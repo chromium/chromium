@@ -13,35 +13,43 @@
 #include "base/task/single_thread_task_executor.h"
 #include "content/public/browser/browser_main_parts.h"
 
+namespace metrics {
+class MemoryMetricsLogger;
+}
+
 namespace android_webview {
 
 class AwBrowserProcess;
 class AwContentBrowserClient;
-class MemoryMetricsLogger;
 
 class AwBrowserMainParts : public content::BrowserMainParts {
  public:
   explicit AwBrowserMainParts(AwContentBrowserClient* browser_client);
+
+  AwBrowserMainParts(const AwBrowserMainParts&) = delete;
+  AwBrowserMainParts& operator=(const AwBrowserMainParts&) = delete;
+
   ~AwBrowserMainParts() override;
 
   // Overriding methods from content::BrowserMainParts.
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostCreateThreads() override;
 
  private:
+  void RegisterSyntheticTrials();
+
   // Android specific UI SingleThreadTaskExecutor.
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
 
   AwContentBrowserClient* browser_client_;
 
-  std::unique_ptr<MemoryMetricsLogger> metrics_logger_;
+  std::unique_ptr<metrics::MemoryMetricsLogger> metrics_logger_;
 
   std::unique_ptr<AwBrowserProcess> browser_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserMainParts);
 };
 
 }  // namespace android_webview

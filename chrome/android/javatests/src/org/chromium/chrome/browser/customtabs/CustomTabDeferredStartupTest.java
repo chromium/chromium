@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
 
 import androidx.annotation.NonNull;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -24,26 +22,28 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests that when DeferredStartupHandler#queueDeferredTasksOnIdleHandler() is run that the
@@ -57,7 +57,7 @@ public class CustomTabDeferredStartupTest {
         private boolean mIsPageLoadFinished;
 
         @Override
-        public void onPageLoadFinished(Tab tab, String url) {
+        public void onPageLoadFinished(Tab tab, GURL url) {
             mIsPageLoadFinished = true;
         }
 
@@ -79,8 +79,9 @@ public class CustomTabDeferredStartupTest {
         }
     }
 
-    static class NewTabObserver extends EmptyTabModelSelectorObserver
-            implements ApplicationStatus.ActivityStateListener, InflationObserver {
+    static class NewTabObserver implements TabModelSelectorObserver,
+                                           ApplicationStatus.ActivityStateListener,
+                                           InflationObserver {
         private BaseCustomTabActivity mActivity;
         private TabObserver mObserver;
 
@@ -89,7 +90,7 @@ public class CustomTabDeferredStartupTest {
         }
 
         @Override
-        public void onNewTabCreated(Tab tab) {
+        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
             tab.addObserver(mObserver);
         }
 
@@ -143,59 +144,30 @@ public class CustomTabDeferredStartupTest {
     private @ActivityType int mActivityType;
 
     @Rule
-    public final ChromeActivityTestRule mActivityTestRule;
+    public final ChromeActivityTestRule<?> mActivityTestRule;
 
     public CustomTabDeferredStartupTest(@ActivityType int activityType) {
         mActivityType = activityType;
-        mActivityTestRule = (activityType == ActivityType.WEBAPP) ? new WebappActivityTestRule()
-                                                                  : new CustomTabActivityTestRule();
-    }
-
-    private void launchActivity() throws TimeoutException {
-        if (mActivityType == ActivityType.WEBAPP) {
-            launchWebapp((WebappActivityTestRule) mActivityTestRule);
-            return;
-        }
-
-        CustomTabActivityTestRule customTabActivityTestRule =
-                (CustomTabActivityTestRule) mActivityTestRule;
-        if (mActivityType == ActivityType.CUSTOM_TAB) {
-            launchCct(customTabActivityTestRule);
-            return;
-        }
-        launchTwa(customTabActivityTestRule);
-    }
-
-    private void launchWebapp(WebappActivityTestRule activityTestRule) {
-        activityTestRule.startWebappActivity();
-    }
-
-    private void launchCct(CustomTabActivityTestRule activityTestRule) {
-        activityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), "about:blank"));
-    }
-
-    private void launchTwa(CustomTabActivityTestRule activityTestRule) throws TimeoutException {
-        String packageName = InstrumentationRegistry.getTargetContext().getPackageName();
-        Intent intent = TrustedWebActivityTestUtil.createTrustedWebActivityIntent("about:blank");
-        TrustedWebActivityTestUtil.spoofVerification(packageName, "about:blank");
-        TrustedWebActivityTestUtil.createSession(intent, packageName);
-        activityTestRule.startCustomTabActivityWithIntent(intent);
+        mActivityTestRule = CustomTabActivityTypeTestUtils.createActivityTestRule(activityType);
     }
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
+    // TODO(eirage): Make this test work with quality enforcement.
     public void testPageIsLoadedOnDeferredStartup() throws Exception {
-        PageLoadFinishedTabObserver tabObserver = new PageLoadFinishedTabObserver();
-        NewTabObserver newTabObserver = new NewTabObserver(tabObserver);
-        TabModelSelectorBase.setObserverForTests(newTabObserver);
-        ApplicationStatus.registerStateListenerForAllActivities(newTabObserver);
         CallbackHelper helper = new CallbackHelper();
-        PageIsLoadedDeferredStartupHandler handler =
-                new PageIsLoadedDeferredStartupHandler(tabObserver, helper);
-        DeferredStartupHandler.setInstanceForTests(handler);
-        launchActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PageLoadFinishedTabObserver tabObserver = new PageLoadFinishedTabObserver();
+            NewTabObserver newTabObserver = new NewTabObserver(tabObserver);
+            TabModelSelectorBase.setObserverForTests(newTabObserver);
+            ApplicationStatus.registerStateListenerForAllActivities(newTabObserver);
+            PageIsLoadedDeferredStartupHandler handler =
+                    new PageIsLoadedDeferredStartupHandler(tabObserver, helper);
+            DeferredStartupHandler.setInstanceForTests(handler);
+        });
+        CustomTabActivityTypeTestUtils.launchActivity(
+                mActivityType, mActivityTestRule, "about:blank");
         helper.waitForCallback(0);
     }
 }

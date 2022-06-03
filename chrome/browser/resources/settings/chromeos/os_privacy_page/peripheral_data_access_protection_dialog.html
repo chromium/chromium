@@ -1,0 +1,32 @@
+<style include="settings-shared">
+  #dataAccesProtectionDialogSubDescription {
+    padding-top: 10px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 370px;
+  }
+</style>
+
+<cr-dialog id="warningDialog" show-on-attach>
+  <div slot="title">
+    $i18n{peripheralDataAccessProtectionWarningTitle}
+  </div>
+  <div slot="body">
+    <div>$i18n{peripheralDataAccessProtectionWarningDescription}</div>
+    <div id="dataAccesProtectionDialogSubDescription">
+      $i18n{peripheralDataAccessProtectionWarningSubDescription}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelButtonClicked_">
+      $i18n{peripheralDataAccessProtectionCancelButton}
+    </cr-button>
+    <cr-button id="disableConfirmation" class="action-button"
+        on-click="onDisableClicked_">
+      $i18n{peripheralDataAccessProtectionDisableButton}
+    </cr-button>
+  </div>
+</cr-dialog>
+

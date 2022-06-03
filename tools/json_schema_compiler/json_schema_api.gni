@@ -109,6 +109,7 @@ template("generated_json_strings") {
   root_target_name = target_name
 
   bundle_generator_schema_name = target_name + "_bundle_generator_schema"
+
   action(bundle_generator_schema_name) {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
@@ -225,6 +226,7 @@ template("function_registration") {
 
   bundle_generator_registration_name =
       target_name + "_bundle_generator_registration"
+
   action(bundle_generator_registration_name) {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
@@ -317,6 +319,7 @@ template("generated_types") {
   root_target_name = target_name
 
   schema_generator_name = target_name + "_schema_generator"
+
   action_foreach(schema_generator_name) {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
@@ -343,7 +346,7 @@ template("generated_types") {
     "//base",
     "//tools/json_schema_compiler:generated_api_util",
   ]
-  lib_extra_configs = [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  lib_extra_configs = []
   if (defined(invoker.configs)) {
     lib_extra_configs += invoker.configs
   }

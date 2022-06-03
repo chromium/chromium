@@ -8,19 +8,20 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "third_party/cros_system_api/dbus/service_constants.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace display {
 
 class DisplaySnapshot;
 class ManagedDisplayMode;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a string describing |state|.
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
 
@@ -32,7 +33,10 @@ GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
                 chromeos::DisplayPowerState state,
                 std::vector<bool>* display_power);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Determines whether |a| is within an epsilon of |b|.
+bool WithinEpsilon(float a, float b);
 
 // Returns a string describing |state|.
 std::string MultipleDisplayStateToString(MultipleDisplayState state);
@@ -50,14 +54,6 @@ GetDisplayZoomFactors(const ManagedDisplayMode& mode);
 // This is useful for displays that have a non unity device scale factors
 // applied to them.
 std::vector<float> DISPLAY_MANAGER_EXPORT GetDisplayZoomFactorForDsf(float dsf);
-
-// This function adds |dsf| to the vector of |zoom_values| by replacing
-// the element it is closest to in the list. It also ensures that it never
-// replaces the default zoom value of 1.0 from the list and that the size of the
-// list never changes.
-// TODO(malaykeshav): Remove this after a few milestones.
-void DISPLAY_MANAGER_EXPORT InsertDsfIntoList(std::vector<float>* zoom_values,
-                                              float dsf);
 
 }  // namespace display
 

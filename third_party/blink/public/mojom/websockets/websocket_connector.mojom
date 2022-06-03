@@ -4,6 +4,8 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "url/mojom/url.mojom";
 
@@ -17,7 +19,9 @@ interface WebSocketConnector {
   // until the connection is established. See network_context.mojom for details.
   Connect(url.mojom.Url url,
           array<string> requested_protocols,
-          url.mojom.Url site_for_cookies,
+          network.mojom.SiteForCookies site_for_cookies,
           string? user_agent,
-          pending_remote<network.mojom.WebSocketHandshakeClient> handshake_client);
+          pending_remote<network.mojom.WebSocketHandshakeClient> handshake_client,
+          mojo_base.mojom.UnguessableToken? throttling_profile_id);
+
 };

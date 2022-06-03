@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_unittest_base.js']);
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
 
 /**
  * Base class for walker test fixtures.
@@ -50,7 +50,7 @@ ChromeVoxWalkerUnitTestBase.prototype = {
    * selection, then asserts that for all the parameters passed in desc,
    * the new selection matches. Returns the new selections if assertion passes.
    * NOTE: If you change the parameters here, you should also change the
-   * whitelist above.
+   * allowlist above.
    * @param {!cvox.CursorSelection} sel The selection.
    * @param {!string|!cvox.CursorSelection} opt_cmdOrDest The command to
    *  execute, or the override returned selection.
@@ -82,7 +82,8 @@ ChromeVoxWalkerUnitTestBase.prototype = {
     if (opt_cmdOrDest instanceof cvox.CursorSelection) {
       var ret = opt_cmdOrDest;
     } else {
-      if (ChromeVoxWalkerUnitTestBase.CMD_WHITELIST.indexOf(opt_cmdOrDest) == -1) {
+      if (ChromeVoxWalkerUnitTestBase.CMD_ALLOWLIST.indexOf(
+          opt_cmdOrDest) == -1) {
         // Intentionally fail the test if there's a typo.
         throw 'Got an invalid command: "' + opt_cmdOrDest + '".';
       }
@@ -100,7 +101,7 @@ ChromeVoxWalkerUnitTestBase.prototype = {
     }
 
     for (var key in desc) {
-      if (ChromeVoxWalkerUnitTestBase.DESC_WHITELIST.indexOf(key) == -1) {
+      if (ChromeVoxWalkerUnitTestBase.DESC_ALLOWLIST.indexOf(key) == -1) {
         throw 'Invalid key in desc parameter: "' + key + '".';
       }
     }
@@ -151,18 +152,19 @@ ChromeVoxWalkerUnitTestBase.prototype = {
 };
 
 /**
- * Whitelist for the commands that are allowed to be executed with go().
+ * Allowlist for the commands that are allowed to be executed with go().
  * @type {Array.string}
  * @const
  */
-ChromeVoxWalkerUnitTestBase.CMD_WHITELIST = ['next', 'sync', 'nextRow', 'nextCol'];
+ChromeVoxWalkerUnitTestBase.CMD_ALLOWLIST = [
+  'next', 'sync', 'nextRow', 'nextCol'];
 
 /**
- * Whitelist for the properties that can be asserted with go().
+ * Allowlist for the properties that can be asserted with go().
  * @type {Array.string}
  * @const
  */
-ChromeVoxWalkerUnitTestBase.DESC_WHITELIST = ['selText', 'selNodeId',
+ChromeVoxWalkerUnitTestBase.DESC_ALLOWLIST = ['selText', 'selNodeId',
 'selParentNodeId', 'selStartIndex', 'selEndIndex', 'selReversed', 'descText',
 'descContext', 'descAnnotation', 'descUserValue', 'descPersonality'];
 

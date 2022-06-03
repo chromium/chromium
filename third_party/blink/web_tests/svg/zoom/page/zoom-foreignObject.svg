@@ -2,6 +2,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" onload="runAfterLayoutAndPaint(repaintTest, true);"
      xmlns:xlink="http://www.w3.org/1999/xlink"
      xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <style>
+        /* This test is not concerned with scrollbar differences. */
+        :root {
+            overflow: hidden;
+        }
+    </style>
 
 <!-- HTML FO text -->
 <foreignObject width="250" height="200" transform="scale(3) skewY(5) skewX(5)">

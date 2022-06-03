@@ -10,13 +10,14 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "chromecast/media/api/cast_audio_decoder.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 #include "chromecast/media/cma/backend/android/audio_sink_manager.h"
-#include "chromecast/media/cma/decoder/cast_audio_decoder.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/media_util.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -41,6 +42,10 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   using BufferStatus = MediaPipelineBackend::BufferStatus;
 
   explicit AudioDecoderAndroid(MediaPipelineBackendAndroid* backend);
+
+  AudioDecoderAndroid(const AudioDecoderAndroid&) = delete;
+  AudioDecoderAndroid& operator=(const AudioDecoderAndroid&) = delete;
+
   ~AudioDecoderAndroid() override;
 
   void Initialize();
@@ -78,7 +83,6 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   void ResetSinkForNewConfig(const AudioConfig& config);
   void CreateDecoder();
   void CreateRateShifter(const AudioConfig& config);
-  void OnDecoderInitialized(bool success);
   void OnBufferDecoded(uint64_t input_bytes,
                        CastAudioDecoder::Status status,
                        const AudioConfig& config,
@@ -106,6 +110,7 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   std::unique_ptr<CastAudioDecoder> decoder_;
 
   std::unique_ptr<::media::AudioRendererAlgorithm> rate_shifter_;
+  ::media::NullMediaLog media_log_;
   base::circular_deque<RateShifterInfo> rate_shifter_info_;
   std::unique_ptr<::media::AudioBus> rate_shifter_output_;
 
@@ -119,8 +124,6 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   scoped_refptr<::media::AudioBufferMemoryPool> pool_;
 
   base::WeakPtrFactory<AudioDecoderAndroid> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderAndroid);
 };
 
 }  // namespace media

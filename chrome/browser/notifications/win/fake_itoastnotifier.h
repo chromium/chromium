@@ -9,7 +9,6 @@
 #include <wrl/implements.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 class NotificationLaunchId;
 
@@ -20,6 +19,8 @@ class FakeIToastNotifier
           ABI::Windows::UI::Notifications::IToastNotifier> {
  public:
   FakeIToastNotifier();
+  FakeIToastNotifier(const FakeIToastNotifier&) = delete;
+  FakeIToastNotifier& operator=(const FakeIToastNotifier&) = delete;
   ~FakeIToastNotifier() override;
 
   // Sets a callback to be notified when Show has been called.
@@ -54,8 +55,6 @@ class FakeIToastNotifier
  private:
   base::RepeatingCallback<void(const NotificationLaunchId& launch_id)>
       notification_shown_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIToastNotifier);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_ITOASTNOTIFIER_H_

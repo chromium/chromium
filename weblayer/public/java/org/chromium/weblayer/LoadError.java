@@ -41,7 +41,15 @@ public @interface LoadError {
     int CONNECTIVITY_ERROR = org.chromium.weblayer_private.interfaces.LoadError.CONNECTIVITY_ERROR;
 
     /**
-     * An error not listed above occurred.
+     * An error not listed above or below occurred.
      */
     int OTHER_ERROR = org.chromium.weblayer_private.interfaces.LoadError.OTHER_ERROR;
+
+    /**
+     * Safe browsing error.
+     *
+     * @since 88
+     */
+    int SAFE_BROWSING_ERROR =
+            org.chromium.weblayer_private.interfaces.LoadError.SAFE_BROWSING_ERROR;
 }

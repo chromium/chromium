@@ -1,91 +1,15 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'The color of this'",
-          "rect": [379, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'green'",
-          "rect": [379, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'reflection should be'",
-          "rect": [379, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'text in the'",
-          "rect": [379, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this'",
-          "rect": [69, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'green'",
-          "rect": [69, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'reflection should be'",
-          "rect": [69, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'text in the'",
-          "rect": [69, 267, 288, 72],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this'",
-          "rect": [304, 21, 128, 208],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'green'",
-          "rect": [304, 21, 128, 208],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'reflection should be'",
-          "rect": [304, 21, 128, 208],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'text in the'",
-          "rect": [304, 21, 128, 208],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this'",
-          "rect": [304, 377, 128, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'green'",
-          "rect": [304, 377, 128, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'reflection should be'",
-          "rect": [304, 377, 128, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'text in the'",
-          "rect": [304, 377, 128, 156],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [379, 267, 288, 72],
+        [69, 267, 288, 72],
+        [304, 21, 128, 208],
+        [304, 377, 128, 156]
       ]
     }
   ]

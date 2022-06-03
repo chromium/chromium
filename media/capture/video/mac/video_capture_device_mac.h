@@ -16,13 +16,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
-
-@class VideoCaptureDeviceAVFoundation;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -42,7 +40,8 @@ CAPTURE_EXPORT
   int32_t _transportType;
 }
 
-- (id)initWithName:(NSString*)name transportType:(int32_t)transportType;
+- (instancetype)initWithName:(NSString*)name
+               transportType:(int32_t)transportType;
 
 - (NSString*)deviceName;
 - (int32_t)transportType;
@@ -52,10 +51,16 @@ namespace media {
 
 // Called by VideoCaptureManager to open, close and start, stop Mac video
 // capture devices.
-class VideoCaptureDeviceMac : public VideoCaptureDevice {
+class VideoCaptureDeviceMac
+    : public VideoCaptureDevice,
+      public VideoCaptureDeviceAVFoundationFrameReceiver {
  public:
   explicit VideoCaptureDeviceMac(
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceMac(const VideoCaptureDeviceMac&) = delete;
+  VideoCaptureDeviceMac& operator=(const VideoCaptureDeviceMac&) = delete;
+
   ~VideoCaptureDeviceMac() override;
 
   // VideoCaptureDevice implementation.
@@ -67,30 +72,31 @@ class VideoCaptureDeviceMac : public VideoCaptureDevice {
   void GetPhotoState(GetPhotoStateCallback callback) override;
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
+  // VideoFrameConsumerFeedbackObserver implementation.
+  void OnUtilizationReport(int frame_feedback_id,
+                           media::VideoCaptureFeedback feedback) override;
 
   bool Init(VideoCaptureApi capture_api_type);
 
-  // Called to deliver captured video frames.  It's safe to call this method
-  // from any thread, including those controlled by AVFoundation.
+  // VideoCaptureDeviceAVFoundationFrameReceiver:
   void ReceiveFrame(const uint8_t* video_frame,
                     int video_frame_length,
                     const VideoCaptureFormat& frame_format,
                     const gfx::ColorSpace color_space,
                     int aspect_numerator,
                     int aspect_denominator,
-                    base::TimeDelta timestamp);
-
-  // Callbacks with the result of a still image capture, or in case of error,
-  // respectively. It's safe to call these methods from any thread.
+                    base::TimeDelta timestamp) override;
+  void ReceiveExternalGpuMemoryBufferFrame(
+      CapturedExternalVideoBuffer frame,
+      std::vector<CapturedExternalVideoBuffer> scaled_frames,
+      base::TimeDelta timestamp) override;
   void OnPhotoTaken(const uint8_t* image_data,
                     size_t image_length,
-                    const std::string& mime_type);
-  void OnPhotoError();
-
-  // Forwarder to VideoCaptureDevice::Client::OnError().
+                    const std::string& mime_type) override;
+  void OnPhotoError() override;
   void ReceiveError(VideoCaptureError error,
                     const base::Location& from_here,
-                    const std::string& reason);
+                    const std::string& reason) override;
 
   // Forwarder to VideoCaptureDevice::Client::OnLog().
   void LogMessage(const std::string& message);
@@ -98,6 +104,9 @@ class VideoCaptureDeviceMac : public VideoCaptureDevice {
   static std::string GetDeviceModelId(const std::string& device_id,
                                       VideoCaptureApi capture_api,
                                       VideoCaptureTransportType transport_type);
+
+  static VideoCaptureControlSupport GetControlSupport(
+      const std::string& device_model);
 
  private:
   void SetErrorState(VideoCaptureError error,
@@ -126,8 +135,6 @@ class VideoCaptureDeviceMac : public VideoCaptureDevice {
   // VideoCaptureDeviceMac is destroyed.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoCaptureDeviceMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceMac);
 };
 
 }  // namespace media

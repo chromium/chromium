@@ -112,8 +112,8 @@ TEST_F(BluetoothTaskManagerWinTest, SetPowered) {
     return;
 
   bluetooth_task_runner_->ClearPendingTasks();
-  base::Closure closure;
-  task_manager_->PostSetPoweredBluetoothTask(true, closure, closure);
+  task_manager_->PostSetPoweredBluetoothTask(true, base::OnceClosure(),
+                                             base::OnceClosure());
 
   EXPECT_EQ(1u, bluetooth_task_runner_->NumPendingTasks());
   bluetooth_task_runner_->RunPendingTasks();

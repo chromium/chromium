@@ -4,17 +4,21 @@
 
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
 #endif
 
@@ -24,6 +28,10 @@ class MouseCursorMonitorProxy::Core
     : public webrtc::MouseCursorMonitor::Callback {
  public:
   explicit Core(base::WeakPtr<MouseCursorMonitorProxy> proxy);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void CreateMouseCursorMonitor(const webrtc::DesktopCaptureOptions& options);
@@ -37,16 +45,13 @@ class MouseCursorMonitorProxy::Core
  private:
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
-  void OnMouseCursorPosition(webrtc::MouseCursorMonitor::CursorState state,
-                             const webrtc::DesktopVector& position) override;
+  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   base::ThreadChecker thread_checker_;
 
   base::WeakPtr<MouseCursorMonitorProxy> proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 MouseCursorMonitorProxy::Core::Core(
@@ -63,12 +68,12 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
     const webrtc::DesktopCaptureOptions& options) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if defined(OS_CHROMEOS)
-  mouse_cursor_monitor_.reset(new MouseCursorMonitorAura());
-#else   // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!mouse_cursor_monitor_)
     LOG(ERROR) << "Failed to initialize MouseCursorMonitor.";
 }
@@ -103,20 +108,19 @@ void MouseCursorMonitorProxy::Core::OnMouseCursor(webrtc::MouseCursor* cursor) {
 }
 
 void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
-    webrtc::MouseCursorMonitor::CursorState state,
     const webrtc::DesktopVector& position) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MouseCursorMonitorProxy::OnMouseCursorPosition,
-                                proxy_, state, position));
+                                proxy_, position));
 }
 
 MouseCursorMonitorProxy::MouseCursorMonitorProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
     const webrtc::DesktopCaptureOptions& options)
     : capture_task_runner_(capture_task_runner) {
-  core_.reset(new Core(weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::CreateMouseCursorMonitor,
                                 base::Unretained(core_.get()), options));
@@ -155,10 +159,9 @@ void MouseCursorMonitorProxy::OnMouseCursor(
 }
 
 void MouseCursorMonitorProxy::OnMouseCursorPosition(
-    CursorState state,
     const webrtc::DesktopVector& position) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  callback_->OnMouseCursorPosition(state, position);
+  callback_->OnMouseCursorPosition(position);
 }
 
 }  // namespace remoting

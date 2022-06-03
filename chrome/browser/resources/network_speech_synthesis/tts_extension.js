@@ -76,7 +76,7 @@ TtsExtension.prototype = {
    * This is the main function called to initialize this extension.
    * Initializes data structures and adds event listeners.
    */
-  init: function() {
+  init() {
     // Get voices from manifest.
     const voices = chrome.app.getDetails().tts_engine.voices;
     for (let i = 0; i < voices.length; i++) {
@@ -111,7 +111,14 @@ TtsExtension.prototype = {
    *     in the Chrome ttsEngine extension API.
    * @private
    */
-  onSpeak_: function(utterance, options, callback) {
+  onSpeak_(utterance, options, callback) {
+    // Ignore the utterance if it is empty. Continue such processing causes no
+    // speech and fails all subsequent calls to process additional utterances.
+    if (utterance.length == 0) {
+      callback({'type': 'end', 'charIndex': 0});
+      return;
+    }
+
     // Truncate the utterance if it's too long. Both Chrome's tts
     // extension api and the web speech api specify 32k as the
     // maximum limit for an utterance.
@@ -195,7 +202,7 @@ TtsExtension.prototype = {
    * TTS client.
    * @private
    */
-  onStop_: function() {
+  onStop_() {
     if (this.currentUtterance_) {
       this.audioElement_.pause();
       this.currentUtterance_.callback({
@@ -213,7 +220,7 @@ TtsExtension.prototype = {
    * then begin playing the audio element.
    * @private
    */
-  onStart_: function() {
+  onStart_() {
     if (this.currentUtterance_) {
       if (this.currentUtterance_.options.volume !== undefined) {
         // Both APIs use the same range for volume, between 0.0 and 1.0.
@@ -229,7 +236,7 @@ TtsExtension.prototype = {
    * Pauses audio if we're in the middle of an utterance.
    * @private
    */
-  onPause_: function() {
+  onPause_() {
     if (this.currentUtterance_) {
       this.audioElement_.pause();
     }
@@ -240,7 +247,7 @@ TtsExtension.prototype = {
    * Resumes audio if we're in the middle of an utterance.
    * @private
    */
-  onResume_: function() {
+  onResume_() {
     if (this.currentUtterance_) {
       this.audioElement_.play();
     }

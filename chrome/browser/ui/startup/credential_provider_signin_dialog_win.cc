@@ -4,14 +4,16 @@
 
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 
+#include <windows.h>
+
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -33,11 +35,15 @@
 
 namespace {
 
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "credential_provider_signin_dialog";
+
 #if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
 bool g_enable_gcpw_signin_during_tests = false;
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
 
-// This message must match the one sent in inline_login.js: sendLSTFetchResults.
+// This message must match the one sent in inline_login_app.js:
+// sendLSTFetchResults.
 constexpr char kLSTFetchResultsMessage[] = "lstFetchResults";
 
 void WriteResultToHandle(const base::Value& result) {
@@ -48,7 +54,7 @@ void WriteResultToHandle(const base::Value& result) {
     // ::GetStdHandle(STD_OUTPUT_HANDLE) will result in an invalid or null
     // handle if Chrome was started without providing a console.
     HANDLE output_handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
-    if (output_handle != nullptr && output_handle != INVALID_HANDLE_VALUE) {
+    if (output_handle && output_handle != INVALID_HANDLE_VALUE) {
       DWORD written;
       if (!::WriteFile(output_handle, json_result.c_str(), json_result.length(),
                        &written, nullptr)) {
@@ -124,8 +130,9 @@ void HandleSigninCompleteForGcpwLogin(
     // Create the fetcher and pass it to the callback so that it can be
     // deleted once it is finished.
     auto fetcher = std::make_unique<CredentialProviderSigninInfoFetcher>(
-        refresh_token, url_loader_factory);
-    fetcher->SetCompletionCallbackAndStart(
+        refresh_token, kOAuthConsumerName, url_loader_factory);
+    auto* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->SetCompletionCallbackAndStart(
         access_token, additional_mdm_oauth_scopes,
         base::BindOnce(&HandleAllGcpwInfoFetched, std::move(keep_alive),
                        std::move(fetcher), std::move(signin_result)));
@@ -146,9 +153,14 @@ class CredentialProviderWebUIMessageHandler
       : signin_callback_(std::move(signin_callback)),
         additional_mdm_oauth_scopes_(additional_mdm_oauth_scopes) {}
 
+  CredentialProviderWebUIMessageHandler(
+      const CredentialProviderWebUIMessageHandler&) = delete;
+  CredentialProviderWebUIMessageHandler& operator=(
+      const CredentialProviderWebUIMessageHandler&) = delete;
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         kLSTFetchResultsMessage,
         base::BindRepeating(
             &CredentialProviderWebUIMessageHandler::OnSigninComplete,
@@ -157,7 +169,7 @@ class CredentialProviderWebUIMessageHandler
     // This message is always sent as part of the SAML flow but we don't really
     // need to process it. We do however have to handle the message or else
     // there will be a DCHECK failure in web_ui about an unhandled message.
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "updatePasswordAttributes",
         base::BindRepeating([](const base::ListValue* args) {}));
   }
@@ -183,7 +195,7 @@ class CredentialProviderWebUIMessageHandler
     DCHECK(out_exit_code);
 
     const base::Value* dict_result = nullptr;
-    if (!args || args->empty() || !args->Get(0, &dict_result) ||
+    if (!args || args->GetList().empty() || !args->Get(0, &dict_result) ||
         !dict_result->is_dict()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
@@ -248,8 +260,6 @@ class CredentialProviderWebUIMessageHandler
 
   HandleGcpwSigninCompleteResult signin_callback_;
   const std::string additional_mdm_oauth_scopes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderWebUIMessageHandler);
 };
 
 }  // namespace
@@ -269,19 +279,25 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
       const std::string& email_domains,
       const std::string& gcpw_endpoint_path,
       const std::string& additional_mdm_oauth_scopes,
+      const std::string& show_tos,
       HandleGcpwSigninCompleteResult signin_callback)
       : reauth_email_(reauth_email),
         reauth_gaia_id_(reauth_gaia_id),
         email_domains_(email_domains),
         gcpw_endpoint_path_(gcpw_endpoint_path),
         additional_mdm_oauth_scopes(additional_mdm_oauth_scopes),
+        show_tos_(show_tos),
         signin_callback_(std::move(signin_callback)) {}
+
+  CredentialProviderWebDialogDelegate(
+      const CredentialProviderWebDialogDelegate&) = delete;
+  CredentialProviderWebDialogDelegate& operator=(
+      const CredentialProviderWebDialogDelegate&) = delete;
 
   GURL GetDialogContentURL() const override {
     signin_metrics::AccessPoint access_point =
         signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
-    signin_metrics::Reason reason =
-        signin_metrics::Reason::REASON_FETCH_LST_ONLY;
+    signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
     auto base_url =
         reauth_email_.empty()
@@ -300,6 +316,11 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
           gcpw_endpoint_path_);
     }
 
+    if (!show_tos_.empty()) {
+      base_url = net::AppendQueryParameter(
+          base_url, credential_provider::kShowTosSwitch, show_tos_);
+    }
+
     if (email_domains_.empty())
       return base_url;
 
@@ -309,13 +330,13 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   ui::ModalType GetDialogModalType() const override {
-    return ui::MODAL_TYPE_SYSTEM;
+    return ui::MODAL_TYPE_WINDOW;
   }
 
-  base::string16 GetDialogTitle() const override { return base::string16(); }
+  std::u16string GetDialogTitle() const override { return std::u16string(); }
 
-  base::string16 GetAccessibleDialogTitle() const override {
-    return base::string16();
+  std::u16string GetAccessibleDialogTitle() const override {
+    return std::u16string();
   }
 
   std::string GetDialogName() const override {
@@ -362,7 +383,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override {}
 
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     return true;
   }
@@ -387,14 +408,14 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // Additional mdm oauth scopes flag value.
   const std::string additional_mdm_oauth_scopes;
 
+  // Show tos page in the login path when this parameter is set to 1.
+  const std::string show_tos_;
+
   // Callback that will be called when a valid sign in has been completed
   // through the dialog.
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
   mutable CredentialProviderWebUIMessageHandler* handler_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderWebDialogDelegate);
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,
@@ -417,7 +438,7 @@ bool CanStartGCPWSignin() {
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
   // Ensure that we are running under a "winlogon" desktop before starting the
   // gcpw sign in dialog.
-  return base::win::IsRunningUnderDesktopName(STRING16_LITERAL("winlogon"));
+  return base::win::IsRunningUnderDesktopName(L"winlogon");
 }
 
 bool StartGCPWSignin(const base::CommandLine& command_line,
@@ -467,12 +488,15 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
       credential_provider::kGcpwEndpointPathSwitch);
   std::string additional_mdm_oauth_scopes = command_line.GetSwitchValueASCII(
       credential_provider::kGcpwAdditionalOauthScopes);
+  std::string show_tos =
+      command_line.GetSwitchValueASCII(credential_provider::kShowTosSwitch);
 
   // Delegate to handle the result of the sign in request. This will
   // delete itself eventually when it receives the OnDialogClosed call.
   auto delegate = std::make_unique<CredentialProviderWebDialogDelegate>(
       reauth_email, reauth_gaia_id, email_domains, gcpw_endpoint_path,
-      additional_mdm_oauth_scopes, std::move(signin_complete_handler));
+      additional_mdm_oauth_scopes, show_tos,
+      std::move(signin_complete_handler));
 
   // The web dialog view that will contain the web ui for the login screen.
   // This view will be automatically deleted by the widget that owns it when it

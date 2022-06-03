@@ -6,8 +6,8 @@
 // once the win-specific allocation shim has been removed, and the generic shim
 // has becaome the default.
 
-#ifndef BASE_ALLOCATOR_WINHEAP_STUBS_H_
-#define BASE_ALLOCATOR_WINHEAP_STUBS_H_
+#ifndef BASE_ALLOCATOR_WINHEAP_STUBS_WIN_H_
+#define BASE_ALLOCATOR_WINHEAP_STUBS_WIN_H_
 
 #include <stdint.h>
 
@@ -45,4 +45,4 @@ BASE_EXPORT void WinHeapAlignedFree(void* ptr);
 }  // namespace allocator
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_WINHEAP_STUBS_H_
+#endif  // BASE_ALLOCATOR_WINHEAP_STUBS_WIN_H_

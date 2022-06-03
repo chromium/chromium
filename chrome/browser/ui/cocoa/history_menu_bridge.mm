@@ -13,16 +13,25 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
@@ -57,48 +66,52 @@ HistoryMenuBridge::HistoryItem::~HistoryItem() {
 
 HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     : controller_([[HistoryMenuCocoaController alloc] initWithBridge:this]),
-      profile_(profile),
-      history_service_(NULL),
-      tab_restore_service_(NULL),
-      create_in_progress_(false),
-      need_recreate_(false),
-      history_service_observer_(this) {
-  // If we don't have a profile, do not bother initializing our data sources.
-  // This shouldn't happen except in unit tests.
-  if (profile_) {
-    // Check to see if the history service is ready. Because it loads async, it
-    // may not be ready when the Bridge is created. If this happens, register
-    // for a notification that tells us the HistoryService is ready.
-    history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (hs) {
-      history_service_observer_.Add(hs);
-      if (hs->BackendLoaded()) {
-        history_service_ = hs;
-        Init();
-      }
-    }
+      profile_(profile) {
+  DCHECK(profile_);
+  // Set the static icons in the menu.
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
+  [full_history_item
+      setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
 
-    tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
-    if (tab_restore_service_) {
-      tab_restore_service_->AddObserver(this);
-      // If the tab entries are already loaded, invoke the observer method to
-      // build the "Recently Closed" section. Otherwise it will be when the
-      // backend loads.
-      if (!tab_restore_service_->IsLoaded())
-        tab_restore_service_->LoadTabsFromLastSession();
-      else
-        TabRestoreServiceChanged(tab_restore_service_);
+  // Set the visibility of menu items according to profile type.
+  // "Recently Visited", "Recently Closed" and "Show Full History" sections
+  // should be hidden for incognito mode, while incognito disclaimer should be
+  // visible.
+  SetVisibilityOfMenuItems();
+
+  // If the profile is incognito, no need to set history and tab restore
+  // services.
+  if (profile_->IsOffTheRecord())
+    return;
+
+  // Check to see if the history service is ready. Because it loads async, it
+  // may not be ready when the Bridge is created. If this happens, register for
+  // a notification that tells us the HistoryService is ready.
+  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  if (hs) {
+    history_service_observation_.Observe(hs);
+    if (hs->BackendLoaded()) {
+      history_service_ = hs;
+      Init();
     }
   }
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
+  if (tab_restore_service_) {
+    tab_restore_service_observation_.Observe(tab_restore_service_);
+    // If the tab entries are already loaded, invoke the observer method to
+    // build the "Recently Closed" section. Otherwise it will be when the
+    // backend loads.
+    if (!tab_restore_service_->IsLoaded())
+      tab_restore_service_->LoadTabsFromLastSession();
+    else
+      TabRestoreServiceChanged(tab_restore_service_);
+  }
+
   default_favicon_.reset(
       [rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage() retain]);
-
-  // Set the static icons in the menu.
-  NSMenuItem* item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
-  [item setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
 
   [HistoryMenu() setDelegate:controller_];
 }
@@ -106,21 +119,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 // Note that all requests sent to either the history service or the favicon
 // service will be automatically cancelled by their respective Consumers, so
 // task cancellation is not done manually here in the dtor.
-HistoryMenuBridge::~HistoryMenuBridge() {
-  // Unregister ourselves as observers and notifications.
-  DCHECK(profile_);
-
-  if (tab_restore_service_)
-    tab_restore_service_->RemoveObserver(this);
-
-  // Since the map owns the HistoryItems, delete anything that still exists.
-  std::map<NSMenuItem*, HistoryItem*>::iterator it = menu_item_map_.begin();
-  while (it != menu_item_map_.end()) {
-    HistoryItem* item  = it->second;
-    menu_item_map_.erase(it++);
-    delete item;
-  }
-}
+HistoryMenuBridge::~HistoryMenuBridge() = default;
 
 void HistoryMenuBridge::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
@@ -137,71 +136,27 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
   for (const auto& entry : entries) {
     if (added_count >= kRecentlyClosedCount)
       break;
-    // If this is a window, create a submenu for all of its tabs.
     if (entry->type == sessions::TabRestoreService::WINDOW) {
-      const auto* entry_win =
-          static_cast<sessions::TabRestoreService::Window*>(entry.get());
-      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-          tabs = entry_win->tabs;
-      if (tabs.empty())
-        continue;
-
-      // Create the item for the parent/window. Do not set the title yet because
-      // the actual number of items that are in the menu will not be known until
-      // things like the NTP are filtered out, which is done when the tab items
-      // are actually created.
-      HistoryItem* item = new HistoryItem();
-      item->session_id = entry_win->id;
-
-      // Create the submenu.
-      base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
-
-      // Create standard items within the window submenu.
-      NSString* restore_title = l10n_util::GetNSString(
-          IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
-      base::scoped_nsobject<NSMenuItem> restore_item(
-          [[NSMenuItem alloc] initWithTitle:restore_title
-                                     action:@selector(openHistoryMenuItem:)
-                              keyEquivalent:@""]);
-      [restore_item setTarget:controller_.get()];
-      // Duplicate the HistoryItem otherwise the different NSMenuItems will
-      // point to the same HistoryItem, which would then be double-freed when
-      // removing the items from the map or in the dtor.
-      HistoryItem* dup_item = new HistoryItem(*item);
-      menu_item_map_.insert(std::make_pair(restore_item.get(), dup_item));
-      [submenu addItem:restore_item.get()];
-      [submenu addItem:[NSMenuItem separatorItem]];
-
-      // Loop over the window's tabs and add them to the submenu.
-      NSInteger subindex = [[submenu itemArray] count];
-      for (const auto& tab : tabs) {
-        HistoryItem* tab_item = HistoryItemForTab(*tab);
-        if (tab_item) {
-          item->tabs.push_back(tab_item);
-          AddItemToMenu(tab_item, submenu.get(), kRecentlyClosed + 1,
-                        subindex++);
-        }
-      }
-
-      // Now that the number of tabs that has been added is known, set the title
-      // of the parent menu item.
-      item->title = l10n_util::GetPluralStringFUTF16(
-          IDS_RECENTLY_CLOSED_WINDOW, item->tabs.size());
-
-      // Sometimes it is possible for there to not be any subitems for a given
-      // window; if that is the case, do not add the entry to the main menu.
-      if ([[submenu itemArray] count] > 2) {
-        // Create the menu item parent.
-        NSMenuItem* parent_item =
-            AddItemToMenu(item, menu, kRecentlyClosed, index++);
-        [parent_item setSubmenu:submenu.get()];
+      bool added = AddWindowEntryToMenu(
+          static_cast<sessions::TabRestoreService::Window*>(entry.get()), menu,
+          kRecentlyClosed, index);
+      if (added) {
+        ++index;
         ++added_count;
       }
     } else if (entry->type == sessions::TabRestoreService::TAB) {
       const auto& tab = static_cast<sessions::TabRestoreService::Tab&>(*entry);
-      HistoryItem* item = HistoryItemForTab(tab);
+      std::unique_ptr<HistoryItem> item = HistoryItemForTab(tab);
       if (item) {
-        AddItemToMenu(item, menu, kRecentlyClosed, index++);
+        AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
+        ++added_count;
+      }
+    } else if (entry->type == sessions::TabRestoreService::GROUP) {
+      bool added = AddGroupEntryToMenu(
+          static_cast<sessions::TabRestoreService::Group*>(entry.get()), menu,
+          kRecentlyClosed, index);
+      if (added) {
+        ++index;
         ++added_count;
       }
     }
@@ -210,13 +165,16 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
 
 void HistoryMenuBridge::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
-  // Intentionally left blank. We hold a weak reference to the service.
+  DCHECK_EQ(service, tab_restore_service_);
+  tab_restore_service_observation_.Reset();
+  tab_restore_service_ = nullptr;
 }
 
 void HistoryMenuBridge::ResetMenu() {
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   ClearMenuSection(menu, kRecentlyClosed);
+  DCHECK(menu_item_map_.empty());
 }
 
 void HistoryMenuBridge::BuildMenu() {
@@ -228,11 +186,11 @@ void HistoryMenuBridge::BuildMenu() {
 
 HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForMenuItem(
     NSMenuItem* item) {
-  std::map<NSMenuItem*, HistoryItem*>::iterator it = menu_item_map_.find(item);
+  auto it = menu_item_map_.find(item);
   if (it != menu_item_map_.end()) {
-    return it->second;
+    return it->second.get();
   }
-  return NULL;
+  return nullptr;
 }
 
 void HistoryMenuBridge::SetIsMenuOpen(bool flag) {
@@ -270,7 +228,6 @@ void HistoryMenuBridge::ClearMenuSection(NSMenu* menu, NSInteger tag) {
       if (item) {
         CancelFaviconRequest(item);
         menu_item_map_.erase(menu_item);
-        delete item;
       }
 
       // If this menu item has a submenu, recurse.
@@ -284,14 +241,14 @@ void HistoryMenuBridge::ClearMenuSection(NSMenu* menu, NSInteger tag) {
   }
 }
 
-NSMenuItem* HistoryMenuBridge::AddItemToMenu(HistoryItem* item,
+NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
                                              NSMenu* menu,
                                              NSInteger tag,
                                              NSInteger index) {
   // Elide the title of the history item, or use the URL if there is none.
   const std::string& url = item->url.possibly_invalid_spec();
-  const base::string16& full_title = item->title;
-  const base::string16& title =
+  const std::u16string& full_title = item->title;
+  const std::u16string& title =
       full_title.empty() ? base::UTF8ToUTF16(url) : full_title;
 
   item->menu_item.reset(
@@ -314,9 +271,135 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(HistoryItem* item,
   }
 
   [menu insertItem:item->menu_item.get() atIndex:index];
-  menu_item_map_.insert(std::make_pair(item->menu_item.get(), item));
 
-  return item->menu_item.get();
+  NSMenuItem* menu_item = item->menu_item.get();
+  auto it = menu_item_map_.emplace(menu_item, std::move(item));
+  CHECK(it.second);
+  return menu_item;
+}
+
+bool HistoryMenuBridge::AddWindowEntryToMenu(
+    sessions::TabRestoreService::Window* window,
+    NSMenu* menu,
+    NSInteger tag,
+    NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+      window->tabs;
+  if (tabs.empty())
+    return false;
+
+  // Create the item for the parent/window. Do not set the title yet because
+  // the actual number of items that are in the menu will not be known until
+  // things like the NTP are filtered out, which is done when the tab items
+  // are actually created.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = window->id;
+
+  // Create the submenu.
+  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
+  int added_count = AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+
+  // Sometimes it is possible for there to not be any subitems for a given
+  // window; if that is the case, do not add the entry to the main menu.
+  if (added_count == 0)
+    return false;
+
+  // Now that the number of tabs that has been added is known, set the title
+  // of the parent menu item.
+  item->title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_WINDOW,
+                                                 item->tabs.size());
+
+  // Create the menu item parent.
+  NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
+  [parent_item setSubmenu:submenu.get()];
+  return true;
+}
+
+bool HistoryMenuBridge::AddGroupEntryToMenu(
+    sessions::TabRestoreService::Group* group,
+    NSMenu* menu,
+    NSInteger tag,
+    NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+      group->tabs;
+  if (tabs.empty())
+    return false;
+
+  // Create the item for the parent/group.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = group->id;
+
+  // Set the title of the group.
+  if (group->visual_data.title().empty()) {
+    item->title = l10n_util::GetPluralStringFUTF16(
+        IDS_RECENTLY_CLOSED_GROUP_UNNAMED, tabs.size());
+  } else {
+    item->title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
+                                                   tabs.size());
+    item->title = base::ReplaceStringPlaceholders(
+        item->title, {group->visual_data.title()}, nullptr);
+  }
+
+  // Set the icon of the group to the group color circle.
+  const auto& theme = ThemeService::GetThemeProviderForProfile(profile_);
+  const int color_id =
+      GetTabGroupContextMenuColorId(group->visual_data.color());
+  gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
+      kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
+
+  // Create the submenu.
+  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
+  AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+
+  NSImage* image = NSImageFromImageSkia(group_icon);
+  item->icon.reset([image retain]);
+  [item->menu_item setImage:item->icon.get()];
+
+  // Create the menu item parent.
+  NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
+  [parent_item setSubmenu:submenu.get()];
+  return true;
+}
+
+int HistoryMenuBridge::AddTabsToSubmenu(
+    NSMenu* submenu,
+    HistoryItem* item,
+    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+        tabs) {
+  // Create standard items within the submenu.
+  // Duplicate the HistoryItem otherwise the different NSMenuItems will
+  // point to the same HistoryItem, which would then be double-freed when
+  // removing the items from the map or in the dtor.
+  auto restore_item = std::make_unique<HistoryItem>(*item);
+  NSString* restore_title =
+      l10n_util::GetNSString(IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
+  restore_item->menu_item.reset([[NSMenuItem alloc]
+      initWithTitle:restore_title
+             action:@selector(openHistoryMenuItem:)
+      keyEquivalent:@""]);
+  NSMenuItem* restore_menu_item = restore_item->menu_item;
+  [restore_menu_item setTag:kRecentlyClosed + 1];  // +1 for submenu item.
+  [restore_menu_item setTarget:controller_.get()];
+  auto it = menu_item_map_.emplace(restore_menu_item, std::move(restore_item));
+  CHECK(it.second);
+  [submenu addItem:restore_menu_item];
+  [submenu addItem:[NSMenuItem separatorItem]];
+
+  // Loop over the tabs and add them to the submenu. This filters out
+  // uninteresting tabs like the NTP.
+  NSInteger subindex = [[submenu itemArray] count];
+  int added_count = 0;
+  for (const auto& tab : tabs) {
+    std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
+    if (tab_item) {
+      item->tabs.push_back(tab_item.get());
+      AddItemToMenu(std::move(tab_item), submenu, kRecentlyClosed + 1,
+                    subindex++);
+      ++added_count;
+    }
+  }
+
+  return added_count;
 }
 
 void HistoryMenuBridge::Init() {
@@ -326,19 +409,22 @@ void HistoryMenuBridge::Init() {
 void HistoryMenuBridge::CreateMenu() {
   // If we're currently running CreateMenu(), wait until it finishes.
   // If the menu is currently open, wait until it closes.
-  if (create_in_progress_ || is_menu_open_)
+  // If the history service got torn down while our async task was queued, don't
+  // do anything - the browser is exiting anyway.
+  // If the current profile is incognito, do not fill the menu.
+  if (create_in_progress_ || is_menu_open_ || !history_service_ ||
+      profile_->IsOffTheRecord()) {
     return;
+  }
   create_in_progress_ = true;
   need_recreate_ = false;
-
-  DCHECK(history_service_);
 
   history::QueryOptions options;
   options.max_count = kVisitedCount;
   options.SetRecentDayRange(kVisitedScope);
 
   history_service_->QueryHistory(
-      base::string16(), options,
+      std::u16string(), options,
       base::BindOnce(&HistoryMenuBridge::OnVisitedHistoryResults,
                      base::Unretained(this)),
       &cancelable_task_tracker_);
@@ -351,6 +437,17 @@ void HistoryMenuBridge::OnHistoryChanged() {
 }
 
 void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
+  // It's possible for history_service_ to have been destroyed while our request
+  // was waiting to be returned to us, because both the initial request *and the
+  // delivery of the reply* from the service are async - i.e., this can happen:
+  // 1. We call HistoryService::QueryHistory()
+  // 2. That message loop runs, the query happens, the reply to us is posted
+  // 3. HistoryService is destroyed
+  // 4. The posted reply to us arrives
+  // To guard against that, check for history_service_ here.
+  if (!history_service_)
+    return;
+
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   NSInteger top_item = [menu indexOfItemWithTag:kVisitedTitle] + 1;
@@ -359,15 +456,15 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   for (size_t i = 0; i < count; ++i) {
     const history::URLResult& result = results[i];
 
-    HistoryItem* item = new HistoryItem;
+    auto item = std::make_unique<HistoryItem>();
     item->title = result.title();
     item->url = result.url();
 
     // Need to explicitly get the favicon for each row.
-    GetFaviconForHistoryItem(item);
+    GetFaviconForHistoryItem(item.get());
 
     // This will add |item| to the |menu_item_map_|, which takes ownership.
-    AddItemToMenu(item, HistoryMenu(), kVisited, top_item + i);
+    AddItemToMenu(std::move(item), HistoryMenu(), kVisited, top_item + i);
   }
 
   // We are already invalid by the time we finished, darn.
@@ -377,19 +474,20 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   create_in_progress_ = false;
 }
 
-HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForTab(
+std::unique_ptr<HistoryMenuBridge::HistoryItem>
+HistoryMenuBridge::HistoryItemForTab(
     const sessions::TabRestoreService::Tab& entry) {
   DCHECK(!entry.navigations.empty());
 
   const sessions::SerializedNavigationEntry& current_navigation =
       entry.navigations.at(entry.current_navigation_index);
-  HistoryItem* item = new HistoryItem();
+  auto item = std::make_unique<HistoryItem>();
   item->title = current_navigation.title();
   item->url = current_navigation.virtual_url();
   item->session_id = entry.id;
 
   // Tab navigations don't come with icons, so we always have to request them.
-  GetFaviconForHistoryItem(item);
+  GetFaviconForHistoryItem(item.get());
 
   return item;
 }
@@ -400,8 +498,8 @@ void HistoryMenuBridge::GetFaviconForHistoryItem(HistoryItem* item) {
   base::CancelableTaskTracker::TaskId task_id =
       service->GetFaviconImageForPageURL(
           item->url,
-          base::Bind(
-              &HistoryMenuBridge::GotFaviconData, base::Unretained(this), item),
+          base::BindOnce(&HistoryMenuBridge::GotFaviconData,
+                         base::Unretained(this), item),
           &cancelable_task_tracker_);
   item->icon_task_id = task_id;
   item->icon_requested = true;
@@ -456,4 +554,47 @@ void HistoryMenuBridge::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   history_service_ = history_service;
   Init();
+}
+
+void HistoryMenuBridge::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  history_service_observation_.Reset();
+  history_service_ = nullptr;
+}
+
+void HistoryMenuBridge::SetVisibilityOfMenuItems() {
+  NSMenu* menu = HistoryMenu();
+  for (int i = 0; i < [menu numberOfItems]; i++) {
+    NSMenuItem* item = [menu itemAtIndex:i];
+    [item setHidden:!ShouldMenuItemBeVisible(item)];
+  }
+}
+
+bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
+  if (!base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito)) {
+    return true;
+  }
+
+  int tag = [item tag];
+  switch (tag) {
+    // The common menu items for both profiles
+    case IDC_HOME:
+    case IDC_BACK:
+    case IDC_FORWARD:
+      return true;
+    // The original profile specific menu items
+    case kRecentlyClosedSeparator:
+    case kRecentlyClosedTitle:
+    case kVisitedSeparator:
+    case kVisitedTitle:
+    case kShowFullSeparator:
+    case IDC_SHOW_HISTORY:
+      return !profile_->IsOffTheRecord();
+  }
+
+  // When a new menu item is introduced, it should be added to one of the cases
+  // above.
+  NOTREACHED();
+  return false;
 }

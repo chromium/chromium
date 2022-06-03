@@ -5,7 +5,8 @@
 #include "ui/base/test/ui_controls_aura.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui_controls {
 namespace {
@@ -43,13 +44,13 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
 }
 
 // static
-bool SendMouseMove(long x, long y) {
+bool SendMouseMove(int x, int y) {
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseMove(x, y);
 }
 
 // static
-bool SendMouseMoveNotifyWhenDone(long x, long y, base::OnceClosure task) {
+bool SendMouseMoveNotifyWhenDone(int x, int y, base::OnceClosure task) {
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseMoveNotifyWhenDone(x, y, std::move(task));
 }
@@ -84,7 +85,7 @@ bool SendTouchEvents(int action, int num, int x, int y) {
   CHECK(g_ui_controls_enabled);
   return instance_->SendTouchEvents(action, num, x, y);
 }
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 bool SendTouchEvents(int action, int id, int x, int y) {
   CHECK(g_ui_controls_enabled);

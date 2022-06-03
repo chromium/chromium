@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +30,8 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -53,7 +55,12 @@ constexpr CacheTestEntry kCacheEntries[] = {
     {"https://localhost:3456/yoursite", "15 Jun 2018", 512}};
 
 mojom::NetworkContextParamsPtr CreateContextParams() {
-  mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  // Use a dummy CertVerifier that always passes cert verification, since
+  // these unittests don't need to test CertVerifier behavior.
+  params->cert_verifier_params =
+      FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
   // Use a fixed proxy config, to avoid dependencies on local network
   // configuration.
   params->initial_proxy_config = net::ProxyConfigWithAnnotation::CreateDirect();
@@ -163,7 +170,7 @@ class HttpCacheDataCounterTest : public testing::Test {
 
     // The upper bound is "exclusive" but appropriximately so; make it clearly
     // exclusive.
-    end_time -= base::TimeDelta::FromDays(1);
+    end_time -= base::Days(1);
 
     auto result = CountBetween(network_context_.get(), start_time, end_time);
     ASSERT_GE(result.second, 0);

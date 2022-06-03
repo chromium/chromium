@@ -15,7 +15,7 @@ The Benchmarking team provides:
   * A [perf waterfall](perf_waterfall.md) to run these benchmarks on our continuous build on a dozen
     real device types, on Windows, Mac, Linux, and Android.
 
-TL: crouleau@chromium.org
+TL: johnchen@chromium.org
 
 ## Speed Tooling
 The [Speed Tooling](chrome_speed_tooling.md) team provides:

@@ -49,12 +49,11 @@ void FallbackFamilyStyleCache::Put(
   String cache_key =
       makeCacheKey(generic_family, bcp47_language_tag, fallback_priority);
 
-  FallbackLruCache::TypefaceVector* existing_typefaces =
-      recent_fallback_fonts_.Get(cache_key);
+  TypefaceVector* existing_typefaces = recent_fallback_fonts_.Get(cache_key);
   if (existing_typefaces) {
     existing_typefaces->insert(0, sk_ref_sp(typeface));
   } else {
-    FallbackLruCache::TypefaceVector typefaces;
+    TypefaceVector typefaces;
     typefaces.push_back(sk_ref_sp(typeface));
     recent_fallback_fonts_.Put(std::move(cache_key), std::move(typefaces));
   }
@@ -67,7 +66,7 @@ void FallbackFamilyStyleCache::Get(
     UChar32 character,
     String* fallback_family,
     SkFontStyle* fallback_style) {
-  FallbackLruCache::TypefaceVector* typefaces = recent_fallback_fonts_.Get(
+  TypefaceVector* typefaces = recent_fallback_fonts_.Get(
       makeCacheKey(generic_family, bcp47_language_tag, fallback_priority));
   if (!typefaces)
     return;

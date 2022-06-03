@@ -15,8 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.widget.LoadingView;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.widget.ChromeBulletSpan;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithLeading;
 
 import java.lang.annotation.Retention;

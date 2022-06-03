@@ -10,6 +10,7 @@
 // Coordinator for displaying an activity indicator overlay over the current
 // context.
 @interface ActivityOverlayCoordinator : ChromeCoordinator
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ELEMENTS_ACTIVITY_OVERLAY_COORDINATOR_H_

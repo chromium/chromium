@@ -54,6 +54,8 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   DCHECK(params.Valid());
 #endif
 
+  this->initiator_frame_token = params.initiator_frame_token;
+  this->initiator_process_id = params.initiator_process_id;
   this->initiator_origin = params.initiator_origin;
   this->referrer = params.referrer;
   this->reload_type = params.reload_type;
@@ -78,12 +80,13 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->user_gesture = params.user_gesture;
   this->blob_url_loader_factory = params.blob_url_loader_factory;
   this->href_translate = params.href_translate;
+  this->impression = params.impression;
 
   // Implementation notes:
   //   The following NavigateParams don't have an equivalent in OpenURLParams:
   //     browser
   //     contents_to_insert
-  //     created_with_opener
+  //     opened_by_another_window
   //     extension_app_id
   //     frame_name
   //     group

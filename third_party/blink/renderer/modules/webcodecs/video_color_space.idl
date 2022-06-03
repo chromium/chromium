@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface VideoColorSpace {
+  constructor(optional VideoColorSpaceInit init = {});
+
+  readonly attribute VideoColorPrimaries? primaries;
+  readonly attribute VideoTransferCharacteristics? transfer;
+  readonly attribute VideoMatrixCoefficients? matrix;
+  readonly attribute boolean? fullRange;
+
+  // Note: [Default] implementation would be correct.
+  VideoColorSpaceInit toJSON();
+};

@@ -1,24 +1,342 @@
 <style include="cr-shared-style">
-  #customizeButton {
-    bottom: 16px;
-    position: absolute;
+  :host {
+    --ntp-theme-text-color: var(--google-grey-800);
+    --ntp-theme-text-shadow: none;
+    --ntp-one-google-bar-height: 56px;
+    --ntp-search-box-width: 337px;
+    --ntp-module-width: var(--ntp-search-box-width);
+    --ntp-module-border-radius: 5px;
   }
 
-  :host-context([dir='ltr']) #customizeButton {
+  @media (min-width: 560px) {
+    :host {
+      --ntp-search-box-width: 449px;
+    }
+  }
+
+  @media (min-width: 672px) {
+    :host {
+      --ntp-search-box-width: 561px;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --ntp-theme-text-color: white;
+    }
+  }
+
+  :host([modules-redesigned-enabled_]) {
+    --ntp-module-border-radius: 24px;
+    --ntp-module-width: 360px;
+  }
+
+  :host([show-background-image_]) {
+    --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  }
+
+  #oneGoogleBar {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  #content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--ntp-one-google-bar-height));
+    min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
+    padding-top: var(--ntp-one-google-bar-height);
+    position: relative;
+    z-index: 1;
+  }
+
+  #logo {
+    margin-bottom: 38px;
+    z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
+  }
+
+  ntp-realbox {
+    margin-bottom: 16px;
+  }
+
+  ntp-realbox {
+    flex-shrink: 0;
+    width: var(--ntp-search-box-width);
+  }
+
+  ntp-modules {
+    flex-shrink: 0;
+    width: var(--ntp-module-width);
+  }
+
+  ntp-middle-slot-promo {
+    max-width: var(--ntp-search-box-width);
+  }
+
+  ntp-realbox {
+    visibility: hidden;
+  }
+
+  ntp-realbox[shown] {
+    visibility: visible;
+  }
+
+  cr-most-visited {
+    --most-visited-focus-shadow: var(--ntp-focus-shadow);
+    --most-visited-text-color: var(--ntp-theme-text-color);
+    --most-visited-text-shadow: var(--ntp-theme-text-shadow);
+  }
+
+  /* ~ because the dom-if results in a template between the middle-slot-promo
+     and ntp-modules. */
+  ntp-middle-slot-promo:not([hidden]) ~ ntp-modules {
+    margin-top: 16px;
+  }
+
+  #customizeButtonContainer {
+    background-color: var(--ntp-background-override-color);
+    border-radius: calc(.5 * var(--cr-button-height));
+    bottom: 16px;
+    position: fixed;
+  }
+
+  :host-context([dir='ltr']) #customizeButtonContainer {
     right: 16px;
   }
 
-  :host-context([dir='rtl']) #customizeButton {
+  :host-context([dir='rtl']) #customizeButtonContainer {
     left: 16px;
   }
+
+  :host([show-background-image_]) #customizeButtonContainer {
+    background-color: transparent;
+  }
+
+  :host([show-background-image_]) #customizeButtonContainer:hover {
+    background-color: rgba(255, 255, 255, .1);
+  }
+
+  #customizeButton {
+    border: none;
+    border-radius: calc(.5 * var(--cr-button-height));
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
+    font-weight: 400;
+    min-width: 32px;
+  }
+
+  :host([show-background-image_]) #customizeButton {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  :host-context(.focus-outline-visible) #customizeButton:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  #customizeIcon {
+    -webkit-mask-image: url(icons/icon_pencil.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--text-color);
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  :host([show-background-image_]) #customizeIcon {
+    background-color: white;
+    margin: 0;
+  }
+
+  @media (max-width: 550px) {
+    #customizeButton {
+      padding: 0;
+    }
+
+    #customizeIcon {
+      margin: 0;
+    }
+
+    #customizeText {
+      display: none;
+    }
+  }
+
+  #themeAttribution {
+    align-self: flex-start;
+    bottom: 16px;
+    color: var(--cr-secondary-text-color);
+    margin-inline-start: 16px;
+    position: fixed;
+  }
+
+  #backgroundImageAttribution {
+    border-radius: 8px;
+    bottom: 16px;
+    color: var(--ntp-theme-text-color);
+    line-height: 20px;
+    max-width: 50vw;
+    padding: 8px;
+    position: fixed;
+    text-shadow: var(--ntp-theme-text-shadow);
+    z-index: -1;
+  }
+
+  :host-context([dir='ltr']) #backgroundImageAttribution {
+    left: 16px;
+  }
+
+  :host-context([dir='rtl']) #backgroundImageAttribution {
+    right: 16px;
+  }
+
+  #backgroundImageAttribution:hover {
+    background: rgba(var(--google-grey-900-rgb), .1);
+  }
+
+  #backgroundImageAttribution1Container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #linkIcon {
+    -webkit-mask-image: url(icons/link.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--ntp-theme-text-color);
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  #backgroundImageAttribution1,
+  #backgroundImageAttribution2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #backgroundImageAttribution1 {
+    font-size: .875rem;
+  }
+
+  #backgroundImageAttribution2 {
+    font-size: .75rem;
+  }
+
+  #contentBottomSpacer {
+    flex-shrink: 0;
+    height: 32px;
+    width: 1px;
+  }
+
+  svg {
+    position: fixed;
+  }
 </style>
-<ntp-most-visited></ntp-most-visited>
-<dom-if if="[[showCustomizeDialog_]]" restamp>
+<div id="content" style="
+        --ntp-theme-text-color: [[rgbaOrInherit_(theme_.textColor)]];
+        --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
+  <template is="dom-if" if="[[lazyRender_]]">
+    <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
+      <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
+          hidden$="[[!oneGoogleBarLoaded_]]">
+      </ntp-iframe>
+    </template>
+  </template>
+  <!-- TODO(crbug.com/1168361): Instead of hidden$="[[!logoEnabled_]]" it would
+       be nicer to use a dom-if. However, that breaks
+       StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
+       the msan builder. See crbug.com/1169070. -->
+  <ntp-logo id="logo" single-colored$="[[singleColoredLogo_]]"
+      dark="[[theme_.isDark]]" background-color="[[backgroundColor_]]"
+      hidden$="[[!logoEnabled_]]">
+  </ntp-logo>
+  <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
+      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
+  </ntp-realbox>
+  <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
+    <template>
+      <template is="dom-if" if="[[shortcutsEnabled_]]">
+        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]">
+        </cr-most-visited>
+      </template>
+      <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
+        <ntp-middle-slot-promo
+            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_"
+            hidden="[[!promoAndModulesLoaded_]]">
+        </ntp-middle-slot-promo>
+      </template>
+      <template is="dom-if" if="[[modulesEnabled_]]" >
+        <ntp-modules id="modules"
+            on-modules-loaded="onModulesLoaded_"
+            on-customize-module="onCustomizeModule_"
+            hidden="[[!promoAndModulesLoaded_]]">
+        </ntp-modules>
+      </template>
+      <a id="backgroundImageAttribution"
+          href="[[backgroundImageAttributionUrl_]]"
+          hidden="[[!backgroundImageAttribution1_]]">
+        <div id="backgroundImageAttribution1Container">
+          <div id="linkIcon"></div>
+          <div id="backgroundImageAttribution1">
+            [[backgroundImageAttribution1_]]
+          </div>
+        </div>
+        <div id="backgroundImageAttribution2"
+            hidden="[[!backgroundImageAttribution2_]]">
+          [[backgroundImageAttribution2_]]
+        </div>
+      </a>
+      <!-- cr-button has a transparent background. This leads to incorrect
+           results when a custom background is set. Therefore, wrap customize
+           button in container to enfore solid background color. -->
+      <div id="customizeButtonContainer">
+        <cr-button id="customizeButton" on-click="onCustomizeClick_"
+            title="[[i18n('customizeThisPage')]]">
+          <div id="customizeIcon"></div>
+          <div id="customizeText" hidden$="[[showBackgroundImage_]]">
+            [[i18n('customizeButton')]]
+          </div>
+        </cr-button>
+      </div>
+      <div id="themeAttribution"
+          hidden$="[[!theme_.backgroundImage.attributionUrl]]">
+        <div>[[i18n('themeCreatedBy')]]</div>
+        <img src="[[theme_.backgroundImage.attributionUrl.url]]"><img>
+      </div>
+    </template>
+  </dom-if>
+  <div id="contentBottomSpacer"></div>
+</div>
+<dom-if if="[[showVoiceSearchOverlay_]]" restamp>
   <template>
-    <ntp-customize-dialog on-close="onCustomizeDialogClose_">
-    </ntp-customize-dialog>
+    <ntp-voice-search-overlay on-close="onVoiceSearchOverlayClose_">
+    </ntp-voice-search-overlay>
   </template>
 </dom-if>
-<cr-button id="customizeButton" on-click="onCustomizeClick_">
-  $i18n{customizeButton}
-</cr-button>
+<template id="customizeDialogIf" is="dom-if" if="[[showCustomizeDialog_]]"
+    restamp>
+  <ntp-customize-dialog
+      on-close="onCustomizeDialogClose_"
+      theme="[[theme_]]"
+      background-selection="{{backgroundSelection_}}"
+      selected-page="[[selectedCustomizeDialogPage_]]">
+  </ntp-customize-dialog>
+</template>
+<svg>
+  <defs>
+    <clipPath id="oneGoogleBarClipPath">
+      <!-- Set an initial non-empty clip-path so the OneGoogleBar resize events
+           are processed. When the clip-path is empty, it's possible for the
+           OneGoogleBar to get into a state where it does not send  the
+           'overlayUpdates' message which is used to populate this
+           clip-path. -->
+      <rect x="0" y="0" width="1" height="1"></rect>
+    </clipPath>
+  </defs>
+</svg>

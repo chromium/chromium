@@ -6,9 +6,7 @@
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_STORAGE_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -32,6 +30,10 @@ class ReadingListModelStorage : public syncer::ModelTypeSyncBridge {
 
   ReadingListModelStorage(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  ReadingListModelStorage(const ReadingListModelStorage&) = delete;
+  ReadingListModelStorage& operator=(const ReadingListModelStorage&) = delete;
+
   ~ReadingListModelStorage() override;
 
   // Sets the model the Storage is backing.
@@ -61,14 +63,12 @@ class ReadingListModelStorage : public syncer::ModelTypeSyncBridge {
   class ScopedBatchUpdate {
    public:
     ScopedBatchUpdate() {}
+
+    ScopedBatchUpdate(const ScopedBatchUpdate&) = delete;
+    ScopedBatchUpdate& operator=(const ScopedBatchUpdate&) = delete;
+
     virtual ~ScopedBatchUpdate() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedBatchUpdate);
   };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelStorage);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_STORAGE_H_

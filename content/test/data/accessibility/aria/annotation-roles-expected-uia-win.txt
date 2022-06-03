@@ -1,8 +1,8 @@
-document LocalizedControlType='document'
-++group Name='comment'
-++group Name='suggestion'
-++group LocalizedControlType='group' IsControlElement=false
-++++description Name='This is '
-++++description LocalizedControlType='highlight'
-++++++description Name='highlighted'
-++++description Name='.'
+Document LocalizedControlType='document'
+++Group LocalizedControlType='comment' Name='comment'
+++Group LocalizedControlType='group' Name='suggestion'
+++Group LocalizedControlType='group' IsControlElement=false
+++++Text Name='This is '
+++++Text LocalizedControlType='highlight'
+++++++Text Name='highlighted'
+++++Text Name='.'

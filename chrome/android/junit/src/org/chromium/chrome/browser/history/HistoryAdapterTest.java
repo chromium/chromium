@@ -17,8 +17,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.widget.MoreProgressButton;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+import org.chromium.components.browser_ui.widget.MoreProgressButton;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -34,12 +33,14 @@ public class HistoryAdapterTest {
 
     @Mock
     private MoreProgressButton mMockButton;
+    @Mock
+    private HistoryContentManager mContentManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter = new HistoryAdapter(new SelectionDelegate<HistoryItem>(), null, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }

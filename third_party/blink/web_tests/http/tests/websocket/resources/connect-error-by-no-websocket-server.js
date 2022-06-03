@@ -53,9 +53,9 @@ function doTest(port, closeOnError, closeOnClose)
         }
     };
 
-    // Each failure to connect to 127.0.0.1 takes 1 second on Windows.
-    // Allow 2 seconds for padding.
-    timeoutID = setTimeout(timeOutCallback, 2000);
+    // Each failure to connect to 127.0.0.1 takes 3 seconds on Windows.
+    // Allow 4 seconds for padding.
+    timeoutID = setTimeout(timeOutCallback, 4000);
 }
 
 function timeOutCallback()

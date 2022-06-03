@@ -3,47 +3,68 @@
 // found in the LICENSE file.
 
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
+
+#include <utility>
+
 #include "gpu/vulkan/buildflags.h"
+#include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
+
+namespace {
+
+// Setting this limit to 0 practically forces sync at every submit.
+constexpr uint32_t kSyncCpuMemoryLimitAtMemoryPressureCritical = 0;
+
+}  // namespace
 
 namespace viz {
 
+// static
 scoped_refptr<VulkanInProcessContextProvider>
 VulkanInProcessContextProvider::Create(
-    gpu::VulkanImplementation* vulkan_implementation) {
+    gpu::VulkanImplementation* vulkan_implementation,
+    uint32_t heap_memory_limit,
+    uint32_t sync_cpu_memory_limit,
+    const gpu::GPUInfo* gpu_info,
+    base::TimeDelta cooldown_duration_at_memory_pressure_critical) {
   scoped_refptr<VulkanInProcessContextProvider> context_provider(
-      new VulkanInProcessContextProvider(vulkan_implementation));
-  if (!context_provider->Initialize())
+      new VulkanInProcessContextProvider(
+          vulkan_implementation, heap_memory_limit, sync_cpu_memory_limit,
+          cooldown_duration_at_memory_pressure_critical));
+  if (!context_provider->Initialize(gpu_info))
     return nullptr;
   return context_provider;
 }
 
-GrVkGetProc make_unified_getter(const PFN_vkGetInstanceProcAddr& iproc,
-                                const PFN_vkGetDeviceProcAddr& dproc) {
-  return [&iproc, &dproc](const char* proc_name, VkInstance instance,
-                          VkDevice device) {
-    if (device != VK_NULL_HANDLE) {
-      return dproc(device, proc_name);
-    }
-    return iproc(instance, proc_name);
-  };
-}
-
 VulkanInProcessContextProvider::VulkanInProcessContextProvider(
-    gpu::VulkanImplementation* vulkan_implementation)
-    : vulkan_implementation_(vulkan_implementation) {}
+    gpu::VulkanImplementation* vulkan_implementation,
+    uint32_t heap_memory_limit,
+    uint32_t sync_cpu_memory_limit,
+    base::TimeDelta cooldown_duration_at_memory_pressure_critical)
+    : vulkan_implementation_(vulkan_implementation),
+      heap_memory_limit_(heap_memory_limit),
+      sync_cpu_memory_limit_(sync_cpu_memory_limit),
+      cooldown_duration_at_memory_pressure_critical_(
+          cooldown_duration_at_memory_pressure_critical) {
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
+                          base::Unretained(this)));
+}
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
   Destroy();
 }
 
-bool VulkanInProcessContextProvider::Initialize() {
+bool VulkanInProcessContextProvider::Initialize(
+    const gpu::GPUInfo* gpu_info) {
   DCHECK(!device_queue_);
 
   const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
@@ -60,10 +81,16 @@ bool VulkanInProcessContextProvider::Initialize() {
     }
   }
 
-  device_queue_ = gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags);
+  device_queue_ = gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags,
+                                               gpu_info, heap_memory_limit_);
   if (!device_queue_)
     return false;
 
+  return true;
+}
+
+bool VulkanInProcessContextProvider::InitializeGrContext(
+    const GrContextOptions& context_options) {
   GrVkBackendContext backend_context;
   backend_context.fInstance = device_queue_->GetVulkanInstance();
   backend_context.fPhysicalDevice = device_queue_->GetVulkanPhysicalDevice();
@@ -73,12 +100,23 @@ bool VulkanInProcessContextProvider::Initialize() {
   backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
                                        ->vulkan_info()
                                        .used_api_version;
+  backend_context.fMemoryAllocator =
+      gpu::CreateGrVkMemoryAllocator(device_queue_.get());
 
-  gpu::VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-  GrVkGetProc get_proc =
-      make_unified_getter(vulkan_function_pointers->vkGetInstanceProcAddrFn,
-                          vulkan_function_pointers->vkGetDeviceProcAddrFn);
+  GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
+                            VkDevice device) {
+    if (device) {
+      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0)
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::CreateGraphicsPipelinesHook);
+      return vkGetDeviceProcAddr(device, proc_name);
+    }
+    return vkGetInstanceProcAddr(instance, proc_name);
+  };
+
+  const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
+                                        ->vulkan_info()
+                                        .enabled_instance_extensions;
 
   std::vector<const char*> device_extensions;
   device_extensions.reserve(device_queue_->enabled_extensions().size());
@@ -94,11 +132,9 @@ bool VulkanInProcessContextProvider::Initialize() {
   backend_context.fDeviceFeatures2 =
       &device_queue_->enabled_device_features_2();
   backend_context.fGetProc = get_proc;
-  backend_context.fProtectedContext =
-      vulkan_implementation_->enforce_protected_memory() ? GrProtected::kYes
-                                                         : GrProtected::kNo;
+  backend_context.fProtectedContext = GrProtected::kNo;
 
-  gr_context_ = GrContext::MakeVulkan(backend_context);
+  gr_context_ = GrDirectContext::MakeVulkan(backend_context, context_options);
 
   return gr_context_ != nullptr;
 }
@@ -133,7 +169,7 @@ gpu::VulkanDeviceQueue* VulkanInProcessContextProvider::GetDeviceQueue() {
   return device_queue_.get();
 }
 
-GrContext* VulkanInProcessContextProvider::GetGrContext() {
+GrDirectContext* VulkanInProcessContextProvider::GetGrContext() {
   return gr_context_.get();
 }
 
@@ -150,6 +186,26 @@ void VulkanInProcessContextProvider::EnqueueSecondaryCBSemaphores(
 void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
     base::OnceClosure closure) {
   NOTREACHED();
+}
+
+absl::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
+    const {
+  // Return false to indicate that there's no limit.
+  if (!sync_cpu_memory_limit_)
+    return absl::optional<uint32_t>();
+  return base::TimeTicks::Now() < critical_memory_pressure_expiration_time_
+             ? absl::optional<uint32_t>(
+                   kSyncCpuMemoryLimitAtMemoryPressureCritical)
+             : absl::optional<uint32_t>(sync_cpu_memory_limit_);
+}
+
+void VulkanInProcessContextProvider::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+    return;
+
+  critical_memory_pressure_expiration_time_ =
+      base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_;
 }
 
 }  // namespace viz

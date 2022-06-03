@@ -9,18 +9,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/views_export.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#endif  // defined(OS_WIN)
 
 namespace gfx {
 class Canvas;
+}
+
+namespace ui {
+class ThemedVectorIcon;
 }
 
 namespace views {
@@ -43,6 +44,10 @@ class View;
 class VIEWS_EXPORT Background {
  public:
   Background();
+
+  Background(const Background&) = delete;
+  Background& operator=(const Background&) = delete;
+
   virtual ~Background();
 
   // Render the background for the provided view
@@ -59,9 +64,7 @@ class VIEWS_EXPORT Background {
   SkColor get_color() const { return color_; }
 
  private:
-  SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(Background);
+  SkColor color_ = gfx::kPlaceholderColor;
 };
 
 // Creates a background that fills the canvas in the specified color.
@@ -73,17 +76,19 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     float radius);
 
 // Creates a background that fills the canvas in the color specified by the
-// view's NativeTheme and the given color identifier.
+// view's ColorProvider and the given color identifier.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(
     View* view,
-    ui::NativeTheme::ColorId color_id);
+    ui::ColorId color_id);
 
-// Creates Chrome's standard panel background
-VIEWS_EXPORT std::unique_ptr<Background> CreateStandardPanelBackground();
-
-// Creates a Background from the specified Painter.
+// Creates a background from the specified Painter.
 VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
     std::unique_ptr<Painter> painter);
+
+// Creates a background from the specified ThemedVectorIcon.
+VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
+    View* view,
+    const ui::ThemedVectorIcon& icon);
 
 }  // namespace views
 

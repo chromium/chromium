@@ -124,13 +124,15 @@ by CQ bot. Or see this
 The [coverage script] automates the process described below and provides a
 one-stop service to generate code coverage reports locally in just one command.
 
-This script is currently supported on Linux, Mac, iOS and ChromeOS platforms.
+This script is currently supported on Android, Linux, Mac, iOS and ChromeOS
+platforms.
 
 Here is an example usage:
 
 ```
 $ gn gen out/coverage \
-    --args='use_clang_coverage=true is_component_build=false dcheck_always_on=true'
+    --args="use_clang_coverage=true is_component_build=false
+    dcheck_always_on=true is_debug=false"
 $ python tools/code_coverage/coverage.py \
     crypto_unittests url_unittests \
     -b out/coverage -o out/report \
@@ -158,9 +160,9 @@ process.
 
 ### Step 0 Download Tooling
 Generating code coverage reports requires llvm-profdata and llvm-cov tools.
-Currently, these two tools are not part of Chromium’s Clang bundle,
-[coverage script] downloads and updates them automatically, you can also
-download the tools manually ([tools link]).
+You can get them by adding `"checkout_clang_coverage_tools": True,` to 
+`custom_vars` in the `.gclient` config and run `gclient runhooks`. You can also
+download the tools manually ([tools link])
 
 ### Step 1 Build
 In Chromium, to compile code with coverage enabled, one needs to add
@@ -184,10 +186,11 @@ hundred, resulting in the generation of a few hundred gigabytes’ raw
 profiles. To limit the number of raw profiles, `%Nm` pattern in
 `LLVM_PROFILE_FILE` environment variable is used to run tests in multi-process
 mode, where `N` is the number of raw profiles. With `N = 4`, the total size of
-the raw profiles are limited to a few gigabytes.
+the raw profiles are limited to a few gigabytes. (If working on Android, the
+.profraw files will be located in ./out/coverage/coverage by default.)
 
 ```
-$ export LLVM_PROFILE_FILE=”out/report/crypto_unittests.%4m.profraw”
+$ export LLVM_PROFILE_FILE="out/report/crypto_unittests.%4m.profraw"
 $ ./out/coverage/crypto_unittests
 $ ls out/report/
 crypto_unittests.3657994905831792357_0.profraw
@@ -228,9 +231,13 @@ code coverage report:
 ```
 $ llvm-cov show -output-dir=out/report -format=html \
     -instr-profile=out/report/coverage.profdata \
+    -compilation-dir=out/coverage \
     -object=out/coverage/url_unittests \
     out/coverage/crypto_unittests
 ```
+
+If creating a report for Android, the -object arg would be the lib.unstripped
+file, ie out/coverage/lib.unstripped/libcrypto_unittests__library.so
 
 For more information on how to use llvm-cov, please refer to the [guide].
 
@@ -299,12 +306,12 @@ reported usually grows after that.
 ### How can I improve [coverage dashboard]?
 
 The code for the service and dashboard currently lives along with findit at
-[this location](https://chromium.googlesource.com/infra/infra/+/master/appengine/findit/)
+[this location](https://chromium.googlesource.com/infra/infra/+/main/appengine/findit/)
 because of significant shared logic.
 
 The code used by the bots that generate the coverage data lives (among other
 places) in the
-[code coverage recipe module](https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/code_coverage/).
+[code coverage recipe module](https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipe_modules/code_coverage/).
 
 ### Why is coverage for X not reported or unreasonably low, even though there is a test for X?
 

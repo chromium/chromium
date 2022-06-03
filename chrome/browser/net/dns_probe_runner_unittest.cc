@@ -50,7 +50,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
       : result_list_(std::move(result_list)) {}
 
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     ASSERT_FALSE(resolver_);
     resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver),
@@ -70,7 +70,7 @@ class FirstHangingThenFakeResolverNetworkContext
       : result_list_(std::move(result_list)) {}
 
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     if (call_num == 0) {
       resolver_ = std::make_unique<HangingHostResolver>(std::move(receiver));
@@ -171,6 +171,21 @@ TEST_F(DnsProbeRunnerTest, Probe_DnsNotRun) {
             net::ResolveErrorInfo(net::ERR_DNS_CACHE_MISS),
             FakeHostResolver::kNoResponse);
   RunTest(DnsProbeRunner::UNKNOWN);
+}
+
+TEST_F(DnsProbeRunnerTest, Probe_SecureDnsHostnameNotResolved) {
+  SetupTest(net::ERR_NAME_NOT_RESOLVED,
+            net::ResolveErrorInfo(
+                net::ERR_DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED),
+            FakeHostResolver::kNoResponse);
+  RunTest(DnsProbeRunner::UNREACHABLE);
+}
+
+TEST_F(DnsProbeRunnerTest, Probe_SecureDnsCertificateError) {
+  SetupTest(net::ERR_NAME_NOT_RESOLVED,
+            net::ResolveErrorInfo(net::ERR_CERT_COMMON_NAME_INVALID),
+            FakeHostResolver::kNoResponse);
+  RunTest(DnsProbeRunner::UNREACHABLE);
 }
 
 TEST_F(DnsProbeRunnerTest, TwoProbes) {

@@ -3,13 +3,9 @@
 # found in the LICENSE file.
 
 group("scheduler") {
-  deps = [
-    ":factory",
-  ]
+  deps = [ ":factory" ]
 
-  public_deps = [
-    "//chrome/browser/notifications/scheduler/public",
-  ]
+  public_deps = [ "//chrome/browser/notifications/scheduler/public" ]
 }
 
 # The embedder can depend on this target to get the internal library.

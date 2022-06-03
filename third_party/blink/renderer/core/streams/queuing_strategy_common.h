@@ -5,15 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_QUEUING_STRATEGY_COMMON_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_QUEUING_STRATEGY_COMMON_H_
 
+#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class ScriptState;
-class QueuingStrategyInit;
+class ScriptValue;
 
-v8::Local<v8::Value> HighWaterMarkOrUndefined(ScriptState* script_state,
-                                              const QueuingStrategyInit* init);
+using SizeFunctionFactory = v8::Local<v8::Function> (*)(ScriptState*);
+
+// Returns the value cached on the global proxy object under |key|, or, if that
+// is not set, caches and returns the result of calling |factory|.
+ScriptValue GetCachedSizeFunction(ScriptState*,
+                                  const V8PrivateProperty::SymbolKey& key,
+                                  SizeFunctionFactory factory);
 
 }  // namespace blink
 

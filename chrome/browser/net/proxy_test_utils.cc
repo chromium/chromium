@@ -4,11 +4,12 @@
 
 #include "chrome/browser/net/proxy_test_utils.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/proxy_resolution/proxy_bypass_rules.h"
 
 ProxyBrowserTest::ProxyBrowserTest()
     : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,

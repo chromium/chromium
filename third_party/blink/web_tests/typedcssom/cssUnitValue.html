@@ -64,7 +64,7 @@ function generateTests(unitList, typeString) {
 }
 
 test(() => {
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     new CSSUnitValue(100, 'bananas');
   });
 }, 'CSSUnitValue throws for invalid unit in constructor');

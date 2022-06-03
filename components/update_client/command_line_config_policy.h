@@ -34,9 +34,9 @@ class CommandLineConfigPolicy {
 
   // If non-zero, time interval in seconds until the first component
   // update check.
-  virtual int InitialDelay() const;
+  virtual double InitialDelay() const;
 
-  virtual ~CommandLineConfigPolicy() {}
+  virtual ~CommandLineConfigPolicy() = default;
 };
 
 }  // namespace update_client

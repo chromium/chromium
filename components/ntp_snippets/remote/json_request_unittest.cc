@@ -19,6 +19,7 @@
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -45,24 +46,21 @@ using testing::NotNull;
 using testing::StrEq;
 
 MATCHER_P(EqualsJSON, json, "equals JSON") {
-  std::unique_ptr<base::Value> expected =
-      base::JSONReader::ReadDeprecated(json);
+  absl::optional<base::Value> expected = base::JSONReader::Read(json);
   if (!expected) {
     *result_listener << "INTERNAL ERROR: couldn't parse expected JSON";
     return false;
   }
 
-  std::string err_msg;
-  int err_line, err_col;
-  std::unique_ptr<base::Value> actual =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          arg, base::JSON_PARSE_RFC, nullptr, &err_msg, &err_line, &err_col);
-  if (!actual) {
-    *result_listener << "input:" << err_line << ":" << err_col << ": "
-                     << "parse error: " << err_msg;
+  base::JSONReader::ValueWithError actual =
+      base::JSONReader::ReadAndReturnValueWithError(arg);
+  if (!actual.value) {
+    *result_listener << "input:" << actual.error_line << ":"
+                     << actual.error_column << ": "
+                     << "parse error: " << actual.error_message;
     return false;
   }
-  return *expected == *actual;
+  return *expected == *actual.value;
 }
 
 }  // namespace
@@ -83,6 +81,8 @@ class JsonRequestTest : public testing::Test {
     language::UrlLanguageHistogram::RegisterProfilePrefs(
         pref_service_->registry());
   }
+  JsonRequestTest(const JsonRequestTest&) = delete;
+  JsonRequestTest& operator=(const JsonRequestTest&) = delete;
 
   std::unique_ptr<language::UrlLanguageHistogram> MakeLanguageHistogram(
       const std::set<std::string>& codes) {
@@ -118,13 +118,13 @@ class JsonRequestTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
   std::unique_ptr<base::ThreadTaskRunnerHandle> mock_runner_handle_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsonRequestTest);
 };
 
 TEST_F(JsonRequestTest, MAYBE_BuildRequestAuthenticated) {

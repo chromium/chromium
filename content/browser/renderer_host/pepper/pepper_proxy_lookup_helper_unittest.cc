@@ -9,12 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,6 +20,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -41,8 +39,8 @@ class PepperProxyLookupHelperTest : public testing::Test {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     base::RunLoop run_loop;
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&PepperProxyLookupHelperTest::StartLookupOnIOThread,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -64,8 +62,8 @@ class PepperProxyLookupHelperTest : public testing::Test {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     base::RunLoop run_loop;
 
-    base::PostTaskAndReply(
-        FROM_HERE, {BrowserThread::IO},
+    GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(
             &PepperProxyLookupHelperTest::DestroyLookupHelperOnIOThread,
             base::Unretained(this)),
@@ -81,7 +79,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
   }
 
   // Get the proxy information passed into OnLookupCompleteOnIOThread().
-  const base::Optional<net::ProxyInfo>& proxy_info() const {
+  const absl::optional<net::ProxyInfo>& proxy_info() const {
     return proxy_info_;
   }
 
@@ -129,7 +127,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
 
   // Invoked by |lookup_helper_| on the IO thread once the proxy lookup has
   // completed.
-  void OnLookupCompleteOnIOThread(base::Optional<net::ProxyInfo> proxy_info) {
+  void OnLookupCompleteOnIOThread(absl::optional<net::ProxyInfo> proxy_info) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     proxy_info_ = std::move(proxy_info);
@@ -148,7 +146,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
 
   std::unique_ptr<PepperProxyLookupHelper> lookup_helper_;
 
-  base::Optional<net::ProxyInfo> proxy_info_;
+  absl::optional<net::ProxyInfo> proxy_info_;
   mojo::Remote<network::mojom::ProxyLookupClient> proxy_lookup_client_;
 
   base::RunLoop lookup_complete_run_loop_;
@@ -169,7 +167,7 @@ TEST_F(PepperProxyLookupHelperTest, Success) {
 TEST_F(PepperProxyLookupHelperTest, Failure) {
   StartLookup();
   ClaimProxyLookupClient()->OnProxyLookupComplete(net::ERR_FAILED,
-                                                  base::nullopt);
+                                                  absl::nullopt);
   WaitForLookupCompletion();
   EXPECT_FALSE(proxy_info());
 }

@@ -10,8 +10,8 @@
 
 namespace content {
 
-class DesktopMediaWindowRegistryAura : public DesktopMediaWindowRegistry,
-                                       public aura::WindowObserver {
+class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
+                                             public aura::WindowObserver {
  public:
   static DesktopMediaWindowRegistryAura* GetInstance() {
     static base::NoDestructor<DesktopMediaWindowRegistryAura> instance;
@@ -19,6 +19,11 @@ class DesktopMediaWindowRegistryAura : public DesktopMediaWindowRegistry,
   }
 
   DesktopMediaWindowRegistryAura() = default;
+
+  DesktopMediaWindowRegistryAura(const DesktopMediaWindowRegistryAura&) =
+      delete;
+  DesktopMediaWindowRegistryAura& operator=(
+      const DesktopMediaWindowRegistryAura&) = delete;
 
   Id RegisterWindow(gfx::NativeWindow window) final {
     base::IDMap<aura::Window*>::const_iterator it(&registered_windows_);
@@ -51,8 +56,6 @@ class DesktopMediaWindowRegistryAura : public DesktopMediaWindowRegistry,
   }
 
   base::IDMap<aura::Window*> registered_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaWindowRegistryAura);
 };
 
 // static

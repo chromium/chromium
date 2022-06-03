@@ -13,17 +13,18 @@
 #include <sys/stat.h>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/linux_util.h"
+#include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/linux/services/libc_interceptor.h"
-#include "services/service_manager/sandbox/linux/sandbox_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
 
 namespace content {
 
@@ -84,7 +85,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   // bytes long (this is the largest message type).
   // The size limit  used to be FontConfigIPC::kMaxFontFamilyLength which was
   // 2048, but we do not receive FontConfig IPC here anymore. The only payloads
-  // here are service_manager::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT
+  // here are sandbox::policy::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT
   // and HandleLocalTime from libc_interceptor for which
   // kMaxSandboxIPCMessagePayloadSize set to 64 should be plenty.
   // 128 bytes padding are necessary so recvmsg() does not return MSG_TRUNC
@@ -120,7 +121,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
     return;
 
   if (kind ==
-      service_manager::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT) {
+      sandbox::policy::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT) {
     HandleMakeSharedMemorySegment(fd, iter, fds);
     return;
   }

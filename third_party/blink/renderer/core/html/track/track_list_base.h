@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/track_event.h"
-#include "third_party/blink/renderer/core/html/track/track_event_init.h"
 
 namespace blink {
 
@@ -78,7 +77,7 @@ class TrackListBase : public EventTargetWithInlineData {
     ScheduleEvent(Event::Create(event_type_names::kChange));
   }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(tracks_);
     visitor->Trace(media_element_);
     EventTargetWithInlineData::Trace(visitor);
@@ -96,4 +95,4 @@ class TrackListBase : public EventTargetWithInlineData {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_TRACK_LIST_BASE_H_

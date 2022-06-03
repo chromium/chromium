@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Parser for Blink IDL.
 
 The parser uses the PLY (Python Lex-Yacc) library to build a set of parsing
@@ -55,18 +54,22 @@ http://www.chromium.org/developers/design-documents/idl-compiler#TOC-Front-end
 # pylint: disable=E1101
 #
 
+from __future__ import print_function
+
 import os.path
 import sys
 
 # PLY is in Chromium src/third_party/ply
 module_path, module_name = os.path.split(__file__)
-third_party = os.path.join(module_path, os.pardir, os.pardir, os.pardir, os.pardir)
+third_party = os.path.join(module_path, os.pardir, os.pardir, os.pardir,
+                           os.pardir)
 # Insert at front to override system libraries, and after path[0] == script dir
 sys.path.insert(1, third_party)
 from ply import yacc
 
 # Base parser is in Chromium src/tools/idl_parser
-tools_dir = os.path.join(module_path, os.pardir, os.pardir, os.pardir, os.pardir, os.pardir, 'tools')
+tools_dir = os.path.join(module_path, os.pardir, os.pardir, os.pardir,
+                         os.pardir, os.pardir, 'tools')
 sys.path.append(tools_dir)
 from idl_parser.idl_parser import IDLParser  # pylint: disable=import-error
 from idl_parser.idl_parser import ParseFile as parse_file
@@ -76,16 +79,21 @@ import blink_idl_lexer
 
 
 class BlinkIDLParser(IDLParser):
-    def __init__(self,
-                 # common parameters
-                 debug=False,
-                 # local parameters
-                 rewrite_tables=False,
-                 # idl_parser parameters
-                 lexer=None, verbose=False, mute_error=False,
-                 # yacc parameters
-                 outputdir='', optimize=True, write_tables=False,
-                 picklefile=None):
+    def __init__(
+            self,
+            # common parameters
+            debug=False,
+            # local parameters
+            rewrite_tables=False,
+            # idl_parser parameters
+            lexer=None,
+            verbose=False,
+            mute_error=False,
+            # yacc parameters
+            outputdir='',
+            optimize=True,
+            write_tables=False,
+            picklefile=None):
         if debug:
             # Turn off optimization and caching, and write out tables,
             # to help debugging
@@ -94,16 +102,16 @@ class BlinkIDLParser(IDLParser):
             picklefile = None
             write_tables = True
         if outputdir:
-            picklefile = picklefile or os.path.join(outputdir, 'parsetab.pickle')
+            picklefile = picklefile or os.path.join(outputdir,
+                                                    'parsetab.pickle')
             if rewrite_tables:
                 try:
                     os.unlink(picklefile)
                 except OSError:
                     pass
 
-        lexer = lexer or BlinkIDLLexer(debug=debug,
-                                       outputdir=outputdir,
-                                       optimize=optimize)
+        lexer = lexer or BlinkIDLLexer(
+            debug=debug, outputdir=outputdir, optimize=optimize)
         self.lexer = lexer
         self.tokens = lexer.KnownTokens()
         # Optimized mode substantially decreases startup time (by disabling
@@ -115,11 +123,12 @@ class BlinkIDLParser(IDLParser):
         # as we don't need to modify sys.path; virtually identical speed.
         # See: CHANGES, Version 3.2
         # http://ply.googlecode.com/svn/trunk/CHANGES
-        self.yaccobj = yacc.yacc(module=self,
-                                 debug=debug,
-                                 optimize=optimize,
-                                 write_tables=write_tables,
-                                 picklefile=picklefile)
+        self.yaccobj = yacc.yacc(
+            module=self,
+            debug=debug,
+            optimize=optimize,
+            write_tables=write_tables,
+            picklefile=picklefile)
         # See IDLParser.__init__() why we set defaulted_states.
         self.yaccobj.defaulted_states = {}
         self.parse_debug = debug
@@ -134,12 +143,13 @@ class BlinkIDLParser(IDLParser):
 
 ################################################################################
 
+
 def main(argv):
     # If file itself executed, cache lex/parse tables
     try:
         outputdir = argv[1]
     except IndexError as err:
-        print 'Usage: %s OUTPUT_DIR' % argv[0]
+        print('Usage: %s OUTPUT_DIR' % argv[0])
         return 1
     blink_idl_lexer.main(argv)
     # Important: rewrite_tables=True causes the cache file to be deleted if it

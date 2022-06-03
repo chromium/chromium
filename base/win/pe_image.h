@@ -26,78 +26,72 @@ namespace win {
 
 // This class is a wrapper for the Portable Executable File Format (PE).
 // Its main purpose is to provide an easy way to work with imports and exports
-// from a file, mapped in memory as image.
+// from a file, mapped in memory as image. A PEImage object is constructed from
+// a loaded PE file by passing the HMODULE to the constructor. Loading a PE file
+// as an image will execute code and should only be done with trusted images.
+// Parsing of untrusted PE files is better done with PeImageReader.
+// PEImage can only parse PE files that match the bitness of the process.
+// See also PEImageAsData.
 class PEImage {
  public:
   // Callback to enumerate sections.
   // cookie is the value passed to the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumSectionsFunction)(const PEImage& image,
-                                       PIMAGE_SECTION_HEADER header,
-                                       PVOID section_start,
-                                       DWORD section_size,
-                                       PVOID cookie);
+  using EnumSectionsFunction =
+      bool (*)(const PEImage&, PIMAGE_SECTION_HEADER, PVOID, DWORD, PVOID);
 
   // Callback to enumerate exports.
   // function is the actual address of the symbol. If forward is not null, it
   // contains the dll and symbol to forward this export to. cookie is the value
   // passed to the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumExportsFunction)(const PEImage& image,
-                                      DWORD ordinal,
-                                      DWORD hint,
-                                      LPCSTR name,
-                                      PVOID function,
-                                      LPCSTR forward,
-                                      PVOID cookie);
+  using EnumExportsFunction =
+      bool (*)(const PEImage&, DWORD, DWORD, LPCSTR, PVOID, LPCSTR, PVOID);
 
   // Callback to enumerate import blocks.
   // name_table and iat point to the imports name table and address table for
   // this block. cookie is the value passed to the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumImportChunksFunction)(const PEImage& image,
-                                           LPCSTR module,
-                                           PIMAGE_THUNK_DATA name_table,
-                                           PIMAGE_THUNK_DATA iat,
-                                           PVOID cookie);
+  using EnumImportChunksFunction = bool (*)(const PEImage&,
+                                            LPCSTR,
+                                            PIMAGE_THUNK_DATA,
+                                            PIMAGE_THUNK_DATA,
+                                            PVOID);
 
   // Callback to enumerate imports.
   // module is the dll that exports this symbol. cookie is the value passed to
   // the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumImportsFunction)(const PEImage& image,
-                                      LPCSTR module,
-                                      DWORD ordinal,
-                                      LPCSTR name,
-                                      DWORD hint,
-                                      PIMAGE_THUNK_DATA iat,
-                                      PVOID cookie);
+  using EnumImportsFunction = bool (*)(const PEImage&,
+                                       LPCSTR,
+                                       DWORD,
+                                       LPCSTR,
+                                       DWORD,
+                                       PIMAGE_THUNK_DATA,
+                                       PVOID);
 
   // Callback to enumerate delayed import blocks.
   // module is the dll that exports this block of symbols. cookie is the value
   // passed to the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumDelayImportChunksFunction)(const PEImage& image,
-                                                PImgDelayDescr delay_descriptor,
-                                                LPCSTR module,
-                                                PIMAGE_THUNK_DATA name_table,
-                                                PIMAGE_THUNK_DATA iat,
-                                                PVOID cookie);
+  using EnumDelayImportChunksFunction = bool (*)(const PEImage&,
+                                                 PImgDelayDescr,
+                                                 LPCSTR,
+                                                 PIMAGE_THUNK_DATA,
+                                                 PIMAGE_THUNK_DATA,
+                                                 PVOID);
 
   // Callback to enumerate relocations.
   // cookie is the value passed to the enumerate method.
   // Returns true to continue the enumeration.
-  typedef bool (*EnumRelocsFunction)(const PEImage& image,
-                                     WORD type,
-                                     PVOID address,
-                                     PVOID cookie);
+  using EnumRelocsFunction = bool (*)(const PEImage&, WORD, PVOID, PVOID);
 
   explicit PEImage(HMODULE module) : module_(module) {}
   explicit PEImage(const void* module) {
     module_ = reinterpret_cast<HMODULE>(const_cast<void*>(module));
   }
 
-  virtual ~PEImage() {}
+  virtual ~PEImage() = default;
 
   // Gets the HMODULE for this object.
   HMODULE module() const;

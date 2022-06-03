@@ -1,0 +1,73 @@
+Tests that Input.imeSetComposition works and waits for JavaScript event handlers to finish.
+Dispatching event
+Initial value:"abcd"
+
+event: keydown
+value: abcd
+selectionStart: 4
+selectionEnd: 4
+keyCode: 37
+key: ArrowLeft
+
+event: keyup
+value: abcd
+selectionStart: 3
+selectionEnd: 3
+keyCode: 37
+key: ArrowLeft
+
+event: compositionstart
+value: abcd
+selectionStart: 3
+selectionEnd: 3
+
+event: beforeinput
+value: abcd
+selectionStart: 3
+selectionEnd: 3
+
+event: compositionupdate
+value: abcd
+selectionStart: 3
+selectionEnd: 3
+
+event: input
+value: abcｓd
+selectionStart: 4
+selectionEnd: 4
+
+event: beforeinput
+value: abcｓd
+selectionStart: 3
+selectionEnd: 4
+
+event: compositionupdate
+value: abcｓd
+selectionStart: 3
+selectionEnd: 4
+
+event: input
+value: abcすd
+selectionStart: 4
+selectionEnd: 4
+
+event: beforeinput
+value: abcすd
+selectionStart: 3
+selectionEnd: 4
+
+event: compositionupdate
+value: abcすd
+selectionStart: 3
+selectionEnd: 4
+
+event: input
+value: abcすd
+selectionStart: 4
+selectionEnd: 4
+
+event: compositionend
+value: abcすd
+selectionStart: 4
+selectionEnd: 4
+

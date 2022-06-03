@@ -1,1 +1,0 @@
-<html><head></head><body><div class="line-gutter-backdrop"></div><table><tbody><tr><td class="line-number" value="1"></td><td class="line-content">1234567<span class="html-end-of-file"></span></td></tr></tbody></table></body></html>

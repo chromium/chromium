@@ -8,15 +8,20 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/keycodes/keysym_to_unicode.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/events/keycodes/xkb_keysym.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
+#include "ui/gfx/x/xinput.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_types.h"
 
 #define VKEY_UNSUPPORTED VKEY_UNKNOWN
 
@@ -127,67 +132,67 @@ namespace {
 // Please refer to crbug.com/386066.
 //
 const struct MAP0 {
-  KeySym ch0;
+  uint32_t ch0;
   uint8_t vk;
   bool operator()(const MAP0& m1, const MAP0& m2) const {
     return m1.ch0 < m2.ch0;
   }
 } map0[] = {
-      {0x0025, 0x35},  // XK_percent: VKEY_5
-      {0x0026, 0x31},  // XK_ampersand: VKEY_1
-      {0x003C, 0xDC},  // XK_less: VKEY_OEM_5
-      {0x007B, 0xDE},  // XK_braceleft: VKEY_OEM_7
-      {0x007C, 0xDC},  // XK_bar: VKEY_OEM_5
-      {0x007D, 0xBF},  // XK_braceright: VKEY_OEM_2
-      {0x007E, 0xDC},  // XK_asciitilde: VKEY_OEM_5
-      {0x00A1, 0xDD},  // XK_exclamdown: VKEY_OEM_6
-      {0x00AD, 0xC0},  // XK_hyphen: VKEY_OEM_3
-      {0x00B2, 0xDE},  // XK_twosuperior: VKEY_OEM_7
-      {0x00B5, 0xDC},  // XK_mu: VKEY_OEM_5
-      {0x00BB, 0x39},  // XK_guillemotright: VKEY_9
-      {0x00BD, 0xDC},  // XK_onehalf: VKEY_OEM_5
-      {0x00BF, 0xDD},  // XK_questiondown: VKEY_OEM_6
-      {0x00DF, 0xDB},  // XK_ssharp: VKEY_OEM_4
-      {0x00E5, 0xDD},  // XK_aring: VKEY_OEM_6
-      {0x00EA, 0x33},  // XK_ecircumflex: VKEY_3
-      {0x00EB, 0xBA},  // XK_ediaeresis: VKEY_OEM_1
-      {0x00EC, 0xDD},  // XK_igrave: VKEY_OEM_6
-      {0x00EE, 0xDD},  // XK_icircumflex: VKEY_OEM_6
-      {0x00F1, 0xC0},  // XK_ntilde: VKEY_OEM_3
-      {0x00F2, 0xC0},  // XK_ograve: VKEY_OEM_3
-      {0x00F5, 0xDB},  // XK_otilde: VKEY_OEM_4
-      {0x00F7, 0xDD},  // XK_division: VKEY_OEM_6
-      {0x00FD, 0x37},  // XK_yacute: VKEY_7
-      {0x00FE, 0xBD},  // XK_thorn: VKEY_OEM_MINUS
-      {0x01A1, 0xDD},  // XK_ohorn: VKEY_OEM_6
-      {0x01B0, 0xDB},  // XK_uhorn: VKEY_OEM_4
-      {0x01B5, 0x32},  // XK_lcaron: VKEY_2
-      {0x01B6, 0xDD},  // XK_zstroke: VKEY_OEM_6
-      {0x01BB, 0x35},  // XK_tcaron: VKEY_5
-      {0x01E6, 0xDE},  // XK_cacute: VKEY_OEM_7
-      {0x01EC, 0x32},  // XK_ecaron: VKEY_2
-      {0x01F2, 0xDC},  // XK_ncaron: VKEY_OEM_5
-      {0x01F5, 0xDB},  // XK_odoubleacute: VKEY_OEM_4
-      {0x01F8, 0x35},  // XK_rcaron: VKEY_5
-      {0x01F9, 0xBA},  // XK_uring: VKEY_OEM_1
-      {0x01FB, 0xDC},  // XK_udoubleacute: VKEY_OEM_5
-      {0x01FE, 0xDE},  // XK_tcedilla: VKEY_OEM_7
-      {0x0259, 0xC0},  // XK_schwa: VKEY_OEM_3
-      {0x02B1, 0xDD},  // XK_hstroke: VKEY_OEM_6
-      {0x02B9, 0xBA},  // XK_idotless: VKEY_OEM_1
-      {0x02BB, 0xDD},  // XK_gbreve: VKEY_OEM_6
-      {0x02E5, 0xC0},  // XK_cabovedot: VKEY_OEM_3
-      {0x02F5, 0xDB},  // XK_gabovedot: VKEY_OEM_4
-      {0x03B6, 0xBF},  // XK_lcedilla: VKEY_OEM_2
-      {0x03BA, 0x57},  // XK_emacron: VKEY_W
-      {0x03E0, 0xDF},  // XK_amacron: VKEY_OEM_8
-      {0x03EF, 0xDD},  // XK_imacron: VKEY_OEM_6
-      {0x03F1, 0xDB},  // XK_ncedilla: VKEY_OEM_4
-      {0x03F3, 0xDC},  // XK_kcedilla: VKEY_OEM_5
+    {0x0025, 0x35},  // XK_percent: VKEY_5
+    {0x0026, 0x31},  // XK_ampersand: VKEY_1
+    {0x003C, 0xDC},  // XK_less: VKEY_OEM_5
+    {0x007B, 0xDE},  // XK_braceleft: VKEY_OEM_7
+    {0x007C, 0xDC},  // XK_bar: VKEY_OEM_5
+    {0x007D, 0xBF},  // XK_braceright: VKEY_OEM_2
+    {0x007E, 0xDC},  // XK_asciitilde: VKEY_OEM_5
+    {0x00A1, 0xDD},  // XK_exclamdown: VKEY_OEM_6
+    {0x00AD, 0xC0},  // XK_hyphen: VKEY_OEM_3
+    {0x00B2, 0xDE},  // XK_twosuperior: VKEY_OEM_7
+    {0x00B5, 0xDC},  // XK_mu: VKEY_OEM_5
+    {0x00BB, 0x39},  // XK_guillemotright: VKEY_9
+    {0x00BD, 0xDC},  // XK_onehalf: VKEY_OEM_5
+    {0x00BF, 0xDD},  // XK_questiondown: VKEY_OEM_6
+    {0x00DF, 0xDB},  // XK_ssharp: VKEY_OEM_4
+    {0x00E5, 0xDD},  // XK_aring: VKEY_OEM_6
+    {0x00EA, 0x33},  // XK_ecircumflex: VKEY_3
+    {0x00EB, 0xBA},  // XK_ediaeresis: VKEY_OEM_1
+    {0x00EC, 0xDD},  // XK_igrave: VKEY_OEM_6
+    {0x00EE, 0xDD},  // XK_icircumflex: VKEY_OEM_6
+    {0x00F1, 0xC0},  // XK_ntilde: VKEY_OEM_3
+    {0x00F2, 0xC0},  // XK_ograve: VKEY_OEM_3
+    {0x00F5, 0xDB},  // XK_otilde: VKEY_OEM_4
+    {0x00F7, 0xDD},  // XK_division: VKEY_OEM_6
+    {0x00FD, 0x37},  // XK_yacute: VKEY_7
+    {0x00FE, 0xBD},  // XK_thorn: VKEY_OEM_MINUS
+    {0x01A1, 0xDD},  // XK_ohorn: VKEY_OEM_6
+    {0x01B0, 0xDB},  // XK_uhorn: VKEY_OEM_4
+    {0x01B5, 0x32},  // XK_lcaron: VKEY_2
+    {0x01B6, 0xDD},  // XK_zstroke: VKEY_OEM_6
+    {0x01BB, 0x35},  // XK_tcaron: VKEY_5
+    {0x01E6, 0xDE},  // XK_cacute: VKEY_OEM_7
+    {0x01EC, 0x32},  // XK_ecaron: VKEY_2
+    {0x01F2, 0xDC},  // XK_ncaron: VKEY_OEM_5
+    {0x01F5, 0xDB},  // XK_odoubleacute: VKEY_OEM_4
+    {0x01F8, 0x35},  // XK_rcaron: VKEY_5
+    {0x01F9, 0xBA},  // XK_uring: VKEY_OEM_1
+    {0x01FB, 0xDC},  // XK_udoubleacute: VKEY_OEM_5
+    {0x01FE, 0xDE},  // XK_tcedilla: VKEY_OEM_7
+    {0x0259, 0xC0},  // XK_schwa: VKEY_OEM_3
+    {0x02B1, 0xDD},  // XK_hstroke: VKEY_OEM_6
+    {0x02B9, 0xBA},  // XK_idotless: VKEY_OEM_1
+    {0x02BB, 0xDD},  // XK_gbreve: VKEY_OEM_6
+    {0x02E5, 0xC0},  // XK_cabovedot: VKEY_OEM_3
+    {0x02F5, 0xDB},  // XK_gabovedot: VKEY_OEM_4
+    {0x03B6, 0xBF},  // XK_lcedilla: VKEY_OEM_2
+    {0x03BA, 0x57},  // XK_emacron: VKEY_W
+    {0x03E0, 0xDF},  // XK_amacron: VKEY_OEM_8
+    {0x03EF, 0xDD},  // XK_imacron: VKEY_OEM_6
+    {0x03F1, 0xDB},  // XK_ncedilla: VKEY_OEM_4
+    {0x03F3, 0xDC},  // XK_kcedilla: VKEY_OEM_5
 };
 
 const struct MAP1 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
   uint8_t vk;
   bool operator()(const MAP1& m1, const MAP1& m2) const {
@@ -376,9 +381,9 @@ const struct MAP1 {
 };
 
 const struct MAP2 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
-  KeySym ch1;
+  uint32_t ch1;
   uint8_t vk;
   bool operator()(const MAP2& m1, const MAP2& m2) const {
     if (m1.ch0 == m2.ch0 && m1.sc == m2.sc)
@@ -388,41 +393,39 @@ const struct MAP2 {
     return m1.ch0 < m2.ch0;
   }
 } map2[] = {
-      {0x0023, 0x33, 0x0027,
-       0xBF},  // XK_numbersign+BKSL+XK_quoteright: VKEY_OEM_2
-      {0x0027, 0x30, 0x0022,
-       0xDE},  // XK_quoteright+AC11+XK_quotedbl: VKEY_OEM_7
-      {0x0027, 0x31, 0x0022,
-       0xC0},  // XK_quoteright+TLDE+XK_quotedbl: VKEY_OEM_3
-      {0x0027, 0x31, 0x00B7,
-       0xDC},  // XK_quoteright+TLDE+XK_periodcentered: VKEY_OEM_5
-      {0x0027, 0x33, 0x0000, 0xDC},  // XK_quoteright+BKSL+NoSymbol: VKEY_OEM_5
-      {0x002D, 0x3D, 0x003D, 0xBD},  // XK_minus+AB10+XK_equal: VKEY_OEM_MINUS
-      {0x002F, 0x0C, 0x0033, 0x33},  // XK_slash+AE03+XK_3: VKEY_3
-      {0x002F, 0x0C, 0x003F, 0xBF},  // XK_slash+AE03+XK_question: VKEY_OEM_2
-      {0x002F, 0x13, 0x0030, 0x30},  // XK_slash+AE10+XK_0: VKEY_0
-      {0x002F, 0x13, 0x003F, 0xBF},  // XK_slash+AE10+XK_question: VKEY_OEM_2
-      {0x003D, 0x3D, 0x0025, 0xDF},  // XK_equal+AB10+XK_percent: VKEY_OEM_8
-      {0x003D, 0x3D, 0x002B, 0xBB},  // XK_equal+AB10+XK_plus: VKEY_OEM_PLUS
-      {0x005C, 0x33, 0x007C, 0xDC},  // XK_backslash+BKSL+XK_bar: VKEY_OEM_5
-      {0x0060, 0x31, 0x0000, 0xC0},  // XK_quoteleft+TLDE+NoSymbol: VKEY_OEM_3
-      {0x0060, 0x31, 0x00AC, 0xDF},  // XK_quoteleft+TLDE+XK_notsign: VKEY_OEM_8
-      {0x00A7, 0x31, 0x00B0, 0xBF},  // XK_section+TLDE+XK_degree: VKEY_OEM_2
-      {0x00A7, 0x31, 0x00BD, 0xDC},  // XK_section+TLDE+XK_onehalf: VKEY_OEM_5
-      {0x00E0, 0x30, 0x00B0, 0xDE},  // XK_agrave+AC11+XK_degree: VKEY_OEM_7
-      {0x00E0, 0x30, 0x00E4, 0xDC},  // XK_agrave+AC11+XK_adiaeresis: VKEY_OEM_5
-      {0x00E4, 0x30, 0x00E0, 0xDC},  // XK_adiaeresis+AC11+XK_agrave: VKEY_OEM_5
-      {0x00E9, 0x2F, 0x00C9, 0xBA},  // XK_eacute+AC10+XK_Eacute: VKEY_OEM_1
-      {0x00E9, 0x2F, 0x00F6, 0xDE},  // XK_eacute+AC10+XK_odiaeresis: VKEY_OEM_7
-      {0x00F6, 0x2F, 0x00E9, 0xDE},  // XK_odiaeresis+AC10+XK_eacute: VKEY_OEM_7
-      {0x00FC, 0x22, 0x00E8, 0xBA},  // XK_udiaeresis+AD11+XK_egrave: VKEY_OEM_1
+    {0x0023, 0x33, 0x0027,
+     0xBF},  // XK_numbersign+BKSL+XK_quoteright: VKEY_OEM_2
+    {0x0027, 0x30, 0x0022, 0xDE},  // XK_quoteright+AC11+XK_quotedbl: VKEY_OEM_7
+    {0x0027, 0x31, 0x0022, 0xC0},  // XK_quoteright+TLDE+XK_quotedbl: VKEY_OEM_3
+    {0x0027, 0x31, 0x00B7,
+     0xDC},  // XK_quoteright+TLDE+XK_periodcentered: VKEY_OEM_5
+    {0x0027, 0x33, 0x0000, 0xDC},  // XK_quoteright+BKSL+NoSymbol: VKEY_OEM_5
+    {0x002D, 0x3D, 0x003D, 0xBD},  // XK_minus+AB10+XK_equal: VKEY_OEM_MINUS
+    {0x002F, 0x0C, 0x0033, 0x33},  // XK_slash+AE03+XK_3: VKEY_3
+    {0x002F, 0x0C, 0x003F, 0xBF},  // XK_slash+AE03+XK_question: VKEY_OEM_2
+    {0x002F, 0x13, 0x0030, 0x30},  // XK_slash+AE10+XK_0: VKEY_0
+    {0x002F, 0x13, 0x003F, 0xBF},  // XK_slash+AE10+XK_question: VKEY_OEM_2
+    {0x003D, 0x3D, 0x0025, 0xDF},  // XK_equal+AB10+XK_percent: VKEY_OEM_8
+    {0x003D, 0x3D, 0x002B, 0xBB},  // XK_equal+AB10+XK_plus: VKEY_OEM_PLUS
+    {0x005C, 0x33, 0x007C, 0xDC},  // XK_backslash+BKSL+XK_bar: VKEY_OEM_5
+    {0x0060, 0x31, 0x0000, 0xC0},  // XK_quoteleft+TLDE+NoSymbol: VKEY_OEM_3
+    {0x0060, 0x31, 0x00AC, 0xDF},  // XK_quoteleft+TLDE+XK_notsign: VKEY_OEM_8
+    {0x00A7, 0x31, 0x00B0, 0xBF},  // XK_section+TLDE+XK_degree: VKEY_OEM_2
+    {0x00A7, 0x31, 0x00BD, 0xDC},  // XK_section+TLDE+XK_onehalf: VKEY_OEM_5
+    {0x00E0, 0x30, 0x00B0, 0xDE},  // XK_agrave+AC11+XK_degree: VKEY_OEM_7
+    {0x00E0, 0x30, 0x00E4, 0xDC},  // XK_agrave+AC11+XK_adiaeresis: VKEY_OEM_5
+    {0x00E4, 0x30, 0x00E0, 0xDC},  // XK_adiaeresis+AC11+XK_agrave: VKEY_OEM_5
+    {0x00E9, 0x2F, 0x00C9, 0xBA},  // XK_eacute+AC10+XK_Eacute: VKEY_OEM_1
+    {0x00E9, 0x2F, 0x00F6, 0xDE},  // XK_eacute+AC10+XK_odiaeresis: VKEY_OEM_7
+    {0x00F6, 0x2F, 0x00E9, 0xDE},  // XK_odiaeresis+AC10+XK_eacute: VKEY_OEM_7
+    {0x00FC, 0x22, 0x00E8, 0xBA},  // XK_udiaeresis+AD11+XK_egrave: VKEY_OEM_1
 };
 
 const struct MAP3 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
-  KeySym ch1;
-  KeySym ch2;
+  uint32_t ch1;
+  uint32_t ch2;
   uint8_t vk;
   bool operator()(const MAP3& m1, const MAP3& m2) const {
     if (m1.ch0 == m2.ch0 && m1.sc == m2.sc && m1.ch1 == m2.ch1)
@@ -541,32 +544,65 @@ KeyboardCode FindVK(const T_MAP& key, const T_MAP* map, size_t size) {
 // based on KeySym, and never fall back to MAP0~MAP3, since some layouts
 // generate them by applying the Control/AltGr modifier to some other key.
 // e.g. in de(neo), AltGr+V generates XK_Enter.
-bool IsTtyFunctionOrSpaceKey(KeySym keysym) {
-  KeySym keysyms[] = {
-    XK_BackSpace,
-    XK_Tab,
-    XK_Linefeed,
-    XK_Clear,
-    XK_Return,
-    XK_Pause,
-    XK_Scroll_Lock,
-    XK_Sys_Req,
-    XK_Escape,
-    XK_Delete,
-    XK_space
-  };
+bool IsTtyFunctionOrSpaceKey(uint32_t keysym) {
+  uint32_t keysyms[] = {XK_BackSpace, XK_Tab,    XK_Linefeed,    XK_Clear,
+                        XK_Return,    XK_Pause,  XK_Scroll_Lock, XK_Sys_Req,
+                        XK_Escape,    XK_Delete, XK_space};
 
-  for (size_t i = 0; i < base::size(keysyms); ++i) {
-    if (keysyms[i] == keysym)
+  for (unsigned long i : keysyms) {
+    if (i == keysym)
       return true;
   }
   return false;
 }
 
+uint32_t TranslateKey(uint32_t keycode, uint32_t modifiers) {
+  return x11::Connection::Get()->KeycodeToKeysym(
+      static_cast<x11::KeyCode>(keycode), modifiers);
+}
+
+void GetKeycodeAndModifiers(const x11::Event& event,
+                            uint32_t* keycode,
+                            uint32_t* modifiers) {
+  if (auto* dev = event.As<x11::Input::DeviceEvent>()) {
+    *keycode = dev->detail;
+    *modifiers = dev->mods.effective;
+  } else if (auto* key = event.As<x11::KeyEvent>()) {
+    *keycode = static_cast<uint32_t>(key->detail);
+    *modifiers = static_cast<uint32_t>(key->state);
+  }
+}
+
+bool IsKeypadKey(uint32_t keysym) {
+  return keysym >= XK_KP_Space && keysym <= XK_KP_Equal;
+}
+
+bool IsPrivateKeypadKey(uint32_t keysym) {
+  return keysym >= 0x11000000 && keysym <= 0x1100FFFF;
+}
+
+bool IsCursorKey(uint32_t keysym) {
+  return keysym >= XK_Home && keysym < XK_Select;
+}
+
+bool IsPFKey(uint32_t keysym) {
+  return keysym >= XK_KP_F1 && keysym <= XK_KP_F4;
+}
+
+bool IsFunctionKey(uint32_t keysym) {
+  return keysym >= XK_F1 && keysym <= XK_F35;
+}
+
+bool IsModifierKey(uint32_t keysym) {
+  return ((keysym >= XK_Shift_L) && (keysym <= XK_Hyper_R)) ||
+         ((keysym >= XK_ISO_Lock) && (keysym <= XK_ISO_Level5_Lock)) ||
+         keysym == XK_Mode_switch || keysym == XK_Num_Lock;
+}
+
 }  // namespace
 
 // Get an ui::KeyboardCode from an X keyevent
-KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
+KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
   // Gets correct VKEY code from XEvent is performed as the following steps:
   // 1. Gets the keysym without modifier states.
   // 2. For [a-z] & [0-9] cases, returns the VKEY code accordingly.
@@ -580,21 +616,12 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
   //    mainly for non-letter keys.
   // 8. If not found, fallback to find with the hardware code in US layout.
 
-  KeySym keysym = NoSymbol;
-  XEvent xkeyevent;
-  xkeyevent.xkey = {};
-  if (xev->type == GenericEvent) {
-    // Convert the XI2 key event into a core key event so that we can
-    // continue to use XLookupString() until crbug.com/367732 is complete.
-    InitXKeyEventFromXIDeviceEvent(*xev, &xkeyevent);
-  } else {
-    xkeyevent.xkey = xev->xkey;
-  }
+  uint32_t keysym = 0;
+  uint32_t xkeycode = 0;
+  uint32_t modifiers = 0;
+  GetKeycodeAndModifiers(xev, &xkeycode, &modifiers);
   KeyboardCode keycode = VKEY_UNKNOWN;
-  XKeyEvent* xkey = &xkeyevent.xkey;
-  // XLookupKeysym does not take into consideration the state of the lock/shift
-  // etc. keys. So it is necessary to use XLookupString instead.
-  XLookupString(xkey, NULL, 0, &keysym, NULL);
+  keysym = TranslateKey(xkeycode, modifiers);
   if (IsKeypadKey(keysym) || IsPrivateKeypadKey(keysym) ||
       IsCursorKey(keysym) || IsPFKey(keysym) || IsFunctionKey(keysym) ||
       IsModifierKey(keysym) || IsTtyFunctionOrSpaceKey(keysym)) {
@@ -604,9 +631,9 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
   // If |xkey| has modifiers set, other than NumLock, then determine the
   // un-modified KeySym and use that to map, so that e.g. Ctrl+D correctly
   // generates VKEY_D.
-  if (xkey->state & 0xFF & ~Mod2Mask) {
-    xkey->state &= (~0xFF | Mod2Mask);
-    XLookupString(xkey, NULL, 0, &keysym, NULL);
+  if (modifiers & 0xFF & ~static_cast<int>(x11::KeyButMask::Mod2)) {
+    modifiers &= (~0xFF | static_cast<int>(x11::KeyButMask::Mod2));
+    keysym = TranslateKey(xkeycode, modifiers);
   }
 
   // [a-z] cases.
@@ -625,24 +652,24 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    MAP1 key1 = {keysym & 0xFFFF, xkey->keycode, 0};
+    MAP1 key1 = {keysym & 0xFFFF, xkeycode, 0};
     keycode = FindVK(key1, map1, base::size(map1));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_shift = NoSymbol;
-    xkey->state |= ShiftMask;
-    XLookupString(xkey, NULL, 0, &keysym_shift, NULL);
-    MAP2 key2 = {keysym & 0xFFFF, xkey->keycode, keysym_shift & 0xFFFF, 0};
+    uint32_t keysym_shift{};
+    modifiers |= static_cast<int>(x11::KeyButMask::Shift);
+    keysym_shift = TranslateKey(xkeycode, modifiers);
+    MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
     keycode = FindVK(key2, map2, base::size(map2));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_altgr = NoSymbol;
-    xkey->state &= ~ShiftMask;
-    xkey->state |= Mod1Mask;
-    XLookupString(xkey, NULL, 0, &keysym_altgr, NULL);
-    MAP3 key3 = {keysym & 0xFFFF, xkey->keycode, keysym_shift & 0xFFFF,
+    uint32_t keysym_altgr{};
+    modifiers &= ~static_cast<int>(x11::KeyButMask::Shift);
+    modifiers |= static_cast<int>(x11::KeyButMask::Mod1);
+    keysym_altgr = TranslateKey(xkeycode, modifiers);
+    MAP3 key3 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF,
                  keysym_altgr & 0xFFFF, 0};
     keycode = FindVK(key3, map3, base::size(map3));
     if (keycode != VKEY_UNKNOWN)
@@ -651,8 +678,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
     // On Linux some keys has AltGr char but not on Windows.
     // So if cannot find VKEY with (ch0+sc+ch1+ch2) in map3, tries to fallback
     // to just find VKEY with (ch0+sc+ch1). This is the best we could do.
-    MAP3 key4 = {keysym & 0xFFFF, xkey->keycode, keysym_shift & 0xFFFF, 0,
-                 0};
+    MAP3 key4 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0, 0};
     const MAP3* p =
         std::lower_bound(map3, map3 + base::size(map3), key4, MAP3());
     if (p != map3 + base::size(map3) && p->ch0 == key4.ch0 &&
@@ -664,7 +690,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
   if (keycode == VKEY_UNKNOWN && !IsModifierKey(keysym)) {
     // Modifier keys should not fall back to the hardware-keycode-based US
     // layout.  See crbug.com/402320
-    keycode = DefaultKeyboardCodeFromHardwareKeycode(xkey->keycode);
+    keycode = DefaultKeyboardCodeFromHardwareKeycode(xkeycode);
   }
 
   return keycode;
@@ -949,48 +975,37 @@ KeyboardCode KeyboardCodeFromXKeysym(unsigned int keysym) {
     case XF86XK_KbdBrightnessUp:
       return VKEY_KBD_BRIGHTNESS_UP;
 
-    // TODO(sad): some keycodes are still missing.
+      // TODO(sad): some keycodes are still missing.
   }
   DVLOG(1) << "Unknown keysym: " << base::StringPrintf("0x%x", keysym);
   return VKEY_UNKNOWN;
 }
 
-DomCode CodeFromXEvent(const XEvent* xev) {
-  int keycode = (xev->type == GenericEvent)
-                    ? static_cast<XIDeviceEvent*>(xev->xcookie.data)->detail
-                    : xev->xkey.keycode;
+DomCode CodeFromXEvent(const x11::Event& xev) {
+  auto* device = xev.As<x11::Input::DeviceEvent>();
+  int keycode = 0;
+  if (device) {
+    keycode = device->detail;
+  } else {
+    auto* key = xev.As<x11::KeyEvent>();
+    DCHECK(key);
+    keycode = static_cast<uint8_t>(key->detail);
+  }
   return ui::KeycodeConverter::NativeKeycodeToDomCode(keycode);
 }
 
-uint16_t GetCharacterFromXEvent(const XEvent* xev) {
-  XEvent xkeyevent;
-  xkeyevent.xkey = {};
-  const XKeyEvent* xkey = NULL;
-  if (xev->type == GenericEvent) {
-    // Convert the XI2 key event into a core key event so that we can
-    // continue to use XLookupString() until crbug.com/367732 is complete.
-    InitXKeyEventFromXIDeviceEvent(*xev, &xkeyevent);
-    xkey = &xkeyevent.xkey;
-  } else {
-    xkey = &xev->xkey;
-  }
-  KeySym keysym = XK_VoidSymbol;
-  XLookupString(const_cast<XKeyEvent*>(xkey), NULL, 0, &keysym, NULL);
+uint16_t GetCharacterFromXEvent(const x11::Event& xev) {
+  uint32_t xkeycode = 0;
+  uint32_t modifiers = 0;
+  GetKeycodeAndModifiers(xev, &xkeycode, &modifiers);
+  uint32_t keysym = TranslateKey(xkeycode, modifiers);
   return GetUnicodeCharacterFromXKeySym(keysym);
 }
 
-DomKey GetDomKeyFromXEvent(const XEvent* xev) {
-  XEvent xkeyevent;
-  xkeyevent.xkey = {};
-  XKeyEvent xkey;
-  if (xev->type == GenericEvent) {
-    // Convert the XI2 key event into a core key event so that we can
-    // continue to use XLookupString() until crbug.com/367732 is complete.
-    InitXKeyEventFromXIDeviceEvent(*xev, &xkeyevent);
-    xkey = xkeyevent.xkey;
-  } else {
-    xkey = xev->xkey;
-  }
+DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
+  uint32_t xkeycode = 0;
+  uint32_t modifiers = 0;
+  GetKeycodeAndModifiers(xev, &xkeycode, &modifiers);
   // There is no good way to check whether a key combination will print a
   // character on screen.
   // e.g. On Linux US keyboard with French layout, |XLookupString()|
@@ -1000,10 +1015,9 @@ DomKey GetDomKeyFromXEvent(const XEvent* xev) {
   // The solution is to take out ctrl modifier directly, as according to XKB map
   // no keyboard combinations with ctrl key are mapped to printable character.
   // https://crbug.com/633838
-  xkey.state &= ~ControlMask;
-  KeySym keysym = XK_VoidSymbol;
-  XLookupString(&xkey, NULL, 0, &keysym, NULL);
-  base::char16 ch = GetUnicodeCharacterFromXKeySym(keysym);
+  modifiers &= ~static_cast<int>(x11::KeyButMask::Control);
+  uint32_t keysym = TranslateKey(xkeycode, modifiers);
+  char16_t ch = GetUnicodeCharacterFromXKeySym(keysym);
   return XKeySymToDomKey(keysym, ch);
 }
 
@@ -1163,7 +1177,12 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       case 0xB5:  // KEY_REFRESH
         return VKEY_BROWSER_REFRESH;
       case 0xD4:  // KEY_DASHBOARD
-        return VKEY_MEDIA_LAUNCH_APP2;
+        // This was changed from VKEY_MEDIA_LAUNCH_APP2 when the full screen
+        // key was moved to VKEY_ZOOM with crbug.com/1204710. In order to
+        // maintain existing behavior this was kept consistent but it
+        // seems like this should have been VKEY_MEDIA_LAUNCH_APP1 aka
+        // overview in the first place.
+        return VKEY_ZOOM;
       case 0xE8:  // KEY_BRIGHTNESSDOWN
         return VKEY_BRIGHTNESS_DOWN;
       case 0xE9:  // KEY_BRIGHTNESSUP
@@ -1217,7 +1236,10 @@ int XKeysymForWindowsKeyCode(KeyboardCode keycode, bool shift) {
     case VKEY_RETURN:
       return XK_Return;
     case VKEY_SHIFT:
+    case VKEY_LSHIFT:
       return XK_Shift_L;
+    case VKEY_RSHIFT:
+      return XK_Shift_R;
     case VKEY_CONTROL:
       return XK_Control_L;
     case VKEY_MENU:
@@ -1440,41 +1462,12 @@ int XKeysymForWindowsKeyCode(KeyboardCode keycode, bool shift) {
     default:
       LOG(WARNING) << "Unknown keycode:" << keycode;
       return 0;
-    }
-}
-
-void InitXKeyEventFromXIDeviceEvent(const XEvent& src, XEvent* xkeyevent) {
-  DCHECK(src.type == GenericEvent);
-  XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(src.xcookie.data);
-  switch (xievent->evtype) {
-    case XI_KeyPress:
-      xkeyevent->type = KeyPress;
-      break;
-    case XI_KeyRelease:
-      xkeyevent->type = KeyRelease;
-      break;
-    default:
-      NOTREACHED();
   }
-  xkeyevent->xkey.serial = xievent->serial;
-  xkeyevent->xkey.send_event = xievent->send_event;
-  xkeyevent->xkey.display = xievent->display;
-  xkeyevent->xkey.window = xievent->event;
-  xkeyevent->xkey.root = xievent->root;
-  xkeyevent->xkey.subwindow = xievent->child;
-  xkeyevent->xkey.time = xievent->time;
-  xkeyevent->xkey.x = xievent->event_x;
-  xkeyevent->xkey.y = xievent->event_y;
-  xkeyevent->xkey.x_root = xievent->root_x;
-  xkeyevent->xkey.y_root = xievent->root_y;
-  xkeyevent->xkey.state = xievent->mods.effective;
-  xkeyevent->xkey.keycode = xievent->detail;
-  xkeyevent->xkey.same_screen = 1;
 }
 
 unsigned int XKeyCodeForWindowsKeyCode(ui::KeyboardCode key_code,
                                        int flags,
-                                       XDisplay* display) {
+                                       x11::Connection* connection) {
   // SHIFT state is ignored in the call to XKeysymForWindowsKeyCode() here
   // because we map the XKeysym back to a keycode, i.e. a physical key position.
   // Using a SHIFT-modified XKeysym would sometimes yield X keycodes that,
@@ -1495,7 +1488,8 @@ unsigned int XKeyCodeForWindowsKeyCode(ui::KeyboardCode key_code,
   // crbug.com/386066 and crbug.com/390263 are examples of problems
   // associated with this.
   //
-  return XKeysymToKeycode(display, XKeysymForWindowsKeyCode(key_code, false));
+  return static_cast<uint8_t>(
+      connection->KeysymToKeycode(XKeysymForWindowsKeyCode(key_code, false)));
 }
 
 }  // namespace ui

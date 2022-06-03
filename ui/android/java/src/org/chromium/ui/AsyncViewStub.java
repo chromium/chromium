@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.support.v4.view.AsyncLayoutInflater;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;

@@ -1385,6 +1385,238 @@
 #define __NR_memfd_create (__NR_SYSCALL_BASE+385)
 #endif
 
+#if !defined(__NR_bpf)
+#define __NR_bpf (__NR_SYSCALL_BASE+386)
+#endif
+
+#if !defined(__NR_execveat)
+#define __NR_execveat (__NR_SYSCALL_BASE+387)
+#endif
+
+#if !defined(__NR_userfaultfd)
+#define __NR_userfaultfd (__NR_SYSCALL_BASE+388)
+#endif
+
+#if !defined(__NR_membarrier)
+#define __NR_membarrier (__NR_SYSCALL_BASE+389)
+#endif
+
+#if !defined(__NR_mlock2)
+#define __NR_mlock2 (__NR_SYSCALL_BASE+390)
+#endif
+
+#if !defined(__NR_copy_file_range)
+#define __NR_copy_file_range (__NR_SYSCALL_BASE+391)
+#endif
+
+#if !defined(__NR_preadv2)
+#define __NR_preadv2 (__NR_SYSCALL_BASE+392)
+#endif
+
+#if !defined(__NR_pwritev2)
+#define __NR_pwritev2 (__NR_SYSCALL_BASE+393)
+#endif
+
+#if !defined(__NR_pkey_mprotect)
+#define __NR_pkey_mprotect (__NR_SYSCALL_BASE+394)
+#endif
+
+#if !defined(__NR_pkey_alloc)
+#define __NR_pkey_alloc (__NR_SYSCALL_BASE+395)
+#endif
+
+#if !defined(__NR_pkey_free)
+#define __NR_pkey_free (__NR_SYSCALL_BASE+396)
+#endif
+
+#if !defined(__NR_statx)
+#define __NR_statx (__NR_SYSCALL_BASE+397)
+#endif
+
+#if !defined(__NR_rseq)
+#define __NR_rseq (__NR_SYSCALL_BASE+398)
+#endif
+
+#if !defined(__NR_io_pgetevents)
+#define __NR_io_pgetevents (__NR_SYSCALL_BASE+399)
+#endif
+
+#if !defined(__NR_migrate_pages)
+#define __NR_migrate_pages (__NR_SYSCALL_BASE + 400)
+#endif
+
+#if !defined(__NR_kexec_file_load)
+#define __NR_kexec_file_load (__NR_SYSCALL_BASE + 401)
+#endif
+
+#if !defined(__NR_clock_gettime64)
+#define __NR_clock_gettime64 (__NR_SYSCALL_BASE + 403)
+#endif
+
+#if !defined(__NR_clock_settime64)
+#define __NR_clock_settime64 (__NR_SYSCALL_BASE + 404)
+#endif
+
+#if !defined(__NR_clock_adjtime64)
+#define __NR_clock_adjtime64 (__NR_SYSCALL_BASE + 405)
+#endif
+
+#if !defined(__NR_clock_getres_time64)
+#define __NR_clock_getres_time64 (__NR_SYSCALL_BASE + 406)
+#endif
+
+#if !defined(__NR_clock_nanosleep_time64)
+#define __NR_clock_nanosleep_time64 (__NR_SYSCALL_BASE + 407)
+#endif
+
+#if !defined(__NR_timer_gettime64)
+#define __NR_timer_gettime64 (__NR_SYSCALL_BASE + 408)
+#endif
+
+#if !defined(__NR_timer_settime64)
+#define __NR_timer_settime64 (__NR_SYSCALL_BASE + 409)
+#endif
+
+#if !defined(__NR_timerfd_gettime64)
+#define __NR_timerfd_gettime64 (__NR_SYSCALL_BASE + 410)
+#endif
+
+#if !defined(__NR_timerfd_settime64)
+#define __NR_timerfd_settime64 (__NR_SYSCALL_BASE + 411)
+#endif
+
+#if !defined(__NR_utimensat_time64)
+#define __NR_utimensat_time64 (__NR_SYSCALL_BASE + 412)
+#endif
+
+#if !defined(__NR_pselect6_time64)
+#define __NR_pselect6_time64 (__NR_SYSCALL_BASE + 413)
+#endif
+
+#if !defined(__NR_ppoll_time64)
+#define __NR_ppoll_time64 (__NR_SYSCALL_BASE + 414)
+#endif
+
+#if !defined(__NR_io_pgetevents_time64)
+#define __NR_io_pgetevents_time64 (__NR_SYSCALL_BASE + 416)
+#endif
+
+#if !defined(__NR_recvmmsg_time64)
+#define __NR_recvmmsg_time64 (__NR_SYSCALL_BASE + 417)
+#endif
+
+#if !defined(__NR_mq_timedsend_time64)
+#define __NR_mq_timedsend_time64 (__NR_SYSCALL_BASE + 418)
+#endif
+
+#if !defined(__NR_mq_timedreceive_time64)
+#define __NR_mq_timedreceive_time64 (__NR_SYSCALL_BASE + 419)
+#endif
+
+#if !defined(__NR_semtimedop_time64)
+#define __NR_semtimedop_time64 (__NR_SYSCALL_BASE + 420)
+#endif
+
+#if !defined(__NR_rt_sigtimedwait_time64)
+#define __NR_rt_sigtimedwait_time64 (__NR_SYSCALL_BASE + 421)
+#endif
+
+#if !defined(__NR_futex_time64)
+#define __NR_futex_time64 (__NR_SYSCALL_BASE + 422)
+#endif
+
+#if !defined(__NR_sched_rr_get_interval_time64)
+#define __NR_sched_rr_get_interval_time64 (__NR_SYSCALL_BASE + 423)
+#endif
+
+#if !defined(__NR_pidfd_send_signal)
+#define __NR_pidfd_send_signal (__NR_SYSCALL_BASE + 424)
+#endif
+
+#if !defined(__NR_io_uring_setup)
+#define __NR_io_uring_setup (__NR_SYSCALL_BASE + 425)
+#endif
+
+#if !defined(__NR_io_uring_enter)
+#define __NR_io_uring_enter (__NR_SYSCALL_BASE + 426)
+#endif
+
+#if !defined(__NR_io_uring_register)
+#define __NR_io_uring_register (__NR_SYSCALL_BASE + 427)
+#endif
+
+#if !defined(__NR_open_tree)
+#define __NR_open_tree (__NR_SYSCALL_BASE + 428)
+#endif
+
+#if !defined(__NR_move_mount)
+#define __NR_move_mount (__NR_SYSCALL_BASE + 429)
+#endif
+
+#if !defined(__NR_fsopen)
+#define __NR_fsopen (__NR_SYSCALL_BASE + 430)
+#endif
+
+#if !defined(__NR_fsconfig)
+#define __NR_fsconfig (__NR_SYSCALL_BASE + 431)
+#endif
+
+#if !defined(__NR_fsmount)
+#define __NR_fsmount (__NR_SYSCALL_BASE + 432)
+#endif
+
+#if !defined(__NR_fspick)
+#define __NR_fspick (__NR_SYSCALL_BASE + 433)
+#endif
+
+#if !defined(__NR_pidfd_open)
+#define __NR_pidfd_open (__NR_SYSCALL_BASE + 434)
+#endif
+
+#if !defined(__NR_clone3)
+#define __NR_clone3 (__NR_SYSCALL_BASE + 435)
+#endif
+
+#if !defined(__NR_close_range)
+#define __NR_close_range (__NR_SYSCALL_BASE + 436)
+#endif
+
+#if !defined(__NR_openat2)
+#define __NR_openat2 (__NR_SYSCALL_BASE + 437)
+#endif
+
+#if !defined(__NR_pidfd_getfd)
+#define __NR_pidfd_getfd (__NR_SYSCALL_BASE + 438)
+#endif
+
+#if !defined(__NR_faccessat2)
+#define __NR_faccessat2 (__NR_SYSCALL_BASE + 439)
+#endif
+
+#if !defined(__NR_process_madvise)
+#define __NR_process_madvise (__NR_SYSCALL_BASE + 440)
+#endif
+
+#if !defined(__NR_epoll_pwait2)
+#define __NR_epoll_pwait2 (__NR_SYSCALL_BASE + 441)
+#endif
+
+#if !defined(__NR_mount_setattr)
+#define __NR_mount_setattr (__NR_SYSCALL_BASE + 442)
+#endif
+
+#if !defined(__NR_landlock_create_ruleset)
+#define __NR_landlock_create_ruleset (__NR_SYSCALL_BASE + 444)
+#endif
+
+#if !defined(__NR_landlock_add_rule)
+#define __NR_landlock_add_rule (__NR_SYSCALL_BASE + 445)
+#endif
+
+#if !defined(__NR_landlock_restrict_self)
+#define __NR_landlock_restrict_self (__NR_SYSCALL_BASE + 446)
+#endif
+
 // ARM private syscalls.
 #if !defined(__ARM_NR_BASE)
 #define __ARM_NR_BASE (__NR_SYSCALL_BASE + 0xF0000)

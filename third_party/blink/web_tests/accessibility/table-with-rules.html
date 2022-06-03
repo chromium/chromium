@@ -3,7 +3,7 @@
     if (window.testRunner)
         testRunner.dumpAsText();
 </script>
-<body id="body">
+<body>
 
     <table id="testTable1" rules="rows"><tr><td>asdf</td><td>asdf</td></tr></table>
     <table id="testTable2" rules="all"><tr><td>asdf</td><td>asdf</td></tr></table>
@@ -18,13 +18,11 @@
     <script>
         if (window.accessibilityController) {
             var result = document.getElementById("result");
-            var body = document.getElementById("body");
-            body.focus();
 
             // these should be the tables. in this order
             // the last table should not show up as a table.
             for (var k = 0; k < 5; k++) {
-                var table = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(k);
+                var table = accessibilityController.accessibleElementById('testTable' + (k + 1));
                 result.innerText += table.allAttributes() + "\n\n";
             }
         }

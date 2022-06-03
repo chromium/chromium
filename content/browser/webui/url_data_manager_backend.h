@@ -11,14 +11,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "net/http/http_response_headers.h"
-#include "net/url_request/url_request_job_factory.h"
 
 class GURL;
 
@@ -28,19 +26,25 @@ class RefCountedMemory;
 
 namespace content {
 
-class ResourceContext;
+class BrowserContext;
 class URLDataManagerBackend;
 class URLDataSourceImpl;
 
-// URLDataManagerBackend is used internally by ChromeURLDataManager on the IO
+// URLDataManagerBackend is used internally by ChromeURLDataManager on the UI
 // thread. In most cases you can use the API in ChromeURLDataManager and ignore
-// this class. URLDataManagerBackend is owned by ResourceContext.
+// this class. URLDataManagerBackend is owned by BrowserContext.
 class URLDataManagerBackend : public base::SupportsUserData::Data {
  public:
   typedef int RequestID;
 
   URLDataManagerBackend();
+
+  URLDataManagerBackend(const URLDataManagerBackend&) = delete;
+  URLDataManagerBackend& operator=(const URLDataManagerBackend&) = delete;
+
   ~URLDataManagerBackend() override;
+
+  static URLDataManagerBackend* GetForBrowserContext(BrowserContext* context);
 
   // Adds a DataSource to the collection of data sources.
   void AddDataSource(URLDataSourceImpl* source);
@@ -73,8 +77,7 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   static std::vector<std::string> GetWebUISchemes();
 
  private:
-  typedef std::map<std::string,
-      scoped_refptr<URLDataSourceImpl> > DataSourceMap;
+  typedef std::map<std::string, scoped_refptr<URLDataSourceImpl>> DataSourceMap;
 
   // Custom sources of data, keyed by source path (e.g. "favicon").
   DataSourceMap data_sources_;
@@ -87,8 +90,6 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // and detached from the backend. This allows outstanding asynchronous queries
   // to be served and routed to the backend to which they were original issued.
   base::WeakPtrFactory<URLDataManagerBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLDataManagerBackend);
 };
 
 }  // namespace content

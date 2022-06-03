@@ -5,9 +5,7 @@
 import("//build/config/android/rules.gni")
 
 group("cpu_features") {
-  public_deps = [
-    "$android_ndk_root:cpu_features",
-  ]
+  public_deps = [ "$android_ndk_root:cpu_features" ]
 }
 
 if (enable_java_templates) {
@@ -32,16 +30,14 @@ if (enable_java_templates) {
     _resources_target = "${target_name}__resources"
     android_resources(_resources_target) {
       testonly = true
-      resource_dirs = []
+      sources = []
       android_manifest = _manifest_output_path
       android_manifest_dep = ":$_manifest_target"
     }
 
     java_group(target_name) {
       testonly = true
-      deps = [
-        ":$_resources_target",
-      ]
+      deps = [ ":$_resources_target" ]
       input_jars_paths = [ "${android_sdk}/optional/${invoker.jar_name}" ]
     }
   }
@@ -65,9 +61,6 @@ if (enable_java_templates) {
 
   android_library("android_support_chromium_java") {
     testonly = true
-    java_files = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
-  }
-  android_java_prebuilt("android_gcm_java") {
-    jar_path = "//third_party/android_sdk/public/extras/google/gcm/gcm-client/dist/gcm.jar"
+    sources = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
   }
 }

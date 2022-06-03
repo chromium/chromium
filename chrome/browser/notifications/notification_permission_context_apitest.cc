@@ -4,11 +4,11 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/check.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -25,8 +25,11 @@ class ExtensionPermissionUpdater : public ExtensionRegistryObserver {
  public:
   ExtensionPermissionUpdater(Profile* profile, bool enabled)
       : profile_(profile), enabled_(enabled) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
   }
+  ExtensionPermissionUpdater(const ExtensionPermissionUpdater&) = delete;
+  ExtensionPermissionUpdater& operator=(const ExtensionPermissionUpdater&) =
+      delete;
 
   // ExtensionRegistryObserver overrides:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -47,10 +50,8 @@ class ExtensionPermissionUpdater : public ExtensionRegistryObserver {
   Profile* profile_;
   bool enabled_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPermissionUpdater);
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 using NotificationPermissionContextApiTest = extensions::ExtensionApiTest;
@@ -60,8 +61,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionContextApiTest, Granted) {
   // report permission status when permission has been granted.
   ExtensionPermissionUpdater updater(profile(), /* enabled= */ true);
 
-  ASSERT_TRUE(
-      RunExtensionTestWithArg("notifications/permissions_test", "granted"))
+  ASSERT_TRUE(RunExtensionTest("notifications/permissions_test",
+                               {.custom_arg = "granted"}))
       << message_;
 }
 
@@ -70,8 +71,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionContextApiTest, Denied) {
   // report permission status when permission has been denied.
   ExtensionPermissionUpdater updater(profile(), /* enabled= */ false);
 
-  ASSERT_TRUE(
-      RunExtensionTestWithArg("notifications/permissions_test", "denied"))
+  ASSERT_TRUE(RunExtensionTest("notifications/permissions_test",
+                               {.custom_arg = "denied"}))
       << message_;
 }
 

@@ -9,7 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -18,11 +20,14 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/components/file_handler_manager.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -30,17 +35,13 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
-#include "extensions/grit/extensions_browser_resources.h"
-#include "skia/ext/image_operations.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if defined(OS_WIN)
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
-#include "ui/gfx/icon_util.h"
+#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "chrome/common/chrome_switches.h"
 #endif
 
@@ -50,39 +51,14 @@ namespace web_app {
 
 namespace {
 
-#if defined(OS_MACOSX)
-const int kDesiredSizes[] = {16, 32, 128, 256, 512};
-const size_t kNumDesiredSizes = base::size(kDesiredSizes);
-#elif defined(OS_LINUX)
-// Linux supports icons of any size. FreeDesktop Icon Theme Specification states
-// that "Minimally you should install a 48x48 icon in the hicolor theme."
-const int kDesiredSizes[] = {16, 32, 48, 128, 256, 512};
-const size_t kNumDesiredSizes = base::size(kDesiredSizes);
-#elif defined(OS_WIN)
-const int* kDesiredSizes = IconUtil::kIconDimensions;
-const size_t kNumDesiredSizes = IconUtil::kNumIconDimensions;
-#else
-const int kDesiredSizes[] = {32};
-const size_t kNumDesiredSizes = base::size(kDesiredSizes);
-#endif
-
 void OnImageLoaded(std::unique_ptr<ShortcutInfo> shortcut_info,
                    ShortcutInfoCallback callback,
                    gfx::ImageFamily image_family) {
   // If the image failed to load (e.g. if the resource being loaded was empty)
   // use the standard application icon.
   if (image_family.empty()) {
-    gfx::Image default_icon =
-        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-            IDR_APP_DEFAULT_ICON);
-    int size = kDesiredSizes[kNumDesiredSizes - 1];
-    SkBitmap bmp = skia::ImageOperations::Resize(
-        *default_icon.ToSkBitmap(), skia::ImageOperations::RESIZE_BEST, size,
-        size);
-    gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bmp);
-    // We are on the UI thread, and this image is needed from the FILE thread,
-    // for creating shortcut icon files.
-    image_skia.MakeThreadSafe();
+    int size = GetDesiredIconSizesForShortcut().back();
+    gfx::ImageSkia image_skia = CreateDefaultApplicationIcon(size);
     shortcut_info->favicon.Add(gfx::Image(image_skia));
   } else {
     shortcut_info->favicon = std::move(image_family);
@@ -92,7 +68,7 @@ void OnImageLoaded(std::unique_ptr<ShortcutInfo> shortcut_info,
 }
 
 void UpdateAllShortcutsForShortcutInfo(
-    const base::string16& old_app_title,
+    const std::u16string& old_app_title,
     base::OnceClosure callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
@@ -103,6 +79,25 @@ void UpdateAllShortcutsForShortcutInfo(
       std::move(shortcut_info), std::move(callback));
 }
 
+using AppCallbackMap = base::flat_map<AppId, std::vector<base::OnceClosure>>;
+AppCallbackMap& GetShortcutsDeletedCallbackMap() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<AppCallbackMap> map;
+  return *map;
+}
+
+void ShortcutsDeleted(const AppId& app_id, bool /*shortcut_deleted*/) {
+  auto& map = GetShortcutsDeletedCallbackMap();
+  auto it = map.find(app_id);
+  if (it == map.end())
+    return;
+  std::vector<base::OnceClosure> callbacks = std::move(it->second);
+  map.erase(it);
+  for (base::OnceClosure& callback : callbacks) {
+    std::move(callback).Run();
+  }
+}
+
 }  // namespace
 
 void CreateShortcutsWithInfo(ShortcutCreationReason reason,
@@ -110,6 +105,10 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
                              CreateShortcutsCallback callback,
                              std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (shortcut_info == nullptr) {
+    std::move(callback).Run(/*created_shortcut=*/false);
+    return;
+  }
 
   // If the shortcut is for an application shortcut with the new bookmark app
   // flow disabled, there will be no corresponding extension.
@@ -134,7 +133,14 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
         extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
-    if (!extension) {
+    bool is_app_installed = false;
+    auto* app_provider = WebAppProvider::GetForWebApps(profile);
+    if (app_provider &&
+        app_provider->registrar().IsInstalled(shortcut_info->extension_id)) {
+      is_app_installed = true;
+    }
+
+    if (!extension && !is_app_installed) {
       std::move(callback).Run(false /* created_shortcut */);
       return;
     }
@@ -154,21 +160,21 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
       ShortcutInfoForExtensionAndProfile(extension, profile));
 
   std::vector<extensions::ImageLoader::ImageRepresentation> info_list;
-  for (size_t i = 0; i < kNumDesiredSizes; ++i) {
-    int size = kDesiredSizes[i];
+
+  for (int size : GetDesiredIconSizesForShortcut()) {
     extensions::ExtensionResource resource =
         extensions::IconsInfo::GetIconResource(extension, size,
                                                ExtensionIconSet::MATCH_EXACTLY);
     if (!resource.empty()) {
       info_list.push_back(extensions::ImageLoader::ImageRepresentation(
           resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-          gfx::Size(size, size), ui::SCALE_FACTOR_100P));
+          gfx::Size(size, size),
+          GetScaleForResourceScaleFactor(ui::k100Percent)));
     }
   }
 
   if (info_list.empty()) {
-    size_t i = kNumDesiredSizes - 1;
-    int size = kDesiredSizes[i];
+    int size = GetDesiredIconSizesForShortcut().back();
 
     // If there is no icon at the desired sizes, we will resize what we can get.
     // Making a large icon smaller is preferred to making a small icon larger,
@@ -182,7 +188,8 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
     }
     info_list.push_back(extensions::ImageLoader::ImageRepresentation(
         resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-        gfx::Size(size, size), ui::SCALE_FACTOR_100P));
+        gfx::Size(size, size),
+        GetScaleForResourceScaleFactor(ui::k100Percent)));
   }
 
   // |info_list| may still be empty at this point, in which case
@@ -190,14 +197,15 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
   // image and exit immediately.
   extensions::ImageLoader::Get(profile)->LoadImageFamilyAsync(
       extension, info_list,
-      base::BindOnce(&OnImageLoaded, base::Passed(&shortcut_info),
+      base::BindOnce(&OnImageLoaded, std::move(shortcut_info),
                      std::move(callback)));
 }
 
 std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
     const extensions::Extension* app,
     Profile* profile) {
-  std::unique_ptr<ShortcutInfo> shortcut_info(new ShortcutInfo);
+  auto shortcut_info = std::make_unique<ShortcutInfo>();
+
   shortcut_info->extension_id = app->id();
   shortcut_info->url = extensions::AppLaunchInfo::GetLaunchWebURL(app);
   shortcut_info->title = base::UTF8ToUTF16(app->name());
@@ -206,12 +214,21 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
   shortcut_info->profile_name =
       profile->GetPrefs()->GetString(prefs::kProfileName);
   shortcut_info->version_for_display = app->GetVersionForDisplay();
-  if (const auto* info = extensions::FileHandlers::GetFileHandlers(app)) {
-    shortcut_info->file_handler_extensions =
-        web_app::GetFileExtensionsFromFileHandlers(*info);
-    shortcut_info->file_handler_mime_types =
-        web_app::GetMimeTypesFromFileHandlers(*info);
+
+  // File Handlers should only be included in bookmark apps.
+  if (app->from_bookmark()) {
+    shortcut_info->is_multi_profile = true;
+    OsIntegrationManager& os_integration_manager =
+        WebAppProvider::GetForWebApps(profile)->os_integration_manager();
+    if (const auto* file_handlers =
+            os_integration_manager.GetEnabledFileHandlers(app->id())) {
+      shortcut_info->file_handler_extensions =
+          apps::GetFileExtensionsFromFileHandlers(*file_handlers);
+      shortcut_info->file_handler_mime_types =
+          apps::GetMimeTypesFromFileHandlers(*file_handlers);
+    }
   }
+
   return shortcut_info;
 }
 
@@ -220,7 +237,8 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              const extensions::Extension* extension) {
   // Shortcuts should never be created for component apps, or for apps that
   // cannot be shown in the launcher.
-  if (extension->location() == extensions::Manifest::COMPONENT ||
+  if (extension->location() ==
+          extensions::mojom::ManifestLocation::kComponent ||
       !extensions::ui_util::CanDisplayInAppLauncher(extension, profile)) {
     return false;
   }
@@ -228,14 +246,6 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
   // Always create shortcuts for v2 packaged apps.
   if (extension->is_platform_app())
     return true;
-
-#if defined(OS_MACOSX)
-  if (extension->is_hosted_app() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableHostedAppShimCreation)) {
-    return false;
-  }
-#endif
 
   // Allow shortcut creation if it was explicitly requested by the user (i.e. is
   // not automatic).
@@ -259,6 +269,20 @@ void CreateShortcuts(ShortcutCreationReason reason,
                                        locations, std::move(callback)));
 }
 
+void CreateShortcutsForWebApp(ShortcutCreationReason reason,
+                              const ShortcutLocations& locations,
+                              Profile* profile,
+                              const std::string& app_id,
+                              CreateShortcutsCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebAppProvider::GetForWebApps(profile)
+      ->os_integration_manager()
+      .GetShortcutInfoForApp(
+          app_id, base::BindOnce(&CreateShortcutsWithInfo, reason, locations,
+                                 std::move(callback)));
+}
+
 void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -266,12 +290,18 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
       ShortcutInfoForExtensionAndProfile(app, profile));
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTask(
-      base::BindOnce(&internals::DeletePlatformShortcuts, shortcut_data_dir),
-      std::move(shortcut_info));
+  internals::ScheduleDeletePlatformShortcuts(
+      shortcut_data_dir, std::move(shortcut_info),
+      base::BindOnce(ShortcutsDeleted, app->id()));
 }
 
-void UpdateAllShortcuts(const base::string16& old_app_title,
+void WaitForExtensionShortcutsDeleted(const AppId& app_id,
+                                      base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetShortcutsDeletedCallbackMap()[app_id].push_back(std::move(callback));
+}
+
+void UpdateAllShortcuts(const std::u16string& old_app_title,
                         Profile* profile,
                         const extensions::Extension* app,
                         base::OnceClosure callback) {
@@ -282,7 +312,7 @@ void UpdateAllShortcuts(const base::string16& old_app_title,
                                        old_app_title, std::move(callback)));
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   std::move(callback).Run();
 }

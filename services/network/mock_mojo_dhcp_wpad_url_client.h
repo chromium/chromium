@@ -17,6 +17,11 @@ namespace network {
 class MockMojoDhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
  public:
   MockMojoDhcpWpadUrlClient(const std::string& pac_url);
+
+  MockMojoDhcpWpadUrlClient(const MockMojoDhcpWpadUrlClient&) = delete;
+  MockMojoDhcpWpadUrlClient& operator=(const MockMojoDhcpWpadUrlClient&) =
+      delete;
+
   ~MockMojoDhcpWpadUrlClient() override;
 
   // Calls |callback| with |pac_url_|.
@@ -30,7 +35,6 @@ class MockMojoDhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
 
  private:
   std::string pac_url_;
-  DISALLOW_COPY_AND_ASSIGN(MockMojoDhcpWpadUrlClient);
 };
 
 }  // namespace network

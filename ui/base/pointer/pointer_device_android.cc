@@ -5,7 +5,7 @@
 #include "ui/base/pointer/pointer_device.h"
 
 #include "base/android/jni_array.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/base/ui_base_jni_headers/TouchDevice_jni.h"
 
 using base::android::AttachCurrentThread;

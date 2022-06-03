@@ -12,13 +12,13 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/stack_container.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -129,6 +129,9 @@ struct VisitedLinkWriter::LoadFromFileResult
                      int32_t used_count,
                      uint8_t salt[LINK_SALT_LENGTH]);
 
+  LoadFromFileResult(const LoadFromFileResult&) = delete;
+  LoadFromFileResult& operator=(const LoadFromFileResult&) = delete;
+
   base::ScopedFILE file;
   base::MappedReadOnlyRegion hash_table_memory;
   int32_t num_entries;
@@ -138,8 +141,6 @@ struct VisitedLinkWriter::LoadFromFileResult
  private:
   friend class base::RefCountedThreadSafe<LoadFromFileResult>;
   virtual ~LoadFromFileResult();
-
-  DISALLOW_COPY_AND_ASSIGN(LoadFromFileResult);
 };
 
 VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
@@ -181,6 +182,9 @@ class VisitedLinkWriter::TableBuilder
  public:
   TableBuilder(VisitedLinkWriter* writer, const uint8_t salt[LINK_SALT_LENGTH]);
 
+  TableBuilder(const TableBuilder&) = delete;
+  TableBuilder& operator=(const TableBuilder&) = delete;
+
   // Called on the main thread when the writer is being destroyed. This will
   // prevent a crash when the query completes and the writer is no longer
   // around. We can not actually do anything but mark this fact, since the
@@ -209,8 +213,6 @@ class VisitedLinkWriter::TableBuilder
 
   // Stores the fingerprints we computed on the background thread.
   VisitedLinkCommon::Fingerprints fingerprints_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableBuilder);
 };
 
 // VisitedLinkWriter ----------------------------------------------------------
@@ -257,12 +259,13 @@ VisitedLinkWriter::~VisitedLinkWriter() {
     // state. On the next start table will be rebuilt.
     base::FilePath filename;
     GetDatabaseFileName(&filename);
-    PostIOTask(FROM_HERE, base::BindOnce(IgnoreResult(&base::DeleteFile),
-                                         filename, false));
+    PostIOTask(FROM_HERE,
+               base::BindOnce(base::GetDeleteFileCallback(), filename));
   }
 }
 
 bool VisitedLinkWriter::Init() {
+  TRACE_EVENT0("browser", "VisitedLinkWriter::Init");
   // Create the temporary table. If the table is rebuilt that temporary table
   // will be became the main table.
   // The salt must be generated before the table so that it can be copied to
@@ -620,8 +623,8 @@ void VisitedLinkWriter::LoadFromFile(const base::FilePath& filename,
   scoped_refptr<LoadFromFileResult> load_from_file_result;
   bool success = LoadApartFromFile(filename, &load_from_file_result);
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(std::move(callback), success, load_from_file_result));
 }
 
@@ -1143,8 +1146,8 @@ void VisitedLinkWriter::TableBuilder::OnComplete(bool success) {
 
   // Marshal to the main thread to notify the VisitedLinkWriter that the
   // rebuild is complete.
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&TableBuilder::OnCompleteMainThread, this));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&TableBuilder::OnCompleteMainThread, this));
 }
 
 void VisitedLinkWriter::TableBuilder::OnCompleteMainThread() {

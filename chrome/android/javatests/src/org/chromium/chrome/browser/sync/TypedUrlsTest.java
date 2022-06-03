@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.support.test.filters.LargeTest;
 import android.util.Pair;
 
+import androidx.test.filters.LargeTest;
+
+import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -16,8 +18,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.ModelType;
@@ -25,14 +30,11 @@ import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.components.sync.protocol.TypedUrlSpecifics;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Test suite for the typed URLs sync data type.
@@ -67,7 +69,7 @@ public class TypedUrlsTest {
 
     @Before
     public void setUp() throws Exception {
-        mSyncTestRule.setUpTestAccountAndSignIn();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         // Make sure the initial state is clean.
         assertClientTypedUrlCount(0);
         assertServerTypedUrlCountWithName(0, URL);
@@ -170,29 +172,26 @@ public class TypedUrlsTest {
     }
 
     private void waitForClientTypedUrlCount(int count) {
-        CriteriaHelper.pollInstrumentationThread(Criteria.equals(count, new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), TYPED_URLS_TYPE)
-                        .size();
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(
+                        SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), TYPED_URLS_TYPE)
+                                .size(),
+                        Matchers.is(count));
+            } catch (JSONException ex) {
+                throw new CriteriaNotSatisfiedException(ex);
             }
-        }), SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
+        }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
 
     private void waitForServerTypedUrlCountWithName(final int count, final String name) {
         CriteriaHelper.pollInstrumentationThread(
-                new Criteria("Expected " + count + " server typed URLs with name " + name + ".") {
-                    @Override
-                    public boolean isSatisfied() {
-                        try {
-                            return mSyncTestRule.getFakeServerHelper()
-                                    .verifyEntityCountByTypeAndName(
-                                            count, ModelType.TYPED_URLS, name);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                ()
+                        -> {
+                    return mSyncTestRule.getFakeServerHelper().verifyEntityCountByTypeAndName(
+                            count, ModelType.TYPED_URLS, name);
                 },
+                "Expected " + count + " server typed URLs with name " + name + ".",
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
 

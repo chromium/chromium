@@ -10,7 +10,7 @@
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
- * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
  *
  ************************************************************************
@@ -92,7 +92,7 @@
 
 /*
  * In ANSI/IEEE 754-1985 64-bits double format numbers have the
- * following properties (amoungst others)
+ * following properties (amongst others)
  *
  *   o FLT_RADIX == 2: binary encoding
  *   o DBL_MAX_EXP == 1024: 11 bits exponent, where one bit is used
@@ -123,8 +123,8 @@ static TRIO_CONST char rcsid[] = "@(#)$Id$";
  * integer, becomes 0x0706050403020100 (we could have used a 64-bit
  * integer value instead of a double, but not all platforms supports
  * that type). The value is automatically encoded with the correct
- * endianess by the compiler, which means that we can support any
- * kind of endianess. The individual bytes are then used as an index
+ * endianness by the compiler, which means that we can support any
+ * kind of endianness. The individual bytes are then used as an index
  * for the IEEE 754 bit-patterns and masks.
  */
 #define TRIO_DOUBLE_INDEX(x) (((unsigned char *)&internalEndianMagic)[7-(x)])

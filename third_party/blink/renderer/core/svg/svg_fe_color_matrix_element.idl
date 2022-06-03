@@ -26,7 +26,8 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEColorMatrixElement
 
 [
-    DoNotCheckConstants
+    DoNotCheckConstants,
+    Exposed=Window
 ] interface SVGFEColorMatrixElement : SVGElement {
     // Color Matrix Types
     [MeasureAs=SVG1DOMFilter] const unsigned short SVG_FECOLORMATRIX_TYPE_UNKNOWN = 0;

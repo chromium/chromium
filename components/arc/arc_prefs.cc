@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_supervision_transition.h"
+#include "components/arc/session/arc_management_transition.h"
 
 #include <string>
 
@@ -38,7 +38,7 @@ const char kArcDataRemoveRequested[] = "arc.data.remove_requested";
 // TODO(hidehiko): For historical reason, now the preference name does not
 // directly reflect "Google Play Store". We should get and set the values via
 // utility methods (IsArcPlayStoreEnabledForProfile() and
-// SetArcPlayStoreEnabledForProfile()) in chrome/browser/chromeos/arc/arc_util.
+// SetArcPlayStoreEnabledForProfile()) in chrome/browser/ash/arc/arc_util.h.
 const char kArcEnabled[] = "arc.enabled";
 // A preference to control if ARC can access removable media on the host side.
 // TODO(fukino): Remove this pref once "Play Store applications can't access
@@ -57,12 +57,12 @@ const char kArcVisibleExternalStorages[] = "arc.visible_external_storages";
 // |kArcInitialSettingsPending| can be different and
 // |kArcInitialSettingsPending| may even be handled in the next user session.
 const char kArcInitialSettingsPending[] = "arc.initial.settings.pending";
+// A preference that indicates that a management transition is necessary, in
+// response to account management state change.
+const char kArcManagementTransition[] = "arc.management_transition";
 // A preference that indicated whether Android reported it's compliance status
 // with provided policies. This is used only as a signal to start Android kiosk.
 const char kArcPolicyComplianceReported[] = "arc.policy_compliance_reported";
-// A preference that indicates that a supervision transition is necessary, in
-// response to a CHILD_ACCOUNT transiting to a REGULAR_ACCOUNT or vice-versa.
-const char kArcSupervisionTransition[] = "arc.supervision_transition";
 // A preference that indicates that user accepted PlayStore terms.
 const char kArcTermsAccepted[] = "arc.terms.accepted";
 // A preference that indicates that ToS was shown in OOBE flow.
@@ -91,9 +91,6 @@ const char kArcPushInstallAppsRequested[] = "arc.push_install.requested";
 // A preference that holds the list of apps that the admin requested to be
 // push-installed, but which have not been successfully installed yet.
 const char kArcPushInstallAppsPending[] = "arc.push_install.pending";
-// A preference to keep the ro.serialno and ro.boot.serialno Android properties
-// used to start ARC.
-const char kArcSerialNumber[] = "arc.serialno";
 // A preference to keep deferred requests of setting notifications enabled flag.
 const char kArcSetNotificationsEnabledDeferred[] =
     "arc.set_notifications_enabled_deferred";
@@ -106,14 +103,30 @@ const char kArcSkippedReportingNotice[] = "arc.skipped.reporting.notice";
 // the user directory (i.e., the user finished required migration.)
 const char kArcCompatibleFilesystemChosen[] =
     "arc.compatible_filesystem.chosen";
-// Integer pref indicating the ecryptfs to ext4 migration strategy. One of
-// options: forbidden = 0, migrate = 1, wipe = 2 or minimal migrate = 4.
-const char kEcryptfsMigrationStrategy[] = "ecryptfs_migration_strategy";
 // Preferences for storing engagement time data, as per
 // GuestOsEngagementMetrics.
 const char kEngagementPrefsPrefix[] = "arc.metrics";
 
+// A boolean preference that indicates ARC management state.
+const char kArcIsManaged[] = "arc.is_managed";
+
+// A counter preference that indicates number of ARC resize-lock splash screen.
+const char kArcShowResizeLockSplashScreenLimits[] =
+    "arc.show_resize_lock_splash_screen_limits";
+
+// A preference to know whether or not the Arc.PlayStoreLaunchWithinAWeek
+// metric can been recorded.
+const char kArcPlayStoreLaunchMetricCanBeRecorded[] =
+    "arc.playstore_launched_by_user";
+
 // ======== LOCAL STATE PREFS ========
+
+// A boolean preference that indicates whether this device has run with the
+// native bridge 64 bit support experiment enabled. Persisting value in local
+// state, rather than in a user profile, is required as it needs to be read
+// whenever ARC mini-container is started.
+const char kNativeBridge64BitSupportExperimentEnabled[] =
+    "arc.native_bridge_64bit_support_experiment";
 
 // A dictionary preference that keeps track of stability metric values, which is
 // maintained by StabilityMetricsManager. Persisting values in local state is
@@ -121,7 +134,23 @@ const char kEngagementPrefsPrefix[] = "arc.metrics";
 // crash.
 const char kStabilityMetrics[] = "arc.metrics.stability";
 
+// A preference to keep the salt for generating ro.serialno and ro.boot.serialno
+// Android properties. Used only in ARCVM.
+const char kArcSerialNumberSalt[] = "arc.serialno_salt";
+
+// A preference to keep time intervals when snapshotting is allowed.
+const char kArcSnapshotHours[] = "arc.snapshot_hours";
+
+// A preferece to keep ARC snapshot related info in dictionary.
+const char kArcSnapshotInfo[] = "arc.snapshot";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  // Sorted in lexicographical order.
+  registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
+  registry->RegisterDictionaryPref(kArcSnapshotHours);
+  registry->RegisterDictionaryPref(kArcSnapshotInfo);
+  registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
+                                false);
   registry->RegisterDictionaryPref(kStabilityMetrics);
 }
 
@@ -140,12 +169,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcBackupRestoreEnabled, false);
   registry->RegisterBooleanPref(kArcLocationServiceEnabled, false);
 
-  // This is used to decide whether migration from ecryptfs to ext4 is allowed.
-  registry->RegisterIntegerPref(prefs::kEcryptfsMigrationStrategy, 0);
-
   registry->RegisterIntegerPref(
-      kArcSupervisionTransition,
-      static_cast<int>(ArcSupervisionTransition::NO_TRANSITION));
+      kArcManagementTransition,
+      static_cast<int>(ArcManagementTransition::NO_TRANSITION));
+
+  registry->RegisterBooleanPref(kArcIsManaged, false);
 
   guest_os::prefs::RegisterEngagementProfilePrefs(registry,
                                                   kEngagementPrefsPrefix);
@@ -162,7 +190,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kArcFastAppReinstallPackages);
   registry->RegisterBooleanPref(kArcPolicyComplianceReported, false);
   registry->RegisterBooleanPref(kArcProvisioningInitiatedFromOobe, false);
-  registry->RegisterStringPref(kArcSerialNumber, std::string());
   registry->RegisterBooleanPref(kArcSignedIn, false);
   registry->RegisterBooleanPref(kArcSkippedReportingNotice, false);
   registry->RegisterBooleanPref(kArcTermsAccepted, false);

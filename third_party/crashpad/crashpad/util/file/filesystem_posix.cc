@@ -32,7 +32,7 @@ bool FileModificationTime(const base::FilePath& path, timespec* mtime) {
     return false;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   *mtime = st.st_mtimespec;
 #elif defined(OS_ANDROID)
   // This is needed to compile with traditional NDK headers.

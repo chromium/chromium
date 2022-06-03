@@ -24,6 +24,8 @@
 #ifndef THIRD_PARTY_APPLE_APSL_MALLOC_H_
 #define THIRD_PARTY_APPLE_APSL_MALLOC_H_
 
+#include <mach/boolean.h>
+
 typedef struct _ChromeMallocZone {
     /* Only zone implementors should depend on the layout of this structure;
     Regular callers should use the access functions below */
@@ -53,6 +55,13 @@ typedef struct _ChromeMallocZone {
 
     /* Empty out caches in the face of memory pressure. The callback may be NULL. Present in version >= 8. */
     size_t 	(*pressure_relief)(struct _malloc_zone_t *zone, size_t goal);
+
+    /*
+     * Checks whether an address might belong to the zone. May be NULL. Present in version >= 10.
+     * False positives are allowed (e.g. the pointer was freed, or it's in zone space that has
+     * not yet been allocated. False negatives are not allowed.
+     */
+    boolean_t (*claimed_address)(struct _malloc_zone_t *zone, void *ptr);
 } ChromeMallocZone;
 
 #endif  // THIRD_PARTY_APPLE_APSL_MALLOC_H_

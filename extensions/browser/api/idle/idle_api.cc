@@ -34,14 +34,17 @@ int ClampThreshold(int threshold) {
 IdleQueryStateFunction::~IdleQueryStateFunction() = default;
 
 ExtensionFunction::ResponseAction IdleQueryStateFunction::Run() {
-  int threshold = 0;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &threshold));
-  threshold = ClampThreshold(threshold);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& threshold_value = args()[0];
+  EXTENSION_FUNCTION_VALIDATE(threshold_value.is_int());
+  int threshold = ClampThreshold(threshold_value.GetInt());
 
   ui::IdleState state =
-      IdleManagerFactory::GetForBrowserContext(context_)->QueryState(threshold);
+      IdleManagerFactory::GetForBrowserContext(browser_context())
+          ->QueryState(threshold);
 
-  return RespondNow(OneArgument(IdleManager::CreateIdleValue(state)));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(IdleManager::CreateIdleValue(state))));
 }
 
 void IdleQueryStateFunction::IdleStateCallback(ui::IdleState state) {
@@ -50,12 +53,13 @@ void IdleQueryStateFunction::IdleStateCallback(ui::IdleState state) {
 IdleSetDetectionIntervalFunction::~IdleSetDetectionIntervalFunction() = default;
 
 ExtensionFunction::ResponseAction IdleSetDetectionIntervalFunction::Run() {
-  int threshold = 0;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &threshold));
-  threshold = ClampThreshold(threshold);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& threshold_value = args()[0];
+  EXTENSION_FUNCTION_VALIDATE(threshold_value.is_int());
+  int threshold = ClampThreshold(threshold_value.GetInt());
 
-  IdleManagerFactory::GetForBrowserContext(context_)->SetThreshold(
-      extension_id(), threshold);
+  IdleManagerFactory::GetForBrowserContext(browser_context())
+      ->SetThreshold(extension_id(), threshold);
 
   return RespondNow(NoArguments());
 }
@@ -63,9 +67,9 @@ ExtensionFunction::ResponseAction IdleSetDetectionIntervalFunction::Run() {
 IdleGetAutoLockDelayFunction::~IdleGetAutoLockDelayFunction() = default;
 
 ExtensionFunction::ResponseAction IdleGetAutoLockDelayFunction::Run() {
-  const int delay = IdleManagerFactory::GetForBrowserContext(context_)
+  const int delay = IdleManagerFactory::GetForBrowserContext(browser_context())
                         ->GetAutoLockDelay()
                         .InSeconds();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(delay)));
+  return RespondNow(OneArgument(base::Value(delay)));
 }
 }  // namespace extensions

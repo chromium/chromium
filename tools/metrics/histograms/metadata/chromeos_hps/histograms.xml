@@ -1,0 +1,64 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of hps (go/cros-hps) histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ChromeOS.HPS.TurnOn.Result" enum="HpsTurnOnResult"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Reports the result of each attempt to turn the hps device on.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.HPS.TurnOn.{Result}.Duration" units="ms"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Measures the time it took to turn on the device, when the result was
+    {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failed"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.HPS.Update.{Stage}.Duration" units="ms"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>Measures the time it took to send an {Stage} update.</summary>
+  <token key="Stage">
+    <variant name="Mcu"/>
+    <variant name="Spi"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

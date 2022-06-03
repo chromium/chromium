@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Changing a named container invalidates relevant descendants
+PASS Changing container-name invalidates relevant descendants
+Harness: the test ran to completion.
+

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +36,8 @@ class TestConfiguration : public Configuration {
   explicit TestConfiguration(const wchar_t* command_line) {
     EXPECT_TRUE(ParseCommandLine(command_line));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestConfiguration);
+  TestConfiguration(const TestConfiguration&) = delete;
+  TestConfiguration& operator=(const TestConfiguration&) = delete;
 };
 
 }  // namespace
@@ -47,9 +45,10 @@ class TestConfiguration : public Configuration {
 class UpdaterInstallerConfigurationTest : public ::testing::Test {
  protected:
   UpdaterInstallerConfigurationTest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdaterInstallerConfigurationTest);
+  UpdaterInstallerConfigurationTest(const UpdaterInstallerConfigurationTest&) =
+      delete;
+  UpdaterInstallerConfigurationTest& operator=(
+      const UpdaterInstallerConfigurationTest&) = delete;
 };
 
 // Test that the operation type is CLEANUP iff --cleanup is on the cmdline.

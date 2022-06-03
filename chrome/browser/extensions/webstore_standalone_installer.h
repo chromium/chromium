@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/common/extensions/webstore_install_result.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace base {
@@ -54,6 +52,11 @@ class WebstoreStandaloneInstaller
   WebstoreStandaloneInstaller(const std::string& webstore_item_id,
                               Profile* profile,
                               Callback callback);
+
+  WebstoreStandaloneInstaller(const WebstoreStandaloneInstaller&) = delete;
+  WebstoreStandaloneInstaller& operator=(const WebstoreStandaloneInstaller&) =
+      delete;
+
   void BeginInstall();
 
  protected:
@@ -126,7 +129,8 @@ class WebstoreStandaloneInstaller
   virtual std::unique_ptr<WebstoreInstaller::Approval> CreateApproval() const;
 
   // Called once the install prompt has finished.
-  virtual void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  virtual void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // Accessors to be used by subclasses.
   bool show_user_count() const { return show_user_count_; }
@@ -165,12 +169,14 @@ class WebstoreStandaloneInstaller
   // informs our delegate of success/failure.
 
   // WebstoreDataFetcherDelegate interface implementation.
-  void OnWebstoreRequestFailure() override;
+  void OnWebstoreRequestFailure(const std::string& extension_id) override;
 
   void OnWebstoreResponseParseSuccess(
+      const std::string& extension_id,
       std::unique_ptr<base::DictionaryValue> webstore_data) override;
 
-  void OnWebstoreResponseParseFailure(const std::string& error) override;
+  void OnWebstoreResponseParseFailure(const std::string& extension_id,
+                                      const std::string& error) override;
 
   // WebstoreInstallHelper::Delegate interface implementation.
   void OnWebstoreParseSuccess(
@@ -221,8 +227,6 @@ class WebstoreStandaloneInstaller
   // Created by ShowInstallUI() when a prompt is shown (if
   // the implementor returns a non-NULL in CreateInstallPrompt()).
   scoped_refptr<Extension> localized_extension_for_display_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebstoreStandaloneInstaller);
 };
 
 }  // namespace extensions

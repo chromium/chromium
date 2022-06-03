@@ -26,8 +26,6 @@ const char kRemotingService[] = "chromoting";
 
 // OAuth scopes.
 const char kOAuth1LoginScope[] = "https://www.google.com/accounts/OAuthLogin";
-const char kOAuthWrapBridgeUserInfoScope[] =
-    "https://www.googleapis.com/auth/userinfo.email";
 
 // Service/scope names for device management (cloud-based policy) server.
 const char kDeviceManagementServiceOAuth[] =
@@ -43,6 +41,14 @@ const char kChromeSyncOAuth2Scope[] =
 const char kChromeSyncSupervisedOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromesync_playpen";
 
+// OAuth2 scope for access to Kid Management API.
+const char kKidManagementOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.management";
+
+// OAuth2 scope for parental consent logging for secondary account addition.
+const char kKidManagementPrivilegedOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.management.privileged";
+
 // OAuth2 scope for access to Google Family Link Supervision Setup.
 const char kKidsSupervisionSetupChildOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.supervision.setup.child";
@@ -51,25 +57,117 @@ const char kKidsSupervisionSetupChildOAuth2Scope[] =
 const char kGoogleTalkOAuth2Scope[] =
     "https://www.googleapis.com/auth/googletalk";
 
+// OAuth2 scope for access to Google account information.
 const char kGoogleUserInfoEmail[] =
     "https://www.googleapis.com/auth/userinfo.email";
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
-// OAuth scope for access to the people API (read-only).
+// OAuth2 scope for access to the parent approval widget.
+const char kParentApprovalOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kids.parentapproval";
+
+// OAuth2 scope for access to the people API (read-only).
 const char kPeopleApiReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readonly";
 
-// OAuth scope for access to the Reauth flow.
+// OAuth2 scope for access to the programmatic challenge API (read-only).
+const char kProgrammaticChallengeOAuth2Scope[] =
+    "https://www.googleapis.com/auth/accounts.programmaticchallenge";
+
+// OAuth2 scope for access to the Reauth flow.
 const char kAccountsReauthOAuth2Scope[] =
     "https://www.googleapis.com/auth/accounts.reauth";
 
-// OAuth scope for access to audit recording (ARI).
+// OAuth2 scope for access to audit recording (ARI).
 const char kAuditRecordingOAuth2Scope[] =
     "https://www.googleapis.com/auth/auditrecording-pa";
 
-// OAuth scope for access to clear cut logs.
+// OAuth2 scope for access to clear cut logs.
 const char kClearCutOAuth2Scope[] = "https://www.googleapis.com/auth/cclog";
+
+// OAuth2 scope for FCM, the Firebase Cloud Messaging service.
+const char kFCMOAuthScope[] =
+    "https://www.googleapis.com/auth/firebase.messaging";
+
+// OAuth2 scope for access to Tachyon api.
+const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
+
+// OAuth2 scope for access to the Photos API.
+const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
+
+// OAuth2 scope for access to Cast backdrop API.
+const char kCastBackdropOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast.backdrop";
+
+// OAuth scope for access to Cloud Translation API.
+const char kCloudTranslationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloud-translation";
+
+// OAuth2 scope for access to passwords leak checking API.
+const char kPasswordsLeakCheckOAuth2Scope[] =
+    "https://www.googleapis.com/auth/identity.passwords.leak.check";
+
+// OAuth2 scope for access to Chrome safe browsing API.
+const char kChromeSafeBrowsingOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-safe-browsing";
+
+// OAuth2 scope for access to kid permissions by URL.
+const char kClassifyUrlKidPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.permission";
+const char kKidFamilyReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.family.readonly";
+
+// OAuth2 scope for access to payments.
+const char kPaymentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/wallet.chrome";
+
+const char kCryptAuthOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cryptauth";
+
+// OAuth2 scope for access to Drive.
+const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
+
+// The scope required for an access token in order to query ItemSuggest.
+const char kDriveReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.readonly";
+
+// OAuth2 scope for access to Assistant SDK.
+const char kAssistantOAuth2Scope[] =
+    "https://www.googleapis.com/auth/assistant-sdk-prototype";
+
+// OAuth2 scope for access to nearby devices (fast pair) APIs.
+const char kCloudPlatformProjectsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloudplatformprojects";
+
+// OAuth2 scope for access to nearby sharing.
+const char kNearbyShareOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbysharing-pa";
+
+// OAuth2 scopes for access to GCM account tracker.
+const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";
+const char kGCMCheckinServerOAuth2Scope[] =
+    "https://www.googleapis.com/auth/android_checkin";
+
+// OAuth2 scope for access to readonly Chrome web store.
+const char kChromeWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+
+// OAuth2 scope for access to Account Capabilities API.
+const char kAccountCapabilitiesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/account.capabilities";
+
+// OAuth2 scope for support content API.
+const char kSupportContentOAuth2Scope[] =
+    "https://www.googleapis.com/auth/supportcontent";
+
+// OAuth 2 scope for NTP Photos module API.
+const char kPhotosModuleOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.firstparty.readonly";
+
+// OAuth 2 scope for NTP Photos module image API.
+const char kPhotosModuleImageOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.image.readonly";
 
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";
@@ -92,4 +190,8 @@ const char kClientOAuthEmailKey[] = "email";
 
 // Used as an Invalid refresh token.
 const char kInvalidRefreshToken[] = "invalid_refresh_token";
+
+// Name of the Google authentication cookie.
+const char kGaiaSigninCookieName[] = "SAPISID";
+
 }  // namespace GaiaConstants

@@ -1,0 +1,15 @@
+Name: TensorFlow Text
+Short Name: tensorflow-text
+URL: https://github.com/tensorflow/text.git
+Version: 2.4.3
+Date: 2021/01/28
+License: Apache 2.0
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: unknown
+
+Description:
+TensorFlow Text provides a collection of text related classes and ops ready
+to use with TensorFlow 2.0. The library can perform the preprocessing
+regularly required by text-based models, and includes other features useful
+for sequence modeling not provided by core TensorFlow.

@@ -116,14 +116,14 @@ std::unique_ptr<VideoContextWrapper> VideoContextWrapper::CreateWrapper(
     HRESULT* status) {
   if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_0) {
     ComD3D11VideoContext video_context;
-    *status = device_context.CopyTo(video_context.ReleaseAndGetAddressOf());
+    *status = device_context.As(&video_context);
     return std::make_unique<VideoContextWrapperImpl<ID3D11VideoContext>>(
         video_context);
   }
 
   if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_1) {
     ComD3D11VideoContext1 video_context;
-    *status = device_context.CopyTo(video_context.ReleaseAndGetAddressOf());
+    *status = device_context.As(&video_context);
     return std::make_unique<VideoContextWrapperImpl<ID3D11VideoContext1>>(
         video_context);
   }

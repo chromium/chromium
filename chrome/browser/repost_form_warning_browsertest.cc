@@ -14,6 +14,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -22,6 +23,10 @@ using web_modal::WebContentsModalDialogManager;
 class RepostFormWarningTest : public DialogBrowserTest {
  public:
   RepostFormWarningTest() {}
+
+  RepostFormWarningTest(const RepostFormWarningTest&) = delete;
+  RepostFormWarningTest& operator=(const RepostFormWarningTest&) = delete;
+
   ~RepostFormWarningTest() override {}
 
   // BrowserTestBase:
@@ -32,9 +37,6 @@ class RepostFormWarningTest : public DialogBrowserTest {
 
  protected:
   content::WebContents* TryReload();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RepostFormWarningTest);
 };
 
 void RepostFormWarningTest::SetUpOnMainThread() {
@@ -42,11 +44,11 @@ void RepostFormWarningTest::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Load a form.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/form.html")));
   // Submit it.
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("javascript:document.getElementById('form').submit()"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("javascript:document.getElementById('form').submit()")));
 }
 
 void RepostFormWarningTest::ShowUi(const std::string& name) {
@@ -73,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestDoubleReload) {
   EXPECT_TRUE(web_contents_modal_dialog_manager->IsDialogActive());
 
   // Navigate away from the page (this is when the test usually crashes).
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/bar"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/bar")));
 
   // The dialog should've been closed.
   EXPECT_FALSE(web_contents_modal_dialog_manager->IsDialogActive());
@@ -111,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, TestLoginAfterRepost) {
 
 // Disable on Mac OS until dialogs are using toolkit-views for MacViews project.
 // https://crbug.com/683356
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(RepostFormWarningTest, InvokeUi_TestRepostWarning) {
   ShowAndVerifyUi();
 }

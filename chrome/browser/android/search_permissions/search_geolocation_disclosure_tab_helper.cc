@@ -6,18 +6,17 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/GeolocationHeader_jni.h"
 #include "chrome/android/chrome_jni_headers/SearchGeolocationDisclosureTabHelper_jni.h"
+#include "chrome/browser/android/omnibox/geolocation_header.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_infobar_delegate.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_manager.h"
-#include "chrome/browser/permissions/permission_result.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -26,11 +25,14 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_result.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
@@ -44,7 +46,7 @@ bool gIgnoreUrlChecksForTesting = false;
 int gDayOffsetForTesting = 0;
 
 base::Time GetTimeNow() {
-  return base::Time::Now() + base::TimeDelta::FromDays(gDayOffsetForTesting);
+  return base::Time::Now() + base::Days(gDayOffsetForTesting);
 }
 
 }  // namespace
@@ -55,17 +57,34 @@ SearchGeolocationDisclosureTabHelper::SearchGeolocationDisclosureTabHelper(
 
 SearchGeolocationDisclosureTabHelper::~SearchGeolocationDisclosureTabHelper() {}
 
-void SearchGeolocationDisclosureTabHelper::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  MaybeShowDisclosureForNavigation(web_contents()->GetVisibleURL());
+void SearchGeolocationDisclosureTabHelper::PrimaryPageChanged(
+    content::Page& page) {
+  content::RenderFrameHost* rfh = &page.GetMainDocument();
+  const GURL& gurl = rfh->GetLastCommittedURL();
+
+  if (!ShouldShowDisclosureForNavigation(gurl))
+    return;
+
+  MaybeShowDisclosureForValidUrl(rfh, gurl);
 }
 
 void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForAPIAccess(
-    const GURL& gurl) {
-  if (!ShouldShowDisclosureForAPIAccess(gurl))
+    content::RenderFrameHost* rfh,
+    const GURL& requesting_origin) {
+  if (!rfh->GetPage().IsPrimary())
     return;
 
-  MaybeShowDisclosureForValidUrl(gurl);
+  // On Android, it is possible for a cross-origin navigation to reuse the
+  // same RFH and as a result, the origin of the RFH at the time the request
+  // was made might be different from the current origin. We don't want to
+  // consider this an API access by the primary page, so we return early.
+  if (rfh->GetLastCommittedOrigin().GetURL() != requesting_origin)
+    return;
+
+  if (!ShouldShowDisclosureForAPIAccess(requesting_origin))
+    return;
+
+  MaybeShowDisclosureForValidUrl(rfh, requesting_origin);
 }
 
 // static
@@ -105,15 +124,8 @@ void SearchGeolocationDisclosureTabHelper::RegisterProfilePrefs(
       prefs::kSearchGeolocationPostDisclosureMetricsRecorded, false);
 }
 
-void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForNavigation(
-    const GURL& gurl) {
-  if (!ShouldShowDisclosureForNavigation(gurl))
-    return;
-
-  MaybeShowDisclosureForValidUrl(gurl);
-}
-
 void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
+    content::RenderFrameHost* rfh,
     const GURL& gurl) {
   // Don't show the infobar if the user has dismissed it, or they've seen it
   // enough times already.
@@ -135,7 +147,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   // Or if it has been shown too recently.
   base::Time last_shown = base::Time::FromInternalValue(
       prefs->GetInt64(prefs::kSearchGeolocationDisclosureLastShowDate));
-  if (GetTimeNow() - last_shown < base::TimeDelta::FromDays(kDaysPerShow)) {
+  if (GetTimeNow() - last_shown < base::Days(kDaysPerShow)) {
     return;
   }
 
@@ -144,15 +156,15 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   RecordPreDisclosureMetrics(gurl);
 
   // Only show disclosure if the DSE geolocation setting is on.
-  if (PermissionManager::Get(GetProfile())
-          ->GetPermissionStatus(ContentSettingsType::GEOLOCATION, gurl, gurl)
+  if (PermissionManagerFactory::GetForProfile(GetProfile())
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::GEOLOCATION, rfh)
           .content_setting != CONTENT_SETTING_ALLOW) {
     return;
   }
 
   // Check that the Chrome app has geolocation permission.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (!Java_GeolocationHeader_hasGeolocationPermission(env))
+  if (!HasGeolocationPermission())
     return;
 
   // All good, let's show the disclosure and increment the shown count.
@@ -164,7 +176,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   // search |template_url| was non-null, and ShouldShowDisclosureForAPIAccess()
   // would have also seen an empty DSE origin if it were.
   DCHECK(template_url);
-  base::string16 search_engine_name = template_url->short_name();
+  std::u16string search_engine_name = template_url->short_name();
   SearchGeolocationDisclosureInfoBarDelegate::Create(web_contents(), gurl,
                                                      search_engine_name);
   shown_count++;
@@ -218,8 +230,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPreDisclosureMetrics(
           prefs::kSearchGeolocationPreDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
-                                std::string());
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION);
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PreDisclosureDSESetting",
                           status == CONTENT_SETTING_ALLOW);
@@ -236,8 +247,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPostDisclosureMetrics(
           prefs::kSearchGeolocationPostDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
-                                std::string());
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION);
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PostDisclosureDSESetting",
                           status == CONTENT_SETTING_ALLOW);
@@ -264,4 +274,4 @@ void JNI_SearchGeolocationDisclosureTabHelper_SetDayOffsetForTesting(
   gDayOffsetForTesting = days;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper);

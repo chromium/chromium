@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,9 +47,6 @@ namespace {
     UMA_HISTOGRAM_COUNTS_1M(uma, UNIQUE_VARNAME >> 10); \
   }
 
-const double kSecondsPerWeek =
-    base::Time::kMicrosecondsPerWeek / base::Time::kMicrosecondsPerSecond;
-
 // Returns the value at |index| of |list_value| as an int64_t.
 int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
   int64_t val = 0;
@@ -67,13 +64,14 @@ int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
 // front, or appending "0"'s to the back.
 void MaintainContentLengthPrefsWindow(base::ListValue* list, size_t length) {
   // Remove data for old days from the front.
-  while (list->GetSize() > length)
-    list->Remove(0, nullptr);
+  base::Value::ListView list_view = list->GetList();
+  while (list_view.size() > length)
+    list->EraseListIter(list_view.begin());
   // Newly added lists are empty. Add entries to back to fill the window,
   // each initialized to zero.
-  while (list->GetSize() < length)
-    list->AppendString(base::NumberToString(0));
-  DCHECK_EQ(length, list->GetSize());
+  while (list_view.size() < length)
+    list->Append(base::NumberToString(0));
+  DCHECK_EQ(length, list_view.size());
 }
 
 // Increments an int64_t, stored as a string, in a ListPref at the specified
@@ -93,6 +91,12 @@ void RecordSavingsClearedMetric(DataReductionProxySavingsClearedReason reason) {
       "DataReductionProxy.SavingsCleared.Reason", reason,
       DataReductionProxySavingsClearedReason::REASON_COUNT);
 }
+
+// TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
+// http://crbug.com/865373
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
+const double kSecondsPerWeek =
+    base::Time::kMicrosecondsPerWeek / base::Time::kMicrosecondsPerSecond;
 
 // Returns the week number for the current time. The epoch time is treated as
 // week=0.
@@ -127,7 +131,7 @@ void MoveAndClearDictionaryPrefs(PrefService* pref_service,
   base::DictionaryValue* pref_dict_src = pref_update_src.Get();
   pref_dict_dst->Clear();
   pref_dict_dst->Swap(pref_dict_src);
-  DCHECK(pref_dict_src->empty());
+  DCHECK(pref_dict_src->DictEmpty());
 }
 
 void MaybeInitWeeklyAggregateDataUsePrefs(const base::Time& now,
@@ -170,14 +174,15 @@ void RecordDictionaryToHistogram(const std::string& histogram_name,
                                  const base::DictionaryValue* dictionary) {
   base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
-  for (const auto& entry : *dictionary) {
+  for (auto entry : dictionary->DictItems()) {
     int key;
-    int value = entry.second->GetInt();
+    int value = entry.second.GetInt();
     if (value > 0 && base::StringToInt(entry.first, &key)) {
       histogram->AddCount(key, value);
     }
   }
 }
+#endif
 
 }  // namespace
 
@@ -189,6 +194,9 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
       : update_(nullptr),
         compression_stats_(compression_stats),
         pref_path_(pref_path) {}
+
+  DailyContentLengthUpdate(const DailyContentLengthUpdate&) = delete;
+  DailyContentLengthUpdate& operator=(const DailyContentLengthUpdate&) = delete;
 
   void UpdateForDateChange(int days_since_last_update) {
     if (days_since_last_update) {
@@ -236,7 +244,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
     } else if (days_since_last_update < -1) {
       // Erase all entries if the system went backwards in time by more than
       // a day.
-      update_->Clear();
+      update_->ClearList();
 
       days_since_last_update = kNumDaysInHistory;
     }
@@ -248,7 +256,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
     for (int i = 0;
          i < days_since_last_update && i < static_cast<int>(kNumDaysInHistory);
          ++i) {
-      update_->AppendString(base::NumberToString(0));
+      update_->Append(base::NumberToString(0));
     }
 
     // Entries for new days may have been appended. Maintain the invariant that
@@ -262,8 +270,6 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
   DataReductionProxyCompressionStats* compression_stats_;
   // The path of the content length pref for |this|.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyContentLengthUpdate);
 };
 
 // DailyDataSavingUpdate maintains a pair of data saving prefs, original_update_
@@ -278,6 +284,9 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
                         const char* received_pref_path)
       : original_(compression_stats, original_pref_path),
         received_(compression_stats, received_pref_path) {}
+
+  DailyDataSavingUpdate(const DailyDataSavingUpdate&) = delete;
+  DailyDataSavingUpdate& operator=(const DailyDataSavingUpdate&) = delete;
 
   void UpdateForDateChange(int days_since_last_update) {
     original_.UpdateForDateChange(days_since_last_update);
@@ -300,8 +309,6 @@ class DataReductionProxyCompressionStats::DailyDataSavingUpdate {
  private:
   DailyContentLengthUpdate original_;
   DailyContentLengthUpdate received_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyDataSavingUpdate);
 };
 
 DataReductionProxyCompressionStats::DataReductionProxyCompressionStats(
@@ -333,13 +340,13 @@ void DataReductionProxyCompressionStats::Init() {
 
   data_usage_reporting_enabled_.Init(
       prefs::kDataUsageReportingEnabled, pref_service_,
-      base::Bind(
+      base::BindRepeating(
           &DataReductionProxyCompressionStats::OnDataUsageReportingPrefChanged,
           weak_factory_.GetWeakPtr()));
 
   if (data_usage_reporting_enabled_.GetValue()) {
     current_data_usage_load_status_ = LOADING;
-    service_->LoadCurrentDataUsageBucket(base::Bind(
+    service_->LoadCurrentDataUsageBucket(base::BindRepeating(
         &DataReductionProxyCompressionStats::OnCurrentDataUsageLoaded,
         weak_factory_.GetWeakPtr()));
   }
@@ -363,14 +370,13 @@ void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(
     int64_t data_used,
     int64_t original_size,
     bool data_saver_enabled,
-    DataReductionProxyRequestType request_type,
     const std::string& mime_type,
     bool is_user_traffic,
     data_use_measurement::DataUseUserData::DataUseContentType content_type,
     int32_t service_hash_code) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0("loading",
-               "DataReductionProxyCompressionStats::RecordDataUseWithMimeType")
+               "DataReductionProxyCompressionStats::RecordDataUseWithMimeType");
 
   IncreaseInt64Pref(data_reduction_proxy::prefs::kHttpReceivedContentLength,
                     data_used);
@@ -378,7 +384,7 @@ void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(
                     original_size);
 
   RecordRequestSizePrefs(data_used, original_size, data_saver_enabled,
-                         request_type, mime_type, base::Time::Now());
+                         mime_type, base::Time::Now());
   RecordWeeklyAggregateDataUse(
       base::Time::Now(), std::round(static_cast<double>(data_used) / 1024),
       is_user_traffic, content_type, service_hash_code);
@@ -391,8 +397,7 @@ void DataReductionProxyCompressionStats::InitInt64Pref(const char* pref) {
 
 void DataReductionProxyCompressionStats::InitListPref(const char* pref) {
   std::unique_ptr<base::ListValue> pref_value =
-      std::unique_ptr<base::ListValue>(
-          pref_service_->GetList(pref)->DeepCopy());
+      pref_service_->GetList(pref)->CreateDeepCopy();
   list_pref_map_[pref] = std::move(pref_value);
 }
 
@@ -461,11 +466,11 @@ void DataReductionProxyCompressionStats::ResetStatistics() {
       GetList(prefs::kDailyHttpOriginalContentLength);
   base::ListValue* received_update =
       GetList(prefs::kDailyHttpReceivedContentLength);
-  original_update->Clear();
-  received_update->Clear();
+  original_update->ClearList();
+  received_update->ClearList();
   for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-    original_update->AppendString(base::NumberToString(0));
-    received_update->AppendString(base::NumberToString(0));
+    original_update->Append(base::NumberToString(0));
+    received_update->Append(base::NumberToString(0));
   }
 }
 
@@ -481,7 +486,7 @@ ContentLengthList DataReductionProxyCompressionStats::GetDailyContentLengths(
     const char* pref_name) {
   ContentLengthList content_lengths;
   const base::ListValue* list_value = GetList(pref_name);
-  if (list_value->GetSize() == kNumDaysInHistory) {
+  if (list_value->GetList().size() == kNumDaysInHistory) {
     for (size_t i = 0; i < kNumDaysInHistory; ++i)
       content_lengths.push_back(GetInt64PrefValue(*list_value, i));
   }
@@ -500,8 +505,8 @@ void DataReductionProxyCompressionStats::GetContentLengths(
   const base::ListValue* received_list =
       GetList(prefs::kDailyHttpReceivedContentLength);
 
-  if (original_list->GetSize() != kNumDaysInHistory ||
-      received_list->GetSize() != kNumDaysInHistory) {
+  if (original_list->GetList().size() != kNumDaysInHistory ||
+      received_list->GetList().size() != kNumDaysInHistory) {
     *original_content_length = 0L;
     *received_content_length = 0L;
     *last_update_time = 0L;
@@ -522,8 +527,9 @@ void DataReductionProxyCompressionStats::GetContentLengths(
 }
 
 void DataReductionProxyCompressionStats::GetHistoricalDataUsage(
-    const HistoricalDataUsageCallback& get_data_usage_callback) {
-  GetHistoricalDataUsageImpl(get_data_usage_callback, base::Time::Now());
+    HistoricalDataUsageCallback get_data_usage_callback) {
+  GetHistoricalDataUsageImpl(std::move(get_data_usage_callback),
+                             base::Time::Now());
 }
 
 void DataReductionProxyCompressionStats::DeleteBrowsingHistory(
@@ -606,7 +612,7 @@ void DataReductionProxyCompressionStats::ClearDataSavingStatistics(
 
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
-    iter->second->Clear();
+    iter->second->ClearList();
   }
 
   RecordSavingsClearedMetric(reason);
@@ -621,17 +627,15 @@ void DataReductionProxyCompressionStats::DelayedWritePrefs() {
 }
 
 void DataReductionProxyCompressionStats::TransferList(
-    const base::ListValue& from_list,
-    base::ListValue* to_list) {
-  to_list->Clear();
-  from_list.CreateDeepCopy()->Swap(to_list);
+    const base::Value& from_list,
+    base::Value* to_list) {
+  *to_list = from_list.Clone();
 }
 
 void DataReductionProxyCompressionStats::RecordRequestSizePrefs(
     int64_t data_used,
     int64_t original_size,
     bool with_data_saver_enabled,
-    DataReductionProxyRequestType request_type,
     const std::string& mime_type,
     const base::Time& now) {
   // TODO(bengr): Remove this check once the underlying cause of
@@ -751,7 +755,7 @@ void DataReductionProxyCompressionStats::DeleteHistoricalDataUsage() {
 }
 
 void DataReductionProxyCompressionStats::GetHistoricalDataUsageImpl(
-    const HistoricalDataUsageCallback& get_data_usage_callback,
+    HistoricalDataUsageCallback get_data_usage_callback,
     const base::Time& now) {
 #if !defined(OS_ANDROID)
   if (current_data_usage_load_status_ != LOADED) {
@@ -759,8 +763,8 @@ void DataReductionProxyCompressionStats::GetHistoricalDataUsageImpl(
     // extension can retry after a slight delay.
     // This use case is unlikely to occur in practice since current data usage
     // should have sufficient time to load before user tries to view data usage.
-    get_data_usage_callback.Run(
-        std::make_unique<std::vector<DataUsageBucket>>());
+    std::move(get_data_usage_callback)
+        .Run(std::make_unique<std::vector<DataUsageBucket>>());
     return;
   }
 #endif
@@ -779,14 +783,14 @@ void DataReductionProxyCompressionStats::GetHistoricalDataUsageImpl(
     service_->StoreCurrentDataUsageBucket(std::move(data_usage_bucket));
   }
 
-  service_->LoadHistoricalDataUsage(get_data_usage_callback);
+  service_->LoadHistoricalDataUsage(std::move(get_data_usage_callback));
 }
 
 void DataReductionProxyCompressionStats::OnDataUsageReportingPrefChanged() {
   if (data_usage_reporting_enabled_.GetValue()) {
     if (current_data_usage_load_status_ == NOT_LOADED) {
       current_data_usage_load_status_ = LOADING;
-      service_->LoadCurrentDataUsageBucket(base::Bind(
+      service_->LoadCurrentDataUsageBucket(base::BindOnce(
           &DataReductionProxyCompressionStats::OnCurrentDataUsageLoaded,
           weak_factory_.GetWeakPtr()));
     }
@@ -808,12 +812,9 @@ void DataReductionProxyCompressionStats::OnDataUsageReportingPrefChanged() {
 
 void DataReductionProxyCompressionStats::InitializeWeeklyAggregateDataUse(
     const base::Time& now) {
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
   // TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
   // http://crbug.com/865373
-  return;
-#endif
-
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
   MaybeInitWeeklyAggregateDataUsePrefs(now, pref_service_);
   // Record the histograms that will show up in the user feedback.
   RecordDictionaryToHistogram(
@@ -842,6 +843,7 @@ void DataReductionProxyCompressionStats::InitializeWeeklyAggregateDataUse(
       "ContentType",
       pref_service_->GetDictionary(
           prefs::kLastWeekUserTrafficContentTypeDownstreamKB));
+#endif
 }
 
 void DataReductionProxyCompressionStats::RecordWeeklyAggregateDataUse(
@@ -850,11 +852,9 @@ void DataReductionProxyCompressionStats::RecordWeeklyAggregateDataUse(
     bool is_user_request,
     data_use_measurement::DataUseUserData::DataUseContentType content_type,
     int32_t service_hash_code) {
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
   // TODO(rajendrant): Enable aggregate metrics recording in x86 Android.
   // http://crbug.com/865373
-  return;
-#endif
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
   // Update the prefs if this is a new week. This can happen when chrome is open
   // for weeks without being closed.
   MaybeInitWeeklyAggregateDataUsePrefs(now, pref_service_);
@@ -874,6 +874,7 @@ void DataReductionProxyCompressionStats::RecordWeeklyAggregateDataUse(
                           service_hash_code, data_used_kb);
     }
   }
+#endif
 }
 
 // static

@@ -44,8 +44,8 @@ unsigned TextTrackList::length() const {
 }
 
 int TextTrackList::GetTrackIndex(TextTrack* text_track) {
-  if (text_track->TrackType() == TextTrack::kTrackElement)
-    return ToLoadableTextTrack(text_track)->TrackElementIndex();
+  if (auto* loadable_text_track = DynamicTo<LoadableTextTrack>(text_track))
+    return loadable_text_track->TrackElementIndex();
 
   if (text_track->TrackType() == TextTrack::kAddTrack)
     return element_tracks_.size() + add_track_tracks_.Find(text_track);
@@ -141,7 +141,7 @@ TextTrack* TextTrackList::getTrackById(const AtomicString& id) {
 void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
   HeapVector<Member<TextTrack>>* tracks = nullptr;
 
-  if (track->TrackType() == TextTrack::kTrackElement) {
+  if (IsA<LoadableTextTrack>(track)) {
     tracks = &element_tracks_;
     for (const auto& add_track : add_track_tracks_)
       add_track->InvalidateTrackIndex();
@@ -168,9 +168,9 @@ void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
 void TextTrackList::Append(TextTrack* track) {
   if (track->TrackType() == TextTrack::kAddTrack) {
     add_track_tracks_.push_back(track);
-  } else if (track->TrackType() == TextTrack::kTrackElement) {
+  } else if (auto* loadable_text_track = DynamicTo<LoadableTextTrack>(track)) {
     // Insert tracks added for <track> element in tree order.
-    wtf_size_t index = ToLoadableTextTrack(track)->TrackElementIndex();
+    wtf_size_t index = loadable_text_track->TrackElementIndex();
     element_tracks_.insert(index, track);
   } else if (track->TrackType() == TextTrack::kInBand) {
     inband_tracks_.push_back(track);
@@ -189,7 +189,7 @@ void TextTrackList::Append(TextTrack* track) {
 void TextTrackList::Remove(TextTrack* track) {
   HeapVector<Member<TextTrack>>* tracks = nullptr;
 
-  if (track->TrackType() == TextTrack::kTrackElement) {
+  if (IsA<LoadableTextTrack>(track)) {
     tracks = &element_tracks_;
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
@@ -223,7 +223,7 @@ void TextTrackList::RemoveAllInbandTracks() {
 bool TextTrackList::Contains(TextTrack* track) const {
   const HeapVector<Member<TextTrack>>* tracks = nullptr;
 
-  if (track->TrackType() == TextTrack::kTrackElement)
+  if (IsA<LoadableTextTrack>(track))
     tracks = &element_tracks_;
   else if (track->TrackType() == TextTrack::kAddTrack)
     tracks = &add_track_tracks_;
@@ -296,7 +296,7 @@ HTMLMediaElement* TextTrackList::Owner() const {
   return owner_;
 }
 
-void TextTrackList::Trace(Visitor* visitor) {
+void TextTrackList::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
   visitor->Trace(add_track_tracks_);
   visitor->Trace(element_tracks_);

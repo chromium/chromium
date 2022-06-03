@@ -120,6 +120,10 @@ There are some fundamental metrics.
 : Counts of `new DedicatedWorker()` calls in `DedicatedWorkerGlobalScope`.
 - [SharedWorkerStart](https://www.chromestatus.com/metrics/feature/timeline/popularity/5)
 : Counts of `new SharedWorker()` calls in `Document`.
+- [ClassicSharedWorker](https://www.chromestatus.com/metrics/feature/timeline/popularity/3148)
+: Counts of new SharedWorker() calls with `{ type: 'classic' }` or without `WorkerOptions#type` argument.
+- [ModuleSharedWorker](https://www.chromestatus.com/metrics/feature/timeline/popularity/3149)
+: Counts of new SharedWorker() calls with `{ type: 'module' }`.
 - [WorkletAddModule](https://www.chromestatus.com/metrics/feature/timeline/popularity/2364)
 : Counts of `Worklet#addModule()` calls in `Document`. This includes all worklet
 types. Each worklet type has its own counter, too.
@@ -156,6 +160,7 @@ in the following files and directories to avoid breakage.
 
 - Web Platform Tests
   - [content-security-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/content-security-policy/)
+  - [cross-origin-embedder-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/html/cross-origin-embedder-policy/)
   - [fetch/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/fetch/)
   - [mixed-content/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/mixed-content/)
   - [performance-timeline/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/performance-timeline/)
@@ -171,9 +176,12 @@ in the following files and directories to avoid breakage.
   - [chrome/browser/extensions/api/web_request/web_request_apitest.cc](https://cs.chromium.org/chromium/src/chrome/browser/extensions/api/web_request/web_request_apitest.cc)
   - [chrome/browser/ssl/ssl_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/ssl/ssl_browsertest.cc)
   - [chrome/browser/subresource_filter/subresource_filter_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/subresource_filter/subresource_filter_browsertest.cc)
+  - [content/browser/do_not_track_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/do_not_track_browsertest.cc)
 
 # References
 
+- [ES Modules for Shared Workers](https://docs.google.com/document/d/1sSdYdSOLd5zvnNGeVNlBqfTZs_VRPIrrigV3SlMnWjg/edit?usp=sharing) (Feb 19, 2020)
 - [WorkerGlobalScope Initialization](https://docs.google.com/document/d/1JCv8TD2nPLNC2iRCp_D1OM4I3uTS0HoEobuTymaMqgw/edit?usp=sharing) (April 1, 2019)
 - [Worker / Worklet Internals](https://docs.google.com/presentation/d/1GZJ3VnLIO_Pw0jr9nRw6_-trg68ol-AkliMxJ6jo6Bo/edit?usp=sharing) (April 19, 2018)
+- [ES Modules for Dedicated Workers](https://docs.google.com/document/d/1IMGWAK7Wq37mLehwkbysNRBBnhQBo3z2MbYyMkViEnY/edit?usp=sharing) (Mar 8, 2018)
 - [Design of UseCounter for workers](https://docs.google.com/document/d/1VyYZnhjBdk-MzCRAcX37TM5-yjwTY40U_J9rWnEAo8c/edit?usp=sharing) (Feb 14, 2017)

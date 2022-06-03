@@ -7,14 +7,14 @@
 
 #include <windows.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // This interface is implemented by classes who get input events forwarded to
 // them from others. E.g. would be a win32 parent child relationship where the
 // child forwards input events to the parent after doing minimal processing.
-class UI_BASE_EXPORT WindowEventTarget {
+class COMPONENT_EXPORT(UI_BASE) WindowEventTarget {
  public:
   static const char kWin32InputEventTarget[];
 

@@ -22,6 +22,11 @@ namespace web {
 extern NSString* const kCertificateSerializationKey;
 extern NSString* const kHostSerializationKey;
 extern NSString* const kStatusSerializationKey;
+
+// Total bytes serialized during CRWSessionCertificateStorage encoding since the
+// uptime.
+size_t GetCertPolicyBytesEncoded();
+
 }  // namespace web
 
 // A serializable representation of a certificate.

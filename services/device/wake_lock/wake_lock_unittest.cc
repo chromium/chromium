@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,6 +19,10 @@
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/device/wake_lock/wake_lock_provider.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
 
 namespace device {
 
@@ -34,6 +38,9 @@ class TestWakeLockObserver : public mojom::WakeLockObserver {
     wake_lock_events_.emplace(
         mojom::WakeLockType::kPreventDisplaySleepAllowDimming, EventCount());
   }
+
+  TestWakeLockObserver(const TestWakeLockObserver&) = delete;
+  TestWakeLockObserver& operator=(const TestWakeLockObserver&) = delete;
 
   ~TestWakeLockObserver() override = default;
 
@@ -61,13 +68,15 @@ class TestWakeLockObserver : public mojom::WakeLockObserver {
   mojo::ReceiverSet<mojom::WakeLockObserver> receivers_;
 
   std::map<mojom::WakeLockType, EventCount> wake_lock_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWakeLockObserver);
 };
 
 class WakeLockTest : public DeviceServiceTestBase {
  public:
   WakeLockTest() = default;
+
+  WakeLockTest(const WakeLockTest&) = delete;
+  WakeLockTest& operator=(const WakeLockTest&) = delete;
+
   ~WakeLockTest() override = default;
 
  protected:
@@ -135,10 +144,13 @@ class WakeLockTest : public DeviceServiceTestBase {
   bool has_wakelock_;
   bool result_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Instantiate LacrosService for WakeLock support.
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
+
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
   mojo::Remote<mojom::WakeLock> wake_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockTest);
 };
 
 // Request a wake lock, then cancel.

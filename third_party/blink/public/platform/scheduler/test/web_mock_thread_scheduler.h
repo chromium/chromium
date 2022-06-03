@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 
 namespace base {
@@ -22,9 +22,13 @@ namespace scheduler {
 class WebMockThreadScheduler : public WebThreadScheduler {
  public:
   WebMockThreadScheduler() = default;
+  WebMockThreadScheduler(const WebMockThreadScheduler&) = delete;
+  WebMockThreadScheduler& operator=(const WebMockThreadScheduler&) = delete;
   ~WebMockThreadScheduler() override = default;
 
   MOCK_METHOD0(DefaultTaskRunner,
+               scoped_refptr<base::SingleThreadTaskRunner>());
+  MOCK_METHOD0(DeprecatedDefaultTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
   MOCK_METHOD0(CompositorTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
@@ -32,6 +36,9 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(LoadingTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
   MOCK_METHOD0(IPCTaskRunner, scoped_refptr<base::SingleThreadTaskRunner>());
+  MOCK_METHOD0(CreateAgentGroupScheduler,
+               std::unique_ptr<WebAgentGroupScheduler>());
+  MOCK_METHOD0(GetCurrentAgentGroupScheduler, WebAgentGroupScheduler*());
   MOCK_METHOD0(NewRenderWidgetSchedulingState,
                std::unique_ptr<WebRenderWidgetSchedulingState>());
   MOCK_METHOD1(WillBeginFrame, void(const viz::BeginFrameArgs&));
@@ -40,8 +47,10 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(DidCommitFrameToCompositor, void());
   MOCK_METHOD2(DidHandleInputEventOnCompositorThread,
                void(const WebInputEvent&, InputEventState));
-  MOCK_METHOD1(WillPostInputEventToMainThread, void(WebInputEvent::Type));
-  MOCK_METHOD1(WillHandleInputEventOnMainThread, void(WebInputEvent::Type));
+  MOCK_METHOD2(WillPostInputEventToMainThread,
+               void(WebInputEvent::Type, const WebInputEventAttribution&));
+  MOCK_METHOD2(WillHandleInputEventOnMainThread,
+               void(WebInputEvent::Type, const WebInputEventAttribution&));
   MOCK_METHOD2(DidHandleInputEventOnMainThread,
                void(const WebInputEvent&, WebInputEventResult));
   MOCK_METHOD0(DidAnimateForInputOnCompositorThread, void());
@@ -49,7 +58,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(DidRunBeginMainFrame, void());
   MOCK_METHOD1(SetRendererHidden, void(bool));
   MOCK_METHOD1(SetRendererBackgrounded, void(bool));
-  MOCK_METHOD1(SetSchedulerKeepActive, void(bool));
   MOCK_METHOD0(PauseRenderer, std::unique_ptr<RendererPauseHandle>());
 #if defined(OS_ANDROID)
   MOCK_METHOD0(PauseTimersForAndroidWebView, void());
@@ -65,9 +73,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD1(SetTopLevelBlameContext, void(base::trace_event::BlameContext*));
   MOCK_METHOD1(SetRendererProcessType, void(WebRendererProcessType));
   MOCK_METHOD0(OnMainFrameRequestedForInput, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebMockThreadScheduler);
 };
 
 }  // namespace scheduler

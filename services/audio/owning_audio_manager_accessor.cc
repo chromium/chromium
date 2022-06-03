@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_features.h"
@@ -27,17 +27,17 @@ namespace audio {
 
 namespace {
 
-base::Optional<base::TimeDelta> GetAudioThreadHangDeadline() {
+absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
   if (!base::FeatureList::IsEnabled(
           features::kAudioServiceOutOfProcessKillAtHang)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const std::string timeout_string = base::GetFieldTrialParamValueByFeature(
       features::kAudioServiceOutOfProcessKillAtHang, "timeout_seconds");
   int timeout_int = 0;
   if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
-    return base::nullopt;
-  return base::TimeDelta::FromSeconds(timeout_int);
+    return absl::nullopt;
+  return base::Seconds(timeout_int);
 }
 
 HangAction GetAudioThreadHangAction() {
@@ -58,6 +58,10 @@ HangAction GetAudioThreadHangAction() {
 class MainThread final : public media::AudioThread {
  public:
   MainThread();
+
+  MainThread(const MainThread&) = delete;
+  MainThread& operator=(const MainThread&) = delete;
+
   ~MainThread() final;
 
   // AudioThread implementation.
@@ -74,8 +78,6 @@ class MainThread final : public media::AudioThread {
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 
   media::AudioThreadHangMonitor::Ptr hang_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThread);
 };
 
 MainThread::MainThread()
@@ -115,7 +117,10 @@ base::SingleThreadTaskRunner* MainThread::GetWorkerTaskRunner() {
       task_runner_->BelongsToCurrentThread() ||
       (worker_task_runner_ && worker_task_runner_->BelongsToCurrentThread()));
   if (!worker_task_runner_) {
-    CHECK(worker_thread_.Start());
+    base::Thread::Options options;
+    options.timer_slack = base::TIMER_SLACK_NONE;
+    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    CHECK(worker_thread_.StartWithOptions(std::move(options)));
     worker_task_runner_ = worker_thread_.task_runner();
   }
   return worker_task_runner_.get();

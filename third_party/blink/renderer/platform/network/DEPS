@@ -7,7 +7,7 @@ include_rules = [
 
     # Dependencies.
     "+media",
-    "-media/blink",
+
     # net/ includes should be allowed only in a limited set of directories,
     # so we have separate DEPS from platform's one.
     "+net/base",
@@ -21,6 +21,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/instrumentation",
     "+third_party/blink/renderer/platform/loader",
+    "+third_party/blink/renderer/platform/mojo/security_origin_mojom_traits.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/scheduler",
     "+third_party/blink/renderer/platform/wtf/shared_buffer.h",

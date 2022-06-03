@@ -1,1 +1,3 @@
+This test expects a HTTP fetch resulting in a redirect for the first history navigation. This doesn't happen if the page is restored from back-forward cache, so back-fowrad cache has to be disabled to test this behaviour.
+
 We pass if we don't crash.

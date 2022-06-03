@@ -58,7 +58,7 @@ class GPUInfoCollectorTest
     testing::Test::SetUp();
     gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
     gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-    gl_.reset(new ::testing::StrictMock<::gl::MockGLInterface>());
+    gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
     ::gl::MockGLInterface::SetGLInterface(gl_.get());
     switch (GetParam()) {
       case kMockedAndroid: {
@@ -143,6 +143,10 @@ class GPUInfoCollectorTest
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             test_values_.gl_version.c_str())));
 
+    EXPECT_CALL(*gl_, GetString(GL_RENDERER))
+        .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
+            test_values_.gl_renderer.c_str())));
+
     // Now that that expectation is set up, we can call this helper function.
     if (gl::WillUseGLGetStringForExtensions()) {
       EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))
@@ -214,7 +218,7 @@ TEST_P(GPUInfoCollectorTest, CollectGraphicsInfoGL) {
     // Skip testing the driver version on Windows because it's
     // obtained from the bot's registry.
   }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   if (GetParam() == kMockedMacOSX) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);
@@ -224,7 +228,7 @@ TEST_P(GPUInfoCollectorTest, CollectGraphicsInfoGL) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);
   }
-#else  // defined (OS_LINUX)
+#else  // defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (GetParam() == kMockedLinux) {
     EXPECT_EQ(test_values_.gpu.driver_vendor, gpu_info.gpu.driver_vendor);
     EXPECT_EQ(test_values_.gpu.driver_version, gpu_info.gpu.driver_version);

@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-Metadata
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Metadata {
     [CallWith=ScriptState, Measure] readonly attribute object modificationTime;
     readonly attribute unsigned long long size;

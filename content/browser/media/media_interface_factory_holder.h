@@ -5,16 +5,13 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERFACE_FACTORY_HOLDER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERFACE_FACTORY_HOLDER_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 namespace content {
 
@@ -24,13 +21,17 @@ class MediaInterfaceFactoryHolder {
  public:
   using MediaServiceGetter =
       base::RepeatingCallback<media::mojom::MediaService&()>;
-  using CreateInterfaceProviderCB = base::RepeatingCallback<
-      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>()>;
+  using FrameServicesGetter = base::RepeatingCallback<
+      mojo::PendingRemote<media::mojom::FrameInterfaceFactory>()>;
 
   // |media_service_getter| will be called from the UI thread.
-  MediaInterfaceFactoryHolder(
-      MediaServiceGetter media_service_getter,
-      CreateInterfaceProviderCB create_interface_provider_cb);
+  MediaInterfaceFactoryHolder(MediaServiceGetter media_service_getter,
+                              FrameServicesGetter frame_services_getter);
+
+  MediaInterfaceFactoryHolder(const MediaInterfaceFactoryHolder&) = delete;
+  MediaInterfaceFactoryHolder& operator=(const MediaInterfaceFactoryHolder&) =
+      delete;
+
   ~MediaInterfaceFactoryHolder();
 
   // Gets the MediaService |interface_factory_remote_|. The returned pointer is
@@ -40,16 +41,11 @@ class MediaInterfaceFactoryHolder {
  private:
   void ConnectToMediaService();
 
-  // Callback for connection error from |interface_factory_remote_|.
-  void OnMediaServiceConnectionError();
-
   MediaServiceGetter media_service_getter_;
-  CreateInterfaceProviderCB create_interface_provider_cb_;
+  FrameServicesGetter frame_services_getter_;
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_remote_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceFactoryHolder);
 };
 
 }  // namespace content

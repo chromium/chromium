@@ -7,21 +7,23 @@
 #include <inttypes.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/test_completion_callback.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace content {
 
@@ -61,8 +63,8 @@ void OnResume(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 void OnResponseSentOnServerIOThread(
     TestDownloadHttpResponse::OnResponseSentCallback callback,
     std::unique_ptr<TestDownloadHttpResponse::CompletedRequest> request) {
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(std::move(callback), std::move(request)));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(request)));
 }
 
 GURL GetURLFromRequest(const net::test_server::HttpRequest& request) {
@@ -77,18 +79,21 @@ class HttpResponse : public net::test_server::HttpResponse {
  public:
   explicit HttpResponse(base::WeakPtr<TestDownloadHttpResponse> owner)
       : owner_(owner) {}
+
+  HttpResponse(const HttpResponse&) = delete;
+  HttpResponse& operator=(const HttpResponse&) = delete;
+
   ~HttpResponse() override = default;
 
  private:
   // net::test_server::HttpResponse implementations.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     if (owner_)
-      owner_->SendResponse(send, std::move(done));
+      owner_->SendResponse(delegate);
   }
 
   base::WeakPtr<TestDownloadHttpResponse> owner_;
-  DISALLOW_COPY_AND_ASSIGN(HttpResponse);
 };
 
 }  // namespace
@@ -108,11 +113,13 @@ TestDownloadHttpResponse::HttpResponseData::HttpResponseData(
     int64_t min_offset,
     int64_t max_offset,
     const std::string& response,
-    bool is_transient)
+    bool is_transient,
+    bool delay_response)
     : min_offset(min_offset),
       max_offset(max_offset),
       response(response),
-      is_transient(is_transient) {}
+      is_transient(is_transient),
+      delay_response(delay_response) {}
 
 // static
 TestDownloadHttpResponse::Parameters
@@ -152,9 +159,10 @@ void TestDownloadHttpResponse::Parameters::SetResponseForRangeRequest(
     int64_t min_offset,
     int64_t max_offset,
     const std::string& response,
-    bool is_transient) {
-  range_request_responses.emplace_back(
-      HttpResponseData(min_offset, max_offset, response, is_transient));
+    bool is_transient,
+    bool delay_response) {
+  range_request_responses.emplace_back(HttpResponseData(
+      min_offset, max_offset, response, is_transient, delay_response));
 }
 
 TestDownloadHttpResponse::CompletedRequest::CompletedRequest(
@@ -226,14 +234,13 @@ TestDownloadHttpResponse::TestDownloadHttpResponse(
 TestDownloadHttpResponse::~TestDownloadHttpResponse() = default;
 
 void TestDownloadHttpResponse::SendResponse(
-    const net::test_server::SendBytesCallback& send,
-    net::test_server::SendCompleteCallback done) {
-  bytes_sender_ = send;
-  done_callback_ = std::move(done);
+    base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+  response_delegate_ = delegate;
 
   // Throw error before sending headers.
   if (ShouldAbortImmediately()) {
-    bytes_sender_.Run(std::string(), GenerateResultClosure());
+    response_delegate_->SendRawResponseHeaders("");
+    response_delegate_->SendContents("", GenerateResultClosure());
     return;
   }
 
@@ -242,8 +249,8 @@ void TestDownloadHttpResponse::SendResponse(
       parameters_.injected_errors.front() <= range_.last_byte_position() &&
       parameters_.injected_errors.front() >= range_.first_byte_position() &&
       !parameters_.inject_error_cb.is_null()) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(parameters_.inject_error_cb,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(parameters_.inject_error_cb,
                                   range_.first_byte_position(),
                                   parameters_.injected_errors.front() -
                                       range_.first_byte_position()));
@@ -288,20 +295,30 @@ void TestDownloadHttpResponse::ParseRequestHeader() {
 void TestDownloadHttpResponse::SendResponseHeaders() {
   // Send static response in |parameters_| and close connection.
   if (!parameters_.static_response.empty()) {
-    bytes_sender_.Run(parameters_.static_response, GenerateResultClosure());
+    response_delegate_->SendRawResponseHeaders(parameters_.static_response);
+    response_delegate_->SendContents("", GenerateResultClosure());
     return;
   }
 
   // Send static |range_request_responses| in |parameters_| and close
   // connection.
   std::string response;
-  if (GetResponseForRangeRequest(&response)) {
-    bytes_sender_.Run(response, GenerateResultClosure());
+  bool delay_response = false;
+  if (GetResponseForRangeRequest(&response, &delay_response)) {
+    if (delay_response) {
+      delayed_response_callback_ =
+          base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
+                         response_delegate_, response, GenerateResultClosure());
+      response_delegate_->SendRawResponseHeaders(GetDefaultResponseHeaders());
+    } else {
+      response_delegate_->SendContents(response, GenerateResultClosure());
+    }
     return;
   }
 
   // Send the headers and start to send the body.
-  bytes_sender_.Run(GetDefaultResponseHeaders(), SendNextBodyChunkClosure());
+  response_delegate_->SendRawResponseHeaders(GetDefaultResponseHeaders());
+  SendResponseBodyChunk();
 }
 
 std::string TestDownloadHttpResponse::GetDefaultResponseHeaders() {
@@ -353,7 +370,9 @@ std::string TestDownloadHttpResponse::GetDefaultResponseHeaders() {
   return headers;
 }
 
-bool TestDownloadHttpResponse::GetResponseForRangeRequest(std::string* output) {
+bool TestDownloadHttpResponse::GetResponseForRangeRequest(
+    std::string* output,
+    bool* delay_response) {
   if (!range_.IsValid())
     return false;
 
@@ -370,6 +389,7 @@ bool TestDownloadHttpResponse::GetResponseForRangeRequest(std::string* output) {
 
     if (it->max_offset == -1 || requset_offset <= it->max_offset) {
       *output = it->response;
+      *delay_response = it->delay_response;
       // Update the global parameter for transient response, so the
       // next response will be different.
       if (it->is_transient) {
@@ -535,8 +555,8 @@ void TestDownloadHttpResponse::PauseResponsesAndWaitForResumption() {
 
   // Continue to send data after resumption.
   // TODO(xingliu): Unwind thread hopping callbacks here.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           std::move(pause_callback),
           base::BindOnce(OnResume, base::ThreadTaskRunnerHandle::Get(),
@@ -550,9 +570,9 @@ void TestDownloadHttpResponse::SendResponseBodyChunk() {
     return;
   }
 
-  int64_t upper_bound = base::ClampToRange(response_sent_offset_ + kBufferSize,
-                                           range_.first_byte_position(),
-                                           range_.last_byte_position());
+  int64_t upper_bound =
+      base::clamp(response_sent_offset_ + kBufferSize,
+                  range_.first_byte_position(), range_.last_byte_position());
   auto buffer_range =
       net::HttpByteRange::Bounded(response_sent_offset_, upper_bound);
 
@@ -575,13 +595,17 @@ void TestDownloadHttpResponse::SendBodyChunkInternal(
     base::OnceClosure next) {
   std::string response_chunk = GetResponseChunk(buffer_range);
   transferred_bytes_ += static_cast<int64_t>(response_chunk.size());
-  bytes_sender_.Run(response_chunk, std::move(next));
+  response_delegate_->SendContents(response_chunk, std::move(next));
 }
 
-net::test_server::SendCompleteCallback
-TestDownloadHttpResponse::SendNextBodyChunkClosure() {
+base::OnceClosure TestDownloadHttpResponse::SendNextBodyChunkClosure() {
   return base::BindOnce(&TestDownloadHttpResponse::SendResponseBodyChunk,
                         base::Unretained(this));
+}
+
+void TestDownloadHttpResponse::SendDelayedResponse() {
+  if (delayed_response_callback_)
+    std::move(delayed_response_callback_).Run();
 }
 
 void TestDownloadHttpResponse::GenerateResult() {
@@ -592,11 +616,10 @@ void TestDownloadHttpResponse::GenerateResult() {
                                  std::move(completed_request));
 
   // Close the HTTP connection.
-  std::move(done_callback_).Run();
+  response_delegate_->FinishResponse();
 }
 
-net::test_server::SendCompleteCallback
-TestDownloadHttpResponse::GenerateResultClosure() {
+base::OnceClosure TestDownloadHttpResponse::GenerateResultClosure() {
   return base::BindOnce(&TestDownloadHttpResponse::GenerateResult,
                         base::Unretained(this));
 }
@@ -668,6 +691,16 @@ void TestDownloadResponseHandler::WaitUntilCompletion(size_t request_count) {
 
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
+}
+
+void TestDownloadResponseHandler::DispatchDelayedResponses() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& response : responses_) {
+    server_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TestDownloadHttpResponse::SendDelayedResponse,
+                       base::Unretained(response.get())));
+  }
 }
 
 }  // namespace content

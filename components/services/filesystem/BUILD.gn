@@ -35,9 +35,7 @@ if (!is_ios) {
       "directory_test_helper.h",
     ]
 
-    deps = [
-      "//base/test:test_support",
-    ]
+    deps = [ "//base/test:test_support" ]
 
     public_deps = [
       ":lib",

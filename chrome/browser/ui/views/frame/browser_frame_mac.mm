@@ -7,10 +7,9 @@
 #import "base/mac/foundation_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #import "chrome/browser/ui/cocoa/browser_window_command_handler.h"
@@ -19,10 +18,12 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/dom_distiller/content/browser/distillable_page_utils.h"
+#include "components/dom_distiller/core/url_utils.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
@@ -31,6 +32,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -38,10 +40,10 @@
 namespace {
 
 AppShimHost* GetHostForBrowser(Browser* browser) {
-  auto* shim_handler = apps::ExtensionAppShimHandler::Get();
-  if (!shim_handler)
+  auto* shim_manager = apps::AppShimManager::Get();
+  if (!shim_manager)
     return nullptr;
-  return shim_handler->GetHostForBrowser(browser);
+  return shim_manager->GetHostForRemoteCocoaBrowser(browser);
 }
 
 bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
@@ -51,7 +53,7 @@ bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
     return false;
 
   // Ignore synthesized keyboard events. See http://crbug.com/23221.
-  if (event.GetType() == content::NativeWebKeyboardEvent::kChar)
+  if (event.GetType() == content::NativeWebKeyboardEvent::Type::kChar)
     return false;
 
   // If the event was not synthesized it should have an os_event.
@@ -145,7 +147,11 @@ void BrowserFrameMac::OnFocusWindowToolbar() {
   chrome::ExecuteCommand(browser_view_->browser(), IDC_FOCUS_TOOLBAR);
 }
 
-void BrowserFrameMac::OnWindowFullscreenStateChange() {
+void BrowserFrameMac::OnWindowFullscreenTransitionStart() {
+  browser_view_->FullscreenStateChanging();
+}
+
+void BrowserFrameMac::OnWindowFullscreenTransitionComplete() {
   browser_view_->FullscreenStateChanged();
 }
 
@@ -174,24 +180,6 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
                                             : IDS_ENTER_FULLSCREEN_MAC));
       break;
     }
-    case IDC_BOOKMARK_THIS_TAB: {
-      // Extensions have the ability to hide the bookmark tab menu item.
-      // This only affects the bookmark tab menu item under the main menu.
-      // The bookmark tab menu item under the app menu has its visibility
-      // controlled by AppMenuModel.
-      result->new_hidden_state =
-          chrome::ShouldRemoveBookmarkThisTabUI(browser->profile());
-      break;
-    }
-    case IDC_BOOKMARK_ALL_TABS: {
-      // Extensions have the ability to hide the bookmark all tabs menu
-      // item.  This only affects the bookmark page menu item under the main
-      // menu.  The bookmark page menu item under the app menu has its
-      // visibility controlled by AppMenuModel.
-      result->new_hidden_state =
-          chrome::ShouldRemoveBookmarkAllTabsUI(browser->profile());
-      break;
-    }
     case IDC_SHOW_AS_TAB: {
       // Hide this menu option if the window is tabbed or is the devtools
       // window.
@@ -203,6 +191,22 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // Hide this menu option if Media Router is disabled.
       result->new_hidden_state =
           !media_router::MediaRouterEnabled(browser->profile());
+      break;
+    }
+    case IDC_DISTILL_PAGE: {
+      // Enable the reader mode option if the page is a distilled page
+      // or if the page is distillable.
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+      absl::optional<dom_distiller::DistillabilityResult> distillability =
+          dom_distiller::GetLatestResult(web_contents);
+      bool distillable =
+          distillability && distillability.value().is_distillable;
+      bool is_distilled = dom_distiller::url_utils::IsDistilledPage(
+          web_contents->GetLastCommittedURL());
+      result->new_title.emplace(l10n_util::GetStringUTF16(
+          is_distilled ? IDS_EXIT_DISTILLED_PAGE : IDS_DISTILL_PAGE));
+      result->enable = distillable || is_distilled;
       break;
     }
     default:
@@ -231,6 +235,16 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
           prefs->GetBoolean(prefs::kShowFullscreenToolbar);
       break;
     }
+    case IDC_SHOW_FULL_URLS: {
+      PrefService* prefs = browser->profile()->GetPrefs();
+      result->new_toggle_state =
+          prefs->GetBoolean(omnibox::kPreventUrlElisionsInOmnibox);
+      // Disable this menu option if the show full URLs pref is managed.
+      result->enable =
+          !prefs->FindPreference(omnibox::kPreventUrlElisionsInOmnibox)
+               ->IsManaged();
+      break;
+    }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
       PrefService* prefs = browser->profile()->GetPrefs();
       result->new_toggle_state =
@@ -245,11 +259,19 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       result->new_toggle_state = !model->empty() && !will_mute;
       break;
     }
-    case IDC_WINDOW_PIN_TAB:
+    case IDC_WINDOW_PIN_TAB: {
       TabStripModel* model = browser->tab_strip_model();
       result->new_toggle_state =
           !model->empty() && !model->WillContextMenuPin(model->active_index());
       break;
+    }
+    case IDC_WINDOW_GROUP_TAB: {
+      TabStripModel* model = browser->tab_strip_model();
+      result->new_toggle_state =
+          !model->empty() &&
+          !model->WillContextMenuGroup(model->active_index());
+      break;
+    }
   }
 }
 
@@ -274,8 +296,8 @@ bool BrowserFrameMac::ExecuteCommand(
     // https://crbug.com/836947.
     // The function IsReservedCommandOrKey does not examine its event argument
     // on macOS.
-    content::NativeWebKeyboardEvent dummy_event(blink::WebInputEvent::kKeyDown,
-                                                0, base::TimeTicks());
+    content::NativeWebKeyboardEvent dummy_event(
+        blink::WebInputEvent::Type::kKeyDown, 0, base::TimeTicks());
     if (!browser->command_controller()->IsReservedCommandOrKey(command,
                                                                dummy_event)) {
       return false;
@@ -294,8 +316,7 @@ void BrowserFrameMac::PopulateCreateWindowParams(
                        NSMiniaturizableWindowMask | NSResizableWindowMask;
 
   base::scoped_nsobject<NativeWidgetMacNSWindow> ns_window;
-  if (browser_view_->IsBrowserTypeNormal() ||
-      browser_view_->IsBrowserTypeWebApp()) {
+  if (browser_view_->GetIsNormalType() || browser_view_->GetIsWebAppType()) {
     params->window_class = remote_cocoa::mojom::WindowClass::kBrowser;
     params->style_mask |= NSFullSizeContentViewWindowMask;
 
@@ -303,7 +324,7 @@ void BrowserFrameMac::PopulateCreateWindowParams(
     params->titlebar_appears_transparent = true;
 
     // Hosted apps draw their own window title.
-    if (browser_view_->IsBrowserTypeWebApp())
+    if (browser_view_->GetIsWebAppType())
       params->window_title_hidden = true;
   } else {
     params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
@@ -410,4 +431,24 @@ bool BrowserFrameMac::HandleKeyboardEvent(
   // Redispatch the event. If it's a keyEquivalent:, this gives
   // CommandDispatcher the opportunity to finish passing the event to consumers.
   return GetNSWindowHost()->RedispatchKeyEvent(event.os_event);
+}
+
+bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
+  return true;
+}
+
+void BrowserFrameMac::AnnounceTextInInProcessWindow(
+    const std::u16string& text) {
+  NSAccessibilityPriorityLevel priority = NSAccessibilityPriorityHigh;
+  NSDictionary* notification_info = @{
+    NSAccessibilityAnnouncementKey : base::SysUTF16ToNSString(text),
+    NSAccessibilityPriorityKey : @(priority)
+  };
+
+  NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (ns_window) {
+    NSAccessibilityPostNotificationWithUserInfo(
+        ns_window, NSAccessibilityAnnouncementRequestedNotification,
+        notification_info);
+  }
 }

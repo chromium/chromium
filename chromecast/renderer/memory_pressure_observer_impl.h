@@ -16,14 +16,17 @@ class MemoryPressureObserverImpl : public mojom::MemoryPressureObserver {
  public:
   MemoryPressureObserverImpl(
       mojo::PendingRemote<mojom::MemoryPressureObserver>* observer);
+
+  MemoryPressureObserverImpl(const MemoryPressureObserverImpl&) = delete;
+  MemoryPressureObserverImpl& operator=(const MemoryPressureObserverImpl&) =
+      delete;
+
   ~MemoryPressureObserverImpl() override;
 
  private:
   void MemoryPressureLevelChanged(int32_t pressure_level) override;
 
   mojo::Receiver<mojom::MemoryPressureObserver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureObserverImpl);
 };
 
 }  // namespace chromecast

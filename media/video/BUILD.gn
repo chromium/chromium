@@ -18,6 +18,7 @@ source_set("video") {
   sources = [
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
+    "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
     "h264_bit_reader.cc",
     "h264_bit_reader.h",
@@ -31,41 +32,65 @@ source_set("video") {
     "half_float_maker.h",
     "picture.cc",
     "picture.h",
-    "supported_video_decoder_config.cc",
-    "supported_video_decoder_config.h",
+    "renderable_gpu_memory_buffer_video_frame_pool.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool.h",
     "trace_util.cc",
     "trace_util.h",
     "video_decode_accelerator.cc",
     "video_decode_accelerator.h",
     "video_encode_accelerator.cc",
     "video_encode_accelerator.h",
+    "video_encode_accelerator_adapter.cc",
+    "video_encode_accelerator_adapter.h",
+    "video_encoder_fallback.cc",
+    "video_encoder_fallback.h",
+    "video_encoder_info.cc",
+    "video_encoder_info.h",
   ]
 
-  if (proprietary_codecs && enable_platform_hevc) {
+  if (enable_platform_hevc) {
     sources += [
-      "h265_parser.cc",
-      "h265_parser.h",
+      "h265_nalu_parser.cc",
+      "h265_nalu_parser.h",
     ]
+    if (enable_platform_hevc_decoding) {
+      sources += [
+        "h265_parser.cc",
+        "h265_parser.h",
+      ]
+    }
   }
 
-  public_deps = [
-    "//gpu/command_buffer/client:gles2_interface",
-  ]
+  public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
     "//media/base",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gl",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
+
+  if (media_use_libvpx) {
+    sources += [
+      "vpx_video_encoder.cc",
+      "vpx_video_encoder.h",
+    ]
+    deps += [ "//third_party/libvpx" ]
+  }
+
+  if (proprietary_codecs && media_use_openh264) {
+    sources += [
+      "openh264_video_encoder.cc",
+      "openh264_video_encoder.h",
+    ]
+    deps += [ "//third_party/openh264:encoder" ]
+  }
 }
 
 # Note: This is a roll-up only target; do not expand the visibility. DEPS should
@@ -107,10 +132,16 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
-    "supported_video_decoder_config_unittest.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
+    "software_video_encoder_test.cc",
+    "video_encode_accelerator_adapter_test.cc",
+    "video_encoder_fallback_test.cc",
   ]
   if (enable_platform_hevc) {
-    sources += [ "h265_parser_unittest.cc" ]
+    sources += [ "h265_nalu_parser_unittest.cc" ]
+    if (enable_platform_hevc_decoding) {
+      sources += [ "h265_parser_unittest.cc" ]
+    }
   }
 
   configs += [ "//media:media_config" ]
@@ -124,17 +155,26 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libyuv:libyuv",
     "//ui/gfx",
   ]
 }
 
 fuzzer_test("media_h264_parser_fuzzer") {
-  sources = [
-    "h264_parser_fuzzertest.cc",
-  ]
+  sources = [ "h264_parser_fuzzertest.cc" ]
   deps = [
     "//base",
     "//media",
     "//ui/gfx/geometry",
   ]
+}
+
+if (enable_platform_hevc_decoding) {
+  fuzzer_test("media_h265_parser_fuzzer") {
+    sources = [ "h265_parser_fuzzertest.cc" ]
+    deps = [
+      "//base",
+      "//media",
+    ]
+  }
 }

@@ -6,11 +6,11 @@
 
 namespace tracing {
 
-DummyProducer::DummyProducer(PerfettoTaskRunner* task_runner)
+DummyProducer::DummyProducer(base::tracing::PerfettoTaskRunner* task_runner)
     : SystemProducer(task_runner) {}
-DummyProducer::~DummyProducer() {}
+DummyProducer::~DummyProducer() = default;
 
-// perfetto::Producer functions.
+// perfetto::Producer implementation.
 void DummyProducer::OnConnect() {}
 void DummyProducer::OnDisconnect() {}
 void DummyProducer::OnTracingSetup() {}
@@ -26,52 +26,28 @@ void DummyProducer::ClearIncrementalState(
     const perfetto::DataSourceInstanceID* data_source_ids,
     size_t num_data_sources) {}
 
-// perfetto::TracingService::ProducerEndpoint functions.
-void DummyProducer::RegisterDataSource(const perfetto::DataSourceDescriptor&) {}
-void DummyProducer::UnregisterDataSource(const std::string& name) {}
-
-void DummyProducer::RegisterTraceWriter(uint32_t writer_id,
-                                        uint32_t target_buffer) {}
-void DummyProducer::UnregisterTraceWriter(uint32_t writer_id) {}
-
-void DummyProducer::CommitData(const perfetto::CommitDataRequest& commit,
-                               CommitDataCallback callback) {}
-perfetto::SharedMemory* DummyProducer::shared_memory() const {
+// PerfettoProducer implementation.
+perfetto::SharedMemoryArbiter* DummyProducer::MaybeSharedMemoryArbiter() {
   return nullptr;
 }
-size_t DummyProducer::shared_buffer_page_size_kb() const {
-  return 0;
-}
-perfetto::SharedMemoryArbiter* DummyProducer::GetSharedMemoryArbiter() {
-  return nullptr;
-}
-perfetto::SharedMemoryArbiter* DummyProducer::GetInProcessShmemArbiter() {
-  return nullptr;
-}
-void DummyProducer::NotifyFlushComplete(perfetto::FlushRequestID) {}
-
-void DummyProducer::NotifyDataSourceStarted(perfetto::DataSourceInstanceID) {}
-void DummyProducer::NotifyDataSourceStopped(perfetto::DataSourceInstanceID) {}
-
-void DummyProducer::ActivateTriggers(const std::vector<std::string>&) {}
-
-// tracing::PerfettoProducer functions.
-void DummyProducer::NewDataSourceAdded(
-    const PerfettoTracedProcess::DataSourceBase* const data_source) {}
 bool DummyProducer::IsTracingActive() {
   return false;
 }
+void DummyProducer::NewDataSourceAdded(
+    const PerfettoTracedProcess::DataSourceBase* const data_source) {}
+bool DummyProducer::SetupSharedMemoryForStartupTracing() {
+  return false;
+}
 
-// Functions expected for SystemProducer
+// SystemProducer implementation.
+void DummyProducer::ConnectToSystemService() {}
+void DummyProducer::ActivateTriggers(const std::vector<std::string>&) {}
 void DummyProducer::DisconnectWithReply(
     base::OnceClosure on_disconnect_complete) {
   std::move(on_disconnect_complete).Run();
 }
-
 bool DummyProducer::IsDummySystemProducerForTesting() {
   return true;
 }
-
-void DummyProducer::ResetSequenceForTesting() {}
 
 }  // namespace tracing

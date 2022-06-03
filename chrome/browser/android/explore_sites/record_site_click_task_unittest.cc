@@ -5,8 +5,7 @@
 #include "chrome/browser/android/explore_sites/record_site_click_task.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
@@ -27,6 +26,12 @@ const int kType = 5;
 class ExploreSitesRecordSiteClickTest : public TaskTestBase {
  public:
   ExploreSitesRecordSiteClickTest() = default;
+
+  ExploreSitesRecordSiteClickTest(const ExploreSitesRecordSiteClickTest&) =
+      delete;
+  ExploreSitesRecordSiteClickTest& operator=(
+      const ExploreSitesRecordSiteClickTest&) = delete;
+
   ~ExploreSitesRecordSiteClickTest() override = default;
 
   void SetUp() override {
@@ -50,21 +55,21 @@ class ExploreSitesRecordSiteClickTest : public TaskTestBase {
  private:
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesRecordSiteClickTest);
 };
 
 void ExploreSitesRecordSiteClickTest::PopulateActivity() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
+    static constexpr char kActivitySql[] =
+        // clang-format off
+        "INSERT INTO activity(time, category_type, url)"
+              "VALUES(?, 1, 'https://www.google.com')";
+    // clang-format on
+    sql::Statement insert_activity(db->GetUniqueStatement(kActivitySql));
     for (int i = 0; i < 200; i++) {
-      sql::Statement insert_activity(db->GetUniqueStatement(R"(
-INSERT INTO activity
-(time, category_type, url)
-VALUES
-(?, 1, "https://www.google.com");
-      )"));
+      insert_activity.Reset(/*clear_bound_vars=*/true);
       insert_activity.BindInt64(0, i + 1);
-      insert_activity.Run();
+      if (!insert_activity.Run())
+        return false;
     }
     return true;
   }));

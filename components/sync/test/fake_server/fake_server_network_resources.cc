@@ -4,6 +4,7 @@
 
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 
+#include <memory>
 #include <string>
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -22,8 +23,7 @@ CreateFakeServerHttpPostProviderFactoryHelper(
     scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner,
     const std::string& user_agent,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory,
-    const syncer::NetworkTimeUpdateCallback& network_time_update_callback) {
+        pending_url_loader_factory) {
   return std::make_unique<FakeServerHttpPostProviderFactory>(
       fake_server, fake_server_task_runner);
 }

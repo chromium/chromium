@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/data_buffer.h"
 #include "media/formats/webm/webm_constants.h"
 

@@ -92,7 +92,7 @@ configuration of proxies, but which requires it be supplied as part of the
 `URLRequestContextGetter` building, if proxies are going to be supported.
 
 An example of injecting configuration flags can be seen in the
-`HttpNetworkSession::Params` structure, which is used to provide much of
+`HttpNetworkSessionParams` structure, which is used to provide much of
 the initialization parameters for the HTTP layer.
 
 The ideal form of injection is to pass ownership of the injected object,
@@ -139,12 +139,12 @@ Delegate. It is from the experience debugging and supporting these APIs
 that the `//net` team strongly encourages all new code pass explicit
 ownership, to reduce the complexity and risk of lifetime issues).
 
-While the use of a `base::Callback` can also be considered a form of
+While the use of a `base::RepeatingCallback` can also be considered a form of
 delegation, the `//net` layer tries to eschew any callbacks that can be
 called more than once, and instead favors defining class interfaces
 with concrete behavioral requirements in order to ensure the correct
 lifetimes of objects and to adjust over time. When `//net` takes a
-callback (e.g. `net::CompletionCallback`), the intended pattern is to
+callback (e.g. `net::CompletionOnceCallback`), the intended pattern is to
 signal the asynchronous completion of a single method, invoking that
 callback at most once before deallocating it. For more discussion
 of these patterns, see [Code Patterns](code-patterns.md).
@@ -218,13 +218,13 @@ it ambiguous.
 
 In addition to preferring explicit lifetimes, such as through judicious use of
 `std::unique_ptr<>` to indicate ownership transfer of dependencies, many
-features in `//net` also expect that if a `base::Callback` is involved (which
-includes `net::CompletionCallback`), then it's possible that invoking the
-callback may result in the deletion of the current (calling) object. As
-further expanded upon in [Code Patterns](code-patterns.md), features and
-changes should be designed such that any callback invocation is the last
-bit of code executed, and that the callback is accessed via the stack (such
-as through the use of `std::move(callback_).Run()`.
+features in `//net` also expect that if a `base::{Once, Repeating}Callback` is
+involved (which includes `net::CompletionOnceCallback`), then it's possible that
+invoking the callback may result in the deletion of the current (calling)
+object. As further expanded upon in [Code Patterns](code-patterns.md), features
+and changes should be designed such that any callback invocation is the last bit
+of code executed, and that the callback is accessed via the stack (such as
+through the use of `std::move(callback_).Run()`.
 
 ### Specs: What Are They Good For
 

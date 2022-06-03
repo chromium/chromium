@@ -23,7 +23,12 @@
     height: 2000px;
   }
 </style>
-
+<script>
+  // Prefer non-composited scrolling because this is a test of non-composited
+  // scrollers.
+  if (window.internals)
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+</script>
 <div id='nonFastRegion'><div>This should be covered by a green overlay.</div></div>
 
 <p>A single square should be visible covered by a green overlay.</p>

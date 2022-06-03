@@ -7,15 +7,20 @@ import("//build/config/sysroot.gni")
 assert(is_mac)
 
 config("gcapi_config") {
+  # gcapi can be bundled with installers of other software, which might run
+  # on older macOS versions than chrome itself. To not making a dependency on
+  # gcapi a problem for these installers, make it target a very old version
+  # of macOS.
+  min_version = "10.8"
   cflags = [
     "-isysroot",
-    sysroot,
-    "-mmacosx-version-min=10.6",
+    rebase_path(sysroot, root_build_dir),
+    "-mmacosx-version-min=$min_version",
   ]
   ldflags = [
     "-isysroot",
-    sysroot,
-    "-mmacosx-version-min=10.6",
+    rebase_path(sysroot, root_build_dir),
+    "-mmacosx-version-min=$min_version",
   ]
 }
 
@@ -27,7 +32,7 @@ static_library("gcapi_lib") {
     "gcapi.mm",
   ]
 
-  libs = [ "Cocoa.framework" ]
+  frameworks = [ "Cocoa.framework" ]
 
   # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
@@ -37,13 +42,9 @@ static_library("gcapi_lib") {
 }
 
 executable("gcapi_example") {
-  sources = [
-    "gcapi_example_client.mm",
-  ]
+  sources = [ "gcapi_example_client.mm" ]
 
-  deps = [
-    ":gcapi_lib",
-  ]
+  deps = [ ":gcapi_lib" ]
 
   # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
@@ -51,7 +52,7 @@ executable("gcapi_example") {
 
   # Every executable by default links to a hermetic libc++, so that we can
   # guarantee the capability of the standard library. Neither gcapi_lib
-  # not gcapi_example contain any significant use of the standard library
+  # nor gcapi_example contain any significant use of the standard library
   # and gcapi_lib is supposed to be redistributable to partners who don't
   # want to link our hermetic libc++, so set no_default_deps to not link to
   # our hermetic libc++.

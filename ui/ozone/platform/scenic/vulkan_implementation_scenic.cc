@@ -10,7 +10,7 @@
 #include <vulkan/vulkan.h>
 #include <memory>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/macros.h"
@@ -18,6 +18,7 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_util.h"
@@ -32,14 +33,30 @@
 
 namespace ui {
 
+namespace {
+
+constexpr char kFuchsiaSwapchainLayerName[] =
+    "VK_LAYER_FUCHSIA_imagepipe_swapchain";
+
+bool CheckSwapchainAvailable() {
+  uint32_t num_instance_exts;
+  VkResult result = vkEnumerateInstanceExtensionProperties(
+      kFuchsiaSwapchainLayerName, &num_instance_exts, nullptr);
+  return result == VK_SUCCESS;
+}
+
+bool IsSwapchainEnabled() {
+  static bool is_swapchain_enabled = CheckSwapchainAvailable();
+  return is_swapchain_enabled;
+}
+
+}  // namespace
+
 VulkanImplementationScenic::VulkanImplementationScenic(
     ScenicSurfaceFactory* scenic_surface_factory,
     SysmemBufferManager* sysmem_buffer_manager,
-    bool allow_protected_memory,
-    bool enforce_protected_memory)
-    : VulkanImplementation(false /* use_swiftshader */,
-                           allow_protected_memory,
-                           enforce_protected_memory),
+    bool allow_protected_memory)
+    : VulkanImplementation(false /* use_swiftshader */, allow_protected_memory),
       scenic_surface_factory_(scenic_surface_factory),
       sysmem_buffer_manager_(sysmem_buffer_manager) {}
 
@@ -57,15 +74,22 @@ bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
 
   gpu::VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
-  vulkan_function_pointers->vulkan_loader_library_ = handle;
+  vulkan_function_pointers->vulkan_loader_library = handle;
+
+  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
+    return false;
+
   std::vector<const char*> required_extensions = {
-      VK_KHR_SURFACE_EXTENSION_NAME,
-      VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME,
       VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
   };
-  std::vector<const char*> required_layers = {
-      "VK_LAYER_FUCHSIA_imagepipe_swapchain",
+  std::vector<const char*> required_layers;
+
+  if (IsSwapchainEnabled()) {
+    required_layers.push_back(kFuchsiaSwapchainLayerName);
+    required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    required_extensions.push_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
   };
+
   return vulkan_instance_.Initialize(required_extensions, required_layers);
 }
 
@@ -75,20 +99,11 @@ gpu::VulkanInstance* VulkanImplementationScenic::GetVulkanInstance() {
 
 std::unique_ptr<gpu::VulkanSurface>
 VulkanImplementationScenic::CreateViewSurface(gfx::AcceleratedWidget window) {
-  // TODO(crbug.com/982922): Remove these checks after swapchain update and
-  // ImagePipe2 rollout completes.
-  uint32_t image_pipe_swapchain_implementation_version = 0;
-  constexpr base::StringPiece image_pipe_swapchain(
-      "VK_LAYER_FUCHSIA_imagepipe_swapchain");
-  for (const VkLayerProperties& layer_property :
-       vulkan_instance_.vulkan_info().instance_layers) {
-    if (image_pipe_swapchain != layer_property.layerName)
-      continue;
-    image_pipe_swapchain_implementation_version =
-        layer_property.implementationVersion;
-    break;
+  if (!IsSwapchainEnabled()) {
+    LOG(FATAL) << "CreateViewSurface() called while swapchain extension isn't "
+                  "enabled.";
   }
-  DCHECK_GT(image_pipe_swapchain_implementation_version, 0u);
+
   ScenicSurface* scenic_surface = scenic_surface_factory_->GetSurface(window);
   fuchsia::images::ImagePipe2Ptr image_pipe;
   scenic_surface->SetTextureToNewImagePipe(image_pipe.NewRequest());
@@ -109,35 +124,41 @@ VulkanImplementationScenic::CreateViewSurface(gfx::AcceleratedWidget window) {
     LOG(FATAL) << "vkCreateImagePipeSurfaceFUCHSIA failed: " << result;
   }
 
-  return std::make_unique<gpu::VulkanSurface>(
-      vulkan_instance_.vk_instance(), surface,
-      enforce_protected_memory() /* use_protected_memory */);
+  return std::make_unique<gpu::VulkanSurface>(vulkan_instance_.vk_instance(),
+                                              window, surface);
 }
 
 bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
     VkPhysicalDevice physical_device,
     const std::vector<VkQueueFamilyProperties>& queue_family_properties,
     uint32_t queue_family_index) {
-  // TODO(spang): vkGetPhysicalDeviceMagmaPresentationSupportKHR returns false
-  // here. Use it once it is fixed.
-  NOTIMPLEMENTED();
   return true;
 }
 
 std::vector<const char*>
 VulkanImplementationScenic::GetRequiredDeviceExtensions() {
-  return {
-      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
+  std::vector<const char*> result = {
+      VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
+      VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME,
       VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
       VK_KHR_MAINTENANCE1_EXTENSION_NAME,
       VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
   };
+
+  if (IsSwapchainEnabled())
+    result.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+  return result;
+}
+
+std::vector<const char*>
+VulkanImplementationScenic::GetOptionalDeviceExtensions() {
+  return {};
 }
 
 VkFence VulkanImplementationScenic::CreateVkFenceForGpuFence(
@@ -156,8 +177,7 @@ VulkanImplementationScenic::ExportVkFenceToGpuFence(VkDevice vk_device,
 VkSemaphore VulkanImplementationScenic::CreateExternalSemaphore(
     VkDevice vk_device) {
   return gpu::CreateExternalVkSemaphore(
-      vk_device,
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA);
+      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
 }
 
 VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
@@ -167,7 +187,7 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
     return VK_NULL_HANDLE;
 
   if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA) {
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
     return VK_NULL_HANDLE;
   }
 
@@ -179,11 +199,11 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
 
   zx::event event = handle.TakeHandle();
   VkImportSemaphoreZirconHandleInfoFUCHSIA import = {
-      VK_STRUCTURE_TYPE_TEMP_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
+      VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
   import.semaphore = semaphore;
   import.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.handle = event.get();
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
+  import.zirconHandle = event.get();
 
   result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
   if (result != VK_SUCCESS) {
@@ -202,10 +222,9 @@ gpu::SemaphoreHandle VulkanImplementationScenic::GetSemaphoreHandle(
     VkSemaphore vk_semaphore) {
   // Create VkSemaphoreGetFdInfoKHR structure.
   VkSemaphoreGetZirconHandleInfoFUCHSIA info = {
-      VK_STRUCTURE_TYPE_TEMP_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
+      VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
   info.semaphore = vk_semaphore;
-  info.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
+  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
 
   zx_handle_t handle;
   VkResult result =
@@ -216,13 +235,13 @@ gpu::SemaphoreHandle VulkanImplementationScenic::GetSemaphoreHandle(
   }
 
   return gpu::SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
       zx::event(handle));
 }
 
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationScenic::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA;
+  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
 }
 
 bool VulkanImplementationScenic::CanImportGpuMemoryBuffer(
@@ -230,33 +249,54 @@ bool VulkanImplementationScenic::CanImportGpuMemoryBuffer(
   return memory_buffer_type == gfx::NATIVE_PIXMAP;
 }
 
-bool VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
-    VkDevice vk_device,
+std::unique_ptr<gpu::VulkanImage>
+VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkImage* vk_image,
-    VkImageCreateInfo* vk_image_info,
-    VkDeviceMemory* vk_device_memory,
-    VkDeviceSize* mem_allocation_size,
-    base::Optional<gpu::VulkanYCbCrInfo>* ycbcr_info) {
+    VkFormat vk_format) {
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
-    return false;
+    return nullptr;
 
   if (!gmb_handle.native_pixmap_handle.buffer_collection_id) {
     DLOG(ERROR) << "NativePixmapHandle.buffer_collection_id is not set.";
-    return false;
+    return nullptr;
   }
 
   auto collection = sysmem_buffer_manager_->GetCollectionById(
       gmb_handle.native_pixmap_handle.buffer_collection_id.value());
   if (!collection) {
-    DLOG(ERROR) << "Tried to use an unknown buffer collection ID";
-    return false;
+    DLOG(ERROR) << "Tried to use an unknown buffer collection ID.";
+    return nullptr;
+  }
+  VkImage vk_image = VK_NULL_HANDLE;
+  VkImageCreateInfo vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+  VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
+  VkDeviceSize vk_device_size = 0;
+  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle.buffer_index,
+                                 device_queue->GetVulkanDevice(), size,
+                                 &vk_image, &vk_image_info, &vk_device_memory,
+                                 &vk_device_size, &ycbcr_info)) {
+    DLOG(ERROR) << "CreateVkImage failed.";
+    return nullptr;
   }
 
-  return collection->CreateVkImage(
-      gmb_handle.native_pixmap_handle.buffer_index, vk_device, size, vk_image,
-      vk_image_info, vk_device_memory, mem_allocation_size, ycbcr_info);
+  auto image = gpu::VulkanImage::Create(
+      device_queue, vk_image, vk_device_memory, size, vk_image_info.format,
+      vk_image_info.tiling, vk_device_size, 0 /* memory_type_index */,
+      ycbcr_info, vk_image_info.usage, vk_image_info.flags);
+
+  if (image->format() != vk_format) {
+    DLOG(ERROR) << "Unexpected format " << vk_format << " vs "
+                << image->format();
+    image->Destroy();
+    return nullptr;
+  }
+
+  image->set_native_pixmap(collection->CreateNativePixmap(
+      gmb_handle.native_pixmap_handle.buffer_index));
+  return image;
 }
 
 class SysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
@@ -264,22 +304,36 @@ class SysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
   SysmemBufferCollectionImpl(
       scoped_refptr<ui::SysmemBufferCollection> collection)
       : collection_(std::move(collection)) {}
+
+  SysmemBufferCollectionImpl(const SysmemBufferCollectionImpl&) = delete;
+  SysmemBufferCollectionImpl& operator=(const SysmemBufferCollectionImpl&) =
+      delete;
+
   ~SysmemBufferCollectionImpl() override = default;
 
  private:
   scoped_refptr<ui::SysmemBufferCollection> collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferCollectionImpl);
 };
 
 std::unique_ptr<gpu::SysmemBufferCollection>
 VulkanImplementationScenic::RegisterSysmemBufferCollection(
     VkDevice device,
     gfx::SysmemBufferCollectionId id,
-    zx::channel token) {
+    zx::channel token,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    gfx::Size size,
+    size_t min_buffer_count,
+    bool register_with_image_pipe) {
+  fuchsia::images::ImagePipe2Ptr image_pipe = nullptr;
+  auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
+      device, id, std::move(token), size, format, usage, min_buffer_count,
+      register_with_image_pipe);
+  if (!buffer_collection)
+    return nullptr;
+
   return std::make_unique<SysmemBufferCollectionImpl>(
-      sysmem_buffer_manager_->ImportSysmemBufferCollection(device, id,
-                                                           std::move(token)));
+      std::move(buffer_collection));
 }
 
 }  // namespace ui

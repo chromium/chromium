@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Defines style error handler classes.
 
 A style error handler is a function to call when a style error is
@@ -49,10 +48,12 @@ Methods:
 
 
 class DefaultStyleErrorHandler(object):
-
     """The default style error handler."""
 
-    def __init__(self, file_path, configuration, increment_error_count,
+    def __init__(self,
+                 file_path,
+                 configuration,
+                 increment_error_count,
                  line_numbers=None):
         """Create a default style error handler.
 
@@ -126,7 +127,11 @@ class DefaultStyleErrorHandler(object):
     def turn_off_line_filtering(self):
         self._line_numbers = None
 
-    def __call__(self, line_number, category, confidence, message):
+    def __call__(self,
+                 line_number=0,
+                 category='error',
+                 confidence='1',
+                 message=''):
         """Handle the occurrence of a style error.
 
         See the docstring of this module for more information.
@@ -134,9 +139,10 @@ class DefaultStyleErrorHandler(object):
         if not self.should_line_be_checked(line_number):
             return False
 
-        if not self._configuration.is_reportable(category=category,
-                                                 confidence_in_error=confidence,
-                                                 file_path=self._file_path):
+        if not self._configuration.is_reportable(
+                category=category,
+                confidence_in_error=confidence,
+                file_path=self._file_path):
             return False
 
         category_total = self._add_reportable_error(category)
@@ -147,12 +153,14 @@ class DefaultStyleErrorHandler(object):
             # Then suppress displaying the error.
             return False
 
-        self._configuration.write_style_error(category=category,
-                                              confidence_in_error=confidence,
-                                              file_path=self._file_path,
-                                              line_number=line_number,
-                                              message=message)
+        self._configuration.write_style_error(
+            category=category,
+            confidence_in_error=confidence,
+            file_path=self._file_path,
+            line_number=line_number,
+            message=message)
         if category_total == max_reports:
-            self._configuration.stderr_write('Suppressing further [%s] reports '
-                                             'for this file.\n' % category)
+            self._configuration.stderr_write(
+                'Suppressing further [%s] reports '
+                'for this file.\n' % category)
         return True

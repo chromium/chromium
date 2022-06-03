@@ -86,7 +86,7 @@ CSSStyleSheet* StyleSheetList::AnonymousNamedGetter(const AtomicString& name) {
   return sheet;
 }
 
-void StyleSheetList::Trace(blink::Visitor* visitor) {
+void StyleSheetList::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(style_sheet_vector_);
   ScriptWrappable::Trace(visitor);

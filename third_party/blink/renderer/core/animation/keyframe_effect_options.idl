@@ -7,4 +7,5 @@
 dictionary KeyframeEffectOptions : EffectTiming {
     // TODO(alancutter): Implement iterationComposite
   CompositeOperation composite = "replace";
+  CSSOMString?       pseudoElement = null;
 };

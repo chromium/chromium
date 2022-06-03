@@ -6,13 +6,13 @@
 #define CONTENT_PUBLIC_BROWSER_SESSION_STORAGE_USAGE_INFO_H_
 
 #include "content/common/content_export.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
 // Used to report Session Storage usage info by DOMStorageContext.
 struct CONTENT_EXPORT SessionStorageUsageInfo {
-  GURL origin;
+  blink::StorageKey storage_key;
   std::string namespace_id;
 };
 

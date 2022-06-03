@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <ostream>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace remoting {
 

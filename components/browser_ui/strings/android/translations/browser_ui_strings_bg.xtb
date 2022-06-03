@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="bg">
+<translation id="1006017844123154345">Отваряне онлайн</translation>
+<translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
+<translation id="1124090076051167250">Съхраняваните от сайтовете или приложенията на началния екран данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
+<translation id="1178581264944972037">Пауза</translation>
+<translation id="1181037720776840403">Премахване</translation>
+<translation id="1201402288615127009">Напред</translation>
+<translation id="1242008676835033345">Вграден в <ph name="WEBSITE_URL" /></translation>
+<translation id="1272079795634619415">Стоп</translation>
+<translation id="1289742167380433257">Изображенията на тази страница бяха оптимизирани от Google с цел пестене на данни.</translation>
+<translation id="129382876167171263">Тук се показват файловете, запазени от уебсайтове</translation>
+<translation id="1317194122196776028">Забравяне на този сайт</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> – <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676">Сайтът <ph name="SITE_NAME" /> е добавен</translation>
+<translation id="1383876407941801731">Търсене</translation>
+<translation id="1384959399684842514">Изтеглянето е на пауза</translation>
+<translation id="1415402041810619267">URL адресът е съкратен</translation>
+<translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
+<translation id="1620510694547887537">Камера</translation>
+<translation id="1644574205037202324">История</translation>
+<translation id="1647582022260550163">Наистина ли искате да нулирате разрешенията и да изчистите „бисквитките“ и данните за сайта?</translation>
+<translation id="1660204651932907780">Разрешаване на сайтовете да възпроизвеждат звук (препоръчително)</translation>
+<translation id="1677097821151855053">„Бисквитките“ и другите данни за сайтове се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
+<translation id="1688867105868176567">Да се изчистят ли данните за сайта?</translation>
+<translation id="169515064810179024">Блокиране на достъпа на сайтовете до сензорите за движение</translation>
+<translation id="1717218214683051432">Сензори за движение</translation>
+<translation id="1743802530341753419">Извеждане на запитване, преди да се разреши на сайтовете да се свържат с устройство (препоръчително)</translation>
+<translation id="1779089405699405702">Декодиране на изображения</translation>
+<translation id="1818308510395330587">За да разрешите на <ph name="APP_NAME" /> да използва AR, камерата трябва да бъде включена от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">От <ph name="SOURCE_NAME" /></translation>
+<translation id="1887786770086287077">Достъпът до местоположението е изключен за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="1919345977826869612">Реклами</translation>
+<translation id="1919950603503897840">Избор на контакти</translation>
+<translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> от <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">Разрешено, но не и за трети страни</translation>
+<translation id="1989112275319619282">Сърфиране</translation>
+<translation id="1994173015038366702">URL адрес на сайт</translation>
+<translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
+<translation id="2025115093177348061">Обогатена реалност</translation>
+<translation id="2030769033451695672">Докоснете, за да се върнете към <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
+<translation id="2079545284768500474">Отмяна</translation>
+<translation id="2091887806945687916">Звук</translation>
+<translation id="2107397443965016585">Запитване преди разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
+<translation id="2146738493024040262">Отваряне на мигновеното приложение</translation>
+<translation id="2148716181193084225">Днес</translation>
+<translation id="2182457891543959921">Извеждане на запитване, преди да се разреши на сайтовете да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата (препоръчително)</translation>
+<translation id="2212565012507486665">Разрешаване на „бисквитките“</translation>
+<translation id="2228071138934252756">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до камерата ви, тя трябва да бъде включена и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="2241634353105152135">Само веднъж</translation>
+<translation id="2289270750774289114">Извеждане на запитване, когато сайт иска да открива устройства с Bluetooth в близост (препоръчително)</translation>
+<translation id="2315043854645842844">Избраният сертификат от страната на клиента не се поддържа от операционната система.</translation>
+<translation id="2359808026110333948">Напред</translation>
+<translation id="2379925928934107488">Прилагане на тъмната тема към сайтовете, стига да е възможно и когато Chrome използва тъмната тема</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
+<translation id="2434158240863470628">Изтеглянето завърши <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Винаги да се заявява настолният сайт</translation>
+<translation id="2482878487686419369">Известия</translation>
+<translation id="2485422356828889247">Деинсталиране</translation>
+<translation id="2490684707762498678">Управляват се от <ph name="APP_NAME" /></translation>
+<translation id="2498359688066513246">Помощ и отзиви</translation>
+<translation id="2501278716633472235">Назад</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Блокирана е 1 „бисквитка“}other{Блокирани са # „бисквитки“}}</translation>
+<translation id="2570922361219980984">Достъпът до местоположението е изключен и за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="257931822824936280">Разгънато – кликнете за свиване.</translation>
+<translation id="2586657967955657006">Буферна памет</translation>
+<translation id="2597457036804169544">Без прилагане на тъмната тема към сайтовете</translation>
+<translation id="2621115761605608342">Разрешаване на JavaScript за конкретен сайт.</translation>
+<translation id="2653659639078652383">Изпращане</translation>
+<translation id="2677748264148917807">Излизане</translation>
+<translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
+<translation id="2704606927547763573">Копирано</translation>
+<translation id="2717722538473713889">Имейл адреси</translation>
+<translation id="2785051990912111074">Така ще се изчистят „бисквитките“ за <ph name="WEBSITE" /></translation>
+<translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2870560284913253234">Сайт</translation>
+<translation id="2874939134665556319">Предишен запис</translation>
+<translation id="2903493209154104877">Адреси</translation>
+<translation id="2910701580606108292">Запитване преди разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
+<translation id="2913331724188855103">Разрешаване на сайтовете да запазват „бисквитки“ и да четат данни от такива (препоръчително)</translation>
+<translation id="2932883381142163287">Подаване на сигнал за злоупотреба</translation>
+<translation id="2968755619301702150">Визуализатор на сертификатите</translation>
+<translation id="300526633675317032">Така ще се изчистят всички съхранявани данни от уебсайтове (<ph name="SIZE_IN_KB" />).</translation>
+<translation id="3008272652534848354">Нулиране на разрешенията</translation>
+<translation id="301521992641321250">Автоматично блокирано</translation>
+<translation id="3114012059975132928">Видеоплейър</translation>
+<translation id="3115898365077584848">Показване на информацията</translation>
+<translation id="3123473560110926937">Блокиране на някои сайтове</translation>
+<translation id="3198916472715691905">Съхранявани данни: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="321187648315454507">За да разрешите на <ph name="APP_NAME" /> да ви изпраща известия, те трябва да бъдат включени и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="3227137524299004712">Микрофон</translation>
+<translation id="3277252321222022663">Разрешаване на достъпа на сайтовете до сензорите (препоръчително)</translation>
+<translation id="3295602654194328831">Скриване на информацията</translation>
+<translation id="3328801116991980348">Информация за сайта</translation>
+<translation id="3333961966071413176">Всички контакти</translation>
+<translation id="3386292677130313581">Извеждане на запитване, преди на сайтовете да се разреши достъп до местоположението ви (препоръчително)</translation>
+<translation id="3538390592868664640">Блокиране на сайтовете, така че да не могат да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
+<translation id="3551268116566418498">Излизане от режим „инкогнито“?</translation>
+<translation id="3586500876634962664">Ползване на камерата и микрофона</translation>
+<translation id="358794129225322306">Разрешаване на сайт автоматично да изтегля няколко файла.</translation>
+<translation id="3594780231884063836">Без образ</translation>
+<translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
+<translation id="3600792891314830896">Спиране на звука, възпроизвеждан от сайтовете</translation>
+<translation id="3744111561329211289">Синхронизиране на заден план</translation>
+<translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
+<translation id="3797520601150691162">Без прилагане на тъмната тема към конкретен сайт</translation>
+<translation id="381841723434055211">Телефонни номера</translation>
+<translation id="3835233591525155343">Използването на устройството ви</translation>
+<translation id="385051799172605136">Назад</translation>
+<translation id="3859306556332390985">Придвижване напред</translation>
+<translation id="3955193568934677022">Разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
+<translation id="3967822245660637423">Изтеглянето завърши</translation>
+<translation id="3987993985790029246">Връзка: Коп.</translation>
+<translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> от ?</translation>
+<translation id="4002066346123236978">Заглавие</translation>
+<translation id="4008040567710660924">Разрешаване на „бисквитките“ за конкретен сайт.</translation>
+<translation id="4046123991198612571">Следващ запис</translation>
+<translation id="4165986682804962316">Настройки за сайта</translation>
+<translation id="4200726100658658164">Отваряне на настройките за местоположението</translation>
+<translation id="4226663524361240545">Възможно е устройството да вибрира при известия</translation>
+<translation id="4259722352634471385">Навигирането е блокирано: <ph name="URL" /></translation>
+<translation id="4278390842282768270">Разрешено</translation>
+<translation id="429312253194641664">Сайт възпроизвежда мултимедийно съдържание</translation>
+<translation id="42981349822642051">Разгъване</translation>
+<translation id="4336434711095810371">Изчистване на всички данни</translation>
+<translation id="4402755511846832236">Блокиране на сайтовете, така че да не знаят дали това устройство се използва активно</translation>
+<translation id="4434045419905280838">Изскач. прозорци и пренасочвания</translation>
+<translation id="445467742685312942">Разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
+<translation id="4468959413250150279">Спиране на звука за конкретен сайт.</translation>
+<translation id="4479647676395637221">Извеждане на запитване, преди да се разреши на сайтовете да използват камерата (препоръчително)</translation>
+<translation id="4505788138578415521">URL адресът е разгънат</translation>
+<translation id="4534723447064627427">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до микрофона ви, той трябва да бъде включен и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="4570913071927164677">Подробности</translation>
+<translation id="4645575059429386691">Управлява се от ваш родител</translation>
+<translation id="4670064810192446073">Виртуална реалност</translation>
+<translation id="4751476147751820511">Сензори за движение или светлина</translation>
+<translation id="4836046166855586901">Извеждане на запитване, когато сайт иска да знае кога това устройство се използва активно</translation>
+<translation id="4883854917563148705">Управляваните настройки не могат да се зададат отново</translation>
+<translation id="4887024562049524730">Извеждане на запитване, преди да се разреши на сайтовете да използват устройството и данните ви за виртуална реалност (препоръчително)</translation>
+<translation id="4962975101802056554">Отмяна на всички разрешения за устройството</translation>
+<translation id="497421865427891073">Преминаване напред</translation>
+<translation id="4976702386844183910">Последно посещение: <ph name="DATE" /></translation>
+<translation id="4994033804516042629">Няма намерени контакти</translation>
+<translation id="4996978546172906250">Споделяне чрез</translation>
+<translation id="5014906230196386306">Да се изчистят ли „бисквитките“?</translation>
+<translation id="5039804452771397117">Разрешаване</translation>
+<translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
+<translation id="5050380848339752099">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
+<translation id="5063480226653192405">Употреба</translation>
+<translation id="509133520954049755">Заявяване на изглед за настолни компютри</translation>
+<translation id="5100237604440890931">Свито – кликнете за разгъване.</translation>
+<translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
+<translation id="5134599672855298214">Заявяване на изглед за мобилни устройства (препоръчително)</translation>
+<translation id="5186036860380548585">Опцията е в горната част на екрана</translation>
+<translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Последно посещение: днес</translation>
+<translation id="528192093759286357">Плъзнете пръст от горната част на екрана и докоснете бутона за връщане назад, за да излезете от режима на цял екран.</translation>
+<translation id="5300589172476337783">Показване</translation>
+<translation id="5301954838959518834">Добре, разбрах</translation>
+<translation id="5313967007315987356">Добавяне на сайт</translation>
+<translation id="5317780077021120954">Запазване</translation>
+<translation id="5335288049665977812">Разрешаване на сайтовете да изпълняват JavaScript (препоръчително)</translation>
+<translation id="534295439873310000">Устройства с NFC</translation>
+<translation id="5354152178998424783">Съхраняваните от сайтовете данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
+<translation id="5403592356182871684">Имена</translation>
+<translation id="5438097262470833822">Така ще се нулират разрешенията за <ph name="WEBSITE" /></translation>
+<translation id="5489227211564503167">Изминало време: <ph name="ELAPSED_TIME" /> от <ph name="TOTAL_TIME" />.</translation>
+<translation id="5494752089476963479">Блокиране на рекламите от сайтове, на които се показват натрапчиви или подвеждащи реклами</translation>
+<translation id="5502860503640766021">Достъпът до <ph name="PERMISSION_1" /> е разрешен, а до <ph name="PERMISSION_2" /> е блокиран</translation>
+<translation id="5505264765875738116">Сайтовете не могат да извеждат подкани за изпращане на известия</translation>
+<translation id="5516455585884385570">Отваряне на настройките за известия</translation>
+<translation id="5527111080432883924">Извеждане на запитване, преди да се разреши на сайтовете да четат текста и изображенията от буферната памет (препоръчително)</translation>
+<translation id="5553374991681107062">Най-новите</translation>
+<translation id="5556459405103347317">Повторно зареждане</translation>
+<translation id="5596627076506792578">Още опции</translation>
+<translation id="5649053991847567735">Автоматични изтегляния</translation>
+<translation id="5677928146339483299">Блокирано</translation>
+<translation id="5689516760719285838">Местоположение</translation>
+<translation id="5690795753582697420">Камерата е изключена от настройките на Android</translation>
+<translation id="5710871682236653961">Извеждане на запитване преди разрешаване на сайтовете да изпращат и получават информация при допиране на устройства с NFC (препоръчително)</translation>
+<translation id="5719847187258001597">Всички съхранявани от <ph name="ORIGIN" /> или от съответното приложение на началния екран данни и „бисквитки“ ще бъдат изчистени.</translation>
+<translation id="5771720122942595109">Достъпът до <ph name="PERMISSION_1" /> е блокиран</translation>
+<translation id="5804241973901381774">Разрешения</translation>
+<translation id="5860033963881614850">Изключено</translation>
+<translation id="5876056640971328065">Поставяне на видеоклипа на пауза</translation>
+<translation id="5887687176710214216">Последно посещение: вчера</translation>
+<translation id="5916664084637901428">Включено</translation>
+<translation id="5922853908706496913">Екранът ви се споделя</translation>
+<translation id="5939518447894949180">Нулиране</translation>
+<translation id="5975083100439434680">Намаляване на мащаба</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">Контролирайте достъпа на този сайт до устройството ви</translation>
+<translation id="6040143037577758943">Затваряне</translation>
+<translation id="6042308850641462728">Още</translation>
+<translation id="6064125863973209585">Завършени изтегляния</translation>
+<translation id="6165508094623778733">Научете повече</translation>
+<translation id="6177111841848151710">Блокирано за текущата търсеща машина</translation>
+<translation id="6177128806592000436">Връзката ви с този сайт не е защитена</translation>
+<translation id="6181444274883918285">Добавяне на изключение за сайт</translation>
+<translation id="6192792657125177640">Изключения</translation>
+<translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
+<translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6231752747840485235">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> са блокирани</translation>
+<translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
+<translation id="6295158916970320988">Всички сайтове</translation>
+<translation id="6320088164292336938">Вибриране</translation>
+<translation id="6388207532828177975">Изчистване и нулиране</translation>
+<translation id="6398765197997659313">Изход от цял екран</translation>
+<translation id="6439114592976064011">Блокиране на сайтовете, така че да не използват устройствата и данните ви за виртуална реалност</translation>
+<translation id="6447842834002726250">„Бисквитки“</translation>
+<translation id="6527303717912515753">Споделяне</translation>
+<translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}}</translation>
+<translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
+<translation id="6561560012278703671">Използване на по-малко натрапчиви съобщения (подканите за известия се блокират, така че да не ви прекъсват)</translation>
+<translation id="6593061639179217415">Настолен сайт</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
+<translation id="6612358246767739896">Защитено съдържание</translation>
+<translation id="662080504995468778">Оставане</translation>
+<translation id="6643016212128521049">Изчистване</translation>
+<translation id="6689172468748959065">Снимки на потребителския профил</translation>
+<translation id="6697925417670533197">Активни изтегляния</translation>
+<translation id="6746124502594467657">Придвижване надолу</translation>
+<translation id="6749077623962119521">Да се нулират ли разрешенията?</translation>
+<translation id="6766622839693428701">Прекарайте пръст надолу, за да затворите.</translation>
+<translation id="6790428901817661496">Пускане</translation>
+<translation id="6818926723028410516">Избор на елементи</translation>
+<translation id="6864395892908308021">Това устройство не може да чете NFC</translation>
+<translation id="6910211073230771657">Изтрито</translation>
+<translation id="6912998170423641340">Забраняване на сайтовете да четат текста и изображенията от буферната памет</translation>
+<translation id="6945221475159498467">Избиране</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="6992289844737586249">Извеждане на запитване, преди да се разреши на сайтовете да използват микрофона (препоръчително)</translation>
+<translation id="7000754031042624318">Изключено от настройките на Android</translation>
+<translation id="7016516562562142042">Разрешено за текущата търсеща машина</translation>
+<translation id="7053983685419859001">Блокиране</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избран е 1}other{Избрани са #}}</translation>
+<translation id="7070090581017165256">Всичко за този сайт</translation>
+<translation id="7087918508125750058">Избрани: <ph name="ITEM_COUNT" />. Налице са опции близо до горната част на екрана</translation>
+<translation id="7141896414559753902">Блокиране на показването на изскачащи прозорци и пренасочвания от сайтовете (препоръчително)</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
+<translation id="723171743924126238">Избиране на изображения</translation>
+<translation id="7243308994586599757">Опциите са в долната част на екрана</translation>
+<translation id="7250468141469952378">Избрани: <ph name="ITEM_COUNT" /></translation>
+<translation id="7260727271532453612">Достъпът до <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> е разрешен</translation>
+<translation id="7302486331832100261">Обикновено блокирате известията. За да разрешите, докоснете „Подробности“.</translation>
+<translation id="7423098979219808738">Първо ще се извежда запитване</translation>
+<translation id="7423538860840206698">Достъпът за четене до буферната памет е блокиран</translation>
+<translation id="7425915948813553151">Тъмна тема за сайтовете</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">Сайт използва микрофона ви</translation>
+<translation id="7561196759112975576">Винаги</translation>
+<translation id="7572498721684305250">Блокиране на сайтовете, така че да не изпращат и получават информация при допиране на устройства с NFC</translation>
+<translation id="757524316907819857">Блокиране на възможността на сайтовете да възпроизвеждат защитено съдържание</translation>
+<translation id="7649070708921625228">Помощ</translation>
+<translation id="7658239707568436148">Отказ</translation>
+<translation id="7781829728241885113">Вчера</translation>
+<translation id="7791543448312431591">Добавяне</translation>
+<translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7804248752222191302">Сайт използва камерата ви</translation>
+<translation id="7817023149356982970">Ще излезете от профила си в този сайт.</translation>
+<translation id="7828557259026017104">Това са файлове, създавани от уебсайтовете, които посещавате. Сайтовете ги използват, за да запомнят предпочитанията ви. „Бисквитките“ на трети страни се създават от други сайтове. Тези сайтове притежават част от съдържанието, като например реклами или изображения, което виждате на посетената от вас уеб страница.</translation>
+<translation id="7835852323729233924">Възпроизвеждане на мултимедия</translation>
+<translation id="783819812427904514">С образ</translation>
+<translation id="7846076177841592234">Анулиране на избора</translation>
+<translation id="7846621471902887024">Ще излезете от профила си във всички сайтове.</translation>
+<translation id="7882806643839505685">Разрешаване на звука за конкретен сайт.</translation>
+<translation id="7940722705963108451">Напомняне</translation>
+<translation id="7986741934819883144">Изберете контакт</translation>
+<translation id="7999064672810608036">Наистина ли искате да изчистите всички локални данни, включително „бисквитките“, и да нулирате всички разрешения за този уебсайт?</translation>
+<translation id="8007176423574883786">Изключено за това устройство</translation>
+<translation id="802154636333426148">Изтеглянето не бе успешно</translation>
+<translation id="8042586301629853791">Сортиране по:</translation>
+<translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
+<translation id="8068648041423924542">Сертификатът не може да бъде избран.</translation>
+<translation id="8087000398470557479">Това съдържание се показва от Google, а източникът му е <ph name="DOMAIN_NAME" />.</translation>
+<translation id="8116925261070264013">Заглушени</translation>
+<translation id="813082847718468539">Преглед на информацията за сайта</translation>
+<translation id="8131740175452115882">Потвърждаване</translation>
+<translation id="8154912474061769055">Функциите в много сайтове може да не работят</translation>
+<translation id="8197286292360124385">Достъпът до <ph name="PERMISSION_1" /> е разрешен</translation>
+<translation id="8200772114523450471">Възобновяване</translation>
+<translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
+<translation id="8211406090763984747">Връзката е защитена</translation>
+<translation id="8249310407154411074">Преместване най-горе</translation>
+<translation id="8261506727792406068">Изтриване</translation>
+<translation id="8300705686683892304">Управлявани от приложение</translation>
+<translation id="8324158725704657629">Без повторно питане</translation>
+<translation id="8372893542064058268">Разрешаване на синхронизирането на заден план за конкретен сайт.</translation>
+<translation id="8376384591331888629">Включително бисквитките на трети страни на този сайт</translation>
+<translation id="83792324527827022">Сайт използва камерата и микрофона ви</translation>
+<translation id="8380167699614421159">На този сайт се показват натрапчиви или подвеждащи реклами</translation>
+<translation id="8394832520002899662">Докоснете, за да се върнете към сайта</translation>
+<translation id="8425213833346101688">Промяна</translation>
+<translation id="8441146129660941386">Придвижване назад</translation>
+<translation id="8444433999583714703">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до местоположението ви, то трябва да бъде включено и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="8447861592752582886">Отмяна на разрешението за достъп до устройството</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Използва се 1 „бисквитка“}other{Използват се # „бисквитки“}}</translation>
+<translation id="8487700953926739672">Налице офлайн</translation>
+<translation id="848952951823693243">Винаги да се заявява мобилният сайт</translation>
+<translation id="851751545965956758">Блокиране на сайтовете, така че да не се свързват с устройства</translation>
+<translation id="8525306231823319788">На цял екран</translation>
+<translation id="857943718398505171">Разрешено (препоръчително)</translation>
+<translation id="8609465669617005112">Придвижване нагоре</translation>
+<translation id="8676374126336081632">Изчистване на въведеното</translation>
+<translation id="868929229000858085">Търсене в контактите ви</translation>
+<translation id="8702612070107455751">Всички офлайн данни ще бъдат изчистени.</translation>
+<translation id="8712637175834984815">Разбрах</translation>
+<translation id="8719283222052720129">Включете разрешението за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="8725066075913043281">Опитайте отново</translation>
+<translation id="8730621377337864115">Готово</translation>
+<translation id="8737217482364735741">Всички данни и „бисквитки“, съхранявани от <ph name="ORIGIN" />, ще бъдат изчистени.</translation>
+<translation id="8751914237388039244">Избор на изображение</translation>
+<translation id="8801436777607969138">Блокиране на JavaScript за конкретен сайт.</translation>
+<translation id="8816026460808729765">Блокиране на достъпа на сайтовете до сензорите</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Увеличаване на мащаба</translation>
+<translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
+<translation id="8926666909099850184">Функцията за NFC е изключена на това устройство. Включете я от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="8941729603749328384">www.example.com</translation>
+<translation id="8958424370300090006">Блокиране на „бисквитките“ за конкретен сайт.</translation>
+<translation id="8959122750345127698">Навигирането не е възможно: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Забравяне</translation>
+<translation id="9019902583201351841">Управлява се от родителите ви</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}}</translation>
+<translation id="913657688200966289">Включете разрешенията за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Тази страница е опасна</translation>
+<translation id="930525582205581608">Да се забрави ли този сайт?</translation>
+<translation id="967624055006145463">Съхранени данни</translation>
+</translationbundle>

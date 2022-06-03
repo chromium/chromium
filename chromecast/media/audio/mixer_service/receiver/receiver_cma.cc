@@ -21,7 +21,14 @@ namespace media {
 namespace mixer_service {
 
 namespace {
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
+
+enum MessageTypes : int {
+  kPushResult = 1,
+  kEndOfStream,
+};
+
 }  // namespace
 
 class ReceiverCma::UnusedSocket : public MixerSocket::Delegate {
@@ -33,6 +40,9 @@ class ReceiverCma::UnusedSocket : public MixerSocket::Delegate {
     socket_->SetDelegate(this);
   }
 
+  UnusedSocket(const UnusedSocket&) = delete;
+  UnusedSocket& operator=(const UnusedSocket&) = delete;
+
   ~UnusedSocket() override = default;
 
  private:
@@ -41,8 +51,6 @@ class ReceiverCma::UnusedSocket : public MixerSocket::Delegate {
 
   ReceiverCma* const receiver_;
   const std::unique_ptr<MixerSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnusedSocket);
 };
 
 class ReceiverCma::Stream : public MixerSocket::Delegate,
@@ -58,6 +66,9 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
     inactivity_timer_.Start(FROM_HERE, kInactivityTimeout, this,
                             &Stream::OnInactivityTimeout);
   }
+
+  Stream(const Stream&) = delete;
+  Stream& operator=(const Stream&) = delete;
 
   ~Stream() override = default;
 
@@ -86,10 +97,15 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
       cma_audio_->SetVolumeMultiplier(message.set_stream_volume().volume());
     }
 
+    if (message.has_eos_played_out()) {
+      // Explicit EOS.
+      return HandleAudioData(nullptr, 0, INT64_MIN);
+    }
+
     return true;
   }
 
-  bool HandleAudioData(char* data, int size, int64_t timestamp) override {
+  bool HandleAudioData(char* data, size_t size, int64_t timestamp) override {
     last_receive_time_ = base::TimeTicks::Now();
     inactivity_timer_.Reset();
 
@@ -123,20 +139,12 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
   // CmaBackendShim::Delegate implementation:
   void OnBufferPushed(CmaBackendShim::RenderingDelay rendering_delay) override {
     if (!pushed_eos_) {
-      int64_t next_playout_timestamp;
-      if (rendering_delay.timestamp_microseconds ==
-          std::numeric_limits<int64_t>::min()) {
-        next_playout_timestamp = std::numeric_limits<int64_t>::min();
-      } else {
-        next_playout_timestamp = rendering_delay.timestamp_microseconds +
-                                 rendering_delay.delay_microseconds;
-      }
-
       mixer_service::BufferPushResult message;
-      message.set_next_playback_timestamp(next_playout_timestamp);
+      message.set_delay_timestamp(rendering_delay.timestamp_microseconds);
+      message.set_delay(rendering_delay.delay_microseconds);
       mixer_service::Generic generic;
       *(generic.mutable_push_result()) = message;
-      socket_->SendProto(generic);
+      socket_->SendProto(kPushResult, generic);
       last_send_time_ = base::TimeTicks::Now();
     }
 
@@ -148,7 +156,7 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
     mixer_service::EosPlayedOut message;
     mixer_service::Generic generic;
     *generic.mutable_eos_played_out() = message;
-    socket_->SendProto(generic);
+    socket_->SendProto(kEndOfStream, generic);
     last_send_time_ = base::TimeTicks::Now();
 
     cma_audio_.reset();
@@ -173,8 +181,6 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
   base::TimeTicks last_receive_time_;
 
   base::WeakPtrFactory<Stream> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Stream);
 };
 
 ReceiverCma::ReceiverCma(MediaPipelineBackendManager* backend_manager)

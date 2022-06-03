@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -36,8 +36,8 @@ class Renderer;
 
 // A mojom::Renderer implementation that use a media::Renderer to render
 // media streams.
-class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
-                                              public RendererClient {
+class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
+                                                    public RendererClient {
  public:
   // Helper function to bind MojoRendererService with a SelfOwendReceiver,
   // which is safely accessible via the returned SelfOwnedReceiverRef.
@@ -51,12 +51,15 @@ class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
   MojoRendererService(MojoCdmServiceContext* mojo_cdm_service_context,
                       std::unique_ptr<media::Renderer> renderer);
 
+  MojoRendererService(const MojoRendererService&) = delete;
+  MojoRendererService& operator=(const MojoRendererService&) = delete;
+
   ~MojoRendererService() final;
 
   // mojom::Renderer implementation.
   void Initialize(
       mojo::PendingAssociatedRemote<mojom::RendererClient> client,
-      base::Optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
+      absl::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
           streams,
       mojom::MediaUrlParamsPtr media_url_params,
       InitializeCallback callback) final;
@@ -64,13 +67,8 @@ class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
   void StartPlayingFrom(base::TimeDelta time_delta) final;
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
-  void SetCdm(int32_t cdm_id, SetCdmCallback callback) final;
-
-  // TODO(tguilbert): Get rid of |bad_message_cb_|, now that it's no longer
-  // needed.
-  void set_bad_message_cb(base::Closure bad_message_cb) {
-    bad_message_cb_ = bad_message_cb;
-  }
+  void SetCdm(const absl::optional<base::UnguessableToken>& cdm_id,
+              SetCdmCallback callback) final;
 
  private:
   enum State {
@@ -92,10 +90,11 @@ class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
   void OnVideoConfigChange(const VideoDecoderConfig& config) final;
   void OnVideoNaturalSizeChange(const gfx::Size& size) final;
   void OnVideoOpacityChange(bool opaque) final;
+  void OnVideoFrameRateChange(absl::optional<int> fps) final;
 
   // Called when the MediaResourceShim is ready to go (has a config,
   // pipe handle, etc) and can be handed off to a renderer for use.
-  void OnStreamReady(base::OnceCallback<void(bool)> callback);
+  void OnAllStreamsReady(base::OnceCallback<void(bool)> callback);
 
   // Called when |audio_renderer_| initialization has completed.
   void OnRendererInitializeDone(base::OnceCallback<void(bool)> callback,
@@ -136,15 +135,8 @@ class MEDIA_MOJO_EXPORT MojoRendererService : public mojom::Renderer,
   // Must use "media::" because "Renderer" is ambiguous.
   std::unique_ptr<media::Renderer> renderer_;
 
-  // Callback to be called when an invalid or unexpected message is received.
-  // TODO(tguilbert): Revisit how to do InitiateScopedSurfaceRequest() so that
-  // we can eliminate this callback. See http://crbug.com/669606
-  base::Closure bad_message_cb_;
-
   base::WeakPtr<MojoRendererService> weak_this_;
   base::WeakPtrFactory<MojoRendererService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererService);
 };
 
 }  // namespace media

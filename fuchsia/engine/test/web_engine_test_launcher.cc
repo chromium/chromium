@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/web/cpp/fidl.h>
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -9,6 +10,7 @@
 #include "base/test/test_suite.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_launcher.h"
+#include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia/engine/web_engine_main_delegate.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -20,37 +22,21 @@ class WebEngineTestLauncherDelegate : public content::TestLauncherDelegate {
   WebEngineTestLauncherDelegate() = default;
   ~WebEngineTestLauncherDelegate() override = default;
 
+  WebEngineTestLauncherDelegate(const WebEngineTestLauncherDelegate&) = delete;
+  WebEngineTestLauncherDelegate& operator=(
+      const WebEngineTestLauncherDelegate&) = delete;
+
   // content::TestLauncherDelegate implementation:
   int RunTestSuite(int argc, char** argv) override {
     base::TestSuite test_suite(argc, argv);
-    // Browser tests are expected not to tear-down various globals and may
-    // complete with the thread priority being above NORMAL.
+    // Browser tests are expected not to tear-down various globals.
     test_suite.DisableCheckForLeakedGlobals();
-    test_suite.DisableCheckForThreadPriorityAtTestEnd();
     return test_suite.Run();
   }
 
-  bool AdjustChildProcessCommandLine(
-      base::CommandLine* command_line,
-      const base::FilePath& temp_data_dir) override {
-    return true;
-  }
-
   content::ContentMainDelegate* CreateContentMainDelegate() override {
-    // Set up the channels for the Context service, but postpone client
-    // binding until after the browser TaskRunners are up and running.
-    fidl::InterfaceHandle<fuchsia::web::Context> context;
-    content::ContentMainDelegate* content_main_delegate =
-        new WebEngineMainDelegate(context.NewRequest());
-
-    cr_fuchsia::WebEngineBrowserTest::SetContextClientChannel(
-        context.TakeChannel());
-
-    return content_main_delegate;
+    return new WebEngineMainDelegate();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebEngineTestLauncherDelegate);
 };
 
 }  // namespace
@@ -58,14 +44,17 @@ class WebEngineTestLauncherDelegate : public content::TestLauncherDelegate {
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
+  command_line->AppendSwitchASCII(switches::kOzonePlatform, "scenic");
   command_line->AppendSwitchASCII(switches::kEnableLogging, "stderr");
-  command_line->AppendSwitch(switches::kDisableGpu);
 
-  size_t parallel_jobs = base::NumParallelJobs();
-  if (parallel_jobs > 1U) {
-    parallel_jobs /= 2U;
-  }
+  // Indicate to all processes that they are being run as part of a browser
+  // test, so that dependencies which might compromise test isolation
+  // won't be used (e.g. memory pressure).
+  command_line->AppendSwitch(switches::kBrowserTest);
+
+  size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
+  if (parallel_jobs == 0U)
+    return 1;
   ::WebEngineTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

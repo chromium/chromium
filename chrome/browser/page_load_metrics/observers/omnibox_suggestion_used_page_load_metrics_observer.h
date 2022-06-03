@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/page_transition_types.h"
@@ -13,7 +12,13 @@
 class OmniboxSuggestionUsedMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit OmniboxSuggestionUsedMetricsObserver(bool is_prerender);
+  OmniboxSuggestionUsedMetricsObserver();
+
+  OmniboxSuggestionUsedMetricsObserver(
+      const OmniboxSuggestionUsedMetricsObserver&) = delete;
+  OmniboxSuggestionUsedMetricsObserver& operator=(
+      const OmniboxSuggestionUsedMetricsObserver&) = delete;
+
   ~OmniboxSuggestionUsedMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -27,11 +32,7 @@ class OmniboxSuggestionUsedMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
-  // Indicates whether this page load comes from prerender.
-  const bool is_prerender_;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxSuggestionUsedMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_

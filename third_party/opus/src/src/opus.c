@@ -252,7 +252,7 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
       /* Number of frames encoded in bits 0 to 5 */
       ch = *data++;
       count = ch&0x3F;
-      if (count <= 0 || framesize*count > 5760)
+      if (count <= 0 || framesize*(opus_int32)count > 5760)
          return OPUS_INVALID_PACKET;
       len--;
       /* Padding flag is bit 6 */

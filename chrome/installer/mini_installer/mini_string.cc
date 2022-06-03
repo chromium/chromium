@@ -86,7 +86,7 @@ bool SafeStrCat(wchar_t* dest, size_t dest_size, const wchar_t* src) {
 }
 
 bool StrEndsWith(const wchar_t* str, const wchar_t* end_str) {
-  if (str == NULL || end_str == NULL)
+  if (str == nullptr || end_str == nullptr)
     return false;
 
   for (int i = lstrlen(str) - 1, j = lstrlen(end_str) - 1; j >= 0; --i, --j) {
@@ -98,7 +98,7 @@ bool StrEndsWith(const wchar_t* str, const wchar_t* end_str) {
 }
 
 bool StrStartsWith(const wchar_t* str, const wchar_t* start_str) {
-  if (str == NULL || start_str == NULL)
+  if (str == nullptr || start_str == nullptr)
     return false;
 
   for (int i = 0; start_str[i] != L'\0'; ++i) {
@@ -127,7 +127,7 @@ const wchar_t* SearchStringI(const wchar_t* source, const wchar_t* find) {
     ++scan;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool FindTagInStr(const wchar_t* str,
@@ -136,11 +136,10 @@ bool FindTagInStr(const wchar_t* str,
   int tag_length = ::lstrlen(tag);
   const wchar_t* scan = str;
   for (const wchar_t* tag_start = SearchStringI(scan, tag);
-       tag_start != NULL;
-       tag_start = SearchStringI(scan, tag)) {
+       tag_start != nullptr; tag_start = SearchStringI(scan, tag)) {
     scan = tag_start + tag_length;
     if (*scan == L'-' || *scan == L'\0') {
-      if (position != NULL)
+      if (position != nullptr)
         *position = tag_start;
       return true;
     }
@@ -162,8 +161,8 @@ const wchar_t* GetNameFromPathExt(const wchar_t* path, size_t size) {
 }
 
 wchar_t* GetNameFromPathExt(wchar_t* path, size_t size) {
-  return const_cast<wchar_t*>(GetNameFromPathExt(
-    const_cast<const wchar_t*>(path), size));
+  return const_cast<wchar_t*>(
+      GetNameFromPathExt(const_cast<const wchar_t*>(path), size));
 }
 
 }  // namespace mini_installer

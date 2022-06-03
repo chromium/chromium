@@ -20,7 +20,7 @@ namespace blink {
 
 class SchedulingAffectingFeaturesTest : public SimTest {
  public:
-  PageScheduler* PageScheduler() {
+  PageScheduler* GetPageScheduler() {
     return MainFrameScheduler()->GetPageScheduler();
   }
 
@@ -35,20 +35,26 @@ class SchedulingAffectingFeaturesTest : public SimTest {
              ->GetActiveFeaturesTrackedForBackForwardCacheMetrics()) {
       if (feature == SchedulingPolicy::Feature::kDocumentLoaded)
         continue;
-      if (feature == SchedulingPolicy::Feature::kOutstandingNetworkRequest)
+      if (feature == SchedulingPolicy::Feature::kOutstandingNetworkRequestFetch)
         continue;
+      if (feature == SchedulingPolicy::Feature::kOutstandingNetworkRequestXHR)
+        continue;
+      if (feature ==
+          SchedulingPolicy::Feature::kOutstandingNetworkRequestOthers) {
+        continue;
+      }
       result.push_back(feature);
     }
     return result;
   }
 };
 
-TEST_F(SchedulingAffectingFeaturesTest, WebSocketStopsThrottling) {
+TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
   SimRequest main_resource("https://example.com/", "text/html");
 
   LoadURL("https://example.com/");
 
-  EXPECT_FALSE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
               testing::UnorderedElementsAre());
 
@@ -57,14 +63,14 @@ TEST_F(SchedulingAffectingFeaturesTest, WebSocketStopsThrottling) {
       "  var socket = new WebSocket(\"ws://www.example.com/websocket\");"
       "</script>");
 
-  EXPECT_TRUE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(
       GetNonTrivialMainFrameFeatures(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
 
   MainFrame().ExecuteScript(WebString("socket.close();"));
 
-  EXPECT_FALSE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
               testing::UnorderedElementsAre());
 }
@@ -137,84 +143,6 @@ TEST_F(SchedulingAffectingFeaturesTest, CacheControl_Navigation) {
 
   EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
               testing::UnorderedElementsAre());
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_PageShow) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"pageshow\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kPageShowEventListener));
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_PageHide) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"pagehide\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kPageHideEventListener));
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_BeforeUnload) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"beforeunload\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kBeforeUnloadEventListener));
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_Unload) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"unload\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kUnloadEventListener));
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_Freeze) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"freeze\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kFreezeEventListener));
-}
-
-TEST_F(SchedulingAffectingFeaturesTest, EventListener_Resume) {
-  SimRequest main_resource("https://foo.com/", "text/html");
-  LoadURL("https://foo.com/");
-  main_resource.Complete(
-      "<script>"
-      " window.addEventListener(\"resume\", () => {}); "
-      "</script>");
-
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kResumeEventListener));
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, Plugins) {

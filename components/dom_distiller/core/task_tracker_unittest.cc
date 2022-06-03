@@ -4,10 +4,12 @@
 
 #include "components/dom_distiller/core/task_tracker.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
@@ -23,7 +25,7 @@ namespace test {
 
 class FakeViewRequestDelegate : public ViewRequestDelegate {
  public:
-  ~FakeViewRequestDelegate() override {}
+  ~FakeViewRequestDelegate() override = default;
   MOCK_METHOD1(OnArticleReady,
                void(const DistilledArticleProto* article_proto));
   MOCK_METHOD1(OnArticleUpdated,
@@ -32,8 +34,11 @@ class FakeViewRequestDelegate : public ViewRequestDelegate {
 
 class MockContentStore : public DistilledContentStore {
  public:
-  MOCK_METHOD2(LoadContent,
-               void(const ArticleEntry& entry, LoadCallback callback));
+  void LoadContent(const ArticleEntry& entry, LoadCallback callback) override {
+    LoadContent_(entry, callback);
+  }
+  MOCK_METHOD2(LoadContent_,
+               void(const ArticleEntry& entry, LoadCallback& callback));
   MOCK_METHOD3(SaveContent,
                void(const ArticleEntry& entry,
                     const DistilledArticleProto& proto,
@@ -44,7 +49,7 @@ class TestCancelCallback {
  public:
   TestCancelCallback() : cancelled_(false) {}
   TaskTracker::CancelCallback GetCallback() {
-    return base::Bind(&TestCancelCallback::Cancel, base::Unretained(this));
+    return base::BindOnce(&TestCancelCallback::Cancel, base::Unretained(this));
   }
   void Cancel(TaskTracker*) { cancelled_ = true; }
   bool Cancelled() { return cancelled_; }
@@ -133,8 +138,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestViewerCancelledWithSaveRequest) {
   EXPECT_FALSE(cancel_callback.Cancelled());
 
   MockSaveCallback save_callback;
-  task_tracker.AddSaveCallback(
-      base::Bind(&MockSaveCallback::Save, base::Unretained(&save_callback)));
+  task_tracker.AddSaveCallback(base::BindOnce(
+      &MockSaveCallback::Save, base::Unretained(&save_callback)));
   handle.reset();
 
   // Since there is a pending save request, the task shouldn't be cancelled.
@@ -183,8 +188,7 @@ TEST_F(DomDistillerTaskTrackerTest, TestDistillerFails) {
 
   task_tracker.StartDistiller(&distiller_factory,
                               std::unique_ptr<DistillerPage>());
-  distiller->RunDistillerCallback(
-      std::unique_ptr<DistilledArticleProto>(new DistilledArticleProto));
+  distiller->RunDistillerCallback(std::make_unique<DistilledArticleProto>());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(cancel_callback.Cancelled());
@@ -201,8 +205,8 @@ TEST_F(DomDistillerTaskTrackerTest,
                            nullptr);
 
   MockSaveCallback save_callback;
-  task_tracker.AddSaveCallback(
-      base::Bind(&MockSaveCallback::Save, base::Unretained(&save_callback)));
+  task_tracker.AddSaveCallback(base::BindOnce(
+      &MockSaveCallback::Save, base::Unretained(&save_callback)));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(save_callback, Save(_, _, _));
@@ -351,22 +355,21 @@ TEST_F(DomDistillerTaskTrackerTest, TestDistillerFailsFirst) {
       task_tracker.AddViewer(&viewer_delegate));
 
   DistilledContentStore::LoadCallback content_store_load_callback;
-  EXPECT_CALL(content_store, LoadContent(_, _))
-      .WillOnce(testing::SaveArg<1>(&content_store_load_callback));
+  EXPECT_CALL(content_store, LoadContent_(_, _))
+      .WillOnce(MoveArg<1>(&content_store_load_callback));
 
   task_tracker.StartDistiller(&distiller_factory,
                               std::unique_ptr<DistillerPage>());
   task_tracker.StartBlobFetcher();
 
   EXPECT_CALL(viewer_delegate, OnArticleReady(_)).Times(0);
-  distiller->RunDistillerCallback(
-      std::unique_ptr<DistilledArticleProto>(new DistilledArticleProto));
+  distiller->RunDistillerCallback(std::make_unique<DistilledArticleProto>());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(viewer_delegate, OnArticleReady(_));
-  content_store_load_callback.Run(
-      true, std::unique_ptr<DistilledArticleProto>(new DistilledArticleProto(
-                CreateDistilledArticleForEntry(entry))));
+  std::move(content_store_load_callback)
+      .Run(true, std::make_unique<DistilledArticleProto>(
+                     CreateDistilledArticleForEntry(entry)));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(cancel_callback.Cancelled());
@@ -400,8 +403,8 @@ TEST_F(DomDistillerTaskTrackerTest, ContentIsSaved) {
                               std::unique_ptr<DistillerPage>());
 
   EXPECT_CALL(viewer_delegate, OnArticleReady(_));
-  distiller->RunDistillerCallback(std::unique_ptr<DistilledArticleProto>(
-      new DistilledArticleProto(distilled_article)));
+  distiller->RunDistillerCallback(
+      std::make_unique<DistilledArticleProto>(distilled_article));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(stored_distilled_article.SerializeAsString(),

@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -21,7 +21,7 @@ namespace policy {
 AsyncPolicyProvider::AsyncPolicyProvider(
     SchemaRegistry* registry,
     std::unique_ptr<AsyncPolicyLoader> loader)
-    : loader_(std::move(loader)) {
+    : loader_(std::move(loader)), first_policies_loaded_(false) {
   // Make an immediate synchronous load on startup.
   OnLoaderReloaded(loader_->InitialLoad(registry->schema_map()));
 }
@@ -37,10 +37,9 @@ void AsyncPolicyProvider::Init(SchemaRegistry* registry) {
   if (!loader_)
     return;
 
-  AsyncPolicyLoader::UpdateCallback callback =
-      base::Bind(&AsyncPolicyProvider::LoaderUpdateCallback,
-                 base::ThreadTaskRunnerHandle::Get(),
-                 weak_factory_.GetWeakPtr());
+  AsyncPolicyLoader::UpdateCallback callback = base::BindRepeating(
+      &AsyncPolicyProvider::LoaderUpdateCallback,
+      base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr());
   bool post = loader_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&AsyncPolicyLoader::Init,
                                 base::Unretained(loader_.get()), callback));
@@ -80,17 +79,19 @@ void AsyncPolicyProvider::RefreshPolicies() {
   if (!loader_)
     return;
   refresh_callback_.Reset(
-      base::Bind(&AsyncPolicyProvider::ReloadAfterRefreshSync,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AsyncPolicyProvider::ReloadAfterRefreshSync,
+                     weak_factory_.GetWeakPtr()));
   loader_->task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                            refresh_callback_.callback());
 }
 
+bool AsyncPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return first_policies_loaded_;
+}
+
 void AsyncPolicyProvider::ReloadAfterRefreshSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This task can only enter if it was posted from RefreshPolicies(), and it
-  // hasn't been cancelled meanwhile by another call to RefreshPolicies().
-  DCHECK(!refresh_callback_.IsCancelled());
   // There can't be another refresh callback pending now, since its creation
   // in RefreshPolicies() would have cancelled the current execution. So it's
   // safe to cancel the |refresh_callback_| now, so that OnLoaderReloaded()
@@ -108,6 +109,7 @@ void AsyncPolicyProvider::ReloadAfterRefreshSync() {
 void AsyncPolicyProvider::OnLoaderReloaded(
     std::unique_ptr<PolicyBundle> bundle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  first_policies_loaded_ = true;
   // Only propagate policy updates if there are no pending refreshes, and if
   // Shutdown() hasn't been called yet.
   if (refresh_callback_.IsCancelled() && loader_)

@@ -56,7 +56,7 @@ class ScopedLoggingPathTest : public ::testing::Test {
 };
 
 TEST_F(ScopedLoggingPathTest, Default) {
-  EXPECT_EQ(ScopedLogging::GetLogFilePath(nullptr), DefaultExpectedLogFile());
+  EXPECT_EQ(ScopedLogging::GetLogFilePath(L""), DefaultExpectedLogFile());
   EXPECT_EQ(ScopedLogging::GetLogFilePath(L"-suffix"),
             DefaultExpectedLogFile().InsertBeforeExtension(L"-suffix"));
 }
@@ -75,7 +75,7 @@ TEST_F(ScopedLoggingPathTest, WithOverride) {
                                      .BaseName()
                                      .ReplaceExtension(L".log"));
 
-  EXPECT_EQ(ScopedLogging::GetLogFilePath(nullptr), expected_log_file);
+  EXPECT_EQ(ScopedLogging::GetLogFilePath(L""), expected_log_file);
   EXPECT_EQ(ScopedLogging::GetLogFilePath(L"-suffix"),
             expected_log_file.InsertBeforeExtension(L"-suffix"));
 }
@@ -85,7 +85,7 @@ TEST_F(ScopedLoggingPathTest, EmptyOverride) {
   command_line.GetProcessCommandLine()->AppendSwitch(kTestLoggingPathSwitch);
 
   // Should be ignored.
-  EXPECT_EQ(ScopedLogging::GetLogFilePath(nullptr), DefaultExpectedLogFile());
+  EXPECT_EQ(ScopedLogging::GetLogFilePath(L""), DefaultExpectedLogFile());
   EXPECT_EQ(ScopedLogging::GetLogFilePath(L"-suffix"),
             DefaultExpectedLogFile().InsertBeforeExtension(L"-suffix"));
 }

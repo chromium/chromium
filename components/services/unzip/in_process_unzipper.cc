@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/services/unzip/unzipper_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -24,8 +25,8 @@ void BindInProcessUnzipper(mojo::PendingReceiver<mojom::Unzipper> receiver) {
 
 mojo::PendingRemote<mojom::Unzipper> LaunchInProcessUnzipper() {
   mojo::PendingRemote<mojom::Unzipper> remote;
-  base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives()})
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&BindInProcessUnzipper,
                                 remote.InitWithNewPipeAndPassReceiver()));

@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 
+#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -43,11 +44,9 @@ class HTMLFormElement;
 class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
                                            public ListedElement,
                                            public FormAssociated {
-  USING_GARBAGE_COLLECTED_MIXIN(HTMLFormControlElement);
-
  public:
   ~HTMLFormControlElement() override;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   String formAction() const;
   void setFormAction(const AtomicString&);
@@ -58,8 +57,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool FormNoValidate() const;
 
   void Reset();
-
-  void DispatchChangeEvent();
 
   HTMLFormElement* formOwner() const final;
 
@@ -91,6 +88,14 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   virtual bool IsActivatedSubmit() const { return false; }
   virtual void SetActivatedSubmit(bool) {}
 
+  // Getter and setter for the PII type of the element derived from the autofill
+  // field semantic prediction.
+  virtual FormElementPiiType GetFormElementPiiType() const {
+    return FormElementPiiType::kUnknown;
+  }
+  virtual void SetFormElementPiiType(FormElementPiiType form_element_pii_type) {
+  }
+
   bool willValidate() const override;
 
   bool IsReadOnly() const;
@@ -102,7 +107,16 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsAutofilled() const {
     return autofill_state_ != WebAutofillState::kNotFilled;
   }
+  bool HighlightAutofilled() const {
+    return autofill_state_ == WebAutofillState::kPreviewed ||
+           (autofill_state_ == WebAutofillState::kAutofilled &&
+            !PreventHighlightingOfAutofilledFields());
+  }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
+  void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
+  bool PreventHighlightingOfAutofilledFields() const {
+    return prevent_highlighting_of_autofilled_fields_;
+  }
 
   // The autofill section to which this element belongs (e.g. billing address,
   // shipping address, .. .)
@@ -124,7 +138,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool BlocksFormSubmission() const { return blocks_form_submission_; }
   void SetBlocksFormSubmission(bool value) { blocks_form_submission_ = value; }
 
-  unsigned UniqueRendererFormControlId() const {
+  uint64_t UniqueRendererFormControlId() const {
     return unique_renderer_form_control_id_;
   }
 
@@ -137,7 +151,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void ParseAttribute(const AttributeModificationParams&) override;
   virtual void RequiredAttributeChanged();
   void DisabledAttributeChanged() override;
-  void AttachLayoutTree(AttachContext&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void WillChangeForm() override;
@@ -146,9 +159,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   bool SupportsFocus() const override;
   bool IsKeyboardFocusable() const override;
-  bool ShouldHaveFocusAppearance() const final;
-
-  void DidRecalcStyle(const StyleRecalcChange) override;
+  bool ShouldHaveFocusAppearance() const override;
 
   virtual void ResetImpl() {}
 
@@ -159,10 +170,11 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsValidElement() override;
   bool MatchesValidityPseudoClasses() const override;
 
-  unsigned unique_renderer_form_control_id_;
+  uint64_t unique_renderer_form_control_id_;
 
   WebString autofill_section_;
   enum WebAutofillState autofill_state_;
+  bool prevent_highlighting_of_autofilled_fields_ : 1;
 
   bool blocks_form_submission_ : 1;
 };
@@ -187,4 +199,4 @@ struct DowncastTraits<HTMLFormControlElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_

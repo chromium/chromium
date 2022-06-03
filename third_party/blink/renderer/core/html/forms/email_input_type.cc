@@ -57,9 +57,9 @@ static const int32_t kMaximumDomainNameLength = 255;
 // Use the same option as in url/url_canon_icu.cc
 static const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
 
-std::unique_ptr<ScriptRegexp> EmailInputType::CreateEmailRegexp() {
-  return std::make_unique<ScriptRegexp>(kEmailPattern,
-                                        kTextCaseUnicodeInsensitive);
+ScriptRegexp* EmailInputType::CreateEmailRegexp() {
+  return MakeGarbageCollected<ScriptRegexp>(kEmailPattern,
+                                            kTextCaseUnicodeInsensitive);
 }
 
 String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
@@ -175,26 +175,25 @@ const AtomicString& EmailInputType::FormControlType() const {
   return input_type_names::kEmail;
 }
 
-ScriptRegexp& EmailInputType::EnsureEmailRegexp() const {
-  if (!email_regexp_)
-    email_regexp_ = CreateEmailRegexp();
-  return *email_regexp_;
-}
-
 // The return value is an invalid email address string if the specified string
-// contains an invalid email address. Otherwise, null string is returned.
+// contains an invalid email address. Otherwise, an empty string is returned.
 // If an empty string is returned, it means empty address is specified.
 // e.g. "foo@example.com,,bar@example.com" for multiple case.
 String EmailInputType::FindInvalidAddress(const String& value) const {
   if (value.IsEmpty())
     return String();
-  if (!GetElement().Multiple())
-    return IsValidEmailAddress(EnsureEmailRegexp(), value) ? String() : value;
+  if (!GetElement().Multiple()) {
+    return IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
+                               value)
+               ? String()
+               : value;
+  }
   Vector<String> addresses;
   value.Split(',', true, addresses);
   for (const auto& address : addresses) {
     String stripped = StripLeadingAndTrailingHTMLSpaces(address);
-    if (!IsValidEmailAddress(EnsureEmailRegexp(), stripped))
+    if (!IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
+                             stripped))
       return stripped;
   }
   return String();
@@ -284,8 +283,10 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
 String EmailInputType::ConvertFromVisibleValue(
     const String& visible_value) const {
   String sanitized_value = SanitizeValue(visible_value);
-  if (!GetElement().Multiple())
-    return ConvertEmailAddressToASCII(EnsureEmailRegexp(), sanitized_value);
+  if (!GetElement().Multiple()) {
+    return ConvertEmailAddressToASCII(
+        GetElement().GetDocument().EnsureEmailRegexp(), sanitized_value);
+  }
   Vector<String> addresses;
   sanitized_value.Split(',', true, addresses);
   StringBuilder builder;
@@ -293,8 +294,8 @@ String EmailInputType::ConvertFromVisibleValue(
   for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     if (i > 0)
       builder.Append(',');
-    builder.Append(
-        ConvertEmailAddressToASCII(EnsureEmailRegexp(), addresses[i]));
+    builder.Append(ConvertEmailAddressToASCII(
+        GetElement().GetDocument().EnsureEmailRegexp(), addresses[i]));
   }
   return builder.ToString();
 }

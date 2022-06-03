@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_SERVICE_METRICS_H_
 #define SERVICES_AUDIO_SERVICE_METRICS_H_
 
+#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -16,6 +17,10 @@ namespace audio {
 class ServiceMetrics {
  public:
   explicit ServiceMetrics(const base::TickClock* clock);
+
+  ServiceMetrics(const ServiceMetrics&) = delete;
+  ServiceMetrics& operator=(const ServiceMetrics&) = delete;
+
   ~ServiceMetrics();
 
   void HasConnections();
@@ -25,11 +30,8 @@ class ServiceMetrics {
   void LogHasNoConnectionsDuration();
 
   const base::TickClock* clock_;
-  const base::TimeTicks service_start_;
   base::TimeTicks has_connections_start_;
   base::TimeTicks has_no_connections_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceMetrics);
 };
 
 }  // namespace audio

@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.input;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -55,6 +56,7 @@ public class ThreadedInputConnectionFactoryTest {
 
         private boolean mSucceeded;
         private boolean mFailed;
+        private long mDelayMs;
 
         TestFactory(InputMethodManagerWrapper inputMethodManagerWrapper) {
             super(inputMethodManagerWrapper);
@@ -64,11 +66,6 @@ public class ThreadedInputConnectionFactoryTest {
         protected ThreadedInputConnectionProxyView createProxyView(Handler handler,
                 View containerView) {
             return mProxyView;
-        }
-
-        @Override
-        protected InputMethodUma createInputMethodUma() {
-            return null;
         }
 
         @Override
@@ -89,10 +86,22 @@ public class ThreadedInputConnectionFactoryTest {
             return mSucceeded;
         }
 
+        public long delayMs() {
+            return mDelayMs;
+        }
+
         @Override
         public void onWindowFocusChanged(boolean gainFocus) {
             mHasWindowFocus = gainFocus;
             super.onWindowFocusChanged(gainFocus);
+        }
+
+        @Override
+        protected void postDelayed(View view, Runnable r, long delayMs) {
+            mDelayMs = delayMs;
+            // Note that robolectric will run this immediately in runOneTask(). We can only test
+            // the delay MS value.
+            super.postDelayed(view, r, delayMs);
         }
     }
 
@@ -134,7 +143,7 @@ public class ThreadedInputConnectionFactoryTest {
         mImeAdapter = Mockito.mock(ImeAdapterImpl.class);
         mInputMethodManager = Mockito.mock(InputMethodManager.class);
 
-        mFactory = new TestFactory(new InputMethodManagerWrapperImpl(mContext));
+        mFactory = new TestFactory(new InputMethodManagerWrapperImpl(mContext, null, null));
         mFactory.onWindowFocusChanged(true);
         mImeHandler = mFactory.getHandler();
         mImeShadowLooper = (ShadowLooper) Shadow.extract(mImeHandler.getLooper());
@@ -154,7 +163,7 @@ public class ThreadedInputConnectionFactoryTest {
             @Override
             public InputConnection call() {
                 return mFactory.initializeAndGet(
-                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, mEditorInfo);
+                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo);
             }
         };
         when(mProxyView.onCreateInputConnection(any(EditorInfo.class)))
@@ -197,7 +206,7 @@ public class ThreadedInputConnectionFactoryTest {
             @Override
             public void run() {
                 assertNull(mFactory.initializeAndGet(
-                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, mEditorInfo));
+                        mContainerView, mImeAdapter, 1, 0, 0, 0, 0, 0, "", mEditorInfo));
             }
         });
     }
@@ -217,6 +226,8 @@ public class ThreadedInputConnectionFactoryTest {
 
         // The first onCreateInputConnection().
         runOneUiTask();
+        assertEquals(0, mFactory.delayMs());
+
         mInOrder.verify(mContainerView).hasFocus();
         mInOrder.verify(mContainerView).hasWindowFocus();
         mInOrder.verify(mProxyView).requestFocus();
@@ -256,6 +267,8 @@ public class ThreadedInputConnectionFactoryTest {
 
         // The first onCreateInputConnection().
         runOneUiTask();
+        assertEquals(0, mFactory.delayMs());
+
         mInOrder.verify(mContainerView).hasFocus();
         mInOrder.verify(mContainerView).hasWindowFocus();
         mInOrder.verify(mProxyView).requestFocus();
@@ -291,6 +304,58 @@ public class ThreadedInputConnectionFactoryTest {
         // Failed, but no logging because check has been invalidated.
         assertNull(mInputConnection);
         assertFalse(mFactory.hasSucceeded());
+        assertFalse(mFactory.hasFailed());
+    }
+
+    // Test for https://crbug.com/1108237
+    @Test
+    @Feature({"TextInput"})
+    public void testCreateInputConnection_Delayed() {
+        // Pause all the loopers.
+        Robolectric.getForegroundThreadScheduler().pause();
+        mImeShadowLooper.pause();
+
+        mFactory.onViewFocusChanged(false);
+        mFactory.onWindowFocusChanged(false);
+
+        // Note that we gained view focus before gaining window focus.
+        // We will delay the keyboard activation.
+        mFactory.onViewFocusChanged(true);
+        mFactory.onWindowFocusChanged(true);
+
+        activateInput();
+
+        // The first onCreateInputConnection().
+        runOneUiTask();
+
+        // We delay the keyboard activation when view gets focused before window does.
+        assertEquals(1000, mFactory.delayMs());
+
+        mInOrder.verify(mContainerView).hasFocus();
+        mInOrder.verify(mContainerView).hasWindowFocus();
+        mInOrder.verify(mProxyView).requestFocus();
+        mInOrder.verify(mContainerView).getHandler();
+        mInOrder.verifyNoMoreInteractions();
+        assertNull(mInputConnection);
+
+        // The second onCreateInputConnection().
+        runOneUiTask();
+        mInOrder.verify(mProxyView).onWindowFocusChanged(true);
+        mInOrder.verify(mInputMethodManager).isActive(mContainerView);
+        mInOrder.verify(mProxyView).onCreateInputConnection(any(EditorInfo.class));
+        mInOrder.verify(mContainerView).getContext(); // BaseInputConnection#<init>
+        mInOrder.verifyNoMoreInteractions();
+        assertNotNull(mInputConnection);
+        assertTrue(ThreadedInputConnection.class.isInstance(mInputConnection));
+
+        // Verification process.
+        mImeShadowLooper.runOneTask();
+        runOneUiTask();
+
+        mInOrder.verify(mInputMethodManager).isActive(mProxyView);
+        mInOrder.verifyNoMoreInteractions();
+
+        assertTrue(mFactory.hasSucceeded());
         assertFalse(mFactory.hasFailed());
     }
 }

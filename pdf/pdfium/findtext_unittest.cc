@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-using testing::InSequence;
 using testing::_;
+using testing::InSequence;
 
 namespace chrome_pdf {
 
@@ -19,25 +19,27 @@ namespace {
 class FindTextTestClient : public TestClient {
  public:
   FindTextTestClient() = default;
+  FindTextTestClient(const FindTextTestClient&) = delete;
+  FindTextTestClient& operator=(const FindTextTestClient&) = delete;
   ~FindTextTestClient() override = default;
 
   // PDFEngine::Client:
-  MOCK_METHOD2(NotifyNumberOfFindResultsChanged, void(int, bool));
-  MOCK_METHOD1(NotifySelectedFindResultChanged, void((int)));
+  MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
+  MOCK_METHOD(void, NotifySelectedFindResultChanged, (int), (override));
 
-  std::vector<SearchStringResult> SearchString(const base::char16* string,
-                                               const base::char16* term,
+  std::vector<SearchStringResult> SearchString(const char16_t* string,
+                                               const char16_t* term,
                                                bool case_sensitive) override {
     EXPECT_TRUE(case_sensitive);
-    base::string16 haystack = base::string16(string);
-    base::string16 needle = base::string16(term);
+    std::u16string haystack = std::u16string(string);
+    std::u16string needle = std::u16string(term);
 
     std::vector<SearchStringResult> results;
 
     size_t pos = 0;
     while (1) {
       pos = haystack.find(needle, pos);
-      if (pos == base::string16::npos)
+      if (pos == std::u16string::npos)
         break;
 
       SearchStringResult result;
@@ -48,9 +50,6 @@ class FindTextTestClient : public TestClient {
     }
     return results;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindTextTestClient);
 };
 
 }  // namespace
@@ -146,7 +145,7 @@ TEST_F(FindTextTest, FindFancyQuotationMarkText) {
   }
 
   // don't, using right apostrophe instead of a single quotation mark
-  base::string16 term = {'d', 'o', 'n', 0x2019, 't'};
+  std::u16string term = {'d', 'o', 'n', 0x2019, 't'};
   engine->StartFind(base::UTF16ToUTF8(term), /*case_sensitive=*/true);
 }
 

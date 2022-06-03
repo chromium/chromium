@@ -11,12 +11,15 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_renderer.h"
@@ -27,48 +30,54 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-namespace test {
-class ScopedFeatureList;
-}
-}
-
 namespace viz {
 class CopyOutputResult;
 class DirectRenderer;
 class DisplayResourceProvider;
-class GLRenderer;
 class GpuServiceImpl;
 class TestSharedBitmapManager;
 }
 
 namespace cc {
 class FakeOutputSurfaceClient;
-class OutputSurface;
 
 class PixelTest : public testing::Test {
  protected:
-  PixelTest();
+  // Some graphics backends require command line or base::Feature initialization
+  // which must occur in the constructor to avoid potential races.
+  enum GraphicsBackend {
+    // The pixel test will be initialized for software or GL renderers. No work
+    // needs to be done in the constructor.
+    kDefault,
+    // SkiaRenderer with the Vulkan backend will be used.
+    kSkiaVulkan,
+    // SkiaRenderer with the Dawn backend will be used; on Linux this will
+    // initialize Vulkan, and on Windows this will initialize D3D12.
+    kSkiaDawn,
+  };
+
+  explicit PixelTest(GraphicsBackend backend = kDefault);
   ~PixelTest() override;
 
-  bool RunPixelTest(viz::RenderPassList* pass_list,
+  bool RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                     const base::FilePath& ref_file,
                     const PixelComparator& comparator);
 
-  bool RunPixelTest(viz::RenderPassList* pass_list,
+  bool RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                     std::vector<SkColor>* ref_pixels,
                     const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTarget(viz::RenderPassList* pass_list,
-                                      viz::RenderPass* target,
+  bool RunPixelTestWithReadbackTarget(viz::AggregatedRenderPassList* pass_list,
+                                      viz::AggregatedRenderPass* target,
                                       const base::FilePath& ref_file,
                                       const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTargetAndArea(viz::RenderPassList* pass_list,
-                                             viz::RenderPass* target,
-                                             const base::FilePath& ref_file,
-                                             const PixelComparator& comparator,
-                                             const gfx::Rect* copy_rect);
+  bool RunPixelTestWithReadbackTargetAndArea(
+      viz::AggregatedRenderPassList* pass_list,
+      viz::AggregatedRenderPass* target,
+      const base::FilePath& ref_file,
+      const PixelComparator& comparator,
+      const gfx::Rect* copy_rect);
 
   viz::ContextProvider* context_provider() const {
     return output_surface_->context_provider();
@@ -93,12 +102,22 @@ class PixelTest : public testing::Test {
   viz::ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
                                                   const SkBitmap& source);
 
+  // |scoped_feature_list_| must be the first member to ensure that it is
+  // destroyed after any member that might be using it.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  viz::TestGpuServiceHolder::ScopedResetter gpu_service_resetter_;
+
   // For SkiaRenderer.
   viz::TestGpuServiceHolder* gpu_service_holder_ = nullptr;
 
   viz::RendererSettings renderer_settings_;
+  viz::DebugRendererSettings debug_settings_;
   gfx::Size device_viewport_size_;
+  gfx::DisplayColorSpaces display_color_spaces_;
+  viz::SurfaceDamageRectList surface_damage_rect_list_;
   bool disable_picture_quad_image_filtering_;
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+      display_controller_;
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;
   std::unique_ptr<viz::OutputSurface> output_surface_;
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
@@ -109,9 +128,9 @@ class PixelTest : public testing::Test {
   viz::SoftwareRenderer* software_renderer_ = nullptr;
   std::unique_ptr<SkBitmap> result_bitmap_;
 
-  void SetUpGLWithoutRenderer(bool flipped_output_surface);
-  void SetUpGLRenderer(bool flipped_output_surface);
-  void SetUpSkiaRenderer(bool flipped_output_surface, bool enable_vulkan);
+  void SetUpGLWithoutRenderer(gfx::SurfaceOrigin output_surface_origin);
+  void SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin);
+  void SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin);
   void SetUpSoftwareRenderer();
 
   void TearDown() override;
@@ -126,162 +145,7 @@ class PixelTest : public testing::Test {
                             const PixelComparator& comparator);
 
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
-
-template<typename RendererType>
-class RendererPixelTest : public PixelTest {
- public:
-  RendererType* renderer() {
-    return static_cast<RendererType*>(renderer_.get());
-  }
-
-  // Text string for graphics backend of the RendererType. Suitable for
-  // generating separate base line file paths.
-  const char* renderer_type() {
-    if (std::is_base_of<viz::GLRenderer, RendererType>::value)
-      return "gl";
-    if (std::is_base_of<viz::SkiaRenderer, RendererType>::value)
-      return "skia";
-    if (std::is_base_of<viz::SoftwareRenderer, RendererType>::value)
-      return "software";
-    return "unknown";
-  }
-
-  bool use_gpu() { return !!child_context_provider_; }
-
- protected:
-  void SetUp() override;
-};
-
-// Wrappers to differentiate renderers where the the output surface and viewport
-// have an externally determined size and offset.
-class GLRendererWithExpandedViewport : public viz::GLRenderer {
- public:
-  GLRendererWithExpandedViewport(
-      const viz::RendererSettings* settings,
-      viz::OutputSurface* output_surface,
-      viz::DisplayResourceProvider* resource_provider,
-      scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
-      : viz::GLRenderer(settings,
-                        output_surface,
-                        resource_provider,
-                        std::move(current_task_runner)) {}
-};
-
-class SoftwareRendererWithExpandedViewport : public viz::SoftwareRenderer {
- public:
-  SoftwareRendererWithExpandedViewport(
-      const viz::RendererSettings* settings,
-      viz::OutputSurface* output_surface,
-      viz::DisplayResourceProvider* resource_provider)
-      : SoftwareRenderer(settings, output_surface, resource_provider) {}
-};
-
-class GLRendererWithFlippedSurface : public viz::GLRenderer {
- public:
-  GLRendererWithFlippedSurface(
-      const viz::RendererSettings* settings,
-      viz::OutputSurface* output_surface,
-      viz::DisplayResourceProvider* resource_provider,
-      scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
-      : viz::GLRenderer(settings,
-                        output_surface,
-                        resource_provider,
-                        std::move(current_task_runner)) {}
-};
-
-class SkiaRendererWithFlippedSurface : public viz::SkiaRenderer {
- public:
-  SkiaRendererWithFlippedSurface(
-      const viz::RendererSettings* settings,
-      viz::OutputSurface* output_surface,
-      viz::DisplayResourceProvider* resource_provider,
-      viz::SkiaOutputSurface* skia_output_surface,
-      DrawMode mode)
-      : SkiaRenderer(settings,
-                     output_surface,
-                     resource_provider,
-                     skia_output_surface,
-                     mode) {}
-};
-
-class VulkanSkiaRenderer : public viz::SkiaRenderer {
- public:
-  VulkanSkiaRenderer(const viz::RendererSettings* settings,
-                     viz::OutputSurface* output_surface,
-                     viz::DisplayResourceProvider* resource_provider,
-                     viz::SkiaOutputSurface* skia_output_surface,
-                     DrawMode mode)
-      : SkiaRenderer(settings,
-                     output_surface,
-                     resource_provider,
-                     skia_output_surface,
-                     mode) {}
-};
-
-class VulkanSkiaRendererWithFlippedSurface : public viz::SkiaRenderer {
- public:
-  VulkanSkiaRendererWithFlippedSurface(
-      const viz::RendererSettings* settings,
-      viz::OutputSurface* output_surface,
-      viz::DisplayResourceProvider* resource_provider,
-      viz::SkiaOutputSurface* skia_output_surface,
-      DrawMode mode)
-      : SkiaRenderer(settings,
-                     output_surface,
-                     resource_provider,
-                     skia_output_surface,
-                     mode) {}
-};
-
-template <>
-inline void RendererPixelTest<viz::GLRenderer>::SetUp() {
-  SetUpGLRenderer(false);
-}
-
-template<>
-inline void RendererPixelTest<GLRendererWithExpandedViewport>::SetUp() {
-  SetUpGLRenderer(false);
-}
-
-template <>
-inline void RendererPixelTest<GLRendererWithFlippedSurface>::SetUp() {
-  SetUpGLRenderer(true);
-}
-
-template <>
-inline void RendererPixelTest<viz::SoftwareRenderer>::SetUp() {
-  SetUpSoftwareRenderer();
-}
-
-template<>
-inline void RendererPixelTest<SoftwareRendererWithExpandedViewport>::SetUp() {
-  SetUpSoftwareRenderer();
-}
-
-template <>
-inline void RendererPixelTest<viz::SkiaRenderer>::SetUp() {
-  SetUpSkiaRenderer(false, false);
-}
-
-template <>
-inline void RendererPixelTest<SkiaRendererWithFlippedSurface>::SetUp() {
-  SetUpSkiaRenderer(true, false);
-}
-
-template <>
-inline void RendererPixelTest<VulkanSkiaRenderer>::SetUp() {
-  SetUpSkiaRenderer(false, true);
-}
-
-template <>
-inline void RendererPixelTest<VulkanSkiaRendererWithFlippedSurface>::SetUp() {
-  SetUpSkiaRenderer(true, true);
-}
-
-typedef RendererPixelTest<viz::GLRenderer> GLRendererPixelTest;
-typedef RendererPixelTest<viz::SoftwareRenderer> SoftwareRendererPixelTest;
 
 }  // namespace cc
 

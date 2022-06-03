@@ -17,13 +17,13 @@
 #include "base/macros.h"
 
 namespace base {
-namespace fuchsia {
 
 const char kPersistedDataDirectoryPath[] = "/data";
+const char kPersistedCacheDirectoryPath[] = "/cache";
 const char kServiceDirectoryPath[] = "/svc";
 const char kPackageRootDirectoryPath[] = "/pkg";
 
-fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
     const base::FilePath& path) {
   ScopedFD fd(open(path.value().c_str(), O_DIRECTORY | O_RDONLY));
   if (!fd.is_valid()) {
@@ -44,5 +44,4 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
   return fidl::InterfaceHandle<::fuchsia::io::Directory>(std::move(channel));
 }
 
-}  // namespace fuchsia
 }  // namespace base

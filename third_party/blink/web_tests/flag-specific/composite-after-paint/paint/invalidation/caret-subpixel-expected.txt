@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl INPUT id='target'",
-          "rect": [8, 8, 224, 22],
-          "reason": "subtree"
-        },
-        {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [209, 11, 2, 16],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [8, 8, 226, 22]
       ]
     }
   ]

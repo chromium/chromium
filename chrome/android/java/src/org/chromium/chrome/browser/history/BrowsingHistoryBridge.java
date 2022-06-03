@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +20,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     private boolean mRemovingItems;
     private boolean mHasPendingRemoveRequest;
 
-    public BrowsingHistoryBridge(boolean isIncognito) {
+    public BrowsingHistoryBridge(Profile profile) {
         mNativeHistoryBridge =
-                BrowsingHistoryBridgeJni.get().init(BrowsingHistoryBridge.this, isIncognito);
+                BrowsingHistoryBridgeJni.get().init(BrowsingHistoryBridge.this, profile);
     }
 
     @Override
@@ -39,13 +42,26 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @Override
     public void queryHistory(String query) {
         BrowsingHistoryBridgeJni.get().queryHistory(mNativeHistoryBridge,
-                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), query);
+                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), query, false);
+    }
+
+    @Override
+    public void queryHistoryForHost(String hostName) {
+        BrowsingHistoryBridgeJni.get().queryHistory(mNativeHistoryBridge,
+                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), hostName, true);
     }
 
     @Override
     public void queryHistoryContinuation() {
         BrowsingHistoryBridgeJni.get().queryHistoryContinuation(
                 mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<HistoryItem>());
+    }
+
+    @Override
+    public void getLastVisitToHostBeforeRecentNavigations(
+            String hostName, Callback<Long> callback) {
+        BrowsingHistoryBridgeJni.get().getLastVisitToHostBeforeRecentNavigations(
+                mNativeHistoryBridge, BrowsingHistoryBridge.this, hostName, callback);
     }
 
     @Override
@@ -69,7 +85,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @CalledByNative
-    public static void createHistoryItemAndAddToList(List<HistoryItem> items, String url,
+    public static void createHistoryItemAndAddToList(List<HistoryItem> items, GURL url,
             String domain, String title, long mostRecentJavaTimestamp, long[] nativeTimestamps,
             boolean blockedVisit) {
         items.add(new HistoryItem(
@@ -108,14 +124,16 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
     @NativeMethods
     interface Natives {
-        long init(BrowsingHistoryBridge caller, boolean isIncognito);
+        long init(BrowsingHistoryBridge caller, Profile profile);
         void destroy(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
         void queryHistory(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
-                List<HistoryItem> historyItems, String query);
+                List<HistoryItem> historyItems, String query, boolean hostOnly);
         void queryHistoryContinuation(long nativeBrowsingHistoryBridge,
                 BrowsingHistoryBridge caller, List<HistoryItem> historyItems);
+        void getLastVisitToHostBeforeRecentNavigations(long nativeBrowsingHistoryBridge,
+                BrowsingHistoryBridge caller, String hostName, Callback<Long> callback);
         void markItemForRemoval(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
-                String url, long[] nativeTimestamps);
+                GURL url, long[] nativeTimestamps);
         void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
     }
 }

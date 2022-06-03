@@ -1,0 +1,28 @@
+<style>
+  /* See chrome/browser/ui/views/download/download_shelf_view.cc for style. */
+  :host {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    margin-inline-start: 4px;
+  }
+
+  download-list {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  #close-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    border-radius: 4px;
+    margin-inline-end: 6px;
+    margin-inline-start: 6px;
+  }
+
+</style>
+<download-list></download-list>
+<cr-button id="show-all-button"></cr-button>
+<cr-icon-button id="close-button" iron-icon="cr:close">
+</cr-icon-button>

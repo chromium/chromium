@@ -1,0 +1,15 @@
+<settings-safety-check-child
+    id="safetyCheckChild"
+    icon-status="[[getIconStatus_(status_)]]"
+    label="$i18n{safetyCheckExtensionsPrimaryLabel}"
+    sub-label="[[displayString_]]"
+    button-label="[[getButtonLabel_(status_)]]"
+    button-aria-label="$i18n{safetyCheckExtensionsButtonAriaLabel}"
+    button-class="action-button"
+    on-button-click="onButtonClick_"
+    on-click="onRowClick_"
+    row-clickable="[[isRowClickable_(status_)]]"
+    external
+    managed-icon="[[getManagedIcon_(status_)]]"
+    role="presentation">
+</settings-safety-check-child>

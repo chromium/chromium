@@ -1,0 +1,22 @@
+Document
+++Group IsControlElement=false
+++++Button LocalizedControlType='color picker' Name='color picker' Value.Value='100% red 60% green 0% blue'
+++++++Pane Name='Chrome Legacy Window' IsControlElement=false
+++++++++Document
+++++++++++Group IsControlElement=false
+++++++++++++Group
+++++++++++++++Slider Name='Color well' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=32016.00 RangeValue.Minimum=0.00 RangeValue.Value=227.00 Value.Value='X: 227, Y: 0'
+++++++++++++Group IsControlElement=false
+++++++++++++++Button Name='Eyedropper'
+++++++++++++++Group
+++++++++++++++++Slider Name='Hue slider' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=129.00 RangeValue.Minimum=0.00 RangeValue.Value=116.00 Value.Value='116'
+++++++++++++Edit Name='Red channel' Value.Value='255'
+++++++++++++Edit Name='Green channel' Value.Value='153'
+++++++++++++Edit Name='Blue channel' Value.Value='0'
+++++++++++++Spinner Name='Format toggler' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=3.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='1'
+++++++++++++++Text Name='R'
+++++++++++++++Text Name='G'
+++++++++++++++Text Name='B'
+++++++++++++++Group IsControlElement=false
+++++++++++++++++Image
+++++++++++++Group

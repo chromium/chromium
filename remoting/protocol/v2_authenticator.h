@@ -36,6 +36,9 @@ class V2Authenticator : public Authenticator {
       const std::string& shared_secret,
       State initial_state);
 
+  V2Authenticator(const V2Authenticator&) = delete;
+  V2Authenticator& operator=(const V2Authenticator&) = delete;
+
   ~V2Authenticator() override;
 
   // Authenticator interface.
@@ -43,7 +46,7 @@ class V2Authenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
-                      const base::Closure& resume_callback) override;
+                      base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -75,8 +78,6 @@ class V2Authenticator : public Authenticator {
   RejectionReason rejection_reason_;
   base::queue<std::string> pending_messages_;
   std::string auth_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(V2Authenticator);
 };
 
 }  // namespace protocol

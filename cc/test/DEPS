@@ -12,6 +12,7 @@ include_rules = [
   "+gpu/ipc",
   "+services/viz/privileged/mojom/gl/gpu_host.mojom.h",
   "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h",
+  "+ui/base/ui_base_features.h",
 ]
 
 specific_include_rules = {

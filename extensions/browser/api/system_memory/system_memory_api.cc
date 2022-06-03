@@ -18,17 +18,19 @@ SystemMemoryGetInfoFunction::~SystemMemoryGetInfoFunction() {
 }
 
 ExtensionFunction::ResponseAction SystemMemoryGetInfoFunction::Run() {
-  MemoryInfoProvider::Get()->StartQueryInfo(
-      base::Bind(&SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted, this));
+  MemoryInfoProvider::Get()->StartQueryInfo(base::BindOnce(
+      &SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted, this));
   // StartQueryInfo responds asynchronously.
   return RespondLater();
 }
 
 void SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted(bool success) {
-  if (success)
-    Respond(OneArgument(MemoryInfoProvider::Get()->memory_info().ToValue()));
-  else
+  if (success) {
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        MemoryInfoProvider::Get()->memory_info().ToValue())));
+  } else {
     Respond(Error("Error occurred when querying memory information."));
+  }
 }
 
 }  // namespace extensions

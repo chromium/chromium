@@ -7,14 +7,18 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/task/post_task.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -30,6 +34,10 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
  public:
   explicit RenderProcessHostDelegateImpl(uint32_t render_process_id)
       : render_process_id_(render_process_id) {}
+
+  RenderProcessHostDelegateImpl(const RenderProcessHostDelegateImpl&) = delete;
+  RenderProcessHostDelegateImpl& operator=(
+      const RenderProcessHostDelegateImpl&) = delete;
 
   ~RenderProcessHostDelegateImpl() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -54,7 +62,6 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
 
  private:
   const uint32_t render_process_id_;
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostDelegateImpl);
 };
 
 VideoCaptureHost::VideoCaptureHost(uint32_t render_process_id,
@@ -103,16 +110,16 @@ VideoCaptureHost::~VideoCaptureHost() {
   }
 
   NotifyAllStreamsRemoved();
-  base::DeleteSoon(FROM_HERE, {BrowserThread::UI},
-                   render_process_host_delegate_.release());
+  GetUIThreadTaskRunner({})->DeleteSoon(
+      FROM_HERE, render_process_host_delegate_.release());
 }
 
 void VideoCaptureHost::OnError(const VideoCaptureControllerID& controller_id,
                                media::VideoCaptureError error) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&VideoCaptureHost::DoError, weak_factory_.GetWeakPtr(),
                      controller_id, error));
 }
@@ -144,8 +151,8 @@ void VideoCaptureHost::OnBufferDestroyed(
 
 void VideoCaptureHost::OnBufferReady(
     const VideoCaptureControllerID& controller_id,
-    int buffer_id,
-    const media::mojom::VideoFrameInfoPtr& frame_info) {
+    const ReadyBuffer& buffer,
+    const std::vector<ReadyBuffer>& scaled_buffers) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (controllers_.find(controller_id) == controllers_.end())
     return;
@@ -153,15 +160,23 @@ void VideoCaptureHost::OnBufferReady(
   if (!base::Contains(device_id_to_observer_map_, controller_id))
     return;
 
-  device_id_to_observer_map_[controller_id]->OnBufferReady(buffer_id,
-                                                           frame_info.Clone());
+  media::mojom::ReadyBufferPtr mojom_buffer = media::mojom::ReadyBuffer::New(
+      buffer.buffer_id, buffer.frame_info->Clone());
+  std::vector<media::mojom::ReadyBufferPtr> mojom_scaled_buffers;
+  mojom_scaled_buffers.reserve(scaled_buffers.size());
+  for (const auto& scaled_buffer : scaled_buffers) {
+    mojom_scaled_buffers.push_back(media::mojom::ReadyBuffer::New(
+        scaled_buffer.buffer_id, scaled_buffer.frame_info->Clone()));
+  }
+  device_id_to_observer_map_[controller_id]->OnBufferReady(
+      std::move(mojom_buffer), std::move(mojom_scaled_buffers));
 }
 
 void VideoCaptureHost::OnEnded(const VideoCaptureControllerID& controller_id) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(&VideoCaptureHost::DoEnded,
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&VideoCaptureHost::DoEnded,
                                 weak_factory_.GetWeakPtr(), controller_id));
 }
 
@@ -191,6 +206,11 @@ void VideoCaptureHost::Start(
            << ", device_id=" << device_id << ", format="
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!params.IsValid()) {
+    mojo::ReportBadMessage("Invalid video capture params.");
+    return;
+  }
 
   DCHECK(!base::Contains(device_id_to_observer_map_, device_id));
   device_id_to_observer_map_[device_id].Bind(std::move(observer));
@@ -249,6 +269,11 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
   DVLOG(1) << __func__ << " " << device_id;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  if (!params.IsValid()) {
+    mojo::ReportBadMessage("Invalid video capture params.");
+    return;
+  }
+
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
   if (it == controllers_.end() || !it->second)
@@ -260,6 +285,34 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
     device_id_to_observer_map_[device_id]->OnStateChanged(
         media::mojom::VideoCaptureState::RESUMED);
   }
+}
+
+void VideoCaptureHost::Crop(const base::UnguessableToken& device_id,
+                            const base::Token& crop_id,
+                            CropCallback callback) {
+  DVLOG(1) << __func__ << " " << device_id;
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  const VideoCaptureControllerID& controller_id(device_id);
+  const auto it = controllers_.find(controller_id);
+  if (it == controllers_.end() || !it->second) {
+    std::move(callback).Run(
+        media::mojom::CropRequestResult::kErrorUnknownDeviceId);
+    return;
+  }
+  VideoCaptureController* const controller = it->second.get();
+  DCHECK(controller);  // Verified above.
+
+  if (!controller->IsDeviceAlive()) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+
+  // TODO(crbug.com/1247761): Validate that the crop-ID was produced
+  // by produceCropId(), and that this was done for this specific tab,
+  // thereby rejecting (a) unknown crop-IDs and (b) other-tab-crops.
+
+  controller->Crop(crop_id, std::move(callback));
 }
 
 void VideoCaptureHost::RequestRefreshFrame(
@@ -278,9 +331,10 @@ void VideoCaptureHost::RequestRefreshFrame(
   }
 }
 
-void VideoCaptureHost::ReleaseBuffer(const base::UnguessableToken& device_id,
-                                     int32_t buffer_id,
-                                     double consumer_resource_utilization) {
+void VideoCaptureHost::ReleaseBuffer(
+    const base::UnguessableToken& device_id,
+    int32_t buffer_id,
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   VideoCaptureControllerID controller_id(device_id);
@@ -290,8 +344,7 @@ void VideoCaptureHost::ReleaseBuffer(const base::UnguessableToken& device_id,
 
   const base::WeakPtr<VideoCaptureController>& controller = it->second;
   if (controller) {
-    controller->ReturnBuffer(controller_id, this, buffer_id,
-                             consumer_resource_utilization);
+    controller->ReturnBuffer(controller_id, this, buffer_id, feedback);
   }
 }
 
@@ -434,8 +487,8 @@ void VideoCaptureHost::NotifyStreamAdded() {
   ++number_of_active_streams_;
   // base::Unretained() usage is safe because |render_process_host_delegate_|
   // is destroyed on UI thread.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&RenderProcessHostDelegate::NotifyStreamAdded,
                      base::Unretained(render_process_host_delegate_.get())));
 }
@@ -451,8 +504,8 @@ void VideoCaptureHost::NotifyStreamRemoved() {
   --number_of_active_streams_;
   // base::Unretained() usage is safe because |render_process_host_delegate_| is
   // destroyed on UI thread.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&RenderProcessHostDelegate::NotifyStreamRemoved,
                      base::Unretained(render_process_host_delegate_.get())));
 }

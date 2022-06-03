@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Worker constructor
+PASS SharedWorker constructor
+PASS importScripts() in a dedicated worker
+PASS Worker() in a dedicated worker
+FAIL SharedWorker() in a dedicated worker assert_equals: expected "%C3%A5" but got "ReferenceError: SharedWorker is not defined"
+FAIL importScripts() in a shared worker assert_equals: expected "%C3%A5" but got "importScripts failed to run"
+FAIL Worker() in a shared worker assert_equals: expected "%C3%A5" but got "ReferenceError: Worker is not defined"
+FAIL SharedWorker() in a shared worker assert_equals: expected "%C3%A5" but got "ReferenceError: SharedWorker is not defined"
+Harness: the test ran to completion.
+

@@ -1,0 +1,24 @@
+Verifies that Network.RequestWillBeSentExtraInfo events report structured request cookies with the correct SameParty attribute.
+
+requestWillBeSentExtraInfo request cookies on same domain:[
+    [0] : {
+        blockedReasons : [
+        ]
+        cookie : {
+            domain : .cookie.test
+            expires : -1
+            httpOnly : false
+            name : name1
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            secure : true
+            session : true
+            size : 11
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value1
+        }
+    }
+]
+

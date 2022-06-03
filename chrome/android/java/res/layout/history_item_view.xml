@@ -5,22 +5,5 @@
 
 <org.chromium.chrome.browser.history.HistoryItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
-
-    <LinearLayout
-        android:id="@+id/content"
-        style="@style/ListItemContainer" >
-
-        <include layout="@layout/modern_list_item_view" />
-
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/remove"
-            style="@style/ListItemEndIconSmall"
-            android:contentDescription="@string/remove"
-            android:src="@drawable/btn_delete_24dp"
-            app:tint="@color/default_icon_color_secondary" />
-    </LinearLayout>
-
-</org.chromium.chrome.browser.history.HistoryItemView>
+    android:layout_height="wrap_content" />

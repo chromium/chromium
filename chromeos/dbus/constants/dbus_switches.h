@@ -13,11 +13,17 @@ namespace switches {
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kAttestationServer[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kBiodFake[];
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kCrosDisksFake[];
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kDbusStub[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kFakeOobeConfiguration[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kShillStub[];
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kHermesFake[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kSmsTestMessages[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)

@@ -12,10 +12,17 @@ namespace extensions {
 class ShellFileSystemDelegate : public FileSystemDelegate {
  public:
   ShellFileSystemDelegate();
+
+  ShellFileSystemDelegate(const ShellFileSystemDelegate&) = delete;
+  ShellFileSystemDelegate& operator=(const ShellFileSystemDelegate&) = delete;
+
   ~ShellFileSystemDelegate() override;
 
   // FileSystemDelegate:
   base::FilePath GetDefaultDirectory() override;
+  base::FilePath GetManagedSaveAsDirectory(
+      content::BrowserContext* browser_context,
+      const Extension& extension) override;
   bool ShowSelectFileDialog(
       scoped_refptr<ExtensionFunction> extension_function,
       ui::SelectFileDialog::Type type,
@@ -24,16 +31,13 @@ class ShellFileSystemDelegate : public FileSystemDelegate {
       FileSystemDelegate::FilesSelectedCallback files_selected_callback,
       base::OnceClosure file_selection_canceled_callback) override;
   void ConfirmSensitiveDirectoryAccess(bool has_write_permission,
-                                       const base::string16& app_name,
+                                       const std::u16string& app_name,
                                        content::WebContents* web_contents,
-                                       const base::Closure& on_accept,
-                                       const base::Closure& on_cancel) override;
+                                       base::OnceClosure on_accept,
+                                       base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellFileSystemDelegate);
 };
 
 }  // namespace extensions

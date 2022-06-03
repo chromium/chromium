@@ -5,7 +5,9 @@
 #ifndef UI_VIEWS_CONTROLS_SLIDER_H_
 #define UI_VIEWS_CONTROLS_SLIDER_H_
 
-#include "base/macros.h"
+#include <memory>
+
+#include "base/containers/flat_set.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -20,9 +22,9 @@ class SliderTestApi;
 
 class Slider;
 
-enum SliderChangeReason {
-  VALUE_CHANGED_BY_USER,  // value was changed by the user (by clicking, e.g.)
-  VALUE_CHANGED_BY_API,   // value was changed by a call to SetValue.
+enum class SliderChangeReason {
+  kByUser,  // value was changed by the user (e.g. by clicking)
+  kByApi,   // value was changed by a call to SetValue.
 };
 
 class VIEWS_EXPORT SliderListener {
@@ -41,11 +43,15 @@ class VIEWS_EXPORT SliderListener {
   virtual ~SliderListener() = default;
 };
 
+// Slider operates in interval [0,1] by default, but can also switch between a
+// predefined set of values, see SetAllowedValues method below.
 class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(Slider);
 
-  explicit Slider(SliderListener* listener);
+  explicit Slider(SliderListener* listener = nullptr);
+  Slider(const Slider&) = delete;
+  Slider& operator=(const Slider&) = delete;
   ~Slider() override;
 
   float GetValue() const;
@@ -59,7 +65,21 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
     kDefaultStyle,
     kMinimalStyle,
   };
-  void SetRenderingStyle(RenderingStyle style) { style_ = style; }
+
+  // Set rendering style and schedule paint since the colors for the slider
+  // may change.
+  void SetRenderingStyle(RenderingStyle style);
+
+  RenderingStyle style() const { return style_; }
+
+  // Sets discrete set of allowed slider values. Each value must be in [0,1].
+  // Sets active value to the lower bound of the current value in allowed set.
+  // nullptr will drop currently active set and allow full [0,1] interval.
+  void SetAllowedValues(const base::flat_set<float>* allowed_values);
+
+  const base::flat_set<float>& allowed_values() const {
+    return allowed_values_;
+  }
 
  protected:
   // Returns the current position of the thumb on the slider.
@@ -72,6 +92,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
 
  private:
   friend class test::SliderTestApi;
@@ -99,7 +122,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnPaint(gfx::Canvas* canvas) override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnFocus() override;
   void OnBlur() override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -108,20 +131,21 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  void set_listener(SliderListener* listener) {
-    listener_ = listener;
-  }
+  void set_listener(SliderListener* listener) { listener_ = listener; }
 
   void NotifyPendingAccessibilityValueChanged();
 
-  SkColor GetThumbColor() const;
-  SkColor GetTroughColor() const;
+  virtual SkColor GetThumbColor() const;
+  virtual SkColor GetTroughColor() const;
   int GetSliderExtraPadding() const;
 
   SliderListener* listener_;
 
   std::unique_ptr<gfx::SlideAnimation> move_animation_;
 
+  // When |allowed_values_| is not empty, slider will allow moving only between
+  // these values. I.e. it will become discrete slider.
+  base::flat_set<float> allowed_values_;  // Allowed values.
   float value_ = 0.f;
   float keyboard_increment_ = 0.1f;
   float initial_animating_value_ = 0.f;
@@ -137,11 +161,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // Animating value of the current radius of the thumb's highlight.
   float thumb_highlight_radius_ = 0.f;
 
-  gfx::SlideAnimation highlight_animation_;
+  gfx::SlideAnimation highlight_animation_{this};
 
-  bool pending_accessibility_value_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(Slider);
+  bool pending_accessibility_value_change_ = false;
 };
 
 }  // namespace views

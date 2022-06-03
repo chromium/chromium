@@ -8,14 +8,15 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/system_tray_test_api.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
-#include "chrome/browser/media/router/media_sinks_observer.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
-#include "chrome/common/media_router/media_source.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
@@ -26,22 +27,22 @@ namespace {
 
 const char kNotificationId[] = "chrome://cast";
 
-// Helper to create a MediaSink intance.
-media_router::MediaSink MakeSink(const std::string& id,
-                                 const std::string& name) {
-  return media_router::MediaSink(id, name, media_router::SinkIconType::GENERIC);
-}
-
 // Helper to create a MediaRoute instance.
 media_router::MediaRoute MakeRoute(const std::string& route_id,
                                    const std::string& sink_id,
                                    bool is_local) {
   return media_router::MediaRoute(
-      route_id, media_router::MediaSource::ForDesktop(), sink_id, "description",
-      is_local, true /*for_display*/);
+      route_id, media_router::MediaSource::ForUnchosenDesktop(), sink_id,
+      "description", is_local, true /*for_display*/);
 }
 
 class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
+ public:
+  SystemTrayTrayCastMediaRouterChromeOSTest(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+  SystemTrayTrayCastMediaRouterChromeOSTest& operator=(
+      const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
+
  protected:
   SystemTrayTrayCastMediaRouterChromeOSTest() : InProcessBrowserTest() {}
   ~SystemTrayTrayCastMediaRouterChromeOSTest() override {}
@@ -58,14 +59,14 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     return !GetNotificationString().empty();
   }
 
-  base::string16 GetNotificationString() {
+  std::u16string GetNotificationString() {
     message_center::NotificationList::Notifications notification_set =
         message_center::MessageCenter::Get()->GetVisibleNotifications();
     for (auto* notification : notification_set) {
       if (notification->id() == kNotificationId)
         return notification->title();
     }
-    return base::string16();
+    return std::u16string();
   }
 
   media_router::MediaSinksObserver* media_sinks_observer() const {
@@ -122,8 +123,6 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
   media_router::MediaRoutesObserver* media_routes_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayTrayCastMediaRouterChromeOSTest);
 };
 
 }  // namespace
@@ -137,9 +136,9 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
   std::vector<media_router::MediaSink> zero_sinks;
   std::vector<media_router::MediaSink> one_sink;
   std::vector<media_router::MediaSink> two_sinks;
-  one_sink.push_back(MakeSink("id1", "name"));
-  two_sinks.push_back(MakeSink("id1", "name"));
-  two_sinks.push_back(MakeSink("id2", "name"));
+  one_sink.push_back(media_router::CreateCastSink("id1", "name"));
+  two_sinks.push_back(media_router::CreateCastSink("id1", "name"));
+  two_sinks.push_back(media_router::CreateCastSink("id2", "name"));
 
   // The tray should be hidden when there are no sinks.
   EXPECT_FALSE(IsTrayVisible());
@@ -173,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
 
   // Setup the sinks.
   const std::vector<media_router::MediaSink> sinks = {
-      MakeSink("remote_sink", "Remote Sink"),
-      MakeSink("local_sink", "Local Sink")};
+      media_router::CreateCastSink("remote_sink", "Remote Sink"),
+      media_router::CreateCastSink("local_sink", "Local Sink")};
   media_sinks_observer()->OnSinksUpdated(sinks, std::vector<url::Origin>());
   content::RunAllPendingInMessageLoop();
 
@@ -202,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
       multiple_routes, std::vector<media_router::MediaRoute::Id>());
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsCastingNotificationVisible());
-  EXPECT_NE(base::string16::npos,
-            GetNotificationString().find(base::ASCIIToUTF16("Local Sink")));
+  EXPECT_NE(std::u16string::npos, GetNotificationString().find(u"Local Sink"));
 
   // When a casting session stops, we shouldn't display the cast view.
   media_routes_observer()->OnRoutesUpdated(

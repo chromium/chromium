@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "ui/gfx/image/image_skia.h"
@@ -37,6 +37,7 @@ class ChromeAppListItem {
 
     void SetFolderId(const std::string& folder_id);
     void SetPosition(const syncer::StringOrdinal& position);
+    void SetName(const std::string& name);
 
    private:
     ChromeAppListItem* const item_;
@@ -45,6 +46,8 @@ class ChromeAppListItem {
   ChromeAppListItem(Profile* profile,
                     const std::string& app_id,
                     AppListModelUpdater* model_updater);
+  ChromeAppListItem(const ChromeAppListItem&) = delete;
+  ChromeAppListItem& operator=(const ChromeAppListItem&) = delete;
   virtual ~ChromeAppListItem();
 
   // AppListControllerDelegate is not properly implemented in tests. Use mock
@@ -58,25 +61,24 @@ class ChromeAppListItem {
   const std::string& folder_id() const { return metadata_->folder_id; }
   const syncer::StringOrdinal& position() const { return metadata_->position; }
   const std::string& name() const { return metadata_->name; }
+  ash::AppStatus app_status() const { return metadata_->app_status; }
   bool is_folder() const { return metadata_->is_folder; }
   bool is_persistent() const { return metadata_->is_persistent; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   bool is_page_break() const { return metadata_->is_page_break; }
 
-  void SetIsInstalling(bool is_installing);
-  void SetPercentDownloaded(int32_t percent_downloaded);
-
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
 
+  // Loads the app icon and call SetIcon to update ash when finished.
+  virtual void LoadIcon();
+
   // The following methods set Chrome side data here, and call model updater
   // interfaces that talk to ash directly.
+  void IncrementIconVersion();
   void SetIcon(const gfx::ImageSkia& icon);
-  void SetName(const std::string& name);
-  void SetNameAndShortName(const std::string& name,
-                           const std::string& short_name);
+  void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
-  void SetPosition(const syncer::StringOrdinal& position);
   void SetIsPageBreak(bool is_page_break);
   void SetIsPersistent(bool is_persistent);
 
@@ -112,11 +114,16 @@ class ChromeAppListItem {
 
   std::string ToDebugString() const;
 
-  // Set the default position if it exists. Otherwise set the first available
-  // position in the app list if |model_updater| is not null.
-  void SetDefaultPositionIfApplicable(AppListModelUpdater* model_updater);
+  // Returns the default position if it exists. Otherwise returns the position
+  // for a new item if |model_updater| is not null.
+  syncer::StringOrdinal CalculateDefaultPositionIfApplicable(
+      AppListModelUpdater* model_updater);
+
+  AppListModelUpdater* model_updater() { return model_updater_; }
 
  protected:
+  friend class ChromeAppListModelUpdater;
+
   ChromeAppListItem(Profile* profile, const std::string& app_id);
 
   Profile* profile() const { return profile_; }
@@ -125,13 +132,18 @@ class ChromeAppListItem {
 
   AppListControllerDelegate* GetController();
 
-  AppListModelUpdater* model_updater() { return model_updater_; }
+  void SetName(const std::string& name);
+  void SetNameAndShortName(const std::string& name,
+                           const std::string& short_name);
+  void SetPosition(const syncer::StringOrdinal& position);
+
   void set_model_updater(AppListModelUpdater* model_updater) {
     model_updater_ = model_updater;
   }
 
-  // Updates item position and name from |sync_item|. |sync_item| must be valid.
-  void UpdateFromSync(
+  // Initializes item position and name from `sync_item`. `sync_item` must be
+  // valid.
+  void InitFromSync(
       const app_list::AppListSyncableService::SyncItem* sync_item);
 
   // Get the context menu of a certain app. This could be different for
@@ -144,8 +156,6 @@ class ChromeAppListItem {
   std::unique_ptr<ash::AppListItemMetadata> metadata_;
   Profile* profile_;
   AppListModelUpdater* model_updater_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppListItem);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_CHROME_APP_LIST_ITEM_H_

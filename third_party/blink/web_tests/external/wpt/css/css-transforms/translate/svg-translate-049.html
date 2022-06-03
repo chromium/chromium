@@ -5,7 +5,7 @@
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#svg-transform">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#two-d-transform-functions">
-		<link rel="help" href="http://www.w3.org/TR/css-transforms-1/#funcdef-translate">
+		<link rel="help" href="http://www.w3.org/TR/css-transforms-1/#funcdef-transform-translate">
     <link rel="match" href="reference/svg-translate-ref.html">
     <meta name="flags" content="svg">
     <meta name="assert" content="The translate transform function takes tx as the first translation-value parameter and ty is the optional second translation-value parameter. If ty is not provided, ty has zero as a value. The rect in the test should be moved 50 pixels in the X direction">
@@ -20,7 +20,7 @@
     <p>The test passes if there is a green square and no red.</p>
     <svg>
         <rect x="51" y="51" width="98" height="98" fill="red"/>
-        <rect y="50" width="100" height="100" fill="green" transform="translate(50px)"/>
+        <rect y="50" width="100" height="100" fill="green" transform="translate(50)"/>
     </svg>
 </body>
 </html>

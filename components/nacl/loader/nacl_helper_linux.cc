@@ -36,13 +36,12 @@
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "components/nacl/loader/sandbox_linux/nacl_sandbox_linux.h"
+#include "content/public/common/content_descriptors.h"
+#include "content/public/common/zygote/send_zygote_child_ping_linux.h"
+#include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
-#include "services/service_manager/embedder/descriptors.h"
-#include "services/service_manager/embedder/switches.h"
-#include "services/service_manager/zygote/common/send_zygote_child_ping_linux.h"
-#include "services/service_manager/zygote/common/zygote_fork_delegate_linux.h"
 
 #if defined(OS_NACL_NONSFI)
 #include "components/nacl/loader/nonsfi/nonsfi_listener.h"
@@ -94,8 +93,8 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   // This file descriptor is insidiously used by a number of APIs. Closing it
   // could lead to difficult to debug issues. Instead of closing it, replace
   // it with a dummy.
-  const int sandbox_ipc_channel = base::GlobalDescriptors::kBaseDescriptor +
-                                  service_manager::kSandboxIPCChannel;
+  const int sandbox_ipc_channel =
+      base::GlobalDescriptors::kBaseDescriptor + kSandboxIPCChannel;
 
   ReplaceFDWithDummy(sandbox_ipc_channel);
 
@@ -116,7 +115,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   nacl_sandbox->SealLayerOneSandbox();
   nacl_sandbox->CheckSandboxingStateWithPolicy();
 
-  base::GlobalDescriptors::GetInstance()->Set(service_manager::kMojoIPCChannel,
+  base::GlobalDescriptors::GetInstance()->Set(kMojoIPCChannel,
                                               browser_fd.release());
 
   // The Mojo EDK must be initialized before using IPC.
@@ -144,16 +143,16 @@ void ChildNaClLoaderInit(std::vector<base::ScopedFD> child_fds,
                          nacl::NaClSandbox* nacl_sandbox,
                          const std::string& channel_id) {
   DCHECK(child_fds.size() >
-         std::max(service_manager::ZygoteForkDelegate::kPIDOracleFDIndex,
-                  service_manager::ZygoteForkDelegate::kBrowserFDIndex));
+         std::max(content::ZygoteForkDelegate::kPIDOracleFDIndex,
+                  content::ZygoteForkDelegate::kBrowserFDIndex));
 
   // Ping the PID oracle socket.
-  CHECK(service_manager::SendZygoteChildPing(
-      child_fds[service_manager::ZygoteForkDelegate::kPIDOracleFDIndex].get()));
+  CHECK(content::SendZygoteChildPing(
+      child_fds[content::ZygoteForkDelegate::kPIDOracleFDIndex].get()));
 
   // Save the browser socket and close the rest.
-  base::ScopedFD browser_fd(std::move(
-      child_fds[service_manager::ZygoteForkDelegate::kBrowserFDIndex]));
+  base::ScopedFD browser_fd(
+      std::move(child_fds[content::ZygoteForkDelegate::kBrowserFDIndex]));
   child_fds.clear();
 
   BecomeNaClLoader(std::move(browser_fd), system_info, uses_nonsfi_mode,
@@ -181,7 +180,7 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
     return false;
   }
 
-  if (service_manager::ZygoteForkDelegate::kNumPassedFDs != child_fds.size()) {
+  if (content::ZygoteForkDelegate::kNumPassedFDs != child_fds.size()) {
     LOG(ERROR) << "nacl_helper: unexpected number of fds, got "
         << child_fds.size();
     return false;

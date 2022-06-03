@@ -5,10 +5,18 @@
 #include "third_party/blink/renderer/core/animation/transition_keyframe.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
+#include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
+#include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
+#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -26,12 +34,35 @@ PropertyHandleSet TransitionKeyframe::Properties() const {
 }
 
 void TransitionKeyframe::AddKeyframePropertiesToV8Object(
-    V8ObjectBuilder& object_builder) const {
-  Keyframe::AddKeyframePropertiesToV8Object(object_builder);
-  // TODO(crbug.com/777971): Add in the property/value for TransitionKeyframe.
+    V8ObjectBuilder& object_builder,
+    Element* element) const {
+  Keyframe::AddKeyframePropertiesToV8Object(object_builder, element);
+
+  // TODO(crbug.com/933761): Fix resolution of the style in the case where the
+  // target element has been removed.
+  if (!element)
+    return;
+
+  Document& document = element->GetDocument();
+  StyleResolverState state(document, *element);
+  state.SetStyle(document.GetStyleResolver().CreateComputedStyle());
+  CSSInterpolationTypesMap map(document.GetPropertyRegistry(), document);
+  CSSInterpolationEnvironment environment(map, state, nullptr, nullptr);
+  value_->GetType().Apply(value_->GetInterpolableValue(),
+                          value_->GetNonInterpolableValue(), environment);
+
+  const ComputedStyle* style = state.Style();
+  String property_value =
+      AnimationUtils::KeyframeValueFromComputedStyle(
+          property_, *style, document, element->GetLayoutObject())
+          ->CssText();
+
+  String property_name =
+      AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property_);
+  object_builder.Add(property_name, property_value);
 }
 
-void TransitionKeyframe::Trace(Visitor* visitor) {
+void TransitionKeyframe::Trace(Visitor* visitor) const {
   visitor->Trace(compositor_value_);
   Keyframe::Trace(visitor);
 }
@@ -62,7 +93,8 @@ TransitionKeyframe::PropertySpecificKeyframe::CreateInterpolation(
       other.compositor_value_);
 }
 
-void TransitionKeyframe::PropertySpecificKeyframe::Trace(Visitor* visitor) {
+void TransitionKeyframe::PropertySpecificKeyframe::Trace(
+    Visitor* visitor) const {
   visitor->Trace(compositor_value_);
   Keyframe::PropertySpecificKeyframe::Trace(visitor);
 }

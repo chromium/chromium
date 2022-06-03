@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
+#include "net/url_request/referrer_policy.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -24,6 +25,11 @@ class IOSImageDataFetcherWrapper {
   // The TaskRunner is used to decode the image if it is WebP-encoded.
   explicit IOSImageDataFetcherWrapper(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  IOSImageDataFetcherWrapper(const IOSImageDataFetcherWrapper&) = delete;
+  IOSImageDataFetcherWrapper& operator=(const IOSImageDataFetcherWrapper&) =
+      delete;
+
   virtual ~IOSImageDataFetcherWrapper();
 
   // Helper to start downloading and possibly decoding the image without a
@@ -36,14 +42,13 @@ class IOSImageDataFetcherWrapper {
   // be called with the downloaded image, or nil if any error happened. If the
   // image is WebP it will be decoded.
   // The |referrer| and |referrer_policy| will be passed on to the underlying
-  // URLFetcher.
+  // URLLoader.
   // |callback| cannot be nil.
-  void FetchImageDataWebpDecoded(
-      const GURL& image_url,
-      ImageDataFetcherBlock callback,
-      const std::string& referrer,
-      net::URLRequest::ReferrerPolicy referrer_policy,
-      bool send_cookies = false);
+  void FetchImageDataWebpDecoded(const GURL& image_url,
+                                 ImageDataFetcherBlock callback,
+                                 const std::string& referrer,
+                                 net::ReferrerPolicy referrer_policy,
+                                 bool send_cookies = false);
 
   // Test-only accessor for underlying ImageDataFetcher.
   ImageDataFetcher* AccessImageDataFetcherForTesting() {
@@ -55,8 +60,6 @@ class IOSImageDataFetcherWrapper {
       ImageDataFetcherBlock callback);
 
   ImageDataFetcher image_data_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSImageDataFetcherWrapper);
 };
 
 }  // namespace image_fetcher

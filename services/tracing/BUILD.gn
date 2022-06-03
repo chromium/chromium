@@ -7,6 +7,7 @@
 # Others modules should only need the public targets.
 
 import("//build/config/compiler/compiler.gni")
+import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -27,17 +28,20 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":privacy_check",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp",
+    "//services/tracing/public/mojom:mojom",
     "//third_party/perfetto:libperfetto",
+    "//third_party/perfetto/include/perfetto/ext/trace_processor:export_json",
+    "//third_party/perfetto/include/perfetto/trace_processor:basic_types",
+    "//third_party/perfetto/include/perfetto/trace_processor:storage",
     "//third_party/perfetto/protos/perfetto/config:lite",
   ]
 }
 
 source_set("privacy_check") {
-  testonly = true
-
   sources = [
     "perfetto/privacy_filtered_fields-inl.h",
     "perfetto/privacy_filtering_check.cc",
@@ -47,7 +51,6 @@ source_set("privacy_check") {
   deps = [
     "//base",
     "//third_party/perfetto:libperfetto",
-    "//third_party/perfetto/src/protozero:protozero",
   ]
 }
 
@@ -57,22 +60,25 @@ source_set("test_utils") {
   sources = [
     "perfetto/test_utils.cc",
     "perfetto/test_utils.h",
+    "public/cpp/perfetto/producer_test_utils.cc",
+    "public/cpp/perfetto/producer_test_utils.h",
   ]
 
   deps = [
     ":lib",
+    "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/perfetto/protos/perfetto/common:lite",
     "//third_party/perfetto/protos/perfetto/trace:lite",
+    "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
   ]
 
-  if (is_android) {
+  if (is_posix) {
     sources += [
       "perfetto/system_test_utils.cc",
       "perfetto/system_test_utils.h",
     ]
-
-    deps += [ "//third_party/perfetto/src/tracing:ipc" ]
   }
 }
 
@@ -82,13 +88,25 @@ source_set("tests") {
   sources = [
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
-    "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
-    "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
-    "public/cpp/perfetto/task_runner_unittest.cc",
+    "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
+    "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
   ]
+
+  if (is_android) {
+    sources += [
+      "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
+      "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
+      "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
+    ]
+    if (current_cpu == "arm64") {
+      sources += [
+        "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc",
+      ]
+    }
+  }
 
   if (!is_android) {
     sources += [ "tracing_service_unittest.cc" ]
@@ -96,10 +114,15 @@ source_set("tests") {
 
   deps = [
     ":lib",
+    ":privacy_check",
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
+    "//services/tracing/public/cpp:buildflags",
+    "//services/tracing/public/cpp/background_tracing:unit_tests",
+    "//services/tracing/public/mojom:mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/perfetto/include/perfetto/protozero:protozero",
@@ -107,38 +130,71 @@ source_set("tests") {
     "//third_party/perfetto/protos/perfetto/trace:lite",
     "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
     "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+    "//third_party/perfetto/protos/perfetto/trace/profiling:lite",
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
 
-  if (is_android) {
-    sources += [ "perfetto/system_perfetto_unittest.cc" ]
-    deps += [ "//third_party/perfetto/include/perfetto/ext/tracing/ipc" ]
+  if (is_posix) {
+    # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.
+    if (!is_mac) {
+      sources += [ "perfetto/system_perfetto_unittest.cc" ]
+    }
+
+    if (!is_android) {
+      sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
+    }
 
     if (can_unwind_with_cfi_table && is_official_build) {
-      sources +=
-          [ "public/cpp/stack_sampling/stack_unwinder_android_unittest.cc" ]
+      if (is_android) {
+        sources +=
+            [ "public/cpp/stack_sampling/stack_unwinder_android_unittest.cc" ]
+      }
       deps += [
         ":jni_headers",
         ":tracing_test_helper_java",
       ]
     }
   }
+
+  if (enable_loader_lock_sampling) {
+    if (is_win) {
+      sources +=
+          [ "public/cpp/stack_sampling/loader_lock_sampler_win_unittest.cc" ]
+    }
+
+    deps += [ ":loader_lock_sampler_test_strings" ]
+    data_deps = [ ":loader_lock_sampler_test_dll" ]
+  }
 }
 
 if (is_android) {
   generate_jni("jni_headers") {
     testonly = true
-    sources = [
-      "android/test/src/org/chromium/tracing/UnwindTestHelper.java",
-    ]
+    sources = [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
   }
 
   android_library("tracing_test_helper_java") {
     testonly = true
-    deps = [
-      "//base:base_java",
+    deps = [ "//base:base_java" ]
+    sources = [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
+  }
+}
+
+if (enable_loader_lock_sampling) {
+  source_set("loader_lock_sampler_test_strings") {
+    testonly = true
+
+    sources = [
+      "public/cpp/stack_sampling/loader_lock_sampler_test_strings.cc",
+      "public/cpp/stack_sampling/loader_lock_sampler_test_strings.h",
     ]
-    java_files =
-        [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
+  }
+
+  loadable_module("loader_lock_sampler_test_dll") {
+    testonly = true
+
+    sources = [ "public/cpp/stack_sampling/loader_lock_sampler_test_dll.cc" ]
+
+    deps = [ ":loader_lock_sampler_test_strings" ]
   }
 }

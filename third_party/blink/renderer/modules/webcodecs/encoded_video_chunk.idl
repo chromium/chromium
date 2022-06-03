@@ -8,13 +8,16 @@ enum EncodedVideoChunkType {
 };
 
 [
-   RuntimeEnabled=WebCodecs
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
 ] interface EncodedVideoChunk {
-  constructor(EncodedVideoChunkType type, unsigned long long timestamp, BufferSource data);
-  constructor(EncodedVideoChunkType type, unsigned long long timestamp, unsigned long long duration, BufferSource data);
+  constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
   // TODO: Add frame dependency information
-  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute long long timestamp;  // microseconds
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute ArrayBuffer data;
+  readonly attribute unsigned long byteLength;
+
+  [RaisesException]
+  void copyTo(AllowSharedBufferSource destination);
 };

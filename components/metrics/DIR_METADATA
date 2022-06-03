@@ -1,0 +1,3 @@
+mixins: "//base/metrics/COMMON_METADATA"
+
+team_email: "chromium-dev@chromium.org"

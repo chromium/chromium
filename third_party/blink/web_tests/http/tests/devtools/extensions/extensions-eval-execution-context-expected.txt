@@ -1,0 +1,11 @@
+Tests that webInspector.inspectedWindow.eval() only evaluates in the correct execution context
+
+Started extension.
+Running tests...
+RUNNING TEST: extension_testEvaluateInFixedExecutionContext
+error: Request Runtime.evaluate failed. {"code":-32602,"message":"uniqueContextId not found"}
+error: uniqueContextId not found
+error: Extension server error: Inspector protocol error: uniqueContextId not found
+Got error, as expected: {"code":"E_PROTOCOLERROR","description":"Inspector protocol error: %s","details":["uniqueContextId not found"],"isError":true}
+All tests done.
+

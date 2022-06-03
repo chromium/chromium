@@ -8,13 +8,13 @@
     }
   </style>
   <script>
-    if (window.eventSender) {
+    if (window.testRunner) {
       addEventListener('load', function() {
         // Zoom in three times. Since the image has sizes=50vw it should
         // remain the same size since the viewport shrinks during a zoom.
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
-        eventSender.zoomPageIn();
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
+        testRunner.zoomPageIn();
       });
     }
   </script>

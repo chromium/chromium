@@ -1,0 +1,2000 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/web_test/browser/web_test_control_host.h"
+
+#include <stddef.h>
+#include <string.h>
+
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <queue>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/barrier_closure.h"
+#include "base/base64.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
+#include "content/public/browser/content_index_context.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/blink_test_browser_support.h"
+#include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
+#include "content/shell/browser/shell_content_index_provider.h"
+#include "content/shell/browser/shell_devtools_frontend.h"
+#include "content/test/mock_platform_notification_service.h"
+#include "content/test/storage_partition_test_helpers.h"
+#include "content/web_test/browser/devtools_protocol_test_bindings.h"
+#include "content/web_test/browser/fake_bluetooth_chooser.h"
+#include "content/web_test/browser/test_info_extractor.h"
+#include "content/web_test/browser/web_test_bluetooth_chooser_factory.h"
+#include "content/web_test/browser/web_test_browser_context.h"
+#include "content/web_test/browser/web_test_content_browser_client.h"
+#include "content/web_test/browser/web_test_devtools_bindings.h"
+#include "content/web_test/browser/web_test_first_device_bluetooth_chooser.h"
+#include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/common/web_test_constants.h"
+#include "content/web_test/common/web_test_string_util.h"
+#include "content/web_test/common/web_test_switches.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
+#include "storage/browser/database/database_tracker.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/unique_name/unique_name_helper.h"
+#include "ui/base/ui_base_switches.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "url/url_constants.h"
+
+#if defined(OS_MAC)
+#include "base/mac/foundation_util.h"
+#endif
+
+namespace content {
+
+namespace {
+
+// The URL used in between two web tests.
+const char kAboutBlankResetWebTest[] = "about:blank?reset-web-test";
+
+std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
+                           size_t indent,
+                           bool is_current_index) {
+  std::string result;
+  if (is_current_index) {
+    constexpr const char kCurrentMarker[] = "curr->";
+    result.append(kCurrentMarker);
+    result.append(indent - strlen(kCurrentMarker), ' ');
+  } else {
+    result.append(indent, ' ');
+  }
+
+  std::string url = web_test_string_util::NormalizeWebTestURL(
+      base::UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())));
+  result.append(url);
+  DCHECK(frame_state.target);
+  if (!frame_state.target->empty()) {
+    std::string unique_name = base::UTF16ToUTF8(*frame_state.target);
+    result.append(" (in frame \"");
+    result.append(
+        blink::UniqueNameHelper::ExtractStableNameForTesting(unique_name));
+    result.append("\")");
+  }
+  result.append("\n");
+
+  std::vector<blink::ExplodedFrameState> sorted_children = frame_state.children;
+  std::sort(
+      sorted_children.begin(), sorted_children.end(),
+      [](const blink::ExplodedFrameState& lhs,
+         const blink::ExplodedFrameState& rhs) {
+        // Child nodes should always have a target (aka unique name).
+        DCHECK(lhs.target);
+        DCHECK(rhs.target);
+        std::string lhs_name =
+            blink::UniqueNameHelper::ExtractStableNameForTesting(
+                base::UTF16ToUTF8(*lhs.target));
+        std::string rhs_name =
+            blink::UniqueNameHelper::ExtractStableNameForTesting(
+                base::UTF16ToUTF8(*rhs.target));
+        if (!base::EqualsCaseInsensitiveASCII(lhs_name, rhs_name))
+          return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) < 0;
+
+        return lhs.item_sequence_number < rhs.item_sequence_number;
+      });
+  for (const auto& child : sorted_children)
+    result += DumpFrameState(child, indent + 4, false);
+
+  return result;
+}
+
+std::string DumpNavigationEntry(NavigationEntry* navigation_entry,
+                                bool is_current_index) {
+  // This is silly, but it's currently the best way to extract the information.
+  blink::PageState page_state = navigation_entry->GetPageState();
+  blink::ExplodedPageState exploded_page_state;
+  CHECK(
+      blink::DecodePageState(page_state.ToEncodedData(), &exploded_page_state));
+  return DumpFrameState(exploded_page_state.top, 8, is_current_index);
+}
+
+std::string DumpHistoryForWebContents(WebContents* web_contents) {
+  std::string result;
+  const int current_index =
+      web_contents->GetController().GetCurrentEntryIndex();
+  for (int i = 0; i < web_contents->GetController().GetEntryCount(); ++i) {
+    result += DumpNavigationEntry(
+        web_contents->GetController().GetEntryAtIndex(i), i == current_index);
+  }
+  return result;
+}
+
+std::vector<std::string> DumpTitleWasSet(WebContents* web_contents) {
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool load =
+      control_host->web_test_runtime_flags().dump_frame_load_callbacks();
+
+  bool title_changed =
+      control_host->web_test_runtime_flags().dump_title_changes();
+
+  std::vector<std::string> logs;
+
+  if (load) {
+    // TitleWasSet is only available on top-level frames.
+    std::string log = "main frame";
+    logs.emplace_back(
+        log + " - TitleWasSet: " + base::UTF16ToUTF8(web_contents->GetTitle()));
+  }
+
+  if (title_changed) {
+    logs.emplace_back("TITLE CHANGED: '" +
+                      base::UTF16ToUTF8(web_contents->GetTitle()) + "'");
+  }
+  return logs;
+}
+
+std::string DumpFailLoad(WebContents* web_contents,
+                         RenderFrameHost* render_frame_host) {
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool result =
+      control_host->web_test_runtime_flags().dump_frame_load_callbacks();
+
+  if (!result)
+    return std::string();
+
+  std::string log = (web_contents->GetMainFrame() == render_frame_host)
+                        ? "main frame "
+                        : "frame ";
+  std::string name = GetFrameNameFromBrowserForWebTests(render_frame_host);
+  log += !name.empty() ? "\"" + name + "\"" : "(anonymous)";
+  return log + " - DidFailLoad";
+}
+
+// Draws a selection rect into a bitmap.
+void DrawSelectionRect(const SkBitmap& bitmap, const gfx::Rect& wr) {
+  // Render a red rectangle bounding selection rect
+  cc::SkiaPaintCanvas canvas(bitmap);
+  cc::PaintFlags flags;
+  flags.setColor(0xFFFF0000);  // Fully opaque red
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setAntiAlias(true);
+  flags.setStrokeWidth(1.0f);
+  SkIRect rect;  // Bounding rect
+  rect.setXYWH(wr.x(), wr.y(), wr.width(), wr.height());
+  canvas.drawIRect(rect, flags);
+}
+
+// Applies settings that differ between web tests and regular mode. Some
+// of the defaults are controlled via command line flags which are
+// automatically set for web tests.
+void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  prefs->allow_universal_access_from_file_urls = false;
+  prefs->dom_paste_enabled = true;
+  prefs->javascript_can_access_clipboard = true;
+  prefs->xslt_enabled = true;
+  prefs->application_cache_enabled = true;
+  prefs->tabs_to_links = false;
+  prefs->hyperlink_auditing_enabled = false;
+  prefs->allow_running_insecure_content = false;
+  prefs->disable_reading_from_canvas = false;
+  prefs->strict_mixed_content_checking = false;
+  prefs->strict_powerful_feature_restrictions = false;
+  prefs->webgl_errors_to_console_enabled = false;
+  prefs->enable_scroll_animator =
+      !command_line.HasSwitch(switches::kDisableSmoothScrolling);
+  prefs->threaded_scrolling_enabled =
+      command_line.HasSwitch(switches::kEnableThreadedCompositing) &&
+      !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
+  prefs->minimum_logical_font_size = 9;
+  prefs->accelerated_2d_canvas_enabled =
+      command_line.HasSwitch(switches::kEnableAccelerated2DCanvas);
+  prefs->smart_insert_delete_enabled = true;
+  prefs->viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
+  prefs->default_minimum_page_scale_factor = 1.f;
+  prefs->default_maximum_page_scale_factor = 4.f;
+  prefs->presentation_receiver =
+      command_line.HasSwitch(switches::kForcePresentationReceiverForTesting);
+  prefs->translate_service_available = true;
+
+#if defined(OS_MAC)
+  prefs->editing_behavior = blink::mojom::EditingBehavior::kEditingMacBehavior;
+#else
+  prefs->editing_behavior =
+      blink::mojom::EditingBehavior::kEditingWindowsBehavior;
+#endif
+
+#if defined(OS_MAC)
+  prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
+      u"Apple Chancery";
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";
+  prefs->serif_font_family_map[blink::web_pref::kCommonScript] = u"Times";
+  prefs->standard_font_family_map[blink::web_pref::kCommonScript] = u"Times";
+#else
+  prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
+      u"Comic Sans MS";
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Impact";
+  prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
+      u"times new roman";
+  prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
+      u"times new roman";
+#endif
+  prefs->fixed_font_family_map[blink::web_pref::kCommonScript] = u"Courier";
+  prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
+      u"Helvetica";
+}
+
+}  // namespace
+
+// WebTestResultPrinter ----------------------------------------------------
+
+WebTestResultPrinter::WebTestResultPrinter(std::ostream* output,
+                                           std::ostream* error)
+    : output_(output), error_(error) {}
+
+void WebTestResultPrinter::StartStateDump() {
+  state_ = DURING_STATE_DUMP;
+}
+
+void WebTestResultPrinter::PrintTextHeader() {
+  if (state_ != DURING_STATE_DUMP)
+    return;
+  if (!capture_text_only_)
+    *output_ << "Content-Type: text/plain\n";
+  state_ = IN_TEXT_BLOCK;
+}
+
+void WebTestResultPrinter::PrintTextBlock(const std::string& block) {
+  if (state_ != IN_TEXT_BLOCK)
+    return;
+  *output_ << block;
+}
+
+void WebTestResultPrinter::PrintTextFooter() {
+  if (state_ != IN_TEXT_BLOCK)
+    return;
+  if (!capture_text_only_) {
+    *output_ << "#EOF\n";
+    output_->flush();
+  }
+  state_ = IN_IMAGE_BLOCK;
+}
+
+void WebTestResultPrinter::PrintImageHeader(const std::string& actual_hash,
+                                            const std::string& expected_hash) {
+  if (state_ != IN_IMAGE_BLOCK || capture_text_only_)
+    return;
+  *output_ << "\nActualHash: " << actual_hash << "\n";
+  if (!expected_hash.empty())
+    *output_ << "\nExpectedHash: " << expected_hash << "\n";
+}
+
+void WebTestResultPrinter::PrintImageBlock(
+    const std::vector<unsigned char>& png_image) {
+  if (state_ != IN_IMAGE_BLOCK || capture_text_only_)
+    return;
+  *output_ << "Content-Type: image/png\n";
+  if (encode_binary_data_) {
+    PrintEncodedBinaryData(png_image);
+    return;
+  }
+
+  *output_ << "Content-Length: " << png_image.size() << "\n";
+  output_->write(reinterpret_cast<const char*>(&png_image[0]),
+                 png_image.size());
+}
+
+void WebTestResultPrinter::PrintImageFooter() {
+  if (state_ != IN_IMAGE_BLOCK)
+    return;
+  if (!capture_text_only_) {
+    *output_ << "#EOF\n";
+    output_->flush();
+  }
+  state_ = AFTER_TEST;
+}
+
+void WebTestResultPrinter::PrintAudioHeader() {
+  DCHECK_EQ(state_, DURING_STATE_DUMP);
+  if (!capture_text_only_)
+    *output_ << "Content-Type: audio/wav\n";
+  state_ = IN_AUDIO_BLOCK;
+}
+
+void WebTestResultPrinter::PrintAudioBlock(
+    const std::vector<unsigned char>& audio_data) {
+  if (state_ != IN_AUDIO_BLOCK || capture_text_only_)
+    return;
+  if (encode_binary_data_) {
+    PrintEncodedBinaryData(audio_data);
+    return;
+  }
+
+  *output_ << "Content-Length: " << audio_data.size() << "\n";
+  output_->write(reinterpret_cast<const char*>(&audio_data[0]),
+                 audio_data.size());
+}
+
+void WebTestResultPrinter::PrintAudioFooter() {
+  if (state_ != IN_AUDIO_BLOCK)
+    return;
+  if (!capture_text_only_) {
+    *output_ << "#EOF\n";
+    output_->flush();
+  }
+  state_ = IN_IMAGE_BLOCK;
+}
+
+void WebTestResultPrinter::AddMessageToStderr(const std::string& message) {
+  *error_ << message;
+}
+
+void WebTestResultPrinter::AddMessage(const std::string& message) {
+  AddMessageRaw(message + "\n");
+}
+
+void WebTestResultPrinter::AddMessageRaw(const std::string& message) {
+  if (state_ != DURING_TEST)
+    return;
+  *output_ << message;
+}
+
+void WebTestResultPrinter::AddErrorMessage(const std::string& message) {
+  if (!capture_text_only_)
+    *error_ << message << "\n";
+  if (state_ != DURING_TEST && state_ != DURING_STATE_DUMP)
+    return;
+  PrintTextHeader();
+  *output_ << message << "\n";
+  PrintTextFooter();
+  PrintImageFooter();
+}
+
+void WebTestResultPrinter::PrintEncodedBinaryData(
+    const std::vector<unsigned char>& data) {
+  *output_ << "Content-Transfer-Encoding: base64\n";
+
+  std::string data_base64;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(&data[0]), data.size()),
+      &data_base64);
+
+  *output_ << "Content-Length: " << data_base64.length() << "\n";
+  output_->write(data_base64.c_str(), data_base64.length());
+}
+
+void WebTestResultPrinter::CloseStderr() {
+  if (state_ != AFTER_TEST)
+    return;
+  if (!capture_text_only_) {
+    *error_ << "#EOF\n";
+    error_->flush();
+  }
+}
+
+// WebTestWindowObserver -----------------------------------------------------
+
+class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
+ public:
+  WebTestWindowObserver(WebContents* web_contents,
+                        WebTestControlHost* web_test_control)
+      : WebContentsObserver(web_contents), web_test_control_(web_test_control) {
+    // If the WebContents was already set up before given to the Shell, it may
+    // have a set of RenderFrames already, and we need to notify about them
+    // here.
+    web_contents->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+          if (render_frame_host->IsRenderFrameLive())
+            RenderFrameCreated(render_frame_host);
+        }));
+  }
+
+ private:
+  void WebContentsDestroyed() override {
+    // Deletes |this| and removes the pointer to it from WebTestControlHost.
+    web_test_control_->test_opened_window_observers_.erase(web_contents());
+  }
+
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
+    web_test_control_->HandleNewRenderFrameHost(render_frame_host);
+  }
+
+  WebTestControlHost* const web_test_control_;
+};
+
+// WebTestControlHost -------------------------------------------------------
+
+WebTestControlHost* WebTestControlHost::instance_ = nullptr;
+
+// static
+WebTestControlHost* WebTestControlHost::Get() {
+  return instance_;
+}
+
+WebTestControlHost::WebTestControlHost() {
+  CHECK(!instance_);
+  instance_ = this;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableLeakDetection)) {
+    leak_detector_ = std::make_unique<LeakDetector>();
+    std::string switchValue =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kEnableLeakDetection);
+    crash_when_leak_found_ = switchValue == switches::kCrashOnFailure;
+  }
+
+  printer_ = std::make_unique<WebTestResultPrinter>(&std::cout, &std::cerr);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEncodeBinary))
+    printer_->set_encode_binary_data(true);
+
+  // Print text only (without binary dumps and headers/footers for run_web_tests
+  // protocol) until we enter the protocol mode (see TestInfo::protocol_mode).
+  printer_->set_capture_text_only(true);
+
+  InjectTestSharedWorkerService(ShellContentBrowserClient::Get()
+                                    ->browser_context()
+                                    ->GetDefaultStoragePartition());
+
+  GpuDataManager::GetInstance()->AddObserver(this);
+  ResetBrowserAfterWebTest();
+}
+
+WebTestControlHost::~WebTestControlHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(instance_ == this);
+  CHECK(test_phase_ == BETWEEN_TESTS);
+  GpuDataManager::GetInstance()->RemoveObserver(this);
+  instance_ = nullptr;
+  // The |main_window_| and |secondary_window_| are leaked here, but the
+  // WebTestBrowserMainRunner will close all Shell windows including those.
+}
+
+bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
+  TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  current_working_directory_ = test_info.current_working_directory;
+  expected_pixel_hash_ = test_info.expected_pixel_hash;
+  bool is_devtools_js_test = false;
+  test_url_ = WebTestDevToolsBindings::MapTestURLIfNeeded(test_info.url,
+                                                          &is_devtools_js_test);
+  bool is_devtools_protocol_test = false;
+  test_url_ = DevToolsProtocolTestBindings::MapTestURLIfNeeded(
+      test_url_, &is_devtools_protocol_test);
+
+  protocol_mode_ = test_info.protocol_mode;
+  if (protocol_mode_)
+    printer_->set_capture_text_only(false);
+  printer_->reset();
+
+  accumulated_web_test_runtime_flags_changes_.Clear();
+  web_test_runtime_flags_.Reset();
+  main_window_render_view_hosts_.clear();
+  main_window_render_process_hosts_.clear();
+  all_observed_render_process_hosts_.clear();
+  render_process_host_observations_.RemoveAllObservations();
+  frame_to_layout_dump_map_.clear();
+
+  ShellBrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+
+  browser_context->GetClientHintsControllerDelegate()->ResetForTesting();
+
+  const gfx::Size window_size = Shell::GetShellDefaultSize();
+
+  if (!main_window_) {
+    TRACE_EVENT0("shell",
+                 "WebTestControlHost::PrepareForWebTest::CreateMainWindow");
+    main_window_ = content::Shell::CreateNewWindow(
+        browser_context, GURL(url::kAboutBlankURL), nullptr, window_size);
+    WebContentsObserver::Observe(main_window_->web_contents());
+
+    default_prefs_ = main_window_->web_contents()->GetOrCreateWebPreferences();
+  } else {
+    // Set a different size first to reset the possibly inconsistent state
+    // caused by the previous test using unfortunate synchronous resize mode.
+    // This forces SetSize() not to early return which would otherwise happen
+    // when we set the size to |window_size| which is the same as its current
+    // size. See http://crbug.com/1011191 for more details.
+    // TODO(crbug.com/309760): This resize to half-size could go away if
+    // testRunner.useUnfortunateSynchronousResizeMode() goes away.
+    main_window_->ResizeWebContentForTests(
+        gfx::ScaleToCeiledSize(window_size, 0.5f, 1));
+    main_window_->ResizeWebContentForTests(window_size);
+
+    main_window_->web_contents()->SetWebPreferences(default_prefs_);
+
+    main_window_->web_contents()->WasShown();
+  }
+
+  // Tests should always start with the browser controls hidden.
+  // TODO(danakj): We no longer run web tests on android, and this is an android
+  // feature, so maybe this isn't needed anymore.
+  main_window_->web_contents()->UpdateBrowserControlsState(
+      cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
+      false);
+
+  // We did not track the |main_window_| RenderFrameHost during the creation of
+  // |main_window_|, since we need the pointer value in this class set first. So
+  // we update the |test_phase_| here allowing us to now track the RenderFrames
+  // in that window, and call HandleNewRenderFrameHost() explicitly.
+  test_phase_ = DURING_TEST;
+  HandleNewRenderFrameHost(main_window_->web_contents()->GetMainFrame());
+
+  if (is_devtools_protocol_test) {
+    devtools_protocol_test_bindings_ =
+        std::make_unique<DevToolsProtocolTestBindings>(
+            main_window_->web_contents());
+  }
+
+  // We don't go down the normal system path of focusing RenderWidgetHostView
+  // because on mac headless, there are no system windows and that path does
+  // not do anything. Instead we go through the Shell::ActivateContents() path
+  // which knows how to perform the activation correctly on all platforms and in
+  // headless mode.
+  main_window_->ActivateContents(main_window_->web_contents());
+
+  RenderViewHost* main_render_view_host =
+      main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
+  {
+    TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest::Flush");
+    // Round-trip through the InputHandler mojom interface to the compositor
+    // thread, in order to ensure that any input events (moving the mouse at the
+    // start of the test, focus coming from ActivateContents() above, etc) are
+    // handled and bounced if appropriate to the main thread, before we continue
+    // and start the test. This will ensure they are handled on the main thread
+    // before the test runs, which would otherwise race against them.
+    main_render_view_host->GetWidget()->FlushForTesting();
+  }
+
+  if (is_devtools_js_test) {
+    secondary_window_ = content::Shell::CreateNewWindow(
+        ShellContentBrowserClient::Get()->browser_context(),
+        GURL(url::kAboutBlankURL), nullptr, window_size);
+    // This navigates the secondary (devtools inspector) window, and then
+    // navigates the main window once that has loaded to a devtools html test
+    // page, based on the test url.
+    devtools_bindings_ = std::make_unique<WebTestDevToolsBindings>(
+        main_window_->web_contents(), secondary_window_->web_contents(),
+        test_url_);
+  } else {
+    // Loading the URL will immediately start the web test. Manually call
+    // LoadURLWithParams on the WebContents to avoid extraneous calls from
+    // content::Shell such as SetFocus(), which could race with the web
+    // test.
+    NavigationController::LoadURLParams params(test_url_);
+
+    // Using PAGE_TRANSITION_TYPED replicates an omnibox navigation.
+    params.transition_type =
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
+
+    // Clear history to purge the prior navigation to about:blank.
+    params.should_clear_history_list = true;
+    main_window_->web_contents()->GetController().LoadURLWithParams(params);
+  }
+
+  return true;
+}
+
+bool WebTestControlHost::ResetBrowserAfterWebTest() {
+  TRACE_EVENT0("shell", "WebTestControlHost::ResetBrowserAfterWebTest");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Close any windows opened by the test to avoid them polluting the next
+  // test.
+  CloseTestOpenedWindows();
+
+  // Close IPC channels to avoid unexpected messages or replies after the test
+  // is done. New channels will be opened for the next test.
+  web_test_render_frame_map_.clear();
+  web_test_render_thread_map_.clear();
+  receiver_bindings_.Clear();
+
+  printer_->PrintTextFooter();
+  printer_->PrintImageFooter();
+  printer_->CloseStderr();
+  test_phase_ = BETWEEN_TESTS;
+  expected_pixel_hash_.clear();
+  test_url_ = GURL();
+  prefs_ = blink::web_pref::WebPreferences();
+  should_override_prefs_ = false;
+  WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(true);
+  WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
+  WebTestContentBrowserClient::Get()->SetScreenOrientationChanged(false);
+  WebTestContentBrowserClient::Get()->ResetFakeBluetoothDelegate();
+  WebTestContentBrowserClient::Get()
+      ->GetWebTestBrowserContext()
+      ->GetWebTestPermissionManager()
+      ->ResetPermissions();
+  check_for_leaked_windows_ = false;
+  renderer_dump_result_ = nullptr;
+  navigation_history_dump_ = "";
+  layout_dump_.reset();
+  waiting_for_layout_dumps_ = 0;
+  pixel_dump_.reset();
+  actual_pixel_hash_ = "";
+  waiting_for_pixel_results_ = false;
+  composite_all_frames_node_queue_ = std::queue<Node*>();
+  composite_all_frames_node_storage_.clear();
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
+
+  BlockThirdPartyCookies(false);
+  SetBluetoothManualChooser(false);
+  SetDatabaseQuota(content::kDefaultDatabaseQuota);
+
+  // Delete all cookies.
+  {
+    BrowserContext* browser_context =
+        ShellContentBrowserClient::Get()->browser_context();
+    StoragePartition* storage_partition =
+        browser_context->GetDefaultStoragePartition();
+    storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
+        network::mojom::CookieDeletionFilter::New(), base::DoNothing());
+  }
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (writable_directory_for_tests_.IsValid()) {
+      if (!writable_directory_for_tests_.Delete())
+        LOG(ERROR) << "Failed to delete temporary directory";
+    }
+  }
+
+  weak_factory_.InvalidateWeakPtrs();
+
+  return true;
+}
+
+void WebTestControlHost::DidCreateOrAttachWebContents(
+    WebContents* web_contents) {
+  auto result = test_opened_window_observers_.emplace(
+      web_contents,
+      std::make_unique<WebTestWindowObserver>(web_contents, this));
+  CHECK(result.second);  // The WebContents should not already be in the map!
+}
+
+void WebTestControlHost::SetTempPath(const base::FilePath& temp_path) {
+  temp_path_ = temp_path;
+}
+
+void WebTestControlHost::OverrideWebkitPrefs(
+    blink::web_pref::WebPreferences* prefs) {
+  if (should_override_prefs_) {
+    *prefs = prefs_;
+  } else {
+    ApplyWebTestDefaultPreferences(prefs);
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceDarkMode)) {
+    prefs->preferred_color_scheme = blink::mojom::PreferredColorScheme::kDark;
+  } else {
+    prefs->preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceHighContrast)) {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+  } else {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kNoPreference;
+  }
+}
+
+void WebTestControlHost::OpenURL(const GURL& url) {
+  if (test_phase_ != DURING_TEST)
+    return;
+
+  Shell::CreateNewWindow(main_window_->web_contents()->GetBrowserContext(), url,
+                         main_window_->web_contents()->GetSiteInstance(),
+                         gfx::Size());
+}
+
+void WebTestControlHost::InitiateCaptureDump(
+    mojom::WebTestRendererDumpResultPtr renderer_dump_result,
+    bool capture_navigation_history,
+    bool capture_pixels) {
+  if (test_phase_ != DURING_TEST)
+    return;
+
+  renderer_dump_result_ = std::move(renderer_dump_result);
+
+  if (capture_navigation_history) {
+    for (auto* window : Shell::windows()) {
+      WebContents* web_contents = window->web_contents();
+      // Only dump the main test window, and windows that it opened. This avoids
+      // devtools windows specifically.
+      if (window == main_window_ || web_contents->HasOpener()) {
+        navigation_history_dump_ +=
+            "\n============== Back Forward List ==============\n";
+        navigation_history_dump_ += DumpHistoryForWebContents(web_contents);
+        navigation_history_dump_ +=
+            "===============================================\n";
+      }
+    }
+  }
+
+  // Grab a layout dump if the renderer was not able to provide one.
+  if (!renderer_dump_result_->layout) {
+    DCHECK_EQ(0, waiting_for_layout_dumps_);
+
+    main_window_->web_contents()->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+          if (!render_frame_host->IsRenderFrameLive())
+            return;
+
+          ++waiting_for_layout_dumps_;
+          GetWebTestRenderFrameRemote(render_frame_host)
+              ->DumpFrameLayout(
+                  base::BindOnce(&WebTestControlHost::OnDumpFrameLayoutResponse,
+                                 weak_factory_.GetWeakPtr(),
+                                 render_frame_host->GetFrameTreeNodeId()));
+        }));
+  }
+
+  if (capture_pixels) {
+    waiting_for_pixel_results_ = true;
+    auto* rwhv = main_window_->web_contents()->GetRenderWidgetHostView();
+    // If we're running in threaded mode, then the frames will be produced via a
+    // scheduler elsewhere, all we need to do is to ensure that the surface is
+    // synchronized before we copy from it. In single threaded mode, we have to
+    // force each renderer to produce a frame.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableThreadedCompositing)) {
+      rwhv->EnsureSurfaceSynchronizedForWebTest();
+      EnqueueSurfaceCopyRequest();
+    } else {
+      CompositeAllFramesThen(
+          base::BindOnce(&WebTestControlHost::EnqueueSurfaceCopyRequest,
+                         weak_factory_.GetWeakPtr()));
+    }
+  }
+
+  // Try to report results now, if we aren't waiting for anything.
+  ReportResults();
+}
+
+void WebTestControlHost::TestFinishedInSecondaryRenderer() {
+  GetWebTestRenderThreadRemote(main_window_->web_contents()
+                                   ->GetMainFrame()
+                                   ->GetRenderViewHost()
+                                   ->GetProcess())
+      ->TestFinishedFromSecondaryRenderer();
+}
+
+// Enqueue an image copy output request.
+void WebTestControlHost::EnqueueSurfaceCopyRequest() {
+  // Under fuzzing, the renderer may close the |main_window_| while we're
+  // capturing test results, as demonstrated by https://crbug.com/1098835.
+  // We must handle this bad behaviour, and we just end the test without
+  // recording any results.
+  if (!main_window_) {
+    OnTestFinished();
+    return;
+  }
+
+  auto* rwhv = main_window_->web_contents()->GetRenderWidgetHostView();
+  rwhv->CopyFromSurface(gfx::Rect(), gfx::Size(),
+                        base::BindOnce(&WebTestControlHost::OnPixelDumpCaptured,
+                                       weak_factory_.GetWeakPtr()));
+}
+
+void WebTestControlHost::CompositeAllFramesThen(
+    base::OnceCallback<void()> callback) {
+  // Only allow a single call to CompositeAllFramesThen(), without a call to
+  // ResetBrowserAfterWebTest() in between. More than once risks overlapping
+  // calls, due to the asynchronous nature of CompositeNodeQueueThen(), which
+  // can lead to use-after-free, e.g.
+  // https://clusterfuzz.com/v2/testcase-detail/4929420383748096
+  if (!composite_all_frames_node_storage_.empty() ||
+      !composite_all_frames_node_queue_.empty()) {
+    // Using NOTREACHED + return here because we want to disallow the second
+    // call if this happens in release builds, while still catching this
+    // condition in debug builds.
+    NOTREACHED();
+    return;
+  }
+  // Build the frame storage and depth first queue.
+  Node* root = BuildFrameTree(main_window_->web_contents());
+  BuildDepthFirstQueue(root);
+  // Now asynchronously run through the node queue.
+  CompositeNodeQueueThen(std::move(callback));
+}
+
+void WebTestControlHost::CompositeNodeQueueThen(
+    base::OnceCallback<void()> callback) {
+  RenderFrameHost* frame = nullptr;
+  while (!frame) {
+    if (composite_all_frames_node_queue_.empty()) {
+      // Done with the queue - call the callback.
+      std::move(callback).Run();
+      return;
+    }
+
+    frame = composite_all_frames_node_queue_.front()->render_frame_host;
+    GlobalRenderFrameHostId routing_id =
+        composite_all_frames_node_queue_.front()->render_frame_host_id;
+    composite_all_frames_node_queue_.pop();
+
+    if (!RenderFrameHost::FromID(routing_id.child_id,
+                                 routing_id.frame_routing_id)) {
+      // The frame is gone. Frames can get detached by a parent frame during or
+      // in between SynchronouslyCompositeAfterTest() calls, after the test
+      // claims it has finished. That would be bad test behaviour but the fuzzer
+      // can do it. See crbug.com/899465 for an example of this problem.
+      frame = nullptr;
+    } else if (!frame->IsRenderFrameLive()) {
+      // The renderer is gone. Frames can also crash the renderer after the test
+      // claims to be finished.
+      frame = nullptr;
+    } else if (frame->GetParent() && frame->GetParent()->GetSiteInstance() ==
+                                         frame->GetSiteInstance()) {
+      // The frame is not a local root, so nothing to do.
+      frame = nullptr;
+    }
+  }
+
+  GetWebTestRenderFrameRemote(frame)->SynchronouslyCompositeAfterTest(
+      base::BindOnce(&WebTestControlHost::CompositeNodeQueueThen,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebTestControlHost::BuildDepthFirstQueue(Node* node) {
+  for (auto* child : node->children)
+    BuildDepthFirstQueue(child);
+  composite_all_frames_node_queue_.push(node);
+}
+
+WebTestControlHost::Node* WebTestControlHost::BuildFrameTree(
+    WebContents* web_contents) {
+  // Returns a Node for a given RenderFrameHost, or nullptr if doesn't exist.
+  auto node_for_frame = [this](RenderFrameHost* rfh) {
+    auto it = std::find_if(
+        composite_all_frames_node_storage_.begin(),
+        composite_all_frames_node_storage_.end(),
+        [rfh](auto& node) { return node->render_frame_host == rfh; });
+    return it == composite_all_frames_node_storage_.end() ? nullptr : it->get();
+  };
+
+  //  Collect all live frames in web_contents.
+  std::vector<RenderFrameHost*> frames;
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          frames.push_back(render_frame_host);
+      }));
+
+  // Add all of the frames to storage.
+  for (auto* frame : frames) {
+    DCHECK(!node_for_frame(frame)) << "Frame seen multiple times.";
+    composite_all_frames_node_storage_.emplace_back(
+        std::make_unique<Node>(frame));
+  }
+
+  // Construct a tree rooted at |root|.
+  Node* root = nullptr;
+  for (auto* frame : frames) {
+    Node* node = node_for_frame(frame);
+    DCHECK(node);
+    if (!frame->GetParentOrOuterDocument()) {
+      DCHECK(!root) << "Multiple roots found.";
+      root = node;
+    } else {
+      Node* parent = node_for_frame(frame->GetParentOrOuterDocument());
+      DCHECK(parent);
+      parent->children.push_back(node);
+    }
+  }
+  DCHECK(root) << "No root found.";
+
+  return root;
+}
+
+bool WebTestControlHost::IsMainWindow(WebContents* web_contents) const {
+  return main_window_ && web_contents == main_window_->web_contents();
+}
+
+std::unique_ptr<BluetoothChooser> WebTestControlHost::RunBluetoothChooser(
+    RenderFrameHost* frame,
+    const BluetoothChooser::EventHandler& event_handler) {
+  // TODO(https://crbug.com/509038): Remove |bluetooth_chooser_factory_| once
+  // all of the Web Bluetooth tests are migrated to external/wpt/.
+  if (bluetooth_chooser_factory_) {
+    return bluetooth_chooser_factory_->RunBluetoothChooser(frame,
+                                                           event_handler);
+  }
+
+  auto next_fake_bluetooth_chooser =
+      WebTestContentBrowserClient::Get()->GetNextFakeBluetoothChooser();
+  if (next_fake_bluetooth_chooser) {
+    const url::Origin origin = frame->GetLastCommittedOrigin();
+    DCHECK(!origin.opaque());
+    next_fake_bluetooth_chooser->OnRunBluetoothChooser(event_handler, origin);
+    return next_fake_bluetooth_chooser;
+  }
+
+  return std::make_unique<WebTestFirstDeviceBluetoothChooser>(event_handler);
+}
+
+void WebTestControlHost::RequestToLockMouse(WebContents* web_contents) {
+  if (next_pointer_lock_action_ == NextPointerLockAction::kTestWillRespond)
+    return;
+
+  web_contents->GotResponseToLockMouseRequest(
+      next_pointer_lock_action_ == NextPointerLockAction::kWillSucceed
+          ? blink::mojom::PointerLockResult::kSuccess
+          : blink::mojom::PointerLockResult::kPermissionDenied);
+
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
+}
+
+void WebTestControlHost::PluginCrashed(const base::FilePath& plugin_path,
+                                       base::ProcessId plugin_pid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  printer_->AddErrorMessage(
+      base::StringPrintf("#CRASHED - plugin (pid %" CrPRIdPid ")", plugin_pid));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&WebTestControlHost::DiscardMainWindow),
+                     weak_factory_.GetWeakPtr()));
+}
+
+void WebTestControlHost::TitleWasSet(NavigationEntry* entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> logs = DumpTitleWasSet(main_window_->web_contents());
+  if (logs.empty())
+    return;
+  for (auto log : logs)
+    printer_->AddMessage(log);
+}
+
+void WebTestControlHost::DidFailLoad(RenderFrameHost* render_frame_host,
+                                     const GURL& validated_url,
+                                     int error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string log =
+      DumpFailLoad(main_window_->web_contents(), render_frame_host);
+  if (log.empty())
+    return;
+  printer_->AddMessage(log);
+}
+
+void WebTestControlHost::WebContentsDestroyed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  printer_->AddErrorMessage("FAIL: main window was destroyed");
+  DiscardMainWindow();
+}
+
+void WebTestControlHost::DidUpdateFaviconURL(
+    RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  if (web_test_runtime_flags_.dump_icon_changes()) {
+    std::string log = IsMainWindow(web_contents()) ? "main frame " : "frame ";
+    printer_->AddMessageRaw(log + "- didChangeIcons\n");
+  }
+}
+
+void WebTestControlHost::RenderViewHostChanged(RenderViewHost* old_host,
+                                               RenderViewHost* new_host) {
+  // Notifies the main frame of |old_host| that it is deactivated while it's
+  // kept alive in back-forward cache.
+  RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(old_host);
+  GetWebTestRenderFrameRemote(rvhi->GetMainRenderFrameHost())->OnDeactivated();
+}
+
+void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
+  main_window_render_view_hosts_.erase(render_view_host);
+}
+
+void WebTestControlHost::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  RenderFrameHostImpl* rfh = request->rfh_restored_from_back_forward_cache();
+  if (rfh)
+    GetWebTestRenderFrameRemote(rfh)->OnReactivated();
+}
+
+void WebTestControlHost::RenderProcessHostDestroyed(
+    RenderProcessHost* render_process_host) {
+  render_process_host_observations_.RemoveObservation(render_process_host);
+  all_observed_render_process_hosts_.erase(render_process_host);
+  web_test_render_thread_map_.erase(render_process_host);
+  main_window_render_process_hosts_.erase(render_process_host);
+}
+
+void WebTestControlHost::RenderProcessExited(
+    RenderProcessHost* render_process_host,
+    const ChildProcessTerminationInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (info.status) {
+    case base::TerminationStatus::TERMINATION_STATUS_NORMAL_TERMINATION:
+    case base::TerminationStatus::TERMINATION_STATUS_STILL_RUNNING:
+      break;
+
+    case base::TerminationStatus::TERMINATION_STATUS_ABNORMAL_TERMINATION:
+    case base::TerminationStatus::TERMINATION_STATUS_LAUNCH_FAILED:
+    case base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED:
+    case base::TerminationStatus::TERMINATION_STATUS_PROCESS_WAS_KILLED:
+    default: {
+      const base::Process& process = render_process_host->GetProcess();
+      if (process.IsValid()) {
+        printer_->AddErrorMessage(std::string("#CRASHED - renderer (pid ") +
+                                  base::NumberToString(process.Pid()) + ")");
+      } else {
+        printer_->AddErrorMessage("#CRASHED - renderer");
+      }
+
+      DiscardMainWindow();
+      break;
+    }
+  }
+}
+
+void WebTestControlHost::OnGpuProcessCrashed(
+    base::TerminationStatus exit_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  printer_->AddErrorMessage("#CRASHED - gpu");
+  DiscardMainWindow();
+}
+
+void WebTestControlHost::DiscardMainWindow() {
+  // We can get here for 2 different reasons:
+  // 1. The |main_window_| Shell is destroying, and the WebContents inside it
+  // has been destroyed. Then we dare not call Shell::Close() on the
+  // |main_window_|.
+  // 2. Some other fatal error has occurred. We can't tell this apart from the
+  // Shell destroying, since that is also something a test can do, and
+  // destroying the WebContents can also happen in order ways (like activating a
+  // portal).
+  //
+  // Since we can't tell at this point if |main_window_| is okay to use, we
+  // don't touch it, and we stop observing its WebContents.
+  WebContentsObserver::Observe(nullptr);
+  main_window_ = nullptr;
+
+  // We don't want to leak any open windows when we finish a test, and the next
+  // test will create its own |main_window_|. So at this point we close all
+  // Shell windows, to avoid using the potentially-bad pointer.
+  CloseAllWindows();
+
+  // Then we immediately end the current test instead of timing out. This is
+  // like ReportResults() except we report only messages added to the
+  // |printer_| and no other test results.
+  printer_->StartStateDump();
+  printer_->PrintTextHeader();
+  printer_->PrintTextFooter();
+  OnTestFinished();
+}
+
+void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
+  // When creating the main window, we don't have a |main_window_| pointer yet.
+  // So we will explicitly call this for the main window after moving  to
+  // DURING_TEST.
+  if (test_phase_ != DURING_TEST)
+    return;
+
+  const bool main_window =
+      FrameTreeNode::From(frame)->frame_tree()->type() ==
+          FrameTree::Type::kPrimary &&
+      WebContents::FromRenderFrameHost(frame) == main_window_->web_contents();
+
+  RenderProcessHost* process_host = frame->GetProcess();
+  RenderViewHost* view_host = frame->GetRenderViewHost();
+
+  // If this the first time this renderer contains parts of the main test
+  // window, we need to make sure that it gets configured correctly (including
+  // letting it know that it's part of the main test window).
+  // We consider the renderer as new when we see either a new RenderProcessHost
+  // or a new RenderViewHost, as it is possible that a new renderer (with a new
+  // RenderViewHost) reuses a renderer process, and it's also possible that we
+  // reuse RenderViewHosts (in some fetch tests).
+  // TODO(rakina): Understand the fetch tests to figure out if it's possible to
+  // remove RenderProcessHost tracking here.
+  if (main_window &&
+      (!base::Contains(main_window_render_view_hosts_, view_host) ||
+       !base::Contains(main_window_render_process_hosts_, process_host))) {
+    // When we find the main window's main frame for the first time, we mark the
+    // test as starting for the renderer.
+    const bool starting_test = main_window_render_process_hosts_.empty();
+    DCHECK_EQ(main_window_render_process_hosts_.empty(),
+              main_window_render_view_hosts_.empty());
+
+    main_window_render_view_hosts_.insert(view_host);
+    main_window_render_process_hosts_.insert(process_host);
+
+    // Make sure the new renderer process_host has a test configuration shared
+    // with other renderers.
+    mojom::WebTestRunTestConfigurationPtr params =
+        mojom::WebTestRunTestConfiguration::New();
+    params->allow_external_pages = false;
+    params->current_working_directory = current_working_directory_;
+    params->temp_path = temp_path_;
+    params->test_url = test_url_;
+    params->allow_external_pages =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kAllowExternalPages);
+    params->expected_pixel_hash = expected_pixel_hash_;
+    params->protocol_mode = protocol_mode_;
+
+    GetWebTestRenderFrameRemote(frame)->SetTestConfiguration(std::move(params),
+                                                             starting_test);
+  }
+
+  // Is this a previously unknown renderer process_host?
+  if (!render_process_host_observations_.IsObservingSource(process_host)) {
+    render_process_host_observations_.AddObservation(process_host);
+    all_observed_render_process_hosts_.insert(process_host);
+
+    if (!main_window) {
+      GetWebTestRenderThreadRemote(process_host)
+          ->SetupRendererProcessForNonTestWindow();
+    }
+
+    GetWebTestRenderThreadRemote(process_host)
+        ->ReplicateWebTestRuntimeFlagsChanges(
+            accumulated_web_test_runtime_flags_changes_.Clone());
+    GetWebTestRenderThreadRemote(process_host)
+        ->ReplicateWorkQueueStates(work_queue_states_.Clone());
+  }
+}
+
+void WebTestControlHost::OnTestFinished() {
+  test_phase_ = CLEAN_UP;
+  if (!printer_->output_finished())
+    printer_->PrintImageFooter();
+  if (main_window_)
+    main_window_->web_contents()->ExitFullscreen(/*will_cause_resize=*/false);
+  devtools_bindings_.reset();
+  devtools_protocol_test_bindings_.reset();
+  accumulated_web_test_runtime_flags_changes_.Clear();
+  web_test_runtime_flags_.Reset();
+  work_queue_states_.Clear();
+
+  ShellBrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
+                        weak_factory_.GetWeakPtr()));
+
+  StoragePartition* storage_partition =
+      browser_context->GetDefaultStoragePartition();
+  storage_partition->GetServiceWorkerContext()->ClearAllServiceWorkersForTest(
+      barrier_closure);
+  storage_partition->ClearBluetoothAllowedDevicesMapForTesting();
+
+  // TODO(nhiroki): Add a comment about the reason why we terminate all shared
+  // workers here.
+  TerminateAllSharedWorkers(ShellContentBrowserClient::Get()
+                                ->browser_context()
+                                ->GetDefaultStoragePartition(),
+                            barrier_closure);
+}
+
+void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
+                                                   const std::string& dump) {
+  // Store the result.
+  auto pair = frame_to_layout_dump_map_.emplace(frame_tree_node_id, dump);
+  bool insertion_took_place = pair.second;
+  DCHECK(insertion_took_place);
+
+  // See if we need to wait for more responses.
+  if (--waiting_for_layout_dumps_ > 0)
+    return;
+
+  // Stitch the frame-specific results in the right order.
+  std::string stitched_layout_dump;
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        auto it = frame_to_layout_dump_map_.find(
+            render_frame_host->GetFrameTreeNodeId());
+        if (it != frame_to_layout_dump_map_.end()) {
+          stitched_layout_dump.append(it->second);
+        }
+      }));
+
+  layout_dump_.emplace(std::move(stitched_layout_dump));
+  ReportResults();
+}
+
+void WebTestControlHost::OnPixelDumpCaptured(const SkBitmap& snapshot) {
+  // In the test: test_runner/notify_done_and_defered_close_dump_surface.html,
+  // the |main_window_| is closed while waiting for the pixel dump. When this
+  // happens, every window is closed and while pumping the message queue,
+  // OnPixelDumpCaptured is called with an empty snapshot.
+  if (!main_window_)
+    return;
+
+  DCHECK(!snapshot.drawsNothing());
+  pixel_dump_ = snapshot;
+  waiting_for_pixel_results_ = false;
+  ReportResults();
+}
+
+void WebTestControlHost::ReportResults() {
+  if (waiting_for_layout_dumps_ || waiting_for_pixel_results_)
+    return;
+
+  printer_->StartStateDump();
+
+  // Audio results only come from the renderer.
+  if (renderer_dump_result_->audio)
+    OnAudioDump(*renderer_dump_result_->audio);
+
+  // Use the browser-generated |layout_dump_| if present, else use the
+  // renderer's.
+  if (layout_dump_)
+    OnTextDump(*layout_dump_);
+  else if (renderer_dump_result_->layout)
+    OnTextDump(*renderer_dump_result_->layout);
+  else
+    NOTREACHED();
+
+  // Use the browser-generated |pixel_dump_| if present, else use the
+  // renderer's.
+  if (pixel_dump_) {
+    // See if we need to draw the selection bounds rect on top of the snapshot.
+    if (!renderer_dump_result_->selection_rect.IsEmpty())
+      DrawSelectionRect(*pixel_dump_, renderer_dump_result_->selection_rect);
+    // The snapshot arrives from the GPU process via shared memory. Because MSan
+    // can't track initializedness across processes, we must assure it that the
+    // pixels are in fact initialized.
+    MSAN_UNPOISON(pixel_dump_->getPixels(), pixel_dump_->computeByteSize());
+    base::MD5Digest digest;
+    base::MD5Sum(pixel_dump_->getPixels(), pixel_dump_->computeByteSize(),
+                 &digest);
+    actual_pixel_hash_ = base::MD5DigestToBase16(digest);
+
+    OnImageDump(actual_pixel_hash_, *pixel_dump_);
+  } else if (!renderer_dump_result_->actual_pixel_hash.empty()) {
+    OnImageDump(renderer_dump_result_->actual_pixel_hash,
+                renderer_dump_result_->pixels);
+  }
+
+  OnTestFinished();
+}
+
+void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
+                                     const SkBitmap& image) {
+  printer_->PrintImageHeader(actual_pixel_hash, expected_pixel_hash_);
+
+  // Only encode and dump the png if the hashes don't match. Encoding the
+  // image is really expensive.
+  if (actual_pixel_hash != expected_pixel_hash_) {
+    std::vector<unsigned char> png;
+
+    bool discard_transparency = true;
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kForceOverlayFullscreenVideo)) {
+      discard_transparency = false;
+    }
+    if (web_test_runtime_flags().dump_drag_image())
+      discard_transparency = false;
+
+    gfx::PNGCodec::ColorFormat pixel_format;
+    switch (image.info().colorType()) {
+      case kBGRA_8888_SkColorType:
+        pixel_format = gfx::PNGCodec::FORMAT_BGRA;
+        break;
+      case kRGBA_8888_SkColorType:
+        pixel_format = gfx::PNGCodec::FORMAT_RGBA;
+        break;
+      default:
+        NOTREACHED();
+        return;
+    }
+
+    std::vector<gfx::PNGCodec::Comment> comments;
+    comments.push_back(gfx::PNGCodec::Comment("checksum", actual_pixel_hash));
+    bool success = gfx::PNGCodec::Encode(
+        static_cast<const unsigned char*>(image.getPixels()), pixel_format,
+        gfx::Size(image.width(), image.height()),
+        static_cast<int>(image.rowBytes()), discard_transparency, comments,
+        &png);
+    if (success)
+      printer_->PrintImageBlock(png);
+  }
+  printer_->PrintImageFooter();
+}
+
+void WebTestControlHost::OnAudioDump(const std::vector<unsigned char>& dump) {
+  printer_->PrintAudioHeader();
+  printer_->PrintAudioBlock(dump);
+  printer_->PrintAudioFooter();
+}
+
+void WebTestControlHost::OnTextDump(const std::string& dump) {
+  printer_->PrintTextHeader();
+  printer_->PrintTextBlock(dump);
+  if (!navigation_history_dump_.empty())
+    printer_->PrintTextBlock(navigation_history_dump_);
+  printer_->PrintTextFooter();
+}
+
+void WebTestControlHost::PrintMessageToStderr(const std::string& message) {
+  printer_->AddMessageToStderr(message);
+}
+
+void WebTestControlHost::PrintMessage(const std::string& message) {
+  printer_->AddMessageRaw(message);
+}
+
+void WebTestControlHost::OverridePreferences(
+    const blink::web_pref::WebPreferences& prefs) {
+  should_override_prefs_ = true;
+  prefs_ = prefs;
+
+  // Notifies the WebContents that Blink preferences changed so
+  // immediately apply the new settings and to avoid re-usage of cached
+  // preferences that are now stale. WebContents::UpdateWebPreferences is
+  // not used here because it would send an unneeded preferences update to the
+  // renderer.
+  main_window_->web_contents()->OnWebPreferencesChanged();
+}
+
+void WebTestControlHost::SetPopupBlockingEnabled(bool block_popups) {
+  WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(block_popups);
+}
+
+void WebTestControlHost::SetScreenOrientationChanged() {
+  WebTestContentBrowserClient::Get()->SetScreenOrientationChanged(true);
+}
+
+void WebTestControlHost::SetPermission(const std::string& name,
+                                       blink::mojom::PermissionStatus status,
+                                       const GURL& origin,
+                                       const GURL& embedding_origin) {
+  content::PermissionType type;
+  if (name == "midi") {
+    type = PermissionType::MIDI;
+  } else if (name == "midi-sysex") {
+    type = PermissionType::MIDI_SYSEX;
+  } else if (name == "push-messaging" || name == "notifications") {
+    type = PermissionType::NOTIFICATIONS;
+  } else if (name == "geolocation") {
+    type = PermissionType::GEOLOCATION;
+  } else if (name == "protected-media-identifier") {
+    type = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+  } else if (name == "background-sync") {
+    type = PermissionType::BACKGROUND_SYNC;
+  } else if (name == "accessibility-events") {
+    type = PermissionType::ACCESSIBILITY_EVENTS;
+  } else if (name == "clipboard-read-write") {
+    type = PermissionType::CLIPBOARD_READ_WRITE;
+  } else if (name == "clipboard-sanitized-write") {
+    type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
+  } else if (name == "payment-handler") {
+    type = PermissionType::PAYMENT_HANDLER;
+  } else if (name == "accelerometer" || name == "gyroscope" ||
+             name == "magnetometer" || name == "ambient-light-sensor") {
+    type = PermissionType::SENSORS;
+  } else if (name == "background-fetch") {
+    type = PermissionType::BACKGROUND_FETCH;
+  } else if (name == "periodic-background-sync") {
+    type = PermissionType::PERIODIC_BACKGROUND_SYNC;
+  } else if (name == "wake-lock-screen") {
+    type = PermissionType::WAKE_LOCK_SCREEN;
+  } else if (name == "wake-lock-system") {
+    type = PermissionType::WAKE_LOCK_SYSTEM;
+  } else if (name == "nfc") {
+    type = PermissionType::NFC;
+  } else if (name == "storage-access") {
+    type = PermissionType::STORAGE_ACCESS_GRANT;
+  } else {
+    NOTREACHED();
+    type = PermissionType::NOTIFICATIONS;
+  }
+
+  WebTestContentBrowserClient::Get()
+      ->GetWebTestBrowserContext()
+      ->GetWebTestPermissionManager()
+      ->SetPermission(type, status, origin, embedding_origin);
+}
+
+void WebTestControlHost::GetWritableDirectory(
+    GetWritableDirectoryCallback reply) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!writable_directory_for_tests_.IsValid()) {
+    if (!writable_directory_for_tests_.CreateUniqueTempDir()) {
+      LOG(ERROR) << "Failed to create temporary directory, test might not work "
+                    "correctly";
+    }
+  }
+  std::move(reply).Run(writable_directory_for_tests_.GetPath());
+}
+
+namespace {
+
+// A fake ui::SelectFileDialog, which will select a single pre-determined path.
+class FakeSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  FakeSelectFileDialog(base::FilePath result,
+                       Listener* listener,
+                       std::unique_ptr<ui::SelectFilePolicy> policy)
+      : ui::SelectFileDialog(listener, std::move(policy)),
+        result_(std::move(result)) {}
+
+ protected:
+  ~FakeSelectFileDialog() override = default;
+
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      void* params) override {
+    listener_->FileSelected(result_, 0, params);
+  }
+
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return false;
+  }
+  void ListenerDestroyed() override {}
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+ private:
+  base::FilePath result_;
+};
+
+class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit FakeSelectFileDialogFactory(base::FilePath result)
+      : result_(std::move(result)) {}
+  ~FakeSelectFileDialogFactory() override = default;
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    return new FakeSelectFileDialog(result_, listener, std::move(policy));
+  }
+
+ private:
+  base::FilePath result_;
+};
+
+}  // namespace
+
+void WebTestControlHost::SetFilePathForMockFileDialog(
+    const base::FilePath& path) {
+  ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory(path));
+}
+
+void WebTestControlHost::FocusDevtoolsSecondaryWindow() {
+  CHECK(secondary_window_);
+  // We don't go down the normal system path of focusing RenderWidgetHostView
+  // because on mac headless, there are no system windows and that path does
+  // not do anything. Instead we go through the Shell::ActivateContents() path
+  // which knows how to perform the activation correctly on all platforms and in
+  // headless mode.
+  secondary_window_->ActivateContents(secondary_window_->web_contents());
+}
+
+void WebTestControlHost::SetTrustTokenKeyCommitments(
+    const std::string& raw_commitments,
+    base::OnceClosure callback) {
+  GetNetworkService()->SetTrustTokenKeyCommitments(raw_commitments,
+                                                   std::move(callback));
+}
+
+void WebTestControlHost::ClearTrustTokenState(base::OnceClosure callback) {
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  StoragePartition* storage_partition =
+      browser_context->GetDefaultStoragePartition();
+  storage_partition->GetNetworkContext()->ClearTrustTokenData(
+      nullptr,  // A wildcard filter.
+      std::move(callback));
+}
+
+void WebTestControlHost::SetDatabaseQuota(int32_t quota) {
+  auto run_on_io_thread = [](scoped_refptr<storage::QuotaManager> quota_manager,
+                             int32_t quota) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    if (quota == kDefaultDatabaseQuota) {
+      // Reset quota to settings with a zero refresh interval to force
+      // QuotaManager to refresh settings immediately.
+      storage::QuotaSettings default_settings;
+      default_settings.refresh_interval = base::TimeDelta();
+      quota_manager->SetQuotaSettings(default_settings);
+    } else {
+      DCHECK_GE(quota, 0);
+      quota_manager->SetQuotaSettings(storage::GetHardCodedSettings(quota));
+    }
+  };
+
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  StoragePartition* storage_partition =
+      browser_context->GetDefaultStoragePartition();
+  scoped_refptr<storage::QuotaManager> quota_manager =
+      base::WrapRefCounted(storage_partition->GetQuotaManager());
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(run_on_io_thread, std::move(quota_manager), quota));
+}
+
+void WebTestControlHost::ClearAllDatabases() {
+  auto run_on_database_sequence =
+      [](scoped_refptr<storage::DatabaseTracker> db_tracker) {
+        DCHECK(db_tracker->task_runner()->RunsTasksInCurrentSequence());
+        db_tracker->DeleteDataModifiedSince(base::Time(), base::DoNothing());
+      };
+
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  StoragePartition* storage_partition =
+      browser_context->GetDefaultStoragePartition();
+  scoped_refptr<storage::DatabaseTracker> db_tracker =
+      base::WrapRefCounted(storage_partition->GetDatabaseTracker());
+
+  base::SequencedTaskRunner* task_runner = db_tracker->task_runner();
+  task_runner->PostTask(FROM_HERE, base::BindOnce(run_on_database_sequence,
+                                                  std::move(db_tracker)));
+}
+
+void WebTestControlHost::SimulateWebNotificationClick(
+    const std::string& title,
+    int32_t action_index,
+    const absl::optional<std::u16string>& reply) {
+  auto* client = WebTestContentBrowserClient::Get();
+  auto* context = client->GetWebTestBrowserContext();
+  auto* service = context->GetPlatformNotificationService();
+  static_cast<MockPlatformNotificationService*>(service)->SimulateClick(
+      title,
+      action_index == std::numeric_limits<int32_t>::min()
+          ? absl::optional<int>()
+          : absl::optional<int>(action_index),
+      reply);
+}
+
+void WebTestControlHost::SimulateWebNotificationClose(const std::string& title,
+                                                      bool by_user) {
+  auto* client = WebTestContentBrowserClient::Get();
+  auto* context = client->GetWebTestBrowserContext();
+  auto* service = context->GetPlatformNotificationService();
+  static_cast<MockPlatformNotificationService*>(service)->SimulateClose(
+      title, by_user);
+}
+
+void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  auto* content_index_provider = static_cast<ShellContentIndexProvider*>(
+      browser_context->GetContentIndexProvider());
+
+  std::pair<int64_t, url::Origin> registration_data =
+      content_index_provider->GetRegistrationDataFromId(id);
+
+  StoragePartition* storage_partition =
+      browser_context->GetStoragePartitionForUrl(
+          registration_data.second.GetURL(),
+          /*can_create=*/false);
+  storage_partition->GetContentIndexContext()->OnUserDeletedItem(
+      registration_data.first, registration_data.second, id);
+}
+
+void WebTestControlHost::WebTestRuntimeFlagsChanged(
+    base::Value changed_web_test_runtime_flags) {
+  const int render_process_id = receiver_bindings_.current_context();
+
+  // Stash the accumulated changes for future, not-yet-created renderers.
+  accumulated_web_test_runtime_flags_changes_.MergeDictionary(
+      &changed_web_test_runtime_flags);
+  web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
+      accumulated_web_test_runtime_flags_changes_);
+
+  // Propagate the changes to all the tracked renderer processes.
+  for (RenderProcessHost* process : all_observed_render_process_hosts_) {
+    // Do not propagate the changes back to the process that originated
+    // them. Propagating them back could also clobber subsequent changes in the
+    // originator.
+    if (process->GetID() == render_process_id)
+      continue;
+
+    GetWebTestRenderThreadRemote(process)->ReplicateWebTestRuntimeFlagsChanges(
+        changed_web_test_runtime_flags.Clone());
+  }
+}
+
+void WebTestControlHost::RegisterIsolatedFileSystem(
+    const std::vector<base::FilePath>& file_paths,
+    RegisterIsolatedFileSystemCallback callback) {
+  const int render_process_id = receiver_bindings_.current_context();
+
+  ChildProcessSecurityPolicy* policy =
+      ChildProcessSecurityPolicy::GetInstance();
+
+  storage::IsolatedContext::FileInfoSet file_info_set;
+  for (auto& path : file_paths) {
+    file_info_set.AddPath(path, nullptr);
+    if (!policy->CanReadFile(render_process_id, path))
+      policy->GrantReadFile(render_process_id, path);
+  }
+
+  std::string filesystem_id =
+      storage::IsolatedContext::GetInstance()->RegisterDraggedFileSystem(
+          file_info_set);
+  policy->GrantReadFileSystem(render_process_id, filesystem_id);
+
+  std::move(callback).Run(filesystem_id);
+}
+
+void WebTestControlHost::DropPointerLock() {
+  main_window_->web_contents()->DropMouseLockForTesting();
+}
+
+void WebTestControlHost::SetPointerLockWillFail() {
+  next_pointer_lock_action_ = NextPointerLockAction::kWillFail;
+}
+
+void WebTestControlHost::SetPointerLockWillRespondAsynchronously() {
+  next_pointer_lock_action_ = NextPointerLockAction::kTestWillRespond;
+}
+
+void WebTestControlHost::AllowPointerLock() {
+  DCHECK_EQ(next_pointer_lock_action_, NextPointerLockAction::kTestWillRespond);
+  main_window_->web_contents()->GotResponseToLockMouseRequest(
+      blink::mojom::PointerLockResult::kSuccess);
+  next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
+}
+
+void WebTestControlHost::WorkItemAdded(mojom::WorkItemPtr work_item) {
+  // TODO(peria): Check if |work_item| comes from the main window's main frame.
+  // TODO(peria): Reject the item if the work queue is frozen.
+  work_queue_.push_back(std::move(work_item));
+}
+
+void WebTestControlHost::RequestWorkItem() {
+  DCHECK(main_window_);
+  RenderProcessHost* main_frame_process = main_window_->web_contents()
+                                              ->GetMainFrame()
+                                              ->GetRenderViewHost()
+                                              ->GetProcess();
+  if (work_queue_.empty()) {
+    work_queue_states_.SetBoolPath(kDictKeyWorkQueueHasItems, false);
+    GetWebTestRenderThreadRemote(main_frame_process)
+        ->ReplicateWorkQueueStates(work_queue_states_.Clone());
+  } else {
+    GetWebTestRenderThreadRemote(main_frame_process)
+        ->ProcessWorkItem(work_queue_.front()->Clone());
+    work_queue_.pop_front();
+  }
+}
+
+void WebTestControlHost::WorkQueueStatesChanged(
+    base::Value changed_work_queue_states) {
+  work_queue_states_.MergeDictionary(&changed_work_queue_states);
+}
+
+void WebTestControlHost::GoToOffset(int offset) {
+  main_window_->GoBackOrForward(offset);
+}
+
+void WebTestControlHost::Reload() {
+  main_window_->Reload();
+}
+
+void WebTestControlHost::LoadURLForFrame(const GURL& url,
+                                         const std::string& frame_name) {
+  main_window_->LoadURLForFrame(url, frame_name, ui::PAGE_TRANSITION_LINK);
+}
+
+void WebTestControlHost::SetMainWindowHidden(bool hidden) {
+  if (hidden)
+    main_window_->web_contents()->WasHidden();
+  else
+    main_window_->web_contents()->WasShown();
+}
+
+void WebTestControlHost::CheckForLeakedWindows() {
+  check_for_leaked_windows_ = true;
+}
+
+void WebTestControlHost::PrepareRendererForNextWebTest() {
+  // If the window is gone, due to crashes or whatever, we need to make
+  // progress.
+  if (!main_window_) {
+    PrepareRendererForNextWebTestDone();
+    return;
+  }
+
+  content::WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(main_window_->web_contents());
+
+  // TODO(arthursonzogni): Not sure if this line is needed. It cancels pending
+  // navigations and pending subresources requests. I guess it increases the
+  // odds of transitionning from one test to another with no side effects.
+  // Consider removing it to understand what happens without.
+  web_contents->Stop();
+
+  // Navigate to about:blank in between two consecutive web tests.
+  //
+  // Note: this navigation might happen in a new process, depending on the
+  // COOP policy of the previous document.
+  NavigationController::LoadURLParams params((GURL(kAboutBlankResetWebTest)));
+  params.transition_type = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
+  params.should_clear_history_list = true;
+  params.initiator_origin = url::Origin();  // Opaque initiator.
+  web_contents->GetController().LoadURLWithParams(params);
+
+  // The navigation might have to wait for before unload handler to execute. The
+  // remaining of the logic continues in:
+  // |WebTestControlHost::DidFinishNavigation|.
+}
+
+void WebTestControlHost::DidFinishNavigation(NavigationHandle* navigation) {
+  if (navigation->GetURL() != GURL(kAboutBlankResetWebTest))
+    return;
+
+  // During fuzzing, the |main_window_| might close itself using window.close().
+  // This might happens after the end of the test, during the cleanup phase. In
+  // this case, the pending about:blank navigation might be canceled, within the
+  // |main_window_| destructor. It is no longer safe to access |main_window_|
+  // here. See https://crbug.com/1221183
+  if (!navigation->HasCommitted())
+    return;
+
+  // Request additional web test specific cleanup in the renderer process:
+  content::WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(main_window_->web_contents());
+  RenderProcessHost* main_rfh_process =
+      web_contents->GetMainFrame()->GetProcess();
+  GetWebTestRenderThreadRemote(main_rfh_process)->ResetRendererAfterWebTest();
+
+  PrepareRendererForNextWebTestDone();
+}
+
+void WebTestControlHost::PrepareRendererForNextWebTestDone() {
+  if (leak_detector_ && main_window_) {
+    // When doing leak detection, we don't want to count opened windows as
+    // leaks, unless the test specifies that it expects to have closed them
+    // all and wants to look for them as leaks.
+    if (!check_for_leaked_windows_)
+      CloseTestOpenedWindows();
+
+    RenderViewHost* rvh =
+        main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
+    RenderProcessHost* rph = rvh->GetProcess();
+    CHECK(rph->GetProcess().IsValid());
+    leak_detector_->TryLeakDetection(
+        rph,
+        base::BindOnce(&WebTestControlHost::OnLeakDetectionDone,
+                       weak_factory_.GetWeakPtr(), rph->GetProcess().Pid()));
+    return;
+  }
+
+  Shell::QuitMainMessageLoopForTesting();
+}
+
+void WebTestControlHost::OnLeakDetectionDone(
+    int pid,
+    const LeakDetector::LeakDetectionReport& report) {
+  if (report.leaked) {
+    printer_->StartStateDump();
+    printer_->AddErrorMessage(base::StringPrintf("#LEAK - renderer pid %d (%s)",
+                                                 pid, report.detail.c_str()));
+    CHECK(!crash_when_leak_found_);
+    DiscardMainWindow();
+  }
+
+  Shell::QuitMainMessageLoopForTesting();
+}
+
+void WebTestControlHost::CloseTestOpenedWindows() {
+  DevToolsAgentHost::DetachAllClients();
+  std::vector<Shell*> open_windows(Shell::windows());
+  for (auto* shell : open_windows) {
+    if (shell != main_window_)
+      shell->Close();
+  }
+  secondary_window_ = nullptr;
+  base::RunLoop().RunUntilIdle();
+}
+
+void WebTestControlHost::CloseAllWindows() {
+  DevToolsAgentHost::DetachAllClients();
+  while (!Shell::windows().empty())
+    Shell::windows().back()->Close();
+  main_window_ = nullptr;
+  secondary_window_ = nullptr;
+  base::RunLoop().RunUntilIdle();
+}
+
+void WebTestControlHost::SetBluetoothManualChooser(bool enable) {
+  if (enable) {
+    bluetooth_chooser_factory_ =
+        std::make_unique<WebTestBluetoothChooserFactory>();
+  } else {
+    bluetooth_chooser_factory_.reset();
+  }
+}
+
+void WebTestControlHost::GetBluetoothManualChooserEvents(
+    GetBluetoothManualChooserEventsCallback reply) {
+  if (!bluetooth_chooser_factory_) {
+    printer_->AddErrorMessage(
+        "FAIL: Must call setBluetoothManualChooser before "
+        "getBluetoothManualChooserEvents.");
+    std::move(reply).Run({});
+    return;
+  }
+  std::move(reply).Run(bluetooth_chooser_factory_->GetAndResetEvents());
+}
+
+void WebTestControlHost::SendBluetoothManualChooserEvent(
+    const std::string& event_name,
+    const std::string& argument) {
+  if (!bluetooth_chooser_factory_) {
+    printer_->AddErrorMessage(
+        "FAIL: Must call setBluetoothManualChooser before "
+        "sendBluetoothManualChooserEvent.");
+    return;
+  }
+  BluetoothChooserEvent event;
+  if (event_name == "cancelled") {
+    event = BluetoothChooserEvent::CANCELLED;
+  } else if (event_name == "selected") {
+    event = BluetoothChooserEvent::SELECTED;
+  } else if (event_name == "rescan") {
+    event = BluetoothChooserEvent::RESCAN;
+  } else {
+    printer_->AddErrorMessage(base::StringPrintf(
+        "FAIL: Unexpected sendBluetoothManualChooserEvent() event name '%s'.",
+        event_name.c_str()));
+    return;
+  }
+  bluetooth_chooser_factory_->SendEvent(event, argument);
+}
+
+void WebTestControlHost::BlockThirdPartyCookies(bool block) {
+  ShellBrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  StoragePartition* storage_partition =
+      browser_context->GetDefaultStoragePartition();
+  storage_partition->GetCookieManagerForBrowserProcess()
+      ->BlockThirdPartyCookies(block);
+}
+
+void WebTestControlHost::BindWebTestControlHostForRenderer(
+    int render_process_id,
+    mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver) {
+  receiver_bindings_.Add(this, std::move(receiver), render_process_id);
+}
+
+mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
+WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
+  GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
+                              frame->GetRoutingID());
+  if (web_test_render_frame_map_.find(key) ==
+      web_test_render_frame_map_.end()) {
+    mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
+        web_test_render_frame_map_[key];
+    frame->GetRemoteAssociatedInterfaces()->GetInterface(&new_ptr);
+    new_ptr.set_disconnect_handler(
+        base::BindOnce(&WebTestControlHost::HandleWebTestRenderFrameRemoteError,
+                       weak_factory_.GetWeakPtr(), key));
+  }
+  DCHECK(web_test_render_frame_map_[key].get());
+  return web_test_render_frame_map_[key];
+}
+
+mojo::AssociatedRemote<mojom::WebTestRenderThread>&
+WebTestControlHost::GetWebTestRenderThreadRemote(RenderProcessHost* process) {
+  if (web_test_render_thread_map_.find(process) ==
+      web_test_render_thread_map_.end()) {
+    IPC::ChannelProxy* channel = process->GetChannel();
+    // channel might be null in tests.
+    if (process->IsInitializedAndNotDead() && channel) {
+      mojo::AssociatedRemote<mojom::WebTestRenderThread>& new_ptr =
+          web_test_render_thread_map_[process];
+      channel->GetRemoteAssociatedInterface(&new_ptr);
+      new_ptr.set_disconnect_handler(base::BindOnce(
+          &WebTestControlHost::HandleWebTestRenderThreadRemoteError,
+          weak_factory_.GetWeakPtr(), process));
+    }
+  }
+  DCHECK(web_test_render_thread_map_[process].get());
+  return web_test_render_thread_map_[process];
+}
+
+void WebTestControlHost::HandleWebTestRenderFrameRemoteError(
+    const GlobalRenderFrameHostId& key) {
+  web_test_render_frame_map_.erase(key);
+}
+
+void WebTestControlHost::HandleWebTestRenderThreadRemoteError(
+    RenderProcessHost* key) {
+  web_test_render_thread_map_.erase(key);
+}
+
+WebTestControlHost::Node::Node(RenderFrameHost* host)
+    : render_frame_host(host),
+      render_frame_host_id(host->GetProcess()->GetID(), host->GetRoutingID()) {}
+
+WebTestControlHost::Node::Node(Node&& other) = default;
+WebTestControlHost::Node& WebTestControlHost::Node::operator=(Node&& other) =
+    default;
+
+WebTestControlHost::Node::~Node() = default;
+
+}  // namespace content

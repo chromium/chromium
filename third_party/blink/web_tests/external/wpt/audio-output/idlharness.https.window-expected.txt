@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface HTMLMediaElement: original interface defined
+PASS Partial interface HTMLMediaElement: member names are unique
+PASS Partial interface MediaDevices: original interface defined
+PASS Partial interface MediaDevices: member names are unique
+PASS Partial interface MediaDevices[2]: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+FAIL MediaDevices interface: operation selectAudioOutput(optional AudioOutputOptions) assert_own_property: interface prototype object missing non-static operation expected property "selectAudioOutput" missing
+FAIL MediaDevices interface: navigator.mediaDevices must inherit property "selectAudioOutput(optional AudioOutputOptions)" with the proper type assert_inherits: property "selectAudioOutput" not found in prototype chain
+FAIL MediaDevices interface: calling selectAudioOutput(optional AudioOutputOptions) on navigator.mediaDevices with too few arguments must throw TypeError assert_inherits: property "selectAudioOutput" not found in prototype chain
+PASS HTMLMediaElement interface: attribute sinkId
+PASS HTMLMediaElement interface: operation setSinkId(DOMString)
+Harness: the test ran to completion.
+

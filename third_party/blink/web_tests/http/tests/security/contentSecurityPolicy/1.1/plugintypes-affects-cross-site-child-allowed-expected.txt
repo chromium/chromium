@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-This tests a scenario where an iframe element's src attribute points to a cross-site URI that loads a plugin. In this test the plugin is allowed by the plugin-types Content Security Policy directive, therefore the test passes if 1) there is a "Blink Test Plugin: initializing" console message 2) there is no console message indicating CSP violation

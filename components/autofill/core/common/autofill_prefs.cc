@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #include "base/base64.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -35,13 +36,6 @@ int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
 
 }  // namespace
 
-// Integer that is set to the last choice user made when prompted for saving a
-// credit card. The prompt is for user's consent in saving the card in the
-// server for signed in users and saving the card locally for non signed-in
-// users.
-const char kAutofillAcceptSaveCreditCardPromptState[] =
-    "autofill.accept_save_credit_card_prompt_state";
-
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 const char kAutofillCreditCardEnabled[] = "autofill.credit_card_enabled";
@@ -50,9 +44,11 @@ const char kAutofillCreditCardEnabled[] = "autofill.credit_card_enabled";
 const char kAutofillCreditCardFidoAuthEnabled[] =
     "autofill.credit_card_fido_auth_enabled";
 
+#if defined(OS_ANDROID)
 // Boolean that is true if FIDO Authentication is enabled for card unmasking.
 const char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
     "autofill.credit_card_fido_auth_offer_checkbox_state";
+#endif
 
 // Number of times the credit card signin promo has been shown.
 const char kAutofillCreditCardSigninPromoImpressionCount[] =
@@ -95,6 +91,10 @@ const char kAutofillProfileEnabled[] = "autofill.profile_enabled";
 // because of a mismatch when the priorify prefs were generated. Consider
 // migrating this back to "autofill." in the future.
 const char kAutofillProfileValidity[] = "autofill_profile_validity";
+
+// This pref stores the file path where the autofill states data is
+// downloaded to.
+const char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 
 // The opt-ins for Sync Transport features for each client.
 const char kAutofillSyncTransportOptIn[] = "autofill.sync_transport_opt_ins";
@@ -156,16 +156,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterBooleanPref(prefs::kAutofillCreditCardFidoAuthEnabled,
                                 false);
+#if defined(OS_ANDROID)
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
   registry->RegisterIntegerPref(
       prefs::kAutofillCreditCardSigninPromoImpressionCount, 0);
   registry->RegisterBooleanPref(prefs::kAutofillWalletImportEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kAutofillWalletImportStorageCheckboxState, true);
-  registry->RegisterIntegerPref(
-      prefs::kAutofillAcceptSaveCreditCardPromptState,
-      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
   registry->RegisterIntegerPref(prefs::kAutocompleteLastVersionRetentionPolicy,
@@ -180,6 +179,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillJapanCityFieldMigratedDeprecated,
                                 false);
+  // Deprecated in profile prefs.
+  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
@@ -213,6 +214,11 @@ void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
 
   // Added 10/2019.
   prefs->ClearPref(kAutofillJapanCityFieldMigratedDeprecated);
+
+  // Added 11/2020
+  // TODO(crbug.com/1147852): Remove deprecated kAutofillStatesDataDir from
+  // autofill profile prefs.
+  prefs->ClearPref(kAutofillStatesDataDir);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
@@ -302,6 +308,10 @@ void SetUserOptedInWalletSyncTransport(PrefService* prefs,
 
 bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
                                       const CoreAccountId& account_id) {
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  // On mobile, no specific opt-in is required.
+  return true;
+#else
   // Get the hash of the account id.
   std::string account_hash;
   base::Base64Encode(crypto::SHA256HashString(account_id.ToString()),
@@ -310,6 +320,7 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
   // Return whether the wallet opt-in bit is set.
   return GetSyncTransportOptInBitFieldForAccount(prefs, account_hash) &
          sync_transport_opt_in::kWallet;
+#endif  // OS_ANDROID || defined(OS_IOS)
 }
 
 void ClearSyncTransportOptIns(PrefService* prefs) {

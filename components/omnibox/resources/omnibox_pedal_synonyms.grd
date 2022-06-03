@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<grit latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+
+  <outputs>
+    <output filename="grit/omnibox_pedal_synonyms.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <if expr="is_android">
+      <output filename="omnibox_pedal_synonyms_af.pak" type="data_package" lang="af" />
+      <output filename="omnibox_pedal_synonyms_as.pak" type="data_package" lang="as" />
+      <output filename="omnibox_pedal_synonyms_az.pak" type="data_package" lang="az" />
+      <output filename="omnibox_pedal_synonyms_be.pak" type="data_package" lang="be" />
+      <output filename="omnibox_pedal_synonyms_bs.pak" type="data_package" lang="bs" />
+      <output filename="omnibox_pedal_synonyms_eu.pak" type="data_package" lang="eu" />
+      <output filename="omnibox_pedal_synonyms_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="omnibox_pedal_synonyms_gl.pak" type="data_package" lang="gl" />
+      <output filename="omnibox_pedal_synonyms_hy.pak" type="data_package" lang="hy" />
+      <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
+      <output filename="omnibox_pedal_synonyms_ka.pak" type="data_package" lang="ka" />
+      <output filename="omnibox_pedal_synonyms_kk.pak" type="data_package" lang="kk" />
+      <output filename="omnibox_pedal_synonyms_km.pak" type="data_package" lang="km" />
+      <output filename="omnibox_pedal_synonyms_ky.pak" type="data_package" lang="ky" />
+      <output filename="omnibox_pedal_synonyms_lo.pak" type="data_package" lang="lo" />
+      <output filename="omnibox_pedal_synonyms_mk.pak" type="data_package" lang="mk" />
+      <output filename="omnibox_pedal_synonyms_mn.pak" type="data_package" lang="mn" />
+      <output filename="omnibox_pedal_synonyms_my.pak" type="data_package" lang="my" />
+      <output filename="omnibox_pedal_synonyms_ne.pak" type="data_package" lang="ne" />
+      <output filename="omnibox_pedal_synonyms_or.pak" type="data_package" lang="or" />
+      <output filename="omnibox_pedal_synonyms_pa.pak" type="data_package" lang="pa" />
+      <output filename="omnibox_pedal_synonyms_si.pak" type="data_package" lang="si" />
+      <output filename="omnibox_pedal_synonyms_sq.pak" type="data_package" lang="sq" />
+      <output filename="omnibox_pedal_synonyms_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="omnibox_pedal_synonyms_ur.pak" type="data_package" lang="ur" />
+      <output filename="omnibox_pedal_synonyms_uz.pak" type="data_package" lang="uz" />
+      <output filename="omnibox_pedal_synonyms_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="omnibox_pedal_synonyms_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
+    </if>
+    <output filename="omnibox_pedal_synonyms_am.pak" type="data_package" lang="am" />
+    <output filename="omnibox_pedal_synonyms_ar.pak" type="data_package" lang="ar" />
+    <output filename="omnibox_pedal_synonyms_bg.pak" type="data_package" lang="bg" />
+    <output filename="omnibox_pedal_synonyms_bn.pak" type="data_package" lang="bn" />
+    <output filename="omnibox_pedal_synonyms_ca.pak" type="data_package" lang="ca" />
+    <output filename="omnibox_pedal_synonyms_cs.pak" type="data_package" lang="cs" />
+    <output filename="omnibox_pedal_synonyms_da.pak" type="data_package" lang="da" />
+    <output filename="omnibox_pedal_synonyms_de.pak" type="data_package" lang="de" />
+    <output filename="omnibox_pedal_synonyms_el.pak" type="data_package" lang="el" />
+    <output filename="omnibox_pedal_synonyms_en-US.pak" type="data_package" lang="en" />
+    <output filename="omnibox_pedal_synonyms_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="omnibox_pedal_synonyms_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="omnibox_pedal_synonyms_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="omnibox_pedal_synonyms_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="omnibox_pedal_synonyms_et.pak" type="data_package" lang="et" />
+    <output filename="omnibox_pedal_synonyms_fa.pak" type="data_package" lang="fa" />
+    <output filename="omnibox_pedal_synonyms_fi.pak" type="data_package" lang="fi" />
+    <output filename="omnibox_pedal_synonyms_fil.pak" type="data_package" lang="fil" />
+    <output filename="omnibox_pedal_synonyms_fr.pak" type="data_package" lang="fr" />
+    <output filename="omnibox_pedal_synonyms_gu.pak" type="data_package" lang="gu" />
+    <output filename="omnibox_pedal_synonyms_he.pak" type="data_package" lang="he" />
+    <output filename="omnibox_pedal_synonyms_hi.pak" type="data_package" lang="hi" />
+    <output filename="omnibox_pedal_synonyms_hr.pak" type="data_package" lang="hr" />
+    <output filename="omnibox_pedal_synonyms_hu.pak" type="data_package" lang="hu" />
+    <output filename="omnibox_pedal_synonyms_id.pak" type="data_package" lang="id" />
+    <output filename="omnibox_pedal_synonyms_it.pak" type="data_package" lang="it" />
+    <output filename="omnibox_pedal_synonyms_ja.pak" type="data_package" lang="ja" />
+    <output filename="omnibox_pedal_synonyms_kn.pak" type="data_package" lang="kn" />
+    <output filename="omnibox_pedal_synonyms_ko.pak" type="data_package" lang="ko" />
+    <output filename="omnibox_pedal_synonyms_lt.pak" type="data_package" lang="lt" />
+    <output filename="omnibox_pedal_synonyms_lv.pak" type="data_package" lang="lv" />
+    <output filename="omnibox_pedal_synonyms_ml.pak" type="data_package" lang="ml" />
+    <output filename="omnibox_pedal_synonyms_mr.pak" type="data_package" lang="mr" />
+    <output filename="omnibox_pedal_synonyms_ms.pak" type="data_package" lang="ms" />
+    <output filename="omnibox_pedal_synonyms_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="omnibox_pedal_synonyms_nb.pak" type="data_package" lang="no" />
+    <output filename="omnibox_pedal_synonyms_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="omnibox_pedal_synonyms_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="omnibox_pedal_synonyms_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="omnibox_pedal_synonyms_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="omnibox_pedal_synonyms_ro.pak" type="data_package" lang="ro" />
+    <output filename="omnibox_pedal_synonyms_ru.pak" type="data_package" lang="ru" />
+    <output filename="omnibox_pedal_synonyms_sk.pak" type="data_package" lang="sk" />
+    <output filename="omnibox_pedal_synonyms_sl.pak" type="data_package" lang="sl" />
+    <output filename="omnibox_pedal_synonyms_sr.pak" type="data_package" lang="sr" />
+    <output filename="omnibox_pedal_synonyms_sv.pak" type="data_package" lang="sv" />
+    <output filename="omnibox_pedal_synonyms_sw.pak" type="data_package" lang="sw" />
+    <output filename="omnibox_pedal_synonyms_ta.pak" type="data_package" lang="ta" />
+    <output filename="omnibox_pedal_synonyms_te.pak" type="data_package" lang="te" />
+    <output filename="omnibox_pedal_synonyms_th.pak" type="data_package" lang="th" />
+    <output filename="omnibox_pedal_synonyms_tr.pak" type="data_package" lang="tr" />
+    <output filename="omnibox_pedal_synonyms_uk.pak" type="data_package" lang="uk" />
+    <output filename="omnibox_pedal_synonyms_vi.pak" type="data_package" lang="vi" />
+    <output filename="omnibox_pedal_synonyms_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="omnibox_pedal_synonyms_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="omnibox_pedal_synonyms_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="omnibox_pedal_synonyms_en-XA.pak" type="data_package" lang="en-XA" />
+  </outputs>
+
+  <!-- Note, the list of languages here must match the omnibox_pedal_synonyms_grd languages
+       list in tools/gritsettings/translation_expectations.pyl or TC pipeline breaks. 
+       Note also, omnibox_pedal_synonyms_translation_languages in google3
+       googleclient/chrome/transconsole_resources/BUILD should be updated
+       before changing this list or another phase of TC pipeline breaks. -->
+  <translations>
+    <file path="translations/omnibox_pedal_synonyms_am.xtb" lang="am" />
+    <file path="translations/omnibox_pedal_synonyms_ar.xtb" lang="ar" />
+    <file path="translations/omnibox_pedal_synonyms_bg.xtb" lang="bg" />
+    <file path="translations/omnibox_pedal_synonyms_bn.xtb" lang="bn" />
+    <file path="translations/omnibox_pedal_synonyms_ca.xtb" lang="ca" />
+    <file path="translations/omnibox_pedal_synonyms_cs.xtb" lang="cs" />
+    <file path="translations/omnibox_pedal_synonyms_da.xtb" lang="da" />
+    <file path="translations/omnibox_pedal_synonyms_de.xtb" lang="de" />
+    <file path="translations/omnibox_pedal_synonyms_el.xtb" lang="el" />
+    <file path="translations/omnibox_pedal_synonyms_en.xtb" lang="en" />
+    <file path="translations/omnibox_pedal_synonyms_en-GB.xtb" lang="en-GB" />
+    <file path="translations/omnibox_pedal_synonyms_es.xtb" lang="es" />
+    <file path="translations/omnibox_pedal_synonyms_es-419.xtb" lang="es-419" />
+    <file path="translations/omnibox_pedal_synonyms_et.xtb" lang="et" />
+    <file path="translations/omnibox_pedal_synonyms_fa.xtb" lang="fa" />
+    <file path="translations/omnibox_pedal_synonyms_fi.xtb" lang="fi" />
+    <file path="translations/omnibox_pedal_synonyms_fil.xtb" lang="fil" />
+    <file path="translations/omnibox_pedal_synonyms_fr.xtb" lang="fr" />
+    <file path="translations/omnibox_pedal_synonyms_gu.xtb" lang="gu" />
+    <file path="translations/omnibox_pedal_synonyms_he.xtb" lang="he" />
+    <file path="translations/omnibox_pedal_synonyms_hi.xtb" lang="hi" />
+    <file path="translations/omnibox_pedal_synonyms_hr.xtb" lang="hr" />
+    <file path="translations/omnibox_pedal_synonyms_hu.xtb" lang="hu" />
+    <file path="translations/omnibox_pedal_synonyms_id.xtb" lang="id" />
+    <file path="translations/omnibox_pedal_synonyms_it.xtb" lang="it" />
+    <file path="translations/omnibox_pedal_synonyms_ja.xtb" lang="ja" />
+    <file path="translations/omnibox_pedal_synonyms_kn.xtb" lang="kn" />
+    <file path="translations/omnibox_pedal_synonyms_ko.xtb" lang="ko" />
+    <file path="translations/omnibox_pedal_synonyms_lt.xtb" lang="lt" />
+    <file path="translations/omnibox_pedal_synonyms_lv.xtb" lang="lv" />
+    <file path="translations/omnibox_pedal_synonyms_ml.xtb" lang="ml" />
+    <file path="translations/omnibox_pedal_synonyms_mr.xtb" lang="mr" />
+    <file path="translations/omnibox_pedal_synonyms_ms.xtb" lang="ms" />
+    <file path="translations/omnibox_pedal_synonyms_nl.xtb" lang="nl" />
+    <file path="translations/omnibox_pedal_synonyms_pl.xtb" lang="pl" />
+    <file path="translations/omnibox_pedal_synonyms_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/omnibox_pedal_synonyms_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/omnibox_pedal_synonyms_ro.xtb" lang="ro" />
+    <file path="translations/omnibox_pedal_synonyms_ru.xtb" lang="ru" />
+    <file path="translations/omnibox_pedal_synonyms_sk.xtb" lang="sk" />
+    <file path="translations/omnibox_pedal_synonyms_sl.xtb" lang="sl" />
+    <file path="translations/omnibox_pedal_synonyms_sr.xtb" lang="sr" />
+    <file path="translations/omnibox_pedal_synonyms_sv.xtb" lang="sv" />
+    <file path="translations/omnibox_pedal_synonyms_sw.xtb" lang="sw" />
+    <file path="translations/omnibox_pedal_synonyms_ta.xtb" lang="ta" />
+    <file path="translations/omnibox_pedal_synonyms_te.xtb" lang="te" />
+    <file path="translations/omnibox_pedal_synonyms_th.xtb" lang="th" />
+    <file path="translations/omnibox_pedal_synonyms_tr.xtb" lang="tr" />
+    <file path="translations/omnibox_pedal_synonyms_uk.xtb" lang="uk" />
+    <file path="translations/omnibox_pedal_synonyms_vi.xtb" lang="vi" />
+    <file path="translations/omnibox_pedal_synonyms_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/omnibox_pedal_synonyms_zh-TW.xtb" lang="zh-TW" />
+  </translations>
+
+  <release seq="1">
+    <!-- DO NOT EDIT the messages block. It is generated by pedal_processor. -->
+    <messages fallback_to_english="true">
+      <message name="IDS_OMNIBOX_PEDALS_IGNORE_GROUP" is_accessibility_with_no_ui="true" desc="The IGNORE group of common words without relevant meaning. The listed token sequences will be removed from input before checking for any Pedal matches. Context: The user is typing into the omnibox to find some setting or action, and the way to describe it isn't obvious. For example, they may be looking for chrome://settings/clearBrowserData but they type 'clear my history' or 'delete the browser data'. The Pedals system can identify the meaning of 'clear', 'delete', 'history', and 'browsing data' but 'the' and 'my' in this context are unnecessary extra words (sometimes called 'stop words'). The IGNORE group is the list of the most common words that users may type but which don't convey the necessary specific meaning for Pedals actions. Don't translate this list word for word; rather, consider and list any words that may be unnecessarily included in queries written by users who speak the target language. If a language doesn't have any such words, the list may be empty.">
+        inside, within, for, how, the, an, do, in, my, on, to, a, i
+      </message>
+      <!-- Pedal #7: RUN_CHROME_SAFETY_CHECK -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_OPTIONAL_ACTIVATE" is_accessibility_with_no_ui="true" desc="Synonyms for the RUN_CHROME_SAFETY_CHECK Pedal's 'activate' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Run a Safety Check in Chrome settings' via chrome://settings/safetyCheck?activateSafetyCheck but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'activate' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        activate, perform, run, use
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the RUN_CHROME_SAFETY_CHECK Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Run a Safety Check in Chrome settings' via chrome://settings/safetyCheck?activateSafetyCheck but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google chrome' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google chrome, browser, chrome, google
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_CHECKUP" is_accessibility_with_no_ui="true" desc="Synonyms for the RUN_CHROME_SAFETY_CHECK Pedal's 'checkup' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Run a Safety Check in Chrome settings' via chrome://settings/safetyCheck?activateSafetyCheck but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'checkup' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        checkup, checks, check
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_PASSWORDS" is_accessibility_with_no_ui="true" desc="Synonyms for the RUN_CHROME_SAFETY_CHECK Pedal's 'passwords' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Run a Safety Check in Chrome settings' via chrome://settings/safetyCheck?activateSafetyCheck but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'passwords' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        passwords, security, password, safety
+      </message>
+
+      <!-- Pedal #8: MANAGE_SECURITY_SETTINGS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ANY_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SECURITY_SETTINGS Pedal's 'google chrome' group. To trigger, ANY number of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Manage your Safe Browsing and more in Chrome settings' via chrome://settings/security but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google chrome' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google chrome, browsing, browser, chrome, google, browse, change, manage
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_REQUIRED_ENHANCED_PROTECTION" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SECURITY_SETTINGS Pedal's 'enhanced protection' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage your Safe Browsing and more in Chrome settings' via chrome://settings/security but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'enhanced protection' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        enhanced protection, standard protection, security settings, security keys, certificates, secure dns, securely, safely
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_OPTIONAL_ALTER" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SECURITY_SETTINGS Pedal's 'alter' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Manage your Safe Browsing and more in Chrome settings' via chrome://settings/security but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'alter' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        alter, use
+      </message>
+
+      <!-- Pedal #10: MANAGE_ADDRESSES -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_CONTROL" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_ADDRESSES Pedal's 'control' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Add and manage addresses in Chrome settings' via chrome://settings/addresses but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'control' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        control, manage, adjust, delete, change, store, edit, add
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_SHIPPING_ADDRESSES" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_ADDRESSES Pedal's 'shipping addresses' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Add and manage addresses in Chrome settings' via chrome://settings/addresses but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'shipping addresses' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        shipping addresses, shipping address, new address, addresses, address
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_ADDRESSES Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Add and manage addresses in Chrome settings' via chrome://settings/addresses but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google chrome' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google chrome, browser, chrome, google
+      </message>
+
+      <!-- Pedal #11: MANAGE_SYNC -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_SYNC_SETTINGS" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SYNC Pedal's 'sync settings' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage what info you sync in Chrome settings' via chrome://settings/syncSetup/advanced but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'sync settings' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        sync settings, sync
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ANY_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SYNC Pedal's 'google chrome' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage what info you sync in Chrome settings' via chrome://settings/syncSetup/advanced but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google chrome' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google chrome, customize, browser, control, disable, chrome, google, manage, adjust, change, edit, add
+      </message>
+
+      <!-- Pedal #12: MANAGE_SITE_SETTINGS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ONE_REQUIRED_SITE_PERMISSIONS" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SITE_SETTINGS Pedal's 'site permissions' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage permissions and data stored across sites in Chrome settings' via chrome://settings/content but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'site permissions' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        site permissions, site settings, permissions
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ANY_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SITE_SETTINGS Pedal's 'google chrome' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage permissions and data stored across sites in Chrome settings' via chrome://settings/content but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google chrome' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google chrome, customize, browser, control, chrome, google, manage, adjust, change, edit
+      </message>
+
+      <!-- Pedal #13: CREATE_GOOGLE_DOC -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_GOOGLE_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_DOC Pedal's 'google workspace' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Doc quickly (like doc.new)' via https://docs.google.com/document/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google workspace, google chrome, workspace, browser, g suite, google, chrome, gsuite
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ANY_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_DOC Pedal's 'create' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Doc quickly (like doc.new)' via https://docs.google.com/document/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_DOCUMENT" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_DOC Pedal's 'document' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Doc quickly (like doc.new)' via https://docs.google.com/document/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'document' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        document, doc
+      </message>
+
+      <!-- Pedal #14: CREATE_GOOGLE_SHEET -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ANY_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SHEET Pedal's 'create' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Sheet quickly (like sheet.new)' via https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_GOOGLE_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SHEET Pedal's 'google workspace' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Sheet quickly (like sheet.new)' via https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google workspace, google chrome, workspace, browser, g suite, google, chrome
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_SPREADSHEET" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SHEET Pedal's 'spreadsheet' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Sheet quickly (like sheet.new)' via https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'spreadsheet' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        spreadsheet, sheets, sheet, trix
+      </message>
+
+      <!-- Pedal #15: CREATE_GOOGLE_SLIDE -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SLIDE Pedal's 'create' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create new Google Slides quickly (like slide.new)' via https://docs.google.com/presentation/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_PRESENTATION" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SLIDE Pedal's 'presentation' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create new Google Slides quickly (like slide.new)' via https://docs.google.com/presentation/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'presentation' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        presentation, slides, slide, preso, deck
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ANY_REQUIRED_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SLIDE Pedal's 'workspace' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create new Google Slides quickly (like slide.new)' via https://docs.google.com/presentation/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        workspace, browser, g suite, google, chrome
+      </message>
+
+      <!-- Pedal #16: CREATE_GOOGLE_CALENDAR_EVENT -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ANY_REQUIRED_SCHEDULE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_CALENDAR_EVENT Pedal's 'schedule' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Calendar event quickly (like cal.new)' via https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'schedule' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        schedule, create, start, open, make, new, add
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ANY_REQUIRED_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_CALENDAR_EVENT Pedal's 'workspace' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Calendar event quickly (like cal.new)' via https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        workspace, calendar, browser, g suite, google, chrome, cal
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ONE_REQUIRED_MEETING" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_CALENDAR_EVENT Pedal's 'meeting' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Calendar event quickly (like cal.new)' via https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'meeting' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        meeting, invite, event
+      </message>
+
+      <!-- Pedal #17: CREATE_GOOGLE_SITE -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ANY_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SITE Pedal's 'create' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Site quickly (like site.new)' via https://sites.google.com/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ANY_REQUIRED_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SITE Pedal's 'workspace' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Site quickly (like site.new)' via https://sites.google.com/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        workspace, browser, g suite, google, chrome
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ONE_REQUIRED_WEBSITE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_SITE Pedal's 'website' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Site quickly (like site.new)' via https://sites.google.com/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'website' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        website, site
+      </message>
+
+      <!-- Pedal #18: CREATE_GOOGLE_KEEP_NOTE -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ANY_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_KEEP_NOTE Pedal's 'create' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Keep note quickly (like keep.new)' via https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ANY_REQUIRED_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_KEEP_NOTE Pedal's 'workspace' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Keep note quickly (like keep.new)' via https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        workspace, browser, g suite, google, chrome, keep
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ONE_REQUIRED_NOTES" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_KEEP_NOTE Pedal's 'notes' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Keep note quickly (like keep.new)' via https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'notes' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        notes, note
+      </message>
+
+      <!-- Pedal #19: CREATE_GOOGLE_FORM -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ANY_REQUIRED_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_FORM Pedal's 'create' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Form quickly (like form.new)' via https://docs.google.com/forms/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'create' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        create, start, open, make, new
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ANY_REQUIRED_WORKSPACE" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_FORM Pedal's 'workspace' group. To trigger, ANY number of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Form quickly (like form.new)' via https://docs.google.com/forms/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'workspace' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        workspace, browser, g suite, chrome, google
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ONE_REQUIRED_SURVEY" is_accessibility_with_no_ui="true" desc="Synonyms for the CREATE_GOOGLE_FORM Pedal's 'survey' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Create a new Google Form quickly (like form.new)' via https://docs.google.com/forms/u/0/create?usp=chrome_actions but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'survey' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        survey, forms, form, quiz
+      </message>
+
+      <!-- Pedal #21: SEE_CHROME_TIPS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_OPTIONAL_MAKE_THE_MOST_OF" is_accessibility_with_no_ui="true" desc="Synonyms for the SEE_CHROME_TIPS Pedal's 'make the most of' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Learn about new Chrome features' via https://www.google.com/chrome/tips/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'make the most of' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        make the most of, understand, explore, learn, visit, see
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ANY_OPTIONAL_BROWSER" is_accessibility_with_no_ui="true" desc="Synonyms for the SEE_CHROME_TIPS Pedal's 'browser' group. To trigger, ANY number of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Learn about new Chrome features' via https://www.google.com/chrome/tips/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'browser' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        browser, google
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_REQUIRED_NEW_CHROME_FEATURES" is_accessibility_with_no_ui="true" desc="Synonyms for the SEE_CHROME_TIPS Pedal's 'new chrome features' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Learn about new Chrome features' via https://www.google.com/chrome/tips/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'new chrome features' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        new chrome features, chrome tips center, chrome features, chrome tips
+      </message>
+
+      <!-- Pedal #22: MANAGE_GOOGLE_ACCOUNT -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_GOOGLE_ACCOUNT" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_GOOGLE_ACCOUNT Pedal's 'google account' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage your Google Account' via https://myaccount.google.com/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google account' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google account
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ANY_OPTIONAL_BROWSER" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_GOOGLE_ACCOUNT Pedal's 'browser' group. To trigger, ANY number of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Manage your Google Account' via https://myaccount.google.com/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'browser' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        browser, chrome
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_CONTROL" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_GOOGLE_ACCOUNT Pedal's 'control' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Manage your Google Account' via https://myaccount.google.com/ but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'control' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        control, manage, adjust, fix
+      </message>
+
+      <!-- Pedal #24: CHANGE_GOOGLE_PASSWORD -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_GOOGLE_ACCOUNT_PASSWORD" is_accessibility_with_no_ui="true" desc="Synonyms for the CHANGE_GOOGLE_PASSWORD Pedal's 'google account password' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Change the password for your Google Account' via https://myaccount.google.com/signinoptions/password but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'google account password' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        google account password, gmail account password, google password, gmail password
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ANY_OPTIONAL_BROWSER" is_accessibility_with_no_ui="true" desc="Synonyms for the CHANGE_GOOGLE_PASSWORD Pedal's 'browser' group. To trigger, ANY number of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Change the password for your Google Account' via https://myaccount.google.com/signinoptions/password but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'browser' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        browser, chrome, google
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE" is_accessibility_with_no_ui="true" desc="Synonyms for the CHANGE_GOOGLE_PASSWORD Pedal's 'change' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Change the password for your Google Account' via https://myaccount.google.com/signinoptions/password but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Do not translate the list word for word; rather, list the various ways users typing in the target language might describe this synonym group's concept when trying to perform this Pedal's action. Each Pedal has a few such groups, some required and some optional, and this list represents just one (the 'change' group). Being able to identify presence of specific concepts in the query enables the Pedals system to help the user perform the desired action.">
+        change, update, reset, fix
+      </message>
+
+      <!-- Pedal #26: CLOSE_INCOGNITO_WINDOWS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE_INCOGNITO_WINDOW" is_accessibility_with_no_ui="true" desc="Whole phrases for the CLOSE_INCOGNITO_WINDOWS Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Close incognito browser windows' but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        close incognito window, end incognito
+      </message>
+
+      <!-- Pedal #27: PLAY_CHROME_DINO_GAME -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_CHROME_DINO" is_accessibility_with_no_ui="true" desc="Whole phrases for the PLAY_CHROME_DINO_GAME Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Play the Dino Run game in Chrome' via chrome://dino but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        chrome dino, dino game, play dino run
+      </message>
+
+      <!-- Pedal #28: FIND_MY_PHONE -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_FIND_MY_PHONE_ONE_REQUIRED_FIND_LOST_PHONE" is_accessibility_with_no_ui="true" desc="Whole phrases for the FIND_MY_PHONE Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Locate a lost device' via https://myaccount.google.com/find-your-phone but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        find lost phone, find my device
+      </message>
+
+      <!-- Pedal #29: MANAGE_GOOGLE_PRIVACY -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_PRIVACY_ONE_REQUIRED_CHANGE_GOOGLE_PRIVACY_SETTINGS" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_GOOGLE_PRIVACY Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Manage Google privacy (control the use of their data)' via https://myaccount.google.com/data-and-privacy but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        change google privacy settings, manage google privacy
+      </message>
+
+      <!-- Pedal #31: MANAGE_CHROME_SETTINGS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHANGE_CHROME_SETTINGS" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_CHROME_SETTINGS Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Get to Chrome settings' via chrome://settings but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        change chrome settings, manage settings
+      </message>
+
+      <!-- Pedal #32: MANAGE_CHROME_DOWNLOADS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_DOWNLOADS_ONE_REQUIRED_MANAGE_CHROME_DOWNLOADS" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_CHROME_DOWNLOADS Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Access downloaded files in Chrome' via chrome://downloads but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        manage chrome downloads, view downloads
+      </message>
+
+      <!-- Pedal #33: VIEW_CHROME_HISTORY -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_SEE_CHROME_HISTORY" is_accessibility_with_no_ui="true" desc="Whole phrases for the VIEW_CHROME_HISTORY Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'See the full Chrome history page' via chrome://history but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        see chrome history, view browsing history
+      </message>
+
+      <!-- Pedal #34: SHARE_THIS_PAGE -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_SHARE_THIS_PAGE_ONE_REQUIRED_SHARE_THIS_PAGE" is_accessibility_with_no_ui="true" desc="Whole phrases for the SHARE_THIS_PAGE Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Learn about and use the Sharing Hub' but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        share this page, share this tab
+      </message>
+
+      <!-- Pedal #35: MANAGE_CHROME_ACCESSIBILITY -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROME_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_CHROME_ACCESSIBILITY Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Personalize Chrome based on abilities and preferences for assistive technology' via chrome://settings/accessibility but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        customize chrome accessibility, manage accessibility settings
+      </message>
+
+      <!-- Pedal #36: CUSTOMIZE_CHROME_FONTS -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_CHROME_FONTS_ONE_REQUIRED_CHANGE_BROWSER_FONT" is_accessibility_with_no_ui="true" desc="Whole phrases for the CUSTOMIZE_CHROME_FONTS Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Adjust font sizes and font types in Chrome' via chrome://settings/fonts but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        change browser font, chrome fonts
+      </message>
+
+      <!-- Pedal #37: MANAGE_CHROME_THEMES -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_THEMES_ONE_REQUIRED_CUSTOMIZE_CHROME_APPEARANCE" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_CHROME_THEMES Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Change themes in Chrome' via chrome://new-tab-page/?customize=backgrounds but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        customize chrome appearance, manage chrome themes
+      </message>
+
+      <!-- Pedal #38: CUSTOMIZE_SEARCH_ENGINES -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_SEARCH_ENGINES_ONE_REQUIRED_ADD_CUSTOM_SEARCH" is_accessibility_with_no_ui="true" desc="Whole phrases for the CUSTOMIZE_SEARCH_ENGINES Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Manage search engines in Chrome' via chrome://settings/searchEngines but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        add custom search, manage search engines, search engines
+      </message>
+
+      <!-- Pedal #39: MANAGE_CHROMEOS_ACCESSIBILITY -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROMEOS_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROMEOS_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Whole phrases for the MANAGE_CHROMEOS_ACCESSIBILITY Pedal's solitary triggering group. Context: The user is typing into the omnibox to find a way to 'Manage accessibility settings in ChromeOS settings' via chrome://os-settings/manageAccessibility but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the pedal action button should appear. Do not translate the list 1:1 phrase for phrase; rather, list several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma. Example: Given the translation string 'aaa bbb, ccc ddd eee' the pedal will appear for users who type either 'aaa bbb' or 'ccc ddd eee'. Note, each phrase is compared exactly as written, with no support for syntax like slash/slashes. So any alternative spelling for gender, pluralization, etc. should be written out as a full separate entry.">
+        customize chromeos accessibility, manage accessibility settings
+      </message>
+
+    </messages>
+  </release>
+</grit>

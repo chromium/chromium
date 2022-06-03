@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/compositor-controls.js"></script>
+<style>
+  body {
+    margin: 0px;
+    height: 3000px;
+    width: 3000px;
+  }
+  p {
+    width: 750px;
+  }
+  #scrollable {
+    height: 400px;
+    width: 400px;
+  }
+</style>
+
+<p>
+  This test ensures that autoscrolling doesn't scroll an iframe that's marked
+  as unscrollable via `scrolling="no"`. To test manually, fully scroll the blue
+  inner scroller and use middle click autoscroll (Windows feature) from the
+  inner blue scroller or the rest of the iframe to scroll downwards. This test
+  passes if the iframe that contains the blue scroller doesn't scroll.
+</p>
+<iframe id="scrollable" scrolling="no" srcdoc="
+  <!DOCTYPE html>
+  <style>
+    body {
+      width: 410px;
+      height: 410px;
+    }
+    #scroller {
+      width: 300px;
+      height: 300px;
+      overflow: scroll;
+      background-color: blue;
+    }
+    #space {
+     width: 400px;
+     height: 400px;
+    }
+  </style>
+  <div id='scroller'>
+    <div id='space'></div>
+  </div>
+"></iframe>
+
+<script>
+setAnimationRequiresRaster();
+var scrollable = document.getElementById('scrollable');
+
+function autoScroll(start_x, start_y, end_x, end_y) {
+  return new Promise((resolve, reject) => {
+    if (!window.eventSender) {
+      reject();
+    } else {
+      const MIDDLE_BUTTON = 1;
+      eventSender.mouseMoveTo(start_x, start_y);
+      eventSender.mouseDown(MIDDLE_BUTTON);
+      eventSender.mouseUp(MIDDLE_BUTTON);
+      eventSender.mouseMoveTo(end_x, end_y);
+      resolve();
+    }
+  });
+}
+
+window.addEventListener('load', () => {
+    var inner_scroller = frames[0].document.getElementById('scroller');
+    inner_scroller.scrollTop = 1000;
+    promise_test(async t => {
+      const MIDDLE_CLICK_AUTOSCROLL_RADIUS = 15; // from blink::kNoMiddleClickAutoscrollRadius
+      var rect = scrollable.getBoundingClientRect();
+      var startX = rect.left + 50;
+      var startY = rect.top + 50;
+      var endX = startX;
+      var endY = startY + 30 * MIDDLE_CLICK_AUTOSCROLL_RADIUS;
+      assert_equals(inner_scroller.scrollTop,
+                    inner_scroller.scrollHeight - inner_scroller.clientHeight,
+                    "Inner scroller starts fully scrolled.");
+      assert_equals(window.scrollY, 0, "Main window starts unscrolled.");
+      assert_equals(frames[0].window.scrollY, 0, "IFrame starts unscrolled.");
+
+      // Autoscroll over the inner scroller.
+      await autoScroll(startX, startY, endX, endY);
+      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
+      assert_equals(frames[0].window.scrollY, 0, "Iframe frame should not scroll");
+
+      // Autoscroll over the iframe.
+      startX = rect.right - 20;
+      endX = startX;
+      await autoScroll(startX, startY, endX, endY);
+      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
+      assert_true(window.scrollY > 0, "Main frame should not scroll");
+      assert_equals(frames[0].window.scrollY, 0, "IFrame must NOT scroll.");
+    });
+});
+
+</script>

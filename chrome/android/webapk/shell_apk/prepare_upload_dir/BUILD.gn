@@ -28,6 +28,11 @@ copy_dir("copy_res_to_upload_dir") {
   destination_dir = "${upload_dir}/res"
 }
 
+copy_dir("copy_res_app_icon_to_upload_dir") {
+  source_dir = "//chrome/android/webapk/shell_apk/res_app_icon"
+  destination_dir = "${upload_dir}/res"
+}
+
 copy_dir("copy_res_template_to_upload_dir") {
   source_dir = "//chrome/android/webapk/shell_apk/res_template"
   destination_dir = "${upload_dir}/res"
@@ -38,29 +43,38 @@ copy_dir("copy_libs_common_res_splash_to_upload_dir") {
   destination_dir = "${upload_dir}/res"
 }
 
+copy_dir("copy_components_libs_common_res_splash_to_upload_dir") {
+  source_dir = "//components/webapk/android/libs/common/res_splash"
+  destination_dir = "${upload_dir}/res"
+}
+
 copy_ex("copy_extra_files_to_upload_dir") {
   dest = upload_dir
 
-  renaming_sources = [ generate_old_style_manifest_for_upload_output ]
+  renaming_sources = [ generate_chromeos_manifest_for_upload_output ]
   renaming_destinations = [ "AndroidManifest.xml" ]
 
-  renaming_sources += [ generate_new_style_manifest_for_upload_output ]
+  renaming_sources += [ generate_manifest_for_upload_output ]
   renaming_destinations += [ "new_style_AndroidManifest.xml" ]
 
-  renaming_sources += [ "${root_out_dir}/resource_zips/chrome/android/webapk/shell_apk/webapk_strings_grd.resources.zip" ]
+  _strings_target = "//chrome/android/webapk/shell_apk:webapk_strings_grd"
+  _target_out_dir = get_label_info(_strings_target, "target_out_dir")
+  renaming_sources += [ "$_target_out_dir/webapk_strings_grd.resources.zip" ]
   renaming_destinations += [ "res/strings.zip" ]
 
   deps = [
-    "//chrome/android/webapk/shell_apk:generate_new_style_manifest_for_upload",
-    "//chrome/android/webapk/shell_apk:generate_old_style_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:generate_chromeos_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:generate_manifest_for_upload",
     "//chrome/android/webapk/shell_apk:webapk_strings_grd",
   ]
 }
 
 group("prepare_webapk_shell_upload_dir") {
   deps = [
+    ":copy_components_libs_common_res_splash_to_upload_dir",
     ":copy_extra_files_to_upload_dir",
     ":copy_libs_common_res_splash_to_upload_dir",
+    ":copy_res_app_icon_to_upload_dir",
     ":copy_res_template_to_upload_dir",
     ":copy_res_to_upload_dir",
   ]

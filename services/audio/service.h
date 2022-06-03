@@ -6,22 +6,21 @@
 #define SERVICES_AUDIO_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
 #include "services/audio/stream_factory.h"
 #include "services/audio/testing_api_binder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DeferredSequencedTaskRunner;
@@ -41,7 +40,7 @@ class LogFactoryManager;
 class ServiceMetrics;
 class SystemInfo;
 
-class Service : public mojom::AudioService {
+class Service final : public mojom::AudioService {
  public:
   // Abstracts AudioManager ownership. Lives and must be accessed on a thread
   // its created on, and that thread must be AudioManager main thread.
@@ -69,6 +68,10 @@ class Service : public mojom::AudioService {
   Service(std::unique_ptr<AudioManagerAccessor> audio_manager_accessor,
           bool enable_remote_client_support,
           mojo::PendingReceiver<mojom::AudioService> receiver);
+
+  Service(const Service&) = delete;
+  Service& operator=(const Service&) = delete;
+
   ~Service() final;
 
   // Returns a DeferredSequencedTaskRunner to be used to run the audio service
@@ -89,8 +92,8 @@ class Service : public mojom::AudioService {
       mojo::PendingReceiver<mojom::SystemInfo> receiver) override;
   void BindDebugRecording(
       mojo::PendingReceiver<mojom::DebugRecording> receiver) override;
-  void BindStreamFactory(
-      mojo::PendingReceiver<mojom::StreamFactory> receiver) override;
+  void BindStreamFactory(mojo::PendingReceiver<media::mojom::AudioStreamFactory>
+                             receiver) override;
   void BindDeviceNotifier(
       mojo::PendingReceiver<mojom::DeviceNotifier> receiver) override;
   void BindLogFactoryManager(
@@ -115,20 +118,15 @@ class Service : public mojom::AudioService {
   std::unique_ptr<AudioManagerAccessor> audio_manager_accessor_;
   const bool enable_remote_client_support_;
   std::unique_ptr<base::SystemMonitor> system_monitor_;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::unique_ptr<media::AudioDeviceListenerMac> audio_device_listener_mac_;
 #endif
   std::unique_ptr<SystemInfo> system_info_;
   std::unique_ptr<DebugRecording> debug_recording_;
-  base::Optional<StreamFactory> stream_factory_;
+  absl::optional<StreamFactory> stream_factory_;
   std::unique_ptr<DeviceNotifier> device_notifier_;
   std::unique_ptr<LogFactoryManager> log_factory_manager_;
   std::unique_ptr<ServiceMetrics> metrics_;
-
-  // TODO(crbug.com/888478): Remove this after diagnosis.
-  volatile uint32_t magic_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(Service);
 };
 
 }  // namespace audio

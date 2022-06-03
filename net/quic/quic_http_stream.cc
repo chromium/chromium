@@ -8,13 +8,14 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -22,13 +23,14 @@
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
 #include "net/third_party/quiche/src/quic/core/quic_stream_sequencer.h"
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -56,7 +58,8 @@ void NetLogQuicPushStream(const NetLogWithSource& net_log1,
 }  // namespace
 
 QuicHttpStream::QuicHttpStream(
-    std::unique_ptr<QuicChromiumClientSession::Handle> session)
+    std::unique_ptr<QuicChromiumClientSession::Handle> session,
+    std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
       next_state_(STATE_NONE),
       stream_(nullptr),
@@ -77,7 +80,8 @@ QuicHttpStream::QuicHttpStream(
       user_buffer_len_(0),
       session_error_(ERR_UNEXPECTED),
       found_promise_(false),
-      in_loop_(false) {}
+      in_loop_(false),
+      dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {
   CHECK(!in_loop_);
@@ -93,24 +97,20 @@ HttpResponseInfo::ConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       return HttpResponseInfo::CONNECTION_INFO_QUIC_43;
     case quic::QUIC_VERSION_46:
       return HttpResponseInfo::CONNECTION_INFO_QUIC_46;
-    case quic::QUIC_VERSION_48:
-      return quic_version.handshake_protocol == quic::PROTOCOL_TLS1_3
-                 ? HttpResponseInfo::CONNECTION_INFO_QUIC_T048
-                 : HttpResponseInfo::CONNECTION_INFO_QUIC_Q048;
-    case quic::QUIC_VERSION_49:
-      return quic_version.handshake_protocol == quic::PROTOCOL_TLS1_3
-                 ? HttpResponseInfo::CONNECTION_INFO_QUIC_T049
-                 : HttpResponseInfo::CONNECTION_INFO_QUIC_Q049;
     case quic::QUIC_VERSION_50:
-      return quic_version.handshake_protocol == quic::PROTOCOL_TLS1_3
+      return quic_version.UsesTls()
                  ? HttpResponseInfo::CONNECTION_INFO_QUIC_T050
                  : HttpResponseInfo::CONNECTION_INFO_QUIC_Q050;
-    case quic::QUIC_VERSION_99:
-      return quic_version.handshake_protocol == quic::PROTOCOL_TLS1_3
-                 ? HttpResponseInfo::CONNECTION_INFO_QUIC_T099
-                 : HttpResponseInfo::CONNECTION_INFO_QUIC_Q099;
+    case quic::QUIC_VERSION_IETF_DRAFT_29:
+      DCHECK(quic_version.UsesTls());
+      return HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_29;
+    case quic::QUIC_VERSION_IETF_RFC_V1:
+      DCHECK(quic_version.UsesTls());
+      return HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
       return HttpResponseInfo::CONNECTION_INFO_QUIC_999;
+    case quic::QUIC_VERSION_51:
+      return HttpResponseInfo::CONNECTION_INFO_QUIC_T051;
   }
   NOTREACHED();
   return HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION;
@@ -253,7 +253,12 @@ int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
   // Store the response info.
   response_info_ = response;
 
-  int rv;
+  // Put the peer's IP address and port into the response.
+  IPEndPoint address;
+  int rv = quic_session()->GetPeerAddress(&address);
+  if (rv != OK)
+    return rv;
+  response_info_->remote_endpoint = address;
 
   if (!found_promise_) {
     next_state_ = STATE_SET_REQUEST_PRIORITY;
@@ -386,8 +391,12 @@ int64_t QuicHttpStream::GetTotalSentBytes() const {
 
 bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   bool is_first_stream = closed_is_first_stream_;
-  if (stream_)
+  if (stream_) {
     is_first_stream = stream_->IsFirstStream();
+    load_timing_info->first_early_hints_time =
+        stream_->first_early_hints_time();
+  }
+
   if (is_first_stream) {
     load_timing_info->socket_reused = false;
     load_timing_info->connect_timing = connect_timing_;
@@ -400,7 +409,7 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
 bool QuicHttpStream::GetAlternativeService(
     AlternativeService* alternative_service) const {
   alternative_service->protocol = kProtoQUIC;
-  const HostPortPair& destination = quic_session()->destination();
+  const url::SchemeHostPort& destination = quic_session()->destination();
   alternative_service->host = destination.host();
   alternative_service->port = destination.port();
   return true;
@@ -410,7 +419,7 @@ void QuicHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {
   details->connection_info =
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
   quic_session()->PopulateNetErrorDetails(details);
-  if (quic_session()->IsCryptoHandshakeConfirmed() && stream_ &&
+  if (quic_session()->OneRttKeysAvailable() && stream_ &&
       stream_->connection_error() != quic::QUIC_NO_ERROR)
     details->quic_connection_error = stream_->connection_error();
 }
@@ -429,6 +438,19 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
   if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     DoCallback(rv);
   }
+}
+
+const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
+  return dns_aliases_;
+}
+
+base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {
@@ -602,7 +624,7 @@ int QuicHttpStream::DoSendHeaders() {
   if (rv > 0)
     headers_bytes_sent_ += rv;
 
-  request_headers_ = spdy::SpdyHeaderBlock();
+  request_headers_ = spdy::Http2HeaderBlock();
   return rv;
 }
 
@@ -649,7 +671,7 @@ int QuicHttpStream::DoSendBody() {
   int len = request_body_buf_->BytesRemaining();
   if (len > 0 || eof) {
     next_state_ = STATE_SEND_BODY_COMPLETE;
-    quiche::QuicheStringPiece data(request_body_buf_->data(), len);
+    base::StringPiece data(request_body_buf_->data(), len);
     return stream_->WriteStreamData(
         data, eof,
         base::BindOnce(&QuicHttpStream::OnIOComplete,
@@ -676,18 +698,21 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 }
 
 int QuicHttpStream::ProcessResponseHeaders(
-    const spdy::SpdyHeaderBlock& headers) {
-  if (!SpdyHeadersToHttpResponse(headers, response_info_)) {
+    const spdy::Http2HeaderBlock& headers) {
+  const bool header_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
+                            header_valid);
+  if (!header_valid) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }
-  // Put the peer's IP address and port into the response.
-  IPEndPoint address;
-  int rv = quic_session()->GetPeerAddress(&address);
-  if (rv != OK)
-    return rv;
 
-  response_info_->remote_endpoint = address;
+  if (response_info_->headers->response_code() == HTTP_EARLY_HINTS) {
+    DCHECK(!response_headers_received_);
+    headers_bytes_received_ = 0;
+    return OK;
+  }
+
   response_info_->connection_info =
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
   response_info_->vary_data.Init(*request_info_,
@@ -750,8 +775,7 @@ void QuicHttpStream::ResetStream() {
 }
 
 int QuicHttpStream::MapStreamError(int rv) {
-  if (rv == ERR_QUIC_PROTOCOL_ERROR &&
-      !quic_session()->IsCryptoHandshakeConfirmed()) {
+  if (rv == ERR_QUIC_PROTOCOL_ERROR && !quic_session()->OneRttKeysAvailable()) {
     return ERR_QUIC_HANDSHAKE_FAILED;
   }
   return rv;
@@ -777,7 +801,7 @@ int QuicHttpStream::ComputeResponseStatus() const {
 
   // If the handshake has failed this will be handled by the QuicStreamFactory
   // and HttpStreamFactory to mark QUIC as broken if TCP is actually working.
-  if (!quic_session()->IsCryptoHandshakeConfirmed())
+  if (!quic_session()->OneRttKeysAvailable())
     return ERR_QUIC_HANDSHAKE_FAILED;
 
   // If the session was aborted by a higher layer, simply use that error code.
@@ -790,13 +814,18 @@ int QuicHttpStream::ComputeResponseStatus() const {
   if (!response_info_)
     return ERR_CONNECTION_CLOSED;
 
-  // Explicit stream error are always fatal.
-  if (stream_->stream_error() != quic::QUIC_STREAM_NO_ERROR &&
-      stream_->stream_error() != quic::QUIC_STREAM_CONNECTION_ERROR) {
-    return ERR_QUIC_PROTOCOL_ERROR;
-  }
+  base::UmaHistogramEnumeration("Net.QuicHttpStream.ResponseStatus",
+                                stream_->stream_error(),
+                                quic::QUIC_STREAM_LAST_ERROR);
 
   return ERR_QUIC_PROTOCOL_ERROR;
+}
+
+void QuicHttpStream::SetRequestIdempotency(Idempotency idempotency) {
+  if (stream_ == nullptr) {
+    return;
+  }
+  stream_->SetRequestIdempotency(idempotency);
 }
 
 }  // namespace net

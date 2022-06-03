@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_JS_CALLS_CONTAINER_TEST_API_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_JS_CALLS_CONTAINER_TEST_API_H_
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -20,9 +19,13 @@ class JSCallsContainer;
 class JSCallsContainerTestApi {
  public:
   explicit JSCallsContainerTestApi(JSCallsContainer* js_calls_container);
+
+  JSCallsContainerTestApi(const JSCallsContainerTestApi&) = delete;
+  JSCallsContainerTestApi& operator=(const JSCallsContainerTestApi&) = delete;
+
   ~JSCallsContainerTestApi();
 
-  // |function| has arguments serialized to make matching easier. For example, a
+  // `function` has arguments serialized to make matching easier. For example, a
   // valid invocation looks like
   //
   //   EXPECT_CALL(test_api,
@@ -35,7 +38,6 @@ class JSCallsContainerTestApi {
 
  private:
   JSCallsContainer* const js_calls_container_;
-  DISALLOW_COPY_AND_ASSIGN(JSCallsContainerTestApi);
 };
 
 }  // namespace chromeos

@@ -15,7 +15,7 @@ DataTypeManager::ConfigureResult::ConfigureResult(ConfigureStatus status,
 DataTypeManager::ConfigureResult::ConfigureResult(
     const ConfigureResult& other) = default;
 
-DataTypeManager::ConfigureResult::~ConfigureResult() {}
+DataTypeManager::ConfigureResult::~ConfigureResult() = default;
 
 // Static.
 std::string DataTypeManager::ConfigureStatusToString(ConfigureStatus status) {
@@ -24,8 +24,6 @@ std::string DataTypeManager::ConfigureStatusToString(ConfigureStatus status) {
       return "Ok";
     case ABORTED:
       return "Aborted";
-    case UNRECOVERABLE_ERROR:
-      return "Unrecoverable Error";
     case UNKNOWN:
       NOTREACHED();
       return std::string();

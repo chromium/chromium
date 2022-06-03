@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_token.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -43,6 +42,8 @@ class VTTTokenizer {
 
  public:
   explicit VTTTokenizer(const String& input);
+  VTTTokenizer(const VTTTokenizer&) = delete;
+  VTTTokenizer& operator=(const VTTTokenizer&) = delete;
 
   bool NextToken(VTTToken&);
 
@@ -53,10 +54,8 @@ class VTTTokenizer {
 
   // ://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
   InputStreamPreprocessor<VTTTokenizer> input_stream_preprocessor_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTTTokenizer);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_

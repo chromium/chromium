@@ -7,10 +7,13 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include <cmath>
 #include <limits>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,7 +33,7 @@ double RoundDoubleTowardsZero(const double& x) {
   if (std::isnan(x)) {
     return 0.0;
   }
-  return x > 0.0 ? floor(x) : ceil(x);
+  return x > 0.0 ? std::floor(x) : std::ceil(x);
 }
 
 // Rounds to jlong using Java's type conversion rules.
@@ -65,7 +68,7 @@ jint RoundDoubleToInt(const double& x) {
 }
 
 jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
-                                          const base::Value* value,
+                                          int64_t integer_value,
                                           const JavaType& target_type,
                                           bool coerce_to_string,
                                           GinJavaBridgeError* error) {
@@ -76,29 +79,27 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
   // all but the lowest n buts, where n is the number of bits in the target
   // type.
   jvalue result;
-  int int_value;
-  value->GetAsInteger(&int_value);
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(int_value);
+      result.b = static_cast<jbyte>(integer_value);
       break;
     case JavaType::TypeChar:
-      result.c = static_cast<jchar>(int_value);
+      result.c = static_cast<jchar>(integer_value);
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(int_value);
+      result.s = static_cast<jshort>(integer_value);
       break;
     case JavaType::TypeInt:
-      result.i = int_value;
+      result.i = static_cast<jint>(integer_value);
       break;
     case JavaType::TypeLong:
-      result.j = int_value;
+      result.j = integer_value;
       break;
     case JavaType::TypeFloat:
-      result.f = int_value;
+      result.f = integer_value;
       break;
     case JavaType::TypeDouble:
-      result.d = int_value;
+      result.d = integer_value;
       break;
     case JavaType::TypeObject:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
@@ -106,10 +107,11 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
       result.l = NULL;
       break;
     case JavaType::TypeString:
-      result.l = coerce_to_string ? ConvertUTF8ToJavaString(
-                                        env, base::NumberToString(int_value))
-                                        .Release()
-                                  : NULL;
+      result.l = coerce_to_string
+                     ? ConvertUTF8ToJavaString(
+                           env, base::NumberToString(integer_value))
+                           .Release()
+                     : NULL;
       break;
     case JavaType::TypeBoolean:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
@@ -199,8 +201,7 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
                                           bool coerce_to_string,
                                           GinJavaBridgeError* error) {
   // See http://jdk6.java.net/plugin2/liveconnect/#JS_BOOLEAN_VALUES.
-  bool boolean_value;
-  value->GetAsBoolean(&boolean_value);
+  bool boolean_value = value->GetBool();
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeBoolean:
@@ -251,9 +252,7 @@ jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeString: {
-      std::string string_result;
-      value->GetAsString(&string_result);
-      result.l = ConvertUTF8ToJavaString(env, string_result).Release();
+      result.l = ConvertUTF8ToJavaString(env, value->GetString()).Release();
       break;
     }
     case JavaType::TypeObject:
@@ -460,7 +459,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
   const base::ListValue* list_value;
   value->GetAsList(&list_value);
   // Create the Java array.
-  jsize length = static_cast<jsize>(list_value->GetSize());
+  jsize length = static_cast<jsize>(list_value->GetList().size());
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
     return NULL;
@@ -516,14 +515,12 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
   // range for a Java array length, return null.
   jsize length = -1;
   if (length_value->is_int()) {
-    int int_length;
-    length_value->GetAsInteger(&int_length);
-    if (int_length >= 0 && int_length <= std::numeric_limits<int32_t>::max()) {
-      length = static_cast<jsize>(int_length);
+    if (length_value->GetInt() >= 0 &&
+        length_value->GetInt() <= std::numeric_limits<int32_t>::max()) {
+      length = static_cast<jsize>(length_value->GetInt());
     }
   } else if (length_value->is_double()) {
-    double double_length;
-    length_value->GetAsDouble(&double_length);
+    double double_length = length_value->GetDouble();
     if (double_length >= 0.0 &&
         double_length <= std::numeric_limits<int32_t>::max()) {
       length = static_cast<jsize>(double_length);
@@ -661,14 +658,22 @@ jvalue CoerceGinJavaBridgeValueToJavaValue(JNIEnv* env,
       return CoerceJavaScriptNullOrUndefinedToJavaValue(
           env, value, target_type, coerce_to_string, error);
     case GinJavaBridgeValue::TYPE_NONFINITE: {
-      float float_value;
-      gin_value->GetAsNonFinite(&float_value);
+      float float_value = 0.f;
+      if (!gin_value->GetAsNonFinite(&float_value))
+        return jvalue();
       return CoerceJavaScriptDoubleToJavaValue(
           env, float_value, target_type, coerce_to_string, error);
     }
     case GinJavaBridgeValue::TYPE_OBJECT_ID:
       return CoerceJavaScriptObjectToJavaValue(
           env, value, target_type, coerce_to_string, object_refs, error);
+    case GinJavaBridgeValue::TYPE_UINT32: {
+      uint32_t uint32_value = 0;
+      if (!gin_value->GetAsUInt32(&uint32_value))
+        return jvalue();
+      return CoerceJavaScriptIntegerToJavaValue(env, uint32_value, target_type,
+                                                coerce_to_string, error);
+    }
     default:
       NOTREACHED();
   }
@@ -700,12 +705,10 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
   switch (value->type()) {
     case base::Value::Type::INTEGER:
       return CoerceJavaScriptIntegerToJavaValue(
-          env, value, target_type, coerce_to_string, error);
+          env, value->GetInt(), target_type, coerce_to_string, error);
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      value->GetAsDouble(&double_value);
       return CoerceJavaScriptDoubleToJavaValue(
-          env, double_value, target_type, coerce_to_string, error);
+          env, value->GetDouble(), target_type, coerce_to_string, error);
     }
     case base::Value::Type::BOOLEAN:
       return CoerceJavaScriptBooleanToJavaValue(
@@ -722,14 +725,9 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
     case base::Value::Type::BINARY:
       return CoerceGinJavaBridgeValueToJavaValue(
           env, value, target_type, coerce_to_string, object_refs, error);
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
-      CHECK(false);
-      return jvalue();
   }
 
-  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
-  CHECK(false);
+  NOTREACHED();
   return jvalue();
 }
 

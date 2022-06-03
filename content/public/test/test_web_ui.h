@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
@@ -19,6 +21,10 @@ namespace content {
 class TestWebUI : public WebUI {
  public:
   TestWebUI();
+
+  TestWebUI(const TestWebUI&) = delete;
+  TestWebUI& operator=(const TestWebUI&) = delete;
+
   ~TestWebUI() override;
 
   void ClearTrackedCalls();
@@ -33,13 +39,18 @@ class TestWebUI : public WebUI {
   WebUIController* GetController() override;
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
-  const base::string16& GetOverriddenTitle() override;
-  void OverrideTitle(const base::string16& title) override {}
+  const std::u16string& GetOverriddenTitle() override;
+  void OverrideTitle(const std::u16string& title) override {}
   int GetBindings() override;
   void SetBindings(int bindings) override;
+  const std::vector<std::string>& GetRequestableSchemes() override;
+  void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               const MessageCallback& callback) override;
+                               MessageCallback callback) override;
+  void RegisterDeprecatedMessageCallback(
+      base::StringPiece message,
+      const DeprecatedMessageCallback& callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
                            const base::ListValue& args) override {}
@@ -93,16 +104,35 @@ class TestWebUI : public WebUI {
     return call_data_;
   }
 
+  // An observer that will be notified of javascript calls.
+  class JavascriptCallObserver : public base::CheckedObserver {
+   public:
+    virtual void OnJavascriptFunctionCalled(const CallData& call_data) = 0;
+  };
+
+  void AddJavascriptCallObserver(JavascriptCallObserver* obs) {
+    javascript_call_observers_.AddObserver(obs);
+  }
+
+  void RemoveJavascriptCallObserver(JavascriptCallObserver* obs) {
+    javascript_call_observers_.RemoveObserver(obs);
+  }
+
  private:
+  void OnJavascriptCall(const CallData& call_data);
+
   base::flat_map<std::string, std::vector<MessageCallback>> message_callbacks_;
+  base::flat_map<std::string, std::vector<DeprecatedMessageCallback>>
+      deprecated_message_callbacks_;
   std::vector<std::unique_ptr<CallData>> call_data_;
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
-  base::string16 temp_string_;
-  WebContents* web_contents_;
+  std::u16string temp_string_;
+  WebContents* web_contents_ = nullptr;
   std::unique_ptr<WebUIController> controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestWebUI);
+  // Observers to be notified on all javascript calls.
+  base::ObserverList<JavascriptCallObserver> javascript_call_observers_;
 };
 
 }  // namespace content

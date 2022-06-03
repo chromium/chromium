@@ -8,14 +8,13 @@ namespace blink {
 
 namespace {
 
-WTF::String OverscrollBehaviorTypeToString(
-    cc::OverscrollBehavior::OverscrollBehaviorType value) {
+WTF::String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
   switch (value) {
-    case cc::OverscrollBehavior::kOverscrollBehaviorTypeNone:
+    case cc::OverscrollBehavior::Type::kNone:
       return "none";
-    case cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto:
+    case cc::OverscrollBehavior::Type::kAuto:
       return "auto";
-    case cc::OverscrollBehavior::kOverscrollBehaviorTypeContain:
+    case cc::OverscrollBehavior::Type::kContain:
       return "contain";
     default:
       NOTREACHED();
@@ -32,13 +31,11 @@ const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
 }
 
 std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
-  auto json = std::make_unique<JSONObject>();
-  if (Parent())
-    json->SetString("parent", String::Format("%p", Parent()));
-  if (state_.container_rect != IntRect())
-    json->SetString("containerRect", state_.container_rect.ToString());
-  if (!state_.contents_size.IsZero())
-    json->SetString("contentsSize", state_.contents_size.ToString());
+  auto json = ToJSONBase();
+  if (!state_.container_rect.IsEmpty())
+    json->SetString("containerRect", String(state_.container_rect.ToString()));
+  if (!state_.contents_size.IsEmpty())
+    json->SetString("contentsSize", String(state_.contents_size.ToString()));
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(
         "userScrollable",
@@ -52,23 +49,17 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
                         state_.main_thread_scrolling_reasons)
                         .c_str());
   }
-  if (state_.scrolls_inner_viewport)
-    json->SetString("scrollsInnerViewport", "true");
-  if (state_.scrolls_outer_viewport)
-    json->SetString("scrollsOuterViewport", "true");
   if (state_.max_scroll_offset_affected_by_page_scale)
     json->SetString("maxScrollOffsetAffectedByPageScale", "true");
   if (state_.compositor_element_id) {
     json->SetString("compositorElementId",
                     state_.compositor_element_id.ToString().c_str());
   }
-  if (state_.overscroll_behavior.x !=
-      cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto) {
+  if (state_.overscroll_behavior.x != cc::OverscrollBehavior::Type::kAuto) {
     json->SetString("overscroll-behavior-x", OverscrollBehaviorTypeToString(
                                                  state_.overscroll_behavior.x));
   }
-  if (state_.overscroll_behavior.y !=
-      cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto) {
+  if (state_.overscroll_behavior.y != cc::OverscrollBehavior::Type::kAuto) {
     json->SetString("overscroll-behavior-y", OverscrollBehaviorTypeToString(
                                                  state_.overscroll_behavior.y));
   }

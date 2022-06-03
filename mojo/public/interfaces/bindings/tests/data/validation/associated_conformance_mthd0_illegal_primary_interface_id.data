@@ -1,0 +1,24 @@
+[dist4]message_header  // num_bytes
+[u4]2                  // version
+[u4]0                  // interface ID
+[u4]0                  // name
+[u4]0                  // flags
+[u4]0                  // padding
+[u8]0                  // request_id
+[dist8]payload
+[dist8]payload_interface_ids
+[anchr]message_header
+
+[anchr]payload
+[dist4]method0_params  // num_bytes
+[u4]0                  // version
+[u4]1                  // associated interface pointer: interface ID index
+[u4]1                  // associated interface pointer: version
+[anchr]method0_params
+
+[anchr]payload_interface_ids
+[dist4]interface_id_array  // num_bytes
+[u4]2                      // num_elements
+[u4]3
+[u4]0                      // Unexpected primary interface ID.
+[anchr]interface_id_array

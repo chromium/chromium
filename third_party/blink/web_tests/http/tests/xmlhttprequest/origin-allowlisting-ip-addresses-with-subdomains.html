@@ -1,0 +1,21 @@
+<p>Specifying that an IP address should match subdomains doesn't make sense. This test verifies that it doesn't do anything.</p>
+<pre id="console"></pre>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+
+function log(message)
+{
+    document.getElementById('console').appendChild(document.createTextNode(message + '\n'));
+}
+
+var iframe = document.createElement("iframe");
+document.body.appendChild(iframe);
+iframe.src = "http://localhost:8000/xmlhttprequest/resources/origin-allowlisting-ip-address-test.html#subdomains";
+window.addEventListener("message", function(e) {
+    if (e.data == "DONE")
+        testRunner.notifyDone();
+    else
+        log(e.data);
+}, false);
+</script>

@@ -27,8 +27,8 @@ function assert_matrix_approx_equals(actual, expected) {
 
 async_test(t => {
   runAfterLayoutAndPaint(t.step_func_done(() => {
-    eventSender.zoomPageIn();
-    eventSender.zoomPageIn();
+    testRunner.zoomPageIn();
+    testRunner.zoomPageIn();
 
     assert_matrix_approx_equals(document.getElementById('svg1').getScreenCTM(),
                                 { a: 1, b: 0, c: 0, d: 1, e: 0, f: 100 });

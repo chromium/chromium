@@ -5,31 +5,56 @@
 #include "pdf/pdfium/pdfium_form_filler.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/web/blink.h"
+#include "third_party/pdfium/public/fpdf_annot.h"
+#include "ui/gfx/geometry/rect.h"
+#include "v8/include/v8-isolate.h"
 
 namespace chrome_pdf {
 
 namespace {
 
+int g_last_timer_id = 0;
+
+#if defined(PDF_ENABLE_V8)
 std::string WideStringToString(FPDF_WIDESTRING wide_string) {
-  return base::UTF16ToUTF8(reinterpret_cast<const base::char16*>(wide_string));
+  return base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(wide_string));
 }
+#endif
 
 }  // namespace
 
-PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
-    : engine_(engine) {
+// static
+PDFiumFormFiller::ScriptOption PDFiumFormFiller::DefaultScriptOption() {
+#if defined(PDF_ENABLE_XFA)
+  if (base::FeatureList::IsEnabled(features::kPdfXfaSupport))
+    return PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
+#endif  // defined(PDF_ENABLE_XFA)
+  return PDFiumFormFiller::ScriptOption::kJavaScript;
+}
+
+PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
+                                   ScriptOption script_option)
+    : engine_in_isolate_scope_factory_(engine), script_option_(script_option) {
   // Initialize FPDF_FORMFILLINFO member variables.  Deriving from this struct
   // allows the static callbacks to be able to cast the FPDF_FORMFILLINFO in
   // callbacks to ourself instead of maintaining a map of them to
   // PDFiumEngine.
-  FPDF_FORMFILLINFO::version = 1;
+  FPDF_FORMFILLINFO::version = 2;
   FPDF_FORMFILLINFO::Release = nullptr;
   FPDF_FORMFILLINFO::FFI_Invalidate = Form_Invalidate;
   FPDF_FORMFILLINFO::FFI_OutputSelectedRect = Form_OutputSelectedRect;
@@ -45,26 +70,29 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
   FPDF_FORMFILLINFO::FFI_SetTextFieldFocus = Form_SetTextFieldFocus;
   FPDF_FORMFILLINFO::FFI_DoURIAction = Form_DoURIAction;
   FPDF_FORMFILLINFO::FFI_DoGoToAction = Form_DoGoToAction;
-#if defined(PDF_ENABLE_XFA)
-  FPDF_FORMFILLINFO::version = 2;
-  FPDF_FORMFILLINFO::FFI_EmailTo = Form_EmailTo;
-  FPDF_FORMFILLINFO::FFI_DisplayCaret = Form_DisplayCaret;
-  FPDF_FORMFILLINFO::FFI_SetCurrentPage = Form_SetCurrentPage;
-  FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = Form_GetCurrentPageIndex;
-  FPDF_FORMFILLINFO::FFI_GetPageViewRect = Form_GetPageViewRect;
-  FPDF_FORMFILLINFO::FFI_GetPlatform = Form_GetPlatform;
-  FPDF_FORMFILLINFO::FFI_PageEvent = Form_PageEvent;
-  FPDF_FORMFILLINFO::FFI_PopupMenu = Form_PopupMenu;
-  FPDF_FORMFILLINFO::FFI_PostRequestURL = Form_PostRequestURL;
-  FPDF_FORMFILLINFO::FFI_PutRequestURL = Form_PutRequestURL;
-  FPDF_FORMFILLINFO::FFI_UploadTo = Form_UploadTo;
-  FPDF_FORMFILLINFO::FFI_DownloadFromURL = Form_DownloadFromURL;
-  FPDF_FORMFILLINFO::FFI_OpenFile = Form_OpenFile;
-  FPDF_FORMFILLINFO::FFI_GotoURL = Form_GotoURL;
-  FPDF_FORMFILLINFO::FFI_GetLanguage = Form_GetLanguage;
-#endif  // defined(PDF_ENABLE_XFA)
+  FPDF_FORMFILLINFO::FFI_OnFocusChange = Form_OnFocusChange;
+  FPDF_FORMFILLINFO::FFI_DoURIActionWithKeyboardModifier =
+      Form_DoURIActionWithKeyboardModifier;
+  FPDF_FORMFILLINFO::xfa_disabled = true;
+  FPDF_FORMFILLINFO::FFI_EmailTo = nullptr;
+  FPDF_FORMFILLINFO::FFI_DisplayCaret = nullptr;
+  FPDF_FORMFILLINFO::FFI_SetCurrentPage = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetPageViewRect = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetPlatform = nullptr;
+  FPDF_FORMFILLINFO::FFI_PageEvent = nullptr;
+  FPDF_FORMFILLINFO::FFI_PopupMenu = nullptr;
+  FPDF_FORMFILLINFO::FFI_PostRequestURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_PutRequestURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_UploadTo = nullptr;
+  FPDF_FORMFILLINFO::FFI_DownloadFromURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_OpenFile = nullptr;
+  FPDF_FORMFILLINFO::FFI_GotoURL = nullptr;
+  FPDF_FORMFILLINFO::FFI_GetLanguage = nullptr;
+  FPDF_FORMFILLINFO::m_pJsPlatform = nullptr;
 
-  if (enable_javascript) {
+#if defined(PDF_ENABLE_V8)
+  if (script_option != ScriptOption::kNoJavaScript) {
     FPDF_FORMFILLINFO::m_pJsPlatform = this;
     IPDF_JSPLATFORM::version = 3;
     IPDF_JSPLATFORM::app_alert = Form_Alert;
@@ -76,9 +104,28 @@ PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine, bool enable_javascript)
     IPDF_JSPLATFORM::Doc_submitForm = Form_SubmitForm;
     IPDF_JSPLATFORM::Doc_gotoPage = Form_GotoPage;
     IPDF_JSPLATFORM::Field_browse = nullptr;
-  } else {
-    FPDF_FORMFILLINFO::m_pJsPlatform = nullptr;
   }
+#if defined(PDF_ENABLE_XFA)
+  if (script_option == ScriptOption::kJavaScriptAndXFA) {
+    FPDF_FORMFILLINFO::xfa_disabled = false;
+    FPDF_FORMFILLINFO::FFI_EmailTo = Form_EmailTo;
+    FPDF_FORMFILLINFO::FFI_DisplayCaret = Form_DisplayCaret;
+    FPDF_FORMFILLINFO::FFI_SetCurrentPage = Form_SetCurrentPage;
+    FPDF_FORMFILLINFO::FFI_GetCurrentPageIndex = Form_GetCurrentPageIndex;
+    FPDF_FORMFILLINFO::FFI_GetPageViewRect = Form_GetPageViewRect;
+    FPDF_FORMFILLINFO::FFI_GetPlatform = Form_GetPlatform;
+    FPDF_FORMFILLINFO::FFI_PageEvent = Form_PageEvent;
+    FPDF_FORMFILLINFO::FFI_PopupMenu = Form_PopupMenu;
+    FPDF_FORMFILLINFO::FFI_PostRequestURL = Form_PostRequestURL;
+    FPDF_FORMFILLINFO::FFI_PutRequestURL = Form_PutRequestURL;
+    FPDF_FORMFILLINFO::FFI_UploadTo = Form_UploadTo;
+    FPDF_FORMFILLINFO::FFI_DownloadFromURL = Form_DownloadFromURL;
+    FPDF_FORMFILLINFO::FFI_OpenFile = Form_OpenFile;
+    FPDF_FORMFILLINFO::FFI_GotoURL = Form_GotoURL;
+    FPDF_FORMFILLINFO::FFI_GetLanguage = Form_GetLanguage;
+  }
+#endif  // defined(PDF_ENABLE_XFA)
+#endif  // defined(PDF_ENABLE_V8)
 }
 
 PDFiumFormFiller::~PDFiumFormFiller() = default;
@@ -90,7 +137,8 @@ void PDFiumFormFiller::Form_Invalidate(FPDF_FORMFILLINFO* param,
                                        double top,
                                        double right,
                                        double bottom) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   int page_index = engine->GetVisiblePageIndex(page);
   if (page_index == -1) {
     // This can sometime happen when the page is closed because it went off
@@ -98,9 +146,9 @@ void PDFiumFormFiller::Form_Invalidate(FPDF_FORMFILLINFO* param,
     return;
   }
 
-  pp::Rect rect = engine->pages_[page_index]->PageToScreen(
-      engine->GetVisibleRect().point(), engine->current_zoom_, left, top, right,
-      bottom, engine->layout_.options().default_page_orientation());
+  gfx::Rect rect = engine->pages_[page_index]->PageToScreen(
+      engine->GetVisibleRect().origin(), engine->current_zoom_, left, top,
+      right, bottom, engine->layout_.options().default_page_orientation());
   engine->client_->Invalidate(rect);
 }
 
@@ -111,15 +159,15 @@ void PDFiumFormFiller::Form_OutputSelectedRect(FPDF_FORMFILLINFO* param,
                                                double top,
                                                double right,
                                                double bottom) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   int page_index = engine->GetVisiblePageIndex(page);
-  if (page_index == -1) {
-    NOTREACHED();
+  if (page_index == -1)
     return;
-  }
-  pp::Rect rect = engine->pages_[page_index]->PageToScreen(
-      engine->GetVisibleRect().point(), engine->current_zoom_, left, top, right,
-      bottom, engine->layout_.options().default_page_orientation());
+
+  gfx::Rect rect = engine->pages_[page_index]->PageToScreen(
+      engine->GetVisibleRect().origin(), engine->current_zoom_, left, top,
+      right, bottom, engine->layout_.options().default_page_orientation());
   if (rect.IsEmpty())
     return;
 
@@ -138,8 +186,7 @@ int PDFiumFormFiller::Form_SetTimer(FPDF_FORMFILLINFO* param,
                                     int elapse,
                                     TimerCallback timer_func) {
   auto* form_filler = static_cast<PDFiumFormFiller*>(param);
-  return form_filler->SetTimer(base::TimeDelta::FromMilliseconds(elapse),
-                               timer_func);
+  return form_filler->SetTimer(base::Milliseconds(elapse), timer_func);
 }
 
 // static
@@ -168,15 +215,17 @@ FPDF_SYSTEMTIME PDFiumFormFiller::Form_GetLocalTime(FPDF_FORMFILLINFO* param) {
 
 // static
 void PDFiumFormFiller::Form_OnChange(FPDF_FORMFILLINFO* param) {
-  PDFiumEngine* engine = GetEngine(param);
-  engine->SetEditMode(true);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
+  engine->EnteredEditMode();
 }
 
 // static
 FPDF_PAGE PDFiumFormFiller::Form_GetPage(FPDF_FORMFILLINFO* param,
                                          FPDF_DOCUMENT document,
                                          int page_index) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   if (!engine->PageIndexInBounds(page_index))
     return nullptr;
   return engine->pages_[page_index]->GetPage();
@@ -185,16 +234,16 @@ FPDF_PAGE PDFiumFormFiller::Form_GetPage(FPDF_FORMFILLINFO* param,
 // static
 FPDF_PAGE PDFiumFormFiller::Form_GetCurrentPage(FPDF_FORMFILLINFO* param,
                                                 FPDF_DOCUMENT document) {
-  PDFiumEngine* engine = GetEngine(param);
-  int index = engine->last_page_mouse_down_;
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
+  int index = engine->last_focused_page_;
   if (index == -1) {
     index = engine->GetMostVisiblePage();
-    if (index == -1) {
-      NOTREACHED();
+    if (index == -1)
       return nullptr;
-    }
   }
 
+  DCHECK_NE(index, -1);
   return engine->pages_[index]->GetPage();
 }
 
@@ -207,14 +256,15 @@ int PDFiumFormFiller::Form_GetRotation(FPDF_FORMFILLINFO* param,
 // static
 void PDFiumFormFiller::Form_ExecuteNamedAction(FPDF_FORMFILLINFO* param,
                                                FPDF_BYTESTRING named_action) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   std::string action(named_action);
   if (action == "Print") {
     engine->client_->Print();
     return;
   }
 
-  int index = engine->last_page_mouse_down_;
+  int index = engine->last_focused_page_;
   /* Don't try to calculate the most visible page if we don't have a left click
      before this event (this code originally copied Form_GetCurrentPage which of
      course needs to do that and which doesn't have recursion). This can end up
@@ -251,9 +301,27 @@ void PDFiumFormFiller::Form_SetTextFieldFocus(FPDF_FORMFILLINFO* param,
 }
 
 // static
+void PDFiumFormFiller::Form_OnFocusChange(FPDF_FORMFILLINFO* param,
+                                          FPDF_ANNOTATION annot,
+                                          int page_index) {
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
+  if (!engine->PageIndexInBounds(page_index))
+    return;
+
+  // Maintain viewport if we are updating focus. This is to ensure that we don't
+  // scroll the focused annotation into view when focus is regained.
+  if (!engine->updating_focus_)
+    engine->ScrollAnnotationIntoView(annot, page_index);
+
+  engine->OnFocusedAnnotationUpdated(annot, page_index);
+}
+
+// static
 void PDFiumFormFiller::Form_DoURIAction(FPDF_FORMFILLINFO* param,
                                         FPDF_BYTESTRING uri) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->NavigateTo(std::string(uri),
                               WindowOpenDisposition::CURRENT_TAB);
 }
@@ -264,10 +332,32 @@ void PDFiumFormFiller::Form_DoGoToAction(FPDF_FORMFILLINFO* param,
                                          int zoom_mode,
                                          float* position_array,
                                          int size_of_array) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->ScrollToPage(page_index);
 }
 
+// static
+void PDFiumFormFiller::Form_DoURIActionWithKeyboardModifier(
+    FPDF_FORMFILLINFO* param,
+    FPDF_BYTESTRING uri,
+    int modifiers) {
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
+  bool middle_button =
+      !!(modifiers & blink::WebInputEvent::Modifiers::kMiddleButtonDown);
+  bool alt_key = !!(modifiers & blink::WebInputEvent::Modifiers::kAltKey);
+  bool ctrl_key = !!(modifiers & blink::WebInputEvent::Modifiers::kControlKey);
+  bool meta_key = !!(modifiers & blink::WebInputEvent::Modifiers::kMetaKey);
+  bool shift_key = !!(modifiers & blink::WebInputEvent::Modifiers::kShiftKey);
+
+  WindowOpenDisposition disposition = ui::DispositionFromClick(
+      middle_button, alt_key, ctrl_key, meta_key, shift_key);
+
+  engine->client_->NavigateTo(std::string(uri), disposition);
+}
+
+#if defined(PDF_ENABLE_V8)
 #if defined(PDF_ENABLE_XFA)
 
 // static
@@ -284,7 +374,8 @@ void PDFiumFormFiller::Form_EmailTo(FPDF_FORMFILLINFO* param,
   std::string bcc_str = WideStringToString(bcc);
   std::string message_str = WideStringToString(message);
 
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->Email(to_str, cc_str, bcc_str, subject_str, message_str);
 }
 
@@ -301,14 +392,16 @@ void PDFiumFormFiller::Form_DisplayCaret(FPDF_FORMFILLINFO* param,
 void PDFiumFormFiller::Form_SetCurrentPage(FPDF_FORMFILLINFO* param,
                                            FPDF_DOCUMENT document,
                                            int page) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->ScrollToPage(page);
 }
 
 // static
 int PDFiumFormFiller::Form_GetCurrentPageIndex(FPDF_FORMFILLINFO* param,
                                                FPDF_DOCUMENT document) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   return engine->GetMostVisiblePage();
 }
 
@@ -319,7 +412,8 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
                                             double* top,
                                             double* right,
                                             double* bottom) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   int page_index = engine->GetVisiblePageIndex(page);
   if (!engine->PageIndexInBounds(page_index)) {
     *left = 0;
@@ -329,10 +423,7 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
     return;
   }
 
-  pp::Rect page_view_rect = engine->GetPageContentsRect(page_index);
-
-  float toolbar_height_in_screen_coords =
-      engine->GetToolbarHeightInScreenCoords();
+  gfx::Rect page_view_rect = engine->GetPageContentsRect(page_index);
 
   float page_width = FPDF_GetPageWidth(page);
   float page_height = FPDF_GetPageHeight(page);
@@ -346,24 +437,23 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
   // coords, we use (page_width * (x - base_x) / page_view_rect.width()).
   // For y positions, (page_height * (y - base_y) / page_view_rect.height()).
 
-  // The top-most y position that can be relied to be visible on the screen is
-  // the bottom of the toolbar, which is y = toolbar_height_in_screen_coords.
+  // The top-most x position that is visible on the screen is the top of the
+  // plugin area, which is y = 0.
   float screen_top_in_page_coords =
-      page_height * (toolbar_height_in_screen_coords - page_view_rect.y()) /
-      page_view_rect.height();
+      page_height * (0 - page_view_rect.y()) / page_view_rect.height();
   // The bottom-most y position that is visible on the screen is the bottom of
-  // the plugin area, which is y = engine->plugin_size_.height().
+  // the plugin area, which is y = engine->plugin_size().height().
   float screen_bottom_in_page_coords =
-      page_height * (engine->plugin_size_.height() - page_view_rect.y()) /
+      page_height * (engine->plugin_size().height() - page_view_rect.y()) /
       page_view_rect.height();
   // The left-most x position that is visible on the screen is the left of the
   // plugin area, which is x = 0.
   float screen_left_in_page_coords =
       page_width * (0 - page_view_rect.x()) / page_view_rect.width();
   // The right-most x position that is visible on the screen is the right of the
-  // plugin area, which is x = engine->plugin_size_.width().
+  // plugin area, which is x = engine->plugin_size().width().
   float screen_right_in_page_coords =
-      page_width * (engine->plugin_size_.width() - page_view_rect.x()) /
+      page_width * (engine->plugin_size().width() - page_view_rect.x()) /
       page_view_rect.width();
 
   // Return the edge of the screen or of the page, since we're restricted to
@@ -402,7 +492,8 @@ void PDFiumFormFiller::Form_PageEvent(FPDF_FORMFILLINFO* param,
   DCHECK(event_type == FXFA_PAGEVIEWEVENT_POSTADDED ||
          event_type == FXFA_PAGEVIEWEVENT_POSTREMOVED);
 
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->UpdatePageCount();
 }
 
@@ -507,7 +598,8 @@ int PDFiumFormFiller::Form_Alert(IPDF_JSPLATFORM* param,
     ALERT_RESULT_YES
   };
 
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   std::string message_str = WideStringToString(message);
   if (type == ALERT_TYPE_OK) {
     engine->client_->Alert(message_str);
@@ -522,7 +614,8 @@ int PDFiumFormFiller::Form_Alert(IPDF_JSPLATFORM* param,
 
 // static
 void PDFiumFormFiller::Form_Beep(IPDF_JSPLATFORM* param, int type) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->Beep();
 }
 
@@ -538,10 +631,11 @@ int PDFiumFormFiller::Form_Response(IPDF_JSPLATFORM* param,
   std::string question_str = WideStringToString(question);
   std::string default_str = WideStringToString(default_response);
 
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   std::string rv = engine->client_->Prompt(question_str, default_str);
-  base::string16 rv_16 = base::UTF8ToUTF16(rv);
-  int rv_bytes = rv_16.size() * sizeof(base::char16);
+  std::u16string rv_16 = base::UTF8ToUTF16(rv);
+  int rv_bytes = rv_16.size() * sizeof(char16_t);
   if (response) {
     int bytes_to_copy = rv_bytes < length ? rv_bytes : length;
     memcpy(response, rv_16.c_str(), bytes_to_copy);
@@ -553,11 +647,15 @@ int PDFiumFormFiller::Form_Response(IPDF_JSPLATFORM* param,
 int PDFiumFormFiller::Form_GetFilePath(IPDF_JSPLATFORM* param,
                                        void* file_path,
                                        int length) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   std::string rv = engine->client_->GetURL();
-  if (file_path && rv.size() <= static_cast<size_t>(length))
-    memcpy(file_path, rv.c_str(), rv.size());
-  return rv.size();
+
+  // Account for the trailing null.
+  int necessary_length = rv.size() + 1;
+  if (file_path && necessary_length <= length)
+    memcpy(file_path, rv.c_str(), necessary_length);
+  return necessary_length;
 }
 
 // static
@@ -570,7 +668,7 @@ void PDFiumFormFiller::Form_Mail(IPDF_JSPLATFORM* param,
                                  FPDF_WIDESTRING cc,
                                  FPDF_WIDESTRING bcc,
                                  FPDF_WIDESTRING message) {
-  // Note: |mail_data| and |length| are ignored. We don't handle attachments;
+  // Note: `mail_data` and `length` are ignored. We don't handle attachments;
   // there is no way with mailto.
   std::string to_str = WideStringToString(to);
   std::string cc_str = WideStringToString(cc);
@@ -578,7 +676,8 @@ void PDFiumFormFiller::Form_Mail(IPDF_JSPLATFORM* param,
   std::string subject_str = WideStringToString(subject);
   std::string message_str = WideStringToString(message);
 
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->Email(to_str, cc_str, bcc_str, subject_str, message_str);
 }
 
@@ -594,7 +693,8 @@ void PDFiumFormFiller::Form_Print(IPDF_JSPLATFORM* param,
                                   FPDF_BOOL annotations) {
   // No way to pass the extra information to the print dialog using JavaScript.
   // Just opening it is fine for now.
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->Print();
 }
 
@@ -604,31 +704,74 @@ void PDFiumFormFiller::Form_SubmitForm(IPDF_JSPLATFORM* param,
                                        int length,
                                        FPDF_WIDESTRING url) {
   std::string url_str = WideStringToString(url);
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->client_->SubmitForm(url_str, form_data, length);
 }
 
 // static
 void PDFiumFormFiller::Form_GotoPage(IPDF_JSPLATFORM* param, int page_number) {
-  PDFiumEngine* engine = GetEngine(param);
+  EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
+  PDFiumEngine* engine = engine_scope.engine();
   engine->ScrollToPage(page_number);
 }
 
-// static
-PDFiumEngine* PDFiumFormFiller::GetEngine(FPDF_FORMFILLINFO* info) {
-  auto* form_filler = static_cast<PDFiumFormFiller*>(info);
-  return form_filler->engine_;
+#endif  // defined(PDF_ENABLE_V8)
+
+PDFiumFormFiller::EngineInIsolateScope::EngineInIsolateScope(
+    PDFiumEngine* engine,
+    v8::Isolate* isolate)
+    : isolate_scope_(isolate ? std::make_unique<v8::Isolate::Scope>(isolate)
+                             : nullptr),
+      engine_(engine) {
+  DCHECK(engine_);
+}
+
+PDFiumFormFiller::EngineInIsolateScope::EngineInIsolateScope(
+    EngineInIsolateScope&&) = default;
+
+PDFiumFormFiller::EngineInIsolateScope&
+PDFiumFormFiller::EngineInIsolateScope::operator=(EngineInIsolateScope&&) =
+    default;
+
+PDFiumFormFiller::EngineInIsolateScope::~EngineInIsolateScope() = default;
+
+PDFiumFormFiller::EngineInIsolateScopeFactory::EngineInIsolateScopeFactory(
+    PDFiumEngine* engine)
+    : engine_(engine), callback_isolate_(v8::Isolate::TryGetCurrent()) {
+  if (callback_isolate_)
+    CHECK_EQ(blink::MainThreadIsolate(), callback_isolate_);
+}
+
+PDFiumFormFiller::EngineInIsolateScopeFactory::~EngineInIsolateScopeFactory() =
+    default;
+
+PDFiumFormFiller::EngineInIsolateScope
+PDFiumFormFiller::EngineInIsolateScopeFactory::GetEngineInIsolateScope() const {
+  return EngineInIsolateScope(engine_, callback_isolate_);
 }
 
 // static
-PDFiumEngine* PDFiumFormFiller::GetEngine(IPDF_JSPLATFORM* platform) {
+PDFiumFormFiller::EngineInIsolateScope
+PDFiumFormFiller::GetEngineInIsolateScope(FPDF_FORMFILLINFO* info) {
+  auto* form_filler = static_cast<PDFiumFormFiller*>(info);
+  return form_filler->engine_in_isolate_scope_factory_
+      .GetEngineInIsolateScope();
+}
+
+// static
+PDFiumFormFiller::EngineInIsolateScope
+PDFiumFormFiller::GetEngineInIsolateScope(IPDF_JSPLATFORM* platform) {
   auto* form_filler = static_cast<PDFiumFormFiller*>(platform);
-  return form_filler->engine_;
+  return form_filler->engine_in_isolate_scope_factory_
+      .GetEngineInIsolateScope();
 }
 
 int PDFiumFormFiller::SetTimer(const base::TimeDelta& delay,
                                TimerCallback timer_func) {
-  const int timer_id = ++last_timer_id_;
+  const int timer_id = ++g_last_timer_id;
+  DCHECK(!base::Contains(timers_, timer_id));
+
   auto timer = std::make_unique<base::RepeatingTimer>();
   timer->Start(FROM_HERE, delay, base::BindRepeating(timer_func, timer_id));
   timers_[timer_id] = std::move(timer);
@@ -636,7 +779,8 @@ int PDFiumFormFiller::SetTimer(const base::TimeDelta& delay,
 }
 
 void PDFiumFormFiller::KillTimer(int timer_id) {
-  timers_.erase(timer_id);
+  size_t erased = timers_.erase(timer_id);
+  DCHECK_EQ(1u, erased);
 }
 
 }  // namespace chrome_pdf

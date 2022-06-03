@@ -6,22 +6,20 @@
 
 #include <math.h>
 #include <algorithm>
-#include <limits>
+#include <cstddef>
 #include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
@@ -29,13 +27,13 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "content/browser/indexed_db/cursor_impl.h"
-#include "content/browser/indexed_db/indexed_db_blob_info.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_index_writer.h"
@@ -46,12 +44,12 @@
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/transaction_impl.h"
-#include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "url/origin.h"
@@ -68,6 +66,22 @@ using leveldb::Status;
 namespace content {
 namespace {
 
+std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
+    std::vector<IndexedDBReturnValue>& found_values,
+    IndexedDBDispatcherHost* dispatcher_host,
+    const blink::StorageKey& storage_key) {
+  std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
+  mojo_values.reserve(found_values.size());
+  for (size_t i = 0; i < found_values.size(); ++i) {
+    mojo_values.push_back(
+        IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
+    dispatcher_host->CreateAllExternalObjects(
+        storage_key, found_values[i].external_objects,
+        &mojo_values[i]->value->external_objects);
+  }
+  return mojo_values;
+}
+
 IndexedDBDatabaseError CreateError(blink::mojom::IDBException code,
                                    const char* message,
                                    IndexedDBTransaction* transaction) {
@@ -76,7 +90,7 @@ IndexedDBDatabaseError CreateError(blink::mojom::IDBException code,
 }
 
 IndexedDBDatabaseError CreateError(blink::mojom::IDBException code,
-                                   const base::string16& message,
+                                   const std::u16string& message,
                                    IndexedDBTransaction* transaction) {
   transaction->IncrementNumErrorsSent();
   return IndexedDBDatabaseError(code, message);
@@ -134,7 +148,7 @@ IndexedDBDatabase::OpenCursorOperationParams::~OpenCursorOperationParams() =
     default;
 
 IndexedDBDatabase::IndexedDBDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBBackingStore* backing_store,
     IndexedDBFactory* factory,
     IndexedDBClassFactory* class_factory,
@@ -339,73 +353,19 @@ void IndexedDBDatabase::TransactionFinished(
   }
 }
 
-void IndexedDBDatabase::AddPendingObserver(
-    IndexedDBTransaction* transaction,
-    int32_t observer_id,
-    const IndexedDBObserver::Options& options) {
-  DCHECK(transaction);
-  transaction->AddPendingObserver(observer_id, options);
-}
-
-void IndexedDBDatabase::FilterObservation(IndexedDBTransaction* transaction,
-                                          int64_t object_store_id,
-                                          blink::mojom::IDBOperationType type,
-                                          const IndexedDBKeyRange& key_range,
-                                          const IndexedDBValue* value) {
-  for (auto* connection : connections()) {
-    bool recorded = false;
-    for (const auto& observer : connection->active_observers()) {
-      if (!observer->IsRecordingType(type) ||
-          !observer->IsRecordingObjectStore(object_store_id))
-        continue;
-      if (!recorded) {
-        auto observation = blink::mojom::IDBObservation::New();
-        observation->object_store_id = object_store_id;
-        observation->type = type;
-        if (type != blink::mojom::IDBOperationType::Clear)
-          observation->key_range = key_range;
-        transaction->AddObservation(connection->id(), std::move(observation));
-        recorded = true;
-      }
-      blink::mojom::IDBObserverChangesPtr& changes =
-          *transaction->GetPendingChangesForConnection(connection->id());
-
-      changes->observation_index_map[observer->id()].push_back(
-          changes->observations.size() - 1);
-      if (value && observer->values() && !changes->observations.back()->value) {
-        // TODO(dmurph): Avoid any and all IndexedDBValue copies. Perhaps defer
-        // this until the end of the transaction, where we can safely erase the
-        // indexeddb value. crbug.com/682363
-        IndexedDBValue copy = *value;
-        changes->observations.back()->value =
-            IndexedDBValue::ConvertAndEraseValue(&copy);
-      }
-    }
-  }
-}
-
-void IndexedDBDatabase::SendObservations(
-    std::map<int32_t, blink::mojom::IDBObserverChangesPtr> changes_map) {
-  for (auto* conn : connections()) {
-    auto it = changes_map.find(conn->id());
-    if (it != changes_map.end())
-      conn->callbacks()->OnDatabaseChange(std::move(it->second));
-  }
-}
-
 void IndexedDBDatabase::ScheduleOpenConnection(
-    IndexedDBOriginStateHandle origin_state_handle,
+    IndexedDBStorageKeyStateHandle storage_key_state_handle,
     std::unique_ptr<IndexedDBPendingConnection> connection) {
-  connection_coordinator_.ScheduleOpenConnection(std::move(origin_state_handle),
-                                                 std::move(connection));
+  connection_coordinator_.ScheduleOpenConnection(
+      std::move(storage_key_state_handle), std::move(connection));
 }
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
-    IndexedDBOriginStateHandle origin_state_handle,
+    IndexedDBStorageKeyStateHandle storage_key_state_handle,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     base::OnceClosure on_deletion_complete) {
   connection_coordinator_.ScheduleDeleteDatabase(
-      std::move(origin_state_handle), std::move(callbacks),
+      std::move(storage_key_state_handle), std::move(callbacks),
       std::move(on_deletion_complete));
 }
 
@@ -463,7 +423,7 @@ IndexedDBIndexMetadata IndexedDBDatabase::RemoveIndexFromMetadata(
 
 leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     int64_t object_store_id,
-    const base::string16& name,
+    const std::u16string& name,
     const IndexedDBKeyPath& key_path,
     bool auto_increment,
     IndexedDBTransaction* transaction) {
@@ -549,7 +509,7 @@ void IndexedDBDatabase::DeleteObjectStoreAbortOperation(
 
 leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
     int64_t object_store_id,
-    const base::string16& new_name,
+    const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
   IDB_TRACE1("IndexedDBDatabase::RenameObjectStore", "txn.id",
@@ -566,7 +526,7 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
   IndexedDBObjectStoreMetadata& object_store_metadata =
       metadata_.object_stores[object_store_id];
 
-  base::string16 old_name;
+  std::u16string old_name;
 
   Status s = metadata_coding_->RenameObjectStore(
       transaction->BackingStoreTransaction()->transaction(),
@@ -585,7 +545,7 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
 
 void IndexedDBDatabase::RenameObjectStoreAbortOperation(
     int64_t object_store_id,
-    base::string16 old_name) {
+    std::u16string old_name) {
   IDB_TRACE("IndexedDBDatabase::RenameObjectStoreAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
@@ -625,7 +585,7 @@ void IndexedDBDatabase::VersionChangeAbortOperation(int64_t previous_version) {
 leveldb::Status IndexedDBDatabase::CreateIndexOperation(
     int64_t object_store_id,
     int64_t index_id,
-    const base::string16& name,
+    const std::u16string& name,
     const IndexedDBKeyPath& key_path,
     bool unique,
     bool multi_entry,
@@ -714,7 +674,7 @@ void IndexedDBDatabase::DeleteIndexAbortOperation(
 leveldb::Status IndexedDBDatabase::RenameIndexOperation(
     int64_t object_store_id,
     int64_t index_id,
-    const base::string16& new_name,
+    const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
   IDB_TRACE1("IndexedDBDatabase::RenameIndex", "txn.id", transaction->id());
@@ -729,7 +689,7 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
   IndexedDBIndexMetadata& index_metadata =
       metadata_.object_stores[object_store_id].indexes[index_id];
 
-  base::string16 old_name;
+  std::u16string old_name;
   Status s = metadata_coding_->RenameIndex(
       transaction->BackingStoreTransaction()->transaction(),
       transaction->database()->id(), object_store_id, new_name, &old_name,
@@ -746,7 +706,7 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
 
 void IndexedDBDatabase::RenameIndexAbortOperation(int64_t object_store_id,
                                                   int64_t index_id,
-                                                  base::string16 old_name) {
+                                                  std::u16string old_name) {
   IDB_TRACE("IndexedDBDatabase::RenameIndexAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
@@ -876,8 +836,9 @@ Status IndexedDBDatabase::GetOperation(
 
     blink::mojom::IDBReturnValuePtr mojo_value =
         IndexedDBReturnValue::ConvertReturnValue(&value);
-    dispatcher_host->CreateAllBlobs(value.blob_info,
-                                    &mojo_value->value->blob_or_file_info);
+    dispatcher_host->CreateAllExternalObjects(
+        storage_key(), value.external_objects,
+        &mojo_value->value->external_objects);
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
     return s;
@@ -933,8 +894,9 @@ Status IndexedDBDatabase::GetOperation(
 
   blink::mojom::IDBReturnValuePtr mojo_value =
       IndexedDBReturnValue::ConvertReturnValue(&value);
-  dispatcher_host->CreateAllBlobs(value.blob_info,
-                                  &mojo_value->value->blob_or_file_info);
+  dispatcher_host->CreateAllExternalObjects(
+      storage_key(), value.external_objects,
+      &mojo_value->value->external_objects);
   std::move(callback).Run(
       blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
   return s;
@@ -956,12 +918,14 @@ Status IndexedDBDatabase::GetAllOperation(
     IndexedDBTransaction* transaction) {
   IDB_TRACE1("IndexedDBDatabase::GetAllOperation", "txn.id", transaction->id());
 
-  if (!IsObjectStoreIdInMetadata(object_store_id)) {
+  mojo::Remote<blink::mojom::IDBDatabaseGetAllResultSink> result_sink;
+  std::move(callback).Run(result_sink.BindNewPipeAndPassReceiver());
+
+  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
     IndexedDBDatabaseError error = CreateError(
         blink::mojom::IDBException::kUnknownError, "Bad request", transaction);
-    std::move(callback).Run(
-        blink::mojom::IDBDatabaseGetAllResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
+    result_sink->OnError(
+        blink::mojom::IDBError::New(error.code(), error.message()));
     return leveldb::Status::InvalidArgument("Invalid object_store_id.");
   }
 
@@ -977,9 +941,8 @@ Status IndexedDBDatabase::GetAllOperation(
     IndexedDBDatabaseError error =
         CreateError(blink::mojom::IDBException::kUnknownError, "Unknown error",
                     transaction);
-    std::move(callback).Run(
-        blink::mojom::IDBDatabaseGetAllResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
+    result_sink->OnError(
+        blink::mojom::IDBError::New(error.code(), error.message()));
     return s;
   }
 
@@ -1018,20 +981,15 @@ Status IndexedDBDatabase::GetAllOperation(
     IndexedDBDatabaseError error =
         CreateError(blink::mojom::IDBException::kUnknownError,
                     "Corruption detected, unable to continue", transaction);
-    std::move(callback).Run(
-        blink::mojom::IDBDatabaseGetAllResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
+    result_sink->OnError(
+        blink::mojom::IDBError::New(error.code(), error.message()));
     return s;
   }
 
   std::vector<IndexedDBKey> found_keys;
   std::vector<IndexedDBReturnValue> found_values;
   if (!cursor) {
-    // Doesn't matter if key or value array here - will be empty array when it
-    // hits JavaScript.
-    std::vector<blink::mojom::IDBReturnValuePtr> mojo_found_values;
-    std::move(callback).Run(blink::mojom::IDBDatabaseGetAllResult::NewValues(
-        std::move(mojo_found_values)));
+    // No values or keys found.
     return s;
   }
 
@@ -1039,7 +997,16 @@ Status IndexedDBDatabase::GetAllOperation(
   bool generated_key = object_store_metadata.auto_increment &&
                        !object_store_metadata.key_path.IsNull();
 
-  size_t response_size = blink::mojom::kIDBMaxMessageOverhead;
+  // Max idbvalue size before blob wrapping is 64k, so make an assumption
+  // that max key/value size is 128kb tops, to fit under 128mb mojo limit.
+  // This value is just a heuristic and is an attempt to make sure that
+  // GetAll fits under the message limit size.
+  static_assert(
+      blink::mojom::kIDBMaxMessageSize >
+          blink::mojom::kIDBGetAllChunkSize * blink::mojom::kIDBWrapThreshold,
+      "Chunk heuristic too large");
+
+  const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
   int64_t num_found_items = 0;
   while (num_found_items++ < max_count) {
     bool cursor_valid;
@@ -1053,9 +1020,8 @@ Status IndexedDBDatabase::GetAllOperation(
       IndexedDBDatabaseError error =
           CreateError(blink::mojom::IDBException::kUnknownError,
                       "Seek failure, unable to continue", transaction);
-      std::move(callback).Run(
-          blink::mojom::IDBDatabaseGetAllResult::NewErrorResult(
-              blink::mojom::IDBError::New(error.code(), error.message())));
+      result_sink->OnError(
+          blink::mojom::IDBError::New(error.code(), error.message()));
       return s;
     }
 
@@ -1077,43 +1043,35 @@ Status IndexedDBDatabase::GetAllOperation(
     }
 
     if (cursor_type == indexed_db::CURSOR_KEY_ONLY)
-      response_size += return_key.size_estimate();
-    else
-      response_size += return_value.SizeEstimate();
-    if (response_size > GetUsableMessageSizeInBytes()) {
-      IndexedDBDatabaseError error =
-          CreateError(blink::mojom::IDBException::kUnknownError,
-                      "Maximum IPC message size exceeded.", transaction);
-      std::move(callback).Run(
-          blink::mojom::IDBDatabaseGetAllResult::NewErrorResult(
-              blink::mojom::IDBError::New(error.code(), error.message())));
-      return s;
-    }
-
-    if (cursor_type == indexed_db::CURSOR_KEY_ONLY)
       found_keys.push_back(return_key);
     else
       found_values.push_back(return_value);
+
+    // Periodically stream values and keys if we have too many.
+    if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+      if (found_keys.size() >= max_values_before_sending) {
+        result_sink->ReceiveKeys(std::move(found_keys));
+        found_keys.clear();
+      }
+    } else {
+      if (found_values.size() >= max_values_before_sending) {
+        result_sink->ReceiveValues(CreateMojoValues(
+            found_values, dispatcher_host.get(), storage_key()));
+        found_values.clear();
+      }
+    }
   }
 
   if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
-    // IndexedDBKey already supports an array of values so we can leverage  this
-    // to return an array of keys - no need to create our own array of keys.
-    std::move(callback).Run(blink::mojom::IDBDatabaseGetAllResult::NewKey(
-        IndexedDBKey(std::move(found_keys))));
-    return s;
+    if (!found_keys.empty()) {
+      result_sink->ReceiveKeys(std::move(found_keys));
+    }
+  } else {
+    if (!found_values.empty()) {
+      result_sink->ReceiveValues(
+          CreateMojoValues(found_values, dispatcher_host.get(), storage_key()));
+    }
   }
-
-  std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
-  mojo_values.reserve(found_values.size());
-  for (size_t i = 0; i < found_values.size(); ++i) {
-    mojo_values.push_back(
-        IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
-    dispatcher_host->CreateAllBlobs(found_values[i].blob_info,
-                                    &mojo_values[i]->value->blob_or_file_info);
-  }
-  std::move(callback).Run(
-      blink::mojom::IDBDatabaseGetAllResult::NewValues(std::move(mojo_values)));
   return s;
 }
 
@@ -1125,8 +1083,8 @@ Status IndexedDBDatabase::PutOperation(
   DCHECK_NE(transaction->mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   Status s = Status::OK();
-  transaction->set_in_flight_memory(transaction->in_flight_memory() -
-                                    params->value.SizeEstimate());
+  transaction->in_flight_memory() -= params->value.SizeEstimate();
+  DCHECK(transaction->in_flight_memory().IsValid());
 
   if (!IsObjectStoreIdInMetadata(params->object_store_id)) {
     IndexedDBDatabaseError error = CreateError(
@@ -1185,7 +1143,7 @@ Status IndexedDBDatabase::PutOperation(
   }
 
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  base::string16 error_message;
+  std::u16string error_message;
   bool obeys_constraints = false;
   bool backing_store_success = MakeIndexWriters(
       transaction, backing_store_, id(), object_store, *key, key_was_generated,
@@ -1244,13 +1202,8 @@ Status IndexedDBDatabase::PutOperation(
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
-  FilterObservation(transaction, params->object_store_id,
-                    params->put_mode == blink::mojom::IDBPutMode::AddOnly
-                        ? blink::mojom::IDBOperationType::Add
-                        : blink::mojom::IDBOperationType::Put,
-                    IndexedDBKeyRange(*key), &params->value);
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name,
+      storage_key(), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
   return s;
 }
@@ -1280,7 +1233,7 @@ Status IndexedDBDatabase::SetIndexKeysOperation(
   }
 
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  base::string16 error_message;
+  std::u16string error_message;
   bool obeys_constraints = false;
   DCHECK(metadata_.object_stores.find(object_store_id) !=
          metadata_.object_stores.end());
@@ -1321,7 +1274,7 @@ Status IndexedDBDatabase::SetIndexesReadyOperation(
 
 Status IndexedDBDatabase::OpenCursorOperation(
     std::unique_ptr<OpenCursorOperationParams> params,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     IndexedDBTransaction* transaction) {
   IDB_TRACE1("IndexedDBDatabase::OpenCursorOperation", "txn.id",
@@ -1395,19 +1348,22 @@ Status IndexedDBDatabase::OpenCursorOperation(
   transaction->RegisterOpenCursor(cursor_ptr);
 
   blink::mojom::IDBValuePtr mojo_value;
-  std::vector<IndexedDBBlobInfo> blob_info;
+  std::vector<IndexedDBExternalObject> external_objects;
   if (cursor_ptr->Value()) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(cursor_ptr->Value());
-    blob_info.swap(cursor_ptr->Value()->blob_info);
+    external_objects.swap(cursor_ptr->Value()->external_objects);
   }
 
-  if (mojo_value)
-    dispatcher_host->CreateAllBlobs(blob_info, &mojo_value->blob_or_file_info);
+  if (mojo_value) {
+    dispatcher_host->CreateAllExternalObjects(storage_key, external_objects,
+                                              &mojo_value->external_objects);
+  }
 
   std::move(params->callback)
       .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewValue(
           blink::mojom::IDBDatabaseOpenCursorValue::New(
-              dispatcher_host->CreateCursorBinding(origin, std::move(cursor)),
+              dispatcher_host->CreateCursorBinding(storage_key,
+                                                   std::move(cursor)),
               cursor_ptr->key(), cursor_ptr->primary_key(),
               std::move(mojo_value))));
   return s;
@@ -1473,11 +1429,9 @@ Status IndexedDBDatabase::DeleteRangeOperation(
   if (!s.ok())
     return s;
   callbacks->OnSuccess();
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Delete, *key_range,
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
+      storage_key(), metadata_.name,
+      metadata_.object_stores[object_store_id].name);
   return s;
 }
 
@@ -1520,11 +1474,9 @@ Status IndexedDBDatabase::ClearOperation(
     return s;
   callbacks->OnSuccess();
 
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Clear, IndexedDBKeyRange(),
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
-      origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
+      storage_key(), metadata_.name,
+      metadata_.object_stores[object_store_id].name);
   return s;
 }
 
@@ -1615,16 +1567,11 @@ Status IndexedDBDatabase::OpenInternal() {
 }
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
-    IndexedDBOriginStateHandle origin_state_handle,
-    scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
-    IndexedDBExecutionContextConnectionTracker::Handle
-        execution_context_connection_handle) {
-  const int render_process_id =
-      execution_context_connection_handle.render_process_id();
+    IndexedDBStorageKeyStateHandle storage_key_state_handle,
+    scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks) {
   std::unique_ptr<IndexedDBConnection> connection =
       std::make_unique<IndexedDBConnection>(
-          std::move(execution_context_connection_handle),
-          std::move(origin_state_handle), class_factory_,
+          std::move(storage_key_state_handle), class_factory_,
           weak_factory_.GetWeakPtr(),
           base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
                               weak_factory_.GetWeakPtr()),
@@ -1632,7 +1579,6 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
                          weak_factory_.GetWeakPtr()),
           database_callbacks);
   connections_.insert(connection.get());
-  backing_store_->GrantChildProcessPermissions(render_process_id);
   return connection;
 }
 

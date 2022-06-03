@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "media/audio/audio_debug_recording_manager.h"
 
@@ -17,7 +18,7 @@ namespace audio {
 namespace {
 
 #if defined(OS_WIN)
-#define NumberToStringType base::NumberToString16
+#define NumberToStringType base::NumberToWString
 #else
 #define NumberToStringType base::NumberToString
 #endif
@@ -48,9 +49,9 @@ void DebugRecordingSession::DebugRecordingFileProvider::CreateWavFile(
     media::AudioDebugRecordingStreamType stream_type,
     uint32_t id,
     CreateWavFileCallback reply_callback) {
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
           [](const base::FilePath& file_name) {

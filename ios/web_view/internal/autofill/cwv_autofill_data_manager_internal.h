@@ -12,7 +12,7 @@ class PersonalDataManager;
 }  // namespace autofill;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }  // password_manager
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,9 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 // It should outlive this instance.
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
-                              passwordStore:(password_manager::PasswordStore*)
-                                                passwordStore
-    NS_DESIGNATED_INITIALIZER;
+                              passwordStore:
+                                  (password_manager::PasswordStoreInterface*)
+                                      passwordStore NS_DESIGNATED_INITIALIZER;
 
 @end
 

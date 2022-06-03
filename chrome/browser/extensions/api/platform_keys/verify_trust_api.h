@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -42,12 +41,16 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // |cert_status| to the bitwise-OR of CertStatus flags. If an error occured
   // during processing the parameters, |error| is set to an english error
   // message and |return_value| and |cert_status| must be ignored.
-  using VerifyCallback = base::Callback<
+  using VerifyCallback = base::OnceCallback<
       void(const std::string& error, int return_value, int cert_status)>;
   using Params = api::platform_keys::VerifyTLSServerCertificate::Params;
 
   // Consumers should use the factory instead of this constructor.
   explicit VerifyTrustAPI(content::BrowserContext* context);
+
+  VerifyTrustAPI(const VerifyTrustAPI&) = delete;
+  VerifyTrustAPI& operator=(const VerifyTrustAPI&) = delete;
+
   ~VerifyTrustAPI() override;
 
   // Verifies the server certificate as described by |params| for the
@@ -59,7 +62,7 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // will NOT be called.
   void Verify(std::unique_ptr<Params> params,
               const std::string& extension_id,
-              const VerifyCallback& callback);
+              VerifyCallback callback);
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -79,13 +82,13 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   friend class BrowserContextKeyedAPIFactory<VerifyTrustAPI>;
 
   // Calls |ui_callback| with the given parameters.
-  void FinishedVerificationOnUI(const VerifyCallback& ui_callback,
+  void FinishedVerificationOnUI(VerifyCallback ui_callback,
                                 const std::string& error,
                                 int return_value,
                                 int cert_status);
 
   // Calls |ui_callback| on the UIThread with the given arguments.
-  static void CallBackOnUI(const VerifyCallback& ui_callback,
+  static void CallBackOnUI(VerifyCallback ui_callback,
                            const std::string& error,
                            int return_value,
                            int cert_status);
@@ -97,12 +100,10 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // IOThread.
   std::unique_ptr<IOPart, content::BrowserThread::DeleteOnIOThread> io_part_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   base::WeakPtrFactory<VerifyTrustAPI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VerifyTrustAPI);
 };
 
 template <>

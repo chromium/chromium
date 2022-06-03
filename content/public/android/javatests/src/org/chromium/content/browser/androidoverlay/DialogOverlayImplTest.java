@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,7 +21,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DialogOverlayImplTest {
-    private static final String BLANK_URL = "about://blank";
+    private static final String BLANK_URL = "about:blank";
 
     @Rule
     public DialogOverlayImplTestRule mActivityTestRule =

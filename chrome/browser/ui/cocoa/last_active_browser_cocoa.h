@@ -12,7 +12,7 @@
 // the Cocoa frontend that cannot be allowed via C++ friendship as these places
 // are in Obj-C objects.
 // Do NOT include or build this file on non-Mac platforms.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 #error This file is intended for use in the Cocoa frontend only.
 #endif
 

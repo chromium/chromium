@@ -8,7 +8,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -18,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -31,6 +34,7 @@ import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -43,7 +47,7 @@ public class WebContentsTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final String TEST_URL_1 = "about://blank";
+    private static final String TEST_URL_1 = "about:blank";
     private static final String TEST_URL_2 = UrlUtils.encodeHtmlDataUri("<html>1</html>");
     private static final String WEB_CONTENTS_KEY = "WEBCONTENTSKEY";
     private static final String PARCEL_STRING_TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
@@ -349,13 +353,31 @@ public class WebContentsTest {
                 Assert.assertNotNull(frameHost);
 
                 Assert.assertEquals("RenderFrameHost has incorrect last committed URL", TEST_URL_2,
-                        frameHost.getLastCommittedURL());
+                        frameHost.getLastCommittedURL().getSpec());
 
                 WebContents associatedWebContents =
                         WebContentsStatics.fromRenderFrameHost(frameHost);
                 Assert.assertEquals("RenderFrameHost associated with different WebContents",
                         webContents, associatedWebContents);
             }
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testWebContentsGetAllRenderFrameHosts() {
+        String testUrl = UrlUtils.encodeHtmlDataUri("<html><body>"
+                + "   <iframe srcdoc='<body>frame1</body>'></iframe>"
+                + "   <iframe srcdoc='<body>frame2</body>'></iframe>"
+                + "</body></html>");
+
+        final ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(testUrl);
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        final WebContentsImpl webContents = ((WebContentsImpl) activity.getActiveWebContents());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+            Assert.assertEquals(3, frames.size());
         });
     }
 
@@ -376,6 +398,10 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The test expects only one renderer process and may
+    // incorrectly check its assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testChildProcessImportance() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
@@ -385,8 +411,12 @@ public class WebContentsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
-        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertFalse(connection.isModerateBindingBound()));
+        // Need to poll here because there is an intentional delay for removing binding.
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> !connection.isModerateBindingBound()),
+                "Failed to remove moderate binding");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.setImportance(ChildProcessImportance.MODERATE));
@@ -396,6 +426,10 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
+    // This test may run with --site-per-process, which also enables a feature to maintain a
+    // spare renderer process. The test expects only one renderer process and may
+    // incorrectly check its assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
     public void testVisibilityControlsBinding() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
@@ -407,8 +441,11 @@ public class WebContentsTest {
                 () -> Assert.assertTrue(connection.isStrongBindingBound()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
-        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertFalse(connection.isStrongBindingBound()));
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> !connection.isStrongBindingBound()),
+                "Failed to remove strong binding");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> webContents.onShow());
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(

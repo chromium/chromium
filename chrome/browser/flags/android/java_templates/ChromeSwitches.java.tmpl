@@ -1,0 +1,175 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.flags;
+
+/**
+ * Contains all of the command line switches that are specific to the chrome/
+ * portion of Chromium on Android.
+ */
+public abstract class ChromeSwitches {{
+    // Switches used from Java.  Please continue switch style used Chrome where
+    // options-have-hyphens and are_not_split_with_underscores.
+
+    /** Whether fullscreen support is disabled (auto hiding controls, etc...). */
+    public static final String DISABLE_FULLSCREEN = "disable-fullscreen";
+
+    /**
+     * When fullscreen support is enabled, this will disable the timer which
+     * ensures the browser controls are visible for a minium period of time.
+     */
+    public static final String DISABLE_MINIMUM_SHOW_DURATION = "disable-minimum-show-duration";
+
+    /** Whether instant is disabled. */
+    public static final String DISABLE_INSTANT = "disable-instant";
+
+    /** Enables StrictMode violation detection. By default this logs violations to logcat. */
+    public static final String STRICT_MODE = "strict-mode";
+
+    /** Don't restore persistent state from saved files on startup. */
+    public static final String NO_RESTORE_STATE = "no-restore-state";
+
+    /** Disable the First Run Experience. */
+    public static final String DISABLE_FIRST_RUN_EXPERIENCE = "disable-fre";
+
+    /** Disable promos shown on startup. */
+    public static final String DISABLE_STARTUP_PROMOS = "disable-startup-promos-for-testing";
+
+    /** Force the crash dump to be uploaded regardless of preferences. */
+    public static final String FORCE_CRASH_DUMP_UPLOAD = "force-dump-upload";
+
+    /** Disable Contextual Search. */
+    public static final String DISABLE_CONTEXTUAL_SEARCH = "disable-contextual-search";
+
+    /** Enable Contextual Search. */
+    public static final String ENABLE_CONTEXTUAL_SEARCH = "enable-contextual-search";
+
+    // How many thumbnails should we allow in the cache (per tab stack)?
+    public static final String THUMBNAILS = "thumbnails";
+
+    // How many "approximated" thumbnails should we allow in the cache
+    // (per tab stack)?  These take very low memory but have poor quality.
+    public static final String APPROXIMATION_THUMBNAILS = "approximation-thumbnails";
+
+    /**
+     * Disable bottom infobar-like Reader Mode panel.
+     */
+    public static final String DISABLE_READER_MODE_BOTTOM_BAR = "disable-reader-mode-bottom-bar";
+
+    /**
+     * Forces the update state to be set to the given state if the value is {{@link
+     * org.chromium.chrome.browser.omaha.UpdateMenuItemHelper#NONE_SWITCH_VALUE}}, {{@link
+     * org.chromium.chrome.browser.omaha.UpdateMenuItemHelper#UPDATE_AVAILABLE_SWITCH_VALUE}},
+     * {{@link
+     * org.chromium.chrome.browser.omaha.UpdateMenuItemHelper#UNSUPPORTED_OS_VERSION_SWITCH_VALUE}}.
+     */
+    public static final String FORCE_UPDATE_MENU_UPDATE_TYPE = "force-update-menu-type";
+
+    /**
+     * Disable multiwindow tab merging for testing.
+     */
+    public static final String DISABLE_TAB_MERGING_FOR_TESTING = "disable-tab-merging";
+
+
+    /**
+     * Disable native initialization for testing.
+     */
+    public static final String DISABLE_NATIVE_INITIALIZATION = "disable-native-initialization";
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Native Switches
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** Enable the DOM Distiller. */
+    public static final String ENABLE_DOM_DISTILLER = "enable-dom-distiller";
+
+    /**
+     * Use sandbox Wallet environment for requestAutocomplete.
+     * Native switch - autofill::switches::kWalletServiceUseSandbox.
+     */
+    public static final String USE_SANDBOX_WALLET_ENVIRONMENT = "wallet-service-use-sandbox";
+
+    /**
+     * Change Google base URL.
+     * Native switch - switches::kGoogleBaseURL.
+     */
+    public static final String GOOGLE_BASE_URL = "google-base-url";
+
+    /**
+     * Enables hung renderer InfoBar activation for unresponsive web content.
+     * Native switch - switches::kEnableHungRendererInfoBar
+     */
+    public static final String ENABLE_HUNG_RENDERER_INFOBAR = "enable-hung-renderer-infobar";
+
+    /**
+     * Set the partner-defined homepage URL, for testing.
+     */
+    public static final String PARTNER_HOMEPAGE_FOR_TESTING = "partner-homepage-for-testing";
+
+    /** Treats all WebAPKs as valid - useful only for local testing. */
+    public static final String SKIP_WEBAPK_VERIFICATION = "skip-webapk-verification";
+
+    /**
+     * Forces a check for whether the WebAPK's Web Manifest has changed each time that a WebAPK is
+     * launched.
+     */
+    public static final String CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP =
+            "check-for-web-manifest-update-on-startup";
+
+    /** Enable Vr Shell development environment. */
+    public static final String ENABLE_VR_SHELL_DEV = "enable-vr-shell-dev";
+
+    /** Switch for enabling the Chrome Survey. Only works when UMA is accepted. */
+    public static final String CHROME_FORCE_ENABLE_SURVEY = "force-enable-chrome-survey";
+
+    /** Switch to enable incognito tabs to be seen in Android Recents. */
+    public static final String ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS =
+            "enable-incognito-snapshots-in-android-recents";
+
+    /** Open all custom tabs in a new task. Used only for experimental purposes. */
+    public static final String OPEN_CUSTOM_TABS_IN_NEW_TASK = "open-custom-tabs-in-new-task";
+
+    /**
+     * Don't crash on undispatched VIEW intents sent to .Main.
+     * See ChromeTabbedActivity.maybeDispatchExplicitMainViewIntent() for more info.
+     */
+    public static final String DONT_CRASH_ON_VIEW_MAIN_INTENTS = "dont-crash-on-view-main-intents";
+
+    /**
+     * Disables digital asset link verification for the given website.
+     */
+    public static final String DISABLE_DIGITAL_ASSET_LINK_VERIFICATION =
+            "disable-digital-asset-link-verification-for-url";
+
+    /**
+     * Forces Trusted Web Activities to show the the Disclosure Toast every time.
+     */
+    public static final String FORCE_TRUSTED_WEB_ACTIVITY_DISCLOSURE =
+            "force-trusted-web-activity-disclosure";
+
+    /**
+     * Allows first-party apps to launch incognito custom tabs.
+     */
+    public static final String ENABLE_INCOGNITO_CUSTOM_TABS = "enable-incognito-custom-tabs";
+
+    /** Force enable special user handling. */
+    public static final String FORCE_ENABLE_SPECIAL_USER = "force-enable-special-user";
+
+    /** Set the configuration to trigger the feed header menu IPH. */
+    public static final String FEED_HEADER_MENU_IPH_TRIGGER_CONFIG =
+            "feed-header-menu-iph-trigger-config";
+
+    /** Disable the default browser promo. */
+    public static final String DISABLE_DEFAULT_BROWSER_PROMO =
+            "disable-default-browser-promo";
+
+    /** Debug Chime notifications. */
+    public static final String DEBUG_CHIME_NOTIFICATION =
+            "debug-chime-notification";
+
+{NATIVE_STRINGS}
+
+    // Prevent instantiation.
+    protected ChromeSwitches() {{}}
+}}

@@ -16,7 +16,7 @@ function doTest() {
     }
 
     var div = document.createElement('div');
-    root = div.createShadowRoot();
+    root = div.attachShadow({mode: 'open'});
     root.appendChild(document.createTextNode('SS'));
 
     container = document.getElementById('container');
@@ -26,7 +26,7 @@ function doTest() {
     shouldBe('container.firstChild.textContent', '"SS"');
 
     var div = document.createElement('div');
-    root = div.createShadowRoot();
+    root = div.attachShadow({mode: 'open'});
     root.appendChild(document.createTextNode('PA'));
 
     container.insertBefore(root, container.firstChild);

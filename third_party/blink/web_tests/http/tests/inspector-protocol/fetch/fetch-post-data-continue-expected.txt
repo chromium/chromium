@@ -1,0 +1,4 @@
+Test post data interception
+binary string
+error when passing body as string: Failed to deserialize params.postData - BINDINGS: binary value expected <somewhere>
+

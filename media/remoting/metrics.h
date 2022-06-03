@@ -5,19 +5,55 @@
 #ifndef MEDIA_REMOTING_METRICS_H_
 #define MEDIA_REMOTING_METRICS_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/pipeline_metadata.h"
 #include "media/remoting/triggers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace remoting {
 
+// The compatibility of a media content with remoting, and the reasons for
+// incompatibilities.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RemotingCompatibility {
+  kCompatible = 0,
+  kNoAudioNorVideo = 1,
+  kEncryptedVideo = 2,
+  kIncompatibleVideoCodec = 3,
+  kEncryptedAudio = 4,
+  kIncompatibleAudioCodec = 5,
+  kDisabledByPage = 6,
+  kDurationBelowThreshold = 7,
+  // Add new values here. Don't re-number existing values.
+
+  kMaxValue = kDurationBelowThreshold,
+};
+
+// The rate of pixels in a video and whether the receiver supports its playback.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PixelRateSupport {
+  // Pixels per second is at most the equivalent of 1080p 30fps.
+  k2kSupported = 0,
+  // More than 1080p 30fps and at most 2160p 30fps.
+  k4kSupported = 1,
+  k4kNotSupported = 2,
+  kOver4kNotSupported = 3,
+  // Add new values here. Don't re-number existing values.
+
+  kMaxValue = kOver4kNotSupported,
+};
+
 class SessionMetricsRecorder {
  public:
   SessionMetricsRecorder();
+
+  SessionMetricsRecorder(const SessionMetricsRecorder&) = delete;
+  SessionMetricsRecorder& operator=(const SessionMetricsRecorder&) = delete;
+
   ~SessionMetricsRecorder();
 
   // When attempting to start a remoting session, WillStartSession() is called,
@@ -31,6 +67,15 @@ class SessionMetricsRecorder {
   // These may be called before, during, or after a remoting session.
   void OnPipelineMetadataChanged(const PipelineMetadata& metadata);
   void OnRemotePlaybackDisabled(bool disabled);
+
+  // Records the rate of pixels in a video (bucketed into FHD, 4K, etc.) and
+  // whether the receiver supports its playback. Records only on the first call
+  // for the recorder instance.
+  void RecordVideoPixelRateSupport(PixelRateSupport support);
+
+  // Records the compatibility of a media content with remoting. Records only on
+  // the first call for the recorder instance.
+  void RecordCompatibility(RemotingCompatibility compatibility);
 
  private:
   // Whether audio only, video only, or both were played during the session.
@@ -54,7 +99,7 @@ class SessionMetricsRecorder {
   void RecordTrackConfiguration();
 
   // |start_trigger_| is set while a remoting session is active.
-  base::Optional<StartTrigger> start_trigger_;
+  absl::optional<StartTrigger> start_trigger_;
 
   // When the current (or last) remoting session started.
   base::TimeTicks start_time_;
@@ -70,14 +115,19 @@ class SessionMetricsRecorder {
 
   // Last known disabled playback state. This can change before/after a remoting
   // session as well as during one.
-  bool remote_playback_is_disabled_;
+  bool remote_playback_is_disabled_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(SessionMetricsRecorder);
+  bool did_record_pixel_rate_support_ = false;
+  bool did_record_compatibility_ = false;
 };
 
 class RendererMetricsRecorder {
  public:
   RendererMetricsRecorder();
+
+  RendererMetricsRecorder(const RendererMetricsRecorder&) = delete;
+  RendererMetricsRecorder& operator=(const RendererMetricsRecorder&) = delete;
+
   ~RendererMetricsRecorder();
 
   // Called when an "initialize success" message is received from the remote.
@@ -94,9 +144,7 @@ class RendererMetricsRecorder {
 
  private:
   const base::TimeTicks start_time_;
-  bool did_record_first_playout_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererMetricsRecorder);
+  bool did_record_first_playout_ = false;
 };
 
 }  // namespace remoting

@@ -9,7 +9,7 @@ description('offsetWidth of a fixed width element should cause a style recalc if
 
 onload = function() {
     host = document.getElementById('host');
-    shadowRoot = host.createShadowRoot();
+    shadowRoot = host.attachShadow({mode: 'open'});
     div = shadowRoot.appendChild(document.createElement('div'));
     div.style.width = '100px';
     shouldBe('div.offsetWidth', '100');

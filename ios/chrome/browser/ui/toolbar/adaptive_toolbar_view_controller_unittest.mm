@@ -6,6 +6,7 @@
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
+#include "base/ios/ios_util.h"
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,6 +49,11 @@ class AdaptiveToolbarViewControllerTest : public PlatformTest {
 };
 
 TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // IPad doesn't have force touch.
+    return;
+  }
+
   id dispatcher = OCMProtocolMock(@protocol(PopupMenuCommands));
   id longPressDelegate = OCMProtocolMock(@protocol(PopupMenuLongPressDelegate));
   ToolbarButtonFactory* factory =
@@ -85,7 +92,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   OCMStub([touch force]).andReturn(currentForce);
   [gestureRecognizer touchesMoved:[NSSet setWithObject:touch] withEvent:event];
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(dispatcher);
 
@@ -99,7 +106,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   OCMStub([touch force]).andReturn(currentForce);
   [gestureRecognizer touchesMoved:[NSSet setWithObject:touch] withEvent:event];
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(longPressDelegate);
 
@@ -107,7 +114,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   // working on unit test (the state is cancelled).
   gestureRecognizer.state = UIGestureRecognizerStateEnded;
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(longPressDelegate);
 }

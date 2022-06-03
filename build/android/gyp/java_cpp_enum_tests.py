@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -484,6 +484,42 @@ public @interface ClassName {
     self.assertEqual(collections.OrderedDict([('A', 0)]),
                      definition.entries)
 
+  def testParseEnumClassOneValueSubstringOfAnother(self):
+    test_data = """
+      // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
+      enum class SafeBrowsingStatus {
+        kChecking = 0,
+        kEnabled = 1,
+        kDisabled = 2,
+        kDisabledByAdmin = 3,
+        kDisabledByExtension = 4,
+        kEnabledStandard = 5,
+        kEnabledEnhanced = 6,
+        // New enum values must go above here.
+        kMaxValue = kEnabledEnhanced,
+      };
+    """.split('\n')
+    definitions = HeaderParser(test_data).ParseDefinitions()
+    self.assertEqual(1, len(definitions))
+    definition = definitions[0]
+    self.assertEqual('SafeBrowsingStatus', definition.class_name)
+    self.assertEqual('test.namespace', definition.enum_package)
+    self.assertEqual(
+        collections.OrderedDict([
+            ('CHECKING', '0'),
+            ('ENABLED', '1'),
+            ('DISABLED', '2'),
+            ('DISABLED_BY_ADMIN', '3'),
+            ('DISABLED_BY_EXTENSION', '4'),
+            ('ENABLED_STANDARD', '5'),
+            ('ENABLED_ENHANCED', '6'),
+            ('MAX_VALUE', 'ENABLED_ENHANCED'),
+        ]), definition.entries)
+    self.assertEqual(
+        collections.OrderedDict([
+            ('MAX_VALUE', 'New enum values must go above here.')
+        ]), definition.comments)
+
   def testParseEnumStruct(self):
     test_data = """
       // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
@@ -730,7 +766,7 @@ public @interface ClassName {
     definition.AppendEntry('B', None)
     definition.AppendEntry('NAME_LAST', None)
     definition.Finalize()
-    self.assertEqual(['A', 'B', 'NAME_LAST'], definition.entries.keys())
+    self.assertEqual(['A', 'B', 'NAME_LAST'], list(definition.entries.keys()))
 
   def testGenerateThrowsOnEmptyInput(self):
     with self.assertRaises(Exception):

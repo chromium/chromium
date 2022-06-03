@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -32,6 +31,10 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   static WorkAreaInsets* ForWindow(const aura::Window* window);
 
   explicit WorkAreaInsets(RootWindowController* root_window_controller);
+
+  WorkAreaInsets(const WorkAreaInsets&) = delete;
+  WorkAreaInsets& operator=(const WorkAreaInsets&) = delete;
+
   ~WorkAreaInsets() override;
 
   // Returns cached height of the accessibility panel in DIPs for this root
@@ -56,6 +59,9 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // Returns accessibility insets in DIPs.
   gfx::Insets GetAccessibilityInsets() const;
 
+  // Returns the persistent desk bar insets in DIPs.
+  gfx::Insets GetPersistentDeskBarInsets() const;
+
   // Returns bounds of the stable work area (work area when the shelf is
   // visible) in screen coordinates DIPs.
   gfx::Rect ComputeStableWorkArea() const;
@@ -72,6 +78,16 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // Sets height of the docked magnifier in DIPs for this root window.
   // Shell observers will be notified that accessibility insets changed.
   void SetAccessibilityPanelHeight(int height);
+
+  // Sets height of the persistent desk bar in DIPs for this root
+  // window. Shell observers will be notified that persistent desk bar
+  // insets changed.
+  void SetPersistentDeskBarHeight(int height);
+
+  // Indicates if the persistent desk bar height is in change. This is useful to
+  // prevent circular call from the App List as it also observes the work area
+  // value.
+  bool PersistentDeskBarHeightInChange();
 
   // Sets bounds (in window coordinates) and insets of the shelf for this root
   // window. |bounds| and |insets| are passed separately, because insets depend
@@ -120,7 +136,12 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // screen. It needs to be removed from the available work area.
   int accessibility_panel_height_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(WorkAreaInsets);
+  // Cached height of the persistent desk bar in DIPs at the top of the
+  // screen. It needs to be removed from the available work area.
+  int persistent_desk_bar_height_ = 0;
+
+  // Indicates if the persistent desk bar height is in change.
+  bool persistent_desk_bar_height_in_change_ = false;
 };
 
 }  // namespace ash

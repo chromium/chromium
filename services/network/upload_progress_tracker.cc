@@ -4,15 +4,14 @@
 
 #include "services/network/upload_progress_tracker.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "net/base/upload_progress.h"
 #include "net/url_request/url_request.h"
 
 namespace network {
 namespace {
 // The interval for calls to ReportUploadProgress.
-constexpr base::TimeDelta kUploadProgressInterval =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kUploadProgressInterval = base::Milliseconds(100);
 }  // namespace
 
 UploadProgressTracker::UploadProgressTracker(
@@ -67,7 +66,7 @@ void UploadProgressTracker::ReportUploadProgressIfNeeded() {
     return;
 
   const uint64_t kHalfPercentIncrements = 200;
-  const base::TimeDelta kOneSecond = base::TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta kOneSecond = base::Milliseconds(1000);
 
   uint64_t amt_since_last = progress.position() - last_upload_position_;
   base::TimeTicks now = GetCurrentTime();

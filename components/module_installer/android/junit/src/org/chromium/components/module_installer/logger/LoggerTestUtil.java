@@ -7,7 +7,6 @@ package org.chromium.components.module_installer.logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
-import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
@@ -24,10 +23,6 @@ public class LoggerTestUtil {
      * @return The smallest recorded sample.
      */
     public static int getHistogramStatus(String name, int boundary) {
-        // Make sure the metrics are flushed.
-        // Needed by the EnumeratedHistogramSample but not for RecordHistogram.
-        CachedMetrics.commitCachedMetrics();
-
         int sampleCount = RecordHistogram.getHistogramTotalCountForTesting(name);
         assertThat(sampleCount, greaterThan(0));
 

@@ -1,2 +1,6 @@
 file://pdf/OWNERS
-# COMPONENT: Internals>Plugins>PDF
+
+per-file pdf_extension_test.*=dpapad@chromium.org
+per-file pdf_extension_test.*=rbpotter@chromium.org
+per-file pdf_extension_util.*=dpapad@chromium.org
+per-file pdf_extension_util.*=rbpotter@chromium.org

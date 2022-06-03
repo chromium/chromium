@@ -10,6 +10,43 @@
 
 NSString* const kSettingsTableViewId = @"kSettingsTableViewId";
 NSString* const kSettingsSignInCellId = @"kSettingsSignInCellId";
+NSString* const kSettingsSignInDisabledCellId =
+    @"kSettingsSignInDisabledCellId";
+NSString* const kSettingsSignInDisabledByPolicyCellId =
+    @"kSettingsSignInDisabledByPolicyCellId";
 NSString* const kSettingsAccountCellId = @"kSettingsAccountCellId";
-NSString* const kSettingsSearchEngineCellId = @"Search Engine";
-NSString* const kSettingsVoiceSearchCellId = @"Voice Search Settings";
+NSString* const kSettingsSearchEngineCellId = @"kSettingsSearchEngineCellId";
+NSString* const kSettingsManagedSearchEngineCellId =
+    @"kSettingsManagedSearchEngineCellId";
+NSString* const kSettingsVoiceSearchCellId = @"kSettingsVoiceSearchCellId";
+NSString* const kSettingsGoogleSyncAndServicesCellId =
+    @"kSettingsGoogleSyncAndServicesCellId";
+NSString* const kSettingsGoogleServicesCellId =
+    @"kSettingsGoogleServicesCellId";
+NSString* const kSettingsPasswordsCellId = @"kSettingsPasswordsCellId";
+NSString* const kSettingsPaymentMethodsCellId =
+    @"kSettingsPaymentMethodsCellId";
+NSString* const kSettingsAddressesAndMoreCellId =
+    @"kSettingsAddressesAndMoreCellId";
+NSString* const kSettingsPrivacyCellId = @"kSettingsPrivacyCellId";
+NSString* const kSettingsArticleSuggestionsCellId =
+    @"kSettingsArticleSuggestionsCellId";
+NSString* const kSettingsLanguagesCellId = @"kSettingsLanguagesCellId";
+NSString* const kSettingsContentSettingsCellId =
+    @"kSettingsContentSettingsCellId";
+NSString* const kSettingsBandwidthCellId = @"kSettingsBandwidthCellId";
+NSString* const kSettingsAboutCellId = @"kSettingsAboutCellId";
+NSString* const kSettingsOpenSourceLicencesCellId =
+    @"kSettingsOpenSourceLicencesCellId";
+NSString* const kSettingsTOSCellId = @"kSettingsTOSCellId";
+NSString* const kSettingsPrivacyNoticeCellId = @"kSettingsPrivacyNoticeCellId";
+NSString* const kSettingsPreloadCellId = @"kSettingsPreloadCellId";
+NSString* const kSettingsBlockPopupsCellId = @"kSettingsBlockPopupsCellId";
+NSString* const kSettingsShowLinkPreviewCellId =
+    @"kSettingsShowLinkPreviewCellId";
+NSString* const kSettingsDefaultAppsCellId = @"kSettingsDefaultAppsCellId";
+NSString* const kSettingsAddLanguageCellId = @"kSettingsAddLanguageCellId";
+NSString* const kSettingsClearBrowsingDataCellId =
+    @"kSettingsClearBrowsingDataCellId";
+NSString* const kSettingsHandoffCellId = @"kSettingsHandoffCellId";
+NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";

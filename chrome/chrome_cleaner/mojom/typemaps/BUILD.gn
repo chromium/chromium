@@ -10,7 +10,7 @@ source_set("unittest_sources") {
 
   sources = [
     "pup_typemap_unittest.cc",
-    "string16_embedded_nulls_typemap_unittest.cc",
+    "wstring_embedded_nulls_typemap_unittest.cc",
   ]
 
   deps = [

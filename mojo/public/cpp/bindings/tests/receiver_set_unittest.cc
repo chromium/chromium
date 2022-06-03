@@ -6,13 +6,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
-#include "mojo/core/embedder/embedder.h"
+#include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -211,7 +212,7 @@ TEST_P(ReceiverSetTest, ReceiverSetReportBadMessage) {
   PingImpl impl;
 
   std::string last_received_error;
-  core::SetDefaultProcessErrorCallback(
+  SetDefaultProcessErrorHandler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -241,14 +242,14 @@ TEST_P(ReceiverSetTest, ReceiverSetReportBadMessage) {
 
   EXPECT_TRUE(receivers.empty());
 
-  core::SetDefaultProcessErrorCallback(mojo::core::ProcessErrorCallback());
+  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
   PingImpl impl;
 
   std::string last_received_error;
-  core::SetDefaultProcessErrorCallback(
+  SetDefaultProcessErrorHandler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -291,14 +292,14 @@ TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
 
   EXPECT_TRUE(receivers.empty());
 
-  core::SetDefaultProcessErrorCallback(mojo::core::ProcessErrorCallback());
+  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
   PingImpl impl;
 
   std::string last_received_error;
-  core::SetDefaultProcessErrorCallback(
+  SetDefaultProcessErrorHandler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -319,7 +320,7 @@ TEST_P(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
   std::move(bad_message_callback).Run("message 1");
   EXPECT_EQ("message 1", last_received_error);
 
-  core::SetDefaultProcessErrorCallback(mojo::core::ProcessErrorCallback());
+  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 class PingProviderImpl : public AssociatedPingProvider, public PingService {
@@ -419,7 +420,7 @@ TEST_P(ReceiverSetTest, AssociatedReceiverSetContext) {
   EXPECT_TRUE(impl.ping_receivers().empty());
 }
 
-TEST_P(ReceiverSetTest, MasterInterfaceReceiverSetContext) {
+TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetContext) {
   Remote<AssociatedPingProvider> provider_a, provider_b;
   PingProviderImpl impl;
   ReceiverSet<AssociatedPingProvider, int> receivers;
@@ -464,7 +465,7 @@ TEST_P(ReceiverSetTest, MasterInterfaceReceiverSetContext) {
   EXPECT_TRUE(receivers.empty());
 }
 
-TEST_P(ReceiverSetTest, MasterInterfaceReceiverSetDispatchReceiver) {
+TEST_P(ReceiverSetTest, PrimaryInterfaceReceiverSetDispatchReceiver) {
   Remote<AssociatedPingProvider> provider_a, provider_b;
   PingProviderImpl impl;
   ReceiverSet<AssociatedPingProvider, int> receivers;
@@ -512,13 +513,13 @@ TEST_P(ReceiverSetTest, MasterInterfaceReceiverSetDispatchReceiver) {
 }
 
 TEST_P(ReceiverSetTest, AssociatedReceiverSetConnectionErrorWithReason) {
-  Remote<AssociatedPingProvider> remote_master;
-  PingProviderImpl master_impl;
-  Receiver<AssociatedPingProvider> master_receiver(
-      &master_impl, remote_master.BindNewPipeAndPassReceiver());
+  Remote<AssociatedPingProvider> remote_primary;
+  PingProviderImpl primary_impl;
+  Receiver<AssociatedPingProvider> primary_receiver(
+      &primary_impl, remote_primary.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop;
-  master_impl.ping_receivers().set_disconnect_with_reason_handler(
+  primary_impl.ping_receivers().set_disconnect_with_reason_handler(
       base::BindLambdaForTesting(
           [&](uint32_t custom_reason, const std::string& description) {
             EXPECT_EQ(2048u, custom_reason);
@@ -527,7 +528,7 @@ TEST_P(ReceiverSetTest, AssociatedReceiverSetConnectionErrorWithReason) {
           }));
 
   AssociatedRemote<PingService> remote_ping;
-  remote_master->GetPing(remote_ping.BindNewEndpointAndPassReceiver());
+  remote_primary->GetPing(remote_ping.BindNewEndpointAndPassReceiver());
 
   remote_ping.ResetWithReason(2048u, "bye");
 

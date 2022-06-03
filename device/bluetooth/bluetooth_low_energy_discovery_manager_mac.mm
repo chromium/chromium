@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_device_mac.h"
@@ -32,22 +32,22 @@ void BluetoothLowEnergyDiscoveryManagerMac::StartDiscovery(
 
 void BluetoothLowEnergyDiscoveryManagerMac::TryStartDiscovery() {
   if (!discovering_) {
-    VLOG(1) << "TryStartDiscovery !discovering_";
+    DVLOG(1) << "TryStartDiscovery !discovering_";
     return;
   }
 
   if (!pending_) {
-    VLOG(1) << "TryStartDiscovery !pending_";
+    DVLOG(1) << "TryStartDiscovery !pending_";
     return;
   }
 
   if (!central_manager_) {
-    VLOG(1) << "TryStartDiscovery !central_manager_";
+    DVLOG(1) << "TryStartDiscovery !central_manager_";
     return;
   }
 
   if (GetCBManagerState(central_manager_) != CBCentralManagerStatePoweredOn) {
-    VLOG(1) << "TryStartDiscovery != CBCentralManagerStatePoweredOn";
+    DVLOG(1) << "TryStartDiscovery != CBCentralManagerStatePoweredOn";
     return;
   }
 
@@ -63,7 +63,7 @@ void BluetoothLowEnergyDiscoveryManagerMac::TryStartDiscovery() {
     }
   };
 
-  VLOG(1) << "TryStartDiscovery scanForPeripheralsWithServices";
+  DVLOG(1) << "TryStartDiscovery scanForPeripheralsWithServices";
   // Start a scan with the Allow Duplicates option so that we get notified
   // of each new Advertisement Packet. This allows us to provide up to date
   // values for RSSI, Advertised Services, Advertised Data, etc.
@@ -77,7 +77,7 @@ void BluetoothLowEnergyDiscoveryManagerMac::TryStartDiscovery() {
 }
 
 void BluetoothLowEnergyDiscoveryManagerMac::StopDiscovery() {
-  VLOG(1) << "StopDiscovery";
+  DVLOG(1) << "StopDiscovery";
   if (discovering_ && !pending_) {
     [central_manager_ stopScan];
   }

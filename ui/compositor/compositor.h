@@ -8,32 +8,40 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
+#include <unordered_set>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/power_monitor/power_observer.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom-forward.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_animator_collection.h"
-#include "ui/gfx/color_space.h"
+#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/throughput_tracker_host.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -54,9 +62,11 @@ class TaskGraphRunner;
 }
 
 namespace gfx {
+namespace mojom {
+class DelegatedInkPointRenderer;
+}  // namespace mojom
 struct PresentationFeedback;
 class Rect;
-class ScrollOffset;
 class Size;
 }
 
@@ -65,99 +75,25 @@ class GpuMemoryBufferManager;
 }
 
 namespace viz {
+namespace mojom {
+class DisplayPrivate;
+class ExternalBeginFrameController;
+}  // namespace mojom
 class ContextProvider;
 class HostFrameSinkManager;
-class LocalSurfaceIdAllocation;
+class LocalSurfaceId;
 class RasterContextProvider;
-}
+}  // namespace viz
 
 namespace ui {
-
 class Compositor;
 class Layer;
-class Reflector;
 class ScopedAnimationDurationScaleMode;
 class ScrollInputHandler;
+class ThroughputTracker;
+struct PendingBeginFrameArgs;
 
 constexpr int kCompositorLockTimeoutMs = 67;
-
-class COMPOSITOR_EXPORT ContextFactoryObserver {
- public:
-  virtual ~ContextFactoryObserver() {}
-
-  // Notifies that the viz::ContextProviders returned from
-  // ui::ContextFactory::SharedMainThreadContextProvider and/or
-  // ui::ContextFactory::SharedMainThreadRasterContextProvider were lost.
-  // When this is called, the old resources (e.g. shared context, GL helper)
-  // still exist, but are about to be destroyed. Getting a reference to those
-  // resources from the ContextFactory (e.g. through
-  // SharedMainThreadContextProvider()) will return newly recreated, valid
-  // resources.
-  virtual void OnLostSharedContext() = 0;
-};
-
-// This is privileged interface to the compositor. It is a global object.
-class COMPOSITOR_EXPORT ContextFactoryPrivate {
- public:
-  virtual ~ContextFactoryPrivate() {}
-
-  // Creates a reflector that copies the content of the |mirrored_compositor|
-  // onto |mirroring_layer|.
-  virtual std::unique_ptr<Reflector> CreateReflector(
-      Compositor* mirrored_compositor,
-      Layer* mirroring_layer) = 0;
-
-  // Removes the reflector, which stops the mirroring.
-  virtual void RemoveReflector(Reflector* reflector) = 0;
-
-  // Allocate a new client ID for the display compositor.
-  virtual viz::FrameSinkId AllocateFrameSinkId() = 0;
-
-  // Gets the frame sink manager host instance.
-  virtual viz::HostFrameSinkManager* GetHostFrameSinkManager() = 0;
-
-  // Inform the display corresponding to this compositor if it is visible. When
-  // false it does not need to produce any frames. Visibility is reset for each
-  // call to CreateLayerTreeFrameSink.
-  virtual void SetDisplayVisible(ui::Compositor* compositor, bool visible) = 0;
-
-  // Resize the display corresponding to this compositor to a particular size.
-  virtual void ResizeDisplay(ui::Compositor* compositor,
-                             const gfx::Size& size) = 0;
-
-  // Attempts to immediately swap a frame with the current size if possible,
-  // then will no longer swap until ResizeDisplay() is called.
-  virtual void DisableSwapUntilResize(ui::Compositor* compositor) = 0;
-
-  // Sets the color matrix used to transform how all output is drawn to the
-  // display underlying this ui::Compositor.
-  virtual void SetDisplayColorMatrix(ui::Compositor* compositor,
-                                     const SkMatrix44& matrix) = 0;
-
-  // Set the output color profile into which this compositor should render.
-  virtual void SetDisplayColorSpace(ui::Compositor* compositor,
-                                    const gfx::ColorSpace& output_color_space,
-                                    float sdr_white_level) = 0;
-
-  // Mac path for transporting vsync parameters to the display.  Other platforms
-  // update it via the BrowserCompositorLayerTreeFrameSink directly.
-  virtual void SetDisplayVSyncParameters(ui::Compositor* compositor,
-                                         base::TimeTicks timebase,
-                                         base::TimeDelta interval) = 0;
-
-  virtual void IssueExternalBeginFrame(
-      ui::Compositor* compositor,
-      const viz::BeginFrameArgs& args,
-      bool force,
-      base::OnceCallback<void(const viz::BeginFrameAck&)> callback) = 0;
-
-  virtual void SetOutputIsSecure(Compositor* compositor, bool secure) = 0;
-
-  // Adds an observer for vsync parameter changes.
-  virtual void AddVSyncParameterObserver(
-      Compositor* compositor,
-      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer) = 0;
-};
 
 // This class abstracts the creation of the 3D context for the compositor. It is
 // a global object.
@@ -190,9 +126,14 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Gets the task graph runner.
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
 
-  virtual void AddObserver(ContextFactoryObserver* observer) = 0;
+  // Allocate a new client ID for the display compositor.
+  virtual viz::FrameSinkId AllocateFrameSinkId() = 0;
 
-  virtual void RemoveObserver(ContextFactoryObserver* observer) = 0;
+  // Allocates a new capture ID for a layer subtree within a frame sink.
+  virtual viz::SubtreeCaptureId AllocateSubtreeCaptureId() = 0;
+
+  // Gets the frame sink manager host instance.
+  virtual viz::HostFrameSinkManager* GetHostFrameSinkManager() = 0;
 };
 
 // Compositor object to take care of GPU painting.
@@ -200,33 +141,34 @@ class COMPOSITOR_EXPORT ContextFactory {
 // displayable form of pixels comprising a single widget's contents. It draws an
 // appropriately transformed texture for each transformed view in the widget's
 // view hierarchy.
-class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
+class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
+                                     public cc::LayerTreeHostClient,
                                      public cc::LayerTreeHostSingleThreadClient,
-                                     public viz::HostFrameSinkClient {
+                                     public viz::HostFrameSinkClient,
+                                     public ThroughputTrackerHost {
  public:
-  // |trace_environment_name| is passed to trace events so that tracing
-  // can identify the environment the trace events are from. Examples are,
-  // "ash", and "browser". If no value is supplied, "browser" is used.
   Compositor(const viz::FrameSinkId& frame_sink_id,
              ui::ContextFactory* context_factory,
-             ui::ContextFactoryPrivate* context_factory_private,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              bool enable_pixel_canvas,
              bool use_external_begin_frame_control = false,
              bool force_software_compositor = false,
-             const char* trace_environment_name = nullptr);
+             bool enable_compositing_based_throttling = false);
+
+  Compositor(const Compositor&) = delete;
+  Compositor& operator=(const Compositor&) = delete;
+
   ~Compositor() override;
 
   ui::ContextFactory* context_factory() { return context_factory_; }
 
-  ui::ContextFactoryPrivate* context_factory_private() {
-    return context_factory_private_;
-  }
-
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id);
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id);
 
-  void SetLayerTreeFrameSink(std::unique_ptr<cc::LayerTreeFrameSink> surface);
+  void SetLayerTreeFrameSink(std::unique_ptr<cc::LayerTreeFrameSink> surface,
+                             viz::mojom::DisplayPrivate* display_private);
+  void SetExternalBeginFrameController(viz::mojom::ExternalBeginFrameController*
+                                           external_begin_frame_controller);
 
   // Called when a child surface is about to resize.
   void OnChildResizing();
@@ -249,17 +191,12 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // compositing layers on.
   float device_scale_factor() const { return device_scale_factor_; }
 
-  // The color space of the device that this compositor is being displayed on.
-  const gfx::ColorSpace& output_color_space() const {
-    return output_color_space_;
-  }
-
   // Gets and sets the color matrix used to transform the output colors of what
   // this compositor renders.
-  const SkMatrix44& display_color_matrix() const {
+  const skia::Matrix44& display_color_matrix() const {
     return display_color_matrix_;
   }
-  void SetDisplayColorMatrix(const SkMatrix44& matrix);
+  void SetDisplayColorMatrix(const skia::Matrix44& matrix);
 
   // Where possible, draws are scissored to a damage region calculated from
   // changes to layer properties.  This bypasses that and indicates that
@@ -270,22 +207,26 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // from changes to layer properties.
   void ScheduleRedrawRect(const gfx::Rect& damage_rect);
 
-  // Finishes all outstanding rendering and disables swapping on this surface
-  // until it is resized.
+#if defined(OS_WIN)
+  // Until this is called with |should| true then both DisableSwapUntilResize()
+  // and ReenableSwap() do nothing.
+  void SetShouldDisableSwapUntilResize(bool should);
+
+  // Attempts to immediately swap a frame with the current size if possible,
+  // then disables swapping on this surface until it is resized.
   void DisableSwapUntilResize();
   void ReenableSwap();
+#endif
 
   // Sets the compositor's device scale factor and size.
-  void SetScaleAndSize(
-      float scale,
-      const gfx::Size& size_in_pixel,
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+  void SetScaleAndSize(float scale,
+                       const gfx::Size& size_in_pixel,
+                       const viz::LocalSurfaceId& local_surface_id);
 
   // Set the output color profile into which this compositor should render. Also
   // sets the SDR white level (in nits) used to scale HDR color space primaries.
-  void SetDisplayColorSpace(
-      const gfx::ColorSpace& color_space,
-      float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
+  void SetDisplayColorSpaces(
+      const gfx::DisplayColorSpaces& display_color_spaces);
 
   // Set the transform/rotation info for the display output surface.
   void SetDisplayTransformHint(gfx::OverlayTransform hint);
@@ -300,7 +241,9 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // the |root_layer|.
   void SetBackgroundColor(SkColor color);
 
-  // Sets the visibility of the underlying compositor.
+  // Inform the display corresponding to this compositor if it is visible. When
+  // false it does not need to produce any frames. Visibility is reset for each
+  // call to CreateLayerTreeFrameSink.
   void SetVisible(bool visible);
 
   // Gets the visibility of the underlying compositor.
@@ -309,11 +252,11 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // Gets or sets the scroll offset for the given layer in step with the
   // cc::InputHandler. Returns true if the layer is active on the impl side.
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
-                               gfx::ScrollOffset* offset) const;
-  bool ScrollLayerTo(cc::ElementId element_id, const gfx::ScrollOffset& offset);
+                               gfx::Vector2dF* offset) const;
+  bool ScrollLayerTo(cc::ElementId element_id, const gfx::Vector2dF& offset);
 
-  // Mac sets vsync parameters through the browser compositor rather than from
-  // the GPU.
+  // Mac path for transporting vsync parameters to the display. Other platforms
+  // update it via the BrowserCompositorLayerTreeFrameSink directly.
   void SetDisplayVSyncParameters(base::TimeTicks timebase,
                                  base::TimeDelta interval);
   void AddVSyncParameterObserver(
@@ -356,8 +299,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // timeout is null, then no timeout is used.
   std::unique_ptr<CompositorLock> GetCompositorLock(
       CompositorLockClient* client,
-      base::TimeDelta timeout =
-          base::TimeDelta::FromMilliseconds(kCompositorLockTimeoutMs)) {
+      base::TimeDelta timeout = base::Milliseconds(kCompositorLockTimeoutMs)) {
     return lock_manager_.GetCompositorLock(client, timeout,
                                            host_->DeferMainFrameUpdate());
   }
@@ -371,11 +313,22 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   void RequestPresentationTimeForNextFrame(PresentationTimeCallback callback);
 
+  void IssueExternalBeginFrame(
+      const viz::BeginFrameArgs& args,
+      bool force,
+      base::OnceCallback<void(const viz::BeginFrameAck&)> callback);
+
+  // Creates a ThroughputTracker for tracking this Compositor.
+  ThroughputTracker RequestNewThroughputTracker();
+
+  // Returns a percentage representing average throughput of last X seconds.
+  uint32_t GetAverageThroughput() const;
+
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool) override {}
+  void OnDeferCommitsChanged(bool, cc::PaintHoldingReason) override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;
@@ -384,17 +337,13 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void UpdateLayerTreeHost() override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override {
   }
-  void RecordManipulationTypeCounts(cc::ManipulationInfo info) override {}
-  void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      cc::ElementId scroll_latched_element_id) override {}
-  void SendScrollEndEventFromImplSide(
-      cc::ElementId scroll_latched_element_id) override {}
+  void UpdateCompositorScrollState(
+      const cc::CompositorCommitData& commit_data) override {}
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit() override {}
-  void DidCommit() override;
+  void WillCommit(cc::CommitState*) override {}
+  void DidCommit(base::TimeTicks, base::TimeTicks) override;
   void DidCommitAndDrawFrame() override {}
   void DidReceiveCompositorFrameAck() override;
   void DidCompletePageScaleAnimation() override {}
@@ -402,20 +351,43 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
   void RecordStartOfFrameMetrics() override {}
-  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override {}
+  void RecordEndOfFrameMetrics(
+      base::TimeTicks frame_begin_time,
+      cc::ActiveFrameSequenceTrackers trackers) override {}
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
+  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
+  void NotifyThroughputTrackerResults(
+      cc::CustomTrackerResults results) override;
+  void DidObserveFirstScrollDelay(
+      base::TimeDelta first_scroll_delay,
+      base::TimeTicks first_scroll_timestamp) override {}
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
   void DidLoseLayerTreeFrameSink() override {}
   void FrameIntervalUpdated(base::TimeDelta interval) override;
+  void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) override;
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  // ThroughputTrackerHost implementation.
+  void StartThroughputTracker(
+      TrackerId tracker_id,
+      ThroughputTrackerHost::ReportCallback callback) override;
+  bool StopThroughtputTracker(TrackerId tracker_id) override;
+  void CancelThroughtputTracker(TrackerId tracker_id) override;
+
+  // base::PowerSuspendObserver:
+  void OnResume() override;
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnCompleteSwapWithNewSize(const gfx::Size& size);
 #endif
 
@@ -449,13 +421,36 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
     return scroll_input_handler_.get();
   }
 
+  virtual void SetDelegatedInkPointRenderer(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver);
+
  private:
   friend class base::RefCounted<Compositor>;
+  friend class TotalAnimationThroughputReporter;
+
+  // Called when collected metrics for the tracker of |tracker_id| is ready.
+  void ReportMetricsForTracker(
+      int tracker_id,
+      const cc::FrameSequenceMetrics::CustomReportData& data);
 
   gfx::Size size_;
 
   ui::ContextFactory* context_factory_;
-  ui::ContextFactoryPrivate* context_factory_private_;
+
+  // |display_private_| can be null for:
+  // 1. Tests that don't set |display_private_|.
+  // 2. Intermittently on creation or if there is some kind of error (GPU crash,
+  //    GL context loss, etc.) that triggers reinitializing message pipes to the
+  //    GPU process RootCompositorFrameSinkImpl.
+  // Therefore, it should always be null checked for safety before use.
+  //
+  // These pointers are owned by |context_factory_|, and must be reset before
+  // calling RemoveCompositor();
+  viz::mojom::DisplayPrivate* display_private_ = nullptr;
+  viz::mojom::ExternalBeginFrameController* external_begin_frame_controller_ =
+      nullptr;
+
+  std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args_;
 
   // The root of the Layer tree drawn by this compositor.
   Layer* root_layer_ = nullptr;
@@ -480,6 +475,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   scoped_refptr<cc::Layer> root_web_layer_;
   std::unique_ptr<cc::AnimationHost> animation_host_;
   std::unique_ptr<cc::LayerTreeHost> host_;
+  base::WeakPtr<cc::InputHandler> input_handler_weak_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Snapshot of last set vsync parameters, to avoid redundant IPCs.
@@ -498,11 +494,10 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
   std::unique_ptr<ScopedAnimationDurationScaleMode> slow_animations_;
 
-  SkMatrix44 display_color_matrix_;
+  skia::Matrix44 display_color_matrix_;
+  gfx::DisplayColorSpaces display_color_spaces_;
 
-  gfx::ColorSpace output_color_space_;
-
-  float sdr_white_level_ = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  bool output_is_secure_ = false;
 
   // If true, all paint commands are recorded at pixel size instead of DIP.
   const bool is_pixel_canvas_;
@@ -511,14 +506,35 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 
   std::unique_ptr<ScrollInputHandler> scroll_input_handler_;
 
+#if defined(OS_WIN)
+  bool should_disable_swap_until_resize_ = false;
+#endif
+
   // Set in DisableSwapUntilResize and reset when a resize happens.
   bool disabled_swap_until_resize_ = false;
 
-  const char* trace_environment_name_;
+  TrackerId next_throughput_tracker_id_ = 1u;
+  struct TrackerState {
+    TrackerState();
+    TrackerState(TrackerState&&);
+    TrackerState& operator=(TrackerState&&);
+    ~TrackerState();
+
+    // Whether a tracker is waiting for report and `report_callback` should be
+    // invoked. This is set to true when a tracker is stopped.
+    bool should_report = false;
+    // Whether the report for a tracker has happened. This is set when an
+    // involuntary report happens before the tracker is stopped and set
+    // `should_report` field above.
+    bool report_attempted = false;
+    // Invoked to send report to the owner of a tracker.
+    ThroughputTrackerHost::ReportCallback report_callback;
+  };
+  using ThroughputTrackerMap = base::flat_map<TrackerId, TrackerState>;
+  ThroughputTrackerMap throughput_tracker_map_;
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Compositor);
+  base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

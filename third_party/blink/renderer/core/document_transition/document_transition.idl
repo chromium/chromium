@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+// See third_party/blink/renderer/core/document_transition/README.md.
+[
+    ActiveScriptWrappable,
+    Exposed=Window,
+    RuntimeEnabled=DocumentTransition
+] interface DocumentTransition {
+  // - This should only be called after any previous start() calls have resolved.
+  // - Rejects any previous unresolved prepare() promises.
+  // - Returns a promise that resolves after the transition has been
+  //   prepared.
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionPrepareOptions options = {});
+
+  // Can only be called after prepare(), during the task during
+  // which prepare() most recently resolved.
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionStartOptions options = {});
+};

@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -129,12 +131,26 @@ void WebContentsModalDialogManager::CloseAllDialogs() {
 
 void WebContentsModalDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted())
     return;
+
+  if (!child_dialogs_.empty()) {
+    // Disable BFCache for the page which had any modal dialog open.
+    // This prevents the page which has print, confirm form resubmission, http
+    // password dialogs, etc. to go in to BFCache. We can't simply dismiss the
+    // dialogs in the case, since they are requesting meaningful input from the
+    // user that affects the loading or display of the content.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kModalDialog));
+  }
 
   // Close constrained windows if necessary.
   if (!net::registry_controlled_domains::SameDomainOrHost(
-          navigation_handle->GetPreviousURL(), navigation_handle->GetURL(),
+          navigation_handle->GetPreviousMainFrameURL(),
+          navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES))
     CloseAllDialogs();
 }
@@ -170,10 +186,6 @@ void WebContentsModalDialogManager::WebContentsDestroyed() {
   CloseAllDialogs();
 }
 
-void WebContentsModalDialogManager::DidAttachInterstitialPage() {
-  CloseAllDialogs();
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsModalDialogManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsModalDialogManager);
 
 }  // namespace web_modal

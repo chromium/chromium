@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 25
+// Next MinVersion: 26
 
 module arc.mojom;
 
@@ -176,9 +176,9 @@ struct ArcDoNotDisturbStatus {
 struct ArcNotificationUserActionData {
   // Unique action id for this user action.
   uint32 action_id;
-  // Notification key of top-level notification which contains the notification
-  // which is initiating this action.
-  string top_level_notification_key;
+  // DEPRECATED: Notification key of top-level notification which contains
+  // the notification which is initiating this action.
+  string top_level_notification_key_deprecated;
   // True if the task should be executed on the unlocked state.
   bool defer_until_unlock;
   // True if the notification view should be focused after unlock. This is
@@ -199,6 +199,15 @@ struct NotificationConfiguration {
   // Flag to enable notification expansion animations on arc.
   // See b/35786193.
   bool expansion_animation;
+};
+
+// These values represent an visibility of MessageCenter on Chrome OS.
+[Extensible, MinVersion=25]
+enum MessageCenterVisibility {
+  // When nothing or just toast popups are being displayed.
+  VISIBILITY_TRANSIENT = 0,
+  // When the message center view is being displayed.
+  VISIBILITY_MESSAGE_CENTER = 1,
 };
 
 // Next Method ID: 11
@@ -239,14 +248,14 @@ interface NotificationsHost {
   OnLockScreenSettingUpdated@10(ArcLockScreenNotificationSetting setting);
 };
 
-// Next Method ID: 13
+// Next Method ID: 14
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 interface NotificationsInstance {
   // DEPRECATED: Please use Init@5 instead.
-  InitDeprecated@0(NotificationsHost host_ptr);
+  InitDeprecated@0(pending_remote<NotificationsHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=14] Init@5(NotificationsHost host_ptr) => ();
+  [MinVersion=14] Init@5(pending_remote<NotificationsHost> host_remote) => ();
 
   // Sends an event from Chrome notification UI to Android.
   // |event| is a type of occured event.
@@ -302,4 +311,8 @@ interface NotificationsInstance {
   // Set configuration variables for notifications.
   [MinVersion=22]
   SetNotificationConfiguration@12(NotificationConfiguration configuration);
+
+  // Reports that Message Center visibility has changed.
+  [MinVersion=25]
+  OnMessageCenterVisibilityChanged@13(MessageCenterVisibility visibility);
 };

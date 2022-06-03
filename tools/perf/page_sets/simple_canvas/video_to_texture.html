@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<body>
+<video id="video" muted="muted" loop></video>
+<script src="resources/canvas_runner.js"></script>
+<script>
+var videoElement = document.getElementById("video");
+var canvas3D = document.createElement('canvas');
+var gl = canvas3D.getContext('webgl');
+document.body.appendChild(canvas3D);
+
+if(!gl) {
+    console.logFatalError("WebGL is not supported or enabled on this platform!");
+    throw "WebGL is not supported or enabled on this platform!";
+}
+
+function setSize(width, height) {
+    canvas3D.width = width;
+    canvas3D.height = height;
+}
+
+function startPerfTest() {
+    for (i = 0; i < 10; i++) {
+        doRun();
+    }
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+    requestAnimationFrame(startPerfTest);
+}
+
+var flipYAndPremultipyAlphas =
+  [[ false, false ],
+   [ false, true  ],
+   [ true,  false ],
+   [ true,  true  ]];
+var optionIndex = 0;
+var tex = null;
+
+function preRun() {
+    tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    optionIndex = 0;
+}
+
+function doRun() {
+    var i = optionIndex++ % flipYAndPremultipyAlphas.length;
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipYAndPremultipyAlphas[i][0]);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, flipYAndPremultipyAlphas[i][1]);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, videoElement);
+}
+
+window.onload = function () {
+    setSize(1, 1);
+
+    videoElement.src = "resources/crowd1080.webm";
+    if(!videoElement.canPlayType('video/webm').replace(/no/, '')) {
+        console.logFatalError("video/webm is unsupported");
+        throw 'video/webm is unsupported';
+    };
+    preRun();
+    CanvasRunner.startPlayingAndWaitForVideo(videoElement, startPerfTest);
+}
+
+</script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 include_rules = [
+  "+components/ukm/ios",
   "+ios/web/common",
   "+ios/web/public",
+  "+services/metrics/public",
   "+services/network/public/cpp",
   "+third_party/ocmock",
 ]

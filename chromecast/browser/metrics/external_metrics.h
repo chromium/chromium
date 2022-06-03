@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 
 namespace metrics {
 class MetricSample;
@@ -28,6 +28,10 @@ class ExternalMetrics {
  public:
   explicit ExternalMetrics(CastStabilityMetricsProvider* stability_provider,
                            const std::string& uma_events_file);
+
+  ExternalMetrics(const ExternalMetrics&) = delete;
+  ExternalMetrics& operator=(const ExternalMetrics&) = delete;
+
   // Begins external data collection. Calls to RecordAction originate in the
   // File thread but are executed in the UI thread.
   void Start();
@@ -78,8 +82,6 @@ class ExternalMetrics {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ExternalMetrics> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMetrics);
 };
 
 }  // namespace metrics

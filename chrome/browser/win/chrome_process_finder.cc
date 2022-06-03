@@ -7,10 +7,10 @@
 #include <shellapi.h>
 #include <string>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +21,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
-
 
 namespace {
 
@@ -35,22 +34,12 @@ HWND FindRunningChromeWindow(const base::FilePath& user_data_dir) {
   return base::win::MessageWindow::FindWindow(user_data_dir.value());
 }
 
-NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window,
-                                                bool fast_start) {
+NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   DCHECK(remote_window);
   DWORD process_id = 0;
   DWORD thread_id = GetWindowThreadProcessId(remote_window, &process_id);
   if (!thread_id || !process_id)
     return NOTIFY_FAILED;
-
-  base::CommandLine command_line(*base::CommandLine::ForCurrentProcess());
-  command_line.AppendSwitchASCII(
-      switches::kOriginalProcessStartTime,
-      base::NumberToString(
-          base::Process::Current().CreationTime().ToInternalValue()));
-
-  if (fast_start)
-    command_line.AppendSwitch(switches::kFastStart);
 
   // Send the command line to the remote chrome window.
   // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
@@ -60,7 +49,8 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window,
     return NOTIFY_FAILED;
   to_send.append(cur_dir.value());
   to_send.append(L"\0", 1);  // Null separator.
-  to_send.append(command_line.GetCommandLineString());
+  to_send.append(
+      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
   to_send.append(L"\0", 1);  // Null separator.
 
   // Allow the current running browser window to make itself the foreground
@@ -92,8 +82,7 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window,
 }
 
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout) {
-  base::TimeDelta old_timeout =
-      base::TimeDelta::FromMilliseconds(g_timeout_in_milliseconds);
+  base::TimeDelta old_timeout = base::Milliseconds(g_timeout_in_milliseconds);
   g_timeout_in_milliseconds =
       base::checked_cast<uint32_t>(new_timeout.InMilliseconds());
   return old_timeout;

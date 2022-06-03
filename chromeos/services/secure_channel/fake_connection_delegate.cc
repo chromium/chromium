@@ -5,7 +5,6 @@
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 
 namespace chromeos {
 

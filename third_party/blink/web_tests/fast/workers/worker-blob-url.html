@@ -1,0 +1,25 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+if (self.testRunner !== undefined && self.origin !== 'null') {
+  // We want to test the behavior without --allow-file-access-from-file-urls,
+  // so change the settings and reload.
+  testRunner.setAllowFileAccessFromFileURLs(false);
+  location.reload();
+} else {
+  promise_test(async (t) => {
+    const blob = new Blob(['postMessage("hello");']);
+    const url = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+    URL.revokeObjectURL(url);
+
+    const ev = await new Promise((resolve, reject) => {
+      worker.addEventListener('message', resolve, {once: true});
+      worker.addEventListener('error', reject);
+    });
+    assert_equals(ev.data, 'hello');
+  }, 'Create a worker from a blob URL about to be revoked, in a local file.');
+}
+</script>

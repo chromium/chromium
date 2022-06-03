@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 import os
 
@@ -24,8 +26,10 @@ test_harness_script = r"""
   };
 """
 
+
 def safe_feature_name(feature):
   return feature.lower().replace(' ', '_')
+
 
 class HardwareAcceleratedFeatureIntegrationTest(
     gpu_integration_test.GpuIntegrationTest):
@@ -49,33 +53,34 @@ class HardwareAcceleratedFeatureIntegrationTest(
     # to become interactive or better, avoiding critical race
     # conditions.
     self.tab.action_runner.Navigate(
-      url, script_to_evaluate_on_commit=test_harness_script)
+        url, script_to_evaluate_on_commit=test_harness_script)
 
   @classmethod
   def GenerateGpuTests(cls, options):
     tests = ('WebGL', 'Canvas')
     for feature in tests:
-      yield('HardwareAcceleratedFeature_%s_accelerated' %
-            safe_feature_name(feature),
-            'chrome://gpu',
-            (feature))
+      yield ('HardwareAcceleratedFeature_%s_accelerated' %
+             safe_feature_name(feature), 'chrome://gpu', (feature))
 
   def RunActualGpuTest(self, test_path, *args):
     feature = args[0]
     self._Navigate(test_path)
     tab = self.tab
+    tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=30)
     if not tab.EvaluateJavaScript(
         'VerifyHardwareAccelerated({{ feature }})', feature=feature):
-      print 'Test failed. Printing page contents:'
-      print tab.EvaluateJavaScript('document.body.innerHTML')
+      print('Test failed. Printing page contents:')
+      print(tab.EvaluateJavaScript('document.body.innerHTML'))
       self.fail('%s not hardware accelerated' % feature)
 
   @classmethod
   def ExpectationsFiles(cls):
     return [
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'test_expectations',
-                     'hardware_accelerated_feature_expectations.txt')]
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
+            'hardware_accelerated_feature_expectations.txt')
+    ]
+
 
 def load_tests(loader, tests, pattern):
   del loader, tests, pattern  # Unused.

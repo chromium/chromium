@@ -7,8 +7,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 
@@ -31,6 +30,9 @@ class VIEWS_EXPORT ViewModelBase {
     gfx::Rect ideal_bounds;
   };
   using Entries = std::vector<Entry>;
+
+  ViewModelBase(const ViewModelBase&) = delete;
+  ViewModelBase& operator=(const ViewModelBase&) = delete;
 
   ~ViewModelBase();
 
@@ -89,7 +91,6 @@ class VIEWS_EXPORT ViewModelBase {
   // For access to ViewAtBase().
   friend class ViewModelUtils;
 
-
 #if !defined(NDEBUG)
   void check_index(int index) const {
     DCHECK_LT(index, static_cast<int>(entries_.size()));
@@ -100,8 +101,6 @@ class VIEWS_EXPORT ViewModelBase {
 #endif
 
   Entries entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewModelBase);
 };
 
 // ViewModelT is used to track an 'interesting' set of a views. Often times
@@ -112,7 +111,10 @@ class VIEWS_EXPORT ViewModelBase {
 template <class T>
 class ViewModelT : public ViewModelBase {
  public:
-  ViewModelT<T>() = default;
+  ViewModelT() = default;
+
+  ViewModelT(const ViewModelT&) = delete;
+  ViewModelT& operator=(const ViewModelT&) = delete;
 
   // Adds |view| to this model. This does not add |view| to a view hierarchy,
   // only to this model.
@@ -120,9 +122,6 @@ class ViewModelT : public ViewModelBase {
 
   // Returns the view at the specified index.
   T* view_at(int index) const { return static_cast<T*>(ViewAtBase(index)); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewModelT<T>);
 };
 
 // ViewModel is a collection of views with no specfic type. If all views have

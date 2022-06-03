@@ -4,6 +4,11 @@
 
 #include "cc/trees/animated_paint_worklet_tracker.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/containers/cxx20_erase.h"
 #include "cc/layers/picture_layer_impl.h"
 
 namespace cc {
@@ -25,25 +30,22 @@ AnimatedPaintWorkletTracker::PropertyState::PropertyState(
 AnimatedPaintWorkletTracker::PropertyState::~PropertyState() = default;
 
 void AnimatedPaintWorkletTracker::OnCustomPropertyMutated(
-    ElementId element_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::PropertyValue custom_property_value) {
-  // This function is called to update custom property value only.
-  DCHECK(!custom_property_name.empty());
-  PaintWorkletInput::PropertyKey key{custom_property_name, element_id};
-  auto iter = input_properties_.find(key);
+    PaintWorkletInput::PropertyKey property_key,
+    PaintWorkletInput::PropertyValue property_value) {
+  auto iter = input_properties_.find(property_key);
   // OnCustomPropertyMutated is called for all composited custom property
-  // animations, but there may not be a matching PaintWorklet, and thus no entry
+  // animations and some types of native properties that uses the paint worklet
+  // infra, but there may not be a matching PaintWorklet, and thus no entry
   // in |input_properties_|.
   // TODO(xidachen): Only create composited custom property animations if they
   // affect paint worklet.
   if (iter == input_properties_.end())
     return;
-  iter->second.animation_value = std::move(custom_property_value);
+  iter->second.animation_value = std::move(property_value);
   // Keep track of which input properties have been changed so that the
   // associated PaintWorklets can be invalidated before activating the pending
   // tree.
-  input_properties_animated_on_impl_.insert(key);
+  input_properties_animated_on_impl_.insert(property_key);
 }
 
 bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {

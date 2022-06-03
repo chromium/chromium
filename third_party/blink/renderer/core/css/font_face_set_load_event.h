@@ -33,10 +33,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
-#include "third_party/blink/renderer/core/css/font_face_set_load_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 
 namespace blink {
+
+class FontFaceSetLoadEventInit;
 
 class FontFaceSetLoadEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -62,7 +63,7 @@ class FontFaceSetLoadEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   FontFaceArray fontfaces_;

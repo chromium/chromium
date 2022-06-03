@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
 
@@ -32,29 +31,32 @@ class TaskDurationMetricReporter {
       : value_per_type_histogram_(new base::ScaledLinearHistogram(
             metric_name,
             1,
-            static_cast<int>(TaskClass::kCount),
-            static_cast<int>(TaskClass::kCount) + 1,
+            static_cast<int>(TaskClass::kMaxValue) + 1,
+            static_cast<int>(TaskClass::kMaxValue) + 2,
             1000 * 1000,
             base::HistogramBase::kUmaTargetedHistogramFlag)) {}
 
+  TaskDurationMetricReporter(const TaskDurationMetricReporter&) = delete;
+  TaskDurationMetricReporter& operator=(const TaskDurationMetricReporter&) =
+      delete;
+
   void RecordTask(TaskClass task_class, base::TimeDelta duration) {
     DCHECK_LT(static_cast<int>(task_class),
-              static_cast<int>(TaskClass::kCount));
+              static_cast<int>(TaskClass::kMaxValue) + 1);
 
-    // To get mircoseconds precision, duration is converted to microseconds
+    // To get microseconds precision, duration is converted to microseconds
     // since |value_per_type_histogram_| is constructed with a scale of
     // 1000*1000.
-    if (!duration.is_zero()) {
-      value_per_type_histogram_->AddScaledCount(
-          static_cast<int>(task_class),
-          base::saturated_cast<int>(duration.InMicroseconds()));
+    const int task_micros =
+        base::saturated_cast<int>(duration.InMicroseconds());
+    if (task_micros > 0) {
+      value_per_type_histogram_->AddScaledCount(static_cast<int>(task_class),
+                                                task_micros);
     }
   }
 
  private:
   std::unique_ptr<base::ScaledLinearHistogram> value_per_type_histogram_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskDurationMetricReporter);
 };
 
 }  // namespace scheduling_metrics

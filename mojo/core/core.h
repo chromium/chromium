@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/handle_signals_state.h"
@@ -39,6 +39,10 @@ class PlatformSharedMemoryMapping;
 class MOJO_SYSTEM_IMPL_EXPORT Core {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   virtual ~Core();
 
   static Core* Get();
@@ -53,8 +57,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
 
   scoped_refptr<Dispatcher> GetDispatcher(MojoHandle handle);
   scoped_refptr<Dispatcher> GetAndRemoveDispatcher(MojoHandle handle);
-
-  void SetDefaultProcessErrorCallback(ProcessErrorCallback callback);
 
   // Creates a message pipe endpoint with an unbound peer port returned in
   // |*peer|. Useful for setting up cross-process bootstrap message pipes. The
@@ -78,7 +80,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   // invitation. An attached port can be claimed (as a message pipe handle) by
   // the invitee.
   void SendBrokerClientInvitation(
-      base::ProcessHandle target_process,
+      base::Process target_process,
       ConnectionParams connection_params,
       const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
       const ProcessErrorCallback& process_error_callback);
@@ -325,6 +327,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
                         uint64_t* limit,
                         uint64_t* usage);
 
+  MojoResult SetDefaultProcessErrorHandler(
+      MojoDefaultProcessErrorHandler handler,
+      const MojoSetDefaultProcessErrorHandlerOptions* options);
+
   void GetActiveHandlesForTest(std::vector<MojoHandle>* handles);
 
  private:
@@ -358,8 +364,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   using MappingTable =
       std::unordered_map<void*, std::unique_ptr<PlatformSharedMemoryMapping>>;
   MappingTable mapping_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 }  // namespace core

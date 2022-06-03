@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.enablePixelTesting = true;
+</script>
+<script src="../../resources/ahem.js"></script>
+<script src="../resources/picker-common.js"></script>
+<style>
+  select:focus {
+    outline-width: 0;
+  }
+  select {
+    width: 200px;
+    font: 10px Ahem;
+    appearance: none;
+    background-color: white;
+  }
+  select::-webkit-scrollbar {
+    width: 15px;
+  }
+
+  select::-webkit-scrollbar-track {
+    background: orange;
+  }
+
+  select::-webkit-scrollbar-thumb {
+    background: gray;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<select id='menu'>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+</select>
+<script>
+   openPickerAppearanceOnly(document.getElementById('menu'), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

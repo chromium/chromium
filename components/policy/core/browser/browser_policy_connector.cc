@@ -6,14 +6,14 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -36,6 +36,9 @@ namespace {
 // The URL for the device management server.
 const char kDefaultDeviceManagementServerUrl[] =
     "https://m.google.com/devicemanagement/data/api";
+
+const char kDefaultEncryptedReportingServerUrl[] =
+    "https://chromereporting-pa.googleapis.com/v1/record";
 
 // The URL for the realtime reporting server.
 const char kDefaultRealtimeReportingServerUrl[] =
@@ -67,7 +70,8 @@ const wchar_t* const kNonManagedDomainPatterns[] = {
 const char* non_managed_domain_for_testing = nullptr;
 
 // Returns true if |domain| matches the regex |pattern|.
-bool MatchDomain(const base::string16& domain, const base::string16& pattern,
+bool MatchDomain(const std::u16string& domain,
+                 const std::u16string& pattern,
                  size_t index) {
   UErrorCode status = U_ZERO_ERROR;
   const icu::UnicodeString icu_pattern(pattern.data(), pattern.length());
@@ -105,9 +109,10 @@ void BrowserPolicyConnector::InitInternal(
     std::unique_ptr<DeviceManagementService> device_management_service) {
   device_management_service_ = std::move(device_management_service);
 
-  policy_statistics_collector_.reset(new policy::PolicyStatisticsCollector(
-      base::Bind(&GetChromePolicyDetails), GetChromeSchema(),
-      GetPolicyService(), local_state, base::ThreadTaskRunnerHandle::Get()));
+  policy_statistics_collector_ =
+      std::make_unique<policy::PolicyStatisticsCollector>(
+          base::BindRepeating(&GetChromePolicyDetails), GetChromeSchema(),
+          GetPolicyService(), local_state, base::ThreadTaskRunnerHandle::Get());
   policy_statistics_collector_->Initialize();
 }
 
@@ -124,6 +129,44 @@ void BrowserPolicyConnector::ScheduleServiceInitialization(
     device_management_service_->ScheduleInitialization(delay_milliseconds);
 }
 
+bool BrowserPolicyConnector::ProviderHasPolicies(
+    const ConfigurationPolicyProvider* provider) const {
+  if (!provider)
+    return false;
+  for (const auto& pair : provider->policies()) {
+    if (!pair.second.empty())
+      return true;
+  }
+  return false;
+}
+
+std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDeviceManagementUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kDeviceManagementUrl);
+  else
+    return kDefaultDeviceManagementServerUrl;
+}
+
+std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kRealtimeReportingUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
+  else
+    return kDefaultRealtimeReportingServerUrl;
+}
+
+std::string BrowserPolicyConnector::GetEncryptedReportingUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEncryptedReportingUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kEncryptedReportingUrl);
+  else
+    return kDefaultEncryptedReportingServerUrl;
+}
+
 // static
 bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
   TRACE_EVENT0("browser", "BrowserPolicyConnector::IsNonEnterpriseUser");
@@ -134,10 +177,10 @@ bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
     // users.
     return true;
   }
-  const base::string16 domain = base::UTF8ToUTF16(
+  const std::u16string domain = base::UTF8ToUTF16(
       gaia::ExtractDomainName(gaia::CanonicalizeEmail(username)));
   for (size_t i = 0; i < base::size(kNonManagedDomainPatterns); i++) {
-    base::string16 pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
+    std::u16string pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
     if (MatchDomain(domain, pattern, i))
       return true;
   }
@@ -155,34 +198,12 @@ void BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
 }
 
 // static
-std::string BrowserPolicyConnector::GetDeviceManagementUrl() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDeviceManagementUrl))
-    return command_line->GetSwitchValueASCII(switches::kDeviceManagementUrl);
-  else
-    return kDefaultDeviceManagementServerUrl;
-}
-
-// static
-std::string BrowserPolicyConnector::GetRealtimeReportingUrl() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kRealtimeReportingUrl))
-    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
-  else
-    return kDefaultRealtimeReportingServerUrl;
-}
-
-// static
 void BrowserPolicyConnector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       policy_prefs::kUserPolicyRefreshRate,
       CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
-  registry->RegisterStringPref(
-      policy_prefs::kMachineLevelUserCloudPolicyEnrollmentToken, std::string());
   registry->RegisterBooleanPref(
       policy_prefs::kCloudManagementEnrollmentMandatory, false);
-  registry->RegisterBooleanPref(
-      policy_prefs::kCloudPolicyOverridesPlatformPolicy, false);
 }
 
 }  // namespace policy

@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/app/remoting_view_controller.h"
 
 #include <SystemConfiguration/SystemConfiguration.h>
 #include <netinet/in.h>
 
+#import <MaterialComponents/MDCAppBarViewController.h>
+#import <MaterialComponents/MaterialAnimationTiming.h>
+#import <MaterialComponents/MaterialDialogs.h>
+#import <MaterialComponents/MaterialShadowElevations.h>
+#import <MaterialComponents/MaterialShadowLayer.h>
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/bind.h"
-#import "ios/third_party/material_components_ios/src/components/AnimationTiming/src/MaterialAnimationTiming.h"
-#import "ios/third_party/material_components_ios/src/components/AppBar/src/MDCAppBarViewController.h"
-#import "ios/third_party/material_components_ios/src/components/Dialogs/src/MaterialDialogs.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowElevations/src/MaterialShadowElevations.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowLayer/src/MaterialShadowLayer.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/strings/sys_string_conversions.h"
+#include "remoting/base/oauth_token_getter.h"
+#include "remoting/base/string_resources.h"
+#include "remoting/client/connect_to_host_info.h"
+#import "remoting/ios/app/account_manager.h"
 #import "remoting/ios/app/app_delegate.h"
 #import "remoting/ios/app/client_connection_view_controller.h"
 #import "remoting/ios/app/host_collection_view_controller.h"
@@ -26,19 +29,16 @@
 #import "remoting/ios/app/host_setup_view_controller.h"
 #import "remoting/ios/app/host_view_controller.h"
 #import "remoting/ios/app/refresh_control_provider.h"
-#import "remoting/ios/app/remoting_menu_view_controller.h"
 #import "remoting/ios/app/remoting_theme.h"
 #import "remoting/ios/app/view_utils.h"
 #import "remoting/ios/domain/client_session_details.h"
-#import "remoting/ios/facade/remoting_service.h"
-
-#include "base/mac/scoped_cftyperef.h"
-#include "base/strings/sys_string_conversions.h"
-#include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/string_resources.h"
-#include "remoting/client/connect_to_host_info.h"
 #include "remoting/ios/facade/host_list_service.h"
+#import "remoting/ios/facade/remoting_service.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 static CGFloat kHostInset = 5.f;
 
@@ -95,10 +95,8 @@ using remoting::HostListService;
   HostFetchingErrorViewController* _fetchingErrorViewController;
   HostSetupViewController* _setupViewController;
   HostListService* _hostListService;
-  std::unique_ptr<HostListService::CallbackSubscription>
-      _hostListStateSubscription;
-  std::unique_ptr<HostListService::CallbackSubscription>
-      _hostListFetchFailureSubscription;
+  base::CallbackListSubscription _hostListStateSubscription;
+  base::CallbackListSubscription _hostListFetchFailureSubscription;
 
   NSArray<id<RemotingRefreshControl>>* _refreshControls;
 }
@@ -141,14 +139,6 @@ using remoting::HostListService;
 
     self.navigationItem.title =
         l10n_util::GetNSString(IDS_PRODUCT_NAME).lowercaseString;
-
-    UIBarButtonItem* menuButton =
-        [[UIBarButtonItem alloc] initWithImage:RemotingTheme.menuIcon
-                                         style:UIBarButtonItemStyleDone
-                                        target:self
-                                        action:@selector(didSelectMenu)];
-    remoting::SetAccessibilityInfoFromImage(menuButton);
-    self.navigationItem.leftBarButtonItem = menuButton;
 
     _appBarViewController.headerView.backgroundColor =
         RemotingTheme.hostListBackgroundColor;
@@ -196,15 +186,37 @@ using remoting::HostListService;
   [self.view sendSubviewToBack:imageView];
 
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.view addSubview:_appBarViewController.view];
+  [_appBarViewController didMoveToParentViewController:self];
+
+  UIViewController* accountParticleDiscViewController =
+      remoting::ios::AccountManager::GetInstance()
+          ->CreateAccountParticleDiscViewController();
+  accountParticleDiscViewController.view
+      .translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:accountParticleDiscViewController];
+  [self.view addSubview:accountParticleDiscViewController.view];
+  [accountParticleDiscViewController didMoveToParentViewController:self];
+
   [NSLayoutConstraint activateConstraints:@[
     [[imageView widthAnchor]
         constraintGreaterThanOrEqualToAnchor:[self.view widthAnchor]],
     [[imageView heightAnchor]
         constraintGreaterThanOrEqualToAnchor:[self.view heightAnchor]],
-  ]];
 
-  [self.view addSubview:_appBarViewController.view];
-  [_appBarViewController didMoveToParentViewController:self];
+    [accountParticleDiscViewController.view.topAnchor
+        constraintEqualToAnchor:_appBarViewController.navigationBar.topAnchor],
+    [accountParticleDiscViewController.view.trailingAnchor
+        constraintEqualToAnchor:_appBarViewController.navigationBar
+                                    .trailingAnchor],
+    [accountParticleDiscViewController.view.widthAnchor
+        constraintEqualToConstant:accountParticleDiscViewController
+                                      .preferredContentSize.width],
+    [accountParticleDiscViewController.view.heightAnchor
+        constraintEqualToConstant:accountParticleDiscViewController
+                                      .preferredContentSize.height],
+  ]];
 
   __weak __typeof(self) weakSelf = self;
   _hostListStateSubscription =
@@ -262,19 +274,20 @@ using remoting::HostListService;
   if (![cell.hostInfo isOnline]) {
     MDCSnackbarMessage* message = [[MDCSnackbarMessage alloc] init];
     message.text = l10n_util::GetNSString(IDS_HOST_OFFLINE_TOOLTIP);
-    [MDCSnackbarManager showMessage:message];
+    [MDCSnackbarManager.defaultManager showMessage:message];
     return;
   }
 
   if (GetConnectionType() == ConnectionType::NONE) {
-    [MDCSnackbarManager
+    [MDCSnackbarManager.defaultManager
         showMessage:[MDCSnackbarMessage
                         messageWithText:l10n_util::GetNSString(
                                             IDS_ERROR_NETWORK_ERROR)]];
     return;
   }
 
-  [MDCSnackbarManager dismissAndCallCompletionBlocksWithCategory:nil];
+  [MDCSnackbarManager.defaultManager
+      dismissAndCallCompletionBlocksWithCategory:nil];
   ClientConnectionViewController* clientConnectionViewController =
       [[ClientConnectionViewController alloc] initWithHostInfo:cell.hostInfo];
   [self.navigationController pushViewController:clientConnectionViewController
@@ -314,10 +327,6 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
 - (void)didSelectRefresh {
   _hostListService->RequestFetch();
-}
-
-- (void)didSelectMenu {
-  [AppDelegate.instance showMenuAnimated:YES];
 }
 
 - (void)refreshContent {
@@ -370,7 +379,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
   if ([self isAnyRefreshControlRefreshing]) {
     // User could just try pull-to-refresh again to refresh. We just need to
     // show the error as a toast.
-    [MDCSnackbarManager
+    [MDCSnackbarManager.defaultManager
         showMessage:[MDCSnackbarMessage messageWithText:errorText]];
     [self stopAllRefreshControls];
     return;
@@ -379,10 +388,12 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
   // Pull-to-refresh is not available. We need to show a dedicated view to allow
   // user to retry.
 
-  // Dismiss snackbars and hide the SSO menu so that the accessibility focus
-  // can shift into the label.
-  [MDCSnackbarManager dismissAndCallCompletionBlocksWithCategory:nil];
-  [AppDelegate.instance hideMenuAnimated:YES];
+  // Dismiss snackbars and so that the accessibility focus can shift into the
+  // label.
+  // TODO(yuweih): See if we really need to hide the account menu in this case,
+  // since it requires nontrivial changes.
+  [MDCSnackbarManager.defaultManager
+      dismissAndCallCompletionBlocksWithCategory:nil];
 
   _fetchingErrorViewController.label.text = errorText;
   remoting::SetAccessibilityFocusElement(_fetchingErrorViewController.label);

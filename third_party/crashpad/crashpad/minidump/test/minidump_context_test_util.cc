@@ -17,8 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_context.h"
@@ -274,7 +274,7 @@ void InitializeMinidumpContextMIPS64(MinidumpContextMIPS64* context,
 
 namespace {
 
-// Using gtest assertions, compares |expected| to |observed|. This is
+// Using Google Test assertions, compares |expected| to |observed|. This is
 // templatized because the CPUContextX86::Fxsave and CPUContextX86_64::Fxsave
 // are nearly identical but have different sizes for the members |xmm|,
 // |reserved_4|, and |available|.

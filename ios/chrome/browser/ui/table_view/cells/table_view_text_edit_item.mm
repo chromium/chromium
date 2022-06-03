@@ -4,16 +4,15 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,11 +58,16 @@ const CGFloat kEditIconLength = 18;
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
   cell.textField.placeholder = self.textFieldPlaceholder;
   cell.textField.text = self.textFieldValue;
+  cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
     cell.textField.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@_textField", self.textFieldName];
   }
-  if (styler.cellBackgroundColor) {
+
+  if (self.textFieldBackgroundColor) {
+    cell.textLabel.backgroundColor = self.textFieldBackgroundColor;
+    cell.textField.backgroundColor = self.textFieldBackgroundColor;
+  } else if (styler.cellBackgroundColor) {
     cell.textLabel.backgroundColor = styler.cellBackgroundColor;
     cell.textField.backgroundColor = styler.cellBackgroundColor;
   } else {
@@ -76,21 +80,23 @@ const CGFloat kEditIconLength = 18;
   if (self.hideIcon) {
     cell.textField.textColor = self.textFieldEnabled
                                    ? [UIColor colorNamed:kBlueColor]
-                                   : UIColor.cr_secondaryLabelColor;
+                                   : [UIColor colorNamed:kTextSecondaryColor];
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = UIColor.cr_secondaryLabelColor;
+      cell.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    } else {
+      cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }
-    if (cell.textField.editing && cell.textField.text.length > 0) {
+
+    if (!self.hasValidText) {
+      cell.iconView.accessibilityIdentifier =
+          [NSString stringWithFormat:@"%@_errorIcon", self.textFieldName];
+      [cell setIcon:TableViewTextEditItemIconTypeError];
+    } else if (cell.textField.editing && cell.textField.text.length > 0) {
       cell.iconView.accessibilityIdentifier =
           [NSString stringWithFormat:@"%@_noIcon", self.textFieldName];
       [cell setIcon:TableViewTextEditItemIconTypeNone];
-    } else if (!self.hasValidText) {
-      cell.iconView.accessibilityIdentifier =
-          [NSString stringWithFormat:@"%@_errorIcon", self.textFieldName];
-      cell.textField.textColor = [UIColor colorNamed:kRedColor];
-      [cell setIcon:TableViewTextEditItemIconTypeError];
     } else {
       cell.iconView.accessibilityIdentifier =
           [NSString stringWithFormat:@"%@_editIcon", self.textFieldName];
@@ -361,18 +367,26 @@ const CGFloat kEditIconLength = 18;
   self.textField.accessibilityIdentifier = nil;
   self.textField.enabled = NO;
   self.textField.delegate = nil;
+  self.textField.secureTextEntry = NO;
   [self.textField removeTarget:nil
                         action:nil
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  [self.identifyingIconButton removeTarget:nil
+                                    action:nil
+                          forControlEvents:UIControlEventAllEvents];
 }
 
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@, %@", self.textLabel.text, self.textField.text];
+  // If |textFieldSecureTextEntry| is
+  // YES, the voice over should not read the text value.
+  NSString* textFieldText =
+      self.textField.secureTextEntry ? @"" : self.textField.text;
+  return
+      [NSString stringWithFormat:@"%@, %@", self.textLabel.text, textFieldText];
 }
 
 #pragma mark Private

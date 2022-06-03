@@ -13,9 +13,14 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(X509CertificateModelTest, GetCertNameOrNicknameAndGetTitle) {
+// Required to register an observer from the constructor of
+// net::NSSCertDatabase.
+using X509CertificateModelTest = net::TestWithTaskEnvironment;
+
+TEST_F(X509CertificateModelTest, GetCertNameOrNicknameAndGetTitle) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(cert.get());
@@ -48,7 +53,7 @@ TEST(X509CertificateModelTest, GetCertNameOrNicknameAndGetTitle) {
             x509_certificate_model::GetTitle(no_cn_cert2.get()));
 }
 
-TEST(X509CertificateModelTest, GetExtensions) {
+TEST_F(X509CertificateModelTest, GetExtensions) {
   {
     net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
         net::GetTestCertsDirectory(), "root_ca_cert.pem"));
@@ -198,7 +203,7 @@ TEST(X509CertificateModelTest, GetExtensions) {
   }
 }
 
-TEST(X509CertificateModelTest, GetTypeCA) {
+TEST_F(X509CertificateModelTest, GetTypeCA) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(cert.get());
@@ -219,7 +224,7 @@ TEST(X509CertificateModelTest, GetTypeCA) {
   EXPECT_EQ(net::CA_CERT, x509_certificate_model::GetType(cert.get()));
 }
 
-TEST(X509CertificateModelTest, GetTypeServer) {
+TEST_F(X509CertificateModelTest, GetTypeServer) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "google.single.der"));
   ASSERT_TRUE(cert.get());
@@ -251,7 +256,7 @@ TEST(X509CertificateModelTest, GetTypeServer) {
 
 // An X.509 v1 certificate with the version field omitted should get
 // the default value v1.
-TEST(X509CertificateModelTest, GetVersionOmitted) {
+TEST_F(X509CertificateModelTest, GetVersionOmitted) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "ndn.ca.crt"));
   ASSERT_TRUE(cert.get());
@@ -259,7 +264,7 @@ TEST(X509CertificateModelTest, GetVersionOmitted) {
   EXPECT_EQ("1", x509_certificate_model::GetVersion(cert.get()));
 }
 
-TEST(X509CertificateModelTest, GetCMSString) {
+TEST_F(X509CertificateModelTest, GetCMSString) {
   net::ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       net::GetTestCertsDirectory(), "multi-root-chain1.pem",
       net::X509Certificate::FORMAT_AUTO);
@@ -302,7 +307,7 @@ TEST(X509CertificateModelTest, GetCMSString) {
   }
 }
 
-TEST(X509CertificateModelTest, ProcessSecAlgorithms) {
+TEST_F(X509CertificateModelTest, ProcessSecAlgorithms) {
   {
     net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
         net::GetTestCertsDirectory(), "root_ca_cert.pem"));
@@ -333,7 +338,7 @@ TEST(X509CertificateModelTest, ProcessSecAlgorithms) {
   }
 }
 
-TEST(X509CertificateModelTest, ProcessSubjectPublicKeyInfo) {
+TEST_F(X509CertificateModelTest, ProcessSubjectPublicKeyInfo) {
   {
     net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
         net::GetTestCertsDirectory(), "root_ca_cert.pem"));
@@ -377,27 +382,27 @@ TEST(X509CertificateModelTest, ProcessSubjectPublicKeyInfo) {
   }
 }
 
-TEST(X509CertificateModelTest, ProcessRawBitsSignatureWrap) {
+TEST_F(X509CertificateModelTest, ProcessRawBitsSignatureWrap) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
       net::GetTestCertsDirectory(), "root_ca_cert.pem"));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ(
-      "5B 53 FF 6D D5 0A 43 A5 0F D4 7D C6 5D 88 E3 98\n"
-      "9D 67 EB 32 82 B3 0F F5 C1 78 F8 05 4A BF BC 21\n"
-      "05 EE 21 08 2C B2 15 A1 B8 B2 F6 A3 15 61 E4 C1\n"
-      "AD 84 A4 A7 40 0C 87 09 5F 2B 1B F9 4D 6C 92 7D\n"
-      "CB 7E 2B B0 01 0A ED 40 E5 4E AF 1A F1 0D EC 1D\n"
-      "9E 96 C7 D4 61 64 39 23 FA 5F 29 C4 2A 3A B8 ED\n"
-      "8A 72 50 6A AC 45 04 76 09 A8 3D 57 D7 F0 4B AE\n"
-      "46 B4 83 C1 14 50 2A 19 59 53 B2 4D AE FC 2F 40\n"
-      "49 C8 AD 4D 9D C8 22 8D 8C 01 DB 31 33 5A F4 BC\n"
-      "4C 9B ED D7 E3 43 D9 E8 1D 53 8B 30 D8 81 9E 72\n"
-      "AB 9E CE B8 F5 83 93 F2 72 DB DE CD B0 52 9A 45\n"
-      "4D CF E7 21 D8 CE 16 64 8F 42 AF C1 87 A8 F9 D5\n"
-      "E2 03 DD BA 6B 1B 7C 7D A0 38 33 61 39 B4 DD 5C\n"
-      "69 17 79 02 3A EC 1D 6F 5E BB 13 FB A6 82 5D 07\n"
-      "20 FC 86 FE 6E 8B AC E1 C2 18 A2 FE 3F 95 66 D3\n"
-      "69 8A 00 06 2C 56 37 34 B9 B6 31 DE 0F F6 44 39",
+      "B1 B1 83 61 AF DB ED 98 CF 3D 43 5F A7 42 B8 6D\n"
+      "94 36 57 BB AB 04 EE DD 3B B7 6D EC 78 7D 46 59\n"
+      "B1 E6 2A C3 AA A5 70 A7 E1 0C FA 65 37 C6 CB 7D\n"
+      "A1 37 35 A1 FF F0 DD CE B6 A4 2C 12 D4 46 A9 9C\n"
+      "A2 91 3A B0 95 55 97 55 E6 0A DA 63 60 24 19 AC\n"
+      "20 C9 B1 94 40 E9 99 B1 F5 C3 ED 61 5D DE 4C E4\n"
+      "EB D9 0E AC 3A 0A FC 44 7D 0F 77 A6 B6 DA 28 D4\n"
+      "ED EA 3A BC 57 23 9C 72 2B 2D B0 5D 11 02 4D C5\n"
+      "BC B0 D6 7E 00 8E F7 E7 F5 19 3A 23 DF 33 02 AA\n"
+      "4B BF 81 F4 5A 99 EE 74 20 F3 77 A1 F0 85 1E A8\n"
+      "D6 CC A4 CB 31 FA 73 24 A2 0E DD 9F 6F 82 38 5F\n"
+      "85 AC 8D 76 BD D8 F2 69 73 E3 46 44 42 E3 5E F3\n"
+      "AA 5E 44 13 51 EA 0B 78 91 77 96 EE 73 FE 2A B5\n"
+      "88 C1 38 8D 8D A8 19 76 94 05 02 CF D4 6F EB E6\n"
+      "07 F5 9D 52 24 B8 50 A3 0E C4 45 A6 09 B4 06 2D\n"
+      "3E 14 A5 3F 1C 1A BC DA B8 40 3E C1 1C F6 3C 05",
       x509_certificate_model::ProcessRawBitsSignatureWrap(cert.get()));
 }

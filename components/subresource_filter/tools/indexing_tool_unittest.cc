@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -41,6 +40,9 @@ class IndexingToolTest : public ::testing::Test {
  public:
   IndexingToolTest() {}
 
+  IndexingToolTest(const IndexingToolTest&) = delete;
+  IndexingToolTest& operator=(const IndexingToolTest&) = delete;
+
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
@@ -56,9 +58,9 @@ class IndexingToolTest : public ::testing::Test {
     rules.push_back(testing::CreateSuffixRule("disallowed2.png"));
     rules.push_back(testing::CreateSuffixRule("disallowed3.png"));
     rules.push_back(
-        testing::CreateWhitelistSuffixRule("whitelist/disallowed1.png"));
+        testing::CreateAllowlistSuffixRule("allowlist/disallowed1.png"));
     rules.push_back(
-        testing::CreateWhitelistSuffixRule("whitelist/disallowed2.png"));
+        testing::CreateAllowlistSuffixRule("allowlist/disallowed2.png"));
 
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
@@ -76,8 +78,6 @@ class IndexingToolTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexingToolTest);
 };
 
 TEST_F(IndexingToolTest, UnindexedFileDoesNotExist) {

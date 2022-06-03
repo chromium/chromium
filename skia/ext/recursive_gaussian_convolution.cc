@@ -6,7 +6,8 @@
 #include <cmath>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "skia/ext/recursive_gaussian_convolution.h"
 
 namespace skia {

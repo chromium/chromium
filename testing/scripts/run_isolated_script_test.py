@@ -5,31 +5,18 @@
 
 """Runs a script that can run as an isolate (or not).
 
-The main requirement is that
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
-  --isolated-script-test-output=[FILENAME]
-
-is passed on the command line to run_isolated_script_tests. This gets
-remapped to the command line argument --write-full-results-to.
-
-json is written to that file in the format produced by
-common.parse_common_test_results.
-
-Optional argument:
-
-  --isolated-script-test-filter=[TEST_NAMES]
-
-is a double-colon-separated ("::") list of test names, to run just that subset
-of tests. This list is parsed by this harness and sent down via the --test-list
-argument.
+If optional argument --isolated-script-test-filter=[TEST_NAMES] is passed to
+the script, it should be a  double-colon-separated ("::") list of test names,
+to run just that subset of tests.
 
 This script is intended to be the base command invoked by the isolate,
 followed by a subsequent Python script. It could be generalized to
 invoke an arbitrary executable.
 """
-
-# TODO(tansell): Remove this script once LayoutTests can accept the isolated
-# arguments and start xvfb itself.
 
 import argparse
 import json
@@ -48,19 +35,24 @@ import xvfb
 
 # Some harnesses understand the --isolated-script-test arguments
 # directly and prefer that they be passed through.
-KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py'}
+KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py', 'run_webgpu_cts.py'}
 
 
 # Known typ test runners this script wraps. They need a different argument name
 # when selecting which tests to run.
 # TODO(dpranke): Detect if the wrapped test suite uses typ better.
 KNOWN_TYP_TEST_RUNNERS = {
-    'run_blinkpy_tests.py',
     'metrics_python_tests.py',
+    'monochrome_python_tests.py',
+    'run_blinkpy_tests.py',
     'run_mac_signing_tests.py',
-    'run_polymer_tools_tests.py',
+    'run_mini_installer_tests.py',
 }
 
+KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
+    'monochrome_python_tests.py',
+    'run_polymer_tools_tests.py',
+}
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def __init__(self):
@@ -108,7 +100,7 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
     self._temp_filter_file.write('\n'.join(filter_list))
     self._temp_filter_file.close()
     arg_name = 'test-list'
-    if KNOWN_TYP_TEST_RUNNERS.intersection(self.rest_args):
+    if any(r in self.rest_args[0] for r in KNOWN_TYP_TEST_RUNNERS):
       arg_name = 'file-list'
 
     return ['--%s=' % arg_name + self._temp_filter_file.name]
@@ -116,6 +108,11 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def clean_up_after_test_run(self):
     if self._temp_filter_file:
       os.unlink(self._temp_filter_file.name)
+
+  def select_python_executable(self):
+    if any(r in self.rest_args[0] for r in KNOWN_TYP_VPYTHON3_TEST_RUNNERS):
+      return 'vpython3.bat' if sys.platform == 'win32' else 'vpython3'
+    return super(TypUnittestAdapter, self).select_python_executable()
 
   def run_test(self):
     return super(TypUnittestAdapter, self).run_test()

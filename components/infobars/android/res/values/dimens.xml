@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Infobar dimensions -->
+    <!-- Maximum width of an infobar. -->
+    <dimen name="infobar_max_width">600dp</dimen>
+    <!-- Width of side shadows on floating infobars. -->
+    <dimen name="infobar_shadow_width">8dp</dimen>
+    <!-- Height of top shadow on each infobar. -->
+    <dimen name="infobar_shadow_height">8dp</dimen>
+    <!-- Distance that a back infobar peeks out above the front infobar. -->
+    <dimen name="infobar_peeking_height">10dp</dimen>
+
+    <!-- Dimensions for compact infobars are a little shorter. -->
+    <dimen name="infobar_compact_size">56dp</dimen>
+    <dimen name="infobar_compact_message_vertical_padding">8dp</dimen>
+
+    <!-- Margin between items in the same control group. -->
+    <dimen name="infobar_control_margin_between_rows">8dp</dimen>
+    <dimen name="infobar_control_margin_between_columns">32dp</dimen>
+    <!-- Text size of the infobar message and other controls. -->
+    <dimen name="infobar_text_size">16sp</dimen>
+    <!-- Text size of the infobar message when a big icon is shown. -->
+    <dimen name="infobar_big_icon_message_size">20sp</dimen>
+    <!-- Margin between stacked buttons in an infobar. -->
+    <dimen name="infobar_margin_between_stacked_buttons">24dp</dimen>
+    <!-- Padding surrounding the infobar. -->
+    <dimen name="infobar_padding">16dp</dimen>
+    <!-- Minimum width of an infobar. -->
+    <dimen name="infobar_min_width">220dp</dimen>
+
+    <!-- Dimensions applied to InfoBars with differently sized icons. -->
+    <dimen name="infobar_small_icon_size">24dp</dimen>
+    <dimen name="infobar_small_icon_margin">8dp</dimen>
+    <dimen name="infobar_big_icon_size">48dp</dimen>
+    <dimen name="infobar_big_icon_margin">16dp</dimen>
+
+    <!-- Vertical margin applied between groups of controls. -->
+    <dimen name="infobar_margin_above_control_groups">24dp</dimen>
+    <dimen name="infobar_margin_above_button_row">32dp</dimen>
+
+    <!-- Used for the surface color of infobar, theme specific. -->
+    <dimen name="infobar_elevation">@dimen/default_elevation_0</dimen>
+</resources>

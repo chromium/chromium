@@ -5,9 +5,9 @@
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
 
 option java_outer_classname = "TranslateEventProtos";
-option java_package = "org.chromium.components.metrics";
 
 package metrics;
 
@@ -148,7 +148,7 @@ message TranslateEventProto {
   // Event received from translate UI.
   optional EventType event_type = 10;
 
-  // Decisions that have been overriden by translate ranker (e.g.
+  // Decisions that have been overridden by translate ranker (e.g.
   // LANGUAGE_DISABLED_BY_AUTO_BLACKLIST).
   repeated EventType decision_overrides = 15;
 

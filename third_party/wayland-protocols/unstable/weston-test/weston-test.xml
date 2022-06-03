@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="weston_test">
+
+  <copyright>
+    Copyright © 2012 Intel Corporation
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="weston_test" version="1">
+    <description summary="weston internal testing">
+      Internal testing facilities for the weston compositor.
+
+      It can't be stressed enough that these should never ever be used
+      outside of running weston's tests.  The weston-test.so module should
+      never be installed.
+
+      These requests may allow clients to do very bad things.
+    </description>
+    <request name="move_surface">
+      <description summary="do not use">
+        Moves the surface to a specified location on screen.
+
+        Note from Chromium developers: the move_surface API must not be used as
+        it may result in unexpected results as it violates layering and
+        positioning of surface inside the Wayland compositor.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
+    <request name="move_pointer">
+      <description summary="moves pointer to a specified location on the surface">
+        Moves the pointer to a specified location on the surface. The
+        coordinates passed must be relative to surface local coordinates. It
+        is not guaranteed that the surface will receive the events as it may
+        be stacked below another surface. Thus, before calling this method,
+        the client should activate the surface by using the activate_surface
+        request that will raise and activate the requested surface.
+
+        NULL surface is allowed. In this case, the provided coordinates will be
+        treated as global screen coordinates and it is not defined what surface
+        may receive events.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface" allow-null="true"/>
+      <arg name="tv_sec_hi" type="uint"/>
+      <arg name="tv_sec_lo" type="uint"/>
+      <arg name="tv_nsec" type="uint"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
+    <request name="send_button">
+      <description summary="sends a pointer button using the current location of the pointer">
+        Sends a pointer button using the current location of the pointer. If
+        the caller wants to send a pointer button event to a specific surface,
+        they must first move the pointer using the "move_pointer" API to a
+        desired location.
+      </description>
+      <arg name="tv_sec_hi" type="uint"/>
+      <arg name="tv_sec_lo" type="uint"/>
+      <arg name="tv_nsec" type="uint"/>
+      <arg name="button" type="int"/>
+      <arg name="state" type="uint"/>
+    </request>
+    <request name="reset_pointer">
+      <description summary="resets pressed pointer buttons if any">
+        Unpresses pressed mouse buttons if any.
+      </description>
+    </request>
+    <request name="send_axis">
+      <arg name="tv_sec_hi" type="uint"/>
+      <arg name="tv_sec_lo" type="uint"/>
+      <arg name="tv_nsec" type="uint"/>
+      <arg name="axis" type="uint"/>
+      <arg name="value" type="fixed"/>
+    </request>
+    <request name="activate_surface">
+      <description summary="activates the specified surface">
+        Activates and raises the surface a client requested.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface" allow-null="true"/>
+    </request>
+    <request name="send_key">
+      <description summary="send a keyboard key">
+        Sends a keyboard key to the currently active window. In order to send a
+        key to a desired surface, the client must first call activate_surface
+        before sending a key.
+      </description>
+      <arg name="tv_sec_hi" type="uint"/>
+      <arg name="tv_sec_lo" type="uint"/>
+      <arg name="tv_nsec" type="uint"/>
+      <arg name="key" type="uint"/>
+      <arg name="state" type="uint"/>
+    </request>
+    <request name="device_release">
+      <arg name="device" type="string"/>
+    </request>
+    <request name="device_add">
+      <arg name="device" type="string"/>
+    </request>
+    <event name="pointer_position">
+      <description summary="a callback event that is called upon move_pointer request">
+        Signals that the event has been sent. The x and y are the same values
+        sent via the move_pointer request.
+      </description>
+      <arg name="x" type="fixed"/>
+      <arg name="y" type="fixed"/>
+    </event>
+    <event name="pointer_button">
+      <description summary="notifies current pointer button events">
+        The pointer_button signal is sent after each send_button request.
+      </description>
+      <arg name="button" type="int"/>
+      <arg name="state" type="uint"/>
+    </event>
+    <event name="keyboard_key">
+      <description summary="notifies current pointer button events">
+        The keyboard_key signal is sent after each send_key request.
+      </description>
+      <arg name="key" type="uint"/>
+      <arg name="state" type="uint"/>
+    </event>
+    <request name="capture_screenshot">
+      <description summary="records current screen image">
+        Records an image of what is currently displayed on a given
+        display output, returning the image as an event.
+      </description>
+      <arg name="output" type="object" interface="wl_output"
+           summary="output to capture from"/>
+      <arg name="buffer" type="object" interface="wl_buffer"
+           summary="buffer for returning screenshots to the test client"/>
+    </request>
+    <event name="capture_screenshot_done">
+	  <description summary="screenshot capture is done">
+		The capture_screenshot_done signal is sent when a screenshot has been copied into the
+		provided buffer.
+	  </description>
+    </event>
+    <request name="send_touch">
+      <arg name="tv_sec_hi" type="uint"/>
+      <arg name="tv_sec_lo" type="uint"/>
+      <arg name="tv_nsec" type="uint"/>
+      <arg name="touch_id" type="int"/>
+      <arg name="x" type="fixed"/>
+      <arg name="y" type="fixed"/>
+      <arg name="touch_type" type="uint"/>
+    </request>
+  </interface>
+
+  <interface name="weston_test_runner" version="1">
+    <description summary="weston internal testing">
+      This is a global singleton interface for Weston internal tests.
+
+      This interface allows a test client to trigger compositor-side
+      test procedures. This is useful for cases, where the actual tests
+      are in compositor plugins, but they also require the presence of
+      a particular client.
+
+      This interface is implemented by the compositor plugins containing
+      the testing code.
+
+      A test client starts a test with the "run" request. It must not send
+      another "run" request until receiving the "finished" event. If the
+      compositor-side test succeeds, the "finished" event is sent. If the
+      compositor-side test fails, the compositor should send the protocol
+      error "test_failed", but it may also exit with an error (e.g. SEGV).
+
+      Unknown test name will raise "unknown_test" protocol error.
+    </description>
+
+    <enum name="error">
+      <entry name="test_failed" value="0" summary="compositor test failed"/>
+      <entry name="unknown_test" value="1" summary="unrecognized test name"/>
+    </enum>
+
+    <request name="destroy" type="destructor"/>
+
+    <request name="run">
+      <arg name="test_name" type="string"/>
+    </request>
+
+    <event name="finished"/>
+  </interface>
+</protocol>

@@ -5,9 +5,12 @@
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium:  //chromeos/services/machine_learning/public/mojom/
 //       Chrome OS: src/platform2/ml/mojom/
+//       Note: Other repos downstream of Chromium might also use this mojom.
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
-// client (Chromium) later.
+// clients (Chromium, other downstream repos) later.
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
+// replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;
 
@@ -17,6 +20,7 @@ import "chromeos/services/machine_learning/public/mojom/tensor.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum ExecuteResult {
   OK = 0,
   INPUT_MISSING_ERROR = 1,
@@ -28,16 +32,16 @@ enum ExecuteResult {
   UNKNOWN_OUTPUT_ERROR = 7,
   DUPLICATE_OUTPUT_ERROR = 8,
   EXECUTION_ERROR = 9,
-  // Remove kMax and use builtin kMaxValue after Mojo uprev (crbug.com/909719).
-  kMax = EXECUTION_ERROR,
 };
 
 // API for performing inference on a TensorFlow graph. A given graph can be
 // executed multiple times with a single instance of GraphExecutor.
+// Next ordinal: 1
+[Stable]
 interface GraphExecutor {
-  // Initializes input node values as specified in |inputs|, then executes the
-  // graph. The returned |outputs| are the values for the nodes specified in
-  // |output_names|.
-  Execute(map<string, Tensor> inputs, array<string> output_names)
+  // Initializes input node values as specified in `inputs`, then executes the
+  // graph. The returned `outputs` are the values for the nodes specified in
+  // `output_names`.
+  Execute@0(map<string, Tensor> inputs, array<string> output_names)
        => (ExecuteResult result, array<Tensor>? outputs);
 };

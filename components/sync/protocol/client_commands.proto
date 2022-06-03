@@ -19,11 +19,11 @@ package sync_pb;
 message CustomNudgeDelay {
   optional int32 datatype_id = 1;  // Datatype id.
   optional int32 delay_ms = 2;     // Delay in milliseconds.
-};
+}
 
 message ClientCommand {
   // Time to wait before sending any requests to the server.
-  optional int32 set_sync_poll_interval = 1;       // in seconds
+  optional int32 set_sync_poll_interval = 1;  // in seconds
   // This has been deprecated since M75.
   optional int32 set_sync_long_poll_interval = 2 [deprecated = true];
 
@@ -47,4 +47,4 @@ message ClientCommand {
   // |sessions_commit_delay_seconds|
   // New in M39.
   repeated CustomNudgeDelay custom_nudge_delays = 8;
-};
+}

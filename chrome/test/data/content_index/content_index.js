@@ -11,6 +11,16 @@ async function RegisterServiceWorker() {
   await navigator.serviceWorker.register('sw.js', { scope: 'content_index' });
 }
 
+async function AddContentForFrame(id) {
+  const iframe = document.getElementById('iframe-id');
+  await iframe.contentWindow.AddContent(id);
+}
+
+async function GetIdsForFrame() {
+  const iframe = document.getElementById('iframe-id');
+  return await iframe.contentWindow.GetIds();
+}
+
 async function AddContent(id) {
   const registration = await navigator.serviceWorker.ready;
 
@@ -22,7 +32,7 @@ async function AddContent(id) {
     icons: [{
       src: '/anchor_download_test.png',
     }],
-    launchUrl: '/content_index/content_index.html?launch',
+    url: '/content_index/content_index.html?launch',
   });
 }
 

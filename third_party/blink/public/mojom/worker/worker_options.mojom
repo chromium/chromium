@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/fetch_api.mojom";
+import "third_party/blink/public/mojom/script/script_type.mojom";
+
+// Used for constructing shared workers:
+// https://html.spec.whatwg.org/multipage/workers.html#workeroptions
+struct WorkerOptions {
+  ScriptType type = ScriptType.kClassic;
+  network.mojom.CredentialsMode credentials =
+      network.mojom.CredentialsMode.kSameOrigin;
+  string name = "";
+};

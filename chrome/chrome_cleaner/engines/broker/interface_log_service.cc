@@ -12,8 +12,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -24,7 +24,7 @@ namespace chrome_cleaner {
 
 namespace {
 
-base::FilePath GetPathForLogFile(const base::StringPiece16 log_file_name) {
+base::FilePath GetPathForLogFile(const base::WStringPiece log_file_name) {
   base::FilePath app_data_path;
   GetAppDataProductDirectory(&app_data_path);
   base::FilePath log_file_path = app_data_path.Append(log_file_name);
@@ -39,16 +39,16 @@ base::TimeDelta InterfaceLogService::GetTicksSinceCreation() const {
 
 // static
 std::unique_ptr<InterfaceLogService> InterfaceLogService::Create(
-    const base::StringPiece16 file_name,
-    const base::StringPiece16 build_version) {
+    const base::WStringPiece file_name,
+    const base::WStringPiece build_version) {
   if (file_name.empty())
     return nullptr;
 
   base::FilePath file_path = GetPathForLogFile(file_name);
 
   std::string file_path_utf8;
-  if (!base::UTF16ToUTF8(file_path.value().c_str(), file_path.value().size(),
-                         &file_path_utf8)) {
+  if (!base::WideToUTF8(file_path.value().c_str(), file_path.value().size(),
+                        &file_path_utf8)) {
     LOG(ERROR) << "Can't open interface log file " << file_path.value()
                << ": name is invalid" << std::endl;
     return nullptr;
@@ -114,14 +114,13 @@ base::FilePath InterfaceLogService::GetLogFilePath() const {
   return GetPathForLogFile(log_file_name_);
 }
 
-InterfaceLogService::InterfaceLogService(
-    const base::StringPiece16 file_name,
-    const base::StringPiece16 build_version,
-    std::ofstream csv_stream)
+InterfaceLogService::InterfaceLogService(const base::WStringPiece file_name,
+                                         const base::WStringPiece build_version,
+                                         std::ofstream csv_stream)
     : InterfaceMetadataObserver(),
       log_file_name_(file_name),
       csv_stream_(std::move(csv_stream)) {
-  std::string build_version_utf8 = base::UTF16ToUTF8(build_version);
+  std::string build_version_utf8 = base::WideToUTF8(build_version);
 
   base::AutoLock lock(lock_);
   call_record_.set_build_version(build_version_utf8);

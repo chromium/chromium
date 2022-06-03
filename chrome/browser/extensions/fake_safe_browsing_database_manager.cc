@@ -11,18 +11,23 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/safe_browsing/db/util.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace extensions {
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(bool enabled)
-    : enabled_(enabled) {}
+    : safe_browsing::TestSafeBrowsingDatabaseManager(
+          content::GetUIThreadTaskRunner({}),
+          content::GetIOThreadTaskRunner({})),
+      enabled_(enabled) {}
 
 FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {
 }

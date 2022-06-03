@@ -27,6 +27,7 @@ enum AnnotationType {
   kOcr = 1,
   kLabel = 2,
   kCaption = 3,
+  kIcon = 4,
 };
 
 // One annotation for an image.
@@ -43,6 +44,8 @@ union AnnotateImageResult {
   array<Annotation> annotations;
 };
 
+// This interface is used inside Blink renderers and received within the
+// ImageAnnotationService to return image annotations.
 interface Annotator {
   // Requests a11y annotations (i.e. OCR, labels) for the given image.
   //

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "printing/metafile.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,16 +20,18 @@ namespace printing {
 // Note: May be accessed from many threads at the same time. This is an non
 // issue since this object is immutable. The reason is that a page may be
 // printed and be displayed at the same time.
-class PRINTING_EXPORT PrintedPage
+class COMPONENT_EXPORT(PRINTING) PrintedPage
     : public base::RefCountedThreadSafe<PrintedPage> {
  public:
-  PrintedPage(int page_number,
+  PrintedPage(uint32_t page_number,
               std::unique_ptr<MetafilePlayer> metafile,
               const gfx::Size& page_size,
               const gfx::Rect& page_content_rect);
+  PrintedPage(const PrintedPage&) = delete;
+  PrintedPage& operator=(const PrintedPage&) = delete;
 
   // Getters
-  int page_number() const { return page_number_; }
+  uint32_t page_number() const { return page_number_; }
   const MetafilePlayer* metafile() const;
   const gfx::Size& page_size() const { return page_size_; }
   const gfx::Rect& page_content_rect() const { return page_content_rect_; }
@@ -45,7 +46,7 @@ class PRINTING_EXPORT PrintedPage
   ~PrintedPage();
 
   // Page number inside the printed document.
-  const int page_number_;
+  const uint32_t page_number_;
 
   // Actual paint data.
   const std::unique_ptr<MetafilePlayer> metafile_;
@@ -59,8 +60,6 @@ class PRINTING_EXPORT PrintedPage
 
   // The printable area of the page.
   const gfx::Rect page_content_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintedPage);
 };
 
 }  // namespace printing

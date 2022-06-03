@@ -1,25 +1,33 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Web Bluetooth (https://webbluetoothcg.github.io/web-bluetooth/)
 
 dictionary BluetoothDataFilterInit {
   BufferSource dataPrefix;
   BufferSource mask;
 };
+
+dictionary BluetoothManufacturerDataFilterInit : BluetoothDataFilterInit {
+  required [EnforceRange] unsigned short companyIdentifier;
+};
+
+dictionary BluetoothServiceDataFilterInit : BluetoothDataFilterInit {
+  required BluetoothServiceUUID service;
+};
+
 dictionary BluetoothLEScanFilterInit {
   sequence<BluetoothServiceUUID> services;
   DOMString name;
   DOMString namePrefix;
-  // Maps unsigned shorts to BluetoothDataFilters.
-  object manufacturerData;
-  // Maps BluetoothServiceUUIDs to BluetoothDataFilters.
-  object serviceData;
+  sequence<BluetoothManufacturerDataFilterInit> manufacturerData;
+  sequence<BluetoothServiceDataFilterInit> serviceData;
 };
 
 dictionary RequestDeviceOptions {
   sequence<BluetoothLEScanFilterInit> filters;
   sequence<BluetoothServiceUUID> optionalServices = [];
+  sequence<unsigned short> optionalManufacturerData = [];
   boolean acceptAllDevices = false;
 };
 
@@ -29,8 +37,10 @@ interface Bluetooth : EventTarget {
   attribute EventHandler onavailabilitychanged;
   [SameObject]
   readonly attribute BluetoothDevice? referringDevice;
+  Promise<sequence<BluetoothDevice>> getDevices();
   Promise<BluetoothDevice> requestDevice(optional RequestDeviceOptions options = {});
 };
+
 Bluetooth includes BluetoothDeviceEventHandlers;
 Bluetooth includes CharacteristicEventHandlers;
 Bluetooth includes ServiceEventHandlers;
@@ -40,6 +50,7 @@ dictionary BluetoothPermissionDescriptor : PermissionDescriptor {
   // These match RequestDeviceOptions.
   sequence<BluetoothLEScanFilterInit> filters;
   sequence<BluetoothServiceUUID> optionalServices = [];
+  sequence<unsigned short> optionalManufacturerData = [];
   boolean acceptAllDevices = false;
 };
 
@@ -48,8 +59,9 @@ dictionary AllowedBluetoothDevice {
   required boolean mayUseGATT;
   // An allowedServices of "all" means all services are allowed.
   required (DOMString or sequence<UUID>) allowedServices;
+  required sequence<unsigned short> allowedManufacturerData;
 };
-dictionary BluetoothPermissionData {
+dictionary BluetoothPermissionStorage {
   required sequence<AllowedBluetoothDevice> allowedDevices;
 };
 
@@ -77,13 +89,17 @@ interface BluetoothDevice : EventTarget {
   readonly attribute DOMString? name;
   readonly attribute BluetoothRemoteGATTServer? gatt;
 
-  Promise<void> watchAdvertisements();
-  void unwatchAdvertisements();
+  Promise<undefined> watchAdvertisements(
+      optional WatchAdvertisementsOptions options = {});
   readonly attribute boolean watchingAdvertisements;
 };
 BluetoothDevice includes BluetoothDeviceEventHandlers;
 BluetoothDevice includes CharacteristicEventHandlers;
 BluetoothDevice includes ServiceEventHandlers;
+
+dictionary WatchAdvertisementsOptions {
+  AbortSignal signal;
+};
 
 [Exposed=Window, SecureContext]
 interface BluetoothManufacturerDataMap {
@@ -128,7 +144,7 @@ interface BluetoothRemoteGATTServer {
   readonly attribute BluetoothDevice device;
   readonly attribute boolean connected;
   Promise<BluetoothRemoteGATTServer> connect();
-  void disconnect();
+  undefined disconnect();
   Promise<BluetoothRemoteGATTService> getPrimaryService(BluetoothServiceUUID service);
   Promise<sequence<BluetoothRemoteGATTService>>
     getPrimaryServices(optional BluetoothServiceUUID service);
@@ -163,9 +179,9 @@ interface BluetoothRemoteGATTCharacteristic : EventTarget {
   Promise<sequence<BluetoothRemoteGATTDescriptor>>
     getDescriptors(optional BluetoothDescriptorUUID descriptor);
   Promise<DataView> readValue();
-  Promise<void> writeValue(BufferSource value);
-  Promise<void> writeValueWithResponse(BufferSource value);
-  Promise<void> writeValueWithoutResponse(BufferSource value);
+  Promise<undefined> writeValue(BufferSource value);
+  Promise<undefined> writeValueWithResponse(BufferSource value);
+  Promise<undefined> writeValueWithoutResponse(BufferSource value);
   Promise<BluetoothRemoteGATTCharacteristic> startNotifications();
   Promise<BluetoothRemoteGATTCharacteristic> stopNotifications();
 };
@@ -191,7 +207,7 @@ interface BluetoothRemoteGATTDescriptor {
   readonly attribute UUID uuid;
   readonly attribute DataView? value;
   Promise<DataView> readValue();
-  Promise<void> writeValue(BufferSource value);
+  Promise<undefined> writeValue(BufferSource value);
 };
 
 [SecureContext]
@@ -213,6 +229,7 @@ interface mixin ServiceEventHandlers {
 };
 
 typedef DOMString UUID;
+
 [Exposed=Window]
 interface BluetoothUUID {
   static UUID getService((DOMString or unsigned long) name);

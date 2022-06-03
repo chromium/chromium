@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace base {
+class Value;
 class DictionaryValue;
 }
 
@@ -27,10 +27,15 @@ extern const char kSignInPromoQueryKeyShowAccountManagement[];
 class InlineLoginHandler : public content::WebUIMessageHandler {
  public:
   InlineLoginHandler();
+
+  InlineLoginHandler(const InlineLoginHandler&) = delete;
+  InlineLoginHandler& operator=(const InlineLoginHandler&) = delete;
+
   ~InlineLoginHandler() override;
 
   // content::WebUIMessageHandler overrides:
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  protected:
   // Enum for gaia auth mode, must match AuthMode defined in
@@ -65,15 +70,11 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // from the CookieManager.
   void HandleCompleteLoginMessageWithCookies(
       const base::ListValue& args,
-      const net::CookieStatusList& cookies,
-      const net::CookieStatusList& excluded_cookies);
+      const net::CookieAccessResultList& cookies,
+      const net::CookieAccessResultList& excluded_cookies);
 
   // JS callback to switch the UI from a constrainted dialog to a full tab.
   void HandleSwitchToFullTabMessage(const base::ListValue* args);
-
-  // Handles the web ui message sent when the navigation button is clicked by
-  // the user, requesting either a back navigation or closing the dialog.
-  void HandleNavigationButtonClicked(const base::ListValue* args);
 
   // Handles the web ui message sent when the window is closed from javascript.
   virtual void HandleDialogClose(const base::ListValue* args);
@@ -86,11 +87,10 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
                              bool skip_for_now,
                              bool trusted,
                              bool trusted_found,
-                             bool choose_what_to_sync) = 0;
+                             bool choose_what_to_sync,
+                             base::Value edu_login_params) = 0;
 
   base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_H_

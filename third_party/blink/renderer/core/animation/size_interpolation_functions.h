@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SIZE_INTERPOLATION_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SIZE_INTERPOLATION_FUNCTIONS_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/style/fill_layer.h"

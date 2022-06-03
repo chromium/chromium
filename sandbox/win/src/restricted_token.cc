@@ -146,6 +146,14 @@ DWORD RestrictedToken::GetRestrictedToken(
     }
   }
 
+  for (const auto& default_dacl_sid : sids_for_default_dacl_) {
+    if (!AddSidToDefaultDacl(new_token.Get(), std::get<0>(default_dacl_sid),
+                             std::get<1>(default_dacl_sid),
+                             std::get<2>(default_dacl_sid))) {
+      return ::GetLastError();
+    }
+  }
+
   // Add user to default dacl.
   if (!AddUserSidToDefaultDacl(new_token.Get(), GENERIC_ALL))
     return ::GetLastError();
@@ -408,6 +416,17 @@ DWORD RestrictedToken::SetIntegrityLevel(IntegrityLevel integrity_level) {
 
 void RestrictedToken::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
+}
+
+DWORD RestrictedToken::AddDefaultDaclSid(const Sid& sid,
+                                         ACCESS_MODE access_mode,
+                                         ACCESS_MASK access) {
+  DCHECK(init_);
+  if (!init_)
+    return ERROR_NO_TOKEN;
+
+  sids_for_default_dacl_.push_back(std::make_tuple(sid, access_mode, access));
+  return ERROR_SUCCESS;
 }
 
 }  // namespace sandbox

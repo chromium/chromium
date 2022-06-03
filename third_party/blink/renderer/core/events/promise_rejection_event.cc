@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/events/promise_rejection_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_promise_rejection_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 
@@ -15,10 +16,10 @@ PromiseRejectionEvent::PromiseRejectionEvent(
     const PromiseRejectionEventInit* initializer)
     : Event(type, initializer), world_(&script_state->World()) {
   DCHECK(initializer->hasPromise());
-  promise_.Set(initializer->promise().GetIsolate(),
-               initializer->promise().V8Value());
+  promise_.Reset(initializer->promise().GetIsolate(),
+                 initializer->promise().V8Value());
   if (initializer->hasReason()) {
-    reason_.Set(script_state->GetIsolate(), initializer->reason().V8Value());
+    reason_.Reset(script_state->GetIsolate(), initializer->reason().V8Value());
   }
 }
 
@@ -29,8 +30,7 @@ ScriptPromise PromiseRejectionEvent::promise(ScriptState* script_state) const {
   // world that created the promise.
   if (!CanBeDispatchedInWorld(script_state->World()))
     return ScriptPromise();
-  return ScriptPromise(script_state,
-                       promise_.NewLocal(script_state->GetIsolate()));
+  return ScriptPromise(script_state, promise_.Get(script_state->GetIsolate()));
 }
 
 ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {
@@ -41,7 +41,7 @@ ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {
                        v8::Undefined(script_state->GetIsolate()));
   }
   return ScriptValue(script_state->GetIsolate(),
-                     reason_.NewLocal(script_state->GetIsolate()));
+                     reason_.Get(script_state->GetIsolate()));
 }
 
 const AtomicString& PromiseRejectionEvent::InterfaceName() const {
@@ -54,7 +54,7 @@ bool PromiseRejectionEvent::CanBeDispatchedInWorld(
   return world_->GetWorldId() == world.GetWorldId();
 }
 
-void PromiseRejectionEvent::Trace(blink::Visitor* visitor) {
+void PromiseRejectionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(promise_);
   visitor->Trace(reason_);
   Event::Trace(visitor);

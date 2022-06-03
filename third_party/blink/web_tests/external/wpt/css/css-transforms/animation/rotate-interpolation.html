@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <title>rotate interpolation</title>
 <link rel="help" href="https://drafts.csswg.org/css-transforms-2/#propdef-rotate">
-
 <meta name="assert" content="rotate supports animation.">
+<meta name="timeout" content="long">
+
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/interpolation-testcommon.js"></script>
@@ -55,7 +56,7 @@ test_interpolation({
   to: '-1 1 0 60deg',
 }, [
   {at: -1, expect: '0.447214 -0.447214 0.774597 104.478deg'},
-  {at: 0, expect: 'z 45deg'},
+  {at: 0, expect: '45deg'},
   {at: 0.125, expect: '-0.136456 0.136456 0.981203 40.6037deg'},
   {at: 0.875, expect: '-0.70246 0.70246 0.114452 53.1994deg'},
   {at: 1, expect: '-0.71 0.71 0 60deg'},

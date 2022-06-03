@@ -20,9 +20,6 @@ div {
    font-family: arial
    display: block
 }
-html {
-   color: -internal-root-color
-}
 #third::before {
    content: "uno-1"
 }
@@ -35,7 +32,6 @@ Running: testFilterFontFamily
 Filtering styles by: font-family
 [ VISIBLE ] Inherited from div#second
 [ VISIBLE ] Inherited from div#first
-[ HIDDEN ]  Inherited from html
 [ HIDDEN ]  Pseudo ::before element
 [ HIDDEN ]  Pseudo ::after element
 
@@ -43,7 +39,6 @@ Running: testContentProperty
 Filtering styles by: content
 [ HIDDEN ]  Inherited from div#second
 [ HIDDEN ]  Inherited from div#first
-[ HIDDEN ]  Inherited from html
 [ VISIBLE ] Pseudo ::before element
 [ VISIBLE ] Pseudo ::after element
 
@@ -51,7 +46,6 @@ Running: testDisplayProperty
 Filtering styles by: display
 [ HIDDEN ]  Inherited from div#second
 [ VISIBLE ] Inherited from div#first
-[ HIDDEN ]  Inherited from html
 [ HIDDEN ]  Pseudo ::before element
 [ VISIBLE ] Pseudo ::after element
 

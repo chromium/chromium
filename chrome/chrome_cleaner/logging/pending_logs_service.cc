@@ -11,7 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/logging.h"
+#include "base/task/current_thread.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/proto/chrome_cleaner_report.pb.h"
@@ -28,18 +29,18 @@ namespace chrome_cleaner {
 bool PendingLogsService::retrying_ = false;
 
 // static.
-base::string16 PendingLogsService::LogsUploadRetryTaskName(
-    const base::string16& product_shortname) {
+std::wstring PendingLogsService::LogsUploadRetryTaskName(
+    const std::wstring& product_shortname) {
   return product_shortname + L" logs upload retry";
 }
 
 // static.
 void PendingLogsService::ScheduleLogsUploadTask(
-    const base::string16& product_shortname,
+    const std::wstring& product_shortname,
     const ChromeCleanerReport& chrome_cleaner_report,
     base::FilePath* log_file,
     RegistryLogger* registry_logger) {
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(log_file);
   DCHECK(registry_logger);
   // This can happen when we fail while retrying. The logging service is not
@@ -62,8 +63,8 @@ void PendingLogsService::ScheduleLogsUploadTask(
   }
 
   // To get rid of the temporary file if we are not going to use it.
-  base::ScopedClosureRunner delete_file_closure(base::BindRepeating(
-      IgnoreResult(&base::DeleteFile), temp_file_path, false));
+  base::ScopedClosureRunner delete_file_closure(
+      base::BindOnce(base::GetDeleteFileCallback(), temp_file_path));
 
   if (base::WriteFile(temp_file_path, chrome_cleaner_report_string.c_str(),
                       chrome_cleaner_report_string.size()) <= 0) {
@@ -104,7 +105,7 @@ void PendingLogsService::ScheduleLogsUploadTask(
 
 // static.
 void PendingLogsService::ClearPendingLogFile(
-    const base::string16& product_shortname,
+    const std::wstring& product_shortname,
     const base::FilePath& log_file,
     RegistryLogger* registry_logger) {
   DCHECK(registry_logger);
@@ -118,18 +119,18 @@ void PendingLogsService::ClearPendingLogFile(
       LOG(ERROR) << "Failed to delete logs upload retry task.";
   }
 
-  if (!base::DeleteFile(log_file, false))
+  if (!base::DeleteFile(log_file))
     LOG(ERROR) << "Failed to delete '" << SanitizePath(log_file) << "'.";
 }
 
 PendingLogsService::PendingLogsService() {
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
 }
 
 PendingLogsService::~PendingLogsService() = default;
 
 void PendingLogsService::RetryNextPendingLogsUpload(
-    const base::string16& product_shortname,
+    const std::wstring& product_shortname,
     base::OnceCallback<void(bool)> done_callback,
     RegistryLogger* registry_logger) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -167,7 +168,7 @@ void PendingLogsService::RetryNextPendingLogsUpload(
 }
 
 void PendingLogsService::UploadResultCallback(
-    const base::string16& product_shortname,
+    const std::wstring& product_shortname,
     RegistryLogger* registry_logger,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

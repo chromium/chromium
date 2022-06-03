@@ -11,22 +11,19 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class DeviceInfoSyncService;
-class DeviceInfoTracker;
 class LocalDeviceInfoProvider;
 }  // namespace syncer
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 class PrefService;
 
@@ -39,13 +36,14 @@ class SharingSyncPreference {
  public:
   // FCM registration status of current device. Not synced across devices.
   struct FCMRegistration {
-    FCMRegistration(std::string authorized_entity, base::Time timestamp);
+    FCMRegistration(absl::optional<std::string> authorized_entity,
+                    base::Time timestamp);
     FCMRegistration(FCMRegistration&& other);
     FCMRegistration& operator=(FCMRegistration&& other);
     ~FCMRegistration();
 
     // Authorized entity registered with FCM.
-    std::string authorized_entity;
+    absl::optional<std::string> authorized_entity;
 
     // Timestamp of latest registration.
     base::Time timestamp;
@@ -54,19 +52,23 @@ class SharingSyncPreference {
   SharingSyncPreference(
       PrefService* prefs,
       syncer::DeviceInfoSyncService* device_info_sync_service);
+
+  SharingSyncPreference(const SharingSyncPreference&) = delete;
+  SharingSyncPreference& operator=(const SharingSyncPreference&) = delete;
+
   ~SharingSyncPreference();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns local SharingInfo to be uploaded to sync.
-  static base::Optional<syncer::DeviceInfo::SharingInfo>
+  static absl::optional<syncer::DeviceInfo::SharingInfo>
   GetLocalSharingInfoForSync(PrefService* prefs);
 
   // Returns VAPID key from preferences if present, otherwise returns
-  // base::nullopt.
+  // absl::nullopt.
   // For more information on vapid keys, please see
   // https://tools.ietf.org/html/draft-thomson-webpush-vapid-02
-  base::Optional<std::vector<uint8_t>> GetVapidKey() const;
+  absl::optional<std::vector<uint8_t>> GetVapidKey() const;
 
   // Adds VAPID key to preferences for syncing across devices.
   void SetVapidKey(const std::vector<uint8_t>& vapid_key) const;
@@ -77,27 +79,11 @@ class SharingSyncPreference {
   // Clears previously set observer.
   void ClearVapidKeyChangeObserver();
 
-  base::Optional<FCMRegistration> GetFCMRegistration() const;
+  absl::optional<FCMRegistration> GetFCMRegistration() const;
 
   void SetFCMRegistration(FCMRegistration registration);
 
   void ClearFCMRegistration();
-
-  // Returns eanbled feaures of device with specified |device_info|.
-  // |device_info| must not be nullptr.
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> GetEnabledFeatures(
-      const syncer::DeviceInfo* device_info) const;
-
-  // Returns the SharingTargetInfo of device with specified |device_info|.
-  base::Optional<syncer::DeviceInfo::SharingTargetInfo> GetTargetInfo(
-      const std::string& guid) const;
-
-  SharingDevicePlatform GetDevicePlatform(const std::string& guid) const;
-
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo() const;
-
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo(
-      const syncer::DeviceInfo* device_info) const;
 
   void SetLocalSharingInfo(syncer::DeviceInfo::SharingInfo sharing_info);
 
@@ -106,17 +92,10 @@ class SharingSyncPreference {
  private:
   friend class SharingSyncPreferenceTest;
 
-  // Returns local SharingInfo stored in preferences.
-  static base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo(
-      PrefService* prefs);
-
   PrefService* prefs_;
   syncer::DeviceInfoSyncService* device_info_sync_service_;
-  syncer::DeviceInfoTracker* device_info_tracker_;
   syncer::LocalDeviceInfoProvider* local_device_info_provider_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingSyncPreference);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SYNC_PREFERENCE_H_

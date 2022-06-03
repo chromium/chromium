@@ -1,3 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++image
+++++genericContainer ignored
+++++++image
+++++++++image
+++++++++image

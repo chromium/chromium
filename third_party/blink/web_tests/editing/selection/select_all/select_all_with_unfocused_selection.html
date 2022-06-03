@@ -12,7 +12,7 @@ test(() => {
 
   assert_selection(
     'foo<textarea>bar|</textarea><a href="http://www.example.com">baz</a>',
-    selection => {
+    (selection, testRunner) => {
       selection.document.querySelector('a').focus();
       testRunner.execCommand('selectAll');
     },
@@ -24,7 +24,7 @@ test(() => {
 
   assert_selection(
     'foo<textarea>^ba|r</textarea><a href="http://www.example.com">baz</a>',
-    selection => {
+    (selection, testRunner) => {
       selection.document.querySelector('a').focus();
       testRunner.execCommand('selectAll');
     },
@@ -36,7 +36,7 @@ test(() => {
 
   assert_selection(
     'foo<div contenteditable>bar|</div><a href="http://www.example.com">baz</a>',
-    selection => {
+    (selection, testRunner) => {
       selection.document.querySelector('a').focus();
       testRunner.execCommand('selectAll');
     },
@@ -48,7 +48,7 @@ test(() => {
 
   assert_selection(
     'foo<div contenteditable>^ba|r</div><a href="http://www.example.com">baz</a>',
-    selection => {
+    (selection, testRunner) => {
       selection.document.querySelector('a').focus();
       testRunner.execCommand('selectAll');
     },

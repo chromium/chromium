@@ -1,0 +1,70 @@
+Document
+++Group IsControlElement=false
+++++Edit LocalizedControlType='date picker'
+++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Spinner Name='Month' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++Text Name='09'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Day' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++Text Name='01'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++Text Name='2008'
+++++++Button Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Edit LocalizedControlType='date picker'
+++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Spinner Name='Month' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++Text Name='09'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Day' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++Text Name='01'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++Text Name='2008'
+++++++Button Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Edit LocalizedControlType='date picker' Name='Third date picker' ControllerFor='{document}'
+++++++Group IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Spinner Name='Month Third date picker' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++Text Name='09'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Day Third date picker' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++Text Name='01'
+++++++++++Text Name='/'
+++++++++++Spinner Name='Year Third date picker' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++Text Name='2008'
+++++++Button Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++Pane Name='Chrome Legacy Window' IsControlElement=false
+++++++++Document
+++++++++++Group
+++++++++++++Group IsControlElement=false
+++++++++++++++Group IsControlElement=false
+++++++++++++++++Group IsControlElement=false
+++++++++++++++++++Button Name='Show month selection panel'
+++++++++++++++++++++Text IsControlElement=false
+++++++++++++++++++++Image
+++++++++++++++++Button Name='Show previous month'
+++++++++++++++++++Image
+++++++++++++++++Button Name='Show next month'
+++++++++++++++++++Image
+++++++++++++++++DataGrid Grid.ColumnCount=0 Grid.RowCount=0 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Su'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Mo'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Tu'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='We'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Th'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Fr'
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++++Text Name='Sa'
+++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++++Group IsControlElement=false
+++++++++++++++++++Button Name='Today'

@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
@@ -64,11 +64,11 @@ void MojoJpegEncodeAcceleratorService::Create(
 }
 
 MojoJpegEncodeAcceleratorService::MojoJpegEncodeAcceleratorService()
-    : accelerator_factory_functions_(
-          GpuJpegEncodeAcceleratorFactory::GetAcceleratorFactories()) {}
+    : accelerator_initialized_(false), weak_this_factory_(this) {}
 
 MojoJpegEncodeAcceleratorService::~MojoJpegEncodeAcceleratorService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  accelerator_.reset();
 }
 
 void MojoJpegEncodeAcceleratorService::VideoFrameReady(
@@ -87,32 +87,67 @@ void MojoJpegEncodeAcceleratorService::NotifyError(
   NotifyEncodeStatus(task_id, 0, error);
 }
 
+void MojoJpegEncodeAcceleratorService::InitializeInternal(
+    std::vector<GpuJpegEncodeAcceleratorFactory::CreateAcceleratorCB>
+        remaining_accelerator_factory_functions,
+    InitializeCallback init_cb) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (remaining_accelerator_factory_functions.empty()) {
+    DLOG(ERROR) << "All JPEG accelerators failed to initialize";
+    std::move(init_cb).Run(false);
+    return;
+  }
+  accelerator_ = std::move(remaining_accelerator_factory_functions.front())
+                     .Run(base::ThreadTaskRunnerHandle::Get());
+  remaining_accelerator_factory_functions.erase(
+      remaining_accelerator_factory_functions.begin());
+  if (!accelerator_) {
+    OnInitialize(
+        std::move(remaining_accelerator_factory_functions), std::move(init_cb),
+        /*last_initialize_result=*/
+        ::chromeos_camera::JpegEncodeAccelerator::HW_JPEG_ENCODE_NOT_SUPPORTED);
+    return;
+  }
+  accelerator_->InitializeAsync(
+      this, base::BindOnce(&MojoJpegEncodeAcceleratorService::OnInitialize,
+                           weak_this_factory_.GetWeakPtr(),
+                           std::move(remaining_accelerator_factory_functions),
+                           std::move(init_cb)));
+}
+
 void MojoJpegEncodeAcceleratorService::Initialize(InitializeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // When adding non-chromeos platforms, VideoCaptureGpuJpegEncoder::Initialize
   // needs to be updated.
 
-  std::unique_ptr<::chromeos_camera::JpegEncodeAccelerator> accelerator;
-  for (const auto& create_jea_function : accelerator_factory_functions_) {
-    std::unique_ptr<::chromeos_camera::JpegEncodeAccelerator> tmp_accelerator =
-        create_jea_function.Run(base::ThreadTaskRunnerHandle::Get());
-    if (tmp_accelerator &&
-        tmp_accelerator->Initialize(this) ==
-            ::chromeos_camera::JpegEncodeAccelerator::Status::ENCODE_OK) {
-      accelerator = std::move(tmp_accelerator);
-      break;
-    }
-  }
+  InitializeInternal(GpuJpegEncodeAcceleratorFactory::GetAcceleratorFactories(),
+                     std::move(callback));
+}
 
-  if (!accelerator) {
-    DLOG(ERROR) << "JPEG accelerator initialization failed";
-    std::move(callback).Run(false);
+void MojoJpegEncodeAcceleratorService::OnInitialize(
+    std::vector<GpuJpegEncodeAcceleratorFactory::CreateAcceleratorCB>
+        remaining_accelerator_factory_functions,
+    InitializeCallback init_cb,
+    chromeos_camera::JpegEncodeAccelerator::Status last_initialize_result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (last_initialize_result ==
+      ::chromeos_camera::JpegEncodeAccelerator::ENCODE_OK) {
+    accelerator_initialized_ = true;
+    std::move(init_cb).Run(true);
     return;
   }
-
-  accelerator_ = std::move(accelerator);
-  std::move(callback).Run(true);
+  // Note that we can't call InitializeInternal() directly. The reason is that
+  // InitializeInternal() may destroy |accelerator_| which could cause a
+  // use-after-free if |accelerator_| needs to do more stuff after calling
+  // OnInitialize().
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MojoJpegEncodeAcceleratorService::InitializeInternal,
+                     weak_this_factory_.GetWeakPtr(),
+                     std::move(remaining_accelerator_factory_functions),
+                     std::move(init_cb)));
 }
 
 void MojoJpegEncodeAcceleratorService::EncodeWithFD(
@@ -127,9 +162,17 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     uint32_t output_buffer_size,
     EncodeWithFDCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::PlatformFile input_fd;
-  base::PlatformFile exif_fd;
-  base::PlatformFile output_fd;
+
+  if (!accelerator_initialized_) {
+    std::move(callback).Run(
+        task_id, 0,
+        ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
+    return;
+  }
+
+  base::ScopedPlatformFile input_fd;
+  base::ScopedPlatformFile exif_fd;
+  base::ScopedPlatformFile output_fd;
   MojoResult result;
 
   if (coded_size_width <= 0 || coded_size_height <= 0) {
@@ -166,13 +209,13 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
   base::UnsafeSharedMemoryRegion input_region =
       base::UnsafeSharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
-              base::ScopedFD(input_fd),
+              std::move(input_fd),
               base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
               input_buffer_size, base::UnguessableToken::Create()));
 
   base::subtle::PlatformSharedMemoryRegion output_shm_region =
       base::subtle::PlatformSharedMemoryRegion::Take(
-          base::ScopedFD(output_fd),
+          std::move(output_fd),
           base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
           output_buffer_size, base::UnguessableToken::Create());
 
@@ -182,8 +225,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
   if (exif_buffer_size > 0) {
     base::subtle::PlatformSharedMemoryRegion exif_shm_region =
         base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(base::ScopedFD(exif_fd),
-                                       base::ScopedFD()),
+            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
             base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
             exif_buffer_size, base::UnguessableToken::Create());
     exif_buffer = std::make_unique<media::BitstreamBuffer>(
@@ -247,8 +289,15 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     uint32_t exif_buffer_size,
     int32_t coded_size_width,
     int32_t coded_size_height,
+    int32_t quality,
     EncodeWithDmaBufCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!accelerator_initialized_) {
+    std::move(callback).Run(
+        0, ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
+    return;
+  }
 
   const gfx::Size coded_size(coded_size_width, coded_size_height);
   if (coded_size.IsEmpty()) {
@@ -261,7 +310,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     return;
   }
 
-  base::PlatformFile exif_fd;
+  base::ScopedPlatformFile exif_fd;
   auto result = mojo::UnwrapPlatformFile(std::move(exif_handle), &exif_fd);
   if (result != MOJO_RESULT_OK) {
     std::move(callback).Run(
@@ -289,8 +338,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     // the encode task process from both Chrome OS and Chrome side.
     base::subtle::PlatformSharedMemoryRegion exif_shm_region =
         base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(base::ScopedFD(exif_fd),
-                                       base::ScopedFD()),
+            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
             base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
             exif_buffer_size, base::UnguessableToken::Create());
     exif_buffer = std::make_unique<media::BitstreamBuffer>(
@@ -299,8 +347,8 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
   encode_cb_map_.emplace(task_id, std::move(callback));
 
   DCHECK(accelerator_);
-  accelerator_->EncodeWithDmaBuf(input_video_frame, output_video_frame,
-                                 kJpegQuality, task_id, exif_buffer.get());
+  accelerator_->EncodeWithDmaBuf(input_video_frame, output_video_frame, quality,
+                                 task_id, exif_buffer.get());
 }
 
 void MojoJpegEncodeAcceleratorService::NotifyEncodeStatus(

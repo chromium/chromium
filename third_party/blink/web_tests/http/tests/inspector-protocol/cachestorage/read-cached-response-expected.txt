@@ -5,9 +5,9 @@ Type of body: string
 application/x-javascript
 Type of body: string
 Trying without specifying all the arguments:
-Error: Invalid parameters cacheId: string value expected; requestURL: string value expected
+Error: Invalid parameters Failed to deserialize params.cacheId - BINDINGS: string value expected <somewhere>
 Trying without specifying the request path:
-Error: Invalid parameters requestURL: string value expected
+Error: Invalid parameters Failed to deserialize params.requestURL - BINDINGS: string value expected <somewhere>
 Trying with non existant cache:
 Error: Invalid cache id. 
 Trying with non existant request path:

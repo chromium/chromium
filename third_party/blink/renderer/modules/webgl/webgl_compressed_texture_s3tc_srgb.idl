@@ -5,7 +5,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_s3tc_srgb/
 
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     DoNotCheckConstants
 ] interface WebGLCompressedTextureS3TCsRGB {
     /* Compressed Texture Formats */

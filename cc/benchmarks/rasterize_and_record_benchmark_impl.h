@@ -7,13 +7,10 @@
 
 #include <stddef.h>
 
-#include <map>
-#include <utility>
-#include <vector>
-
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
+#include "cc/raster/lcd_text_disallowed_reason.h"
 #include "cc/raster/task_graph_runner.h"
 
 namespace cc {
@@ -25,7 +22,7 @@ class RasterizeAndRecordBenchmarkImpl : public MicroBenchmarkImpl {
  public:
   explicit RasterizeAndRecordBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-      base::Value* value,
+      int rasterize_repeat_count,
       MicroBenchmarkImpl::DoneCallback callback);
   ~RasterizeAndRecordBenchmarkImpl() override;
 
@@ -41,6 +38,8 @@ class RasterizeAndRecordBenchmarkImpl : public MicroBenchmarkImpl {
     int pixels_rasterized;
     int pixels_rasterized_with_non_solid_color;
     int pixels_rasterized_as_opaque;
+    int visible_pixels_by_lcd_text_disallowed_reason
+        [kLCDTextDisallowedReasonCount];
     base::TimeDelta total_best_time;
     int total_layers;
     int total_picture_layers;

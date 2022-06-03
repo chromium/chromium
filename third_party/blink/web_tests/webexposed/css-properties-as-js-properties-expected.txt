@@ -1,6 +1,8 @@
 This test (crudely) documents Blink's web-exposed CSS properties.  All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 
+accentColor
+additiveSymbols
 alignContent
 alignItems
 alignSelf
@@ -14,7 +16,12 @@ animationFillMode
 animationIterationCount
 animationName
 animationPlayState
+animationTimeline
 animationTimingFunction
+appRegion
+appearance
+ascentOverride
+aspectRatio
 backdropFilter
 backfaceVisibility
 background
@@ -54,6 +61,8 @@ borderBottomStyle
 borderBottomWidth
 borderCollapse
 borderColor
+borderEndEndRadius
+borderEndStartRadius
 borderImage
 borderImageOutset
 borderImageRepeat
@@ -82,6 +91,8 @@ borderRightColor
 borderRightStyle
 borderRightWidth
 borderSpacing
+borderStartEndRadius
+borderStartStartRadius
 borderStyle
 borderTop
 borderTopColor
@@ -107,6 +118,7 @@ color
 colorInterpolation
 colorInterpolationFilters
 colorRendering
+colorScheme
 columnCount
 columnFill
 columnGap
@@ -118,19 +130,29 @@ columnSpan
 columnWidth
 columns
 contain
+containIntrinsicBlockSize
+containIntrinsicHeight
+containIntrinsicInlineSize
+containIntrinsicSize
+containIntrinsicWidth
 content
+contentVisibility
 counterIncrement
 counterReset
+counterSet
 cssFloat
 cssText
 cursor
 cx
 cy
 d
+descentOverride
 direction
 display
 dominantBaseline
 emptyCells
+end
+fallback
 fill
 fillOpacity
 fillRule
@@ -155,6 +177,10 @@ fontSize
 fontSizeAdjust
 fontStretch
 fontStyle
+fontSynthesis
+fontSynthesisSmallCaps
+fontSynthesisStyle
+fontSynthesisWeight
 fontVariant
 fontVariantCaps
 fontVariantEastAsian
@@ -162,6 +188,7 @@ fontVariantLigatures
 fontVariantNumeric
 fontVariationSettings
 fontWeight
+forcedColorAdjust
 gap
 getPropertyPriority
 getPropertyValue
@@ -187,6 +214,8 @@ height
 hyphens
 imageOrientation
 imageRendering
+inherits
+initialValue
 inlineSize
 inset
 insetBlock
@@ -195,11 +224,6 @@ insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
-intrinsicBlockSize
-intrinsicHeight
-intrinsicInlineSize
-intrinsicSize
-intrinsicWidth
 isolation
 item
 justifyContent
@@ -210,6 +234,7 @@ length
 letterSpacing
 lightingColor
 lineBreak
+lineGapOverride
 lineHeight
 lineHeightStep
 listStyle
@@ -232,8 +257,10 @@ markerEnd
 markerMid
 markerStart
 mask
-maskSourceType
 maskType
+mathDepth
+mathShift
+mathStyle
 maxBlockSize
 maxHeight
 maxInlineSize
@@ -245,6 +272,7 @@ minInlineSize
 minWidth
 minZoom
 mixBlendMode
+negative
 objectFit
 objectPosition
 offset
@@ -265,6 +293,7 @@ outlineWidth
 overflow
 overflowAnchor
 overflowBlock
+overflowClipMargin
 overflowInline
 overflowWrap
 overflowX
@@ -274,6 +303,7 @@ overscrollBehaviorBlock
 overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
+pad
 padding
 paddingBlock
 paddingBlockEnd
@@ -289,6 +319,7 @@ page
 pageBreakAfter
 pageBreakBefore
 pageBreakInside
+pageOrientation
 paintOrder
 parentRule
 perspective
@@ -298,14 +329,16 @@ placeItems
 placeSelf
 pointerEvents
 position
+prefix
 quotes
 r
+range
 removeProperty
-renderSubtree
 resize
 right
 rotate
 rowGap
+rubyPosition
 rx
 ry
 scale
@@ -335,14 +368,20 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollbarGutter
+scrollbarWidth
 setProperty
 shapeImageThreshold
 shapeMargin
 shapeOutside
 shapeRendering
 size
+sizeAdjust
+source
 speak
+speakAs
 src
+start
 stopColor
 stopOpacity
 stroke
@@ -353,6 +392,10 @@ strokeLinejoin
 strokeMiterlimit
 strokeOpacity
 strokeWidth
+suffix
+symbols
+syntax
+system
 tabSize
 tableLayout
 textAlign
@@ -364,6 +407,7 @@ textDecorationColor
 textDecorationLine
 textDecorationSkipInk
 textDecorationStyle
+textDecorationThickness
 textIndent
 textJustify
 textOrientation
@@ -372,6 +416,7 @@ textRendering
 textShadow
 textSizeAdjust
 textTransform
+textUnderlineOffset
 textUnderlinePosition
 top
 touchAction
@@ -466,7 +511,6 @@ webkitFlexGrow
 webkitFlexShrink
 webkitFlexWrap
 webkitFontFeatureSettings
-webkitFontSizeDelta
 webkitFontSmoothing
 webkitHighlight
 webkitHyphenateCharacter

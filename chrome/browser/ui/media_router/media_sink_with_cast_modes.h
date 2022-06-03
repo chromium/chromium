@@ -8,7 +8,7 @@
 #include <set>
 
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/common/media_router/media_sink.h"
+#include "components/media_router/common/media_sink.h"
 
 namespace media_router {
 

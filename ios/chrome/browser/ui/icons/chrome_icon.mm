@@ -6,7 +6,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 

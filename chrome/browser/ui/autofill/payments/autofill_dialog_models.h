@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 
@@ -18,6 +16,8 @@ namespace autofill {
 class MonthComboboxModel : public ui::ComboboxModel {
  public:
   MonthComboboxModel();
+  MonthComboboxModel(const MonthComboboxModel&) = delete;
+  MonthComboboxModel& operator=(const MonthComboboxModel&) = delete;
   ~MonthComboboxModel() override;
 
   // Set |default_index_| to the given |month| before user interaction. There is
@@ -26,15 +26,13 @@ class MonthComboboxModel : public ui::ComboboxModel {
 
   // ui::Combobox implementation:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
+  std::u16string GetItemAt(int index) const override;
   int GetDefaultIndex() const override;
 
  private:
   // The index of the item that is selected by default (before user
   // interaction).
   int default_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MonthComboboxModel);
 };
 
 // A model for years between now and a decade hence.
@@ -44,6 +42,8 @@ class YearComboboxModel : public ui::SimpleComboboxModel {
   // [current year, current year + 9], this will add |additional_year| to the
   // model. Passing 0 has no effect.
   explicit YearComboboxModel(int additional_year = 0);
+  YearComboboxModel(const YearComboboxModel&) = delete;
+  YearComboboxModel& operator=(const YearComboboxModel&) = delete;
   ~YearComboboxModel() override;
 
   // Set |default_index_| to the given |year| before user interaction. There is
@@ -57,8 +57,6 @@ class YearComboboxModel : public ui::SimpleComboboxModel {
   // The index of the item that is selected by default (before user
   // interaction).
   int default_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(YearComboboxModel);
 };
 
 }  // namespace autofill

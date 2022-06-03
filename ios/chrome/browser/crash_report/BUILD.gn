@@ -4,8 +4,10 @@
 
 source_set("crash_report") {
   sources = [
-    "breakpad_helper.h",
-    "breakpad_helper.mm",
+    "crash_helper.h",
+    "crash_helper.mm",
+    "crash_keys_helper.h",
+    "crash_keys_helper.mm",
     "crash_loop_detection_util.h",
     "crash_loop_detection_util.mm",
     "crash_report_multi_parameter.h",
@@ -14,30 +16,35 @@ source_set("crash_report") {
     "crash_report_user_application_state.mm",
     "crash_upload_list.cc",
     "crash_upload_list.h",
+    "features.cc",
+    "features.h",
     "main_thread_freeze_detector.h",
     "main_thread_freeze_detector.mm",
+    "synthetic_crash_report_util.h",
+    "synthetic_crash_report_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":flags",
     "//base",
+    "//build:branding_buildflags",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
+    "//components/crash/core/app",
+    "//components/crash/core/browser",
     "//components/crash/core/common",
+    "//components/previous_session_info",
     "//components/upload_list",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/common",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/crash_report",
     "//ios/web",
+    "//third_party/abseil-cpp:absl",
     "//third_party/breakpad:client",
-  ]
-}
-
-source_set("flags") {
-  sources = [
-    "crash_report_flags.cc",
-    "crash_report_flags.h",
-  ]
-  deps = [
-    "//base",
   ]
 }
 
@@ -46,13 +53,18 @@ source_set("crash_report_internal") {
   sources = [
     "crash_report_helper.h",
     "crash_report_helper.mm",
+    "crash_reporter_url_observer.h",
+    "crash_reporter_url_observer.mm",
     "crash_restore_helper.h",
     "crash_restore_helper.mm",
   ]
   deps = [
     ":crash_report",
     "//base",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:crash_key_lib",
     "//components/infobars/core",
+    "//components/previous_session_info",
     "//components/sessions",
     "//components/strings",
     "//components/upload_list",
@@ -61,10 +73,13 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_service",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
@@ -77,19 +92,30 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "breakpad_helper_unittest.mm",
+    "crash_helper_unittest.mm",
     "crash_loop_detection_util_unittest.mm",
+    "crash_reporter_breadcrumb_observer_unittest.mm",
+    "crash_reporter_url_observer_unittest.mm",
     "crash_restore_helper_unittest.mm",
+    "main_thread_freeze_detector_unittest.mm",
+    "synthetic_crash_report_util_unittest.mm",
   ]
   deps = [
     ":crash_report",
     ":crash_report_internal",
     "//base",
     "//base/test:test_support",
+    "//components/breadcrumbs/core",
+    "//components/previous_session_info",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_service",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/browser/web_state_list:web_state_list",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/test/ocmock",
     "//ios/testing:block_swizzler",
     "//ios/web/public/test",

@@ -1,0 +1,133 @@
+{
+  "linux-swangle-chromium-x64": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "linux-swangle-tot-angle-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "linux-swangle-tot-swiftshader-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "linux-swangle-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac-swangle-chromium-x64": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-swangle-chromium-x86": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win-swangle-tot-angle-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-swangle-tot-angle-x86": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win-swangle-tot-swiftshader-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-swangle-tot-swiftshader-x86": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win-swangle-x64": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-swangle-x86": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "dcheck_always_on": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

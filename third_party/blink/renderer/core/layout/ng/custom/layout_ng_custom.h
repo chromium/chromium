@@ -10,11 +10,6 @@
 
 namespace blink {
 
-// NOTE: In the future there may be a third state "normal", this will mean that
-// not everything is blockified, (e.g. root inline boxes, so that line-by-line
-// layout can be performed).
-enum LayoutNGCustomState { kUnloaded, kBlock };
-
 // The LayoutObject for elements which have "display: layout(foo);" specified.
 // https://drafts.css-houdini.org/css-layout-api/
 //
@@ -23,6 +18,11 @@ enum LayoutNGCustomState { kUnloaded, kBlock };
 // block-flow layout algorithm.
 class LayoutNGCustom final : public LayoutNGBlockFlow {
  public:
+  // NOTE: In the future there may be a third state "normal", this will mean
+  // that not everything is blockified, (e.g. root inline boxes, so that
+  // line-by-line layout can be performed).
+  enum State { kUnloaded, kBlock };
+
   explicit LayoutNGCustom(Element*);
 
   const char* GetName() const override { return "LayoutNGCustom"; }
@@ -30,15 +30,22 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
   bool IsLoaded() { return state_ != kUnloaded; }
 
+  void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
+  void RemoveChild(LayoutObject* child) override;
+
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final {
+    return kForbidBreaks;
+  }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectLayoutNGCustom ||
-           LayoutNGBlockFlow::IsOfType(type);
+    return type == kLayoutObjectNGCustom || LayoutNGBlockFlow::IsOfType(type);
   }
 
-  LayoutNGCustomState state_;
+  State state_;
 };
 
 template <>

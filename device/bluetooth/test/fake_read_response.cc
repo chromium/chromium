@@ -8,7 +8,7 @@ namespace bluetooth {
 
 FakeReadResponse::FakeReadResponse(
     uint16_t gatt_code,
-    const base::Optional<std::vector<uint8_t>>& value)
+    const absl::optional<std::vector<uint8_t>>& value)
     : gatt_code_(gatt_code), value_(value) {}
 
 FakeReadResponse::~FakeReadResponse() = default;

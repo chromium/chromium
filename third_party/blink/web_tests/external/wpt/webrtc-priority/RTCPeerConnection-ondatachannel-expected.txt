@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL In-band negotiated channel created on remote peer should match the same configuration as local peer assert_equals: expected (string) "high" but got (undefined) undefined
+FAIL In-band negotiated channel created on remote peer should match the same (default) configuration as local peer assert_equals: expected (string) "low" but got (undefined) undefined
+Harness: the test ran to completion.
+

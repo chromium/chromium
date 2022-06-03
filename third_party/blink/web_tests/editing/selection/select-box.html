@@ -1,34 +1,38 @@
-<html> 
+<!DOCTYPE html>
+<html>
 <head>
-
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
 
-function editingTest() {
-    for (var i = 0; i < 50; i++) {
-        moveSelectionForwardByCharacterCommand();
-    }
-    for (var i = 0; i < 50; i++) {
-        moveSelectionBackwardByCharacterCommand();
-    }
+let many_options = '';
+for (let i = 0; i < 50; ++i) {
+  many_options += `<option>${i}</option>`;
 }
 
-</script>
+selection_test(
+  `<div contenteditable="true">|select box: <select>${many_options}</select>the end ...</div>`,
+  selection => {
+    for (let i = 0; i < 30; ++i)
+      selection.modify('move', 'forward', 'character');
+  },
+  `<div contenteditable="true">select box: <select>${many_options}</select>the end ...|</div>`,
+  'The caret should skip over the select box (forward, character)');
 
-<title>Editing Test</title> 
-</head> 
-<body>
-<p>This tests caret movement across a select box.  The caret should skip over the select box as if it were an image.</p>
-<div contenteditable id="root" class="editing">
-<div id="test">
-select box: <select><option>1</option><option>2</option></select>
-the end ...
-</div>
-</div>
-<script>
-runEditingTest();
-</script>
+selection_test(
+  `<div contenteditable="true">select box: <select>${many_options}</select>the end ...|</div>`,
+  selection => {
+    for (let i = 0; i < 30; ++i)
+      selection.modify('move', 'backward', 'character');
+  },
+  `<div contenteditable="true">|select box: <select>${many_options}</select>the end ...</div>`,
+  'The caret should skip over the select box (backward, character)');
 
-</body>
+selection_test(
+  '<div contenteditable="true">|<select><option>1</option></select></div>',
+  selection => selection.modify('move', 'forward', 'paragraphBoundary'),
+  '<div contenteditable="true"><select><option>1</option></select>|</div>',
+  'The caret should skip over the select box (forward, paragraph)');
+</script>
 </html>

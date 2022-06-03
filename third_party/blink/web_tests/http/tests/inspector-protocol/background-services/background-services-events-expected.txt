@@ -161,7 +161,7 @@ Background Fetch Failure:
             }
             [1] : {
                 key : Failure Reason
-                value : BackgroundFetchFailureReason::BAD_STATUS
+                value : BAD_STATUS
             }
         ]
         eventName : Background Fetch completed

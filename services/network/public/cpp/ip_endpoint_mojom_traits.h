@@ -7,11 +7,12 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/ip_endpoint.h"
-#include "services/network/public/mojom/ip_endpoint.mojom.h"
+#include "services/network/public/mojom/ip_endpoint.mojom-shared.h"
 
 namespace mojo {
 template <>
-struct StructTraits<network::mojom::IPEndPointDataView, net::IPEndPoint> {
+struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
+    StructTraits<network::mojom::IPEndPointDataView, net::IPEndPoint> {
   static const net::IPAddress& address(const net::IPEndPoint& obj) {
     return obj.address();
   }

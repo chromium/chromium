@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="de">
+<translation id="1006017844123154345">Online öffnen</translation>
+<translation id="1044891598689252897">Websites funktionieren normal</translation>
+<translation id="1124090076051167250">Dadurch werden <ph name="DATASIZE" /> an von Websites oder Apps auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="1178581264944972037">Pause</translation>
+<translation id="1181037720776840403">Entfernen</translation>
+<translation id="1201402288615127009">Weiter</translation>
+<translation id="1242008676835033345">Auf <ph name="WEBSITE_URL" /> eingebettet</translation>
+<translation id="1272079795634619415">Stoppen</translation>
+<translation id="1289742167380433257">Die Bilder auf dieser Seite wurden von Google optimiert, um den Datenverbrauch zu reduzieren.</translation>
+<translation id="129382876167171263">Hier werden von Websites gespeicherte Dateien angezeigt</translation>
+<translation id="1317194122196776028">Verlauf dieser Website löschen</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> – <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676">Website "<ph name="SITE_NAME" />" hinzugefügt</translation>
+<translation id="1383876407941801731">Durchsuchen</translation>
+<translation id="1384959399684842514">Download angehalten</translation>
+<translation id="1415402041810619267">URL abgeschnitten</translation>
+<translation id="1446450296470737166">Volle Kontr. über MIDI-Ger. erl.</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1644574205037202324">Verlauf</translation>
+<translation id="1647582022260550163">Möchten Sie die Berechtigungen dieser Website wirklich zurücksetzen und ihre Cookies und Daten löschen?</translation>
+<translation id="1660204651932907780">Wiedergabe von Ton auf Websites zulassen (empfohlen)</translation>
+<translation id="1677097821151855053">Durch Cookies und andere Websitedaten erinnert sich die Website an Sie, z. B. bei der Anmeldung oder für personalisierte Werbung. Sie können Cookies für alle Websites <ph name="BEGIN_LINK" />in den Einstellungen verwalten<ph name="END_LINK" />.</translation>
+<translation id="1688867105868176567">Websitedaten löschen?</translation>
+<translation id="169515064810179024">Zugriff auf Bewegungssensoren für Websites blockieren</translation>
+<translation id="1717218214683051432">Bewegungssensoren</translation>
+<translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
+<translation id="1779089405699405702">Bild-Decodierer</translation>
+<translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
+<translation id="1864927262126810325">Quelle: <ph name="SOURCE_NAME" /></translation>
+<translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Sie können ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
+<translation id="1919345977826869612">Werbung</translation>
+<translation id="1919950603503897840">Kontakte auswählen</translation>
+<translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">Zugelassen, außer Cookies Dritter</translation>
+<translation id="1989112275319619282">Durchsuchen</translation>
+<translation id="1994173015038366702">Website-URL</translation>
+<translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
+<translation id="2025115093177348061">Augmented Reality</translation>
+<translation id="2030769033451695672">Tippen, um zu <ph name="URL_OF_THE_CURRENT_TAB" /> zurückzukehren</translation>
+<translation id="2079545284768500474">Rückgängig machen</translation>
+<translation id="2091887806945687916">Ton</translation>
+<translation id="2107397443965016585">Fragen, bevor Websites erlaubt wird, geschützten Inhalt wiederzugeben (empfohlen)</translation>
+<translation id="2146738493024040262">Instant-App öffnen</translation>
+<translation id="2148716181193084225">Heute</translation>
+<translation id="2182457891543959921">Nachfragen, bevor Websites erlaubt wird, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen (empfohlen)</translation>
+<translation id="2212565012507486665">Cookies zulassen</translation>
+<translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf Ihre Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="2241634353105152135">Nur einmal</translation>
+<translation id="2289270750774289114">Nachfragen, wenn eine Website nach Bluetooth-Geräten in der Nähe suchen möchte (empfohlen)</translation>
+<translation id="2315043854645842844">Die clientseitige Zertifikatauswahl wird vom Betriebssystem nicht unterstützt.</translation>
+<translation id="2359808026110333948">Weiter</translation>
+<translation id="2379925928934107488">Sofern möglich, dunkles Design auf Websites anwenden, wenn Chrome das dunkle Design verwendet</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
+<translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Desktopwebsite immer anfordern</translation>
+<translation id="2482878487686419369">Benachrichtigungen</translation>
+<translation id="2485422356828889247">Deinstallieren</translation>
+<translation id="2490684707762498678">Über <ph name="APP_NAME" /> verwaltet</translation>
+<translation id="2498359688066513246">Hilfe &amp; Feedback</translation>
+<translation id="2501278716633472235">Zurück</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Ein Cookie blockiert}other{# Cookies blockiert}}</translation>
+<translation id="2570922361219980984">Der Standortzugriff ist für dieses Gerät ebenfalls deaktiviert. Sie können ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
+<translation id="257931822824936280">Maximiert – zum Minimieren klicken</translation>
+<translation id="2586657967955657006">Zwischenablage</translation>
+<translation id="2597457036804169544">Dunkles Design nicht auf Websites anwenden</translation>
+<translation id="2621115761605608342">JavaScript für eine bestimmte Website zulassen.</translation>
+<translation id="2653659639078652383">Senden</translation>
+<translation id="2677748264148917807">Verlassen</translation>
+<translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
+<translation id="2704606927547763573">Kopiert</translation>
+<translation id="2717722538473713889">E-Mail-Adressen</translation>
+<translation id="2785051990912111074">Mit dieser Option werden Cookies für <ph name="WEBSITE" /> gelöscht</translation>
+<translation id="2822354292072154809">Möchten Sie wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
+<translation id="2870560284913253234">Website</translation>
+<translation id="2874939134665556319">Vorheriger Titel</translation>
+<translation id="2903493209154104877">Adressen</translation>
+<translation id="2910701580606108292">Fragen, bevor die Wiedergabe geschützter Inhalte auf Websites zugelassen wird</translation>
+<translation id="2913331724188855103">Websites dürfen Cookiedaten speichern und lesen (empfohlen)</translation>
+<translation id="2932883381142163287">Missbrauch melden</translation>
+<translation id="2968755619301702150">Zertifikats-Viewer</translation>
+<translation id="300526633675317032">Der gesamte Websitespeicher (<ph name="SIZE_IN_KB" />) wird gelöscht.</translation>
+<translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
+<translation id="301521992641321250">Automatisch blockiert</translation>
+<translation id="3114012059975132928">Videoplayer</translation>
+<translation id="3115898365077584848">Informationen anzeigen</translation>
+<translation id="3123473560110926937">Auf einigen Websites blockiert</translation>
+<translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gespeicherte Daten</translation>
+<translation id="321187648315454507">Damit <ph name="APP_NAME" /> Ihnen Benachrichtigungen senden kann, müssen Sie die Berechtigung für Benachrichtigungen auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
+<translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3277252321222022663">Websites den Zugriff auf Sensoren erlauben (empfohlen)</translation>
+<translation id="3295602654194328831">Informationen ausblenden</translation>
+<translation id="3328801116991980348">Websiteinformationen</translation>
+<translation id="3333961966071413176">Alle Kontakte</translation>
+<translation id="3386292677130313581">Nachfragen, bevor Websites mein Standort angezeigt wird (empfohlen)</translation>
+<translation id="3538390592868664640">Websites daran hindern, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
+<translation id="3551268116566418498">Inkognitomodus deaktivieren?</translation>
+<translation id="3586500876634962664">Kamera- und Mikrofonnutzung</translation>
+<translation id="358794129225322306">Einer Website erlauben, automatisch mehrere Dateien herunterzuladen.</translation>
+<translation id="3594780231884063836">Video stummschalten</translation>
+<translation id="3596414637720633074">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
+<translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
+<translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
+<translation id="3763247130972274048">Tippen Sie links oder rechts im Video doppelt, um 10 s zu überspringen</translation>
+<translation id="3797520601150691162">Dunkles Design auf eine bestimmte Website nicht anwenden</translation>
+<translation id="381841723434055211">Telefonnummern</translation>
+<translation id="3835233591525155343">Meine Gerätenutzung</translation>
+<translation id="385051799172605136">Zurück</translation>
+<translation id="3859306556332390985">Nach vorne navigieren</translation>
+<translation id="3955193568934677022">Wiedergabe geschützter Inhalte auf Websites zulassen (empfohlen)</translation>
+<translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="3987993985790029246">Link kopieren</translation>
+<translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von ?</translation>
+<translation id="4002066346123236978">Titel</translation>
+<translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
+<translation id="4046123991198612571">Nächster Titel</translation>
+<translation id="4165986682804962316">Website-Einstellungen</translation>
+<translation id="4200726100658658164">Standorteinstellungen öffnen</translation>
+<translation id="4226663524361240545">Bei Benachrichtigungen kann das Gerät vibrieren</translation>
+<translation id="4259722352634471385">Die Navigation zu <ph name="URL" /> ist blockiert.</translation>
+<translation id="4278390842282768270">Zugelassen</translation>
+<translation id="429312253194641664">Eine Website gibt Medien wieder</translation>
+<translation id="42981349822642051">Maximieren</translation>
+<translation id="4336434711095810371">Alle Daten löschen</translation>
+<translation id="4402755511846832236">Websites daran hindern, Informationen zu Ihrer aktiven Nutzung dieses Geräts abzurufen</translation>
+<translation id="4434045419905280838">Pop-ups und Weiterleitungen</translation>
+<translation id="445467742685312942">Websites erlauben, geschützte Inhalte wiederzugeben</translation>
+<translation id="4468959413250150279">Eine bestimmte Website stummschalten.</translation>
+<translation id="4479647676395637221">Nachfragen, bevor Websites Zugriff auf meine Kamera erhalten (empfohlen)</translation>
+<translation id="4505788138578415521">URL maximiert</translation>
+<translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf Ihr Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="4570913071927164677">Details</translation>
+<translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
+<translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
+<translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu Ihrer aktiven Nutzung dieses Geräts abrufen möchte</translation>
+<translation id="4883854917563148705">Verwaltete Einstellungen können nicht zurückgesetzt werden</translation>
+<translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
+<translation id="4962975101802056554">Alle Berechtigungen für Gerät entziehen</translation>
+<translation id="497421865427891073">Weiter</translation>
+<translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
+<translation id="4994033804516042629">Keine Kontakte gefunden</translation>
+<translation id="4996978546172906250">Teilen über</translation>
+<translation id="5014906230196386306">Cookies löschen?</translation>
+<translation id="5039804452771397117">Zulassen</translation>
+<translation id="5048398596102334565">Websites den Zugriff auf Bewegungssensoren erlauben (empfohlen)</translation>
+<translation id="5050380848339752099">Diese Website ist im Begriff, Informationen mit einer Anwendung außerhalb des Inkognitomodus zu teilen.</translation>
+<translation id="5063480226653192405">Verwendung</translation>
+<translation id="509133520954049755">Desktop-Ansicht anzeigen</translation>
+<translation id="5100237604440890931">Minimiert – zum Maximieren klicken</translation>
+<translation id="5123685120097942451">Inkognitotab</translation>
+<translation id="5134599672855298214">Mobile Ansicht anzeigen (empfohlen)</translation>
+<translation id="5186036860380548585">Option ist oben auf dem Bildschirm verfügbar</translation>
+<translation id="5197729504361054390">Die von Ihnen ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
+<translation id="5216942107514965959">Heute zuletzt besucht</translation>
+<translation id="528192093759286357">Ziehen Sie zum Beenden des Vollbildmodus von oben und tippen Sie auf die Zurück-Taste.</translation>
+<translation id="5300589172476337783">Anzeigen</translation>
+<translation id="5301954838959518834">Ok</translation>
+<translation id="5313967007315987356">Website hinzufügen</translation>
+<translation id="5317780077021120954">Speichern</translation>
+<translation id="5335288049665977812">Ausführung von JavaScript durch Websites zulassen (empfohlen)</translation>
+<translation id="534295439873310000">NFC-Geräte</translation>
+<translation id="5354152178998424783">Dadurch werden <ph name="DATASIZE" /> an von Websites gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
+<translation id="5403592356182871684">Namen</translation>
+<translation id="5438097262470833822">Mit dieser Option werden die Berechtigungen für <ph name="WEBSITE" /> zurückgesetzt</translation>
+<translation id="5489227211564503167">Verstrichene Zeit: <ph name="ELAPSED_TIME" /> von <ph name="TOTAL_TIME" />.</translation>
+<translation id="5494752089476963479">Werbung auf Websites blockieren, auf denen aufdringliche oder irreführende Werbung angezeigt wird</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> zugelassen, <ph name="PERMISSION_2" /> blockiert</translation>
+<translation id="5505264765875738116">Websites können nicht fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
+<translation id="5516455585884385570">Benachrichtigungseinstellungen öffnen</translation>
+<translation id="5527111080432883924">Nachfragen, bevor einer Website erlaubt wird, Texte und Bilder aus der Zwischenablage abzurufen (empfohlen)</translation>
+<translation id="5553374991681107062">Letzte</translation>
+<translation id="5556459405103347317">Neu laden</translation>
+<translation id="5596627076506792578">Weitere Optionen</translation>
+<translation id="5649053991847567735">Auto-Downloads</translation>
+<translation id="5677928146339483299">Blockiert</translation>
+<translation id="5689516760719285838">Standort</translation>
+<translation id="5690795753582697420">Die Kamera wurde in den Android-Einstellungen deaktiviert</translation>
+<translation id="5710871682236653961">Fragen, bevor Websites erlaubt wird, Informationen zu senden und zu empfangen, wenn das Smartphone an NFC-Geräte gehalten wird (empfohlen)</translation>
+<translation id="5719847187258001597">Dadurch werden alle von <ph name="ORIGIN" /> oder der zugehörigen App auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockiert</translation>
+<translation id="5804241973901381774">Berechtigungen</translation>
+<translation id="5860033963881614850">Aus</translation>
+<translation id="5876056640971328065">Video anhalten</translation>
+<translation id="5887687176710214216">Gestern zuletzt besucht</translation>
+<translation id="5916664084637901428">An</translation>
+<translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
+<translation id="5939518447894949180">Zurücksetzen</translation>
+<translation id="5975083100439434680">Verkleinern</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">Zugriff dieser Website auf Ihr Gerät steuern</translation>
+<translation id="6040143037577758943">Schließen</translation>
+<translation id="6042308850641462728">Mehr</translation>
+<translation id="6064125863973209585">Abgeschlossene Downloads</translation>
+<translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6177111841848151710">Für die aktuelle Suchmaschine blockiert</translation>
+<translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
+<translation id="6181444274883918285">Ausnahme für Website hinzufügen</translation>
+<translation id="6192792657125177640">Ausnahmen</translation>
+<translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
+<translation id="6216432067784365534">Optionen für <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6231752747840485235">„<ph name="APP_NAME" />“ deinstallieren?</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> blockiert</translation>
+<translation id="6270391203985052864">Websites können fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
+<translation id="6295158916970320988">Alle Websites</translation>
+<translation id="6320088164292336938">Vibrieren</translation>
+<translation id="6388207532828177975">Löschen &amp; zurücksetzen</translation>
+<translation id="6398765197997659313">Vollbildmodus beenden</translation>
+<translation id="6439114592976064011">Websites daran hindern, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden</translation>
+<translation id="6447842834002726250">Cookies</translation>
+<translation id="6527303717912515753">Teilen</translation>
+<translation id="6545864417968258051">Bluetooth-Suche</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}}</translation>
+<translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
+<translation id="6561560012278703671">Ein Symbol in der Adressleiste einblenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
+<translation id="6593061639179217415">Desktopwebsite</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
+<translation id="6612358246767739896">Geschützte Inhalte</translation>
+<translation id="662080504995468778">Bleiben</translation>
+<translation id="6643016212128521049">Löschen</translation>
+<translation id="6689172468748959065">Profilfotos</translation>
+<translation id="6697925417670533197">Aktive Downloads</translation>
+<translation id="6746124502594467657">Nach unten</translation>
+<translation id="6749077623962119521">Berechtigungen zurücksetzen?</translation>
+<translation id="6766622839693428701">Zum Schließen nach unten wischen.</translation>
+<translation id="6790428901817661496">Wiedergabe</translation>
+<translation id="6818926723028410516">Einträge auswählen</translation>
+<translation id="6864395892908308021">NFC wird von diesem Gerät nicht unterstützt</translation>
+<translation id="6910211073230771657">Gelöscht</translation>
+<translation id="6912998170423641340">Websites dürfen keine Texte oder Bilder aus der Zwischenablage abrufen</translation>
+<translation id="6945221475159498467">Auswählen</translation>
+<translation id="6965382102122355670">Ok</translation>
+<translation id="6992289844737586249">Nachfragen, bevor Websites auf mein Mikrofon zugreifen dürfen (empfohlen)</translation>
+<translation id="7000754031042624318">In den Android-Einstellungen deaktiviert</translation>
+<translation id="7016516562562142042">Für die aktuelle Suchmaschine zugelassen</translation>
+<translation id="7053983685419859001">Blockieren</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
+<translation id="7070090581017165256">Über diese Website</translation>
+<translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ausgewählt. Optionen sind oben auf dem Bildschirm verfügbar</translation>
+<translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="723171743924126238">Bilder auswählen</translation>
+<translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
+<translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
+<translation id="7302486331832100261">Normalerweise blockieren Sie Benachrichtigungen. Sie können auf Details tippen, um sie zuzulassen.</translation>
+<translation id="7423098979219808738">Zuerst fragen</translation>
+<translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
+<translation id="7425915948813553151">Dunkles Design für Websites</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">Eine Website verwendet Ihr Mikrofon</translation>
+<translation id="7561196759112975576">Immer</translation>
+<translation id="7572498721684305250">Websites daran hindern, Informationen zu senden und zu empfangen, wenn das Smartphone an NFC-Geräte gehalten wird</translation>
+<translation id="757524316907819857">Wiedergabe von geschützten Inhalten für Websites blockieren</translation>
+<translation id="7649070708921625228">Hilfe</translation>
+<translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7781829728241885113">Gestern</translation>
+<translation id="7791543448312431591">Hinzufügen</translation>
+<translation id="780301667611848630">Kein Interesse</translation>
+<translation id="7804248752222191302">Eine Website verwendet Ihre Kamera</translation>
+<translation id="7817023149356982970">Sie werden von dieser Website abgemeldet.</translation>
+<translation id="7828557259026017104">Cookies sind Dateien, die von Websites erstellt werden, die Sie besuchen. Sie werden zum Speichern Ihrer Einstellungen verwendet. Drittanbieter-Cookies werden von anderen Websites erstellt. Diesen Websites gehören einige der Inhalte, wie z. B. Werbeanzeigen oder Bilder, die Sie auf der besuchten Webseite sehen.</translation>
+<translation id="7835852323729233924">Medien werden wiedergegeben</translation>
+<translation id="783819812427904514">Stummschaltung des Videos aufheben</translation>
+<translation id="7846076177841592234">Auswahl aufheben</translation>
+<translation id="7846621471902887024">Sie werden von allen Websites abgemeldet.</translation>
+<translation id="7882806643839505685">Wiedergabe von Ton auf einer bestimmten Website zulassen.</translation>
+<translation id="7940722705963108451">Erinnern</translation>
+<translation id="7986741934819883144">Kontakt auswählen</translation>
+<translation id="7999064672810608036">Möchten Sie wirklich alle lokalen Daten einschließlich Cookies löschen und alle Berechtigungen für diese Website zurücksetzen?</translation>
+<translation id="8007176423574883786">Für dieses Gerät deaktiviert</translation>
+<translation id="802154636333426148">Downloadfehler</translation>
+<translation id="8042586301629853791">Sortieren nach:</translation>
+<translation id="8067883171444229417">Video ansehen</translation>
+<translation id="8068648041423924542">Zertifikat kann nicht ausgewählt werden.</translation>
+<translation id="8087000398470557479">Dieser Inhalt ist von <ph name="DOMAIN_NAME" /> und wurde von Google bereitgestellt.</translation>
+<translation id="8116925261070264013">Stummgeschaltet</translation>
+<translation id="813082847718468539">Website-Informationen anzeigen</translation>
+<translation id="8131740175452115882">Bestätigen</translation>
+<translation id="8154912474061769055">Viele Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> zugelassen</translation>
+<translation id="8200772114523450471">Fortsetzen</translation>
+<translation id="8206354486702514201">Diese Einstellung wird von Ihrem Administrator erzwungen.</translation>
+<translation id="8211406090763984747">Verbindung ist sicher</translation>
+<translation id="8249310407154411074">Ganz nach oben</translation>
+<translation id="8261506727792406068">Löschen</translation>
+<translation id="8300705686683892304">Von App verwaltet</translation>
+<translation id="8324158725704657629">Nicht mehr fragen</translation>
+<translation id="8372893542064058268">Lässt die Hintergrundsynchronisierung für eine bestimmte Website zu.</translation>
+<translation id="8376384591331888629">Einschließlich Cookies von Drittanbietern auf dieser Website</translation>
+<translation id="83792324527827022">Eine Website verwendet Ihre Kamera und Ihr Mikrofon</translation>
+<translation id="8380167699614421159">Diese Website zeigt aufdringliche oder irreführende Werbung an</translation>
+<translation id="8394832520002899662">Tippen, um zur Website zurückzukehren</translation>
+<translation id="8425213833346101688">Ändern</translation>
+<translation id="8441146129660941386">Zurück navigieren</translation>
+<translation id="8444433999583714703">Um <ph name="APP_NAME" /> Zugriff auf Ihren Standort zu gewähren, müssen Sie die Standortberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
+<translation id="8447861592752582886">Zugriffsberechtigung auf Gerät widerrufen</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 verwendeter Cookie}other{# verwendete Cookies}}</translation>
+<translation id="8487700953926739672">Offline verfügbar</translation>
+<translation id="848952951823693243">Mobile Website immer anfordern</translation>
+<translation id="851751545965956758">Verhindern, dass Websites eine Verbindung zu Geräten herstellen</translation>
+<translation id="8525306231823319788">Vollbildmodus</translation>
+<translation id="857943718398505171">Zugelassen (empfohlen)</translation>
+<translation id="8609465669617005112">Nach oben</translation>
+<translation id="8676374126336081632">Eingabe löschen</translation>
+<translation id="868929229000858085">Kontakte durchsuchen</translation>
+<translation id="8702612070107455751">Alle Offlinedaten werden gelöscht.</translation>
+<translation id="8712637175834984815">Alles klar</translation>
+<translation id="8719283222052720129">Die Berechtigung für <ph name="APP_NAME" /> kann in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="8725066075913043281">Erneut versuchen</translation>
+<translation id="8730621377337864115">Fertig</translation>
+<translation id="8737217482364735741">Dadurch werden alle von <ph name="ORIGIN" /> gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="8751914237388039244">Bild auswählen</translation>
+<translation id="8801436777607969138">Hier können Sie Websites angeben, für die JavaScript blockiert werden soll.</translation>
+<translation id="8816026460808729765">Zugriff auf Sensoren für Websites blockieren</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Vergrößern</translation>
+<translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
+<translation id="8926666909099850184">NFC ist für dieses Gerät deaktiviert. Sie können die Funktion in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
+<translation id="8941729603749328384">www.example.com</translation>
+<translation id="8958424370300090006">Cookies für eine bestimmte Website werden blockiert.</translation>
+<translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
+<translation id="8986362086234534611">Entfernen</translation>
+<translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}}</translation>
+<translation id="913657688200966289">Die Berechtigungen für <ph name="APP_NAME" /> können in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="9162462602695099906">Diese Seite ist gefährlich</translation>
+<translation id="930525582205581608">Informationen auf dieser Website löschen?</translation>
+<translation id="967624055006145463">Gespeicherte Daten</translation>
+</translationbundle>

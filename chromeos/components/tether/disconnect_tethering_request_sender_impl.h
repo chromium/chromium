@@ -7,9 +7,9 @@
 
 #include <map>
 
-#include "base/optional.h"
 #include "chromeos/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,22 +31,28 @@ class DisconnectTetheringRequestSenderImpl
  public:
   class Factory {
    public:
-    static std::unique_ptr<DisconnectTetheringRequestSender> NewInstance(
+    static std::unique_ptr<DisconnectTetheringRequestSender> Create(
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
         TetherHostFetcher* tether_host_fetcher);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<DisconnectTetheringRequestSender> BuildInstance(
+    virtual ~Factory();
+    virtual std::unique_ptr<DisconnectTetheringRequestSender> CreateInstance(
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
-        TetherHostFetcher* tether_host_fetcher);
+        TetherHostFetcher* tether_host_fetcher) = 0;
 
    private:
     static Factory* factory_instance_;
   };
+
+  DisconnectTetheringRequestSenderImpl(
+      const DisconnectTetheringRequestSenderImpl&) = delete;
+  DisconnectTetheringRequestSenderImpl& operator=(
+      const DisconnectTetheringRequestSenderImpl&) = delete;
 
   ~DisconnectTetheringRequestSenderImpl() override;
 
@@ -66,7 +72,7 @@ class DisconnectTetheringRequestSenderImpl
  private:
   void OnTetherHostFetched(
       const std::string& device_id,
-      base::Optional<multidevice::RemoteDeviceRef> tether_host);
+      absl::optional<multidevice::RemoteDeviceRef> tether_host);
 
   device_sync::DeviceSyncClient* device_sync_client_;
   secure_channel::SecureChannelClient* secure_channel_client_;
@@ -78,8 +84,6 @@ class DisconnectTetheringRequestSenderImpl
 
   base::WeakPtrFactory<DisconnectTetheringRequestSenderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSenderImpl);
 };
 
 }  // namespace tether

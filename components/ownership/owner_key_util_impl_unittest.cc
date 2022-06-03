@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +47,10 @@ const uint8_t kTestKeyData[] = {
 };
 
 class OwnerKeyUtilImplTest : public testing::Test {
+ public:
+  OwnerKeyUtilImplTest(const OwnerKeyUtilImplTest&) = delete;
+  OwnerKeyUtilImplTest& operator=(const OwnerKeyUtilImplTest&) = delete;
+
  protected:
   OwnerKeyUtilImplTest() {}
   ~OwnerKeyUtilImplTest() override {}
@@ -61,9 +64,6 @@ class OwnerKeyUtilImplTest : public testing::Test {
   base::ScopedTempDir tmpdir_;
   base::FilePath key_file_;
   scoped_refptr<OwnerKeyUtil> util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OwnerKeyUtilImplTest);
 };
 
 TEST_F(OwnerKeyUtilImplTest, ImportPublicKey) {

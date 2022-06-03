@@ -8,18 +8,17 @@
 #include <iosfwd>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_hash_data.h"
+#include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
-
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
-#include "components/password_manager/core/browser/password_hash_data.h"  // nogncheck
-#include "components/password_manager/core/browser/password_reuse_detector_consumer.h"  // nogncheck
-#endif
 
 namespace password_manager {
 
@@ -30,47 +29,79 @@ namespace password_manager {
 template <class Context, class Store>
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(new Store);
-  if (!store->Init(syncer::SyncableService::StartSyncFlare(), nullptr))
+  if (!store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr))
     return nullptr;
   return store;
+}
+
+template <class Context, class Store>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface(
+    Context* context) {
+  scoped_refptr<password_manager::PasswordStoreInterface> store(new Store);
+  return store;
+}
+
+// As above, but allows passing parameters to the to-be-created store. The
+// parameters are specified *before* context so that they can be bound (as in
+// base::BindRepeating(&BuildPasswordStoreWithArgs<...>, my_arg)), leaving
+// |context| as a free parameter for TestingFactory.
+template <class Context, class Store, typename... Args>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
+    Args... args,
+    Context* context) {
+  scoped_refptr<password_manager::PasswordStore> store(
+      new Store(std::forward<Args>(args)...));
+  if (!store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr))
+    return nullptr;
+  return store;
+}
+
+// Helper function that builds a real password store with a fake backend.
+// Context is the browser context prescribed by TestingFactory.
+template <class Context>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithFakeBackend(
+    Context* context) {
+  return password_manager::BuildPasswordStoreWithArgs<
+      Context, password_manager::PasswordStore,
+      std::unique_ptr<password_manager::FakePasswordStoreBackend>>(
+      std::make_unique<password_manager::FakePasswordStoreBackend>(), context);
 }
 
 // Struct used for creation of PasswordForms from static arrays of data.
 // Note: This is only meant to be used in unit test.
 struct PasswordFormData {
-  const autofill::PasswordForm::Scheme scheme;
+  const PasswordForm::Scheme scheme;
   const char* signon_realm;
   const char* origin;
   const char* action;
-  const wchar_t* submit_element;
-  const wchar_t* username_element;
-  const wchar_t* password_element;
-  const wchar_t* username_value;  // Set to NULL for a blacklist entry.
-  const wchar_t* password_value;
+  const char16_t* submit_element;
+  const char16_t* username_element;
+  const char16_t* password_element;
+  const char16_t* username_value;  // Set to NULL for a blocklist entry.
+  const char16_t* password_value;
   const double last_usage_time;
   const double creation_time;
 };
 
 // Creates and returns a new PasswordForm built from |form_data|.
-std::unique_ptr<autofill::PasswordForm> PasswordFormFromData(
+std::unique_ptr<PasswordForm> PasswordFormFromData(
     const PasswordFormData& form_data);
 
 // Like PasswordFormFromData(), but also fills arbitrary values into fields not
 // specified by |form_data|.  This may be useful e.g. for tests looking to
 // verify the handling of these fields.  If |use_federated_login| is true, this
 // function will set the form's |federation_origin|.
-std::unique_ptr<autofill::PasswordForm> FillPasswordFormWithData(
+std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
     bool use_federated_login = false);
 
 // Creates a new vector entry. Callers are expected to call .get() to get a raw
 // pointer to the underlying PasswordForm.
-std::unique_ptr<autofill::PasswordForm> CreateEntry(
-    const std::string& username,
-    const std::string& password,
-    const GURL& origin_url,
-    bool is_psl_match,
-    bool is_affiliation_based_match);
+std::unique_ptr<PasswordForm> CreateEntry(const std::string& username,
+                                          const std::string& password,
+                                          const GURL& origin_url,
+                                          bool is_psl_match,
+                                          bool is_affiliation_based_match);
 
 // Checks whether the PasswordForms pointed to in |actual_values| are in some
 // permutation pairwise equal to those in |expectations|. Returns true in case
@@ -79,8 +110,8 @@ std::unique_ptr<autofill::PasswordForm> CreateEntry(
 // Note: |expectations| should be a const ref, but needs to be a const pointer,
 // because GMock tried to copy the reference by value.
 bool ContainsEqualPasswordFormsUnordered(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& expectations,
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& actual_values,
+    const std::vector<std::unique_ptr<PasswordForm>>& expectations,
+    const std::vector<std::unique_ptr<PasswordForm>>& actual_values,
     std::ostream* mismatch_output);
 
 MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
@@ -88,49 +119,61 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
                                              result_listener->stream());
 }
 
-class MockPasswordStoreObserver : public PasswordStore::Observer {
+class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
  public:
   MockPasswordStoreObserver();
   ~MockPasswordStoreObserver() override;
 
-  MOCK_METHOD1(OnLoginsChanged, void(const PasswordStoreChangeList& changes));
+  MOCK_METHOD((void),
+              OnLoginsChanged,
+              (PasswordStoreInterface * store,
+               const PasswordStoreChangeList& changes),
+              (override));
+  MOCK_METHOD((void),
+              OnLoginsRetained,
+              (PasswordStoreInterface * store,
+               const std::vector<PasswordForm>& retained_passwords),
+              (override));
 };
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
  public:
   MockPasswordReuseDetectorConsumer();
   ~MockPasswordReuseDetectorConsumer() override;
 
-  MOCK_METHOD4(OnReuseFound,
-               void(size_t,
-                    base::Optional<PasswordHashData>,
-                    const std::vector<std::string>&,
-                    int));
+  MOCK_METHOD((void),
+              OnReuseCheckDone,
+              (bool,
+               size_t,
+               absl::optional<PasswordHashData>,
+               const std::vector<MatchingReusedCredential>&,
+               int),
+              (override));
 };
 
 // Matcher class used to compare PasswordHashData in tests.
 class PasswordHashDataMatcher
-    : public ::testing::MatcherInterface<base::Optional<PasswordHashData>> {
+    : public ::testing::MatcherInterface<absl::optional<PasswordHashData>> {
  public:
-  explicit PasswordHashDataMatcher(base::Optional<PasswordHashData> expected);
-  virtual ~PasswordHashDataMatcher() {}
+  explicit PasswordHashDataMatcher(absl::optional<PasswordHashData> expected);
+
+  PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
+  PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
+
+  ~PasswordHashDataMatcher() override = default;
 
   // ::testing::MatcherInterface overrides
-  virtual bool MatchAndExplain(base::Optional<PasswordHashData> hash_data,
-                               ::testing::MatchResultListener* listener) const;
-  virtual void DescribeTo(::std::ostream* os) const;
-  virtual void DescribeNegationTo(::std::ostream* os) const;
+  bool MatchAndExplain(absl::optional<PasswordHashData> hash_data,
+                       ::testing::MatchResultListener* listener) const override;
+  void DescribeTo(::std::ostream* os) const override;
+  void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
-  const base::Optional<PasswordHashData> expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordHashDataMatcher);
+  const absl::optional<PasswordHashData> expected_;
 };
 
-::testing::Matcher<base::Optional<PasswordHashData>> Matches(
-    base::Optional<PasswordHashData> expected);
-#endif
+::testing::Matcher<absl::optional<PasswordHashData>> Matches(
+    absl::optional<PasswordHashData> expected);
 
 }  // namespace password_manager
 

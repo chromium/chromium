@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  disable_variants = true
+
+  sources = [
+    "content_settings_agent.mojom",
+    "content_settings_manager.mojom",
+  ]
+
+  deps = [
+    "//components/content_settings/core/common:mojo_bindings",
+    "//services/network/public/mojom:cookies_mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+}

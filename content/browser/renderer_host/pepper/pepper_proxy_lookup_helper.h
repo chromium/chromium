@@ -8,13 +8,12 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -39,9 +38,13 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
   // Callback to invoke when complete. Invoked on thread the
   // PepperProxyLookupHelper was created on.
   using LookUpCompleteCallback =
-      base::OnceCallback<void(base::Optional<net::ProxyInfo> proxy_info)>;
+      base::OnceCallback<void(absl::optional<net::ProxyInfo> proxy_info)>;
 
   PepperProxyLookupHelper();
+
+  PepperProxyLookupHelper(const PepperProxyLookupHelper&) = delete;
+  PepperProxyLookupHelper& operator=(const PepperProxyLookupHelper&) = delete;
+
   ~PepperProxyLookupHelper();
 
   // Starts a lookup for |url| on the UI thread. Invokes
@@ -55,7 +58,7 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
  private:
   class UIThreadHelper;
 
-  void OnProxyLookupComplete(base::Optional<net::ProxyInfo> proxy_info);
+  void OnProxyLookupComplete(absl::optional<net::ProxyInfo> proxy_info);
 
   LookUpCompleteCallback look_up_complete_callback_;
   std::unique_ptr<UIThreadHelper> ui_thread_helper_;
@@ -63,8 +66,6 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PepperProxyLookupHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperProxyLookupHelper);
 };
 
 }  // namespace content

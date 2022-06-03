@@ -16,31 +16,37 @@ namespace ios_web_view {
 class WebViewWebClient : public web::WebClient {
  public:
   WebViewWebClient();
+
+  WebViewWebClient(const WebViewWebClient&) = delete;
+  WebViewWebClient& operator=(const WebViewWebClient&) = delete;
+
   ~WebViewWebClient() override;
 
   // WebClient implementation.
   std::unique_ptr<web::WebMainParts> CreateWebMainParts() override;
+  void AddAdditionalSchemes(Schemes* schemes) const override;
+  bool IsAppSpecificURL(const GURL& url) const override;
   std::string GetUserAgent(web::UserAgentType type) const override;
   base::StringPiece GetDataResource(
       int resource_id,
-      ui::ScaleFactor scale_factor) const override;
+      ui::ResourceScaleFactor scale_factor) const override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
-  NSString* GetDocumentStartScriptForAllFrames(
+  std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
-  base::string16 GetPluginNotSupportedText() const override;
-  void AllowCertificateError(
-      web::WebState* web_state,
-      int cert_error,
-      const net::SSLInfo& ssl_info,
-      const GURL& request_url,
-      bool overridable,
-      int64_t navigation_id,
-      const base::RepeatingCallback<void(bool)>& callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebClient);
+  std::u16string GetPluginNotSupportedText() const override;
+  bool IsLegacyTLSAllowedForHost(web::WebState* web_state,
+                                 const std::string& hostname) override;
+  void PrepareErrorPage(web::WebState* web_state,
+                        const GURL& url,
+                        NSError* error,
+                        bool is_post,
+                        bool is_off_the_record,
+                        const absl::optional<net::SSLInfo>& info,
+                        int64_t navigation_id,
+                        base::OnceCallback<void(NSString*)> callback) override;
+  bool EnableLongPressUIContextMenu() const override;
 };
 
 }  // namespace ios_web_view

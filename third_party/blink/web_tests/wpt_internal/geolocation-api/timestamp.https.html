@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that Geoposition timestamps are well-formed (non-zero and in the same units as Date.getTime).");
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100.0;
+
+const now = new Date().getTime();
+assert_not_equals(now, 0);
+let t = null;
+let then = null;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
+
+function checkPosition(p) {
+    t = p.timestamp;
+    const d = new Date();
+    then = d.getTime();
+    assert_not_equals(t, 0);
+    assert_not_equals(then, 0);
+    assert_less_than_equal(now - 1, t);  // Avoid rounding errors
+    assert_less_than_equal(t, then + 1);  // Avoid rounding errors
+    finishJSTest();
+}
+
+navigator.geolocation.getCurrentPosition(checkPosition);
+</script>
+</body>
+</html>

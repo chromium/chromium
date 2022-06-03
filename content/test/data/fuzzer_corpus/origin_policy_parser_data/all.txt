@@ -1,7 +1,0 @@
-{
- "content-security-policy": {
-   "policy": "does not matter",
-   "disposition": "enforce",
-   "allow-override": true,
- }
-}

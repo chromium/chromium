@@ -1,0 +1,37 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "Accessibility Common",
+  "version": "{{set_version}}",
+  "description": "Accessibility Common extension to communicate with the Automation API",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "page": "accessibility_common/background.html"
+  },
+  "permissions": [
+    "accessibilityPrivate",
+    "accessibilityFeatures.read",
+    "accessibilityFeatures.modify",
+    "commandLinePrivate",
+    "input",
+    "inputMethodPrivate",
+    "settingsPrivate",
+    "languageSettingsPrivate",
+    "speechRecognitionPrivate"
+  ],
+  "automation": {
+    "desktop": true
+  },
+  "default_locale": "en",
+  "input_components": [
+    {
+      "name": "Dictation",
+      "id": "dictation",
+      "language": ["none"]
+    }
+  ]
+}

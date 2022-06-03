@@ -1,0 +1,27 @@
+<histogram-configuration>
+
+  <!-- Enum types -->
+
+<enums>
+
+<enum name="Enum1">
+  <int value="0" label="Value0"/>
+  <int value="1" label="Value1"/>
+</enum>
+
+<enum name="TestEnum">
+  <int value="0" label="Value0"/>
+  <int value="1" label="Value1"/>
+</enum>
+
+<enum name="UkmEventNameHash">
+  <summary>
+    Placeholder enum. The values are UKM event name hashes truncated to 31 bits.
+    This gets populated by the GetEnumsNodes function in merge_xml.py when
+    producing the merged XML file.
+  </summary>
+</enum>
+
+</enums>
+
+</histogram-configuration>

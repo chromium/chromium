@@ -13,7 +13,7 @@ test(function(t) {
     // Ensure that it's valid.
     var axLabel = axButton.nameElementAtIndex(0);
     assert_equals(axLabel.isValid, true);
-    assert_equals(axLabel.role, 'AXRole: AXLabel');
+    assert_equals(axLabel.role, 'AXRole: AXLabelText');
 
     // Now un-hide the label.
     var label = document.getElementById('label');
@@ -35,7 +35,7 @@ test(function(t) {
     assert_equals(axLabel.isValid, false);
     assert_equals(axLabel2.isValid, false);
     assert_equals(axLabel3.isValid, true);
-    assert_equals(axLabel3.role, 'AXRole: AXLabel');
+    assert_equals(axLabel3.role, 'AXRole: AXLabelText');
     assert_equals(axLabel.isEqual(axLabel3), false);
     assert_equals(axLabel2.isEqual(axLabel3), false);
 }, "Accessibility objects for display:none elements");

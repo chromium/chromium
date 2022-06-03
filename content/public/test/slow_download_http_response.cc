@@ -4,108 +4,70 @@
 
 #include "content/public/test/slow_download_http_response.h"
 
-#include <utility>
-
 #include "base/bind.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace content {
 
-namespace {
-
-static bool g_should_finish_download = false;
-
-void SendResponseBodyDone(const net::test_server::SendBytesCallback& send,
-                          net::test_server::SendCompleteCallback done);
-
-// Sends the response body with the given size.
-void SendResponseBody(const net::test_server::SendBytesCallback& send,
-                      net::test_server::SendCompleteCallback done,
-                      bool finish_download) {
-  int data_size = finish_download
-                      ? SlowDownloadHttpResponse::kSecondDownloadSize
-                      : SlowDownloadHttpResponse::kFirstDownloadSize;
-  std::string response(data_size, '*');
-
-  if (finish_download) {
-    send.Run(response, std::move(done));
-  } else {
-    send.Run(response,
-             base::BindOnce(&SendResponseBodyDone, send, std::move(done)));
-  }
-}
-
-// Called when the response body was sucessfully sent.
-void SendResponseBodyDone(const net::test_server::SendBytesCallback& send,
-                          net::test_server::SendCompleteCallback done) {
-  if (g_should_finish_download) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SendResponseBody, send, std::move(done), true),
-        base::TimeDelta::FromMilliseconds(100));
-  } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&SendResponseBodyDone, send, std::move(done)),
-        base::TimeDelta::FromMilliseconds(100));
-  }
-}
-
-}  // namespace
-
 // static
-const char SlowDownloadHttpResponse::kSlowDownloadHostName[] =
-    "url.handled.by.slow.download";
+const char SlowDownloadHttpResponse::kSlowResponseHostName[] =
+    "url.handled.by.slow.response";
 const char SlowDownloadHttpResponse::kUnknownSizeUrl[] =
     "/download-unknown-size";
 const char SlowDownloadHttpResponse::kKnownSizeUrl[] = "/download-known-size";
-const char SlowDownloadHttpResponse::kFinishDownloadUrl[] = "/download-finish";
 
-const int SlowDownloadHttpResponse::kFirstDownloadSize = 1024 * 35;
-const int SlowDownloadHttpResponse::kSecondDownloadSize = 1024 * 10;
+// static
+base::OnceClosure g_finish_last_request;
 
 // static
 std::unique_ptr<net::test_server::HttpResponse>
 SlowDownloadHttpResponse::HandleSlowDownloadRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != kUnknownSizeUrl &&
-      request.relative_url != kKnownSizeUrl &&
-      request.relative_url != kFinishDownloadUrl) {
-    return nullptr;
+  if (request.relative_url ==
+      SlowDownloadHttpResponse::kFinishSlowResponseUrl) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(g_finish_last_request));
+    return std::make_unique<net::test_server::BasicHttpResponse>();
   }
-  auto response =
-      std::make_unique<SlowDownloadHttpResponse>(request.relative_url);
-  return std::move(response);
+
+  if (request.relative_url != SlowDownloadHttpResponse::kUnknownSizeUrl &&
+      request.relative_url != SlowDownloadHttpResponse::kKnownSizeUrl)
+    return nullptr;
+
+  return std::make_unique<SlowDownloadHttpResponse>(
+      request.relative_url,
+      base::BindLambdaForTesting([&](base::OnceClosure start_response,
+                                     base::OnceClosure finish_response) {
+        // The response is started immediately, but we delay finishing it.
+        std::move(start_response).Run();
+        // If there's an active slow download request already, we clobber the
+        // finish closure so it will never be finished.
+        g_finish_last_request = std::move(finish_response);
+      }));
 }
 
-SlowDownloadHttpResponse::SlowDownloadHttpResponse(const std::string& url)
-    : url_(url) {}
+SlowDownloadHttpResponse::SlowDownloadHttpResponse(
+    const std::string& url,
+    GotRequestCallback got_request)
+    : SlowHttpResponse(std::move(got_request)), url_(url) {}
 
 SlowDownloadHttpResponse::~SlowDownloadHttpResponse() = default;
 
-void SlowDownloadHttpResponse::SendResponse(
-    const net::test_server::SendBytesCallback& send,
-    net::test_server::SendCompleteCallback done) {
-  std::string response;
-  response.append("HTTP/1.1 200 OK\r\n");
-  if (base::LowerCaseEqualsASCII(kFinishDownloadUrl, url_)) {
-    response.append("Content-type: text/plain\r\n");
-    response.append("\r\n");
+base::StringPairs SlowDownloadHttpResponse::ResponseHeaders() {
+  base::StringPairs response;
+  response.emplace_back("Content-type", "application/octet-stream");
+  response.emplace_back("Cache-Control", "max-age=0");
 
-    g_should_finish_download = true;
-    send.Run(response, std::move(done));
-  } else {
-    response.append("Content-type: application/octet-stream\r\n");
-    response.append("Cache-Control: max-age=0\r\n");
-
-    if (base::LowerCaseEqualsASCII(kKnownSizeUrl, url_)) {
-      response.append(base::StringPrintf(
-          "Content-Length: %d\r\n", kFirstDownloadSize + kSecondDownloadSize));
-    }
-    response.append("\r\n");
-    send.Run(response,
-             base::BindOnce(&SendResponseBody, send, std::move(done), false));
+  if (base::LowerCaseEqualsASCII(kKnownSizeUrl, url_)) {
+    response.emplace_back(
+        "Content-Length",
+        base::NumberToString(kFirstResponsePartSize + kSecondResponsePartSize));
   }
+
+  return response;
 }
 
 }  // namespace content

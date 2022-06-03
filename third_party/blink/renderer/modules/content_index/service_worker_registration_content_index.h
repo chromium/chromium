@@ -18,13 +18,16 @@ class ContentIndex;
 class ServiceWorkerRegistrationContentIndex final
     : public GarbageCollected<ServiceWorkerRegistrationContentIndex>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationContentIndex);
-
  public:
   static const char kSupplementName[];
 
   explicit ServiceWorkerRegistrationContentIndex(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationContentIndex(
+      const ServiceWorkerRegistrationContentIndex&) = delete;
+  ServiceWorkerRegistrationContentIndex& operator=(
+      const ServiceWorkerRegistrationContentIndex&) = delete;
 
   static ServiceWorkerRegistrationContentIndex& From(
       ServiceWorkerRegistration& registration);
@@ -32,13 +35,10 @@ class ServiceWorkerRegistrationContentIndex final
   static ContentIndex* index(ServiceWorkerRegistration& registration);
   ContentIndex* index();
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<ContentIndex> content_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationContentIndex);
 };
 
 }  // namespace blink

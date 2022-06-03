@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) ::after",
-          "rect": [138, 8, 100, 100],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='hitregion'",
-          "rect": [8, 8, 100, 100],
-          "reason": "background"
-        }
+      "invalidations": [
+        [138, 8, 100, 100],
+        [8, 8, 100, 100]
       ]
     }
   ]

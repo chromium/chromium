@@ -60,7 +60,7 @@ class CORE_EXPORT TouchList final : public ScriptWrappable {
 
   void Append(Touch* touch) { values_.push_back(touch); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<Touch>> values_;

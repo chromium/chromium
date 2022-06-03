@@ -9,6 +9,9 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/android/view_android.h"
 
 namespace gfx {
@@ -17,9 +20,7 @@ class Rect;
 
 namespace content {
 
-class RenderFrameHost;
 class WebContentsImpl;
-struct MenuItem;
 
 class SelectPopup {
  public:
@@ -30,9 +31,9 @@ class SelectPopup {
   // |multiple| defines if it should support multi-select.
   // If not |multiple|, |selected_item| sets the initially selected item.
   // Otherwise, item's "checked" flag selects it.
-  void ShowMenu(RenderFrameHost* frame,
+  void ShowMenu(mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
                 const gfx::Rect& bounds,
-                const std::vector<MenuItem>& items,
+                std::vector<blink::mojom::MenuItemPtr> items,
                 int selected_item,
                 bool multiple,
                 bool right_aligned);
@@ -51,6 +52,7 @@ class SelectPopup {
 
   // Select popup view
   ui::ViewAndroid::ScopedAnchorView popup_view_;
+  mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
 };
 
 }  // namespace content

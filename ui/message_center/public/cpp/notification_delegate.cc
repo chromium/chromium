@@ -5,7 +5,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace message_center {
 
@@ -21,8 +21,8 @@ void ThunkNotificationDelegate::Close(bool by_user) {
 }
 
 void ThunkNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (impl_)
     impl_->Click(button_index, reply);
 }
@@ -43,28 +43,38 @@ ThunkNotificationDelegate::~ThunkNotificationDelegate() = default;
 
 HandleNotificationClickDelegate::HandleNotificationClickDelegate(
     const base::RepeatingClosure& callback) {
-  if (!callback.is_null()) {
-    // Create a callback that consumes and ignores the button index parameter,
-    // and just runs the provided closure.
-    callback_ = base::BindRepeating(
-        [](const base::RepeatingClosure& closure,
-           base::Optional<int> button_index) {
-          DCHECK(!button_index);
-          closure.Run();
-        },
-        callback);
-  }
+  SetCallback(callback);
 }
 
 HandleNotificationClickDelegate::HandleNotificationClickDelegate(
     const ButtonClickCallback& callback)
     : callback_(callback) {}
 
+void HandleNotificationClickDelegate::SetCallback(
+    const ButtonClickCallback& callback) {
+  callback_ = callback;
+}
+
+void HandleNotificationClickDelegate::SetCallback(
+    const base::RepeatingClosure& closure) {
+  if (!closure.is_null()) {
+    // Create a callback that consumes and ignores the button index parameter,
+    // and just runs the provided closure.
+    callback_ = base::BindRepeating(
+        [](const base::RepeatingClosure& closure,
+           absl::optional<int> button_index) {
+          DCHECK(!button_index);
+          closure.Run();
+        },
+        closure);
+  }
+}
+
 HandleNotificationClickDelegate::~HandleNotificationClickDelegate() {}
 
 void HandleNotificationClickDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!callback_.is_null())
     callback_.Run(button_index);
 }

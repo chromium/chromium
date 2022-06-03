@@ -36,23 +36,17 @@ ContentSecurityPolicyResponseHeaders::ContentSecurityPolicyResponseHeaders(
     const ResourceResponse& response)
     : ContentSecurityPolicyResponseHeaders(
           response.HttpHeaderFields(),
+          response.CurrentRequestUrl(),
           SchemeRegistry::SchemeSupportsWasmEvalCSP(
               response.CurrentRequestUrl().Protocol())) {}
 
 ContentSecurityPolicyResponseHeaders::ContentSecurityPolicyResponseHeaders(
     const HTTPHeaderMap& headers,
+    const KURL& response_url,
     bool should_parse_wasm_eval)
     : content_security_policy_(headers.Get(http_names::kContentSecurityPolicy)),
       content_security_policy_report_only_(
           headers.Get(http_names::kContentSecurityPolicyReportOnly)),
+      response_url_(response_url),
       should_parse_wasm_eval_(should_parse_wasm_eval) {}
-
-ContentSecurityPolicyResponseHeaders
-ContentSecurityPolicyResponseHeaders::IsolatedCopy() const {
-  ContentSecurityPolicyResponseHeaders headers;
-  headers.content_security_policy_ = content_security_policy_.IsolatedCopy();
-  headers.content_security_policy_report_only_ =
-      content_security_policy_report_only_.IsolatedCopy();
-  return headers;
-}
 }

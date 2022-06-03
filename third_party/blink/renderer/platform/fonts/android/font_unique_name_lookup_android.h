@@ -7,17 +7,25 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
+#include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom-blink.h"
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-#include <memory>
-
 namespace blink {
 
+// Unique font lookup implementation for Android, uses two backends: Fonts from
+// the firmware in the font directories indexed by
+// content/browser/font_unique_name_lookup/font_unique_name_lookup.cc as well
+// as the Mojo IPC connection to a java implementation that fetches fonts from
+// GMSCore, see
+// content/public/android/java/src/org/chromium/content/browser/font/AndroidFontLookupImpl.java
 class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
  public:
   FontUniqueNameLookupAndroid() = default;
+  FontUniqueNameLookupAndroid(const FontUniqueNameLookupAndroid&) = delete;
+  FontUniqueNameLookupAndroid& operator=(const FontUniqueNameLookupAndroid&) =
+      delete;
   ~FontUniqueNameLookupAndroid() override;
 
   bool IsFontUniqueNameLookupReadyForSyncLookup() override;
@@ -33,13 +41,21 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
   void ReceiveReadOnlySharedMemoryRegion(
       base::ReadOnlySharedMemoryRegion shared_memory_region);
 
-  mojo::Remote<mojom::blink::FontUniqueNameLookup> service_;
-  WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  base::Optional<bool> sync_available_;
+  sk_sp<SkTypeface> MatchUniqueNameFromFirmwareFonts(
+      const String& font_unique_name);
 
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupAndroid);
+  bool RequestedNameInQueryableFonts(const String& font_unique_name);
+  sk_sp<SkTypeface> MatchUniqueNameFromDownloadableFonts(
+      const String& font_unique_name);
+
+  mojo::Remote<mojom::blink::FontUniqueNameLookup>
+      firmware_font_lookup_service_;
+  mojo::Remote<mojom::blink::AndroidFontLookup> android_font_lookup_service_;
+  WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
+  absl::optional<bool> sync_available_;
+  absl::optional<Vector<String>> queryable_fonts_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_ANDROID_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_

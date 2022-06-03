@@ -25,7 +25,7 @@ void ClientEventDispatcher::InjectKeyEvent(const KeyEvent& event) {
   EventMessage message;
   message.set_timestamp(base::TimeTicks::Now().ToInternalValue());
   message.mutable_key_event()->CopyFrom(event);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientEventDispatcher::InjectTextEvent(const TextEvent& event) {
@@ -33,21 +33,21 @@ void ClientEventDispatcher::InjectTextEvent(const TextEvent& event) {
   EventMessage message;
   message.set_timestamp(base::TimeTicks::Now().ToInternalValue());
   message.mutable_text_event()->CopyFrom(event);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientEventDispatcher::InjectMouseEvent(const MouseEvent& event) {
   EventMessage message;
   message.set_timestamp(base::TimeTicks::Now().ToInternalValue());
   message.mutable_mouse_event()->CopyFrom(event);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientEventDispatcher::InjectTouchEvent(const TouchEvent& event) {
   EventMessage message;
   message.set_timestamp(base::TimeTicks::Now().ToInternalValue());
   message.mutable_touch_event()->CopyFrom(event);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientEventDispatcher::OnIncomingMessage(

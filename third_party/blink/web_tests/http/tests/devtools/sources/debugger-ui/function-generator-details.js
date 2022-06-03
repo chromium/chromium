@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that Debugger.getGeneratorObjectDetails command returns correct result.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function forward(iter, step)
@@ -61,6 +61,8 @@
       TestRunner.assertTrue(
           properties && properties.internalProperties, 'FAIL: no properties');
       for (var prop of properties.internalProperties) {
+        if (prop.name === '[[Prototype]]')
+          continue;
         if (prop.name !== '[[GeneratorLocation]]')
           TestRunner.addResult(prop.name + ' = ' + prop.value.description);
         else
@@ -86,7 +88,7 @@
   ];
 
   function createTestSuiteFunction(expression) {
-    var functionName = 'test' + expression.toTitleCase();
+    var functionName = 'test' + expression;
     return eval(
         'function ' + functionName + '(next)\n' +
         '{\n' +

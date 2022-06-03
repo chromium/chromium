@@ -27,9 +27,7 @@ static_library("common") {
 source_set("unittest_sources") {
   testonly = true
 
-  sources = [
-    "sandbox_setup_unittest.cc",
-  ]
+  sources = [ "sandbox_setup_unittest.cc" ]
 
   deps = [
     ":common",

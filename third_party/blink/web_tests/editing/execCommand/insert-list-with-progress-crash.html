@@ -14,14 +14,14 @@ test(()=> assert_selection(
   'InsertOrderedList',
   [
   '<div contenteditable>',
+    '<progress hidden>',
+      '<textarea></textarea>',
+    '</progress>',
     '<ol>',
       '<li>',
         '^<select></select>|',
       '</li>',
     '</ol>',
-    '<progress hidden>',
-      '<textarea></textarea>',
-    '</progress>',
     '<div></div>',
     '</div>']),
   "This InsertOrderedList in contenteditable div with progress.");

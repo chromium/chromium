@@ -1,0 +1,116 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+index cba756c449a6..b0ff8eae2786 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+@@ -35,10 +35,10 @@ enum class RegexTag {
+ };
+ 
+ enum class SequenceTag {
+-  UPPER,
+-  LOWER,
+-  DIGITS,
+-  UNICODE,
++  kUpper,
++  kLower,
++  kDigits,
++  kUnicode,
+ };
+ 
+ struct PortableRegexMatch {
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
+index 729cbad18709..58f0673224fb 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
+@@ -139,21 +139,21 @@ template<>
+ struct val_converter<zxcvbn::SequenceTag> {
+   static zxcvbn::SequenceTag from(const emscripten::val & val) {
+     auto s = val_converter<std::string>::from(val);
+-    if (s == "upper") return zxcvbn::SequenceTag::UPPER;
+-    else if (s == "lower") return zxcvbn::SequenceTag::LOWER;
+-    else if (s == "digits") return zxcvbn::SequenceTag::DIGITS;
++    if (s == "upper") return zxcvbn::SequenceTag::kUpper;
++    else if (s == "lower") return zxcvbn::SequenceTag::kLower;
++    else if (s == "digits") return zxcvbn::SequenceTag::kDigits;
+     else {
+       assert(s == "unicode");
+-      return zxcvbn::SequenceTag::UNICODE;
++      return zxcvbn::SequenceTag::kUnicode;
+     }
+   }
+   static emscripten::val to(const zxcvbn::SequenceTag & val) {
+     std::string s = [&] {
+-      if (val == zxcvbn::SequenceTag::UPPER) return "upper";
+-      else if (val == zxcvbn::SequenceTag::LOWER) return "lower";
+-      else if (val == zxcvbn::SequenceTag::DIGITS) return "digits";
++      if (val == zxcvbn::SequenceTag::kUpper) return "upper";
++      else if (val == zxcvbn::SequenceTag::kLower) return "lower";
++      else if (val == zxcvbn::SequenceTag::kDigits) return "digits";
+       else {
+-        assert(val == zxcvbn::SequenceTag::UNICODE);
++        assert(val == zxcvbn::SequenceTag::kUnicode);
+         return "unicode";
+       }
+     }();
+@@ -325,7 +325,7 @@ struct val_converter<zxcvbn::Match> {
+               });
+       }
+       case zxcvbn::MatchPattern::SEQUENCE: {
+-        auto sequence_tag = from_val_with_default<GET_MEMBER_TYPE(&zxcvbn::SequenceMatch::sequence_tag)>(val["sequence_name"], zxcvbn::SequenceTag::UNICODE);
++        auto sequence_tag = from_val_with_default<GET_MEMBER_TYPE(&zxcvbn::SequenceMatch::sequence_tag)>(val["sequence_name"], zxcvbn::SequenceTag::kUnicode);
+         return zxcvbn::Match(i, j, token, zxcvbn::SequenceMatch{
+             sequence_tag,
+               PARSE_MEMBER_DEF(SequenceMatch, sequence_space, 0),
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index 6d53664f884c..173382e70626 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+@@ -536,19 +536,19 @@ std::vector<Match> sequence_match(const std::string & password) {
+         SequenceTag sequence_name;
+         unsigned sequence_space;
+         if (std::regex_search(token, std::regex(R"(^[a-z]+$)"))) {
+-          sequence_name = SequenceTag::LOWER;
++          sequence_name = SequenceTag::kLower;
+           sequence_space = 26;
+         }
+         else if (std::regex_search(token, std::regex(R"(^[A-Z]+$)"))) {
+-          sequence_name = SequenceTag::UPPER;
++          sequence_name = SequenceTag::kUpper;
+           sequence_space = 26;
+         }
+         else if (std::regex_search(token, std::regex(R"(^\d+$)"))) {
+-          sequence_name = SequenceTag::DIGITS;
++          sequence_name = SequenceTag::kDigits;
+           sequence_space = 10;
+         }
+         else {
+-          sequence_name = SequenceTag::UNICODE;
++          sequence_name = SequenceTag::kUnicode;
+           sequence_space = 26;
+         }
+         result.push_back(Match(i, j, token,
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+index 8a52c4815ab8..96c4c76d1e65 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+@@ -281,7 +281,7 @@ guesses_t estimate_guesses(Match & match, const std::string & password) {
+ #define MATCH_FN(title, upper, lower) \
+   : match.get_pattern() == MatchPattern::upper ? lower##_guesses
+   guesses_t (*estimation_function)(const Match &) =
+-    false ? nullptr MATCH_RUN() : nullptr;
++    (false) ? nullptr MATCH_RUN() : nullptr;
+ #undef MATCH_FN
+   assert(estimation_function != nullptr);
+   auto guesses = estimation_function(match);
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
+index 901c71f15e3b..ec9fd22d8e18 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
+@@ -49,7 +49,7 @@ guesses_t estimate_guesses(Match & match, const std::string & password);
+ 
+ #define MATCH_FN(title, upper, lower) \
+   guesses_t lower##_guesses(const Match &);
+-MATCH_RUN();
++MATCH_RUN()
+ #undef MATCH_FN
+ 
+ guesses_t uppercase_variations(const Match & match);

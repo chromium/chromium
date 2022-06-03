@@ -5,16 +5,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <base/strings/utf_string_conversions.h>
-#include "base/strings/string16.h"
+#include <string>
 
+#include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/preg_parser.h"
 #include "components/policy/core/common/registry_dict.h"
 
 namespace {
 
-const char kRegistryChromePolicyKey[] = "SOFTWARE\\Policies\\Chromium";
+const char16_t kRegistryChromePolicyKey[] = u"SOFTWARE\\Policies\\Chromium";
 
 }  // namespace
 
@@ -23,11 +24,11 @@ namespace preg_parser {
 
 // Disable logging.
 struct Environment {
-  Environment() : root(base::ASCIIToUTF16(kRegistryChromePolicyKey)) {
+  Environment() : root(kRegistryChromePolicyKey) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
   }
 
-  const base::string16 root;
+  const std::u16string root;
 };
 
 Environment* env = new Environment();

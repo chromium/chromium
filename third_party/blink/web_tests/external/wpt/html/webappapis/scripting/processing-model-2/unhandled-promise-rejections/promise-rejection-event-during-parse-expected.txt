@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Promise rejection during initial parsing of document assert_array_equals: lengths differ, expected array ["readystatechange:interactive", "unhandledrejection", "readystatechange:complete"] length 3, got ["readystatechange:interactive", "readystatechange:complete"] length 2
+Harness: the test ran to completion.
+

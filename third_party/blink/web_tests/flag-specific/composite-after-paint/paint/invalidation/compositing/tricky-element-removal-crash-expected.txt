@@ -12,6 +12,13 @@
       "contentsOpaque": true,
       "backgroundColor": "#FA8072",
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "position": [8, 8],
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     }
   ],
   "transforms": [

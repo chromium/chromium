@@ -27,6 +27,7 @@ component("web_modal") {
   ]
 
   deps = [
+    "//components/back_forward_cache",
     "//net",
     "//skia",
     "//ui/gfx/geometry",
@@ -42,9 +43,7 @@ static_library("test_support") {
     "test_web_contents_modal_dialog_manager_delegate.h",
   ]
 
-  public_deps = [
-    ":web_modal",
-  ]
+  public_deps = [ ":web_modal" ]
   deps = [
     "//base",
     "//ui/gfx",
@@ -55,9 +54,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "web_contents_modal_dialog_manager_unittest.cc",
-  ]
+  sources = [ "web_contents_modal_dialog_manager_unittest.cc" ]
 
   deps = [
     ":test_support",

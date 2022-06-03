@@ -30,9 +30,9 @@ void NetworkingPrivateDelegate::RemoveObserver(
 void NetworkingPrivateDelegate::StartActivate(
     const std::string& guid,
     const std::string& carrier,
-    const VoidCallback& success_callback,
-    const FailureCallback& failure_callback) {
-  failure_callback.Run(networking_private::kErrorNotSupported);
+    VoidCallback success_callback,
+    FailureCallback failure_callback) {
+  std::move(failure_callback).Run(networking_private::kErrorNotSupported);
 }
 
 }  // namespace extensions

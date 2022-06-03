@@ -16,14 +16,17 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/notifications/echo_dialog_view.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/ui/echo_dialog_view.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -32,17 +35,9 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace echo_api = extensions::api::echo_private;
-
-namespace {
-
-// URL of "More info" link shown in echo dialog in GetUserConsent function.
-const char kMoreInfoLink[] =
-    "chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html?"
-    "answer=2677280";
-
-}  // namespace
 
 namespace chromeos {
 
@@ -86,7 +81,7 @@ EchoPrivateGetRegistrationCodeFunction::GetRegistrationCode(
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
   std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
-      echo_api::GetRegistrationCode::Params::Create(*args_);
+      echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   return RespondNow(GetRegistrationCode(params->type));
 }
@@ -97,7 +92,7 @@ EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::SetOfferInfo::Params> params =
-      echo_api::SetOfferInfo::Params::Create(*args_);
+      echo_api::SetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -106,7 +101,8 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
 
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
-  offer_update->SetWithoutPathExpansion("echo." + service_id, std::move(dict));
+  offer_update->SetKey("echo." + service_id,
+                       base::Value::FromUniquePtrValue(std::move(dict)));
   return RespondNow(NoArguments());
 }
 
@@ -116,7 +112,7 @@ EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::GetOfferInfo::Params> params =
-      echo_api::GetOfferInfo::Params::Create(*args_);
+      echo_api::GetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -142,26 +138,28 @@ EchoPrivateGetOobeTimestampFunction::EchoPrivateGetOobeTimestampFunction() {
 EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() {
 }
 
-bool EchoPrivateGetOobeTimestampFunction::RunAsync() {
+ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
   base::PostTaskAndReplyWithResult(
       extensions::GetExtensionFileTaskRunner().get(), FROM_HERE,
-      base::Bind(
+      base::BindOnce(
           &EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence,
           this),
-      base::Bind(&EchoPrivateGetOobeTimestampFunction::SendResponse, this));
-  return true;
+      base::BindOnce(&EchoPrivateGetOobeTimestampFunction::RespondWithResult,
+                     this));
+  return RespondLater();
 }
 
 // Get the OOBE timestamp from file /home/chronos/.oobe_completed.
 // The timestamp is used to determine when the user first activates the device.
 // If we can get the timestamp info, return it as yyyy-mm-dd, otherwise, return
 // an empty string.
-bool EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence() {
+std::unique_ptr<base::Value>
+EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence() {
   DCHECK(
       extensions::GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
   const char kOobeTimestampFile[] = "/home/chronos/.oobe_completed";
-  std::string timestamp = "";
+  std::string timestamp;
   base::File::Info fileInfo;
   if (base::GetFileInfo(base::FilePath(kOobeTimestampFile), &fileInfo)) {
     base::Time::Exploded ctime;
@@ -171,8 +169,12 @@ bool EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence() {
                                     ctime.month,
                                     ctime.day_of_month);
   }
-  results_ = echo_api::GetOobeTimestamp::Results::Create(timestamp);
-  return true;
+  return std::make_unique<base::Value>(timestamp);
+}
+
+void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
+    std::unique_ptr<base::Value> result) {
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction()
@@ -191,9 +193,9 @@ EchoPrivateGetUserConsentFunction::CreateForTest(
 
 EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() {}
 
-bool EchoPrivateGetUserConsentFunction::RunAsync() {
+ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
   CheckRedeemOffersAllowed();
-  return true;
+  return RespondLater();
 }
 
 void EchoPrivateGetUserConsentFunction::OnAccept() {
@@ -205,7 +207,8 @@ void EchoPrivateGetUserConsentFunction::OnCancel() {
 }
 
 void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
-  NavigateParams params(GetProfile(), GURL(kMoreInfoLink),
+  NavigateParams params(Profile::FromBrowserContext(browser_context()),
+                        GURL(chrome::kEchoLearnMoreURL),
                         ui::PAGE_TRANSITION_LINK);
   // Open the link in a new window. The echo dialog is modal, so the current
   // window is useless until the dialog is closed.
@@ -214,16 +217,15 @@ void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
 }
 
 void EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
-      chromeos::CrosSettings::Get()->PrepareTrustedValues(base::Bind(
-          &EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed,
-          this));
-  if (status == chromeos::CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
+  ash::CrosSettingsProvider::TrustedStatus status =
+      ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
+          &EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed, this));
+  if (status == ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
     return;
 
   bool allow = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
-      chromeos::kAllowRedeemChromeOsRegistrationOffers, &allow);
+  ash::CrosSettings::Get()->GetBoolean(
+      ash::kAllowRedeemChromeOsRegistrationOffers, &allow);
 
   OnRedeemOffersAllowedChecked(allow);
 }
@@ -233,13 +235,12 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
   redeem_offers_allowed_ = is_allowed;
 
   std::unique_ptr<echo_api::GetUserConsent::Params> params =
-      echo_api::GetUserConsent::Params::Create(*args_);
+      echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.
   GURL service_origin = GURL(params->consent_requester.origin);
   if (!service_origin.is_valid()) {
-    error_ = "Invalid origin.";
-    SendResponse(false);
+    Respond(Error("Invalid origin."));
     return;
   }
 
@@ -248,9 +249,8 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
     web_contents = GetSenderWebContents();
 
     if (!web_contents || extensions::GetViewType(web_contents) !=
-                             extensions::VIEW_TYPE_APP_WINDOW) {
-      error_ = "Not called from an app window - the tabId is required.";
-      SendResponse(false);
+                             extensions::mojom::ViewType::kAppWindow) {
+      Respond(Error("Not called from an app window - the tabId is required."));
       return;
     }
   } else {
@@ -260,8 +260,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
             *params->consent_requester.tab_id, browser_context(),
             false /*incognito_enabled*/, nullptr /*browser*/, &tab_strip,
             &web_contents, &tab_index)) {
-      error_ = "Tab not found.";
-      SendResponse(false);
+      Respond(Error("Tab not found."));
       return;
     }
 
@@ -269,8 +268,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
     // window, so showing it for a request from an inactive tab could be
     // misleading/confusing to the user.
     if (tab_index != tab_strip->active_index()) {
-      error_ = "Consent requested from an inactive tab.";
-      SendResponse(false);
+      Respond(Error("Consent requested from an inactive tab."));
       return;
     }
   }
@@ -282,7 +280,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
   AddRef();
 
   // Create and show the dialog.
-  chromeos::EchoDialogView::Params dialog_params;
+  ash::EchoDialogView::Params dialog_params;
   dialog_params.echo_enabled = redeem_offers_allowed_;
   if (dialog_params.echo_enabled) {
     dialog_params.service_name =
@@ -290,8 +288,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
     dialog_params.origin = base::UTF8ToUTF16(params->consent_requester.origin);
   }
 
-  chromeos::EchoDialogView* dialog =
-      new chromeos::EchoDialogView(this, dialog_params);
+  ash::EchoDialogView* dialog = new ash::EchoDialogView(this, dialog_params);
   dialog->Show(web_contents->GetTopLevelNativeWindow());
 
   // If there is a dialog_shown_callback_, invoke it with the created dialog.
@@ -302,8 +299,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {
   // Consent should not be true if offers redeeming is disabled.
   CHECK(redeem_offers_allowed_ || !consent);
-  results_ = echo_api::GetUserConsent::Results::Create(consent);
-  SendResponse(true);
+  Respond(OneArgument(base::Value(consent)));
 
   // Release the reference added in |OnRedeemOffersAllowedChecked|, before
   // showing the dialog.

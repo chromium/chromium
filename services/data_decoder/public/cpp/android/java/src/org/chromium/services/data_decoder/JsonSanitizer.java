@@ -148,7 +148,7 @@ public class JsonSanitizer {
 
     /**
      * Checks whether a given String is well-formed UTF-16, i.e. all surrogates appear in high-low
-     * pairs and each code point is a valid character.
+     * pairs, in other words: each character is a valid Unicode code point.
      *
      * @param string The string to check.
      * @return Whether the given string is well-formed UTF-16.
@@ -159,7 +159,7 @@ public class JsonSanitizer {
             char c = string.charAt(i);
             // Check that surrogates only appear in pairs of a high surrogate followed by a low
             // surrogate.
-            // A lone low surrogate is not allowed.
+            // A lone surrogate is not allowed.
             if (Character.isLowSurrogate(c)) return false;
 
             int codePoint;
@@ -174,20 +174,12 @@ public class JsonSanitizer {
                 // Decode the high-low pair into a code point.
                 codePoint = Character.toCodePoint(high, low);
             } else {
-                // The code point is neither a low surrogate nor a high surrogate, so we just need
-                // to check that it's a valid character.
+                // The code point is neither a low surrogate nor a high surrogate, so
+                // it's a valid Unicode character.
                 codePoint = c;
             }
-
-            if (!isUnicodeCharacter(codePoint)) return false;
         }
         return true;
-    }
-
-    private static boolean isUnicodeCharacter(int codePoint) {
-        // See the native method base::IsValidCharacter().
-        return codePoint < 0xD800 || (codePoint >= 0xE000 && codePoint < 0xFDD0)
-                || (codePoint > 0xFDEF && codePoint <= 0x10FFFF && (codePoint & 0xFFFE) != 0xFFFE);
     }
 
     @NativeMethods

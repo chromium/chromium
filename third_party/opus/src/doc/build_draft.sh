@@ -48,7 +48,16 @@ mkdir "${destdir}/src"
 mkdir "${destdir}/silk"
 mkdir "${destdir}/silk/float"
 mkdir "${destdir}/silk/fixed"
+mkdir "${destdir}/silk/fixed/x86"
+mkdir "${destdir}/silk/fixed/arm"
+mkdir "${destdir}/silk/fixed/mips"
+mkdir "${destdir}/silk/x86"
+mkdir "${destdir}/silk/arm"
+mkdir "${destdir}/silk/mips"
 mkdir "${destdir}/celt"
+mkdir "${destdir}/celt/x86"
+mkdir "${destdir}/celt/arm"
+mkdir "${destdir}/celt/mips"
 mkdir "${destdir}/include"
 for f in `cat "${toplevel}"/opus_sources.mk "${toplevel}"/celt_sources.mk \
  "${toplevel}"/silk_sources.mk "${toplevel}"/opus_headers.mk \
@@ -82,7 +91,7 @@ cat opus_source.tar.gz| base64 | tr -d '\n' | fold -w 64 | \
 #echo '</artwork>' >> opus_compare_escaped.c
 #echo '</figure>' >> opus_compare_escaped.c
 
-if [[ ! -d ../opus_testvectors ]] ; then
+if [ ! -d ../opus_testvectors ] ; then
   echo "Downloading test vectors..."
   wget 'http://opus-codec.org/testvectors/opus_testvectors.tar.gz'
   tar -C .. -xvzf opus_testvectors.tar.gz

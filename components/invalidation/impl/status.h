@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace syncer {
+namespace invalidation {
 
 // Status of the message arrived from FCM.
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
@@ -46,7 +46,7 @@ struct Status {
 
   bool IsSuccess() const { return code == StatusCode::SUCCESS; }
   bool IsAuthFailure() const { return code == StatusCode::AUTH_FAILURE; }
-  bool ShouldRetry() const { return code != StatusCode::FAILED_NON_RETRIABLE; }
+  bool ShouldRetry() const { return code == StatusCode::FAILED; }
 
   StatusCode code;
   // The message is not meant to be displayed to the user.
@@ -55,6 +55,6 @@ struct Status {
   // Copy and assignment allowed.
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_STATUS_H_

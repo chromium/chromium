@@ -10,29 +10,26 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "chromecast/browser/extensions/api/tts/tts_extension_api.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/info_map.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
-#include "extensions/browser/shared_user_script_master.h"
-#include "extensions/browser/value_store/value_store_factory_impl.h"
+#include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/file_util.h"
@@ -40,8 +37,6 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 
 using content::BrowserContext;
-using content::BrowserThread;
-
 namespace {
 
 std::unique_ptr<base::DictionaryValue> LoadManifestFromString(
@@ -51,7 +46,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestFromString(
   std::unique_ptr<base::Value> root(deserializer.Deserialize(nullptr, error));
   if (!root.get()) {
     if (error->empty()) {
-      // If |error| is empty, than the file could not be read.
+      // If |error| is empty, then the file could not be read.
       // It would be cleaner to have the JSON reader give a specific error
       // in this case, but other code tests for a file error with
       // error->empty().  For now, be consistent.
@@ -78,7 +73,8 @@ namespace extensions {
 
 CastExtensionSystem::CastExtensionSystem(BrowserContext* browser_context)
     : browser_context_(browser_context),
-      store_factory_(new ValueStoreFactoryImpl(browser_context->GetPath())),
+      store_factory_(
+          new value_store::ValueStoreFactoryImpl(browser_context->GetPath())),
       weak_factory_(this) {}
 
 CastExtensionSystem::~CastExtensionSystem() {}
@@ -94,8 +90,8 @@ const Extension* CastExtensionSystem::LoadExtensionByManifest(
   }
 
   scoped_refptr<extensions::Extension> extension(extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::COMMAND_LINE, *manifest, 0,
-      std::string(), &error));
+      base::FilePath(), extensions::mojom::ManifestLocation::kCommandLine,
+      *manifest, 0, std::string(), &error));
   if (!extension.get()) {
     LOG(ERROR) << "Failed to create extension: " << error;
     return nullptr;
@@ -108,6 +104,12 @@ const Extension* CastExtensionSystem::LoadExtensionByManifest(
 
 const Extension* CastExtensionSystem::LoadExtension(
     const base::FilePath& extension_dir) {
+  return LoadExtension(kManifestFilename, extension_dir);
+}
+
+const Extension* CastExtensionSystem::LoadExtension(
+    const base::FilePath::CharType* manifest_file,
+    const base::FilePath& extension_dir) {
   // cast_shell only supports unpacked extensions.
   // NOTE: If you add packed extension support consider removing the flag
   // FOLLOW_SYMLINKS_ANYWHERE below. Packed extensions should not have symlinks.
@@ -115,7 +117,8 @@ const Extension* CastExtensionSystem::LoadExtension(
   int load_flags = Extension::FOLLOW_SYMLINKS_ANYWHERE;
   std::string load_error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::COMPONENT, load_flags, &load_error);
+      extension_dir, manifest_file, std::string(),
+      mojom::ManifestLocation::kComponent, load_flags, &load_error);
   if (!extension.get()) {
     LOG(ERROR) << "Loading extension at " << extension_dir.value()
                << " failed with: " << load_error;
@@ -130,8 +133,8 @@ const Extension* CastExtensionSystem::LoadExtension(
       LOG(WARNING) << warning.message;
   }
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&CastExtensionSystem::PostLoadExtension,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CastExtensionSystem::PostLoadExtension,
                                 base::Unretained(this), extension));
 
   return extension.get();
@@ -159,10 +162,6 @@ void CastExtensionSystem::Init() {
 
   // Inform the rest of the extensions system to start.
   ready_.Signal();
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_EXTENSIONS_READY_DEPRECATED,
-      content::Source<BrowserContext>(browser_context_),
-      content::NotificationService::NoDetails());
 }
 
 void CastExtensionSystem::LaunchApp(const ExtensionId& extension_id) {
@@ -182,15 +181,12 @@ void CastExtensionSystem::Shutdown() {}
 void CastExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);
-  runtime_data_ =
-      std::make_unique<RuntimeData>(ExtensionRegistry::Get(browser_context_));
   quota_service_ = std::make_unique<QuotaService>();
   app_sorting_ = std::make_unique<NullAppSorting>();
 
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_);
 
-  shared_user_script_master_ =
-      std::make_unique<SharedUserScriptMaster>(browser_context_);
+  user_script_manager_ = std::make_unique<UserScriptManager>(browser_context_);
 
   extension_registrar_ =
       std::make_unique<ExtensionRegistrar>(browser_context_, this);
@@ -198,10 +194,6 @@ void CastExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
 
 ExtensionService* CastExtensionSystem::extension_service() {
   return nullptr;
-}
-
-RuntimeData* CastExtensionSystem::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* CastExtensionSystem::management_policy() {
@@ -212,8 +204,8 @@ ServiceWorkerManager* CastExtensionSystem::service_worker_manager() {
   return service_worker_manager_.get();
 }
 
-SharedUserScriptMaster* CastExtensionSystem::shared_user_script_master() {
-  return shared_user_script_master_.get();
+UserScriptManager* CastExtensionSystem::user_script_manager() {
+  return user_script_manager_.get();
 }
 
 StateStore* CastExtensionSystem::state_store() {
@@ -224,7 +216,12 @@ StateStore* CastExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> CastExtensionSystem::store_factory() {
+StateStore* CastExtensionSystem::dynamic_user_scripts_store() {
+  return nullptr;
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+CastExtensionSystem::store_factory() {
   return store_factory_;
 }
 
@@ -244,12 +241,13 @@ AppSorting* CastExtensionSystem::app_sorting() {
 
 void CastExtensionSystem::RegisterExtensionWithRequestContexts(
     const Extension* extension,
-    const base::Closure& callback) {
-  base::PostTaskAndReply(FROM_HERE, {BrowserThread::IO},
-                         base::BindOnce(&InfoMap::AddExtension, info_map(),
-                                        base::RetainedRef(extension),
-                                        base::Time::Now(), false, false),
-                         callback);
+    base::OnceClosure callback) {
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&InfoMap::AddExtension, info_map(),
+                     base::RetainedRef(extension), base::Time::Now(), false,
+                     false),
+      std::move(callback));
 }
 
 void CastExtensionSystem::UnregisterExtensionWithRequestContexts(
@@ -258,6 +256,10 @@ void CastExtensionSystem::UnregisterExtensionWithRequestContexts(
 
 const base::OneShotEvent& CastExtensionSystem::ready() const {
   return ready_;
+}
+
+bool CastExtensionSystem::is_ready() const {
+  return ready_.is_signaled();
 }
 
 ContentVerifier* CastExtensionSystem::content_verifier() {
@@ -275,6 +277,12 @@ void CastExtensionSystem::InstallUpdate(
     const base::FilePath& unpacked_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
+  NOTREACHED();
+}
+
+void CastExtensionSystem::PerformActionBasedOnOmahaAttributes(
+    const std::string& extension_id,
+    const base::Value& attributes) {
   NOTREACHED();
 }
 

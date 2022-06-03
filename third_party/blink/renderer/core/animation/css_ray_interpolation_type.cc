@@ -57,7 +57,15 @@ class CSSRayNonInterpolableValue : public NonInterpolableValue {
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(CSSRayNonInterpolableValue);
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(CSSRayNonInterpolableValue);
+template <>
+struct DowncastTraits<CSSRayNonInterpolableValue> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() == CSSRayNonInterpolableValue::static_type_;
+  }
+};
 
 namespace {
 
@@ -78,7 +86,7 @@ class UnderlyingRayModeChecker
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
     return mode_ ==
-           ToCSSRayNonInterpolableValue(*underlying.non_interpolable_value)
+           To<CSSRayNonInterpolableValue>(*underlying.non_interpolable_value)
                .Mode();
   }
 
@@ -113,10 +121,10 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const CSSRayNonInterpolableValue& ray_non_interpolable_value =
-      ToCSSRayNonInterpolableValue(*non_interpolable_value);
+  const auto& ray_non_interpolable_value =
+      To<CSSRayNonInterpolableValue>(*non_interpolable_value);
   state.Style()->SetOffsetPath(
-      StyleRay::Create(ToInterpolableNumber(interpolable_value).Value(),
+      StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
                        ray_non_interpolable_value.Mode().Size(),
                        ray_non_interpolable_value.Mode().Contain()));
 }
@@ -127,11 +135,11 @@ void CSSRayInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   const RayMode& underlying_mode =
-      ToCSSRayNonInterpolableValue(
+      To<CSSRayNonInterpolableValue>(
           *underlying_value_owner.Value().non_interpolable_value)
           .Mode();
   const RayMode& ray_mode =
-      ToCSSRayNonInterpolableValue(*value.non_interpolable_value).Mode();
+      To<CSSRayNonInterpolableValue>(*value.non_interpolable_value).Mode();
   if (underlying_mode == ray_mode) {
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
@@ -144,7 +152,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   const RayMode& underlying_mode =
-      ToCSSRayNonInterpolableValue(*underlying.non_interpolable_value).Mode();
+      To<CSSRayNonInterpolableValue>(*underlying.non_interpolable_value).Mode();
   conversion_checkers.push_back(
       std::make_unique<UnderlyingRayModeChecker>(underlying_mode));
   return CreateValue(0, underlying_mode);
@@ -176,9 +184,9 @@ PairwiseInterpolationValue CSSRayInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
   const RayMode& start_mode =
-      ToCSSRayNonInterpolableValue(*start.non_interpolable_value).Mode();
+      To<CSSRayNonInterpolableValue>(*start.non_interpolable_value).Mode();
   const RayMode& end_mode =
-      ToCSSRayNonInterpolableValue(*end.non_interpolable_value).Mode();
+      To<CSSRayNonInterpolableValue>(*end.non_interpolable_value).Mode();
   if (start_mode != end_mode)
     return nullptr;
   return PairwiseInterpolationValue(std::move(start.interpolable_value),

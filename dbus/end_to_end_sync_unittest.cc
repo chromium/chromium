@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -24,7 +26,7 @@ class EndToEndSyncTest : public testing::Test {
   void SetUp() override {
     // Start the test service;
     TestService::Options options;
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_FALSE(test_service_->HasDBusThread());
@@ -47,6 +49,8 @@ class EndToEndSyncTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestService> test_service_;
   scoped_refptr<Bus> client_bus_;
   ObjectProxy* object_proxy_;
@@ -121,6 +125,27 @@ TEST_F(EndToEndSyncTest, InvalidServiceName) {
   std::unique_ptr<Response> response(
       object_proxy_->CallMethodAndBlock(&method_call, timeout_ms));
   ASSERT_FALSE(response.get());
+}
+
+TEST_F(EndToEndSyncTest, ConnectToSignalAndBlock) {
+  constexpr char kMessage[] = "hello";
+  base::RunLoop run_loop;
+  std::string test_signal_string;
+  EXPECT_TRUE(object_proxy_->ConnectToSignalAndBlock(
+      "org.chromium.TestInterface", "Test",
+      base::BindRepeating(
+          [](base::OnceClosure quit_closure, std::string* return_string,
+             Signal* signal) {
+            MessageReader reader(signal);
+            ASSERT_TRUE(reader.PopString(return_string));
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &test_signal_string)));
+  test_service_->SendTestSignal(kMessage);
+  run_loop.Run();
+  EXPECT_EQ(test_signal_string, kMessage);
+  // Ensure resources on the DBus thread are cleaned up.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace dbus

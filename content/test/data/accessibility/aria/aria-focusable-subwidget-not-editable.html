@@ -1,0 +1,20 @@
+<!--
+@WIN-ALLOW:IA2_STATE_EDITABLE
+-->
+<!-- Subwidgets such as tree items should not have editable state
+when used aria-activedescendant. -->
+<div contenteditable aria-activedescendant="item1">
+  <div role="tree">
+    <div role="treeitem" id="item1">cats</div>
+    <div role="treeitem" id="item2">dogs</div>
+  </div>
+</div>
+
+<!-- "Control group" to prove that when no aria-activedescendant
+is present, that the editable state is preserved -->
+<div contenteditable>
+  <div role="tree">
+    <div role="treeitem" id="item3">fish</div>
+    <div role="treeitem" id="item4">birds</div>
+  </div>
+</div>

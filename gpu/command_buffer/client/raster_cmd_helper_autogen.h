@@ -89,7 +89,9 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
 }
 
 void BeginRasterCHROMIUMImmediate(GLuint sk_color,
+                                  GLboolean needs_clear,
                                   GLuint msaa_sample_count,
+                                  gpu::raster::MsaaMode msaa_mode,
                                   GLboolean can_use_lcd_text,
                                   const GLbyte* mailbox) {
   const uint32_t size =
@@ -98,7 +100,8 @@ void BeginRasterCHROMIUMImmediate(GLuint sk_color,
       GetImmediateCmdSpaceTotalSize<raster::cmds::BeginRasterCHROMIUMImmediate>(
           size);
   if (c) {
-    c->Init(sk_color, msaa_sample_count, can_use_lcd_text, mailbox);
+    c->Init(sk_color, needs_clear, msaa_sample_count, msaa_mode,
+            can_use_lcd_text, mailbox);
   }
 }
 
@@ -190,6 +193,7 @@ void CopySubTextureINTERNALImmediate(GLint xoffset,
                                      GLint y,
                                      GLsizei width,
                                      GLsizei height,
+                                     GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) {
   const uint32_t size =
       raster::cmds::CopySubTextureINTERNALImmediate::ComputeSize();
@@ -197,7 +201,104 @@ void CopySubTextureINTERNALImmediate(GLint xoffset,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::CopySubTextureINTERNALImmediate>(size);
   if (c) {
-    c->Init(xoffset, yoffset, x, y, width, height, mailboxes);
+    c->Init(xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+  }
+}
+
+void WritePixelsINTERNALImmediate(GLint x_offset,
+                                  GLint y_offset,
+                                  GLuint src_width,
+                                  GLuint src_height,
+                                  GLuint row_bytes,
+                                  GLuint src_sk_color_type,
+                                  GLuint src_sk_alpha_type,
+                                  GLint shm_id,
+                                  GLuint shm_offset,
+                                  GLuint pixels_offset,
+                                  const GLbyte* mailbox) {
+  const uint32_t size =
+      raster::cmds::WritePixelsINTERNALImmediate::ComputeSize();
+  raster::cmds::WritePixelsINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<raster::cmds::WritePixelsINTERNALImmediate>(
+          size);
+  if (c) {
+    c->Init(x_offset, y_offset, src_width, src_height, row_bytes,
+            src_sk_color_type, src_sk_alpha_type, shm_id, shm_offset,
+            pixels_offset, mailbox);
+  }
+}
+
+void ReadbackARGBImagePixelsINTERNALImmediate(GLint src_x,
+                                              GLint src_y,
+                                              GLuint dst_width,
+                                              GLuint dst_height,
+                                              GLuint row_bytes,
+                                              GLuint dst_sk_color_type,
+                                              GLuint dst_sk_alpha_type,
+                                              GLint shm_id,
+                                              GLuint shm_offset,
+                                              GLuint color_space_offset,
+                                              GLuint pixels_offset,
+                                              const GLbyte* mailbox) {
+  const uint32_t size =
+      raster::cmds::ReadbackARGBImagePixelsINTERNALImmediate::ComputeSize();
+  raster::cmds::ReadbackARGBImagePixelsINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          raster::cmds::ReadbackARGBImagePixelsINTERNALImmediate>(size);
+  if (c) {
+    c->Init(src_x, src_y, dst_width, dst_height, row_bytes, dst_sk_color_type,
+            dst_sk_alpha_type, shm_id, shm_offset, color_space_offset,
+            pixels_offset, mailbox);
+  }
+}
+
+void ReadbackYUVImagePixelsINTERNALImmediate(GLuint dst_width,
+                                             GLuint dst_height,
+                                             GLint shm_id,
+                                             GLuint shm_offset,
+                                             GLuint y_offset,
+                                             GLuint y_stride,
+                                             GLuint u_offset,
+                                             GLuint u_stride,
+                                             GLuint v_offset,
+                                             GLuint v_stride,
+                                             const GLbyte* mailbox) {
+  const uint32_t size =
+      raster::cmds::ReadbackYUVImagePixelsINTERNALImmediate::ComputeSize();
+  raster::cmds::ReadbackYUVImagePixelsINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          raster::cmds::ReadbackYUVImagePixelsINTERNALImmediate>(size);
+  if (c) {
+    c->Init(dst_width, dst_height, shm_id, shm_offset, y_offset, y_stride,
+            u_offset, u_stride, v_offset, v_stride, mailbox);
+  }
+}
+
+void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
+                                                GLenum plane_config,
+                                                GLenum subsampling,
+                                                const GLbyte* mailboxes) {
+  const uint32_t size =
+      raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
+  raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
+  if (c) {
+    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
+  }
+}
+
+void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
+                                                 GLenum plane_config,
+                                                 GLenum subsampling,
+                                                 const GLbyte* mailboxes) {
+  const uint32_t size =
+      raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate::ComputeSize();
+  raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate>(size);
+  if (c) {
+    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
   }
 }
 

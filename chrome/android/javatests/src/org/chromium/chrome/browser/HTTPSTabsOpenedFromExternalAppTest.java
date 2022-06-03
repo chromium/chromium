@@ -7,7 +7,8 @@ package org.chromium.chrome.browser;
 import static org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.HTTP_REFERRER;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
+
+import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,8 +17,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -30,8 +32,7 @@ import org.chromium.network.mojom.ReferrerPolicy;
 
 public class HTTPSTabsOpenedFromExternalAppTest {
     @Rule
-    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -52,7 +53,7 @@ public class HTTPSTabsOpenedFromExternalAppTest {
                 InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
         try {
             String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-            TabsOpenedFromExternalAppTest.launchAndVerifyReferrerWithPolicy(
+            TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
                     url, mActivityTestRule, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
         } finally {
             if (mTestServer != null) mTestServer.stopAndDestroyServer();

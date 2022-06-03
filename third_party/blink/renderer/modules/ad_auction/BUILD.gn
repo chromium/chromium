@@ -1,0 +1,28 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("ad_auction") {
+  sources = [
+    "navigator_auction.cc",
+    "navigator_auction.h",
+    "validate_blink_interest_group.cc",
+    "validate_blink_interest_group.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "validate_blink_interest_group_test.cc" ]
+
+  deps = [
+    "//base",
+    "//testing/gtest:gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/renderer/modules:modules",
+    "//url",
+  ]
+}

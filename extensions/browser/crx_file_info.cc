@@ -4,7 +4,7 @@
 
 #include "extensions/browser/crx_file_info.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/crx_file/crx_verifier.h"
 
 namespace extensions {
@@ -12,38 +12,28 @@ namespace extensions {
 CRXFileInfo::CRXFileInfo() : path() {
 }
 
-CRXFileInfo::CRXFileInfo(const std::string& i,
-                         const base::FilePath& p,
-                         const std::string& h,
-                         const crx_file::VerifierFormat f)
-    : extension_id(i), path(p), expected_hash(h), required_format(f) {
-  DCHECK(!path.empty());
-}
-
-CRXFileInfo::CRXFileInfo(const std::string& i,
-                         const crx_file::VerifierFormat f,
-                         const base::FilePath& p)
-    : extension_id(i), path(p), expected_hash(), required_format(f) {
-  DCHECK(!path.empty());
-}
-
 CRXFileInfo::CRXFileInfo(const base::FilePath& p,
                          const crx_file::VerifierFormat f)
-    : extension_id(), path(p), expected_hash(), required_format(f) {
+    : path(p), required_format(f) {
   DCHECK(!path.empty());
 }
 
 CRXFileInfo::CRXFileInfo(const CRXFileInfo& other)
-    : extension_id(other.extension_id),
-      path(other.path),
+    : path(other.path),
+      required_format(other.required_format),
+      extension_id(other.extension_id),
       expected_hash(other.expected_hash),
-      required_format(other.required_format) {
+      expected_version(other.expected_version) {
   DCHECK(!path.empty());
 }
 
+CRXFileInfo::~CRXFileInfo() = default;
+
 bool CRXFileInfo::operator==(const CRXFileInfo& that) const {
-  return extension_id == that.extension_id && path == that.path &&
-         expected_hash == that.expected_hash;
+  return path == that.path && required_format == that.required_format &&
+         extension_id == that.extension_id &&
+         expected_hash == that.expected_hash &&
+         expected_version == that.expected_version;
 }
 
 }  // namespace extensions

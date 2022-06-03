@@ -7,25 +7,23 @@
 
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_export.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace ui {
 
-class UI_BASE_EXPORT DragDropTypes {
+class COMPONENT_EXPORT(UI_BASE_DRAGDROP_TYPES) DragDropTypes {
  public:
+  // These constants match their equivalents in NSDragOperation and
+  // should not be renumbered.
+  // TODO(https://crbug.com/1093536): replace this enum with
+  // ui::mojom::DragOperation.
   enum DragOperation {
     DRAG_NONE = 0,
-    DRAG_MOVE = 1 << 0,
-    DRAG_COPY = 1 << 1,
-    DRAG_LINK = 1 << 2
-  };
-
-  enum DragEventSource {
-    DRAG_EVENT_SOURCE_MOUSE = 0,
-    DRAG_EVENT_SOURCE_TOUCH,
-    DRAG_EVENT_SOURCE_LAST = DRAG_EVENT_SOURCE_TOUCH,
-    DRAG_EVENT_SOURCE_COUNT
+    DRAG_COPY = 1,
+    DRAG_LINK = 2,
+    DRAG_MOVE = 16,
   };
 
 #if defined(OS_WIN)
@@ -33,11 +31,14 @@ class UI_BASE_EXPORT DragDropTypes {
   static int DropEffectToDragOperation(uint32_t effect);
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   static uint64_t DragOperationToNSDragOperation(int drag_operation);
   static int NSDragOperationToDragOperation(uint64_t ns_drag_operation);
 #endif
 };
+
+COMPONENT_EXPORT(UI_BASE_DRAGDROP_TYPES)
+ui::mojom::DragOperation PreferredDragOperation(int operations);
 
 }  // namespace ui
 

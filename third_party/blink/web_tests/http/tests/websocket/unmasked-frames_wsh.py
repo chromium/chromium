@@ -37,7 +37,7 @@ def web_socket_transfer_data(request):
 
     # Send a masked close frame. Clients should be able to handle this frame
     # and the WebSocket object should be closed cleanly.
-    request.connection.write(stream.create_close_frame('', mask=False))
+    request.connection.write(stream.create_close_frame(b'', mask=False))
 
     # Prevents pywebsocket from starting its own closing handshake.
     raise handshake.AbortedByUserException('Abort the connection')

@@ -6,7 +6,6 @@
 #define CHROME_CHROME_CLEANER_ENGINES_COMMON_ENGINE_DIGEST_VERIFIER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/chrome_cleaner/engines/common/engine_digest_verifier.h"
 #include "chrome/chrome_cleaner/os/digest_verifier.h"
 
 namespace chrome_cleaner {

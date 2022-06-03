@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These are pseudo-wire types. We need these types to marshal data from the
+// xsurface API. These messages can and should depend on wire types, and the
+// Chrome UI code need not parse these.
+
+syntax = "proto3";
+
+package feedpacking;
+
+import "components/feed/core/proto/v2/wire/data_operation.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message DismissData {
+  repeated feedwire.DataOperation data_operations = 1;
+}

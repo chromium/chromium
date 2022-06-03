@@ -5,7 +5,8 @@
 #include "services/device/screen_orientation/screen_orientation_listener_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/memory/ptr_util.h"
+#include "base/task/current_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/screen_orientation/screen_orientation_jni_headers/ScreenOrientationListener_jni.h"
 
@@ -22,7 +23,7 @@ void ScreenOrientationListenerAndroid::Create(
 ScreenOrientationListenerAndroid::ScreenOrientationListenerAndroid() = default;
 
 ScreenOrientationListenerAndroid::~ScreenOrientationListenerAndroid() {
-  DCHECK(base::MessageLoopCurrentForIO::IsSet());
+  DCHECK(base::CurrentIOThread::IsSet());
 }
 
 void ScreenOrientationListenerAndroid::IsAutoRotateEnabledByUser(

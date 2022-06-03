@@ -56,7 +56,7 @@ void ProductStateTest::MinimallyInstallProduct(const wchar_t* version) {
 
 void ProductStateTest::ApplyUninstallCommand(const wchar_t* exe_path,
                                              const wchar_t* args) {
-  if (exe_path == NULL) {
+  if (exe_path == nullptr) {
     LONG result = client_state_.DeleteValue(kUninstallStringField);
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
   } else {
@@ -64,7 +64,7 @@ void ProductStateTest::ApplyUninstallCommand(const wchar_t* exe_path,
               client_state_.WriteValue(kUninstallStringField, exe_path));
   }
 
-  if (args == NULL) {
+  if (args == nullptr) {
     LONG result = client_state_.DeleteValue(kUninstallArgumentsField);
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
   } else {
@@ -93,8 +93,8 @@ TEST_P(ProductStateTest, InitializeInstalled) {
   // Bogus version.
   {
     ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegVersionField,
-                                      L"goofy");
+    LONG result =
+        clients_.WriteValue(google_update::kRegVersionField, L"goofy");
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_FALSE(state.Initialize(system_install_));
   }
@@ -102,8 +102,8 @@ TEST_P(ProductStateTest, InitializeInstalled) {
   // Valid "pv" value.
   {
     ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegVersionField,
-                                      L"10.0.47.0");
+    LONG result =
+        clients_.WriteValue(google_update::kRegVersionField, L"10.0.47.0");
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_EQ("10.0.47.0", state.version().GetString());
@@ -120,7 +120,7 @@ TEST_P(ProductStateTest, InitializeOldVersion) {
     LONG result = clients_.DeleteValue(google_update::kRegOldVersionField);
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.old_version() == NULL);
+    EXPECT_EQ(state.old_version(), nullptr);
   }
 
   // Empty "opv" value.
@@ -129,27 +129,27 @@ TEST_P(ProductStateTest, InitializeOldVersion) {
     LONG result = clients_.WriteValue(google_update::kRegOldVersionField, L"");
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.old_version() == NULL);
+    EXPECT_EQ(state.old_version(), nullptr);
   }
 
   // Bogus "opv" value.
   {
     ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegOldVersionField,
-                                      L"coming home");
+    LONG result =
+        clients_.WriteValue(google_update::kRegOldVersionField, L"coming home");
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.old_version() == NULL);
+    EXPECT_EQ(state.old_version(), nullptr);
   }
 
   // Valid "opv" value.
   {
     ProductState state;
-    LONG result = clients_.WriteValue(google_update::kRegOldVersionField,
-                                      L"10.0.47.0");
+    LONG result =
+        clients_.WriteValue(google_update::kRegOldVersionField, L"10.0.47.0");
     EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.old_version() != NULL);
+    EXPECT_NE(state.old_version(), nullptr);
     EXPECT_EQ("10.0.47.0", state.old_version()->GetString());
   }
 }
@@ -187,38 +187,6 @@ TEST_P(ProductStateTest, InitializeRenameCmd) {
   }
 }
 
-// Test extraction of the "ap" value from the ClientState key.
-TEST_P(ProductStateTest, InitializeChannelInfo) {
-  MinimallyInstallProduct(L"10.0.1.1");
-
-  // No "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.DeleteValue(google_update::kRegApField);
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Empty "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Valid "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"spam");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"spam", state.channel().value());
-  }
-}
-
 // Test extraction of the uninstall command and arguments from the ClientState
 // key.
 TEST_P(ProductStateTest, InitializeUninstallCommand) {
@@ -227,7 +195,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
   // No uninstall command.
   {
     ProductState state;
-    ApplyUninstallCommand(NULL, NULL);
+    ApplyUninstallCommand(nullptr, nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_TRUE(state.GetSetupPath().empty());
     EXPECT_TRUE(state.uninstall_command().GetCommandLineString().empty());
@@ -247,7 +215,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
   // Uninstall command without exe.
   {
     ProductState state;
-    ApplyUninstallCommand(NULL, L"--uninstall");
+    ApplyUninstallCommand(nullptr, L"--uninstall");
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_TRUE(state.GetSetupPath().empty());
     EXPECT_EQ(L" --uninstall",
@@ -258,7 +226,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
   // Uninstall command without args.
   {
     ProductState state;
-    ApplyUninstallCommand(L"setup.exe", NULL);
+    ApplyUninstallCommand(L"setup.exe", nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_EQ(L"setup.exe", state.GetSetupPath().value());
     EXPECT_EQ(L"setup.exe", state.uninstall_command().GetCommandLineString());
@@ -268,7 +236,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
   // Uninstall command with exe that requires quoting.
   {
     ProductState state;
-    ApplyUninstallCommand(L"set up.exe", NULL);
+    ApplyUninstallCommand(L"set up.exe", nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_EQ(L"set up.exe", state.GetSetupPath().value());
     EXPECT_EQ(L"\"set up.exe\"",
@@ -335,40 +303,9 @@ TEST_P(ProductStateTest, InitializeMsi) {
   {
     ProductState state;
     EXPECT_EQ(ERROR_SUCCESS,
-              client_state_.WriteValue(google_update::kRegMSIField,
-                                       L"bogus!"));
+              client_state_.WriteValue(google_update::kRegMSIField, L"bogus!"));
     EXPECT_TRUE(state.Initialize(system_install_));
     EXPECT_FALSE(state.is_msi());
-  }
-}
-
-// Test detection of multi-install.
-TEST_P(ProductStateTest, InitializeMultiInstall) {
-  MinimallyInstallProduct(L"10.0.1.1");
-
-  // No uninstall command means single install.
-  {
-    ProductState state;
-    ApplyUninstallCommand(NULL, NULL);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_FALSE(state.is_multi_install());
-  }
-
-  // Uninstall command without --multi-install is single install.
-  {
-    ProductState state;
-    ApplyUninstallCommand(L"setup.exe", L"--uninstall");
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_FALSE(state.is_multi_install());
-  }
-
-  // Uninstall command with --multi-install is multi install.
-  {
-    ProductState state;
-    ApplyUninstallCommand(L"setup.exe",
-                          L"--uninstall --chrome --multi-install");
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.is_multi_install());
   }
 }
 

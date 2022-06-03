@@ -1,17 +1,21 @@
+{# For bindings internals, generated code is concatenated into a larger module
+ # at build time, so we avoid a superfluous file header here. #}
+{%- if not for_bindings_internals -%}
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 'use strict';
+{%- endif %}
 
 {% if generate_closure_exports -%}
 goog.require('mojo.internal');
 {%- if interfaces %}
 goog.require('mojo.internal.interfaceSupport');
 {%- endif %}
-{% for kind in module.imported_kinds.values() %}
+{% for kind in module.imported_kinds.values()|sort %}
 goog.require('{{kind|lite_js_import_name}}');
 {%- endfor %}
-{% else %}
+{% elif not for_bindings_internals  %}
 mojo.internal.exportModule('{{module.namespace}}');
 {% endif %}
 

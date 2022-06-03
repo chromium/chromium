@@ -1,28 +1,26 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='item')",
-      "position": [7, 27],
-      "bounds": [100, 210],
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'ipsum'",
-          "rect": [0, 80, 40, 40],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'lorem'",
-          "rect": [0, 80, 40, 40],
-          "reason": "geometry"
-        }
-      ],
+      "name": "LayoutNGBlockFlow DIV class='overlap'",
+      "bounds": [300, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='item'",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 80, 40, 40]
+      ]
     }
   ],
   "transforms": [
@@ -40,38 +38,27 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='item')",
-      "position": [7, 27],
-      "bounds": [100, 210],
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'ipsum'",
-          "rect": [0, 160, 40, 40],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'lorem'",
-          "rect": [0, 160, 40, 40],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'ipsum'",
-          "rect": [0, 80, 40, 40],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'lorem'",
-          "rect": [0, 80, 40, 40],
-          "reason": "geometry"
-        }
-      ],
+      "name": "LayoutNGBlockFlow DIV class='overlap'",
+      "bounds": [300, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='item'",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 160, 40, 40],
+        [0, 80, 40, 40]
+      ]
     }
   ],
   "transforms": [

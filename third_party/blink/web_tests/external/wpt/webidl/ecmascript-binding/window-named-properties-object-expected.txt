@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS [[SetPrototypeOf]] and [[GetPrototypeOf]]
+PASS [[PreventExtensions]] and [[IsExtensible]]
+PASS [[GetOwnProperty]]
+PASS [[GetOwnProperty]] (named property visibility algorithm)
+FAIL [[DefineOwnProperty]] assert_false: supported non-index property name expected false got true
+PASS [[HasProperty]]
+PASS [[Get]]
+FAIL [[Get]] (named property visibility algorithm) assert_equals: supported indexed property name expected (number) 20 but got (object) Element node <div id="0"></div>
+FAIL [[Set]] (direct) assert_false: expected false got true
+PASS [[Set]] (prototype chain)
+PASS [[Set]] (Reflect.set)
+FAIL [[Delete]] assert_throws_js: existing symbol property name function "() => { delete object[key]; }" did not throw
+PASS [[OwnPropertyKeys]]
+Harness: the test ran to completion.
+

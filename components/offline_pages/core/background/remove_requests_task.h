@@ -22,12 +22,15 @@ class RemoveRequestsTask : public Task {
   RemoveRequestsTask(RequestQueueStore* store,
                      const std::vector<int64_t>& request_ids,
                      RequestQueueStore::UpdateCallback callback);
+
+  RemoveRequestsTask(const RemoveRequestsTask&) = delete;
+  RemoveRequestsTask& operator=(const RemoveRequestsTask&) = delete;
+
   ~RemoveRequestsTask() override;
 
+ private:
   // TaskQueue::Task implementation.
   void Run() override;
-
- private:
   // Step 1. Removes requests from the store.
   void RemoveRequests();
   // Step for early termination, that builds failure result.
@@ -43,8 +46,6 @@ class RemoveRequestsTask : public Task {
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<RemoveRequestsTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveRequestsTask);
 };
 
 }  // namespace offline_pages

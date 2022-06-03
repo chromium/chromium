@@ -4,10 +4,17 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/memory/ptr_util.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
+#include "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_banner_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_modal_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -16,42 +23,93 @@
 #error "This file requires ARC support."
 #endif
 
+WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
+
+// static
+void InfobarOverlayRequestInserter::CreateForWebState(
+    web::WebState* web_state,
+    InfobarOverlayRequestFactory request_factory) {
+  DCHECK(web_state);
+  if (!FromWebState(web_state)) {
+    web_state->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new InfobarOverlayRequestInserter(
+            web_state, request_factory
+                           ? request_factory
+                           : &DefaultInfobarOverlayRequestFactory)));
+  }
+}
+
+InsertParams::InsertParams(InfoBarIOS* infobar) : infobar(infobar) {}
+
 InfobarOverlayRequestInserter::InfobarOverlayRequestInserter(
     web::WebState* web_state,
-    std::unique_ptr<InfobarOverlayRequestFactory> factory)
-    : web_state_(web_state), request_factory_(std::move(factory)) {
+    InfobarOverlayRequestFactory factory)
+    : web_state_(web_state),
+      modal_completion_notifier_(
+          std::make_unique<InfobarModalCompletionNotifier>(web_state_)),
+      request_factory_(factory) {
   DCHECK(web_state_);
   DCHECK(request_factory_);
   // Populate |queues_| with the request queues at the appropriate modalities.
   queues_[InfobarOverlayType::kBanner] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarBanner);
-  queues_[InfobarOverlayType::kDetailSheet] = OverlayRequestQueue::FromWebState(
-      web_state_, OverlayModality::kInfobarModal);
   queues_[InfobarOverlayType::kModal] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarModal);
 }
 
-InfobarOverlayRequestInserter::~InfobarOverlayRequestInserter() = default;
+InfobarOverlayRequestInserter::~InfobarOverlayRequestInserter() {
+  for (auto& observer : observers_) {
+    observer.InserterDestroyed(this);
+  }
+}
 
-void InfobarOverlayRequestInserter::AddOverlayRequest(
-    infobars::InfoBar* infobar,
-    InfobarOverlayType type) const {
-  InsertOverlayRequest(infobar, type, queues_.at(type)->size());
+void InfobarOverlayRequestInserter::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+void InfobarOverlayRequestInserter::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void InfobarOverlayRequestInserter::InsertOverlayRequest(
-    infobars::InfoBar* infobar,
-    InfobarOverlayType type,
-    size_t index) const {
+    const InsertParams& params) {
   // Create the request and its cancel handler.
   std::unique_ptr<OverlayRequest> request =
-      request_factory_->CreateInfobarRequest(infobar, type);
-  DCHECK(request.get());
-  DCHECK_EQ(infobar,
+      request_factory_(params.infobar, params.overlay_type);
+  DCHECK(request);
+  DCHECK_EQ(params.infobar,
             request->GetConfig<InfobarOverlayRequestConfig>()->infobar());
-  OverlayRequestQueue* queue = queues_.at(type);
-  std::unique_ptr<OverlayRequestCancelHandler> cancel_handler =
-      std::make_unique<InfobarOverlayRequestCancelHandler>(request.get(), queue,
-                                                           type, this);
-  queue->InsertRequest(index, std::move(request), std::move(cancel_handler));
+  OverlayRequestQueue* queue = queues_.at(params.overlay_type);
+  std::unique_ptr<OverlayRequestCancelHandler> cancel_handler;
+  switch (params.overlay_type) {
+    case InfobarOverlayType::kBanner:
+      cancel_handler =
+          std::make_unique<InfobarBannerOverlayRequestCancelHandler>(
+              request.get(), queue, params.infobar, this,
+              modal_completion_notifier_.get());
+      break;
+    case InfobarOverlayType::kModal:
+      // Add placeholder request in front of banner queue so no banner get
+      // presented behind the modal.
+      cancel_handler = std::make_unique<InfobarOverlayRequestCancelHandler>(
+          request.get(), queue, params.infobar);
+      OverlayRequestQueue* banner_queue =
+          queues_.at(InfobarOverlayType::kBanner);
+      std::unique_ptr<OverlayRequest> request =
+          OverlayRequest::CreateWithConfig<
+              InfobarBannerPlaceholderRequestConfig>(params.infobar);
+      std::unique_ptr<InfobarModalOverlayRequestCancelHandler>
+          modal_cancel_handler =
+              std::make_unique<InfobarModalOverlayRequestCancelHandler>(
+                  request.get(), banner_queue, params.infobar,
+                  modal_completion_notifier_.get());
+      banner_queue->InsertRequest(0, std::move(request),
+                                  std::move(modal_cancel_handler));
+      break;
+  }
+  for (auto& observer : observers_) {
+    observer.InfobarRequestInserted(this, params);
+  }
+  queue->InsertRequest(params.insertion_index, std::move(request),
+                       std::move(cancel_handler));
 }

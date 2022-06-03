@@ -8,70 +8,28 @@
 #ifndef CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
 #define CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
 
-#include "components/viz/common/quads/selection.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "content/public/common/page_visibility_state.h"
-#include "content/public/common/resource_type.h"
+#include "content/common/navigation_gesture.h"
 #include "ipc/ipc_message_macros.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/platform/web_content_security_policy.h"
-#include "third_party/blink/public/platform/web_cursor_info.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_text_autosizer_page_info.h"
-#include "third_party/blink/public/web/web_ime_text_span.h"
-#include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gfx/ipc/geometry/gfx_param_traits.h"
-#include "ui/gfx/ipc/gfx_param_traits.h"
+#include "ui/native_theme/native_theme.h"
+
+#if defined(OS_MAC)
+#include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
+#endif
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
-IPC_ENUM_TRAITS_MAX_VALUE(content::InputEventAckState,
-                          content::INPUT_EVENT_ACK_STATE_MAX)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::RequestContextType,
-                          blink::mojom::RequestContextType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(content::ResourceType,
-                          content::ResourceType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(
-    network::mojom::ContentSecurityPolicySource,
-    network::mojom::ContentSecurityPolicySource::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ContentSecurityPolicyType,
-                          network::mojom::ContentSecurityPolicyType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(ui::CursorType, ui::CursorType::kMaxValue)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::WebInputEvent::Type,
-                              blink::WebInputEvent::kTypeFirst,
-                              blink::WebInputEvent::kTypeLast)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebImeTextSpan::Type,
-                          blink::WebImeTextSpan::Type::kMisspellingSuggestion)
-IPC_ENUM_TRAITS_MAX_VALUE(ui::mojom::ImeTextSpanThickness,
-                          ui::mojom::ImeTextSpanThickness::kThick)
-IPC_ENUM_TRAITS_MAX_VALUE(content::PageVisibilityState,
-                          content::PageVisibilityState::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(content::NavigationGesture,
+                          content::NavigationGestureLast)
 
-IPC_STRUCT_TRAITS_BEGIN(viz::Selection<gfx::SelectionBound>)
-  IPC_STRUCT_TRAITS_MEMBER(start)
-  IPC_STRUCT_TRAITS_MEMBER(end)
-IPC_STRUCT_TRAITS_END()
+#if defined(OS_MAC)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::ScrollerStyle, blink::kScrollerStyleOverlay)
+#endif
 
-IPC_STRUCT_TRAITS_BEGIN(blink::WebImeTextSpan)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(start_offset)
-  IPC_STRUCT_TRAITS_MEMBER(end_offset)
-  IPC_STRUCT_TRAITS_MEMBER(underline_color)
-  IPC_STRUCT_TRAITS_MEMBER(thickness)
-  IPC_STRUCT_TRAITS_MEMBER(background_color)
-  IPC_STRUCT_TRAITS_MEMBER(suggestion_highlight_color)
-  IPC_STRUCT_TRAITS_MEMBER(remove_on_finish_composing)
-  IPC_STRUCT_TRAITS_MEMBER(suggestions)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(blink::WebTextAutosizerPageInfo)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_width)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_layout_width)
-  IPC_STRUCT_TRAITS_MEMBER(device_scale_adjustment)
-IPC_STRUCT_TRAITS_END()
+IPC_ENUM_TRAITS_MAX_VALUE(ui::NativeTheme::SystemThemeColor,
+                          ui::NativeTheme::SystemThemeColor::kMaxValue)
 
 #endif  // CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_

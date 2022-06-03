@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace tether {
@@ -31,6 +29,11 @@ class TetherSessionCompletionLogger {
   };
 
   TetherSessionCompletionLogger();
+
+  TetherSessionCompletionLogger(const TetherSessionCompletionLogger&) = delete;
+  TetherSessionCompletionLogger& operator=(
+      const TetherSessionCompletionLogger&) = delete;
+
   virtual ~TetherSessionCompletionLogger();
 
   virtual void RecordTetherSessionCompletion(
@@ -38,8 +41,6 @@ class TetherSessionCompletionLogger {
 
  private:
   friend class TetherSessionCompletionLoggerTest;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherSessionCompletionLogger);
 };
 
 }  // namespace tether

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_NTLM_CONSTANTS_H_
-#define NET_BASE_NTLM_CONSTANTS_H_
+#ifndef NET_NTLM_NTLM_CONSTANTS_H_
+#define NET_NTLM_NTLM_CONSTANTS_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -66,16 +66,14 @@ enum class NegotiateFlags : uint32_t {
   kTargetInfo = 0x800000,
 };
 
-constexpr inline NegotiateFlags operator|(NegotiateFlags lhs,
-                                          NegotiateFlags rhs) {
+constexpr NegotiateFlags operator|(NegotiateFlags lhs, NegotiateFlags rhs) {
   using TFlagsInt = std::underlying_type<NegotiateFlags>::type;
 
   return static_cast<NegotiateFlags>(static_cast<TFlagsInt>(lhs) |
                                      static_cast<TFlagsInt>(rhs));
 }
 
-constexpr inline NegotiateFlags operator&(NegotiateFlags lhs,
-                                          NegotiateFlags rhs) {
+constexpr NegotiateFlags operator&(NegotiateFlags lhs, NegotiateFlags rhs) {
   using TFlagsInt = std::underlying_type<NegotiateFlags>::type;
 
   return static_cast<NegotiateFlags>(static_cast<TFlagsInt>(lhs) &
@@ -101,14 +99,14 @@ enum class TargetInfoAvFlags : uint32_t {
 
 using TAvFlagsInt = std::underlying_type<TargetInfoAvFlags>::type;
 
-constexpr inline TargetInfoAvFlags operator|(TargetInfoAvFlags lhs,
-                                             TargetInfoAvFlags rhs) {
+constexpr TargetInfoAvFlags operator|(TargetInfoAvFlags lhs,
+                                      TargetInfoAvFlags rhs) {
   return static_cast<TargetInfoAvFlags>(static_cast<TAvFlagsInt>(lhs) |
                                         static_cast<TAvFlagsInt>(rhs));
 }
 
-constexpr inline TargetInfoAvFlags operator&(TargetInfoAvFlags lhs,
-                                             TargetInfoAvFlags rhs) {
+constexpr TargetInfoAvFlags operator&(TargetInfoAvFlags lhs,
+                                      TargetInfoAvFlags rhs) {
   return static_cast<TargetInfoAvFlags>(static_cast<TAvFlagsInt>(lhs) &
                                         static_cast<TAvFlagsInt>(rhs));
 }
@@ -187,4 +185,4 @@ static constexpr NegotiateFlags kNegotiateMessageFlags =
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_CONSTANTS_H_
+#endif  // NET_NTLM_NTLM_CONSTANTS_H_

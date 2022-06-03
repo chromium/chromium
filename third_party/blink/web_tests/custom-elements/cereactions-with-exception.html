@@ -15,7 +15,7 @@ test(() => {
     if (document.querySelector('#log'))
       document.adoptNode(log);
   });
-  assert_throws('NotFoundError', () => { log.outerHTML = '<my-custom-element></my-custom-element>'; });
+  assert_throws_dom('NotFoundError', () => { log.outerHTML = '<my-custom-element></my-custom-element>'; });
   assert_true(upgraded, 'MyCustomElement constructor should be called');
 }, 'CEReactions should rethrow an exception by the originally-specified steps; 1');
 
@@ -29,7 +29,7 @@ test(() => {
   var myElement = document.createElement('my-custom-element-2');
   container.innerHTML = "a";
   container.appendChild(myElement);
-  assert_throws("HierarchyRequestError", () => container.firstChild.before("b", container));
+  assert_throws_dom("HierarchyRequestError", () => container.firstChild.before("b", container));
   assert_true(disconnected, 'diconnectedCallback() should be called');
 }, 'CEReactions should rethrow an exception by the originally-specified steps; 2');
 </script>

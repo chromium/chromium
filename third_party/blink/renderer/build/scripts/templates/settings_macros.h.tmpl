@@ -39,28 +39,16 @@ void Settings::Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passi
     return; \
   {{setting.name.to_class_data_member()}} = {{setting.name.to_snake_case()}}; \
   {% if setting.invalidate %}
-  Invalidate(SettingsDelegate::k{{setting.invalidate}}Change); \
+  {% for type in setting.invalidate %}
+  Invalidate(SettingsDelegate::ChangeType::k{{type}}); \
+  {% endfor %}
   {% endif  %}
 } \
 {% endfor %}
 void Settings::SetFromStrings(const String& name, const String& value) { \
   {% for setting in settings %}
   if (name == "{{setting.name}}") { \
-    Set{{setting.name.to_upper_camel_case()}}( \
-      {% if setting.type == 'String' %}
-      value \
-      {% elif setting.type == 'bool' %}
-      value.IsEmpty() || value == "true" \
-      {% elif setting.type == 'int' %}
-      value.ToInt() \
-      {% elif setting.type == 'float' %}
-      value.ToFloat() \
-      {% elif setting.type == 'double' %}
-      value.ToDouble() \
-      {% else %}
-      static_cast<{{setting.type}}>(value.ToInt()) \
-      {% endif %}
-    ); \
+    Set{{setting.name.to_upper_camel_case()}}(FromString<{{setting.type}}>()(value)); \
     return; \
   } \
   {% endfor %}

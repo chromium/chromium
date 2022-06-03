@@ -7,12 +7,12 @@
     </head>
     <body bgcolor="0x333333" text="#60B0C0">
         <b><u>Encapsulation of Opus in ISO Base Media File Format</u></b><br>
-        <font size="2">last updated: April 28, 2016</font><br>
+        <font size="2">last updated: August 28, 2018</font><br>
         <br>
         <div class="normal_link pre frame_box">
 
                                 Encapsulation of Opus in ISO Base Media File Format
-                                        Version 0.6.8 (incomplete)
+                                        Version 0.8.1 (incomplete)
 
 
 Table of Contents
@@ -20,7 +20,7 @@ Table of Contents
 <a href="#2">2</a> Normative References
 <a href="#3">3</a> Terms and Definitions
 <a href="#4">4</a> Design Rules of Encapsulation
-    <a href="#4.1">4.1</a> File Type Indentification
+    <a href="#4.1">4.1</a> File Type Identification
     <a href="#4.2">4.2</a> Overview of Track Structure
     <a href="#4.3">4.3</a> Definitions of Opus sample
         <a href="#4.3.1">4.3.1</a> Sample entry format
@@ -32,7 +32,9 @@ Table of Contents
             <a href="#4.3.6.1">4.3.6.1</a> Random Access Point
             <a href="#4.3.6.2">4.3.6.2</a> Pre-roll
     <a href="#4.4">4.4</a> Trimming of Actual Duration
-    <a href="#4.5">4.5</a> Channel Layout (informative)
+    <a href="#4.5">4.5</a> Channel Mapping
+        <a href="#4.5.1">4.5.1</a> ISO Base Media native Channel Mapping
+        <a href="#4.5.2">4.5.2</a> Composition on all active tracks (informative)
     <a href="#4.6">4.6</a> Basic Structure (informative)
         <a href="#4.6.1">4.6.2</a> Initial Movie
         <a href="#4.6.2">4.6.3</a> Movie Fragments
@@ -53,7 +55,7 @@ Table of Contents
     [2] RFC 6716
         Definition of the Opus Audio Codec
 
-    [3] draft-ietf-codec-oggopus-06
+    [3] RFC 7845
         Ogg Encapsulation for the Opus Audio Codec
 
 <a name="3"></a>
@@ -83,8 +85,8 @@ Table of Contents
 
 <a name="4"></a>
 4 Design Rules of Encapsulation
-    4.1 File Type Indentification<a name="4.1"></a>
-        This specification does not define any brand to declare files are conformant to this specification. However,
+    4.1 File Type Identification<a name="4.1"></a>
+        This specification defines the brand 'Opus' to declare files are conformant to this specification. Additionally,
         files conformant to this specification shall contain at least one brand, which supports the requirements and the
         requirements described in this clause without contradiction, in the compatible brands list of the File Type Box.
         As an example, the minimal support of the encapsulation of Opus bitstreams in ISO Base Media file format requires
@@ -117,15 +119,14 @@ Table of Contents
 
             The syntax and semantics of the OpusSampleEntry is shown as follows.
 
-            class OpusSampleEntry() extends AudioSampleEntry ('Opus'){
+            class OpusSampleEntry() extends AudioSampleEntry ('Opus') {
                 OpusSpecificBox();
             }
 
             + channelcount:
-                The channelcount field shall be set to the sum of the total number of Opus bitstreams and the number
-                of Opus bitstreams producing two channels. This value is indentical with (M+N), where M is the value of
-                the *Coupled Stream Count* field and N is the value of the *Stream Count* field in the *Channel Mapping
-                Table* in the identification header defined in Ogg Opus [3].
+                The channelcount field indicates the number of output channels and shall be set to the same value of
+                the OutputChannelCount in the OpusDecoderConfigurationRecord. The value of this field may be used in
+                the ChannelLayout if any as described in 4.5.1.
             + samplesize:
                 The samplesize field shall be set to 16.
             + samplerate:
@@ -135,20 +136,21 @@ Table of Contents
 
         4.3.2 Opus Specific Box<a name="4.3.2"></a>
             Exactly one Opus Specific Box shall be present in each OpusSampleEntry.
-            The Opus Specific Box contains the Version field and this specification defines version 0 of this box.
-            If incompatible changes occured in the fields after the Version field within the OpusSpecificBox in the
-            future versions of this specification, another version will be defined.
+            The Opus Specific Box contains an OpusDecoderConfigurationRecord which contains the Version field and
+            this specification defines version 0 of this record. If incompatible changes occured in the fields after
+            the Version field within the OpusDecoderConfigurationRecord in the future versions of this specification,
+            another version will be defined.
             This box refers to Ogg Opus [3] at many parts but all the data are stored as big-endian format.
 
             The syntax and semantics of the Opus Specific Box is shown as follows.
 
-            class ChannelMappingTable (unsigned int(8) OutputChannelCount){
+            class ChannelMappingTable (unsigned int(8) OutputChannelCount) {
                 unsigned int(8) StreamCount;
                 unsigned int(8) CoupledCount;
                 unsigned int(8 * OutputChannelCount) ChannelMapping;
             }
 
-            aligned(8) class OpusSpecificBox extends Box('dOps'){
+            aligned(8) class OpusDecoderConfigurationRecord {
                 unsigned int(8) Version;
                 unsigned int(8) OutputChannelCount;
                 unsigned int(16) PreSkip;
@@ -158,6 +160,10 @@ Table of Contents
                 if (ChannelMappingFamily != 0) {
                     ChannelMappingTable(OutputChannelCount);
                 }
+            }
+
+            class OpusSpecificBox extends Box('dOps') {
+                OpusDecoderConfigurationRecord() OpusConfig;
             }
 
             + Version:
@@ -181,7 +187,8 @@ Table of Contents
                 header define in Ogg Opus [3]. Note that the value is stored as 8.8 fixed-point.
             + ChannelMappingFamily:
                 The ChannelMappingFamily field shall be set to the same value as the *Channel Mapping Family* field in
-                the identification header defined in Ogg Opus [3].
+                the identification header defined in Ogg Opus [3]. Note that the value 255 may be used for an alternative
+                to map channels by ISO Base Media native mapping. The details are described in 4.5.1.
             + StreamCount:
                 The StreamCount field shall be set to the same value as the *Stream Count* field in the identification
                 header defined in Ogg Opus [3].
@@ -270,42 +277,62 @@ Table of Contents
         the duration of the last Opus sample may be helpful by setting zero to the segment_duration field since the
         value 0 represents implicit duration equal to the sum of the duration of all samples.
 <a name="4.5"></a>
-    4.5 Channel Layout (informative)
-        By the application of alternate_group in the Track Header Box, whole audio channels in all active tracks from
-        non-alternate group and/or different alternate group from each other are composited into the presentation. If
-        an Opus sample consists of multiple Opus bitstreams, it can be splitted into individual Opus bitstreams and
-        reconstructed into new Opus samples as long as every Opus bitstream has the same total duration in each Opus
-        sample. This nature can be utilized to encapsulate a single Opus bitstream in each track without breaking the
-        original channel layout.
+    4.5 Channel Mapping
+        4.5.1 ISO Base Media native Channel Mapping<a name="4.5.1"></a>
+            ISO Base Media File Format, that is ISO/IEC 14496-12 [1], defines an extension ChannelLayout to the
+            AudioSampleEntry, which conveys information of mapping channels to loudspeaker positions. The ChannelLayout
+            enables to specify the channel layout more flexibly than the predefined layouts of the ChannelMappingFamily.
 
-        As an example, let's say there is a following track:
-            OutputChannelCount = 6;
-            StreamCount        = 4;
-            CoupledCount       = 2;
-            ChannelMapping     = {0, 4, 1, 2, 3, 5}; // front left, front center, front right, rear left, rear right, LFE
-        Here, to couple front left to front right channels into the first stream, and couple rear left to rear right
-        channels into the second stream, reordering is needed since coupled streams must precede any non-coupled stream.
-        You extract the four Opus bitstreams from this track and you encapsulate two of the four into a track and the
-        others into another track. The former track is as follows.
-            OutputChannelCount = 6;
-            StreamCount        = 2;
-            CoupledCount       = 2;
-            ChannelMapping     = {0, 255, 1, 2, 3, 255}; // front left, front center, front right, rear left, rear right, LFE
-        And the latter track is as follows.
-            OutputChannelCount = 6;
-            StreamCount        = 2;
-            CoupledCount       = 0;
-            ChannelMapping     = {255, 0, 255, 255, 255, 1}; // front left, front center, front right, rear left, rear right, LFE
-        In addition, the value of the alternate_group field in the both tracks is set to 0. As the result, the player
-        may play as if channels with 255 are not present, and play the presentation constructed from the both tracks
-        in the same channel layout as the one of the original track. Keep in mind that the way of the composition, i.e.
-        the mixing for playback, is not defined here, and maybe different results could occur except for the channel
-        layout of the original, depending on an implementation or the definition of a derived file format.
+            To utilize the ChannelLayout for OpusSampleEntry, the ChannelMappingFamily field should be set to 255.
+            Even when the ChannelMappingFamily field is set to another value, the assignment of each output channel to
+            loudspeaker position specified by the ChannelMappingFamily would be changed as specified by the ChannelLayout.
+            The procedure of the assignment is the following.
 
-        Note that some derived file formats may specify the restriction to ignore alternate grouping. In the context of
-        such file formats, this application is not available. This unavailability does not mean incompatibilities among
-        file formats unless the restriction to the value of the alternate_group field is specified and brings about
-        any conflict among their definitions.
+                1. Decoded channels are mapped to output channels according to the ChannelMappingTable.
+                2. Output channels are mapped to loudspeaker positions according to the ChannelLayout.
+
+            In this way, the parameters of the Opus Specific Box are processed before the ChannelLayout, and the
+            ChannelLayout shall follow the Opus Specific Box.
+
+        4.5.2 Composition on all active tracks (informative)<a name="4.5.2"></a>
+            By the application of alternate_group in the Track Header Box, whole audio channels in all active tracks from
+            non-alternate group and/or different alternate group from each other are composited into the presentation. If
+            an Opus sample consists of multiple Opus bitstreams, it can be splitted into individual Opus bitstreams and
+            reconstructed into new Opus samples as long as every Opus bitstream has the same total duration in each Opus
+            sample. This nature can be utilized to encapsulate a single Opus bitstream in each track without breaking the
+            original channel layout.
+
+            As an example, let's say there is a following track:
+                OutputChannelCount = 6;
+                StreamCount        = 4;
+                CoupledCount       = 2;
+                ChannelMapping     = {0, 4, 1, 2, 3, 5}; // front left, front center, front right,
+                                                         // rear left, rear right, LFE
+            Here, to couple front left to front right channels into the first stream, and couple rear left to rear right
+            channels into the second stream, reordering is needed since coupled streams must precede any non-coupled
+            stream. You extract the four Opus bitstreams from this track and you encapsulate two of the four into a track
+            and the others into another track. The former track is as follows.
+                OutputChannelCount = 6;
+                StreamCount        = 2;
+                CoupledCount       = 2;
+                ChannelMapping     = {0, 255, 1, 2, 3, 255}; // front left, front center, front right,
+                                                             // rear left, rear right, LFE
+            And the latter track is as follows.
+                OutputChannelCount = 6;
+                StreamCount        = 2;
+                CoupledCount       = 0;
+                ChannelMapping     = {255, 0, 255, 255, 255, 1}; // front left, front center, front right,
+                                                                 // rear left, rear right, LFE
+            In addition, the value of the alternate_group field in the both tracks is set to 0. As the result, the player
+            may play as if channels with 255 are not present, and play the presentation constructed from the both tracks
+            in the same channel layout as the one of the original track. Keep in mind that the way of the composition, i.e.
+            the mixing for playback, is not defined here, and maybe different results could occur except for the channel
+            layout of the original, depending on an implementation or the definition of a derived file format.
+
+            Note that some derived file formats may specify the restriction to ignore alternate grouping. In the context
+            of such file formats, this application is not available. This unavailability does not mean incompatibilities
+            among file formats unless the restriction to the value of the alternate_group field is specified and brings
+            about any conflict among their definitions.
 <a name="4.6"></a>
     4.6 Basic Structure (informative)
         4.6.1 Initial Movie<a name="4.6.1"></a>
@@ -395,7 +422,7 @@ Table of Contents
             +----+----+----+----+----+----+----+----+------------------------------+
             |    |    |sgpd|*   |    |    |    |    | Sample Group Description Box |
             +----+----+----+----+----+----+----+----+------------------------------+
-            |    |    |sbgp|*   |    |    |    |    | Sample to Group Box          |
+            |    |    |sbgp|    |    |    |    |    | Sample to Group Box          |
             +----+----+----+----+----+----+----+----+------------------------------+
 
                     Figure 3 - Basic structure of Movie Fragment Box
@@ -407,14 +434,14 @@ Table of Contents
 <a name="4.7"></a>
     4.7 Example of Encapsulation (informative)
         [File]
-            size = 17790
+            size = 17757
             [ftyp: File Type Box]
                 position = 0
                 size = 24
-                major_brand = mp42 : MP4 version 2
+                major_brand = Opus : Opus audio coding
                 minor_version = 0
                 compatible_brands
-                    brand[0] = mp42 : MP4 version 2
+                    brand[0] = Opus : Opus audio coding
                     brand[1] = iso2 : ISO Base Media file format version 2
             [moov: Movie Box]
                 position = 24
@@ -444,30 +471,11 @@ Table of Contents
                     pre_defined = 0x00000000
                     pre_defined = 0x00000000
                     next_track_ID = 2
-                [iods: Object Descriptor Box]
-                    position = 140
-                    size = 33
-                    version = 0
-                    flags = 0x000000
-                    [tag = 0x10: MP4_IOD]
-                        expandableClassSize = 16
-                        ObjectDescriptorID = 1
-                        URL_Flag = 0
-                        includeInlineProfileLevelFlag = 0
-                        reserved = 0xf
-                        ODProfileLevelIndication = 0xff
-                        sceneProfileLevelIndication = 0xff
-                        audioProfileLevelIndication = 0xfe
-                        visualProfileLevelIndication = 0xff
-                        graphicsProfileLevelIndication = 0xff
-                        [tag = 0x0e: ES_ID_Inc]
-                            expandableClassSize = 4
-                            Track_ID = 1
                 [trak: Track Box]
-                    position = 173
+                    position = 140
                     size = 608
                     [tkhd: Track Header Box]
-                        position = 181
+                        position = 148
                         size = 92
                         version = 0
                         flags = 0x000007
@@ -492,7 +500,7 @@ Table of Contents
                         width = 0.000000
                         height = 0.000000
                     [edts: Edit Box]
-                        position = 273
+                        position = 240
                         size = 36
                         [elst: Edit List Box]
                             position = 281
@@ -505,10 +513,10 @@ Table of Contents
                                 media_time = 312
                                 media_rate = 1.000000
                     [mdia: Media Box]
-                        position = 309
+                        position = 276
                         size = 472
                         [mdhd: Media Header Box]
-                            position = 317
+                            position = 284
                             size = 32
                             version = 0
                             flags = 0x000000
@@ -519,7 +527,7 @@ Table of Contents
                             language = und
                             pre_defined = 0x0000
                         [hdlr: Handler Reference Box]
-                            position = 349
+                            position = 316
                             size = 51
                             version = 0
                             flags = 0x000000
@@ -530,41 +538,41 @@ Table of Contents
                             reserved = 0x00000000
                             name = Xiph Audio Handler
                         [minf: Media Information Box]
-                            position = 400
+                            position = 367
                             size = 381
                             [smhd: Sound Media Header Box]
-                                position = 408
+                                position = 375
                                 size = 16
                                 version = 0
                                 flags = 0x000000
                                 balance = 0.000000
                                 reserved = 0x0000
                             [dinf: Data Information Box]
-                                position = 424
+                                position = 391
                                 size = 36
                                 [dref: Data Reference Box]
-                                    position = 432
+                                    position = 399
                                     size = 28
                                     version = 0
                                     flags = 0x000000
                                     entry_count = 1
                                     [url : Data Entry Url Box]
-                                        position = 448
+                                        position = 415
                                         size = 12
                                         version = 0
                                         flags = 0x000001
                                         location = in the same file
                             [stbl: Sample Table Box]
-                                position = 460
+                                position = 427
                                 size = 321
                                 [stsd: Sample Description Box]
-                                    position = 468
+                                    position = 435
                                     size = 79
                                     version = 0
                                     flags = 0x000000
                                     entry_count = 1
                                     [Opus: Audio Description]
-                                        position = 484
+                                        position = 451
                                         size = 63
                                         reserved = 0x000000000000
                                         data_reference_index = 1
@@ -577,7 +585,7 @@ Table of Contents
                                         reserved = 0
                                         samplerate = 48000.000000
                                         [dOps: Opus Specific Box]
-                                            position = 520
+                                            position = 487
                                             size = 27
                                             Version = 0
                                             OutputChannelCount = 6
@@ -595,7 +603,7 @@ Table of Contents
                                                 4 -> 3: side right
                                                 5 -> 5: rear center
                                 [stts: Decoding Time to Sample Box]
-                                    position = 547
+                                    position = 514
                                     size = 24
                                     version = 0
                                     flags = 0x000000
@@ -604,7 +612,7 @@ Table of Contents
                                         sample_count = 18
                                         sample_delta = 1920
                                 [stsc: Sample To Chunk Box]
-                                    position = 571
+                                    position = 538
                                     size = 40
                                     version = 0
                                     flags = 0x000000
@@ -618,7 +626,7 @@ Table of Contents
                                         samples_per_chunk = 5
                                         sample_description_index = 1
                                 [stsz: Sample Size Box]
-                                    position = 611
+                                    position = 578
                                     size = 92
                                     version = 0
                                     flags = 0x000000
@@ -643,7 +651,7 @@ Table of Contents
                                     entry_size[16] = 962
                                     entry_size[17] = 848
                                 [stco: Chunk Offset Box]
-                                    position = 703
+                                    position = 670
                                     size = 24
                                     version = 0
                                     flags = 0x000000
@@ -651,7 +659,7 @@ Table of Contents
                                     chunk_offset[0] = 797
                                     chunk_offset[1] = 13096
                                 [sgpd: Sample Group Description Box]
-                                    position = 727
+                                    position = 694
                                     size = 26
                                     version = 1
                                     flags = 0x000000
@@ -660,7 +668,7 @@ Table of Contents
                                     entry_count = 1
                                     roll_distance[0] = -2
                                 [sbgp: Sample to Group Box]
-                                    position = 753
+                                    position = 720
                                     size = 28
                                     version = 0
                                     flags = 0x000000
@@ -670,10 +678,10 @@ Table of Contents
                                         sample_count = 18
                                         group_description_index = 1
             [free: Free Space Box]
-                position = 781
+                position = 748
                 size = 8
             [mdat: Media Data Box]
-                position = 789
+                position = 756
                 size = 17001
 <a name="5"></a>
 5 Authors' Address

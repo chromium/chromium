@@ -1,0 +1,14 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL xml-roles:tablist setsize:2
+++++ROLE_SYSTEM_PAGETAB name='Tab 1 of 2, level 1' xml-roles:tab setsize:2 posinset:1
+++++ROLE_SYSTEM_PAGETAB name='Tab 2 of 2, level 1' xml-roles:tab setsize:2 posinset:2
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL xml-roles:tablist setsize:3
+++++ROLE_SYSTEM_PAGETAB name='Tab 1 of 3, level 2' xml-roles:tab setsize:3 posinset:1
+++++ROLE_SYSTEM_PAGETAB name='Tab 2 of 3, level 2' xml-roles:tab setsize:3 posinset:2
+++++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL xml-roles:tablist setsize:1
+++++++ROLE_SYSTEM_PAGETAB name='Tab 1 of 1, level 3' xml-roles:tab setsize:1 posinset:1
+++++ROLE_SYSTEM_PAGETAB name='Tab 3 of 3, level 2' xml-roles:tab setsize:3 posinset:3
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL xml-roles:tablist setsize:1
+++++ROLE_SYSTEM_PAGETAB name='Tab 1 of 1, level 2' xml-roles:tab setsize:1 posinset:1
+++ROLE_SYSTEM_PAGETABLIST IA2_STATE_HORIZONTAL xml-roles:tablist setsize:1
+++++ROLE_SYSTEM_PAGETAB name='Tab 1 of 1, level 1' xml-roles:tab setsize:1 posinset:1

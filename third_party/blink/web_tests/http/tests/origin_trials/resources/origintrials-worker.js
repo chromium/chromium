@@ -28,7 +28,7 @@ expect_failure_worker = () => {
   test(() => {
     var testObject = self.internals.originTrialsTest();
     assert_idl_attribute(testObject, 'throwingAttribute');
-    assert_throws('NotSupportedError', () => {
+    assert_throws_dom('NotSupportedError', () => {
       testObject.throwingAttribute;
     }, 'Accessing attribute should throw error');
   }, 'Accessing attribute should throw error in ' + worker_type + ' worker');
@@ -37,11 +37,6 @@ expect_failure_worker = () => {
     assert_false('normalAttribute' in testObject);
     assert_equals(testObject.normalAttribute, undefined);
   }, 'Attribute should not exist in ' + worker_type + ' worker');
-  test(() => {
-    var testObject = self.internals.originTrialsTest();
-    assert_false('CONSTANT' in testObject);
-    assert_equals(testObject.CONSTANT, undefined);
-  }, 'Constant should not exist in ' + worker_type + ' worker');
   done();
 }
 
@@ -87,6 +82,20 @@ expect_failure_worker_invalid_os = () => {
   done();
 }
 
+// Test whether the origin-trial-enabled attributes are *NOT* attached in a
+// worker where the third-party trial is not enabled.
+expect_failure_worker_third_party = () => {
+  // Use |worker_type| to make the test descriptions unique when multiple
+  // workers are created in a single test file.
+  var worker_type = get_worker_type();
+  test(() => {
+    var testObject = self.internals.originTrialsTest();
+    assert_false('thirdPartyAttribute' in testObject);
+    assert_equals(testObject.impliedAttribute, undefined);
+  }, 'Third-party attribute should not exist in ' + worker_type + ' worker');
+  done();
+}
+
 // Test whether the origin-trial-enabled attributes are attached in a worker
 // where the trial is enabled.
 // This is deliberately just a minimal set of tests to ensure that trials are
@@ -105,23 +114,11 @@ expect_success_worker = () => {
       assert_idl_attribute(testObject, 'normalAttribute');
       assert_true(testObject.normalAttribute, 'Attribute should return boolean value');
     }, 'Attribute should exist and return value in ' + worker_type + ' worker');
-  test(() => {
-      var testObject = self.internals.originTrialsTest();
-      assert_idl_attribute(testObject, 'CONSTANT');
-      assert_equals(testObject.CONSTANT, 1, 'Constant should return integer value');
-    }, 'Constant should exist and return value in ' + worker_type + ' worker');
-  test(() => {
-      var testObject = self.internals.originTrialsTest();
-      assert_idl_attribute(testObject, 'CONSTANT');
-      testObject.CONSTANT = 10;
-      assert_equals(testObject.CONSTANT, 1, 'Constant should not be modifiable');
-    }, 'Constant should exist and not be modifiable in ' + worker_type + ' worker');
   done();
 }
 
 // Test whether the origin-trial-enabled attributes are attached in a worker
-// where the deprecation trial is enabled, either directly or by the related
-// trial.
+// where the deprecation trial is enabled.
 expect_success_worker_deprecation = () => {
   // Use |worker_type| to make the test descriptions unique when multiple
   // workers are created in a single test file.
@@ -144,6 +141,20 @@ expect_success_worker_implied = () => {
       var testObject = self.internals.originTrialsTest();
       assert_idl_attribute(testObject, 'impliedAttribute');
       assert_true(testObject.impliedAttribute, 'Attribute should return boolean value');
+    }, 'Implied attribute should exist and return value in ' + worker_type + ' worker');
+  done();
+}
+
+// Test whether the origin-trial-enabled attributes are attached in a worker
+// where the third-party trial is enabled.
+expect_success_worker_third_party = () => {
+  // Use |worker_type| to make the test descriptions unique when multiple
+  // workers are created in a single test file.
+  var worker_type = get_worker_type();
+  test(() => {
+      var testObject = self.internals.originTrialsTest();
+      assert_idl_attribute(testObject, 'thirdPartyAttribute');
+      assert_true(testObject.thirdPartyAttribute, 'Attribute should return boolean value');
     }, 'Implied attribute should exist and return value in ' + worker_type + ' worker');
   done();
 }

@@ -1,0 +1,103 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [
+    "abort_payment_handler_browsertest.cc",
+    "android_payment_app_factory_browsertest.cc",
+    "colocated_payment_manifests_browsertest.cc",
+    "empty_parameters_browsertest.cc",
+    "has_enrolled_instrument_browsertest.cc",
+    "has_enrolled_instrument_query_quota_browsertest.cc",
+    "iframe_csp_browsertest.cc",
+    "ignore_payment_method_browsertest.cc",
+    "journey_logger_browsertest.cc",
+    "load_and_remove_iframe_with_many_payment_requests_browsertest.cc",
+    "payment_handler_change_shipping_address_option_browsertest.cc",
+    "payment_handler_enable_delegations_browsertest.cc",
+    "payment_handler_enforce_full_delegation_browsertest.cc",
+    "payment_handler_exploit_browsertest.cc",
+    "payment_handler_install_failed_browsertest.cc",
+    "payment_handler_jit_install_with_registered_sw_browsertest.cc",
+    "payment_handler_just_in_time_installation_browsertest.cc",
+    "payment_handler_ui_browsertest.cc",
+    "payment_handler_uninstall_browsertest.cc",
+    "payment_request_app_store_billing_browsertest.cc",
+    "payment_request_can_make_payment_browsertest.cc",
+    "payment_request_can_make_payment_event_browsertest.cc",
+    "payment_request_security_policy_browsertest.cc",
+    "sec_fetch_site_browsertest.cc",
+    "secure_payment_confirmation_browsertest.cc",
+    "two_payment_requests_browsertest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/test:test_support",
+    "//chrome/test/payments:test_support",
+    "//components/payments/content",
+    "//components/payments/content:utils",
+    "//components/payments/core",
+    "//components/payments/core:test_support",
+    "//components/ukm:test_support",
+    "//components/webdata_services:webdata_services",
+    "//device/fido:test_support",
+  ]
+
+  if (is_android) {
+    sources += [ "expandable_payment_handler_browsertest.cc" ]
+    deps += [ "//components/payments/content/android" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "manifest_verifier_browsertest.cc",
+      "payment_manifest_parser_browsertest.cc",
+      "service_worker_payment_app_finder_browsertest.cc",
+      "site_per_process_payments_browsertest.cc",
+    ]
+
+    deps += [
+      "//chrome/test:test_support_ui",
+      "//components/payments/content:utils",
+      "//components/payments/content/utility",
+      "//components/permissions:permissions",
+      "//components/webdata_services:webdata_services",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/public/cpp/external_arc:external_arc" ]
+  }
+}
+
+source_set("unittests") {
+  testonly = true
+
+  sources = [ "payment_handler_permission_context_unittest.cc" ]
+
+  deps = [
+    "//chrome/test:test_support",
+    "//components/content_settings/core/test:test_support",
+    "//components/infobars/content",
+    "//components/permissions:permissions",
+  ]
+
+  if (is_android) {
+    sources += [ "android/payment_app_service_bridge_unittest.cc" ]
+
+    deps += [
+      "//components/payments/content",
+      "//components/payments/content:utils",
+      "//components/payments/content/android",
+    ]
+  }
+}

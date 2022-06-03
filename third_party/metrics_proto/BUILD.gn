@@ -10,6 +10,7 @@ if (is_android) {
 
 _proto_files = [
   "call_stack_profile.proto",
+  "cast_assistant_logs.proto",
   "cast_logs.proto",
   "chrome_os_app_list_launch_event.proto",
   "chrome_user_metrics_extension.proto",
@@ -24,7 +25,7 @@ _proto_files = [
   "printer_event.proto",
   "reporting_info.proto",
   "sampled_profile.proto",
-  "structured_event.proto",
+  "structured_data.proto",
   "system_profile.proto",
   "trace_log.proto",
   "translate_event.proto",

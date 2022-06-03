@@ -7,14 +7,13 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
-struct PP_PdfPrintSettings_Dev;
-struct PP_PrintSettings_Dev;
-struct PP_PrintPageNumberRange_Dev;
+namespace blink {
+struct WebPrintParams;
+}  // namespace blink
 
 namespace gfx {
 class Rect;
@@ -28,22 +27,20 @@ class PDFiumEngine;
 class PDFiumPrint {
  public:
   explicit PDFiumPrint(PDFiumEngine* engine);
+  PDFiumPrint(const PDFiumPrint&) = delete;
+  PDFiumPrint& operator=(const PDFiumPrint&) = delete;
   ~PDFiumPrint();
 
 #if defined(OS_CHROMEOS)
-  // Flattens the |doc|.
-  // On success, returns the flattened version of |doc| as a vector.
+  // Flattens the `doc`.
+  // On success, returns the flattened version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
 #endif  // defined(OS_CHROMEOS)
 
-  static std::vector<uint32_t> GetPageNumbersFromPrintPageNumberRange(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count);
-
-  // Performs N-up PDF generation for |doc| based on |pages_per_sheet|,
-  // |page_size|, and |printable_area|.
-  // On success, returns the N-up version of |doc| as a vector.
+  // Performs N-up PDF generation for `doc` based on `pages_per_sheet`,
+  // `page_size`, and `printable_area`.
+  // On success, returns the N-up version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateNupPdf(ScopedFPDFDocument doc,
                                            size_t pages_per_sheet,
@@ -64,30 +61,19 @@ class PDFiumPrint {
                                          const gfx::Rect& printable_area);
 
   std::vector<uint8_t> PrintPagesAsPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings,
-      bool raster);
+      const std::vector<int>& page_numbers,
+      const blink::WebPrintParams& print_params);
 
  private:
-  ScopedFPDFDocument CreatePrintPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+  ScopedFPDFDocument CreatePrintPdf(const std::vector<int>& page_numbers,
+                                    const blink::WebPrintParams& print_params);
 
-  ScopedFPDFDocument CreateRasterPdf(
-      ScopedFPDFDocument doc,
-      const PP_PrintSettings_Dev& print_settings);
+  ScopedFPDFDocument CreateRasterPdf(ScopedFPDFDocument doc, int dpi);
 
-  ScopedFPDFDocument CreateSinglePageRasterPdf(
-      FPDF_PAGE page_to_print,
-      const PP_PrintSettings_Dev& print_settings);
+  ScopedFPDFDocument CreateSinglePageRasterPdf(FPDF_PAGE page_to_print,
+                                               int dpi);
 
   PDFiumEngine* const engine_;
-
-  DISALLOW_COPY_AND_ASSIGN(PDFiumPrint);
 };
 
 }  // namespace chrome_pdf

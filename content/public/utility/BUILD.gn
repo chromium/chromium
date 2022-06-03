@@ -5,13 +5,9 @@
 # See //content/BUILD.gn for how this works.
 group("utility") {
   if (is_component_build) {
-    public_deps = [
-      "//content",
-    ]
+    public_deps = [ "//content" ]
   } else {
-    public_deps = [
-      ":utility_sources",
-    ]
+    public_deps = [ ":utility_sources" ]
   }
 }
 

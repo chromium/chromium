@@ -35,8 +35,10 @@ source_set("test_support") {
     "mock_keychain.h",
   ]
 
-  public_deps = [
-    "//testing/gmock",
+  public_deps = [ "//testing/gmock" ]
+  deps = [
+    ":persistence",
+    "//base",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -51,11 +53,12 @@ source_set("unit_tests") {
   deps = [
     ":persistence",
     ":test_support",
+    "//base",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  libs = [ "Security.framework" ]
+  frameworks = [ "Security.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

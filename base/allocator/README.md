@@ -124,6 +124,9 @@ This stage takes care of overriding the symbols `malloc`, `free`,
 allocator shim (next point).
 This is taken care of by the headers in `allocator_shim_override_*`.
 
+*On Windows*: Windows' UCRT (Universal C Runtime) exports weak symbols, that we
+can override in `allocator_shim_override_ucr_symbols_win.h`.
+
 *On Linux/CrOS*: the allocator symbols are defined as exported global symbols
 in `allocator_shim_override_libc_symbols.h` (for `malloc`, `free` and friends)
 and in `allocator_shim_override_cpp_symbols.h` (for `operator new`,
@@ -172,18 +175,6 @@ at build time and ultimately routes the allocator calls to the actual allocator
 (as described in the *Background* section above). This is taken care of by the
 headers in `allocator_shim_default_dispatch_to_*` files.
 
-
-Appendixes
-----------
-**How does the Windows shim layer replace the malloc symbols?**
-The mechanism for hooking LIBCMT in Windows is rather tricky.  The core
-problem is that by default, the Windows library does not declare malloc and
-free as weak symbols.  Because of this, they cannot be overridden.  To work
-around this, we start with the LIBCMT.LIB, and manually remove all allocator
-related functions from it using the visual studio library tool.  Once removed,
-we can now link against the library and provide custom versions of the
-allocator related functionality.
-See the script `preb_libc.py` in this folder.
 
 Related links
 -------------

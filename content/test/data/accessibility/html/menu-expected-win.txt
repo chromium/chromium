@@ -1,0 +1,8 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_PARAGRAPH
+++++ROLE_SYSTEM_STATICTEXT name='Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553.'
+++ROLE_SYSTEM_LIST READONLY
+++++ROLE_SYSTEM_LISTITEM READONLY
+++++++ROLE_SYSTEM_STATICTEXT name='Cats'
+++++ROLE_SYSTEM_LISTITEM READONLY
+++++++ROLE_SYSTEM_STATICTEXT name='Dogs'

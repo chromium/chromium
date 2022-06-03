@@ -31,8 +31,9 @@
 // https://webaudio.github.io/web-midi-api/#MIDIMessageEvent
 
 [
+    Exposed=Window,
     SecureContext
 ] interface MIDIMessageEvent : Event {
-    constructor(DOMString type, optional MIDIMessageEventInit eventInitDict);
+    constructor(DOMString type, optional MIDIMessageEventInit eventInitDict = {});
     readonly attribute Uint8Array data;
 };

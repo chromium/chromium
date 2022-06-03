@@ -4,21 +4,21 @@
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the ARIA pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('accessibility_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadTestModule('accessibility_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <span id="inspected" aria-checked="true" role="checkbox"></span>
     `);
 
-  UI.viewManager.showView('accessibility.view')
+  await UI.viewManager.showView('accessibility.view')
       .then(() => AccessibilityTestRunner.selectNodeAndWaitForAccessibility('inspected'))
       .then(runTests);
 
   function getPromptForAttribute(attribute) {
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement(attribute);
-    treeElement._startEditing();
-    return treeElement._prompt;
+    treeElement.startEditing();
+    return treeElement.prompt;
   }
 
   function runTests() {
@@ -54,9 +54,9 @@
       selectionRange.selectNodeContents(proxyElement);
     }
     var range = selectionRange.startContainer.rangeOfWord(
-        selectionRange.startOffset, prompt._completionStopCharacters, proxyElement, 'backward');
+        selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
-    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
+    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);
 
     function completions(result) {

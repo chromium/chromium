@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
@@ -23,8 +23,17 @@
 #include "extensions/renderer/source_map.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/converter.h"
-#include "third_party/blink/public/web/web_context_features.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_v8_features.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-message.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
 
 namespace extensions {
 
@@ -186,7 +195,7 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   if (context_->GetRenderFrame() &&
       context_->context_type() == Feature::BLESSED_EXTENSION_CONTEXT &&
       !context_->IsForServiceWorker() && ContextNeedsMojoBindings(context_)) {
-    blink::WebContextFeatures::EnableMojoJS(context->v8_context(), true);
+    blink::WebV8Features::EnableMojoJS(context->v8_context(), true);
   }
 }
 
@@ -326,7 +335,7 @@ void ModuleSystem::CallModuleMethodSafe(
     const std::string& method_name,
     int argc,
     v8::Local<v8::Value> argv[],
-    const ScriptInjectionCallback::CompleteCallback& callback) {
+    ScriptInjectionCallback::CompleteCallback callback) {
   TRACE_EVENT2("v8", "v8.callModuleMethodSafe", "module_name", module_name,
                "method_name", method_name);
 
@@ -349,7 +358,7 @@ void ModuleSystem::CallModuleMethodSafe(
   {
     v8::TryCatch try_catch(GetIsolate());
     try_catch.SetCaptureMessage(true);
-    context_->SafeCallFunction(function, argc, argv, callback);
+    context_->SafeCallFunction(function, argc, argv, std::move(callback));
     if (try_catch.HasCaught())
       HandleException(try_catch);
   }
@@ -580,8 +589,8 @@ v8::Local<v8::Value> ModuleSystem::RunString(v8::Local<v8::String> code,
                                              v8::Local<v8::String> name) {
   return context_->RunScript(
       name, code,
-      base::Bind(&ExceptionHandler::HandleUncaughtException,
-                 base::Unretained(exception_handler_.get())),
+      base::BindOnce(&ExceptionHandler::HandleUncaughtException,
+                     base::Unretained(exception_handler_.get())),
       v8::ScriptCompiler::NoCacheReason::kNoCacheBecauseExtensionModule);
 }
 
@@ -730,9 +739,8 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
   v8::Local<v8::Object> exports = v8::Object::New(GetIsolate());
 
   v8::Local<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(
-      GetIsolate(),
-      &SetExportsProperty);
-  tmpl->RemovePrototype();
+      GetIsolate(), &SetExportsProperty, v8::Local<v8::Value>(),
+      v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
   v8::Local<v8::String> v8_key;
   if (!ToV8String(GetIsolate(), "$set", &v8_key)) {
     NOTREACHED();

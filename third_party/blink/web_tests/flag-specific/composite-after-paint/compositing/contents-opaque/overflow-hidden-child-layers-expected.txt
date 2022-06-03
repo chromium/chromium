@@ -10,7 +10,8 @@
       "name": "LayoutNGBlockFlow DIV class='box'",
       "position": [-30, -30],
       "bounds": [160, 160],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#C0C0C0",
       "transform": 1
     }
   ],

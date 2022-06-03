@@ -48,6 +48,9 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   explicit SoftwareVideoRenderer(
       std::unique_ptr<protocol::FrameConsumer> consumer);
 
+  SoftwareVideoRenderer(const SoftwareVideoRenderer&) = delete;
+  SoftwareVideoRenderer& operator=(const SoftwareVideoRenderer&) = delete;
+
   ~SoftwareVideoRenderer() override;
 
   // VideoRenderer interface.
@@ -64,10 +67,10 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
 
  private:
   void RenderFrame(std::unique_ptr<protocol::FrameStats> stats,
-                   const base::Closure& done,
+                   base::OnceClosure done,
                    std::unique_ptr<webrtc::DesktopFrame> frame);
   void OnFrameRendered(std::unique_ptr<protocol::FrameStats> stats,
-                       const base::Closure& done);
+                       base::OnceClosure done);
 
   scoped_refptr<base::SingleThreadTaskRunner> decode_task_runner_;
 
@@ -86,8 +89,6 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SoftwareVideoRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareVideoRenderer);
 };
 
 }  // namespace remoting

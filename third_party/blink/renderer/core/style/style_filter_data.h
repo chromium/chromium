@@ -43,7 +43,7 @@ class StyleFilterData final : public GarbageCollected<StyleFilterData> {
   bool operator==(const StyleFilterData&) const;
   bool operator!=(const StyleFilterData& o) const { return !(*this == o); }
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(operations_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(operations_); }
 
   FilterOperations operations_;
 };

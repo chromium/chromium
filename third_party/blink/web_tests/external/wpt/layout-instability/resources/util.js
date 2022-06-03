@@ -59,6 +59,7 @@ ScoreWatcher = function() {
   resetPromise();
   const observer = new PerformanceObserver(list => {
     list.getEntries().forEach(entry => {
+      this.lastEntry = entry;
       this.score += entry.value;
       if (!entry.hadRecentInput)
         this.scoreWithInputExclusion += entry.value;
@@ -66,4 +67,23 @@ ScoreWatcher = function() {
     });
   });
   observer.observe({entryTypes: ['layout-shift']});
+};
+
+ScoreWatcher.prototype.checkExpectation = function(expectation) {
+  if (expectation.score != undefined)
+    assert_equals(this.score, expectation.score);
+  if (expectation.sources)
+    check_sources(expectation.sources, this.lastEntry.sources);
+};
+
+check_sources = (expect_sources, actual_sources) => {
+  assert_equals(expect_sources.length, actual_sources.length);
+  let rect_match = (e, a) =>
+      e[0] == a.x && e[1] == a.y && e[2] == a.width && e[3] == a.height;
+  let match = e => a =>
+      e.node === a.node &&
+      rect_match(e.previousRect, a.previousRect) &&
+      rect_match(e.currentRect, a.currentRect);
+  for (let e of expect_sources)
+    assert_true(actual_sources.some(match(e)), e.node + " not found");
 };

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/testcases.sub.js"></script>
+</head>
+
+<body>
+<script>
+    function getString(fragment) {
+      d = document.createElement("div");
+      d.appendChild(fragment);
+      return d.innerHTML;
+    }
+    function getFragment(markup) {
+      const d = document.createElement("div");
+      d.innerHTML = markup;
+      let f = document.createDocumentFragment();
+      f.replaceChildren(...d.childNodes);
+      return f;
+    }
+    function getDoc(markup) {
+      return new DOMParser().parseFromString(markup, "text/html");
+    }
+    function assert_node_equals(node1, node2) {
+      assert_true(node1 instanceof Node && node1.isEqualNode(node2),
+                  `Node[${getString(node1)}] == Node[${getString(node2)}]`);
+    }
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
+        fragment = s.sanitize(dom);
+        assert_true(fragment instanceof DocumentFragment);
+
+        let result = getString(fragment);
+        assert_equals(result, c.result);
+    }, "SanitizerAPI with config with Document: " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        let tpl = document.createElement("template");
+        tpl.innerHTML = c.value;
+        fragment = s.sanitize(tpl.content);
+        assert_true(fragment instanceof DocumentFragment);
+        assert_equals(getString(fragment), c.result);
+    }, "SanitizerAPI with config with DocumentFragment: " + c.message));
+
+    // Let's also test .setHTML. The main test suite factors this out
+    // into a seperate file.
+    testcases.forEach(c => test(t => {
+        let result = document.createElement("div");
+        let probe = document.createElement("div");
+        result.innerHTML = c.result;
+        probe.setHTML(c.value, new Sanitizer(c.config_input));
+        assert_equals(result.innerHTML, probe.innerHTML);
+    }, "SanitizerAPI with config with Element.setHTML: " + c.message));
+</script>
+</body>
+</html>

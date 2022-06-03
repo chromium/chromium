@@ -13,6 +13,8 @@
     <input id="textfield" type="text" style="width:100%" oninput="finishJavaScriptStep()" onclick="finishJavaScriptStep()"></input>
   </body>
   <script>
+    setup({single_test: true});
+
     function stepVerifyInitialString(expectedString) {
       let actualString = document.getElementById("textfield").value;
       assert_equals(actualString, expectedString,

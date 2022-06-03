@@ -8,6 +8,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 
 namespace ash {
@@ -19,6 +20,10 @@ int kPageCount = 10;
 class PageIndicatorViewTest : public NoSessionAshTestBase {
  public:
   PageIndicatorViewTest() = default;
+
+  PageIndicatorViewTest(const PageIndicatorViewTest&) = delete;
+  PageIndicatorViewTest& operator=(const PageIndicatorViewTest&) = delete;
+
   ~PageIndicatorViewTest() override = default;
 
   void SetUp() override {
@@ -27,39 +32,38 @@ class PageIndicatorViewTest : public NoSessionAshTestBase {
     model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
 
-    page_indicator_view_ = std::make_unique<PageIndicatorView>(
+    unified_view_ = std::make_unique<UnifiedSystemTrayView>(
         controller_.get(), true /* initially_expanded */);
   }
 
   void TearDown() override {
     controller_.reset();
-    page_indicator_view_.reset();
+    unified_view_.reset();
     model_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
  protected:
   int GetButtonCount() {
-    return page_indicator_view_->buttons_container()->children().size();
+    return page_indicator_view()->buttons_container()->children().size();
   }
 
   bool IsPageSelected(int index) {
-    return page_indicator_view_->IsPageSelectedForTesting(index);
+    return page_indicator_view()->IsPageSelectedForTesting(index);
   }
 
-  void Layout() { page_indicator_view_->Layout(); }
+  void Layout() { unified_view_->Layout(); }
 
   PaginationModel* pagination_model() { return model_->pagination_model(); }
   PageIndicatorView* page_indicator_view() {
-    return page_indicator_view_.get();
+    return unified_view_->page_indicator_view_for_test();
   }
+  UnifiedSystemTrayView* unified_view() { return unified_view_.get(); }
 
  private:
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
-  std::unique_ptr<PageIndicatorView> page_indicator_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageIndicatorViewTest);
+  std::unique_ptr<UnifiedSystemTrayView> unified_view_;
 };
 
 // Number of buttons is equal to total pages in PaginationModel.
@@ -95,17 +99,17 @@ TEST_F(PageIndicatorViewTest, ExpandAndCollapse) {
 
   // PageIndicatorView has decreasing height as the expanded amount is
   // decreased.
-  prev_height = page_indicator_view()->GetPreferredSize().height();
+  prev_height = page_indicator_view()->GetContentsBounds().height();
   for (double i : expanded_increments) {
-    page_indicator_view()->SetExpandedAmount(i);
-    cur_height = page_indicator_view()->GetPreferredSize().height();
-    EXPECT_GT(prev_height, cur_height);
+    unified_view()->SetExpandedAmount(i);
+    cur_height = page_indicator_view()->GetContentsBounds().height();
+    EXPECT_GE(prev_height, cur_height);
     prev_height = cur_height;
   }
 
   // PageIndicatorView has zero height when collapsed.
-  page_indicator_view()->SetExpandedAmount(0.00);
-  EXPECT_EQ(page_indicator_view()->GetPreferredSize().height(), 0);
+  unified_view()->SetExpandedAmount(0.00);
+  EXPECT_EQ(page_indicator_view()->GetContentsBounds().height(), 0);
 }
 
 }  // namespace ash

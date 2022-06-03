@@ -10,9 +10,10 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/mac/scoped_aedesc.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -95,7 +96,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
     //  'utxt'("string here")
     case typeUnicodeText: {
       size_t byte_length = AEGetDescDataSize(aedesc);
-      std::vector<base::char16> data_vector(byte_length / sizeof(base::char16));
+      std::vector<char16_t> data_vector(byte_length / sizeof(char16_t));
       OSErr err = AEGetDescData(aedesc, data_vector.data(), byte_length);
       if (err != noErr) {
         NOTREACHED();
@@ -103,7 +104,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
       }
       return FourCharToString(typeUnicodeText) + "(\"" +
              base::UTF16ToUTF8(
-                 base::string16(data_vector.begin(), data_vector.end())) +
+                 std::u16string(data_vector.begin(), data_vector.end())) +
              "\")";
     }
     // Lists look like:

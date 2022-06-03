@@ -11,12 +11,8 @@
       "position": [68, 7],
       "bounds": [365, 21],
       "backfaceVisibility": "hidden",
-      "paintInvalidations": [
-        {
-          "object": "LayoutInline (relative positioned) DIV id='block'",
-          "rect": [0, 0, 365, 21],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [0, 0, 365, 21]
       ]
     }
   ]

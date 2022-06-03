@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/input_method/textinput_test_helper.h"
+#include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/display.h"
@@ -27,6 +28,10 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
   explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
   ~KeyboardVisibleWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -42,8 +47,6 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
  private:
   base::RunLoop run_loop_;
   const bool visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardVisibleWaiter);
 };  // namespace
 
 bool WaitUntilShown() {
@@ -72,6 +75,9 @@ gfx::Size GetScreenBounds() {
 
 class KeyboardEndToEndTest : public InProcessBrowserTest {
  public:
+  KeyboardEndToEndTest(const KeyboardEndToEndTest&) = delete;
+  KeyboardEndToEndTest& operator=(const KeyboardEndToEndTest&) = delete;
+
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
@@ -80,7 +86,7 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     GURL test_url = ui_test_utils::GetTestUrl(
         base::FilePath("chromeos/virtual_keyboard"), test_file_);
-    ui_test_utils::NavigateToURL(browser(), test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents_);
 
@@ -141,18 +147,19 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
 
  private:
   base::FilePath test_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndTest);
 };
 
 class KeyboardEndToEndFormTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndFormTest()
       : KeyboardEndToEndTest(base::FilePath("form.html")) {}
+
+  KeyboardEndToEndFormTest(const KeyboardEndToEndFormTest&) = delete;
+  KeyboardEndToEndFormTest& operator=(const KeyboardEndToEndFormTest&) = delete;
+
   ~KeyboardEndToEndFormTest() override {}
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndFormTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest, ClickTextFieldShowsKeyboard) {
@@ -251,10 +258,14 @@ class KeyboardEndToEndFocusTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndFocusTest()
       : KeyboardEndToEndTest(base::FilePath("focus.html")) {}
+
+  KeyboardEndToEndFocusTest(const KeyboardEndToEndFocusTest&) = delete;
+  KeyboardEndToEndFocusTest& operator=(const KeyboardEndToEndFocusTest&) =
+      delete;
+
   ~KeyboardEndToEndFocusTest() override {}
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndFocusTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFocusTest,
@@ -310,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(
   // Wait until the transient blur threshold (3500ms) passes.
   // TODO(https://crbug.com/849995): Find a way to accelerate the clock without
   // actually waiting in real time.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(3501));
+  base::PlatformThread::Sleep(base::Milliseconds(3501));
 
   ClickElementWithId(web_contents_, "async");
   base::RunLoop().RunUntilIdle();  // Allow async operations to complete.
@@ -321,6 +332,12 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndOverscrollTest()
       : KeyboardEndToEndTest(base::FilePath("form.html")) {}
+
+  KeyboardEndToEndOverscrollTest(const KeyboardEndToEndOverscrollTest&) =
+      delete;
+  KeyboardEndToEndOverscrollTest& operator=(
+      const KeyboardEndToEndOverscrollTest&) = delete;
+
   ~KeyboardEndToEndOverscrollTest() override {}
 
   void FocusAndShowKeyboard() { ClickElementWithId(web_contents_, "username"); }
@@ -336,8 +353,6 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
         ->GetVisibleViewportSize()
         .height();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndOverscrollTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndOverscrollTest,

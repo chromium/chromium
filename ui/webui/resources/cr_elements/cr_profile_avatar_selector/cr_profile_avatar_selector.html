@@ -1,14 +1,4 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../cr_button/cr_button.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="../../html/icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="cr_profile_avatar_selector_grid.html">
-
-<dom-module id="cr-profile-avatar-selector">
-  <template>
-    <style>
+    <style include="cr-shared-style">
       :host {
         --avatar-size: 96px;
         --avatar-spacing: 24px;
@@ -60,17 +50,28 @@
       cr-button {
         background-size: var(--avatar-size);
       }
+
+      paper-tooltip {
+        --paper-tooltip-delay-in: 100ms;
+        --paper-tooltip-duration-in: 100ms;
+        --paper-tooltip-duration-out: 100ms;
+        --paper-tooltip-min-width: none;
+      }
     </style>
-    <cr-profile-avatar-selector-grid id="avatar-grid"
+    <cr-profile-avatar-selector-grid id="avatar-grid" role="radiogroup"
         ignore-modified-key-events="[[ignoreModifiedKeyEvents]]">
       <template is="dom-repeat" items="[[avatars]]">
-        <cr-button class$="avatar [[getSelectedClass_(item.selected)]]"
-            title="[[item.label]]"
+        <cr-button id="[[getAvatarId_(index)]]" aria-label="[[item.label]]"
+            tabindex$="[[getTabIndex_(index, item, tabFocusableAvatar_)]]"
+            class$="avatar [[getSelectedClass_(item, selectedAvatar)]]"
             style$="background-image: [[getIconImageSet_(item.url)]]"
-            on-click="onAvatarTap_">
+            on-click="onAvatarTap_"
+            role="radio"
+            aria-checked$="[[getCheckedAttribute_(item, selectedAvatar)]]">
         </cr-button>
+        <paper-tooltip for="[[getAvatarId_(index)]]"
+            offset="0" fit-to-visible-bounds>
+          [[item.label]]
+        </paper-tooltip>
       </template>
     </cr-profile-avatar-selector-grid>
-  </template>
-  <script src="cr_profile_avatar_selector.js"></script>
-</dom-module>

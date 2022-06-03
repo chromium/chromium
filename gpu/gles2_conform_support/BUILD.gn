@@ -59,7 +59,7 @@ executable("gles2_conform_support") {
     "//gpu/gles2_conform_support/egl",
     "//ui/gl",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "native/egl_native_aura.cc",
       "native/egl_native_x11.cc",
@@ -82,18 +82,14 @@ if (internal_gles2_conform_tests) {
   }
   action("generate_gles2_conform_tests") {
     script = "generate_gles2_conform_tests.py"
-    outputs = [
-      "$target_gen_dir/gles2_conform_test_autogen.cc",
-    ]
+    outputs = [ "$target_gen_dir/gles2_conform_test_autogen.cc" ]
     args = [ rebase_path("$target_gen_dir") ]
   }
   executable("gles2_conform_test_windowless") {
     testonly = true
 
     # Include a dummy c++ file to force linking of libstdc++.
-    sources = [
-      "dummy.cc",
-    ]
+    sources = [ "dummy.cc" ]
 
     gtf_source = "//third_party/gles2_conform/GTF_ES/glsl/GTF/Source"
     sources += [
@@ -411,7 +407,6 @@ if (internal_gles2_conform_tests) {
     ]
     configs += [
       "//build/config/compiler:no_incompatible_pointer_warnings",
-      "//build/config/compiler:no_shorten_64_warnings",
 
       # Must be done this way for warning flags to be ordered correctly.
       ":gles2_conform_test_warnings",
@@ -426,22 +421,6 @@ if (internal_gles2_conform_tests) {
         "EGLAPIENTRY=",
       ]
       configs -= [ "//build/config/win:nominmax" ]
-      cflags = [
-        "/wd4013",  # undefined function, assuming extern returning int
-        "/wd4018",  # signed/unsigned mismatch
-        "/wd4054",  # type cast from function pointer to data pointer
-        "/wd4057",  # non-constant aggregate initializer
-        "/wd4101",  # unreferenced local variable
-        "/wd4189",  # local variable is initialized but not referenced
-        "/wd4204",  # non-constant aggregate initializer
-        "/wd4245",  # conversion between int/uint
-        "/wd4389",  # signed/unsigned comparison
-        "/wd4701",  # potentially uninitialized variable used
-        "/wd4703",  # potentially uninitialized pointer variable used
-        "/wd4706",  # assignment within conditional expression
-        "/wd4715",  # not all control paths return a value
-        "/wd4716",  # function must return a value
-      ]
     }
     if (is_mac) {
       defines += [
@@ -476,14 +455,10 @@ test("gles2_conform_test") {
     "//testing/gtest",
   ]
 
-  data = [
-    "gles2_conform_test_expectations.txt",
-  ]
+  data = [ "gles2_conform_test_expectations.txt" ]
 
   if (internal_gles2_conform_tests) {
-    data_deps = [
-      ":gles2_conform_test_windowless",
-    ]
+    data_deps = [ ":gles2_conform_test_windowless" ]
     deps += [ ":generate_gles2_conform_tests" ]
     sources += [ "$target_gen_dir/gles2_conform_test_autogen.cc" ]
     data += [ "//third_party/gles2_conform/GTF_ES/" ]

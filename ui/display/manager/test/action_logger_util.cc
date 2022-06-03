@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -19,22 +18,22 @@
 namespace display {
 namespace test {
 
-std::string DisplaySnapshotToString(const DisplaySnapshot& output) {
-  return base::StringPrintf("id=%" PRId64, output.display_id());
+std::string GetCrtcAction(
+    const display::DisplayConfigurationParams& display_config_params) {
+  return base::StringPrintf(
+      "crtc(display_id=[%" PRId64 "],x=%d,y=%d,mode=[%s])",
+      display_config_params.id, display_config_params.origin.x(),
+      display_config_params.origin.y(),
+      display_config_params.mode.has_value()
+          ? display_config_params.mode.value()->ToString().c_str()
+          : "NULL");
 }
 
-std::string GetCrtcAction(const DisplaySnapshot& output,
-                          const DisplayMode* mode,
-                          const gfx::Point& origin) {
-  return base::StringPrintf("crtc(display=[%s],x=%d,y=%d,mode=[%s])",
-                            DisplaySnapshotToString(output).c_str(), origin.x(),
-                            origin.y(),
-                            mode ? mode->ToString().c_str() : "NULL");
-}
-
-std::string GetSetHDCPStateAction(int64_t display_id, HDCPState state) {
-  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d)", display_id,
-                            state);
+std::string GetSetHDCPStateAction(int64_t display_id,
+                                  HDCPState state,
+                                  ContentProtectionMethod protection_method) {
+  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d,method=%d)",
+                            display_id, state, protection_method);
 }
 
 std::string SetColorMatrixAction(int64_t display_id,
@@ -67,6 +66,11 @@ std::string SetGammaCorrectionAction(
   return base::StringPrintf("set_gamma_correction(id=%" PRId64 "%s%s)",
                             display_id, degamma_table.c_str(),
                             gamma_table.c_str());
+}
+
+std::string SetPrivacyScreenAction(int64_t display_id, bool enabled) {
+  return base::StringPrintf("set_privacy_screen(id=%" PRId64 ",state=%d)",
+                            display_id, enabled);
 }
 
 std::string JoinActions(const char* action, ...) {

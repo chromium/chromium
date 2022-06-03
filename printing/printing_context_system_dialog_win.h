@@ -11,16 +11,20 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context_win.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace printing {
 
-class PRINTING_EXPORT PrintingContextSystemDialogWin
+class COMPONENT_EXPORT(PRINTING) PrintingContextSystemDialogWin
     : public PrintingContextWin {
  public:
   explicit PrintingContextSystemDialogWin(Delegate* delegate);
+  PrintingContextSystemDialogWin(const PrintingContextSystemDialogWin&) =
+      delete;
+  PrintingContextSystemDialogWin& operator=(
+      const PrintingContextSystemDialogWin&) = delete;
   ~PrintingContextSystemDialogWin() override;
 
   // PrintingContext implementation.
@@ -43,9 +47,7 @@ class PRINTING_EXPORT PrintingContextSystemDialogWin
                                     bool selection_only);
 
   // Parses the result of a PRINTDLGEX result.
-  Result ParseDialogResultEx(const PRINTDLGEX& dialog_options);
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingContextSystemDialogWin);
+  mojom::ResultCode ParseDialogResultEx(const PRINTDLGEX& dialog_options);
 };
 
 }  // namespace printing

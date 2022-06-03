@@ -12,6 +12,24 @@
 namespace translate {
 namespace {
 
+// RAII class to set the TranslateDownloadManager application locale, and then
+// restore it to the original value when the object goes out of scope.
+class TranslateLocaleRestorer {
+ public:
+  explicit TranslateLocaleRestorer(const std::string& new_locale)
+      : existing_locale_(
+            TranslateDownloadManager::GetInstance()->application_locale()) {
+    TranslateDownloadManager::GetInstance()->set_application_locale(new_locale);
+  }
+  ~TranslateLocaleRestorer() {
+    TranslateDownloadManager::GetInstance()->set_application_locale(
+        existing_locale_);
+  }
+
+ private:
+  const std::string existing_locale_;
+};
+
 TEST(TranslateAcceptLanguagesTest, TestIsAcceptLanguage) {
   const char* const pref_setting = "translate-accept-languages";
   TestingPrefServiceSimple prefs;
@@ -30,24 +48,6 @@ TEST(TranslateAcceptLanguagesTest, TestIsAcceptLanguage) {
   // zh-XX cannot be shortened to zh.
   EXPECT_FALSE(accept_languages.IsAcceptLanguage("zh"));
 }
-
-// RAII class to set the TranslateDownloadManager application locale, and then
-// restore it to the original value when the object goes out of scope.
-class TranslateLocaleRestorer {
- public:
-  explicit TranslateLocaleRestorer(const std::string& new_locale)
-      : existing_locale_(
-            TranslateDownloadManager::GetInstance()->application_locale()) {
-    TranslateDownloadManager::GetInstance()->set_application_locale(new_locale);
-  }
-  ~TranslateLocaleRestorer() {
-    TranslateDownloadManager::GetInstance()->set_application_locale(
-        existing_locale_);
-  }
-
- private:
-  const std::string existing_locale_;
-};
 
 TEST(TranslateAcceptLanguagesTest, TestCanBeAcceptLanguage) {
   TranslateLocaleRestorer locale_restorer("es");

@@ -31,7 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "SigProc_FIX.h"
 
-/* Convert int32 coefficients to int16 coefs and make sure there's no wrap-around */
+/* Convert int32 coefficients to int16 coefs and make sure there's no wrap-around.
+   This logic is reused in _celt_lpc(). Any bug fixes should also be applied there. */
 void silk_LPC_fit(
     opus_int16                  *a_QOUT,            /* O    Output signal                                               */
     opus_int32                    *a_QIN,             /* I/O  Input signal                                                */

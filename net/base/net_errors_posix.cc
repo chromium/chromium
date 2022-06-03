@@ -17,7 +17,8 @@ namespace net {
 
 Error MapSystemError(logging::SystemErrorCode os_error) {
   if (os_error != 0)
-    DVLOG(2) << "Error " << os_error;
+    DVLOG(2) << "Error " << os_error << ": "
+             << logging::SystemErrorCodeToString(os_error);
 
   // There are numerous posix error codes, but these are the ones we thus far
   // find interesting.

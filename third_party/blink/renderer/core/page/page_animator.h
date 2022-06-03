@@ -5,21 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_ANIMATOR_H_
 
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace cc {
+class AnimationHost;
+}
+
 namespace blink {
 
 class LocalFrame;
 class Page;
+class TreeScope;
 
 class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
  public:
   explicit PageAnimator(Page&);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   void ScheduleVisualUpdate(LocalFrame*);
   void ServiceScriptedAnimations(
       base::TimeTicks monotonic_animation_start_time);
@@ -34,21 +41,44 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool);
 
   // See documents of methods with the same names in LocalFrameView class.
-  void UpdateAllLifecyclePhases(
-      LocalFrame& root_frame,
-      DocumentLifecycle::LifecycleUpdateReason reason);
-  void UpdateAllLifecyclePhasesExceptPaint(LocalFrame& root_frame);
-  void UpdateLifecycleToLayoutClean(LocalFrame& root_frame);
+  void UpdateAllLifecyclePhases(LocalFrame& root_frame,
+                                DocumentUpdateReason reason);
+  void UpdateLifecycleToPrePaintClean(LocalFrame& root_frame,
+                                      DocumentUpdateReason reason);
+  void UpdateLifecycleToLayoutClean(LocalFrame& root_frame,
+                                    DocumentUpdateReason reason);
   AnimationClock& Clock() { return animation_clock_; }
+  HeapVector<Member<Animation>> GetAnimations(const TreeScope&);
+  void SetHasCanvasInvalidation();
+  bool has_canvas_invalidation_for_test() const {
+    return has_canvas_invalidation_;
+  }
+  void SetHasInlineStyleMutation();
+  bool has_inline_style_mutation_for_test() const {
+    return has_inline_style_mutation_;
+  }
+  void SetHasSmilAnimation();
+  void SetCurrentFrameHadRaf();
+  void SetNextFrameHasPendingRaf();
+  void ReportFrameAnimations(cc::AnimationHost* animation_host);
 
  private:
-  void UpdateHitTestOcclusionData(LocalFrame& root_frame);
-
   Member<Page> page_;
   bool servicing_animations_;
   bool updating_layout_and_style_for_painting_;
   bool suppress_frame_requests_workaround_for704763_only_ = false;
   AnimationClock animation_clock_;
+
+  // True if there is inline style mutation in the current frame.
+  bool has_inline_style_mutation_ = false;
+  // True if the current main frame has canvas invalidation.
+  bool has_canvas_invalidation_ = false;
+  // True if the current main frame has svg smil animation.
+  bool has_smil_animation_ = false;
+  // True if there is a raf scheduled in this frame.
+  bool current_frame_had_raf_ = false;
+  // True if there is a raf scheduled for the next frame.
+  bool next_frame_has_pending_raf_ = false;
 };
 
 }  // namespace blink

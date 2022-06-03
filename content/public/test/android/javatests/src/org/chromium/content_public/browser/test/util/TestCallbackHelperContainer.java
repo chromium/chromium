@@ -183,4 +183,8 @@ public class TestCallbackHelperContainer {
     public OnReceivedErrorHelper getOnReceivedErrorHelper() {
         return mTestWebContentsObserver.getOnReceivedErrorHelper();
     }
+
+    public CallbackHelper getOnFirstVisuallyNonEmptyPaintHelper() {
+        return mTestWebContentsObserver.getOnFirstVisuallyNonEmptyPaintHelper();
+    }
 }

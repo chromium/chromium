@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.trichromelibrary"
+    platformBuildVersionCode="31"
+    platformBuildVersionName="12">
+  <uses-feature android:glEsVersion="0x00020000"/>
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+  <uses-feature android:name="android.software.leanback" android:required="false"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
+  <application
+      android:extractNativeLibs="false"
+      android:icon="@drawable/icon_webview"
+      android:label="Trichrome Library"
+      android:multiArch="true"
+      android:use32bitAbi="true">
+    <static-library android:name="$PACKAGE" android:version="$VERSION_NUMBER"/>
+  </application>
+</manifest>

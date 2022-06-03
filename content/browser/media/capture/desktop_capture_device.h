@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
@@ -41,6 +40,9 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   static std::unique_ptr<media::VideoCaptureDevice> Create(
       const DesktopMediaID& source);
 
+  DesktopCaptureDevice(const DesktopCaptureDevice&) = delete;
+  DesktopCaptureDevice& operator=(const DesktopCaptureDevice&) = delete;
+
   ~DesktopCaptureDevice() override;
 
   // VideoCaptureDevice interface.
@@ -68,8 +70,6 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
 
   base::Thread thread_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureDevice);
 };
 
 }  // namespace content

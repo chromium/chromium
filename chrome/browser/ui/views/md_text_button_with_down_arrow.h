@@ -5,20 +5,24 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 #define CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/md_text_button.h"
 
 namespace views {
-
-class ButtonListener;
 
 // The material design themed text button with a drop arrow displayed on the
 // right side.
 class MdTextButtonWithDownArrow : public MdTextButton {
  public:
-  MdTextButtonWithDownArrow(ButtonListener* listener,
-                            const base::string16& text);
+  METADATA_HEADER(MdTextButtonWithDownArrow);
+
+  MdTextButtonWithDownArrow(PressedCallback callback,
+                            const std::u16string& text);
+  MdTextButtonWithDownArrow(const MdTextButtonWithDownArrow&) = delete;
+  MdTextButtonWithDownArrow& operator=(const MdTextButtonWithDownArrow&) =
+      delete;
   ~MdTextButtonWithDownArrow() override;
 
  protected:
@@ -27,8 +31,6 @@ class MdTextButtonWithDownArrow : public MdTextButton {
 
  private:
   void SetDropArrowImage();
-
-  DISALLOW_COPY_AND_ASSIGN(MdTextButtonWithDownArrow);
 };
 
 }  // namespace views

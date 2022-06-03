@@ -321,6 +321,9 @@
         "list_recycle_transform": {
             "DEFAULT": "rendering_mobile_018.wprgo"
         },
+        "lost_crypt": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
+        },
         "man_in_blue": {
             "DEFAULT": "rendering_mobile_004.wprgo"
         },
@@ -332,6 +335,9 @@
         },
         "megi_dish": {
             "DEFAULT": "rendering_mobile_004.wprgo"
+        },
+        "microgame_fps": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
         },
         "microsoft_asteroid_belt": {
             "DEFAULT": "rendering_mobile_004.wprgo"
@@ -429,6 +435,30 @@
         "motionmark_html_leaves_20_50": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
+        "motionmark_ramp_canvas_arcs": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_canvas_lines": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_design": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_images": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_leaves": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_multiply": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_paths": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
+        "motionmark_ramp_suits": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
         "motionmark_svg_bouncing_circles_250": {
             "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
         },
@@ -522,6 +552,9 @@
         "sfgate_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
+        "skelebuddies_wasm_2020": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
+        },
         "slashdot_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
@@ -554,6 +587,9 @@
         },
         "theverge_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
+        },
+        "tiny_racing_v3_wasm_2020": {
+            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
         },
         "twitch_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"

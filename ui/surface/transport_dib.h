@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
@@ -23,6 +22,9 @@ class SkCanvas;
 // -----------------------------------------------------------------------------
 class SURFACE_EXPORT TransportDIB {
  public:
+  TransportDIB(const TransportDIB&) = delete;
+  TransportDIB& operator=(const TransportDIB&) = delete;
+
   ~TransportDIB();
 
   // Creates and maps a new TransportDIB with a shared memory region.
@@ -73,8 +75,6 @@ class SURFACE_EXPORT TransportDIB {
   base::UnsafeSharedMemoryRegion shm_region_;
   base::WritableSharedMemoryMapping shm_mapping_;
   size_t size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportDIB);
 };
 
 #endif  // UI_SURFACE_TRANSPORT_DIB_H_

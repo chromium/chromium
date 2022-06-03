@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_morphology_element.h"
 
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -54,7 +56,15 @@ SVGFEMorphologyElement::SVGFEMorphologyElement(Document& document)
   AddToPropertyMap(svg_operator_);
 }
 
-void SVGFEMorphologyElement::Trace(blink::Visitor* visitor) {
+SVGAnimatedNumber* SVGFEMorphologyElement::radiusX() {
+  return radius_->FirstNumber();
+}
+
+SVGAnimatedNumber* SVGFEMorphologyElement::radiusY() {
+  return radius_->SecondNumber();
+}
+
+void SVGFEMorphologyElement::Trace(Visitor* visitor) const {
   visitor->Trace(radius_);
   visitor->Trace(in1_);
   visitor->Trace(svg_operator_);
@@ -66,8 +76,7 @@ bool SVGFEMorphologyElement::SetFilterEffectAttribute(
     const QualifiedName& attr_name) {
   FEMorphology* morphology = static_cast<FEMorphology*>(effect);
   if (attr_name == svg_names::kOperatorAttr)
-    return morphology->SetMorphologyOperator(
-        svg_operator_->CurrentValue()->EnumValue());
+    return morphology->SetMorphologyOperator(svg_operator_->CurrentEnumValue());
   if (attr_name == svg_names::kRadiusAttr) {
     // Both setRadius functions should be evaluated separately.
     bool is_radius_x_changed =
@@ -81,7 +90,8 @@ bool SVGFEMorphologyElement::SetFilterEffectAttribute(
 }
 
 void SVGFEMorphologyElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kOperatorAttr ||
       attr_name == svg_names::kRadiusAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -95,7 +105,7 @@ void SVGFEMorphologyElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEMorphologyElement::Build(SVGFilterBuilder* filter_builder,
@@ -114,7 +124,7 @@ FilterEffect* SVGFEMorphologyElement::Build(SVGFilterBuilder* filter_builder,
   float x_radius = radiusX()->CurrentValue()->Value();
   float y_radius = radiusY()->CurrentValue()->Value();
   auto* effect = MakeGarbageCollected<FEMorphology>(
-      filter, svg_operator_->CurrentValue()->EnumValue(), x_radius, y_radius);
+      filter, svg_operator_->CurrentEnumValue(), x_radius, y_radius);
   effect->InputEffects().push_back(input1);
   return effect;
 }

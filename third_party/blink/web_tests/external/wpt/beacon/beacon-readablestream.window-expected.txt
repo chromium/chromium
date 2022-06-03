@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL sendBeacon() with a stream does not work due to the keepalive flag being set assert_throws: function "() => navigator.sendBeacon("...", new ReadableStream())" did not throw
-Harness: the test ran to completion.
-

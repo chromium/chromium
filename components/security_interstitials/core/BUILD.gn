@@ -14,12 +14,14 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
-    "features.cc",
-    "features.h",
+    "legacy_tls_ui.cc",
+    "legacy_tls_ui.h",
     "metrics_helper.cc",
     "metrics_helper.h",
     "mitm_software_ui.cc",
     "mitm_software_ui.h",
+    "pref_names.cc",
+    "pref_names.h",
     "safe_browsing_loud_error_ui.cc",
     "safe_browsing_loud_error_ui.h",
     "safe_browsing_quiet_error_ui.cc",
@@ -57,16 +59,28 @@ static_library("core") {
     "//ui/base",
   ]
 
-  public_deps = [
-    "//components/security_interstitials/core/common/mojom",
+  public_deps = [ "//components/security_interstitials/core/common/mojom" ]
+}
+
+static_library("unsafe_resource") {
+  sources = [
+    "unsafe_resource.cc",
+    "unsafe_resource.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/common:common",
+    "//net",
+    "//services/network/public/mojom",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ssl_error_options_mask_unittest.cc",
-  ]
+  sources = [ "ssl_error_options_mask_unittest.cc" ]
 
   deps = [
     ":core",

@@ -1,0 +1,94 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+
+struct DedupKey {
+  int64 value;
+};
+
+struct Conversion {
+  // Origin of the conversion registration redirect.
+  url.mojom.Origin reporting_origin;
+
+  // Conversion data specified in conversion redirect. 0 is used as a
+  // default if none is provided.
+  uint64 conversion_data = 0;
+
+  // Event source trigger data specified in conversion redirect. 0 is used as a
+  // default if none is provided.
+  uint64 event_source_trigger_data = 0;
+
+  // Priority specified in conversion redirect. 0 is used as a default if none
+  // is provided.
+  int64 priority = 0;
+
+  // Key specified in conversion redirect for deduplication against existing
+  // conversions with the same source.
+  DedupKey? dedup_key;
+
+  // The request id of the conversion redirect. In case the conversion is
+  // invalid and an error is reported to DevTools, the error can be tied to the
+  // corresponding network request via this id.
+  string? devtools_request_id;
+};
+
+// Mojo struct to represent blink::Impression native struct.
+struct Impression {
+  // Intended committed top-level origin of the resulting navigation. Must match
+  // the committed navigation's origin to be a valid impression. Declared by
+  // the impression tag.
+  url.mojom.Origin conversion_destination;
+
+  // Optional origin that will receive all conversion measurement reports
+  // associated with this impression. Declared by the impression tag.
+  url.mojom.Origin? reporting_origin;
+
+  // Data that will be sent in conversion reports to identify this impression.
+  // Declared by the impression tag.
+  uint64 impression_data;
+
+  // Optional expiry specifying the amount of time this impression can convert.
+  // Declared by the impression tag.
+  mojo_base.mojom.TimeDelta? expiry;
+
+  // Priority for the attribution source. 0 is used as a default if none is provided.
+  int64 priority = 0;
+};
+
+// Errors that can result from trying to register an impression.
+// TODO(crbug.com/1202170): In the future, this may be returned from the
+// RegisterImpression method below, so that errors from the ConversionHost can
+// be propagated to registerAttributionSource calls in JS.
+enum RegisterImpressionError {
+  // The permission policy doesn't allow use of the attribution reporting API.
+  kNotAllowed,
+  // The frame's context is not secure.
+  kInsecureContext,
+  // The attributionDestination parameter doesn't have a secure origin.
+  kInsecureAttributionDestination,
+  // The attributionReportTo parameter doesn't have a secure origin.
+  kInsecureAttributionReportTo,
+  // The attributionSourceEventId parameter isn't parsable as an unsigned
+  // 64-bit base-10 integer.
+  kInvalidAttributionSourceEventId,
+};
+
+// Sent from renderer to browser process when a resource request matching the
+// .well-known conversion registration path is intercepted.
+interface ConversionHost {
+  // Registers a conversion on the site with data provided in the conversion
+  // registration redirect. Only called for requests loaded in the top-level
+  // browsing context.
+  RegisterConversion(Conversion conversion);
+
+  // Registers an impression. Triggered by the registerattributionsource
+  // attribute being added to an anchor element alongside other API attributes,
+  // or by the registerAttributionSource JS method. These impressions are not
+  // associated with a browser navigation.
+  RegisterImpression(Impression impression);
+};

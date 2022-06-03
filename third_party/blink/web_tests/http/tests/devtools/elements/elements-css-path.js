@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests DOMNode.cssPath()\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -128,7 +128,7 @@
   ElementsTestRunner.expandElementsTree(enqueueNodes);
 
   function enqueueNodes() {
-    enqueueNode('', getDocumentElement());
+    enqueueNode('', ElementsTestRunner.getDocumentElement());
     dumpNodeData();
   }
 
@@ -147,16 +147,6 @@
       TestRunner.assertEquals(1, result);
       dumpNodeData();
     }
-  }
-
-  function getDocumentElement() {
-    var map = TestRunner.domModel._idToDOMNode;
-    for (var id in map) {
-      if (map[id].nodeName() === '#document')
-        return map[id];
-    }
-
-    return null;
   }
 
   function enqueueNode(prefix, node) {

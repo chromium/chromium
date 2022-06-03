@@ -19,6 +19,9 @@ class RangeStructTraitsTest : public testing::Test,
  public:
   RangeStructTraitsTest() {}
 
+  RangeStructTraitsTest(const RangeStructTraitsTest&) = delete;
+  RangeStructTraitsTest& operator=(const RangeStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::RangeTraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::RangeTraitsTestService> remote;
@@ -38,8 +41,6 @@ class RangeStructTraitsTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<RangeTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RangeStructTraitsTest);
 };
 
 }  // namespace

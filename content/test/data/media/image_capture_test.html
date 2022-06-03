@@ -114,11 +114,6 @@ function testCreateAndGetTrackCapabilities() {
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-        // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-        // use instead a round trip of capabilities: https://crbug.com/711524.
-        return imageCapturer.getPhotoCapabilities();
-      })
-      .then(capabilities => {
         imageCapturer.track.getCapabilities();
         // There's nothing to check here since |capabilities| vary per device.
         reportTestSuccess();
@@ -135,11 +130,6 @@ function testCreateAndGetTrackSettings() {
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-        // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-        // use instead a round trip of capabilities: https://crbug.com/711524.
-        return imageCapturer.getPhotoCapabilities();
-      })
-      .then(capabilities => {
         imageCapturer.track.getSettings();
         // There's nothing to check here since |settings| vary per device.
         reportTestSuccess();
@@ -158,11 +148,6 @@ function testManipulatePan() {
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-        // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-        // use instead a round trip of capabilities: https://crbug.com/711524.
-        return imageCapturer.getPhotoCapabilities();
-      })
-      .then(capabilities => {
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.pan === undefined) {
           console.log('pan not supported, skipping test');
@@ -199,11 +184,6 @@ function testManipulateTilt() {
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-        // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-        // use instead a round trip of capabilities: https://crbug.com/711524.
-        return imageCapturer.getPhotoCapabilities();
-      })
-      .then(capabilities => {
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.tilt === undefined) {
           console.log('tilt not supported, skipping test');
@@ -240,11 +220,6 @@ function testManipulateZoom() {
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-        // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-        // use instead a round trip of capabilities: https://crbug.com/711524.
-        return imageCapturer.getPhotoCapabilities();
-      })
-      .then(capabilities => {
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.zoom === undefined) {
           console.log('zoom not supported, skipping test');
@@ -281,11 +256,6 @@ function testManipulateExposureTime() {
         .then(stream => {
             assertEquals('video', stream.getVideoTracks()[0].kind);
             imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-            // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-            // use instead a round trip of capabilities: https://crbug.com/711524.
-            return imageCapturer.getPhotoCapabilities();
-        })
-        .then(capabilities => {
             const trackCapabilities = imageCapturer.track.getCapabilities();
             if (trackCapabilities.exposureTime === undefined) {
                 console.log('exposureTime not supported, skipping test');
@@ -340,11 +310,6 @@ function testManipulateFocusDistance() {
         .then(stream => {
             assertEquals('video', stream.getVideoTracks()[0].kind);
             imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
-            // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
-            // use instead a round trip of capabilities: https://crbug.com/711524.
-            return imageCapturer.getPhotoCapabilities();
-        })
-        .then(capabilities => {
             const trackCapabilities = imageCapturer.track.getCapabilities();
             if (trackCapabilities.focusDistance === undefined) {
                 console.log('focusDistance not supported, skipping test');

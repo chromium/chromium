@@ -4,8 +4,8 @@
 
 #include "chrome/browser/vr/model/color_scheme.h"
 
+#include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "chrome/browser/vr/assets_loader.h"
 #include "ui/gfx/color_palette.h"
 
@@ -235,9 +235,8 @@ static constexpr size_t kButtonColorsSize = 20;
 }  // namespace
 
 ColorScheme::ColorScheme() = default;
-ColorScheme::ColorScheme(const ColorScheme& other) {
-  *this = other;
-}
+ColorScheme::ColorScheme(const ColorScheme& other) = default;
+ColorScheme& ColorScheme::operator=(const ColorScheme& other) = default;
 
 static_assert(kButtonColorsSize == sizeof(ButtonColors),
               "If the new colors are added to ButtonColors, we must explicitly "

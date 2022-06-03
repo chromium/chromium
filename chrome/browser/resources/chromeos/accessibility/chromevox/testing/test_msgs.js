@@ -12,10 +12,43 @@ goog.provide('TestMsgs');
 goog.require('Msgs');
 goog.require('TestMessages');
 
-/**
- * @constructor
- */
-TestMsgs = function() {};
+TestMsgs = class {
+  constructor() {}
+
+  /**
+   * @return {string} The locale.
+   */
+  static getLocale() {
+    return 'testing';
+  }
+
+  /**
+   * @param {string} messageId
+   * @param {Array<string>=} opt_subs
+   * @return {string}
+   */
+  static getMsg(messageId, opt_subs) {
+    if (!messageId) {
+      throw Error('Message id required');
+    }
+    let messageString = TestMsgs.Untranslated[messageId.toUpperCase()];
+    if (messageString === undefined) {
+      const messageObj = TestMessages[('chromevox_' + messageId).toUpperCase()];
+      if (messageObj === undefined) {
+        throw Error('missing-msg: ' + messageId);
+      }
+      messageString = messageObj.message;
+      const placeholders = messageObj.placeholders;
+      if (placeholders) {
+        for (name in placeholders) {
+          messageString = messageString.replace(
+              '$' + name + '$', placeholders[name].content);
+        }
+      }
+    }
+    return Msgs.applySubstitutions_(messageString, opt_subs);
+  }
+};
 
 /**
  * @type {function(string, Array<string>=): string}
@@ -28,39 +61,6 @@ TestMsgs.applySubstitutions_ = Msgs.applySubstitutions_;
  */
 TestMsgs.Untranslated = Msgs.Untranslated;
 
-/**
- * @return {string} The locale.
- */
-TestMsgs.getLocale = function() {
-  return 'testing';
-};
-
-/**
- * @param {string} messageId
- * @param {Array<string>=} opt_subs
- * @return {string}
- */
-TestMsgs.getMsg = function(messageId, opt_subs) {
-  if (!messageId) {
-    throw Error('Message id required');
-  }
-  var messageString = TestMsgs.Untranslated[messageId.toUpperCase()];
-  if (messageString === undefined) {
-    var messageObj = TestMessages[('chromevox_' + messageId).toUpperCase()];
-    if (messageObj === undefined) {
-      throw Error('missing-msg: ' + messageId);
-    }
-    var messageString = messageObj.message;
-    var placeholders = messageObj.placeholders;
-    if (placeholders) {
-      for (name in placeholders) {
-        messageString =
-            messageString.replace('$' + name + '$', placeholders[name].content);
-      }
-    }
-  }
-  return Msgs.applySubstitutions_(messageString, opt_subs);
-};
 
 /**
  * @param {number} num

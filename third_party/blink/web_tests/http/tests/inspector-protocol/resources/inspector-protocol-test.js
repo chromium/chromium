@@ -3,18 +3,43 @@
 // found in the LICENSE file.
 
 var TestRunner = class {
-  constructor(testBaseURL, targetBaseURL, log, completeTest, fetch) {
+  constructor(testBaseURL, targetBaseURL, log, completeTest, fetch, params) {
     this._dumpInspectorProtocolMessages = false;
     this._testBaseURL = testBaseURL;
     this._targetBaseURL = targetBaseURL;
     this._log = log;
     this._completeTest = completeTest;
     this._fetch = fetch;
+    this._params = params;
     this._browserSession = new TestRunner.Session(this, '');
   }
 
   static get stabilizeNames() {
-    return ['id', 'nodeId', 'objectId', 'scriptId', 'timestamp', 'backendNodeId', 'parentId', 'frameId', 'loaderId', 'baseURL', 'documentURL', 'styleSheetId', 'executionContextId', 'targetId', 'browserContextId', 'sessionId', 'ownerNode'];
+    return [
+      'id',
+      'nodeId',
+      'objectId',
+      'scriptId',
+      'timestamp',
+      'backendNodeId',
+      'parentId',
+      'frameId',
+      'loaderId',
+      'baseURL',
+      'documentURL',
+      'styleSheetId',
+      'executionContextId',
+      'openerId',
+      'targetId',
+      'browserContextId',
+      'sessionId',
+      'receivedBytes',
+      'ownerNode',
+      'guid',
+      'requestId',
+      'openerFrameId',
+      'issueId',
+    ];
   }
 
   startDumpingProtocolMessages() {
@@ -29,6 +54,10 @@ var TestRunner = class {
     if (typeof item === 'object')
       return this._logObject(item, title, stabilizeNames);
     this._log.call(null, item);
+  }
+
+  params(name) {
+    return name ? this._params.get(name) : this._params;
   }
 
   _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames) {
@@ -244,10 +273,15 @@ var TestRunner = class {
     }
   }
 
+  _replaceUUID(url) {
+    const uuidRegex = new RegExp('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+    return url.replace(uuidRegex, 'UUID');
+  }
+
   logCallFrames(callFrames) {
     for (let frame of callFrames) {
       let functionName = frame.functionName || '(anonymous)';
-      let url = frame.url;
+      let url = this._replaceUUID(frame.url);
       let location = frame.location || frame;
       this.log(`${functionName} at ${url}:${
                                             location.lineNumber
@@ -260,6 +294,10 @@ TestRunner.Page = class {
   constructor(testRunner, targetId) {
     this._testRunner = testRunner;
     this._targetId = targetId;
+  }
+
+  targetId() {
+    return this._targetId;
   }
 
   async createSession() {
@@ -324,11 +362,14 @@ TestRunner.Session = class {
     return session;
   }
 
-  sendCommand(method, params) {
+  async sendCommand(method, params) {
     var requestId = ++this._requestId;
     if (this._testRunner._dumpInspectorProtocolMessages)
       this._testRunner.log(`frontend => backend: ${JSON.stringify({method, params, sessionId: this._sessionId})}`);
-    return DevToolsAPI._sendCommand(this._sessionId, method, params);
+    const result = await DevToolsAPI._sendCommand(this._sessionId, method, params);
+    if (this._testRunner._dumpInspectorProtocolMessages)
+      this._testRunner.log(`backend => frontend: ${JSON.stringify(result)}`);
+    return result;
   }
 
   async evaluate(code, ...args) {
@@ -520,7 +561,7 @@ DevToolsAPI._fetch = function(url) {
 
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
-testRunner.setCanOpenWindows(true);
+testRunner.setPopupBlockingEnabled(false);
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);
@@ -532,7 +573,7 @@ window.addEventListener('load', () => {
   var targetBaseURL = targetPageURL.substring(0, targetPageURL.lastIndexOf('/') + 1);
 
   DevToolsAPI._fetch(testScriptURL).then(testScript => {
-    var testRunner = new TestRunner(testBaseURL, targetBaseURL, DevToolsAPI._log, DevToolsAPI._completeTest, DevToolsAPI._fetch);
+    var testRunner = new TestRunner(testBaseURL, targetBaseURL, DevToolsAPI._log, DevToolsAPI._completeTest, DevToolsAPI._fetch, params);
     var testFunction = eval(`${testScript}\n//# sourceURL=${testScriptURL}`);
     if (params.get('debug')) {
       var dispatch = DevToolsAPI.dispatchMessage;

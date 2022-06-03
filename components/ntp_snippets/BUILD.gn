@@ -6,11 +6,6 @@ import("//build/config/ui.gni")
 
 import("//third_party/protobuf/proto_library.gni")
 
-if (is_android) {
-  import("//build/config/android/config.gni")
-  import("//build/config/android/rules.gni")
-}
-
 static_library("ntp_snippets") {
   sources = [
     "callbacks.h",
@@ -50,9 +45,6 @@ static_library("ntp_snippets") {
     "remote/json_to_categories.cc",
     "remote/json_to_categories.h",
     "remote/persistent_scheduler.h",
-    "remote/prefetched_pages_tracker.h",
-    "remote/prefetched_pages_tracker_impl.cc",
-    "remote/prefetched_pages_tracker_impl.h",
     "remote/remote_suggestion.cc",
     "remote/remote_suggestion.h",
     "remote/remote_suggestions_database.cc",
@@ -101,12 +93,12 @@ static_library("ntp_snippets") {
   deps = [
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
     "//components/image_fetcher/core",
     "//components/language/core/browser",
     "//components/metrics",
     "//components/ntp_snippets/remote/proto",
-    "//components/offline_pages/core",
     "//components/reading_list/core",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -126,17 +118,6 @@ static_library("ntp_snippets") {
   ]
 }
 
-if (is_android) {
-  java_cpp_enum("ntp_snippets_java_enums_srcjar") {
-    sources = [
-      "category.h",
-      "category_info.h",
-      "category_status.h",
-      "content_suggestions_service.cc",
-    ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -149,7 +130,6 @@ source_set("unit_tests") {
     "reading_list/reading_list_suggestions_provider_unittest.cc",
     "remote/cached_image_fetcher_unittest.cc",
     "remote/json_request_unittest.cc",
-    "remote/prefetched_pages_tracker_impl_unittest.cc",
     "remote/remote_suggestion_unittest.cc",
     "remote/remote_suggestions_database_unittest.cc",
     "remote/remote_suggestions_fetcher_impl_unittest.cc",
@@ -168,13 +148,11 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/leveldb_proto:test_support",
     "//components/ntp_snippets/remote/proto",
-    "//components/offline_pages/core",
-    "//components/offline_pages/core:test_support",
-    "//components/offline_pages/core/background:test_support",
     "//components/prefs:test_support",
     "//components/reading_list/core",
     "//components/signin/public/identity_manager:test_support",
@@ -209,8 +187,6 @@ source_set("test_support") {
     "mock_content_suggestions_provider.h",
     "mock_content_suggestions_provider_observer.cc",
     "mock_content_suggestions_provider_observer.h",
-    "offline_pages/offline_pages_test_utils.cc",
-    "offline_pages/offline_pages_test_utils.h",
     "remote/remote_suggestion_builder.cc",
     "remote/remote_suggestion_builder.h",
   ]
@@ -219,8 +195,6 @@ source_set("test_support") {
     ":ntp_snippets",
     "//base",
     "//components/ntp_snippets/remote/proto",
-    "//components/offline_pages/core",
-    "//components/offline_pages/core:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

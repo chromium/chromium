@@ -1,0 +1,19 @@
+<html>
+<head>
+  <!--
+   Restrict all resource access for other origins except images. Also unblock inline script
+   and eval execution for testing purposes.
+ -->
+  <meta http-equiv="Content-Security-Policy"
+   content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * ">
+</head>
+<img alt="long_placeholder_text"/>
+<script src="common.js"></script>
+<script>
+window.onload = () => {
+  setTimeout(() => {
+    document.images[0].src = "image.png"
+  }, 1000);
+}
+</script>
+</html>

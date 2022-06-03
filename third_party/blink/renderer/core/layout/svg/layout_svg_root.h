@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_ROOT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
 namespace blink {
 
@@ -34,6 +35,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
  public:
   explicit LayoutSVGRoot(SVGElement*);
   ~LayoutSVGRoot() override;
+  void Trace(Visitor*) const override;
 
   bool IsEmbeddedThroughSVGImage() const;
   bool IsEmbeddedThroughFrameContainingSVGDocument() const;
@@ -46,27 +48,35 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void SlowLastChild() const = delete;
 
   LayoutObject* FirstChild() const {
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->FirstChild();
+    NOT_DESTROYED();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().FirstChild();
   }
   LayoutObject* LastChild() const {
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->LastChild();
+    NOT_DESTROYED();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().LastChild();
   }
 
-  bool IsLayoutSizeChanged() const { return is_layout_size_changed_; }
+  bool IsLayoutSizeChanged() const {
+    NOT_DESTROYED();
+    return is_layout_size_changed_;
+  }
   bool DidScreenScaleFactorChange() const {
+    NOT_DESTROYED();
     return did_screen_scale_factor_change_;
   }
   void SetNeedsBoundariesUpdate() override {
+    NOT_DESTROYED();
     needs_boundaries_or_transform_update_ = true;
   }
   void SetNeedsTransformUpdate() override {
+    NOT_DESTROYED();
     needs_boundaries_or_transform_update_ = true;
   }
 
-  LayoutSize ContainerSize() const { return container_size_; }
   void SetContainerSize(const LayoutSize& container_size) {
+    NOT_DESTROYED();
     // SVGImage::draw() does a view layout prior to painting,
     // and we need that layout to know of the new size otherwise
     // the layout may be incorrectly using the old size.
@@ -80,6 +90,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // localToBorderBoxTransform maps local SVG viewport coordinates to local CSS
   // box coordinates.
   const AffineTransform& LocalToBorderBoxTransform() const {
+    NOT_DESTROYED();
     return local_to_border_box_transform_;
   }
 
@@ -89,23 +100,37 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   bool HasNonIsolatedBlendingDescendants() const final;
 
-  const char* GetName() const override { return "LayoutSVGRoot"; }
+  bool HasDescendantCompositingReasons() const {
+    NOT_DESTROYED();
+    return AdditionalCompositingReasons() != CompositingReason::kNone;
+  }
+  void NotifyDescendantCompositingReasonsChanged();
+
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGRoot";
+  }
 
  private:
-  bool ComputeShouldClipOverflow() const override {
-    return LayoutBox::ComputeShouldClipOverflow() || ShouldApplyViewportClip();
+  OverflowClipAxes ComputeOverflowClipAxes() const override {
+    NOT_DESTROYED();
+    if (ShouldApplyViewportClip())
+      return kOverflowClipBothAxis;
+    return LayoutReplaced::ComputeOverflowClipAxes();
   }
   LayoutRect ComputeContentsVisualOverflow() const;
 
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
-
-  LayoutObjectChildList* VirtualChildren() override { return Children(); }
+  LayoutObjectChildList* VirtualChildren() override {
+    NOT_DESTROYED();
+    return &content_.Children();
+  }
   const LayoutObjectChildList* VirtualChildren() const override {
-    return Children();
+    NOT_DESTROYED();
+    return &content_.Children();
   }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || type == kLayoutObjectSVGRoot ||
            LayoutReplaced::IsOfType(type);
   }
@@ -131,10 +156,17 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   AffineTransform LocalToSVGParentTransform() const override;
 
-  FloatRect ObjectBoundingBox() const override { return object_bounding_box_; }
-  FloatRect StrokeBoundingBox() const override { return stroke_bounding_box_; }
-  FloatRect VisualRectInLocalSVGCoordinates() const override {
-    return visual_rect_in_local_svg_coordinates_;
+  gfx::RectF ObjectBoundingBox() const override {
+    NOT_DESTROYED();
+    return content_.ObjectBoundingBox();
+  }
+  gfx::RectF StrokeBoundingBox() const override {
+    NOT_DESTROYED();
+    return content_.StrokeBoundingBox();
+  }
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override {
+    NOT_DESTROYED();
+    return content_.StrokeBoundingBox();
   }
 
   bool NodeAtPoint(HitTestResult&,
@@ -145,11 +177,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const override;
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const override;
 
-  bool CanHaveChildren() const override { return true; }
+  bool CanHaveChildren() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
@@ -161,22 +193,36 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
 
-  LayoutObjectChildList children_;
+  // This is a special case for SVG documents with percentage dimensions which
+  // would normally not change under zoom. See: https://crbug.com/222786.
+  double LogicalSizeScaleFactorForPercentageLengths() const;
+
+  PaintLayerType LayerTypeRequired() const override;
+  bool CanHaveAdditionalCompositingReasons() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+  CompositingReasons AdditionalCompositingReasons() const override;
+  bool HasDescendantWithCompositingReason() const;
+
+  SVGContentContainer content_;
   LayoutSize container_size_;
-  FloatRect object_bounding_box_;
-  bool object_bounding_box_valid_;
-  FloatRect stroke_bounding_box_;
-  FloatRect visual_rect_in_local_svg_coordinates_;
   AffineTransform local_to_border_box_transform_;
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;
   bool needs_boundaries_or_transform_update_ : 1;
-  bool has_box_decoration_background_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
+  mutable bool has_descendant_with_compositing_reason_ : 1;
+  mutable bool has_descendant_with_compositing_reason_dirty_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGRoot, IsSVGRoot());
+template <>
+struct DowncastTraits<LayoutSVGRoot> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGRoot();
+  }
+};
 
 }  // namespace blink
 

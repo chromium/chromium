@@ -1,35 +1,35 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+    <style include="cr-shared-style settings-shared iron-flex">
+      .content-settings-header,
+      .radio-group {
+        padding: 0 var(--cr-section-padding);
+      }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="passwords_leak_detection_toggle.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="../clear_browsing_data_dialog/clear_browsing_data_dialog.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../people_page/sync_browser_proxy.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../site_settings/all_sites.html">
-<link rel="import" href="../site_settings/constants.html">
+      .radio-group-sub-heading {
+        padding-bottom: 10px;
+      }
 
-<link rel="import" href="privacy_page_browser_proxy.html">
+      settings-collapse-radio-button {
+        --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+      }
 
-<dom-module id="settings-privacy-page">
-  <template>
-    <style include="settings-shared">
-      .iron-collapse-indented {
-        margin-inline-start: var(--cr-section-indent-width);
+      settings-collapse-radio-button.two-line {
+        --settings-collapse-toggle-min-height:
+            var(--settings-row-two-line-min-height);
+      }
+
+      settings-collapse-radio-button:not(:first-of-type) {
+        --settings-collapse-separator-line: var(--cr-separator-line);
+      }
+
+      settings-privacy-review-page {
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
+      }
+
+      :host(:not([enable-iph-demo_])) #showIPHBubble,
+      :host(:not([enable-iph-demo_])) #iphBubble {
+        display: none;
       }
     </style>
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
@@ -37,122 +37,67 @@
           on-close="onDialogClosed_">
       </settings-clear-browsing-data-dialog>
     </template>
-    <template id="doNotTrackDialogIf" is="dom-if" if="[[showDoNotTrackDialog_]]"
-        on-dom-change="onDoNotTrackDomChange_">
-      <cr-dialog id="confirmDoNotTrackDialog"
-          close-text="$i18n{close}" on-cancel="onDoNotTrackDialogCancel_"
-          on-close="onDoNotTrackDialogClosed_">
-        <div slot="title">$i18n{doNotTrackDialogTitle}</div>
-        <div slot="body">$i18nRaw{doNotTrackDialogMessage}</div>
-        <div slot="button-container">
-          <cr-button class="cancel-button"
-              on-click="onDoNotTrackDialogCancel_">
-            $i18n{cancel}
-          </cr-button>
-          <cr-button class="action-button"
-              on-click="onDoNotTrackDialogConfirm_">
-            $i18n{confirm}
-          </cr-button>
-        </div>
-      </cr-dialog>
-    </template>
     <settings-animated-pages id="pages" section="privacy"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <cr-link-row id="clearBrowsingData"
-            class="hr"
+            start-icon="cr:delete"
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>
-        <cr-link-row id="site-settings-subpage-trigger"
+        <cr-link-row id="showIPHBubble"
+            start-icon="settings20:lightbulb" class="hr"
+            label="Show IPH Bubble"
+            sub-label="Experimental button, click to show a test IPH bubble"
+            on-click="onShowIPHBubbleTap_">
+        </cr-link-row>
+        <template is="dom-if" if="[[enablePrivacyReview_]]">
+          <cr-link-row id="privacyReviewLinkRow" class="hr"
+              start-icon="settings20:explore"
+              label="$i18n{privacyReviewLabel}"
+              sub-label="$i18n{privacyReviewSublabel}"
+              on-click="onPrivacyReviewClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <iph-bubble id="iphBubble"
+            anchor-id="cookiesLinkRow"
+            body="Click on the &quot;Cookies and other site data&quot; section">
+        </iph-bubble>
+        <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
+            class="hr" label="$i18n{cookiePageTitle}"
+            sub-label="[[cookieSettingDescription_]]"
+            on-click="onCookiesClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <cr-link-row id="securityLinkRow" start-icon="cr:security"
+            class="hr" label="$i18n{securityPageTitle}"
+            sub-label="$i18n{securityPageDescription}"
+            on-click="onSecurityPageClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <cr-link-row id="permissionsLinkRow" start-icon="settings:permissions"
+            class="hr" label="$i18n{siteSettings}"
+            sub-label="$i18n{permissionsPageDescription}"
+            on-click="onPermissionsPageClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <cr-link-row id="privacySandboxLinkRow"
+            start-icon="settings20:experiment"
             class="hr"
-            label="$i18n{siteSettings}"
-            sub-label="$i18n{siteSettingsDescription}"
-            on-click="onSiteSettingsTap_"></cr-link-row>
-        <cr-expand-button id="moreExpansion"
-            alt="$i18n{privacyPageMore}"
-            class="settings-box"
-            expanded="{{moreOpened_}}">
-            <div>$i18n{privacyPageMore}</div>
-        </cr-expand-button>
-        <iron-collapse id="moreCollapse" opened="[[moreOpened_]]"
-            class="iron-collapse-indented">
-          <settings-toggle-button id="safeBrowsingToggle"
-              class="settings-box first"
-              pref="{{prefs.safebrowsing.enabled}}"
-              label="$i18n{safeBrowsingEnableProtection}"
-              sub-label="$i18n{safeBrowsingEnableProtectionDesc}">
-          </settings-toggle-button>
-          <template is="dom-if" if="[[passwordsLeakDetectionEnabled_]]">
-            <settings-passwords-leak-detection-toggle
-                id="passwordsLeakDetectionToggle"
-                prefs="{{prefs}}"
-                sync-status="[[syncStatus]]">
-            </settings-passwords-leak-detection-toggle>
-          </template>
-          <settings-toggle-button id="safeBrowsingReportingToggle"
-              pref="[[safeBrowsingReportingPref_]]" no-set-pref
-              label="$i18n{safeBrowsingEnableExtendedReporting}"
-              sub-label="$i18n{safeBrowsingEnableExtendedReportingDesc}"
-              disabled="[[getDisabledExtendedSafeBrowsing_(prefs.*)]]"
-              on-settings-boolean-control-change=
-                  "onSafeBrowsingReportingToggleChange_">
-          </settings-toggle-button>
-          <settings-toggle-button id="doNotTrack"
-              pref="{{prefs.enable_do_not_track}}" label="$i18n{doNotTrack}"
-              on-settings-boolean-control-change="onDoNotTrackChange_"
-              no-set-pref>
-          </settings-toggle-button>
-          <settings-toggle-button id="canMakePaymentToggle"
-              aria-label="$i18n{canMakePaymentToggleLabel}"
-              label="$i18n{canMakePaymentToggleLabel}"
-              pref="{{prefs.payments.can_make_payment_enabled}}"
-              on-settings-boolean-control-change="onCanMakePaymentChange_">
-          </settings-toggle-button>
-          <settings-toggle-button hidden="[[!pageVisibility.networkPrediction]]"
-              pref="{{prefs.net.network_prediction_options}}"
-              label="$i18n{networkPredictionEnabled}"
-              sub-label="$i18n{networkPredictionEnabledDesc}"
-              numeric-unchecked-value="[[networkPredictionUncheckedValue_]]"
-              on-settings-boolean-control-change="onNetworkPredictionChange_">
-          </settings-toggle-button>
-<if expr="chromeos">
-          <settings-toggle-button
-              hidden="[[!pageVisibility.contentProtectionAttestation]]"
-              pref=
-              "{{prefs.cros.device.attestation_for_content_protection_enabled}}"
-              label="$i18n{enableContentProtectionAttestation}">
-          </settings-toggle-button>
-          <settings-toggle-button
-              hidden="[[!pageVisibility.wakeOnWifi]]"
-              pref="{{prefs.settings.internet.wake_on_wifi_darkconnect}}"
-              label="$i18n{wakeOnWifi}">
-          </settings-toggle-button>
-</if>
-<if expr="use_nss_certs or is_win or is_macosx">
-          <cr-link-row id="manageCertificates"
-              class="hr"
-<if expr="not use_nss_certs">
-          external
-</if>
-          label="$i18n{manageCertificates}"
-          sub-label="$i18n{manageCertificatesDescription}"
-          on-click="onManageCertificatesTap_"></cr-link-row>
-</if>
-          <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
-            <cr-link-row id="security-keys-subpage-trigger"
-              class="hr"
-              label="$i18n{securityKeysTitle}"
-              sub-label="$i18n{securityKeysDesc}"
-              on-click="onSecurityKeysTap_"></cr-link-row>
-          </template>
-        </iron-collapse>
+            label="$i18n{privacySandboxTitle}"
+            sub-label="[[computePrivacySandboxSublabel_(
+                prefs.privacy_sandbox.apis_enabled.*)]]"
+            on-click="onPrivacySandboxClick_"
+            external
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <a id="privacySandboxLink" href="privacySandbox"
+            target="_blank" tabindex="-1" aria-disabled="true"
+            role="none"></a>
       </div>
 
 <if expr="use_nss_certs">
       <template is="dom-if" route-path="/certificates">
         <settings-subpage
-            associated-control="[[$$('#manageCertificates')]]"
+            associated-control="[[$$('#securityLinkRow')]]"
             page-title="$i18n{manageCertificates}">
           <certificate-manager></certificate-manager>
         </settings-subpage>
@@ -161,8 +106,7 @@
 
       <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <template is="dom-if" route-path="/securityKeys">
-          <settings-subpage
-              associated-control="[[$$('#security-keys-subpage-trigger')]]"
+          <settings-subpage associated-control="[[$$('#securityLinkRow')]]"
               page-title="$i18n{securityKeysTitle}">
             <security-keys-subpage></security-keys-subpage>
           </settings-subpage>
@@ -171,19 +115,31 @@
 
       <template is="dom-if" route-path="/content">
         <settings-subpage
-            associated-control="[[$$('#site-settings-subpage-trigger')]]"
+            associated-control="[[$$('#permissionsLinkRow')]]"
             id="site-settings"
             page-title="$i18n{siteSettings}"
             learn-more-url="$i18n{exceptionsLearnMoreURL}">
-          <settings-site-settings-page focus-config="[[focusConfig_]]">
+          <settings-site-settings-page focus-config="[[focusConfig_]]"
+              prefs="{{prefs}}">
           </settings-site-settings-page>
+        </settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/security">
+        <settings-subpage id="security" page-title="$i18n{securityPageTitle}"
+            associated-control="[[$$('#securityLinkRow')]]"
+            learn-more-url="$i18n{safeBrowsingHelpCenterURL}">
+          <settings-security-page prefs="{{prefs}}"
+              focus-config="[[focusConfig_]]">
+          </settings-security-page>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/content/all" no-search>
         <settings-subpage page-title="$i18n{siteSettingsAllSites}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
+            search-term="{{searchFilter_}}"
+            preserve-search-term>
           <all-sites filter="[[searchFilter_]]"></all-sites>
         </settings-subpage>
       </template>
@@ -191,14 +147,24 @@
         <settings-subpage page-title="$i18n{siteSettingsAutomaticDownloads}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsAutoDownloadBlock}"
-              toggle-on-label="$i18n{siteSettingsAutoDownloadAskRecommended}"
-              category="{{ContentSettingsTypes.AUTOMATIC_DOWNLOADS}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+              $i18n{siteSettingsAutomaticDownloadsDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
+              allow-option-label=
+                      "$i18n{siteSettingsAutomaticDownloadsAllowed}"
+              allow-option-icon="cr:file-download"
+              block-option-label
+                  ="$i18n{siteSettingsAutomaticDownloadsBlocked}"
+              block-option-icon="settings:file-download-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.AUTOMATIC_DOWNLOADS}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
+              allow-header=
+                  "$i18n{siteSettingsAutomaticDownloadsAllowedExceptions}"
+              block-header=
+                  "$i18n{siteSettingsAutomaticDownloadsBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -207,15 +173,25 @@
         <settings-subpage page-title="$i18n{siteSettingsBackgroundSync}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsBackgroundSyncBlocked}"
-              toggle-on-label=
-                  "$i18n{siteSettingsAllowRecentlyClosedSitesRecommended}"
-              category="{{ContentSettingsTypes.BACKGROUND_SYNC}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsBackgroundSyncDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
+              allow-option-label=
+                  "$i18n{siteSettingsBackgroundSyncAllowed}"
+              allow-option-icon="cr:sync"
+              block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsBackgroundSyncBlockedSubLabel}"
+              block-option-icon="settings:sync-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.BACKGROUND_SYNC}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
+              allow-header=
+                  "$i18n{siteSettingsBackgroundSyncAllowedExceptions}"
+              block-header=
+                  "$i18n{siteSettingsBackgroundSyncBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -226,47 +202,56 @@
             search-term="{{searchFilter_}}">
           <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
           </media-picker>
-          <category-default-setting category="{{ContentSettingsTypes.CAMERA}}"
-              toggle-off-label="$i18n{siteSettingsBlocked}"
-              toggle-on-label=
-                  "$i18n{siteSettingsAskBeforeAccessingRecommended}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsCameraDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.CAMERA]]"
+              allow-option-label=
+                  "$i18n{siteSettingsCameraAllowed}"
+              allow-option-icon="cr:videocam"
+              block-option-label="$i18n{siteSettingsCameraBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsCameraBlockedSubLabel}"
+              block-option-icon="settings:videocam-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.CAMERA}}" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.CAMERA]]" read-only-list
+              allow-header="$i18n{siteSettingsCameraAllowedExceptions}"
+              block-header="$i18n{siteSettingsCameraBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/content/cookies" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryCookies}"
+      <template is="dom-if" if="[[enablePrivacyReview_]]">
+        <template is="dom-if" route-path="/privacy/review">
+          <settings-subpage id="privacy-review"
+              class="multi-card"
+              page-title="$i18n{privacyReviewLabel}"
+              associated-control="[[$$('#privacyReviewLinkRow')]]">
+            <settings-privacy-review-page prefs="{{prefs}}"
+                focus-config="[[focusConfig_]]">
+            </settings-privacy-review-page>
+          </settings-subpage>
+        </template>
+      </template>
+      <template is="dom-if" route-path="/cookies">
+        <settings-subpage id="cookies" page-title="$i18n{cookiePageTitle}"
+            learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <category-default-setting category="{{ContentSettingsTypes.COOKIES}}"
-              toggle-off-label="$i18n{siteSettingsBlocked}"
-              toggle-on-label="$i18n{siteSettingsCookiesAllowedRecommended}"
-              sub-option-label="$i18n{deleteDataPostSession}"
-              sub-option-mode="cookies-session-only">
-          </category-default-setting>
-          <settings-toggle-button
-              pref="{{prefs.profile.block_third_party_cookies}}"
-              label="$i18n{thirdPartyCookie}"
-              sub-label="$i18n{thirdPartyCookieSublabel}">
-          </settings-toggle-button>
-          <cr-link-row id="site-data-trigger" class="hr"
-              on-click="onSiteDataTap_" label="$i18n{siteSettingsCookieLink}">
-          </cr-link-row>
-          <category-setting-exceptions
-              category="{{ContentSettingsTypes.COOKIES}}"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+            search-term="{{searchFilter_}}"
+            associated-control="[[$$('#cookiesLinkRow')]]">
+          <settings-cookies-page prefs="{{prefs}}"
+              focus-config="[[focusConfig_]]"
+              search-term="[[searchFilter_]]">
+          </settings-cookies-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/siteData" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCookieHeader}"
             search-label="$i18n{siteSettingsCookieSearch}"
-            search-term="{{siteDataFilter_}}">
+            search-term="{{siteDataFilter_}}"
+            preserve-search-term>
           <site-data filter="[[siteDataFilter_]]"
               focus-config="[[focusConfig_]]">
           </site-data>
@@ -276,46 +261,69 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting category="{{ContentSettingsTypes.IMAGES}}"
-              toggle-off-label="$i18n{siteSettingsDontShowImages}"
-              toggle-on-label="$i18n{siteSettingsShowAllRecommended}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsImagesDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.IMAGES]]"
+              allow-option-label="$i18n{siteSettingsImagesAllowed}"
+              allow-option-icon="settings:photo"
+              block-option-label="$i18n{siteSettingsImagesBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsImagesBlockedSubLabel}"
+              block-option-icon="settings:photo-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.IMAGES}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.IMAGES]]"
+              allow-header="$i18n{siteSettingsImagesAllowedExceptions}"
+              block-header="$i18n{siteSettingsImagedBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[enableInsecureContentContentSetting_]]">
-        <template is="dom-if" route-path="/content/insecureContent" no-search>
-          <settings-subpage
-              page-title="$i18n{siteSettingsCategoryInsecureContent}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <div class="settings-box first">
-              $i18n{siteSettingsInsecureContentBlock}
-            </div>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.MIXEDSCRIPT]]"
-                block-header="$i18n{siteSettingsBlock}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/content/insecureContent" no-search>
+        <settings-subpage
+            page-title="$i18n{siteSettingsCategoryInsecureContent}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsInsecureContentDescription}
+          </div>
+          <div class="cr-row first secondary">
+            $i18n{siteSettingsInsecureContentBlock}
+          </div>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
+              allow-header=
+                  "$i18n{siteSettingsInsecureContentAllowedExceptions}"
+              block-header=
+                  "$i18n{siteSettingsInsecureContentBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/location" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsBlocked}"
-              toggle-on-label="$i18n{siteSettingsAskBeforeAccessingRecommended}"
-              category="{{ContentSettingsTypes.GEOLOCATION}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsLocationDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+              allow-option-label=
+                  "$i18n{siteSettingsLocationAllowed}"
+              allow-option-icon="settings:location-on"
+              block-option-label="$i18n{siteSettingsLocationBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsLocationBlockedSubLabel}"
+              block-option-icon="settings:location-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.GEOLOCATION}}" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsLocationAllowedExceptions}"
+              block-header="$i18n{siteSettingsLocationBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -330,26 +338,59 @@
       </template>
       <template is="dom-if" route-path="/content/zoomLevels" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsZoomLevelsDescription}
+          </div>
           <zoom-levels></zoom-levels>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/pdfDocuments" no-search>
         <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
-          <settings-pdf-documents prefs="{{prefs}}"></settings-pdf-documents>
+          <div class="radio-group">
+            <div class="secondary">$i18n{siteSettingsPdfsDescription}</div>
+            <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+            <div class="secondary radio-sub-heading">
+              $i18n{siteSettingsDefaultBehaviorDescription}
+            </div>
+            <settings-radio-group
+                pref="{{prefs.plugins.always_open_pdf_externally}}"
+                selectable-elements="settings-collapse-radio-button">
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.plugins.always_open_pdf_externally]]"
+                  label="$i18n{siteSettingsPdfsAllowed}"
+                  name="true"
+                  disabled$="[[isGuest_]]"
+                  icon="cr:file-download">
+              </settings-collapse-radio-button>
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.plugins.always_open_pdf_externally]]"
+                  label="$i18n{siteSettingsPdfsBlocked}"
+                  name="false"
+                  disabled$="[[isGuest_]]"
+                  icon="settings:open-in-browser">
+              </settings-collapse-radio-button>
+            </settings-radio-group>
+          </div>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/javascript" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryJavascript}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsBlocked}"
-              toggle-on-label="$i18n{siteSettingsAllowedRecommended}"
-              category="{{ContentSettingsTypes.JAVASCRIPT}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsJavascriptDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
+              allow-option-label="$i18n{siteSettingsJavascriptAllowed}"
+              allow-option-icon="settings:code"
+              block-option-label="$i18n{siteSettingsJavascriptBlocked}"
+              block-option-icon="settings:code-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.JAVASCRIPT}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
+              allow-header="$i18n{siteSettingsJavascriptAllowedExceptions}"
+              block-header="$i18n{siteSettingsJavascriptBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -358,13 +399,20 @@
         <settings-subpage page-title="$i18n{siteSettingsSound}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsSoundBlock}"
-              toggle-on-label="$i18n{siteSettingsSoundAllowRecommended}"
-              category="{{ContentSettingsTypes.SOUND}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsSoundDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.SOUND]]"
+              allow-option-label="$i18n{siteSettingsSoundAllowed}"
+              allow-option-icon="settings:volume-up"
+              block-option-label="$i18n{siteSettingsSoundBlocked}"
+              block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
+              block-option-icon="settings:volume-up-off">
+          </settings-category-default-radio-group>
           <settings-toggle-button
               id="block-autoplay-setting"
+              class="hr"
               label="$i18n{siteSettingsBlockAutoplaySetting}"
               pref="{{blockAutoplayStatus_.pref}}"
               disabled="[[!blockAutoplayStatus_.enabled]]"
@@ -373,8 +421,9 @@
               no-set-pref>
           </settings-toggle-button>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.SOUND}}"
-              block-header="$i18n{siteSettingsBlockSound}"
+              category="[[contentSettingsTypesEnum_.SOUND]]"
+              allow-header="$i18n{siteSettingsSoundAllowedExceptions}"
+              block-header="$i18n{siteSettingsSoundBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -385,14 +434,22 @@
             search-term="{{searchFilter_}}">
           <media-picker label="$i18n{siteSettingsMicrophoneLabel}" type="mic">
           </media-picker>
-          <category-default-setting category="{{ContentSettingsTypes.MIC}}"
-              toggle-off-label="$i18n{siteSettingsBlocked}"
-              toggle-on-label=
-                  "$i18n{siteSettingsAskBeforeAccessingRecommended}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsMicDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.MIC]]"
+              allow-option-label=
+                  "$i18n{siteSettingsMicAllowed}"
+              allow-option-icon="cr:mic"
+              block-option-label="$i18n{siteSettingsMicBlocked}"
+              block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
+              block-option-icon="settings:mic-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.MIC}}" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.MIC]]" read-only-list
+              allow-header="$i18n{siteSettingsMicAllowedExceptions}"
+              block-header="$i18n{siteSettingsMicBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -401,14 +458,22 @@
         <settings-subpage page-title="$i18n{siteSettingsSensors}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsSensorsBlock}"
-              toggle-on-label="$i18n{siteSettingsSensorsAllow}"
-              category="{{ContentSettingsTypes.SENSORS}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsMotionSensorsDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.SENSORS]]"
+              allow-option-label="$i18n{siteSettingsMotionSensorsAllowed}"
+              allow-option-icon="settings:sensors"
+              block-option-label="$i18n{siteSettingsMotionSensorsBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
+              block-option-icon="settings:sensors-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.SENSORS}}" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.SENSORS]]" read-only-list
+              allow-header="$i18n{siteSettingsMotionSensorsAllowedExceptions}"
+              block-header="$i18n{siteSettingsMotionSensorsBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -417,58 +482,48 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryNotifications}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <template is="dom-if" if="[[enableQuietNotificationPromptsSetting_]]">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsNotificationsAsk}"
-                toggle-on-label="$i18n{siteSettingsNotificationsAsk}"
-                category="{{ContentSettingsTypes.NOTIFICATIONS}}"
-                sub-option-pref="{{prefs.profile.content_settings.enable_quiet_permission_ui.notifications}}"
-                sub-option-label=
-                    "$i18n{siteSettingsEnableQuietNotificationPrompts}"
-                sub-option-mode="pref">
-            </category-default-setting>
-          </template>
-          <template is="dom-if" if="[[!enableQuietNotificationPromptsSetting_]]">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsCategoryNotifications}"
-                toggle-on-label="$i18n{siteSettingsCategoryNotifications}"
-                toggle-off-description="$i18n{siteSettingsNotificationsBlock}"
-                toggle-on-description="$i18n{siteSettingsNotificationsAsk}"
-                category="{{ContentSettingsTypes.NOTIFICATIONS}}"
-                sub-option-mode="none">
-            </category-default-setting>
-          </template>
+          <div id="notificationRadioGroup" class="radio-group">
+            <div class="secondary">
+              $i18n{siteSettingsNotificationsDescription}
+            </div>
+            <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+            <div id="notificationSubHeading"
+              class="secondary radio-sub-heading">
+              $i18n{siteSettingsDefaultBehaviorDescription}
+            </div>
+            <settings-radio-group
+                pref="{{prefs.generated.notification}}"
+                selectable-elements="settings-collapse-radio-button">
+              <settings-collapse-radio-button no-collapse
+                  name="[[notificationSettingEnum_.ASK]]"
+                  pref="[[prefs.generated.notification]]"
+                  label="$i18n{siteSettingsNotificationsAllowed}"
+                  icon="settings:notifications">
+              </settings-collapse-radio-button>
+              <template is="dom-if"
+                  if="[[enableQuietNotificationPromptsSetting_]]">
+                <settings-collapse-radio-button no-collapse class="two-line"
+                    name="[[notificationSettingEnum_.QUIETER_MESSAGING]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsPartial}"
+                    sub-label=
+                        "$i18n{siteSettingsNotificationsPartialSubLabel}"
+                    icon="settings:notifications">
+                </settings-collapse-radio-button>
+              </template>
+              <settings-collapse-radio-button no-collapse class="two-line"
+                  name="[[notificationSettingEnum_.BLOCK]]"
+                  pref="[[prefs.generated.notification]]"
+                  label="$i18n{siteSettingsNotificationsBlocked}"
+                  sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
+                  icon="settings:notifications-off">
+              </settings-collapse-radio-button>
+            </settings-radio-group>
+          </div>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.NOTIFICATIONS}}"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/flash" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsFlash}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <a class="settings-box first no-outline" tabindex="-1"
-              target="_blank">
-            $i18n{siteSettingsFlashPermissionsEphemeral}
-          </a>
-          <category-default-setting category="{{ContentSettingsTypes.PLUGINS}}"
-              toggle-off-label="$i18n{siteSettingsFlashBlockRecommended}"
-              toggle-on-label="$i18n{siteSettingsFlashAskFirst}">
-          </category-default-setting>
-<if expr="chromeos">
-          <a class="settings-box inherit-color no-outline" tabindex="-1"
-              target="_blank"
-              href="https://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager07.html">
-            <div class="start">$i18n{adobeFlashStorage}</div>
-            <cr-icon-button class="icon-external"
-                aria-label="$i18n{adobeFlashStorage}"></cr-icon-button>
-          </a>
-</if>
-          <category-setting-exceptions
-              category="{{ContentSettingsTypes.PLUGINS}}"
-              block-header="$i18n{siteSettingsBlock}" read-only-list
+              category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
+              allow-header="$i18n{siteSettingsNotificationsAllowedExceptions}"
+              block-header="$i18n{siteSettingsNotificationsBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -477,13 +532,20 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryPopups}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting category="{{ContentSettingsTypes.POPUPS}}"
-              toggle-off-label="$i18n{siteSettingsBlockedRecommended}"
-              toggle-on-label="$i18n{siteSettingsAllowed}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsPopupsDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.POPUPS]]"
+              allow-option-label="$i18n{siteSettingsPopupsAllowed}"
+              allow-option-icon="cr:open-in-new"
+              block-option-label="$i18n{siteSettingsPopupsBlocked}"
+              block-option-icon="settings:open-in-new-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.POPUPS}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.POPUPS]]"
+              allow-header="$i18n{siteSettingsPopupsAllowedExceptions}"
+              block-header="$i18n{siteSettingsPopupsBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -494,100 +556,152 @@
           <settings-subpage page-title="$i18n{siteSettingsAds}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <category-default-setting
-                category="{{ContentSettingsTypes.ADS}}"
-                toggle-off-label="$i18n{siteSettingsAdsBlockRecommended}"
-                toggle-on-label="$i18n{siteSettingsAllowed}">
-            </category-default-setting>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsAdsDescription}
+            </div>
+            <settings-category-default-radio-group
+                category="[[contentSettingsTypesEnum_.ADS]]"
+                allow-option-label="$i18n{siteSettingsAdsAllowed}"
+                allow-option-icon="settings:ads"
+                block-option-label="$i18n{siteSettingsAdsBlocked}"
+                block-option-icon="settings:ads-off">
+            </settings-category-default-radio-group>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.ADS}}"
+                category="[[contentSettingsTypesEnum_.ADS]]"
                 read-only-list
-                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAdsAllowedExceptions}"
+                block-header="$i18n{siteSettingsAdsBlockedExceptions}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>
        </template>
      </template>
-     <template is="dom-if" route-path="/content/unsandboxedPlugins" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsUnsandboxedPlugins}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsUnsandboxedPluginsBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsUnsandboxedPluginsAskRecommended}"
-              category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}">
-          </category-default-setting>
-          <category-setting-exceptions
-              category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}"
-              block-header="$i18n{siteSettingsBlock}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/midiDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsMidiDevices}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsMidiDevicesBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsMidiDevicesAskRecommended}"
-              category="{{ContentSettingsTypes.MIDI_DEVICES}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsMidiDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
+              allow-option-label=
+                  "$i18n{siteSettingsMidiAllowed}"
+              allow-option-icon="settings:midi"
+              block-option-label="$i18n{siteSettingsMidiBlocked}"
+              block-option-icon="settings:midi-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.MIDI_DEVICES}}" read-only-list
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsMidiAllowedExceptions}"
+              block-header="$i18n{siteSettingsMidiBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsUsbDevicesBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsUsbDevicesAskRecommended}"
-              category="{{ContentSettingsTypes.USB_DEVICES}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsUsbDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
+              allow-option-label="$i18n{siteSettingsUsbAllowed}"
+              allow-option-icon="settings:usb"
+              block-option-label="$i18n{siteSettingsUsbBlocked}"
+              block-option-icon="settings:usb-off">
+          </settings-category-default-radio-group>
           <chooser-exception-list
-              category="{{ContentSettingsTypes.USB_DEVICES}}"
-              chooser-type="{{ChooserType.USB_DEVICES}}">
+              category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
+              chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
           </chooser-exception-list>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/serialPorts" no-search>
         <settings-subpage page-title="$i18n{siteSettingsSerialPorts}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsSerialPortsBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsSerialPortsAskRecommended}"
-              category="{{ContentSettingsTypes.SERIAL_PORTS}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsSerialPortsDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
+              allow-option-label=
+                  "$i18n{siteSettingsSerialPortsAllowed}"
+              allow-option-icon="settings:serial-port"
+              block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
+              block-option-icon="settings:serial-port-off">
+          </settings-category-default-radio-group>
           <chooser-exception-list
-              category="{{ContentSettingsTypes.SERIAL_PORTS}}"
-              chooser-type="{{ChooserType.SERIAL_PORTS}}">
+              category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
+              chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
           </chooser-exception-list>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[enableNativeFileSystemWriteContentSetting_]]">
-        <template is="dom-if" route-path="/content/filesystem" no-search>
-          <settings-subpage
-              page-title="$i18n{siteSettingsNativeFileSystemWrite}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsNativeFileSystemWriteBlock}"
-                toggle-on-label=
-                    "$i18n{siteSettingsNativeFileSystemWriteAskRecommended}"
-                category="{{ContentSettingsTypes.NATIVE_FILE_SYSTEM_WRITE}}">
-            </category-default-setting>
-            <category-setting-exceptions
-                category="{{ContentSettingsTypes.NATIVE_FILE_SYSTEM_WRITE}}"
-                read-only-list
-                block-header="$i18n{siteSettingsBlock}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+      <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
+        <template is="dom-if" route-path="/content/bluetoothDevices" no-search>
+          <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}">
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsBluetoothDevicesDescription}
+              </div>
+              <settings-category-default-radio-group
+                    category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
+                    allow-option-label=
+                        "$i18n{siteSettingsBluetoothDevicesAllowed}"
+                    allow-option-icon="settings:bluetooth"
+                    block-option-label=
+                        "$i18n{siteSettingsBluetoothDevicesBlocked}"
+                    block-option-icon="settings:bluetooth-off">
+            </settings-category-default-radio-group>
+            <chooser-exception-list
+                category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
+                chooser-type="[[chooserTypeEnum_.BLUETOOTH_DEVICES]]">
+            </chooser-exception-list>
           </settings-subpage>
         </template>
+      </template>
+      <template is="dom-if" route-path="/content/filesystem" no-search>
+        <settings-subpage
+            page-title="$i18n{siteSettingsFileSystemWrite}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsFileSystemWriteDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
+              allow-option-label=
+                  "$i18n{siteSettingsFileSystemWriteAllowed}"
+              allow-option-icon="settings:save-original"
+              block-option-label=
+                  "$i18n{siteSettingsFileSystemWriteBlocked}"
+              block-option-icon="settings:file-editing-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
+              read-only-list
+              block-header=
+                  "$i18n{siteSettingsFileSystemWriteBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/hidDevices" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsHidDevices}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsHidDevicesDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
+              allow-option-label=
+                  "$i18n{siteSettingsHidDevicesAllowed}"
+              allow-option-icon="settings:hid-device"
+              block-option-label=
+                  "$i18n{siteSettingsHidDevicesBlocked}"
+              block-option-icon="settings:hid-device-off">
+          </settings-category-default-radio-group>
+          <chooser-exception-list
+              category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
+              chooser-type="[[chooserTypeEnum_.HID_DEVICES]]">
+          </chooser-exception-list>
+        </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/siteDetails" no-search>
         <settings-subpage page-title="[[pageTitle]]">
@@ -608,40 +722,69 @@
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/protectedContent" no-search>
-<if expr="not chromeos">
+<if expr="not chromeos and not is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}">
 </if>
-<if expr="chromeos">
+<if expr="chromeos or is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
 </if>
-          <settings-toggle-button class="first"
+          <div class="radio-group">
+            <div class="secondary">
+              $i18n{siteSettingsProtectedContentDescription}
+            </div>
+            <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+            <div class="secondary radio-sub-heading">
+              $i18n{siteSettingsDefaultBehaviorDescription}
+            </div>
+            <settings-radio-group
               pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
-              label="[[getProtectedContentLabel_(
-                  prefs.webkit.webprefs.encrypted_media_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
-<if expr="chromeos or is_win">
-          <div class="settings-box first two-line">
-            $i18n{siteSettingsProtectedContentIdentifiersExplanation}
+              selectable-elements="settings-collapse-radio-button">
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                  label="$i18n{siteSettingsProtectedContentAllowed}"
+                  name="true"
+                  disabled$="[[isGuest_]]"
+                  icon="settings:protected-content">
+              </settings-collapse-radio-button>
+              <settings-collapse-radio-button no-collapse
+                  pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                  label="$i18n{siteSettingsProtectedContentBlocked}"
+                  sub-label=
+                      "$i18n{siteSettingsProtectedContentBlockedSubLabel}"
+                  name="false"
+                  disabled$="[[isGuest_]]"
+                  icon="settings:protected-content-off">
+              </settings-collapse-radio-button>
+            </settings-radio-group>
           </div>
-          <settings-toggle-button class="first"
-              pref="{{prefs.settings.privacy.drm_enabled}}"
-              label="[[getProtectedContentIdentifiersLabel_(
-                  prefs.settings.privacy.drm_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
-</if>
-<if expr="chromeos">
-          <template is="dom-if"
-              if="[[prefs.settings.privacy.drm_enabled.value]]">
-            <category-setting-exceptions
-                category="{{ContentSettingsTypes.PROTECTED_CONTENT}}"
-                block-header="$i18n{siteSettingsBlock}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
-          </template>
+<if expr="chromeos or is_win">
+          <settings-category-default-radio-group
+            header="$i18n{siteSettingsProtectedContentIdentifiers}"
+            description=
+                "$i18n{siteSettingsProtectedContentIdentifiersExplanation}"
+            category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
+            block-option-label=
+                "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
+            block-option-sub-label=
+                "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
+            block-option-icon="settings:protected-content-off"
+            allow-option-label=
+                "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
+            allow-option-icon="settings:protected-content"
+            disabled$="[[isGuest_]]">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              description=
+                  "$i18n{siteSettingsCustomizedBehaviorsDescriptionShort}"
+              category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
+              allow-header=
+                  "$i18n{siteSettingsProtectedContentIdentifiersAllowedExceptions}"
+              block-header=
+                  "$i18n{siteSettingsProtectedContentIdentifiersBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
 </if>
         </settings-subpage>
       </template>
@@ -649,14 +792,20 @@
         <settings-subpage page-title="$i18n{siteSettingsClipboard}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsClipboardBlock}"
-              toggle-on-label="$i18n{siteSettingsClipboardAskRecommended}"
-              category="{{ContentSettingsTypes.CLIPBOARD}}">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsClipboardDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
+              allow-option-label="$i18n{siteSettingsClipboardAllowed}"
+              allow-option-icon="settings:clipboard"
+              block-option-label="$i18n{siteSettingsClipboardBlocked}"
+              block-option-icon="settings:clipboard-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="{{ContentSettingsTypes.CLIPBOARD}}"
-              block-header="$i18n{siteSettingsBlock}"
+              category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
+              allow-header="$i18n{siteSettingsClipboardAllowedExceptions}"
+              block-header="$i18n{siteSettingsClipboardBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -666,14 +815,23 @@
           <settings-subpage page-title="$i18n{siteSettingsPaymentHandler}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsPaymentHandlerBlock}"
-                toggle-on-label="$i18n{siteSettingsPaymentHandlerAllowRecommended}"
-                category="[[ContentSettingsTypes.PAYMENT_HANDLER]]">
-            </category-default-setting>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsPaymentHandlersDescription}
+            </div>
+            <settings-category-default-radio-group
+                category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
+                allow-option-label=
+                    "$i18n{siteSettingsPaymentHandlersAllowed}"
+                allow-option-icon="settings:payment-handler"
+                block-option-label="$i18n{siteSettingsPaymentHandlersBlocked}"
+                block-option-icon="settings:payment-handler-off">
+            </settings-category-default-radio-group>
             <category-setting-exceptions
-                category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
-                block-header="$i18n{siteSettingsBlocked}"
+                category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
+                allow-header=
+                    "$i18n{siteSettingsPaymentHandlersAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsPaymentHandlersBlockedExceptions}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>
@@ -688,18 +846,149 @@
                 toggle-off-label="$i18n{siteSettingsBluetoothScanningBlock}"
                 toggle-on-label=
                     "$i18n{siteSettingsBluetoothScanningAskRecommended}"
-                category="{{ContentSettingsTypes.BLUETOOTH_SCANNING}}">
+                category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]">
             </category-default-setting>
             <category-setting-exceptions
-                category="{{ContentSettingsTypes.BLUETOOTH_SCANNING}}"
+                category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
                 read-only-list
                 block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
                 search-filter="[[searchFilter_]]">
             </category-setting-exceptions>
           </settings-subpage>
         </template>
       </template>
+      <template is="dom-if" route-path="/content/vr" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsVr}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsVrDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.VR]]"
+              allow-option-label="$i18n{siteSettingsVrAllowed}"
+              allow-option-icon="settings:vr-headset"
+              block-option-label="$i18n{siteSettingsVrBlocked}"
+              block-option-icon="settings:vr-headset-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.VR]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsVrAllowedExceptions}"
+              block-header="$i18n{siteSettingsVrBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/ar" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsAr}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsArDescription}
+          </div>
+          <!-- TODO(crbug.com/1196900): Fix redesign string when available.-->
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.AR]]"
+              allow-option-label="$i18n{siteSettingsArAsk}"
+              allow-option-icon="settings:vr-headset"
+              block-option-label="$i18n{siteSettingsArBlock}"
+              block-option-icon="settings:vr-headset-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.AR]]"
+              read-only-list
+              allow-header="$i18n{siteSettingsArAllowedExceptions}"
+              block-header="$i18n{siteSettingsArBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/idleDetection" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsDeviceUseDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+              allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
+              allow-option-icon="settings:devices"
+              block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
+              block-option-icon="settings:devices-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+              allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
+              block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/windowPlacement" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsWindowPlacement}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <category-default-setting
+              toggle-off-label="$i18n{siteSettingsWindowPlacementBlock}"
+              toggle-on-label=
+                  "$i18n{siteSettingsWindowPlacementAskRecommended}"
+              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]">
+          </category-default-setting>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
+              block-header="$i18n{siteSettingsBlock}"
+              allow-header="$i18n{siteSettingsAllow}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/fontAccess" no-search>
+        <settings-subpage page-title="$i18n{fonts}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsFontsDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
+              allow-option-label="$i18n{siteSettingsFontsAllowed}"
+              allow-option-icon="settings:font-access"
+              block-option-label="$i18n{siteSettingsFontsBlocked}"
+              block-option-icon="settings:font-access-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
+              block-header="$i18n{siteSettingsFontsBlockedExceptions}"
+              allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/fileHandlers" no-search>
+        <settings-subpage page-title="$i18n{siteSettingsFileHandling}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsFileHandlingDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
+              allow-option-label="$i18n{siteSettingsFileHandlingAllowed}"
+              allow-option-icon="settings:file-handling"
+              block-option-label="$i18n{siteSettingsFileHandlingBlocked}"
+              block-option-icon="settings:file-handling-off">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
+              block-header=
+                  "$i18n{siteSettingsFileHandlingBlockedExceptions}"
+              allow-header=
+                  "$i18n{siteSettingsFileHandlingAllowedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
     </settings-animated-pages>
-  </template>
-  <script src="privacy_page.js"></script>
-</dom-module>

@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <script>
+let video;
 function canplaythrough() {
     parent.postMessage("Video loaded", "*");
 }
 
 function fullscreenChanged() {
     parent.postMessage("SUCCEED - entered full screen!", "*");
+    video.requestVideoFrameCallback(framePainted);
+}
+
+function framePainted() {
+    parent.postMessage("Video frame painted.", "*");
 }
 
 onload = function() {
-    var video = document.getElementById('video');
+    video = document.getElementById('video');
     var mediaFile = "../../media/content/test.ogv";
     video.src = mediaFile;
     video.addEventListener('canplaythrough', canplaythrough);

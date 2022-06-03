@@ -4,7 +4,6 @@
 
 import web_idl
 
-
 _CODE_GEN_EXPR_PASS_KEY = object()
 
 
@@ -110,7 +109,7 @@ def expr_and(terms):
 
     if any(term.is_always_false for term in terms):
         return _Expr(False)
-    terms = filter(lambda x: not x.is_always_true, terms)
+    terms = list(filter(lambda x: not x.is_always_true, terms))
     if not terms:
         return _Expr(True)
     if len(terms) == 1:
@@ -125,7 +124,7 @@ def expr_or(terms):
 
     if any(term.is_always_true for term in terms):
         return _Expr(True)
-    terms = filter(lambda x: not x.is_always_false, terms)
+    terms = list(filter(lambda x: not x.is_always_false, terms))
     if not terms:
         return _Expr(False)
     if len(terms) == 1:
@@ -144,20 +143,105 @@ def expr_uniq(terms):
     return uniq_terms
 
 
-def expr_from_exposure(exposure, in_global=None):
+def expr_from_exposure(exposure,
+                       global_names=None,
+                       may_use_feature_selector=False):
     """
+    Returns an expression to determine whether this property should be exposed
+    or not.
+
     Args:
-        exposure: web_idl.Exposure
-        in_global: A global name of [Exposed] that the ExecutionContext is
-            supposed to be / represent.
+        exposure: web_idl.Exposure of the target construct.
+        global_names: When specified, it's taken into account that the global
+            object implements |global_names|.
+        may_use_feature_selector: True enables use of ${feature_selector} iff
+            the exposure is context dependent.
     """
     assert isinstance(exposure, web_idl.Exposure)
-    assert in_global is None or isinstance(in_global, str)
+    assert (global_names is None
+            or (isinstance(global_names, (list, tuple))
+                and all(isinstance(name, str) for name in global_names)))
+
+    # The property exposures are categorized into three.
+    # - Unconditional: Always exposed.
+    # - Context-independent: Enabled per v8::Isolate.
+    # - Context-dependent: Enabled per v8::Context, e.g. origin trials.
+    #
+    # Context-dependent properties can be installed in two phases.
+    # - The first phase installs all the properties that are associated with the
+    #   features enabled at the moment.  This phase is represented by
+    #   FeatureSelector as FeatureSelector.IsAll().
+    # - The second phase installs the properties associated with the specified
+    #   feature.  This phase is represented as FeatureSelector.IsAny(feature).
+    #
+    # The exposure condition is represented as;
+    #   (and feature_selector-independent-term
+    #        (or
+    #         feature_selector-1st-phase-term
+    #         feature_selector-2nd-phase-term))
+    # which can be represented in more details as:
+    #   (and cross_origin_isolated_term
+    #        direct_socket_enabled_term
+    #        secure_context_term
+    #        uncond_exposed_term
+    #        (or
+    #         (and feature_selector.IsAll()  # 1st phase; all enabled
+    #              cond_exposed_term
+    #              (or feature_enabled_term
+    #                  context_enabled_term))
+    #         (or exposed_selector_term      # 2nd phase; any selected
+    #             feature_selector_term)))
+    # where
+    #   cross_origin_isolated_term represents [CrossOriginIsolated]
+    #   direct_socket_enabled_term represents [DirectSocketEnabled]
+    #   secure_context_term represents [SecureContext=F1]
+    #   uncond_exposed_term represents [Exposed=(G1, G2)]
+    #   cond_exposed_term represents [Exposed(G1 F1, G2 F2)]
+    #   feature_enabled_term represents [RuntimeEnabled=(F1, F2)]
+    #   context_enabled_term represents [ContextEnabled=F1]
+    #   exposed_selector_term represents [Exposed(G1 F1, G2 F2)]
+    #   feature_selector_term represents [RuntimeEnabled=(F1, F2)]
+    uncond_exposed_terms = []
+    cond_exposed_terms = []
+    feature_enabled_terms = []
+    context_enabled_terms = []
+    exposed_selector_terms = []
+    feature_selector_names = []  # Will turn into feature_selector.IsAnyOf(...)
 
     def ref_enabled(feature):
-        return _Expr("RuntimeEnabledFeatures::{}Enabled()".format(feature))
+        arg = "${execution_context}" if feature.is_context_dependent else ""
+        return _Expr("RuntimeEnabledFeatures::{}Enabled({})".format(
+            feature, arg))
 
-    top_terms = [_Expr(True)]
+    def ref_selected(features):
+        feature_tokens = map(
+            lambda feature: "OriginTrialFeature::k{}".format(feature),
+            features)
+        return _Expr("${{feature_selector}}.IsAnyOf({})".format(
+            ", ".join(feature_tokens)))
+
+    # [CrossOriginIsolated]
+    if exposure.only_in_coi_contexts:
+        cross_origin_isolated_term = _Expr("${is_cross_origin_isolated}")
+    else:
+        cross_origin_isolated_term = _Expr(True)
+
+    # [DirectSocketEnabled]
+    if exposure.only_in_direct_socket_contexts:
+        direct_socket_enabled_term = _Expr("${is_direct_socket_enabled}")
+    else:
+        direct_socket_enabled_term = _Expr(True)
+
+    # [SecureContext]
+    if exposure.only_in_secure_contexts is True:
+        secure_context_term = _Expr("${is_in_secure_context}")
+    elif exposure.only_in_secure_contexts is False:
+        secure_context_term = _Expr(True)
+    else:
+        terms = list(map(ref_enabled, exposure.only_in_secure_contexts))
+        secure_context_term = expr_or(
+            [_Expr("${is_in_secure_context}"),
+             expr_not(expr_and(terms))])
 
     # [Exposed]
     GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST = {
@@ -168,43 +252,93 @@ def expr_from_exposure(exposure, in_global=None):
         "PaintWorklet": "IsPaintWorkletGlobalScope",
         "ServiceWorker": "IsServiceWorkerGlobalScope",
         "SharedWorker": "IsSharedWorkerGlobalScope",
-        "Window": "IsDocument",
+        "Window": "IsWindow",
         "Worker": "IsWorkerGlobalScope",
         "Worklet": "IsWorkletGlobalScope",
     }
-    in_globals = set()
-    if in_global:
-        in_globals.add(in_global)
-        for category_name in ("Worker", "Worklet"):
-            if in_global.endswith(category_name):
-                in_globals.add(category_name)
-    exposed_terms = []
-    for entry in exposure.global_names_and_features:
-        terms = []
-        if entry.global_name not in in_globals:
-            pred = GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[entry.global_name]
-            terms.append(_Expr("${{execution_context}}->{}()".format(pred)))
-        if entry.feature:
-            terms.append(ref_enabled(entry.feature))
-        if terms:
-            exposed_terms.append(expr_and(terms))
-    if exposed_terms:
-        top_terms.append(expr_or(exposed_terms))
+    if global_names:
+        matched_global_count = 0
+        for entry in exposure.global_names_and_features:
+            if entry.global_name not in global_names:
+                continue
+            matched_global_count += 1
+            if entry.feature:
+                cond_exposed_terms.append(ref_enabled(entry.feature))
+                if entry.feature.is_context_dependent:
+                    feature_selector_names.append(entry.feature)
+        assert (not exposure.global_names_and_features
+                or matched_global_count > 0)
+    else:
+        for entry in exposure.global_names_and_features:
+            pred_term = _Expr("${{execution_context}}->{}()".format(
+                GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[entry.global_name]))
+            if not entry.feature:
+                uncond_exposed_terms.append(pred_term)
+            else:
+                cond_exposed_terms.append(
+                    expr_and([pred_term, ref_enabled(entry.feature)]))
+                if entry.feature.is_context_dependent:
+                    exposed_selector_terms.append(
+                        expr_and([pred_term,
+                                  ref_selected([entry.feature])]))
 
     # [RuntimeEnabled]
     if exposure.runtime_enabled_features:
-        terms = map(ref_enabled, exposure.runtime_enabled_features)
-        top_terms.append(expr_or(terms))
+        feature_enabled_terms.extend(
+            map(ref_enabled, exposure.runtime_enabled_features))
+        feature_selector_names.extend(
+            exposure.context_dependent_runtime_enabled_features)
 
-    # [SecureContext]
-    if exposure.only_in_secure_contexts is True:
-        top_terms.append(_Expr("${in_secure_context}"))
-    elif exposure.only_in_secure_contexts is False:
-        top_terms.append(_Expr(True))
-    else:
-        terms = map(ref_enabled, exposure.only_in_secure_contexts)
-        top_terms.append(
-            expr_or([_Expr("${in_secure_context}"),
-                     expr_not(expr_and(terms))]))
+    # [ContextEnabled]
+    if exposure.context_enabled_features:
+        terms = list(
+            map(
+                lambda feature: _Expr(
+                    "${{context_feature_settings}}->is{}Enabled()".format(
+                        feature)), exposure.context_enabled_features))
+        context_enabled_terms.append(
+            expr_and([_Expr("${context_feature_settings}"),
+                      expr_or(terms)]))
 
-    return expr_and(top_terms)
+    # Build an expression.
+    top_level_terms = []
+    top_level_terms.append(cross_origin_isolated_term)
+    top_level_terms.append(direct_socket_enabled_term)
+    top_level_terms.append(secure_context_term)
+    if uncond_exposed_terms:
+        top_level_terms.append(expr_or(uncond_exposed_terms))
+
+    if not (may_use_feature_selector
+            and exposure.is_context_dependent(global_names)):
+        if cond_exposed_terms:
+            top_level_terms.append(expr_or(cond_exposed_terms))
+        if feature_enabled_terms:
+            top_level_terms.append(expr_and(feature_enabled_terms))
+        return expr_and(top_level_terms)
+
+    all_enabled_terms = [_Expr("${feature_selector}.IsAll()")]
+    if cond_exposed_terms:
+        all_enabled_terms.append(expr_or(cond_exposed_terms))
+    if feature_enabled_terms or context_enabled_terms:
+        terms = []
+        if feature_enabled_terms:
+            terms.append(expr_and(feature_enabled_terms))
+        if context_enabled_terms:
+            terms.append(expr_or(context_enabled_terms))
+        all_enabled_terms.append(expr_or(terms))
+
+    selector_terms = []
+    if exposed_selector_terms:
+        selector_terms.append(expr_or(exposed_selector_terms))
+    if feature_selector_names:
+        # Remove duplicates
+        selector_terms.append(ref_selected(sorted(
+            set(feature_selector_names))))
+
+    terms = []
+    terms.append(expr_and(all_enabled_terms))
+    if selector_terms:
+        terms.append(expr_or(selector_terms))
+    top_level_terms.append(expr_or(terms))
+
+    return expr_and(top_level_terms)

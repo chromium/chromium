@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQL_LOG_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQL_LOG_H_
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 // We can see logs with |--v=N| or |--vmodule=SQLLog=N| where N is a

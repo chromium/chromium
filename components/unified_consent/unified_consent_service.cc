@@ -4,9 +4,9 @@
 
 #include "components/unified_consent/unified_consent_service.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -66,10 +66,14 @@ void UnifiedConsentService::Shutdown() {
   sync_service_->RemoveObserver(this);
 }
 
-void UnifiedConsentService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  // By design, clearing the primary account disables URL-keyed data collection.
-  SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+void UnifiedConsentService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    // By design, clearing the primary account disables URL-keyed data
+    // collection.
+    SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  }
 }
 
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
@@ -151,7 +155,7 @@ void UnifiedConsentService::SetMigrationState(MigrationState migration_state) {
 void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
   DCHECK_EQ(GetMigrationState(), MigrationState::kNotInitialized);
 
-  if (!identity_manager_->HasPrimaryAccount()) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     SetMigrationState(MigrationState::kCompleted);
     return;
   }
@@ -171,7 +175,7 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
       sync_service_->IsSyncFeatureEnabled() &&
       sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory) &&
-      !sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase();
+      !sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   SetUrlKeyedAnonymizedDataCollectionEnabled(url_keyed_metrics_enabled);
 }
 

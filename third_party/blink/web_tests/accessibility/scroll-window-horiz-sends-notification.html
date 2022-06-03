@@ -24,7 +24,7 @@ async_test((t) => {
   assert_equals(window.pageXOffset, 0);
 
   accessibilityController.addNotificationListener(t.step_func((target, notification) => {
-    if (target.role == 'AXRole: AXWebArea' && notification == 'ScrollPositionChanged') {
+    if (target.role == 'AXRole: AXRootWebArea' && notification == 'LayoutComplete') {
       console.log('Got notification on web area');
       accessibilityController.removeNotificationListener();
       assert_equals(window.pageXOffset, 500);
@@ -32,12 +32,7 @@ async_test((t) => {
     }
   }));
 
-  window.setTimeout(function() {
-    window.scrollTo(500, 0);
-  }, 0);
-  window.setTimeout(t.step_func_done(() => {
-    assert_unreached();
-  }), 200);
+  window.scrollTo(500, 0);
 }, "This test ensures that scrolling the window sends a notification.");
 
 </script>

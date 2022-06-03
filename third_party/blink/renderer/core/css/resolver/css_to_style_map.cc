@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
@@ -145,7 +146,8 @@ void CSSToStyleMap::MapFillImage(StyleResolverState& state,
   CSSPropertyID property = layer->GetType() == EFillLayerType::kBackground
                                ? CSSPropertyID::kBackgroundImage
                                : CSSPropertyID::kWebkitMaskImage;
-  layer->SetImage(state.GetStyleImage(property, value));
+  layer->SetImage(
+      state.GetStyleImage(property, state.ResolveLightDarkPair(value)));
 }
 
 void CSSToStyleMap::MapFillRepeatX(StyleResolverState&,
@@ -286,35 +288,6 @@ void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
   }
 }
 
-void CSSToStyleMap::MapFillMaskSourceType(StyleResolverState&,
-                                          FillLayer* layer,
-                                          const CSSValue& value) {
-  EMaskSourceType type = FillLayer::InitialFillMaskSourceType(layer->GetType());
-  if (value.IsInitialValue()) {
-    layer->SetMaskSourceType(type);
-    return;
-  }
-
-  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (!identifier_value)
-    return;
-
-  switch (identifier_value->GetValueID()) {
-    case CSSValueID::kAlpha:
-      type = EMaskSourceType::kAlpha;
-      break;
-    case CSSValueID::kLuminance:
-      type = EMaskSourceType::kLuminance;
-      break;
-    case CSSValueID::kAuto:
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  layer->SetMaskSourceType(type);
-}
-
 double CSSToStyleMap::MapAnimationDelay(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSTimingData::InitialDelay();
@@ -383,6 +356,23 @@ AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
     return AtomicString(custom_ident_value->Value());
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
   return CSSAnimationData::InitialName();
+}
+
+StyleNameOrKeyword CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
+  if (value.IsInitialValue())
+    return CSSAnimationData::InitialTimeline();
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK(ident->GetValueID() == CSSValueID::kAuto ||
+           ident->GetValueID() == CSSValueID::kNone);
+    return StyleNameOrKeyword(ident->GetValueID());
+  }
+  if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
+    return StyleNameOrKeyword(
+        StyleName(custom_ident->Value(), StyleName::Type::kCustomIdent));
+  }
+  return StyleNameOrKeyword(
+      StyleName(AtomicString(To<CSSStringValue>(value).Value()),
+                StyleName::Type::kString));
 }
 
 EAnimPlayState CSSToStyleMap::MapAnimationPlayState(const CSSValue& value) {

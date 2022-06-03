@@ -36,7 +36,7 @@ bool StaticSelection::isCollapsed() const {
   return anchor_node_ == focus_node_ && anchor_offset_ == focus_offset_;
 }
 
-void StaticSelection::Trace(blink::Visitor* visitor) {
+void StaticSelection::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_node_);
   visitor->Trace(focus_node_);
   ScriptWrappable::Trace(visitor);

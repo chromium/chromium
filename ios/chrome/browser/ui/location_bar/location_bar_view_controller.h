@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/badges/badge_consumer.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 
 @class InfobarMetricsRecorder;
@@ -28,6 +28,22 @@
 
 // Notifies the delegate about a tap on the Copy entry in the editing menu.
 - (void)locationBarCopyTapped;
+
+// Returns the target that location bar scribble events should be forwarded to.
+- (UIResponder<UITextInput>*)omniboxScribbleForwardingTarget;
+
+// Request the scribble target to be focused.
+- (void)locationBarRequestScribbleTargetFocus;
+
+// Notifies the delegate about a tap on the share button to record metrics.
+- (void)recordShareButtonPressed;
+
+// Notifies the delegate about a tap on the Visit Copied Link context menu
+// action.
+- (void)locationBarVisitCopyLinkTapped;
+
+// Starts a reverse image search for the image currently in the pasteboard.
+- (void)searchCopiedImage;
 
 @end
 
@@ -53,7 +69,8 @@
                               ApplicationCommands,
                               BrowserCommands,
                               InfobarCommands,
-                              LoadQueryCommands>
+                              LoadQueryCommands,
+                              OmniboxCommands>
     dispatcher;
 
 // Delegate for this location bar view controller.

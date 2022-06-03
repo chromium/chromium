@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -26,6 +25,7 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -46,7 +46,7 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
+  std::u16string GetItemAt(int index) const override;
 
  private:
   // A list of the launch types available in the combobox, in order.
@@ -54,7 +54,7 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
 
   // A list of the messages to display in the combobox, in order. The indexes in
   // this list correspond to the indexes in launch_types_.
-  std::vector<base::string16> launch_type_messages_;
+  std::vector<std::u16string> launch_type_messages_;
 };
 
 LaunchOptionsComboboxModel::LaunchOptionsComboboxModel() {
@@ -92,17 +92,13 @@ int LaunchOptionsComboboxModel::GetItemCount() const {
   return launch_types_.size();
 }
 
-base::string16 LaunchOptionsComboboxModel::GetItemAt(int index) {
+std::u16string LaunchOptionsComboboxModel::GetItemAt(int index) const {
   return launch_type_messages_[index];
 }
 
 AppInfoSummaryPanel::AppInfoSummaryPanel(Profile* profile,
                                          const extensions::Extension* app)
-    : AppInfoPanel(profile, app),
-      size_value_(nullptr),
-      homepage_link_(nullptr),
-      licenses_link_(nullptr),
-      launch_options_combobox_(nullptr) {
+    : AppInfoPanel(profile, app) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -113,7 +109,7 @@ AppInfoSummaryPanel::AppInfoSummaryPanel(Profile* profile,
 
 AppInfoSummaryPanel::~AppInfoSummaryPanel() {
   // Destroy view children before their models.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
@@ -126,11 +122,11 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
               DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
   if (!app_->description().empty()) {
-    const size_t max_length = 400;
-    base::string16 text = base::UTF8ToUTF16(app_->description());
-    if (text.length() > max_length) {
-      text = text.substr(0, max_length);
-      text += base::ASCIIToUTF16(" ... ");
+    constexpr size_t kMaxLength = 400;
+    std::u16string text = base::UTF8ToUTF16(app_->description());
+    if (text.length() > kMaxLength) {
+      text = text.substr(0, kMaxLength - 5);
+      text += u" ... ";
     }
 
     auto description_label = std::make_unique<AppInfoLabel>(text);
@@ -138,24 +134,21 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
     description_and_labels_stack->AddChildView(std::move(description_label));
   }
 
+  const auto add_link = [&](int message_id,
+                            void (AppInfoSummaryPanel::*ptr)()) {
+    auto* link = description_and_labels_stack->AddChildView(
+        std::make_unique<views::Link>(l10n_util::GetStringUTF16(message_id)));
+    link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    link->SetCallback(base::BindRepeating(ptr, base::Unretained(this)));
+    link->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  };
   if (CanShowAppHomePage()) {
-    auto homepage_link = std::make_unique<views::Link>(
-        l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_HOMEPAGE_LINK));
-    homepage_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    homepage_link->set_listener(this);
-    homepage_link->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    homepage_link_ =
-        description_and_labels_stack->AddChildView(std::move(homepage_link));
+    add_link(IDS_APPLICATION_INFO_HOMEPAGE_LINK,
+             &AppInfoSummaryPanel::ShowAppHomePage);
   }
-
   if (CanDisplayLicenses()) {
-    auto licenses_link = std::make_unique<views::Link>(
-        l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_LICENSES_BUTTON_TEXT));
-    licenses_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    licenses_link->set_listener(this);
-    licenses_link->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    licenses_link_ =
-        description_and_labels_stack->AddChildView(std::move(licenses_link));
+    add_link(IDS_APPLICATION_INFO_LICENSES_BUTTON_TEXT,
+             &AppInfoSummaryPanel::DisplayLicenses);
   }
 
   vertical_stack->AddChildView(std::move(description_and_labels_stack));
@@ -163,7 +156,7 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
 
 void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   // Component apps have no details.
-  if (app_->location() == extensions::Manifest::COMPONENT)
+  if (app_->location() == extensions::mojom::ManifestLocation::kComponent)
     return;
 
   std::unique_ptr<views::View> details_list =
@@ -182,17 +175,14 @@ void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   details_list->AddChildView(
       CreateKeyValueField(std::move(size_title), std::move(size_value)));
 
-  // The version doesn't make sense for bookmark apps.
-  if (!app_->from_bookmark()) {
-    auto version_title = std::make_unique<AppInfoLabel>(
-        l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
+  auto version_title = std::make_unique<AppInfoLabel>(
+      l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
 
-    auto version_value = std::make_unique<AppInfoLabel>(
-        base::UTF8ToUTF16(app_->GetVersionForDisplay()));
+  auto version_value = std::make_unique<AppInfoLabel>(
+      base::UTF8ToUTF16(app_->GetVersionForDisplay()));
 
-    details_list->AddChildView(CreateKeyValueField(std::move(version_title),
-                                                   std::move(version_value)));
-  }
+  details_list->AddChildView(
+      CreateKeyValueField(std::move(version_title), std::move(version_value)));
 
   vertical_stack->AddChildView(std::move(details_list));
 }
@@ -207,7 +197,8 @@ void AppInfoSummaryPanel::AddLaunchOptionControl(views::View* vertical_stack) {
       std::make_unique<views::Combobox>(launch_options_combobox_model_.get());
   launch_options_combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_LAUNCH_OPTIONS_ACCNAME));
-  launch_options_combobox->set_listener(this);
+  launch_options_combobox->SetCallback(base::BindRepeating(
+      &AppInfoSummaryPanel::LaunchOptionsChanged, base::Unretained(this)));
   launch_options_combobox->SetSelectedIndex(
       launch_options_combobox_model_->GetIndexForLaunchType(GetLaunchType()));
 
@@ -230,23 +221,9 @@ void AppInfoSummaryPanel::AddSubviews() {
   AddChildView(std::move(vertical_stack));
 }
 
-void AppInfoSummaryPanel::OnPerformAction(views::Combobox* combobox) {
-  if (combobox == launch_options_combobox_) {
-    SetLaunchType(launch_options_combobox_model_->GetLaunchTypeAtIndex(
-        launch_options_combobox_->GetSelectedIndex()));
-  } else {
-    NOTREACHED();
-  }
-}
-
-void AppInfoSummaryPanel::LinkClicked(views::Link* source, int event_flags) {
-  if (source == homepage_link_) {
-    ShowAppHomePage();
-  } else if (source == licenses_link_) {
-    DisplayLicenses();
-  } else {
-    NOTREACHED();
-  }
+void AppInfoSummaryPanel::LaunchOptionsChanged() {
+  SetLaunchType(launch_options_combobox_model_->GetLaunchTypeAtIndex(
+      launch_options_combobox_->GetSelectedIndex()));
 }
 
 void AppInfoSummaryPanel::StartCalculatingAppSize() {
@@ -260,7 +237,7 @@ void AppInfoSummaryPanel::StartCalculatingAppSize() {
   }
 }
 
-void AppInfoSummaryPanel::OnAppSizeCalculated(const base::string16& size) {
+void AppInfoSummaryPanel::OnAppSizeCalculated(const std::u16string& size) {
   size_value_->SetText(size);
 }
 
@@ -281,6 +258,7 @@ bool AppInfoSummaryPanel::CanSetLaunchType() const {
   return !app_->is_platform_app() && !app_->is_extension() &&
          app_->id() != extension_misc::kChromeAppId;
 }
+
 void AppInfoSummaryPanel::ShowAppHomePage() {
   DCHECK(CanShowAppHomePage());
   OpenLink(extensions::ManifestURL::GetHomepageURL(app_));
@@ -324,3 +302,6 @@ const std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
   }
   return license_urls;
 }
+
+BEGIN_METADATA(AppInfoSummaryPanel, AppInfoPanel)
+END_METADATA

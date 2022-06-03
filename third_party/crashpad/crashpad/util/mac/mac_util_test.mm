@@ -40,8 +40,8 @@ namespace {
 
 // Runs /usr/bin/sw_vers with a single argument, |argument|, and places the
 // command’s standard output into |output| after stripping the trailing newline.
-// Fatal gtest assertions report tool failures, which the caller should check
-// for with ASSERT_NO_FATAL_FAILURE() or testing::Test::HasFatalFailure().
+// Fatal Google Test assertions report tool failures, which the caller should
+// check for with ASSERT_NO_FATAL_FAILURE() or testing::Test::HasFatalFailure().
 void SwVers(NSString* argument, std::string* output) {
   @autoreleasepool {
     base::scoped_nsobject<NSPipe> pipe([[NSPipe alloc] init]);
@@ -71,15 +71,22 @@ void SwVers(NSString* argument, std::string* output) {
   }
 }
 
-TEST(MacUtil, MacOSXVersion) {
+TEST(MacUtil, MacOSVersionComponents) {
   int major;
   int minor;
   int bugfix;
   std::string build;
   bool server;
   std::string version_string;
-  ASSERT_TRUE(
-      MacOSXVersion(&major, &minor, &bugfix, &build, &server, &version_string));
+  ASSERT_TRUE(MacOSVersionComponents(
+      &major, &minor, &bugfix, &build, &server, &version_string));
+
+  EXPECT_GE(major, 10);
+  EXPECT_LE(major, 99);
+  EXPECT_GE(minor, 0);
+  EXPECT_LE(minor, 99);
+  EXPECT_GE(bugfix, 0);
+  EXPECT_LE(bugfix, 99);
 
   std::string version;
   if (bugfix) {
@@ -108,20 +115,26 @@ TEST(MacUtil, MacOSXVersion) {
   EXPECT_EQ(version_string.find(expected_product_name), 0u);
 }
 
-TEST(MacUtil, MacOSXMinorVersion) {
-  // Make sure that MacOSXMinorVersion() and MacOSXVersion() agree. The two have
-  // their own distinct implementations, and the latter was checked against
-  // sw_vers above.
+TEST(MacUtil, MacOSVersionNumber) {
+  // Make sure that MacOSVersionNumber() and MacOSVersionComponents() agree. The
+  // two have their own distinct implementations, and the latter was checked
+  // against sw_vers above.
+  int macos_version_number = MacOSVersionNumber();
+  EXPECT_GE(macos_version_number, 10'00'00);
+  EXPECT_LE(macos_version_number, 99'99'99);
+
   int major;
   int minor;
   int bugfix;
   std::string build;
   bool server;
   std::string version_string;
-  ASSERT_TRUE(
-      MacOSXVersion(&major, &minor, &bugfix, &build, &server, &version_string));
+  ASSERT_TRUE(MacOSVersionComponents(
+      &major, &minor, &bugfix, &build, &server, &version_string));
 
-  EXPECT_EQ(MacOSXMinorVersion(), minor);
+  EXPECT_EQ(macos_version_number,
+            major * 1'00'00 + minor * 1'00 +
+                (macos_version_number >= 10'13'04 ? bugfix : 0));
 }
 
 TEST(MacUtil, MacModelAndBoard) {

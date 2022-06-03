@@ -12,13 +12,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace media {
@@ -29,15 +29,14 @@ class AudioParameters;
 
 namespace blink {
 
-class WebLocalFrame;
-class MediaStreamInternalFrameWrapper;
+class LocalFrame;
 
 // TrackAudioRenderer is a WebMediaStreamAudioRenderer for plumbing audio
 // data generated from either local or remote (but not
 // PeerConnection/WebRTC-sourced) MediaStreamAudioTracks to an audio output
 // device, reconciling differences in the rates of production and consumption of
 // the audio data.  Note that remote PeerConnection-sourced tracks are NOT
-// rendered by this implementation (see WebMediaStreamRendererFactoryImpl).
+// rendered by this implementation (see MediaStreamRendererFactory).
 //
 // This class uses AudioDeviceFactory to create media::AudioRendererSink and
 // owns/manages their lifecycles.  Output devices are automatically re-created
@@ -62,10 +61,14 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   // otherwise, audio is output to the default device for the system.
   //
   // Called on the main thread.
-  TrackAudioRenderer(const WebMediaStreamTrack& audio_track,
-                     WebLocalFrame* playout_web_frame,
+  TrackAudioRenderer(MediaStreamComponent* audio_component,
+                     LocalFrame& playout_web_frame,
                      const base::UnguessableToken& session_id,
-                     const String& device_id);
+                     const String& device_id,
+                     base::RepeatingCallback<void()> on_render_error_callback);
+
+  TrackAudioRenderer(const TrackAudioRenderer&) = delete;
+  TrackAudioRenderer& operator=(const TrackAudioRenderer&) = delete;
 
   // WebMediaStreamAudioRenderer implementation.
   // Called on the main thread.
@@ -101,6 +104,8 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
              media::AudioBus* audio_bus) override;
   void OnRenderError() override;
 
+  void OnRenderErrorCrossThread();
+
   // Initializes and starts the |sink_| if
   //  we have received valid |source_params_| &&
   //  |playing_| has been set to true.
@@ -124,10 +129,10 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   // This class is calling WebMediaStreamAudioSink::AddToAudioTrack() and
   // WebMediaStreamAudioSink::RemoveFromAudioTrack() to connect and
   // disconnect with the audio track.
-  WebMediaStreamTrack audio_track_;
+  Persistent<MediaStreamComponent> audio_component_;
 
-  // The WebLocalFrame in which the audio is rendered into |sink_|.
-  std::unique_ptr<MediaStreamInternalFrameWrapper> internal_playout_frame_;
+  // The LocalFrame in which the audio is rendered into |sink_|.
+  WeakPersistent<LocalFrame> playout_frame_;
   const base::UnguessableToken session_id_;
 
   // MessageLoop associated with the single thread that performs all control
@@ -151,6 +156,8 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   // Must only be touched on the main thread.
   media::AudioParameters source_params_;
 
+  base::RepeatingCallback<void()> on_render_error_callback_;
+
   // Set when playing, cleared when paused.
   bool playing_;
 
@@ -168,8 +175,6 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
 
   // Flag to indicate whether |sink_| has been started yet.
   bool sink_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackAudioRenderer);
 };
 
 }  // namespace blink

@@ -7,6 +7,6 @@
 [
     Exposed=Window
 ] interface DragEvent : MouseEvent {
-    constructor(DOMString type, optional DragEventInit eventInitDict);
+    constructor(DOMString type, optional DragEventInit eventInitDict = {});
     [ImplementedAs=getDataTransfer] readonly attribute DataTransfer? dataTransfer;
 };

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<body>
+  <video id="video" src="../media/test.webm" loop></video>
+  <portal src="media-capture-portal.html"></portal>
+  <script>
+    let video = document.querySelector('video');
+    video.onclick = () => {
+      video.play();
+    }
+
+    function activate() {
+      let portal = document.querySelector('portal');
+      portal.activate();
+    }
+  </script>
+</body>

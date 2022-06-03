@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl (positioned) TEXTAREA id='textarea'",
-          "rect": [0, 50, 106, 106],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTextControl (positioned) TEXTAREA id='textarea'",
-          "rect": [90, 140, 15, 15],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [0, 50, 106, 106]
       ]
     }
   ]

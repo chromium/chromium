@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,14 +23,9 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/lib/headless_content_main_delegate.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/events/devices/device_data_manager.h"
-
-#if defined(USE_NSS_CERTS)
-#include "net/cert_net/nss_ocsp.h"
-#endif
 
 namespace headless {
 
@@ -54,17 +48,19 @@ HeadlessBrowserImpl::CreateBrowserContextBuilder() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 HeadlessBrowserImpl::BrowserMainThread() const {
-  return base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
+  return content::GetUIThreadTaskRunner({});
 }
 
 void HeadlessBrowserImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  browser_contexts_.clear();
+  // Make sure GetAllBrowserContexts is sane if called after this point.
+  auto tmp = std::move(browser_contexts_);
+  tmp.clear();
   if (system_request_context_manager_) {
-    base::DeleteSoon(FROM_HERE, {content::BrowserThread::IO},
-                     system_request_context_manager_.release());
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, system_request_context_manager_.release());
   }
   browser_main_parts_->QuitMainMessageLoop();
 }
@@ -195,6 +191,19 @@ HeadlessBrowserImpl::CreateDevToolsChannel() {
   DCHECK(agent_host_);
   return std::make_unique<HeadlessDevToolsAgentHostClient>(agent_host_);
 }
+
+#if defined(HEADLESS_USE_PREFS)
+PrefService* HeadlessBrowserImpl::GetPrefs() {
+  return browser_main_parts_ ? browser_main_parts_->GetPrefs() : nullptr;
+}
+#endif
+
+#if defined(HEADLESS_USE_POLICY)
+policy::PolicyService* HeadlessBrowserImpl::GetPolicyService() {
+  return browser_main_parts_ ? browser_main_parts_->GetPolicyService()
+                             : nullptr;
+}
+#endif
 
 void HeadlessBrowserImpl::AttachClient(HeadlessDevToolsClient* client) {
   client->AttachToChannel(CreateDevToolsChannel());

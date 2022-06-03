@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -24,12 +24,12 @@ namespace blink {
 
 class ActiveStyleSheetsTest : public PageTestBase {
  protected:
-  static CSSStyleSheet* CreateSheet(const String& css_text = String()) {
+  CSSStyleSheet* CreateSheet(const String& css_text = String()) {
     auto* contents = MakeGarbageCollected<StyleSheetContents>(
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext));
     contents->ParseString(css_text);
-    contents->EnsureRuleSet(MediaQueryEvaluator(),
+    contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
                             kRuleHasDocumentSecurityOrigin);
     return MakeGarbageCollected<CSSStyleSheet>(contents);
   }
@@ -123,8 +123,9 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_Mutated) {
       std::make_pair(sheet3, &sheet3->Contents()->GetRuleSet()));
 
   sheet2->Contents()->ClearRuleSet();
-  sheet2->Contents()->EnsureRuleSet(MediaQueryEvaluator(),
-                                    kRuleHasDocumentSecurityOrigin);
+  sheet2->Contents()->EnsureRuleSet(
+      MediaQueryEvaluator(GetDocument().GetFrame()),
+      kRuleHasDocumentSecurityOrigin);
 
   EXPECT_NE(old_sheets[1].second, &sheet2->Contents()->GetRuleSet());
 
@@ -402,9 +403,9 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_AddRemoveNonMatchingMQ) {
 
   CSSStyleSheet* sheet1 = CreateSheet();
   scoped_refptr<MediaQuerySet> mq =
-      MediaQueryParser::ParseMediaQuerySet("(min-width: 9000px)");
+      MediaQueryParser::ParseMediaQuerySet("(min-width: 9000px)", nullptr);
   sheet1->SetMediaQueries(mq);
-  sheet1->MatchesMediaQueries(MediaQueryEvaluator());
+  sheet1->MatchesMediaQueries(MediaQueryEvaluator(GetDocument().GetFrame()));
 
   new_sheets.push_back(std::make_pair(sheet1, nullptr));
 
@@ -436,7 +437,7 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToDocument) {
 }
 
 TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
-  GetDocument().body()->SetInnerHTMLFromString("<div id=host></div>");
+  GetDocument().body()->setInnerHTML("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
@@ -470,12 +471,12 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
                                        new_style_sheets);
 
-  EXPECT_EQ(kSubtreeStyleChange,
+  EXPECT_EQ(kNoStyleChange,
             GetDocument().documentElement()->GetStyleChangeType());
 }
 
 TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
-  GetDocument().body()->SetInnerHTMLFromString("<div id=host></div>");
+  GetDocument().body()->setInnerHTML("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
@@ -500,17 +501,15 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
 }
 
 TEST_F(ApplyRulesetsTest, RemoveSheetFromShadowTree) {
-  GetDocument().body()->SetInnerHTMLFromString("<div id=host></div>");
+  GetDocument().body()->setInnerHTML("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.SetInnerHTMLFromString(
-      "<style>::slotted(#dummy){color:pink}</style>");
+  shadow_root.setInnerHTML("<style>::slotted(#dummy){color:pink}</style>");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_TRUE(GetStyleEngine().TreeBoundaryCrossingScopes().IsEmpty());
   ASSERT_EQ(1u, shadow_root.StyleSheets().length());
 
   StyleSheet* sheet = shadow_root.StyleSheets().item(0);
@@ -523,8 +522,6 @@ TEST_F(ApplyRulesetsTest, RemoveSheetFromShadowTree) {
       std::make_pair(css_sheet, &css_sheet->Contents()->GetRuleSet()));
   GetStyleEngine().ApplyRuleSetChanges(shadow_root, old_style_sheets,
                                        ActiveStyleSheetVector());
-
-  EXPECT_TRUE(GetStyleEngine().TreeBoundaryCrossingScopes().IsEmpty());
 }
 
 }  // namespace blink

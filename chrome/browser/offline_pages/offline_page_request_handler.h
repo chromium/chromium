@@ -9,13 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
-#include "content/public/common/resource_type.h"
 
 namespace base {
 class FilePath;
@@ -172,9 +171,6 @@ class OfflinePageRequestHandler {
     // response data is received.
     virtual void SetOfflinePageNavigationUIData(bool is_offline_page) = 0;
 
-    // Returns true if the preview is allowed.
-    virtual bool ShouldAllowPreview() const = 0;
-
     // Returns the page transition type for this navigation.
     virtual int GetPageTransition() const = 0;
 
@@ -209,6 +205,10 @@ class OfflinePageRequestHandler {
       const GURL& url,
       const net::HttpRequestHeaders& extra_request_headers,
       Delegate* delegate);
+
+  OfflinePageRequestHandler(const OfflinePageRequestHandler&) = delete;
+  OfflinePageRequestHandler& operator=(const OfflinePageRequestHandler&) =
+      delete;
 
   ~OfflinePageRequestHandler();
 
@@ -253,7 +253,7 @@ class OfflinePageRequestHandler {
   void Redirect(const GURL& redirected_url);
 
   void OpenFile(const base::FilePath& file_path,
-                const base::Callback<void(int)>& callback);
+                const base::RepeatingCallback<void(int)>& callback);
   void UpdateDigestOnBackground(
       scoped_refptr<net::IOBuffer> buffer,
       size_t len,
@@ -302,8 +302,6 @@ class OfflinePageRequestHandler {
   std::unique_ptr<net::FileStream> stream_;
 
   base::WeakPtrFactory<OfflinePageRequestHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageRequestHandler);
 };
 
 }  // namespace offline_pages

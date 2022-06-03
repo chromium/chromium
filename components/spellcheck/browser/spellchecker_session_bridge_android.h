@@ -8,10 +8,9 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 
 // A class used to interface between the Java class of the same name and the
@@ -21,13 +20,18 @@
 class SpellCheckerSessionBridge {
  public:
   SpellCheckerSessionBridge();
+
+  SpellCheckerSessionBridge(const SpellCheckerSessionBridge&) = delete;
+  SpellCheckerSessionBridge& operator=(const SpellCheckerSessionBridge&) =
+      delete;
+
   ~SpellCheckerSessionBridge();
 
   using RequestTextCheckCallback =
       spellcheck::mojom::SpellCheckHost::RequestTextCheckCallback;
 
   // Receives text to be checked and sends it to Java to be spellchecked.
-  void RequestTextCheck(const base::string16& text,
+  void RequestTextCheck(const std::u16string& text,
                         RequestTextCheckCallback callback);
 
   // Receives information from Java side about the typos in a given string
@@ -46,15 +50,16 @@ class SpellCheckerSessionBridge {
  private:
   class SpellingRequest {
    public:
-    SpellingRequest(const base::string16& text,
+    SpellingRequest(const std::u16string& text,
                     RequestTextCheckCallback callback);
+
+    SpellingRequest(const SpellingRequest&) = delete;
+    SpellingRequest& operator=(const SpellingRequest&) = delete;
+
     ~SpellingRequest();
 
-    base::string16 text_;
+    std::u16string text_;
     RequestTextCheckCallback callback_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SpellingRequest);
   };
 
   std::unique_ptr<SpellingRequest> active_request_;
@@ -62,9 +67,6 @@ class SpellCheckerSessionBridge {
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   bool java_object_initialization_failed_;
-  bool active_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckerSessionBridge);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELLCHECKER_SESSION_BRIDGE_ANDROID_H_

@@ -19,7 +19,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webrtc_logging {
@@ -48,10 +47,14 @@ class PartialCircularBufferTest : public testing::Test {
         new uint8_t[buffer_header_size_ + sizeof(kOutputRefDataWrap)]);
   }
 
+  PartialCircularBufferTest(const PartialCircularBufferTest&) = delete;
+  PartialCircularBufferTest& operator=(const PartialCircularBufferTest&) =
+      delete;
+
   void InitWriteBuffer(bool append) {
-    pcb_write_.reset(new PartialCircularBuffer(
+    pcb_write_ = std::make_unique<PartialCircularBuffer>(
         buffer_.get(), buffer_header_size_ + sizeof(kOutputRefDataWrap),
-        kWrapPosition, append));
+        kWrapPosition, append);
   }
 
   void WriteToBuffer(int num) {
@@ -60,8 +63,8 @@ class PartialCircularBufferTest : public testing::Test {
   }
 
   void InitReadBuffer() {
-    pcb_read_.reset(new PartialCircularBuffer(
-        buffer_.get(), buffer_header_size_ + sizeof(kOutputRefDataWrap)));
+    pcb_read_ = std::make_unique<PartialCircularBuffer>(
+        buffer_.get(), buffer_header_size_ + sizeof(kOutputRefDataWrap));
   }
 
  protected:
@@ -69,8 +72,6 @@ class PartialCircularBufferTest : public testing::Test {
   std::unique_ptr<PartialCircularBuffer> pcb_read_;
   std::unique_ptr<uint8_t[]> buffer_;
   uint32_t buffer_header_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialCircularBufferTest);
 };
 
 TEST_F(PartialCircularBufferTest, NoWrapBeginningPartOnly) {

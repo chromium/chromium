@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_LOGIN_DELEGATE_H_
 
 #include "content/common/content_export.h"
+#include "net/base/auth.h"
 
 namespace content {
 
@@ -15,7 +16,10 @@ namespace content {
 // has been canceled and the callback should not be called.
 class CONTENT_EXPORT LoginDelegate {
  public:
-  virtual ~LoginDelegate() {}
+  using LoginAuthRequiredCallback =
+      base::OnceCallback<void(const absl::optional<net::AuthCredentials>&)>;
+
+  virtual ~LoginDelegate() = default;
 };
 
 }  // namespace content

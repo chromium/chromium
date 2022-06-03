@@ -9,7 +9,8 @@
 #ifndef CHROME_INSTALLER_SETUP_BRAND_BEHAVIORS_H_
 #define CHROME_INSTALLER_SETUP_BRAND_BEHAVIORS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
@@ -29,7 +30,7 @@ void UpdateInstallStatus(installer::ArchiveType archive_type,
 // Returns an opaque string holding data relating to the browser being
 // uninstalled. This function is called before the product's Clients key is
 // deleted. This blob is later passed to DoPostUninstallOperations.
-base::string16 GetDistributionData();
+std::wstring GetDistributionData();
 
 // Performs brand-specific operations following unintsallation of the browser.
 // |version| is the version of the browser being uninstalled. |local_data_path|
@@ -38,7 +39,7 @@ base::string16 GetDistributionData();
 // |GetDistributionData().
 void DoPostUninstallOperations(const base::Version& version,
                                const base::FilePath& local_data_path,
-                               const base::string16& distribution_data);
+                               const std::wstring& distribution_data);
 
 }  // namespace installer
 

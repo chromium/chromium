@@ -5,9 +5,8 @@
 #ifndef UI_BASE_WIN_FOREGROUND_HELPER_H_
 #define UI_BASE_WIN_FOREGROUND_HELPER_H_
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
+#include "base/notreached.h"
 #include "ui/gfx/win/window_impl.h"
 
 #include <windows.h>
@@ -21,9 +20,13 @@ namespace ui {
 // to be capable of moving to the foreground.
 //
 // This is probably leveraging a windows bug.
-class UI_BASE_EXPORT ForegroundHelper : public gfx::WindowImpl {
+class COMPONENT_EXPORT(UI_BASE) ForegroundHelper : public gfx::WindowImpl {
  public:
   ForegroundHelper();
+
+  ForegroundHelper(const ForegroundHelper&) = delete;
+  ForegroundHelper& operator=(const ForegroundHelper&) = delete;
+
   ~ForegroundHelper() override;
 
   CR_BEGIN_MSG_MAP_EX(ForegroundHelper)
@@ -44,8 +47,6 @@ class UI_BASE_EXPORT ForegroundHelper : public gfx::WindowImpl {
   HWND window_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(ForegroundHelper)
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundHelper);
 };
 
 }  // namespace ui

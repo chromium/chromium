@@ -8,7 +8,6 @@
 #include "android_webview/common/aw_content_client.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +30,7 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
     return "";
   base::DictionaryValue description;
   description.SetBoolean("attached", bvr->attached_to_window());
+  description.SetBoolean("never_attached", !bvr->was_attached());
   description.SetBoolean("visible", bvr->IsVisible());
   gfx::Rect screen_rect = bvr->GetScreenRect();
   description.SetInteger("screenX", screen_rect.x());

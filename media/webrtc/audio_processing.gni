@@ -1,4 +1,0 @@
-declare_args() {
-  # Note: the audio service must be sandboxed for us to use the APM there.
-  audio_processing_in_audio_service_supported = is_linux || is_win || is_mac
-}

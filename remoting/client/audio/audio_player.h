@@ -24,6 +24,9 @@ class AudioPlayer : public protocol::AudioStub {
   static const int kChannels = 2;
   static const int kSampleSizeBytes = 2;
 
+  AudioPlayer(const AudioPlayer&) = delete;
+  AudioPlayer& operator=(const AudioPlayer&) = delete;
+
   ~AudioPlayer() override;
 
   // protocol::AudioStub implementation.
@@ -70,8 +73,6 @@ class AudioPlayer : public protocol::AudioStub {
 
   // The number of bytes from |queued_packets_| that have been consumed.
   size_t bytes_consumed_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlayer);
 };
 
 }  // namespace remoting

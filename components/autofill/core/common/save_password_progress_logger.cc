@@ -5,16 +5,17 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string16.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/autofill/core/common/signatures.h"
 
 using base::checked_cast;
 using base::DictionaryValue;
@@ -32,75 +33,62 @@ bool IsUnwantedInElementID(char c) {
            base::IsAsciiDigit(c));
 }
 
-SavePasswordProgressLogger::StringID FormSchemeToStringID(
-    PasswordForm::Scheme scheme) {
-  switch (scheme) {
-    case PasswordForm::Scheme::kHtml:
-      return SavePasswordProgressLogger::STRING_SCHEME_HTML;
-    case PasswordForm::Scheme::kBasic:
-      return SavePasswordProgressLogger::STRING_SCHEME_BASIC;
-    case PasswordForm::Scheme::kDigest:
-      return SavePasswordProgressLogger::STRING_SCHEME_DIGEST;
-    case PasswordForm::Scheme::kOther:
-      return SavePasswordProgressLogger::STRING_OTHER;
-    case PasswordForm::Scheme::kUsernameOnly:
-      return SavePasswordProgressLogger::STRING_SCHEME_USERNAME_ONLY;
-  }
-  NOTREACHED();
-  return SavePasswordProgressLogger::STRING_INVALID;
-}
-
 }  // namespace
 
-SavePasswordProgressLogger::SavePasswordProgressLogger() {}
+SavePasswordProgressLogger::SavePasswordProgressLogger() = default;
+SavePasswordProgressLogger::~SavePasswordProgressLogger() = default;
 
-SavePasswordProgressLogger::~SavePasswordProgressLogger() {}
+std::string FormSignatureToDebugString(autofill::FormSignature form_signature) {
+  return base::StrCat(
+      {NumberToString(form_signature.value()), " - ",
+       NumberToString(autofill::HashFormSignature(form_signature))});
+}
 
-void SavePasswordProgressLogger::LogPasswordForm(
+void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
-    const PasswordForm& form) {
-  DictionaryValue log;
-  log.SetString(GetStringFromID(STRING_SCHEME_MESSAGE),
-                GetStringFromID(FormSchemeToStringID(form.scheme)));
-  log.SetString(GetStringFromID(STRING_SCHEME_MESSAGE),
-                GetStringFromID(FormSchemeToStringID(form.scheme)));
-  log.SetString(GetStringFromID(STRING_SIGNON_REALM),
-                ScrubURL(GURL(form.signon_realm)));
-  log.SetString(GetStringFromID(STRING_ORIGIN), ScrubURL(form.origin));
-  log.SetString(GetStringFromID(STRING_ACTION), ScrubURL(form.action));
-  log.SetString(GetStringFromID(STRING_USERNAME_ELEMENT),
-                ScrubElementID(form.username_element));
-  if (form.has_renderer_ids) {
-    log.SetString(GetStringFromID(STRING_USERNAME_ELEMENT_RENDERER_ID),
-                  NumberToString(form.username_element_renderer_id));
+    const FormData& form_data) {
+  std::string message = GetStringFromID(label) + ": {\n";
+  message +=
+      GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
+      FormSignatureToDebugString(autofill::CalculateFormSignature(form_data)) +
+      "\n";
+  message +=
+      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
+  message +=
+      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form_data.action) + "\n";
+  if (form_data.main_frame_origin.GetURL().is_valid())
+    message += GetStringFromID(STRING_MAIN_FRAME_ORIGIN) + ": " +
+               ScrubURL(form_data.main_frame_origin.GetURL()) + "\n";
+  message += GetStringFromID(STRING_FORM_NAME) + ": " +
+             ScrubElementID(form_data.name) + "\n";
+
+  message += GetStringFromID(STRING_IS_FORM_TAG) + ": " +
+             (form_data.is_form_tag ? "true" : "false") + "\n";
+
+  if (form_data.is_form_tag) {
+    message += "Form renderer id: " +
+               NumberToString(form_data.unique_renderer_id.value()) + "\n";
   }
-  log.SetString(GetStringFromID(STRING_PASSWORD_ELEMENT),
-                ScrubElementID(form.password_element));
-  if (form.has_renderer_ids) {
-    log.SetString(GetStringFromID(STRING_PASSWORD_ELEMENT_RENDERER_ID),
-                  NumberToString(form.password_element_renderer_id));
+
+  // Log fields.
+  message += GetStringFromID(STRING_FIELDS) + ": " + "\n";
+  for (const auto& field : form_data.fields) {
+    std::string is_visible = field.is_focusable ? "visible" : "invisible";
+    std::string is_empty = field.value.empty() ? "empty" : "non-empty";
+    std::string autocomplete =
+        field.autocomplete_attribute.empty()
+            ? std::string()
+            : (", autocomplete=" +
+               ScrubElementID(field.autocomplete_attribute));
+    std::string field_info =
+        ScrubElementID(field.name) +
+        ": type=" + ScrubElementID(field.form_control_type) +
+        ", renderer_id = " + NumberToString(field.unique_renderer_id.value()) +
+        ", " + is_visible + ", " + is_empty + autocomplete + "\n";
+    message += field_info;
   }
-  log.SetString(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT),
-                ScrubElementID(form.new_password_element));
-  if (form.has_renderer_ids) {
-    log.SetString(GetStringFromID(STRING_NEW_PASSWORD_ELEMENT_RENDERER_ID),
-                  NumberToString(form.new_password_element_renderer_id));
-  }
-  if (!form.confirmation_password_element.empty()) {
-    log.SetString(GetStringFromID(STRING_CONFIRMATION_PASSWORD_ELEMENT),
-                  ScrubElementID(form.confirmation_password_element));
-    if (form.has_renderer_ids) {
-      log.SetString(
-          GetStringFromID(STRING_CONFIRMATION_PASSWORD_ELEMENT_RENDERER_ID),
-          NumberToString(form.confirmation_password_element_renderer_id));
-    }
-  }
-  log.SetBoolean(GetStringFromID(STRING_PASSWORD_GENERATED),
-                 form.type == PasswordForm::Type::kGenerated);
-  log.SetInteger(GetStringFromID(STRING_TIMES_USED), form.times_used);
-  log.SetBoolean(GetStringFromID(STRING_PSL_MATCH),
-                 form.is_public_suffix_match);
-  LogValue(label, log);
+  message += "}";
+  SendLog(message);
 }
 
 void SavePasswordProgressLogger::LogHTMLForm(
@@ -160,7 +148,7 @@ void SavePasswordProgressLogger::LogValue(StringID label, const Value& log) {
 
 // static
 std::string SavePasswordProgressLogger::ScrubElementID(
-    const base::string16& element_id) {
+    const std::u16string& element_id) {
   return ScrubElementID(base::UTF16ToUTF8(element_id));
 }
 
@@ -257,14 +245,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Form is visible";
     case SavePasswordProgressLogger::STRING_FORM_IS_PASSWORD:
       return "Form is a password form";
-    case SavePasswordProgressLogger::STRING_FORM_IS_NOT_PASSWORD:
-      return "Form isn't a password form";
-    case SavePasswordProgressLogger::STRING_WILL_SUBMIT_FORM_METHOD:
-      return "PasswordAutofillAgent::WillSubmitForm";
     case SavePasswordProgressLogger::STRING_HTML_FORM_FOR_SUBMIT:
       return "HTML form for submit";
-    case SavePasswordProgressLogger::STRING_CREATED_PASSWORD_FORM:
-      return "Created PasswordForm";
     case SavePasswordProgressLogger::STRING_DID_START_PROVISIONAL_LOAD_METHOD:
       return "PasswordAutofillAgent::DidStartProvisionalLoad";
     case SavePasswordProgressLogger::STRING_FRAME_NOT_MAIN_FRAME:
@@ -275,8 +257,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Empty password";
     case SavePasswordProgressLogger::STRING_MATCHING_NOT_COMPLETE:
       return "No form manager has completed matching";
-    case SavePasswordProgressLogger::STRING_FORM_BLACKLISTED:
-      return "Form blacklisted";
     case SavePasswordProgressLogger::STRING_INVALID_FORM:
       return "Invalid form";
     case SavePasswordProgressLogger::STRING_SYNC_CREDENTIAL:
@@ -285,8 +265,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Blocked password due to same origin but insecure scheme";
     case SavePasswordProgressLogger::STRING_ON_PASSWORD_FORMS_RENDERED_METHOD:
       return "PasswordManager::OnPasswordFormsRendered";
-    case SavePasswordProgressLogger::STRING_ON_SAME_DOCUMENT_NAVIGATION:
-      return "PasswordManager::OnSameDocumentNavigation";
+    case SavePasswordProgressLogger::STRING_ON_DYNAMIC_FORM_SUBMISSION:
+      return "PasswordManager::OnDynamicFormSubmission";
+    case SavePasswordProgressLogger::STRING_ON_SUBFRAME_FORM_SUBMISSION:
+      return "PasswordManager::OnSubframeFormSubmission";
     case SavePasswordProgressLogger::STRING_ON_ASK_USER_OR_SAVE_PASSWORD:
       return "PasswordManager::AskUserOrSavePassword";
     case SavePasswordProgressLogger::STRING_CAN_PROVISIONAL_MANAGER_SAVE_METHOD:
@@ -373,8 +355,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Generation disabled: no sync";
     case STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE:
       return "Generation: automatic generation is available";
-    case STRING_GENERATION_RENDERER_SHOW_MANUAL_GENERATION_POPUP:
-      return "Show generation popup triggered manually";
+    case STRING_GENERATION_RENDERER_SHOW_GENERATION_POPUP:
+      return "Show generation popup triggered";
     case STRING_GENERATION_RENDERER_GENERATED_PASSWORD_ACCEPTED:
       return "Generated password accepted";
     case STRING_SUCCESSFUL_SUBMISSION_INDICATOR_EVENT:
@@ -406,8 +388,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "HttpAuthManager::SetObserver";
     case SavePasswordProgressLogger::STRING_HTTPAUTH_ON_DETACH_OBSERVER:
       return "HttpAuthManager::DetachObserver";
-    case SavePasswordProgressLogger::STRING_SHOW_ONBOARDING:
-      return "Show onboarding experience and offer to save password";
     case STRING_LEAK_DETECTION_DISABLED_FEATURE:
       return "Leak detection disabled in settings";
     case STRING_LEAK_DETECTION_DISABLED_SAFE_BROWSING:
@@ -422,6 +402,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Leak detection failed: signed out";
     case STRING_LEAK_DETECTION_TOKEN_REQUEST_ERROR:
       return "Leak detection failed: can't get a token";
+    case STRING_LEAK_DETECTION_NETWORK_ERROR:
+      return "Leak detection failed: network error";
+    case STRING_LEAK_DETECTION_QUOTA_LIMIT:
+      return "Leak detection failed: quota limit";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE:
       return "Uploading password requirements vote for using lowercase letters";
@@ -444,6 +428,12 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Server predictions";
     case STRING_USERNAME_FIRST_FLOW_VOTE:
       return "Username first flow vote";
+    case STRING_POSSIBLE_USERNAME_USED:
+      return "Possible username is used";
+    case STRING_POSSIBLE_USERNAME_NOT_USED:
+      return "Possible username is not used";
+    case STRING_LOCALLY_SAVED_PREDICTION:
+      return "Locally saved prediction";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

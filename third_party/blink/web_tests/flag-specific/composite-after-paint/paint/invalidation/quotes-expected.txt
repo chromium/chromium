@@ -5,32 +5,12 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'quote 2'",
-          "rect": [17, 28, 47, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'quote 2'",
-          "rect": [16, 28, 47, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '}'",
-          "rect": [64, 28, 9, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '{'",
-          "rect": [8, 28, 9, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment '}'",
-          "rect": [63, 28, 8, 19],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [17, 28, 47, 19],
+        [16, 28, 47, 19],
+        [64, 28, 9, 19],
+        [8, 28, 9, 19],
+        [63, 28, 8, 19]
       ]
     }
   ]

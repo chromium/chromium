@@ -26,10 +26,11 @@ static_library("core") {
   ]
 
   public_deps = [
+    "//base",
     "//skia",
   ]
+
   deps = [
-    "//base",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/animation",
@@ -43,9 +44,13 @@ static_library("core") {
 }
 
 if (is_android) {
-  java_cpp_enum("infobar_enums_java") {
-    sources = [
-      "infobar_delegate.h",
-    ]
+  java_cpp_enum("infobar_generated_enums") {
+    sources = [ "infobar_delegate.h" ]
+  }
+
+  android_library("infobar_enums_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+    srcjar_deps = [ ":infobar_generated_enums" ]
   }
 }

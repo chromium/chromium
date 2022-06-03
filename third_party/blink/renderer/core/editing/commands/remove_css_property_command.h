@@ -36,12 +36,11 @@ class Element;
 class RemoveCSSPropertyCommand final : public SimpleEditCommand {
  public:
   RemoveCSSPropertyCommand(Document&, Element*, CSSPropertyID);
-
-  void Trace(Visitor*) override;
-
- private:
   ~RemoveCSSPropertyCommand() override;
 
+  void Trace(Visitor*) const override;
+
+ private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
 

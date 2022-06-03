@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Rất tiếc! Không thể tạo khóa cá nhân RSA ngẫu nhiên.</translation>
 <translation id="1445572445564823378">Tiện ích này đang làm chậm <ph name="PRODUCT_NAME" />. Bạn phải tắt tiện ích để khôi phục hiệu suất của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL không được hỗ trợ.</translation>
-<translation id="149347756975725155">Không thể tải biểu tượng tiện ích '<ph name="ICON" />'.</translation>
 <translation id="1803557475693955505">Không thể tải trang nền '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Không thể giải mã hình ảnh: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Sử dụng bản địa hóa nhưng không chỉ định default_locale trong tệp kê khai.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Không thể đọc khóa cá nhân.</translation>
 <translation id="6391538222494443604">Thư mục dữ liệu nhập phải tồn tại.</translation>
 <translation id="641087317769093025">Không thể giải nén tiện ích</translation>
-<translation id="6413453408918378296">Biểu tượng này không phải là '<ph name="ICON" />' hiển thị đầy đủ.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một hoặc nhiều thiết bị của bạn:</translation>
 <translation id="657064425229075395">Không thể tải tập lệnh nền '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> của <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>

@@ -4,14 +4,9 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
-import "url/mojom/origin.mojom";
-
-// Represents a namespace for Session Storage and allows data access and
-// cloning. This is implemented by the browser process.
+// Represents a namespace for Session Storage and allows cloning. This is
+// implemented by the browser process.
 interface SessionStorageNamespace {
-  OpenArea(url.mojom.Origin origin,
-           pending_associated_receiver<StorageArea> area);
   // Clones this namespace the new given namespace. Used before navigating to
   // a new frame which would be given this session storage namespace.
   Clone(string clone_to_namespace);

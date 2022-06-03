@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/debug/activity_tracker.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -51,6 +52,9 @@ class AutoLockMutex {
     DPCHECK(result == WAIT_OBJECT_0) << "Result = " << result;
   }
 
+  AutoLockMutex(const AutoLockMutex&) = delete;
+  AutoLockMutex& operator=(const AutoLockMutex&) = delete;
+
   ~AutoLockMutex() {
     BOOL released = ::ReleaseMutex(mutex_);
     DPCHECK(released);
@@ -58,7 +62,6 @@ class AutoLockMutex {
 
  private:
   HANDLE mutex_;
-  DISALLOW_COPY_AND_ASSIGN(AutoLockMutex);
 };
 
 // A helper class that releases the given |mutex| while the AutoUnlockMutex is
@@ -70,6 +73,9 @@ class AutoUnlockMutex {
     DPCHECK(released);
   }
 
+  AutoUnlockMutex(const AutoUnlockMutex&) = delete;
+  AutoUnlockMutex& operator=(const AutoUnlockMutex&) = delete;
+
   ~AutoUnlockMutex() {
     DWORD result = ::WaitForSingleObject(mutex_, INFINITE);
     DPCHECK(result == WAIT_OBJECT_0) << "Result = " << result;
@@ -77,7 +83,6 @@ class AutoUnlockMutex {
 
  private:
   HANDLE mutex_;
-  DISALLOW_COPY_AND_ASSIGN(AutoUnlockMutex);
 };
 
 // Checks the visibility of the enumerated window and signals once a visible
@@ -174,7 +179,7 @@ bool ProcessLaunchNotification(
 }
 
 bool DisplayShouldKillMessageBox() {
-  return chrome::ShowQuestionMessageBox(
+  return chrome::ShowQuestionMessageBoxSync(
              NULL, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetStringUTF16(IDS_BROWSER_HUNGBROWSER_MESSAGE)) !=
          chrome::MESSAGE_BOX_RESULT_NO;
@@ -266,8 +271,7 @@ ProcessSingleton::ProcessSingleton(
       lock_file_(INVALID_HANDLE_VALUE),
       user_data_dir_(user_data_dir),
       should_kill_remote_process_callback_(
-          base::Bind(&DisplayShouldKillMessageBox)) {
-}
+          base::BindRepeating(&DisplayShouldKillMessageBox)) {}
 
 ProcessSingleton::~ProcessSingleton() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -285,7 +289,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
     return PROCESS_NONE;
   }
 
-  switch (chrome::AttemptToNotifyRunningChrome(remote_window_, false)) {
+  switch (chrome::AttemptToNotifyRunningChrome(remote_window_)) {
     case chrome::NOTIFY_SUCCESS:
       return PROCESS_NOTIFIED;
     case chrome::NOTIFY_FAILED:
@@ -335,6 +339,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
 
 ProcessSingleton::NotifyResult
 ProcessSingleton::NotifyOtherProcessOrCreate() {
+  TRACE_EVENT0("startup", "ProcessSingleton::NotifyOtherProcessOrCreate");
   const base::TimeTicks begin_ticks = base::TimeTicks::Now();
   for (int i = 0; i < 2; ++i) {
     if (Create()) {
@@ -414,9 +419,10 @@ bool ProcessSingleton::Create() {
       if (lock_file_ != INVALID_HANDLE_VALUE) {
         // Set the window's title to the path of our user data directory so
         // other Chrome instances can decide if they should forward to us.
-        bool result = window_.CreateNamed(
-            base::Bind(&ProcessLaunchNotification, notification_callback_),
-            user_data_dir_.value());
+        bool result =
+            window_.CreateNamed(base::BindRepeating(&ProcessLaunchNotification,
+                                                    notification_callback_),
+                                user_data_dir_.value());
         CHECK(result && window_.hwnd());
       }
     }

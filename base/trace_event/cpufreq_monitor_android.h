@@ -5,7 +5,8 @@
 #ifndef BASE_TRACE_EVENT_CPUFREQ_MONITOR_ANDROID_H_
 #define BASE_TRACE_EVENT_CPUFREQ_MONITOR_ANDROID_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,6 +22,10 @@ namespace trace_event {
 class BASE_EXPORT CPUFreqMonitorDelegate {
  public:
   CPUFreqMonitorDelegate();
+
+  CPUFreqMonitorDelegate(const CPUFreqMonitorDelegate&) = delete;
+  CPUFreqMonitorDelegate& operator=(const CPUFreqMonitorDelegate&) = delete;
+
   virtual ~CPUFreqMonitorDelegate() = default;
 
   // Returns a vector of the minimal set of CPU IDs that we need to monitor to
@@ -46,9 +51,6 @@ class BASE_EXPORT CPUFreqMonitorDelegate {
   // Allows us to delay creating a task runner, necessary because many tests
   // don't like us creating one outside of a TaskEnvironment.
   virtual scoped_refptr<SingleThreadTaskRunner> CreateTaskRunner();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CPUFreqMonitorDelegate);
 };
 
 // A class for monitoring the CPU frequency on unique cores/clusters.
@@ -59,6 +61,10 @@ class BASE_EXPORT CPUFreqMonitor : public TraceLog::EnabledStateObserver {
   static const size_t kDefaultCPUFreqSampleIntervalMs = 50;
 
   CPUFreqMonitor();
+
+  CPUFreqMonitor(const CPUFreqMonitor&) = delete;
+  CPUFreqMonitor& operator=(const CPUFreqMonitor&) = delete;
+
   ~CPUFreqMonitor() override;
 
   static CPUFreqMonitor* GetInstance();
@@ -84,12 +90,10 @@ class BASE_EXPORT CPUFreqMonitor : public TraceLog::EnabledStateObserver {
   // various tests.
   const scoped_refptr<SingleThreadTaskRunner>& GetOrCreateTaskRunner();
 
-  base::subtle::Atomic32 is_enabled_ = 0;
+  std::atomic<bool> is_enabled_{false};
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<CPUFreqMonitorDelegate> delegate_;
   base::WeakPtrFactory<CPUFreqMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CPUFreqMonitor);
 };
 
 }  // namespace trace_event

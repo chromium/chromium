@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"

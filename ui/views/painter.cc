@@ -4,7 +4,9 @@
 
 #include "ui/views/painter.h"
 
-#include "base/logging.h"
+#include <utility>
+
+#include "base/check.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -34,6 +36,10 @@ class SolidRoundRectPainter : public Painter {
                         const gfx::Insets& insets,
                         SkBlendMode blend_mode,
                         bool antialias);
+
+  SolidRoundRectPainter(const SolidRoundRectPainter&) = delete;
+  SolidRoundRectPainter& operator=(const SolidRoundRectPainter&) = delete;
+
   ~SolidRoundRectPainter() override;
 
   // Painter:
@@ -47,8 +53,6 @@ class SolidRoundRectPainter : public Painter {
   const gfx::Insets insets_;
   const SkBlendMode blend_mode_;
   const bool antialias_;
-
-  DISALLOW_COPY_AND_ASSIGN(SolidRoundRectPainter);
 };
 
 SolidRoundRectPainter::SolidRoundRectPainter(SkColor bg_color,
@@ -104,6 +108,10 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 class SolidFocusPainter : public Painter {
  public:
   SolidFocusPainter(SkColor color, int thickness, const gfx::InsetsF& insets);
+
+  SolidFocusPainter(const SolidFocusPainter&) = delete;
+  SolidFocusPainter& operator=(const SolidFocusPainter&) = delete;
+
   ~SolidFocusPainter() override;
 
   // Painter:
@@ -114,8 +122,6 @@ class SolidFocusPainter : public Painter {
   const SkColor color_;
   const int thickness_;
   const gfx::InsetsF insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SolidFocusPainter);
 };
 
 SolidFocusPainter::SolidFocusPainter(SkColor color,
@@ -147,6 +153,9 @@ class ImagePainter : public Painter {
   // Constructs an ImagePainter with the specified image and insets.
   ImagePainter(const gfx::ImageSkia& image, const gfx::Insets& insets);
 
+  ImagePainter(const ImagePainter&) = delete;
+  ImagePainter& operator=(const ImagePainter&) = delete;
+
   ~ImagePainter() override;
 
   // Painter:
@@ -155,18 +164,14 @@ class ImagePainter : public Painter {
 
  private:
   std::unique_ptr<gfx::NineImagePainter> nine_painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImagePainter);
 };
 
 ImagePainter::ImagePainter(const int image_ids[])
-    : nine_painter_(ui::CreateNineImagePainter(image_ids)) {
-}
+    : nine_painter_(ui::CreateNineImagePainter(image_ids)) {}
 
 ImagePainter::ImagePainter(const gfx::ImageSkia& image,
                            const gfx::Insets& insets)
-    : nine_painter_(new gfx::NineImagePainter(image, insets)) {
-}
+    : nine_painter_(new gfx::NineImagePainter(image, insets)) {}
 
 ImagePainter::~ImagePainter() = default;
 
@@ -181,6 +186,10 @@ void ImagePainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 class PaintedLayer : public ui::LayerOwner, public ui::LayerDelegate {
  public:
   explicit PaintedLayer(std::unique_ptr<Painter> painter);
+
+  PaintedLayer(const PaintedLayer&) = delete;
+  PaintedLayer& operator=(const PaintedLayer&) = delete;
+
   ~PaintedLayer() override;
 
   // LayerDelegate:
@@ -190,8 +199,6 @@ class PaintedLayer : public ui::LayerOwner, public ui::LayerDelegate {
 
  private:
   std::unique_ptr<Painter> painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintedLayer);
 };
 
 PaintedLayer::PaintedLayer(std::unique_ptr<Painter> painter)
@@ -211,7 +218,6 @@ void PaintedLayer::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                               float new_device_scale_factor) {}
 
 }  // namespace
-
 
 // Painter --------------------------------------------------------------------
 

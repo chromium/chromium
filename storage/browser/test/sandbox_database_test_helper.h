@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILEAPI_SANDBOX_DATABASE_TEST_HELPER_H_
-#define CONTENT_BROWSER_FILEAPI_SANDBOX_DATABASE_TEST_HELPER_H_
+#ifndef STORAGE_BROWSER_TEST_SANDBOX_DATABASE_TEST_HELPER_H_
+#define STORAGE_BROWSER_TEST_SANDBOX_DATABASE_TEST_HELPER_H_
 
 #include <stddef.h>
 
@@ -13,7 +13,7 @@ namespace base {
 class FilePath;
 }
 
-namespace content {
+namespace storage {
 
 void CorruptDatabase(const base::FilePath& db_path,
                      leveldb::FileType type,
@@ -23,6 +23,6 @@ void CorruptDatabase(const base::FilePath& db_path,
 void DeleteDatabaseFile(const base::FilePath& db_path,
                         leveldb::FileType type);
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_FILEAPI_SANDBOX_DATABASE_TEST_HELPER_H_
+#endif  // STORAGE_BROWSER_TEST_SANDBOX_DATABASE_TEST_HELPER_H_

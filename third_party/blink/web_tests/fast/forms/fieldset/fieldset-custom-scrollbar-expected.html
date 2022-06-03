@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<style>
+.fieldset::-webkit-scrollbar {
+  width: 30px;
+  background: lime;
+}
+.fieldset::-webkit-scrollbar-thumb {
+  background: red;
+  border-radius: 12px;
+}
+
+.fieldset {
+  height: 300px;
+  width: 500px;
+  overflow: scroll;
+  margin: 0;
+  padding: 0;
+  border: 2px solid gray;
+}
+</style>
+<div class="fieldset">
+<div style="height: 600px; width: 400px;"></div>
+</div>
+<script>
+testRunner.waitUntilDone();
+const fieldset = document.querySelector('.fieldset');
+const rect = fieldset.getBoundingClientRect();
+const clickX = rect.right - 20;
+const clickY = rect.top + 20;
+chrome.gpuBenchmarking.pointerActionSequence([{
+  source: 'mouse',
+  actions: [
+    {name:'pointerDown', x:clickX, y:clickY},
+    {name:'pointerMove', x:clickX, y:clickY + 100},
+    {name:'pointerUp'}
+  ]}], () => { testRunner.notifyDone(); });
+</script>
+

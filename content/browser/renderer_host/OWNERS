@@ -1,40 +1,53 @@
-# General renderer_host owners
+
+# Compositing and input related code.
 kenrb@chromium.org
 
-# for *aura*
-per-file *aura*=sadrul@chromium.org
-
-# for GPU-related stuff in *mac*
-kbr@chromium.org
-ccameron@chromium.org
-
-# for *android*
-per-file *android*=ericrk@chromium.org
-per-file *android*=khushalsagar@chromium.org
-
-# For touch/gesture specific changes
+# Touch input and gesture relatated code.
 rjkroege@chromium.org
 sadrul@chromium.org
 
-# For surface ID propagation and synchronization
-fsamuel@chromium.org
-samans@chromium.org
+# Surface ID propagation and synchronization, and compositing embedding
+# via DelegatedFrame*.
 jonross@chromium.org
 
-# DelegatedFrame*
-per-file *delegated_frame*=fsamuel@chromium.org
-per-file *delegated_frame*=samans@chromium.org
+# RenderFrameHost and navigation-related code.
+alexmos@chromium.org
+altimin@chromium.org
+arthursonzogni@chromium.org
+creis@chromium.org
+nasko@chromium.org
+rakina@chromium.org
 
-# WebSQL
-per-file web_database_*=jsbell@chromium.org
-per-file web_database_*=pwnall@chromium.org
+# Aura platform code.
+per-file *aura*=sadrul@chromium.org
 
-# Embedded Frame Sinks (eg. Offscreen Canvas)
-per-file embedded_frame_sink*.*=xlai@chromium.org
-per-file embedded_frame_sink*.*=junov@chromium.org
+# Mac platform GPU-related code.
+per-file *mac*=kbr@chromium.org
+per-file *mac*=ccameron@chromium.org
+
+# Android platform code.
+per-file *android*=boliu@chromium.org
+
+# Embedded Frame Sinks (eg. Offscreen Canvas).
 per-file embedded_frame_sink*.*=kylechar@chromium.org
 
-# DirectWrite Font Code
+# DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
-# COMPONENT: Internals>Core
+# BackForwardCache.
+per-file back_forward_cache*=altimin@chromium.org
+per-file back_forward_cache*=rakina@chromium.org
+
+# Clipboard
+per-file *clipboard_host_impl*=mek@chromium.org
+per-file *clipboard_host_impl*=pwnall@chromium.org
+per-file *clipboard_host_impl*=dcheng@chromium.org
+
+# AgentSchedulingGroup (MBI)
+per-file agent_scheduling_group*=talp@chromium.org
+per-file agent_scheduling_group*=dom@chromium.org
+per-file agent_scheduling_group*=kouhei@chromium.org
+per-file agent_scheduling_group*=haraken@chromium.org
+
+per-file *_sandboxed*.*=set noparent
+per-file *_sandboxed*.*=file://ipc/SECURITY_OWNERS

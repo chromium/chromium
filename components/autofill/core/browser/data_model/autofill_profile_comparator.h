@@ -7,21 +7,40 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
-#include "base/strings/string16.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
+
+struct ProfileValueDifference {
+  // The type of the field that is different.
+  ServerFieldType type;
+  // The original value.
+  std::u16string first_value;
+  // The new value.
+  std::u16string second_value;
+  bool operator==(const ProfileValueDifference& right) const;
+};
+
+ServerFieldTypeSet GetUserVisibleTypes();
 
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
   explicit AutofillProfileComparator(const base::StringPiece& app_locale);
+
+  AutofillProfileComparator(const AutofillProfileComparator&) = delete;
+  AutofillProfileComparator& operator=(const AutofillProfileComparator&) =
+      delete;
+
   ~AutofillProfileComparator();
 
   enum WhitespaceSpec { RETAIN_WHITESPACE, DISCARD_WHITESPACE };
@@ -44,9 +63,64 @@ class AutofillProfileComparator {
                base::StringPiece16 text2,
                WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
 
+  // Returns the first merge candidate from |existing_profiles| for
+  // |new_profile| as an optional. If no merge candidate exists |absl::nullopt|
+  // is returned.
+  static absl::optional<AutofillProfile> GetAutofillProfileMergeCandidate(
+      const AutofillProfile& new_profile,
+      const std::vector<AutofillProfile*>& existing_profiles,
+      const std::string& app_locale);
+
+  // Returns true if |existing_profile| is a merge candidate for |new_profile|.
+  // A profile is a merge candidate if it is mergeable with |new_profile| and if
+  // at least one settings-visible value is changed.
+  bool IsMergeCandidate(const AutofillProfile& existing_profile,
+                        const AutofillProfile& new_profile,
+                        const std::string& app_locale);
+
+  // Returns true if two AutofillProfiles |p1| and |p2| have at least one
+  // settings-visible value that is different.
+  static bool ProfilesHaveDifferentSettingsVisibleValues(
+      const AutofillProfile& p1,
+      const AutofillProfile& p2);
+
   // Returns true if |text| is empty or contains only skippable characters. A
   // character is skippable if it is punctuation or white space.
   bool HasOnlySkippableCharacters(base::StringPiece16 text) const;
+
+  // Get the difference in 'types' of two profiles. The difference is determined
+  // with respect to the provided `app_locale`.
+  static std::vector<ProfileValueDifference> GetProfileDifference(
+      const AutofillProfile& first_profile,
+      const AutofillProfile& second_profile,
+      ServerFieldTypeSet types,
+      const std::string& app_locale);
+
+  // Same as `GetProfileDifference()` but returns a map that maps the type to a
+  // pair of strings that contain the corresponding value from the first and
+  // second profile.
+  static base::flat_map<ServerFieldType,
+                        std::pair<std::u16string, std::u16string>>
+  GetProfileDifferenceMap(const AutofillProfile& first_profile,
+                          const AutofillProfile& second_profile,
+                          ServerFieldTypeSet types,
+                          const std::string& app_locale);
+
+  // Get the difference of two profiles for settings-visible values.
+  // The difference is determined with respect to the provided `app_locale`.
+  static std::vector<ProfileValueDifference>
+  GetSettingsVisibleProfileDifference(const AutofillProfile& first_profile,
+                                      const AutofillProfile& second_profile,
+                                      const std::string& app_locale);
+
+  // Same as `GetSettingsVisibleProfileDifference()` but returns a map that maps
+  // the type to a pair of strings that contain the corresponding value from the
+  // first and second profile.
+  static base::flat_map<ServerFieldType,
+                        std::pair<std::u16string, std::u16string>>
+  GetSettingsVisibleProfileDifferenceMap(const AutofillProfile& first_profile,
+                                         const AutofillProfile& second_profile,
+                                         const std::string& app_locale);
 
   // Returns a copy of |text| with uppercase converted to lowercase and
   // diacritics removed.
@@ -57,9 +131,9 @@ class AutofillProfileComparator {
   //
   // If |whitespace_spec| is DISCARD_WHITESPACE, punctuation and whitespace are
   // discarded. For example, +1 (234) 567-8900 becomes 12345678900.
-  base::string16 NormalizeForComparison(
+  static std::u16string NormalizeForComparison(
       base::StringPiece16 text,
-      WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE) const;
+      WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE);
 
   // Returns true if |p1| and |p2| are viable merge candidates. This means that
   // their names, addresses, email addreses, company names, and phone numbers
@@ -91,8 +165,8 @@ class AutofillProfileComparator {
   // true, "john quincy public" is not a name variant of "john q public".
   //
   // Note: Expects that |full_name| is already normalized for comparison.
-  bool IsNameVariantOf(const base::string16& full_name_1,
-                       const base::string16& full_name_2) const;
+  bool IsNameVariantOf(const std::u16string& full_name_1,
+                       const std::u16string& full_name_2) const;
 
   // Populates |email_info| with the result of merging the email addresses in
   // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have
@@ -144,7 +218,7 @@ class AutofillProfileComparator {
   // profile.
   static std::string MergeProfile(
       const AutofillProfile& new_profile,
-      std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
+      const std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
       const std::string& app_locale,
       std::vector<AutofillProfile>* merged_profiles);
 
@@ -168,7 +242,7 @@ class AutofillProfileComparator {
   // Returns the value of |t| from |p1| or |p2| depending on which is non-empty.
   // This method expects that the value is either the same in |p1| and |p2| or
   // empty in one of them.
-  base::string16 GetNonEmptyOf(const AutofillProfile& p1,
+  std::u16string GetNonEmptyOf(const AutofillProfile& p1,
                                const AutofillProfile& p2,
                                AutofillType t) const;
 
@@ -182,8 +256,8 @@ class AutofillProfileComparator {
   //     "jean", "jean f", "jean francois", "jf" }
   //
   // Note: Expects that |name| is already normalized for comparison.
-  static std::set<base::string16> GetNamePartVariants(
-      const base::string16& name_part);
+  static std::set<std::u16string> GetNamePartVariants(
+      const std::u16string& name_part);
 
   // Returns true if |p1| and |p2| have names which are equivalent for the
   // purposes of merging the two profiles. This means one of the names is
@@ -244,10 +318,7 @@ class AutofillProfileComparator {
 
  private:
   l10n::CaseInsensitiveCompare case_insensitive_compare_;
-  std::unique_ptr<icu::Transliterator> transliterator_;
   const std::string app_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileComparator);
 };
 
 }  // namespace autofill

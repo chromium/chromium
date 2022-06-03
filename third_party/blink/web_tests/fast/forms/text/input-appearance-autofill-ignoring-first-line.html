@@ -1,0 +1,9 @@
+<!doctype html>
+<style>
+/* This line should have no effect when in suggested mode */
+input::first-line { color: red; }
+</style>
+<input id="input" value="">
+<script>
+internals.setSuggestedValue(input, 'hello');
+</script>

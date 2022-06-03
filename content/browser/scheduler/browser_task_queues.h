@@ -6,18 +6,16 @@
 #define CONTENT_BROWSER_SCHEDULER_BROWSER_TASK_QUEUES_H_
 
 #include <array>
-#include <set>
 
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace base {
 namespace sequence_manager {
 class SequenceManager;
-class TimeDomain;
 }  // namespace sequence_manager
 }  // namespace base
 
@@ -52,8 +50,8 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // For tasks on the critical path up to issuing the initial navigation.
     kBootstrap,
 
-    // For navigation and preconnection related tasks.
-    kNavigationAndPreconnection,
+    // For preconnection-related tasks.
+    kPreconnection,
 
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
@@ -65,41 +63,20 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // system) but they are not an immediate response to a user interaction.
     kUserVisible,
 
-    kMaxValue = kUserVisible
+    // For tasks directly related to handling input events. This also changes
+    // the priority of yielding to native (to get the user input events faster).
+    // This is higher priority than kUserBlocking.
+    kUserInput,
+
+    // For tasks processing navigation network request's response from the
+    // network service.
+    kNavigationNetworkResponse,
+
+    kMaxValue = kNavigationNetworkResponse
   };
 
   static constexpr size_t kNumQueueTypes =
       static_cast<size_t>(QueueType::kMaxValue) + 1;
-
-  // Per queue interface for validating PostTasks. Validation is only enabled if
-  // DCHECKs are on.
-  class Validator {
-   public:
-    virtual ~Validator() = default;
-
-    // This should check fail if there's a problem.
-    virtual void ValidatePostTask(const base::Location& from_here) = 0;
-  };
-
-#if DCHECK_IS_ON()
-  class CONTENT_EXPORT ValidatorSet
-      : public base::sequence_manager::TaskQueue::Observer {
-   public:
-    ValidatorSet();
-    ~ValidatorSet() override;
-
-    void AddValidator(Validator* validator);
-    void RemoveValidator(Validator* validator);
-
-    // base::sequence_manager::TaskQueue::Observer:
-    void OnPostTask(base::Location from_here, base::TimeDelta delay) override;
-    void OnQueueNextWakeUpChanged(base::TimeTicks next_wake_up) override;
-
-   private:
-    base::Lock lock_;
-    std::set<Validator*> validators_ GUARDED_BY(lock_);
-  };
-#endif
 
   // Handle to a BrowserTaskQueues instance that can be used from any thread
   // as all operations are thread safe.
@@ -151,12 +128,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     void ScheduleRunAllPendingTasksForTesting(
         base::OnceClosure on_pending_task_ran);
 
-    // Adds a Validator for |queue_type|.
-    void AddValidator(QueueType queue_type, Validator* validator);
-
-    // Removes a Validator previously added by AddValidator.
-    void RemoveValidator(QueueType queue_type, Validator* validator);
-
    private:
     friend base::RefCountedThreadSafe<Handle>;
 
@@ -174,16 +145,12 @@ class CONTENT_EXPORT BrowserTaskQueues {
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
     std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
         browser_task_runners_;
-#if DCHECK_IS_ON()
-    std::array<ValidatorSet, kNumQueueTypes> validator_sets_;
-#endif
   };
 
-  // |sequence_manager| and |time_domain| must outlive this instance.
+  // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(
       BrowserThread::ID thread_id,
-      base::sequence_manager::SequenceManager* sequence_manager,
-      base::sequence_manager::TimeDomain* time_domain);
+      base::sequence_manager::SequenceManager* sequence_manager);
 
   // Destroys all queues.
   ~BrowserTaskQueues();

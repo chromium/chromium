@@ -109,11 +109,11 @@ void PackExtensionJob::ReportFailureOnClientSequence(
 }
 
 // static
-base::string16 PackExtensionJob::StandardSuccessMessage(
+std::u16string PackExtensionJob::StandardSuccessMessage(
     const base::FilePath& crx_file,
     const base::FilePath& key_file) {
-  base::string16 crx_file_string = crx_file.LossyDisplayName();
-  base::string16 key_file_string = key_file.LossyDisplayName();
+  std::u16string crx_file_string = crx_file.LossyDisplayName();
+  std::u16string key_file_string = key_file.LossyDisplayName();
   if (key_file_string.empty()) {
     return l10n_util::GetStringFUTF16(
         IDS_EXTENSION_PACK_DIALOG_SUCCESS_BODY_UPDATE,

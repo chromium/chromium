@@ -5,9 +5,9 @@
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -26,16 +26,13 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_gpu_test_helper.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/platform_window/win/win_window.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/platform_window/x11/x11_window.h"  // nogncheck
 #endif
 
 namespace {
@@ -49,14 +46,15 @@ class InitBase {
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("demo");
   }
 
+  InitBase(const InitBase&) = delete;
+  InitBase& operator=(const InitBase&) = delete;
+
   ~InitBase() = default;
 
  private:
   // The exit manager is in charge of calling the dtors of singleton objects.
   base::AtExitManager exit_manager_;
   base::SingleThreadTaskExecutor main_task_executor_{base::MessagePumpType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(InitBase);
 };
 
 // Initializes and owns mojo.
@@ -71,31 +69,30 @@ class InitMojo {
         mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
   }
 
+  InitMojo(const InitMojo&) = delete;
+  InitMojo& operator=(const InitMojo&) = delete;
+
   ~InitMojo() = default;
 
  private:
   base::Thread thread_;
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitMojo);
 };
 
 // Initializes and owns the UI components needed for the app.
 class InitUI {
  public:
   InitUI() {
-#if defined(USE_X11)
-    XInitThreads();
-#endif
     event_source_ = ui::PlatformEventSource::CreateDefault();
   }
+
+  InitUI(const InitUI&) = delete;
+  InitUI& operator=(const InitUI&) = delete;
 
   ~InitUI() = default;
 
  private:
   std::unique_ptr<ui::PlatformEventSource> event_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitUI);
 };
 
 // DemoWindow creates the native window for the demo app. The native window
@@ -104,6 +101,10 @@ class InitUI {
 class DemoWindow : public ui::PlatformWindowDelegate {
  public:
   DemoWindow() = default;
+
+  DemoWindow(const DemoWindow&) = delete;
+  DemoWindow& operator=(const DemoWindow&) = delete;
+
   ~DemoWindow() override = default;
 
   void Create(const gfx::Rect& bounds) {
@@ -118,14 +119,10 @@ class DemoWindow : public ui::PlatformWindowDelegate {
       const gfx::Rect& bounds) {
     ui::PlatformWindowInitProperties props(bounds);
 #if defined(USE_OZONE)
-    return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
-        this, std::move(props));
+      return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+          this, std::move(props));
 #elif defined(OS_WIN)
     return std::make_unique<ui::WinWindow>(this, props.bounds);
-#elif defined(USE_X11)
-    auto x11_window = std::make_unique<ui::X11Window>(this);
-    x11_window->Initialize(std::move(props));
-    return x11_window;
 #else
     NOTIMPLEMENTED();
     return nullptr;
@@ -161,8 +158,8 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   }
 
   // ui::PlatformWindowDelegate:
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {
-    host_->Resize(new_bounds.size());
+  void OnBoundsChanged(const BoundsChange& bounds) override {
+    host_->Resize(bounds.bounds.size());
   }
 
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {
@@ -175,8 +172,10 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   void DispatchEvent(ui::Event* event) override {}
   void OnCloseRequest() override {}
   void OnClosed() override {}
-  void OnWindowStateChanged(ui::PlatformWindowState new_state) override {}
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override {}
   void OnLostCapture() override {}
+  void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
@@ -186,8 +185,6 @@ class DemoWindow : public ui::PlatformWindowDelegate {
 
   std::unique_ptr<ui::PlatformWindow> platform_window_;
   gfx::AcceleratedWidget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindow);
 };
 
 int DemoMain() {
@@ -198,12 +195,55 @@ int DemoMain() {
   return 0;
 }
 
+#if defined(USE_OZONE)
+std::unique_ptr<ui::OzoneGpuTestHelper> gpu_helper;
+
+static void SetupOzone(base::WaitableEvent* done) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII(switches::kUseGL, gl::kGLImplementationEGLName);
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
+  done->Signal();
+}
+#endif
+
 }  // namespace
 
 int main(int argc, char** argv) {
+#if defined(USE_OZONE)
+  base::CommandLine command_line(argc, argv);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitializeFromCommandLine(
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures),
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  base::Thread rendering_thread("GLRenderingVEAClientThread");
+#endif
+
   InitBase base(argc, argv);
   InitMojo mojo;
   InitUI ui;
+
+#if defined(USE_OZONE)
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForUI(params);
+
+  base::Thread::Options options;
+  options.message_pump_type = base::MessagePumpType::UI;
+  CHECK(rendering_thread.StartWithOptions(std::move(options)));
+  base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                           base::WaitableEvent::InitialState::NOT_SIGNALED);
+  rendering_thread.task_runner()->PostTask(FROM_HERE,
+                                           base::BindOnce(&SetupOzone, &done));
+  done.Wait();
+
+  // To create dmabuf through gbm, Ozone needs to be set up.
+  gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
+  gpu_helper->Initialize();
+#endif
 
   return DemoMain();
 }

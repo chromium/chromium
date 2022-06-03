@@ -12,7 +12,7 @@
 #include <cmath>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace tab_ranker {
 namespace tfnative_model {

@@ -11,44 +11,44 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
 #include "device/fido/features.h"
+#include "device/fido/filter.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/origin.h"
 
 #if defined(OS_WIN)
+#include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // defined(OS_WIN)
 
-namespace {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
-// U2FAttestationPromptResult enumerates events related to attestation prompts.
-// These values are recorded in an UMA histogram and so should not be
-// reassigned.
-enum class U2FAttestationPromptResult {
-  // kQueried indicates that the embedder was queried in order to determine
-  // whether attestation information should be returned to the origin.
-  kQueried = 0,
-  // kAllowed indicates that the query to the embedder was resolved positively.
-  // (E.g. the user clicked to allow, or the embedder allowed immediately by
-  // policy.) Note that this may still be recorded if the user clicks to allow
-  // attestation after the request has timed out.
-  kAllowed = 1,
-  // kBlocked indicates that the query to the embedder was resolved negatively.
-  // (E.g. the user clicked to block, or closed the dialog.) Navigating away or
-  // closing the tab also fall into this bucket.
-  kBlocked = 2,
-  kMaxValue = kBlocked,
-};
+namespace extensions {
+
+namespace api {
+
+namespace {
 
 const char kGoogleDotCom[] = "google.com";
 constexpr const char* kGoogleGstaticAppIds[] = {
@@ -63,7 +63,7 @@ bool ContainsAppIdByHash(const base::ListValue& list,
     return false;
   }
 
-  for (const auto& i : list) {
+  for (const auto& i : list.GetList()) {
     const std::string& s = i.GetString();
     if (s.find('/') == std::string::npos) {
       // No slashes mean that this is a webauthn RP ID, not a U2F AppID.
@@ -81,16 +81,20 @@ bool ContainsAppIdByHash(const base::ListValue& list,
   return false;
 }
 
-void RecordAttestationEvent(U2FAttestationPromptResult event) {
-  UMA_HISTOGRAM_ENUMERATION("WebAuthentication.U2FAttestationPromptResult",
-                            event);
+content::RenderFrameHost* RenderFrameHostForTabAndFrameId(
+    content::BrowserContext* const browser_context,
+    const int tab_id,
+    const int frame_id) {
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context,
+                                    /*include_incognito=*/true,
+                                    &web_contents)) {
+    return nullptr;
+  }
+  return ExtensionApiFrameIdMap::GetRenderFrameHostById(web_contents, frame_id);
 }
 
 }  // namespace
-
-namespace extensions {
-
-namespace api {
 
 void CryptotokenRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -103,7 +107,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::
 ExtensionFunction::ResponseAction
 CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   std::unique_ptr<cryptotoken_private::CanOriginAssertAppId::Params> params =
-      cryptotoken_private::CanOriginAssertAppId::Params::Create(*args_);
+      cryptotoken_private::CanOriginAssertAppId::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const GURL origin_url(params->security_origin);
@@ -118,7 +122,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   }
 
   if (origin_url == app_id_url) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
   // Fetch the eTLD+1 of both.
@@ -139,7 +143,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
         "Could not find an eTLD for appId *", params->app_id_url)));
   }
   if (origin_etldp1 == app_id_etldp1) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
   // For legacy purposes, allow google.com origins to assert certain
   // gstatic.com appIds.
@@ -147,10 +151,10 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   if (origin_etldp1 == kGoogleDotCom) {
     for (const char* id : kGoogleGstaticAppIds) {
       if (params->app_id_url == id)
-        return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+        return RespondNow(OneArgument(base::Value(true)));
     }
   }
-  return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+  return RespondNow(OneArgument(base::Value(false)));
 }
 
 CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::
@@ -161,7 +165,7 @@ CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::Run() {
   std::unique_ptr<cryptotoken_private::IsAppIdHashInEnterpriseContext::Params>
       params(
           cryptotoken_private::IsAppIdHashInEnterpriseContext::Params::Create(
-              *args_));
+              args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -180,7 +184,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::
 ExtensionFunction::ResponseAction
 CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   std::unique_ptr<cryptotoken_private::CanAppIdGetAttestation::Params> params =
-      cryptotoken_private::CanAppIdGetAttestation::Params::Create(*args_);
+      cryptotoken_private::CanAppIdGetAttestation::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const GURL origin_url(params->options.origin);
@@ -199,18 +203,24 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   const base::ListValue* const permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
-  if (std::find_if(permit_attestation->begin(), permit_attestation->end(),
-                   [&app_id](const base::Value& v) -> bool {
-                     return v.GetString() == app_id;
-                   }) != permit_attestation->end()) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+  for (const auto& entry : permit_attestation->GetList()) {
+    if (entry.GetString() == app_id)
+      return RespondNow(OneArgument(base::Value(true)));
+  }
+
+  // If the origin is blocked, reject attestation.
+  if (device::fido_filter::Evaluate(
+          device::fido_filter::Operation::MAKE_CREDENTIAL, origin.Serialize(),
+          /*device=*/absl::nullopt, /*id=*/absl::nullopt) ==
+      device::fido_filter::Action::NO_ATTESTATION) {
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   // If prompting is disabled, allow attestation because that is the historical
   // behavior.
   if (!base::FeatureList::IsEnabled(
           ::features::kSecurityKeyAttestationPrompt)) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
 #if defined(OS_WIN)
@@ -226,7 +236,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
       device::WinWebAuthnApi::GetDefault()->IsAvailable() &&
       device::WinWebAuthnApi::GetDefault()->Version() >=
           WEBAUTHN_API_VERSION_2) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 #endif  // defined(OS_WIN)
 
@@ -241,25 +251,154 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
     return RespondNow(Error("cannot find specified tab"));
   }
 
-  PermissionRequestManager* permission_request_manager =
-      PermissionRequestManager::FromWebContents(web_contents);
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (!permission_request_manager) {
     return RespondNow(Error("no PermissionRequestManager"));
   }
 
-  RecordAttestationEvent(U2FAttestationPromptResult::kQueried);
   // The created AttestationPermissionRequest deletes itself once complete.
-  permission_request_manager->AddRequest(NewAttestationPermissionRequest(
-      origin,
-      base::BindOnce(
-          &CryptotokenPrivateCanAppIdGetAttestationFunction::Complete, this)));
+  permission_request_manager->AddRequest(
+      web_contents->GetMainFrame(),  // Extension API targets a particular tab,
+                                     // so select the current main frame to
+                                     // handle the request.
+      NewAttestationPermissionRequest(
+          origin,
+          base::BindOnce(
+              &CryptotokenPrivateCanAppIdGetAttestationFunction::Complete,
+              this)));
   return RespondLater();
 }
 
 void CryptotokenPrivateCanAppIdGetAttestationFunction::Complete(bool result) {
-  RecordAttestationEvent(result ? U2FAttestationPromptResult::kAllowed
-                                : U2FAttestationPromptResult::kBlocked);
-  Respond(OneArgument(std::make_unique<base::Value>(result)));
+  Respond(OneArgument(base::Value(result)));
+}
+
+CryptotokenPrivateCanMakeU2fApiRequestFunction::
+    CryptotokenPrivateCanMakeU2fApiRequestFunction() = default;
+
+ExtensionFunction::ResponseAction
+CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
+  auto params =
+      cryptotoken_private::CanMakeU2fApiRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The `chrome.tabs` API doesn't work in Chrome OS sign-in contexts (e.g.
+  // device login with some SAML provider making a U2F request). This means that
+  // in these contexts we can't figure out the sender frame of the original U2F
+  // API request and therefore can't show a permission prompt or check for
+  // origin trial enrollment. Hence, just let these requests succeed without
+  // further checks.
+  if (!ash::ProfileHelper::IsRegularProfile(
+          Profile::FromBrowserContext(browser_context()))) {
+    DCHECK_EQ(params->options.tab_id, api::tabs::TAB_ID_NONE);
+    return RespondNow(OneArgument(base::Value(true)));
+  }
+#endif
+
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->options.tab_id, browser_context(),
+                                    true /* include incognito windows */,
+                                    &web_contents)) {
+    return RespondNow(Error("cannot find specified tab"));
+  }
+
+  content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(
+      browser_context(), params->options.tab_id, params->options.frame_id);
+  if (!frame) {
+    return RespondNow(Error("cannot find frame"));
+  }
+  frame->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kWarning,
+      R"(The U2F Security Key API is deprecated and will be removed soon. If you own this website, please migrate to the Web Authentication API. For more information see https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A/m/yg20tsVFBAAJ)");
+
+  blink::TrialTokenValidator validator;
+  const net::HttpResponseHeaders* response_headers =
+      frame->GetLastResponseHeaders();
+  const bool u2f_api_origin_trial_enabled =
+      (response_headers && validator.RequestEnablesFeature(
+                               frame->GetLastCommittedURL(), response_headers,
+                               extension_misc::kCryptotokenDeprecationTrialName,
+                               base::Time::Now()));
+  const bool u2f_api_enterprise_policy_enabled =
+      Profile::FromBrowserContext(browser_context())
+          ->GetPrefs()
+          ->GetBoolean(extensions::pref_names::kU2fSecurityKeyApiEnabled);
+
+  DCHECK(
+      base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
+
+  // Don't show a permission prompt if its feature flag is disabled, or if the
+  // site enrolled in the deprecation trial (since they're obviously aware of
+  // the deprecation), or if the enterprise policy to override U2F
+  // deprecation-related changes has been enabled.
+  //
+  // Also don't show the prompt in "non-regular" ChromeOS profiles, which
+  // includes CrOS SAML sign-in context that doesn't support permission prompts
+  // (crbug.com/1257293).
+  if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
+    return RespondNow(OneArgument(base::Value(true)));
+  }
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  if (!permission_request_manager) {
+    return RespondNow(Error("no PermissionRequestManager"));
+  }
+
+  const GURL origin_url(params->options.origin);
+  if (!origin_url.is_valid()) {
+    return RespondNow(Error(extensions::ErrorUtils::FormatErrorMessage(
+        "invalid origin", params->options.origin)));
+  }
+
+  permission_request_manager->AddRequest(
+      frame, NewU2fApiPermissionRequest(
+                 url::Origin::Create(origin_url),
+                 base::BindOnce(
+                     &CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete,
+                     this)));
+  return RespondLater();
+}
+
+void CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete(bool result) {
+  Respond(OneArgument(base::Value(result)));
+}
+
+ExtensionFunction::ResponseAction
+CryptotokenPrivateRecordRegisterRequestFunction::Run() {
+  auto params =
+      cryptotoken_private::RecordRegisterRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(
+      browser_context(), params->tab_id, params->frame_id);
+  if (!frame) {
+    return RespondNow(Error("cannot find specified tab or frame"));
+  }
+
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      frame, blink::mojom::WebFeature::kU2FCryptotokenRegister);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+CryptotokenPrivateRecordSignRequestFunction::Run() {
+  auto params = cryptotoken_private::RecordSignRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(
+      browser_context(), params->tab_id, params->frame_id);
+  if (!frame) {
+    return RespondNow(Error("cannot find specified tab or frame"));
+  }
+
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      frame, blink::mojom::WebFeature::kU2FCryptotokenSign);
+  return RespondNow(NoArguments());
 }
 
 }  // namespace api

@@ -85,8 +85,8 @@ promise_test(async t => {
     }).then(function() {
       let expectedEventSequence =
           [ 'stream:' + pc2.getRemoteStreams()[0].id,
-            'track:' + pc2.getRemoteStreams()[0].getAudioTracks()[0].id,
             'stream:' + pc2.getRemoteStreams()[1].id,
+            'track:' + pc2.getRemoteStreams()[0].getAudioTracks()[0].id,
             'track:' + pc2.getRemoteStreams()[1].getAudioTracks()[0].id ];
       assert_array_equals(eventSequence, expectedEventSequence);
     });

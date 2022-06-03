@@ -13,11 +13,7 @@ namespace cast {
 
 FakeVideoEncodeAcceleratorFactory::FakeVideoEncodeAcceleratorFactory(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
-    : task_runner_(task_runner),
-      will_init_succeed_(true),
-      auto_respond_(false),
-      vea_response_count_(0),
-      shm_response_count_(0) {}
+    : task_runner_(task_runner) {}
 
 FakeVideoEncodeAcceleratorFactory::~FakeVideoEncodeAcceleratorFactory() =
     default;
@@ -32,13 +28,11 @@ void FakeVideoEncodeAcceleratorFactory::SetAutoRespond(bool auto_respond) {
   if (auto_respond_) {
     if (!vea_response_callback_.is_null())
       RespondWithVideoEncodeAccelerator();
-    if (!shm_response_callback_.is_null())
-      RespondWithSharedMemory();
   }
 }
 
 void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
-      const ReceiveVideoEncodeAcceleratorCallback& callback) {
+    ReceiveVideoEncodeAcceleratorCallback callback) {
   DCHECK(!callback.is_null());
   DCHECK(!next_response_vea_);
 
@@ -46,20 +40,9 @@ void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
       new FakeVideoEncodeAccelerator(task_runner_);
   vea->SetWillInitializationSucceed(will_init_succeed_);
   next_response_vea_.reset(vea);
-  vea_response_callback_ = callback;
+  vea_response_callback_ = std::move(callback);
   if (auto_respond_)
     RespondWithVideoEncodeAccelerator();
-}
-
-void FakeVideoEncodeAcceleratorFactory::CreateSharedMemory(
-    size_t size, const ReceiveVideoEncodeMemoryCallback& callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(!next_response_shm_.IsValid());
-
-  next_response_shm_ = base::UnsafeSharedMemoryRegion::Create(size);
-  shm_response_callback_ = callback;
-  if (auto_respond_)
-    RespondWithSharedMemory();
 }
 
 void FakeVideoEncodeAcceleratorFactory::RespondWithVideoEncodeAccelerator() {
@@ -67,12 +50,6 @@ void FakeVideoEncodeAcceleratorFactory::RespondWithVideoEncodeAccelerator() {
   ++vea_response_count_;
   std::move(vea_response_callback_)
       .Run(task_runner_, std::move(next_response_vea_));
-}
-
-void FakeVideoEncodeAcceleratorFactory::RespondWithSharedMemory() {
-  DCHECK(next_response_shm_.IsValid());
-  ++shm_response_count_;
-  std::move(shm_response_callback_).Run(std::move(next_response_shm_));
 }
 
 }  // namespace cast

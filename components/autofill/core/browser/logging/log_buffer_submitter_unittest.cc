@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
@@ -18,7 +19,7 @@ namespace autofill {
 
 class MockLogReceiver : public LogReceiver {
  public:
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 };
 
 TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {

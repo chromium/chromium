@@ -17,10 +17,10 @@
 #include <iterator>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "snapshot/capture_memory.h"
-#include "snapshot/win/cpu_context_win.h"
 #include "snapshot/win/capture_memory_delegate_win.h"
+#include "snapshot/win/cpu_context_win.h"
 #include "snapshot/win/process_reader_win.h"
 
 namespace crashpad {

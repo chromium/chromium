@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/elements/chrome_activity_overlay_view_controller.h"
 
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,8 +31,7 @@ const CGFloat kActivityIndicatorViewSize = 55;
   containerView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   containerView.layer.cornerRadius = kContainerCornerRadius;
   containerView.layer.masksToBounds = YES;
-  UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc]
-      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+  UIActivityIndicatorView* activityView = GetLargeUIActivityIndicatorView();
   activityView.color = [UIColor colorNamed:kTextPrimaryColor];
   activityView.translatesAutoresizingMaskIntoConstraints = NO;
   [activityView startAnimating];
@@ -55,8 +55,7 @@ const CGFloat kActivityIndicatorViewSize = 55;
     [activityView.bottomAnchor
         constraintEqualToAnchor:containerView.bottomAnchor
                        constant:-kContainerViewSpacing],
-    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor
-                                               constant:0],
+    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
     [activityView.heightAnchor
         constraintEqualToConstant:kActivityIndicatorViewSize],
     [activityView.widthAnchor

@@ -5,25 +5,27 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_
 
-#include "base/macros.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_promo_infobar_delegate_android.h"
-#include "chrome/browser/ui/android/infobars/confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 
-class DataReductionPromoInfoBar : public ConfirmInfoBar {
+class DataReductionPromoInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit DataReductionPromoInfoBar(
       std::unique_ptr<DataReductionPromoInfoBarDelegateAndroid> delegate);
+
+  DataReductionPromoInfoBar(const DataReductionPromoInfoBar&) = delete;
+  DataReductionPromoInfoBar& operator=(const DataReductionPromoInfoBar&) =
+      delete;
 
   ~DataReductionPromoInfoBar() override;
 
  private:
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   DataReductionPromoInfoBarDelegateAndroid* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionPromoInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_

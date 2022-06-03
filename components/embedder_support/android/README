@@ -1,2 +1,4 @@
 Collection of Android libraries that provides embedders with
-typical implementations of interfaces of content layer.
+typical implementations of content and component layer interfaces as well as
+utilities that are used across multiple embedders and have nowhere more
+specific to live.

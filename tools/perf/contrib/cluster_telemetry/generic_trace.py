@@ -45,7 +45,7 @@ class _GenericTraceMeasurement(legacy_page_test.LegacyPageTest):
           continue
         if self._trace_names and event['name'] not in self._trace_names:
           continue
-        for arg_name, arg_value in event.get('args', {}).iteritems():
+        for arg_name, arg_value in event.get('args', {}).items():
           if not isinstance(arg_value, int):
             continue
           value_name = '/'.join([event['cat'], event['name'], arg_name])

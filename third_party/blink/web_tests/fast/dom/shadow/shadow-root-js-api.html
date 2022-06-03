@@ -18,7 +18,7 @@ shouldThrow("new window.ShadowRoot(document.createElement('div'))");
 
 var shadowHost = document.createElement('div');
 document.body.appendChild(shadowHost);
-var shadowRoot = shadowHost.createShadowRoot();
+var shadowRoot = shadowHost.attachShadow({mode: 'open'});
 
 shouldBeTrue("shadowRoot instanceof window.ShadowRoot");
 

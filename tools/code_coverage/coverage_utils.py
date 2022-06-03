@@ -224,6 +224,8 @@ class CoverageReportHtmlGenerator(object):
         table_entry_type=self._table_entry_type)
     html_footer = self._footer_template.render()
 
+    if not os.path.exists(os.path.dirname(self._output_path)):
+      os.makedirs(os.path.dirname(self._output_path))
     with open(self._output_path, 'w') as html_file:
       html_file.write(html_header + html_table + html_footer)
 
@@ -415,10 +417,7 @@ class CoverageReportPostProcessor(object):
     html_report_path = os.path.join(
         GetFullPath(dir_path), DIRECTORY_COVERAGE_HTML_REPORT_NAME)
 
-    # '+' is used instead of os.path.join because both of them are absolute
-    # paths and os.path.join ignores the first path.
-    # TODO(crbug.com/809150): Think of a generic cross platform fix (Windows).
-    return self.report_root_dir + html_report_path
+    return self.CombineAbsolutePaths(self.report_root_dir, html_report_path)
 
   def GetCoverageHtmlReportPathForFile(self, file_path):
     """Given a file path, returns the corresponding html report path."""
@@ -426,10 +425,17 @@ class CoverageReportPostProcessor(object):
         self._MapToLocal(file_path)), '"%s" is not a file.' % file_path
     html_report_path = os.extsep.join([GetFullPath(file_path), 'html'])
 
+    return self.CombineAbsolutePaths(self.report_root_dir, html_report_path)
+
+  def CombineAbsolutePaths(self, path1, path2):
+    if GetHostPlatform() == 'win':
+      # Absolute paths in Windows may start with a drive letter and colon.
+      # Remove them from the second path before appending to the first.
+      _, path2 = os.path.splitdrive(path2)
+
     # '+' is used instead of os.path.join because both of them are absolute
     # paths and os.path.join ignores the first path.
-    # TODO(crbug.com/809150): Think of a generic cross platform fix (Windows).
-    return self.report_root_dir + html_report_path
+    return path1 + path2
 
   def GenerateFileViewHtmlIndexFile(self, per_file_coverage_summary,
                                     file_view_index_file_path):
@@ -458,7 +464,7 @@ class CoverageReportPostProcessor(object):
 
     per_file_coverage_summary = {}
     for file_coverage_data in files_coverage_data:
-      file_path = file_coverage_data['filename']
+      file_path = os.path.normpath(file_coverage_data['filename'])
       assert file_path.startswith(self.src_root_dir), (
           'File path "%s" in coverage summary is outside source checkout.' %
           file_path)
@@ -536,21 +542,6 @@ class CoverageReportPostProcessor(object):
                           src_root_html_report_path)
     logging.debug('Finished generating directory view html index file.')
 
-  def RenameDefaultCoverageDirectory(self):
-    """Rename the default coverage directory into platform specific name."""
-    # llvm-cov creates "coverage" subdir in the output dir. We would like to use
-    # the platform name instead, as it simplifies the report dir structure when
-    # the same report is generated for different platforms.
-    default_report_subdir_path = os.path.join(self.output_dir, 'coverage')
-    if not os.path.exists(default_report_subdir_path):
-      logging.error('Default coverage report dir does not exist: %s.',
-                    default_report_subdir_path)
-
-    if not os.path.exists(self.report_root_dir):
-      os.mkdir(self.report_root_dir)
-
-    MergeTwoDirectories(default_report_subdir_path, self.report_root_dir)
-
   def OverwriteHtmlReportsIndexFile(self):
     """Overwrites the root index file to redirect to the default view."""
     html_index_file_path = self.html_index_path
@@ -565,8 +556,6 @@ class CoverageReportPostProcessor(object):
       os.remove(index_path)
 
   def PrepareHtmlReport(self):
-    self.RenameDefaultCoverageDirectory()
-
     per_file_coverage_summary = self.GeneratePerFileCoverageSummary()
 
     if not self.no_file_view:
@@ -716,16 +705,6 @@ def GetSharedLibraries(binary_paths, build_dir, otool_path):
                 shared_libraries)
   logging.info('Finished finding shared libraries for targets.')
   return shared_libraries
-
-
-def MergeTwoDirectories(src_dir_path, dst_dir_path):
-  """Merge src_dir_path directory into dst_path directory."""
-  for filename in os.listdir(src_dir_path):
-    dst_path = os.path.join(dst_dir_path, filename)
-    if os.path.exists(dst_path):
-      shutil.rmtree(dst_path)
-    os.rename(os.path.join(src_dir_path, filename), dst_path)
-  shutil.rmtree(src_dir_path)
 
 
 def WriteRedirectHtmlFile(from_html_path, to_html_path):

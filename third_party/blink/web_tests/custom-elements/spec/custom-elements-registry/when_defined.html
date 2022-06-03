@@ -93,9 +93,9 @@
 
   function promise_rejects_with_dom_exception_syntax_error(global_context, test, promise, description) {
     return promise.then(test.unreached_func("Should have rejected: " + description)).catch(function(e) {
-        assert_throws_dom_exception(global_context, 'SYNTAX_ERR', function () { throw e; })         
+        assert_throws_dom('SYNTAX_ERR', global_context.DOMException, function () { throw e; })
       });
-    }  
+    }
 })();
 </script>
 </body>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Strings for displaying error pages with Android system styling -->
+      <message name="IDS_ANDROID_ERROR_PAGE_WEBPAGE_NOT_AVAILABLE" desc="The title of the webpage shown when the requested URL in unavailable">
+        Webpage not available
+      </message>
+      <message name="IDS_ANDROID_ERROR_PAGE_WEBPAGE_CAN_NOT_BE_LOADED" desc="Message informing the user that the page can not be loaded">
+        The webpage at <ph name="PAGE">&lt;strong&gt;$1&lt;/strong&gt;<ex>page.html</ex></ph> could not be loaded because:
+      </message>
+      <message name="IDS_ANDROID_ERROR_PAGE_WEBPAGE_TEMPORARILY_DOWN" desc="Message informing the user that it is not possible to contact the server">
+        The webpage at <ph name="PAGE">&lt;strong&gt;$1&lt;/strong&gt;<ex>page.html</ex></ph> might be temporarily down or it may have moved permanently to a new web address.
+      </message>
+      <message name="IDS_ANDROID_ERROR_PAGE_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS" desc="Suggestions provided to the user when it is not possible to contact the server"><ph name="MARKUP_1">&lt;strong&gt;<ex>_</ex></ph>Suggestions:<ph name="MARKUP_2">&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;<ex>_</ex></ph>Make sure you have a data connection<ph name="MARKUP_3">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Reload this webpage later<ph name="MARKUP_4">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Check the address you entered<ph name="MARKUP_5">&lt;/li&gt;&lt;/ul&gt;<ex>_</ex></ph>
+      </message>
+</grit-part>

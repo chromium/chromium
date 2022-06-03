@@ -8,7 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -20,6 +20,7 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
@@ -28,7 +29,6 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/public/mojom/service_control.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
-#include "services/service_manager/sandbox/sandbox_type.h"
 #include "services/service_manager/service_instance.h"
 #include "services/service_manager/service_process_host.h"
 
@@ -75,20 +75,24 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
   {
   }
 
+  DefaultServiceProcessHost(const DefaultServiceProcessHost&) = delete;
+  DefaultServiceProcessHost& operator=(const DefaultServiceProcessHost&) =
+      delete;
+
   ~DefaultServiceProcessHost() override = default;
 
-  mojo::PendingRemote<mojom::Service> Launch(const Identity& identity,
-                                             SandboxType sandbox_type,
-                                             const base::string16& display_name,
-                                             LaunchCallback callback) override {
+  mojo::PendingRemote<mojom::Service> Launch(
+      const Identity& identity,
+      sandbox::mojom::Sandbox sandbox_type,
+      const std::u16string& display_name,
+      LaunchCallback callback) override {
 #if defined(OS_IOS)
     return mojo::NullRemote();
 #else
     // TODO(https://crbug.com/781334): Support sandboxing.
-    CHECK_EQ(sandbox_type, SandboxType::kNoSandbox);
-    return launcher_
-        .Start(identity, SandboxType::kNoSandbox, std::move(callback))
-        .PassInterface();
+    CHECK_EQ(sandbox_type, sandbox::mojom::Sandbox::kNoSandbox);
+    return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
+                           std::move(callback));
 #endif  // defined(OS_IOS)
   }
 
@@ -96,8 +100,6 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 #if !defined(OS_IOS)
   ServiceProcessLauncher launcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceProcessHost);
 };
 
 // Default ServiceManager::Delegate implementation. This supports launching only
@@ -110,6 +112,11 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
   explicit DefaultServiceManagerDelegate(
       ServiceManager::ServiceExecutablePolicy service_executable_policy)
       : service_executable_policy_(service_executable_policy) {}
+
+  DefaultServiceManagerDelegate(const DefaultServiceManagerDelegate&) = delete;
+  DefaultServiceManagerDelegate& operator=(
+      const DefaultServiceManagerDelegate&) = delete;
+
   ~DefaultServiceManagerDelegate() override = default;
 
   bool RunBuiltinServiceInstanceInCurrentProcess(
@@ -138,8 +145,6 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
 
  private:
   const ServiceManager::ServiceExecutablePolicy service_executable_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceManagerDelegate);
 };
 
 }  // namespace
@@ -161,7 +166,7 @@ ServiceManager::ServiceManager(const std::vector<Manifest>& manifests,
   service_manager_instance_->SetPID(GetCurrentPid());
 
   mojo::PendingRemote<mojom::Service> remote;
-  service_binding_.Bind(remote.InitWithNewPipeAndPassReceiver());
+  service_receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
   service_manager_instance_->StartWithRemote(std::move(remote));
 }
 
@@ -188,11 +193,6 @@ ServiceManager::~ServiceManager() {
   }
   service_manager_instance_->Stop();
   instances_.clear();
-}
-
-void ServiceManager::SetInstanceQuitCallback(
-    base::OnceCallback<void(const Identity&)> callback) {
-  instance_quit_callback_ = std::move(callback);
 }
 
 ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
@@ -309,10 +309,10 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     case Manifest::ExecutionMode::kOutOfProcessBuiltin: {
       auto process_host = delegate_->CreateProcessHostForBuiltinServiceInstance(
           target_instance->identity());
-      if (!process_host ||
-          !target_instance->StartWithProcessHost(
-              std::move(process_host),
-              UtilitySandboxTypeFromString(manifest->options.sandbox_type))) {
+      if (!process_host || !target_instance->StartWithProcessHost(
+                               std::move(process_host),
+                               sandbox::policy::UtilitySandboxTypeFromString(
+                                   manifest->options.sandbox_type))) {
         DestroyInstance(target_instance);
         return nullptr;
       }
@@ -325,10 +325,10 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
       auto process_host = delegate_->CreateProcessHostForServiceExecutable(
           service_exe_root.AppendASCII(manifest->service_name +
                                        kServiceExecutableExtension));
-      if (!process_host ||
-          !target_instance->StartWithProcessHost(
-              std::move(process_host),
-              UtilitySandboxTypeFromString(manifest->options.sandbox_type))) {
+      if (!process_host || !target_instance->StartWithProcessHost(
+                               std::move(process_host),
+                               sandbox::policy::UtilitySandboxTypeFromString(
+                                   manifest->options.sandbox_type))) {
         DestroyInstance(target_instance);
         return nullptr;
       }
@@ -404,9 +404,6 @@ void ServiceManager::OnInstanceStopped(const Identity& identity) {
   for (auto& listener : listeners_) {
     listener->OnServiceStopped(identity);
   }
-
-  if (!instance_quit_callback_.is_null())
-    std::move(instance_quit_callback_).Run(identity);
 }
 
 ServiceInstance* ServiceManager::GetExistingInstance(

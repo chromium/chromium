@@ -7,18 +7,23 @@ var allTests = [
     var url = 'data:text/html,<!doctype html>' +
         encodeURI('<input autofocus title=abc>');
     chrome.automation.getDesktop(function(rootNode) {
-      chrome.tabs.create({url: url});
-
       rootNode.addEventListener('focus', function(event) {
         if (event.target.root.url == url) {
           chrome.automation.getFocus(function(focus) {
-            assertEq('textField', focus.role);
+            if (focus.role !== 'textField') {
+              // If the page is particularly slow in loading, the root may have
+              // focus first. Wait for subsequent focus events.
+              return;
+            }
+
             assertEq('abc', focus.name);
             chrome.test.succeed();
           });
         }
       }, false);
     });
+
+    chrome.tabs.create({url: url});
   },
 ];
 

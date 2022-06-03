@@ -68,7 +68,7 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
            DataEquivalent(bottom_, other.bottom_);
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   TypeForSerialization serialization_type_;

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/first_run/first_run_internal.h"
 
-#include "chrome/browser/mac/master_prefs.h"
+#include "chrome/browser/mac/initial_prefs.h"
 
 namespace first_run {
 namespace internal {
 
-base::FilePath MasterPrefsPath() {
-  return master_prefs::MasterPrefsPath();
+base::FilePath InitialPrefsPath() {
+  return initial_prefs::InitialPrefsPath();
 }
 
 }  // namespace internal

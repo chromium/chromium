@@ -1,0 +1,11 @@
+# Copyright (c) 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of .proto files used when defining Chromium extensions for typed events.
+# New files should be added to this list.
+#
+# DO NOT EDIT THIS AT THE MOMENT. This file has to be supported in Perfetto
+# first in order to be useful.
+# TODO(b/181318121): Implement the support in Perfetto and remove the warning.
+chrome_track_event_sources = [ "chrome_track_event.proto" ]

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<!-- Documentation licensed under CC BY 4.0 -->
+<!-- License available at https://creativecommons.org/licenses/by/4.0/ -->
+
+{% include favicon.html %}
+{{ content }}
+<script src="{{site.github.url}}/js/article.js"></script>
+<script>
+  window['_JEKYLL_DATA'] = {
+    'site': {{site|jsonify}},
+    'page': {{page|jsonify}},
+  };
+  closure.docs.startAnalytics();
+</script>

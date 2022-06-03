@@ -4,16 +4,18 @@
 
 #include "remoting/host/it2me_desktop_environment.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
+#include "remoting/protocol/capability_names.h"
 
 #if defined(OS_POSIX)
 #include <sys/types.h>
@@ -49,7 +51,7 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   bool enable_user_interface = options.enable_user_interface();
   bool enable_notifications = options.enable_notifications();
   // The host UI should be created on the UI thread.
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Don't try to display any UI on top of the system's login screen as this
   // is rejected by the Window Server on OS X 10.7.4, and prevents the
   // capturer from working (http://crbug.com/140984).
@@ -58,7 +60,7 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   // running in the LoginWindow context, and refactor this into a separate
   // function to be used here and in CurtainMode::ActivateCurtain().
   enable_user_interface = getuid() != 0;
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
   // Create the continue window.  The implication of this window is that the
   // session length will be limited.  If the user interface is disabled,
@@ -66,8 +68,8 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   // window timer.
   if (enable_user_interface) {
     continue_window_ = HostWindow::CreateContinueWindow();
-    continue_window_.reset(new HostWindowProxy(
-        caller_task_runner, ui_task_runner, std::move(continue_window_)));
+    continue_window_ = std::make_unique<HostWindowProxy>(
+        caller_task_runner, ui_task_runner, std::move(continue_window_));
     continue_window_->Start(client_session_control);
   }
 
@@ -77,8 +79,8 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   // a disconnect button to terminate the connection.
   if (enable_notifications) {
     disconnect_window_ = HostWindow::CreateDisconnectWindow();
-    disconnect_window_.reset(new HostWindowProxy(
-        caller_task_runner, ui_task_runner, std::move(disconnect_window_)));
+    disconnect_window_ = std::make_unique<HostWindowProxy>(
+        caller_task_runner, ui_task_runner, std::move(disconnect_window_));
     disconnect_window_->Start(client_session_control);
   }
 }

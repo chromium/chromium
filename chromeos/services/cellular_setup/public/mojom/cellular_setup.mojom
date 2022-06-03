@@ -23,18 +23,20 @@ enum CarrierPortalStatus {
   kPortalLoadedAndUserCompletedPayment,
 };
 
-// Potential results for an activation attempt.
+// Potential results for an activation attempt. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
 enum ActivationResult {
   // Activation was initiated successfully by the attempt. Note that the device
   // may not be fully activated by the time this result occurs since the process
   // completes in the background.
-  kSuccessfullyStartedActivation,
+  kSuccessfullyStartedActivation = 0,
 
   // Activation was unnecessary because the SIM is already activated.
-  kAlreadyActivated,
+  kAlreadyActivated = 1,
 
   // Activation failed (e.g., due to a failure within Shill).
-  kFailedToActivate,
+  kFailedToActivate = 2,
 };
 
 // Metadata corresponding to a cellular activation request which allows the

@@ -1,8 +1,9 @@
 rootWebArea
 ++genericContainer ignored
-++++anchor name='named anchor'
-++++++staticText name='named anchor'
-++++++++inlineTextBox name='named anchor'
-++++link name='both a named anchor and a link'
-++++++staticText name='both a named anchor and a link'
-++++++++inlineTextBox name='both a named anchor and a link'
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='named anchor'
+++++++++++inlineTextBox name='named anchor'
+++++++link name='both a named anchor and a link'
+++++++++staticText name='both a named anchor and a link'
+++++++++++inlineTextBox name='both a named anchor and a link'

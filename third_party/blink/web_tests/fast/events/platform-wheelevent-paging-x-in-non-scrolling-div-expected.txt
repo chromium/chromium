@@ -1,9 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS event.wheelDeltaY is 0
-PASS event.wheelDeltaX is window.givenScrollLeft*-3
-PASS event.wheelDelta is window.givenScrollLeft*-3
-PASS div.scrollTop is window.expectedScrollTop
-PASS div.scrollLeft is window.expectedScrollLeft

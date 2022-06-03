@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_TREE_SCOPE_EVENT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_TREE_SCOPE_EVENT_CONTEXT_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -48,7 +49,7 @@ class CORE_EXPORT TreeScopeEventContext final
     : public GarbageCollected<TreeScopeEventContext> {
  public:
   explicit TreeScopeEventContext(TreeScope&);
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
   TreeScope& GetTreeScope() const { return *tree_scope_; }
   ContainerNode& RootNode() const { return tree_scope_->RootNode(); }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+iframe {
+  position: absolute;
+  margin-left: 5vw;
+  margin-top: 60vh;
+  width: 90vw;
+  height: 40vh;
+  border: 0px;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+p {
+  position: fixed;
+}
+</style>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/large-sticky-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+<script>
+promise_test(async function(t) {
+  // Create the large-sticky-ad.
+  appendAdFrameTo(document.body);
+
+  let ad_candidate = document.getElementsByTagName("iframe")[0];
+  let initial_margin_top = parseInt(window.getComputedStyle(ad_candidate).marginTop, 10);
+
+  // After 1500ms, force a layout update so that the sticky ad detector is
+  // aware of the sticky ad candidate.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
+
+  // Scroll down to 5000px. Reset the frame's position w.r.t. the viewport
+  // to its initial position.
+  window.scrollTo(0, 5000);
+  ad_candidate.style.marginTop = initial_margin_top + window.scrollY + 'px';
+
+  // After 1500ms, force a layout update. At this point the scrolling
+  // position has changed by a distance greater than the candidate's height,
+  // so the use counter kLargeStickyAd should be recorded.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  assert_true(internals.isUseCounted(document, kLargeStickyAd));
+}, "Test UseCounter for large-sticky-ad at the bottom when the frame itself has an absolute position, and along with scrolling the ad's position w.r.t. the browser viewport gets frequently reset to the initial postion.");
+</script>
+</body>
+</html>

@@ -8,41 +8,27 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class RoundedRectView;
-class SplitViewHighlightViewTestApi;
-
 // View that is used for displaying and animating the highlights which tell
 // users where to drag windows to enter splitview, and previews the space which
-// a snapped window will occupy. It is a view consisting of a rectangle with
-// rounded corners on the left or top, a rectangle in the middle and a rectangle
-// with rounded corners on the right or bottom. It is done this way to ensure
-// rounded corners remain the same during the duration of an animation.
-// (Transforming a rounded rect will stretch the corners, and having to repaint
-// every animation tick is expensive.)
-//
-// Although rounded corners are prevented from stretching along one axis, there
-// is one animation where the rounded corners will stretch along the
-// perpendicular axis. Specifically, the preview area has a small inset (on all
-// four sides) until you actually snap the window, and then the preview area
-// animates to nix that inset while fading out. So the rounded corners will
-// stretch by an amount depending on the dimensions of the work area, but it is
-// unlikely to be noticeable under normal circumstances.
+// a snapped window will occupy. It is a view consists of one solid color layer
+// with rounded corners. If animations are needed, they are performed by
+// animating the layer's clip rect.
 class ASH_EXPORT SplitViewHighlightView : public views::View {
  public:
   explicit SplitViewHighlightView(bool is_right_or_bottom);
   ~SplitViewHighlightView() override;
 
+  SplitViewHighlightView(const SplitViewHighlightView&) = delete;
+  SplitViewHighlightView& operator=(const SplitViewHighlightView&) = delete;
+
   // Updates bounds, animating if |animation_type| has a value.
   void SetBounds(const gfx::Rect& bounds,
-                 bool landscape,
-                 const base::Optional<SplitviewAnimationType>& animation_type);
-
-  void SetColor(SkColor color);
+                 const absl::optional<SplitviewAnimationType>& animation_type);
 
   // Called to update the opacity of the highlights view on transition from
   // |previous_window_dragging_state| to |window_dragging_state|. If
@@ -57,21 +43,11 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
       bool can_dragged_window_be_snapped);
 
  private:
-  friend class SplitViewHighlightViewTestApi;
-
-  // The three components of this view.
-  RoundedRectView* left_top_ = nullptr;
-  RoundedRectView* right_bottom_ = nullptr;
-  views::View* middle_ = nullptr;
-
-  bool landscape_ = true;
   // Determines whether this particular highlight view is located at the right
   // or bottom of the screen. These highlights animate in the opposite direction
-  // as left or top highlights, so when we use SetBounds extra calucations have
-  // to be done to ensure the animation is correct.
+  // as left or top highlights, so when we use |SetBounds()| extra calucations
+  // have to be done to ensure the animation is correct.
   const bool is_right_or_bottom_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewHighlightView);
 };
 
 }  // namespace ash

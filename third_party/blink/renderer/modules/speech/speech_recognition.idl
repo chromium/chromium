@@ -27,10 +27,12 @@
 
 [
     ActiveScriptWrappable,
-    Measure,
-    NoInterfaceObject
+    LegacyWindowAlias=webkitSpeechRecognition,
+    LegacyWindowAlias_Measure,
+    LegacyWindowAlias_RuntimeEnabled=ScriptedSpeechRecognition,
+    LegacyNoInterfaceObject
 ] interface SpeechRecognition : EventTarget {
-    [CallWith=ExecutionContext] constructor();
+    [CallWith=ExecutionContext, Measure] constructor();
     // recognition parameters
     [Measure] attribute SpeechGrammarList grammars;
     attribute DOMString lang;

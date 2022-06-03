@@ -1,0 +1,37 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.blink.mojom"]
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// TextFragmentReceiver is used for requesting renderer to perform text fragment
+// operations on the frame that interacts with the link-to-text/shared-highlighting
+// feature, mainly generating and removing fragments. A text fragment receiver is
+// associated with exactly one frame but a frame will only create its receiver
+// lazily when needed.
+interface TextFragmentReceiver {
+  // Cancel text fragment generation if in progress.
+  Cancel();
+
+  // Request that the receiver generate a text fragment selector based on the
+  // currently selected text on the page. See also:
+  // https://github.com/WICG/scroll-to-text-fragment.
+  RequestSelector() => (string selector);
+
+  // Dismiss all text fragments from this frame at the time the
+  // context menu was invoked.
+  RemoveFragments();
+
+  // Retrieves the text fragments matches from the fragment directive.
+  ExtractTextFragmentsMatches() => (array<string> text);
+
+  // Request text fragment selectors for existing highlights.
+  GetExistingSelectors() => (array<string> selectors);
+
+  // Request the bounding rectangle, relative to the viewport, of the first
+  // found match. Returns an empty rectangle if no matches are found.
+  ExtractFirstFragmentRect() => (gfx.mojom.Rect bounds);
+};

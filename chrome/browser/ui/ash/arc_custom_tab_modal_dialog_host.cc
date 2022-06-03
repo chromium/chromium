@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/arc_custom_tab.h"
+#include "components/arc/intent_helper/custom_tab.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -14,19 +14,31 @@
 #include "ui/gfx/geometry/size.h"
 
 ArcCustomTabModalDialogHost::ArcCustomTabModalDialogHost(
-    std::unique_ptr<ash::ArcCustomTab> custom_tab,
-    std::unique_ptr<content::WebContents> web_contents)
-    : custom_tab_(std::move(custom_tab)),
-      web_contents_(std::move(web_contents)) {
+    std::unique_ptr<arc::CustomTab> custom_tab,
+    content::WebContents* web_contents)
+    : WebContentsObserver(web_contents),
+      custom_tab_(std::move(custom_tab)),
+      web_contents_(web_contents) {
   // Attach any required WebContents helpers. Browser tabs automatically get
   // them attached in TabHelpers::AttachTabHelpers.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      web_contents_.get());
-  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_.get())
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents_);
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
       ->SetDelegate(this);
 }
 
-ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() = default;
+ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() {
+  for (auto& observer : observer_list_)
+    observer.OnHostDestroying();
+
+  // |web_contents_| is deleted by the base class, so there's no need to call
+  // WebContentsModalDialogManager::SetDelegate(nullptr)
+}
+
+void ArcCustomTabModalDialogHost::PrimaryMainFrameWasResized(
+    bool width_changed) {
+  for (auto& observer : observer_list_)
+    observer.OnPositionRequiresUpdate();
+}
 
 web_modal::WebContentsModalDialogHost*
 ArcCustomTabModalDialogHost::GetWebContentsModalDialogHost() {
@@ -47,7 +59,11 @@ gfx::Size ArcCustomTabModalDialogHost::GetMaximumDialogSize() {
 }
 
 void ArcCustomTabModalDialogHost::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
 
 void ArcCustomTabModalDialogHost::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}

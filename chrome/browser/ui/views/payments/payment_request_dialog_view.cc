@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/credit_card_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/cvc_unmask_view_controller.h"
@@ -30,14 +32,18 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace payments {
 
@@ -57,62 +63,23 @@ std::unique_ptr<views::View> CreateViewAndInstallController(
 
 }  // namespace
 
-PaymentRequestDialogView::PaymentRequestDialogView(
-    PaymentRequest* request,
-    PaymentRequestDialogView::ObserverForTest* observer)
-    : request_(request), observer_for_testing_(observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
-
-  request->spec()->AddObserver(this);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  view_stack_ = std::make_unique<ViewStack>();
-  view_stack_->set_owned_by_client();
-  AddChildView(view_stack_.get());
-
-  SetupSpinnerOverlay();
-
-  if (!request->state()->IsInitialized()) {
-    request->state()->AddInitializationObserver(this);
-    ++number_of_initialization_tasks_;
-  }
-
-  if (!request->spec()->IsInitialized()) {
-    request->spec()->AddInitializationObserver(this);
-    ++number_of_initialization_tasks_;
-  }
-
-  if (number_of_initialization_tasks_ > 0) {
-    ShowProcessingSpinner();
-  } else if (observer_for_testing_) {
-    // When testing, signal that the processing spinner events have passed, even
-    // though the UI does not need to show it.
-    observer_for_testing_->OnProcessingSpinnerShown();
-    observer_for_testing_->OnProcessingSpinnerHidden();
-  }
-
-  ShowInitialPaymentSheet();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::PAYMENT_REQUEST);
+// static
+base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
+    base::WeakPtr<PaymentRequest> request,
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer) {
+  return (new PaymentRequestDialogView(request, observer))
+      ->weak_ptr_factory_.GetWeakPtr();
 }
-
-PaymentRequestDialogView::~PaymentRequestDialogView() {}
 
 void PaymentRequestDialogView::RequestFocus() {
   view_stack_->RequestFocus();
 }
 
-ui::ModalType PaymentRequestDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 views::View* PaymentRequestDialogView::GetInitiallyFocusedView() {
-  return view_stack_.get();
+  return view_stack_;
 }
 
-bool PaymentRequestDialogView::Cancel() {
+void PaymentRequestDialogView::OnDialogClosed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Called when the widget is about to close. We send a message to the
   // PaymentRequest object to signal user cancellation.
@@ -125,10 +92,9 @@ bool PaymentRequestDialogView::Cancel() {
   for (const auto& controller : controller_map_) {
     controller.second->Stop();
   }
-  view_stack_.reset();
+  RemoveChildViewT(view_stack_);
   controller_map_.clear();
-  request_->UserCancelled();
-  return true;
+  request_->OnUserCancelled();
 }
 
 bool PaymentRequestDialogView::ShouldShowCloseButton() const {
@@ -152,9 +118,13 @@ void PaymentRequestDialogView::CloseDialog() {
 }
 
 void PaymentRequestDialogView::ShowErrorMessage() {
+  if (being_closed_ || !request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ErrorMessageViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
   HideProcessingSpinner();
@@ -177,17 +147,45 @@ bool PaymentRequestDialogView::IsInteractive() const {
 void PaymentRequestDialogView::ShowPaymentHandlerScreen(
     const GURL& url,
     PaymentHandlerOpenWindowCallback callback) {
+  if (!request_->spec())
+    return;
+
+  if (PaymentsExperimentalFeatures::IsEnabled(
+          features::kPaymentHandlerPopUpSizeWindow)) {
+    is_showing_large_payment_handler_window_ = true;
+
+    // Calculate |payment_handler_window_height_|
+    auto* browser =
+        chrome::FindBrowserWithWebContents(request_->web_contents());
+    int browser_window_content_height =
+        browser->window()->GetContentsSize().height();
+    payment_handler_window_height_ =
+        std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
+                                         browser_window_content_height));
+
+    ResizeDialogWindow();
+  }
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<PaymentHandlerWebFlowViewController>(
-              request_->spec(), request_->state(), this,
-              request_->web_contents(), GetProfile(), url, std::move(callback)),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), request_->web_contents(),
+              GetProfile(), url, std::move(callback)),
           &controller_map_),
-      /* animate = */ !request_->skipped_payment_request_ui());
+      // Do not animate the view when the dialog size changes or payment sheet
+      // is skipped.
+      /* animate = */ !is_showing_large_payment_handler_window_ &&
+          !request_->skipped_payment_request_ui());
+  request_->OnPaymentHandlerOpenWindowCalled();
   HideProcessingSpinner();
+  if (observer_for_testing_)
+    observer_for_testing_->OnPaymentHandlerWindowOpened();
 }
 
 void PaymentRequestDialogView::RetryDialog() {
+  if (!request_->spec())
+    return;
+
   HideProcessingSpinner();
   GoBackToPaymentSheet(false /* animate */);
 
@@ -197,10 +195,8 @@ void PaymentRequestDialogView::RetryDialog() {
     ShowShippingAddressEditor(
         BackNavigationType::kOneStep,
         /*on_edited=*/
-        base::BindOnce(
-            &PaymentRequestState::SetSelectedShippingProfile,
-            request_->state()->AsWeakPtr(), profile,
-            PaymentRequestState::SectionSelectionStatus::kEditedSelected),
+        base::BindOnce(&PaymentRequestState::SetSelectedShippingProfile,
+                       request_->state(), profile),
         /*on_added=*/
         base::OnceCallback<void(const autofill::AutofillProfile&)>(), profile);
   }
@@ -211,13 +207,15 @@ void PaymentRequestDialogView::RetryDialog() {
     ShowContactInfoEditor(
         BackNavigationType::kOneStep,
         /*on_edited=*/
-        base::BindOnce(
-            &PaymentRequestState::SetSelectedContactProfile,
-            request_->state()->AsWeakPtr(), profile,
-            PaymentRequestState::SectionSelectionStatus::kEditedSelected),
+        base::BindOnce(&PaymentRequestState::SetSelectedContactProfile,
+                       request_->state(), profile),
         /*on_added=*/
         base::OnceCallback<void(const autofill::AutofillProfile&)>(), profile);
   }
+}
+
+void PaymentRequestDialogView::ConfirmPaymentForTesting() {
+  Pay();
 }
 
 void PaymentRequestDialogView::OnStartUpdating(
@@ -226,6 +224,9 @@ void PaymentRequestDialogView::OnStartUpdating(
 }
 
 void PaymentRequestDialogView::OnSpecUpdated() {
+  if (!request_->spec())
+    return;
+
   if (request_->spec()->current_update_reason() !=
       PaymentRequestSpec::UpdateReason::NONE) {
     HideProcessingSpinner();
@@ -260,8 +261,14 @@ void PaymentRequestDialogView::GoBack() {
     return;
   }
 
-  view_stack_->Pop();
+  // Do not animate views when the dialog size changes.
+  view_stack_->Pop(!is_showing_large_payment_handler_window_ /* = animate */);
 
+  // Back navigation from payment handler window should resize the dialog;
+  if (is_showing_large_payment_handler_window_) {
+    is_showing_large_payment_handler_window_ = false;
+    ResizeDialogWindow();
+  }
   if (observer_for_testing_)
     observer_for_testing_->OnBackNavigation();
 }
@@ -269,18 +276,30 @@ void PaymentRequestDialogView::GoBack() {
 void PaymentRequestDialogView::GoBackToPaymentSheet(bool animate) {
   // This assumes that the Payment Sheet is the first view in the stack. Thus if
   // there is only one view, we are already showing the payment sheet.
-  if (view_stack_->size() > 1)
-    view_stack_->PopMany(view_stack_->size() - 1, animate);
+  if (view_stack_->GetSize() > 1) {
+    // Do not animate views when the dialog size changes.
+    view_stack_->PopMany(view_stack_->GetSize() - 1,
+                         animate && !is_showing_large_payment_handler_window_);
 
+    // Back navigation from payment handler window should resize the dialog;
+    if (is_showing_large_payment_handler_window_) {
+      ResizeDialogWindow();
+      is_showing_large_payment_handler_window_ = false;
+    }
+  }
   if (observer_for_testing_)
     observer_for_testing_->OnBackToPaymentSheetNavigation();
 }
 
 void PaymentRequestDialogView::ShowContactProfileSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetContactProfileViewController(
-              request_->spec(), request_->state(), this),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr()),
           &controller_map_),
       /* animate */ true);
   if (observer_for_testing_)
@@ -288,9 +307,13 @@ void PaymentRequestDialogView::ShowContactProfileSheet() {
 }
 
 void PaymentRequestDialogView::ShowOrderSummary() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<OrderSummaryViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -298,9 +321,13 @@ void PaymentRequestDialogView::ShowOrderSummary() {
 }
 
 void PaymentRequestDialogView::ShowPaymentMethodSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentMethodViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -308,10 +335,14 @@ void PaymentRequestDialogView::ShowPaymentMethodSheet() {
 }
 
 void PaymentRequestDialogView::ShowShippingProfileSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetShippingProfileViewController(
-              request_->spec(), request_->state(), this),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -319,9 +350,13 @@ void PaymentRequestDialogView::ShowShippingProfileSheet() {
 }
 
 void PaymentRequestDialogView::ShowShippingOptionSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ShippingOptionViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -333,10 +368,14 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate,
     content::WebContents* web_contents) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<CvcUnmaskViewController>(
-                            request_->spec(), request_->state(), this,
-                            credit_card, result_delegate, web_contents),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr(), credit_card,
+                            result_delegate, web_contents),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -345,16 +384,19 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
 
 void PaymentRequestDialogView::ShowCreditCardEditor(
     BackNavigationType back_navigation_type,
-    int next_ui_tag,
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::CreditCard&)> on_added,
     autofill::CreditCard* credit_card) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<CreditCardEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
-              next_ui_tag, std::move(on_edited), std::move(on_added),
-              credit_card, request_->IsIncognito()),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
+              std::move(on_edited), std::move(on_added), credit_card,
+              request_->IsOffTheRecord()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -366,12 +408,16 @@ void PaymentRequestDialogView::ShowShippingAddressEditor(
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
     autofill::AutofillProfile* profile) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ShippingAddressEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
               std::move(on_edited), std::move(on_added), profile,
-              request_->IsIncognito()),
+              request_->IsOffTheRecord()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -383,12 +429,16 @@ void PaymentRequestDialogView::ShowContactInfoEditor(
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
     autofill::AutofillProfile* profile) {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ContactInfoEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
               std::move(on_edited), std::move(on_added), profile,
-              request_->IsIncognito()),
+              request_->IsOffTheRecord()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -412,27 +462,74 @@ Profile* PaymentRequestDialogView::GetProfile() {
       request_->web_contents()->GetBrowserContext());
 }
 
-void PaymentRequestDialogView::OnDialogOpened() {
-  if (request_->spec()->request_shipping() &&
-      !request_->state()->selected_shipping_profile() &&
-      PaymentsExperimentalFeatures::IsEnabled(
-          features::kStrictHasEnrolledAutofillInstrument)) {
-    view_stack_->Push(
-        CreateViewAndInstallController(
-            ProfileListViewController::GetShippingProfileViewController(
-                request_->spec(), request_->state(), this),
-            &controller_map_),
-        /* animate = */ false);
+PaymentRequestDialogView::PaymentRequestDialogView(
+    base::WeakPtr<PaymentRequest> request,
+    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer)
+    : request_(request), observer_for_testing_(observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(request);
+  DCHECK(request->spec());
+
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetModalType(ui::MODAL_TYPE_CHILD);
+
+  SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  // The dialog's CancelCallback may be called during initialization e.g. by
+  // pressing the escape key, calling OnDialogClosed will ensure the correct
+  // order of destruction.
+  SetCancelCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  request->spec()->AddObserver(this);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  view_stack_ = AddChildView(std::make_unique<ViewStack>());
+
+  SetupSpinnerOverlay();
+
+  if (!request->state()->IsInitialized()) {
+    request->state()->AddInitializationObserver(this);
+    ++number_of_initialization_tasks_;
   }
+
+  if (!request->spec()->IsInitialized()) {
+    request->spec()->AddInitializationObserver(this);
+    ++number_of_initialization_tasks_;
+  }
+
+  if (number_of_initialization_tasks_ > 0) {
+    ShowProcessingSpinner();
+  } else if (observer_for_testing_) {
+    // When testing, signal that the processing spinner events have passed, even
+    // though the UI does not need to show it.
+    observer_for_testing_->OnProcessingSpinnerShown();
+    observer_for_testing_->OnProcessingSpinnerHidden();
+  }
+
+  ShowInitialPaymentSheet();
+
+  chrome::RecordDialogCreation(chrome::DialogIdentifier::PAYMENT_REQUEST);
+}
+
+PaymentRequestDialogView::~PaymentRequestDialogView() = default;
+
+void PaymentRequestDialogView::OnDialogOpened() {
+  if (!request_->spec())
+    return;
 
   if (observer_for_testing_)
     observer_for_testing_->OnDialogOpened();
 }
 
 void PaymentRequestDialogView::ShowInitialPaymentSheet() {
+  if (!request_->spec())
+    return;
+
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentSheetViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
 
@@ -444,46 +541,53 @@ void PaymentRequestDialogView::ShowInitialPaymentSheet() {
 }
 
 void PaymentRequestDialogView::SetupSpinnerOverlay() {
-  auto throbber = std::make_unique<views::Throbber>();
-  auto throbber_overlay = std::make_unique<views::View>();
+  throbber_overlay_ = AddChildView(std::make_unique<views::View>());
 
-  throbber_overlay->SetPaintToLayer();
-  throbber_overlay->SetVisible(false);
+  throbber_overlay_->SetPaintToLayer();
+  throbber_overlay_->SetVisible(false);
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
-  throbber_overlay->SetBackground(views::CreateThemedSolidBackground(
-      throbber_overlay.get(), ui::NativeTheme::kColorId_DialogBackground));
+  throbber_overlay_->SetBackground(views::CreateThemedSolidBackground(
+      throbber_overlay_, ui::kColorDialogBackground));
 
-  views::GridLayout* layout =
-      throbber_overlay->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* throbber_columns = layout->AddColumnSet(0);
-  throbber_columns->AddPaddingColumn(0.5, 0);
-  throbber_columns->AddColumn(views::GridLayout::Alignment::CENTER,
-                              views::GridLayout::Alignment::TRAILING,
-                              views::GridLayout::kFixedSize,
-                              views::GridLayout::SizeType::USE_PREF, 0, 0);
-  throbber_columns->AddPaddingColumn(0.5, 0);
+  views::BoxLayout* layout =
+      throbber_overlay_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  views::ColumnSet* label_columns = layout->AddColumnSet(1);
-  label_columns->AddPaddingColumn(0.5, 0);
-  label_columns->AddColumn(views::GridLayout::Alignment::CENTER,
-                           views::GridLayout::Alignment::LEADING,
-                           views::GridLayout::kFixedSize,
-                           views::GridLayout::SizeType::USE_PREF, 0, 0);
-  label_columns->AddPaddingColumn(0.5, 0);
-
-  layout->StartRow(0.5, 0);
-  throbber_ = layout->AddView(std::move(throbber));
-
-  layout->StartRow(0.5, 1);
-  layout->AddView(std::make_unique<views::Label>(
+  throbber_ =
+      throbber_overlay_->AddChildView(std::make_unique<views::Throbber>());
+  throbber_overlay_->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_PROCESSING_MESSAGE)));
-
-  throbber_overlay_ = AddChildView(std::move(throbber_overlay));
 }
 
 gfx::Size PaymentRequestDialogView::CalculatePreferredSize() const {
+  if (is_showing_large_payment_handler_window_) {
+    return gfx::Size(GetActualDialogWidth(),
+                     GetActualPaymentHandlerDialogHeight());
+  }
   return gfx::Size(GetActualDialogWidth(), kDialogHeight);
+}
+
+int PaymentRequestDialogView::GetActualPaymentHandlerDialogHeight() const {
+  if (!PaymentsExperimentalFeatures::IsEnabled(
+          features::kPaymentHandlerPopUpSizeWindow)) {
+    return kDialogHeight;
+  }
+
+  DCHECK_NE(0, payment_handler_window_height_);
+  return payment_handler_window_height_ > 0 ? payment_handler_window_height_
+                                            : kDialogHeight;
+}
+
+int PaymentRequestDialogView::GetActualDialogWidth() const {
+  int actual_width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
+      is_showing_large_payment_handler_window_
+          ? kPreferredPaymentHandlerDialogWidth
+          : kDialogMinWidth);
+  return actual_width;
 }
 
 void PaymentRequestDialogView::ViewHierarchyChanged(
@@ -499,5 +603,20 @@ void PaymentRequestDialogView::ViewHierarchyChanged(
     controller_map_.erase(details.child);
   }
 }
+
+void PaymentRequestDialogView::ResizeDialogWindow() {
+  if (GetWidget() && request_->web_contents()) {
+    constrained_window::UpdateWebContentsModalDialogPosition(
+        GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
+                         request_->web_contents())
+                         ->delegate()
+                         ->GetWebContentsModalDialogHost());
+  }
+}
+
+BEGIN_METADATA(PaymentRequestDialogView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(int, ActualPaymentHandlerDialogHeight)
+ADD_READONLY_PROPERTY_METADATA(int, ActualDialogWidth)
+END_METADATA
 
 }  // namespace payments

@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.fullscreen;
 
 import android.os.SystemClock;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -18,18 +22,15 @@ import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Utility methods for testing the {@link ChromeFullscreenManager}.
+ * Utility methods for testing the {@link BrowserControlsManager}.
  */
 public class FullscreenManagerTestUtils {
     /**
@@ -38,8 +39,9 @@ public class FullscreenManagerTestUtils {
      * @param show Whether the browser controls should be shown.
      */
     public static void scrollBrowserControls(ChromeActivityTestRule testRule, boolean show) {
-        ChromeFullscreenManager fullscreenManager = testRule.getActivity().getFullscreenManager();
-        int browserControlsHeight = fullscreenManager.getTopControlsHeight();
+        BrowserControlsStateProvider browserControlsStateProvider =
+                testRule.getActivity().getBrowserControlsManager();
+        int browserControlsHeight = browserControlsStateProvider.getTopControlsHeight();
 
         waitForPageToBeScrollable(testRule.getActivity().getActivityTab());
 
@@ -70,14 +72,12 @@ public class FullscreenManagerTestUtils {
      */
     public static void waitForBrowserControlsPosition(
             ChromeActivityTestRule testRule, int position) {
-        final ChromeFullscreenManager fullscreenManager =
-                testRule.getActivity().getFullscreenManager();
-        CriteriaHelper.pollUiThread(Criteria.equals(position, new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return fullscreenManager.getTopControlOffset();
-            }
-        }));
+        final BrowserControlsStateProvider browserControlsStateProvider =
+                testRule.getActivity().getBrowserControlsManager();
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    browserControlsStateProvider.getTopControlOffset(), Matchers.is(position));
+        });
     }
 
     /**
@@ -85,13 +85,10 @@ public class FullscreenManagerTestUtils {
      * @param tab The current activity tab.
      */
     public static void waitForPageToBeScrollable(final Tab tab) {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return RenderCoordinates.fromWebContents(tab.getWebContents())
-                               .getContentHeightPixInt()
-                        > tab.getContentView().getHeight();
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(RenderCoordinates.fromWebContents(tab.getWebContents())
+                                       .getContentHeightPixInt(),
+                    Matchers.greaterThan(tab.getContentView().getHeight()));
         });
     }
 
@@ -110,29 +107,21 @@ public class FullscreenManagerTestUtils {
         waitForBrowserControlsPosition(testRule, 0);
 
         final CallbackHelper contentMovedCallback = new CallbackHelper();
-        final ChromeFullscreenManager fullscreenManager =
-                testRule.getActivity().getFullscreenManager();
-        final float initialVisibleContentOffset = fullscreenManager.getTopVisibleContentOffset();
+        final BrowserControlsStateProvider browserControlsStateProvider =
+                testRule.getActivity().getBrowserControlsManager();
+        final float initialVisibleContentOffset =
+                browserControlsStateProvider.getTopVisibleContentOffset();
 
-        fullscreenManager.addListener(new FullscreenListener() {
+        browserControlsStateProvider.addObserver(new BrowserControlsStateProvider.Observer() {
             @Override
-            public void onControlsOffsetChanged(
-                    int topOffset, int bottomOffset, boolean needsAnimate) {
-                if (fullscreenManager.getTopVisibleContentOffset() != initialVisibleContentOffset) {
+            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                if (browserControlsStateProvider.getTopVisibleContentOffset()
+                        != initialVisibleContentOffset) {
                     contentMovedCallback.notifyCalled();
-                    fullscreenManager.removeListener(this);
+                    browserControlsStateProvider.removeObserver(this);
                 }
             }
-
-            @Override
-            public void onToggleOverlayVideoMode(boolean enabled) {}
-
-            @Override
-            public void onContentOffsetChanged(int offset) {}
-
-            @Override
-            public void onBottomControlsHeightChanged(
-                    int bottomControlsHeight, int bottomControlsMinHeight) {}
         });
 
         float dragX = 50f;
@@ -161,7 +150,7 @@ public class FullscreenManagerTestUtils {
         for (int i = 0; i < 10; i++) {
             int numScrollEndCalled = scrollEndCallback.getCallCount();
             int numFlingEndCalled = flingEndCallback.getCallCount();
-            float dragEndY = dragStartY - fullscreenManager.getTopControlsHeight();
+            float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();
 
             long downTime = SystemClock.uptimeMillis();
             TouchCommon.dragStart(testRule.getActivity(), dragX, dragStartY, downTime);

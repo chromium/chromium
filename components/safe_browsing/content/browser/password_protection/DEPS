@@ -1,0 +1,25 @@
+include_rules = [
+  "+components/content_settings/core/browser",
+  "+components/history/core/browser",
+  "+components/password_manager/core/browser/password_manager_metrics_util.h",
+  "+components/password_manager/core/browser/password_reuse_detector.h",
+  "+components/sessions",
+  "+components/signin/public/identity_manager",
+  "+components/url_formatter",
+  "+components/zoom",
+  "+content/public/test",
+  "+net",
+  "+services/network/public",
+  "+third_party/blink/public/common/page/page_zoom.h",
+  "+ui/gfx",
+  "+third_party/skia/include",
+  "+third_party/opencv",
+]
+
+specific_include_rules = {
+  ".*_(unit|pixel|perf)?test.*\.(cc|h)": [
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+content/public/test",
+    "+services/network/test",
+  ],
+}

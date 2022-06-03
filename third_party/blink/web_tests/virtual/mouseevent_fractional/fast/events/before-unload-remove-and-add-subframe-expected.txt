@@ -1,7 +1,0 @@
-This test ensures beforeunload event does not fire for subframes that has been removed from the DOM within a beforeunload event handler. Also ensures the event doesn't fire for subframes added within a beforeunload event handler. The latter behavior matches MSIE.
-
-PASS: fired on parent
-PASS: fired on a
-PASS: fired on c
-DONE
-

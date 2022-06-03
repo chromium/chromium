@@ -1,31 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="sync_browser_proxy.html">
-<link rel="import" href="../privacy_page/personalization_options.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-
-<if expr="not chromeos">
-<link rel="import" href="sync_account_control.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
-</if>
-
-<dom-module id="settings-sync-page">
-  <template>
     <style include="cr-shared-style settings-shared iron-flex">
       #sync-separator {
         border-bottom: var(--cr-separator-line);
@@ -68,10 +40,6 @@
         padding-bottom: 8px;
       }
 
-      #other-sync-items > .list-item:not(.first) {
-        border-top: var(--cr-separator-line);
-      }
-
       .passphrase-reset-icon {
         margin-inline-end: 8px;
       }
@@ -81,7 +49,6 @@
         width: 40px;
       }
 
-<if expr="not chromeos">
       #toast {
         left: 0;
         z-index: 1;
@@ -91,37 +58,50 @@
         left: auto;
         right: 0;
       }
-</if>
+
+      cr-link-row {
+        padding-inline-end: 8px;
+        padding-inline-start: 0;
+      }
     </style>
-<if expr="not chromeos">
+
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
-        syncStatus.syncSystemEnabled, syncStatus.signinAllowed)]]">
+        syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
           sync-status="[[syncStatus]]" prefs="{{prefs}}"
           promo-label-with-account=
-              "$i18n{peopleSignInPromptSecondaryWithAccount}"
+              "$i18n{peopleSignInSyncPagePromptSecondaryWithAccount}"
           promo-label-with-no-account=
-              "$i18n{peopleSignInPromptSecondaryWithNoAccount}"
+              "$i18n{peopleSignInSyncPagePromptSecondaryWithNoAccount}"
           on-sync-setup-done="onSyncSetupDone_">
       </settings-sync-account-control>
     </template>
-</if>
-    <div class="settings-box first" hidden="[[!syncDisabledByAdmin_]]">
+    <div class="cr-row first" hidden="[[!syncDisabledByAdmin_]]">
       <iron-icon id="disabled-by-admin-icon" icon="cr20:domain"></iron-icon>
-      <div class="middle settings-box-text">
+      <div class="flex cr-padded-text">
         $i18n{syncDisabledByAdministrator}
       </div>
     </div>
+
+<if expr="chromeos or lacros">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+</if>
 
     <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
         syncPrefs.passphraseRequired)]]"
         on-dom-change="focusPassphraseInput_">
       <div id="existingPassphrase" class="list-frame">
         <div id="existingPassphraseTitle" class="list-item">
-            <div class="start settings-box-text">
+            <div class="start cr-padded-text">
               <div>$i18n{existingPassphraseTitle}</div>
               <div class="secondary"
-                  inner-h-t-m-l="[[syncPrefs.enterPassphraseBody]]">
+                  inner-h-t-m-l="[[existingPassphraseLabel_]]">
               </div>
             </div>
         </div>
@@ -139,7 +119,7 @@
           </cr-input>
         </div>
         <div id="passphraseRecoverHint" class="list-item">
-          <div class="settings-box-text">$i18nRaw{passphraseRecover}</div>
+          <div class="cr-padded-text">$i18nRaw{passphraseRecover}</div>
         </div>
       </div>
     </template>
@@ -147,124 +127,62 @@
     <div id="sync-separator" hidden="[[!syncSectionDisabled_]]"></div>
 
     <div id="sync-section" hidden="[[syncSectionDisabled_]]">
-      <div class="settings-box first">
-        <h2 class="cr-title-text start">$i18n{sync}</h2>
+      <div class="cr-row first">
+        <h2 class="cr-title-text">$i18n{sync}</h2>
       </div>
 
-      <div id="[[pages_.SPINNER]]" class="settings-box first settings-box-text"
-          hidden$="[[!isStatus_(pages_.SPINNER, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.SPINNER]]" class="cr-row first cr-padded-text"
+          hidden$="[[!isStatus_(pageStatusEnum_.SPINNER, pageStatus_)]]">
         $i18n{syncLoading}
       </div>
-      <div id="[[pages_.TIMEOUT]]" class="settings-box first settings-box-text"
-          hidden$="[[!isStatus_(pages_.TIMEOUT, pageStatus_)]]">
-        $i18n{syncTimeout}
-      </div>
-      <div id="[[pages_.CONFIGURE]]"
-          hidden$="[[!isStatus_(pages_.CONFIGURE, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.CONFIGURE]]"
+          hidden$="[[!isStatus_(pageStatusEnum_.CONFIGURE, pageStatus_)]]">
         <div id="other-sync-items" class="list-frame">
-          <div id="sync-advanced-row" class="list-item first"
-              on-click="onSyncAdvancedTap_" actionable>
-            <div class="start" id="page-title" aria-hidden="true">
-              $i18n{syncAdvancedPageTitle}
-            </div>
-            <cr-icon-button class="subpage-arrow" aria-labelledby="page-title"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
-            </cr-icon-button>
-          </div>
+          <cr-link-row id="sync-advanced-row"
+              label="$i18n{syncAdvancedPageTitle}"
+              role-description="$i18n{subpageArrowRoleDescription}"
+              on-click="onSyncAdvancedClick_"></cr-link-row>
 
-          <a class="inherit-color no-outline list-item" tabindex="-1"
-              target="_blank" href="$i18n{activityControlsUrl}"
-              on-click="onActivityControlsTap_">
-            <div class="start settings-box-text">
-              $i18n{personalizeGoogleServicesTitle}
-            </div>
-            <cr-icon-button class="icon-external"></cr-icon-button>
-          </a>
+          <cr-link-row class="hr"
+              label="$i18n{personalizeGoogleServicesTitle}"
+              on-click="onActivityControlsClick_" external></cr-link-row>
 
-          <a id="syncDashboardLink"
-              class="inherit-color no-outline list-item"
-              tabindex="-1" target="_blank" href="$i18n{syncDashboardUrl}"
-              hidden="[[syncStatus.supervisedUser]]">
-            <div class="start settings-box-text">
-              $i18n{manageSyncedDataTitle}
-            </div>
-            <cr-icon-button class="icon-external"></cr-icon-button>
-          </a>
+          <cr-link-row id="syncDashboardLink" class="hr"
+              label="$i18n{manageSyncedDataTitle}"
+              on-click="onSyncDashboardLinkClick_"
+              hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
 
-          <div id="encryptionDescription"
+          <cr-expand-button id="encryptionDescription"
               hidden="[[syncPrefs.passphraseRequired]]"
-              class$="single-column settings-box-text
-                  [[getPassphraseHintLines_(syncPrefs.encryptAllData)]]
-                  list-item">
+              expanded="{{encryptionExpanded_}}"
+              class="hr">
             $i18n{encryptionOptionsTitle}
             <div class="secondary">
               $i18n{syncDataEncryptedText}
-              <div hidden="[[!syncPrefs.encryptAllData]]">
+              <div on-click="onResetSyncClick_"
+                  hidden="[[!syncPrefs.encryptAllData]]">
                 <iron-icon icon="cr:info-outline"
                     class="passphrase-reset-icon">
                 </iron-icon>
                 $i18nRaw{passphraseResetHintEncryption}
               </div>
             </div>
-          </div>
+          </cr-expand-button>
 
-          <div id="encryptionRadioGroupContainer" class="list-frame"
-              hidden="[[syncPrefs.passphraseRequired]]">
-            <cr-radio-group
-                id="encryptionRadioGroup"
-                selected="[[selectedEncryptionRadio_(syncPrefs)]]"
-                on-selected-changed="onEncryptionRadioSelectionChanged_"
-                disabled$="[[disableEncryptionOptions_]]">
-              <cr-radio-button name="encrypt-with-google" class="list-item"
-                  aria-label="$i18n{encryptWithGoogleCredentialsLabel}"
-                  disabled$="[[disableEncryptionOptions_]]">
-                $i18n{encryptWithGoogleCredentialsLabel}
-              </cr-radio-button>
-              <cr-radio-button name="encrypt-with-passphrase" class="list-item"
-                  disabled$="[[disableEncryptionOptions_]]">
-                <span hidden="[[!syncPrefs.fullEncryptionBody]]">
-                  [[syncPrefs.fullEncryptionBody]]
-                </span>
-                <span on-click="onLearnMoreTap_"
-                    hidden="[[syncPrefs.fullEncryptionBody]]">
-                  $i18nRaw{encryptWithSyncPassphraseLabel}
-                </span>
-              </cr-radio-button>
-            </cr-radio-group>
-          </div>
-
-          <template is="dom-if" if="[[creatingNewPassphrase_]]">
-            <div class="list-frame">
-              <div id="create-password-box"
-                  on-keypress="onSaveNewPassphraseTap_">
-                <div class="list-item">
-                  <span>$i18nRaw{passphraseExplanationText}</span>
-                </div>
-                <cr-input id="passphraseInput" type="password"
-                    value="{{passphrase_}}"
-                    placeholder="$i18n{passphrasePlaceholder}"
-                    error-message="$i18n{emptyPassphraseError}">
-                </cr-input>
-                <cr-input id="passphraseConfirmationInput" type="password"
-                    value="{{confirmation_}}"
-                    placeholder="$i18n{passphraseConfirmationPlaceholder}"
-                    error-message="$i18n{mismatchedPassphraseError}">
-                </cr-input>
-                <cr-button id="saveNewPassphrase"
-                    on-click="onSaveNewPassphraseTap_" class="action-button"
-                    disabled="[[!isSaveNewPassphraseEnabled_(passphrase_,
-                                                             confirmation_)]]">
-                  $i18n{save}
-                </cr-button>
-              </div>
-            </div>
-          </template>
+          <iron-collapse id="encryptionCollapse"
+              opened="[[encryptionExpanded_]]">
+            <settings-sync-encryption-options
+                sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
+                existing-passphrase-label="[[existingPassphraseLabel_]]"
+                on-passphrase-changed="onPassphraseChanged_">
+            </settings-sync-encryption-options>
+          </iron-collapse>
 
         </div>
       </div>
     </div>
 
-    <div class="settings-box first">
+    <div class="cr-row first">
       <h2 class="cr-title-text">
         $i18n{nonPersonalizedServicesSectionLabel}
       </h2>
@@ -292,6 +210,3 @@
       </cr-dialog>
     </template>
 </if>
-  </template>
-  <script src="sync_page.js"></script>
-</dom-module>

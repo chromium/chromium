@@ -157,8 +157,7 @@
                 "begin": 11
             },
             "blink_perf.parser": {},
-            "memory.top_10_mobile": {},
-            "blink_perf.canvas": {}
+            "memory.top_10_mobile": {}
         }
     },
     "16": {

@@ -25,13 +25,13 @@ bool GetSubjectPublicKeyInfo(const net::X509Certificate& certificate,
           &spki_der_piece)) {
     return false;
   }
-  *spki_der = spki_der_piece.as_string();
+  *spki_der = std::string(spki_der_piece);
   return !spki_der->empty();
 }
 
 }  // namespace
 
-base::Optional<ChallengeResponseKey::SignatureAlgorithm>
+absl::optional<ChallengeResponseKey::SignatureAlgorithm>
 GetChallengeResponseKeyAlgorithmFromSsl(uint16_t ssl_algorithm) {
   switch (ssl_algorithm) {
     case SSL_SIGN_RSA_PKCS1_SHA1:

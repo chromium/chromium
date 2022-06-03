@@ -48,12 +48,12 @@ dictionary MediaTrackConstraintSet {
     ConstrainDouble    saturation;
     ConstrainDouble    sharpness;
     ConstrainDouble    focusDistance;
-    [RuntimeEnabled=MediaCapturePanTilt] ConstrainDouble    pan;
-    [RuntimeEnabled=MediaCapturePanTilt] ConstrainDouble    tilt;
-    ConstrainDouble    zoom;
+    (boolean or ConstrainDouble) pan;
+    (boolean or ConstrainDouble) tilt;
+    (boolean or ConstrainDouble) zoom;
     ConstrainBoolean   torch;
     // The "mandatory" and "_optional" members are retained for conformance
     // with https://www.w3.org/TR/2013/WD-mediacapture-streams-20130903/
-    Dictionary mandatory;
-    sequence<Dictionary> _optional;
+    object mandatory;
+    sequence<object> _optional;
 };

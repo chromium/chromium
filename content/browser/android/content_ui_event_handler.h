@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace ui {
 class KeyEventAndroid;
@@ -27,6 +26,9 @@ class ContentUiEventHandler {
   ContentUiEventHandler(JNIEnv* env,
                         const base::android::JavaRef<jobject>& obj,
                         WebContentsImpl* web_contents);
+
+  ContentUiEventHandler(const ContentUiEventHandler&) = delete;
+  ContentUiEventHandler& operator=(const ContentUiEventHandler&) = delete;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -73,8 +75,6 @@ class ContentUiEventHandler {
   JavaObjectWeakGlobalRef java_ref_;
 
   WebContentsImpl* const web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentUiEventHandler);
 };
 
 }  // namespace content

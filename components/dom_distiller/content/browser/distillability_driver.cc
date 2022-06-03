@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +26,7 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
       base::WeakPtr<DistillabilityDriver> distillability_driver)
       : distillability_driver_(distillability_driver) {}
 
-  ~DistillabilityServiceImpl() override {}
+  ~DistillabilityServiceImpl() override = default;
 
   void NotifyIsDistillable(bool is_distillable,
                            bool is_last_update,
@@ -46,7 +47,7 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
 };
 
 DistillabilityDriver::DistillabilityDriver(content::WebContents* web_contents)
-    : latest_result_(base::nullopt) {
+    : latest_result_(absl::nullopt), web_contents_(web_contents) {
   if (!web_contents)
     return;
 }
@@ -60,13 +61,32 @@ void DistillabilityDriver::CreateDistillabilityService(
       std::move(receiver));
 }
 
+void DistillabilityDriver::SetIsSecureCallback(
+    base::RepeatingCallback<bool(content::WebContents*)> is_secure_check) {
+  is_secure_check_ = std::move(is_secure_check);
+}
+
 void DistillabilityDriver::OnDistillability(
     const DistillabilityResult& result) {
+#if !defined(OS_ANDROID)
+  if (result.is_distillable) {
+    if (!is_secure_check_ || !is_secure_check_.Run(web_contents_)) {
+      DistillabilityResult not_distillable;
+      not_distillable.is_distillable = false;
+      not_distillable.is_last = result.is_last;
+      not_distillable.is_mobile_friendly = result.is_mobile_friendly;
+      latest_result_ = not_distillable;
+      for (auto& observer : observers_)
+        observer.OnResult(not_distillable);
+      return;
+    }
+  }
+#endif  // !defined(OS_ANDROID)
   latest_result_ = result;
   for (auto& observer : observers_)
     observer.OnResult(result);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DistillabilityDriver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DistillabilityDriver);
 
 }  // namespace dom_distiller

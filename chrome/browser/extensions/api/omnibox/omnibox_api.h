@@ -9,15 +9,13 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/window_open_disposition.h"
@@ -40,6 +38,10 @@ namespace extensions {
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
  public:
+  ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
+  ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =
+      delete;
+
   // The user has just typed the omnibox keyword. This is sent exactly once in
   // a given input session, before any OnInputChanged events.
   static void OnInputStarted(
@@ -69,9 +71,6 @@ class ExtensionOmniboxEventRouter {
   static void OnDeleteSuggestion(Profile* profile,
                                  const std::string& extension_id,
                                  const std::string& suggestion_text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionOmniboxEventRouter);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {
@@ -89,6 +88,10 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
                    public ExtensionRegistryObserver {
  public:
   explicit OmniboxAPI(content::BrowserContext* context);
+
+  OmniboxAPI(const OmniboxAPI&) = delete;
+  OmniboxAPI& operator=(const OmniboxAPI&) = delete;
+
   ~OmniboxAPI() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -133,15 +136,13 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   PendingExtensions pending_extensions_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_sub_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxAPI);
+  base::CallbackListSubscription template_url_subscription_;
 };
 
 template <>
@@ -164,7 +165,7 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
 void ApplyDefaultSuggestionForExtensionKeyword(
     Profile* profile,
     const TemplateURL* keyword,
-    const base::string16& remaining_input,
+    const std::u16string& remaining_input,
     AutocompleteMatch* match);
 
 // This function converts style information populated by the JSON schema

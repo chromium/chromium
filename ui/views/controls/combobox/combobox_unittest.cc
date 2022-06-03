@@ -6,12 +6,16 @@
 
 #include <memory>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/models/combobox_model.h"
@@ -23,10 +27,14 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/combobox_test_api.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -38,57 +46,30 @@ using test::ComboboxTestApi;
 
 namespace {
 
-// A wrapper of Combobox to intercept the result of OnKeyPressed() and
-// OnKeyReleased() methods.
-class TestCombobox : public Combobox {
- public:
-  explicit TestCombobox(ui::ComboboxModel* model)
-      : Combobox(model), key_handled_(false), key_received_(false) {}
-
-  bool OnKeyPressed(const ui::KeyEvent& e) override {
-    key_received_ = true;
-    key_handled_ = Combobox::OnKeyPressed(e);
-    return key_handled_;
-  }
-
-  bool OnKeyReleased(const ui::KeyEvent& e) override {
-    key_received_ = true;
-    key_handled_ = Combobox::OnKeyReleased(e);
-    return key_handled_;
-  }
-
-  bool key_handled() const { return key_handled_; }
-  bool key_received() const { return key_received_; }
-
-  void clear() {
-    key_received_ = key_handled_ = false;
-  }
-
- private:
-  bool key_handled_;
-  bool key_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCombobox);
-};
+using TestCombobox = Combobox;
 
 // A concrete class is needed to test the combobox.
 class TestComboboxModel : public ui::ComboboxModel {
  public:
   TestComboboxModel() = default;
+
+  TestComboboxModel(const TestComboboxModel&) = delete;
+  TestComboboxModel& operator=(const TestComboboxModel&) = delete;
+
   ~TestComboboxModel() override = default;
 
   enum { kItemCount = 10 };
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return item_count_; }
-  base::string16 GetItemAt(int index) override {
+  std::u16string GetItemAt(int index) const override {
     if (IsItemSeparatorAt(index)) {
       NOTREACHED();
-      return ASCIIToUTF16("SEPARATOR");
+      return u"SEPARATOR";
     }
     return ASCIIToUTF16(index % 2 == 0 ? "PEANUT BUTTER" : "JELLY");
   }
-  bool IsItemSeparatorAt(int index) override {
+  bool IsItemSeparatorAt(int index) const override {
     return separators_.find(index) != separators_.end();
   }
 
@@ -128,8 +109,6 @@ class TestComboboxModel : public ui::ComboboxModel {
   base::ObserverList<ui::ComboboxModelObserver> observers_;
   std::set<int> separators_;
   int item_count_ = kItemCount;
-
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModel);
 };
 
 // A combobox model which refers to a vector.
@@ -137,6 +116,10 @@ class VectorComboboxModel : public ui::ComboboxModel {
  public:
   explicit VectorComboboxModel(std::vector<std::string>* values)
       : values_(values) {}
+
+  VectorComboboxModel(const VectorComboboxModel&) = delete;
+  VectorComboboxModel& operator=(const VectorComboboxModel&) = delete;
+
   ~VectorComboboxModel() override = default;
 
   void set_default_index(int default_index) { default_index_ = default_index; }
@@ -145,10 +128,10 @@ class VectorComboboxModel : public ui::ComboboxModel {
   int GetItemCount() const override {
     return static_cast<int>(values_->size());
   }
-  base::string16 GetItemAt(int index) override {
+  std::u16string GetItemAt(int index) const override {
     return ASCIIToUTF16(values_->at(index));
   }
-  bool IsItemSeparatorAt(int index) override { return false; }
+  bool IsItemSeparatorAt(int index) const override { return false; }
   int GetDefaultIndex() const override { return default_index_; }
   void AddObserver(ui::ComboboxModelObserver* observer) override {
     observers_.AddObserver(observer);
@@ -166,57 +149,54 @@ class VectorComboboxModel : public ui::ComboboxModel {
   base::ObserverList<ui::ComboboxModelObserver> observers_;
   int default_index_ = 0;
   std::vector<std::string>* const values_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorComboboxModel);
 };
 
-class EvilListener : public ComboboxListener {
+class EvilListener {
  public:
-  EvilListener() = default;
-  ~EvilListener() override = default;
-
-  // ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override {
-    delete combobox;
-    deleted_ = true;
+  EvilListener() {
+    combobox_->SetCallback(base::BindRepeating(&EvilListener::OnPerformAction,
+                                               base::Unretained(this)));
   }
 
-  bool deleted() const { return deleted_; }
+  EvilListener(const EvilListener&) = delete;
+  EvilListener& operator=(const EvilListener&) = delete;
+
+  ~EvilListener() = default;
+
+  TestCombobox* combobox() { return combobox_.get(); }
 
  private:
-  bool deleted_ = false;
+  void OnPerformAction() { combobox_.reset(); }
 
-  DISALLOW_COPY_AND_ASSIGN(EvilListener);
+  TestComboboxModel model_;
+  std::unique_ptr<TestCombobox> combobox_ =
+      std::make_unique<TestCombobox>(&model_);
 };
 
-class TestComboboxListener : public views::ComboboxListener {
+class TestComboboxListener {
  public:
-  TestComboboxListener() = default;
-  ~TestComboboxListener() override = default;
+  explicit TestComboboxListener(Combobox* combobox) : combobox_(combobox) {}
 
-  void OnPerformAction(views::Combobox* combobox) override {
-    perform_action_index_ = combobox->GetSelectedIndex();
+  TestComboboxListener(const TestComboboxListener&) = delete;
+  TestComboboxListener& operator=(const TestComboboxListener&) = delete;
+
+  ~TestComboboxListener() = default;
+
+  void OnPerformAction() {
+    perform_action_index_ = combobox_->GetSelectedIndex();
     actions_performed_++;
   }
 
-  int perform_action_index() const {
-    return perform_action_index_;
-  }
+  int perform_action_index() const { return perform_action_index_; }
 
-  bool on_perform_action_called() const {
-    return actions_performed_ > 0;
-  }
+  bool on_perform_action_called() const { return actions_performed_ > 0; }
 
-  int actions_performed() const {
-    return actions_performed_;
-  }
+  int actions_performed() const { return actions_performed_; }
 
  private:
+  Combobox* combobox_;
   int perform_action_index_ = -1;
   int actions_performed_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxListener);
 };
 
 }  // namespace
@@ -225,9 +205,11 @@ class ComboboxTest : public ViewsTestBase {
  public:
   ComboboxTest() = default;
 
+  ComboboxTest(const ComboboxTest&) = delete;
+  ComboboxTest& operator=(const ComboboxTest&) = delete;
+
   void TearDown() override {
-    if (widget_)
-      widget_->Close();
+    widget_.reset();
     ViewsTestBase::TearDown();
   }
 
@@ -238,26 +220,25 @@ class ComboboxTest : public ViewsTestBase {
       model_->SetSeparators(*separators);
 
     ASSERT_FALSE(combobox_);
-    combobox_ = new TestCombobox(model_.get());
-    test_api_ = std::make_unique<ComboboxTestApi>(combobox_);
+    auto combobox = std::make_unique<TestCombobox>(model_.get());
+    test_api_ = std::make_unique<ComboboxTestApi>(combobox.get());
     test_api_->InstallTestMenuRunner(&menu_show_count_);
-    combobox_->SetID(1);
+    combobox->SetID(1);
 
-    widget_ = new Widget;
+    widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(200, 200, 200, 200);
     widget_->Init(std::move(params));
-    View* container = new View();
-    widget_->SetContentsView(container);
-    container->AddChildView(combobox_);
+    View* container = widget_->SetContentsView(std::make_unique<View>());
+    combobox_ = container->AddChildView(std::move(combobox));
     widget_->Show();
 
     combobox_->RequestFocus();
     combobox_->SizeToPreferredSize();
 
-    event_generator_ =
-        std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        GetRootWindow(widget_.get()));
     event_generator_->set_target(ui::test::EventGenerator::Target::WINDOW);
   }
 
@@ -295,7 +276,7 @@ class ComboboxTest : public ViewsTestBase {
   }
 
   // We need widget to populate wrapper class.
-  Widget* widget_ = nullptr;
+  UniqueWidgetPtr widget_;
 
   // |combobox_| will be allocated InitCombobox() and then owned by |widget_|.
   TestCombobox* combobox_ = nullptr;
@@ -308,12 +289,9 @@ class ComboboxTest : public ViewsTestBase {
   int menu_show_count_ = 0;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComboboxTest);
 };
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Tests whether the various Mac specific keyboard shortcuts invoke the dropdown
 // menu or not.
 TEST_F(ComboboxTest, KeyTestMac) {
@@ -360,29 +338,34 @@ TEST_F(ComboboxTest, KeyTestMac) {
 }
 #endif
 
+// Iterate through all the metadata and test each property.
+TEST_F(ComboboxTest, MetadataTest) {
+  InitCombobox(nullptr);
+  test::TestViewMetadata(combobox_);
+}
+
 // Check that if a combobox is disabled before it has a native wrapper, then the
 // native wrapper inherits the disabled state when it gets created.
 TEST_F(ComboboxTest, DisabilityTest) {
   model_ = std::make_unique<TestComboboxModel>();
 
   ASSERT_FALSE(combobox_);
-  combobox_ = new TestCombobox(model_.get());
-  combobox_->SetEnabled(false);
+  auto combobox = std::make_unique<TestCombobox>(model_.get());
+  combobox->SetEnabled(false);
 
-  widget_ = new Widget;
+  widget_ = std::make_unique<Widget>();
   Widget::InitParams params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(100, 100, 100, 100);
   widget_->Init(std::move(params));
-  View* container = new View();
-  widget_->SetContentsView(container);
-  container->AddChildView(combobox_);
+  View* container = widget_->SetContentsView(std::make_unique<View>());
+  combobox_ = container->AddChildView(std::move(combobox));
   EXPECT_FALSE(combobox_->GetEnabled());
 }
 
 // On Mac, key events can't change the currently selected index directly for a
 // combobox.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 // Tests the behavior of various keyboard shortcuts on the currently selected
 // index.
@@ -527,7 +510,7 @@ TEST_F(ComboboxTest, SkipMultipleSeparatorsAtEnd) {
   PressKey(ui::VKEY_END);
   EXPECT_EQ(6, combobox_->GetSelectedIndex());
 }
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC
 
 TEST_F(ComboboxTest, GetTextForRowTest) {
   std::set<int> separators;
@@ -540,7 +523,8 @@ TEST_F(ComboboxTest, GetTextForRowTest) {
       EXPECT_TRUE(combobox_->GetTextForRow(i).empty()) << i;
     } else {
       EXPECT_EQ(ASCIIToUTF16(i % 2 == 0 ? "PEANUT BUTTER" : "JELLY"),
-                combobox_->GetTextForRow(i)) << i;
+                combobox_->GetTextForRow(i))
+          << i;
     }
   }
 }
@@ -549,36 +533,34 @@ TEST_F(ComboboxTest, GetTextForRowTest) {
 TEST_F(ComboboxTest, SelectValue) {
   InitCombobox(nullptr);
   ASSERT_EQ(model_->GetDefaultIndex(), combobox_->GetSelectedIndex());
-  EXPECT_TRUE(combobox_->SelectValue(ASCIIToUTF16("PEANUT BUTTER")));
+  EXPECT_TRUE(combobox_->SelectValue(u"PEANUT BUTTER"));
   EXPECT_EQ(0, combobox_->GetSelectedIndex());
-  EXPECT_TRUE(combobox_->SelectValue(ASCIIToUTF16("JELLY")));
+  EXPECT_TRUE(combobox_->SelectValue(u"JELLY"));
   EXPECT_EQ(1, combobox_->GetSelectedIndex());
-  EXPECT_FALSE(combobox_->SelectValue(ASCIIToUTF16("BANANAS")));
+  EXPECT_FALSE(combobox_->SelectValue(u"BANANAS"));
   EXPECT_EQ(1, combobox_->GetSelectedIndex());
 }
 
 TEST_F(ComboboxTest, ListenerHandlesDelete) {
-  TestComboboxModel model;
-
-  // |combobox| will be deleted on change.
-  TestCombobox* combobox = new TestCombobox(&model);
-  std::unique_ptr<EvilListener> evil_listener(new EvilListener());
-  combobox->set_listener(evil_listener.get());
-  ASSERT_NO_FATAL_FAILURE(ComboboxTestApi(combobox).PerformActionAt(2));
-  EXPECT_TRUE(evil_listener->deleted());
+  auto evil_listener = std::make_unique<EvilListener>();
+  ASSERT_TRUE(evil_listener->combobox());
+  ASSERT_NO_FATAL_FAILURE(
+      ComboboxTestApi(evil_listener->combobox()).PerformActionAt(2));
+  EXPECT_FALSE(evil_listener->combobox());
 }
 
 TEST_F(ComboboxTest, Click) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   combobox_->Layout();
 
   // Click the left side. The menu is shown.
   EXPECT_EQ(0, menu_show_count_);
-  PerformClick(gfx::Point(combobox_->x() + 1,
-                          combobox_->y() + combobox_->height() / 2));
+  PerformClick(
+      gfx::Point(combobox_->x() + 1, combobox_->y() + combobox_->height() / 2));
   EXPECT_FALSE(listener.on_perform_action_called());
   EXPECT_EQ(1, menu_show_count_);
 }
@@ -586,15 +568,16 @@ TEST_F(ComboboxTest, Click) {
 TEST_F(ComboboxTest, ClickButDisabled) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
   combobox_->SetEnabled(false);
 
   // Click the left side, but nothing happens since the combobox is disabled.
-  PerformClick(gfx::Point(combobox_->x() + 1,
-                          combobox_->y() + combobox_->height() / 2));
+  PerformClick(
+      gfx::Point(combobox_->x() + 1, combobox_->y() + combobox_->height() / 2));
   EXPECT_FALSE(listener.on_perform_action_called());
   EXPECT_EQ(0, menu_show_count_);
 }
@@ -602,8 +585,9 @@ TEST_F(ComboboxTest, ClickButDisabled) {
 TEST_F(ComboboxTest, NotifyOnClickWithReturnKey) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shown.
   PressKey(ui::VKEY_RETURN);
@@ -615,8 +599,9 @@ TEST_F(ComboboxTest, NotifyOnClickWithReturnKey) {
 TEST_F(ComboboxTest, NotifyOnClickWithSpaceKey) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   // The click event is ignored. Instead the menu is shwon.
   PressKey(ui::VKEY_SPACE);
@@ -661,14 +646,15 @@ TEST_F(ComboboxTest, ShowViaAccessibleAction) {
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
   combobox_->Layout();
 
   // Click the right side (arrow button). The menu is shown.
   const gfx::Point right_point(combobox_->x() + combobox_->width() - 1,
-                         combobox_->y() + combobox_->height() / 2);
+                               combobox_->y() + combobox_->height() / 2);
 
   EXPECT_EQ(0, menu_show_count_);
 
@@ -705,6 +691,35 @@ TEST_F(ComboboxTest, ConsumingPressKeyEvents) {
     EXPECT_FALSE(combobox_->OnKeyPressed(return_press));
     EXPECT_EQ(1, menu_show_count_);
   }
+}
+
+// Test that ensures that the combobox is resized correctly when selecting
+// between indices of different label lengths.
+TEST_F(ComboboxTest, ContentSizeUpdateOnSetSelectedIndex) {
+  const gfx::FontList& font_list =
+      style::GetFont(Combobox::kDefaultComboboxTextContext,
+                     Combobox::kDefaultComboboxTextStyle);
+  InitCombobox(nullptr);
+  combobox_->SetSizeToLargestLabel(false);
+  test_api_->PerformActionAt(1);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(1), font_list),
+            test_api_->content_size().width());
+  combobox_->SetSelectedIndex(1);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(1), font_list),
+            test_api_->content_size().width());
+
+  // Avoid selected_index_ == index optimization and start with index 1 selected
+  // to test resizing from a an index with a shorter label to an index with a
+  // longer label.
+  combobox_->SetSelectedIndex(0);
+  combobox_->SetSelectedIndex(1);
+
+  test_api_->PerformActionAt(0);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(0), font_list),
+            test_api_->content_size().width());
+  combobox_->SetSelectedIndex(0);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(0), font_list),
+            test_api_->content_size().width());
 }
 
 TEST_F(ComboboxTest, ContentWidth) {
@@ -780,8 +795,9 @@ TEST_F(ComboboxTest, ModelChanged) {
 TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
   InitCombobox(nullptr);
 
-  TestComboboxListener listener;
-  combobox_->set_listener(&listener);
+  TestComboboxListener listener(combobox_);
+  combobox_->SetCallback(base::BindRepeating(
+      &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
   ui::TextInputClient* input_client =
       widget_->GetInputMethod()->GetTextInputClient();
 
@@ -829,7 +845,7 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             menu_model->GetTypeAt(kSeparatorIndex));
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Comboboxes on Mac should have checkmarks, with the selected item checked,
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(0));
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu_model->GetTypeAt(1));
@@ -844,10 +860,129 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(1));
 #endif
 
-  EXPECT_EQ(ASCIIToUTF16("PEANUT BUTTER"), menu_model->GetLabelAt(0));
-  EXPECT_EQ(ASCIIToUTF16("JELLY"), menu_model->GetLabelAt(1));
+  EXPECT_EQ(u"PEANUT BUTTER", menu_model->GetLabelAt(0));
+  EXPECT_EQ(u"JELLY", menu_model->GetLabelAt(1));
 
   EXPECT_TRUE(menu_model->IsVisibleAt(0));
+}
+
+// Verifies SetTooltipTextAndAccessibleName will call NotifyAccessibilityEvent.
+TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
+  InitCombobox(nullptr);
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
+  test::AXEventCounter counter(AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+  combobox_->SetTooltipTextAndAccessibleName(test_tooltip_text);
+  EXPECT_EQ(test_tooltip_text, combobox_->GetTooltipTextAndAccessibleName());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+  EXPECT_EQ(test_tooltip_text, combobox_->GetAccessibleName());
+  ui::AXNodeData data;
+  combobox_->GetAccessibleNodeData(&data);
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(test_tooltip_text, ASCIIToUTF16(name));
+}
+
+namespace {
+
+using ComboboxDefaultTest = ViewsTestBase;
+
+class ConfigurableComboboxModel final : public ui::ComboboxModel {
+ public:
+  explicit ConfigurableComboboxModel(bool* destroyed = nullptr)
+      : destroyed_(destroyed) {
+    if (destroyed_)
+      *destroyed_ = false;
+  }
+  ConfigurableComboboxModel(ConfigurableComboboxModel&) = delete;
+  ConfigurableComboboxModel& operator=(const ConfigurableComboboxModel&) =
+      delete;
+  ~ConfigurableComboboxModel() override {
+    if (destroyed_)
+      *destroyed_ = true;
+  }
+
+  // ui::ComboboxModel:
+  int GetItemCount() const override { return item_count_; }
+  std::u16string GetItemAt(int index) const override {
+    DCHECK_LT(index, item_count_);
+    return base::NumberToString16(index);
+  }
+  int GetDefaultIndex() const override { return default_index_; }
+
+  void SetItemCount(int item_count) { item_count_ = item_count; }
+
+  void SetDefaultIndex(int default_index) { default_index_ = default_index; }
+
+ private:
+  bool* const destroyed_;
+  int item_count_ = 0;
+  int default_index_ = -1;
+};
+
+}  // namespace
+
+TEST_F(ComboboxDefaultTest, Default) {
+  auto combobox = std::make_unique<Combobox>();
+  EXPECT_EQ(0, combobox->GetRowCount());
+  EXPECT_EQ(-1, combobox->GetSelectedRow());
+}
+
+TEST_F(ComboboxDefaultTest, SetModel) {
+  bool destroyed = false;
+  std::unique_ptr<ConfigurableComboboxModel> model =
+      std::make_unique<ConfigurableComboboxModel>(&destroyed);
+  model->SetItemCount(42);
+  model->SetDefaultIndex(27);
+  {
+    auto combobox = std::make_unique<Combobox>();
+    combobox->SetModel(model.get());
+    EXPECT_EQ(42, combobox->GetRowCount());
+    EXPECT_EQ(27, combobox->GetSelectedRow());
+  }
+  EXPECT_FALSE(destroyed);
+}
+
+TEST_F(ComboboxDefaultTest, SetOwnedModel) {
+  bool destroyed = false;
+  std::unique_ptr<ConfigurableComboboxModel> model =
+      std::make_unique<ConfigurableComboboxModel>(&destroyed);
+  model->SetItemCount(42);
+  model->SetDefaultIndex(27);
+  {
+    auto combobox = std::make_unique<Combobox>();
+    combobox->SetOwnedModel(std::move(model));
+    EXPECT_EQ(42, combobox->GetRowCount());
+    EXPECT_EQ(27, combobox->GetSelectedRow());
+  }
+  EXPECT_TRUE(destroyed);
+}
+
+TEST_F(ComboboxDefaultTest, SetModelOverwriteOwned) {
+  bool destroyed = false;
+  std::unique_ptr<ConfigurableComboboxModel> model =
+      std::make_unique<ConfigurableComboboxModel>(&destroyed);
+  auto combobox = std::make_unique<Combobox>();
+  combobox->SetModel(model.get());
+  ASSERT_FALSE(destroyed);
+  combobox->SetOwnedModel(std::make_unique<ConfigurableComboboxModel>());
+  EXPECT_FALSE(destroyed);
+}
+
+TEST_F(ComboboxDefaultTest, SetOwnedModelOverwriteOwned) {
+  bool destroyed_first = false;
+  bool destroyed_second = false;
+  {
+    auto combobox = std::make_unique<Combobox>();
+    combobox->SetOwnedModel(
+        std::make_unique<ConfigurableComboboxModel>(&destroyed_first));
+    ASSERT_FALSE(destroyed_first);
+    combobox->SetOwnedModel(
+        std::make_unique<ConfigurableComboboxModel>(&destroyed_second));
+    EXPECT_TRUE(destroyed_first);
+    ASSERT_FALSE(destroyed_second);
+  }
+  EXPECT_TRUE(destroyed_second);
 }
 
 }  // namespace views

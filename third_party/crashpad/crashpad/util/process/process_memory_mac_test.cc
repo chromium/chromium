@@ -33,7 +33,7 @@ namespace {
 
 TEST(ProcessMemoryMac, ReadMappedSelf) {
   vm_address_t address = 0;
-  constexpr vm_size_t kSize = 4 * PAGE_SIZE;
+  const vm_size_t kSize = 4 * PAGE_SIZE;
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
@@ -88,7 +88,7 @@ TEST(ProcessMemoryMac, ReadMappedSelf) {
 
 TEST(ProcessMemoryMac, ReadSelfUnmapped) {
   vm_address_t address = 0;
-  constexpr vm_size_t kSize = 2 * PAGE_SIZE;
+  const vm_size_t kSize = 2 * PAGE_SIZE;
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
@@ -150,7 +150,7 @@ TEST(ProcessMemoryMac, ReadSelfUnmapped) {
 
 TEST(ProcessMemoryMac, ReadCStringSelfUnmapped) {
   vm_address_t address = 0;
-  constexpr vm_size_t kSize = 2 * PAGE_SIZE;
+  const vm_size_t kSize = 2 * PAGE_SIZE;
   kern_return_t kr =
       vm_allocate(mach_task_self(), &address, kSize, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(kr, KERN_SUCCESS) << MachErrorMessage(kr, "vm_allocate");
@@ -259,7 +259,7 @@ TEST(ProcessMemoryMac, MappedMemoryDeallocates) {
   // This is the same but with a big buffer that’s definitely larger than a
   // single page. This makes sure that the whole mapped region winds up being
   // deallocated.
-  constexpr size_t kBigSize = 4 * PAGE_SIZE;
+  const size_t kBigSize = 4 * PAGE_SIZE;
   std::unique_ptr<char[]> big_buffer(new char[kBigSize]);
   test_address = FromPointerCast<mach_vm_address_t>(&big_buffer[0]);
   ASSERT_TRUE((mapped = memory.ReadMapped(test_address, kBigSize)));

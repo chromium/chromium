@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/engine/engine_components_factory.h"
 
 namespace syncer {
@@ -19,7 +18,10 @@ namespace syncer {
 class EngineComponentsFactoryImpl : public EngineComponentsFactory {
  public:
   explicit EngineComponentsFactoryImpl(const Switches& switches);
-  ~EngineComponentsFactoryImpl() override;
+  EngineComponentsFactoryImpl(const EngineComponentsFactoryImpl&) = delete;
+  EngineComponentsFactoryImpl& operator=(const EngineComponentsFactoryImpl&) =
+      delete;
+  ~EngineComponentsFactoryImpl() override = default;
 
   std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,
@@ -29,25 +31,18 @@ class EngineComponentsFactoryImpl : public EngineComponentsFactory {
 
   std::unique_ptr<SyncCycleContext> BuildContext(
       ServerConnectionManager* connection_manager,
-      syncable::Directory* directory,
       ExtensionsActivity* extensions_activity,
       const std::vector<SyncEngineEventListener*>& listeners,
       DebugInfoGetter* debug_info_getter,
       ModelTypeRegistry* model_type_registry,
       const std::string& invalidator_client_id,
+      const std::string& cache_guid,
       const std::string& store_birthday,
       const std::string& bag_of_chips,
       base::TimeDelta poll_interval) override;
 
-  std::unique_ptr<syncable::DirectoryBackingStore> BuildDirectoryBackingStore(
-      StorageOption storage,
-      const std::string& dir_name,
-      const base::RepeatingCallback<std::string()>& cache_guid_generator,
-      const base::FilePath& backing_filepath) override;
-
  private:
   const Switches switches_;
-  DISALLOW_COPY_AND_ASSIGN(EngineComponentsFactoryImpl);
 };
 
 }  // namespace syncer

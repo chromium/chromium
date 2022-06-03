@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 class MockSharingService;
 class NotificationDisplayServiceTester;
@@ -27,16 +27,22 @@ class Notification;
 class SharedClipboardTestBase : public testing::Test {
  public:
   SharedClipboardTestBase();
+
+  SharedClipboardTestBase(const SharedClipboardTestBase&) = delete;
+  SharedClipboardTestBase& operator=(const SharedClipboardTestBase&) = delete;
+
   ~SharedClipboardTestBase() override;
 
   void SetUp() override;
 
   void TearDown() override;
 
-  chrome_browser_sharing::SharingMessage CreateMessage(std::string guid,
-                                                       std::string device_name);
+  chrome_browser_sharing::SharingMessage CreateMessage(
+      const std::string& guid,
+      const std::string& device_name);
 
   std::string GetClipboardText();
+  SkBitmap GetClipboardImage();
 
   message_center::Notification GetNotification();
 
@@ -45,9 +51,6 @@ class SharedClipboardTestBase : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   std::unique_ptr<MockSharingService> sharing_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardTestBase);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_TEST_BASE_H_

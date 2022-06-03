@@ -9,62 +9,41 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
 
 void* QueryDeviceObjectFromANGLE(int object_type) {
-  EGLDisplay egl_display = nullptr;
+  TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
+
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  if (egl_display == EGL_NO_DISPLAY) {
+    DVLOG(1) << "Failed to retrieve EGLDisplay";
+    return nullptr;
+  }
+
+  if (!gl::GLSurfaceEGL::IsEGLQueryDeviceSupported()) {
+    DVLOG(1) << "EGL_EXT_device_query not supported";
+    return nullptr;
+  }
+
   intptr_t egl_device = 0;
+  if (!eglQueryDisplayAttribEXT(egl_display, EGL_DEVICE_EXT, &egl_device)) {
+    DVLOG(1) << "eglQueryDisplayAttribEXT failed";
+    return nullptr;
+  }
+
+  if (!egl_device) {
+    DVLOG(1) << "Failed to retrieve EGLDeviceEXT";
+    return nullptr;
+  }
+
   intptr_t device = 0;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. GetHardwareDisplay");
-    egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-  }
-
-  if (!gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_device_query"))
+  if (!eglQueryDeviceAttribEXT(reinterpret_cast<EGLDeviceEXT>(egl_device),
+                               object_type, &device)) {
+    DVLOG(1) << "eglQueryDeviceAttribEXT failed";
     return nullptr;
-
-  PFNEGLQUERYDISPLAYATTRIBEXTPROC QueryDisplayAttribEXT = nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. eglGetProcAddress");
-
-    QueryDisplayAttribEXT = reinterpret_cast<PFNEGLQUERYDISPLAYATTRIBEXTPROC>(
-        eglGetProcAddress("eglQueryDisplayAttribEXT"));
-
-    if (!QueryDisplayAttribEXT)
-      return nullptr;
-  }
-
-  PFNEGLQUERYDEVICEATTRIBEXTPROC QueryDeviceAttribEXT = nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. eglGetProcAddress");
-
-    QueryDeviceAttribEXT = reinterpret_cast<PFNEGLQUERYDEVICEATTRIBEXTPROC>(
-        eglGetProcAddress("eglQueryDeviceAttribEXT"));
-    if (!QueryDeviceAttribEXT)
-      return nullptr;
-  }
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. QueryDisplayAttribEXT");
-
-    if (!QueryDisplayAttribEXT(egl_display, EGL_DEVICE_EXT, &egl_device))
-      return nullptr;
-  }
-  if (!egl_device)
-    return nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. QueryDisplayAttribEXT");
-
-    if (!QueryDeviceAttribEXT(reinterpret_cast<EGLDeviceEXT>(egl_device),
-                              object_type, &device)) {
-      return nullptr;
-    }
   }
 
   return reinterpret_cast<void*>(device);
@@ -100,8 +79,9 @@ Microsoft::WRL::ComPtr<IDCompositionDevice2> QueryDirectCompositionDevice(
     return dcomp_device;
 
   UINT data_size = sizeof(dcomp_device.Get());
-  HRESULT hr = d3d11_device->GetPrivateData(kDirectCompositionGUID, &data_size,
-                                            dcomp_device.GetAddressOf());
+  HRESULT hr =
+      d3d11_device->GetPrivateData(kDirectCompositionGUID, &data_size,
+                                   dcomp_device.ReleaseAndGetAddressOf());
   if (SUCCEEDED(hr) && dcomp_device)
     return dcomp_device;
 
@@ -119,14 +99,13 @@ Microsoft::WRL::ComPtr<IDCompositionDevice2> QueryDirectCompositionDevice(
     return dcomp_device;
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.CopyTo(dxgi_device.GetAddressOf());
+  d3d11_device.As(&dxgi_device);
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-  hr = create_device_function(dxgi_device.Get(),
-                              IID_PPV_ARGS(desktop_device.GetAddressOf()));
+  hr = create_device_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
   if (FAILED(hr))
     return dcomp_device;
 
-  hr = desktop_device.CopyTo(dcomp_device.GetAddressOf());
+  hr = desktop_device.As(&dcomp_device);
   CHECK(SUCCEEDED(hr));
   d3d11_device->SetPrivateDataInterface(kDirectCompositionGUID,
                                         dcomp_device.Get());

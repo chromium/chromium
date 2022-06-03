@@ -18,7 +18,10 @@
 #include <ostream>
 #include <sstream>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 namespace cctz {
 namespace detail {
@@ -87,4 +90,5 @@ std::ostream& operator<<(std::ostream& os, weekday wd) {
 }  // namespace detail
 }  // namespace cctz
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

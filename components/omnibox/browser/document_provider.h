@@ -13,9 +13,9 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
@@ -66,8 +66,8 @@ class DocumentProvider : public AutocompleteProvider {
   // ^           ^ ^^   ^            ^  ^
   // NONE        M |M   |            |  NONE
   //               NONE NONE         MATCH
-  static ACMatchClassifications Classify(const base::string16& input_text,
-                                         const base::string16& text);
+  static ACMatchClassifications Classify(const std::u16string& input_text,
+                                         const std::u16string& text);
 
   // Builds a GURL to use for deduping against other document/history
   // suggestions. Multiple URLs may refer to the same document.
@@ -77,23 +77,12 @@ class DocumentProvider : public AutocompleteProvider {
   static const GURL GetURLForDeduping(const GURL& url);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CheckFeatureBehindFlag);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteNoIncognito);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteNoSync);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteClientSettingOff);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteDefaultSearch);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeatureNotInExplicitKeywordMode);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           CheckFeaturePrerequisiteServerBackoff);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, IsDocumentProviderAllowed);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, IsInputLikelyURL);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, ParseDocumentSearchResults);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ProductDescriptionStringsAndAccessibleLabels);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, MatchDescriptionString);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ParseDocumentSearchResultsBreakTies);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
@@ -101,21 +90,23 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ParseDocumentSearchResultsBreakTiesZeroLimit);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           ParseDocumentSearchResultsWithBackoff);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
-                           ParseDocumentSearchResultsWithIneligibleFlag);
+                           ParseDocumentSearchResultsWithBadResponse);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, GenerateLastModifiedString);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Scoring);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Caching);
-  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, MinQueryLength);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForAsyncMatches);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForSyncMatches);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, StartCallsStop);
 
-  using MatchesCache = base::MRUCache<GURL, AutocompleteMatch>;
+  using MatchesCache = base::LRUCache<GURL, AutocompleteMatch>;
 
   DocumentProvider(AutocompleteProviderClient* client,
                    AutocompleteProviderListener* listener,
                    size_t cache_size);
 
   ~DocumentProvider() override;
+
+  DocumentProvider(const DocumentProvider&) = delete;
+  DocumentProvider& operator=(const DocumentProvider&) = delete;
 
   // Determines whether the profile/session/window meet the feature
   // prerequisites.
@@ -149,39 +140,42 @@ class DocumentProvider : public AutocompleteProvider {
   // Appends |matches_cache_| to |matches_|. Updates their classifications
   // according to |input_.text()| and sets their relevance to 0.
   // |skip_n_most_recent_matches| indicates the number of cached matches already
-  // in |matches_|. E.g. if the drive server responded with 3 docs, these 3 docs
-  // are added both to |matches_| and |matches_cache| prior to invoking
-  // |AddCachedMatches| in order to avoid duplicate matches.
+  //   in |matches_|. E.g. if the drive server responded with 3 docs, these 3
+  //   docs are added both to |matches_| and |matches_cache| prior to invoking
+  //   |CopyCachedMatchesToMatches()| in order to avoid duplicate matches.
   void CopyCachedMatchesToMatches(size_t skip_n_most_recent_matches = 0);
+
+  // Sets the scores of all cached matches to 0. This is invoked before pushing
+  // the latest async response returns so that the scores aren't preserved for
+  // further inputs. E.g., the input 'london' shouldn't display cached docs from
+  // a previous input 'paris'. This can't be done by automatically (i.e. set
+  // scores to 0 before pushing to the cache), as the scores are needed for the
+  // async pass if the user continued their input.
+  void SetCachedMatchesScoresTo0();
+
+  // Sets the scores of matches beyond the first |provider_max_matches_| to 0.
+  // This ensures the doc provider doesn't exceed it's allocated suggestions
+  // while also allowing docs from other providers to be deduped and styled like
+  // docs from the doc provider.
+  void DemoteMatchesBeyondMax();
 
   // Generates the localized last-modified timestamp to present to the user.
   // Full date for old files, mm/dd within the same calendar year, or time-of-
   // day if a file was modified on the same date.
   // |now| should generally be base::Time::Now() but is passed in for testing.
-  static base::string16 GenerateLastModifiedString(
+  static std::u16string GenerateLastModifiedString(
       const std::string& modified_timestamp_string,
       base::Time now);
 
-  // Don't request doc suggestions for inputs shorter than |min_query_length_|
-  // or longer than |max_query_length_|. A value of -1 indicates no limit. These
-  // help limit the load on backend servers.
-  const size_t min_query_length_;
-  const size_t max_query_length_;
-  // Hide doc suggestions for inputs shorter than |min_query_show_length_| or
-  // longer than |max_query_show_length_|. A value of -1 indicates no limit.
-  // These help analyze experiments by allowing observing the effect of changing
-  // |min(max)_query_length_| while keeping data populations consistent.
-  const size_t min_query_show_length_;
-  const size_t max_query_show_length_;
-  // Don't log doc suggestions for inputs shorter than |min_query_log_length_|
-  // or longer than |max_query_log_length_| (i.e. don't trigger
-  // field_trial_triggered and field_trial_triggered_in_session). A value of -1
-  // indicates no limit. These help analyze experiments by restricting data
-  // populations to avoid noise when only interested in a range of input
-  // lengths. E.g. experimenting with |max_query_show_length_| would affect only
-  // the small subset of long queries.
-  const size_t min_query_log_length_;
-  const size_t max_query_log_length_;
+  // Convert mimetype (e.g. "application/vnd.google-apps.document") to a string
+  // that can be used in the match description (e.g. "Google Docs").
+  static std::u16string GetProductDescriptionString(
+      const std::string& mimetype);
+
+  // Construct match description; e.g. "Jan 12 - First Last - Google Docs".
+  static std::u16string GetMatchDescription(const std::string& update_time,
+                                            const std::string& mimetype,
+                                            const std::string& owner);
 
   // Whether a field trial has triggered for this query and this session,
   // respectively. Works similarly to BaseSearchProvider, though this class does
@@ -220,8 +214,6 @@ class DocumentProvider : public AutocompleteProvider {
 
   // For callbacks that may be run after destruction. Must be declared last.
   base::WeakPtrFactory<DocumentProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentProvider);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_DOCUMENT_PROVIDER_H_

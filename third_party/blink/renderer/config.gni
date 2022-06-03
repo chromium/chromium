@@ -4,6 +4,7 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/ui.gni")
+import("//build/toolchain/gcc_toolchain.gni")
 import("//third_party/blink/public/public_features.gni")
 
 if (is_android) {
@@ -20,14 +21,21 @@ declare_args() {
 }
 
 declare_args() {
+  # Format the generated files to improve the code readability.  Apply clang-
+  # format, gn format, etc. to the generated files if possible.
+  blink_enable_generated_code_formatting = true
+
   # How many symbols to include in the build of blink. This affects
   # the performance of the build since the symbols are large and dealing with
   # them is slow.
   #   2 means regular build with symbols.
-  #   1 means minimal symbols, usually enough for backtraces only. Symbols with
+  #   1 means medium symbols, usually enough for backtraces only. Symbols with
   # internal linkage (static functions or those in anonymous namespaces) may not
-  # appear when using this level.
-  #   0 means no symbols.
+  # appear when using this level. On some platforms (including Windows)
+  # filenames and line numbers will be included. Information about types and
+  # locals is not included.
+  #   0 means minimal symbols, which on some platforms (including Windows) may
+  # include function names suitable for backtraces.
   #   -1 means auto-set according to debug/release and platform.
   blink_symbol_level = -1
 
@@ -37,13 +45,17 @@ declare_args() {
   # If true, ffmpeg will be used for computing FFTs for WebAudio
   use_webaudio_ffmpeg = !is_mac && !is_android && !use_webaudio_pffft
 
-  # If true, webgl2-compute context will be supported.
-  support_webgl2_compute_context = !is_android
+  # If true, the experimental renderer extensions library will be used.
+  use_blink_extensions_chromeos = false
 }
 
 # feature_defines_list ---------------------------------------------------------
 
 feature_defines_list = []
+
+if (use_blink_extensions_chromeos) {
+  feature_defines_list += [ "USE_BLINK_EXTENSIONS_CHROMEOS=1" ]
+}
 
 if (use_low_quality_image_interpolation) {
   feature_defines_list += [ "WTF_USE_LOW_QUALITY_IMAGE_INTERPOLATION=1" ]
@@ -53,22 +65,8 @@ if (use_webaudio_ffmpeg) {
   feature_defines_list += [ "WTF_USE_WEBAUDIO_FFMPEG=1" ]
 }
 
-if (support_webgl2_compute_context) {
-  feature_defines_list += [ "SUPPORT_WEBGL2_COMPUTE_CONTEXT=1" ]
-}
-
 if (use_webaudio_pffft) {
   feature_defines_list += [ "WTF_USE_WEBAUDIO_PFFFT=1" ]
-}
-
-if (blink_symbol_level == 0 && is_win && symbol_level != 0) {
-  # If we use no_symbols on Windows when symbol_level is not zero then no
-  # PDB will be generated but ninja will be expecting one. This would mean
-  # that the build would always be dirty. Using minimal_symbols in this
-  # situation keeps the build times fast (roughly identical to no_symbols)
-  # while still generating a PDB to keep ninja happy (and it gives us proper
-  # call stacks).
-  blink_symbol_level = 1
 }
 
 if (blink_symbol_level == 2) {

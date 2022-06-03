@@ -4,23 +4,34 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
-import android.support.annotation.Nullable;
+import android.content.Context;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPopup;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionFactory;
+import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantPopupListSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantStaticTextSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection.TextInputFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputType;
+import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.payments.AutofillContact;
+import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
+import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,28 +41,78 @@ import java.util.List;
 public class AssistantCollectUserDataModel extends PropertyModel {
     // TODO(crbug.com/806868): Add |setSelectedLogin|.
 
+    /** Options specifying how to summarize an {@code AutofillContact}. */
+    public static class ContactDescriptionOptions {
+        public @AssistantContactField int[] mFields;
+        public int mMaxNumberLines;
+    }
+
     /**
-     * This class holds a the credit card and billing address information required to create an
-     * {@code AutofillPaymentInstrument}.
+     * Model wrapper for an {@code EditableOption} to contain errors.
+     *
+     * @param <T> The type of |EditableOption| that a concrete instance of this class is created
+     * for, such as |AutofillContact|, |AutofillPaymentMethod|, etc.
      */
-    public static class PaymentTuple {
-        private final PersonalDataManager.CreditCard mCreditCard;
-        @Nullable
-        private final PersonalDataManager.AutofillProfile mBillingAddress;
+    public static class OptionModel<T extends EditableOption> {
+        public T mOption;
+        public List<String> mErrors;
 
-        public PaymentTuple(PersonalDataManager.CreditCard creditCard,
-                @Nullable PersonalDataManager.AutofillProfile billingAddress) {
-            mCreditCard = creditCard;
-            mBillingAddress = billingAddress;
+        public OptionModel(T option, List<String> errors) {
+            this.mOption = option;
+            this.mErrors = errors;
         }
 
-        public PersonalDataManager.CreditCard getCreditCard() {
-            return mCreditCard;
+        public OptionModel(T option) {
+            this(option, new ArrayList<>());
+        }
+    }
+
+    /** Model wrapper for an {@code AutofillContact}. */
+    public static class ContactModel extends OptionModel<AutofillContact> {
+        private final boolean mCanEdit;
+
+        public ContactModel(AutofillContact contact, List<String> errors, boolean canEdit) {
+            super(contact, errors);
+            mCanEdit = canEdit;
         }
 
-        @Nullable
-        public PersonalDataManager.AutofillProfile getBillingAddress() {
-            return mBillingAddress;
+        public ContactModel(AutofillContact contact) {
+            super(contact);
+            mCanEdit = true;
+        }
+
+        public boolean canEdit() {
+            return mCanEdit;
+        }
+    }
+
+    /** Model wrapper for an {@code AutofillAddress}. */
+    public static class AddressModel extends OptionModel<AutofillAddress> {
+        public AddressModel(AutofillAddress address, List<String> errors) {
+            super(address, errors);
+        }
+
+        public AddressModel(AutofillAddress address) {
+            super(address);
+        }
+    }
+
+    /** Model wrapper for an {@code AutofillPaymentInstrument}. */
+    public static class PaymentInstrumentModel extends OptionModel<AutofillPaymentInstrument> {
+        public PaymentInstrumentModel(
+                AutofillPaymentInstrument paymentInstrument, List<String> errors) {
+            super(paymentInstrument, errors);
+        }
+
+        public PaymentInstrumentModel(AutofillPaymentInstrument paymentInstrument) {
+            super(paymentInstrument);
+        }
+    }
+
+    /** Model wrapper for an {@code AssistantLoginChoice}. */
+    public static class LoginChoiceModel extends OptionModel<AssistantLoginChoice> {
+        public LoginChoiceModel(AssistantLoginChoice loginChoice) {
+            super(loginChoice);
         }
     }
 
@@ -65,27 +126,35 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
     /** The chosen shipping address. */
-    public static final WritableObjectPropertyKey<PersonalDataManager.AutofillProfile>
-            SHIPPING_ADDRESS = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<AddressModel> SELECTED_SHIPPING_ADDRESS =
+            new WritableObjectPropertyKey<>();
 
     /** The chosen payment method (including billing address). */
-    public static final WritableObjectPropertyKey<AssistantCollectUserDataModel.PaymentTuple>
-            PAYMENT_METHOD = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<PaymentInstrumentModel>
+            SELECTED_PAYMENT_INSTRUMENT = new WritableObjectPropertyKey<>();
 
     /** The chosen contact details. */
-    public static final WritableObjectPropertyKey<PersonalDataManager.AutofillProfile>
-            CONTACT_DETAILS = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ContactModel> SELECTED_CONTACT_DETAILS =
+            new WritableObjectPropertyKey<>();
+
+    /** The contact details section title. */
+    public static final WritableObjectPropertyKey<String> CONTACT_SECTION_TITLE =
+            new WritableObjectPropertyKey<>();
 
     /** The login section title. */
     public static final WritableObjectPropertyKey<String> LOGIN_SECTION_TITLE =
             new WritableObjectPropertyKey<>();
 
     /** The chosen login option. */
-    public static final WritableObjectPropertyKey<AssistantLoginChoice> SELECTED_LOGIN =
+    public static final WritableObjectPropertyKey<LoginChoiceModel> SELECTED_LOGIN =
             new WritableObjectPropertyKey<>();
 
     /** The status of the third party terms & conditions. */
     public static final WritableIntPropertyKey TERMS_STATUS = new WritableIntPropertyKey();
+
+    /** The shipping section title. */
+    public static final WritableObjectPropertyKey<String> SHIPPING_SECTION_TITLE =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey REQUEST_NAME = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey REQUEST_EMAIL = new WritableBooleanPropertyKey();
@@ -101,11 +170,17 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey REQUEST_LOGIN_CHOICE =
             new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<List<PersonalDataManager.AutofillProfile>>
-            AVAILABLE_PROFILES = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<List<AutofillAddress>>
+            AVAILABLE_BILLING_ADDRESSES = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<List<AssistantCollectUserDataModel.PaymentTuple>>
-            AVAILABLE_AUTOFILL_PAYMENT_METHODS = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_CONTACTS =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<List<AddressModel>> AVAILABLE_SHIPPING_ADDRESSES =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<List<PaymentInstrumentModel>>
+            AVAILABLE_PAYMENT_INSTRUMENTS = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<String>> SUPPORTED_BASIC_CARD_NETWORKS =
             new WritableObjectPropertyKey<>();
@@ -118,25 +193,43 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<AssistantVerticalExpander> EXPANDED_SECTION =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableBooleanPropertyKey REQUIRE_BILLING_POSTAL_CODE =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableObjectPropertyKey<String> BILLING_POSTAL_CODE_MISSING_TEXT =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableBooleanPropertyKey REQUEST_DATE_RANGE =
             new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<AssistantDateChoiceOptions> DATE_RANGE_START =
+    public static final WritableObjectPropertyKey<AssistantDateChoiceOptions>
+            DATE_RANGE_START_OPTIONS = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<AssistantDateTime> DATE_RANGE_START_DATE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> DATE_RANGE_START_LABEL =
+    public static final WritableObjectPropertyKey<Integer> DATE_RANGE_START_TIMESLOT =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<AssistantDateChoiceOptions> DATE_RANGE_END =
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_START_DATE_LABEL =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> DATE_RANGE_END_LABEL =
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_START_TIME_LABEL =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<AssistantDateChoiceOptions>
+            DATE_RANGE_END_OPTIONS = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<AssistantDateTime> DATE_RANGE_END_DATE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<Integer> DATE_RANGE_END_TIMESLOT =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_END_DATE_LABEL =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_END_TIME_LABEL =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<AssistantAdditionalSectionFactory>>
@@ -151,38 +244,71 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> PRIVACY_NOTICE_TEXT =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<View> GENERIC_USER_INTERFACE =
+    public static final WritableObjectPropertyKey<String> INFO_SECTION_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey INFO_SECTION_TEXT_CENTER =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<View> GENERIC_USER_INTERFACE_PREPENDED =
             new WritableObjectPropertyKey<>();
 
-    public AssistantCollectUserDataModel() {
-        super(DELEGATE, WEB_CONTENTS, VISIBLE, SHIPPING_ADDRESS, PAYMENT_METHOD, CONTACT_DETAILS,
-                LOGIN_SECTION_TITLE, SELECTED_LOGIN, TERMS_STATUS, REQUEST_NAME, REQUEST_EMAIL,
-                REQUEST_PHONE, REQUEST_SHIPPING_ADDRESS, REQUEST_PAYMENT,
-                ACCEPT_TERMS_AND_CONDITIONS_TEXT, SHOW_TERMS_AS_CHECKBOX, REQUEST_LOGIN_CHOICE,
-                AVAILABLE_PROFILES, AVAILABLE_AUTOFILL_PAYMENT_METHODS,
-                SUPPORTED_BASIC_CARD_NETWORKS, AVAILABLE_LOGINS, EXPANDED_SECTION,
-                REQUIRE_BILLING_POSTAL_CODE, BILLING_POSTAL_CODE_MISSING_TEXT, REQUEST_DATE_RANGE,
-                DATE_RANGE_START, DATE_RANGE_START_LABEL, DATE_RANGE_END, DATE_RANGE_END_LABEL,
-                PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
-                PRIVACY_NOTICE_TEXT, GENERIC_USER_INTERFACE);
+    public static final WritableObjectPropertyKey<View> GENERIC_USER_INTERFACE_APPENDED =
+            new WritableObjectPropertyKey<>();
 
-        /**
+    public static final WritableObjectPropertyKey<ContactDescriptionOptions>
+            CONTACT_SUMMARY_DESCRIPTION_OPTIONS = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<ContactDescriptionOptions>
+            CONTACT_FULL_DESCRIPTION_OPTIONS = new WritableObjectPropertyKey<>();
+
+    public static final WritableBooleanPropertyKey SHOULD_STORE_USER_DATA_CHANGES =
+            new WritableBooleanPropertyKey();
+
+    public AssistantCollectUserDataModel() {
+        super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
+                SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, CONTACT_SECTION_TITLE,
+                LOGIN_SECTION_TITLE, SELECTED_LOGIN, SHIPPING_SECTION_TITLE, TERMS_STATUS,
+                REQUEST_NAME, REQUEST_EMAIL, REQUEST_PHONE, REQUEST_SHIPPING_ADDRESS,
+                REQUEST_PAYMENT, ACCEPT_TERMS_AND_CONDITIONS_TEXT, SHOW_TERMS_AS_CHECKBOX,
+                REQUEST_LOGIN_CHOICE, AVAILABLE_BILLING_ADDRESSES, AVAILABLE_CONTACTS,
+                AVAILABLE_SHIPPING_ADDRESSES, AVAILABLE_PAYMENT_INSTRUMENTS,
+                SUPPORTED_BASIC_CARD_NETWORKS, AVAILABLE_LOGINS, EXPANDED_SECTION,
+                REQUEST_DATE_RANGE, DATE_RANGE_START_OPTIONS, DATE_RANGE_START_DATE,
+                DATE_RANGE_START_TIMESLOT, DATE_RANGE_START_DATE_LABEL, DATE_RANGE_START_TIME_LABEL,
+                DATE_RANGE_END_OPTIONS, DATE_RANGE_END_DATE, DATE_RANGE_END_TIMESLOT,
+                DATE_RANGE_END_DATE_LABEL, DATE_RANGE_END_TIME_LABEL,
+                DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE, DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE,
+                PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
+                PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
+                GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
+                CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
+                SHOULD_STORE_USER_DATA_CHANGES);
+
+        /*
          * Set initial state for basic type properties (others are implicitly null).
          * This is necessary to ensure that the initial UI state is consistent with the model.
          */
         set(VISIBLE, false);
         set(TERMS_STATUS, AssistantTermsAndConditionsState.NOT_SELECTED);
+        set(SHOULD_STORE_USER_DATA_CHANGES, false);
         set(REQUEST_NAME, false);
         set(REQUEST_EMAIL, false);
         set(REQUEST_PHONE, false);
         set(REQUEST_PAYMENT, false);
         set(REQUEST_SHIPPING_ADDRESS, false);
         set(REQUEST_LOGIN_CHOICE, false);
-        set(REQUIRE_BILLING_POSTAL_CODE, false);
-        set(DATE_RANGE_START_LABEL, "");
-        set(DATE_RANGE_END_LABEL, "");
-        set(PREPENDED_SECTIONS, new ArrayList<>());
-        set(APPENDED_SECTIONS, new ArrayList<>());
+        set(PREPENDED_SECTIONS, Collections.emptyList());
+        set(APPENDED_SECTIONS, Collections.emptyList());
+        set(AVAILABLE_PAYMENT_INSTRUMENTS, Collections.emptyList());
+        set(AVAILABLE_CONTACTS, Collections.emptyList());
+        set(AVAILABLE_SHIPPING_ADDRESSES, Collections.emptyList());
+        set(AVAILABLE_BILLING_ADDRESSES, Collections.emptyList());
+        set(INFO_SECTION_TEXT, "");
+    }
+
+    @CalledByNative
+    private void setShouldStoreUserDataChanges(boolean shouldStoreUserDataChanges) {
+        set(SHOULD_STORE_USER_DATA_CHANGES, shouldStoreUserDataChanges);
     }
 
     @CalledByNative
@@ -221,13 +347,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setRequireBillingPostalCode(boolean requireBillingPostalCode) {
-        set(REQUIRE_BILLING_POSTAL_CODE, requireBillingPostalCode);
-    }
-
-    @CalledByNative
-    private void setBillingPostalCodeMissingText(String text) {
-        set(BILLING_POSTAL_CODE_MISSING_TEXT, text);
+    private void setContactSectionTitle(String text) {
+        set(CONTACT_SECTION_TITLE, text);
     }
 
     @CalledByNative
@@ -238,6 +359,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setRequestLoginChoice(boolean requestLoginChoice) {
         set(REQUEST_LOGIN_CHOICE, requestLoginChoice);
+    }
+
+    @CalledByNative
+    private void setShippingSectionTitle(String text) {
+        set(SHIPPING_SECTION_TITLE, text);
     }
 
     @CalledByNative
@@ -266,23 +392,35 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setContactDetails(@Nullable PersonalDataManager.AutofillProfile contact) {
-        set(CONTACT_DETAILS, contact);
+    private void setSelectedContactDetails(
+            @Nullable AutofillContact contact, String[] errors, boolean canEdit) {
+        set(SELECTED_CONTACT_DETAILS,
+                contact == null ? null : new ContactModel(contact, Arrays.asList(errors), canEdit));
     }
 
     @CalledByNative
-    private void setShippingAddress(@Nullable PersonalDataManager.AutofillProfile shippingAddress) {
-        set(SHIPPING_ADDRESS, shippingAddress);
+    private void setSelectedShippingAddress(
+            @Nullable AutofillAddress shippingAddress, String[] errors) {
+        set(SELECTED_SHIPPING_ADDRESS,
+                shippingAddress == null ? null
+                                        : new AddressModel(shippingAddress, Arrays.asList(errors)));
     }
 
     @CalledByNative
-    private void setPaymentMethod(@Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingAddress) {
-        if (card == null) {
-            set(PAYMENT_METHOD, null);
-        } else {
-            set(PAYMENT_METHOD, new PaymentTuple(card, billingAddress));
-        }
+    private void setSelectedPaymentInstrument(WebContents webContents,
+            @Nullable PersonalDataManager.CreditCard card,
+            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
+        AutofillPaymentInstrument paymentInstrument =
+                createAutofillPaymentInstrument(webContents, card, billingProfile);
+        set(SELECTED_PAYMENT_INSTRUMENT,
+                paymentInstrument == null
+                        ? null
+                        : new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
+    }
+
+    @CalledByNative
+    private void setSelectedLoginChoice(@Nullable AssistantLoginChoice loginChoice) {
+        set(SELECTED_LOGIN, loginChoice == null ? null : new LoginChoiceModel(loginChoice));
     }
 
     /** Creates an empty list of login options. */
@@ -291,13 +429,22 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         return new ArrayList<>();
     }
 
+    /** Creates a login choice. */
+    @CalledByNative
+    private static AssistantLoginChoice createLoginChoice(String identifier, String label,
+            String sublabel, @Nullable String sublabelAccessibilityHint, int priority,
+            @Nullable AssistantInfoPopup infoPopup, @Nullable String editButtonContentDescription) {
+        return new AssistantLoginChoice(identifier, label, sublabel, sublabelAccessibilityHint,
+                priority, infoPopup, editButtonContentDescription);
+    }
+
     /** Appends a login choice to {@code loginChoices}. */
     @CalledByNative
     private static void addLoginChoice(List<AssistantLoginChoice> loginChoices, String identifier,
-            String label, String sublabel, String sublabelAccessibilityHint, int priority,
-            @Nullable AssistantInfoPopup infoPopup) {
-        loginChoices.add(new AssistantLoginChoice(
-                identifier, label, sublabel, sublabelAccessibilityHint, priority, infoPopup));
+            String label, @Nullable String sublabel, String sublabelAccessibilityHint, int priority,
+            @Nullable AssistantInfoPopup infoPopup, @Nullable String editButtonContentDescription) {
+        loginChoices.add(new AssistantLoginChoice(identifier, label, sublabel,
+                sublabelAccessibilityHint, priority, infoPopup, editButtonContentDescription));
     }
 
     /** Sets the list of available login choices. */
@@ -320,30 +467,90 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     /** Configures the start of the date/time range. */
     @CalledByNative
-    private void setDateTimeRangeStart(AssistantDateTime initialValue, AssistantDateTime minValue,
-            AssistantDateTime maxValue) {
+    private void setDateTimeRangeStartOptions(
+            AssistantDateTime minDate, AssistantDateTime maxDate, String[] timeSlots) {
         AssistantDateChoiceOptions options =
-                new AssistantDateChoiceOptions(initialValue, minValue, maxValue);
-        set(DATE_RANGE_START, options);
+                new AssistantDateChoiceOptions(minDate, maxDate, Arrays.asList(timeSlots));
+        set(DATE_RANGE_START_OPTIONS, options);
     }
 
     /** Configures the end of the date/time range. */
     @CalledByNative
-    private void setDateTimeRangeEnd(AssistantDateTime initialValue, AssistantDateTime minValue,
-            AssistantDateTime maxValue) {
+    private void setDateTimeRangeEndOptions(
+            AssistantDateTime minDate, AssistantDateTime maxDate, String[] timeSlots) {
         AssistantDateChoiceOptions options =
-                new AssistantDateChoiceOptions(initialValue, minValue, maxValue);
-        set(DATE_RANGE_END, options);
+                new AssistantDateChoiceOptions(minDate, maxDate, Arrays.asList(timeSlots));
+        set(DATE_RANGE_END_OPTIONS, options);
     }
 
     @CalledByNative
-    private void setDateTimeRangeStartLabel(String label) {
-        set(DATE_RANGE_START_LABEL, label);
+    private void setDateTimeRangeStartDate(AssistantDateTime date) {
+        set(DATE_RANGE_START_DATE, date);
     }
 
     @CalledByNative
-    private void setDateTimeRangeEndLabel(String label) {
-        set(DATE_RANGE_END_LABEL, label);
+    private void setDateTimeRangeStartTimeSlot(int timeSlot) {
+        set(DATE_RANGE_START_TIMESLOT, timeSlot);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeEndDate(AssistantDateTime date) {
+        set(DATE_RANGE_END_DATE, date);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeEndTimeSlot(int timeSlot) {
+        set(DATE_RANGE_END_TIMESLOT, timeSlot);
+    }
+
+    @CalledByNative
+    private void clearDateTimeRangeStartDate() {
+        set(DATE_RANGE_START_DATE, null);
+    }
+
+    @CalledByNative
+    private void clearDateTimeRangeStartTimeSlot() {
+        set(DATE_RANGE_START_TIMESLOT, null);
+    }
+
+    @CalledByNative
+    private void clearDateTimeRangeEndDate() {
+        set(DATE_RANGE_END_DATE, null);
+    }
+
+    @CalledByNative
+    private void clearDateTimeRangeEndTimeSlot() {
+        set(DATE_RANGE_END_TIMESLOT, null);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeStartDateLabel(String label) {
+        set(DATE_RANGE_START_DATE_LABEL, label);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeStartTimeLabel(String label) {
+        set(DATE_RANGE_START_TIME_LABEL, label);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeEndDateLabel(String label) {
+        set(DATE_RANGE_END_DATE_LABEL, label);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeEndTimeLabel(String label) {
+        set(DATE_RANGE_END_TIME_LABEL, label);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeDateNotSetErrorMessage(String message) {
+        set(DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE, message);
+    }
+
+    @CalledByNative
+    private void setDateTimeRangeTimeNotSetErrorMessage(String message) {
+        set(DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE, message);
     }
 
     @CalledByNative
@@ -361,6 +568,14 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     private static void appendTextInputSection(List<AssistantAdditionalSectionFactory> sections,
             String title, List<TextInputFactory> inputs) {
         sections.add(new AssistantTextInputSection.Factory(title, inputs));
+    }
+
+    @CalledByNative
+    private static void appendPopupListSection(List<AssistantAdditionalSectionFactory> sections,
+            String title, String identifier, String[] items, int[] initialSelection,
+            boolean allowMultiselect, boolean selectionMandatory, String noSelectionErrorMessage) {
+        sections.add(new AssistantPopupListSection.Factory(title, identifier, items,
+                initialSelection, allowMultiselect, selectionMandatory, noSelectionErrorMessage));
     }
 
     @CalledByNative
@@ -392,48 +607,159 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
+    private void setInfoSectionText(String text, boolean center) {
+        set(INFO_SECTION_TEXT, text);
+        set(INFO_SECTION_TEXT_CENTER, center);
+    }
+
+    @CalledByNative
     private void setPrivacyNoticeText(String text) {
         set(PRIVACY_NOTICE_TEXT, text);
     }
 
     @CalledByNative
-    private static List<PersonalDataManager.AutofillProfile> createAutofillProfileList() {
+    private static List<ContactModel> createAutofillContactList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
-    private static void addAutofillProfile(List<PersonalDataManager.AutofillProfile> profiles,
-            PersonalDataManager.AutofillProfile profile) {
-        profiles.add(profile);
+    private static void addAutofillContact(List<ContactModel> contacts, AutofillContact contact,
+            String[] errors, boolean canEdit) {
+        contacts.add(new ContactModel(contact, Arrays.asList(errors), canEdit));
+    }
+
+    @VisibleForTesting
+    @CalledByNative
+    @Nullable
+    public static AutofillContact createAutofillContact(Context context,
+            @Nullable PersonalDataManager.AutofillProfile profile, boolean requestName,
+            boolean requestPhone, boolean requestEmail) {
+        if (profile == null || !(requestName || requestPhone || requestEmail)) {
+            return null;
+        }
+        ContactEditor editor =
+                new ContactEditor(requestName, requestPhone, requestEmail, /* saveToDisk= */ false);
+        String name = profile.getFullName();
+        String phone = profile.getPhoneNumber();
+        String email = profile.getEmailAddress();
+        return new AutofillContact(context, profile, name, phone, email,
+                editor.checkContactCompletionStatus(name, phone, email), requestName, requestPhone,
+                requestEmail);
     }
 
     @CalledByNative
-    private void setAutofillProfiles(List<PersonalDataManager.AutofillProfile> profiles) {
-        set(AVAILABLE_PROFILES, profiles);
+    private void setAvailableContacts(List<ContactModel> contacts) {
+        set(AVAILABLE_CONTACTS, contacts);
     }
 
     @CalledByNative
-    private static List<AssistantCollectUserDataModel.PaymentTuple>
-    createAutofillPaymentMethodList() {
+    private static List<AddressModel> createShippingAddressList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
-    private static void addAutofillPaymentMethod(
-            List<AssistantCollectUserDataModel.PaymentTuple> paymentTuples,
-            PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingAddress) {
-        paymentTuples.add(new PaymentTuple(card, billingAddress));
+    private static void addShippingAddress(
+            List<AddressModel> addresses, AutofillAddress address, String[] errors) {
+        addresses.add(new AddressModel(address, Arrays.asList(errors)));
+    }
+
+    @VisibleForTesting
+    @CalledByNative
+    @Nullable
+    public static AutofillAddress createAutofillAddress(
+            Context context, @Nullable PersonalDataManager.AutofillProfile profile) {
+        if (profile == null) {
+            return null;
+        }
+        return new AutofillAddress(context, profile);
     }
 
     @CalledByNative
-    private void setAutofillPaymentMethods(
-            List<AssistantCollectUserDataModel.PaymentTuple> paymentTuples) {
-        set(AVAILABLE_AUTOFILL_PAYMENT_METHODS, paymentTuples);
+    private void setAvailableShippingAddresses(List<AddressModel> addresses) {
+        set(AVAILABLE_SHIPPING_ADDRESSES, addresses);
     }
 
     @CalledByNative
-    private void setGenericUserInterface(@Nullable View userInterface) {
-        set(GENERIC_USER_INTERFACE, userInterface);
+    private static List<AutofillAddress> createBillingAddressList() {
+        return new ArrayList<>();
+    }
+
+    @CalledByNative
+    private static void addBillingAddress(
+            List<AutofillAddress> addresses, AutofillAddress address) {
+        addresses.add(address);
+    }
+
+    @CalledByNative
+    private void setAvailableBillingAddresses(List<AutofillAddress> addresses) {
+        set(AVAILABLE_BILLING_ADDRESSES, addresses);
+    }
+
+    @CalledByNative
+    private static List<PaymentInstrumentModel> createAutofillPaymentInstrumentList() {
+        return new ArrayList<>();
+    }
+
+    @CalledByNative
+    private static void addAutofillPaymentInstrument(
+            List<PaymentInstrumentModel> paymentInstruments, WebContents webContents,
+            @Nullable PersonalDataManager.CreditCard card,
+            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
+        AutofillPaymentInstrument paymentInstrument =
+                createAutofillPaymentInstrument(webContents, card, billingProfile);
+        if (paymentInstrument != null) {
+            paymentInstruments.add(
+                    new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
+        }
+    }
+
+    // TODO(b/144005336): Call from native instead.
+    @VisibleForTesting
+    @Nullable
+    public static AutofillPaymentInstrument createAutofillPaymentInstrument(WebContents webContents,
+            @Nullable PersonalDataManager.CreditCard card,
+            @Nullable PersonalDataManager.AutofillProfile billingProfile) {
+        if (webContents == null) {
+            return null;
+        }
+        if (card == null) {
+            return null;
+        }
+        return new AutofillPaymentInstrument(
+                webContents, card, billingProfile, MethodStrings.BASIC_CARD);
+    }
+
+    @CalledByNative
+    private void setAvailablePaymentInstruments(List<PaymentInstrumentModel> paymentInstruments) {
+        set(AVAILABLE_PAYMENT_INSTRUMENTS, paymentInstruments);
+    }
+
+    @CalledByNative
+    private void setGenericUserInterfacePrepended(@Nullable View userInterface) {
+        set(GENERIC_USER_INTERFACE_PREPENDED, userInterface);
+    }
+
+    @CalledByNative
+    private void setGenericUserInterfaceAppended(@Nullable View userInterface) {
+        set(GENERIC_USER_INTERFACE_APPENDED, userInterface);
+    }
+
+    @CalledByNative
+    private static ContactDescriptionOptions createContactDescriptionOptions(
+            @AssistantContactField int[] fields, int maxNumberLines) {
+        ContactDescriptionOptions options = new ContactDescriptionOptions();
+        options.mFields = fields;
+        options.mMaxNumberLines = maxNumberLines;
+        return options;
+    }
+
+    @CalledByNative
+    private void setContactSummaryDescriptionOptions(ContactDescriptionOptions options) {
+        set(CONTACT_SUMMARY_DESCRIPTION_OPTIONS, options);
+    }
+
+    @CalledByNative
+    private void setContactFullDescriptionOptions(ContactDescriptionOptions options) {
+        set(CONTACT_FULL_DESCRIPTION_OPTIONS, options);
     }
 }

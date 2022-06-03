@@ -2,16 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-function resetDocument() {
-  window.viewer.viewport.goToPage(0);
-  window.viewer.viewport.setZoom(1);
-  window.viewer.isFormFieldFocused_ = false;
+/** @return {!PDFViewerElement} */
+function getViewer() {
+  return /** @type {!PDFViewerElement} */ (
+      document.body.querySelector('pdf-viewer'));
 }
 
+/** @param {boolean} focused */
+function simulateFormFocusChange(focused) {
+  const plugin = getViewer().shadowRoot.querySelector('embed');
+  plugin.dispatchEvent(
+      new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
+}
+
+function resetDocument() {
+  const viewer = getViewer();
+  viewer.viewport.goToPage(0);
+  simulateFormFocusChange(false);
+}
+
+
+/** @return {number} */
 function getCurrentPage() {
-  return window.viewer.viewport.getMostVisiblePage();
+  return getViewer().viewport.getMostVisiblePage();
 }
 
 const tests = [
@@ -20,11 +36,11 @@ const tests = [
    */
   function testPageChangesWithArrows() {
     // Right arrow -> Go to page 2.
-    pressAndReleaseKeyOn(document, 39);
+    pressAndReleaseKeyOn(document.documentElement, 39, '', 'ArrowRight');
     chrome.test.assertEq(1, getCurrentPage());
 
     // Left arrow -> Back to page 1.
-    pressAndReleaseKeyOn(document, 37);
+    pressAndReleaseKeyOn(document.documentElement, 37, '', 'ArrowLeft');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -38,13 +54,13 @@ const tests = [
   function testPageDoesntChangeWhenFormFocused() {
     // This should be set by a message from plugin -> page when a field is
     // focused.
-    window.viewer.isFormFieldFocused_ = true;
+    simulateFormFocusChange(true);
 
     // Page should not change when left/right are pressed.
-    pressAndReleaseKeyOn(document, 39);
+    pressAndReleaseKeyOn(document.documentElement, 39, '', 'ArrowLeft');
     chrome.test.assertEq(0, getCurrentPage());
 
-    pressAndReleaseKeyOn(document, 37);
+    pressAndReleaseKeyOn(document.documentElement, 37, '', 'ArrowRight');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -52,18 +68,18 @@ const tests = [
   },
 
   /**
-   * Test that when the document is in fit to page, pressing page up/page down
-   * changes page back/forth.
+   * Test that when the document.documentElement is in fit to page, pressing
+   * page up/page down changes page back/forth.
    */
   function testPageDownInFitPage() {
-    window.viewer.viewport.fitToPage();
+    getViewer().viewport.fitToPage();
 
     // Page down -> Go to page 2.
-    pressAndReleaseKeyOn(document, 34);
+    pressAndReleaseKeyOn(document.documentElement, 34, '', 'PageDown');
     chrome.test.assertEq(1, getCurrentPage());
 
     // Page up -> Back to page 1.
-    pressAndReleaseKeyOn(document, 33);
+    pressAndReleaseKeyOn(document.documentElement, 33, '', 'PageUp');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();

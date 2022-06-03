@@ -32,19 +32,32 @@ namespace network {
 
 namespace {
 
+net::CompletionOnceCallback NoCallback() {
+  return base::BindOnce([](int result) {
+    NOTREACHED() << "This callback should not be called. result=" << result;
+  });
+}
+
 class ChunkedDataPipeUploadDataStreamTest : public testing::Test {
  public:
   ChunkedDataPipeUploadDataStreamTest() { CreateAndInitChunkedUploadStream(); }
 
   void CreateAndInitChunkedUploadStream() {
+    CreateChunkedUploadStream();
+    InitChunkedUploadStream();
+  }
+
+  void CreateChunkedUploadStream() {
     chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
     chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
         base::MakeRefCounted<network::ResourceRequestBody>(),
         chunked_data_pipe_getter_->GetDataPipeGetterRemote());
+  }
+
+  void InitChunkedUploadStream() {
     // Nothing interesting happens before Init, so always wait for it in the
     // test fixture.
-    net::TestCompletionCallback callback;
-    EXPECT_EQ(net::OK, chunked_upload_stream_->Init(callback.callback(),
+    EXPECT_EQ(net::OK, chunked_upload_stream_->Init(NoCallback(),
                                                     net::NetLogWithSource()));
     get_size_callback_ = chunked_data_pipe_getter_->WaitForGetSize();
     write_pipe_ = chunked_data_pipe_getter_->WaitForStartReading();
@@ -337,7 +350,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsBeforeInit) {
 
   std::string read_data;
   while (read_data.size() < kData.size()) {
-    net::TestCompletionCallback callback;
     int read_size = kData.size() - read_data.size();
     auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_size);
     int result = chunked_upload_stream_->Read(
@@ -386,7 +398,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsAfterReset) {
   read_data.erase();
   mojo::BlockingCopyFromString(kData, write_pipe_);
   while (read_data.size() < kData.size()) {
-    net::TestCompletionCallback callback;
     int read_size = kData.size() - read_data.size();
     auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_size);
     int result = chunked_upload_stream_->Read(
@@ -786,6 +797,287 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest,
   EXPECT_EQ(net::ERR_FAILED,
             chunked_upload_stream_->Init(callback3.callback(),
                                          net::NetLogWithSource()));
+}
+
+#define EXPECT_READ(chunked_upload_stream, io_buffer, expected)       \
+  {                                                                   \
+    int read_result = chunked_upload_stream->Read(                    \
+        io_buffer.get(), io_buffer->size(), NoCallback());            \
+    EXPECT_GT(read_result, 0);                                        \
+    EXPECT_EQ(std::string(io_buffer->data(), read_result), expected); \
+  }
+
+#define EXPECT_EOF(chunked_upload_stream, size)                               \
+  {                                                                           \
+    net::TestCompletionCallback test_callback;                                \
+    auto one_byte_io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1); \
+    int read_result = chunked_upload_stream->Read(                            \
+        one_byte_io_buffer.get(), 1u, test_callback.callback());              \
+    EXPECT_EQ(net::ERR_IO_PENDING, read_result);                              \
+    std::move(get_size_callback_).Run(net::OK, size);                         \
+    EXPECT_EQ(net::OK, test_callback.GetResult(read_result));                 \
+    EXPECT_TRUE(chunked_upload_stream->IsEOF());                              \
+  }
+
+#define WRITE_DATA_SYNC(write_pipe, str)                            \
+  {                                                                 \
+    std::string data(str);                                          \
+    uint32_t num_size = data.size();                                \
+    EXPECT_EQ(write_pipe->WriteData((void*)data.c_str(), &num_size, \
+                                    MOJO_WRITE_DATA_FLAG_NONE),     \
+              MOJO_RESULT_OK);                                      \
+    EXPECT_EQ(num_size, data.size());                               \
+  }
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheNotUsed) {
+  chunked_upload_stream_->EnableCache();
+
+  const std::string kData = "1234567890";
+  WRITE_DATA_SYNC(write_pipe_, kData);
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EOF(chunked_upload_stream_, kData.size());
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheEnableBeforeInit1) {
+  CreateChunkedUploadStream();
+  chunked_upload_stream_->EnableCache();
+  InitChunkedUploadStream();
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+  int result = chunked_upload_stream_->Read(io_buffer.get(), io_buffer->size(),
+                                            NoCallback());
+  EXPECT_EQ(result, net::ERR_IO_PENDING);
+
+  // Destroy the DataPipeGetter pipe, which is the pipe used for
+  // GetSizeCallback.
+  chunked_data_pipe_getter_->ClosePipe();
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheEnableBeforeInit2) {
+  CreateChunkedUploadStream();
+  chunked_upload_stream_->EnableCache();
+  InitChunkedUploadStream();
+
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EOF(chunked_upload_stream_, 10);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheRead) {
+  chunked_upload_stream_->EnableCache();
+
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EOF(chunked_upload_stream_, 10);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheOverWindowOnce) {
+  const size_t kMaxSize = 4u;
+  chunked_upload_stream_->EnableCache(kMaxSize);
+
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EOF(chunked_upload_stream_, 10);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheOverWindowTwice) {
+  const size_t kMaxSize = 4u;
+  chunked_upload_stream_->EnableCache(kMaxSize);
+
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+
+  int result =
+      chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource());
+  EXPECT_EQ(net::ERR_FAILED, result);
+
+  // Destroy the DataPipeGetter pipe, which is the pipe used for
+  // GetSizeCallback.
+  chunked_data_pipe_getter_->ClosePipe();
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheInitBeforeRead) {
+  chunked_upload_stream_->EnableCache();
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  EXPECT_EOF(chunked_upload_stream_, 10);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheInitWhileRead) {
+  chunked_upload_stream_->EnableCache();
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+
+  io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "123");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "456");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  // Re-init in the middle of reading from the cache
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "123");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "456");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "7");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  // Re-init exactly after reading the last cached bit.
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "123");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "456");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "7");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  // Reading "890" over the first cache should append "890" to the cache.
+  io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+  EXPECT_EOF(chunked_upload_stream_, 10);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheReadAppendDataBeforeInit) {
+  chunked_upload_stream_->EnableCache();
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  net::TestCompletionCallback callback;
+  int result = chunked_upload_stream_->Read(io_buffer.get(), io_buffer->size(),
+                                            callback.callback());
+  EXPECT_EQ(net::ERR_IO_PENDING, result);
+
+  WRITE_DATA_SYNC(write_pipe_, "abc");
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  // Wait mojo.
+  base::RunLoop().RunUntilIdle();
+  // We should not receive the second mojo data.
+  EXPECT_FALSE(callback.have_result());
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "abc");
+
+  EXPECT_EOF(chunked_upload_stream_, 13);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheReadAppendDataAfterInit) {
+  chunked_upload_stream_->EnableCache();
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  net::TestCompletionCallback callback;
+  int result = chunked_upload_stream_->Read(io_buffer.get(), io_buffer->size(),
+                                            callback.callback());
+  EXPECT_EQ(net::ERR_IO_PENDING, result);
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  WRITE_DATA_SYNC(write_pipe_, "abc");
+  // Wait mojo.
+  base::RunLoop().RunUntilIdle();
+  // We should not receive the second mojo data.
+  EXPECT_FALSE(callback.have_result());
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "abc");
+
+  EXPECT_EOF(chunked_upload_stream_, 13);
+}
+
+TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheReadAppendDataDuringRead) {
+  chunked_upload_stream_->EnableCache();
+  WRITE_DATA_SYNC(write_pipe_, "1234567890");
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(7);
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_FALSE(chunked_upload_stream_->IsEOF());
+
+  net::TestCompletionCallback callback;
+  int result = chunked_upload_stream_->Read(io_buffer.get(), io_buffer->size(),
+                                            callback.callback());
+  EXPECT_EQ(net::ERR_IO_PENDING, result);
+  EXPECT_EQ(chunked_upload_stream_->Init(NoCallback(), net::NetLogWithSource()),
+            net::OK);
+  // We should not receive the second mojo data.
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "1234567");
+
+  WRITE_DATA_SYNC(write_pipe_, "abc");
+  // Wait mojo.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "890");
+  EXPECT_READ(chunked_upload_stream_, io_buffer, "abc");
+
+  EXPECT_EOF(chunked_upload_stream_, 13);
 }
 
 }  // namespace

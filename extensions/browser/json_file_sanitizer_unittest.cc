@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,9 @@ namespace {
 class JsonFileSanitizerTest : public testing::Test {
  public:
   JsonFileSanitizerTest() {}
+
+  JsonFileSanitizerTest(const JsonFileSanitizerTest&) = delete;
+  JsonFileSanitizerTest& operator=(const JsonFileSanitizerTest&) = delete;
 
  protected:
   base::FilePath CreateFilePath(const base::FilePath::StringType& file_name) {
@@ -54,7 +58,8 @@ class JsonFileSanitizerTest : public testing::Test {
     sanitizer_ = JsonFileSanitizer::CreateAndStart(
         &data_decoder_, file_paths,
         base::BindOnce(&JsonFileSanitizerTest::SanitizationDone,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        GetExtensionFileTaskRunner());
   }
 
   JsonFileSanitizer::Status last_reported_status() const {
@@ -82,8 +87,6 @@ class JsonFileSanitizerTest : public testing::Test {
   base::OnceClosure done_callback_;
   std::unique_ptr<JsonFileSanitizer> sanitizer_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizerTest);
 };
 
 }  // namespace

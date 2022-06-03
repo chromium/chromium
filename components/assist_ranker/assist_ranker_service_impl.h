@@ -29,6 +29,10 @@ class AssistRankerServiceImpl : public AssistRankerService {
   AssistRankerServiceImpl(
       base::FilePath base_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  AssistRankerServiceImpl(const AssistRankerServiceImpl&) = delete;
+  AssistRankerServiceImpl& operator=(const AssistRankerServiceImpl&) = delete;
+
   ~AssistRankerServiceImpl() override;
 
   // AssistRankerService...
@@ -49,8 +53,6 @@ class AssistRankerServiceImpl : public AssistRankerService {
       predictor_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AssistRankerServiceImpl);
 };
 
 }  // namespace assist_ranker

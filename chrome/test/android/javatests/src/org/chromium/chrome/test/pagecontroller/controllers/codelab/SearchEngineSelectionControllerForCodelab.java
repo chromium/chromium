@@ -12,7 +12,7 @@ import org.chromium.chrome.test.pagecontroller.controllers.PageController;
  * Search Engine Selection Page Controller for the Code Lab, representing
  * SearchEnginePreferences.java.
  *
- * @see org.chromium.chrome.browser.settings.search_engine.SearchEngineSettings
+ * @see {@link org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings}
  */
 
 public class SearchEngineSelectionControllerForCodelab extends PageController {

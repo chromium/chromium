@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Note: Nested layouts are used because the styling was being overwritten,
+     likely because of the behavior of the Android Spinner class. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/default_bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <include layout="@layout/modern_list_item_view" />
+
+</FrameLayout>

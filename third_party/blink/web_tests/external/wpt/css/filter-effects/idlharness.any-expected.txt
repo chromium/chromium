@@ -28,7 +28,7 @@ PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
-PASS Element includes Slotable: member names are unique
+PASS Element includes Slottable: member names are unique
 PASS SVGFilterElement interface: existence and properties of interface object
 PASS SVGFilterElement interface object length
 PASS SVGFilterElement interface object name

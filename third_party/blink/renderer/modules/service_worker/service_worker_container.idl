@@ -30,12 +30,13 @@
 
 // https://w3c.github.io/ServiceWorker/#serviceworkercontainer-interface
 [
+    Exposed=Window,
     SecureContext
 ] interface ServiceWorkerContainer : EventTarget {
     readonly attribute ServiceWorker? controller;
     [CallWith=ScriptState, RaisesException] readonly attribute Promise<ServiceWorkerRegistration> ready;
 
-    [CallWith=ScriptState, ImplementedAs=registerServiceWorker] Promise<ServiceWorkerRegistration> register(USVString url, optional RegistrationOptions options);
+    [CallWith=ScriptState, ImplementedAs=registerServiceWorker] Promise<ServiceWorkerRegistration> register(ScriptURLString url, optional RegistrationOptions options = {});
     [CallWith=ScriptState] Promise<ServiceWorkerRegistration> getRegistration(optional USVString documentURL = "");
     [CallWith=ScriptState] Promise<sequence<ServiceWorkerRegistration>> getRegistrations();
 

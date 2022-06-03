@@ -41,14 +41,14 @@ accessed in Java with
 WebView can use strings and resources defined in GRD files in other layers (for
 now, only `//components/`). Unlike other Chrome, we trim out all such resources
 by default. To use these resources, you must add the resource to the appropriate
-whitelist file: [`grit_strings_whitelist.txt`](./grit_strings_whitelist.txt) for
+allowlist file: [`grit_strings_allowlist.txt`](./grit_strings_allowlist.txt) for
 `IDS_*` strings or
-[`grit_resources_whitelist.txt`](./grit_resources_whitelist.txt) for `IDR_*`
+[`grit_resources_allowlist.txt`](./grit_resources_allowlist.txt) for `IDR_*`
 resources.
 
 *** note
 **Note:** Inflating a
-non-whitelisted resource triggers a `DCHECK` (in release builds, this usually
+non-allowlisted resource triggers a `DCHECK` (in release builds, this usually
 inflates to empty content).
 ***
 

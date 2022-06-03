@@ -14,10 +14,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace viz {
 class ClientResourceProvider;
 }
@@ -51,10 +47,10 @@ class CC_EXPORT UIResourceLayerImpl : public LayerImpl {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
-  std::unique_ptr<base::DictionaryValue> LayerAsJson() const override;
+  void AsValueInto(base::trace_event::TracedValue* state) const override;
 
  protected:
   UIResourceLayerImpl(LayerTreeImpl* tree_impl, int id);

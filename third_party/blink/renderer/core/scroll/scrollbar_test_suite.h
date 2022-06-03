@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_
 
-#include <memory>
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -38,8 +37,6 @@ class MockPlatformChromeClient : public EmptyChromeClient {
 
 class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
                            public ScrollableArea {
-  USING_GARBAGE_COLLECTED_MIXIN(MockScrollableArea);
-
  public:
   static MockScrollableArea* Create() {
     return MakeGarbageCollected<MockScrollableArea>();
@@ -52,10 +49,12 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   }
 
   explicit MockScrollableArea()
-      : maximum_scroll_offset_(ScrollOffset(0, 100)),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        maximum_scroll_offset_(ScrollOffset(0, 100)),
         chrome_client_(MakeGarbageCollected<MockPlatformChromeClient>()) {}
   explicit MockScrollableArea(const ScrollOffset& offset)
-      : maximum_scroll_offset_(offset),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        maximum_scroll_offset_(offset),
         chrome_client_(MakeGarbageCollected<MockPlatformChromeClient>()) {}
 
   MOCK_CONST_METHOD0(VisualRectForScrollbarParts, LayoutRect());
@@ -73,12 +72,14 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(VerticalScrollbar, Scrollbar*());
   MOCK_CONST_METHOD0(ScrollbarsHiddenIfOverlay, bool());
   MOCK_METHOD0(ScheduleAnimation, bool());
-  MOCK_CONST_METHOD0(UsedColorScheme, WebColorScheme());
+  MOCK_CONST_METHOD0(UsedColorScheme, mojom::blink::ColorScheme());
+  MOCK_CONST_METHOD0(UsesCompositedScrolling, bool());
 
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ScrollbarsCanBeActive() const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
-  void UpdateScrollOffset(const ScrollOffset& offset, ScrollType) override {
+  void UpdateScrollOffset(const ScrollOffset& offset,
+                          mojom::blink::ScrollType) override {
     scroll_offset_ = offset.ShrunkTo(maximum_scroll_offset_);
   }
   IntSize ScrollOffsetInt() const override {
@@ -93,9 +94,17 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   CompositorElementId GetScrollElementId() const override {
     return CompositorElementId();
   }
-  bool ScrollAnimatorEnabled() const override { return false; }
+  bool ScrollAnimatorEnabled() const override { return true; }
   int PageStep(ScrollbarOrientation) const override { return 0; }
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
+  gfx::Point ConvertFromRootFrame(const gfx::Point& point_in_root_frame) const {
+    return point_in_root_frame;
+  }
+  gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
+      const Scrollbar& scrollbar,
+      const gfx::Point& parent_point) const {
+    return parent_point;
+  }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final {
     return blink::scheduler::GetSingleThreadTaskRunnerForTesting();
@@ -111,21 +120,22 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
     return ScrollbarTheme::GetTheme();
   }
 
-  using ScrollableArea::ShowOverlayScrollbars;
-  using ScrollableArea::HorizontalScrollbarNeedsPaintInvalidation;
-  using ScrollableArea::VerticalScrollbarNeedsPaintInvalidation;
   using ScrollableArea::ClearNeedsPaintInvalidationForScrollControls;
+  using ScrollableArea::HorizontalScrollbarNeedsPaintInvalidation;
+  using ScrollableArea::ShowNonMacOverlayScrollbars;
+  using ScrollableArea::VerticalScrollbarNeedsPaintInvalidation;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(chrome_client_);
     ScrollableArea::Trace(visitor);
   }
 
- private:
+ protected:
   void SetMaximumScrollOffset(const ScrollOffset& maximum_scroll_offset) {
     maximum_scroll_offset_ = maximum_scroll_offset;
   }
 
+ private:
   ScrollOffset scroll_offset_;
   ScrollOffset maximum_scroll_offset_;
   Member<MockPlatformChromeClient> chrome_client_;
@@ -133,4 +143,4 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_TEST_SUITE_H_

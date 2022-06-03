@@ -6,9 +6,12 @@
 
 #include <stdarg.h>
 
+#include <memory>
+
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "courgette/assembly_program.h"
 #include "courgette/disassembler.h"
@@ -123,7 +126,7 @@ void CourgetteFlow::CreateEncodedProgramFromDisassemblerAndAssemblyProgram(
   if (failed())
     return;
   Data* d = data(group);
-  d->encoded.reset(new EncodedProgram());
+  d->encoded = std::make_unique<EncodedProgram>();
   if (!check(d->disassembler->DisassembleAndEncode(d->program.get(),
                                                    d->encoded.get()))) {
     setMessage("Cannot disassemble to form EncodedProgram for %s.",

@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class AccountId;
@@ -27,7 +29,8 @@ class CloudPolicyClientRegistrationHelper;
 
 // A specialization of the UserPolicySigninServiceBase for the desktop
 // platforms (Windows, Mac and Linux).
-class UserPolicySigninService : public UserPolicySigninServiceBase {
+class UserPolicySigninService : public UserPolicySigninServiceBase,
+                                public ProfileAttributesStorage::Observer {
  public:
   // Creates a UserPolicySigninService associated with the passed
   // |policy_manager| and |identity_manager|.
@@ -38,6 +41,8 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  UserPolicySigninService(const UserPolicySigninService&) = delete;
+  UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
   ~UserPolicySigninService() override;
 
   // Registers a CloudPolicyClient for fetching policy for a user. |username| is
@@ -51,12 +56,21 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
 
   // signin::IdentityManager::Observer implementation:
   // UserPolicySigninServiceBase is already an observer of IdentityManager.
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
+
+  // The signin flow may be interrupted after the policy manager was
+  // initialized, but before the account is set as primary account. In this case
+  // the manager must be shutdown manually.
+  void ShutdownUserCloudPolicyManager() override;
+
+  void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) override;
 
  protected:
   // UserPolicySigninServiceBase implementation:
@@ -65,7 +79,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       std::unique_ptr<CloudPolicyClient> client) override;
 
   void PrepareForUserCloudPolicyManagerShutdown() override;
-  void ShutdownUserCloudPolicyManager() override;
 
  private:
   // Fetches an OAuth token to allow the cloud policy service to register with
@@ -90,12 +103,10 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
                                       PolicyRegistrationCallback callback);
 
-  // Parent profile for this service.
-  Profile* profile_;
-
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      observed_profile_{this};
 };
 
 }  // namespace policy

@@ -18,8 +18,9 @@ import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
 import android.os.StrictMode;
-import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -569,6 +570,56 @@ public class CronetUrlRequestTest {
         }
         assertEquals(1, actualValues.size());
         assertEquals("header-value2", actualValues.get(0));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    public void testCustomReferer_verbatim() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValue = "http://example.com/";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValue, callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_changeToCanonical() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValueNoTrailingSlash = "http://example.com";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValueNoTrailingSlash);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValueNoTrailingSlash + "/", callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_discardInvalid() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String invalidRefererValue = "foobar";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, invalidRefererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals("Header not found. :(", callback.mResponseAsString);
     }
 
     @Test
@@ -2436,6 +2487,28 @@ public class CronetUrlRequestTest {
         for (TestUrlRequestCallback callback : callbacks) {
             callback.blockForDone();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    public void testSetIdempotency() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        ExperimentalUrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
+        assertEquals(builder.setIdempotency(ExperimentalUrlRequest.Builder.IDEMPOTENT), builder);
+
+        TestUploadDataProvider dataProvider = new TestUploadDataProvider(
+                TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        builder.setUploadDataProvider(dataProvider, callback.getExecutor());
+        builder.addHeader("Content-Type", "useless/string");
+        builder.build().start();
+        callback.blockForDone();
+        dataProvider.assertClosed();
+
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals("POST", callback.mResponseAsString);
     }
 
     // Return connection migration disable load flag value.

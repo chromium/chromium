@@ -87,7 +87,7 @@ AccessibilityTest.runAudit_ = function(testDef) {
  * @return {!Array<axe.Result>} List of filtered violations.
  */
 AccessibilityTest.filterViolations_ = function(violations, filter) {
-  if (Object.keys(filter).length == 0) {
+  if (Object.keys(filter).length === 0) {
     return violations;
   }
 

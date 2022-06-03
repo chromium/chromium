@@ -28,15 +28,14 @@ namespace blink {
 
 class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGSymbolElement);
 
  public:
   explicit SVGSymbolElement(Document&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 };

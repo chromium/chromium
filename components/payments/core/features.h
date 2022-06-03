@@ -15,9 +15,6 @@ namespace features {
 // release.
 extern const base::Feature kWebPaymentsExperimentalFeatures;
 
-// Used to control whether Google Pay cards are returned for basic-card.
-extern const base::Feature kReturnGooglePayInBasicCard;
-
 #if defined(OS_IOS)
 // Used to control the support for iOS third party apps as payment methods.
 extern const base::Feature kWebPaymentsNativeApps;
@@ -35,33 +32,38 @@ extern const base::Feature kWebPaymentsModifiers;
 // with a single URL based payment app and no other info requested.
 extern const base::Feature kWebPaymentsSingleAppUiSkip;
 
+// Used to control whether the invoking TWA can handle payments for app store
+// payment method identifiers.
+extern const base::Feature kAppStoreBilling;
+
+// Used to control whether to remove the restriction that TWA has to be
+// installed from specific app stores.
+extern const base::Feature kAppStoreBillingDebug;
+
 // Used to control whether allow crawling just-in-time installable payment app.
 extern const base::Feature kWebPaymentsJustInTimePaymentApp;
-
-// Used to enable crawling just-in-time installable payment apps even if
-// basic-card is also requested.
-extern const base::Feature kAlwaysAllowJustInTimePaymentApp;
-
-// Used to control whether canMakePayment() quota is per-method.
-extern const base::Feature kWebPaymentsPerMethodCanMakePaymentQuota;
 
 // Used to control whether the shipping address returned for the
 // ShippingAddressChangeEvent is redacted of fine-grained details.
 extern const base::Feature kWebPaymentsRedactShippingAddress;
 
-// Used to make autofill instrument more restrictive when responding to
-// hasEnrolledInstrument() queries.
-extern const base::Feature kStrictHasEnrolledAutofillInstrument;
+// If enabled, just-in-time installable payment handlers are ranked lower than
+// complete autofill instruments in payment sheet's method selection section.
+extern const base::Feature kDownRankJustInTimePaymentApp;
 
-// Enables skip-to-GPay experimental flow.
-extern const base::Feature kPaymentRequestSkipToGPay;
+// Desktop only, if enabled payment handler window size matches the pop up
+// window size.
+extern const base::Feature kPaymentHandlerPopUpSizeWindow;
 
-// Enables skip-to-GPay experimental flow, but only if user doesn't have an
-// eligible credit card.
-extern const base::Feature kPaymentRequestSkipToGPayIfNoCard;
+// Used to test icon refetch for JIT installed apps with missing icons.
+extern const base::Feature kAllowJITInstallationWhenAppIconIsMissing;
 
-// Controls whether the minimal payment request ui features are enabled.
-extern const base::Feature kWebPaymentsMinimalUI;
+// Used to reject the apps with partial delegation.
+extern const base::Feature kEnforceFullDelegation;
+
+// If enabled, the GooglePayPaymentApp handles communications between the native
+// GPay app and the browser for dynamic updates on shipping and payment data.
+extern const base::Feature kGPayAppDynamicUpdate;
 
 }  // namespace features
 }  // namespace payments

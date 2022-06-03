@@ -1,34 +1,23 @@
-<html> 
-<head>
-
-<link rel=stylesheet href="../editingStyle.css" type="text/css">
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    for (var i = 0; i < 30; i++) {
-        extendSelectionForwardByLineCommand();
-    }
-}
-
+// Test case for fix for https://bugs.webkit.org/show_bug.cgi?id=5354
+// Changes were made to VisiblePosition's so that init() will not leave the
+// block containing the requested position unless there are no VisiblePositions
+// in that block.
+selection_test(
+    [
+        '<div contenteditable><p>|abc</p></div>',
+        '<p style="overflow: hidden;">XYZ</p>',
+    ],
+    selection => {
+      selection.modify('extend', 'forward', 'line');
+      selection.modify('extend', 'forward', 'line');
+    },
+    [
+        '<div contenteditable><p>^abc|</p></div>',
+        '<p style="overflow: hidden;">XYZ</p>',
+    ]);
 </script>
-
-<title>Editing Test</title> 
-</head> 
-
-<body>
-<p>Test case for fix for <a href="https://bugs.webkit.org/show_bug.cgi?id=5354">http://bugzilla.opendarwin.org/show_bug.cgi?id=5354</a>.</p>
-<p>Changes were made to VisiblePosition's so that init() will not leave the block containing the requested position unless there are no VisiblePositions in that block.<p>
-
-                <div class="editableblock" id="test" contenteditable="true">
-                        <p>Select All while inside this editable block should create a selection that does not extend outside of this block.</p>
-                </div>
-
-                <p style="overflow: hidden;">This is a paragraph outside the editable block with overflow:hidden</p>
-
-<script>
-runEditingTest();
-</script>
-</body>
-</html>

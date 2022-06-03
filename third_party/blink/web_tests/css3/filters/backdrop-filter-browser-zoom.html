@@ -46,6 +46,7 @@ div {
 }
 </style>
 <script>
-    eventSender.setPageZoomFactor(1.5);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(1.5);
 </script>
 </html>

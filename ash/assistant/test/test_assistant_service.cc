@@ -8,35 +8,37 @@
 #include <utility>
 #include <vector>
 
-#include "ash/assistant/assistant_interaction_controller.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "base/unguessable_token.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
-using chromeos::assistant::mojom::AssistantInteractionMetadata;
-using chromeos::assistant::mojom::AssistantInteractionMetadataPtr;
-using chromeos::assistant::mojom::AssistantInteractionResolution;
-using chromeos::assistant::mojom::AssistantInteractionSubscriber;
-using chromeos::assistant::mojom::AssistantInteractionType;
+using chromeos::assistant::AssistantInteractionMetadata;
+using chromeos::assistant::AssistantInteractionResolution;
+using chromeos::assistant::AssistantInteractionSubscriber;
+using chromeos::assistant::AssistantInteractionType;
+using chromeos::assistant::AssistantSuggestion;
 
 // Subscriber that will ensure the LibAssistant contract is enforced.
 // More specifically, it will ensure that:
 //    - A conversation is finished before starting a new one.
 //    - No responses (text, card, ...) are sent before starting or after
 //    finishing an interaction.
-class SanityCheckSubscriber : public AssistantInteractionSubscriber {
+class LibassistantContractChecker : public AssistantInteractionSubscriber {
  public:
-  SanityCheckSubscriber() : receiver_(this) {}
-  ~SanityCheckSubscriber() override = default;
+  LibassistantContractChecker() = default;
 
-  mojo::PendingRemote<AssistantInteractionSubscriber>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
+  LibassistantContractChecker(const LibassistantContractChecker&) = delete;
+  LibassistantContractChecker& operator=(const LibassistantContractChecker&) =
+      delete;
 
-  // AssistantInteractionSubscriber implementation:
-  void OnInteractionStarted(AssistantInteractionMetadataPtr metadata) override {
+  ~LibassistantContractChecker() override = default;
+
+  // DefaultAssistantInteractionSubscriber implementation:
+  void OnInteractionStarted(
+      const AssistantInteractionMetadata& metadata) override {
     if (current_state_ == ConversationState::kInProgress) {
       ADD_FAILURE()
           << "Cannot start a new Assistant interaction without finishing the "
@@ -58,7 +60,7 @@ class SanityCheckSubscriber : public AssistantInteractionSubscriber {
   }
 
   void OnSuggestionsResponse(
-      std::vector<chromeos::assistant::mojom::AssistantSuggestionPtr> response)
+      const std::vector<chromeos::assistant::AssistantSuggestion>& response)
       override {
     CheckResponse();
   }
@@ -69,27 +71,10 @@ class SanityCheckSubscriber : public AssistantInteractionSubscriber {
     CheckResponse();
   }
 
-  void OnOpenAppResponse(chromeos::assistant::mojom::AndroidAppInfoPtr app_info,
-                         OnOpenAppResponseCallback callback) override {
+  void OnOpenAppResponse(
+      const chromeos::assistant::AndroidAppInfo& app_info) override {
     CheckResponse();
   }
-
-  void OnSpeechRecognitionStarted() override {}
-
-  void OnSpeechRecognitionIntermediateResult(
-      const std::string& high_confidence_text,
-      const std::string& low_confidence_text) override {}
-
-  void OnSpeechRecognitionEndOfUtterance() override {}
-
-  void OnSpeechRecognitionFinalResult(
-      const std::string& final_result) override {}
-
-  void OnSpeechLevelUpdated(float speech_level) override {}
-
-  void OnTtsStarted(bool due_to_error) override {}
-
-  void OnWaitStarted() override {}
 
  private:
   void CheckResponse() {
@@ -108,63 +93,35 @@ class SanityCheckSubscriber : public AssistantInteractionSubscriber {
   };
 
   ConversationState current_state_ = ConversationState::kNotStarted;
-  mojo::Receiver<AssistantInteractionSubscriber> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(SanityCheckSubscriber);
 };
 
 // Subscriber that tracks the current interaction.
 class CurrentInteractionSubscriber : public AssistantInteractionSubscriber {
  public:
-  CurrentInteractionSubscriber() : receiver_(this) {}
+  CurrentInteractionSubscriber() = default;
   CurrentInteractionSubscriber(CurrentInteractionSubscriber&) = delete;
   CurrentInteractionSubscriber& operator=(CurrentInteractionSubscriber&) =
       delete;
   ~CurrentInteractionSubscriber() override = default;
 
-  mojo::PendingRemote<AssistantInteractionSubscriber>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
   // AssistantInteractionSubscriber implementation:
-  void OnInteractionStarted(AssistantInteractionMetadataPtr metadata) override {
-    current_interaction_ = *metadata;
+  void OnInteractionStarted(
+      const AssistantInteractionMetadata& metadata) override {
+    current_interaction_ = metadata;
   }
 
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {
-    current_interaction_ = base::nullopt;
+    current_interaction_ = absl::nullopt;
   }
 
-  void OnHtmlResponse(const std::string& response,
-                      const std::string& fallback) override {}
-  void OnSuggestionsResponse(
-      std::vector<chromeos::assistant::mojom::AssistantSuggestionPtr> response)
-      override {}
-  void OnTextResponse(const std::string& response) override {}
-  void OnOpenUrlResponse(const ::GURL& url, bool in_background) override {}
-  void OnOpenAppResponse(chromeos::assistant::mojom::AndroidAppInfoPtr app_info,
-                         OnOpenAppResponseCallback callback) override {}
-  void OnSpeechRecognitionStarted() override {}
-  void OnSpeechRecognitionIntermediateResult(
-      const std::string& high_confidence_text,
-      const std::string& low_confidence_text) override {}
-  void OnSpeechRecognitionEndOfUtterance() override {}
-  void OnSpeechRecognitionFinalResult(
-      const std::string& final_result) override {}
-  void OnSpeechLevelUpdated(float speech_level) override {}
-  void OnTtsStarted(bool due_to_error) override {}
-  void OnWaitStarted() override {}
-
-  base::Optional<AssistantInteractionMetadata> current_interaction() {
+  absl::optional<AssistantInteractionMetadata> current_interaction() {
     return current_interaction_;
   }
 
  private:
-  base::Optional<AssistantInteractionMetadata> current_interaction_ =
-      base::nullopt;
-  mojo::Receiver<AssistantInteractionSubscriber> receiver_;
+  absl::optional<AssistantInteractionMetadata> current_interaction_ =
+      absl::nullopt;
 };
 
 class InteractionResponse::Response {
@@ -173,23 +130,46 @@ class InteractionResponse::Response {
   virtual ~Response() = default;
 
   virtual void SendTo(
-      chromeos::assistant::mojom::AssistantInteractionSubscriber* receiver) = 0;
+      chromeos::assistant::AssistantInteractionSubscriber* receiver) = 0;
 };
 
 class TextResponse : public InteractionResponse::Response {
  public:
   explicit TextResponse(const std::string& text) : text_(text) {}
+
+  TextResponse(const TextResponse&) = delete;
+  TextResponse& operator=(const TextResponse&) = delete;
+
   ~TextResponse() override = default;
 
-  void SendTo(chromeos::assistant::mojom::AssistantInteractionSubscriber*
-                  receiver) override {
+  void SendTo(
+      chromeos::assistant::AssistantInteractionSubscriber* receiver) override {
     receiver->OnTextResponse(text_);
   }
 
  private:
   std::string text_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TextResponse);
+class SuggestionsResponse : public InteractionResponse::Response {
+ public:
+  explicit SuggestionsResponse(const std::string& text) : text_(text) {}
+  SuggestionsResponse(const SuggestionsResponse&) = delete;
+  SuggestionsResponse& operator=(const SuggestionsResponse&) = delete;
+  ~SuggestionsResponse() override = default;
+
+  void SendTo(
+      chromeos::assistant::AssistantInteractionSubscriber* receiver) override {
+    std::vector<AssistantSuggestion> suggestions;
+    suggestions.emplace_back();
+    auto& suggestion = suggestions.back();
+    suggestion.text = text_;
+    suggestion.id = base::UnguessableToken::Create();
+    receiver->OnSuggestionsResponse(suggestions);
+  }
+
+ private:
+  std::string text_;
 };
 
 class ResolutionResponse : public InteractionResponse::Response {
@@ -198,139 +178,125 @@ class ResolutionResponse : public InteractionResponse::Response {
 
   explicit ResolutionResponse(Resolution resolution)
       : resolution_(resolution) {}
+
+  ResolutionResponse(const ResolutionResponse&) = delete;
+  ResolutionResponse& operator=(const ResolutionResponse&) = delete;
+
   ~ResolutionResponse() override = default;
 
-  void SendTo(chromeos::assistant::mojom::AssistantInteractionSubscriber*
-                  receiver) override {
+  void SendTo(
+      chromeos::assistant::AssistantInteractionSubscriber* receiver) override {
     receiver->OnInteractionFinished(resolution_);
   }
 
  private:
   Resolution resolution_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolutionResponse);
 };
 
 TestAssistantService::TestAssistantService()
-    : sanity_check_subscriber_(std::make_unique<SanityCheckSubscriber>()),
+    : libassistant_contract_checker_(
+          std::make_unique<LibassistantContractChecker>()),
       current_interaction_subscriber_(
           std::make_unique<CurrentInteractionSubscriber>()) {
-  AddAssistantInteractionSubscriber(
-      sanity_check_subscriber_->BindNewPipeAndPassRemote());
-  AddAssistantInteractionSubscriber(
-      current_interaction_subscriber_->BindNewPipeAndPassRemote());
+  AddAssistantInteractionSubscriber(libassistant_contract_checker_.get());
+  AddAssistantInteractionSubscriber(current_interaction_subscriber_.get());
 }
 
 TestAssistantService::~TestAssistantService() = default;
-
-mojo::PendingRemote<chromeos::assistant::mojom::Assistant>
-TestAssistantService::CreateRemoteAndBind() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
 
 void TestAssistantService::SetInteractionResponse(
     std::unique_ptr<InteractionResponse> response) {
   interaction_response_ = std::move(response);
 }
 
-base::Optional<AssistantInteractionMetadata>
+absl::optional<AssistantInteractionMetadata>
 TestAssistantService::current_interaction() {
   return current_interaction_subscriber_->current_interaction();
 }
 
-void TestAssistantService::StartCachedScreenContextInteraction() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::StartEditReminderInteraction(
+    const std::string& client_id) {}
 
-void TestAssistantService ::StartEditReminderInteraction(
-    const std::string& client_id) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::StartScreenContextInteraction(
+    ax::mojom::AssistantStructurePtr assistant_structure,
+    const std::vector<uint8_t>& assistant_screenshot) {}
 
-void TestAssistantService ::StartMetalayerInteraction(const gfx::Rect& region) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void TestAssistantService ::StartTextInteraction(
+void TestAssistantService::StartTextInteraction(
     const std::string& query,
-    chromeos::assistant::mojom::AssistantQuerySource source,
+    chromeos::assistant::AssistantQuerySource source,
     bool allow_tts) {
   StartInteraction(AssistantInteractionType::kText, source, query);
   if (interaction_response_)
     SendInteractionResponse();
 }
 
-void TestAssistantService ::StartVoiceInteraction() {
+void TestAssistantService::StartVoiceInteraction() {
   StartInteraction(AssistantInteractionType::kVoice);
   if (interaction_response_)
     SendInteractionResponse();
 }
 
-void TestAssistantService ::StartWarmerWelcomeInteraction(
-    int num_warmer_welcome_triggered,
-    bool allow_tts) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void TestAssistantService ::StopActiveInteraction(bool cancel_conversation) {
+void TestAssistantService::StopActiveInteraction(bool cancel_conversation) {
   if (!running_active_interaction_)
     return;
 
   running_active_interaction_ = false;
   for (auto& subscriber : interaction_subscribers_) {
-    subscriber->OnInteractionFinished(
+    subscriber.OnInteractionFinished(
         AssistantInteractionResolution::kInterruption);
   }
 }
 
-void TestAssistantService ::AddAssistantInteractionSubscriber(
-    mojo::PendingRemote<AssistantInteractionSubscriber> subscriber) {
-  interaction_subscribers_.Add(
-      mojo::Remote<AssistantInteractionSubscriber>(std::move(subscriber)));
+void TestAssistantService::AddAssistantInteractionSubscriber(
+    AssistantInteractionSubscriber* subscriber) {
+  interaction_subscribers_.AddObserver(subscriber);
 }
 
-void TestAssistantService ::RetrieveNotification(
-    chromeos::assistant::mojom::AssistantNotificationPtr notification,
-    int action_index) {
-  NOTIMPLEMENTED_LOG_ONCE();
+void TestAssistantService::RemoveAssistantInteractionSubscriber(
+    AssistantInteractionSubscriber* subscriber) {
+  interaction_subscribers_.RemoveObserver(subscriber);
 }
 
-void TestAssistantService ::DismissNotification(
-    chromeos::assistant::mojom::AssistantNotificationPtr notification) {
-  NOTIMPLEMENTED_LOG_ONCE();
+mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+TestAssistantService::GetPendingNotificationDelegate() {
+  return mojo::PendingReceiver<
+      chromeos::libassistant::mojom::NotificationDelegate>();
 }
 
-void TestAssistantService ::CacheScreenContext(
-    CacheScreenContextCallback callback) {
-  std::move(callback).Run();
+void TestAssistantService::RetrieveNotification(
+    const chromeos::assistant::AssistantNotification& notification,
+    int action_index) {}
+
+void TestAssistantService::DismissNotification(
+    const chromeos::assistant::AssistantNotification& notification) {}
+
+void TestAssistantService::OnAccessibilityStatusChanged(
+    bool spoken_feedback_enabled) {}
+
+void TestAssistantService::OnColorModeChanged(bool dark_mode_enabled) {
+  dark_mode_enabled_ = dark_mode_enabled;
 }
 
-void TestAssistantService ::OnAccessibilityStatusChanged(
-    bool spoken_feedback_enabled) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::SendAssistantFeedback(
+    const chromeos::assistant::AssistantFeedback& feedback) {}
 
-void TestAssistantService ::SendAssistantFeedback(
-    chromeos::assistant::mojom::AssistantFeedbackPtr feedback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::AddTimeToTimer(const std::string& id,
+                                          base::TimeDelta duration) {}
 
-void TestAssistantService::StopAlarmTimerRinging() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::PauseTimer(const std::string& id) {}
 
-void TestAssistantService::CreateTimer(base::TimeDelta duration) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void TestAssistantService::RemoveAlarmOrTimer(const std::string& id) {}
+
+void TestAssistantService::ResumeTimer(const std::string& id) {}
 
 void TestAssistantService::StartInteraction(
-    chromeos::assistant::mojom::AssistantInteractionType type,
-    chromeos::assistant::mojom::AssistantQuerySource source,
+    chromeos::assistant::AssistantInteractionType type,
+    chromeos::assistant::AssistantQuerySource source,
     const std::string& query) {
   DCHECK(!running_active_interaction_);
+  AssistantInteractionMetadata metadata{type, source, query};
   for (auto& subscriber : interaction_subscribers_) {
-    subscriber->OnInteractionStarted(
-        AssistantInteractionMetadata::New(type, source, query));
+    subscriber.OnInteractionStarted(metadata);
   }
   running_active_interaction_ = true;
 }
@@ -339,7 +305,7 @@ void TestAssistantService::SendInteractionResponse() {
   DCHECK(interaction_response_);
   DCHECK(running_active_interaction_);
   for (auto& subscriber : interaction_subscribers_)
-    interaction_response_->SendTo(subscriber.get());
+    interaction_response_->SendTo(&subscriber);
   DCHECK(!current_interaction());
   interaction_response_.reset();
   running_active_interaction_ = false;
@@ -354,6 +320,12 @@ InteractionResponse* InteractionResponse::AddTextResponse(
   return this;
 }
 
+InteractionResponse* InteractionResponse::AddSuggestionChip(
+    const std::string& text) {
+  AddResponse(std::make_unique<SuggestionsResponse>(text));
+  return this;
+}
+
 InteractionResponse* InteractionResponse::AddResolution(Resolution resolution) {
   AddResponse(std::make_unique<ResolutionResponse>(resolution));
   return this;
@@ -364,7 +336,7 @@ void InteractionResponse::AddResponse(std::unique_ptr<Response> response) {
 }
 
 void InteractionResponse::SendTo(
-    chromeos::assistant::mojom::AssistantInteractionSubscriber* receiver) {
+    chromeos::assistant::AssistantInteractionSubscriber* receiver) {
   for (auto& response : responses_)
     response->SendTo(receiver);
 }

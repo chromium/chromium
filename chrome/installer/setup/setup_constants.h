@@ -4,8 +4,8 @@
 
 // Defines all the command-line switches used by Chrome installer.
 
-#ifndef CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H__
-#define CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H__
+#ifndef CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
+#define CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
 
 #include "chrome/installer/setup/buildflags.h"
 
@@ -20,8 +20,6 @@ extern const wchar_t kInstallSourceDir[];
 extern const wchar_t kInstallSourceChromeDir[];
 
 extern const wchar_t kMediaPlayerRegPath[];
-
-extern const char kUninstallMetricsName[];
 
 // The range of error values among the installer, Courgette, BSDiff and
 // Zucchini overlap. These offset values disambiguate between different sets
@@ -39,13 +37,16 @@ extern const char kZucchini[];
 
 namespace switches {
 
-extern const char kDelay[];
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
+extern const char kStartupEventHandle[];
 extern const char kUserExperiment[];
+
+extern const char kCleanupForDowngradeOperation[];
+extern const char kCleanupForDowngradeVersion[];
 
 }  // namespace switches
 
 }  // namespace installer
 
-#endif  // CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H__
+#endif  // CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_

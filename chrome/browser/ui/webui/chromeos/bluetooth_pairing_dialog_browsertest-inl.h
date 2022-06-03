@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -63,12 +64,9 @@ void BluetoothPairingDialogTest::ShowDialog() {
       .WillRepeatedly(testing::Return(mock_device_.get()));
 
   chromeos::SystemWebDialogDelegate* dialog =
-      chromeos::BluetoothPairingDialog::ShowDialog(
-          mock_device_->GetAddress(), mock_device_->GetNameForDisplay(),
-          mock_device_->IsPaired(), mock_device_->IsConnected());
-
+      chromeos::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
   content::WebUI* webui = dialog->GetWebUIForTest();
   content::WebContents* webui_webcontents = webui->GetWebContents();
-  content::WaitForLoadStop(webui_webcontents);
+  EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));
   SetWebUIInstance(webui);
 }

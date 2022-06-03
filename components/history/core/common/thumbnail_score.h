@@ -48,7 +48,7 @@ struct ThumbnailScore {
 
   // Whether the thumbnail was taken with height greater than
   // width or width greater than height and the aspect ratio less than
-  // kTooWideAspectRatio. In cases where we don't have |good_clipping|,
+  // kTooWideAspectRatio. In cases where we don't have `good_clipping`,
   // the thumbnails are either clipped from the horizontal center of the
   // window, or are otherwise weirdly stretched.
   bool good_clipping;
@@ -57,7 +57,7 @@ struct ThumbnailScore {
   // displaying the top of the page. Most pages are more recognizable
   // by their headers then by a set of random text half way down the
   // page; i.e. most MediaWiki sites would be indistinguishable by
-  // thumbnails with |at_top| set to false.
+  // thumbnails with `at_top` set to false.
   bool at_top;
 
   // Whether this thumbnail was taken after load was completed.
@@ -95,7 +95,7 @@ struct ThumbnailScore {
   static const double kThumbnailDegradePerHour;
 
   // If a thumbnail is taken with the aspect ratio greater than or equal to
-  // this value, |good_clipping| is to false.
+  // this value, `good_clipping` is to false.
   static const double kTooWideAspectRatio;
 
   // Checks whether we should consider updating a new thumbnail based on

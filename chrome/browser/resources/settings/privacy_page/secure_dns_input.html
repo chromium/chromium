@@ -1,0 +1,18 @@
+    <style>
+      :host {
+        cursor: auto;
+        display: block;
+        width: 100%;
+      }
+
+      cr-input {
+        width: 100%;
+        --cr-input-width: 75%;
+      }
+    </style>
+    <!-- Max length of 100 KB to prevent browser from freezing. -->
+    <cr-input id="input" value="{{value}}"
+        placeholder="$i18n{secureDnsCustomPlaceholder}" invalid="[[showError_]]"
+        error-message="[[errorText_]]" maxlength="102400" spellcheck="false"
+        on-input="onInput_" on-blur="validate">
+    </cr-input>

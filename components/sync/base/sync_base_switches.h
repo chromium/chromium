@@ -9,9 +9,10 @@
 
 namespace switches {
 
-extern const base::Feature kSyncForceDisableScryptForCustomPassphrase;
-extern const base::Feature kSyncE2ELatencyMeasurement;
-extern const base::Feature kDoNotSyncFaviconDataTypes;
+extern const char kSyncServiceURL[];
+extern const char kTrustedVaultServiceURL[];
+
+extern const base::Feature kSyncNigoriRemoveMetadataOnCacheGuidMismatch;
 
 }  // namespace switches
 

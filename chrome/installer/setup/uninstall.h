@@ -9,18 +9,19 @@
 
 #include <shlobj.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
 class CommandLine;
 class FilePath;
-}
+}  // namespace base
 
 namespace installer {
 
-class InstallationState;
 class InstallerState;
+struct ModifyParams;
 
 enum DeleteResult {
   DELETE_SUCCEEDED,
@@ -42,7 +43,7 @@ DeleteResult DeleteChromeDirectoriesIfEmpty(
 // suffix for default browser entry name in the registry (optional).
 bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                                   HKEY root,
-                                  const base::string16& browser_entry_suffix,
+                                  const std::wstring& browser_entry_suffix,
                                   InstallStatus* exit_code);
 
 // Removes any legacy registry keys from earlier versions of Chrome that are no
@@ -53,40 +54,38 @@ void RemoveChromeLegacyRegistryKeys(const base::FilePath& chrome_exe);
 // This function uninstalls a product.  Hence we came up with this awesome
 // name for it.
 //
-// original_state: The installation state of all products on the system.
-// installer_state: State associated with this operation.
-// setup_exe: The path to the currently running setup.exe. It and its containing
-//     directories are left in-place if it is within the target directory of
-//     the product being uninstalled.
+// modify_params: See modify_params.h
 // remove_all: Remove all shared files, registry entries as well.
 // force_uninstall: Uninstall without prompting for user confirmation or
 //                  any checks for Chrome running.
 // cmd_line: CommandLine that contains information about the command that
 //           was used to launch current uninstaller.
-installer::InstallStatus UninstallProduct(
-    const InstallationState& original_state,
-    const InstallerState& installer_state,
-    const base::FilePath& setup_exe,
-    bool remove_all,
-    bool force_uninstall,
-    const base::CommandLine& cmd_line);
+installer::InstallStatus UninstallProduct(const ModifyParams& modify_params,
+                                          bool remove_all,
+                                          bool force_uninstall,
+                                          const base::CommandLine& cmd_line);
 
 // Cleans up the installation directory after all uninstall operations have
 // completed. Depending on what products are remaining, setup.exe and the
 // installer archive may be deleted. Empty directories will be pruned (or
 // scheduled for pruning after reboot, if necessary).
 //
-// original_state: The installation state of all products on the system.
-// installer_state: State associated with this operation.
+// target_path: Installation directory.
 // setup_exe: The path to the currently running setup.exe, which will be moved
 //     into a temporary directory to allow for deletion of the installation
 //     directory.
 // uninstall_status: the uninstall status so far (may change during invocation).
 void CleanUpInstallationDirectoryAfterUninstall(
-    const InstallationState& original_state,
-    const InstallerState& installer_state,
+    const base::FilePath& target_path,
     const base::FilePath& setup_exe,
     InstallStatus* uninstall_status);
+
+// Moves |setup_exe| to a temporary file, outside of the install folder.
+// Also attempts to change the current directory to the TMP directory.
+// On Windows, each process has a handle to its CWD. If |setup.exe|'s CWD
+// happens to be within the install directory, deletion will fail as a result
+// of the open handle.
+bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe);
 
 }  // namespace installer
 

@@ -1,0 +1,74 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_infobar_banner_interaction_handler.h",
+    "password_infobar_banner_interaction_handler.mm",
+    "password_infobar_interaction_handler.h",
+    "password_infobar_interaction_handler.mm",
+    "password_infobar_modal_interaction_handler.h",
+    "password_infobar_modal_interaction_handler.mm",
+    "password_infobar_modal_overlay_request_callback_installer.h",
+    "password_infobar_modal_overlay_request_callback_installer.mm",
+    "update_password_infobar_interaction_handler.h",
+    "update_password_infobar_interaction_handler.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays",
+    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/ui/commands",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "password_infobar_banner_interaction_handler_unittest.mm",
+    "password_infobar_modal_interaction_handler_unittest.mm",
+    "password_infobar_modal_overlay_request_callback_installer_unittest.mm",
+  ]
+  deps = [
+    ":passwords",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays",
+    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/test",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

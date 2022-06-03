@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "chromecast/browser/tts/tts_controller.h"
+#include "content/public/browser/tts_controller.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 
@@ -20,8 +20,8 @@ namespace content {
 class BrowserContext;
 }
 
-const char* TtsEventTypeToString(TtsEventType event_type);
-TtsEventType TtsEventTypeFromString(const std::string& str);
+const char* TtsEventTypeToString(content::TtsEventType event_type);
+content::TtsEventType TtsEventTypeFromString(const std::string& str);
 
 namespace extensions {
 

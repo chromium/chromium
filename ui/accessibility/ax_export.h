@@ -11,14 +11,14 @@
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
 
-#if defined(ACCESSIBILITY_IMPLEMENTATION)
+#if defined(AX_IMPLEMENTATION)
 #define AX_EXPORT __declspec(dllexport)
 #else
 #define AX_EXPORT __declspec(dllimport)
 #endif  // defined(ACCESSIBILITY_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(ACCESSIBILITY_IMPLEMENTATION)
+#if defined(AX_IMPLEMENTATION)
 #define AX_EXPORT __attribute__((visibility("default")))
 #else
 #define AX_EXPORT

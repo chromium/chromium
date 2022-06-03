@@ -39,7 +39,7 @@ function addCompositionMarker(elem, start, end) {
     range.setStart(textNode, start);
     range.setEnd(textNode, end);
     if (typeof internals !== 'undefined')
-        internals.addCompositionMarker(range, 'orange', 'thin', 'lightBlue');
+        internals.addCompositionMarker(range, 'orange', 'thin', 'solid', 'transparent', 'lightBlue');
 };
 
 function addSpellingMarker(elem, start, end) {

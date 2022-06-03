@@ -1,0 +1,20 @@
+{
+  "$build/chromium_orchestrator": {
+    "compilator": "chromeos-amd64-generic-rel-compilator",
+    "compilator_watcher_git_revision": "d5bee0e7798a40c3c6261c3dbc14becf1fbb693f"
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "recipe": "chromium/orchestrator"
+}

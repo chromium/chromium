@@ -1,0 +1,61 @@
+<style include="edu-login-css">
+  .info-container {
+    margin-inline-start: 20px;
+  }
+
+  .info-item {
+    display: flex;
+    flex: auto;
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
+
+  .info-item:not(:last-child) {
+    border-bottom: var(--grey-border);
+  }
+
+  .info-icon {
+    flex-basis: 24px;
+  }
+
+  .info-title {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding-inline-start: 24px;
+  }
+</style>
+
+<edu-login-template>
+  <span slot="main">
+    <div class="main-padding">
+      <if expr="_google_chrome">
+        <img class="google-full-logo"
+            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+      </if>
+
+      <h1>$i18n{parentInfoTitle}</h1>
+
+      <p class="secondary">$i18nRaw{parentInfoBody}</p>
+
+      <div class="info-container secondary">
+        <div class="info-item">
+          <iron-icon icon="edu-login-icons:child-account-icon"
+              class="info-icon">
+          </iron-icon>
+          <span class="info-title">
+            <p>$i18n{parentInfoParentSettingsText}</p>
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="back">
+    </edu-login-button>
+    <edu-login-button button-type="next">
+    </edu-login-button>
+  </span>
+ </edu-login-template>

@@ -6,14 +6,14 @@
 
 namespace extensions {
 
-PermissionMessage::PermissionMessage(const base::string16& message,
+PermissionMessage::PermissionMessage(const std::u16string& message,
                                      const PermissionIDSet& permissions)
     : message_(message), permissions_(permissions) {}
 
 PermissionMessage::PermissionMessage(
-    const base::string16& message,
+    const std::u16string& message,
     const PermissionIDSet& permissions,
-    const std::vector<base::string16>& submessages)
+    const std::vector<std::u16string>& submessages)
     : message_(message), permissions_(permissions), submessages_(submessages) {}
 
 PermissionMessage::PermissionMessage(const PermissionMessage& other) = default;

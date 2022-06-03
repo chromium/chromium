@@ -9,14 +9,16 @@
 #include <utility>
 
 #include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
+#include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -81,6 +83,9 @@ class Remote {
          scoped_refptr<base::SequencedTaskRunner> task_runner) {
     Bind(std::move(pending_remote), std::move(task_runner));
   }
+
+  Remote(const Remote&) = delete;
+  Remote& operator=(const Remote&) = delete;
 
   ~Remote() = default;
 
@@ -154,7 +159,10 @@ class Remote {
   }
 
   // A convenient helper that resets this Remote on disconnect. Note that this
-  // replaces any previously set disconnection handler.
+  // replaces any previously set disconnection handler. Must be called on a
+  // bound Remote object. If the Remote is connected, a callback is set to reset
+  // it after it is disconnected. If Remote is bound but disconnected then reset
+  // is called immediately.
   void reset_on_disconnect() {
     if (!is_connected()) {
       reset();
@@ -164,8 +172,8 @@ class Remote {
         base::BindOnce(&Remote::reset, base::Unretained(this)));
   }
 
-  // Sets a Closure to be invoked if the receiving endpoint reports itself as
-  // idle and there are no in-flight messages it has yet to acknowledge, and
+  // Sets a Closure to be invoked any time the receiving endpoint reports itself
+  // as idle and there are no in-flight messages it has yet to acknowledge, and
   // this state occurs continuously for a duration of at least |timeout|. The
   // first time this is called, it must be called BEFORE sending any interface
   // messages to the receiver. It may be called any number of times after that
@@ -180,12 +188,14 @@ class Remote {
   //
   //   - There are no messages sent on this Remote that have not already been
   //     dispatched by the receiver.
+  //   - There are no interfaces which were bound directly or transitively
+  //     through this Remote and are still connected.
   //   - The receiver has explicitly notified us that it considers itself to be
   //     "idle."
   //   - The receiver has not dispatched any additional messages since sending
-  //     this idle notification
+  //     this idle notification.
   //   - The Remote does not have any outstanding reply callbacks that haven't
-  //     been called yet
+  //     been called yet.
   //   - All of the above has been true continuously for a duration of at least
   //     |timeout|.
   //
@@ -226,6 +236,7 @@ class Remote {
   // default SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at
   // the time of this call). Must only be called on an unbound Remote.
   PendingReceiver<Interface> BindNewPipeAndPassReceiver() WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "Remote is already bound";
     return BindNewPipeAndPassReceiver(nullptr);
   }
 
@@ -235,6 +246,7 @@ class Remote {
   // owns this Remote.
   PendingReceiver<Interface> BindNewPipeAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "Remote is already bound";
     MessagePipe pipe;
     Bind(PendingRemote<Interface>(std::move(pipe.handle0), 0),
          std::move(task_runner));
@@ -247,6 +259,7 @@ class Remote {
   // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
   // be called on an unbound Remote.
   void Bind(PendingRemote<Interface> pending_remote) {
+    DCHECK(!is_bound()) << "Remote is already bound";
     DCHECK(pending_remote.is_valid());
     Bind(std::move(pending_remote), nullptr);
   }
@@ -307,6 +320,51 @@ class Remote {
     internal_state_.RequireVersion(version);
   }
 
+  // Pauses the receiving endpoint until the flush corresponding to |flush| has
+  // completed. Any calls made on this Remote prior to this call will be
+  // dispatched at the receiving endpoint before pausing. The endpoint will not
+  // dispatch any subsequent calls until the flush operation corresponding to
+  // |flush| has been completed or canceled.
+  //
+  // See documentation for |FlushAsync()| on Remote and Receiver for how to
+  // acquire a PendingFlush object, and documentation on PendingFlush for
+  // example usage.
+  void PauseReceiverUntilFlushCompletes(PendingFlush flush) {
+    internal_state_.PauseReceiverUntilFlushCompletes(std::move(flush));
+  }
+
+  // Flushes the receiving endpoint asynchronously using |flusher|. Once all
+  // calls made on this Remote prior to this |FlushAsyncWithFlusher()| call have
+  // dispatched at the receiving endpoint, |flusher| will signal its
+  // corresponding PendingFlush, unblocking any endpoint waiting on the flush
+  // operation.
+  //
+  // NOTE: It is more common to use |FlushAsync()| defined below. If you really
+  // want to provide your own AsyncFlusher using this method, see the
+  // single-arugment constructor on PendingFlush. This would typically be used
+  // when code executing on the current sequence wishes to immediately pause
+  // one of its remote endpoints to wait on a flush operation that needs to be
+  // initiated on a separate sequence. Rather than bouncing to the second
+  // sequence to initiate a flush and then passing a PendingFlush back to the
+  // original sequence, the AsyncFlusher/PendingFlush can be created on the
+  // original sequence and a single task can be posted to pass the AsyncFlusher
+  // to the second sequence for use with this method.
+  void FlushAsyncWithFlusher(AsyncFlusher flusher) {
+    internal_state_.FlushAsync(std::move(flusher));
+  }
+
+  // Same as above but an AsyncFlusher/PendingFlush pair is created on the
+  // caller's behalf. The AsyncFlusher is immediately passed to a
+  // |FlushAsyncWithFlusher()| call on this object, while the PendingFlush is
+  // returned for use by the caller. See documentation on PendingFlush for
+  // example usage.
+  PendingFlush FlushAsync() {
+    AsyncFlusher flusher;
+    PendingFlush flush(&flusher);
+    FlushAsyncWithFlusher(std::move(flusher));
+    return flush;
+  }
+
   // Sends a no-op message on the underlying message pipe and runs the current
   // message loop until its response is received. This can be used in tests to
   // verify that no message was sent on a message pipe in response to some
@@ -333,8 +391,6 @@ class Remote {
  private:
   using State = internal::InterfacePtrState<Interface>;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(Remote);
 };
 
 }  // namespace mojo

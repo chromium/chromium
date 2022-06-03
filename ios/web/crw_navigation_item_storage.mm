@@ -4,6 +4,7 @@
 
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/nscoder_util.h"
 #import "ios/web/public/web_client.h"
@@ -16,39 +17,44 @@
 namespace web {
 
 // Keys used to serialize navigation properties.
-NSString* const kNavigationItemStorageURLKey = @"virtualUrlString";
+NSString* const kNavigationItemStorageURLKey = @"urlString";
+NSString* const kNavigationItemStorageVirtualURLKey = @"virtualUrlString";
 NSString* const kNavigationItemStorageReferrerURLKey = @"referrerUrlString";
 NSString* const kNavigationItemStorageReferrerURLDeprecatedKey = @"referrer";
 NSString* const kNavigationItemStorageReferrerPolicyKey = @"referrerPolicy";
 NSString* const kNavigationItemStorageTimestampKey = @"timestamp";
 NSString* const kNavigationItemStorageTitleKey = @"title";
 NSString* const kNavigationItemStoragePageDisplayStateKey = @"state";
-NSString* const kNavigationItemStoragePOSTDataKey = @"POSTData";
 NSString* const kNavigationItemStorageHTTPRequestHeadersKey = @"httpHeaders";
 NSString* const kNavigationItemStorageSkipRepostFormConfirmationKey =
     @"skipResubmitDataConfirmation";
 NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
 
+const char kNavigationItemSerializedSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedSize";
+const char kNavigationItemSerializedVirtualURLSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedVirtualURLSize";
+const char kNavigationItemSerializedURLSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedURLSize";
+const char kNavigationItemSerializedReferrerURLSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedReferrerURLSize";
+const char kNavigationItemSerializedTitleSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedTitleSize";
+const char kNavigationItemSerializedDisplayStateSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedDisplayStateSize";
+const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
+    "Session.WebStates.NavigationItem.SerializedRequestHeadersSize";
+
 }  // namespace web
 
 @implementation CRWNavigationItemStorage
-
-@synthesize virtualURL = _virtualURL;
-@synthesize referrer = _referrer;
-@synthesize timestamp = _timestamp;
-@synthesize title = _title;
-@synthesize displayState = _displayState;
-@synthesize shouldSkipRepostFormConfirmation =
-    _shouldSkipRepostFormConfirmation;
-@synthesize userAgentType = _userAgentType;
-@synthesize POSTData = _POSTData;
-@synthesize HTTPRequestHeaders = _HTTPRequestHeaders;
 
 #pragma mark - NSObject
 
 - (NSString*)description {
   NSMutableString* description =
       [NSMutableString stringWithString:[super description]];
+  [description appendFormat:@"URL : %s, ", _URL.spec().c_str()];
   [description appendFormat:@"virtualURL : %s, ", _virtualURL.spec().c_str()];
   [description appendFormat:@"referrer : %s, ", _referrer.url.spec().c_str()];
   [description appendFormat:@"timestamp : %f, ", _timestamp.ToCFAbsoluteTime()];
@@ -60,7 +66,6 @@ NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
   [description
       appendFormat:@"userAgentType : %s, ",
                    web::GetUserAgentTypeDescription(_userAgentType).c_str()];
-  [description appendFormat:@"POSTData : %@, ", _POSTData];
   [description appendFormat:@"HTTPRequestHeaders : %@", _HTTPRequestHeaders];
   return description;
 }
@@ -71,9 +76,15 @@ NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
   self = [super init];
   if (self) {
     // Desktop chrome only persists virtualUrl_ and uses it to feed the url
-    // when creating a NavigationEntry.
-    if ([aDecoder containsValueForKey:web::kNavigationItemStorageURLKey]) {
+    // when creating a NavigationEntry. Chrome on iOS is also storing _url.
+    if ([aDecoder
+            containsValueForKey:web::kNavigationItemStorageVirtualURLKey]) {
       _virtualURL = GURL(web::nscoder_util::DecodeString(
+          aDecoder, web::kNavigationItemStorageVirtualURLKey));
+    }
+
+    if ([aDecoder containsValueForKey:web::kNavigationItemStorageURLKey]) {
+      _URL = GURL(web::nscoder_util::DecodeString(
           aDecoder, web::kNavigationItemStorageURLKey));
     }
 
@@ -125,8 +136,6 @@ NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
     _shouldSkipRepostFormConfirmation =
         [aDecoder decodeBoolForKey:
                       web::kNavigationItemStorageSkipRepostFormConfirmationKey];
-    _POSTData =
-        [aDecoder decodeObjectForKey:web::kNavigationItemStoragePOSTDataKey];
     _HTTPRequestHeaders = [aDecoder
         decodeObjectForKey:web::kNavigationItemStorageHTTPRequestHeadersKey];
   }
@@ -135,28 +144,94 @@ NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   // Desktop Chrome doesn't persist |url_| or |originalUrl_|, only
-  // |virtualUrl_|.
+  // |virtualUrl_|. Chrome on iOS is persisting |url_|.
+  int serializedSizeInBytes = 0;
+  int serializedVirtualURLSizeInBytes = 0;
+  if (_virtualURL != _URL) {
+    // In most cases _virtualURL is the same as URL. Not storing virtual URL
+    // will save memory during unarchiving.
+    web::nscoder_util::EncodeString(
+        aCoder, web::kNavigationItemStorageVirtualURLKey, _virtualURL.spec());
+    serializedVirtualURLSizeInBytes = _virtualURL.spec().size();
+    serializedSizeInBytes += serializedVirtualURLSizeInBytes;
+  }
+  base::UmaHistogramMemoryKB(
+      web::kNavigationItemSerializedVirtualURLSizeHistogram,
+      serializedVirtualURLSizeInBytes / 1024);
+
   web::nscoder_util::EncodeString(aCoder, web::kNavigationItemStorageURLKey,
-                                  _virtualURL.spec());
+                                  _URL.spec());
+  int serializedURLSizeInBytes = _URL.spec().size();
+  serializedSizeInBytes += serializedURLSizeInBytes;
+  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedURLSizeHistogram,
+                             serializedURLSizeInBytes / 1024);
+
   web::nscoder_util::EncodeString(
       aCoder, web::kNavigationItemStorageReferrerURLKey, _referrer.url.spec());
+  int serializedReferrerURLSizeInBytes = _referrer.url.spec().size();
+  serializedSizeInBytes += serializedReferrerURLSizeInBytes;
+  base::UmaHistogramMemoryKB(
+      web::kNavigationItemSerializedReferrerURLSizeHistogram,
+      serializedReferrerURLSizeInBytes / 1024);
+
   [aCoder encodeInt:_referrer.policy
              forKey:web::kNavigationItemStorageReferrerPolicyKey];
   [aCoder encodeInt64:_timestamp.ToInternalValue()
                forKey:web::kNavigationItemStorageTimestampKey];
+  // Size of int is negligible, do not log or count towards session size.
 
-  [aCoder encodeObject:base::SysUTF16ToNSString(_title)
-                forKey:web::kNavigationItemStorageTitleKey];
-  [aCoder encodeObject:_displayState.GetSerialization()
+  NSString* title = base::SysUTF16ToNSString(_title);
+  [aCoder encodeObject:title forKey:web::kNavigationItemStorageTitleKey];
+  int serializedTitleSizeInBytes =
+      [[NSKeyedArchiver archivedDataWithRootObject:title
+                             requiringSecureCoding:NO
+                                             error:nullptr] length];
+  serializedSizeInBytes += serializedTitleSizeInBytes;
+  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedTitleSizeHistogram,
+                             serializedTitleSizeInBytes / 1024);
+
+  NSDictionary* displayState = _displayState.GetSerialization();
+  [aCoder encodeObject:displayState
                 forKey:web::kNavigationItemStoragePageDisplayStateKey];
+  int serializedDisplayStateSizeInBytes =
+      [[NSKeyedArchiver archivedDataWithRootObject:displayState
+                             requiringSecureCoding:NO
+                                             error:nullptr] length];
+  serializedSizeInBytes += serializedDisplayStateSizeInBytes;
+  base::UmaHistogramMemoryKB(
+      web::kNavigationItemSerializedDisplayStateSizeHistogram,
+      serializedDisplayStateSizeInBytes / 1024);
+
   [aCoder encodeBool:_shouldSkipRepostFormConfirmation
               forKey:web::kNavigationItemStorageSkipRepostFormConfirmationKey];
+  // Size of BOOL is negligible, do not log or count towards session size.
+
+  std::string userAgent = web::GetUserAgentTypeDescription(_userAgentType);
   web::nscoder_util::EncodeString(
-      aCoder, web::kNavigationItemStorageUserAgentTypeKey,
-      web::GetUserAgentTypeDescription(_userAgentType));
-  [aCoder encodeObject:_POSTData forKey:web::kNavigationItemStoragePOSTDataKey];
+      aCoder, web::kNavigationItemStorageUserAgentTypeKey, userAgent);
+  serializedSizeInBytes += userAgent.size();
+  // No need to log the user agent type size, because it's a set of constants.
+
   [aCoder encodeObject:_HTTPRequestHeaders
                 forKey:web::kNavigationItemStorageHTTPRequestHeadersKey];
+  int serializedRequestHeadersSizeInBytes =
+      [[NSKeyedArchiver archivedDataWithRootObject:_HTTPRequestHeaders
+                             requiringSecureCoding:NO
+                                             error:nullptr] length];
+  serializedSizeInBytes += serializedRequestHeadersSizeInBytes;
+  base::UmaHistogramMemoryKB(
+      web::kNavigationItemSerializedRequestHeadersSizeHistogram,
+      serializedRequestHeadersSizeInBytes / 1024);
+
+  base::UmaHistogramMemoryKB(web::kNavigationItemSerializedSizeHistogram,
+                             serializedSizeInBytes / 1024);
+}
+
+- (GURL)virtualURL {
+  // virtualURL is not stored (see -encodeWithCoder:) if it's the same as URL.
+  // This logic repeats NavigationItemImpl::GetURL to store virtualURL only when
+  // different from URL.
+  return _virtualURL.is_empty() ? _URL : _virtualURL;
 }
 
 @end

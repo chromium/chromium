@@ -17,10 +17,7 @@ namespace internal {
 // the class using MenuController. This is implemented by MenuRunnerImpl.
 class MenuControllerDelegate {
  public:
-  enum NotifyType {
-    NOTIFY_DELEGATE,
-    DONT_NOTIFY_DELEGATE
-  };
+  enum NotifyType { NOTIFY_DELEGATE, DONT_NOTIFY_DELEGATE };
 
   // Invoked when MenuController closes. unless the owner deletes the
   // MenuController during MenuDelegate::ExecuteCommand. |mouse_event_flags| are

@@ -1,0 +1,12 @@
+{
+    "content_scripts": [ {
+        "js": ["inject.js"],
+        "matches": ["<all_urls>"],
+        "run_at": "document_end"
+    }],
+    "description": "Test extension that breaks displaying of PDF files in Chromium.",
+    "manifest_version": 2,
+    "name": "Break PDF Display",
+    "permissions": [ "<all_urls>"],
+    "version": "0.1"
+}

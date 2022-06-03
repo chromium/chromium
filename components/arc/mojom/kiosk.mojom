@@ -23,8 +23,8 @@ interface KioskHost {
 // Next method ID: 2
 interface KioskInstance {
   // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(KioskHost host_ptr);
+  InitDeprecated@0(pending_remote<KioskHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(KioskHost host_ptr) => ();
+  [MinVersion=1] Init@1(pending_remote<KioskHost> host_remote) => ();
 };

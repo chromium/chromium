@@ -1,0 +1,95 @@
+Tests accessibility values of ignored nodes in model dialog.
+{
+    childIds : <object>
+    domNode : div
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : activeModalDialog
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : dialog
+                    }
+                ]
+                type : idref
+            }
+        }
+    ]
+    nodeId : <string>
+    parentId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+{
+    childIds : <object>
+    domNode : dialog
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : modal
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : dialog
+    }
+}
+{
+    childIds : <object>
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : generic
+    }
+}
+

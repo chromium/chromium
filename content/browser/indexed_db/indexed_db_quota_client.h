@@ -8,48 +8,56 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "components/services/storage/public/cpp/storage_key_quota_client.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/quota_client.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 class IndexedDBContextImpl;
 
-// A QuotaClient implementation to integrate IndexedDB
-// with the quota  management system. This interface is used
-// on the IO thread by the quota manager.
-class IndexedDBQuotaClient : public storage::QuotaClient {
+// Integrates IndexedDB with the quota management system.
+//
+// Each instance is owned by an IndexedDBContextImpl.
+class IndexedDBQuotaClient : public storage::StorageKeyQuotaClient {
  public:
   CONTENT_EXPORT explicit IndexedDBQuotaClient(
-      IndexedDBContextImpl* indexed_db_context);
+      IndexedDBContextImpl& indexed_db_context);
 
-  // QuotaClient method overrides
-  ID id() const override;
-  void OnQuotaManagerDestroyed() override {}
-  CONTENT_EXPORT void GetOriginUsage(const url::Origin& origin,
-                                     blink::mojom::StorageType type,
-                                     GetUsageCallback callback) override;
-  CONTENT_EXPORT void GetOriginsForType(blink::mojom::StorageType type,
-                                        GetOriginsCallback callback) override;
-  CONTENT_EXPORT void GetOriginsForHost(blink::mojom::StorageType type,
-                                        const std::string& host,
-                                        GetOriginsCallback callback) override;
-  CONTENT_EXPORT void DeleteOriginData(const url::Origin& origin,
-                                       blink::mojom::StorageType type,
-                                       DeletionCallback callback) override;
-  bool DoesSupport(blink::mojom::StorageType type) const override;
+  IndexedDBQuotaClient(const IndexedDBQuotaClient&) = delete;
+  IndexedDBQuotaClient& operator=(const IndexedDBQuotaClient&) = delete;
 
- private:
   CONTENT_EXPORT ~IndexedDBQuotaClient() override;
 
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  // storage::StorageKeyQuotaClient implementation:
+  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          GetStorageKeyUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void GetStorageKeysForHost(blink::mojom::StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            DeleteStorageKeyDataCallback callback) override;
+  void PerformStorageCleanup(blink::mojom::StorageType type,
+                             PerformStorageCleanupCallback callback) override;
 
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBQuotaClient);
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Raw pointer use is safe here because the IndexedDBContextImpl owns this.
+  IndexedDBContextImpl& indexed_db_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<IndexedDBQuotaClient> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

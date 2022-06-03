@@ -6,9 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_TASK_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
@@ -19,10 +18,12 @@ namespace scheduler {
 class FakeTaskRunner : public base::SingleThreadTaskRunner {
  public:
   FakeTaskRunner();
+  FakeTaskRunner(const FakeTaskRunner&) = delete;
+  FakeTaskRunner& operator=(const FakeTaskRunner&) = delete;
 
   void SetTime(base::TimeTicks new_time);
   void SetTime(double new_time) {
-    SetTime(base::TimeTicks() + base::TimeDelta::FromSecondsD(new_time));
+    SetTime(base::TimeTicks() + base::Seconds(new_time));
   }
 
   // base::SingleThreadTaskRunner implementation:
@@ -31,7 +32,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
   void RunUntilIdle();
   void AdvanceTimeAndRun(base::TimeDelta delta);
   void AdvanceTimeAndRun(double delta_seconds) {
-    AdvanceTimeAndRun(base::TimeDelta::FromSecondsD(delta_seconds));
+    AdvanceTimeAndRun(base::Seconds(delta_seconds));
   }
 
   using PendingTask = std::pair<base::OnceClosure, base::TimeTicks>;
@@ -53,8 +54,6 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
   scoped_refptr<Data> data_;
 
   explicit FakeTaskRunner(scoped_refptr<Data> data);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskRunner);
 };
 
 }  // namespace scheduler

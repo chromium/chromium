@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_DATABASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_DATABASE_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +55,10 @@ class SQLiteDatabase {
 
  public:
   SQLiteDatabase();
+
+  SQLiteDatabase(const SQLiteDatabase&) = delete;
+  SQLiteDatabase& operator=(const SQLiteDatabase&) = delete;
+
   ~SQLiteDatabase();
 
   bool Open(const String& filename);
@@ -149,10 +154,8 @@ class SQLiteDatabase {
   std::string open_error_message_;
 
   int last_changes_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteDatabase);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_DATABASE_H_

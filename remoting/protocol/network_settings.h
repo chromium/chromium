@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
-#include "base/logging.h"
 #include "base/time/time.h"
 #include "remoting/protocol/port_range.h"
 
@@ -55,7 +52,7 @@ struct NetworkSettings {
   PortRange port_range;
 
   // ICE Timeout.
-  base::TimeDelta ice_timeout = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta ice_timeout = base::Seconds(15);
 
   // ICE reconnect attempts.
   int ice_reconnect_attempts = 2;
@@ -64,4 +61,4 @@ struct NetworkSettings {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_NETWORK_SETTINGS_H_
+#endif  // REMOTING_PROTOCOL_NETWORK_SETTINGS_H_

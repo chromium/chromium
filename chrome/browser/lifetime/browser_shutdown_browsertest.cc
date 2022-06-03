@@ -5,6 +5,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -16,11 +17,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
 #endif
 
@@ -30,32 +32,36 @@ using testing::AtLeast;
 class BrowserShutdownBrowserTest : public InProcessBrowserTest {
  public:
   BrowserShutdownBrowserTest() {}
+
+  BrowserShutdownBrowserTest(const BrowserShutdownBrowserTest&) = delete;
+  BrowserShutdownBrowserTest& operator=(const BrowserShutdownBrowserTest&) =
+      delete;
+
   ~BrowserShutdownBrowserTest() override {}
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserShutdownBrowserTest);
 };
 
 class BrowserClosingObserver : public BrowserListObserver {
  public:
   BrowserClosingObserver() {}
-  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserClosingObserver);
+  BrowserClosingObserver(const BrowserClosingObserver&) = delete;
+  BrowserClosingObserver& operator=(const BrowserClosingObserver&) = delete;
+
+  MOCK_METHOD1(OnBrowserClosing, void(Browser* browser));
 };
 
 // ChromeOS has the different shutdown flow on user initiated exit process.
 // See the comment for chrome::AttemptUserExit() function declaration.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        PRE_TwoBrowsersClosingShutdownHistograms) {
-  ui_test_utils::NavigateToURL(browser(), GURL("browser://version"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
   Browser* browser2 = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(browser2, GURL("browser://help"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("browser://help")));
 
   BrowserClosingObserver closing_observer;
   BrowserList::AddObserver(&closing_observer);
@@ -74,8 +80,16 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   BrowserList::RemoveObserver(&closing_observer);
 }
 
+// Flakes on Mac11.0: https://crbug.com/1259913
+#if defined(OS_MAC)
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  DISABLED_TwoBrowsersClosingShutdownHistograms
+#else
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  TwoBrowsersClosingShutdownHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       TwoBrowsersClosingShutdownHistograms) {
+                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
   histogram_tester_.ExpectUniqueSample(
       "Shutdown.ShutdownType",
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
@@ -101,4 +115,4 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, ShutdownConfirmation) {
 
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

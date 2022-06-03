@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Ensures iframes are overridable if overrides are setup.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
-  await TestRunner.loadModule('sources');
+  await TestRunner.loadTestModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('sources');
+  await TestRunner.loadLegacyModule('sources');
 
   var {project} = await BindingsTestRunner.createOverrideProject('file:///tmp/');
   BindingsTestRunner.setOverridesEnabled(true);
@@ -18,6 +19,6 @@
     throw "No uiSourceCode.";
   var uiSourceCodeFrame = new Sources.UISourceCodeFrame(uiSourceCode);
   TestRunner.addResult('URL: ' + uiSourceCode.url().substr(uiSourceCode.url().lastIndexOf('/') + 1));
-  TestRunner.addResult('Can Edit Source: ' + uiSourceCodeFrame._canEditSource());
+  TestRunner.addResult('Can Edit Source: ' + uiSourceCodeFrame.canEditSource());
   TestRunner.completeTest();
 })();

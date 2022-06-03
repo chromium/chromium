@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Test Mojo interfaces for MojoWebUIControllerBrowserTest.
+
+module test.mojom;
+
+interface Foo {
+  GetFoo() => (string value);
+};
+
+interface Bar {
+  GetBar() => (string value);
+};
+
+interface Baz {
+  GetBaz() => (string value);
+};

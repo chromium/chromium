@@ -5,6 +5,7 @@
 module display.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 
 // Corresponds to display::Display::Rotation.
 enum Rotation {
@@ -39,6 +40,7 @@ struct Display {
   TouchSupport touch_support;
   AccelerometerSupport accelerometer_support;
   gfx.mojom.Size maximum_cursor_size;
+  gfx.mojom.DisplayColorSpaces color_spaces;
   int32 color_depth;
   int32 depth_per_component;
   bool is_monochrome;

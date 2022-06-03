@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Fonts Test: font-size-adjust and page zoom</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#propdef-font-size-adjust">
+<link rel="stylesheet" herf="/fonts/ahem.css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="flags" content="ahem">
+<style>
+  div {
+    font-family: Ahem;
+    font-size: 100px;
+    /* font-size-adjust:1.0 should give a used font which has 1ex equal to the
+       original font-size. */
+    font-size-adjust: 1.0;
+    width: 1ex;
+  }
+</style>
+<div id="testDiv"></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(testDiv).width, "100px");
+  }, "1ex equal to the original font-size.");
+
+  test(() => {
+    assert_true(window.testRunner instanceof Object,
+                'window.testRunner is required for this test.');
+    testRunner.setPageZoomFactor(2);
+    assert_equals(getComputedStyle(testDiv).width, "100px");
+  }, "1ex equal to the original font-size - 200% page zoom.");
+</script>

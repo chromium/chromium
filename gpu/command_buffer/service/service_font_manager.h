@@ -26,7 +26,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
     virtual void ReportProgress() = 0;
   };
 
-  ServiceFontManager(Client* client);
+  ServiceFontManager(Client* client, bool disable_oopr_debug_crash_dump);
   void Destroy();
 
   bool Deserialize(const volatile char* memory,
@@ -34,6 +34,10 @@ class GPU_GLES2_EXPORT ServiceFontManager
                    std::vector<SkDiscardableHandleId>* locked_handles);
   bool Unlock(const std::vector<SkDiscardableHandleId>& handles);
   SkStrikeClient* strike_client() { return strike_client_.get(); }
+  bool disable_oopr_debug_crash_dump() const {
+    return disable_oopr_debug_crash_dump_;
+  }
+  bool is_destroyed() const { return destroyed_; }
 
  private:
   friend class base::RefCountedThreadSafe<ServiceFontManager>;
@@ -53,6 +57,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>
       discardable_handle_map_;
   bool destroyed_ = false;
+  const bool disable_oopr_debug_crash_dump_;
 };
 
 }  // namespace gpu

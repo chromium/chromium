@@ -46,10 +46,10 @@ class CSSFontFaceRule final : public CSSRule {
 
   StyleRuleFontFace* StyleRule() const { return font_face_rule_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kFontFaceRule; }
+  CSSRule::Type GetType() const override { return kFontFaceRule; }
 
   Member<StyleRuleFontFace> font_face_rule_;
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
@@ -58,7 +58,7 @@ class CSSFontFaceRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSFontFaceRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kFontFaceRule;
+    return rule.GetType() == CSSRule::kFontFaceRule;
   }
 };
 

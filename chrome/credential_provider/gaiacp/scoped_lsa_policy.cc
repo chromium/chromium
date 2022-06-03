@@ -7,6 +7,7 @@
 #include <Windows.h>  // Needed for ACCESS_MASK, <lm.h>
 #include <Winternl.h>
 #include <lm.h>  // Needed for LSA_UNICODE_STRING
+#include <ntstatus.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <ntsecapi.h>  // For LSA_xxx types
@@ -124,15 +125,48 @@ bool ScopedLsaPolicy::PrivateDataExists(const wchar_t* key) {
   return true;
 }
 
-HRESULT ScopedLsaPolicy::AddAccountRights(PSID sid, const wchar_t* right) {
-  LSA_UNICODE_STRING lsa_right;
-  InitLsaString(right, &lsa_right);
-  NTSTATUS sts = ::LsaAddAccountRights(handle_, sid, &lsa_right, 1);
-  if (sts != STATUS_SUCCESS) {
-    HRESULT hr = HRESULT_FROM_NT(sts);
-    LOGFN(ERROR) << "LsaAddAccountRights sts=" << putHR(sts)
-                 << " hr=" << putHR(hr);
-    return hr;
+HRESULT ScopedLsaPolicy::AddAccountRights(
+    PSID sid,
+    const std::vector<std::wstring>& rights) {
+  LOGFN(VERBOSE);
+  for (auto& right : rights) {
+    std::vector<LSA_UNICODE_STRING> lsa_rights;
+    LSA_UNICODE_STRING lsa_right;
+    InitLsaString(right.c_str(), &lsa_right);
+    lsa_rights.push_back(lsa_right);
+    NTSTATUS sts = ::LsaAddAccountRights(handle_, sid, lsa_rights.data(),
+                                         lsa_rights.size());
+    if (sts != STATUS_SUCCESS) {
+      HRESULT hr = HRESULT_FROM_NT(sts);
+      LOGFN(ERROR) << "LsaAddAccountRights " << right << "sts=" << putHR(sts)
+                   << " hr=" << putHR(hr);
+      return hr;
+    }
+  }
+  return S_OK;
+}
+
+HRESULT ScopedLsaPolicy::RemoveAccountRights(
+    PSID sid,
+    const std::vector<std::wstring>& rights) {
+  LOGFN(VERBOSE);
+  for (auto& right : rights) {
+    std::vector<LSA_UNICODE_STRING> lsa_rights;
+    LSA_UNICODE_STRING lsa_right;
+    InitLsaString(right.c_str(), &lsa_right);
+    lsa_rights.push_back(lsa_right);
+    NTSTATUS sts = ::LsaRemoveAccountRights(
+        handle_, sid, FALSE, lsa_rights.data(), lsa_rights.size());
+    if (sts != STATUS_SUCCESS) {
+      HRESULT hr = HRESULT_FROM_NT(sts);
+      // Donot log error message when the privilege isn't
+      // assigned to the user and removal of the account right
+      // fails.
+      if (hr != HRESULT_FROM_NT(STATUS_OBJECT_NAME_NOT_FOUND)) {
+        LOGFN(ERROR) << "LsaRemoveAccountRights " << right
+                     << " sts=" << putHR(sts) << " hr=" << putHR(hr);
+      }
+    }
   }
   return S_OK;
 }

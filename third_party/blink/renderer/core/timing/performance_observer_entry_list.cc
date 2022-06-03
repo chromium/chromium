@@ -68,7 +68,7 @@ PerformanceEntryVector PerformanceObserverEntryList::getEntriesByName(
   return entries;
 }
 
-void PerformanceObserverEntryList::Trace(blink::Visitor* visitor) {
+void PerformanceObserverEntryList::Trace(Visitor* visitor) const {
   visitor->Trace(performance_entries_);
   ScriptWrappable::Trace(visitor);
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 
 namespace extensions {

@@ -18,7 +18,8 @@
 #include <type_traits>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/elevation_service/elevator.h"
@@ -31,7 +32,7 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
-constexpr base::char16 kWindowsServiceName[] = L"ChromeElevationService";
+constexpr wchar_t kWindowsServiceName[] = L"ChromeElevationService";
 
 }  // namespace
 
@@ -203,7 +204,7 @@ void ServiceMain::ServiceControlHandler(DWORD control) {
 }
 
 // static
-void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, base::char16* argv[]) {
+void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
   ServiceMain::GetInstance()->ServiceMainImpl();
 }
 

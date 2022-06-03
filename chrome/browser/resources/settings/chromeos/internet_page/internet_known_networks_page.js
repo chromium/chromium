@@ -7,12 +7,36 @@
  * 'settings-internet-known-networks' is the settings subpage listing the
  * known networks for a type (currently always WiFi).
  */
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '../../settings_shared_css.js';
+import './internet_shared_css.js';
+
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-internet-known-networks-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     NetworkListenerBehavior,
     CrPolicyNetworkBehaviorMojo,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -31,7 +55,7 @@ Polymer({
      */
     networkStateList_: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       }
     },
@@ -49,6 +73,28 @@ Polymer({
      * @private
      */
     enableForget_: Boolean,
+
+    /**
+     * Contains the settingId of any deep link that wasn't able to be shown,
+     * null otherwise.
+     * @private {?chromeos.settings.mojom.Setting}
+     */
+    pendingSettingId_: {
+      type: Number,
+      value: null,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kPreferWifiNetwork,
+        chromeos.settings.mojom.Setting.kForgetWifiNetwork,
+      ]),
+    },
   },
 
   /** @private {string} */
@@ -58,18 +104,39 @@ Polymer({
   networkConfig_: null,
 
   /** @override */
-  created: function() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+  created() {
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+  },
+
+  /**
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
+   * @protected
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.KNOWN_NETWORKS) {
+      return;
+    }
+
+    this.attemptDeepLink().then(result => {
+      if (!result.deepLinkShown && result.pendingSettingId) {
+        // Store any deep link settingId that wasn't shown so we can try again
+        // in refreshNetworks.
+        this.pendingSettingId_ = result.pendingSettingId;
+      }
+    });
   },
 
   /** CrosNetworkConfigObserver impl */
-  onNetworkStateListChanged: function() {
+  onNetworkStateListChanged() {
     this.refreshNetworks_();
   },
 
   /** @private */
-  networkTypeChanged_: function() {
+  networkTypeChanged_() {
     this.refreshNetworks_();
   },
 
@@ -78,7 +145,7 @@ Polymer({
    * once the results are returned from Chrome.
    * @private
    */
-  refreshNetworks_: function() {
+  refreshNetworks_() {
     if (this.networkType === undefined) {
       return;
     }
@@ -89,6 +156,17 @@ Polymer({
     };
     this.networkConfig_.getNetworkStateList(filter).then(response => {
       this.networkStateList_ = response.result;
+
+      // Check if we have yet to focus a deep-linked element.
+      if (!this.pendingSettingId_) {
+        return;
+      }
+
+      this.showDeepLink(this.pendingSettingId_).then(result => {
+        if (result.deepLinkShown) {
+          this.pendingSettingId_ = null;
+        }
+      });
     });
   },
 
@@ -97,7 +175,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  networkIsPreferred_: function(networkState) {
+  networkIsPreferred_(networkState) {
     // Currently we treat NetworkStateProperties.Priority as a boolean.
     return networkState.priority > 0;
   },
@@ -107,15 +185,15 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  networkIsNotPreferred_: function(networkState) {
-    return networkState.priority == 0;
+  networkIsNotPreferred_(networkState) {
+    return networkState.priority === 0;
   },
 
   /**
    * @return {boolean}
    * @private
    */
-  havePreferred_: function() {
+  havePreferred_() {
     return this.networkStateList_.find(
                state => this.networkIsPreferred_(state)) !== undefined;
   },
@@ -124,7 +202,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  haveNotPreferred_: function() {
+  haveNotPreferred_() {
     return this.networkStateList_.find(
                state => this.networkIsNotPreferred_(state)) !== undefined;
   },
@@ -134,7 +212,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getNetworkDisplayName_: function(networkState) {
+  getNetworkDisplayName_(networkState) {
     return OncMojo.getNetworkStateDisplayName(networkState);
   },
 
@@ -142,7 +220,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onMenuButtonTap_: function(event) {
+  onMenuButtonTap_(event) {
     const button = event.target;
     const networkState =
         /** @type {!OncMojo.NetworkStateProperties} */ (event.model.item);
@@ -154,7 +232,7 @@ Polymer({
         .then(response => {
           const properties = response.result;
           if (!properties) {
-            console.error('Properties not found for: ' + this.selectedGuid_);
+            console.warn('Properties not found for: ' + this.selectedGuid_);
             return;
           }
           if (properties.priority &&
@@ -177,19 +255,20 @@ Polymer({
    * @param {!chromeos.networkConfig.mojom.ConfigProperties} config
    * @private
    */
-  setProperties_: function(config) {
+  setProperties_(config) {
     this.networkConfig_.setProperties(this.selectedGuid_, config)
         .then(response => {
           if (!response.success) {
-            console.error(
+            console.warn(
                 'Unable to set properties for: ' + this.selectedGuid_ + ': ' +
                 JSON.stringify(config));
           }
         });
+    recordSettingChange();
   },
 
   /** @private */
-  onRemovePreferredTap_: function() {
+  onRemovePreferredTap_() {
     assert(this.networkType !== undefined);
     const config = OncMojo.getDefaultConfigProperties(this.networkType);
     config.priority = {value: 0};
@@ -198,7 +277,7 @@ Polymer({
   },
 
   /** @private */
-  onAddPreferredTap_: function() {
+  onAddPreferredTap_() {
     assert(this.networkType !== undefined);
     const config = OncMojo.getDefaultConfigProperties(this.networkType);
     config.priority = {value: 1};
@@ -207,12 +286,19 @@ Polymer({
   },
 
   /** @private */
-  onForgetTap_: function() {
+  onForgetTap_() {
     this.networkConfig_.forgetNetwork(this.selectedGuid_).then(response => {
       if (!response.success) {
-        console.error('Froget network failed for: ' + this.selectedGuid_);
+        console.warn('Froget network failed for: ' + this.selectedGuid_);
       }
     });
+
+    if (this.networkType === chromeos.networkConfig.mojom.NetworkType.kWiFi) {
+      recordSettingChange(chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+    } else {
+      recordSettingChange();
+    }
+
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
   },
 
@@ -222,7 +308,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  fireShowDetails_: function(event) {
+  fireShowDetails_(event) {
     const networkState =
         /** @type {!OncMojo.NetworkStateProperties} */ (event.model.item);
     this.fire('show-detail', networkState);
@@ -234,7 +320,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  doNothing_: function(event) {
+  doNothing_(event) {
     event.stopPropagation();
   },
 });

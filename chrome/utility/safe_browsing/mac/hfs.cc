@@ -9,12 +9,13 @@
 #include <sys/stat.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
@@ -23,7 +24,7 @@ namespace safe_browsing {
 namespace dmg {
 
 // UTF-16 character for file path seprator.
-static const uint16_t kFilePathSeparator = '/';
+static const char16_t kFilePathSeparator = u'/';
 
 static void ConvertBigEndian(HFSPlusForkData* fork) {
   ConvertBigEndian(&fork->logicalSize);
@@ -128,6 +129,10 @@ static void ConvertBigEndian(HFSPlusCatalogFile* file) {
 class HFSForkReadStream : public ReadStream {
  public:
   HFSForkReadStream(HFSIterator* hfs, const HFSPlusForkData& fork);
+
+  HFSForkReadStream(const HFSForkReadStream&) = delete;
+  HFSForkReadStream& operator=(const HFSForkReadStream&) = delete;
+
   ~HFSForkReadStream() override;
 
   bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
@@ -141,8 +146,6 @@ class HFSForkReadStream : public ReadStream {
   bool read_current_extent_;  // Whether the current_extent_ has been read.
   std::vector<uint8_t> current_extent_data_;  // Data for |current_extent_|.
   size_t fork_logical_offset_;  // The logical offset into the fork.
-
-  DISALLOW_COPY_AND_ASSIGN(HFSForkReadStream);
 };
 
 // HFSBTreeIterator iterates over the HFS+ catalog file.
@@ -150,7 +153,7 @@ class HFSBTreeIterator {
  public:
   struct Entry {
     uint16_t record_type;  // Catalog folder item type.
-    base::string16 path;  // Full path to the item.
+    std::u16string path;   // Full path to the item.
     bool unexported;  // Whether this is HFS+ private data.
     union {
       HFSPlusCatalogFile* file;
@@ -159,6 +162,10 @@ class HFSBTreeIterator {
   };
 
   HFSBTreeIterator();
+
+  HFSBTreeIterator(const HFSBTreeIterator&) = delete;
+  HFSBTreeIterator& operator=(const HFSBTreeIterator&) = delete;
+
   ~HFSBTreeIterator();
 
   bool Init(ReadStream* stream);
@@ -182,14 +189,14 @@ class HFSBTreeIterator {
 
   // Checks if the HFS+ catalog key is a Mac OS X reserved key that should not
   // have it or its contents iterated over.
-  bool IsKeyUnexported(const base::string16& path);
+  bool IsKeyUnexported(const std::u16string& path);
 
   ReadStream* stream_;  // The stream backing the catalog file.
   BTHeaderRec header_;  // The header B-tree node.
 
   // Maps CNIDs to their full path. This is used to construct full paths for
   // items that descend from the folders in this map.
-  std::map<uint32_t, base::string16> folder_cnid_map_;
+  std::map<uint32_t, std::u16string> folder_cnid_map_;
 
   // CNIDs of the non-exported folders reserved by OS X. If an item has this
   // CNID as a parent, it should be skipped.
@@ -213,12 +220,9 @@ class HFSBTreeIterator {
   Entry current_record_;  // The record read at |current_leaf_offset_|.
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.
-  const base::string16 kHFSMetadataFolder =
-      base::UTF8ToUTF16(base::StringPiece("\x0\x0\x0\x0HFS+ Private Data", 21));
-  const base::string16 kHFSDirMetadataFolder =
-      base::UTF8ToUTF16(".HFS+ Private Directory Data\xd");
-
-  DISALLOW_COPY_AND_ASSIGN(HFSBTreeIterator);
+  const std::u16string kHFSMetadataFolder{u"\0\0\0\0HFS+ Private Data", 21};
+  const std::u16string kHFSDirMetadataFolder =
+      u".HFS+ Private Directory Data\r";
 };
 
 HFSIterator::HFSIterator(ReadStream* stream)
@@ -306,7 +310,7 @@ bool HFSIterator::IsDecmpfsCompressed() {
   return file->bsdInfo.ownerFlags & UF_COMPRESSED;
 }
 
-base::string16 HFSIterator::GetPath() {
+std::u16string HFSIterator::GetPath() {
   return catalog_->current_record()->path;
 }
 
@@ -326,8 +330,9 @@ bool HFSIterator::SeekToBlock(uint64_t block) {
 }
 
 bool HFSIterator::ReadCatalogFile() {
-  catalog_file_.reset(new HFSForkReadStream(this, volume_header_.catalogFile));
-  catalog_.reset(new HFSBTreeIterator());
+  catalog_file_ =
+      std::make_unique<HFSForkReadStream>(this, volume_header_.catalogFile);
+  catalog_ = std::make_unique<HFSBTreeIterator>();
   return catalog_->Init(catalog_file_.get());
 }
 
@@ -367,8 +372,8 @@ bool HFSForkReadStream::Read(uint8_t* buffer,
 
     auto extent_size =
         base::CheckedNumeric<size_t>(extent->blockCount) * hfs_->block_size();
-    if (!extent_size.IsValid()) {
-      DLOG(ERROR) << "Extent blockCount overflows";
+    if (extent_size.ValueOrDefault(0) == 0) {
+      DLOG(ERROR) << "Extent blockCount overflows or is 0";
       return false;
     }
 
@@ -379,7 +384,7 @@ bool HFSForkReadStream::Read(uint8_t* buffer,
         return false;
       }
       current_extent_data_.resize(extent_size.ValueOrDie());
-      if (!hfs_->stream()->ReadExact(&current_extent_data_[0],
+      if (!hfs_->stream()->ReadExact(current_extent_data_.data(),
                                      extent_size.ValueOrDie())) {
         DLOG(ERROR) << "Failed to read extent " << current_extent_;
         return false;
@@ -536,7 +541,7 @@ bool HFSBTreeIterator::Next() {
   }
 
   // Read and byte-swap the variable-length key string.
-  base::string16 key(key_string_length, '\0');
+  std::u16string key(key_string_length, '\0');
   for (uint16_t i = 0; i < key_string_length; ++i) {
     auto* character = GetLeafData<uint16_t>();
     if (!character) {
@@ -589,7 +594,7 @@ bool HFSBTreeIterator::Next() {
       ++leaf_records_read_;
       ++current_leaf_records_read_;
 
-      base::string16 path =
+      std::u16string path =
           folder_cnid_map_[parent_id] + kFilePathSeparator + key;
       current_record_.path = path;
       current_record_.file = file;
@@ -675,7 +680,7 @@ T* HFSBTreeIterator::GetLeafData() {
   return object;
 }
 
-bool HFSBTreeIterator::IsKeyUnexported(const base::string16& key) {
+bool HFSBTreeIterator::IsKeyUnexported(const std::u16string& key) {
   return key == kHFSDirMetadataFolder ||
          key == kHFSMetadataFolder;
 }

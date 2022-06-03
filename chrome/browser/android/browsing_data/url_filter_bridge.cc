@@ -12,11 +12,11 @@
 using base::android::JavaParamRef;
 
 UrlFilterBridge::UrlFilterBridge(
-    const base::Callback<bool(const GURL&)>& url_filter)
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter)
     : url_filter_(url_filter),
-      j_bridge_(Java_UrlFilterBridge_create(
-          base::android::AttachCurrentThread(),
-          reinterpret_cast<uintptr_t>(this))) {}
+      j_bridge_(
+          Java_UrlFilterBridge_create(base::android::AttachCurrentThread(),
+                                      reinterpret_cast<uintptr_t>(this))) {}
 
 UrlFilterBridge::~UrlFilterBridge() {}
 

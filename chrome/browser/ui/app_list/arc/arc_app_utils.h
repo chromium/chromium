@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/app.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -26,10 +26,17 @@ class BrowserContext;
 namespace arc {
 
 extern const char kInitialStartParam[];
+extern const char kCategoryLauncher[];
 extern const char kRequestStartTimeParamTemplate[];
 extern const char kPlayStoreActivity[];
 extern const char kPlayStorePackage[];
-extern const char kSettingsAppDomainUrlActivity[];
+
+extern const char kAction[];
+extern const char kCategory[];
+extern const char kComponent[];
+extern const char kEndSuffix[];
+extern const char kIntentPrefix[];
+extern const char kLaunchFlags[];
 
 extern const char kCameraMigrationAppId[];
 extern const char kGmailAppId[];
@@ -47,11 +54,18 @@ extern const char kPlayMusicAppId[];
 extern const char kPlayStoreAppId[];
 extern const char kSettingsAppId[];
 extern const char kYoutubeAppId[];
+extern const char kYoutubeMusicAppId[];
+extern const char kYoutubeMusicWebApkAppId[];
+extern const char kAndroidContactsAppId[];
 
 // Represents unparsed intent.
 class Intent {
  public:
   Intent();
+
+  Intent(const Intent&) = delete;
+  Intent& operator=(const Intent&) = delete;
+
   ~Intent();
 
   enum LaunchFlags : uint32_t {
@@ -90,8 +104,6 @@ class Intent {
   std::string activity_;                   // Extracted from component.
   uint32_t launch_flags_ = 0;              // Extracted from launchFlags;
   std::vector<std::string> extra_params_;  // Other parameters not listed above.
-
-  DISALLOW_COPY_AND_ASSIGN(Intent);
 };
 
 // Observes ARC app launches.
@@ -104,13 +116,9 @@ class AppLaunchObserver : public base::CheckedObserver {
 // Checks if a given app should be hidden in launcher.
 bool ShouldShowInLauncher(const std::string& app_id);
 
-// Launch Android Settings app.
-bool LaunchAndroidSettingsApp(content::BrowserContext* context,
-                              int event_flags,
-                              int64_t display_id);
-
-// Launch Play Store app.
-bool LaunchPlayStoreWithUrl(const std::string& url);
+// Helper to create arc::mojom::WindowInfoPtr using |display_id|, which is the
+// id of the display from which the app is launched.
+arc::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
 
 // Launches an ARC app.
 bool LaunchApp(content::BrowserContext* context,
@@ -121,14 +129,14 @@ bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                UserInteractionType user_action,
-               int64_t display_id);
+               arc::mojom::WindowInfoPtr window_info);
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,
-                         const base::Optional<std::string>& launch_intent,
+                         const absl::optional<std::string>& launch_intent,
                          int event_flags,
                          UserInteractionType user_action,
-                         int64_t display_id);
+                         arc::mojom::WindowInfoPtr window_info);
 
 // Launches App Shortcut that was published by Android's ShortcutManager.
 bool LaunchAppShortcutItem(content::BrowserContext* context,
@@ -136,11 +144,8 @@ bool LaunchAppShortcutItem(content::BrowserContext* context,
                            const std::string& shortcut_id,
                            int64_t display_id);
 
-// Launches a specific activity within Settings app on ARC.
-bool LaunchSettingsAppActivity(content::BrowserContext* context,
-                               const std::string& activity,
-                               int event_flags,
-                               int64_t display_id);
+// Updates pre-launched window info to ARC.
+void UpdateWindowInfo(arc::mojom::WindowInfoPtr window_info);
 
 // Sets task active.
 void SetTaskActive(int task_id);
@@ -148,8 +153,8 @@ void SetTaskActive(int task_id);
 // Closes the task.
 void CloseTask(int task_id);
 
-// Opens TalkBack settings window.
-void ShowTalkBackSettings();
+// Sets TouchMode in Android. Returns true if the intent was sent.
+bool SetTouchMode(bool enable);
 
 // Gets user selected package names.
 std::vector<std::string> GetSelectedPackagesFromPrefs(
@@ -205,20 +210,34 @@ void GetAndroidId(
 std::string AppIdToArcPackageName(const std::string& app_id, Profile* profile);
 
 // Returns the AppID for the specified package_name, which must be the package
-// name of an ARC app.
+// name of an ARC app or an empty string if name not found.
 std::string ArcPackageNameToAppId(const std::string& package_name,
                                   Profile* profile);
-
-// Returns true if the ARC app is sticky (not uninstallable). This function
-// will DCHECK if app_id isn't installed. This functionality should eventually
-// move to the App Service: (https://crbug.com/948408).
-bool IsArcAppSticky(const std::string& app_id, Profile* profile);
 
 // Add/remove an observer to be notified of app launches.
 void AddAppLaunchObserver(content::BrowserContext* context,
                           AppLaunchObserver* observer);
 void RemoveAppLaunchObserver(content::BrowserContext* context,
                              AppLaunchObserver* observer);
+
+// Returns the app id from the app id or the shelf group id.
+const std::string GetAppFromAppOrGroupId(content::BrowserContext* context,
+                                         const std::string& app_or_group_id);
+
+// Executes an app Shortcut command.
+void ExecuteArcShortcutCommand(content::BrowserContext* context,
+                               const std::string& id,
+                               const std::string& shortcut_id,
+                               int64_t display_id);
+
+// Records whether or not Play Store has been launched by the user within a
+// week after from the when onboarding (OOBE) finished, following this logic:
+// * we are still within a week from onboarding:
+//   -Play Store has been launched --> true
+//   -Play Store has not been launched yet --> do nothing
+// * a week has passed since onboarding --> no
+void RecordPlayStoreLaunchWithinAWeek(PrefService* prefs, bool launched);
+
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_UTILS_H_

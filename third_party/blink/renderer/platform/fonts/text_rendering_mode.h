@@ -39,6 +39,7 @@ enum TextRenderingMode {
 };
 
 PLATFORM_EXPORT String ToString(TextRenderingMode);
+PLATFORM_EXPORT String ToStringForIdl(TextRenderingMode);
 
 }  // namespace blink
 

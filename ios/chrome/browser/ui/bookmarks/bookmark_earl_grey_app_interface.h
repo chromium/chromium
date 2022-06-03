@@ -33,6 +33,9 @@
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
                        expectedCount:(NSUInteger)expectedCount;
 
+// Programmatically adds a bookmark with the given title and URL.
++ (NSError*)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url;
+
 // Removes programmatically the first bookmark with the given title.
 + (NSError*)removeBookmarkWithTitle:(NSString*)title;
 
@@ -51,6 +54,9 @@
 // Verifies the absence of a Bookmark with |URL|.
 + (NSError*)verifyAbsenceOfBookmarkWithURL:(NSString*)URL;
 
+// Verifies that a folder called |title| exists.
++ (NSError*)verifyExistenceOfFolderWithTitle:(NSString*)title;
+
 // Checks that the promo has already been seen or not.
 + (NSError*)verifyPromoAlreadySeen:(BOOL)seen;
 
@@ -62,9 +68,6 @@
 
 // Returns the number of times a Promo has been seen.
 + (int)numberOfTimesPromoAlreadySeen;
-
-// Sets up a FakeIdentity and returns the email of this Identity.
-+ (NSString*)setupFakeIdentity;
 
 @end
 

@@ -18,7 +18,6 @@
 namespace jni_generator {
 struct JniJavaCallContextUnchecked;
 }
-struct unw_context_t;
 
 namespace tracing {
 
@@ -33,9 +32,6 @@ namespace tracing {
 class COMPONENT_EXPORT(TRACING_CPP) StackUnwinderAndroid {
  public:
   using JniMarker = jni_generator::JniJavaCallContextUnchecked;
-
-  // Whether to use libunwind for android framework frames.
-  static const bool kUseLibunwind;
 
   StackUnwinderAndroid();
   ~StackUnwinderAndroid();
@@ -73,7 +69,6 @@ class COMPONENT_EXPORT(TRACING_CPP) StackUnwinderAndroid {
                                    base::StackBuffer* stack_buffer,
                                    uintptr_t* sp,
                                    size_t* stack_size,
-                                   unw_context_t* context,
                                    ucontext_t* signal_context) const;
 
   // Replaces any pointers to the old stack to point to the new stack segment.

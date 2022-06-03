@@ -13,24 +13,25 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser_jni_headers/AwCookieManager_jni.h"
+#include "android_webview/common/aw_switches.h"
+#include "base/android/build_info.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -47,11 +48,12 @@
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using base::WaitableEvent;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -88,21 +90,17 @@ enum class SecureCookieAction {
   kInvalidCookie = 2,
   kNotASecureCookie = 3,
   kFixedUp = 4,
-  kMaxValue = kFixedUp,
+  kDisallowedAndroidR = 5,
+  kMaxValue = kDisallowedAndroidR,
 };
 
-// Since this function parses the set-cookie line into a ParsedCookie, it is
-// convenient to hook into here to get the SameSite value from the parsed
-// cookie for histogramming.
-GURL MaybeFixUpSchemeForSecureCookieAndGetSameSite(
-    const GURL& host,
-    const std::string& value,
-    net::CookieSameSiteString* samesite_out) {
+GURL MaybeFixUpSchemeForSecureCookie(const GURL& host,
+                                     const std::string& value,
+                                     bool workaround_http_secure_cookies,
+                                     bool* should_allow_cookie) {
   net::ParsedCookie parsed_cookie(value);
 
-  // Grab the SameSite value for histogramming.
-  DCHECK(samesite_out);
-  parsed_cookie.SameSite(samesite_out);
+  *should_allow_cookie = true;
 
   // Log message for catching strict secure cookies related bugs.
   // TODO(ntfschr): try to remove this, based on UMA stats
@@ -128,9 +126,20 @@ GURL MaybeFixUpSchemeForSecureCookieAndGetSameSite(
     return host;
   }
 
-  LOG(WARNING) << "Strict Secure Cookie policy does not allow setting a "
-                  "secure cookie for "
-               << host.spec();
+  LOG(ERROR) << "Strict Secure Cookie policy does not allow setting a "
+                "secure cookie for "
+             << host.spec()
+             << " for apps targeting >= R. Please either use the 'https:' "
+                "scheme for this URL or omit the 'Secure' directive in the "
+                "cookie value.";
+  if (!workaround_http_secure_cookies) {
+    // Don't allow setting this cookie if we target >= R.
+    *should_allow_cookie = false;
+    base::UmaHistogramEnumeration(kSecureCookieHistogramName,
+                                  SecureCookieAction::kDisallowedAndroidR);
+    return host;
+  }
+
   base::UmaHistogramEnumeration(kSecureCookieHistogramName,
                                 SecureCookieAction::kFixedUp);
   GURL::Replacements replace_host;
@@ -185,6 +194,9 @@ base::FilePath GetPathInAppDirectory(std::string path) {
 CookieManager::CookieManager()
     : allow_file_scheme_cookies_(kDefaultFileSchemeAllowed),
       cookie_store_created_(false),
+      workaround_http_secure_cookies_(
+          base::android::BuildInfo::GetInstance()->target_sdk_version() <
+          base::android::SDK_VERSION_R),
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {
@@ -204,16 +216,13 @@ void CookieManager::MigrateCookieStorePath() {
   base::FilePath old_cookie_store_path = GetPathInAppDirectory("Cookies");
   base::FilePath old_cookie_journal_path =
       GetPathInAppDirectory("Cookies-journal");
+  base::FilePath new_cookie_journal_path =
+      GetPathInAppDirectory("Default/Cookies-journal");
 
   if (base::PathExists(old_cookie_store_path)) {
+    base::CreateDirectory(cookie_store_path_.DirName());
     base::Move(old_cookie_store_path, cookie_store_path_);
-    base::Move(old_cookie_journal_path, cookie_store_path_);
-  } else {
-    // Some users got an incomplete version of this migration where the journal
-    // was not moved. Delete the old journal if it exists, as we can't merge
-    // them.
-    // TODO(torne): remove this in a future release (M81?)
-    base::DeleteFile(old_cookie_journal_path, false);
+    base::Move(old_cookie_journal_path, new_cookie_journal_path);
   }
 }
 
@@ -306,7 +315,7 @@ net::CookieStore* CookieManager::GetCookieStore() {
   if (!cookie_store_) {
     content::CookieStoreConfig cookie_config(
         cookie_store_path_, true /* restore_old_session_cookies */,
-        true /* persist_session_cookies */, nullptr /* storage_policy */);
+        true /* persist_session_cookies */);
     cookie_config.client_task_runner = cookie_store_task_runner_;
     cookie_config.background_task_runner =
         cookie_store_backend_thread_.task_runner();
@@ -331,11 +340,14 @@ net::CookieStore* CookieManager::GetCookieStore() {
     }
 
     cookie_store_ = content::CreateCookieStore(cookie_config, nullptr);
-    // Use a CookieAccessDelegate that always returns Legacy mode, for
-    // compatibility reasons.
+    auto cookie_access_delegate_type =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebViewEnableModernCookieSameSite)
+            ? network::mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY
+            : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
     cookie_store_->SetCookieAccessDelegate(
         std::make_unique<network::CookieAccessDelegateImpl>(
-            network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY));
+            cookie_access_delegate_type, nullptr /* first_party_sets */));
   }
 
   return cookie_store_.get();
@@ -385,6 +397,23 @@ void CookieManager::SwapMojoCookieManagerAsync(
   RunPendingCookieTasks();
 }
 
+void CookieManager::SetWorkaroundHttpSecureCookiesForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean allow) {
+  ExecCookieTaskSync(
+      base::BindOnce(&CookieManager::SetWorkaroundHttpSecureCookiesAsyncHelper,
+                     base::Unretained(this), allow));
+}
+
+void CookieManager::SetWorkaroundHttpSecureCookiesAsyncHelper(
+    bool allow,
+    base::OnceClosure complete) {
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
+  workaround_http_secure_cookies_ = allow;
+  std::move(complete).Run();
+}
+
 void CookieManager::SetShouldAcceptCookies(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jboolean accept) {
@@ -429,46 +458,35 @@ void CookieManager::SetCookieSync(JNIEnv* env,
 void CookieManager::SetCookieHelper(const GURL& host,
                                     const std::string& value,
                                     base::OnceCallback<void(bool)> callback) {
-  net::CookieSameSiteString samesite = net::CookieSameSiteString::kUnspecified;
-  const GURL& new_host =
-      MaybeFixUpSchemeForSecureCookieAndGetSameSite(host, value, &samesite);
+  DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Android.WebView.CookieManager.SameSiteAttributeValue", samesite);
+  bool should_allow_cookie = true;
+  const GURL& new_host = MaybeFixUpSchemeForSecureCookie(
+      host, value, workaround_http_secure_cookies_, &should_allow_cookie);
 
-  net::CanonicalCookie::CookieInclusionStatus status;
-  std::unique_ptr<net::CanonicalCookie> cc(
-      net::CanonicalCookie::Create(new_host, value, base::Time::Now(),
-                                   base::nullopt /* server_time */, &status));
+  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
+      new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
+      net::CookiePartitionKey::Todo()));
 
-  if (!cc) {
+  if (!cc || !should_allow_cookie) {
     MaybeRunCookieCallback(std::move(callback), false);
     return;
   }
 
-  if (cc->SameSite() == net::CookieSameSite::NO_RESTRICTION) {
-    UMA_HISTOGRAM_BOOLEAN("Android.WebView.CookieManager.SameSiteNoneIsSecure",
-                          cc->IsSecure());
-  }
-
-  // Note: CookieStore and network::CookieManager have different signatures: one
-  // accepts a boolean callback while the other (recently) changed to accept a
-  // CookieInclusionStatus callback. WebView only cares about boolean success,
-  // which is why we use |AdaptCookieInclusionStatusToBool|. This is temporary
+  // Note: CookieStore and network::CookieManager both accept a
+  // CookieAccessResult callback. WebView only cares about boolean success,
+  // which is why we use |AdaptCookieAccessResultToBool|. This is temporary
   // technical debt until we fully launch the Network Service code path.
   if (GetMojoCookieManager()) {
     // *cc.get() is safe, because network::CookieManager::SetCanonicalCookie
     // will make a copy before our smart pointer goes out of scope.
     GetMojoCookieManager()->SetCanonicalCookie(
-        *cc.get(), new_host.scheme(), net::CookieOptions::MakeAllInclusive(),
-        net::cookie_util::AdaptCookieInclusionStatusToBool(
-            std::move(callback)));
+        *cc.get(), new_host, net::CookieOptions::MakeAllInclusive(),
+        net::cookie_util::AdaptCookieAccessResultToBool(std::move(callback)));
   } else {
     GetCookieStore()->SetCanonicalCookieAsync(
-        std::move(cc), new_host.scheme(),
-        net::CookieOptions::MakeAllInclusive(),
-        net::cookie_util::AdaptCookieInclusionStatusToBool(
-            std::move(callback)));
+        std::move(cc), new_host, net::CookieOptions::MakeAllInclusive(),
+        net::cookie_util::AdaptCookieAccessResultToBool(std::move(callback)));
   }
 }
 
@@ -494,12 +512,12 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
 
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->GetCookieList(
-        host, options,
+        host, options, net::CookiePartitionKeychain::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
     GetCookieStore()->GetCookieListWithOptionsAsync(
-        host, options,
+        host, options, net::CookiePartitionKeychain::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }
@@ -508,9 +526,9 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
 void CookieManager::GetCookieListCompleted(
     base::OnceClosure complete,
     net::CookieList* result,
-    const net::CookieStatusList& value,
-    const net::CookieStatusList& excluded_cookies) {
-  *result = net::cookie_util::StripStatuses(value);
+    const net::CookieAccessResultList& value,
+    const net::CookieAccessResultList& excluded_cookies) {
+  *result = net::cookie_util::StripAccessResults(value);
   std::move(complete).Run();
 }
 

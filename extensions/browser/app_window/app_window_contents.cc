@@ -16,8 +16,9 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/extension_messages.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace extensions {
 
@@ -58,22 +59,30 @@ void AppWindowContentsImpl::LoadContents(int32_t creator_process_id) {
 
 void AppWindowContentsImpl::NativeWindowChanged(
     NativeAppWindow* native_app_window) {
-  base::ListValue args;
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
-  host_->GetSerializedState(dictionary.get());
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  host_->GetSerializedState(&dictionary);
+  base::Value args(base::Value::Type::LIST);
   args.Append(std::move(dictionary));
 
   content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  rfh->Send(new ExtensionMsg_MessageInvoke(rfh->GetRoutingID(),
-                                           host_->extension_id(), "app.window",
-                                           "updateAppWindowProperties", args));
+  // Return early if this method is called before RenderFrameCreated(). (e.g.
+  // if AppWindow is created and shown before navigation, this method is called
+  // for the visibility change.)
+  if (!rfh->IsRenderFrameLive())
+    return;
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(rfh)
+      ->MessageInvoke(host_->extension_id(), "app.window",
+                      "updateAppWindowProperties", std::move(args));
 }
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  rfh->Send(
-      new ExtensionMsg_AppWindowClosed(rfh->GetRoutingID(), send_onclosed));
+  // Return early if this method is called when the render frame is not live.
+  if (!web_contents_->GetMainFrame()->IsRenderFrameLive())
+    return;
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(web_contents_->GetMainFrame())
+      ->AppWindowClosed(send_onclosed);
 }
 
 content::WebContents* AppWindowContentsImpl::GetWebContents() const {

@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -58,6 +59,7 @@ class WebRtcWebcamBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->RemoveSwitch(switches::kUseFakeDeviceForMediaStream);
     EXPECT_FALSE(command_line->HasSwitch(
         switches::kUseFakeDeviceForMediaStream));
     EXPECT_FALSE(command_line->HasSwitch(
@@ -92,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcWebcamBrowserTest,
                        MANUAL_TestAcquiringAndReacquiringWebcam) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 

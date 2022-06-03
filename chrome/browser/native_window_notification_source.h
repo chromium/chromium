@@ -9,7 +9,7 @@
 #include "content/public/browser/notification_source.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 namespace content {
 

@@ -4,16 +4,20 @@
 
 #include "extensions/browser/api/file_handlers/directory_util.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
 #endif
@@ -34,7 +38,7 @@ bool GetIsDirectoryFromFileInfo(const base::FilePath& path) {
 void EntryIsDirectory(content::BrowserContext* context,
                       const base::FilePath& path,
                       base::OnceCallback<void(bool)> callback) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NonNativeFileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();
   if (delegate && delegate->IsUnderNonNativeLocalPath(context, path)) {
@@ -43,8 +47,8 @@ void EntryIsDirectory(content::BrowserContext* context,
   }
 #endif
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetIsDirectoryFromFileInfo, path), std::move(callback));
 }
 
@@ -63,7 +67,7 @@ void IsDirectoryCollector::CollectForEntriesPaths(
   callback_ = std::move(callback);
 
   DCHECK(!result_.get());
-  result_.reset(new std::set<base::FilePath>());
+  result_ = std::make_unique<std::set<base::FilePath>>();
   left_ = paths.size();
 
   if (!left_) {

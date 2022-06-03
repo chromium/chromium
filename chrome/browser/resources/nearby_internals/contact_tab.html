@@ -1,0 +1,26 @@
+<style include="shared-style">
+  :host {
+    --standard-border: 1px solid black;
+  }
+
+  #clearButton {
+    float: right;
+  }
+</style>
+<cr-button on-click="onDownloadContacts_"
+    class="internals-button">
+  Download Contacts
+</cr-button>
+<cr-button on-click="onClearMessagesButtonClicked_" class="internals-button"
+    id="clearButton" disabled="[[!contactList_.length]]">
+ Clear Messages
+</cr-button>
+<dom-repeat items="[[contactList_]]" as="contact" id="contact-list"
+    hidden="[[!contactList_.length]]">
+  <!-- TODO(https://crbug.com/1120668): Add missing bottom border to contact
+    list. -->
+  <template>
+    <contact-object item="[[contact]]">
+    </contact-object>
+  </template>
+</dom-repeat>

@@ -22,19 +22,19 @@ source_set("bubble") {
     "//base:i18n",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
@@ -52,5 +52,5 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/util",
     "//testing/gtest",
   ]
-  libs = [ "CoreGraphics.framework" ]
+  frameworks = [ "CoreGraphics.framework" ]
 }

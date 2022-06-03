@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "google_apis/gcm/base/mcs_util.h"
 
 namespace gcm {

@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/web_contents.h"
@@ -79,7 +80,7 @@ void MultiTabLoadingPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     RECORD_HISTOGRAMS(
         internal::kHistogramForegroundToFirstContentfulPaintSuffix,
         timing.paint_timing->first_contentful_paint.value() -
-            GetDelegate().GetFirstForegroundTime().value());
+            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 
@@ -90,13 +91,6 @@ void MultiTabLoadingPageLoadMetricsObserver::
           timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     RECORD_HISTOGRAMS(internal::kHistogramFirstMeaningfulPaintSuffix,
                       timing.paint_timing->first_meaningful_paint.value());
-  }
-  if (page_load_metrics::WasStartedInBackgroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    RECORD_HISTOGRAMS(
-        internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
-        timing.paint_timing->first_meaningful_paint.value() -
-            GetDelegate().GetFirstForegroundTime().value());
   }
 }
 
@@ -133,9 +127,7 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* this_contents = navigation_handle->GetWebContents();
   int num_loading = 0;
-  for (TabModelList::const_iterator it = TabModelList::begin();
-       it != TabModelList::end(); ++it) {
-    TabModel* model = *it;
+  for (const TabModel* model : TabModelList::models()) {
     // Note: |this_contents| may not appear in |model|.
     for (int i = 0; i < model->GetTabCount(); ++i) {
       content::WebContents* other_contents = model->GetWebContentsAt(i);

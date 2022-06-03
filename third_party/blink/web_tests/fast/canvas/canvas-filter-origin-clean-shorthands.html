@@ -1,0 +1,29 @@
+<!doctype html>
+<title>CSS shorthand filters never taint the canvas</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+function assert_not_tainted(performCommands, description) {
+  let ctx = document.createElement('canvas').getContext('2d');
+  performCommands(ctx);
+  assert_not_equals(ctx.getImageData(0, 0, 1, 1), null, description);
+}
+
+test(function() {
+  assert_not_tainted(ctx => {
+    ctx.fillStyle = '#0f0';
+    ctx.filter = 'brightness(0.5)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'brightness(0.5)');
+
+  assert_not_tainted(ctx => {
+    ctx.filter = 'blur(5px)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'blur(5px)');
+
+  assert_not_tainted(ctx => {
+    ctx.filter = 'hue-rotate(45deg) drop-shadow(16px 16px 20px blue)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'hue-rotate(45deg) drop-shadow(16px 16px 20px blue)');
+});
+</script>

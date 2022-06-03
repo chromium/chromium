@@ -16,10 +16,8 @@ group("strings") {
 grit("ios_search_widget_extension_strings") {
   source = "ios_search_widget_extension_strings.grd"
   output_dir = "$root_gen_dir/ios/search_widget_extension"
-  outputs = [
-    "grit/ios_search_widget_extension_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/ios_search_widget_extension_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "ios_search_widget_extension_strings_$locale.pak" ]
   }
 }
@@ -27,10 +25,8 @@ grit("ios_search_widget_extension_strings") {
 grit("ios_search_widget_extension_chromium_strings") {
   source = "ios_search_widget_extension_chromium_strings.grd"
   output_dir = "$root_gen_dir/ios/search_widget_extension"
-  outputs = [
-    "grit/ios_search_widget_extension_chromium_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/ios_search_widget_extension_chromium_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "ios_search_widget_extension_chromium_strings_$locale.pak" ]
   }
 }
@@ -38,10 +34,8 @@ grit("ios_search_widget_extension_chromium_strings") {
 grit("ios_search_widget_extension_google_chrome_strings") {
   source = "ios_search_widget_extension_google_chrome_strings.grd"
   output_dir = "$root_gen_dir/ios/search_widget_extension"
-  outputs = [
-    "grit/ios_search_widget_extension_google_chrome_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/ios_search_widget_extension_google_chrome_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs +=
         [ "ios_search_widget_extension_google_chrome_strings_$locale.pak" ]
   }

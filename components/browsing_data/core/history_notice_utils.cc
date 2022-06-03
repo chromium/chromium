@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/version_info/version_info.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace {
 
@@ -23,11 +23,10 @@ class MergeBooleanCallbacks {
  public:
   // Constructor. Upon receiving |expected_call_count| calls to |RunCallback|,
   // |target_callback| will be run with the boolean product of their results.
-  MergeBooleanCallbacks(
-      int expected_call_count,
-      const base::Callback<void(bool)>& target_callback)
+  MergeBooleanCallbacks(int expected_call_count,
+                        base::OnceCallback<void(bool)> target_callback)
       : expected_call_count_(expected_call_count),
-        target_callback_(target_callback),
+        target_callback_(std::move(target_callback)),
         final_response_(true),
         call_count_(0) {}
 
@@ -39,13 +38,13 @@ class MergeBooleanCallbacks {
     if (++call_count_ < expected_call_count_)
       return;
 
-    target_callback_.Run(final_response_);
+    std::move(target_callback_).Run(final_response_);
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }
 
  private:
   int expected_call_count_;
-  base::Callback<void(bool)> target_callback_;
+  base::OnceCallback<void(bool)> target_callback_;
   bool final_response_;
   int call_count_;
 };
@@ -57,13 +56,13 @@ namespace browsing_data {
 void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
     const syncer::SyncService* sync_service,
     history::WebHistoryService* history_service,
-    base::Callback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (!sync_service || !sync_service->IsSyncFeatureActive() ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
-      sync_service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
       !history_service) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
@@ -92,27 +91,30 @@ void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
           }
         }
       })");
-  history_service->QueryWebAndAppActivity(callback, partial_traffic_annotation);
+  history_service->QueryWebAndAppActivity(std::move(callback),
+                                          partial_traffic_annotation);
 }
 
 void ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
     const syncer::SyncService* sync_service,
     history::WebHistoryService* history_service,
     version_info::Channel channel,
-    base::Callback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (!sync_service || !sync_service->IsSyncFeatureActive() ||
       !sync_service->GetActiveDataTypes().Has(
           syncer::HISTORY_DELETE_DIRECTIVES) ||
-      sync_service->GetUserSettings()->IsUsingSecondaryPassphrase() ||
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase() ||
       !history_service) {
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
   // Return the boolean product of QueryWebAndAppActivity and
   // QueryOtherFormsOfBrowsingHistory. MergeBooleanCallbacks deletes itself
   // after processing both callbacks.
-  MergeBooleanCallbacks* merger = new MergeBooleanCallbacks(2, callback);
+  MergeBooleanCallbacks* merger =
+      new MergeBooleanCallbacks(2, std::move(callback));
+
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation("history_notice_utils_popup",
                                                  "web_history_service", R"(
@@ -137,11 +139,13 @@ void ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
             }
           })");
   history_service->QueryWebAndAppActivity(
-      base::Bind(&MergeBooleanCallbacks::RunCallback, base::Unretained(merger)),
+      base::BindOnce(&MergeBooleanCallbacks::RunCallback,
+                     base::Unretained(merger)),
       partial_traffic_annotation);
   history_service->QueryOtherFormsOfBrowsingHistory(
       channel,
-      base::Bind(&MergeBooleanCallbacks::RunCallback, base::Unretained(merger)),
+      base::BindOnce(&MergeBooleanCallbacks::RunCallback,
+                     base::Unretained(merger)),
       partial_traffic_annotation);
 }
 

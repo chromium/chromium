@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -37,7 +37,7 @@ struct GFX_EXPORT CALayerParams {
   // Used to set the contents of a CALayer in the browser to an IOSurface that
   // is specified by the GPU process. This is non-null iff |ca_context_id| is
   // zero.
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
 #endif
 

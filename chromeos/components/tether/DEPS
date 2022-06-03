@@ -3,7 +3,6 @@ include_rules = [
   # to //chromeos/services/secure_channel/public once SecureChannelClient
   # migration is complete.
   "+chromeos/services/secure_channel",
-  "+components/cryptauth",
   "+components/pref_registry",
   "+components/proximity_auth/logging",
   "+components/session_manager/core",

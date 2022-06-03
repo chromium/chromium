@@ -1,0 +1,82 @@
+This test verifies the base size returned when highlighting flex items.
+
+fixed-flex-basis{
+  "flexItemInfo": [
+    {
+      "baseSize": 20,
+      "isHorizontalFlow": true,
+      "boxSizing": "content",
+      "flexItemHighlightConfig": {
+        "baseSizeBox": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "baseSizeBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "flexibilityArrow": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+zero-flex-basis{
+  "flexItemInfo": [
+    {}
+  ]
+}
+fixed-width{
+  "flexItemInfo": [
+    {
+      "baseSize": 30,
+      "isHorizontalFlow": true,
+      "boxSizing": "content",
+      "flexItemHighlightConfig": {
+        "baseSizeBox": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "baseSizeBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "flexibilityArrow": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+missing-basis-width{
+  "flexItemInfo": [
+    {}
+  ]
+}
+column-fixed-height{
+  "flexItemInfo": [
+    {
+      "baseSize": 40,
+      "isHorizontalFlow": false,
+      "boxSizing": "content",
+      "flexItemHighlightConfig": {
+        "baseSizeBox": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "baseSizeBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "flexibilityArrow": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+

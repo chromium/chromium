@@ -1,0 +1,13 @@
+Name: Default Plexus Container
+Short Name: plexus-container-default
+URL: https://codehaus-plexus.github.io/
+Version: 1.0-alpha-9-stable-1
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+
+
+Local Modifications:
+No modifications.

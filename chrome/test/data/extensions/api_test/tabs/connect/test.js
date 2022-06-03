@@ -100,7 +100,7 @@ chrome.test.runTests([
   },
 
   function connectToRemovedTab() {
-    // Expect a disconnect event when you connect to a non-existant tab, and
+    // Expect a disconnect event when you connect to a non-existent tab, and
     // once disconnected, expect an error while trying to post messages.
     chrome.tabs.create({}, pass(function(tab) {
       chrome.tabs.remove(tab.id, pass(function() {

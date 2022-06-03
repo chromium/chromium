@@ -4,7 +4,7 @@
 
 #include "ui/events/devices/device_data_manager.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
@@ -12,13 +12,17 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
 class DeviceDataManagerTest : public testing::Test {
  public:
   DeviceDataManagerTest() {}
+
+  DeviceDataManagerTest(const DeviceDataManagerTest&) = delete;
+  DeviceDataManagerTest& operator=(const DeviceDataManagerTest&) = delete;
+
   ~DeviceDataManagerTest() override {}
 
   // testing::Test:
@@ -29,9 +33,6 @@ class DeviceDataManagerTest : public testing::Test {
   void CallOnDeviceListsComplete() {
     DeviceDataManager::GetInstance()->OnDeviceListsComplete();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerTest);
 };
 
 TEST_F(DeviceDataManagerTest, DisplayIdUpdated) {
@@ -62,6 +63,10 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
  public:
   TestInputDeviceEventObserver() = default;
 
+  TestInputDeviceEventObserver(const TestInputDeviceEventObserver&) = delete;
+  TestInputDeviceEventObserver& operator=(const TestInputDeviceEventObserver&) =
+      delete;
+
   int on_touch_device_associations_changed_call_count() const {
     return on_touch_device_associations_changed_call_count_;
   }
@@ -73,8 +78,6 @@ class TestInputDeviceEventObserver : public InputDeviceEventObserver {
 
  private:
   int on_touch_device_associations_changed_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputDeviceEventObserver);
 };
 
 }  // namespace
@@ -83,9 +86,9 @@ TEST_F(DeviceDataManagerTest, AreTouchscreenTargetDisplaysValid) {
   DeviceDataManager* device_data_manager = DeviceDataManager::GetInstance();
   EXPECT_FALSE(device_data_manager->AreTouchscreenTargetDisplaysValid());
   TestInputDeviceEventObserver observer;
-  ScopedObserver<DeviceDataManager, InputDeviceEventObserver> scoped_observer(
-      &observer);
-  scoped_observer.Add(device_data_manager);
+  base::ScopedObservation<DeviceDataManager, InputDeviceEventObserver>
+      scoped_obaservation(&observer);
+  scoped_obaservation.Observe(device_data_manager);
   CallOnDeviceListsComplete();
   EXPECT_FALSE(device_data_manager->AreTouchscreenTargetDisplaysValid());
   EXPECT_EQ(0, observer.on_touch_device_associations_changed_call_count());

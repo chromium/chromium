@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+<title>Test webkitRelativePath IDL attribute</title>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<input type="file" webkitdirectory>
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+// This is an automated-version of external/wpt/entries-api/file-webkitRelativePath-manual.html
+
+promise_test(async () => {
+  const file = document.querySelector('input');
+  const simulatedDirectorySelectionChange = new Promise(
+      resolve => file.addEventListener('change', resolve, {once: true}));
+
+  const chosenDir = '/tmp/web_tests/external/wpt/entries-api/support/a';
+  mockFileChooserFactory.setPathsToBeChosen(
+      [`${chosenDir}/b/c/d/1.txt`, `${chosenDir}/b/c/d/2.txt`,
+       `${chosenDir}/b/c/3.txt`],
+      chosenDir);
+
+  test_driver.click(file);
+  await simulatedDirectorySelectionChange;
+
+  const files = Array.from(file.files).sort(
+      (a, b) => a.name < b.name ? -1 : b.name < a.name ? 1 : 0);
+  assert_equals(files.length, 3);
+  assert_equals(files[0].webkitRelativePath, 'a/b/c/d/1.txt');
+  assert_equals(files[1].webkitRelativePath, 'a/b/c/d/2.txt');
+  assert_equals(files[2].webkitRelativePath, 'a/b/c/3.txt');
+}, 'webkitRelativePath is relative from the to the parent of the chosen non-root directory');
+
+</script>
+</body>

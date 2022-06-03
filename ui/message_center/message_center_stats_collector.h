@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
@@ -39,6 +38,11 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
   };
 
   explicit MessageCenterStatsCollector(MessageCenter* message_center);
+
+  MessageCenterStatsCollector(const MessageCenterStatsCollector&) = delete;
+  MessageCenterStatsCollector& operator=(const MessageCenterStatsCollector&) =
+      delete;
+
   ~MessageCenterStatsCollector() override;
 
  private:
@@ -72,8 +76,8 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
   void OnNotificationUpdated(const std::string& notification_id) override;
   void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) override;
   void OnNotificationSettingsClicked(bool handled) override;
   void OnNotificationDisplayed(const std::string& notification_id,
                                const DisplaySource source) override;
@@ -85,8 +89,6 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
 
   typedef std::map<std::string, NotificationStats> StatsCollection;
   StatsCollection stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterStatsCollector);
 };
 
 }  // namespace message_center

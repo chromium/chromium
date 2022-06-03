@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/threading/thread.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/vsync_provider_win.h"
 
 namespace base {
 template <typename T>
@@ -29,11 +30,16 @@ class GL_EXPORT VSyncThreadWin {
  public:
   static VSyncThreadWin* GetInstance();
 
+  VSyncThreadWin(const VSyncThreadWin&) = delete;
+  VSyncThreadWin& operator=(const VSyncThreadWin&) = delete;
+
   // These methods are not rentrancy safe, and shouldn't be called inside
   // VSyncObserver::OnVSync.  It's safe to assume that these can be called only
   // from the main thread.
   void AddObserver(VSyncObserver* obs);
   void RemoveObserver(VSyncObserver* obs);
+
+  gfx::VSyncProvider* vsync_provider() { return &vsync_provider_; }
 
  private:
   friend struct base::DefaultSingletonTraits<VSyncThreadWin>;
@@ -46,6 +52,7 @@ class GL_EXPORT VSyncThreadWin {
   base::Thread vsync_thread_;
 
   // Used on vsync thread only after initialization.
+  VSyncProviderWin vsync_provider_;
   const Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   HMONITOR primary_monitor_ = nullptr;
   Microsoft::WRL::ComPtr<IDXGIOutput> primary_output_;
@@ -53,8 +60,6 @@ class GL_EXPORT VSyncThreadWin {
   base::Lock lock_;
   bool GUARDED_BY(lock_) is_idle_ = true;
   base::flat_set<VSyncObserver*> GUARDED_BY(lock_) observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncThreadWin);
 };
 }  // namespace gl
 

@@ -38,7 +38,9 @@ LogoMetadata GetExampleMetadata() {
   metadata.dark_mime_type = "image/jpeg";
   metadata.dark_background_color = "#ABC123";
   metadata.log_url = GURL("https://www.google.com/ddllog?a=b");
+  metadata.dark_log_url = GURL("https://www.google.com/ddllog?a=dark");
   metadata.cta_log_url = GURL("https://www.google.com/ddllog?c=d");
+  metadata.dark_cta_log_url = GURL("https://www.google.com/ddllog?c=dark");
   metadata.share_button_x = 200;
   metadata.share_button_y = 100;
   metadata.share_button_opacity = 0.5;
@@ -49,6 +51,10 @@ LogoMetadata GetExampleMetadata() {
   metadata.dark_share_button_opacity = 0.7;
   metadata.dark_share_button_icon = "dark_test_img";
   metadata.dark_share_button_bg = "#22ff22";
+  metadata.width_px = 500;
+  metadata.height_px = 200;
+  metadata.dark_width_px = 600;
+  metadata.dark_height_px = 230;
   return metadata;
 }
 
@@ -115,7 +121,10 @@ void ExpectMetadataEqual(const LogoMetadata& expected_metadata,
   EXPECT_EQ(expected_metadata.alt_text, actual_metadata.alt_text);
   EXPECT_EQ(expected_metadata.mime_type, actual_metadata.mime_type);
   EXPECT_EQ(expected_metadata.log_url, actual_metadata.log_url);
+  EXPECT_EQ(expected_metadata.dark_log_url, actual_metadata.dark_log_url);
   EXPECT_EQ(expected_metadata.cta_log_url, actual_metadata.cta_log_url);
+  EXPECT_EQ(expected_metadata.dark_cta_log_url,
+            actual_metadata.dark_cta_log_url);
   EXPECT_EQ(expected_metadata.short_link, actual_metadata.short_link);
   EXPECT_EQ(expected_metadata.share_button_x, actual_metadata.share_button_x);
   EXPECT_EQ(expected_metadata.share_button_y, actual_metadata.share_button_y);
@@ -134,6 +143,15 @@ void ExpectMetadataEqual(const LogoMetadata& expected_metadata,
             actual_metadata.dark_share_button_icon);
   EXPECT_EQ(expected_metadata.dark_share_button_bg,
             actual_metadata.dark_share_button_bg);
+  EXPECT_EQ(expected_metadata.width_px, actual_metadata.width_px);
+  EXPECT_EQ(expected_metadata.height_px, actual_metadata.height_px);
+  EXPECT_EQ(expected_metadata.dark_width_px, actual_metadata.dark_width_px);
+  EXPECT_EQ(expected_metadata.dark_height_px, actual_metadata.dark_height_px);
+  EXPECT_EQ(expected_metadata.iframe_width_px, actual_metadata.iframe_width_px);
+  EXPECT_EQ(expected_metadata.iframe_height_px,
+            actual_metadata.iframe_height_px);
+  EXPECT_EQ(expected_metadata.dark_background_color,
+            actual_metadata.dark_background_color);
 }
 
 void ExpectLogosEqual(const EncodedLogo& expected_logo,
@@ -258,7 +276,7 @@ TEST_F(LogoCacheTest, StoreAndRetrieveMetadata) {
   ExpectMetadata(&metadata);
 
   // Ensure metadata is cached in memory.
-  base::DeleteFile(cache_->GetMetadataPath(), false);
+  base::DeleteFile(cache_->GetMetadataPath());
   ExpectMetadata(&metadata);
 }
 

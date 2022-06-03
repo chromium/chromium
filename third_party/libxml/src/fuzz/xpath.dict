@@ -1,0 +1,94 @@
+# XML
+
+elem_a="<a></a>"
+elem_b="<b></b>"
+elem_c="<c></c>"
+elem_d="<d></d>"
+elem_empty="<a/>"
+elem_ns_a="<a:a xmlns:a='a'></a:a>"
+elem_ns_b="<b:b xmlns:b='b'></b:b>"
+
+attr_a=" a='a'"
+attr_b=" b='b'"
+
+ns_decl=" xmlns:a='a'"
+ns_default=" xmlns='a'"
+ns_prefix_a="a:"
+ns_prefix_b="b:"
+
+cdata_section="<![CDATA[ ]]>"
+
+comment="<!-- -->"
+
+pi="<?a?>"
+
+# XPath
+
+axis_ancestor="ancestor::"
+axis_ancestor_or_self="ancestor-or-self::"
+axis_attribute="attribute::"
+axis_attribute_abbrev="@"
+axis_child="child::"
+axis_descendant="descendant::"
+axis_descendant_or_self="descendant-or-self::"
+axis_following="following::"
+axis_following_sibling="following-sibling::"
+axis_namespace="namespace::"
+axis_parent="parent::"
+axis_preceding="preceding::"
+axis_preceding_siblings="preceding-sibling::"
+axis_self="self::"
+
+node_test_ns="a:"
+
+val_num="=(1.0)"
+val_str_sq="=('a')"
+val_str_dq="=(\"a\")"
+val_node_set="=(*)"
+val_elem="=(b)"
+
+step_root="/"
+step_descendant="//"
+step_any="//*"
+step_any_l="*//"
+step_elem="//b"
+step_ns_elem="//a:a"
+step_comment="//comment()"
+step_node="//node()"
+step_node_l="node()//"
+step_pi="//processing-instruction()"
+step_text="//text()"
+step_parent="../"
+
+op_plus="+1"
+op_minus=" - 1"
+op_neg="-"
+op_mul="*1"
+op_div=" div 1"
+op_mod=" mod 1"
+op_and=" and 1"
+op_or=" or 1"
+op_ne="!=1"
+op_lt="<1"
+op_gt=">1"
+op_le="<=1"
+op_ge=">=1"
+op_predicate_num="[1]"
+op_predicate_last="[last()]"
+op_predicate_str="['a']"
+op_predicate="[1=1]"
+op_arg_num=",1"
+op_arg_str=",'a'"
+op_arg_node=",*"
+op_union="|//b"
+
+var_num="=$f"
+var_bool="=$b"
+var_str="=$s"
+var_node_set="=$n"
+
+# Unicode
+
+utf8_2="\xC3\x84"
+utf8_3="\xE2\x80\x9C"
+utf8_4="\xF0\x9F\x98\x80"

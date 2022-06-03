@@ -15,15 +15,15 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -45,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/search_engines/template_url.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -83,16 +84,14 @@ const BookmarkInfo kIESortedBookmarks[] = {
   {false, 0, {}, L"c", "http://www.google.com/3"},
 };
 
-const base::char16 kIEIdentifyUrl[] =
-    L"http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value";
-const base::char16 kIEIdentifyTitle[] =
-    L"Unittest GUID";
-const base::char16 kIECacheItemUrl[] =
-    L"http://B2EF40C8-2569-4D7E-97EA-BAD9DF468D9C.com";
-const base::char16 kIECacheItemTitle[] =
-    L"Unittest Cache Item GUID";
+const char16_t kIEIdentifyUrl[] =
+    u"http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value";
+const char16_t kIEIdentifyTitle[] = u"Unittest GUID";
+const char16_t kIECacheItemUrl[] =
+    u"http://B2EF40C8-2569-4D7E-97EA-BAD9DF468D9C.com";
+const char16_t kIECacheItemTitle[] = u"Unittest Cache Item GUID";
 
-const base::char16 kFaviconStreamSuffix[] = L"url:favicon:$DATA";
+const wchar_t kFaviconStreamSuffix[] = L"url:favicon:$DATA";
 const char kDummyFaviconImageData[] =
     "\x42\x4D"          // Magic signature 'BM'
     "\x1E\x00\x00\x00"  // File size
@@ -105,22 +104,20 @@ const char kDummyFaviconImageData[] =
     "\x00\xFF\x00\x00"; // The pixel
 
 struct FaviconGroup {
-  const base::char16* favicon_url;
-  const base::char16* site_url[2];
+  const char16_t* favicon_url;
+  const char16_t* site_url[2];
 };
 
 const FaviconGroup kIEFaviconGroup[2] = {
-  {L"http://www.google.com/favicon.ico",
-    {L"http://www.google.com/",
-      L"http://www.subfolder.com/"}},
-  {L"http://example.com/favicon.ico",
-    {L"http://host:8080/cgi?q=query",
-      L"http://chinese-title-favorite/"}},
+    {u"http://www.google.com/favicon.ico",
+     {u"http://www.google.com/", u"http://www.subfolder.com/"}},
+    {u"http://example.com/favicon.ico",
+     {u"http://host:8080/cgi?q=query", u"http://chinese-title-favorite/"}},
 };
 
 bool CreateOrderBlob(const base::FilePath& favorites_folder,
-                     const base::string16& path,
-                     const std::vector<base::string16>& entries) {
+                     const std::wstring& path,
+                     const std::vector<std::wstring>& entries) {
   if (entries.size() > 255)
     return false;
 
@@ -148,7 +145,7 @@ bool CreateOrderBlob(const base::FilePath& favorites_folder,
     ILFree(id_list_full);
   }
 
-  base::string16 key_path(importer::GetIEFavoritesOrderKey());
+  std::wstring key_path(importer::GetIEFavoritesOrderKey());
   if (!path.empty())
     key_path += L"\\" + path;
   base::win::RegKey key;
@@ -164,8 +161,8 @@ bool CreateOrderBlob(const base::FilePath& favorites_folder,
 }
 
 bool CreateUrlFileWithFavicon(const base::FilePath& file,
-                              const base::string16& url,
-                              const base::string16& favicon_url) {
+                              const std::wstring& url,
+                              const std::wstring& favicon_url) {
   Microsoft::WRL::ComPtr<IUniformResourceLocator> locator;
   HRESULT result =
       ::CoCreateInstance(CLSID_InternetShortcut, NULL, CLSCTX_INPROC_SERVER,
@@ -173,7 +170,7 @@ bool CreateUrlFileWithFavicon(const base::FilePath& file,
   if (FAILED(result))
     return false;
   Microsoft::WRL::ComPtr<IPersistFile> persist_file;
-  result = locator.CopyTo(persist_file.GetAddressOf());
+  result = locator.As(&persist_file);
   if (FAILED(result))
     return false;
   result = locator->SetURL(url.c_str(), 0);
@@ -183,11 +180,11 @@ bool CreateUrlFileWithFavicon(const base::FilePath& file,
   // Write favicon url if specified.
   if (!favicon_url.empty()) {
     Microsoft::WRL::ComPtr<IPropertySetStorage> property_set_storage;
-    if (FAILED(locator.CopyTo(property_set_storage.GetAddressOf())))
+    if (FAILED(locator.As(&property_set_storage)))
       return false;
     Microsoft::WRL::ComPtr<IPropertyStorage> property_storage;
     if (FAILED(property_set_storage->Open(FMTID_Intshcut, STGM_WRITE,
-                                          property_storage.GetAddressOf()))) {
+                                          &property_storage))) {
       return false;
     }
     PROPSPEC properties[] = {{PRSPEC_PROPID, {PID_IS_ICONFILE}}};
@@ -213,8 +210,8 @@ bool CreateUrlFileWithFavicon(const base::FilePath& file,
       sizeof kDummyFaviconImageData) != -1);
 }
 
-bool CreateUrlFile(const base::FilePath& file, const base::string16& url) {
-  return CreateUrlFileWithFavicon(file, url, base::string16());
+bool CreateUrlFile(const base::FilePath& file, const std::wstring& url) {
+  return CreateUrlFileWithFavicon(file, url, std::wstring());
 }
 
 class TestObserver : public ProfileWriter,
@@ -279,7 +276,7 @@ class TestObserver : public ProfileWriter,
   }
 
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& top_level_folder_name) override {
+                    const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(), base::size(kIEBookmarks));
     // Importer should import the IE Favorites folder the same as the list,
     // in the same order.
@@ -356,7 +353,7 @@ class MalformedFavoritesRegistryTestObserver
   void AddKeywords(TemplateURLService::OwnedTemplateURLVector template_urls,
                    bool unique_on_host_and_path) override {}
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& top_level_folder_name) override {
+                    const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(),
               base::size(kIESortedBookmarks));
     for (size_t i = 0; i < bookmarks.size(); ++i) {
@@ -431,18 +428,14 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   base::WriteFile(path.AppendASCII("InvalidUrlFile.url"), "x", 1);
   base::WriteFile(path.AppendASCII("PlainTextFile.txt"), "x", 1);
 
-  const base::char16* root_links[] = {
-    L"Links",
-    L"Google Home Page.url",
-    L"TheLink.url",
-    L"SubFolder",
-    L"WithPortAndQuery.url",
-    L"a",
-    L"SubFolder.url",
+  const wchar_t* root_links[] = {
+      L"Links",         L"Google Home Page.url", L"TheLink.url",
+      L"SubFolder",     L"WithPortAndQuery.url", L"a",
+      L"SubFolder.url",
   };
   ASSERT_TRUE(
       CreateOrderBlob(base::FilePath(path), L"",
-                      std::vector<base::string16>(
+                      std::vector<std::wstring>(
                           root_links, root_links + base::size(root_links))));
 
   // Sets up a special history link.
@@ -453,9 +446,11 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   // Usage of ADDURL_ADDTOHISTORYANDCACHE and ADDURL_ADDTOCACHE flags
   // is explained in the article:
   // http://msdn.microsoft.com/ru-ru/aa767730
-  ASSERT_EQ(S_OK, url_history_stg2->AddUrl(kIEIdentifyUrl, kIEIdentifyTitle,
+  ASSERT_EQ(S_OK, url_history_stg2->AddUrl(base::as_wcstr(kIEIdentifyUrl),
+                                           base::as_wcstr(kIEIdentifyTitle),
                                            ADDURL_ADDTOHISTORYANDCACHE));
-  ASSERT_EQ(S_OK, url_history_stg2->AddUrl(kIECacheItemUrl, kIECacheItemTitle,
+  ASSERT_EQ(S_OK, url_history_stg2->AddUrl(base::as_wcstr(kIECacheItemUrl),
+                                           base::as_wcstr(kIECacheItemTitle),
                                            ADDURL_ADDTOCACHE));
 
   // Starts to import the above settings.
@@ -474,8 +469,8 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   base::RunLoop().Run();
 
   // Cleans up.
-  url_history_stg2->DeleteUrl(kIEIdentifyUrl, 0);
-  url_history_stg2->DeleteUrl(kIECacheItemUrl, 0);
+  url_history_stg2->DeleteUrl(base::as_wcstr(kIEIdentifyUrl), 0);
+  url_history_stg2->DeleteUrl(base::as_wcstr(kIECacheItemUrl), 0);
   url_history_stg2.Reset();
 }
 
@@ -525,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
   // Verify malformed registry data are safely ignored and alphabetical
   // sort is performed.
   for (size_t i = 0; i < base::size(kBadBinary); ++i) {
-    base::string16 key_path(importer::GetIEFavoritesOrderKey());
+    std::wstring key_path(importer::GetIEFavoritesOrderKey());
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
@@ -560,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
   TestObserver* observer = new TestObserver(importer::HOME_PAGE);
   host->set_observer(observer);
 
-  base::string16 key_path(importer::GetIESettingsKey());
+  std::wstring key_path(importer::GetIESettingsKey());
   base::win::RegKey key;
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));

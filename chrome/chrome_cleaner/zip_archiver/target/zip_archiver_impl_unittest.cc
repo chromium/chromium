@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
@@ -16,7 +16,6 @@
 #include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/zip_archiver/test_zip_archiver_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
@@ -63,8 +62,8 @@ void RunArchiver(base::win::ScopedHandle src_file_handle,
   ZipArchiverImpl zip_archiver_impl(
       zip_archiver.BindNewPipeAndPassReceiver(),
       /*connection_error_handler=*/base::DoNothing());
-  zip_archiver_impl.Archive(mojo::WrapPlatformFile(src_file_handle.Take()),
-                            mojo::WrapPlatformFile(zip_file_handle.Take()),
+  zip_archiver_impl.Archive(mojo::PlatformHandle(std::move(src_file_handle)),
+                            mojo::PlatformHandle(std::move(zip_file_handle)),
                             filename, password, std::move(callback));
 }
 

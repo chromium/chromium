@@ -4,6 +4,7 @@
 
 var assertEq = chrome.test.assertEq;
 var assertFalse = chrome.test.assertFalse;
+var assertLastError = chrome.test.assertLastError;
 var assertNoLastError = chrome.test.assertNoLastError;
 var assertTrue = chrome.test.assertTrue;
 var fail = chrome.test.fail;

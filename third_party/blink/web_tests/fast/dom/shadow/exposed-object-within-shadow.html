@@ -16,7 +16,7 @@ function testAncestorObjectDivShadow() {
     debug("Shadow DOM inside an &lt;object&gt; and a &lt;div&gt;");
     obj = document.getElementById("o1");
     host = obj.querySelector("div");
-    shadowRoot = host.createShadowRoot();
+    shadowRoot = host.attachShadow({mode: 'open'});
 
     child = document.createElement("object");
     child.name = "obj1-child1";
@@ -40,7 +40,7 @@ function testSiblingObjectShadow() {
     obj = document.createElement("object");
     obj.name = "obj3";
     div2.appendChild(obj);
-    shadowRoot = div2.createShadowRoot();
+    shadowRoot = div2.attachShadow({mode: 'open'});
 
     child = document.createElement("embed");
     child.name = "embed1";
@@ -64,7 +64,7 @@ function testSiblingShadowObject() {
     obj = document.createElement("object");
     obj.name = "obj4";
     div2.appendChild(obj);
-    shadowRoot = div2.createShadowRoot();
+    shadowRoot = div2.attachShadow({mode: 'open'});
 
     child = document.createElement("embed");
     child.name = "embed1";
@@ -87,7 +87,7 @@ function testAncestorObjectParamShadow() {
     shouldBeTrue("obj.name in document");
 
     host = obj.querySelector("div");
-    shadowRoot = host.createShadowRoot();
+    shadowRoot = host.attachShadow({mode: 'open'});
 
     child = document.createElement("embed");
     child.name = "embed1";

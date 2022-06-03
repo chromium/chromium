@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @class BookmarkFolderViewController;
-@protocol BrowserCommands;
+class Browser;
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
@@ -56,7 +56,7 @@ class BookmarkNode;
               editedNodes:(const std::set<const bookmarks::BookmarkNode*>&)nodes
              allowsCancel:(BOOL)allowsCancel
            selectedFolder:(const bookmarks::BookmarkNode*)selectedFolder
-               dispatcher:(id<BrowserCommands>)dispatcher;
+                  browser:(Browser*)browser;
 
 // This method changes the currently selected folder and updates the UI. The
 // delegate is not notified of the change.

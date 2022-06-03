@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -15,10 +15,12 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.ReachedCodeProfiler;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
@@ -29,8 +31,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class ReachedCodeProfilerTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String FAKE_GROUP_NAME = "FakeGroup";
 
@@ -52,11 +53,17 @@ public final class ReachedCodeProfilerTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
-    public void testEnabledViaCachedSharedPreference() {
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(true);
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.REACHED_CODE_PROFILER + "<"
+                    + ChromeFeatureList.REACHED_CODE_PROFILER,
+            "force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME,
+            "force-fieldtrial-params=" + ChromeFeatureList.REACHED_CODE_PROFILER + "."
+                    + FAKE_GROUP_NAME + ":sampling_interval_us/42"})
+    public void
+    testEnabledViaCachedSharedPreference() {
+        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(true, 42);
         mActivityTestRule.startMainActivityFromLauncher();
         assertReachedCodeProfilerIsEnabled();
+        Assert.assertEquals(42, LibraryLoader.getReachedCodeSamplingIntervalUs());
     }
 
     /**
@@ -69,7 +76,7 @@ public final class ReachedCodeProfilerTest {
     public void testSharedPreferenceIsCached_Enable() {
         mActivityTestRule.startMainActivityFromLauncher();
 
-        Assert.assertTrue(LibraryLoader.isReachedCodeProfilerEnabled());
+        Assert.assertEquals(10000, LibraryLoader.getReachedCodeSamplingIntervalUs());
         // Enabling takes effect only on the second startup.
         Assert.assertFalse(ReachedCodeProfiler.isEnabled());
     }
@@ -83,10 +90,9 @@ public final class ReachedCodeProfilerTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
     public void testSharedPreferenceIsCached_Disable() {
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(true);
+        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(true, 0);
         mActivityTestRule.startMainActivityFromLauncher();
-
-        Assert.assertFalse(LibraryLoader.isReachedCodeProfilerEnabled());
+        Assert.assertEquals(0, LibraryLoader.getReachedCodeSamplingIntervalUs());
         // Disabling takes effect only on the second startup.
         assertReachedCodeProfilerIsEnabled();
     }
@@ -103,7 +109,7 @@ public final class ReachedCodeProfilerTest {
         mActivityTestRule.startMainActivityFromLauncher();
         Assert.assertEquals(FAKE_GROUP_NAME,
                 SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP_KEY, null));
+                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, null));
     }
 
     /**

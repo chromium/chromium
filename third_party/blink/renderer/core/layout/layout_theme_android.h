@@ -13,6 +13,10 @@ class LayoutThemeAndroid final : public LayoutThemeMobile {
  public:
   static scoped_refptr<LayoutTheme> Create();
   bool DelegatesMenuListRendering() const override { return true; }
+  Color PlatformActiveSelectionBackgroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+  Color PlatformActiveSelectionForegroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
 
  private:
   ~LayoutThemeAndroid() override;

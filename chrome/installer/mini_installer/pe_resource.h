@@ -6,6 +6,7 @@
 #define CHROME_INSTALLER_MINI_INSTALLER_PE_RESOURCE_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 
 // This class models a windows PE resource. It does not pretend to be a full
@@ -15,7 +16,7 @@
 class PEResource {
  public:
   // This ctor takes the handle to the resource and the module where it was
-  // found. Ownership of the resource is transfered to this object.
+  // found. Ownership of the resource is transferred to this object.
   PEResource(HRSRC resource, HMODULE module);
 
   // This ctor takes the resource name, the resource type and the module where

@@ -4,19 +4,24 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #import "base/test/ios/wait_util.h"
+#include "build/branding_buildflags.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,22 +52,71 @@ NSString* const kResponseGetUploadDetailsFailure =
     @"{\"error\":{\"code\":\"FAILED_PRECONDITION\",\"user_error_message\":\"An"
      " unexpected error has occurred. Please try again later.\"}}";
 
-id<GREYMatcher> closeButtonMatcher() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CLOSE);
-}
+NSString* const kSavedCardLabel =
+    @"Mastercard  ‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠5454‬";
 
-id<GREYMatcher> saveButtonMatcher() {
+id<GREYMatcher> LocalSaveButtonMatcher() {
   return chrome_test_util::ButtonWithAccessibilityLabelId(
       IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
 }
 
+id<GREYMatcher> UploadBannerSaveButtonMatcher() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_AUTOFILL_SAVE_ELLIPSIS);
+}
+
+id<GREYMatcher> UploadModalSaveButtonMatcher() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_AUTOFILL_SAVE_CARD);
+}
+
+id<GREYMatcher> LocalBannerMatcher() {
+  NSString* bannerLabel =
+      [NSString stringWithFormat:@"%@,%@",
+                                 l10n_util::GetNSString(
+                                     IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL),
+                                 kSavedCardLabel];
+  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
+                    grey_accessibilityLabel(bannerLabel), nil);
+}
+
+id<GREYMatcher> UploadBannerMatcher() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  NSString* title =
+      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
+#else
+  NSString* title =
+      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD);
+#endif
+  NSString* bannerLabel =
+      [NSString stringWithFormat:@"%@,%@", title, kSavedCardLabel];
+  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
+                    grey_accessibilityLabel(bannerLabel), nil);
+}
+
 }  // namepsace
 
-@interface SaveCardInfobarEGTest : ChromeTestCase
+@interface SaveCardInfobarEGTest : WebHttpServerChromeTestCase
 
 @end
 
 @implementation SaveCardInfobarEGTest
+
+// TODO(crbug.com/1245213)
+// Some tests are not compatible with explicit save prompts for addresses.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testUserData_LocalSave_UserAccepts)] ||
+      [self
+          isRunningTest:@selector(testOfferLocalSave_FullData_RequestFails)] ||
+      [self isRunningTest:@selector(testUserData_LocalSave_UserDeclines)] ||
+      [self isRunningTest:@selector
+            (testOfferLocalSave_FullData_PaymentsDeclines)]) {
+    config.features_disabled.push_back(
+        autofill::features::kAutofillAddressProfileSavePrompt);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -156,9 +210,9 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to show.");
+
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
   ]
@@ -193,8 +247,7 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
@@ -231,9 +284,9 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Make sure the save card infobar does not become visible.
-  GREYAssertFalse([self waitForUIElementToAppearWithMatcher:
-                            chrome_test_util::AutofillSaveCardLocallyInfobar()],
-                  @"Save card infobar should not show.");
+  GREYAssertFalse(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
+      @"Save card infobar should not show.");
 }
 
 // Ensures that submitting the form should query Google Payments; and the
@@ -258,9 +311,9 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
              @"Save card infobar failed to show.");
+
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
   ]
@@ -293,8 +346,7 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
              @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
@@ -328,23 +380,21 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
              @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
   ]
                                           timeout:kWaitForDownloadTimeout];
-  // Tap the X button.
-  [[EarlGrey selectElementWithMatcher:closeButtonMatcher()]
-      performAction:grey_tap()];
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
+  // Dismiss Infobar banner
+  [[EarlGrey selectElementWithMatcher:UploadBannerMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
-             @"Save card infobar failed to disappear.");
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:UploadBannerMatcher()],
+      @"Save card infobar failed to disappear.");
 
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
@@ -384,17 +434,21 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
              @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnSentUploadCardRequestCalled)
   ]
                                           timeout:kWaitForDownloadTimeout];
-  // Tap the save button.
-  [[EarlGrey selectElementWithMatcher:saveButtonMatcher()]
+  // Tap the banner save button.
+  [[EarlGrey selectElementWithMatcher:UploadBannerSaveButtonMatcher()]
       performAction:grey_tap()];
+
+  // Tap the modal save button.
+  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
+      performAction:grey_tap()];
+
   if (![[AutofillAppInterface paymentsRiskData] length]) {
     // There is no provider for risk data so the request will not be sent.
     // Provide dummy risk data for this test.
@@ -404,9 +458,9 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:
-                       chrome_test_util::AutofillUploadCardInfobar()],
-             @"Save card infobar failed to disappear.");
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:UploadBannerMatcher()],
+      @"Save card infobar failed to disappear.");
 
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
@@ -446,23 +500,20 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
   ]
                                           timeout:kWaitForDownloadTimeout];
-  // Tap the X button.
-  [[EarlGrey selectElementWithMatcher:closeButtonMatcher()]
-      performAction:grey_tap()];
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
+  // Dismiss infobar banner.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kInfobarBannerViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToDisappearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to disappear.");
 
   // Ensure credit card is not saved locally.
@@ -498,17 +549,15 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to show.");
 
   // Tap the save button.
-  [[EarlGrey selectElementWithMatcher:saveButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:LocalSaveButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:
-                       chrome_test_util::AutofillSaveCardLocallyInfobar()],
+  GREYAssert([self waitForUIElementToDisappearWithMatcher:LocalBannerMatcher()],
              @"Save card infobar failed to disappear.");
 
   // Ensure credit card is saved locally.
@@ -545,9 +594,9 @@ id<GREYMatcher> saveButtonMatcher() {
                  @"Event was not triggered");
 
   // Make sure the save card infobar does not become visible.
-  GREYAssertFalse([self waitForUIElementToAppearWithMatcher:
-                            chrome_test_util::AutofillSaveCardLocallyInfobar()],
-                  @"Save card infobar should not show.");
+  GREYAssertFalse(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
+      @"Save card infobar should not show.");
 }
 
 @end

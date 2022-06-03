@@ -22,6 +22,7 @@
 #include <wrl/event.h>
 
 #include <iomanip>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -54,24 +55,13 @@ using Win::Devices::Enumeration::IDeviceWatcher;
 using Win::Foundation::IAsyncOperation;
 using Win::Foundation::ITypedEventHandler;
 
+// Alias for printing HRESULT.
+const auto PrintHr = logging::SystemErrorCodeToString;
+
 enum {
   kDefaultTaskRunner = TaskService::kDefaultRunnerId,
   kComTaskRunner
 };
-
-// Helpers for printing HRESULTs.
-struct PrintHr {
-  PrintHr(HRESULT hr) : hr(hr) {}
-  HRESULT hr;
-};
-
-std::ostream& operator<<(std::ostream& os, const PrintHr& phr) {
-  std::ios_base::fmtflags ff = os.flags();
-  os << _com_error(phr.hr).ErrorMessage() << " (0x" << std::hex
-     << std::uppercase << std::setfill('0') << std::setw(8) << phr.hr << ")";
-  os.flags(ff);
-  return os;
-}
 
 template <typename T>
 std::string GetIdString(T* obj) {
@@ -154,7 +144,7 @@ void GetDevPropString(DEVINST handle,
   if (cr != CR_SUCCESS)
     VLOG(1) << "CM_Get_DevNode_Property failed: CONFIGRET 0x" << std::hex << cr;
   else
-    *out = base::WideToUTF8(reinterpret_cast<base::char16*>(buffer.get()));
+    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.get()));
 }
 
 // Retrieves manufacturer (provider) and version information of underlying
@@ -174,7 +164,7 @@ void GetDevPropString(DEVINST handle,
 void GetDriverInfoFromDeviceId(const std::string& dev_id,
                                std::string* out_manufacturer,
                                std::string* out_driver_version) {
-  base::string16 dev_instance_id =
+  std::wstring dev_instance_id =
       base::UTF8ToWide(dev_id.substr(4, dev_id.size() - 43));
   base::ReplaceChars(dev_instance_id, L"#", L"\\", &dev_instance_id);
 
@@ -206,12 +196,12 @@ template <typename InterfaceType>
 struct MidiPort {
   MidiPort() = default;
 
+  MidiPort(const MidiPort&) = delete;
+  MidiPort& operator=(const MidiPort&) = delete;
+
   uint32_t index;
   WRL::ComPtr<InterfaceType> handle;
   EventRegistrationToken token_MessageReceived;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MidiPort);
 };
 
 }  // namespace
@@ -219,7 +209,7 @@ struct MidiPort {
 template <typename InterfaceType,
           typename RuntimeType,
           typename StaticsInterfaceType,
-          base::char16 const* runtime_class_id>
+          wchar_t const* runtime_class_id>
 class MidiManagerWinrt::MidiPortManager {
  public:
   // MidiPortManager instances should be constructed on the kComTaskRunner.
@@ -258,8 +248,7 @@ class MidiManagerWinrt::MidiPortManager {
       return false;
     }
 
-    hr = dev_info_statics->CreateWatcherAqsFilter(device_selector,
-                                                  watcher_.GetAddressOf());
+    hr = dev_info_statics->CreateWatcherAqsFilter(device_selector, &watcher_);
     if (FAILED(hr)) {
       VLOG(1) << "CreateWatcherAqsFilter failed: " << PrintHr(hr);
       return false;
@@ -648,6 +637,9 @@ class MidiManagerWinrt::MidiInPortManager final
   MidiInPortManager(MidiManagerWinrt* midi_manager)
       : MidiPortManager(midi_manager) {}
 
+  MidiInPortManager(const MidiInPortManager&) = delete;
+  MidiInPortManager& operator=(const MidiInPortManager&) = delete;
+
  private:
   // MidiPortManager overrides:
   bool RegisterOnMessageReceived(Win::Devices::Midi::IMidiInPort* handle,
@@ -669,14 +661,14 @@ class MidiManagerWinrt::MidiInPortManager final
               std::string dev_id = GetDeviceIdString(handle);
 
               WRL::ComPtr<Win::Devices::Midi::IMidiMessage> message;
-              HRESULT hr = args->get_Message(message.GetAddressOf());
+              HRESULT hr = args->get_Message(&message);
               if (FAILED(hr)) {
                 VLOG(1) << "get_Message failed: " << PrintHr(hr);
                 return hr;
               }
 
               WRL::ComPtr<Win::Storage::Streams::IBuffer> buffer;
-              hr = message->get_RawData(buffer.GetAddressOf());
+              hr = message->get_RawData(&buffer);
               if (FAILED(hr)) {
                 VLOG(1) << "get_RawData failed: " << PrintHr(hr);
                 return hr;
@@ -741,8 +733,6 @@ class MidiManagerWinrt::MidiInPortManager final
 
     midi_manager_->ReceiveMidiData(port->index, &data[0], data.size(), time);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MidiInPortManager);
 };
 
 class MidiManagerWinrt::MidiOutPortManager final
@@ -754,6 +744,9 @@ class MidiManagerWinrt::MidiOutPortManager final
   MidiOutPortManager(MidiManagerWinrt* midi_manager)
       : MidiPortManager(midi_manager) {}
 
+  MidiOutPortManager(const MidiOutPortManager&) = delete;
+  MidiOutPortManager& operator=(const MidiOutPortManager&) = delete;
+
  private:
   // MidiPortManager overrides:
   void AddPort(mojom::PortInfo info) final {
@@ -763,8 +756,6 @@ class MidiManagerWinrt::MidiOutPortManager final
   void SetPortState(uint32_t port_index, PortState state) final {
     midi_manager_->SetOutputPortState(port_index, state);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MidiOutPortManager);
 };
 
 namespace {
@@ -840,8 +831,8 @@ void MidiManagerWinrt::InitializeOnComRunner() {
     return;
   }
 
-  port_manager_in_.reset(new MidiInPortManager(this));
-  port_manager_out_.reset(new MidiOutPortManager(this));
+  port_manager_in_ = std::make_unique<MidiInPortManager>(this);
+  port_manager_out_ = std::make_unique<MidiOutPortManager>(this);
 
   if (!(port_manager_in_->StartWatcher() &&
         port_manager_out_->StartWatcher())) {

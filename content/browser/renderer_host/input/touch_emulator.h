@@ -9,11 +9,10 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/common/cursors/webcursor.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -41,6 +40,10 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   };
 
   TouchEmulator(TouchEmulatorClient* client, float device_scale_factor);
+
+  TouchEmulator(const TouchEmulator&) = delete;
+  TouchEmulator& operator=(const TouchEmulator&) = delete;
+
   ~TouchEmulator() override;
 
   void Enable(Mode mode, ui::GestureProviderConfigType config_type);
@@ -74,7 +77,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // Returns |true| if the event ack was consumed. Consumed ack should not
   // propagate any further.
   bool HandleTouchEventAck(const blink::WebTouchEvent& event,
-                           InputEventAckState ack_result);
+                           blink::mojom::InputEventResultState ack_result);
 
   // Injects a touch event to be processed for gestures and optionally
   // forwarded to the client. Only works in kInjectingTouchEvents mode.
@@ -177,8 +180,6 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   bool pinch_gesture_active_;
 
   base::queue<base::OnceClosure> injected_touch_completion_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEmulator);
 };
 
 }  // namespace content

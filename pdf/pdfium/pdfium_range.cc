@@ -4,9 +4,12 @@
 
 #include "pdf/pdfium/pdfium_range.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
@@ -23,7 +26,7 @@ void AdjustForBackwardsRange(int* index, int* count) {
 
 }  // namespace
 
-bool IsIgnorableCharacter(base::char16 c) {
+bool IsIgnorableCharacter(char16_t c) {
   return (c == kZeroWidthSpace) || (c == kPDFSoftHyphenMarker);
 }
 
@@ -47,21 +50,21 @@ void PDFiumRange::SetCharCount(int char_count) {
   DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
 #endif
 
-  cached_screen_rects_offset_ = pp::Point();
+  cached_screen_rects_point_ = gfx::Point();
   cached_screen_rects_zoom_ = 0;
 }
 
-const std::vector<pp::Rect>& PDFiumRange::GetScreenRects(
-    const pp::Point& offset,
+const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
+    const gfx::Point& point,
     double zoom,
     PageOrientation orientation) const {
-  if (offset == cached_screen_rects_offset_ &&
+  if (point == cached_screen_rects_point_ &&
       zoom == cached_screen_rects_zoom_) {
     return cached_screen_rects_;
   }
 
   cached_screen_rects_.clear();
-  cached_screen_rects_offset_ = offset;
+  cached_screen_rects_point_ = point;
   cached_screen_rects_zoom_ = zoom;
 
   int char_index = char_index_;
@@ -82,8 +85,8 @@ const std::vector<pp::Rect>& PDFiumRange::GetScreenRects(
     double right;
     double bottom;
     FPDFText_GetRect(page_->GetTextPage(), i, &left, &top, &right, &bottom);
-    pp::Rect rect = page_->PageToScreen(offset, zoom, left, top, right, bottom,
-                                        orientation);
+    gfx::Rect rect =
+        page_->PageToScreen(point, zoom, left, top, right, bottom, orientation);
     if (rect.IsEmpty())
       continue;
     cached_screen_rects_.push_back(rect);
@@ -92,16 +95,16 @@ const std::vector<pp::Rect>& PDFiumRange::GetScreenRects(
   return cached_screen_rects_;
 }
 
-base::string16 PDFiumRange::GetText() const {
+std::u16string PDFiumRange::GetText() const {
   int index = char_index_;
   int count = char_count_;
-  base::string16 rv;
+  std::u16string rv;
   if (count == 0)
     return rv;
 
   AdjustForBackwardsRange(&index, &count);
   if (count > 0) {
-    PDFiumAPIStringBufferAdapter<base::string16> api_string_adapter(&rv, count,
+    PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(&rv, count,
                                                                     false);
     unsigned short* data =
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
@@ -109,7 +112,7 @@ base::string16 PDFiumRange::GetText() const {
     api_string_adapter.Close(written);
   }
 
-  base::EraseIf(rv, [](base::char16 c) { return IsIgnorableCharacter(c); });
+  base::EraseIf(rv, [](char16_t c) { return IsIgnorableCharacter(c); });
 
   return rv;
 }

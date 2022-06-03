@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {

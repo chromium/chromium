@@ -9,8 +9,9 @@
 #include "services/device/public/mojom/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/html/media/remote_playback_observer.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 
 namespace blink {
@@ -27,18 +28,17 @@ class HTMLVideoElement;
 // merge all the requests and take the appropriate system wake lock.
 // VideoWakeLock only uses "screen" related wake lock: it prevents the screen
 // from locking on mobile or the lockscreen to show up on desktop.
-class CORE_EXPORT VideoWakeLock final : public NativeEventListener,
-                                        public PageVisibilityObserver,
-                                        public RemotePlaybackObserver,
-                                        public ContextLifecycleStateObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(VideoWakeLock);
-
+class CORE_EXPORT VideoWakeLock final
+    : public NativeEventListener,
+      public PageVisibilityObserver,
+      public RemotePlaybackObserver,
+      public ExecutionContextLifecycleStateObserver {
  public:
   explicit VideoWakeLock(HTMLVideoElement&);
 
   void ElementDidMoveToNewDocument();
 
-  void Trace(Visitor*) final;
+  void Trace(Visitor*) const final;
 
   // EventListener implementation.
   void Invoke(ExecutionContext*, Event*) final;
@@ -47,15 +47,22 @@ class CORE_EXPORT VideoWakeLock final : public NativeEventListener,
   void OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState) final;
 
-  // ContextLifecycleStateObserver
+  // ExecutionContextLifecycleStateObserver
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
   bool active_for_tests() const { return active_; }
 
  private:
+  friend class VideoWakeLockTest;
+
   // PageVisibilityObserver implementation.
   void PageVisibilityChanged() final;
+
+  // Called by the IntersectionObserver instance when the visibility state of
+  // the video element has changed.
+  void OnVisibilityChanged(
+      const HeapVector<Member<IntersectionObserverEntry>>&);
 
   // Called when any state is changed. Will update active state and notify the
   // service if needed.
@@ -73,6 +80,9 @@ class CORE_EXPORT VideoWakeLock final : public NativeEventListener,
   // Notify the wake lock service of the current wake lock state.
   void UpdateWakeLockService();
 
+  // Create a new |intersection_observer_| instance and start observing.
+  void StartIntersectionObserver();
+
   HTMLVideoElement& VideoElement() { return *video_element_; }
   const HTMLVideoElement& VideoElement() const { return *video_element_; }
 
@@ -85,6 +95,8 @@ class CORE_EXPORT VideoWakeLock final : public NativeEventListener,
   bool active_ = false;
   mojom::blink::PresentationConnectionState remote_playback_state_ =
       mojom::blink::PresentationConnectionState::CLOSED;
+  Member<IntersectionObserver> intersection_observer_;
+  bool is_visible_ = false;
 };
 
 }  // namespace blink

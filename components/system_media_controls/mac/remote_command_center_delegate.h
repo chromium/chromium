@@ -11,6 +11,10 @@
 
 @class RemoteCommandCenterDelegateCocoa;
 
+namespace base {
+class TimeDelta;
+}
+
 namespace system_media_controls {
 
 class SystemMediaControlsObserver;
@@ -21,6 +25,11 @@ namespace internal {
 class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
  public:
   RemoteCommandCenterDelegate();
+
+  RemoteCommandCenterDelegate(const RemoteCommandCenterDelegate&) = delete;
+  RemoteCommandCenterDelegate& operator=(const RemoteCommandCenterDelegate&) =
+      delete;
+
   ~RemoteCommandCenterDelegate();
 
   // Part of the implementation of SystemMediaControls.
@@ -30,6 +39,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
   void SetIsPreviousEnabled(bool value);
   void SetIsPlayPauseEnabled(bool value);
   void SetIsStopEnabled(bool value);
+  void SetIsSeekToEnabled(bool value);
 
   // Called by |remote_command_center_delegate_cocoa_| when the event happens.
   void OnNext();
@@ -38,6 +48,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
   void OnPlayPause();
   void OnStop();
   void OnPlay();
+  void OnSeekTo(const base::TimeDelta& time);
 
  private:
   // Used to track which commands we're already listening for.
@@ -46,6 +57,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
     kPlayPause,
     kNextTrack,
     kPreviousTrack,
+    kSeekTo,
   };
 
   bool ShouldSetCommandEnabled(Command command, bool will_enable);
@@ -54,8 +66,6 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
       remote_command_center_delegate_cocoa_;
   base::ObserverList<SystemMediaControlsObserver> observers_;
   base::flat_set<Command> enabled_commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandCenterDelegate);
 };
 
 }  // namespace internal

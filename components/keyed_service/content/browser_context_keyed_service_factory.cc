@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -60,9 +60,6 @@ KeyedService* BrowserContextKeyedServiceFactory::GetServiceForBrowserContext(
 content::BrowserContext*
 BrowserContextKeyedServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/701326): This DCHECK should be moved to GetContextToUse().
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // Safe default for Incognito mode: no service.
   if (context->IsOffTheRecord())
     return nullptr;
@@ -103,6 +100,7 @@ bool BrowserContextKeyedServiceFactory::IsOffTheRecord(void* context) const {
 }
 
 void* BrowserContextKeyedServiceFactory::GetContextToUse(void* context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AssertContextWasntDestroyed(context);
   return GetBrowserContextToUse(static_cast<content::BrowserContext*>(context));
 }

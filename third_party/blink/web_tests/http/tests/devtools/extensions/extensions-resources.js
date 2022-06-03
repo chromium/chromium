@@ -4,24 +4,31 @@
 
 (async function() {
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('extensions_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('components');
 
-  TestRunner.clickOnURL = function() {
-    UI.viewManager.showView("console").then(() => {
-      Console.ConsoleView.instance()._updateMessageList();
-      var xpathResult = document.evaluate("//span[@class='devtools-link' and starts-with(., 'test-script.js')]",
-                                          Console.ConsoleView.instance().element, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
+  TestRunner.clickOnURL = async function() {
+    await UI.viewManager.showView("console").then(() => {
+      Console.ConsoleView.instance().updateMessageList();
 
-      var click = document.createEvent("MouseEvent");
-      click.initMouseEvent("click", true, true);
-      xpathResult.singleNodeValue.dispatchEvent(click);
+      // Trigger link creation so we can properly await pending live location updates. Needed so we can
+      // click the link in the first place.
+      for (const messageView of Console.ConsoleView.instance().visibleViewMessages) messageView.element();
+      TestRunner.waitForPendingLiveLocationUpdates().then(() => {
+        var xpathResult = document.evaluate("//span[@class='devtools-link' and starts-with(., 'test-script.js')]",
+                                            Console.ConsoleView.instance().element, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
+
+        var click = document.createEvent("MouseEvent");
+        click.initMouseEvent("click", true, true);
+        xpathResult.singleNodeValue.dispatchEvent(click);
+      });
     });
   }
 
   TestRunner.waitForStyleSheetChangedEvent = function(reply) {
-    TestRunner.addSniffer(SDK.CSSModel.prototype, "_fireStyleSheetChanged", reply);
+    TestRunner.addSniffer(SDK.CSSModel.prototype, "fireStyleSheetChanged", reply);
   }
 
   await TestRunner.evaluateInPageAnonymously(`
@@ -156,7 +163,7 @@
       webInspector.panels.setOpenResourceHandler(handleOpenResource);
       webInspector.inspectedWindow.eval("logMessage()", function() {
         evaluateOnFrontend("TestRunner.clickOnURL();");
-        evaluateOnFrontend("Components.Linkifier._linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
+        evaluateOnFrontend("Components.Linkifier.linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
       });
     },
   ]);

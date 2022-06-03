@@ -4,8 +4,8 @@
 
 #include "ios/web/public/init/web_main_runner.h"
 
+#include "base/check.h"
 #include "base/i18n/icu_util.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "ios/web/init/web_main_loop.h"
 #include "ios/web/public/init/ios_global_state.h"
@@ -28,6 +28,9 @@ class WebMainRunnerImpl : public WebMainRunner {
         is_shutdown_(false),
         completed_basic_startup_(false),
         delegate_(nullptr) {}
+
+  WebMainRunnerImpl(const WebMainRunnerImpl&) = delete;
+  WebMainRunnerImpl& operator=(const WebMainRunnerImpl&) = delete;
 
   ~WebMainRunnerImpl() override {
     if (is_initialized_ && !is_shutdown_) {
@@ -61,7 +64,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     if (!GetWebClient())
       SetWebClient(&empty_web_client_);
 
-    RegisterWebSchemes(true);
+    RegisterWebSchemes();
     ui::RegisterPathProvider();
 
     CHECK(base::i18n::InitializeICU());
@@ -72,7 +75,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     main_loop_.reset(new WebMainLoop());
     main_loop_->Init();
     main_loop_->EarlyInitialization();
-    main_loop_->MainMessageLoopStart();
+    main_loop_->CreateMainMessageLoop();
     main_loop_->CreateStartupTasks();
     int result_code = main_loop_->GetResultCode();
     if (result_code > 0)
@@ -121,8 +124,6 @@ class WebMainRunnerImpl : public WebMainRunner {
   WebClient empty_web_client_;
 
   std::unique_ptr<WebMainLoop> main_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMainRunnerImpl);
 };
 
 // static

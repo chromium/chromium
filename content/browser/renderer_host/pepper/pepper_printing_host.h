@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/pepper_print_settings_manager.h"
 #include "content/common/content_export.h"
@@ -26,6 +25,10 @@ class CONTENT_EXPORT PepperPrintingHost : public ppapi::host::ResourceHost {
       PP_Instance instance,
       PP_Resource resource,
       std::unique_ptr<PepperPrintSettingsManager> print_settings_manager);
+
+  PepperPrintingHost(const PepperPrintingHost&) = delete;
+  PepperPrintingHost& operator=(const PepperPrintingHost&) = delete;
+
   ~PepperPrintingHost() override;
 
   // ppapi::host::ResourceHost implementation.
@@ -42,8 +45,6 @@ class CONTENT_EXPORT PepperPrintingHost : public ppapi::host::ResourceHost {
   std::unique_ptr<PepperPrintSettingsManager> print_settings_manager_;
 
   base::WeakPtrFactory<PepperPrintingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPrintingHost);
 };
 
 }  // namespace content

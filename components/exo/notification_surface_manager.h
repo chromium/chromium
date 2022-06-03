@@ -13,6 +13,8 @@ class NotificationSurface;
 
 class NotificationSurfaceManager {
  public:
+  virtual ~NotificationSurfaceManager() = default;
+
   // Gets the NotificationSurface associated with the given notification id.
   // Returns nullptr if no NotificationSurface is associated with the id.
   virtual NotificationSurface* GetSurface(
@@ -23,9 +25,6 @@ class NotificationSurfaceManager {
 
   // Removes a NotificationSurface from the manager.
   virtual void RemoveSurface(NotificationSurface* surface) = 0;
-
- protected:
-  virtual ~NotificationSurfaceManager() {}
 };
 
 }  // namespace exo

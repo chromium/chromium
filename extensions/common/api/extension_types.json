@@ -74,6 +74,32 @@
             "description": "The <a href=\"https://www.w3.org/TR/css3-cascade/#cascading-origins\">origin</a> of the CSS to inject. This may only be specified for CSS, not JavaScript. Defaults to <code>\"author\"</code>."
           }
         }
+      },
+      {
+        "id": "DeleteInjectionDetails",
+        "type": "object",
+        "description": "Details of the CSS to remove. Either the code or the file property must be set, but both may not be set at the same time.",
+        "properties": {
+          "code": {"type": "string", "optional": true, "description": "CSS code to remove."},
+          "file": {"type": "string", "optional": true, "description": "CSS file to remove."},
+          "allFrames": {
+            "type": "boolean",
+            "optional": true,
+            "description": "If allFrames is <code>true</code>, implies that the CSS should be removed from all frames of current page. By default, it's <code>false</code> and is only removed from the top frame. If <code>true</code> and <code>frameId</code> is set, then the code is removed from the selected frame and all of its child frames."
+          },
+          "frameId": {
+            "type": "integer",
+            "optional": true,
+            "minimum": 0,
+            "description": "The <a href='webNavigation#frame_ids'>frame</a> from where the CSS should be removed. Defaults to 0 (the top-level frame)."
+          },
+          "matchAboutBlank": {"type": "boolean", "optional": true, "description": "If matchAboutBlank is true, then the code is also removed from about:blank and about:srcdoc frames if your extension has access to its parent document. By default it is <code>false</code>."},
+          "cssOrigin": {
+            "$ref": "CSSOrigin",
+            "optional": true,
+            "description": "The <a href=\"https://www.w3.org/TR/css3-cascade/#cascading-origins\">origin</a> of the CSS to remove. Defaults to <code>\"author\"</code>."
+          }
+        }
       }
     ]
   }

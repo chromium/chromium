@@ -1,2 +1,0 @@
-This tests that pressing Tab focuses areas in an image map even if they're not direct children.
-Test Passed

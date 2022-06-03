@@ -63,5 +63,6 @@ const char kInstallReplacementAndroidAppNotFromWebstoreError[] =
     "Only extensions from the web store can install replacement Android apps.";
 const char kInstallReplacementAndroidAppCannotInstallApp[] =
     "Could not install Android App.";
+const char kParentPermissionFailedError[] = "Parent Permission Request Failed.";
 
 }  // namespace extension_management_api_constants

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/util/named_guide.h"
 
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

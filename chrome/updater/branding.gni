@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+if (is_chrome_branded) {
+  updater_company_full_name = "Google LLC"
+  updater_company_short_name = "Google"
+  updater_product_full_name = "GoogleUpdater"
+  browser_name = "Chrome"
+  browser_product_name = "Google Chrome"
+  updater_copyright =
+      "Copyright 2020 The Chromium Authors. All rights reserved."
+  mac_updater_bundle_identifier = "com.google.GoogleUpdater"
+  mac_browser_bundle_identifier = "com.google.Chrome"
+  keystone_app_name = "GoogleSoftwareUpdate"
+  privileged_helper_name = "com.google.GoogleUpdater.helper"
+} else {
+  updater_company_full_name = "Chromium Authors"
+  updater_company_short_name = "Chromium"
+  updater_product_full_name = "ChromiumUpdater"
+  browser_name = "Chromium"
+  browser_product_name = "Chromium"
+  updater_copyright =
+      "Copyright 2020 The Chromium Authors. All rights reserved."
+  mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
+  mac_browser_bundle_identifier = "org.chromium.Chromium"
+  keystone_app_name = "ChromiumSoftwareUpdate"
+  privileged_helper_name = "org.chromium.ChromiumUpdater.helper"
+}
+
+# Chrome and Chromium share the same endpoints for now.
+update_check_url = "https://update.googleapis.com/service/update2/json"
+crash_upload_url = "https://clients2.google.com/cr/report"
+crash_staging_upload_url = "https://clients2.google.com/cr/staging_report"
+device_management_server_url = "https://m.google.com/devicemanagement/data/api"

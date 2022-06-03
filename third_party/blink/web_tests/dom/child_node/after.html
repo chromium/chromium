@@ -144,7 +144,7 @@ function test_after(nodeName) {
         var parent = document.createElement('div');
         parent.appendChild(child);
         var doc2 = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html");
-        assert_throws('HierarchyRequestError', () => { child.after(doc2, "foo") });
+        assert_throws_dom('HierarchyRequestError', () => { child.after(doc2, "foo") });
         assert_equals(parent.firstChild, child);
     }, nodeName + '.after() with a Document as an argument should throw.');
 }

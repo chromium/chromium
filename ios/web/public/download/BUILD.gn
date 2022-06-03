@@ -17,7 +17,7 @@ source_set("download") {
     "download_task_observer.h",
   ]
 
-  libs = [ "Foundation.framework" ]
+  frameworks = [ "Foundation.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

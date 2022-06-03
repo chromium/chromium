@@ -83,7 +83,7 @@ int64_t GamepadDataFetcher::CurrentTimeInMicroseconds() {
 }
 
 // static
-void GamepadDataFetcher::UpdateGamepadStrings(const std::string& name,
+void GamepadDataFetcher::UpdateGamepadStrings(const std::string& product_name,
                                               uint16_t vendor_id,
                                               uint16_t product_id,
                                               bool has_standard_mapping,
@@ -91,7 +91,7 @@ void GamepadDataFetcher::UpdateGamepadStrings(const std::string& name,
   // The ID contains the device name, vendor and product IDs,
   // and an indication of whether the standard mapping is in use.
   std::string id = base::StringPrintf(
-      "%s (%sVendor: %04x Product: %04x)", name.c_str(),
+      "%s (%sVendor: %04x Product: %04x)", product_name.c_str(),
       has_standard_mapping ? "STANDARD GAMEPAD " : "", vendor_id, product_id);
   pad.SetID(base::UTF8ToUTF16(id));
 

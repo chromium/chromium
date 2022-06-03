@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "content/public/test/browser_test.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
-#include "chromeos/constants/chromeos_features.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #endif
 
 namespace {
 
-using apps_helper::InstallAppForAllProfiles;
+using apps_helper::InstallHostedAppForAllProfiles;
 using extension_settings_helper::AllExtensionSettingsSameAsVerifier;
 using extension_settings_helper::SetExtensionSettings;
 using extension_settings_helper::SetExtensionSettingsForAllProfiles;
@@ -38,7 +38,7 @@ void MutateSomeSettings(
     // Write to extension0 from profile 0 but not profile 1.
     base::DictionaryValue settings;
     settings.SetString("asdf", base::StringPrintf("asdfasdf-%d", seed));
-    SetExtensionSettings(test()->verifier(),    extension0, settings);
+    SetExtensionSettings(test()->verifier(), extension0, settings);
     SetExtensionSettings(test()->GetProfile(0), extension0, settings);
   }
   {
@@ -52,13 +52,13 @@ void MutateSomeSettings(
     // Write different data to extension2 from each profile.
     base::DictionaryValue settings0;
     settings0.SetString("zxcv", base::StringPrintf("zxcvzxcv-%d", seed));
-    SetExtensionSettings(test()->verifier(),    extension2, settings0);
+    SetExtensionSettings(test()->verifier(), extension2, settings0);
     SetExtensionSettings(test()->GetProfile(0), extension2, settings0);
 
     base::DictionaryValue settings1;
     settings1.SetString("1324", base::StringPrintf("12341234-%d", seed));
     settings1.SetString("5687", base::StringPrintf("56785678-%d", seed));
-    SetExtensionSettings(test()->verifier(),    extension2, settings1);
+    SetExtensionSettings(test()->verifier(), extension2, settings1);
     SetExtensionSettings(test()->GetProfile(1), extension2, settings1);
   }
 }
@@ -66,11 +66,12 @@ void MutateSomeSettings(
 class TwoClientExtensionSettingsAndAppSettingsSyncTest : public SyncTest {
  public:
   TwoClientExtensionSettingsAndAppSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override = default;
 
-  ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionSettingsAndAppSettingsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 // For three independent extensions:
@@ -83,9 +84,8 @@ testing::AssertionResult StartWithSameSettingsTest(
     const std::string& extension1,
     const std::string& extension2) {
   {
-    // Leave extension0 empty.
-  }
-  {
+      // Leave extension0 empty.
+  } {
     base::DictionaryValue settings;
     settings.SetString("foo", "bar");
     SetExtensionSettingsForAllProfiles(extension1, settings);
@@ -129,13 +129,12 @@ testing::AssertionResult StartWithDifferentSettingsTest(
     const std::string& extension1,
     const std::string& extension2) {
   {
-    // Leave extension0 empty again for no particular reason other than it's
-    // the only remaining unique combination given the other 2 tests have
-    // (empty, nonempty) and (nonempty, nonempty) configurations. We can't test
-    // (nonempty, nonempty) because the merging will provide unpredictable
-    // results, so test (empty, empty).
-  }
-  {
+      // Leave extension0 empty again for no particular reason other than it's
+      // the only remaining unique combination given the other 2 tests have
+      // (empty, nonempty) and (nonempty, nonempty) configurations. We can't
+      // test (nonempty, nonempty) because the merging will provide
+      // unpredictable results, so test (empty, empty).
+  } {
     base::DictionaryValue settings;
     settings.SetString("foo", "bar");
     SetExtensionSettings(test()->verifier(), extension1, settings);
@@ -196,8 +195,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        AppsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithSameSettingsTest, InstallAppForAllProfiles(0),
-               InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
+  ASSERT_PRED3(StartWithSameSettingsTest, InstallHostedAppForAllProfiles(0),
+               InstallHostedAppForAllProfiles(1),
+               InstallHostedAppForAllProfiles(2));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
@@ -211,34 +211,44 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        AppsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithDifferentSettingsTest, InstallAppForAllProfiles(0),
-               InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
+  ASSERT_PRED3(
+      StartWithDifferentSettingsTest, InstallHostedAppForAllProfiles(0),
+      InstallHostedAppForAllProfiles(1), InstallHostedAppForAllProfiles(2));
 }
 
-#if defined(OS_CHROMEOS)
-// Tests for SplitSettingsSync, which uses a different ModelTypeController for
-// syncer::APP_SETTINGS.
-class TwoClientAppSettingsOsSyncTest : public OsSyncTest {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests for SyncSettingsCategorization, which uses a different
+// ModelTypeController for syncer::APP_SETTINGS.
+class TwoClientAppSettingsOsSyncTest
+    : public SyncSettingsCategorizationSyncTest {
  public:
-  TwoClientAppSettingsOsSyncTest() : OsSyncTest(TWO_CLIENT) {}
+  TwoClientAppSettingsOsSyncTest()
+      : SyncSettingsCategorizationSyncTest(TWO_CLIENT) {}
   ~TwoClientAppSettingsOsSyncTest() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
                        AppsStartWithSameSettings) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncSettingsCategorizationEnabled());
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithSameSettingsTest, InstallAppForAllProfiles(0),
-               InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
+  ASSERT_PRED3(StartWithSameSettingsTest, InstallHostedAppForAllProfiles(0),
+               InstallHostedAppForAllProfiles(1),
+               InstallHostedAppForAllProfiles(2));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
                        AppsStartWithDifferentSettings) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncSettingsCategorizationEnabled());
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithDifferentSettingsTest, InstallAppForAllProfiles(0),
-               InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
+  ASSERT_PRED3(
+      StartWithDifferentSettingsTest, InstallHostedAppForAllProfiles(0),
+      InstallHostedAppForAllProfiles(1), InstallHostedAppForAllProfiles(2));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

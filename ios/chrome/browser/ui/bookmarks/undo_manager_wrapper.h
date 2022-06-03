@@ -7,9 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
 
 // This object is a convenience ObjC wrapper around UndoManager.
 // On construction, it registers itself as an observer of the UndoManager.
@@ -25,7 +23,7 @@ class ChromeBrowserState;
 @interface UndoManagerWrapper : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState;
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
 
 // Subsequent changes to the BookmarkModel are grouped together so that a single
 // undo will revert all changes.

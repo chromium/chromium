@@ -9,7 +9,7 @@
 
 namespace weblayer {
 
-base::TimeTicks GetMainEntryPointTimeTicks();
+base::TimeTicks GetApplicationStartTime();
 
 }  // namespace weblayer
 

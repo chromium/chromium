@@ -1,0 +1,19 @@
+Test CSS.trackComputedStyleUpdates and CSS.takeComputedStyleUpdates methods
+First round of updated nodes should contain the first item: true
+First round of updated nodes should not contain the second item: true
+First round of updated nodes should contain the third item: true
+First round of updated nodes should not contain the fourth item: true
+Updated nodes from the first session should contain the first item: true
+Updated nodes from the first session should contain the second item: true
+Updated nodes from the first session should not contain the third item: true
+Updated nodes from the first session should not contain the fourth item: true
+Updated nodes from the second session should not contain the first item: true
+Updated nodes from the second session should contain the second item: true
+Updated nodes from the second session should contain the third item: true
+Updated nodes from the second session should not contain the fourth item: true
+Sending a request while no style is being tracked should fail with an error message:
+{
+    code : -32000
+    message : No computed styles are being tracked right now.
+}
+

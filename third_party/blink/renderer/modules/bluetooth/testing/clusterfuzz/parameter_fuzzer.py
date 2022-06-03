@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Module to fuzz parameters of a template."""
 
 import constraints
@@ -23,8 +22,7 @@ def FuzzParameters(test_file_data):
     """
 
     test_file_data = FillInParameter('TRANSFORM_BASIC_BASE',
-                                     constraints.GetBasicBase,
-                                     test_file_data)
+                                     constraints.GetBasicBase, test_file_data)
 
     test_file_data = FillInParameter('TRANSFORM_DEVICE_DISCOVERY_BASE',
                                      constraints.GetDeviceDiscoveryBase,
@@ -38,9 +36,9 @@ def FuzzParameters(test_file_data):
                                      constraints.get_services_retrieved_base,
                                      test_file_data)
 
-    test_file_data = FillInParameter('TRANSFORM_CHARACTERISTICS_RETRIEVED_BASE',
-                                     constraints.get_characteristics_retrieved_base,
-                                     test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_CHARACTERISTICS_RETRIEVED_BASE',
+        constraints.get_characteristics_retrieved_base, test_file_data)
 
     test_file_data = FillInParameter('TRANSFORM_REQUEST_DEVICE_OPTIONS',
                                      constraints.GetRequestDeviceOptions,
@@ -62,12 +60,10 @@ def FuzzParameters(test_file_data):
                                      constraints.get_pick_a_characteristic,
                                      test_file_data)
 
-    test_file_data = FillInParameter('TRANSFORM_VALUE',
-                                     constraints.get_buffer_source,
-                                     test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_VALUE', constraints.get_buffer_source, test_file_data)
 
     test_file_data = FillInParameter('TRANSFORM_RELOAD_ID',
-                                     constraints.get_reload_id,
-                                     test_file_data)
+                                     constraints.get_reload_id, test_file_data)
 
     return test_file_data

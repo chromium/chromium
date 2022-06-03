@@ -5,11 +5,11 @@
 #ifndef CONTENT_GPU_GPU_SANDBOX_HOOK_LINUX_H_
 #define CONTENT_GPU_GPU_SANDBOX_HOOK_LINUX_H_
 
-#include "services/service_manager/sandbox/linux/sandbox_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
 
 namespace content {
 
-bool GpuProcessPreSandboxHook(service_manager::SandboxLinux::Options options);
+bool GpuProcessPreSandboxHook(sandbox::policy::SandboxLinux::Options options);
 
 }  // namespace content
 

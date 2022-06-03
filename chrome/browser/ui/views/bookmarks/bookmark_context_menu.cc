@@ -41,7 +41,7 @@ BookmarkContextMenu::BookmarkContextMenu(
     views::Widget* parent_widget,
     Browser* browser,
     Profile* profile,
-    PageNavigator* page_navigator,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection,
@@ -51,7 +51,7 @@ BookmarkContextMenu::BookmarkContextMenu(
           this,
           browser,
           profile,
-          page_navigator,
+          std::move(get_navigator),
           opened_from,
           parent,
           selection)),
@@ -61,7 +61,7 @@ BookmarkContextMenu::BookmarkContextMenu(
                                          views::MenuRunner::HAS_MNEMONICS |
                                              views::MenuRunner::IS_NESTED |
                                              views::MenuRunner::CONTEXT_MENU)),
-      observer_(NULL),
+      observer_(nullptr),
       close_on_remove_(close_on_remove) {
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (int i = 0; i < menu_model->GetItemCount(); ++i) {
@@ -90,10 +90,6 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
                           gfx::Rect(point.x(), point.y(), 0, 0),
                           views::MenuAnchorPosition::kTopLeft, source_type);
-}
-
-void BookmarkContextMenu::SetPageNavigator(PageNavigator* navigator) {
-  controller_->set_navigator(navigator);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

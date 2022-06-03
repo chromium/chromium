@@ -2,61 +2,82 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
+// clang-format on
+
 suite('cr-slider', function() {
+  /** @type {!CrSliderElement} */
   let crSlider;
 
   setup(function() {
-    PolymerTest.clearBody();
-    document.body.innerHTML = '<cr-slider min="0" max="100"></cr-slider>';
+    document.body.innerHTML = `
+      <style>
+        #wrapper {
+          width: 200px;
+        }
+      </style>
+      <div id="wrapper">
+        <cr-slider min="0" max="100"></cr-slider>
+      </div>
+    `;
 
-    crSlider = document.body.querySelector('cr-slider');
+    crSlider = /** @type {!CrSliderElement} */ (
+        document.body.querySelector('cr-slider'));
     crSlider.value = 0;
-    return test_util.flushTasks();
+    return flushTasks();
   });
 
   /** @param {boolean} expected */
   function checkDisabled(expected) {
     assertEquals(
         expected,
-        window.getComputedStyle(crSlider)['pointer-events'] == 'none');
+        window.getComputedStyle(crSlider)['pointer-events'] === 'none');
     const expectedTabindex = expected ? '-1' : '0';
     assertEquals(expectedTabindex, crSlider.getAttribute('tabindex'));
   }
 
   function pressArrowRight() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+    pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
   }
 
   function pressArrowLeft() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
   }
 
   function pressPageUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
+    pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
   }
 
   function pressPageDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
+    pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
   }
 
   function pressArrowUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
+    pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
   }
 
   function pressArrowDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
   }
 
   function pressHome() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
+    pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
   }
 
   function pressEnd() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 35, [], 'End');
+    pressAndReleaseKeyOn(crSlider, 35, [], 'End');
   }
 
   function pointerEvent(eventType, ratio) {
-    const rect = crSlider.$.container.getBoundingClientRect();
+    const rect =
+        crSlider.shadowRoot.querySelector('#container').getBoundingClientRect();
     crSlider.dispatchEvent(new PointerEvent(eventType, {
       buttons: 1,
       pointerId: 1,
@@ -124,11 +145,12 @@ suite('cr-slider', function() {
   });
 
   test('mouse events', () => {
+    assertFalse(crSlider.dragging);
     pointerMove(.25);
     assertEquals(0, crSlider.value);
     pointerDown(.5);
+    assertTrue(crSlider.dragging);
     assertEquals(50, crSlider.value);
-    assertEquals(5, crSlider.draggingEventTracker_.listeners_.length);
     pointerMove(.75);
     assertEquals(75, crSlider.value);
     pointerMove(-1);
@@ -137,7 +159,7 @@ suite('cr-slider', function() {
     assertEquals(100, crSlider.value);
     pointerUp();
     assertEquals(100, crSlider.value);
-    assertEquals(0, crSlider.draggingEventTracker_.listeners_.length);
+    assertFalse(crSlider.dragging);
     pointerMove(.25);
     assertEquals(100, crSlider.value);
   });
@@ -169,10 +191,10 @@ suite('cr-slider', function() {
   });
 
   test('markers', () => {
-    assertTrue(crSlider.$.markers.hidden);
+    assertTrue(crSlider.shadowRoot.querySelector('#markers').hidden);
     crSlider.markerCount = 10;
-    assertFalse(crSlider.$.markers.hidden);
-    Polymer.dom.flush();
+    assertFalse(crSlider.shadowRoot.querySelector('#markers').hidden);
+    flush();
     const markers = Array.from(crSlider.root.querySelectorAll('#markers div'));
     assertEquals(9, markers.length);
     markers.forEach((marker, i) => {
@@ -198,13 +220,15 @@ suite('cr-slider', function() {
     assertEquals('8', crSlider.getAttribute('aria-valuemax'));
     assertEquals('4', crSlider.getAttribute('aria-valuetext'));
     assertEquals('4', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('', crSlider.$.label.innerHTML.trim());
+    assertEquals(
+        '', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     assertEquals(2, crSlider.value);
     pressArrowRight();
     assertEquals(3, crSlider.value);
     assertEquals('8', crSlider.getAttribute('aria-valuetext'));
     assertEquals('8', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('', crSlider.$.label.innerHTML.trim());
+    assertEquals(
+        '', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     crSlider.value = 2;
     crSlider.ticks = [
       {
@@ -225,12 +249,14 @@ suite('cr-slider', function() {
     assertEquals('1', crSlider.getAttribute('aria-valuemin'));
     assertEquals('3', crSlider.getAttribute('aria-valuemax'));
     assertEquals('Third', crSlider.getAttribute('aria-valuetext'));
-    assertEquals('Third', crSlider.$.label.innerHTML.trim());
+    assertEquals(
+        'Third', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     assertEquals('3', crSlider.getAttribute('aria-valuenow'));
     pressArrowLeft();
     assertEquals('Second', crSlider.getAttribute('aria-valuetext'));
     assertEquals('20', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('Second', crSlider.$.label.innerHTML.trim());
+    assertEquals(
+        'Second', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
   });
 
   test('disabled whenever public |disabled| is true', () => {
@@ -308,22 +334,35 @@ suite('cr-slider', function() {
     const assertNoTransition = () => {
       const expected = 'all 0s ease 0s';
       assertEquals(
-          expected, getComputedStyle(crSlider.$.knobAndLabel).transition);
-      assertEquals(expected, getComputedStyle(crSlider.$.bar).transition);
+          expected,
+          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel'))
+              .transition);
+      assertEquals(
+          expected,
+          getComputedStyle(crSlider.shadowRoot.querySelector('#bar'))
+              .transition);
     };
     const assertTransition = () => {
       const getValue = propName => `${propName} 0.08s ease 0s`;
       assertEquals(
           getValue('margin-inline-start'),
-          getComputedStyle(crSlider.$.knobAndLabel).transition);
+          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel'))
+              .transition);
       assertEquals(
-          getValue('width'), getComputedStyle(crSlider.$.bar).transition);
+          getValue('width'),
+          getComputedStyle(crSlider.shadowRoot.querySelector('#bar'))
+              .transition);
     };
 
     assertNoTransition();
     pointerDown(.5);
     assertTransition();
-    await test_util.eventToPromise('transitionend', crSlider.$.knobAndLabel);
+
+    const knobAndLabel =
+        /** @type {!HTMLElement} */ (
+            crSlider.shadowRoot.querySelector('#knobAndLabel'));
+
+    await eventToPromise('transitionend', knobAndLabel);
     assertNoTransition();
     // Other operations that change the value do not have transitions.
     pointerMove(0);
@@ -341,7 +380,7 @@ suite('cr-slider', function() {
     crSlider.value = 0;
     pointerDown(0);
     assertTransition();
-    await test_util.eventToPromise('transitionend', crSlider.$.knobAndLabel);
+    await eventToPromise('transitionend', knobAndLabel);
     assertNoTransition();
   });
 
@@ -357,38 +396,53 @@ suite('cr-slider', function() {
   });
 
   test('cr-slider-value-changed event when mouse clicked', () => {
-    const wait = test_util.eventToPromise('cr-slider-value-changed', crSlider);
+    const wait = eventToPromise('cr-slider-value-changed', crSlider);
     pointerDown(.1);
     return wait;
   });
 
   test('cr-slider-value-changed event when key pressed', () => {
-    const wait = test_util.eventToPromise('cr-slider-value-changed', crSlider);
+    const wait = eventToPromise('cr-slider-value-changed', crSlider);
     pressArrowRight();
     return wait;
   });
 
-  test('out of range value updated back into min/max range', () => {
-    crSlider.min = 0;
-    crSlider.max = 100;
-    crSlider.value = 50;
-    assertEquals(50, crSlider.value);
-    crSlider.value = 150;
-    assertEquals(100, crSlider.value);
-    crSlider.value = -50;
-    assertEquals(0, crSlider.value);
-    crSlider.min = 25;
-    assertEquals(25, crSlider.value);
-    crSlider.value = 100;
-    crSlider.max = 50;
-    assertEquals(50, crSlider.value);
-  });
+  test(
+      'out of range value updated back into min/max range with debounce',
+      async () => {
+        crSlider.min = -100;
+        crSlider.max = 1000;
+        crSlider.value = -50;
+        await flushTasks();
+        assertEquals(-50, crSlider.value);
 
-  test('container hidden until value set', () => {
+        crSlider.min = 0;
+        crSlider.max = 100;
+        crSlider.value = 150;
+        // Clamping value should happen async, not sync, in order to not race
+        // when min/max and value change at the same time.
+        assertEquals(150, crSlider.value);
+
+        await flushTasks();
+        assertEquals(100, crSlider.value);
+
+        crSlider.max = 25;
+        await flushTasks();
+        assertEquals(25, crSlider.value);
+
+        crSlider.min = 50;
+        crSlider.max = 100;
+        await flushTasks();
+        assertEquals(50, crSlider.value);
+      });
+
+  test('container hidden until value set', async () => {
     document.body.innerHTML = '<cr-slider></cr-slider>';
-    crSlider = document.body.querySelector('cr-slider');
-    assertTrue(crSlider.$.container.hidden);
+    crSlider = /** @type {!CrSliderElement} */ (
+        document.body.querySelector('cr-slider'));
+    assertTrue(crSlider.shadowRoot.querySelector('#container').hidden);
     crSlider.value = 0;
-    assertFalse(crSlider.$.container.hidden);
+    await flushTasks();
+    assertFalse(crSlider.shadowRoot.querySelector('#container').hidden);
   });
 });

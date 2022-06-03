@@ -6,7 +6,6 @@
 
 #include <objbase.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +27,11 @@ class MockDirectManipulationViewport
               IDirectManipulationViewport>> {
  public:
   MockDirectManipulationViewport() {}
+
+  MockDirectManipulationViewport(const MockDirectManipulationViewport&) =
+      delete;
+  MockDirectManipulationViewport& operator=(
+      const MockDirectManipulationViewport&) = delete;
 
   ~MockDirectManipulationViewport() override {}
 
@@ -169,8 +173,6 @@ class MockDirectManipulationViewport
 
  private:
   bool zoom_to_rect_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDirectManipulationViewport);
 };
 
 enum class EventGesture {
@@ -202,6 +204,9 @@ struct Event {
 class MockWindowEventTarget : public ui::WindowEventTarget {
  public:
   MockWindowEventTarget() {}
+
+  MockWindowEventTarget(const MockWindowEventTarget&) = delete;
+  MockWindowEventTarget& operator=(const MockWindowEventTarget&) = delete;
 
   ~MockWindowEventTarget() override {}
 
@@ -301,8 +306,6 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
 
  private:
   std::vector<Event> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWindowEventTarget);
 };
 
 }  //  namespace
@@ -310,14 +313,16 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
 class DirectManipulationUnitTest : public testing::Test {
  public:
   DirectManipulationUnitTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPrecisionTouchpad);
-
     viewport_ = Microsoft::WRL::Make<MockDirectManipulationViewport>();
     content_ = Microsoft::WRL::Make<MockDirectManipulationContent>();
     direct_manipulation_helper_ =
         DirectManipulationHelper::CreateInstanceForTesting(&event_target_,
                                                            viewport_);
   }
+
+  DirectManipulationUnitTest(const DirectManipulationUnitTest&) = delete;
+  DirectManipulationUnitTest& operator=(const DirectManipulationUnitTest&) =
+      delete;
 
   ~DirectManipulationUnitTest() override {}
 
@@ -350,9 +355,6 @@ class DirectManipulationUnitTest : public testing::Test {
   Microsoft::WRL::ComPtr<MockDirectManipulationViewport> viewport_;
   Microsoft::WRL::ComPtr<MockDirectManipulationContent> content_;
   MockWindowEventTarget event_target_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationUnitTest);
 };
 
 TEST_F(DirectManipulationUnitTest, HelperShouldCreateForWin10) {

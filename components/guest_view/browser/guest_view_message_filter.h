@@ -10,8 +10,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -31,8 +30,10 @@ class GuestViewManager;
 // the IO thread or the UI thread.
 class GuestViewMessageFilter : public content::BrowserMessageFilter {
  public:
-  GuestViewMessageFilter(int render_process_id,
-                         content::BrowserContext* context);
+  GuestViewMessageFilter(const GuestViewMessageFilter&) = delete;
+  GuestViewMessageFilter& operator=(const GuestViewMessageFilter&) = delete;
+
+  static void EnsureShutdownNotifierFactoryBuilt();
 
  protected:
   GuestViewMessageFilter(const uint32_t* message_classes_to_filter,
@@ -61,19 +62,14 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
   const int render_process_id_;
 
   // Should only be accessed on the UI thread.
-  content::BrowserContext* const browser_context_;
-
-  // Weak pointers produced by this factory are bound to the IO thread.
-  base::WeakPtrFactory<GuestViewMessageFilter> weak_ptr_factory_{this};
+  // May become null if this filter outlives the BrowserContext.
+  content::BrowserContext* browser_context_;
 
  private:
   friend class content::BrowserThread;
   friend class base::DeleteHelper<GuestViewMessageFilter>;
 
   // Message handlers on the UI thread.
-  void OnAttachGuest(int element_instance_id,
-                     int guest_instance_id,
-                     const base::DictionaryValue& attach_params);
   void OnAttachToEmbedderFrame(int embedder_local_render_frame_id,
                                int element_instance_id,
                                int guest_instance_id,
@@ -81,7 +77,9 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
   void OnViewCreated(int view_instance_id, const std::string& view_type);
   void OnViewGarbageCollected(int view_instance_id);
 
-  DISALLOW_COPY_AND_ASSIGN(GuestViewMessageFilter);
+  void OnBrowserContextShutdown();
+
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
 };
 
 }  // namespace guest_view

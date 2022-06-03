@@ -63,8 +63,8 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
        MAYBE_ReadLocalCharacteristicValue) {
   delegate_->value_to_write_ = 0x1337;
   SimulateLocalGattCharacteristicValueReadRequest(
-      device_, read_characteristic_.get(), GetReadValueCallback(Call::EXPECTED),
-      GetCallback(Call::NOT_EXPECTED));
+      device_, read_characteristic_.get(),
+      GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
 
   EXPECT_EQ(delegate_->value_to_write_, GetInteger(last_read_value_));
   EXPECT_EQ(device_->GetIdentifier(), delegate_->last_seen_device_);
@@ -129,7 +129,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   delegate_->should_fail_ = true;
   SimulateLocalGattCharacteristicValueReadRequest(
       device_, read_characteristic_.get(),
-      GetReadValueCallback(Call::NOT_EXPECTED), GetCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   EXPECT_NE(delegate_->value_to_write_, GetInteger(last_read_value_));
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
@@ -147,7 +147,7 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
   delegate_->value_to_write_ = 0x1337;
   SimulateLocalGattCharacteristicValueReadRequest(
       device_, write_characteristic_.get(),
-      GetReadValueCallback(Call::NOT_EXPECTED), GetCallback(Call::EXPECTED));
+      GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   EXPECT_NE(delegate_->value_to_write_, GetInteger(last_read_value_));
   EXPECT_NE(device_->GetIdentifier(), delegate_->last_seen_device_);
@@ -197,22 +197,22 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
 #endif
 TEST_F(BluetoothLocalGattCharacteristicTest, MAYBE_StartAndStopNotifications) {
   EXPECT_FALSE(SimulateLocalGattCharacteristicNotificationsRequest(
-      read_characteristic_.get(), true));
+      device_, read_characteristic_.get(), true));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       read_characteristic_.get()));
 
   EXPECT_FALSE(SimulateLocalGattCharacteristicNotificationsRequest(
-      write_characteristic_.get(), true));
+      device_, write_characteristic_.get(), true));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       write_characteristic_.get()));
 
   EXPECT_TRUE(SimulateLocalGattCharacteristicNotificationsRequest(
-      notify_characteristic_.get(), true));
+      device_, notify_characteristic_.get(), true));
   EXPECT_TRUE(delegate_->NotificationStatusForCharacteristic(
       notify_characteristic_.get()));
 
   EXPECT_TRUE(SimulateLocalGattCharacteristicNotificationsRequest(
-      notify_characteristic_.get(), false));
+      device_, notify_characteristic_.get(), false));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       notify_characteristic_.get()));
 }

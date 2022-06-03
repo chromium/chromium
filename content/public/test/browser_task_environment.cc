@@ -7,18 +7,23 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/check.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/browser/after_startup_task_utils.h"
+#include "content/browser/browser_process_io_thread.h"
+#include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 #include "content/browser/scheduler/browser_task_executor.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread.h"
 #include "content/public/test/test_utils.h"
 
 #if defined(OS_ANDROID)
@@ -30,6 +35,87 @@
 #endif
 
 namespace content {
+
+class TestBrowserThread {
+ public:
+  // Creates and starts a TestBrowserThread with a MessagePumpForIO.
+  static std::unique_ptr<TestBrowserThread> StartIOThread();
+
+  // Constructs a TestBrowserThread "running" on |thread_runner| (no
+  // |real_thread_|).
+  TestBrowserThread(BrowserThread::ID identifier,
+                    scoped_refptr<base::SingleThreadTaskRunner> thread_runner);
+
+  TestBrowserThread(const TestBrowserThread&) = delete;
+  TestBrowserThread& operator=(const TestBrowserThread&) = delete;
+
+  ~TestBrowserThread();
+
+  // Stops the thread, no-op if this is not a real thread.
+  void Stop();
+
+ private:
+  explicit TestBrowserThread(
+      BrowserThread::ID identifier,
+      std::unique_ptr<BrowserProcessIOThread> real_thread);
+
+  const BrowserThread::ID identifier_;
+
+  // A real thread which represents |identifier_| when StartIOThread() is used
+  // (null otherwise).
+  std::unique_ptr<BrowserProcessIOThread> real_thread_;
+
+  // Binds |identifier_| to |thread_runner| when the public constructor is used
+  // (null otherwise).
+  std::unique_ptr<BrowserThreadImpl> fake_thread_;
+};
+
+// static
+std::unique_ptr<TestBrowserThread> TestBrowserThread::StartIOThread() {
+  auto thread = base::WrapUnique(new TestBrowserThread(
+      BrowserThread::IO, BrowserTaskExecutor::CreateIOThread()));
+  thread->real_thread_->RegisterAsBrowserThread();
+  return thread;
+}
+
+TestBrowserThread::TestBrowserThread(
+    BrowserThread::ID identifier,
+    std::unique_ptr<BrowserProcessIOThread> real_thread)
+    : identifier_(identifier), real_thread_(std::move(real_thread)) {}
+
+TestBrowserThread::TestBrowserThread(
+    BrowserThread::ID identifier,
+    scoped_refptr<base::SingleThreadTaskRunner> thread_runner)
+    : identifier_(identifier),
+      fake_thread_(
+          new BrowserThreadImpl(identifier_, std::move(thread_runner))) {}
+
+TestBrowserThread::~TestBrowserThread() {
+  // The upcoming BrowserThreadImpl::ResetGlobalsForTesting() call requires that
+  // |identifier_| have completed its SHUTDOWN phase.
+  real_thread_.reset();
+  fake_thread_.reset();
+
+  // Resets BrowserThreadImpl's globals so that |identifier_| is no longer
+  // bound. This is fine since the underlying MessageLoop has already been
+  // flushed and deleted above. In the case of an externally provided
+  // MessageLoop however, this means that TaskRunners obtained through
+  // |BrowserThreadImpl::GetTaskRunnerForThread(identifier_)| will no longer
+  // recognize their BrowserThreadImpl for RunsTasksInCurrentSequence(). This
+  // happens most often when such verifications are made from
+  // CurrentThread::DestructionObservers. Callers that care to work around
+  // that should instead use this shutdown sequence:
+  //   1) TestBrowserThread::Stop()
+  //   2) ~MessageLoop()
+  //   3) ~TestBrowserThread()
+  // (~BrowserTaskEnvironment() does this).
+  BrowserThreadImpl::ResetGlobalsForTesting(identifier_);
+}
+
+void TestBrowserThread::Stop() {
+  if (real_thread_)
+    real_thread_->Stop();
+}
 
 BrowserTaskEnvironment::~BrowserTaskEnvironment() {
   // This is required to ensure we run all remaining MessageLoop and
@@ -87,8 +173,10 @@ void BrowserTaskEnvironment::Init() {
   CHECK(com_initializer_->Succeeded());
 #endif
 
-  auto browser_ui_thread_scheduler = BrowserUIThreadScheduler::CreateForTesting(
-      sequence_manager(), GetTimeDomain());
+  if (GetMockTimeDomain())
+    sequence_manager()->SetTimeDomain(GetMockTimeDomain());
+  auto browser_ui_thread_scheduler =
+      BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
   auto default_ui_task_runner =
       browser_ui_thread_scheduler->GetHandle()->GetDefaultTaskRunner();
   auto browser_io_thread_delegate =
@@ -103,9 +191,9 @@ void BrowserTaskEnvironment::Init() {
   DeferredInitFromSubclass(std::move(default_ui_task_runner));
 
   if (HasIOMainLoop()) {
-    CHECK(base::MessageLoopCurrentForIO::IsSet());
+    CHECK(base::CurrentIOThread::IsSet());
   } else if (main_thread_type() == MainThreadType::UI) {
-    CHECK(base::MessageLoopCurrentForUI::IsSet());
+    CHECK(base::CurrentUIThread::IsSet());
   }
 
   // Set the current thread as the UI thread.
@@ -138,8 +226,8 @@ void BrowserTaskEnvironment::RunIOThreadUntilIdle() {
   base::WaitableEvent io_thread_idle(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::PostTask(FROM_HERE, {BrowserThread::IO},
-                 base::BindOnce(
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
                      [](base::WaitableEvent* io_thread_idle) {
                        base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed)
                            .RunUntilIdle();

@@ -17,8 +17,8 @@ import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
- * The dialog content view for illustration dialogs used by the password manager (e.g. onboarding,
- * leak warning).
+ * The dialog content view for illustration dialogs used by the password manager (e.g. leak
+ * warning).
  */
 public class PasswordManagerDialogView extends ScrollView {
     private @Nullable ChromeImageButton mHelpButtonView;
@@ -77,11 +77,22 @@ public class PasswordManagerDialogView extends ScrollView {
         mInlineHelpButtonView.setVisibility(usesInlineIcon ? VISIBLE : GONE);
     }
 
+    void cropImageToText() {
+        LinearLayout.LayoutParams marginParams =
+                new LinearLayout.LayoutParams(mIllustrationView.getLayoutParams());
+        marginParams.setMarginStart(getContext().getResources().getDimensionPixelSize(
+                R.dimen.password_manager_dialog_text_margin));
+        marginParams.setMarginEnd(getContext().getResources().getDimensionPixelSize(
+                R.dimen.password_manager_dialog_text_margin));
+        mIllustrationView.setLayoutParams(marginParams);
+        mIllustrationView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    }
+
     void setTitle(String title) {
         mTitleView.setText(title);
     }
 
-    void setDetails(String details) {
+    void setDetails(CharSequence details) {
         mDetailsView.setText(details);
     }
 }

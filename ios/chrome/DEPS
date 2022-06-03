@@ -30,7 +30,7 @@ include_rules = [
   "-ios/web/public/web_view_only",
 
   # All code in ios/chrome assumes that web::BrowserState* can be safely
-  # casted to ios::ChromeBrowserState*. This mean that no code should use
+  # casted to ChromeBrowserState*. This mean that no code should use
   # web::TestBrowserState in ios/chrome.
   "-ios/web/public/test/fakes/test_browser_state.h",
 

@@ -5,12 +5,8 @@
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 600, 250],
-          "reason": "background"
-        }
+      "invalidations": [
+        [0, 0, 600, 250]
       ]
     }
   ]
@@ -22,12 +18,8 @@
       "bounds": [400, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 400, 250],
-          "reason": "background"
-        }
+      "invalidations": [
+        [0, 0, 400, 250]
       ]
     }
   ]
@@ -39,12 +31,8 @@
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 400, 600],
-          "reason": "background"
-        }
+      "invalidations": [
+        [0, 0, 400, 600]
       ]
     }
   ]
@@ -56,12 +44,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 800, 600],
-          "reason": "background"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

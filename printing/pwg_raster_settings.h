@@ -5,6 +5,7 @@
 #ifndef PRINTING_PWG_RASTER_SETTINGS_H_
 #define PRINTING_PWG_RASTER_SETTINGS_H_
 
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
 namespace printing {
@@ -18,7 +19,7 @@ enum PwgRasterTransformType {
 };
 
 struct PwgRasterSettings {
-  DuplexMode duplex_mode;
+  mojom::DuplexMode duplex_mode;
   // How to transform odd-numbered pages.
   PwgRasterTransformType odd_page_transform;
   // Rotate all pages (on top of odd-numbered page transform).

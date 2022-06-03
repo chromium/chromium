@@ -11,6 +11,8 @@
 #include <stddef.h>
 #include <sys/socket.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
@@ -23,7 +25,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/extensions/image_writer/image_writer_util_mac.h"
 #include "chrome/utility/image_writer/disk_unmounter_mac.h"
-#include "chrome/utility/image_writer/error_messages.h"
+#include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {
@@ -52,7 +54,7 @@ bool ImageWriter::IsValidDevice() {
 
 void ImageWriter::UnmountVolumes(base::OnceClosure continuation) {
   if (!unmounter_)
-    unmounter_.reset(new DiskUnmounterMac());
+    unmounter_ = std::make_unique<DiskUnmounterMac>();
 
   unmounter_->Unmount(
       device_path_.value(), std::move(continuation),

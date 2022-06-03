@@ -8,26 +8,32 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
 
 namespace ui {
 
 // Dummy implementation of TextInputClient. All functions do nothing.
+// TODO(crbug.com/1148157): Replace this class with FakeTextInputClient.
 class DummyTextInputClient : public TextInputClient {
  public:
   DummyTextInputClient();
   explicit DummyTextInputClient(TextInputType text_input_type);
   DummyTextInputClient(TextInputType text_input_type,
                        TextInputMode text_input_mode);
+
+  DummyTextInputClient(const DummyTextInputClient&) = delete;
+  DummyTextInputClient& operator=(const DummyTextInputClient&) = delete;
+
   ~DummyTextInputClient() override;
 
   // Overriden from TextInputClient.
   void SetCompositionText(const CompositionText& composition) override;
-  void ConfirmCompositionText(bool) override;
+  uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
-  void InsertText(const base::string16& text) override;
+  void InsertText(const std::u16string& text,
+                  InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const KeyEvent& event) override;
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
@@ -35,6 +41,7 @@ class DummyTextInputClient : public TextInputClient {
   int GetTextInputFlags() const override;
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
+  gfx::Rect GetSelectionBoundingBox() const override;
   bool GetCompositionCharacterBounds(uint32_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -45,7 +52,7 @@ class DummyTextInputClient : public TextInputClient {
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -56,24 +63,38 @@ class DummyTextInputClient : public TextInputClient {
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  gfx::Range GetAutocorrectRange() const override;
+  gfx::Rect GetAutocorrectCharacterBounds() const override;
+  bool SetAutocorrectRange(const gfx::Range& range) override;
+  absl::optional<GrammarFragment> GetGrammarFragment(
+      const gfx::Range& range) override;
+  bool ClearGrammarFragments(const gfx::Range& range) override;
+  bool AddGrammarFragments(
+      const std::vector<GrammarFragment>& fragments) override;
+#endif
+
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  void GetActiveTextInputControlLayoutBounds(
+      absl::optional<gfx::Rect>* control_bounds,
+      absl::optional<gfx::Rect>* selection_bounds) override;
+#endif
 #if defined(OS_WIN)
-  bool GetEditContextLayoutBounds(gfx::Rect* control_bounds,
-                                  gfx::Rect* selection_bounds) override;
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
 
   int insert_char_count() const { return insert_char_count_; }
-  base::char16 last_insert_char() const { return last_insert_char_; }
-  const std::vector<base::string16>& insert_text_history() const {
+  char16_t last_insert_char() const { return last_insert_char_; }
+  const std::vector<std::u16string>& insert_text_history() const {
     return insert_text_history_;
   }
   const std::vector<CompositionText>& composition_history() const {
@@ -83,17 +104,21 @@ class DummyTextInputClient : public TextInputClient {
     return selection_history_;
   }
 
+  std::vector<GrammarFragment> get_grammar_fragments() const {
+    return grammar_fragments_;
+  }
+
   TextInputType text_input_type_;
   TextInputMode text_input_mode_;
 
-  DISALLOW_COPY_AND_ASSIGN(DummyTextInputClient);
-
  private:
   int insert_char_count_;
-  base::char16 last_insert_char_;
-  std::vector<base::string16> insert_text_history_;
+  char16_t last_insert_char_;
+  std::vector<std::u16string> insert_text_history_;
   std::vector<CompositionText> composition_history_;
   std::vector<gfx::Range> selection_history_;
+  gfx::Range autocorrect_range_;
+  std::vector<GrammarFragment> grammar_fragments_;
 };
 
 }  // namespace ui

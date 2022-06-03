@@ -8,10 +8,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
+
 namespace blink {
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings()
-    : VideoTrackAdapterSettings(base::nullopt,
+    : VideoTrackAdapterSettings(absl::nullopt,
                                 0.0,
                                 std::numeric_limits<double>::max(),
                                 0.0) {}
@@ -22,7 +24,7 @@ VideoTrackAdapterSettings::VideoTrackAdapterSettings(
     : VideoTrackAdapterSettings(target_size, 0.0, HUGE_VAL, max_frame_rate) {}
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(
-    base::Optional<gfx::Size> target_size,
+    absl::optional<gfx::Size> target_size,
     double min_aspect_ratio,
     double max_aspect_ratio,
     double max_frame_rate)

@@ -5,15 +5,16 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
 #include "mojo/public/cpp/bindings/string_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file is included by serialization implementation files to avoid circular
 // includes.
@@ -29,7 +30,7 @@ struct Serializer;
 template <typename T>
 struct IsOptionalWrapper {
   static const bool value = IsSpecializationOf<
-      base::Optional,
+      absl::optional,
       typename std::remove_const<
           typename std::remove_reference<T>::type>::type>::value;
 };
@@ -58,17 +59,14 @@ bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
 
 template <typename MojomType,
           typename InputUserType,
-          typename BufferWriterType,
+          typename FragmentType,
           typename... Args,
           typename std::enable_if<
               IsOptionalWrapper<InputUserType>::value>::type* = nullptr>
-void Serialize(InputUserType&& input,
-               Buffer* buffer,
-               BufferWriterType* writer,
-               Args&&... args) {
+void Serialize(InputUserType&& input, FragmentType& fragment, Args&&... args) {
   if (!input)
     return;
-  Serialize<MojomType>(*input, buffer, writer, std::forward<Args>(args)...);
+  Serialize<MojomType>(*input, fragment, std::forward<Args>(args)...);
 }
 
 template <typename MojomType,
@@ -79,7 +77,7 @@ template <typename MojomType,
               IsOptionalWrapper<InputUserType>::value>::type* = nullptr>
 bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
   if (!input) {
-    *output = base::nullopt;
+    *output = absl::nullopt;
     return true;
   }
   if (!*output)

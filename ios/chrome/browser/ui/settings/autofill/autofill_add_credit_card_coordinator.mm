@@ -8,12 +8,12 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
-#import "ios/chrome/browser/ui/settings/credit_card_scanner/credit_card_scanner_coordinator.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -27,11 +27,6 @@
 
 // Displays message for invalid credit card data.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
-
-// The Credit Card Scanner Coordinator.
-@property(nonatomic, strong)
-    CreditCardScannerCoordinator* creditCardScannerCoordinator API_AVAILABLE(
-        ios(13.0));
 
 // The view controller attached to this coordinator.
 @property(nonatomic, strong)
@@ -52,7 +47,7 @@
   // one so the user can add credit cards.
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browserState->GetOriginalChromeBrowserState());
+          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
   self.mediator = [[AutofillAddCreditCardMediator alloc]
          initWithDelegate:self
@@ -73,11 +68,6 @@
 }
 
 - (void)stop {
-  if (@available(iOS 13, *)) {
-    [self.creditCardScannerCoordinator stop];
-    self.creditCardScannerCoordinator = nil;
-  }
-
   [self.addCreditCardViewController.navigationController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -105,13 +95,11 @@
                 IDS_IOS_ADD_CREDIT_CARD_INVALID_EXPIRATION_DATE_ALERT)];
 }
 
-- (void)creditCardMediatorShowScanner:(AutofillAddCreditCardMediator*)mediator
-    API_AVAILABLE(ios(13.0)) {
-  self.creditCardScannerCoordinator = [[CreditCardScannerCoordinator alloc]
-      initWithBaseViewController:self.addCreditCardViewController
-              creditCardConsumer:self.addCreditCardViewController];
-
-  [self.creditCardScannerCoordinator start];
+- (void)creditCardMediatorHasInvalidNickname:
+    (AutofillAddCreditCardMediator*)mediator {
+  [self
+      showAlertWithMessage:l10n_util::GetNSString(
+                               IDS_IOS_ADD_CREDIT_CARD_INVALID_NICKNAME_ALERT)];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -132,6 +120,7 @@
 - (void)showActionSheetAlert {
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.addCreditCardViewController
+                         browser:self.browser
                            title:
                                l10n_util::GetNSString(
                                    IDS_IOS_ADD_CREDIT_CARD_VIEW_CONTROLLER_DISMISS_ALERT_TITLE)
@@ -163,6 +152,7 @@
 - (void)showAlertWithMessage:(NSString*)message {
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.addCreditCardViewController
+                         browser:self.browser
                            title:message
                          message:nil];
 

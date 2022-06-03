@@ -1,0 +1,12 @@
+<!--
+Copyright The Closure Library Authors.
+SPDX-License-Identifier: Apache-2.0
+-->
+<script>
+  // Required for the test. Sadly we cannot set the uncompiled/compiled defines since the actual
+  // _test.html file will evaluate this after goog.async.Deferred has already been loaded, and thus
+  // the default value of LONG_STACK_TRACES set. And doing this in the _test.js causes a compile
+  // error. This statement will be evaulated before the tests run, however, so it is still safe to
+  // put here.
+  goog.async.Deferred.LONG_STACK_TRACES = true;
+</script>

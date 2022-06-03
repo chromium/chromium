@@ -38,7 +38,7 @@ CBrowserSwitcherBHO::CBrowserSwitcherBHO() = default;
 CBrowserSwitcherBHO::~CBrowserSwitcherBHO() = default;
 
 // Implementation of IObjectWithSiteImpl::SetSite.
-STDMETHODIMP CBrowserSwitcherBHO::SetSite(IUnknown* site) {
+STDMETHODIMP CBrowserSwitcherBHO::SetSite(IUnknown* site) noexcept {
   if (site != NULL) {
     HRESULT hr = site->QueryInterface(IID_PPV_ARGS(&web_browser_));
     if (SUCCEEDED(hr)) {

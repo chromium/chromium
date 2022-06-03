@@ -7,14 +7,18 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class TimingFunction;
+}  // namespace gfx
 
 namespace cc {
-
-class TimingFunction;
 
 // ScrollOffsetAnimationCurve computes scroll offset as a function of time
 // during a scroll offset animation.
@@ -23,9 +27,18 @@ class TimingFunction;
 // user input or programmatic scroll operations.  For more information about
 // scheduling and servicing scroll animations, see blink::ScrollAnimator and
 // blink::ProgrammaticScrollAnimator.
-
-class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
+class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
+    : public gfx::AnimationCurve {
  public:
+  class Target {
+   public:
+    ~Target() = default;
+
+    virtual void OnScrollOffsetAnimated(const gfx::Vector2dF& value,
+                                        int target_property_id,
+                                        gfx::KeyframeModel* keyframe_model) = 0;
+  };
+
   // Indicates how the animation duration should be computed for Ease-in-out
   // style scroll animation curves.
   enum class DurationBehavior {
@@ -38,6 +51,12 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
     // preserving smoothness of slow wheel movements.
     INVERSE_DELTA
   };
+
+  static const ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve(
+      const AnimationCurve* c);
+
+  static ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve(
+      AnimationCurve* c);
 
   // There is inherent delay in input processing; it may take many milliseconds
   // from the time of user input to when when we're actually able to handle it
@@ -64,53 +83,60 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
       delete;
 
   // Sets the initial offset and velocity (in pixels per second).
-  void SetInitialValue(const gfx::ScrollOffset& initial_value,
+  void SetInitialValue(const gfx::Vector2dF& initial_value,
                        base::TimeDelta delayed_by = base::TimeDelta(),
                        float velocity = 0);
   bool HasSetInitialValue() const;
-  gfx::ScrollOffset GetValue(base::TimeDelta t) const;
-  gfx::ScrollOffset target_value() const { return target_value_; }
+  gfx::Vector2dF GetValue(base::TimeDelta t) const;
+  gfx::Vector2dF target_value() const { return target_value_; }
 
   // Updates the current curve to aim at a new target, starting at time t
   // relative to the start of the animation. The duration is recomputed based
   // on the animation type the curve was constructed with. The timing function
   // is modified to preserve velocity at t.
-  void UpdateTarget(base::TimeDelta t, const gfx::ScrollOffset& new_target);
+  void UpdateTarget(base::TimeDelta t, const gfx::Vector2dF& new_target);
 
   // Shifts the entire curve by a delta without affecting its shape or timing.
   // Used for scroll anchoring adjustments that happen during scroll animations
-  // (see blink::ScrollAnimator::AdjustAnimationAndSetScrollOffset).
+  // (see blink::ScrollAnimator::AdjustAnimation).
   void ApplyAdjustment(const gfx::Vector2dF& adjustment);
 
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
-  CurveType Type() const override;
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  int Type() const override;
+  const char* TypeName() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
   std::unique_ptr<ScrollOffsetAnimationCurve>
   CloneToScrollOffsetAnimationCurve() const;
-
+  void Tick(base::TimeDelta t,
+            int property_id,
+            gfx::KeyframeModel* keyframe_model) const override;
   static void SetAnimationDurationForTesting(base::TimeDelta duration);
+  void set_target(Target* target) { target_ = target; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget);
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest,
+                           ImpulseUpdateTargetSwitchDirections);
   friend class ScrollOffsetAnimationCurveFactory;
   enum class AnimationType { kLinear, kEaseInOut, kImpulse };
 
   // |duration_behavior| should be provided if (and only if) |animation_type| is
   // kEaseInOut.
   ScrollOffsetAnimationCurve(
-      const gfx::ScrollOffset& target_value,
+      const gfx::Vector2dF& target_value,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior = base::nullopt);
+      absl::optional<DurationBehavior> duration_behavior = absl::nullopt);
   ScrollOffsetAnimationCurve(
-      const gfx::ScrollOffset& target_value,
-      std::unique_ptr<TimingFunction> timing_function,
+      const gfx::Vector2dF& target_value,
+      std::unique_ptr<gfx::TimingFunction> timing_function,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior);
+      absl::optional<DurationBehavior> duration_behavior);
 
   base::TimeDelta SegmentDuration(
       const gfx::Vector2dF& delta,
       base::TimeDelta delayed_by,
-      base::Optional<double> velocity = base::nullopt);
+      absl::optional<double> velocity = absl::nullopt);
 
   base::TimeDelta EaseInOutBoundedSegmentDuration(
       const gfx::Vector2dF& new_delta,
@@ -120,22 +146,24 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
   // Returns the velocity at time t in units of pixels per second.
   double CalculateVelocity(base::TimeDelta t);
 
-  gfx::ScrollOffset initial_value_;
-  gfx::ScrollOffset target_value_;
+  gfx::Vector2dF initial_value_;
+  gfx::Vector2dF target_value_;
   base::TimeDelta total_animation_duration_;
 
   // Time from animation start to most recent UpdateTarget.
   base::TimeDelta last_retarget_;
 
-  std::unique_ptr<TimingFunction> timing_function_;
+  std::unique_ptr<gfx::TimingFunction> timing_function_;
   AnimationType animation_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.
-  base::Optional<DurationBehavior> duration_behavior_;
+  absl::optional<DurationBehavior> duration_behavior_;
 
   bool has_set_initial_value_;
 
-  static base::Optional<double> animation_duration_for_testing_;
+  static absl::optional<double> animation_duration_for_testing_;
+
+  Target* target_ = nullptr;
 };
 
 }  // namespace cc

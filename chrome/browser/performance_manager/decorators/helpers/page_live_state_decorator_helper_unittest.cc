@@ -4,12 +4,15 @@
 
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
-#include "components/performance_manager/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/page_live_state_decorator.h"
+#include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/test_support/decorators_utils.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +32,7 @@ class PageLiveStateDecoratorHelperTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    perf_man_ = PerformanceManagerImpl::Create(base::DoNothing());
-    registry_ = PerformanceManagerRegistry::Create();
+    pm_harness_.SetUp();
     helper_ = std::make_unique<PageLiveStateDecoratorHelper>();
     indicator_ = MediaCaptureDevicesDispatcher::GetInstance()
                      ->GetMediaStreamCaptureIndicator();
@@ -41,59 +43,56 @@ class PageLiveStateDecoratorHelperTest
   void TearDown() override {
     DeleteContents();
     helper_.reset();
-    if (registry_) {
-      registry_->TearDown();
-      registry_.reset();
-    }
-    // Have the performance manager destroy itself.
     indicator_.reset();
-    PerformanceManagerImpl::Destroy(std::move(perf_man_));
-    task_environment()->RunUntilIdle();
-
+    pm_harness_.TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  std::unique_ptr<content::WebContents> CreateTestWebContents() {
-    std::unique_ptr<content::WebContents> contents =
-        ChromeRenderViewHostTestHarness::CreateTestWebContents();
-    registry_->CreatePageNodeForWebContents(contents.get());
-    return contents;
   }
 
   MediaStreamCaptureIndicator* indicator() { return indicator_.get(); }
 
   void EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType stream_type,
+      absl::optional<media::mojom::DisplayMediaInformationPtr>
+          display_media_info,
       bool (PageLiveStateDecorator::Data::*pm_getter)() const);
 
   // Forces deletion of the PageLiveStateDecoratorHelper.
   void ResetHelper() { helper_.reset(); }
 
  private:
+  PerformanceManagerTestHarnessHelper pm_harness_;
   scoped_refptr<MediaStreamCaptureIndicator> indicator_;
-  std::unique_ptr<PerformanceManagerImpl> perf_man_;
-  std::unique_ptr<PerformanceManagerRegistry> registry_;
   std::unique_ptr<PageLiveStateDecoratorHelper> helper_;
 };
 
 void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
     blink::mojom::MediaStreamType stream_type,
+    absl::optional<media::mojom::DisplayMediaInformationPtr> display_media_info,
     bool (PageLiveStateDecorator::Data::*pm_getter)() const) {
   // By default all properties are set to false.
-  TestPageLiveStatePropertyOnPMSequence(web_contents(), pm_getter, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, false);
 
   // Create the fake stream device and start it, this should set the property to
   // true.
-  blink::MediaStreamDevices devices{
-      blink::MediaStreamDevice(stream_type, "fake_device", "fake_device")};
+  blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
+  device.display_media_info = std::move(display_media_info);
+
   std::unique_ptr<content::MediaStreamUI> ui =
-      indicator()->RegisterMediaStream(web_contents(), devices);
-  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback());
-  TestPageLiveStatePropertyOnPMSequence(web_contents(), pm_getter, true);
+      indicator()->RegisterMediaStream(web_contents(), {device});
+  ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, true);
 
   // Switch back to the default state.
   ui.reset();
-  TestPageLiveStatePropertyOnPMSequence(web_contents(), pm_getter, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, false);
 }
 
 }  // namespace
@@ -101,40 +100,54 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingVideoChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingVideo);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingAudioChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingAudio);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsBeingMirroredChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsBeingMirrored);
 }
 
-TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDesktopChanged) {
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingWindowChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      &PageLiveStateDecorator::Data::IsCapturingDesktop);
+      /*display_media_info=*/absl::nullopt,
+      &PageLiveStateDecorator::Data::IsCapturingWindow);
+}
+
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDisplayChanged) {
+  EndToEndStreamPropertyTest(
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::MONITOR,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr),
+      &PageLiveStateDecorator::Data::IsCapturingDisplay);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToBluetoothDevice) {
-  TestPageLiveStatePropertyOnPMSequence(
-      web_contents(),
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, false);
   content::WebContentsTester::For(web_contents())
       ->TestIncrementBluetoothConnectedDeviceCount();
-  TestPageLiveStatePropertyOnPMSequence(
-      web_contents(),
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, true);
   content::WebContentsTester::For(web_contents())
       ->TestDecrementBluetoothConnectedDeviceCount();
-  TestPageLiveStatePropertyOnPMSequence(
-      web_contents(),
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, false);
 }
 

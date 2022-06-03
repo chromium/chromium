@@ -1,4 +1,4 @@
 Check that the WebAuthn command addVirtualAuthenticator sets user verification
-NotAllowedError: The operation either timed out or was not allowed. See: https://w3c.github.io/webauthn/#sec-assertion-privacy.
+NotAllowedError: The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.
 OK
 

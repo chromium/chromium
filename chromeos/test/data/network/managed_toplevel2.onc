@@ -39,6 +39,7 @@
         "OpenVPN": {
           "AuthRetry": "interact",
           "CompLZO": "true",
+          "CompressionAlgorithm": "FramingOnly",
           "KeyDirection": "1",
           "Port": 543,
           "Proto": "udp",

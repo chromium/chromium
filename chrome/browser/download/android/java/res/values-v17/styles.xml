@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Download Dialogs Styles -->
+    <style name="TextAppearance.DownloadDialogTitle" parent="TextAppearance.AlertDialogTitleStyle">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="Theme.DownloadDateTimePickerDialog" parent="Theme.Chromium.ModalDialog">
+        <item name="android:windowMinWidthMajor">@null</item>
+        <item name="android:windowMinWidthMinor">@null</item>
+    </style>
+</resources>

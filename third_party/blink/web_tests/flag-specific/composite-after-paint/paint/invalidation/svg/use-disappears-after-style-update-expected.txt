@@ -5,22 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGContainer use",
-          "rect": [50, 10, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='rect'",
-          "rect": [10, 10, 30, 30],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect id='rect'",
-          "rect": [10, 10, 30, 30],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [50, 10, 30, 30],
+        [10, 10, 30, 30]
       ]
     }
   ]

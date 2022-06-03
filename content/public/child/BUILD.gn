@@ -2,19 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 # See //content/BUILD.gn for how this works.
 group("child") {
   if (is_component_build) {
-    public_deps = [
-      "//content",
-    ]
+    public_deps = [ "//content" ]
   } else {
-    public_deps = [
-      ":child_sources",
-    ]
+    public_deps = [ ":child_sources" ]
     if (!is_android) {
       public_deps += [ "//content/gpu" ]
     }
@@ -24,15 +19,18 @@ group("child") {
   }
 }
 
-jumbo_source_set("child_sources") {
+source_set("child_sources") {
   # External code should depend in via ":child" above.
   visibility = [ "//content/*" ]
 
   sources = [
     "child_thread.h",
-    "dwrite_font_proxy_init_win.h",
     "image_decoder_utils.h",
   ]
+
+  if (is_win) {
+    sources += [ "dwrite_font_proxy_init_win.h" ]
+  }
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",

@@ -1,0 +1,83 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/chrome_common_shared_library.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorUI.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    ":logging_java",
+    "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_fido_java",
+    "$google_play_services_package:google_play_services_tasks_java",
+    "$google_play_services_package:google_play_services_vision_common_java",
+    "$google_play_services_package:google_play_services_vision_java",
+    "//base:base_java",
+    "//chrome/browser/webauthn/android:java_resources",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.webauth.authenticator"
+}
+
+android_library("logging_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/webauth/authenticator/CableEventLogger.java" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
+    "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
+  ]
+  split_name = "cablev2_authenticator"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-night/ble.xml",
+    "java/res/drawable/ble.xml",
+    "java/res/drawable/usb_conn_disconnect.xml",
+    "java/res/layout-sw600dp/cablev2_ble_enable.xml",
+    "java/res/layout/cablev2_ble_enable.xml",
+    "java/res/layout/cablev2_qr.xml",
+    "java/res/layout/cablev2_usb_attached.xml",
+    "java/res/values/attrs.xml",
+  ]
+  deps = [ "//chrome/android:chrome_app_java_resources" ]
+}
+
+source_set("native") {
+  sources = [ "native/cablev2_authenticator_android.cc" ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/cbor",
+    "//components/device_event_log",
+    "//content/public/browser",
+    "//crypto",
+    "//device/fido",
+    "//device/fido:cablev2_authenticator",
+    "//device/fido:cablev2_registration",
+    "//third_party/boringssl",
+  ]
+
+  # caBLE v2 authenticator native entrypoints belong in the partition.
+  if (use_native_partitions) {
+    cflags = [ "-fsymbol-partition=cablev2_authenticator_partition" ]
+  }
+}

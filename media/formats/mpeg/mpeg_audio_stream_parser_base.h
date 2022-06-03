@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -31,6 +30,11 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   MPEGAudioStreamParserBase(uint32_t start_code_mask,
                             AudioCodec audio_codec,
                             int codec_delay);
+
+  MPEGAudioStreamParserBase(const MPEGAudioStreamParserBase&) = delete;
+  MPEGAudioStreamParserBase& operator=(const MPEGAudioStreamParserBase&) =
+      delete;
+
   ~MPEGAudioStreamParserBase() override;
 
   // StreamParser implementation.
@@ -84,7 +88,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
                                ChannelLayout* channel_layout,
                                int* sample_count,
                                bool* metadata_frame,
-                               std::vector<uint8_t>* extra_data) const = 0;
+                               std::vector<uint8_t>* extra_data) = 0;
 
   MediaLog* media_log() const { return media_log_; }
 
@@ -125,7 +129,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   //       next start code..
   //   0 : If a valid start code was not found and more data is needed.
   // < 0 : An error was encountered during parsing.
-  int FindNextValidStartCode(const uint8_t* data, int size) const;
+  int FindNextValidStartCode(const uint8_t* data, int size);
 
   // Sends the buffers in |buffers| to |new_buffers_cb_| and then clears
   // |buffers|.
@@ -152,8 +156,6 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   const uint32_t start_code_mask_;
   const AudioCodec audio_codec_;
   const int codec_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(MPEGAudioStreamParserBase);
 };
 
 }  // namespace media

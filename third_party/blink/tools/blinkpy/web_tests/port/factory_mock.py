@@ -6,7 +6,6 @@ from blinkpy.web_tests.port.test import TestPort
 
 
 class MockPortFactory(object):
-
     def __init__(self, host):
         self._host = host
 
@@ -14,5 +13,6 @@ class MockPortFactory(object):
         return TestPort(port_name=port_name, host=self._host)
 
     def get_from_builder_name(self, builder_name):
-        port_name = self._host.builders.port_name_for_builder_name(builder_name)
+        port_name = self._host.builders.port_name_for_builder_name(
+            builder_name)
         return self.get(port_name)

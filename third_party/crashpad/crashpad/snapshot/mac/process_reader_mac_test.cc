@@ -14,22 +14,25 @@
 
 #include "snapshot/mac/process_reader_mac.h"
 
-#include <AvailabilityMacros.h>
-#include <errno.h>
+#include <Availability.h>
 #include <OpenCL/opencl.h>
+#include <dlfcn.h>
+#include <errno.h>
 #include <mach-o/dyld.h>
 #include <mach-o/dyld_images.h>
 #include <mach/mach.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <map>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -79,6 +82,9 @@ class ProcessReaderChild final : public MachMultiprocess {
  public:
   ProcessReaderChild() : MachMultiprocess() {}
 
+  ProcessReaderChild(const ProcessReaderChild&) = delete;
+  ProcessReaderChild& operator=(const ProcessReaderChild&) = delete;
+
   ~ProcessReaderChild() {}
 
  private:
@@ -115,8 +121,6 @@ class ProcessReaderChild final : public MachMultiprocess {
     // the pipe.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderChild);
 };
 
 TEST(ProcessReaderMac, ChildBasic) {
@@ -162,6 +166,9 @@ class TestThreadPool {
   };
 
   TestThreadPool() : thread_infos_() {}
+
+  TestThreadPool(const TestThreadPool&) = delete;
+  TestThreadPool& operator=(const TestThreadPool&) = delete;
 
   // Resumes suspended threads, signals each thread’s exit semaphore asking it
   // to exit, and joins each thread, blocking until they have all exited.
@@ -286,8 +293,6 @@ class TestThreadPool {
   // This is a vector of pointers because the address of a ThreadInfo object is
   // passed to each thread’s ThreadMain(), so they cannot move around in memory.
   std::vector<std::unique_ptr<ThreadInfo>> thread_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThreadPool);
 };
 
 using ThreadMap = std::map<uint64_t, TestThreadPool::ThreadExpectation>;
@@ -429,6 +434,10 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
   explicit ProcessReaderThreadedChild(size_t thread_count)
       : MachMultiprocess(), thread_count_(thread_count) {}
 
+  ProcessReaderThreadedChild(const ProcessReaderThreadedChild&) = delete;
+  ProcessReaderThreadedChild& operator=(const ProcessReaderThreadedChild&) =
+      delete;
+
   ~ProcessReaderThreadedChild() {}
 
  private:
@@ -495,8 +504,7 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
     // Write an entry for everything in the thread pool.
     for (size_t thread_index = 0; thread_index < thread_count_;
          ++thread_index) {
-      uint64_t thread_id =
-          thread_pool.GetThreadInfo(thread_index, &expectation);
+      thread_id = thread_pool.GetThreadInfo(thread_index, &expectation);
 
       CheckedWriteFile(write_handle, &thread_id, sizeof(thread_id));
       CheckedWriteFile(write_handle,
@@ -513,8 +521,6 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
   }
 
   size_t thread_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderThreadedChild);
 };
 
 TEST(ProcessReaderMac, ChildOneThread) {
@@ -528,6 +534,75 @@ TEST(ProcessReaderMac, ChildSeveralThreads) {
   constexpr size_t kChildThreads = 64;
   ProcessReaderThreadedChild process_reader_threaded_child(kChildThreads);
   process_reader_threaded_child.Run();
+}
+
+template <typename T>
+T GetDyldFunction(const char* symbol) {
+  static void* dl_handle = []() -> void* {
+    Dl_info dl_info;
+    if (!dladdr(reinterpret_cast<void*>(dlopen), &dl_info)) {
+      LOG(ERROR) << "dladdr: failed";
+      return nullptr;
+    }
+
+    void* dl_handle =
+        dlopen(dl_info.dli_fname, RTLD_LAZY | RTLD_LOCAL | RTLD_NOLOAD);
+    DCHECK(dl_handle) << "dlopen: " << dlerror();
+
+    return dl_handle;
+  }();
+
+  if (!dl_handle) {
+    return nullptr;
+  }
+
+  return reinterpret_cast<T>(dlsym(dl_handle, symbol));
+}
+
+void VerifyImageExistenceAndTimestamp(const char* path, time_t timestamp) {
+  const char* stat_path;
+  bool timestamp_may_be_0;
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_16
+  static auto _dyld_shared_cache_contains_path =
+      GetDyldFunction<bool (*)(const char*)>(
+          "_dyld_shared_cache_contains_path");
+#endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+  if (_dyld_shared_cache_contains_path &&
+      _dyld_shared_cache_contains_path(path)) {
+#pragma clang diagnostic pop
+    // The timestamp will either match the timestamp of the dyld_shared_cache
+    // file in use, or be 0.
+    static const char* dyld_shared_cache_file_path = []() -> const char* {
+      auto dyld_shared_cache_file_path_f =
+          GetDyldFunction<const char* (*)()>("dyld_shared_cache_file_path");
+
+      // dyld_shared_cache_file_path should always be present if
+      // _dyld_shared_cache_contains_path is.
+      DCHECK(dyld_shared_cache_file_path_f);
+
+      const char* dyld_shared_cache_file_path = dyld_shared_cache_file_path_f();
+      DCHECK(dyld_shared_cache_file_path);
+
+      return dyld_shared_cache_file_path;
+    }();
+
+    stat_path = dyld_shared_cache_file_path;
+    timestamp_may_be_0 = true;
+  } else {
+    stat_path = path;
+    timestamp_may_be_0 = false;
+  }
+
+  struct stat stat_buf;
+  int rv = stat(stat_path, &stat_buf);
+  EXPECT_EQ(rv, 0) << ErrnoMessage("stat");
+  if (rv == 0 && (!timestamp_may_be_0 || timestamp != 0)) {
+    EXPECT_EQ(timestamp, stat_buf.st_mtime);
+  }
 }
 
 // cl_kernels images (OpenCL kernels) are weird. They’re not ld output and don’t
@@ -545,7 +620,13 @@ TEST(ProcessReaderMac, ChildSeveralThreads) {
 class ScopedOpenCLNoOpKernel {
  public:
   ScopedOpenCLNoOpKernel()
-      : context_(nullptr), program_(nullptr), kernel_(nullptr) {}
+      : context_(nullptr),
+        program_(nullptr),
+        kernel_(nullptr),
+        success_(false) {}
+
+  ScopedOpenCLNoOpKernel(const ScopedOpenCLNoOpKernel&) = delete;
+  ScopedOpenCLNoOpKernel& operator=(const ScopedOpenCLNoOpKernel&) = delete;
 
   ~ScopedOpenCLNoOpKernel() {
     if (kernel_) {
@@ -569,12 +650,12 @@ class ScopedOpenCLNoOpKernel {
     cl_int rv = clGetPlatformIDs(1, &platform_id, nullptr);
     ASSERT_EQ(rv, CL_SUCCESS) << "clGetPlatformIDs";
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_10 && \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_10
-// cl_device_id is really available in OpenCL.framework back to 10.5, but in
-// the 10.10 SDK and later, OpenCL.framework includes <OpenGL/CGLDevice.h>,
-// which has its own cl_device_id that was introduced in 10.10. That
-// triggers erroneous availability warnings.
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_10 && \
+    __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_10
+    // cl_device_id is really available in OpenCL.framework back to 10.5, but in
+    // the 10.10 SDK and later, OpenCL.framework includes <OpenGL/CGLDevice.h>,
+    // which has its own cl_device_id that was introduced in 10.10. That
+    // triggers erroneous availability warnings.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 #define DISABLED_WUNGUARDED_AVAILABILITY
@@ -589,6 +670,14 @@ class ScopedOpenCLNoOpKernel {
 #endif  // DISABLED_WUNGUARDED_AVAILABILITY
     rv =
         clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, &device_id, nullptr);
+#if defined(ARCH_CPU_ARM64)
+    // CL_DEVICE_TYPE_CPU doesn’t seem to work at all on arm64, meaning that
+    // these weird OpenCL modules probably don’t show up there at all. Keep this
+    // test even on arm64 in case this ever does start working.
+    if (rv == CL_INVALID_VALUE) {
+      return;
+    }
+#endif  // ARCH_CPU_ARM64
     ASSERT_EQ(rv, CL_SUCCESS) << "clGetDeviceIDs";
 
     context_ = clCreateContext(nullptr, 1, &device_id, nullptr, nullptr, &rv);
@@ -626,28 +715,30 @@ class ScopedOpenCLNoOpKernel {
 
     kernel_ = clCreateKernel(program_, "NoOp", &rv);
     ASSERT_EQ(rv, CL_SUCCESS) << "clCreateKernel";
+
+    success_ = true;
   }
+
+  bool success() const { return success_; }
 
  private:
   cl_context context_;
   cl_program program_;
   cl_kernel kernel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOpenCLNoOpKernel);
+  bool success_;
 };
 
 // Although Mac OS X 10.6 has OpenCL and can compile and execute OpenCL code,
 // OpenCL kernels that run on the CPU do not result in cl_kernels images
 // appearing on that OS version.
 bool ExpectCLKernels() {
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_7
-  return true;
-#else
-  return MacOSXMinorVersion() >= 7;
-#endif
+  return __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_7 ||
+         MacOSVersionNumber() >= 10'07'00;
 }
 
-TEST(ProcessReaderMac, SelfModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_SelfModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
@@ -695,16 +786,12 @@ TEST(ProcessReaderMac, SelfModules) {
       found_cl_kernels = true;
     } else {
       // Hope that the module didn’t change on disk.
-      struct stat stat_buf;
-      int rv = stat(dyld_image_name, &stat_buf);
-      EXPECT_EQ(rv, 0) << ErrnoMessage("stat");
-      if (rv == 0) {
-        EXPECT_EQ(modules[index].timestamp, stat_buf.st_mtime);
-      }
+      VerifyImageExistenceAndTimestamp(dyld_image_name,
+                                       modules[index].timestamp);
     }
   }
 
-  EXPECT_EQ(found_cl_kernels, ExpectCLKernels());
+  EXPECT_EQ(found_cl_kernels, ExpectCLKernels() && ensure_cl_kernels.success());
 
   size_t index = modules.size() - 1;
   EXPECT_EQ(modules[index].name, kDyldPath);
@@ -724,7 +811,13 @@ TEST(ProcessReaderMac, SelfModules) {
 
 class ProcessReaderModulesChild final : public MachMultiprocess {
  public:
-  ProcessReaderModulesChild() : MachMultiprocess() {}
+  explicit ProcessReaderModulesChild(bool ensure_cl_kernels_success)
+      : MachMultiprocess(),
+        ensure_cl_kernels_success_(ensure_cl_kernels_success) {}
+
+  ProcessReaderModulesChild(const ProcessReaderModulesChild&) = delete;
+  ProcessReaderModulesChild& operator=(const ProcessReaderModulesChild&) =
+      delete;
 
   ~ProcessReaderModulesChild() {}
 
@@ -785,16 +878,13 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
         found_cl_kernels = true;
       } else {
         // Hope that the module didn’t change on disk.
-        struct stat stat_buf;
-        int rv = stat(expect_name.c_str(), &stat_buf);
-        EXPECT_EQ(rv, 0) << ErrnoMessage("stat");
-        if (rv == 0) {
-          EXPECT_EQ(modules[index].timestamp, stat_buf.st_mtime);
-        }
+        VerifyImageExistenceAndTimestamp(expect_name.c_str(),
+                                         modules[index].timestamp);
       }
     }
 
-    EXPECT_EQ(found_cl_kernels, ExpectCLKernels());
+    EXPECT_EQ(found_cl_kernels,
+              ExpectCLKernels() && ensure_cl_kernels_success_);
   }
 
   void MachMultiprocessChild() override {
@@ -844,14 +934,17 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
 
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderModulesChild);
+  bool ensure_cl_kernels_success_;
 };
 
-TEST(ProcessReaderMac, ChildModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_ChildModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
-  ProcessReaderModulesChild process_reader_modules_child;
+  ProcessReaderModulesChild process_reader_modules_child(
+      ensure_cl_kernels.success());
   process_reader_modules_child.Run();
 }
 

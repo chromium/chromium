@@ -22,6 +22,10 @@ extern const char kEventFilterServiceTypeKey[];
 class EventMatcher {
  public:
   EventMatcher(std::unique_ptr<base::DictionaryValue> filter, int routing_id);
+
+  EventMatcher(const EventMatcher&) = delete;
+  EventMatcher& operator=(const EventMatcher&) = delete;
+
   ~EventMatcher();
 
   // Returns true if |event_info| satisfies this matcher's criteria, not taking
@@ -57,8 +61,6 @@ class EventMatcher {
   const std::unique_ptr<base::DictionaryValue> filter_;
 
   const int routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMatcher);
 };
 
 }  // namespace extensions

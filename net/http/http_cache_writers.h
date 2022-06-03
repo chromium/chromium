@@ -12,10 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_response_info.h"
 
 namespace net {
 
 class HttpResponseInfo;
+class IOBuffer;
 class PartialData;
 
 // If multiple HttpCache::Transactions are accessing the same cache entry
@@ -53,6 +55,10 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   // |cache| and |entry| must outlive this object.
   Writers(HttpCache* cache, HttpCache::ActiveEntry* entry);
+
+  Writers(const Writers&) = delete;
+  Writers& operator=(const Writers&) = delete;
+
   ~Writers();
 
   // Retrieves data from the network transaction associated with the Writers
@@ -124,6 +130,8 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   const HttpTransaction* network_transaction() const {
     return network_transaction_.get();
   }
+
+  void CloseConnectionOnDestruction();
 
   // Returns the load state of the |network_transaction_| if present else
   // returns LOAD_STATE_IDLE.
@@ -233,9 +241,9 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // Owner of |this|.
   ActiveEntry* entry_ = nullptr;
 
-  std::unique_ptr<HttpTransaction> network_transaction_ = nullptr;
+  std::unique_ptr<HttpTransaction> network_transaction_;
 
-  scoped_refptr<IOBuffer> read_buf_ = nullptr;
+  scoped_refptr<IOBuffer> read_buf_;
 
   int io_buf_len_ = 0;
   int write_len_ = 0;
@@ -284,7 +292,6 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   base::OnceClosure cache_callback_;  // Callback for cache_.
 
   base::WeakPtrFactory<Writers> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Writers);
 };
 
 }  // namespace net

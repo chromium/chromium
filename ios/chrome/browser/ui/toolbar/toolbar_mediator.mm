@@ -5,19 +5,16 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/scoped_observer.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -27,42 +24,31 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarMediator ()<BookmarkModelBridgeObserver,
-                              CRWWebStateObserver,
-                              SearchEngineObserving,
-                              WebStateListObserving>
+@interface ToolbarMediator () <CRWWebStateObserver,
+                               OverlayPresenterObserving,
+                               WebStateListObserving>
 
 // The current web state associated with the toolbar.
 @property(nonatomic, assign) web::WebState* webState;
 
-// The icon for the search button.
-@property(nonatomic, strong) UIImage* searchIcon;
-
-// Whether the associated toolbar is in dark mode.
-@property(nonatomic, assign) BOOL toolbarDarkMode;
+// Whether an overlay is currently presented over the web content area.
+@property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)
+    BOOL webContentAreaShowingOverlay;
 
 @end
 
 @implementation ToolbarMediator {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  // Bridge to register for bookmark changes.
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _bookmarkModelBridge;
-  // Listen for default search engine changes.
-  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
 }
-
-@synthesize bookmarkModel = _bookmarkModel;
-@synthesize consumer = _consumer;
-@synthesize webState = _webState;
-@synthesize webStateList = _webStateList;
-@synthesize searchIcon = _searchIcon;
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
   }
   return self;
 }
@@ -76,10 +62,11 @@
 - (void)updateConsumerForWebState:(web::WebState*)webState {
   [self updateNavigationBackAndForwardStateForWebState:webState];
   [self updateShareMenuForWebState:webState];
-  [self updateBookmarksForWebState:webState];
 }
 
 - (void)disconnect {
+  self.webContentAreaOverlayPresenter = nullptr;
+
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver.reset();
@@ -91,8 +78,6 @@
     _webStateObserver.reset();
     _webState = nullptr;
   }
-  _bookmarkModelBridge.reset();
-  _searchEngineObserver.reset();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -121,7 +106,7 @@
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  [self.consumer setLoadingState:self.webState->IsLoading()];
+  [self updateConsumer];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -168,7 +153,7 @@
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
-                     reason:(int)reason {
+                     reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(_webStateList, webStateList);
   self.webState = newWebState;
 }
@@ -180,20 +165,6 @@
     return;
 
   _incognito = incognito;
-  if (self.searchIcon) {
-    // If the searchEngine was already initialized, ask for the new image.
-    [self updateSearchIcon];
-  }
-}
-
-- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
-  _templateURLService = templateURLService;
-  if (templateURLService) {
-    // Listen for default search engine changes.
-    _searchEngineObserver =
-        std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
-    templateURLService->Load();
-  }
 }
 
 - (void)setWebState:(web::WebState*)webState {
@@ -214,9 +185,7 @@
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
   _consumer = consumer;
-  [_consumer setVoiceSearchEnabled:ios::GetChromeBrowserProvider()
-                                       ->GetVoiceSearchProvider()
-                                       ->IsVoiceSearchEnabled()];
+  [_consumer setVoiceSearchEnabled:ios::provider::IsVoiceSearchEnabled()];
   if (self.webState) {
     [self updateConsumer];
   }
@@ -244,19 +213,25 @@
   }
 }
 
-- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
-  _bookmarkModel = bookmarkModel;
-  if (self.webState && self.consumer) {
-    [self updateConsumer];
-  }
-  _bookmarkModelBridge.reset();
-  if (bookmarkModel) {
-    _bookmarkModelBridge =
-        std::make_unique<bookmarks::BookmarkModelBridge>(self, bookmarkModel);
-  }
+- (void)setWebContentAreaOverlayPresenter:
+    (OverlayPresenter*)webContentAreaOverlayPresenter {
+  if (_webContentAreaOverlayPresenter)
+    _webContentAreaOverlayPresenter->RemoveObserver(_overlayObserver.get());
+
+  _webContentAreaOverlayPresenter = webContentAreaOverlayPresenter;
+
+  if (_webContentAreaOverlayPresenter)
+    _webContentAreaOverlayPresenter->AddObserver(_overlayObserver.get());
 }
 
-#pragma mark - Helper methods
+- (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
+  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
+    return;
+  _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
+  [self updateShareMenuForWebState:self.webState];
+}
+
+#pragma mark - Update helper methods
 
 // Updates the consumer to match the current WebState.
 - (void)updateConsumer {
@@ -269,7 +244,10 @@
   // Never show the loading UI for an NTP.
   BOOL isLoading = self.webState->IsLoading() && !isNTP;
   [self.consumer setLoadingState:isLoading];
-  [self updateBookmarksForWebState:self.webState];
+  if (isLoading) {
+    [self.consumer
+        setLoadingProgressFraction:self.webState->GetLoadingProgress()];
+  }
   [self updateShareMenuForWebState:self.webState];
 }
 
@@ -282,89 +260,30 @@
   [self.consumer setCanGoBack:webState->GetNavigationManager()->CanGoBack()];
 }
 
-// Updates the bookmark state of the consumer.
-- (void)updateBookmarksForWebState:(web::WebState*)webState {
-  if (self.webState) {
-    GURL URL = webState->GetVisibleURL();
-    [self.consumer setPageBookmarked:self.bookmarkModel &&
-                                     self.bookmarkModel->IsBookmarked(URL)];
-  }
-}
-
 // Updates the Share Menu button of the consumer.
 - (void)updateShareMenuForWebState:(web::WebState*)webState {
+  if (!self.webState)
+    return;
   const GURL& URL = webState->GetLastCommittedURL();
   BOOL shareMenuEnabled =
       URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL);
-  [self.consumer setShareMenuEnabled:shareMenuEnabled];
+  // Page sharing requires JavaScript execution, which is paused while overlays
+  // are displayed over the web content area.
+  [self.consumer setShareMenuEnabled:shareMenuEnabled &&
+                                     !self.webContentAreaShowingOverlay];
 }
 
-// Updates the search icon in the toolbar. This depends on both the current
-// search engine as well as the dark mode status of the associated toolbar.
-- (void)updateSearchIcon {
-  SearchEngineIcon searchEngineIcon = SEARCH_ENGINE_ICON_OTHER;
-  if (self.templateURLService &&
-      self.templateURLService->GetDefaultSearchProvider() &&
-      self.templateURLService->GetDefaultSearchProvider()->GetEngineType(
-          self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE) {
-    searchEngineIcon = SEARCH_ENGINE_ICON_GOOGLE_SEARCH;
-  }
-  BOOL useDarkIcon = self.incognito || self.toolbarDarkMode;
-  UIImage* searchIcon =
-      ios::GetChromeBrowserProvider()
-          ->GetBrandedImageProvider()
-          ->GetToolbarSearchIcon(searchEngineIcon, useDarkIcon);
-  DCHECK(searchIcon);
-  [self.consumer setSearchIcon:searchIcon];
+#pragma mark - OverlayPresesenterObserving
+
+- (void)overlayPresenter:(OverlayPresenter*)presenter
+    willShowOverlayForRequest:(OverlayRequest*)request
+          initialPresentation:(BOOL)initialPresentation {
+  self.webContentAreaShowingOverlay = YES;
 }
 
-#pragma mark - BookmarkModelBridgeObserver
-
-// If an added or removed bookmark is the same as the current url, update the
-// toolbar so the star highlight is kept in sync.
-- (void)bookmarkNodeChildrenChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-// If all bookmarks are removed, update the toolbar so the star highlight is
-// kept in sync.
-- (void)bookmarkModelRemovedAllNodes {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-// In case we are on a bookmarked page before the model is loaded.
-- (void)bookmarkModelLoaded {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
-            toParent:(const bookmarks::BookmarkNode*)newParent {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
-                 fromFolder:(const bookmarks::BookmarkNode*)folder {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-
-#pragma mark - SearchEngineObserving
-
-- (void)searchEngineChanged {
-  [self updateSearchIcon];
-}
-
-#pragma mark - AdaptiveToolbarViewControllerDelegate
-
-- (void)userInterfaceStyleChangedForViewController:
-    (AdaptiveToolbarViewController*)viewController {
-  self.toolbarDarkMode = viewController.traitCollection.userInterfaceStyle ==
-                         UIUserInterfaceStyleDark;
-  [self updateSearchIcon];
+- (void)overlayPresenter:(OverlayPresenter*)presenter
+    didHideOverlayForRequest:(OverlayRequest*)request {
+  self.webContentAreaShowingOverlay = NO;
 }
 
 @end

@@ -19,6 +19,9 @@ class MediaTaskRunner
  public:
   MediaTaskRunner();
 
+  MediaTaskRunner(const MediaTaskRunner&) = delete;
+  MediaTaskRunner& operator=(const MediaTaskRunner&) = delete;
+
   // Post a task with the given media |timestamp|. If |timestamp| is equal to
   // |kNoTimestamp|, the task is scheduled right away.
   // How the media timestamp is used to schedule the task is an implementation
@@ -26,15 +29,12 @@ class MediaTaskRunner
   // Returns true if the task may be run at some point in the future, and false
   // if the task definitely will not be run.
   virtual bool PostMediaTask(const base::Location& from_here,
-                             const base::Closure& task,
+                             base::OnceClosure task,
                              base::TimeDelta timestamp) = 0;
 
  protected:
   virtual ~MediaTaskRunner();
   friend class base::RefCountedThreadSafe<MediaTaskRunner>;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaTaskRunner);
 };
 
 }  // namespace media

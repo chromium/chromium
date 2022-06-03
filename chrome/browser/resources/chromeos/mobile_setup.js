@@ -48,7 +48,7 @@ cr.define('mobile', function() {
     STATE_ACTIVATING_: 'activating',
     STATE_CONNECTED_: 'connected',
 
-    initialize: function(frame_name, carrierPage) {
+    initialize(frame_name, carrierPage) {
       if (this.initialized_) {
         console.log('calling initialize() again?');
         return;
@@ -73,12 +73,12 @@ cr.define('mobile', function() {
       chrome.send('startActivation');
     },
 
-    startSpinner_: function() {
+    startSpinner_() {
       this.stopSpinner_();
       this.spinnerInt_ = setInterval(mobile.MobileSetup.drawProgress, 100);
     },
 
-    stopSpinner_: function() {
+    stopSpinner_() {
       if (this.spinnerInt_ != -1) {
         clearInterval(this.spinnerInt_);
         this.spinnerInt_ = -1;
@@ -93,7 +93,7 @@ cr.define('mobile', function() {
      * @param {!Object} evt Load abort event.
      * @private
      */
-    paymentLoadAborted_: function(paymentUrl, evt) {
+    paymentLoadAborted_(paymentUrl, evt) {
       if (!evt.isTopLevel ||
           new URL(evt.url).origin != new URL(paymentUrl).origin) {
         return;
@@ -109,7 +109,7 @@ cr.define('mobile', function() {
      * @param {!Object} evt Load commit event.
      * @private
      */
-    paymentLoadCommitted_: function(paymentUrl, evt) {
+    paymentLoadCommitted_(paymentUrl, evt) {
       if (!evt.isTopLevel ||
           new URL(evt.url).origin != new URL(paymentUrl).origin) {
         return;
@@ -134,7 +134,7 @@ cr.define('mobile', function() {
      * @param {string} paymentUrl The payment portal URL - used to restrict
      *     origins to which the message is sent.
      */
-    sendInitialMessage_: function(paymentUrl) {
+    sendInitialMessage_(paymentUrl) {
       $('portalFrameWebview')
           .contentWindow.postMessage({msg: 'loadedInWebview'}, paymentUrl);
     },
@@ -157,7 +157,7 @@ cr.define('mobile', function() {
      *     information that should be passed to the payment portal.
      * @private
      */
-    loadPaymentFrame_: function(deviceInfo) {
+    loadPaymentFrame_(deviceInfo) {
       if (!deviceInfo)
         return;
       this.deviceInfo_ = deviceInfo;
@@ -195,7 +195,7 @@ cr.define('mobile', function() {
       }
     },
 
-    onMessageReceived_: function(e) {
+    onMessageReceived_(e) {
       if (e.origin !=
           this.deviceInfo_.payment_url.substring(0, e.origin.length))
         return;
@@ -208,7 +208,7 @@ cr.define('mobile', function() {
       }
     },
 
-    changeState_: function(deviceInfo) {
+    changeState_(deviceInfo) {
       var newState = deviceInfo.state;
       if (this.state_ == newState)
         return;
@@ -346,7 +346,7 @@ cr.define('mobile', function() {
      * @param {string} url The URL to embed into the carrierPage webview.
      * @param
      */
-    setCarrierPage_: function(url) {
+    setCarrierPage_(url) {
       if (this.carrierPageUrl_ == url)
         return;
 
@@ -354,11 +354,11 @@ cr.define('mobile', function() {
       $('carrierPage').src = url;
     },
 
-    updateDeviceStatus_: function(deviceInfo) {
+    updateDeviceStatus_(deviceInfo) {
       this.changeState_(deviceInfo);
     },
 
-    sendDeviceInfo_: function() {
+    sendDeviceInfo_() {
       var msg = {
         type: 'deviceInfoMsg',
         domain: document.location,

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_recognizer.h"
@@ -19,6 +18,10 @@ namespace ui {
 class EVENTS_EXPORT GestureRecognizerImplMac : public GestureRecognizer {
  public:
   GestureRecognizerImplMac();
+
+  GestureRecognizerImplMac(const GestureRecognizerImplMac&) = delete;
+  GestureRecognizerImplMac& operator=(const GestureRecognizerImplMac&) = delete;
+
   ~GestureRecognizerImplMac() override;
 
  private:
@@ -27,7 +30,7 @@ class EVENTS_EXPORT GestureRecognizerImplMac : public GestureRecognizer {
                                     GestureConsumer* consumer) override;
   Gestures AckTouchEvent(uint32_t unique_event_id,
                          ui::EventResult result,
-                         bool is_source_touch_event_set_non_blocking,
+                         bool is_source_touch_event_set_blocking,
                          GestureConsumer* consumer) override;
   bool CleanupStateForConsumer(GestureConsumer* consumer) override;
   GestureConsumer* GetTouchLockedTarget(const TouchEvent& event) override;
@@ -50,8 +53,8 @@ class EVENTS_EXPORT GestureRecognizerImplMac : public GestureRecognizer {
   bool CancelActiveTouches(GestureConsumer* consumer) override;
   void AddGestureEventHelper(GestureEventHelper* helper) override;
   void RemoveGestureEventHelper(GestureEventHelper* helper) override;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerImplMac);
+  bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const override;
+  void SendSynthesizedEndEvents(GestureConsumer* consumer) override;
 };
 
 }  // namespace ui

@@ -5,7 +5,6 @@
 #include "components/offline_pages/core/background/reconcile_task.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/request_coordinator_event_logger.h"
 #include "components/offline_pages/core/background/request_notifier.h"

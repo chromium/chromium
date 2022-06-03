@@ -8,18 +8,20 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -27,34 +29,59 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_session_win.h"
+#include "remoting/host/host_config.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/switches.h"
+#include "remoting/host/win/etw_trace_consumer.h"
+#include "remoting/host/win/host_event_file_logger.h"
+#include "remoting/host/win/host_event_windows_event_logger.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/unprivileged_process_delegate.h"
 #include "remoting/host/win/worker_process_launcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::ScopedHandle;
-using base::TimeDelta;
 
 namespace {
 
-// Duplicates |key| and returns the value that can be sent over IPC.
-IPC::PlatformFileForTransit GetRegistryKeyForTransit(
+constexpr char kEtwTracingThreadName[] = "ETW Trace Consumer";
+
+// Duplicates |key| and returns a value that can be sent over IPC.
+base::win::ScopedHandle DuplicateRegistryKeyHandle(
     const base::win::RegKey& key) {
-  base::PlatformFile handle =
-      reinterpret_cast<base::PlatformFile>(key.Handle());
-  return IPC::GetPlatformFileForTransit(handle, false);
+  HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
+  BOOL result = ::DuplicateHandle(::GetCurrentProcess(),
+                                  reinterpret_cast<HANDLE>(key.Handle()),
+                                  ::GetCurrentProcess(), &duplicate_handle, 0,
+                                  FALSE, DUPLICATE_SAME_ACCESS);
+  if (!result || duplicate_handle == INVALID_HANDLE_VALUE) {
+    return base::win::ScopedHandle();
+  }
+  return base::win::ScopedHandle(duplicate_handle);
 }
+
+#if defined(OFFICIAL_BUILD)
+constexpr wchar_t kLoggingRegistryKeyName[] =
+    L"SOFTWARE\\Google\\Chrome Remote Desktop\\logging";
+#else
+constexpr wchar_t kLoggingRegistryKeyName[] = L"SOFTWARE\\Chromoting\\logging";
+#endif
+
+constexpr wchar_t kLogToFileRegistryValue[] = L"LogToFile";
+constexpr wchar_t kLogToEventLogRegistryValue[] = L"LogToEventLog";
 
 }  // namespace
 
@@ -62,25 +89,23 @@ namespace remoting {
 
 class WtsTerminalMonitor;
 
-// The command line parameters that should be copied from the service's command
-// line to the host process.
-const char kEnableVp9SwitchName[] = "enable-vp9";
-const char kEnableH264SwitchName[] = "enable-h264";
-const char* kCopiedSwitchNames[] = {switches::kV, switches::kVModule,
-                                    kEnableVp9SwitchName,
-                                    kEnableH264SwitchName};
+const char* kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
 
 class DaemonProcessWin : public DaemonProcess {
  public:
-  DaemonProcessWin(
-      scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-      const base::Closure& stopped_callback);
+  DaemonProcessWin(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
+                   scoped_refptr<AutoThreadTaskRunner> io_task_runner,
+                   base::OnceClosure stopped_callback);
+
+  DaemonProcessWin(const DaemonProcessWin&) = delete;
+  DaemonProcessWin& operator=(const DaemonProcessWin&) = delete;
+
   ~DaemonProcessWin() override;
 
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
   void OnPermanentError(int exit_code) override;
+  void OnWorkerProcessStopped() override;
 
   // DaemonProcess overrides.
   void SendToNetwork(IPC::Message* message) override;
@@ -88,6 +113,12 @@ class DaemonProcessWin : public DaemonProcess {
       int terminal_id,
       int session_id,
       const IPC::ChannelHandle& desktop_pipe) override;
+
+  // If event logging has been configured, creates an ETW trace consumer which
+  // listens for logged events from our host processes.  Tracing stops when
+  // |etw_trace_consumer_| is destroyed.  Logging destinations are configured
+  // via the registry.
+  void ConfigureHostLogging();
 
  protected:
   // DaemonProcess implementation.
@@ -97,12 +128,13 @@ class DaemonProcessWin : public DaemonProcess {
       bool virtual_terminal) override;
   void DoCrashNetworkProcess(const base::Location& location) override;
   void LaunchNetworkProcess() override;
+  void SendHostConfigToNetworkProcess(
+      const std::string& serialized_config) override;
 
   // Changes the service start type to 'manual'.
   void DisableAutoStart();
 
-  // Initializes the pairing registry on the host side by sending
-  // ChromotingDaemonNetworkMsg_InitializePairingRegistry message.
+  // Initializes the pairing registry on the host side.
   bool InitializePairingRegistry();
 
   // Opens the pairing registry keys.
@@ -122,19 +154,22 @@ class DaemonProcessWin : public DaemonProcess {
   base::win::RegKey pairing_registry_privileged_key_;
   base::win::RegKey pairing_registry_unprivileged_key_;
 
-  DISALLOW_COPY_AND_ASSIGN(DaemonProcessWin);
+  std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
+
+  mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
 };
 
 DaemonProcessWin::DaemonProcessWin(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    const base::Closure& stopped_callback)
-    : DaemonProcess(caller_task_runner, io_task_runner, stopped_callback),
+    base::OnceClosure stopped_callback)
+    : DaemonProcess(caller_task_runner,
+                    io_task_runner,
+                    std::move(stopped_callback)),
       ipc_support_(io_task_runner->task_runner(),
                    mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST) {}
 
-DaemonProcessWin::~DaemonProcessWin() {
-}
+DaemonProcessWin::~DaemonProcessWin() = default;
 
 void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
   // Obtain the handle of the network process.
@@ -143,6 +178,19 @@ void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
     CrashNetworkProcess(FROM_HERE);
     return;
   }
+
+  network_launcher_->GetRemoteAssociatedInterface(
+      remoting_host_control_.BindNewEndpointAndPassReceiver());
+  if (!remoting_host_control_.is_connected()) {
+    CrashNetworkProcess(FROM_HERE);
+    return;
+  }
+
+  // Typically the Daemon process is responsible for disconnecting the remote
+  // however in cases where the network process crashes, we want to ensure that
+  // |remoting_host_control_| is reset so it can be reused after the network
+  // process is relaunched.
+  remoting_host_control_.reset_on_disconnect();
 
   if (!InitializePairingRegistry()) {
     CrashNetworkProcess(FROM_HERE);
@@ -157,7 +205,7 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
          exit_code <= kMaxPermanentErrorExitCode);
 
   // Both kInvalidHostIdExitCode and kInvalidOauthCredentialsExitCode are
-  // errors then will never go away with the current config.
+  // errors that will never go away with the current config.
   // Disabling automatic service start until the host is re-enabled and config
   // updated.
   if (exit_code == kInvalidHostIdExitCode ||
@@ -166,6 +214,12 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
   }
 
   DaemonProcess::OnPermanentError(exit_code);
+}
+
+void DaemonProcessWin::OnWorkerProcessStopped() {
+  // Reset our IPC remote so it's ready to re-init if the network process is
+  // re-launched.
+  remoting_host_control_.reset();
 }
 
 void DaemonProcessWin::SendToNetwork(IPC::Message* message) {
@@ -224,16 +278,39 @@ void DaemonProcessWin::LaunchNetworkProcess() {
 
   std::unique_ptr<UnprivilegedProcessDelegate> delegate(
       new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));
-  network_launcher_.reset(new WorkerProcessLauncher(std::move(delegate), this));
+  network_launcher_ =
+      std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
+}
+
+void DaemonProcessWin::SendHostConfigToNetworkProcess(
+    const std::string& serialized_config) {
+  if (remoting_host_control_.is_bound()) {
+    LOG_IF(ERROR, !remoting_host_control_.is_connected())
+        << "IPC channel not connected. HostConfig message will be dropped.";
+
+    absl::optional<base::Value> config(HostConfigFromJson(serialized_config));
+    if (!config.has_value()) {
+      LOG(ERROR) << "Invalid host config, shutting down.";
+      OnPermanentError(kInvalidHostConfigurationExitCode);
+      return;
+    }
+
+    remoting_host_control_->ApplyHostConfig(std::move(config.value()));
+  }
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    const base::Closure& stopped_callback) {
-  std::unique_ptr<DaemonProcessWin> daemon_process(new DaemonProcessWin(
-      caller_task_runner, io_task_runner, stopped_callback));
+    base::OnceClosure stopped_callback) {
+  auto daemon_process = std::make_unique<DaemonProcessWin>(
+      caller_task_runner, io_task_runner, std::move(stopped_callback));
+
+  // Configure host logging first so we can capture subsequent events.
+  daemon_process->ConfigureHostLogging();
+
   daemon_process->Initialize();
+
   return std::move(daemon_process);
 }
 
@@ -279,19 +356,24 @@ bool DaemonProcessWin::InitializePairingRegistry() {
       return false;
   }
 
-  // Duplicate handles to the network process.
-  IPC::PlatformFileForTransit privileged_key = GetRegistryKeyForTransit(
-      pairing_registry_privileged_key_);
-  IPC::PlatformFileForTransit unprivileged_key = GetRegistryKeyForTransit(
-      pairing_registry_unprivileged_key_);
-  if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
-    return false;
-
   // Initialize the pairing registry in the network process. This has to be done
   // before the host configuration is sent, otherwise the host will not use
   // the passed handles.
-  SendToNetwork(new ChromotingDaemonNetworkMsg_InitializePairingRegistry(
-      privileged_key, unprivileged_key));
+
+  // Duplicate handles for the network process.
+  base::win::ScopedHandle privileged_key =
+      DuplicateRegistryKeyHandle(pairing_registry_privileged_key_);
+  base::win::ScopedHandle unprivileged_key =
+      DuplicateRegistryKeyHandle(pairing_registry_unprivileged_key_);
+  if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
+    return false;
+
+  if (!remoting_host_control_.is_bound())
+    return false;
+
+  remoting_host_control_->InitializePairingRegistry(
+      mojo::PlatformHandle(std::move(privileged_key)),
+      mojo::PlatformHandle(std::move(unprivileged_key)));
 
   return true;
 }
@@ -377,6 +459,63 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   pairing_registry_privileged_key_.Set(privileged.Take());
   pairing_registry_unprivileged_key_.Set(unprivileged.Take());
   return true;
+}
+
+void DaemonProcessWin::ConfigureHostLogging() {
+  DCHECK(!etw_trace_consumer_);
+
+  base::win::RegKey logging_reg_key;
+  LONG result = logging_reg_key.Open(HKEY_LOCAL_MACHINE,
+                                     kLoggingRegistryKeyName, KEY_READ);
+  if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(ERROR) << "Failed to open HKLM\\" << kLoggingRegistryKeyName;
+    return;
+  }
+
+  std::vector<std::unique_ptr<HostEventLogger>> loggers;
+
+  // Check to see if file logging has been enabled.
+  if (logging_reg_key.HasValue(kLogToFileRegistryValue)) {
+    DWORD enabled = 0;
+    result = logging_reg_key.ReadValueDW(kLogToFileRegistryValue, &enabled);
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
+                  << kLogToFileRegistryValue;
+    } else if (enabled) {
+      auto file_logger = HostEventFileLogger::Create();
+      if (file_logger) {
+        loggers.push_back(std::move(file_logger));
+      }
+    }
+  }
+
+  // Check to see if Windows event logging has been enabled.
+  if (logging_reg_key.HasValue(kLogToEventLogRegistryValue)) {
+    DWORD enabled = 0;
+    result = logging_reg_key.ReadValueDW(kLogToEventLogRegistryValue, &enabled);
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
+                  << kLogToEventLogRegistryValue;
+    } else if (enabled) {
+      auto event_logger = HostEventWindowsEventLogger::Create();
+      if (event_logger) {
+        loggers.push_back(std::move(event_logger));
+      }
+    }
+  }
+
+  if (loggers.empty()) {
+    VLOG(1) << "No host event loggers have been configured.";
+    return;
+  }
+
+  etw_trace_consumer_ = EtwTraceConsumer::Create(
+      AutoThread::CreateWithType(kEtwTracingThreadName, caller_task_runner(),
+                                 base::MessagePumpType::IO),
+      std::move(loggers));
 }
 
 }  // namespace remoting

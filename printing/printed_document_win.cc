@@ -4,7 +4,8 @@
 
 #include "printing/printed_document.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/strings/utf_string_conversions.h"
 #include "printing/metafile_skia.h"
 #include "printing/page_number.h"
 #include "printing/printed_page_win.h"
@@ -80,17 +81,18 @@ void PrintedDocument::RenderPrintedPage(
 }
 
 bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
-  if (context->NewPage() != PrintingContext::OK)
+  if (context->NewPage() != mojom::ResultCode::kSuccess)
     return false;
 
-  base::string16 device_name = immutable_.settings_->device_name();
+  std::wstring device_name =
+      base::UTF16ToWide(immutable_.settings_->device_name());
   {
     base::AutoLock lock(lock_);
     const MetafilePlayer* metafile = GetMetafile();
     static_cast<PrintingContextWin*>(context)->PrintDocument(
         device_name, *(static_cast<const MetafileSkia*>(metafile)));
   }
-  return context->PageDone() == PrintingContext::OK;
+  return context->PageDone() == mojom::ResultCode::kSuccess;
 }
 
 }  // namespace printing

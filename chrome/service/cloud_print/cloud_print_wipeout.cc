@@ -42,8 +42,7 @@ void CloudPrintWipeout::UnregisterNextPrinter() {
                                     printer_id,
                                     "connector_disabled");
   request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
-  request_->StartGetRequest(CloudPrintURLFetcher::REQUEST_UNREGISTER,
-                            url, this, kMaxWipeoutAttempts, std::string());
+  request_->StartGetRequest(url, this, kMaxWipeoutAttempts);
 }
 
 CloudPrintURLFetcher::ResponseAction CloudPrintWipeout::HandleJSONData(
@@ -66,8 +65,8 @@ CloudPrintURLFetcher::ResponseAction CloudPrintWipeout::OnRequestAuthError() {
   return CloudPrintURLFetcher::STOP_PROCESSING;
 }
 
-std::string CloudPrintWipeout::GetAuthHeader() {
-  return GetCloudPrintAuthHeader(auth_token_);
+std::string CloudPrintWipeout::GetAuthHeaderValue() {
+  return GetCloudPrintAuthHeaderValue(auth_token_);
 }
 
 }  // namespace cloud_print

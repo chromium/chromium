@@ -7,13 +7,8 @@
 
 #include "build/build_config.h"
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-
-#include "ui/base/ui_base_export.h"
-
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
 
 namespace base {
 class FilePath;
@@ -22,7 +17,7 @@ class FilePath;
 namespace ui {
 
 // Defines the interface to observe the status of file download.
-class UI_BASE_EXPORT DownloadFileObserver
+class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) DownloadFileObserver
     : public base::RefCountedThreadSafe<DownloadFileObserver> {
  public:
   virtual void OnDownloadCompleted(const base::FilePath& file_path) = 0;
@@ -34,7 +29,7 @@ class UI_BASE_EXPORT DownloadFileObserver
 };
 
 // Defines the interface to control how a file is downloaded.
-class UI_BASE_EXPORT DownloadFileProvider {
+class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) DownloadFileProvider {
  public:
   virtual ~DownloadFileProvider() = default;
 

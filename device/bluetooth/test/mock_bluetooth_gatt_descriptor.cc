@@ -15,11 +15,9 @@ MockBluetoothGattDescriptor::MockBluetoothGattDescriptor(
     MockBluetoothGattCharacteristic* characteristic,
     const std::string& identifier,
     const BluetoothUUID& uuid,
-    bool is_local,
     BluetoothRemoteGattCharacteristic::Permissions permissions) {
   ON_CALL(*this, GetIdentifier()).WillByDefault(Return(identifier));
   ON_CALL(*this, GetUUID()).WillByDefault(Return(uuid));
-  ON_CALL(*this, IsLocal()).WillByDefault(Return(is_local));
   ON_CALL(*this, GetValue())
       .WillByDefault(ReturnRefOfCopy(std::vector<uint8_t>()));
   ON_CALL(*this, GetCharacteristic()).WillByDefault(Return(characteristic));

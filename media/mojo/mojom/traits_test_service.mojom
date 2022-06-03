@@ -10,3 +10,10 @@ interface TraitsTestService {
   [Sync]
   EchoVideoFrame(VideoFrame? f) => (VideoFrame? pass);
 };
+
+// Test service to help with verifying VideoFrameMetadata traits.
+interface VideoFrameMetadataTraitsTestService {
+  // Serializes and deserializes VideoFrameMedata.
+  [Sync]
+  EchoVideoFrameMetadata(VideoFrameMetadata vfm) => (VideoFrameMetadata pass);
+};

@@ -46,7 +46,7 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
   // This method will succeed even if all devices are disabled.
   Microsoft::WRL::ComPtr<IMMDeviceCollection> collection;
   hr = enumerator->EnumAudioEndpoints(data_flow, DEVICE_STATE_ACTIVE,
-                                      collection.GetAddressOf());
+                                      &collection);
   if (FAILED(hr))
     return false;
 
@@ -64,7 +64,7 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
     // Retrieve unique name of endpoint device.
     // Example: "{0.0.1.00000000}.{8db6020f-18e3-4f25-b6f5-7726c9122574}".
     Microsoft::WRL::ComPtr<IMMDevice> audio_device;
-    hr = collection->Item(i, audio_device.GetAddressOf());
+    hr = collection->Item(i, &audio_device);
     if (FAILED(hr))
       continue;
 
@@ -77,7 +77,7 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
     // Retrieve user-friendly name of endpoint device.
     // Example: "Microphone (Realtek High Definition Audio)".
     Microsoft::WRL::ComPtr<IPropertyStore> properties;
-    hr = audio_device->OpenPropertyStore(STGM_READ, properties.GetAddressOf());
+    hr = audio_device->OpenPropertyStore(STGM_READ, &properties);
     if (SUCCEEDED(hr)) {
       base::win::ScopedPropVariant friendly_name;
       hr = properties->GetValue(PKEY_Device_FriendlyName,

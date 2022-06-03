@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,6 +22,7 @@ class FrameTracker;
 struct Geoposition;
 class JavaScriptDialogManager;
 struct KeyEvent;
+class MobileEmulationOverrideManager;
 struct MouseEvent;
 struct NetworkConditions;
 class Status;
@@ -33,6 +33,8 @@ class WebView {
  public:
   virtual ~WebView() {}
 
+  virtual bool IsServiceWorker() const = 0;
+
   // Return the id for this WebView.
   virtual std::string GetId() = 0;
 
@@ -41,6 +43,9 @@ class WebView {
 
   // Make DevToolsCient connect to DevTools if it is disconnected.
   virtual Status ConnectIfNecessary() = 0;
+
+  // Make DevToolsCient set up DevTools.
+  virtual Status SetUpDevTools() = 0;
 
   // Handles events that have been received but not yet handled.
   virtual Status HandleReceivedEvents() = 0;
@@ -84,9 +89,12 @@ class WebView {
   // the result. |frame| is a frame ID or an empty string for the main frame.
   // If the expression evaluates to a element, it will be bound to a unique ID
   // (per frame) and the ID will be returned.
+  // |awaitPromise| controls awaitPromise parameter for Command
+  // send to devtools backend
   // |result| will never be NULL on success.
   virtual Status EvaluateScript(const std::string& frame,
                                 const std::string& expression,
+                                const bool awaitPromise,
                                 std::unique_ptr<base::Value>* result) = 0;
 
   // Calls a JavaScript function in a specified frame with the given args and
@@ -141,7 +149,7 @@ class WebView {
                                     std::string* out_frame) = 0;
 
   // Dispatch a sequence of mouse events.
-  virtual Status DispatchMouseEvents(const std::list<MouseEvent>& events,
+  virtual Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                                      const std::string& frame,
                                      bool async_dispatch_events) = 0;
 
@@ -150,16 +158,22 @@ class WebView {
                                     bool async_dispatch_events) = 0;
 
   // Dispatch a sequence of touch events.
-  virtual Status DispatchTouchEvents(const std::list<TouchEvent>& events,
+  virtual Status DispatchTouchEvents(const std::vector<TouchEvent>& events,
                                      bool async_dispatch_events) = 0;
 
   // Dispatch a single touch event with more than one touch point.
   virtual Status DispatchTouchEventWithMultiPoints(
-      const std::list<TouchEvent>& events,
+      const std::vector<TouchEvent>& events,
       bool async_dispatch_events) = 0;
+
   // Dispatch a sequence of key events.
-  virtual Status DispatchKeyEvents(const std::list<KeyEvent>& events,
+  virtual Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
                                    bool async_dispatch_events) = 0;
+
+  // Emulate inserting text that doesn't come from a key press,
+  // for example an emoji keyboard or an IME.
+  virtual Status InsertText(const std::string& text,
+                            bool async_dispatch_events) = 0;
 
   // Return all the cookies visible to the current page.
   virtual Status GetCookies(std::unique_ptr<base::ListValue>* cookies,
@@ -192,13 +206,16 @@ class WebView {
                                            const Timeout& timeout,
                                            bool stop_load_on_timeout) = 0;
 
-  // Returns whether the frame is pending navigation.
-  virtual Status IsPendingNavigation(const std::string& frame_id,
-                                     const Timeout* timeout,
+  // Returns whether the current frame is pending navigation.
+  virtual Status IsPendingNavigation(const Timeout* timeout,
                                      bool* is_pending) const = 0;
 
   // Returns the JavaScriptDialogManager. Never null.
   virtual JavaScriptDialogManager* GetJavaScriptDialogManager() = 0;
+
+  // Returns the MobileEmulationOverrideManager.
+  virtual MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
+      const = 0;
 
   // Overrides normal geolocation with a given geoposition.
   virtual Status OverrideGeolocation(const Geoposition& geoposition) = 0;
@@ -215,6 +232,9 @@ class WebView {
   virtual Status CaptureScreenshot(
       std::string* screenshot,
       const base::DictionaryValue& params) = 0;
+
+  virtual Status PrintToPDF(const base::DictionaryValue& params,
+                            std::string* pdf) = 0;
 
   // Set files in a file input element.
   // |element| is the WebElement JSON Object of the input element.
@@ -257,7 +277,11 @@ class WebView {
 
   virtual std::unique_ptr<base::Value> GetCastIssueMessage() = 0;
 
-  virtual void ClearNavigationState(const std::string& new_frame_id) = 0;
+  virtual void SetFrame(const std::string& new_frame_id) = 0;
+
+  virtual Status GetNodeIdByElement(const std::string& frame,
+                                    const base::DictionaryValue& element,
+                                    int* node_id) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

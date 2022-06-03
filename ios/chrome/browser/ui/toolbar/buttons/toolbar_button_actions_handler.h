@@ -9,15 +9,21 @@
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
-@protocol OmniboxFocuser;
+@protocol FindInPageCommands;
+@protocol OmniboxCommands;
+class WebNavigationBrowserAgent;
 
 // Handler for the actions associated with the different toolbar buttons.
 @interface ToolbarButtonActionsHandler : NSObject
 
 // Dispatcher for the actions.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, OmniboxFocuser>
-        dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands,
+                              BrowserCommands,
+                              FindInPageCommands,
+                              OmniboxCommands>
+    dispatcher;
+
+@property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 // Whether this handler is created in incognito.
 @property(nonatomic, assign) BOOL incognito;
@@ -45,9 +51,6 @@
 
 // Action when the stop button is tapped.
 - (void)stopAction;
-
-// Action when the bookmark button is tapped.
-- (void)bookmarkAction;
 
 // Action when the search button is tapped.
 - (void)searchAction:(id)sender;

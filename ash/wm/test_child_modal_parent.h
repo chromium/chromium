@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -23,7 +22,6 @@ namespace ash {
 
 // Test window that can act as a parent for modal child windows.
 class TestChildModalParent : public views::WidgetDelegateView,
-                             public views::ButtonListener,
                              public views::WidgetObserver {
  public:
   // Create and show a top-level window that hosts a modal parent. Returns the
@@ -31,6 +29,10 @@ class TestChildModalParent : public views::WidgetDelegateView,
   static TestChildModalParent* Show(aura::Window* context);
 
   explicit TestChildModalParent(aura::Window* context);
+
+  TestChildModalParent(const TestChildModalParent&) = delete;
+  TestChildModalParent& operator=(const TestChildModalParent&) = delete;
+
   ~TestChildModalParent() override;
 
   // Returns the modal parent window hosted within the top-level window.
@@ -40,19 +42,14 @@ class TestChildModalParent : public views::WidgetDelegateView,
   aura::Window* ShowModalChild();
 
  private:
-  // Overridden from views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
-
   // Overridden from views::View:
   void Layout() override;
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
-
-  // Overridden from ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void AddedToWidget() override;
 
   // Overridden from WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  void ButtonPressed();
 
   // The widget for the modal parent, a child of TestChildModalParent's Widget.
   std::unique_ptr<views::Widget> modal_parent_;
@@ -69,8 +66,6 @@ class TestChildModalParent : public views::WidgetDelegateView,
 
   // The modal child widget.
   views::Widget* modal_child_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChildModalParent);
 };
 
 }  // namespace ash

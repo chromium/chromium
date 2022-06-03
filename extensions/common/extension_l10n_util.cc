@@ -10,13 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/utils/base_string.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -126,7 +128,7 @@ bool LocalizeManifestListValue(const std::string& key,
     return true;
 
   bool ret = true;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     std::string result;
     if (list->GetString(i, &result)) {
       if (messages.ReplaceMessages(&result, error))
@@ -163,10 +165,16 @@ namespace extension_l10n_util {
 
 GzippedMessagesPermission GetGzippedMessagesPermissionForExtension(
     const extensions::Extension* extension) {
+  return extension
+             ? GetGzippedMessagesPermissionForLocation(extension->location())
+             : GzippedMessagesPermission::kDisallow;
+}
+
+GzippedMessagesPermission GetGzippedMessagesPermissionForLocation(
+    extensions::mojom::ManifestLocation location) {
   // Component extensions are part of the chromium or chromium OS source and
   // as such are considered a trusted source.
-  return (extension &&
-          extension->location() == extensions::Manifest::Location::COMPONENT)
+  return location == extensions::mojom::ManifestLocation::kComponent
              ? GzippedMessagesPermission::kAllowForTrustedSource
              : GzippedMessagesPermission::kDisallow;
 }
@@ -240,6 +248,14 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   if (!LocalizeManifestValue(key, messages, manifest, error))
     return false;
 
+  // Initialize action.default_title
+  // TODO(devlin): These could easily use something like base::StrCat().
+  key.assign(keys::kAction);
+  key.append(".");
+  key.append(keys::kActionDefaultTitle);
+  if (!LocalizeManifestValue(key, messages, manifest, error))
+    return false;
+
   // Initialize omnibox.keyword.
   if (!LocalizeManifestValue(keys::kOmniboxKeyword, messages, manifest, error))
     return false;
@@ -247,7 +263,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   base::ListValue* file_handlers = NULL;
   if (manifest->GetList(keys::kFileBrowserHandlers, &file_handlers)) {
     key.assign(keys::kFileBrowserHandlers);
-    for (size_t i = 0; i < file_handlers->GetSize(); i++) {
+    for (size_t i = 0; i < file_handlers->GetList().size(); i++) {
       base::DictionaryValue* handler = NULL;
       if (!file_handlers->GetDictionary(i, &handler)) {
         *error = errors::kInvalidFileBrowserHandler;
@@ -262,7 +278,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   // Initialize all input_components
   base::ListValue* input_components = NULL;
   if (manifest->GetList(keys::kInputComponents, &input_components)) {
-    for (size_t i = 0; i < input_components->GetSize(); ++i) {
+    for (size_t i = 0; i < input_components->GetList().size(); ++i) {
       base::DictionaryValue* module = NULL;
       if (!input_components->GetDictionary(i, &module)) {
         *error = errors::kInvalidInputComponents;
@@ -388,7 +404,7 @@ std::string CurrentLocaleOrDefault() {
 
 void GetAllLocales(std::set<std::string>* all_locales) {
   const std::vector<std::string>& available_locales =
-      l10n_util::GetAvailableLocales();
+      l10n_util::GetAvailableICULocales();
   // Add all parents of the current locale to the available locales set.
   // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
   for (size_t i = 0; i < available_locales.size(); ++i) {
@@ -526,7 +542,10 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
   if (base::Contains(subdir, '.'))
     return true;
 
-  if (all_locales.find(subdir) == all_locales.end())
+  // On case-insensitive file systems we will load messages by matching them
+  // with locale names (see LoadMessageCatalogs). Reversed comparison must still
+  // work here, when we match locale name with file name.
+  if (!extensions::ContainsStringIgnoreCaseASCII(all_locales, subdir))
     return true;
 
   return false;
@@ -542,13 +561,13 @@ ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece locale)
 ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece process_locale,
                                          base::StringPiece preferred_locale)
     : ScopedLocaleForTest() {
-  SetProcessLocale(process_locale.as_string());
-  SetPreferredLocale(preferred_locale.as_string());
+  SetProcessLocale(std::string(process_locale));
+  SetPreferredLocale(std::string(preferred_locale));
 }
 
 ScopedLocaleForTest::~ScopedLocaleForTest() {
-  SetProcessLocale(process_locale_.as_string());
-  SetPreferredLocale(preferred_locale_.as_string());
+  SetProcessLocale(std::string(process_locale_));
+  SetPreferredLocale(std::string(preferred_locale_));
 }
 
 const std::string& GetPreferredLocaleForTest() {

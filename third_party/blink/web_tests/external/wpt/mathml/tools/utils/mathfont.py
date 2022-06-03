@@ -1,16 +1,14 @@
-from __future__ import print_function
 import fontforge
-from misc import MathMLAssociationCopyright
 
 em = 1000
 
-def create(aName):
+def create(aName, aCopyRight):
     print("Generating %s.woff..." % aName, end="")
     mathFont = fontforge.font()
     mathFont.fontname = aName
     mathFont.familyname = aName
     mathFont.fullname = aName
-    mathFont.copyright = MathMLAssociationCopyright
+    mathFont.copyright = aCopyRight
     mathFont.encoding = "UnicodeFull"
 
     # Create a space character. Also force the creation of some MATH subtables
@@ -27,14 +25,14 @@ def create(aName):
     mathFont[ord(" ")].verticalVariants = "space"
     return mathFont
 
-def drawRectangleGlyph(aGlyph, aWidth, aAscent, aDescent):
-    p = aGlyph.glyphPen()
-    p.moveTo(0, -aDescent)
-    p.lineTo(0, aAscent)
-    p.lineTo(aWidth, aAscent)
-    p.lineTo(aWidth, -aDescent)
+def drawRectangleGlyph(glyph, width, ascent, descent = 0, padding_left = 0):
+    p = glyph.glyphPen()
+    p.moveTo(padding_left, -descent)
+    p.lineTo(padding_left, ascent)
+    p.lineTo(padding_left + width, ascent)
+    p.lineTo(padding_left + width, -descent)
     p.closePath();
-    aGlyph.width = aWidth
+    glyph.width = padding_left + width
 
 def createSquareGlyph(aFont, aCodePoint):
     g = aFont.createChar(aCodePoint)
@@ -171,6 +169,27 @@ def createGlyphFromValue(aFont, aCodePoint):
         value /= 16
     g.width = 5 * em / 2
     g.stroke("circular", em / 10, "square", "miter", "cleanup")
+
+def createSizeVariants(aFont):
+    for size in (0, 1, 2, 3):
+        g = aFont.createChar(-1, "v%d" % size)
+        drawRectangleGlyph(g, em, (size + 1) * em, 0)
+        g = aFont.createChar(-1, "h%d" % size)
+        drawRectangleGlyph(g, (size + 1) * em, em, 0)
+
+def createStretchy(aFont, codePoint, isHorizontal):
+    if isHorizontal:
+        aFont[codePoint].horizontalVariants = "h0 h1 h2 h3"
+        # Part: (glyphName, isExtender, startConnector, endConnector, fullAdvance)
+        aFont[codePoint].horizontalComponents = \
+            (("h2", False, 0, em, 3 * em), \
+             ("h1", True, em, em, 2 * em))
+    else:
+        aFont[codePoint].verticalVariants = "v0 v1 v2 v3"
+        # Part: (glyphName, isExtender, startConnector, endConnector, fullAdvance)
+        aFont[codePoint].verticalComponents = \
+            (("v2", False, 0, em, 3 * em), \
+             ("v1", True, em, em, 2 * em))
 
 def save(aFont):
     aFont.em = em

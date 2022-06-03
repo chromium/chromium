@@ -12,6 +12,6 @@ PrefServiceMockFactory::PrefServiceMockFactory() {
   user_prefs_ = new TestingPrefStore;
 }
 
-PrefServiceMockFactory::~PrefServiceMockFactory() {}
+PrefServiceMockFactory::~PrefServiceMockFactory() = default;
 
 }  // namespace sync_preferences

@@ -19,7 +19,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "courgette/disassembler_elf_32_arm.h"
 #include "courgette/label_manager.h"
 #include "courgette/streams.h"
 
@@ -138,14 +137,14 @@ class InstructionStoreReceptor : public InstructionReceptor {
     CHECK(encoded_);
   }
 
+  InstructionStoreReceptor(const InstructionStoreReceptor&) = delete;
+  InstructionStoreReceptor& operator=(const InstructionStoreReceptor&) = delete;
+
   CheckBool EmitPeRelocs() override {
     return encoded_->AddPeMakeRelocs(exe_type_);
   }
   CheckBool EmitElfRelocation() override {
     return encoded_->AddElfMakeRelocs();
-  }
-  CheckBool EmitElfARMRelocation() override {
-    return encoded_->AddElfARMMakeRelocs();
   }
   CheckBool EmitOrigin(RVA rva) override { return encoded_->AddOrigin(rva); }
   CheckBool EmitSingleByte(uint8_t byte) override {
@@ -157,12 +156,6 @@ class InstructionStoreReceptor : public InstructionReceptor {
   CheckBool EmitRel32(Label* label) override {
     return encoded_->AddRel32(label->index_);
   }
-  CheckBool EmitRel32ARM(uint16_t op,
-                         Label* label,
-                         const uint8_t* arm_op,
-                         uint16_t op_size) override {
-    return encoded_->AddRel32ARM(op, label->index_);
-  }
   CheckBool EmitAbs32(Label* label) override {
     return encoded_->AddAbs32(label->index_);
   }
@@ -173,8 +166,6 @@ class InstructionStoreReceptor : public InstructionReceptor {
  private:
   ExecutableType exe_type_;
   EncodedProgram* encoded_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstructionStoreReceptor);
 };
 
 }  // namespace
@@ -254,11 +245,6 @@ CheckBool EncodedProgram::AddRel32(int label_index) {
   return ops_.push_back(REL32) && rel32_ix_.push_back(label_index);
 }
 
-CheckBool EncodedProgram::AddRel32ARM(uint16_t op, int label_index) {
-  return ops_.push_back(static_cast<OP>(op)) &&
-      rel32_ix_.push_back(label_index);
-}
-
 CheckBool EncodedProgram::AddPeMakeRelocs(ExecutableType kind) {
   if (kind == EXE_WIN_32_X86)
     return ops_.push_back(MAKE_PE_RELOCATION_TABLE);
@@ -267,10 +253,6 @@ CheckBool EncodedProgram::AddPeMakeRelocs(ExecutableType kind) {
 
 CheckBool EncodedProgram::AddElfMakeRelocs() {
   return ops_.push_back(MAKE_ELF_RELOCATION_TABLE);
-}
-
-CheckBool EncodedProgram::AddElfARMMakeRelocs() {
-  return ops_.push_back(MAKE_ELF_ARM_RELOCATION_TABLE);
 }
 
 void EncodedProgram::DebuggingSummary() {
@@ -419,117 +401,6 @@ bool VectorAt(const V& v, size_t index, T* output) {
   return true;
 }
 
-CheckBool EncodedProgram::EvaluateRel32ARM(OP op,
-                                           size_t* ix_rel32_ix,
-                                           RVA* current_rva,
-                                           SinkStream* output) {
-  switch (op & 0x0000F000) {
-    case REL32ARM8: {
-      uint32_t index;
-      if (!VectorAt(rel32_ix_, *ix_rel32_ix, &index))
-        return false;
-      ++(*ix_rel32_ix);
-      RVA rva;
-      if (!VectorAt(rel32_rva_, index, &rva))
-        return false;
-      uint32_t decompressed_op;
-      if (!DisassemblerElf32ARM::Decompress(
-              ARM_OFF8, static_cast<uint16_t>(op),
-              static_cast<uint32_t>(rva - *current_rva), &decompressed_op)) {
-        return false;
-      }
-      uint16_t op16 = static_cast<uint16_t>(decompressed_op);
-      if (!output->Write(&op16, 2))
-        return false;
-      *current_rva += 2;
-      break;
-    }
-    case REL32ARM11: {
-      uint32_t index;
-      if (!VectorAt(rel32_ix_, *ix_rel32_ix, &index))
-        return false;
-      ++(*ix_rel32_ix);
-      RVA rva;
-      if (!VectorAt(rel32_rva_, index, &rva))
-        return false;
-      uint32_t decompressed_op;
-      if (!DisassemblerElf32ARM::Decompress(ARM_OFF11, (uint16_t)op,
-                                            (uint32_t)(rva - *current_rva),
-                                            &decompressed_op)) {
-        return false;
-      }
-      uint16_t op16 = static_cast<uint16_t>(decompressed_op);
-      if (!output->Write(&op16, 2))
-        return false;
-      *current_rva += 2;
-      break;
-    }
-    case REL32ARM24: {
-      uint32_t index;
-      if (!VectorAt(rel32_ix_, *ix_rel32_ix, &index))
-        return false;
-      ++(*ix_rel32_ix);
-      RVA rva;
-      if (!VectorAt(rel32_rva_, index, &rva))
-        return false;
-      uint32_t decompressed_op;
-      if (!DisassemblerElf32ARM::Decompress(ARM_OFF24, (uint16_t)op,
-                                            (uint32_t)(rva - *current_rva),
-                                            &decompressed_op)) {
-        return false;
-      }
-      if (!output->Write(&decompressed_op, 4))
-        return false;
-      *current_rva += 4;
-      break;
-    }
-    case REL32ARM25: {
-      uint32_t index;
-      if (!VectorAt(rel32_ix_, *ix_rel32_ix, &index))
-        return false;
-      ++(*ix_rel32_ix);
-      RVA rva;
-      if (!VectorAt(rel32_rva_, index, &rva))
-        return false;
-      uint32_t decompressed_op;
-      if (!DisassemblerElf32ARM::Decompress(ARM_OFF25, (uint16_t)op,
-                                            (uint32_t)(rva - *current_rva),
-                                            &decompressed_op)) {
-        return false;
-      }
-      uint32_t words = (decompressed_op << 16) | (decompressed_op >> 16);
-      if (!output->Write(&words, 4))
-        return false;
-      *current_rva += 4;
-      break;
-    }
-    case REL32ARM21: {
-      uint32_t index;
-      if (!VectorAt(rel32_ix_, *ix_rel32_ix, &index))
-        return false;
-      ++(*ix_rel32_ix);
-      RVA rva;
-      if (!VectorAt(rel32_rva_, index, &rva))
-        return false;
-      uint32_t decompressed_op;
-      if (!DisassemblerElf32ARM::Decompress(ARM_OFF21, (uint16_t)op,
-                                            (uint32_t)(rva - *current_rva),
-                                            &decompressed_op)) {
-        return false;
-      }
-      uint32_t words = (decompressed_op << 16) | (decompressed_op >> 16);
-      if (!output->Write(&words, 4))
-        return false;
-      *current_rva += 4;
-      break;
-    }
-    default:
-      return false;
-  }
-
-  return true;
-}
-
 CheckBool EncodedProgram::AssembleTo(SinkStream* final_buffer) {
   // For the most part, the assembly process walks the various tables.
   // ix_mumble is the index into the mumble table.
@@ -553,9 +424,7 @@ CheckBool EncodedProgram::AssembleTo(SinkStream* final_buffer) {
 
     switch (op) {
       default:
-        if (!EvaluateRel32ARM(op, &ix_rel32_ix, &current_rva, output))
-          return false;
-        break;
+        return false;
 
       case ORIGIN: {
         RVA section_rva;
@@ -666,18 +535,6 @@ CheckBool EncodedProgram::AssembleTo(SinkStream* final_buffer) {
 
         pending_pe_relocation_table = true;
         pending_pe_relocation_table_type = 0x0A;  // IMAGE_REL_BASED_DIR64
-        output = &bytes_following_relocation_table;
-        break;
-      }
-
-      case MAKE_ELF_ARM_RELOCATION_TABLE: {
-        // We can see the base relocation anywhere, but we only have the
-        // information to generate it at the very end.  So we divert the bytes
-        // we are generating to a temporary stream.
-        if (pending_elf_relocation_table_type)
-          return false;  // Can't have two base relocation tables.
-
-        pending_elf_relocation_table_type = R_ARM_RELATIVE;
         output = &bytes_following_relocation_table;
         break;
       }

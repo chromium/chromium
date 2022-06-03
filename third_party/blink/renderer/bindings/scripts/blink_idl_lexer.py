@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Lexer for Blink IDL.
 
 The lexer uses the PLY (Python Lex-Yacc) library to build a tokenizer which
@@ -54,12 +53,15 @@ http://www.chromium.org/developers/design-documents/idl-compiler#TOC-Front-end
 # Disable attribute validation, as lint can't import parent class to check
 # pylint: disable=E1101
 
+from __future__ import print_function
+
 import os.path
 import sys
 
 # PLY is in Chromium src/third_party/ply
 module_path, module_name = os.path.split(__file__)
-third_party = os.path.join(module_path, os.pardir, os.pardir, os.pardir, os.pardir)
+third_party = os.path.join(module_path, os.pardir, os.pardir, os.pardir,
+                           os.pardir)
 # Insert at front to override system libraries, and after path[0] == script dir
 sys.path.insert(1, third_party)
 from ply import lex
@@ -73,7 +75,10 @@ LEXTAB = 'lextab'
 
 
 class BlinkIDLLexer(IDLLexer):
-    def __init__(self, debug=False, optimize=True, outputdir=None,
+    def __init__(self,
+                 debug=False,
+                 optimize=True,
+                 outputdir=None,
                  rewrite_tables=False):
         if debug:
             # Turn off optimization and caching to help debugging
@@ -103,21 +108,23 @@ class BlinkIDLLexer(IDLLexer):
         # error checking), and also allows use of Python's optimized mode.
         # See: Optimized Mode
         # http://www.dabeaz.com/ply/ply.html#ply_nn15
-        self._lexobj = lex.lex(object=self,
-                               debug=debug,
-                               optimize=optimize,
-                               lextab=lextab,
-                               outputdir=outputdir)
+        self._lexobj = lex.lex(
+            object=self,
+            debug=debug,
+            optimize=optimize,
+            lextab=lextab,
+            outputdir=outputdir)
 
 
 ################################################################################
+
 
 def main(argv):
     # If file itself executed, build and cache lex table
     try:
         outputdir = argv[1]
     except IndexError as err:
-        print 'Usage: %s OUTPUT_DIR' % argv[0]
+        print('Usage: %s OUTPUT_DIR' % argv[0])
         return 1
     # Important: rewrite_tables=True causes the cache file to be deleted if it
     # exists, thus making sure that PLY doesn't load it instead of regenerating

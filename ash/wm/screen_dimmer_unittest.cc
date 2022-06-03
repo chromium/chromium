@@ -19,6 +19,10 @@ namespace ash {
 class ScreenDimmerTest : public AshTestBase {
  public:
   ScreenDimmerTest() = default;
+
+  ScreenDimmerTest(const ScreenDimmerTest&) = delete;
+  ScreenDimmerTest& operator=(const ScreenDimmerTest&) = delete;
+
   ~ScreenDimmerTest() override = default;
 
   void SetUp() override {
@@ -44,9 +48,6 @@ class ScreenDimmerTest : public AshTestBase {
 
  protected:
   std::unique_ptr<ScreenDimmer> dimmer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenDimmerTest);
 };
 
 TEST_F(ScreenDimmerTest, DimAndUndim) {
@@ -113,6 +114,12 @@ TEST_F(ScreenDimmerTest, DimAtBottom) {
 class ScreenDimmerShellDestructionTest : public AshTestBase {
  public:
   ScreenDimmerShellDestructionTest() = default;
+
+  ScreenDimmerShellDestructionTest(const ScreenDimmerShellDestructionTest&) =
+      delete;
+  ScreenDimmerShellDestructionTest& operator=(
+      const ScreenDimmerShellDestructionTest&) = delete;
+
   ~ScreenDimmerShellDestructionTest() override = default;
 
   void TearDown() override {
@@ -120,9 +127,6 @@ class ScreenDimmerShellDestructionTest : public AshTestBase {
     AshTestBase::TearDown();
     // ScreenDimmer is destroyed *after* the shell.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenDimmerShellDestructionTest);
 };
 
 // This test verifies ScreenDimmer can be destroyed after the shell. The

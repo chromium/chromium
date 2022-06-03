@@ -31,7 +31,7 @@ class GURL;
 // TableViewCell that displays a text label that might contain a link.
 @interface TableViewTextLinkCell : TableViewCell
 // The text to display.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
+@property(nonatomic, readonly, strong) UITextView* textView;
 // Delegate for the TableViewTextLinkCell. Is notified when a link is
 // tapped.
 @property(nonatomic, weak) id<TableViewTextLinkCellDelegate> delegate;

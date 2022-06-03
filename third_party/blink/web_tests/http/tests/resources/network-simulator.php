@@ -79,7 +79,7 @@ function generateResponse($path)
         if (file_exists($path)) {
             header("Last-Modified: " . gmdate("D, d M Y H:i:s T", filemtime($path)));
             header("Content-Type: " . contentType($path));
-        
+
             print file_get_contents($path);
         } else {
             header('HTTP/1.1 404 Not Found');
@@ -124,6 +124,9 @@ function handleGetResourceCountCommand($path)
     }
 }
 
+# Do not use for new tests as this logging functionalities are not maintained,
+# and are not safe to run tests in parallel. Accesses for other tests may be
+# merged, or other commands may trim the log.
 function handleStartResourceRequestsLog()
 {
     $resourceLogFile = sys_get_temp_dir() . "/resource-log";
@@ -149,7 +152,7 @@ function handleGetResourceRequestsLog()
 function handleLogResourceRequest($path)
 {
     $resourceLogFile = sys_get_temp_dir() . "/resource-log";
-    
+
     $newData = "\n".$path;
     file_put_contents($resourceLogFile, $newData, FILE_APPEND | LOCK_EX);
 }

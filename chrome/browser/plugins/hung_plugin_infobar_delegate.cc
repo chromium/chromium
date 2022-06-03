@@ -5,19 +5,20 @@
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/hung_plugin_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
 infobars::InfoBar* HungPluginInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     HungPluginTabHelper* helper,
     int plugin_child_id,
-    const base::string16& plugin_name) {
-  return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+    const std::u16string& plugin_name) {
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new HungPluginInfoBarDelegate(
           helper, plugin_child_id, plugin_name))));
 }
@@ -25,7 +26,7 @@ infobars::InfoBar* HungPluginInfoBarDelegate::Create(
 HungPluginInfoBarDelegate::HungPluginInfoBarDelegate(
     HungPluginTabHelper* helper,
     int plugin_child_id,
-    const base::string16& plugin_name)
+    const std::u16string& plugin_name)
     : ConfirmInfoBarDelegate(),
       helper_(helper),
       plugin_child_id_(plugin_child_id),
@@ -46,7 +47,7 @@ const gfx::VectorIcon& HungPluginInfoBarDelegate::GetVectorIcon() const {
   return kExtensionCrashedIcon;
 }
 
-base::string16 HungPluginInfoBarDelegate::GetMessageText() const {
+std::u16string HungPluginInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -54,7 +55,7 @@ int HungPluginInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 HungPluginInfoBarDelegate::GetButtonLabel(
+std::u16string HungPluginInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return button_text_;
 }

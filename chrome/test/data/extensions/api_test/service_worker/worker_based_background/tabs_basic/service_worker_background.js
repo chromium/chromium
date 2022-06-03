@@ -154,8 +154,30 @@ chrome.test.runTests([
   function testTabQuery3() {
     queryTabUtil({currentWindow: true}, function(tabs) {
       chrome.test.assertEq(1, tabs.length);
-      chrome.test.assertEq(tabs[0].id, tabProps[0].id);
-      chrome.test.assertEq(tabs[0].url, tabProps[0].url);
+      chrome.test.assertEq(tabProps[0].id, tabs[0].id);
+      chrome.test.assertEq(tabProps[0].url, tabs[0].url);
+      chrome.test.succeed();
+    });
+  },
+  // Reload the remaining tab.
+  function testTabReload() {
+    chrome.tabs.onUpdated.addListener(function localListener(tabId,
+                                                             changeInfo,
+                                                             tab) {
+      if (changeInfo.status == 'complete') {
+        chrome.tabs.onUpdated.removeListener(localListener);
+        chrome.test.assertEq(tabProps[0].id, tabId);
+        chrome.test.assertEq(tabProps[0].url, tab.url);
+        chrome.test.succeed();
+      }
+    });
+    chrome.tabs.reload(tabProps[0].id, {bypassCache: true});
+  },
+  // Update the remaining tab.
+  function testTabUpdate() {
+    chrome.tabs.update(tabProps[0].id, {url: tabProps[1].url}, function(tab) {
+      chrome.test.assertEq(tabProps[0].id, tab.id);
+      chrome.test.assertEq(tabProps[1].url, tab.pendingUrl);
       chrome.test.succeed();
     });
   },

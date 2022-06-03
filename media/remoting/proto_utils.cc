@@ -10,8 +10,6 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "media/base/decrypt_config.h"
-#include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/timestamp_constants.h"
 #include "media/remoting/proto_enum_utils.h"
@@ -25,47 +23,8 @@ constexpr size_t kPayloadVersionFieldSize = sizeof(uint8_t);
 constexpr size_t kProtoBufferHeaderSize = sizeof(uint16_t);
 constexpr size_t kDataBufferHeaderSize = sizeof(uint32_t);
 
-std::unique_ptr<DecryptConfig> ConvertProtoToDecryptConfig(
-    const pb::DecryptConfig& config_message) {
-  if (!config_message.has_key_id())
-    return nullptr;
-  if (!config_message.has_iv())
-    return nullptr;
-
-  if (!config_message.has_mode()) {
-    // Assume it's unencrypted.
-    return nullptr;
-  }
-
-  std::vector<SubsampleEntry> entries(config_message.sub_samples_size());
-  for (int i = 0; i < config_message.sub_samples_size(); ++i) {
-    entries.push_back(
-        SubsampleEntry(config_message.sub_samples(i).clear_bytes(),
-                       config_message.sub_samples(i).cypher_bytes()));
-  }
-
-  if (config_message.mode() == pb::EncryptionMode::kCenc) {
-    return DecryptConfig::CreateCencConfig(config_message.key_id(),
-                                           config_message.iv(), entries);
-  }
-
-  base::Optional<EncryptionPattern> pattern;
-  if (config_message.has_crypt_byte_block()) {
-    pattern = EncryptionPattern(config_message.crypt_byte_block(),
-                                config_message.skip_byte_block());
-  }
-
-  if (config_message.mode() == pb::EncryptionMode::kCbcs) {
-    return DecryptConfig::CreateCbcsConfig(config_message.key_id(),
-                                           config_message.iv(), entries,
-                                           std::move(pattern));
-  }
-
-  return nullptr;
-}
-
 scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
-    const pb::DecoderBuffer& buffer_message,
+    const openscreen::cast::DecoderBuffer& buffer_message,
     scoped_refptr<DecoderBuffer> buffer) {
   if (buffer_message.is_eos()) {
     VLOG(1) << "EOS data";
@@ -73,13 +32,11 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
   }
 
   if (buffer_message.has_timestamp_usec()) {
-    buffer->set_timestamp(
-        base::TimeDelta::FromMicroseconds(buffer_message.timestamp_usec()));
+    buffer->set_timestamp(base::Microseconds(buffer_message.timestamp_usec()));
   }
 
   if (buffer_message.has_duration_usec()) {
-    buffer->set_duration(
-        base::TimeDelta::FromMicroseconds(buffer_message.duration_usec()));
+    buffer->set_duration(base::Microseconds(buffer_message.duration_usec()));
   }
   VLOG(3) << "timestamp:" << buffer_message.timestamp_usec()
           << " duration:" << buffer_message.duration_usec();
@@ -87,23 +44,16 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
   if (buffer_message.has_is_key_frame())
     buffer->set_is_key_frame(buffer_message.is_key_frame());
 
-  if (buffer_message.has_decrypt_config()) {
-    buffer->set_decrypt_config(
-        ConvertProtoToDecryptConfig(buffer_message.decrypt_config()));
-  }
-
   bool has_discard = false;
   base::TimeDelta front_discard;
   if (buffer_message.has_front_discard_usec()) {
     has_discard = true;
-    front_discard =
-        base::TimeDelta::FromMicroseconds(buffer_message.front_discard_usec());
+    front_discard = base::Microseconds(buffer_message.front_discard_usec());
   }
   base::TimeDelta back_discard;
   if (buffer_message.has_back_discard_usec()) {
     has_discard = true;
-    back_discard =
-        base::TimeDelta::FromMicroseconds(buffer_message.back_discard_usec());
+    back_discard = base::Microseconds(buffer_message.back_discard_usec());
   }
 
   if (has_discard) {
@@ -120,32 +70,9 @@ scoped_refptr<DecoderBuffer> ConvertProtoToDecoderBuffer(
   return buffer;
 }
 
-void ConvertDecryptConfigToProto(const DecryptConfig& decrypt_config,
-                                 pb::DecryptConfig* config_message) {
-  DCHECK(config_message);
-
-  config_message->set_key_id(decrypt_config.key_id());
-  config_message->set_iv(decrypt_config.iv());
-
-  for (const auto& entry : decrypt_config.subsamples()) {
-    pb::DecryptConfig::SubSample* sub_sample =
-        config_message->add_sub_samples();
-    sub_sample->set_clear_bytes(entry.clear_bytes);
-    sub_sample->set_cypher_bytes(entry.cypher_bytes);
-  }
-
-  config_message->set_mode(
-      ToProtoEncryptionMode(decrypt_config.encryption_scheme()).value());
-  if (decrypt_config.HasPattern()) {
-    config_message->set_crypt_byte_block(
-        decrypt_config.encryption_pattern()->crypt_byte_block());
-    config_message->set_skip_byte_block(
-        decrypt_config.encryption_pattern()->skip_byte_block());
-  }
-}
-
-void ConvertDecoderBufferToProto(const DecoderBuffer& decoder_buffer,
-                                 pb::DecoderBuffer* buffer_message) {
+void ConvertDecoderBufferToProto(
+    const DecoderBuffer& decoder_buffer,
+    openscreen::cast::DecoderBuffer* buffer_message) {
   if (decoder_buffer.end_of_stream()) {
     buffer_message->set_is_eos(true);
     return;
@@ -157,11 +84,6 @@ void ConvertDecoderBufferToProto(const DecoderBuffer& decoder_buffer,
       decoder_buffer.timestamp().InMicroseconds());
   buffer_message->set_duration_usec(decoder_buffer.duration().InMicroseconds());
   buffer_message->set_is_key_frame(decoder_buffer.is_key_frame());
-
-  if (decoder_buffer.decrypt_config()) {
-    ConvertDecryptConfigToProto(*decoder_buffer.decrypt_config(),
-                                buffer_message->mutable_decrypt_config());
-  }
 
   buffer_message->set_front_discard_usec(
       decoder_buffer.discard_padding().first.InMicroseconds());
@@ -181,7 +103,7 @@ scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
   base::BigEndianReader reader(reinterpret_cast<const char*>(data), size);
   uint8_t payload_version = 0;
   uint16_t proto_size = 0;
-  pb::DecoderBuffer segment;
+  openscreen::cast::DecoderBuffer segment;
   uint32_t buffer_size = 0;
   if (reader.ReadU8(&payload_version) && payload_version == 0 &&
       reader.ReadU16(&proto_size) && proto_size < reader.remaining() &&
@@ -203,7 +125,7 @@ scoped_refptr<DecoderBuffer> ByteArrayToDecoderBuffer(const uint8_t* data,
 
 std::vector<uint8_t> DecoderBufferToByteArray(
     const DecoderBuffer& decoder_buffer) {
-  pb::DecoderBuffer decoder_buffer_message;
+  openscreen::cast::DecoderBuffer decoder_buffer_message;
   ConvertDecoderBufferToProto(decoder_buffer, &decoder_buffer_message);
 
   size_t decoder_buffer_size =
@@ -235,27 +157,9 @@ std::vector<uint8_t> DecoderBufferToByteArray(
   return buffer;
 }
 
-void ConvertEncryptionSchemeToProto(EncryptionScheme encryption_scheme,
-                                    pb::EncryptionScheme* message) {
-  DCHECK(message);
-
-  // The remote side only cares about the cipher mode. Setting EncryptionPattern
-  // to (0, 0) is fine.
-  // TODO(crbug.com/1018923): Upgrade proto to remove EncryptionPattern from
-  // Audio/VideoDecoderConfig.
-  message->set_mode(
-      ToProtoEncryptionSchemeCipherMode(encryption_scheme).value());
-  message->set_encrypt_blocks(0);
-  message->set_skip_blocks(0);
-}
-
-EncryptionScheme ConvertProtoToEncryptionScheme(
-    const pb::EncryptionScheme& message) {
-  return ToMediaEncryptionScheme(message.mode()).value();
-}
-
-void ConvertAudioDecoderConfigToProto(const AudioDecoderConfig& audio_config,
-                                      pb::AudioDecoderConfig* audio_message) {
+void ConvertAudioDecoderConfigToProto(
+    const AudioDecoderConfig& audio_config,
+    openscreen::cast::AudioDecoderConfig* audio_message) {
   DCHECK(audio_config.IsValidConfig());
   DCHECK(audio_message);
 
@@ -276,17 +180,10 @@ void ConvertAudioDecoderConfigToProto(const AudioDecoderConfig& audio_config,
     audio_message->set_extra_data(audio_config.extra_data().data(),
                                   audio_config.extra_data().size());
   }
-
-  if (audio_config.is_encrypted()) {
-    pb::EncryptionScheme* encryption_scheme_message =
-        audio_message->mutable_encryption_scheme();
-    ConvertEncryptionSchemeToProto(audio_config.encryption_scheme(),
-                                   encryption_scheme_message);
-  }
 }
 
 bool ConvertProtoToAudioDecoderConfig(
-    const pb::AudioDecoderConfig& audio_message,
+    const openscreen::cast::AudioDecoderConfig& audio_message,
     AudioDecoderConfig* audio_config) {
   DCHECK(audio_config);
   audio_config->Initialize(
@@ -296,14 +193,15 @@ bool ConvertProtoToAudioDecoderConfig(
       audio_message.samples_per_second(),
       std::vector<uint8_t>(audio_message.extra_data().begin(),
                            audio_message.extra_data().end()),
-      ConvertProtoToEncryptionScheme(audio_message.encryption_scheme()),
-      base::TimeDelta::FromMicroseconds(audio_message.seek_preroll_usec()),
+      EncryptionScheme::kUnencrypted,
+      base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
   return audio_config->IsValidConfig();
 }
 
-void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
-                                      pb::VideoDecoderConfig* video_message) {
+void ConvertVideoDecoderConfigToProto(
+    const VideoDecoderConfig& video_config,
+    openscreen::cast::VideoDecoderConfig* video_message) {
   DCHECK(video_config.IsValidConfig());
   DCHECK(video_message);
 
@@ -312,36 +210,40 @@ void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
   video_message->set_profile(
       ToProtoVideoDecoderConfigProfile(video_config.profile()).value());
   // TODO(dalecurtis): Remove |format| it's now unused.
-  video_message->set_format(video_config.alpha_mode() ==
-                                    VideoDecoderConfig::AlphaMode::kHasAlpha
-                                ? pb::VideoDecoderConfig::PIXEL_FORMAT_I420A
-                                : pb::VideoDecoderConfig::PIXEL_FORMAT_I420);
+  video_message->set_format(
+      video_config.alpha_mode() == VideoDecoderConfig::AlphaMode::kHasAlpha
+          ? openscreen::cast::VideoDecoderConfig::PIXEL_FORMAT_I420A
+          : openscreen::cast::VideoDecoderConfig::PIXEL_FORMAT_I420);
 
   // TODO(hubbe): Update proto to use color_space_info()
   if (video_config.color_space_info() == VideoColorSpace::JPEG()) {
-    video_message->set_color_space(pb::VideoDecoderConfig::COLOR_SPACE_JPEG);
+    video_message->set_color_space(
+        openscreen::cast::VideoDecoderConfig::COLOR_SPACE_JPEG);
   } else if (video_config.color_space_info() == VideoColorSpace::REC709()) {
     video_message->set_color_space(
-        pb::VideoDecoderConfig::COLOR_SPACE_HD_REC709);
+        openscreen::cast::VideoDecoderConfig::COLOR_SPACE_HD_REC709);
   } else if (video_config.color_space_info() == VideoColorSpace::REC601()) {
     video_message->set_color_space(
-        pb::VideoDecoderConfig::COLOR_SPACE_SD_REC601);
+        openscreen::cast::VideoDecoderConfig::COLOR_SPACE_SD_REC601);
   } else {
     video_message->set_color_space(
-        pb::VideoDecoderConfig::COLOR_SPACE_SD_REC601);
+        openscreen::cast::VideoDecoderConfig::COLOR_SPACE_SD_REC601);
   }
 
-  pb::Size* coded_size_message = video_message->mutable_coded_size();
+  openscreen::cast::Size* coded_size_message =
+      video_message->mutable_coded_size();
   coded_size_message->set_width(video_config.coded_size().width());
   coded_size_message->set_height(video_config.coded_size().height());
 
-  pb::Rect* visible_rect_message = video_message->mutable_visible_rect();
+  openscreen::cast::Rect* visible_rect_message =
+      video_message->mutable_visible_rect();
   visible_rect_message->set_x(video_config.visible_rect().x());
   visible_rect_message->set_y(video_config.visible_rect().y());
   visible_rect_message->set_width(video_config.visible_rect().width());
   visible_rect_message->set_height(video_config.visible_rect().height());
 
-  pb::Size* natural_size_message = video_message->mutable_natural_size();
+  openscreen::cast::Size* natural_size_message =
+      video_message->mutable_natural_size();
   natural_size_message->set_width(video_config.natural_size().width());
   natural_size_message->set_height(video_config.natural_size().height());
 
@@ -349,32 +251,25 @@ void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
     video_message->set_extra_data(video_config.extra_data().data(),
                                   video_config.extra_data().size());
   }
-
-  if (video_config.is_encrypted()) {
-    pb::EncryptionScheme* encryption_scheme_message =
-        video_message->mutable_encryption_scheme();
-    ConvertEncryptionSchemeToProto(video_config.encryption_scheme(),
-                                   encryption_scheme_message);
-  }
 }
 
 bool ConvertProtoToVideoDecoderConfig(
-    const pb::VideoDecoderConfig& video_message,
+    const openscreen::cast::VideoDecoderConfig& video_message,
     VideoDecoderConfig* video_config) {
   DCHECK(video_config);
 
   // TODO(hubbe): Update pb to use VideoColorSpace
   VideoColorSpace color_space;
   switch (video_message.color_space()) {
-    case pb::VideoDecoderConfig::COLOR_SPACE_UNSPECIFIED:
+    case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_UNSPECIFIED:
       break;
-    case pb::VideoDecoderConfig::COLOR_SPACE_JPEG:
+    case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_JPEG:
       color_space = VideoColorSpace::JPEG();
       break;
-    case pb::VideoDecoderConfig::COLOR_SPACE_HD_REC709:
+    case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_HD_REC709:
       color_space = VideoColorSpace::REC709();
       break;
-    case pb::VideoDecoderConfig::COLOR_SPACE_SD_REC601:
+    case openscreen::cast::VideoDecoderConfig::COLOR_SPACE_SD_REC601:
       color_space = VideoColorSpace::REC601();
       break;
   }
@@ -395,12 +290,12 @@ bool ConvertProtoToVideoDecoderConfig(
                 video_message.natural_size().height()),
       std::vector<uint8_t>(video_message.extra_data().begin(),
                            video_message.extra_data().end()),
-      ConvertProtoToEncryptionScheme(video_message.encryption_scheme()));
+      EncryptionScheme::kUnencrypted);
   return video_config->IsValidConfig();
 }
 
 void ConvertProtoToPipelineStatistics(
-    const pb::PipelineStatistics& stats_message,
+    const openscreen::cast::PipelineStatistics& stats_message,
     PipelineStatistics* stats) {
   stats->audio_bytes_decoded = stats_message.audio_bytes_decoded();
   stats->video_bytes_decoded = stats_message.video_bytes_decoded();
@@ -419,140 +314,26 @@ void ConvertProtoToPipelineStatistics(
   // that sender provided the values.
   if (stats_message.has_audio_decoder_info()) {
     auto audio_info = stats_message.audio_decoder_info();
-    stats->audio_decoder_info.decoder_name = audio_info.decoder_name();
-    stats->audio_decoder_info.is_platform_decoder =
+    stats->audio_pipeline_info.decoder_type =
+        static_cast<AudioDecoderType>(audio_info.decoder_type());
+    stats->audio_pipeline_info.is_platform_decoder =
         audio_info.is_platform_decoder();
-    stats->audio_decoder_info.has_decrypting_demuxer_stream =
-        audio_info.has_decrypting_demuxer_stream();
+    stats->audio_pipeline_info.has_decrypting_demuxer_stream = false;
+    stats->audio_pipeline_info.encryption_type = EncryptionType::kClear;
   }
   if (stats_message.has_video_decoder_info()) {
     auto video_info = stats_message.video_decoder_info();
-    stats->video_decoder_info.decoder_name = video_info.decoder_name();
-    stats->video_decoder_info.is_platform_decoder =
+    stats->video_pipeline_info.decoder_type =
+        static_cast<VideoDecoderType>(video_info.decoder_type());
+    stats->video_pipeline_info.is_platform_decoder =
         video_info.is_platform_decoder();
-    stats->video_decoder_info.has_decrypting_demuxer_stream =
-        video_info.has_decrypting_demuxer_stream();
+    stats->video_pipeline_info.has_decrypting_demuxer_stream = false;
+    stats->video_pipeline_info.encryption_type = EncryptionType::kClear;
   }
   if (stats_message.has_video_frame_duration_average_usec()) {
-    stats->video_frame_duration_average = base::TimeDelta::FromMicroseconds(
-        stats_message.video_frame_duration_average_usec());
+    stats->video_frame_duration_average =
+        base::Microseconds(stats_message.video_frame_duration_average_usec());
   }
-}
-
-void ConvertCdmKeyInfoToProto(
-    const CdmKeysInfo& keys_information,
-    pb::CdmClientOnSessionKeysChange* key_change_message) {
-  for (auto& info : keys_information) {
-    pb::CdmKeyInformation* key = key_change_message->add_key_information();
-    key->set_key_id(info->key_id.data(), info->key_id.size());
-    key->set_status(ToProtoCdmKeyInformation(info->status).value());
-    key->set_system_code(info->system_code);
-  }
-}
-
-void ConvertProtoToCdmKeyInfo(
-    const pb::CdmClientOnSessionKeysChange keychange_message,
-    CdmKeysInfo* key_information) {
-  DCHECK(key_information);
-  key_information->reserve(keychange_message.key_information_size());
-  for (int i = 0; i < keychange_message.key_information_size(); ++i) {
-    const pb::CdmKeyInformation key_info_msg =
-        keychange_message.key_information(i);
-
-    std::unique_ptr<CdmKeyInformation> key(new CdmKeyInformation(
-        key_info_msg.key_id(),
-        ToMediaCdmKeyInformationKeyStatus(key_info_msg.status()).value(),
-        key_info_msg.system_code()));
-    key_information->push_back(std::move(key));
-  }
-}
-
-void ConvertCdmPromiseToProto(const CdmPromiseResult& result,
-                              pb::CdmPromise* promise_message) {
-  promise_message->set_success(result.success());
-  if (!result.success()) {
-    promise_message->set_exception(
-        ToProtoCdmException(result.exception()).value());
-    promise_message->set_system_code(result.system_code());
-    promise_message->set_error_message(result.error_message());
-  }
-}
-
-void ConvertCdmPromiseWithSessionIdToProto(const CdmPromiseResult& result,
-                                           const std::string& session_id,
-                                           pb::CdmPromise* promise_message) {
-  ConvertCdmPromiseToProto(result, promise_message);
-  promise_message->set_session_id(session_id);
-}
-
-void ConvertCdmPromiseWithCdmIdToProto(const CdmPromiseResult& result,
-                                       int cdm_id,
-                                       pb::CdmPromise* promise_message) {
-  ConvertCdmPromiseToProto(result, promise_message);
-  promise_message->set_cdm_id(cdm_id);
-}
-
-bool ConvertProtoToCdmPromise(const pb::CdmPromise& promise_message,
-                              CdmPromiseResult* result) {
-  if (!promise_message.has_success())
-    return false;
-
-  bool success = promise_message.success();
-  if (success) {
-    *result = CdmPromiseResult::SuccessResult();
-    return true;
-  }
-
-  CdmPromise::Exception exception = CdmPromise::Exception::NOT_SUPPORTED_ERROR;
-  uint32_t system_code = 0;
-  std::string error_message;
-
-  exception = ToCdmPromiseException(promise_message.exception()).value();
-  system_code = promise_message.system_code();
-  error_message = promise_message.error_message();
-  *result = CdmPromiseResult(exception, system_code, error_message);
-  return true;
-}
-
-bool ConvertProtoToCdmPromiseWithCdmIdSessionId(const pb::RpcMessage& message,
-                                                CdmPromiseResult* result,
-                                                int* cdm_id,
-                                                std::string* session_id) {
-  if (!message.has_cdm_promise_rpc())
-    return false;
-
-  const auto& promise_message = message.cdm_promise_rpc();
-  if (!ConvertProtoToCdmPromise(promise_message, result))
-    return false;
-
-  if (cdm_id)
-    *cdm_id = promise_message.cdm_id();
-  if (session_id)
-    *session_id = promise_message.session_id();
-
-  return true;
-}
-
-//==============================================================================
-CdmPromiseResult::CdmPromiseResult()
-    : CdmPromiseResult(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0, "") {}
-
-CdmPromiseResult::CdmPromiseResult(CdmPromise::Exception exception,
-                                   uint32_t system_code,
-                                   std::string error_message)
-    : success_(false),
-      exception_(exception),
-      system_code_(system_code),
-      error_message_(error_message) {}
-
-CdmPromiseResult::CdmPromiseResult(const CdmPromiseResult& other) = default;
-
-CdmPromiseResult::~CdmPromiseResult() = default;
-
-CdmPromiseResult CdmPromiseResult::SuccessResult() {
-  CdmPromiseResult result(static_cast<CdmPromise::Exception>(0), 0, "");
-  result.success_ = true;
-  return result;
 }
 
 }  // namespace remoting

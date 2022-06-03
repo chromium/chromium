@@ -47,16 +47,16 @@ PageTest.Drawer = function() {
     });
 
     function openByButton() {
-      MockInteractions.tap($('nav-menu-btn'));
+      $('nav-menu-btn').click();
     }
 
     function closeByClickBackground() {
-      MockInteractions.tap($('sys-internals-drawer'));
+      $('sys-internals-drawer').click();
     }
 
     function closeByClickInfoPageButton() {
       const infoPageBtn = document.getElementsByClassName('drawer-item')[0];
-      MockInteractions.tap(infoPageBtn);
+      infoPageBtn.click();
     }
 
     test('Tap to open and close', function() {

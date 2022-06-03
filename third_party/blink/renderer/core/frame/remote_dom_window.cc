@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -17,7 +17,7 @@ ExecutionContext* RemoteDOMWindow::GetExecutionContext() const {
   return nullptr;
 }
 
-void RemoteDOMWindow::Trace(blink::Visitor* visitor) {
+void RemoteDOMWindow::Trace(Visitor* visitor) const {
   DOMWindow::Trace(visitor);
 }
 
@@ -31,10 +31,7 @@ void RemoteDOMWindow::FrameDetached() {
   DisconnectFromFrame();
 }
 
-void RemoteDOMWindow::SchedulePostMessage(
-    MessageEvent* event,
-    scoped_refptr<const SecurityOrigin> target,
-    Document* source) {
+void RemoteDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // To match same-process behavior, the IPC to forward postMessage
   // cross-process should only be sent after the current script finishes
   // running, to preserve relative ordering of IPCs.  See
@@ -45,24 +42,27 @@ void RemoteDOMWindow::SchedulePostMessage(
   // should also be observable by the target frame prior to receiving the
   // postMessage. We might consider forcing layout in ForwardPostMessage or
   // further delaying postMessage forwarding until after the next BeginFrame.
-  source->GetTaskRunner(TaskType::kPostedMessage)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
-                           WrapPersistent(this), WrapPersistent(event),
-                           std::move(target), WrapPersistent(source)));
+  posted_message->source
+      ->GetTaskRunner(TaskType::kInternalPostMessageForwarding)
+      ->PostTask(FROM_HERE, WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
+                                      WrapPersistent(this),
+                                      WrapPersistent(posted_message)));
 }
 
-void RemoteDOMWindow::ForwardPostMessage(
-    MessageEvent* event,
-    scoped_refptr<const SecurityOrigin> target,
-    Document* source) {
+void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {
   // If the target frame was detached after the message was scheduled,
   // don't deliver the message.
   if (!GetFrame())
     return;
 
-  GetFrame()->Client()->ForwardPostMessage(event, std::move(target),
-                                           source->GetFrame());
+  LocalFrame* source_frame = posted_message->source->GetFrame();
+  scoped_refptr<const SecurityOrigin> source_origin =
+      posted_message->source_origin;
+  scoped_refptr<const SecurityOrigin> target_origin =
+      posted_message->target_origin;
+  GetFrame()->ForwardPostMessage(
+      std::move(*posted_message).ToBlinkTransferableMessage(), source_frame,
+      std::move(source_origin), std::move(target_origin));
 }
 
 }  // namespace blink

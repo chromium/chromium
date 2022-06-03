@@ -6,22 +6,30 @@
 #define BASE_PROFILER_STACK_SAMPLING_PROFILER_TEST_UTIL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/native_library.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
+#include "base/profiler/stack_sampling_profiler.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
 
 class Unwinder;
+class ModuleCache;
 
 // A thread to target for profiling that will run the supplied closure.
 class TargetThread : public PlatformThread::Delegate {
  public:
   TargetThread(OnceClosure to_run);
+
+  TargetThread(const TargetThread&) = delete;
+  TargetThread& operator=(const TargetThread&) = delete;
+
   ~TargetThread() override;
 
   // PlatformThread::Delegate:
@@ -32,8 +40,6 @@ class TargetThread : public PlatformThread::Delegate {
  private:
   SamplingProfilerThreadToken thread_token_ = {0};
   OnceClosure to_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetThread);
 };
 
 // Addresses near the start and end of a function.
@@ -91,6 +97,16 @@ class UnwindScenario {
 // any special unwinding setup, to exercise the "normal" unwind scenario.
 FunctionAddressRange CallWithPlainFunction(OnceClosure wait_for_sample);
 
+// Calls into |wait_for_sample| after using alloca(), to test unwinding with a
+// frame pointer.
+FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample);
+
+// Calls into |wait_for_sample| through a function within another library, to
+// test unwinding through multiple modules and scenarios involving unloaded
+// modules.
+FunctionAddressRange CallThroughOtherLibrary(NativeLibrary library,
+                                             OnceClosure wait_for_sample);
+
 // The callback to perform profiling on the provided thread.
 using ProfileCallback = OnceCallback<void(SamplingProfilerThreadToken)>;
 
@@ -121,6 +137,18 @@ void ExpectStackContains(const std::vector<Frame>& stack,
 void ExpectStackDoesNotContain(
     const std::vector<Frame>& stack,
     const std::vector<FunctionAddressRange>& functions);
+
+// Loads the other library, which defines a function to be called in the
+// WITH_OTHER_LIBRARY configuration.
+NativeLibrary LoadOtherLibrary();
+
+uintptr_t GetAddressInOtherLibrary(NativeLibrary library);
+
+// Creates a list of core unwinders required for StackSamplingProfilerTest.
+// This is useful notably on Android, which requires ChromeUnwinderAndroid in
+// addition to the native one.
+StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
+    ModuleCache* module_cache);
 
 }  // namespace base
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
@@ -57,7 +58,8 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
   }
 
   Channel::MessagePtr message =
-      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read));
+      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read),
+                                    Channel::HandlePolicy::kAcceptHandles);
   if (!message || message->payload_size() < sizeof(BrokerMessageHeader)) {
     LOG(ERROR) << "Invalid broker message";
 
@@ -109,16 +111,15 @@ Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
     const InitData* data = reinterpret_cast<const InitData*>(header + 1);
     CHECK_EQ(message->payload_size(),
              sizeof(BrokerMessageHeader) + sizeof(InitData) +
-                 data->pipe_name_length * sizeof(base::char16));
-    const base::char16* name_data =
-        reinterpret_cast<const base::char16*>(data + 1);
+                 data->pipe_name_length * sizeof(char16_t));
+    auto* name_data = reinterpret_cast<const wchar_t*>(data + 1);
     CHECK(data->pipe_name_length);
     inviter_endpoint_ = NamedPlatformChannel::ConnectToServer(
-        base::StringPiece16(name_data, data->pipe_name_length).as_string());
+        NamedPlatformChannel::ServerName(name_data, data->pipe_name_length));
   }
 }
 
-Broker::~Broker() {}
+Broker::~Broker() = default;
 
 PlatformChannelEndpoint Broker::GetInviterEndpoint() {
   return std::move(inviter_endpoint_);

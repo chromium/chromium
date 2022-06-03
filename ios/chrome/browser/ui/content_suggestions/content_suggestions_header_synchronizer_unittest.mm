@@ -74,7 +74,7 @@ TEST_F(ContentSuggestionsHeaderSynchronizerTest, updateFakeOmnibox) {
   SetAsIPhone();
 
   // Action.
-  [Synchronizer() updateFakeOmniboxOnCollectionScroll];
+  [Synchronizer() updateFakeOmniboxForScrollPosition];
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(headerController);

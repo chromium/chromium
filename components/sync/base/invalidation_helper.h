@@ -7,14 +7,10 @@
 
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/sync/base/model_type.h"
-#include "google/cacheinvalidation/include/types.h"
 
 namespace syncer {
 
-bool RealModelTypeToObjectId(ModelType model_type,
-                             invalidation::ObjectId* object_id);
-
-ObjectIdSet ModelTypeSetToObjectIdSet(ModelTypeSet model_types);
+invalidation::TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types);
 
 }  // namespace syncer
 

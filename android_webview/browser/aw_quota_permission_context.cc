@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/aw_quota_permission_context.h"
 
-#include "base/logging.h"
 
 using content::QuotaPermissionContext;
 

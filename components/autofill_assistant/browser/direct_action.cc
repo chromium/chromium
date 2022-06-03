@@ -12,16 +12,11 @@ DirectAction::DirectAction() = default;
 DirectAction::DirectAction(const DirectAction&) = default;
 DirectAction::~DirectAction() = default;
 
-DirectAction::DirectAction(const DirectActionProto& proto) {
-  for (const std::string& name : proto.names()) {
-    names.insert(name);
-  }
-  for (const std::string& argument : proto.required_arguments()) {
-    required_arguments.emplace_back(argument);
-  }
-  for (const std::string& argument : proto.optional_arguments()) {
-    optional_arguments.emplace_back(argument);
-  }
-}
+DirectAction::DirectAction(const DirectActionProto& proto)
+    : names(proto.names().begin(), proto.names().end()),
+      required_arguments(proto.required_arguments().begin(),
+                         proto.required_arguments().end()),
+      optional_arguments(proto.optional_arguments().begin(),
+                         proto.optional_arguments().end()) {}
 
 }  // namespace autofill_assistant

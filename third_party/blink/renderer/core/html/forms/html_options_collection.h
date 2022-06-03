@@ -26,12 +26,14 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class ExceptionState;
-class HTMLOptionElementOrHTMLOptGroupElement;
-class HTMLElementOrLong;
+class V8UnionHTMLElementOrLong;
+class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 
 class HTMLOptionsCollection final : public HTMLCollection {
   DEFINE_WRAPPERTYPEINFO();
@@ -44,16 +46,18 @@ class HTMLOptionsCollection final : public HTMLCollection {
     return To<HTMLOptionElement>(HTMLCollection::item(offset));
   }
 
-  void add(const HTMLOptionElementOrHTMLOptGroupElement&,
-           const HTMLElementOrLong&,
-           ExceptionState&);
+  void add(const V8UnionHTMLOptGroupElementOrHTMLOptionElement* element,
+           const V8UnionHTMLElementOrLong* before,
+           ExceptionState& exception_state);
   void remove(int index);
 
   int selectedIndex() const;
   void setSelectedIndex(int);
 
   void setLength(unsigned, ExceptionState&);
-  bool AnonymousIndexedSetter(unsigned, HTMLOptionElement*, ExceptionState&);
+  IndexedPropertySetterResult AnonymousIndexedSetter(unsigned,
+                                                     HTMLOptionElement*,
+                                                     ExceptionState&);
 
   bool ElementMatches(const HTMLElement&) const;
 
@@ -61,11 +65,12 @@ class HTMLOptionsCollection final : public HTMLCollection {
   void SupportedPropertyNames(Vector<String>& names) override;
 };
 
-DEFINE_TYPE_CASTS(HTMLOptionsCollection,
-                  LiveNodeListBase,
-                  collection,
-                  collection->GetType() == kSelectOptions,
-                  collection.GetType() == kSelectOptions);
+template <>
+struct DowncastTraits<HTMLOptionsCollection> {
+  static bool AllowFrom(const LiveNodeListBase& collection) {
+    return collection.GetType() == kSelectOptions;
+  }
+};
 
 inline bool HTMLOptionsCollection::ElementMatches(
     const HTMLElement& element) const {

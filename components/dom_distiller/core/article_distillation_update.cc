@@ -4,7 +4,7 @@
 
 #include "components/dom_distiller/core/article_distillation_update.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace dom_distiller {
 

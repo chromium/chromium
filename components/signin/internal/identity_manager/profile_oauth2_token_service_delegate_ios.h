@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
@@ -25,6 +24,12 @@ class ProfileOAuth2TokenServiceIOSDelegate
       SigninClient* client,
       std::unique_ptr<DeviceAccountsProvider> provider,
       AccountTrackerService* account_tracker_service);
+
+  ProfileOAuth2TokenServiceIOSDelegate(
+      const ProfileOAuth2TokenServiceIOSDelegate&) = delete;
+  ProfileOAuth2TokenServiceIOSDelegate& operator=(
+      const ProfileOAuth2TokenServiceIOSDelegate&) = delete;
+
   ~ProfileOAuth2TokenServiceIOSDelegate() override;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -53,8 +58,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // Subsequent calls to |RefreshTokenIsAvailable| will return |false|.
   void RevokeAllCredentials() override;
 
-  void ReloadAllAccountsFromSystem() override;
-
+  void ReloadAllAccountsFromSystemWithPrimaryAccount(
+      const absl::optional<CoreAccountId>& primary_account_id) override;
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;
 
   // Adds |account_id| to |accounts_| if it does not exist or udpates
@@ -69,16 +74,6 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
  private:
   friend class ProfileOAuth2TokenServiceIOSDelegateTest;
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           LoadRevokeCredentialsClearsExcludedAccounts);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           ReloadCredentials);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           ReloadCredentialsWithPrimaryAccountId);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           UpdateAuthErrorAfterRevokeCredentials);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           GetAuthError);
 
   struct AccountStatus {
     GoogleServiceAuthError last_auth_error;
@@ -91,10 +86,7 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // Reloads accounts from the provider. Fires |OnRefreshTokenAvailable| for
   // each new account. Fires |OnRefreshTokenRevoked| for each account that was
   // removed.
-  void ReloadCredentials();
-
-  // Clears exclude secondary accounts preferences.
-  void ClearExcludedSecondaryAccounts();
+  void ReloadCredentials(const CoreAccountId& primary_account_id);
 
   // Info about the existing accounts.
   AccountStatusMap accounts_;
@@ -108,7 +100,5 @@ class ProfileOAuth2TokenServiceIOSDelegate
   SigninClient* client_ = nullptr;
   std::unique_ptr<DeviceAccountsProvider> provider_;
   AccountTrackerService* account_tracker_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceIOSDelegate);
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_IOS_H_

@@ -27,7 +27,8 @@ typedef std::vector<ThreadData> ThreadsVector;
 // Contains per process data stored in each data snapshot.
 struct ProcessData {
   ULONGLONG cpu_time;
-  ULONGLONG working_set;
+  ULONGLONG memory;  // Private commit
+  DWORD handle_count;
   ThreadsVector threads;
 };
 
@@ -51,6 +52,10 @@ class SystemInformationSampler {
 
  private:
   wchar_t target_process_name_[256] = {};
+  // Process ID of target process. If nonzero, |target_process_name| is a
+  // process ID, so filter to this ID and its child processes.
+  DWORD target_process_id_ = 0;
+
   LARGE_INTEGER perf_frequency_;
   LARGE_INTEGER initial_counter_;
   size_t previous_buffer_size_ = 0;

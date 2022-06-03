@@ -8,18 +8,16 @@
 #include <map>
 #include <memory>
 
-#include "chrome/browser/extensions/convert_web_app.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/extensions/manifest_handlers/app_icon_color_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
-#include "chrome/common/extensions/sync_helper.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
@@ -43,18 +41,13 @@ struct AppState {
   syncer::StringOrdinal page_ordinal;
   extensions::LaunchType launch_type;
   GURL launch_web_url;
-  GURL bookmark_app_scope;
-  std::string icon_color;
-  base::Optional<SkColor> theme_color;
   std::string description;
   std::string name;
-  bool from_bookmark;
 };
 
 using AppStateMap = std::map<std::string, AppState>;
 
-AppState::AppState()
-    : launch_type(extensions::LAUNCH_TYPE_INVALID), from_bookmark(false) {}
+AppState::AppState() : launch_type(extensions::LAUNCH_TYPE_INVALID) {}
 
 AppState::~AppState() {}
 
@@ -66,11 +59,8 @@ bool AppState::Equals(const AppState& other) const {
   return app_launch_ordinal.Equals(other.app_launch_ordinal) &&
          page_ordinal.Equals(other.page_ordinal) &&
          launch_type == other.launch_type &&
-         bookmark_app_scope == other.bookmark_app_scope &&
-         icon_color == other.icon_color && theme_color == other.theme_color &&
          launch_web_url == other.launch_web_url &&
-         description == other.description && name == other.name &&
-         from_bookmark == other.from_bookmark;
+         description == other.description && name == other.name;
 }
 
 // Load all the app specific values for |id| into |app_state|.
@@ -89,19 +79,10 @@ void LoadApp(content::BrowserContext* context,
   // In case of running tests against real backend servers, pending apps won't
   // be installed.
   if (extension) {
-    if (extension->from_bookmark()) {
-      app_state->bookmark_app_scope =
-          extensions::GetScopeURLFromBookmarkApp(extension);
-    }
     app_state->launch_web_url =
         extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-    app_state->icon_color =
-        extensions::AppIconColorInfo::GetIconColorString(extension);
-    app_state->theme_color =
-        extensions::AppThemeColorInfo::GetThemeColor(extension);
     app_state->description = extension->description();
     app_state->name = extension->name();
-    app_state->from_bookmark = extension->from_bookmark();
   }
 }
 
@@ -114,7 +95,7 @@ AppStateMap GetAppStates(Profile* profile) {
           ->GenerateInstalledExtensionsSet());
   for (const auto& extension : *extensions) {
     if (extension->is_app() &&
-        extensions::sync_helper::IsSyncable(extension.get())) {
+        extensions::util::ShouldSync(extension.get(), profile)) {
       const std::string& id = extension->id();
       LoadApp(profile, id, &(app_state_map[id]));
     }
@@ -125,12 +106,11 @@ AppStateMap GetAppStates(Profile* profile) {
           ->extension_service()
           ->pending_extension_manager();
 
-  std::list<std::string> pending_crx_ids;
-  pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_crx_ids);
+  std::list<std::string> pending_crx_ids =
+      pending_extension_manager->GetPendingIdsForUpdateCheck();
 
-  for (std::list<std::string>::const_iterator id = pending_crx_ids.begin();
-       id != pending_crx_ids.end(); ++id) {
-    LoadApp(profile, *id, &(app_state_map[*id]));
+  for (const auto& id : pending_crx_ids) {
+    LoadApp(profile, id, &(app_state_map[id]));
   }
 
   return app_state_map;
@@ -152,7 +132,7 @@ void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
     extensions::ExtensionSystem::Get(test->GetProfile(i))
         ->InitForRegularProfile(true /* extensions_enabled */);
   }
-  if (test->use_verifier()) {
+  if (test->UseVerifier()) {
     extensions::ExtensionSystem::Get(test->verifier())
         ->InitForRegularProfile(true /* extensions_enabled */);
   }
@@ -161,8 +141,8 @@ void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
 }
 
 bool SyncAppHelper::AppStatesMatch(Profile* profile1, Profile* profile2) {
-  if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(
-          profile1, profile2))
+  if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(profile1,
+                                                                profile2))
     return false;
 
   const AppStateMap& state_map1 = GetAppStates(profile1);

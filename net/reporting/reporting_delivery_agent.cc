@@ -4,19 +4,24 @@
 
 #include "net/reporting/reporting_delivery_agent.h"
 
+#include <algorithm>
 #include <map>
+#include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/url_util.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
 #include "net/reporting/reporting_context.h"
@@ -31,9 +36,15 @@ namespace net {
 
 namespace {
 
-void SerializeReports(const std::vector<const ReportingReport*>& reports,
-                      base::TimeTicks now,
-                      std::string* json_out) {
+using ReportList = std::vector<const ReportingReport*>;
+using ReportingUploadHeaderType =
+    ReportingDeliveryAgent::ReportingUploadHeaderType;
+
+void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
+  base::UmaHistogramEnumeration("Net.Reporting.UploadHeaderType", header_type);
+}
+
+std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
   base::ListValue reports_value;
 
   for (const ReportingReport* report : reports) {
@@ -49,9 +60,137 @@ void SerializeReports(const std::vector<const ReportingReport*>& reports,
     reports_value.Append(std::move(report_value));
   }
 
-  bool json_written = base::JSONWriter::Write(reports_value, json_out);
+  std::string json_out;
+  bool json_written = base::JSONWriter::Write(reports_value, &json_out);
   DCHECK(json_written);
+  return json_out;
 }
+
+bool CompareReportGroupKeys(const ReportingReport* lhs,
+                            const ReportingReport* rhs) {
+  return lhs->GetGroupKey() < rhs->GetGroupKey();
+}
+
+// Each Delivery corresponds to one upload URLRequest.
+class Delivery {
+ public:
+  // The target of a delivery. All reports uploaded together must share the
+  // same values for these parameters.
+  // Note that |origin| here (which matches the report's |origin|) is not
+  // necessarily the same as the |origin| of the ReportingEndpoint's group key
+  // (if the endpoint is configured to include subdomains). Reports with
+  // different group keys can be in the same delivery, as long as the NIK,
+  // report origin and reporting source are the same, and they all get assigned
+  // to the same endpoint URL.
+  // |isolation_info| is the IsolationInfo struct associated with the reporting
+  // endpoint, and is used to determine appropriate credentials for the upload.
+  // |network_isolation_key| is the NIK from the ReportingEndpoint, which may
+  // have been cleared in the ReportingService if reports are not being
+  // partitioned by NIK. (This is why a separate parameter is used here, rather
+  // than simply using the computed NIK from |isolation_info|.)
+  struct Target {
+    Target(const IsolationInfo& isolation_info,
+           const NetworkIsolationKey& network_isolation_key,
+           const url::Origin& origin,
+           const GURL& endpoint_url,
+           const absl::optional<base::UnguessableToken> reporting_source)
+        : isolation_info(isolation_info),
+          network_isolation_key(network_isolation_key),
+          origin(origin),
+          endpoint_url(endpoint_url),
+          reporting_source(reporting_source) {
+      DCHECK(network_isolation_key.IsEmpty() ||
+             network_isolation_key == isolation_info.network_isolation_key());
+    }
+
+    ~Target() = default;
+
+    bool operator<(const Target& other) const {
+      // Note that sorting by NIK here is required for V0 reports; V1 reports
+      // should not need this (but it doesn't hurt). We can remove that as a
+      // comparison key when V0 reporting endpoints are removed.
+      return std::tie(network_isolation_key, origin, endpoint_url,
+                      reporting_source) <
+             std::tie(other.network_isolation_key, other.origin,
+                      other.endpoint_url, other.reporting_source);
+    }
+
+    IsolationInfo isolation_info;
+    NetworkIsolationKey network_isolation_key;
+    url::Origin origin;
+    GURL endpoint_url;
+    absl::optional<base::UnguessableToken> reporting_source;
+  };
+
+  explicit Delivery(const Target& target) : target_(target) {}
+
+  ~Delivery() = default;
+
+  // Add the reports in [reports_begin, reports_end) into this delivery.
+  // Modify the report counter for the |endpoint| to which this delivery is
+  // destined.
+  void AddReports(const ReportingEndpoint& endpoint,
+                  const ReportList::const_iterator reports_begin,
+                  const ReportList::const_iterator reports_end) {
+    DCHECK(reports_begin != reports_end);
+    DCHECK_EQ(endpoint.group_key.network_isolation_key,
+              network_isolation_key());
+    DCHECK(IsSubdomainOf(target_.origin.host() /* subdomain */,
+                         endpoint.group_key.origin.host() /* superdomain */));
+    for (auto it = reports_begin; it != reports_end; ++it) {
+      DCHECK_EQ((*reports_begin)->GetGroupKey(), (*it)->GetGroupKey());
+      DCHECK_EQ((*it)->network_isolation_key, network_isolation_key());
+      DCHECK_EQ(url::Origin::Create((*it)->url), target_.origin);
+      DCHECK_EQ((*it)->group, endpoint.group_key.group_name);
+      // Report origin is equal to, or a subdomain of, the endpoint
+      // configuration's origin.
+      DCHECK(IsSubdomainOf((*it)->url.host_piece() /* subdomain */,
+                           endpoint.group_key.origin.host() /* superdomain */));
+    }
+
+    reports_per_group_[endpoint.group_key] +=
+        std::distance(reports_begin, reports_end);
+    reports_.insert(reports_.end(), reports_begin, reports_end);
+  }
+
+  // Records statistics for reports after an upload has completed.
+  // Either removes successfully delivered reports, or increments the failure
+  // counter if delivery was unsuccessful.
+  void ProcessOutcome(ReportingCache* cache, bool success) {
+    for (const auto& group_name_and_count : reports_per_group_) {
+      cache->IncrementEndpointDeliveries(group_name_and_count.first,
+                                         target_.endpoint_url,
+                                         group_name_and_count.second, success);
+    }
+    if (success) {
+      ReportingUploadHeaderType upload_type =
+          target_.reporting_source.has_value()
+              ? ReportingUploadHeaderType::kReportingEndpoints
+              : ReportingUploadHeaderType::kReportTo;
+      for (size_t i = 0; i < reports_.size(); ++i) {
+        RecordReportingUploadHeaderType(upload_type);
+      }
+      cache->RemoveReports(reports_, /* delivery_success */ true);
+    } else {
+      cache->IncrementReportsAttempts(reports_);
+    }
+  }
+
+  const NetworkIsolationKey& network_isolation_key() const {
+    return target_.network_isolation_key;
+  }
+  const GURL& endpoint_url() const { return target_.endpoint_url; }
+  const ReportList& reports() const { return reports_; }
+
+ private:
+  const Target target_;
+  ReportList reports_;
+
+  // Used to track statistics for each ReportingEndpoint.
+  // The endpoint is uniquely identified by the key in conjunction with
+  // |target_.endpoint_url|. See ProcessOutcome().
+  std::map<ReportingEndpointGroupKey, int> reports_per_group_;
+};
 
 class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
                                    public ReportingCacheObserver {
@@ -69,6 +208,10 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     context_->AddCacheObserver(this);
   }
 
+  ReportingDeliveryAgentImpl(const ReportingDeliveryAgentImpl&) = delete;
+  ReportingDeliveryAgentImpl& operator=(const ReportingDeliveryAgentImpl&) =
+      delete;
+
   // ReportingDeliveryAgent implementation:
 
   ~ReportingDeliveryAgentImpl() override {
@@ -80,6 +223,15 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     timer_ = std::move(timer);
   }
 
+  void SendReportsForSource(base::UnguessableToken reporting_source) override {
+    DCHECK(!reporting_source.is_empty());
+    ReportList reports =
+        cache()->GetReportsToDeliverForSource(reporting_source);
+    if (reports.empty())
+      return;
+    DoSendReports(std::move(reports));
+  }
+
   // ReportingCacheObserver implementation:
   void OnReportsUpdated() override {
     if (CacheHasReports() && !timer_->IsRunning()) {
@@ -89,35 +241,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   }
 
  private:
-  using OriginGroup = std::pair<url::Origin, std::string>;
-  using OriginEndpoint = std::pair<url::Origin, GURL>;
-  using OriginGroupEndpoint = std::tuple<url::Origin, std::string, GURL>;
-
-  class Delivery {
-   public:
-    Delivery(const OriginEndpoint& report_origin_endpoint)
-        : report_origin(report_origin_endpoint.first),
-          endpoint(report_origin_endpoint.second) {}
-
-    ~Delivery() = default;
-
-    void AddReports(const ReportingEndpoint& endpoint,
-                    const std::vector<const ReportingReport*>& to_add) {
-      OriginGroupEndpoint key =
-          std::make_tuple(endpoint.group_key.origin,
-                          endpoint.group_key.group_name, endpoint.info.url);
-      reports_per_endpoint[key] += to_add.size();
-      reports.insert(reports.end(), to_add.begin(), to_add.end());
-    }
-
-    const url::Origin report_origin;
-    const GURL endpoint;
-    std::vector<const ReportingReport*> reports;
-    std::map<OriginGroupEndpoint, int> reports_per_endpoint;
-  };
-
   bool CacheHasReports() {
-    std::vector<const ReportingReport*> reports;
+    ReportList reports;
     context_->cache()->GetReports(&reports);
     return !reports.empty();
   }
@@ -136,14 +261,13 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   }
 
   void SendReports() {
-    std::vector<const ReportingReport*> reports;
-    cache()->GetNonpendingReports(&reports);
+    ReportList reports = cache()->GetReportsToDeliver();
+    if (reports.empty())
+      return;
+    DoSendReports(std::move(reports));
+  }
 
-    // Mark all of these reports as pending, so that they're not deleted out
-    // from under us while we're checking permissions (possibly on another
-    // thread).
-    cache()->SetReportsPending(reports);
-
+  void DoSendReports(ReportList reports) {
     // First determine which origins we're allowed to upload reports about.
     std::set<url::Origin> report_origins;
     for (const ReportingReport* report : reports) {
@@ -155,83 +279,85 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
                        weak_factory_.GetWeakPtr(), std::move(reports)));
   }
 
-  void OnSendPermissionsChecked(std::vector<const ReportingReport*> reports,
+  void OnSendPermissionsChecked(ReportList reports,
                                 std::set<url::Origin> allowed_report_origins) {
-    // Sort reports into (origin, group) buckets.
-    std::map<OriginGroup, std::vector<const ReportingReport*>>
-        origin_group_reports;
-    for (const ReportingReport* report : reports) {
-      url::Origin report_origin = url::Origin::Create(report->url);
-      if (allowed_report_origins.find(report_origin) ==
-          allowed_report_origins.end())
-        continue;
-      OriginGroup origin_group(report_origin, report->group);
-      origin_group_reports[origin_group].push_back(report);
-    }
+    DCHECK(!reports.empty());
+    std::map<Delivery::Target, std::unique_ptr<Delivery>> deliveries;
 
-    // Find an endpoint for each (origin, group) bucket and sort reports into
-    // endpoint buckets. Don't allow concurrent deliveries to the same (origin,
-    // group) bucket.
-    std::map<OriginEndpoint, std::unique_ptr<Delivery>> deliveries;
-    for (auto& it : origin_group_reports) {
-      const OriginGroup& origin_group = it.first;
-      const url::Origin& report_origin = origin_group.first;
-      const std::string& group = origin_group.second;
+    // Sort by group key
+    std::sort(reports.begin(), reports.end(), &CompareReportGroupKeys);
 
-      if (base::Contains(pending_origin_groups_, origin_group))
+    // Iterate over "buckets" of reports with the same group key.
+    for (auto bucket_it = reports.begin(); bucket_it != reports.end();) {
+      auto bucket_start = bucket_it;
+      // Set the iterator to the beginning of the next group bucket.
+      bucket_it = std::upper_bound(bucket_it, reports.end(), *bucket_it,
+                                   &CompareReportGroupKeys);
+
+      // Skip this group if we don't have origin permissions for this origin.
+      const ReportingEndpointGroupKey& report_group_key =
+          (*bucket_start)->GetGroupKey();
+      if (!base::Contains(allowed_report_origins, report_group_key.origin))
         continue;
 
-      // TODO(mmenke): Populate NetworkIsolationKey argument.
+      // Skip this group if there is already a pending upload for it.
+      // We don't allow multiple concurrent uploads for the same group.
+      if (base::Contains(pending_groups_, report_group_key))
+        continue;
+
+      // Find an endpoint to deliver these reports to.
       const ReportingEndpoint endpoint =
-          endpoint_manager_->FindEndpointForDelivery(NetworkIsolationKey(),
-                                                     report_origin, group);
-      if (!endpoint) {
-        // TODO(chlily): Remove reports for which there are no valid
-        // delivery endpoints.
+          endpoint_manager_->FindEndpointForDelivery(report_group_key);
+      // TODO(chlily): Remove reports for which there are no valid delivery
+      // endpoints.
+      if (!endpoint)
         continue;
-      }
-      OriginEndpoint report_origin_endpoint(report_origin, endpoint.info.url);
 
-      Delivery* delivery;
-      auto delivery_it = deliveries.find(report_origin_endpoint);
+      pending_groups_.insert(report_group_key);
+
+      IsolationInfo isolation_info =
+          cache()->GetIsolationInfoForEndpoint(endpoint);
+
+      // Add the reports to the appropriate delivery.
+      Delivery::Target target(isolation_info,
+                              report_group_key.network_isolation_key,
+                              report_group_key.origin, endpoint.info.url,
+                              endpoint.group_key.reporting_source);
+      auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
-        auto new_delivery = std::make_unique<Delivery>(report_origin_endpoint);
-        delivery = new_delivery.get();
-        deliveries[report_origin_endpoint] = std::move(new_delivery);
-      } else {
-        delivery = delivery_it->second.get();
+        bool inserted;
+        auto new_delivery = std::make_unique<Delivery>(target);
+        std::tie(delivery_it, inserted) = deliveries.insert(
+            std::make_pair(std::move(target), std::move(new_delivery)));
+        DCHECK(inserted);
       }
-
-      delivery->AddReports(endpoint, it.second);
-      pending_origin_groups_.insert(origin_group);
+      delivery_it->second->AddReports(endpoint, bucket_start, bucket_it);
     }
 
     // Keep track of which of these reports we don't queue for delivery; we'll
     // need to mark them as not-pending.
-    std::unordered_set<const ReportingReport*> undelivered_reports(
-        reports.begin(), reports.end());
+    std::set<const ReportingReport*> undelivered_reports(reports.begin(),
+                                                         reports.end());
 
     // Start an upload for each delivery.
-    for (auto& it : deliveries) {
-      const OriginEndpoint& report_origin_endpoint = it.first;
-      const url::Origin& report_origin = report_origin_endpoint.first;
-      const GURL& endpoint = report_origin_endpoint.second;
-      std::unique_ptr<Delivery>& delivery = it.second;
-
-      std::string json;
-      SerializeReports(delivery->reports, tick_clock().NowTicks(), &json);
+    for (auto& target_and_delivery : deliveries) {
+      const Delivery::Target& target = target_and_delivery.first;
+      std::unique_ptr<Delivery>& delivery = target_and_delivery.second;
 
       int max_depth = 0;
-      for (const ReportingReport* report : delivery->reports) {
+      for (const ReportingReport* report : delivery->reports()) {
         undelivered_reports.erase(report);
-        if (report->depth > max_depth)
-          max_depth = report->depth;
+        max_depth = std::max(report->depth, max_depth);
       }
 
+      std::string upload_data =
+          SerializeReports(delivery->reports(), tick_clock().NowTicks());
+
       // TODO: Calculate actual max depth.
-      // TODO(mmenke): Populate NetworkIsolationKey.
       uploader()->StartUpload(
-          report_origin, endpoint, NetworkIsolationKey(), json, max_depth,
+          target.origin, target.endpoint_url, target.isolation_info,
+          upload_data, max_depth,
+          /*eligible_for_credentials=*/target.reporting_source.has_value(),
           base::BindOnce(&ReportingDeliveryAgentImpl::OnUploadComplete,
                          weak_factory_.GetWeakPtr(), std::move(delivery)));
     }
@@ -242,38 +368,25 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
   void OnUploadComplete(std::unique_ptr<Delivery> delivery,
                         ReportingUploader::Outcome outcome) {
-    for (const auto& endpoint_and_count : delivery->reports_per_endpoint) {
-      const url::Origin& origin = std::get<0>(endpoint_and_count.first);
-      const std::string& group = std::get<1>(endpoint_and_count.first);
-      const GURL& endpoint = std::get<2>(endpoint_and_count.first);
-      int report_count = endpoint_and_count.second;
-      cache()->IncrementEndpointDeliveries(
-          origin, group, endpoint, report_count,
-          outcome == ReportingUploader::Outcome::SUCCESS);
-    }
+    bool success = outcome == ReportingUploader::Outcome::SUCCESS;
+    delivery->ProcessOutcome(cache(), success);
 
-    if (outcome == ReportingUploader::Outcome::SUCCESS) {
-      cache()->RemoveReports(delivery->reports,
-                             ReportingReport::Outcome::DELIVERED);
-      // TODO(mmenke): Populate NetworkIsolationKey argument.
-      endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(),
-                                                 delivery->endpoint, true);
-    } else {
-      cache()->IncrementReportsAttempts(delivery->reports);
-      // TODO(mmenke): Populate NetworkIsolationKey argument.
-      endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(),
-                                                 delivery->endpoint, false);
-    }
+    endpoint_manager_->InformOfEndpointRequest(
+        delivery->network_isolation_key(), delivery->endpoint_url(), success);
 
+    // TODO(chlily): This leaks information across NIKs. If the endpoint URL is
+    // configured for both NIK1 and NIK2, and it responds with a 410 on a NIK1
+    // connection, then the change in configuration will be detectable on a NIK2
+    // connection.
+    // TODO(rodneyding): Handle Remove endpoint for Reporting-Endpoints header.
     if (outcome == ReportingUploader::Outcome::REMOVE_ENDPOINT)
-      cache()->RemoveEndpointsForUrl(delivery->endpoint);
+      cache()->RemoveEndpointsForUrl(delivery->endpoint_url());
 
-    for (const ReportingReport* report : delivery->reports) {
-      pending_origin_groups_.erase(
-          OriginGroup(delivery->report_origin, report->group));
+    for (const ReportingReport* report : delivery->reports()) {
+      pending_groups_.erase(report->GetGroupKey());
     }
 
-    cache()->ClearReportsPending(delivery->reports);
+    cache()->ClearReportsPending(delivery->reports());
   }
 
   const ReportingPolicy& policy() const { return context_->policy(); }
@@ -286,15 +399,12 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  // Tracks OriginGroup tuples for which there is a pending delivery running.
-  // (Would be an unordered_set, but there's no hash on pair.)
-  std::set<OriginGroup> pending_origin_groups_;
+  // Tracks endpoint groups for which there is a pending delivery running.
+  std::set<ReportingEndpointGroupKey> pending_groups_;
 
   std::unique_ptr<ReportingEndpointManager> endpoint_manager_;
 
   base::WeakPtrFactory<ReportingDeliveryAgentImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingDeliveryAgentImpl);
 };
 
 }  // namespace

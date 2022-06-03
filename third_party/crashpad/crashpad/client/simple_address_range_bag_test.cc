@@ -14,7 +14,6 @@
 
 #include "client/simple_address_range_bag.h"
 
-#include "base/logging.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
 

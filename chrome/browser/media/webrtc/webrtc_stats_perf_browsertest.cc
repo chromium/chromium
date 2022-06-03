@@ -13,6 +13,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/public/common/features.h"
@@ -85,7 +86,6 @@ class WebRtcStatsPerfBrowserTest : public WebRtcTestBase {
         .AddExtension(test::kY4mFileExtension);
     command_line->AppendSwitchPath(switches::kUseFileForFakeVideoCapture,
                                    input_video);
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
   void StartCall(const std::string& audio_codec,
@@ -318,9 +318,18 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioAndVideoCallCollectingMetricsWithVideoCodec("VP9");
 }
 
+// TODO(crbug.com/1241344): test fails on some mac bots.
+#if defined(OS_MAC)
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
+  DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
+#else
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
+  MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
-    MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2) {
+    MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   RunsAudioAndVideoCallCollectingMetricsWithVideoCodec(
       "VP9", true /* prefer_hw_video_codec */,

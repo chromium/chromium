@@ -14,6 +14,9 @@ namespace gpu {
 
 class GPU_EXPORT GpuBlocklist : public GpuControlList {
  public:
+  GpuBlocklist(const GpuBlocklist&) = delete;
+  GpuBlocklist& operator=(const GpuBlocklist&) = delete;
+
   ~GpuBlocklist() override;
 
   static std::unique_ptr<GpuBlocklist> Create();
@@ -23,8 +26,6 @@ class GPU_EXPORT GpuBlocklist : public GpuControlList {
 
  private:
   explicit GpuBlocklist(const GpuControlListData& data);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuBlocklist);
 };
 
 }  // namespace gpu

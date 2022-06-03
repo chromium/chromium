@@ -9,14 +9,14 @@ import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Callback;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests for {@link Weblayer#createAsync} and {@link Weblayer#createSync}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(WebLayerJUnit4ClassRunner.class)
 public class WebLayerLoadingTest {
     private Context mContext;
 

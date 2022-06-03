@@ -9,7 +9,7 @@
     Exposed=Window,
     RuntimeEnabled=WebXR
 ] interface XRRigidTransform {
-  [RaisesException] constructor(optional DOMPointInit position, optional DOMPointInit orientation);
+  [RaisesException] constructor(optional DOMPointInit position = {}, optional DOMPointInit orientation = {});
   [SameObject] readonly attribute DOMPointReadOnly position;
   [SameObject] readonly attribute DOMPointReadOnly orientation;
   [SameObject] readonly attribute Float32Array matrix;

@@ -17,6 +17,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace web {
+class WebUIIOS;
+}  // namespace web
+
 namespace ios_web_view {
 
 class WebViewURLRequestContextGetter;
@@ -24,11 +28,15 @@ class WebViewDownloadManager;
 
 // WebView implementation of BrowserState. Can only be used only on the UI
 // thread.
-class WebViewBrowserState : public web::BrowserState {
+class WebViewBrowserState final : public web::BrowserState {
  public:
   explicit WebViewBrowserState(
       bool off_the_record,
       WebViewBrowserState* recording_browser_state = nullptr);
+
+  WebViewBrowserState(const WebViewBrowserState&) = delete;
+  WebViewBrowserState& operator=(const WebViewBrowserState&) = delete;
+
   ~WebViewBrowserState() override;
 
   // web::BrowserState implementation.
@@ -46,6 +54,8 @@ class WebViewBrowserState : public web::BrowserState {
   // Converts from web::BrowserState to WebViewBrowserState.
   static WebViewBrowserState* FromBrowserState(
       web::BrowserState* browser_state);
+
+  static WebViewBrowserState* FromWebUIIOS(web::WebUIIOS* web_ui);
 
  private:
   // Registers the preferences for this BrowserState.
@@ -68,8 +78,6 @@ class WebViewBrowserState : public web::BrowserState {
 
   // Handles browser downloads.
   std::unique_ptr<WebViewDownloadManager> download_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserState);
 };
 
 }  // namespace ios_web_view

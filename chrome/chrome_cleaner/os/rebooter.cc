@@ -29,10 +29,10 @@ const char* kSwitchesToPropagate[]{
     kChromeVersionSwitch, kDumpRawLogsSwitch,   kEnableCrashReportingSwitch,
     kEngineSwitch,        kExecutionModeSwitch, kLogUploadRetryIntervalSwitch,
     kNoSelfDeleteSwitch,  kTestingSwitch,       kUmaUserSwitch,
-};
+    kResetShortcutsSwitch};
 
 // The name of the task to run post reboot.
-base::string16 PostRebootRunTaskName(const base::string16& product_shortname) {
+std::wstring PostRebootRunTaskName(const std::wstring& product_shortname) {
   return product_shortname + L" post reboot run";
 }
 
@@ -43,7 +43,7 @@ bool Rebooter::IsPostReboot() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kPostRebootSwitch);
 }
 
-Rebooter::Rebooter(const base::string16& product_shortname)
+Rebooter::Rebooter(const std::wstring& product_shortname)
     : product_shortname_(product_shortname),
       switches_(base::CommandLine::NO_PROGRAM) {}
 

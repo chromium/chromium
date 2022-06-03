@@ -11,12 +11,12 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -55,8 +55,6 @@ void ClickToCallContextMenuObserver::BuildMenu(
     const std::string& selection_text,
     SharingClickToCallEntryPoint entry_point) {
   DCHECK(!phone_number.empty());
-  LogClickToCallPhoneNumberSize(phone_number, entry_point,
-                                /*send_to_device=*/false);
 
   phone_number_ = phone_number;
   selection_text_ = selection_text;
@@ -68,7 +66,7 @@ void ClickToCallContextMenuObserver::BuildMenu(
     return;
 
   if (devices_.size() == 1) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     proxy_->AddMenuItem(
         IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
         l10n_util::GetStringFUTF16(
@@ -80,11 +78,13 @@ void ClickToCallContextMenuObserver::BuildMenu(
         l10n_util::GetStringFUTF16(
             IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE,
             base::UTF8ToUTF16(devices_[0]->client_name())),
-        vector_icons::kCallIcon);
+        ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
+                                       ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
 #endif
   } else {
     BuildSubMenu();
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     proxy_->AddSubMenu(
         IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
         l10n_util::GetStringUTF16(
@@ -94,7 +94,10 @@ void ClickToCallContextMenuObserver::BuildMenu(
     proxy_->AddSubMenuWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
         IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
-        sub_menu_model_.get(), vector_icons::kCallIcon);
+        sub_menu_model_.get(),
+        ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
+                                       ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
 #endif
   }
 }
@@ -140,13 +143,11 @@ void ClickToCallContextMenuObserver::ExecuteCommand(int command_id) {
 void ClickToCallContextMenuObserver::SendClickToCallMessage(
     int chosen_device_index) {
   DCHECK(entry_point_);
-  if (size_t{chosen_device_index} >= devices_.size())
+  if (static_cast<size_t>(chosen_device_index) >= devices_.size())
     return;
 
-  LogSharingSelectedDeviceIndex(controller_->GetFeatureMetricsPrefix(),
-                                kSharingUiContextMenu, chosen_device_index);
-  if (!selection_text_.empty())
-    LogPhoneNumberDetectionMetrics(selection_text_, /*sent_to_device=*/true);
+  LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),
+                          kSharingUiContextMenu, chosen_device_index);
 
   controller_->OnDeviceSelected(phone_number_, *devices_[chosen_device_index],
                                 *entry_point_);

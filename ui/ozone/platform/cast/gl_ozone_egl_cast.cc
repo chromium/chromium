@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/public/cast_egl_platform.h"
@@ -79,7 +79,7 @@ void GLOzoneEglCast::TerminateDisplay() {
   DCHECK(get_display);
   DCHECK(terminate);
 
-  EGLDisplay display = get_display(GetNativeDisplay());
+  EGLDisplay display = get_display(GetNativeDisplay().GetDisplay());
   DCHECK_NE(display, EGL_NO_DISPLAY);
 
   EGLBoolean terminate_result = terminate(display);
@@ -89,8 +89,8 @@ void GLOzoneEglCast::TerminateDisplay() {
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
     gfx::AcceleratedWidget widget) {
   // Verify requested widget dimensions match our current display size.
-  DCHECK_EQ(widget >> 16, display_size_.width());
-  DCHECK_EQ(widget & 0xffff, display_size_.height());
+  DCHECK_EQ(static_cast<int>(widget >> 16), display_size_.width());
+  DCHECK_EQ(static_cast<int>(widget & 0xffff), display_size_.height());
 
   return gl::InitializeGLSurface(new GLSurfaceCast(widget, this));
 }
@@ -100,9 +100,10 @@ scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateOffscreenGLSurface(
   return gl::InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
 }
 
-intptr_t GLOzoneEglCast::GetNativeDisplay() {
+gl::EGLDisplayPlatform GLOzoneEglCast::GetNativeDisplay() {
   CreateDisplayTypeAndWindowIfNeeded();
-  return reinterpret_cast<intptr_t>(display_type_);
+  return gl::EGLDisplayPlatform(
+      reinterpret_cast<EGLNativeDisplayType>(display_type_));
 }
 
 void GLOzoneEglCast::CreateDisplayTypeAndWindowIfNeeded() {
@@ -131,7 +132,8 @@ bool GLOzoneEglCast::ResizeDisplay(gfx::Size size) {
   return true;
 }
 
-bool GLOzoneEglCast::LoadGLES2Bindings(gl::GLImplementation implementation) {
+bool GLOzoneEglCast::LoadGLES2Bindings(
+    const gl::GLImplementationParts& implementation) {
   InitializeHardwareIfNeeded();
 
   void* lib_egl = egl_platform_->GetEglLibrary();

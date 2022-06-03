@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -41,7 +42,14 @@
 namespace blink {
 
 float FloatPoint::SlopeAngleRadians() const {
+#if defined(OS_MAC)
+  // atan2f(...) returns less accurate results on Mac.
+  // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
+  return static_cast<float>(
+      atan2(static_cast<double>(y_), static_cast<double>(x_)));
+#else
   return atan2f(y_, x_);
+#endif
 }
 
 float FloatPoint::length() const {
@@ -57,7 +65,7 @@ FloatPoint FloatPoint::ShrunkTo(const FloatPoint& other) const {
 }
 
 FloatPoint FloatPoint::NarrowPrecision(double x, double y) {
-  return FloatPoint(clampTo<float>(x), clampTo<float>(y));
+  return FloatPoint(ClampTo<float>(x), ClampTo<float>(y));
 }
 
 bool FindIntersection(const FloatPoint& p1,
@@ -65,21 +73,21 @@ bool FindIntersection(const FloatPoint& p1,
                       const FloatPoint& d1,
                       const FloatPoint& d2,
                       FloatPoint& intersection) {
-  float px_length = p2.X() - p1.X();
-  float py_length = p2.Y() - p1.Y();
+  float px_length = p2.x() - p1.x();
+  float py_length = p2.y() - p1.y();
 
-  float dx_length = d2.X() - d1.X();
-  float dy_length = d2.Y() - d1.Y();
+  float dx_length = d2.x() - d1.x();
+  float dy_length = d2.y() - d1.y();
 
   float denom = px_length * dy_length - py_length * dx_length;
   if (!denom)
     return false;
 
   float param =
-      ((d1.X() - p1.X()) * dy_length - (d1.Y() - p1.Y()) * dx_length) / denom;
+      ((d1.x() - p1.x()) * dy_length - (d1.y() - p1.y()) * dx_length) / denom;
 
-  intersection.SetX(p1.X() + param * px_length);
-  intersection.SetY(p1.Y() + param * py_length);
+  intersection.set_x(p1.x() + param * px_length);
+  intersection.set_y(p1.y() + param * py_length);
   return true;
 }
 
@@ -88,12 +96,12 @@ std::ostream& operator<<(std::ostream& ostream, const FloatPoint& point) {
 }
 
 String FloatPoint::ToString() const {
-  return String::Format("%lg,%lg", X(), Y());
+  return String::Format("%lg,%lg", x(), y());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatPoint& p) {
-  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.X());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.Y());
+  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
   ts << ")";
   return ts;
 }

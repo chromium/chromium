@@ -11,7 +11,7 @@
 #include <limits>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/cast/test/utility/audio_utility.h"
 
 const size_t kSamplingFrequency = 48000;

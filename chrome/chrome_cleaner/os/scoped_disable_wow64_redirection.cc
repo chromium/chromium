@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/scoped_native_library.h"
 
 namespace chrome_cleaner {
@@ -34,6 +35,9 @@ class Wow64Functions {
       PLOG(ERROR) << "Cannot open library 'kernel32'.";
     }
   }
+
+  Wow64Functions(const Wow64Functions&) = delete;
+  Wow64Functions& operator=(const Wow64Functions&) = delete;
 
   bool is_valid() const {
     return is_wow_64_process_ && wow_64_disable_wow_64_fs_redirection_ &&
@@ -65,8 +69,6 @@ class Wow64Functions {
   IsWow64Process is_wow_64_process_;
   Wow64DisableWow64FSRedirection wow_64_disable_wow_64_fs_redirection_;
   Wow64RevertWow64FSRedirection wow_64_revert_wow_64_fs_redirection_;
-
-  DISALLOW_COPY_AND_ASSIGN(Wow64Functions);
 };
 
 // Global Wow64Function instance used by ScopedDisableWow64Redirection below.

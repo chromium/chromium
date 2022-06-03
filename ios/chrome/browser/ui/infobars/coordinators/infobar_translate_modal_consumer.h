@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_TRANSLATE_MODAL_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_TRANSLATE_MODAL_CONSUMER_H_
 
+#import <Foundation/Foundation.h>
+
 namespace {
 // Pref keys passed through setupModalViewControllerWithPrefs:.
 NSString* kSourceLanguagePrefKey = @"sourceLanguage";
@@ -20,13 +22,12 @@ NSString* kDisplayNeverTranslateLanguagePrefKey =
 NSString* kIsTranslatableLanguagePrefKey = @"isTranslatableLanguage";
 NSString* kDisplayNeverTranslateSiteButtonPrefKey =
     @"displayNeverTranslateSite";
-NSString* kIsSiteBlacklistedPrefKey = @"isSiteBlacklisted";
-
+NSString* kIsSiteOnNeverPromptListPrefKey = @"isSiteBlacklisted";
 }
 
 // Protocol consumer used to push information to the Infobar Translate Modal UI
 // for it to properly configure itself.
-@protocol InfobarTranslateModalConsumer <NSObject>
+@protocol InfobarTranslateModalConsumer
 
 // Informs the consumer of the current state of important prefs.
 - (void)setupModalViewControllerWithPrefs:

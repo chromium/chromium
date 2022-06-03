@@ -2,10 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {MetadataModel} from './metadata/metadata_model.js';
+
 /**
  * File list.
  */
-class FileListModel extends cr.ui.ArrayDataModel {
+export class FileListModel extends ArrayDataModel {
   /** @param {!MetadataModel} metadataModel */
   constructor(metadataModel) {
     super([]);
@@ -97,7 +106,7 @@ class FileListModel extends cr.ui.ArrayDataModel {
    */
   sort(field, direction) {
     this.isDescendingOrder_ = direction === 'desc';
-    cr.ui.ArrayDataModel.prototype.sort.call(this, field, direction);
+    ArrayDataModel.prototype.sort.call(this, field, direction);
   }
 
   /**
@@ -118,7 +127,7 @@ class FileListModel extends cr.ui.ArrayDataModel {
   /**
    * Removes and adds items to the model.
    *
-   * The implementation is similar to cr.ui.ArrayDataModel.splice(), but this
+   * The implementation is similar to ArrayDataModel.splice(), but this
    * has a Files app specific optimization, which sorts only the new items and
    * merge sorted lists.
    * Note that this implementation assumes following conditions.
@@ -254,10 +263,10 @@ class FileListModel extends cr.ui.ArrayDataModel {
    * @override
    */
   replaceItem(oldItem, newItem) {
-    this.onRemoveEntryFromList_(oldItem);
-    this.onAddEntryToList_(newItem);
+    this.onRemoveEntryFromList_(/** @type {?Entry} */ (oldItem));
+    this.onAddEntryToList_(/** @type {?Entry} */ (newItem));
 
-    cr.ui.ArrayDataModel.prototype.replaceItem.apply(this, arguments);
+    ArrayDataModel.prototype.replaceItem.apply(this, arguments);
   }
 
   /**

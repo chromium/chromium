@@ -22,9 +22,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELEMENT_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -38,13 +39,14 @@ namespace blink {
 class AffineTransform;
 class Document;
 class ElementSMILAnimations;
+class ExecutionContext;
 class SVGAnimatedPropertyBase;
 class SubtreeLayoutScope;
 class SVGAnimatedString;
 class SVGElement;
 class SVGElementRareData;
+class SVGElementResourceClient;
 class SVGPropertyBase;
-class SVGResourceClient;
 class SVGSVGElement;
 class SVGUseElement;
 
@@ -57,10 +59,6 @@ class CORE_EXPORT SVGElement : public Element {
   ~SVGElement() override;
 
   bool SupportsFocus() const override { return false; }
-
-  // The TreeScope this element should resolve id's against. This differs from
-  // the regular Node::treeScope() by taking <use> into account.
-  TreeScope& TreeScopeForIdResolution() const;
 
   bool IsOutermostSVGSVGElement() const;
 
@@ -96,17 +94,23 @@ class CORE_EXPORT SVGElement : public Element {
   void SetWebAnimationsPending();
   void ApplyActiveWebAnimations();
 
+  void BaseValueChanged(const SVGAnimatedPropertyBase&);
   void EnsureAttributeAnimValUpdated();
 
   void SetWebAnimatedAttribute(const QualifiedName& attribute,
                                SVGPropertyBase*);
   void ClearWebAnimatedAttributes();
 
-  ElementSMILAnimations* GetSMILAnimations();
+  ElementSMILAnimations* GetSMILAnimations() const;
   ElementSMILAnimations& EnsureSMILAnimations();
+  const ComputedStyle* BaseComputedStyleForSMIL();
 
   void SetAnimatedAttribute(const QualifiedName&, SVGPropertyBase*);
   void ClearAnimatedAttribute(const QualifiedName&);
+  void SetAnimatedMotionTransform(const AffineTransform&);
+  void ClearAnimatedMotionTransform();
+
+  bool HasNonCSSPropertyAnimations() const;
 
   SVGSVGElement* ownerSVGElement() const;
   SVGElement* viewportElement() const;
@@ -121,8 +125,18 @@ class CORE_EXPORT SVGElement : public Element {
   // For SVGTests
   virtual bool IsValid() const { return true; }
 
-  virtual void SvgAttributeChanged(const QualifiedName&);
-  void SvgAttributeBaseValChanged(const QualifiedName&);
+  struct SvgAttributeChangedParams {
+    STACK_ALLOCATED();
+
+   public:
+    SvgAttributeChangedParams(const QualifiedName& qname,
+                              AttributeModificationReason reason)
+        : name(qname), reason(reason) {}
+
+    const QualifiedName& name;
+    const AttributeModificationReason reason;
+  };
+  virtual void SvgAttributeChanged(const SvgAttributeChangedParams&);
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const;
@@ -134,24 +148,24 @@ class CORE_EXPORT SVGElement : public Element {
 
   virtual AffineTransform* AnimateMotionTransform() { return nullptr; }
 
-  void InvalidateSVGAttributes() {
-    EnsureUniqueElementData().animated_svg_attributes_are_dirty_ = true;
-  }
   void InvalidateSVGPresentationAttributeStyle() {
-    EnsureUniqueElementData().presentation_attribute_style_is_dirty_ = true;
+    EnsureUniqueElementData().SetPresentationAttributeStyleIsDirty(true);
   }
 
   const HeapHashSet<WeakMember<SVGElement>>& InstancesForElement() const;
-  void MapInstanceToElement(SVGElement*);
-  void RemoveInstanceMapping(SVGElement*);
+  void AddInstance(SVGElement*);
+  void RemoveInstance(SVGElement*);
 
   SVGElement* CorrespondingElement() const;
   void SetCorrespondingElement(SVGElement*);
-  SVGUseElement* CorrespondingUseElement() const;
+  SVGUseElement* GeneratingUseElement() const;
 
-  void SynchronizeAnimatedSVGAttribute(const QualifiedName&) const;
+  void SynchronizeSVGAttribute(const QualifiedName&) const;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet*) override;
 
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) final;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
 
 #if DCHECK_IS_ON()
@@ -160,7 +174,6 @@ class CORE_EXPORT SVGElement : public Element {
 
   MutableCSSPropertyValueSet* AnimatedSMILStyleProperties() const;
   MutableCSSPropertyValueSet* EnsureAnimatedSMILStyleProperties();
-  void SetUseOverrideComputedStyle(bool);
 
   virtual bool HaveLoadedRequiredResources();
 
@@ -179,19 +192,20 @@ class CORE_EXPORT SVGElement : public Element {
   void RemoveAllIncomingReferences();
   void RemoveAllOutgoingReferences();
 
-  SVGResourceClient* GetSVGResourceClient();
-  SVGResourceClient& EnsureSVGResourceClient();
+  SVGElementResourceClient* GetSVGResourceClient();
+  SVGElementResourceClient& EnsureSVGResourceClient();
 
   class InvalidationGuard {
     STACK_ALLOCATED();
 
    public:
     InvalidationGuard(SVGElement* element) : element_(element) {}
+    InvalidationGuard(const InvalidationGuard&) = delete;
+    InvalidationGuard& operator=(const InvalidationGuard&) = delete;
     ~InvalidationGuard() { element_->InvalidateInstances(); }
 
    private:
-    Member<SVGElement> element_;
-    DISALLOW_COPY_AND_ASSIGN(InvalidationGuard);
+    SVGElement* element_;
   };
 
   class InstanceUpdateBlocker {
@@ -199,18 +213,19 @@ class CORE_EXPORT SVGElement : public Element {
 
    public:
     InstanceUpdateBlocker(SVGElement* target_element);
+    InstanceUpdateBlocker(const InstanceUpdateBlocker&) = delete;
+    InstanceUpdateBlocker& operator=(const InstanceUpdateBlocker&) = delete;
     ~InstanceUpdateBlocker();
 
    private:
-    Member<SVGElement> target_element_;
-    DISALLOW_COPY_AND_ASSIGN(InstanceUpdateBlocker);
+    SVGElement* target_element_;
   };
 
   void InvalidateInstances();
   void SetNeedsStyleRecalcForInstances(StyleChangeType,
                                        const StyleChangeReasonForTracing&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   static const AtomicString& EventParameterName();
 
@@ -237,7 +252,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void DetachLayoutTree(bool performing_reattach) override;
 
-  static CSSPropertyID CssPropertyIdForSVGAttributeName(const QualifiedName&);
+  static CSSPropertyID CssPropertyIdForSVGAttributeName(const ExecutionContext*,
+                                                        const QualifiedName&);
   void UpdateRelativeLengthsInformation() {
     UpdateRelativeLengthsInformation(SelfHasRelativeLengths(), this);
   }
@@ -261,11 +277,11 @@ class CORE_EXPORT SVGElement : public Element {
   bool HasFocusEventListeners() const;
 
   void AddedEventListener(const AtomicString& event_type,
-                          RegisteredEventListener&) final;
+                          RegisteredEventListener&) override;
   void RemovedEventListener(const AtomicString& event_type,
                             const RegisteredEventListener&) final;
 
-  void AccessKeyAction(bool send_mouse_events) override;
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 
  private:
   bool IsSVGElement() const =
@@ -273,13 +289,9 @@ class CORE_EXPORT SVGElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  const ComputedStyle* EnsureComputedStyle(PseudoId = kPseudoIdNone);
-  const ComputedStyle* VirtualEnsureComputedStyle(
-      PseudoId pseudo_element_specifier = kPseudoIdNone) final {
-    return EnsureComputedStyle(pseudo_element_specifier);
-  }
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();
+  void UpdateWebAnimatedAttributeOnBaseValChange(const QualifiedName&);
 
   HeapHashSet<WeakMember<SVGElement>> elements_with_relative_lengths_;
 

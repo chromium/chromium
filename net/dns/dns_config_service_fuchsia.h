@@ -17,15 +17,17 @@ namespace internal {
 class NET_EXPORT_PRIVATE DnsConfigServiceFuchsia : public DnsConfigService {
  public:
   DnsConfigServiceFuchsia();
+
+  DnsConfigServiceFuchsia(const DnsConfigServiceFuchsia&) = delete;
+  DnsConfigServiceFuchsia& operator=(const DnsConfigServiceFuchsia&) = delete;
+
   ~DnsConfigServiceFuchsia() override;
 
  protected:
   // DnsConfigService overrides.
-  void ReadNow() override;
+  void ReadConfigNow() override;
+  void ReadHostsNow() override;
   bool StartWatching() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServiceFuchsia);
 };
 
 }  // namespace internal

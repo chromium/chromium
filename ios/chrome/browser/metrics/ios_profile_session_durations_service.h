@@ -25,6 +25,12 @@ class IOSProfileSessionDurationsService : public KeyedService {
   // not monitor profile session durations.
   IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
                                     signin::IdentityManager* identity_manager);
+
+  IOSProfileSessionDurationsService(const IOSProfileSessionDurationsService&) =
+      delete;
+  IOSProfileSessionDurationsService& operator=(
+      const IOSProfileSessionDurationsService&) = delete;
+
   ~IOSProfileSessionDurationsService() override;
 
   // KeyedService:
@@ -35,12 +41,13 @@ class IOSProfileSessionDurationsService : public KeyedService {
   // application enters background).
   virtual void OnSessionStarted(base::TimeTicks session_start);
   virtual void OnSessionEnded(base::TimeDelta session_length);
+  virtual bool IsSessionActive();
 
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
       metrics_recorder_;
 
-  DISALLOW_COPY_AND_ASSIGN(IOSProfileSessionDurationsService);
+  bool is_session_active_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_PROFILE_SESSION_DURATIONS_SERVICE_H_

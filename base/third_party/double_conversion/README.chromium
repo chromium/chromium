@@ -2,8 +2,8 @@ Name: Google Double Conversion
 Short Name: double-conversion
 URL: https://github.com/google/double-conversion
 Version: 0
-Date: 2019-06-22
-Revision: 3f9cd30e1bca91c0a036ad8b2b7eb8e2d2290dd2
+Date: 2020-01-27
+Revision: 9df6272fefd846401afbf839cbe7d0f9e319fe08
 License: BSD
 License File: LICENSE
 Security Critical: yes

@@ -1,0 +1,17 @@
+  
+To run this test manually:
+Enter something to the text field and choose files with the files choosers.
+Click here to navigate away from the page.
+Click here to navigate back to the page.
+Check that the state of the form was restored.
+
+Test that the state of a file chooser is recovered when navigating away and navigating back.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.getElementById('text-input').value is "text to be posted"
+FAIL Unexpected error: Uncaught TypeError: Failed to execute 'readAsText' on 'FileReader': parameter 1 is not of type 'Blob'.
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

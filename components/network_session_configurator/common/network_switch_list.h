@@ -12,9 +12,6 @@ NETWORK_SWITCH(kDisableQuic, "disable-quic")
 // Disables the HTTP/2 protocol.
 NETWORK_SWITCH(kDisableHttp2, "disable-http2")
 
-// Enable Websocket over HTTP/2.
-NETWORK_SWITCH(kEnableWebsocketOverHttp2, "enable-websocket-over-http2")
-
 // Enables Alternate-Protocol when the port is user controlled (> 1024).
 NETWORK_SWITCH(kEnableUserAlternateProtocolPorts,
                "enable-user-controlled-alternate-protocol-ports")
@@ -31,6 +28,9 @@ NETWORK_SWITCH(kOriginToForceQuicOn, "origin-to-force-quic-on")
 // Specifies a comma separated list of QUIC connection options to send to
 // the server.
 NETWORK_SWITCH(kQuicConnectionOptions, "quic-connection-options")
+
+// Specifies a comma separated list of QUIC client connection options.
+NETWORK_SWITCH(kQuicClientConnectionOptions, "quic-client-connection-options")
 
 // Specifies the maximum length for a QUIC packet.
 NETWORK_SWITCH(kQuicMaxPacketLength, "quic-max-packet-length")
@@ -67,3 +67,9 @@ NETWORK_SWITCH(kHostRules, "host-rules")
 // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for more detail.
 NETWORK_SWITCH(kHttp2GreaseSettings, "http2-grease-settings")
 NETWORK_SWITCH(kHttp2GreaseFrameType, "http2-grease-frame-type")
+
+// If request has no body, close the stream not by setting END_STREAM flag on
+// the HEADERS frame, but by sending an empty DATA frame with END_STREAM
+// afterwards.  Only affects HTTP/2 request streams, not proxy or bidirectional
+// streams.
+NETWORK_SWITCH(kHttp2EndStreamWithDataFrame, "http2-end-stream-with-data-frame")

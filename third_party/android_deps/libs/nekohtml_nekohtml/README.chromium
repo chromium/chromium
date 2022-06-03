@@ -1,0 +1,13 @@
+Name: Neko HTML
+Short Name: nekohtml
+URL: http://nekohtml.sourceforge.net/
+Version: 1.9.6.2
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+NekoHTML is a simple HTML scanner and tag balancer.
+
+Local Modifications:
+No modifications.

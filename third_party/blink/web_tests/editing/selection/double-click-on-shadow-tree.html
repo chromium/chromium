@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<div id="host"><b id="one">one</b><b id="two">two</b></div>
+<div id="host"><b id="one" slot="one">one</b><b id="two" slot="two">two</b></div>
 <div id="log"></div>
 <script>
 var host = document.querySelector('#host');
-var shadowRoot = host.createShadowRoot();
-shadowRoot.innerHTML = 'A<content select=#two></content>B C<content select=#one></content>D';
+var shadowRoot = host.attachShadow({mode: 'open'});
+shadowRoot.innerHTML = 'A<slot name="two"></slot>B C<slot name="one"></slot>D';
 var two = document.querySelector('#two');
 test(function() {
     if (!window.eventSender || window.internals)

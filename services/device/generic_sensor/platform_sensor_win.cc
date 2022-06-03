@@ -5,13 +5,10 @@
 #include "services/device/generic_sensor/platform_sensor_win.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 namespace device {
-
-namespace {
-constexpr double kDefaultSensorReportingFrequency = 5.0;
-}  // namespace
 
 PlatformSensorWin::PlatformSensorWin(
     mojom::SensorType type,
@@ -27,7 +24,7 @@ PlatformSensorWin::PlatformSensorWin(
 }
 
 PlatformSensorConfiguration PlatformSensorWin::GetDefaultConfiguration() {
-  return PlatformSensorConfiguration(kDefaultSensorReportingFrequency);
+  return PlatformSensorConfiguration(GetSensorDefaultFrequency(GetType()));
 }
 
 mojom::ReportingMode PlatformSensorWin::GetReportingMode() {
@@ -40,7 +37,7 @@ double PlatformSensorWin::GetMaximumSupportedFrequency() {
   base::TimeDelta minimal_reporting_interval_ms =
       sensor_reader_->GetMinimalReportingInterval();
   if (minimal_reporting_interval_ms.is_zero())
-    return kDefaultSensorReportingFrequency;
+    return GetSensorDefaultFrequency(GetType());
   return 1.0 / minimal_reporting_interval_ms.InSecondsF();
 }
 
@@ -49,25 +46,25 @@ void PlatformSensorWin::OnReadingUpdated(const SensorReading& reading) {
 }
 
 void PlatformSensorWin::OnSensorError() {
-  task_runner_->PostTask(FROM_HERE,
+  PostTaskToMainSequence(FROM_HERE,
                          base::BindOnce(&PlatformSensorWin::NotifySensorError,
                                         weak_factory_.GetWeakPtr()));
 }
 
 bool PlatformSensorWin::StartSensor(
     const PlatformSensorConfiguration& configuration) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   return sensor_reader_->StartSensor(configuration);
 }
 
 void PlatformSensorWin::StopSensor() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   sensor_reader_->StopSensor();
 }
 
 bool PlatformSensorWin::CheckSensorConfiguration(
     const PlatformSensorConfiguration& configuration) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   base::TimeDelta minimal_reporting_interval_ms =
       sensor_reader_->GetMinimalReportingInterval();
   if (minimal_reporting_interval_ms.is_zero())

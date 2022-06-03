@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 2: Blocked opening 'javascript: opener.parent.windowOpened(opener);' in a new window because the request was made in a sandboxed frame whose 'allow-popups' permission is not set.
+CONSOLE ERROR: Blocked opening 'javascript: opener.parent.windowOpened(opener);' in a new window because the request was made in a sandboxed frame whose 'allow-popups' permission is not set.
 Verifies that a sandboxed IFrame cannot open new windows using window.open(). Expect ten windows to be opened, but the sandboxed IFrame not to be the opener of any of them.
 
 This test will print "PASS" on success.

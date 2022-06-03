@@ -53,6 +53,9 @@ class ChromotingClient : public SignalStrategy::Listener,
                    protocol::VideoRenderer* video_renderer,
                    base::WeakPtr<protocol::AudioStub> audio_stream_consumer);
 
+  ChromotingClient(const ChromotingClient&) = delete;
+  ChromotingClient& operator=(const ChromotingClient&) = delete;
+
   ~ChromotingClient() override;
 
   void set_protocol_config(
@@ -91,6 +94,7 @@ class ChromotingClient : public SignalStrategy::Listener,
       const protocol::PairingResponse& pairing_response) override;
   void DeliverHostMessage(const protocol::ExtensionMessage& message) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
+  void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
 
   // ClipboardStub implementation for receiving clipboard data from host.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
@@ -149,8 +153,6 @@ class ChromotingClient : public SignalStrategy::Listener,
   bool host_capabilities_received_ = false;
 
   std::unique_ptr<HostExperimentSender> host_experiment_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingClient);
 };
 
 }  // namespace remoting

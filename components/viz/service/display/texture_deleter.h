@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace base {
@@ -22,7 +23,6 @@ struct SyncToken;
 
 namespace viz {
 class ContextProvider;
-class SingleReleaseCallback;
 
 class VIZ_SERVICE_EXPORT TextureDeleter {
  public:
@@ -30,6 +30,10 @@ class VIZ_SERVICE_EXPORT TextureDeleter {
   // to. If null, the delete will happen on the calling thread.
   explicit TextureDeleter(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  TextureDeleter(const TextureDeleter&) = delete;
+  TextureDeleter& operator=(const TextureDeleter&) = delete;
+
   ~TextureDeleter();
 
   // Returns a Callback that can be used as the ReleaseCallback for a
@@ -39,22 +43,20 @@ class VIZ_SERVICE_EXPORT TextureDeleter {
   // ReleaseCallback will become a no-op and the texture will be deleted
   // immediately on the impl thread, along with dropping the reference to the
   // ContextProvider.
-  std::unique_ptr<SingleReleaseCallback> GetReleaseCallback(
+  ReleaseCallback GetReleaseCallback(
       scoped_refptr<ContextProvider> context_provider,
       const gpu::Mailbox& mailbox);
 
  private:
   // Runs the |impl_callback| to delete the texture and removes the callback
   // from the |impl_callbacks_| list.
-  void RunDeleteTextureOnImplThread(SingleReleaseCallback* impl_callback,
+  void RunDeleteTextureOnImplThread(ReleaseCallback* impl_callback,
                                     const gpu::SyncToken& sync_token,
                                     bool is_lost);
 
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner_;
-  std::vector<std::unique_ptr<SingleReleaseCallback>> impl_callbacks_;
+  std::vector<std::unique_ptr<ReleaseCallback>> impl_callbacks_;
   base::WeakPtrFactory<TextureDeleter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TextureDeleter);
 };
 
 }  // namespace viz

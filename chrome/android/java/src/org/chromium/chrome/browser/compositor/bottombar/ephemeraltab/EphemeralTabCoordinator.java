@@ -4,79 +4,118 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.support.annotation.DrawableRes;
-import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.SysUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressObserver;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
-import org.chromium.chrome.browser.favicon.FaviconHelper;
-import org.chromium.chrome.browser.favicon.FaviconUtils;
-import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.content.ContentUtils;
+import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ssl.SecurityStateModel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.url.GURL;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
  * the preview tab UI.
  */
+@ActivityScope
 public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
-    /** The delay (four video frames) after which the hide progress will be hidden. */
-    private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
-
-    // TODO(crbug/1001256): Use Context after removing dependency on OverlayPanelContent.
-    private final ChromeActivity mActivity;
+    private final Context mContext;
+    private final ActivityWindowAndroid mWindow;
+    private final View mLayoutView;
+    private final ActivityTabProvider mTabProvider;
+    private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
-    private final FaviconLoader mFaviconLoader;
-    private OverlayPanelContent mPanelContent;
-    private WebContentsObserver mWebContentsObserver;
+    private final EphemeralTabMetrics mMetrics = new EphemeralTabMetrics();
+    private final boolean mCanPromoteToNewTab;
+
+    private EphemeralTabMediator mMediator;
+
+    private WebContents mWebContents;
+    private ContentView mContentView;
     private EphemeralTabSheetContent mSheetContent;
-    private boolean mIsIncognito;
-    private String mUrl;
+    private EmptyBottomSheetObserver mSheetObserver;
+
+    private GURL mUrl;
+    private int mCurrentMaxViewHeight;
+    private boolean mPeeked;
+    private boolean mViewed; // Moved up from peek state by user
+    private boolean mFullyOpened;
 
     /**
      * Constructor.
-     * @param activity The associated {@link ChromeActivity}.
-     * @param bottomSheetController The associated {@link BottomSheetController}.
+     * @param context The associated {@link Context}.
+     * @param window The associated {@link WindowAndroid}.
+     * @param layoutView The {@link View} to listen layout change on.
+     * @param tabProvider Provider of the current activity tab.
+     * @param tabCreator Supplier for {@link TabCreator} handling a new tab creation.
+     * @param bottomSheetController {@link BottomSheetController} as the container of the tab.
+     * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
      */
-    public EphemeralTabCoordinator(
-            ChromeActivity activity, BottomSheetController bottomSheetController) {
-        mActivity = activity;
+    @Inject
+    public EphemeralTabCoordinator(@Named(ACTIVITY_CONTEXT) Context context,
+            ActivityWindowAndroid window, @Named(DECOR_VIEW) View layoutView,
+            ActivityTabProvider tabProvider, Supplier<TabCreator> tabCreator,
+            BottomSheetController bottomSheetController,
+            @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN) boolean canPromoteToNewTab) {
+        mContext = context;
+        mWindow = window;
+        mLayoutView = layoutView;
+        mTabProvider = tabProvider;
+        mTabCreator = tabCreator;
         mBottomSheetController = bottomSheetController;
-        mFaviconLoader = new FaviconLoader(mActivity);
-        mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetContentChanged(BottomSheetContent newContent) {
-                if (newContent != mSheetContent) destroyContent();
-            }
+        mCanPromoteToNewTab = canPromoteToNewTab;
+    }
 
-            @Override
-            public void onSheetStateChanged(int newState) {
-                if (mSheetContent == null) return;
-                mSheetContent.showOpenInNewTabButton(newState == SheetState.FULL);
-            }
-        });
+    /**
+     * Checks if this feature (a.k.a. "Preview page/image") is supported.
+     * @return {@code true} if the feature is enabled.
+     */
+    public static boolean isSupported() {
+        return !SysUtils.isLowEndDevice();
+    }
+
+    /**
+     * Checks if the preview tab is in open (peek) state.
+     */
+    public boolean isOpened() {
+        return mPeeked || mFullyOpened;
     }
 
     /**
@@ -86,57 +125,128 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param title The title to be shown.
      * @param isIncognito Whether we are currently in incognito mode.
      */
-    public void requestOpenSheet(String url, String title, boolean isIncognito) {
+    public void requestOpenSheet(GURL url, String title, boolean isIncognito) {
         mUrl = url;
-        mIsIncognito = isIncognito;
-        if (mSheetContent == null) mSheetContent = createSheetContent();
+        Profile profile = getProfile(isIncognito);
+        if (mMediator == null) {
+            float topControlsHeight =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                    / mWindow.getDisplay().getDipScale();
+            mMediator = new EphemeralTabMediator(mBottomSheetController,
+                    new FaviconLoader(mContext), mMetrics, (int) topControlsHeight);
+        }
+        if (mWebContents == null) {
+            assert mSheetContent == null;
+            createWebContents(profile);
+            mSheetObserver = new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetContentChanged(BottomSheetContent newContent) {
+                    if (newContent != mSheetContent) {
+                        mPeeked = false;
+                        destroyWebContents();
+                    }
+                }
 
-        getContent().loadUrl(url, true);
-        getContent().updateBrowserControlsState(true);
-        if (mWebContentsObserver == null) mWebContentsObserver = createWebContentsObserver();
-        mSheetContent.attachWebContents(
-                getContent().getWebContents(), (ContentView) getContent().getContainerView());
-        mSheetContent.updateTitle(title);
-        mBottomSheetController.requestShowContent(mSheetContent, true);
+                @Override
+                public void onSheetOpened(@StateChangeReason int reason) {
+                    if (!mViewed) {
+                        mMetrics.recordMetricsForViewed();
+                        mViewed = true;
+                    }
+                }
 
-        // TODO(donnd): Collect UMA with OverlayPanel.StateChangeReason.CLICK.
+                @Override
+                public void onSheetStateChanged(int newState, int reason) {
+                    if (mSheetContent == null) return;
+                    switch (newState) {
+                        case SheetState.PEEK:
+                            if (!mPeeked) {
+                                mMetrics.recordMetricsForPeeked();
+                                mPeeked = true;
+                            }
+                            break;
+                        case SheetState.FULL:
+                            if (!mFullyOpened) {
+                                mMetrics.recordMetricsForOpened();
+                                mFullyOpened = true;
+                            }
+                            break;
+                    }
+                }
+
+                @Override
+                public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                    if (mSheetContent == null) return;
+                    if (mCanPromoteToNewTab) mSheetContent.showOpenInNewTabButton(heightFraction);
+                }
+            };
+            mBottomSheetController.addObserver(mSheetObserver);
+            IntentRequestTracker intentRequestTracker = mWindow.getIntentRequestTracker();
+            assert intentRequestTracker
+                    != null : "ActivityWindowAndroid must have a IntentRequestTracker.";
+            mSheetContent = new EphemeralTabSheetContent(mContext, this::openInNewTab,
+                    this::onToolbarClick, this::close, getMaxViewHeight(), intentRequestTracker);
+            mMediator.init(mWebContents, mContentView, mSheetContent, profile);
+            mLayoutView.addOnLayoutChangeListener(this);
+        }
+
+        mPeeked = false;
+        mViewed = false;
+        mFullyOpened = false;
+        mMediator.requestShowContent(url, title);
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
     }
 
-    private OverlayPanelContent getContent() {
-        if (mPanelContent == null) {
-            mPanelContent = new OverlayPanelContent(new EphemeralTabPanelContentDelegate(),
-                    new PageLoadProgressObserver(), mActivity, mIsIncognito,
-                    mActivity.getResources().getDimensionPixelSize(
-                            R.dimen.toolbar_height_no_shadow));
-        }
-        return mPanelContent;
+    private Profile getProfile(boolean isIncognito) {
+        if (!isIncognito) return Profile.getLastUsedRegularProfile();
+        Profile otrProfile = IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid(mWindow);
+        return (otrProfile == null)
+                ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true)
+                : otrProfile;
     }
 
-    private void destroyContent() {
-        if (mSheetContent != null) {
-            mSheetContent.destroy();
-            mSheetContent = null;
+    private void createWebContents(Profile profile) {
+        assert mWebContents == null;
+
+        // Creates an initially hidden WebContents which gets shown when the panel is opened.
+        mWebContents = WebContentsFactory.createWebContents(profile, true);
+
+        mContentView = ContentView.createContentView(
+                mContext, null /* eventOffsetHandler */, mWebContents);
+
+        mWebContents.initialize(ChromeVersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(mContentView), mContentView, mWindow,
+                WebContents.createDefaultInternalsHolder());
+        ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
+    }
+
+    private void destroyWebContents() {
+        mSheetContent = null; // Will be destroyed by BottomSheet controller.
+
+        mPeeked = false;
+        mFullyOpened = false;
+
+        if (mWebContents != null) {
+            mWebContents.destroy();
+            mWebContents = null;
+            mContentView = null;
         }
 
-        if (mPanelContent != null) {
-            mPanelContent.destroy();
-            mPanelContent = null;
-        }
+        if (mMediator != null) mMediator.destroyContent();
 
-        if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
-            mWebContentsObserver = null;
-        }
-
-        mActivity.getWindow().getDecorView().removeOnLayoutChangeListener(this);
+        mLayoutView.removeOnLayoutChangeListener(this);
+        if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
     }
 
     private void openInNewTab() {
-        if (canPromoteToNewTab() && mUrl != null) {
-            mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-            mActivity.getCurrentTabCreator().createNewTab(
-                    new LoadUrlParams(mUrl, PageTransition.LINK), TabLaunchType.FROM_LINK,
-                    mActivity.getActivityTabProvider().get());
+        if (mCanPromoteToNewTab && mUrl != null) {
+            mBottomSheetController.hideContent(
+                    mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
+            mTabCreator.get().createNewTab(new LoadUrlParams(mUrl.getSpec(), PageTransition.LINK),
+                    TabLaunchType.FROM_LINK, mTabProvider.get());
+            mMetrics.recordOpenInNewTab();
         }
     }
 
@@ -149,151 +259,39 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         }
     }
 
-    private void onCloseButtonClick() {
+    /**
+     * Close the ephemeral tab.
+     */
+    public void close() {
         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-    }
-
-    private boolean canPromoteToNewTab() {
-        return !mActivity.isCustomTab();
-    }
-
-    private void onFaviconAvailable(Drawable drawable) {
-        if (mSheetContent == null) return;
-        mSheetContent.startFaviconAnimation(drawable);
-    }
-
-    private EphemeralTabSheetContent createSheetContent() {
-        mSheetContent = new EphemeralTabSheetContent(mActivity, this::openInNewTab,
-                this::onToolbarClick, this::onCloseButtonClick, getMaxSheetHeight());
-
-        mActivity.getWindow().getDecorView().addOnLayoutChangeListener(this);
-        return mSheetContent;
     }
 
     @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft,
             int oldTop, int oldRight, int oldBottom) {
         if (mSheetContent == null) return;
-        if ((oldBottom - oldTop) == (bottom - top)) return;
-        mSheetContent.updateContentHeight(getMaxSheetHeight());
+
+        // It may not be possible to update the content height when the actual height changes
+        // due to the current tab not being ready yet. Try it later again when the tab
+        // (hence MaxViewHeight) becomes valid.
+        int maxViewHeight = getMaxViewHeight();
+        if (maxViewHeight == 0 || mCurrentMaxViewHeight == maxViewHeight) return;
+        mSheetContent.updateContentHeight(maxViewHeight);
+        mCurrentMaxViewHeight = maxViewHeight;
     }
 
-    private int getMaxSheetHeight() {
-        Tab tab = mActivity.getActivityTabProvider().get();
-        if (tab == null) return 0;
-        return (int) (tab.getView().getHeight() * 0.9f);
-    }
-
-    private WebContentsObserver createWebContentsObserver() {
-        return new WebContentsObserver(mPanelContent.getWebContents()) {
-            @Override
-            public void titleWasSet(String title) {
-                mSheetContent.updateTitle(title);
-            }
-
-            @Override
-            public void didFinishNavigation(NavigationHandle navigation) {
-                if (navigation.hasCommitted() && navigation.isInMainFrame()) {
-                    mSheetContent.updateURL(mPanelContent.getWebContents().getVisibleUrl());
-                }
-            }
-        };
-    }
-
-    @DrawableRes
-    static int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
-        switch (securityLevel) {
-            case ConnectionSecurityLevel.NONE:
-            case ConnectionSecurityLevel.WARNING:
-                return R.drawable.omnibox_info;
-            case ConnectionSecurityLevel.DANGEROUS:
-                return R.drawable.omnibox_not_secure_warning;
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
-            case ConnectionSecurityLevel.SECURE:
-            case ConnectionSecurityLevel.EV_SECURE:
-                return R.drawable.omnibox_https_valid;
-            default:
-                assert false;
-        }
-        return 0;
-    }
-
-    /**
-     * Observes the ephemeral tab web contents and loads the associated favicon.
-     */
-    private class EphemeralTabPanelContentDelegate extends OverlayContentDelegate {
-        /** Whether the currently loaded page is an error (interstitial) page. */
-        private boolean mIsOnErrorPage;
-
-        private String mCurrentUrl;
-
-        @Override
-        public void onMainFrameLoadStarted(String url, boolean isExternalUrl) {
-            if (TextUtils.equals(mCurrentUrl, url)) return;
-
-            if (mIsOnErrorPage && NewTabPage.isNTPUrl(url)) {
-                mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-                mCurrentUrl = null;
-                return;
-            }
-
-            mCurrentUrl = url;
-            mFaviconLoader.loadFavicon(url, (drawable) -> onFaviconAvailable(drawable));
-        }
-
-        @Override
-        public void onMainFrameNavigation(
-                String url, boolean isExternalUrl, boolean isFailure, boolean isError) {
-            mIsOnErrorPage = isError;
-        }
-
-        @Override
-        public void onSSLStateUpdated() {
-            if (mSheetContent == null) return;
-            int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(
-                    mPanelContent.getWebContents());
-            mSheetContent.setSecurityIcon(getSecurityIconResource(securityLevel));
-            mSheetContent.updateURL(mPanelContent.getWebContents().getVisibleUrl());
-        }
-
-        @Override
-        public void onOpenNewTabRequested(String url) {
-            // We never open a separate tab when navigating in a preview tab.
-            getContent().getWebContents().getNavigationController().loadUrl(new LoadUrlParams(url));
-        }
-    }
-
-    /** Observes the ephemeral tab page load progress and updates the progress bar. */
-    private class PageLoadProgressObserver extends OverlayContentProgressObserver {
-        @Override
-        public void onProgressBarStarted() {
-            if (mSheetContent == null) return;
-            mSheetContent.setProgressVisible(true);
-            mSheetContent.setProgress(0);
-        }
-
-        @Override
-        public void onProgressBarUpdated(float progress) {
-            if (mSheetContent == null) return;
-            mSheetContent.setProgress(progress);
-        }
-
-        @Override
-        public void onProgressBarFinished() {
-            // Hides the Progress Bar after a delay to make sure it is rendered for at least
-            // a few frames, otherwise its completion won't be visually noticeable.
-            new Handler().postDelayed(() -> {
-                if (mSheetContent == null) return;
-                mSheetContent.setProgressVisible(false);
-            }, HIDE_PROGRESS_BAR_DELAY_MS);
-        }
+    /** @return The maximum base view height for sheet content view. */
+    private int getMaxViewHeight() {
+        Tab tab = mTabProvider.get();
+        if (tab == null || tab.getView() == null) return 0;
+        return tab.getView().getHeight();
     }
 
     /**
      * Helper class to generate a favicon for a given URL and resize it to the desired dimensions
      * for displaying it on the image view.
      */
-    private static class FaviconLoader {
+    static class FaviconLoader {
         private final Context mContext;
         private final FaviconHelper mFaviconHelper;
         private final RoundedIconGenerator mIconGenerator;
@@ -313,24 +311,24 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
          * the URL, a default favicon will be shown.
          * @param url The URL for which favicon is to be generated.
          * @param callback The callback to be invoked to display the final image.
+         * @param profile The profile for which favicon service is used.
          */
-        public void loadFavicon(final String url, Callback<Drawable> callback) {
+        public void loadFavicon(final GURL url, Callback<Drawable> callback, Profile profile) {
+            assert profile != null;
             FaviconHelper.FaviconImageCallback imageCallback = (bitmap, iconUrl) -> {
                 Drawable drawable;
                 if (bitmap != null) {
                     drawable = FaviconUtils.createRoundedBitmapDrawable(
                             mContext.getResources(), bitmap);
                 } else {
-                    drawable = UiUtils.getTintedDrawable(
-                            mContext, R.drawable.ic_globe_24dp, R.color.standard_mode_tint);
+                    drawable = UiUtils.getTintedDrawable(mContext, R.drawable.ic_globe_24dp,
+                            R.color.default_icon_color_tint_list);
                 }
 
                 callback.onResult(drawable);
             };
 
-            mFaviconHelper.getLocalFaviconImageForURL(
-                    Profile.getLastUsedProfile(), url, mFaviconSize, imageCallback);
+            mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, imageCallback);
         }
-
     }
 }

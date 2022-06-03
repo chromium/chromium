@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/mac/process_reader_mac.h"
@@ -38,6 +37,10 @@ namespace internal {
 class ThreadSnapshotMac final : public ThreadSnapshot {
  public:
   ThreadSnapshotMac();
+
+  ThreadSnapshotMac(const ThreadSnapshotMac&) = delete;
+  ThreadSnapshotMac& operator=(const ThreadSnapshotMac&) = delete;
+
   ~ThreadSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -63,12 +66,16 @@ class ThreadSnapshotMac final : public ThreadSnapshot {
   std::vector<const MemorySnapshot*> ExtraMemory() const override;
 
  private:
-#if defined(ARCH_CPU_X86_FAMILY)
   union {
+#if defined(ARCH_CPU_X86_FAMILY)
     CPUContextX86 x86;
     CPUContextX86_64 x86_64;
-  } context_union_;
+#elif defined(ARCH_CPU_ARM64)
+    CPUContextARM64 arm64;
+#else
+#error Port to your CPU architecture
 #endif
+  } context_union_;
   CPUContext context_;
   MemorySnapshotGeneric stack_;
   uint64_t thread_id_;
@@ -77,8 +84,6 @@ class ThreadSnapshotMac final : public ThreadSnapshot {
   int suspend_count_;
   int priority_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotMac);
 };
 
 }  // namespace internal

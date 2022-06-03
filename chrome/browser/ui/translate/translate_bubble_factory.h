@@ -31,7 +31,8 @@ class TranslateBubbleFactory {
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type);
+      translate::TranslateErrors::Type error_type,
+      bool is_user_gesture);
 
   // Sets the factory to change the behavior how to show the bubble.
   // TranslateBubbleFactory doesn't take the ownership of |factory|.

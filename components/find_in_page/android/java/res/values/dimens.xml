@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="find_result_bar_touch_width">68dp</dimen>
+    <dimen name="find_result_bar_draw_width">46dp</dimen>
+    <dimen name="find_result_bar_separator_width">1dp</dimen>
+    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <dimen tools:ignore="PxUsage" name="find_result_bar_result_min_height">8px</dimen>
+    <dimen tools:ignore="PxUsage" name="find_result_bar_active_min_height">16px</dimen>
+    <dimen tools:ignore="PxUsage" name="find_result_bar_vertical_padding">8px</dimen>
+    <dimen tools:ignore="PxUsage" name="find_result_bar_min_gap_between_stacks">3px</dimen>
+    <dimen tools:ignore="PxUsage" name="find_result_bar_stacked_result_height">3px</dimen>
+</resources>

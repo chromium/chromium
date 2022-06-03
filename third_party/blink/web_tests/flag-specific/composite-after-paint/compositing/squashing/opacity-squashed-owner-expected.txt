@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='target' class='composited box opaque'",
       "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
       "transform": 1
     },
@@ -16,7 +17,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='squashed'",
       "position": [16, 4],
       "bounds": [40, 90],
-      "backgroundColor": "#90EE90"
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

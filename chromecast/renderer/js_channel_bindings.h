@@ -19,12 +19,18 @@ class JsChannelBindings : public content::RenderFrameObserver,
   explicit JsChannelBindings(
       content::RenderFrame* render_frame,
       mojo::PendingReceiver<mojom::JsChannelClient> receiver);
+
+  JsChannelBindings(const JsChannelBindings&) = delete;
+  JsChannelBindings& operator=(const JsChannelBindings&) = delete;
+
   ~JsChannelBindings() override;
 
  private:
   // content::RenderFrameObserver implementation:
   void DidClearWindowObject() final;
   void OnDestruct() final;
+  void DidCreateScriptContext(v8::Local<v8::Context> context,
+                              int32_t world_id) final;
 
   // mojom::JsChannelClient implementation:
   void CreateChannel(const std::string& channel,
@@ -35,11 +41,10 @@ class JsChannelBindings : public content::RenderFrameObserver,
 
   void Func(const std::string& channel, v8::Local<v8::Value> message);
 
+  bool did_create_script_context_ = false;
   std::vector<std::pair<std::string, mojo::Remote<mojom::JsChannel>>> channels_;
 
   mojo::Receiver<mojom::JsChannelClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsChannelBindings);
 };
 
 }  // namespace chromecast

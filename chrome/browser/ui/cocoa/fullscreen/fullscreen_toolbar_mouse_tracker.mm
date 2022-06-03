@@ -31,7 +31,12 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   std::unique_ptr<ScopedMenuBarLock> _menuBarLock;
 
   // The content view for the window.
-  NSView* _contentView;  // weak
+  // TODO(lgrey): Instead of retaining this, we should refrain from trying to
+  // remove the tracking area when the content view has already dealloced.
+  // Unfortunately, until we have a repro for https://crbug.com/1064911, we
+  // can't verify more targeted fixes (for example, only removing the tracking
+  // area if |_controller| has a window).
+  base::scoped_nsobject<NSView> _contentView;
 
   FullscreenToolbarController* _controller;  // weak
 }
@@ -70,7 +75,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
     [self removeTrackingArea];
   }
 
-  _contentView = [[[_controller delegate] window] contentView];
+  _contentView.reset([[[_controller window] contentView] retain]);
 
   _trackingArea.reset([[CrTrackingArea alloc]
       initWithRect:_trackingAreaFrame
@@ -82,7 +87,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 }
 
 - (void)updateToolbarFrame:(NSRect)frame {
-  NSRect contentBounds = [[[[_controller delegate] window] contentView] bounds];
+  NSRect contentBounds = [[[_controller window] contentView] bounds];
   _trackingAreaFrame = frame;
   _trackingAreaFrame.origin.y -= kTrackingAreaAdditionalThreshold;
   _trackingAreaFrame.size.height =
@@ -98,7 +103,7 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   DCHECK(_contentView);
   [_contentView removeTrackingArea:_trackingArea];
   _trackingArea.reset();
-  _contentView = nil;
+  _contentView.reset();
 }
 
 - (void)mouseEntered:(NSEvent*)event {

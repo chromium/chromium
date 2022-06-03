@@ -4,9 +4,12 @@
 
 #include <stddef.h>
 
+#include <atomic>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
@@ -36,6 +39,15 @@ class TestStorageInfoProvider : public extensions::StorageInfoProvider {
   TestStorageInfoProvider(const struct TestStorageUnitInfo* testing_data,
                           size_t n);
 
+  void set_expected_call_count(int count) { expected_call_count_ = count; }
+
+  void WaitForCallbacks() {
+    DCHECK(expected_call_count_);
+    if (callback_count_ != expected_call_count_) {
+      run_loop_.Run();
+    }
+  }
+
  private:
   ~TestStorageInfoProvider() override;
 
@@ -44,6 +56,14 @@ class TestStorageInfoProvider : public extensions::StorageInfoProvider {
       const std::string& transient_id) override;
 
   std::vector<struct TestStorageUnitInfo> testing_data_;
+
+  // Read on the IO thread, written from another thread.
+  std::atomic<int> callback_count_{0};
+
+  // Assumed to be read-only once the test starts.
+  int expected_call_count_ = 0;
+
+  base::RunLoop run_loop_;
 };
 
 TestStorageInfoProvider::TestStorageInfoProvider(
@@ -57,14 +77,18 @@ TestStorageInfoProvider::~TestStorageInfoProvider() {
 
 double TestStorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
     const std::string& transient_id) {
+  double result = -1;
   std::string device_id =
       StorageMonitor::GetInstance()->GetDeviceIdForTransientId(transient_id);
   for (size_t i = 0; i < testing_data_.size(); ++i) {
     if (testing_data_[i].device_id == device_id) {
-      return static_cast<double>(testing_data_[i].available_capacity);
+      result = static_cast<double>(testing_data_[i].available_capacity);
+      break;
     }
   }
-  return -1;
+  if (++callback_count_ == expected_call_count_)
+    run_loop_.QuitWhenIdle();
+  return result;
 }
 
 class SystemStorageApiTest : public extensions::ShellApiTest {
@@ -97,21 +121,26 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
 
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
   SetUpAllMockStorageDevices();
-  TestStorageInfoProvider* provider =
-      new TestStorageInfoProvider(kTestingData, base::size(kTestingData));
+  auto provider = base::MakeRefCounted<TestStorageInfoProvider>(
+      kTestingData, base::size(kTestingData));
   extensions::StorageInfoProvider::InitializeForTesting(provider);
   std::vector<std::unique_ptr<ExtensionTestMessageListener>>
       device_ids_listeners;
-  for (size_t i = 0; i < base::size(kTestingData); ++i) {
+  for (const auto& entry : kTestingData) {
     device_ids_listeners.push_back(
         std::make_unique<ExtensionTestMessageListener>(
             StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
-                kTestingData[i].device_id),
+                entry.device_id),
             false));
   }
+  // Set the number of expected callbacks into the StorageInfoProvider.
+  provider->set_expected_call_count(device_ids_listeners.size());
   ASSERT_TRUE(RunAppTest("system/storage")) << message_;
-  for (size_t i = 0; i < device_ids_listeners.size(); ++i)
-    EXPECT_TRUE(device_ids_listeners[i]->WaitUntilSatisfied());
+  for (const auto& listener : device_ids_listeners)
+    EXPECT_TRUE(listener->WaitUntilSatisfied());
+  // Wait for the callbacks to complete so they don't run during
+  // teardown.
+  provider->WaitForCallbacks();
 }
 
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, StorageAttachment) {

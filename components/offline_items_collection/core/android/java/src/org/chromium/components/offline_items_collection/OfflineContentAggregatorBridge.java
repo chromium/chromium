@@ -39,10 +39,11 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
 
     // OfflineContentProvider implementation.
     @Override
-    public void openItem(@LaunchLocation int location, ContentId id) {
+    public void openItem(OpenParams openParams, ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get().openItem(mNativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge.this, location, id.namespace, id.id);
+                OfflineContentAggregatorBridge.this, openParams.location,
+                openParams.openInIncognito, id.namespace, id.id);
     }
 
     @Override
@@ -73,6 +74,17 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
         OfflineContentAggregatorBridgeJni.get().resumeDownload(
                 mNativeOfflineContentAggregatorBridge, OfflineContentAggregatorBridge.this,
                 id.namespace, id.id, hasUserGesture);
+    }
+
+    @Override
+    public void changeSchedule(final ContentId id, final OfflineItemSchedule schedule) {
+        if (mNativeOfflineContentAggregatorBridge == 0) return;
+        boolean onlyOnWifi = (schedule == null) ? false : schedule.onlyOnWifi;
+        long startTimeMs = (schedule == null) ? -1 : schedule.startTimeMs;
+
+        OfflineContentAggregatorBridgeJni.get().changeSchedule(
+                mNativeOfflineContentAggregatorBridge, OfflineContentAggregatorBridge.this,
+                id.namespace, id.id, onlyOnWifi, startTimeMs);
     }
 
     @Override
@@ -183,7 +195,7 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     interface Natives {
         void openItem(long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller, @LaunchLocation int location,
-                String nameSpace, String id);
+                boolean openInIncognito, String nameSpace, String id);
 
         void removeItem(long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller, String nameSpace, String id);
@@ -208,5 +220,8 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
         void renameItem(long nativeOfflineContentAggregatorBridge,
                 OfflineContentAggregatorBridge caller, String nameSpace, String id, String name,
                 Callback</*RenameResult*/ Integer> callback);
+        void changeSchedule(long nativeOfflineContentAggregatorBridge,
+                OfflineContentAggregatorBridge caller, String nameSpace, String id,
+                boolean onlyOnWifi, long startTimeMs);
     }
 }

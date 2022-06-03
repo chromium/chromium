@@ -32,7 +32,7 @@ SVGViewElement::SVGViewElement(Document& document)
   UseCounter::Count(document, WebFeature::kSVGViewElement);
 }
 
-void SVGViewElement::Trace(blink::Visitor* visitor) {
+void SVGViewElement::Trace(Visitor* visitor) const {
   SVGElement::Trace(visitor);
   SVGFitToViewBox::Trace(visitor);
 }

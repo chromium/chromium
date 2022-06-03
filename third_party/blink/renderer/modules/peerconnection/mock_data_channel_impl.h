@@ -21,6 +21,9 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   MockDataChannel(const std::string& label,
                   const webrtc::DataChannelInit* config);
 
+  MockDataChannel(const MockDataChannel&) = delete;
+  MockDataChannel& operator=(const MockDataChannel&) = delete;
+
   void RegisterObserver(webrtc::DataChannelObserver* observer) override;
   void UnregisterObserver() override;
   std::string label() const override;
@@ -50,8 +53,6 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   webrtc::DataChannelInterface::DataState state_;
   webrtc::DataChannelInit config_;
   webrtc::DataChannelObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDataChannel);
 };
 
 }  // namespace blink

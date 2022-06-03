@@ -4,10 +4,12 @@
 
 #include "components/arc/intent_helper/intent_filter.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
+#include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/gurl.h"
@@ -19,12 +21,37 @@ IntentFilter::IntentFilter(IntentFilter&& other) = default;
 
 IntentFilter::IntentFilter(
     const std::string& package_name,
+    std::vector<std::string> actions,
     std::vector<IntentFilter::AuthorityEntry> authorities,
     std::vector<IntentFilter::PatternMatcher> paths,
-    std::vector<std::string> schemes)
+    std::vector<std::string> schemes,
+    std::vector<std::string> mime_types)
     : package_name_(package_name),
+      actions_(std::move(actions)),
       authorities_(std::move(authorities)),
-      schemes_(std::move(schemes)) {
+      schemes_(std::move(schemes)),
+      mime_types_(std::move(mime_types)) {
+  // In order to register a path we need to have at least one authority.
+  if (!authorities_.empty())
+    paths_ = std::move(paths);
+}
+
+IntentFilter::IntentFilter(
+    const std::string& package_name,
+    const std::string& activity_name,
+    const std::string& activity_label,
+    std::vector<std::string> actions,
+    std::vector<IntentFilter::AuthorityEntry> authorities,
+    std::vector<IntentFilter::PatternMatcher> paths,
+    std::vector<std::string> schemes,
+    std::vector<std::string> mime_types)
+    : package_name_(package_name),
+      activity_name_(activity_name),
+      activity_label_(activity_label),
+      actions_(std::move(actions)),
+      authorities_(std::move(authorities)),
+      schemes_(std::move(schemes)),
+      mime_types_(std::move(mime_types)) {
   // In order to register a path we need to have at least one authority.
   if (!authorities_.empty())
     paths_ = std::move(paths);
@@ -42,6 +69,15 @@ bool IntentFilter::Match(const GURL& url) const {
   // match code really only implements the matchData part of the android
   // IntentFilter class.
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Don't return match for filters for sharing.
+  if (std::any_of(actions_.begin(), actions_.end(),
+                  [](const std::string action) {
+                    return action == kIntentActionSend ||
+                           action == kIntentActionSendMultiple;
+                  })) {
     return false;
   }
 

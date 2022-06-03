@@ -30,9 +30,7 @@
 
 #include "third_party/blink/public/web/web_history_item.h"
 
-#include "third_party/blink/public/platform/web_float_point.h"
 #include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
@@ -41,6 +39,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -88,30 +87,30 @@ void WebHistoryItem::SetTarget(const WebString& target) {
   target_ = target;
 }
 
-WebFloatPoint WebHistoryItem::VisualViewportScrollOffset() const {
+gfx::PointF WebHistoryItem::VisualViewportScrollOffset() const {
   const auto& scroll_and_view_state = private_->GetViewState();
   ScrollOffset offset =
       scroll_and_view_state
           ? scroll_and_view_state->visual_viewport_scroll_offset_
           : ScrollOffset();
-  return WebFloatPoint(offset.Width(), offset.Height());
+  return gfx::PointF(offset.width(), offset.height());
 }
 
 void WebHistoryItem::SetVisualViewportScrollOffset(
-    const WebFloatPoint& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   private_->SetVisualViewportScrollOffset(ToScrollOffset(scroll_offset));
 }
 
-WebPoint WebHistoryItem::GetScrollOffset() const {
+gfx::Point WebHistoryItem::GetScrollOffset() const {
   const auto& scroll_and_view_state = private_->GetViewState();
   ScrollOffset offset = scroll_and_view_state
                             ? scroll_and_view_state->scroll_offset_
                             : ScrollOffset();
-  return WebPoint(offset.Width(), offset.Height());
+  return gfx::Point(offset.width(), offset.height());
 }
 
-void WebHistoryItem::SetScrollOffset(const WebPoint& scroll_offset) {
-  private_->SetScrollOffset(ScrollOffset(scroll_offset.x, scroll_offset.y));
+void WebHistoryItem::SetScrollOffset(const gfx::Point& scroll_offset) {
+  private_->SetScrollOffset(ScrollOffset(scroll_offset.x(), scroll_offset.y()));
 }
 
 float WebHistoryItem::PageScaleFactor() const {
@@ -152,15 +151,14 @@ void WebHistoryItem::SetDocumentSequenceNumber(
   private_->SetDocumentSequenceNumber(document_sequence_number);
 }
 
-WebHistoryScrollRestorationType WebHistoryItem::ScrollRestorationType() const {
-  return static_cast<WebHistoryScrollRestorationType>(
-      private_->ScrollRestorationType());
+mojom::blink::ScrollRestorationType WebHistoryItem::ScrollRestorationType()
+    const {
+  return private_->ScrollRestorationType();
 }
 
 void WebHistoryItem::SetScrollRestorationType(
-    WebHistoryScrollRestorationType type) {
-  private_->SetScrollRestorationType(
-      static_cast<HistoryScrollRestorationType>(type));
+    mojom::blink::ScrollRestorationType type) {
+  private_->SetScrollRestorationType(type);
 }
 
 WebSerializedScriptValue WebHistoryItem::StateObject() const {
@@ -191,7 +189,7 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
   HashSet<String> file_paths;
   const EncodedFormData* form_data = private_->FormData();
   if (form_data) {
-    for (size_t i = 0; i < form_data->Elements().size(); ++i) {
+    for (wtf_size_t i = 0; i < form_data->Elements().size(); ++i) {
       const FormDataElement& element = form_data->Elements()[i];
       if (element.type_ == FormDataElement::kEncodedFile)
         file_paths.insert(element.filename_);
@@ -200,7 +198,7 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
 
   const Vector<String>& referenced_file_paths =
       private_->GetReferencedFilePaths();
-  for (size_t i = 0; i < referenced_file_paths.size(); ++i)
+  for (wtf_size_t i = 0; i < referenced_file_paths.size(); ++i)
     file_paths.insert(referenced_file_paths[i]);
 
   Vector<String> results;
@@ -223,6 +221,30 @@ ScrollAnchorData WebHistoryItem::GetScrollAnchorData() const {
 void WebHistoryItem::SetScrollAnchorData(
     const struct ScrollAnchorData& scroll_anchor_data) {
   private_->SetScrollAnchorData(scroll_anchor_data);
+}
+
+WebString WebHistoryItem::GetAppHistoryKey() const {
+  return private_->GetAppHistoryKey();
+}
+
+void WebHistoryItem::SetAppHistoryKey(const WebString& key) {
+  private_->SetAppHistoryKey(key);
+}
+
+WebString WebHistoryItem::GetAppHistoryId() const {
+  return private_->GetAppHistoryId();
+}
+
+void WebHistoryItem::SetAppHistoryId(const WebString& id) {
+  private_->SetAppHistoryId(id);
+}
+
+WebSerializedScriptValue WebHistoryItem::GetAppHistoryState() const {
+  return WebSerializedScriptValue(private_->GetAppHistoryState());
+}
+
+void WebHistoryItem::SetAppHistoryState(const WebSerializedScriptValue& state) {
+  private_->SetAppHistoryState(state);
 }
 
 WebHistoryItem::WebHistoryItem(HistoryItem* item) : private_(item) {}

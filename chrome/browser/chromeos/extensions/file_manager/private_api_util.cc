@@ -9,28 +9,30 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_util.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/file_manager/snapshot_manager.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/snapshot_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -145,6 +147,23 @@ void GetSelectedFileInfoInternal(
       params->selected_files.emplace_back(file_path, file_path);
     }
   }
+
+  // Populate the virtual path for any files on a external mount point. This
+  // lets consumers that are capable of using a virtual path use this rather
+  // than file_path, which can make certain operations more efficient.
+  for (auto& file_info : params->selected_files) {
+    auto* external_mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    base::FilePath virtual_path;
+    if (external_mount_points->GetVirtualPath(file_info.file_path,
+                                              &virtual_path)) {
+      file_info.virtual_path.emplace(std::move(virtual_path));
+    } else {
+      LOG(ERROR) << "Failed to get external virtual path: "
+                 << file_info.file_path;
+    }
+  }
+
   std::move(params->callback).Run(params->selected_files);
 }
 
@@ -180,12 +199,190 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
   GetSelectedFileInfoInternal(profile, std::move(params));
 }
 
+std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
+    const GURL& alternate_url) {
+  // Set |share_url| to a modified version of |alternate_url| that opens the
+  // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
+  GURL::Replacements replacements;
+  std::string new_query =
+      (alternate_url.has_query() ? alternate_url.query() + "&" : "") +
+      "userstoinvite=%22%22";
+  replacements.SetQueryStr(new_query);
+
+  return std::make_unique<std::string>(
+      alternate_url.ReplaceComponents(replacements).spec());
+}
+
 }  // namespace
 
+// Creates an instance and starts the process.
+void SingleEntryPropertiesGetterForDriveFs::Start(
+    const storage::FileSystemURL& file_system_url,
+    Profile* const profile,
+    ResultCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  SingleEntryPropertiesGetterForDriveFs* instance =
+      new SingleEntryPropertiesGetterForDriveFs(file_system_url, profile,
+                                                std::move(callback));
+  instance->StartProcess();
+
+  // The instance will be destroyed by itself.
+}
+
+SingleEntryPropertiesGetterForDriveFs::SingleEntryPropertiesGetterForDriveFs(
+    const storage::FileSystemURL& file_system_url,
+    Profile* const profile,
+    ResultCallback callback)
+    : callback_(std::move(callback)),
+      file_system_url_(file_system_url),
+      running_profile_(profile),
+      properties_(std::make_unique<
+                  extensions::api::file_manager_private::EntryProperties>()) {
+  DCHECK(callback_);
+  DCHECK(profile);
+}
+
+SingleEntryPropertiesGetterForDriveFs::
+    ~SingleEntryPropertiesGetterForDriveFs() = default;
+
+void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(running_profile_);
+  if (!integration_service || !integration_service->IsMounted()) {
+    CompleteGetEntryProperties(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
+    return;
+  }
+  base::FilePath path;
+  if (!integration_service->GetRelativeDrivePath(file_system_url_.path(),
+                                                 &path)) {
+    CompleteGetEntryProperties(drive::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  auto* drivefs_interface = integration_service->GetDriveFsInterface();
+  if (!drivefs_interface) {
+    CompleteGetEntryProperties(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
+    return;
+  }
+
+  drivefs_interface->GetMetadata(
+      path,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo,
+                         weak_ptr_factory_.GetWeakPtr()),
+          drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
+}
+
+void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!metadata) {
+    CompleteGetEntryProperties(error);
+    return;
+  }
+
+  properties_->size = std::make_unique<double>(metadata->size);
+  properties_->present = std::make_unique<bool>(metadata->available_offline);
+  properties_->dirty = std::make_unique<bool>(metadata->dirty);
+  properties_->hosted =
+      std::make_unique<bool>(drivefs::IsHosted(metadata->type));
+  properties_->available_offline = std::make_unique<bool>(
+      metadata->available_offline || *properties_->hosted);
+  properties_->available_when_metered = std::make_unique<bool>(
+      metadata->available_offline || *properties_->hosted);
+  properties_->pinned = std::make_unique<bool>(metadata->pinned);
+  properties_->shared = std::make_unique<bool>(metadata->shared);
+  properties_->starred = std::make_unique<bool>(metadata->starred);
+
+  if (metadata->modification_time != base::Time()) {
+    properties_->modification_time =
+        std::make_unique<double>(metadata->modification_time.ToJsTime());
+  }
+  if (metadata->last_viewed_by_me_time != base::Time()) {
+    properties_->modification_by_me_time =
+        std::make_unique<double>(metadata->last_viewed_by_me_time.ToJsTime());
+  }
+  if (!metadata->content_mime_type.empty()) {
+    properties_->content_mime_type =
+        std::make_unique<std::string>(metadata->content_mime_type);
+  }
+  if (!metadata->custom_icon_url.empty()) {
+    properties_->custom_icon_url =
+        std::make_unique<std::string>(std::move(metadata->custom_icon_url));
+  }
+  if (!metadata->alternate_url.empty()) {
+    properties_->alternate_url =
+        std::make_unique<std::string>(std::move(metadata->alternate_url));
+    properties_->share_url =
+        GetShareUrlFromAlternateUrl(GURL(*properties_->alternate_url));
+  }
+  if (metadata->image_metadata) {
+    if (metadata->image_metadata->height) {
+      properties_->image_height =
+          std::make_unique<int32_t>(metadata->image_metadata->height);
+    }
+    if (metadata->image_metadata->width) {
+      properties_->image_width =
+          std::make_unique<int32_t>(metadata->image_metadata->width);
+    }
+    if (metadata->image_metadata->rotation) {
+      properties_->image_rotation =
+          std::make_unique<int32_t>(metadata->image_metadata->rotation);
+    }
+  }
+
+  properties_->can_delete =
+      std::make_unique<bool>(metadata->capabilities->can_delete);
+  properties_->can_rename =
+      std::make_unique<bool>(metadata->capabilities->can_rename);
+  properties_->can_add_children =
+      std::make_unique<bool>(metadata->capabilities->can_add_children);
+
+  // Only set the |can_copy| capability for hosted documents; for other files,
+  // we must have read access, so |can_copy| is implicitly true.
+  properties_->can_copy = std::make_unique<bool>(
+      !*properties_->hosted || metadata->capabilities->can_copy);
+  properties_->can_share =
+      std::make_unique<bool>(metadata->capabilities->can_share);
+
+  if (drivefs::IsAFile(metadata->type)) {
+    properties_->thumbnail_url = std::make_unique<std::string>(
+        base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));
+    properties_->cropped_thumbnail_url =
+        std::make_unique<std::string>(*properties_->thumbnail_url);
+  }
+
+  if (metadata->folder_feature) {
+    properties_->is_machine_root =
+        std::make_unique<bool>(metadata->folder_feature->is_machine_root);
+    properties_->is_external_media =
+        std::make_unique<bool>(metadata->folder_feature->is_external_media);
+    properties_->is_arbitrary_sync_folder = std::make_unique<bool>(
+        metadata->folder_feature->is_arbitrary_sync_folder);
+  }
+
+  CompleteGetEntryProperties(drive::FILE_ERROR_OK);
+}
+
+void SingleEntryPropertiesGetterForDriveFs::CompleteGetEntryProperties(
+    drive::FileError error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(callback_);
+
+  std::move(callback_).Run(std::move(properties_),
+                           drive::FileErrorToBaseFileError(error));
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
+}
+
 void FillIconSet(file_manager_private::IconSet* output,
-                 const chromeos::file_system_provider::IconSet& input) {
+                 const ash::file_system_provider::IconSet& input) {
   DCHECK(output);
-  using chromeos::file_system_provider::IconSet;
+  using ash::file_system_provider::IconSet;
   if (input.HasIcon(IconSet::IconSize::SIZE_16x16)) {
     output->icon16x16_url = std::make_unique<std::string>(
         input.GetIcon(IconSet::IconSize::SIZE_16x16).spec());
@@ -212,6 +409,10 @@ void VolumeToVolumeMetadata(
   if (!volume.source_path().empty()) {
     volume_metadata->source_path =
         std::make_unique<std::string>(volume.source_path().AsUTF8Unsafe());
+  }
+  if (!volume.remote_mount_path().empty()) {
+    volume_metadata->remote_mount_path =
+        std::make_unique<std::string>(volume.remote_mount_path().value());
   }
 
   switch (volume.source()) {
@@ -373,7 +574,7 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
       util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
 
   const storage::FileSystemURL filesystem_url(
-      file_system_context->CrackURL(url));
+      file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
   if (!chromeos::FileSystemBackend::CanHandleURL(filesystem_url))
     return base::FilePath();
@@ -409,6 +610,8 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {
+  if (!profile)
+    return nullptr;
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;

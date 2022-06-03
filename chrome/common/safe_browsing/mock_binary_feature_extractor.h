@@ -13,6 +13,11 @@ namespace safe_browsing {
 class MockBinaryFeatureExtractor : public BinaryFeatureExtractor {
  public:
   MockBinaryFeatureExtractor();
+
+  MockBinaryFeatureExtractor(const MockBinaryFeatureExtractor&) = delete;
+  MockBinaryFeatureExtractor& operator=(const MockBinaryFeatureExtractor&) =
+      delete;
+
   MOCK_METHOD2(CheckSignature,
                void(const base::FilePath&,
                     ClientDownloadRequest_SignatureInfo*));
@@ -24,9 +29,6 @@ class MockBinaryFeatureExtractor : public BinaryFeatureExtractor {
 
  protected:
   ~MockBinaryFeatureExtractor() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBinaryFeatureExtractor);
 };
 
 }  // namespace safe_browsing

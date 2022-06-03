@@ -48,7 +48,7 @@ TrackBase::TrackBase(WebMediaPlayer::TrackType type,
 
 TrackBase::~TrackBase() = default;
 
-void TrackBase::Trace(Visitor* visitor) {
+void TrackBase::Trace(Visitor* visitor) const {
   Supplementable<TrackBase>::Trace(visitor);
   visitor->Trace(media_element_);
 }

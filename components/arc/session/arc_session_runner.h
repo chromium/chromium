@@ -7,20 +7,19 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "components/arc/session/arc_client_adapter.h"
 #include "components/arc/session/arc_instance_mode.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_stop_reason.h"
 #include "components/arc/session/arc_upgrade_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -72,11 +71,20 @@ class ArcSessionRunner : public ArcSession::Observer {
       base::RepeatingCallback<std::unique_ptr<ArcSession>()>;
 
   explicit ArcSessionRunner(const ArcSessionFactory& factory);
+
+  ArcSessionRunner(const ArcSessionRunner&) = delete;
+  ArcSessionRunner& operator=(const ArcSessionRunner&) = delete;
+
   ~ArcSessionRunner() override;
 
   // Add/Remove an observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Resumes |this| runner. Every time when a runner is created, it is in
+  // 'suspended' state meaning that it won't start any instance. This method
+  // is to allow the runner to actually start it.
+  void ResumeRunner();
 
   // Starts the mini ARC instance.
   void RequestStartMiniInstance();
@@ -93,9 +101,26 @@ class ArcSessionRunner : public ArcSession::Observer {
   // when this function is called, MessageLoop is no longer exists.
   void OnShutdown();
 
-  // Sets a hash string of the profile user ID and an ARC serial number for the
+  // Sets a hash string of the profile user IDs and an ARC serial number for the
   // user.
-  void SetUserInfo(const std::string& hash, const std::string& serial_number);
+  void SetUserInfo(const cryptohome::Identification& cryptohome_id,
+                   const std::string& hash,
+                   const std::string& serial_number);
+
+  // Provides the DemoModeDelegate which will be used to load the demo session
+  // apps path.
+  void SetDemoModeDelegate(
+      std::unique_ptr<ArcClientAdapter::DemoModeDelegate> delegate);
+
+  // Trims VM's memory by moving it to zram. |callback| is called when the
+  // operation is done.
+  using TrimVmMemoryCallback =
+      base::OnceCallback<void(bool success, const std::string& failure_reason)>;
+  void TrimVmMemory(TrimVmMemoryCallback callback);
+
+  void set_default_device_scale_factor(float scale_factor) {
+    default_device_scale_factor_ = scale_factor;
+  }
 
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
@@ -127,7 +152,7 @@ class ArcSessionRunner : public ArcSession::Observer {
 
   // Target ARC instance running mode. If nullopt, it means the ARC instance
   // should stop eventually.
-  base::Optional<ArcInstanceMode> target_mode_;
+  absl::optional<ArcInstanceMode> target_mode_;
 
   // Instead of immediately trying to restart the container, give it some time
   // to finish tearing down in case it is still in the process of stopping.
@@ -145,15 +170,22 @@ class ArcSessionRunner : public ArcSession::Observer {
   // Parameters to upgrade request.
   UpgradeParams upgrade_params_;
 
+  // A cryptohome ID of the profile.
+  cryptohome::Identification cryptohome_id_;
   // A hash string of the profile user ID.
   std::string user_id_hash_;
   // A serial number for the current profile.
   std::string serial_number_;
 
+  bool resumed_ = false;
+
+  float default_device_scale_factor_ = 1.0f;
+
+  // DemoModeDelegate to be used by ArcSession.
+  std::unique_ptr<ArcClientAdapter::DemoModeDelegate> demo_mode_delegate_;
+
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionRunner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionRunner);
 };
 
 }  // namespace arc

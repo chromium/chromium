@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/foreground_eid_generator.h"
 
 namespace chromeos {
@@ -15,12 +14,6 @@ namespace chromeos {
 namespace multidevice {
 class RemoteDeviceRef;
 }  // namespace multidevice
-
-namespace tether {
-class BleAdvertiserImplTest;
-class BleServiceDataHelperImplTest;
-class AdHocBleAdvertiserImplTest;
-}  // namespace tether
 
 namespace secure_channel {
 
@@ -34,6 +27,10 @@ class BleAdvertisementGenerator {
       multidevice::RemoteDeviceRef remote_device,
       const std::string& local_device_public_key);
 
+  BleAdvertisementGenerator(const BleAdvertisementGenerator&) = delete;
+  BleAdvertisementGenerator& operator=(const BleAdvertisementGenerator&) =
+      delete;
+
   virtual ~BleAdvertisementGenerator();
 
  protected:
@@ -45,21 +42,17 @@ class BleAdvertisementGenerator {
 
  private:
   friend class SecureChannelBleAdvertisementGeneratorTest;
-  friend class SecureChannelBleServiceDataHelperImplTest;
-  friend class tether::BleAdvertiserImplTest;
-  friend class tether::BleServiceDataHelperImplTest;
-  friend class tether::AdHocBleAdvertiserImplTest;
+  friend class SecureChannelBluetoothHelperImplTest;
 
   static BleAdvertisementGenerator* instance_;
 
+  // TODO(dcheng): Update this to follow the standard factory pattern.
   static void SetInstanceForTesting(BleAdvertisementGenerator* test_generator);
 
   void SetEidGeneratorForTesting(
       std::unique_ptr<ForegroundEidGenerator> test_eid_generator);
 
   std::unique_ptr<ForegroundEidGenerator> eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertisementGenerator);
 };
 
 }  // namespace secure_channel

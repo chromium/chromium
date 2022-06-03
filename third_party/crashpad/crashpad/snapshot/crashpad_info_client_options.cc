@@ -15,7 +15,6 @@
 #include "snapshot/crashpad_info_client_options.h"
 
 #include "base/logging.h"
-#include "client/crashpad_info.h"
 
 namespace crashpad {
 

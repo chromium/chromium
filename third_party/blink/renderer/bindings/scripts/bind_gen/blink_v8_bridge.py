@@ -5,6 +5,7 @@
 import web_idl
 
 from . import name_style
+from .code_node import FormatNode
 from .code_node import Likeliness
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
@@ -23,34 +24,48 @@ def blink_class_name(idl_definition):
     if class_name:
         return class_name
 
+    assert idl_definition.identifier[0].isupper()
+    # Do not apply |name_style.class_| in order to respect the original name
+    # (Web spec'ed name) as much as possible.  For example, |interface EXTsRGB|
+    # is implemented as |class EXTsRGB|, not as |ExtSRgb| nor |ExtsRgb|.
     if isinstance(idl_definition,
-                  (web_idl.CallbackFunction, web_idl.CallbackInterface)):
-        return name_style.class_("v8", idl_definition.identifier)
+                  (web_idl.CallbackFunction, web_idl.CallbackInterface,
+                   web_idl.Enumeration, web_idl.Typedef)):
+        return "V8{}".format(idl_definition.identifier)
+    elif isinstance(idl_definition, web_idl.ObservableArray):
+        return "V8ObservableArray{}".format(
+            idl_definition.idl_type.element_type.
+            type_name_with_extended_attribute_key_values)
+    elif isinstance(idl_definition, web_idl.Union):
+        # Technically this name is not guaranteed to be unique because
+        # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
+        # name, but it's highly unlikely to cause a conflict in the actual use
+        # cases.  Plus, we prefer a simple naming rule conformant to the
+        # Chromium coding style.  So, we go with this way.
+        return "V8Union{}".format("Or".join(idl_definition.member_tokens))
     else:
-        return name_style.class_(idl_definition.identifier)
+        return idl_definition.identifier
 
 
 def v8_bridge_class_name(idl_definition):
     """
     Returns the name of V8-from/to-Blink bridge class.
     """
-    assert isinstance(idl_definition, (web_idl.Namespace, web_idl.Interface))
+    assert isinstance(
+        idl_definition,
+        (web_idl.CallbackInterface, web_idl.Interface, web_idl.Namespace))
 
-    return name_style.class_("v8", idl_definition.identifier)
+    assert idl_definition.identifier[0].isupper()
+    # Do not apply |name_style.class_| due to the same reason as
+    # |blink_class_name|.
+    return "V8{}".format(idl_definition.identifier)
 
 
 def blink_type_info(idl_type):
     """
-    Returns the types of Blink implementation corresponding to the given IDL
-    type.  The returned object has the following attributes.
-
-      member_t: The type of a member variable.  E.g. T => Member<T>
-      ref_t: The type of a local variable that references to an already-existing
-          value.  E.g. String => String&
-      value_t: The type of a variable that behaves as a value.  E.g. String =>
-          String
-      is_nullable: True if the Blink implementation type can represent IDL null
-          value by itself.
+    Returns an object that represents the types of Blink implementation
+    corresponding to the given IDL type, such as reference type, value type,
+    member type, etc.
     """
     assert isinstance(idl_type, web_idl.IdlType)
 
@@ -59,13 +74,125 @@ def blink_type_info(idl_type):
                      typename,
                      member_fmt="{}",
                      ref_fmt="{}",
+                     const_ref_fmt="const {}",
                      value_fmt="{}",
-                     is_nullable=False):
-            self.member_t = member_fmt.format(typename)
-            self.ref_t = ref_fmt.format(typename)
-            self.value_t = value_fmt.format(typename)
-            # Whether Blink impl type can represent IDL null or not.
-            self.is_nullable = is_nullable
+                     has_null_value=False,
+                     is_gc_type=False,
+                     is_heap_vector_type=False,
+                     is_move_effective=False,
+                     is_traceable=False,
+                     clear_member_var_fmt="{}.Clear()"):
+            self._typename = typename
+            self._has_null_value = has_null_value
+            self._is_gc_type = is_gc_type
+            self._is_heap_vector_type = is_heap_vector_type
+            self._is_move_effective = is_move_effective
+            self._is_traceable = (is_gc_type or is_heap_vector_type
+                                  or is_traceable)
+            self._clear_member_var_fmt = clear_member_var_fmt
+
+            self._ref_t = ref_fmt.format(typename)
+            self._const_ref_t = const_ref_fmt.format(typename)
+            self._value_t = value_fmt.format(typename)
+            self._member_t = member_fmt.format(typename)
+            self._member_ref_t = (self._ref_t
+                                  if self._is_gc_type else self._const_ref_t)
+
+        @property
+        def typename(self):
+            """Returns the internal-use-only name.  Do not use this."""
+            return self._typename
+
+        @property
+        def ref_t(self):
+            """
+            Returns the type of a local variable that references to an existing
+            value.  E.g. String => String&
+            """
+            return self._ref_t
+
+        @property
+        def const_ref_t(self):
+            """
+            Returns the const-qualified version of |ref_t|.  E.g. String =>
+            const String&
+            """
+            return self._const_ref_t
+
+        @property
+        def value_t(self):
+            """
+            Returns the type of a variable that behaves as a value.  E.g. String =>
+            String
+            """
+            return self._value_t
+
+        @property
+        def member_t(self):
+            """
+            Returns the type of a member variable.  E.g. Node => Member<Node>
+            """
+            return self._member_t
+
+        @property
+        def member_ref_t(self):
+            """
+            Returns the type used for input to and output from a member
+            variable.  E.g. Node* for Member<Node> and const String& for String
+            """
+            return self._member_ref_t
+
+        @property
+        def has_null_value(self):
+            """
+            Returns True if the Blink implementation type can represent IDL
+            null value without use of absl::optional<T>.  E.g. pointer type =>
+            True and int32_t => False
+            """
+            return self._has_null_value
+
+        @property
+        def is_gc_type(self):
+            """
+            Returns True if the Blink implementation type is a GarbageCollected
+            type.
+            """
+            return self._is_gc_type
+
+        @property
+        def is_heap_vector_type(self):
+            """
+            Returns True if the Blink implementation type is HeapVector<T>.
+
+            HeapVector is very special because HeapVector is GarbageCollected
+            but it's used as a value type rather than a reference type for the
+            most cases because HeapVector had been implemented as a non-GC type
+            for a long time and it turned into a GC type in 2021 January.
+            """
+            return self._is_heap_vector_type
+
+        @property
+        def is_move_effective(self):
+            """
+            Returns True if support of std::move is effective and desired.
+            E.g. Vector => True and int32_t => False
+            """
+            return self._is_move_effective
+
+        @property
+        def is_traceable(self):
+            """
+            Returns True if the Blink implementation type has Trace method.
+            E.g. ScriptValue => True and int32_t => False
+            """
+            return self._is_traceable
+
+        def clear_member_var_expr(self, var_name):
+            """
+            Returns an expression to reset the given member variable.  E.g.
+            Vector => var_name.clear() and int32_t => var_name = 0
+            """
+            return self._clear_member_var_fmt.format(var_name)
 
     real_type = idl_type.unwrap(typedef=True)
 
@@ -85,79 +212,222 @@ def blink_type_info(idl_type):
             "double": "double",
             "unrestricted double": "double",
         }
-        return TypeInfo(cxx_type[real_type.keyword_typename])
+        return TypeInfo(cxx_type[real_type.keyword_typename],
+                        const_ref_fmt="{}",
+                        clear_member_var_fmt="{} = 0")
 
     if real_type.is_string:
-        return TypeInfo("String", ref_fmt="{}&", is_nullable=True)
+        return TypeInfo("String",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        clear_member_var_fmt="{} = String()")
+
+    if real_type.is_array_buffer:
+        if "AllowShared" in idl_type.effective_annotations:
+            # DOMArrayBufferBase is the common base class of DOMArrayBuffer and
+            # DOMSharedArrayBuffer, so it works as [AllowShared] ArrayBuffer.
+            typename = "DOMArrayBufferBase"
+        else:
+            typename = "DOMArrayBuffer"
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if real_type.is_buffer_source_type:
-        return TypeInfo(
-            'DOM{}'.format(real_type.keyword_typename),
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            value_fmt="{}*",
-            is_nullable=True)
+        if "FlexibleArrayBufferView" in idl_type.effective_annotations:
+            assert "AllowShared" in idl_type.effective_annotations
+            return TypeInfo("Flexible{}".format(real_type.keyword_typename),
+                            member_fmt="void",
+                            ref_fmt="{}",
+                            const_ref_fmt="const {}",
+                            value_fmt="{}",
+                            has_null_value=True,
+                            is_gc_type=True)
+        elif "AllowShared" in idl_type.effective_annotations:
+            return TypeInfo("MaybeShared<DOM{}>".format(
+                real_type.keyword_typename),
+                            has_null_value=True,
+                            is_gc_type=True)
+        else:
+            return TypeInfo("NotShared<DOM{}>".format(
+                real_type.keyword_typename),
+                            has_null_value=True,
+                            is_gc_type=True)
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
     if real_type.is_any or real_type.is_object:
-        return TypeInfo("ScriptValue", ref_fmt="{}&", is_nullable=True)
+        return TypeInfo("ScriptValue",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        is_traceable=True)
 
     if real_type.is_void:
         assert False, "Blink does not support/accept IDL void type."
 
-    if real_type.type_definition_object is not None:
-        type_def_obj = real_type.type_definition_object
-        blink_impl_type = (
-            type_def_obj.code_generator_info.receiver_implemented_as
-            or name_style.class_(type_def_obj.identifier))
-        return TypeInfo(
-            blink_impl_type,
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            value_fmt="{}*",
-            is_nullable=True)
+    if real_type.type_definition_object:
+        typename = blink_class_name(real_type.type_definition_object)
+        if real_type.is_enumeration:
+            return TypeInfo(typename,
+                            ref_fmt="{}",
+                            const_ref_fmt="{}",
+                            clear_member_var_fmt="")
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if (real_type.is_sequence or real_type.is_frozen_array
             or real_type.is_variadic):
         element_type = blink_type_info(real_type.element_type)
-        return TypeInfo(
-            "VectorOf<{}>".format(element_type.value_t), ref_fmt="{}&")
+        if element_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = "HeapVector<AddMemberIfNeeded<{}>>".format(
+                element_type.member_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            return TypeInfo("Vector<{}>".format(element_type.value_t),
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
+
+    if real_type.is_observable_array:
+        typename = blink_class_name(
+            real_type.observable_array_definition_object)
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if real_type.is_record:
+        assert real_type.key_type.is_string
         key_type = blink_type_info(real_type.key_type)
         value_type = blink_type_info(real_type.value_type)
-        return TypeInfo(
-            "VectorOfPairs<{}, {}>".format(key_type.value_t,
-                                           value_type.value_t),
-            ref_fmt="{}&")
+        if value_type.is_traceable:
+            # HeapVector is GarbageCollected but we'd like to treat it as
+            # a value type (is_gc_type=False, has_null_value=False) rather than
+            # a reference type (is_gc_type=True, has_null_value=True) by
+            # default.
+            typename = (
+                "HeapVector<std::pair<{}, AddMemberIfNeeded<{}>>>".format(
+                    key_type.value_t, value_type.member_t))
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            has_null_value=False,
+                            is_gc_type=False,
+                            is_move_effective=True,
+                            is_heap_vector_type=True,
+                            clear_member_var_fmt="{}.clear()")
+        else:
+            typename = "Vector<std::pair<{}, {}>>".format(
+                key_type.value_t, value_type.value_t)
+            return TypeInfo(typename,
+                            ref_fmt="{}&",
+                            const_ref_fmt="const {}&",
+                            is_move_effective=True,
+                            clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        return TypeInfo("ScriptPromise", ref_fmt="{}&")
+        return TypeInfo("ScriptPromise",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        is_traceable=True)
 
     if real_type.is_union:
-        return TypeInfo("ToBeImplementedUnion")
+        typename = blink_class_name(real_type.union_definition_object)
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True,
+                        is_gc_type=True)
 
     if real_type.is_nullable:
         inner_type = blink_type_info(real_type.inner_type)
-        if inner_type.is_nullable:
+        if inner_type.has_null_value:
             return inner_type
-        return TypeInfo(
-            "base::Optional<{}>".format(inner_type.value_t), ref_fmt="{}&")
+        if inner_type.is_heap_vector_type:
+            return TypeInfo(inner_type.typename,
+                            member_fmt="Member<{}>",
+                            ref_fmt="{}*",
+                            const_ref_fmt="const {}*",
+                            value_fmt="{}*",
+                            has_null_value=True,
+                            is_gc_type=True,
+                            is_move_effective=False,
+                            is_heap_vector_type=False)
+        assert not inner_type.is_traceable
+        return TypeInfo("absl::optional<{}>".format(inner_type.value_t),
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        is_move_effective=inner_type.is_move_effective,
+                        clear_member_var_fmt="{}.reset()")
 
     assert False, "Unknown type: {}".format(idl_type.syntactic_form)
 
 
-def native_value_tag(idl_type):
+def native_value_tag(idl_type, argument=None, apply_optional_to_last_arg=True):
     """Returns the tag type of NativeValueTraits."""
     assert isinstance(idl_type, web_idl.IdlType)
+    assert argument is None or isinstance(argument, web_idl.Argument)
+
+    if (idl_type.is_optional and argument
+            and not (idl_type.is_nullable or argument.default_value)
+            and (apply_optional_to_last_arg
+                 or argument != argument.owner.arguments[-1])):
+        return "IDLOptional<{}>".format(_native_value_tag_impl(idl_type))
+
+    return _native_value_tag_impl(idl_type)
+
+
+def _native_value_tag_impl(idl_type):
+    """Returns the tag type of NativeValueTraits."""
+    assert isinstance(idl_type, web_idl.IdlType)
+
+    if idl_type.is_typedef:
+        if idl_type.identifier in ("EventHandler",
+                                   "OnBeforeUnloadEventHandler",
+                                   "OnErrorEventHandler"):
+            return "IDL{}".format(idl_type.identifier)
 
     real_type = idl_type.unwrap(typedef=True)
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
             or real_type.is_any or real_type.is_object):
-        return "IDL{}".format(real_type.type_name)
+        return "IDL{}".format(
+            idl_type.type_name_with_extended_attribute_key_values)
+
+    if real_type.is_array_buffer:
+        return blink_type_info(real_type).typename
+
+    if real_type.is_buffer_source_type:
+        return blink_type_info(real_type).value_t
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
@@ -165,26 +435,76 @@ def native_value_tag(idl_type):
     if real_type.is_void:
         assert False, "Blink does not support/accept IDL void type."
 
-    if real_type.type_definition_object is not None:
-        return blink_type_info(real_type).value_t
+    if real_type.type_definition_object:
+        return blink_class_name(real_type.type_definition_object)
 
     if real_type.is_sequence:
         return "IDLSequence<{}>".format(
-            native_value_tag(real_type.element_type))
+            _native_value_tag_impl(real_type.element_type))
+
+    if real_type.is_frozen_array:
+        return "IDLArray<{}>".format(
+            _native_value_tag_impl(real_type.element_type))
+
+    if real_type.is_observable_array:
+        return blink_class_name(real_type.observable_array_definition_object)
 
     if real_type.is_record:
         return "IDLRecord<{}, {}>".format(
-            native_value_tag(real_type.key_type),
-            native_value_tag(real_type.value_type))
+            _native_value_tag_impl(real_type.key_type),
+            _native_value_tag_impl(real_type.value_type))
 
     if real_type.is_promise:
         return "IDLPromise"
 
     if real_type.is_union:
-        return blink_type_info(real_type).value_t
+        return blink_class_name(real_type.union_definition_object)
 
     if real_type.is_nullable:
-        return "IDLNullable<{}>".format(native_value_tag(real_type.inner_type))
+        return "IDLNullable<{}>".format(
+            _native_value_tag_impl(real_type.inner_type))
+
+    assert False, "Unknown type: {}".format(idl_type.syntactic_form)
+
+
+def make_blink_to_v8_value(
+        v8_var_name,
+        blink_value_expr,
+        idl_type,
+        argument=None,
+        error_exit_return_statement="return v8::MaybeLocal<v8::Value>();",
+        creation_context_script_state="${script_state}"):
+    """
+    Returns a SymbolNode whose definition converts a Blink value to a v8::Value.
+    """
+    assert isinstance(v8_var_name, str)
+    assert isinstance(blink_value_expr, str)
+    assert isinstance(idl_type, web_idl.IdlType)
+    assert argument is None or isinstance(argument, web_idl.Argument)
+    assert isinstance(error_exit_return_statement, str)
+    assert isinstance(creation_context_script_state, str)
+
+    T = TextNode
+    F = FormatNode
+
+    def create_definition(symbol_node):
+        binds = {
+            "blink_value_expr": blink_value_expr,
+            "creation_context_script_state": creation_context_script_state,
+            "native_value_tag": native_value_tag(idl_type, argument=argument),
+            "v8_var_name": v8_var_name,
+        }
+        pattern = ("!ToV8Traits<{native_value_tag}>::ToV8("
+                   "{creation_context_script_state}, {blink_value_expr})"
+                   ".ToLocal(&{v8_var_name})")
+        nodes = [
+            F("v8::Local<v8::Value> {v8_var_name};", **binds),
+            CxxUnlikelyIfNode(cond=F(pattern, **binds),
+                              body=T(error_exit_return_statement)),
+        ]
+        return SymbolDefinitionNode(symbol_node, nodes)
+
+    return SymbolNode(v8_var_name, definition_constructor=create_definition)
 
 
 def make_default_value_expr(idl_type, default_value):
@@ -192,52 +512,150 @@ def make_default_value_expr(idl_type, default_value):
     Returns a set of C++ expressions to be used for initialization with default
     values.  The returned object has the following attributes.
 
-      initializer: Used as "Type var(|initializer|);".  This is None if
-          "Type var;" sets an appropriate default value.
+      initializer_expr: Used as "Type var{|initializer_expr|};".  This is None
+          if "Type var;" sets an appropriate default value.
+      initializer_deps: A list of symbol names that |initializer_expr| depends
+          on.
+      is_initialization_lightweight: True if a possibly-redundant initialization
+          will not be more expensive than assignment.  See bellow for an
+          example.
       assignment_value: Used as "var = |assignment_value|;".
+      assignment_deps: A list of symbol names that |assignment_value| depends
+          on.
+
+
+    |is_initialization_lightweight| is True if
+
+      Type var{${initializer_expr}};
+      if (value_is_given)
+        var = value;
+
+    is not more expensive than
+
+      Type var;
+      if (value_is_given)
+        var = value;
+      else
+        var = ${assignment_value};
     """
+    assert isinstance(idl_type, web_idl.IdlType)
+    assert (default_value is None
+            or isinstance(default_value, web_idl.LiteralConstant))
     assert default_value.is_type_compatible_with(idl_type)
 
-    if idl_type.is_union:
-        for member_type in idl_type.flattened_member_types:
+    class DefaultValueExpr(object):
+        _ALLOWED_SYMBOLS_IN_DEPS = ("isolate")
+
+        def __init__(self, initializer_expr, initializer_deps,
+                     is_initialization_lightweight, assignment_value,
+                     assignment_deps):
+            assert initializer_expr is None or isinstance(
+                initializer_expr, str)
+            assert (isinstance(initializer_deps, (list, tuple)) and all(
+                dependency in DefaultValueExpr._ALLOWED_SYMBOLS_IN_DEPS
+                for dependency in initializer_deps))
+            assert isinstance(is_initialization_lightweight, bool)
+            assert isinstance(assignment_value, str)
+            assert (isinstance(assignment_deps, (list, tuple)) and all(
+                dependency in DefaultValueExpr._ALLOWED_SYMBOLS_IN_DEPS
+                for dependency in assignment_deps))
+
+            self.initializer_expr = initializer_expr
+            self.initializer_deps = tuple(initializer_deps)
+            self.is_initialization_lightweight = is_initialization_lightweight
+            self.assignment_value = assignment_value
+            self.assignment_deps = tuple(assignment_deps)
+
+    if idl_type.unwrap(typedef=True).is_union:
+        union_type = idl_type.unwrap(typedef=True)
+        member_type = None
+        for member_type in union_type.flattened_member_types:
             if default_value.is_type_compatible_with(member_type):
-                idl_type = member_type
+                member_type = member_type
                 break
-        assert False
+        assert not (member_type is None) or default_value.idl_type.is_nullable
+
+        pattern = "MakeGarbageCollected<{}>({})"
+        union_class_name = blink_class_name(union_type.union_definition_object)
+
+        if default_value.idl_type.is_nullable:
+            value = pattern.format(union_class_name, "nullptr")
+            return DefaultValueExpr(initializer_expr=value,
+                                    initializer_deps=[],
+                                    is_initialization_lightweight=False,
+                                    assignment_value=value,
+                                    assignment_deps=[])
+        else:
+            member_default_expr = make_default_value_expr(
+                member_type, default_value)
+            value = pattern.format(union_class_name,
+                                   member_default_expr.assignment_value)
+            return DefaultValueExpr(
+                initializer_expr=value,
+                initializer_deps=member_default_expr.initializer_deps,
+                is_initialization_lightweight=False,
+                assignment_value=value,
+                assignment_deps=member_default_expr.assignment_deps)
+
     type_info = blink_type_info(idl_type)
 
-    is_initializer_lightweight = False
+    is_initialization_lightweight = False
+    initializer_deps = []
+    assignment_deps = []
     if default_value.idl_type.is_nullable:
-        if idl_type.unwrap().type_definition_object is not None:
-            initializer = "nullptr"
-            is_initializer_lightweight = True
+        if not type_info.has_null_value:
+            initializer_expr = None  # !absl::optional::has_value() by default
+            assignment_value = "absl::nullopt"
+        elif idl_type.unwrap().type_definition_object is not None:
+            initializer_expr = "nullptr"
+            is_initialization_lightweight = True
             assignment_value = "nullptr"
         elif idl_type.unwrap().is_string:
-            initializer = None  # String::IsNull() by default
+            initializer_expr = None  # String::IsNull() by default
             assignment_value = "String()"
-        elif type_info.value_t == "ScriptValue":
-            initializer = None  # ScriptValue::IsEmpty() by default
-            assignment_value = "ScriptValue()"
+        elif idl_type.unwrap().is_buffer_source_type:
+            initializer_expr = "nullptr"
+            is_initialization_lightweight = True
+            assignment_value = "nullptr"
+        elif type_info.typename == "ScriptValue":
+            initializer_expr = "${isolate}, v8::Null(${isolate})"
+            initializer_deps = ["isolate"]
+            assignment_value = "ScriptValue::CreateNull(${isolate})"
+            assignment_deps = ["isolate"]
+        elif idl_type.unwrap().is_union:
+            initializer_expr = "nullptr"
+            is_initialization_lightweight = True
+            assignment_value = "nullptr"
         else:
-            assert not type_info.is_nullable
-            initializer = None  # !base::Optional::has_value() by default
-            assignment_value = "base::nullopt"
+            assert False
     elif default_value.idl_type.is_sequence:
-        initializer = None  # VectorOf<T>::size() == 0 by default
+        initializer_expr = None  # VectorOf<T>::size() == 0 by default
         assignment_value = "{}()".format(type_info.value_t)
     elif default_value.idl_type.is_object:
-        dict_name = blink_class_name(idl_type.unwrap().type_definition_object)
-        value = _format("{}::Create()", dict_name)
-        initializer = value
-        assignment_value = value
+        dictionary = idl_type.unwrap().type_definition_object
+        # Currently "isolate" is the only possible dependency, so whenever
+        # .initializer_deps exists, it must be ["isolate"].
+        if any((make_default_value_expr(member.idl_type,
+                                        member.default_value).initializer_deps)
+               for member in dictionary.members if member.default_value):
+            value = _format("{}::Create(${isolate})",
+                            blink_class_name(dictionary))
+            initializer_expr = value
+            initializer_deps = ["isolate"]
+            assignment_value = value
+            assignment_deps = ["isolate"]
+        else:
+            value = _format("{}::Create()", blink_class_name(dictionary))
+            initializer_expr = value
+            assignment_value = value
     elif default_value.idl_type.is_boolean:
         value = "true" if default_value.value else "false"
-        initializer = value
-        is_initializer_lightweight = True
+        initializer_expr = value
+        is_initialization_lightweight = True
         assignment_value = value
     elif default_value.idl_type.is_integer:
-        initializer = default_value.literal
-        is_initializer_lightweight = True
+        initializer_expr = default_value.literal
+        is_initialization_lightweight = True
         assignment_value = default_value.literal
     elif default_value.idl_type.is_floating_point_numeric:
         if default_value.value == float("NaN"):
@@ -250,93 +668,164 @@ def make_default_value_expr(idl_type, default_value):
             value_fmt = "{value}"
         value = value_fmt.format(
             type=type_info.value_t, value=default_value.literal)
-        initializer = value
-        is_initializer_lightweight = True
+        initializer_expr = value
+        is_initialization_lightweight = True
         assignment_value = value
     elif default_value.idl_type.is_string:
-        value = "\"{}\"".format(default_value.value)
-        initializer = value
-        assignment_value = value
+        if idl_type.unwrap().is_string:
+            value = "\"{}\"".format(default_value.value)
+            initializer_expr = value
+            assignment_value = value
+        elif idl_type.unwrap().is_enumeration:
+            enum_class_name = blink_class_name(
+                idl_type.unwrap().type_definition_object)
+            enum_value_name = name_style.constant(default_value.value)
+            initializer_expr = "{}::Enum::{}".format(enum_class_name,
+                                                     enum_value_name)
+            is_initialization_lightweight = True
+            assignment_value = "{}({})".format(enum_class_name,
+                                               initializer_expr)
+        else:
+            assert False
     else:
         assert False
 
-    class DefaultValueExpr:
-        def __init__(self, initializer, is_initializer_lightweight,
-                     assignment_value):
-            assert initializer is None or isinstance(initializer, str)
-            assert isinstance(is_initializer_lightweight, bool)
-            assert isinstance(assignment_value, str)
-            self.initializer = initializer
-            self.is_initializer_lightweight = is_initializer_lightweight
-            self.assignment_value = assignment_value
-
     return DefaultValueExpr(
-        initializer=initializer,
-        is_initializer_lightweight=is_initializer_lightweight,
-        assignment_value=assignment_value)
+        initializer_expr=initializer_expr,
+        initializer_deps=initializer_deps,
+        is_initialization_lightweight=is_initialization_lightweight,
+        assignment_value=assignment_value,
+        assignment_deps=assignment_deps)
 
 
 def make_v8_to_blink_value(blink_var_name,
                            v8_value_expr,
                            idl_type,
-                           default_value=None):
+                           argument=None,
+                           error_exit_return_statement="return;",
+                           cg_context=None):
     """
     Returns a SymbolNode whose definition converts a v8::Value to a Blink value.
     """
     assert isinstance(blink_var_name, str)
     assert isinstance(v8_value_expr, str)
     assert isinstance(idl_type, web_idl.IdlType)
-    assert (default_value is None
-            or isinstance(default_value, web_idl.LiteralConstant))
+    assert argument is None or isinstance(argument, web_idl.Argument)
+    assert isinstance(error_exit_return_statement, str)
 
     T = TextNode
-    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+    F = FormatNode
+
+    # Use of fast path is a trade-off between speed and binary size, so apply
+    # it only when it's effective.  This hack is most significant on Android.
+    use_fast_path = (
+        cg_context and cg_context.operation
+        and not (cg_context.is_return_type_promise_type or
+                 "RaisesException" in cg_context.operation.extended_attributes)
+        and all((arg.idl_type.type_name == "String" or arg.idl_type.unwrap(
+            typedef=True).is_callback_function)
+                for arg in cg_context.operation.arguments))
+    fast_path_cond = None
+    fast_path_body_text = None
+    if not use_fast_path:
+        pass
+    elif idl_type.type_name == "String":
+        # A key point of this fast path is that it doesn't require an
+        # ExceptionState.
+        fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
+        fast_path_body_text = "{}.Init({}.As<v8::String>());".format(
+            blink_var_name, v8_value_expr)
+    elif idl_type.unwrap(typedef=True).is_callback_function:
+        # A key point of this fast path is that it doesn't require an
+        # ExceptionState.
+        fast_path_cond = "LIKELY({}->IsFunction())".format(v8_value_expr)
+        fast_path_body_text = "{} = {}::Create({}.As<v8::Function>());".format(
+            blink_var_name,
+            blink_class_name(idl_type.unwrap().type_definition_object),
+            v8_value_expr)
 
     def create_definition(symbol_node):
-        blink_value_expr = _format(
-            "NativeValueTraits<{_1}>::NativeValue({_2})",
-            _1=native_value_tag(idl_type),
-            _2=", ".join(["${isolate}", v8_value_expr, "${exception_state}"]))
+        if argument is None:
+            func_name = "NativeValue"
+            arguments = ["${isolate}", v8_value_expr, "${exception_state}"]
+        else:
+            func_name = "ArgumentValue"
+            arguments = [
+                "${isolate}",
+                str(argument.index),
+                v8_value_expr,
+                "${exception_state}",
+            ]
+        if "StringContext" in idl_type.effective_annotations:
+            arguments.append("${execution_context_of_document_tree}")
+        blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
+                                   _1=native_value_tag(
+                                       idl_type,
+                                       argument=argument,
+                                       apply_optional_to_last_arg=False),
+                                   _2=func_name,
+                                   _3=", ".join(arguments))
+        if argument and argument.default_value:
+            default_expr = make_default_value_expr(idl_type,
+                                                   argument.default_value)
+        else:
+            default_expr = None
+        exception_exit_node = CxxUnlikelyIfNode(
+            cond="UNLIKELY(${exception_state}.HadException())",
+            body=T(error_exit_return_statement))
 
-        if default_value is None:
+        if not (default_expr or fast_path_cond):
             return SymbolDefinitionNode(symbol_node, [
-                F("const auto& ${{{}}} = {};", blink_var_name,
-                  blink_value_expr),
-                CxxUnlikelyIfNode(
-                    cond="${exception_state}.HadException()",
-                    body=T("return;")),
+                F("auto&& ${{{}}} = {};", blink_var_name, blink_value_expr),
+                exception_exit_node,
             ])
 
-        nodes = []
-        type_info = blink_type_info(idl_type)
-        default_expr = make_default_value_expr(idl_type, default_value)
-        if default_expr.initializer is None:
-            nodes.append(F("{} ${{{}}};", type_info.value_t, blink_var_name))
-        elif default_expr.is_initializer_lightweight:
-            nodes.append(
-                F("{} ${{{}}} = {};", type_info.value_t, blink_var_name,
-                  default_expr.initializer))
+        blink_var_type = _format(
+            "decltype(NativeValueTraits<{}>::NativeValue("
+            "std::declval<v8::Isolate*>(), "
+            "std::declval<v8::Local<v8::Value>>(), "
+            "std::declval<ExceptionState&>()))",
+            native_value_tag(idl_type,
+                             argument=argument,
+                             apply_optional_to_last_arg=False))
+        if default_expr and default_expr.is_initialization_lightweight:
+            pattern = "{} ${{{}}}{{{}}};"
+            args = [
+                blink_var_type, blink_var_name, default_expr.initializer_expr
+            ]
+        else:
+            pattern = "{} ${{{}}};"
+            args = [blink_var_type, blink_var_name]
+        blink_var_def_node = F(pattern, *args)
         assignment = [
             F("${{{}}} = {};", blink_var_name, blink_value_expr),
-            CxxUnlikelyIfNode(
-                cond="${exception_state}.HadException()", body=T("return;")),
+            exception_exit_node,
         ]
-        if (default_expr.initializer is None
-                or default_expr.is_initializer_lightweight):
-            nodes.append(
-                CxxLikelyIfNode(
-                    cond="!{}->IsUndefined()".format(v8_value_expr),
-                    body=assignment))
+        if not default_expr:
+            pass
+        elif (default_expr.initializer_expr is None
+              or default_expr.is_initialization_lightweight):
+            assignment = CxxLikelyIfNode(
+                cond="!{}->IsUndefined()".format(v8_value_expr),
+                body=assignment)
         else:
-            nodes.append(
-                CxxIfElseNode(
-                    cond="{}->IsUndefined()".format(v8_value_expr),
-                    then=F("${{{}}} = {};", blink_var_name,
-                           default_expr.assignment_value),
-                    then_likeliness=Likeliness.LIKELY,
-                    else_=assignment,
-                    else_likeliness=Likeliness.LIKELY))
-        return SymbolDefinitionNode(symbol_node, nodes)
+            assignment = CxxIfElseNode(
+                cond="{}->IsUndefined()".format(v8_value_expr),
+                then=F("${{{}}} = {};", blink_var_name,
+                       default_expr.assignment_value),
+                then_likeliness=Likeliness.LIKELY,
+                else_=assignment,
+                else_likeliness=Likeliness.LIKELY)
+        if fast_path_cond:
+            assignment = CxxIfElseNode(cond=fast_path_cond,
+                                       then=T(fast_path_body_text),
+                                       then_likeliness=Likeliness.LIKELY,
+                                       else_=assignment,
+                                       else_likeliness=Likeliness.UNLIKELY)
+        return SymbolDefinitionNode(symbol_node, [
+            blink_var_def_node,
+            assignment,
+        ])
 
     return SymbolNode(blink_var_name, definition_constructor=create_definition)
 
@@ -349,20 +838,28 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
     """
     assert isinstance(blink_var_name, str)
     assert isinstance(v8_array, str)
-    assert isinstance(v8_array_start_index, (int, long))
+    assert isinstance(v8_array_start_index, int)
     assert isinstance(idl_type, web_idl.IdlType)
 
-    pattern = "const auto& ${{{_1}}} = ToImplArguments<{_2}>({_3});"
-    _1 = blink_var_name
-    _2 = native_value_tag(idl_type.element_type)
-    _3 = [v8_array, str(v8_array_start_index), "${exception_state}"]
-    text = _format(pattern, _1=_1, _2=_2, _3=", ".join(_3))
+    pattern = ("auto&& ${{{_1}}} = "
+               "bindings::VariadicArgumentsToNativeValues<{_2}>({_3});")
+    arguments = [
+        "${isolate}", v8_array,
+        str(v8_array_start_index), "${exception_state}"
+    ]
+    if "StringContext" in idl_type.element_type.effective_annotations:
+        arguments.append("${execution_context_of_document_tree}")
+    text = _format(
+        pattern,
+        _1=blink_var_name,
+        _2=native_value_tag(idl_type.element_type),
+        _3=", ".join(arguments))
 
     def create_definition(symbol_node):
         return SymbolDefinitionNode(symbol_node, [
             TextNode(text),
             CxxUnlikelyIfNode(
-                cond="${exception_state}.HadException()",
+                cond="UNLIKELY(${exception_state}.HadException())",
                 body=TextNode("return;")),
         ])
 

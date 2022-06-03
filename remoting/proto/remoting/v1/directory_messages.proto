@@ -7,6 +7,7 @@ syntax = "proto2";
 option java_multiple_files = true;
 option optimize_for = LITE_RUNTIME;
 
+option java_package = "remoting.apis.v1";
 package remoting.apis.v1;
 
 import "host_info.proto";
@@ -68,12 +69,29 @@ message HeartbeatRequest {
 
   // Operating system version the host is running on.
   optional string host_os_version = 9;
+
+  // CPU type of the host machine (e.g. x86 or ARM).
+  optional string host_cpu_type = 10;
+
+  // Indicates whether this request is the first heartbeat from a host instance.
+  optional bool is_initial_heartbeat = 11;
+
+  // Local hostname of the machine.
+  optional string hostname = 12;
 }
 
 // Sent in response to a HeartbeatRequest.
 message HeartbeatResponse {
+  enum RemoteCommand {
+    REMOTE_COMMAND_UNSPECIFIED = 0;
+    RESTART_HOST = 1;
+  }
+
   // The amount of time to wait before the host should send its next update.
   optional int32 set_interval_seconds = 1;
+
+  // Command to execute upon reception of the heartbeat response.
+  optional RemoteCommand remote_command = 2;
 }
 
 // Requests that a new host entry to added to the Directory.

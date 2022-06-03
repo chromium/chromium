@@ -1,65 +1,34 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [1026, 1016],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1026, 1032],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'pservers-pattern-01-b \u2190'",
-          "rect": [177, 992, 202, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u2192 script-handle-01-b'",
-          "rect": [432, 992, 177, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutInline A",
-          "rect": [378, 987, 55, 29],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'index'",
-          "rect": [383, 992, 45, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'index'",
-          "rect": [383, 992, 45, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [427, 992, 6, 19],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [378, 992, 6, 19],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [177, 1009, 202, 19],
+        [432, 1009, 177, 19],
+        [381, 1006, 49, 24],
+        [427, 1009, 6, 18],
+        [378, 1009, 6, 18]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [785, 15],
-      "contentsOpaque": true
+      "bounds": [785, 15]
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 585],
-      "contentsOpaque": true
+      "bounds": [15, 585]
     },
     {
-      "name": "Scroll Corner Layer",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -69,7 +38,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -431, 0, 1]
+        [0, -447, 0, 1]
       ]
     }
   ]

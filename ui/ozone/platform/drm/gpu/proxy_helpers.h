@@ -7,26 +7,13 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ui {
-
-namespace internal {
-
-template <typename... Args>
-void PostAsyncTask(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    base::OnceCallback<void(Args...)> callback,
-    Args... args) {
-  auto closure = base::BindOnce(std::move(callback), std::move(args)...);
-  task_runner->PostTask(FROM_HERE, std::move(closure));
-}
-
-}  // namespace internal
 
 // Posts a task to a different thread and blocks waiting for the task to finish
 // executing.
@@ -40,10 +27,10 @@ void PostSyncTask(
 // thread).
 template <typename... Args>
 base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
-    base::RepeatingCallback<void(Args...)> callback) {
-  return base::BindRepeating(&internal::PostAsyncTask<Args...>,
-                             base::ThreadTaskRunnerHandle::Get(),
-                             std::move(callback));
+    base::RepeatingCallback<void(Args...)> callback,
+    const base::Location& location = FROM_HERE) {
+  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                            std::move(callback), location);
 }
 
 // Creates a OnceCallback that will run |callback| on the calling thread. Useful
@@ -51,10 +38,10 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
 // task finished (and the callback needs to run on the original thread).
 template <typename... Args>
 base::OnceCallback<void(Args...)> CreateSafeOnceCallback(
-    base::OnceCallback<void(Args...)> callback) {
-  return base::BindOnce(&internal::PostAsyncTask<Args...>,
-                        base::ThreadTaskRunnerHandle::Get(),
-                        std::move(callback));
+    base::OnceCallback<void(Args...)> callback,
+    const base::Location& location = FROM_HERE) {
+  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                            std::move(callback), location);
 }
 
 }  // namespace ui

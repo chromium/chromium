@@ -5,6 +5,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client_provider.h"
 
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -15,9 +16,8 @@
 namespace chromeos {
 
 DebugDaemonClientProvider::DebugDaemonClientProvider()
-    : dbus_task_runner_(base::CreateSingleThreadTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
-           base::MayBlock()})),
+    : dbus_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
       debug_daemon_client_(DebugDaemonClient::Create()) {
   dbus::Bus::Options dbus_options;
   dbus_options.bus_type = dbus::Bus::SYSTEM;

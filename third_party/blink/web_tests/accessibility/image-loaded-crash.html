@@ -19,8 +19,8 @@
     // Note: This bug only repros with the deprecated shadow dom v0 API.
     // The crash doesn't happen if you try to switch this to use
     // attachShadow and slot.
-    var shadowRoot = header.createShadowRoot();
-    var content = document.createElement('content');
+    var shadowRoot = header.attachShadow({mode: 'open'});
+    var content = document.createElement('span');
     content.setAttribute('select', '.c6');
     shadowRoot.appendChild(content);
     img.setAttribute('class', 'c6'); 

@@ -15,13 +15,18 @@
 
 #include "absl/flags/usage_config.h"
 
+#include <functional>
 #include <iostream>
-#include <memory>
+#include <string>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/const_init.h"
+#include "absl/base/thread_annotations.h"
 #include "absl/flags/internal/path_util.h"
 #include "absl/flags/internal/program_name.h"
-#include "absl/strings/str_cat.h"
+#include "absl/strings/match.h"
+#include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
 #include "absl/synchronization/mutex.h"
 
@@ -29,11 +34,13 @@ extern "C" {
 
 // Additional report of fatal usage error message before we std::exit. Error is
 // fatal if is_fatal argument to ReportUsageError is true.
-ABSL_ATTRIBUTE_WEAK void AbslInternalReportFatalUsageError(absl::string_view) {}
+ABSL_ATTRIBUTE_WEAK void ABSL_INTERNAL_C_SYMBOL(
+    AbslInternalReportFatalUsageError)(absl::string_view) {}
 
 }  // extern "C"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 
 namespace {
@@ -45,10 +52,15 @@ namespace {
 bool ContainsHelpshortFlags(absl::string_view filename) {
   // By default we only want flags in binary's main. We expect the main
   // routine to reside in <program>.cc or <program>-main.cc or
-  // <program>_main.cc, where the <program> is the name of the binary.
+  // <program>_main.cc, where the <program> is the name of the binary
+  // (without .exe on Windows).
   auto suffix = flags_internal::Basename(filename);
-  if (!absl::ConsumePrefix(&suffix,
-                           flags_internal::ShortProgramInvocationName()))
+  auto program_name = flags_internal::ShortProgramInvocationName();
+  absl::string_view program_name_ref = program_name;
+#if defined(_WIN32)
+  absl::ConsumeSuffix(&program_name_ref, ".exe");
+#endif
+  if (!absl::ConsumePrefix(&suffix, program_name_ref))
     return false;
   return absl::StartsWith(suffix, ".") || absl::StartsWith(suffix, "-main.") ||
          absl::StartsWith(suffix, "_main.");
@@ -117,7 +129,7 @@ void ReportUsageError(absl::string_view msg, bool is_fatal) {
   std::cerr << "ERROR: " << msg << std::endl;
 
   if (is_fatal) {
-    AbslInternalReportFatalUsageError(msg);
+    ABSL_INTERNAL_C_SYMBOL(AbslInternalReportFatalUsageError)(msg);
   }
 }
 
@@ -149,4 +161,5 @@ void SetFlagsUsageConfig(FlagsUsageConfig usage_config) {
     flags_internal::custom_usage_config = new FlagsUsageConfig(usage_config);
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl

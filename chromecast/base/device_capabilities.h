@@ -10,11 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
+#include "base/values.h"
 
 namespace chromecast {
 
@@ -75,6 +71,9 @@ class DeviceCapabilities {
   // Validator class and implement its interface.
   class Validator {
    public:
+    Validator(const Validator&) = delete;
+    Validator& operator=(const Validator&) = delete;
+
     // |path| is full path to capability, which could include paths expanded on
     // the capability key that gets registered through the Register() method.
     // For example, if a key of "foo" is registered for a Validator, |path|
@@ -84,7 +83,7 @@ class DeviceCapabilities {
     // to it must be handled serially. Returns response through
     // SetPublicValidatedValue() or SetPrivateValidatedValue().
     virtual void Validate(const std::string& path,
-                          std::unique_ptr<base::Value> proposed_value) = 0;
+                          base::Value proposed_value) = 0;
 
    protected:
     explicit Validator(DeviceCapabilities* capabilities);
@@ -99,14 +98,12 @@ class DeviceCapabilities {
     // TODO(seantopping): Change this interface so that Validators are not the
     // only means of accessing private capabilities.
     void SetPublicValidatedValue(const std::string& path,
-                                 std::unique_ptr<base::Value> new_value) const;
+                                 base::Value new_value) const;
     void SetPrivateValidatedValue(const std::string& path,
-                                  std::unique_ptr<base::Value> new_value) const;
+                                  base::Value new_value) const;
 
    private:
     DeviceCapabilities* const capabilities_;
-
-    DISALLOW_COPY_AND_ASSIGN(Validator);
   };
 
   // Class used to store/own capabilities-related data. It is immutable and
@@ -114,10 +111,11 @@ class DeviceCapabilities {
   // lifetime without worrying about the data getting invalidated in any way.
   class Data : public base::RefCountedThreadSafe<Data> {
    public:
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
+
     // Accessor for complete capabilities in dictionary format.
-    const base::DictionaryValue& dictionary() const {
-      return *dictionary_.get();
-    }
+    const base::Value& dictionary() const { return dictionary_; }
 
     // Accessor for complete capabilities string in JSON format.
     const std::string& json_string() const { return json_string_; }
@@ -131,13 +129,11 @@ class DeviceCapabilities {
     // Constructs empty dictionary with no capabilities.
     Data();
     // Uses |dictionary| as capabilities dictionary.
-    explicit Data(std::unique_ptr<const base::DictionaryValue> dictionary);
+    explicit Data(base::Value dictionary);
     ~Data();
 
-    const std::unique_ptr<const base::DictionaryValue> dictionary_;
-    const std::string json_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(Data);
+    const base::Value dictionary_;
+    std::string json_string_;
   };
 
   // Default Capability keys
@@ -145,6 +141,9 @@ class DeviceCapabilities {
   static const char kKeyBluetoothSupported[];
   static const char kKeyDisplaySupported[];
   static const char kKeyHiResAudioSupported[];
+
+  DeviceCapabilities(const DeviceCapabilities&) = delete;
+  DeviceCapabilities& operator=(const DeviceCapabilities&) = delete;
 
   // This class should get destroyed after all Validators have been
   // unregistered, all Observers have been removed, and the class is no longer
@@ -196,8 +195,7 @@ class DeviceCapabilities {
 
   // Returns a deep copy of the value at |path|. If the capability at |path|
   // does not exist, a null scoped_ptr is returned.
-  virtual std::unique_ptr<base::Value> GetCapability(
-      const std::string& path) const = 0;
+  virtual base::Value GetCapability(const std::string& path) const = 0;
 
   // Use this method to access dictionary and JSON string. No deep copying is
   // performed, so this method is inexpensive. Note that any capability updates
@@ -223,11 +221,11 @@ class DeviceCapabilities {
   // classify the value as public or private via SetPublicValidatedValue() or
   // SetPrivateValidatedValue() respectively.
   virtual void SetCapability(const std::string& path,
-                             std::unique_ptr<base::Value> proposed_value) = 0;
+                             base::Value proposed_value) = 0;
 
   // Iterates through entries in |dict_value| and calls SetCapability() for
   // each one. This method is asynchronous.
-  virtual void MergeDictionary(const base::DictionaryValue& dict_value) = 0;
+  virtual void MergeDictionary(const base::Value& dict_value) = 0;
 
   // Adds/removes an observer. It doesn't take the ownership of |observer|.
   virtual void AddCapabilitiesObserver(Observer* observer) = 0;
@@ -241,22 +239,17 @@ class DeviceCapabilities {
   // Creates empty dictionary with no capabilities.
   static scoped_refptr<Data> CreateData();
   // Uses |dictionary| as capabilities dictionary.
-  static scoped_refptr<Data> CreateData(
-      std::unique_ptr<const base::DictionaryValue> dictionary);
+  static scoped_refptr<Data> CreateData(base::Value dictionary);
 
  private:
   // Internally update the capability residing at |path| to |new_value|. This
   // capability will be visible in GetAllData() and GetPublicData().
-  virtual void SetPublicValidatedValue(
-      const std::string& path,
-      std::unique_ptr<base::Value> new_value) = 0;
+  virtual void SetPublicValidatedValue(const std::string& path,
+                                       base::Value new_value) = 0;
   // Similar to SetPublicValidatedValue(), but this capability will only be
   // visible in GetAllData().
-  virtual void SetPrivateValidatedValue(
-      const std::string& path,
-      std::unique_ptr<base::Value> new_value) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCapabilities);
+  virtual void SetPrivateValidatedValue(const std::string& path,
+                                        base::Value new_value) = 0;
 };
 
 }  // namespace chromecast

@@ -4,10 +4,10 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -26,6 +26,7 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -95,8 +96,7 @@ class BrowserEncodingTest
     scoped_refptr<content::MessageLoopRunner> loop_runner(
         new content::MessageLoopRunner);
     content::SavePackageFinishedObserver observer(
-        content::BrowserContext::GetDownloadManager(browser()->profile()),
-        loop_runner->QuitClosure());
+        browser()->profile()->GetDownloadManager(), loop_runner->QuitClosure());
     browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
         full_file_name, temp_sub_resource_dir_,
         content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(BrowserEncodingTest, TestEncodingAliasMapping) {
 
   GURL url =
       embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(GetParam().encoding_name,
             browser()->tab_strip_model()->GetActiveWebContents()->
                 GetEncoding());
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(BrowserEncodingTest, TestEncodingAutoDetect) {
     test_file_path = test_file_path.AppendASCII(kTestDatas[i].test_file_name);
     GURL url =
         embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     // Get the encoding of page. It should return the real encoding now.
     EXPECT_EQ(kTestDatas[i].expected_encoding, web_contents->GetEncoding());

@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 
-#include "third_party/blink/renderer/platform/transforms/identity_transform_operation.h"
-
 namespace blink {
 
 bool InterpolatedTransformOperation::operator==(
@@ -59,21 +57,17 @@ scoped_refptr<TransformOperation> InterpolatedTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
+
   TransformOperations to_operations;
   to_operations.Operations().push_back(this);
   TransformOperations from_operations;
   if (blend_to_identity) {
-    from_operations.Operations().push_back(
-        IdentityTransformOperation::Create());
-    return InterpolatedTransformOperation::Create(
-        to_operations, from_operations, 0, 1 - progress);
+    return InterpolatedTransformOperation::Create(to_operations,
+                                                  from_operations, 0, progress);
   }
-  if (!from) {
-    from_operations.Operations().push_back(
-        IdentityTransformOperation::Create());
-  } else {
+
+  if (from) {
     from_operations.Operations().push_back(
         const_cast<TransformOperation*>(from));
   }

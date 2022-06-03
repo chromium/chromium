@@ -14,10 +14,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -34,8 +33,13 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
                                                const base::FilePath& unzip_dir,
                                                const std::string& error)>;
 
+  ZipFileInstaller(const ZipFileInstaller&) = delete;
+  ZipFileInstaller& operator=(const ZipFileInstaller&) = delete;
+
   // Creates a ZipFileInstaller that invokes |done_callback| when done.
-  static scoped_refptr<ZipFileInstaller> Create(DoneCallback done_callback);
+  static scoped_refptr<ZipFileInstaller> Create(
+      const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
+      DoneCallback done_callback);
 
   // Creates a temporary directory and unzips the extension in it.
   void LoadFromZipFile(const base::FilePath& zip_file);
@@ -50,17 +54,19 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   FRIEND_TEST_ALL_PREFIXES(ZipFileInstallerTest, Theme_FileExtractionFilter);
   FRIEND_TEST_ALL_PREFIXES(ZipFileInstallerTest, ManifestExtractionFilter);
 
-  explicit ZipFileInstaller(DoneCallback done_callback);
+  explicit ZipFileInstaller(
+      const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
+      DoneCallback done_callback);
   ~ZipFileInstaller();
 
   void LoadFromZipFileImpl(const base::FilePath& zip_file,
                            const base::FilePath& unzip_dir);
 
   // Unzip an extension into |unzip_dir| and load it with an UnpackedInstaller.
-  void Unzip(base::Optional<base::FilePath> unzip_dir);
+  void Unzip(absl::optional<base::FilePath> unzip_dir);
   void ManifestUnzipped(const base::FilePath& unzip_dir, bool success);
   void ManifestRead(const base::FilePath& unzip_dir,
-                    base::Optional<std::string> manifest_content);
+                    absl::optional<std::string> manifest_content);
   void ManifestParsed(const base::FilePath& unzip_dir,
                       data_decoder::DataDecoder::ValueOrError result);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);
@@ -81,9 +87,10 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   // File containing the extension to unzip.
   base::FilePath zip_file_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Task runner for file I/O.
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
-  DISALLOW_COPY_AND_ASSIGN(ZipFileInstaller);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace extensions

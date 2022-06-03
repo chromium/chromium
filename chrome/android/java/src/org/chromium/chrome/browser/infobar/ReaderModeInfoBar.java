@@ -12,21 +12,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.ui.widget.text.AccessibleTextView;
+import org.chromium.components.browser_ui.widget.text.AccessibleTextView;
+import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.infobars.InfoBarCompactLayout;
 
-/**
- * This is the InfoBar implementation of the Reader Mode UI. This is used in place of the
- * {@link OverlayPanel} implementation when Chrome Home is enabled.
- */
+/** This is the InfoBar implementation of the Reader Mode UI. */
 public class ReaderModeInfoBar extends InfoBar {
     /** If the infobar has started hiding. */
     private boolean mIsHiding;
@@ -65,8 +63,8 @@ public class ReaderModeInfoBar extends InfoBar {
         prompt.setText(R.string.reader_view_text_alt);
         prompt.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getContext().getResources().getDimension(R.dimen.infobar_text_size));
-        prompt.setTextColor(
-                ApiCompatibilityUtils.getColor(layout.getResources(), R.color.default_text_color));
+        prompt.setTextColor(AppCompatResources.getColorStateList(
+                getContext(), R.color.default_text_color_list));
         prompt.setGravity(Gravity.CENTER_VERTICAL);
         prompt.setOnClickListener(mNavigateListener);
 
@@ -74,7 +72,7 @@ public class ReaderModeInfoBar extends InfoBar {
         iconView.setOnClickListener(mNavigateListener);
         iconView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         final int messagePadding = getContext().getResources().getDimensionPixelOffset(
-                R.dimen.reader_mode_infobar_text_padding);
+                R.dimen.infobar_compact_message_vertical_padding);
         prompt.setPadding(0, messagePadding, 0, messagePadding);
         layout.addContent(prompt, 1f);
     }
@@ -87,7 +85,7 @@ public class ReaderModeInfoBar extends InfoBar {
     @Override
     public void onCloseButtonClicked() {
         if (getReaderModeManager() != null) {
-            getReaderModeManager().onClosed(StateChangeReason.CLOSE_BUTTON);
+            getReaderModeManager().onClosed();
         }
         super.onCloseButtonClicked();
     }
@@ -100,15 +98,19 @@ public class ReaderModeInfoBar extends InfoBar {
         ReaderModeInfoBarJni.get().create(tab);
     }
 
+    /** @return The tab that this infobar is showing for. */
+    private Tab getTab() {
+        if (getNativeInfoBarPtr() == 0) return null;
+        return ReaderModeInfoBarJni.get().getTab(getNativeInfoBarPtr(), ReaderModeInfoBar.this);
+    }
+
     /**
      * @return The {@link ReaderModeManager} for this infobar.
      */
     private ReaderModeManager getReaderModeManager() {
-        if (getNativeInfoBarPtr() == 0) return null;
-        Tab tab = ReaderModeInfoBarJni.get().getTab(getNativeInfoBarPtr(), ReaderModeInfoBar.this);
-
-        if (tab == null || ((TabImpl) tab).getActivity() == null) return null;
-        return ((TabImpl) tab).getActivity().getReaderModeManager();
+        Tab tab = getTab();
+        if (tab == null) return null;
+        return tab.getUserDataHost().getUserData(ReaderModeManager.USER_DATA_KEY);
     }
 
     /**
@@ -120,7 +122,8 @@ public class ReaderModeInfoBar extends InfoBar {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void create(Tab tab);
         Tab getTab(long nativeReaderModeInfoBar, ReaderModeInfoBar caller);
     }

@@ -1,0 +1,38 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+<style>
+  .hidden { display: none; }
+</style>
+<input id="test" type="text" aria-labelledby="lbl1 lbl2" aria-describedby="descId" />
+<span>
+  <span aria-hidden="true" id="lbl1">Important</span>
+  <span class="hidden">
+    <span aria-hidden="true" id="lbl2">stuff</span>
+  </span>
+</span>
+<div class="hidden">
+  <div id="descId">
+    <span aria-hidden="true"><i> Hello, </i></span>
+    <span>My</span> name is
+    <div><img src="file.jpg" title="Bryan" alt="" role="presentation" /></div>
+    <span role="presentation" aria-label="Eli">
+      <span aria-label="Garaventa">Zambino</span>
+    </span>
+    <span>the weird.</span>
+    (QED)
+    <span class="hidden"><i><b>and don't you forget it.</b></i></span>
+    <table>
+      <tr>
+        <td>Where</td>
+        <td style="visibility:hidden;"><div>in</div></td>
+        <td><div style="display:none;">the world</div></td>
+        <td>are my marbles?</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

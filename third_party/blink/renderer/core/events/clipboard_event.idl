@@ -7,6 +7,6 @@
 [
     Exposed=Window
 ] interface ClipboardEvent : Event {
-    constructor(DOMString type, optional ClipboardEventInit eventInitDict);
+    constructor(DOMString type, optional ClipboardEventInit eventInitDict = {});
     readonly attribute DataTransfer? clipboardData;
 };

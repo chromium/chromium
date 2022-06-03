@@ -1,0 +1,12 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/mojom/rrect_f.mojom";
+
+// See ui/gfx/mask_filter_info.h.
+struct MaskFilterInfo {
+  gfx.mojom.RRectF rounded_corner_bounds;
+};

@@ -42,5 +42,5 @@ Here are some mechanisms that could make this safe:
 
 ## See also
 
-*   [LinuxCrashDumping](linux_crash_dumping.md)
+*   [LinuxCrashDumping](linux/crash_dumping.md)
 *   [Issue 37728](https://crbug.com/37728)

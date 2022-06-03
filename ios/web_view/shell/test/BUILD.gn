@@ -3,64 +3,8 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/third_party/earl_grey/ios_eg_test.gni")
-import("//ios/third_party/features.gni")
 
+# TODO(crbug.com/698657): Create EarlGrey 2 test target if needed.
 group("all_tests") {
   testonly = true
-  deps = [
-    ":ios_web_view_shell_egtests",
-  ]
-}
-
-ios_eg_test("ios_web_view_shell_egtests") {
-  info_plist = "//ios/web_view/shell/Info.plist"
-  sources = [
-    "shell_egtest.mm",
-  ]
-
-  deps = [
-    ":earl_grey_test_support",
-    "//ios/testing:http_server_bundle_data",
-    "//ios/web_view:web_view+link",
-    "//ios/web_view/shell:shell",
-    "//ios/web_view/test:test_support",
-    "//net:test_support",
-  ]
-
-  if (ios_third_party_material_components_built_as_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  assert_no_deps = ios_assert_no_deps
-}
-
-source_set("earl_grey_test_support") {
-  testonly = true
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ios/third_party/webkit",
-    "//ios/web_view/shell",
-  ]
-
-  public_deps = [
-    "//build/config/ios:xctest",
-    "//ios/third_party/earl_grey:earl_grey+link",
-  ]
-
-  libs = [ "XCTest.framework" ]
-
-  sources = [
-    "earl_grey/web_view_shell_matchers.h",
-    "earl_grey/web_view_shell_matchers.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

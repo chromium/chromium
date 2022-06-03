@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Pseudo-element ::backdrop responds to container size changes
+Harness: the test ran to completion.
+

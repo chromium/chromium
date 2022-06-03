@@ -14,8 +14,8 @@
 
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 
@@ -137,15 +137,15 @@ bool EAGLViewCore::IsStarted() const {
 }
 
 - (void)startWithContext:(EAGLContext*)context {
-  [self
-      runOnDisplayThread:(base::Bind(&EAGLViewCore::Start,
-                                     base::Unretained(_core.get()), context))];
+  [self runOnDisplayThread:(base::BindOnce(&EAGLViewCore::Start,
+                                           base::Unretained(_core.get()),
+                                           context))];
   [self reshapeFrameBuffer];
 }
 
 - (void)stop {
-  [self runOnDisplayThread:(base::Bind(&EAGLViewCore::Stop,
-                                       base::Unretained(_core.get())))];
+  [self runOnDisplayThread:(base::BindOnce(&EAGLViewCore::Stop,
+                                           base::Unretained(_core.get())))];
 }
 
 #pragma mark - View
@@ -166,18 +166,18 @@ bool EAGLViewCore::IsStarted() const {
 
 // Runs a closure directly if current thread is the display thread. Otherwise
 // post a task to do so.
-- (void)runOnDisplayThread:(const base::Closure&)closure {
+- (void)runOnDisplayThread:(base::OnceClosure)closure {
   DCHECK(_displayTaskRunner) << "displayTaskRunner has not been set.";
   if (_displayTaskRunner->BelongsToCurrentThread()) {
-    closure.Run();
+    std::move(closure).Run();
     return;
   }
-  _displayTaskRunner->PostTask(FROM_HERE, closure);
+  _displayTaskRunner->PostTask(FROM_HERE, std::move(closure));
 }
 
 - (void)reshapeFrameBuffer {
   CGFloat scaleFactor = self.contentScaleFactor;
-  [self runOnDisplayThread:(base::Bind(
+  [self runOnDisplayThread:(base::BindOnce(
                                &EAGLViewCore::ReshapeFramebuffer,
                                base::Unretained(_core.get()),
                                scaleFactor * CGRectGetWidth(self.bounds),

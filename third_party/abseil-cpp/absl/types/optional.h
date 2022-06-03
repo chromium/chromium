@@ -38,19 +38,21 @@
 #include "absl/base/config.h"   // TODO(calabrese) IWYU removal?
 #include "absl/utility/utility.h"
 
-#ifdef ABSL_HAVE_STD_OPTIONAL
+#ifdef ABSL_USES_STD_OPTIONAL
 
 #include <optional>  // IWYU pragma: export
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 using std::bad_optional_access;
 using std::optional;
 using std::make_optional;
 using std::nullopt_t;
 using std::nullopt;
+ABSL_NAMESPACE_END
 }  // namespace absl
 
-#else  // ABSL_HAVE_STD_OPTIONAL
+#else  // ABSL_USES_STD_OPTIONAL
 
 #include <cassert>
 #include <functional>
@@ -65,6 +67,7 @@ using std::nullopt;
 #include "absl/types/internal/optional.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // nullopt_t
 //
@@ -133,10 +136,10 @@ class optional : private optional_internal::optional_data<T>,
   constexpr optional(nullopt_t) noexcept {}  // NOLINT(runtime/explicit)
 
   // Copy constructor, standard semantics
-  optional(const optional& src) = default;
+  optional(const optional&) = default;
 
   // Move constructor, standard semantics
-  optional(optional&& src) = default;
+  optional(optional&&) = default;
 
   // Constructs a non-empty `optional` direct-initialized value of type `T` from
   // the arguments `std::forward<Args>(args)...`  within the `optional`.
@@ -409,11 +412,11 @@ class optional : private optional_internal::optional_data<T>,
   //
   // If you need myOpt->foo in constexpr, use (*myOpt).foo instead.
   const T* operator->() const {
-    assert(this->engaged_);
+    ABSL_HARDENING_ASSERT(this->engaged_);
     return std::addressof(this->data_);
   }
   T* operator->() {
-    assert(this->engaged_);
+    ABSL_HARDENING_ASSERT(this->engaged_);
     return std::addressof(this->data_);
   }
 
@@ -422,17 +425,17 @@ class optional : private optional_internal::optional_data<T>,
   // Accesses the underlying `T` value of an `optional`. If the `optional` is
   // empty, behavior is undefined.
   constexpr const T& operator*() const& {
-    return ABSL_ASSERT(this->engaged_), reference();
+    return ABSL_HARDENING_ASSERT(this->engaged_), reference();
   }
   T& operator*() & {
-    assert(this->engaged_);
+    ABSL_HARDENING_ASSERT(this->engaged_);
     return reference();
   }
   constexpr const T&& operator*() const && {
-    return absl::move(reference());
+    return ABSL_HARDENING_ASSERT(this->engaged_), absl::move(reference());
   }
   T&& operator*() && {
-    assert(this->engaged_);
+    ABSL_HARDENING_ASSERT(this->engaged_);
     return std::move(reference());
   }
 
@@ -441,7 +444,7 @@ class optional : private optional_internal::optional_data<T>,
   // Returns false if and only if the `optional` is empty.
   //
   //   if (opt) {
-  //     // do something with opt.value();
+  //     // do something with *opt or opt->;
   //   } else {
   //     // opt is empty.
   //   }
@@ -754,6 +757,7 @@ constexpr auto operator>=(const U& v, const optional<T>& x)
   return static_cast<bool>(x) ? static_cast<bool>(v >= *x) : true;
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 namespace std {
@@ -767,6 +771,6 @@ struct hash<absl::optional<T> >
 
 #undef ABSL_MSVC_CONSTEXPR_BUG_IN_UNION_LIKE_CLASS
 
-#endif  // ABSL_HAVE_STD_OPTIONAL
+#endif  // ABSL_USES_STD_OPTIONAL
 
 #endif  // ABSL_TYPES_OPTIONAL_H_

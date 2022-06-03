@@ -1,0 +1,113 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("menu") {
+  sources = [
+    "action_factory.h",
+    "action_factory.mm",
+    "browser_action_factory.h",
+    "browser_action_factory.mm",
+    "menu_action_type.h",
+    "menu_histograms.h",
+    "menu_histograms.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "resources:bookmark",
+    "resources:close",
+    "resources:copy",
+    "resources:copy_link_url",
+    "resources:delete",
+    "resources:download",
+    "resources:edit",
+    "resources:hide_preview",
+    "resources:lens_icon",
+    "resources:mark_read",
+    "resources:move_folder",
+    "resources:offline",
+    "resources:open",
+    "resources:open_image_in_new_tab",
+    "resources:open_in_incognito",
+    "resources:open_in_new_tab",
+    "resources:open_new_window",
+    "resources:read_later",
+    "resources:remove",
+    "resources:search_image",
+    "resources:select",
+    "resources:share",
+    "resources:show_preview",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/window_activities",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("context_menu_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [ "tab_context_menu_delegate.h" ]
+
+  deps = [ "//ios/chrome/browser/ui/activity_services" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "action_factory_unittest.mm",
+    "browser_action_factory_unittest.mm",
+  ]
+  deps = [
+    ":menu",
+    "resources:bookmark",
+    "resources:close",
+    "resources:copy",
+    "resources:copy_link_url",
+    "resources:delete",
+    "resources:download",
+    "resources:edit",
+    "resources:lens_icon",
+    "resources:mark_read",
+    "resources:move_folder",
+    "resources:offline",
+    "resources:open",
+    "resources:open_image_in_new_tab",
+    "resources:open_in_incognito",
+    "resources:open_in_new_tab",
+    "resources:open_new_window",
+    "resources:read_later",
+    "resources:remove",
+    "resources:search_image",
+    "resources:select",
+    "resources:share",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/window_activities",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+}

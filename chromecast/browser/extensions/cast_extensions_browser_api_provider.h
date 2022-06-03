@@ -13,12 +13,15 @@ namespace extensions {
 class CastExtensionsBrowserAPIProvider : public ExtensionsBrowserAPIProvider {
  public:
   CastExtensionsBrowserAPIProvider();
+
+  CastExtensionsBrowserAPIProvider(const CastExtensionsBrowserAPIProvider&) =
+      delete;
+  CastExtensionsBrowserAPIProvider& operator=(
+      const CastExtensionsBrowserAPIProvider&) = delete;
+
   ~CastExtensionsBrowserAPIProvider() override;
 
   void RegisterExtensionFunctions(ExtensionFunctionRegistry* registry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsBrowserAPIProvider);
 };
 
 }  // namespace extensions

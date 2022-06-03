@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
+#include "content/public/test/browser_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 class SkiaGoldDemoPixelTest : public InProcessBrowserTest {

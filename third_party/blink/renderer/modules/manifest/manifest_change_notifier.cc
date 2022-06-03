@@ -7,24 +7,25 @@
 #include <utility>
 
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
 
 namespace blink {
 
-ManifestChangeNotifier::ManifestChangeNotifier(LocalFrame& frame)
-    : frame_(&frame) {}
+ManifestChangeNotifier::ManifestChangeNotifier(LocalDOMWindow& window)
+    : window_(window), manifest_change_observer_(&window) {}
 
 ManifestChangeNotifier::~ManifestChangeNotifier() = default;
 
-void ManifestChangeNotifier::Trace(Visitor* visitor) {
-  visitor->Trace(frame_);
+void ManifestChangeNotifier::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+  visitor->Trace(manifest_change_observer_);
 }
 
 void ManifestChangeNotifier::DidChangeManifest() {
   // Manifests are not considered when the current page has a unique origin.
-  if (!ManifestManager::From(*frame_)->CanFetchManifest())
+  if (!ManifestManager::From(*window_)->CanFetchManifest())
     return;
 
   if (report_task_scheduled_)
@@ -38,9 +39,9 @@ void ManifestChangeNotifier::DidChangeManifest() {
   //
   // During document load, coalescing is disabled to maintain relative ordering
   // of this notification and the favicon URL reporting.
-  if (!frame_->IsLoading()) {
+  if (!window_->GetFrame()->IsLoading()) {
     report_task_scheduled_ = true;
-    frame_->GetTaskRunner(TaskType::kInternalLoading)
+    window_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(FROM_HERE,
                    WTF::Bind(&ManifestChangeNotifier::ReportManifestChange,
                              WrapWeakPersistent(this)));
@@ -51,33 +52,29 @@ void ManifestChangeNotifier::DidChangeManifest() {
 
 void ManifestChangeNotifier::ReportManifestChange() {
   report_task_scheduled_ = false;
-  if (!frame_ || !frame_->GetDocument() || !frame_->IsAttached())
+  if (!window_ || !window_->GetFrame())
     return;
 
-  auto manifest_url = ManifestManager::From(*frame_)->ManifestURL();
+  auto manifest_url = ManifestManager::From(*window_)->ManifestURL();
 
   EnsureManifestChangeObserver();
+  DCHECK(manifest_change_observer_.is_bound());
 
-  // |manifest_change_observer_| may be null for tests.
-  if (!manifest_change_observer_)
-    return;
-
-  if (manifest_url.IsNull())
-    manifest_change_observer_->ManifestUrlChanged(base::nullopt);
-  else
-    manifest_change_observer_->ManifestUrlChanged(manifest_url);
+  manifest_change_observer_->ManifestUrlChanged(manifest_url);
 }
 
 void ManifestChangeNotifier::EnsureManifestChangeObserver() {
-  if (manifest_change_observer_)
+  if (manifest_change_observer_.is_bound())
     return;
 
   AssociatedInterfaceProvider* provider =
-      frame_->GetRemoteNavigationAssociatedInterfaces();
+      window_->GetFrame()->GetRemoteNavigationAssociatedInterfaces();
   if (!provider)
     return;
 
-  provider->GetInterface(&manifest_change_observer_);
+  provider->GetInterface(
+      manifest_change_observer_.BindNewEndpointAndPassReceiver(
+          window_->GetTaskRunner(TaskType::kInternalLoading)));
 }
 
 }  // namespace blink

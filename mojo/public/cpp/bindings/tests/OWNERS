@@ -1,6 +1,0 @@
-per-file *.typemap=file://mojo/OWNERS
-
-# These typemap test files don't really require security review, but we need to
-# add these to please PRESUBMIT.
-per-file *.typemap=set noparent
-per-file *.typemap=file://ipc/SECURITY_OWNERS

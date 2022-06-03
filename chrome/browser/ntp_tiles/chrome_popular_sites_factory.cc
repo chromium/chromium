@@ -18,6 +18,6 @@ ChromePopularSitesFactory::NewForProfile(Profile* profile) {
   return std::make_unique<ntp_tiles::PopularSitesImpl>(
       profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile),
       g_browser_process->variations_service(),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

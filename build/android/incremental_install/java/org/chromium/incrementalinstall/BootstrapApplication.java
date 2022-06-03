@@ -130,8 +130,9 @@ public final class BootstrapApplication extends Application {
             // Even when instrumentation is not enabled, ActivityThread uses a default
             // Instrumentation instance internally. We hook it here in order to hook into the
             // call to Instrumentation.onCreate().
-            Reflect.setField(mActivityThread, "mInstrumentation",
-                    new BootstrapInstrumentation(this));
+            BootstrapInstrumentation bootstrapInstrumentation = new BootstrapInstrumentation(this);
+            populateInstrumenationFields(bootstrapInstrumentation);
+            Reflect.setField(mActivityThread, "mInstrumentation", bootstrapInstrumentation);
 
             // attachBaseContext() is called from ActivityThread#handleBindApplication() and
             // Application#mApplication is changed right after we return. Thus, we cannot swap
@@ -188,14 +189,22 @@ public final class BootstrapApplication extends Application {
         Log.i(TAG, "Instantiating instrumentation " + realInstrumentationName);
         Instrumentation ret =
                 (Instrumentation) Reflect.newInstance(Class.forName(realInstrumentationName));
+        populateInstrumenationFields(ret);
+        return ret;
+    }
 
+    /**
+     * Sets important fields on a newly created Instrumentation object by copying them from the
+     * original Instrumentation instance.
+     */
+    private void populateInstrumenationFields(Instrumentation target)
+            throws ReflectiveOperationException {
         // Initialize the fields that are set by Instrumentation.init().
         String[] initFields = {"mAppContext", "mComponent", "mInstrContext", "mMessageQueue",
                 "mThread", "mUiAutomationConnection", "mWatcher"};
         for (String fieldName : initFields) {
-            Reflect.setField(ret, fieldName, Reflect.getField(mOrigInstrumentation, fieldName));
+            Reflect.setField(target, fieldName, Reflect.getField(mOrigInstrumentation, fieldName));
         }
-        return ret;
     }
 
     /**

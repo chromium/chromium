@@ -10,8 +10,8 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -55,14 +55,18 @@ const char* GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "ui_best_effort_tq";
     case BrowserTaskQueues::QueueType::kBootstrap:
       return "ui_bootstrap_tq";
-    case BrowserTaskQueues::QueueType::kNavigationAndPreconnection:
-      return "ui_navigation_and_preconnection_tq";
+    case BrowserTaskQueues::QueueType::kPreconnection:
+      return "ui_preconnection_tq";
     case BrowserTaskQueues::QueueType::kDefault:
       return "ui_default_tq";
     case BrowserTaskQueues::QueueType::kUserBlocking:
       return "ui_user_blocking_tq";
     case BrowserTaskQueues::QueueType::kUserVisible:
       return "ui_user_visible_tq";
+    case BrowserTaskQueues::QueueType::kUserInput:
+      return "ui_user_input_tq";
+    case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
+      return "ui_navigation_network_response_tq";
   }
 }
 
@@ -72,14 +76,18 @@ const char* GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "io_best_effort_tq";
     case BrowserTaskQueues::QueueType::kBootstrap:
       return "io_bootstrap_tq";
-    case BrowserTaskQueues::QueueType::kNavigationAndPreconnection:
-      return "io_navigation_and_preconnection_tq";
+    case BrowserTaskQueues::QueueType::kPreconnection:
+      return "io_preconnection_tq";
     case BrowserTaskQueues::QueueType::kDefault:
       return "io_default_tq";
     case BrowserTaskQueues::QueueType::kUserBlocking:
       return "io_user_blocking_tq";
     case BrowserTaskQueues::QueueType::kUserVisible:
       return "io_user_visible_tq";
+    case BrowserTaskQueues::QueueType::kUserInput:
+      return "io_user_input_tq";
+    case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
+      return "io_navigation_network_response_tq";
   }
 }
 
@@ -150,72 +158,23 @@ void BrowserTaskQueues::Handle::ScheduleRunAllPendingTasksForTesting(
           base::ScopedClosureRunner(std::move(on_pending_task_ran))));
 }
 
-#if DCHECK_IS_ON()
-
-void BrowserTaskQueues::Handle::AddValidator(QueueType queue_type,
-                                             Validator* validator) {
-  validator_sets_[static_cast<size_t>(queue_type)].AddValidator(validator);
-}
-
-void BrowserTaskQueues::Handle::RemoveValidator(QueueType queue_type,
-                                                Validator* validator) {
-  validator_sets_[static_cast<size_t>(queue_type)].RemoveValidator(validator);
-}
-
-BrowserTaskQueues::ValidatorSet::ValidatorSet() = default;
-
-BrowserTaskQueues::ValidatorSet::~ValidatorSet() {
-  // Note the queue has already been shut down by the time we're deleted so we
-  // don't need to unregister.
-  DCHECK(validators_.empty());
-}
-
-void BrowserTaskQueues::ValidatorSet::AddValidator(Validator* validator) {
-  base::AutoLock lock(lock_);
-  DCHECK_EQ(validators_.count(validator), 0u)
-      << "Validator added more than once";
-  validators_.insert(validator);
-}
-
-void BrowserTaskQueues::ValidatorSet::RemoveValidator(Validator* validator) {
-  base::AutoLock lock(lock_);
-  size_t num_erased = validators_.erase(validator);
-  DCHECK_EQ(num_erased, 1u) << "Validator not in set";
-}
-
-void BrowserTaskQueues::ValidatorSet::OnPostTask(base::Location from_here,
-                                                 base::TimeDelta delay) {
-  base::AutoLock lock(lock_);
-  for (Validator* validator : validators_) {
-    validator->ValidatePostTask(from_here);
-  }
-}
-
-void BrowserTaskQueues::ValidatorSet::OnQueueNextWakeUpChanged(
-    base::TimeTicks next_wake_up) {}
-
-#endif  // DCHECK_IS_ON()
-
 BrowserTaskQueues::QueueData::QueueData() = default;
 BrowserTaskQueues::QueueData::~QueueData() = default;
 
 BrowserTaskQueues::BrowserTaskQueues(
     BrowserThread::ID thread_id,
-    base::sequence_manager::SequenceManager* sequence_manager,
-    base::sequence_manager::TimeDomain* time_domain) {
+    base::sequence_manager::SequenceManager* sequence_manager) {
   for (size_t i = 0; i < queue_data_.size(); ++i) {
     queue_data_[i].task_queue = sequence_manager->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
-            GetTaskQueueName(thread_id, static_cast<QueueType>(i)))
-            .SetTimeDomain(time_domain));
+            GetTaskQueueName(thread_id, static_cast<QueueType>(i))));
     queue_data_[i].voter = queue_data_[i].task_queue->CreateQueueEnabledVoter();
     queue_data_[i].voter->SetVoteToEnable(false);
   }
 
   // Default task queue
   default_task_queue_ = sequence_manager->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(GetDefaultQueueName(thread_id))
-          .SetTimeDomain(time_domain));
+      base::sequence_manager::TaskQueue::Spec(GetDefaultQueueName(thread_id)));
 
   GetBrowserTaskQueue(QueueType::kUserVisible)
       ->SetQueuePriority(QueuePriority::kLowPriority);
@@ -224,33 +183,27 @@ BrowserTaskQueues::BrowserTaskQueues(
   GetBrowserTaskQueue(QueueType::kBestEffort)
       ->SetQueuePriority(QueuePriority::kBestEffortPriority);
 
+  // User Input queue
+  GetBrowserTaskQueue(QueueType::kUserInput)
+      ->SetQueuePriority(QueuePriority::kHighestPriority);
+
+  GetBrowserTaskQueue(QueueType::kNavigationNetworkResponse)
+      ->SetQueuePriority(QueuePriority::kHighPriority);
+
   // Control queue
   control_queue_ =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
-                                            GetControlTaskQueueName(thread_id))
-                                            .SetTimeDomain(time_domain));
+          GetControlTaskQueueName(thread_id)));
   control_queue_->SetQueuePriority(QueuePriority::kControlPriority);
 
   // Run all pending queue
-  run_all_pending_tasks_queue_ = sequence_manager->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(
-          GetRunAllPendingTaskQueueName(thread_id))
-          .SetTimeDomain(time_domain));
+  run_all_pending_tasks_queue_ =
+      sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
+          GetRunAllPendingTaskQueueName(thread_id)));
   run_all_pending_tasks_queue_->SetQueuePriority(
       QueuePriority::kBestEffortPriority);
 
   handle_ = base::AdoptRef(new Handle(this));
-
-#if DCHECK_IS_ON()
-  for (size_t i = 0; i < queue_data_.size(); ++i) {
-    queue_data_[i].task_queue->SetObserver(&handle_->validator_sets_[i]);
-  }
-
-  // Treat the |default_task_queue_| the same as the USER_BLOCKING task queue
-  // from a validation point of view.
-  default_task_queue_->SetObserver(
-      &handle_->validator_sets_[static_cast<int>(QueueType::kUserBlocking)]);
-#endif
 }
 
 BrowserTaskQueues::~BrowserTaskQueues() {
@@ -274,15 +227,17 @@ BrowserTaskQueues::CreateBrowserTaskRunners() const {
 }
 
 void BrowserTaskQueues::PostFeatureListInitializationSetup() {
-  if (base::FeatureList::IsEnabled(features::kPrioritizeBootstrapTasks)) {
-    GetBrowserTaskQueue(QueueType::kBootstrap)
-        ->SetQueuePriority(QueuePriority::kHighestPriority);
+  // NOTE: This queue will not be used if the |kTreatBootstrapAsDefault|
+  // feature is enabled (see browser_task_executor.cc).
+  GetBrowserTaskQueue(QueueType::kBootstrap)
+      ->SetQueuePriority(QueuePriority::kHighestPriority);
 
-    // Navigation and preconnection tasks are also important during startup so
-    // prioritize them too.
-    GetBrowserTaskQueue(QueueType::kNavigationAndPreconnection)
-        ->SetQueuePriority(QueuePriority::kHighPriority);
-  }
+  // Preconnection tasks are also important during startup so prioritize this
+  // queue too. NOTE: This queue will not be used if the
+  // |kTreatPreconnectAsDefault| feature is enabled (see
+  // browser_task_executor.cc).
+  GetBrowserTaskQueue(QueueType::kPreconnection)
+      ->SetQueuePriority(QueuePriority::kHighPriority);
 }
 
 void BrowserTaskQueues::EnableAllQueues() {

@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>MediaStream>CaptureFromElement"
+}
+team_email: "webrtc-dev@chromium.org"

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,14 +7,13 @@
 
 from __future__ import print_function
 
+import io
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import unittest
-
-from six import StringIO
 
 from grit import util
 from grit import xtb_reader
@@ -23,7 +22,7 @@ from grit.node import empty
 
 class XtbReaderUnittest(unittest.TestCase):
   def testParsing(self):
-    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="fr">
         <translation id="5282608565720904145">Bingo.</translation>
@@ -59,12 +58,14 @@ and another after a blank line.</translation>
     clique_hello_user = msgs.children[1].GetCliques()[0]
     msg_hello_user = clique_hello_user.GetMessage()
 
-    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="is">
         <translation id="%s">Meirihattar!</translation>
         <translation id="%s">Saelir <ph name="USERNAME"/></translation>
-      </translationbundle>''' % (msg_mega.GetId(), msg_hello_user.GetId()))
+      </translationbundle>''' % (
+        msg_mega.GetId().encode('utf-8'),
+        msg_hello_user.GetId().encode('utf-8')))
 
     xtb_reader.Parse(xtb_file,
                      msgs.UberClique().GenerateXtbParserCallback('is'))
@@ -82,7 +83,7 @@ and another after a blank line.</translation>
     clique = msgs.children[0].GetCliques()[0]
     msg = clique.GetMessage()
 
-    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="is">
         <if expr="is_linux">
@@ -100,7 +101,8 @@ and another after a blank line.</translation>
   def testParseLargeFile(self):
     def Callback(id, structure):
       pass
-    with open(util.PathFromRoot('grit/testdata/generated_resources_fr.xtb')) as xtb:
+    path = util.PathFromRoot('grit/testdata/generated_resources_fr.xtb')
+    with open(path, 'rb') as xtb:
       xtb_reader.Parse(xtb, Callback)
 
 

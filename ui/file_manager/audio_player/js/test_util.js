@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {test} from '../../file_manager/background/js/test_util_base.js';
+
+import {open} from './background.js';
+
 /**
  * Opens the audio player and waits until it is ready.
  *
@@ -13,4 +17,4 @@ test.util.async.openAudioPlayer = function(urls, callback) {
 };
 
 // Register the test utils.
-test.util.registerRemoteTestUtils();
+test.util.registerRemoteTestUtils('/js/runtime_loaded_test_util.js');

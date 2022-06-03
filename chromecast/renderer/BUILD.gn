@@ -24,69 +24,94 @@ grit("extensions_resources") {
   ]
 }
 
-cast_source_set("renderer") {
+group("renderer") {
+  public_deps = [ ":renderer_base" ]
+
+  if (chromecast_branding == "public") {
+    public_deps += [ ":simple_client" ]
+  }
+}
+
+cast_source_set("renderer_base") {
   sources = [
+    "activity_filtering_websocket_handshake_throttle.cc",
+    "activity_filtering_websocket_handshake_throttle.h",
+    "assistant_bindings.cc",
+    "assistant_bindings.h",
+    "cast_accessibility_bindings.cc",
+    "cast_accessibility_bindings.h",
+    "cast_activity_url_filter_manager.cc",
+    "cast_activity_url_filter_manager.h",
     "cast_content_renderer_client.cc",
     "cast_content_renderer_client.h",
-    "cast_media_playback_options.cc",
-    "cast_media_playback_options.h",
+    "cast_content_settings_client.cc",
+    "cast_content_settings_client.h",
+    "cast_demo_bindings.cc",
+    "cast_demo_bindings.h",
     "cast_url_loader_throttle_provider.cc",
     "cast_url_loader_throttle_provider.h",
+    "cast_websocket_handshake_throttle_provider.cc",
+    "cast_websocket_handshake_throttle_provider.h",
+    "cast_window_manager_bindings.cc",
+    "cast_window_manager_bindings.h",
+    "feature_manager.cc",
+    "feature_manager.h",
+    "feature_manager_on_associated_interface.cc",
+    "feature_manager_on_associated_interface.h",
+    "identification_settings_manager_renderer.cc",
+    "identification_settings_manager_renderer.h",
+    "identification_settings_manager_store.h",
     "js_channel_bindings.cc",
     "js_channel_bindings.h",
     "native_bindings_helper.cc",
     "native_bindings_helper.h",
-    "on_load_script_injector.cc",
-    "on_load_script_injector.h",
-    "queryable_data_bindings.cc",
-    "queryable_data_bindings.h",
     "queryable_data_store.cc",
     "queryable_data_store.h",
+    "settings_ui_bindings.cc",
+    "settings_ui_bindings.h",
   ]
 
   public_deps = [
-    "//chromecast/renderer/media",
-  ]
-
-  if (chromecast_branding == "public") {
-    sources += [ "cast_content_renderer_client_simple.cc" ]
-  }
-
-  deps = [
-    "//base",
     "//chromecast:chromecast_buildflags",
-    "//chromecast/base",
-    "//chromecast/common",
-    "//chromecast/common:queryable_data",
-    "//chromecast/common/media",
+    "//chromecast/browser/mojom",
     "//chromecast/common/mojom",
-    "//chromecast/media",
-    "//components/network_hints/renderer",
-    "//content/public/common",
     "//content/public/renderer",
-    "//crypto",
-    "//gin",
-    "//ipc",
     "//media",
-    "//services/network/public/cpp:cpp",
-    "//services/service_manager/public/cpp",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink",
     "//v8",
   ]
 
-  if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
-    deps += [ "//chromecast/crash" ]
-  }
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/common",
+    "//chromecast/common:activity_url_filter",
+    "//chromecast/common:feature_constants",
+    "//chromecast/common:queryable_data",
+    "//chromecast/common/media",
+    "//chromecast/crash",
+    "//chromecast/media",
+    "//chromecast/media/base:media_codec_support",
+    "//chromecast/renderer/media",
+    "//components/media_control/renderer",
+    "//components/network_hints/renderer",
+    "//components/on_load_script_injector/renderer",
+    "//content/public/common",
+    "//crypto",
+    "//gin",
+    "//ipc",
+    "//media/remoting:remoting_constants",
+    "//media/remoting:remoting_renderer",
+    "//net",
+    "//services/network/public/cpp:cpp",
+    "//services/service_manager/public/cpp",
+  ]
 
   if (!is_android) {
     sources += [
       "memory_pressure_observer_impl.cc",
       "memory_pressure_observer_impl.h",
-    ]
-
-    deps += [
-      "//chromecast/common/mojom",
-      "//mojo/public/cpp/bindings",
     ]
   } else {
     deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
@@ -108,11 +133,22 @@ cast_source_set("renderer") {
       "//chromecast/common",
       "//chromecast/common/extensions_api:api",
       "//chromecast/renderer:extensions_resources",
+      "//components/guest_view/renderer",
       "//components/version_info:version_info",
       "//extensions/common",
+      "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/renderer",
       "//gin:gin",
     ]
   }
+}
+
+cast_source_set("simple_client") {
+  sources = [ "cast_content_renderer_client_simple.cc" ]
+
+  public_deps = [
+    ":renderer_base",
+    "//base",
+  ]
 }

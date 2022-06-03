@@ -17,27 +17,39 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   MockGpuMemoryBufferManager();
 
+  MockGpuMemoryBufferManager(const MockGpuMemoryBufferManager&) = delete;
+  MockGpuMemoryBufferManager& operator=(const MockGpuMemoryBufferManager&) =
+      delete;
+
   ~MockGpuMemoryBufferManager() override;
 
-  MOCK_METHOD4(
-      CreateGpuMemoryBuffer,
-      std::unique_ptr<gfx::GpuMemoryBuffer>(const gfx::Size& size,
-                                            gfx::BufferFormat format,
-                                            gfx::BufferUsage usage,
-                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD5(CreateGpuMemoryBuffer,
+               std::unique_ptr<gfx::GpuMemoryBuffer>(
+                   const gfx::Size& size,
+                   gfx::BufferFormat format,
+                   gfx::BufferUsage usage,
+                   gpu::SurfaceHandle surface_handle,
+                   base::WaitableEvent* shutdown_event));
 
   MOCK_METHOD2(SetDestructionSyncToken,
                void(gfx::GpuMemoryBuffer* buffer,
                     const gpu::SyncToken& sync_token));
 
+  MOCK_METHOD3(CopyGpuMemoryBufferAsync,
+               void(gfx::GpuMemoryBufferHandle buffer_handle,
+                    base::UnsafeSharedMemoryRegion memory_region,
+                    base::OnceCallback<void(bool)> callback));
+
+  MOCK_METHOD2(CopyGpuMemoryBufferSync,
+               bool(gfx::GpuMemoryBufferHandle buffer_handle,
+                    base::UnsafeSharedMemoryRegion memory_region));
+
   static std::unique_ptr<gfx::GpuMemoryBuffer> CreateFakeGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGpuMemoryBufferManager);
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event);
 };
 
 }  // namespace unittest_internal

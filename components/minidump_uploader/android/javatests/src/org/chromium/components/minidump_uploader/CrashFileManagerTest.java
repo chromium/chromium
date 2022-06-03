@@ -7,8 +7,9 @@ package org.chromium.components.minidump_uploader;
 import static org.junit.Assert.assertArrayEquals;
 
 import android.os.ParcelFileDescriptor;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

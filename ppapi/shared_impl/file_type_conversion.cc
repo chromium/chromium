@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/file_type_conversion.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_file_io.h"
 #include "ppapi/shared_impl/time_conversion.h"

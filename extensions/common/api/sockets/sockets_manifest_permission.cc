@@ -18,6 +18,8 @@
 #include "ipc/ipc_message.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace sockets_errors {
@@ -34,7 +36,7 @@ static bool ParseHostPattern(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
     const std::string& host_pattern,
-    base::string16* error) {
+    std::u16string* error) {
   SocketPermissionEntry entry;
   if (!SocketPermissionEntry::ParseHostPattern(
           operation_type, host_pattern, &entry)) {
@@ -50,7 +52,7 @@ static bool ParseHostPatterns(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
     const std::unique_ptr<SocketHostPatterns>& host_patterns,
-    base::string16* error) {
+    std::u16string* error) {
   if (!host_patterns)
     return true;
 
@@ -75,8 +77,8 @@ static void SetHostPatterns(
     std::unique_ptr<SocketHostPatterns>& host_patterns,
     const SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type) {
-  host_patterns.reset(new SocketHostPatterns());
-  host_patterns->as_strings.reset(new std::vector<std::string>());
+  host_patterns = std::make_unique<SocketHostPatterns>();
+  host_patterns->as_strings = std::make_unique<std::vector<std::string>>();
   for (auto it = permission->entries().cbegin();
        it != permission->entries().cend(); ++it) {
     if (it->pattern().type == operation_type) {
@@ -93,7 +95,7 @@ bool AddAnyHostMessage(const SocketPermissionEntrySet& sockets,
   for (const auto& socket : sockets) {
     if (socket.IsAddressBoundType() &&
         socket.GetHostType() == SocketPermissionEntry::ANY_HOST) {
-      ids->insert(APIPermission::kSocketAnyHost);
+      ids->insert(APIPermissionID::kSocketAnyHost);
       return true;
     }
   }
@@ -104,14 +106,14 @@ bool AddAnyHostMessage(const SocketPermissionEntrySet& sockets,
 // messages are needed from |sockets|, and adds permissions to |ids|.
 void AddSubdomainHostMessage(const SocketPermissionEntrySet& sockets,
                              PermissionIDSet* ids) {
-  std::set<base::string16> domains;
+  std::set<std::u16string> domains;
   for (const auto& socket : sockets) {
     if (socket.GetHostType() == SocketPermissionEntry::HOSTS_IN_DOMAINS)
       domains.insert(base::UTF8ToUTF16(socket.pattern().host));
   }
   if (!domains.empty()) {
     for (const auto& domain : domains)
-      ids->insert(APIPermission::kSocketDomainHosts, domain);
+      ids->insert(APIPermissionID::kSocketDomainHosts, domain);
   }
 }
 
@@ -119,14 +121,14 @@ void AddSubdomainHostMessage(const SocketPermissionEntrySet& sockets,
 // messages are needed from |sockets|, and adds permissions to |ids|.
 void AddSpecificHostMessage(const SocketPermissionEntrySet& sockets,
                             PermissionIDSet* ids) {
-  std::set<base::string16> hostnames;
+  std::set<std::u16string> hostnames;
   for (const auto& socket : sockets) {
     if (socket.GetHostType() == SocketPermissionEntry::SPECIFIC_HOSTS)
       hostnames.insert(base::UTF8ToUTF16(socket.pattern().host));
   }
   if (!hostnames.empty()) {
     for (const auto& hostname : hostnames)
-      ids->insert(APIPermission::kSocketSpecificHosts, hostname);
+      ids->insert(APIPermissionID::kSocketSpecificHosts, hostname);
   }
 }
 
@@ -136,7 +138,7 @@ void AddNetworkListMessage(const SocketPermissionEntrySet& sockets,
                            PermissionIDSet* ids) {
   for (const auto& socket : sockets) {
     if (socket.pattern().type == SocketPermissionRequest::NETWORK_STATE) {
-      ids->insert(APIPermission::kNetworkState);
+      ids->insert(APIPermissionID::kNetworkState);
     }
   }
 }
@@ -150,10 +152,10 @@ SocketsManifestPermission::~SocketsManifestPermission() {}
 // static
 std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<Sockets> sockets = Sockets::FromValue(value, error);
   if (!sockets)
-    return std::unique_ptr<SocketsManifestPermission>();
+    return nullptr;
 
   std::unique_ptr<SocketsManifestPermission> result(
       new SocketsManifestPermission());
@@ -162,19 +164,19 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::UDP_BIND,
                            sockets->udp->bind,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
     if (!ParseHostPatterns(result.get(),
                            SocketPermissionRequest::UDP_SEND_TO,
                            sockets->udp->send,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
     if (!ParseHostPatterns(result.get(),
                            SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
                            sockets->udp->multicast_membership,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   if (sockets->tcp) {
@@ -182,7 +184,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::TCP_CONNECT,
                            sockets->tcp->connect,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   if (sockets->tcp_server) {
@@ -190,7 +192,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::TCP_LISTEN,
                            sockets->tcp_server->listen,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   return result;
@@ -221,7 +223,7 @@ PermissionIDSet SocketsManifestPermission::GetPermissions() const {
 bool SocketsManifestPermission::FromValue(const base::Value* value) {
   if (!value)
     return false;
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<SocketsManifestPermission> manifest_permission(
       SocketsManifestPermission::FromValue(*value, &error));
 
@@ -235,7 +237,7 @@ bool SocketsManifestPermission::FromValue(const base::Value* value) {
 std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
   Sockets sockets;
 
-  sockets.udp.reset(new Sockets::Udp());
+  sockets.udp = std::make_unique<Sockets::Udp>();
   SetHostPatterns(sockets.udp->bind, this, SocketPermissionRequest::UDP_BIND);
   SetHostPatterns(
       sockets.udp->send, this, SocketPermissionRequest::UDP_SEND_TO);
@@ -248,14 +250,14 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
     sockets.udp.reset(NULL);
   }
 
-  sockets.tcp.reset(new Sockets::Tcp());
+  sockets.tcp = std::make_unique<Sockets::Tcp>();
   SetHostPatterns(
       sockets.tcp->connect, this, SocketPermissionRequest::TCP_CONNECT);
   if (sockets.tcp->connect->as_strings->size() == 0) {
     sockets.tcp.reset(NULL);
   }
 
-  sockets.tcp_server.reset(new Sockets::TcpServer());
+  sockets.tcp_server = std::make_unique<Sockets::TcpServer>();
   SetHostPatterns(
       sockets.tcp_server->listen, this, SocketPermissionRequest::TCP_LISTEN);
   if (sockets.tcp_server->listen->as_strings->size() == 0) {
@@ -312,6 +314,14 @@ void SocketsManifestPermission::AddSocketHostPermissions(
     AddSubdomainHostMessage(sockets, ids);
   }
   AddNetworkListMessage(sockets, ids);
+}
+
+bool SocketsManifestPermission::RequiresManagementUIWarning() const {
+  return false;
+}
+
+bool SocketsManifestPermission::RequiresManagedSessionFullLoginWarning() const {
+  return false;
 }
 
 }  // namespace extensions

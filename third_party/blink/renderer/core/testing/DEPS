@@ -1,12 +1,15 @@
 include_rules = [
     "+base/run_loop.h",
+    "+base/process/process_handle.h",
     "+cc",
+    "+components/ukm/test_ukm_recorder.h",
     # TODO(crbug.com/838693): Test harnesses use LayerTreeView
     # from content instead of a fake WebLayerTreeView implementation, so
     # that the Web abstraction can go away.
     "+content/renderer/compositor",
     "+content/test",
     "+gpu/command_buffer/client/gles2_interface.h",
+    "+ui/events/blink/blink_event_util.h",
 ]
 
 specific_include_rules = {

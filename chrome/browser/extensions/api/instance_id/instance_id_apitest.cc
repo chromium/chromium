@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/instance_id/instance_id_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -18,6 +17,7 @@
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
 
 using extensions::ResultCatcher;
@@ -28,11 +28,12 @@ class InstanceIDApiTest : public ExtensionApiTest {
  public:
   InstanceIDApiTest();
 
+  InstanceIDApiTest(const InstanceIDApiTest&) = delete;
+  InstanceIDApiTest& operator=(const InstanceIDApiTest&) = delete;
+
  private:
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDApiTest);
 };
 
 InstanceIDApiTest::InstanceIDApiTest()
@@ -64,9 +65,10 @@ IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, Incognito) {
   catcher.RestrictToBrowserContext(profile());
   ResultCatcher incognito_catcher;
   incognito_catcher.RestrictToBrowserContext(
-      profile()->GetOffTheRecordProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ASSERT_TRUE(RunExtensionTestIncognito("instance_id/incognito"));
+  ASSERT_TRUE(RunExtensionTest("instance_id/incognito", {},
+                               {.allow_in_incognito = true}));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(incognito_catcher.GetNextResult()) << incognito_catcher.message();

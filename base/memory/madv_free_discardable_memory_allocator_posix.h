@@ -13,12 +13,10 @@
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -27,6 +25,12 @@ class BASE_EXPORT MadvFreeDiscardableMemoryAllocatorPosix
       public base::trace_event::MemoryDumpProvider {
  public:
   MadvFreeDiscardableMemoryAllocatorPosix();
+
+  MadvFreeDiscardableMemoryAllocatorPosix(
+      const MadvFreeDiscardableMemoryAllocatorPosix&) = delete;
+  MadvFreeDiscardableMemoryAllocatorPosix& operator=(
+      const MadvFreeDiscardableMemoryAllocatorPosix&) = delete;
+
   ~MadvFreeDiscardableMemoryAllocatorPosix() override;
 
   std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
@@ -44,8 +48,6 @@ class BASE_EXPORT MadvFreeDiscardableMemoryAllocatorPosix
 
  private:
   std::atomic<size_t> bytes_allocated_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(MadvFreeDiscardableMemoryAllocatorPosix);
 };
 }  // namespace base
 

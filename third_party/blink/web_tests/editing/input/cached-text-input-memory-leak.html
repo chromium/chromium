@@ -1,0 +1,35 @@
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<title>This tests the memory leak issue in CachedTextInputInfo</title>
+</head>
+<body>
+<div class="App" id="app"></div>
+<span id="app1">
+    How to repro:<br/>
+    1. Click on this page before the "Watch me leak!" text disappears.<br/>
+    2. Once the text disappears, without clicking anywhere else, take a heap snapshot.<br/>
+</span>
+<script>
+promise_test(async () => {
+  document.addEventListener("selectionchange", e => {
+      var app = document.getElementById("app");
+      var header = document.getElementById("header");
+      app.removeChild(header);
+  });
+  var app = document.getElementById("app");
+  var header = document.createElement("h1");
+  header.id = "header";
+  header.innerHTML = "Watch me leak!";
+  app.appendChild(header);
+  var app1 = document.getElementById("app1");
+  await test_driver.click(app1);
+  assert_equals(document.activeElement, document.body, 'activeElement');
+  assert_equals(app.firstChild, null, 'child');
+}, 'Removing an element after clicking textnodes shouldn\'t cause memory leaks');
+</script>
+</body>
+</html>

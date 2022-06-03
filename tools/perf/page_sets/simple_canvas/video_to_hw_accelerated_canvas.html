@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body>
+<video id="video" muted="muted" loop></video>
+<script src="resources/canvas_runner.js"></script>
+<script>
+var videoElement = document.getElementById("video");
+var destCanvas2D = document.createElement("canvas");
+var destCtx2D = destCanvas2D.getContext("2d");
+var dummyCanvas2D = document.createElement("canvas");
+var dummyCtx2D = dummyCanvas2D.getContext("2d");
+document.body.appendChild(destCanvas2D);
+
+function setSize(width, height) {
+    destCanvas2D.width = width;
+    destCanvas2D.height = height;
+    dummyCanvas2D.width = width;
+    dummyCanvas2D.height = height;
+}
+
+function startPerfTest() {
+    for (i = 0; i < 10; i++) {
+        doRun();
+    }
+    ensureComplete();
+    requestAnimationFrame(startPerfTest);
+}
+
+function doRun() {
+    // draw Video
+    destCtx2D.drawImage(videoElement, 0, 0);
+}
+
+function ensureComplete() {
+    // Using destCanvas2D as a source image is just to flush out the content when
+    // accelerated 2D canvas is in use.
+    // dummyCtx2D must also be accelerated to prevent destCanvas2D from becoming
+    // non-accelerated due to the DisableAccelerationToAvoidReadbacks heuristic.
+    dummyCtx2D.drawImage(destCanvas2D, 0, 0, 1, 1, 0, 0, 1, 1);
+}
+
+window.onload = function () {
+    // It should use setMinimumAccelerated2dCanvasSize() to enable accelerated Canvas for a specified size
+    // but this API is not available in JS or WebPage. Assume the threshold size is 256x257
+    // and the dest canvas is HW accelerated Canvas when setting its size to 1024x1024.
+    setSize(1024, 1024);
+
+    videoElement.src = "resources/crowd1080.webm";
+    if(!videoElement.canPlayType('video/webm').replace(/no/, '')) {
+        console.logFatalError("video/webm is unsupported");
+        throw 'video/webm is unsupported';
+    };
+    CanvasRunner.startPlayingAndWaitForVideo(videoElement, startPerfTest);
+}
+
+</script>
+</body>
+</html>

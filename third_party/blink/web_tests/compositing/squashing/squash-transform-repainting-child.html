@@ -31,8 +31,8 @@ will-change: transform;
 .top {
   position: absolute;
   z-index: 1;
-  top: 180px;
-  left: 180px;
+  top: 50px;
+  left: 50px;
   background-color: cyan;
 }
 
@@ -68,19 +68,19 @@ div:hover {
     function executeTestCases()
     {
         internals.startTrackingRepaints(document);
-        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         eventSender.mouseMoveTo(0, 0);
         internals.startTrackingRepaints(document);
         hoverOverOuterDiv();
-        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         eventSender.mouseMoveTo(0, 0);
         internals.startTrackingRepaints(document);
         hoverOverInnerDiv();
-        document.getElementById('Case3').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case3').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Display the test results only after test is done so that it does not affect repaint rect results.

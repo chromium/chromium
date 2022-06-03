@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
 #include "chrome/installer/util/callback_work_item.h"
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 // A callback that always fails (returns false).
-bool TestFailureCallback(const CallbackWorkItem& work_item) {
+bool TestFailureCallback(const CallbackWorkItem& item) {
   return false;
 }
 
@@ -17,7 +20,8 @@ bool TestFailureCallback(const CallbackWorkItem& work_item) {
 
 // Test that the work item returns false when a callback returns failure.
 TEST(CallbackWorkItemTest, TestFailure) {
-  CallbackWorkItem work_item(base::Bind(&TestFailureCallback));
+  CallbackWorkItem work_item(base::BindOnce(&TestFailureCallback),
+                             base::DoNothing());
 
   EXPECT_FALSE(work_item.Do());
 }
@@ -30,21 +34,19 @@ enum TestCallbackState {
   TCS_CALLED_ROLLBACK,
 };
 
-// A callback that sets |state| according to whether it is rolling forward or
-// backward.
-bool TestForwardBackwardCallback(TestCallbackState* state,
-                                 const CallbackWorkItem& work_item) {
-  *state = work_item.IsRollback() ? TCS_CALLED_ROLLBACK : TCS_CALLED_FORWARD;
-  return true;
-}
-
 }  // namespace
 
-// Test that the callback is invoked correclty during Do() and Rollback().
+// Test that the callback is invoked correctly during Do() and Rollback().
 TEST(CallbackWorkItemTest, TestForwardBackward) {
   TestCallbackState state = TCS_UNDEFINED;
 
-  CallbackWorkItem work_item(base::Bind(&TestForwardBackwardCallback, &state));
+  CallbackWorkItem work_item(
+      base::BindLambdaForTesting([&](const CallbackWorkItem& item) -> bool {
+        state = TCS_CALLED_FORWARD;
+        return true;
+      }),
+      base::BindLambdaForTesting(
+          [&](const CallbackWorkItem& item) { state = TCS_CALLED_ROLLBACK; }));
 
   EXPECT_TRUE(work_item.Do());
   EXPECT_EQ(TCS_CALLED_FORWARD, state);

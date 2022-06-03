@@ -15,16 +15,17 @@ class DataTypeManagerMock : public DataTypeManager {
  public:
   DataTypeManagerMock();
   ~DataTypeManagerMock() override;
-
-  MOCK_METHOD2(Configure, void(ModelTypeSet, const ConfigureContext&));
-  MOCK_METHOD1(DataTypePreconditionChanged, void(ModelType));
-  MOCK_METHOD0(ResetDataTypeErrors, void());
-  MOCK_METHOD1(PurgeForMigration, void(ModelTypeSet));
-  MOCK_METHOD1(Stop, void(ShutdownReason));
-  MOCK_METHOD0(controllers, const DataTypeController::TypeMap&());
-  MOCK_CONST_METHOD0(GetActiveDataTypes, ModelTypeSet());
-  MOCK_CONST_METHOD0(IsNigoriEnabled, bool());
-  MOCK_CONST_METHOD0(state, State());
+  MOCK_METHOD(void,
+              Configure,
+              (ModelTypeSet, const ConfigureContext&),
+              (override));
+  MOCK_METHOD(void, DataTypePreconditionChanged, (ModelType), (override));
+  MOCK_METHOD(void, ResetDataTypeErrors, (), (override));
+  MOCK_METHOD(void, PurgeForMigration, (ModelTypeSet), (override));
+  MOCK_METHOD(void, Stop, (ShutdownReason), (override));
+  MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetPurgedDataTypes, (), (const override));
+  MOCK_METHOD(State, state, (), (const override));
 
  private:
   DataTypeManager::ConfigureResult result_;

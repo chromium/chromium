@@ -7,6 +7,11 @@
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 
+#if defined(OS_WIN)
+#include "media/cdm/media_foundation_cdm_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // defined(OS_WIN)
+
 namespace media {
 
 CdmAuxiliaryHelper::CdmAuxiliaryHelper() = default;
@@ -18,15 +23,9 @@ cdm::FileIO* CdmAuxiliaryHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
   return nullptr;
 }
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-cdm::CdmProxy* CdmAuxiliaryHelper::CreateCdmProxy(cdm::CdmProxyClient* client) {
-  return nullptr;
+url::Origin CdmAuxiliaryHelper::GetCdmOrigin() {
+  return url::Origin();
 }
-
-int CdmAuxiliaryHelper::GetCdmProxyCdmId() {
-  return CdmContext::kInvalidCdmId;
-}
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 cdm::Buffer* CdmAuxiliaryHelper::CreateCdmBuffer(size_t capacity) {
   return nullptr;
@@ -54,5 +53,16 @@ void CdmAuxiliaryHelper::ChallengePlatform(const std::string& service_id,
 void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   std::move(callback).Run(version, std::vector<uint8_t>());
 }
+
+#if defined(OS_WIN)
+void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCB callback) {
+  std::move(callback).Run(std::make_unique<MediaFoundationCdmData>(
+      base::UnguessableToken::Null(), absl::nullopt, base::FilePath()));
+}
+
+void CdmAuxiliaryHelper::SetCdmClientToken(
+    const std::vector<uint8_t>& client_token) {}
+#endif  // defined(OS_WIN)
 
 }  // namespace media

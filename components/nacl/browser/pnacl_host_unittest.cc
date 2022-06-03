@@ -36,7 +36,7 @@ const size_t kBufferSize = 16u;
 class PnaclHostTest : public testing::Test {
  protected:
   PnaclHostTest()
-      : host_(NULL),
+      : host_(nullptr),
         temp_callback_count_(0),
         write_callback_count_(0),
         task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
@@ -122,18 +122,14 @@ static nacl::PnaclCacheInfo GetTestCacheInfo() {
   return info;
 }
 
-#define GET_NEXE_FD(renderer, instance, incognito, info, expect_hit) \
-  do {                                                               \
-    SCOPED_TRACE("");                                                \
-    host_->GetNexeFd(                                                \
-        renderer,                                                    \
-        0, /* ignore render_view_id for now */                       \
-        instance,                                                    \
-        incognito,                                                   \
-        info,                                                        \
-        base::Bind(expect_hit ? &PnaclHostTest::CallbackExpectHit    \
-                              : &PnaclHostTest::CallbackExpectMiss,  \
-                   base::Unretained(this)));                         \
+#define GET_NEXE_FD(renderer, instance, incognito, info, expect_hit)         \
+  do {                                                                       \
+    SCOPED_TRACE("");                                                        \
+    host_->GetNexeFd(                                                        \
+        renderer, instance, incognito, info,                                 \
+        base::BindRepeating(expect_hit ? &PnaclHostTest::CallbackExpectHit   \
+                                       : &PnaclHostTest::CallbackExpectMiss, \
+                            base::Unretained(this)));                        \
   } while (0)
 
 TEST_F(PnaclHostTest, BasicMiss) {

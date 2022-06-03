@@ -50,8 +50,9 @@ void DevUiModuleProvider::InstallModule(
                                          listener->j_listener());
 }
 
-void DevUiModuleProvider::LoadModule() {
-  Java_DevUiModuleProvider_loadModule(base::android::AttachCurrentThread());
+void DevUiModuleProvider::EnsureLoaded() {
+  Java_DevUiModuleProvider_ensureNativeLoaded(
+      base::android::AttachCurrentThread());
 }
 
 DevUiModuleProvider::DevUiModuleProvider() = default;

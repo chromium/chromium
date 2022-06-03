@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_LIBXML_CHROMIUM_LIBXML_UTILS_H_
 #define THIRD_PARTY_LIBXML_CHROMIUM_LIBXML_UTILS_H_
 
-#include <string>
+#include <libxml/xmlreader.h>
 
-#include "third_party/libxml/src/include/libxml/xmlreader.h"
+#include <string>
 
 // libxml uses a global error function pointer for reporting errors.
 // A ScopedXmlErrorFunc object lets you change the global error pointer

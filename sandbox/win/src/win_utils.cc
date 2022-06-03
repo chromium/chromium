@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/pe_image.h"
 #include "sandbox/win/src/internal_types.h"
@@ -234,7 +234,6 @@ DWORD IsReparsePoint(const std::wstring& full_path) {
             (path.rfind(L'\\') == kNTDotPrefixLen - 1)) {
           break;
         }
-        NOTREACHED_NT();
         return error;
       }
     } else if (FILE_ATTRIBUTE_REPARSE_POINT & attributes) {

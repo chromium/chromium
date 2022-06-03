@@ -11,16 +11,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/circular_deque.h"
-#include "base/logging.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_default.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +31,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_source.h"
@@ -42,6 +44,7 @@
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
+#include "url/origin.h"
 
 namespace jingle_glue {
 
@@ -51,6 +54,9 @@ namespace {
 class AsyncSocketDataProvider : public net::SocketDataProvider {
  public:
   AsyncSocketDataProvider() : has_pending_read_(false) {}
+
+  AsyncSocketDataProvider(const AsyncSocketDataProvider&) = delete;
+  AsyncSocketDataProvider& operator=(const AsyncSocketDataProvider&) = delete;
 
   ~AsyncSocketDataProvider() override {
     EXPECT_TRUE(writes_.empty());
@@ -123,8 +129,6 @@ class AsyncSocketDataProvider : public net::SocketDataProvider {
   bool has_pending_read_;
 
   base::circular_deque<net::MockWrite> writes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncSocketDataProvider);
 };
 
 class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
@@ -144,21 +148,30 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   };
 
   MockProxyResolvingSocket() {}
+
+  MockProxyResolvingSocket(const MockProxyResolvingSocket&) = delete;
+  MockProxyResolvingSocket& operator=(const MockProxyResolvingSocket&) = delete;
+
   ~MockProxyResolvingSocket() override {}
 
   void Connect(mojo::PendingRemote<network::mojom::SocketObserver> observer,
                network::mojom::ProxyResolvingSocketFactory::
                    CreateProxyResolvingSocketCallback callback) {
-    mojo::DataPipe send_pipe;
-    mojo::DataPipe receive_pipe;
+    mojo::ScopedDataPipeProducerHandle send_producer_handle;
+    ASSERT_EQ(
+        mojo::CreateDataPipe(nullptr, send_producer_handle, send_pipe_handle_),
+        MOJO_RESULT_OK);
+
+    mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+    ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_pipe_handle_,
+                                   receive_consumer_handle),
+              MOJO_RESULT_OK);
 
     observer_.Bind(std::move(observer));
-    receive_pipe_handle_ = std::move(receive_pipe.producer_handle);
-    send_pipe_handle_ = std::move(send_pipe.consumer_handle);
 
-    std::move(callback).Run(net::OK, base::nullopt, base::nullopt,
-                            std::move(receive_pipe.consumer_handle),
-                            std::move(send_pipe.producer_handle));
+    std::move(callback).Run(net::OK, absl::nullopt, absl::nullopt,
+                            std::move(receive_consumer_handle),
+                            std::move(send_producer_handle));
   }
 
   void RunEvents(std::vector<Event>&& events);
@@ -178,24 +191,33 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   mojo::Remote<network::mojom::SocketObserver> observer_;
   mojo::ScopedDataPipeProducerHandle receive_pipe_handle_;
   mojo::ScopedDataPipeConsumerHandle send_pipe_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProxyResolvingSocket);
 };
 
 class MockProxyResolvingSocketFactory
     : public network::mojom::ProxyResolvingSocketFactory {
  public:
   explicit MockProxyResolvingSocketFactory() : socket_raw_(nullptr) {}
+
+  MockProxyResolvingSocketFactory(const MockProxyResolvingSocketFactory&) =
+      delete;
+  MockProxyResolvingSocketFactory& operator=(
+      const MockProxyResolvingSocketFactory&) = delete;
+
   ~MockProxyResolvingSocketFactory() override {}
 
   // mojom::ProxyResolvingSocketFactory implementation.
   void CreateProxyResolvingSocket(
       const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
       network::mojom::ProxyResolvingSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::ProxyResolvingSocket> receiver,
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateProxyResolvingSocketCallback callback) override {
+    url::Origin origin = url::Origin::Create(url);
+    EXPECT_EQ(net::NetworkIsolationKey(origin /* top_frame_origin */,
+                                       origin /* frame_origin */),
+              network_isolation_key);
     auto socket = std::make_unique<MockProxyResolvingSocket>();
     socket_raw_ = socket.get();
     proxy_resolving_socket_receivers_.Add(std::move(socket),
@@ -211,8 +233,6 @@ class MockProxyResolvingSocketFactory
 
   // Owned by |proxy_resolving_socket_receivers_|.
   MockProxyResolvingSocket* socket_raw_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProxyResolvingSocketFactory);
 };
 
 void MockProxyResolvingSocket::RunEvents(std::vector<Event>&& events) {
@@ -286,6 +306,10 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
     testing::GTEST_FLAG(death_test_style) = "threadsafe";
   }
 
+  NetworkServiceAsyncSocketTest(const NetworkServiceAsyncSocketTest&) = delete;
+  NetworkServiceAsyncSocketTest& operator=(
+      const NetworkServiceAsyncSocketTest&) = delete;
+
   ~NetworkServiceAsyncSocketTest() override {}
 
   void SetUp() override {
@@ -317,12 +341,12 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
               test_url_request_context_.get());
     }
 
-    ns_async_socket_.reset(new NetworkServiceAsyncSocket(
+    ns_async_socket_ = std::make_unique<NetworkServiceAsyncSocket>(
         base::BindRepeating(
             &NetworkServiceAsyncSocketTest::BindToProxyResolvingSocketFactory,
             base::Unretained(this)),
         false, /* use_fake_tls_handshake */
-        14, 20, TRAFFIC_ANNOTATION_FOR_TESTS));
+        14, 20, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     ns_async_socket_->SignalConnected.connect(
         this, &NetworkServiceAsyncSocketTest::OnConnect);
@@ -577,9 +601,6 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   std::unique_ptr<NetworkServiceAsyncSocket> ns_async_socket_;
   base::circular_deque<SignalSocketState> signal_socket_states_;
   const net::HostPortPair addr_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceAsyncSocketTest);
 };
 
 TEST_F(NetworkServiceAsyncSocketTest, InitialState) {
@@ -627,7 +648,7 @@ TEST_F(NetworkServiceAsyncSocketTest, ZeroPortConnect) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, DoubleConnect) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -725,7 +746,7 @@ TEST_F(NetworkServiceAsyncSocketTest, EmptyRead) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, WrongRead) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         async_socket_data_provider_.set_connect_data(
             net::MockConnect(net::ASYNC, net::OK));
@@ -887,7 +908,7 @@ TEST_F(NetworkServiceAsyncSocketTest, PendingReadError) {
 // After this we can assume non-SSL Read() works as expected.
 
 TEST_F(NetworkServiceAsyncSocketTest, WrongWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         std::string data("foo");
         EXPECT_FALSE(ns_async_socket_->Write(data.data(), data.size()));
@@ -969,7 +990,7 @@ TEST_F(NetworkServiceAsyncSocketTest, AsyncWriteError) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, LargeWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -988,7 +1009,7 @@ TEST_F(NetworkServiceAsyncSocketTest, LargeWrite) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, LargeAccumulatedWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -1038,7 +1059,7 @@ TEST_F(NetworkServiceAsyncSocketTest, ImmediateSSLConnect) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, DoubleSSLConnect) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         async_socket_data_provider_.AddRead(net::MockRead(kReadData));
         DoOpenClosed();

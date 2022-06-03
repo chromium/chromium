@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 #include "ui/events/event_targeter.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace gfx {
+class Point;
 class Rect;
 }
 
@@ -28,6 +28,10 @@ class Window;
 class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
  public:
   WindowTargeter();
+
+  WindowTargeter(const WindowTargeter&) = delete;
+  WindowTargeter& operator=(const WindowTargeter&) = delete;
+
   ~WindowTargeter() override;
 
   using HitTestRects = std::vector<gfx::Rect>;
@@ -114,8 +118,6 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   // Returns whether the location of the event is in an actionable region of the
   // target. Note that the location etc. of |event| is in the |window|'s
   // parent's coordinate system.
-  // Deprecated. As an alternative, override GetHitTestRects.
-  // TODO(varkha): Make this non-overridable.
   virtual bool EventLocationInsideBounds(Window* target,
                                          const ui::LocatedEvent& event) const;
 
@@ -126,13 +128,29 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   const gfx::Insets& mouse_extend() const { return mouse_extend_; }
   const gfx::Insets& touch_extend() const { return touch_extend_; }
 
+  static gfx::Point ConvertEventLocationToWindowCoordinates(
+      Window* window,
+      const ui::LocatedEvent& event);
+
  private:
   // To call OnInstalled().
   friend class Window;
 
+  enum class BoundsType {
+    kMouse,
+    kTouch,
+    kGesture,
+  };
+
   Window* FindTargetForNonKeyEvent(Window* root_window, ui::Event* event);
   Window* FindTargetForLocatedEventRecursively(Window* root_window,
                                                ui::LocatedEvent* event);
+
+  // Whether |point| is inside |window| or its descendents using |bounds_type|
+  // as a rect source. |point| should be relative to |window|.
+  bool PointInsideBounds(Window* window,
+                         BoundsType bounds_type,
+                         const gfx::Point& point) const;
 
   // The Window this WindowTargeter is installed on. Null if not attached to a
   // Window.
@@ -140,8 +158,6 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
 
   gfx::Insets mouse_extend_;
   gfx::Insets touch_extend_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTargeter);
 };
 
 }  // namespace aura

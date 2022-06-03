@@ -155,7 +155,7 @@ void Watchdog::ThreadDelegate::ThreadMain() {
       watchdog_->Alarm();  // Set a break point here to debug on alarms.
     }
     TimeDelta last_alarm_delay = TimeTicks::Now() - last_alarm_time;
-    if (last_alarm_delay <= TimeDelta::FromMilliseconds(2))
+    if (last_alarm_delay <= Milliseconds(2))
       continue;
     // Ignore race of two alarms/breaks going off at roughly the same time.
     AutoLock static_lock(static_data->lock);

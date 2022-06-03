@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
+  "+components/thin_webview/java/src/org/chromium/components/thinwebview",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+  "+content/public/android/java/src/org/chromium/content_public/common",
+]

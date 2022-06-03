@@ -8,12 +8,14 @@
 
 #include "base/lazy_instance.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
-#include "content/public/common/referrer.h"
-#include "content/public/common/referrer_type_converters.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
+#include "pdf/accessibility_structs.h"
+#include "ppapi/c/pp_bool.h"
+#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/ppapi_host.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace pdf {
 
@@ -215,23 +218,18 @@ int32_t PepperPDFHost::OnHostMsgSaveAs(
   if (!instance)
     return PP_ERROR_FAILED;
 
-  GURL url = instance->GetPluginURL();
-  content::Referrer referrer;
-  referrer.url = url;
-  referrer.policy = network::mojom::ReferrerPolicy::kDefault;
-  referrer = content::Referrer::SanitizeForRequest(url, referrer);
-
   mojom::PdfService* service = GetRemotePdfService();
   if (!service)
     return PP_ERROR_FAILED;
 
-  service->SaveUrlAs(url, blink::mojom::Referrer::From(referrer));
+  service->SaveUrlAs(instance->GetPluginURL(),
+                     network::mojom::ReferrerPolicy::kDefault);
   return PP_OK;
 }
 
 int32_t PepperPDFHost::OnHostMsgSetSelectedText(
     ppapi::host::HostMessageContext* context,
-    const base::string16& selected_text) {
+    const std::u16string& selected_text) {
   content::PepperPluginInstance* instance =
       host_->GetPluginInstance(pp_instance());
   if (!instance)
@@ -253,34 +251,164 @@ int32_t PepperPDFHost::OnHostMsgSetLinkUnderCursor(
 
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityViewportInfo(
     ppapi::host::HostMessageContext* context,
-    const PP_PrivateAccessibilityViewportInfo& viewport_info) {
+    const PP_PrivateAccessibilityViewportInfo& pp_viewport_info) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
   CreatePdfAccessibilityTreeIfNeeded();
+  chrome_pdf::AccessibilityViewportInfo viewport_info = {
+      pp_viewport_info.zoom,
+      pp_viewport_info.scale,
+      gfx::Point(pp_viewport_info.scroll.x, pp_viewport_info.scroll.y),
+      gfx::Point(pp_viewport_info.offset.x, pp_viewport_info.offset.y),
+      pp_viewport_info.selection_start_page_index,
+      pp_viewport_info.selection_start_char_index,
+      pp_viewport_info.selection_end_page_index,
+      pp_viewport_info.selection_end_char_index,
+      {static_cast<chrome_pdf::FocusObjectType>(
+           pp_viewport_info.focus_info.focused_object_type),
+       pp_viewport_info.focus_info.focused_object_page_index,
+       pp_viewport_info.focus_info.focused_annotation_index_in_page}};
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info);
   return PP_OK;
 }
 
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityDocInfo(
     ppapi::host::HostMessageContext* context,
-    const PP_PrivateAccessibilityDocInfo& doc_info) {
+    const PP_PrivateAccessibilityDocInfo& pp_doc_info) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
   CreatePdfAccessibilityTreeIfNeeded();
+  chrome_pdf::AccessibilityDocInfo doc_info = {
+      pp_doc_info.page_count, PP_ToBool(pp_doc_info.text_accessible),
+      PP_ToBool(pp_doc_info.text_copyable)};
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info);
   return PP_OK;
 }
 
+namespace {
+
+chrome_pdf::AccessibilityTextStyleInfo ToAccessibilityTextStyleInfo(
+    const ppapi::PdfAccessibilityTextStyleInfo& pp_style) {
+  chrome_pdf::AccessibilityTextStyleInfo style;
+  style.font_name = pp_style.font_name;
+  style.font_weight = pp_style.font_weight;
+  style.render_mode = static_cast<chrome_pdf::AccessibilityTextRenderMode>(
+      pp_style.render_mode);
+  style.font_size = pp_style.font_size;
+  style.fill_color = pp_style.fill_color;
+  style.stroke_color = pp_style.stroke_color;
+  style.is_italic = pp_style.is_italic;
+  style.is_bold = pp_style.is_bold;
+  return style;
+}
+
+chrome_pdf::AccessibilityPageObjects ToAccessibilityPageObjects(
+    const ppapi::PdfAccessibilityPageObjects& pp_page_objects) {
+  chrome_pdf::AccessibilityPageObjects page_objects;
+
+  page_objects.links.reserve(pp_page_objects.links.size());
+  for (const ppapi::PdfAccessibilityLinkInfo& pp_link : pp_page_objects.links) {
+    chrome_pdf::AccessibilityTextRunRangeInfo range_info = {
+        pp_link.text_run_index, pp_link.text_run_count};
+    page_objects.links.emplace_back(pp_link.url, pp_link.index_in_page,
+                                    content::PP_ToGfxRectF(pp_link.bounds),
+                                    std::move(range_info));
+  }
+
+  page_objects.images.reserve(pp_page_objects.images.size());
+  for (const ppapi::PdfAccessibilityImageInfo& pp_image :
+       pp_page_objects.images) {
+    page_objects.images.emplace_back(pp_image.alt_text, pp_image.text_run_index,
+                                     content::PP_ToGfxRectF(pp_image.bounds));
+  }
+
+  page_objects.highlights.reserve(pp_page_objects.highlights.size());
+  for (const ppapi::PdfAccessibilityHighlightInfo& pp_highlight :
+       pp_page_objects.highlights) {
+    chrome_pdf::AccessibilityTextRunRangeInfo range_info = {
+        pp_highlight.text_run_index, pp_highlight.text_run_count};
+    page_objects.highlights.emplace_back(
+        pp_highlight.note_text, pp_highlight.index_in_page, pp_highlight.color,
+        content::PP_ToGfxRectF(pp_highlight.bounds), std::move(range_info));
+  }
+
+  page_objects.form_fields.text_fields.reserve(
+      pp_page_objects.form_fields.text_fields.size());
+  for (const ppapi::PdfAccessibilityTextFieldInfo& pp_text_field :
+       pp_page_objects.form_fields.text_fields) {
+    page_objects.form_fields.text_fields.emplace_back(
+        pp_text_field.name, pp_text_field.value, pp_text_field.is_read_only,
+        pp_text_field.is_required, pp_text_field.is_password,
+        pp_text_field.index_in_page, pp_text_field.text_run_index,
+        content::PP_ToGfxRectF(pp_text_field.bounds));
+  }
+
+  page_objects.form_fields.choice_fields.reserve(
+      pp_page_objects.form_fields.choice_fields.size());
+  for (const ppapi::PdfAccessibilityChoiceFieldInfo& pp_choice_field :
+       pp_page_objects.form_fields.choice_fields) {
+    std::vector<chrome_pdf::AccessibilityChoiceFieldOptionInfo> options;
+    options.reserve(pp_choice_field.options.size());
+    for (const ppapi::PdfAccessibilityChoiceFieldOptionInfo& pp_option :
+         pp_choice_field.options) {
+      options.push_back({pp_option.name, pp_option.is_selected,
+                         content::PP_ToGfxRectF(pp_option.bounds)});
+    }
+
+    page_objects.form_fields.choice_fields.emplace_back(
+        pp_choice_field.name, std::move(options),
+        static_cast<chrome_pdf::ChoiceFieldType>(pp_choice_field.type),
+        pp_choice_field.is_read_only, pp_choice_field.is_multi_select,
+        pp_choice_field.has_editable_text_box, pp_choice_field.index_in_page,
+        pp_choice_field.text_run_index,
+        content::PP_ToGfxRectF(pp_choice_field.bounds));
+  }
+
+  page_objects.form_fields.buttons.reserve(
+      pp_page_objects.form_fields.buttons.size());
+  for (const ppapi::PdfAccessibilityButtonInfo& pp_button :
+       pp_page_objects.form_fields.buttons) {
+    page_objects.form_fields.buttons.emplace_back(
+        pp_button.name, pp_button.value,
+        static_cast<chrome_pdf::ButtonType>(pp_button.type),
+        pp_button.is_read_only, pp_button.is_checked, pp_button.control_count,
+        pp_button.control_index, pp_button.index_in_page,
+        pp_button.text_run_index, content::PP_ToGfxRectF(pp_button.bounds));
+  }
+
+  return page_objects;
+}
+
+}  // namespace
+
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
     ppapi::host::HostMessageContext* context,
-    const PP_PrivateAccessibilityPageInfo& page_info,
-    const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_run_info,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
-    const ppapi::PdfAccessibilityPageObjects& page_objects) {
+    const PP_PrivateAccessibilityPageInfo& pp_page_info,
+    const std::vector<ppapi::PdfAccessibilityTextRunInfo>& pp_text_run_infos,
+    const std::vector<PP_PrivateAccessibilityCharInfo>& pp_chars,
+    const ppapi::PdfAccessibilityPageObjects& pp_page_objects) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
   CreatePdfAccessibilityTreeIfNeeded();
-  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_info,
+  chrome_pdf::AccessibilityPageInfo page_info = {
+      pp_page_info.page_index, content::PP_ToGfxRect(pp_page_info.bounds),
+      pp_page_info.text_run_count, pp_page_info.char_count};
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_run_infos;
+  text_run_infos.reserve(pp_text_run_infos.size());
+  for (const auto& pp_text_run_info : pp_text_run_infos) {
+    text_run_infos.emplace_back(
+        pp_text_run_info.len, content::PP_ToGfxRectF(pp_text_run_info.bounds),
+        static_cast<chrome_pdf::AccessibilityTextDirection>(
+            pp_text_run_info.direction),
+        ToAccessibilityTextStyleInfo(pp_text_run_info.style));
+  }
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars;
+  chars.reserve(pp_chars.size());
+  for (const auto& pp_char : pp_chars)
+    chars.push_back({pp_char.unicode_character, pp_char.char_width});
+  chrome_pdf::AccessibilityPageObjects page_objects =
+      ToAccessibilityPageObjects(pp_page_objects);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_infos,
                                                     chars, page_objects);
   return PP_OK;
 }
@@ -314,7 +442,7 @@ int32_t PepperPDFHost::OnHostMsgSetPluginCanSave(
 void PepperPDFHost::CreatePdfAccessibilityTreeIfNeeded() {
   if (!pdf_accessibility_tree_) {
     pdf_accessibility_tree_ =
-        std::make_unique<PdfAccessibilityTree>(host_, pp_instance());
+        std::make_unique<PdfAccessibilityTree>(GetRenderFrame(), this);
   }
 }
 
@@ -368,6 +496,54 @@ void PepperPDFHost::SetSelectionBounds(const gfx::PointF& base,
       host_->GetPluginInstance(pp_instance());
   if (instance)
     instance->SetSelectionBounds(base, extent);
+}
+
+void PepperPDFHost::EnableAccessibility() {
+  // `PepperPluginInstanceImpl` notifies the PDF plugin of accessibility change.
+}
+
+namespace {
+
+PP_PdfPageCharacterIndex ToPdfPageCharacterIndex(
+    const chrome_pdf::PageCharacterIndex& page_char_index) {
+  return {
+      .page_index = page_char_index.page_index,
+      .char_index = page_char_index.char_index,
+  };
+}
+
+PP_PdfAccessibilityActionData ToPdfAccessibilityActionData(
+    const chrome_pdf::AccessibilityActionData& action_data) {
+  return {
+      .action = static_cast<PP_PdfAccessibilityAction>(action_data.action),
+      .annotation_type = static_cast<PP_PdfAccessibilityAnnotationType>(
+          action_data.annotation_type),
+      .target_point = content::PP_FromGfxPoint(action_data.target_point),
+      .target_rect = content::PP_FromGfxRect(action_data.target_rect),
+      .annotation_index = action_data.annotation_index,
+      .page_index = action_data.page_index,
+      .horizontal_scroll_alignment =
+          static_cast<PP_PdfAccessibilityScrollAlignment>(
+              action_data.horizontal_scroll_alignment),
+      .vertical_scroll_alignment =
+          static_cast<PP_PdfAccessibilityScrollAlignment>(
+              action_data.vertical_scroll_alignment),
+      .selection_start_index =
+          ToPdfPageCharacterIndex(action_data.selection_start_index),
+      .selection_end_index =
+          ToPdfPageCharacterIndex(action_data.selection_end_index),
+  };
+}
+
+}  // namespace
+
+void PepperPDFHost::HandleAccessibilityAction(
+    const chrome_pdf::AccessibilityActionData& action_data) {
+  content::PepperPluginInstance* instance =
+      host_->GetPluginInstance(pp_instance());
+  if (instance)
+    instance->HandleAccessibilityAction(
+        ToPdfAccessibilityActionData(action_data));
 }
 
 }  // namespace pdf

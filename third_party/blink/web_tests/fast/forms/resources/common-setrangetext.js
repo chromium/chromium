@@ -173,13 +173,13 @@ function runTestsShouldFailTestHarness(tagName, attributes, descriptions, title)
   document.body.appendChild(element);
   test(() => {
     if (element.getAttribute("type") == "file") {
-      assert_throws('InvalidStateError', () => element.value = '0123456789XYZ', descriptions.shift());
+      assert_throws_dom('InvalidStateError', () => element.value = '0123456789XYZ', descriptions.shift());
     } else {
       element.value = '0123456789XYZ';
     }
 
     var initialValue = element.value;
-    assert_throws('InvalidStateError', () => element.setRangeText('ABC', 0, 0), descriptions.shift());
+    assert_throws_dom('InvalidStateError', () => element.setRangeText('ABC', 0, 0), descriptions.shift());
 
     // setRangeText() shouldn't do anything on non-text form controls.
     assert_equals(element.value, initialValue);

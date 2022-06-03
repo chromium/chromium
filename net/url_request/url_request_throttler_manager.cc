@@ -4,7 +4,7 @@
 
 #include "net/url_request/url_request_throttler_manager.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"

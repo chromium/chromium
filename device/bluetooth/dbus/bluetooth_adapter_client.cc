@@ -4,12 +4,13 @@
 
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,6 +22,7 @@
 #include "dbus/values_util.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -28,14 +30,16 @@ namespace bluez {
 // Automatically determine transport mode.
 constexpr char kBluezAutoTransport[] = "auto";
 
+constexpr char kBluezAddressTypePublic[] = "public";
+constexpr char kBluezAddressTypeRandom[] = "random";
+
 namespace {
 
 // TODO(rkc) Find better way to do this.
 void WriteNumberAttribute(dbus::MessageWriter* writer,
                           const BluetoothServiceAttributeValueBlueZ& attribute,
                           bool is_signed) {
-  int value;
-  attribute.value().GetAsInteger(&value);
+  int value = attribute.value().GetInt();
 
   switch (attribute.size()) {
     case 1:
@@ -116,7 +120,7 @@ BluetoothAdapterClient::Error ErrorResponseToError(
 void OnResponseAdapter(
     base::OnceClosure callback,
     BluetoothAdapterClient::ErrorCallback error_callback,
-    const base::Optional<BluetoothAdapterClient::Error>& error) {
+    const absl::optional<BluetoothAdapterClient::Error>& error) {
   if (!error) {
     std::move(callback).Run();
     return;
@@ -134,22 +138,22 @@ BluetoothAdapterClient::DiscoveryFilter::~DiscoveryFilter() = default;
 void BluetoothAdapterClient::DiscoveryFilter::CopyFrom(
     const DiscoveryFilter& filter) {
   if (filter.rssi.get())
-    rssi.reset(new int16_t(*filter.rssi));
+    rssi = std::make_unique<int16_t>(*filter.rssi);
   else
     rssi.reset();
 
   if (filter.pathloss.get())
-    pathloss.reset(new uint16_t(*filter.pathloss));
+    pathloss = std::make_unique<uint16_t>(*filter.pathloss);
   else
     pathloss.reset();
 
   if (filter.transport.get())
-    transport.reset(new std::string(*filter.transport));
+    transport = std::make_unique<std::string>(*filter.transport);
   else
-    transport.reset(new std::string(kBluezAutoTransport));
+    transport = std::make_unique<std::string>(kBluezAutoTransport);
 
   if (filter.uuids.get())
-    uuids.reset(new std::vector<std::string>(*filter.uuids));
+    uuids = std::make_unique<std::vector<std::string>>(*filter.uuids);
   else
     uuids.reset();
 }
@@ -190,7 +194,11 @@ BluetoothAdapterClient::Properties::~Properties() = default;
 class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
                                    public dbus::ObjectManager::Interface {
  public:
-  BluetoothAdapterClientImpl() : object_manager_(nullptr) {}
+  BluetoothAdapterClientImpl() = default;
+
+  BluetoothAdapterClientImpl(const BluetoothAdapterClientImpl&) = delete;
+  BluetoothAdapterClientImpl& operator=(const BluetoothAdapterClientImpl&) =
+      delete;
 
   ~BluetoothAdapterClientImpl() override {
     // There is an instance of this client that is created but not initialized
@@ -224,11 +232,10 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
       dbus::ObjectProxy* object_proxy,
       const dbus::ObjectPath& object_path,
       const std::string& interface_name) override {
-    Properties* properties = new Properties(
+    return new Properties(
         object_proxy, interface_name,
-        base::Bind(&BluetoothAdapterClientImpl::OnPropertyChanged,
-                   weak_ptr_factory_.GetWeakPtr(), object_path));
-    return static_cast<dbus::PropertySet*>(properties);
+        base::BindRepeating(&BluetoothAdapterClientImpl::OnPropertyChanged,
+                            weak_ptr_factory_.GetWeakPtr(), object_path));
   }
 
   // BluetoothAdapterClient override.
@@ -273,56 +280,6 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAdapterClientImpl::OnResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  // BluetoothAdapterClient override.
-  void PauseDiscovery(const dbus::ObjectPath& object_path,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {
-    dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
-                                 bluetooth_adapter::kPauseDiscovery);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(false);  // Not a system suspend
-
-    dbus::ObjectProxy* object_proxy =
-        object_manager_->GetObjectProxy(object_path);
-    if (!object_proxy) {
-      std::move(error_callback).Run(kUnknownAdapterError, "");
-      return;
-    }
-
-    object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothAdapterClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
-  }
-
-  // BluetoothAdapterClient override.
-  void UnpauseDiscovery(const dbus::ObjectPath& object_path,
-                        base::OnceClosure callback,
-                        ErrorCallback error_callback) override {
-    dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
-                                 bluetooth_adapter::kUnpauseDiscovery);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(false);  // Not a system suspend
-
-    dbus::ObjectProxy* object_proxy =
-        object_manager_->GetObjectProxy(object_path);
-    if (!object_proxy) {
-      std::move(error_callback).Run(kUnknownAdapterError, "");
-      return;
-    }
-
-    object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothAdapterClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
   }
 
   // BluetoothAdapterClient override.
@@ -497,20 +454,34 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   }
 
   // BluetoothAdapterClient override.
-  void SetLongTermKeys(const dbus::ObjectPath& object_path,
-                       const std::vector<std::vector<uint8_t>>& long_term_keys,
-                       ErrorCallback error_callback) override {
-    // TODO(crbug.com/942089): Use real constant once its available in
-    // //third_party/.
+  void ConnectDevice(const dbus::ObjectPath& object_path,
+                     const std::string& address,
+                     const absl::optional<AddressType>& address_type,
+                     ConnectDeviceCallback callback,
+                     ErrorCallback error_callback) override {
     dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
-                                 "SetLongTermKeys");
+                                 bluetooth_adapter::kConnectDevice);
 
     dbus::MessageWriter writer(&method_call);
-    dbus::MessageWriter array_writer(&method_call);
-    writer.OpenArray("ay", &array_writer);
-    for (auto key : long_term_keys)
-      array_writer.AppendArrayOfBytes(key.data(), key.size());
-    writer.CloseContainer(&array_writer);
+    base::DictionaryValue dict;
+    dict.SetStringKey(bluetooth_device::kAddressProperty, address);
+    if (address_type) {
+      std::string address_type_value;
+      switch (*address_type) {
+        case AddressType::kPublic:
+          address_type_value = kBluezAddressTypePublic;
+          break;
+        case AddressType::kRandom:
+          address_type_value = kBluezAddressTypeRandom;
+          break;
+        default:
+          NOTREACHED();
+          break;
+      };
+      dict.SetStringKey(bluetooth_device::kAddressTypeProperty,
+                        address_type_value);
+    }
+    dbus::AppendValueData(&writer, dict);
 
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(object_path);
@@ -520,8 +491,11 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
     }
 
     object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing(),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&BluetoothAdapterClientImpl::OnConnectDevice,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothAdapterClientImpl::OnConnectDeviceError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -564,17 +538,6 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   }
 
   // Called when a response for successful method call is received.
-  void OnCreateServiceRecord(ServiceRecordCallback callback,
-                             dbus::Response* response) {
-    DCHECK(response);
-    dbus::MessageReader reader(response);
-    uint32_t handle = 0;
-    if (!reader.PopUint32(&handle))
-      LOG(ERROR) << "Invalid response from CreateServiceRecord.";
-    std::move(callback).Run(handle);
-  }
-
-  // Called when a response for successful method call is received.
   void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
     DCHECK(response);
     std::move(callback).Run();
@@ -600,14 +563,45 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
                   dbus::Response* response,
                   dbus::ErrorResponse* error_response) {
     if (response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
     std::move(callback).Run(ErrorResponseToError(error_response));
   }
 
-  dbus::ObjectManager* object_manager_;
+  // Called when CreateServiceRecord() succeeds.
+  void OnCreateServiceRecord(ServiceRecordCallback callback,
+                             dbus::Response* response) {
+    DCHECK(response);
+    dbus::MessageReader reader(response);
+    uint32_t handle = 0;
+    if (!reader.PopUint32(&handle))
+      LOG(ERROR) << "Invalid response from CreateServiceRecord.";
+    std::move(callback).Run(handle);
+  }
+
+  // Called when ConnectDevice() succeeds.
+  void OnConnectDevice(ConnectDeviceCallback callback,
+                       base::Time start_time,
+                       dbus::Response* response) {
+    DCHECK(response);
+    dbus::MessageReader reader(response);
+    dbus::ObjectPath device_path;
+    if (!reader.PopObjectPath(&device_path))
+      LOG(ERROR) << "Invalid response from ConnectDevice.";
+
+    RecordSuccess(kConnectDeviceMethod, start_time);
+    std::move(callback).Run(device_path);
+  }
+
+  void OnConnectDeviceError(ErrorCallback error_callback,
+                            dbus::ErrorResponse* response) {
+    RecordFailure(kConnectDeviceMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
+  dbus::ObjectManager* object_manager_ = nullptr;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothAdapterClient::Observer>::Unchecked observers_;
@@ -617,8 +611,6 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterClientImpl);
 };
 
 BluetoothAdapterClient::BluetoothAdapterClient() = default;

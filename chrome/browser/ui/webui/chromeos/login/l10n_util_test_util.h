@@ -9,10 +9,8 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
+#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace chromeos {
 
@@ -20,6 +18,12 @@ class MockInputMethodManagerWithInputMethods
     : public input_method::MockInputMethodManagerImpl {
  public:
   MockInputMethodManagerWithInputMethods();
+
+  MockInputMethodManagerWithInputMethods(
+      const MockInputMethodManagerWithInputMethods&) = delete;
+  MockInputMethodManagerWithInputMethods& operator=(
+      const MockInputMethodManagerWithInputMethods&) = delete;
+
   ~MockInputMethodManagerWithInputMethods() override;
 
   void AddInputMethod(const std::string& id,
@@ -28,8 +32,6 @@ class MockInputMethodManagerWithInputMethods
 
  private:
   input_method::InputMethodDescriptors descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodManagerWithInputMethods);
 };
 
 }  // namespace chromeos

@@ -26,10 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// See https://webaudio.github.io/web-audio-api/#channelmergernode
+// https://webaudio.github.io/web-audio-api/#channelmergernode
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface ChannelMergerNode : AudioNode {
-  [RaisesException] constructor(BaseAudioContext context, optional ChannelMergerOptions options);
+  [RaisesException, Measure] constructor(BaseAudioContext context, optional ChannelMergerOptions options = {});
 };

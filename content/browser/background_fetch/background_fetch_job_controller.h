@@ -11,10 +11,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
@@ -68,6 +66,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
       uint64_t upload_total,
       ProgressCallback progress_callback,
       FinishedCallback finished_callback);
+
+  BackgroundFetchJobController(const BackgroundFetchJobController&) = delete;
+  BackgroundFetchJobController& operator=(const BackgroundFetchJobController&) =
+      delete;
+
   ~BackgroundFetchJobController() override;
 
   // Initializes the job controller with the status of the active and completed
@@ -78,7 +81,8 @@ class CONTENT_EXPORT BackgroundFetchJobController
       int total_downloads,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      bool start_paused);
+      bool start_paused,
+      absl::optional<net::IsolationInfo> isolation_info);
 
   // Gets the number of bytes downloaded/uploaded for jobs that are currently
   // running.
@@ -210,12 +214,14 @@ class CONTENT_EXPORT BackgroundFetchJobController
   blink::mojom::BackgroundFetchFailureReason failure_reason_ =
       blink::mojom::BackgroundFetchFailureReason::NONE;
 
+  // Whether one of the requests handled by the controller failed
+  // the CORS checks and should not have its response exposed.
+  bool has_failed_cors_request_ = false;
+
   // Custom callback that runs after the controller is finished.
   FinishedCallback finished_callback_;
 
   base::WeakPtrFactory<BackgroundFetchJobController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchJobController);
 };
 
 }  // namespace content

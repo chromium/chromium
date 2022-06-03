@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -18,7 +18,7 @@ namespace content {
 // The |vea| object must be accessed on the thread associated with the
 // |encode_task_runner|.
 typedef base::OnceCallback<void(
-    scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
     std::unique_ptr<media::VideoEncodeAccelerator> vea)>
     OnCreateVideoEncodeAcceleratorCallback;
 

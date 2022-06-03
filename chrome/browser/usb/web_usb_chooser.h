@@ -8,11 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/bubble/bubble_reference.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
 namespace content {
@@ -26,6 +22,9 @@ class UsbChooserController;
 class WebUsbChooser {
  public:
   explicit WebUsbChooser(content::RenderFrameHost* render_frame_host);
+
+  WebUsbChooser(const WebUsbChooser&) = delete;
+  WebUsbChooser& operator=(const WebUsbChooser&) = delete;
 
   virtual ~WebUsbChooser();
 
@@ -42,8 +41,6 @@ class WebUsbChooser {
 
  private:
   content::RenderFrameHost* const render_frame_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbChooser);
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_CHOOSER_H_

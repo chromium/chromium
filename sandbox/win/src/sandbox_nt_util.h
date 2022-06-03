@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SANDBOX_NT_UTIL_H_
-#define SANDBOX_SRC_SANDBOX_NT_UTIL_H_
+#ifndef SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
+#define SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 
 #include <intrin.h>
 #include <stddef.h>
@@ -189,6 +189,9 @@ class AutoProtectMemory {
   AutoProtectMemory()
       : changed_(false), address_(nullptr), bytes_(0), old_protect_(0) {}
 
+  AutoProtectMemory(const AutoProtectMemory&) = delete;
+  AutoProtectMemory& operator=(const AutoProtectMemory&) = delete;
+
   ~AutoProtectMemory() { RevertProtection(); }
 
   // Sets the desired protection of a given memory range.
@@ -202,8 +205,6 @@ class AutoProtectMemory {
   void* address_;
   size_t bytes_;
   ULONG old_protect_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoProtectMemory);
 };
 
 // Returns true if the file_rename_information structure is supported by our
@@ -214,4 +215,4 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SANDBOX_NT_UTIL_H__
+#endif  // SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_

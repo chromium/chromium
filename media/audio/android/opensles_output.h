@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
@@ -36,6 +35,9 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   OpenSLESOutputStream(AudioManagerAndroid* manager,
                        const AudioParameters& params,
                        SLint32 stream_type);
+
+  OpenSLESOutputStream(const OpenSLESOutputStream&) = delete;
+  OpenSLESOutputStream& operator=(const OpenSLESOutputStream&) = delete;
 
   ~OpenSLESOutputStream() override;
 
@@ -150,8 +152,6 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Adjustment for hardware latency.  Needed for some cast targets, since
   // OpenSLES's GetPosition doesn't properly account for HAL latency.
   base::TimeDelta hardware_latency_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSLESOutputStream);
 };
 
 }  // namespace media

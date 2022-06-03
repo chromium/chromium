@@ -13,9 +13,10 @@ QuicChromiumClock* QuicChromiumClock::GetInstance() {
   static base::NoDestructor<QuicChromiumClock> instance;
   return instance.get();
 }
-QuicChromiumClock::QuicChromiumClock() {}
 
-QuicChromiumClock::~QuicChromiumClock() {}
+QuicChromiumClock::QuicChromiumClock() = default;
+
+QuicChromiumClock::~QuicChromiumClock() = default;
 
 QuicTime QuicChromiumClock::ApproximateNow() const {
   // At the moment, Chrome does not have a distinct notion of ApproximateNow().
@@ -35,6 +36,15 @@ QuicWallTime QuicChromiumClock::WallNow() const {
   int64_t time_since_unix_epoch_micro = time_since_unix_epoch.InMicroseconds();
   DCHECK_GE(time_since_unix_epoch_micro, 0);
   return QuicWallTime::FromUNIXMicroseconds(time_since_unix_epoch_micro);
+}
+
+// static
+base::TimeTicks QuicChromiumClock::QuicTimeToTimeTicks(QuicTime quic_time) {
+  // QuicChromiumClock defines base::TimeTicks() as equal to
+  // quic::QuicTime::Zero(). See QuicChromiumClock::Now() above.
+  QuicTime::Delta offset_from_zero = quic_time - QuicTime::Zero();
+  int64_t offset_from_zero_us = offset_from_zero.ToMicroseconds();
+  return base::TimeTicks() + base::Microseconds(offset_from_zero_us);
 }
 
 }  // namespace quic

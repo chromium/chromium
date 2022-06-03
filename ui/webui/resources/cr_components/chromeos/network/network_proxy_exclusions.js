@@ -7,8 +7,6 @@
  * Includes UI for adding, changing, and removing entries.
  */
 
-(function() {
-
 Polymer({
   is: 'network-proxy-exclusions',
 
@@ -27,7 +25,7 @@ Polymer({
      */
     exclusions: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       },
       notify: true
@@ -39,10 +37,9 @@ Polymer({
    * @param {!{model: !{index: number}}} event
    * @private
    */
-  onRemoveTap_: function(event) {
+  onRemoveTap_(event) {
     const index = event.model.index;
     this.splice('exclusions', index, 1);
     this.fire('proxy-exclusions-change');
   }
 });
-})();

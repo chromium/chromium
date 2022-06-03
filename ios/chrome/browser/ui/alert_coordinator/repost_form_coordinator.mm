@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,15 +42,14 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
 @implementation RepostFormCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                             dialogLocation:(CGPoint)dialogLocation
                                   webState:(web::WebState*)webState
                          completionHandler:(void (^)(BOOL))completionHandler {
+  DCHECK(browser);
   DCHECK(webState);
   DCHECK(completionHandler);
-  self = [super
-      initWithBaseViewController:viewController
-                    browserState:ios::ChromeBrowserState::FromBrowserState(
-                                     webState->GetBrowserState())];
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _webState = webState;
     CGRect sourceRect = CGRectMake(dialogLocation.x, dialogLocation.y, 1, 1);

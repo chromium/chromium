@@ -20,13 +20,9 @@ sys.path.insert(
 sys.path.insert(
     1, os.path.join(SRC_DIR, 'third_party', 'protobuf', 'third_party', 'six'))
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
+from google.protobuf.compiler import plugin_pb2
 
 from . import types
-
-sys.path.insert(
-    1, os.path.join(SRC_DIR,
-                    'third_party', 'dom_distiller_js', 'dist', 'python'))
-import plugin_pb2
 
 
 class PluginRequest(object):
@@ -37,7 +33,7 @@ class PluginRequest(object):
     return dict((v.split('=') for v in self.proto.parameter.split(',')))
 
   def GetAllFiles(self):
-    files = map(ProtoFile, self.proto.proto_file)
+    files = [ProtoFile(x) for x in self.proto.proto_file]
     for f in files:
       assert f.Filename() in self.proto.file_to_generate
     return files
@@ -62,8 +58,9 @@ class PluginResponse(object):
     self.proto.error += err + '\n'
 
   def WriteToStdout(self):
-    sys.stdout.write(self.proto.SerializeToString())
-    sys.stdout.flush()
+    stream = sys.stdout if sys.version_info[0] < 3 else sys.stdout.buffer
+    stream.write(self.proto.SerializeToString())
+    stream.flush()
 
 
 class ProtoFile(object):
@@ -123,7 +120,7 @@ class ProtoFile(object):
   def GetDependencies(self):
     # import is not supported
     assert [] == self.proto.dependency
-    return map(types.GetProtoFileForFilename, self.proto.dependency)
+    return [types.GetProtoFileForFilename(x) for x in self.proto.dependency]
 
   def JavaFilename(self):
     return '/'.join(self.JavaQualifiedOuterClass().split('.')) + '.java'
@@ -167,7 +164,7 @@ class ProtoMessage(object):
     return types.TitleCase(self.proto.name)
 
   def GetFields(self):
-    return map(ProtoField, self.proto.field)
+    return [ProtoField(x) for x in self.proto.field]
 
   def GetMessages(self):
     return [ProtoMessage(n, self.qualified_types)
@@ -230,6 +227,9 @@ class ProtoField(object):
   def CppValueType(self):
     return types.GetCppValueType(self.CppPrimitiveType())
 
+  def CppValuePredicate(self, variable_name):
+    return types.GetCppValuePredicate(self.CppPrimitiveType(), variable_name)
+
   def CheckSupported(self):
     if self.Extendee():
       return 'Unsupported field extension: ' + self.DebugString()
@@ -273,7 +273,7 @@ class ProtoEnum(object):
     return types.TitleCase(self.proto.name)
 
   def Values(self):
-    return map(ProtoEnumValue, self.proto.value)
+    return [ProtoEnumValue(x) for x in self.proto.value]
 
 
 class ProtoEnumValue(object):

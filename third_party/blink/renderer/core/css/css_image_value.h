@@ -35,7 +35,6 @@ namespace blink {
 class Document;
 class KURL;
 class StyleImage;
-class ComputedStyle;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
@@ -43,8 +42,8 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
                 const KURL&,
                 const Referrer&,
                 OriginClean origin_clean,
+                bool is_ad_related,
                 StyleImage* image = nullptr);
-  CSSImageValue(const AtomicString& absolute_url, OriginClean origin_clean);
   ~CSSImageValue();
 
   bool IsCachePending() const { return !cached_image_; }
@@ -52,15 +51,16 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
     DCHECK(!IsCachePending());
     return cached_image_.Get();
   }
+  FetchParameters PrepareFetch(const Document&,
+                               FetchParameters::ImageRequestBehavior,
+                               CrossOriginAttributeValue) const;
   StyleImage* CacheImage(
       const Document&,
-      FetchParameters::ImageRequestOptimization,
+      FetchParameters::ImageRequestBehavior,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
   const String& Url() const { return absolute_url_; }
   const String& RelativeUrl() const { return relative_url_; }
-
-  const Referrer& GetReferrer() const { return referrer_; }
 
   void ReResolveURL(const Document&) const;
 
@@ -70,23 +70,21 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   bool Equals(const CSSImageValue&) const;
 
-  bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
   CSSImageValue* ValueWithURLMadeAbsolute() const {
     return MakeGarbageCollected<CSSImageValue>(
         absolute_url_, KURL(absolute_url_), Referrer(), origin_clean_,
-        cached_image_.Get());
+        is_ad_related_, cached_image_.Get());
   }
 
   CSSImageValue* Clone() const {
     return MakeGarbageCollected<CSSImageValue>(
         relative_url_, KURL(absolute_url_), Referrer(), origin_clean_,
-        cached_image_.Get());
+        is_ad_related_, cached_image_.Get());
   }
 
   void SetInitiator(const AtomicString& name) { initiator_name_ = name; }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
   void RestoreCachedResourceIfNeeded(const Document&) const;
 
  private:
@@ -101,6 +99,14 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   // Whether the stylesheet that requested this image is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
   const OriginClean origin_clean_;
+
+  // Whether this was created by an ad-related CSSParserContext.
+  const bool is_ad_related_;
+
+  // The url passed into the constructor had the PotentiallyDanglingMarkup flag
+  // set. That information needs to be passed on to the fetch code to block such
+  // resources from loading.
+  const bool potentially_dangling_markup_;
 };
 
 template <>

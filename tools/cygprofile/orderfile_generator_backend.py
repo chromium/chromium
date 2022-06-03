@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,13 +10,12 @@ sections are placed consecutively in the order specified. This allows us
 to page in less code during start-up.
 
 Example usage:
-  tools/cygprofile/orderfile_generator_backend.py -l 20 -j 1000 --use-goma \
-    --target-arch=arm
+  tools/cygprofile/orderfile_generator_backend.py --use-goma --target-arch=arm
 """
 
-from __future__ import print_function
 
 import argparse
+import csv
 import hashlib
 import json
 import glob
@@ -33,7 +32,6 @@ import cyglog_to_orderfile
 import patch_orderfile
 import process_profiles
 import profile_android_startup
-import symbol_extractor
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
@@ -55,9 +53,9 @@ constants.SetBuildType('Release')
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
-    'arm': [ 'target_cpu = "arm"' ],
-    'arm64': [ 'target_cpu = "arm64"',
-               'android_64bit_browser = true'],
+    'arm': ['target_cpu = "arm"'],
+    'arm64': ['target_cpu = "arm64"', 'android_64bit_browser = true'],
+    'x86': ['target_cpu = "x86"'],
 }
 
 class CommandError(Exception):
@@ -284,10 +282,11 @@ class ClankCompiler(object):
 
     # Set the "Release Official" flavor, the parts affecting performance.
     args = [
-        'enable_resource_whitelist_generation=false',
+        'enable_resource_allowlist_generation=false',
         'is_chrome_branded=' + str(not self._public).lower(),
         'is_debug=false',
         'is_official_build=true',
+        'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
         'target_os="android"',
         'use_goma=' + str(self._use_goma).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
@@ -387,7 +386,7 @@ class OrderfileUpdater(object):
       Exception if the hash file does not match the file.
       NotImplementedError when the commit logic hasn't been overridden.
     """
-    files_to_commit = list(filter(None, files))
+    files_to_commit = [_f for _f in files if _f]
     if files_to_commit:
       self._CommitStashedFiles(files_to_commit)
 
@@ -427,10 +426,6 @@ class OrderfileUpdater(object):
     with open(abs_hash_filename, 'r') as f:
       return (rel_hash_filename, f.read())
 
-  def _CommitFiles(self, files_to_commit, commit_message_lines):
-    """Commits a list of files, with a given message."""
-    raise NotImplementedError
-
   def _GitStash(self):
     """Git stash the current clank tree.
 
@@ -454,19 +449,6 @@ class OrderfileUpdater(object):
     Raises:
       NotImplementedError when the commit logic hasn't been overridden.
     """
-    raise NotImplementedError
-
-
-class OrderfileNoopUpdater(OrderfileUpdater):
-  def CommitFileHashes(self, unpatched_orderfile_filename, orderfile_filename):
-    # pylint: disable=unused-argument
-    return
-
-  def UploadToCloudStorage(self, filename, use_debug_location):
-    # pylint: disable=unused-argument
-    return
-
-  def _CommitFiles(self, files_to_commit, commit_message_lines):
     raise NotImplementedError
 
 
@@ -501,7 +483,11 @@ class OrderfileGenerator(object):
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
-    return self._path_to_orderfile % self._options.arch
+    # Build GN files use the ".arm" orderfile irrespective of the actual
+    # architecture. Fake it, otherwise the orderfile we generate here is not
+    # going to be picked up by builds.
+    orderfile_fake_arch = 'arm'
+    return self._path_to_orderfile % orderfile_fake_arch
 
   def _GetUnpatchedOrderfileFilename(self):
     """Gets the path to the architecture-specific unpatched orderfile."""
@@ -593,15 +579,11 @@ class OrderfileGenerator(object):
     self._step_recorder = StepRecorder(options.buildbot)
     self._compiler = None
     if orderfile_updater_class is None:
-      if options.public:
-        orderfile_updater_class = OrderfileNoopUpdater
-      else:
-        orderfile_updater_class = OrderfileUpdater
+      orderfile_updater_class = OrderfileUpdater
     assert issubclass(orderfile_updater_class, OrderfileUpdater)
     self._orderfile_updater = orderfile_updater_class(self._clank_dir,
                                                       self._step_recorder)
     assert os.path.isdir(constants.DIR_SOURCE_ROOT), 'No src directory found'
-    symbol_extractor.SetArchitecture(options.arch)
 
   @staticmethod
   def _RemoveBlanks(src_file, dest_file):
@@ -727,12 +709,12 @@ class OrderfileGenerator(object):
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
-    return_code = self._step_recorder.RunCommand(
-        [self._CHECK_ORDERFILE_SCRIPT, self._compiler.lib_chrome_so,
-         self._GetPathToOrderfile(),
-         '--target-arch=' + self._options.arch],
-        constants.DIR_SOURCE_ROOT,
-        raise_on_error=False)
+    return_code = self._step_recorder.RunCommand([
+        self._CHECK_ORDERFILE_SCRIPT, self._compiler.lib_chrome_so,
+        self._GetPathToOrderfile()
+    ],
+                                                 constants.DIR_SOURCE_ROOT,
+                                                 raise_on_error=False)
     if return_code:
       self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
 
@@ -914,6 +896,7 @@ class OrderfileGenerator(object):
     Returns:
       benchmark_results: (dict) Results extracted from benchmarks.
     """
+    benchmark_results = {}
     try:
       _UnstashOutputDirectory(out_directory)
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
@@ -933,7 +916,6 @@ class OrderfileGenerator(object):
       self._compiler.CompileChromeApk(instrumented=False,
                                       use_call_graph=False,
                                       force_relink=True)
-      benchmark_results = dict()
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
           self._compiler.chrome_apk)
       benchmark_results['orderfile.memory_mobile'] = (
@@ -983,8 +965,8 @@ class OrderfileGenerator(object):
     elif self._options.manual_symbol_offsets:
       assert self._options.manual_libname
       assert self._options.manual_objdir
-      with file(self._options.manual_symbol_offsets) as f:
-        symbol_offsets = [int(x) for x in f.xreadlines()]
+      with open(self._options.manual_symbol_offsets) as f:
+        symbol_offsets = [int(x) for x in f]
       processor = process_profiles.SymbolOffsetProcessor(
           self._compiler.manual_libname)
       generator = cyglog_to_orderfile.OffsetOrderfileGenerator(
@@ -1030,7 +1012,8 @@ class OrderfileGenerator(object):
       self._output_data['no_orderfile_benchmark_results'] = self.RunBenchmark(
           self._no_orderfile_out_dir, no_orderfile=True)
 
-    self._orderfile_updater._GitStash()
+    if self._options.buildbot:
+      self._orderfile_updater._GitStash()
     self._step_recorder.EndStep()
     return not self._step_recorder.ErrorRecorded()
 
@@ -1070,9 +1053,11 @@ def CreateArgumentParser():
   parser.add_argument(
       '--verify', action='store_true',
       help='If true, the script only verifies the current orderfile')
-  parser.add_argument('--target-arch', action='store', dest='arch',
+  parser.add_argument('--target-arch',
+                      action='store',
+                      dest='arch',
                       default='arm',
-                      choices=['arm', 'arm64'],
+                      choices=list(_ARCH_GN_ARGS.keys()),
                       help='The target architecture for which to build.')
   parser.add_argument('--output-json', action='store', dest='json_file',
                       help='Location to save stats in json format')
@@ -1088,8 +1073,10 @@ def CreateArgumentParser():
       '--use-goma', action='store_true', help='Enable GOMA.', default=False)
   parser.add_argument('--adb-path', help='Path to the adb binary.')
 
-  parser.add_argument('--public', action='store_true',
-                      help='Required if your checkout is non-internal.',
+  parser.add_argument('--public',
+                      action='store_true',
+                      help='Build non-internal APK and change the orderfile '
+                      'location. Required if your checkout is non-internal.',
                       default=False)
   parser.add_argument('--nosystem-health-orderfile', action='store_false',
                       dest='system_health_orderfile', default=True,
@@ -1133,8 +1120,6 @@ def CreateArgumentParser():
   parser.add_argument('--commit-hashes', action='store_true',
                       help=('Commit any orderfile hash files in the current '
                             'checkout; performs no other action'))
-  parser.add_argument('--new-commit-flow', action='store_true', default=True,
-                      help='Use the new two-step commit flow.')
   parser.add_argument('--use-call-graph', action='store_true', default=False,
                       help='Use call graph instrumentation.')
   profile_android_startup.AddProfileCollectionArguments(parser)
@@ -1147,15 +1132,20 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   Args:
     options: As returned from optparse.OptionParser.parse_args()
     orderfile_updater_class: (OrderfileUpdater) subclass of OrderfileUpdater.
-                             Use to explicitly set an OrderfileUpdater class,
-                             the defaults are OrderfileUpdater, or
-                             OrderfileNoopUpdater if --public is set.
 
   Returns:
     True iff success.
   """
   logging.basicConfig(level=logging.INFO)
   devil_chromium.Initialize(adb_path=options.adb_path)
+
+  # Since we generate a ".arm" orderfile irrespective of the architecture (see
+  # comment in _GetPathToOrderfile()), make sure that we don't commit it.
+  if options.arch != 'arm':
+    assert not options.buildbot, (
+        'ARM is the only supported architecture on bots')
+    assert not options.upload_ready_orderfiles, (
+        'ARM is the only supported architecture on bots')
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
   try:

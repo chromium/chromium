@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -34,6 +34,9 @@ class TaskManagerView : public TableViewDelegate,
                         public views::ContextMenuController,
                         public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(TaskManagerView);
+  TaskManagerView(const TaskManagerView&) = delete;
+  TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;
 
   // Shows the Task Manager window, or re-activates an existing one.
@@ -55,15 +58,10 @@ class TaskManagerView : public TableViewDelegate,
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
-  bool CanResize() const override;
-  bool CanMaximize() const override;
-  bool CanMinimize() const override;
   bool ExecuteWindowsCommand(int command_id) override;
-  base::string16 GetWindowTitle() const override;
-  gfx::ImageSkia GetWindowIcon() override;
+  ui::ImageModel GetWindowIcon() override;
   std::string GetWindowName() const override;
   bool Accept() override;
-  bool Close() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   void WindowClosing() override;
 
@@ -114,7 +112,7 @@ class TaskManagerView : public TableViewDelegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // We need to own the text of the menu, the Windows API does not copy it.
-  base::string16 always_on_top_menu_text_;
+  std::u16string always_on_top_menu_text_;
 
   views::TableView* tab_table_;
   views::View* tab_table_parent_;
@@ -124,8 +122,6 @@ class TaskManagerView : public TableViewDelegate,
 
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerView);
 };
 
 }  // namespace task_manager

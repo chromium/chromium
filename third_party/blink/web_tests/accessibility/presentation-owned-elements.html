@@ -1,5 +1,6 @@
 <script src="../resources/js-test.js"></script>
 <script src="../resources/accessibility-helper.js"></script>
+<div id="container">
 <div>These lists have a static text role because they have a presentation role.</div>
 <ul role="presentation">
     <li>Presentation Item 1</li>
@@ -60,21 +61,12 @@ Button has a button role because it has an explicit role.</div>
 <input type="radio" name="gender" value="male" disabled> Male
 <input type="radio" name="gender" value="female" disabled> Female
 </menu>
-
-<div>The option A has a static text role because it has a presentation role and is disabled.<br>
-The option B has option role because it has an explicit role.</div>
-<div role="group">
-  <select multiple role="presentation" disabled>
-    <option value="A" disabled>A</option>
-    <option value="B" disabled role="option">B</option>
-  </select>
 </div>
 
-<p>End of test</p>
 <p id="description"></p>
 <div id="console"></div>
 <script>
-description("This test make sure that presentation role is inherited to required owned elements.");
+description("This test makes sure that presentation role is inherited to required owned elements.");
 
 if (window.testRunner)
     testRunner.dumpAsText();
@@ -82,6 +74,6 @@ if (window.testRunner)
 if (window.accessibilityController) {
     // Ensure we've seen all nodes in accessibility tree.
     traverseAccessibilityTree(accessibilityController.rootElement);
-    buildAccessibilityTree(accessibilityController.focusedElement, 0, 1);
+    buildAccessibilityTree(accessibilityController.accessibleElementById('container'), 0, 1);
 }
 </script>

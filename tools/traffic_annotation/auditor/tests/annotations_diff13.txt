@@ -1,5 +1,0 @@
-
-	Add line: ' <item id="G" hash_code="4" content_hash_code="40" os_list="linux,windows"/>'
-	Remove line: ' <item id="C" hash_code="3" content_hash_code="30" os_list="linux,windows"/>'
-	Remove line: ' <item id="M" hash_code="6" content_hash_code="60" os_list="linux,windows"/>'
-	Remove line: ' <item id="X" hash_code="8" content_hash_code="80" os_list="linux,windows"/>'

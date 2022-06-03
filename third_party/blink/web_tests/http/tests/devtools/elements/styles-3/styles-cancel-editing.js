@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that editing is canceled properly after incremental editing.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="color: red">Text</div>
@@ -17,7 +17,7 @@
   var section;
 
   async function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('color');
 
     treeElement.startEditing();
@@ -40,9 +40,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('After append:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

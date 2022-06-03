@@ -3,8 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- TODO(crbug.com/1017190): Remove the UnusedResources workaround. -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+<resources>
     <!-- Standard width for overflow menu in Chrome. -->
     <dimen name="menu_width">258dp</dimen>
 
@@ -14,4 +13,10 @@
     <!-- Alert dialog -->
     <dimen name="dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
     <dimen name="dialog_padding_sides">@dimen/abc_dialog_padding_material</dimen>
+
+    <!-- Toolbar dimensions -->
+    <dimen name="toolbar_shadow_height">8dp</dimen>
+    <dimen name="toolbar_hairline_height">1dp</dimen>
+
+    <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
 </resources>

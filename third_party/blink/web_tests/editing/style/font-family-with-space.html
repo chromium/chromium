@@ -1,11 +1,27 @@
-<html style="font-family: Arial; font-size: 13px;">
-<body contenteditable="true" style="font-family: 'Times New Roman'; font-weight: bold;">This text should be Times New Roman bold.</body>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-document.body.focus();
-document.execCommand("SelectAll");
-document.execCommand("Underline");
-document.execCommand("Copy");
-window.getSelection().modify("move", "forward", "character");
-document.execCommand("Paste");
+const kStyle = 'font-family: &apos;Times New Roman&apos;; font-weight: bold;';
+selection_test(
+    [
+        `<div contenteditable style="${kStyle}">`,
+            '<div><u>^abc|</u></div>',
+        '</div>',
+    ],
+    selection => {
+        if (!window.testRunner)
+            throw 'This test requires testRunner.';
+        selection.document.documentElement.setAttribute('style',
+            'font-family: Arial; font-size: 13px;');
+        selection.document.execCommand('Copy');
+        selection.modify('move', 'forward', 'character'),
+        selection.document.execCommand('Paste');
+    },
+    [
+        `<div contenteditable style="${kStyle}">`,
+            '<div><u>abc</u><u>abc|</u></div>',
+        '</div>',
+    ]);
 </script>
-</html>

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.historyreport;
 
-import org.chromium.blink.mojom.document_metadata.WebPage;
+import org.chromium.blink.mojom.WebPage;
 import org.chromium.chrome.browser.AppHooks;
 
 /** Base class for reporting entities to App Indexing. */

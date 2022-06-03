@@ -7,19 +7,18 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
-#endif  // OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/network/network_handler_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_IOS)
 #include "ios/web/public/test/web_task_environment.h"
@@ -33,29 +32,20 @@ namespace metrics {
 
 class NetworkMetricsProviderTest : public testing::Test {
  public:
+  NetworkMetricsProviderTest(const NetworkMetricsProviderTest&) = delete;
+  NetworkMetricsProviderTest& operator=(const NetworkMetricsProviderTest&) =
+      delete;
+
  protected:
   NetworkMetricsProviderTest()
       : task_environment_(MetricsTaskEnvironment::IO_MAINLOOP) {}
   ~NetworkMetricsProviderTest() override {}
 
-  void SetUp() override {
-#if defined(OS_CHROMEOS)
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::NetworkHandler::Initialize();
-#endif  // OS_CHROMEOS
-  }
-
-  void TearDown() override {
-#if defined(OS_CHROMEOS)
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-#endif  // OS_CHROMEOS
-  }
-
  private:
   MetricsTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProviderTest);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // Verifies that the effective connection type is correctly set.

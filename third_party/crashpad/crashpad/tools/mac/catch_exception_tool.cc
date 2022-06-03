@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "tools/tool_support.h"
+#include "util/mach/bootstrap.h"
 #include "util/mach/exc_server_variants.h"
 #include "util/mach/exception_behaviors.h"
 #include "util/mach/exception_types.h"
@@ -50,7 +51,7 @@ struct Options {
   MachMessageServer::Persistent persistent;
 };
 
-class ExceptionServer : public UniversalMachExcServer::Interface {
+class ExceptionServer final : public UniversalMachExcServer::Interface {
  public:
   ExceptionServer(const Options& options,
                   const std::string& me,

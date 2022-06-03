@@ -9,6 +9,7 @@ import android.content.Intent;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
@@ -44,12 +45,7 @@ public class ChromeTabbedActivityVrTestRule
 
     @Override
     public boolean isDonEnabled() {
-        return mDonEnabled;
-    }
-
-    @Override
-    public void setDonEnabled(boolean isEnabled) {
-        mDonEnabled = isEnabled;
+        return CommandLine.getInstance().hasSwitch("vr-don-enabled");
     }
 
     @Override

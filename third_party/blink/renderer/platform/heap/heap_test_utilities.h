@@ -1,200 +1,98 @@
-/*
- * Copyright 2017 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_UTILITIES_H_
 
-#include "base/callback.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/heap/blink_gc.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/trace_traits.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8-cppgc.h"
+#include "v8.h"
+#include "v8/include/cppgc/testing.h"
 
 namespace blink {
 
+// Allows for overriding the stack state for the purpose of testing. Any garbage
+// collection calls scoped with `HeapPointersOnStackScope` will perform
+// conservative stack scanning, even if other (more local) hints indicate that
+// there's no need for it.
+class HeapPointersOnStackScope final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit HeapPointersOnStackScope(const ThreadState* state)
+      : embedder_stack_state_(
+            state->cpp_heap().GetHeapHandle(),
+            cppgc::EmbedderStackState::kMayContainHeapPointers) {}
+
+  HeapPointersOnStackScope(const HeapPointersOnStackScope&) = delete;
+  HeapPointersOnStackScope& operator=(const HeapPointersOnStackScope&) = delete;
+
+ private:
+  cppgc::testing::OverrideEmbedderStackStateScope embedder_stack_state_;
+};
+
 class TestSupportingGC : public testing::Test {
  public:
-  // Performs a precise garbage collection with eager sweeping.
-  static void PreciselyCollectGarbage(
-      BlinkGC::SweepingType sweeping_type = BlinkGC::kEagerSweeping);
+  ~TestSupportingGC() override;
 
-  // Performs a conservative garbage collection.
-  static void ConservativelyCollectGarbage(
-      BlinkGC::SweepingType sweeping_type = BlinkGC::kEagerSweeping);
+  // Performs a precise garbage collection with eager sweeping.
+  static void PreciselyCollectGarbage();
+
+  // Performs a conservative garbage collection with eager sweeping.
+  static void ConservativelyCollectGarbage();
 
   // Performs multiple rounds of garbage collections until no more memory can be
   // freed. This is useful to avoid other garbage collections having to deal
   // with stale memory.
-  void ClearOutOldGarbage();
-
-  // Completes sweeping if it is currently running.
-  void CompleteSweepingIfNeeded();
+  static void ClearOutOldGarbage();
 
  protected:
   base::test::TaskEnvironment task_environment_;
 };
 
-template <typename T>
-class ObjectWithCallbackBeforeInitializer
-    : public GarbageCollected<ObjectWithCallbackBeforeInitializer<T>> {
+// Test driver for compaction.
+class CompactionTestDriver {
  public:
-  ObjectWithCallbackBeforeInitializer(
-      base::OnceCallback<void(ObjectWithCallbackBeforeInitializer<T>*)>&& cb,
-      T* value)
-      : bool_(ExecuteCallbackReturnTrue(this, std::move(cb))), value_(value) {}
+  explicit CompactionTestDriver(ThreadState*);
 
-  ObjectWithCallbackBeforeInitializer(
-      base::OnceCallback<void(ObjectWithCallbackBeforeInitializer<T>*)>&& cb)
-      : bool_(ExecuteCallbackReturnTrue(this, std::move(cb))) {}
+  void ForceCompactionForNextGC();
 
-  virtual void Trace(Visitor* visitor) { visitor->Trace(value_); }
-
-  T* value() const { return value_.Get(); }
-
- private:
-  static bool ExecuteCallbackReturnTrue(
-      ObjectWithCallbackBeforeInitializer* thiz,
-      base::OnceCallback<void(ObjectWithCallbackBeforeInitializer<T>*)>&& cb) {
-    std::move(cb).Run(thiz);
-    return true;
-  }
-
-  bool bool_;
-  Member<T> value_;
-};
-
-template <typename T>
-class MixinWithCallbackBeforeInitializer : public GarbageCollectedMixin {
- public:
-  MixinWithCallbackBeforeInitializer(
-      base::OnceCallback<void(MixinWithCallbackBeforeInitializer<T>*)>&& cb,
-      T* value)
-      : bool_(ExecuteCallbackReturnTrue(this, std::move(cb))), value_(value) {}
-
-  MixinWithCallbackBeforeInitializer(
-      base::OnceCallback<void(MixinWithCallbackBeforeInitializer<T>*)>&& cb)
-      : bool_(ExecuteCallbackReturnTrue(this, std::move(cb))) {}
-
-  void Trace(Visitor* visitor) override { visitor->Trace(value_); }
-
-  T* value() const { return value_.Get(); }
-
- private:
-  static bool ExecuteCallbackReturnTrue(
-      MixinWithCallbackBeforeInitializer* thiz,
-      base::OnceCallback<void(MixinWithCallbackBeforeInitializer<T>*)>&& cb) {
-    std::move(cb).Run(thiz);
-    return true;
-  }
-
-  bool bool_;
-  Member<T> value_;
-};
-
-class BoolMixin {
  protected:
-  bool bool_ = false;
-};
-
-template <typename T>
-class ObjectWithMixinWithCallbackBeforeInitializer
-    : public GarbageCollected<ObjectWithMixinWithCallbackBeforeInitializer<T>>,
-      public BoolMixin,
-      public MixinWithCallbackBeforeInitializer<T> {
-  USING_GARBAGE_COLLECTED_MIXIN(ObjectWithMixinWithCallbackBeforeInitializer);
-
- public:
-  using Mixin = MixinWithCallbackBeforeInitializer<T>;
-
-  ObjectWithMixinWithCallbackBeforeInitializer(
-      base::OnceCallback<void(Mixin*)>&& cb,
-      T* value)
-      : Mixin(std::move(cb), value) {}
-
-  ObjectWithMixinWithCallbackBeforeInitializer(
-      base::OnceCallback<void(Mixin*)>&& cb)
-      : Mixin(std::move(cb)) {}
-
-  void Trace(Visitor* visitor) override { Mixin::Trace(visitor); }
-};
-
-// Simple linked object to be used in tests.
-class LinkedObject : public GarbageCollected<LinkedObject> {
- public:
-  LinkedObject() = default;
-  explicit LinkedObject(LinkedObject* next) : next_(next) {}
-
-  void set_next(LinkedObject* next) { next_ = next; }
-  LinkedObject* next() const { return next_; }
-  Member<LinkedObject>& next_ref() { return next_; }
-
-  void Trace(Visitor* visitor) { visitor->Trace(next_); }
-
- private:
-  Member<LinkedObject> next_;
+  cppgc::testing::StandaloneTestingHeap heap_;
 };
 
 // Test driver for incremental marking. Assumes that no stack handling is
 // required.
 class IncrementalMarkingTestDriver {
  public:
-  explicit IncrementalMarkingTestDriver(ThreadState* thread_state)
-      : thread_state_(thread_state) {}
+  explicit IncrementalMarkingTestDriver(ThreadState*);
   ~IncrementalMarkingTestDriver();
 
-  void Start();
-  bool SingleStep(BlinkGC::StackState stack_state =
-                      BlinkGC::StackState::kNoHeapPointersOnStack);
-  void FinishSteps(BlinkGC::StackState stack_state =
-                       BlinkGC::StackState::kNoHeapPointersOnStack);
-  void FinishGC(bool complete_sweep = true);
+  virtual void StartGC();
+  virtual void TriggerMarkingSteps(
+      ThreadState::StackState stack_state =
+          ThreadState::StackState::kNoHeapPointers);
+  virtual void FinishGC();
 
-  // Methods for forcing a concurrent marking step without any assistance from
-  // mutator thread (i.e. without incremental marking on the mutator thread).
-  bool SingleConcurrentStep(BlinkGC::StackState stack_state =
-                                BlinkGC::StackState::kNoHeapPointersOnStack);
-  void FinishConcurrentSteps(BlinkGC::StackState stack_state =
-                                 BlinkGC::StackState::kNoHeapPointersOnStack);
-
-  size_t GetHeapCompactLastFixupCount() const;
-
- private:
-  ThreadState* const thread_state_;
+ protected:
+  cppgc::testing::StandaloneTestingHeap heap_;
 };
 
-class IntegerObject : public GarbageCollected<IntegerObject> {
+// Test driver for concurrent marking. Assumes that no stack handling is
+// required.
+class ConcurrentMarkingTestDriver : public IncrementalMarkingTestDriver {
  public:
-  void Trace(blink::Visitor* visitor) {}
+  explicit ConcurrentMarkingTestDriver(ThreadState*);
 
-  int Value() const { return x_; }
-
-  bool operator==(const IntegerObject& other) const {
-    return other.Value() == Value();
-  }
-
-  unsigned GetHash() { return IntHash<int>::GetHash(x_); }
-
-  explicit IntegerObject(int x) : x_(x) {}
-
- private:
-  int x_;
-};
-
-struct IntegerObjectHash {
-  static unsigned GetHash(const IntegerObject& key) {
-    return WTF::HashInt(static_cast<uint32_t>(key.Value()));
-  }
-
-  static bool Equal(const IntegerObject& a, const IntegerObject& b) {
-    return a == b;
-  }
+  void StartGC() override;
+  void TriggerMarkingSteps(
+      ThreadState::StackState stack_state =
+          ThreadState::StackState::kNoHeapPointers) override;
+  void FinishGC() override;
 };
 
 }  // namespace blink

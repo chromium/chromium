@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 if (is_android) {
@@ -14,12 +16,6 @@ source_set("time_zone_monitor") {
   sources = [
     "time_zone_monitor.cc",
     "time_zone_monitor.h",
-    "time_zone_monitor_android.cc",
-    "time_zone_monitor_android.h",
-    "time_zone_monitor_chromeos.cc",
-    "time_zone_monitor_linux.cc",
-    "time_zone_monitor_mac.mm",
-    "time_zone_monitor_win.cc",
   ]
 
   deps = [
@@ -29,24 +25,33 @@ source_set("time_zone_monitor") {
     "//third_party/icu",
   ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 
   if (is_android) {
+    sources += [
+      "time_zone_monitor_android.cc",
+      "time_zone_monitor_android.h",
+    ]
     deps += [ ":time_zone_monitor_jni_headers" ]
   }
 
   if (is_win) {
+    sources += [ "time_zone_monitor_win.cc" ]
     deps += [ "//ui/gfx" ]
   }
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/settings" ]
+  if (is_linux || is_chromeos_lacros) {
+    sources += [ "time_zone_monitor_linux.cc" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [ "time_zone_monitor_chromeos.cc" ]
+    deps += [ "//ash/components/settings" ]
   }
 
   if (is_mac) {
-    libs = [ "Foundation.framework" ]
+    sources += [ "time_zone_monitor_mac.mm" ]
+    frameworks = [ "Foundation.framework" ]
   }
 
   if (is_fuchsia) {
@@ -57,9 +62,7 @@ source_set("time_zone_monitor") {
 if (is_android) {
   generate_jni("time_zone_monitor_jni_headers") {
     visibility = [ ":time_zone_monitor" ]
-    sources = [
-      "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java",
-    ]
+    sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
   }
 
   android_library("java") {
@@ -67,11 +70,8 @@ if (is_android) {
     # However, various generated targets also need to see this target as a
     # result of //services/device:java depending on it.
     visibility = [ "//services/device:*" ]
-    java_files = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-    ]
+    sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
+    deps = [ "//base:base_java" ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

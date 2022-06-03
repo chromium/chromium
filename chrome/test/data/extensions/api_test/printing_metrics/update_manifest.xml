@@ -8,6 +8,6 @@
   <app appid='cmgkkmeeoiceijkpmaabbmpgnkpaaela'>
     <updatecheck
         codebase='http://mock.http/extensions/api_test/printing_metrics.crx'
-        version='1.0.0.0' />
+        version='0.1' />
    </app>
 </gupdate>

@@ -9,6 +9,12 @@
     "compiler_options": {
       "implemented_in": "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
     },
+    "properties": {
+      "MAX_CAPTURE_VISIBLE_REGION_CALLS_PER_SECOND": {
+        "value": 2,
+        "description": "The maximum number of times that $(ref:captureVisibleRegion) can be called per second. $(ref:captureVisibleRegion) is expensive and should not be called too often."
+      }
+    },
     "types": [
       {
         "id": "DataTypeSet",

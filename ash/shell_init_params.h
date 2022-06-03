@@ -19,7 +19,6 @@ class KeyboardUIFactory;
 
 namespace ui {
 class ContextFactory;
-class ContextFactoryPrivate;
 }
 
 namespace ash {
@@ -33,7 +32,6 @@ struct ASH_EXPORT ShellInitParams {
 
   std::unique_ptr<ShellDelegate> delegate;
   ui::ContextFactory* context_factory = nullptr;                 // Non-owning.
-  ui::ContextFactoryPrivate* context_factory_private = nullptr;  // Non-owning.
   PrefService* local_state = nullptr;                            // Non-owning.
 
   // Factory for creating the virtual keyboard UI. Must be non-null.

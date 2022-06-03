@@ -5,10 +5,22 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 
+#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/process/process_handle.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace performance_manager {
+
+namespace policies {
+class WorkingSetTrimmerPolicyChromeOS;
+}  // namespace policies
+
 namespace mechanism {
 
 // WorkingSetTrimmerChromeOS is the platform specific implementation of a
@@ -16,6 +28,10 @@ namespace mechanism {
 // should be used via the WorkingSetTrimmer::GetInstance() method.
 class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
  public:
+  WorkingSetTrimmerChromeOS(const WorkingSetTrimmerChromeOS&) = delete;
+  WorkingSetTrimmerChromeOS& operator=(const WorkingSetTrimmerChromeOS&) =
+      delete;
+
   ~WorkingSetTrimmerChromeOS() override;
 
   // WorkingSetTrimmer implementation:
@@ -24,13 +40,31 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
 
  private:
   friend class base::NoDestructor<WorkingSetTrimmerChromeOS>;
+  friend class policies::WorkingSetTrimmerPolicyChromeOS;
+  friend class TestWorkingSetTrimmerChromeOS;
+  using TrimArcVmWorkingSetCallback =
+      base::OnceCallback<void(bool result, const std::string& failure_reason)>;
+
+  // Creates the trimmer with the |context| for testing.
+  static std::unique_ptr<WorkingSetTrimmerChromeOS> CreateForTesting(
+      content::BrowserContext* context);
+
+  // TrimWorkingSet based on ProcessId |pid|.
+  bool TrimWorkingSet(base::ProcessId pid);
+
+  // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
+  // The function must be called on the UI thread.
+  void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback);
+  void OnDropArcVmCaches(TrimArcVmWorkingSetCallback callback, bool result);
 
   // The constructor is made private to prevent instantiation of this class
   // directly, it should always be retrieved via
   // WorkingSetTrimmer::GetInstance().
   WorkingSetTrimmerChromeOS();
 
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerChromeOS);
+  content::BrowserContext* context_for_testing_ = nullptr;
+
+  base::WeakPtrFactory<WorkingSetTrimmerChromeOS> weak_factory_{this};
 };
 
 }  // namespace mechanism

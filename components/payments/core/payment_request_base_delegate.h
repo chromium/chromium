@@ -40,8 +40,8 @@ class PaymentRequestBaseDelegate {
 
   virtual const std::string& GetApplicationLocale() const = 0;
 
-  // Returns whether the user is in Incognito mode.
-  virtual bool IsIncognito() const = 0;
+  // Returns whether the user is off-the-record.
+  virtual bool IsOffTheRecord() const = 0;
 
   // Returns the URL of the page that is currently being displayed.
   virtual const GURL& GetLastCommittedURL() const = 0;

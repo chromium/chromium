@@ -6,11 +6,11 @@
 #define MEDIA_GPU_COMMAND_BUFFER_HELPER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_helpers.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/gpu/media_gpu_export.h"
@@ -18,6 +18,11 @@
 
 namespace gpu {
 class CommandBufferStub;
+class DXGISharedHandleManager;
+class SharedImageBacking;
+class SharedImageRepresentationFactoryRef;
+class SharedImageStub;
+class TextureBase;
 }  // namespace gpu
 
 namespace gl {
@@ -43,17 +48,33 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   static scoped_refptr<CommandBufferHelper> Create(
       gpu::CommandBufferStub* stub);
 
+  CommandBufferHelper(const CommandBufferHelper&) = delete;
+  CommandBufferHelper& operator=(const CommandBufferHelper&) = delete;
+
   // Gets the associated GLContext.
   //
   // Used by DXVAVDA to test for D3D11 support, and by V4L2VDA to create
   // EGLImages. New clients should use more specialized accessors instead.
   virtual gl::GLContext* GetGLContext() = 0;
 
+  // Retrieve the interface through which to create shared images.
+  virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
+
+#if defined(OS_WIN)
+  virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;
+#endif
+
   // Checks whether the stub has been destroyed.
   virtual bool HasStub() = 0;
 
   // Makes the GL context current.
   virtual bool MakeContextCurrent() = 0;
+
+  // Register a shared image backing
+  virtual std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
+      std::unique_ptr<gpu::SharedImageBacking> backing) = 0;
+
+  virtual gpu::TextureBase* GetTexture(GLuint service_id) const = 0;
 
   // Creates a texture and returns its |service_id|.
   //
@@ -121,6 +142,12 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // may not change the current context.
   virtual void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) = 0;
 
+  // Is the backing command buffer passthrough (versus validating).
+  virtual bool IsPassthrough() const = 0;
+
+  // Does this command buffer support ARB_texture_rectangle.
+  virtual bool SupportsTextureRectangle() const = 0;
+
  protected:
   explicit CommandBufferHelper(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -133,8 +160,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
  private:
   friend class base::DeleteHelper<CommandBufferHelper>;
   friend class base::RefCountedDeleteOnSequence<CommandBufferHelper>;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelper);
 };
 
 }  // namespace media

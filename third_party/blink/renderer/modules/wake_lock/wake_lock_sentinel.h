@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -24,9 +24,8 @@ class WakeLockManager;
 class MODULES_EXPORT WakeLockSentinel final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<WakeLockSentinel>,
-      public ContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(WakeLockSentinel);
 
  public:
   WakeLockSentinel(ScriptState* script_state,
@@ -37,18 +36,19 @@ class MODULES_EXPORT WakeLockSentinel final
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(release, kRelease)
   ScriptPromise release(ScriptState*);
+  bool released() const;
   String type() const;
 
   // EventTarget overrides.
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // ActiveScriptWrappable overrides.
   bool HasPendingActivity() const override;
 
-  // ContextLifecycleObserver overrides.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver overrides.
+  void ContextDestroyed() override;
 
  private:
   friend class WakeLockManager;
@@ -62,6 +62,7 @@ class MODULES_EXPORT WakeLockSentinel final
   void DoRelease();
 
   Member<WakeLockManager> manager_;
+  bool released_ = false;
   const WakeLockType type_;
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockSentinelTest, MultipleReleaseCalls);

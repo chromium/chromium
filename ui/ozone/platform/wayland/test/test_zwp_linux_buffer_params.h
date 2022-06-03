@@ -8,7 +8,6 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -26,6 +25,11 @@ class MockZwpLinuxDmabufV1;
 class TestZwpLinuxBufferParamsV1 : public ServerObject {
  public:
   explicit TestZwpLinuxBufferParamsV1(wl_resource* resource);
+
+  TestZwpLinuxBufferParamsV1(const TestZwpLinuxBufferParamsV1&) = delete;
+  TestZwpLinuxBufferParamsV1& operator=(const TestZwpLinuxBufferParamsV1&) =
+      delete;
+
   ~TestZwpLinuxBufferParamsV1() override;
 
   void Destroy(wl_client* client, wl_resource* resource);
@@ -71,8 +75,6 @@ class TestZwpLinuxBufferParamsV1 : public ServerObject {
   // A buffer resource, which is created on Create or CreateImmed call. Can be
   // null if not created/failed to be created.
   wl_resource* buffer_resource_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestZwpLinuxBufferParamsV1);
 };
 
 }  // namespace wl

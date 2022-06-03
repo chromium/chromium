@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 
-#include "third_party/blink/public/platform/web_pointer_event.h"
-#include "third_party/blink/public/platform/web_pointer_properties.h"
+#include "third_party/blink/public/common/input/web_pointer_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -27,9 +27,15 @@ class CORE_EXPORT PointerEventFactory {
   DISALLOW_NEW();
 
  public:
+  // Returns the pointerType string for the PointerType enum.
+  static const AtomicString& PointerTypeNameForWebPointPointerType(
+      WebPointerProperties::PointerType type);
+
   PointerEventFactory();
   ~PointerEventFactory();
 
+  // Returns nullptr if the |web_pointer_event| is invalid from event stream
+  // perspective (e.g. it is a pointercancel for a non-existent id).
   PointerEvent* Create(const WebPointerEvent& web_pointer_event,
                        const Vector<WebPointerEvent>& coalesced_events,
                        const Vector<WebPointerEvent>& predicted_events,
@@ -74,11 +80,12 @@ class CORE_EXPORT PointerEventFactory {
   // Otherwise it returns WebPointerProperties::PointerType::Unknown.
   WebPointerProperties::PointerType GetPointerType(PointerId pointer_id) const;
 
-  // Returns whether a WebPoinerProperties is primary pointer.
+  // Returns whether a WebPoinerProperties is a primary pointer.
   bool IsPrimary(const WebPointerProperties&) const;
 
   static const PointerId kMouseId;
   static const PointerId kInvalidId;
+  static const PointerId kReservedNonPointerId;
 
   // Removes pointer_id from the map.
   void RemoveLastPosition(const PointerId pointer_id);
@@ -112,6 +119,14 @@ class CORE_EXPORT PointerEventFactory {
     }
     int RawId() const { return second; }
   } IncomingId;
+
+  using IncomingIdToPointerIdMap =
+      HashMap<IncomingId,
+              PointerId,
+              WTF::PairHash<int, int>,
+              WTF::PairHashTraits<WTF::UnsignedWithZeroKeyHashTraits<int>,
+                                  WTF::UnsignedWithZeroKeyHashTraits<int>>>;
+
   typedef struct PointerAttributes {
     IncomingId incoming_id;
     bool is_active_buttons;
@@ -128,9 +143,14 @@ class CORE_EXPORT PointerEventFactory {
 
   PointerId AddIdAndActiveButtons(const IncomingId,
                                   bool is_active_buttons,
-                                  bool hovering);
+                                  bool hovering,
+                                  WebInputEvent::Type event_type);
   bool IsPrimary(const PointerId) const;
+
+  // Returns nullptr when the event is unexpected.  E.g. pointercancel for a
+  // non-existent id (see crbug.com/1007164).
   PointerEventInit* ConvertIdTypeButtonsEvent(const WebPointerEvent&);
+
   void SetEventSpecificFields(PointerEventInit*, const AtomicString& type);
 
   // Creates pointerevents like boundary and capture events from another
@@ -146,12 +166,7 @@ class CORE_EXPORT PointerEventFactory {
       LocalDOMWindow* view);
 
   PointerId current_id_;
-  HashMap<IncomingId,
-          PointerId,
-          WTF::PairHash<int, int>,
-          WTF::PairHashTraits<WTF::UnsignedWithZeroKeyHashTraits<int>,
-                              WTF::UnsignedWithZeroKeyHashTraits<int>>>
-      pointer_incoming_id_mapping_;
+  IncomingIdToPointerIdMap pointer_incoming_id_mapping_;
   PointerIdKeyMap<PointerAttributes> pointer_id_mapping_;
   int primary_id_[static_cast<int>(
                       WebPointerProperties::PointerType::kMaxValue) +

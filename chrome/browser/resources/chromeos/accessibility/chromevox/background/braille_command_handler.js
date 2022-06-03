@@ -8,13 +8,14 @@
 
 goog.provide('BrailleCommandHandler');
 
+goog.require('EventGenerator');
 goog.require('EventSourceState');
-goog.require('BackgroundKeyboardHandler');
 goog.require('DesktopAutomationHandler');
+goog.require('KeyCode');
 
 goog.scope(function() {
-var RoleType = chrome.automation.RoleType;
-var StateType = chrome.automation.StateType;
+const RoleType = chrome.automation.RoleType;
+const StateType = chrome.automation.StateType;
 
 /**
  * Global setting for the enabled state of this handler.
@@ -36,6 +37,9 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
   }
 
   EventSourceState.set(EventSourceType.BRAILLE_KEYBOARD);
+
+  // Try to restore to the last valid range.
+  ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
 
   // Note: panning within content occurs earlier in event dispatch.
   Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
@@ -69,7 +73,7 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
         return false;
       }
 
-      var command = BrailleCommandData.getCommand(evt.brailleDots);
+      const command = BrailleCommandData.getCommand(evt.brailleDots);
       if (command) {
         if (BrailleCommandHandler.onEditCommand_(command)) {
           CommandHandler.onCommand(command);
@@ -88,11 +92,11 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
  * @private
  */
 BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
-  var actionNodeSpan = null;
-  var selectionSpan = null;
-  var selSpans = text.getSpansInstanceOf(Output.SelectionSpan);
-  var nodeSpans = text.getSpansInstanceOf(Output.NodeSpan);
-  for (var i = 0, selSpan; selSpan = selSpans[i]; i++) {
+  let actionNodeSpan = null;
+  let selectionSpan = null;
+  const selSpans = text.getSpansInstanceOf(OutputSelectionSpan);
+  const nodeSpans = text.getSpansInstanceOf(OutputNodeSpan);
+  for (let i = 0, selSpan; selSpan = selSpans[i]; i++) {
     if (text.getSpanStart(selSpan) <= position &&
         position < text.getSpanEnd(selSpan)) {
       selectionSpan = selSpan;
@@ -100,10 +104,10 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
     }
   }
 
-  var interval;
-  for (var j = 0, nodeSpan; nodeSpan = nodeSpans[j]; j++) {
-    var intervals = text.getSpanIntervals(nodeSpan);
-    var tempInterval = intervals.find(function(innerInterval) {
+  let interval;
+  for (let j = 0, nodeSpan; nodeSpan = nodeSpans[j]; j++) {
+    const intervals = text.getSpanIntervals(nodeSpan);
+    const tempInterval = intervals.find(function(innerInterval) {
       return innerInterval.start <= position && position <= innerInterval.end;
     });
     if (tempInterval) {
@@ -116,14 +120,14 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
     return;
   }
 
-  var actionNode = actionNodeSpan.node;
-  var offset = actionNodeSpan.offset;
+  let actionNode = actionNodeSpan.node;
+  const offset = actionNodeSpan.offset;
   if (actionNode.role === RoleType.INLINE_TEXT_BOX) {
     actionNode = actionNode.parent;
   }
   actionNode.doDefault();
 
-  if (actionNode.role != RoleType.STATIC_TEXT &&
+  if (actionNode.role !== RoleType.STATIC_TEXT &&
       !actionNode.state[StateType.EDITABLE]) {
     return;
   }
@@ -133,8 +137,8 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
   }
 
   if (actionNode.state.richlyEditable) {
-    var start = interval ? interval.start : text.getSpanStart(selectionSpan);
-    var targetPosition = position - start + offset;
+    const start = interval ? interval.start : text.getSpanStart(selectionSpan);
+    const targetPosition = position - start + offset;
     chrome.automation.setDocumentSelection({
       anchorObject: actionNode,
       anchorOffset: targetPosition,
@@ -142,8 +146,8 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
       focusOffset: targetPosition
     });
   } else {
-    var start = text.getSpanStart(selectionSpan);
-    var targetPosition = position - start + offset;
+    const start = text.getSpanStart(selectionSpan);
+    const targetPosition = position - start + offset;
     actionNode.setSelection(targetPosition, targetPosition);
   }
 };
@@ -156,40 +160,40 @@ BrailleCommandHandler.onRoutingCommand_ = function(text, position) {
  * @private
  */
 BrailleCommandHandler.onEditCommand_ = function(command) {
-  var current = ChromeVoxState.instance.currentRange;
+  const current = ChromeVoxState.instance.currentRange;
   if (ChromeVox.isStickyModeOn() || !current || !current.start ||
       !current.start.node || !current.start.node.state[StateType.EDITABLE]) {
     return true;
   }
 
-  var textEditHandler = DesktopAutomationHandler.instance.textEditHandler;
-  if (!textEditHandler) {
+  const textEditHandler = DesktopAutomationHandler.instance.textEditHandler;
+  if (!textEditHandler || current.start.node !== textEditHandler.node) {
     return true;
   }
 
-  var isMultiline = AutomationPredicate.multiline(current.start.node);
+  const isMultiline = AutomationPredicate.multiline(current.start.node);
   switch (command) {
     case 'forceClickOnCurrentItem':
-      BackgroundKeyboardHandler.sendKeyPress(13);
+      EventGenerator.sendKeyPress(KeyCode.RETURN);
       break;
     case 'previousCharacter':
-      BackgroundKeyboardHandler.sendKeyPress(37);
+      EventGenerator.sendKeyPress(KeyCode.LEFT);
       break;
     case 'nextCharacter':
-      BackgroundKeyboardHandler.sendKeyPress(39);
+      EventGenerator.sendKeyPress(KeyCode.RIGHT);
       break;
     case 'previousWord':
-      BackgroundKeyboardHandler.sendKeyPress(37, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true});
       break;
     case 'nextWord':
-      BackgroundKeyboardHandler.sendKeyPress(39, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true});
       break;
     case 'previousObject':
     case 'previousLine':
       if (!isMultiline || textEditHandler.isSelectionOnFirstLine()) {
         return true;
       }
-      BackgroundKeyboardHandler.sendKeyPress(38);
+      EventGenerator.sendKeyPress(KeyCode.UP);
       break;
     case 'nextObject':
     case 'nextLine':
@@ -202,13 +206,13 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
         return false;
       }
 
-      BackgroundKeyboardHandler.sendKeyPress(40);
+      EventGenerator.sendKeyPress(KeyCode.DOWN);
       break;
     case 'previousGroup':
-      BackgroundKeyboardHandler.sendKeyPress(38, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.UP, {ctrl: true});
       break;
     case 'nextGroup':
-      BackgroundKeyboardHandler.sendKeyPress(40, {ctrl: true});
+      EventGenerator.sendKeyPress(KeyCode.DOWN, {ctrl: true});
       break;
     default:
       return true;
@@ -218,4 +222,4 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
 
 /** @private {boolean} */
 BrailleCommandHandler.enabled_ = true;
-});  //  goog.scope
+});  // goog.scope

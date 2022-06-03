@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "cc/base/tiling_data.h"
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {

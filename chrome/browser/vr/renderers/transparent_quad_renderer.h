@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_RENDERERS_TRANSPARENT_QUAD_RENDERER_H_
 #define CHROME_BROWSER_VR_RENDERERS_TRANSPARENT_QUAD_RENDERER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 
 namespace vr {
@@ -13,9 +12,11 @@ namespace vr {
 class TransparentQuadRenderer : public TexturedQuadRenderer {
  public:
   TransparentQuadRenderer();
-  ~TransparentQuadRenderer() override;
 
-  DISALLOW_COPY_AND_ASSIGN(TransparentQuadRenderer);
+  TransparentQuadRenderer(const TransparentQuadRenderer&) = delete;
+  TransparentQuadRenderer& operator=(const TransparentQuadRenderer&) = delete;
+
+  ~TransparentQuadRenderer() override;
 };
 
 }  // namespace vr

@@ -9,12 +9,11 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/host/resource_host.h"
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 #include "base/files/file.h"
 #elif defined(OS_WIN)
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -39,6 +38,10 @@ class PepperFlashFontFileHost : public ppapi::host::ResourceHost {
       PP_Resource resource,
       const ppapi::proxy::SerializedFontDescription& description,
       PP_PrivateFontCharset charset);
+
+  PepperFlashFontFileHost(const PepperFlashFontFileHost&) = delete;
+  PepperFlashFontFileHost& operator=(const PepperFlashFontFileHost&) = delete;
+
   ~PepperFlashFontFileHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -50,13 +53,11 @@ class PepperFlashFontFileHost : public ppapi::host::ResourceHost {
                          uint32_t table);
   bool GetFontData(uint32_t table, void* buffer, size_t* length);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::File font_file_;
 #elif defined(OS_WIN)
   sk_sp<SkTypeface> typeface_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFlashFontFileHost);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_FLASH_FONT_FILE_HOST_H_

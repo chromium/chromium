@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -78,7 +79,7 @@ SVGMaskElement::SVGMaskElement(Document& document)
   AddToPropertyMap(mask_content_units_);
 }
 
-void SVGMaskElement::Trace(blink::Visitor* visitor) {
+void SVGMaskElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -111,7 +112,9 @@ void SVGMaskElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGMaskElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGMaskElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool is_length_attr =
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
@@ -129,21 +132,20 @@ void SVGMaskElement::SvgAttributeChanged(const QualifiedName& attr_name) {
       UpdateRelativeLengthsInformation();
     }
 
-    LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(GetLayoutObject());
+    auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
 
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (change.by_parser)
+  if (change.ByParser())
     return;
 
   if (LayoutObject* object = GetLayoutObject()) {
@@ -154,7 +156,7 @@ void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGMaskElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGResourceMasker(this);
+  return MakeGarbageCollected<LayoutSVGResourceMasker>(this);
 }
 
 bool SVGMaskElement::SelfHasRelativeLengths() const {

@@ -8,16 +8,19 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
-
-using ::autofill::PasswordForm;
 
 using Label = CSVPassword::Label;
 using Status = CSVPassword::Status;
 
 TEST(CSVPasswordTest, Construction) {
+  base::test::SingleThreadTaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
   const CSVPassword::ColumnMap kColMap = {
       {0, Label::kOrigin},
       {1, Label::kUsername},
@@ -27,10 +30,13 @@ TEST(CSVPasswordTest, Construction) {
   const CSVPassword csv_pwd(kColMap, "http://example.com,user,password");
   const PasswordForm result = csv_pwd.ParseValid();
   const GURL expected_origin("http://example.com");
-  EXPECT_EQ(expected_origin, result.origin);
-  EXPECT_EQ(expected_origin.GetOrigin().spec(), result.signon_realm);
-  EXPECT_EQ(base::ASCIIToUTF16("user"), result.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("password"), result.password_value);
+  EXPECT_EQ(expected_origin, result.url);
+  EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
+            result.signon_realm);
+  EXPECT_EQ(u"user", result.username_value);
+  EXPECT_EQ(u"password", result.password_value);
+  EXPECT_EQ(base::Time::Now(), result.date_created);
+  EXPECT_EQ(base::Time::Now(), result.date_password_modified);
 }
 
 struct TestCase {
@@ -48,7 +54,9 @@ struct TestCase {
 
 class TestCaseBuilder {
  public:
-  TestCaseBuilder(std::string name) { test_case_.name = std::move(name); }
+  explicit TestCaseBuilder(std::string name) {
+    test_case_.name = std::move(name);
+  }
 
   ~TestCaseBuilder() = default;
 
@@ -93,7 +101,11 @@ class TestCaseBuilder {
   TestCase test_case_;
 };
 
-class CSVPasswordTestSuccess : public ::testing::TestWithParam<TestCase> {};
+class CSVPasswordTestSuccess : public ::testing::TestWithParam<TestCase> {
+ private:
+  base::test::SingleThreadTaskEnvironment env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 TEST_P(CSVPasswordTestSuccess, Parse) {
   const TestCase& test_case = GetParam();
@@ -104,11 +116,13 @@ TEST_P(CSVPasswordTestSuccess, Parse) {
   const PasswordForm result = csv_pwd.ParseValid();
 
   const GURL expected_origin(test_case.origin);
-  EXPECT_EQ(expected_origin, result.origin);
-  EXPECT_EQ(expected_origin.GetOrigin().spec(), result.signon_realm);
+  EXPECT_EQ(expected_origin, result.url);
+  EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
+            result.signon_realm);
 
   EXPECT_EQ(base::UTF8ToUTF16(test_case.username), result.username_value);
   EXPECT_EQ(base::UTF8ToUTF16(test_case.password), result.password_value);
+  EXPECT_EQ(base::Time::Now(), result.date_created);
 
   EXPECT_EQ(result, csv_pwd.ParseValid());
 }

@@ -1,10 +1,17 @@
 include_rules = [
   "+components/apdu",
   "+components/cbor",
+  "+components/gcm_driver",
   "+crypto",
+  "+dbus",
   "+net/base",
   "+net/cert",
-  "+ui/base/l10n",
+  "+net/cookies",
+  "+net/http",
+  "+net/traffic_annotation",
+  "+services/network",
   "+third_party/boringssl/src/include",
+  "+third_party/cros_system_api",
   "+third_party/microsoft_webauthn",
+  "+ui/base/l10n",
 ]

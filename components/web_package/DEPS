@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/cbor",
+  "+mojo/public/cpp",
+  "+net",
+  "+services/network/public/mojom"
+]
+
+specific_include_rules = {
+  "web_bundle_parser_fuzzer\.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+}

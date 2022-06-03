@@ -9,66 +9,16 @@
 #include <array>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_snapshot.h"
 
 namespace display {
-namespace {
 
-// The total number of display zoom factors to enumerate.
-constexpr int kNumOfZoomFactors = 9;
-
-// A pair representing the list of zoom values for a given minimum display
-// resolution width.
-using ZoomListBucket = std::pair<int, std::array<float, kNumOfZoomFactors>>;
-
-// A pair representing the list of zoom values for a given minimum default dsf.
-using ZoomListBucketDsf =
-    std::pair<float, std::array<float, kNumOfZoomFactors>>;
-
-// For displays with a device scale factor of unity, we use a static list of
-// initialized zoom values. For a given resolution width of a display, we can
-// find its associated list of zoom values by simply finding the last bucket
-// with a width less than the given resolution width.
-// Ex. A resolution width of 1024, we will use the bucket with the width of 960.
-constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
-    {0, {0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f}},
-    {720, {0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f}},
-    {800, {0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f}},
-    {960, {0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f}},
-    {1280, {0.90f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f, 1.50f}},
-    {1920, {1.f, 1.10f, 1.15f, 1.20f, 1.30f, 1.40f, 1.50f, 1.75f, 2.00f}},
-    {3840, {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}},
-    {5120, {1.f, 1.25f, 1.50f, 1.75f, 2.00f, 2.25f, 2.50f, 2.75f, 3.00f}},
-}};
-
-// Displays with a default device scale factor have a static list of initialized
-// zoom values that includes a zoom level to go to the native resolution of the
-// display. Ensure that the list of DSFs are in sync with the list of default
-// device scale factors in display_change_observer.cc.
-constexpr std::array<ZoomListBucketDsf, 6> kZoomListBucketsForDsf{{
-    {1.25f, {0.7f, 1.f / 1.25f, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
-    {1.6f, {1.f / 1.6f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 1.f, 1.15f, 1.3f}},
-    {1.77777779102325439453125f,
-     {1.f / 1.77777779102325439453125f, 0.65f, 0.75f, 0.8f, 0.9f, 1.f, 1.1f,
-      1.2f, 1.3f}},
-    {2.f, {1.f / 2.f, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.1f, 1.25f, 1.5f}},
-    {2.25f, {1.f / 2.25f, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.15f, 1.3f, 1.5f}},
-    {2.6666667461395263671875f,
-     {1.f / 2.6666667461395263671875f, 0.5f, 0.6f, 0.8f, 0.9f, 1.f, 1.2f, 1.35f,
-      1.5f}},
-}};
-
-bool WithinEpsilon(float a, float b) {
-  return std::abs(a - b) < std::numeric_limits<float>::epsilon();
-}
-
-}  // namespace
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state) {
   switch (state) {
     case chromeos::DISPLAY_POWER_ALL_ON:
@@ -106,7 +56,11 @@ int GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
   return num_on_displays;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool WithinEpsilon(float a, float b) {
+  return std::abs(a - b) < std::numeric_limits<float>::epsilon();
+}
 
 std::string MultipleDisplayStateToString(MultipleDisplayState state) {
   switch (state) {
@@ -194,52 +148,6 @@ std::vector<float> GetDisplayZoomFactorForDsf(float dsf) {
   }
   NOTREACHED() << "Received a DSF not on the list: " << dsf;
   return {1.f / dsf, 1.f};
-}
-
-void InsertDsfIntoList(std::vector<float>* zoom_values, float dsf) {
-  // 1.0 is already in the list of |zoom_values|. We do not need to add it.
-  if (WithinEpsilon(dsf, 1.f))
-    return;
-
-  if (dsf > 1.f && WithinEpsilon(*(zoom_values->rbegin()), 1.f)) {
-    // If the last element of the vector is 1 then |dsf|, which is greater than
-    // 1, will simply be inserted after that.
-    zoom_values->push_back(dsf);
-    zoom_values->erase(zoom_values->begin());
-    return;
-  } else if (dsf < 1.f && WithinEpsilon(*(zoom_values->begin()), 1.f)) {
-    // If the first element in the list is 1 then |dsf|, which is less than 1,
-    // will simply be inseted before that.
-    zoom_values->insert(zoom_values->begin(), dsf);
-    zoom_values->pop_back();
-    return;
-  }
-
-  // We dont need to add |dsf| to the list if it is already in the list.
-  auto it = std::lower_bound(zoom_values->begin(), zoom_values->end(), dsf);
-  if (it != zoom_values->end() && WithinEpsilon(*it, dsf))
-    return;
-
-  if (it == zoom_values->begin()) {
-    DCHECK_LT(dsf, 1.f);
-    *(zoom_values->begin()) = dsf;
-  } else if (it == zoom_values->end()) {
-    DCHECK_GT(dsf, 1.f);
-    *(zoom_values->rbegin()) = dsf;
-  } else {
-    // There can only be 1 entry for 1.f value.
-    DCHECK(!(WithinEpsilon(*(it - 1), 1.f) && WithinEpsilon(*it, 1.f)));
-
-    // True if |dsf| is closer to |it| than it is to |it-1|.
-    const bool dsf_closer_to_it =
-        std::abs(*it - dsf) < std::abs(*(it - 1) - dsf);
-    if (WithinEpsilon(*(it - 1), 1.f) ||
-        (dsf_closer_to_it && !WithinEpsilon(*it, 1.f))) {
-      *it = dsf;
-    } else {
-      *(it - 1) = dsf;
-    }
-  }
 }
 
 }  // namespace display

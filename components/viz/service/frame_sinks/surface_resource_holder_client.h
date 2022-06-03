@@ -16,8 +16,7 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolderClient {
 
   // ReturnResources gets called when the display compositor is done using the
   // resources so that the client can use them.
-  virtual void ReturnResources(
-      const std::vector<ReturnedResource>& resources) = 0;
+  virtual void ReturnResources(std::vector<ReturnedResource> resources) = 0;
 };
 
 }  // namespace viz

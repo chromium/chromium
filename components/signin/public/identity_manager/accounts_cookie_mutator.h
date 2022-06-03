@@ -6,14 +6,18 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 struct CoreAccountId;
 class GoogleServiceAuthError;
+
+namespace network {
+namespace mojom {
+class CookieManager;
+}
+}  // namespace network
 
 namespace signin {
 
@@ -24,12 +28,38 @@ enum class SetAccountsInCookieResult;
 // accounts into the cookie jar tracking the list of logged-in Google sessions.
 class AccountsCookieMutator {
  public:
+  // Delegate class used to interact with storage partitions other than the
+  // default one. The default storage partition is managed by the SigninClient.
+  class PartitionDelegate {
+   public:
+    // Creates a new GaiaAuthFetcher for the partition.
+    virtual std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
+        GaiaAuthConsumer* consumer,
+        const gaia::GaiaSource& source) = 0;
+
+    // Returns the CookieManager for the partition.
+    virtual network::mojom::CookieManager* GetCookieManagerForPartition() = 0;
+  };
+
+  // Task handle for SetAccountsInCookieForPartition. Deleting this object
+  // cancels the task. Must not outlive the AccountsInCookieMutator.
+  class SetAccountsInCookieTask {
+   public:
+    virtual ~SetAccountsInCookieTask() = default;
+  };
+
   AccountsCookieMutator() = default;
+
+  AccountsCookieMutator(const AccountsCookieMutator&) = delete;
+  AccountsCookieMutator& operator=(const AccountsCookieMutator&) = delete;
+
   virtual ~AccountsCookieMutator() = default;
 
   typedef base::OnceCallback<void(const CoreAccountId& account_id,
                                   const GoogleServiceAuthError& error)>
       AddAccountToCookieCompletedCallback;
+  typedef base::OnceCallback<void(const GoogleServiceAuthError& error)>
+      LogOutFromCookieCompletedCallback;
 
   // Adds an account identified by |account_id| to the cookie responsible for
   // tracking the list of logged-in Google sessions across the web.
@@ -67,6 +97,21 @@ class AccountsCookieMutator {
       base::OnceCallback<void(SetAccountsInCookieResult)>
           set_accounts_in_cookies_completed_callback) = 0;
 
+  // This is similar to SetAccountsInCookie, but allow specifying the partition
+  // where the cookies are set. This function must not be used with the default
+  // partition (use SetAccountsInCookie instead).
+  //
+  // The returned SetAccountsInCookieTask must not outlive the
+  // AccountsCookieMutator. If the task is deleted, all network requests are
+  // cancelled; the partition delegate and the callback will not be called.
+  virtual std::unique_ptr<SetAccountsInCookieTask>
+  SetAccountsInCookieForPartition(
+      PartitionDelegate* partition_delegate,
+      const MultiloginParameters& parameters,
+      gaia::GaiaSource source,
+      base::OnceCallback<void(SetAccountsInCookieResult)>
+          set_accounts_in_cookies_completed_callback) = 0;
+
   // Triggers a ListAccounts fetch. Can be used in circumstances where clients
   // know that the contents of the Gaia cookie might have changed.
   virtual void TriggerCookieJarUpdate() = 0;
@@ -82,10 +127,16 @@ class AccountsCookieMutator {
 #endif
 
   // Remove all accounts from the Gaia cookie.
-  virtual void LogOutAllAccounts(gaia::GaiaSource source) = 0;
+  // Note: this only clears the Gaia cookies. Other cookies such as the SAML
+  // provider cookies are not cleared. To cleanly remove an account from the
+  // web, the Gaia logout page should be loaded as a navigation.
+  virtual void LogOutAllAccounts(
+      gaia::GaiaSource source,
+      LogOutFromCookieCompletedCallback completion_callback) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutator);
+  // Indicates that an account previously listed via ListAccounts should now
+  // be removed.
+  virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
 };
 
 }  // namespace signin

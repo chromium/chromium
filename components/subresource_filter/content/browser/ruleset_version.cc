@@ -26,6 +26,10 @@ const char kSubresourceFilterRulesetChecksum[] =
 
 UnindexedRulesetInfo::UnindexedRulesetInfo() = default;
 UnindexedRulesetInfo::~UnindexedRulesetInfo() = default;
+UnindexedRulesetInfo::UnindexedRulesetInfo(const UnindexedRulesetInfo&) =
+    default;
+UnindexedRulesetInfo& UnindexedRulesetInfo::operator=(
+    const UnindexedRulesetInfo&) = default;
 
 IndexedRulesetVersion::IndexedRulesetVersion() = default;
 IndexedRulesetVersion::IndexedRulesetVersion(const std::string& content_version,

@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <utility>
 
-#include "apps/ui/views/app_window_frame_view.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
@@ -23,8 +23,11 @@
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/browser/app_window/app_delegate.h"
+#include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
@@ -127,12 +130,16 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
       create_params.visible_on_all_workspaces;
 
   OnBeforeWidgetInit(create_params, &init_params, widget());
+  gfx::Rect init_param_bounds = init_params.bounds;
   widget()->Init(std::move(init_params));
 
   // The frame insets are required to resolve the bounds specifications
   // correctly. So we set the window bounds and constraints now.
   gfx::Insets frame_insets = GetFrameInsets();
-  gfx::Rect window_bounds = create_params.GetInitialWindowBounds(frame_insets);
+  gfx::Rect window_bounds =
+      init_param_bounds.IsEmpty()
+          ? create_params.GetInitialWindowBounds(frame_insets)
+          : init_param_bounds;
   SetContentSizeConstraints(create_params.GetContentMinimumSize(frame_insets),
                             create_params.GetContentMaximumSize(frame_insets));
   if (!window_bounds.IsEmpty()) {
@@ -140,13 +147,24 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     bool position_specified =
         window_bounds.x() != BoundsSpecification::kUnspecifiedPosition &&
         window_bounds.y() != BoundsSpecification::kUnspecifiedPosition;
-    if (!position_specified)
+    if (!position_specified) {
+#if defined(OS_MAC)
+      // On Mac, this will call NativeWidgetMac's CenterWindow() which relies
+      // on the size being its content size instead of window size. That
+      // API only causes a problem when we use system title bar in an old
+      // platform app.
+      gfx::Rect content_bounds = window_bounds;
+      content_bounds.Inset(frame_insets);
+      widget()->CenterWindow(content_bounds.size());
+#else
       widget()->CenterWindow(window_bounds.size());
-    else
+#endif
+    } else {
       widget()->SetBounds(window_bounds);
+    }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (create_params.is_ime_window)
     return;
 #endif
@@ -175,7 +193,8 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
 
   for (auto iter = accelerator_table.begin(); iter != accelerator_table.end();
        ++iter) {
-    if (is_kiosk_app_mode && !chrome::IsCommandAllowedInAppMode(iter->second))
+    if (is_kiosk_app_mode &&
+        !chrome::IsCommandAllowedInAppMode(iter->second, /* is_popup */ false))
       continue;
 
     focus_manager->RegisterAccelerator(
@@ -183,7 +202,7 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   }
 }
 
-views::NonClientFrameView*
+std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViews::CreateStandardDesktopAppFrame() {
   return views::WidgetDelegateView::CreateNonClientFrameView(widget());
 }
@@ -213,9 +232,9 @@ ui::ZOrderLevel ChromeNativeAppWindowViews::GetZOrderLevel() const {
 
 // views::WidgetDelegate implementation.
 
-gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowAppIcon() {
+ui::ImageModel ChromeNativeAppWindowViews::GetWindowAppIcon() {
   // Resulting icon is cached in aura::client::kAppIconKey window property.
-  const gfx::Image& custom_image = app_window()->custom_app_icon();
+  const gfx::Image& custom_image = GetCustomImage();
   if (app_window()->app_icon_url().is_valid() &&
       app_window()->show_in_shelf()) {
     EnsureAppIconCreated();
@@ -231,34 +250,34 @@ gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowAppIcon() {
           gfx::ImageSkiaOperations::CreateResizedImage(
               base_image.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
               gfx::Size(large_icon_size, large_icon_size));
-      return gfx::ImageSkiaOperations::CreateIconWithBadge(
-          resized_image, app_icon_->image_skia());
+      return ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateIconWithBadge(
+              resized_image, GetAppIconImage().AsImageSkia()));
     }
-    return gfx::ImageSkiaOperations::CreateIconWithBadge(
-        base_image.AsImageSkia(), app_icon_->image_skia());
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateIconWithBadge(
+            base_image.AsImageSkia(), GetAppIconImage().AsImageSkia()));
   }
 
   if (!custom_image.IsEmpty())
-    return *custom_image.ToImageSkia();
+    return ui::ImageModel::FromImage(custom_image);
   EnsureAppIconCreated();
-  return app_icon_->image_skia();
+  return ui::ImageModel::FromImage(GetAppIconImage());
 }
 
-gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowIcon() {
+ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
   // Resulting icon is cached in aura::client::kWindowIconKey window property.
   content::WebContents* web_contents = app_window()->web_contents();
   if (web_contents) {
     favicon::FaviconDriver* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents);
-    gfx::Image app_icon = favicon_driver->GetFavicon();
-    if (!app_icon.IsEmpty())
-      return *app_icon.ToImageSkia();
+    return ui::ImageModel::FromImage(favicon_driver->GetFavicon());
   }
-  return gfx::ImageSkia();
+  return ui::ImageModel();
 }
 
-views::NonClientFrameView* ChromeNativeAppWindowViews::CreateNonClientFrameView(
-    views::Widget* widget) {
+std::unique_ptr<views::NonClientFrameView>
+ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
   return (IsFrameless() || has_frame_color_) ?
       CreateNonStandardAppFrame() : CreateStandardDesktopAppFrame();
 }
@@ -323,6 +342,7 @@ void ChromeNativeAppWindowViews::UpdateShape(
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
   }
   shape_ = std::move(region);
+  OnWidgetHasHitTestMaskChanged();
   widget()->SetShape(shape() ? std::make_unique<ShapeRects>(*shape_rects_)
                              : nullptr);
   widget()->OnSizeConstraintsChanged();
@@ -355,6 +375,15 @@ void ChromeNativeAppWindowViews::InitializeWindow(
           Profile::FromBrowserContext(app_window->browser_context()),
           widget()->GetFocusManager(),
           extensions::ExtensionKeybindingRegistry::PLATFORM_APPS_ONLY, nullptr);
+}
+
+gfx::Image ChromeNativeAppWindowViews::GetCustomImage() {
+  return app_window()->custom_app_icon();
+}
+
+gfx::Image ChromeNativeAppWindowViews::GetAppIconImage() {
+  DCHECK(app_icon_);
+  return gfx::Image(app_icon_->image_skia());
 }
 
 void ChromeNativeAppWindowViews::EnsureAppIconCreated() {

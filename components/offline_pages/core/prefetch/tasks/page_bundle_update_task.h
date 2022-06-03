@@ -41,12 +41,15 @@ class PageBundleUpdateTask : public Task {
                        PrefetchDispatcher* dispatcher,
                        const std::string& operation_name,
                        const std::vector<RenderPageInfo>& pages);
+
+  PageBundleUpdateTask(const PageBundleUpdateTask&) = delete;
+  PageBundleUpdateTask& operator=(const PageBundleUpdateTask&) = delete;
+
   ~PageBundleUpdateTask() override;
 
+ private:
   // Task implementation.
   void Run() override;
-
- private:
   void FinishedWork(PageBundleUpdateResult result);
 
   // Owned by PrefetchService which also transitively owns |this|, so raw
@@ -59,8 +62,6 @@ class PageBundleUpdateTask : public Task {
   std::vector<RenderPageInfo> pages_;
 
   base::WeakPtrFactory<PageBundleUpdateTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageBundleUpdateTask);
 };
 
 }  // namespace offline_pages

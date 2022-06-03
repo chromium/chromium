@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
@@ -31,13 +29,13 @@ class VIZ_COMMON_EXPORT VideoHoleDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              const base::UnguessableToken& overlay_plane_id);
+              const base::UnguessableToken& plane_id);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              const base::UnguessableToken& overlay_plane_id);
+              const base::UnguessableToken& plane_id);
 
   static const VideoHoleDrawQuad* MaterialCast(const DrawQuad*);
   base::UnguessableToken overlay_plane_id;

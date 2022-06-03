@@ -4,16 +4,24 @@
 
 #include "base/containers/span.h"
 
+// span.h is a widely included header and its size has significant impact on
+// build time. Try not to raise this limit unless absolutely necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 270000
+#endif
+
 #include <stdint.h>
 
-#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <vector>
 
 #include "base/containers/checked_iterators.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +61,8 @@ TEST(SpanTest, DefaultConstructor) {
 }
 
 TEST(SpanTest, ConstructFromDataAndSize) {
-  constexpr span<int> empty_span(nullptr, 0);
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, 0);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
@@ -74,26 +83,146 @@ TEST(SpanTest, ConstructFromDataAndSize) {
     EXPECT_EQ(vector[i], static_span[i]);
 }
 
-TEST(SpanTest, ConstructFromPointerPair) {
-  constexpr span<int> empty_span(nullptr, nullptr);
+TEST(SpanTest, ConstructFromIterAndSize) {
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, 0);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
   std::vector<int> vector = {1, 1, 2, 3, 5, 8};
 
-  span<int> dynamic_span(vector.data(), vector.data() + vector.size() / 2);
+  span<int> dynamic_span(vector.begin(), vector.size());
+  EXPECT_EQ(vector.data(), dynamic_span.data());
+  EXPECT_EQ(vector.size(), dynamic_span.size());
+
+  for (size_t i = 0; i < dynamic_span.size(); ++i)
+    EXPECT_EQ(vector[i], dynamic_span[i]);
+
+  span<int, 6> static_span(vector.begin(), vector.size());
+  EXPECT_EQ(vector.data(), static_span.data());
+  EXPECT_EQ(vector.size(), static_span.size());
+
+  for (size_t i = 0; i < static_span.size(); ++i)
+    EXPECT_EQ(vector[i], static_span[i]);
+}
+
+TEST(SpanTest, ConstructFromIterPair) {
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, kNull);
+  EXPECT_TRUE(empty_span.empty());
+  EXPECT_EQ(nullptr, empty_span.data());
+
+  std::vector<int> vector = {1, 1, 2, 3, 5, 8};
+
+  span<int> dynamic_span(vector.begin(), vector.begin() + vector.size() / 2);
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size() / 2, dynamic_span.size());
 
   for (size_t i = 0; i < dynamic_span.size(); ++i)
     EXPECT_EQ(vector[i], dynamic_span[i]);
 
-  span<int, 3> static_span(vector.data(), vector.data() + vector.size() / 2);
+  span<int, 3> static_span(vector.begin(), vector.begin() + vector.size() / 2);
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size() / 2, static_span.size());
 
   for (size_t i = 0; i < static_span.size(); ++i)
     EXPECT_EQ(vector[i], static_span[i]);
+}
+
+TEST(SpanTest, AllowedConversionsFromStdArray) {
+  // In the following assertions we use std::is_convertible_v<From, To>, which
+  // for non-void types is equivalent to checking whether the following
+  // expression is well-formed:
+  //
+  // T obj = std::declval<From>();
+  //
+  // In particular we are checking whether From is implicitly convertible to To,
+  // which also implies that To is explicitly constructible from From.
+  static_assert(
+      std::is_convertible<std::array<int, 3>&, base::span<int>>::value,
+      "Error: l-value reference to std::array<int> should be convertible to "
+      "base::span<int> with dynamic extent.");
+  static_assert(
+      std::is_convertible<std::array<int, 3>&, base::span<int, 3>>::value,
+      "Error: l-value reference to std::array<int> should be convertible to "
+      "base::span<int> with the same static extent.");
+  static_assert(
+      std::is_convertible<std::array<int, 3>&, base::span<const int>>::value,
+      "Error: l-value reference to std::array<int> should be convertible to "
+      "base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible<std::array<int, 3>&, base::span<const int, 3>>::value,
+      "Error: l-value reference to std::array<int> should be convertible to "
+      "base::span<const int> with the same static extent.");
+  static_assert(std::is_convertible<const std::array<int, 3>&,
+                                    base::span<const int>>::value,
+                "Error: const l-value reference to std::array<int> should be "
+                "convertible to base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible<const std::array<int, 3>&,
+                          base::span<const int, 3>>::value,
+      "Error: const l-value reference to std::array<int> should be convertible "
+      "to base::span<const int> with the same static extent.");
+  static_assert(std::is_convertible<std::array<const int, 3>&,
+                                    base::span<const int>>::value,
+                "Error: l-value reference to std::array<const int> should be "
+                "convertible to base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible<std::array<const int, 3>&,
+                          base::span<const int, 3>>::value,
+      "Error: l-value reference to std::array<const int> should be convertible "
+      "to base::span<const int> with the same static extent.");
+  static_assert(
+      std::is_convertible<const std::array<const int, 3>&,
+                          base::span<const int>>::value,
+      "Error: const l-value reference to std::array<const int> should be "
+      "convertible to base::span<const int> with dynamic extent.");
+  static_assert(
+      std::is_convertible<const std::array<const int, 3>&,
+                          base::span<const int, 3>>::value,
+      "Error: const l-value reference to std::array<const int> should be "
+      "convertible to base::span<const int> with the same static extent.");
+}
+
+TEST(SpanTest, DisallowedConstructionsFromStdArray) {
+  // In the following assertions we use !std::is_constructible_v<T, Args>, which
+  // is equivalent to checking whether the following expression is malformed:
+  //
+  // T obj(std::declval<Args>()...);
+  //
+  // In particular we are checking that T is not explicitly constructible from
+  // Args, which also implies that T is not implicitly constructible from Args
+  // as well.
+  static_assert(
+      !std::is_constructible<base::span<int>, const std::array<int, 3>&>::value,
+      "Error: base::span<int> with dynamic extent should not be constructible "
+      "from const l-value reference to std::array<int>");
+
+  static_assert(
+      !std::is_constructible<base::span<int>, std::array<const int, 3>&>::value,
+      "Error: base::span<int> with dynamic extent should not be constructible "
+      "from l-value reference to std::array<const int>");
+
+  static_assert(
+      !std::is_constructible<base::span<int>,
+                             const std::array<const int, 3>&>::value,
+      "Error: base::span<int> with dynamic extent should not be constructible "
+      "const from l-value reference to std::array<const int>");
+
+  static_assert(
+      !std::is_constructible<base::span<int, 2>, std::array<int, 3>&>::value,
+      "Error: base::span<int> with static extent should not be constructible "
+      "from l-value reference to std::array<int> with different extent");
+
+  static_assert(
+      !std::is_constructible<base::span<int, 4>, std::array<int, 3>&>::value,
+      "Error: base::span<int> with dynamic extent should not be constructible "
+      "from l-value reference to std::array<int> with different extent");
+
+  static_assert(
+      !std::is_constructible<base::span<int>, std::array<bool, 3>&>::value,
+      "Error: base::span<int> with dynamic extent should not be constructible "
+      "from l-value reference to std::array<bool>");
 }
 
 TEST(SpanTest, ConstructFromConstexprArray) {
@@ -965,7 +1094,7 @@ TEST(SpanTest, ReverseIterator) {
   EXPECT_TRUE(std::equal(std::rbegin(kArray), std::rend(kArray), span.rbegin(),
                          span.rend()));
   EXPECT_TRUE(std::equal(std::crbegin(kArray), std::crend(kArray),
-                         span.crbegin(), span.crend()));
+                         std::crbegin(span), std::crend(span)));
 }
 
 TEST(SpanTest, AsBytes) {
@@ -1196,46 +1325,6 @@ TEST(SpanTest, MakeSpanFromStaticSpan) {
       "the type of made_span differs from expected_span!");
 }
 
-TEST(SpanTest, StdTupleSize) {
-  static_assert(std::tuple_size<span<int, 0>>::value == 0, "");
-  static_assert(std::tuple_size<span<int, 1>>::value == 1, "");
-  static_assert(std::tuple_size<span<int, 2>>::value == 2, "");
-}
-
-TEST(SpanTest, StdTupleElement) {
-  static_assert(std::is_same<int, std::tuple_element_t<0, span<int, 1>>>::value,
-                "");
-  static_assert(
-      std::is_same<const int,
-                   std::tuple_element_t<0, span<const int, 2>>>::value,
-      "");
-  static_assert(
-      std::is_same<const int*,
-                   std::tuple_element_t<1, span<const int*, 2>>>::value,
-      "");
-}
-
-TEST(SpanTest, StdGet) {
-  static constexpr int kArray[] = {1, 6, 1, 8, 0};
-  constexpr span<const int, 5> span(kArray);
-
-  static_assert(
-      &kArray[0] == &std::get<0>(span),
-      "std::get<0>(span) does not refer to the same element as kArray[0]");
-  static_assert(
-      &kArray[1] == &std::get<1>(span),
-      "std::get<1>(span) does not refer to the same element as kArray[1]");
-  static_assert(
-      &kArray[2] == &std::get<2>(span),
-      "std::get<2>(span) does not refer to the same element as kArray[2]");
-  static_assert(
-      &kArray[3] == &std::get<3>(span),
-      "std::get<3>(span) does not refer to the same element as kArray[3]");
-  static_assert(
-      &kArray[4] == &std::get<4>(span),
-      "std::get<4>(span) does not refer to the same element as kArray[4]");
-}
-
 TEST(SpanTest, EnsureConstexprGoodness) {
   static constexpr int kArray[] = {5, 4, 3, 2, 1};
   constexpr span<const int> constexpr_span(kArray);
@@ -1299,11 +1388,6 @@ TEST(SpanTest, IteratorIsRangeMoveSafe) {
         CheckedContiguousIterator<const int>(
             span.data() + dest_start_index,
             span.data() + dest_start_index + kNumElements)));
-    EXPECT_FALSE(CheckedContiguousConstIterator<const int>::IsRangeMoveSafe(
-        span.cbegin(), span.cend(),
-        CheckedContiguousConstIterator<const int>(
-            span.data() + dest_start_index,
-            span.data() + dest_start_index + kNumElements)));
   }
 
   // Non-overlapping ranges.
@@ -1313,35 +1397,24 @@ TEST(SpanTest, IteratorIsRangeMoveSafe) {
         CheckedContiguousIterator<const int>(
             span.data() + dest_start_index,
             span.data() + dest_start_index + kNumElements)));
-    EXPECT_TRUE(CheckedContiguousConstIterator<const int>::IsRangeMoveSafe(
-        span.cbegin(), span.cend(),
-        CheckedContiguousConstIterator<const int>(
-            span.data() + dest_start_index,
-            span.data() + dest_start_index + kNumElements)));
   }
 
   // IsRangeMoveSafe is true if the length to be moved is 0.
   EXPECT_TRUE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
       span.begin(), span.begin(),
       CheckedContiguousIterator<const int>(span.data(), span.data())));
-  EXPECT_TRUE(CheckedContiguousConstIterator<const int>::IsRangeMoveSafe(
-      span.cbegin(), span.cbegin(),
-      CheckedContiguousConstIterator<const int>(span.data(), span.data())));
 
   // IsRangeMoveSafe is false if end < begin.
   EXPECT_FALSE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
       span.end(), span.begin(),
       CheckedContiguousIterator<const int>(span.data(), span.data())));
-  EXPECT_FALSE(CheckedContiguousConstIterator<const int>::IsRangeMoveSafe(
-      span.cend(), span.cbegin(),
-      CheckedContiguousConstIterator<const int>(span.data(), span.data())));
 }
 
 TEST(SpanTest, Sort) {
   int array[] = {5, 4, 3, 2, 1};
 
   span<int> dynamic_span = array;
-  std::sort(dynamic_span.begin(), dynamic_span.end());
+  ranges::sort(dynamic_span);
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
   std::sort(dynamic_span.rbegin(), dynamic_span.rend());
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));
@@ -1349,7 +1422,7 @@ TEST(SpanTest, Sort) {
   span<int, 5> static_span = array;
   std::sort(static_span.rbegin(), static_span.rend(), std::greater<>());
   EXPECT_THAT(array, ElementsAre(1, 2, 3, 4, 5));
-  std::sort(static_span.begin(), static_span.end(), std::greater<>());
+  ranges::sort(static_span, std::greater<>());
   EXPECT_THAT(array, ElementsAre(5, 4, 3, 2, 1));
 }
 
@@ -1376,12 +1449,27 @@ TEST(SpanTest, SpanExtentConversions) {
 
 TEST(SpanTest, IteratorConversions) {
   static_assert(std::is_convertible<span<int>::iterator,
-                                    span<int>::const_iterator>::value,
-                "Error: iterator should be convertible to const_iterator");
+                                    span<const int>::iterator>::value,
+                "Error: iterator should be convertible to const iterator");
 
-  static_assert(!std::is_convertible<span<int>::const_iterator,
+  static_assert(!std::is_convertible<span<const int>::iterator,
                                      span<int>::iterator>::value,
-                "Error: const_iterator should not be convertible to iterator");
+                "Error: const iterator should not be convertible to iterator");
+}
+
+TEST(SpanTest, ExtentMacro) {
+  constexpr size_t kSize = 10;
+  std::array<uint8_t, kSize> array;
+  static_assert(EXTENT(array) == kSize, "EXTENT broken");
+
+  const std::array<uint8_t, kSize>& reference = array;
+  static_assert(EXTENT(reference) == kSize, "EXTENT broken for references");
+
+  const std::array<uint8_t, kSize>* pointer = nullptr;
+  static_assert(EXTENT(*pointer) == kSize, "EXTENT broken for pointers");
+
+  uint8_t plain_array[kSize] = {0};
+  static_assert(EXTENT(plain_array) == kSize, "EXTENT broken for plain arrays");
 }
 
 }  // namespace base

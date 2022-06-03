@@ -71,8 +71,6 @@ def build_and_upload(script_path, distro, release, arch, lock):
 
 def main():
   script_dir = os.path.dirname(os.path.realpath(__file__))
-  subprocess.check_call(
-      [os.path.join(script_dir, 'update-archive-timestamp.sh')])
   procs = []
   lock = multiprocessing.Lock()
   for filename in glob.glob(os.path.join(script_dir, 'sysroot-creator-*.sh')):

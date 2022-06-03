@@ -82,7 +82,7 @@ static int libxml_is_threaded = 1;
 
 /*
  * TODO: this module still uses malloc/free and not xmlMalloc/xmlFree
- *       to avoid some crazyness since xmlMalloc/xmlFree may actually
+ *       to avoid some craziness since xmlMalloc/xmlFree may actually
  *       be hosted on allocated blocks needing them for the allocation ...
  */
 
@@ -239,7 +239,7 @@ xmlMutexLock(xmlMutexPtr tok)
     if (acquire_sem(tok->sem) != B_NO_ERROR) {
 #ifdef DEBUG_THREADS
         xmlGenericError(xmlGenericErrorContext,
-                        "xmlMutexLock():BeOS:Couldn't aquire semaphore\n");
+                        "xmlMutexLock():BeOS:Couldn't acquire semaphore\n");
 #endif
     }
     tok->tid = find_thread(NULL);
@@ -885,8 +885,6 @@ xmlInitThreads(void)
         }
     }
 #endif /* XML_PTHREAD_WEAK */
-#elif defined(HAVE_WIN32_THREADS) && !defined(HAVE_COMPILER_TLS) && (!defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL))
-    InitializeCriticalSection(&cleanup_helpers_cs);
 #endif
 }
 
@@ -958,6 +956,9 @@ xmlOnceInit(void)
     if (!run_once.done) {
         if (InterlockedIncrement(&run_once.control) == 1) {
 #if !defined(HAVE_COMPILER_TLS)
+#if !defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL)
+            InitializeCriticalSection(&cleanup_helpers_cs);
+#endif
             globalkey = TlsAlloc();
 #endif
             mainthread = GetCurrentThreadId();

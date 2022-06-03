@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
+import("//build/config/python.gni")
 import("//testing/test.gni")
 
 action("ulp_serialized_to_static_c") {
@@ -12,12 +13,8 @@ action("ulp_serialized_to_static_c") {
     "geolanguage-data_rank1.bin",
     "geolanguage-data_rank2.bin",
   ]
-  sources = [
-    "ulp_language_code_locator_helper.h.tmpl",
-  ]
-  outputs = [
-    "$target_gen_dir/ulp_language_code_locator_helper.h",
-  ]
+  sources = [ "ulp_language_code_locator_helper.h.tmpl" ]
+  outputs = [ "$target_gen_dir/ulp_language_code_locator_helper.h" ]
 
   args = [
     "--data",

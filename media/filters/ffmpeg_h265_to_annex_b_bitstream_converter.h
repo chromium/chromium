@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 #include "media/formats/mp4/hevc.h"
@@ -29,6 +28,11 @@ class MEDIA_EXPORT FFmpegH265ToAnnexBBitstreamConverter
   explicit FFmpegH265ToAnnexBBitstreamConverter(
       AVCodecParameters* stream_codec_parameters);
 
+  FFmpegH265ToAnnexBBitstreamConverter(
+      const FFmpegH265ToAnnexBBitstreamConverter&) = delete;
+  FFmpegH265ToAnnexBBitstreamConverter& operator=(
+      const FFmpegH265ToAnnexBBitstreamConverter&) = delete;
+
   ~FFmpegH265ToAnnexBBitstreamConverter() override;
 
   // FFmpegBitstreamConverter implementation.
@@ -40,11 +44,8 @@ class MEDIA_EXPORT FFmpegH265ToAnnexBBitstreamConverter
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
   AVCodecParameters* stream_codec_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegH265ToAnnexBBitstreamConverter);
 };
 
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_FFMPEG_H265_TO_ANNEX_B_BITSTREAM_CONVERTER_H_
-

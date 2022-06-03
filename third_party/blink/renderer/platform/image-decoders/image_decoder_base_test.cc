@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
@@ -131,11 +132,7 @@ Vector<base::FilePath> ImageDecoderBaseTest::GetImageFiles() const {
   for (base::FilePath next_file_name = enumerator.Next();
        !next_file_name.empty(); next_file_name = enumerator.Next()) {
     base::FilePath base_name = next_file_name.BaseName();
-#if defined(OS_WIN)
-    std::string base_name_ascii = base::UTF16ToASCII(base_name.value());
-#else
-    std::string base_name_ascii = base_name.value();
-#endif
+    std::string base_name_ascii = base_name.MaybeAsASCII();
     if (base::MatchPattern(base_name_ascii, pattern))
       image_files.push_back(next_file_name);
   }

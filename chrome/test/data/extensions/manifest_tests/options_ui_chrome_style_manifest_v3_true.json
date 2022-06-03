@@ -1,0 +1,10 @@
+{
+  "name": "options_ui with chrome_style in manifest v3",
+  "description": "Tests that specifying chrome_style=true is invalid for manifest v3",
+  "version": "1",
+  "manifest_version": 3,
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  }
+}

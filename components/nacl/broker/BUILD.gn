@@ -26,12 +26,13 @@ source_set("broker") {
     "//components/nacl/common:minimal",
     "//components/nacl/common:switches",
     "//content/public/common:static_switches",
+    "//content/public/common/zygote:buildflags",
     "//ipc",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//sandbox",
+    "//sandbox/policy/mojom",
     "//services/service_manager/public/cpp",
-    "//services/service_manager/zygote:zygote_buildflags",
   ]
 
   if (current_cpu == target_cpu) {
@@ -71,16 +72,10 @@ if (current_cpu == "x86") {
     nacl64_out_dir = get_label_info(nacl64_label, "root_out_dir")
     sources = [
       "$nacl64_out_dir/nacl64.exe",
+      "$nacl64_out_dir/nacl64.exe.pdb",
     ]
-    if (symbol_level != 0) {
-      sources += [ "$nacl64_out_dir/nacl64.exe.pdb" ]
-    }
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
-    deps = [
-      nacl64_label,
-    ]
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
+    deps = [ nacl64_label ]
   }
 } else if (current_cpu == "x64") {
   # In the x64 toolchain context, build nacl64.exe for real.
@@ -98,9 +93,7 @@ if (current_cpu == "x86") {
       ldflags = [ "/OPT:REF" ]
     }
 
-    sources = [
-      "//chrome/nacl/nacl_exe_win_64.cc",
-    ]
+    sources = [ "//chrome/nacl/nacl_exe_win_64.cc" ]
 
     deps = [
       ":broker",
@@ -112,7 +105,6 @@ if (current_cpu == "x86") {
       "//chrome/install_static:install_static_util",
       "//components/crash/content/app:deprecated_breakpad_win",
       "//components/nacl/loader:nacl_helper_win_64",
-      "//content/public/common:static_features",
       "//content/public/common:static_switches",
       "//ppapi/proxy:ipc",
       "//sandbox",
@@ -129,7 +121,7 @@ if (current_cpu == "x86") {
       "//content/app/sandbox_helper_win.cc",
       "//content/common/sandbox_init_win.cc",
       "//content/public/common/sandboxed_process_launcher_delegate.cc",
-      "//services/service_manager/sandbox/win/sandbox_win.cc",
+      "//sandbox/policy/win/sandbox_win.cc",
     ]
 
     defines = [
@@ -145,9 +137,9 @@ if (current_cpu == "x86") {
     deps = [
       "//base",
       "//content/public/common:static_switches",
+      "//content/public/common/zygote:buildflags",
       "//sandbox",
-      "//services/service_manager/sandbox",
-      "//services/service_manager/zygote:zygote_buildflags",
+      "//sandbox/policy",
     ]
   }
 

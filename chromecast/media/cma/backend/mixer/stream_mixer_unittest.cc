@@ -8,8 +8,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/media/audio/mixer_service/redirected_audio_connection.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector.h"
+#include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 #include "chromecast/media/cma/backend/mixer/loopback_test_support.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
@@ -243,14 +245,16 @@ class MockLoopbackAudioObserver
     : public mixer_service::LoopbackConnection::Delegate {
  public:
   MockLoopbackAudioObserver() = default;
+
+  MockLoopbackAudioObserver(const MockLoopbackAudioObserver&) = delete;
+  MockLoopbackAudioObserver& operator=(const MockLoopbackAudioObserver&) =
+      delete;
+
   ~MockLoopbackAudioObserver() override = default;
 
   MOCK_METHOD6(OnLoopbackAudio,
                void(int64_t, SampleFormat, int, int, uint8_t*, int));
   MOCK_METHOD1(OnLoopbackInterrupted, void(LoopbackInterruptReason));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoopbackAudioObserver);
 };
 
 // Given |inputs|, returns mixed audio data according to the mixing method used
@@ -259,20 +263,21 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
     const std::vector<MockMixerSource*>& inputs,
     bool apply_volume = true) {
   int read_size = 0;
+  int num_channels = 1;
   for (auto* input : inputs) {
     CHECK(input);
     read_size = std::max(input->data().frames(), read_size);
+    num_channels = std::max(num_channels, input->data().channels());
   }
 
   // Verify all inputs are the right size.
   for (auto* input : inputs) {
-    CHECK_EQ(kNumChannels, input->data().channels());
     CHECK_LE(read_size, input->data().frames());
   }
 
   // Currently, the mixing algorithm is simply to sum the scaled, clipped input
   // streams. Go sample-by-sample and mix the data.
-  auto mixed = ::media::AudioBus::Create(kNumChannels, read_size);
+  auto mixed = ::media::AudioBus::Create(num_channels, read_size);
   for (int c = 0; c < mixed->channels(); ++c) {
     for (int f = 0; f < read_size; ++f) {
       float* result = mixed->channel(c) + f;
@@ -280,6 +285,9 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
       // Sum the sample from each input stream, scaling each stream.
       *result = 0.0;
       for (auto* input : inputs) {
+        if (input->data().channels() <= c) {
+          continue;
+        }
         if (input->data().frames() > f) {
           if (apply_volume) {
             *result += *(input->data().channel(c) + f) * input->multiplier();
@@ -289,7 +297,7 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
         }
       }
 
-      *result = base::ClampToRange(*result, -1.0f, 1.0f);
+      *result = base::clamp(*result, -1.0f, 1.0f);
     }
   }
   return mixed;
@@ -368,12 +376,16 @@ std::string DeathRegex(const std::string& regex) {
 }  // namespace
 
 class StreamMixerTest : public testing::Test {
+ public:
+  StreamMixerTest(const StreamMixerTest&) = delete;
+  StreamMixerTest& operator=(const StreamMixerTest&) = delete;
+
  protected:
   StreamMixerTest() {
     auto output = std::make_unique<NiceMock<MockMixerOutput>>();
     mock_output_ = output.get();
-    mixer_ = std::make_unique<StreamMixer>(std::move(output), nullptr,
-                                           base::ThreadTaskRunnerHandle::Get());
+    mixer_ = std::make_unique<StreamMixer>(
+        std::move(output), base::ThreadTaskRunnerHandle::Get(), "{}");
     mixer_->SetVolume(AudioContentType::kMedia, 1.0f);
     mixer_->SetVolume(AudioContentType::kAlarm, 1.0f);
     std::string test_pipeline_json = base::StringPrintf(
@@ -476,8 +488,6 @@ class StreamMixerTest : public testing::Test {
   MockMixerOutput* mock_output_;
   std::unique_ptr<StreamMixer> mixer_;
   MockPostProcessorFactory* pp_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixerTest);
 };
 
 TEST_F(StreamMixerTest, AddSingleInput) {
@@ -726,6 +736,93 @@ TEST_F(StreamMixerTest, OneStreamStereoInput6ChannelFiltersStereoOutput) {
   mixer_.reset();
 }
 
+TEST_F(StreamMixerTest, OneStream10ChannelInputStereoOutput) {
+  mixer_->SetNumOutputChannelsForTest(2);
+
+  MockMixerSource input(kTestSamplesPerSecond);
+  input.set_num_channels(10);
+  input.set_channel_layout(::media::CHANNEL_LAYOUT_DISCRETE);
+
+  EXPECT_CALL(input, InitializeAudioPlayback(_, _)).Times(1);
+  EXPECT_CALL(*mock_output_, Start(kTestSamplesPerSecond, 2)).Times(1);
+  EXPECT_CALL(*mock_output_, Stop()).Times(0);
+  mixer_->AddInput(&input);
+  WaitForMixer();
+  mock_output_->ClearData();
+
+  // Populate the stream with data.
+  const int kNumFrames = 32;
+  auto data = ::media::AudioBus::Create(10, kNumFrames);
+  for (int c = 0; c < 10; ++c) {
+    for (int f = 0; f < kNumFrames; ++f) {
+      data->channel(c)[f] = (c / 10 + f / kNumFrames) / 10;
+    }
+  }
+  input.SetData(std::move(data));
+
+  EXPECT_CALL(input, FillAudioPlaybackFrames(_, _, _)).Times(1);
+  PlaybackOnce();
+
+  // Get the actual mixed output, and compare it against the expected stream.
+  // The stream should match exactly.
+  auto actual = ::media::AudioBus::Create(2, kNumFrames);
+  ASSERT_GE(mock_output_->data().size(), static_cast<size_t>(kNumFrames * 2));
+  ToPlanar(mock_output_->data().data(), kNumFrames, actual.get());
+
+  auto expected = GetMixedAudioData(&input);
+
+  // Downmix 10-channel input to stereo before comparing.
+  ::media::ChannelMixer channel_mixer(
+      mixer::CreateAudioParametersForChannelMixer(
+          ::media::CHANNEL_LAYOUT_DISCRETE, 10),
+      mixer::CreateAudioParametersForChannelMixer(
+          ::media::CHANNEL_LAYOUT_STEREO, 2));
+  auto expected_stereo = ::media::AudioBus::Create(2, expected->frames());
+  channel_mixer.Transform(expected.get(), expected_stereo.get());
+  CompareAudioData(*expected_stereo, *actual);
+
+  mixer_.reset();
+}
+
+TEST_F(StreamMixerTest, OneStream10ChannelInputAndOutput) {
+  mixer_->SetNumOutputChannelsForTest(10);
+
+  MockMixerSource input(kTestSamplesPerSecond);
+  input.set_num_channels(10);
+  input.set_channel_layout(::media::CHANNEL_LAYOUT_DISCRETE);
+
+  EXPECT_CALL(input, InitializeAudioPlayback(_, _)).Times(1);
+  EXPECT_CALL(*mock_output_, Start(kTestSamplesPerSecond, 10)).Times(1);
+  EXPECT_CALL(*mock_output_, Stop()).Times(0);
+  mixer_->AddInput(&input);
+  WaitForMixer();
+  mock_output_->ClearData();
+
+  // Populate the stream with data.
+  const int kNumFrames = 32;
+  auto data = ::media::AudioBus::Create(10, kNumFrames);
+  for (int c = 0; c < 10; ++c) {
+    for (int f = 0; f < kNumFrames; ++f) {
+      data->channel(c)[f] = (c / 10 + f / kNumFrames) / 10;
+    }
+  }
+  input.SetData(std::move(data));
+
+  EXPECT_CALL(input, FillAudioPlaybackFrames(_, _, _)).Times(1);
+  PlaybackOnce();
+
+  // Get the actual mixed output, and compare it against the expected stream.
+  // The stream should match exactly.
+  auto actual = ::media::AudioBus::Create(10, kNumFrames);
+  ASSERT_GE(mock_output_->data().size(), static_cast<size_t>(kNumFrames * 10));
+  ToPlanar(mock_output_->data().data(), kNumFrames, actual.get());
+
+  auto expected = GetMixedAudioData(&input);
+  CompareAudioData(*expected, *actual);
+
+  mixer_.reset();
+}
+
 TEST_F(StreamMixerTest, OneStreamIsScaledDownProperly) {
   MockMixerSource input(kTestSamplesPerSecond);
 
@@ -753,6 +850,41 @@ TEST_F(StreamMixerTest, OneStreamIsScaledDownProperly) {
   ASSERT_GE(mock_output_->data().size(), static_cast<size_t>(kNumFrames));
   ToPlanar(mock_output_->data().data(), kNumFrames, actual.get());
   auto expected = GetMixedAudioData(&input);
+  CompareAudioData(*expected, *actual);
+
+  mixer_.reset();
+}
+
+TEST_F(StreamMixerTest, FocusType) {
+  MockMixerSource input(kTestSamplesPerSecond);
+  input.set_content_type(AudioContentType::kMedia);
+  input.set_focus_type(AudioContentType::kCommunication);
+
+  EXPECT_CALL(input, InitializeAudioPlayback(_, _)).Times(1);
+  EXPECT_CALL(*mock_output_, Start(kTestSamplesPerSecond, _)).Times(1);
+  EXPECT_CALL(*mock_output_, Stop()).Times(0);
+  mixer_->AddInput(&input);
+  mixer_->SetVolume(AudioContentType::kMedia, 0.75);  // This volume is used.
+  mixer_->SetOutputLimit(AudioContentType::kMedia, 0.5);  // Limit is not used.
+  WaitForMixer();
+
+  // Populate the stream with data.
+  const int kNumFrames = 32;
+  ASSERT_EQ(sizeof(kTestData[0]), kNumChannels * kNumFrames * kBytesPerSample);
+  input.SetData(GetTestData(0));
+
+  mock_output_->ClearData();
+
+  EXPECT_CALL(input, FillAudioPlaybackFrames(_, _, _)).Times(1);
+  PlaybackOnce();
+
+  // Get the actual mixed output, and compare it against the expected stream.
+  // The stream should match exactly.
+  auto actual = ::media::AudioBus::Create(kNumChannels, kNumFrames);
+  ASSERT_GE(mock_output_->data().size(), static_cast<size_t>(kNumFrames));
+  ToPlanar(mock_output_->data().data(), kNumFrames, actual.get());
+  auto expected = GetMixedAudioData(&input);
+  expected->Scale(0.75);
   CompareAudioData(*expected, *actual);
 
   mixer_.reset();
@@ -869,27 +1001,27 @@ TEST_F(StreamMixerTest, TwoUnscaledStreamsMixProperlyWithEdgeCases) {
                                        kMinSample,
                                        kMinSample,
                                        kMinSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                        kMaxSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                    },
                                    {
                                        kMinSample,
-                                       0.0,
+                                       0,
                                        kMaxSample,
-                                       0.0,
+                                       0,
                                        kMaxSample,
                                        kMaxSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                    }};
 
   // Hand-calculate the results. Index 0 is clamped to -(2^31). Index 5 is
   // clamped to 2^31-1.
   const int32_t kResult[8] = {
-      kMinSample, kMinSample, 0.0, 0.0, kMaxSample, kMaxSample, 0.0, 0.0,
+      kMinSample, kMinSample, 0, 0, kMaxSample, kMaxSample, 0, 0,
   };
 
   // Populate the streams with data.
@@ -924,7 +1056,7 @@ TEST_F(StreamMixerTest, TwoUnscaledStreamsMixProperlyWithEdgeCases) {
   do {                                                                    \
     auto itr = map->find(name);                                           \
     CHECK(itr != map->end()) << "Could not find processor for " << name;  \
-    EXPECT_CALL(*(itr->second), ProcessFrames(_, frames, _, silence))     \
+    EXPECT_CALL(*(itr->second), ProcessFrames(_, frames, _, _, silence))  \
         .Times(times);                                                    \
   } while (0);
 
@@ -1267,9 +1399,12 @@ TEST_F(StreamMixerTest, OneStreamOutputRedirection) {
   const int kNumFrames = 32;
   input.SetData(GetTestData(0));
 
-  EXPECT_CALL(*redirected_output,
-              OnRedirectedAudio(_, kTestSamplesPerSecond, _, kOutputFrames))
-      .Times(2);
+  testing::Expectation set_sample_rate_is_called =
+      EXPECT_CALL(*redirected_output, SetSampleRate(kTestSamplesPerSecond))
+          .Times(testing::AtLeast(1));
+  EXPECT_CALL(*redirected_output, OnRedirectedAudio(_, _, kOutputFrames))
+      .Times(2)
+      .After(set_sample_rate_is_called);
   PlaybackOnce();  // First buffer is faded in, so don't try to compare it.
   input.SetData(GetTestData(0));
   PlaybackOnce();
@@ -1303,9 +1438,9 @@ TEST_F(StreamMixerTest, OutputRedirectionOrder) {
   const int kNumFrames = 32;
   input.SetData(GetTestData(0));
 
-  EXPECT_CALL(*redirected_output1, OnRedirectedAudio(_, _, _, kOutputFrames))
+  EXPECT_CALL(*redirected_output1, OnRedirectedAudio(_, _, kOutputFrames))
       .Times(2);
-  EXPECT_CALL(*redirected_output2, OnRedirectedAudio(_, _, _, kOutputFrames))
+  EXPECT_CALL(*redirected_output2, OnRedirectedAudio(_, _, kOutputFrames))
       .Times(0);
   PlaybackOnce();  // First buffer is faded in, so don't try to compare it.
   input.SetData(GetTestData(0));

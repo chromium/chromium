@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
-#include "base/logging.h"
 #include "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/common/material_timing.h"
 

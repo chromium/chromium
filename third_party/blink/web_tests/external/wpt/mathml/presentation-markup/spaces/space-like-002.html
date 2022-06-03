@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>Space-like elements</title>
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#definition-of-space-like-elements">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#operator-fence-separator-or-accent-mo">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#layout-of-mrow">
+<link rel="help" href="https://w3c.github.io/mathml-core/#definition-of-space-like-elements">
+<link rel="help" href="https://w3c.github.io/mathml-core/#operator-fence-separator-or-accent-mo">
+<link rel="help" href="https://w3c.github.io/mathml-core/#layout-of-mrow">
 <meta name="assert" content="Verify definition of space-like elements">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -56,9 +56,9 @@
 
       test(function() {
           assert_true(MathMLFeatureDetection.has_operator_spacing());
-          assert_approx_equals(spaceBefore("maction2"), 0, epsilon);
-          assert_approx_equals(spaceAfter("maction2"), 2 * emToPx, epsilon);
-      }, "non-space like maction (no first child)");
+          assert_approx_equals(spaceBefore("maction2"), emToPx, epsilon);
+          assert_approx_equals(spaceAfter("maction2"), emToPx, epsilon);
+      }, "space-like maction (no first child)");
 
       test(function() {
           assert_approx_equals(spaceBefore("maction3"), 0, epsilon);
@@ -74,9 +74,9 @@
 
       test(function() {
           assert_true(MathMLFeatureDetection.has_operator_spacing());
-          assert_approx_equals(spaceBefore("semantics2"), 0, epsilon);
-          assert_approx_equals(spaceAfter("semantics2"), 2 * emToPx, epsilon);
-      }, "non-space like semantics (no first child)");
+          assert_approx_equals(spaceBefore("semantics2"), emToPx, epsilon);
+          assert_approx_equals(spaceAfter("semantics2"), emToPx, epsilon);
+      }, "space-like semantics (no first child)");
 
       test(function() {
           assert_true(MathMLFeatureDetection.has_operator_spacing());

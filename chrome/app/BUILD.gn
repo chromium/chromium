@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -13,25 +16,17 @@ import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+} else if (is_fuchsia) {
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 }
 
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
-  sources = [
-    "chrome_command_ids.h",
-  ]
-}
-
-# TODO: put back in chrome/browser if necessary. http://crbug.com/771801.
-source_set("shutdown_signal_handlers") {
-  if (is_posix || is_fuchsia) {
-    sources = [
-      "shutdown_signal_handlers_posix.cc",
-      "shutdown_signal_handlers_posix.h",
-    ]
-  }
+  sources = [ "chrome_command_ids.h" ]
   deps = [
-    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
   ]
 }
 
@@ -40,13 +35,9 @@ source_set("shutdown_signal_handlers") {
 source_set("chrome_dll_resources") {
   # This source is added unconditionally for include checking on non-Windows
   # platforms.
-  sources = [
-    "chrome_dll_resource.h",
-  ]
+  sources = [ "chrome_dll_resource.h" ]
 
-  deps = [
-    ":command_ids",
-  ]
+  deps = [ ":command_ids" ]
 
   if (is_win) {
     sources += [
@@ -61,22 +52,51 @@ source_set("chrome_dll_resources") {
   }
 }
 
+if (is_win) {
+  source_set("chrome_exe_main_exports") {
+    sources = [ "chrome_exe_main_win.h" ]
+  }
+}
+
+if (is_mac) {
+  source_set("notification_metrics") {
+    sources = [
+      "notification_metrics.cc",
+      "notification_metrics.h",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
 if (is_android) {
-  import("//build/config/android/rules.gni")
   android_generated_java_resources =
       [ "java/res/values/generated_resources.xml" ] +
       process_file_template(
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
+
+  google_chrome_strings_java_resources =
+      [ "java/res/values/google_chrome_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/google_chrome_strings.xml" ])
+  chromium_strings_java_resources =
+      [ "java/res/values/chromium_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/chromium_strings.xml" ])
 }
 
 grit("generated_resources") {
   source = "generated_resources.grd"
   defines = chrome_grit_defines
+  if (is_cfm) {
+    defines += [ "is_cfm" ]
+  }
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/generated_resources.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "generated_resources_{{source_name_part}}.pak" ])
   if (is_android) {
     outputs += android_generated_java_resources
@@ -88,9 +108,16 @@ if (is_android) {
     grit_output_dir = "$root_gen_dir/chrome/java/res"
     generated_files =
         rebase_path(android_generated_java_resources, "java/res", ".")
-    deps = [
-      ":generated_resources",
-    ]
+    deps = [ ":generated_resources" ]
+    if (is_chrome_branded) {
+      generated_files +=
+          rebase_path(google_chrome_strings_java_resources, "java/res", ".")
+      deps += [ ":google_chrome_strings" ]
+    } else {
+      generated_files +=
+          rebase_path(chromium_strings_java_resources, "java/res", ".")
+      deps += [ ":chromium_strings" ]
+    }
   }
 }
 
@@ -100,8 +127,12 @@ grit("google_chrome_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs = [ "grit/google_chrome_strings.h" ] +
             process_file_template(
-                locales_with_fake_bidi,
+                locales_with_pseudolocales,
                 [ "google_chrome_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += google_chrome_strings_java_resources
+  }
 }
 
 grit("chromium_strings") {
@@ -110,8 +141,12 @@ grit("chromium_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/chromium_strings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "chromium_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += chromium_strings_java_resources
+  }
 }
 
 static_library("test_support") {
@@ -125,7 +160,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//chrome/app:shutdown_signal_handlers",
+    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
@@ -134,25 +169,26 @@ static_library("test_support") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/gwp_asan/buildflags",
+    "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",
-    "//components/startup_metric_utils/browser:lib",
-    "//content/public/app:both",
+    "//components/power_scheduler",
+    "//components/startup_metric_utils/browser",
+    "//content/public/app",
     "//content/public/common",
-    "//content/public/common:service_names",
-    "//pdf",
+    "//pdf:pdf_ppapi",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//services/service_manager/embedder",
     "//services/tracing/public/cpp",
     "//ui/base",
     "//v8:v8_headers",
   ]
+  public_deps = []
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     deps += [
-      "//components/crash/content/app",
-      "//components/crash/content/app:test_support",
+      "//components/crash/core/app",
+      "//components/crash/core/app:test_support",
     ]
   }
 
@@ -164,17 +200,31 @@ static_library("test_support") {
 
   if (is_win) {
     deps += [
-      "//chrome:chrome_initial",
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
+      "//components/browser_watcher:stability_client",
       "//sandbox/win:sandbox",
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chromeos/dbus/constants" ]
+  }
+
+  if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/chromeos",
       "//chromeos",
+      "//chromeos/memory:memory",
+    ]
+    public_deps += [ "//ui/lottie" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
     ]
   }
 
@@ -190,88 +240,56 @@ static_library("test_support") {
   }
 }
 
-source_set("chrome_content_browser_overlay_manifest") {
-  sources = [
-    "chrome_content_browser_overlay_manifest.cc",
-    "chrome_content_browser_overlay_manifest.h",
-  ]
+if (is_fuchsia) {
+  # Generate a packaged component, and an installer script to aid development.
 
-  deps = [
-    "//base",
-    "//chrome/browser/engagement:mojo_bindings",
-    "//chrome/browser/media:mojo_bindings",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/downloads:mojo_bindings",
-    "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/interventions_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings",
-    "//chrome/browser/ui/webui/reset_password:mojo_bindings",
-    "//chrome/browser/ui/webui/snippets_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
-    "//chrome/common:available_offline_content_mojom",
-    "//chrome/common:mojo_bindings",
-    "//chrome/common:offline_page_auto_fetcher_mojom",
-    "//chrome/common/media_router/mojom:media_router",
-    "//chrome/test/data:web_ui_test_bindings",
-    "//components/autofill/content/common/mojom",
-    "//components/contextual_search/content/common/mojom",
-    "//components/data_reduction_proxy/core/common:interfaces",
-    "//components/metrics/public/mojom:call_stack_mojo_bindings",
-    "//components/page_load_metrics/common:page_load_metrics_mojom",
-    "//components/rappor/public/mojom",
-    "//components/safe_browsing/common:interfaces",
-    "//components/services/heap_profiling/public/mojom",
-    "//components/translate/content/common",
-    "//extensions/buildflags",
-    "//services/service_manager/public/cpp",
-    "//third_party/blink/public/common",
-  ]
+  # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
+  fuchsia_component("chrome_component_v1") {
+    manifest = "chrome_v1.cmx"
+    data_deps = [ "//chrome:chrome_initial" ]
+    visibility = [ ":*" ]
+  }
 
-  if (enable_extensions) {
-    deps += [
-      "//extensions/common:mojom",
-      "//extensions/common/api:mojom",
+  fuchsia_component("chrome_component") {
+    manifest = "chrome.cml"
+    data_deps = [ "//chrome:chrome_initial" ]
+    visibility = [ ":*" ]
+  }
+
+  fuchsia_package("chrome_pkg") {
+    package_name = "chrome"
+    deps = [
+      ":chrome_component",
+      ":chrome_component_v1",
+    ]
+
+    excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
+  }
+
+  fuchsia_package_installer("chrome_fuchsia_installer") {
+    package = ":chrome_pkg"
+    package_name = "chrome"
+  }
+
+  fuchsia_run_script_with_packages("chrome_fuchsia_runner") {
+    package = ":chrome_pkg"
+    package_name = "chrome"
+    output_name_format = "run_%package%"
+
+    executable = rebase_path("//build/fuchsia/run_ffx_command.py")
+    executable_args = [
+      "--command",
+      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx",
+
+      # TODO(bugs.fuchsia.dev/85949): Pass runtime arguments using %args%.
+    ]
+    include_fuchsia_build_dir = true
+  }
+
+  group("chrome_fuchsia") {
+    deps = [
+      ":chrome_fuchsia_installer",
+      ":chrome_fuchsia_runner",
     ]
   }
-
-  if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
-      "//chromeos/services/cellular_setup/public/mojom",
-      "//chromeos/services/ime/public/mojom",
-      "//chromeos/services/media_perception/public/mojom",
-      "//chromeos/services/multidevice_setup/public/mojom",
-      "//chromeos/services/network_config/public/mojom",
-      "//components/chromeos_camera/common:camera_app_helper",
-      "//media/capture/video/chromeos/mojom:cros_camera",
-    ]
-  }
-
-  if (is_android) {
-    deps +=
-        [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings" ]
-  } else {
-    deps += [ "//chrome/browser/ui/webui/app_management:mojo_bindings" ]
-  }
-
-  if (is_win || is_mac || is_desktop_linux || is_chromeos) {
-    deps += [
-      "//chrome/browser/ui/webui/discards:mojo_bindings",
-      "//services/resource_coordinator/public/mojom",
-    ]
-  }
-
-  if (is_android && notouch_build) {
-    configs += [ "//chrome/browser:notouch_config" ]
-  }
-}
-
-source_set("chrome_service_manifests") {
-  public_deps = [
-    ":chrome_content_browser_overlay_manifest",
-  ]
 }

@@ -8,6 +8,8 @@
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
+#include "ui/gfx/animation/keyframe/transition.h"
+
 namespace vr {
 
 // Allows the element hierarchy within it to be scrolled, providing a windowed
@@ -20,6 +22,10 @@ class VR_UI_EXPORT ScrollableElement : public UiElement {
   enum Orientation { kVertical, kHorizontal };
 
   explicit ScrollableElement(Orientation orientation);
+
+  ScrollableElement(const ScrollableElement&) = delete;
+  ScrollableElement& operator=(const ScrollableElement&) = delete;
+
   ~ScrollableElement() override;
 
   // Sets the maximum size the element can have in the axis of orientation.
@@ -65,9 +71,7 @@ class VR_UI_EXPORT ScrollableElement : public UiElement {
 
   float scroll_offset_ = 0.0f;
 
-  Transition cached_transition_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableElement);
+  gfx::Transition cached_transition_;
 };
 
 }  // namespace vr

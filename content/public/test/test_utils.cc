@@ -4,30 +4,32 @@
 
 #include "content/public/test/test_utils.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_delegate.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/common/url_schemes.h"
+#include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_info.h"
+#include "content/browser/site_instance_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -73,8 +75,12 @@ void DeferredQuitRunLoop(base::OnceClosure quit_task, int num_quit_deferrals) {
 // Monitors if any task is processed by the message loop.
 class TaskObserver : public base::TaskObserver {
  public:
-  TaskObserver() : processed_(false) {}
-  ~TaskObserver() override {}
+  TaskObserver() = default;
+
+  TaskObserver(const TaskObserver&) = delete;
+  TaskObserver& operator=(const TaskObserver&) = delete;
+
+  ~TaskObserver() override = default;
 
   // TaskObserver overrides.
   void WillProcessTask(const base::PendingTask& pending_task,
@@ -93,8 +99,7 @@ class TaskObserver : public base::TaskObserver {
   bool processed() const { return processed_; }
 
  private:
-  bool processed_;
-  DISALLOW_COPY_AND_ASSIGN(TaskObserver);
+  bool processed_ = false;
 };
 
 // Adapter that makes a WindowedNotificationObserver::ConditionTestCallback from
@@ -119,7 +124,7 @@ blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = url;
   request->method = method;
-  request->headers = {headers.begin(), headers.end()};
+  request->headers = headers;
   request->referrer = std::move(referrer);
   request->is_reload = is_reload;
   return request;
@@ -131,7 +136,7 @@ void RunMessageLoop() {
 }
 
 void RunThisRunLoop(base::RunLoop* run_loop) {
-  base::MessageLoopCurrent::ScopedNestableTaskAllower allow;
+  base::CurrentThread::ScopedNestableTaskAllower allow;
   run_loop->Run();
 }
 
@@ -153,7 +158,7 @@ void RunAllTasksUntilIdle() {
     // current loop iteration and loop in case the MessageLoop posts tasks to
     // the Task Scheduler after the initial flush.
     TaskObserver task_observer;
-    base::MessageLoopCurrent::Get()->AddTaskObserver(&task_observer);
+    base::CurrentThread::Get()->AddTaskObserver(&task_observer);
 
     // This must use RunLoop::Type::kNestableTasksAllowed in case this
     // RunAllTasksUntilIdle() call is nested inside an existing Run(). Without
@@ -166,7 +171,7 @@ void RunAllTasksUntilIdle() {
 
     run_loop.Run();
 
-    base::MessageLoopCurrent::Get()->RemoveTaskObserver(&task_observer);
+    base::CurrentThread::Get()->RemoveTaskObserver(&task_observer);
 
     if (!task_observer.processed())
       break;
@@ -201,19 +206,57 @@ bool AreAllSitesIsolatedForTesting() {
   return SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
 }
 
+bool ShouldOriginGetOptInIsolation(SiteInstance* site_instance,
+                                   const url::Origin& origin) {
+  return static_cast<ChildProcessSecurityPolicyImpl*>(
+             ChildProcessSecurityPolicy::GetInstance())
+      ->ShouldOriginGetOptInIsolation(
+          static_cast<SiteInstanceImpl*>(site_instance)->GetIsolationContext(),
+          origin, false /* origin_requests_isolation */);
+}
+
 bool AreDefaultSiteInstancesEnabled() {
   return !AreAllSitesIsolatedForTesting() &&
          base::FeatureList::IsEnabled(
              features::kProcessSharingWithDefaultSiteInstances);
 }
 
+bool AreStrictSiteInstancesEnabled() {
+  return AreAllSitesIsolatedForTesting() ||
+         base::FeatureList::IsEnabled(
+             features::kProcessSharingWithStrictSiteInstances);
+}
+
+bool IsIsolatedOriginRequiredToGuaranteeDedicatedProcess() {
+  return AreDefaultSiteInstancesEnabled() ||
+         base::FeatureList::IsEnabled(
+             features::kProcessSharingWithStrictSiteInstances);
+}
+
 void IsolateAllSitesForTesting(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kSitePerProcess);
 }
 
-void ResetSchemesAndOriginsWhitelist() {
-  url::ResetForTests();
-  ReRegisterContentSchemesForTests();
+bool CanSameSiteMainFrameNavigationsChangeRenderFrameHosts() {
+  // TODO(crbug.com/936696): Also return true when RenderDocument for main frame
+  // is enabled.
+  return CanSameSiteMainFrameNavigationsChangeSiteInstances();
+}
+
+bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
+  return IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
+         IsSameSiteBackForwardCacheEnabled();
+}
+
+void DisableProactiveBrowsingInstanceSwapFor(RenderFrameHost* rfh) {
+  if (!CanSameSiteMainFrameNavigationsChangeSiteInstances())
+    return;
+  // If the RFH is not a main frame, navigations on it will never result in a
+  // proactive BrowsingInstance swap, so we shouldn't call this function on
+  // subframes.
+  DCHECK(!rfh->GetParent());
+  static_cast<RenderFrameHostImpl*>(rfh)
+      ->DisableProactiveBrowsingInstanceSwapForTesting();
 }
 
 GURL GetWebUIURL(const std::string& host) {
@@ -226,8 +269,7 @@ std::string GetWebUIURLString(const std::string& host) {
 }
 
 WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
-  WebContents* outer_contents =
-      static_cast<RenderFrameHostImpl*>(rfh)->delegate()->GetAsWebContents();
+  auto* outer_contents = WebContents::FromRenderFrameHost(rfh);
   if (!outer_contents)
     return nullptr;
 
@@ -242,6 +284,40 @@ WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
                                          false /* is_full_page */);
 
   return inner_contents;
+}
+
+void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
+  class Awaiter : public WebContentsObserver {
+   public:
+    explicit Awaiter(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents),
+          observed_(web_contents->IsDocumentOnLoadCompletedInMainFrame()) {}
+
+    Awaiter(const Awaiter&) = delete;
+    Awaiter& operator=(const Awaiter&) = delete;
+
+    ~Awaiter() override = default;
+
+    void Await() {
+      if (!observed_)
+        run_loop_.Run();
+      DCHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
+    }
+
+    // WebContentsObserver:
+    void DocumentOnLoadCompletedInMainFrame(
+        RenderFrameHost* render_frame_host) override {
+      observed_ = true;
+      if (run_loop_.running())
+        run_loop_.Quit();
+    }
+
+   private:
+    bool observed_ = false;
+    base::RunLoop run_loop_;
+  };
+
+  Awaiter(web_contents).Await();
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
@@ -345,30 +421,29 @@ InProcessUtilityThreadHelper::~InProcessUtilityThreadHelper() {
 }
 
 void InProcessUtilityThreadHelper::JoinAllUtilityThreads() {
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
-
+  ASSERT_FALSE(run_loop_);
+  run_loop_.emplace();
   BrowserChildProcessObserver::Add(this);
   CheckHasRunningChildProcess();
-  run_loop.Run();
+  run_loop_->Run();
+  run_loop_.reset();
   BrowserChildProcessObserver::Remove(this);
 }
 
 void InProcessUtilityThreadHelper::CheckHasRunningChildProcess() {
+  ASSERT_TRUE(run_loop_);
+
   auto check_has_running_child_process_on_io =
-      [](base::WeakPtr<InProcessUtilityThreadHelper> weak_ptr,
-         base::OnceClosure* quit_closure) {
+      [](base::OnceClosure quit_closure) {
         BrowserChildProcessHostIterator it;
         // If not Done(), we have some running child processes and need to wait.
-        // The |quit_closure| is valid while |weak_ptr| is alive.
-        if (it.Done() && weak_ptr)
-          std::move(*quit_closure).Run();
+        if (it.Done())
+          std::move(quit_closure).Run();
       };
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(check_has_running_child_process_on_io,
-                     weak_ptr_factory_.GetWeakPtr(), &quit_closure_));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(check_has_running_child_process_on_io,
+                                run_loop_->QuitClosure()));
 }
 
 void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
@@ -378,34 +453,70 @@ void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
 
 RenderFrameDeletedObserver::RenderFrameDeletedObserver(RenderFrameHost* rfh)
     : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      process_id_(rfh->GetProcess()->GetID()),
-      routing_id_(rfh->GetRoutingID()),
-      deleted_(false) {}
+      rfh_id_(rfh->GetGlobalId()) {
+  DCHECK(rfh);
+}
 
-RenderFrameDeletedObserver::~RenderFrameDeletedObserver() {}
+RenderFrameDeletedObserver::~RenderFrameDeletedObserver() = default;
 
 void RenderFrameDeletedObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetProcess()->GetID() == process_id_ &&
-      render_frame_host->GetRoutingID() == routing_id_) {
-    deleted_ = true;
+  if (render_frame_host->GetGlobalId() == rfh_id_) {
+    rfh_id_ = GlobalRenderFrameHostId();
 
     if (runner_.get())
       runner_->Quit();
   }
 }
 
-bool RenderFrameDeletedObserver::deleted() {
-  return deleted_;
+bool RenderFrameDeletedObserver::deleted() const {
+  return rfh_id_ == GlobalRenderFrameHostId();
 }
 
-void RenderFrameDeletedObserver::WaitUntilDeleted() {
-  if (deleted_)
-    return;
+bool RenderFrameDeletedObserver::WaitUntilDeleted() {
+  if (deleted())
+    return true;
 
-  runner_.reset(new base::RunLoop());
+  runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
   runner_.reset();
+  return deleted();
+}
+
+RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHost* rfh)
+    : rfh_id_(rfh->GetGlobalId()),
+      deleted_observer_(std::make_unique<RenderFrameDeletedObserver>(rfh)) {}
+
+RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhft) =
+    default;
+RenderFrameHostWrapper::~RenderFrameHostWrapper() = default;
+
+RenderFrameHost* RenderFrameHostWrapper::get() const {
+  return RenderFrameHost::FromID(rfh_id_);
+}
+
+bool RenderFrameHostWrapper::IsDestroyed() const {
+  return get() == nullptr;
+}
+
+// See RenderFrameDeletedObserver for notes on the difference between
+// RenderFrame being deleted and RenderFrameHost being destroyed.
+bool RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
+  return deleted_observer_->WaitUntilDeleted();
+}
+
+bool RenderFrameHostWrapper::IsRenderFrameDeleted() const {
+  return deleted_observer_->deleted();
+}
+
+RenderFrameHost& RenderFrameHostWrapper::operator*() const {
+  DCHECK(get());
+  return *get();
+}
+
+RenderFrameHost* RenderFrameHostWrapper::operator->() const {
+  DCHECK(get());
+  return get();
 }
 
 WebContentsDestroyedWatcher::WebContentsDestroyedWatcher(
@@ -414,21 +525,21 @@ WebContentsDestroyedWatcher::WebContentsDestroyedWatcher(
   EXPECT_TRUE(web_contents != nullptr);
 }
 
-WebContentsDestroyedWatcher::~WebContentsDestroyedWatcher() {
-}
+WebContentsDestroyedWatcher::~WebContentsDestroyedWatcher() = default;
 
 void WebContentsDestroyedWatcher::Wait() {
   run_loop_.Run();
 }
 
 void WebContentsDestroyedWatcher::WebContentsDestroyed() {
+  destroyed_ = true;
   run_loop_.Quit();
 }
 
 TestPageScaleObserver::TestPageScaleObserver(WebContents* web_contents)
     : WebContentsObserver(web_contents) {}
 
-TestPageScaleObserver::~TestPageScaleObserver() {}
+TestPageScaleObserver::~TestPageScaleObserver() = default;
 
 void TestPageScaleObserver::OnPageScaleFactorChanged(float page_scale_factor) {
   last_scale_ = page_scale_factor;
@@ -448,31 +559,47 @@ float TestPageScaleObserver::WaitForPageScaleUpdate() {
 }
 
 EffectiveURLContentBrowserClient::EffectiveURLContentBrowserClient(
+    bool requires_dedicated_process)
+    : requires_dedicated_process_(requires_dedicated_process) {}
+
+EffectiveURLContentBrowserClient::EffectiveURLContentBrowserClient(
     const GURL& url_to_modify,
     const GURL& url_to_return,
     bool requires_dedicated_process)
-    : url_to_modify_(url_to_modify),
-      url_to_return_(url_to_return),
-      requires_dedicated_process_(requires_dedicated_process) {}
+    : requires_dedicated_process_(requires_dedicated_process) {
+  AddTranslation(url_to_modify, url_to_return);
+}
 
-EffectiveURLContentBrowserClient::~EffectiveURLContentBrowserClient() {}
+EffectiveURLContentBrowserClient::~EffectiveURLContentBrowserClient() = default;
+
+void EffectiveURLContentBrowserClient::AddTranslation(
+    const GURL& url_to_modify,
+    const GURL& url_to_return) {
+  urls_to_modify_[url_to_modify] = url_to_return;
+}
 
 GURL EffectiveURLContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
-  if (url == url_to_modify_)
-    return url_to_return_;
+  auto it = urls_to_modify_.find(url);
+  if (it != urls_to_modify_.end())
+    return it->second;
   return url;
 }
 
 bool EffectiveURLContentBrowserClient::DoesSiteRequireDedicatedProcess(
     BrowserContext* browser_context,
     const GURL& effective_site_url) {
-  GURL expected_effective_site_url =
-      SiteInstance::GetSiteForURL(browser_context, url_to_modify_);
+  if (!requires_dedicated_process_)
+    return false;
 
-  return requires_dedicated_process_ &&
-         expected_effective_site_url == effective_site_url;
+  for (const auto& pair : urls_to_modify_) {
+    auto site_info = SiteInfo::CreateForTesting(
+        IsolationContext(browser_context), pair.first);
+    if (site_info.site_url() == effective_site_url)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace content

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -12,8 +13,6 @@ import("//build/config/features.gni")
 source_set("networking_private") {
   # Sources that will be added if a non-stub implementation is chosen.
   default_sources = [
-    "networking_cast_private_delegate.cc",
-    "networking_cast_private_delegate.h",
     "networking_private_api.cc",
     "networking_private_api.h",
     "networking_private_delegate.cc",
@@ -27,15 +26,18 @@ source_set("networking_private") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//components/onc",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//net",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 
-  if (!is_chromeos && is_linux && use_dbus) {
+  if ((is_linux || is_chromeos_lacros) && use_dbus) {
     sources = default_sources + [
                 "network_config_dbus_constants_linux.cc",
                 "network_config_dbus_constants_linux.h",
@@ -43,26 +45,28 @@ source_set("networking_private") {
                 "networking_private_linux.cc",
                 "networking_private_linux.h",
               ]
-    if (use_dbus) {
-      deps += [ "//dbus" ]
-    }
-  } else if (is_win || is_mac) {
+
+    deps += [ "//dbus" ]
+  } else if (is_win || is_mac || is_fuchsia) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
                 "networking_private_service_client.cc",
                 "networking_private_service_client.h",
               ]
     deps += [ "//components/wifi" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     sources = default_sources + [
                 "networking_private_chromeos.cc",
                 "networking_private_chromeos.h",
                 "networking_private_event_router_chromeos.cc",
               ]
+    deps += [
+      "//chromeos/login/login_state",
+      "//chromeos/network",
+      "//components/proxy_config",
+    ]
   } else {
     not_needed([ "default_sources" ])
-    sources = [
-      "networking_private_stubs.cc",
-    ]
+    sources = [ "networking_private_stubs.cc" ]
   }
 }

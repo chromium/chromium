@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL A new noopener window to make sure there is a not copy of the previous window's sessionStorage assert_equals: storage.getItem('FOO') expected (object) null but got (string) "BAR"
-Harness: the test ran to completion.
-

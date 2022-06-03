@@ -2,146 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":address_edit_dialog",
-    ":autofill_page",
-    ":autofill_section",
-    ":blocking_request_manager",
-    ":credit_card_edit_dialog",
-    ":credit_card_list",
-    ":credit_card_list_entry",
-    ":password_edit_dialog",
-    ":password_list_item",
-    ":password_manager_proxy",
-    ":passwords_section",
-    ":payments_section",
-    ":show_password_behavior",
+html_to_js("web_components") {
+  js_files = [
+    "address_edit_dialog.ts",
+    "address_remove_confirmation_dialog.ts",
+    "autofill_page.ts",
+    "avatar_icon.ts",
+    "autofill_section.ts",
+    "passwords_list_handler.ts",
+    "credit_card_edit_dialog.ts",
+    "credit_card_list_entry.ts",
+    "password_check_edit_dialog.ts",
+    "password_check_edit_disclaimer_dialog.ts",
+    "password_check_list_item.ts",
+    "password_check.ts",
+    "password_edit_dialog.ts",
+    "password_remove_dialog.ts",
+    "password_list_item.ts",
+    "password_move_multiple_passwords_to_account_dialog.ts",
+    "password_move_to_account_dialog.ts",
+    "password_remove_confirmation_dialog.ts",
+    "passwords_export_dialog.ts",
+    "passwords_section.ts",
+    "passwords_device_section.ts",
+    "passwords_shared_css.ts",
+    "payments_list.ts",
+    "payments_section.ts",
+    "upi_id_list_entry.ts",
   ]
-}
-
-js_library("autofill_page") {
-  deps = [
-    ":autofill_section",
-    ":passwords_section",
-    ":payments_section",
-    "..:open_window_proxy",
-    "..:route",
-    "../prefs:prefs_behavior",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [
-    "$externs_path/passwords_private.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("autofill_section") {
-  deps = [
-    ":address_edit_dialog",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
-js_library("blocking_request_manager") {
-}
-
-js_library("payments_section") {
-  deps = [
-    ":credit_card_edit_dialog",
-    ":credit_card_list",
-    "../people_page:sync_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
-js_library("address_edit_dialog") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
-js_library("credit_card_edit_dialog") {
-  deps = [
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
-js_library("credit_card_list") {
-  deps = [
-    ":credit_card_list_entry",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("credit_card_list_entry") {
-  deps = [
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("password_list_item") {
-  deps = [
-    ":show_password_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-}
-
-js_library("password_manager_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/passwords_private.js" ]
-}
-
-js_library("passwords_section") {
-  deps = [
-    ":password_edit_dialog",
-    ":password_list_item",
-    ":password_manager_proxy",
-    "..:global_scroll_target_behavior",
-    "../people_page:sync_browser_proxy",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/passwords_private.js" ]
-}
-
-js_library("password_edit_dialog") {
-  deps = [
-    ":show_password_behavior",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-}
-
-js_library("show_password_behavior") {
-  deps = [
-    ":blocking_request_manager",
-  ]
-  externs_list = [ "$externs_path/passwords_private.js" ]
 }

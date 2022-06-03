@@ -7,9 +7,21 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-addEventListener('unhandledrejection', function(e) {
+addEventListener('unhandledrejection', async exception => {
+    // Ordering in between:
+    // 1. dispatching the console.error
+    // 2. dispatching 'unhandledrejection'
+    // is not guaranteed.
+    //
+    // This caused this test to be flaky. See https://crbug.com/1185119
+    //
+    // (1) is not observable from here, but part of the expectations. The only
+    // ways to ensure it will happen consistently before (2) is to use
+    // setTimeout, unfortunately.
+    await new Promise(resolve => setTimeout(resolve, 250));
     console.log('PASS: received unhandledrejection event');
-    if (e.reason == 42)
+
+    if (exception.reason == 42)
         console.log('PASS: received expected reason');
     else
         console.log('FAIL: received unexpected reason: ' + e.reason);

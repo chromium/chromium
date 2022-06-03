@@ -4,16 +4,15 @@
 
 #include "ui/gl/gl_share_group.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_surface.h"
 
 namespace gl {
 
 GLShareGroup::GLShareGroup()
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     : renderer_id_(-1)
 #endif
 {
@@ -25,12 +24,8 @@ void GLShareGroup::AddContext(GLContext* context) {
 
 void GLShareGroup::RemoveContext(GLContext* context) {
   contexts_.erase(context);
-  for (const auto& pair : shared_contexts_) {
-    if (pair.second == context) {
-      shared_contexts_.erase(pair.first);
-      return;
-    }
-  }
+  if (shared_context_ == context)
+    shared_context_ = nullptr;
 }
 
 void* GLShareGroup::GetHandle() {
@@ -50,20 +45,12 @@ GLContext* GLShareGroup::GetContext() {
   return NULL;
 }
 
-void GLShareGroup::SetSharedContext(GLSurface* compatible, GLContext* context) {
+void GLShareGroup::SetSharedContext(GLContext* context) {
   DCHECK(contexts_.find(context) != contexts_.end());
-  shared_contexts_[compatible->GetCompatibilityKey()] = context;
+  shared_context_ = context;
 }
 
-GLContext* GLShareGroup::GetSharedContext(GLSurface* compatible) {
-  unsigned long compatibility_key = compatible->GetCompatibilityKey();
-  auto it = shared_contexts_.find(compatibility_key);
-  if (it == shared_contexts_.end())
-    return nullptr;
-  return it->second;
-}
-
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 void GLShareGroup::SetRendererID(int renderer_id) {
   renderer_id_ = renderer_id;
 }

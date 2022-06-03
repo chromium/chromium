@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
@@ -24,6 +26,11 @@
 #include "build/build_config.h"
 
 #include <windows.h>
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
+#endif
 
 namespace base {
 
@@ -37,9 +44,9 @@ constexpr int kWin7BackgroundThreadModePriority = 4;
 // set to normal on Windows 7.
 constexpr int kWin7NormalPriority = 3;
 
-// These values are sometimes returned by ::GetThreadPriority() on Windows 10.
-constexpr int kWin10NormalPriority1 = 5;
-constexpr int kWin10NormalPriority2 = 6;
+// These values are sometimes returned by ::GetThreadPriority().
+constexpr int kWinNormalPriority1 = 5;
+constexpr int kWinNormalPriority2 = 6;
 
 // The information on how to set the thread name comes from
 // a MSDN article: http://msdn2.microsoft.com/en-us/library/xcb2z8hs.aspx
@@ -81,7 +88,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   ThreadParams* thread_params = static_cast<ThreadParams*>(params);
   PlatformThread::Delegate* delegate = thread_params->delegate;
   if (!thread_params->joinable)
-    base::ThreadRestrictions::SetSingletonAllowed(false);
+    base::DisallowSingleton();
 
   if (thread_params->priority != ThreadPriority::NORMAL)
     PlatformThread::SetCurrentThreadPriority(thread_params->priority);
@@ -96,6 +103,10 @@ DWORD __stdcall ThreadFunc(void* params) {
                                 0,
                                 FALSE,
                                 DUPLICATE_SAME_ACCESS);
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan::NotifyThreadCreated(internal::GetStackPointer());
+#endif
 
   win::ScopedHandle scoped_platform_handle;
 
@@ -114,6 +125,17 @@ DWORD __stdcall ThreadFunc(void* params) {
         scoped_platform_handle.Get(),
         PlatformThread::CurrentId());
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan::NotifyThreadDestroyed();
+#endif
+
+  // Ensure thread priority is at least NORMAL before initiating thread
+  // destruction. Thread destruction on Windows holds the LdrLock while
+  // performing TLS destruction which causes hangs if performed at background
+  // priority (priority inversion) (see: http://crbug.com/1096203).
+  if (PlatformThread::GetCurrentThreadPriority() < ThreadPriority::NORMAL)
+    PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
 
   return 0;
 }
@@ -134,7 +156,18 @@ bool CreateThreadInternal(size_t stack_size,
     // |chrome/BUILD.gn|, but keep the default stack size of other threads to
     // 1MB for the address space pressure.
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
-    stack_size = 1024 * 1024;
+    static BOOL is_wow64 = -1;
+    if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64))
+      is_wow64 = FALSE;
+    // When is_wow64 is set that means we are running on 64-bit Windows and we
+    // get 4 GiB of address space. In that situation we can afford to use 1 MiB
+    // of address space for stacks. When running on 32-bit Windows we only get
+    // 2 GiB of address space so we need to conserve. Typically stack usage on
+    // these threads is only about 100 KiB.
+    if (is_wow64)
+      stack_size = 1024 * 1024;
+    else
+      stack_size = 512 * 1024;
 #endif
   }
 
@@ -143,19 +176,13 @@ bool CreateThreadInternal(size_t stack_size,
   params->joinable = out_thread_handle != nullptr;
   params->priority = priority;
 
-  void* thread_handle;
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER("Windows.CreateThreadTime");
-
-    // Using CreateThread here vs _beginthreadex makes thread creation a bit
-    // faster and doesn't require the loader lock to be available.  Our code
-    // will  have to work running on CreateThread() threads anyway, since we run
-    // code on the Windows thread pool, etc.  For some background on the
-    // difference:
-    //   http://www.microsoft.com/msj/1099/win32/win321099.aspx
-    thread_handle =
-        ::CreateThread(nullptr, stack_size, ThreadFunc, params, flags, nullptr);
-  }
+  // Using CreateThread here vs _beginthreadex makes thread creation a bit
+  // faster and doesn't require the loader lock to be available.  Our code will
+  // have to work running on CreateThread() threads anyway, since we run code on
+  // the Windows thread pool, etc.  For some background on the difference:
+  // http://www.microsoft.com/msj/1099/win32/win321099.aspx
+  void* thread_handle =
+      ::CreateThread(nullptr, stack_size, ThreadFunc, params, flags, nullptr);
 
   if (!thread_handle) {
     DWORD last_error = ::GetLastError();
@@ -327,7 +354,8 @@ void PlatformThread::Detach(PlatformThreadHandle thread_handle) {
 }
 
 // static
-bool PlatformThread::CanIncreaseThreadPriority(ThreadPriority priority) {
+bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
+                                             ThreadPriority to) {
   return true;
 }
 
@@ -390,8 +418,6 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
       internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_VERY_LOW);
     }
   }
-
-  DCHECK_EQ(GetCurrentThreadPriority(), priority);
 }
 
 // static
@@ -441,11 +467,9 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
       FALLTHROUGH;
     case THREAD_PRIORITY_NORMAL:
       return ThreadPriority::NORMAL;
-    case kWin10NormalPriority1:
+    case kWinNormalPriority1:
       FALLTHROUGH;
-    case kWin10NormalPriority2:
-      DCHECK_GE(win::GetVersion(), win::Version::WIN10);
-      DCHECK_LT(win::GetVersion(), win::Version::WIN_LAST);
+    case kWinNormalPriority2:
       return ThreadPriority::NORMAL;
     case THREAD_PRIORITY_ABOVE_NORMAL:
     case THREAD_PRIORITY_HIGHEST:

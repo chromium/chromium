@@ -7,11 +7,18 @@
 
 #include <stdint.h>
 
-#include "base/sequenced_task_runner.h"
+#include <memory>
+#include <vector>
+
+#include "base/task/sequenced_task_runner.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "gpu/command_buffer/common/sync_token.h"
+
+namespace base {
+class WaitableEvent;
+}
 
 namespace gpu {
 class GpuMemoryBufferManager;
@@ -62,8 +69,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) const override;
+  void SetShutdownEvent(base::WaitableEvent* shutdown_event) override;
   void Shutdown() override;
-  bool CheckRasterFinishedQueries() override;
 
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(
@@ -105,6 +112,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                   const gfx::AxisTransform2d& transform,
                   const RasterSource::PlaybackSettings& playback_settings,
                   const GURL& url) override;
+    bool SupportsBackgroundThreadPriority() const override;
 
    private:
     // These fields may only be used on the compositor thread.
@@ -150,6 +158,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   viz::ContextProvider* const compositor_context_provider_;
   viz::RasterContextProvider* const worker_context_provider_;
   gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
+  base::WaitableEvent* shutdown_event_ = nullptr;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
   const bool use_gpu_memory_buffer_resources_;

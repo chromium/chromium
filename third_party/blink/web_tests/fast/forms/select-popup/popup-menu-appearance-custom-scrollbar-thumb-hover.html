@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.enablePixelTesting = true;
+</script>
+<script src="../resources/picker-common.js"></script>
+<script src="../resources/common.js"></script>
+<style>
+  select:focus {
+    outline-width: 0;
+  }
+  select {
+    width: 200px;
+    font: 10px Ahem;
+    -webkit-appearance: none;
+    background-color: white;
+  }
+  select::-webkit-scrollbar {
+    width: 200px;
+  }
+  select::-webkit-scrollbar-track {
+    background: orange;
+  }
+  select::-webkit-scrollbar-corner {
+    background: yellow;
+  }
+
+  select::-webkit-scrollbar-thumb {
+    background: gray;
+  }
+  select::-webkit-scrollbar-thumb:hover {
+    background: green;
+  }
+  option:hover{
+    background-color: green;
+  }
+</style>
+</head>
+<body>
+<select id='menu'>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+</select>
+<script>
+let menu = document.getElementById('menu');
+function mouseMoveToScrollbar() {
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      let selectElement = internals.pagePopupWindow.global.picker._selectElement;
+      let innerSelectRect = selectElement.getBoundingClientRect();
+      let scrollbarX = innerSelectRect.x + innerSelectRect.width - 10;
+      let scrollbarY = innerSelectRect.y + 50;
+      chrome.gpuBenchmarking.pointerActionSequence(
+          [{
+            source: 'mouse',
+            actions: [{name: 'pointerMove', x: scrollbarX, y: scrollbarY}]
+          }],
+          resolve);
+    } else {
+      reject();
+    }
+  });
+}
+openPicker(menu, ()=>{
+  mouseMoveToScrollbar().then(()=>{
+    testRunner.notifyDone()
+  })
+})
+testRunner.waitUntilDone()
+</script>
+</body>
+</html>

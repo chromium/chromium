@@ -7,7 +7,6 @@
 NonBlockingNavigationTracker::~NonBlockingNavigationTracker() {}
 
 Status NonBlockingNavigationTracker::IsPendingNavigation(
-    const std::string& frame_id,
     const Timeout* timeout,
     bool* is_pending) {
   *is_pending = false;
@@ -16,8 +15,7 @@ Status NonBlockingNavigationTracker::IsPendingNavigation(
 
 void NonBlockingNavigationTracker::set_timed_out(bool timed_out) {}
 
-void NonBlockingNavigationTracker::ClearState(const std::string& new_frame_id) {
-}
+void NonBlockingNavigationTracker::SetFrame(const std::string& new_frame_id) {}
 
 bool NonBlockingNavigationTracker::IsNonBlocking() const {
   return true;

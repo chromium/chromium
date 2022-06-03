@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_search.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_table.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"

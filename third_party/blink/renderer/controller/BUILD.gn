@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
@@ -10,12 +9,16 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
-visibility = [ "//third_party/blink/*" ]
+visibility = [
+  "//:gn_all",
+  "//third_party/blink/*",
+]
 
-jumbo_component("controller") {
+component("controller") {
   output_name = "blink_controller"
 
   deps = [
+    "//components/performance_manager/public/mojom:mojom_blink",
     "//skia",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/modules",
@@ -23,7 +26,12 @@ jumbo_component("controller") {
     "//v8",
   ]
 
+  if (use_blink_extensions_chromeos) {
+    deps += [ "//third_party/blink/renderer/extensions/chromeos" ]
+  }
+
   configs += [
+    "//build/config/compiler:noshadowing",
     "//build/config/compiler:wexit_time_destructors",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
@@ -38,31 +46,63 @@ jumbo_component("controller") {
     "blink_initializer.h",
     "blink_leak_detector.cc",
     "blink_leak_detector.h",
+    "blink_shutdown.cc",
     "controller_export.h",
     "dev_tools_frontend_impl.cc",
     "dev_tools_frontend_impl.h",
     "memory_usage_monitor.cc",
     "memory_usage_monitor.h",
+    "performance_manager/renderer_resource_coordinator_impl.cc",
+    "performance_manager/renderer_resource_coordinator_impl.h",
+    "performance_manager/v8_detailed_memory_reporter_impl.cc",
+    "performance_manager/v8_detailed_memory_reporter_impl.h",
+    "performance_manager/v8_worker_memory_reporter.cc",
+    "performance_manager/v8_worker_memory_reporter.h",
   ]
 
+  if (is_linux || is_chromeos) {
+    sources += [
+      "memory_usage_monitor_posix.cc",
+      "memory_usage_monitor_posix.h",
+    ]
+    deps += [ "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings_blink" ]
+  }
   if (is_android) {
     sources += [
       "crash_memory_metrics_reporter_impl.cc",
       "crash_memory_metrics_reporter_impl.h",
-      "highest_pmf_reporter.cc",
-      "highest_pmf_reporter.h",
-      "memory_usage_monitor_android.cc",
-      "memory_usage_monitor_android.h",
+      "memory_usage_monitor_posix.cc",
+      "memory_usage_monitor_posix.h",
       "oom_intervention_impl.cc",
       "oom_intervention_impl.h",
-      "user_level_memory_pressure_signal_generator.cc",
-      "user_level_memory_pressure_signal_generator.h",
+    ]
+    public_deps = [ "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings_blink" ]
+  }
+  if (is_win) {
+    sources += [
+      "memory_usage_monitor_win.cc",
+      "memory_usage_monitor_win.h",
     ]
   }
   if (is_mac) {
-    libs = [
+    sources += [
+      "memory_usage_monitor_mac.cc",
+      "memory_usage_monitor_mac.h",
+    ]
+    frameworks = [
       "AppKit.framework",
       "Foundation.framework",
+    ]
+  }
+
+  # HighestPmfReporter depends on MemoryUsageMonitor and MemoryUsageMonitor
+  # depends on platform specific code. Explicitly specify supported platforms.
+  if (is_linux || is_chromeos || is_win || is_android || is_mac) {
+    sources += [
+      "highest_pmf_reporter.cc",
+      "highest_pmf_reporter.h",
+      "user_level_memory_pressure_signal_generator.cc",
+      "user_level_memory_pressure_signal_generator.h",
     ]
   }
 
@@ -84,19 +124,16 @@ group("webkit_unit_tests") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
-  deps = [
-    ":blink_unittests",
-  ]
+  deps = [ ":blink_unittests" ]
 }
 
 test("blink_unittests") {
-  deps = [
-    ":blink_unittests_sources",
-  ]
+  deps = [ ":blink_unittests_sources" ]
 
   data_deps = [
     ":blink_unittests_data",
     "//content/shell:pak",
+    "//testing/buildbot/filters:blink_unittests_filters",
   ]
 
   if (is_android) {
@@ -111,27 +148,34 @@ test("blink_unittests") {
       data_deps += [ "//clank/build/bot/filters:blink_unittests_filters" ]
     }
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    ]
+  }
 }
 
 test("blink_perf_tests") {
-  deps = [
-    ":blink_perf_tests_sources",
-  ]
+  deps = [ ":blink_perf_tests_sources" ]
 }
 
-jumbo_source_set("blink_perf_tests_sources") {
+source_set("blink_perf_tests_sources") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
 
-  sources = [
-    "tests/run_all_tests.cc",
-  ]
+  sources = [ "tests/run_all_tests.cc" ]
 
   deps = [
     ":controller",
     "//base",
+    "//base/test:test_support",
     "//content/test:test_support",
+    "//third_party/blink/renderer/core:core",
     "//third_party/blink/renderer/core:perf_tests",
   ]
 
@@ -142,36 +186,72 @@ jumbo_source_set("blink_perf_tests_sources") {
   ]
 }
 
-jumbo_source_set("blink_unittests_sources") {
+source_set("blink_bindings_test_sources") {
+  testonly = true
+  sources = bindings_unittest_files
+  deps = [
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+}
+
+source_set("blink_unittests_sources") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
 
   sources = [
+    "performance_manager/renderer_resource_coordinator_impl_test.cc",
+    "performance_manager/v8_detailed_memory_reporter_impl_test.cc",
+    "performance_manager/v8_worker_memory_reporter_test.cc",
     "tests/run_all_tests.cc",
   ]
-  sources += bindings_unittest_files
+  if (is_linux || is_chromeos) {
+    sources += [ "memory_usage_monitor_posix_test.cc" ]
+  }
   if (is_android) {
     sources += [
-      "highest_pmf_reporter_test.cc",
-      "memory_usage_monitor_android_test.cc",
-      "memory_usage_monitor_test.cc",
+      "memory_usage_monitor_posix_test.cc",
       "oom_intervention_impl_test.cc",
       "user_level_memory_pressure_signal_generator_test.cc",
     ]
   }
 
+  if (is_linux || is_chromeos || is_android || is_mac || is_win) {
+    sources += [
+      "highest_pmf_reporter_test.cc",
+      "memory_usage_monitor_test.cc",
+    ]
+  }
+
   deps = [
+    ":blink_bindings_test_sources",
     ":controller",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
     "//components/payments/mojom:mojom_blink",
+    "//components/performance_manager/public/mojom:mojom_blink",
     "//content/test:test_support",
     "//gpu:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
+    "//third_party/blink/renderer/modules:modules",
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/platform",

@@ -9,14 +9,15 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/signaling/log_to_server.h"
 
-namespace grpc {
-class Status;
-}  // namespace grpc
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace remoting {
 
@@ -28,12 +29,19 @@ class CreateLogEntryResponse;
 }  // namespace apis
 
 class OAuthTokenGetter;
+class ProtobufHttpStatus;
 
 // RemotingLogToServer sends log entries to to the remoting telemetry server.
 class RemotingLogToServer : public LogToServer {
  public:
-  RemotingLogToServer(ServerLogEntry::Mode mode,
-                      std::unique_ptr<OAuthTokenGetter> token_getter);
+  RemotingLogToServer(
+      ServerLogEntry::Mode mode,
+      std::unique_ptr<OAuthTokenGetter> token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RemotingLogToServer(const RemotingLogToServer&) = delete;
+  RemotingLogToServer& operator=(const RemotingLogToServer&) = delete;
+
   ~RemotingLogToServer() override;
 
   // LogToServer interface.
@@ -43,9 +51,9 @@ class RemotingLogToServer : public LogToServer {
  private:
   static constexpr int kMaxSendLogAttempts = 5;
 
-  using CreateLogEntryResponseCallback =
-      base::OnceCallback<void(const grpc::Status&,
-                              const apis::v1::CreateLogEntryResponse&)>;
+  using CreateLogEntryResponseCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<apis::v1::CreateLogEntryResponse>)>;
   using CreateLogEntryCallback =
       base::RepeatingCallback<void(const apis::v1::CreateLogEntryRequest&,
                                    CreateLogEntryResponseCallback callback)>;
@@ -56,10 +64,11 @@ class RemotingLogToServer : public LogToServer {
                       int attempts_left);
   void SendLogRequestWithBackoff(const apis::v1::CreateLogEntryRequest& request,
                                  int attempts_left);
-  void OnSendLogRequestResult(const apis::v1::CreateLogEntryRequest& request,
-                              int attempts_left,
-                              const grpc::Status& status,
-                              const apis::v1::CreateLogEntryResponse& response);
+  void OnSendLogRequestResult(
+      const apis::v1::CreateLogEntryRequest& request,
+      int attempts_left,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::CreateLogEntryResponse> response);
 
   ServerLogEntry::Mode mode_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
@@ -71,8 +80,6 @@ class RemotingLogToServer : public LogToServer {
   CreateLogEntryCallback create_log_entry_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingLogToServer);
 };
 
 }  // namespace remoting

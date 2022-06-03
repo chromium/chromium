@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface ImageTrack {
+  // The number of frames in the image.
+  //
+  // When decoding a ReadableStream with a format that has no fixed count, the
+  // value will increase as frames are received by the decoder.
+  readonly attribute unsigned long frameCount;
+
+  // Indicates that this track has more than one frame.
+  readonly attribute boolean animated;
+
+  // The image's preferred repetition count. Zero means play through only once,
+  // a value of N means play N + 1 times. Infinity means play forever.
+  readonly attribute unrestricted float repetitionCount;
+
+  // Modify to choose this track in the image. Identical track selections will
+  // be ignored.
+  //
+  // Changing tracks will resolve all outstanding decode requests as rejected
+  // and reset any partially decoded frame state. Outstanding ImageDecodeResults
+  // and metadata decode promises will remain valid.
+  attribute boolean selected;
+};

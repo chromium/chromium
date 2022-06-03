@@ -22,27 +22,27 @@ var writingModes = ["horizontal", "vertical"];
 var directions = ["ltr", "rtl"];
 var logicalWidthsCombinations = [
     /* fixed min-width, auto width */
-    {"min-width": "500px", "width": null, "computed-width": {"css": "500px", "html": "470px"}},
-    {"min-width": "150px", "width": null, "computed-width": {"css": "250px", "html": "250px"}},
-    {"min-width": "50px", "width": null, "computed-width": {"css": "250px", "html": "250px"}},
+    {"min-width": "500px", "width": null, "computed-width": {"css": "500px", "html": "500px"}},
+    {"min-width": "150px", "width": null, "computed-width": {"css": "250px", "html": "280px"}},
+    {"min-width": "50px", "width": null, "computed-width": {"css": "250px", "html": "280px"}},
     /* fixed min-width, fixed width */
-    {"min-width": "500px", "width": "600px", "computed-width": {"css": "600px", "html": "570px"}},
-    {"min-width": "500px", "width": "400px", "computed-width": {"css": "500px", "html": "470px"}},
+    {"min-width": "500px", "width": "600px", "computed-width": {"css": "600px", "html": "600px"}},
+    {"min-width": "500px", "width": "400px", "computed-width": {"css": "500px", "html": "500px"}},
     /* fixed min-width, percent width */
-    {"min-width": "500px", "width": "60%", "computed-width": {"css": "600px", "html": "570px"}},
-    {"min-width": "500px", "width": "40%", "computed-width": {"css": "500px", "html": "470px"}},
+    {"min-width": "500px", "width": "60%", "computed-width": {"css": "600px", "html": "600px"}},
+    {"min-width": "500px", "width": "40%", "computed-width": {"css": "500px", "html": "500px"}},
     /* percent min-width, auto width */
-    {"min-width": "50%", "width": null, "computed-width": {"css": "500px", "html": "470px"}},
-    {"min-width": "15%", "width": null, "computed-width": {"css": "250px", "html": "250px"}},
-    {"min-width": "5%", "width": null, "computed-width": {"css": "250px", "html": "250px"}},
+    {"min-width": "50%", "width": null, "computed-width": {"css": "500px", "html": "500px"}},
+    {"min-width": "15%", "width": null, "computed-width": {"css": "250px", "html": "280px"}},
+    {"min-width": "5%", "width": null, "computed-width": {"css": "250px", "html": "280px"}},
     /* percent min-width, fixed width */
-    {"min-width": "50%", "width": "600px", "computed-width": {"css": "600px", "html": "570px"}},
-    {"min-width": "50%", "width": "400px", "computed-width": {"css": "500px", "html": "470px"}},
+    {"min-width": "50%", "width": "600px", "computed-width": {"css": "600px", "html": "600px"}},
+    {"min-width": "50%", "width": "400px", "computed-width": {"css": "500px", "html": "500px"}},
      /* percent min-width, percent width */
-    {"min-width": "50%", "width": "60%", "computed-width": {"css": "600px", "html": "570px"}},
-    {"min-width": "50%", "width": "40%", "computed-width": {"css": "500px", "html": "470px"}},
+    {"min-width": "50%", "width": "60%", "computed-width": {"css": "600px", "html": "600px"}},
+    {"min-width": "50%", "width": "40%", "computed-width": {"css": "500px", "html": "500px"}},
      /* auto min-width (shouldn't affect anything), auto width */
-    {"min-width": "auto", "width": null, "computed-width": {"css": "250px", "html": "250px"}},
+    {"min-width": "auto", "width": null, "computed-width": {"css": "250px", "html": "280px"}},
 ];
 
 function runTests(tableType)

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -20,6 +19,9 @@ class MockDisplayObserver : public DisplayObserver {
         display_removed_(0),
         display_changed_(0),
         latest_metrics_change_(DisplayObserver::DISPLAY_METRIC_NONE) {}
+
+  MockDisplayObserver(const MockDisplayObserver&) = delete;
+  MockDisplayObserver& operator=(const MockDisplayObserver&) = delete;
 
   ~MockDisplayObserver() override {}
 
@@ -46,8 +48,6 @@ class MockDisplayObserver : public DisplayObserver {
   int display_removed_;
   int display_changed_;
   uint32_t latest_metrics_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDisplayObserver);
 };
 
 TEST(DisplayChangeNotifierTest, AddObserver_Smoke) {

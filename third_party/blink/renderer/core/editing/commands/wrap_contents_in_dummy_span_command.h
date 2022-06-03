@@ -36,7 +36,7 @@ class WrapContentsInDummySpanCommand final : public SimpleEditCommand {
  public:
   explicit WrapContentsInDummySpanCommand(Element*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

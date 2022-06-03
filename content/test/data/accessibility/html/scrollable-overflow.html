@@ -1,53 +1,76 @@
 <!--
 * Test scrollXMin -- the presence of this indicates something is scrollable.
+@AURALINUX-ALLOW:class:*
 @BLINK-ALLOW:scrollXMin=*
+@BLINK-ALLOW:scrollable=true
+@BLINK-ALLOW:className*
+@UIA-WIN-ALLOW:ClassName*
+@UIA-WIN-ALLOW:*ScrollItemPatternAvailable*
+@UIA-WIN-ALLOW:*ScrollPatternAvailable*
+@UIA-WIN-ALLOW:*Scrollable*
+@WIN-ALLOW:class:*
 -->
 <html>
   <style>
   body { font-style: monospace; width: 999px;}
-  .x-overflow > div { width: 25px; height: 50px;}
-  .x-overflow > div > p { margin: 0; }
-  .y-overflow > div { height: 25px; }
-  .y-overflow > div > p { padding: 12px 0; margin: 0;}
+  .not-scrollable { margin-bottom: 50px; border: 2px dashed red;}
+  .scrollable { margin-bottom: 50px; border: 2px solid green;}
+  .clipped { width: 25px; height: 25px; overflow: hidden; }
+  .x-overflow-group > div { width: 25px; height: 50px;}
+  .x-overflow-group > div > p { margin: 0; }
+  .y-overflow-group > div { height: 25px; width: 20em;}
+  .y-overflow-group > div > p { padding: 12px 0; margin: 0;}
   </style>
   <body>
-    <div class="no-overflow">  <!-- Not scrollable -->
-      <p>no overflow
+    <div class="no-overflow not-scrollable">  <!-- Not scrollable -->
+      <p>no overflow <!-- Default is overflow: visible -->
     </div>
 
-    <div class="not-enough-content-to-scroll">  <!-- Not scrollable -->
+    <div class="clipped-not scrollable">  <!-- Not scrollable -->
+      <p>clipped large lots of text more text <!-- Default is overflow: visible -->
+    </div>
+
+    <textarea class="textarea scrollable" rows="1" cols="2">ab cd</textarea>  <!-- User scrollable -->
+
+    <div class="not-enough-content not-scrollable">  <!-- Not scrollable -->
       <div style="overflow: scroll; width: 100px; height: 100px">
         <p>tiny
       </div>
     </div>
 
-    <div class="x-overflow">
-      <div style="overflow-x: hidden;">  <!-- Scrollable -->
-          <p>x=hidden
+    <div class="x-overflow-group" role="group">
+      <div class="x-hidden-small not-scrollable" style="overflow-x: hidden;">  <!-- Not user scrollable, because not enough content   -->
+        <p>x=hidden
       </div>
-      <div style="overflow-x: auto;">  <!-- Scrollable -->
-          <p>x=auto
+      <div class="x-hidden-large scrollable" style="overflow-x: hidden;">  <!-- Actually user scrollable, because overflow-x=hidden changes overflow-y to auto   -->
+        <p style="width:999px; height:999px; background-color:green;">x=hidden
       </div>
-      <div style="overflow-x: scroll;">  <!-- Scrollable -->
-          <p>x=scroll
+      <div class="x-auto scrollable" style="overflow-x: auto;">  <!-- User scrollable if overflow -->
+        <p>x=auto
       </div>
-      <div style="overflow-x: visible;">  <!-- Not scrollable -->
-          <p>x=visible
+      <div class="x-scroll scrollable" style="overflow-x: scroll;">  <!-- User scrollable if overflow -->
+        <p>x=scroll
+      </div>
+      <div class="x-visible not-scrollable" style="overflow-x: visible;">  <!-- Not scrollable -->
+        <p>x=visible
       </div>
     </div>
 
-    <div class="y-overflow">
-      <div style="overflow-y: hidden;">  <!-- Scrollable -->
-          <p>y=hidden
+    <div class="y-overflow-group" role="group">
+      <div class="y-hidden-small not-scrollable" style="overflow-y: hidden;">  <!-- Not user scrollable, because not enough text   -->
+        <p>y=hidden
       </div>
-      <div style="overflow-y: auto;">  <!-- Scrollable -->
-          <p>y=auto
+      <div class="y-hidden-large scrollable" style="overflow-y: hidden;">  <!-- Actually user scrollable, because overflow-y=hidden changes overflow-x to auto   -->
+        <p style="width:999px; height:999px; background-color:green;">y=hidden
       </div>
-      <div style="overflow-y: scroll;">  <!-- Scrollable -->
-          <p>y=scroll
+      <div class="y-auto scrollable" style="overflow-y: auto;">  <!-- Use scrollable if overflow -->
+        <p>y=auto
       </div>
-      <div style="overflow-y: visible;">  <!-- Not scrollable -->
-          <p>y=visible
+      <div class="y-scroll scrollable" style="overflow-y: scroll;">  <!-- Use scrollable if overflow  -->
+        <p>y=scroll
+      </div>
+      <div class="y-visible not-scrollable" style="overflow-y: visible;">  <!-- Not scrollable -->
+        <p>y=visible
       </div>
     </div>
   </body>

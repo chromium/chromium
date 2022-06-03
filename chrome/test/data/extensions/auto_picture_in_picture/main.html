@@ -29,51 +29,47 @@
       document.title = document.visibilityState;
     });
 
-    function enterPictureInPicture() {
-      video.requestPictureInPicture()
-      .then(_ => { window.domAutomationController.send(true); })
-      .catch(e => { window.domAutomationController.send(false); });
+    async function enterPictureInPicture() {
+      await video.requestPictureInPicture();
+      return true;
     }
 
     function isInPictureInPicture() {
-      window.domAutomationController.send(document.pictureInPictureElement == video);
+      return document.pictureInPictureElement == video;
     }
 
-    function changeVideoSrcToNoAudioTrackVideo() {
+    async function changeVideoSrcToNoAudioTrackVideo() {
       video.src = '/media/engagement/engagement_no_audio_track.webm';
-      video.play()
-      .then(_ => { window.domAutomationController.send(true); })
-      .catch(e => { window.domAutomationController.send(false); });
+      await video.play();
+      return true;
     }
 
     function isPaused() {
-      window.domAutomationController.send(video.paused);
+      return video.paused;
     }
 
-    function playVideo() {
-      video.play()
-      .then(_ => { window.domAutomationController.send(true); })
-      .catch(e => { window.domAutomationController.send(false); });
+    async function playVideo() {
+      await video.play();
+      return true;
     }
 
-    function playSecondVideo() {
-      secondVideo.play()
-      .then(_ => { window.domAutomationController.send(true); })
-      .catch(e => { window.domAutomationController.send(false); });
+    async function playSecondVideo() {
+      await secondVideo.play();
+      return true;
     }
 
-    function addHtmlVideoWithAutoPictureInPicture() {
+    async function addHtmlVideoWithAutoPictureInPicture() {
       document.body.insertAdjacentHTML('beforeend',
         '<video id="htmlVideo" autopictureinpicture></video>');
       htmlVideo.src = '/media/bigbuck.webm';
 
-      htmlVideo.play()
-      .then(_ => { window.domAutomationController.send(true); })
-      .catch(e => { window.domAutomationController.send(false); });
+      await htmlVideo.play();
 
       htmlVideo.addEventListener('enterpictureinpicture', () => {
         document.title = 'htmlVideo.enterpictureinpicture';
       });
+
+      return true;
     }
   </script>
 </body>

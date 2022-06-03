@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
@@ -132,60 +131,11 @@ class RecurrenceRankerTest : public testing::Test {
     return proto;
   }
 
-  void ExpectErrors(bool fresh_model_created = true,
-                    bool using_fake_predictor = true,
-                    bool has_saved = false) {
-    // Total count of serialization reports:
-    //  - one for either a kLoadOk or kModelReadError
-    //  - one if |fresh_model_created| because model is written to disk with a
-    //    kSaveOk on initialization.
-    //  - one if |has_saved| because model is again written to disk with a
-    //    kSaveOk.
-    histogram_tester_.ExpectTotalCount(
-        "RecurrenceRanker.SerializationStatus.MyModel",
-        1 + static_cast<int>(has_saved) +
-            static_cast<int>(fresh_model_created));
-
-    // If a model doesn't already exist, a read error is logged.
-    if (fresh_model_created) {
-      histogram_tester_.ExpectBucketCount(
-          "RecurrenceRanker.SerializationStatus.MyModel",
-          SerializationStatus::kModelReadError, 1);
-    } else {
-      histogram_tester_.ExpectBucketCount(
-          "RecurrenceRanker.SerializationStatus.MyModel",
-          SerializationStatus::kLoadOk, 1);
-    }
-
-    histogram_tester_.ExpectBucketCount(
-        "RecurrenceRanker.SerializationStatus.MyModel",
-        SerializationStatus::kSaveOk,
-        static_cast<int>(has_saved) + static_cast<int>(fresh_model_created));
-
-    // Initialising with the fake predictor logs an UMA error, because it should
-    // be used only in tests and not in production.
-    if (using_fake_predictor) {
-      histogram_tester_.ExpectTotalCount(
-          "RecurrenceRanker.InitializationStatus.MyModel", 2);
-      histogram_tester_.ExpectBucketCount(
-          "RecurrenceRanker.InitializationStatus.MyModel",
-          InitializationStatus::kFakePredictorUsed, 1);
-      histogram_tester_.ExpectBucketCount(
-          "RecurrenceRanker.InitializationStatus.MyModel",
-          InitializationStatus::kInitialized, 1);
-    } else {
-      histogram_tester_.ExpectUniqueSample(
-          "RecurrenceRanker.InitializationStatus.MyModel",
-          InitializationStatus::kInitialized, 1);
-    }
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::DEFAULT,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::HistogramTester histogram_tester_;
 
   base::FilePath ranker_filepath_;
 };
@@ -199,8 +149,6 @@ TEST_F(RecurrenceRankerTest, Record) {
 
   EXPECT_THAT(ranker->Rank(), UnorderedElementsAre(Pair("A", FloatEq(1.0f)),
                                                    Pair("B", FloatEq(2.0f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, RenameTarget) {
@@ -212,8 +160,6 @@ TEST_F(RecurrenceRankerTest, RenameTarget) {
   ranker->RenameTarget("B", "A");
 
   EXPECT_THAT(ranker->Rank(), ElementsAre(Pair("A", FloatEq(2.0f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, RemoveTarget) {
@@ -225,8 +171,6 @@ TEST_F(RecurrenceRankerTest, RemoveTarget) {
   ranker->RemoveTarget("A");
 
   EXPECT_THAT(ranker->Rank(), ElementsAre(Pair("B", FloatEq(2.0f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, ComplexRecordAndRank) {
@@ -246,8 +190,6 @@ TEST_F(RecurrenceRankerTest, ComplexRecordAndRank) {
   EXPECT_THAT(ranker->Rank(), UnorderedElementsAre(Pair("A", FloatEq(1.0f)),
                                                    Pair("B", FloatEq(2.0f)),
                                                    Pair("F", FloatEq(1.0f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, RankTopN) {
@@ -263,17 +205,34 @@ TEST_F(RecurrenceRankerTest, RankTopN) {
   EXPECT_THAT(ranker->RankTopN(100),
               ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f)),
                           Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
+}
+
+TEST_F(RecurrenceRankerTest, RankSorted) {
+  auto ranker = MakeSimpleRanker();
+
+  const std::vector<std::string> targets = {"B", "A", "A", "B", "C",
+                                            "B", "D", "C", "A", "A"};
+  for (auto target : targets)
+    ranker->Record(target);
+
+  EXPECT_THAT(ranker->RankSorted(),
+              ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f)),
+                          Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
+}
+
+TEST_F(RecurrenceRankerTest, Empty) {
+  auto ranker = MakeSimpleRanker();
+
+  EXPECT_TRUE(ranker->empty());
+  ranker->Record("A");
+  EXPECT_FALSE(ranker->empty());
 }
 
 TEST_F(RecurrenceRankerTest, LoadFromDisk) {
   // Serialise a testing proto.
   RecurrenceRankerProto proto = MakeTestingProto();
   const std::string proto_str = proto.SerializeAsString();
-  EXPECT_NE(
-      base::WriteFile(ranker_filepath_, proto_str.c_str(), proto_str.size()),
-      -1);
+  EXPECT_TRUE(base::WriteFile(ranker_filepath_, proto_str));
 
   // Make a ranker.
   RecurrenceRanker ranker("MyModel", ranker_filepath_, MakeSimpleConfig(),
@@ -288,8 +247,6 @@ TEST_F(RecurrenceRankerTest, LoadFromDisk) {
   EXPECT_THAT(ranker.Rank(), UnorderedElementsAre(Pair("A", FloatEq(1.0f)),
                                                   Pair("B", FloatEq(2.0f)),
                                                   Pair("C", FloatEq(1.0f))));
-  ExpectErrors(/* fresh_model_created = */ false,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, InitializeIfNoFileExists) {
@@ -304,9 +261,6 @@ TEST_F(RecurrenceRankerTest, InitializeIfNoFileExists) {
 
   EXPECT_TRUE(ranker.load_from_disk_completed_);
   EXPECT_TRUE(ranker.Rank().empty());
-
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, SaveToDisk) {
@@ -338,10 +292,6 @@ TEST_F(RecurrenceRankerTest, SaveToDisk) {
 
   // Expect the content to be proto_.
   EXPECT_TRUE(EquivToProtoLite(proto_written, MakeTestingProto()));
-
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ true,
-               /* has_saved = */ true);
 }
 
 TEST_F(RecurrenceRankerTest, SavedRankerRejectedIfConfigMismatched) {
@@ -368,10 +318,6 @@ TEST_F(RecurrenceRankerTest, SavedRankerRejectedIfConfigMismatched) {
   EXPECT_TRUE(other_ranker.Rank().empty());
   // For comparison:
   EXPECT_THAT(ranker->Rank(), UnorderedElementsAre(Pair("A", FloatEq(1.0f))));
-  // Should also log an error to UMA.
-  histogram_tester_.ExpectBucketCount(
-      "RecurrenceRanker.InitializationStatus.MyModel",
-      InitializationStatus::kHashMismatch, 1);
 }
 
 TEST_F(RecurrenceRankerTest, Cleanup) {
@@ -416,9 +362,6 @@ TEST_F(RecurrenceRankerTest, EphemeralUsersUseDefaultPredictor) {
   Wait();
   EXPECT_THAT(ephemeral_ranker.GetPredictorNameForTesting(),
               StrEq(DefaultPredictor::kPredictorName));
-  histogram_tester_.ExpectBucketCount(
-      "RecurrenceRanker.InitializationStatus.MyModel",
-      InitializationStatus::kEphemeralUser, 1);
 }
 
 TEST_F(RecurrenceRankerTest, IntegrationWithDefaultPredictor) {
@@ -437,8 +380,6 @@ TEST_F(RecurrenceRankerTest, IntegrationWithDefaultPredictor) {
   EXPECT_THAT(ranker.Rank(), UnorderedElementsAre(Pair("A", FloatEq(0.2304f)),
                                                   Pair("B", FloatEq(0.16f)),
                                                   Pair("C", FloatEq(0.2f))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ false);
 }
 
 TEST_F(RecurrenceRankerTest, IntegrationWithZeroStateFrecencyPredictor) {
@@ -465,8 +406,6 @@ TEST_F(RecurrenceRankerTest, IntegrationWithZeroStateFrecencyPredictor) {
               UnorderedElementsAre(Pair("A", FloatEq(0.09375f / total)),
                                    Pair("B", FloatEq(0.125f / total)),
                                    Pair("C", FloatEq(0.25f / total))));
-  ExpectErrors(/* fresh_model_created = */ true,
-               /* using_fake_predictor = */ false);
 }
 
 }  // namespace app_list

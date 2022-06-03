@@ -37,6 +37,12 @@ class VIEWS_EXPORT ViewObserver {
   // Called when the bounds of |observed_view|'s layer change.
   virtual void OnLayerTargetBoundsChanged(View* observed_view) {}
 
+  // Called when the `observed_view`'s layer transform changes.
+  // TODO(crbug.com/1203386): This is temporarily added to support a migration.
+  // Do not use for new call sites, we should instead figure out how to
+  // migrate this method (and possibly others) into callbacks.
+  virtual void OnViewLayerTransformed(View* observed_view) {}
+
   // Called when View::ViewHierarchyChanged() is called.
   virtual void OnViewHierarchyChanged(
       View* observed_view,

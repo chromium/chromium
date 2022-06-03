@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -191,7 +191,7 @@ void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
   statement.BindCString(8, kTestURL);
   statement.BindString(9, base::FilePath(kFilePath).MaybeAsASCII());
   statement.BindInt64(10, store_utils::ToDatabaseTime(OfflineTimeNow()));
-  statement.BindString16(11, base::UTF8ToUTF16("Test title"));
+  statement.BindString16(11, u"Test title");
   ASSERT_TRUE(statement.Run());
   ASSERT_TRUE(connection.DoesTableExist(OFFLINE_PAGES_TABLE_V1));
   ASSERT_TRUE(connection.DoesColumnExist(OFFLINE_PAGES_TABLE_V1, "version"));
@@ -238,7 +238,7 @@ void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
   statement.BindCString(7, kTestURL);
   statement.BindString(8, base::FilePath(kFilePath).MaybeAsASCII());
   statement.BindInt64(9, store_utils::ToDatabaseTime(OfflineTimeNow()));
-  statement.BindString16(10, base::UTF8ToUTF16("Test title"));
+  statement.BindString16(10, u"Test title");
   ASSERT_TRUE(statement.Run());
   ASSERT_TRUE(connection.DoesTableExist(OFFLINE_PAGES_TABLE_V1));
   ASSERT_TRUE(connection.DoesColumnExist(OFFLINE_PAGES_TABLE_V1, "title"));
@@ -283,7 +283,7 @@ void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
   statement.BindCString(7, kTestURL);
   statement.BindString(8, base::FilePath(kFilePath).MaybeAsASCII());
   statement.BindInt64(9, store_utils::ToDatabaseTime(OfflineTimeNow()));
-  statement.BindString16(10, base::UTF8ToUTF16("Test title"));
+  statement.BindString16(10, u"Test title");
   statement.BindCString(11, kOriginalTestURL);
   ASSERT_TRUE(statement.Run());
   ASSERT_TRUE(connection.DoesTableExist(OFFLINE_PAGES_TABLE_V1));
@@ -326,7 +326,7 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
   statement.BindString(6, kTestClientId2.id);
   statement.BindCString(7, kTestURL);
   statement.BindString(8, base::FilePath(kFilePath).MaybeAsASCII());
-  statement.BindString16(9, base::UTF8ToUTF16("Test title"));
+  statement.BindString16(9, u"Test title");
   statement.BindCString(10, kOriginalTestURL);
   ASSERT_TRUE(statement.Run());
   ASSERT_TRUE(connection.DoesTableExist(OFFLINE_PAGES_TABLE_V1));
@@ -371,7 +371,7 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file) {
   statement.BindString(6, kTestClientId2.id);
   statement.BindCString(7, kTestURL);
   statement.BindString(8, base::FilePath(kFilePath).MaybeAsASCII());
-  statement.BindString16(9, base::UTF8ToUTF16("Test title"));
+  statement.BindString16(9, u"Test title");
   statement.BindCString(10, kOriginalTestURL);
   statement.BindString(11, kTestRequestOrigin);
   ASSERT_TRUE(statement.Run());
@@ -491,7 +491,7 @@ bool InsertVisualsVersion3(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kInsertVisualsSql));
   statement.BindInt64(0, visuals.offline_id);
   statement.BindInt64(1, store_utils::ToDatabaseTime(visuals.expiration));
-  statement.BindBlob(2, visuals.thumbnail.data(), visuals.thumbnail.size());
+  statement.BindBlob(2, visuals.thumbnail);
   return statement.Run();
 }
 
@@ -531,7 +531,7 @@ OfflinePageItem MakeOfflinePageItem(sql::Statement* statement) {
   GURL url(statement->ColumnString(10));
   base::FilePath path(
       store_utils::FromDatabaseFilePath(statement->ColumnString(11)));
-  base::string16 title = statement->ColumnString16(12);
+  std::u16string title = statement->ColumnString16(12);
   GURL original_url(statement->ColumnString(13));
   std::string request_origin = statement->ColumnString(14);
   std::string digest = statement->ColumnString(15);
@@ -610,7 +610,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
     size_t store_size = GetOfflinePages(store.get()).size();
     OfflinePageItem offline_page(GURL(kTestURL), 1234LL, kTestClientId1,
                                  base::FilePath(kFilePath), kFileSize);
-    offline_page.title = base::UTF8ToUTF16("a title");
+    offline_page.title = u"a title";
     offline_page.original_url_if_different = GURL(kOriginalTestURL);
     offline_page.system_download_id = kTestSystemDownloadId;
     offline_page.digest = kTestDigest;
@@ -931,7 +931,7 @@ TEST_F(OfflinePageMetadataStoreTest, AddSameOfflinePageTwice) {
 
   OfflinePageItem offline_page(GURL(kTestURL), 1234LL, kTestClientId1,
                                base::FilePath(kFilePath), kFileSize);
-  offline_page.title = base::UTF8ToUTF16("a title");
+  offline_page.title = u"a title";
 
   EXPECT_EQ(ItemActionStatus::SUCCESS,
             AddOfflinePage(store.get(), offline_page));

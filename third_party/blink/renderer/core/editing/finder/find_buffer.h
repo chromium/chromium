@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
@@ -29,7 +30,23 @@ class CORE_EXPORT FindBuffer {
   static EphemeralRangeInFlatTree FindMatchInRange(
       const EphemeralRangeInFlatTree& range,
       String search_text,
-      const FindOptions);
+      const FindOptions,
+      absl::optional<base::TimeDelta> timeout_ms = absl::nullopt);
+
+  // Returns the closest ancestor of |start_node| (including the node itself)
+  // that is block level.
+  static const Node& GetFirstBlockLevelAncestorInclusive(
+      const Node& start_node);
+
+  // Returns true if start and end nodes are in the same layout block flow and
+  // there are no nodes in between that can be considered blocks. Otherwise,
+  // returns false.
+  static bool IsInSameUninterruptedBlock(const Node& start_node,
+                                         const Node& end_node);
+
+  // See |GetVisibleTextNode|.
+  static Node* ForwardVisibleTextNode(Node& start_node);
+  static Node* BackwardVisibleTextNode(Node& start_node);
 
   // A match result, containing the starting position of the match and
   // the length of the match.
@@ -133,19 +150,6 @@ class CORE_EXPORT FindBuffer {
   // another LayoutBlockFlow or after |end_position|) to |node_after_block_|.
   void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range);
 
-  // Adds the ScopedForcedUpdate of |element|'s DisplayLockContext (if it's
-  // there) to |scoped_forced_update_list_|. Returns true if we added a
-  // ScopedForceUpdate.
-  bool PushScopedForcedUpdateIfNeeded(const Element& element);
-
-  // Collects all ScopedForceUpdates of any activatable-locked element
-  // within the range of [start_node, search_range_end_node] or
-  // [start_node, node_after_block) whichever is smaller, to
-  // |scoped_forced_update_list_|.
-  void CollectScopedForcedUpdates(Node& start_node,
-                                  const Node* search_range_end_node,
-                                  const Node* node_after_block);
-
   // Mapping for position in buffer -> actual node where the text came from,
   // along with the offset in the NGOffsetMapping of this find_buffer.
   // This is needed because when we find a match in the buffer, we want to know
@@ -187,10 +191,9 @@ class CORE_EXPORT FindBuffer {
                        LayoutBlockFlow& block_flow,
                        const EphemeralRangeInFlatTree& range);
 
-  Member<Node> node_after_block_;
+  Node* node_after_block_ = nullptr;
   Vector<UChar> buffer_;
   Vector<BufferNodeMapping> buffer_node_mappings_;
-  Vector<DisplayLockContext::ScopedForcedUpdate> scoped_forced_update_list_;
   TextSearcherICU text_searcher_;
 
   const NGOffsetMapping* offset_mapping_ = nullptr;

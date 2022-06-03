@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -72,11 +73,17 @@ interface DevToolsAgent {
   // |client_expects_binary_response| indicates that responses (and
   // notifications) sent from this session should use binary (CBOR)
   // encoding as opposed to JSON encoding.
+  //
+  // |session_id| is a string which, if provided, uniquely identifies the
+  // session. The renderer must send this back with each response. The current
+  // implementation uses the string serialization of an UnguessableToken, but
+  // that is subject to change.
   AttachDevToolsSession(pending_associated_remote<DevToolsSessionHost> host,
                         pending_associated_receiver<DevToolsSession> session,
                         pending_receiver<DevToolsSession> io_session,
                         DevToolsSessionState? reattach_session_state,
-                        bool client_expects_binary_responses);
+                        bool client_expects_binary_responses,
+                        string session_id);
 
   // Requests an element at specific position to be inspected in every
   // attached session (or the next attached one if none yet).
@@ -93,10 +100,10 @@ interface DevToolsAgent {
   ReportChildWorkers(bool report, bool wait_for_debugger) => ();
 };
 
-// This interface is implemented in browser and is notified by DevToolsAgent
-// when new child worker is available for future debugging.
+// This interface is implemented in the browser and is notified by
+// DevToolsAgent when a new child worker is available for future debugging.
 interface DevToolsAgentHost {
-  // Informs the host about new child worker and gives its DevToolsAgent
+  // Informs the host about the new child worker and gives its DevToolsAgent
   // for debugging.
   // |devtools_worker_token| is a unique token identifying this worker.
   // |waiting_for_debugger| is true if worker was paused on startup and
@@ -121,7 +128,9 @@ interface DevToolsSession {
   // |method| is a method name as defined in protocol (e.g. "Runtime.evaluate").
   // |call_id| is a command id as defined in protocol, and is going to be
   // reported back to host in a response message (see DevToolsSessionHost).
-  DispatchProtocolCommand(int32 call_id, string method, DevToolsMessage message);
+  DispatchProtocolCommand(int32 call_id,
+                          string method,
+                          mojo_base.mojom.ReadOnlyBuffer message);
 };
 
 // A peer of DevToolsSession representing a remote debugging client
@@ -133,11 +142,16 @@ interface DevToolsSessionHost {
   // |updates| are the session state deltas for future reattach (see
   // DevToolsAgent), may be missing if the state did not change since
   // last time.
+  //
+  // TODO(crbug.com/1142000): Investigate whether it's possible to remove
+  // [UnlimitedSize] from these messages.
+  [UnlimitedSize]
   DispatchProtocolResponse(DevToolsMessage message,
                            int32 call_id,
                            DevToolsSessionState? updates);
 
   // Dispatches protocol notification to a remote debugging client.
+  [UnlimitedSize]
   DispatchProtocolNotification(DevToolsMessage message,
                                DevToolsSessionState? updates);
 };

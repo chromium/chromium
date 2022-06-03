@@ -5,7 +5,7 @@
 #include "cc/paint/paint_recorder.h"
 
 #include "cc/paint/display_item_list.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -45,6 +45,14 @@ std::unique_ptr<RecordPaintCanvas> PaintRecorder::CreateCanvas(
     DisplayItemList* list,
     const SkRect& bounds) {
   return std::make_unique<RecordPaintCanvas>(list, bounds);
+}
+
+bool PaintRecorder::ListHasDrawOps() const {
+  return display_item_list_->has_draw_ops();
+}
+
+size_t PaintRecorder::num_paint_ops() const {
+  return display_item_list_->num_paint_ops();
 }
 
 }  // namespace cc

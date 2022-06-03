@@ -11,8 +11,9 @@ namespace blink {
 
 class HeapObject : public GarbageCollected<HeapObject> {
 public:
-    void Trace(Visitor*);
-    void clearWeakMembers(Visitor*);
+ void Trace(Visitor*) const;
+ void clearWeakMembers(Visitor*);
+
 private:
     Member<HeapObject> m_obj1;
     WeakMember<HeapObject> m_obj2;

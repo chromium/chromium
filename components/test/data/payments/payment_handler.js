@@ -4,19 +4,27 @@
  * found in the LICENSE file.
  */
 
-const methodName = window.location.origin + '/pay';
-const swSrcUrl = 'payment_handler_sw.js';
+const DEFAULT_METHOD_NAME = window.location.origin + '/pay';
+const SW_SRC_URL = 'payment_handler_sw.js';
 
-/** Installs the payment handler. */
-async function install() { // eslint-disable-line no-unused-vars
+let methodName = DEFAULT_METHOD_NAME;
+var request;
+
+/** Installs the payment handler.
+ * @param {string} method - The payment method that this service worker
+ *    supports.
+ * @return {Promise<string>} - 'success' or error message on failure.
+ */
+async function install(method=DEFAULT_METHOD_NAME) { // eslint-disable-line no-unused-vars, max-len
   try {
+    methodName = method;
     let registration =
-        await navigator.serviceWorker.getRegistration(swSrcUrl);
+        await navigator.serviceWorker.getRegistration(SW_SRC_URL);
     if (registration) {
       return 'The payment handler is already installed.';
     }
 
-    await navigator.serviceWorker.register(swSrcUrl);
+    await navigator.serviceWorker.register(SW_SRC_URL);
     registration = await navigator.serviceWorker.ready;
     if (!registration.paymentManager) {
       return 'PaymentManager API not found.';
@@ -24,8 +32,26 @@ async function install() { // eslint-disable-line no-unused-vars
 
     await registration.paymentManager.instruments.set('instrument-id', {
       name: 'Instrument Name',
-      method: methodName,
+      method,
     });
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Uninstalls the payment handler.
+ * @return {Promise<string>} - 'success' or error message on failure.
+ */
+async function uninstall() { // eslint-disable-line no-unused-vars
+  try {
+    let registration =
+        await navigator.serviceWorker.getRegistration(SW_SRC_URL);
+    if (!registration) {
+      return 'The Payment handler has not been installed yet.';
+    }
+    await registration.unregister();
     return 'success';
   } catch (e) {
     return e.toString();
@@ -35,13 +61,13 @@ async function install() { // eslint-disable-line no-unused-vars
 /**
  * Delegates handling of the provided options to the payment handler.
  * @param {Array<string>} delegations The list of payment options to delegate.
- * @return {string} The 'success' or error message.
+ * @return {Promise<string>} - 'success' or error message on failure.
  */
 async function enableDelegations(delegations) { // eslint-disable-line no-unused-vars, max-len
   try {
     await navigator.serviceWorker.ready;
     let registration =
-        await navigator.serviceWorker.getRegistration(swSrcUrl);
+        await navigator.serviceWorker.getRegistration(SW_SRC_URL);
     if (!registration) {
       return 'The payment handler is not installed.';
     }
@@ -61,6 +87,7 @@ async function enableDelegations(delegations) { // eslint-disable-line no-unused
 
 /**
  * Launches the payment handler.
+ * @return {Promise<string>} - 'success' or error message on failure.
  */
 async function launch() { // eslint-disable-line no-unused-vars
   try {
@@ -69,6 +96,35 @@ async function launch() { // eslint-disable-line no-unused-vars
     });
     const response = await request.show();
     await response.complete('success');
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Launches the payment handler without waiting for a response to be returned.
+ * @return {string} The 'success' or error message.
+ */
+function launchWithoutWaitForResponse() { // eslint-disable-line no-unused-vars
+  try {
+    request = new PaymentRequest([{supportedMethods: methodName}], {
+      total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
+    });
+    request.show();
+    return 'success';
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Aborts the on-going payment request.
+ * @return {Promise<string>} - 'success' or error message on failure.
+ */
+async function abort() { // eslint-disable-line no-unused-vars
+  try {
+    await request.abort();
     return 'success';
   } catch (e) {
     return e.toString();

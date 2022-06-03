@@ -14,14 +14,13 @@
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "content/public/common/screen_info.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::ElementsAre;
@@ -36,7 +35,7 @@ void GetFingerprintInternal(
     uint64_t obfuscated_gaia_id,
     const gfx::Rect& window_bounds,
     const gfx::Rect& content_bounds,
-    const content::ScreenInfo& screen_info,
+    const display::ScreenInfo& screen_info,
     const std::string& version,
     const std::string& charset,
     const std::string& accept_languages,
@@ -75,16 +74,17 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
         unavailable_screen_bounds_(0, 0, 101, 11) {}
 
   void SetUpOnMainThread() override {
-    device::mojom::Geoposition position;
-    position.latitude = kLatitude;
-    position.longitude = kLongitude;
-    position.altitude = kAltitude;
-    position.accuracy = kAccuracy;
-    position.timestamp = base::Time::UnixEpoch() +
-                         base::TimeDelta::FromMilliseconds(kGeolocationTime);
+    auto position = device::mojom::Geoposition::New();
+    position->latitude = kLatitude;
+    position->longitude = kLongitude;
+    position->altitude = kAltitude;
+    position->accuracy = kAccuracy;
+    position->timestamp =
+        base::Time::UnixEpoch() + base::Milliseconds(kGeolocationTime);
 
     geolocation_overrider_ =
-        std::make_unique<device::ScopedGeolocationOverrider>(position);
+        std::make_unique<device::ScopedGeolocationOverrider>(
+            std::move(position));
   }
 
   void GetFingerprintTestCallback(base::OnceClosure continuation_callback,
@@ -200,7 +200,7 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
 
 // Test that getting a fingerprint works on some basic level.
 IN_PROC_BROWSER_TEST_F(AutofillRiskFingerprintTest, GetFingerprint) {
-  content::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   screen_info.depth = kScreenColorDepth;
   screen_info.rect = screen_bounds_;
   screen_info.available_rect = available_screen_bounds_;
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AutofillRiskFingerprintTest, GetFingerprint) {
       kObfuscatedGaiaId, window_bounds_, content_bounds_, screen_info,
       "25.0.0.123", kCharset, kAcceptLanguages, AutofillClock::Now(), kLocale,
       kUserAgent,
-      base::TimeDelta::FromDays(1),  // Ought to be longer than any test run.
+      base::Days(1),  // Ought to be longer than any test run.
       base::BindOnce(&AutofillRiskFingerprintTest::GetFingerprintTestCallback,
                      base::Unretained(this), run_loop.QuitWhenIdleClosure()));
 

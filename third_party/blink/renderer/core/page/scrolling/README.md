@@ -1,6 +1,6 @@
 # Scrolling
 
-The `Source/core/page/scrolling` directory contains utilities and classes for
+The `renderer/core/page/scrolling` directory contains utilities and classes for
 scrolling that don't belong anywhere else. For example, the majority of
 document.rootScroller's implementation as well as overscroll and some scroll
 customization types live here.

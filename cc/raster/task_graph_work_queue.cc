@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {

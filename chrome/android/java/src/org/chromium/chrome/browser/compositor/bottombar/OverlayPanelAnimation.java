@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
 /**
  * Base abstract class for animating the Overlay Panel.
@@ -56,9 +56,11 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /**
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
+     * @param toolbarHeightDp The height of the toolbar in dp.
      */
-    public OverlayPanelAnimation(Context context, LayoutUpdateHost updateHost) {
-        super(context);
+    public OverlayPanelAnimation(
+            Context context, LayoutUpdateHost updateHost, float toolbarHeightDp) {
+        super(context, toolbarHeightDp);
         mUpdateHost = updateHost;
     }
 

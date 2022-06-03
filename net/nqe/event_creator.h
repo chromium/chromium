@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/effective_connection_type.h"
@@ -27,6 +26,10 @@ namespace internal {
 class NET_EXPORT_PRIVATE EventCreator {
  public:
   explicit EventCreator(NetLogWithSource net_log);
+
+  EventCreator(const EventCreator&) = delete;
+  EventCreator& operator=(const EventCreator&) = delete;
+
   ~EventCreator();
 
   // May add network quality changed event to the net-internals log if there
@@ -48,8 +51,6 @@ class NET_EXPORT_PRIVATE EventCreator {
   NetworkQuality past_network_quality_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(EventCreator);
 };
 
 }  // namespace internal

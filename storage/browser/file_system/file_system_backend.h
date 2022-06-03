@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -95,7 +96,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // |error_code| correspondingly.
   // This method is usually dispatched by
   // FileSystemContext::CreateFileSystemOperation.
-  virtual FileSystemOperation* CreateFileSystemOperation(
+  virtual std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const = 0;
@@ -119,7 +120,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // This method itself does *not* check if the given path exists and is a
   // regular file. At most |max_bytes_to_read| can be fetched from the file
   // stream reader.
-  virtual std::unique_ptr<storage::FileStreamReader> CreateFileStreamReader(
+  virtual std::unique_ptr<FileStreamReader> CreateFileStreamReader(
       const FileSystemURL& url,
       int64_t offset,
       int64_t max_bytes_to_read,
@@ -162,31 +163,29 @@ class ExternalFileSystemBackend : public FileSystemBackend {
   // Returns true if |url| is allowed to be accessed.
   // This is supposed to perform ExternalFileSystem-specific security
   // checks.
-  virtual bool IsAccessAllowed(const storage::FileSystemURL& url) const = 0;
+  virtual bool IsAccessAllowed(const FileSystemURL& url) const = 0;
   // Returns the list of top level directories that are exposed by this
   // provider. This list is used to set appropriate child process file access
   // permissions.
   virtual std::vector<base::FilePath> GetRootDirectories() const = 0;
-  // Grants access to |virtual_path| from |origin_url|.
-  virtual void GrantFileAccessToExtension(
-      const std::string& extension_id,
-      const base::FilePath& virtual_path) = 0;
-  // Revokes file access from extension identified with |extension_id|.
-  virtual void RevokeAccessForExtension(const std::string& extension_id) = 0;
+  // Grants access to |virtual_path| from |origin| URL.
+  virtual void GrantFileAccessToOrigin(const url::Origin& origin,
+                                       const base::FilePath& virtual_path) = 0;
+  // Revokes file access from origin identified with |origin|.
+  virtual void RevokeAccessForOrigin(const url::Origin& origin) = 0;
   // Gets virtual path by known filesystem path. Returns false when filesystem
   // path is not exposed by this provider.
   virtual bool GetVirtualPath(const base::FilePath& file_system_path,
                               base::FilePath* virtual_path) const = 0;
   // Gets a redirect URL for contents. e.g. Google Drive URL for hosted
   // documents. Returns empty URL if the entry does not have the redirect URL.
-  virtual void GetRedirectURLForContents(
-      const storage::FileSystemURL& url,
-      storage::URLCallback callback) const = 0;
+  virtual void GetRedirectURLForContents(const FileSystemURL& url,
+                                         URLCallback callback) const = 0;
   // Creates an internal File System URL for performing internal operations such
   // as confirming if a file or a directory exist before granting the final
   // permission to the entry. The path must be an absolute path.
-  virtual storage::FileSystemURL CreateInternalURL(
-      storage::FileSystemContext* context,
+  virtual FileSystemURL CreateInternalURL(
+      FileSystemContext* context,
       const base::FilePath& entry_path) const = 0;
 };
 

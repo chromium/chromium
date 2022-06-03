@@ -1,0 +1,8 @@
+static_library("views_debug") {
+  sources = [
+    "debugger_utils.cc",
+    "debugger_utils.h",
+  ]
+
+  deps = [ "//base" ]
+}

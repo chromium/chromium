@@ -8,45 +8,47 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
-#include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 namespace {
 
-using autofill::PasswordForm;
+using testing::_;
 using testing::ElementsAre;
 using testing::Invoke;
 using testing::Pointee;
+using testing::Return;
 using testing::SaveArg;
 using testing::Unused;
-using testing::_;
 
 constexpr char kTestHttpsURL[] = "https://example.org/path";
+constexpr char kTestHost[] = "example.org";
 constexpr char kTestHttpURL[] = "http://example.org/path";
 constexpr char kTestSubdomainHttpURL[] = "http://login.example.org/path2";
 
 // Creates a dummy http form with some basic arbitrary values.
 PasswordForm CreateTestForm() {
   PasswordForm form;
-  form.origin = GURL(kTestHttpURL);
-  form.signon_realm = form.origin.GetOrigin().spec();
+  form.url = GURL(kTestHttpURL);
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL("https://example.org/action.html");
-  form.username_value = base::ASCIIToUTF16("user");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"user";
+  form.password_value = u"password";
   return form;
 }
 
 // Creates a dummy http PSL-matching form with some basic arbitrary values.
 PasswordForm CreateTestPSLForm() {
   PasswordForm form;
-  form.origin = GURL(kTestSubdomainHttpURL);
-  form.signon_realm = form.origin.GetOrigin().spec();
+  form.url = GURL(kTestSubdomainHttpURL);
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL(kTestSubdomainHttpURL);
-  form.username_value = base::ASCIIToUTF16("user2");
-  form.password_value = base::ASCIIToUTF16("password2");
+  form.username_value = u"user2";
+  form.password_value = u"password2";
   form.is_public_suffix_match = true;
   return form;
 }
@@ -54,10 +56,10 @@ PasswordForm CreateTestPSLForm() {
 // Creates an Android credential.
 PasswordForm CreateAndroidCredential() {
   PasswordForm form;
-  form.username_value = base::ASCIIToUTF16("user3");
-  form.password_value = base::ASCIIToUTF16("password3");
+  form.username_value = u"user3";
+  form.password_value = u"password3";
   form.signon_realm = "android://hash@com.example.android/";
-  form.origin = GURL(form.signon_realm);
+  form.url = GURL(form.signon_realm);
   form.action = GURL();
   form.is_affiliation_based_match = true;
   return form;
@@ -66,9 +68,9 @@ PasswordForm CreateAndroidCredential() {
 // Creates a local federated credential.
 PasswordForm CreateLocalFederatedCredential() {
   PasswordForm form;
-  form.username_value = base::ASCIIToUTF16("user4");
+  form.username_value = u"user4";
   form.signon_realm = "federation://localhost/federation.example.com";
-  form.origin = GURL("http://localhost/");
+  form.url = GURL("http://localhost/");
   form.action = GURL("http://localhost/");
   form.federation_origin =
       url::Origin::Create(GURL("https://federation.example.com"));
@@ -77,61 +79,48 @@ PasswordForm CreateLocalFederatedCredential() {
 
 class MockConsumer : public HttpPasswordStoreMigrator::Consumer {
  public:
-  MOCK_METHOD1(ProcessForms,
-               void(const std::vector<autofill::PasswordForm*>& forms));
+  MOCK_METHOD1(ProcessForms, void(const std::vector<PasswordForm*>& forms));
 
   void ProcessMigratedForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override {
-    std::vector<autofill::PasswordForm*> raw_forms(forms.size());
-    std::transform(forms.begin(), forms.end(), raw_forms.begin(),
-                   [](const std::unique_ptr<autofill::PasswordForm>& form) {
-                     return form.get();
-                   });
+      std::vector<std::unique_ptr<PasswordForm>> forms) override {
+    std::vector<PasswordForm*> raw_forms(forms.size());
+    std::transform(
+        forms.begin(), forms.end(), raw_forms.begin(),
+        [](const std::unique_ptr<PasswordForm>& form) { return form.get(); });
     ProcessForms(raw_forms);
   }
 };
 
-class MockPasswordManagerClient : public StubPasswordManagerClient {
+class MockNetworkContext : public network::TestNetworkContext {
  public:
-  explicit MockPasswordManagerClient(PasswordStore* store) : store_(store) {}
+  MockNetworkContext() = default;
+  ~MockNetworkContext() override = default;
 
-  // PasswordManagerClient:
-  PasswordStore* GetProfilePasswordStore() const override { return store_; }
-  void PostHSTSQueryForHost(const GURL& gurl,
-                            HSTSCallback callback) const override {
-    saved_callback_ = std::move(callback);
-    PostHSTSQueryForHostHelper(gurl);
-  }
-
-  MOCK_CONST_METHOD1(PostHSTSQueryForHostHelper, void(const GURL&));
-  HSTSCallback hsts_acquire_callback() { return std::move(saved_callback_); }
-
- private:
-  PasswordStore* store_;
-  mutable HSTSCallback saved_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerClient);
+  MOCK_METHOD(void,
+              IsHSTSActiveForHost,
+              (const std::string&, IsHSTSActiveForHostCallback),
+              (override));
 };
 
 }  // namespace
 
 class HttpPasswordStoreMigratorTest : public testing::Test {
  public:
-  HttpPasswordStoreMigratorTest()
-      : mock_store_(new testing::StrictMock<MockPasswordStore>),
-        client_(mock_store_.get()) {
-    mock_store_->Init(syncer::SyncableService::StartSyncFlare(), nullptr);
-  }
+  HttpPasswordStoreMigratorTest() = default;
 
-  ~HttpPasswordStoreMigratorTest() override {
-    mock_store_->ShutdownOnUIThread();
-  }
+  HttpPasswordStoreMigratorTest(const HttpPasswordStoreMigratorTest&) = delete;
+  HttpPasswordStoreMigratorTest& operator=(
+      const HttpPasswordStoreMigratorTest&) = delete;
+
+  ~HttpPasswordStoreMigratorTest() override = default;
 
   MockConsumer& consumer() { return consumer_; }
-  MockPasswordStore& store() { return *mock_store_; }
-  MockPasswordManagerClient& client() { return client_; }
+  MockPasswordStoreInterface& store() { return *mock_store_; }
+  password_manager::MockSmartBubbleStatsStore& smart_bubble_stats_store() {
+    return mock_smart_bubble_stats_store_;
+  }
 
-  void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
+  MockNetworkContext& mock_network_context() { return mock_network_context_; }
 
  protected:
   void TestEmptyStore(bool is_hsts);
@@ -141,59 +130,65 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   MockConsumer consumer_;
-  scoped_refptr<MockPasswordStore> mock_store_;
-  MockPasswordManagerClient client_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpPasswordStoreMigratorTest);
+  scoped_refptr<MockPasswordStoreInterface> mock_store_ =
+      base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
+  testing::NiceMock<MockNetworkContext> mock_network_context_;
+  testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
 };
 
 void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
-  PasswordStore::FormDigest form(CreateTestForm());
-  EXPECT_CALL(store(), GetLogins(form, _));
-  EXPECT_CALL(client(), PostHSTSQueryForHostHelper(GURL(kTestHttpsURL)))
-      .Times(1);
-  HttpPasswordStoreMigrator migrator(GURL(kTestHttpsURL), &client(),
-                                     &consumer());
-  HSTSCallback callback = client().hsts_acquire_callback();
-  std::move(callback).Run(is_hsts ? HSTSResult::kYes : HSTSResult::kNo);
-  // We expect a potential call to |RemoveSiteStatsImpl| which is a async task
-  // posted from |PasswordStore::RemoveSiteStats|. Hence the following lines are
-  // necessary to ensure |RemoveSiteStatsImpl| gets called when expected.
-  EXPECT_CALL(store(), RemoveSiteStatsImpl(GURL(kTestHttpURL).GetOrigin()))
-      .Times(is_hsts);
-  WaitForPasswordStore();
+  PasswordFormDigest form_digest(CreateTestForm());
+  form_digest.url = form_digest.url.DeprecatedGetOriginAsURL();
+  EXPECT_CALL(store(), GetLogins(form_digest, _));
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<1>(
+          [is_hsts](auto cb) { std::move(cb).Run(is_hsts); }));
 
-  EXPECT_CALL(consumer(), ProcessForms(std::vector<autofill::PasswordForm*>()));
+  EXPECT_CALL(store(), GetSmartBubbleStatsStore)
+      .WillRepeatedly(Return(&smart_bubble_stats_store()));
+
+  EXPECT_CALL(smart_bubble_stats_store(),
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
+      .Times(is_hsts);
+
+  HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
+                                     &store(), &mock_network_context(),
+                                     &consumer());
+
+  EXPECT_CALL(consumer(), ProcessForms(std::vector<PasswordForm*>()));
   migrator.OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>());
+      std::vector<std::unique_ptr<PasswordForm>>());
 }
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
-  PasswordStore::FormDigest form_digest(CreateTestForm());
+  PasswordFormDigest form_digest(CreateTestForm());
+  form_digest.url = form_digest.url.DeprecatedGetOriginAsURL();
   EXPECT_CALL(store(), GetLogins(form_digest, _));
-  EXPECT_CALL(client(), PostHSTSQueryForHostHelper(GURL(kTestHttpsURL)))
-      .Times(1);
-  HttpPasswordStoreMigrator migrator(GURL(kTestHttpsURL), &client(),
-                                     &consumer());
-  HSTSCallback callback = client().hsts_acquire_callback();
-  std::move(callback).Run(is_hsts ? HSTSResult::kYes : HSTSResult::kNo);
-  // We expect a potential call to |RemoveSiteStatsImpl| which is a async task
-  // posted from |PasswordStore::RemoveSiteStats|. Hence the following lines are
-  // necessary to ensure |RemoveSiteStatsImpl| gets called when expected.
-  EXPECT_CALL(store(), RemoveSiteStatsImpl(GURL(kTestHttpURL).GetOrigin()))
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<1>(
+          [is_hsts](auto cb) { std::move(cb).Run(is_hsts); }));
+  EXPECT_CALL(store(), GetSmartBubbleStatsStore)
+      .WillRepeatedly(Return(&smart_bubble_stats_store()));
+  EXPECT_CALL(smart_bubble_stats_store(),
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
       .Times(is_hsts);
-  WaitForPasswordStore();
+  HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
+                                     &store(), &mock_network_context(),
+                                     &consumer());
 
   PasswordForm form = CreateTestForm();
   PasswordForm psl_form = CreateTestPSLForm();
   PasswordForm android_form = CreateAndroidCredential();
   PasswordForm federated_form = CreateLocalFederatedCredential();
   PasswordForm expected_form = form;
-  expected_form.origin = GURL(kTestHttpsURL);
-  expected_form.signon_realm = expected_form.origin.GetOrigin().spec();
+  expected_form.url = GURL(kTestHttpsURL);
+  expected_form.signon_realm =
+      expected_form.url.DeprecatedGetOriginAsURL().spec();
 
   PasswordForm expected_federated_form = federated_form;
-  expected_federated_form.origin = GURL("https://localhost");
+  expected_federated_form.url = GURL("https://localhost");
   expected_federated_form.action = GURL("https://localhost");
 
   EXPECT_CALL(store(), AddLogin(expected_form));
@@ -203,7 +198,7 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   EXPECT_CALL(consumer(),
               ProcessForms(ElementsAre(Pointee(expected_form),
                                        Pointee(expected_federated_form))));
-  std::vector<std::unique_ptr<autofill::PasswordForm>> results;
+  std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(psl_form));
   results.push_back(std::make_unique<PasswordForm>(form));
   results.push_back(std::make_unique<PasswordForm>(android_form));
@@ -216,29 +211,30 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
 // this is not the case.
 void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
     bool is_hsts) {
-  // Setup expectations on store and client.
+  // Setup expectations on store and network_context.
   EXPECT_CALL(store(), GetLogins(_, _));
-  EXPECT_CALL(client(), PostHSTSQueryForHostHelper(GURL(kTestHttpsURL)))
-      .Times(1);
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<1>(
+          [is_hsts](auto cb) { std::move(cb).Run(is_hsts); }));
+  EXPECT_CALL(store(), GetSmartBubbleStatsStore)
+      .WillRepeatedly(Return(&smart_bubble_stats_store()));
 
+  EXPECT_CALL(smart_bubble_stats_store(),
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
+      .Times(is_hsts);
   // Construct the migrator, call |OnGetPasswordStoreResults| explicitly and
   // manually delete it.
   auto migrator = std::make_unique<HttpPasswordStoreMigrator>(
-      GURL(kTestHttpsURL), &client(), &consumer());
-  migrator->OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>>());
+      url::Origin::Create(GURL(kTestHttpsURL)), &store(),
+      &mock_network_context(), &consumer());
+
   EXPECT_CALL(consumer(), ProcessForms(_)).WillOnce(Invoke([&migrator](Unused) {
     migrator.reset();
   }));
 
-  HSTSCallback callback = client().hsts_acquire_callback();
-  std::move(callback).Run(is_hsts ? HSTSResult::kYes : HSTSResult::kNo);
-  // We expect a potential call to |RemoveSiteStatsImpl| which is a async task
-  // posted from |PasswordStore::RemoveSiteStats|. Hence the following lines are
-  // necessary to ensure |RemoveSiteStatsImpl| gets called when expected.
-  EXPECT_CALL(store(), RemoveSiteStatsImpl(GURL(kTestHttpURL).GetOrigin()))
-      .Times(is_hsts);
-  WaitForPasswordStore();
+  migrator->OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>>());
 }
 
 TEST_F(HttpPasswordStoreMigratorTest, EmptyStoreWithHSTS) {
@@ -271,17 +267,17 @@ TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {
 
   for (bool origin_has_paths : {true, false}) {
     PasswordForm http_html_form;
-    http_html_form.origin = kOrigins[origin_has_paths];
+    http_html_form.url = kOrigins[origin_has_paths];
     http_html_form.signon_realm = "http://example.org/";
     http_html_form.scheme = PasswordForm::Scheme::kHtml;
 
     PasswordForm non_html_empty_realm_form;
-    non_html_empty_realm_form.origin = kOrigins[origin_has_paths];
+    non_html_empty_realm_form.url = kOrigins[origin_has_paths];
     non_html_empty_realm_form.signon_realm = "http://example.org/";
     non_html_empty_realm_form.scheme = PasswordForm::Scheme::kBasic;
 
     PasswordForm non_html_form;
-    non_html_form.origin = kOrigins[origin_has_paths];
+    non_html_form.url = kOrigins[origin_has_paths];
     non_html_form.signon_realm = "http://example.org/realm";
     non_html_form.scheme = PasswordForm::Scheme::kBasic;
 

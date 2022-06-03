@@ -13,6 +13,7 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
                                 Node* dirty_node) {
   DCHECK(dirty_node);
   DCHECK(dirty_node->isConnected());
+  AssertRootNodeInvariants();
 
   if (!common_ancestor) {
     // This is either first dirty node in which case we are using it as a
@@ -21,12 +22,16 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
     //
     // TODO(futhark): Disallow Document as the root. All traversals start at
     // the RootElement().
+    Element* document_element = dirty_node->GetDocument().documentElement();
     if (dirty_node->IsDocumentNode() ||
-        (root_node_ &&
-         dirty_node == dirty_node->GetDocument().documentElement())) {
+        (root_node_ && dirty_node == document_element)) {
       root_type_ = RootType::kCommonRoot;
+    } else {
+      DCHECK(!document_element ||
+             (!root_node_ && root_type_ == RootType::kSingleRoot));
     }
     root_node_ = dirty_node;
+    AssertRootNodeInvariants();
     return;
   }
 
@@ -52,9 +57,12 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
   root_type_ = RootType::kCommonRoot;
 }
 
-void StyleTraversalRoot::ChildrenRemoved(ContainerNode& parent) {
-  if (root_node_ && !root_node_->isConnected())
-    RootRemoved(parent);
+#if DCHECK_IS_ON()
+bool StyleTraversalRoot::IsModifyingFlatTree() const {
+  DCHECK(root_node_);
+  return root_node_->GetDocument().GetStyleEngine().InDOMRemoval() ||
+         root_node_->GetDocument().IsInSlotAssignmentRecalc();
 }
+#endif
 
 }  // namespace blink

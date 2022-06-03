@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -16,25 +16,26 @@ import xml.etree.ElementTree as ElementTree
 from util import build_utils
 from util import manifest_utils
 
-# Tools library directory - relative to Android SDK root
-_SDK_TOOLS_LIB_DIR = os.path.join('tools', 'lib')
-
 _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 _MANIFEST_MERGER_JARS = [
-    'common{suffix}.jar',
-    'manifest-merger{suffix}.jar',
-    'sdk-common{suffix}.jar',
-    'sdklib{suffix}.jar',
+    os.path.join('build-system', 'manifest-merger.jar'),
+    os.path.join('common', 'common.jar'),
+    os.path.join('sdk-common', 'sdk-common.jar'),
+    os.path.join('sdklib', 'sdklib.jar'),
+    os.path.join('external', 'com', 'google', 'guava', 'guava', '30.1-jre',
+                 'guava-30.1-jre.jar'),
+    os.path.join('external', 'kotlin-plugin-ij', 'Kotlin', 'kotlinc', 'lib',
+                 'kotlin-stdlib.jar'),
+    os.path.join('external', 'com', 'google', 'code', 'gson', 'gson', '2.8.6',
+                 'gson-2.8.6.jar'),
 ]
 
 
 @contextlib.contextmanager
 def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
                      max_sdk_version, manifest_package):
-  """Patches an Android manifest to always include the 'tools' namespace
-  declaration, as it is not propagated by the manifest merger from the SDK.
-
-  See https://issuetracker.google.com/issues/63411481
+  """Patches an Android manifest's package and performs assertions to ensure
+  correctness for the manifest.
   """
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
   manifest_utils.AssertUsesSdk(manifest, min_sdk_version, target_sdk_version,
@@ -50,11 +51,9 @@ def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
     yield patched_manifest.name, manifest_utils.GetPackage(manifest)
 
 
-def _BuildManifestMergerClasspath(build_vars):
+def _BuildManifestMergerClasspath(android_sdk_cmdline_tools):
   return ':'.join([
-      os.path.join(
-          build_vars['android_sdk_root'], _SDK_TOOLS_LIB_DIR,
-          jar.format(suffix=build_vars['android_sdk_tools_version_suffix']))
+      os.path.join(android_sdk_cmdline_tools, 'lib', jar)
       for jar in _MANIFEST_MERGER_JARS
   ])
 
@@ -63,9 +62,10 @@ def main(argv):
   argv = build_utils.ExpandFileArgs(argv)
   parser = argparse.ArgumentParser(description=__doc__)
   build_utils.AddDepfileOption(parser)
-  parser.add_argument('--build-vars',
-                      help='Path to GN build vars file',
-                      required=True)
+  parser.add_argument(
+      '--android-sdk-cmdline-tools',
+      help='Path to SDK\'s cmdline-tools folder.',
+      required=True)
   parser.add_argument('--root-manifest',
                       help='Root manifest which to merge into',
                       required=True)
@@ -85,14 +85,15 @@ def main(argv):
   parser.add_argument(
       '--manifest-package',
       help='Package name of the merged AndroidManifest.xml.')
+  parser.add_argument('--warnings-as-errors',
+                      action='store_true',
+                      help='Treat all warnings as errors.')
   args = parser.parse_args(argv)
 
-  classpath = _BuildManifestMergerClasspath(
-      build_utils.ReadBuildVars(args.build_vars))
+  classpath = _BuildManifestMergerClasspath(args.android_sdk_cmdline_tools)
 
   with build_utils.AtomicOutput(args.output) as output:
-    cmd = [
-        build_utils.JAVA_PATH,
+    cmd = build_utils.JavaCmd(args.warnings_as_errors) + [
         '-cp',
         classpath,
         _MANIFEST_MERGER_MAIN_CLASS,
@@ -123,12 +124,15 @@ def main(argv):
           root_manifest,
           '--property',
           'PACKAGE=' + package,
+          '--remove-tools-declarations',
       ]
-      build_utils.CheckOutput(cmd,
-        # https://issuetracker.google.com/issues/63514300:
-        # The merger doesn't set a nonzero exit code for failures.
-        fail_func=lambda returncode, stderr: returncode != 0 or
-          build_utils.IsTimeStale(output.name, [root_manifest] + extras))
+      build_utils.CheckOutput(
+          cmd,
+          # https://issuetracker.google.com/issues/63514300:
+          # The merger doesn't set a nonzero exit code for failures.
+          fail_func=lambda returncode, stderr: returncode != 0 or build_utils.
+          IsTimeStale(output.name, [root_manifest] + extras),
+          fail_on_output=args.warnings_as_errors)
 
     # Check for correct output.
     _, manifest, _ = manifest_utils.ParseManifest(output.name)
@@ -138,8 +142,7 @@ def main(argv):
 
   if args.depfile:
     inputs = extras + classpath.split(':')
-    build_utils.WriteDepfile(args.depfile, args.output, inputs=inputs,
-                             add_pydeps=False)
+    build_utils.WriteDepfile(args.depfile, args.output, inputs=inputs)
 
 
 if __name__ == '__main__':

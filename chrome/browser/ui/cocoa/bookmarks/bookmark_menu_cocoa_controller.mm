@@ -10,7 +10,6 @@
 #include "chrome/app/chrome_command_ids.h"  // IDC_BOOKMARK_MENU
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -19,6 +18,7 @@
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/menu_controller.h"
 
@@ -55,7 +55,7 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   return cocoa_l10n_util::TooltipForURLAndTitle(url, title);
 }
 
-- (id)initWithBridge:(BookmarkMenuBridge*)bridge {
+- (instancetype)initWithBridge:(BookmarkMenuBridge*)bridge {
   if ((self = [super init])) {
     _bridge = bridge;
     DCHECK(_bridge);
@@ -96,7 +96,8 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
 - (void)openURLForNode:(const BookmarkNode*)node {
   Browser* browser = chrome::FindTabbedBrowser(_bridge->GetProfile(), true);
   if (!browser) {
-    browser = new Browser(Browser::CreateParams(_bridge->GetProfile(), true));
+    browser =
+        Browser::Create(Browser::CreateParams(_bridge->GetProfile(), true));
   }
   WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
@@ -106,7 +107,7 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   browser->OpenURL(params);
   RecordBookmarkLaunch(
       BOOKMARK_LAUNCH_LOCATION_TOP_MENU,
-      ProfileMetrics::GetBrowserProfileType(_bridge->GetProfile()));
+      profile_metrics::GetBrowserProfileType(_bridge->GetProfile()));
 }
 
 - (IBAction)openBookmarkMenuItem:(id)sender {

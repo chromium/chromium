@@ -12,16 +12,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/win/registry.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/dll_hash/dll_hash.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
-#include "services/service_manager/sandbox/features.h"
+#include "sandbox/policy/features.h"
 
 const char kBrowserBlacklistTrialName[] = "BrowserBlacklist";
 const char kBrowserBlacklistTrialDisabledGroupName[] = "NoBlacklist";
@@ -63,9 +66,54 @@ void RecordBlacklistSetupEvent(BlacklistSetupEventType blacklist_setup_event) {
                                 BLACKLIST_SETUP_EVENT_MAX);
 }
 
-base::string16 GetBeaconRegistryPath() {
+std::wstring GetBeaconRegistryPath() {
   return install_static::GetRegistryPath().append(
       blacklist::kRegistryBeaconKeyName);
+}
+
+// This enum is used to define the buckets for an enumerated UMA histogram.
+// Hence,
+//   (a) existing enumerated constants should never be deleted or reordered, and
+//   (b) new constants should only be appended in front of EXTENSIONPOINT_MAX.
+enum ExtensionPointEnableState {
+  // Extension point mitigation disabled due to presence of legacy IME.
+  EXTENSIONPOINT_DISABLED_IME,
+
+  // Extension point mitigation enabled.
+  EXTENSIONPOINT_ENABLED,
+
+  // Always keep this at the end.
+  EXTENSIONPOINT_MAX,
+};
+
+void RecordExtensionPointsEnableState(ExtensionPointEnableState enable_state) {
+  base::UmaHistogramEnumeration("ChromeElf.ExtensionPoint.EnableState",
+                                enable_state, EXTENSIONPOINT_MAX);
+}
+
+ExtensionPointEnableState GetExtensionPointsEnableState() {
+  // Legacy IMEs can be detected as HKLs that have a file name.
+  int list_size = GetKeyboardLayoutList(0, nullptr);
+  if (list_size != 0) {
+    std::vector<HKL> hkl_list(list_size);
+    if (GetKeyboardLayoutList(list_size, hkl_list.data()) == list_size) {
+      for (auto* hkl : hkl_list) {
+        if (ImmGetIMEFileName(hkl, nullptr, 0) != 0)
+          return EXTENSIONPOINT_DISABLED_IME;
+      }
+    }
+  }
+  return EXTENSIONPOINT_ENABLED;
+}
+
+bool IsBrowserLegacyExtensionPointsBlocked() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state ||
+      !local_state->HasPrefPath(prefs::kBlockBrowserLegacyExtensionPoints) ||
+      !local_state->IsManagedPreference(
+          prefs::kBlockBrowserLegacyExtensionPoints))
+    return true;
+  return local_state->GetBoolean(prefs::kBlockBrowserLegacyExtensionPoints);
 }
 
 }  // namespace
@@ -80,23 +128,31 @@ void InitializeChromeElf() {
     BrowserBlacklistBeaconSetup();
   }
 
-  // Make sure the early finch emergency "off switch" for
+  // Make sure the registry key we read earlier in startup
   // sandbox::MITIGATION_EXTENSION_POINT_DISABLE is set properly in reg.
   // Note: the very existence of this key signals elf to not enable
   // this mitigation on browser next start.
-  const base::string16 finch_path(install_static::GetRegistryPath().append(
-      elf_sec::kRegSecurityFinchKeyName));
-  base::win::RegKey finch_security_registry_key(HKEY_CURRENT_USER,
-                                                finch_path.c_str(), KEY_READ);
+  const std::wstring reg_path(install_static::GetRegistryPath().append(
+      elf_sec::kRegBrowserExtensionPointKeyName));
+  base::win::RegKey browser_extension_point_registry_key(
+      HKEY_CURRENT_USER, reg_path.c_str(), KEY_READ);
 
-  if (base::FeatureList::IsEnabled(
-          service_manager::features::kWinSboxDisableExtensionPoints)) {
-    if (finch_security_registry_key.Valid())
-      finch_security_registry_key.DeleteKey(L"");
-  } else {
-    if (!finch_security_registry_key.Valid()) {
-      finch_security_registry_key.Create(HKEY_CURRENT_USER, finch_path.c_str(),
-                                         KEY_WRITE);
+  ExtensionPointEnableState extension_point_enable_state =
+      GetExtensionPointsEnableState();
+  RecordExtensionPointsEnableState(extension_point_enable_state);
+  bool enable_extension_point_policy =
+      (extension_point_enable_state == EXTENSIONPOINT_ENABLED) &&
+      base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxDisableExtensionPoints) &&
+      IsBrowserLegacyExtensionPointsBlocked();
+
+  if (enable_extension_point_policy) {
+    if (!browser_extension_point_registry_key.Valid()) {
+      browser_extension_point_registry_key.Create(HKEY_CURRENT_USER,
+                                                  reg_path.c_str(), KEY_WRITE);
+    } else {
+      if (browser_extension_point_registry_key.Valid())
+        browser_extension_point_registry_key.DeleteKey(L"");
     }
   }
 }
@@ -143,7 +199,7 @@ void BrowserBlacklistBeaconSetup() {
   }
 
   // Find the last recorded blacklist version.
-  base::string16 blacklist_version;
+  std::wstring blacklist_version;
   blacklist_registry_key.ReadValue(blacklist::kBeaconVersion,
                                    &blacklist_version);
 

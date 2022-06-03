@@ -10,13 +10,14 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
-#include "services/network/public/mojom/network_interface.mojom.h"
+#include "services/network/public/mojom/network_interface.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-class StructTraits<network::mojom::NetworkInterfaceDataView,
-                   net::NetworkInterface> {
+class COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::NetworkInterfaceDataView,
+                 net::NetworkInterface> {
  public:
   static const std::string& name(const net::NetworkInterface& network) {
     return network.name;
@@ -47,8 +48,9 @@ class StructTraits<network::mojom::NetworkInterfaceDataView,
 };
 
 template <>
-struct EnumTraits<network::mojom::ConnectionType,
-                  net::NetworkChangeNotifier::ConnectionType> {
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::ConnectionType,
+               net::NetworkChangeNotifier::ConnectionType> {
   static network::mojom::ConnectionType ToMojom(
       net::NetworkChangeNotifier::ConnectionType input);
   static bool FromMojom(network::mojom::ConnectionType input,

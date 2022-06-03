@@ -4,16 +4,18 @@
 
 package org.chromium.content.browser.input;
 
-import android.support.test.filters.SmallTest;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.base.ime.TextInputAction;
@@ -23,7 +25,7 @@ import org.chromium.ui.base.ime.TextInputType;
  * IME (input method editor) and text input tests for enterkeyhint attribute.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+@Batch(ImeTest.IME_BATCH)
 public class ImeInputActionTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
@@ -31,6 +33,11 @@ public class ImeInputActionTest {
     @Before
     public void setUp() throws Exception {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_ACTION_HTML);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
     }
 
     private void checkInputAction(String elementId, int type, int textAction, int editorAction)

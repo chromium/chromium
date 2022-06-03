@@ -5,6 +5,8 @@
 #include "components/sync/model/sync_error.h"
 
 #include "base/location.h"
+#include "base/logging.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -12,8 +14,9 @@ namespace syncer {
 namespace {
 
 using std::string;
+using ::testing::HasSubstr;
 
-using SyncErrorTest = testing::Test;
+using SyncErrorTest = ::testing::Test;
 
 TEST_F(SyncErrorTest, Unset) {
   SyncError error;
@@ -135,7 +138,7 @@ TEST_F(SyncErrorTest, ToString) {
   LOG(INFO) << "Expect " << expected;
   SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);
   EXPECT_TRUE(error.IsSet());
-  EXPECT_NE(string::npos, error.ToString().find(expected));
+  EXPECT_THAT(error.ToString(), HasSubstr(expected));
 
   SyncError error2;
   EXPECT_FALSE(error2.IsSet());
@@ -143,7 +146,7 @@ TEST_F(SyncErrorTest, ToString) {
 
   error2 = error;
   EXPECT_TRUE(error2.IsSet());
-  EXPECT_NE(string::npos, error.ToString().find(expected));
+  EXPECT_THAT(error.ToString(), HasSubstr(expected));
 }
 
 }  // namespace

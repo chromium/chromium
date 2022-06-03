@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/pattern.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -300,8 +300,8 @@ TEST(ParseCapabilities, ManualProxy) {
   proxy.SetString("socksProxy", "localhost:12345");
   proxy.SetInteger("socksVersion", 5);
   std::unique_ptr<base::ListValue> bypass = std::make_unique<base::ListValue>();
-  bypass->AppendString("google.com");
-  bypass->AppendString("youtube.com");
+  bypass->Append("google.com");
+  bypass->Append("youtube.com");
   proxy.SetList("noProxy", std::move(bypass));
   base::DictionaryValue caps;
   caps.SetKey("proxy", std::move(proxy));
@@ -513,7 +513,7 @@ TEST(ParseCapabilities, ExcludeSwitches) {
   ASSERT_TRUE(base::Contains(switches, "switch2"));
 }
 
-TEST(ParseCapabilities, UseRemoteBrowser) {
+TEST(ParseCapabilities, UseRemoteBrowserHostName) {
   Capabilities capabilities;
   base::DictionaryValue caps;
   caps.SetString("goog:chromeOptions.debuggerAddress", "abc:123");
@@ -522,6 +522,30 @@ TEST(ParseCapabilities, UseRemoteBrowser) {
   ASSERT_TRUE(capabilities.IsRemoteBrowser());
   ASSERT_EQ("abc", capabilities.debugger_address.host());
   ASSERT_EQ(123, capabilities.debugger_address.port());
+}
+
+TEST(ParseCapabilities, UseRemoteBrowserIpv4) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetString("goog:chromeOptions.debuggerAddress", "127.0.0.1:456");
+  Status status = capabilities.Parse(caps);
+  ASSERT_TRUE(status.IsOk());
+  ASSERT_TRUE(capabilities.IsRemoteBrowser());
+  ASSERT_EQ("127.0.0.1", capabilities.debugger_address.host());
+  ASSERT_EQ(456, capabilities.debugger_address.port());
+}
+
+TEST(ParseCapabilities, UseRemoteBrowserIpv6) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetString("goog:chromeOptions.debuggerAddress",
+                 "[fe80::f2ef:86ff:fe69:cafe]:789");
+  Status status = capabilities.Parse(caps);
+  ASSERT_TRUE(status.IsOk());
+  ASSERT_TRUE(capabilities.IsRemoteBrowser());
+  ASSERT_EQ("[fe80::f2ef:86ff:fe69:cafe]",
+            capabilities.debugger_address.host());
+  ASSERT_EQ(789, capabilities.debugger_address.port());
 }
 
 TEST(ParseCapabilities, MobileEmulationUserAgent) {
@@ -544,7 +568,7 @@ TEST(ParseCapabilities, MobileEmulationDeviceMetrics) {
   base::DictionaryValue mobile_emulation;
   mobile_emulation.SetInteger("deviceMetrics.width", 360);
   mobile_emulation.SetInteger("deviceMetrics.height", 640);
-  mobile_emulation.SetDouble("deviceMetrics.pixelRatio", 3.0);
+  mobile_emulation.SetDoublePath("deviceMetrics.pixelRatio", 3.0);
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "mobileEmulation"},
                std::move(mobile_emulation));
@@ -617,10 +641,44 @@ TEST(ParseCapabilities, MobileEmulationBadDict) {
   mobile_emulation.SetString("deviceName", "Google Nexus 5");
   mobile_emulation.SetInteger("deviceMetrics.width", 360);
   mobile_emulation.SetInteger("deviceMetrics.height", 640);
-  mobile_emulation.SetDouble("deviceMetrics.pixelRatio", 3.0);
+  mobile_emulation.SetDoublePath("deviceMetrics.pixelRatio", 3.0);
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "mobileEmulation"},
                std::move(mobile_emulation));
   Status status = capabilities.Parse(caps);
   ASSERT_FALSE(status.IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetBoolKey("webauthn:virtualAuthenticators", true);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+
+  caps.SetBoolKey("webauthn:virtualAuthenticators", false);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsNotBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetStringKey("webauthn:virtualAuthenticators", "not a bool");
+  EXPECT_FALSE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetBoolKey("webauthn:extension:largeBlob", true);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+
+  caps.SetBoolKey("webauthn:extension:largeBlob", false);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobNotBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetStringKey("webauthn:extension:largeBlob", "not a bool");
+  EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }

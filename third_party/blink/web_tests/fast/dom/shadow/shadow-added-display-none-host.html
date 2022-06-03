@@ -10,7 +10,7 @@
     description("Tests adding a shadow root to a display none host doesn't leave dirty bits.");
 
     getComputedStyle(document.body).color; // recalcStyle.
-    var root = document.getElementById("host").createShadowRoot();
+    var root = document.getElementById("host").attachShadow({mode: 'open'});
     var inside = document.createElement("inside");
     root.appendChild(inside);
 

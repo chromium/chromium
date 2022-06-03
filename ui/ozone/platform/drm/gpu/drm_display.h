@@ -10,11 +10,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 typedef struct _drmModeModeInfo drmModeModeInfo;
@@ -22,18 +21,19 @@ typedef struct _drmModeModeInfo drmModeModeInfo;
 namespace display {
 class DisplaySnapshot;
 struct GammaRampRGBEntry;
-}
+}  // namespace display
 
 namespace ui {
-
 class DrmDevice;
 class HardwareDisplayControllerInfo;
-class ScreenManager;
 
 class DrmDisplay {
  public:
-  DrmDisplay(ScreenManager* screen_manager,
-             const scoped_refptr<DrmDevice>& drm);
+  explicit DrmDisplay(const scoped_refptr<DrmDevice>& drm);
+
+  DrmDisplay(const DrmDisplay&) = delete;
+  DrmDisplay& operator=(const DrmDisplay&) = delete;
+
   ~DrmDisplay();
 
   int64_t display_id() const { return display_id_; }
@@ -44,19 +44,27 @@ class DrmDisplay {
 
   std::unique_ptr<display::DisplaySnapshot> Update(
       HardwareDisplayControllerInfo* info,
-      size_t device_index);
+      uint8_t device_index);
 
-  bool Configure(const drmModeModeInfo* mode, const gfx::Point& origin);
-  bool GetHDCPState(display::HDCPState* state);
-  bool SetHDCPState(display::HDCPState state);
+  void SetOrigin(const gfx::Point origin) { origin_ = origin; }
+  bool GetHDCPState(display::HDCPState* state,
+                    display::ContentProtectionMethod* protection_method);
+  bool SetHDCPState(display::HDCPState state,
+                    display::ContentProtectionMethod protection_method);
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetBackgroundColor(const uint64_t background_color);
   void SetGammaCorrection(
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetPrivacyScreen(bool enabled);
+  void SetColorSpace(const gfx::ColorSpace& color_space);
+
+  void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
 
  private:
-  ScreenManager* screen_manager_;  // Not owned.
+  void CommitGammaCorrection(
+      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
+      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
 
   int64_t display_id_ = -1;
   const scoped_refptr<DrmDevice> drm_;
@@ -64,8 +72,8 @@ class DrmDisplay {
   ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplay);
+  bool is_hdr_capable_ = false;
+  gfx::ColorSpace current_color_space_;
 };
 
 }  // namespace ui

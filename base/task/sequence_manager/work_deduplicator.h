@@ -72,18 +72,18 @@ class BASE_EXPORT WorkDeduplicator {
   // B: return ShouldScheduleWork::kNotNeeded because we're in a DoWork.
   // C: return ShouldScheduleWork::kNotNeeded because we're in a DoWork, however
   //    DidCheckForMoreWork should subsequently return
-  //    ShouldScheduleWork::kSchedule.
-  // D: If DidCheckForMoreWork(kIsImmediate::kIsImmediate) was called then it
+  //    ShouldScheduleWork::kScheduleImmediate.
+  // D: If DidCheckForMoreWork(NextTask::kIsImmediate) was called then it
   //    should ShouldScheduleWork::kNotNeeded because there's a pending DoWork.
-  //    Otherwise it should return ShouldScheduleWork::kSchedule, but a
+  //    Otherwise it should return ShouldScheduleWork::kScheduleImmediate, but a
   //    subsequent call to OnWorkRequested should return
   //    ShouldScheduleWork::kNotNeeded because there's now a pending DoWork.
   ShouldScheduleWork OnWorkRequested();
 
-  // Returns ShouldScheduleWork::kSchedule if it's OK to schedule a
+  // Returns ShouldScheduleWork::kScheduleImmediate if it's OK to schedule a
   // DoDelayedWork without risk of redundancy. Deduplication of delayed work is
   // assumed to have been done by the caller, the purpose of this method it to
-  // check if there's a pending Do(Some)Work which would schedule a delayed
+  // check if there's a pending DoWork which would schedule a delayed
   // continuation as needed.
   //
   // Returns ShouldScheduleWork::kNotNeeded if:
@@ -112,21 +112,12 @@ class BASE_EXPORT WorkDeduplicator {
     kIsDelayed,
   };
 
-  // Marks us as exiting DoWork. Returns ShouldScheduleWork::kSchedule if an
-  // immediate DoWork continuation should be posted. This method takes into
-  // account any OnWorkRequested's called between BeforeComputeDelayTillNextTask
-  // and here. Must be called on the associated thread.
+  // Marks us as exiting DoWork. Returns ShouldScheduleWork::kScheduleImmediate
+  // if an immediate DoWork continuation should be posted. This method
+  // atomically takes into account any OnWorkRequested's called between
+  // gathering information about |next_task| and this call. Must be called on
+  // the associated thread.
   ShouldScheduleWork DidCheckForMoreWork(NextTask next_task);
-
-  // For ThreadControllerWithMessagePumpImpl. The MessagePump calls DoWork and
-  // DoDelayed work sequentially. If DoWork returns
-  // ShouldScheduleWork::kSchedule, the pump will call ScheduleWork. We remember
-  // if DoWork will be scheduled so we don't accidentally call it twice from
-  // DoDelayedWork. Must be called on the associated thread.
-  // TODO(alexclarke): Remove these when the DoWork/DoDelayed work merger
-  // happens.
-  void OnDelayedWorkStarted();
-  ShouldScheduleWork OnDelayedWorkEnded(NextTask next_task);
 
  private:
   enum Flags {
@@ -145,9 +136,6 @@ class BASE_EXPORT WorkDeduplicator {
   std::atomic<int> state_{State::kUnbound};
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
-
-  // TODO(alexclarke): Remove when the DoWork/DoDelayed work merger happens.
-  ShouldScheduleWork last_work_check_result_ = ShouldScheduleWork::kNotNeeded;
 };
 
 }  // namespace internal

@@ -7,16 +7,17 @@
 
 #include <windows.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // Wrapper for GetTouchInputInfo, which is not defined before Win7. For
 // earlier OS's, this function returns FALSE.
-UI_BASE_EXPORT BOOL GetTouchInputInfoWrapper(HTOUCHINPUT handle,
-                                             UINT count,
-                                             PTOUCHINPUT pointer,
-                                             int size);
+COMPONENT_EXPORT(UI_BASE)
+BOOL GetTouchInputInfoWrapper(HTOUCHINPUT handle,
+                              UINT count,
+                              PTOUCHINPUT pointer,
+                              int size);
 
 }  // namespace ui
 

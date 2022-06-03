@@ -12,6 +12,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -161,7 +162,7 @@ std::vector<BrokerFilePermission> GetAudioFilePermissions() {
 
 void LoadAudioLibraries() {
   const std::string libraries[]{"libasound.so.2", "libpulse.so.0",
-                                "libnss_files.so.2"};
+                                "libnss_files.so.2", "libnss_compat.so.2"};
   for (const auto& library_name : libraries) {
     if (nullptr ==
         dlopen(library_name.c_str(), RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE)) {
@@ -173,9 +174,9 @@ void LoadAudioLibraries() {
 
 }  // namespace
 
-bool AudioPreSandboxHook(service_manager::SandboxLinux::Options options) {
+bool AudioPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   LoadAudioLibraries();
-  auto* instance = service_manager::SandboxLinux::GetInstance();
+  auto* instance = sandbox::policy::SandboxLinux::GetInstance();
   instance->StartBrokerProcess(MakeBrokerCommandSet({
                                  sandbox::syscall_broker::COMMAND_ACCESS,
 #if defined(USE_PULSEAUDIO)
@@ -187,7 +188,7 @@ bool AudioPreSandboxHook(service_manager::SandboxLinux::Options options) {
                                      sandbox::syscall_broker::COMMAND_UNLINK,
                                }),
                                GetAudioFilePermissions(),
-                               service_manager::SandboxLinux::PreSandboxHook(),
+                               sandbox::policy::SandboxLinux::PreSandboxHook(),
                                options);
 
   // TODO(https://crbug.com/850878) enable namespace sandbox. Currently, if

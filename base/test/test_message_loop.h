@@ -5,9 +5,9 @@
 #ifndef BASE_TEST_TEST_MESSAGE_LOOP_H_
 #define BASE_TEST_TEST_MESSAGE_LOOP_H_
 
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 
 namespace base {
 
@@ -17,6 +17,9 @@ namespace base {
 //
 // TestMessageLoop will attempt to drain the underlying MessageLoop on
 // destruction for clean teardown of tests.
+//
+// TODO(b/891670): Get rid of this and migrate users to
+// SingleThreadTaskEnvironment
 class TestMessageLoop {
  public:
   TestMessageLoop();
@@ -24,11 +27,11 @@ class TestMessageLoop {
   ~TestMessageLoop();
 
   scoped_refptr<SingleThreadTaskRunner> task_runner() {
-    return loop_.task_runner();
+    return task_environment_.GetMainThreadTaskRunner();
   }
 
  private:
-  MessageLoop loop_;
+  test::SingleThreadTaskEnvironment task_environment_;
 };
 
 }  // namespace base

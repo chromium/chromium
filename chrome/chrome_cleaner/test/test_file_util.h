@@ -9,14 +9,12 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 
 namespace chrome_cleaner {
 
 // Create an empty file named |name| under |folder|. Return false on failure.
-bool CreateFileInFolder(const base::FilePath& folder,
-                        const base::string16& name);
+bool CreateFileInFolder(const base::FilePath& folder, const std::wstring& name);
 
 // Create an empty file for path |path|. Return true on success.
 bool CreateEmptyFile(const base::FilePath& path);
@@ -29,7 +27,7 @@ void CreateFileWithContent(const base::FilePath& path,
 // Creates a file |file_name| in |temp_dir| with the specified |content|.
 base::win::ScopedHandle CreateFileWithContent(
     const std::string& content,
-    const base::string16& file_name,
+    const std::wstring& file_name,
     const base::ScopedTempDir& temp_dir);
 
 // Create a file |path| by writing |count| times the content |content|.

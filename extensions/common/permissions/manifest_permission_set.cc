@@ -22,12 +22,11 @@ using extensions::ManifestPermissionSet;
 using extensions::ManifestHandler;
 namespace errors = extensions::manifest_errors;
 
-bool CreateManifestPermission(
-    const std::string& permission_name,
-    const base::Value* permission_value,
-    ManifestPermissionSet* manifest_permissions,
-    base::string16* error,
-    std::vector<std::string>* unhandled_permissions) {
+bool CreateManifestPermission(const std::string& permission_name,
+                              const base::Value* permission_value,
+                              ManifestPermissionSet* manifest_permissions,
+                              std::u16string* error,
+                              std::vector<std::string>* unhandled_permissions) {
   std::unique_ptr<ManifestPermission> permission(
       ManifestHandler::CreatePermission(permission_name));
 
@@ -61,15 +60,18 @@ namespace extensions {
 bool ManifestPermissionSet::ParseFromJSON(
     const base::ListValue* permissions,
     ManifestPermissionSet* manifest_permissions,
-    base::string16* error,
+    std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
-  for (size_t i = 0; i < permissions->GetSize(); ++i) {
+  for (size_t i = 0; i < permissions->GetList().size(); ++i) {
     std::string permission_name;
     const base::Value* permission_value = NULL;
     if (!permissions->GetString(i, &permission_name)) {
-      const base::DictionaryValue* dict = NULL;
+      const base::Value& value = permissions->GetList()[i];
+      const base::DictionaryValue* dict = nullptr;
+      if (value.is_dict())
+        dict = static_cast<const base::DictionaryValue*>(&value);
       // permission should be a string or a single key dict.
-      if (!permissions->GetDictionary(i, &dict) || dict->size() != 1) {
+      if (!dict || dict->DictSize() != 1) {
         if (error) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidPermission, base::NumberToString(i));

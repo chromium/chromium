@@ -15,6 +15,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/win/scoped_com_initializer.h"
+#include "chrome/elevation_service/scoped_mock_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace elevation_service {
@@ -61,85 +63,30 @@ const base::FilePath TestFile(const std::string& file) {
       .AppendASCII(file);
 }
 
-// A mock implementation of IServerSecurity that allows for the production code
-// that calls ::CoImpersonateClient() to work.
-class MockServerSecurity
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IServerSecurity> {
- public:
-  MockServerSecurity() : is_impersonating_(false) {}
-
-  IFACEMETHOD(QueryBlanket)
-  (DWORD* authentication_service,
-   DWORD* authorization_service,
-   OLECHAR** server_principal_name,
-   DWORD* authentication_level,
-   DWORD* impersonation_level,
-   void** privilege,
-   DWORD* capabilities) {
-    return E_NOTIMPL;
-  }
-  IFACEMETHOD(ImpersonateClient)() {
-    is_impersonating_ = true;
-    return S_OK;
-  }
-  IFACEMETHOD(RevertToSelf)() {
-    is_impersonating_ = false;
-    return S_OK;
-  }
-  IFACEMETHOD_(BOOL, IsImpersonating)() { return is_impersonating_; }
-
- private:
-  ~MockServerSecurity() override { EXPECT_FALSE(is_impersonating_); }
-
-  bool is_impersonating_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockServerSecurity);
-};
-
 }  // namespace
-
-void SetupMockContext() {
-  auto server_security = Microsoft::WRL::Make<MockServerSecurity>();
-  server_security->AddRef();
-  Microsoft::WRL::ComPtr<IUnknown> original_call_context;
-
-  // We set the call context to a mock object that implements IServerSecurity.
-  // This allows for the production code that calls ::CoImpersonateClient() to
-  // succeed.
-  EXPECT_HRESULT_SUCCEEDED(
-      ::CoSwitchCallContext(server_security.Get(), &original_call_context));
-  EXPECT_EQ(nullptr, original_call_context.Get());
-}
-
-void TeardownMockContext() {
-  Microsoft::WRL::ComPtr<IUnknown> call_context;
-  EXPECT_HRESULT_SUCCEEDED(::CoSwitchCallContext(nullptr, &call_context));
-  EXPECT_NE(nullptr, call_context.Get());
-}
 
 class ElevatedRecoveryTest : public testing::Test {
  protected:
   ElevatedRecoveryTest() = default;
 
-  void SetUp() override { SetupMockContext(); }
-
-  void TearDown() override { TeardownMockContext(); }
+  void SetUp() override {
+    ASSERT_TRUE(com_initializer_.Succeeded());
+    ASSERT_TRUE(mock_context_.Succeeded());
+  }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ElevatedRecoveryTest);
+  base::win::ScopedCOMInitializer com_initializer_;
+  ScopedMockContext mock_context_;
 };
 
 TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
   base::win::ScopedHandle proc_handle;
 
   // Empty browser_appid/browser_version/session_id.
-  EXPECT_EQ(
-      E_INVALIDARG,
-      elevation_service::RunChromeRecoveryCRX(
-          TestFile("valid_publisher.crx3"), base::string16(), base::string16(),
-          base::string16(), ::GetCurrentProcessId(), &proc_handle));
+  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
+                              TestFile("valid_publisher.crx3"), std::wstring(),
+                              std::wstring(), std::wstring(),
+                              ::GetCurrentProcessId(), &proc_handle));
 
   // Invalid browser_appid, valid browser_version/session_id.
   EXPECT_EQ(E_INVALIDARG,
@@ -150,8 +97,8 @@ TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
 
   // Empty browser_appid, invalid browser_version, valid session_id.
   EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
-                              TestFile("valid_publisher.crx3"),
-                              base::string16(), L"invalidbrowserversion",
+                              TestFile("valid_publisher.crx3"), std::wstring(),
+                              L"invalidbrowserversion",
                               L"{c49ab053-2387-4809-b188-1902648802e1}",
                               ::GetCurrentProcessId(), &proc_handle));
 

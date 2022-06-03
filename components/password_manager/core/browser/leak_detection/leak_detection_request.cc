@@ -15,15 +15,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_api.pb.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -41,13 +44,12 @@ constexpr char kPostMethod[] = "POST";
 constexpr char kProtobufContentType[] = "application/x-protobuf";
 
 google::internal::identity::passwords::leak::check::v1::LookupSingleLeakRequest
-MakeLookupSingleLeakRequest(std::string username_hash_prefix,
-                            std::string encrypted_payload) {
+MakeLookupSingleLeakRequest(LookupSingleLeakPayload payload) {
   google::internal::identity::passwords::leak::check::v1::
       LookupSingleLeakRequest request;
-  request.set_username_hash_prefix(std::move(username_hash_prefix));
+  request.set_username_hash_prefix(std::move(payload.username_hash_prefix));
   request.set_username_hash_prefix_length(kUsernameHashPrefixLength);
-  request.set_encrypted_lookup_hash(std::move(encrypted_payload));
+  request.set_encrypted_lookup_hash(std::move(payload.encrypted_payload));
   return request;
 }
 
@@ -61,9 +63,8 @@ LeakDetectionRequest::~LeakDetectionRequest() = default;
 
 void LeakDetectionRequest::LookupSingleLeak(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const std::string& access_token,
-    std::string username_hash_prefix,
-    std::string encrypted_payload,
+    const absl::optional<std::string>& access_token,
+    LookupSingleLeakPayload payload,
     LookupSingleLeakCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("lookup_single_password_leak", R"(
@@ -111,16 +112,16 @@ void LeakDetectionRequest::LookupSingleLeak(
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = kPostMethod;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({kAuthHeaderBearer, access_token}));
+  if (access_token.has_value()) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        base::StrCat({kAuthHeaderBearer, access_token.value()}));
+  }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(
-      MakeLookupSingleLeakRequest(std::move(username_hash_prefix),
-                                  std::move(encrypted_payload))
-          .SerializeAsString(),
+      MakeLookupSingleLeakRequest(std::move(payload)).SerializeAsString(),
       kProtobufContentType);
   simple_url_loader_->DownloadToString(
       url_loader_factory,
@@ -136,11 +137,15 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
     RecordLookupResponseResult(LeakLookupResponseResult::kFetchError);
     DLOG(ERROR) << "Empty Lookup Single Leak Response";
     int response_code = -1;
+    LeakDetectionError error = LeakDetectionError::kNetworkError;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {
       response_code =
           simple_url_loader_->ResponseInfo()->headers->response_code();
       DLOG(ERROR) << "HTTP Response Code: " << response_code;
+      error = response_code == net::HTTP_TOO_MANY_REQUESTS
+                  ? LeakDetectionError::kQuotaLimit
+                  : LeakDetectionError::kInvalidServerResponse;
     }
 
     base::UmaHistogramSparse("PasswordManager.LeakDetection.HttpResponseCode",
@@ -148,11 +153,8 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
 
     int net_error = simple_url_loader_->NetError();
     DLOG(ERROR) << "Net Error: " << net::ErrorToString(net_error);
-    // Network error codes are negative. See: src/net/base/net_error_list.h.
-    base::UmaHistogramSparse("PasswordManager.LeakDetection.NetErrorCode",
-                             -net_error);
 
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, error);
     return;
   }
 
@@ -164,7 +166,8 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
     RecordLookupResponseResult(LeakLookupResponseResult::kParseError);
     DLOG(ERROR) << "Could not parse response: "
                 << base::HexEncode(response->data(), response->size());
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr,
+                            LeakDetectionError::kInvalidServerResponse);
     return;
   }
 
@@ -180,7 +183,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
   base::UmaHistogramCounts100000(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
-  std::move(callback).Run(std::move(single_lookup_response));
+  std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
 }
 
 }  // namespace password_manager

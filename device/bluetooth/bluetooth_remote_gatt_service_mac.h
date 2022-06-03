@@ -33,6 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
       BluetoothLowEnergyDeviceMac* bluetooth_device_mac,
       CBService* service,
       bool is_primary);
+
+  BluetoothRemoteGattServiceMac(const BluetoothRemoteGattServiceMac&) = delete;
+  BluetoothRemoteGattServiceMac& operator=(
+      const BluetoothRemoteGattServiceMac&) = delete;
+
   ~BluetoothRemoteGattServiceMac() override;
 
   // BluetoothRemoteGattService override.
@@ -84,8 +89,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
   // Increased each time DiscoverCharacteristics() is called. And decreased when
   // DidDiscoverCharacteristics() is called.
   int discovery_pending_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceMac);
 };
 
 // Stream operator for logging.

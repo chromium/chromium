@@ -1,0 +1,61 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<div id="correct">
+ <div class="one two three">
+  <div class="four five">
+  </div>
+  <div class="six seven content">
+   <div>
+   </div>
+   Blah
+  </div>
+ </div>
+</div>
+<div id="missing-class">
+ <div class="one two three">
+  <div class="five">
+  </div>
+  <div class="six seven content">
+   <div>
+   </div>
+   Blah
+  </div>
+ </div>
+</div>
+<div id="extra-class">
+ <div class="one two three">
+  <div class="four five five-point-five">
+  </div>
+  <div class="six seven content">
+   <div>
+   </div>
+   Blah
+  </div>
+ </div>
+</div>
+<div id="missing-child">
+ <div class="one two three">
+  <div class="six seven content">
+   <div>
+   </div>
+   Blah
+  </div>
+ </div>
+</div>
+<div id="extra-child">
+ <div class="one two three">
+  <div class="four five">
+   <div class="five-point-five">
+   </div>
+  </div>
+  <div class="six seven content">
+   <div>
+   </div>
+   Blah
+  </div>
+ </div>
+</div>

@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/browser/general_audience_browsing/mojom/general_audience_browsing.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
@@ -30,7 +31,14 @@ class GeneralAudienceBrowsingService
   using CheckURLCallback = base::OnceCallback<void(bool is_safe)>;
 
   GeneralAudienceBrowsingService(
+      external_service_support::ExternalConnector* connector,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+
+  GeneralAudienceBrowsingService(const GeneralAudienceBrowsingService&) =
+      delete;
+  GeneralAudienceBrowsingService& operator=(
+      const GeneralAudienceBrowsingService&) = delete;
+
   ~GeneralAudienceBrowsingService() override;
 
   // Starts a call to the Safe Search API for the given URL to determine whether
@@ -59,8 +67,6 @@ class GeneralAudienceBrowsingService
       general_audience_browsing_api_key_observer_receiver_{this};
   mojo::Remote<mojom::GeneralAudienceBrowsingAPIKeySubject>
       general_audience_browsing_api_key_subject_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneralAudienceBrowsingService);
 };
 
 }  // namespace chromecast

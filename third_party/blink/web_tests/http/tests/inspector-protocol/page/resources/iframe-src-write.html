@@ -1,0 +1,7 @@
+<iframe id="frame" src="http://devtools.test:8000/inspector-protocol/resources/empty.html"></iframe>
+<script>
+  const doc = document.getElementById('frame').contentDocument;
+  doc.open();
+  doc.write("<h1>Hello world!</h1>");
+  doc.close();
+</script>

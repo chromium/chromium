@@ -6,9 +6,8 @@
 
 #include <atomic>
 
-#include "base/bind_helpers.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -156,12 +155,12 @@ TEST_F(ResponsivenessMetricSourceTest, RunTasks) {
   task_environment_.RunIOThreadUntilIdle();
   task_environment_.RunUntilIdle();
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI}, base::DoNothing());
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_GT(delegate->will_run_task_on_ui_thread(), 0);
   EXPECT_GT(delegate->did_run_task_on_ui_thread(), 0);
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::IO}, base::DoNothing());
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_GT(delegate->will_run_task_on_io_thread(), 0);
   EXPECT_GT(delegate->did_run_task_on_io_thread(), 0);

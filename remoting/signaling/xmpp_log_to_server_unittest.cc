@@ -4,6 +4,8 @@
 
 #include "remoting/signaling/xmpp_log_to_server.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/signaling/mock_signal_strategy.h"
@@ -16,6 +18,7 @@ using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 using testing::_;
 using testing::DeleteArg;
+using testing::DoAll;
 using testing::InSequence;
 using testing::Return;
 
@@ -43,8 +46,8 @@ class XmppLogToServerTest : public testing::Test {
   void SetUp() override {
     EXPECT_CALL(signal_strategy_, AddListener(_));
     EXPECT_CALL(signal_strategy_, RemoveListener(_));
-    xmpp_log_to_server_.reset(new XmppLogToServer(
-        ServerLogEntry::ME2ME, &signal_strategy_, kTestBotJid));
+    xmpp_log_to_server_ = std::make_unique<XmppLogToServer>(
+        ServerLogEntry::ME2ME, &signal_strategy_, kTestBotJid);
   }
 
  protected:

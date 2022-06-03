@@ -22,8 +22,7 @@ class Iterable {
  public:
   Iterator* keysForBinding(ScriptState* script_state,
                            ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<KeySelector>>(source);
@@ -31,8 +30,7 @@ class Iterable {
 
   Iterator* valuesForBinding(ScriptState* script_state,
                              ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<ValueSelector>>(source);
@@ -40,8 +38,7 @@ class Iterable {
 
   Iterator* entriesForBinding(ScriptState* script_state,
                               ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
     if (!source)
       return nullptr;
     return MakeGarbageCollected<IterableIterator<EntrySelector>>(source);
@@ -52,8 +49,7 @@ class Iterable {
                          V8ForEachIteratorCallback* callback,
                          const ScriptValue& this_arg,
                          ExceptionState& exception_state) {
-    IterationSource* source =
-        this->StartIteration(script_state, exception_state);
+    IterationSource* source = StartIteration(script_state, exception_state);
 
     v8::TryCatch try_catch(script_state->GetIsolate());
 
@@ -97,7 +93,7 @@ class Iterable {
     // false.  Otherwise: set |key| and |value| and return true.
     virtual bool Next(ScriptState*, KeyType&, ValueType&, ExceptionState&) = 0;
 
-    virtual void Trace(blink::Visitor* visitor) {}
+    virtual void Trace(Visitor* visitor) const {}
   };
 
  private:
@@ -160,7 +156,7 @@ class Iterable {
       return next(script_state, exception_state);
     }
 
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
       Iterator::Trace(visitor);
     }

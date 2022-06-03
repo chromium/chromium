@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls the Search Bar Banner.
+ * Controls the Search Bar Banner, which presents a banner above the Bar.
+ * This can be used for promotional features.
+ * TODO(donnd): consider removal since this is currently unused.
  */
 public class ContextualSearchBarBannerControl extends OverlayPanelInflater {
     /**

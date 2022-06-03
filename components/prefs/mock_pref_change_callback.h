@@ -28,7 +28,7 @@ MATCHER_P3(PrefValueMatches, prefs, pref_name, value, "") {
     return value == NULL;
   if (!value)
     return actual_value == NULL;
-  return value->Equals(actual_value);
+  return *value == *actual_value;
 }
 
 // A mock for testing preference notifications and easy setup of expectations.

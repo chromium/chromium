@@ -2,41 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from '../navigator.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {BackButtonNode} from './back_button_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the grouping of nodes that are not grouped in the
  *     automation tree. They are defined by their parent and child nodes.
  * Ex: Nodes in the virtual keyboard have no intermediate grouping, but should
  *     be grouped by row.
  */
-class GroupNode extends SAChildNode {
+export class GroupNode extends SAChildNode {
   /**
    * @param {!Array<!SAChildNode>} children The nodes that this group contains.
    *     Should not include the back button.
+   * @param {!AutomationNode} containingNode The automation node most closely
+   * containing the children.
    * @private
    */
-  constructor(children) {
+  constructor(children, containingNode) {
     super();
 
-    /** @type {!Array<!SAChildNode>} */
+    /** @private {!Array<!SAChildNode>} */
     this.children_ = children;
+
+    /** @private {!AutomationNode} */
+    this.containingNode_ = containingNode;
   }
 
   // ================= Getters and setters =================
 
   /** @override */
   get actions() {
-    return [];
+    return [SwitchAccessMenuAction.SELECT];
   }
 
   /** @override */
   get automationNode() {
-    return null;
+    return this.containingNode_;
   }
 
   /** @override */
   get location() {
-    const childLocations = this.children_.map(c => c.location);
-    return RectHelper.unionAll(childLocations);
+    const childLocations =
+        this.children_.filter(c => c.isValidAndVisible()).map(c => c.location);
+    return RectUtil.unionAll(childLocations);
   }
 
   /** @override */
@@ -48,12 +62,10 @@ class GroupNode extends SAChildNode {
 
   /** @override */
   asRootNode() {
-    const root = new SARootNode();
+    const root = new SARootNode(this.containingNode_);
 
-    let children = [];
-    for (const child of this.children_) {
-      children.push(child);
-    }
+    // Make a copy of the children array.
+    const children = [...this.children_];
 
     children.push(new BackButtonNode(root));
     root.children = children;
@@ -72,7 +84,7 @@ class GroupNode extends SAChildNode {
       return false;
     }
     for (let i = 0; i < this.children_.length; i++) {
-      if (other.children_[i].equals(this.children_[i])) {
+      if (!other.children_[i].equals(this.children_[i])) {
         return false;
       }
     }
@@ -81,6 +93,16 @@ class GroupNode extends SAChildNode {
 
   /** @override */
   isEquivalentTo(node) {
+    if (node instanceof GroupNode) {
+      return this.equals(node);
+    }
+
+    for (const child of this.children_) {
+      if (child.isEquivalentTo(node)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -90,8 +112,22 @@ class GroupNode extends SAChildNode {
   }
 
   /** @override */
+  isValidAndVisible() {
+    for (const child of this.children_) {
+      if (child.isValidAndVisible()) {
+        return super.isValidAndVisible();
+      }
+    }
+    return false;
+  }
+
+  /** @override */
   performAction(action) {
-    return true;
+    if (action === SwitchAccessMenuAction.SELECT) {
+      Navigator.byItem.enterGroup();
+      return SAConstants.ActionResponse.CLOSE_MENU;
+    }
+    return SAConstants.ActionResponse.NO_ACTION_TAKEN;
   }
 
   // ================= Static methods =================
@@ -99,26 +135,24 @@ class GroupNode extends SAChildNode {
   /**
    * Assumes nodes are visually in rows.
    * @param {!Array<!SAChildNode>} nodes
+   * @param {!AutomationNode} containingNode
    * @return {!Array<!GroupNode>}
    */
-  static separateByRow(nodes) {
-    let result = [];
+  static separateByRow(nodes, containingNode) {
+    const result = [];
 
     for (let i = 0; i < nodes.length;) {
-      let children = [];
+      const children = [];
       children.push(nodes[i]);
       i++;
 
       while (i < nodes.length &&
-             RectHelper.sameRow(children[0].location, nodes[i].location)) {
+             RectUtil.sameRow(children[0].location, nodes[i].location)) {
         children.push(nodes[i]);
         i++;
       }
-      if (children.length <= 1) {
-        throw new Error('Cannot group row with only one element.');
-      }
 
-      result.push(new GroupNode(children));
+      result.push(new GroupNode(children, containingNode));
     }
 
     return result;

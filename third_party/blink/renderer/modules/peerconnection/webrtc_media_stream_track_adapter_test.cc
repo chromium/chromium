@@ -7,20 +7,21 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 namespace blink {
@@ -28,7 +29,8 @@ namespace blink {
 class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
   }
 
@@ -42,45 +44,39 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
-  blink::WebMediaStreamTrack CreateLocalAudioTrack() {
-    blink::WebMediaStreamSource web_source;
-    web_source.Initialize(blink::WebString::FromUTF8("local_audio_id"),
-                          blink::WebMediaStreamSource::kTypeAudio,
-                          blink::WebString::FromUTF8("local_audio_track"),
-                          false);
-    blink::MediaStreamAudioSource* audio_source =
-        new blink::MediaStreamAudioSource(
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting(), true);
-    // Takes ownership of |audio_source|.
-    web_source.SetPlatformSource(base::WrapUnique(audio_source));
+  MediaStreamComponent* CreateLocalAudioTrack() {
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("local_audio_id"), MediaStreamSource::kTypeAudio,
+        String::FromUTF8("local_audio_track"), false);
+    auto audio_source = std::make_unique<MediaStreamAudioSource>(
+        scheduler::GetSingleThreadTaskRunnerForTesting(), true);
+    auto* audio_source_ptr = audio_source.get();
+    source->SetPlatformSource(std::move(audio_source));
 
-    blink::WebMediaStreamTrack web_track;
-    web_track.Initialize(web_source.Id(), web_source);
-    audio_source->ConnectToTrack(web_track);
-    return web_track;
+    auto* component =
+        MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+    audio_source_ptr->ConnectToTrack(component);
+    return component;
   }
 
-  blink::WebMediaStreamTrack CreateLocalVideoTrack() {
-    blink::WebMediaStreamSource web_source;
-    web_source.Initialize(blink::WebString::FromUTF8("local_video_id"),
-                          blink::WebMediaStreamSource::kTypeVideo,
-                          blink::WebString::FromUTF8("local_video_track"),
-                          false);
-    blink::MockMediaStreamVideoSource* video_source =
-        new blink::MockMediaStreamVideoSource();
-    // Takes ownership of |video_source|.
-    web_source.SetPlatformSource(base::WrapUnique(video_source));
+  MediaStreamComponent* CreateLocalVideoTrack() {
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("local_video_id"), MediaStreamSource::kTypeVideo,
+        String::FromUTF8("local_video_track"), false);
+    auto video_source = std::make_unique<MockMediaStreamVideoSource>();
+    auto* video_source_ptr = video_source.get();
+    source->SetPlatformSource(std::move(video_source));
 
-    return blink::MediaStreamVideoTrack::CreateVideoTrack(
-        video_source, blink::MediaStreamVideoSource::ConstraintsOnceCallback(),
-        true);
+    return MediaStreamVideoTrack::CreateVideoTrack(
+        video_source_ptr,
+        blink::MediaStreamVideoSource::ConstraintsOnceCallback(), true);
   }
 
   void CreateRemoteTrackAdapter(
       webrtc::MediaStreamTrackInterface* webrtc_track) {
     track_adapter_ =
         blink::WebRtcMediaStreamTrackAdapter::CreateRemoteTrackAdapter(
-            dependency_factory_.get(), main_thread_, webrtc_track);
+            dependency_factory_.Get(), main_thread_, webrtc_track);
   }
 
   void HoldOntoAdapterReference(
@@ -115,7 +111,7 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
+  CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapter> track_adapter_;
@@ -124,16 +120,16 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
 TEST_F(WebRtcMediaStreamTrackAdapterTest, LocalAudioTrack) {
   track_adapter_ =
       blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-          dependency_factory_.get(), main_thread_, CreateLocalAudioTrack());
+          dependency_factory_.Get(), main_thread_, CreateLocalAudioTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
-  EXPECT_TRUE(!track_adapter_->web_track().IsNull());
-  EXPECT_EQ(track_adapter_->web_track().Source().GetType(),
-            blink::WebMediaStreamSource::kTypeAudio);
+  EXPECT_TRUE(track_adapter_->track());
+  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+            MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
   EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->web_track().Id());
+            track_adapter_->track()->Id());
   EXPECT_TRUE(track_adapter_->GetLocalTrackAudioSinkForTesting());
   EXPECT_EQ(
       track_adapter_->GetLocalTrackAudioSinkForTesting()->webrtc_audio_track(),
@@ -144,16 +140,16 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, LocalAudioTrack) {
 TEST_F(WebRtcMediaStreamTrackAdapterTest, DISABLED_LocalVideoTrack) {
   track_adapter_ =
       blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-          dependency_factory_.get(), main_thread_, CreateLocalVideoTrack());
+          dependency_factory_.Get(), main_thread_, CreateLocalVideoTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
-  EXPECT_TRUE(!track_adapter_->web_track().IsNull());
-  EXPECT_EQ(track_adapter_->web_track().Source().GetType(),
-            blink::WebMediaStreamSource::kTypeVideo);
+  EXPECT_TRUE(track_adapter_->track());
+  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+            MediaStreamSource::kTypeVideo);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kVideoKind);
   EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->web_track().Id());
+            track_adapter_->track()->Id());
   EXPECT_TRUE(track_adapter_->GetLocalTrackVideoSinkForTesting());
   EXPECT_EQ(
       track_adapter_->GetLocalTrackVideoSinkForTesting()->webrtc_video_track(),
@@ -172,14 +168,14 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteAudioTrack) {
   RunMessageLoopsUntilIdle();
   DCHECK(track_adapter_);
   EXPECT_TRUE(track_adapter_->is_initialized());
-  EXPECT_TRUE(!track_adapter_->web_track().IsNull());
-  EXPECT_EQ(track_adapter_->web_track().Source().GetType(),
-            blink::WebMediaStreamSource::kTypeAudio);
+  EXPECT_TRUE(track_adapter_->track());
+  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+            MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
   EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->web_track().Id());
+            track_adapter_->track()->Id());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteAudioTrackAdapterForTesting()->initialized());
@@ -197,14 +193,14 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteVideoTrack) {
   RunMessageLoopsUntilIdle();
   DCHECK(track_adapter_);
   EXPECT_TRUE(track_adapter_->is_initialized());
-  EXPECT_TRUE(!track_adapter_->web_track().IsNull());
-  EXPECT_EQ(track_adapter_->web_track().Source().GetType(),
-            blink::WebMediaStreamSource::kTypeVideo);
+  EXPECT_TRUE(track_adapter_->track());
+  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+            MediaStreamSource::kTypeVideo);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kVideoKind);
   EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->web_track().Id());
+            track_adapter_->track()->Id());
   EXPECT_TRUE(track_adapter_->GetRemoteVideoTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteVideoTrackAdapterForTesting()->initialized());
@@ -226,14 +222,14 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteTrackExplicitlyInitialized) {
   // Explicitly initialize before the main thread loop has a chance to run.
   track_adapter_->InitializeOnMainThread();
   EXPECT_TRUE(track_adapter_->is_initialized());
-  EXPECT_TRUE(!track_adapter_->web_track().IsNull());
-  EXPECT_EQ(track_adapter_->web_track().Source().GetType(),
-            blink::WebMediaStreamSource::kTypeAudio);
+  EXPECT_TRUE(track_adapter_->track());
+  EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
+            MediaStreamSource::kTypeAudio);
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
   EXPECT_EQ(track_adapter_->webrtc_track()->id().c_str(),
-            track_adapter_->web_track().Id());
+            track_adapter_->track()->Id());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteAudioTrackAdapterForTesting()->initialized());

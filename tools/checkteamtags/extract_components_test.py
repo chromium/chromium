@@ -12,9 +12,6 @@ from StringIO import StringIO
 
 import extract_components
 
-SRC = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-sys.path.append(os.path.join(SRC, 'third_party', 'pymock'))
-
 import mock
 
 

@@ -35,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   };
 
   protocol_request::Request request = MakeProtocolRequest(
-      "{" + GetUtf8String() + "}" /* session_id */,
+      false, "{" + GetUtf8String() + "}" /* session_id */,
       GetUtf8String() /* prod_id */, GetUtf8String() /* browser_version */,
       GetUtf8String() /* lang */, GetUtf8String() /* channel */,
       GetUtf8String() /* os_long_name */,
@@ -47,8 +47,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string request_serialized = serializer->Serialize(request);
 
   // Any request we serialize should be valid JSON.
-  base::JSONReader json_reader;
-  CHECK(json_reader.Read(request_serialized));
+  CHECK(base::JSONReader::Read(request_serialized));
   return 0;
 }
 }  // namespace update_client

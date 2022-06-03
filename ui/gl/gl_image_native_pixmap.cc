@@ -6,13 +6,14 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -24,13 +25,14 @@
 #define DRM_FORMAT_R8 FOURCC('R', '8', ' ', ' ')
 #define DRM_FORMAT_R16 FOURCC('R', '1', '6', ' ')
 #define DRM_FORMAT_GR88 FOURCC('G', 'R', '8', '8')
+#define DRM_FORMAT_GR1616 FOURCC('G', 'R', '3', '2')
 #define DRM_FORMAT_RGB565 FOURCC('R', 'G', '1', '6')
 #define DRM_FORMAT_ARGB8888 FOURCC('A', 'R', '2', '4')
 #define DRM_FORMAT_ABGR8888 FOURCC('A', 'B', '2', '4')
 #define DRM_FORMAT_XRGB8888 FOURCC('X', 'R', '2', '4')
 #define DRM_FORMAT_XBGR8888 FOURCC('X', 'B', '2', '4')
-#define DRM_FORMAT_XBGR2101010 FOURCC('X', 'B', '3', '0')
-#define DRM_FORMAT_XRGB2101010 FOURCC('X', 'R', '3', '0')
+#define DRM_FORMAT_ABGR2101010 FOURCC('A', 'B', '3', '0')
+#define DRM_FORMAT_ARGB2101010 FOURCC('A', 'R', '3', '0')
 #define DRM_FORMAT_YVU420 FOURCC('Y', 'V', '1', '2')
 #define DRM_FORMAT_NV12 FOURCC('N', 'V', '1', '2')
 #define DRM_FORMAT_P010 FOURCC('P', '0', '1', '0')
@@ -59,6 +61,8 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_R16;
     case gfx::BufferFormat::RG_88:
       return DRM_FORMAT_GR88;
+    case gfx::BufferFormat::RG_1616:
+      return DRM_FORMAT_GR1616;
     case gfx::BufferFormat::BGR_565:
       return DRM_FORMAT_RGB565;
     case gfx::BufferFormat::RGBA_8888:
@@ -70,9 +74,9 @@ EGLint FourCC(gfx::BufferFormat format) {
     case gfx::BufferFormat::BGRX_8888:
       return DRM_FORMAT_XRGB8888;
     case gfx::BufferFormat::RGBA_1010102:
-      return DRM_FORMAT_XBGR2101010;
-    case gfx::BufferFormat::BGRX_1010102:
-      return DRM_FORMAT_XRGB2101010;
+      return DRM_FORMAT_ABGR2101010;
+    case gfx::BufferFormat::BGRA_1010102:
+      return DRM_FORMAT_ARGB2101010;
     case gfx::BufferFormat::YVU_420:
       return DRM_FORMAT_YVU420;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
@@ -102,8 +106,10 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
       return gfx::BufferFormat::BGRA_8888;
     case DRM_FORMAT_XRGB8888:
       return gfx::BufferFormat::BGRX_8888;
-    case DRM_FORMAT_XBGR2101010:
+    case DRM_FORMAT_ABGR2101010:
       return gfx::BufferFormat::RGBA_1010102;
+    case DRM_FORMAT_ARGB2101010:
+      return gfx::BufferFormat::BGRA_1010102;
     case DRM_FORMAT_RGB565:
       return gfx::BufferFormat::BGR_565;
     case DRM_FORMAT_NV12:
@@ -121,9 +127,11 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
 }  // namespace
 
 GLImageNativePixmap::GLImageNativePixmap(const gfx::Size& size,
-                                         gfx::BufferFormat format)
+                                         gfx::BufferFormat format,
+                                         gfx::BufferPlane plane)
     : GLImageEGL(size),
       format_(format),
+      plane_(plane),
       has_image_flush_external_(
           gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_flush_external")),
       has_image_dma_buf_export_(
@@ -148,34 +156,47 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
     attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
     attrs.push_back(FourCC(format_));
 
-    const EGLint kLinuxDrmModifiers[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
-                                         EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
-                                         EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT};
-    bool has_dma_buf_import_modifier = gl::GLSurfaceEGL::HasEGLExtension(
-        "EGL_EXT_image_dma_buf_import_modifiers");
+    if (plane_ == gfx::BufferPlane::DEFAULT) {
+      const EGLint kLinuxDrmModifiers[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
+                                           EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
+                                           EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT};
+      bool has_dma_buf_import_modifier = gl::GLSurfaceEGL::HasEGLExtension(
+          "EGL_EXT_image_dma_buf_import_modifiers");
 
-    for (size_t attrs_plane = 0; attrs_plane < pixmap->GetNumberOfPlanes();
-         ++attrs_plane) {
-      attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT + attrs_plane * 3);
+      for (size_t attrs_plane = 0; attrs_plane < pixmap->GetNumberOfPlanes();
+           ++attrs_plane) {
+        attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT + attrs_plane * 3);
 
-      size_t pixmap_plane = attrs_plane;
+        size_t pixmap_plane = attrs_plane;
 
-      attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
-      attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT + attrs_plane * 3);
-      attrs.push_back(pixmap->GetDmaBufOffset(pixmap_plane));
-      attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT + attrs_plane * 3);
-      attrs.push_back(pixmap->GetDmaBufPitch(pixmap_plane));
-      uint64_t modifier = pixmap->GetBufferFormatModifier();
-      if (has_dma_buf_import_modifier &&
-          modifier != gfx::NativePixmapHandle::kNoModifier) {
-        DCHECK(attrs_plane < base::size(kLinuxDrmModifiers));
-        attrs.push_back(kLinuxDrmModifiers[attrs_plane]);
-        attrs.push_back(modifier & 0xffffffff);
-        attrs.push_back(kLinuxDrmModifiers[attrs_plane] + 1);
-        attrs.push_back(static_cast<uint32_t>(modifier >> 32));
+        attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
+        attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT + attrs_plane * 3);
+        attrs.push_back(pixmap->GetDmaBufOffset(pixmap_plane));
+        attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT + attrs_plane * 3);
+        attrs.push_back(pixmap->GetDmaBufPitch(pixmap_plane));
+        uint64_t modifier = pixmap->GetBufferFormatModifier();
+        if (has_dma_buf_import_modifier &&
+            modifier != gfx::NativePixmapHandle::kNoModifier) {
+          DCHECK(attrs_plane < base::size(kLinuxDrmModifiers));
+          attrs.push_back(kLinuxDrmModifiers[attrs_plane]);
+          attrs.push_back(modifier & 0xffffffff);
+          attrs.push_back(kLinuxDrmModifiers[attrs_plane] + 1);
+          attrs.push_back(static_cast<uint32_t>(modifier >> 32));
+        }
       }
+      attrs.push_back(EGL_NONE);
+    } else {
+      DCHECK(plane_ == gfx::BufferPlane::Y || plane_ == gfx::BufferPlane::UV);
+      size_t pixmap_plane = plane_ == gfx::BufferPlane::Y ? 0 : 1;
+
+      attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT);
+      attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
+      attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT);
+      attrs.push_back(pixmap->GetDmaBufOffset(pixmap_plane));
+      attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT);
+      attrs.push_back(pixmap->GetDmaBufPitch(pixmap_plane));
+      attrs.push_back(EGL_NONE);
     }
-    attrs.push_back(EGL_NONE);
 
     if (!GLImageEGL::Initialize(EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
                                 static_cast<EGLClientBuffer>(nullptr),
@@ -316,20 +337,6 @@ bool GLImageNativePixmap::CopyTexSubImage(unsigned target,
   return false;
 }
 
-bool GLImageNativePixmap::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  DCHECK(pixmap_);
-  return pixmap_->ScheduleOverlayPlane(widget, z_order, transform, bounds_rect,
-                                       crop_rect, enable_blend,
-                                       std::move(gpu_fence));
-}
-
 void GLImageNativePixmap::Flush() {
   if (!has_image_flush_external_)
     return;
@@ -351,6 +358,10 @@ void GLImageNativePixmap::OnMemoryDump(
     uint64_t process_tracing_id,
     const std::string& dump_name) {
   // TODO(ericrk): Implement GLImage OnMemoryDump. crbug.com/514914
+}
+
+scoped_refptr<gfx::NativePixmap> GLImageNativePixmap::GetNativePixmap() {
+  return pixmap_;
 }
 
 }  // namespace gl

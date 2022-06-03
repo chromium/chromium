@@ -57,16 +57,16 @@ class CORE_EXPORT CSSPropertyRef {
     DCHECK(IsValid());
     if (property_id_ == CSSPropertyID::kVariable)
       return custom_property_;
-    return CSSProperty::Get(resolveCSSPropertyID(property_id_));
+    return CSSProperty::Get(ResolveCSSPropertyID(property_id_));
   }
 
   const CSSUnresolvedProperty& GetUnresolvedProperty() const {
-    if (isPropertyAlias(property_id_))
+    if (IsPropertyAlias(property_id_))
       return *CSSUnresolvedProperty::GetAliasProperty(property_id_);
     return GetProperty();
   }
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(custom_property_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(custom_property_); }
 
  private:
   CSSPropertyID property_id_;

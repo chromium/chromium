@@ -26,21 +26,30 @@
 #include <algorithm>
 #include <limits>
 
+#include "build/build_config.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
+// Breakpoints where we deicde to do linear interoplation, 3-point
+// interpolation or 5-point interpolation.  See DoInterpolation().
+constexpr float kInterpolate2Point = 0.3;
+constexpr float kInterpolate3Point = 0.16;
+
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
                                      const String& oscillator_type,
-                                     PeriodicWave* wave_table,
+                                     PeriodicWaveImpl* wave_table,
                                      AudioParamHandler& frequency,
                                      AudioParamHandler& detune)
     : AudioScheduledSourceHandler(kNodeTypeOscillator, node, sample_rate),
@@ -48,8 +57,8 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
       detune_(&detune),
       first_render_(true),
       virtual_read_index_(0),
-      phase_increments_(audio_utilities::kRenderQuantumFrames),
-      detune_values_(audio_utilities::kRenderQuantumFrames) {
+      phase_increments_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   if (wave_table) {
     // A PeriodicWave overrides any value for the oscillator type,
     // forcing the type to be 'custom".
@@ -77,7 +86,7 @@ scoped_refptr<OscillatorHandler> OscillatorHandler::Create(
     AudioNode& node,
     float sample_rate,
     const String& oscillator_type,
-    PeriodicWave* wave_table,
+    PeriodicWaveImpl* wave_table,
     AudioParamHandler& frequency,
     AudioParamHandler& detune) {
   return base::AdoptRef(new OscillatorHandler(
@@ -148,7 +157,7 @@ bool OscillatorHandler::SetType(uint8_t type) {
       return false;
   }
 
-  SetPeriodicWave(periodic_wave);
+  SetPeriodicWave(periodic_wave->impl());
   type_ = type;
   return true;
 }
@@ -170,7 +179,7 @@ static void ClampFrequency(float* frequency,
     if (std::isnan(f)) {
       frequency[k] = nyquist;
     } else {
-      frequency[k] = clampTo(f, -nyquist, nyquist);
+      frequency[k] = ClampTo(f, -nyquist, nyquist);
     }
   }
 }
@@ -192,7 +201,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
   float final_scale = periodic_wave_->RateScale();
 
-  if (frequency_->HasSampleAccurateValues()) {
+  if (frequency_->HasSampleAccurateValues() && frequency_->IsAudioRate()) {
     has_sample_accurate_values = true;
     has_frequency_changes = true;
 
@@ -202,11 +211,11 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
                                               frames_to_process);
   } else {
     // Handle ordinary parameter changes if there are no scheduled changes.
-    float frequency = frequency_->Value();
+    float frequency = frequency_->FinalValue();
     final_scale *= frequency;
   }
 
-  if (detune_->HasSampleAccurateValues()) {
+  if (detune_->HasSampleAccurateValues() && detune_->IsAudioRate()) {
     has_sample_accurate_values = true;
 
     // Get the sample-accurate detune values.
@@ -230,7 +239,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   } else {
     // Handle ordinary parameter changes if there are no scheduled
     // changes.
-    float detune = detune_->Value();
+    float detune = detune_->FinalValue();
     float detune_scale = DetuneToFrequencyMultiplier(detune);
     final_scale *= detune_scale;
   }
@@ -272,7 +281,7 @@ static float DoInterpolation(double virtual_read_index,
   // We use Lagrange interpolation because it's relatively simple to
   // implement and fairly inexpensive, and the interpolator always
   // passes through known points.
-  if (incr >= 0.3) {
+  if (incr >= kInterpolate2Point) {
     // Increment is fairly large, so we're doing no more than about 3
     // points between each wave table entry. Assume linear
     // interpolation between points is good enough.
@@ -295,7 +304,7 @@ static float DoInterpolation(double virtual_read_index,
     sample_lower = (1 - interpolation_factor) * sample1_lower +
                    interpolation_factor * sample2_lower;
 
-  } else if (incr >= .16) {
+  } else if (incr >= kInterpolate3Point) {
     // We're doing about 6 interpolation values between each wave
     // table sample. Just use a 3-point Lagrange interpolator to get a
     // better estimate than just linear.
@@ -351,6 +360,313 @@ static float DoInterpolation(double virtual_read_index,
   return sample;
 }
 
+#if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
+// Vector operations not supported, so there's nothing to do except return 0 and
+// virtual_read_index.  The scalar version will do the necessary processing.
+std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
+    int n,
+    float* dest_p,
+    double virtual_read_index,
+    float frequency,
+    float rate_scale) const {
+  DCHECK_GE(frequency * rate_scale, kInterpolate2Point);
+  return std::make_tuple(0, virtual_read_index);
+}
+#endif
+
+#if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
+double OscillatorHandler::ProcessARateVectorKernel(
+    float* dest_p,
+    double virtual_read_index,
+    const float* phase_increments,
+    unsigned periodic_wave_size,
+    const float* const lower_wave_data[4],
+    const float* const higher_wave_data[4],
+    const float table_interpolation_factor[4]) const {
+  double inv_periodic_wave_size = 1.0 / periodic_wave_size;
+  unsigned read_index_mask = periodic_wave_size - 1;
+
+  for (int m = 0; m < 4; ++m) {
+    unsigned read_index_0 = static_cast<unsigned>(virtual_read_index);
+
+    // Increment is fairly large, so we're doing no more than about 3
+    // points between each wave table entry. Assume linear
+    // interpolation between points is good enough.
+    unsigned read_index2 = read_index_0 + 1;
+
+    // Contain within valid range.
+    read_index_0 = read_index_0 & read_index_mask;
+    read_index2 = read_index2 & read_index_mask;
+
+    float sample1_lower = lower_wave_data[m][read_index_0];
+    float sample2_lower = lower_wave_data[m][read_index2];
+    float sample1_higher = higher_wave_data[m][read_index_0];
+    float sample2_higher = higher_wave_data[m][read_index2];
+
+    // Linearly interpolate within each table (lower and higher).
+    double interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
+    // Doing linear interpolation via x0 + f*(x1-x0) gives slightly
+    // different results from (1-f)*x0 + f*x1, but requires fewer
+    // operations.  This causes a very slight decrease in SNR (< 0.05 dB) in
+    // oscillator sweep tests.
+    float sample_higher =
+        sample1_higher +
+        interpolation_factor * (sample2_higher - sample1_higher);
+    float sample_lower =
+        sample1_lower + interpolation_factor * (sample2_lower - sample1_lower);
+
+    // Then interpolate between the two tables.
+    float sample = sample_higher + table_interpolation_factor[m] *
+                                       (sample_lower - sample_higher);
+
+    dest_p[m] = sample;
+
+    // Increment virtual read index and wrap virtualReadIndex into the range
+    // 0 -> periodicWaveSize.
+    virtual_read_index += phase_increments[m];
+    virtual_read_index -=
+        floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
+  }
+
+  return virtual_read_index;
+}
+#endif
+
+double OscillatorHandler::ProcessKRateScalar(int start,
+                                             int n,
+                                             float* dest_p,
+                                             double virtual_read_index,
+                                             float frequency,
+                                             float rate_scale) const {
+  const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
+  const unsigned read_index_mask = periodic_wave_size - 1;
+
+  float* higher_wave_data = nullptr;
+  float* lower_wave_data = nullptr;
+  float table_interpolation_factor = 0;
+
+  periodic_wave_->WaveDataForFundamentalFrequency(
+      frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
+
+  const float incr = frequency * rate_scale;
+  DCHECK_GE(incr, kInterpolate2Point);
+
+  for (int k = start; k < n; ++k) {
+    // Get indices for the current and next sample, and contain them within the
+    // valid range
+    const unsigned read_index_0 =
+        static_cast<unsigned>(virtual_read_index) & read_index_mask;
+    const unsigned read_index_1 = (read_index_0 + 1) & read_index_mask;
+
+    const float sample1_lower = lower_wave_data[read_index_0];
+    const float sample2_lower = lower_wave_data[read_index_1];
+    const float sample1_higher = higher_wave_data[read_index_0];
+    const float sample2_higher = higher_wave_data[read_index_1];
+
+    // Linearly interpolate within each table (lower and higher).
+    const float interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
+    const float sample_higher =
+        sample1_higher +
+        interpolation_factor * (sample2_higher - sample1_higher);
+    const float sample_lower =
+        sample1_lower + interpolation_factor * (sample2_lower - sample1_lower);
+
+    // Then interpolate between the two tables.
+    const float sample = sample_higher + table_interpolation_factor *
+                                             (sample_lower - sample_higher);
+
+    dest_p[k] = sample;
+
+    // Increment virtual read index and wrap virtualReadIndex into the range
+    // 0 -> periodicWaveSize.
+    virtual_read_index += incr;
+    virtual_read_index -=
+        floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
+  }
+
+  return virtual_read_index;
+}
+
+double OscillatorHandler::ProcessKRate(int n,
+                                       float* dest_p,
+                                       double virtual_read_index) const {
+  const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
+  const unsigned read_index_mask = periodic_wave_size - 1;
+
+  float* higher_wave_data = nullptr;
+  float* lower_wave_data = nullptr;
+  float table_interpolation_factor = 0;
+
+  float frequency = frequency_->FinalValue();
+  const float detune_scale = DetuneToFrequencyMultiplier(detune_->FinalValue());
+  frequency *= detune_scale;
+  ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
+  periodic_wave_->WaveDataForFundamentalFrequency(
+      frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
+
+  const float rate_scale = periodic_wave_->RateScale();
+  const float incr = frequency * rate_scale;
+
+  if (incr >= kInterpolate2Point) {
+    int k;
+    double v_index = virtual_read_index;
+
+    std::tie(k, v_index) =
+        ProcessKRateVector(n, dest_p, v_index, frequency, rate_scale);
+
+    if (k < n) {
+      // In typical cases, this won't be run because the number of frames is 128
+      // so the vector version will process all the samples.
+      v_index =
+          ProcessKRateScalar(k, n, dest_p, v_index, frequency, rate_scale);
+    }
+
+    // Recompute to reduce round-off introduced when processing the samples
+    // above.
+    virtual_read_index += n * incr;
+    virtual_read_index -=
+        floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
+  } else {
+    for (int k = 0; k < n; ++k) {
+      float sample = DoInterpolation(
+          virtual_read_index, fabs(incr), read_index_mask,
+          table_interpolation_factor, lower_wave_data, higher_wave_data);
+
+      *dest_p++ = sample;
+
+      // Increment virtual read index and wrap virtualReadIndex into the range
+      // 0 -> periodicWaveSize.
+      virtual_read_index += incr;
+      virtual_read_index -= floor(virtual_read_index * inv_periodic_wave_size) *
+                            periodic_wave_size;
+    }
+  }
+
+  return virtual_read_index;
+}
+
+std::tuple<int, double> OscillatorHandler::ProcessARateVector(
+    int n,
+    float* destination,
+    double virtual_read_index,
+    const float* phase_increments) const {
+  float rate_scale = periodic_wave_->RateScale();
+  float inv_rate_scale = 1 / rate_scale;
+  unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  double inv_periodic_wave_size = 1.0 / periodic_wave_size;
+  unsigned read_index_mask = periodic_wave_size - 1;
+
+  float* higher_wave_data[4];
+  float* lower_wave_data[4];
+  float table_interpolation_factor[4] __attribute__((aligned(16)));
+
+  int k = 0;
+  int n_loops = n / 4;
+
+  for (int loop = 0; loop < n_loops; ++loop, k += 4) {
+    bool is_big_increment = true;
+    float frequency[4];
+
+    for (int m = 0; m < 4; ++m) {
+      float phase_incr = phase_increments[k + m];
+      is_big_increment =
+          is_big_increment && (fabs(phase_incr) >= kInterpolate2Point);
+      frequency[m] = inv_rate_scale * phase_incr;
+    }
+
+    periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
+                                                    higher_wave_data,
+                                                    table_interpolation_factor);
+
+    // If all the phase increments are large enough, we can use linear
+    // interpolation with a possibly vectorized implementation.  If not, we need
+    // to call DoInterpolation to handle it correctly.
+    if (is_big_increment) {
+      virtual_read_index = ProcessARateVectorKernel(
+          destination + k, virtual_read_index, phase_increments + k,
+          periodic_wave_size, lower_wave_data, higher_wave_data,
+          table_interpolation_factor);
+    } else {
+      for (int m = 0; m < 4; ++m) {
+        float sample =
+            DoInterpolation(virtual_read_index, fabs(phase_increments[k + m]),
+                            read_index_mask, table_interpolation_factor[m],
+                            lower_wave_data[m], higher_wave_data[m]);
+
+        destination[k + m] = sample;
+
+        // Increment virtual read index and wrap virtualReadIndex into the range
+        // 0 -> periodicWaveSize.
+        virtual_read_index += phase_increments[k + m];
+        virtual_read_index -=
+            floor(virtual_read_index * inv_periodic_wave_size) *
+            periodic_wave_size;
+      }
+    }
+  }
+
+  return std::make_tuple(k, virtual_read_index);
+}
+
+double OscillatorHandler::ProcessARateScalar(
+    int k,
+    int n,
+    float* destination,
+    double virtual_read_index,
+    const float* phase_increments) const {
+  float rate_scale = periodic_wave_->RateScale();
+  float inv_rate_scale = 1 / rate_scale;
+  unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
+  double inv_periodic_wave_size = 1.0 / periodic_wave_size;
+  unsigned read_index_mask = periodic_wave_size - 1;
+
+  float* higher_wave_data = nullptr;
+  float* lower_wave_data = nullptr;
+  float table_interpolation_factor = 0;
+
+  for (int m = k; m < n; ++m) {
+    float incr = phase_increments[m];
+
+    float frequency = inv_rate_scale * incr;
+    periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
+                                                    higher_wave_data,
+                                                    table_interpolation_factor);
+
+    float sample = DoInterpolation(virtual_read_index, fabs(incr),
+                                   read_index_mask, table_interpolation_factor,
+                                   lower_wave_data, higher_wave_data);
+
+    destination[m] = sample;
+
+    // Increment virtual read index and wrap virtualReadIndex into the range
+    // 0 -> periodicWaveSize.
+    virtual_read_index += incr;
+    virtual_read_index -=
+        floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
+  }
+
+  return virtual_read_index;
+}
+
+double OscillatorHandler::ProcessARate(int n,
+                                       float* destination,
+                                       double virtual_read_index,
+                                       float* phase_increments) const {
+  int frames_processed = 0;
+
+  std::tie(frames_processed, virtual_read_index) =
+      ProcessARateVector(n, destination, virtual_read_index, phase_increments);
+
+  virtual_read_index = ProcessARateScalar(frames_processed, n, destination,
+                                          virtual_read_index, phase_increments);
+
+  return virtual_read_index;
+}
+
 void OscillatorHandler::Process(uint32_t frames_to_process) {
   AudioBus* output_bus = Output(0).Bus();
 
@@ -390,7 +706,6 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   }
 
   unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
-  double inv_periodic_wave_size = 1.0 / periodic_wave_size;
 
   float* dest_p = output_bus->Channel(0)->MutableData();
 
@@ -400,7 +715,6 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   double virtual_read_index = virtual_read_index_;
 
   float rate_scale = periodic_wave_->RateScale();
-  float inv_rate_scale = 1 / rate_scale;
   bool has_sample_accurate_values =
       CalculateSampleAccuratePhaseIncrements(frames_to_process);
 
@@ -410,8 +724,8 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   float table_interpolation_factor = 0;
 
   if (!has_sample_accurate_values) {
-    frequency = frequency_->Value();
-    float detune = detune_->Value();
+    frequency = frequency_->FinalValue();
+    float detune = detune_->FinalValue();
     float detune_scale = DetuneToFrequencyMultiplier(detune);
     frequency *= detune_scale;
     ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
@@ -420,10 +734,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
                                                     table_interpolation_factor);
   }
 
-  float incr = frequency * rate_scale;
   float* phase_increments = phase_increments_.Data();
-
-  unsigned read_index_mask = periodic_wave_size - 1;
 
   // Start rendering at the correct offset.
   dest_p += quantum_frame_offset;
@@ -442,27 +753,11 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     virtual_read_index = -start_frame_offset * frequency * rate_scale;
   }
 
-  while (n--) {
-    if (has_sample_accurate_values) {
-      incr = *phase_increments++;
-
-      frequency = inv_rate_scale * incr;
-      periodic_wave_->WaveDataForFundamentalFrequency(
-          frequency, lower_wave_data, higher_wave_data,
-          table_interpolation_factor);
-    }
-
-    float sample = DoInterpolation(virtual_read_index, fabs(incr),
-                                   read_index_mask, table_interpolation_factor,
-                                   lower_wave_data, higher_wave_data);
-
-    *dest_p++ = sample;
-
-    // Increment virtual read index and wrap virtualReadIndex into the range
-    // 0 -> periodicWaveSize.
-    virtual_read_index += incr;
-    virtual_read_index -=
-        floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
+  if (has_sample_accurate_values) {
+    virtual_read_index =
+        ProcessARate(n, dest_p, virtual_read_index, phase_increments);
+  } else {
+    virtual_read_index = ProcessKRate(n, dest_p, virtual_read_index);
   }
 
   virtual_read_index_ = virtual_read_index;
@@ -470,7 +765,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   output_bus->ClearSilentFlag();
 }
 
-void OscillatorHandler::SetPeriodicWave(PeriodicWave* periodic_wave) {
+void OscillatorHandler::SetPeriodicWave(PeriodicWaveImpl* periodic_wave) {
   DCHECK(IsMainThread());
   DCHECK(periodic_wave);
 
@@ -481,11 +776,18 @@ void OscillatorHandler::SetPeriodicWave(PeriodicWave* periodic_wave) {
 }
 
 bool OscillatorHandler::PropagatesSilence() const {
-  return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_.Get();
+  return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_;
 }
 
 void OscillatorHandler::HandleStoppableSourceNode() {
   double now = Context()->currentTime();
+
+  MutexTryLocker try_locker(process_lock_);
+  if (!try_locker.Locked()) {
+    // Can't get the lock, so just return.  It's ok to handle these at a later
+    // time; this was just a hint anyway so stopping them a bit later is ok.
+    return;
+  }
 
   // If we know the end time, and the source was started and the current time is
   // definitely past the end time, we can stop this node.  (This handles the
@@ -522,11 +824,11 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
                              -1200 * log2f(std::numeric_limits<float>::max()),
-                             1200 * log2f(std::numeric_limits<float>::max()))),
-      periodic_wave_(wave_table) {
-  SetHandler(OscillatorHandler::Create(
-      *this, context.sampleRate(), oscillator_type, wave_table,
-      frequency_->Handler(), detune_->Handler()));
+                             1200 * log2f(std::numeric_limits<float>::max()))) {
+  SetHandler(
+      OscillatorHandler::Create(*this, context.sampleRate(), oscillator_type,
+                                wave_table ? wave_table->impl() : nullptr,
+                                frequency_->Handler(), detune_->Handler()));
 }
 
 OscillatorNode* OscillatorNode::Create(BaseAudioContext& context,
@@ -549,8 +851,11 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext* context,
     return nullptr;
   }
 
-  OscillatorNode* node = Create(*context, options->type(),
-                                options->periodicWave(), exception_state);
+  // TODO(crbug.com/1070871): Use periodicWaveOr(nullptr).
+  OscillatorNode* node =
+      Create(*context, IDLEnumAsString(options->type()),
+             options->hasPeriodicWave() ? options->periodicWave() : nullptr,
+             exception_state);
 
   if (!node)
     return nullptr;
@@ -563,10 +868,9 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext* context,
   return node;
 }
 
-void OscillatorNode::Trace(blink::Visitor* visitor) {
+void OscillatorNode::Trace(Visitor* visitor) const {
   visitor->Trace(frequency_);
   visitor->Trace(detune_);
-  visitor->Trace(periodic_wave_);
   AudioScheduledSourceNode::Trace(visitor);
 }
 
@@ -592,8 +896,7 @@ AudioParam* OscillatorNode::detune() {
 }
 
 void OscillatorNode::setPeriodicWave(PeriodicWave* wave) {
-  periodic_wave_ = wave;
-  GetOscillatorHandler().SetPeriodicWave(wave);
+  GetOscillatorHandler().SetPeriodicWave(wave->impl());
 }
 
 void OscillatorNode::ReportDidCreate() {

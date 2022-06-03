@@ -5,7 +5,7 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/web/public/browser_state.h"
@@ -54,9 +54,6 @@ KeyedService* BrowserStateKeyedServiceFactory::GetServiceForBrowserState(
 
 web::BrowserState* BrowserStateKeyedServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  // TODO(crbug.com/701326): This DCHECK should be moved to GetContextToUse().
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // Safe default for Incognito mode: no service.
   if (context->IsOffTheRecord())
     return nullptr;
@@ -92,6 +89,7 @@ bool BrowserStateKeyedServiceFactory::IsOffTheRecord(void* context) const {
 }
 
 void* BrowserStateKeyedServiceFactory::GetContextToUse(void* context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AssertContextWasntDestroyed(context);
   return GetBrowserStateToUse(static_cast<web::BrowserState*>(context));
 }

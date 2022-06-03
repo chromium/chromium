@@ -11,10 +11,10 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
 namespace ash {
@@ -27,6 +27,10 @@ class VpnList;
 class ASH_EXPORT TrayNetworkStateModel {
  public:
   TrayNetworkStateModel();
+
+  TrayNetworkStateModel(const TrayNetworkStateModel&) = delete;
+  TrayNetworkStateModel& operator=(const TrayNetworkStateModel&) = delete;
+
   ~TrayNetworkStateModel();
 
   void AddObserver(TrayNetworkStateObserver* observer);
@@ -38,12 +42,16 @@ class ASH_EXPORT TrayNetworkStateModel {
 
   // Returns the DeviceStateType for |type| if a device exists or kUnavailable.
   chromeos::network_config::mojom::DeviceStateType GetDeviceState(
-      chromeos::network_config::mojom::NetworkType type);
+      chromeos::network_config::mojom::NetworkType type) const;
 
   // Convenience method to call the |remote_cros_network_config_| method.
   void SetNetworkTypeEnabledState(
       chromeos::network_config::mojom::NetworkType type,
       bool enabled);
+
+  // Returns true if built-in VPN is prohibited.
+  // Note: Currently only built-in VPNs can be prohibited by policy.
+  bool IsBuiltinVpnProhibited() const;
 
   // This used to be inlined but now requires details from the Impl class.
   chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config();
@@ -84,6 +92,7 @@ class ASH_EXPORT TrayNetworkStateModel {
   void NotifyVpnProvidersChanged();
   void SendActiveNetworkStateChanged();
   void SendNetworkListChanged();
+  void SendDeviceStateListChanged();
 
   class Impl;
   std::unique_ptr<Impl> impl_;
@@ -108,8 +117,6 @@ class ASH_EXPORT TrayNetworkStateModel {
   chromeos::network_config::mojom::NetworkStatePropertiesPtr active_vpn_;
   bool has_vpn_ = false;
   std::unique_ptr<VpnList> vpn_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayNetworkStateModel);
 };
 
 }  // namespace ash

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBSOCKET_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_
-#define CONTENT_BROWSER_WEBSOCKET_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_
+#ifndef CONTENT_BROWSER_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_
+#define CONTENT_BROWSER_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_
 
 #include "content/public/browser/websocket_handshake_request_info.h"
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -16,6 +15,11 @@ class WebSocketHandshakeRequestInfoImpl final
     : public WebSocketHandshakeRequestInfo,
       public base::SupportsUserData::Data {
  public:
+  WebSocketHandshakeRequestInfoImpl(const WebSocketHandshakeRequestInfoImpl&) =
+      delete;
+  WebSocketHandshakeRequestInfoImpl& operator=(
+      const WebSocketHandshakeRequestInfoImpl&) = delete;
+
   ~WebSocketHandshakeRequestInfoImpl() override;
 
   static void CreateInfoAndAssociateWithRequest(int child_id,
@@ -30,10 +34,8 @@ class WebSocketHandshakeRequestInfoImpl final
 
   const int child_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeRequestInfoImpl);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBSOCKET_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_
+#endif  // CONTENT_BROWSER_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_IMPL_H_

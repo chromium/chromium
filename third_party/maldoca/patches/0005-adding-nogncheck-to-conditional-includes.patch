@@ -1,0 +1,278 @@
+From 6f2b62146dd6d2857b20e75c57091f1a11d3cf29 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Wed, 25 Aug 2021 23:44:31 +0000
+Subject: [PATCH] adding nogncheck to conditional includes
+
+---
+ third_party/maldoca/src/maldoca/base/file.cc  |  4 +-
+ third_party/maldoca/src/maldoca/base/file.h   |  4 +-
+ third_party/maldoca/src/maldoca/ole/dir.cc    | 56 +++++++++++++------
+ third_party/maldoca/src/maldoca/ole/mso.cc    |  4 +-
+ .../maldoca/src/maldoca/ole/oss_utils.cc      | 10 ++--
+ .../maldoca/src/maldoca/ole/oss_utils.h       |  4 +-
+ third_party/maldoca/src/maldoca/ole/ppt.cc    |  4 +-
+ .../maldoca/src/maldoca/ole/vba_extract.cc    |  4 +-
+ .../src/maldoca/service/common/process_doc.cc |  4 +-
+ .../service/common/processing_pipeline.cc     |  4 +-
+ .../service/common/processing_pipeline.h      |  4 +-
+ 11 files changed, 70 insertions(+), 32 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/file.cc b/third_party/maldoca/src/maldoca/base/file.cc
+index c52ede0e0da0..9025db522577 100644
+--- a/third_party/maldoca/src/maldoca/base/file.cc
++++ b/third_party/maldoca/src/maldoca/base/file.cc
+@@ -38,7 +38,7 @@
+ #include "absl/time/clock.h"
+ #include "absl/time/time.h"
+ #ifndef MALDOCA_CHROME
+-#include "google/protobuf/text_format.h"
++#include "google/protobuf/text_format.h"  // nogncheck
+ #include "maldoca/base/ret_check.h"
+ #include "maldoca/base/status_macros.h"
+ #include "re2/re2.h"
+@@ -46,7 +46,9 @@
+ 
+ using absl::Status;
+ 
++#ifndef MALDOCA_CHROME
+ using ::google::protobuf::Message;
++#endif
+ 
+ namespace maldoca {
+ namespace file {
+diff --git a/third_party/maldoca/src/maldoca/base/file.h b/third_party/maldoca/src/maldoca/base/file.h
+index ebf2b56b1f95..2c3e3af56a6b 100644
+--- a/third_party/maldoca/src/maldoca/base/file.h
++++ b/third_party/maldoca/src/maldoca/base/file.h
+@@ -29,8 +29,8 @@
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/string_view.h"
+ #include "base/files/file_path.h"
+-#ifndef MALDOCA_CRHOME
+-#include "google/protobuf/message.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "google/protobuf/message.h"  // nogncheck
+ #endif
+ #include "maldoca/base/statusor.h"
+ #if defined(_WIN32)
+diff --git a/third_party/maldoca/src/maldoca/ole/dir.cc b/third_party/maldoca/src/maldoca/ole/dir.cc
+index 2b63bc3f174f..472ca11da960 100644
+--- a/third_party/maldoca/src/maldoca/ole/dir.cc
++++ b/third_party/maldoca/src/maldoca/ole/dir.cc
+@@ -22,12 +22,18 @@
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/string_view.h"
++#ifndef MALDOCA_IN_CHROMIUM
+ #include "maldoca/base/cleanup.h"
++#endif
+ #include "maldoca/base/utf8/unicodetext.h"
+ #include "maldoca/ole/endian_reader.h"
+ #include "maldoca/ole/fat.h"
+ #include "maldoca/ole/stream.h"
+ 
++#ifdef MALDOCA_IN_CHROMIUM
++#include "base/callback_helpers.h"
++#endif
++
+ // Directory entry ID constants (from AAF specifications). These are
+ // constants that we don't need to share so they are defined here.
+ static const uint32_t kDirectoryMaximumEntry = 0xFFFFFFFA;  // Maximum entry ID
+@@ -244,6 +250,11 @@ bool IsValidSectorIndex(uint32_t sector_index,
+   return true;
+ }
+ 
++CleanUpDirectory(std::vector<OLEDirectoryEntry *> *dir_entries,
++                 uint32_t sector_index) {
++  (*dir_entries)[sector_index] = nullptr;
++}
++
+ // Helper function to read a directory node from a stream, recursively
+ // build a directory tree from the new node and attach the node to its
+ // parent.
+@@ -260,26 +271,37 @@ static bool BuildDirectoryTreeElement(
+   }
+ 
+   auto child = absl::make_unique<OLEDirectoryEntry>();
++#ifdef MALDOCA_IN_CHROMIUM
++  auto cleanup = ScopedClosureRunner(
++      base::BindOnce(CleanUpDirectory, &dir_entries, sector_index));
++#else
+   auto cleanup = MakeCleanup(
+       [dir_entries, sector_index] { (*dir_entries)[sector_index] = nullptr; });
+-  (*dir_entries)[sector_index] = child.get();
+-  if (!OLEDirectoryEntry::ReadDirectoryEntryFromStream(
+-          input, sector_index, sector_size, child.get())) {
+-    return false;
+-  }
+-  if (!(BuildDirectoryTree(input, sector_size, parent, child.get(),
+-                           dir_entries))) {
+-    return false;
+-  }
+-  if (!parent->AddChild(child.get())) {
+-    LOG(ERROR) << "Can not add node " << child->Name() << " to parent "
+-               << parent->Name();
+-    return false;
+-  }
+-  // Only release the child now - we can return above with an error
+-  // without triggering a memory leak.
+-  child.release();
++#endif
++
++(*dir_entries)[sector_index] = child.get();
++if (!OLEDirectoryEntry::ReadDirectoryEntryFromStream(
++        input, sector_index, sector_size, child.get())) {
++  return false;
++}
++if (!(BuildDirectoryTree(input, sector_size, parent, child.get(),
++                         dir_entries))) {
++  return false;
++}
++if (!parent->AddChild(child.get())) {
++  LOG(ERROR) << "Can not add node " << child->Name() << " to parent "
++             << parent->Name();
++  return false;
++}
++// Only release the child now - we can return above with an error
++// without triggering a memory leak.
++child.release();
++
++#ifdef MALDOCA_IN_CHROMIUM
++  cleanup.Release();
++#else
+   std::move(cleanup).Cancel();
++#endif
+   return true;
+ }
+ 
+diff --git a/third_party/maldoca/src/maldoca/ole/mso.cc b/third_party/maldoca/src/maldoca/ole/mso.cc
+index 599444d5040f..038007311d9d 100644
+--- a/third_party/maldoca/src/maldoca/ole/mso.cc
++++ b/third_party/maldoca/src/maldoca/ole/mso.cc
+@@ -20,7 +20,9 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "absl/flags/flag.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "absl/flags/flag.h"  // nogncheck
++#endif
+ #include "absl/strings/escaping.h"
+ #include "absl/strings/string_view.h"
+ #include "libxml/tree.h"
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.cc b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+index c53ea7521e9d..b1178df99a06 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.cc
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+@@ -21,12 +21,14 @@
+ 
+ // Use third_party/protobuf/text_format.h for oss
+ #include "absl/base/call_once.h"
+-#include "absl/flags/flag.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "absl/flags/flag.h"  // nogncheck
++#endif
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_format.h"
+-#ifndef MALDOCA_CHROME
+-#include "google/protobuf/text_format.h"
+-#endif  // MALDOCA_CHROME
++#ifndef MALDOCA_IN_CHROMIUM
++#include "google/protobuf/text_format.h"  // nogncheck
++#endif                                    // MALDOCA_IN_CHROMIUM
+ #include "libxml/SAX2.h"
+ #include "libxml/parserInternals.h"
+ 
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.h b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+index 422903beaa4a..a92133df1ffa 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.h
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+@@ -28,7 +28,9 @@
+ #include "absl/status/statusor.h"
+ #include "absl/strings/escaping.h"
+ #include "absl/strings/string_view.h"
+-#include "google/protobuf/io/tokenizer.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "google/protobuf/io/tokenizer.h"  // nogncheck
++#endif
+ #include "libxml/tree.h"
+ #include "maldoca/base/file.h"
+ #include "maldoca/base/logging.h"
+diff --git a/third_party/maldoca/src/maldoca/ole/ppt.cc b/third_party/maldoca/src/maldoca/ole/ppt.cc
+index 82520e7ce774..38566604ea09 100644
+--- a/third_party/maldoca/src/maldoca/ole/ppt.cc
++++ b/third_party/maldoca/src/maldoca/ole/ppt.cc
+@@ -16,7 +16,9 @@
+ 
+ #include <iomanip>
+ 
+-#include "absl/flags/flag.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "absl/flags/flag.h"  // nogncheck
++#endif
+ #include "absl/strings/match.h"
+ #include "maldoca/base/logging.h"
+ #include "maldoca/base/status_macros.h"
+diff --git a/third_party/maldoca/src/maldoca/ole/vba_extract.cc b/third_party/maldoca/src/maldoca/ole/vba_extract.cc
+index e7c61e33e59e..54becd9bc0e5 100644
+--- a/third_party/maldoca/src/maldoca/ole/vba_extract.cc
++++ b/third_party/maldoca/src/maldoca/ole/vba_extract.cc
+@@ -25,7 +25,9 @@
+ #include "absl/base/casts.h"
+ #include "absl/container/flat_hash_set.h"
+ #include "absl/container/node_hash_map.h"
+-#include "absl/flags/flag.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "absl/flags/flag.h"  // nogncheck
++#endif
+ #include "absl/status/status.h"
+ #include "absl/strings/match.h"
+ #include "absl/strings/str_cat.h"
+diff --git a/third_party/maldoca/src/maldoca/service/common/process_doc.cc b/third_party/maldoca/src/maldoca/service/common/process_doc.cc
+index c074a209ddf9..d93753a032f7 100644
+--- a/third_party/maldoca/src/maldoca/service/common/process_doc.cc
++++ b/third_party/maldoca/src/maldoca/service/common/process_doc.cc
+@@ -19,7 +19,9 @@
+ #include "absl/memory/memory.h"
+ #include "absl/status/statusor.h"
+ #include "absl/strings/str_cat.h"
+-#include "google/protobuf/message.h"
++#ifndef MALDOCA_IN_CHROMIUM
++#include "google/protobuf/message.h"  // nogncheck
++#endif
+ #include "maldoca/base/digest.h"
+ #include "maldoca/base/status.h"
+ #include "maldoca/base/status_macros.h"
+diff --git a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
+index 98b62179500d..46441c6e7dc0 100644
+--- a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
++++ b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
+@@ -17,8 +17,8 @@
+ 
+ #include <algorithm>
+ #ifndef MALDOCA_CHROME
+-#include "google/protobuf/text_format.h"
+-#endif  // MALODCA_CHOMRe
++#include "google/protobuf/text_format.h"  // nogncheck
++#endif  // MALODCA_CHOMRE
+ #include "maldoca/base/file.h"
+ #include "maldoca/base/logging.h"
+ #include "maldoca/base/status_macros.h"
+diff --git a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.h b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.h
+index a059be9d40ce..edc2299b39a7 100644
+--- a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.h
++++ b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.h
+@@ -58,7 +58,9 @@
+ #include <vector>
+ 
+ #include "absl/container/flat_hash_set.h"
+-#include "google/protobuf/message.h"
++#ifndef MALDOCA_CHROME
++#include "google/protobuf/message.h"  // nogncheck
++#endif
+ #include "maldoca/service/common/processing_component.h"
+ #include "maldoca/service/proto/document_features.pb.h"
+ #include "maldoca/service/proto/exported_features.pb.h"
+-- 
+2.33.0.rc2.250.ged5fa647cd-goog
+

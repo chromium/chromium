@@ -4,23 +4,22 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FIELD_TRIAL_PARAM_SHOW_CONFIRMATION_BUTTON;
-
 import android.content.Context;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetObserver;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the touch to fill
@@ -44,8 +43,8 @@ class TouchToFillView implements BottomSheetContent {
         }
 
         @Override
-        public void onSheetStateChanged(int newState) {
-            super.onSheetStateChanged(newState);
+        public void onSheetStateChanged(int newState, int reason) {
+            super.onSheetStateChanged(newState, reason);
             if (newState != BottomSheetController.SheetState.HIDDEN) return;
             // This is a fail-safe for cases where onSheetClosed isn't triggered.
             mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
@@ -156,8 +155,7 @@ class TouchToFillView implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return Math.min(mContext.getResources().getDimensionPixelSize(getDesiredSheetHeight()),
-                       mBottomSheetController.getContainerHeight())
+        return Math.min(getDesiredSheetHeight(), mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
 
@@ -187,18 +185,28 @@ class TouchToFillView implements BottomSheetContent {
     }
 
     // TODO(crbug.com/1009331): This should add up the height of all items up to the 2nd credential.
-    private @DimenRes int getDesiredSheetHeight() {
-        if (mSheetItemListView.getAdapter() != null
+    private @Px int getDesiredSheetHeight() {
+        Resources resources = mContext.getResources();
+        @Px
+        int totalHeight = resources.getDimensionPixelSize(
+                R.dimen.touch_to_fill_sheet_height_single_credential);
+
+        final boolean hasMultipleCredentials = mSheetItemListView.getAdapter() != null
                 && mSheetItemListView.getAdapter().getItemCount() > 2
                 && mSheetItemListView.getAdapter().getItemViewType(2)
-                        == TouchToFillProperties.ItemType.CREDENTIAL) {
-            return R.dimen.touch_to_fill_sheet_height_multiple_credentials;
+                        == TouchToFillProperties.ItemType.CREDENTIAL;
+        if (hasMultipleCredentials) {
+            totalHeight += resources.getDimensionPixelSize(
+                    R.dimen.touch_to_fill_sheet_height_second_credential);
+            totalHeight += resources.getDimensionPixelSize(
+                    R.dimen.touch_to_fill_sheet_bottom_padding_credentials);
+        } else {
+            totalHeight +=
+                    resources.getDimensionPixelSize(R.dimen.touch_to_fill_sheet_height_button);
+            totalHeight += resources.getDimensionPixelSize(
+                    R.dimen.touch_to_fill_sheet_bottom_padding_button);
         }
-        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.TOUCH_TO_FILL_ANDROID,
-                    FIELD_TRIAL_PARAM_SHOW_CONFIRMATION_BUTTON, false)) {
-            return R.dimen.touch_to_fill_sheet_height_single_credential_with_button;
-        }
-        return R.dimen.touch_to_fill_sheet_height_single_credential;
+
+        return totalHeight;
     }
 }

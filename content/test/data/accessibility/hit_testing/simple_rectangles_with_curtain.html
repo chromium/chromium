@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+  .curtain {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: #048;
+  }
+</style>
+<!-- Confound naive hit testing by appearing to cover the whole screen,
+     while actually having a negative z-index. -->
+<div role="group" class="curtain">
+  <div role="group" class="curtain">
+  </div>
+</div>
+<div>
+  <div style="width: 5px; height: 5px; background: lightgray; display: inline-block; margin: 10px" tabindex="0" aria-label="rect1"></div>
+  <div style="width: 5px; height: 5px; background: lightgray; display: inline-block; margin: 10px" tabindex="0" aria-label="rect2"></div>
+  <div style="width: 5px; height: 5px; background: lightgray; display: inline-block; margin: 10px" tabindex="0" aria-label="rect3"></div>
+  <div style="width: 5px; height: 5px; background: lightgray; display: inline-block; margin: 10px" tabindex="0" aria-label="rect4"></div>
+  <div style="width: 5px; height: 5px; background: lightgray; display: inline-block; margin: 10px" tabindex="0" aria-label="rect5"></div>
+</div>
+<iframe src="simple_rectangles_iframe.html" style="width: 200px; height: 50px; margin: 20px"></iframe>
+<!-- Confound naive hit testing by appearing to cover the whole screen -->
+<div role="group" class="curtain">
+  <div role="group" class="curtain">
+  </div>
+</div>

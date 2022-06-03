@@ -31,11 +31,11 @@ class FileSystemFileUtil;
 class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
     : public AsyncFileUtil {
  public:
-  // Creates a new AsyncFileUtil for |sync_file_util|. This takes the
-  // ownership of |sync_file_util|. (This doesn't take std::unique_ptr<> just
-  // to save extra base::WrapUnique; in all use cases a new fresh FileUtil is
-  // created only for this adapter.)
-  explicit AsyncFileUtilAdapter(FileSystemFileUtil* sync_file_util);
+  explicit AsyncFileUtilAdapter(
+      std::unique_ptr<FileSystemFileUtil> sync_file_util);
+
+  AsyncFileUtilAdapter(const AsyncFileUtilAdapter&) = delete;
+  AsyncFileUtilAdapter& operator=(const AsyncFileUtilAdapter&) = delete;
 
   ~AsyncFileUtilAdapter() override;
 
@@ -73,13 +73,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
   void CopyFileLocal(std::unique_ptr<FileSystemOperationContext> context,
                      const FileSystemURL& src_url,
                      const FileSystemURL& dest_url,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      CopyFileProgressCallback progress_callback,
                      StatusCallback callback) override;
   void MoveFileLocal(std::unique_ptr<FileSystemOperationContext> context,
                      const FileSystemURL& src_url,
                      const FileSystemURL& dest_url,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      StatusCallback callback) override;
   void CopyInForeignFile(std::unique_ptr<FileSystemOperationContext> context,
                          const base::FilePath& src_file_path,
@@ -100,8 +100,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
 
  private:
   std::unique_ptr<FileSystemFileUtil> sync_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncFileUtilAdapter);
 };
 
 }  // namespace storage

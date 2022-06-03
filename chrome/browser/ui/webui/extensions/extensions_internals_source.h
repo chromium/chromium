@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_INTERNALS_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_INTERNALS_SOURCE_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -15,6 +16,9 @@ class Profile;
 class ExtensionsInternalsSource : public content::URLDataSource {
  public:
   explicit ExtensionsInternalsSource(Profile* profile);
+  ExtensionsInternalsSource(const ExtensionsInternalsSource&) = delete;
+  ExtensionsInternalsSource& operator=(const ExtensionsInternalsSource&) =
+      delete;
   ~ExtensionsInternalsSource() override;
 
   // content::URLDataSource:
@@ -31,8 +35,6 @@ class ExtensionsInternalsSource : public content::URLDataSource {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsInternalsSource);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_INTERNALS_SOURCE_H_

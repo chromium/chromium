@@ -8,7 +8,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/bundle_locations.h"
 #endif
 
@@ -30,15 +30,6 @@ bool PathProvider(int key, base::FilePath* result) {
 
       *result = cur;
       return true;
-    }
-    case DIR_MEDIA_LIBS: {
-#if defined(OS_MACOSX)
-      *result = base::mac::FrameworkBundlePath();
-      *result = result->Append("Libraries");
-      return true;
-#else
-      return base::PathService::Get(base::DIR_MODULE, result);
-#endif
     }
     default:
       return false;

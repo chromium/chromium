@@ -1,0 +1,55 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_back_button.html">
+<link rel="import" href="/components/buttons/oobe_next_button.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/network_select_login.html">
+
+<dom-module id="oobe-network-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      network-select-login {
+        --cr-network-row-height: var(--oobe-network-row-height);
+      }
+    </style>
+    <oobe-adaptive-dialog id="networkDialog" role="dialog"
+        on-show-dialog="onShown_"
+        aria-label$="[[i18nDynamic(locale, 'networkSectionTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:wifi">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'networkSectionTitle')]]
+      </h1>
+      <div slot="subtitle" hidden$="[[isDemoModeSetup]]">
+        [[i18nDynamic(locale, 'networkSectionHint')]]
+      </div>
+      <div slot="subtitle" hidden$="[[!errorMessage_]]">
+        [[errorMessage_]]
+      </div>
+      <div slot="content" class="layout vertical">
+        <network-select-login id="networkSelectLogin"
+            enable-wifi-scans="[[enableWifiScans_]]"
+            on-selected-network-connected="onNetworkConnected_"
+            is-network-connected="{{isConnected_}}">
+        </network-select-login>
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="backButton"
+            on-click="onBackClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="nextButton" disabled="[[!isConnected_]]"
+            on-click="onNextClicked_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

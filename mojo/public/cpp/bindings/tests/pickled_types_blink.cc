@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/bindings/tests/pickled_types_blink.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/pickle.h"
 
 namespace mojo {

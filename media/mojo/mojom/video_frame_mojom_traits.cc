@@ -7,22 +7,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
+#include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
-#include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
+#include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/posix/eintr_wrapper.h"
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 namespace mojo {
 
@@ -30,7 +31,7 @@ namespace {
 
 media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     const media::VideoFrame* input) {
-  if (input->metadata()->IsTrue(media::VideoFrameMetadata::END_OF_STREAM)) {
+  if (input->metadata().end_of_stream) {
     return media::mojom::VideoFrameData::NewEosData(
         media::mojom::EosVideoFrameData::New());
   }
@@ -48,39 +49,25 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     mojo::ScopedSharedBufferHandle dup = mojo_frame->Handle().Clone(
         mojo::SharedBufferHandle::AccessMode::READ_WRITE);
     DCHECK(dup.is_valid());
+    size_t num_planes = media::VideoFrame::NumPlanes(mojo_frame->format());
+    std::vector<uint32_t> offsets(num_planes);
+    std::vector<int32_t> strides(num_planes);
+    for (size_t i = 0; i < num_planes; ++i) {
+      offsets[i] = mojo_frame->PlaneOffset(i);
+      strides[i] = mojo_frame->stride(i);
+    }
 
     return media::mojom::VideoFrameData::NewSharedBufferData(
         media::mojom::SharedBufferVideoFrameData::New(
-            std::move(dup), mojo_frame->MappedSize(),
-            mojo_frame->stride(media::VideoFrame::kYPlane),
-            mojo_frame->stride(media::VideoFrame::kUPlane),
-            mojo_frame->stride(media::VideoFrame::kVPlane),
-            mojo_frame->PlaneOffset(media::VideoFrame::kYPlane),
-            mojo_frame->PlaneOffset(media::VideoFrame::kUPlane),
-            mojo_frame->PlaneOffset(media::VideoFrame::kVPlane)));
+            std::move(dup), mojo_frame->MappedSize(), std::move(strides),
+            std::move(offsets)));
   }
-
-#if defined(OS_LINUX)
-  if (input->storage_type() == media::VideoFrame::STORAGE_DMABUFS) {
-    std::vector<mojo::ScopedHandle> dmabuf_fds;
-
-    const size_t num_planes = media::VideoFrame::NumPlanes(input->format());
-    dmabuf_fds.reserve(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      const int dmabuf_fd = HANDLE_EINTR(dup(input->DmabufFds()[i].get()));
-      dmabuf_fds.emplace_back(mojo::WrapPlatformFile(dmabuf_fd));
-      DCHECK(dmabuf_fds.back().is_valid());
-    }
-
-    return media::mojom::VideoFrameData::NewDmabufData(
-        media::mojom::DmabufVideoFrameData::New(std::move(dmabuf_fds)));
-  }
-#endif
 
   std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
-  size_t num_planes = media::VideoFrame::NumPlanes(input->format());
-  DCHECK_LE(num_planes, mailbox_holder.size());
-  for (size_t i = 0; i < num_planes; i++)
+  DCHECK_LE(input->NumTextures(), mailbox_holder.size());
+  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailboxes,
+  // we should only access them when there are textures.
+  for (size_t i = 0; i < input->NumTextures(); i++)
     mailbox_holder[i] = input->mailbox_holder(i);
 
   if (input->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
@@ -151,57 +138,18 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     media::mojom::SharedBufferVideoFrameDataDataView shared_buffer_data;
     data.GetSharedBufferDataDataView(&shared_buffer_data);
 
-    // TODO(sandersd): Conversion from uint64_t to size_t could cause
-    // corruption. Platform-dependent types should be removed from the
-    // implementation (limiting to 32-bit offsets is fine).
+    std::vector<int32_t> strides;
+    if (!shared_buffer_data.ReadStrides(&strides))
+      return false;
+
+    std::vector<uint32_t> offsets;
+    if (!shared_buffer_data.ReadOffsets(&offsets))
+      return false;
     frame = media::MojoSharedBufferVideoFrame::Create(
         format, coded_size, visible_rect, natural_size,
         shared_buffer_data.TakeFrameData(),
-        shared_buffer_data.frame_data_size(), shared_buffer_data.y_offset(),
-        shared_buffer_data.u_offset(), shared_buffer_data.v_offset(),
-        shared_buffer_data.y_stride(), shared_buffer_data.u_stride(),
-        shared_buffer_data.v_stride(), timestamp);
-#if defined(OS_LINUX)
-  } else if (data.is_dmabuf_data()) {
-    media::mojom::DmabufVideoFrameDataDataView dmabuf_data;
-    data.GetDmabufDataDataView(&dmabuf_data);
-
-    std::vector<mojo::ScopedHandle> dmabuf_fds_data;
-    if (!dmabuf_data.ReadDmabufFds(&dmabuf_fds_data))
-      return false;
-
-    const size_t num_planes = media::VideoFrame::NumPlanes(format);
-    std::vector<int> strides =
-        media::VideoFrame::ComputeStrides(format, coded_size);
-    if (num_planes != strides.size())
-      return false;
-    if (num_planes != dmabuf_fds_data.size())
-      return false;
-
-    std::vector<media::ColorPlaneLayout> planes(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      planes[i].stride = strides[i];
-      planes[i].offset = 0;
-      planes[i].size = static_cast<size_t>(
-          media::VideoFrame::PlaneSize(format, i, coded_size).GetArea());
-    }
-
-    auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
-                                                            std::move(planes));
-    if (!layout)
-      return false;
-
-    std::vector<base::ScopedFD> dmabuf_fds;
-    dmabuf_fds.reserve(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      base::PlatformFile platform_file;
-      mojo::UnwrapPlatformFile(std::move(dmabuf_fds_data[i]), &platform_file);
-      dmabuf_fds.emplace_back(platform_file);
-      DCHECK(dmabuf_fds.back().is_valid());
-    }
-    frame = media::VideoFrame::WrapExternalDmabufs(
-        *layout, visible_rect, natural_size, std::move(dmabuf_fds), timestamp);
-#endif
+        shared_buffer_data.frame_data_size(), std::move(offsets),
+        std::move(strides), timestamp);
   } else if (data.is_gpu_memory_buffer_data()) {
     media::mojom::GpuMemoryBufferVideoFrameDataDataView gpu_memory_buffer_data;
     data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);
@@ -226,23 +174,29 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < mailbox_holder.size(); i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    base::Optional<gfx::BufferFormat> buffer_format =
+    absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     if (!buffer_format)
       return false;
+
+    // Shared memory GMBs do not support VEA/CAMERA usage.
+    const gfx::BufferUsage buffer_usage =
+        (gpu_memory_buffer_handle.type ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
+            ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+            : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
     gpu::GpuMemoryBufferSupport support;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
         support.CreateGpuMemoryBufferImplFromHandle(
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            base::NullCallback());
+            buffer_usage, base::NullCallback());
     if (!gpu_memory_buffer)
       return false;
 
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer),
-        mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(), timestamp);
+        mailbox_holder_array, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
@@ -255,7 +209,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < media::VideoFrame::kMaxPlanes; i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
     if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
       return false;
 
@@ -272,16 +226,21 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   if (!frame)
     return false;
 
-  base::Value metadata;
+  media::VideoFrameMetadata metadata;
   if (!input.ReadMetadata(&metadata))
     return false;
 
-  frame->metadata()->MergeInternalValuesFrom(metadata);
+  frame->set_metadata(metadata);
 
   gfx::ColorSpace color_space;
   if (!input.ReadColorSpace(&color_space))
     return false;
   frame->set_color_space(color_space);
+
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  if (!input.ReadHdrMetadata(&hdr_metadata))
+    return false;
+  frame->set_hdr_metadata(std::move(hdr_metadata));
 
   *output = std::move(frame);
   return true;

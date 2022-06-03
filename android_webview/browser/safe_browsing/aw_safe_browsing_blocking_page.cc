@@ -9,22 +9,29 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_contents_client_bridge.h"
+#include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/browser/threat_details.h"
-#include "components/safe_browsing/features.h"
-#include "components/safe_browsing/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
-#include "components/security_interstitials/content/unsafe_resource.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
+#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/safe_browsing_quiet_error_ui.h"
-#include "content/public/browser/interstitial_page.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-using content::InterstitialPage;
+#include "net/base/net_errors.h"
+
 using content::WebContents;
 using security_interstitials::BaseSafeBrowsingErrorUI;
 using security_interstitials::SafeBrowsingQuietErrorUI;
@@ -39,16 +46,16 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
     const UnsafeResourceList& unsafe_resources,
     std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
     const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
-    ErrorUiType errorUiType)
+    ErrorUiType errorUiType,
+    std::unique_ptr<AwWebResourceRequest> resource_request)
     : BaseBlockingPage(ui_manager,
                        web_contents,
                        main_frame_url,
                        unsafe_resources,
                        std::move(controller_client),
                        display_options),
-      threat_details_in_progress_(false) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.Interstitial.Type", errorUiType,
-                            ErrorUiType::COUNT);
+      threat_details_in_progress_(false),
+      resource_request_(std::move(resource_request)) {
   if (errorUiType == ErrorUiType::QUIET_SMALL ||
       errorUiType == ErrorUiType::QUIET_GIANT) {
     set_sb_error_ui(std::make_unique<SafeBrowsingQuietErrorUI>(
@@ -63,7 +70,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
     AwBrowserContext* aw_browser_context =
         AwBrowserContext::FromWebContents(web_contents);
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(aw_browser_context)
+        aw_browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
     // TODO(timvolodine): create a proper history service; currently the
     // HistoryServiceFactory lives in the chrome/ layer and relies on Profile
@@ -75,30 +82,8 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 safe_browsing::TriggerType::SECURITY_INTERSTITIAL, web_contents,
                 unsafe_resources[0], url_loader_factory,
                 /*history_service*/ nullptr,
+                /*referrer_chain_provider*/ nullptr,
                 sb_error_ui()->get_error_display_options());
-  }
-}
-
-// static
-void AwSafeBrowsingBlockingPage::ShowBlockingPage(
-    AwSafeBrowsingUIManager* ui_manager,
-    const UnsafeResource& unsafe_resource) {
-  DVLOG(1) << __func__ << " " << unsafe_resource.url.spec();
-  WebContents* web_contents = unsafe_resource.web_contents_getter.Run();
-
-  if (InterstitialPage::GetInterstitialPage(web_contents) &&
-      unsafe_resource.is_subresource) {
-    // This is an interstitial for a page's resource, let's queue it.
-    UnsafeResourceMap* unsafe_resource_map = GetUnsafeResourcesMap();
-    (*unsafe_resource_map)[web_contents].push_back(unsafe_resource);
-  } else {
-    // There is no interstitial currently showing, or we are about to display a
-    // new one for the main frame. If there is already an interstitial, showing
-    // the new one will automatically hide the old one.
-    AwSafeBrowsingBlockingPage* blocking_page = CreateBlockingPage(
-        ui_manager, unsafe_resource.web_contents_getter.Run(), GURL(),
-        unsafe_resource);
-    blocking_page->Show();
   }
 }
 
@@ -106,11 +91,17 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     AwSafeBrowsingUIManager* ui_manager,
     content::WebContents* web_contents,
     const GURL& main_frame_url,
-    const UnsafeResource& unsafe_resource) {
+    const UnsafeResource& unsafe_resource,
+    std::unique_ptr<AwWebResourceRequest> resource_request) {
+  // Log the request destination that triggers the safe browsing blocking page.
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
+                            unsafe_resource.request_destination);
   const UnsafeResourceList unsafe_resources{unsafe_resource};
   AwBrowserContext* browser_context =
       AwBrowserContext::FromWebContents(web_contents);
   PrefService* pref_service = browser_context->GetPrefService();
+  // TODO(crbug.com/1134678): Set is_enhanced_protection_message_enabled once
+  // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
           IsMainPageLoadBlocked(unsafe_resources),
@@ -118,9 +109,12 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
           browser_context->IsOffTheRecord(),
           safe_browsing::IsExtendedReportingEnabled(*pref_service),
           safe_browsing::IsExtendedReportingPolicyManaged(*pref_service),
+          safe_browsing::IsEnhancedProtectionEnabled(*pref_service),
           pref_service->GetBoolean(::prefs::kSafeBrowsingProceedAnywayDisabled),
-          false,                    // should_open_links_in_new_tab
-          false,                    // always_show_back_to_safety
+          false,  // should_open_links_in_new_tab
+          false,  // always_show_back_to_safety
+          false,  // is_enhanced_protection_message_enabled
+          safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service),
           "cpn_safe_browsing_wv");  // help_center_article_link
 
   ErrorUiType errorType =
@@ -130,15 +124,32 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   // committed interstitials, it can be cleaned up when removing non-committed
   // interstitials.
   content::NavigationEntry* entry =
-      unsafe_resource.GetNavigationEntryForResource();
+      GetNavigationEntryForResource(unsafe_resource);
   GURL url =
       (main_frame_url.is_empty() && entry) ? entry->GetURL() : main_frame_url;
 
+  // TODO(crbug.com/1134678): Set settings_page_helper once enhanced protection
+  // is supported on aw.
   return new AwSafeBrowsingBlockingPage(
       ui_manager, web_contents, url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager,
-                             pref_service),
-      display_options, errorType);
+                             pref_service, /*settings_page_helper*/ nullptr),
+      display_options, errorType, std::move(resource_request));
+}
+
+AwSafeBrowsingBlockingPage::~AwSafeBrowsingBlockingPage() {}
+
+void AwSafeBrowsingBlockingPage::CreatedPostCommitErrorPageNavigation(
+    content::NavigationHandle* error_page_navigation_handle) {
+  DCHECK(!resource_request_);
+  resource_request_ = std::make_unique<AwWebResourceRequest>(
+      error_page_navigation_handle->GetURL().spec(),
+      error_page_navigation_handle->IsPost() ? "POST" : "GET",
+      error_page_navigation_handle->IsInMainFrame(),
+      error_page_navigation_handle->HasUserGesture(),
+      error_page_navigation_handle->GetRequestHeaders());
+  resource_request_->is_renderer_initiated =
+      error_page_navigation_handle->IsRendererInitiated();
 }
 
 void AwSafeBrowsingBlockingPage::FinishThreatDetails(
@@ -162,6 +173,22 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::EXTENDED_REPORTING_IS_ENABLED);
   }
+}
+
+void AwSafeBrowsingBlockingPage::OnInterstitialClosing() {
+  if (resource_request_ && !proceeded()) {
+    AwContentsClientBridge* client =
+        AwContentsClientBridge::FromWebContents(web_contents());
+    // With committed interstitials, the navigation to the site is failed before
+    // showing the interstitial so we omit notifications to embedders at that
+    // time, and manually trigger them here.
+    if (client) {
+      client->OnReceivedError(*resource_request_,
+                              safe_browsing::kNetErrorCodeForSafeBrowsing, true,
+                              false);
+    }
+  }
+  safe_browsing::BaseBlockingPage::OnInterstitialClosing();
 }
 
 }  // namespace android_webview

@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/toast_manager.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule with invalid selector works as expected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
@@ -18,8 +18,8 @@
     function keyframesRuleSelector(next) {
       ElementsTestRunner.addNewRule('@-webkit-keyframes shake', callback);
 
-      function callback() {
-        ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+      async function callback() {
+        await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
         next();
       }
     }

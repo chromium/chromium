@@ -32,7 +32,7 @@ class Generator : public Fuzzer {
   void FuzzFloat(float* value) override;
   void FuzzDouble(double* value) override;
   void FuzzString(std::string* value) override;
-  void FuzzString16(base::string16* value) override;
+  void FuzzString16(std::u16string* value) override;
   void FuzzData(char* data, int length) override;
   void FuzzBytes(void* data, int data_len) override;
   bool ShouldGenerate() override;

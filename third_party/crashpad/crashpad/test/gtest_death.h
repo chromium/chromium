@@ -19,15 +19,15 @@
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "test/mac/exception_swallower.h"
 #endif
 
 //! \file
 
-#if (defined(OS_MACOSX) && !defined(OS_IOS)) || DOXYGEN
+#if defined(OS_MAC) || DOXYGEN
 
-//! \brief Wraps the gtest `ASSERT_DEATH_IF_SUPPORTED()` macro to make
+//! \brief Wraps the Google Test `ASSERT_DEATH_IF_SUPPORTED()` macro to make
 //!     assertions about death caused by crashes.
 //!
 //! On macOS, this macro prevents the system’s crash reporter from handling
@@ -35,10 +35,10 @@
 //! system’s crash reporter, but it is undesirable for intentional
 //! ASSERT_DEATH_CRASH() crashes to be handled by any crash reporter.
 //!
-//! `ASSERT_DEATH_IF_SUPPORTED()` is used instead of `ASSERT_DEATH()` to
-//! support platforms where death tests are not implemented by gtest (e.g.
-//! Fuchsia). On platforms where death tests are not implemented, a warning
-//! will be logged and the remainder of the test body skipped.
+//! `ASSERT_DEATH_IF_SUPPORTED()` is used instead of `ASSERT_DEATH()` to support
+//! platforms where death tests are not implemented by Google Test (e.g.
+//! Fuchsia). On platforms where death tests are not implemented, a warning will
+//! be logged and the remainder of the test body skipped.
 //!
 //! \sa ASSERT_DEATH_CHECK()
 //! \sa EXPECT_DEATH_CRASH()
@@ -50,7 +50,7 @@
         { statement; }, regex);                                  \
   } while (false)
 
-//! \brief Wraps the gtest `EXPECT_DEATH_IF_SUPPORTED()` macro to make
+//! \brief Wraps the Google Test `EXPECT_DEATH_IF_SUPPORTED()` macro to make
 //!     assertions about death caused by crashes.
 //!
 //! On macOS, this macro prevents the system’s crash reporter from handling
@@ -58,10 +58,10 @@
 //! system’s crash reporter, but it is undesirable for intentional
 //! EXPECT_DEATH_CRASH() crashes to be handled by any crash reporter.
 //!
-//! `EXPECT_DEATH_IF_SUPPORTED()` is used instead of `EXPECT_DEATH()` to
-//! support platforms where death tests are not implemented by gtest (e.g.
-//! Fuchsia). On platforms where death tests are not implemented, a warning
-//! will be logged and the remainder of the test body skipped.
+//! `EXPECT_DEATH_IF_SUPPORTED()` is used instead of `EXPECT_DEATH()` to support
+//! platforms where death tests are not implemented by Google Test (e.g.
+//! Fuchsia). On platforms where death tests are not implemented, a warning will
+//! be logged and the remainder of the test body skipped.
 //!
 //! \sa EXPECT_DEATH_CHECK()
 //! \sa ASSERT_DEATH_CRASH()
@@ -73,14 +73,14 @@
                  regex);                                                  \
   } while (false)
 
-#else  // OS_MACOSX && !OS_IOS
+#else  // OS_MAC
 
 #define ASSERT_DEATH_CRASH(statement, regex) \
   ASSERT_DEATH_IF_SUPPORTED(statement, regex)
 #define EXPECT_DEATH_CRASH(statement, regex) \
   EXPECT_DEATH_IF_SUPPORTED(statement, regex)
 
-#endif  // OS_MACOSX && !OS_IOS
+#endif  // OS_MAC
 
 #if !(!defined(MINI_CHROMIUM_BASE_LOGGING_H_) && \
       defined(OFFICIAL_BUILD) &&                 \

@@ -8,12 +8,13 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -30,13 +31,13 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     public void initialize(Context context, BottomSheetController sheetController,
             TouchToFillComponent.Delegate delegate) {
         mMediator.initialize(delegate, mModel,
-                new LargeIconBridge(Profile.getLastUsedProfile().getOriginalProfile()),
+                new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                 context.getResources().getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size));
         setUpModelChangeProcessors(mModel, new TouchToFillView(context, sheetController));
     }
 
     @Override
-    public void showCredentials(String url, boolean isOriginSecure, List<Credential> credentials) {
+    public void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials) {
         mMediator.showCredentials(url, isOriginSecure, credentials);
     }
 

@@ -1,0 +1,1511 @@
+This is a testharness.js-based test.
+Found 1507 tests; 1480 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS -apple-color-filter: _camel_cased_attribute v. CSS.supports
+PASS -apple-color-filter: _webkit_cased_attribute must only exist for -webkit-
+PASS -apple-color-filter: _dashed_attribute v. CSS.supports
+PASS -apple-pay-button-style: _camel_cased_attribute v. CSS.supports
+PASS -apple-pay-button-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -apple-pay-button-style: _dashed_attribute v. CSS.supports
+PASS -apple-pay-button-type: _camel_cased_attribute v. CSS.supports
+PASS -apple-pay-button-type: _webkit_cased_attribute must only exist for -webkit-
+PASS -apple-pay-button-type: _dashed_attribute v. CSS.supports
+PASS -apple-trailing-word: _camel_cased_attribute v. CSS.supports
+PASS -apple-trailing-word: _webkit_cased_attribute must only exist for -webkit-
+PASS -apple-trailing-word: _dashed_attribute v. CSS.supports
+FAIL -epub-caption-side: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-caption-side: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-caption-side: _dashed_attribute v. CSS.supports
+FAIL -epub-text-combine: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-combine: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-combine: _dashed_attribute v. CSS.supports
+FAIL -epub-text-emphasis: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-emphasis: _dashed_attribute v. CSS.supports
+FAIL -epub-text-emphasis-color: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis-color: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-emphasis-color: _dashed_attribute v. CSS.supports
+FAIL -epub-text-emphasis-style: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-emphasis-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-emphasis-style: _dashed_attribute v. CSS.supports
+FAIL -epub-text-orientation: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-orientation: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-orientation: _dashed_attribute v. CSS.supports
+FAIL -epub-text-transform: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-text-transform: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-text-transform: _dashed_attribute v. CSS.supports
+FAIL -epub-word-break: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-word-break: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-word-break: _dashed_attribute v. CSS.supports
+FAIL -epub-writing-mode: _camel_cased_attribute v. CSS.supports assert_equals: expected false but got true
+PASS -epub-writing-mode: _webkit_cased_attribute must only exist for -webkit-
+PASS -epub-writing-mode: _dashed_attribute v. CSS.supports
+PASS -moz-animation: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation: _dashed_attribute v. CSS.supports
+PASS -moz-animation-delay: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-delay: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-delay: _dashed_attribute v. CSS.supports
+PASS -moz-animation-direction: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-direction: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-direction: _dashed_attribute v. CSS.supports
+PASS -moz-animation-duration: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-duration: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-duration: _dashed_attribute v. CSS.supports
+PASS -moz-animation-fill-mode: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-fill-mode: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-fill-mode: _dashed_attribute v. CSS.supports
+PASS -moz-animation-iteration-count: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-iteration-count: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-iteration-count: _dashed_attribute v. CSS.supports
+PASS -moz-animation-name: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-name: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-name: _dashed_attribute v. CSS.supports
+PASS -moz-animation-play-state: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-play-state: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-play-state: _dashed_attribute v. CSS.supports
+PASS -moz-animation-timing-function: _camel_cased_attribute v. CSS.supports
+PASS -moz-animation-timing-function: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-animation-timing-function: _dashed_attribute v. CSS.supports
+PASS -moz-appearance: _camel_cased_attribute v. CSS.supports
+PASS -moz-appearance: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-appearance: _dashed_attribute v. CSS.supports
+PASS -moz-backface-visibility: _camel_cased_attribute v. CSS.supports
+PASS -moz-backface-visibility: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-backface-visibility: _dashed_attribute v. CSS.supports
+PASS -moz-binding: _camel_cased_attribute v. CSS.supports
+PASS -moz-binding: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-binding: _dashed_attribute v. CSS.supports
+PASS -moz-border-bottom-colors: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-bottom-colors: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-bottom-colors: _dashed_attribute v. CSS.supports
+PASS -moz-border-end: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-end: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-end: _dashed_attribute v. CSS.supports
+PASS -moz-border-end-color: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-end-color: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-end-color: _dashed_attribute v. CSS.supports
+PASS -moz-border-end-style: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-end-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-end-style: _dashed_attribute v. CSS.supports
+PASS -moz-border-end-width: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-end-width: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-end-width: _dashed_attribute v. CSS.supports
+PASS -moz-border-image: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-image: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-image: _dashed_attribute v. CSS.supports
+PASS -moz-border-left-colors: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-left-colors: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-left-colors: _dashed_attribute v. CSS.supports
+PASS -moz-border-right-colors: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-right-colors: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-right-colors: _dashed_attribute v. CSS.supports
+PASS -moz-border-start: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-start: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-start: _dashed_attribute v. CSS.supports
+PASS -moz-border-start-color: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-start-color: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-start-color: _dashed_attribute v. CSS.supports
+PASS -moz-border-start-style: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-start-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-start-style: _dashed_attribute v. CSS.supports
+PASS -moz-border-start-width: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-start-width: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-start-width: _dashed_attribute v. CSS.supports
+PASS -moz-border-top-colors: _camel_cased_attribute v. CSS.supports
+PASS -moz-border-top-colors: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-border-top-colors: _dashed_attribute v. CSS.supports
+PASS -moz-box-align: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-align: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-align: _dashed_attribute v. CSS.supports
+PASS -moz-box-direction: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-direction: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-direction: _dashed_attribute v. CSS.supports
+PASS -moz-box-flex: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-flex: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-flex: _dashed_attribute v. CSS.supports
+PASS -moz-box-ordinal-group: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-ordinal-group: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-ordinal-group: _dashed_attribute v. CSS.supports
+PASS -moz-box-orient: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-orient: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-orient: _dashed_attribute v. CSS.supports
+PASS -moz-box-pack: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-pack: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-pack: _dashed_attribute v. CSS.supports
+PASS -moz-box-sizing: _camel_cased_attribute v. CSS.supports
+PASS -moz-box-sizing: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-box-sizing: _dashed_attribute v. CSS.supports
+PASS -moz-column-count: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-count: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-count: _dashed_attribute v. CSS.supports
+PASS -moz-column-fill: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-fill: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-fill: _dashed_attribute v. CSS.supports
+PASS -moz-column-gap: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-gap: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-gap: _dashed_attribute v. CSS.supports
+PASS -moz-column-rule: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-rule: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-rule: _dashed_attribute v. CSS.supports
+PASS -moz-column-rule-color: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-rule-color: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-rule-color: _dashed_attribute v. CSS.supports
+PASS -moz-column-rule-style: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-rule-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-rule-style: _dashed_attribute v. CSS.supports
+PASS -moz-column-rule-width: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-rule-width: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-rule-width: _dashed_attribute v. CSS.supports
+PASS -moz-column-span: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-span: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-span: _dashed_attribute v. CSS.supports
+PASS -moz-column-width: _camel_cased_attribute v. CSS.supports
+PASS -moz-column-width: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-column-width: _dashed_attribute v. CSS.supports
+PASS -moz-columns: _camel_cased_attribute v. CSS.supports
+PASS -moz-columns: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-columns: _dashed_attribute v. CSS.supports
+PASS -moz-float-edge: _camel_cased_attribute v. CSS.supports
+PASS -moz-float-edge: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-float-edge: _dashed_attribute v. CSS.supports
+PASS -moz-font-feature-settings: _camel_cased_attribute v. CSS.supports
+PASS -moz-font-feature-settings: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-font-feature-settings: _dashed_attribute v. CSS.supports
+PASS -moz-font-language-override: _camel_cased_attribute v. CSS.supports
+PASS -moz-font-language-override: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-font-language-override: _dashed_attribute v. CSS.supports
+PASS -moz-force-broken-image-icon: _camel_cased_attribute v. CSS.supports
+PASS -moz-force-broken-image-icon: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-force-broken-image-icon: _dashed_attribute v. CSS.supports
+PASS -moz-hyphens: _camel_cased_attribute v. CSS.supports
+PASS -moz-hyphens: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-hyphens: _dashed_attribute v. CSS.supports
+PASS -moz-image-region: _camel_cased_attribute v. CSS.supports
+PASS -moz-image-region: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-image-region: _dashed_attribute v. CSS.supports
+PASS -moz-margin-end: _camel_cased_attribute v. CSS.supports
+PASS -moz-margin-end: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-margin-end: _dashed_attribute v. CSS.supports
+PASS -moz-margin-start: _camel_cased_attribute v. CSS.supports
+PASS -moz-margin-start: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-margin-start: _dashed_attribute v. CSS.supports
+PASS -moz-orient: _camel_cased_attribute v. CSS.supports
+PASS -moz-orient: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-orient: _dashed_attribute v. CSS.supports
+PASS -moz-osx-font-smoothing: _camel_cased_attribute v. CSS.supports
+PASS -moz-osx-font-smoothing: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-osx-font-smoothing: _dashed_attribute v. CSS.supports
+PASS -moz-padding-end: _camel_cased_attribute v. CSS.supports
+PASS -moz-padding-end: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-padding-end: _dashed_attribute v. CSS.supports
+PASS -moz-padding-start: _camel_cased_attribute v. CSS.supports
+PASS -moz-padding-start: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-padding-start: _dashed_attribute v. CSS.supports
+PASS -moz-perspective: _camel_cased_attribute v. CSS.supports
+PASS -moz-perspective: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-perspective: _dashed_attribute v. CSS.supports
+PASS -moz-perspective-origin: _camel_cased_attribute v. CSS.supports
+PASS -moz-perspective-origin: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-perspective-origin: _dashed_attribute v. CSS.supports
+PASS -moz-stack-sizing: _camel_cased_attribute v. CSS.supports
+PASS -moz-stack-sizing: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-stack-sizing: _dashed_attribute v. CSS.supports
+PASS -moz-tab-size: _camel_cased_attribute v. CSS.supports
+PASS -moz-tab-size: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-tab-size: _dashed_attribute v. CSS.supports
+PASS -moz-text-align-last: _camel_cased_attribute v. CSS.supports
+PASS -moz-text-align-last: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-text-align-last: _dashed_attribute v. CSS.supports
+PASS -moz-text-size-adjust: _camel_cased_attribute v. CSS.supports
+PASS -moz-text-size-adjust: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-text-size-adjust: _dashed_attribute v. CSS.supports
+PASS -moz-transform: _camel_cased_attribute v. CSS.supports
+PASS -moz-transform: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transform: _dashed_attribute v. CSS.supports
+PASS -moz-transform-origin: _camel_cased_attribute v. CSS.supports
+PASS -moz-transform-origin: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transform-origin: _dashed_attribute v. CSS.supports
+PASS -moz-transform-style: _camel_cased_attribute v. CSS.supports
+PASS -moz-transform-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transform-style: _dashed_attribute v. CSS.supports
+PASS -moz-transition: _camel_cased_attribute v. CSS.supports
+PASS -moz-transition: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transition: _dashed_attribute v. CSS.supports
+PASS -moz-transition-delay: _camel_cased_attribute v. CSS.supports
+PASS -moz-transition-delay: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transition-delay: _dashed_attribute v. CSS.supports
+PASS -moz-transition-duration: _camel_cased_attribute v. CSS.supports
+PASS -moz-transition-duration: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transition-duration: _dashed_attribute v. CSS.supports
+PASS -moz-transition-property: _camel_cased_attribute v. CSS.supports
+PASS -moz-transition-property: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transition-property: _dashed_attribute v. CSS.supports
+PASS -moz-transition-timing-function: _camel_cased_attribute v. CSS.supports
+PASS -moz-transition-timing-function: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-transition-timing-function: _dashed_attribute v. CSS.supports
+PASS -moz-user-focus: _camel_cased_attribute v. CSS.supports
+PASS -moz-user-focus: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-user-focus: _dashed_attribute v. CSS.supports
+PASS -moz-user-input: _camel_cased_attribute v. CSS.supports
+PASS -moz-user-input: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-user-input: _dashed_attribute v. CSS.supports
+PASS -moz-user-modify: _camel_cased_attribute v. CSS.supports
+PASS -moz-user-modify: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-user-modify: _dashed_attribute v. CSS.supports
+PASS -moz-user-select: _camel_cased_attribute v. CSS.supports
+PASS -moz-user-select: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-user-select: _dashed_attribute v. CSS.supports
+PASS -moz-window-dragging: _camel_cased_attribute v. CSS.supports
+PASS -moz-window-dragging: _webkit_cased_attribute must only exist for -webkit-
+PASS -moz-window-dragging: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-chaining: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-chaining: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-chaining: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-limit: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-limit: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-limit: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-limit-max: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-limit-max: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-limit-max: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-limit-min: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-limit-min: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-limit-min: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-snap: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-snap: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-snap: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-snap-points: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-snap-points: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-snap-points: _dashed_attribute v. CSS.supports
+PASS -ms-content-zoom-snap-type: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zoom-snap-type: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zoom-snap-type: _dashed_attribute v. CSS.supports
+PASS -ms-content-zooming: _camel_cased_attribute v. CSS.supports
+PASS -ms-content-zooming: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-content-zooming: _dashed_attribute v. CSS.supports
+PASS -ms-flow-from: _camel_cased_attribute v. CSS.supports
+PASS -ms-flow-from: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-flow-from: _dashed_attribute v. CSS.supports
+PASS -ms-flow-into: _camel_cased_attribute v. CSS.supports
+PASS -ms-flow-into: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-flow-into: _dashed_attribute v. CSS.supports
+PASS -ms-font-feature-settings: _camel_cased_attribute v. CSS.supports
+PASS -ms-font-feature-settings: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-font-feature-settings: _dashed_attribute v. CSS.supports
+PASS -ms-grid-column: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-column: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-column: _dashed_attribute v. CSS.supports
+PASS -ms-grid-column-align: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-column-align: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-column-align: _dashed_attribute v. CSS.supports
+PASS -ms-grid-column-span: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-column-span: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-column-span: _dashed_attribute v. CSS.supports
+PASS -ms-grid-columns: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-columns: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-columns: _dashed_attribute v. CSS.supports
+PASS -ms-grid-row: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-row: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-row: _dashed_attribute v. CSS.supports
+PASS -ms-grid-row-align: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-row-align: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-row-align: _dashed_attribute v. CSS.supports
+PASS -ms-grid-row-span: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-row-span: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-row-span: _dashed_attribute v. CSS.supports
+PASS -ms-grid-rows: _camel_cased_attribute v. CSS.supports
+PASS -ms-grid-rows: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-grid-rows: _dashed_attribute v. CSS.supports
+PASS -ms-high-contrast-adjust: _camel_cased_attribute v. CSS.supports
+PASS -ms-high-contrast-adjust: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-high-contrast-adjust: _dashed_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-chars: _camel_cased_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-chars: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-hyphenate-limit-chars: _dashed_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-lines: _camel_cased_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-lines: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-hyphenate-limit-lines: _dashed_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-zone: _camel_cased_attribute v. CSS.supports
+PASS -ms-hyphenate-limit-zone: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-hyphenate-limit-zone: _dashed_attribute v. CSS.supports
+PASS -ms-hyphens: _camel_cased_attribute v. CSS.supports
+PASS -ms-hyphens: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-hyphens: _dashed_attribute v. CSS.supports
+PASS -ms-ime-align: _camel_cased_attribute v. CSS.supports
+PASS -ms-ime-align: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-ime-align: _dashed_attribute v. CSS.supports
+PASS -ms-overflow-style: _camel_cased_attribute v. CSS.supports
+PASS -ms-overflow-style: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-overflow-style: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-chaining: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-chaining: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-chaining: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-limit: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-limit: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-limit: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-limit-x-max: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-limit-x-max: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-limit-x-max: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-limit-x-min: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-limit-x-min: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-limit-x-min: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-limit-y-max: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-limit-y-max: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-limit-y-max: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-limit-y-min: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-limit-y-min: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-limit-y-min: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-rails: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-rails: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-rails: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-snap-points-x: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-snap-points-x: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-snap-points-x: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-snap-points-y: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-snap-points-y: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-snap-points-y: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-snap-type: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-snap-type: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-snap-type: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-snap-x: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-snap-x: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-snap-x: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-snap-y: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-snap-y: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-snap-y: _dashed_attribute v. CSS.supports
+PASS -ms-scroll-translation: _camel_cased_attribute v. CSS.supports
+PASS -ms-scroll-translation: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-scroll-translation: _dashed_attribute v. CSS.supports
+PASS -ms-text-combine-horizontal: _camel_cased_attribute v. CSS.supports
+PASS -ms-text-combine-horizontal: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-text-combine-horizontal: _dashed_attribute v. CSS.supports
+PASS -ms-text-size-adjust: _camel_cased_attribute v. CSS.supports
+PASS -ms-text-size-adjust: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-text-size-adjust: _dashed_attribute v. CSS.supports
+PASS -ms-touch-select: _camel_cased_attribute v. CSS.supports
+PASS -ms-touch-select: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-touch-select: _dashed_attribute v. CSS.supports
+PASS -ms-user-select: _camel_cased_attribute v. CSS.supports
+PASS -ms-user-select: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-user-select: _dashed_attribute v. CSS.supports
+PASS -ms-wrap-flow: _camel_cased_attribute v. CSS.supports
+PASS -ms-wrap-flow: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-wrap-flow: _dashed_attribute v. CSS.supports
+PASS -ms-wrap-margin: _camel_cased_attribute v. CSS.supports
+PASS -ms-wrap-margin: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-wrap-margin: _dashed_attribute v. CSS.supports
+PASS -ms-wrap-through: _camel_cased_attribute v. CSS.supports
+PASS -ms-wrap-through: _webkit_cased_attribute must only exist for -webkit-
+PASS -ms-wrap-through: _dashed_attribute v. CSS.supports
+PASS -webkit-align-content: _camel_cased_attribute v. CSS.supports
+PASS -webkit-align-content: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-align-content: _dashed_attribute v. CSS.supports
+PASS -webkit-align-items: _camel_cased_attribute v. CSS.supports
+PASS -webkit-align-items: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-align-items: _dashed_attribute v. CSS.supports
+PASS -webkit-align-self: _camel_cased_attribute v. CSS.supports
+PASS -webkit-align-self: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-align-self: _dashed_attribute v. CSS.supports
+PASS -webkit-animation: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-delay: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-delay: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-delay: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-direction: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-direction: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-direction: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-duration: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-duration: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-duration: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-fill-mode: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-fill-mode: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-fill-mode: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-iteration-count: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-iteration-count: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-iteration-count: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-name: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-name: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-name: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-play-state: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-play-state: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-play-state: _dashed_attribute v. CSS.supports
+PASS -webkit-animation-timing-function: _camel_cased_attribute v. CSS.supports
+PASS -webkit-animation-timing-function: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-animation-timing-function: _dashed_attribute v. CSS.supports
+PASS -webkit-appearance: _camel_cased_attribute v. CSS.supports
+PASS -webkit-appearance: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-appearance: _dashed_attribute v. CSS.supports
+PASS -webkit-backface-visibility: _camel_cased_attribute v. CSS.supports
+PASS -webkit-backface-visibility: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-backface-visibility: _dashed_attribute v. CSS.supports
+PASS -webkit-background-clip: _camel_cased_attribute v. CSS.supports
+PASS -webkit-background-clip: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-background-clip: _dashed_attribute v. CSS.supports
+PASS -webkit-background-origin: _camel_cased_attribute v. CSS.supports
+PASS -webkit-background-origin: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-background-origin: _dashed_attribute v. CSS.supports
+PASS -webkit-background-size: _camel_cased_attribute v. CSS.supports
+PASS -webkit-background-size: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-background-size: _dashed_attribute v. CSS.supports
+PASS -webkit-border-bottom-left-radius: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-bottom-left-radius: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-bottom-left-radius: _dashed_attribute v. CSS.supports
+PASS -webkit-border-bottom-right-radius: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-bottom-right-radius: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-bottom-right-radius: _dashed_attribute v. CSS.supports
+PASS -webkit-border-image: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-image: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-image: _dashed_attribute v. CSS.supports
+PASS -webkit-border-radius: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-radius: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-radius: _dashed_attribute v. CSS.supports
+PASS -webkit-border-top-left-radius: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-top-left-radius: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-top-left-radius: _dashed_attribute v. CSS.supports
+PASS -webkit-border-top-right-radius: _camel_cased_attribute v. CSS.supports
+PASS -webkit-border-top-right-radius: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-border-top-right-radius: _dashed_attribute v. CSS.supports
+PASS -webkit-box-align: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-align: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-align: _dashed_attribute v. CSS.supports
+PASS -webkit-box-direction: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-direction: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-direction: _dashed_attribute v. CSS.supports
+PASS -webkit-box-flex: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-flex: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-flex: _dashed_attribute v. CSS.supports
+PASS -webkit-box-ordinal-group: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-ordinal-group: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-ordinal-group: _dashed_attribute v. CSS.supports
+PASS -webkit-box-orient: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-orient: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-orient: _dashed_attribute v. CSS.supports
+PASS -webkit-box-pack: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-pack: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-pack: _dashed_attribute v. CSS.supports
+PASS -webkit-box-shadow: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-shadow: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-shadow: _dashed_attribute v. CSS.supports
+PASS -webkit-box-sizing: _camel_cased_attribute v. CSS.supports
+PASS -webkit-box-sizing: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-box-sizing: _dashed_attribute v. CSS.supports
+PASS -webkit-filter: _camel_cased_attribute v. CSS.supports
+PASS -webkit-filter: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-filter: _dashed_attribute v. CSS.supports
+PASS -webkit-flex: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-basis: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-basis: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-basis: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-direction: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-direction: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-direction: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-flow: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-flow: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-flow: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-grow: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-grow: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-grow: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-shrink: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-shrink: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-shrink: _dashed_attribute v. CSS.supports
+PASS -webkit-flex-wrap: _camel_cased_attribute v. CSS.supports
+PASS -webkit-flex-wrap: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-flex-wrap: _dashed_attribute v. CSS.supports
+PASS -webkit-justify-content: _camel_cased_attribute v. CSS.supports
+PASS -webkit-justify-content: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-justify-content: _dashed_attribute v. CSS.supports
+PASS -webkit-line-clamp: _camel_cased_attribute v. CSS.supports
+PASS -webkit-line-clamp: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-line-clamp: _dashed_attribute v. CSS.supports
+PASS -webkit-mask: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-clip: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-clip: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-clip: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-composite: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-composite: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-composite: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-image: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-image: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-image: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-origin: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-origin: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-origin: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-position: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-position: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-position: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-position-x: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-position-x: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-position-x: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-position-y: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-position-y: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-position-y: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-repeat: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-repeat: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-repeat: _dashed_attribute v. CSS.supports
+PASS -webkit-mask-size: _camel_cased_attribute v. CSS.supports
+PASS -webkit-mask-size: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-mask-size: _dashed_attribute v. CSS.supports
+PASS -webkit-order: _camel_cased_attribute v. CSS.supports
+PASS -webkit-order: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-order: _dashed_attribute v. CSS.supports
+PASS -webkit-perspective: _camel_cased_attribute v. CSS.supports
+PASS -webkit-perspective: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-perspective: _dashed_attribute v. CSS.supports
+PASS -webkit-perspective-origin: _camel_cased_attribute v. CSS.supports
+PASS -webkit-perspective-origin: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-perspective-origin: _dashed_attribute v. CSS.supports
+PASS -webkit-text-fill-color: _camel_cased_attribute v. CSS.supports
+PASS -webkit-text-fill-color: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-text-fill-color: _dashed_attribute v. CSS.supports
+PASS -webkit-text-size-adjust: _camel_cased_attribute v. CSS.supports
+PASS -webkit-text-size-adjust: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-text-size-adjust: _dashed_attribute v. CSS.supports
+PASS -webkit-text-stroke: _camel_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke: _dashed_attribute v. CSS.supports
+PASS -webkit-text-stroke-color: _camel_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke-color: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke-color: _dashed_attribute v. CSS.supports
+PASS -webkit-text-stroke-width: _camel_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke-width: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-text-stroke-width: _dashed_attribute v. CSS.supports
+PASS -webkit-transform: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transform: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transform: _dashed_attribute v. CSS.supports
+PASS -webkit-transform-origin: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transform-origin: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transform-origin: _dashed_attribute v. CSS.supports
+PASS -webkit-transform-style: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transform-style: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transform-style: _dashed_attribute v. CSS.supports
+PASS -webkit-transition: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transition: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transition: _dashed_attribute v. CSS.supports
+PASS -webkit-transition-delay: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transition-delay: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transition-delay: _dashed_attribute v. CSS.supports
+PASS -webkit-transition-duration: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transition-duration: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transition-duration: _dashed_attribute v. CSS.supports
+PASS -webkit-transition-property: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transition-property: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transition-property: _dashed_attribute v. CSS.supports
+PASS -webkit-transition-timing-function: _camel_cased_attribute v. CSS.supports
+PASS -webkit-transition-timing-function: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-transition-timing-function: _dashed_attribute v. CSS.supports
+PASS -webkit-user-select: _camel_cased_attribute v. CSS.supports
+PASS -webkit-user-select: _webkit_cased_attribute v. CSS.supports
+PASS -webkit-user-select: _dashed_attribute v. CSS.supports
+PASS align-content: _camel_cased_attribute v. CSS.supports
+PASS align-content: _dashed_attribute v. CSS.supports
+PASS align-items: _camel_cased_attribute v. CSS.supports
+PASS align-items: _dashed_attribute v. CSS.supports
+PASS align-self: _camel_cased_attribute v. CSS.supports
+PASS align-self: _dashed_attribute v. CSS.supports
+PASS alignment-baseline: _camel_cased_attribute v. CSS.supports
+PASS alignment-baseline: _dashed_attribute v. CSS.supports
+PASS all: _camel_cased_attribute v. CSS.supports
+PASS alt: _camel_cased_attribute v. CSS.supports
+PASS animation: _camel_cased_attribute v. CSS.supports
+PASS animation-delay: _camel_cased_attribute v. CSS.supports
+PASS animation-delay: _dashed_attribute v. CSS.supports
+PASS animation-direction: _camel_cased_attribute v. CSS.supports
+PASS animation-direction: _dashed_attribute v. CSS.supports
+PASS animation-duration: _camel_cased_attribute v. CSS.supports
+PASS animation-duration: _dashed_attribute v. CSS.supports
+PASS animation-fill-mode: _camel_cased_attribute v. CSS.supports
+PASS animation-fill-mode: _dashed_attribute v. CSS.supports
+PASS animation-iteration-count: _camel_cased_attribute v. CSS.supports
+PASS animation-iteration-count: _dashed_attribute v. CSS.supports
+PASS animation-name: _camel_cased_attribute v. CSS.supports
+PASS animation-name: _dashed_attribute v. CSS.supports
+PASS animation-play-state: _camel_cased_attribute v. CSS.supports
+PASS animation-play-state: _dashed_attribute v. CSS.supports
+PASS animation-timing-function: _camel_cased_attribute v. CSS.supports
+PASS animation-timing-function: _dashed_attribute v. CSS.supports
+PASS appearance: _camel_cased_attribute v. CSS.supports
+PASS backdrop-filter: _camel_cased_attribute v. CSS.supports
+PASS backdrop-filter: _dashed_attribute v. CSS.supports
+PASS backface-visibility: _camel_cased_attribute v. CSS.supports
+PASS backface-visibility: _dashed_attribute v. CSS.supports
+PASS background: _camel_cased_attribute v. CSS.supports
+PASS background-attachment: _camel_cased_attribute v. CSS.supports
+PASS background-attachment: _dashed_attribute v. CSS.supports
+PASS background-blend-mode: _camel_cased_attribute v. CSS.supports
+PASS background-blend-mode: _dashed_attribute v. CSS.supports
+PASS background-clip: _camel_cased_attribute v. CSS.supports
+PASS background-clip: _dashed_attribute v. CSS.supports
+PASS background-color: _camel_cased_attribute v. CSS.supports
+PASS background-color: _dashed_attribute v. CSS.supports
+PASS background-image: _camel_cased_attribute v. CSS.supports
+PASS background-image: _dashed_attribute v. CSS.supports
+PASS background-origin: _camel_cased_attribute v. CSS.supports
+PASS background-origin: _dashed_attribute v. CSS.supports
+PASS background-position: _camel_cased_attribute v. CSS.supports
+PASS background-position: _dashed_attribute v. CSS.supports
+PASS background-position-x: _camel_cased_attribute v. CSS.supports
+PASS background-position-x: _dashed_attribute v. CSS.supports
+PASS background-position-y: _camel_cased_attribute v. CSS.supports
+PASS background-position-y: _dashed_attribute v. CSS.supports
+PASS background-repeat: _camel_cased_attribute v. CSS.supports
+PASS background-repeat: _dashed_attribute v. CSS.supports
+PASS background-repeat-x: _camel_cased_attribute v. CSS.supports
+PASS background-repeat-x: _dashed_attribute v. CSS.supports
+PASS background-repeat-y: _camel_cased_attribute v. CSS.supports
+PASS background-repeat-y: _dashed_attribute v. CSS.supports
+PASS background-size: _camel_cased_attribute v. CSS.supports
+PASS background-size: _dashed_attribute v. CSS.supports
+PASS baseline-shift: _camel_cased_attribute v. CSS.supports
+PASS baseline-shift: _dashed_attribute v. CSS.supports
+PASS block-size: _camel_cased_attribute v. CSS.supports
+PASS block-size: _dashed_attribute v. CSS.supports
+PASS border: _camel_cased_attribute v. CSS.supports
+PASS border-block: _camel_cased_attribute v. CSS.supports
+PASS border-block: _dashed_attribute v. CSS.supports
+PASS border-block-color: _camel_cased_attribute v. CSS.supports
+PASS border-block-color: _dashed_attribute v. CSS.supports
+PASS border-block-end: _camel_cased_attribute v. CSS.supports
+PASS border-block-end: _dashed_attribute v. CSS.supports
+PASS border-block-end-color: _camel_cased_attribute v. CSS.supports
+PASS border-block-end-color: _dashed_attribute v. CSS.supports
+PASS border-block-end-style: _camel_cased_attribute v. CSS.supports
+PASS border-block-end-style: _dashed_attribute v. CSS.supports
+PASS border-block-end-width: _camel_cased_attribute v. CSS.supports
+PASS border-block-end-width: _dashed_attribute v. CSS.supports
+PASS border-block-start: _camel_cased_attribute v. CSS.supports
+PASS border-block-start: _dashed_attribute v. CSS.supports
+PASS border-block-start-color: _camel_cased_attribute v. CSS.supports
+PASS border-block-start-color: _dashed_attribute v. CSS.supports
+PASS border-block-start-style: _camel_cased_attribute v. CSS.supports
+PASS border-block-start-style: _dashed_attribute v. CSS.supports
+PASS border-block-start-width: _camel_cased_attribute v. CSS.supports
+PASS border-block-start-width: _dashed_attribute v. CSS.supports
+PASS border-block-style: _camel_cased_attribute v. CSS.supports
+PASS border-block-style: _dashed_attribute v. CSS.supports
+PASS border-block-width: _camel_cased_attribute v. CSS.supports
+PASS border-block-width: _dashed_attribute v. CSS.supports
+PASS border-bottom: _camel_cased_attribute v. CSS.supports
+PASS border-bottom: _dashed_attribute v. CSS.supports
+PASS border-bottom-color: _camel_cased_attribute v. CSS.supports
+PASS border-bottom-color: _dashed_attribute v. CSS.supports
+PASS border-bottom-left-radius: _camel_cased_attribute v. CSS.supports
+PASS border-bottom-left-radius: _dashed_attribute v. CSS.supports
+PASS border-bottom-right-radius: _camel_cased_attribute v. CSS.supports
+PASS border-bottom-right-radius: _dashed_attribute v. CSS.supports
+PASS border-bottom-style: _camel_cased_attribute v. CSS.supports
+PASS border-bottom-style: _dashed_attribute v. CSS.supports
+PASS border-bottom-width: _camel_cased_attribute v. CSS.supports
+PASS border-bottom-width: _dashed_attribute v. CSS.supports
+PASS border-collapse: _camel_cased_attribute v. CSS.supports
+PASS border-collapse: _dashed_attribute v. CSS.supports
+PASS border-color: _camel_cased_attribute v. CSS.supports
+PASS border-color: _dashed_attribute v. CSS.supports
+PASS border-end-end-radius: _camel_cased_attribute v. CSS.supports
+PASS border-end-end-radius: _dashed_attribute v. CSS.supports
+PASS border-end-start-radius: _camel_cased_attribute v. CSS.supports
+PASS border-end-start-radius: _dashed_attribute v. CSS.supports
+PASS border-image: _camel_cased_attribute v. CSS.supports
+PASS border-image: _dashed_attribute v. CSS.supports
+PASS border-image-outset: _camel_cased_attribute v. CSS.supports
+PASS border-image-outset: _dashed_attribute v. CSS.supports
+PASS border-image-repeat: _camel_cased_attribute v. CSS.supports
+PASS border-image-repeat: _dashed_attribute v. CSS.supports
+PASS border-image-slice: _camel_cased_attribute v. CSS.supports
+PASS border-image-slice: _dashed_attribute v. CSS.supports
+PASS border-image-source: _camel_cased_attribute v. CSS.supports
+PASS border-image-source: _dashed_attribute v. CSS.supports
+PASS border-image-width: _camel_cased_attribute v. CSS.supports
+PASS border-image-width: _dashed_attribute v. CSS.supports
+PASS border-inline: _camel_cased_attribute v. CSS.supports
+PASS border-inline: _dashed_attribute v. CSS.supports
+PASS border-inline-color: _camel_cased_attribute v. CSS.supports
+PASS border-inline-color: _dashed_attribute v. CSS.supports
+PASS border-inline-end: _camel_cased_attribute v. CSS.supports
+PASS border-inline-end: _dashed_attribute v. CSS.supports
+PASS border-inline-end-color: _camel_cased_attribute v. CSS.supports
+PASS border-inline-end-color: _dashed_attribute v. CSS.supports
+PASS border-inline-end-style: _camel_cased_attribute v. CSS.supports
+PASS border-inline-end-style: _dashed_attribute v. CSS.supports
+PASS border-inline-end-width: _camel_cased_attribute v. CSS.supports
+PASS border-inline-end-width: _dashed_attribute v. CSS.supports
+PASS border-inline-start: _camel_cased_attribute v. CSS.supports
+PASS border-inline-start: _dashed_attribute v. CSS.supports
+PASS border-inline-start-color: _camel_cased_attribute v. CSS.supports
+PASS border-inline-start-color: _dashed_attribute v. CSS.supports
+PASS border-inline-start-style: _camel_cased_attribute v. CSS.supports
+PASS border-inline-start-style: _dashed_attribute v. CSS.supports
+PASS border-inline-start-width: _camel_cased_attribute v. CSS.supports
+PASS border-inline-start-width: _dashed_attribute v. CSS.supports
+PASS border-inline-style: _camel_cased_attribute v. CSS.supports
+PASS border-inline-style: _dashed_attribute v. CSS.supports
+PASS border-inline-width: _camel_cased_attribute v. CSS.supports
+PASS border-inline-width: _dashed_attribute v. CSS.supports
+PASS border-left: _camel_cased_attribute v. CSS.supports
+PASS border-left: _dashed_attribute v. CSS.supports
+PASS border-left-color: _camel_cased_attribute v. CSS.supports
+PASS border-left-color: _dashed_attribute v. CSS.supports
+PASS border-left-style: _camel_cased_attribute v. CSS.supports
+PASS border-left-style: _dashed_attribute v. CSS.supports
+PASS border-left-width: _camel_cased_attribute v. CSS.supports
+PASS border-left-width: _dashed_attribute v. CSS.supports
+PASS border-radius: _camel_cased_attribute v. CSS.supports
+PASS border-radius: _dashed_attribute v. CSS.supports
+PASS border-right: _camel_cased_attribute v. CSS.supports
+PASS border-right: _dashed_attribute v. CSS.supports
+PASS border-right-color: _camel_cased_attribute v. CSS.supports
+PASS border-right-color: _dashed_attribute v. CSS.supports
+PASS border-right-style: _camel_cased_attribute v. CSS.supports
+PASS border-right-style: _dashed_attribute v. CSS.supports
+PASS border-right-width: _camel_cased_attribute v. CSS.supports
+PASS border-right-width: _dashed_attribute v. CSS.supports
+PASS border-spacing: _camel_cased_attribute v. CSS.supports
+PASS border-spacing: _dashed_attribute v. CSS.supports
+PASS border-start-end-radius: _camel_cased_attribute v. CSS.supports
+PASS border-start-end-radius: _dashed_attribute v. CSS.supports
+PASS border-start-start-radius: _camel_cased_attribute v. CSS.supports
+PASS border-start-start-radius: _dashed_attribute v. CSS.supports
+PASS border-style: _camel_cased_attribute v. CSS.supports
+PASS border-style: _dashed_attribute v. CSS.supports
+PASS border-top: _camel_cased_attribute v. CSS.supports
+PASS border-top: _dashed_attribute v. CSS.supports
+PASS border-top-color: _camel_cased_attribute v. CSS.supports
+PASS border-top-color: _dashed_attribute v. CSS.supports
+PASS border-top-left-radius: _camel_cased_attribute v. CSS.supports
+PASS border-top-left-radius: _dashed_attribute v. CSS.supports
+PASS border-top-right-radius: _camel_cased_attribute v. CSS.supports
+PASS border-top-right-radius: _dashed_attribute v. CSS.supports
+PASS border-top-style: _camel_cased_attribute v. CSS.supports
+PASS border-top-style: _dashed_attribute v. CSS.supports
+PASS border-top-width: _camel_cased_attribute v. CSS.supports
+PASS border-top-width: _dashed_attribute v. CSS.supports
+PASS border-width: _camel_cased_attribute v. CSS.supports
+PASS border-width: _dashed_attribute v. CSS.supports
+PASS bottom: _camel_cased_attribute v. CSS.supports
+PASS box-decoration-break: _camel_cased_attribute v. CSS.supports
+PASS box-decoration-break: _dashed_attribute v. CSS.supports
+PASS box-shadow: _camel_cased_attribute v. CSS.supports
+PASS box-shadow: _dashed_attribute v. CSS.supports
+PASS box-sizing: _camel_cased_attribute v. CSS.supports
+PASS box-sizing: _dashed_attribute v. CSS.supports
+PASS break-after: _camel_cased_attribute v. CSS.supports
+PASS break-after: _dashed_attribute v. CSS.supports
+PASS break-before: _camel_cased_attribute v. CSS.supports
+PASS break-before: _dashed_attribute v. CSS.supports
+PASS break-inside: _camel_cased_attribute v. CSS.supports
+PASS break-inside: _dashed_attribute v. CSS.supports
+PASS buffered-rendering: _camel_cased_attribute v. CSS.supports
+PASS buffered-rendering: _dashed_attribute v. CSS.supports
+PASS caption-side: _camel_cased_attribute v. CSS.supports
+PASS caption-side: _dashed_attribute v. CSS.supports
+PASS caret-color: _camel_cased_attribute v. CSS.supports
+PASS caret-color: _dashed_attribute v. CSS.supports
+PASS clear: _camel_cased_attribute v. CSS.supports
+PASS clip: _camel_cased_attribute v. CSS.supports
+PASS clip-path: _camel_cased_attribute v. CSS.supports
+PASS clip-path: _dashed_attribute v. CSS.supports
+PASS clip-rule: _camel_cased_attribute v. CSS.supports
+PASS clip-rule: _dashed_attribute v. CSS.supports
+PASS color: _camel_cased_attribute v. CSS.supports
+PASS color-adjust: _camel_cased_attribute v. CSS.supports
+PASS color-adjust: _dashed_attribute v. CSS.supports
+PASS color-interpolation: _camel_cased_attribute v. CSS.supports
+PASS color-interpolation: _dashed_attribute v. CSS.supports
+PASS color-interpolation-filters: _camel_cased_attribute v. CSS.supports
+PASS color-interpolation-filters: _dashed_attribute v. CSS.supports
+PASS color-profile: _camel_cased_attribute v. CSS.supports
+PASS color-profile: _dashed_attribute v. CSS.supports
+PASS color-rendering: _camel_cased_attribute v. CSS.supports
+PASS color-rendering: _dashed_attribute v. CSS.supports
+PASS color-scheme: _camel_cased_attribute v. CSS.supports
+PASS color-scheme: _dashed_attribute v. CSS.supports
+PASS column-count: _camel_cased_attribute v. CSS.supports
+PASS column-count: _dashed_attribute v. CSS.supports
+PASS column-fill: _camel_cased_attribute v. CSS.supports
+PASS column-fill: _dashed_attribute v. CSS.supports
+PASS column-gap: _camel_cased_attribute v. CSS.supports
+PASS column-gap: _dashed_attribute v. CSS.supports
+PASS column-progression: _camel_cased_attribute v. CSS.supports
+PASS column-progression: _dashed_attribute v. CSS.supports
+PASS column-rule: _camel_cased_attribute v. CSS.supports
+PASS column-rule: _dashed_attribute v. CSS.supports
+PASS column-rule-color: _camel_cased_attribute v. CSS.supports
+PASS column-rule-color: _dashed_attribute v. CSS.supports
+PASS column-rule-style: _camel_cased_attribute v. CSS.supports
+PASS column-rule-style: _dashed_attribute v. CSS.supports
+PASS column-rule-width: _camel_cased_attribute v. CSS.supports
+PASS column-rule-width: _dashed_attribute v. CSS.supports
+PASS column-span: _camel_cased_attribute v. CSS.supports
+PASS column-span: _dashed_attribute v. CSS.supports
+PASS column-width: _camel_cased_attribute v. CSS.supports
+PASS column-width: _dashed_attribute v. CSS.supports
+PASS columns: _camel_cased_attribute v. CSS.supports
+PASS contain: _camel_cased_attribute v. CSS.supports
+PASS contain-intrinsic-size: _camel_cased_attribute v. CSS.supports
+PASS contain-intrinsic-size: _dashed_attribute v. CSS.supports
+PASS content: _camel_cased_attribute v. CSS.supports
+PASS content-visibility: _camel_cased_attribute v. CSS.supports
+PASS content-visibility: _dashed_attribute v. CSS.supports
+PASS counter-increment: _camel_cased_attribute v. CSS.supports
+PASS counter-increment: _dashed_attribute v. CSS.supports
+PASS counter-reset: _camel_cased_attribute v. CSS.supports
+PASS counter-reset: _dashed_attribute v. CSS.supports
+PASS counter-set: _camel_cased_attribute v. CSS.supports
+PASS counter-set: _dashed_attribute v. CSS.supports
+PASS cursor: _camel_cased_attribute v. CSS.supports
+PASS cx: _camel_cased_attribute v. CSS.supports
+PASS cy: _camel_cased_attribute v. CSS.supports
+PASS d: _camel_cased_attribute v. CSS.supports
+PASS direction: _camel_cased_attribute v. CSS.supports
+PASS display: _camel_cased_attribute v. CSS.supports
+PASS dominant-baseline: _camel_cased_attribute v. CSS.supports
+PASS dominant-baseline: _dashed_attribute v. CSS.supports
+PASS empty-cells: _camel_cased_attribute v. CSS.supports
+PASS empty-cells: _dashed_attribute v. CSS.supports
+PASS enable-background: _camel_cased_attribute v. CSS.supports
+PASS enable-background: _dashed_attribute v. CSS.supports
+PASS fill: _camel_cased_attribute v. CSS.supports
+PASS fill-opacity: _camel_cased_attribute v. CSS.supports
+PASS fill-opacity: _dashed_attribute v. CSS.supports
+PASS fill-rule: _camel_cased_attribute v. CSS.supports
+PASS fill-rule: _dashed_attribute v. CSS.supports
+PASS filter: _camel_cased_attribute v. CSS.supports
+PASS flex: _camel_cased_attribute v. CSS.supports
+PASS flex-basis: _camel_cased_attribute v. CSS.supports
+PASS flex-basis: _dashed_attribute v. CSS.supports
+PASS flex-direction: _camel_cased_attribute v. CSS.supports
+PASS flex-direction: _dashed_attribute v. CSS.supports
+PASS flex-flow: _camel_cased_attribute v. CSS.supports
+PASS flex-flow: _dashed_attribute v. CSS.supports
+PASS flex-grow: _camel_cased_attribute v. CSS.supports
+PASS flex-grow: _dashed_attribute v. CSS.supports
+PASS flex-shrink: _camel_cased_attribute v. CSS.supports
+PASS flex-shrink: _dashed_attribute v. CSS.supports
+PASS flex-wrap: _camel_cased_attribute v. CSS.supports
+PASS flex-wrap: _dashed_attribute v. CSS.supports
+PASS float: _camel_cased_attribute v. CSS.supports
+PASS flood-color: _camel_cased_attribute v. CSS.supports
+PASS flood-color: _dashed_attribute v. CSS.supports
+PASS flood-opacity: _camel_cased_attribute v. CSS.supports
+PASS flood-opacity: _dashed_attribute v. CSS.supports
+PASS font: _camel_cased_attribute v. CSS.supports
+FAIL font-display: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL font-display: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS font-family: _camel_cased_attribute v. CSS.supports
+PASS font-family: _dashed_attribute v. CSS.supports
+PASS font-feature-settings: _camel_cased_attribute v. CSS.supports
+PASS font-feature-settings: _dashed_attribute v. CSS.supports
+PASS font-kerning: _camel_cased_attribute v. CSS.supports
+PASS font-kerning: _dashed_attribute v. CSS.supports
+PASS font-language-override: _camel_cased_attribute v. CSS.supports
+PASS font-language-override: _dashed_attribute v. CSS.supports
+PASS font-optical-sizing: _camel_cased_attribute v. CSS.supports
+PASS font-optical-sizing: _dashed_attribute v. CSS.supports
+PASS font-size: _camel_cased_attribute v. CSS.supports
+PASS font-size: _dashed_attribute v. CSS.supports
+PASS font-size-adjust: _camel_cased_attribute v. CSS.supports
+PASS font-size-adjust: _dashed_attribute v. CSS.supports
+PASS font-stretch: _camel_cased_attribute v. CSS.supports
+PASS font-stretch: _dashed_attribute v. CSS.supports
+PASS font-style: _camel_cased_attribute v. CSS.supports
+PASS font-style: _dashed_attribute v. CSS.supports
+PASS font-synthesis: _camel_cased_attribute v. CSS.supports
+PASS font-synthesis: _dashed_attribute v. CSS.supports
+PASS font-variant: _camel_cased_attribute v. CSS.supports
+PASS font-variant: _dashed_attribute v. CSS.supports
+PASS font-variant-alternates: _camel_cased_attribute v. CSS.supports
+PASS font-variant-alternates: _dashed_attribute v. CSS.supports
+PASS font-variant-caps: _camel_cased_attribute v. CSS.supports
+PASS font-variant-caps: _dashed_attribute v. CSS.supports
+PASS font-variant-east-asian: _camel_cased_attribute v. CSS.supports
+PASS font-variant-east-asian: _dashed_attribute v. CSS.supports
+PASS font-variant-ligatures: _camel_cased_attribute v. CSS.supports
+PASS font-variant-ligatures: _dashed_attribute v. CSS.supports
+PASS font-variant-numeric: _camel_cased_attribute v. CSS.supports
+PASS font-variant-numeric: _dashed_attribute v. CSS.supports
+PASS font-variant-position: _camel_cased_attribute v. CSS.supports
+PASS font-variant-position: _dashed_attribute v. CSS.supports
+PASS font-variation-settings: _camel_cased_attribute v. CSS.supports
+PASS font-variation-settings: _dashed_attribute v. CSS.supports
+PASS font-weight: _camel_cased_attribute v. CSS.supports
+PASS font-weight: _dashed_attribute v. CSS.supports
+PASS gap: _camel_cased_attribute v. CSS.supports
+PASS glyph-orientation-horizontal: _camel_cased_attribute v. CSS.supports
+PASS glyph-orientation-horizontal: _dashed_attribute v. CSS.supports
+PASS glyph-orientation-vertical: _camel_cased_attribute v. CSS.supports
+PASS glyph-orientation-vertical: _dashed_attribute v. CSS.supports
+PASS grid: _camel_cased_attribute v. CSS.supports
+PASS grid-area: _camel_cased_attribute v. CSS.supports
+PASS grid-area: _dashed_attribute v. CSS.supports
+PASS grid-auto-columns: _camel_cased_attribute v. CSS.supports
+PASS grid-auto-columns: _dashed_attribute v. CSS.supports
+PASS grid-auto-flow: _camel_cased_attribute v. CSS.supports
+PASS grid-auto-flow: _dashed_attribute v. CSS.supports
+PASS grid-auto-rows: _camel_cased_attribute v. CSS.supports
+PASS grid-auto-rows: _dashed_attribute v. CSS.supports
+PASS grid-column: _camel_cased_attribute v. CSS.supports
+PASS grid-column: _dashed_attribute v. CSS.supports
+PASS grid-column-end: _camel_cased_attribute v. CSS.supports
+PASS grid-column-end: _dashed_attribute v. CSS.supports
+PASS grid-column-gap: _camel_cased_attribute v. CSS.supports
+PASS grid-column-gap: _dashed_attribute v. CSS.supports
+PASS grid-column-start: _camel_cased_attribute v. CSS.supports
+PASS grid-column-start: _dashed_attribute v. CSS.supports
+PASS grid-gap: _camel_cased_attribute v. CSS.supports
+PASS grid-gap: _dashed_attribute v. CSS.supports
+PASS grid-row: _camel_cased_attribute v. CSS.supports
+PASS grid-row: _dashed_attribute v. CSS.supports
+PASS grid-row-end: _camel_cased_attribute v. CSS.supports
+PASS grid-row-end: _dashed_attribute v. CSS.supports
+PASS grid-row-gap: _camel_cased_attribute v. CSS.supports
+PASS grid-row-gap: _dashed_attribute v. CSS.supports
+PASS grid-row-start: _camel_cased_attribute v. CSS.supports
+PASS grid-row-start: _dashed_attribute v. CSS.supports
+PASS grid-template: _camel_cased_attribute v. CSS.supports
+PASS grid-template: _dashed_attribute v. CSS.supports
+PASS grid-template-areas: _camel_cased_attribute v. CSS.supports
+PASS grid-template-areas: _dashed_attribute v. CSS.supports
+PASS grid-template-columns: _camel_cased_attribute v. CSS.supports
+PASS grid-template-columns: _dashed_attribute v. CSS.supports
+PASS grid-template-rows: _camel_cased_attribute v. CSS.supports
+PASS grid-template-rows: _dashed_attribute v. CSS.supports
+PASS hanging-punctuation: _camel_cased_attribute v. CSS.supports
+PASS hanging-punctuation: _dashed_attribute v. CSS.supports
+PASS height: _camel_cased_attribute v. CSS.supports
+PASS hyphens: _camel_cased_attribute v. CSS.supports
+PASS image-orientation: _camel_cased_attribute v. CSS.supports
+PASS image-orientation: _dashed_attribute v. CSS.supports
+PASS image-rendering: _camel_cased_attribute v. CSS.supports
+PASS image-rendering: _dashed_attribute v. CSS.supports
+PASS ime-mode: _camel_cased_attribute v. CSS.supports
+PASS ime-mode: _dashed_attribute v. CSS.supports
+FAIL inherits: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL initial-value: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL initial-value: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS inline-size: _camel_cased_attribute v. CSS.supports
+PASS inline-size: _dashed_attribute v. CSS.supports
+PASS inset: _camel_cased_attribute v. CSS.supports
+PASS inset-block: _camel_cased_attribute v. CSS.supports
+PASS inset-block: _dashed_attribute v. CSS.supports
+PASS inset-block-end: _camel_cased_attribute v. CSS.supports
+PASS inset-block-end: _dashed_attribute v. CSS.supports
+PASS inset-block-start: _camel_cased_attribute v. CSS.supports
+PASS inset-block-start: _dashed_attribute v. CSS.supports
+PASS inset-inline: _camel_cased_attribute v. CSS.supports
+PASS inset-inline: _dashed_attribute v. CSS.supports
+PASS inset-inline-end: _camel_cased_attribute v. CSS.supports
+PASS inset-inline-end: _dashed_attribute v. CSS.supports
+PASS inset-inline-start: _camel_cased_attribute v. CSS.supports
+PASS inset-inline-start: _dashed_attribute v. CSS.supports
+PASS internal-text-autosizing-status: _camel_cased_attribute v. CSS.supports
+PASS internal-text-autosizing-status: _dashed_attribute v. CSS.supports
+PASS isolation: _camel_cased_attribute v. CSS.supports
+PASS justify-content: _camel_cased_attribute v. CSS.supports
+PASS justify-content: _dashed_attribute v. CSS.supports
+PASS justify-items: _camel_cased_attribute v. CSS.supports
+PASS justify-items: _dashed_attribute v. CSS.supports
+PASS justify-self: _camel_cased_attribute v. CSS.supports
+PASS justify-self: _dashed_attribute v. CSS.supports
+PASS kerning: _camel_cased_attribute v. CSS.supports
+PASS layout-grid: _camel_cased_attribute v. CSS.supports
+PASS layout-grid: _dashed_attribute v. CSS.supports
+PASS layout-grid-char: _camel_cased_attribute v. CSS.supports
+PASS layout-grid-char: _dashed_attribute v. CSS.supports
+PASS layout-grid-line: _camel_cased_attribute v. CSS.supports
+PASS layout-grid-line: _dashed_attribute v. CSS.supports
+PASS layout-grid-mode: _camel_cased_attribute v. CSS.supports
+PASS layout-grid-mode: _dashed_attribute v. CSS.supports
+PASS layout-grid-type: _camel_cased_attribute v. CSS.supports
+PASS layout-grid-type: _dashed_attribute v. CSS.supports
+PASS left: _camel_cased_attribute v. CSS.supports
+PASS letter-spacing: _camel_cased_attribute v. CSS.supports
+PASS letter-spacing: _dashed_attribute v. CSS.supports
+PASS lighting-color: _camel_cased_attribute v. CSS.supports
+PASS lighting-color: _dashed_attribute v. CSS.supports
+PASS line-break: _camel_cased_attribute v. CSS.supports
+PASS line-break: _dashed_attribute v. CSS.supports
+PASS line-height: _camel_cased_attribute v. CSS.supports
+PASS line-height: _dashed_attribute v. CSS.supports
+PASS list-style: _camel_cased_attribute v. CSS.supports
+PASS list-style: _dashed_attribute v. CSS.supports
+PASS list-style-image: _camel_cased_attribute v. CSS.supports
+PASS list-style-image: _dashed_attribute v. CSS.supports
+PASS list-style-position: _camel_cased_attribute v. CSS.supports
+PASS list-style-position: _dashed_attribute v. CSS.supports
+PASS list-style-type: _camel_cased_attribute v. CSS.supports
+PASS list-style-type: _dashed_attribute v. CSS.supports
+PASS margin: _camel_cased_attribute v. CSS.supports
+PASS margin-block: _camel_cased_attribute v. CSS.supports
+PASS margin-block: _dashed_attribute v. CSS.supports
+PASS margin-block-end: _camel_cased_attribute v. CSS.supports
+PASS margin-block-end: _dashed_attribute v. CSS.supports
+PASS margin-block-start: _camel_cased_attribute v. CSS.supports
+PASS margin-block-start: _dashed_attribute v. CSS.supports
+PASS margin-bottom: _camel_cased_attribute v. CSS.supports
+PASS margin-bottom: _dashed_attribute v. CSS.supports
+PASS margin-inline: _camel_cased_attribute v. CSS.supports
+PASS margin-inline: _dashed_attribute v. CSS.supports
+PASS margin-inline-end: _camel_cased_attribute v. CSS.supports
+PASS margin-inline-end: _dashed_attribute v. CSS.supports
+PASS margin-inline-start: _camel_cased_attribute v. CSS.supports
+PASS margin-inline-start: _dashed_attribute v. CSS.supports
+PASS margin-left: _camel_cased_attribute v. CSS.supports
+PASS margin-left: _dashed_attribute v. CSS.supports
+PASS margin-right: _camel_cased_attribute v. CSS.supports
+PASS margin-right: _dashed_attribute v. CSS.supports
+PASS margin-top: _camel_cased_attribute v. CSS.supports
+PASS margin-top: _dashed_attribute v. CSS.supports
+PASS marker: _camel_cased_attribute v. CSS.supports
+PASS marker-end: _camel_cased_attribute v. CSS.supports
+PASS marker-end: _dashed_attribute v. CSS.supports
+PASS marker-mid: _camel_cased_attribute v. CSS.supports
+PASS marker-mid: _dashed_attribute v. CSS.supports
+PASS marker-offset: _camel_cased_attribute v. CSS.supports
+PASS marker-offset: _dashed_attribute v. CSS.supports
+PASS marker-start: _camel_cased_attribute v. CSS.supports
+PASS marker-start: _dashed_attribute v. CSS.supports
+PASS mask: _camel_cased_attribute v. CSS.supports
+PASS mask-clip: _camel_cased_attribute v. CSS.supports
+PASS mask-clip: _dashed_attribute v. CSS.supports
+PASS mask-composite: _camel_cased_attribute v. CSS.supports
+PASS mask-composite: _dashed_attribute v. CSS.supports
+PASS mask-image: _camel_cased_attribute v. CSS.supports
+PASS mask-image: _dashed_attribute v. CSS.supports
+PASS mask-mode: _camel_cased_attribute v. CSS.supports
+PASS mask-mode: _dashed_attribute v. CSS.supports
+PASS mask-origin: _camel_cased_attribute v. CSS.supports
+PASS mask-origin: _dashed_attribute v. CSS.supports
+PASS mask-position: _camel_cased_attribute v. CSS.supports
+PASS mask-position: _dashed_attribute v. CSS.supports
+PASS mask-position-x: _camel_cased_attribute v. CSS.supports
+PASS mask-position-x: _dashed_attribute v. CSS.supports
+PASS mask-position-y: _camel_cased_attribute v. CSS.supports
+PASS mask-position-y: _dashed_attribute v. CSS.supports
+PASS mask-repeat: _camel_cased_attribute v. CSS.supports
+PASS mask-repeat: _dashed_attribute v. CSS.supports
+PASS mask-size: _camel_cased_attribute v. CSS.supports
+PASS mask-size: _dashed_attribute v. CSS.supports
+PASS mask-type: _camel_cased_attribute v. CSS.supports
+PASS mask-type: _dashed_attribute v. CSS.supports
+PASS max-block-size: _camel_cased_attribute v. CSS.supports
+PASS max-block-size: _dashed_attribute v. CSS.supports
+PASS max-height: _camel_cased_attribute v. CSS.supports
+PASS max-height: _dashed_attribute v. CSS.supports
+PASS max-inline-size: _camel_cased_attribute v. CSS.supports
+PASS max-inline-size: _dashed_attribute v. CSS.supports
+PASS max-width: _camel_cased_attribute v. CSS.supports
+PASS max-width: _dashed_attribute v. CSS.supports
+FAIL max-zoom: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL max-zoom: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS min-block-size: _camel_cased_attribute v. CSS.supports
+PASS min-block-size: _dashed_attribute v. CSS.supports
+PASS min-height: _camel_cased_attribute v. CSS.supports
+PASS min-height: _dashed_attribute v. CSS.supports
+PASS min-inline-size: _camel_cased_attribute v. CSS.supports
+PASS min-inline-size: _dashed_attribute v. CSS.supports
+PASS min-width: _camel_cased_attribute v. CSS.supports
+PASS min-width: _dashed_attribute v. CSS.supports
+FAIL min-zoom: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL min-zoom: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS mix-blend-mode: _camel_cased_attribute v. CSS.supports
+PASS mix-blend-mode: _dashed_attribute v. CSS.supports
+PASS motion: _camel_cased_attribute v. CSS.supports
+PASS motion-offset: _camel_cased_attribute v. CSS.supports
+PASS motion-offset: _dashed_attribute v. CSS.supports
+PASS motion-path: _camel_cased_attribute v. CSS.supports
+PASS motion-path: _dashed_attribute v. CSS.supports
+PASS motion-rotation: _camel_cased_attribute v. CSS.supports
+PASS motion-rotation: _dashed_attribute v. CSS.supports
+PASS object-fit: _camel_cased_attribute v. CSS.supports
+PASS object-fit: _dashed_attribute v. CSS.supports
+PASS object-position: _camel_cased_attribute v. CSS.supports
+PASS object-position: _dashed_attribute v. CSS.supports
+PASS offset: _camel_cased_attribute v. CSS.supports
+PASS offset-anchor: _camel_cased_attribute v. CSS.supports
+PASS offset-anchor: _dashed_attribute v. CSS.supports
+PASS offset-block-end: _camel_cased_attribute v. CSS.supports
+PASS offset-block-end: _dashed_attribute v. CSS.supports
+PASS offset-block-start: _camel_cased_attribute v. CSS.supports
+PASS offset-block-start: _dashed_attribute v. CSS.supports
+PASS offset-distance: _camel_cased_attribute v. CSS.supports
+PASS offset-distance: _dashed_attribute v. CSS.supports
+PASS offset-inline-end: _camel_cased_attribute v. CSS.supports
+PASS offset-inline-end: _dashed_attribute v. CSS.supports
+PASS offset-inline-start: _camel_cased_attribute v. CSS.supports
+PASS offset-inline-start: _dashed_attribute v. CSS.supports
+PASS offset-path: _camel_cased_attribute v. CSS.supports
+PASS offset-path: _dashed_attribute v. CSS.supports
+PASS offset-rotate: _camel_cased_attribute v. CSS.supports
+PASS offset-rotate: _dashed_attribute v. CSS.supports
+PASS offset-rotation: _camel_cased_attribute v. CSS.supports
+PASS offset-rotation: _dashed_attribute v. CSS.supports
+PASS opacity: _camel_cased_attribute v. CSS.supports
+PASS order: _camel_cased_attribute v. CSS.supports
+FAIL orientation: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+PASS orphans: _camel_cased_attribute v. CSS.supports
+PASS outline: _camel_cased_attribute v. CSS.supports
+PASS outline-color: _camel_cased_attribute v. CSS.supports
+PASS outline-color: _dashed_attribute v. CSS.supports
+PASS outline-offset: _camel_cased_attribute v. CSS.supports
+PASS outline-offset: _dashed_attribute v. CSS.supports
+PASS outline-style: _camel_cased_attribute v. CSS.supports
+PASS outline-style: _dashed_attribute v. CSS.supports
+PASS outline-width: _camel_cased_attribute v. CSS.supports
+PASS outline-width: _dashed_attribute v. CSS.supports
+PASS overflow: _camel_cased_attribute v. CSS.supports
+PASS overflow-anchor: _camel_cased_attribute v. CSS.supports
+PASS overflow-anchor: _dashed_attribute v. CSS.supports
+PASS overflow-block: _camel_cased_attribute v. CSS.supports
+PASS overflow-block: _dashed_attribute v. CSS.supports
+PASS overflow-inline: _camel_cased_attribute v. CSS.supports
+PASS overflow-inline: _dashed_attribute v. CSS.supports
+PASS overflow-wrap: _camel_cased_attribute v. CSS.supports
+PASS overflow-wrap: _dashed_attribute v. CSS.supports
+PASS overflow-x: _camel_cased_attribute v. CSS.supports
+PASS overflow-x: _dashed_attribute v. CSS.supports
+PASS overflow-y: _camel_cased_attribute v. CSS.supports
+PASS overflow-y: _dashed_attribute v. CSS.supports
+PASS overscroll-behavior: _camel_cased_attribute v. CSS.supports
+PASS overscroll-behavior: _dashed_attribute v. CSS.supports
+PASS overscroll-behavior-block: _camel_cased_attribute v. CSS.supports
+PASS overscroll-behavior-block: _dashed_attribute v. CSS.supports
+PASS overscroll-behavior-inline: _camel_cased_attribute v. CSS.supports
+PASS overscroll-behavior-inline: _dashed_attribute v. CSS.supports
+PASS overscroll-behavior-x: _camel_cased_attribute v. CSS.supports
+PASS overscroll-behavior-x: _dashed_attribute v. CSS.supports
+PASS overscroll-behavior-y: _camel_cased_attribute v. CSS.supports
+PASS overscroll-behavior-y: _dashed_attribute v. CSS.supports
+PASS padding: _camel_cased_attribute v. CSS.supports
+PASS padding-block: _camel_cased_attribute v. CSS.supports
+PASS padding-block: _dashed_attribute v. CSS.supports
+PASS padding-block-end: _camel_cased_attribute v. CSS.supports
+PASS padding-block-end: _dashed_attribute v. CSS.supports
+PASS padding-block-start: _camel_cased_attribute v. CSS.supports
+PASS padding-block-start: _dashed_attribute v. CSS.supports
+PASS padding-bottom: _camel_cased_attribute v. CSS.supports
+PASS padding-bottom: _dashed_attribute v. CSS.supports
+PASS padding-inline: _camel_cased_attribute v. CSS.supports
+PASS padding-inline: _dashed_attribute v. CSS.supports
+PASS padding-inline-end: _camel_cased_attribute v. CSS.supports
+PASS padding-inline-end: _dashed_attribute v. CSS.supports
+PASS padding-inline-start: _camel_cased_attribute v. CSS.supports
+PASS padding-inline-start: _dashed_attribute v. CSS.supports
+PASS padding-left: _camel_cased_attribute v. CSS.supports
+PASS padding-left: _dashed_attribute v. CSS.supports
+PASS padding-right: _camel_cased_attribute v. CSS.supports
+PASS padding-right: _dashed_attribute v. CSS.supports
+PASS padding-top: _camel_cased_attribute v. CSS.supports
+PASS padding-top: _dashed_attribute v. CSS.supports
+PASS page: _camel_cased_attribute v. CSS.supports
+PASS page-break-after: _camel_cased_attribute v. CSS.supports
+PASS page-break-after: _dashed_attribute v. CSS.supports
+PASS page-break-before: _camel_cased_attribute v. CSS.supports
+PASS page-break-before: _dashed_attribute v. CSS.supports
+PASS page-break-inside: _camel_cased_attribute v. CSS.supports
+PASS page-break-inside: _dashed_attribute v. CSS.supports
+PASS page-orientation: _camel_cased_attribute v. CSS.supports
+PASS page-orientation: _dashed_attribute v. CSS.supports
+PASS paint-order: _camel_cased_attribute v. CSS.supports
+PASS paint-order: _dashed_attribute v. CSS.supports
+PASS pen-action: _camel_cased_attribute v. CSS.supports
+PASS pen-action: _dashed_attribute v. CSS.supports
+PASS perspective: _camel_cased_attribute v. CSS.supports
+PASS perspective-origin: _camel_cased_attribute v. CSS.supports
+PASS perspective-origin: _dashed_attribute v. CSS.supports
+PASS perspective-origin-x: _camel_cased_attribute v. CSS.supports
+PASS perspective-origin-x: _dashed_attribute v. CSS.supports
+PASS perspective-origin-y: _camel_cased_attribute v. CSS.supports
+PASS perspective-origin-y: _dashed_attribute v. CSS.supports
+PASS place-content: _camel_cased_attribute v. CSS.supports
+PASS place-content: _dashed_attribute v. CSS.supports
+PASS place-items: _camel_cased_attribute v. CSS.supports
+PASS place-items: _dashed_attribute v. CSS.supports
+PASS place-self: _camel_cased_attribute v. CSS.supports
+PASS place-self: _dashed_attribute v. CSS.supports
+PASS pointer-events: _camel_cased_attribute v. CSS.supports
+PASS pointer-events: _dashed_attribute v. CSS.supports
+PASS position: _camel_cased_attribute v. CSS.supports
+PASS quotes: _camel_cased_attribute v. CSS.supports
+PASS r: _camel_cased_attribute v. CSS.supports
+PASS resize: _camel_cased_attribute v. CSS.supports
+PASS right: _camel_cased_attribute v. CSS.supports
+PASS rotate: _camel_cased_attribute v. CSS.supports
+PASS row-gap: _camel_cased_attribute v. CSS.supports
+PASS row-gap: _dashed_attribute v. CSS.supports
+PASS ruby-align: _camel_cased_attribute v. CSS.supports
+PASS ruby-align: _dashed_attribute v. CSS.supports
+PASS ruby-overhang: _camel_cased_attribute v. CSS.supports
+PASS ruby-overhang: _dashed_attribute v. CSS.supports
+PASS ruby-position: _camel_cased_attribute v. CSS.supports
+PASS ruby-position: _dashed_attribute v. CSS.supports
+PASS rx: _camel_cased_attribute v. CSS.supports
+PASS ry: _camel_cased_attribute v. CSS.supports
+PASS scale: _camel_cased_attribute v. CSS.supports
+PASS scroll-behavior: _camel_cased_attribute v. CSS.supports
+PASS scroll-behavior: _dashed_attribute v. CSS.supports
+PASS scroll-margin: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin: _dashed_attribute v. CSS.supports
+PASS scroll-margin-block: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-block: _dashed_attribute v. CSS.supports
+PASS scroll-margin-block-end: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-block-end: _dashed_attribute v. CSS.supports
+PASS scroll-margin-block-start: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-block-start: _dashed_attribute v. CSS.supports
+PASS scroll-margin-bottom: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-bottom: _dashed_attribute v. CSS.supports
+PASS scroll-margin-inline: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-inline: _dashed_attribute v. CSS.supports
+PASS scroll-margin-inline-end: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-inline-end: _dashed_attribute v. CSS.supports
+PASS scroll-margin-inline-start: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-inline-start: _dashed_attribute v. CSS.supports
+PASS scroll-margin-left: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-left: _dashed_attribute v. CSS.supports
+PASS scroll-margin-right: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-right: _dashed_attribute v. CSS.supports
+PASS scroll-margin-top: _camel_cased_attribute v. CSS.supports
+PASS scroll-margin-top: _dashed_attribute v. CSS.supports
+PASS scroll-padding: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding: _dashed_attribute v. CSS.supports
+PASS scroll-padding-block: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-block: _dashed_attribute v. CSS.supports
+PASS scroll-padding-block-end: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-block-end: _dashed_attribute v. CSS.supports
+PASS scroll-padding-block-start: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-block-start: _dashed_attribute v. CSS.supports
+PASS scroll-padding-bottom: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-bottom: _dashed_attribute v. CSS.supports
+PASS scroll-padding-inline: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-inline: _dashed_attribute v. CSS.supports
+PASS scroll-padding-inline-end: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-inline-end: _dashed_attribute v. CSS.supports
+PASS scroll-padding-inline-start: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-inline-start: _dashed_attribute v. CSS.supports
+PASS scroll-padding-left: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-left: _dashed_attribute v. CSS.supports
+PASS scroll-padding-right: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-right: _dashed_attribute v. CSS.supports
+PASS scroll-padding-top: _camel_cased_attribute v. CSS.supports
+PASS scroll-padding-top: _dashed_attribute v. CSS.supports
+PASS scroll-snap-align: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-align: _dashed_attribute v. CSS.supports
+PASS scroll-snap-coordinate: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-coordinate: _dashed_attribute v. CSS.supports
+PASS scroll-snap-destination: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-destination: _dashed_attribute v. CSS.supports
+PASS scroll-snap-margin: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-margin: _dashed_attribute v. CSS.supports
+PASS scroll-snap-margin-bottom: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-margin-bottom: _dashed_attribute v. CSS.supports
+PASS scroll-snap-margin-left: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-margin-left: _dashed_attribute v. CSS.supports
+PASS scroll-snap-margin-right: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-margin-right: _dashed_attribute v. CSS.supports
+PASS scroll-snap-margin-top: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-margin-top: _dashed_attribute v. CSS.supports
+PASS scroll-snap-points-x: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-points-x: _dashed_attribute v. CSS.supports
+PASS scroll-snap-points-y: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-points-y: _dashed_attribute v. CSS.supports
+PASS scroll-snap-stop: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-stop: _dashed_attribute v. CSS.supports
+PASS scroll-snap-type: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-type: _dashed_attribute v. CSS.supports
+PASS scroll-snap-type-x: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-type-x: _dashed_attribute v. CSS.supports
+PASS scroll-snap-type-y: _camel_cased_attribute v. CSS.supports
+PASS scroll-snap-type-y: _dashed_attribute v. CSS.supports
+PASS scrollbar-color: _camel_cased_attribute v. CSS.supports
+PASS scrollbar-color: _dashed_attribute v. CSS.supports
+PASS scrollbar-width: _camel_cased_attribute v. CSS.supports
+PASS scrollbar-width: _dashed_attribute v. CSS.supports
+PASS shape-image-threshold: _camel_cased_attribute v. CSS.supports
+PASS shape-image-threshold: _dashed_attribute v. CSS.supports
+PASS shape-margin: _camel_cased_attribute v. CSS.supports
+PASS shape-margin: _dashed_attribute v. CSS.supports
+PASS shape-outside: _camel_cased_attribute v. CSS.supports
+PASS shape-outside: _dashed_attribute v. CSS.supports
+PASS shape-rendering: _camel_cased_attribute v. CSS.supports
+PASS shape-rendering: _dashed_attribute v. CSS.supports
+PASS size: _camel_cased_attribute v. CSS.supports
+PASS speak: _camel_cased_attribute v. CSS.supports
+FAIL speak-as: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL speak-as: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL src: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+PASS stop-color: _camel_cased_attribute v. CSS.supports
+PASS stop-color: _dashed_attribute v. CSS.supports
+PASS stop-opacity: _camel_cased_attribute v. CSS.supports
+PASS stop-opacity: _dashed_attribute v. CSS.supports
+PASS stroke: _camel_cased_attribute v. CSS.supports
+PASS stroke-color: _camel_cased_attribute v. CSS.supports
+PASS stroke-color: _dashed_attribute v. CSS.supports
+PASS stroke-dasharray: _camel_cased_attribute v. CSS.supports
+PASS stroke-dasharray: _dashed_attribute v. CSS.supports
+PASS stroke-dashoffset: _camel_cased_attribute v. CSS.supports
+PASS stroke-dashoffset: _dashed_attribute v. CSS.supports
+PASS stroke-linecap: _camel_cased_attribute v. CSS.supports
+PASS stroke-linecap: _dashed_attribute v. CSS.supports
+PASS stroke-linejoin: _camel_cased_attribute v. CSS.supports
+PASS stroke-linejoin: _dashed_attribute v. CSS.supports
+PASS stroke-miterlimit: _camel_cased_attribute v. CSS.supports
+PASS stroke-miterlimit: _dashed_attribute v. CSS.supports
+PASS stroke-opacity: _camel_cased_attribute v. CSS.supports
+PASS stroke-opacity: _dashed_attribute v. CSS.supports
+PASS stroke-width: _camel_cased_attribute v. CSS.supports
+PASS stroke-width: _dashed_attribute v. CSS.supports
+PASS supported-color-schemes: _camel_cased_attribute v. CSS.supports
+PASS supported-color-schemes: _dashed_attribute v. CSS.supports
+FAIL syntax: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+PASS tab-size: _camel_cased_attribute v. CSS.supports
+PASS tab-size: _dashed_attribute v. CSS.supports
+PASS table-layout: _camel_cased_attribute v. CSS.supports
+PASS table-layout: _dashed_attribute v. CSS.supports
+PASS text-align: _camel_cased_attribute v. CSS.supports
+PASS text-align: _dashed_attribute v. CSS.supports
+PASS text-align-last: _camel_cased_attribute v. CSS.supports
+PASS text-align-last: _dashed_attribute v. CSS.supports
+PASS text-anchor: _camel_cased_attribute v. CSS.supports
+PASS text-anchor: _dashed_attribute v. CSS.supports
+PASS text-combine-upright: _camel_cased_attribute v. CSS.supports
+PASS text-combine-upright: _dashed_attribute v. CSS.supports
+PASS text-decoration: _camel_cased_attribute v. CSS.supports
+PASS text-decoration: _dashed_attribute v. CSS.supports
+PASS text-decoration-color: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-color: _dashed_attribute v. CSS.supports
+PASS text-decoration-line: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-line: _dashed_attribute v. CSS.supports
+PASS text-decoration-skip: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-skip: _dashed_attribute v. CSS.supports
+PASS text-decoration-skip-ink: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-skip-ink: _dashed_attribute v. CSS.supports
+PASS text-decoration-style: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-style: _dashed_attribute v. CSS.supports
+PASS text-decoration-thickness: _camel_cased_attribute v. CSS.supports
+PASS text-decoration-thickness: _dashed_attribute v. CSS.supports
+PASS text-emphasis: _camel_cased_attribute v. CSS.supports
+PASS text-emphasis: _dashed_attribute v. CSS.supports
+PASS text-emphasis-color: _camel_cased_attribute v. CSS.supports
+PASS text-emphasis-color: _dashed_attribute v. CSS.supports
+PASS text-emphasis-position: _camel_cased_attribute v. CSS.supports
+PASS text-emphasis-position: _dashed_attribute v. CSS.supports
+PASS text-emphasis-style: _camel_cased_attribute v. CSS.supports
+PASS text-emphasis-style: _dashed_attribute v. CSS.supports
+PASS text-indent: _camel_cased_attribute v. CSS.supports
+PASS text-indent: _dashed_attribute v. CSS.supports
+PASS text-justify: _camel_cased_attribute v. CSS.supports
+PASS text-justify: _dashed_attribute v. CSS.supports
+PASS text-kashida: _camel_cased_attribute v. CSS.supports
+PASS text-kashida: _dashed_attribute v. CSS.supports
+PASS text-kashida-space: _camel_cased_attribute v. CSS.supports
+PASS text-kashida-space: _dashed_attribute v. CSS.supports
+PASS text-line-through: _camel_cased_attribute v. CSS.supports
+PASS text-line-through: _dashed_attribute v. CSS.supports
+PASS text-line-through-color: _camel_cased_attribute v. CSS.supports
+PASS text-line-through-color: _dashed_attribute v. CSS.supports
+PASS text-line-through-mode: _camel_cased_attribute v. CSS.supports
+PASS text-line-through-mode: _dashed_attribute v. CSS.supports
+PASS text-line-through-style: _camel_cased_attribute v. CSS.supports
+PASS text-line-through-style: _dashed_attribute v. CSS.supports
+PASS text-line-through-width: _camel_cased_attribute v. CSS.supports
+PASS text-line-through-width: _dashed_attribute v. CSS.supports
+PASS text-orientation: _camel_cased_attribute v. CSS.supports
+PASS text-orientation: _dashed_attribute v. CSS.supports
+PASS text-overflow: _camel_cased_attribute v. CSS.supports
+PASS text-overflow: _dashed_attribute v. CSS.supports
+PASS text-overline: _camel_cased_attribute v. CSS.supports
+PASS text-overline: _dashed_attribute v. CSS.supports
+PASS text-overline-color: _camel_cased_attribute v. CSS.supports
+PASS text-overline-color: _dashed_attribute v. CSS.supports
+PASS text-overline-mode: _camel_cased_attribute v. CSS.supports
+PASS text-overline-mode: _dashed_attribute v. CSS.supports
+PASS text-overline-style: _camel_cased_attribute v. CSS.supports
+PASS text-overline-style: _dashed_attribute v. CSS.supports
+PASS text-overline-width: _camel_cased_attribute v. CSS.supports
+PASS text-overline-width: _dashed_attribute v. CSS.supports
+PASS text-rendering: _camel_cased_attribute v. CSS.supports
+PASS text-rendering: _dashed_attribute v. CSS.supports
+PASS text-shadow: _camel_cased_attribute v. CSS.supports
+PASS text-shadow: _dashed_attribute v. CSS.supports
+PASS text-size-adjust: _camel_cased_attribute v. CSS.supports
+PASS text-size-adjust: _dashed_attribute v. CSS.supports
+PASS text-transform: _camel_cased_attribute v. CSS.supports
+PASS text-transform: _dashed_attribute v. CSS.supports
+PASS text-underline: _camel_cased_attribute v. CSS.supports
+PASS text-underline: _dashed_attribute v. CSS.supports
+PASS text-underline-color: _camel_cased_attribute v. CSS.supports
+PASS text-underline-color: _dashed_attribute v. CSS.supports
+PASS text-underline-mode: _camel_cased_attribute v. CSS.supports
+PASS text-underline-mode: _dashed_attribute v. CSS.supports
+PASS text-underline-offset: _camel_cased_attribute v. CSS.supports
+PASS text-underline-offset: _dashed_attribute v. CSS.supports
+PASS text-underline-position: _camel_cased_attribute v. CSS.supports
+PASS text-underline-position: _dashed_attribute v. CSS.supports
+PASS text-underline-style: _camel_cased_attribute v. CSS.supports
+PASS text-underline-style: _dashed_attribute v. CSS.supports
+PASS text-underline-width: _camel_cased_attribute v. CSS.supports
+PASS text-underline-width: _dashed_attribute v. CSS.supports
+PASS top: _camel_cased_attribute v. CSS.supports
+PASS touch-action: _camel_cased_attribute v. CSS.supports
+PASS touch-action: _dashed_attribute v. CSS.supports
+PASS transform: _camel_cased_attribute v. CSS.supports
+PASS transform-box: _camel_cased_attribute v. CSS.supports
+PASS transform-box: _dashed_attribute v. CSS.supports
+PASS transform-origin: _camel_cased_attribute v. CSS.supports
+PASS transform-origin: _dashed_attribute v. CSS.supports
+PASS transform-origin-x: _camel_cased_attribute v. CSS.supports
+PASS transform-origin-x: _dashed_attribute v. CSS.supports
+PASS transform-origin-y: _camel_cased_attribute v. CSS.supports
+PASS transform-origin-y: _dashed_attribute v. CSS.supports
+PASS transform-origin-z: _camel_cased_attribute v. CSS.supports
+PASS transform-origin-z: _dashed_attribute v. CSS.supports
+PASS transform-style: _camel_cased_attribute v. CSS.supports
+PASS transform-style: _dashed_attribute v. CSS.supports
+PASS transition: _camel_cased_attribute v. CSS.supports
+PASS transition-delay: _camel_cased_attribute v. CSS.supports
+PASS transition-delay: _dashed_attribute v. CSS.supports
+PASS transition-duration: _camel_cased_attribute v. CSS.supports
+PASS transition-duration: _dashed_attribute v. CSS.supports
+PASS transition-property: _camel_cased_attribute v. CSS.supports
+PASS transition-property: _dashed_attribute v. CSS.supports
+PASS transition-timing-function: _camel_cased_attribute v. CSS.supports
+PASS transition-timing-function: _dashed_attribute v. CSS.supports
+PASS translate: _camel_cased_attribute v. CSS.supports
+PASS unicode-bidi: _camel_cased_attribute v. CSS.supports
+PASS unicode-bidi: _dashed_attribute v. CSS.supports
+FAIL unicode-range: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL unicode-range: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS user-select: _camel_cased_attribute v. CSS.supports
+PASS user-select: _dashed_attribute v. CSS.supports
+FAIL user-zoom: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
+FAIL user-zoom: _dashed_attribute v. CSS.supports assert_equals: expected true but got false
+PASS vector-effect: _camel_cased_attribute v. CSS.supports
+PASS vector-effect: _dashed_attribute v. CSS.supports
+PASS vertical-align: _camel_cased_attribute v. CSS.supports
+PASS vertical-align: _dashed_attribute v. CSS.supports
+PASS viewport-fit: _camel_cased_attribute v. CSS.supports
+PASS viewport-fit: _dashed_attribute v. CSS.supports
+PASS visibility: _camel_cased_attribute v. CSS.supports
+PASS white-space: _camel_cased_attribute v. CSS.supports
+PASS white-space: _dashed_attribute v. CSS.supports
+PASS widows: _camel_cased_attribute v. CSS.supports
+PASS width: _camel_cased_attribute v. CSS.supports
+PASS will-change: _camel_cased_attribute v. CSS.supports
+PASS will-change: _dashed_attribute v. CSS.supports
+PASS word-break: _camel_cased_attribute v. CSS.supports
+PASS word-break: _dashed_attribute v. CSS.supports
+PASS word-spacing: _camel_cased_attribute v. CSS.supports
+PASS word-spacing: _dashed_attribute v. CSS.supports
+PASS word-wrap: _camel_cased_attribute v. CSS.supports
+PASS word-wrap: _dashed_attribute v. CSS.supports
+PASS writing-mode: _camel_cased_attribute v. CSS.supports
+PASS writing-mode: _dashed_attribute v. CSS.supports
+PASS x: _camel_cased_attribute v. CSS.supports
+PASS y: _camel_cased_attribute v. CSS.supports
+PASS z-index: _camel_cased_attribute v. CSS.supports
+PASS z-index: _dashed_attribute v. CSS.supports
+PASS zoom: _camel_cased_attribute v. CSS.supports
+Harness: the test ran to completion.
+

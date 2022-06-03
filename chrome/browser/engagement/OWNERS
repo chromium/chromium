@@ -1,9 +1,4 @@
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-benwells@chromium.org
-calamity@chromium.org
-dominickn@chromium.org
-raymes@chromium.org
-
-# COMPONENT: Internals>Permissions>SiteEngagement
+file://components/site_engagement/OWNERS

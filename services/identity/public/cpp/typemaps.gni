@@ -1,6 +1,0 @@
-typemaps = [
-  "//services/identity/public/cpp/account_state.typemap",
-  "//services/identity/public/cpp/core_account_id.typemap",
-  "//services/identity/public/cpp/google_service_auth_error.typemap",
-  "//services/identity/public/cpp/scope_set.typemap",
-]

@@ -18,9 +18,7 @@ cast_source_set("util") {
 }
 
 test("cast_bluetooth_unittests") {
-  sources = [
-    "bluetooth_util_test.cc",
-  ]
+  sources = [ "bluetooth_util_test.cc" ]
 
   deps = [
     ":util",

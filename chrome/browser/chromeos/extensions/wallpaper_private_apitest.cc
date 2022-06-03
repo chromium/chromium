@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
 class WallPaperPrivateApiTest : public extensions::ExtensionApiTest {
@@ -20,5 +21,7 @@ IN_PROC_BROWSER_TEST_F(WallPaperPrivateApiTest, WallpaperPrivateApiTest) {
   chromeos::SystemSaltGetter::Get()->SetRawSaltForTesting(
       chromeos::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunComponentExtensionTest("wallpaper_manager")) << message_;
+  ASSERT_TRUE(
+      RunExtensionTest("wallpaper_manager", {}, {.load_as_component = true}))
+      << message_;
 }

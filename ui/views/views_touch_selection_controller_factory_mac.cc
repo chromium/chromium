@@ -10,8 +10,7 @@ ViewsTouchEditingControllerFactory::ViewsTouchEditingControllerFactory() =
     default;
 
 ui::TouchEditingControllerDeprecated*
-ViewsTouchEditingControllerFactory::Create(
-    ui::TouchEditable* client_view) {
+ViewsTouchEditingControllerFactory::Create(ui::TouchEditable* client_view) {
   return nullptr;
 }
 

@@ -17,7 +17,6 @@ FAIL WorkletAnimation must be primary interface of new WorkletAnimation("name") 
 FAIL Stringification of new WorkletAnimation("name") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'WorkletAnimation': 2 arguments required, but only 1 present."
 FAIL WorkletAnimation interface: new WorkletAnimation("name") must inherit property "animatorName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'WorkletAnimation': 2 arguments required, but only 1 present."
 PASS WorkletGroupEffect interface: existence and properties of interface object
-PASS WorkletGlobalScope interface: existence and properties of interface object
 PASS CSS namespace: operation escape(CSSOMString)
 FAIL CSS namespace: attribute animationWorklet assert_own_property: CSS does not have property "animationWorklet" expected property "animationWorklet" missing
 Harness: the test ran to completion.

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<body>
+  <!-- If there's an image containing just stopwords in a link,
+       both should be annotated. -->
+  <a href="#">
+    <img src="/android/UiCapture/train.png" alt="photo background" width=50 height=50>
+  </a>
+
+  <!-- If the link has its own name and it's not just stopwords,
+       the link shouldn't get annotated. -->
+  <a href="#" aria-label="Link to more details on frogs">
+    <img src="/android/UiCapture/frog.jpg" alt="the" width=50 height=50>
+  </a>
+
+</body>

@@ -1,0 +1,17 @@
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_s3_server.cc",
+    "fake_s3_server.h",
+    "test_util.h",
+  ]
+
+  deps = [
+    "//chromeos/assistant/internal:internal",
+    "//chromeos/services/assistant:lib",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views:views",
+  ]
+}

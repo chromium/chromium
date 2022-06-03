@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIDEO_H_
 
 #include "third_party/blink/renderer/core/layout/layout_media.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -34,7 +35,7 @@ class HTMLVideoElement;
 
 class LayoutVideo final : public LayoutMedia {
  public:
-  LayoutVideo(HTMLVideoElement*);
+  explicit LayoutVideo(HTMLVideoElement*);
   ~LayoutVideo() override;
 
   static LayoutSize DefaultSize();
@@ -43,26 +44,33 @@ class LayoutVideo final : public LayoutMedia {
 
   bool SupportsAcceleratedRendering() const;
 
-  bool ShouldDisplayVideo() const;
+  enum DisplayMode { kPoster, kVideo };
+  DisplayMode GetDisplayMode() const;
+
   HTMLVideoElement* VideoElement() const;
 
-  const char* GetName() const override { return "LayoutVideo"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutVideo";
+  }
 
   void IntrinsicSizeChanged() override;
 
-  void UpdateAfterLayout() override;
-
-  bool ComputeShouldClipOverflow() const final { return true; }
+  OverflowClipAxes ComputeOverflowClipAxes() const final {
+    NOT_DESTROYED();
+    return kOverflowClipBothAxis;
+  }
 
  private:
   void UpdateFromElement() override;
 
-  LayoutSize CalculateIntrinsicSize();
+  LayoutSize CalculateIntrinsicSize(float scale);
   void UpdateIntrinsicSize(bool is_in_layout);
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectVideo || LayoutMedia::IsOfType(type);
   }
 
@@ -71,12 +79,12 @@ class LayoutVideo final : public LayoutMedia {
 
   void UpdateLayout() override;
 
-  LayoutUnit ComputeReplacedLogicalWidth(
-      ShouldComputePreferred = kComputeActual) const override;
-  LayoutUnit ComputeReplacedLogicalHeight(
-      LayoutUnit estimated_used_width = LayoutUnit()) const override;
   LayoutUnit MinimumReplacedHeight() const override;
 
+  bool CanHaveAdditionalCompositingReasons() const override {
+    NOT_DESTROYED();
+    return true;
+  }
   CompositingReasons AdditionalCompositingReasons() const override;
 
   void UpdatePlayer(bool is_in_layout);
@@ -84,7 +92,10 @@ class LayoutVideo final : public LayoutMedia {
   LayoutSize cached_image_size_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutVideo, IsVideo());
+template <>
+struct DowncastTraits<LayoutVideo> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsVideo(); }
+};
 
 }  // namespace blink
 

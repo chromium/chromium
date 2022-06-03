@@ -64,8 +64,8 @@ New code should prefer Shill*Client::Get() over the DBusThreadManager accessors.
 *   privetd (`privet_daemon_manager_client.cc`)
 *   Wi-Fi AP manager (`ap_manager_client.cc`)
 
-[Chrome OS D-Bus Usage in Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/dbus_in_chrome.md
+[Chrome OS D-Bus Usage in Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/main/dbus_in_chrome.md
 [Mash]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/README.md
 [src/chromeos/dbus/kerberos]: https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/dbus/kerberos
-[dbus_helper.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/chromeos/dbus/dbus_helper.cc
+[dbus_helper.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/ash/dbus/dbus_helper.cc
 [ash_service.cc]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/ash_service.cc

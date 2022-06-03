@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/timer/elapsed_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -72,7 +72,7 @@ const char kRepresentativePlainText[] =
 void RunLooksLikeBinary(const std::string& plaintext, size_t iterations) {
   bool looks_like_binary = false;
   for (size_t i = 0; i < iterations; ++i) {
-    if (LooksLikeBinary(plaintext.data(), plaintext.size()))
+    if (LooksLikeBinary(plaintext))
       looks_like_binary = true;
   }
   CHECK(!looks_like_binary);

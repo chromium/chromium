@@ -23,6 +23,8 @@ class AppTerminationObserver : public content::NotificationObserver,
                                public KeyedService {
  public:
   explicit AppTerminationObserver(content::BrowserContext* browser_context);
+  AppTerminationObserver(const AppTerminationObserver&) = delete;
+  AppTerminationObserver& operator=(const AppTerminationObserver&) = delete;
   ~AppTerminationObserver() override;
 
   static BrowserContextKeyedServiceFactory* GetFactoryInstance();
@@ -35,8 +37,6 @@ class AppTerminationObserver : public content::NotificationObserver,
   content::BrowserContext* browser_context_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppTerminationObserver);
 };
 
 }  // namespace chrome_apps

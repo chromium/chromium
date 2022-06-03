@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -33,15 +33,14 @@ TEST(GetShownOriginTest, RemovePrefixes) {
       {"https://WWW.Example.DE", "example.de"}};
 
   for (const auto& test_case : kTestCases) {
-    autofill::PasswordForm password_form;
-    password_form.origin = GURL(test_case.input);
-    EXPECT_EQ(test_case.output, GetShownOrigin(password_form.origin))
+    EXPECT_EQ(test_case.output,
+              GetShownOrigin(url::Origin::Create(GURL(test_case.input))))
         << "for input " << test_case.input;
   }
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
-  autofill::PasswordForm android_form;
+  PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name.clear();
 
@@ -55,7 +54,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
-  autofill::PasswordForm android_form;
+  PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 
@@ -69,9 +68,9 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
 }
 
 TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
-  autofill::PasswordForm form;
+  PasswordForm form;
   form.signon_realm = "https://example.com/";
-  form.origin = GURL("https://example.com/login?ref=1");
+  form.url = GURL("https://example.com/login?ref=1");
 
   std::string shown_origin;
   GURL link_url;

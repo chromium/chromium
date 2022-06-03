@@ -9,14 +9,11 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -26,7 +23,6 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/resource_coordinator/local_site_characteristics_webcontents_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #endif
 
@@ -42,12 +38,6 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
     rc_parts->tab_memory_metrics_reporter()->StartReporting(
         TabLoadTracker::Get());
   }
-
-#if !defined(OS_ANDROID)
-  local_site_characteristics_wc_observer_ =
-      std::make_unique<LocalSiteCharacteristicsWebContentsObserver>(
-          web_contents);
-#endif
 }
 
 ResourceCoordinatorTabHelper::~ResourceCoordinatorTabHelper() = default;
@@ -61,36 +51,18 @@ bool ResourceCoordinatorTabHelper::IsLoaded(content::WebContents* contents) {
   return true;
 }
 
-bool ResourceCoordinatorTabHelper::IsFrozen(content::WebContents* contents) {
-#if !defined(OS_ANDROID)
-  if (resource_coordinator::ResourceCoordinatorTabHelper::FromWebContents(
-          contents)) {
-    auto* tab_lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
-        GetTabLifecycleUnitExternal(contents);
-    if (tab_lifecycle_unit)
-      return tab_lifecycle_unit->IsFrozen();
-  }
-#endif
-  return false;
+void ResourceCoordinatorTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ =
+      ukm::ConvertToSourceId(page.GetMainDocument().GetPageUkmSourceId(),
+                             ukm::SourceIdType::NAVIGATION_ID);
+  TabLoadTracker::Get()->PrimaryPageChanged(web_contents());
 }
 
-void ResourceCoordinatorTabHelper::DidStartLoading() {
-  TabLoadTracker::Get()->DidStartLoading(web_contents());
+void ResourceCoordinatorTabHelper::DidStopLoading() {
+  TabLoadTracker::Get()->DidStopLoading(web_contents());
 }
 
-void ResourceCoordinatorTabHelper::DidReceiveResponse() {
-  TabLoadTracker::Get()->DidReceiveResponse(web_contents());
-}
-
-void ResourceCoordinatorTabHelper::DidFailLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url,
-    int error_code,
-    const base::string16& error_description) {
-  TabLoadTracker::Get()->DidFailLoad(web_contents());
-}
-
-void ResourceCoordinatorTabHelper::RenderProcessGone(
+void ResourceCoordinatorTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // TODO(siggi): Looks like this can be acquired in a more timely manner from
   //    the RenderProcessHostObserver.
@@ -101,19 +73,6 @@ void ResourceCoordinatorTabHelper::WebContentsDestroyed() {
   TabLoadTracker::Get()->StopTracking(web_contents());
 }
 
-void ResourceCoordinatorTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  if (navigation_handle->IsInMainFrame()) {
-    ukm_source_id_ = ukm::ConvertToSourceId(
-        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-  }
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ResourceCoordinatorTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ResourceCoordinatorTabHelper);
 
 }  // namespace resource_coordinator

@@ -6,7 +6,6 @@
 #define ASH_METRICS_LOGIN_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -27,7 +26,7 @@ class ASH_EXPORT LoginMetricsRecorder {
     kVirtualKeyboardTray,
     kImeTray,
     kNotificationTray,
-    kLockScreenNoteActionButton,
+    kTrayActionNoteButton,
     kParentAccessButton,
     kTargetCount,
   };
@@ -42,6 +41,21 @@ class ASH_EXPORT LoginMetricsRecorder {
     kSystemTray,
     kVirtualKeyboardTray,
     kImeTray,
+    kOsInstallButton,
+    kTargetCount,
+  };
+
+  // User clicks target in OOBE. This enum is used to back an UMA
+  // histogram and new values should be inserted immediately above kTargetCount.
+  enum class OobeUserClickTarget {
+    kShutDownButton = 0,
+    kBrowseAsGuestButton,
+    kSystemTray,
+    kVirtualKeyboardTray,
+    kImeTray,
+    kEnterpriseEnrollmentButton,
+    kSignIn,
+    kOsInstallButton,
     kTargetCount,
   };
 
@@ -67,20 +81,24 @@ class ASH_EXPORT LoginMetricsRecorder {
     kCloseNoteButton,
     kCancelButton,
     kParentAccessButton,
+    kEnterpriseEnrollmentButton,
+    kOsInstallButton,
+    kSignIn,
     kTargetCount,
   };
 
   LoginMetricsRecorder();
+
+  LoginMetricsRecorder(const LoginMetricsRecorder&) = delete;
+  LoginMetricsRecorder& operator=(const LoginMetricsRecorder&) = delete;
+
   ~LoginMetricsRecorder();
 
-  // Used to record UMA stats.
-  void RecordNumLoginAttempts(int num_attempt, bool success);
+  // Methods used to record UMA stats.
+  // |num_attempt| is an output arg as the function reset its value to 0.
+  void RecordNumLoginAttempts(bool success, int* num_attempt);
   void RecordUserTrayClick(TrayClickTarget target);
   void RecordUserShelfButtonClick(ShelfButtonClickTarget target);
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(LoginMetricsRecorder);
 };
 
 }  // namespace ash

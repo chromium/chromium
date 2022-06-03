@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -82,7 +82,7 @@ void IgnoreBool(bool) {}
 class RepostFormTabHelperTest : public PlatformTest {
  protected:
   RepostFormTabHelperTest()
-      : web_state_(new web::TestWebState()),
+      : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[RepostFormTabHelperTestDelegate alloc] init]),
         location_(CGPointMake(kDialogHLocation, kDialogVLocation)) {
     RepostFormTabHelper::CreateForWebState(web_state_.get(), delegate_);
@@ -94,7 +94,7 @@ class RepostFormTabHelperTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   RepostFormTabHelperTestDelegate* delegate_;
   CGPoint location_;
 };
@@ -102,7 +102,7 @@ class RepostFormTabHelperTest : public PlatformTest {
 // Tests presentation location.
 TEST_F(RepostFormTabHelperTest, Location) {
   EXPECT_FALSE(CGPointEqualToPoint(delegate_.location, location_));
-  tab_helper()->PresentDialog(location_, base::Bind(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
   EXPECT_TRUE(CGPointEqualToPoint(delegate_.location, location_));
 }
 
@@ -139,7 +139,7 @@ TEST_F(RepostFormTabHelperTest, AllowRepost) {
 // Tests that dialog is dismissed when WebState is destroyed.
 TEST_F(RepostFormTabHelperTest, DismissingOnWebStateDestruction) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  tab_helper()->PresentDialog(location_, base::Bind(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
   EXPECT_TRUE(delegate_.presentingDialog);
   web_state_.reset();
   EXPECT_FALSE(delegate_.presentingDialog);
@@ -148,7 +148,7 @@ TEST_F(RepostFormTabHelperTest, DismissingOnWebStateDestruction) {
 // Tests that dialog is dismissed after provisional navigation has started.
 TEST_F(RepostFormTabHelperTest, DismissingOnNavigationStart) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  tab_helper()->PresentDialog(location_, base::Bind(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
   EXPECT_TRUE(delegate_.presentingDialog);
   web_state_->OnNavigationStarted(nullptr /* navigation_context */);
   EXPECT_FALSE(delegate_.presentingDialog);

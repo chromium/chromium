@@ -1,4 +1,5 @@
 if (self.importScripts) {
+  importScripts('/resources/get-host-info.js?pipe=sub');
   importScripts('/resources/testharness.js');
   importScripts('/serviceworker/resources/test-helpers.js');
   importScripts('/fetch/resources/fetch-test-options.js');

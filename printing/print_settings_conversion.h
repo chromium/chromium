@@ -5,12 +5,12 @@
 #ifndef PRINTING_PRINT_SETTINGS_CONVERSION_H_
 #define PRINTING_PRINT_SETTINGS_CONVERSION_H_
 
-#include "base/logging.h"
+#include <memory>
+
+#include "base/component_export.h"
 #include "printing/page_range.h"
-#include "printing/printing_export.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }  // namespace base
 
@@ -18,17 +18,19 @@ namespace printing {
 
 class PrintSettings;
 
-PRINTING_EXPORT PageRanges
-GetPageRangesFromJobSettings(const base::Value& job_settings);
+COMPONENT_EXPORT(PRINTING)
+PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings);
 
-PRINTING_EXPORT bool PrintSettingsFromJobSettings(
-    const base::Value& job_settings,
-    PrintSettings* print_settings);
+// Returns nullptr on failure.
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
+    const base::Value& job_settings);
 
-// Use for debug only, because output is not completely consistent with format
-// of |PrintSettingsFromJobSettings| input.
-void PrintSettingsToJobSettingsDebug(const PrintSettings& settings,
-                                     base::DictionaryValue* job_settings);
+// Use for debug/test only, because output is not completely consistent with
+// format of `PrintSettingsFromJobSettings` input.  The returned value is a
+// dictionary type.
+COMPONENT_EXPORT(PRINTING)
+base::Value PrintSettingsToJobSettingsDebug(const PrintSettings& settings);
 
 }  // namespace printing
 

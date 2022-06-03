@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/network_handler.h"
@@ -58,6 +59,10 @@ bool WifiDataProviderChromeOs::GetData(WifiData* data) {
   *data = wifi_data_;
   return is_first_scan_complete_;
 }
+
+// There is currently no reason to force a rescan on ChromeOS so this has not
+// been implemented.
+void WifiDataProviderChromeOs::ForceRescan() {}
 
 std::unique_ptr<WifiPollingPolicy>
 WifiDataProviderChromeOs::CreatePollingPolicy() {
@@ -123,7 +128,7 @@ void WifiDataProviderChromeOs::ScheduleNextScan(int interval) {
       base::BindOnce(
           &WifiDataProviderChromeOs::DoWifiScanTaskOnNetworkHandlerThread,
           this),
-      base::TimeDelta::FromMilliseconds(interval));
+      base::Milliseconds(interval));
 }
 
 void WifiDataProviderChromeOs::ScheduleStop() {

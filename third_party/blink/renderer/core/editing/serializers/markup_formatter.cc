@@ -27,7 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -56,25 +58,38 @@ struct EntityDescription {
 template <typename CharType>
 static inline void AppendCharactersReplacingEntitiesInternal(
     StringBuilder& result,
+    const StringView& source,
     CharType* text,
     unsigned length,
     const EntityDescription entity_maps[],
     unsigned entity_maps_count,
     EntityMask entity_mask) {
   unsigned position_after_last_entity = 0;
-  for (unsigned i = 0; i < length; ++i) {
-    for (unsigned entity_index = 0; entity_index < entity_maps_count;
-         ++entity_index) {
-      if (text[i] == entity_maps[entity_index].entity &&
-          entity_maps[entity_index].mask & entity_mask) {
-        result.Append(text + position_after_last_entity,
-                      i - position_after_last_entity);
-        const std::string& replacement = entity_maps[entity_index].reference;
-        result.Append(replacement.c_str(), replacement.length());
-        position_after_last_entity = i + 1;
-        break;
+  // Avoid scanning the string in cases where the mask is empty, for example
+  // scripTag.innerHTML that use the kEntityMaskInCDATA mask.
+  if (entity_mask) {
+    for (unsigned i = 0; i < length; ++i) {
+      for (unsigned entity_index = 0; entity_index < entity_maps_count;
+           ++entity_index) {
+        if (text[i] == entity_maps[entity_index].entity &&
+            entity_maps[entity_index].mask & entity_mask) {
+          result.Append(text + position_after_last_entity,
+                        i - position_after_last_entity);
+          const std::string& replacement = entity_maps[entity_index].reference;
+          result.Append(replacement.c_str(),
+                        base::checked_cast<unsigned>(replacement.length()));
+          position_after_last_entity = i + 1;
+          break;
+        }
       }
     }
+  }
+  // If we didn't find anything to replace use the fast path on StringBuilder
+  // to avoid a copy. This optimizes cases like scriptTag.innerHTML or
+  // p.innerHTML when the <p> contains a single Text.
+  if (!position_after_last_entity) {
+    result.Append(source);
+    return;
   }
   result.Append(text + position_after_last_entity,
                 length - position_after_last_entity);
@@ -82,9 +97,7 @@ static inline void AppendCharactersReplacingEntitiesInternal(
 
 void MarkupFormatter::AppendCharactersReplacingEntities(
     StringBuilder& result,
-    const String& source,
-    unsigned offset,
-    unsigned length,
+    const StringView& source,
     EntityMask entity_mask) {
   DEFINE_STATIC_LOCAL(const std::string, amp_reference, ("&amp;"));
   DEFINE_STATIC_LOCAL(const std::string, lt_reference, ("&lt;"));
@@ -106,19 +119,11 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
       {'\r', carriage_return_reference, kEntityCarriageReturn},
   };
 
-  if (!(offset + length))
-    return;
-
-  DCHECK_LE(offset + length, source.length());
-  if (source.Is8Bit()) {
+  WTF::VisitCharacters(source, [&](const auto* chars, unsigned) {
     AppendCharactersReplacingEntitiesInternal(
-        result, source.Characters8() + offset, length, kEntityMaps,
+        result, source, chars, source.length(), kEntityMaps,
         base::size(kEntityMaps), entity_mask);
-  } else {
-    AppendCharactersReplacingEntitiesInternal(
-        result, source.Characters16() + offset, length, kEntityMaps,
-        base::size(kEntityMaps), entity_mask);
-  }
+  });
 }
 
 MarkupFormatter::MarkupFormatter(AbsoluteURLs resolve_urls_method,
@@ -206,7 +211,7 @@ void MarkupFormatter::AppendEndMarkup(StringBuilder& result,
 void MarkupFormatter::AppendAttributeValue(StringBuilder& result,
                                            const String& attribute,
                                            bool document_is_html) {
-  AppendCharactersReplacingEntities(result, attribute, 0, attribute.length(),
+  AppendCharactersReplacingEntities(result, attribute,
                                     document_is_html
                                         ? kEntityMaskInHTMLAttributeValue
                                         : kEntityMaskInAttributeValue);
@@ -229,8 +234,7 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
 }
 
 void MarkupFormatter::AppendText(StringBuilder& result, const Text& text) {
-  const String& str = text.data();
-  AppendCharactersReplacingEntities(result, str, 0, str.length(),
+  AppendCharactersReplacingEntities(result, text.data(),
                                     EntityMaskForText(text));
 }
 
@@ -383,18 +387,28 @@ EntityMask MarkupFormatter::EntityMaskForText(const Text& text) const {
   if (text.parentElement())
     parent_name = &(text.parentElement())->TagQName();
 
-  if (parent_name &&
-      (*parent_name == html_names::kScriptTag ||
-       *parent_name == html_names::kStyleTag ||
-       *parent_name == html_names::kXmpTag ||
-       *parent_name == html_names::kIFrameTag ||
-       *parent_name == html_names::kPlaintextTag ||
-       *parent_name == html_names::kNoembedTag ||
-       *parent_name == html_names::kNoframesTag ||
-       (*parent_name == html_names::kNoscriptTag &&
-        text.GetDocument().GetFrame() &&
-        text.GetDocument().CanExecuteScripts(kNotAboutToExecuteScript))))
-    return kEntityMaskInCDATA;
+  if (parent_name) {
+    // For a NOSCRIPT tag, escape the string unless there's an execution context
+    // and scripting is enabled. Note that some documents (e.g. the one created
+    // by DOMParser) are created with a script-enabled execution context, but no
+    // DOMWindow. But per spec [1], they should behave as if they have no
+    // execution context. So check for a DOMWindow here.
+    // [1] https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html
+    bool is_noscript_tag_with_script_enabled =
+        *parent_name == html_names::kNoscriptTag &&
+        text.GetExecutionContext() && text.GetDocument().domWindow() &&
+        text.GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript);
+    if (*parent_name == html_names::kScriptTag ||
+        *parent_name == html_names::kStyleTag ||
+        *parent_name == html_names::kXmpTag ||
+        *parent_name == html_names::kIFrameTag ||
+        *parent_name == html_names::kPlaintextTag ||
+        *parent_name == html_names::kNoembedTag ||
+        *parent_name == html_names::kNoframesTag ||
+        is_noscript_tag_with_script_enabled) {
+      return kEntityMaskInCDATA;
+    }
+  }
   return kEntityMaskInHTMLPCDATA;
 }
 

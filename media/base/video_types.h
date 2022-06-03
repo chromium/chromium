@@ -10,7 +10,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "media/base/media_export.h"
+#include "media/base/media_shmem_export.h"
 
 namespace media {
 
@@ -37,7 +37,8 @@ enum VideoPixelFormat {
       6,  // 12bpp with Y plane followed by a 2x2 interleaved UV plane.
   PIXEL_FORMAT_NV21 =
       7,  // 12bpp with Y plane followed by a 2x2 interleaved VU plane.
-  /* PIXEL_FORMAT_UYVY = 8,  Deprecated */
+  PIXEL_FORMAT_UYVY =
+      8,  // 16bpp interleaved 2x1 U, 1x1 Y, 2x1 V, 1x1 Y samples.
   PIXEL_FORMAT_YUY2 =
       9,  // 16bpp interleaved 1x1 Y, 2x1 U, 1x1 Y, 2x1 V samples.
   PIXEL_FORMAT_ARGB = 10,   // 32bpp BGRA (byte-order), 1 plane.
@@ -76,32 +77,35 @@ enum VideoPixelFormat {
 
   PIXEL_FORMAT_BGRA = 32,  // 32bpp ARGB (byte-order), 1 plane.
 
+  PIXEL_FORMAT_RGBAF16 = 33,  // Half float RGBA, 1 plane.
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_BGRA,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_RGBAF16,  // Must always be equal to largest entry logged.
 };
 
 // Returns the name of a Format as a string.
-MEDIA_EXPORT std::string VideoPixelFormatToString(VideoPixelFormat format);
+MEDIA_SHMEM_EXPORT std::string VideoPixelFormatToString(
+    VideoPixelFormat format);
 
 // Stream operator of Format for logging etc.
-MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
-                                      VideoPixelFormat format);
+MEDIA_SHMEM_EXPORT std::ostream& operator<<(std::ostream& os,
+                                            VideoPixelFormat format);
 
 // Returns human readable fourcc string.
 // If any of the four characters is non-printable, it outputs
 // "0x<32-bit integer in hex>", e.g. FourccToString(0x66616b00) returns
 // "0x66616b00".
-MEDIA_EXPORT std::string FourccToString(uint32_t fourcc);
+MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
 
 // Returns true if |format| is a YUV format with multiple planes.
-MEDIA_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
+MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
 
 // Returns true if |format| has no Alpha channel (hence is always opaque).
-MEDIA_EXPORT bool IsOpaque(VideoPixelFormat format);
+MEDIA_SHMEM_EXPORT bool IsOpaque(VideoPixelFormat format);
 
 // Returns the number of significant bits per channel.
-MEDIA_EXPORT size_t BitDepth(VideoPixelFormat format);
+MEDIA_SHMEM_EXPORT size_t BitDepth(VideoPixelFormat format);
 
 }  // namespace media
 

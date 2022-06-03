@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/process/process_metrics.h"
-#include "base/test/bind_test_util.h"
+#include "base/memory/page_size.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
@@ -51,7 +51,7 @@ class GuardedPageAllocatorTest : public BaseGpaTest,
 
       uintptr_t addr = reinterpret_cast<uintptr_t>(alloc);
       bool is_left_aligned =
-          (base::bits::Align(addr, base::GetPageSize()) == addr);
+          (base::bits::AlignUp(addr, base::GetPageSize()) == addr);
       if (is_left_aligned == left_aligned)
         return reinterpret_cast<char*>(addr);
 
@@ -110,7 +110,7 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
   EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
-#if !defined(OS_MACOSX)
+#if !defined(OS_APPLE)
   EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
 #else
   EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
@@ -212,6 +212,10 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
                              std::array<void*, kMaxMetadata>* allocations)
       : gpa_(gpa), allocations_(allocations) {}
 
+  ThreadedAllocCountDelegate(const ThreadedAllocCountDelegate&) = delete;
+  ThreadedAllocCountDelegate& operator=(const ThreadedAllocCountDelegate&) =
+      delete;
+
   void Run() override {
     for (size_t i = 0; i < kMaxMetadata; i++) {
       (*allocations_)[i] = gpa_->Allocate(1);
@@ -221,8 +225,6 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
  private:
   GuardedPageAllocator* gpa_;
   std::array<void*, kMaxMetadata>* allocations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedAllocCountDelegate);
 };
 
 // Test that no pages are double-allocated or left unallocated, and that no
@@ -260,10 +262,15 @@ class ThreadedHighContentionDelegate
   explicit ThreadedHighContentionDelegate(GuardedPageAllocator* gpa)
       : gpa_(gpa) {}
 
+  ThreadedHighContentionDelegate(const ThreadedHighContentionDelegate&) =
+      delete;
+  ThreadedHighContentionDelegate& operator=(
+      const ThreadedHighContentionDelegate&) = delete;
+
   void Run() override {
     char* buf;
     while ((buf = reinterpret_cast<char*>(gpa_->Allocate(1))) == nullptr) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(5000));
+      base::PlatformThread::Sleep(base::Nanoseconds(5000));
     }
 
     // Verify that no other thread has access to this page.
@@ -272,7 +279,7 @@ class ThreadedHighContentionDelegate
     // Mark this page and allow some time for another thread to potentially
     // gain access to this page.
     buf[0] = 'A';
-    base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(10000));
+    base::PlatformThread::Sleep(base::Nanoseconds(10000));
     EXPECT_EQ(buf[0], 'A');
 
     // Unmark this page and deallocate.
@@ -282,8 +289,6 @@ class ThreadedHighContentionDelegate
 
  private:
   GuardedPageAllocator* gpa_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedHighContentionDelegate);
 };
 
 // Test that allocator remains in consistent state under high contention and

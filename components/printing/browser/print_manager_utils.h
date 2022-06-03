@@ -7,7 +7,7 @@
 
 #include <string>
 
-struct PrintMsg_Print_Params;
+#include "components/printing/common/print.mojom-forward.h"
 
 namespace content {
 class WebContents;
@@ -24,10 +24,10 @@ bool IsOopifEnabled();
 void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
                                    const std::string& user_agent);
 
-// Converts given settings to Print_Params and stores them in the output
+// Converts given settings to PrintParams and stores them in the output
 // parameter |params|.
 void RenderParamsFromPrintSettings(const PrintSettings& settings,
-                                   PrintMsg_Print_Params* params);
+                                   mojom::PrintParams* params);
 
 }  // namespace printing
 

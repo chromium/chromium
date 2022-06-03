@@ -14,10 +14,10 @@
 #include "net/ntlm/ntlm_client.h"
 #include "net/ntlm/ntlm_test_data.h"
 
-base::string16 ConsumeRandomLengthString16(FuzzedDataProvider& data_provider,
+std::u16string ConsumeRandomLengthString16(FuzzedDataProvider& data_provider,
                                            size_t max_chars) {
   std::string bytes = data_provider.ConsumeRandomLengthString(max_chars * 2);
-  return base::string16(reinterpret_cast<const base::char16*>(bytes.data()),
+  return std::u16string(reinterpret_cast<const char16_t*>(bytes.data()),
                         bytes.size() / 2);
 }
 
@@ -30,11 +30,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Generate the input strings and challenge message. The strings will have a
   // maximum length 1 character longer than the maximum that |NtlmClient| will
   // accept to allow exploring the error cases.
-  base::string16 domain =
+  std::u16string domain =
       ConsumeRandomLengthString16(fdp, net::ntlm::kMaxFqdnLen + 1);
-  base::string16 username =
+  std::u16string username =
       ConsumeRandomLengthString16(fdp, net::ntlm::kMaxUsernameLen + 1);
-  base::string16 password =
+  std::u16string password =
       ConsumeRandomLengthString16(fdp, net::ntlm::kMaxPasswordLen + 1);
   std::string hostname =
       fdp.ConsumeRandomLengthString(net::ntlm::kMaxFqdnLen + 1);

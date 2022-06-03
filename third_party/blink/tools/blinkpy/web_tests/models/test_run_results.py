@@ -33,23 +33,23 @@ import time
 
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
 
 
 class TestRunException(Exception):
-
     def __init__(self, code, msg):
         self.code = code
         self.msg = msg
 
 
 class TestRunResults(object):
-
-    def __init__(self, expectations, num_tests):
+    def __init__(self, expectations, num_tests, result_sink):
         self.total = num_tests
         self.remaining = self.total
         self.expectations = expectations
+        self.result_sink = result_sink
 
         # Various counters:
         self.expected = 0
@@ -77,8 +77,9 @@ class TestRunResults(object):
         self.failures_by_name = {}
 
         self.tests_by_expectation = {}
-        for expectation in test_expectations.TestExpectations.EXPECTATIONS.values():
-            self.tests_by_expectation[expectation] = set()
+        for expected_result in \
+            test_expectations.EXPECTATION_DESCRIPTIONS.keys():
+            self.tests_by_expectation[expected_result] = set()
 
         self.slow_tests = set()
         self.interrupted = False
@@ -86,10 +87,13 @@ class TestRunResults(object):
 
     def add(self, test_result, expected, test_is_slow):
         result_type_for_stats = test_result.type
-        self.tests_by_expectation[result_type_for_stats].add(test_result.test_name)
+        self.tests_by_expectation[result_type_for_stats].add(
+            test_result.test_name)
+        if self.result_sink:
+            self.result_sink.sink(expected, test_result, self.expectations)
 
         self.results_by_name[test_result.test_name] = test_result
-        if test_result.type != test_expectations.SKIP:
+        if test_result.type != ResultType.Skip:
             self.all_results.append(test_result)
         self.remaining -= 1
         if len(test_result.failures):
@@ -97,27 +101,30 @@ class TestRunResults(object):
             self.failures_by_name[test_result.test_name] = test_result.failures
         if expected:
             self.expected += 1
-            if test_result.type == test_expectations.SKIP:
+            if test_result.type == ResultType.Skip:
                 self.expected_skips += 1
-            elif test_result.type != test_expectations.PASS:
+            elif test_result.type != ResultType.Pass:
                 self.expected_failures += 1
         else:
-            self.unexpected_results_by_name[test_result.test_name] = test_result
+            self.unexpected_results_by_name[test_result.test_name] = \
+                test_result
             self.unexpected += 1
             if len(test_result.failures):
                 self.unexpected_failures += 1
-            if test_result.type == test_expectations.CRASH:
+            if test_result.type == ResultType.Crash:
                 self.unexpected_crashes += 1
-            elif test_result.type == test_expectations.TIMEOUT:
+            elif test_result.type == ResultType.Timeout:
                 self.unexpected_timeouts += 1
         if test_is_slow:
             self.slow_tests.add(test_result.test_name)
 
 
 class RunDetails(object):
-
-    def __init__(self, exit_code, summarized_full_results=None,
-                 summarized_failing_results=None, initial_results=None,
+    def __init__(self,
+                 exit_code,
+                 summarized_full_results=None,
+                 summarized_failing_results=None,
+                 initial_results=None,
                  all_retry_results=None):
         self.exit_code = exit_code
         self.summarized_full_results = summarized_full_results
@@ -137,10 +144,11 @@ def _interpret_test_failures(failures):
     if test_failures.FailureMissingResult in failure_types:
         test_dict['is_missing_text'] = True
 
-    if (test_failures.FailureMissingImage in failure_types or
-            test_failures.FailureMissingImageHash in failure_types or
-            test_failures.FailureReftestNoImageGenerated in failure_types or
-            test_failures.FailureReftestNoReferenceImageGenerated in failure_types):
+    if (test_failures.FailureMissingImage in failure_types
+            or test_failures.FailureMissingImageHash in failure_types
+            or test_failures.FailureReftestNoImageGenerated in failure_types
+            or test_failures.FailureReftestNoReferenceImageGenerated in
+            failure_types):
         test_dict['is_missing_image'] = True
 
     if test_failures.FailureTestHarnessAssertion in failure_types:
@@ -149,8 +157,11 @@ def _interpret_test_failures(failures):
     return test_dict
 
 
-def summarize_results(port_obj, expectations, initial_results,
-                      all_retry_results, only_include_failing=False):
+def summarize_results(port_obj,
+                      expectations,
+                      initial_results,
+                      all_retry_results,
+                      only_include_failing=False):
     """Returns a dictionary containing a summary of the test runs, with the following fields:
         'version': a version indicator
         'fixable': The number of fixable tests (NOW - PASS)
@@ -166,20 +177,18 @@ def summarize_results(port_obj, expectations, initial_results,
 
     tbe = initial_results.tests_by_expectation
 
-    results['skipped'] = len(tbe[test_expectations.SKIP])
+    results['skipped'] = len(tbe[ResultType.Skip])
 
     # TODO(dpranke): Some or all of these counters can be removed.
     num_passes = 0
     num_flaky = 0
     num_regressions = 0
 
-    keywords = test_expectations.TestExpectations.EXPECTATIONS_TO_STRING
-
     # Calculate the number of failures by types (only in initial results).
     num_failures_by_type = {}
-    for expectation in initial_results.tests_by_expectation:
-        tests = initial_results.tests_by_expectation[expectation]
-        num_failures_by_type[keywords[expectation]] = len(tests)
+    for expected_result in initial_results.tests_by_expectation:
+        tests = initial_results.tests_by_expectation[expected_result]
+        num_failures_by_type[expected_result] = len(tests)
     results['num_failures_by_type'] = num_failures_by_type
 
     # Combine all iterations and retries together into a dictionary with the
@@ -190,10 +199,11 @@ def summarize_results(port_obj, expectations, initial_results,
     merged_results_by_name = collections.defaultdict(list)
     for test_run_results in [initial_results] + all_retry_results:
         # all_results does not include SKIP, so we need results_by_name.
-        for test_name, result in test_run_results.results_by_name.iteritems():
-            if result.type == test_expectations.SKIP:
+        for test_name, result in test_run_results.results_by_name.items():
+            if result.type == ResultType.Skip:
                 is_unexpected = test_name in test_run_results.unexpected_results_by_name
-                merged_results_by_name[test_name].append((result, is_unexpected))
+                merged_results_by_name[test_name].append((result,
+                                                          is_unexpected))
 
         # results_by_name only includes the last result, so we need all_results.
         for result in test_run_results.all_results:
@@ -203,13 +213,14 @@ def summarize_results(port_obj, expectations, initial_results,
 
     # Finally, compute the tests dict.
     tests = {}
-    for test_name, merged_results in merged_results_by_name.iteritems():
+    for test_name, merged_results in merged_results_by_name.items():
         initial_result = merged_results[0][0]
 
-        if only_include_failing and initial_result.type == test_expectations.SKIP:
+        if only_include_failing and initial_result.type == ResultType.Skip:
             continue
-
-        expected = expectations.get_expectations_string(test_name)
+        exp = expectations.get_expectations(test_name)
+        expected_results, bugs = exp.results, exp.reason
+        expected = ' '.join(expected_results)
         actual = []
         actual_types = []
         crash_sites = []
@@ -220,17 +231,17 @@ def summarize_results(port_obj, expectations, initial_results,
         has_unexpected_pass = False
         has_stderr = False
         for result, is_unexpected in merged_results:
-            actual.append(keywords[result.type])
+            actual.append(result.type)
             actual_types.append(result.type)
             crash_sites.append(result.crash_site)
 
-            if result.type != test_expectations.PASS:
+            if result.type != ResultType.Pass:
                 all_pass = False
             if result.has_stderr:
                 has_stderr = True
             if is_unexpected:
                 has_unexpected = True
-                if result.type == test_expectations.PASS:
+                if result.type == ResultType.Pass:
                     has_unexpected_pass = True
             else:
                 has_expected = True
@@ -249,6 +260,13 @@ def summarize_results(port_obj, expectations, initial_results,
         test_dict = {}
         test_dict['expected'] = expected
         test_dict['actual'] = ' '.join(actual)
+
+        # If a flag was added then add flag specific test expectations to the per test field
+        flag_exp = expectations.get_flag_expectations(test_name)
+        if flag_exp:
+            base_exp = expectations.get_base_expectations(test_name)
+            test_dict['flag_expectations'] = list(flag_exp.results)
+            test_dict['base_expectations'] = list(base_exp.results)
 
         # Fields below are optional. To avoid bloating the output results json
         # too much, only add them when they are True or non-empty.
@@ -273,24 +291,18 @@ def summarize_results(port_obj, expectations, initial_results,
             # Either no retries or all retries failed unexpectedly.
             num_regressions += 1
 
-
         rounded_run_time = round(initial_result.test_run_time, 1)
         if rounded_run_time:
             test_dict['time'] = rounded_run_time
 
+        if exp.is_slow_test:
+            test_dict['is_slow_test'] = True
+
         if has_stderr:
             test_dict['has_stderr'] = True
 
-        expectation_line = expectations.model().get_expectation_line(test_name)
-        bugs = expectation_line.bugs
         if bugs:
-            test_dict['bugs'] = bugs
-        if expectation_line.flag_expectations:
-            test_dict['flag_expectations'] = expectation_line.flag_expectations
-
-        base_expectations = expectation_line.base_expectations
-        if base_expectations:
-            test_dict['base_expectations'] = base_expectations
+            test_dict['bugs'] = bugs.split()
 
         if initial_result.reftest_type:
             test_dict.update(reftest_type=list(initial_result.reftest_type))
@@ -299,23 +311,22 @@ def summarize_results(port_obj, expectations, initial_results,
         if len(crash_sites) > 0:
             test_dict['crash_site'] = crash_sites[0]
 
-        if test_failures.has_failure_type(test_failures.FailureTextMismatch, initial_result.failures):
+        if test_failures.has_failure_type(test_failures.FailureTextMismatch,
+                                          initial_result.failures):
             for failure in initial_result.failures:
                 if isinstance(failure, test_failures.FailureTextMismatch):
-                    test_dict['text_mismatch'] = failure.text_mismatch_category()
+                    test_dict['text_mismatch'] = \
+                        failure.text_mismatch_category()
                     break
-
-        def is_expected(actual_result):
-            return expectations.matches_an_expected_result(test_name, actual_result)
 
         # Note: is_unexpected and is_regression are intended to reflect the
         # *last* result. In the normal use case (stop retrying failures
         # once they pass), this is equivalent to saying that all of the
         # results were unexpected failures.
         last_result = actual_types[-1]
-        if not is_expected(last_result):
+        if not expectations.matches_an_expected_result(test_name, last_result):
             test_dict['is_unexpected'] = True
-            if last_result != test_expectations.PASS:
+            if last_result != ResultType.Pass:
                 test_dict['is_regression'] = True
 
         if initial_result.has_repaint_overlay:
@@ -325,10 +336,12 @@ def summarize_results(port_obj, expectations, initial_results,
         for retry_result, is_unexpected in merged_results[1:]:
             # TODO(robertma): Why do we only update unexpected retry failures?
             if is_unexpected:
-                test_dict.update(_interpret_test_failures(retry_result.failures))
+                test_dict.update(
+                    _interpret_test_failures(retry_result.failures))
 
         for test_result, _ in merged_results:
-            for artifact_name, artifacts in test_result.artifacts.artifacts.items():
+            for artifact_name, artifacts in \
+                test_result.artifacts.artifacts.items():
                 artifact_dict = test_dict.setdefault('artifacts', {})
                 artifact_dict.setdefault(artifact_name, []).extend(artifacts)
 
@@ -367,7 +380,10 @@ def summarize_results(port_obj, expectations, initial_results,
     if port_obj.get_option('order') == 'random':
         results['random_order_seed'] = port_obj.get_option('seed')
     results['path_delimiter'] = '/'
-    results['flag_name'] = expectations.model().get_flag_name()
+
+    # If there is a flag name then add the flag name field
+    if expectations.flag_name:
+        results['flag_name'] = expectations.flag_name
 
     # Don't do this by default since it takes >100ms.
     # It's only used for rebaselining and uploading data to the flakiness dashboard.
@@ -378,8 +394,9 @@ def summarize_results(port_obj, expectations, initial_results,
         if git:
             results['chromium_revision'] = str(git.commit_position(path))
         else:
-            _log.warning('Failed to determine chromium commit position for %s, '
-                         'leaving "chromium_revision" key blank in full_results.json.',
-                         path)
+            _log.warning(
+                'Failed to determine chromium commit position for %s, '
+                'leaving "chromium_revision" key blank in full_results.json.',
+                path)
 
     return results

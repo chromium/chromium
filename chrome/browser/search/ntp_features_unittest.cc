@@ -2,49 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/ntp_features.h"
-
-#include <map>
-#include <vector>
+#include "components/search/ntp_features.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ntp_features {
 
-TEST(NTPFeaturesTest, IsRealboxEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_FALSE(IsRealboxEnabled());
+TEST(NTPFeaturesTest, ModulesLoadTimeout) {
+  base::test::ScopedFeatureList scoped_feature_list_;
 
-  feature_list.InitAndEnableFeature(kRealbox);
-  EXPECT_TRUE(IsRealboxEnabled());
+  // The default value can be overridden.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "123"}}}}, {});
+  base::TimeDelta timeout = GetModulesLoadTimeout();
+  EXPECT_EQ(123, timeout.InMilliseconds());
 
-  feature_list.Reset();
-  EXPECT_FALSE(IsRealboxEnabled());
-
-  feature_list.InitAndEnableFeature(omnibox::kZeroSuggestionsOnNTPRealbox);
-  EXPECT_TRUE(IsRealboxEnabled());
-
-  feature_list.Reset();
-  EXPECT_FALSE(IsRealboxEnabled());
-
-  // zero-prefix suggestions are configured for the NTP Omnibox.
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kOnFocusSuggestions,
-        {{"ZeroSuggestVariant:7:*", "Does not matter"}}}},
-      {});
-  EXPECT_FALSE(IsRealboxEnabled());
-
-  feature_list.Reset();
-  EXPECT_FALSE(IsRealboxEnabled());
-
-  // zero-prefix suggestions are configured for the NTP Realbox.
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kOnFocusSuggestions,
-        {{"ZeroSuggestVariant:15:*", "Does not matter"}}}},
-      {});
-  EXPECT_TRUE(IsRealboxEnabled());
+  // If the timeout is not parsable to an unsigned integer, the default value is
+  // used.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "j"}}}}, {});
+  timeout = GetModulesLoadTimeout();
+  EXPECT_EQ(3, timeout.InSeconds());
 }
 
 }  // namespace ntp_features

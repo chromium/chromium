@@ -33,11 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
     : public BluetoothAdapter,
       public BluetoothTaskManagerWin::Observer {
  public:
-  static base::WeakPtr<BluetoothAdapter> CreateAdapter(
-      InitCallback init_callback);
+  static scoped_refptr<BluetoothAdapter> CreateAdapter();
+  static scoped_refptr<BluetoothAdapter> CreateClassicAdapter();
 
-  static base::WeakPtr<BluetoothAdapter> CreateClassicAdapter(
-      InitCallback init_callback);
+  BluetoothAdapterWin(const BluetoothAdapterWin&) = delete;
+  BluetoothAdapterWin& operator=(const BluetoothAdapterWin&) = delete;
 
   static bool UseNewBLEWinImplementation();
 
@@ -45,34 +45,32 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   std::string GetAddress() const override;
   std::string GetName() const override;
   void SetName(const std::string& name,
-               const base::Closure& callback,
-               const ErrorCallback& error_callback) override;
+               base::OnceClosure callback,
+               ErrorCallback error_callback) override;
   bool IsInitialized() const override;
   bool IsPresent() const override;
   bool IsPowered() const override;
   void SetPowered(bool discoverable,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override;
   bool IsDiscovering() const override;
   UUIDList GetUUIDs() const override;
-  void CreateRfcommService(
-      const BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
-  void CreateL2capService(
-      const BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
+  void CreateRfcommService(const BluetoothUUID& uuid,
+                           const ServiceOptions& options,
+                           CreateServiceCallback callback,
+                           CreateServiceErrorCallback error_callback) override;
+  void CreateL2capService(const BluetoothUUID& uuid,
+                          const ServiceOptions& options,
+                          CreateServiceCallback callback,
+                          CreateServiceErrorCallback error_callback) override;
   void RegisterAdvertisement(
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
-      const CreateAdvertisementCallback& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+      CreateAdvertisementCallback callback,
+      AdvertisementErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
 
@@ -112,7 +110,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
     DISCOVERY_STOPPING
   };
 
-  explicit BluetoothAdapterWin(InitCallback init_callback);
+  BluetoothAdapterWin();
   ~BluetoothAdapterWin() override;
 
   // BluetoothAdapter:
@@ -125,8 +123,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
       DiscoverySessionResultCallback callback) override;
   void StopScan(DiscoverySessionResultCallback callback) override;
 
-  void Init();
+  void Initialize(base::OnceClosure callback) override;
   void InitForTest(
+      base::OnceClosure init_callback,
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
       std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -135,7 +134,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   void MaybePostStartDiscoveryTask();
   void MaybePostStopDiscoveryTask();
 
-  InitCallback init_callback_;
+  base::OnceClosure init_callback_;
   std::string address_;
   std::string name_;
   bool initialized_;
@@ -156,8 +155,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   // NOTE: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterWin);
 };
 
 }  // namespace device

@@ -37,13 +37,13 @@ void IPCDataSource::Abort() {
 void IPCDataSource::Read(int64_t position,
                          int size,
                          uint8_t* destination,
-                         const DataSource::ReadCB& callback) {
+                         DataSource::ReadCB callback) {
   DCHECK_CALLED_ON_VALID_THREAD(data_source_thread_checker_);
 
   utility_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&IPCDataSource::ReadMediaData, base::Unretained(this),
-                     destination, callback, size));
+                     destination, std::move(callback), size));
 }
 
 bool IPCDataSource::GetSize(int64_t* size_out) {
@@ -62,29 +62,29 @@ void IPCDataSource::SetBitrate(int bitrate) {
 }
 
 void IPCDataSource::ReadMediaData(uint8_t* destination,
-                                  const DataSource::ReadCB& callback,
+                                  DataSource::ReadCB callback,
                                   int size) {
   DCHECK_CALLED_ON_VALID_THREAD(utility_thread_checker_);
   CHECK_GE(size, 0);
 
   media_data_source_->Read(
       size, base::BindOnce(&IPCDataSource::ReadDone, base::Unretained(this),
-                           destination, callback, size));
+                           destination, std::move(callback), size));
 }
 
 void IPCDataSource::ReadDone(uint8_t* destination,
-                             const DataSource::ReadCB& callback,
+                             DataSource::ReadCB callback,
                              uint32_t requested_size,
                              const std::vector<uint8_t>& data) {
   DCHECK_CALLED_ON_VALID_THREAD(utility_thread_checker_);
   if (data.size() > requested_size) {
     mojo::ReportBadMessage("IPCDataSource::ReadDone: Unexpected data size.");
-    callback.Run(0);
+    std::move(callback).Run(0);
     return;
   }
 
   std::copy(data.begin(), data.end(), destination);
-  callback.Run(data.size());
+  std::move(callback).Run(data.size());
 }
 
 }  // namespace assistant

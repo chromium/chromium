@@ -5,13 +5,12 @@ if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.dumpChildFrames();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function runTest() {
     var iframe = document.getElementById("iframe");
-    iframe.contentWindow.postMessage({"action": "click", "offsetLeft": iframe.offsetLeft, "offsetTop": iframe.offsetTop}, "*");
+    iframe.contentWindow.postMessage({"action": "click"}, "*");
 }
 </script>
 </head>

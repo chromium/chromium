@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#EA5FB0'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+let t = async_test('Color picker: Moving the color well\'s selection ring using the keyboard after a drag.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+    const colorWellSelectionRingRect = colorWellSelectionRing.getBoundingClientRect();
+    eventSender.mouseMoveTo(colorWellSelectionRingRect.left + (colorWellSelectionRingRect.width / 2),
+        colorWellSelectionRingRect.top + (colorWellSelectionRingRect.height / 2));
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(colorWellSelectionRingRect.left + (colorWellSelectionRingRect.width / 2), colorWellRect.bottom);
+    eventSender.mouseUp();
+    for (let i = 0; i < 5; i++) {
+      eventSender.keyDown('ArrowUp');
+    }
+    for (let i = 0; i < 3; i++) {
+      eventSender.keyDown('ArrowUp', ['ctrlKey']);
+    }
+    const rValueContainer = popupDocument.getElementById('rValueContainer');
+    const gValueContainer = popupDocument.getElementById('gValueContainer');
+    const bValueContainer = popupDocument.getElementById('bValueContainer');
+    assert_equals(rValueContainer.value, '123');
+    assert_equals(gValueContainer.value, '50');
+    assert_equals(bValueContainer.value, '93');
+  }));
+});
+</script>
+</body>
+</html>

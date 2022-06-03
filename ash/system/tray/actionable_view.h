@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 
@@ -22,12 +21,14 @@ namespace ash {
 //
 // TODO(bruthig): Consider removing ActionableView and make clients use
 // Buttons instead. (See crbug.com/614453)
-class ASH_EXPORT ActionableView : public views::ButtonListener,
-                                  public views::Button {
+class ASH_EXPORT ActionableView : public views::Button {
  public:
   static const char kViewClassName[];
 
   explicit ActionableView(TrayPopupInkDropStyle ink_drop_style);
+
+  ActionableView(const ActionableView&) = delete;
+  ActionableView& operator=(const ActionableView&) = delete;
 
   ~ActionableView() override;
 
@@ -49,24 +50,17 @@ class ASH_EXPORT ActionableView : public views::ButtonListener,
   const char* GetClassName() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-
-  // Overridden from views::ButtonListener.
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
  private:
+  void ButtonPressed(const ui::Event& event);
+
   // Used by ButtonPressed() to determine whether |this| has been destroyed as a
   // result of performing the associated action. This is necessary because in
   // the not-destroyed case ButtonPressed() uses member variables.
-  bool* destroyed_;
+  bool* destroyed_ = nullptr;
 
   // Defines the flavor of ink drop ripple/highlight that should be constructed.
   const TrayPopupInkDropStyle ink_drop_style_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionableView);
 };
 
 }  // namespace ash

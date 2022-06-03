@@ -21,6 +21,12 @@ assets, gets placed in
 
 out/Release/chromevoxclassic.
 
+The two exceptions are the ./_locales directory and third party files.
+The ./_locales directory and third party files must be copied manually to
+out/Release/chromevoxclassic.
+
+These translations are no longer part of mainline ChromeVox.
+
 #Loading and Testing
 Go to chrome://extensions, and click "Load
 Unpacked". Select out/Release/chromevoxclassic.
@@ -46,3 +52,21 @@ paths are verbalized using entirely different code paths.
 
 Once confirmed, the entire directory can be uploaded once zipped to the Chrome
 webstore.
+
+### Third party files
+
+The extension currently depends on a shim to polyfill shadow DOM. This file is
+located at ./webcomponents-bundle.js.
+
+It is not checked into the repository, but can be obtained by building:
+https://github.com/webcomponents/polyfills/
+(packages/webcomponentsjs)
+
+You can test things work by visiting any polymer app e.g.
+chrome://settings
+
+## A final note on branding
+
+In order to further differentiate ChromeVox from ChromeVox Classic, the Classic
+extension is now simply known as "Screen Reader" and scrubbed of the ChromeVox
+brand.

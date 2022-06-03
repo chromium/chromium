@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -24,7 +23,11 @@ class AndroidUsbSocket : public net::StreamSocket {
   AndroidUsbSocket(scoped_refptr<AndroidUsbDevice> device,
                    uint32_t socket_id,
                    const std::string& command,
-                   base::Closure delete_callback);
+                   base::OnceClosure delete_callback);
+
+  AndroidUsbSocket(const AndroidUsbSocket&) = delete;
+  AndroidUsbSocket& operator=(const AndroidUsbSocket&) = delete;
+
   ~AndroidUsbSocket() override;
 
   void HandleIncoming(std::unique_ptr<AdbMessage> message);
@@ -77,13 +80,11 @@ class AndroidUsbSocket : public net::StreamSocket {
   net::CompletionOnceCallback connect_callback_;
   net::CompletionOnceCallback read_callback_;
   net::CompletionOnceCallback write_callback_;
-  base::Closure delete_callback_;
+  base::OnceClosure delete_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AndroidUsbSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidUsbSocket);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_USB_ANDROID_USB_SOCKET_H_

@@ -57,7 +57,7 @@ extern NSString* KSRegistrationRemoveExistingTag;
 
 @interface KSRegistration : NSObject
 
-+ (id)registrationWithProductID:(NSString*)productID;
++ (instancetype)registrationWithProductID:(NSString*)productID;
 
 - (BOOL)registerWithParameters:(NSDictionary*)args;
 

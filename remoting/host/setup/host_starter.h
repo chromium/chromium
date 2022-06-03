@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_HOST_STARTER
-#define REMOTING_HOST_HOST_STARTER
+#ifndef REMOTING_HOST_SETUP_HOST_STARTER_H_
+#define REMOTING_HOST_SETUP_HOST_STARTER_H_
 
 #include <string>
 
@@ -14,6 +14,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/setup/daemon_controller.h"
+#include "remoting/host/setup/host_stopper.h"
 #include "remoting/host/setup/service_client.h"
 
 namespace network {
@@ -33,20 +34,24 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
     START_ERROR,
   };
 
-  typedef base::Callback<void(Result)> CompletionCallback;
+  typedef base::OnceCallback<void(Result)> CompletionCallback;
+
+  HostStarter(const HostStarter&) = delete;
+  HostStarter& operator=(const HostStarter&) = delete;
 
   ~HostStarter() override;
 
   // Creates a HostStarter.
   static std::unique_ptr<HostStarter> Create(
-      const std::string& remoting_server_endpoint,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Registers a new host with the Chromoting service, and starts it.
   // |auth_code| must be a valid OAuth2 authorization code, typically acquired
   // from a browser. This method uses that code to get an OAuth2 refresh token.
-  void StartHost(const std::string& host_name,
+  void StartHost(const std::string& host_id,
+                 const std::string& host_name,
                  const std::string& host_pin,
+                 const std::string& host_owner,
                  bool consent_to_data_collection,
                  const std::string& auth_code,
                  const std::string& redirect_url,
@@ -84,15 +89,18 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
 
   HostStarter(std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
               std::unique_ptr<remoting::ServiceClient> service_client,
-              scoped_refptr<remoting::DaemonController> daemon_controller);
+              scoped_refptr<remoting::DaemonController> daemon_controller,
+              std::unique_ptr<remoting::HostStopper> host_stopper);
 
   void StartHostProcess();
 
+  void OnLocalHostStopped();
   void OnHostStarted(DaemonController::AsyncResult result);
 
   std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
   std::unique_ptr<remoting::ServiceClient> service_client_;
   scoped_refptr<remoting::DaemonController> daemon_controller_;
+  std::unique_ptr<remoting::HostStopper> host_stopper_;
   gaia::OAuthClientInfo oauth_client_info_;
   std::string host_name_;
   std::string host_pin_;
@@ -106,6 +114,7 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
   std::string xmpp_login_;
   scoped_refptr<remoting::RsaKeyPair> key_pair_;
   std::string host_id_;
+  bool auth_code_exchanged_ = false;
 
   // True if the host was not started and unregistration was requested. If this
   // is set and a network/OAuth error occurs during unregistration, this will
@@ -116,10 +125,8 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
 
   base::WeakPtr<HostStarter> weak_ptr_;
   base::WeakPtrFactory<HostStarter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostStarter);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_HOST_STARTER
+#endif  // REMOTING_HOST_SETUP_HOST_STARTER_H_

@@ -4,42 +4,28 @@
 
 #include "ui/views/controls/button/label_button_label.h"
 
+#include <map>
 #include <memory>
 
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/native_theme/native_theme_base.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views {
 namespace {
 
-// Basic NativeTheme that can customize colors.
-class TestNativeTheme : public ui::NativeThemeBase {
- public:
-  TestNativeTheme() = default;
-
-  void Set(ColorId id, SkColor color) { colors_[id] = color; }
-
-  // NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override {
-    return colors_.count(color_id) ? colors_.find(color_id)->second
-                                   : SK_ColorMAGENTA;
-  }
-
- private:
-  std::map<ColorId, SkColor> colors_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeTheme);
-};
-
 // LabelButtonLabel subclass that reports its text color whenever a paint is
 // scheduled.
-class TestLabel : public LabelButtonLabel {
+class TestLabel : public internal::LabelButtonLabel {
  public:
   explicit TestLabel(SkColor* last_color)
-      : LabelButtonLabel(base::string16(), views::style::CONTEXT_BUTTON),
+      : LabelButtonLabel(std::u16string(), views::style::CONTEXT_BUTTON),
         last_color_(last_color) {}
+
+  TestLabel(const TestLabel&) = delete;
+  TestLabel& operator=(const TestLabel&) = delete;
 
   // LabelButtonLabel:
   void OnDidSchedulePaint(const gfx::Rect& r) override {
@@ -49,8 +35,6 @@ class TestLabel : public LabelButtonLabel {
 
  private:
   SkColor* last_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLabel);
 };
 
 }  // namespace
@@ -59,69 +43,69 @@ class LabelButtonLabelTest : public ViewsTestBase {
  public:
   LabelButtonLabelTest() = default;
 
+  LabelButtonLabelTest(const LabelButtonLabelTest&) = delete;
+  LabelButtonLabelTest& operator=(const LabelButtonLabelTest&) = delete;
+
   void SetUp() override {
     ViewsTestBase::SetUp();
-    label_ = std::make_unique<TestLabel>(&last_color_);
+
+    widget_ = CreateTestWidget();
+    widget_->GetNativeTheme()->set_use_dark_colors(false);
+
+    label_ =
+        widget_->SetContentsView(std::make_unique<TestLabel>(&last_color_));
+    label_->SetAutoColorReadabilityEnabled(false);
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  void SetUseDarkColors(bool use_dark_colors) {
+    ui::NativeTheme* native_theme = widget_->GetNativeTheme();
+    native_theme->set_use_dark_colors(use_dark_colors);
+    native_theme->NotifyOnNativeThemeUpdated();
   }
 
  protected:
-  SkColor last_color_ = SK_ColorCYAN;
-  std::unique_ptr<TestLabel> label_;
-  TestNativeTheme theme1_;
-  TestNativeTheme theme2_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonLabelTest);
+  SkColor last_color_ = gfx::kPlaceholderColor;
+  std::unique_ptr<views::Widget> widget_;
+  TestLabel* label_;
 };
 
 // Test that LabelButtonLabel reacts properly to themed and overridden colors.
 TEST_F(LabelButtonLabelTest, Colors) {
-  // The OnDidSchedulePaint() override won't be called while the base
-  // class is initialized. Not much we can do about that, so give it the first
-  // for free.
-  EXPECT_EQ(SK_ColorCYAN, last_color_);  // Sanity check.
-
-  // At the same time we can check that changing the auto color readability
-  // schedules a paint. Currently it does. Although it technically doesn't need
-  // to since the color isn't actually changing.
-  label_->SetAutoColorReadabilityEnabled(false);
-
   // First one comes from the default theme. This check ensures the SK_ColorRED
   // placeholder initializers were replaced.
   SkColor default_theme_enabled_color =
-      label_->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelEnabledColor);
+      label_->GetColorProvider()->GetColor(ui::kColorLabelForeground);
   EXPECT_EQ(default_theme_enabled_color, last_color_);
 
-  // Note these are not kColorId_Button{Enabled,Disabled}Color because label
-  // buttons use label colors. See LabelButton::ResetColorsFromNativeTheme().
-  theme1_.Set(ui::NativeTheme::kColorId_LabelEnabledColor, SK_ColorGREEN);
-  theme1_.Set(ui::NativeTheme::kColorId_LabelDisabledColor, SK_ColorYELLOW);
-  label_->SetNativeThemeForTesting(&theme1_);
-
-  // Setting the theme should paint.
-  EXPECT_EQ(SK_ColorGREEN, last_color_);
-
   label_->SetEnabled(false);
-  EXPECT_EQ(SK_ColorYELLOW, last_color_);
+  SkColor default_theme_disabled_color =
+      label_->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
+  EXPECT_EQ(default_theme_disabled_color, last_color_);
 
-  // Set up a second theme. View::SetNativeTheme() makes the reasonable
-  // assumption that NativeTheme doesn't change its mind about things unless a
-  // Widget triggers it (which it can do as a friend of RootView).
-  theme2_.Set(ui::NativeTheme::kColorId_LabelEnabledColor, SK_ColorBLUE);
-  theme2_.Set(ui::NativeTheme::kColorId_LabelDisabledColor, SK_ColorGRAY);
-  label_->SetNativeThemeForTesting(&theme2_);
+  SetUseDarkColors(true);
 
-  EXPECT_EQ(SK_ColorGRAY, last_color_);
+  SkColor dark_theme_disabled_color =
+      label_->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
+  EXPECT_NE(default_theme_disabled_color, dark_theme_disabled_color);
+  EXPECT_EQ(dark_theme_disabled_color, last_color_);
 
   label_->SetEnabled(true);
-  EXPECT_EQ(SK_ColorBLUE, last_color_);
+  SkColor dark_theme_enabled_color =
+      label_->GetColorProvider()->GetColor(ui::kColorLabelForeground);
+  EXPECT_NE(default_theme_enabled_color, dark_theme_enabled_color);
+  EXPECT_EQ(dark_theme_enabled_color, last_color_);
 
   // Override the theme for the disabled color.
   label_->SetDisabledColor(SK_ColorRED);
+  EXPECT_NE(SK_ColorRED, dark_theme_disabled_color);
 
   // Still enabled, so not RED yet.
-  EXPECT_EQ(SK_ColorBLUE, last_color_);
+  EXPECT_EQ(dark_theme_enabled_color, last_color_);
 
   label_->SetEnabled(false);
   EXPECT_EQ(SK_ColorRED, last_color_);
@@ -130,12 +114,12 @@ TEST_F(LabelButtonLabelTest, Colors) {
   EXPECT_EQ(SK_ColorMAGENTA, last_color_);
 
   // Disabled still overridden after a theme change.
-  label_->SetNativeThemeForTesting(&theme1_);
+  SetUseDarkColors(false);
   EXPECT_EQ(SK_ColorMAGENTA, last_color_);
 
   // The enabled color still gets its value from the theme.
   label_->SetEnabled(true);
-  EXPECT_EQ(SK_ColorGREEN, last_color_);
+  EXPECT_EQ(default_theme_enabled_color, last_color_);
 
   label_->SetEnabledColor(SK_ColorYELLOW);
   label_->SetDisabledColor(SK_ColorCYAN);

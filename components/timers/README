@@ -1,3 +1,0 @@
-This directory hosts a timer class that is shared with Chrome OS.  Code that
-lives in this directory is not allowed to depend on anything other than base/
-because Chrome OS only pulls in and depends on base/ as a library.

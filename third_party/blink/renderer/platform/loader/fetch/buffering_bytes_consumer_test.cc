@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -33,8 +32,8 @@ class BufferingBytesConsumerTest : public testing::Test {
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     mojo::ScopedDataPipeProducerHandle producer_handle;
     CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(&data_pipe_options, &producer_handle,
-                                  &consumer_handle));
+             mojo::CreateDataPipe(&data_pipe_options, producer_handle,
+                                  consumer_handle));
     return consumer_handle;
   }
 
@@ -166,7 +165,7 @@ TEST_F(BufferingBytesConsumerTest, BufferingWithDelay) {
   EXPECT_EQ(PublicState::kReadableOrWaiting,
             replaying_bytes_consumer->GetPublicState());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(51));
+  task_environment_.FastForwardBy(base::Milliseconds(51));
   task_runner->RunUntilIdle();
 
   // After the delay expires the underlying consumer should be completely read.
@@ -259,7 +258,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeFailsWithExpiredDelay) {
   auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
       data_pipe_consumer, scheduler::GetSingleThreadTaskRunnerForTesting());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(51));
+  task_environment_.FastForwardBy(base::Milliseconds(51));
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
   auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe();

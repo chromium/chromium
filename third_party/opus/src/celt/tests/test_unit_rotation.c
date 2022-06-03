@@ -33,8 +33,6 @@
 #define CUSTOM_MODES
 #endif
 
-#define CELT_C
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "vq.h"

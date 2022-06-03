@@ -7,14 +7,14 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "mojo/public/cpp/bindings/binding.h"
 
 namespace content {
 class BrowserContext;
@@ -32,6 +32,21 @@ class ArcVolumeMounterBridge
       public ConnectionObserver<mojom::VolumeMounterInstance>,
       public mojom::VolumeMounterHost {
  public:
+  class Delegate {
+   public:
+    // To be called by ArcVolumeMounter when a removable media is mounted. This
+    // create a watcher for the removable media.
+    virtual void StartWatchingRemovableMedia(const std::string& fs_uuid,
+                                             const std::string& mount_path,
+                                             base::OnceClosure callback) = 0;
+
+    // To be called by ArcVolumeMounter when a removable media is unmounted.
+    // This removes the watcher for the removable media..
+    virtual void StopWatchingRemovableMedia(const std::string& mount_path) = 0;
+
+   protected:
+    ~Delegate() = default;
+  };
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcVolumeMounterBridge* GetForBrowserContext(
@@ -39,12 +54,16 @@ class ArcVolumeMounterBridge
   static ArcVolumeMounterBridge* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
+  // Returns Factory instance for ArcVolumeMounterBridge.
+  static KeyedServiceBaseFactory* GetFactory();
+
   ArcVolumeMounterBridge(content::BrowserContext* context,
                          ArcBridgeService* bridge_service);
-  ~ArcVolumeMounterBridge() override;
 
-  // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
-  void OnConnectionReady() override;
+  ArcVolumeMounterBridge(const ArcVolumeMounterBridge&) = delete;
+  ArcVolumeMounterBridge& operator=(const ArcVolumeMounterBridge&) = delete;
+
+  ~ArcVolumeMounterBridge() override;
 
   // chromeos::disks::DiskMountManager::Observer overrides:
   void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
@@ -54,14 +73,29 @@ class ArcVolumeMounterBridge
 
   // mojom::VolumeMounterHost overrides:
   void RequestAllMountPoints() override;
+  void ReportMountFailureCount(uint16_t count) override;
 
- private:
+  // Initialize ArcVolumeMounterBridge with delegate.
+  void Initialize(Delegate* delegate);
+
+  // Send all existing mount events. Usually is called around service startup.
   void SendAllMountEvents();
 
+ private:
   void SendMountEventForMyFiles();
+  void SendMountEventForRemovableMedia(
+      chromeos::disks::DiskMountManager::MountEvent event,
+      const std::string& source_path,
+      const std::string& mount_path,
+      const std::string& fs_uuid,
+      const std::string& device_label,
+      chromeos::DeviceType device_type,
+      bool visible);
 
   bool IsVisibleToAndroidApps(const std::string& uuid) const;
   void OnVisibleStoragesChanged();
+
+  Delegate* delegate_;
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
@@ -69,8 +103,6 @@ class ArcVolumeMounterBridge
   PrefChangeRegistrar change_registerar_;
 
   base::WeakPtrFactory<ArcVolumeMounterBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVolumeMounterBridge);
 };
 
 }  // namespace arc

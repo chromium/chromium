@@ -10,10 +10,11 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
@@ -34,7 +35,7 @@ void MediaRemotingDialogView::GetPermission(content::WebContents* web_contents,
   PrefService* const pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   const PrefService::Preference* pref =
-      pref_service->FindPreference(::prefs::kMediaRouterMediaRemotingEnabled);
+      pref_service->FindPreference(prefs::kMediaRouterMediaRemotingEnabled);
   if (pref && !pref->IsDefaultValue()) {
     std::move(callback).Run(pref->GetValue()->GetBool());
     return;
@@ -74,35 +75,6 @@ bool MediaRemotingDialogView::IsShowing() {
   return instance_ != nullptr;
 }
 
-bool MediaRemotingDialogView::ShouldShowCloseButton() const {
-  return true;
-}
-
-base::string16 MediaRemotingDialogView::GetWindowTitle() const {
-  return dialog_title_;
-}
-
-bool MediaRemotingDialogView::Accept() {
-  ReportPermission(true);
-  return true;
-}
-
-bool MediaRemotingDialogView::Cancel() {
-  ReportPermission(false);
-  return true;
-}
-
-bool MediaRemotingDialogView::Close() {
-  return true;
-}
-
-gfx::Size MediaRemotingDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 MediaRemotingDialogView::MediaRemotingDialogView(
     views::View* anchor_view,
     PrefService* pref_service,
@@ -111,18 +83,25 @@ MediaRemotingDialogView::MediaRemotingDialogView(
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       permission_callback_(std::move(callback)),
       pref_service_(pref_service),
-      action_controller_(action_controller),
-      dialog_title_(
-          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE)) {
+      action_controller_(action_controller) {
   DCHECK(pref_service_);
-  DialogDelegate::set_button_label(
-      ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(
-          IDS_MEDIA_ROUTER_REMOTING_DIALOG_OPTIMIZE_BUTTON));
-  DialogDelegate::set_button_label(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(
-          IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON));
+  SetShowCloseButton(true);
+  SetTitle(IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_MEDIA_ROUTER_REMOTING_DIALOG_OPTIMIZE_BUTTON));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 l10n_util::GetStringUTF16(
+                     IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON));
+
+  SetAcceptCallback(base::BindOnce(&MediaRemotingDialogView::ReportPermission,
+                                   base::Unretained(this), true));
+  SetCancelCallback(base::BindOnce(&MediaRemotingDialogView::ReportPermission,
+                                   base::Unretained(this), false));
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   // Depress the Cast toolbar icon.
@@ -136,7 +115,7 @@ MediaRemotingDialogView::~MediaRemotingDialogView() {
 void MediaRemotingDialogView::Init() {
   views::Label* body_text = new views::Label(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_BODY_TEXT),
-      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT, views::style::STYLE_PRIMARY);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   body_text->SetMultiLine(true);
   body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(body_text);
@@ -155,13 +134,15 @@ void MediaRemotingDialogView::ReportPermission(bool allowed) {
   DCHECK(remember_choice_checkbox_);
   DCHECK(permission_callback_);
   if (remember_choice_checkbox_->GetChecked()) {
-    pref_service_->SetBoolean(::prefs::kMediaRouterMediaRemotingEnabled,
-                              allowed);
+    pref_service_->SetBoolean(prefs::kMediaRouterMediaRemotingEnabled, allowed);
   }
   std::move(permission_callback_).Run(allowed);
 }
 
 // static
 MediaRemotingDialogView* MediaRemotingDialogView::instance_ = nullptr;
+
+BEGIN_METADATA(MediaRemotingDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace media_router

@@ -1,0 +1,22 @@
+{
+  "urls": {
+    "google_url": {
+      "url": "http://example.com/"
+    },
+    "gaia_url": {
+      "url": "https://accounts.example.com"
+    },
+    "lso_origin_url": {
+      "url": "https://lso.example.com"
+    },
+    "google_apis_origin_url": {
+      "url": "https://www.exampleapis.com"
+    },
+    "oauth_account_manager_origin_url": {
+      "url": "https://oauthaccountmanager.exampleapis.com"
+    },
+    "account_capabilities_origin_url": {
+      "url": "https://accountcapabilities.exampleapis.com"
+    }
+  }
+}

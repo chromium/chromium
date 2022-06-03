@@ -4,7 +4,9 @@
 
 #include "media/base/video_types.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace media {
@@ -27,6 +29,8 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
       return "PIXEL_FORMAT_NV12";
     case PIXEL_FORMAT_NV21:
       return "PIXEL_FORMAT_NV21";
+    case PIXEL_FORMAT_UYVY:
+      return "PIXEL_FORMAT_UYVY";
     case PIXEL_FORMAT_YUY2:
       return "PIXEL_FORMAT_YUY2";
     case PIXEL_FORMAT_ARGB:
@@ -69,6 +73,8 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
       return "PIXEL_FORMAT_XB30";
     case PIXEL_FORMAT_BGRA:
       return "PIXEL_FORMAT_BGRA";
+    case PIXEL_FORMAT_RGBAF16:
+      return "PIXEL_FORMAT_RGBAF16";
   }
   NOTREACHED() << "Invalid VideoPixelFormat provided: " << format;
   return "";
@@ -112,6 +118,7 @@ bool IsYuvPlanar(VideoPixelFormat format) {
       return true;
 
     case PIXEL_FORMAT_UNKNOWN:
+    case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
@@ -123,6 +130,7 @@ bool IsYuvPlanar(VideoPixelFormat format) {
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_RGBAF16:
       return false;
   }
   return false;
@@ -138,6 +146,7 @@ bool IsOpaque(VideoPixelFormat format) {
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_YUY2:
+    case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_RGB24:
     case PIXEL_FORMAT_MJPEG:
@@ -160,6 +169,7 @@ bool IsOpaque(VideoPixelFormat format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_RGBAF16:
       break;
   }
   return false;
@@ -178,6 +188,7 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_YUY2:
+    case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_RGB24:
@@ -202,6 +213,7 @@ size_t BitDepth(VideoPixelFormat format) {
       return 12;
     case PIXEL_FORMAT_Y16:
     case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_RGBAF16:
       return 16;
   }
   NOTREACHED();

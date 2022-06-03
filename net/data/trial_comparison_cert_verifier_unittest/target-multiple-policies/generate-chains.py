@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright (c) 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,7 +6,7 @@
 """Chain where the leaf has two policies and the intermediate has anyPolicy."""
 
 import sys
-sys.path += ['../../../../../../net/data']
+sys.path += ['../../../../net/data']
 
 import gencerts
 

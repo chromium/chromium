@@ -69,10 +69,8 @@ bool TransactionalLevelDBIterator::IsValid() const {
   switch (iterator_state_) {
     case IteratorState::kEvictedAndValid:
       return true;
-      break;
     case IteratorState::kEvictedAndInvalid:
       return false;
-      break;
     case IteratorState::kActive:
       return iterator_->Valid();
   }

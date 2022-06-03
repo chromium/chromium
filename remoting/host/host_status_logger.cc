@@ -57,8 +57,10 @@ void HostStatusLogger::OnClientRouteChange(
     const std::string& channel_name,
     const protocol::TransportRoute& route) {
   // Store connection type for the video channel. It is logged later
-  // when client authentication is finished.
-  if (channel_name == kVideoChannelName) {
+  // when client authentication is finished. For WebRTC clients, the
+  // route-change notification is not per-channel, so the channel_name is
+  // empty.
+  if (channel_name.empty() || channel_name == kVideoChannelName) {
     connection_route_type_[jid] = route.type;
   }
 }

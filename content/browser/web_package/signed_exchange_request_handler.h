@@ -8,10 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/public/common/resource_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
@@ -45,6 +43,11 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       std::string accept_langs);
+
+  SignedExchangeRequestHandler(const SignedExchangeRequestHandler&) = delete;
+  SignedExchangeRequestHandler& operator=(const SignedExchangeRequestHandler&) =
+      delete;
+
   ~SignedExchangeRequestHandler() override;
 
   // NavigationLoaderInterceptor implementation
@@ -84,8 +87,6 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
   const std::string accept_langs_;
 
   base::WeakPtrFactory<SignedExchangeRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandler);
 };
 
 }  // namespace content

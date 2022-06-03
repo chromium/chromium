@@ -21,13 +21,14 @@ class FieldInfoManagerFactory : public BrowserContextKeyedServiceFactory {
   static password_manager::FieldInfoManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  FieldInfoManagerFactory(const FieldInfoManagerFactory&) = delete;
+  FieldInfoManagerFactory& operator=(const FieldInfoManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<FieldInfoManagerFactory>;
 
   FieldInfoManagerFactory();
   ~FieldInfoManagerFactory() override;
-  FieldInfoManagerFactory(const FieldInfoManagerFactory&) = delete;
-  FieldInfoManagerFactory& operator=(const FieldInfoManagerFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(

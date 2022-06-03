@@ -10,6 +10,8 @@ import android.webkit.ServiceWorkerClient;
 import android.webkit.ServiceWorkerController;
 import android.webkit.ServiceWorkerWebSettings;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.android_webview.AwServiceWorkerController;
 
 /**
@@ -37,7 +39,8 @@ public class ServiceWorkerControllerAdapter extends ServiceWorkerController {
      * Sets the client to capture service worker related callbacks.
      */
     @Override
-    public void setServiceWorkerClient(ServiceWorkerClient client) {
-        mAwServiceWorkerController.setServiceWorkerClient(new ServiceWorkerClientAdapter(client));
+    public void setServiceWorkerClient(@Nullable ServiceWorkerClient client) {
+        mAwServiceWorkerController.setServiceWorkerClient(
+                client != null ? new ServiceWorkerClientAdapter(client) : null);
     }
 }

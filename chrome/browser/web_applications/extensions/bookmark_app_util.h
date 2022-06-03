@@ -5,27 +5,20 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_UTIL_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_UTIL_H_
 
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_application_info.h"
+#include "extensions/common/constants.h"
+
 namespace content {
 class BrowserContext;
 }
 
 class GURL;
-class Profile;
 
 namespace extensions {
 
 class Extension;
 class ExtensionPrefs;
-
-// Sets an extension pref to indicate whether the hosted app is locally
-// installed or not. When apps are not locally installed they will appear in the
-// app launcher, but will act like normal web pages when launched. For example
-// they will never open in standalone windows. They will also have different
-// commands available to them reflecting the fact that they aren't fully
-// installed.
-void SetBookmarkAppIsLocallyInstalled(content::BrowserContext* context,
-                                      const Extension* extension,
-                                      bool is_locally_installed);
 
 // Gets whether the bookmark app is locally installed. Defaults to true if the
 // extension pref that stores this isn't set.
@@ -39,13 +32,13 @@ bool BookmarkAppIsLocallyInstalled(const ExtensionPrefs* prefs,
 // it. https://www.w3.org/TR/appmanifest/#navigation-scope
 bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url);
 
-// Finds the first Shortcut App (a non-PWA Bookmark App) with |url| in its
-// scope, returns nullptr if there are none.
-const Extension* GetInstalledShortcutForUrl(Profile* profile, const GURL& url);
+struct LaunchContainerAndType {
+  extensions::LaunchContainer launch_container;
+  extensions::LaunchType launch_type;
+};
 
-// Count a number of all bookmark apps which are installed by user
-// (non default-installed apps).
-int CountUserInstalledBookmarkApps(content::BrowserContext* browser_context);
+LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(
+    web_app::DisplayMode display_mode);
 
 }  // namespace extensions
 

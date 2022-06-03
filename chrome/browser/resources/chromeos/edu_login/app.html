@@ -1,0 +1,17 @@
+<cr-view-manager id="viewManager" hidden$="[[isErrorShown_]]">
+  <edu-login-parents id="[[Steps.PARENTS]]" slot="view"
+      selected-parent="{{selectedParent_}}">
+  </edu-login-parents>
+  <edu-login-parent-signin id="[[Steps.PARENT_SIGNIN]]" slot="view"
+      parent="[[selectedParent_]]" login-params="{{loginParams_}}">
+  </edu-login-parent-signin>
+  <edu-login-coexistence-info id="[[Steps.COEXISTENCE_INFO]]" slot="view">
+  </edu-login-coexistence-info>
+  <edu-login-parent-info id="[[Steps.PARENT_INFO]]" slot="view">
+  </edu-login-parent-info>
+  <edu-login-signin id="[[Steps.EDU_LOGIN]]" slot="view"
+      login-params="[[loginParams_]]">
+  </edu-login-signin>
+</cr-view-manager>
+<edu-login-error hidden$="[[!isErrorShown_]]" error-type="[[errorType_]]">
+</edu-login-error>

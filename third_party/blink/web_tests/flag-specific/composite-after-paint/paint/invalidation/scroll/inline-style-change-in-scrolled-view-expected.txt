@@ -5,12 +5,8 @@
       "bounds": [2000, 2000],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Text Text Text Text Text Text Text Text Text Text Text Text Text'",
-          "rect": [0, 320, 413, 19],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [0, 320, 413, 19]
       ],
       "transform": 1
     },
@@ -27,7 +23,8 @@
     {
       "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

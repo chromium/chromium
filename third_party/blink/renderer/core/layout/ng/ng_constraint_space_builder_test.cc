@@ -16,9 +16,10 @@ using NGConstraintSpaceBuilderTest = NGLayoutTest;
 TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
   PhysicalSize icb_size{kIndefiniteSize, LayoutUnit(51)};
 
-  NGConstraintSpaceBuilder horizontal_builder(WritingMode::kHorizontalTb,
-                                              WritingMode::kHorizontalTb,
-                                              /* is_new_fc */ true);
+  NGConstraintSpaceBuilder horizontal_builder(
+      WritingMode::kHorizontalTb,
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      /* is_new_fc */ true);
   LogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
   LogicalSize indefinite_size{kIndefiniteSize, kIndefiniteSize};
 
@@ -27,7 +28,8 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
   horizontal_builder.SetPercentageResolutionSize(fixed_size);
 
   NGConstraintSpaceBuilder vertical_builder(
-      horizontal_builder.ToConstraintSpace(), WritingMode::kVerticalLr,
+      horizontal_builder.ToConstraintSpace(),
+      {WritingMode::kVerticalLr, TextDirection::kLtr},
       /* is_new_fc */ true);
 
   vertical_builder.SetOrthogonalFallbackInlineSize(icb_size.height);
@@ -45,9 +47,9 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
 TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
   PhysicalSize icb_size{LayoutUnit(51), kIndefiniteSize};
 
-  NGConstraintSpaceBuilder horizontal_builder(WritingMode::kVerticalLr,
-                                              WritingMode::kVerticalLr,
-                                              /* is_new_fc */ true);
+  NGConstraintSpaceBuilder horizontal_builder(
+      WritingMode::kVerticalLr, {WritingMode::kVerticalLr, TextDirection::kLtr},
+      /* is_new_fc */ true);
   LogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
   LogicalSize indefinite_size{kIndefiniteSize, kIndefiniteSize};
 
@@ -56,7 +58,8 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
   horizontal_builder.SetPercentageResolutionSize(fixed_size);
 
   NGConstraintSpaceBuilder vertical_builder(
-      horizontal_builder.ToConstraintSpace(), WritingMode::kHorizontalTb,
+      horizontal_builder.ToConstraintSpace(),
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ true);
 
   vertical_builder.SetOrthogonalFallbackInlineSize(icb_size.width);

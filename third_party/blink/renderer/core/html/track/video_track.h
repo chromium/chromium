@@ -8,12 +8,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CORE_EXPORT VideoTrack final : public ScriptWrappable, public TrackBase {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(VideoTrack);
 
  public:
   VideoTrack(const String& id,
@@ -22,7 +22,7 @@ class CORE_EXPORT VideoTrack final : public ScriptWrappable, public TrackBase {
              const AtomicString& language,
              bool selected);
   ~VideoTrack() override;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   bool selected() const { return selected_; }
   void setSelected(bool);
@@ -45,7 +45,12 @@ class CORE_EXPORT VideoTrack final : public ScriptWrappable, public TrackBase {
   bool selected_;
 };
 
-DEFINE_TRACK_TYPE_CASTS(VideoTrack, WebMediaPlayer::kVideoTrack);
+template <>
+struct DowncastTraits<VideoTrack> {
+  static bool AllowFrom(const TrackBase& track) {
+    return track.GetType() == WebMediaPlayer::kVideoTrack;
+  }
+};
 
 }  // namespace blink
 

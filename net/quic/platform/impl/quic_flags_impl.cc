@@ -7,22 +7,44 @@
 #include <algorithm>
 #include <initializer_list>
 #include <iostream>
+#include <limits>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/export_template.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 
-#define QUIC_FLAG(type, flag, value) type flag = value;
-#include "net/quic/quic_flags_list.h"
-#undef QUIC_FLAG
+#define DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE(type, flag, value, doc) \
+  type FLAGS_##flag = value;
+
+#define DEFINE_QUIC_PROTOCOL_FLAG_TWO_VALUES(type, flag, internal_value, \
+                                             external_value, doc)        \
+  type FLAGS_##flag = external_value;
+
+// Preprocessor macros can only have one definition.
+// Select the right macro based on the number of arguments.
+#define GET_6TH_ARG(arg1, arg2, arg3, arg4, arg5, arg6, ...) arg6
+#define QUIC_PROTOCOL_FLAG_MACRO_CHOOSER(...)                    \
+  GET_6TH_ARG(__VA_ARGS__, DEFINE_QUIC_PROTOCOL_FLAG_TWO_VALUES, \
+              DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE)
+#define QUIC_PROTOCOL_FLAG(...) \
+  QUIC_PROTOCOL_FLAG_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
+
+#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+
+#undef QUIC_PROTOCOL_FLAG
+#undef QUIC_PROTOCOL_FLAG_MACRO_CHOOSER
+#undef GET_6TH_ARG
+#undef DEFINE_QUIC_PROTOCOL_FLAG_TWO_VALUES
+#undef DEFINE_QUIC_PROTOCOL_FLAG_SINGLE_VALUE
 
 namespace quic {
 
@@ -34,19 +56,21 @@ ToQuicStringVector(const std::vector<std::string>& v) {
   return v;
 }
 
-// Overload for platforms where base::CommandLine::StringType == base::string16.
+#if defined(WCHAR_T_IS_UTF16)
+// Overload for platforms where base::CommandLine::StringType == std::wstring.
 std::vector<std::string> __attribute__((unused))
-ToQuicStringVector(const std::vector<base::string16>& v) {
+ToQuicStringVector(const std::vector<std::wstring>& v) {
   std::vector<std::string> qsv;
   for (const auto& s : v) {
     if (!base::IsStringASCII(s)) {
       QUIC_LOG(ERROR) << "Unable to convert to ASCII: " << s;
       continue;
     }
-    qsv.push_back(base::UTF16ToASCII(s));
+    qsv.push_back(base::WideToASCII(s));
   }
   return qsv;
 }
+#endif  // defined(WCHAR_T_IS_UTF16)
 
 size_t FindLineWrapPosition(const std::string& s, size_t desired_len) {
   if (s.length() <= desired_len) {
@@ -169,6 +193,18 @@ bool TypedQuicFlagHelper<bool>::SetFlag(const std::string& s) const {
 }
 
 template <>
+bool TypedQuicFlagHelper<uint16_t>::SetFlag(const std::string& s) const {
+  int value;
+  if (!base::StringToInt(s, &value) ||
+      value < std::numeric_limits<uint16_t>::min() ||
+      value > std::numeric_limits<uint16_t>::max()) {
+    return false;
+  }
+  *flag_ = static_cast<uint16_t>(value);
+  return true;
+}
+
+template <>
 bool TypedQuicFlagHelper<int32_t>::SetFlag(const std::string& s) const {
   int32_t value;
   if (!base::StringToInt(s, &value)) {
@@ -186,6 +222,8 @@ bool TypedQuicFlagHelper<std::string>::SetFlag(const std::string& s) const {
 
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<bool>;
+template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
+    TypedQuicFlagHelper<uint16_t>;
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<int32_t>;
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
@@ -256,9 +294,9 @@ void SetQuicFlagByName_double(double* flag, const std::string& value) {
     *flag = val;
 }
 
-void SetQuicFlagByName_uint32_t(uint32_t* flag, const std::string& value) {
-  int val;
-  if (base::StringToInt(value, &val) && val >= 0)
+void SetQuicFlagByName_uint64_t(uint64_t* flag, const std::string& value) {
+  uint64_t val;
+  if (base::StringToUint64(value, &val) && val >= 0)
     *flag = val;
 }
 
@@ -277,11 +315,19 @@ void SetQuicFlagByName_int64_t(int64_t* flag, const std::string& value) {
 }  // namespace
 
 void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
-#define QUIC_FLAG(type, flag, default_value) \
-  if (flag_name == #flag) {                  \
-    SetQuicFlagByName_##type(&flag, value);  \
-    return;                                  \
+#define QUIC_FLAG(flag, default_value)    \
+  if (flag_name == #flag) {               \
+    SetQuicFlagByName_bool(&flag, value); \
+    return;                               \
   }
-#include "net/quic/quic_flags_list.h"
+#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
+
+#define QUIC_PROTOCOL_FLAG(type, flag, ...)         \
+  if (flag_name == "FLAGS_" #flag) {                \
+    SetQuicFlagByName_##type(&FLAGS_##flag, value); \
+    return;                                         \
+  }
+#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#undef QUIC_PROTOCOL_FLAG
 }

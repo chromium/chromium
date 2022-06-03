@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests representation of selector lists in the protocol. Bug 103118.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -34,8 +34,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

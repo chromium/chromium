@@ -5,6 +5,7 @@
 #include "extensions/renderer/send_message_tester.h"
 
 #include "base/strings/stringprintf.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
@@ -28,12 +29,10 @@ SendMessageTester::~SendMessageTester() {}
 void SendMessageTester::TestSendMessage(const std::string& args,
                                         const std::string& expected_message,
                                         const MessageTarget& expected_target,
-                                        bool expected_include_tls_channel_id,
                                         PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Message Args: `%s`", args.c_str()));
 
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_include_tls_channel_id,
                            expected_port_status, SEND_MESSAGE);
 }
 
@@ -43,25 +42,24 @@ void SendMessageTester::TestSendRequest(const std::string& args,
                                         PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Request Args: `%s`", args.c_str()));
 
-  TestSendMessageOrRequest(args, expected_message, expected_target, false,
+  TestSendMessageOrRequest(args, expected_message, expected_target,
                            expected_port_status, SEND_REQUEST);
 }
 
 void SendMessageTester::TestConnect(const std::string& args,
                                     const std::string& expected_channel,
-                                    const MessageTarget& expected_target,
-                                    bool expected_include_tls_channel_id) {
+                                    const MessageTarget& expected_target) {
   SCOPED_TRACE(base::StringPrintf("Connect Args: `%s`", args.c_str()));
 
   v8::Local<v8::Context> v8_context = script_context_->v8_context();
 
   constexpr char kAddPortTemplate[] =
       "(function() { return chrome.%s.connect(%s); })";
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
-                                     expected_target, expected_channel,
-                                     expected_include_tls_channel_id));
+                                     expected_target, expected_channel));
   v8::Local<v8::Function> add_port = FunctionFromString(
       v8_context, base::StringPrintf(kAddPortTemplate, api_namespace_.c_str(),
                                      args.c_str()));
@@ -78,7 +76,6 @@ void SendMessageTester::TestSendMessageOrRequest(
     const std::string& args,
     const std::string& expected_message,
     const MessageTarget& expected_target,
-    bool expected_include_tls_channel_id,
     PortStatus expected_port_status,
     Method method) {
   constexpr char kSendMessageTemplate[] = "(function() { chrome.%s.%s(%s); })";
@@ -96,13 +93,13 @@ void SendMessageTester::TestSendMessageOrRequest(
       break;
   }
 
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
 
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
-                                     expected_target, expected_channel,
-                                     expected_include_tls_channel_id));
-  Message message(expected_message, false);
+                                     expected_target, expected_channel));
+  Message message(expected_message, SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 
   if (expected_port_status == CLOSED) {

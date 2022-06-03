@@ -1,6 +1,7 @@
 <html>
 <head>
     <script src="../../resources/js-test.js"></script>
+    <script src="../../resources/visibility.js"></script>
     <script>
         description('<a href="https://bugs.webkit.org/show_bug.cgi?id=98474">Bug 98474</a>: Throttle DOM timers on hidden pages.');
 
@@ -40,18 +41,23 @@
             timerCount++;
             previousTime = time;
 
+            var promise;
             if (timerCount == 1) {
-                testRunner.setPageVisibility("hidden");
+                promise = setMainWindowHidden(true);
                 isPageVisible = false;
             } else if (timerCount == 3) {
-                testRunner.setPageVisibility("visible");
+                promise = setMainWindowHidden(false);
                 isPageVisible = true;
-            } else if (timerCount >= 5) {
+            } else if (timerCount < 5) {
+                promise = Promise.resolve();
+            } else {
                 finishJSTest();
                 return;
             }
-            previousTime = Date.now();
-            setTimeout(testTimer, timeoutInterval);
+            promise.then(() => {
+                previousTime = Date.now();
+                setTimeout(testTimer, timeoutInterval);
+            });
         }
 
         function runTest()

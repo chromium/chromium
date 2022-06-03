@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 
 class SharingService;
 
@@ -14,12 +13,16 @@ class SharingService;
 class SharingServiceProxyAndroid {
  public:
   explicit SharingServiceProxyAndroid(SharingService* sharing_service);
+
+  SharingServiceProxyAndroid(const SharingServiceProxyAndroid&) = delete;
+  SharingServiceProxyAndroid& operator=(const SharingServiceProxyAndroid&) =
+      delete;
+
   ~SharingServiceProxyAndroid();
 
   void SendSharedClipboardMessage(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_guid,
-      const jlong j_last_updated_timestamp_millis,
       const base::android::JavaParamRef<jstring>& j_text,
       const base::android::JavaParamRef<jobject>& j_runnable);
 
@@ -34,8 +37,6 @@ class SharingServiceProxyAndroid {
 
  private:
   SharingService* sharing_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingServiceProxyAndroid);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_

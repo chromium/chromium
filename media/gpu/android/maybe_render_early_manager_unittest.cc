@@ -35,20 +35,17 @@ struct MockImage {
     }
 
     if (expectation == kRenderToBackBuffer) {
-      EXPECT_CALL(*this, RenderToTextureOwnerBackBuffer(
-                             CodecImage::BlockingMode::kForbidBlocking))
+      EXPECT_CALL(*this, RenderToTextureOwnerBackBuffer())
           .WillOnce(Return(phase != kInvalidated));
     } else {
-      EXPECT_CALL(*this, RenderToTextureOwnerBackBuffer(
-                             CodecImage::BlockingMode::kForbidBlocking))
-          .Times(0);
+      EXPECT_CALL(*this, RenderToTextureOwnerBackBuffer()).Times(0);
     }
   }
 
   MOCK_METHOD0(was_rendered_to_front_buffer, bool());
   MOCK_METHOD0(is_texture_owner_backed, bool());
   MOCK_METHOD0(RenderToFrontBuffer, bool());
-  MOCK_METHOD1(RenderToTextureOwnerBackBuffer, bool(CodecImage::BlockingMode));
+  MOCK_METHOD0(RenderToTextureOwnerBackBuffer, bool());
 };
 
 class MaybeRenderEarlyTest : public testing::Test {

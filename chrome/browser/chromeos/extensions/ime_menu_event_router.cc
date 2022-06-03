@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/ime_menu_event_router.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
@@ -39,12 +40,13 @@ void ExtensionImeMenuEventRouter::ImeMenuActivationChanged(bool activation) {
     return;
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendBoolean(activation);
+  args->Append(activation);
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_ACTIVATION_CHANGED,
-      OnImeMenuActivationChanged::kEventName, std::move(args), context_);
+      OnImeMenuActivationChanged::kEventName, std::move(*args).TakeList(),
+      context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -54,12 +56,10 @@ void ExtensionImeMenuEventRouter::ImeMenuListChanged() {
   if (!router->HasEventListener(OnImeMenuListChanged::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED,
-      OnImeMenuListChanged::kEventName, std::move(args), context_);
+      OnImeMenuListChanged::kEventName, std::vector<base::Value>(), context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -75,7 +75,7 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
   for (const auto& item : items) {
     input_method_private::MenuItem menu_item;
     menu_item.id = item.id;
-    menu_item.label.reset(new std::string(item.label));
+    menu_item.label = std::make_unique<std::string>(item.label);
     switch (item.style) {
       case input_method::InputMethodManager::MENU_ITEM_STYLE_CHECK:
         menu_item.style = input_method_private::ParseMenuItemStyle("check");
@@ -89,14 +89,13 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
       default:
         menu_item.style = input_method_private::ParseMenuItemStyle("");
     }
-    menu_item.visible.reset(new bool(item.visible));
-    menu_item.checked.reset(new bool(item.checked));
-    menu_item.enabled.reset(new bool(item.enabled));
+    menu_item.visible = std::make_unique<bool>(item.visible);
+    menu_item.checked = std::make_unique<bool>(item.checked);
+    menu_item.enabled = std::make_unique<bool>(item.enabled);
     menu_items.push_back(std::move(menu_item));
   }
 
-  std::unique_ptr<base::ListValue> args =
-      OnImeMenuItemsChanged::Create(engine_id, menu_items);
+  auto args = OnImeMenuItemsChanged::Create(engine_id, menu_items);
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(

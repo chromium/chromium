@@ -1,0 +1,2 @@
+mixins: "//third_party/blink/renderer/modules/screen_orientation/COMMON_METADATA"
+team_email: "media-dev@chromium.org"

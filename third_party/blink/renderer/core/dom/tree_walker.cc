@@ -248,7 +248,7 @@ Children:
   return nullptr;
 }
 
-void TreeWalker::Trace(Visitor* visitor) {
+void TreeWalker::Trace(Visitor* visitor) const {
   visitor->Trace(current_);
   ScriptWrappable::Trace(visitor);
   NodeIteratorBase::Trace(visitor);

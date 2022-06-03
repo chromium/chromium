@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_CONNECT_RESULT_TYPE_CONVERTER_H_
-#define DEVICE_BLUETOOTH_CONNECT_RESULT_TYPE_CONVERTER_H_
+#ifndef DEVICE_BLUETOOTH_PUBLIC_MOJOM_CONNECT_RESULT_TYPE_CONVERTER_H_
+#define DEVICE_BLUETOOTH_PUBLIC_MOJOM_CONNECT_RESULT_TYPE_CONVERTER_H_
 
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -46,4 +46,4 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
 };
 }  // namespace mojo
 
-#endif  // DEVICE_BLUETOOTH_CONNECT_RESULT_TYPE_CONVERTER_H_
+#endif  // DEVICE_BLUETOOTH_PUBLIC_MOJOM_CONNECT_RESULT_TYPE_CONVERTER_H_

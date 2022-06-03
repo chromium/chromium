@@ -5,31 +5,28 @@
 #ifndef ASH_DISPLAY_TOUCH_CALIBRATOR_VIEW_H_
 #define ASH_DISPLAY_TOUCH_CALIBRATOR_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "cc/paint/paint_flags.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class Label;
-class Widget;
 }  // namespace views
 
 namespace gfx {
 class Animation;
-class LinearAnimation;
 }  // namespace gfx
-
-namespace ui {
-class LayerAnimationSequence;
-}  // namespace ui
 
 namespace ash {
 
 class CircularThrobberView;
+class HintBox;
 
 // An overlay view used during touch calibration. This view is responsible for
 // all animations and UX during touch calibration on all displays currently
@@ -38,8 +35,7 @@ class CircularThrobberView;
 // |TouchCalibratorView| acts as a state machine and has an API to toggle its
 // state or get the current state.
 class ASH_EXPORT TouchCalibratorView : public views::View,
-                                       public views::AnimationDelegateViews,
-                                       public ui::LayerAnimationObserver {
+                                       public views::AnimationDelegateViews {
  public:
   // Different states of |TouchCalibratorView| in order.
   enum State {
@@ -66,8 +62,11 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
                            // out
   };
 
-  TouchCalibratorView(const display::Display& target_display,
-                      bool is_primary_view);
+  // Only use this function to construct. This ensures a Widget is properly
+  // constructed and is set as the content view.
+  static views::UniqueWidgetPtr Create(const display::Display& target_display,
+                                       bool is_primary_view);
+
   ~TouchCalibratorView() override;
 
   // views::View:
@@ -78,12 +77,6 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
-
-  // ui::LayerAnimationObserver
-  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
 
   // Moves the touch calibrator view to its next state.
   void AdvanceToNextState();
@@ -104,15 +97,25 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   State state() { return state_; }
 
  private:
+  TouchCalibratorView(const display::Display& target_display,
+                      bool is_primary_view);
+
   void InitViewContents();
+
+  void OnStateAnimationEnded();
+
+  // Animate the given |view|'s layer to |end_position| and an optional
+  // |opacity|.
+  void AnimateLayerToPosition(views::View* view,
+                              base::TimeDelta duration,
+                              gfx::Point end_position,
+                              float opacity = 1.f);
 
   // The target display on which this view is rendered on.
   const display::Display display_;
 
   // True if this view is on the display that is being calibrated.
-  bool is_primary_view_ = false;
-
-  std::unique_ptr<views::Widget> widget_;
+  bool is_primary_view_;
 
   cc::PaintFlags flags_;
 
@@ -120,14 +123,14 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   gfx::RectF background_rect_;
 
   // Text label indicating how to exit the touch calibration.
-  views::Label* exit_label_;
+  views::Label* exit_label_ = nullptr;
   // Text label indicating the significance of the touch point on screen.
-  views::Label* tap_label_;
+  views::Label* tap_label_ = nullptr;
 
   // Start and end opacity values used during the fade animation. This is set
   // before the animation begins.
-  float start_opacity_value_;
-  float end_opacity_value_;
+  float start_opacity_value_ = 0.0f;
+  float end_opacity_value_ = 0.0f;
 
   // Linear animation used for various aniations including fade-in, fade out,
   // and view translation.
@@ -135,22 +138,20 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
 
   // View responsible for displaying the animated circular icon that the user
   // touches to calibrate the screen.
-  CircularThrobberView* throbber_circle_;
+  CircularThrobberView* throbber_circle_ = nullptr;
 
   // A hint box displayed next to the first touch point to assist user with
   // information about the next step.
-  views::View* hint_box_view_;
+  HintBox* hint_box_view_ = nullptr;
 
   // Final view containing the calibration complete message along with an icon.
-  views::View* completion_message_view_;
+  views::View* completion_message_view_ = nullptr;
 
   // View that contains the animated throbber circle and a text label informing
   // the user to tap the circle to continue calibration.
-  views::View* touch_point_view_;
+  views::View* touch_point_view_ = nullptr;
 
   State state_ = UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchCalibratorView);
 };
 
 }  // namespace ash

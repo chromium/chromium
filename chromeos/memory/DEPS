@@ -1,0 +1,7 @@
+# These deps should be only the required deps for //chromeos/memory
+include_rules = [
+  "+third_party/zlib/google",
+  "+services/resource_coordinator",
+  "+components/memory_pressure",
+  "+content/public/child",
+]

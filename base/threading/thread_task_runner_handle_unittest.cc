@@ -5,7 +5,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +35,7 @@ TEST(ThreadTaskRunnerHandleTest, DeathOnImplicitOverride) {
       { ThreadTaskRunnerHandle overriding_ttrh(overidding_task_runner); });
 }
 
-TEST(ThreadTaskRunnerHandleTest, OverrideForTestingExistingTTRH) {
+TEST(ThreadTaskRunnerHandleTest, OverrideExistingTTRH) {
   scoped_refptr<SingleThreadTaskRunner> task_runner_1(new TestSimpleTaskRunner);
   scoped_refptr<SingleThreadTaskRunner> task_runner_2(new TestSimpleTaskRunner);
   scoped_refptr<SingleThreadTaskRunner> task_runner_3(new TestSimpleTaskRunner);
@@ -48,15 +50,13 @@ TEST(ThreadTaskRunnerHandleTest, OverrideForTestingExistingTTRH) {
 
     {
       // Override.
-      ScopedClosureRunner undo_override_2 =
-          ThreadTaskRunnerHandle::OverrideForTesting(task_runner_2);
+      ThreadTaskRunnerHandleOverrideForTesting ttrh_override_2(task_runner_2);
       EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
       EXPECT_EQ(task_runner_2, ThreadTaskRunnerHandle::Get());
 
       {
         // Nested override.
-        ScopedClosureRunner undo_override_3 =
-            ThreadTaskRunnerHandle::OverrideForTesting(task_runner_3);
+        ThreadTaskRunnerHandleOverrideForTesting ttrh_override_3(task_runner_3);
         EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
         EXPECT_EQ(task_runner_3, ThreadTaskRunnerHandle::Get());
       }
@@ -67,8 +67,7 @@ TEST(ThreadTaskRunnerHandleTest, OverrideForTestingExistingTTRH) {
 
       {
         // Backup to double override with another TTRH.
-        ScopedClosureRunner undo_override_4 =
-            ThreadTaskRunnerHandle::OverrideForTesting(task_runner_4);
+        ThreadTaskRunnerHandleOverrideForTesting ttrh_override_4(task_runner_4);
         EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
         EXPECT_EQ(task_runner_4, ThreadTaskRunnerHandle::Get());
       }
@@ -81,22 +80,20 @@ TEST(ThreadTaskRunnerHandleTest, OverrideForTestingExistingTTRH) {
   EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
 }
 
-TEST(ThreadTaskRunnerHandleTest, OverrideForTestingNoExistingTTRH) {
+TEST(ThreadTaskRunnerHandleTest, OverrideNoExistingTTRH) {
   scoped_refptr<SingleThreadTaskRunner> task_runner_1(new TestSimpleTaskRunner);
   scoped_refptr<SingleThreadTaskRunner> task_runner_2(new TestSimpleTaskRunner);
 
   EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
   {
     // Override with no TTRH in place.
-    ScopedClosureRunner undo_override_1 =
-        ThreadTaskRunnerHandle::OverrideForTesting(task_runner_1);
+    ThreadTaskRunnerHandleOverrideForTesting ttrh_override_1(task_runner_1);
     EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
     EXPECT_EQ(task_runner_1, ThreadTaskRunnerHandle::Get());
 
     {
       // Nested override works the same.
-      ScopedClosureRunner undo_override_2 =
-          ThreadTaskRunnerHandle::OverrideForTesting(task_runner_2);
+      ThreadTaskRunnerHandleOverrideForTesting ttrh_override_2(task_runner_2);
       EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
       EXPECT_EQ(task_runner_2, ThreadTaskRunnerHandle::Get());
     }
@@ -113,10 +110,32 @@ TEST(ThreadTaskRunnerHandleTest, DeathOnTTRHOverOverride) {
   scoped_refptr<SingleThreadTaskRunner> overidding_task_runner(
       new TestSimpleTaskRunner);
 
-  ScopedClosureRunner undo_override =
-      ThreadTaskRunnerHandle::OverrideForTesting(task_runner);
+  ThreadTaskRunnerHandleOverrideForTesting ttrh_override(task_runner);
   EXPECT_DCHECK_DEATH(
       { ThreadTaskRunnerHandle overriding_ttrh(overidding_task_runner); });
+}
+
+TEST(ThreadTaskRunnerHandleTest, NestedRunLoop) {
+  test::SingleThreadTaskEnvironment task_environment;
+  EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
+  scoped_refptr<SingleThreadTaskRunner> task_runner(new TestSimpleTaskRunner);
+  ThreadTaskRunnerHandleOverride ttrh_override(task_runner,
+                                               /*allow_nested_runloop=*/true);
+  EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
+  EXPECT_EQ(task_runner, ThreadTaskRunnerHandle::Get());
+  EXPECT_EQ(task_runner, SequencedTaskRunnerHandle::Get());
+  RunLoop().RunUntilIdle();
+}
+
+TEST(ThreadTaskRunnerHandleTest, DeathOnNestedRunLoop) {
+  test::SingleThreadTaskEnvironment task_environment;
+  EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
+  scoped_refptr<SingleThreadTaskRunner> task_runner(new TestSimpleTaskRunner);
+  ThreadTaskRunnerHandleOverrideForTesting ttrh_override(task_runner);
+  EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
+  EXPECT_EQ(task_runner, ThreadTaskRunnerHandle::Get());
+  EXPECT_EQ(task_runner, SequencedTaskRunnerHandle::Get());
+  EXPECT_DCHECK_DEATH({ RunLoop().RunUntilIdle(); });
 }
 
 }  // namespace base

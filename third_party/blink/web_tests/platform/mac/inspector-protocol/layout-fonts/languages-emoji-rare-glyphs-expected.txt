@@ -23,13 +23,13 @@
 "Geeza Pro" : 71,
 "Times" : 14
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
 #emoji:
-"Apple Color Emoji" : 20
+"Apple Color Emoji" : 24
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
-"Times" : 16
+"Noto Sans EgyptHiero" : 16
 
 ខ្ញុំអាចញុំកញ្ចក់បាន ដោយគ្មានបញ្ហារ
 #khmer:
@@ -38,11 +38,11 @@
 
 𐌲𐌿𐍄𐌹𐍃𐌺
 #gothic:
-"Times" : 6
+"Noto Sans Gothic" : 6
 
 ܐܬܘܪܝܐ
 #syriac:
-"Times" : 6
+"Noto Sans Syriac" : 6
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:

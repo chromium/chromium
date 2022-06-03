@@ -1,0 +1,5 @@
+file://chrome/browser/prefetch/no_state_prefetch/OWNERS
+file://content/browser/prerender/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

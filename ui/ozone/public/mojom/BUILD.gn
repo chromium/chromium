@@ -22,11 +22,7 @@ mojom("mojom") {
 }
 
 mojom("gesture_properties_service") {
-  sources = [
-    "gesture_properties_service.mojom",
-  ]
+  sources = [ "gesture_properties_service.mojom" ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

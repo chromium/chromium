@@ -7,8 +7,15 @@
       table td,
       table th {
         border: 1px solid #777;
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-inline-end: 4px;
+        padding-inline-start: 4px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        table td,
+        table th {
+          border-color: var(--cr-separator-color);
+        }
       }
 
       table th {
@@ -19,6 +26,12 @@
         white-space: nowrap;
       }
 
+      @media (prefers-color-scheme: dark) {
+        table th {
+          background: var(--google-grey-800);
+        }
+      }
+
       table th[data-sort-key] {
         cursor: pointer;
       }
@@ -27,6 +40,13 @@
         align-items: center;
         display: flex;
         justify-content: flex-start;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        table td {
+          background-color: var(--google-grey-900);
+          color: var(--cr-secondary-text-color);
+        }
       }
 
       table td.title-cell {
@@ -87,6 +107,12 @@
         background: rgb(255, 255, 187);
       }
 
+      @media (prefers-color-scheme: dark) {
+        table tr:hover td {
+          background: var(--google-grey-800);
+        }
+      }
+
       th div.header-cell-container::after {
         content: '▲';
         opacity: 0;
@@ -112,7 +138,7 @@
         display: none;
         font-size: 0.75rem;
         left: 50%;
-        margin-left: -100px;
+        margin-inline-start: -100px;
         margin-top: 4px;
         padding: 4px;
         position: absolute;
@@ -126,9 +152,6 @@
       }
     </style>
     <div id="discards">
-      <div is="action-link" on-click="discardNow_">
-        [Discard a tab now]
-      </div>
       <div is="action-link" on-click="discardUrgentNow_">
         [Urgent discard a tab now]
       </div>
@@ -189,16 +212,6 @@
                 </div>
               </div>
             </th>
-            <th data-sort-key="canFreeze" on-click="onSortClick">
-              <div class="header-cell-container">
-                Can freeze?
-              </div>
-            </th>
-            <th data-sort-key="canDiscard" on-click="onSortClick">
-              <div class="header-cell-container">
-                Can discard?
-              </div>
-            </th>
             <th data-sort-key="discardCount" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
@@ -246,32 +259,6 @@
               <td>[[visibilityToString_(item.visibility)]]</td>
               <td>[[loadingStateToString_(item.loadingState)]]</td>
               <td>[[getLifeCycleState_(item)]]</td>
-              <td class="boolean-cell">
-                <div>[[boolToString_(item.canFreeze)]]</div>
-                <div is="action-link" class="tooltip-container"
-                    disabled$="[[!hasCannotFreezeReasons_(item)]]">
-                  [View Reason]
-                  <div class="tooltip">
-                    <template is="dom-repeat"
-                        items="[[item.cannotFreezeReasons]]">
-                      <div>[[item]]</div>
-                    </template>
-                  </div>
-                </div>
-              </td>
-              <td class="boolean-cell">
-                <div>[[boolToString_(item.canDiscard)]]</div>
-                <div is="action-link" class="tooltip-container"
-                  disabled$="[[!hasCannotDiscardReasons_(item)]]">
-                  [View Reason]
-                  <div class="tooltip">
-                    <template is="dom-repeat"
-                        items="[[item.cannotDiscardReasons]]">
-                      <div>[[item]]</div>
-                    </template>
-                  </div>
-                </div>
-              </td>
               <td>[[item.discardCount]]</td>
               <td class="boolean-cell">
                 <div>[[boolToString_(item.isAutoDiscardable)]]</div>
@@ -287,10 +274,6 @@
                 <div is="action-link" on-click="loadTab_"
                     disabled$="[[!canLoad_(item)]]">
                     [Load]</div>
-                <div is="action-link" on-click="freezeTab_"
-                    disabled$="[[!canFreeze_(item)]]">[Freeze]</div>
-                <div is="action-link" on-click="discardTab_"
-                    disabled$="[[!canDiscard_(item)]]">[Discard]</div>
                 <div is="action-link" on-click="urgentDiscardTab_"
                     disabled$="[[!canDiscard_(item)]]">
                   [Urgent Discard]

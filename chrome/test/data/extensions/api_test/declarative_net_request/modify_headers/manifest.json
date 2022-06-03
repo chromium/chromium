@@ -1,0 +1,26 @@
+{
+  "name": "Test header modification using declarativeNetRequest and its interaction with the web request api.",
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "modify_headers",
+      "path": "rules_file_empty.json",
+      "enabled": true
+    }
+    ]
+  },
+  "manifest_version": 2,
+  "permissions": [
+    "declarativeNetRequest",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>",
+    "tabs",
+    "cookies"
+  ],
+  "version": "1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
+}

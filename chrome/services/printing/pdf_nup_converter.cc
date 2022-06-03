@@ -8,9 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/logging.h"
 #include "components/crash/core/common/crash_key.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "pdf/pdf.h"
 
 namespace printing {
@@ -37,7 +35,7 @@ template <class Callback>
 void RunCallbackWithConversionResult(Callback callback,
                                      const std::vector<uint8_t>& buffer) {
   base::MappedReadOnlyRegion region_mapping =
-      mojo::CreateReadOnlySharedMemoryRegion(buffer.size());
+      base::ReadOnlySharedMemoryRegion::Create(buffer.size());
   if (!region_mapping.IsValid()) {
     std::move(callback).Run(mojom::PdfNupConverter::Status::HANDLE_MAP_ERROR,
                             std::move(region_mapping.region));

@@ -1,5 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++radioGroup required
-++++++radioButton checkedState=false
-++++++radioButton checkedState=false
+++++genericContainer ignored
+++++++radioGroup required
+++++++++radioButton checkedState=false
+++++++++radioButton checkedState=false

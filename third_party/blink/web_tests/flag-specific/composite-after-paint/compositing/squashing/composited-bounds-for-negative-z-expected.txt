@@ -14,6 +14,19 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 100],
+      "bounds": [784, 300],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV",
+      "bounds": [285, 300],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
       "name": "VerticalScrollbar",
       "position": [285, 0],
       "bounds": [15, 300],

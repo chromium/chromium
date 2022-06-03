@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -22,17 +21,18 @@
 
 #define IPC_MESSAGE_IMPL
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 #define IPC_MESSAGE_START TestMsgStart
 
 // Generic message class that is an int followed by a string16.
-IPC_MESSAGE_CONTROL2(MsgClassIS, int, base::string16)
+IPC_MESSAGE_CONTROL2(MsgClassIS, int, std::u16string)
 
 // Generic message class that is a string16 followed by an int.
-IPC_MESSAGE_CONTROL2(MsgClassSI, base::string16, int)
+IPC_MESSAGE_CONTROL2(MsgClassSI, std::u16string, int)
 
 // Message to create a mutex in the IPC server, using the received name.
-IPC_MESSAGE_CONTROL2(MsgDoMutex, base::string16, int)
+IPC_MESSAGE_CONTROL2(MsgDoMutex, std::u16string, int)
 
 // Used to generate an ID for a message that should not exist.
 IPC_MESSAGE_CONTROL0(MsgUnhandled)
@@ -63,7 +63,7 @@ TEST(IPCMessageIntegrity, ReadBeyondBufferStr16) {
   m.WriteInt(v2);
 
   base::PickleIterator iter(m);
-  base::string16 vs;
+  std::u16string vs;
   EXPECT_FALSE(iter.ReadString16(&vs));
 }
 
@@ -74,7 +74,7 @@ TEST(IPCMessageIntegrity, ReadBytesBadIterator) {
   m.WriteInt(2);
 
   base::PickleIterator iter(m);
-  const char* data = NULL;
+  const char* data = nullptr;
   EXPECT_TRUE(iter.ReadBytes(&data, sizeof(int)));
 }
 
@@ -141,8 +141,7 @@ TEST(IPCMessageIntegrity, DISABLED_ReadVectorTooLarge3) {
 
 class SimpleListener : public IPC::Listener {
  public:
-  SimpleListener() : other_(NULL) {
-  }
+  SimpleListener() : other_(nullptr) {}
   void Init(IPC::Sender* s) {
     other_ = s;
   }
@@ -177,13 +176,13 @@ class FuzzerServerListener : public SimpleListener {
   }
 
  private:
-  void OnMsgClassISMessage(int value, const base::string16& text) {
+  void OnMsgClassISMessage(int value, const std::u16string& text) {
     UseData(MsgClassIS::ID, value, text);
     RoundtripAckReply(FUZZER_ROUTING_ID, MsgClassIS::ID, value);
     Cleanup();
   }
 
-  void OnMsgClassSIMessage(const base::string16& text, int value) {
+  void OnMsgClassSIMessage(const std::u16string& text, int value) {
     UseData(MsgClassSI::ID, value, text);
     RoundtripAckReply(FUZZER_ROUTING_ID, MsgClassSI::ID, value);
     Cleanup();
@@ -209,7 +208,7 @@ class FuzzerServerListener : public SimpleListener {
     Cleanup();
   }
 
-  void UseData(int caller, int value, const base::string16& text) {
+  void UseData(int caller, int value, const std::u16string& text) {
     std::ostringstream os;
     os << "IPC fuzzer:" << caller << " [" << value << " "
        << base::UTF16ToUTF8(text) << "]\n";
@@ -223,8 +222,7 @@ class FuzzerServerListener : public SimpleListener {
 
 class FuzzerClientListener : public SimpleListener {
  public:
-  FuzzerClientListener() : last_msg_(NULL) {
-  }
+  FuzzerClientListener() : last_msg_(nullptr) {}
 
   bool OnMessageReceived(const IPC::Message& msg) override {
     last_msg_ = new IPC::Message(msg);
@@ -248,7 +246,7 @@ class FuzzerClientListener : public SimpleListener {
       return false;
 
     delete last_msg_;
-    last_msg_ = NULL;
+    last_msg_ = nullptr;
     return true;
   }
 
@@ -259,7 +257,7 @@ class FuzzerClientListener : public SimpleListener {
  private:
   bool MsgHandlerInternal(uint32_t type_id) {
     base::RunLoop().Run();
-    if (NULL == last_msg_)
+    if (!last_msg_)
       return false;
     if (FUZZER_ROUTING_ID != last_msg_->routing_id())
       return false;
@@ -291,13 +289,13 @@ TEST_F(IPCFuzzingTest, SanityTest) {
   listener.Init(channel());
   ASSERT_TRUE(ConnectChannel());
 
-  IPC::Message* msg = NULL;
+  IPC::Message* msg = nullptr;
   int value = 43;
-  msg = new MsgClassIS(value, base::ASCIIToUTF16("expect 43"));
+  msg = new MsgClassIS(value, u"expect 43");
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassIS::ID));
 
-  msg = new MsgClassSI(base::ASCIIToUTF16("expect 44"), ++value);
+  msg = new MsgClassSI(u"expect 44", ++value);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassSI::ID));
 
@@ -322,7 +320,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMsgNotHandled(MsgClassIS::ID));
 
-  msg = new MsgClassSI(base::ASCIIToUTF16("expect one"), 1);
+  msg = new MsgClassSI(u"expect one", 1);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(1, MsgClassSI::ID));
 
@@ -344,7 +342,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
 
   IPC::Message* msg = new IPC::Message(MSG_ROUTING_CONTROL, MsgClassSI::ID,
                                        IPC::Message::PRIORITY_NORMAL);
-  msg->WriteString16(base::ASCIIToUTF16("d"));
+  msg->WriteString16(u"d");
   msg->WriteInt(0);
   msg->WriteInt(0x65);  // Extra argument.
 
@@ -353,7 +351,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
 
   // Now send a well formed message to make sure the receiver wasn't
   // thrown out of sync by the extra argument.
-  msg = new MsgClassIS(3, base::ASCIIToUTF16("expect three"));
+  msg = new MsgClassIS(3, u"expect three");
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(3, MsgClassIS::ID));
 

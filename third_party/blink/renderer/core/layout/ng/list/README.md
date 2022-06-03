@@ -41,7 +41,7 @@ When the content is inline level and therefore generates line boxes:
 generates a box tree of:
 
 - LayoutNGListItem
-  - LayoutNGListMarker
+  - LayoutNGOutsideListMarker
     - LayoutText (1.)
   - LayoutText (sample text)
 
@@ -56,7 +56,7 @@ When the content is block level:
 ```
 
 - LayoutNGListItem
-  - LayoutNGListMarker
+  - LayoutNGOutsideListMarker
     - LayoutText (1.)
   - LayoutNGBlockFlow (div)
     - LayoutText (sample text)
@@ -74,7 +74,7 @@ When the content is mixed:
 ```
 
 - LayoutNGListItem
-  - LayoutNGListMarker
+  - LayoutNGOutsideListMarker
     - LayoutText (1.)
   - LayoutNGBlockFlow (anonymous)
     - LayoutText (inline text)
@@ -134,7 +134,8 @@ and still easy to implement across implementations.
 [marker positioning]: https://drafts.csswg.org/css-lists-3/#positioning
 
 [LayoutNGListItem]: layout_ng_list_item.h
-[LayoutNGListMarker]: layout_ng_list_marker.h
+[LayoutNGInsideListMarker]: layout_ng_inside_list_marker.h
+[LayoutNGOutsideListMarker]: layout_ng_outside_list_marker.h
 [NGBlockLayoutAlgorithm]: ../ng_block_layout_algorithm.h
 [NGInlineItem]: ../inline/ng_inline_item.h
 [NGInlineLayoutAlgorithm]: ../inline/ng_inline_layout_algorithm.h

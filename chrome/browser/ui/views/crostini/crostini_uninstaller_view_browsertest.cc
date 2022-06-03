@@ -4,29 +4,33 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
+#include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
  public:
   class WaitingFakeConciergeClient : public chromeos::FakeConciergeClient {
    public:
+    explicit WaitingFakeConciergeClient(chromeos::FakeCiceroneClient* client)
+        : chromeos::FakeConciergeClient(client) {}
+
     void StopVm(
         const vm_tools::concierge::StopVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
@@ -42,7 +46,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
       base::RunLoop loop;
       closure_ = loop.QuitClosure();
       loop.Run();
-      EXPECT_TRUE(stop_vm_called());
+      EXPECT_GE(stop_vm_call_count(), 1);
     }
 
    private:
@@ -53,11 +57,17 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
       : CrostiniUninstallerViewBrowserTest(true /*register_termina*/) {}
 
   explicit CrostiniUninstallerViewBrowserTest(bool register_termina)
-      : CrostiniDialogBrowserTest(register_termina),
-        waiting_fake_concierge_client_(new WaitingFakeConciergeClient()) {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
-        base::WrapUnique(waiting_fake_concierge_client_));
+      : CrostiniDialogBrowserTest(register_termina) {
+    chromeos::ConciergeClient::Shutdown();
+    // After the browser's mainloop is terminated. chromeos::ShutdownDBus() will
+    // delete the object.
+    waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(nullptr);
   }
+
+  CrostiniUninstallerViewBrowserTest(
+      const CrostiniUninstallerViewBrowserTest&) = delete;
+  CrostiniUninstallerViewBrowserTest& operator=(
+      const CrostiniUninstallerViewBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -74,16 +84,14 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
   bool HasCancelButton() { return ActiveView()->GetCancelButton() != nullptr; }
 
   void WaitForViewDestroyed() {
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    ActiveView()->set_destructor_callback_for_testing(run_loop.QuitClosure());
+    run_loop.Run();
     EXPECT_EQ(nullptr, ActiveView());
   }
 
  protected:
-  // Owned by chromeos::DBusThreadManager
   WaitingFakeConciergeClient* waiting_fake_concierge_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstallerViewBrowserTest);
 };
 
 class CrostiniUninstalledUninstallerViewBrowserTest
@@ -92,8 +100,10 @@ class CrostiniUninstalledUninstallerViewBrowserTest
   CrostiniUninstalledUninstallerViewBrowserTest()
       : CrostiniUninstallerViewBrowserTest(false /*register_termina*/) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstalledUninstallerViewBrowserTest);
+  CrostiniUninstalledUninstallerViewBrowserTest(
+      const CrostiniUninstalledUninstallerViewBrowserTest&) = delete;
+  CrostiniUninstalledUninstallerViewBrowserTest& operator=(
+      const CrostiniUninstalledUninstallerViewBrowserTest&) = delete;
 };
 
 // Test the dialog is actually launched from the app launcher.

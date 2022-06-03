@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "content/common/media/media_log_records.mojom.h"
 #include "content/renderer/media/batching_media_log.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -16,10 +18,15 @@ namespace content {
 class CONTENT_EXPORT RenderMediaEventHandler
     : public BatchingMediaLog::EventHandler {
  public:
-  RenderMediaEventHandler() = default;
-  ~RenderMediaEventHandler() override = default;
-  void SendQueuedMediaEvents(std::vector<media::MediaLogEvent>) override;
+  RenderMediaEventHandler();
+  ~RenderMediaEventHandler() override;
+  void SendQueuedMediaEvents(std::vector<media::MediaLogRecord>) override;
   void OnWebMediaPlayerDestroyed() override;
+
+ private:
+  content::mojom::MediaInternalLogRecords& GetMediaInternalRecordLogRemote();
+  mojo::Remote<content::mojom::MediaInternalLogRecords>
+      media_internal_log_remote_;
 };
 
 }  // namespace content

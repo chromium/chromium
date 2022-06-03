@@ -9,7 +9,7 @@
     SecureContext,
     Exposed=Window
 ] interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent {
-    [CallWith=ScriptState] constructor(DOMString type, optional PaymentMethodChangeEventInit eventInitDict);
+    [CallWith=ScriptState] constructor(DOMString type, optional PaymentMethodChangeEventInit eventInitDict = {});
     readonly attribute DOMString methodName;
     [CallWith=ScriptState] readonly attribute object? methodDetails;
 };

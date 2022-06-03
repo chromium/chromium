@@ -1,5 +1,5 @@
 rootWebArea
 ++genericContainer ignored
-++++none ignored
+++++genericContainer ignored
 ++++++staticText name='With aria-role none'
 ++++++++inlineTextBox name='With aria-role none'

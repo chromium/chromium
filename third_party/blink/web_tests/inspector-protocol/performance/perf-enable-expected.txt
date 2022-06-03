@@ -1,0 +1,24 @@
+Test performance domain enable method time domain specification.
+--- Default enable/disable
+OK
+OK
+--- Default nested enable/disable
+OK
+OK
+OK
+OK
+--- Enable with time domain specification
+OK
+OK
+OK
+OK
+Invalid time domain specification.
+OK
+--- Nested enable with time domain specification
+OK
+OK
+Cannot change time domain while performance metrics collection is enabled.
+OK
+OK
+OK
+

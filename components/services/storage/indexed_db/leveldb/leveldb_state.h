@@ -9,19 +9,24 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
+
+namespace base {
+class WaitableEvent;
+}  // namespace base
 
 namespace content {
 
 // Encapsulates a leveldb database and comparator, allowing them to be used
 // safely across thread boundaries.
+// Because the `RequestDestruction` method is called on shutdown, and blocks
+// shutdown, all references to this object MUST be on task runner that
+// BLOCK_SHUTDOWN. Otherwise it introduces a potential hang on shutdown.
 class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
  public:
   static scoped_refptr<LevelDBState> CreateForDiskDB(
@@ -35,15 +40,17 @@ class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
       std::unique_ptr<leveldb::DB> in_memory_database,
       std::string name_for_tracing);
 
-  // Returns if this call was successfully the first call to request destruction
-  // of this state. Can be called on any thread. The given |task_runner| will be
-  // used to call the |on_destruction| closure, which is called on the
-  // destruction of this state.
-  bool RequestDestruction(base::OnceClosure on_destruction,
-                          scoped_refptr<base::SequencedTaskRunner> task_runner);
+  // Can only be called once. |signal_on_destruction| must outlive this class,
+  // and will be signaled on the destruction of this state (in the destructor).
+  // Can be called on any thread.
+  void RequestDestruction(base::WaitableEvent* signal_on_destruction);
 
   bool destruction_requested() const {
     return destruction_requested_.load(std::memory_order_relaxed);
+  }
+  // Only valid if destruction_requested() returns true.
+  base::WaitableEvent* destruction_event() const {
+    return signal_on_destruction_;
   }
 
   const leveldb::Comparator* comparator() const { return comparator_; }
@@ -74,11 +81,10 @@ class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
   // This member transitions from false to true at most once in the instance's
   // lifetime.
   std::atomic_bool destruction_requested_;
-  // These members are written only once (when |destruction_requested_|
-  // transitions from false to true) and read only once in the destructor, so
-  // they are thread-compatible.
-  base::OnceClosure on_destruction_;
-  scoped_refptr<base::SequencedTaskRunner> on_destruction_task_runner_;
+  // |signal_on_destruction_| is written only once (when
+  // |destruction_requested_| transitions from false to true) and read only once
+  // in the destructor, so it is thread-compatible.
+  base::WaitableEvent* signal_on_destruction_ = nullptr;
 };
 
 }  // namespace content

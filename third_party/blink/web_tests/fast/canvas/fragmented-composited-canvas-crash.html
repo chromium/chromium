@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+Passes if it does not crash.
+<div style="columns: 3;">
+  <div style="width: 600px; height: 300px; position: relative;">
+    <canvas id="canvas" width="600" height="300" style="position: absolute; left: 0; top: 0;">
+    </canvas>
+  </div>
+</div>
+<script>
+async_test(t => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, 100, 100);
+  t.done();
+});
+</script>

@@ -1,10 +1,13 @@
 calamity@chromium.org
+dominickn@chromium.org
 jennyz@chromium.org
 khmel@chromium.org
-stevenjb@chromium.org
+nancylingwang@chromium.org
 xiyuan@chromium.org
 
-per-file app_launch_event_logger*=charleszhao@chromium.org
-per-file app_launch_event_logger*=jiameng@chromium.org
+# Mainly for launcher personalization purposes.
+tby@chromium.org
+thanhdng@chromium.org
+wrong@chromium.org
 
-# COMPONENT: UI>Shell>Launcher
+per-file app_launch_event_logger*=charleszhao@chromium.org

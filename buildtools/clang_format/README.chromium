@@ -1,8 +1,8 @@
 Name: clang-format
 Short Name: clang-format
-URL: http://llvm.org/viewvc/llvm-project/cfe/trunk/tools/clang-format/
-Version: 8.0.0
-Date: 15 November 2018
+URL: https://github.com/llvm/llvm-project/tree/main/clang/tools/clang-format
+Version: See DEPS
+Date: 26 January 2021
 Revision: See DEPS
 License: University of Illinois/NCSA Open Source License
 License File: NOT_SHIPPED

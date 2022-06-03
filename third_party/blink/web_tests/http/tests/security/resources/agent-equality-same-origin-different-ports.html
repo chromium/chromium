@@ -24,7 +24,7 @@ function onMessage(evt) {
   let agentIdB = evt.data;
   let message = [
     'same-origin different-ports test',
-    internals.getDocumentAgentId(document),
+    internals.getAgentId(window),
     agentIdB
   ];
   window.parent.postMessage(message, '*');

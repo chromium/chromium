@@ -4,19 +4,20 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 
+#import <Foundation/Foundation.h>
 #include <unistd.h>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
-#include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_termination_manager.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
@@ -26,10 +27,9 @@
 AppShimListener::AppShimListener() {}
 
 void AppShimListener::Init() {
+  has_initialized_ = true;
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!extension_app_shim_handler_);
-  extension_app_shim_handler_.reset(new apps::ExtensionAppShimHandler());
-  AppShimHostBootstrap::SetClient(extension_app_shim_handler_.get());
   // Initialize the instance of AppShimTerminationManager, to ensure that it
   // registers for its notifications.
   apps::AppShimTerminationManager::Get();
@@ -37,20 +37,19 @@ void AppShimListener::Init() {
   // If running the shim triggers Chrome startup, the user must wait for the
   // socket to be set up before the shim will be usable. This also requires
   // IO, so use MayBlock() with USER_VISIBLE.
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&AppShimListener::InitOnBackgroundThread, this));
 }
 
 AppShimListener::~AppShimListener() {
-  base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})
-      ->DeleteSoon(FROM_HERE, std::move(mach_acceptor_));
+  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                 std::move(mach_acceptor_));
 
   // The AppShimListener is only initialized if the Chrome process
   // successfully took the singleton lock. If it was not initialized, do not
   // delete existing app shim socket files as they belong to another process.
-  if (!extension_app_shim_handler_)
+  if (!has_initialized_)
     return;
 
   AppShimHostBootstrap::SetClient(nullptr);
@@ -60,12 +59,11 @@ AppShimListener::~AppShimListener() {
     base::FilePath version_path =
         user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName);
 
-    base::PostTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        base::BindOnce(base::IgnoreResult(&base::DeleteFile), version_path,
-                       false));
+        base::BindOnce(base::GetDeleteFileCallback(), version_path));
   }
 }
 
@@ -88,18 +86,20 @@ void AppShimListener::InitOnBackgroundThread() {
   // process.
   base::FilePath version_path =
       user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName);
-  base::DeleteFile(version_path, false);
+  base::DeleteFile(version_path);
   base::CreateSymbolicLink(base::FilePath(version_info::GetVersionNumber()),
                            version_path);
 }
 
 void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
                                         base::ProcessId peer_pid) {
-  base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&AppShimHostBootstrap::CreateForChannelAndPeerID,
-                         std::move(endpoint), peer_pid));
+  // TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
+  // internal debugging URL.
+  NSLog(@"AppShim: Connection received from pid %d", peer_pid);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AppShimHostBootstrap::CreateForChannelAndPeerID,
+                     std::move(endpoint), peer_pid));
 }
 
 void AppShimListener::OnServerChannelCreateError() {

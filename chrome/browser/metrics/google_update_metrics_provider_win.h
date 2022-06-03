@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_GOOGLE_UPDATE_METRICS_PROVIDER_WIN_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/metrics_provider.h"
@@ -16,10 +15,16 @@
 class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
  public:
   GoogleUpdateMetricsProviderWin();
+
+  GoogleUpdateMetricsProviderWin(const GoogleUpdateMetricsProviderWin&) =
+      delete;
+  GoogleUpdateMetricsProviderWin& operator=(
+      const GoogleUpdateMetricsProviderWin&) = delete;
+
   ~GoogleUpdateMetricsProviderWin() override;
 
   // metrics::MetricsProvider
-  void AsyncInit(const base::Closure& done_callback) override;
+  void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
 
@@ -52,7 +57,7 @@ class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
   // Receives |google_update_metrics| from a blocking pool thread and runs
   // |done_callback|.
   void ReceiveGoogleUpdateData(
-      const base::Closure& done_callback,
+      base::OnceClosure done_callback,
       const GoogleUpdateMetrics& google_update_metrics);
 
   // Google Update metrics that were fetched via GetGoogleUpdateData(). Will be
@@ -60,8 +65,6 @@ class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
   GoogleUpdateMetrics google_update_metrics_;
 
   base::WeakPtrFactory<GoogleUpdateMetricsProviderWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleUpdateMetricsProviderWin);
 };
 
 #endif  // CHROME_BROWSER_METRICS_GOOGLE_UPDATE_METRICS_PROVIDER_WIN_H_

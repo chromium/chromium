@@ -16,16 +16,22 @@ class ShelfButtonDelegate;
 class ASH_EXPORT ShelfButton : public views::Button {
  public:
   ShelfButton(Shelf* shelf, ShelfButtonDelegate* shelf_button_delegate);
+
+  ShelfButton(const ShelfButton&) = delete;
+  ShelfButton& operator=(const ShelfButton&) = delete;
+
   ~ShelfButton() override;
 
   // views::Button:
+  void OnThemeChanged() override;
   const char* GetClassName() const override;
+  gfx::Rect GetAnchorBoundsInScreen() const override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void NotifyClick(const ui::Event& event) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
 
   Shelf* shelf() { return shelf_; }
+  const Shelf* shelf() const { return shelf_; }
 
  protected:
   ShelfButtonDelegate* shelf_button_delegate() {
@@ -38,8 +44,6 @@ class ASH_EXPORT ShelfButton : public views::Button {
 
   // A class to which this button delegates handling some of its events.
   ShelfButtonDelegate* const shelf_button_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfButton);
 };
 
 }  // namespace ash

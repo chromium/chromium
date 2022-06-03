@@ -2,44 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-jumbo_static_library("core") {
+static_library("core") {
   sources = [
-    "insecure_input_event_data.h",
     "security_state.cc",
     "security_state.h",
-    "security_state_pref_names.cc",
-    "security_state_pref_names.h",
   ]
 
   public_deps = [
     ":features",
     "//base",
-    "//components/prefs",
     "//net",
     "//url",
   ]
+
+  deps = [ "//services/network/public/cpp" ]
 }
 
 if (is_android) {
-  java_cpp_enum("security_state_enums_java") {
-    sources = [
-      "security_state.h",
-    ]
+  java_cpp_enum("security_state_enums") {
+    sources = [ "security_state.h" ]
+  }
+
+  android_library("security_state_enums_java") {
+    srcjar_deps = [ ":security_state_enums" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
-  sources = [
-    "security_state_unittest.cc",
-  ]
+  sources = [ "security_state_unittest.cc" ]
 
   deps = [
     ":core",
@@ -59,7 +56,5 @@ component("features") {
     "features.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

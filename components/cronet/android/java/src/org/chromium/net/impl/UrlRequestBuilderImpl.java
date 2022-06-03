@@ -59,6 +59,9 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
     private RequestFinishedInfo.Listener mRequestFinishedListener;
+    // Idempotency of the request.
+    @CronetEngineBase.Idempotency
+    private int mIdempotency = DEFAULT_IDEMPOTENCY;
 
     /**
      * Creates a builder for {@link UrlRequest} objects. All callbacks for
@@ -140,6 +143,12 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     }
 
     @Override
+    public UrlRequestBuilderImpl setIdempotency(@CronetEngineBase.Idempotency int idempotency) {
+        mIdempotency = idempotency;
+        return this;
+    }
+
+    @Override
     public UrlRequestBuilderImpl setUploadDataProvider(
             UploadDataProvider uploadDataProvider, Executor executor) {
         if (uploadDataProvider == null) {
@@ -200,7 +209,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
         final UrlRequestBase request = mCronetEngine.createRequest(mUrl, mCallback, mExecutor,
                 mPriority, mRequestAnnotations, mDisableCache, mDisableConnectionMigration,
                 mAllowDirectExecutor, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid, mRequestFinishedListener);
+                mTrafficStatsUid, mRequestFinishedListener, mIdempotency);
         if (mMethod != null) {
             request.setHttpMethod(mMethod);
         }

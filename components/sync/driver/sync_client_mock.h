@@ -14,27 +14,41 @@ namespace syncer {
 class SyncClientMock : public SyncClient {
  public:
   SyncClientMock();
+
+  SyncClientMock(const SyncClientMock&) = delete;
+  SyncClientMock& operator=(const SyncClientMock&) = delete;
+
   ~SyncClientMock() override;
 
-  MOCK_METHOD0(GetPrefService, PrefService*());
-  MOCK_METHOD0(GetSyncDataPath, base::FilePath());
-  MOCK_METHOD0(GetLocalSyncBackendFolder, base::FilePath());
-  MOCK_METHOD1(CreateDataTypeControllers,
-               DataTypeController::TypeVector(SyncService* sync_service));
-  MOCK_METHOD0(GetPasswordStateChangedCallback, base::RepeatingClosure());
-
-  MOCK_METHOD0(GetInvalidationService, invalidation::InvalidationService*());
-  MOCK_METHOD0(GetTrustedVaultClient, TrustedVaultClient*());
-  MOCK_METHOD0(GetExtensionsActivity, scoped_refptr<ExtensionsActivity>());
-  MOCK_METHOD1(GetSyncableServiceForType,
-               base::WeakPtr<SyncableService>(ModelType type));
-  MOCK_METHOD1(CreateModelWorkerForGroup,
-               scoped_refptr<ModelSafeWorker>(ModelSafeGroup group));
-  MOCK_METHOD0(GetSyncApiComponentFactory, SyncApiComponentFactory*());
-  MOCK_METHOD0(GetPreferenceProvider, SyncTypePreferenceProvider*());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncClientMock);
+  MOCK_METHOD(PrefService*, GetPrefService, (), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(base::FilePath, GetLocalSyncBackendFolder, (), (override));
+  MOCK_METHOD(DataTypeController::TypeVector,
+              CreateDataTypeControllers,
+              (SyncService * sync_service),
+              (override));
+  MOCK_METHOD(invalidation::InvalidationService*,
+              GetInvalidationService,
+              (),
+              (override));
+  MOCK_METHOD(syncer::SyncInvalidationsService*,
+              GetSyncInvalidationsService,
+              (),
+              (override));
+  MOCK_METHOD(TrustedVaultClient*, GetTrustedVaultClient, (), (override));
+  MOCK_METHOD(scoped_refptr<ExtensionsActivity>,
+              GetExtensionsActivity,
+              (),
+              (override));
+  MOCK_METHOD(SyncApiComponentFactory*,
+              GetSyncApiComponentFactory,
+              (),
+              (override));
+  MOCK_METHOD(SyncTypePreferenceProvider*,
+              GetPreferenceProvider,
+              (),
+              (override));
+  MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
 };
 
 }  // namespace syncer

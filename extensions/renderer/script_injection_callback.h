@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 
@@ -20,17 +20,20 @@ namespace extensions {
 class ScriptInjectionCallback : public blink::WebScriptExecutionCallback {
  public:
   using CompleteCallback =
-      base::Callback<void(const std::vector<v8::Local<v8::Value>>& result)>;
+      base::OnceCallback<void(const std::vector<v8::Local<v8::Value>>& result)>;
 
-  ScriptInjectionCallback(const CompleteCallback& injection_completed_callback);
+  explicit ScriptInjectionCallback(
+      CompleteCallback injection_completed_callback);
+
+  ScriptInjectionCallback(const ScriptInjectionCallback&) = delete;
+  ScriptInjectionCallback& operator=(const ScriptInjectionCallback&) = delete;
+
   ~ScriptInjectionCallback() override;
 
   void Completed(const blink::WebVector<v8::Local<v8::Value>>& result) override;
 
  private:
   CompleteCallback injection_completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptInjectionCallback);
 };
 
 }  // namespace extensions

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test nesting of time/timeEnd records on Timeline\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function simpleConsoleTime()
@@ -77,9 +77,9 @@
       if (namesToDump.has(event.name))
         TestRunner.addResult('----'.repeat(level) + '> ' + Timeline.TimelineUIUtils.eventTitle(event));
     }
-    UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
+    UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
     await PerformanceTestRunner.evaluateWithTimeline(actions);
-    PerformanceTestRunner.walkTimelineEventTree(dumpName);
+    await PerformanceTestRunner.walkTimelineEventTree(dumpName);
     next();
 }
 })();

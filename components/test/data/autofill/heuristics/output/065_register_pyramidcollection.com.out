@@ -11,15 +11,15 @@ PHONE_HOME_WHOLE_NUMBER | P2 | Day Phone * |  | E1_1-default
 PHONE_HOME_WHOLE_NUMBER | P3 | Evening Phone |  | E1_1-default
 UNKNOWN_TYPE | P1 | Create Password * |  | E1_1-default
 UNKNOWN_TYPE | PasswordConfirm | Confirm Password * |  | E1_1-default
-NAME_FIRST | SF1 | First Name * |  | SF1_1-default
-NAME_LAST | SL1 | Last Name * |  | SF1_1-default
-ADDRESS_HOME_LINE1 | SS1 | Address Line 1 * |  | SF1_1-default
-ADDRESS_HOME_LINE2 | SR1 | Address Line 2 |  | SF1_1-default
-ADDRESS_HOME_CITY | SC2 | City * |  | SF1_1-default
-ADDRESS_HOME_STATE | SS2 | State * |  | SF1_1-default
-ADDRESS_HOME_COUNTRY | SC3 | Country * | 0000 | SF1_1-default
-ADDRESS_HOME_ZIP | SZ1 | Zip Code * |  | SF1_1-default
-PHONE_HOME_WHOLE_NUMBER | SP2 | Day Phone * |  | SF1_1-default
-PHONE_HOME_WHOLE_NUMBER | SP3 | Evening Phone |  | SF1_1-default
-UNKNOWN_TYPE | sameAsBilling | My Shipping address is same as billing address. | on | SF1_1-default
-EMAIL_ADDRESS | email | ENTER TO WIN A $100 GIFT CARD! | enter email address | email_1-default
+NAME_FIRST | SF1 | First Name * |  | SF1_2-default
+NAME_LAST | SL1 | Last Name * |  | SF1_2-default
+ADDRESS_HOME_LINE1 | SS1 | Address Line 1 * |  | SF1_2-default
+ADDRESS_HOME_LINE2 | SR1 | Address Line 2 |  | SF1_2-default
+ADDRESS_HOME_CITY | SC2 | City * |  | SF1_2-default
+ADDRESS_HOME_STATE | SS2 | State * |  | SF1_2-default
+ADDRESS_HOME_COUNTRY | SC3 | Country * | 0000 | SF1_2-default
+ADDRESS_HOME_ZIP | SZ1 | Zip Code * |  | SF1_2-default
+PHONE_HOME_WHOLE_NUMBER | SP2 | Day Phone * |  | SF1_2-default
+PHONE_HOME_WHOLE_NUMBER | SP3 | Evening Phone |  | SF1_2-default
+UNKNOWN_TYPE | sameAsBilling | My Shipping address is same as billing address. | on | SF1_2-default
+UNKNOWN_TYPE | email | ENTER TO WIN A $100 GIFT CARD! | enter email address | email_1-default

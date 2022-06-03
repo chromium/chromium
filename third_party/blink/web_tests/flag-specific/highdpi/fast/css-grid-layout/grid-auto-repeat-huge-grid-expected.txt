@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Test that we don't get more than kGridMaxTracks repetitions even on very wide grids (normal tracks clamped).
+PASS Test that we don't get more than kGridMaxTracks repetitions even on very tall grids (normal tracks clamped).
+PASS Test that we don't get more than kGridMaxTracks repetitions even on very wide grids (auto repeat tracks clamped).
+PASS Test that we don't get more than kGridMaxTracks repetitions even on very tall grids (auto repeat tracks clamped).
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps. assert_equals: expected 30 but got 20
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps. assert_equals: expected 30 but got 20
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps and min-width. assert_equals: expected "20px" but got "19.9896px"
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps and min-height. assert_equals: expected "20px" but got "19.9896px"
+PASS Test that we don't crash when there are exactly kGridMaxTracks auto repeat rows on very tall grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks auto repeat columns on very wide grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks (normal and auto-repeat) rows on very tall grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks (normal and auto-repeat) columns on very wide grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks non auto-repeat rows on very tall grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks non auto-repeat columns on very wide grids.
+PASS Test that we don't crash when there are exactly kGridMaxTracks non auto-repeat rows on very tall grids with enough room for auto repetitions.
+PASS Test that we don't crash when there are exactly kGridMaxTracks non auto-repeat columns on very wide grids with enough room for auto repetitions.
+PASS Test that we don't crash when there are more than kGridMaxTracks non auto-repeat rows on very tall grids.
+PASS Test that we don't crash when there are more than kGridMaxTracks non auto-repeat columns on very wide grids.
+PASS Test that we don't crash when there are more than kGridMaxTracks rows in the auto repeat <track-list>.
+PASS Test that we don't crash when there are more than kGridMaxTracks columns in the auto repeat <track-list>.
+Harness: the test ran to completion.
+

@@ -16,15 +16,16 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .bss: 0 bytes (0 bytes) (not included in totals)
     .data: 0 bytes (0 bytes) (0.0%)
     .data.rel.ro: 0 bytes (0 bytes) (0.0%)
+    .data.rel.ro.local: 0 bytes (0 bytes) (0.0%)
     .other: 0 bytes (0 bytes) (0.0%)
-    .rel.dyn: 0 bytes (0 bytes) (0.0%)
+    .rel.dyn: 0 bytes (0 bytes) (0.0%) (counted in .other)
     .rodata: 0 bytes (0 bytes) (0.0%)
     .text: 0 bytes (0 bytes) (0.0%)
 
-0 symbols added (+), 0 changed (~), 0 removed (-), 51 unchanged (not shown)
+0 symbols added (+), 0 changed (~), 0 removed (-), 77 unchanged (not shown)
 Added/Removed by section: 
 Of changed symbols, 0 grew, 0 shrank
-Number of unique symbols 46 -> 46 (+0)
+Number of unique symbols 72 -> 72 (+0)
 0 paths added, 0 removed, 0 changed
 
 Showing 0 symbols (0 -> 0 unique) with total pss: 0 bytes

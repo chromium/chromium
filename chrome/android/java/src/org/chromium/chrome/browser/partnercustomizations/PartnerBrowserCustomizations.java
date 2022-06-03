@@ -21,12 +21,12 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ChromeVersionInfo;
-import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
-import org.chromium.chrome.browser.util.UrlConstants;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
@@ -39,6 +39,9 @@ public class PartnerBrowserCustomizations {
     private static final String TAG = "PartnerCustomize";
     private static final String PROVIDER_AUTHORITY = "com.android.partnerbrowsercustomizations";
 
+    /** Default timeout in ms for reading PartnerBrowserCustomizations provider. */
+    private static final int DEFAULT_TIMEOUT_MS = 10_000;
+
     private static final int HOMEPAGE_URL_MAX_LENGTH = 1000;
     // Private homepage structure.
     @VisibleForTesting
@@ -49,14 +52,31 @@ public class PartnerBrowserCustomizations {
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
 
     private static String sProviderAuthority = PROVIDER_AUTHORITY;
-    private static boolean sIgnoreBrowserProviderSystemPackageCheck;
-    private static volatile String sHomepage;
-    private static volatile boolean sIncognitoModeDisabled;
-    private static volatile boolean sBookmarksEditingDisabled;
-    private static boolean sIsInitialized;
-    private static List<Runnable> sInitializeAsyncCallbacks = new ArrayList<>();
+    private static Boolean sIgnoreSystemPackageCheck;
 
-    /** Provider of partner customizations. */
+    private static volatile PartnerBrowserCustomizations sInstance;
+
+    private volatile String mHomepage;
+    private volatile boolean mIncognitoModeDisabled;
+    private volatile boolean mBookmarksEditingDisabled;
+    private boolean mIsInitialized;
+
+    private final List<Runnable> mInitializeAsyncCallbacks;
+    private PartnerHomepageListener mListener;
+
+    /**
+     * Interface that listen to homepage URI updates from provider packages.
+     */
+    public interface PartnerHomepageListener {
+        /**
+         * Will be called if homepage have any update after {@link #initializeAsync(Context, long)}.
+         */
+        void onHomepageUpdate();
+    }
+
+    /**
+     * Provider of partner customizations.
+     */
     public interface Provider {
         @Nullable
         String getHomepage();
@@ -65,7 +85,9 @@ public class PartnerBrowserCustomizations {
         boolean isBookmarksEditingDisabled();
     }
 
-    /** Partner customizations provided by ContentProvider package. */
+    /**
+     * Partner customizations provided by ContentProvider package.
+     */
     public static class ProviderPackage implements Provider {
         private static Boolean sValid;
 
@@ -73,71 +95,118 @@ public class PartnerBrowserCustomizations {
             ProviderInfo providerInfo =
                     ContextUtils.getApplicationContext().getPackageManager().resolveContentProvider(
                             sProviderAuthority, 0);
-            if (providerInfo == null) return false;
-
-            if ((providerInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
-                    && !sIgnoreBrowserProviderSystemPackageCheck) {
-                Log.w(TAG,
-                        "Browser Customizations content provider package, "
-                                + providerInfo.packageName + ", is not a system package. "
-                                + "This could be a malicious attempt from a third party "
-                                + "app, so skip reading the browser content provider.");
+            if (providerInfo == null) {
                 return false;
             }
-            return true;
+            if ((providerInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                return true;
+            }
+
+            // In prod mode (sIgnoreBrowserProviderSystemPackageCheck == null), non-system package
+            // is rejected unless Chrome Android is a local build.
+            // When sIgnoreBrowserProviderSystemPackageCheck is true, accept non-system package.
+            // When sIgnoreBrowserProviderSystemPackageCheck is false, reject non-system package.
+            if (sIgnoreSystemPackageCheck != null && sIgnoreSystemPackageCheck) {
+                return true;
+            }
+
+            Log.w(TAG,
+                    "Browser Customizations content provider package, " + providerInfo.packageName
+                            + ", is not a system package. "
+                            + "This could be a malicious attempt from a third party "
+                            + "app, so skip reading the browser content provider.");
+            if (sIgnoreSystemPackageCheck != null && !sIgnoreSystemPackageCheck) {
+                return false;
+            }
+            if (ChromeVersionInfo.isLocalBuild()) {
+                Log.w(TAG,
+                        "This is a local build of Chrome Android, "
+                                + "so keep reading the browser content provider, "
+                                + "to make debugging customization easier.");
+                return true;
+            }
+            return false;
         }
 
         private boolean isValid() {
-            if (sValid == null) sValid = isValidInternal();
+            if (sValid == null) {
+                sValid = isValidInternal();
+            }
             return sValid;
         }
 
         @Override
         public String getHomepage() {
-            if (!isValid()) return null;
+            if (!isValid()) {
+                return null;
+            }
             String homepage = null;
             Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                     buildQueryUri(PARTNER_HOMEPAGE_PATH), null, null, null, null);
             if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
                 homepage = cursor.getString(0);
             }
-            if (cursor != null) cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
             return homepage;
         }
 
         @Override
         public boolean isIncognitoModeDisabled() {
-            if (!isValid()) return false;
+            if (!isValid()) {
+                return false;
+            }
             boolean disabled = false;
             Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                     buildQueryUri(PARTNER_DISABLE_INCOGNITO_MODE_PATH), null, null, null, null);
             if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
                 disabled = cursor.getInt(0) == 1;
             }
-            if (cursor != null) cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
             return disabled;
         }
 
         @Override
         public boolean isBookmarksEditingDisabled() {
-            if (!isValid()) return false;
+            if (!isValid()) {
+                return false;
+            }
             boolean disabled = false;
             Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                     buildQueryUri(PARTNER_DISABLE_BOOKMARKS_EDITING_PATH), null, null, null, null);
             if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
                 disabled = cursor.getInt(0) == 1;
             }
-            if (cursor != null) cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
             return disabled;
         }
     }
 
+    private PartnerBrowserCustomizations() {
+        mInitializeAsyncCallbacks = new ArrayList<>();
+    }
+
+    /**
+     * @return singleton instance of {@link PartnerBrowserCustomizations}.
+     */
+    public static PartnerBrowserCustomizations getInstance() {
+        if (sInstance == null) {
+            sInstance = new PartnerBrowserCustomizations();
+        }
+        return sInstance;
+    }
+
     /**
      * @return True if the partner homepage content provider exists and enabled. Note that The data
-     *         this method reads is not initialized until the asynchronous initialization of this
-     *         class has been completed.
+     * this method reads is not initialized until the asynchronous initialization of this class has
+     * been completed.
      */
-    public static boolean isHomepageProviderAvailableAndEnabled() {
+    public boolean isHomepageProviderAvailableAndEnabled() {
         return !TextUtils.isEmpty(getHomePageUrl());
     }
 
@@ -146,24 +215,33 @@ public class PartnerBrowserCustomizations {
      */
     @CalledByNative
     public static boolean isIncognitoDisabled() {
-        return sIncognitoModeDisabled;
+        return getInstance().mIncognitoModeDisabled;
+    }
+
+    /**
+     * Set the listener that will receive updates when partner provided homepage changes.
+     * @param listener {@link PartnerHomepageListener} that will receive update when partner
+     *         provided homepage changes.
+     */
+    public void setPartnerHomepageListener(PartnerHomepageListener listener) {
+        assert mListener == null;
+        mListener = listener;
     }
 
     /**
      * @return Whether partner bookmarks editing is disabled by the partner.
      */
-    @VisibleForTesting
-    static boolean isBookmarksEditingDisabled() {
-        return sBookmarksEditingDisabled;
+    public boolean isBookmarksEditingDisabled() {
+        return mBookmarksEditingDisabled;
     }
 
     /**
      * @return True, if initialization is finished. Checking that there is no provider, or failing
-     *         to read provider is also considered initialization.
+     * to read provider is also considered initialization.
      */
     @VisibleForTesting
-    public static boolean isInitialized() {
-        return sIsInitialized;
+    public boolean isInitialized() {
+        return mIsInitialized;
     }
 
     @VisibleForTesting
@@ -180,7 +258,7 @@ public class PartnerBrowserCustomizations {
      */
     @VisibleForTesting
     static void ignoreBrowserProviderSystemPackageCheckForTests(boolean ignore) {
-        sIgnoreBrowserProviderSystemPackageCheck = ignore;
+        sIgnoreSystemPackageCheck = ignore;
     }
 
     @VisibleForTesting
@@ -196,46 +274,53 @@ public class PartnerBrowserCustomizations {
      * Constructs an async task that reads PartnerBrowserCustomization provider.
      *
      * @param context   The current application context.
+     */
+    public void initializeAsync(final Context context) {
+        initializeAsync(context, DEFAULT_TIMEOUT_MS);
+    }
+
+    /**
+     * Constructs an async task that reads PartnerBrowserCustomization provider.
+     *
+     * @param context   The current application context.
      * @param timeoutMs If initializing takes more than this time, cancels it. The unit is ms.
      */
-    public static void initializeAsync(final Context context, long timeoutMs) {
-        sIsInitialized = false;
-        Provider provider = AppHooks.get().getCustomizationProvider();
+    @VisibleForTesting
+    void initializeAsync(final Context context, long timeoutMs) {
+        mIsInitialized = false;
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask = new AsyncTask<Void>() {
-            private boolean mDisablePartnerBookmarksShim;
             private boolean mHomepageUriChanged;
 
-            private void refreshHomepage() {
+            private void refreshHomepage(Provider provider) {
                 try {
                     String homepage = provider.getHomepage();
-                    if (!isValidHomepage(homepage)) homepage = null;
-                    if (!TextUtils.equals(sHomepage, homepage)) {
+                    if (!isValidHomepage(homepage)) {
+                        homepage = null;
+                    }
+                    if (!TextUtils.equals(mHomepage, homepage)) {
                         mHomepageUriChanged = true;
                     }
-                    sHomepage = homepage;
+                    mHomepage = homepage;
+                    SharedPreferencesManager.getInstance().writeString(
+                            ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                            mHomepage);
                 } catch (Exception e) {
                     Log.w(TAG, "Partner homepage provider URL read failed : ", e);
                 }
             }
 
-            private void refreshIncognitoModeDisabled() {
+            private void refreshIncognitoModeDisabled(Provider provider) {
                 try {
-                    sIncognitoModeDisabled = provider.isIncognitoModeDisabled();
+                    mIncognitoModeDisabled = provider.isIncognitoModeDisabled();
                 } catch (Exception e) {
                     Log.w(TAG, "Partner disable incognito mode read failed : ", e);
                 }
             }
 
-            private void refreshBookmarksEditingDisabled() {
+            private void refreshBookmarksEditingDisabled(Provider provider) {
                 try {
-                    boolean disabled = provider.isBookmarksEditingDisabled();
-                    // Only need to disable it once.
-                    if (disabled != sBookmarksEditingDisabled) {
-                        assert disabled;
-                        mDisablePartnerBookmarksShim = true;
-                    }
-                    sBookmarksEditingDisabled = disabled;
+                    mBookmarksEditingDisabled = provider.isBookmarksEditingDisabled();
                 } catch (Exception e) {
                     Log.w(TAG, "Partner disable bookmarks editing read failed : ", e);
                 }
@@ -254,13 +339,16 @@ public class PartnerBrowserCustomizations {
                     }
 
                     if (isCancelled()) return null;
-                    refreshIncognitoModeDisabled();
+                    Provider provider = AppHooks.get().getCustomizationProvider();
 
                     if (isCancelled()) return null;
-                    refreshBookmarksEditingDisabled();
+                    refreshIncognitoModeDisabled(provider);
 
                     if (isCancelled()) return null;
-                    refreshHomepage();
+                    refreshBookmarksEditingDisabled(provider);
+
+                    if (isCancelled()) return null;
+                    refreshHomepage(provider);
                 } catch (Exception e) {
                     Log.w(TAG, "Fetching partner customizations failed", e);
                 }
@@ -278,20 +366,15 @@ public class PartnerBrowserCustomizations {
             }
 
             private void onFinalized() {
-                sIsInitialized = true;
+                mIsInitialized = true;
 
-                for (Runnable callback : sInitializeAsyncCallbacks) {
+                for (Runnable callback : mInitializeAsyncCallbacks) {
                     callback.run();
                 }
-                sInitializeAsyncCallbacks.clear();
+                mInitializeAsyncCallbacks.clear();
 
-                if (mHomepageUriChanged) {
-                    HomepageManager.getInstance().notifyHomepageUpdated();
-                }
-
-                // Disable partner bookmarks editing if necessary.
-                if (mDisablePartnerBookmarksShim) {
-                    PartnerBookmarksReader.disablePartnerBookmarksEditing();
+                if (mHomepageUriChanged && mListener != null) {
+                    mListener.onHomepageUpdate();
                 }
             }
         };
@@ -308,51 +391,63 @@ public class PartnerBrowserCustomizations {
      *
      * @param callback  This is called when the initialization is done.
      */
-    public static void setOnInitializeAsyncFinished(final Runnable callback) {
-        if (sIsInitialized) {
+    public void setOnInitializeAsyncFinished(final Runnable callback) {
+        if (mIsInitialized) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
         } else {
-            sInitializeAsyncCallbacks.add(callback);
+            mInitializeAsyncCallbacks.add(callback);
         }
     }
 
     /**
      * Sets a callback that will be executed when the initialization is done.
      *
-     * @param callback  This is called when the initialization is done.
+     * @param callback This is called when the initialization is done.
      * @param timeoutMs If initializing takes more than this time since this function is called,
-     *                  force run |callback| early. The unit is ms.
+     * force run |callback| early. The unit is ms.
      */
-    public static void setOnInitializeAsyncFinished(final Runnable callback, long timeoutMs) {
-        sInitializeAsyncCallbacks.add(callback);
+    public void setOnInitializeAsyncFinished(final Runnable callback, long timeoutMs) {
+        mInitializeAsyncCallbacks.add(callback);
 
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
-            if (sInitializeAsyncCallbacks.remove(callback)) callback.run();
-        }, sIsInitialized ? 0 : timeoutMs);
+            if (mInitializeAsyncCallbacks.remove(callback)) {
+                if (!mIsInitialized) {
+                    Log.w(TAG, "mInitializeAsyncCallbacks executed as timeout expired.");
+                }
+                callback.run();
+            }
+        }, mIsInitialized ? 0 : timeoutMs);
     }
 
     public static void destroy() {
-        sIsInitialized = false;
-        sInitializeAsyncCallbacks.clear();
-        sHomepage = null;
+        getInstance().destroyInternal();
+        sInstance = null;
+        sIgnoreSystemPackageCheck = null;
+    }
+
+    private void destroyInternal() {
+        mInitializeAsyncCallbacks.clear();
+        mListener = null;
     }
 
     /**
      * @return Home page URL from Android provider. If null, that means either there is no homepage
-     *         provider or provider set it to null to disable homepage.
+     * provider or provider set it to null to disable homepage.
      */
-    public static String getHomePageUrl() {
+    public String getHomePageUrl() {
         CommandLine commandLine = CommandLine.getInstance();
         if (commandLine.hasSwitch(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING)) {
             return commandLine.getSwitchValue(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING);
         }
-        return sHomepage;
+        return mHomepage;
     }
 
     @VisibleForTesting
     static boolean isValidHomepage(String url) {
-        if (url == null) return false;
-        if (!UrlUtilities.isHttpOrHttps(url) && !NewTabPage.isNTPUrl(url)) {
+        if (url == null) {
+            return false;
+        }
+        if (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url)) {
             Log.w(TAG,
                     "Partner homepage must be HTTP(S) or NewTabPage. "
                             + "Got invalid URL \"%s\"",
@@ -364,5 +459,10 @@ public class PartnerBrowserCustomizations {
             return false;
         }
         return true;
+    }
+
+    @VisibleForTesting
+    public void setHomepageForTests(String homepage) {
+        mHomepage = homepage;
     }
 }

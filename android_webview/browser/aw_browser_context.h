@@ -18,6 +18,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/zoom_level_delegate.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 
 class GURL;
 class PrefService;
@@ -50,6 +52,10 @@ class AwBrowserContext : public content::BrowserContext,
                          public visitedlink::VisitedLinkDelegate {
  public:
   AwBrowserContext();
+
+  AwBrowserContext(const AwBrowserContext&) = delete;
+  AwBrowserContext& operator=(const AwBrowserContext&) = delete;
+
   ~AwBrowserContext() override;
 
   // Currently only one instance per process is supported.
@@ -75,6 +81,7 @@ class AwBrowserContext : public content::BrowserContext,
 
   AwQuotaManagerBridge* GetQuotaManagerBridge();
   jlong GetQuotaManagerBridge(JNIEnv* env);
+  void SetWebLayerRunningInSameProcess(JNIEnv* env);
 
   AwFormDatabaseService* GetFormDatabaseService();
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager();
@@ -90,6 +97,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -103,6 +112,8 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
+  std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
+      const base::FilePath& partition_path) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
@@ -111,9 +122,12 @@ class AwBrowserContext : public content::BrowserContext,
 
   void SetExtendedReportingAllowed(bool allowed);
 
-  network::mojom::NetworkContextParamsPtr GetNetworkContextParams(
+  void ConfigureNetworkContextParams(
       bool in_memory,
-      const base::FilePath& relative_partition_path);
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaBrowserContext();
 
@@ -139,8 +153,6 @@ class AwBrowserContext : public content::BrowserContext,
   SimpleFactoryKey simple_factory_key_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserContext);
 };
 
 }  // namespace android_webview

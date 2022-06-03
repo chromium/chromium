@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/auto_reset.h"
 #include "build/build_config.h"
 
 class PrefRegistrySimple;
@@ -65,6 +66,8 @@ void OnShutdownStarting(ShutdownType type);
 
 // Returns true if OnShutdownStarting has been called to note that shutdown has
 // started.
+// TODO (crbug/1155597): Make this work in sync with
+// BrowserProcessImpl::IsShuttingDown.
 bool HasShutdownStarted();
 
 // Returns true if OnShutdownStarting has been called and unload handlers (e.g.,
@@ -114,6 +117,10 @@ void SetTryingToQuit(bool quitting);
 
 // General accessor.
 bool IsTryingToQuit();
+
+// Allows setting a fake shutdown type for testing purposes.
+base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
+    ShutdownType shutdown_type);
 
 }  // namespace browser_shutdown
 

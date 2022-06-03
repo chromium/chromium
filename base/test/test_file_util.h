@@ -9,8 +9,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -36,6 +34,11 @@ bool EvictFileFromSystemCacheWithRetry(const FilePath& file);
 // of failure to workaround Windows file locking semantics. Returns true on
 // success.
 bool DieFileDie(const FilePath& file, bool recurse);
+
+// Creates a a new unique directory and returns the generated path. The
+// directory will be automatically deleted when the test completes. Failure
+// upon creation or deletion will cause a test failure.
+FilePath CreateUniqueTempDirectoryScopedToTest();
 
 // Synchronize all the dirty pages from the page cache to disk (on POSIX
 // systems). The Windows analogy for this operation is to 'Flush file buffers'.
@@ -64,14 +67,16 @@ bool MakeFileUnwritable(const FilePath& path) WARN_UNUSED_RESULT;
 class FilePermissionRestorer {
  public:
   explicit FilePermissionRestorer(const FilePath& path);
+
+  FilePermissionRestorer(const FilePermissionRestorer&) = delete;
+  FilePermissionRestorer& operator=(const FilePermissionRestorer&) = delete;
+
   ~FilePermissionRestorer();
 
  private:
   const FilePath path_;
   void* info_;  // The opaque stored permission information.
   size_t length_;  // The length of the stored permission information.
-
-  DISALLOW_COPY_AND_ASSIGN(FilePermissionRestorer);
 };
 
 #if defined(OS_ANDROID)

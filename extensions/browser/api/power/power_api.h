@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -55,9 +55,12 @@ class PowerReleaseKeepAwakeFunction : public ExtensionFunction {
 class PowerAPI : public BrowserContextKeyedAPI,
                  public extensions::ExtensionRegistryObserver {
  public:
-  typedef base::Callback<void(device::mojom::WakeLockType)>
-      ActivateWakeLockFunction;
-  typedef base::Callback<void()> CancelWakeLockFunction;
+  using ActivateWakeLockFunction =
+      base::RepeatingCallback<void(device::mojom::WakeLockType)>;
+  using CancelWakeLockFunction = base::RepeatingCallback<void()>;
+
+  PowerAPI(const PowerAPI&) = delete;
+  PowerAPI& operator=(const PowerAPI&) = delete;
 
   static PowerAPI* Get(content::BrowserContext* context);
 
@@ -82,8 +85,8 @@ class PowerAPI : public BrowserContextKeyedAPI,
   // Replaces the functions that will be called to activate and cancel the wake
   // lock. Passing empty callbacks will revert to the default.
   void SetWakeLockFunctionsForTesting(
-      const ActivateWakeLockFunction& activate_function,
-      const CancelWakeLockFunction& cancel_function);
+      ActivateWakeLockFunction activate_function,
+      CancelWakeLockFunction cancel_function);
 
   // Overridden from extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -135,8 +138,6 @@ class PowerAPI : public BrowserContextKeyedAPI,
 
   // Outstanding requests.
   ExtensionLevelMap extension_levels_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerAPI);
 };
 
 }  // namespace extensions

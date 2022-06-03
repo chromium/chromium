@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/web/web_content_holder.h"
 
+#include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -23,19 +23,17 @@ WebContentHolder::~WebContentHolder() {
 }
 
 WebString WebContentHolder::GetValue() const {
-  return private_->nodeValue();
+  return private_->node()->nodeValue();
 }
 
-WebRect WebContentHolder::GetBoundingBox() const {
-  if (auto* layout_obj = private_->GetLayoutObject())
-    return EnclosingIntRect(layout_obj->VisualRectInDocument());
-  return IntRect();
+gfx::Rect WebContentHolder::GetBoundingBox() const {
+  return private_->rect();
 }
 
 uint64_t WebContentHolder::GetId() const {
-  return reinterpret_cast<uint64_t>(private_.Get());
+  return reinterpret_cast<uint64_t>(private_->node());
 }
 
-WebContentHolder::WebContentHolder(Node& node) : private_(&node) {}
+WebContentHolder::WebContentHolder(ContentHolder& holder) : private_(&holder) {}
 
 }  // namespace blink

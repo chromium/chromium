@@ -4,9 +4,10 @@
 
 #include "chrome/chrome_cleaner/test/test_native_reg_util.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
@@ -18,9 +19,9 @@ namespace chrome_cleaner_sandbox {
 
 namespace {
 
-const base::char16 kTimestampDelimiter[] = STRING16_LITERAL("$");
-const base::char16 kTempTestKeyPath[] =
-    STRING16_LITERAL("Software\\ChromeCleaner\\NativeTempTestKeys");
+const wchar_t kTimestampDelimiter[] = L"$";
+const wchar_t kTempTestKeyPath[] =
+    L"Software\\ChromeCleaner\\NativeTempTestKeys";
 
 }  // namespace
 
@@ -28,8 +29,8 @@ ScopedTempRegistryKey::ScopedTempRegistryKey() {
   const base::TimeDelta timestamp =
       base::Time::Now().ToDeltaSinceWindowsEpoch();
   key_path_ = base::StrCat(
-      {kTempTestKeyPath, base::NumberToString16(timestamp.InMicroseconds()),
-       kTimestampDelimiter, base::ASCIIToUTF16(base::GenerateGUID())});
+      {kTempTestKeyPath, base::NumberToWString(timestamp.InMicroseconds()),
+       kTimestampDelimiter, base::ASCIIToWide(base::GenerateGUID())});
 
   CHECK(ERROR_SUCCESS ==
         reg_key_.Create(HKEY_LOCAL_MACHINE, key_path_.c_str(), KEY_ALL_ACCESS));
@@ -44,11 +45,11 @@ HANDLE ScopedTempRegistryKey::Get() {
   return reg_key_.Handle();
 }
 
-const base::string16& ScopedTempRegistryKey::Path() const {
+const std::wstring& ScopedTempRegistryKey::Path() const {
   return key_path_;
 }
 
-const base::string16& ScopedTempRegistryKey::FullyQualifiedPath() const {
+const std::wstring& ScopedTempRegistryKey::FullyQualifiedPath() const {
   return fully_qualified_key_path_;
 }
 

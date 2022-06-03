@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/orientation-sensor/#absoluteorientationsensor-interface
 
 [
     SecureContext,
-    MeasureAs=AbsoluteOrientationSensorConstructor,
     Exposed=Window
 ] interface AbsoluteOrientationSensor : OrientationSensor {
-  [CallWith=ExecutionContext, RaisesException] constructor(optional SpatialSensorOptions sensorOptions);
+  [CallWith=ExecutionContext, RaisesException, MeasureAs=AbsoluteOrientationSensorConstructor] constructor(optional SpatialSensorOptions sensorOptions = {});
 };

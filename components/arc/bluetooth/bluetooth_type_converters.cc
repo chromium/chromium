@@ -16,6 +16,7 @@
 #include "components/arc/bluetooth/bluetooth_type_converters.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
@@ -43,7 +44,7 @@ TypeConverter<arc::mojom::BluetoothAddressPtr, std::string>::Convert(
       arc::mojom::BluetoothAddress::New();
 
   mojo_addr->address.resize(kAddressSize);
-  if (!device::BluetoothDevice::ParseAddress(address, mojo_addr->address))
+  if (!device::ParseBluetoothAddress(address, mojo_addr->address))
     mojo_addr->address.clear();
 
   return mojo_addr;

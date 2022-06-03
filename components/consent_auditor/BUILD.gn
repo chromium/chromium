@@ -27,9 +27,7 @@ static_library("consent_auditor") {
 
 if (is_android) {
   java_cpp_enum("consent_auditor_java") {
-    sources = [
-      "consent_auditor.h",
-    ]
+    sources = [ "consent_auditor.h" ]
   }
 }
 

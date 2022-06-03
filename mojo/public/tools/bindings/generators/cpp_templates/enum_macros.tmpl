@@ -20,19 +20,17 @@ enum class {{enum_name}} : int32_t;
 {{ kythe_annotation(full_enum_name) }}
 enum class {{enum_name}} : int32_t {
 {%-   for field in enum.fields %}
-{%-     if field.value %}
   {{ kythe_annotation("%s.%s"|format(full_enum_name, field.name)) }}
-  {{field.name}} = {{field.value|expression_to_text}},
-{%-     else %}
-  {{ kythe_annotation("%s.%s"|format(full_enum_name, field.name)) }}
-  {{field.name}},
-{%-     endif %}
+  {{field.name}} = {{field.numeric_value}},
 {%-   endfor %}
 {%-   if enum.min_value is not none %}
   kMinValue = {{enum.min_value}},
 {%-   endif %}
 {%-   if enum.max_value is not none %}
   kMaxValue = {{enum.max_value}},
+{%-   endif %}
+{%-   if enum.default_field %}
+  kDefaultValue = {{enum.default_field.numeric_value}}
 {%-   endif %}
 };
 
@@ -44,16 +42,33 @@ inline bool IsKnownEnumValue({{enum_name}} value) {
                                   flatten_nested_kind=True)}}::IsKnownValue(
       static_cast<int32_t>(value));
 }
+
+{%-   if enum.extensible and enum.default_field %}
+inline {{enum_name}} ToKnownEnumValue({{enum_name}} value) {
+  if (IsKnownEnumValue(value)) {
+    return value;
+  }
+  return {{enum_name}}::kDefaultValue;
+}
+{%-   endif %}
 {%- endmacro %}
 
 {%- macro enum_stream(enum) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
 std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
+  return os << {{enum_name}}ToString(value);
+}
+{%- endmacro %}
+
+{%- macro enum_to_string(enum) %}
+{%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
+static NOINLINE const char* {{enum_name}}ToStringHelper({{enum_name}} value) {
+  // Defined in a helper function to ensure that Clang generates a lookup table.
 {%- if enum.fields %}
   switch(value) {
 {%-   for _, values in enum.fields|groupby('numeric_value') %}
     case {{enum_name}}::{{values[0].name}}:
-      return os << "{{enum_name}}::
+      return "
 {%-     if values|length > 1 -%}
       {{'{'}}
 {%-     endif -%}
@@ -64,11 +79,19 @@ std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
       ";
 {%-   endfor %}
     default:
-      return os << "Unknown {{enum_name}} value: " << static_cast<int32_t>(value);
+      return nullptr;
   }
 {%- else %}
-  return os << "Unknown {{enum_name}} value: " << static_cast<int32_t>(value);
+  return nullptr;
 {%- endif %}
+}
+
+std::string {{enum_name}}ToString({{enum_name}} value) {
+  const char *str = {{enum_name}}ToStringHelper(value);
+  if (!str) {
+    return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
+  }
+  return str;
 }
 {%- endmacro %}
 
@@ -152,16 +175,29 @@ struct HashTraits<{{enum_name}}>
 }  // namespace WTF
 {%- endmacro %}
 
-{%- macro enum_hash_blink_forward(enum) %}
+{%- macro enum_trace_format_traits_decl(enum, export_attributes) -%}
 {%-   set enum_name = enum|get_qualified_name_for_kind(
-          flatten_nested_kind=True, include_variant=False) %}
-{%-   set hash_fn_name = enum|wtf_hash_fn_name_for_enum %}
-namespace WTF {
-struct {{hash_fn_name}};
+          flatten_nested_kind=True) %}
+namespace perfetto {
 
 template <>
-struct DefaultHash<{{enum_name}}> {
-  using Hash = {{hash_fn_name}};
+struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
+ static void WriteIntoTrace(perfetto::TracedValue context, {{enum_name}} value);
 };
-}  // namespace WTF
+
+} // namespace perfetto
 {%- endmacro %}
+
+{%- macro enum_trace_format_traits(enum) -%}
+{%-   set enum_name = enum|get_qualified_name_for_kind(
+          flatten_nested_kind=True) %}
+namespace perfetto {
+
+// static
+void TraceFormatTraits<{{enum_name}}>::WriteIntoTrace(
+   perfetto::TracedValue context, {{enum_name}} value) {
+  return std::move(context).WriteString({{enum_name}}ToString(value));
+}
+
+} // namespace perfetto
+{%- endmacro %}endmacro 

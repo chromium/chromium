@@ -5,8 +5,8 @@
 #ifndef CHROME_INSTALLER_SETUP_UPDATE_ACTIVE_SETUP_VERSION_WORK_ITEM_H_
 #define CHROME_INSTALLER_SETUP_UPDATE_ACTIVE_SETUP_VERSION_WORK_ITEM_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/work_item.h"
 
@@ -41,8 +41,13 @@ class UpdateActiveSetupVersionWorkItem : public WorkItem {
   // Constructs an UpdateActiveSetupVersionWorkItem that will perform
   // |operation| on the |active_setup_path| key in the registry. This key needs
   // to exist when this WorkItem is ran.
-  UpdateActiveSetupVersionWorkItem(const base::string16& active_setup_path,
+  UpdateActiveSetupVersionWorkItem(const std::wstring& active_setup_path,
                                    Operation operation);
+
+  UpdateActiveSetupVersionWorkItem(const UpdateActiveSetupVersionWorkItem&) =
+      delete;
+  UpdateActiveSetupVersionWorkItem& operator=(
+      const UpdateActiveSetupVersionWorkItem&) = delete;
 
  private:
   // WorkItem:
@@ -51,8 +56,8 @@ class UpdateActiveSetupVersionWorkItem : public WorkItem {
 
   // Returns the updated Active Setup version to be used based on the
   // |existing_version|.
-  base::string16 GetUpdatedActiveSetupVersion(
-      const base::string16& existing_version);
+  std::wstring GetUpdatedActiveSetupVersion(
+      const std::wstring& existing_version);
 
   // The underlying WorkItem re-used to operate forward and backward on the
   // registry.
@@ -60,8 +65,6 @@ class UpdateActiveSetupVersionWorkItem : public WorkItem {
 
   // The Operation to be performed by this WorkItem when executed.
   const Operation operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateActiveSetupVersionWorkItem);
 };
 
 #endif  // CHROME_INSTALLER_SETUP_UPDATE_ACTIVE_SETUP_VERSION_WORK_ITEM_H_

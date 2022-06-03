@@ -101,6 +101,36 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
         return Math.max(1, mViewBuilderMap.size());
     }
 
+    /**
+     * Make an attempt to convert view to desiredType.
+     *
+     * The basic implementation verifies whether the view can be re-used as is without any
+     * modifications, assuming the current view type is same as the desired view type.
+     * Subclasses should override this method if any specific changes can to be made in order
+     * to convert views from one type to another.
+     *
+     * @param view View to convert
+     * @param desiredType Target type of the view to convert to.
+     * @return Whether conversion was successful.
+     */
+    protected boolean canReuseView(View view, int desiredType) {
+        // Check if view type changed. If not, we can re-use this view as is without any
+        // modifications.
+        return view != null && view.getTag(R.id.view_type) != null
+                && (int) view.getTag(R.id.view_type) == desiredType;
+    }
+
+    /**
+     * Create a new view of the desired type.
+     *
+     * @param parent Parent view.
+     * @param typeId Type of the view to create.
+     * @return Created view.
+     */
+    protected View createView(ViewGroup parent, int typeId) {
+        return mViewBuilderMap.get(typeId).first.buildView(parent);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -113,16 +143,15 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
 
         // 2. Build a new view if needed. Otherwise, fetch the old model from the convertView.
         PropertyModel oldModel = null;
-        if (convertView == null || convertView.getTag(R.id.view_type) == null
-                || (int) convertView.getTag(R.id.view_type) != getItemViewType(position)) {
-            int modelTypeId = mModelList.get(position).type;
-            convertView = mViewBuilderMap.get(modelTypeId).first.buildView();
+        final int desiredViewType = getItemViewType(position);
 
+        if (convertView == null || !canReuseView(convertView, desiredViewType)) {
+            convertView = createView(parent, desiredViewType);
             // Since the view type returned by getView is not guaranteed to return a view of that
             // type, we need a means of checking it. The "view_type" tag is attached to the views
             // and identify what type the view is. This should allow lists that aren't necessarily
             // recycler views to work correctly with heterogeneous lists.
-            convertView.setTag(R.id.view_type, modelTypeId);
+            convertView.setTag(R.id.view_type, desiredViewType);
         } else {
             oldModel = (PropertyModel) convertView.getTag(R.id.view_model);
         }

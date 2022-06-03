@@ -34,7 +34,7 @@ class AppendNodeCommand final : public SimpleEditCommand {
  public:
   AppendNodeCommand(ContainerNode* parent, Node*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

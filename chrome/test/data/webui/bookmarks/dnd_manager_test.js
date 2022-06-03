@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, changeFolderOpen, DragInfo, DropPosition} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, changeFolderOpen, DragInfo, DropPosition} from 'chrome://bookmarks/bookmarks.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestBookmarksBrowserProxy} from 'chrome://test/bookmarks/test_browser_proxy.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {TestTimerProxy} from 'chrome://test/bookmarks/test_timer_proxy.js';
-import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
+import {TestStore} from './test_store.js';
+import {TestTimerProxy} from './test_timer_proxy.js';
+import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('drag and drop', function() {
   let app;
@@ -31,7 +31,7 @@ suite('drag and drop', function() {
   function getListItem(id) {
     const items = list.root.querySelectorAll('bookmarks-item');
     for (let i = 0; i < items.length; i++) {
-      if (items[i].itemId == id) {
+      if (items[i].itemId === id) {
         return items[i];
       }
     }
@@ -61,8 +61,10 @@ suite('drag and drop', function() {
     const classList = bookmarkElement.getDropTarget().classList;
     Object.keys(dragStyles).forEach(dragStyle => {
       assertEquals(
-          dragStyle == style, classList.contains(dragStyles[dragStyle]),
-          dragStyles[dragStyle] + (dragStyle == style ? ' missing' : ' found') +
+          dragStyle === style.toString(),
+          classList.contains(dragStyles[dragStyle]),
+          dragStyles[dragStyle] +
+              (dragStyle === style.toString() ? ' missing' : ' found') +
               ' in classList ' + classList);
     });
   }
@@ -70,7 +72,7 @@ suite('drag and drop', function() {
   function createDragData(ids, sameProfile) {
     return {
       elements: ids.map(id => store.data.nodes[id]),
-      sameProfile: sameProfile == undefined ? true : sameProfile,
+      sameProfile: sameProfile === undefined ? true : sameProfile,
     };
   }
 
@@ -122,11 +124,11 @@ suite('drag and drop', function() {
     };
 
     const testBrowserProxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.instance_ = testBrowserProxy;
+    BrowserProxyImpl.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    list = app.$$('bookmarks-list');
-    rootFolderNode = app.$$('bookmarks-folder-node');
+    list = app.shadowRoot.querySelector('bookmarks-list');
+    rootFolderNode = app.shadowRoot.querySelector('bookmarks-folder-node');
     dndManager = app.dndManager_;
     dndManager.setTimerProxyForTesting(new TestTimerProxy());
 

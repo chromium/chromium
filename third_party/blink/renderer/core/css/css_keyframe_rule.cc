@@ -44,7 +44,7 @@ CSSKeyframeRule::~CSSKeyframeRule() = default;
 
 void CSSKeyframeRule::setKeyText(const String& key_text,
                                  ExceptionState& exception_state) {
-  CSSStyleSheet::RuleMutationScope(this);
+  CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
   if (!keyframe_->SetKeyText(key_text))
     exception_state.ThrowDOMException(
@@ -69,7 +69,7 @@ void CSSKeyframeRule::Reattach(StyleRuleBase*) {
   NOTREACHED();
 }
 
-void CSSKeyframeRule::Trace(blink::Visitor* visitor) {
+void CSSKeyframeRule::Trace(Visitor* visitor) const {
   visitor->Trace(keyframe_);
   visitor->Trace(properties_cssom_wrapper_);
   CSSRule::Trace(visitor);

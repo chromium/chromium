@@ -136,7 +136,7 @@
     this.handle_ = null;
 
     this.interfaceEndpointClient_ = new internal.InterfaceEndpointClient(
-        this.router_.createLocalEndpointHandle(internal.kMasterInterfaceId));
+        this.router_.createLocalEndpointHandle(internal.kPrimaryInterfaceId));
 
     this.interfaceEndpointClient_ .setPayloadValidators([
         this.interfaceType_.validateResponse]);
@@ -214,7 +214,7 @@
 
     this.stub_ = new this.interfaceType_.stubClass(this.impl_);
     this.interfaceEndpointClient_ = new internal.InterfaceEndpointClient(
-        this.router_.createLocalEndpointHandle(internal.kMasterInterfaceId),
+        this.router_.createLocalEndpointHandle(internal.kPrimaryInterfaceId),
         this.stub_, this.interfaceType_.kVersion);
 
     this.interfaceEndpointClient_ .setPayloadValidators([
@@ -345,7 +345,7 @@
   //
   //    // A locally-created associated interface pointer can only be used to
   //    // make calls when the corresponding associated request is sent over
-  //    // another interface (either the master interface or another
+  //    // another interface (either the primary interface or another
   //    // associated interface).
   //    var associatedInterfacePtrInfo = new AssociatedInterfacePtrInfo();
   //    var associatedRequest = makeRequest(interfacePtrInfo);

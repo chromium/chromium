@@ -19,6 +19,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
+#include "ui/ozone/platform/drm/gpu/gbm_pixmap.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 
 namespace ui {
@@ -30,6 +31,10 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
     const OverlaySurfaceCandidate& overlay_surface,
     std::vector<scoped_refptr<DrmFramebuffer>>* reusable_buffers,
     size_t* total_allocated_memory_size) {
+  if (overlay_surface.native_pixmap) {
+    return static_cast<GbmPixmap*>(overlay_surface.native_pixmap.get())
+        ->framebuffer();
+  }
   uint32_t fourcc_format =
       overlay_surface.is_opaque
           ? GetFourCCFormatForOpaqueFramebuffer(overlay_surface.format)
@@ -41,7 +46,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   // flip commits.
   std::vector<uint64_t> modifiers =
       is_0th_plane
-          ? drm_window->GetController()->GetFormatModifiers(fourcc_format)
+          ? drm_window->GetController()->GetSupportedModifiers(fourcc_format)
           : std::vector<uint64_t>();
 
   // Check if we can re-use existing buffers.
@@ -68,7 +73,8 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
     *total_allocated_memory_size += buffer->GetPlaneSize(i);
 
   scoped_refptr<DrmFramebuffer> drm_framebuffer =
-      DrmFramebuffer::AddFramebuffer(drm_device, buffer.get(), modifiers);
+      DrmFramebuffer::AddFramebuffer(drm_device, buffer.get(),
+                                     buffer->GetSize(), modifiers);
   if (!drm_framebuffer)
     return nullptr;
 

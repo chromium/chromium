@@ -1,13 +1,3 @@
-<style>
-
-.note::before {
-  content: 'Note: ';
-  font-variant: small-caps;
-  font-style: italic;
-}
-
-</style>
-
 # Chromium Web Development Style Guide
 
 [TOC]
@@ -25,10 +15,10 @@ This guide follows and builds on:
 * [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
 * [Google Polymer Style Guide](http://go/polymer-style)
 
-<div class="note">
-Concerns for browser compatibility are usually not relevant for Chromium-only
-code.
-</div>
+*** aside
+Note: Concerns for browser compatibility are usually not relevant for
+Chromium-only code.
+***
 
 ## Separation of presentation and content
 
@@ -73,14 +63,14 @@ document.querySelector('b').onclick = fireZeeMissiles;
 DON'T:
 ```html
 <!-- missile-button.html -->
-<b style="color: red;" onclick="fireZeeMissiles()">LAUNCH BUTTON WARNING</span>
+<b style="color: red;" onclick="fireZeeMissiles()">LAUNCH BUTTON WARNING</b>
 ```
 
-<div class="note">
-For various technical and historical reasons, code using the Polymer library may
-use <code>on-event</code>-style event listener wiring and
-<code>&lt;style&gt;</code> tags that live inside of .html files.
-</div>
+*** aside
+Note: For various technical and historical reasons, code using the Polymer
+library may use `on-event`-style event listener wiring and `<style>` tags that
+live inside of .html files.
+***
 
 ## HTML
 
@@ -117,10 +107,10 @@ guide](https://google.github.io/styleguide/htmlcssguide.html).
 * Include the appropriate JS scripts.
     * Do not add JS to element event handlers.
 
-<div class="note">
-Polymer event handlers like <code>on-click</code> are allowed and often reduce
-the amount of addressing (adding an ID just to wire up event handling).
-</div>
+*** aside
+Note: Polymer event handlers like `on-click` are allowed and often reduce the
+amount of addressing (adding an ID just to wire up event handling).
+***
 
 ### Body
 
@@ -157,10 +147,10 @@ the amount of addressing (adding an ID just to wire up event handling).
     * DO: `<input type="radio">`
     * DON'T: `<input type="radio" />`
 
-<div class="note">
-All <code>&lt;custom-elements&gt;</code> and some HTML elements like
-<code>&lt;iframe&gt;</code> require closing.
-</div>
+*** aside
+Note: All `<custom-elements>` and some HTML elements like `<iframe>` require
+closing.
+***
 
 * Use the `button` element instead of `<input type="button">`.
 
@@ -264,19 +254,13 @@ compatibility issues are less relevant for Chrome-only code).
 
 ### URLs
 
-* Don't embed data URIs in source files. Instead, use grit's flattening.
+* Don't embed data URIs in source files. Instead, use a relative path to an icon
+  in your UI (and include this icon in the generated grd file), or use an
+  absolute URL for an icon from the shared resources at ui/webui/resources:
 
 ```css
-background-image: url(../path/to/image.svg);
+background-image: url(chrome://resources/images/path/to/image.svg);
 ```
-
-The contents of file.png are base64-encoded and the `url()` is replaced with
-
-```css
-background-image: url(data:image/svg+xml;base64,...);
-```
-
-if `flattenhtml="true"` is specified in your .grd file.
 
 ### RTL
 
@@ -314,7 +298,8 @@ See the [Google JavaScript Style
 Guide](https://google.github.io/styleguide/jsguide.html) as well as
 [ECMAScript Features in Chromium](es.md).
 
-* Use `$('element-id')` instead of `document.getElementById`
+* Use `$('element-id')` instead of `document.getElementById`. This function can
+  be imported from util.m.js.
 
 * Use single-quotes instead of double-quotes for all strings.
     * `clang-format` now handles this automatically.
@@ -329,10 +314,14 @@ Guide](https://google.github.io/styleguide/jsguide.html) as well as
 
 * Prefer `event.preventDefault()` to `return false` from event handlers
 
+* Prefer `this.addEventListener('foo-changed', this.onFooChanged_.bind(this));`
+  instead of always using an arrow function wrapper, when it makes the code less
+  verbose without compromising type safety (for example in TypeScript files).
+
 ### Closure compiler
 
 * Use the [closure
-  compiler](https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md)
+  compiler](https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md)
   to identify JS type errors and enforce correct JSDoc annotations.
 
 * Add a `BUILD.gn` file to any new web UI code directory.
@@ -372,9 +361,44 @@ Guide](https://google.github.io/styleguide/jsguide.html) as well as
 
 Also see the [Google Polymer Style Guide](http://go/polymer-style).
 
-* Use a consistent ordering in the “prototype” object passed to `Polymer()`:
+* Elements with UI should have their HTML in a .html file and logic in a JS file
+  with the same name. The HTML should be copied into the final JS file at build
+  time, replacing the special `{__html_template__}` sequence, using the
+  html_to_js BUILD.gn rule. For example the following will paste the contents
+  of my_app.html into the final generated JS file:
+```
+  html_to_js('web_components') {
+    js_files = [ 'my_app.js' ]
+  }
+```
+
+* In new code, use class based syntax for custom elements. Example:
+```js
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+class MyAppElement extends PolymerElement {
+  static get is() {
+    return 'my-app';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      foo: String,
+    };
+  }
+}
+
+customElements.define(MyAppElement.is, MyAppElement);
+```
+
+* Use a consistent ordering for common methods (or, in legacy code, the
+  parameters passed to Polymer()):
     * `is`
-    * `behaviors`
+    * `behaviors` (legacy code only)
     * `properties` (public, then private)
     * `hostAttributes`
     * `listeners`, `observers`
@@ -383,21 +407,23 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
     * event handlers, computed functions, and private methods
 
 * Use camelCase for element IDs to simplify local DOM accessors (i.e.
-  `this.$.camelCase` instead of `this.$[‘dash-case’]`).
+  `this.$.camelCase` instead of `this.$['dash-case']`).
 
 * Use `this.foo` instead of `newFoo` arguments in observers when possible.
   This makes changing the type of `this.foo` easier (as the `@type` is
   duplicated in less places, i.e. `@param`).
 
 ```js
-properties: {
-  foo: {type: Number, observer: 'fooChanged_'}
-},
+static get properties() {
+  return {
+    foo: {type: Number, observer: 'fooChanged_'},
+  };
+}
 
 /** @private */
-fooChanged_: function() {
+fooChanged_() {
   this.bar = this.derive(this.foo);
-},
+}
 ```
 
 * Use native `on-click` for click events instead of `on-tap`. 'tap' is a
@@ -425,28 +451,72 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
   * Alternatives:
     * Include the SVG in a WebUI page-specific icon file. e.g. `chrome/browser/resources/settings/icons.html`.
     * If reused across multiple WebUI pages, include the SVG in `ui/webui/resources/cr_elements/icons.html` .
-  * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.html).
+  * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
 
 ## Grit processing
 
 Grit is a tool that runs at compile time to pack resources together into
-Chromium.
+Chromium. Resources are packed from grd files. Most Chromium WebUI resources
+should be located in autogenerated grd files created by the generate_grd gn
+rule.
 
 ### Preprocessing
 
-Grit can be used to selectively include or exclude code at compile-time in web
-code.  Preprocessing is be enabled by adding the `preprocess="true"` attribute
-inside of a `.grd` file on `<structure>` and `<include>` nodes.
+Sometimes it is helpful to selectively include or exclude code at compile-time.
+This is done using the preprocess_if_expr gn rule, which makes use of a subset
+of grit that reads and processes files for `<if expr>` without running the
+entire grit resource packing process.  Files that require preprocessing are
+passed to the rule as in_files. Preprocessed versions with the same names will
+be written to the specified out_folder and are listed in out_manifest, which can
+be passed to the generate_grd rule to generate entries for them in a grd file.
 
-<div class="note">
-These preprocesor statements can live in places that surprise linters or
-formatters (for example: running clang-format on a .js file with an &lt;if&gt;
-in it).  Generally, putting these language-invalid features inside of comments
+### Example
+
+The following BUILD.gn example code uses preprocess_if_expr to preprocess any
+`<if expr>` in the final my_app.js file that is generated by the earlier
+html_to_js example. It then uses the manifest from this operation and the
+in_files option to place both the final, preprocessed file and a separate (not
+preprocessed) icon into a generated grd file using generate_grd:
+
+```
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+
+# Read file from target_gen_dir, where it will be pasted by html_to_js.
+preprocess_if_expr("preprocess") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  in_files = [ "my_app.js" ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+}
+
+# Put the preprocessed file as well as a separate my_icon.svg file in the grd:
+generate_grd("build_grd") {
+  input_files = [ "my_icon.svg" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  grd_prefix = [ "foo" ]
+  out_grd = "$target_gen_dir/resources.grd"
+}
+```
+
+*** aside
+Note #1:
+In a few legacy resources, preprocessing is enabled by adding the
+`preprocess="true"` attribute inside of a `.grd` file on `<structure>` and
+`<include>` nodes.
+
+Note #2:
+These preprocessor statements can live in places that surprise linters or
+formatters (for example: running clang-format on a .js file with an `<if>` in
+it).  Generally, putting these language-invalid features inside of comments
 helps alleviate problems with unexpected input.
-</div>
+***
 
 `<if>` tags allow conditional logic by evaluating an expression in a
-compile-time environment of grit variables.  These allow conditionally include
+compile-time environment of grit variables.  These allow conditionally including
 or excluding code.
 
 Example:
@@ -462,31 +532,16 @@ function isWindows() {
 `<include src="[path]">` reads the file at `path` and replaces the `<include>`
 tag with the file contents of `[path]`. Don't use `<include>` in new JS code;
 [it is being removed.](https://docs.google.com/document/d/1Z18WTNv28z5FW3smNEm_GtsfVD2IL-CmmAikwjw3ryo/edit?usp=sharing#heading=h.66ycuu6hfi9n)
-Instead, use JS imports in new pages and pages that use JS modules. Use HTML
-imports in existing pages that are still using HTML imports/Polymer 2.
+Instead, use JS imports. If there is concern about importing a large number of
+JS files, the optimize_webui build rule supports bundling pages using Rollup.
 
-Grit can read and inline resources when enabled via `flattenhtml="true"`.
+Some legacy UIs use Grit to read and inline resources via `flattenhtml="true"`.
+This option should not be used in new code; instead, use JS imports and bundling
+as needed. Icons can also be placed in an iconset, to avoid importing them
+individually.
 
-<div class="note">
-The implementation of flattening does HTML parsing and URL detection via regular
-expresions and is not guaranteed to work in all cases.
-</div>
-
-Example:
-
-```css
-.spinner {
-  background: url(../relative/file/path/to/spinner.svg);
-}
-```
-
-Is transformed to:
-
-```css
-.spinner {
-  background: url(data:image/svg+xml;... base64-encoded content ...);
-}
-```
-
-A minification tool can be specified to Grit (like Closure compiler) to
-transform the code before it's packed into a bundle.
+*** aside
+Note: The implementation of flattening does HTML parsing and URL detection via
+regular expressions and is not guaranteed to work in all cases. In particular,
+it does not work with any generated resources.
+***

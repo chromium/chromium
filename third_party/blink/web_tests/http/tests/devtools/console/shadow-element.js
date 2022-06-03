@@ -4,15 +4,15 @@
 
 (async function() {
   TestRunner.addResult(`Tests that $0 works with shadow dom.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <div><div><div id="host"></div></div></div>
   `);
   await TestRunner.evaluateInPagePromise(`
         var host = document.querySelector('#host');
-        var sr = host.createShadowRoot();
+        var sr = host.attachShadow({mode: 'open'});
         sr.innerHTML = "<div><div><div id='shadow'><input id='user-agent-host' type='range'></div></div></div>";
     `);
 

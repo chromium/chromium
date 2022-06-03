@@ -13,6 +13,11 @@ namespace chromeos {
 class MockNetworkPortalDetector : public NetworkPortalDetector {
  public:
   MockNetworkPortalDetector();
+
+  MockNetworkPortalDetector(const MockNetworkPortalDetector&) = delete;
+  MockNetworkPortalDetector& operator=(const MockNetworkPortalDetector&) =
+      delete;
+
   ~MockNetworkPortalDetector() override;
 
   MOCK_METHOD1(AddObserver,
@@ -21,19 +26,20 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
                void(chromeos::NetworkPortalDetector::Observer* observer));
   MOCK_METHOD1(AddAndFireObserver,
                void(chromeos::NetworkPortalDetector::Observer* observer));
-  MOCK_METHOD1(GetCaptivePortalState,
-               chromeos::NetworkPortalDetector::CaptivePortalState(
-                   const std::string& service_path));
+  MOCK_METHOD0(GetCaptivePortalStatus,
+               chromeos::NetworkPortalDetector::CaptivePortalStatus());
   MOCK_METHOD0(IsEnabled, bool());
   MOCK_METHOD1(Enable, void(bool start_detection));
-  MOCK_METHOD1(StartPortalDetection, bool(bool force));
+  MOCK_METHOD0(StartPortalDetection, void());
   MOCK_METHOD1(SetStrategy,
                void(chromeos::PortalDetectorStrategy::StrategyId id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkPortalDetector);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/network moved to ash.
+namespace ash {
+using ::chromeos::MockNetworkPortalDetector;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_PORTAL_DETECTOR_MOCK_NETWORK_PORTAL_DETECTOR_H_

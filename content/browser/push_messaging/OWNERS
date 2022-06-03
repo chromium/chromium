@@ -4,14 +4,9 @@
 #   //chrome/android/java/src/org/chromium/chrome/browser/push_messaging/
 #   //chrome/android/javatests/src/org/chromium/chrome/browser/push_messaging/
 #   //chrome/browser/push_messaging/
-#   //content/child/push_messaging/
-#   //content/renderer/push_messaging/
 #   //third_party/blink/renderer/modules/push_messaging/
-#   //third_party/blink/public/platform/modules/push_messaging/
 
 johnme@chromium.org
 mvanouwerkerk@chromium.org
 peter@chromium.org
-
-# TEAM: platform-capabilities@chromium.org
-# COMPONENT: Blink>PushAPI
+rayankans@chromium.org

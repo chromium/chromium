@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -15,34 +16,27 @@ source_set("hid") {
     "hid_connection.h",
     "hid_connection_impl.cc",
     "hid_connection_impl.h",
-    "hid_connection_linux.cc",
-    "hid_connection_linux.h",
-    "hid_connection_mac.cc",
-    "hid_connection_mac.h",
-    "hid_connection_win.cc",
-    "hid_connection_win.h",
     "hid_device_info.cc",
     "hid_device_info.h",
     "hid_manager_impl.cc",
     "hid_manager_impl.h",
     "hid_service.cc",
     "hid_service.h",
-    "hid_service_mac.cc",
-    "hid_service_mac.h",
-    "hid_service_win.cc",
-    "hid_service_win.h",
   ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
     "//services/device/public/cpp/hid",
     "//services/device/public/mojom",
   ]
 
-  if (is_linux && use_udev) {
+  if ((is_linux || is_chromeos) && use_udev) {
     sources += [
+      "hid_connection_linux.cc",
+      "hid_connection_linux.h",
       "hid_service_linux.cc",
       "hid_service_linux.h",
       "input_service_linux.cc",
@@ -51,19 +45,36 @@ source_set("hid") {
     deps += [ "//device/udev_linux" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 
   if (is_win) {
+    sources += [
+      "hid_connection_win.cc",
+      "hid_connection_win.h",
+      "hid_preparsed_data.cc",
+      "hid_preparsed_data.h",
+      "hid_service_win.cc",
+      "hid_service_win.h",
+    ]
     libs = [
       "hid.lib",
       "setupapi.lib",
     ]
   }
+
+  if (is_mac) {
+    sources += [
+      "hid_connection_mac.cc",
+      "hid_connection_mac.h",
+      "hid_service_mac.cc",
+      "hid_service_mac.h",
+    ]
+  }
 }
 
-source_set("mocks") {
+source_set("test_support") {
   testonly = true
 
   sources = [
@@ -71,18 +82,22 @@ source_set("mocks") {
     "mock_hid_connection.h",
     "mock_hid_service.cc",
     "mock_hid_service.h",
+    "test_report_descriptors.cc",
+    "test_report_descriptors.h",
+    "test_util.cc",
+    "test_util.h",
   ]
 
   public_deps = [
     ":hid",
     "//base",
+    "//services/device/public/cpp/hid",
+    "//services/device/public/mojom",
   ]
 }
 
 fuzzer_test("hid_report_descriptor_fuzzer") {
-  sources = [
-    "hid_report_descriptor_fuzzer.cc",
-  ]
+  sources = [ "hid_report_descriptor_fuzzer.cc" ]
   deps = [
     "//services/device/public/cpp/hid",
     "//services/device/public/mojom",

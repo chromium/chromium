@@ -1,20 +1,7 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+    <style include="cr-shared-style settings-shared iron-flex"></style>
 
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="site_list_entry.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-
-<dom-module id="chooser-exception-list-entry">
-  <template>
-    <style include="settings-shared"></style>
-
-    <div class="settings-box first">
-      <h2 class="start">[[exception.displayName]]</h2>
+    <div class="cr-row first">
+      <h2 class="flex">[[exception.displayName]]</h2>
     </div>
 
     <div class="list-frame menu-content vertical-list" id="listContainer">
@@ -33,6 +20,3 @@
         </template>
       </iron-list>
     </div>
-  </template>
-  <script src="chooser_exception_list_entry.js"></script>
-</dom-module>

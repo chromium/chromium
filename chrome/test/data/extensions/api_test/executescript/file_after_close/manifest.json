@@ -4,7 +4,8 @@
   "name": "executeScript.file then close",
   "description": "Tests that executeScript with a file source can be fired from a page that immediately closes without crashing the browser",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://b.com/"]
 }

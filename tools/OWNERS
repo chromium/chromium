@@ -5,26 +5,20 @@
 # If you're changing existing tools, have your change reviewed by the
 # OWNERS of the existing tool.
 
+set noparent
 brucedawson@chromium.org
-dpranke@chromium.org
+dpranke@google.com
 scottmg@chromium.org
 thakis@chromium.org
 
-# These aren't actually great contact points for this directory, but
-# changes in this directory are rare and most changes happen in better-owned
-# subdirectories.
-#
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Build
+per-file autotest.py=mthiesse@chromium.org
 
 per-file bisect*.py=anantha@chromium.org
-per-file bisect*.py=prasadv@chromium.org
 per-file bisect*.py=robertocn@chromium.org
 
 per-file boilerplate.py=rsesek@chromium.org
 
 per-file check_git_config.py=iannucci@chromium.org
-per-file check_git_config.py=vadimsh@chromium.org
 
 per-file check_grd_for_unused_strings.py=estade@chromium.org
 
@@ -36,24 +30,14 @@ per-file include_tracer.py=thakis@chromium.org
 
 per-file ipc_messages_log.py=yfriedman@chromium.org
 
-per-file licenses.py=ichikawa@chromium.org
-
 per-file nocompile_driver.py=ajwong@chromium.org
 per-file nocompile_driver.py=wychen@chromium.org
 
-per-file remove_stale_pyc_files.py=dtu@chromium.org
-
 per-file roll_webgl_conformance.py=bajones@chromium.org
 per-file roll_webgl_conformance.py=kbr@chromium.org
-per-file roll_webgl_conformance.py=geofflang@chromium.org
 per-file roll_webgl_conformance.py=zmo@chromium.org
-per-file roll_webrtc.py=phoglund@chromium.org
+per-file roll_webrtc.py=mbonadei@chromium.org
 
-per-file safely-roll-deps.py=borenet@chromium.org
+per-file download_optimization_profile.py=gbiv@chromium.org
 
-per-file sort-headers.py=satorux@chromium.org
-per-file sort-sources.py=satorux@chromium.org
-per-file yes_no.py=satorux@chromium.org
-
-per-file download_cros_provided_profile.py=gbiv@chromium.org
-per-file download_cros_provided_profile.py=tcwang@chromium.org
+per-file update_pgo_profiles.py=liaoyuke@chromium.org

@@ -8,13 +8,17 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
+#include <unordered_map>
 
-#include "base/optional.h"
-#include "content/common/ax_content_node_data.h"
+#include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
 namespace content {
@@ -28,18 +32,19 @@ class RenderFrameImpl;
 class ScopedFreezeBlinkAXTreeSource {
  public:
   explicit ScopedFreezeBlinkAXTreeSource(BlinkAXTreeSource* tree_source);
+
+  ScopedFreezeBlinkAXTreeSource(const ScopedFreezeBlinkAXTreeSource&) = delete;
+  ScopedFreezeBlinkAXTreeSource& operator=(
+      const ScopedFreezeBlinkAXTreeSource&) = delete;
+
   ~ScopedFreezeBlinkAXTreeSource();
 
  private:
   BlinkAXTreeSource* tree_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFreezeBlinkAXTreeSource);
 };
 
-class BlinkAXTreeSource
-    : public ui::AXTreeSource<blink::WebAXObject,
-                              AXContentNodeData,
-                              AXContentTreeData> {
+class CONTENT_EXPORT BlinkAXTreeSource
+    : public ui::AXTreeSource<blink::WebAXObject> {
  public:
   BlinkAXTreeSource(RenderFrameImpl* render_frame, ui::AXMode mode);
   ~BlinkAXTreeSource() override;
@@ -56,11 +61,17 @@ class BlinkAXTreeSource
   // WebDocument if accessibility isn't enabled globally.
   void SetRoot(blink::WebAXObject root);
 
+#if defined(AX_FAIL_FAST_BUILD)
   // Walks up the ancestor chain to see if this is a descendant of the root.
+  // TODO(accessibility) Remove once it's clear this never triggers.
   bool IsInTree(blink::WebAXObject node) const;
+#endif
 
   ui::AXMode accessibility_mode() { return accessibility_mode_; }
   void SetAccessibilityMode(ui::AXMode new_mode);
+
+  bool exclude_offscreen() const { return exclude_offscreen_; }
+  void set_exclude_offscreen(bool exclude) { exclude_offscreen_ = exclude; }
 
   // Set the id of the node to fetch image data for. Normally the content
   // of images is not part of the accessibility tree, but one node at a
@@ -76,22 +87,30 @@ class BlinkAXTreeSource
 
   // The following methods add or remove an image annotator which is used to
   // provide automatic labels for images.
-  void AddImageAnnotator(AXImageAnnotator* const annotator) {
-    DCHECK_EQ(image_annotator_, nullptr);
-    DCHECK(!first_unlabeled_image_id_.has_value());
+  void AddBlinkImageAnnotator(AXImageAnnotator* const annotator) {
     image_annotator_ = annotator;
   }
-  void RemoveImageAnnotator() {
+  void RemoveBlinkImageAnnotator() {
     image_annotator_ = nullptr;
-    first_unlabeled_image_id_ = base::nullopt;
+    first_unlabeled_image_id_ = absl::nullopt;
   }
 
   // Query or update a set of IDs for which we should load inline text boxes.
   bool ShouldLoadInlineTextBoxes(const blink::WebAXObject& obj) const;
   void SetLoadInlineTextBoxesForId(int32_t id);
 
+  void PopulateAXRelativeBounds(blink::WebAXObject obj,
+                                ui::AXRelativeBounds* bounds,
+                                bool* clips_children = nullptr) const;
+
+  // Cached bounding boxes.
+  bool HasCachedBoundingBox(int32_t id) const;
+  const ui::AXRelativeBounds& GetCachedBoundingBox(int32_t id) const;
+  void SetCachedBoundingBox(int32_t id, const ui::AXRelativeBounds& bounds);
+  size_t GetCachedBoundingBoxCount() const;
+
   // AXTreeSource implementation.
-  bool GetTreeData(AXContentTreeData* tree_data) const override;
+  bool GetTreeData(ui::AXTreeData* tree_data) const override;
   blink::WebAXObject GetRoot() const override;
   blink::WebAXObject GetFromId(int32_t id) const override;
   int32_t GetId(blink::WebAXObject node) const override;
@@ -100,14 +119,20 @@ class BlinkAXTreeSource
       std::vector<blink::WebAXObject>* out_children) const override;
   blink::WebAXObject GetParent(blink::WebAXObject node) const override;
   void SerializeNode(blink::WebAXObject node,
-                     AXContentNodeData* out_data) const override;
+                     ui::AXNodeData* out_data) const override;
   bool IsIgnored(blink::WebAXObject node) const override;
   bool IsValid(blink::WebAXObject node) const override;
   bool IsEqual(blink::WebAXObject node1,
                blink::WebAXObject node2) const override;
   blink::WebAXObject GetNull() const override;
+  std::string GetDebugString(blink::WebAXObject node) const override;
+  void SerializerClearedNode(int32_t node_id) override;
 
   blink::WebDocument GetMainDocument() const;
+
+  // Ignore code that limits based on the protocol (like https, file, etc.)
+  // to enable tests to run.
+  static void IgnoreProtocolChecksForTesting();
 
  private:
   const blink::WebDocument& document() const {
@@ -123,6 +148,10 @@ class BlinkAXTreeSource
     return focus_;
   }
 
+  void SerializeBoundingBoxAttributes(blink::WebAXObject src,
+                                      ui::AXNodeData* dst) const;
+  void SerializeOtherScreenReaderAttributes(blink::WebAXObject src,
+                                            ui::AXNodeData* dst) const;
   blink::WebAXObject ComputeRoot() const;
 
   // Max length for attributes such as aria-label.
@@ -131,17 +160,21 @@ class BlinkAXTreeSource
   // Length of War and Peace (http://www.gutenberg.org/files/2600/2600-0.txt).
   static const uint32_t kMaxStaticTextLength = 3227574;
   void TruncateAndAddStringAttribute(
-      AXContentNodeData* dst,
+      ui::AXNodeData* dst,
       ax::mojom::StringAttribute attribute,
       const std::string& value,
       uint32_t max_len = kMaxStringAttributeLength) const;
 
-  void AddImageAnnotations(blink::WebAXObject& src,
-                           AXContentNodeData* dst) const;
+  void AddImageAnnotations(blink::WebAXObject& src, ui::AXNodeData* dst) const;
 
   RenderFrameImpl* render_frame_;
 
   ui::AXMode accessibility_mode_;
+
+  // If true, excludes nodes and their entire subtrees if they're entirely
+  // offscreen. This is only meant to be used when snapshotting the
+  // accessibility tree.
+  bool exclude_offscreen_ = false;
 
   // An explicit root to use, otherwise it's taken from the WebDocument.
   blink::WebAXObject explicit_root_;
@@ -165,7 +198,10 @@ class BlinkAXTreeSource
   //
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
-  mutable base::Optional<int32_t> first_unlabeled_image_id_ = base::nullopt;
+  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
+
+  // Current bounding box of every object, so we can detect when it moves.
+  mutable std::unordered_map<int, ui::AXRelativeBounds> cached_bounding_boxes_;
 
   // These are updated when calling |Freeze|.
   bool frozen_ = false;

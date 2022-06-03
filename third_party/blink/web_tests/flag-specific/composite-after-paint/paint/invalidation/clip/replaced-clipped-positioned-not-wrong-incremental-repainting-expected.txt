@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutImage IMG",
-          "rect": [8, 8, 194, 232],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutImage IMG",
-          "rect": [8, 8, 114, 232],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 8, 194, 232]
       ]
     }
   ]

@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <script>
-var mediaFile = '../content/test.ogv';
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+function waitForVideoPresentation(video) {
+  return new Promise(resolve => {
+    video.requestVideoFrameCallback(resolve);
+  });
+}
+function loadAndQueueVideoPresentation(video) {
+  video.src = '../content/test.ogv';
+  videoPresentations.push(waitForVideoPresentation(video));
+}
+let videoPresentations = [];
 
 function addTrackWithRtlCueData(video, cueData) {
   var track = video.addTextTrack('subtitles');
@@ -22,20 +34,25 @@ video::cue {
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'start', size: 50, line: 0 });
-  video.src = mediaFile;
+  loadAndQueueVideoPresentation(video);
   </script>
 </video>
 <video preload="auto">
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'center', size: 50, line: 0 });
-  video.src = mediaFile;
+  loadAndQueueVideoPresentation(video);
   </script>
 </video>
 <video preload="auto">
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'end', size: 50, line: 0 });
-  video.src = mediaFile;
+  loadAndQueueVideoPresentation(video);
   </script>
 </video>
+<script>
+  Promise.all(videoPresentations).then(() => {
+    testRunner.notifyDone();
+  });
+</script>

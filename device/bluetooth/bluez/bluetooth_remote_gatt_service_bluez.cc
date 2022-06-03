@@ -23,8 +23,8 @@ BluetoothRemoteGattServiceBlueZ::BluetoothRemoteGattServiceBlueZ(
     BluetoothDeviceBlueZ* device,
     const dbus::ObjectPath& object_path)
     : BluetoothGattServiceBlueZ(adapter, object_path), device_(device) {
-  VLOG(1) << "Creating remote GATT service with identifier: "
-          << object_path.value();
+  DVLOG(1) << "Creating remote GATT service with identifier: "
+           << object_path.value();
   DCHECK(GetAdapter());
 
   bluez::BluezDBusManager::Get()->GetBluetoothGattServiceClient()->AddObserver(
@@ -133,8 +133,8 @@ void BluetoothRemoteGattServiceBlueZ::GattServicePropertyChanged(
   if (object_path != this->object_path())
     return;
 
-  VLOG(1) << "Service property changed: \"" << property_name << "\", "
-          << object_path.value();
+  DVLOG(1) << "Service property changed: \"" << property_name << "\", "
+           << object_path.value();
   bluez::BluetoothGattServiceClient::Properties* properties =
       bluez::BluezDBusManager::Get()
           ->GetBluetoothGattServiceClient()
@@ -147,8 +147,8 @@ void BluetoothRemoteGattServiceBlueZ::GattServicePropertyChanged(
 void BluetoothRemoteGattServiceBlueZ::GattCharacteristicAdded(
     const dbus::ObjectPath& object_path) {
   if (characteristics_.find(object_path.value()) != characteristics_.end()) {
-    VLOG(1) << "Remote GATT characteristic already exists: "
-            << object_path.value();
+    DVLOG(1) << "Remote GATT characteristic already exists: "
+             << object_path.value();
     return;
   }
 
@@ -158,12 +158,12 @@ void BluetoothRemoteGattServiceBlueZ::GattCharacteristicAdded(
           ->GetProperties(object_path);
   DCHECK(properties);
   if (properties->service.value() != this->object_path()) {
-    VLOG(2) << "Remote GATT characteristic does not belong to this service.";
+    DVLOG(2) << "Remote GATT characteristic does not belong to this service.";
     return;
   }
 
-  VLOG(1) << "Adding new remote GATT characteristic for GATT service: "
-          << GetIdentifier() << ", UUID: " << GetUUID().canonical_value();
+  DVLOG(1) << "Adding new remote GATT characteristic for GATT service: "
+           << GetIdentifier() << ", UUID: " << GetUUID().canonical_value();
 
   // NOTE: Can't use std::make_unique due to private constructor.
   BluetoothRemoteGattCharacteristicBlueZ* characteristic =
@@ -180,12 +180,12 @@ void BluetoothRemoteGattServiceBlueZ::GattCharacteristicRemoved(
     const dbus::ObjectPath& object_path) {
   auto iter = characteristics_.find(object_path.value());
   if (iter == characteristics_.end()) {
-    VLOG(2) << "Unknown GATT characteristic removed: " << object_path.value();
+    DVLOG(2) << "Unknown GATT characteristic removed: " << object_path.value();
     return;
   }
 
-  VLOG(1) << "Removing remote GATT characteristic from service: "
-          << GetIdentifier() << ", UUID: " << GetUUID().canonical_value();
+  DVLOG(1) << "Removing remote GATT characteristic from service: "
+           << GetIdentifier() << ", UUID: " << GetUUID().canonical_value();
 
   auto characteristic = std::move(iter->second);
   DCHECK(
@@ -205,7 +205,7 @@ void BluetoothRemoteGattServiceBlueZ::GattCharacteristicPropertyChanged(
           GetCharacteristic(object_path.value()));
 
   if (!characteristic_bluez) {
-    VLOG(3) << "Properties of unknown characteristic changed";
+    DVLOG(3) << "Properties of unknown characteristic changed";
     return;
   }
 

@@ -14,7 +14,7 @@
 
 #include "snapshot/fuchsia/thread_snapshot_fuchsia.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "snapshot/fuchsia/cpu_context_fuchsia.h"
 
 namespace crashpad {

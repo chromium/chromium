@@ -14,10 +14,42 @@ determining if any compile or test failures are due to an upstream compiler
 change, filing bugs upstream, and often reverting bad changes in LLVM. This
 document describes some of the processes and techniques for doing that.
 
-https://sheriff-o-matic.appspot.com/chromium.clang is the sheriff-o-matic
-view of that waterfall, which can be easier to work with.
+Some may find the
+[sheriff-o-matic](https://sheriff-o-matic.appspot.com/chromium.clang)
+view of the waterfall easier to work with.
+
+To keep others informed, [file a
+bug](https://bugs.chromium.org/p/chromium/issues/entry).
+earlier rather than later for build breaks likely caused by changes in
+clang or the rest fo the toolchain. Make sure to set the component field to
+`Tools > LLVM`, which will include the entire Chrome toolchain (Lexan) team.
+
+At the beginning of your sheriff rotation, it may be
+useful to [search for recent bot
+breaks](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools%3ELLVM&can=2&sort=-modified).
+We prefer searching like this to having sheriffs compose status email at the
+end of their week.
+
+In addition to the waterfall, make sure
+[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/owner:thakis%2540chromium.org+%2522roll+clang%2522)
+are green. As part of the Clang release process we run upstream LLVM tests.
+Ideally these tests are covered by upstream LLVM bots and breakages are
+quickly noticed and fixed by the original author of a breaking commit,
+but that is sadly not always the case.
+
+Each sheriff should attempt to update the compiler by performing
+[a Clang roll](updating_clang.md) during their week, assuming the bots are
+green enough.
+
+The Sheriff is also responsible for taking notes during the weekly Chrome toolchain
+(Lexan) status sync-up meeting.
 
 [TOC]
+
+## Disk out of space
+
+If there are any issues with disk running out of space, file a go/bug-a-trooper
+bug, for example https://crbug.com/1105134.
 
 ## Is it the compiler?
 
@@ -59,8 +91,13 @@ and what to do about them:
 This is probably the most common bug. The standard procedure is to do these
 things:
 
-1. Use `got_clang_revision` property from first red and last green build to find
-   upstream regression range
+1. Open the `gclient runhooks` stdout log from the first red build.  Near the
+   top of that log you can find the range of upstream llvm revisions.  For
+   example:
+
+       From https://github.com/llvm/llvm-project
+           f917356f9ce..292e898c16d  master     -> origin/master
+
 1. File a crbug documenting the crash. Include the range, and any other bots
    displaying the same symptoms.
 1. All clang crashes on the Chromium bots are automatically uploaded to
@@ -149,7 +186,9 @@ reverted, if the C++ code in question in Chromium looks valid.
 Miscompiles tend to result in crashes, so if you see a test with the CRASHED
 status, this is probably what you want to do.
 
-1. Bisect object files to find the object with the code that changed.
+1. Bisect object files to find the object with the code that changed. LLVM
+   contains `llvm/utils/rsp_bisect.py` which may be useful for bisecting object
+   files using an rsp file.
 1. Debug it with a traditional debugger
 
 ## Linker error
@@ -161,7 +200,7 @@ work on linker bugs without having to have a Chromium build environment.
 To use `ld.lld`'s `--reproduce` flag, follow these steps:
 
 1. Locally (build Chromium with a locally-built
-   clang)[https://chromium.googlesource.com/chromium/src.git/+/master/docs/clang.md#Using-a-custom-clang-binary]
+   clang)[https://chromium.googlesource.com/chromium/src.git/+/main/docs/clang.md#Using-a-custom-clang-binary]
 
 1. After reproducing the link error, build just the failing target with
    ninja's `-v -d keeprsp` flags added:
@@ -169,7 +208,7 @@ To use `ld.lld`'s `--reproduce` flag, follow these steps:
 
 1. Copy the link command that ninja prints, `cd out/gn`, paste it, and manually
    append `-Wl,--reproduce,repro.tar`. With `lld-link`, instead append
-   `/linkrepro:repro.tar`. (`ld.lld` is invoked through the `clang` driver, so
+   `/reproduce:repro.tar`. (`ld.lld` is invoked through the `clang` driver, so
    it needs `-Wl` to pass the flag through to the linker. `lld-link` is called
    directly, so the flag needs no prefix.)
 

@@ -9,19 +9,22 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "components/media_router/common/media_route.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace media_router {
 
 // Used by MediaRouteProviders to buffer outgoing route messages until they
 // are ready to be sent.
-// TODO(imcheng): to be replaced by PresentationConnection mojom message pipes
-// which come with their own message buffering.
+// TODO(crbug.com/1154482): to be replaced by PresentationConnection mojom
+// message pipes which come with their own message buffering.
 class BufferedMessageSender {
  public:
   explicit BufferedMessageSender(mojom::MediaRouter* media_router);
+
+  BufferedMessageSender(const BufferedMessageSender&) = delete;
+  BufferedMessageSender& operator=(const BufferedMessageSender&) = delete;
+
   ~BufferedMessageSender();
 
   // Sends |messages| for route given by |route_id|. The messages are buffered
@@ -46,8 +49,6 @@ class BufferedMessageSender {
 
   // Non-owned pointer provided by DialMediaRouteProvider.
   mojom::MediaRouter* const media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedMessageSender);
 };
 
 }  // namespace media_router

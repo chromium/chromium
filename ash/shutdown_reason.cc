@@ -4,7 +4,9 @@
 
 #include "ash/shutdown_reason.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace ash {
 

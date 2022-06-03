@@ -132,7 +132,7 @@ bool FontDataCache::PurgeLeastRecentlyUsed(int count) {
   auto end = inactive_font_data_.end();
   auto it = inactive_font_data_.begin();
   for (int i = 0; i < count && it != end; ++it, ++i) {
-    scoped_refptr<SimpleFontData>& font_data = *it.Get();
+    const scoped_refptr<SimpleFontData>& font_data = *it;
     cache_.erase(&(font_data->PlatformData()));
     // We should not delete SimpleFontData here because deletion can modify
     // m_inactiveFontData. See http://trac.webkit.org/changeset/44011

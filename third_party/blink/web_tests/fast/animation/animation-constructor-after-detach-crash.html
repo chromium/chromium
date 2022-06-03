@@ -1,0 +1,15 @@
+<!doctype HTML>
+<body>
+PASS if no crash.
+<iframe id="i" src="about:blank"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+window.onload = () => {
+  let i_anim = i.contentWindow.Animation;
+  i.remove();
+  new i_anim();
+}
+</script>
+</body>

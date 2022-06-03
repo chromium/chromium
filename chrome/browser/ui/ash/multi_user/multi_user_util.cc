@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "components/account_id/account_id.h"
@@ -67,8 +67,10 @@ const AccountId GetCurrentAccountId() {
 
 // Move the window to the current user's desktop.
 void MoveWindowToCurrentDesktop(aura::Window* window) {
-  if (!MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window, GetCurrentAccountId())) {
+  MultiUserWindowManagerHelper* helper =
+      MultiUserWindowManagerHelper::GetInstance();
+  if (helper &&
+      !helper->IsWindowOnDesktopOfUser(window, GetCurrentAccountId())) {
     MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
         window, GetCurrentAccountId());
   }

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_SAFE_BROWSING_TELEMETRY_ANDROID_ANDROID_TELEMETRY_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 
 class Profile;
@@ -35,6 +35,7 @@ enum class ApkDownloadTelemetryOutcome {
   // No ping sent because the user is in Incognito mode.
   NOT_SENT_INCOGNITO = 2,
   // No ping sent because the user hasn't enabled extended reporting.
+  // Deprecated for NOT_SENT_UNCONSENTED.
   NOT_SENT_EXTENDED_REPORTING_DISABLED = 3,
   // Download was cancelled.
   NOT_SENT_DOWNLOAD_CANCELLED = 4,
@@ -44,8 +45,10 @@ enum class ApkDownloadTelemetryOutcome {
   NOT_SENT_FEATURE_NOT_ENABLED = 6,
   // Download completed. Ping sent.
   SENT = 7,
-
-  kMaxValue = SENT
+  // No ping sent because the user hasn't enabled enhanced protection and
+  // extended reporting.
+  NOT_SENT_UNCONSENTED = 8,
+  kMaxValue = NOT_SENT_UNCONSENTED
 };
 
 // This class is used to send telemetry information to Safe Browsing for
@@ -64,6 +67,10 @@ class AndroidTelemetryService
       public TelemetryService {
  public:
   AndroidTelemetryService(SafeBrowsingService* sb_service, Profile* profile);
+
+  AndroidTelemetryService(const AndroidTelemetryService&) = delete;
+  AndroidTelemetryService& operator=(const AndroidTelemetryService&) = delete;
+
   ~AndroidTelemetryService() override;
 
   // download::SimpleDownloadManagerCoordinator::Observer.
@@ -91,37 +98,22 @@ class AndroidTelemetryService
   std::unique_ptr<ClientSafeBrowsingReportRequest> GetReport(
       download::DownloadItem* item);
 
-  // If |safety_net_id_on_ui_thread_| isn't already set, post a task on the IO
-  // thread to get the safety net ID of the device and then store that value on
-  // the UI thread in |safety_net_id_on_ui_thread_|.
-  void MaybeCaptureSafetyNetId();
-
   // Sends |report| proto to the Safe Browsing backend. The report may not be
   // sent if the proto fails to serialize.
   void MaybeSendApkDownloadReport(
+      content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
-
-  // Gets called on the UI thread when the |safety_net_id| of the device has
-  // been captured. Sets |safety_net_id_on_ui_thread_| to the captured value.
-  void SetSafetyNetIdOnUIThread(const std::string& safety_net_id);
 
   // Helper method to get prefs from |profile_|.
   const PrefService* GetPrefs();
 
-  // Helper method to check if Safe Browsing is enabled.
-  bool IsSafeBrowsingEnabled();
-
   // Profile associated with this instance. Unowned.
   Profile* profile_;
-
-  std::string safety_net_id_on_ui_thread_;
 
   // Unowned.
   SafeBrowsingService* sb_service_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidTelemetryService);
 };
 
 }  // namespace safe_browsing

@@ -8,7 +8,6 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -32,6 +31,12 @@ const char kDesktopTaskSwitchUserAction[] = "Desktop_SwitchTask";
 class DesktopTaskSwitchMetricRecorderTest : public AshTestBase {
  public:
   DesktopTaskSwitchMetricRecorderTest();
+
+  DesktopTaskSwitchMetricRecorderTest(
+      const DesktopTaskSwitchMetricRecorderTest&) = delete;
+  DesktopTaskSwitchMetricRecorderTest& operator=(
+      const DesktopTaskSwitchMetricRecorderTest&) = delete;
+
   ~DesktopTaskSwitchMetricRecorderTest() override;
 
   // AshTestBase:
@@ -63,9 +68,6 @@ class DesktopTaskSwitchMetricRecorderTest : public AshTestBase {
 
   // The test target.
   std::unique_ptr<DesktopTaskSwitchMetricRecorder> metrics_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopTaskSwitchMetricRecorderTest);
 };
 
 DesktopTaskSwitchMetricRecorderTest::DesktopTaskSwitchMetricRecorderTest() =
@@ -76,8 +78,8 @@ DesktopTaskSwitchMetricRecorderTest::~DesktopTaskSwitchMetricRecorderTest() =
 
 void DesktopTaskSwitchMetricRecorderTest::SetUp() {
   AshTestBase::SetUp();
-  metrics_recorder_.reset(new DesktopTaskSwitchMetricRecorder);
-  user_action_tester_.reset(new base::UserActionTester);
+  metrics_recorder_ = std::make_unique<DesktopTaskSwitchMetricRecorder>();
+  user_action_tester_ = std::make_unique<base::UserActionTester>();
 }
 
 void DesktopTaskSwitchMetricRecorderTest::TearDown() {
@@ -102,7 +104,7 @@ int DesktopTaskSwitchMetricRecorderTest::GetActionCount() const {
 
 std::unique_ptr<aura::Window>
 DesktopTaskSwitchMetricRecorderTest::CreatePositionableWindow() const {
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_NOT_DRAWN);
@@ -111,7 +113,7 @@ DesktopTaskSwitchMetricRecorderTest::CreatePositionableWindow() const {
 
 std::unique_ptr<aura::Window>
 DesktopTaskSwitchMetricRecorderTest::CreateNonPositionableWindow() const {
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
   window->SetType(aura::client::WINDOW_TYPE_UNKNOWN);
   window->Init(ui::LAYER_NOT_DRAWN);
@@ -204,7 +206,7 @@ TEST_F(DesktopTaskSwitchMetricRecorderTest,
 TEST_F(DesktopTaskSwitchMetricRecorderTest, ActivateNullWindow) {
   std::unique_ptr<aura::Window> positionable_window =
       CreatePositionableWindow();
-  std::unique_ptr<aura::Window> null_window = nullptr;
+  std::unique_ptr<aura::Window> null_window;
 
   ActiveTaskWindowWithUserInput(positionable_window.get());
   ResetActionCounts();
@@ -252,6 +254,12 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
     : public AshTestBase {
  public:
   DesktopTaskSwitchMetricRecorderWithShellIntegrationTest();
+
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest& operator=(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+
   ~DesktopTaskSwitchMetricRecorderWithShellIntegrationTest() override;
 
   // AshTestBase:
@@ -274,10 +282,6 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
   // Delegate used when creating new windows using the
   // CreatePositionableWindowInShellWithBounds(...) method.
   aura::test::TestWindowDelegate test_window_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      DesktopTaskSwitchMetricRecorderWithShellIntegrationTest);
 };
 
 DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::
@@ -288,7 +292,7 @@ DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::
 
 void DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::SetUp() {
   AshTestBase::SetUp();
-  user_action_tester_.reset(new base::UserActionTester);
+  user_action_tester_ = std::make_unique<base::UserActionTester>();
 }
 
 void DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::TearDown() {

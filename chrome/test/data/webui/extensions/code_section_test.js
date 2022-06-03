@@ -6,7 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 window.extension_code_section_tests = {};
 extension_code_section_tests.suiteName = 'ExtensionCodeSectionTest';
@@ -24,7 +24,7 @@ suite(extension_code_section_tests.suiteName, function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     codeSection = document.createElement('extensions-code-section');
     codeSection.couldNotDisplayCode = couldNotDisplayCode;
     document.body.appendChild(codeSection);
@@ -39,9 +39,10 @@ suite(extension_code_section_tests.suiteName, function() {
       message: 'Highlight message',
     };
 
-    const testIsVisible = isVisible.bind(null, codeSection);
+    const testIsVisible = isChildVisible.bind(null, codeSection);
     expectFalse(!!codeSection.code);
-    expectTrue(codeSection.$$('#scroll-container').hidden);
+    expectTrue(
+        codeSection.shadowRoot.querySelector('#scroll-container').hidden);
     expectFalse(testIsVisible('#main'));
     expectTrue(testIsVisible('#no-code'));
 
@@ -58,7 +59,9 @@ suite(extension_code_section_tests.suiteName, function() {
     expectEquals(code.afterHighlight, codeSections[2].textContent);
 
     expectEquals(
-        '1\n2\n3\n4', codeSection.$$('#line-numbers span').textContent.trim());
+        '1\n2\n3\n4',
+        codeSection.shadowRoot.querySelector('#line-numbers span')
+            .textContent.trim());
   });
 
   test(assert(extension_code_section_tests.TestNames.LongSource), function() {
@@ -83,38 +86,53 @@ suite(extension_code_section_tests.suiteName, function() {
 
     setCodeContent(0, 2000);
     codeSection.code = code;
-    lineNums = codeSection.$$('#line-numbers span').textContent;
+    lineNums =
+        codeSection.shadowRoot.querySelector('#line-numbers span').textContent;
     // Length should be 1000 +- 1.
     expectTrue(lineNums.split('\n').length >= 999);
     expectTrue(lineNums.split('\n').length <= 1001);
     expectTrue(!!lineNums.match(/^1\n/));
     expectTrue(!!lineNums.match(/1000/));
     expectFalse(!!lineNums.match(/1001/));
-    expectTrue(codeSection.$$('#line-numbers .more-code.before').hidden);
-    expectFalse(codeSection.$$('#line-numbers .more-code.after').hidden);
+    expectTrue(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.before')
+            .hidden);
+    expectFalse(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.after')
+            .hidden);
 
     setCodeContent(1000, 1000);
     codeSection.code = code;
-    lineNums = codeSection.$$('#line-numbers span').textContent;
+    lineNums =
+        codeSection.shadowRoot.querySelector('#line-numbers span').textContent;
     // Length should be 1000 +- 1.
     expectTrue(lineNums.split('\n').length >= 999);
     expectTrue(lineNums.split('\n').length <= 1001);
     expectFalse(!!lineNums.match(/^1\n/));
     expectTrue(!!lineNums.match(/1000/));
     expectFalse(!!lineNums.match(/1999/));
-    expectFalse(codeSection.$$('#line-numbers .more-code.before').hidden);
-    expectFalse(codeSection.$$('#line-numbers .more-code.after').hidden);
+    expectFalse(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.before')
+            .hidden);
+    expectFalse(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.after')
+            .hidden);
 
     setCodeContent(2000, 0);
     codeSection.code = code;
-    lineNums = codeSection.$$('#line-numbers span').textContent;
+    lineNums =
+        codeSection.shadowRoot.querySelector('#line-numbers span').textContent;
     // Length should be 1000 +- 1.
     expectTrue(lineNums.split('\n').length >= 999);
     expectTrue(lineNums.split('\n').length <= 1001);
     expectFalse(!!lineNums.match(/^1\n/));
     expectTrue(!!lineNums.match(/1002/));
     expectTrue(!!lineNums.match(/2000/));
-    expectFalse(codeSection.$$('#line-numbers .more-code.before').hidden);
-    expectTrue(codeSection.$$('#line-numbers .more-code.after').hidden);
+    expectFalse(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.before')
+            .hidden);
+    expectTrue(
+        codeSection.shadowRoot.querySelector('#line-numbers .more-code.after')
+            .hidden);
   });
 });

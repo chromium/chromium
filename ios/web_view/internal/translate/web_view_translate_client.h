@@ -8,36 +8,38 @@
 #include <memory>
 #include <string>
 
+#include "components/language/core/browser/language_model.h"
+#include "components/prefs/pref_service.h"
+#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_client.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_prefs.h"
+#include "components/translate/core/browser/translate_ranker.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #import "components/translate/ios/browser/ios_translate_driver.h"
-#include "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
-
-@class CWVTranslationController;
-
-class PrefService;
-
-namespace translate {
-class TranslateAcceptLanguages;
-class TranslatePrefs;
-class TranslateManager;
-}  // namespace translate
-
-namespace web {
-class WebState;
-}  // namespace web
+#import "ios/web/public/web_state.h"
+#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
+#include "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 
-class WebViewBrowserState;
-
-class WebViewTranslateClient
-    : public translate::TranslateClient,
-      public web::WebStateObserver,
-      public web::WebStateUserData<WebViewTranslateClient> {
+class WebViewTranslateClient : public translate::TranslateClient {
  public:
+  static std::unique_ptr<WebViewTranslateClient> Create(
+      WebViewBrowserState* browser_state,
+      web::WebState* web_state);
+
+  explicit WebViewTranslateClient(
+      PrefService* pref_service,
+      translate::TranslateRanker* translate_ranker,
+      language::LanguageModel* language_model,
+      web::WebState* web_state,
+      translate::TranslateAcceptLanguages* accept_languages);
+
+  WebViewTranslateClient(const WebViewTranslateClient&) = delete;
+  WebViewTranslateClient& operator=(const WebViewTranslateClient&) = delete;
+
   ~WebViewTranslateClient() override;
 
   // This |controller| is assumed to outlive this WebViewTranslateClient.
@@ -56,6 +58,11 @@ class WebViewTranslateClient
   // Marked virtual to allow for testing.
   virtual void RevertTranslation();
 
+  // Attempts to initiate a manual translation flow.
+  // Returns boolean indicating if translation can be offered.
+  // Marked virtual to allow for testing.
+  virtual bool RequestTranslationOffer();
+
   // TranslateClient implementation.
   translate::IOSTranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
@@ -71,30 +78,16 @@ class WebViewTranslateClient
                        translate::TranslateErrors::Type error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
-  void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
-
- protected:
-  // The lifetime of WebViewTranslateClient is managed by WebStateUserData.
-  explicit WebViewTranslateClient(web::WebState* web_state);
+  bool IsAutofillAssistantRunning() const override;
 
  private:
-  friend class web::WebStateUserData<WebViewTranslateClient>;
-
-  // web::WebStateObserver implementation.
-  void WebStateDestroyed(web::WebState* web_state) override;
-
-  // The associated browser state.
-  WebViewBrowserState* browser_state_;
-
-  std::unique_ptr<translate::TranslateManager> translate_manager_;
+  PrefService* pref_service_;
+  translate::TranslateManager translate_manager_;
   translate::IOSTranslateDriver translate_driver_;
+  translate::TranslateAcceptLanguages* accept_languages_;
 
   // ObjC class that wraps this class.
   __weak CWVTranslationController* translation_controller_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTranslateClient);
 };
 
 }  // namespace ios_web_view

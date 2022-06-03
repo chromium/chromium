@@ -15,10 +15,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
-#include "components/sync/model/entity_data.h"
-#include "components/sync/model_impl/in_memory_metadata_change_list.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_store.h"
@@ -33,7 +33,7 @@ const char kTabTitleFormat[] = "session=%d;window=%d;tab=%d";
 const uint64_t kMaxMinutesRange = 1000;
 
 struct TitleTimestampPair {
-  base::string16 title;
+  std::u16string title;
   base::Time timestamp;
 };
 
@@ -69,7 +69,7 @@ struct RecentTabsBuilderTestHelper::TabInfo {
   TabInfo() : id(SessionID::InvalidValue()) {}
   SessionID id;
   base::Time timestamp;
-  base::string16 title;
+  std::u16string title;
 };
 struct RecentTabsBuilderTestHelper::WindowInfo {
   WindowInfo() : id(SessionID::InvalidValue()) {}
@@ -136,15 +136,14 @@ SessionID RecentTabsBuilderTestHelper::GetWindowID(int session_index,
 
 void RecentTabsBuilderTestHelper::AddTab(int session_index, int window_index) {
   base::Time timestamp =
-      start_time_ +
-      base::TimeDelta::FromMinutes(base::RandGenerator(kMaxMinutesRange));
-  AddTabWithInfo(session_index, window_index, timestamp, base::string16());
+      start_time_ + base::Minutes(base::RandGenerator(kMaxMinutesRange));
+  AddTabWithInfo(session_index, window_index, timestamp, std::u16string());
 }
 
 void RecentTabsBuilderTestHelper::AddTabWithInfo(int session_index,
                                                  int window_index,
                                                  base::Time timestamp,
-                                                 const base::string16& title) {
+                                                 const std::u16string& title) {
   TabInfo tab_info;
   tab_info.id = SessionID::NewUnique();
   tab_info.timestamp = timestamp;
@@ -170,10 +169,10 @@ base::Time RecentTabsBuilderTestHelper::GetTabTimestamp(int session_index,
       .tabs[tab_index].timestamp;
 }
 
-base::string16 RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
+std::u16string RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
                                                         int window_index,
                                                         int tab_index) {
-  base::string16 title =
+  std::u16string title =
       sessions_[session_index].windows[window_index].tabs[tab_index].title;
   if (title.empty()) {
     title = base::UTF8ToUTF16(ToTabTitle(
@@ -227,7 +226,7 @@ void RecentTabsBuilderTestHelper::VerifyExport(
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   std::vector<TitleTimestampPair> tabs;
   for (int s = 0; s < GetSessionCount(); ++s) {
@@ -242,7 +241,7 @@ RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   }
   sort(tabs.begin(), tabs.end(), SortTabTimesByRecency);
 
-  std::vector<base::string16> titles;
+  std::vector<std::u16string> titles;
   for (size_t i = 0; i < tabs.size(); ++i)
     titles.push_back(tabs[i].title);
   return titles;
@@ -301,20 +300,19 @@ sync_pb::SessionSpecifics RecentTabsBuilderTestHelper::BuildTabSpecifics(
   return specifics;
 }
 
-std::unique_ptr<syncer::UpdateResponseData>
-RecentTabsBuilderTestHelper::BuildUpdateResponseData(
+syncer::UpdateResponseData RecentTabsBuilderTestHelper::BuildUpdateResponseData(
     const sync_pb::SessionSpecifics& specifics,
     base::Time timestamp) {
-  auto entity = std::make_unique<syncer::EntityData>();
-  *entity->specifics.mutable_session() = specifics;
-  entity->creation_time = timestamp;
-  entity->modification_time = timestamp;
-  entity->client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+  syncer::EntityData entity;
+  *entity.specifics.mutable_session() = specifics;
+  entity.creation_time = timestamp;
+  entity.modification_time = timestamp;
+  entity.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
       syncer::SESSIONS, sync_sessions::SessionStore::GetClientTag(specifics));
-  entity->id = entity->client_tag_hash.value();
+  entity.id = entity.client_tag_hash.value();
 
-  auto update = std::make_unique<syncer::UpdateResponseData>();
-  update->entity = std::move(entity);
-  update->response_version = ++next_response_version_;
+  syncer::UpdateResponseData update;
+  update.entity = std::move(entity);
+  update.response_version = ++next_response_version_;
   return update;
 }

@@ -7,19 +7,21 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.StrictMode;
 
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.about_settings.AboutSettingsBridge;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
-import org.chromium.chrome.browser.settings.about.AboutSettingsBridge;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBarControlLayout;
+import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.GURLUtils;
+import org.chromium.url.GURL;
 
 import java.net.HttpURLConnection;
 import java.sql.Date;
@@ -44,7 +46,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
     private static String sSecondaryButtonText;
 
     private static boolean shouldLaunchPromoInfoBar(Context context, WebContents webContents,
-            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+            GURL url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
         // This switch is only used for testing so let it override every other check.
         if (CommandLine.getInstance().hasSwitch(FORCE_INFOBAR_SWITCH)) return true;
 
@@ -65,45 +67,39 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
         if (DataReductionPromoUtils.getDisplayedInfoBarPromo()) return false;
 
         // Only show the promo on HTTP pages.
-        if (!GURLUtils.getScheme(url).equals(UrlConstants.HTTP_SCHEME)) return false;
+        if (!url.getScheme().equals(UrlConstants.HTTP_SCHEME)) return false;
 
         int currentMilestone = VersionNumberGetter.getMilestoneFromVersionNumber(
                 AboutSettingsBridge.getApplicationVersion());
         String freOrSecondRunVersion =
                 DataReductionPromoUtils.getDisplayedFreOrSecondRunPromoVersion();
 
-        // Temporarily allowing disk access. TODO: Fix. See http://crbug.com/577185
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        try {
-            Calendar releaseDateOfM48Stable = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar releaseDateOfM48Stable = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-            releaseDateOfM48Stable.setTime(Date.valueOf(M48_STABLE_RELEASE_DATE));
-            long packageInstallTime = getPackageInstallTime(context);
+        releaseDateOfM48Stable.setTime(Date.valueOf(M48_STABLE_RELEASE_DATE));
+        long packageInstallTime = getPackageInstallTime(context);
 
-            // The boolean pref that stores whether user opted out on the first run experience was
-            // added in M51. If the last promo was shown before M51, then |freOrSecondRunVersion|
-            // will be empty. If Chrome was installed after the FRE promo was added in M48 and
-            // beforeM51,assume the user opted out from the FRE and don't show the infobar.
-            if (freOrSecondRunVersion.isEmpty()
-                    && packageInstallTime > releaseDateOfM48Stable.getTimeInMillis()) {
-                return false;
-            }
-
-            // Only show the promo if the current version is at least two milestones after the last
-            // promo was displayed or the command line switch is on. If the last promo was shown
-            // before M51 then |freOrSecondRunVersion| will be empty and it is safe to show the
-            // infobar promo.
-            if (!freOrSecondRunVersion.isEmpty()
-                    && currentMilestone < VersionNumberGetter.getMilestoneFromVersionNumber(
-                                                  freOrSecondRunVersion)
-                                    + 2) {
-                return false;
-            }
-
-            return true;
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
+        // The boolean pref that stores whether user opted out on the first run experience was
+        // added in M51. If the last promo was shown before M51, then |freOrSecondRunVersion|
+        // will be empty. If Chrome was installed after the FRE promo was added in M48 and
+        // beforeM51,assume the user opted out from the FRE and don't show the infobar.
+        if (freOrSecondRunVersion.isEmpty()
+                && packageInstallTime > releaseDateOfM48Stable.getTimeInMillis()) {
+            return false;
         }
+
+        // Only show the promo if the current version is at least two milestones after the last
+        // promo was displayed or the command line switch is on. If the last promo was shown
+        // before M51 then |freOrSecondRunVersion| will be empty and it is safe to show the
+        // infobar promo.
+        if (!freOrSecondRunVersion.isEmpty()
+                && currentMilestone
+                        < VersionNumberGetter.getMilestoneFromVersionNumber(freOrSecondRunVersion)
+                                + 2) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -118,7 +114,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
      * @return boolean Whether the promo was launched.
      */
     public static boolean maybeLaunchPromoInfoBar(Context context, WebContents webContents,
-            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+            GURL url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
         ThreadUtils.assertOnUiThread();
 
         if (!shouldLaunchPromoInfoBar(

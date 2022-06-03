@@ -1,0 +1,9 @@
+Tests that captureScreenshot works
+{"format":"png","clip":{"x":0,"y":0,"width":50,"height":50,"scale":1}}
+green: {"r":0,"g":128,"b":0,"a":255}
+red: {"r":255,"g":0,"b":0,"a":255}
+{"format":"jpeg","clip":{"x":0,"y":0,"width":50,"height":50,"scale":1}}
+less than 20% bad pixels: false
+{"format":"webp","clip":{"x":0,"y":0,"width":50,"height":50,"scale":1}}
+less than 20% bad pixels: true
+

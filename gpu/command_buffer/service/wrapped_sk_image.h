@@ -24,15 +24,23 @@ namespace raster {
 class GPU_GLES2_EXPORT WrappedSkImageFactory
     : public gpu::SharedImageBackingFactory {
  public:
-  explicit WrappedSkImageFactory(SharedContextState* context_state);
+  explicit WrappedSkImageFactory(
+      scoped_refptr<SharedContextState> context_state);
+
+  WrappedSkImageFactory(const WrappedSkImageFactory&) = delete;
+  WrappedSkImageFactory& operator=(const WrappedSkImageFactory&) = delete;
+
   ~WrappedSkImageFactory() override;
 
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
+      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -40,6 +48,8 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -47,17 +57,27 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
       int client_id,
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage) override;
-  bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  bool IsSupported(uint32_t usage,
+                   viz::ResourceFormat format,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override;
 
  private:
-  SharedContextState* const context_state_;
+  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
+  bool CanUseWrappedSkImage(uint32_t usage,
+                            GrContextType gr_context_type) const;
 
-  DISALLOW_COPY_AND_ASSIGN(WrappedSkImageFactory);
+  scoped_refptr<SharedContextState> context_state_;
 };
 
 }  // namespace raster

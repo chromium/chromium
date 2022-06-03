@@ -4,12 +4,13 @@
 
 package org.chromium.device.geolocation;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -21,6 +22,7 @@ import com.google.android.gms.location.LocationServices;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
  * This is a LocationProvider using Google Play Services.
@@ -42,8 +44,7 @@ public class LocationProviderGmsCore implements ConnectionCallbacks, OnConnectio
     private LocationRequest mLocationRequest;
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
-                == ConnectionResult.SUCCESS;
+        return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
     }
 
     LocationProviderGmsCore(Context context) {
@@ -67,7 +68,14 @@ public class LocationProviderGmsCore implements ConnectionCallbacks, OnConnectio
         ThreadUtils.assertOnUiThread();
 
         mLocationRequest = LocationRequest.create();
-        if (mEnablehighAccuracy) {
+        if (mGoogleApiClient.getContext().checkCallingOrSelfPermission(
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Workaround for a bug in Google Play Services where, if an app only has
+            // ACCESS_COARSE_LOCATION, trying to request PRIORITY_HIGH_ACCURACY will throw a
+            // SecurityException even on Android S. See: b/184924939.
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        } else if (mEnablehighAccuracy) {
             // With enableHighAccuracy, request a faster update interval and configure the provider
             // for high accuracy mode.
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)

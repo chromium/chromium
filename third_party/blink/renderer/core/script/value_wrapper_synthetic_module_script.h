@@ -26,14 +26,12 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
     : public ModuleScript {
  public:
   static ValueWrapperSyntheticModuleScript*
-  CreateCSSWrapperSyntheticModuleScript(
-      const base::Optional<ModuleScriptCreationParams>& params,
-      Modulator* settings_object);
+  CreateCSSWrapperSyntheticModuleScript(const ModuleScriptCreationParams&,
+                                        Modulator* settings_object);
 
   static ValueWrapperSyntheticModuleScript*
-  CreateJSONWrapperSyntheticModuleScript(
-      const base::Optional<ModuleScriptCreationParams>& params,
-      Modulator* settings_object);
+  CreateJSONWrapperSyntheticModuleScript(const ModuleScriptCreationParams&,
+                                         Modulator* settings_object);
 
   static ValueWrapperSyntheticModuleScript* CreateWithDefaultExport(
       v8::Local<v8::Value> value,
@@ -61,7 +59,7 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
                                     const TextPosition& start_position);
 
   // <specdef
-  // href="https://heycam.github.io/webidl/#synthetic-module-record">
+  // href="https://webidl.spec.whatwg.org/#synthetic-module-record">
   // An abstract operation that will be performed upon evaluation of the module,
   // taking the Synthetic Module Record as its sole argument. These will usually
   // set up the exported values, by using SetSyntheticModuleExport. They must
@@ -70,7 +68,7 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
       v8::Local<v8::Context> context,
       v8::Local<v8::Module> module);
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   TraceWrapperV8Reference<v8::Value> export_value_;

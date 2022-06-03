@@ -8,14 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
+#include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
-#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace media_router {
 
-struct DialLaunchInfo;
 class MediaSinkInternal;
 
 // Types of internal messages that are used in a custom DIAL launch workflow.
@@ -27,9 +26,11 @@ enum class DialInternalMessageType {
   // MR -> Cast SDK
   kNewSession,
   kReceiverAction,
+  kError,
 
   // MR <-> Cast SDK
   kCustomDialLaunch,
+  kDialAppInfo,
 
   kOther
 };
@@ -53,17 +54,19 @@ struct DialInternalMessage {
                                                    std::string* error);
 
   DialInternalMessage(DialInternalMessageType type,
-                      base::Optional<base::Value> body,
+                      absl::optional<base::Value> body,
                       const std::string& client_id,
                       int sequence_number);
+
+  DialInternalMessage(const DialInternalMessage&) = delete;
+  DialInternalMessage& operator=(const DialInternalMessage&) = delete;
+
   ~DialInternalMessage();
 
   DialInternalMessageType type;
-  base::Optional<base::Value> body;
+  absl::optional<base::Value> body;
   std::string client_id;
   int sequence_number;
-
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessage);
 };
 
 // Parsed CUSTOM_DIAL_LAUNCH response from the Cast SDK client.
@@ -75,7 +78,7 @@ struct CustomDialLaunchMessageBody {
   CustomDialLaunchMessageBody();
   CustomDialLaunchMessageBody(
       bool do_launch,
-      const base::Optional<std::string>& launch_parameter);
+      const absl::optional<std::string>& launch_parameter);
   CustomDialLaunchMessageBody(const CustomDialLaunchMessageBody& other);
   ~CustomDialLaunchMessageBody();
 
@@ -85,13 +88,17 @@ struct CustomDialLaunchMessageBody {
   // If |do_launch| is |true|, optional launch parameter to include with the
   // launch (POST) request. This overrides the launch parameter that was
   // specified in the MediaSource (if any).
-  base::Optional<std::string> launch_parameter;
+  absl::optional<std::string> launch_parameter;
 };
 
 class DialInternalMessageUtil final {
  public:
   // |hash_token|: A per-profile value used to hash sink IDs.
   explicit DialInternalMessageUtil(const std::string& hash_token);
+
+  DialInternalMessageUtil(const DialInternalMessageUtil&) = delete;
+  DialInternalMessageUtil& operator=(const DialInternalMessageUtil&) = delete;
+
   ~DialInternalMessageUtil();
 
   // Returns |true| if |message| is a valid STOP_SESSION message.
@@ -100,44 +107,66 @@ class DialInternalMessageUtil final {
   // Returns a NEW_SESSION message to be sent to the page when the user requests
   // an app launch.
   mojom::RouteMessagePtr CreateNewSessionMessage(
-      const DialLaunchInfo& launch_info,
+      const std::string& app_name,
+      const std::string& client_id,
       const MediaSinkInternal& sink) const;
 
   // Returns a RECEIVER_ACTION / CAST message to be sent to the page when the
   // user requests an app launch.
   mojom::RouteMessagePtr CreateReceiverActionCastMessage(
-      const DialLaunchInfo& launch_info,
+      const std::string& client_id,
       const MediaSinkInternal& sink) const;
 
   // Returns a RECEIVER_ACTION / STOP message to be sent to the page when an app
   // is stopped by DialMediaRouteProvider.
   mojom::RouteMessagePtr CreateReceiverActionStopMessage(
-      const DialLaunchInfo& launch_info,
+      const std::string& client_id,
       const MediaSinkInternal& sink) const;
 
   // Returns a CUSTOM_DIAL_LAUNCH request message to be sent to the page.
   // Generates and returns the next number to associate a DIAL launch sequence
   // with.
   std::pair<mojom::RouteMessagePtr, int> CreateCustomDialLaunchMessage(
-      const DialLaunchInfo& launch_info,
+      const std::string& client_id,
       const MediaSinkInternal& sink,
       const ParsedDialAppInfo& app_info) const;
+
+  // Creates an app info message used in a DIAL_APP_INFO response or a
+  // CUSTOM_DIAL_LAUNCH (called via CreateCustomDialLaunchMessage() above)
+  // message.
+  mojom::RouteMessagePtr CreateDialAppInfoMessage(
+      const std::string& client_id,
+      const MediaSinkInternal& sink,
+      const ParsedDialAppInfo& app_info,
+      int sequence_number,
+      DialInternalMessageType type) const;
+
+  mojom::RouteMessagePtr CreateDialAppInfoErrorMessage(
+      DialAppInfoResultCode result_code,
+      const std::string& client_id,
+      int sequence_number,
+      const std::string& error_message,
+      absl::optional<int> http_error_code = absl::nullopt) const;
 
  private:
   base::Value CreateReceiver(const MediaSinkInternal& sink) const;
   base::Value CreateReceiverActionBody(const MediaSinkInternal& sink,
                                        DialReceiverAction action) const;
-  base::Value CreateNewSessionBody(const DialLaunchInfo& launch_info,
+  base::Value CreateNewSessionBody(const std::string& app_name,
                                    const MediaSinkInternal& sink) const;
-  base::Value CreateCustomDialLaunchBody(
-      const MediaSinkInternal& sink,
-      const ParsedDialAppInfo& app_info) const;
+  base::Value CreateDialAppInfoBody(const MediaSinkInternal& sink,
+                                    const ParsedDialAppInfo& app_info) const;
+
+  // |sequence_number| is used by the Cast SDK to match up requests from the SDK
+  // to Chrome with responses from Chrome. If a message from Chrome has no
+  // corresponding request, then its |sequence_number| is an invalid value of
+  // -1.
   base::Value CreateDialMessageCommon(DialInternalMessageType type,
                                       base::Value body,
-                                      const std::string& client_id) const;
+                                      const std::string& client_id,
+                                      int sequence_number = -1) const;
 
   std::string hash_token_;
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessageUtil);
 };
 
 }  // namespace media_router

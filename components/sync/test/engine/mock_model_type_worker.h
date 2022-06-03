@@ -14,15 +14,18 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class GarbageCollectionDirective;
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -35,6 +38,10 @@ class MockModelTypeWorker : public CommitQueue {
  public:
   MockModelTypeWorker(const sync_pb::ModelTypeState& model_type_state,
                       ModelTypeProcessor* processor);
+
+  MockModelTypeWorker(const MockModelTypeWorker&) = delete;
+  MockModelTypeWorker& operator=(const MockModelTypeWorker&) = delete;
+
   ~MockModelTypeWorker() override;
 
   // Callback when local changes are received from the processor.
@@ -88,7 +95,7 @@ class MockModelTypeWorker : public CommitQueue {
   // the same version) or new updates.
   //
   // |ekn| is the encryption key name this item will fake having.
-  std::unique_ptr<syncer::UpdateResponseData> GenerateUpdateData(
+  syncer::UpdateResponseData GenerateUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics,
       int64_t version_offset,
@@ -96,14 +103,19 @@ class MockModelTypeWorker : public CommitQueue {
 
   // Mostly same as GenerateUpdateData above, but set 1 as |version_offset|, and
   // use model_type_state_.encryption_key_name() as |ekn|.
-  std::unique_ptr<syncer::UpdateResponseData> GenerateUpdateData(
+  syncer::UpdateResponseData GenerateUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics);
 
   // Returns an UpdateResponseData representing an update received from
   // the server for a type root node.
-  std::unique_ptr<syncer::UpdateResponseData> GenerateTypeRootUpdateData(
+  syncer::UpdateResponseData GenerateTypeRootUpdateData(
       const ModelType& model_type);
+
+  // Returns an UpdateResponseData representing an update received from
+  // the server for a deleted entity.
+  syncer::UpdateResponseData GenerateTombstoneUpdateData(
+      const ClientTagHash& tag_hash);
 
   // Triggers a server-side deletion of the entity with |tag_hash|; updates
   // server state accordingly.
@@ -117,6 +129,9 @@ class MockModelTypeWorker : public CommitQueue {
   // Pops one pending commit, but returns empty commit response list to indicate
   // that commit failed for requested entities.
   void FailOneCommit();
+
+  // Simulates commit failure like HTTP error.
+  void FailFullCommitRequest();
 
   // Set the encryption key to |ekn| and inform the processor with an update
   // containing the data in |update|, which defaults to an empty list.
@@ -140,6 +155,10 @@ class MockModelTypeWorker : public CommitQueue {
   CommitResponseData SuccessfulCommitResponse(
       const CommitRequestData& request_data,
       int64_t version_offset);
+  // Returns a commit response that indicates a failed commit of the
+  // given |request_data|.
+  FailedCommitResponseData FailedCommitResponse(
+      const CommitRequestData& request_data);
 
   // Retrieve or set the server version.
   int64_t GetServerVersion(const ClientTagHash& tag_hash);
@@ -159,8 +178,6 @@ class MockModelTypeWorker : public CommitQueue {
 
   // WeakPtrFactory for this worker which will be sent to sync thread.
   base::WeakPtrFactory<MockModelTypeWorker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockModelTypeWorker);
 };
 
 }  // namespace syncer

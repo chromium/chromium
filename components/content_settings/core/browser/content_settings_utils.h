@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -65,6 +66,12 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
 
 // Returns true if setting |a| is more permissive than setting |b|.
 bool IsMorePermissive(ContentSetting a, ContentSetting b);
+
+// Returns whether or not the supplied constraint should be persistently stored.
+bool IsConstraintPersistent(const ContentSettingConstraints& constraints);
+
+// Returns the expiration time for a supplied |duration|.
+base::Time GetConstraintExpiration(const base::TimeDelta duration);
 
 }  // namespace content_settings
 

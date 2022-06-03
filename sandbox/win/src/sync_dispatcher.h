@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SYNC_DISPATCHER_H_
-#define SANDBOX_SRC_SYNC_DISPATCHER_H_
+#ifndef SANDBOX_WIN_SRC_SYNC_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_SYNC_DISPATCHER_H_
 
 #include <stdint.h>
 
@@ -20,6 +20,10 @@ namespace sandbox {
 class SyncDispatcher : public Dispatcher {
  public:
   explicit SyncDispatcher(PolicyBase* policy_base);
+
+  SyncDispatcher(const SyncDispatcher&) = delete;
+  SyncDispatcher& operator=(const SyncDispatcher&) = delete;
+
   ~SyncDispatcher() override {}
 
   // Dispatcher interface.
@@ -36,9 +40,8 @@ class SyncDispatcher : public Dispatcher {
   bool OpenEvent(IPCInfo* ipc, std::wstring* name, uint32_t desired_access);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(SyncDispatcher);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SYNC_DISPATCHER_H_
+#endif  // SANDBOX_WIN_SRC_SYNC_DISPATCHER_H_

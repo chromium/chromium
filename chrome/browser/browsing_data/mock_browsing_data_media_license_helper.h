@@ -9,8 +9,6 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/gurl.h"
@@ -19,6 +17,11 @@ class MockBrowsingDataMediaLicenseHelper
     : public BrowsingDataMediaLicenseHelper {
  public:
   explicit MockBrowsingDataMediaLicenseHelper(Profile* profile);
+
+  MockBrowsingDataMediaLicenseHelper(
+      const MockBrowsingDataMediaLicenseHelper&) = delete;
+  MockBrowsingDataMediaLicenseHelper& operator=(
+      const MockBrowsingDataMediaLicenseHelper&) = delete;
 
   // BrowsingDataMediaLicenseHelper implementation:
   void StartFetching(FetchCallback callback) override;
@@ -39,8 +42,6 @@ class MockBrowsingDataMediaLicenseHelper
  private:
   FetchCallback callback_;
   std::list<MediaLicenseInfo> media_licenses_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowsingDataMediaLicenseHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_MEDIA_LICENSE_HELPER_H_

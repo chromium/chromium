@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_POSITION_H_
 
 #include <iosfwd>
+
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
@@ -100,7 +102,7 @@ class VisiblePositionTemplate final {
   static VisiblePositionTemplate<Strategy> InParentBeforeNode(const Node&);
   static VisiblePositionTemplate<Strategy> LastPositionInNode(const Node&);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;
@@ -144,8 +146,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&,
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::VisiblePosition*);
-void showTree(const blink::VisiblePosition&);
+void ShowTree(const blink::VisiblePosition*);
+void ShowTree(const blink::VisiblePosition&);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_POSITION_H_

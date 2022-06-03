@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepOver will skip inlined scripts created by document.write().\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-step-over-document-write.html');
@@ -19,9 +19,9 @@
         'debugger-step-over-document-write.html', step2);
   }
 
-  function step2(sourceFrame) {
+  async function step2(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
-    SourcesTestRunner.setBreakpoint(sourceFrame, 3, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 3, '', true);
     SourcesTestRunner.waitUntilPaused(step3);
     TestRunner.reloadPage(completeTest);
   }

@@ -6,9 +6,10 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_bridge.h"
@@ -22,8 +23,10 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
     OnceModelTypeStoreFactory model_type_store_factory,
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
-    std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client)
-    : device_info_sync_client_(std::move(device_info_sync_client)) {
+    std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
+    SyncInvalidationsService* sync_invalidations_service)
+    : device_info_sync_client_(std::move(device_info_sync_client)),
+      sync_invalidations_service_(sync_invalidations_service) {
   DCHECK(local_device_info_provider);
   DCHECK(device_info_prefs);
   DCHECK(device_info_sync_client_);
@@ -40,13 +43,25 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
           /*dump_stack=*/base::BindRepeating(&ReportUnrecoverableError,
                                              channel)),
       std::move(device_info_prefs));
+
+  if (sync_invalidations_service_) {
+    sync_invalidations_service_->AddTokenObserver(this);
+    sync_invalidations_service_->SetInterestedDataTypesHandler(this);
+  }
 }
 
-DeviceInfoSyncServiceImpl::~DeviceInfoSyncServiceImpl() {}
+DeviceInfoSyncServiceImpl::~DeviceInfoSyncServiceImpl() = default;
 
 LocalDeviceInfoProvider*
 DeviceInfoSyncServiceImpl::GetLocalDeviceInfoProvider() {
   return bridge_->GetLocalDeviceInfoProvider();
+}
+
+void DeviceInfoSyncServiceImpl::
+    SetCommittedAdditionalInterestedDataTypesCallback(
+        base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+  bridge_->SetCommittedAdditionalInterestedDataTypesCallback(
+      std::move(callback));
 }
 
 DeviceInfoTracker* DeviceInfoSyncServiceImpl::GetDeviceInfoTracker() {
@@ -59,7 +74,22 @@ DeviceInfoSyncServiceImpl::GetControllerDelegate() {
 }
 
 void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo() {
-  bridge_->RefreshLocalDeviceInfo();
+  bridge_->RefreshLocalDeviceInfoIfNeeded();
+}
+
+void DeviceInfoSyncServiceImpl::OnFCMRegistrationTokenChanged() {
+  RefreshLocalDeviceInfo();
+}
+
+void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged() {
+  RefreshLocalDeviceInfo();
+}
+
+void DeviceInfoSyncServiceImpl::Shutdown() {
+  if (sync_invalidations_service_) {
+    sync_invalidations_service_->RemoveTokenObserver(this);
+    sync_invalidations_service_->SetInterestedDataTypesHandler(nullptr);
+  }
 }
 
 }  // namespace syncer

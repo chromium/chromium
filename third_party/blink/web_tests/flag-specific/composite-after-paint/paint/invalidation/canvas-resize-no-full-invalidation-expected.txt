@@ -4,18 +4,9 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutHTMLCanvas (positioned) CANVAS id='canvas'",
-          "rect": [550, 50, 100, 500],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutHTMLCanvas (positioned) CANVAS id='canvas'",
-          "rect": [550, 50, 100, 500],
-          "reason": "incremental"
-        }
+      "backgroundColor": "#003300",
+      "invalidations": [
+        [550, 50, 100, 500]
       ]
     }
   ]

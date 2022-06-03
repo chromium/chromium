@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Hit-test of text with fractional (< 1) font-size and small (high scalefactor) viewBox
+Harness: the test ran to completion.
+

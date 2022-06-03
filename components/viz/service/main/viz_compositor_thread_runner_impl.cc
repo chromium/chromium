@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -27,13 +27,11 @@
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "ui/gfx/switches.h"
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-#include "components/ui_devtools/css_agent.h"
-#include "components/ui_devtools/devtools_server.h"
-#include "components/ui_devtools/viz/dom_agent_viz.h"
-#include "components/ui_devtools/viz/overlay_agent_viz.h"
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace viz {
@@ -52,16 +50,24 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   thread->Start();
   return thread;
 #else  // !defined(OS_ANDROID)
-  auto thread = std::make_unique<base::Thread>(kThreadName);
 
+  std::unique_ptr<base::Thread> thread;
   base::Thread::Options thread_options;
+#if defined(USE_OZONE)
+  auto* platform = ui::OzonePlatform::GetInstance();
+  thread_options.message_pump_type =
+      platform->GetPlatformProperties().message_pump_type_for_viz_compositor;
+  thread = std::make_unique<base::Thread>(kThreadName);
+#endif
+  if (!thread)
+    thread = std::make_unique<base::Thread>(kThreadName);
 
 #if defined(OS_FUCHSIA)
   // An IO message pump is needed to use FIDL.
   thread_options.message_pump_type = base::MessagePumpType::IO;
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Increase the thread priority to get more reliable values in performance
   // test of macOS.
   thread_options.priority =
@@ -71,9 +77,15 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
           : thread_priority;
 #else
   thread_options.priority = thread_priority;
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_APPLE)
 
-  CHECK(thread->StartWithOptions(thread_options));
+  CHECK(thread->StartWithOptions(std::move(thread_options)));
+
+  // Setup tracing sampler profiler as early as possible.
+  thread->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&tracing::TracingSamplerProfiler::CreateOnChildThread));
+
   return thread;
 #endif  // !defined(OS_ANDROID)
 }
@@ -92,6 +104,10 @@ VizCompositorThreadRunnerImpl::~VizCompositorThreadRunnerImpl() {
   thread_->Stop();
 }
 
+base::PlatformThreadId VizCompositorThreadRunnerImpl::thread_id() {
+  return thread_->GetThreadId();
+}
+
 base::SingleThreadTaskRunner* VizCompositorThreadRunnerImpl::task_runner() {
   return task_runner_.get();
 }
@@ -102,13 +118,14 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
       FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
-                                nullptr, nullptr));
+                                nullptr, nullptr, nullptr));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service) {
+    GpuServiceImpl* gpu_service,
+    gfx::RenderingPipeline* gpu_pipeline) {
   // All of the unretained objects are owned on the GPU thread and destroyed
   // after VizCompositorThread has been shutdown.
   task_runner_->PostTask(
@@ -116,36 +133,15 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
                                 base::Unretained(task_executor),
-                                base::Unretained(gpu_service)));
-}
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-void VizCompositorThreadRunnerImpl::CreateVizDevTools(
-    mojom::VizDevToolsParamsPtr params) {
-  // It is safe to use Unretained(this) because |this| owns the |task_runner_|,
-  // and will outlive it.
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &VizCompositorThreadRunnerImpl::CreateVizDevToolsOnCompositorThread,
-          base::Unretained(this), std::move(params)));
-}
-#endif
-
-void VizCompositorThreadRunnerImpl::CleanupForShutdown(
-    base::OnceClosure cleanup_finished_callback) {
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          &VizCompositorThreadRunnerImpl::CleanupForShutdownOnCompositorThread,
-          base::Unretained(this)),
-      std::move(cleanup_finished_callback));
+                                base::Unretained(gpu_service),
+                                base::Unretained(gpu_pipeline)));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service) {
+    GpuServiceImpl* gpu_service,
+    gfx::RenderingPipeline* gpu_pipeline) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!frame_sink_manager_);
   if (features::IsUsingSkiaRenderer())
@@ -182,7 +178,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   FrameSinkManagerImpl::InitParams init_params;
   init_params.shared_bitmap_manager = server_shared_bitmap_manager_.get();
   // Set default activation deadline to infinite if client doesn't provide one.
-  init_params.activation_deadline_in_frames = base::nullopt;
+  init_params.activation_deadline_in_frames = absl::nullopt;
   if (params->use_activation_deadline) {
     init_params.activation_deadline_in_frames =
         params->activation_deadline_in_frames;
@@ -191,53 +187,15 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   init_params.restart_id = params->restart_id;
   init_params.run_all_compositor_stages_before_draw =
       run_all_compositor_stages_before_draw;
+  init_params.log_capture_pipeline_in_webrtc =
+      features::ShouldWebRtcLogCapturePipeline();
+  init_params.debug_renderer_settings = params->debug_renderer_settings;
+  init_params.gpu_pipeline = gpu_pipeline;
 
   frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(init_params);
   frame_sink_manager_->BindAndSetClient(
       std::move(params->frame_sink_manager), nullptr,
       std::move(params->frame_sink_manager_client));
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  if (pending_viz_dev_tools_params_)
-    InitVizDevToolsOnCompositorThread(std::move(pending_viz_dev_tools_params_));
-#endif
-}
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-void VizCompositorThreadRunnerImpl::CreateVizDevToolsOnCompositorThread(
-    mojom::VizDevToolsParamsPtr params) {
-  if (!frame_sink_manager_) {
-    DCHECK(!pending_viz_dev_tools_params_);
-    pending_viz_dev_tools_params_ = std::move(params);
-    return;
-  }
-  InitVizDevToolsOnCompositorThread(std::move(params));
-}
-
-void VizCompositorThreadRunnerImpl::InitVizDevToolsOnCompositorThread(
-    mojom::VizDevToolsParamsPtr params) {
-  DCHECK(frame_sink_manager_);
-  devtools_server_ = ui_devtools::UiDevToolsServer::CreateForViz(
-      std::move(params->server_socket), params->server_port);
-  auto dom_agent =
-      std::make_unique<ui_devtools::DOMAgentViz>(frame_sink_manager_.get());
-  auto css_agent = std::make_unique<ui_devtools::CSSAgent>(dom_agent.get());
-  auto overlay_agent =
-      std::make_unique<ui_devtools::OverlayAgentViz>(dom_agent.get());
-  auto devtools_client = std::make_unique<ui_devtools::UiDevToolsClient>(
-      "VizDevToolsClient", devtools_server_.get());
-  devtools_client->AddAgent(std::move(dom_agent));
-  devtools_client->AddAgent(std::move(css_agent));
-  devtools_client->AddAgent(std::move(overlay_agent));
-  devtools_server_->AttachClient(std::move(devtools_client));
-}
-#endif
-
-void VizCompositorThreadRunnerImpl::CleanupForShutdownOnCompositorThread() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-
-  if (frame_sink_manager_)
-    frame_sink_manager_->ForceShutdown();
 }
 
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
@@ -248,9 +206,6 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
         server_shared_bitmap_manager_.get());
   }
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  devtools_server_.reset();
-#endif
   frame_sink_manager_.reset();
   output_surface_provider_.reset();
   server_shared_bitmap_manager_.reset();

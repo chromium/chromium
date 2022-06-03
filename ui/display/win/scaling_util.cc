@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/range/range.h"
@@ -75,7 +77,7 @@ int ScaleOffset(int unscaled_length, float scale_factor, int unscaled_offset) {
   float scaled_length = static_cast<float>(unscaled_length) / scale_factor;
   float percent =
       static_cast<float>(unscaled_offset) / static_cast<float>(unscaled_length);
-  return gfx::ToFlooredInt(scaled_length * percent);
+  return base::ClampFloor(scaled_length * percent);
 }
 
 }  // namespace
@@ -225,8 +227,9 @@ DisplayPlacement CalculateDisplayPlacement(const DisplayInfo& parent,
 // corners and |rect|'s top corners when the rects don't overlap vertically.
 int64_t SquaredDistanceBetweenRects(const gfx::Rect& ref,
                                     const gfx::Rect& rect) {
-  if (ref.Intersects(rect))
-    return 0;
+  gfx::Rect intersection_rect = gfx::IntersectRects(ref, rect);
+  if (!intersection_rect.IsEmpty())
+    return -(intersection_rect.width() * intersection_rect.height());
 
   CoordinateRotation degrees = ComputeCoordinateRotationRefTop(ref, rect);
   gfx::Rect top_rect(CoordinateRotateRect(ref, degrees));

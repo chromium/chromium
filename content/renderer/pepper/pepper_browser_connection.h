@@ -8,14 +8,13 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
+#include "content/common/pepper_plugin.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -35,6 +34,10 @@ class PepperBrowserConnection
   using PendingResourceIDCallback =
       base::OnceCallback<void(const std::vector<int>&)>;
   explicit PepperBrowserConnection(RenderFrame* render_frame);
+
+  PepperBrowserConnection(const PepperBrowserConnection&) = delete;
+  PepperBrowserConnection& operator=(const PepperBrowserConnection&) = delete;
+
   ~PepperBrowserConnection() override;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -59,6 +62,22 @@ class PepperBrowserConnection
   // Called when the renderer deletes an in-process instance.
   void DidDeleteInProcessInstance(PP_Instance instance);
 
+  // Called when the renderer creates an out of process instance.
+  void DidCreateOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external,
+                                           int32_t render_frame_id,
+                                           const GURL& document_url,
+                                           const GURL& plugin_url,
+                                           bool is_priviledged_context);
+
+  // Called when the renderer deletes an out of process instance.
+  void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
+                                           int32_t pp_instance,
+                                           bool is_external);
+  // Return a bound PepperHost.
+  mojom::PepperHost* GetHost();
+
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;
@@ -76,7 +95,6 @@ class PepperBrowserConnection
 
   // Maps a sequence number to the callback to be run.
   std::map<int32_t, PendingResourceIDCallback> pending_create_map_;
-  DISALLOW_COPY_AND_ASSIGN(PepperBrowserConnection);
 };
 
 }  // namespace content

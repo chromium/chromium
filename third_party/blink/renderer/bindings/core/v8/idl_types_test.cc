@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 
 #include <type_traits>
+
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_string_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -114,9 +115,10 @@ static_assert(std::is_same<IDLSequence<Element>::ImplType,
 static_assert(std::is_same<IDLSequence<InternalDictionary>::ImplType,
                            HeapVector<Member<InternalDictionary>>>::value,
               "IDLSequence<dictionary type> produces a HeapVector<Member<>>");
-static_assert(std::is_same<IDLSequence<StringOrStringSequence>::ImplType,
-                           HeapVector<StringOrStringSequence>>::value,
-              "IDLSequence<union type> produces a HeapVector");
+static_assert(
+    std::is_same<IDLSequence<V8UnionStringOrStringSequence>::ImplType,
+                 HeapVector<Member<V8UnionStringOrStringSequence>>>::value,
+    "IDLSequence<union type> produces a HeapVector");
 
 static_assert(std::is_base_of<IDLBase, IDLRecord<IDLString, IDLShort>>::value,
               "IDLRecord inherits from IDLBase");
@@ -136,22 +138,24 @@ static_assert(
     "IDLRecord<IDLUSVString, dictionary type> produces a HeapVector with "
     "Member<>");
 static_assert(
-    std::is_same<IDLRecord<IDLString, StringOrStringSequence>::ImplType,
-                 HeapVector<std::pair<String, StringOrStringSequence>>>::value,
+    std::is_same<
+        IDLRecord<IDLString, V8UnionStringOrStringSequence>::ImplType,
+        HeapVector<std::pair<String, Member<V8UnionStringOrStringSequence>>>>::
+        value,
     "IDLRecord<IDLString, union type> produces a HeapVector with no Member<>");
 
 static_assert(std::is_base_of<IDLBase, IDLNullable<IDLDouble>>::value,
               "IDLNullable should have IDLBase as a base class");
-static_assert(std::is_same<IDLNullable<IDLDouble>::ResultType,
-                           base::Optional<double>>::value,
-              "double? corresponds to base::Optional<double>");
-static_assert(std::is_same<IDLNullable<Element>::ResultType, Element*>::value,
-              "Element? doesn't require a base::Optional<> wrapper");
-static_assert(std::is_same<IDLNullable<IDLString>::ResultType, String>::value,
-              "DOMString? doesn't require a base::Optional<> wrapper");
-static_assert(std::is_same<IDLNullable<StringOrStringSequence>::ResultType,
-                           StringOrStringSequence>::value,
-              "(union type)? doesn't require a base::Optional<> wrapper");
+static_assert(std::is_same<IDLNullable<IDLDouble>::ImplType,
+                           absl::optional<double>>::value,
+              "double? corresponds to absl::optional<double>");
+static_assert(std::is_same<IDLNullable<Element>::ImplType, Element*>::value,
+              "Element? doesn't require a absl::optional<> wrapper");
+static_assert(std::is_same<IDLNullable<IDLString>::ImplType, String>::value,
+              "DOMString? doesn't require a absl::optional<> wrapper");
+static_assert(std::is_same<IDLNullable<V8UnionStringOrStringSequence>::ImplType,
+                           V8UnionStringOrStringSequence*>::value,
+              "(union type)? doesn't require a absl::optional<> wrapper");
 
 }  // namespace
 

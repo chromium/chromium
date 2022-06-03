@@ -9,19 +9,16 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-// Whether or not dot and space suffixes of filename are ignored in the
-// current OS.
-const bool kDotSpaceSuffixIgnored =
-#if defined(OS_WIN)
-    true;
-#else
-    false;
-#endif  // defined(OS_WIN)
+constexpr bool kIsDotSpaceSuffixIgnored =
+    extensions::content_verifier_utils::IsDotSpaceFilenameSuffixIgnored();
+constexpr bool kIsFileAccessCaseInsensitive =
+    !extensions::content_verifier_utils::IsFileAccessCaseSensitive();
 
 // Helper to return base64 encode result by value.
 std::string Base64Encode(const std::string& data) {
@@ -46,20 +43,22 @@ testing::AssertionResult WriteThenReadComputedHashes(
   base::FilePath computed_hashes_path =
       scoped_dir.GetPath().AppendASCII("computed_hashes.json");
   extensions::ComputedHashes::Data computed_hashes_data;
-  for (const auto& info : hash_infos) {
-    computed_hashes_data[info.path] =
-        extensions::ComputedHashes::HashInfo(info.block_size, info.hashes);
-  }
+  for (const auto& info : hash_infos)
+    computed_hashes_data.Add(info.path, info.block_size, info.hashes);
 
   if (!extensions::ComputedHashes(std::move(computed_hashes_data))
            .WriteToFile(computed_hashes_path)) {
     return testing::AssertionFailure()
            << "Failed to write computed_hashes.json";
   }
-  base::Optional<extensions::ComputedHashes> computed_hashes =
-      extensions::ComputedHashes::CreateFromFile(computed_hashes_path);
+  extensions::ComputedHashes::Status computed_hashes_status;
+  absl::optional<extensions::ComputedHashes> computed_hashes =
+      extensions::ComputedHashes::CreateFromFile(computed_hashes_path,
+                                                 &computed_hashes_status);
   if (!computed_hashes)
-    return testing::AssertionFailure() << "Failed to read computed_hashes.json";
+    return testing::AssertionFailure()
+           << "Failed to read computed_hashes.json (status: "
+           << static_cast<int>(computed_hashes_status) << ")";
   *result = std::move(computed_hashes.value());
 
   return testing::AssertionSuccess();
@@ -104,10 +103,13 @@ TEST(ComputedHashesTest, ComputedHashes) {
   // Make sure we can lookup hashes for a file using incorrect case
   base::FilePath path1_badcase(FILE_PATH_LITERAL("FoO.txt"));
   std::vector<std::string> read_hashes1_badcase;
-  EXPECT_TRUE(computed_hashes.GetHashes(path1_badcase, &block_size,
-                                        &read_hashes1_badcase));
-  EXPECT_EQ(block_size, 4096);
-  EXPECT_EQ(hashes1, read_hashes1_badcase);
+  EXPECT_EQ(kIsFileAccessCaseInsensitive,
+            computed_hashes.GetHashes(path1_badcase, &block_size,
+                                      &read_hashes1_badcase));
+  if (kIsFileAccessCaseInsensitive) {
+    EXPECT_EQ(4096, block_size);
+    EXPECT_EQ(hashes1, read_hashes1_badcase);
+  }
 
   // Finally make sure that we can retrieve the hashes for the subdir
   // path even when that path contains forward slashes (on windows).
@@ -177,7 +179,6 @@ TEST(ComputedHashesTest, DotSpaceSuffix) {
            {hash_value}},
       },
       &computed_hashes));
-  std::vector<std::string> read_hashes;
 
   struct TestCase {
     const char* path;
@@ -193,17 +194,17 @@ TEST(ComputedHashesTest, DotSpaceSuffix) {
       // Sanity check: non existent file.
       {"notfound.html", false},
       // Path with "." suffix, along with incorrect case for the same.
-      {"foo.html.", kDotSpaceSuffixIgnored},
-      {"fOo.html.", kDotSpaceSuffixIgnored},
+      {"foo.html.", kIsDotSpaceSuffixIgnored},
+      {"fOo.html.", kIsDotSpaceSuffixIgnored},
       // Path with " " suffix, along with incorrect case for the same.
-      {"foo.html ", kDotSpaceSuffixIgnored},
-      {"fOo.html ", kDotSpaceSuffixIgnored},
+      {"foo.html ", kIsDotSpaceSuffixIgnored},
+      {"fOo.html ", kIsDotSpaceSuffixIgnored},
       // Path with ". " suffix, along with incorrect case for the same.
-      {"foo.html. ", kDotSpaceSuffixIgnored},
-      {"fOo.html. ", kDotSpaceSuffixIgnored},
+      {"foo.html. ", kIsDotSpaceSuffixIgnored},
+      {"fOo.html. ", kIsDotSpaceSuffixIgnored},
       // Path with " ." suffix, along with incorrect case for the same.
-      {"foo.html .", kDotSpaceSuffixIgnored},
-      {"fOo.html .", kDotSpaceSuffixIgnored},
+      {"foo.html .", kIsDotSpaceSuffixIgnored},
+      {"fOo.html .", kIsDotSpaceSuffixIgnored},
   };
 
   for (const auto& test_case : test_cases) {

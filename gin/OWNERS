@@ -1,6 +1,7 @@
-jochen@chromium.org
+set noparent
+cbruni@chromium.org
+haraken@chromium.org
+hpayer@chromium.org
 jbroman@chromium.org
-rmcilroy@chromium.org
-
-# TEAM: blink-reviews-bindings@chromium.org
-# COMPONENT: Blink>Bindings
+leszeks@chromium.org
+mlippautz@chromium.org

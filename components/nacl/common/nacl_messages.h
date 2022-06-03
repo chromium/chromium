@@ -15,6 +15,7 @@
 #include "components/nacl/common/nacl_types_param_traits.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -28,7 +29,7 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClStartParams)
 #if defined(OS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(debug_stub_server_bound_socket)
 #endif
-#if defined(OS_LINUX) || defined(OS_NACL_NONSFI)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_browser_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(ppapi_renderer_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(trusted_service_channel_handle)

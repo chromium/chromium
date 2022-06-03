@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/keyframe_model.h"
@@ -20,18 +19,12 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
 class InterpolatedTransform;
 class LayerAnimationDelegate;
-
-class AnimationMetricsReporter {
- public:
-  virtual ~AnimationMetricsReporter() {}
-  virtual void Report(int value) = 0;
-};
 
 // LayerAnimationElements represent one segment of an animation between two
 // keyframes. They know how to update a LayerAnimationDelegate given a value
@@ -78,6 +71,8 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
 
   LayerAnimationElement(AnimatableProperties properties,
                         base::TimeDelta duration);
+
+  LayerAnimationElement& operator=(const LayerAnimationElement&) = delete;
 
   virtual ~LayerAnimationElement();
 
@@ -209,10 +204,6 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   gfx::Tween::Type tween_type() const { return tween_type_; }
   void set_tween_type(gfx::Tween::Type tween_type) { tween_type_ = tween_type; }
 
-  void set_animation_metrics_reporter(AnimationMetricsReporter* reporter) {
-    animation_metrics_reporter_ = reporter;
-  }
-
   // Each LayerAnimationElement has a unique keyframe_model_id. Elements
   // belonging to sequences that are supposed to start together have the same
   // animation_group_id.
@@ -263,14 +254,7 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
 
   double last_progressed_fraction_;
 
-  // To obtain metrics of animation performance tag animation elements and
-  // keep track of sequential compositor frame number.
-  AnimationMetricsReporter* animation_metrics_reporter_;
-  int start_frame_number_;
-
   base::WeakPtrFactory<LayerAnimationElement> weak_ptr_factory_{this};
-
-  DISALLOW_ASSIGN(LayerAnimationElement);
 };
 
 }  // namespace ui

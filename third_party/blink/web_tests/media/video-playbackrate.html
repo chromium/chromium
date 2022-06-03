@@ -33,17 +33,17 @@ async_test(function(t) {
         video.defaultPlaybackRate = Number.MAX_VALUE;
         assert_equals(video.defaultPlaybackRate, 2);
 
-        assert_throws("NotSupportedError", function() { video.playbackRate = Number.MIN_VALUE; });
-        assert_throws("NotSupportedError", function() { video.playbackRate = Number.MAX_VALUE; });
+        assert_throws_dom("NotSupportedError", function() { video.playbackRate = Number.MIN_VALUE; });
+        assert_throws_dom("NotSupportedError", function() { video.playbackRate = Number.MAX_VALUE; });
 
         // Test non-finite playback rates.
-        assert_throws(new TypeError, function() { video.defaultPlaybackRate = -Infinity; });
-        assert_throws(new TypeError, function() { video.defaultPlaybackRate = Infinity; });
-        assert_throws(new TypeError, function() { video.defaultPlaybackRate = NaN; });
+        assert_throws_js(TypeError, function() { video.defaultPlaybackRate = -Infinity; });
+        assert_throws_js(TypeError, function() { video.defaultPlaybackRate = Infinity; });
+        assert_throws_js(TypeError, function() { video.defaultPlaybackRate = NaN; });
 
-        assert_throws(new TypeError, function() { video.playbackRate = -Infinity; });
-        assert_throws(new TypeError, function() { video.playbackRate = Infinity; });
-        assert_throws(new TypeError, function() { video.playbackRate = NaN; });
+        assert_throws_js(TypeError, function() { video.playbackRate = -Infinity; });
+        assert_throws_js(TypeError, function() { video.playbackRate = Infinity; });
+        assert_throws_js(TypeError, function() { video.playbackRate = NaN; });
     });
 
     var rateChangeCount = 0;

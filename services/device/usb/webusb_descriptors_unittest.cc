@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

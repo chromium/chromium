@@ -86,9 +86,16 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
       json_(0) {
   // Only check structures in the blink and WebKit namespaces.
   options_.checked_namespaces.insert("blink");
+  options_.checked_namespaces.insert("cppgc");
 
   // Ignore GC implementation files.
-  options_.ignored_directories.push_back("/heap/");
+  options_.ignored_directories.push_back(
+      "third_party/blink/renderer/platform/heap/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc-js/");
+
+  options_.allowed_directories.push_back(
+      "third_party/blink/renderer/platform/heap/test/");
 }
 
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
@@ -103,18 +110,14 @@ void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
 
   if (options_.dump_graph) {
     std::error_code err;
-    // TODO: Make createDefaultOutputFile or a shorter createOutputFile work.
+    SmallString<128> OutputFile(instance_.getFrontendOpts().OutputFile);
+    llvm::sys::path::replace_extension(OutputFile, "graph.json");
     json_ = JsonWriter::from(instance_.createOutputFile(
-        "",                                      // OutputPath
-        err,                                     // Errors
+        OutputFile,                              // OutputPath
         true,                                    // Binary
         true,                                    // RemoveFileOnSignal
-        instance_.getFrontendOpts().OutputFile,  // BaseInput
-        "graph.json",                            // Extension
         false,                                   // UseTemporary
-        false,                                   // CreateMissingDirectories
-        0,                                       // ResultPathName
-        0));                                     // TempPathName
+        false));                                 // CreateMissingDirectories
     if (!err && json_) {
       json_->OpenList();
     } else {
@@ -633,9 +636,14 @@ bool BlinkGCPluginConsumer::InIgnoredDirectory(RecordInfo* info) {
 #if defined(_WIN32)
   std::replace(filename.begin(), filename.end(), '\\', '/');
 #endif
-  for (const auto& dir : options_.ignored_directories)
-    if (filename.find(dir) != std::string::npos)
+  for (const auto& ignored_dir : options_.ignored_directories)
+    if (filename.find(ignored_dir) != std::string::npos) {
+      for (const auto& allowed_dir : options_.allowed_directories) {
+        if (filename.find(allowed_dir) != std::string::npos)
+          return false;
+      }
       return true;
+    }
   return false;
 }
 

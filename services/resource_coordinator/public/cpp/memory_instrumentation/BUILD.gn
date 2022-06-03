@@ -12,18 +12,25 @@ component("memory_instrumentation") {
     "memory_instrumentation.h",
     "os_metrics.cc",
     "os_metrics.h",
-    "os_metrics_linux.cc",
-    "os_metrics_mac.cc",
-    "os_metrics_win.cc",
+    "registry.h",
     "tracing_observer.cc",
     "tracing_observer.h",
+    "tracing_observer_proto.cc",
+    "tracing_observer_proto.h",
+    "tracing_observer_traced_value.cc",
+    "tracing_observer_traced_value.h",
   ]
 
-  if (is_android) {
-    # Disable the rule that excludes _linux.cc files from Android builds.
-    set_sources_assignment_filter([])
+  if (is_mac) {
+    sources += [ "os_metrics_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "os_metrics_win.cc" ]
+  }
+
+  if (is_android || is_linux || is_chromeos) {
     sources += [ "os_metrics_linux.cc" ]
-    set_sources_assignment_filter(sources_assignment_filter)
   }
 
   if (is_fuchsia) {
@@ -41,6 +48,7 @@ component("memory_instrumentation") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/resource_coordinator/public/mojom",
+    "//services/tracing/public/cpp",
   ]
 }
 
@@ -50,7 +58,5 @@ source_set("browser") {
     "browser_metrics.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

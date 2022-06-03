@@ -5,6 +5,7 @@
 #include "net/test/embedded_test_server/simple_connection_listener.h"
 
 #include "base/location.h"
+#include "net/socket/stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -18,12 +19,14 @@ SimpleConnectionListener::SimpleConnectionListener(
 
 SimpleConnectionListener::~SimpleConnectionListener() = default;
 
-void SimpleConnectionListener::AcceptedSocket(const StreamSocket& socket) {
+std::unique_ptr<StreamSocket> SimpleConnectionListener::AcceptedSocket(
+    std::unique_ptr<StreamSocket> socket) {
   ++seen_connections_;
   if (allow_additional_connections_ != ALLOW_ADDITIONAL_CONNECTIONS)
     EXPECT_LE(seen_connections_, expected_connections_);
   if (seen_connections_ == expected_connections_)
     run_loop_.Quit();
+  return socket;
 }
 
 void SimpleConnectionListener::ReadFromSocket(const StreamSocket& socket,
@@ -32,6 +35,9 @@ void SimpleConnectionListener::ReadFromSocket(const StreamSocket& socket,
 void SimpleConnectionListener::WaitForConnections() {
   run_loop_.Run();
 }
+
+void SimpleConnectionListener::OnResponseCompletedSuccessfully(
+    std::unique_ptr<StreamSocket> socket) {}
 
 }  // namespace test_server
 }  // namespace net

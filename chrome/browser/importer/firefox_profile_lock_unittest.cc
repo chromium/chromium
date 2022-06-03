@@ -36,10 +36,8 @@ TEST_F(FirefoxProfileLockTest, ProfileLock) {
   base::FilePath lock_file_path =
       test_path.Append(FirefoxProfileLock::kLockFileName);
 
-  std::unique_ptr<FirefoxProfileLock> lock;
-  EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock.get());
   EXPECT_FALSE(base::PathExists(lock_file_path));
-  lock.reset(new FirefoxProfileLock(test_path));
+  auto lock = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_TRUE(lock->HasAcquired());
   EXPECT_TRUE(base::PathExists(lock_file_path));
   lock->Unlock();
@@ -75,9 +73,7 @@ TEST_F(FirefoxProfileLockTest, ProfileLockOrphaned) {
   base::CloseFile(lock_file);
   EXPECT_TRUE(base::PathExists(lock_file_path));
 
-  std::unique_ptr<FirefoxProfileLock> lock;
-  EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock.get());
-  lock.reset(new FirefoxProfileLock(test_path));
+  auto lock = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_TRUE(lock->HasAcquired());
   lock->Unlock();
   EXPECT_FALSE(lock->HasAcquired());
@@ -90,14 +86,10 @@ TEST_F(FirefoxProfileLockTest, ProfileLockOrphaned) {
 TEST_F(FirefoxProfileLockTest, ProfileLockContention) {
   base::FilePath test_path = temp_dir_.GetPath();
 
-  std::unique_ptr<FirefoxProfileLock> lock1;
-  EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock1.get());
-  lock1.reset(new FirefoxProfileLock(test_path));
+  auto lock1 = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_TRUE(lock1->HasAcquired());
 
-  std::unique_ptr<FirefoxProfileLock> lock2;
-  EXPECT_EQ(static_cast<FirefoxProfileLock*>(NULL), lock2.get());
-  lock2.reset(new FirefoxProfileLock(test_path));
+  auto lock2 = std::make_unique<FirefoxProfileLock>(test_path);
   EXPECT_FALSE(lock2->HasAcquired());
 
   lock1->Unlock();

@@ -31,9 +31,9 @@ promise_test(async (test) => {
   // This specifically tests the impact of clicking the scrollbar button
   // when scroller is at max offset. Since Mac scrollbars don't have any
   // buttons, this test is irrelevant.
-  if(navigator.userAgent.search(/\bMac OS X\b/) != -1) {
-    test.done();
-  }
+  if(navigator.userAgent.search(/\bMac OS X\b/) != -1)
+    return;
+
   // Scroll the subscroller to the end, on the y-axis
   let subscroller = document.querySelector(".subscroller");
   subscroller.scrollTo(0, 400);

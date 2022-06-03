@@ -7,6 +7,8 @@ package org.chromium.components.embedder_support.delegate;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ListView;
 
 import org.chromium.components.embedder_support.delegate.ColorSuggestionListAdapter.OnColorSuggestionClickListener;
@@ -62,6 +64,14 @@ public class ColorPickerSimple extends ListView implements OnColorSuggestionClic
                 new ColorSuggestionListAdapter(getContext(), suggestions);
         adapter.setOnColorSuggestionClickListener(this);
         setAdapter(adapter);
+        setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setCollectionInfo(AccessibilityNodeInfo.CollectionInfo.obtain(
+                        DEFAULT_COLORS.length, 1, false));
+            }
+        });
     }
 
     @Override

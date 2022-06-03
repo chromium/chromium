@@ -14,13 +14,13 @@ setup({
 });
 
 test_with_window((w) => {
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.HTMLElement();
   }, 'calling the HTMLElement constructor should throw a TypeError');
 }, 'HTMLElement constructor, invoke');
 
 test_with_window((w) => {
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     new w.HTMLElement();
   }, 'invoking the HTMLElement constructor with a construct call should ' +
      'throw a TypeError');
@@ -29,7 +29,7 @@ test_with_window((w) => {
 test_with_window((w) => {
   class X extends w.HTMLElement {}
   w.customElements.define('a-a', X);
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(TypeError, () => {
     X();
   }, 'calling a custom element constructor should throw a TypeError');
 }, 'Custom element constructor, invoke');
@@ -69,12 +69,12 @@ test_with_window((w) => {
   class C extends w.HTMLElement { }
   class D extends C {}
   w.customElements.define('a-a', C); // Note: Not D.
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     new D();
   }, 'constructing a custom element with a new.target with no registry ' +
      'entry should throw a TypeError');
 
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(TypeError, () => {
     Reflect.construct(C, [], 42);
   }, 'constructing a custom element with a non-object new.target should ' +
      'throw a TypeError');
@@ -82,7 +82,7 @@ test_with_window((w) => {
 
 test_with_window((w) => {
   w.customElements.define('a-a', w.HTMLButtonElement);
-  assert_reports(w, TypeError.prototype, () => {
+  assert_reports_js(w, w.TypeError, () => {
     w.document.createElement('a-a');
   }, 'If NewTarget is equal to active function object, TypeError should be ' +
      'reported');
@@ -90,7 +90,7 @@ test_with_window((w) => {
 
 test_with_window((w) => {
   w.customElements.define('a-a', class extends w.HTMLButtonElement {} );
-  assert_reports(w, TypeError.prototype, () => {
+  assert_reports_js(w, w.TypeError, () => {
     w.document.createElement('a-a');
   }, 'If NewTarget is equal to active function object, TypeError should be ' +
      'reported');
@@ -146,7 +146,7 @@ test_with_window((w) => {
   }
   w.customElements.define('a-a', A);
   let d = w.document.createElement('div');
-  assert_reports(window, 'INVALID_STATE_ERR', () => {
+  assert_reports_js(window, w.TypeError, () => {
     d.innerHTML = '<a-a>';
   }, 'Creating an element that is already constructed marker should report ' +
      'InvalidStateError');
@@ -171,7 +171,7 @@ test_with_window((w) => {
   }
   w.customElements.define('a-a', A);
   w.document.body.appendChild(e);
-  assert_array_equals(errors, ['InvalidStateError'], 'Upgrading an element ' +
-    'that is already constructed marker should throw InvalidStateError');
+  assert_array_equals(errors, ['TypeError'], 'Upgrading an element ' +
+    'that is already constructed marker should throw TypeError');
 }, 'Already constructed marker, upgrade element');
 </script>

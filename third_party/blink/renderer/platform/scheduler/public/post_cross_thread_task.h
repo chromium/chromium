@@ -7,7 +7,7 @@
 
 #include <utility>
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -17,8 +17,8 @@ namespace blink {
 inline bool PostCrossThreadTask(base::SequencedTaskRunner& task_runner,
                                 const base::Location& location,
                                 WTF::CrossThreadOnceClosure task) {
-  return task_runner.PostDelayedTask(
-      location, ConvertToBaseOnceCallback(std::move(task)), base::TimeDelta());
+  return task_runner.PostTask(location,
+                              ConvertToBaseOnceCallback(std::move(task)));
 }
 
 inline bool PostDelayedCrossThreadTask(base::SequencedTaskRunner& task_runner,

@@ -7,16 +7,17 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 TabStripModelStatsRecorder::TabStripModelStatsRecorder()
-    : browser_tab_strip_tracker_(this, nullptr, nullptr) {
+    : browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
 }
 
@@ -143,10 +144,11 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kRemoved &&
-      change.GetRemove()->will_be_deleted) {
-    for (const auto& contents : change.GetRemove()->contents)
-      OnTabClosing(contents.contents);
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& contents : change.GetRemove()->contents) {
+      if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
+        OnTabClosing(contents.contents);
+    }
   } else if (change.type() == TabStripModelChange::kReplaced) {
     auto* replace = change.GetReplace();
     OnTabReplaced(replace->old_contents, replace->new_contents);

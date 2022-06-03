@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
     : public DebugDaemonClient {
  public:
   FakeDebugDaemonClient();
+
+  FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
+  FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;
+
   ~FakeDebugDaemonClient() override;
 
   void Init(dbus::Bus* bus) override;
@@ -56,7 +60,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                      int file_descriptor,
                      DBusMethodCallback<uint64_t> callback) override;
   void StopPerf(uint64_t session_id, VoidDBusMethodCallback callback) override;
-  void GetScrubbedBigLogs(GetLogsCallback callback) override;
+  void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
+                          GetLogsCallback callback) override;
+  void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
+                          VoidDBusMethodCallback callback) override;
   void GetAllLogs(GetLogsCallback callback) override;
   void GetLog(const std::string& log_name,
               DBusMethodCallback<std::string> callback) override;
@@ -65,7 +72,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void TestICMPWithOptions(const std::string& ip_address,
                            const std::map<std::string, std::string>& options,
                            TestICMPCallback callback) override;
-  void UploadCrashes() override;
+  void UploadCrashes(UploadCrashesCallback callback) override;
   void EnableDebuggingFeatures(const std::string& password,
                                EnableDebuggingCallback callback) override;
   void QueryDebuggingFeatures(QueryDevFeaturesCallback callback) override;
@@ -85,9 +92,8 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void CupsRemovePrinter(const std::string& name,
                          CupsRemovePrinterCallback callback,
                          base::OnceClosure error_callback) override;
-  void StartConcierge(ConciergeCallback callback) override;
-  void StopConcierge(ConciergeCallback callback) override;
   void StartPluginVmDispatcher(const std::string& owner_id,
+                               const std::string& lang,
                                PluginVmDispatcherCallback callback) override;
   void StopPluginVmDispatcher(PluginVmDispatcherCallback callback) override;
   void SetRlzPingSent(SetRlzPingSentCallback callback) override;
@@ -98,6 +104,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void SetU2fFlags(const std::set<std::string>& flags,
                    VoidDBusMethodCallback callback) override;
   void GetU2fFlags(DBusMethodCallback<std::set<std::string>> callback) override;
+  void GetKernelFeatureList(KernelFeatureListCallback callback) override;
+  void KernelFeatureEnable(const std::string& name,
+                           KernelFeatureEnableCallback callback) override;
+
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
+  void PacketCaptureStartSignalReceived(dbus::Signal* signal) override;
+  void PacketCaptureStopSignalReceived(dbus::Signal* signal) override;
+  void StopPacketCapture(const std::string& handle) override;
 
   // Sets debugging features mask for testing.
   virtual void SetDebuggingFeaturesStatus(int features_mask);
@@ -121,10 +137,14 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   std::set<std::string> printers_;
   std::string scheduler_configuration_name_;
   std::set<std::string> u2f_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDebugDaemonClient);
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::FakeDebugDaemonClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_DEBUG_DAEMON_FAKE_DEBUG_DAEMON_CLIENT_H_

@@ -6,6 +6,10 @@
 
 #include <stddef.h>
 
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <string.h>
+#endif
+
 #include <vector>
 
 namespace base {

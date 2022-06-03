@@ -7,25 +7,26 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/stl_util.h"
+#include "base/supports_user_data.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
-#include "components/subresource_filter/content/browser/subresource_filter_observer.h"
-#include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 namespace content {
 class NavigationHandle;
 class NavigationThrottle;
+class Page;
 class RenderFrameHost;
 }  // namespace content
 
@@ -33,31 +34,123 @@ namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
 class ActivationStateComputingNavigationThrottle;
+class ContentSubresourceFilterThrottleManager;
+class ContentSubresourceFilterWebContentsHelper;
 class PageLoadStatistics;
-class SubresourceFilterClient;
+class ProfileInteractionManager;
+class SubresourceFilterProfileContext;
+
+// This enum backs a histogram. Make sure new elements are only added to the
+// end. Keep histograms.xml up to date with any changes.
+enum class SubresourceFilterAction {
+  // Standard UI shown. On Desktop this is in the omnibox,
+  // On Android, it is an infobar.
+  kUIShown = 0,
+
+  // The UI was suppressed due to "smart" logic which tries not to spam the UI
+  // on navigations on the same origin within a certain time.
+  kUISuppressed = 1,
+
+  // On Desktop, this is a bubble. On Android it is an
+  // expanded infobar.
+  kDetailsShown = 2,
+
+  kClickedLearnMore = 3,
+
+  // Logged when the user presses "Always allow ads" scoped to a particular
+  // site. Does not count manual changes to content settings.
+  kAllowlistedSite = 4,
+
+  // Logged when a devtools message arrives notifying us to force activation in
+  // this web contents.
+  kForcedActivationEnabled = 5,
+
+  kMaxValue = kForcedActivationEnabled
+};
 
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
 // order to calculate frame activation states and subframe navigation filtering,
-// within a given WebContents. It contains a mapping of all activated
+// within a given Page. It contains a mapping of all activated
 // RenderFrameHosts, along with their associated DocumentSubresourceFilters.
 //
-// The class is designed to be used by a Delegate, which shares lifetime with
-// this class (aka the typical lifetime of a WebContentsObserver). The delegate
-// will be notified of the first disallowed subresource load for a top level
-// navgation, and has veto power for frame activation.
+// The class is 1:1 with each Page in a WebContents, meaning each a non-primary
+// page (e.g. prerender) will have its own instance, in addition to the one for
+// the primary page. A cross document navigation to a new Page will create a
+// new instance of this class.
+//
+// Instances of this class are created by the
+// ContentSubresourceFilterWebContentsHelper class, of which there is 1 per
+// WebContents, on navigation starts that will create a new Page. This class is
+// initially owned by the NavigationHandle that creates it. If the navigation
+// commits, this class will be transferred to be owned the Page it is
+// associated with. Otherwise it will be destroyed with the NavigationHandle.
+//
+// TODO(bokan): The lifetime management and observer pattern seems like it will
+// be common to all features that want to observe events and track state on a
+// per Page basis. The ContentSubresourceFilterWebContentsHelper pattern or
+// something like it should be wrapped up into a common and reusable //content
+// API. See:
+// https://docs.google.com/document/d/1p-IXk8hI5ucWRf5vJEi9K_YvJXsTr8kbvzGrjMcALDE/edit?usp=sharing
 class ContentSubresourceFilterThrottleManager
-    : public content::WebContentsObserver,
-      public mojom::SubresourceFilterHost,
-      public SubresourceFilterObserver,
-      public SubframeNavigationFilteringThrottle::Delegate {
+    : public base::SupportsUserData::Data,
+      public mojom::SubresourceFilterHost {
  public:
-  ContentSubresourceFilterThrottleManager(
-      SubresourceFilterClient* client,
+  static constexpr int kUserDataKey = 0;
+
+  // Binds a remote in the given RenderFrame to the correct
+  // ContentSubresourceFilterThrottleManager in the browser.
+  static void BindReceiver(mojo::PendingAssociatedReceiver<
+                               mojom::SubresourceFilterHost> pending_receiver,
+                           content::RenderFrameHost* render_frame_host);
+
+  // Creates a ThrottleManager instance from the given parameters.
+  // NOTE: Short-circuits out if the kSafeBrowsingSubresourceFilter feature is
+  // not enabled.
+  static std::unique_ptr<ContentSubresourceFilterThrottleManager>
+  CreateForNewPage(
+      SubresourceFilterProfileContext* profile_context,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager,
       VerifiedRulesetDealer::Handle* dealer_handle,
-      content::WebContents* web_contents);
+      ContentSubresourceFilterWebContentsHelper& web_contents_helper,
+      content::NavigationHandle& initiating_navigation_handle);
+
+  // Since the throttle manager is created in a page-creating navigation, then
+  // transferred onto the page once created, it is accessible in both
+  // navigation and post-navigation contexts. Once a page is created, the
+  // throttle manager will be transferred into its user data. FromPage will
+  // retrieve the throttle manager from the given `page`.
+  static ContentSubresourceFilterThrottleManager* FromPage(content::Page& page);
+
+  // FromNavigationHandle will retrieve a throttle manager that should be used
+  // for the given `navigation_handle`. This is a bit more subtle than FromPage
+  // as only those navigations that create a page will store a throttle
+  // manager, that is: main-frame, cross-document navigations that are not
+  // making an existing page primary. In other cases, FromNavigationHandle will
+  // look up the throttle manager from the page it is navigating in. This
+  // cannot (will DCHECK) be used for prerendering or BFCache activating
+  // navigations because which page to get a throttle manager from is
+  // ambiguous: the navigation occurs in the primary frame tree but the
+  // non-primary page is the resulting page.
+  static ContentSubresourceFilterThrottleManager* FromNavigationHandle(
+      content::NavigationHandle& navigation_handle);
+
+  ContentSubresourceFilterThrottleManager(
+      SubresourceFilterProfileContext* profile_context,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager,
+      VerifiedRulesetDealer::Handle* dealer_handle,
+      ContentSubresourceFilterWebContentsHelper& web_contents_helper,
+      content::NavigationHandle& initiating_navigation_handle);
   ~ContentSubresourceFilterThrottleManager() override;
 
-  // This method inspects |navigation_handle| and attaches navigation throttles
+  // Disallow copy and assign.
+  ContentSubresourceFilterThrottleManager(
+      const ContentSubresourceFilterThrottleManager&) = delete;
+  ContentSubresourceFilterThrottleManager& operator=(
+      const ContentSubresourceFilterThrottleManager&) = delete;
+
+  // This method inspects `navigation_handle` and attaches navigation throttles
   // appropriately, based on the current state of frame activation.
   //
   // 1. Subframe navigation filtering throttles are appended if the parent
@@ -76,33 +169,72 @@ class ContentSubresourceFilterThrottleManager
     return ruleset_handle_.get();
   }
 
-  // SubframeNavigationFilteringThrottle::Delegate:
-  bool CalculateIsAdSubframe(content::RenderFrameHost* frame_host,
-                             LoadPolicy load_policy) override;
+  // Returns whether the identified frame is considered to be an ad.
+  bool IsFrameTaggedAsAd(int frame_tree_node_id) const;
+  // Returns whether `frame_host` is in a frame considered to be an ad.
+  bool IsRenderFrameHostTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
-  bool IsFrameTaggedAsAd(const content::RenderFrameHost* frame_host) const;
+  // Returns whether the last navigation resource in the given frame was
+  // detected to be an ad. A null optional indicates there was no previous
+  // navigation or the last navigation was not evaluated by the subresource
+  // filter. Load policy is determined by presence of the navigation url in the
+  // filter list.
+  absl::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
+      int frame_tree_node_id) const;
+
+  // Called when the user has requested a reload of a page with
+  // blocked ads (e.g., via an infobar).
+  void OnReloadRequested();
+
+  // Invoked when an ads violation is detected in `rfh`.
+  void OnAdsViolationTriggered(content::RenderFrameHost* rfh,
+                               mojom::AdsViolation triggered_violation);
+
+  static void LogAction(SubresourceFilterAction action);
+
+  void SetIsAdSubframeForTesting(content::RenderFrameHost* render_frame_host,
+                                 bool is_ad_subframe);
+
+  // Returns the matching FrameAdEvidence for the frame indicated by
+  // `render_frame_host` or `absl::nullopt` if there is none (i.e. the frame is
+  // a main frame, or no navigation or commit has yet occurred and no evidence
+  // has been reported by the renderer).
+  absl::optional<blink::FrameAdEvidence> GetAdEvidenceForFrame(
+      content::RenderFrameHost* render_frame_host);
 
  protected:
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-  void ReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  // These look like WebContentsObserver overrides but they are not, they're
+  // called explicitly from the WebContentsHelper, which is a
+  // WebContentsObserver, but only for the appropriate throttle manager.
+  void RenderFrameDeleted(content::RenderFrameHost* frame_host);
+  void FrameDeleted(int frame_tree_node_id);
+  // "InFrame" here means that the navigation doesn't move a page between frame
+  // trees. i.e.  it is not a prerender activation.
+  void ReadyToCommitInFrameNavigation(
+      content::NavigationHandle* navigation_handle);
+  void DidFinishInFrameNavigation(content::NavigationHandle* navigation_handle,
+                                  bool is_initial_navigation);
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
+                     const GURL& validated_url);
+  void DidBecomePrimaryPage();
 
-  // SubresourceFilterObserver:
-  void OnSubresourceFilterGoingAway() override;
-  void OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      const mojom::ActivationState& activation_state) override;
+  // Called when this manager is moved from a NavigationHandle to a Page. In
+  // most cases this will be the Page of the RenderFrameHost the main-frame
+  // navigation is committing into. However, for non-committing, initial
+  // navigations this can be the initial RFH's Page.
+  void OnPageCreated(content::Page& page);
+
+  // Similar to above, these are called from the WebContentsHelper which is a
+  // SubresourceFilterObserver.
+  void OnPageActivationComputed(content::NavigationHandle* navigation_handle,
+                                const mojom::ActivationState& activation_state);
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) override;
+      LoadPolicy load_policy);
 
  private:
+  friend ContentSubresourceFilterWebContentsHelper;
+
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
                            SubframeNavigationTaggedAsAdByRenderer);
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
@@ -123,57 +255,115 @@ class ContentSubresourceFilterThrottleManager
   AsyncDocumentSubresourceFilter* GetParentFrameFilter(
       content::NavigationHandle* child_frame_navigation);
 
-  // Calls ShowNotification on |client_| at most once per committed,
-  // non-same-page navigation in the main frame.
-  void MaybeShowNotification();
+  // Returns nullptr if the frame is not activated (and therefore has no
+  // subresource filter).
+  AsyncDocumentSubresourceFilter* GetFrameFilter(
+      content::RenderFrameHost* frame_host);
+
+  // Returns the activation state of the frame's filter. If the frame is not
+  // activated (and therefore has no subresource filter), returns absl::nullopt.
+  const absl::optional<subresource_filter::mojom::ActivationState>
+  GetFrameActivationState(content::RenderFrameHost* frame_host);
+
+  // Calls MaybeShowNotification on `profile_interaction_manager_` at most once
+  // per committed, non-same-page navigation in the main frame. `frame_host`
+  // specifies the frame that blocked the subresource.
+  void MaybeShowNotification(content::RenderFrameHost* frame_host);
 
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
-  // Registers |render_frame_host| as an ad frame. If the frame later moves to
+  // Prefer the NavigationHandle version where possible as there are better
+  // guard-rails for deriving the correct frame in edge cases.
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
+      content::NavigationHandle* navigation_handle);
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
+      content::RenderFrameHost* render_frame_host);
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(int frame_tree_node_id,
+                                                int parent_frame_tree_node_id);
+
+  mojom::ActivationState ActivationStateForNextCommittedLoad(
+      content::NavigationHandle* navigation_handle);
+
+  // Registers `render_frame_host` as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
+
+  // Registers `frame_host` as a frame that was created by ad script.
+  // TODO(crbug.com/1145634): Propagate this bit for a frame that navigates
+  // cross-origin.
+  void OnSubframeWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
   void FrameIsAdSubframe() override;
+  void SubframeWasCreatedByAdScript() override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
+  void OnAdsViolationTriggered(mojom::AdsViolation violation) override;
 
-  // Adds the navigation's RenderFrameHost to activated_frame_hosts_ if it is a
-  // special navigation which did not go through navigation throttles and its
-  // parent frame is activated as well. The filter for these frames is set
-  // to nullptr.
-  void MaybeActivateSubframeSpecialUrls(
-      content::NavigationHandle* navigation_handle);
+  // Gets a filter for the navigation from `throttle`, creates and returns a new
+  // filter, or returns `nullptr`. Also updates `frame_host_filter_map_` as
+  // appropriate. `frame_host` is provided as `navigation_handle`'s getter
+  // cannot be used when the navigation has not committed.
+  // `did_inherit_opener_activation` will be set according to whether the
+  // activation was inherited from the frame's same-origin opener.
+  AsyncDocumentSubresourceFilter* FilterForFinishedNavigation(
+      content::NavigationHandle* navigation_handle,
+      ActivationStateComputingNavigationThrottle* throttle,
+      content::RenderFrameHost* frame_host,
+      bool& did_inherit_opener_activation);
 
-  // For each RenderFrameHost where the last committed load has subresource
-  // filtering activated, owns the corresponding AsyncDocumentSubresourceFilter.
-  // It is possible for a frame to have a null filter.
+  void RecordUmaHistogramsForMainFrameNavigation(
+      content::NavigationHandle* navigation_handle,
+      const mojom::ActivationLevel& activation_level,
+      bool did_inherit_opener_activation);
+
+  void RecordExperimentalUmaHistogramsForNavigation(
+      content::NavigationHandle* navigation_handle,
+      bool passed_through_ready_to_commit);
+
+  // Sets whether the frame is considered an ad subframe. If the value has
+  // changed, we also update the replication state and inform observers.
+  void SetIsAdSubframe(content::RenderFrameHost* render_frame_host,
+                       bool is_ad_subframe);
+
+  // For each RenderFrameHost where the last committed load (or the initial load
+  // if no committed load has occurred) has subresource filtering activated,
+  // owns the corresponding AsyncDocumentSubresourceFilter.
   std::map<content::RenderFrameHost*,
            std::unique_ptr<AsyncDocumentSubresourceFilter>>
-      activated_frame_hosts_;
+      frame_host_filter_map_;
 
   // For each ongoing navigation that requires activation state computation,
   // keeps track of the throttle that is carrying out that computation, so that
-  // the result can be retrieved when the navigation is ready to commit.
-  std::map<content::NavigationHandle*,
-           ActivationStateComputingNavigationThrottle*>
+  // the result can be retrieved when the navigation is ready to commit. Keyed
+  // by navigation id.
+  std::map<int64_t, ActivationStateComputingNavigationThrottle*>
       ongoing_activation_throttles_;
 
-  // Set of RenderFrameHosts that have been identified as ads. An RFH is an ad
-  // subframe if any of the following conditions are met:
-  // 1. Its navigation URL is in the filter list
-  // 2. Its parent is a known ad subframe
-  // 3. The RenderFrame declares the frame is an ad (see AdTracker in Blink)
-  // 4. It's the result of moving an old ad subframe RFH to a new RFH (e.g.,
-  //    OOPIF)
-  std::set<const content::RenderFrameHost*> ad_frames_;
+  // The set of navigations that have passed through ReadyToCommitNavigation,
+  // but haven't yet passed through DidFinishNavigation. Keyed by navigation id.
+  base::flat_set<int64_t> ready_to_commit_navigations_;
 
-  content::WebContentsFrameReceiverSet<mojom::SubresourceFilterHost> receiver_;
+  // Set of frames that have been identified as ads, identified by FrameTreeNode
+  // ID. A RenderFrameHost is an ad subframe iff the FrameAdEvidence
+  // corresponding to the frame indicates that it is.
+  base::flat_set<int> ad_frames_;
 
-  ScopedObserver<SubresourceFilterObserverManager, SubresourceFilterObserver>
-      scoped_observer_{this};
+  // Map of subframes, keyed by FrameTreeNode ID, with value being the evidence
+  // for or against the frames being ads. This evidence is updated whenever a
+  // navigation's LoadPolicy is calculated.
+  std::map<int, blink::FrameAdEvidence> tracked_ad_evidence_;
+
+  // Map of frames whose navigations have been identified as ads, keyed by
+  // FrameTreeNode ID. Contains information on the most current completed
+  // navigation for any given frames. If a frame is not present in the map, it
+  // has not had a navigation evaluated by the filter list.
+  std::map<int, LoadPolicy> navigation_load_policies_;
+
+  // Receiver set for all RenderFrames in this throttle manager's page.
+  content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;
 
   // Lazily instantiated in EnsureRulesetHandle when the first page level
   // activation is triggered. Will go away when there are no more activated
@@ -187,14 +377,27 @@ class ContentSubresourceFilterThrottleManager
   // should only be called at most once per main frame load.
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
-  // These members outlive this class.
+  // This member outlives this class.
   VerifiedRulesetDealer::Handle* dealer_handle_;
-  SubresourceFilterClient* client_;
+
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
+
+  std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
+
+  // Unowned since the throttle manager cannot outlive the Page that owns it.
+  // The throttle manager is held as user data first on NavigationHandle, then
+  // transferred to Page once it is created. Once the Page is created and this
+  // class transferred onto it (in ContentSubresourceFilterWebContentsHelper)
+  // we'll set this member to point to it.
+  content::Page* page_ = nullptr;
+
+  // The helper class is attached to the WebContents so it is guaranteed to
+  // outlive this class which is owned by either a Page or NavigationHandle in
+  // the WebContents.
+  ContentSubresourceFilterWebContentsHelper& web_contents_helper_;
 
   base::WeakPtrFactory<ContentSubresourceFilterThrottleManager>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSubresourceFilterThrottleManager);
 };
 
 }  // namespace subresource_filter

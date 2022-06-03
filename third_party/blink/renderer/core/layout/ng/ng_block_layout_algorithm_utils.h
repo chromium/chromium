@@ -19,6 +19,8 @@ class NGExclusionSpace;
 //
 // This function calculates the inline-offset to avoid floats, and respect
 // text-align.
+//
+// TODO(ikilpatrick): Move this back into ng_block_layout_algorithm.cc
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
     const NGBfcOffset& origin_bfc_offset,

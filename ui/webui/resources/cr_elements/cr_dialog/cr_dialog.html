@@ -19,15 +19,13 @@
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.12),
                     0 16px 16px rgba(0, 0, 0, 0.24);
         color: inherit;
+        max-height: initial;
+        max-width: initial;
         overflow-y: hidden;
         padding: 0;
+        position: absolute;
         top: 50%;
-        width: 512px;
-
-        /* Avoid using the mixin. Use ::part(dialog) instead.
-         * Necessary for backward compatibility with Polymer1/SDv0 (only used by
-         * OOBE). TODO(crbug.com/955194): Remove this once fixed.*/
-        @apply --cr-dialog-native;
+        width: var(--cr-dialog-width, 512px);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -67,26 +65,27 @@
 
       :host ::slotted([slot=body]) {
         color: var(--cr-secondary-text-color);
-        padding: 0 20px;
+        padding: 0 var(--cr-dialog-body-padding-horizontal, 20px);
       }
 
       :host ::slotted([slot=title]) {
         color: var(--cr-primary-text-color);
         flex: 1;
-        font-size: calc(15 / 13 * 100%);
+        font-family: var(--cr-dialog-font-family, inherit);
+        font-size: var(--cr-dialog-title-font-size, calc(15 / 13 * 100%));
         line-height: 1;
-        padding-bottom: 16px;
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
-        padding-top: 20px;
+        padding-bottom: var(--cr-dialog-title-slot-padding-bottom, 16px);
+        padding-inline-end:  var(--cr-dialog-title-slot-padding-end, 20px);
+        padding-inline-start: var(--cr-dialog-title-slot-padding-start, 20px);
+        padding-top: var(--cr-dialog-title-slot-padding-top, 20px);
       }
 
       :host ::slotted([slot=button-container]) {
         display: flex;
         justify-content: flex-end;
-        padding-bottom: 16px;
-        padding-inline-end: 16px;
-        padding-inline-start: 16px;
+        padding-bottom: var(--cr-dialog-button-container-padding-bottom, 16px);
+        padding-inline-end: var(--cr-dialog-button-container-padding-horizontal, 16px);
+        padding-inline-start: var(--cr-dialog-button-container-padding-horizontal, 16px);
         padding-top: 24px;
       }
 
@@ -150,9 +149,13 @@
         margin-top: 4px;
       }
     </style>
+    <!-- TODO(crbug/1139958): Remove "not chromeos" block when chromeVox issue is fixed-->
+    <!--Update both "not chromeos" and "chromeos" blocks if either changes-->
+<if expr="not chromeos">
     <dialog id="dialog" on-close="onNativeDialogClose_"
-        on-cancel="onNativeDialogCancel_" part="dialog" aria-labelledby="title">
-      <!-- This wrapper is necessary, such that the "pulse" animation is not
+        on-cancel="onNativeDialogCancel_" part="dialog"
+        aria-labelledby="title">
+    <!-- This wrapper is necessary, such that the "pulse" animation is not
         erroneously played when the user clicks on the outer-most scrollbar. -->
       <div id="content-wrapper" part="wrapper">
         <div class="top-container">
@@ -173,6 +176,32 @@
         <slot name="footer"></slot>
       </div>
     </dialog>
+</if>
+<if expr="chromeos">
+    <dialog id="dialog" on-close="onNativeDialogClose_"
+        on-cancel="onNativeDialogCancel_" part="dialog">
+    <!-- This wrapper is necessary, such that the "pulse" animation is not
+        erroneously played when the user clicks on the outer-most scrollbar. -->
+        <div id="content-wrapper" part="wrapper">
+          <div class="top-container">
+            <div id="title" class="title-container" tabindex="-1">
+              <slot name="title"></slot>
+            </div>
+            <cr-icon-button id="close" class="icon-clear"
+                hidden$="[[!showCloseButton]]" aria-label$="[[closeText]]"
+                on-click="cancel" on-keypress="onCloseKeypress_">
+            </cr-icon-button>
+          </div>
+          <slot name="header"></slot>
+          <div class="body-container" id="container" show-bottom-shadow
+              part="body-container">
+            <slot name="body"></slot>
+          </div>
+          <slot name="button-container"></slot>
+          <slot name="footer"></slot>
+        </div>
+    </dialog>
+</if>
   </template>
   <script src="cr_dialog.js"></script>
 </dom-module>

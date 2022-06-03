@@ -6,9 +6,12 @@
 #define ASH_LOGIN_UI_VIEWS_UTILS_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/ash_color_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/label.h"
 
 namespace views {
+class FocusRing;
 class View;
 class Widget;
 }  // namespace views
@@ -16,6 +19,26 @@ class Widget;
 namespace ash {
 
 namespace login_views_utils {
+
+namespace {
+
+// The most used font size on login/lock screen.
+constexpr int kLoginDefaultFontSize = 13;
+
+// The most used font on login/lock screen.
+constexpr char kLoginDefaultFontName[] = "Roboto";
+
+constexpr int kDefaultLineHeight = 20;
+
+// Helper function to get default font list for login/lock screen text label.
+// It is slightly different from views::Label::GetDefaultFontList since the
+// font size returned is 13 pt instead of 12 pt.
+const gfx::FontList GetLoginDefaultFontList() {
+  return gfx::FontList({kLoginDefaultFontName}, gfx::Font::FontStyle::NORMAL,
+                       kLoginDefaultFontSize, gfx::Font::Weight::NORMAL);
+}
+
+}  // namespace
 
 // Wraps view in another view so the original view is sized to it's preferred
 // size, regardless of the view's parent's layout manager.
@@ -29,20 +52,37 @@ ASH_EXPORT bool ShouldShowLandscape(const views::Widget* widget);
 ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 
 // Creates a standard text label for use in the login bubbles.
-views::Label* CreateBubbleLabel(const base::string16& message, SkColor color);
+// If |view_defining_max_width| is set, we allow the label to have multiple
+// lines and we set its maximum width to the preferred width of
+// |view_defining_max_width|.
+views::Label* CreateBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width = nullptr,
+    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary),
+    const gfx::FontList& font_list = GetLoginDefaultFontList(),
+    int line_height = kDefaultLineHeight);
 
 // Get the bubble container for |view| to place a LoginBaseBubbleView.
 views::View* GetBubbleContainer(views::View* view);
 
-ASH_EXPORT gfx::Point CalculateBubblePositionLeftRightStrategy(
+ASH_EXPORT gfx::Point CalculateBubblePositionAfterBeforeStrategy(
     gfx::Rect anchor,
     gfx::Size bubble,
     gfx::Rect bounds);
 
-ASH_EXPORT gfx::Point CalculateBubblePositionRightLeftStrategy(
+ASH_EXPORT gfx::Point CalculateBubblePositionBeforeAfterStrategy(
     gfx::Rect anchor,
     gfx::Size bubble,
     gfx::Rect bounds);
+
+// Applies a rectangular focus ring to |focus_ring| and round ink drop to
+// |view|. |focus_ring| may not be the ring associated with |view|. If |radius|
+// is passed the ink drop will be a circle with radius |radius| otherwise its
+// radius will be determined by the view's bounds.
+void ConfigureRectFocusRingCircleInkDrop(views::View* view,
+                                         views::FocusRing* focus_ring,
+                                         absl::optional<int> radius);
 
 }  // namespace login_views_utils
 

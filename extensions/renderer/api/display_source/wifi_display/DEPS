@@ -1,8 +1,0 @@
-include_rules = [
-  # TODO(Mikhail): Consider removing when https://crbug.com/432381 is fixed.
-  "+media/base",
-  "+media/video",
-  "+third_party/blink/public/common",
-  "+third_party/openh264/src/codec/api",
-  "+third_party/wds/src/libwds/public",
-]

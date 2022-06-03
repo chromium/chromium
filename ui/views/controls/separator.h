@@ -5,10 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_SEPARATOR_H_
 #define UI_VIEWS_CONTROLS_SEPARATOR_H_
 
-#include <string>
-
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -23,6 +21,10 @@ class VIEWS_EXPORT Separator : public View {
   static constexpr int kThickness = 1;
 
   Separator();
+
+  Separator(const Separator&) = delete;
+  Separator& operator=(const Separator&) = delete;
+
   ~Separator() override;
 
   SkColor GetColor() const;
@@ -37,11 +39,16 @@ class VIEWS_EXPORT Separator : public View {
 
  private:
   int preferred_height_ = kThickness;
-  base::Optional<SkColor> overridden_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(Separator);
+  absl::optional<SkColor> overridden_color_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
+VIEW_BUILDER_PROPERTY(SkColor, Color)
+VIEW_BUILDER_PROPERTY(int, PreferredHeight)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Separator)
 
 #endif  // UI_VIEWS_CONTROLS_SEPARATOR_H_

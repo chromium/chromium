@@ -4,8 +4,9 @@
 
 #include "extensions/browser/api/async_api_function.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_system.h"
@@ -16,8 +17,7 @@ namespace extensions {
 
 // AsyncApiFunction
 AsyncApiFunction::AsyncApiFunction()
-    : work_task_runner_(
-          base::CreateSingleThreadTaskRunner({BrowserThread::IO})) {}
+    : work_task_runner_(content::GetIOThreadTaskRunner({})) {}
 
 AsyncApiFunction::~AsyncApiFunction() {}
 
@@ -58,9 +58,8 @@ ExtensionFunction::ResponseAction AsyncApiFunction::Run() {
 
 void AsyncApiFunction::AsyncWorkCompleted() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    bool rv = base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&AsyncApiFunction::RespondOnUIThread, this));
+    bool rv = content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&AsyncApiFunction::RespondOnUIThread, this));
     DCHECK(rv);
   } else {
     SendResponse(Respond());
@@ -68,7 +67,7 @@ void AsyncApiFunction::AsyncWorkCompleted() {
 }
 
 void AsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
-  results_.reset(new base::ListValue());
+  results_ = std::make_unique<base::ListValue>();
   results_->Append(std::move(result));
 }
 

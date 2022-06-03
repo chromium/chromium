@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/files/file_util.h"
-#include "base/strings/stringprintf.h"
 
 #if defined(OS_WIN)
 

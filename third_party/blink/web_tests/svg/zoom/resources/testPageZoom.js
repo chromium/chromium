@@ -1,20 +1,19 @@
 function repaintTest() {
-    if (!window.eventSender)
+    if (!window.testRunner)
         return;
 
     for (i = 0; i < zoomCount; ++i) {
         if (window.shouldZoomOut)
-            eventSender.zoomPageOut();
+            testRunner.zoomPageOut();
         else
-            eventSender.zoomPageIn();
+            testRunner.zoomPageIn();
     }
 
     if (!window.postZoomCallback)
         return;
 
     window.jsTestIsAsync = true;
-    if (window.testRunner)
-        testRunner.waitUntilDone();
+    testRunner.waitUntilDone();
 
     window.postZoomCallback();
     finishJSTest();

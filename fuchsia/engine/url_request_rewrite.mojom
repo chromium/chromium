@@ -5,7 +5,6 @@
 module mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/network/public/mojom/http_request_headers.mojom";
 import "url/mojom/url.mojom";
 
 // Used by the browser to push URL rewrite rules to renderers. There will be
@@ -13,11 +12,16 @@ import "url/mojom/url.mojom";
 // TODO(https://crbug.com/976975): Support URL rewriting for service workers.
 interface UrlRequestRulesReceiver {
   // Receives a set of rules to apply to URL requests.
-  OnRulesUpdated(array<UrlRequestRewriteRule> rules);
+  OnRulesUpdated(UrlRequestRewriteRules rules);
 };
 
-// A URL request rewrite rule.
-struct UrlRequestRewriteRule {
+// Collection of UrlRequestRules.
+struct UrlRequestRewriteRules {
+  array<UrlRequestRule> rules;
+};
+
+// A URL request modification rule.
+struct UrlRequestRule {
   // Set of hosts to apply the rewrites to. If empty, the rule will apply to
   // every request, independent of host.
   array<string>? hosts_filter;
@@ -27,10 +31,10 @@ struct UrlRequestRewriteRule {
   array<string>? schemes_filter;
 
   // URL request rewrites to apply.
-  array<UrlRequestRewrite> rewrites;
+  array<UrlRequestAction> actions;
 };
 
-union UrlRequestRewrite {
+union UrlRequestAction {
   // Adds a set of headers to a URL request.
   UrlRequestRewriteAddHeaders add_headers;
 
@@ -42,13 +46,26 @@ union UrlRequestRewrite {
 
   // Replaces a URL if the original URL ends with a pattern.
   UrlRequestRewriteReplaceUrl replace_url;
+
+  // Appends to the URL query.
+  UrlRequestRewriteAppendToQuery append_to_query;
+
+  // Specifies whether the request should be allowed or blocked.
+  // Cannot be combined with other UrlRequestActions.
+  UrlRequestAccessPolicy policy;
 };
 
 // Adds |headers| to the URL request. If a header is already present in the
 // original URL request, it will be overwritten.
 struct UrlRequestRewriteAddHeaders {
   // The headers to add.
-  network.mojom.HttpRequestHeaders headers;
+  array<UrlHeader> headers;
+};
+
+// An HTTP header field.
+struct UrlHeader {
+  string name;
+  string value;
 };
 
 // If |query_pattern| in the URL query, removes |header_name| from the list of
@@ -80,4 +97,17 @@ struct UrlRequestRewriteReplaceUrl {
 
   // The replacement URL.
   url.mojom.Url new_url;
+};
+
+// Appends |query| to the URL request query. If the URL request already has a
+// non-empty query, appends |query| to it, preceded by "&". Otherwise, sets the
+// URL request query to |query|.
+struct UrlRequestRewriteAppendToQuery {
+  // The query to be added or set to the URL.
+  string query;
+};
+
+enum UrlRequestAccessPolicy {
+  kAllow,
+  kDeny,
 };

@@ -6,7 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.components.heap_profiling.HeapProfilingTestShim;
+import org.chromium.components.heap_profiling.multi_process.HeapProfilingTestShim;
 
 /**
  * Tests suite for heap profiling.
@@ -32,7 +32,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug.com/968043")
+    @DisabledTest(message = "https://crbug.com/1163744")
     @CommandLineFlags.Add({"memlog=browser", "memlog-stack-mode=native-include-thread-names",
             "memlog-sampling-rate=1"})
     public void
@@ -51,6 +51,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1173304")
     public void testModeBrowserDynamicPseudoSampleEverything() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, true));

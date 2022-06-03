@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -22,7 +22,7 @@ std::tuple<std::string, bool, bool> ReadAndDeleteTextFile(
     const base::FilePath& path) {
   std::string contents;
   bool read_success = base::ReadFileToString(path, &contents);
-  bool delete_success = base::DeleteFile(path, /*recursive=*/false);
+  bool delete_success = base::DeleteFile(path);
   return std::make_tuple(contents, read_success, delete_success);
 }
 
@@ -38,18 +38,23 @@ int WriteStringToFile(const std::string& contents,
 std::unique_ptr<JsonFileSanitizer> JsonFileSanitizer::CreateAndStart(
     data_decoder::DataDecoder* decoder,
     const std::set<base::FilePath>& file_paths,
-    Callback callback) {
+    Callback callback,
+    const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
   // Note we can't use std::make_unique as we want to keep the constructor
   // private.
   std::unique_ptr<JsonFileSanitizer> sanitizer(
-      new JsonFileSanitizer(file_paths, std::move(callback)));
+      new JsonFileSanitizer(file_paths, std::move(callback), io_task_runner));
   sanitizer->Start(decoder);
   return sanitizer;
 }
 
-JsonFileSanitizer::JsonFileSanitizer(const std::set<base::FilePath>& file_paths,
-                                     Callback callback)
-    : file_paths_(file_paths), callback_(std::move(callback)) {}
+JsonFileSanitizer::JsonFileSanitizer(
+    const std::set<base::FilePath>& file_paths,
+    Callback callback,
+    const scoped_refptr<base::SequencedTaskRunner>& io_task_runner)
+    : file_paths_(file_paths),
+      callback_(std::move(callback)),
+      io_task_runner_(io_task_runner) {}
 
 JsonFileSanitizer::~JsonFileSanitizer() = default;
 
@@ -66,7 +71,7 @@ void JsonFileSanitizer::Start(data_decoder::DataDecoder* decoder) {
 
   for (const base::FilePath& path : file_paths_) {
     base::PostTaskAndReplyWithResult(
-        extensions::GetExtensionFileTaskRunner().get(), FROM_HERE,
+        io_task_runner_.get(), FROM_HERE,
         base::BindOnce(&ReadAndDeleteTextFile, path),
         base::BindOnce(&JsonFileSanitizer::JsonFileRead,
                        weak_factory_.GetWeakPtr(), path));
@@ -91,8 +96,8 @@ void JsonFileSanitizer::JsonFileRead(
 
 void JsonFileSanitizer::JsonParsingDone(
     const base::FilePath& file_path,
-    base::Optional<base::Value> json_value,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json_value,
+    const absl::optional<std::string>& error) {
   if (!json_value || !json_value->is_dict()) {
     ReportError(Status::kDecodingError, error ? *error : std::string());
     return;
@@ -109,7 +114,7 @@ void JsonFileSanitizer::JsonParsingDone(
 
   int size = static_cast<int>(json_string.length());
   base::PostTaskAndReplyWithResult(
-      extensions::GetExtensionFileTaskRunner().get(), FROM_HERE,
+      io_task_runner_.get(), FROM_HERE,
       base::BindOnce(&WriteStringToFile, std::move(json_string), file_path),
       base::BindOnce(&JsonFileSanitizer::JsonFileWritten,
                      weak_factory_.GetWeakPtr(), file_path, size));

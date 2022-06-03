@@ -1,41 +1,76 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [5, 5, 167, 44],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [5, 5, 167, 44],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 8, 161, 38],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [9, 11, 159, 16],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "HorizontalScrollbar",
-          "rect": [9, 30, 159, 15],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutTextControl TEXTAREA id='editor'",
-          "rect": [153, 30, 15, 15],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [7, 7, 183, 38]
+      ]
+    },
+    {
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "position": [1, 1],
+      "bounds": [179, 19],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "position": [150, 5],
+      "bounds": [30, 30],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 30, 30]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "position": [1, 1],
+      "bounds": [470, 19],
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 470, 19]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [1, 20],
+      "bounds": [164, 15],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "position": [-1, -1],
+      "bounds": [183, 38],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 183, 38]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-291, 0, 0, 1]
       ]
     }
   ]

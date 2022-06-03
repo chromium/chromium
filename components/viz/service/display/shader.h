@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -130,10 +128,6 @@ enum YUVAlphaTextureMode {
 enum ColorConversionMode {
   // No color conversion is performed.
   COLOR_CONVERSION_MODE_NONE,
-  // Conversion is done directly from input RGB space (or YUV space if
-  // applicable) to output RGB space, via a 3D texture represented as a 2D
-  // texture.
-  COLOR_CONVERSION_MODE_LUT,
   // Conversion is done analytically in the shader.
   COLOR_CONVERSION_MODE_SHADER,
 };
@@ -218,6 +212,9 @@ class VIZ_SERVICE_EXPORT VertexShader {
 
 class VIZ_SERVICE_EXPORT FragmentShader {
  public:
+  FragmentShader(const FragmentShader&) = delete;
+  FragmentShader& operator=(const FragmentShader&) = delete;
+
   virtual void Init(gpu::gles2::GLES2Interface* context,
                     unsigned program,
                     int* base_uniform_index);
@@ -312,10 +309,6 @@ class VIZ_SERVICE_EXPORT FragmentShader {
   int resource_multiplier_location_ = -1;
   int resource_offset_location_ = -1;
 
-  // LUT YUV to color-converted RGB.
-  int lut_texture_location_ = -1;
-  int lut_size_location_ = -1;
-
  private:
   friend class Program;
 
@@ -323,8 +316,6 @@ class VIZ_SERVICE_EXPORT FragmentShader {
   void AppendBlendFunction(std::string* buffer) const;
   base::StringPiece GetBlendFunctionBodyForAlpha() const;
   base::StringPiece GetBlendFunctionBodyForRGB() const;
-
-  DISALLOW_COPY_AND_ASSIGN(FragmentShader);
 };
 
 }  // namespace viz

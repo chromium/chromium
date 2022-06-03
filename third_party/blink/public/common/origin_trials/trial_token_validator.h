@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_TRIAL_TOKEN_VALIDATOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_TRIAL_TOKEN_VALIDATOR_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -23,7 +23,7 @@ class URLRequest;
 namespace blink {
 
 class OriginTrialPolicy;
-enum class OriginTrialTokenStatus;
+class TrialTokenResult;
 
 // TrialTokenValidator checks that a page's OriginTrial token enables a certain
 // feature.
@@ -35,25 +35,59 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   TrialTokenValidator();
   virtual ~TrialTokenValidator();
 
-  using FeatureToTokensMap = std::map<std::string /* feature_name */,
-                                      std::vector<std::string /* token */>>;
+  using FeatureToTokensMap =
+      base::flat_map<std::string /* feature_name */,
+                     std::vector<std::string /* token */>>;
 
-  // If token validates, |*feature_name| is set to the name of the feature the
-  // token enables.
+  // If the token validates, status will be set to
+  // OriginTrialTokenStatus::kSuccess, the rest will be populated with name of
+  // the feature this token enables, the expiry time of the token and whether it
+  // is a third-party token. Otherwise, only the status will be set.
   // This method is thread-safe.
-  virtual OriginTrialTokenStatus ValidateToken(base::StringPiece token,
-                                               const url::Origin& origin,
-                                               std::string* feature_name,
-                                               base::Time current_time) const;
+  virtual TrialTokenResult ValidateToken(base::StringPiece token,
+                                         const url::Origin& origin,
+                                         base::Time current_time) const;
+  // Validates a token for the given |origin|. If identified as a third-party
+  // token, instead validate for the given |third_party_origin|. Validation of a
+  // third-party token will fail if |third_party-origin| is not given. Returns
+  // the same result as ValidateToken() above.
+  // This method is thread-safe.
+  virtual TrialTokenResult ValidateToken(base::StringPiece token,
+                                         const url::Origin& origin,
+                                         const url::Origin* third_party_origin,
+                                         base::Time current_time) const;
 
+  // |request| must not be nullptr.
+  // NOTE: This is not currently used, but remains here for future trials.
   bool RequestEnablesFeature(const net::URLRequest* request,
                              base::StringPiece feature_name,
                              base::Time current_time) const;
 
+  // Returns whether the given response for the given URL enable the named
+  // Origin or Deprecation Trial at the given time.
+  //
+  // |response_headers| must not be nullptr.
   bool RequestEnablesFeature(const GURL& request_url,
                              const net::HttpResponseHeaders* response_headers,
                              base::StringPiece feature_name,
                              base::Time current_time) const;
+
+  // Similar to |RequestEnablesFeature()|, but for Deprecation Trials that may
+  // be enabled on insecure origins.
+  //
+  // For Origin Trials (as opposed to Deprecation Trials) or Deprecation Trials
+  // that are enabled exclusively on secure origins, use
+  // |RequestEnablesFeature()| instead.
+  //
+  // Functionally, the only difference is that this can return true even if
+  // |request_url|'s origin is not secure.
+  //
+  // |response_headers| must not be nullptr.
+  bool RequestEnablesDeprecatedFeature(
+      const GURL& request_url,
+      const net::HttpResponseHeaders* response_headers,
+      base::StringPiece feature_name,
+      base::Time current_time) const;
 
   // Returns all valid tokens in |headers|.
   std::unique_ptr<FeatureToTokensMap> GetValidTokensFromHeaders(
@@ -71,11 +105,17 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   static void SetOriginTrialPolicyGetter(
       base::RepeatingCallback<OriginTrialPolicy*()> policy);
   static void ResetOriginTrialPolicyGetter();
-  static OriginTrialPolicy* Policy();
+
+  static bool IsTrialPossibleOnOrigin(const GURL& url);
 
  private:
-  bool IsTrialPossibleOnOrigin(const url::Origin& origin) const;
-  bool IsTrialPossibleOnOrigin(const GURL& url) const;
+  // Helper for |RequestEnablesFeature()| and
+  // |RequestEnablesDeprecatedFeature()|.
+  bool ResponseBearsValidTokenForFeature(
+      const GURL& request_url,
+      const net::HttpResponseHeaders& response_headers,
+      base::StringPiece feature_name,
+      base::Time current_time) const;
 };  // class TrialTokenValidator
 
 }  // namespace blink

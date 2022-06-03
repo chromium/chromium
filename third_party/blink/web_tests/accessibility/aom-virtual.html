@@ -21,7 +21,7 @@ test(function(t) {
 
 <script>
 test(function(t) {
-    assert_throws('InvalidAccessError', function() {
+    assert_throws_dom('InvalidAccessError', function() {
         var container = document.getElementById("container");
         container.accessibleNode.appendChild(document.body.accessibleNode);
     });
@@ -126,7 +126,7 @@ test(function(t) {
     list1.appendChild(item);
 
     // TODO: support reparenting and then fix this test.
-    assert_throws('NotSupportedError', function() {
+    assert_throws_dom('NotSupportedError', function() {
       list2.appendChild(item);
     });
 }, "Reparenting is not supported yet");

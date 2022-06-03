@@ -1,0 +1,135 @@
+<style include="cr-shared-style">
+  :host {
+    --break-padding: 8px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: fit-content;
+  }
+
+  table {
+    border-spacing: 0;
+  }
+
+  .break > td {
+    --break-color: var(--google-grey-refresh-300);
+    border-bottom: 1px solid var(--break-color);
+    padding-bottom: var(--break-padding);
+  }
+
+
+  .break + tr > td {
+    padding-top: var(--break-padding);
+  }
+
+  .name {
+    color: var(--cr-primary-text-color);
+    padding-inline-end: 12px;
+    vertical-align: top;
+  }
+
+  .value {
+    color: var(--cr-secondary-text-color);
+    max-width: 300px;
+    min-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #keywords {
+    white-space: normal;
+  }
+</style>
+<cr-dialog show-on-attach>
+  <div slot="title">$i18n{propertiesDialogTitle}</div>
+  <div slot="body">
+    <table>
+      <tr>
+        <td class="name">$i18n{propertiesFileName}</td>
+        <td class="value" id="file-name">[[fileName]]</td>
+      </tr>
+      <tr class="break">
+        <td class="name">$i18n{propertiesFileSize}</td>
+        <td class="value" id="file-size">[[documentMetadata.fileSize]]</td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesTitle}</td>
+        <td class="value" id="title">
+          [[getOrPlaceholder_(documentMetadata.title)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesAuthor}</td>
+        <td class="value" id="author">
+          [[getOrPlaceholder_(documentMetadata.author)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesSubject}</td>
+        <td class="value" id="subject">
+          [[getOrPlaceholder_(documentMetadata.subject)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesKeywords}</td>
+        <td class="value" id="keywords">
+          [[getOrPlaceholder_(documentMetadata.keywords)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesCreated}</td>
+        <td class="value" id="created">
+          [[getOrPlaceholder_(documentMetadata.creationDate)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesModified}</td>
+        <td class="value" id="modified">
+          [[getOrPlaceholder_(documentMetadata.modDate)]]
+        </td>
+      </tr>
+      <tr class="break">
+        <td class="name">$i18n{propertiesApplication}</td>
+        <td class="value" id="application">
+          [[getOrPlaceholder_(documentMetadata.creator)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesPdfProducer}</td>
+        <td class="value" id="pdf-producer">
+          [[getOrPlaceholder_(documentMetadata.producer)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesPdfVersion}</td>
+        <td class="value" id="pdf-version">
+          [[getOrPlaceholder_(documentMetadata.version)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesPageCount}</td>
+        <td class="value" id="page-count">[[pageCount]]</td>
+      </tr>
+      <tr class="break">
+        <td class="name">$i18n{propertiesPageSize}</td>
+        <td class="value" id="page-size">
+          [[getOrPlaceholder_(documentMetadata.pageSize)]]
+        </td>
+      </tr>
+      <tr>
+        <td class="name">$i18n{propertiesFastWebView}</td>
+        <td class="value" id="fast-web-view">
+          [[getFastWebViewValue_('$i18nPolymer{propertiesFastWebViewYes}',
+              '$i18nPolymer{propertiesFastWebViewNo}',
+              documentMetadata.linearized)]]
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div slot="button-container">
+    <cr-button id="close" class="action-button" on-click="onClickClose_">
+      $i18n{propertiesDialogClose}
+    </cr-button>
+  </div>
+</cr-dialog>

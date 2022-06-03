@@ -10,7 +10,10 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
+class AuthenticationService;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
+class PrefService;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
@@ -20,15 +23,12 @@ enum class AccessPoint;
 }
 
 namespace ios {
-class ChromeBrowserState;
-
 // Enums for the sign-in promo view state. Those states are sequential, with no
 // way to go backwards. All states can be skipped except |NeverVisible| and
 // |Invalid|.
 enum class SigninPromoViewState {
-  // Initial state. When -[SigninPromoViewMediator
-  // signinPromoViewIsRemoved] is called with that state, no metrics is
-  // recorded.
+  // Initial state. When -[SigninPromoViewMediator disconnect] is called with
+  // that state, no metrics is recorded.
   NeverVisible = 0,
   // None of the buttons has been used yet.
   Unused,
@@ -54,9 +54,11 @@ class PrefRegistrySyncable;
 // Consumer to handle identity update notifications.
 @property(nonatomic, weak) id<SigninPromoViewConsumer> consumer;
 
-// Chrome identity used to configure the view in a warm state mode. Otherwise
-// contains nil.
-@property(nonatomic, strong, readonly) ChromeIdentity* defaultIdentity;
+// Chrome identity used to configure the view in the following modes:
+//  - SigninPromoViewModeSigninWithAccount
+//  - SigninPromoViewModeSyncWithPrimaryAccount
+// Otherwise contains nil.
+@property(nonatomic, strong, readonly) ChromeIdentity* identity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;
@@ -76,19 +78,19 @@ class PrefRegistrySyncable;
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
-                                       browserState:(ios::ChromeBrowserState*)
-                                                        browserState;
+                                        prefService:(PrefService*)prefService;
 
 // See -[SigninPromoViewMediator initWithBrowserState:].
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initialises with browser state.
-// * |browserState| is the current browser state.
-// * |accessPoint| only ACCESS_POINT_SETTINGS, ACCESS_POINT_BOOKMARK_MANAGER,
-// ACCESS_POINT_RECENT_TABS, ACCESS_POINT_TAB_SWITCHER are supported.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                         accessPoint:(signin_metrics::AccessPoint)accessPoint
-                           presenter:(id<SigninPresenter>)presenter
+// Designated initializer.
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;
@@ -102,10 +104,10 @@ class PrefRegistrySyncable;
 // never been shown, or it is already hidden, this method does nothing.
 - (void)signinPromoViewIsHidden;
 
-// Called when the sign-in promo view is removed from the view hierarchy (it or
-// one of its superviews is removed). The mediator should not be used after this
-// called.
-- (void)signinPromoViewIsRemoved;
+// Disconnects the mediator, this method needs to be called when the sign-in
+// promo view is removed from the view hierarchy (it or one of its superviews is
+// removed). The mediator should not be used after this called.
+- (void)disconnect;
 
 @end
 

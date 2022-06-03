@@ -12,6 +12,7 @@
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -23,17 +24,23 @@ namespace test {
 // Flattened type state data used in test to generate client states.
 struct ImpressionTestData {
   ImpressionTestData(SchedulerClientType type,
-                     int current_max_daily_show,
+                     size_t current_max_daily_show,
                      std::vector<Impression> impressions,
-                     base::Optional<SuppressionInfo> suppression_info);
+                     absl::optional<SuppressionInfo> suppression_info,
+                     size_t negative_events_count,
+                     absl::optional<base::Time> last_negative_event_ts,
+                     absl::optional<base::Time> last_shown_ts);
 
   ImpressionTestData(const ImpressionTestData& other);
   ~ImpressionTestData();
 
   SchedulerClientType type;
-  int current_max_daily_show;
+  size_t current_max_daily_show;
   std::vector<Impression> impressions;
-  base::Optional<SuppressionInfo> suppression_info;
+  absl::optional<SuppressionInfo> suppression_info;
+  size_t negative_events_count;
+  absl::optional<base::Time> last_negative_event_ts;
+  absl::optional<base::Time> last_shown_ts;
 };
 
 // Add one impression test data into a client state.

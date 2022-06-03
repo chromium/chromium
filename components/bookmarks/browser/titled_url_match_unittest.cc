@@ -4,7 +4,6 @@
 
 #include "components/bookmarks/browser/titled_url_match.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,11 +43,11 @@ TEST(TitledUrlMatchTest, ReplaceOffsetsInMatchPositions) {
 TEST(TitledUrlMatchTest, ReplaceOffsetsRemovesItemsWithNposOffsets) {
   MatchPositions orig_match_positions = {{1, 3}, {4, 5}, {10, 15}, {17, 20}};
   std::vector<size_t> offsets = {0,
-                                 base::string16::npos,
-                                 base::string16::npos,
+                                 std::u16string::npos,
+                                 std::u16string::npos,
                                  4,
-                                 base::string16::npos,
-                                 base::string16::npos,
+                                 std::u16string::npos,
+                                 std::u16string::npos,
                                  17,
                                  20};
   MatchPositions expected_match_positions = {{17, 20}};

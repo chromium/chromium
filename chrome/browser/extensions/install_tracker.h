@@ -7,9 +7,8 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -18,6 +17,8 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -33,6 +34,10 @@ class InstallTracker : public KeyedService,
  public:
   InstallTracker(content::BrowserContext* browser_context,
                  extensions::ExtensionPrefs* prefs);
+
+  InstallTracker(const InstallTracker&) = delete;
+  InstallTracker& operator=(const InstallTracker&) = delete;
+
   ~InstallTracker() override;
 
   static InstallTracker* Get(content::BrowserContext* context);
@@ -71,8 +76,12 @@ class InstallTracker : public KeyedService,
   // Overriddes for KeyedService.
   void Shutdown() override;
 
+  // Called directly by AppSorting logic when apps are re-ordered on the new tab
+  // page.
+  void OnAppsReordered(const absl::optional<ExtensionId>& extension_id);
+
  private:
-  void OnAppsReordered();
+  void OnExtensionPrefChanged();
 
   // content::NotificationObserver implementation.
   void Observe(int type,
@@ -91,10 +100,8 @@ class InstallTracker : public KeyedService,
   base::ObserverList<InstallObserver>::Unchecked observers_;
   content::NotificationRegistrar registrar_;
   PrefChangeRegistrar pref_change_registrar_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstallTracker);
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 }  // namespace extensions

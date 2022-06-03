@@ -4,7 +4,8 @@
 
 #include "extensions/browser/updater/extension_downloader.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/callback_helpers.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extensions_test.h"
@@ -29,7 +30,7 @@ const char kTestExtensionId[] = "test_app";
 
 class ExtensionDownloaderTest : public ExtensionsTest {
  protected:
-  ExtensionDownloaderTest() {}
+  ExtensionDownloaderTest() = default;
 
   std::unique_ptr<ManifestFetchData> CreateManifestFetchData(
       const GURL& update_url,
@@ -44,7 +45,8 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(kUpdateUrl));
     ManifestFetchData::PingData zero_days(0, 0, true, 0);
-    fetch->AddExtension(kTestExtensionId, "1.0", &zero_days, "", "", "",
+    fetch->AddExtension(kTestExtensionId, "1.0", &zero_days, "", "",
+                        mojom::ManifestLocation::kInternal,
                         ManifestFetchData::FetchPriority::BACKGROUND);
     return fetch;
   }
@@ -298,7 +300,8 @@ TEST_F(ExtensionDownloaderTest, TestNoUpdatesManifestReports) {
       .WillOnce(Return(true));
   // TODO(burunduk) Also check error (second argument). By now we return
   // CRX_FETCH_FAILED, but probably we may want to make another one.
-  EXPECT_CALL(delegate, OnExtensionDownloadFailed(kTestExtensionId, _, _, _));
+  EXPECT_CALL(delegate,
+              OnExtensionDownloadFailed(kTestExtensionId, _, _, _, _));
 
   AddFetchDataToDownloader(&helper, std::move(fetch));
 

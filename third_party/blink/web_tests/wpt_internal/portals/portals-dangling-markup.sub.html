@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function addPortal(url) {
+  var portal = document.createElement('portal');
+  portal.src = url;
+  document.body.appendChild(portal);
+}
+</script>
+<body>
+  <script>addPortal('resources/report.py?op=report&id={{$id1:uuid()}}')</script>
+  <script async defer src="resources/checkReport.sub.js?&testName=RegularURLOK&id={{$id1}}&expect=url"></script>
+  <script>addPortal('resources/report.py?op=report&id={{$id2:uuid()}}\t<')</script>
+  <script async defer src="resources/checkReport.sub.js?testName=DanglingMarkupError&id={{$id2}}&expect=error"></script>
+</body>

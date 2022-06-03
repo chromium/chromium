@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
@@ -27,6 +26,10 @@ class DeviceInfoSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::DeviceInfoSyncService* GetForProfile(Profile* profile);
   static DeviceInfoSyncServiceFactory* GetInstance();
 
+  DeviceInfoSyncServiceFactory(const DeviceInfoSyncServiceFactory&) = delete;
+  DeviceInfoSyncServiceFactory& operator=(const DeviceInfoSyncServiceFactory&) =
+      delete;
+
   // Iterates over all of the profiles that have been loaded so far, and
   // extracts their tracker if present. If some profiles don't have trackers, no
   // indication is given in the passed vector.
@@ -42,8 +45,6 @@ class DeviceInfoSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_

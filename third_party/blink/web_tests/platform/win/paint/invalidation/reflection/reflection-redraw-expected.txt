@@ -1,71 +1,15 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'The color of this text'",
-          "rect": [381, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'in the reflection'",
-          "rect": [381, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'should be green'",
-          "rect": [381, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this text'",
-          "rect": [71, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'in the reflection'",
-          "rect": [71, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'should be green'",
-          "rect": [71, 267, 284, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this text'",
-          "rect": [306, 34, 124, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'in the reflection'",
-          "rect": [306, 34, 124, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'should be green'",
-          "rect": [306, 34, 124, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The color of this text'",
-          "rect": [306, 377, 124, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'in the reflection'",
-          "rect": [306, 377, 124, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'should be green'",
-          "rect": [306, 377, 124, 156],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [381, 267, 284, 59],
+        [71, 267, 284, 59],
+        [306, 34, 124, 182],
+        [306, 377, 124, 156]
       ]
     }
   ]

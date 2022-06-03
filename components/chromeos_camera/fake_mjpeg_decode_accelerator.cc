@@ -4,10 +4,13 @@
 
 #include "components/chromeos_camera/fake_mjpeg_decode_accelerator.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -24,18 +27,32 @@ FakeMjpegDecodeAccelerator::~FakeMjpegDecodeAccelerator() {
   DCHECK(client_task_runner_->BelongsToCurrentThread());
 }
 
-bool FakeMjpegDecodeAccelerator::Initialize(
-    MjpegDecodeAccelerator::Client* client) {
+void FakeMjpegDecodeAccelerator::InitializeOnTaskRunner(
+    MjpegDecodeAccelerator::Client* client,
+    InitCB init_cb) {
   DCHECK(client_task_runner_->BelongsToCurrentThread());
   client_ = client;
 
   if (!decoder_thread_.Start()) {
     DLOG(ERROR) << "Failed to start decoding thread.";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
-  decoder_task_runner_ = decoder_thread_.task_runner();
 
-  return true;
+  decoder_task_runner_ = decoder_thread_.task_runner();
+  std::move(init_cb).Run(true);
+}
+
+void FakeMjpegDecodeAccelerator::InitializeAsync(
+    MjpegDecodeAccelerator::Client* client,
+    InitCB init_cb) {
+  DCHECK(client_task_runner_->BelongsToCurrentThread());
+
+  client_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeMjpegDecodeAccelerator::InitializeOnTaskRunner,
+                     weak_factory_.GetWeakPtr(), client,
+                     media::BindToCurrentLoop(std::move(init_cb))));
 }
 
 void FakeMjpegDecodeAccelerator::Decode(
@@ -58,7 +75,7 @@ void FakeMjpegDecodeAccelerator::Decode(
       FROM_HERE,
       base::BindOnce(&FakeMjpegDecodeAccelerator::DecodeOnDecoderThread,
                      base::Unretained(this), bitstream_buffer.id(),
-                     std::move(video_frame), base::Passed(&src_shm)));
+                     std::move(video_frame), std::move(src_shm)));
 }
 
 void FakeMjpegDecodeAccelerator::Decode(

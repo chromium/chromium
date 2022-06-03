@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -20,20 +21,17 @@ namespace {
 constexpr int kResizeHandleButtonMargin = 4;
 constexpr int kResizeHandleButtonSize = 16;
 
-constexpr SkColor kResizeHandleIconColor = SK_ColorWHITE;
-
 }  // namespace
 
 namespace views {
 
-ResizeHandleButton::ResizeHandleButton(ButtonListener* listener)
-    : ImageButton(listener) {
+ResizeHandleButton::ResizeHandleButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetSize(gfx::Size(kResizeHandleButtonSize, kResizeHandleButtonSize));
   SetImageForQuadrant(OverlayWindowViews::WindowQuadrant::kBottomRight);
 
   // Accessibility.
-  SetFocusForPlatform();
-  const base::string16 resize_button_label(
+  const std::u16string resize_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT));
   SetAccessibleName(resize_button_label);
   SetTooltipText(resize_button_label);
@@ -96,7 +94,7 @@ void ResizeHandleButton::SetImageForQuadrant(
   current_quadrant_ = quadrant;
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      kResizeHandleIcon, kResizeHandleButtonSize, kResizeHandleIconColor);
+      kResizeHandleIcon, kResizeHandleButtonSize, kPipWindowIconColor);
   switch (quadrant) {
     case OverlayWindowViews::WindowQuadrant::kBottomLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
@@ -124,5 +122,8 @@ void ResizeHandleButton::SetImageForQuadrant(
 
   SetImage(views::Button::STATE_NORMAL, icon);
 }
+
+BEGIN_METADATA(ResizeHandleButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

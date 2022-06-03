@@ -28,19 +28,19 @@ class SuggestionVectorMembersAreMatcher
                                     EltType Suggestion::*elt)
       : container_matcher_(seq_matcher), element_(elt) {}
 
-  virtual bool MatchAndExplain(const std::vector<Suggestion>& suggestions,
-                               testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const std::vector<Suggestion>& suggestions,
+                       testing::MatchResultListener* listener) const override {
     Container container;
     for (const auto& suggestion : suggestions)
       container.push_back(suggestion.*element_);
     return container_matcher_.MatchAndExplain(container, listener);
   }
 
-  virtual void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream* os) const override {
     container_matcher_.DescribeTo(os);
   }
 
-  virtual void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream* os) const override {
     container_matcher_.DescribeNegationTo(os);
   }
 
@@ -65,7 +65,7 @@ template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorValuesAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<base::string16>(
+      new SuggestionVectorMembersAreMatcher<std::u16string>(
           elts_are_matcher, &Suggestion::value));
 }
 
@@ -74,7 +74,7 @@ template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorLabelsAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<base::string16>(
+      new SuggestionVectorMembersAreMatcher<std::u16string>(
           elts_are_matcher, &Suggestion::label));
 }
 
@@ -85,6 +85,15 @@ SuggestionVectorIconsAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
       new SuggestionVectorMembersAreMatcher<std::string>(elts_are_matcher,
                                                          &Suggestion::icon));
+}
+
+// Like SuggestionVectorIdsAre above, but tests the store_indicator_icon.
+template <class EltsAreMatcher>
+inline testing::Matcher<const std::vector<Suggestion>&>
+SuggestionVectorStoreIndicatorIconsAre(const EltsAreMatcher& elts_are_matcher) {
+  return testing::MakeMatcher(
+      new SuggestionVectorMembersAreMatcher<std::string>(
+          elts_are_matcher, &Suggestion::store_indicator_icon));
 }
 
 }  // namespace autofill

@@ -8,10 +8,11 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/zlib.h"
 
@@ -109,6 +110,9 @@ class WebRtcRtpDumpWriter::FileWorker {
     DCHECK_EQ(Z_OK, result);
   }
 
+  FileWorker(const FileWorker&) = delete;
+  FileWorker& operator=(const FileWorker&) = delete;
+
   ~FileWorker() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -167,12 +171,9 @@ class WebRtcRtpDumpWriter::FileWorker {
     int bytes_written = -1;
 
     if (base::PathExists(dump_path_)) {
-      bytes_written =
-          base::AppendToFile(dump_path_, reinterpret_cast<const char*>(
-                                             compressed_buffer.data()),
-                             compressed_buffer.size())
-              ? compressed_buffer.size()
-              : -1;
+      bytes_written = base::AppendToFile(dump_path_, compressed_buffer)
+                          ? compressed_buffer.size()
+                          : -1;
     } else {
       bytes_written = base::WriteFile(
           dump_path_,
@@ -237,9 +238,7 @@ class WebRtcRtpDumpWriter::FileWorker {
     memset(&stream_, 0, sizeof(z_stream));
 
     DCHECK(!output_buffer.empty());
-    return base::AppendToFile(
-        dump_path_, reinterpret_cast<const char*>(output_buffer.data()),
-        output_buffer.size());
+    return base::AppendToFile(dump_path_, output_buffer);
   }
 
   const base::FilePath dump_path_;
@@ -247,21 +246,19 @@ class WebRtcRtpDumpWriter::FileWorker {
   z_stream stream_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FileWorker);
 };
 
 WebRtcRtpDumpWriter::WebRtcRtpDumpWriter(
     const base::FilePath& incoming_dump_path,
     const base::FilePath& outgoing_dump_path,
     size_t max_dump_size,
-    const base::Closure& max_dump_size_reached_callback)
+    base::RepeatingClosure max_dump_size_reached_callback)
     : max_dump_size_(max_dump_size),
-      max_dump_size_reached_callback_(max_dump_size_reached_callback),
+      max_dump_size_reached_callback_(
+          std::move(max_dump_size_reached_callback)),
       total_dump_size_on_disk_(0),
-      background_task_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::BEST_EFFORT})),
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       incoming_file_thread_worker_(new FileWorker(incoming_dump_path)),
       outgoing_file_thread_worker_(new FileWorker(outgoing_dump_path)) {}
 
@@ -315,22 +312,20 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
 }
 
 void WebRtcRtpDumpWriter::EndDump(RtpDumpType type,
-                                  const EndDumpCallback& finished_callback) {
+                                  EndDumpCallback finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(type == RTP_DUMP_OUTGOING || incoming_file_thread_worker_ != NULL);
-  DCHECK(type == RTP_DUMP_INCOMING || outgoing_file_thread_worker_ != NULL);
+  DCHECK(type == RTP_DUMP_OUTGOING || incoming_file_thread_worker_ != nullptr);
+  DCHECK(type == RTP_DUMP_INCOMING || outgoing_file_thread_worker_ != nullptr);
 
   bool incoming = (type == RTP_DUMP_BOTH || type == RTP_DUMP_INCOMING);
-  EndDumpContext context(type, finished_callback);
+  EndDumpContext context(type, std::move(finished_callback));
 
   // End the incoming dump first if required. OnDumpEnded will continue to end
   // the outgoing dump if necessary.
-  FlushBuffer(incoming,
-              true,
-              base::Bind(&WebRtcRtpDumpWriter::OnDumpEnded,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         context,
-                         incoming));
+  FlushBuffer(incoming, true,
+              base::BindOnce(&WebRtcRtpDumpWriter::OnDumpEnded,
+                             weak_ptr_factory_.GetWeakPtr(), std::move(context),
+                             incoming));
 }
 
 size_t WebRtcRtpDumpWriter::max_dump_size() const {
@@ -338,24 +333,21 @@ size_t WebRtcRtpDumpWriter::max_dump_size() const {
   return max_dump_size_;
 }
 
-WebRtcRtpDumpWriter::EndDumpContext::EndDumpContext(
-    RtpDumpType type,
-    const EndDumpCallback& callback)
+WebRtcRtpDumpWriter::EndDumpContext::EndDumpContext(RtpDumpType type,
+                                                    EndDumpCallback callback)
     : type(type),
       incoming_succeeded(false),
       outgoing_succeeded(false),
-      callback(callback) {
-}
+      callback(std::move(callback)) {}
 
-WebRtcRtpDumpWriter::EndDumpContext::EndDumpContext(
-    const EndDumpContext& other) = default;
+WebRtcRtpDumpWriter::EndDumpContext::EndDumpContext(EndDumpContext&& other) =
+    default;
 
-WebRtcRtpDumpWriter::EndDumpContext::~EndDumpContext() {
-}
+WebRtcRtpDumpWriter::EndDumpContext::~EndDumpContext() = default;
 
 void WebRtcRtpDumpWriter::FlushBuffer(bool incoming,
                                       bool end_stream,
-                                      const FlushDoneCallback& callback) {
+                                      FlushDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<std::vector<uint8_t>> new_buffer(new std::vector<uint8_t>());
@@ -386,7 +378,7 @@ void WebRtcRtpDumpWriter::FlushBuffer(bool incoming,
   // object is gone.
   base::OnceClosure reply = base::BindOnce(
       &WebRtcRtpDumpWriter::OnFlushDone, weak_ptr_factory_.GetWeakPtr(),
-      callback, std::move(result), std::move(bytes_written));
+      std::move(callback), std::move(result), std::move(bytes_written));
 
   // Define the task and reply outside the method call so that getting and
   // passing the scoped_ptr does not depend on the argument evaluation order.
@@ -402,7 +394,7 @@ void WebRtcRtpDumpWriter::FlushBuffer(bool incoming,
 }
 
 void WebRtcRtpDumpWriter::OnFlushDone(
-    const FlushDoneCallback& callback,
+    FlushDoneCallback callback,
     const std::unique_ptr<FlushResult>& result,
     const std::unique_ptr<size_t>& bytes_written) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -417,8 +409,8 @@ void WebRtcRtpDumpWriter::OnFlushDone(
   // Returns success for FLUSH_RESULT_MAX_SIZE_REACHED since the dump is still
   // valid.
   if (!callback.is_null()) {
-    callback.Run(*result != FLUSH_RESULT_FAILURE &&
-                 *result != FLUSH_RESULT_NO_DATA);
+    std::move(callback).Run(*result != FLUSH_RESULT_FAILURE &&
+                            *result != FLUSH_RESULT_NO_DATA);
   }
 }
 
@@ -437,15 +429,14 @@ void WebRtcRtpDumpWriter::OnDumpEnded(EndDumpContext context,
 
   // End the outgoing dump if needed.
   if (incoming && context.type == RTP_DUMP_BOTH) {
-    FlushBuffer(false,
-                true,
-                base::Bind(&WebRtcRtpDumpWriter::OnDumpEnded,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           context,
-                           false));
+    FlushBuffer(false, true,
+                base::BindOnce(&WebRtcRtpDumpWriter::OnDumpEnded,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(context), false));
     return;
   }
 
   // This object might be deleted after running the callback.
-  context.callback.Run(context.incoming_succeeded, context.outgoing_succeeded);
+  std::move(context).callback.Run(context.incoming_succeeded,
+                                  context.outgoing_succeeded);
 }

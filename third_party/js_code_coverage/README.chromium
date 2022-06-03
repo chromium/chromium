@@ -1,0 +1,46 @@
+Name: V8 to Istanbul Coverage Converter
+Short Name: v8-to-istanbul
+URL: https://www.npmjs.com/package/v8-to-istanbul
+Version: 7.1.2
+License: ISC
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+V8 To Istanbul converts raw v8 coverage into istanbul compliant coverage report.
+
+Local Modifications:
+(none)
+
+Name: Source map
+Short Name: source-map
+URL: https://www.npmjs.com/package/source-map
+Version: 0.7.3
+License: BSD-3-Clause
+License File: NOT_SHIPPED
+Security Critical: No. Not shipped in Chrome, used to generate source maps for build steps.
+
+Description:
+Source map provides useful functionality to easily generate and consume
+JavaScript source maps, useful in identifying the build transformations that
+occurred between the final generated JavaScript file and the source it
+originated from.
+
+Local Modifications:
+(none)
+
+Name: IstanbulJS CLI
+Short Name: nyc
+URL: https://www.npmjs.com/package/nyc
+Version: 15.1.0
+License: ISC
+License File: NOT_SHIPPED
+Security Critical: No. Not shipped in Chrome, used for post-processing of coverage reports.
+
+Description:
+NYC is a CLI to merge, manipulate and generate reports in a variety of formats
+for JavaScript code coverage. This tool is used in conjunction with the
+v8-to-istanbul package to convert v8 coverage -> istanbul -> {html,lcov}
+
+Local Modifications:
+(none)

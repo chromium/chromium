@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -28,18 +27,23 @@ class MediaPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
   MediaPageLoadMetricsObserverTest() {}
+
+  MediaPageLoadMetricsObserverTest(const MediaPageLoadMetricsObserverTest&) =
+      delete;
+  MediaPageLoadMetricsObserverTest& operator=(
+      const MediaPageLoadMetricsObserverTest&) = delete;
+
   ~MediaPageLoadMetricsObserverTest() override = default;
 
   void ResetTest() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     // Reset to the default testing state. Does not reset histogram state.
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.response_start = base::TimeDelta::FromSeconds(2);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromSeconds(3);
-    timing_.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromSeconds(4);
-    timing_.paint_timing->first_image_paint = base::TimeDelta::FromSeconds(5);
-    timing_.document_timing->load_event_start = base::TimeDelta::FromSeconds(7);
+    timing_.response_start = base::Seconds(2);
+    timing_.parse_timing->parse_start = base::Seconds(3);
+    timing_.paint_timing->first_contentful_paint = base::Seconds(4);
+    timing_.paint_timing->first_image_paint = base::Seconds(5);
+    timing_.document_timing->load_event_start = base::Seconds(7);
     PopulateRequiredTimingFields(&timing_);
 
     network_bytes_ = 0;
@@ -87,8 +91,6 @@ class MediaPageLoadMetricsObserverTest
 
  private:
   page_load_metrics::mojom::PageLoadTiming timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPageLoadMetricsObserverTest);
 };
 
 TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {

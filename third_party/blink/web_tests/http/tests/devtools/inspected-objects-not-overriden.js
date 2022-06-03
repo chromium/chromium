@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* TODO(chromium:1050549)
+ * once that bug is complete we can lose this test
+ * as DevTools will no longer touch built-in prototypes.
+ */
+
+
 (async function() {
   TestRunner.addResult(
       `Tests that opening inspector front-end doesn't change methods defined by the inspected application.\n`);
@@ -28,7 +34,7 @@
     Object.hasProperties = myImpl;
     Object.describe = myImpl;
     Object.className = myImpl;
-    String.prototype.escapeCharacters = myImpl;
+    String.prototype.testStringProtoFunc = myImpl;
     var originalJSONStringify = JSON.stringify;
     JSON.stringify = myImpl;
 
@@ -40,7 +46,7 @@
         output("Object.hasProperties === myImpl => " + (Object.hasProperties === myImpl));
         output("Object.describe === myImpl => " + (Object.describe === myImpl));
         output("Object.className === myImpl => " + (Object.className === myImpl));
-        output("String.prototype.escapeCharacters === myImpl => " + (String.prototype.escapeCharacters === myImpl));
+        output("String.prototype.testStringProtoFunc === myImpl => " + (String.prototype.testStringProtoFunc === myImpl));
         output("JSON.stringify === myImpl => " + (JSON.stringify === myImpl));
     }
   `);

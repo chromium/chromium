@@ -12,9 +12,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
@@ -69,12 +69,14 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return AUTHENTICATION_FAILED;
     case Authenticator::PROTOCOL_ERROR:
       return INCOMPATIBLE_PROTOCOL;
-    case Authenticator::INVALID_ACCOUNT:
+    case Authenticator::INVALID_ACCOUNT_ID:
       return INVALID_ACCOUNT;
     case Authenticator::TOO_MANY_CONNECTIONS:
       return SESSION_REJECTED;
     case Authenticator::REJECTED_BY_USER:
       return SESSION_REJECTED;
+    case Authenticator::AUTHORIZATION_POLICY_CHECK_FAILED:
+      return AUTHZ_POLICY_CHECK_FAILED;
   }
   NOTREACHED();
   return UNKNOWN_ERROR;
@@ -113,6 +115,10 @@ int GetSequentialId(const std::string& id) {
 class JingleSession::OrderedMessageQueue {
  public:
   OrderedMessageQueue() = default;
+
+  OrderedMessageQueue(const OrderedMessageQueue&) = delete;
+  OrderedMessageQueue& operator=(const OrderedMessageQueue&) = delete;
+
   ~OrderedMessageQueue() = default;
 
   // Returns the list of messages ordered by their sequential IDs.
@@ -129,8 +135,6 @@ class JingleSession::OrderedMessageQueue {
   std::map<int, PendingMessage> queue_;
 
   int next_incoming_ = kAny;
-
-  DISALLOW_COPY_AND_ASSIGN(OrderedMessageQueue);
 };
 
 std::vector<JingleSession::PendingMessage>
@@ -180,8 +184,8 @@ JingleSession::PendingMessage::PendingMessage() = default;
 JingleSession::PendingMessage::PendingMessage(PendingMessage&& moved) = default;
 JingleSession::PendingMessage::PendingMessage(
     std::unique_ptr<JingleMessage> message,
-    const ReplyCallback& reply_callback)
-    : message(std::move(message)), reply_callback(reply_callback) {}
+    ReplyCallback reply_callback)
+    : message(std::move(message)), reply_callback(std::move(reply_callback)) {}
 JingleSession::PendingMessage::~PendingMessage() = default;
 
 JingleSession::PendingMessage& JingleSession::PendingMessage::operator=(
@@ -279,9 +283,10 @@ void JingleSession::AcceptIncomingConnection(
 
   DCHECK_EQ(authenticator_->state(), Authenticator::WAITING_MESSAGE);
   // |authenticator_| is owned, so Unretained() is safe here.
-  authenticator_->ProcessMessage(first_auth_message, base::Bind(
-      &JingleSession::ContinueAcceptIncomingConnection,
-      base::Unretained(this)));
+  authenticator_->ProcessMessage(
+      first_auth_message,
+      base::BindOnce(&JingleSession::ContinueAcceptIncomingConnection,
+                     base::Unretained(this)));
 }
 
 void JingleSession::ContinueAcceptIncomingConnection() {
@@ -299,8 +304,8 @@ void JingleSession::ContinueAcceptIncomingConnection() {
   if (authenticator_->state() == Authenticator::MESSAGE_READY)
     auth_message = authenticator_->GetNextMessage();
 
-  message->description.reset(new ContentDescription(
-      CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message)));
+  message->description = std::make_unique<ContentDescription>(
+      CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message));
   SendMessage(std::move(message));
 
   // Update state.
@@ -347,10 +352,10 @@ void JingleSession::SendTransportInfo(
   stanza->AddAttr(jingle_xmpp::QN_ID, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(
-      std::move(stanza), base::Bind(&JingleSession::OnTransportInfoResponse,
-                                    base::Unretained(this)));
+      std::move(stanza), base::BindOnce(&JingleSession::OnTransportInfoResponse,
+                                        base::Unretained(this)));
   if (request) {
-    request->SetTimeout(base::TimeDelta::FromSeconds(kTransportInfoTimeout));
+    request->SetTimeout(base::Seconds(kTransportInfoTimeout));
     transport_info_requests_.push_back(std::move(request));
   } else {
     LOG(ERROR) << "Failed to send a transport-info message";
@@ -427,8 +432,9 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
   stanza->AddAttr(jingle_xmpp::QN_ID, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(
-      std::move(stanza), base::Bind(&JingleSession::OnMessageResponse,
-                                    base::Unretained(this), message->action));
+      std::move(stanza),
+      base::BindOnce(&JingleSession::OnMessageResponse, base::Unretained(this),
+                     message->action));
 
   int timeout = kDefaultMessageTimeout;
   if (message->action == JingleMessage::SESSION_INITIATE ||
@@ -436,7 +442,7 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     timeout = kSessionInitiateAndAcceptTimeout;
   }
   if (request) {
-    request->SetTimeout(base::TimeDelta::FromSeconds(timeout));
+    request->SetTimeout(base::Seconds(timeout));
     pending_requests_.push_back(std::move(request));
   } else {
     LOG(ERROR) << "Failed to send a "
@@ -515,13 +521,14 @@ void JingleSession::OnTransportInfoResponse(IqRequest* request,
 
 void JingleSession::OnIncomingMessage(const std::string& id,
                                       std::unique_ptr<JingleMessage> message,
-                                      const ReplyCallback& reply_callback) {
+                                      ReplyCallback reply_callback) {
   ProcessIncomingPluginMessage(*message);
   std::vector<PendingMessage> ordered = message_queue_->OnIncomingMessage(
-      id, PendingMessage{std::move(message), reply_callback});
+      id, PendingMessage{std::move(message), std::move(reply_callback)});
   base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
-  for (auto& message : ordered) {
-    ProcessIncomingMessage(std::move(message.message), message.reply_callback);
+  for (auto& pending_message : ordered) {
+    ProcessIncomingMessage(std::move(pending_message.message),
+                           std::move(pending_message.reply_callback));
     if (!self)
       return;
   }
@@ -529,45 +536,45 @@ void JingleSession::OnIncomingMessage(const std::string& id,
 
 void JingleSession::ProcessIncomingMessage(
     std::unique_ptr<JingleMessage> message,
-    const ReplyCallback& reply_callback) {
+    ReplyCallback reply_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (peer_address_ != message->from) {
     // Ignore messages received from a different Jid.
-    reply_callback.Run(JingleMessageReply::INVALID_SID);
+    std::move(reply_callback).Run(JingleMessageReply::INVALID_SID);
     return;
   }
 
   switch (message->action) {
     case JingleMessage::SESSION_ACCEPT:
-      OnAccept(std::move(message), reply_callback);
+      OnAccept(std::move(message), std::move(reply_callback));
       break;
 
     case JingleMessage::SESSION_INFO:
-      OnSessionInfo(std::move(message), reply_callback);
+      OnSessionInfo(std::move(message), std::move(reply_callback));
       break;
 
     case JingleMessage::TRANSPORT_INFO:
-      OnTransportInfo(std::move(message), reply_callback);
+      OnTransportInfo(std::move(message), std::move(reply_callback));
       break;
 
     case JingleMessage::SESSION_TERMINATE:
-      OnTerminate(std::move(message), reply_callback);
+      OnTerminate(std::move(message), std::move(reply_callback));
       break;
 
     default:
-      reply_callback.Run(JingleMessageReply::UNEXPECTED_REQUEST);
+      std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
   }
 }
 
 void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
-                             const ReplyCallback& reply_callback) {
+                             ReplyCallback reply_callback) {
   if (state_ != CONNECTING) {
-    reply_callback.Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
     return;
   }
 
-  reply_callback.Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(JingleMessageReply::NONE);
 
   const jingle_xmpp::XmlElement* auth_message =
       message->description->authenticator_message();
@@ -586,15 +593,15 @@ void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
 
   DCHECK(authenticator_->state() == Authenticator::WAITING_MESSAGE);
   authenticator_->ProcessMessage(
-      auth_message, base::Bind(&JingleSession::ProcessAuthenticationStep,
-                               base::Unretained(this)));
+      auth_message, base::BindOnce(&JingleSession::ProcessAuthenticationStep,
+                                   base::Unretained(this)));
 }
 
 void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
-                                  const ReplyCallback& reply_callback) {
+                                  ReplyCallback reply_callback) {
   if (!message->info.get() ||
       !Authenticator::IsAuthenticatorMessage(message->info.get())) {
-    reply_callback.Run(JingleMessageReply::UNSUPPORTED_INFO);
+    std::move(reply_callback).Run(JingleMessageReply::UNSUPPORTED_INFO);
     return;
   }
 
@@ -602,48 +609,49 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
       authenticator_->state() != Authenticator::WAITING_MESSAGE) {
     LOG(WARNING) << "Received unexpected authenticator message "
                  << message->info->Str();
-    reply_callback.Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
     Close(INCOMPATIBLE_PROTOCOL);
     return;
   }
 
-  reply_callback.Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(JingleMessageReply::NONE);
 
   authenticator_->ProcessMessage(
-      message->info.get(), base::Bind(&JingleSession::ProcessAuthenticationStep,
-                                      base::Unretained(this)));
+      message->info.get(),
+      base::BindOnce(&JingleSession::ProcessAuthenticationStep,
+                     base::Unretained(this)));
 }
 
 void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
-                                    const ReplyCallback& reply_callback) {
+                                    ReplyCallback reply_callback) {
   if (!message->transport_info) {
-    reply_callback.Run(JingleMessageReply::BAD_REQUEST);
+    std::move(reply_callback).Run(JingleMessageReply::BAD_REQUEST);
     return;
   }
 
   if (state_ == AUTHENTICATING) {
     pending_transport_info_.push_back(
-        PendingMessage{std::move(message), reply_callback});
+        PendingMessage{std::move(message), std::move(reply_callback)});
   } else if (state_ == AUTHENTICATED) {
-    reply_callback.Run(
-        transport_->ProcessTransportInfo(message->transport_info.get())
-            ? JingleMessageReply::NONE
-            : JingleMessageReply::BAD_REQUEST);
+    std::move(reply_callback)
+        .Run(transport_->ProcessTransportInfo(message->transport_info.get())
+                 ? JingleMessageReply::NONE
+                 : JingleMessageReply::BAD_REQUEST);
   } else {
     LOG(ERROR) << "Received unexpected transport-info message.";
-    reply_callback.Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
   }
 }
 
 void JingleSession::OnTerminate(std::unique_ptr<JingleMessage> message,
-                                const ReplyCallback& reply_callback) {
+                                ReplyCallback reply_callback) {
   if (!is_session_active()) {
     LOG(WARNING) << "Received unexpected session-terminate message.";
-    reply_callback.Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
     return;
   }
 
-  reply_callback.Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(JingleMessageReply::NONE);
 
   error_ = message->error_code;
   if (error_ == UNKNOWN_ERROR) {
@@ -746,17 +754,18 @@ void JingleSession::ProcessAuthenticationStep() {
 
 void JingleSession::OnAuthenticated() {
   transport_->Start(authenticator_.get(),
-                    base::Bind(&JingleSession::SendTransportInfo,
-                               weak_factory_.GetWeakPtr()));
+                    base::BindRepeating(&JingleSession::SendTransportInfo,
+                                        weak_factory_.GetWeakPtr()));
 
   base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
   std::vector<PendingMessage> messages_to_process;
   std::swap(messages_to_process, pending_transport_info_);
   for (auto& message : messages_to_process) {
-    message.reply_callback.Run(
-        transport_->ProcessTransportInfo(message.message->transport_info.get())
-            ? JingleMessageReply::NONE
-            : JingleMessageReply::BAD_REQUEST);
+    std::move(message.reply_callback)
+        .Run(transport_->ProcessTransportInfo(
+                 message.message->transport_info.get())
+                 ? JingleMessageReply::NONE
+                 : JingleMessageReply::BAD_REQUEST);
     if (!self)
       return;
   }
@@ -810,9 +819,9 @@ void JingleSession::SendSessionInitiateMessage() {
       peer_address_, JingleMessage::SESSION_INITIATE, session_id_));
   message->initiator =
       session_manager_->signal_strategy_->GetLocalAddress().id();
-  message->description.reset(new ContentDescription(
+  message->description = std::make_unique<ContentDescription>(
       session_manager_->protocol_config_->Clone(),
-      authenticator_->GetNextMessage()));
+      authenticator_->GetNextMessage());
   SendMessage(std::move(message));
 }
 

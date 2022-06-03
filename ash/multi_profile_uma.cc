@@ -9,12 +9,6 @@
 namespace ash {
 
 // static
-void MultiProfileUMA::RecordSigninUser(SigninUserAction action) {
-  UMA_HISTOGRAM_ENUMERATION("MultiProfile.SigninUserUIPath", action,
-                            NUM_SIGNIN_USER_ACTIONS);
-}
-
-// static
 void MultiProfileUMA::RecordSwitchActiveUser(SwitchActiveUserAction action) {
   UMA_HISTOGRAM_ENUMERATION("MultiProfile.SwitchActiveUserUIPath", action,
                             NUM_SWITCH_ACTIVE_USER_ACTIONS);

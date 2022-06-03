@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/custom_wrappable_adapter.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+#include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -13,36 +13,37 @@ namespace blink {
 
 namespace {
 
-v8::Local<v8::FunctionTemplate> CreateCustomWrappableTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world);
+void InstallCustomWrappableTemplate(v8::Isolate* isolate,
+                                    const DOMWrapperWorld& world,
+                                    v8::Local<v8::Template> interface_template);
 
 const WrapperTypeInfo custom_wrappable_info = {
     gin::kEmbedderBlink,
-    CreateCustomWrappableTemplate,
+    InstallCustomWrappableTemplate,
     nullptr,
     "CustomWrappableAdapter",
     nullptr,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kCustomWrappableId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
+    WrapperTypeInfo::kCustomWrappableKind,
 };
 
 void InstallCustomWrappableTemplate(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
-    v8::Local<v8::FunctionTemplate> interfaceTemplate) {
-  V8DOMConfiguration::InitializeDOMInterfaceTemplate(
-      isolate, interfaceTemplate, custom_wrappable_info.interface_name,
-      v8::Local<v8::FunctionTemplate>(), kV8DefaultWrapperInternalFieldCount);
-}
-
-v8::Local<v8::FunctionTemplate> CreateCustomWrappableTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world) {
-  return V8DOMConfiguration::DomClassTemplate(
-      isolate, world, const_cast<WrapperTypeInfo*>(&custom_wrappable_info),
-      InstallCustomWrappableTemplate);
+    v8::Local<v8::Template> interface_template) {
+  v8::Local<v8::FunctionTemplate> interface_function_template =
+      interface_template.As<v8::FunctionTemplate>();
+  v8::Local<v8::ObjectTemplate> instance_object_template =
+      interface_function_template->InstanceTemplate();
+  v8::Local<v8::ObjectTemplate> prototype_object_template =
+      interface_function_template->PrototypeTemplate();
+  v8::Local<v8::FunctionTemplate> parent_interface_template;
+  bindings::SetupIDLInterfaceTemplate(
+      isolate, &custom_wrappable_info, instance_object_template,
+      prototype_object_template, interface_function_template,
+      parent_interface_template);
 }
 
 }  // namespace
@@ -73,12 +74,13 @@ v8::Local<v8::Object> CustomWrappableAdapter::CreateAndInitializeWrapper(
     ScriptState* script_state) {
   DCHECK(wrapper_.IsEmpty());
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Object> wrapper_object = V8DOMWrapper::CreateWrapper(
-      isolate, script_state->GetContext()->Global(), &custom_wrappable_info);
+  v8::Local<v8::Object> wrapper_object =
+      V8DOMWrapper::CreateWrapper(script_state, &custom_wrappable_info)
+          .ToLocalChecked();
   V8DOMWrapper::AssociateObjectWithWrapper(
       isolate, this, &custom_wrappable_info, wrapper_object);
-  wrapper_.Set(isolate, wrapper_object);
-  custom_wrappable_info.ConfigureWrapper(&wrapper_.Get());
+  wrapper_.Reset(isolate, wrapper_object);
+  custom_wrappable_info.ConfigureWrapper(&wrapper_);
   return wrapper_object;
 }
 

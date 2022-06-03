@@ -9,11 +9,8 @@
 
 #include "base/ios/block_types.h"
 
-@class ListItem;
-
-namespace ios {
 class ChromeBrowserState;
-}
+@class TableViewItem;
 
 namespace browsing_data {
 enum class TimePeriod;
@@ -23,12 +20,13 @@ enum class BrowsingDataRemoveMask;
 
 @protocol ClearBrowsingDataConsumer <NSObject>
 // Execute action to clear browsing data.
-- (void)removeBrowsingDataForBrowserState:(ios::ChromeBrowserState*)browserState
+- (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
                                timePeriod:(browsing_data::TimePeriod)timePeriod
                                removeMask:(BrowsingDataRemoveMask)removeMask
                           completionBlock:(ProceduralBlock)completionBlock;
-// Updates contents of a cell for a given item.
-- (void)updateCellsForItem:(ListItem*)item;
+// Updates contents of a cell for a given item. Set reload to NO if a simple
+// reconfigre is enough.
+- (void)updateCellsForItem:(TableViewItem*)item reload:(BOOL)reload;
 
 // Indicate to user that data has been cleared.
 - (void)showBrowsingHistoryRemovedDialog;

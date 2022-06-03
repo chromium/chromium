@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NINE_PIECE_IMAGE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NINE_PIECE_IMAGE_PAINTER_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -28,8 +29,7 @@ class NinePieceImagePainter {
                     const PhysicalRect&,
                     const ComputedStyle&,
                     const NinePieceImage&,
-                    bool include_logical_left_edge = true,
-                    bool include_logical_right_edge = true);
+                    PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
   NinePieceImagePainter() = default;

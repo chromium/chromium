@@ -5,51 +5,61 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_QUOTA_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/quota_client.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
 class CacheStorageManager;
-enum class CacheStorageOwner;
 
-// CacheStorageQuotaClient is owned by the QuotaManager. There is one per
-// CacheStorageManager/CacheStorageOwner tuple.  Created and accessed on
-// the IO thread.
-class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
+// CacheStorageQuotaClient is a self-owned receiver created by
+// CacheStorageContextImpl.  The remote end is owned by QuotaManagerProxy.
+// There is one CacheStorageQuotaClient per CacheStorageManager /
+// CacheStorageOwner tuple.  Created and accessed on the cache storage task
+// runner.
+class CONTENT_EXPORT CacheStorageQuotaClient
+    : public storage::StorageKeyQuotaClient {
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
-                          CacheStorageOwner owner);
+                          storage::mojom::CacheStorageOwner owner);
 
-  // QuotaClient overrides
-  ID id() const override;
-  void OnQuotaManagerDestroyed() override {}
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      GetUsageCallback callback) override;
-  void GetOriginsForType(blink::mojom::StorageType type,
-                         GetOriginsCallback callback) override;
-  void GetOriginsForHost(blink::mojom::StorageType type,
-                         const std::string& host,
-                         GetOriginsCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        DeletionCallback callback) override;
-  bool DoesSupport(blink::mojom::StorageType type) const override;
+  CacheStorageQuotaClient(const CacheStorageQuotaClient&) = delete;
+  CacheStorageQuotaClient& operator=(const CacheStorageQuotaClient&) = delete;
 
-  static ID GetIDFromOwner(CacheStorageOwner owner);
-
- private:
   ~CacheStorageQuotaClient() override;
 
-  scoped_refptr<CacheStorageManager> cache_manager_;
-  CacheStorageOwner owner_;
+  // storage::StorageKeyQuotaClient method overrides.
+  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          GetStorageKeyUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void GetStorageKeysForHost(blink::mojom::StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            DeleteStorageKeyDataCallback callback) override;
+  void PerformStorageCleanup(blink::mojom::StorageType type,
+                             PerformStorageCleanupCallback callback) override;
 
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClient);
+  static storage::QuotaClientType GetClientTypeFromOwner(
+      storage::mojom::CacheStorageOwner owner);
+
+ private:
+  const scoped_refptr<CacheStorageManager> cache_manager_;
+  const storage::mojom::CacheStorageOwner owner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

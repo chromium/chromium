@@ -5,11 +5,11 @@
 #include "components/plugins/renderer/plugin_placeholder.h"
 
 #include "base/strings/string_util.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/object_template_builder.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -31,11 +31,11 @@ PluginPlaceholderBase::PluginPlaceholderBase(
     const std::string& html_data)
     : content::RenderFrameObserver(render_frame),
       plugin_params_(params),
-      plugin_(WebViewPlugin::Create(render_frame->GetRenderView(),
+      plugin_(WebViewPlugin::Create(render_frame->GetWebFrame()->View(),
                                     this,
                                     render_frame
-                                        ? render_frame->GetWebkitPreferences()
-                                        : content::WebPreferences(),
+                                        ? render_frame->GetBlinkPreferences()
+                                        : blink::web_pref::WebPreferences(),
                                     html_data,
                                     GURL(kPluginPlaceholderDataURL))),
       hidden_(false) {}

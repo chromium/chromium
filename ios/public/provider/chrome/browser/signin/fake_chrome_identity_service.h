@@ -7,9 +7,11 @@
 
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
+#import <Foundation/Foundation.h>
+
 #include "testing/gmock/include/gmock/gmock.h"
 
-@class NSMutableArray;
+@class FakeChromeIdentityInteractionManager;
 
 namespace ios {
 
@@ -28,36 +30,23 @@ class FakeChromeIdentityService : public ChromeIdentityService {
       ChromeIdentity* identity,
       UIViewController* viewController,
       BOOL animated) override;
-  ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager(
-      ios::ChromeBrowserState* browser_state,
-      id<ChromeIdentityInteractionManagerDelegate> delegate) const override;
-
-  bool IsValidIdentity(ChromeIdentity* identity) const override;
-  ChromeIdentity* GetIdentityWithGaiaID(
-      const std::string& gaia_id) const override;
-  bool HasIdentities() const override;
-  NSArray* GetAllIdentities() const override;
-  NSArray* GetAllIdentitiesSortedForDisplay() const override;
+  ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager()
+      const override;
+  FakeChromeIdentityInteractionManager*
+  CreateFakeChromeIdentityInteractionManager() const;
+  void IterateOverIdentities(IdentityIteratorCallback callback) override;
   void ForgetIdentity(ChromeIdentity* identity,
                       ForgetIdentityCallback callback) override;
-
-  virtual void GetAccessToken(ChromeIdentity* identity,
-                              const std::string& client_id,
-                              const std::set<std::string>& scopes,
-                              ios::AccessTokenCallback callback) override;
-
-  virtual void GetAvatarForIdentity(ChromeIdentity* identity,
-                                    GetAvatarCallback callback) override;
-
-  virtual UIImage* GetCachedAvatarForIdentity(
-      ChromeIdentity* identity) override;
-
-  virtual void GetHostedDomainForIdentity(
-      ChromeIdentity* identity,
-      GetHostedDomainCallback callback) override;
-
-  virtual NSString* GetCachedHostedDomainForIdentity(
-      ChromeIdentity* identity) override;
+  void GetAccessToken(ChromeIdentity* identity,
+                      const std::string& client_id,
+                      const std::set<std::string>& scopes,
+                      ios::AccessTokenCallback callback) override;
+  void GetAvatarForIdentity(ChromeIdentity* identity) override;
+  UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity) override;
+  void GetHostedDomainForIdentity(ChromeIdentity* identity,
+                                  GetHostedDomainCallback callback) override;
+  bool IsServiceSupported() override;
+  NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity) override;
 
   MOCK_METHOD1(GetMDMDeviceStatus,
                ios::MDMDeviceStatus(NSDictionary* user_info));
@@ -67,8 +56,17 @@ class FakeChromeIdentityService : public ChromeIdentityService {
                     NSDictionary* user_info,
                     ios::MDMStatusCallback callback));
 
+  // Simulates |identity| removed from another Google app.
+  void SimulateForgetIdentityFromOtherApp(ChromeIdentity* identity);
+
+  // Simulates reloading the identities from the keychain by SSOAuth.
+  void FireChromeIdentityReload();
+
   // Sets up the mock methods for integration tests.
   void SetUpForIntegrationTests();
+
+  // Adds the managed identities given their name.
+  void AddManagedIdentities(NSArray* identitiesName);
 
   // Adds the identities given their name.
   void AddIdentities(NSArray* identitiesNames);
@@ -77,17 +75,30 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // is already added.
   void AddIdentity(ChromeIdentity* identity);
 
-  // Removes |identity| from the available identities. No-op if the identity
-  // is unknown.
-  void RemoveIdentity(ChromeIdentity* identity);
-
   // When set to true, call to GetAccessToken() fakes a MDM error.
   void SetFakeMDMError(bool fakeMDMError);
 
-  bool HasPendingCallback();
+  // Adds a mapping from the |identity| to the capability name -> capability
+  // result value used when calling FetchCapabilities.
+  // Assumes the |identity| has been added to the available identities.
+  void SetCapabilities(ChromeIdentity* identity, NSDictionary* capabilities);
+
+  // Waits until all asynchronous callbacks have been completed by the service.
+  // Returns true on successful completion.
+  bool WaitForServiceCallbacksToComplete();
+
+  // Triggers an update notification for |identity|.
+  void TriggerIdentityUpdateNotification(ChromeIdentity* identity);
+
+ protected:
+  void FetchCapabilities(
+      NSArray* capabilities,
+      ChromeIdentity* identity,
+      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
 
  private:
-  NSMutableArray* identities_;
+  NSMutableArray<ChromeIdentity*>* identities_;
+  NSMutableDictionary<NSString*, NSDictionary*>* capabilitiesByIdentity_;
 
   // If true, call to GetAccessToken() fakes a MDM error.
   bool _fakeMDMError;

@@ -79,4 +79,4 @@ class WebContentDecryptionModuleResult {
 
 }  // namespace blink
 
-#endif  // WebContentDecryptionModuleSession_h
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_DECRYPTION_MODULE_RESULT_H_

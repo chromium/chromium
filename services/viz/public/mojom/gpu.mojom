@@ -7,9 +7,10 @@ module viz.mojom;
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/sync_token.mojom";
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 
@@ -24,6 +25,11 @@ interface GpuMemoryBufferFactory {
   // Tells the GPU process to destroy GPU memory buffer.
   DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
                          gpu.mojom.SyncToken sync_token);
+  // Copies GMB pixel data to |shared_memory|.
+  // Returns |true| if the copy has succeeded.
+  CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
+                     mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+                     => (bool success);
 };
 
 // API exposed to clients with lower level of trust, e.g. Renderers.
@@ -42,7 +48,7 @@ interface Gpu {
                             gpu.mojom.GpuFeatureInfo gpu_feature_info);
 
   // Creates a new JpegDecodeAccelerator and binds it to |jda|.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   CreateJpegDecodeAccelerator(
       pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
 

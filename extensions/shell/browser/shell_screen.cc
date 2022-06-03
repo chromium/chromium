@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "extensions/shell/browser/root_window_controller.h"
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 #include "ui/aura/env.h"

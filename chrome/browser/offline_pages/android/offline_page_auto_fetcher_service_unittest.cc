@@ -7,13 +7,14 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/offline_pages/test_request_coordinator_builder.h"
+#include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/offline_pages/core/auto_fetch.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/background/request_coordinator_stub_taco.h"
@@ -43,7 +44,7 @@ SavePageRequest TestRequest(ClientId client_id = TestClientId()) {
 class MockDelegate : public OfflinePageAutoFetcherService::Delegate {
  public:
   MOCK_METHOD5(ShowAutoFetchCompleteNotification,
-               void(const base::string16& pageTitle,
+               void(const std::u16string& pageTitle,
                     const std::string& original_url,
                     const std::string& final_url,
                     int android_tab_id,
@@ -230,7 +231,7 @@ TEST_F(OfflinePageAutoFetcherServiceTest, NotifyOnAutoFetchCompleted) {
   OfflinePageItem returned_item(kTestRequest.url(), kOfflineId,
                                 kTestRequest.client_id(), base::FilePath(),
                                 2000);
-  returned_item.title = base::ASCIIToUTF16("Cows");
+  returned_item.title = u"Cows";
   EXPECT_CALL(offline_page_model_,
               GetPageByOfflineId_(kTestRequest.request_id()))
       .WillOnce(testing::Return(&returned_item));

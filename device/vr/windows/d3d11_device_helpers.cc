@@ -8,7 +8,8 @@
 #include <dxgi.h>
 #include <wrl.h>
 
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 
 namespace vr {
 

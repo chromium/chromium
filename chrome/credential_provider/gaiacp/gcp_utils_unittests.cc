@@ -4,9 +4,8 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
@@ -37,6 +36,28 @@ TEST(GcpPasswordTest, GenerateRandomPassword) {
               manager->GenerateRandomPassword(password, base::size(password)));
     ASSERT_LT(24u, wcslen(password));
   }
+}
+
+TEST(GcpOsVersionTest, GetOsFromRegistries) {
+  registry_util::RegistryOverrideManager registry_override_;
+  InitializeRegistryOverrideForTesting(&registry_override_);
+  wchar_t kOsRegistryPath[] =
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+  wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
+  wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
+  wchar_t kOsBuildName[] = L"CurrentBuildNumber";
+  wchar_t kOsBuild[] = L"10819";
+  DWORD major = 15;
+  DWORD minor = 1;
+
+  SetMachineRegDWORD(kOsRegistryPath, kOsMajorName, major);
+  SetMachineRegDWORD(kOsRegistryPath, kOsMinorName, minor);
+  SetMachineRegString(kOsRegistryPath, kOsBuildName, kOsBuild);
+
+  std::string version;
+  GetOsVersion(&version);
+
+  ASSERT_EQ(version, "15.1.10819");
 }
 
 class GcpProcHelperTest : public ::testing::Test {
@@ -420,8 +441,8 @@ TEST_F(GcpProcHelperTest, GetCommandLineForEntrypoint) {
   ASSERT_LT(0u, GetModuleFileName(nullptr, path, base::size(path)));
   ASSERT_LT(0u, GetShortPathName(path, short_path, base::size(short_path)));
 
-  base::string16 expected_arg =
-      base::StringPrintf(L"%ls,%ls", short_path, L"entrypoint");
+  std::wstring expected_arg =
+      base::StringPrintf(L"\"%ls\",%ls", short_path, L"entrypoint");
 
   ASSERT_EQ(1u, command_line.GetArgs().size());
   ASSERT_EQ(expected_arg, command_line.GetArgs()[0]);
@@ -449,8 +470,10 @@ TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {
 // 7. Serial Number.
 // 8. Machine Guid.
 // 9. Is ADJoined User.
+// 10 Device resource Id.
 class GcpEnrollmentArgsTest
     : public ::testing::TestWithParam<std::tuple<const char*,
+                                                 const char*,
                                                  const char*,
                                                  const char*,
                                                  const char*,
@@ -476,12 +499,13 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
   const char* username = std::get<4>(GetParam());
   const char* domain = std::get<5>(GetParam());
   const char* serial_number = std::get<6>(GetParam());
-  base::string16 serial_number16 =
-      base::UTF8ToUTF16(base::StringPrintf("%s", serial_number));
+  std::wstring serial_number16 =
+      base::UTF8ToWide(base::StringPrintf("%s", serial_number));
   const char* machine_guid = std::get<7>(GetParam());
-  base::string16 machine_guid16 =
-      base::UTF8ToUTF16(base::StringPrintf("%s", machine_guid));
+  std::wstring machine_guid16 =
+      base::UTF8ToWide(base::StringPrintf("%s", machine_guid));
   const char* is_user_ad_joined = std::get<8>(GetParam());
+  const char* device_resource_id = std::get<9>(GetParam());
   FakeOSUserManager fake_os_user_manager;
 
   bool should_succeed = (email && email[0]) && (id_token && id_token[0]) &&
@@ -512,6 +536,13 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
   SetMachineGuidForTesting(machine_guid16);
   GoogleRegistrationDataForTesting g_registration_data(serial_number16);
 
+  if (device_resource_id) {
+    std::wstring sid16 = base::UTF8ToWide(base::StringPrintf("%s", sid));
+    HRESULT hr = SetUserProperty(sid16, kRegUserDeviceResourceId,
+                                 base::UTF8ToWide(device_resource_id));
+    EXPECT_TRUE(SUCCEEDED(hr));
+  }
+
   // EnrollToGoogleMdmIfNeeded() should fail if any field is missing.
   if (should_succeed) {
     ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
@@ -531,7 +562,8 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values("domain", "", nullptr),
                        ::testing::Values("serial_number"),
                        ::testing::Values("machine_guid"),
-                       ::testing::Values("true", "false")));
+                       ::testing::Values("true", "false"),
+                       ::testing::Values("device_resource_id", "")));
 
 INSTANTIATE_TEST_SUITE_P(
     GcpRegistrationHardwareIds,
@@ -544,6 +576,7 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values("domain"),
                        ::testing::Values("serial_number", ""),
                        ::testing::Values("machine_guid", ""),
-                       ::testing::Values("true")));
+                       ::testing::Values("true"),
+                       ::testing::Values("device_resource_id", "")));
 
 }  // namespace credential_provider

@@ -6,17 +6,17 @@
 
 #include <utility>
 
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "media/base/media_switches.h"
 
 namespace audio {
 
 // static
 std::unique_ptr<UserInputMonitor> UserInputMonitor::Create(
-    mojo::ScopedSharedBufferHandle handle) {
-  base::ReadOnlySharedMemoryRegion memory =
-      mojo::UnwrapReadOnlySharedMemoryRegion(std::move(handle));
-  if (memory.IsValid())
+    base::ReadOnlySharedMemoryRegion memory) {
+  if (base::FeatureList::IsEnabled(media::kKeyPressMonitoring) &&
+      memory.IsValid()) {
     return std::make_unique<UserInputMonitor>(memory.Map());
+  }
 
   return nullptr;
 }

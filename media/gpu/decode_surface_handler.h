@@ -6,10 +6,7 @@
 #define MEDIA_GPU_DECODE_SURFACE_HANDLER_H_
 
 #include "base/memory/scoped_refptr.h"
-
-namespace gfx {
-class Rect;
-}
+#include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
@@ -23,6 +20,10 @@ template <class T>
 class DecodeSurfaceHandler {
  public:
   DecodeSurfaceHandler() = default;
+
+  DecodeSurfaceHandler(const DecodeSurfaceHandler&) = delete;
+  DecodeSurfaceHandler& operator=(const DecodeSurfaceHandler&) = delete;
+
   virtual ~DecodeSurfaceHandler() = default;
 
   // Returns a T for decoding into, if available, or nullptr.
@@ -31,16 +32,13 @@ class DecodeSurfaceHandler {
   // Called by the client to indicate that |dec_surface| is ready to be
   // outputted. This can actually be called before decode is finished in
   // hardware; this method must guarantee that |dec_surface|s are processed in
-  // the same order as SurfaceReady is called. (On Intel, this order doesn't
+  // the same order as SurfaceReady() is called. (On Intel, this order doesn't
   // need to be explicitly maintained since the driver will enforce it, together
   // with any necessary dependencies).
   virtual void SurfaceReady(scoped_refptr<T> dec_surface,
                             int32_t bitstream_id,
                             const gfx::Rect& visible_rect,
                             const VideoColorSpace& color_space) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecodeSurfaceHandler);
 };
 
 }  // namespace media

@@ -11,28 +11,28 @@
 
 namespace {
 
-ash::OrientationLockType ToAshOrientationLockType(
-    blink::WebScreenOrientationLockType blink_orientation_lock) {
+chromeos::OrientationType ToAshOrientationLockType(
+    device::mojom::ScreenOrientationLockType blink_orientation_lock) {
   switch (blink_orientation_lock) {
-    case blink::kWebScreenOrientationLockDefault:
-    case blink::kWebScreenOrientationLockAny:
-      return ash::OrientationLockType::kAny;
-    case blink::kWebScreenOrientationLockPortrait:
-      return ash::OrientationLockType::kPortrait;
-    case blink::kWebScreenOrientationLockPortraitPrimary:
-      return ash::OrientationLockType::kPortraitPrimary;
-    case blink::kWebScreenOrientationLockPortraitSecondary:
-      return ash::OrientationLockType::kPortraitSecondary;
-    case blink::kWebScreenOrientationLockLandscape:
-      return ash::OrientationLockType::kLandscape;
-    case blink::kWebScreenOrientationLockLandscapePrimary:
-      return ash::OrientationLockType::kLandscapePrimary;
-    case blink::kWebScreenOrientationLockLandscapeSecondary:
-      return ash::OrientationLockType::kLandscapeSecondary;
-    case blink::kWebScreenOrientationLockNatural:
-      return ash::OrientationLockType::kNatural;
+    case device::mojom::ScreenOrientationLockType::DEFAULT:
+    case device::mojom::ScreenOrientationLockType::ANY:
+      return chromeos::OrientationType::kAny;
+    case device::mojom::ScreenOrientationLockType::PORTRAIT:
+      return chromeos::OrientationType::kPortrait;
+    case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:
+      return chromeos::OrientationType::kPortraitPrimary;
+    case device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY:
+      return chromeos::OrientationType::kPortraitSecondary;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE:
+      return chromeos::OrientationType::kLandscape;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY:
+      return chromeos::OrientationType::kLandscapePrimary;
+    case device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY:
+      return chromeos::OrientationType::kLandscapeSecondary;
+    case device::mojom::ScreenOrientationLockType::NATURAL:
+      return chromeos::OrientationType::kNatural;
   }
-  return ash::OrientationLockType::kAny;
+  return chromeos::OrientationType::kAny;
 }
 
 }  // namespace
@@ -52,14 +52,15 @@ bool ScreenOrientationDelegateChromeos::FullScreenRequired(
 
 void ScreenOrientationDelegateChromeos::Lock(
     content::WebContents* web_contents,
-    blink::WebScreenOrientationLockType orientation_lock) {
+    device::mojom::ScreenOrientationLockType orientation_lock) {
   ash::Shell::Get()->screen_orientation_controller()->LockOrientationForWindow(
       web_contents->GetNativeView(),
       ToAshOrientationLockType(orientation_lock));
 }
 
-bool ScreenOrientationDelegateChromeos::ScreenOrientationProviderSupported() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+bool ScreenOrientationDelegateChromeos::ScreenOrientationProviderSupported(
+    content::WebContents* web_contents) {
+  return ash::TabletMode::IsInTabletMode();
 }
 
 void ScreenOrientationDelegateChromeos::Unlock(

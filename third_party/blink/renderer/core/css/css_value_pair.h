@@ -59,12 +59,12 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
   }
 
   bool Equals(const CSSValuePair& other) const {
-    DCHECK_EQ(identical_values_policy_, other.identical_values_policy_);
     return DataEquivalent(first_, other.first_) &&
-           DataEquivalent(second_, other.second_);
+           DataEquivalent(second_, other.second_) &&
+           identical_values_policy_ == other.identical_values_policy_;
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
   CSSValuePair(ClassType class_type,

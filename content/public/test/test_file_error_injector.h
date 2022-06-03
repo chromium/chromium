@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "url/gurl.h"
@@ -67,6 +66,9 @@ class TestFileErrorInjector
     download::DownloadInterruptReason error;  // Error to inject.
     int64_t stream_offset = -1;     // Offset of the error stream.
     int64_t stream_bytes_written = -1;  // Bytes written to the error stream.
+    // If > 0, only write operations covering this offset will generate errors.
+    // Otherwise, all file writes will generate errors.
+    int64_t data_write_offset = -1;
   };
 
   // Creates an instance.  May only be called once.
@@ -75,6 +77,9 @@ class TestFileErrorInjector
   // TODO(rdsmith): Allow multiple calls for different download managers.
   static scoped_refptr<TestFileErrorInjector> Create(
       DownloadManager* download_manager);
+
+  TestFileErrorInjector(const TestFileErrorInjector&) = delete;
+  TestFileErrorInjector& operator=(const TestFileErrorInjector&) = delete;
 
   // Injects the errors such that new download files will be affected.
   // The download system must already be initialized before calling this.
@@ -127,8 +132,6 @@ class TestFileErrorInjector
 
   // The download manager we set the factory on.
   DownloadManagerImpl* download_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileErrorInjector);
 };
 
 }  // namespace content

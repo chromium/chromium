@@ -34,4 +34,42 @@ TEST(MIMETypeRegistryTest, PluginMimeTypes) {
             MIMETypeRegistry::GetWellKnownMIMETypeForExtension("swf").Utf8());
 }
 
+TEST(MIMETypeRegistryTest, PlainTextMIMEType) {
+  EXPECT_TRUE(MIMETypeRegistry::IsPlainTextMIMEType("text/plain"));
+  EXPECT_TRUE(MIMETypeRegistry::IsPlainTextMIMEType("text/javascript"));
+  EXPECT_TRUE(MIMETypeRegistry::IsPlainTextMIMEType("TEXT/JavaScript"));
+  EXPECT_FALSE(MIMETypeRegistry::IsPlainTextMIMEType("text/html"));
+  EXPECT_FALSE(MIMETypeRegistry::IsPlainTextMIMEType("text/xml"));
+  EXPECT_FALSE(MIMETypeRegistry::IsPlainTextMIMEType("text/xsl"));
+}
+
+TEST(MIMETypeRegistryTest, TextXMLType) {
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("text/xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("Text/xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("tEXt/XML"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/XML"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/x-tra+xML"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/xslt+xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/rdf+Xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("image/svg+xml"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("text/xsl"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("text/XSL"));
+  EXPECT_TRUE(MIMETypeRegistry::IsXMLMIMEType("application/x+xml"));
+
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-custom;a=a+xml"));
+  EXPECT_FALSE(
+      MIMETypeRegistry::IsXMLMIMEType("application/x-custom;a=a+xml ;"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-custom+xml2"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-custom+xml2  "));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-custom+exml"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("text/html"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/xml;"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/xml "));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-what+xml;"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/x-tra+xML;a=2"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/+xML"));
+  EXPECT_FALSE(MIMETypeRegistry::IsXMLMIMEType("application/+xml"));
+}
+
 }  // namespace blink

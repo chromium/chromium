@@ -1,0 +1,16 @@
+noparent = True
+
+include_rules = [
+  "+ash/constants",
+  "+base",
+  "+chromeos/dbus",
+  "+components/prefs",
+  "+device/bluetooth",
+  "+media",
+  "+mojo/public/cpp/bindings",
+  "+services/media_session/public",
+  "+ui/events/devices",
+  "+testing",
+  "+third_party/abseil-cpp/absl",
+  "+third_party/cros_system_api/dbus",
+]

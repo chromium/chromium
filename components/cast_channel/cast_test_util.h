@@ -11,9 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/cast_channel/cast_message_handler.h"
+#include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/cast_channel/cast_transport.h"
@@ -29,6 +29,10 @@ namespace cast_channel {
 class MockCastTransport : public CastTransport {
  public:
   MockCastTransport();
+
+  MockCastTransport(const MockCastTransport&) = delete;
+  MockCastTransport& operator=(const MockCastTransport&) = delete;
+
   ~MockCastTransport() override;
 
   void SetReadDelegate(
@@ -38,12 +42,12 @@ class MockCastTransport : public CastTransport {
                    net::CompletionOnceCallback callback) override {
     // GMock does not handle move-only types, we need to rely on a mock method
     // that takes a repeating callback, which will work well with GMock actions.
-    SendMessage(message, base::AdaptCallbackForRepeating(std::move(callback)));
+    SendMessage_(message, callback);
   }
 
-  MOCK_METHOD2(SendMessage,
+  MOCK_METHOD2(SendMessage_,
                void(const CastMessage& message,
-                    const net::CompletionRepeatingCallback& callback));
+                    net::CompletionOnceCallback& callback));
 
   MOCK_METHOD0(Start, void(void));
 
@@ -52,21 +56,21 @@ class MockCastTransport : public CastTransport {
 
  private:
   std::unique_ptr<CastTransport::Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCastTransport);
 };
 
 class MockCastTransportDelegate : public CastTransport::Delegate {
  public:
   MockCastTransportDelegate();
+
+  MockCastTransportDelegate(const MockCastTransportDelegate&) = delete;
+  MockCastTransportDelegate& operator=(const MockCastTransportDelegate&) =
+      delete;
+
   ~MockCastTransportDelegate() override;
 
   MOCK_METHOD1(OnError, void(ChannelError error));
   MOCK_METHOD1(OnMessage, void(const CastMessage& message));
   MOCK_METHOD0(Start, void(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastTransportDelegate);
 };
 
 class MockCastSocketObserver : public CastSocket::Observer {
@@ -79,7 +83,7 @@ class MockCastSocketObserver : public CastSocket::Observer {
                void(const CastSocket& socket, const CastMessage& message));
 };
 
-class MockCastSocketService : public CastSocketService {
+class MockCastSocketService : public CastSocketServiceImpl {
  public:
   explicit MockCastSocketService(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
@@ -88,39 +92,38 @@ class MockCastSocketService : public CastSocketService {
   void OpenSocket(NetworkContextGetter network_context_getter,
                   const CastSocketOpenParams& open_params,
                   CastSocket::OnOpenCallback open_cb) override {
-    // Unit test should not call |open_cb| more than once. Just use
-    // base::AdaptCallbackForRepeating to pass |open_cb| to a mock method.
-    OpenSocketInternal(open_params.ip_endpoint,
-                       base::AdaptCallbackForRepeating(std::move(open_cb)));
+    OpenSocket_(open_params.ip_endpoint, open_cb);
   }
 
-  MOCK_METHOD2(OpenSocketInternal,
+  MOCK_METHOD2(OpenSocket_,
                void(const net::IPEndPoint& ip_endpoint,
-                    const base::Callback<void(CastSocket*)>& open_cb));
+                    CastSocket::OnOpenCallback& open_cb));
   MOCK_CONST_METHOD1(GetSocket, CastSocket*(int channel_id));
 };
 
 class MockCastSocket : public CastSocket {
  public:
-  using MockOnOpenCallback = base::Callback<void(CastSocket* socket)>;
+  using MockOnOpenCallback = base::RepeatingCallback<void(CastSocket* socket)>;
 
   MockCastSocket();
+
+  MockCastSocket(const MockCastSocket&) = delete;
+  MockCastSocket& operator=(const MockCastSocket&) = delete;
+
   ~MockCastSocket() override;
 
   void Connect(CastSocket::OnOpenCallback callback) override {
-    // Unit test should not call |open_cb| more than once. Just use
-    // base::AdaptCallbackForRepeating to pass |open_cb| to a mock method.
-    ConnectInternal(base::AdaptCallbackForRepeating(std::move(callback)));
+    Connect_(callback);
   }
 
   void Close(net::CompletionOnceCallback callback) override {
     // GMock does not handle move-only types, we need to rely on a mock method
     // that takes a repeating callback, which will work well with GMock actions.
-    Close(base::AdaptCallbackForRepeating(std::move(callback)));
+    Close_(callback);
   }
 
-  MOCK_METHOD1(ConnectInternal, void(const MockOnOpenCallback& callback));
-  MOCK_METHOD1(Close, void(const net::CompletionRepeatingCallback& callback));
+  MOCK_METHOD1(Connect_, void(CastSocket::OnOpenCallback& callback));
+  MOCK_METHOD1(Close_, void(net::CompletionOnceCallback& callback));
   MOCK_CONST_METHOD0(ready_state, ReadyState());
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
@@ -156,16 +159,23 @@ class MockCastSocket : public CastSocket {
 
   std::unique_ptr<MockCastTransport> mock_transport_;
   std::unique_ptr<Observer> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCastSocket);
 };
 
 class MockCastMessageHandler : public CastMessageHandler {
  public:
   explicit MockCastMessageHandler(MockCastSocketService* socket_service);
+
+  MockCastMessageHandler(const MockCastMessageHandler&) = delete;
+  MockCastMessageHandler& operator=(const MockCastMessageHandler&) = delete;
+
   ~MockCastMessageHandler() override;
 
-  MOCK_METHOD3(EnsureConnection,
+  MOCK_METHOD4(EnsureConnection,
+               void(int,
+                    const std::string&,
+                    const std::string&,
+                    VirtualConnectionType connection_type));
+  MOCK_METHOD3(CloseConnection,
                void(int, const std::string&, const std::string&));
   MOCK_METHOD3(RequestAppAvailability,
                void(CastSocket* socket,
@@ -173,23 +183,27 @@ class MockCastMessageHandler : public CastMessageHandler {
                     GetAppAvailabilityCallback callback));
   MOCK_METHOD1(RequestReceiverStatus, void(int channel_id));
   MOCK_METHOD3(SendBroadcastMessage,
-               void(int,
-                    const std::vector<std::string>&,
-                    const BroadcastRequest&));
-  MOCK_METHOD4(LaunchSession,
+               Result(int,
+                      const std::vector<std::string>&,
+                      const BroadcastRequest&));
+  MOCK_METHOD6(LaunchSession,
                void(int,
                     const std::string&,
                     base::TimeDelta,
+                    const std::vector<std::string>&,
+                    const absl::optional<base::Value>&,
                     LaunchSessionCallback callback));
   MOCK_METHOD4(StopSession,
                void(int channel_id,
                     const std::string& session_id,
-                    const base::Optional<std::string>& client_id,
+                    const absl::optional<std::string>& client_id,
                     ResultCallback callback));
   MOCK_METHOD2(SendAppMessage,
                Result(int channel_id, const CastMessage& message));
+  MOCK_METHOD2(SendCastMessage,
+               Result(int channel_id, const CastMessage& message));
   MOCK_METHOD4(SendMediaRequest,
-               base::Optional<int>(int channel_id,
+               absl::optional<int>(int channel_id,
                                    const base::Value& body,
                                    const std::string& source_id,
                                    const std::string& destination_id));
@@ -198,9 +212,6 @@ class MockCastMessageHandler : public CastMessageHandler {
                     const base::Value& body,
                     const std::string& source_id,
                     ResultCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastMessageHandler);
 };
 
 // Creates the IPEndpoint 192.168.1.1.
@@ -221,7 +232,7 @@ ACTION_TEMPLATE(PostCompletionCallbackTask,
                 HAS_1_TEMPLATE_PARAMS(int, cb_idx),
                 AND_1_VALUE_PARAMS(rv)) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(testing::get<cb_idx>(args), rv));
+      FROM_HERE, base::BindOnce(std::move(testing::get<cb_idx>(args)), rv));
 }
 
 }  // namespace cast_channel

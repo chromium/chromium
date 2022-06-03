@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/win/static_constants.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/win_utils.h"

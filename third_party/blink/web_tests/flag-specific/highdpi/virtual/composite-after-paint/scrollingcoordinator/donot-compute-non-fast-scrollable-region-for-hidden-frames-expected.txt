@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL This test ensures that non-fast scrollable area is re-computed on FrameView visibility changes. assert_equals: expected "[51, 102, 200, 200]" but got "[77, 153, 300, 300]"
+Harness: the test ran to completion.
+

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 

@@ -117,7 +117,7 @@ target.
 
 ``` python
 android_library("my_test_service") {
-  java_files = [ "src/org/chromium/chrome/test/MyTestService.java" ]
+  sources = [ "src/org/chromium/chrome/test/MyTestService.java" ]
   deps = [ ... ]
 }
 ```

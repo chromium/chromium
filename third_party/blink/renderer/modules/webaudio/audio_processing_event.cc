@@ -25,8 +25,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_processing_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_processing_event_init.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_processing_event_init.h"
 
 namespace blink {
 
@@ -72,7 +72,7 @@ const AtomicString& AudioProcessingEvent::InterfaceName() const {
   return event_interface_names::kAudioProcessingEvent;
 }
 
-void AudioProcessingEvent::Trace(blink::Visitor* visitor) {
+void AudioProcessingEvent::Trace(Visitor* visitor) const {
   visitor->Trace(input_buffer_);
   visitor->Trace(output_buffer_);
   Event::Trace(visitor);

@@ -15,6 +15,7 @@
 // to make notification_helper_unittests.exe have data dependency on chrome.exe.
 
 #include <memory>
+#include <string>
 
 #include <NotificationActivationCallback.h>
 #include <wrl/client.h>
@@ -22,13 +23,12 @@
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -71,6 +71,8 @@ class ProcessTreeFilter : public base::ProcessFilter {
       : parent_pid_(process.Pid()) {
     ancestor_processes_[process.Pid()] = std::move(process);
   }
+  ProcessTreeFilter(const ProcessTreeFilter&) = delete;
+  ProcessTreeFilter& operator=(const ProcessTreeFilter&) = delete;
 
   bool Includes(const base::ProcessEntry& entry) const override {
     auto iter = ancestor_processes_.find(entry.parent_pid());
@@ -115,8 +117,6 @@ class ProcessTreeFilter : public base::ProcessFilter {
   // A flag indicating if there is any child process alive.
   // Must be mutable because override function Includes() is const.
   mutable bool has_child_process_alive_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessTreeFilter);
 };
 
 // Kills |process| and all of its descendants. Child processes are explicitly
@@ -144,7 +144,7 @@ void KillProcessTree(base::Process process) {
 }
 
 // Returns the process with name |name| if it is found.
-base::Process FindProcess(const base::string16& name) {
+base::Process FindProcess(const std::wstring& name) {
   unsigned int pid;
   {
     base::NamedProcessIterator iter(name, nullptr);
@@ -176,6 +176,8 @@ class ChildProcessFilter : public base::ProcessFilter {
  public:
   explicit ChildProcessFilter(base::ProcessId parent_pid)
       : parent_pid_(parent_pid) {}
+  ChildProcessFilter(const ChildProcessFilter&) = delete;
+  ChildProcessFilter& operator=(const ChildProcessFilter&) = delete;
 
   bool Includes(const base::ProcessEntry& entry) const override {
     return parent_pid_ == entry.parent_pid();
@@ -183,13 +185,17 @@ class ChildProcessFilter : public base::ProcessFilter {
 
  private:
   const base::ProcessId parent_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessFilter);
 };
 
 }  // namespace
 
 class NotificationHelperLaunchesChrome : public testing::Test {
+ public:
+  NotificationHelperLaunchesChrome(const NotificationHelperLaunchesChrome&) =
+      delete;
+  NotificationHelperLaunchesChrome& operator=(
+      const NotificationHelperLaunchesChrome&) = delete;
+
  protected:
   NotificationHelperLaunchesChrome() : root_(HKEY_CURRENT_USER) {}
 
@@ -242,8 +248,6 @@ class NotificationHelperLaunchesChrome : public testing::Test {
   std::unique_ptr<WorkItemList> work_item_list_;
 
   base::win::ScopedCOMInitializer scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationHelperLaunchesChrome);
 };
 
 TEST_F(NotificationHelperLaunchesChrome, ChromeLaunchTest) {

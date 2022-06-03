@@ -41,11 +41,11 @@ test(function() {
   assert_equals(newPoint.y, 210);
 
   // Check invalid arguments for 'matrixTransform'.
-  assert_throws(new TypeError(), function() { point.matrixTransform(); });
-  assert_throws(new TypeError(), function() { point.matrixTransform(-1); });
-  assert_throws(new TypeError(), function() { point.matrixTransform(5); });
-  assert_throws(new TypeError(), function() { point.matrixTransform('aString'); });
-  assert_throws(new TypeError(), function() { point.matrixTransform(point); });
-  assert_throws(new TypeError(), function() { point.matrixTransform(svgElement); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(-1); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(5); });
+  assert_throws_js(TypeError, function() { point.matrixTransform('aString'); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(point); });
+  assert_throws_js(TypeError, function() { point.matrixTransform(svgElement); });
 });
 </script>

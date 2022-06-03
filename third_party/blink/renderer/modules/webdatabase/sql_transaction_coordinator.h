@@ -48,7 +48,12 @@ class SQLTransactionCoordinator final
     : public GarbageCollected<SQLTransactionCoordinator> {
  public:
   SQLTransactionCoordinator();
-  void Trace(blink::Visitor*);
+
+  SQLTransactionCoordinator(const SQLTransactionCoordinator&) = delete;
+  SQLTransactionCoordinator& operator=(const SQLTransactionCoordinator&) =
+      delete;
+
+  void Trace(Visitor*) const;
   void AcquireLock(SQLTransactionBackend*);
   void ReleaseLock(SQLTransactionBackend*);
   void Shutdown();
@@ -70,8 +75,6 @@ class SQLTransactionCoordinator final
   bool is_shutting_down_;
 
   void ProcessPendingTransactions(CoordinationInfo&);
-
-  DISALLOW_COPY_AND_ASSIGN(SQLTransactionCoordinator);
 };
 
 }  // namespace blink

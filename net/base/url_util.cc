@@ -12,7 +12,8 @@
 #include <ws2tcpip.h>
 #endif
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace net {
 
@@ -35,18 +37,18 @@ bool IsHostCharAlphanumeric(char c) {
 }
 
 bool IsNormalizedLocalhostTLD(const std::string& host) {
-  return base::EndsWith(host, ".localhost", base::CompareCase::SENSITIVE);
+  return base::EndsWith(host, ".localhost");
 }
 
 // Helper function used by GetIdentityFromURL. If |escaped_text| can be "safely
 // unescaped" to a valid UTF-8 string, return that string, as UTF-16. Otherwise,
 // convert it as-is to UTF-16. "Safely unescaped" is defined as having no
 // escaped character between '0x00' and '0x1F', inclusive.
-base::string16 UnescapeIdentityString(base::StringPiece escaped_text) {
+std::u16string UnescapeIdentityString(base::StringPiece escaped_text) {
   std::string unescaped_text;
-  if (UnescapeBinaryURLComponentSafe(
+  if (base::UnescapeBinaryURLComponentSafe(
           escaped_text, false /* fail_on_path_separators */, &unescaped_text)) {
-    base::string16 result;
+    std::u16string result;
     if (base::UTF8ToUTF16(unescaped_text.data(), unescaped_text.length(),
                           &result)) {
       return result;
@@ -140,7 +142,7 @@ std::string QueryIterator::GetValue() const {
 const std::string& QueryIterator::GetUnescapedValue() {
   DCHECK(!at_end_);
   if (value_.is_nonempty() && unescaped_value_.empty()) {
-    unescaped_value_ = UnescapeURLComponent(
+    unescaped_value_ = base::UnescapeURLComponent(
         GetValue(), UnescapeRule::SPACES | UnescapeRule::PATH_SEPARATORS |
                         UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
                         UnescapeRule::REPLACE_PLUS_WITH_SPACE);
@@ -252,11 +254,32 @@ std::string TrimEndingDot(base::StringPiece host) {
   if (len > 1 && host_trimmed[len - 1] == '.') {
     host_trimmed.remove_suffix(1);
   }
-  return host_trimmed.as_string();
+  return std::string(host_trimmed);
 }
 
 std::string GetHostOrSpecFromURL(const GURL& url) {
   return url.has_host() ? TrimEndingDot(url.host_piece()) : url.spec();
+}
+
+std::string GetSuperdomain(base::StringPiece domain) {
+  size_t dot_pos = domain.find('.');
+  if (dot_pos == std::string::npos)
+    return "";
+  return std::string(domain.substr(dot_pos + 1));
+}
+
+bool IsSubdomainOf(base::StringPiece subdomain, base::StringPiece superdomain) {
+  // Subdomain must be identical or have strictly more labels than the
+  // superdomain.
+  if (subdomain.length() <= superdomain.length())
+    return subdomain == superdomain;
+
+  // Superdomain must be suffix of subdomain, and the last character not
+  // included in the matching substring must be a dot.
+  if (!base::EndsWith(subdomain, superdomain))
+    return false;
+  subdomain.remove_suffix(superdomain.length());
+  return subdomain.back() == '.';
 }
 
 std::string CanonicalizeHost(base::StringPiece host,
@@ -265,6 +288,17 @@ std::string CanonicalizeHost(base::StringPiece host,
   const url::Component raw_host_component(0, static_cast<int>(host.length()));
   std::string canon_host;
   url::StdStringCanonOutput canon_host_output(&canon_host);
+  // A url::StdStringCanonOutput starts off with a zero length buffer. The
+  // first time through Grow() immediately resizes it to 32 bytes, incurring
+  // a malloc. With libcxx a 22 byte or smaller request can be accommodated
+  // within the std::string itself (i.e. no malloc occurs). Start the buffer
+  // off at the max size to avoid a malloc on short strings.
+  // NOTE: To ensure the final size is correctly reflected, it's necessary
+  // to call Complete() which will adjust the size to the actual bytes written.
+  // This is handled below for success cases, while failure cases discard all
+  // the output.
+  const int kCxxMaxStringBufferSizeWithoutMalloc = 22;
+  canon_host_output.Resize(kCxxMaxStringBufferSizeWithoutMalloc);
   url::CanonicalizeHostVerbose(host.data(), raw_host_component,
                                &canon_host_output, host_info);
 
@@ -359,7 +393,7 @@ bool HostStringIsLocalhost(base::StringPiece host) {
   IPAddress ip_address;
   if (ip_address.AssignFromIPLiteral(host))
     return ip_address.IsLoopback();
-  return IsLocalHostname(host, nullptr);
+  return IsLocalHostname(host);
 }
 
 GURL SimplifyUrlForRequest(const GURL& url) {
@@ -382,9 +416,23 @@ GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url) {
   return url.ReplaceComponents(replace_scheme);
 }
 
+bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme) {
+  // file scheme is special. Windows file share origins can have network hosts.
+  if (scheme == url::kFileScheme)
+    return true;
+
+  url::SchemeType scheme_type;
+  if (!url::GetStandardSchemeType(
+          scheme.data(), url::Component(0, scheme.length()), &scheme_type)) {
+    return false;
+  }
+  return scheme_type == url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION ||
+         scheme_type == url::SCHEME_WITH_HOST_AND_PORT;
+}
+
 void GetIdentityFromURL(const GURL& url,
-                        base::string16* username,
-                        base::string16* password) {
+                        std::u16string* username,
+                        std::u16string* password) {
   *username = UnescapeIdentityString(url.username());
   *password = UnescapeIdentityString(url.password());
 }
@@ -412,34 +460,19 @@ bool IsGoogleHost(base::StringPiece host) {
     // Here it's possible to get away with faster case-sensitive comparisons
     // because the list above is all lowercase, and a GURL's host name will
     // always be canonicalized to lowercase as well.
-    if (base::EndsWith(host, suffix, base::CompareCase::SENSITIVE))
+    if (base::EndsWith(host, suffix))
       return true;
   }
   return false;
 }
 
-bool IsTLS13ExperimentHost(base::StringPiece host) {
-  return host == "inbox.google.com" || host == "mail.google.com" ||
-         host == "gmail.com";
-}
-
-bool IsLocalHostname(base::StringPiece host, bool* is_local6) {
+bool IsLocalHostname(base::StringPiece host) {
   std::string normalized_host = base::ToLowerASCII(host);
   // Remove any trailing '.'.
   if (!normalized_host.empty() && *normalized_host.rbegin() == '.')
     normalized_host.resize(normalized_host.size() - 1);
 
-  if (normalized_host == "localhost6" ||
-      normalized_host == "localhost6.localdomain6") {
-    if (is_local6)
-      *is_local6 = true;
-    return true;
-  }
-
-  if (is_local6)
-    *is_local6 = false;
   return normalized_host == "localhost" ||
-         normalized_host == "localhost.localdomain" ||
          IsNormalizedLocalhostTLD(normalized_host);
 }
 

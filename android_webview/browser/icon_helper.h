@@ -13,13 +13,10 @@
 #include "base/macros.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "url/gurl.h"
 
 class SkBitmap;
-
-namespace content {
-struct FaviconURL;
-}
 
 namespace gfx {
 class Size;
@@ -42,16 +39,19 @@ class IconHelper : public content::WebContentsObserver {
   };
 
   explicit IconHelper(content::WebContents* web_contents);
+
+  IconHelper(const IconHelper&) = delete;
+  IconHelper& operator=(const IconHelper&) = delete;
+
   ~IconHelper() override;
 
   void SetListener(Listener* listener);
 
   // From WebContentsObserver
   void DidUpdateFaviconURL(
-      const std::vector<content::FaviconURL>& candidates) override;
-  void DidStartNavigationToPendingEntry(
-      const GURL& url,
-      content::ReloadType reload_type) override;
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void DidStartNavigation(content::NavigationHandle* navigation) override;
 
   void DownloadFaviconCallback(
       int id,
@@ -69,8 +69,6 @@ class IconHelper : public content::WebContentsObserver {
 
   using MissingFaviconURLHash = size_t;
   std::unordered_set<MissingFaviconURLHash> missing_favicon_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconHelper);
 };
 
 }  // namespace android_webview

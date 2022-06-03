@@ -83,7 +83,7 @@ bool Base64UrlDecode(const StringPiece& input,
       base64_input_size += 4 - required_padding_characters;
 
     base64_input.reserve(base64_input_size.ValueOrDie());
-    input.AppendToString(&base64_input);
+    base64_input.append(input.data(), input.size());
 
     // Substitute the base64url URL-safe characters to their base64 equivalents.
     ReplaceChars(base64_input, "-", "+", &base64_input);

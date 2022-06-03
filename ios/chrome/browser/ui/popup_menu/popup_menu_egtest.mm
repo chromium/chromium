@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
@@ -24,7 +25,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 }  // namespace
 
 // Tests for the popup menus.
-@interface PopupMenuTestCase : ChromeTestCase
+@interface PopupMenuTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation PopupMenuTestCase
@@ -32,12 +33,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
 - (void)tearDown {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
-                                error:nil];
-#endif
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
 
@@ -76,7 +72,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       performAction:grey_longPress()];
 
   // Check that the first four entries are shown the back tab history menu.
-  [[EarlGrey selectElementWithMatcher:grey_text(entry0)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(entry0),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:grey_text(entry1)]
       assertWithMatcher:grey_notNil()];
@@ -128,11 +126,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-#if defined(CHROME_EARL_GREY_1)
-                           errorOrNil:nil];
-#elif defined(CHROME_EARL_GREY_2)
                                 error:nil];
-#endif
 
   // Expect that the tools menu has disappeared.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
@@ -153,17 +147,39 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_notVisible()];
 }
 
+- (void)testNewWindowFromToolsMenu {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::OpenNewWindowMenuButton()];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+
+  // Verify the second window.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+}
+
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
 // is not enabled
 - (void)testNoSearchForPDF {
-  web::test::SetUpFileBasedHttpServer();
+// TODO(crbug.com/1209346): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   const GURL URL = web::test::HttpServer::MakeUrl(kPDFURL);
 
   // Navigate to a mock pdf and verify that the find button is disabled.
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openToolsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kToolsMenuFindInPageId)]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuFindInPageId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 }

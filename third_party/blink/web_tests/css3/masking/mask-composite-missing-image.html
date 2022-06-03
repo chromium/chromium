@@ -15,8 +15,7 @@
 </style>
 </head>
 <body>
-  <p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=26084">WebKit Bug 26084: Bug 26084: Multiple missing images in webkit-mask-image prevent rendering</a></p>
   <div class="test">This text should be visible.</div>
-  <p>If the test passes, you should be able to see a lime square with a black border. Inside the border, you should see the text: This text should be visible. This test is currently failing.</p>
+  <p>If the test passes, you should see nothing above, because we should not render masked content if the mask image fails to load.</p>
 </body>
 </html>

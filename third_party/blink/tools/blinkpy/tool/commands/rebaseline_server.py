@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Starts a local HTTP server which displays web test failures (given a test
 results directory), provides comparisons of expected and actual results (both
 images and text) and allows one-click rebaselining of tests.
@@ -39,8 +38,8 @@ from blinkpy.tool.servers.rebaseline_server import get_test_baselines, Rebaselin
 
 
 class TestConfig(object):
-
-    def __init__(self, test_port, web_tests_directory, results_directory, platforms, host):
+    def __init__(self, test_port, web_tests_directory, results_directory,
+                 platforms, host):
         self.test_port = test_port
         self.web_tests_directory = web_tests_directory
         self.results_directory = results_directory
@@ -73,7 +72,8 @@ class RebaselineServer(AbstractLocalServerCommand):
                 return
             result_dict = result.result_dict()
             result_dict['state'] = STATE_NEEDS_REBASELINE
-            result_dict['baselines'] = get_test_baselines(result.test_name(), self._test_config)
+            result_dict['baselines'] = get_test_baselines(
+                result.test_name(), self._test_config)
             new_tests_subtree[result.test_name()] = result_dict
 
         WebTestResults(results_json).for_each_test(gather_baselines_for_test)
@@ -84,13 +84,17 @@ class RebaselineServer(AbstractLocalServerCommand):
         host = Host()
 
         print 'Parsing full_results.json...'
-        results_json_path = host.filesystem.join(results_directory, 'full_results.json')
-        results_json = json_results_generator.load_json(host.filesystem, results_json_path)
+        results_json_path = host.filesystem.join(results_directory,
+                                                 'full_results.json')
+        results_json = json_results_generator.load_json(
+            host.filesystem, results_json_path)
 
         port = tool.port_factory.get()
         web_tests_directory = port.web_tests_dir()
-        platforms = host.filesystem.listdir(host.filesystem.join(web_tests_directory, 'platform'))
-        self._test_config = TestConfig(port, web_tests_directory, results_directory, platforms, host)
+        platforms = host.filesystem.listdir(
+            host.filesystem.join(web_tests_directory, 'platform'))
+        self._test_config = TestConfig(port, web_tests_directory,
+                                       results_directory, platforms, host)
 
         print 'Gathering current baselines...'
         self._gather_baselines(results_json)

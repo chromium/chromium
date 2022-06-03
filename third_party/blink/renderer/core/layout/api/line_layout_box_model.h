@@ -121,10 +121,10 @@ class LineLayoutBoxModel : public LineLayoutItem {
 
  private:
   LayoutBoxModelObject* ToBoxModel() {
-    return ToLayoutBoxModelObject(GetLayoutObject());
+    return To<LayoutBoxModelObject>(GetLayoutObject());
   }
   const LayoutBoxModelObject* ToBoxModel() const {
-    return ToLayoutBoxModelObject(GetLayoutObject());
+    return To<LayoutBoxModelObject>(GetLayoutObject());
   }
 };
 

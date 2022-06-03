@@ -6,9 +6,7 @@ import logging
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.wpt_github import WPTGitHub
 from blinkpy.w3c.gerrit import GerritAPI, GerritError
-from blinkpy.w3c.common import (
-    read_credentials
-)
+from blinkpy.w3c.common import (read_credentials)
 
 _log = logging.getLogger(__name__)
 
@@ -44,8 +42,8 @@ class PrCleanupTool(object):
                          'script may fail with a network error when making '
                          'an API request to Gerrit.')
 
-        self.wpt_github = self.wpt_github or WPTGitHub(
-            self.host, gh_user, gh_token)
+        self.wpt_github = self.wpt_github or WPTGitHub(self.host, gh_user,
+                                                       gh_token)
         self.gerrit = self.gerrit or GerritAPI(self.host, gr_user, gr_token)
         pull_requests = self.retrieve_all_prs()
         for pull_request in pull_requests:
@@ -60,8 +58,8 @@ class PrCleanupTool(object):
             try:
                 cl = self.gerrit.query_cl(change_id)
             except GerritError as e:
-                _log.error(
-                    'Could not query change_id %s: %s', change_id, str(e))
+                _log.error('Could not query change_id %s: %s', change_id,
+                           str(e))
                 continue
 
             cl_status = cl.status
@@ -80,12 +78,14 @@ class PrCleanupTool(object):
         parser = argparse.ArgumentParser()
         parser.description = __doc__
         parser.add_argument(
-            '-v', '--verbose', action='store_true',
+            '-v',
+            '--verbose',
+            action='store_true',
             help='log extra details that may be helpful when debugging')
         parser.add_argument(
             '--credentials-json',
             help='A JSON file with GitHub credentials, '
-                 'generally not necessary on developer machines')
+            'generally not necessary on developer machines')
         return parser.parse_args(argv)
 
     def retrieve_all_prs(self):
@@ -104,5 +104,6 @@ class PrCleanupTool(object):
         _log.info(comment)
         _log.info('https://github.com/web-platform-tests/wpt/pull/%s',
                   pull_request.number)
-        _log.info(self.wpt_github.extract_metadata(
-            'Reviewed-on: ', pull_request.body))
+        _log.info(
+            self.wpt_github.extract_metadata('Reviewed-on: ',
+                                             pull_request.body))

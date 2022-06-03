@@ -6,10 +6,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/limits.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
@@ -26,14 +28,15 @@ using ::testing::_;
 
 namespace media {
 
-static const gfx::Size kInputVisibleSize(64, 48);
-static const uint32_t kInitialBitrate = 100000u;
-static const VideoCodecProfile kValidOutputProfile = H264PROFILE_MAIN;
+static constexpr gfx::Size kInputVisibleSize(64, 48);
+static constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
+static constexpr VideoCodecProfile kValidOutputProfile = H264PROFILE_MAIN;
 
 extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
       base::ThreadTaskRunnerHandle::Get());
@@ -49,29 +52,40 @@ class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
  public:
   MockVideoEncodeAcceleratorClient() = default;
 
+  MockVideoEncodeAcceleratorClient(const MockVideoEncodeAcceleratorClient&) =
+      delete;
+  MockVideoEncodeAcceleratorClient& operator=(
+      const MockVideoEncodeAcceleratorClient&) = delete;
+
   MOCK_METHOD3(RequireBitstreamBuffers,
                void(unsigned int, const gfx::Size&, size_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
   MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVideoEncodeAcceleratorClient);
+  MOCK_METHOD1(NotifyEncoderInfoChange,
+               void(const media::VideoEncoderInfo& info));
 };
 
 class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
  public:
   MojoVideoEncodeAcceleratorIntegrationTest() = default;
 
+  MojoVideoEncodeAcceleratorIntegrationTest(
+      const MojoVideoEncodeAcceleratorIntegrationTest&) = delete;
+  MojoVideoEncodeAcceleratorIntegrationTest& operator=(
+      const MojoVideoEncodeAcceleratorIntegrationTest&) = delete;
+
   void SetUp() override {
     mojo::PendingRemote<mojom::VideoEncodeAccelerator> mojo_vea;
     mojo_vea_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<MojoVideoEncodeAcceleratorService>(
-            base::Bind(&CreateAndInitializeFakeVEA), gpu::GpuPreferences()),
+            base::BindRepeating(&CreateAndInitializeFakeVEA),
+            gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds()),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
     mojo_vea_.reset(new MojoVideoEncodeAccelerator(
-        std::move(mojo_vea), gpu::VideoEncodeAcceleratorSupportedProfiles()));
+        std::move(mojo_vea),
+        media::VideoEncodeAccelerator::SupportedProfiles()));
   }
 
   void TearDown() override {
@@ -116,8 +130,6 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
 
   // The class under test, as a generic media::VideoEncodeAccelerator.
   std::unique_ptr<VideoEncodeAccelerator> mojo_vea_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorIntegrationTest);
 };
 
 TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, CreateAndDestroy) {}
@@ -309,15 +321,12 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodingParametersChange) {
   auto mock_vea_client = std::make_unique<MockVideoEncodeAcceleratorClient>();
   Initialize(mock_vea_client.get());
 
-  const uint32_t kNewBitrate = 123123u;
+  const Bitrate kNewBitrate = Bitrate::ConstantBitrate(123123u);
   const uint32_t kNewFramerate = 321321u;
 
   mojo_vea()->RequestEncodingParametersChange(kNewBitrate, kNewFramerate);
   base::RunLoop().RunUntilIdle();
-  VideoBitrateAllocation expected_bitrate_allocation;
-  expected_bitrate_allocation.SetBitrate(0, 0, kNewBitrate);
-  EXPECT_EQ(expected_bitrate_allocation,
-            fake_vea()->stored_bitrate_allocations().back());
+  EXPECT_EQ(kNewBitrate, fake_vea()->stored_bitrates().back());
 }
 
 // Tests that a RequestEncodingParametersChange() ripples through correctly.
@@ -363,8 +372,8 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   {
     // Any call to MojoVideoEncodeAccelerator here will do nothing because the
     // remote end has been torn down and needs to be re Initialize()d.
-    mojo_vea()->RequestEncodingParametersChange(1234u /* bitrate */,
-                                                3321 /* framerate */);
+    mojo_vea()->RequestEncodingParametersChange(
+        Bitrate::ConstantBitrate(1234u) /* bitrate */, 3321 /* framerate */);
     base::RunLoop().RunUntilIdle();
   }
 }

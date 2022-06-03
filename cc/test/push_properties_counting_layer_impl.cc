@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/test/push_properties_counting_layer_impl.h"
+#include "base/memory/ptr_util.h"
 
 namespace cc {
 

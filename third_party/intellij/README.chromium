@@ -1,9 +1,0 @@
-Name: IntelliJ Annotations
-URL: https://www.jetbrains.com/help/idea/2016.1/annotating-source-code.html
-Version: 12.0
-License: Apache 2.0
-License File: NOT_SHIPPED
-Security Critical: no
-Description:
-A set of annotations used for code inspection support and code documentation.
-Local Modifications: None

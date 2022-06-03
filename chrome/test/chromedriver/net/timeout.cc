@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 
 Timeout::Timeout() : start_(base::TimeTicks::Now()) {
 }

@@ -6,12 +6,12 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "ppapi/c/dev/ppb_buffer_dev.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_resource.h"
-#include "ppapi/c/dev/ppb_buffer_dev.h"
 #include "ppapi/proxy/host_dispatcher.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/ppapi_messages.h"

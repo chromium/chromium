@@ -3,316 +3,174 @@
 <translationbundle lang="fa">
 <translation id="1002108253973310084">نسخه ناسازگار پروتکل شناسایی شد. لطفاً مطمئن شوید جدیدترین نسخه نرم‌افزار روی هر دو رایانه نصب شده است و دوباره امتحان کنید.</translation>
 <translation id="1008557486741366299">اکنون نه</translation>
-<translation id="1050693411695664090">ضعیف</translation>
-<translation id="1152528166145813711">انتخاب...</translation>
-<translation id="1199593201721843963">غیر فعال کردن اتصالات راه دور</translation>
 <translation id="1201402288615127009">بعدی</translation>
-<translation id="1291443878853470558">‏اگر بخواهید کار با Chrome را برای دسترسی به این رایانه استفاده کنید، شما باید اتصالات راه دور را فعال کنید.</translation>
 <translation id="1297009705180977556">خطا در اتصال به <ph name="HOSTNAME" /></translation>
-<translation id="1324095856329524885">(این ویژگی هنوز برای رایانه شما موجود نیست)</translation>
-<translation id="1342297293546459414">‏رایانه اشتراک‎گذاری ‎شده را مشاهده و کنترل کنید.</translation>
-<translation id="1389790901665088353">‏بارگیری نصب‌کننده میزبان کنترل رایانه ازراه‌دور Chrome</translation>
 <translation id="1450760146488584666">شئ درخواست شده وجود ندارد.</translation>
 <translation id="1480046233931937785">دست‌اندرکاران</translation>
 <translation id="1520828917794284345">تغییر اندازه دسک‌تاپ جهت تناسب</translation>
-<translation id="154040539590487450">راه‌اندازی دسترسی راه دور به سرویس انجام نشد.</translation>
 <translation id="1546934824884762070">یک خطای غیرمنتظره روی داد. لطفاً این مشکل را به برنامه‌نویسان گزارش دهید.</translation>
-<translation id="1624185583382384493">‏اکنون «کنترل از راه دور رایانه Chrome» روی وب است. <ph name="LINK_BEGIN" />برنامه وب<ph name="LINK_END" /> ما را امتحان کنید—برنامه‌ای سریع و رایگان است و ویژگی‌های دیگری هم دارد، ازجمله پشتیبانی بهبودیافته از چند نمایشگر.</translation>
-<translation id="1643640058022401035">‏خروج از این صفحه، جلسه کار با Chrome را پایان می‌دهد.</translation>
-<translation id="1654128982815600832">در حال فعال کردن اتصالات راه دور برای این رایانه…</translation>
 <translation id="1697532407822776718">همه چیز مرتب است.</translation>
-<translation id="170207782578677537">این رایانه ثبت نشد.</translation>
-<translation id="174018511426417793">‏رایانه ثبت‌شده‌ای وجود ندارد. برای فعال کردن اتصال راه‌دور به رایانه، کنترل رایانه ازراه‌دور Chrome را نصب کنید و روی «<ph name="BUTTON_NAME" />» کلیک کنید.</translation>
 <translation id="1742469581923031760">در حال اتصال...</translation>
-<translation id="1770394049404108959">نمی‌توانم برنامه را باز کنم.</translation>
+<translation id="177040763384871009">برای اینکه پیوندهایی که در دستگاه راه دور روی آن‌ها کلیک می‌شود در مرورگر کارخواه باز شوند، باید مرورگر وب سیستم را به «<ph name="URL_FORWARDER_NAME" />» تغییر دهید.</translation>
 <translation id="177096447311351977">‏IP کانال برای کلاینت: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip=«<ph name="CLIENT_IP_ADDRESS_AND_PORT" />» host_ip=«<ph name="HOST_IP_ADDRESS_AND_PORT" />» کانال=«<ph name="CHANNEL_TYPE" />» اتصال=«<ph name="CONNECTION_TYPE" />».</translation>
-<translation id="1779766957982586368">بستن پنجره</translation>
-<translation id="1841799852846221389">در حال غیرفعال کردن اتصالات راه دور برای این رایانه…</translation>
 <translation id="1897488610212723051">حذف</translation>
-<translation id="195619862187186579">چیدمان‌های صفحه‌کلید</translation>
-<translation id="1996161829609978754">‏Chrome در حال بارگیری نصب‌‌کننده میزبان کار با Chrome است. بعد از اینکه بارگیری انجام شد٬ قبل از ادامه٬ نصب‌کننده را اجرا کنید.</translation>
 <translation id="2009755455353575666">اتصال ناموفق بود</translation>
-<translation id="2013884659108657024">‏Chrome درحال بارگیری نصب‌‌کننده میزبان کنترل رایانه ازراه‌دور Chrome است. بعد از اینکه بارگیری انجام شد، قبل از ادامه، نصب‌کننده را اجرا کنید.</translation>
-<translation id="2013996867038862849">همه کلاینت‌های مرتبط حذف شده‌اند.</translation>
 <translation id="2038229918502634450">میزبان در حال راه‌اندازی مجدد است تا یک تغییر در خط‌مشی را اعمال کند.</translation>
-<translation id="2046651113449445291">کلاینت‌های زیر با این کامپیوتر مرتبط شده‌اند و می‌توانند بدون ارائه پین وصل شوند. شما می‌توانید این اجازه را در هر زمان به‌صورت جداگانه یا برای تمام کلاینت‌ها باطل کنید.</translation>
 <translation id="2078880767960296260">فرآیند میزبان</translation>
 <translation id="20876857123010370">حالت پد مسیریابی</translation>
-<translation id="2089514346391228378">اتصالات راه دور برای این رایانه فعال شد.</translation>
 <translation id="2198363917176605566">‏برای استفاده از <ph name="PRODUCT_NAME" />، باید اجازه «ضبط صفحه‌نمایش» را اعطا کنید تا بتوان محتوای صفحه در این Mac را به ماشین کنترل ازراه‌دور ارسال کرد.
 
 برای اعطای این مجوز، روی «<ph name="BUTTON_NAME" />» در زیر کلیک کنید تا قاب اولویت‌های «ضبط صفحه‌نمایش» باز شود و سپس کادر کنار «<ph name="SERVICE_SCRIPT_NAME" />» را علامت بزنید.
 
 اگر «<ph name="SERVICE_SCRIPT_NAME" />» قبلاً علامت زده شده است، علامت آن را بردارید و دوباره علامت بزنید.</translation>
-<translation id="2208514473086078157">‏تنظیمات خط‌مشی اجازه نمی‌دهد این رایانه به‌‌عنوان میزبان کنترل رایانه ازراه‌دور Chrome هم‌رسانی شود. برای دریافت راهنمایی با سرپرست سیستم خود تماس بگیرید.</translation>
-<translation id="2220529011494928058">گزارش یک مشکل</translation>
-<translation id="2221097377466213233">‏استفاده از کلید Ctrl راست برای کلید Win (‏⌘ در Mac)</translation>
-<translation id="2235518894410572517">این رایانه را جهت مشاهده و کنترل برای شخص دیگری به اشتراک بگذارید.</translation>
-<translation id="2246783206985865117">این تنظیم براساس خط‌مشی دامنه‌تان مدیریت می‌شود.</translation>
-<translation id="2256115617011615191">راه‌اندازی مجدد در این لحظه</translation>
 <translation id="225614027745146050">خوش آمدید</translation>
-<translation id="228809120910082333">‏برای اجازه دسترسی به کار با Chrome، لطفاً حساب و پین خود را در زیر تأیید کنید.</translation>
-<translation id="2314101195544969792">جلسه <ph name="APPLICATION_NAME" /> شما برای مدتی بیکار بوده است و به زودی قطع می‌شود.</translation>
-<translation id="2317666076142640974">‏پیش‌نمایشی از <ph name="LINK_BEGIN" />برنامه وب کنترل رایانه ازراه‌دور Chrome‬<ph name="LINK_END" /> جدید دریافت کنید. دوست داریم بازخوردتان را بشنویم.</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
-<translation id="2353140552984634198">‏شما می‌توانید با استفاده از کار با Chrome، در حالت ایمن به رایانه دسترسی داشته باشید.</translation>
+<translation id="2329392777730037872"><ph name="URL" /> در کارخواه باز نشد.</translation>
+<translation id="2333212046079545895">‏حق نشر ۲۰۲۱ Google LLC. کلیه حقوق محفوظ است.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2366718077645204424">دسترسی به میزبان امکان‌پذیر نیست. این احتمالاً به دلیل پیکربندی شبکه‌ای است که استفاده می‌کنید.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  آخرین حضور آنلاین <ph name="RELATIVE_TIMESTAMP" />.</translation>
-<translation id="2405928220797050937">‏این برنامه دیگر پشتیبانی نمی‌شود. برای اطمینان از اینکه جدیدترین قابلیت‌ها و به‌روزرسانی‌های امنیتی را دریافت می‌کنید، لطفاً از <ph name="LINK_BEGIN" />برنامه وب کنترل رایانه ازراه‌دور Chrome<ph name="LINK_END" /> استفاده کنید.</translation>
-<translation id="2499160551253595098">‏با اجازه دادن به ما برای جمع‌آوری آمار مربوط به استفاده و گزارش‌های خرابی کمک کنید تا کنترل رایانه ازراه‌دور Chrome را ارتقا دهیم.</translation>
 <translation id="2504109125669302160">به <ph name="PRODUCT_NAME" /> مجوز «دسترس‌پذیری» اعطا کنید</translation>
 <translation id="2509394361235492552">متصل به <ph name="HOSTNAME" /></translation>
-<translation id="2512228156274966424">‏توجه: برای اطمینان از اینکه همه میان‌برهای صفحه‌کلید در دسترس است، می‌توانید کنترل رایانه ازراه‌دور Chrome را روی «بازکردن به‌عنوان پنجره» پیکربندی کنید.</translation>
 <translation id="2540992418118313681">می‌خواهید این رایانه را برای کاربر دیگر جهت مشاهده و کنترل به اشتراک بگذارید؟</translation>
 <translation id="2579271889603567289">میزبان خراب شد یا راه‌اندازی نشد.</translation>
 <translation id="2599300881200251572">‏این سرویس اتصال ورودی از کلاینت‌های کنترل رایانه ازراه‌دور Chrome را فعال می‌کند.</translation>
 <translation id="2647232381348739934">‏سرویس کار با Chrome</translation>
 <translation id="2676780859508944670">در حال انجام...</translation>
 <translation id="2699970397166997657">‏کار با Chrome</translation>
-<translation id="2747641796667576127">معمولاً به‌روزرسانی نرم‌افزار به‌طور خودکار انجام می‌شود، اما در بعضی موارد نادر ممکن است این کار ناموفق باشد. به‌روزرسانی نرم‌افزار نباید بیشتر از چند دقیقه زمان ببرد و انجام آن باید هنگام اتصال ازراه‌دور به رایانه نیز ممکن باشد.</translation>
-<translation id="2758123043070977469">مشکلی در احراز هویت وجود داشت، لطفاً دوباره به سیستم وارد شوید.</translation>
+<translation id="2758123043070977469">مشکلی در اصالت‌سنجی وجود داشت، لطفاً دوباره به سیستم وارد شوید.</translation>
 <translation id="2803375539583399270">پین را وارد کنید</translation>
-<translation id="2841013758207633010">زمان</translation>
-<translation id="2851754573186462851">‏اجرای جریانی برنامه Chromium</translation>
-<translation id="2888969873284818612">یک خطای شبکه روی داد. وقتی دستگاهتان دوباره آنلاین شد، برنامه را راه‌اندازی مجدد می‌کنیم.</translation>
-<translation id="2891243864890517178">‏برای Mac‏ (OS X Yosemite نسخه ۱۰.۱۰ و بالاتر)</translation>
-<translation id="2894654864775534701">این رایانه در حال حاضر تحت یک حساب دیگر اشتراک‌گذاری شده است.</translation>
 <translation id="2919669478609886916">‏شما در حال اشتراک‌گذاری این سیستم با کاربر دیگری هستید. آیا می‎خواهید اشتراک‎گذاری ادامه یابد؟</translation>
-<translation id="2921543551052660690">‏قبلاً با <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) وارد سیستم شده بودید. برای دسترسی به رایانه‌های آن حساب، با آن حساب <ph name="LINK_BEGIN" />وارد Chromium شوید<ph name="LINK_END" /> و «کار با Chrome» را دوباره نصب کنید.</translation>
-<translation id="2926340305933667314">دسترسی راه دور به این رایانه غیرفعال نشد. لطفاً بعداً دوباره امتحان کنید.</translation>
-<translation id="2930135165929238380">‏بعضی از اجزای لازم وجود ندارند. لطفاً به chrome://plugins بروید و مطمئن شوید Native Client فعال است.</translation>
-<translation id="2939145106548231838">احراز هویت به میزبان</translation>
-<translation id="3020807351229499221">به‌روزرسانی پین انجام نشد. لطفاً بعداً دوباره امتحان کنید.</translation>
-<translation id="3025388528294795783">برای کمک به ما در رفع مشکلتان، لطفاً به ما بگویید چه مشکلی پیش آمد:</translation>
+<translation id="2939145106548231838">اصالت‌سنجی به میزبان</translation>
 <translation id="3027681561976217984">حالت لمسی</translation>
 <translation id="3106379468611574572">‏رایانه راه دور به درخواست اتصال پاسخ نمی‌‎دهد. لطفاً بررسی کنید این رایانه آنلاین باشد و دوباره امتحان کنید.</translation>
-<translation id="310979712355504754">حذف همه</translation>
 <translation id="3150823315463303127">میزبان نتوانست خط‌مشی را بخواند.</translation>
-<translation id="3171922709365450819">این دستگاه توسط این کارخواه پشتیبیانی نمی‌شود چون نیاز به احراز هویت شخص ثالث دارد.</translation>
+<translation id="3171922709365450819">این دستگاه توسط این کارخواه پشتیبیانی نمی‌شود چون نیاز به اصالت‌سنجی شخص ثالث دارد.</translation>
 <translation id="3197730452537982411">رایانه ازراه‌دور</translation>
 <translation id="324272851072175193">ارسال این دستورالعمل با ایمیل</translation>
-<translation id="3258789396564295715">‏می‌توانید با استفاده از کنترل رایانه ازراه‌دور Chrome به‌صورت امن به این رایانه دسترسی پیدا کنید.</translation>
-<translation id="3286521253923406898">‏کنترل‌کننده برنامه میزبان کار با Chrome</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> می‌خواهد تغییراتی ایجاد کند.</translation>
-<translation id="332624996707057614">ویرایش نام رایانه</translation>
 <translation id="3339299787263251426">دسترسی ایمن به رایانه‌تان از طریق اینترنت</translation>
-<translation id="3360306038446926262">Windows</translation>
-<translation id="3362124771485993931">تایپ مجدد پین</translation>
-<translation id="337167041784729019">نمایش آمار</translation>
 <translation id="3385242214819933234">مالک میزبان نامعتبر است.</translation>
-<translation id="3403830762023901068">‏تنظیمات خط‌مشی اجازه نمی‌دهد این رایانه به‌ عنوان یک میزبان کار با Chrome اشتراک‌گذاری شود. برای دریافت راهنمایی با سرپرست سیستم خود تماس بگیرید.</translation>
 <translation id="3423542133075182604">فرایند برقراری ارتباط ازراه‌دور کلید امنیتی</translation>
 <translation id="3581045510967524389">اتصال به شبکه انجام نشد. لطفاً بررسی کنید که دستگاه شما به اینترنت وصل باشد.</translation>
 <translation id="3596628256176442606">‏این سرویس اتصالات ورودی از کلاینت‌های کنترل دسک‌تاپ ازراه‌دور Chrome را فعال می‌کند.</translation>
-<translation id="3606997049964069799">‏وارد سیستم Chromium نشدید. لطفاً وارد سیستم شوید و دوباره امتحان کنید.</translation>
-<translation id="3649256019230929621">بازکردن پنجره در حداقل اندازه</translation>
 <translation id="369442766917958684">آفلاین.</translation>
 <translation id="3695446226812920698">با نحوه انجام کار آشنا شوید</translation>
-<translation id="3718805989288361841">‏خطایی در تنظیمات خط‌مشی «کنترل رایانه ازراه‌دور Chrome» وجود دارد. برای راهنمایی با سرپرست سیستم خود تماس بگیرید.</translation>
 <translation id="3776024066357219166">‏جلسه "کنترل رایانه ازراه‌دور Chrome" تمام شد.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
-<translation id="3884839335308961732">‏برای اجازه دسترسی ازطریق برنامه کنترل رایانه ازراه‌دور Chrome، لطفاً حساب و پین خود را در زیر تأیید کنید.</translation>
+<translation id="3858860766373142691">نام</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3905196214175737742">دامنه مالک میزبان نامعتبر است.</translation>
-<translation id="3908017899227008678">کاهش اندازه</translation>
 <translation id="3931191050278863510">میزبان متوقف شد.</translation>
-<translation id="3933246213702324812">‏«Chrome ازراه‌دور» در <ph name="HOSTNAME" /> به‌ روز نیست و باید به‌روزرسانی شود.</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
-<translation id="3989511127559254552">برای ادامه باید مجوزهای دسترسی گسترش یافته به رایانه‌تان را بدهید. این کار فقط یک بار لازم است انجام شود.</translation>
-<translation id="4006787130661126000">‏اگر می‌خواهید از کنترل رایانه ازراه‌دور Chrome برای دسترسی به این رایانه استفاده کنید، باید اتصال راه‌دور را فعال کنید.</translation>
 <translation id="405887016757208221">رایانه راه دور نتوانست جلسه را مقداردهی اولیه کند. اگر مشکل ادامه داشت، لطفاً میزبان را دوباره پیکربندی کنید.</translation>
 <translation id="4060747889721220580">بارگیری فایل</translation>
-<translation id="4068946408131579958">تمام اتصالات</translation>
-<translation id="409800995205263688">‏توجه: تنظیمات خط‌ مشی فقط اجازه اتصال بین رایانه‎های داخل شبکه شما را می‎دهد.</translation>
 <translation id="4126409073460786861">بعد از تکمیل راه‌اندازی، می‌توانید با انتخاب دستگاه و وارد کردن پین، به رایانه دسترسی داشته باشید</translation>
 <translation id="4145029455188493639">واردشده به سیستم به‌عنوان <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">برخی از بخش‌ها از بین رفته‌اند. لطفاً مطمئن شوید آخرین نسخه نرم‌افزار را دارید و دوباره امتحان کنید.</translation>
-<translation id="4156740505453712750">برای حفاظت از دسترسی به این رایانه، لطفاً پینی را که <ph name="BOLD_START" />حداقل شش رقم<ph name="BOLD_END" /> دارد انتخاب کنید. این پین هنگام اتصال از مکان دیگر لازم است.</translation>
-<translation id="4169432154993690151">‏برای انتخاب تصویر نمایه، به «کنترل رایانه از راه دور Chrome» اجازه دسترسی به دوربین بدهید</translation>
 <translation id="4176825807642096119">کد دسترسی</translation>
-<translation id="4207623512727273241">لطفاً قبل از ادامه، نصب‌کننده را اجرا کنید.</translation>
 <translation id="4227991223508142681">برنامه کمکی ارائه مجوز به میزبان</translation>
 <translation id="4240294130679914010">‏حذف نصب‌کننده برنامه میزبان کار با Chrome</translation>
-<translation id="4277463233460010382">این رایانه پیکربندی شده است تا به یک یا چند کلاینت اجازه دهد بدون وارد کردن پین وصل شوند.</translation>
+<translation id="4257751272692708833">بازارسال‌کننده نشانی وب <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">کد دسترسی نامعتبر است. لطفاً دوباره امتحان کنید.</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
-<translation id="4361728918881830843">‏برای فعال کردن اتصال راه‌دور به یک رایانه دیگر، کنترل رایانه ازراه‌دور Chrome را نصب کنید و سپس روی «<ph name="BUTTON_NAME" />» کلیک کنید.</translation>
-<translation id="4394049700291259645">غیر فعال کردن</translation>
 <translation id="4405930547258349619">کتابخانه اصلی</translation>
-<translation id="4430435636878359009">غیرفعال کردن اتصالات راه دور به این رایانه</translation>
-<translation id="4430915108080446161">در حال ایجاد کد دسترسی...</translation>
 <translation id="443560535555262820">تنها اولویت‌های دسترس‌پذیری</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
-<translation id="4472575034687746823">شروع به کار</translation>
-<translation id="4481276415609939789">‏رایانه‌ای ثبت نشده است. برای فعال کردن اتصالات راه دور به رایانه، کار با Chrome را فعال کنید و روی «<ph name="BUTTON_NAME" />» کلیک کنید.</translation>
+<translation id="4512952200932940229">‏حق نشر ۲۰۲۱ Chromium Authors کلیه حقوق محفوظ است.</translation>
 <translation id="4513946894732546136">بازخورد</translation>
-<translation id="4517233780764084060">‏توجه: برای اطمینان از اینکه همه میان‌برهای صفحه‌کلید در دسترس هستند، می‌توانید کار با Chrome را روی «بازکردن بعنوان پنجره» پیکربندی کنید.</translation>
 <translation id="4563926062592110512">کلاینت قطع شد: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4572065712096155137">دسترسی</translation>
-<translation id="4592037108270173918">وقتی ازطریق شبکه تلفن همراه به دستگاهی متصل می‌شوید، ممکن است بابت داده مصرفی از شما هزینه دریافت شود. می‌خواهید ادامه دهید؟</translation>
-<translation id="4619978527973181021">پذیرفتن و نصب</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> درست پیکربندی نشده است. لطفاً مرورگر وب پیش‌فرض دیگری انتخاب کنید و سپس بازارسال نشانی وب را دوباره فعال کنید.</translation>
 <translation id="4635770493235256822">دستگاه‌های کنترل ازراه‌دور</translation>
 <translation id="4660011489602794167">نمایش صفحه‌کلید</translation>
-<translation id="4703302905453407178">یکی از مؤلفه‌های ضروری دیگر کار نمی‌کند. لطفاً این مشکل را به برنامه‌نویسان گزارش دهید.</translation>
 <translation id="4703799847237267011">‏جلسه کار با Chrome پایان یافته است.</translation>
-<translation id="4736223761657662401">سابقه اتصال</translation>
-<translation id="4741792197137897469">‏احراز هویت انجام نشد. لطفاً دوباره وارد سیستم Chrome شوید.</translation>
-<translation id="477305884757156764">برنامه بیش از حد کند است.</translation>
+<translation id="4741792197137897469">‏اصالت‌سنجی انجام نشد. لطفاً دوباره وارد سیستم Chrome شوید.</translation>
 <translation id="4784508858340177375">‏سرور X خراب شد یا راه‌اندازی نشد.</translation>
-<translation id="4795786176190567663">مجوز انجام این عمل را ندارید.</translation>
 <translation id="4798680868612952294">گزینه‌های موشواره</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4808503597364150972">لطفاً پین خود را برای <ph name="HOSTNAME" /> وارد کنید.</translation>
 <translation id="4812684235631257312">میزبان</translation>
 <translation id="4867841927763172006">‏ارسال PrtScn</translation>
-<translation id="4913529628896049296">در انتظار برقراری اتصال...</translation>
-<translation id="4918086044614829423">می‌پذیرم</translation>
-<translation id="492843737083352574">با صفحه‌کلید یا موشواره‌ام مشکل دارم.</translation>
-<translation id="4973800994433240357">‏با بارگیری «نصب‌کننده میزبان Chromoting»، موافقتتان را با <ph name="LINK_BEGIN" />شرایط خدمات<ph name="LINK_END" /> Google اعلام می‌کنید.</translation>
 <translation id="4974476491460646149">اتصال به <ph name="HOSTNAME" /> بسته شد</translation>
 <translation id="4985296110227979402">ابتدا باید رایانه‌تان را برای دسترسی ازراه‌دور تنظیم کنید</translation>
+<translation id="4987330545941822761">‏«رایانه ازدور Chrome» نمی‌تواند مرورگر را برای باز کردن محل نشانی‌های وب تعیین کند. لطفاً آن را از فهرست زیر انتخاب کنید.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (آفلاین)</translation>
-<translation id="5070121137485264635">‏میزبان راه دور از شما می‌خواهد که در وب سایت شخص ثالثی تأیید هویت شوید. برای ادامه، باید با مجوزهای اضافی «‏‫کنترل کامپیوتر ازراه‌دور Chrome‬» برای دستیابی به این آدرس موافقت کنید:</translation>
 <translation id="507204348399810022">مطمئنید می‌خواهید اتصالات راه دور به <ph name="HOSTNAME" /> را غیرفعال کنید؟</translation>
-<translation id="5081343395220691640">ارتباط با سرور برقرار نشد: <ph name="ERROR" /></translation>
-<translation id="5156271271724754543">لطفاً یک پین یکسان را در هر دو کادر وارد کنید.</translation>
 <translation id="5170982930780719864">شناسه میزبان نامعتبر است.</translation>
-<translation id="518094545883702183">این اطلاعات فقط برای عیب‌یابی مشکل گزارش شده به کار می‌روند و فقط برای فردی که گزارش را بررسی می‌کند قابل دسترس هستند، و بیش از ۳۰ روز نگهداری نمی‌شوند.</translation>
 <translation id="5204575267916639804">سؤالات متداول</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
-<translation id="5234764350956374838">لغو کردن</translation>
-<translation id="5254120496627797685">‏با خارج شدن از این صفحه، جلسه کنترل رایانه ازراه‌دور Chrome تمام می‌شود.</translation>
+<translation id="5234764350956374838">رد کردن</translation>
 <translation id="5308380583665731573">اتصال</translation>
-<translation id="5327248766486351172">نام</translation>
 <translation id="533625276787323658">چیزی برای اتصال وجود ندارد</translation>
-<translation id="5363265567587775042">از کاربری که می‌خواهید به رایانه‌اش دسترسی داشته باشید بخواهید روی «<ph name="SHARE" />» کلیک کند و کد دسترسی را به شما بدهد.</translation>
-<translation id="5379087427956679853">‏کنترل رایانه ازراه‌دور Chrome به شما اجازه می‎دهد به‌طور امن رایانه خود را در وب به اشتراک بگذارید. هر دو کاربر باید برنامه کنترل رایانه ازراه‌دور Chrome را اجرا کنند، این برنامه را در <ph name="URL" /> پیدا می‌کنید.</translation>
 <translation id="5397086374758643919">‏حذف‌ نصب‌کننده میزبان کنترل رایانه ازراه‌دور Chrome</translation>
-<translation id="5419185025274123272">برنامه بازنشانی نمی‌شود. همچنان می‌توانید یک گزارش اشکال ارسال کنید.</translation>
 <translation id="5419418238395129586">آخرین حضور آنلاین: <ph name="DATE" /></translation>
 <translation id="544077782045763683">میزبان خاموش شد.</translation>
-<translation id="5510035215749041527">قطع ارتباط</translation>
-<translation id="5593560073513909978">سرویس موقتاً در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="5601503069213153581">پین</translation>
-<translation id="5619148062500147964">به این رایانه</translation>
-<translation id="5625493749705183369">‏به رایانه‎‌های دیگر دسترسی داشته باشید یا به دیگر کاربران اجازه دهید تا به‌طور امن به رایانهٔ شما در اینترنت دسترسی داشته باشند.</translation>
-<translation id="5702987232842159181">متصل شد:</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">دسک‌تاپ شما در حال حاضر با <ph name="USER" /> به‌ اشتراک گذاشته شده است.</translation>
 <translation id="5750083143895808682">واردشده به سیستم به‌عنوان <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="5773590752998175013">تاریخ مرتبط‌سازی</translation>
 <translation id="579702532610384533">اتصال مجدد</translation>
 <translation id="5810269635982033450">صفحه نمایش مانند ترک‌پد عمل می‌کند</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> درخواست دسترسی کرده تا صفحه‌تان را ببیند و صفحه‌کلید و موشواره‌تان را کنترل کند. اگر انتظار چنین درخواستی را ندارید، «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» را فشار دهید. درغیراین‌صورت، هر وقت آماده بودید «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» را انتخاب کنید تا اتصال مجاز شود.</translation>
 <translation id="5823658491130719298">‏در رایانه‌ای که می‌خواهید از راه‌ دور به آن دسترسی پیدا کنید، Chrome را باز کنید و به <ph name="INSTALLATION_LINK" /> بروید</translation>
 <translation id="5841343754884244200">گزینه‌های نمایش</translation>
-<translation id="5843054235973879827">چرا این امن است؟</translation>
-<translation id="5859141382851488196">پنجره جدید...</translation>
-<translation id="6011539954251327702">‏کار با Chrome، به شما اجازه می‌دهد رایانه خود را به راحتی در وب به اشتراک بگذارید. هر دو کاربر باید برنامه Chrome را داشته باشند که می‌توان آن را در <ph name="URL" /> یافت.</translation>
 <translation id="6033507038939587647">گزینه‌های صفحه‌کلید</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6062854958530969723">مقداردهی اولیه میزبان انجام نشد.</translation>
-<translation id="6091564239975589852">ارسال کلیدها</translation>
 <translation id="6099500228377758828">‏سرویس کنترل رایانه ازراه‌دور Chrome</translation>
 <translation id="6122191549521593678">آنلاین</translation>
-<translation id="6167788864044230298">‏اجرای جریانی برنامه Chrome</translation>
-<translation id="6173536234069435147">‏نمی‌توانم فایل‌های Google Drive خودم را باز کنم.</translation>
 <translation id="6178645564515549384">میزبان پیام‌رسانی بومی برای کمک ازراه‌دور</translation>
 <translation id="618120821413932081">به‌روزرسانی وضوح از راه‌ دور مطابق با پنجره</translation>
-<translation id="6193698048504518729">اتصال به <ph name="HOSTNAME" /></translation>
-<translation id="6198252989419008588">تغییر دادن پین</translation>
-<translation id="6204583485351780592"><ph name="HOSTNAME" /> (تاریخ گذشته)</translation>
-<translation id="6221358653751391898">‏وارد سیستم Chrome نشدید. لطفاً وارد سیستم شوید و دوباره امتحان کنید.</translation>
 <translation id="6223301979382383752">باز کردن اولویت‌های ضبط صفحه‌نمایش</translation>
-<translation id="6227369581881558336">‏درحال‌حاضر، «کنترل از راه دور رایانه Chrome» با ویژگی‌های جدید، ازجمله انتقال فایل، روی وب است! <ph name="LINK_BEGIN" />برنامه وب<ph name="LINK_END" /> ما را بررسی کنید.</translation>
 <translation id="6284412385303060032">میزبانی که در صفحه کنسول منطقی اجرا می‌شود خاموش شده است تا با جابه‌جایی به یک میزبان در حال اجرا در یک جلسه خاص کاربر، «حالت پرده‌ای» را پشتیبانی کند.</translation>
-<translation id="629730747756840877">حساب</translation>
-<translation id="6304318647555713317">کلاینت</translation>
-<translation id="6381670701864002291">مورد دیگر.</translation>
-<translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
-<translation id="6411861157501911556">‏برای استفاده از <ph name="PRODUCT_NAME" />، باید مجوز «دسترس‌پذیری» اعطا کنید تا بتوان ورودی را از ماشین کنترل ازراه‌دور در این Mac تزریق کرد.
-
-برای اعطای این مجوز، روی «<ph name="BUTTON_NAME" />» در زیر کلیک کنید تا قاب اولویت‌های «دسترس‌پذیری» باز شود و سپس کادر کنار «<ph name="SERVICE_SCRIPT_NAME" />» را علامت بزنید.
-
-اگر «<ph name="SERVICE_SCRIPT_NAME" />» قبلاً علامت زده شده است، علامت آن را بردارید و دوباره علامت بزنید.</translation>
-<translation id="6441316101718669559">هماهنگی با دسکتاپ در این پلتفورم پشتیبانی نمی‌شود. همچنان می‌توانید از این برنامه استفاده کنید اما تجربه کاربری مناسبی نخواهید داشت.</translation>
-<translation id="652218476070540101">پین برای این رایانه در حال به‌روزرسانی شدن است...</translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
-<translation id="6541219117979389420">‏گزارش‌های برنامه ممکن است دارای اطلاعات شخصی شامل هویت (ایمیل) و نام و مشخصات فایل‌ها و پوشه‌های Google Drive باشد.</translation>
 <translation id="6542902059648396432">گزارش مشکل...</translation>
-<translation id="6550675742724504774">گزینه‌ها</translation>
-<translation id="6570205395680337606">بازنشانی برنامه. کارهای ذخیره نشده از بین می‌روند.</translation>
 <translation id="6583902294974160967">پشتیبانی</translation>
 <translation id="6612717000975622067">‏ارسال Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">هم‌رسانی</translation>
-<translation id="6668065415969892472">پین شما به‌روز شد.</translation>
-<translation id="6681800064886881394">‏حق نسخه‌برداری ۲۰۱۳ Google Inc. کلیه حقوق محفوظ است.</translation>
-<translation id="6705482892455291412">وقتی کد را وارد می‌کنند، از شما درخواست می‌شود اتصال را بپذیرید و جلسه اشتراک‌گذاری را شروع کنید.</translation>
-<translation id="6746493157771801606">پاک کردن سابقه</translation>
-<translation id="6748108480210050150">از</translation>
 <translation id="677755392401385740">میزبان برای کاربر آغاز شد: <ph name="HOST_USERNAME" />.</translation>
-<translation id="6865175692670882333">مشاهده/ویرایش</translation>
-<translation id="6913710942997637770">‏برای انتخاب تصویر نمایه، به «کنترل رایانه از راه دور Chrome» اجازه دسترسی به عکس‌هایتان را بدهید</translation>
-<translation id="6930242544192836755">مدت زمان</translation>
+<translation id="6902524959760471898">برنامه راهنما برای باز کردن نشانی وب در کارخواه <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">نمایش/پنهان کردن صفحه‌کلید</translation>
-<translation id="6944854424004126054">بازگرداندن پنجره</translation>
-<translation id="6948905685698011662">‏کنترل رایانه ازراه‌دور Chrome‬ اکنون در وب وجود دارد! <ph name="LINK_BEGIN" />برنامه وب رایگان<ph name="LINK_END" /> ما را امتحان کنید.</translation>
 <translation id="6963936880795878952">اتصالات به رایانه راه دور به‌صورت موقت مسدود می‌شود، چون شخصی سعی داشت با پین نامعتبر به آن متصل شود. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6985691951107243942">آیا مطمئنید که می‌خواهید اتصالات راه دور به <ph name="HOSTNAME" /> را غیرفعال کنید؟ اگر نظرتان عوض شود، باید از همان رایانه اتصالات را مجدداً فعال کنید.</translation>
-<translation id="6998989275928107238">به</translation>
 <translation id="7019153418965365059">خطای نامشخص میزبان: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">راهنمایی ازراه‌دور</translation>
 <translation id="7026930240735156896">با دنبال کردن دستورالعمل‌ها، رایانه‌تان را برای دسترسی از راه دور تنظیم کنید</translation>
-<translation id="7038683108611689168">‏با در اختیار قرار دادن آمار استفاده و گزارش‌های خرابی، به ما کمک کنید کار با Chrome را بهبود بخشیم.</translation>
 <translation id="7067321367069083429">صفحه نمایش مانند صفحه لمسی عمل می‌کند</translation>
 <translation id="7116737094673640201">‏به «کنترل رایانه ازراه‌دور Chrome» خوش‌آمدید</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
-<translation id="7149517134817561223">‏برنامه‌ای که دستورها را به میزبان کنترل رایانه ازراه‌دور Chrome ارسال می‌کند.</translation>
-<translation id="7215059001581613786">لطفاً پینی وارد کنید که دارای شش رقم یا بیشتر باشد.</translation>
 <translation id="7312846573060934304">میزبان آفلاین است.</translation>
 <translation id="7319983568955948908">توقف اشتراک‌گذاری</translation>
+<translation id="7359298090707901886">نمی‌توان از مرورگر انتخاب‌شده برای باز کردن نشانی‌های وب در ماشین محلی استفاده کرد.</translation>
 <translation id="7401733114166276557">‏کنترل رایانه ازراه‌دور Chrome</translation>
 <translation id="7434397035092923453">دسترسی برای کلاینت ممنوع شده است: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">کلاینت وصل شد: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">تغییر حساب</translation>
-<translation id="7606912958770842224">فعال کردن اتصالات راه دور</translation>
+<translation id="7535110896613603182">باز کردن تنظیمات برنامه‌های پیش‌فرض</translation>
 <translation id="7628469622942688817">پین من در این دستگاه به خاطر سپرده شود.</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
-<translation id="7672203038394118626">اتصالات راه دور برای این رایانه غیرفعال شد.</translation>
 <translation id="7678209621226490279">متصل کردن در راست</translation>
 <translation id="7693372326588366043">بازخوانی فهرست میزبان‌ها</translation>
 <translation id="7714222945760997814">گزارش این مورد</translation>
-<translation id="7782471917492991422">لطفاً تنظیمات مدیریت نیروی رایانهٔ خود را بررسی کنید و مطمئن شوید که بر روی خواب در هنگام عدم استفاده پیکربندی نشده باشد.</translation>
-<translation id="7810127880729796595">نمایش آمار (ارتباط: <ph name="QUALITY" />)</translation>
-<translation id="7836926030608666805">‏برخی از بخش‌ها از بین رفته‌اند. لطفاً مطمئن شوید آخرین نسخه Chrome را دارید و دوباره امتحان کنید.</translation>
 <translation id="7868137160098754906">لطفاً پین خودتان را برای رایانه راه دور وارد کنید.</translation>
-<translation id="7869445566579231750">مجوز اجرای این برنامه را ندارید.</translation>
 <translation id="7895403300744144251">خط‌مشی‌های امنیتی در رایانه راه دور به اتصالات از حساب شما اجازه نمی‌دهد.</translation>
 <translation id="7936528439960309876">متصل کردن در چپ</translation>
-<translation id="7948001860594368197">گزینه‌های صفحه</translation>
-<translation id="7970576581263377361">‏احراز هویت انجام نشد. لطفاً دوباره وارد سیستم Chromium شوید.</translation>
+<translation id="7970576581263377361">‏اصالت‌سنجی انجام نشد. لطفاً دوباره وارد سیستم Chromium شوید.</translation>
 <translation id="7981525049612125370">وقت جلسه راه دور تمام شد.</translation>
 <translation id="8038111231936746805">(پیش‌‏فرض)</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
-<translation id="8041721485428375115">‏با بارگیری «نصب‌کننده میزبان کنترل رایانه ازراه‌دور Chrome»، موافقتتان را با <ph name="LINK_BEGIN" />شرایط خدمات<ph name="LINK_END" /> Google اعلام می‌کنید.</translation>
 <translation id="8060029310790625334">مرکز راهنمایی</translation>
 <translation id="806699900641041263">درحال اتصال به <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">‏برای استفاده از کنترل رایانه ازراه‌دور Chrome، باید حساب Google به دستگاهتان اضافه کنید.</translation>
-<translation id="80739703311984697">‏میزبان راه دور از شما می‌خواهد که در وب سایت شخص ثالثی تأیید هویت شوید. برای ادامه، باید
-با مجوزهای اضافی Chromoting برای دسترسی به این آدرس موافقت کنید:</translation>
 <translation id="809687642899217504">رایانه‌های من</translation>
-<translation id="811307782653349804">از همه جا به رایانه شخصی خود دسترسی داشته باشید.</translation>
 <translation id="8116630183974937060">یک خطای شبکه رخ داده است. لطفاً بررسی کنید که دستگاهتان آنلاین باشد و دوباره امتحان کنید.</translation>
-<translation id="8178433417677596899">اشتراک‌گذاری صفحه کاربر به کاربر٬ برای پشتیبانی فنی راه دور مناسب است.</translation>
-<translation id="8187079423890319756">‏حق نسخه‌برداری ۲۰۱۳ The Chromium Authors. کلیه حقوق محفوظ است.</translation>
-<translation id="8196755618196986400">برای اینکه بتوانیم برای اطلاعات بیشتر با شما تماس بگیریم، نشانی ایمیل شما در تمام بازخوردهای ارسالی شما قرار می‌گیرد.</translation>
-<translation id="8244400547700556338">اطلاعاتی درباره نحوه انجام کار کسب کنید.</translation>
-<translation id="8261506727792406068">حذف</translation>
-<translation id="8355326866731426344">این کد دسترسی در <ph name="TIMEOUT" /> منقضی میشود</translation>
-<translation id="8355485110405946777">قرار دادن گزارش‌های برنامه برای کمک به رفع مشکلتان (گزارش‌ها ممکن است شامل اطلاعات خصوصی باشند).</translation>
-<translation id="837021510621780684">از این رایانه</translation>
+<translation id="8295077433896346116">‏برای استفاده از <ph name="PRODUCT_NAME" />، باید اجازه «دسترس‌پذیری» بدهید تا ورودی از ماشین ازراه‌دور بتواند به این Mac تزریق شود.
+
+برای ارائه این اجازه، روی «<ph name="BUTTON_NAME" />» در زیر کلیک کنید. در قاب «دسترس‌پذیری» که باز می‌شود، کادر کنار «<ph name="SERVICE_SCRIPT_NAME" />» را علامت بزنید.
+
+اگر «<ph name="SERVICE_SCRIPT_NAME" />» قبلاً علامت زده شده است، علامت آن را بردارید و دوباره علامت بزنید.</translation>
+<translation id="8305209735512572429">فرایند اصالت‌سنجی وب با کنترل ازراه‌دور</translation>
 <translation id="8383794970363966105">‏برای استفاده از کار با Chrome ازراه‌دور، باید یک حساب Google به دستگاهتان اضافه کنید.</translation>
 <translation id="8386846956409881180">‏میزبان با اعتبارنامه OAuth نامعتبری پیکربندی شده است.</translation>
 <translation id="8397385476380433240">اعطای مجوز به <ph name="PRODUCT_NAME" /></translation>
@@ -322,32 +180,16 @@
 <translation id="8509907436388546015">فرآیند یکپارچگی با دسک‌تاپ</translation>
 <translation id="8513093439376855948">میزبان پیام‌رسانی بومی برای کنترل ازراه‌دور مدیریت میزبان</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
-<translation id="8548209692293300397">‏قبلاً با <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) وارد سیستم شده بودید. برای دسترسی به رایانه‌های آن حساب، با آن حساب <ph name="LINK_BEGIN" />وارد Google Chrome شوید<ph name="LINK_END" /> و کنترل رایانه ازراه‌دور Chrome را دوباره نصب کنید.</translation>
 <translation id="858006550102277544">نظر</translation>
-<translation id="8642984861538780905">نسبتاً خوب</translation>
-<translation id="8712909229180978490">‏نمی‌توانم فایل‌های ذخیره شده‌ام را آنلاین در Google Drive ببینم.</translation>
 <translation id="8743328882720071828">می‌خواهید به <ph name="CLIENT_USERNAME" /> اجازه دهید که رایانه‌تان را ببیند و کنترل کند؟</translation>
 <translation id="8747048596626351634">‏جلسه خراب شد یا شروع نشد. درصورت وجود ~/.chrome-remote-desktop-session در رایانه راه‌ دور، مطمئن شوید که یک فرآیند پیش‌زمینه طولانی‌مدت مثل محیط دسک‌تاپ یا مدیر پنجره را راه‌اندازی می‌کند.</translation>
-<translation id="8759753423332885148">بیشتر بیاموزید.</translation>
-<translation id="8791202241915690908">‏بارگیری نصب‌کننده میزبان Chromoting</translation>
 <translation id="8804164990146287819">خط‌مشی رازداری</translation>
-<translation id="894763922177556086">خوب</translation>
-<translation id="895780780740011433">‏برای Windows 7 و بالاتر</translation>
-<translation id="897805526397249209">‏برای فعال کردن اتصالات راه دور به رایانه دیگر، کار با Chrome را نصب کنید و روی «<ph name="BUTTON_NAME" />» کلیک کنید.</translation>
-<translation id="8998327464021325874">‏کنترل‌کننده برنامه میزبان کنترل رایانه ازراه‌دور Chrome</translation>
-<translation id="9016232822027372900">در هر حال متصل شود</translation>
-<translation id="906458777597946297">بازکردن پنجره در حداکثر اندازه</translation>
+<translation id="8906511416443321782">‏برای ضبط کردن صدا و جاری‌سازی آن در کارخواه «رایانه ازدور Chrome»، دسترسی به میکروفون ضروری است.</translation>
 <translation id="9111855907838866522">به دستگاه راه دورتان وصل شده‌اید. برای باز کردن منو، لطفاً با چهار انگشت روی صفحه ضربه بزنید.</translation>
 <translation id="9126115402994542723">هنگام اتصال به میزبان از این دستگاه، پین دوباره درخواست نشود.</translation>
-<translation id="9149580767411232853">مرئی نگه‌داشتن کل رایانه ازراه‌دور</translation>
-<translation id="9149992051684092333">‏برای شروع اشتراک‎گذاری دسک‎تاپ خود، کد دسترسی زیر را به شخصی بدهید که به شما کمک می‎کند.</translation>
 <translation id="916856682307586697">‏XSession پیش‌فرض راه‌اندازی شود</translation>
 <translation id="9187628920394877737">به <ph name="PRODUCT_NAME" /> مجوز «ضبط صفحه‌نمایش» اعطا کنید</translation>
-<translation id="9188433529406846933">ارائهٔ مجوز</translation>
 <translation id="9213184081240281106">پیکربندی میزبان نامعتبر است.</translation>
-<translation id="951991426597076286">رد کردن</translation>
-<translation id="962733587145768554">برای تکمیل این فرآیند لطفاً «<ph name="SHARE" />» را در کادر گفتگوی اتصال انتخاب کنید.</translation>
-<translation id="979100198331752041">‏کنترل رایانه ازراه‌دور Chrome در <ph name="HOSTNAME" /> به‌‌روز نیست و باید به‌روزرسانی شود.</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (آخرین حضور آنلاین <ph name="DATE_OR_TIME" />)</translation>

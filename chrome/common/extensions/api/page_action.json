@@ -16,6 +16,13 @@
         "isInstanceOf": "ImageData",
         "additionalProperties": { "type": "any" },
         "description": "Pixel data for an image. Must be an ImageData object (for example, from a <code>canvas</code> element)."
+      },
+      {
+        "id": "TabDetails",
+        "type": "object",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab to query state for. If no tab is specified, the non-tab-specific state is returned." }
+        }
       }
     ],
     "functions": [
@@ -60,13 +67,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "description": "Specify the tab to get the title from."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",
@@ -131,7 +132,7 @@
       {
         "name": "setPopup",
         "type": "function",
-        "description": "Sets the html document to be opened as a popup when the user clicks on the page action's icon.",
+        "description": "Sets the HTML document to be opened as a popup when the user clicks on the page action's icon.",
         "parameters": [
           {
             "name": "details",
@@ -140,7 +141,7 @@
               "tabId": {"type": "integer", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."},
               "popup": {
                 "type": "string",
-                "description": "The html file to show in a popup.  If set to the empty string (''), no popup is shown."
+                "description": "The relative path to the HTML file to show in a popup. If set to the empty string (<code>''</code>), no popup is shown."
               }
             }
           },
@@ -154,13 +155,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "description": "Specify the tab to get the popup from."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",

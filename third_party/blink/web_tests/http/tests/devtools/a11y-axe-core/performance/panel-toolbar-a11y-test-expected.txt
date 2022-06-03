@@ -1,0 +1,5 @@
+Testing a11y in performance panel - panel toolbar.
+Page reloaded.
+aXe violations: []
+
+

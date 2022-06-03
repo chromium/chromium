@@ -8,8 +8,7 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 #include "build/build_config.h"
 
@@ -40,6 +39,9 @@ class CONTENT_EXPORT StartupTaskRunner {
   StartupTaskRunner(base::OnceCallback<void(int)> startup_complete_callback,
                     scoped_refptr<base::SingleThreadTaskRunner> proxy);
 
+  StartupTaskRunner(const StartupTaskRunner&) = delete;
+  StartupTaskRunner& operator=(const StartupTaskRunner&) = delete;
+
   ~StartupTaskRunner();
 
   // Add a task to the queue of startup tasks to be run.
@@ -58,9 +60,10 @@ class CONTENT_EXPORT StartupTaskRunner {
   void WrappedTask();
 
   base::OnceCallback<void(int)> startup_complete_callback_;
+  // Stores the time that the last post of a WrappedTask occurred. Used for
+  // gathering metrics.
+  base::TimeTicks last_wrapped_task_post_time_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupTaskRunner);
 };
 
 }  // namespace content

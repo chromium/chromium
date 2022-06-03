@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list setSize=8
+++++++++listItem hierarchicalLevel=1 setSize=-1 posInSet=5
+++++++++++staticText name='Level 1, item 5 of set size unknown'
+++++++++++++inlineTextBox name='Level 1, item 5 of set size unknown'
+++++++++listItem hierarchicalLevel=1 setSize=-1 posInSet=6
+++++++++++staticText name='Level 1, item 6 of set size unknown'
+++++++++++++inlineTextBox name='Level 1, item 6 of set size unknown'
+++++++++++list setSize=7
+++++++++++++listItem hierarchicalLevel=2 setSize=-1 posInSet=6
+++++++++++++++staticText name='Level 2, item 6 of set size unknown'
+++++++++++++++++inlineTextBox name='Level 2, item 6 of set size unknown'
+++++++++++++listItem hierarchicalLevel=2 setSize=-1 posInSet=7
+++++++++++++++staticText name='Level 2, item 7 of set size unknown'
+++++++++++++++++inlineTextBox name='Level 2, item 7 of set size unknown'
+++++++++listItem hierarchicalLevel=1 setSize=2 posInSet=7
+++++++++++staticText name='Level 1, item 7 of set size 2'
+++++++++++++inlineTextBox name='Level 1, item 7 of set size 2'
+++++++++listItem hierarchicalLevel=1 setSize=3 posInSet=8
+++++++++++staticText name='Level 1, item 8 of set size 3'
+++++++++++++inlineTextBox name='Level 1, item 8 of set size 3'

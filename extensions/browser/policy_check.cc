@@ -21,12 +21,12 @@ void PolicyCheck::Start(ResultCallback callback) {
   if (!ExtensionSystem::Get(context_)->management_policy()->UserMayInstall(
           extension(), &error_)) {
     DCHECK(!error_.empty());
-    errors.insert(DISALLOWED_BY_POLICY);
+    errors.insert(Error::kDisallowedByPolicy);
   }
   std::move(callback).Run(errors);
 }
 
-base::string16 PolicyCheck::GetErrorMessage() const {
+std::u16string PolicyCheck::GetErrorMessage() const {
   return error_;
 }
 

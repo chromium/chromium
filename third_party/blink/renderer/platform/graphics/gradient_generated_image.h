@@ -43,25 +43,21 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
   ~GradientGeneratedImage() override = default;
 
-  bool ApplyShader(PaintFlags&, const SkMatrix&) override;
-
-  DarkModeClassification CheckTypeSpecificConditionsForDarkMode(
-      const FloatRect& dest_rect,
-      DarkModeImageClassifier* classifier) override {
-    return DarkModeClassification::kApplyFilter;
-  }
+  bool ApplyShader(PaintFlags&,
+                   const SkMatrix&,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
+                   const ImageDrawOptions&) override;
 
  protected:
   void Draw(cc::PaintCanvas*,
             const PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const FloatRect& dest_rect,
+            const FloatRect& src_rect,
+            const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) override;
+                const ImageDrawOptions& draw_options) override;
 
   GradientGeneratedImage(scoped_refptr<Gradient> generator,
                          const FloatSize& size)
@@ -72,4 +68,4 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_GENERATED_IMAGE_H_

@@ -2,11 +2,73 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+var natives = requireNative('setIcon');
+var inServiceWorker = natives.IsInServiceWorker();
+
+// Compute a scaling factor for the image based on the supplied
+// image specification.
+function computeScaleFactor(imageSpec, img) {
+  var scaleFactor = 1;
+  if (imageSpec.width && imageSpec.width < img.width)
+    scaleFactor = imageSpec.width / img.width;
+
+  if (imageSpec.height && imageSpec.height < img.height) {
+    var heightScale = imageSpec.height / img.height;
+    if (heightScale < scaleFactor)
+      scaleFactor = heightScale;
+  }
+  return scaleFactor;
+}
+
+function loadImageDataForServiceWorker(imageSpec, callbacks) {
+  var path = imageSpec.path;
+  let fetchPromise = fetch(path);
+
+  let blobPromise = $Promise.then(fetchPromise, (response) => {
+    if (!response.ok)
+      throw $Error.self({ problem: 'could_not_load', path: path });
+
+    return response.blob();
+  });
+
+  let imagePromise = $Promise.then(blobPromise, (blob) => {
+    return createImageBitmap(blob);
+  });
+
+  let imageDataPromise = $Promise.then(imagePromise, (image) => {
+    if (image.width <= 0 || image.height <= 0)
+      throw $Error.self({ problem: 'image_size_invalid', path: path});
+
+    var scaleFactor = computeScaleFactor(imageSpec, image);
+    var canvas = new OffscreenCanvas(image.width * scaleFactor,
+                                     image.height * scaleFactor);
+
+    var canvasContext = canvas.getContext('2d');
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    canvasContext.drawImage(image, 0, 0, canvas.width, canvas.height);
+    try {
+      var imageData = canvasContext.getImageData(
+          0, 0, canvas.width, canvas.height);
+      if (typeof callbacks.oncomplete === 'function') {
+        callbacks.oncomplete(
+            imageData.width, imageData.height, imageData.data.buffer);
+      }
+    } catch (e) {
+      throw $Error.self({ problem: 'data_url_unavailable', path: path });
+    }
+  });
+
+  $Promise.catch(imageDataPromise, function(error) {
+    if (typeof callbacks.onerror === 'function')
+      callbacks.onerror(error);
+  });
+}
+
 // This function takes an object |imageSpec| with the key |path| -
 // corresponding to the internet URL to be translated - and optionally
 // |width| and |height| which are the maximum dimensions to be used when
 // converting the image.
-function loadImageData(imageSpec, callbacks) {
+function loadImageDataForNonServiceWorker(imageSpec, callbacks) {
   var path = imageSpec.path;
   var img = new Image();
   if (typeof callbacks.onerror === 'function') {
@@ -22,16 +84,7 @@ function loadImageData(imageSpec, callbacks) {
       return;
     }
 
-    var scaleFactor = 1;
-    if (imageSpec.width && imageSpec.width < img.width)
-      scaleFactor = imageSpec.width / img.width;
-
-    if (imageSpec.height && imageSpec.height < img.height) {
-      var heightScale = imageSpec.height / img.height;
-      if (heightScale < scaleFactor)
-        scaleFactor = heightScale;
-    }
-
+    var scaleFactor = computeScaleFactor(imageSpec, img);
     canvas.width = img.width * scaleFactor;
     canvas.height = img.height * scaleFactor;
 
@@ -52,6 +105,14 @@ function loadImageData(imageSpec, callbacks) {
     }
   }
   img.src = path;
+}
+
+function loadImageData(imageSpec, callbacks) {
+  if (inServiceWorker) {
+    loadImageDataForServiceWorker(imageSpec, callbacks);
+  } else {
+    loadImageDataForNonServiceWorker(imageSpec, callbacks);
+  }
 }
 
 function on_complete_index(index, err, loading, finished, callbacks) {

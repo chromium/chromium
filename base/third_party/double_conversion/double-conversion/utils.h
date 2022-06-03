@@ -64,6 +64,12 @@ inline void abort_noreturn() { abort(); }
 #endif
 #endif
 
+#if defined(__clang__) && __has_attribute(uninitialized)
+#define DOUBLE_CONVERSION_STACK_UNINITIALIZED __attribute__((uninitialized))
+#else
+#define DOUBLE_CONVERSION_STACK_UNINITIALIZED
+#endif
+
 // Double operations detection based on target architecture.
 // Linux uses a 80bit wide floating point stack on x86. This induces double
 // rounding, which in turn leads to wrong results.
@@ -94,15 +100,17 @@ int main(int argc, char** argv) {
     defined(__ARMEL__) || defined(__avr32__) || defined(_M_ARM) || defined(_M_ARM64) || \
     defined(__hppa__) || defined(__ia64__) || \
     defined(__mips__) || \
+    defined(__nios2__) || \
     defined(__powerpc__) || defined(__ppc__) || defined(__ppc64__) || \
     defined(_POWER) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || \
     defined(__sparc__) || defined(__sparc) || defined(__s390__) || \
     defined(__SH4__) || defined(__alpha__) || \
     defined(_MIPS_ARCH_MIPS32R2) || defined(__ARMEB__) ||\
     defined(__AARCH64EL__) || defined(__aarch64__) || defined(__AARCH64EB__) || \
-    defined(__riscv) || \
+    defined(__riscv) || defined(__e2k__) || \
     defined(__or1k__) || defined(__arc__) || \
-    defined(__EMSCRIPTEN__)
+    defined(__microblaze__) || defined(__XTENSA__) || \
+    defined(__EMSCRIPTEN__) || defined(__wasm32__)
 #define DOUBLE_CONVERSION_CORRECT_DOUBLE_OPERATIONS 1
 #elif defined(__mc68000__) || \
     defined(__pnacl__) || defined(__native_client__)

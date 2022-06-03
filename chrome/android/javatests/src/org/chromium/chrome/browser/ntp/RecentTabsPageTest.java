@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+import android.app.Activity;
 import android.view.View;
 
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,18 +19,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +46,19 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@RetryOnFailure
 public class RecentTabsPageTest {
+    // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
+    // for Sync promo.
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountInfoService());
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(3).build();
 
     private FakeRecentlyClosedTabManager mManager;
     private Tab mTab;
@@ -53,19 +70,21 @@ public class RecentTabsPageTest {
         RecentTabsManager.setRecentlyClosedTabManagerForTests(mManager);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        mPage = loadRecentTabsPage();
     }
 
     @After
     public void tearDown() {
         leaveRecentTabsPage();
         RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }
 
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
     public void testRecentlyClosedTabs() throws ExecutionException {
+        mPage = loadRecentTabsPage();
         // Set a recently closed tab and confirm a view is rendered for it.
         List<RecentlyClosedTab> tabs = setRecentlyClosedTabs(1);
         Assert.assertEquals(1, mManager.getRecentlyClosedTabs(1).size());
@@ -73,9 +92,41 @@ public class RecentTabsPageTest {
         View view = waitForView(title);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        invokeContextMenu(view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(mActivityTestRule.getActivity(), view,
+                RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         Assert.assertEquals(0, mManager.getRecentlyClosedTabs(1).size());
         waitForViewToDisappear(title);
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
+        Assert.assertEquals(0,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
+        mAccountManagerTestRule.addAccountWithNameAndAvatar(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mPage = loadRecentTabsPage();
+        mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
+        Assert.assertEquals(1,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
+        Assert.assertEquals(0,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
+        mAccountManagerTestRule.addTestAccountThenSignin();
+        mPage = loadRecentTabsPage();
+        mRenderTestRule.render(mPage.getView(), "personalized_sync_promo_recent_tabs_page");
+        Assert.assertEquals(1,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
     }
 
     /**
@@ -86,7 +137,8 @@ public class RecentTabsPageTest {
         final List<RecentlyClosedTab> tabs = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (int i = 0; i < tabCount; i++) {
-                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i, "url " + i));
+                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i,
+                        new GURL("https://www.example.com/url" + i)));
             }
             mManager.setRecentlyClosedTabs(tabs);
         });
@@ -95,13 +147,7 @@ public class RecentTabsPageTest {
 
     private RecentTabsPage loadRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
-        CriteriaHelper.pollUiThread(new Criteria("RecentTabsPage never fully loaded") {
-            @Override
-            public boolean isSatisfied() {
-                return mTab.getNativePage() instanceof RecentTabsPage;
-            }
-        });
-        Assert.assertTrue(mTab.getNativePage() instanceof RecentTabsPage);
+        RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(mTab);
         return (RecentTabsPage) mTab.getNativePage();
     }
 
@@ -110,11 +156,9 @@ public class RecentTabsPageTest {
      */
     private void leaveRecentTabsPage() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        CriteriaHelper.pollUiThread(new Criteria("RecentTabsPage is still there") {
-            @Override
-            public boolean isSatisfied() {
-                return !(mTab.getNativePage() instanceof RecentTabsPage);
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("RecentTabsPage is still there", mTab.getNativePage(),
+                    Matchers.not(Matchers.instanceOf(RecentTabsPage.class)));
         });
     }
 
@@ -123,12 +167,10 @@ public class RecentTabsPageTest {
      */
     private View waitForView(final String text) {
         final ArrayList<View> views = new ArrayList<>();
-        CriteriaHelper.pollUiThread(new Criteria("Could not find view with this text: " + text) {
-            @Override
-            public boolean isSatisfied() {
-                mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
-                return views.size() == 1;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
+            Criteria.checkThat(
+                    "Could not find view with this text: " + text, views.size(), Matchers.is(1));
         });
         return views.get(0);
     }
@@ -137,20 +179,21 @@ public class RecentTabsPageTest {
      * Waits for the view with the specified text to disappear.
      */
     private void waitForViewToDisappear(final String text) {
-        CriteriaHelper.pollUiThread(new Criteria("View with this text is still present: " + text) {
-            @Override
-            public boolean isSatisfied() {
-                ArrayList<View> views = new ArrayList<>();
-                mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
-                return views.isEmpty();
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            ArrayList<View> views = new ArrayList<>();
+            mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
+            Criteria.checkThat(
+                    "View with this text is still present: " + text, views, Matchers.empty());
         });
     }
 
-    private void invokeContextMenu(View view, int contextMenuItemId) throws ExecutionException {
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mActivityTestRule.getActivity(), contextMenuItemId, 0));
+    private static void openContextMenuAndInvokeItem(
+            final Activity activity, final View view, final int itemId) {
+        // IMPLEMENTATION NOTE: Instrumentation.invokeContextMenuAction would've been much simpler,
+        // but it requires the View to be focused which is hard to achieve in touch mode.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            view.performLongClick();
+            activity.getWindow().performContextMenuIdentifierAction(itemId, 0);
+        });
     }
 }

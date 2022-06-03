@@ -18,12 +18,12 @@ namespace browsing_data_important_sites_util {
 // Deletes the types protected by Important Sites with the filter from
 // |filter_builder|, the other types are deleted completely.
 // |callback| will be called when the deletion finished.
-void Remove(int remove_mask,
-            int origin_mask,
+void Remove(uint64_t remove_mask,
+            uint64_t origin_mask,
             browsing_data::TimePeriod time_period,
             std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder,
             content::BrowsingDataRemover* remover,
-            base::OnceClosure callback);
+            base::OnceCallback<void(uint64_t)> callback);
 
 }  // namespace browsing_data_important_sites_util
 

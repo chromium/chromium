@@ -18,13 +18,15 @@ namespace content {
 class CastTracingAgent : public tracing::BaseAgent {
  public:
   CastTracingAgent();
+
+  CastTracingAgent(const CastTracingAgent&) = delete;
+  CastTracingAgent& operator=(const CastTracingAgent&) = delete;
+
   ~CastTracingAgent() override;
 
  private:
   // tracing::BaseAgent implementation.
   void GetCategories(std::set<std::string>* category_set) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTracingAgent);
 };
 
 }  // namespace content

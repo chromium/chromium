@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test trace-specific implementation of timeline model\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -87,7 +87,7 @@
       'name': 'Layout',
       'ts': 1003000,
       'ph': 'E',
-      args: {endData: {}},
+      args: {endData: {'layoutRoots':[]}},
       'tid': mainThread,
       'pid': 100,
       'cat': 'disabled-by-default.devtools.timeline'
@@ -151,7 +151,7 @@
       'name': 'Layout',
       'ts': 2003001,
       'ph': 'E',
-      args: {endData: {}},
+      args: {endData: {'layoutRoots':[]}},
       'tid': mainThread,
       'pid': 100,
       'cat': 'disabled-by-default.devtools.timeline'
@@ -195,9 +195,9 @@
   ];
 
   var tracingTimelineModel = PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(traceEvents));
-  PerformanceTestRunner.forAllEvents(PerformanceTestRunner.mainTrackEvents(), (event, stack) => {
+  await PerformanceTestRunner.forAllEvents(PerformanceTestRunner.mainTrackEvents(), async (event, stack) => {
     const prefix = Array(stack.length + 1).join('----') + (stack.length ? '> ' : '');
-    const details = Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(event, null) || '';
+    const details = await Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(event, null) || '';
     TestRunner.addResult(`${prefix}${event.name}: ${details}`);
   });
   TestRunner.completeTest();

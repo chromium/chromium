@@ -4,6 +4,7 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 

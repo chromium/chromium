@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fieldset_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -49,8 +50,8 @@ std::pair<scoped_refptr<const NGPhysicalBoxFragment>, NGConstraintSpace>
 NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
   auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
   NGBlockNode node(block_flow);
-  NGConstraintSpace space = NGConstraintSpace::CreateFromLayoutObject(
-      *block_flow, false /* is_layout_root */);
+  NGConstraintSpace space =
+      NGConstraintSpace::CreateFromLayoutObject(*block_flow);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
@@ -61,18 +62,34 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
 }
 
 scoped_refptr<const NGPhysicalBoxFragment>
+NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+    NGBlockNode node,
+    const NGConstraintSpace& space,
+    const NGBreakToken* break_token) {
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  scoped_refptr<const NGLayoutResult> result =
+      NGFieldsetLayoutAlgorithm(
+          {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
+          .Layout();
+
+  return To<NGPhysicalBoxFragment>(&result->PhysicalFragment());
+}
+
+scoped_refptr<const NGPhysicalBoxFragment>
 NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
   CHECK(layout_object && layout_object->IsLayoutNGMixin());
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
-      To<LayoutBlockFlow>(layout_object)->CurrentFragment();
+      To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
   return fragment;
 }
 
 const NGPhysicalBoxFragment* NGBaseLayoutAlgorithmTest::CurrentFragmentFor(
     const LayoutNGBlockFlow* block_flow) {
-  return block_flow->CurrentFragment();
+  return block_flow->GetPhysicalFragment(0);
 }
 
 const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
@@ -94,10 +111,9 @@ const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
 }
 
 NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
-    WritingMode writing_mode,
-    TextDirection direction,
+    WritingDirectionMode writing_direction,
     LogicalSize size,
-    bool shrink_to_fit,
+    bool stretch_inline_size_if_auto,
     bool is_new_formatting_context,
     LayoutUnit fragmentainer_space_available) {
   NGFragmentationType block_fragmentation =
@@ -105,12 +121,14 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
           ? NGFragmentationType::kFragmentColumn
           : NGFragmentationType::kFragmentNone;
 
-  NGConstraintSpaceBuilder builder(writing_mode, writing_mode,
+  NGConstraintSpaceBuilder builder(writing_direction.GetWritingMode(),
+                                   writing_direction,
                                    is_new_formatting_context);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
-  builder.SetTextDirection(direction);
-  builder.SetIsShrinkToFit(shrink_to_fit);
+  builder.SetInlineAutoBehavior(stretch_inline_size_if_auto
+                                    ? NGAutoBehavior::kStretchImplicit
+                                    : NGAutoBehavior::kFitContent);
   builder.SetFragmentainerBlockSize(fragmentainer_space_available);
   builder.SetFragmentationType(block_fragmentation);
   return builder.ToConstraintSpace();

@@ -45,17 +45,13 @@ if (current_toolchain == default_toolchain) {
       "//base",
       "//tools/android/common",
     ]
-    data_deps = [
-      "//build/android/pylib/device/commands",
-    ]
+    data_deps = [ "//build/android/pylib/device/commands" ]
   }
 
   create_native_executable_dist("device_forwarder_prepare_dist") {
     dist_dir = "$root_build_dir/forwarder_dist"
     binary = "$root_build_dir/device_forwarder"
-    deps = [
-      ":device_forwarder",
-    ]
+    deps = [ ":device_forwarder" ]
   }
 }
 
@@ -90,9 +86,7 @@ if (current_toolchain != default_toolchain) {
   }
 
   executable("host_forwarder") {
-    sources = [
-      "host_forwarder_main.cc",
-    ]
+    sources = [ "host_forwarder_main.cc" ]
     deps = [
       ":host_forwarder_source_set",
       "//base",
@@ -101,9 +95,7 @@ if (current_toolchain != default_toolchain) {
 
   test("host_forwarder_unittests") {
     testonly = true
-    sources = [
-      "host_controllers_manager_unittest.cc",
-    ]
+    sources = [ "host_controllers_manager_unittest.cc" ]
     deps = [
       ":host_forwarder_source_set",
       "//base",

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 InterestCohortAPI --expire-timestamp=2000000000 --version 3
+-->
+<meta http-equiv="origin-trial" content="A1q7Ss8yaDaFBy5/0JLZCpLDbCD0o4uPIJkE9YEkUUuOBdvmdJiBcoNSy9OvLuRh+XsWnW3zP+0UcWI2T1vP1AwAAABZeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiSW50ZXJlc3RDb2hvcnRBUEkiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>Interest Cohort API - interfaces exposed by origin trial</title>
+<body>
+<p>Test that the API exists with origin trial token</p>
+<div id="result"></div>
+<script>
+'use strict'
+
+if (window.testRunner) {
+  testRunner.dumpAsText();
+}
+
+if (document.interestCohort instanceof Function) {
+  document.getElementById("result").innerHTML += "SUCCESS";
+} else {
+  document.getElementById("result").innerHTML += "FAILURE";
+}
+</script>
+</body>

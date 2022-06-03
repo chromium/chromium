@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_input = [
+  "boundary_event_dispatcher.cc",
+  "boundary_event_dispatcher.h",
+  "context_menu_allowed_scope.cc",
+  "context_menu_allowed_scope.h",
+  "event_handler.cc",
+  "event_handler.h",
+  "event_handling_util.cc",
+  "event_handling_util.h",
+  "gesture_manager.cc",
+  "gesture_manager.h",
+  "input_device_capabilities.cc",
+  "input_device_capabilities.h",
+  "keyboard_event_manager.cc",
+  "keyboard_event_manager.h",
+  "mouse_event_manager.cc",
+  "mouse_event_manager.h",
+  "mouse_wheel_event_manager.cc",
+  "mouse_wheel_event_manager.h",
+  "pointer_event_manager.cc",
+  "pointer_event_manager.h",
+  "scroll_manager.cc",
+  "scroll_manager.h",
+  "touch.cc",
+  "touch.h",
+  "touch_action_util.cc",
+  "touch_action_util.h",
+  "touch_event_manager.cc",
+  "touch_event_manager.h",
+  "touch_list.cc",
+  "touch_list.h",
+]

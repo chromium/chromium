@@ -132,7 +132,7 @@ cvox.Interframe.addListener = function(listener) {
 cvox.Interframe.sendMessageToWindow = function(message, window) {
   var encodedMessage = cvox.Interframe.IF_MSG_PREFIX +
       cvox.ChromeVoxJSON.stringify(message, null, null);
-  window.postMessage(encodedMessage, '*');
+  window.postMessage(encodedMessage, '*' /* target origin */);
 };
 
 /**

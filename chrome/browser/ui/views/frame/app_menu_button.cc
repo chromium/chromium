@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
@@ -14,19 +15,20 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
-AppMenuButton::AppMenuButton(views::ButtonListener* button_listener)
-    : ToolbarButton(nullptr) {
+AppMenuButton::AppMenuButton(PressedCallback callback)
+    : ToolbarButton(PressedCallback()) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
-          this, button_listener,
+          this, std::move(callback),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               this));
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
+  SetProperty(views::kElementIdentifierKey, kAppMenuButtonElementId);
 }
 
-AppMenuButton::~AppMenuButton() {}
+AppMenuButton::~AppMenuButton() = default;
 
 void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
   observer_list_.AddObserver(observer);
@@ -43,6 +45,7 @@ void AppMenuButton::CloseMenu() {
 }
 
 void AppMenuButton::OnMenuClosed() {
+  HandleMenuClosed();
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuClosed();
 }
@@ -68,3 +71,5 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   for (AppMenuButtonObserver& observer : observer_list_)
     observer.AppMenuShown();
 }
+
+void AppMenuButton::HandleMenuClosed() {}

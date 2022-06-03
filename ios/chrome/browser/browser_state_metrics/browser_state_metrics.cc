@@ -23,11 +23,8 @@ bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
     return false;
 
   for (size_t i = 0; i < number_of_browser_states; ++i) {
-    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
+    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i))
       counts->signedin++;
-      if (info_cache->BrowserStateIsAuthErrorAtIndex(i))
-        counts->auth_errors++;
-    }
   }
   return true;
 }
@@ -36,11 +33,4 @@ void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager) {
   profile_metrics::Counts counts;
   CountBrowserStateInformation(manager, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
-}
-
-profile_metrics::BrowserProfileType GetBrowserStateType(
-    web::BrowserState* browser_state) {
-  return browser_state->IsOffTheRecord()
-             ? profile_metrics::BrowserProfileType::kIncognito
-             : profile_metrics::BrowserProfileType::kRegular;
 }

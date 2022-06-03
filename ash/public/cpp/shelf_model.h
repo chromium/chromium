@@ -10,10 +10,9 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_item.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
 
 namespace ash {
 
@@ -52,15 +51,53 @@ class ASH_PUBLIC_EXPORT ShelfModel {
     ShelfModel* model_ = nullptr;
   };
 
+  // Some classes in ash have the ability to insert an item into the ShelfModel,
+  // but with no knowledge of the item beyond an |app_id|. This delegate creates
+  // an explicit mechanism for those classes to fetch both a ShelfItem and a
+  // ShelfItemDelegate.
+  //
+  // If we were designing the architecture from scratch, we probably would not
+  // need this class at all. The point of this class is to take a previous
+  // implicit dependency from //ash on //chrome and make it explicit.
+  class ShelfItemFactory {
+   public:
+    // Creates an |item| and a |delegate| for a given |app_id|. Returns false on
+    // failure. |item| and |delegate| are output parameters, only populated on
+    // success.
+    virtual bool CreateShelfItemForAppId(
+        const std::string& app_id,
+        ShelfItem* item,
+        std::unique_ptr<ShelfItemDelegate>* delegate) = 0;
+  };
+
   ShelfModel();
+
+  ShelfModel(const ShelfModel&) = delete;
+  ShelfModel& operator=(const ShelfModel&) = delete;
+
   ~ShelfModel();
 
-  // Pins an app with |app_id| to shelf. A running instance will get pinned.
-  // If there is no running instance, a new shelf item is created and pinned.
-  void PinAppWithID(const std::string& app_id);
+  // Adds an item to the shelf, using the default factory to construct a
+  // delegate. If a delegate cannot be constructed for this type of app, then no
+  // item will be added.
+  // Prefer to use AddItem directly when the delegate can be easily created.
+  void AddAndPinAppWithFactoryConstructedDelegate(const std::string& app_id);
+
+  // This function can only be called with |app_id| is already present in the
+  // shelf. Changes the ShelfItem state to be pinned. This method has no effect
+  // if the item is already pinned.
+  void PinExistingItemWithID(const std::string& app_id);
 
   // Checks if the app with |app_id_| is pinned to the shelf.
-  bool IsAppPinned(const std::string& app_id);
+  bool IsAppPinned(const std::string& app_id) const;
+
+  // Returns whether the app specified by `app_id` is allowed to be set with the
+  // target pin state. If `target_pin` is true, the target is to pin the item;
+  // otherwise, the target is to unpin the item.
+  // Returns true if the app's current pin state matches the target state, even
+  // if the app pin state is not modifiable (e.g. due to policy).
+  bool AllowedToSetAppPinState(const std::string& app_id,
+                               bool target_pin) const;
 
   // Unpins app item with |app_id|.
   void UnpinAppWithID(const std::string& app_id);
@@ -69,11 +106,13 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   void DestroyItemDelegates();
 
   // Adds a new item to the model. Returns the resulting index.
-  int Add(const ShelfItem& item);
+  int Add(const ShelfItem& item, std::unique_ptr<ShelfItemDelegate> delegate);
 
   // Adds the item. |index| is the requested insertion index, which may be
   // modified to meet type-based ordering. Returns the actual insertion index.
-  int AddAt(int index, const ShelfItem& item);
+  int AddAt(int index,
+            const ShelfItem& item,
+            std::unique_ptr<ShelfItemDelegate> delegate);
 
   // Removes the item at |index|.
   void RemoveItemAt(int index);
@@ -84,12 +123,36 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   std::unique_ptr<ShelfItemDelegate> RemoveItemAndTakeShelfItemDelegate(
       const ShelfID& shelf_id);
 
+  // Returns whether the item with the given index can be swapped with the
+  // next (or previous) item. Example cases when a swap cannot happen are:
+  // trying to swap the first item with the previous one, trying to swap
+  // the last item with the next one, trying to swap a pinned item with an
+  // unpinned item.
+  bool CanSwap(int index, bool with_next) const;
+
+  // Swaps the item at the given index with the next one if |with_next| is
+  // true, or with the previous one if |with_next| is false. Returns true
+  // if the requested swap has happened, and false otherwise.
+  bool Swap(int index, bool with_next);
+
   // Moves the item at |index| to |target_index|. |target_index| is in terms
   // of the model *after* the item at |index| is removed.
   void Move(int index, int target_index);
 
   // Resets the item at the specified index. The item's id should not change.
   void Set(int index, const ShelfItem& item);
+
+  // Updates the items' |is_on_active_desk| from the given vector
+  // |items_desk_updates|. Items whose indices are not included in
+  // |items_desk_updates| will remain unchanged.
+  struct ItemDeskUpdate {
+    // The index of the item being updated.
+    int index = -1;
+    // The new value of the item's |ShelfItem::is_on_active_desk|.
+    bool is_on_active_desk = false;
+  };
+  void UpdateItemsForDeskChange(
+      const std::vector<ItemDeskUpdate>& items_desk_updates);
 
   // Returns the ID of the currently active item, or an empty ShelfID if
   // nothing is currently active.
@@ -108,13 +171,17 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // has changed.
   void OnItemStatusChanged(const ShelfID& id);
 
-  // Adds a record of the notification with this app id and notifies observers.
-  void AddNotificationRecord(const std::string& app_id,
-                             const std::string& notification_id);
+  // Notifies observers that an item has been dragged off the shelf (it is still
+  // being dragged).
+  void OnItemRippedOff();
 
-  // Removes the record of the notification with matching ID and notifies
-  // observers.
-  void RemoveNotificationRecord(const std::string& notification_id);
+  // Notifies observers that an item that was dragged off the shelf has been
+  // dragged back onto the shelf (it is still being dragged).
+  void OnItemReturnedFromRipOff(int index);
+
+  // Update the ShelfItem with |app_id| to set whether the item currently has a
+  // notification.
+  void UpdateItemNotification(const std::string& app_id, bool has_badge);
 
   // Returns the index of the item with id |shelf_id|, or -1 if none exists.
   int ItemIndexByID(const ShelfID& shelf_id) const;
@@ -128,9 +195,9 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // applications yet.
   int FirstRunningAppIndex() const;
 
-  // Returns an iterator into items() for the item with the specified id, or
-  // items().end() if there is no item with the specified id.
-  ShelfItems::const_iterator ItemByID(const ShelfID& shelf_id) const;
+  // Returns a pointer of ShelfItem with the given |shelf_id| in this model.
+  // Or, nullptr if not found.
+  const ShelfItem* ItemByID(const ShelfID& shelf_id) const;
 
   // Returns the index of the matching ShelfItem or -1 if the |app_id| doesn't
   // match a ShelfItem.
@@ -140,15 +207,19 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   int item_count() const { return static_cast<int>(items_.size()); }
 
   // Sets |item_delegate| for the given |shelf_id| and takes ownership.
-  void SetShelfItemDelegate(const ShelfID& shelf_id,
-                            std::unique_ptr<ShelfItemDelegate> item_delegate);
+  void ReplaceShelfItemDelegate(
+      const ShelfID& shelf_id,
+      std::unique_ptr<ShelfItemDelegate> item_delegate);
 
   // Returns ShelfItemDelegate for |shelf_id|, or nullptr if none exists.
   ShelfItemDelegate* GetShelfItemDelegate(const ShelfID& shelf_id) const;
 
-  // Returns AppWindowLauncherItemController for |shelf_id|, or nullptr if none
+  // Sets the ShelfItemFactory.
+  void SetShelfItemFactory(ShelfItemFactory* factory);
+
+  // Returns AppWindowShelfItemController for |shelf_id|, or nullptr if none
   // exists.
-  AppWindowLauncherItemController* GetAppWindowLauncherItemController(
+  AppWindowShelfItemController* GetAppWindowShelfItemController(
       const ShelfID& shelf_id);
 
   void AddObserver(ShelfModelObserver* observer);
@@ -160,11 +231,10 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // returns the new value.
   int ValidateInsertionIndex(ShelfItemType type, int index) const;
 
-  // Finds the app corresponding to |app_id|, sets ShelfItem.has_notification,
-  // and notifies observers.
-  void UpdateItemNotificationsAndNotifyObservers(const std::string& app_id);
-
   ShelfItems items_;
+
+  // This pointer must outlive this class.
+  ShelfItemFactory* shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.
@@ -176,17 +246,10 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // user interaction.
   int current_mutation_is_user_triggered_ = 0;
 
-  // Maps one app id to a set of all matching notification ids.
-  std::map<std::string, std::set<std::string>> app_id_to_notification_id_;
-  // Maps one notification id to one app id.
-  std::map<std::string, std::string> notification_id_to_app_id_;
-
   base::ObserverList<ShelfModelObserver>::Unchecked observers_;
 
   std::map<ShelfID, std::unique_ptr<ShelfItemDelegate>>
       id_to_item_delegate_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfModel);
 };
 
 }  // namespace ash

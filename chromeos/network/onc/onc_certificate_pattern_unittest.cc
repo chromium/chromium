@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -23,6 +22,11 @@ constexpr char kFakePemEncodedIssuer[] = "PEM-ENCODED-ISSUER";
 class OncCertificatePatternTest : public testing::Test {
  public:
   OncCertificatePatternTest() = default;
+
+  OncCertificatePatternTest(const OncCertificatePatternTest&) = delete;
+  OncCertificatePatternTest& operator=(const OncCertificatePatternTest&) =
+      delete;
+
   ~OncCertificatePatternTest() override = default;
 
   void SetUp() override {
@@ -35,8 +39,6 @@ class OncCertificatePatternTest : public testing::Test {
 
  protected:
   scoped_refptr<net::X509Certificate> cert_;
-
-  DISALLOW_COPY_AND_ASSIGN(OncCertificatePatternTest);
 };
 
 }  // namespace
@@ -65,13 +67,13 @@ TEST_F(OncCertificatePatternTest, ParsePatternFromOnc) {
       },
       "IssuerCAPEMs": [ "PEM1", "PEM2" ]
     })";
-  std::string error;
-  std::unique_ptr<base::Value> pattern_value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, &error);
-  ASSERT_TRUE(pattern_value) << error;
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+  auto pattern =
+      OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
   ASSERT_TRUE(pattern);
   EXPECT_FALSE(pattern.value().Empty());
 
@@ -98,14 +100,14 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
         "CommonName": "B CA"
       }
     })";
-  std::string error;
-  std::unique_ptr<base::Value> pattern_value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, &error);
-  ASSERT_TRUE(pattern_value) << error;
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   {
-    auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+    auto pattern =
+        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Empty());
 
@@ -113,12 +115,13 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
   }
 
   {
-    base::Value* issuer =
-        pattern_value->FindKeyOfType("Issuer", base::Value::Type::DICTIONARY);
+    base::Value* issuer = parsed_json.value->FindKeyOfType(
+        "Issuer", base::Value::Type::DICTIONARY);
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("SomeOtherCA"));
 
-    auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+    auto pattern =
+        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Matches(*cert_, kFakePemEncodedIssuer));
   }
@@ -134,14 +137,14 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
         "CommonName": "Client Cert A"
       }
     })";
-  std::string error;
-  std::unique_ptr<base::Value> pattern_value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, &error);
-  ASSERT_TRUE(pattern_value) << error;
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   {
-    auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+    auto pattern =
+        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Empty());
 
@@ -149,12 +152,13 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
   }
 
   {
-    base::Value* issuer =
-        pattern_value->FindKeyOfType("Subject", base::Value::Type::DICTIONARY);
+    base::Value* issuer = parsed_json.value->FindKeyOfType(
+        "Subject", base::Value::Type::DICTIONARY);
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("B CA"));
 
-    auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+    auto pattern =
+        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Matches(*cert_, kFakePemEncodedIssuer));
   }
@@ -165,13 +169,13 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuerCAPEM) {
     {
       "IssuerCAPEMs": ["PEM-ENCODED-ISSUER"]
     })";
-  std::string error;
-  std::unique_ptr<base::Value> pattern_value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, &error);
-  ASSERT_TRUE(pattern_value) << error;
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  auto pattern = OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
+  auto pattern =
+      OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
   ASSERT_TRUE(pattern);
   EXPECT_FALSE(pattern.value().Empty());
 

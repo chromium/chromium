@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
@@ -43,7 +43,6 @@ class Gamepad;
 
 namespace blink {
 
-class Document;
 class GamepadDispatcher;
 class GamepadHapticActuator;
 class GamepadList;
@@ -52,25 +51,22 @@ class Navigator;
 class MODULES_EXPORT NavigatorGamepad final
     : public GarbageCollected<NavigatorGamepad>,
       public Supplement<Navigator>,
-      public DOMWindowClient,
+      public ExecutionContextClient,
       public PlatformEventController,
       public LocalDOMWindow::EventListenerObserver,
       public Gamepad::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorGamepad);
-
  public:
   static const char kSupplementName[];
 
-  static NavigatorGamepad* From(Document&);
   static NavigatorGamepad& From(Navigator&);
 
   explicit NavigatorGamepad(Navigator&);
   ~NavigatorGamepad() override;
 
-  static GamepadList* getGamepads(Navigator&);
+  static GamepadList* getGamepads(Navigator&, ExceptionState&);
   GamepadList* Gamepads();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void SampleGamepads();

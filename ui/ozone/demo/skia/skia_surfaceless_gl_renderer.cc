@@ -9,19 +9,22 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -65,7 +68,6 @@ OverlaySurfaceCandidate MakeOverlayCandidate(int z_order,
 
   // The demo overlay instance is always ontop and not clipped. Clipped quads
   // cannot be placed in overlays.
-  overlay_candidate.is_clipped = false;
 
   return overlay_candidate;
 }
@@ -80,7 +82,7 @@ class SurfacelessSkiaGlRenderer::BufferWrapper {
   gl::GLImage* image() const { return image_.get(); }
   SkSurface* sk_surface() const { return sk_surface_.get(); }
 
-  bool Initialize(GrContext* gr_context,
+  bool Initialize(GrDirectContext* gr_context,
                   gfx::AcceleratedWidget widget,
                   const gfx::Size& size);
   void BindFramebuffer();
@@ -106,7 +108,7 @@ SurfacelessSkiaGlRenderer::BufferWrapper::~BufferWrapper() {
 }
 
 bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
-    GrContext* gr_context,
+    GrDirectContext* gr_context,
     gfx::AcceleratedWidget widget,
     const gfx::Size& size) {
   glGenTextures(1, &gl_tex_);
@@ -239,40 +241,46 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
   SkSurface* sk_surface = buffers_[back_buffer_]->sk_surface();
   if (use_ddl_) {
     StartDDLRenderThreadIfNecessary(sk_surface);
-    auto ddl = GetDDL();
-    sk_surface->draw(ddl.get());
+    sk_surface->draw(GetDDL());
   } else {
     Draw(sk_surface->getCanvas(), NextFraction());
   }
-  gr_context_->flush();
+  gr_context_->flushAndSubmit();
   glFinish();
 
   if (!disable_primary_plane_) {
     CHECK(overlay_list.front().overlay_handled);
     gl_surface_->ScheduleOverlayPlane(
-        0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
-        primary_plane_rect_, unity_rect, /* enable_blend */ true,
-        /* gpu_fence */ nullptr);
+        buffers_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        gfx::OverlayPlaneData(
+            0, gfx::OVERLAY_TRANSFORM_NONE, primary_plane_rect_, unity_rect,
+            /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
+            /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
+            /*hdr_metadata=*/absl::nullopt));
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
     gl_surface_->ScheduleOverlayPlane(
-        1, gfx::OVERLAY_TRANSFORM_NONE, overlay_buffer_[back_buffer_]->image(),
-        overlay_rect, unity_rect, /* enable_blend */ true,
-        /* gpu_fence */ nullptr);
+        overlay_buffer_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        gfx::OverlayPlaneData(
+            1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect, unity_rect,
+            /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
+            /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
+            /*hdr_metadata=*/absl::nullopt));
   }
 
   back_buffer_ ^= 1;
   gl_surface_->SwapBuffersAsync(
-      base::BindRepeating(&SurfacelessSkiaGlRenderer::PostRenderFrameTask,
-                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&SurfacelessSkiaGlRenderer::PostRenderFrameTask,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void SurfacelessSkiaGlRenderer::PostRenderFrameTask(
-    gfx::SwapResult result,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  switch (result) {
+    gfx::SwapCompletionResult result) {
+  switch (result.swap_result) {
     case gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS:
       for (size_t i = 0; i < base::size(buffers_); ++i) {
         buffers_[i] = std::make_unique<BufferWrapper>();
@@ -282,8 +290,9 @@ void SurfacelessSkiaGlRenderer::PostRenderFrameTask(
       }
       FALLTHROUGH;  // We want to render a new frame anyways.
     case gfx::SwapResult::SWAP_ACK:
-      SkiaGlRenderer::PostRenderFrameTask(result, std::move(gpu_fence));
+      SkiaGlRenderer::PostRenderFrameTask(std::move(result));
       break;
+    case gfx::SwapResult::SWAP_SKIPPED:
     case gfx::SwapResult::SWAP_FAILED:
       LOG(FATAL) << "Failed to swap buffers";
       break;

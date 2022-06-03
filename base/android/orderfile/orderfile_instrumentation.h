@@ -6,6 +6,7 @@
 #define BASE_ANDROID_ORDERFILE_ORDERFILE_INSTRUMENTATION_H_
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/android/orderfile/orderfile_buildflags.h"

@@ -8,6 +8,7 @@
 
 #import "remoting/ios/app/first_launch_view_presenter.h"
 
+#include "base/logging.h"
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
 

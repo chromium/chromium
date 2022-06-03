@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "components/pwg_encoder/bitmap_image.h"
 #include "components/pwg_encoder/pwg_encoder.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "pdf/pdf.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 
 namespace printing {
@@ -48,16 +48,22 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
   pwg_data = pwg_encoder::PwgEncoder::GetDocumentHeader();
   pwg_encoder::BitmapImage image(settings.area.size(),
                                  pwg_encoder::BitmapImage::BGRA);
+  const chrome_pdf::RenderOptions options = {
+      .stretch_to_bounds = false,
+      .keep_aspect_ratio = true,
+      .autorotate = settings.autorotate,
+      .use_color = settings.use_color,
+      .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
+  };
   for (int i = 0; i < total_page_count; ++i) {
     int page_number = i;
 
     if (bitmap_settings.reverse_page_order)
       page_number = total_page_count - 1 - page_number;
 
-    if (!chrome_pdf::RenderPDFPageToBitmap(
-            pdf_data, page_number, image.pixel_data(), image.size().width(),
-            image.size().height(), settings.dpi.width(), settings.dpi.height(),
-            settings.autorotate, settings.use_color)) {
+    if (!chrome_pdf::RenderPDFPageToBitmap(pdf_data, page_number,
+                                           image.pixel_data(), image.size(),
+                                           settings.dpi, options)) {
       return invalid_pwg_region;
     }
 
@@ -69,16 +75,16 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
                                   : pwg_encoder::PwgHeaderInfo::SGRAY;
 
     switch (bitmap_settings.duplex_mode) {
-      case DuplexMode::UNKNOWN_DUPLEX_MODE:
+      case mojom::DuplexMode::kUnknownDuplexMode:
         NOTREACHED();
         break;
-      case DuplexMode::SIMPLEX:
+      case mojom::DuplexMode::kSimplex:
         // Already defaults to false/false.
         break;
-      case DuplexMode::LONG_EDGE:
+      case mojom::DuplexMode::kLongEdge:
         header_info.duplex = true;
         break;
-      case DuplexMode::SHORT_EDGE:
+      case mojom::DuplexMode::kShortEdge:
         header_info.duplex = true;
         header_info.tumble = true;
         break;
@@ -115,7 +121,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
   }
 
   base::MappedReadOnlyRegion region_mapping =
-      mojo::CreateReadOnlySharedMemoryRegion(pwg_data.size());
+      base::ReadOnlySharedMemoryRegion::Create(pwg_data.size());
   if (!region_mapping.IsValid())
     return invalid_pwg_region;
 

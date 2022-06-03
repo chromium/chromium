@@ -6,8 +6,10 @@
 
 #include <gtk-primary-selection-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 namespace ui {
 
@@ -15,15 +17,27 @@ namespace ui {
 GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
     WaylandConnection* connection,
     gtk_primary_selection_device* data_device)
-    : internal::WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct gtk_primary_selection_device_listener kListener = {
-      GtkPrimarySelectionDevice::OnDataOffer,
-      GtkPrimarySelectionDevice::OnSelection};
+    : WaylandDataDeviceBase(connection), data_device_(data_device) {
+  static constexpr gtk_primary_selection_device_listener kListener = {
+      &OnDataOffer, &OnSelection};
   gtk_primary_selection_device_add_listener(data_device_.get(), &kListener,
                                             this);
 }
 
 GtkPrimarySelectionDevice::~GtkPrimarySelectionDevice() = default;
+
+void GtkPrimarySelectionDevice::SetSelectionSource(
+    GtkPrimarySelectionSource* source) {
+  auto serial = GetSerialForSelection();
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to set selection. No serial found.";
+    return;
+  }
+  auto* data_source = source ? source->data_source() : nullptr;
+  gtk_primary_selection_device_set_selection(data_device_.get(), data_source,
+                                             serial->value);
+  connection()->ScheduleFlush();
+}
 
 // static
 void GtkPrimarySelectionDevice::OnDataOffer(
@@ -32,10 +46,6 @@ void GtkPrimarySelectionDevice::OnDataOffer(
     gtk_primary_selection_offer* offer) {
   auto* self = static_cast<GtkPrimarySelectionDevice*>(data);
   DCHECK(self);
-
-  self->connection()->clipboard()->UpdateSequenceNumber(
-      ClipboardBuffer::kCopyPaste);
-
   self->set_data_offer(std::make_unique<GtkPrimarySelectionOffer>(offer));
 }
 
@@ -48,17 +58,15 @@ void GtkPrimarySelectionDevice::OnSelection(
   DCHECK(self);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
-  // i.e. there is no longer clipboard data available to paste.
+  // i.e. there is no longer selection data available to be fetched.
   if (!offer) {
     self->ResetDataOffer();
-
-    // Clear Clipboard cache.
-    self->connection()->clipboard()->SetData({}, {});
-    return;
+  } else {
+    DCHECK(self->data_offer());
+    self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  DCHECK(self->data_offer());
-  self->data_offer()->EnsureTextMimeTypeIfNeeded();
+  self->NotifySelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

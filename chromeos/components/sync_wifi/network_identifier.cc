@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/components/sync_wifi/network_type_conversions.h"
+#include "chromeos/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -18,13 +19,13 @@ namespace sync_wifi {
 
 namespace {
 
-const char kDelimeter[] = "_";
+const char kDelimeter[] = "<||>";
 
 }  // namespace
 
 // static
 NetworkIdentifier NetworkIdentifier::FromProto(
-    const sync_pb::WifiConfigurationSpecificsData& specifics) {
+    const sync_pb::WifiConfigurationSpecifics& specifics) {
   return NetworkIdentifier(
       specifics.hex_ssid(),
       SecurityTypeStringFromProto(specifics.security_type()));
@@ -48,6 +49,12 @@ NetworkIdentifier NetworkIdentifier::DeserializeFromString(
   return NetworkIdentifier(pieces[0], pieces[1]);
 }
 
+// static
+NetworkIdentifier NetworkIdentifier::FromNetworkState(
+    const NetworkState* network) {
+  return NetworkIdentifier(network->GetHexSsid(), network->security_class());
+}
+
 NetworkIdentifier::NetworkIdentifier(const std::string& hex_ssid,
                                      const std::string& security_type)
     : security_type_(security_type) {
@@ -64,11 +71,25 @@ std::string NetworkIdentifier::SerializeToString() const {
                             security_type_.c_str());
 }
 
+bool NetworkIdentifier::IsValid() const {
+  return !hex_ssid_.empty() && !security_type_.empty();
+}
+
 bool NetworkIdentifier::operator==(const NetworkIdentifier& o) const {
+  // Invalid networks are not equal to each other.
+  if (!IsValid() || !o.IsValid()) {
+    return false;
+  }
+
   return hex_ssid_ == o.hex_ssid_ && security_type_ == o.security_type_;
 }
 
 bool NetworkIdentifier::operator!=(const NetworkIdentifier& o) const {
+  // Invalid networks are not equal to each other.
+  if (!IsValid() || !o.IsValid()) {
+    return true;
+  }
+
   return hex_ssid_ != o.hex_ssid_ || security_type_ != o.security_type_;
 }
 

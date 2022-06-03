@@ -26,6 +26,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
+#include "absl/random/internal/pcg_engine.h"
 #include "absl/random/internal/sequence_urbg.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
@@ -123,7 +124,7 @@ TYPED_TEST(UniformIntDistributionTest, ViolatesPreconditionsDeathTest) {
   absl::uniform_int_distribution<TypeParam> dist(10, 1);
   auto x = dist(gen);
 
-  // Any value will generate a non-empty std::string.
+  // Any value will generate a non-empty string.
   EXPECT_FALSE(absl::StrCat(+x).empty()) << x;
 #endif  // NDEBUG
 }
@@ -134,7 +135,11 @@ TYPED_TEST(UniformIntDistributionTest, TestMoments) {
   using param_type =
       typename absl::uniform_int_distribution<TypeParam>::param_type;
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
+
   std::vector<double> values(kSize);
   for (const auto& param :
        {param_type(0, Limits::max()), param_type(13, 127)}) {
@@ -178,7 +183,11 @@ TYPED_TEST(UniformIntDistributionTest, ChiSquaredTest50) {
   const TypeParam min = std::is_unsigned<TypeParam>::value ? 37 : -37;
   const TypeParam max = min + kBuckets;
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
+
   absl::uniform_int_distribution<TypeParam> dist(min, max);
 
   std::vector<int32_t> counts(kBuckets + 1, 0);

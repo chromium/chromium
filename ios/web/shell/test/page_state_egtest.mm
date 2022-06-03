@@ -83,13 +83,10 @@ void ScrollLongPageToTop(const GURL& url) {
 
 // Tests that page scroll position of a page is restored upon returning to the
 // page via the back/forward buttons.
-- (void)testScrollPositionRestoring {
-  // grey_scrollInDirection scrolls incorrect distance on iOS 13.
-  // TODO(crbug.com/983144): Enable this test on iOS 13.
-  if (@available(iOS 13, *)) {
-    return;
-  }
+// grey_scrollInDirection scrolls incorrect distance on iOS 13.
+// TODO(crbug.com/983144): Enable this test on iOS 13.
 
+- (void)DISABLED_testScrollPositionRestoring {
   // Scroll the first page and verify the offset.
   ScrollLongPageToTop(_server.GetURL(kLongPage1));
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]
@@ -132,7 +129,8 @@ void ScrollLongPageToTop(const GURL& url) {
         performAction:grey_scrollInDirection(kGREYDirectionDown, offset)];
     // Add a query parameter so the next load creates another NavigationItem.
     GURL::Replacements replacements;
-    replacements.SetQueryStr(base::NumberToString(i));
+    std::string query_string = base::NumberToString(i);
+    replacements.SetQueryStr(query_string);
     [ShellEarlGrey loadURL:baseURL.ReplaceComponents(replacements)];
     // Wait for the content offset to be set to {0, 0}.
     WaitForOffset(0.0);

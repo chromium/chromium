@@ -4,17 +4,204 @@
 
 module new_tab_page.mojom;
 
+import "chrome/browser/ui/webui/realbox/realbox.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
 import "url/mojom/url.mojom";
 
-struct MostVisitedTile {
-  string title;
+// A collection of background images.
+struct BackgroundCollection {
+  // Collection identifier.
+  string id;
+  // Localized string of the collection name.
+  string label;
+  // URL to a preview image for the collection. Can point to untrusted content.
+  url.mojom.Url preview_image_url;
+};
+
+// A background image in a collection.
+struct CollectionImage {
+  // Human readable attributions of the background image.
+  string attribution_1;
+  string attribution_2;
+  // URL associated with the background image. Used for href.
+  url.mojom.Url attribution_url;
+  // URL of image. Can point to untrusted content.
+  url.mojom.Url image_url;
+  // URL to a preview of the image. Can point to untrusted content.
+  url.mojom.Url preview_image_url;
+};
+
+// The background image URL and styling.
+struct BackgroundImage {
+  // URL to the background image. Can point to untrusted content.
+  url.mojom.Url url;
+  // URL to a higher res background image. Can point to untrusted content.
+  url.mojom.Url? url_2x;
+  // URL to a logo of the theme. Has chrome:// scheme.
+  url.mojom.Url? attribution_url;
+  // CSS styling properties set on the background image.
+  string? size;
+  string? repeat_x;
+  string? repeat_y;
+  string? position_x;
+  string? position_y;
+};
+
+// A generic theme.
+struct Theme {
+  skia.mojom.SkColor text_color;
+  skia.mojom.SkColor background_color;
+  // True if the theme is default.
+  bool is_default;
+  // True if the background is custom.
+  bool is_custom_background;
+  // True if the theme is dark (e.g. NTP background color is dark).
+  bool is_dark;
+  // Color of Google logo. If not set show the logo multi-colored.
+  skia.mojom.SkColor? logo_color;
+  // Selected collection for daily refresh.
+  string? daily_refresh_collection_id;
+  // The background image.
+  BackgroundImage? background_image;
+  // Human readable attributions of the background image.
+  string? background_image_attribution_1;
+  string? background_image_attribution_2;
+  // URL associated with the background image. Used for href.
+  url.mojom.Url? background_image_attribution_url;
+
+  // Theme settings for the NTP MV tiles.
+  most_visited.mojom.MostVisitedTheme most_visited;
+
+  // Theme settings for the NTP realbox. Matching those of the Omnibox.
+  realbox.mojom.SearchBoxTheme search_box;
+};
+
+// Specifies look of the doodle share button.
+struct DoodleShareButton {
+  // Position in pixels relative to the doodle's upper left corner.
+  int32 x;
+  int32 y;
+  // Button background color.
+  skia.mojom.SkColor background_color;
+  // Data URL of icon shown on the button.
+  url.mojom.Url icon_url;
+};
+
+// Type of image of an image doodle. Used for metrics logging only.
+enum DoodleImageType {
+  // Animation of an animated doodle.
+  kAnimation,
+  // Static preview image of an animated doodle.
+  kCta,
+  // Image of a static doodle.
+  kStatic,
+};
+
+// A simple or animated doodle in either dark or light mode.
+struct ImageDoodle {
+  // Doodle image encoded as data URL.
+  url.mojom.Url image_url;
+  // URL pointing to animated content (e.g. gif). Only set for animated doodles.
+  url.mojom.Url? animation_url;
+  // Dimensions of the original image in pixels.
+  uint32 width;
+  uint32 height;
+  // Color of the background the doodle was designed for. If the NTP background
+  // differs from that color we show the doodle in a box of that color.
+  skia.mojom.SkColor background_color;
+  // Specification of the share button.
+  DoodleShareButton? share_button;
+  // URLs to be pinged when an image has been shown.
+  url.mojom.Url image_impression_log_url;
+  url.mojom.Url? animation_impression_log_url;
+};
+
+// A simple or animated doodle in both dark and light mode.
+struct AllModeImageDoodle {
+  // Doodles for respective modes.
+  ImageDoodle light;
+  ImageDoodle? dark;
+  // URL opened in new tab when the doodle is clicked.
+  url.mojom.Url? on_click_url;
+  // URL displayed to users, which they can use to share the doodle.
+  url.mojom.Url share_url;
+};
+
+// An interactive doodle.
+struct InteractiveDoodle {
+  // URL pointing to doodle page.
+  url.mojom.Url url;
+  // Initial width and height of the doodle iframe in pixels.
+  uint32 width;
+  uint32 height;
+};
+
+// A doodle. Retrieved from the Google doodle server.
+struct Doodle {
+  // Set for simple and animated doodles.
+  AllModeImageDoodle? image;
+  // Set for interactive doodles.
+  InteractiveDoodle? interactive;
+  // Localized description of the doodle.
+  string description;
+};
+
+// A channel through which a doodle can be shared.
+enum DoodleShareChannel {
+  kFacebook,
+  kTwitter,
+  kEmail,
+  kLinkCopy,
+};
+
+struct PromoImagePart {
+  url.mojom.Url image_url;
+  url.mojom.Url target;
+};
+
+struct PromoLinkPart {
+  string? color;
+  string text;
   url.mojom.Url url;
 };
 
-struct MostVisitedInfo {
-  bool custom_links_enabled;
-  bool visible;
-  array<MostVisitedTile> tiles;
+struct PromoTextPart {
+  string? color;
+  string text;
+};
+
+union PromoPart {
+  PromoImagePart image;
+  PromoLinkPart link;
+  PromoTextPart text;
+};
+
+// Homepage promo used to display a message with a link on the NTP.
+struct Promo {
+  // A unique identifier for this promo.
+  string? id;
+  // URL to ping to log a promo impression. May be invalid.
+  url.mojom.Url? log_url;
+  // Middle slot promo data.
+  array<PromoPart> middle_slot_parts;
+};
+
+// Action the user performed while using the customize dialog. Used for metrics
+// logging only. Actions correspond to items in NTPLoggingEventType.
+enum CustomizeDialogAction {
+  kCancelClicked,
+  kDoneClicked,
+  kOpenClicked,
+  kBackgroundsBackClicked,
+  kBackgroundsNoBackgroundSelected,
+  kBackgroundsCollectionOpened,
+  kBackgroundsRefreshToggleClicked,
+  kBackgroundsImageSelected,
+  kBackgroundsUploadFromDeviceClicked,
+  kShortcutsCustomLinksClicked,
+  kShortcutsMostVisitedClicked,
+  kShortcutsVisibilityToggleClicked,
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -27,30 +214,90 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Adds tile.
-  AddMostVisitedTile(url.mojom.Url url, string title) => (bool success);
-  // Deletes tile by |url|.
-  DeleteMostVisitedTile(url.mojom.Url url) => (bool success);
-  // Moves tile identified by url to a new position at index |new_pos|.
-  ReorderMostVisitedTile(url.mojom.Url url, uint8 new_pos);
-  // Replaces the custom and most-visited tiles with the default tile set.
-  RestoreMostVisitedDefaults();
-  // Undoes the last action done to the tiles (add, delete, reorder, restore or
-  // update). Note that only the last action can be undone.
-  UndoMostVisitedTileAction();
-  // Updates a tile by url.
-  UpdateMostVisitedTile(url.mojom.Url url, url.mojom.Url new_url,
-                        string new_title)
-      => (bool success);
+  // Sets the background image and notifies all NTPs of the change.
+  SetBackgroundImage(string attribution_1, string attribution_2,
+      url.mojom.Url attribution_url, url.mojom.Url image_url);
+  // Sets collection id for daily refresh. When |collection_id| is empty, the
+  // daily refresh is turned off.
+  SetDailyRefreshCollectionId(string collection_id);
+  // Clears the background and daily refresh settings.
+  SetNoBackgroundImage();
+  // Reverts any changes to the background when a background preview
+  // is cancelled.
+  RevertBackgroundChanges();
+  // Confirms that background has been changed.
+  ConfirmBackgroundChanges();
+  // Sets the visibility of NTP tiles and whether custom links are enabled.
+  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
+  // Returns the visibility of NTP tiles and whether custom links are enabled.
+  GetMostVisitedSettings() => (bool custom_links_enabled,
+                               bool shortcuts_visible);
+  // Returns the collections of background images.
+  GetBackgroundCollections() => (array<BackgroundCollection> collections);
+  // Returns the images of a collection identified by |collection_id|.
+  GetBackgroundImages(string collection_id) => (array<CollectionImage> images);
+  // Gets current doodle if there is one.
+  GetDoodle() => (Doodle? doodle);
+  // Choose custom background from local file system.
+  ChooseLocalCustomBackground() => (bool success);
+  // Get the middle slot promo if it exists.
+  GetPromo() => (Promo? promo);
+  // Called when a module the given id is dismissed.
+  OnDismissModule(string module_id);
+  // Called when a module the given id is restored.
+  OnRestoreModule(string module_id);
+  // If |visible| the modules will be shown.
+  SetModulesVisible(bool visible);
+  // Disables module with ID |module_id| if |disabled|. Enables otherwise.
+  SetModuleDisabled(string module_id, bool disabled);
+  // Triggers a call to |SetDisabledModules|.
+  UpdateDisabledModules();
+  // Called when at least one module has loaded with data.
+  OnModulesLoadedWithData();
+  // Sets the order of modules.
+  SetModulesOrder(array<string> module_ids);
+  // Returns the order of modules or an empty array if the user has not
+  // reordered them before.
+  GetModulesOrder() => (array<string> module_ids);
+
+  // ======= METRICS =======
+  // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
+  // |time|.
+  OnOneGoogleBarRendered(double time);
+  // Logs that the promo iframe was loaded at |time| and pings |log_url| for
+  // promo metrics logging.
+  OnPromoRendered(double time, url.mojom.Url? log_url);
+  // Logs an action performed in the customize dialog.
+  OnCustomizeDialogAction(CustomizeDialogAction action);
+  // Logs that the |type| image of an image doodle has been clicked. If set, the
+  // |log_url| should be pinged for metrics logging.
+  OnDoodleImageClicked(DoodleImageType type, url.mojom.Url? log_url);
+  // Logs that the |type| image of an image doodle has been shown at |time|.
+  // Returns additional params, which are fetched from |image_url|, we use to
+  // perform more doodle logging later. We can't fetch the params in JS because
+  // the NTP renderer process does not have network access.
+  OnDoodleImageRendered(DoodleImageType type,
+                        double time,
+                        url.mojom.Url log_url)
+      => (string? image_click_params,
+          url.mojom.Url? interaction_log_url,
+          string? share_id);
+  // Logs that the doodle with |doodle_id| has been shared through |channel|.
+  // |share_id| comes from a previous call to |OnDoodleImageRendered|.
+  OnDoodleShared(DoodleShareChannel channel,
+                 string doodle_id,
+                 string? share_id);
+  // Logs that a link on a promo has been clicked.
+  OnPromoLinkClicked();
+  // Logs that the <ntp-app> element's |ready| callback method was called.
+  OnAppRendered(double time);
 };
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Updates the page with most-visited info which includes whether the
-  // tiles should be shown, if links can be customized and the tiles.
-  SetMostVisitedInfo(MostVisitedInfo info);
-  // Set custom links enabled separate from |SetMostVisitedInfo|.
-  SetCustomLinksEnabled(bool enabled);
-  // Set whether most-visited section should be shown.
-  SetMostVisitedVisible(bool visible);
+  // Sets the current theme.
+  SetTheme(Theme theme);
+  // Disables the modules in |ids|. If |all|, disables all modules and passes an
+  // empty list for |ids|.
+  SetDisabledModules(bool all, array<string> ids);
 };

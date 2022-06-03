@@ -45,11 +45,12 @@ class SQLTransactionClient {
 
  public:
   SQLTransactionClient() = default;
+
+  SQLTransactionClient(const SQLTransactionClient&) = delete;
+  SQLTransactionClient& operator=(const SQLTransactionClient&) = delete;
+
   void DidCommitWriteTransaction(Database*);
   bool DidExceedQuota(Database*);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SQLTransactionClient);
 };
 
 }  // namespace blink

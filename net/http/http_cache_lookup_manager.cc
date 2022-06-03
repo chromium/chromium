@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_info.h"
 
 namespace net {
 
@@ -17,10 +19,10 @@ namespace net {
 base::Value NetLogPushLookupTransactionParams(
     const NetLogSource& net_log,
     const ServerPushDelegate::ServerPushHelper* push_helper) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   net_log.AddToEventParameters(&dict);
-  dict.SetString("push_url", push_helper->GetURL().possibly_invalid_spec());
-  return std::move(dict);
+  dict.SetStringKey("push_url", push_helper->GetURL().possibly_invalid_spec());
+  return dict;
 }
 
 HttpCacheLookupManager::LookupTransaction::LookupTransaction(

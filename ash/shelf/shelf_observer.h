@@ -28,6 +28,10 @@ class ASH_EXPORT ShelfObserver {
   // Invoked when the positions of Shelf Icons are changed.
   virtual void OnShelfIconPositionsChanged() {}
 
+  // Invoked when the hotseat state is changed.
+  virtual void OnHotseatStateChanged(HotseatState old_state,
+                                     HotseatState new_state) {}
+
   // Invoked when the Shelf has updated its insets in work area insets.
   virtual void OnShelfWorkAreaInsetsChanged() {}
 

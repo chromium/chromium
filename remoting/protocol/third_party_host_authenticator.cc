@@ -28,14 +28,14 @@ ThirdPartyHostAuthenticator::~ThirdPartyHostAuthenticator() = default;
 
 void ThirdPartyHostAuthenticator::ProcessTokenMessage(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   // Host has already sent the URL and expects a token from the client.
   std::string token = message->TextNamed(kTokenTag);
   if (token.empty()) {
     LOG(ERROR) << "Third-party authentication protocol error: missing token.";
     token_state_ = REJECTED;
     rejection_reason_ = PROTOCOL_ERROR;
-    resume_callback.Run();
+    std::move(resume_callback).Run();
     return;
   }
 
@@ -45,11 +45,12 @@ void ThirdPartyHostAuthenticator::ProcessTokenMessage(
   // message into the callback, so that OnThirdPartyTokenValidated can give it
   // to the underlying SPAKE authenticator that will be created.
   // |token_validator_| is owned, so Unretained() is safe here.
-  token_validator_->ValidateThirdPartyToken(token, base::Bind(
-          &ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated,
-          base::Unretained(this),
-          base::Owned(new jingle_xmpp::XmlElement(*message)),
-          resume_callback));
+  token_validator_->ValidateThirdPartyToken(
+      token,
+      base::BindOnce(&ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated,
+                     base::Unretained(this),
+                     base::Owned(new jingle_xmpp::XmlElement(*message)),
+                     std::move(resume_callback)));
 }
 
 void ThirdPartyHostAuthenticator::AddTokenElements(
@@ -71,20 +72,21 @@ void ThirdPartyHostAuthenticator::AddTokenElements(
 
 void ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback,
-    const std::string& shared_secret) {
-  if (shared_secret.empty()) {
+    base::OnceClosure resume_callback,
+    const TokenValidator::ValidationResult& validation_result) {
+  if (validation_result.is_error()) {
     token_state_ = REJECTED;
-    rejection_reason_ = INVALID_CREDENTIALS;
-    resume_callback.Run();
+    rejection_reason_ = validation_result.error();
+    std::move(resume_callback).Run();
     return;
   }
 
   // The other side already started the SPAKE authentication.
+  DCHECK(!validation_result.success().empty());
   token_state_ = ACCEPTED;
-  underlying_ =
-      create_base_authenticator_callback_.Run(shared_secret, WAITING_MESSAGE);
-  underlying_->ProcessMessage(message, resume_callback);
+  underlying_ = create_base_authenticator_callback_.Run(
+      validation_result.success(), WAITING_MESSAGE);
+  underlying_->ProcessMessage(message, std::move(resume_callback));
 }
 
 }  // namespace protocol

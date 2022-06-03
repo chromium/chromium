@@ -9,10 +9,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/logging.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -105,7 +104,32 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for changes in number of input streams with
+    // permission per client type.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface,
+        cras::kNumberOfInputStreamsWithPermissionChanged,
+        base::BindRepeating(
+            &CrasAudioClientImpl::NumberOfInputStreamsWithPermissionReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr())
+
+    );
+
+    // Monitor the D-Bus signal for changes in Bluetooth headset battery level.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kBluetoothBatteryChanged,
+        base::BindRepeating(
+            &CrasAudioClientImpl::BluetoothBatteryChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+
+  CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
+  CrasAudioClientImpl& operator=(const CrasAudioClientImpl&) = delete;
 
   ~CrasAudioClientImpl() override = default;
 
@@ -159,6 +183,24 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetSystemNsSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSystemNsSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetSystemAgcSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSystemAgcSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetNodes(DBusMethodCallback<AudioNodeList> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface, cras::kGetNodes);
     cras_proxy_->CallMethod(
@@ -174,6 +216,27 @@ class CrasAudioClientImpl : public CrasAudioClient {
     cras_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&CrasAudioClientImpl::OnGetNumberOfActiveOutputStreams,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback)
+      override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetNumberOfInputStreamsWithPermission);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &CrasAudioClientImpl::OnGetNumberOfInputStreamsWithPermission,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetDeprioritizeBtWbsMic);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetDeprioritizeBtWbsMic,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -219,6 +282,29 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void SetNoiseCancellationEnabled(bool noise_cancellation_on) override {
+    VLOG(1) << "cras_audio_client: Setting noise cancellation state: "
+            << noise_cancellation_on;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetNoiseCancellationEnabled);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(noise_cancellation_on);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void GetNoiseCancellationSupported(
+      DBusMethodCallback<bool> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting noise cancellation support.";
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kIsNoiseCancellationSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetNoiseCancellationSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetActiveOutputNode(uint64_t node_id) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetActiveOutputNode);
@@ -251,6 +337,26 @@ class CrasAudioClientImpl : public CrasAudioClient {
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&CrasAudioClientImpl::OnSetHotwordModel,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetFixA2dpPacketSize(bool enabled) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetFixA2dpPacketSize);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetFlossEnabled(bool enabled) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetFlossEnabled);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
   }
 
   void AddActiveInputNode(uint64_t node_id) override {
@@ -304,6 +410,18 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void SetDisplayRotation(uint64_t node_id,
+                          cras::DisplayRotation rotation) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetDisplayRotation);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint64(node_id);
+    writer.AppendUint32(static_cast<uint32_t>(rotation));
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
   void SetGlobalOutputChannelRemix(int32_t channels,
                                    const std::vector<double>& mixer) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
@@ -311,6 +429,87 @@ class CrasAudioClientImpl : public CrasAudioClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendInt32(channels);
     writer.AppendArrayOfDoubles(mixer.data(), mixer.size());
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetPlayerPlaybackStatus(const std::string& playback_status) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetPlayerPlaybackStatus);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(playback_status);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetPlayerIdentity(const std::string& identity) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetPlayerIdentity);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(identity);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetPlayerPosition(const int64_t& position) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetPlayerPosition);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendInt64(position);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetPlayerDuration(const int64_t& duration) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetPlayerMetadata);
+    dbus::MessageWriter writer(&method_call);
+    dbus::MessageWriter array_writer(nullptr);
+    dbus::MessageWriter dict_entry_writer(nullptr);
+
+    writer.OpenArray("{sv}", &array_writer);
+    array_writer.OpenDictEntry(&dict_entry_writer);
+    dict_entry_writer.AppendString("length");
+    dict_entry_writer.AppendVariantOfInt64(duration);
+    array_writer.CloseContainer(&dict_entry_writer);
+    writer.CloseContainer(&array_writer);
+
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetPlayerMetadata(
+      const std::map<std::string, std::string>& metadata) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetPlayerMetadata);
+    dbus::MessageWriter writer(&method_call);
+    dbus::MessageWriter array_writer(nullptr);
+    dbus::MessageWriter dict_entry_writer(nullptr);
+
+    writer.OpenArray("{sv}", &array_writer);
+
+    for (auto& it : metadata) {
+      array_writer.OpenDictEntry(&dict_entry_writer);
+      dict_entry_writer.AppendString(it.first);
+      dict_entry_writer.AppendVariantOfString(it.second);
+      array_writer.CloseContainer(&dict_entry_writer);
+    }
+
+    writer.CloseContainer(&array_writer);
+
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void ResendBluetoothBattery() override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kResendBluetoothBattery);
     cras_proxy_->CallMethod(&method_call,
                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                             base::DoNothing());
@@ -424,11 +623,53 @@ class CrasAudioClientImpl : public CrasAudioClient {
       observer.NumberOfActiveStreamsChanged();
   }
 
+  void NumberOfInputStreamsWithPermissionReceived(dbus::Signal* signal) {
+    dbus::MessageReader signal_reader(signal);
+    dbus::MessageReader array_reader(nullptr);
+    base::flat_map<std::string, uint32_t> res;
+    while (signal_reader.HasMoreData()) {
+      if (!signal_reader.PopArray(&array_reader)) {
+        LOG(ERROR) << "Error reading signal from cras: " << signal->ToString();
+        return;
+      }
+      std::string client_type;
+      uint32_t num_input_streams;
+      if (!GetNumerInputStreams(&array_reader, &client_type,
+                                &num_input_streams)) {
+        LOG(ERROR) << "Error reading number of input streams from cras: "
+                   << signal->ToString();
+        return;
+      }
+      res[client_type] = num_input_streams;
+    }
+
+    for (auto& observer : observers_)
+      observer.NumberOfInputStreamsWithPermissionChanged(res);
+  }
+
+  void BluetoothBatteryChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    std::string address;
+    uint32_t level;
+
+    if (!reader.PopString(&address)) {
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
+      return;
+    }
+
+    if (!reader.PopUint32(&level)) {
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
+      return;
+    }
+    for (auto& observer : observers_)
+      observer.BluetoothBatteryChanged(address, level);
+  }
+
   void OnGetVolumeState(DBusMethodCallback<VolumeState> callback,
                         dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetVolumeState;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -441,7 +682,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
         !reader.PopBool(&volume_state.output_user_mute)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -452,7 +693,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                     dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetDefaultOutputBufferSize;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     int32_t buffer_size = 0;
@@ -460,7 +701,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopInt32(&buffer_size)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -471,7 +712,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAecSupported;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     bool system_aec_supported = 0;
@@ -479,7 +720,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopBool(&system_aec_supported)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -490,7 +731,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                              dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAecGroupId;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     int32_t system_aec_group_id = 0;
@@ -498,17 +739,55 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopInt32(&system_aec_group_id)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
     std::move(callback).Run(system_aec_group_id);
   }
 
+  void OnGetSystemNsSupported(DBusMethodCallback<bool> callback,
+                              dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetSystemNsSupported;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool system_ns_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&system_ns_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(system_ns_supported);
+  }
+
+  void OnGetSystemAgcSupported(DBusMethodCallback<bool> callback,
+                               dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetSystemAgcSupported;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool system_agc_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&system_agc_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(system_agc_supported);
+  }
+
   void OnGetNodes(DBusMethodCallback<AudioNodeList> callback,
                   dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -519,7 +798,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
       if (!response_reader.PopArray(&array_reader)) {
         LOG(ERROR) << "Error reading response from cras: "
                    << response->ToString();
-        std::move(callback).Run(base::nullopt);
+        std::move(callback).Run(absl::nullopt);
         return;
       }
 
@@ -527,7 +806,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
       if (!GetAudioNode(response, &array_reader, &node)) {
         LOG(WARNING) << "Error reading audio node data from cras: "
                      << response->ToString();
-        std::move(callback).Run(base::nullopt);
+        std::move(callback).Run(absl::nullopt);
         return;
       }
 
@@ -543,7 +822,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                         dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetNumberOfActiveOutputStreams;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     int32_t num_active_streams = 0;
@@ -551,11 +830,88 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopInt32(&num_active_streams)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
     std::move(callback).Run(num_active_streams);
+  }
+
+  bool GetNumerInputStreams(dbus::MessageReader* array_reader,
+                            std::string* client_type,
+                            uint32_t* num_input_streams) {
+    while (array_reader->HasMoreData()) {
+      dbus::MessageReader dict_entry_reader(nullptr);
+      dbus::MessageReader value_reader(nullptr);
+      std::string key;
+      if (!array_reader->PopDictEntry(&dict_entry_reader) ||
+          !dict_entry_reader.PopString(&key) ||
+          !dict_entry_reader.PopVariant(&value_reader)) {
+        return false;
+      }
+
+      if (key == cras::kClientType) {
+        if (!value_reader.PopString(client_type))
+          return false;
+      } else if (key == cras::kNumStreamsWithPermission) {
+        if (!value_reader.PopUint32(num_input_streams))
+          return false;
+      }
+    }
+    return true;
+  }
+
+  void OnGetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << cras::kGetNumberOfInputStreamsWithPermission;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    dbus::MessageReader response_reader(response);
+    dbus::MessageReader array_reader(nullptr);
+    base::flat_map<std::string, uint32_t> res;
+    while (response_reader.HasMoreData()) {
+      if (!response_reader.PopArray(&array_reader)) {
+        LOG(ERROR) << "Error reading response from cras: "
+                   << response->ToString();
+        std::move(callback).Run(absl::nullopt);
+        return;
+      }
+      std::string client_type;
+      uint32_t num_input_streams;
+      if (!GetNumerInputStreams(&array_reader, &client_type,
+                                &num_input_streams)) {
+        LOG(ERROR) << "Error reading number of input streams from cras: "
+                   << response->ToString();
+        std::move(callback).Run(absl::nullopt);
+        return;
+      }
+      res[client_type] = num_input_streams;
+    }
+
+    std::move(callback).Run(std::move(res));
+  }
+
+  void OnGetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback,
+                                 dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << "GetDeprioritizeBtWbsMic";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool deprioritize_bt_wbs_mic = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&deprioritize_bt_wbs_mic)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(deprioritize_bt_wbs_mic);
   }
 
   void OnSetHotwordModel(VoidDBusMethodCallback callback,
@@ -581,6 +937,27 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
 
     std::move(callback).Run(true);
+  }
+
+  void OnGetNoiseCancellationSupported(DBusMethodCallback<bool> callback,
+                                       dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << "GetNoiseCancellationSupported";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool is_noise_cancellation_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&is_noise_cancellation_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_noise_cancellation_supported);
+    VLOG(1) << "cras_audio_client: Retrieved noise cancellation support: "
+            << is_noise_cancellation_supported;
   }
 
   bool GetAudioNode(dbus::Response* response,
@@ -617,9 +994,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
       } else if (key == cras::kPluggedTimeProperty) {
         if (!value_reader.PopUint64(&node->plugged_time))
           return false;
-      } else if (key == cras::kMicPositionsProperty) {
-        if (!value_reader.PopString(&node->mic_positions))
-          return false;
       } else if (key == cras::kStableDeviceIdProperty) {
         if (!value_reader.PopUint64(&node->stable_device_id_v1))
           return false;
@@ -627,6 +1001,12 @@ class CrasAudioClientImpl : public CrasAudioClient {
         if (!value_reader.PopUint64(&node->stable_device_id_v2))
           return false;
         node->has_v2_stable_device_id = true;
+      } else if (key == cras::kMaxSupportedChannelsProperty) {
+        if (!value_reader.PopUint32(&node->max_supported_channels))
+          return false;
+      } else if (key == cras::kAudioEffectProperty) {
+        if (!value_reader.PopUint32(&node->audio_effect))
+          return false;
       }
     }
 
@@ -639,8 +1019,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrasAudioClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClientImpl);
 };
 
 }  // namespace
@@ -666,6 +1044,13 @@ void CrasAudioClient::Observer::HotwordTriggered(uint64_t tv_sec,
                                                  uint64_t tv_nsec) {}
 
 void CrasAudioClient::Observer::NumberOfActiveStreamsChanged() {}
+
+void CrasAudioClient::Observer::BluetoothBatteryChanged(
+    const std::string& address,
+    uint32_t level) {}
+
+void CrasAudioClient::Observer::NumberOfInputStreamsWithPermissionChanged(
+    const base::flat_map<std::string, uint32_t>& num_input_streams) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/logging.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

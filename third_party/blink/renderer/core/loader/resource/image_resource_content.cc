@@ -6,8 +6,11 @@
 
 #include <memory>
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom-blink.h"
+#include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/permissions_policy/policy_value.h"
+#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
@@ -15,8 +18,6 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
@@ -32,33 +33,25 @@ namespace {
 class NullImageResourceInfo final
     : public GarbageCollected<NullImageResourceInfo>,
       public ImageResourceInfo {
-  USING_GARBAGE_COLLECTED_MIXIN(NullImageResourceInfo);
-
  public:
   NullImageResourceInfo() = default;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     ImageResourceInfo::Trace(visitor);
   }
 
  private:
   const KURL& Url() const override { return url_; }
   base::TimeTicks LoadResponseEnd() const override { return base::TimeTicks(); }
-  bool IsSchedulingReload() const override { return false; }
   const ResourceResponse& GetResponse() const override { return response_; }
-  bool ShouldShowPlaceholder() const override { return false; }
-  bool ShouldShowLazyImagePlaceholder() const override { return false; }
   bool IsCacheValidator() const override { return false; }
-  bool SchedulingReloadOrShouldReloadBrokenPlaceholder() const override {
-    return false;
-  }
   bool IsAccessAllowed(
       DoesCurrentFrameHaveSingleSecurityOrigin) const override {
     return true;
   }
   bool HasCacheControlNoStoreHeader() const override { return false; }
-  base::Optional<ResourceError> GetResourceError() const override {
-    return base::nullopt;
+  absl::optional<ResourceError> GetResourceError() const override {
+    return absl::nullopt;
   }
 
   void SetDecodedSize(size_t) override {}
@@ -71,34 +64,15 @@ class NullImageResourceInfo final
 
   void LoadDeferredImage(ResourceFetcher* fetcher) override {}
 
+  bool IsAdResource() const override { return false; }
+
+  const HashSet<String>* GetUnsupportedImageMimeTypes() const override {
+    return nullptr;
+  }
+
   const KURL url_;
   const ResourceResponse response_;
 };
-
-int64_t EstimateOriginalImageSizeForPlaceholder(
-    const ResourceResponse& response) {
-  if (response.HttpHeaderField("chrome-proxy-content-transform") ==
-      "empty-image") {
-    const String& str = response.HttpHeaderField("chrome-proxy");
-    wtf_size_t index = str.Find("ofcl=");
-    if (index != kNotFound) {
-      bool ok = false;
-      int bytes = str.Substring(index + (sizeof("ofcl=") - 1)).ToInt(&ok);
-      if (ok && bytes >= 0)
-        return bytes;
-    }
-  }
-
-  int64_t first = -1, last = -1, length = -1;
-  if (response.HttpStatusCode() == 206 &&
-      ParseContentRangeHeaderFor206(response.HttpHeaderField("content-range"),
-                                    &first, &last, &length) &&
-      length >= 0) {
-    return length;
-  }
-
-  return response.EncodedBodyLength();
-}
 
 }  // namespace
 
@@ -121,14 +95,6 @@ ImageResourceContent* ImageResourceContent::CreateLoaded(
   return content;
 }
 
-ImageResourceContent* ImageResourceContent::CreateLazyImagePlaceholder() {
-  ImageResourceContent* content = MakeGarbageCollected<ImageResourceContent>();
-  content->content_status_ = ResourceStatus::kCached;
-  content->image_ =
-      PlaceholderImage::CreateForLazyImages(content, IntSize(1, 1));
-  return content;
-}
-
 ImageResourceContent* ImageResourceContent::Fetch(FetchParameters& params,
                                                   ResourceFetcher* fetcher) {
   // TODO(hiroshige): Remove direct references to ImageResource by making
@@ -143,15 +109,15 @@ void ImageResourceContent::SetImageResourceInfo(ImageResourceInfo* info) {
   info_ = info;
 }
 
-void ImageResourceContent::Trace(blink::Visitor* visitor) {
+void ImageResourceContent::Trace(Visitor* visitor) const {
   visitor->Trace(info_);
+  visitor->Trace(observers_);
+  visitor->Trace(finished_observers_);
   ImageObserver::Trace(visitor);
 }
 
 void ImageResourceContent::HandleObserverFinished(
     ImageResourceObserver* observer) {
-  if (info_->SchedulingReloadOrShouldReloadBrokenPlaceholder())
-    return;
   {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);
@@ -195,7 +161,8 @@ void ImageResourceContent::RemoveObserver(ImageResourceObserver* observer) {
   auto it = observers_.find(observer);
   bool fully_erased;
   if (it != observers_.end()) {
-    fully_erased = observers_.erase(it);
+    fully_erased = observers_.erase(it) && finished_observers_.find(observer) ==
+                                               finished_observers_.end();
   } else {
     it = finished_observers_.find(observer);
     DCHECK(it != finished_observers_.end());
@@ -265,37 +232,43 @@ IntSize ImageResourceContent::IntrinsicSize(
     RespectImageOrientationEnum should_respect_image_orientation) const {
   if (!image_)
     return IntSize();
-  if (should_respect_image_orientation == kRespectImageOrientation &&
-      image_->IsBitmapImage())
-    return ToBitmapImage(image_.get())->SizeRespectingOrientation();
-  return image_->Size();
+  RespectImageOrientationEnum respect_orientation =
+      ForceOrientationIfNecessary(should_respect_image_orientation);
+  return image_->Size(respect_orientation);
+}
+
+RespectImageOrientationEnum ImageResourceContent::ForceOrientationIfNecessary(
+    RespectImageOrientationEnum default_orientation) const {
+  if (image_ && image_->IsBitmapImage() && !IsAccessAllowed())
+    return kRespectImageOrientation;
+  return default_orientation;
 }
 
 void ImageResourceContent::NotifyObservers(
     NotifyFinishOption notifying_finish_option,
     CanDeferInvalidation defer) {
   {
-    Vector<ImageResourceObserver*> finished_observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> finished_observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      finished_observers_as_vector = finished_observers_.AsVector();
+      CopyToVector(finished_observers_, finished_observers_as_vector);
     }
 
-    for (auto* observer : finished_observers_as_vector) {
+    for (ImageResourceObserver* observer : finished_observers_as_vector) {
       if (finished_observers_.Contains(observer))
         observer->ImageChanged(this, defer);
     }
   }
   {
-    Vector<ImageResourceObserver*> observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      observers_as_vector = observers_.AsVector();
+      CopyToVector(observers_, observers_as_vector);
     }
 
-    for (auto* observer : observers_as_vector) {
+    for (ImageResourceObserver* observer : observers_as_vector) {
       if (observers_.Contains(observer)) {
         observer->ImageChanged(this, defer);
         if (notifying_finish_option == kShouldNotifyFinish &&
@@ -329,7 +302,7 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
 void ImageResourceContent::ClearImage() {
   if (!image_)
     return;
-  int64_t length = image_->Data() ? image_->Data()->size() : 0;
+  int64_t length = image_->HasData() ? image_->DataSize() : 0;
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-length);
 
   // If our Image has an observer, it's always us so we need to clear the back
@@ -451,19 +424,13 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       if (size_available_ == Image::kSizeUnavailable && !all_data_received)
         return UpdateImageResult::kNoDecodeError;
 
-      if ((info_->ShouldShowPlaceholder() ||
-           info_->ShouldShowLazyImagePlaceholder()) &&
-          all_data_received) {
-        if (image_ && !image_->IsNull()) {
-          IntSize dimensions = image_->Size();
-          ClearImage();
-          if (info_->ShouldShowLazyImagePlaceholder()) {
-            image_ = PlaceholderImage::CreateForLazyImages(this, dimensions);
-          } else {
-            image_ = PlaceholderImage::Create(
-                this, dimensions,
-                EstimateOriginalImageSizeForPlaceholder(info_->GetResponse()));
-          }
+      if (image_ && info_->GetUnsupportedImageMimeTypes()) {
+        // Filename extension is set by the image decoder based on the actual
+        // image content.
+        String file_extension = image_->FilenameExtension();
+        if (info_->GetUnsupportedImageMimeTypes()->Contains(
+                String("image/" + file_extension))) {
+          return UpdateImageResult::kShouldDecodeError;
         }
       }
 
@@ -471,7 +438,7 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       // consider such an image as DecodeError.
       // https://www.w3.org/TR/SVG/struct.html#SVGElementWidthAttribute
       if (!image_ ||
-          (image_->IsNull() && (!image_->IsSVGImage() ||
+          (image_->IsNull() && (!IsA<SVGImage>(image_.get()) ||
                                 size_available_ == Image::kSizeUnavailable))) {
         ClearImage();
         return UpdateImageResult::kShouldDecodeError;
@@ -513,19 +480,19 @@ ImageDecoder::CompressionFormat ImageResourceContent::GetCompressionFormat()
 }
 
 bool ImageResourceContent::IsAcceptableCompressionRatio(
-    const ExecutionContext& context) {
+    ExecutionContext& context) {
   if (!image_)
     return true;
 
-  uint64_t pixels = IntrinsicSize(kRespectImageOrientation).Area();
+  uint64_t pixels = image_->Size().Area();
   if (!pixels)
     return true;
 
   double resource_length =
       static_cast<double>(GetResponse().ExpectedContentLength());
-  if (resource_length <= 0 && image_->Data()) {
+  if (resource_length <= 0 && image_->HasData()) {
     // WPT and LayoutTests server returns -1 or 0 for the content length.
-    resource_length = static_cast<double>(image_->Data()->size());
+    resource_length = static_cast<double>(image_->DataSize());
   }
 
   // Calculate the image's compression ratio (in bytes per pixel) with both 1k
@@ -535,43 +502,34 @@ bool ImageResourceContent::IsAcceptableCompressionRatio(
   double compression_ratio_10k = (resource_length - 10240) / pixels;
 
   ImageDecoder::CompressionFormat compression_format = GetCompressionFormat();
-  const auto max_value =
-      PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType::kDecDouble);
-  // If an unoptimized-*-images policy is specified, the specified compression
-  // ratio will be less than the max value.
-  bool is_policy_specified =
-      !context.IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kUnoptimizedLossyImages, max_value) ||
-      !context.IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kUnoptimizedLosslessImagesStrict,
-          max_value) ||
-      !context.IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kUnoptimizedLosslessImages, max_value);
-  if (is_policy_specified) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.FeaturePolicy.ImageFormats",
-                              compression_format);
-  }
 
   // Pass image url to reporting API.
   const String& image_url = Url().GetString();
 
+  const char* message_format =
+      "Image bpp (byte per pixel) exceeds max value set in %s.";
+
   if (compression_format == ImageDecoder::kLossyFormat) {
     // Enforce the lossy image policy.
     return context.IsFeatureEnabled(
-        mojom::FeaturePolicyFeature::kUnoptimizedLossyImages,
-        PolicyValue(compression_ratio_1k), ReportOptions::kReportOnFailure,
-        g_empty_string, image_url);
+        mojom::blink::DocumentPolicyFeature::kLossyImagesMaxBpp,
+        PolicyValue::CreateDecDouble(compression_ratio_1k),
+        ReportOptions::kReportOnFailure,
+        String::Format(message_format, "lossy-images-max-bpp"), image_url);
   }
   if (compression_format == ImageDecoder::kLosslessFormat) {
     // Enforce the lossless image policy.
     bool enabled_by_10k_policy = context.IsFeatureEnabled(
-        mojom::FeaturePolicyFeature::kUnoptimizedLosslessImages,
-        PolicyValue(compression_ratio_10k), ReportOptions::kReportOnFailure,
-        g_empty_string, image_url);
+        mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
+        PolicyValue::CreateDecDouble(compression_ratio_10k),
+        ReportOptions::kReportOnFailure,
+        String::Format(message_format, "lossless-images-max-bpp"), image_url);
     bool enabled_by_1k_policy = context.IsFeatureEnabled(
-        mojom::FeaturePolicyFeature::kUnoptimizedLosslessImagesStrict,
-        PolicyValue(compression_ratio_1k), ReportOptions::kReportOnFailure,
-        g_empty_string, image_url);
+        mojom::blink::DocumentPolicyFeature::kLosslessImagesStrictMaxBpp,
+        PolicyValue::CreateDecDouble(compression_ratio_1k),
+        ReportOptions::kReportOnFailure,
+        String::Format(message_format, "lossless-images-strict-max-bpp"),
+        image_url);
     return enabled_by_10k_policy && enabled_by_1k_policy;
   }
 
@@ -609,7 +567,8 @@ void ImageResourceContent::UpdateImageAnimationPolicy() {
   if (!image_)
     return;
 
-  ImageAnimationPolicy new_policy = kImageAnimationPolicyAllowed;
+  mojom::blink::ImageAnimationPolicy new_policy =
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
   {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);
@@ -632,7 +591,7 @@ void ImageResourceContent::Changed(const blink::Image* image) {
   NotifyObservers(kDoNotNotifyFinish, CanDeferInvalidation::kYes);
 }
 
-bool ImageResourceContent::IsAccessAllowed() {
+bool ImageResourceContent::IsAccessAllowed() const {
   return info_->IsAccessAllowed(
       GetImage()->CurrentFrameHasSingleSecurityOrigin()
           ? ImageResourceInfo::kHasSingleSecurityOrigin
@@ -667,7 +626,12 @@ ResourceStatus ImageResourceContent::GetContentStatus() const {
   return content_status_;
 }
 
-// TODO(hiroshige): Consider removing the following methods, or stoping
+bool ImageResourceContent::IsAnimatedImageWithPaintedFirstFrame() const {
+  return (image_ && !image_->IsNull() && image_->MaybeAnimated() &&
+          image_->CurrentFrameIsComplete());
+}
+
+// TODO(hiroshige): Consider removing the following methods, or stopping
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {
   return info_->Url();
@@ -693,7 +657,7 @@ const ResourceResponse& ImageResourceContent::GetResponse() const {
   return info_->GetResponse();
 }
 
-base::Optional<ResourceError> ImageResourceContent::GetResourceError() const {
+absl::optional<ResourceError> ImageResourceContent::GetResourceError() const {
   return info_->GetResourceError();
 }
 
@@ -703,6 +667,15 @@ bool ImageResourceContent::IsCacheValidator() const {
 
 void ImageResourceContent::LoadDeferredImage(ResourceFetcher* fetcher) {
   info_->LoadDeferredImage(fetcher);
+}
+
+bool ImageResourceContent::IsAdResource() const {
+  return info_->IsAdResource();
+}
+
+void ImageResourceContent::RecordDecodedImageType(UseCounter* use_counter) {
+  if (auto* bitmap_image = DynamicTo<BitmapImage>(image_.get()))
+    bitmap_image->RecordDecodedImageType(use_counter);
 }
 
 }  // namespace blink

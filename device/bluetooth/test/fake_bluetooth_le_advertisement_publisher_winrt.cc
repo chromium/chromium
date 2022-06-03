@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "device/bluetooth/test/fake_bluetooth_le_advertisement_publisher_status_changed_event_args_winrt.h"
 
 namespace device {

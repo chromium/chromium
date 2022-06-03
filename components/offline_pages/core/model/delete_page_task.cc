@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -46,7 +48,7 @@ namespace {
 
 void ReportDeletePageHistograms(
     const std::vector<OfflinePageItem>& deleted_pages) {
-  const int max_minutes = base::TimeDelta::FromDays(365).InMinutes();
+  const int max_minutes = base::Days(365).InMinutes();
   base::Time delete_time = OfflineTimeNow();
   for (const auto& item : deleted_pages) {
     base::UmaHistogramCustomCounts(
@@ -58,11 +60,6 @@ void ReportDeletePageHistograms(
                                         "OfflinePages.AccessCount"),
         item.access_count, 1, 1000000, 50);
   }
-}
-
-bool DeleteArchiveSync(const base::FilePath& file_path) {
-  // Delete the file only, |false| for recursive.
-  return base::DeleteFile(file_path, false);
 }
 
 // Deletes pages. This will return a DeletePageTaskResult which contains the
@@ -85,7 +82,7 @@ DeletePageTaskResult DeletePagesSync(
 
   bool any_archive_deleted = false;
   for (auto& item : pages_to_delete) {
-    if (DeleteArchiveSync(item.file_path)) {
+    if (base::DeleteFile(item.file_path)) {
       any_archive_deleted = true;
       if (DeletePageTask::DeletePageFromDbSync(item.offline_id, db))
         deleted_pages.push_back(std::move(item));

@@ -19,7 +19,10 @@
 class GURL;
 
 namespace net {
+class IsolationInfo;
+class SiteForCookies;
 class SSLInfo;
+struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
 namespace url {
@@ -34,21 +37,28 @@ class WebSocket;
 class WebSocketFactory final {
  public:
   explicit WebSocketFactory(NetworkContext* context);
+
+  WebSocketFactory(const WebSocketFactory&) = delete;
+  WebSocketFactory& operator=(const WebSocketFactory&) = delete;
+
   ~WebSocketFactory();
 
   void CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
-      const GURL& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::SiteForCookies& site_for_cookies,
+      const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
-      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client);
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
+      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
   // Returns a URLRequestContext associated with this factory.
   net::URLRequestContext* GetURLRequestContext();
@@ -73,8 +83,6 @@ class WebSocketFactory final {
 
   // |context_| outlives this object.
   NetworkContext* const context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFactory);
 };
 
 }  // namespace network

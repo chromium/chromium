@@ -7,13 +7,10 @@
 
 #include <memory>
 
-namespace gfx {
-class Rect;
-}
-
 namespace ui {
 
-class ShellSurfaceWrapper;
+class ShellToplevelWrapper;
+struct ShellPopupParams;
 class ShellPopupWrapper;
 class WaylandConnection;
 class WaylandWindow;
@@ -27,8 +24,8 @@ class ShellObjectFactory {
   ShellObjectFactory();
   ~ShellObjectFactory();
 
-  // Creates and initializes a ShellSurfaceWrapper.
-  std::unique_ptr<ShellSurfaceWrapper> CreateShellSurfaceWrapper(
+  // Creates and initializes a ShellToplevelWrapper.
+  std::unique_ptr<ShellToplevelWrapper> CreateShellToplevelWrapper(
       WaylandConnection* connection,
       WaylandWindow* wayland_window);
 
@@ -36,7 +33,7 @@ class ShellObjectFactory {
   std::unique_ptr<ShellPopupWrapper> CreateShellPopupWrapper(
       WaylandConnection* connection,
       WaylandWindow* wayland_window,
-      const gfx::Rect& bounds);
+      const ShellPopupParams& params);
 };
 
 }  // namespace ui

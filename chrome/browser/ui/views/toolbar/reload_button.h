@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
 
@@ -23,16 +25,13 @@ class CommandUpdater;
 ////////////////////////////////////////////////////////////////////////////////
 
 class ReloadButton : public ToolbarButton,
-                     public views::ButtonListener,
                      public ui::SimpleMenuModel::Delegate {
  public:
-  enum class IconStyle { kBrowser, kMinimalUi };
+  METADATA_HEADER(ReloadButton);
+
   enum class Mode { kReload = 0, kStop };
 
-  // The button's class name.
-  static const char kViewClassName[];
-
-  explicit ReloadButton(CommandUpdater* command_updater, IconStyle icon_style);
+  explicit ReloadButton(CommandUpdater* command_updater);
   ReloadButton(const ReloadButton&) = delete;
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
@@ -40,23 +39,18 @@ class ReloadButton : public ToolbarButton,
   // Ask for a specified button state.  If |force| is true this will be applied
   // immediately.
   void ChangeMode(Mode mode, bool force);
+  Mode visible_mode() const { return visible_mode_; }
 
-  // Enable reload drop-down menu.
-  void set_menu_enabled(bool enable) { menu_enabled_ = enable; }
-
-  void SetColors(SkColor normal_color, SkColor disabled_color);
+  // Gets/Sets whether reload drop-down menu is enabled.
+  bool GetMenuEnabled() const;
+  void SetMenuEnabled(bool enable);
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
-  const char* GetClassName() const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldShowMenu() override;
   void ShowDropDownMenu(ui::MenuSourceType source_type) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* /* button */,
-                     const ui::Event& event) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -71,12 +65,14 @@ class ReloadButton : public ToolbarButton,
 
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
+  void SetVisibleMode(Mode mode);
+
+  void ButtonPressed(const ui::Event& event);
+
   void ExecuteBrowserCommand(int command, int event_flags);
-  void ChangeModeInternal(Mode mode);
 
   void OnDoubleClickTimer();
   void OnStopToReloadTimer();
-  void OnLongLoadTimer();
 
   base::OneShotTimer double_click_timer_;
 
@@ -85,8 +81,6 @@ class ReloadButton : public ToolbarButton,
 
   // This may be NULL when testing.
   CommandUpdater* command_updater_;
-
-  const IconStyle icon_style_;
 
   // The mode we should be in assuming no timers are running.
   Mode intended_mode_ = Mode::kReload;
@@ -99,9 +93,6 @@ class ReloadButton : public ToolbarButton,
   base::TimeDelta double_click_timer_delay_;
   base::TimeDelta mode_switch_timer_delay_;
 
-  SkColor normal_color_;
-  SkColor disabled_color_;
-
   // Indicates if reload menu is enabled.
   bool menu_enabled_ = false;
 
@@ -112,5 +103,11 @@ class ReloadButton : public ToolbarButton,
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
 };
+
+BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton, ToolbarButton)
+VIEW_BUILDER_PROPERTY(bool, MenuEnabled)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_

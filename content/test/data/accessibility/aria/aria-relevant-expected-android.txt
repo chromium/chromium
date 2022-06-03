@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View role_description='log' clickable focusable live_region_type=1
-++android.view.View role_description='log' clickable focusable live_region_type=1
-++android.view.View role_description='log' clickable focusable live_region_type=1
-++android.view.View role_description='log' clickable focusable live_region_type=1
-++android.view.View role_description='log' clickable focusable live_region_type=1
+++android.view.View role_description='log' focusable live_region_type=1
+++android.view.View role_description='log' focusable live_region_type=1
+++android.view.View role_description='log' focusable live_region_type=1
+++android.view.View role_description='log' focusable live_region_type=1
+++android.view.View role_description='log' focusable live_region_type=1

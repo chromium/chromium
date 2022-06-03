@@ -6,9 +6,8 @@
 #define CHROME_CHROME_CLEANER_CRASH_CRASH_CLIENT_H_
 
 #include <map>
+#include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 
@@ -23,12 +22,16 @@ class CrashClient {
 
   // Set |client_id| to the current guid associated with crashes. |client_id|
   // may be empty if no guid is associated.
-  static void GetClientId(base::string16* client_id);
+  static void GetClientId(std::wstring* client_id);
 
   // Returns whether upload of crashes is enabled or not.
   static bool IsUploadEnabled();
 
   CrashClient() = default;
+
+  CrashClient(const CrashClient&) = delete;
+  CrashClient& operator=(const CrashClient&) = delete;
+
   virtual ~CrashClient() = default;
 
   // Initializes collection and upload of crash reports. This will only be done
@@ -46,9 +49,6 @@ class CrashClient {
   // |process_type| identifies the type of process that reported the crash.
   virtual bool InitializeCrashReporting(Mode mode,
                                         SandboxType process_type) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashClient);
 };
 
 }  // namespace chrome_cleaner

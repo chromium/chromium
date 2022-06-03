@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace blink {
 namespace scheduler {

@@ -44,10 +44,11 @@ struct BufferedSocketWriter::PendingPacket {
 // static
 std::unique_ptr<BufferedSocketWriter> BufferedSocketWriter::CreateForSocket(
     net::Socket* socket,
-    const WriteFailedCallback& write_failed_callback) {
+    WriteFailedCallback write_failed_callback) {
   std::unique_ptr<BufferedSocketWriter> result =
       std::make_unique<BufferedSocketWriter>();
-  result->Start(base::Bind(&WriteNetSocket, socket), write_failed_callback);
+  result->Start(base::BindRepeating(&WriteNetSocket, socket),
+                std::move(write_failed_callback));
   return result;
 }
 
@@ -57,11 +58,10 @@ BufferedSocketWriter::~BufferedSocketWriter() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void BufferedSocketWriter::Start(
-    const WriteCallback& write_callback,
-    const WriteFailedCallback& write_failed_callback) {
+void BufferedSocketWriter::Start(const WriteCallback& write_callback,
+                                 WriteFailedCallback write_failed_callback) {
   write_callback_ = write_callback;
-  write_failed_callback_ = write_failed_callback;
+  write_failed_callback_ = std::move(write_failed_callback);
   DoWrite();
 }
 
@@ -92,8 +92,8 @@ void BufferedSocketWriter::DoWrite() {
          !queue_.empty()) {
     int result = write_callback_.Run(
         queue_.front()->data.get(), queue_.front()->data->BytesRemaining(),
-        base::Bind(&BufferedSocketWriter::OnWritten,
-                   weak_factory_.GetWeakPtr()),
+        base::BindOnce(&BufferedSocketWriter::OnWritten,
+                       weak_factory_.GetWeakPtr()),
         queue_.front()->traffic_annotation);
     HandleWriteResult(result);
   }

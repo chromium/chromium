@@ -52,6 +52,21 @@ WebView* FrameTracker::GetTargetForFrame(const std::string& frame_id) {
   return nullptr;
 }
 
+bool FrameTracker::IsKnownFrame(const std::string& frame_id) const {
+  if (attached_frames_.count(frame_id) != 0 ||
+      frame_to_context_map_.count(frame_id) != 0 ||
+      frame_to_target_map_.count(frame_id) != 0) {
+    return true;
+  }
+  // Frame unknown to this tracker, recursively search all child targets.
+  for (const auto& it : frame_to_target_map_) {
+    FrameTracker* child = it.second->GetFrameTracker();
+    if (child != nullptr && child->IsKnownFrame(frame_id))
+      return true;
+  }
+  return false;
+}
+
 void FrameTracker::DeleteTargetForFrame(const std::string& frame_id) {
   frame_to_target_map_.erase(frame_id);
 }
@@ -59,6 +74,7 @@ void FrameTracker::DeleteTargetForFrame(const std::string& frame_id) {
 Status FrameTracker::OnConnected(DevToolsClient* client) {
   frame_to_context_map_.clear();
   frame_to_target_map_.clear();
+  attached_frames_.clear();
   // Enable target events to allow tracking iframe targets creation.
   base::DictionaryValue params;
   params.SetBoolean("autoAttach", true);
@@ -105,28 +121,6 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
         return Status(kUnknownError, method + " has invalid 'frameId' value");
     }
 
-    if (context->HasKey("isDefault")) {
-      // TODO(samuong): remove this when we stop supporting Chrome 53.
-      if (!context->GetBoolean("isDefault", &is_default))
-        return Status(kUnknownError, method + " has invalid 'isDefault' value");
-    }
-
-    if (context->HasKey("frameId")) {
-      // TODO(samuong): remove this when we stop supporting Chrome 53.
-      if (!context->GetString("frameId", &frame_id))
-        return Status(kUnknownError, method + " has invalid 'frameId' value");
-    }
-
-    if (context->HasKey("type")) {
-      // Before crrev.com/381172, the optional |type| field can be used to
-      // determine whether we're looking at the default context.
-      // TODO(samuong): remove this when we stop supporting Chrome 50.
-      std::string type;
-      if (!context->GetString("type", &type))
-        return Status(kUnknownError, method + " has invalid 'context.type'");
-      is_default = type != "Extension";  // exclude content scripts
-    }
-
     if (is_default && !frame_id.empty())
       frame_to_context_map_[frame_id] = context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
@@ -141,6 +135,18 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     }
   } else if (method == "Runtime.executionContextsCleared") {
     frame_to_context_map_.clear();
+  } else if (method == "Page.frameAttached") {
+    std::string frame_id;
+    if (!params.GetString("frameId", &frame_id))
+      return Status(kUnknownError,
+                    "missing frameId in Page.frameAttached event");
+    attached_frames_.insert(frame_id);
+  } else if (method == "Page.frameDetached") {
+    std::string frame_id;
+    if (!params.GetString("frameId", &frame_id))
+      return Status(kUnknownError,
+                    "missing frameId in Page.frameDetached event");
+    attached_frames_.erase(frame_id);
   } else if (method == "Page.frameNavigated") {
     const base::Value* unused_value;
     if (!params.Get("frame.parentId", &unused_value))
@@ -173,7 +179,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                                                               target_id));
         WebViewImplHolder child_holder(child.get());
         frame_to_target_map_[target_id] = std::move(child);
-        frame_to_target_map_[target_id]->ConnectIfNecessary();
+        frame_to_target_map_[target_id]->SetUpDevTools();
       }
     }
   } else if (method == "Target.detachedFromTarget") {

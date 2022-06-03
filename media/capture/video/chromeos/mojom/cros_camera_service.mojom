@@ -2,13 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 4
+// Next min version: 7
 
 module cros.mojom;
 
+import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/capture/video/chromeos/mojom/camera_common.mojom";
+import "media/capture/video/chromeos/mojom/cros_camera_client.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// CameraClientType indicates the type of a CameraHalClient.
+// It should be kept in sync with the ChromeOSCameraClientType enum in
+// tools/metrics/histograms/enums.xml in chromium.
+[Extensible]
+enum CameraClientType{
+  UNKNOWN = 0,
+  TESTING = 1,
+  CHROME = 2,
+  ANDROID = 3,
+  PLUGINVM = 4,
+  ASH_CHROME = 5,
+  LACROS_CHROME = 6,
+};
+
+// CameraPrivacySwitchState indicates the state of the camera privacy switch.
+enum CameraPrivacySwitchState{
+  // For devices which can only read the privacy switch status while the camera
+  // is streaming, it is possible that the state of privacy switch is currently
+  // unknown.
+  UNKNOWN = 0,
+
+  // State when the privacy switch is on, which means the black frames will be
+  // delivered when streaming.
+  ON = 1,
+
+  // State when the privacy switch is off, which means camera should stream
+  // normally.
+  OFF = 2,
+};
 
 // The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
 // waits for the server and the clients to register.  There can only be one
@@ -17,24 +50,53 @@ import "media/capture/video/chromeos/mojom/camera_common.mojom";
 // channel to the server and pass the established Mojo channel to the client in
 // order to set up a Mojo channel between the client and the server.
 //
-// Next method ID: 4
+// Next method ID: 7
 interface CameraHalDispatcher {
+  // [Deprecated in version 4]
   // A CameraHalServer calls RegisterServer to register itself with the
   // dispatcher.
   RegisterServer@0(pending_remote<CameraHalServer> server);
 
+  // [Deprecated in version 4]
   // A CameraHalClient calls RegisterClient to register itself with the
   // dispatcher.
   RegisterClient@1(pending_remote<CameraHalClient> client);
 
-  // Get JpegDecodeAccelerator from dispatcher.
-  [MinVersion=1] GetJpegDecodeAccelerator@2(
-    pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator>
+  // Get MjpegDecodeAccelerator from dispatcher.
+  [MinVersion=1] GetMjpegDecodeAccelerator@2(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator>
         jda_receiver);
 
   // Get JpegEncodeAccelerator from dispatcher.
   [MinVersion=2] GetJpegEncodeAccelerator@3(
-    pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea_receiver);
+      pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator>
+        jea_receiver);
+
+  // A CameraHalServer calls RegisterServerWithToken to register itself with the
+  // dispatcher. CameraHalDispatcher would authenticate the server with the
+  // supplied |auth_token|. |callbacks| is fired by CameraHalServer to notify
+  // CameraHalDispatcher about CameraHalClient updates, for example when a
+  // CameraHalClient opens or closes a camera device.
+  [MinVersion=4] RegisterServerWithToken@4(
+      pending_remote<CameraHalServer> server,
+      mojo_base.mojom.UnguessableToken auth_token) =>
+      (int32 result, pending_remote<CameraHalServerCallbacks> callbacks);
+
+  // A CameraHalClient calls RegisterClient to register itself with the
+  // dispatcher. CameraHalDispatcher would authenticate the client with the
+  // given |type| and |auth_token|.
+  [MinVersion=4] RegisterClientWithToken@5(
+      pending_remote<CameraHalClient> client,
+      CameraClientType type,
+      mojo_base.mojom.UnguessableToken auth_token) => (int32 result);
+
+  // A SensorHalClient calls RegisterSensorClient to register itself with
+  // SensorHalDispatcher through CameraHalDispatcher. |auth_token| is used to
+  // prove the caller has been granted permission to access SensorHalClient.
+  // CameraHalDispatcher will send back |result| as the errno.
+  [MinVersion=6] RegisterSensorClientWithToken@6(
+      pending_remote<chromeos.sensors.mojom.SensorHalClient> client,
+      mojo_base.mojom.UnguessableToken auth_token) => (int32 result);
 };
 
 // The CrOS camera HAL v3 Mojo server.
@@ -42,26 +104,33 @@ interface CameraHalDispatcher {
 // Next method ID: 2
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
-  // HAL v3 adapter.  Upon successfully binding of |camera_module_request|, the
+  // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
   // caller will have a established Mojo channel to the camera HAL v3 adapter
   // process.
-  CreateChannel@0(pending_receiver<CameraModule> camera_module_request);
+  CreateChannel@0(pending_receiver<CameraModule> camera_module_receiver,
+                  [MinVersion=4] CameraClientType type);
 
   // Enable or disable tracing.
   [MinVersion=3]
   SetTracingEnabled@1(bool enabled);
 };
 
-// The CrOS camera HAL v3 Mojo client.
+// CameraHalServerCallbacks is an interface for CameraHalServer to notify
+// CameraHalDispatcher for any changes on the server side, for example when a
+// CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 1
-interface CameraHalClient {
-  // A caller calls SetUpChannel to dispatch the established Mojo channel
-  // |camera_module_ptr| to the client.  The CameraHalClient can create a
-  // Mojo channel to the camera HAL v3 adapter process with |camera_module_ptr|.
-  // SetUpChannel may be called multiple times.  In cases such as the
-  // CameraHalServer which holds the original Mojo channel crashes,
-  // CameraHalDispatcher will call SetUpChannel again once a new CameraHalServer
-  // reconnects.
-  SetUpChannel@0(pending_remote<CameraModule> camera_module_ptr);
+// Next method ID: 2
+interface CameraHalServerCallbacks {
+  // Fired when a CameraHalClient opens or closes a camera device. When a
+  // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
+  // would also use this to notify that cameras are closed (not being used).
+  CameraDeviceActivityChange@0(int32 camera_id,
+                               bool opened,
+                               CameraClientType type);
+
+  // Fired when the camera privacy switch status is changed. If the device has
+  // such switch, this callback will be fired immediately for once to notify its
+  // current status when the callbacks are registered.
+  [MinVersion=5]
+  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
 };

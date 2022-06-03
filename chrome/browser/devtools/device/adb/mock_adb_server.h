@@ -31,7 +31,7 @@ class MockAndroidConnection {
     virtual void Close() {}
     virtual ~Delegate() {}
   };
-  using Callback = base::Callback<void(const std::string&)>;
+
   MockAndroidConnection(Delegate* delegate,
                         const std::string& serial,
                         const std::string& command);

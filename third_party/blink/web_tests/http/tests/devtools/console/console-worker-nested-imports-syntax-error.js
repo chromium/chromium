@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that nested import scripts in worker show correct stack on syntax error.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function startWorker()
@@ -16,8 +16,8 @@
   ConsoleTestRunner.waitForConsoleMessages(1, step1);
   TestRunner.evaluateInPage('startWorker();');
 
-  function step1() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

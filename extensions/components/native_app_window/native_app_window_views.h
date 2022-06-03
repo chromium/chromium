@@ -13,6 +13,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/app_window/size_constraints.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/widget.h"
@@ -20,10 +21,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class SkRegion;
-
-namespace content {
-class RenderViewHost;
-}
 
 namespace views {
 class WebView;
@@ -38,7 +35,10 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
                              public views::WidgetDelegateView,
                              public views::WidgetObserver {
  public:
+  METADATA_HEADER(NativeAppWindowViews);
   NativeAppWindowViews();
+  NativeAppWindowViews(const NativeAppWindowViews&) = delete;
+  NativeAppWindowViews& operator=(const NativeAppWindowViews&) = delete;
   ~NativeAppWindowViews() override;
   void Init(extensions::AppWindow* app_window,
             const extensions::AppWindow::CreateParams& create_params);
@@ -64,7 +64,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
       extensions::AppWindow* app_window,
       const extensions::AppWindow::CreateParams& create_params);
 
-  // ui::BaseWindow implementation.
+  // ui::BaseWindow:
   bool IsActive() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
@@ -88,42 +88,32 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
 
-  // WidgetDelegate implementation.
+  // WidgetDelegate:
   void OnWidgetMove() override;
   views::View* GetInitiallyFocusedView() override;
-  bool CanResize() const override;
-  bool CanMaximize() const override;
-  bool CanMinimize() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowWindowTitle() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
                            ui::WindowShowState show_state) override;
-  void DeleteDelegate() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
 
-  // WidgetObserver implementation.
+  // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // WebContentsObserver implementation.
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  // WebContentsObserver:
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
 
-  // views::View implementation.
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
+  // views::View:
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnFocus() override;
 
-  // NativeAppWindow implementation.
+  // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;
   bool IsFullscreenOrPending() const override;
   void UpdateWindowIcon() override;
@@ -147,16 +137,21 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
-  // web_modal::WebContentsModalDialogHost implementation.
+  // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   gfx::Size GetMaximumDialogSize() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  void OnWidgetHasHitTestMaskChanged();
+
  private:
   // Informs modal dialogs that they need to update their positions.
   void OnViewWasResized();
+
+  bool GetCanMaximizeWindow() const;
+  bool GetCanResizeWindow() const;
 
   extensions::AppWindow* app_window_ = nullptr;  // Not owned.
   views::WebView* web_view_ = nullptr;
@@ -172,8 +167,6 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
 
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowViews);
 };
 
 }  // namespace native_app_window

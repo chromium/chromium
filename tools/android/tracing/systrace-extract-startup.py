@@ -227,9 +227,9 @@ class Trace(object):
   NAVIGATION_COMMIT_EVENT_NAME = 'Navigation StartToCommit'
 
   STARTUP_EVENT_NAMES = [
-      'Startup.BrowserMainEntryPoint',
-      'ChromeApplication.onCreate',
-      'ContentShellApplication.onCreate']
+      'Startup.BrowserMainEntryPoint', 'ChromeApplication.onCreate',
+      'ContentShellApplication.onCreate'
+  ]
 
 
 def ParseTrace(file_path):

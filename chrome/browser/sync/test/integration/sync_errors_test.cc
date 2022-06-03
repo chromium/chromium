@@ -2,59 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
-#include "chrome/browser/sync/test/integration/passwords_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
-#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/preferences_helper.h"
+#include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/browser/sync/test/integration/user_events_helper.h"
+#include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/sync_protocol_error.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync_user_events/user_event_service.h"
+#include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::SetTitle;
-using syncer::ProfileSyncService;
+using syncer::SyncServiceImpl;
+using user_events_helper::CreateTestEvent;
 
 namespace {
 
-class SyncDisabledChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit SyncDisabledChecker(ProfileSyncService* service)
-      : SingleClientStatusChangeChecker(service) {}
+constexpr int64_t kUserEventTimeUsec = 123456;
 
-  SyncDisabledChecker(ProfileSyncService* service,
-                      base::OnceClosure condition_satisfied_callback)
-      : SingleClientStatusChangeChecker(service),
-        condition_satisfied_callback_(std::move(condition_satisfied_callback)) {
-  }
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting until sync is disabled";
-    bool satisfied = !service()->IsSetupInProgress() &&
-                     !service()->GetUserSettings()->IsFirstSetupComplete();
-    if (satisfied && condition_satisfied_callback_) {
-      std::move(condition_satisfied_callback_).Run();
-    }
-    return satisfied;
-  }
-
- private:
-  base::OnceClosure condition_satisfied_callback_;
-};
+syncer::ModelTypeSet GetThrottledDataTypes(
+    syncer::SyncServiceImpl* sync_service) {
+  base::RunLoop loop;
+  syncer::ModelTypeSet throttled_types;
+  sync_service->GetThrottledDataTypesForTest(
+      base::BindLambdaForTesting([&](syncer::ModelTypeSet result) {
+        throttled_types = result;
+        loop.Quit();
+      }));
+  loop.Run();
+  return throttled_types;
+}
 
 class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit SyncEngineStoppedChecker(ProfileSyncService* service)
+  explicit SyncEngineStoppedChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -66,8 +63,7 @@ class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
 
 class TypeDisabledChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit TypeDisabledChecker(ProfileSyncService* service,
-                               syncer::ModelType type)
+  explicit TypeDisabledChecker(SyncServiceImpl* service, syncer::ModelType type)
       : SingleClientStatusChangeChecker(service), type_(type) {}
 
   // StatusChangeChecker implementation.
@@ -81,20 +77,54 @@ class TypeDisabledChecker : public SingleClientStatusChangeChecker {
   syncer::ModelType type_;
 };
 
+// Wait for a commit message containing the expected user event (even if the
+// commit request fails).
+class UserEventCommitChecker : public SingleClientStatusChangeChecker {
+ public:
+  UserEventCommitChecker(SyncServiceImpl* service,
+                         fake_server::FakeServer* fake_server,
+                         int64_t expected_event_time_usec)
+      : SingleClientStatusChangeChecker(service),
+        fake_server_(fake_server),
+        expected_event_time_usec_(expected_event_time_usec) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for user event to be committed";
+
+    sync_pb::ClientToServerMessage message;
+    fake_server_->GetLastCommitMessage(&message);
+    for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
+      if (entity.specifics().user_event().event_time_usec() ==
+          expected_event_time_usec_) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  fake_server::FakeServer* const fake_server_ = nullptr;
+  const int64_t expected_event_time_usec_;
+};
+
 class SyncErrorTest : public SyncTest {
  public:
   SyncErrorTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SyncErrorTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorTest);
+  SyncErrorTest(const SyncErrorTest&) = delete;
+  SyncErrorTest& operator=(const SyncErrorTest&) = delete;
+
+  ~SyncErrorTest() override {}
 };
 
 // Helper class that waits until the sync engine has hit an actionable error.
 class ActionableErrorChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit ActionableErrorChecker(ProfileSyncService* service)
+  explicit ActionableErrorChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
+
+  ActionableErrorChecker(const ActionableErrorChecker&) = delete;
+  ActionableErrorChecker& operator=(const ActionableErrorChecker&) = delete;
 
   ~ActionableErrorChecker() override {}
 
@@ -107,9 +137,6 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
     return (status.sync_protocol_error.action != syncer::UNKNOWN_ACTION &&
             service()->HasUnrecoverableError());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActionableErrorChecker);
 };
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
@@ -147,18 +174,19 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
   // Wait until an actionable error is encountered.
   ASSERT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
 
+  // UPGRADE_CLIENT gets mapped to an unrecoverable error, so Sync will *not*
+  // start up again in transport-only mode (which would clear the cached error).
   syncer::SyncStatus status;
   GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
   ASSERT_EQ(status.sync_protocol_error.error_type, syncer::TRANSIENT_ERROR);
   ASSERT_EQ(status.sync_protocol_error.action, syncer::UPGRADE_CLIENT);
-  ASSERT_EQ(status.sync_protocol_error.url, url);
   ASSERT_EQ(status.sync_protocol_error.error_description, description);
 }
 
 // This test verifies that sync keeps retrying if it encounters error during
 // setup.
 // crbug.com/689662
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ErrorWhileSettingUp DISABLED_ErrorWhileSettingUp
 #else
 #define MAYBE_ErrorWhileSettingUp ErrorWhileSettingUp
@@ -166,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
   ASSERT_TRUE(SetupClients());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On non auto start enabled environments if the setup sync fails then
   // the setup would fail. So setup sync normally.
   // In contrast on auto start enabled platforms like chrome os we should be
@@ -179,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::TRANSIENT_ERROR);
   EXPECT_TRUE(GetFakeServer()->EnableAlternatingTriggeredErrors());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Now setup sync and it should succeed.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 #else
@@ -208,19 +236,15 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorUsingActionableErrorTest) {
   const BookmarkNode* node2 = AddFolder(0, 0, "title2");
   SetTitle(0, node2, "new_title2");
 
-  auto condition = base::BindLambdaForTesting([&]() {
-    syncer::SyncStatus status;
-    GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
+  SyncDisabledChecker sync_disabled(GetSyncService(0));
+  sync_disabled.Wait();
 
-    // Note: If SyncStandaloneTransport is enabled, then on receiving the error,
-    // the SyncService will immediately start up again in transport mode, which
-    // resets the status. So query the status that the checker recorded at the
-    // time Sync was off.
-    EXPECT_EQ(status.sync_protocol_error.error_type, syncer::NOT_MY_BIRTHDAY);
-    EXPECT_EQ(status.sync_protocol_error.action,
-              syncer::DISABLE_SYNC_ON_CLIENT);
-  });
-  EXPECT_TRUE(SyncDisabledChecker(GetSyncService(0), condition).Wait());
+  // On receiving the error, the SyncService will immediately start up again
+  // in transport mode, which resets the status. So check the status that the
+  // checker recorded at the time Sync was off.
+  syncer::SyncStatus status = sync_disabled.status_on_sync_disabled();
+  EXPECT_EQ(status.sync_protocol_error.error_type, syncer::NOT_MY_BIRTHDAY);
+  EXPECT_EQ(status.sync_protocol_error.action, syncer::DISABLE_SYNC_ON_CLIENT);
 }
 
 // Tests that on receiving CLIENT_DATA_OBSOLETE sync engine gets restarted and
@@ -238,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
   // Remember cache_guid before actionable error.
   syncer::SyncStatus status;
   GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
-  std::string old_cache_guid = status.sync_id;
+  std::string old_cache_guid = status.cache_guid;
 
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
 
@@ -255,7 +279,33 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
 
   // Ensure cache_guid changed.
   GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
-  ASSERT_NE(old_cache_guid, status.sync_id);
+  ASSERT_NE(old_cache_guid, status.cache_guid);
+}
+
+IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
+  SetTitle(0, node1, "new_title1");
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+
+  GetFakeServer()->TriggerActionableError(
+      sync_pb::SyncEnums::ENCRYPTION_OBSOLETE, "Not My Fault", "www.google.com",
+      sync_pb::SyncEnums::UNKNOWN_ACTION);
+
+  // Now make one more change so we will do another sync.
+  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
+  SetTitle(0, node2, "new_title2");
+
+  SyncDisabledChecker sync_disabled(GetSyncService(0));
+  sync_disabled.Wait();
+
+  // On receiving the error, the SyncService will immediately start up again
+  // in transport mode, which resets the status. So check the status that the
+  // checker recorded at the time Sync was off.
+  syncer::SyncStatus status = sync_disabled.status_on_sync_disabled();
+  EXPECT_EQ(status.sync_protocol_error.error_type, syncer::ENCRYPTION_OBSOLETE);
+  EXPECT_EQ(status.sync_protocol_error.action, syncer::DISABLE_SYNC_ON_CLIENT);
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
@@ -264,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_TRUE(synced_datatypes.Has(syncer::TYPED_URLS));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
-  GetProfile(0)->GetPrefs()->SetBoolean(
-      prefs::kSavingBrowserHistoryDisabled, true);
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
+                                        true);
 
   // Wait for reconfigurations.
   ASSERT_TRUE(
@@ -276,6 +326,110 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
   SetTitle(0, node1, "new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   // TODO(lipalani): Verify initial sync ended for typed url is false.
+}
+
+// Tests that the unsynced entity will be eventually committed even after failed
+// commit request.
+IN_PROC_BROWSER_TEST_F(SyncErrorTest,
+                       PRE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  GetFakeServer()->SetHttpError(net::HTTP_INTERNAL_SERVER_ERROR);
+  syncer::UserEventService* event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+  const sync_pb::UserEventSpecifics specifics =
+      CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(kUserEventTimeUsec)));
+  event_service->RecordUserEvent(specifics);
+
+  // Wait for a commit message containing the user event. However the commit
+  // request will fail.
+  ASSERT_TRUE(UserEventCommitChecker(GetSyncService(0), GetFakeServer(),
+                                     kUserEventTimeUsec)
+                  .Wait());
+
+  // Check that the server doesn't have this event yet.
+  for (const sync_pb::SyncEntity& entity :
+       GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS)) {
+    ASSERT_NE(kUserEventTimeUsec,
+              entity.specifics().user_event().event_time_usec());
+  }
+}
+
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223092
+#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
+  DISABLED_ShouldResendUncommittedEntitiesAfterBrowserRestart
+#else
+#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
+  ShouldResendUncommittedEntitiesAfterBrowserRestart
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SyncErrorTest,
+    MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  const sync_pb::UserEventSpecifics expected_specifics =
+      CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(kUserEventTimeUsec)));
+  EXPECT_TRUE(UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                       {{expected_specifics}})
+                  .Wait());
+}
+
+// Tests that throttling one datatype does not influence other datatypes.
+IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
+  const std::string kBookmarkFolderTitle = "title1";
+
+  ASSERT_TRUE(SetupClients());
+
+  // Set the preference to false initially which should get synced.
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(preferences_helper::GetPreferenceInFakeServer(
+                  prefs::kHomePageIsNewTabPage, GetFakeServer())
+                  .has_value());
+  ASSERT_EQ(preferences_helper::GetPreferenceInFakeServer(
+                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                ->value(),
+            "false");
+
+  // Start throttling PREFERENCES so further commits will be rejected by the
+  // server.
+  GetFakeServer()->SetThrottledTypes({syncer::PREFERENCES});
+
+  // Make local changes for PREFERENCES and BOOKMARKS, but the first is
+  // throttled.
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, true);
+  AddFolder(0, 0, kBookmarkFolderTitle);
+
+  // The bookmark should get committed successfully.
+  EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  GetSyncService(0), GetFakeServer(),
+                  {{kBookmarkFolderTitle, GURL()}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+
+  // The preference should remain unsynced (still set to the previous value).
+  EXPECT_EQ(preferences_helper::GetPreferenceInFakeServer(
+                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                ->value(),
+            "false");
+
+  // PREFERENCES should now be throttled.
+  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)),
+            syncer::ModelTypeSet{syncer::PREFERENCES});
+
+  // Unthrottle PREFERENCES to verify that sync can resume.
+  GetFakeServer()->SetThrottledTypes(syncer::ModelTypeSet());
+
+  // Eventually (depending on throttling delay, which is short in tests) the
+  // preference should be committed.
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(prefs::kHomePageIsNewTabPage, "true")
+          .Wait());
+  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::ModelTypeSet());
 }
 
 }  // namespace

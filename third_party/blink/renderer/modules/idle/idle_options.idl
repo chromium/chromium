@@ -5,5 +5,6 @@
 // https://github.com/samuelgoto/idle-detection
 
 dictionary IdleOptions {
-  unsigned long threshold = 60; /* seconds */
+  [EnforceRange] unsigned long threshold;
+  AbortSignal signal;
 };

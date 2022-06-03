@@ -6,6 +6,9 @@
 
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
@@ -51,15 +54,36 @@ void AddSCTAndLogStatus(scoped_refptr<ct::SignedCertificateTimestamp> sct,
 
 }  // namespace
 
-MultiLogCTVerifier::MultiLogCTVerifier() {}
+base::CallbackListSubscription
+MultiLogCTVerifier::CTLogProvider::RegisterLogsListCallback(
+    LogListCallbackList::CallbackType callback) {
+  return callback_list_.Add(std::move(callback));
+}
+
+void MultiLogCTVerifier::CTLogProvider::NotifyCallbacks(
+    const std::vector<scoped_refptr<const net::CTLogVerifier>>& log_verifiers) {
+  callback_list_.Notify(log_verifiers);
+}
+
+MultiLogCTVerifier::CTLogProvider::CTLogProvider() = default;
+MultiLogCTVerifier::CTLogProvider::~CTLogProvider() = default;
+
+MultiLogCTVerifier::MultiLogCTVerifier(CTLogProvider* notifier) {
+  // base::Unretained is safe since we are using a CallbackListSubscription that
+  // won't outlive |this|.
+  log_provider_subscription_ =
+      notifier->RegisterLogsListCallback(base::BindRepeating(
+          &MultiLogCTVerifier::SetLogs, base::Unretained(this)));
+}
 
 MultiLogCTVerifier::~MultiLogCTVerifier() = default;
 
-void MultiLogCTVerifier::AddLogs(
+void MultiLogCTVerifier::SetLogs(
     const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
+  logs_.clear();
   for (const auto& log_verifier : log_verifiers) {
-    VLOG(1) << "Adding CT log: " << log_verifier->description();
-    logs_[log_verifier->key_id()] = log_verifier;
+    std::string key_id = log_verifier->key_id();
+    logs_[key_id] = log_verifier;
   }
 }
 
@@ -122,8 +146,7 @@ void MultiLogCTVerifier::Verify(
     base::TimeDelta verify_time = base::TimeTicks::Now() - start;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Net.CertificateTransparency.SCT.VerificationTime", verify_time,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(100), 50);
+        base::Microseconds(1), base::Milliseconds(100), 50);
   }
 
   net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED, [&] {
@@ -158,13 +181,7 @@ void MultiLogCTVerifier::VerifySCTs(
     }
     decoded_sct->origin = origin;
 
-    base::TimeTicks start = base::TimeTicks::Now();
     VerifySingleSCT(hostname, decoded_sct, expected_entry, cert, output_scts);
-    base::TimeDelta verify_time = base::TimeTicks::Now() - start;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Net.CertificateTransparency.SCT.SingleVerificationTime", verify_time,
-        base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(100), 50);
   }
 }
 
@@ -177,7 +194,6 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   // Assume this SCT is untrusted until proven otherwise.
   const auto& it = logs_.find(sct->log_id);
   if (it == logs_.end()) {
-    DVLOG(1) << "SCT does not match any known log.";
     AddSCTAndLogStatus(sct, ct::SCT_STATUS_LOG_UNKNOWN, output_scts);
     return false;
   }
@@ -185,14 +201,12 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   sct->log_description = it->second->description();
 
   if (!it->second->Verify(expected_entry, *sct.get())) {
-    DVLOG(1) << "Unable to verify SCT signature.";
     AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_SIGNATURE, output_scts);
     return false;
   }
 
   // SCT verified ok, just make sure the timestamp is legitimate.
   if (sct->timestamp > base::Time::Now()) {
-    DVLOG(1) << "SCT is from the future!";
     AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_TIMESTAMP, output_scts);
     return false;
   }

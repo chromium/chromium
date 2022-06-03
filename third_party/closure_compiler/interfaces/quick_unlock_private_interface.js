@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 //   ./tools/json_schema_compiler/compiler.py.
 
 /** @fileoverview Interface for quickUnlockPrivate that can be overriden. */
-
-assertNotReached('Interface file for Closure Compiler should not be executed.');
 
 /** @interface */
 function QuickUnlockPrivate() {}
@@ -18,10 +16,9 @@ QuickUnlockPrivate.prototype = {
    * seconds until the token expires.
    * @param {string} accountPassword The account password for the logged in
    *     user.
-   * @param {function(!chrome.quickUnlockPrivate.TokenInfo):void} onComplete
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-getAuthToken
+   * @param {function(!chrome.quickUnlockPrivate.TokenInfo): void} onComplete
    */
-  getAuthToken: assertNotReached,
+  getAuthToken: function(accountPassword, onComplete) {},
 
   /**
    * Sets the lock screen enabled state. NOTE: The lock enabled state is
@@ -29,29 +26,46 @@ QuickUnlockPrivate.prototype = {
    * not written using the settings_private API (which also provides policy
    * information). This API must be used to change the pref.
    * @param {string} token The token returned by $(ref:getAuthToken).
-   * @param {boolean} enabled
-   * @param {function():void=} onComplete
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-setLockScreenEnabled
+   * @param {boolean} enabled Whether to enable the lock screen.
+   * @param {function(): void=} onComplete
    */
-  setLockScreenEnabled: assertNotReached,
+  setLockScreenEnabled: function(token, enabled, onComplete) {},
+
+  /**
+   * Sets the PIN auto submit enabled state. NOTE: The PIN autosubmit state is
+   * reflected in the pin_unlock_autosubmit_enabled pref, which can be read but
+   * not written using the settings_private API (which also provides policy
+   * information). This API must be used to change the pref.
+   * @param {string} token The authentication token.
+   * @param {string} pin The PIN of the logged in user.
+   * @param {boolean} enabled Whether to enable PIN auto submit.
+   * @param {function(boolean): void} onComplete Called with true if the quick
+   *     unlock state was updated,     false otherwise. The update is treated as
+   *     a single atomic operation.
+   */
+  setPinAutosubmitEnabled: function(token, pin, enabled, onComplete) {},
+
+  /**
+   * Tests wether it is currently possible to authenticate using PIN.
+   * @param {function(boolean): void} onComplete
+   */
+  canAuthenticatePin: function(onComplete) {},
 
   /**
    * Returns the set of quick unlock modes that are available for the user to
    * use. Some quick unlock modes may be disabled by policy.
-   * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>):void}
+   * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void}
    *     onComplete
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-getAvailableModes
    */
-  getAvailableModes: assertNotReached,
+  getAvailableModes: function(onComplete) {},
 
   /**
    * Returns the quick unlock modes that are currently enabled and usable on the
    * lock screen.
-   * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>):void}
+   * @param {function(!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>): void}
    *     onComplete
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-getActiveModes
    */
-  getActiveModes: assertNotReached,
+  getActiveModes: function(onComplete) {},
 
   /**
    * Checks if the given credential can be used for the given unlock mode.
@@ -59,23 +73,21 @@ QuickUnlockPrivate.prototype = {
    * @param {!chrome.quickUnlockPrivate.QuickUnlockMode} mode The quick unlock
    *     mode that is used.
    * @param {string} credential The given credential.
-   * @param {function(!chrome.quickUnlockPrivate.CredentialCheck):void}
+   * @param {function(!chrome.quickUnlockPrivate.CredentialCheck): void}
    *     onComplete Called with a list of warnings and errors the given
    *     |credential| has (or an empty list if there are none).
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-checkCredential
    */
-  checkCredential: assertNotReached,
+  checkCredential: function(mode, credential, onComplete) {},
 
   /**
    * Gets the credential requirements for the given unlock mode.
    * @param {!chrome.quickUnlockPrivate.QuickUnlockMode} mode The quick unlock
    *     mode that is used.
-   * @param {function(!chrome.quickUnlockPrivate.CredentialRequirements):void}
+   * @param {function(!chrome.quickUnlockPrivate.CredentialRequirements): void}
    *     onComplete Called with the credential requirements of the given
    *     |mode|.
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-getCredentialRequirements
    */
-  getCredentialRequirements: assertNotReached,
+  getCredentialRequirements: function(mode, onComplete) {},
 
   /**
    * Update the set of quick unlock modes that are currently active/enabled.
@@ -85,17 +97,15 @@ QuickUnlockPrivate.prototype = {
    * @param {!Array<string>} credentials The associated credential for each
    *     mode. To keep the     credential the same for the associated mode, pass
    *     an empty string.
-   * @param {function():void} onComplete Called with true if the quick unlock
+   * @param {function(): void} onComplete Called with true if the quick unlock
    *     state was updated,     false otherwise. The update is treated as a
    *     single atomic operation.
-   * @see https://developer.chrome.com/extensions/quickUnlockPrivate#method-setModes
    */
-  setModes: assertNotReached,
+  setModes: function(token, modes, credentials, onComplete) {},
 };
 
 /**
  * Called after the active set of quick unlock modes has changed.
  * @type {!ChromeEvent}
- * @see https://developer.chrome.com/extensions/quickUnlockPrivate#event-onActiveModesChanged
  */
 QuickUnlockPrivate.prototype.onActiveModesChanged;

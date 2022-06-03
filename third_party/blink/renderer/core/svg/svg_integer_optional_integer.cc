@@ -39,7 +39,7 @@ SVGIntegerOptionalInteger::SVGIntegerOptionalInteger(SVGInteger* first_integer,
                                                      SVGInteger* second_integer)
     : first_integer_(first_integer), second_integer_(second_integer) {}
 
-void SVGIntegerOptionalInteger::Trace(blink::Visitor* visitor) {
+void SVGIntegerOptionalInteger::Trace(Visitor* visitor) const {
   visitor->Trace(first_integer_);
   visitor->Trace(second_integer_);
   SVGPropertyBase::Trace(visitor);
@@ -76,8 +76,8 @@ SVGParsingError SVGIntegerOptionalInteger::SetValueAsString(
     x = y = 0;
   }
 
-  first_integer_->SetValue(clampTo<int>(x));
-  second_integer_->SetValue(clampTo<int>(y));
+  first_integer_->SetValue(ClampTo<int>(x));
+  second_integer_->SetValue(ClampTo<int>(y));
   return parse_status;
 }
 
@@ -87,9 +87,9 @@ void SVGIntegerOptionalInteger::SetInitial(unsigned value) {
   second_integer_->SetInitial(value);
 }
 
-void SVGIntegerOptionalInteger::Add(SVGPropertyBase* other,
-                                    SVGElement* context_element) {
-  auto* other_integer_optional_integer = ToSVGIntegerOptionalInteger(other);
+void SVGIntegerOptionalInteger::Add(const SVGPropertyBase* other,
+                                    const SVGElement* context_element) {
+  auto* other_integer_optional_integer = To<SVGIntegerOptionalInteger>(other);
   first_integer_->Add(other_integer_optional_integer->FirstInteger(),
                       context_element);
   second_integer_->Add(other_integer_optional_integer->SecondInteger(),
@@ -97,30 +97,30 @@ void SVGIntegerOptionalInteger::Add(SVGPropertyBase* other,
 }
 
 void SVGIntegerOptionalInteger::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement* context_element) {
-  auto* from_integer = ToSVGIntegerOptionalInteger(from);
-  auto* to_integer = ToSVGIntegerOptionalInteger(to);
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement* context_element) {
+  auto* from_integer = To<SVGIntegerOptionalInteger>(from);
+  auto* to_integer = To<SVGIntegerOptionalInteger>(to);
   auto* to_at_end_of_duration_integer =
-      ToSVGIntegerOptionalInteger(to_at_end_of_duration);
+      To<SVGIntegerOptionalInteger>(to_at_end_of_duration);
 
   first_integer_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count, from_integer->FirstInteger(),
+      parameters, percentage, repeat_count, from_integer->FirstInteger(),
       to_integer->FirstInteger(), to_at_end_of_duration_integer->FirstInteger(),
       context_element);
   second_integer_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count,
-      from_integer->SecondInteger(), to_integer->SecondInteger(),
+      parameters, percentage, repeat_count, from_integer->SecondInteger(),
+      to_integer->SecondInteger(),
       to_at_end_of_duration_integer->SecondInteger(), context_element);
 }
 
-float SVGIntegerOptionalInteger::CalculateDistance(SVGPropertyBase* other,
-                                                   SVGElement*) {
+float SVGIntegerOptionalInteger::CalculateDistance(const SVGPropertyBase* other,
+                                                   const SVGElement*) const {
   // FIXME: Distance calculation is not possible for SVGIntegerOptionalInteger
   // right now. We need the distance for every single value.
   return -1;

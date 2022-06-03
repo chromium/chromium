@@ -54,7 +54,6 @@ class CdmHostProxy {
   virtual void OnDeferredInitializationDone(cdm::StreamType stream_type,
                                             cdm::Status decoder_status) = 0;
   virtual cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) = 0;
-  virtual cdm::CdmProxy* RequestCdmProxy(cdm::CdmProxyClient* client) = 0;
   virtual void RequestStorageId(uint32_t version) = 0;
 };
 

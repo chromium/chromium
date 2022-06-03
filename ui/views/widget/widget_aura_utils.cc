@@ -4,7 +4,7 @@
 
 #include "ui/views/widget/widget_aura_utils.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace views {
 

@@ -16,10 +16,14 @@
 #define ABSL_CONTAINER_INTERNAL_TRACKED_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 // A class that tracks its copies and moves so that it can be queried in tests.
@@ -73,6 +77,7 @@ class Tracked {
 };
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_TRACKED_H_

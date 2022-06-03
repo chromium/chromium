@@ -24,7 +24,7 @@ std::string ArcInstanceModeToString(ArcInstanceMode mode) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(mode);
+  LOG(ERROR) << "Invalid value " << static_cast<int>(mode);
   return std::string();
 }
 
@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, ArcInstanceMode mode) {
 }
 
 std::ostream& operator<<(std::ostream& os,
-                         base::Optional<ArcInstanceMode> mode) {
+                         absl::optional<ArcInstanceMode> mode) {
   return os << (mode.has_value() ? ArcInstanceModeToString(mode.value())
                                  : "(nullopt)");
 }

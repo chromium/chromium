@@ -4,12 +4,12 @@
 
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_service.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -35,9 +35,8 @@ void FontUniqueNameLookupService::Create(
 scoped_refptr<base::SequencedTaskRunner>
 FontUniqueNameLookupService::GetTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>> runner(
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
            base::TaskPriority::USER_BLOCKING}));
   return *runner;
 }

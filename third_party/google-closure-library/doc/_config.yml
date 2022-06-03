@@ -1,0 +1,21 @@
+title: Closure Library
+email: sdh@google.com
+description: Documentation for Google Closure Library.
+baseurl: "/closure-library" # the subpath of your site, e.g. /blog
+url: "https://google.github.io/closure-library"
+github_username: google
+destination: closure-library
+
+# Defaults to plug into all Jekyll frontmatters
+defaults:
+  - scope:
+      path: ""
+    values:
+      root_url: "/closure-library"
+      github_url: "https://github.com/google/closure-library"
+      product_name: "Closure Library"
+      ga: "UA-64923423-1"
+  - scope:
+      path: "develop"
+    values:
+      layout: article

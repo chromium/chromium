@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Explainers:
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardPolicy/explainer.md
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardAPI/explainer.md
+
+[
+    ImplementedAs=VirtualKeyboard,
+    RuntimeEnabled=VirtualKeyboard
+] partial interface Navigator {
+    [SecureContext, SameObject] readonly attribute VirtualKeyboard virtualKeyboard;
+};

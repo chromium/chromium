@@ -18,6 +18,13 @@ namespace chrome_test_util {
 // Opens a new tab, and does not wait for animations to complete.
 void OpenNewTab();
 
+// Simulates opening http://www.example.com/ from another application.
+// Returns the opened URL.
+NSURL* SimulateExternalAppURLOpening();
+
+// Simulates opening the add account sign-in flow from the web.
+void SimulateAddAccountFromWeb();
+
 // Opens a new incognito tab, and does not wait for animations to complete.
 void OpenNewIncognitoTab();
 
@@ -82,7 +89,7 @@ BOOL SimulateTabsBackgrounding();
 void SaveSessionImmediately();
 
 // Evicts the tabs associated with the non-current browser mode.
-void EvictOtherTabModelTabs();
+void EvictOtherBrowserTabs();
 
 // Closes all normal (non-incognito) tabs. Return YES on success.
 BOOL CloseAllNormalTabs() WARN_UNUSED_RESULT;

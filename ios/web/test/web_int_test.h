@@ -11,7 +11,7 @@
 #import "base/ios/block_types.h"
 #include "base/macros.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_state.h"
 
@@ -19,8 +19,12 @@ class GURL;
 
 namespace web {
 
-// A test fixture for integration tests that need to bring up the HttpServer.
+// A test fixture for integration tests that need a WebState which loads pages.
 class WebIntTest : public WebTest {
+ public:
+  WebIntTest(const WebIntTest&) = delete;
+  WebIntTest& operator=(const WebIntTest&) = delete;
+
  protected:
   WebIntTest();
   ~WebIntTest() override;
@@ -39,10 +43,6 @@ class WebIntTest : public WebTest {
   NavigationItem* GetLastCommittedItem() {
     return navigation_manager()->GetLastCommittedItem();
   }
-
-  // Synchronously executes |script| on |web_state|'s JS injection receiver and
-  // returns the result.
-  id ExecuteJavaScript(NSString* script);
 
   // Executes |block| and waits until |url| is successfully loaded in
   // |web_state_|.
@@ -66,13 +66,11 @@ class WebIntTest : public WebTest {
   // or NSNotFound if it is not present.
   NSInteger GetIndexOfNavigationItem(const web::NavigationItem* item);
 
-  web::TestWebStateDelegate web_state_delegate_;
+  web::FakeWebStateDelegate web_state_delegate_;
 
  private:
   // WebState used to load pages.
   std::unique_ptr<WebState> web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebIntTest);
 };
 
 }  // namespace web

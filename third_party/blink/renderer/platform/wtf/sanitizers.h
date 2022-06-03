@@ -11,12 +11,36 @@
 #define ASAN_REGION_IS_POISONED(addr, size) \
   __asan_region_is_poisoned(addr, size)
 #define NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+class AsanUnpoisonScope {
+ public:
+  AsanUnpoisonScope(const void* addr, size_t size)
+      : addr_(addr), size_(size), was_poisoned_(false) {
+    if (!ASAN_REGION_IS_POISONED(const_cast<void*>(addr_), size_))
+      return;
+    ASAN_UNPOISON_MEMORY_REGION(addr_, size_);
+    was_poisoned_ = true;
+  }
+  ~AsanUnpoisonScope() {
+    if (was_poisoned_)
+      ASAN_POISON_MEMORY_REGION(addr_, size_);
+  }
+
+ private:
+  const void* addr_;
+  size_t size_;
+  bool was_poisoned_;
+};
 #else
 #define ASAN_POISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
 #define ASAN_UNPOISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
 #define ASAN_REGION_IS_POISONED(addr, size) \
   ((void)(addr), (void)(size), (void*)nullptr)
 #define NO_SANITIZE_ADDRESS
+class AsanUnpoisonScope {
+ public:
+  AsanUnpoisonScope(const void*, size_t) {}
+  ~AsanUnpoisonScope() {}
+};
 #endif
 
 #if defined(LEAK_SANITIZER)

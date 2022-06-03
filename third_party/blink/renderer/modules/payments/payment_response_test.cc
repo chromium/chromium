@@ -14,10 +14,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
-#include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -27,29 +27,32 @@ namespace {
 class MockPaymentStateResolver final
     : public GarbageCollected<MockPaymentStateResolver>,
       public PaymentStateResolver {
-  USING_GARBAGE_COLLECTED_MIXIN(MockPaymentStateResolver);
-
  public:
   MockPaymentStateResolver() {
-    ON_CALL(*this, Complete(testing::_, testing::_))
+    ON_CALL(*this, Complete(testing::_, testing::_, testing::_))
         .WillByDefault(testing::ReturnPointee(&dummy_promise_));
   }
 
+  MockPaymentStateResolver(const MockPaymentStateResolver&) = delete;
+  MockPaymentStateResolver& operator=(const MockPaymentStateResolver&) = delete;
+
   ~MockPaymentStateResolver() override = default;
 
-  MOCK_METHOD2(Complete, ScriptPromise(ScriptState*, PaymentComplete result));
-  MOCK_METHOD2(Retry,
+  MOCK_METHOD3(Complete,
                ScriptPromise(ScriptState*,
-                             const PaymentValidationErrors* errorFields));
+                             PaymentComplete result,
+                             ExceptionState&));
+  MOCK_METHOD3(Retry,
+               ScriptPromise(ScriptState*,
+                             const PaymentValidationErrors* errorFields,
+                             ExceptionState&));
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(dummy_promise_);
   }
 
  private:
   ScriptPromise dummy_promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPaymentStateResolver);
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {
@@ -145,9 +148,11 @@ TEST(PaymentResponseTest, CompleteCalledWithSuccess) {
       "id");
 
   EXPECT_CALL(*complete_callback,
-              Complete(scope.GetScriptState(), PaymentStateResolver::kSuccess));
+              Complete(scope.GetScriptState(), PaymentStateResolver::kSuccess,
+                       testing::_));
 
-  output->complete(scope.GetScriptState(), "success");
+  output->complete(scope.GetScriptState(), "success",
+                   scope.GetExceptionState());
 }
 
 TEST(PaymentResponseTest, CompleteCalledWithFailure) {
@@ -163,9 +168,10 @@ TEST(PaymentResponseTest, CompleteCalledWithFailure) {
       "id");
 
   EXPECT_CALL(*complete_callback,
-              Complete(scope.GetScriptState(), PaymentStateResolver::kFail));
+              Complete(scope.GetScriptState(), PaymentStateResolver::kFail,
+                       testing::_));
 
-  output->complete(scope.GetScriptState(), "fail");
+  output->complete(scope.GetScriptState(), "fail", scope.GetExceptionState());
 }
 
 TEST(PaymentResponseTest, JSONSerializerTest) {

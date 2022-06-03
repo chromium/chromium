@@ -62,20 +62,6 @@ TEST_F(PageDisplayStateTest, Serialization) {
   EXPECT_EQ(state, new_state);
 }
 
-// Tests that the PageScrollState is updated correctly when restored from the
-// deprecated serialization keys.
-// TODO(crbug.com/926041): Delete this test when legacy keys are removed.
-TEST_F(PageDisplayStateTest, LegacySerialization) {
-  const CGPoint kContentOffset = CGPointMake(25.0, 100.0);
-  web::PageDisplayState state(
-      @{@"scrollX" : @(kContentOffset.x),
-        @"scrollY" : @(kContentOffset.y)});
-  EXPECT_TRUE(CGPointEqualToPoint(kContentOffset,
-                                  state.scroll_state().content_offset()));
-  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
-      state.scroll_state().content_inset(), UIEdgeInsetsZero));
-}
-
 // Tests PageScrollState::GetEffectiveContentOffsetForContentInset().
 TEST_F(PageDisplayStateTest, EffectiveContentOffset) {
   // kContentOffset is chosen such that a page with kTopInset is scrolled to the

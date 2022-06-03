@@ -8,8 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -61,7 +60,7 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
       {"collapseBtn", IDS_ABOUT_SYS_COLLAPSE},
       {"parseError", IDS_ABOUT_SYS_PARSE_ERROR},
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
 
   html_source->AddResourcePath("about_sys.js", IDR_ABOUT_SYS_JS);
   html_source->AddResourcePath("about_sys.css", IDR_ABOUT_SYS_CSS);
@@ -76,20 +75,25 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
 class SystemInfoHandler : public WebUIMessageHandler {
  public:
   SystemInfoHandler();
+
+  SystemInfoHandler(const SystemInfoHandler&) = delete;
+  SystemInfoHandler& operator=(const SystemInfoHandler&) = delete;
+
   ~SystemInfoHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
   // Callback for the "requestSystemInfo" message. This asynchronously requests
   // system info and eventually returns it to the front end.
-  void HandleRequestSystemInfo(const base::ListValue*);
+  void HandleRequestSystemInfo(const base::ListValue* args);
 
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
  private:
+  std::string callback_id_;
   base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,15 +105,22 @@ SystemInfoHandler::SystemInfoHandler() {}
 
 SystemInfoHandler::~SystemInfoHandler() {}
 
-void SystemInfoHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "requestSystemInfo",
-      base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
-                          weak_ptr_factory_.GetWeakPtr()));
+void SystemInfoHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  callback_id_.clear();
 }
 
-void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue*) {
+void SystemInfoHandler::RegisterMessages() {
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "requestSystemInfo",
+      base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
+                          base::Unretained(this)));
+}
+
+void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
   AllowJavascript();
+  callback_id_ = args->GetList()[0].GetString();
+
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();
   fetcher->Fetch(base::BindOnce(&SystemInfoHandler::OnSystemInfo,
@@ -129,7 +140,8 @@ void SystemInfoHandler::OnSystemInfo(
     val->SetString("statValue", it->second);
     data.Append(std::move(val));
   }
-  CallJavascriptFunction("returnSystemInfo", data);
+  ResolveJavascriptCallback(base::Value(callback_id_), data);
+  callback_id_.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

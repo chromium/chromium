@@ -403,11 +403,12 @@ def main():
 
   all_tests_suite = unittest.defaultTestLoader.loadTestsFromModule(
       sys.modules[__name__])
-  tests = unittest_util.FilterTestSuite(all_tests_suite, options.filter)
-  result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(tests)
+  test_suite = unittest_util.FilterTestSuite(all_tests_suite, options.filter)
+  result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2)\
+          .run(test_suite)
 
   if options.isolated_script_test_output:
-    util.WriteResultToJSONFile(tests, result,
+    util.WriteResultToJSONFile([test_suite], [result],
                                options.isolated_script_test_output)
 
   sys.exit(len(result.failures) + len(result.errors))

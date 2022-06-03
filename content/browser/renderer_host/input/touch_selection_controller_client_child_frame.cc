@@ -4,14 +4,17 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/common/widget_messages.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -75,6 +78,13 @@ void TouchSelectionControllerClientChildFrame::UpdateSelectionBoundsIfNeeded(
   }
 }
 
+void TouchSelectionControllerClientChildFrame::ShowTouchSelectionContextMenu(
+    const gfx::Point& location) {
+  // |location| should be in root-view coordinates, and RenderWidgetHostImpl
+  // will do the conversion to renderer coordinates.
+  rwhv_->host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
+}
+
 // Since an active touch selection in a child frame can have its screen position
 // changed by a scroll in a containing frame (and thus without the child frame
 // sending a new compositor frame), we must manually recompute the screen
@@ -133,6 +143,7 @@ void TouchSelectionControllerClientChildFrame::OnSelectionEvent(
 }
 
 void TouchSelectionControllerClientChildFrame::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   NOTREACHED();
 }
@@ -140,7 +151,7 @@ void TouchSelectionControllerClientChildFrame::OnDragUpdate(
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientChildFrame::CreateDrawable() {
   NOTREACHED();
-  return std::unique_ptr<ui::TouchHandleDrawable>();
+  return nullptr;
 }
 
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
@@ -150,14 +161,16 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
 
   bool has_selection = !rwhv_->GetSelectedText().empty();
   switch (command_id) {
-    case IDS_APP_CUT:
+    case ui::TouchEditable::kCut:
       return editable && readable && has_selection;
-    case IDS_APP_COPY:
+    case ui::TouchEditable::kCopy:
       return readable && has_selection;
-    case IDS_APP_PASTE: {
-      base::string16 result;
+    case ui::TouchEditable::kPaste: {
+      std::u16string result;
+      ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+          ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
       ui::Clipboard::GetForCurrentThread()->ReadText(
-          ui::ClipboardBuffer::kCopyPaste, &result);
+          ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
     default:
@@ -174,13 +187,13 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
     return;
 
   switch (command_id) {
-    case IDS_APP_CUT:
+    case ui::TouchEditable::kCut:
       host_delegate->Cut();
       break;
-    case IDS_APP_COPY:
+    case ui::TouchEditable::kCopy:
       host_delegate->Copy();
       break;
-    case IDS_APP_PASTE:
+    case ui::TouchEditable::kPaste:
       host_delegate->Paste();
       break;
     default:
@@ -197,9 +210,8 @@ void TouchSelectionControllerClientChildFrame::RunContextMenu() {
   gfx::PointF origin = rwhv_->TransformPointToRootCoordSpaceF(gfx::PointF());
   anchor_point.Offset(-origin.x(), -origin.y());
   RenderWidgetHostImpl* host = rwhv_->host();
-  host->Send(new WidgetMsg_ShowContextMenu(host->GetRoutingID(),
-                                           ui::MENU_SOURCE_TOUCH_EDIT_MENU,
-                                           gfx::ToRoundedPoint(anchor_point)));
+  host->GetAssociatedFrameWidget()->ShowContextMenu(
+      ui::MENU_SOURCE_TOUCH_EDIT_MENU, gfx::ToRoundedPoint(anchor_point));
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above
@@ -212,7 +224,7 @@ bool TouchSelectionControllerClientChildFrame::ShouldShowQuickMenu() {
   return true;
 }
 
-base::string16 TouchSelectionControllerClientChildFrame::GetSelectedText() {
+std::u16string TouchSelectionControllerClientChildFrame::GetSelectedText() {
   return rwhv_->GetSelectedText();
 }
 

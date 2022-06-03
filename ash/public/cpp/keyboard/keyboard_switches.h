@@ -10,8 +10,10 @@
 namespace keyboard {
 namespace switches {
 
-// Enables the virtual keyboard.
 ASH_PUBLIC_EXPORT extern const char kEnableVirtualKeyboard[];
+// TODO(crbug/1154939): Remove this const when we found a solution to
+// crbug/1140667
+ASH_PUBLIC_EXPORT extern const char kDisableVirtualKeyboard[];
 
 }  // namespace switches
 }  // namespace keyboard

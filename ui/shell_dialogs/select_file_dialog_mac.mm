@@ -5,7 +5,8 @@
 #include "ui/shell_dialogs/select_file_dialog_mac.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #include "components/remote_cocoa/browser/window.h"
@@ -36,7 +37,7 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow parent_window) const {
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
-  listener_ = NULL;
+  listener_ = nullptr;
 }
 
 void SelectFileDialogImpl::FileWasSelected(
@@ -68,7 +69,7 @@ void SelectFileDialogImpl::FileWasSelected(
 
 void SelectFileDialogImpl::SelectFileImpl(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,
@@ -134,6 +135,8 @@ void SelectFileDialogImpl::SelectFileImpl(
     mojo_file_types->extension_description_overrides =
         file_types->extension_description_overrides;
     mojo_file_types->include_all_files = file_types->include_all_files;
+    mojo_file_types->keep_extension_visible =
+        file_types->keep_extension_visible;
   }
 
   auto callback = base::BindOnce(&SelectFileDialogImpl::FileWasSelected,

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
 function requestProcessList() {
-  chrome.send('requestProcessList');
+  sendWithPromise('requestProcessList').then(onProcessListReceived);
 }
 
 function saveDump() {
@@ -34,11 +35,7 @@ function addListRow(table, celltype, cols) {
   table.appendChild(tr);
 }
 
-function setSaveDumpMessage(data) {
-  $('save_dump_text').innerText = data;
-}
-
-function returnProcessList(data) {
+function onProcessListReceived(data) {
   $('message').innerText = data['message'];
 
   const proclist = $('proclist');
@@ -47,25 +44,7 @@ function returnProcessList(data) {
   const processes = data['processes'];
   if (processes.length == 0) {
     return;
-  }  // No processes to dump, don't make the table and refresh button.
-
-  // Add the refresh and save-dump buttons.
-  const commandsDiv = document.createElement('div');
-  commandsDiv.className = 'commands';
-
-  const refreshButton = document.createElement('button');
-  refreshButton.innerText = '\u21ba Refresh process list';
-  refreshButton.onclick = () => requestProcessList();
-  commandsDiv.appendChild(refreshButton);
-  const saveDumpButton = document.createElement('button');
-  saveDumpButton.innerText = '\u21e9 Save dump';
-  saveDumpButton.onclick = () => saveDump();
-  commandsDiv.appendChild(saveDumpButton);
-  const saveDumpText = document.createElement('div');
-  saveDumpText.id = 'save_dump_text';
-  commandsDiv.appendChild(saveDumpText);
-
-  proclist.appendChild(commandsDiv);
+  }  // No processes to dump, don't make the table.
 
   const table = document.createElement('table');
 
@@ -81,13 +60,11 @@ function returnProcessList(data) {
     const description = document.createTextNode(proc[1]);
     const profiled = proc[2];
 
-    let button = null;
+    const button = document.createElement('button');
     if (profiled) {
-      button = document.createElement('button');
       button.innerText = '\uD83D\uDC1E Report';
       button.onclick = () => reportProcess(procId);
     } else {
-      button = document.createElement('button');
       button.innerText = '\u2600 Start profiling';
       button.onclick = () => startProfiling(procId);
     }
@@ -99,11 +76,20 @@ function returnProcessList(data) {
 }
 
 // Get data and have it displayed upon loading.
-document.addEventListener('DOMContentLoaded', requestProcessList);
+document.addEventListener('DOMContentLoaded', () => {
+  $('refresh').onclick = requestProcessList;
+  $('save').onclick = saveDump;
+
+  addWebUIListener('save-dump-progress', progress => {
+    $('save-dump-text').innerText = progress;
+  });
+
+  requestProcessList();
+});
 
 /* For manual testing.
 function fakeResults() {
-  returnProcessList([
+  onProcessListReceived([
     [ 11234, "Process 11234 [Browser]" ],
     [ 11235, "Process 11235 [Renderer]" ],
     [ 11236, "Process 11236 [Renderer]" ]]);

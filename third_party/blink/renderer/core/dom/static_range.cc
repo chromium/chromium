@@ -4,20 +4,16 @@
 
 #include "third_party/blink/renderer/core/dom/static_range.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_static_range_init.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-
-StaticRange::StaticRange(Document& document)
-    : owner_document_(document),
-      start_container_(document),
-      start_offset_(0u),
-      end_container_(document),
-      end_offset_(0u) {}
 
 StaticRange::StaticRange(Document& document,
                          Node* start_container,
@@ -40,14 +36,77 @@ StaticRange* StaticRange::Create(const EphemeralRange& range) {
       range.EndPosition().ComputeOffsetInContainerNode());
 }
 
-void StaticRange::setStart(Node* container, unsigned offset) {
-  start_container_ = container;
-  start_offset_ = offset;
+StaticRange* StaticRange::Create(Document& document,
+                                 const StaticRangeInit* static_range_init,
+                                 ExceptionState& exception_state) {
+  DCHECK(static_range_init);
+
+  if (static_range_init->startContainer()->IsDocumentTypeNode() ||
+      static_range_init->startContainer()->IsAttributeNode() ||
+      static_range_init->endContainer()->IsDocumentTypeNode() ||
+      static_range_init->endContainer()->IsAttributeNode()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidNodeTypeError,
+        "Neither startContainer nor endContainer can be a DocumentType or "
+        "Attribute node.");
+  }
+
+  return MakeGarbageCollected<StaticRange>(
+      document, static_range_init->startContainer(),
+      static_range_init->startOffset(), static_range_init->endContainer(),
+      static_range_init->endOffset());
 }
 
-void StaticRange::setEnd(Node* container, unsigned offset) {
-  end_container_ = container;
-  end_offset_ = offset;
+namespace {
+
+// Returns the lowest ancestor of |node| in the tree that has a containment set.
+Node* GetLowestContainAncestor(const Node* node) {
+  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(*node)) {
+    if (LayoutObject* node_layout_object = ancestor.GetLayoutObject()) {
+      if (node_layout_object->ShouldApplyAnyContainment()) {
+        return &ancestor;
+      }
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+// Returns true if the range crosses any css-contain subtree boundary.
+bool StaticRange::CrossesContainBoundary() const {
+  if (style_version_for_crosses_contain_boundary_ ==
+      owner_document_->StyleVersion())
+    return crosses_contain_boundary_;
+  style_version_for_crosses_contain_boundary_ = owner_document_->StyleVersion();
+
+  crosses_contain_boundary_ = GetLowestContainAncestor(start_container_) !=
+                              GetLowestContainAncestor(end_container_);
+  return crosses_contain_boundary_;
+}
+
+bool StaticRange::IsValid() const {
+  if (dom_tree_version_for_is_valid_ == owner_document_->DomTreeVersion())
+    return is_valid_;
+  dom_tree_version_for_is_valid_ = owner_document_->DomTreeVersion();
+
+  // The full list of checks is:
+  //  1) The start offset is between 0 and the start container’s node length
+  //     (inclusive).
+  //  2) The end offset is between 0 and the end container’s node length
+  //     (inclusive).
+  //  3) The start and end containers of the static range are in the same DOM
+  //     tree.
+  //  4) The position of the start boundary point is before or equal to the
+  //     position of the end boundary point.
+  is_valid_ =
+      start_offset_ <= AbstractRange::LengthOfContents(start_container_) &&
+      end_offset_ <= AbstractRange::LengthOfContents(end_container_) &&
+      !HasDifferentRootContainer(start_container_, end_container_) &&
+      ComparePositionsInDOMTree(start_container_, start_offset_, end_container_,
+                                end_offset_) <= 0;
+
+  return is_valid_;
 }
 
 Range* StaticRange::toRange(ExceptionState& exception_state) const {
@@ -58,7 +117,7 @@ Range* StaticRange::toRange(ExceptionState& exception_state) const {
   return range;
 }
 
-void StaticRange::Trace(Visitor* visitor) {
+void StaticRange::Trace(Visitor* visitor) const {
   visitor->Trace(owner_document_);
   visitor->Trace(start_container_);
   visitor->Trace(end_container_);

@@ -8,9 +8,10 @@
 
 #include <algorithm>
 
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -33,15 +34,17 @@ struct MaxSize<> {
   static constexpr size_t value = 0;
 };
 
-constexpr size_t kLargestDrawQuadSize = MaxSize<viz::DebugBorderDrawQuad,
-                                                viz::PictureDrawQuad,
-                                                viz::RenderPassDrawQuad,
-                                                viz::SolidColorDrawQuad,
-                                                viz::StreamVideoDrawQuad,
-                                                viz::SurfaceDrawQuad,
-                                                viz::TextureDrawQuad,
-                                                viz::TileDrawQuad,
-                                                viz::YUVVideoDrawQuad>::value;
+constexpr size_t kLargestDrawQuadSize =
+    MaxSize<viz::AggregatedRenderPassDrawQuad,
+            viz::DebugBorderDrawQuad,
+            viz::PictureDrawQuad,
+            viz::CompositorRenderPassDrawQuad,
+            viz::SolidColorDrawQuad,
+            viz::StreamVideoDrawQuad,
+            viz::SurfaceDrawQuad,
+            viz::TextureDrawQuad,
+            viz::TileDrawQuad,
+            viz::YUVVideoDrawQuad>::value;
 
 template <typename...>
 struct MaxAlign {};
@@ -57,9 +60,10 @@ struct MaxAlign<> {
 };
 
 constexpr size_t kLargestDrawQuadAlignment =
-    MaxAlign<viz::DebugBorderDrawQuad,
+    MaxAlign<viz::AggregatedRenderPassDrawQuad,
+             viz::DebugBorderDrawQuad,
              viz::PictureDrawQuad,
-             viz::RenderPassDrawQuad,
+             viz::CompositorRenderPassDrawQuad,
              viz::SolidColorDrawQuad,
              viz::StreamVideoDrawQuad,
              viz::SurfaceDrawQuad,

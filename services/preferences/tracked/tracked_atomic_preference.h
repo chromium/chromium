@@ -35,6 +35,9 @@ class TrackedAtomicPreference : public TrackedPreference {
       prefs::mojom::TrackedPreferenceMetadata::ValueType value_type,
       prefs::mojom::TrackedPreferenceValidationDelegate* delegate);
 
+  TrackedAtomicPreference(const TrackedAtomicPreference&) = delete;
+  TrackedAtomicPreference& operator=(const TrackedAtomicPreference&) = delete;
+
   // TrackedPreference implementation.
   TrackedPreferenceType GetType() const override;
   void OnNewValue(const base::Value* value,
@@ -48,8 +51,6 @@ class TrackedAtomicPreference : public TrackedPreference {
   const std::string pref_path_;
   const TrackedPreferenceHelper helper_;
   prefs::mojom::TrackedPreferenceValidationDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedAtomicPreference);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_ATOMIC_PREFERENCE_H_

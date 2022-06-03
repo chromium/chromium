@@ -8,14 +8,9 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 
-@class BrowserWindowController;
+class BrowserView;
 @class FullscreenMenubarTracker;
-class FullscreenToolbarAnimationController;
-@class FullscreenToolbarMouseTracker;
-@class FullscreenToolbarVisibilityLockController;
-@class ImmersiveFullscreenController;
 
 namespace content {
 class WebContents;
@@ -47,8 +42,6 @@ enum class FullscreenToolbarStyle {
 - (BOOL)isFullscreenTransitionInProgress;
 // The native window associated with the fullscreen controller.
 - (NSWindow*)window;
-// Whether in immersive fullscreen mode.
-- (BOOL)isInImmersiveFullscreen;
 
 @end
 
@@ -56,40 +49,11 @@ enum class FullscreenToolbarStyle {
 // window. This class sets up the animation manager, visibility locks, menubar
 // tracking, and mouse tracking associated with the toolbar. It receives input
 // from these objects to update and recompute the fullscreen toolbar laytout.
-@interface FullscreenToolbarController : NSObject {
- @private
-  // Whether or not we are in fullscreen mode.
-  BOOL _inFullscreenMode;
-
-  // Updates the fullscreen toolbar layout for changes in the menubar. This
-  // object is only set when the browser is in fullscreen mode.
-  base::scoped_nsobject<FullscreenMenubarTracker> _menubarTracker;
-
-  // Maintains the toolbar's visibility locks for the TOOLBAR_HIDDEN style.
-  base::scoped_nsobject<FullscreenToolbarVisibilityLockController>
-      _visibilityLockController;
-
-  // Manages the toolbar animations for the TOOLBAR_HIDDEN style.
-  std::unique_ptr<FullscreenToolbarAnimationController> _animationController;
-
-  // When the menu bar and toolbar are visible, creates a tracking area which
-  // is used to keep them visible until the mouse moves far enough away from
-  // them. Only set when the browser is in fullscreen mode.
-  base::scoped_nsobject<FullscreenToolbarMouseTracker> _mouseTracker;
-
-  // Controller for immersive fullscreen.
-  base::scoped_nsobject<ImmersiveFullscreenController>
-      _immersiveFullscreenController;
-
-  // The style of the fullscreen toolbar.
-  FullscreenToolbarStyle _toolbarStyle;
-
-  // Delegate for query fullscreen status and context. Weak.
-  id<FullscreenToolbarContextDelegate> _delegate;
-}
+@interface FullscreenToolbarController
+    : NSObject <FullscreenToolbarContextDelegate>
 
 // Designated initializer.
-- (id)initWithDelegate:(id<FullscreenToolbarContextDelegate>)delegate;
+- (instancetype)initWithBrowserView:(BrowserView*)browserView;
 
 // Informs the controller that the browser has entered or exited fullscreen
 // mode. |-enterFullscreenMode| should be called when the window is about to
@@ -126,33 +90,8 @@ enum class FullscreenToolbarStyle {
 // Returns the object in |menubarTracker_|;
 - (FullscreenMenubarTracker*)menubarTracker;
 
-// Returns the object in |visibilityLockController_|;
-- (FullscreenToolbarVisibilityLockController*)visibilityLockController;
-
-// Returns the object in |immersiveFullscreenController_|;
-- (ImmersiveFullscreenController*)immersiveFullscreenController;
-
 // Sets the value of |toolbarStyle_|.
 - (void)setToolbarStyle:(FullscreenToolbarStyle)style;
-
-- (id<FullscreenToolbarContextDelegate>)delegate;
-
-@end
-
-// Private methods exposed for testing.
-@interface FullscreenToolbarController (ExposedForTesting)
-
-// Returns |animationController_|.
-- (FullscreenToolbarAnimationController*)animationController;
-
-// Allows tests to set a mock FullscreenMenubarTracker object.
-- (void)setMenubarTracker:(FullscreenMenubarTracker*)tracker;
-
-// Allows tests to set a mock FullscreenToolbarMouseTracker object.
-- (void)setMouseTracker:(FullscreenToolbarMouseTracker*)tracker;
-
-// Sets the value of |inFullscreenMode_|.
-- (void)setTestFullscreenMode:(BOOL)isInFullscreen;
 
 @end
 

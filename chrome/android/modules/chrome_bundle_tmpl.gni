@@ -6,6 +6,7 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/util/version.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
+import("//components/module_installer/android/module_desc_java.gni")
 
 # Instantiates a Chrome-specific app bundle.
 #
@@ -21,17 +22,92 @@ template("chrome_bundle") {
   _bundle_target_name = target_name
   _package_id = 126  # == 0x7e.
   _extra_modules = []
-  foreach(_module_desc, invoker.module_descs) {
+  _module_descs = invoker.module_descs
+  _enable_chrome_module = invoker.is_monochrome_or_trichrome
+
+  # If enable_chrome_module is true, //chrome Java code and resources will be
+  # split out into a chrome DFM in Monochrome and Trichrome bundles. This will
+  # additionally move all //chrome-specific manifest definitions (e.g.
+  # activities, services) to the chrome DFM AndroidManifest.xml.
+  if (_enable_chrome_module) {
+    _base_target_gen_dir =
+        get_label_info(invoker.base_module_target, "target_gen_dir")
+    _base_name = get_label_info(invoker.base_module_target, "name")
+    _split_android_manifest = "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
+
+    chrome_module_desc = {
+      name = "chrome"
+      android_manifest = _split_android_manifest
+      android_manifest_dep =
+          "${invoker.base_module_target}__android_manifest__split"
+      java_deps = [ "//chrome/android:chrome_all_java" ]
+      if (enable_arcore) {
+        java_deps += [
+          "//components/webxr/android:ar_java",
+          "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+          "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
+        ]
+      }
+      if (defined(invoker.chrome_deps)) {
+        java_deps += invoker.chrome_deps
+      }
+    }
+    _module_descs += [ chrome_module_desc ]
+  }
+
+  if (invoker.is_monochrome_or_trichrome) {
+    # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
+    # access. For now, move all resources to the base module.
+    _base_target_name = get_label_info(invoker.base_module_target, "name")
+    android_resources("${_base_target_name}__all_dfm_resources") {
+      recursive_resource_deps = true
+      deps = []
+
+      # Java library deps are added to this target because the
+      # recursive_resource_deps arg allows pulling all the android_resources
+      # deps from them. The actual java library targets are not used.
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.java_deps)) {
+          deps += _module_desc.java_deps
+        }
+      }
+    }
+  }
+  foreach(_tmp_module_desc, _module_descs) {
     assert(_package_id > 2, "Too many modules, ran out of package IDs!")
+
+    # Need to reset _module_desc on each loop iteration, otherwise the
+    # "Replacing nonempty scope" error is thrown.
+    _module_desc = {
+    }
+    if (_enable_chrome_module) {
+      _module_desc = _tmp_module_desc
+    } else {
+      # Remove uses_split if child modules are not enabled.
+      _module_desc = {
+        forward_variables_from(_tmp_module_desc, "*", [ "uses_split" ])
+      }
+    }
+
+    # Assert that |load_native_on_get_impl| is defined iff native libraries or
+    # resources are defined.
+    if (defined(_module_desc.native_deps) || defined(_module_desc.paks)) {
+      assert(defined(_module_desc.load_native_on_get_impl))
+    } else {
+      assert(!defined(_module_desc.load_native_on_get_impl))
+    }
+
     chrome_feature_module(
         "${_bundle_target_name}__${_module_desc.name}_bundle_module") {
       forward_variables_from(invoker,
                              [
+                               "add_view_trace_events",
                                "base_module_target",
                                "is_64_bit_browser",
                                "is_monochrome_or_trichrome",
                                "manifest_package",
                                "min_sdk_version",
+                               "target_sdk_version",
                                "version_code",
                              ])
       module_desc = _module_desc
@@ -65,35 +141,42 @@ template("chrome_bundle") {
   android_app_bundle(target_name) {
     forward_variables_from(invoker,
                            [
+                             "add_view_trace_events",
                              "base_module_target",
                              "bundle_name",
                              "compress_shared_libraries",
-                             "failed_proguard_expectation_file",
+                             "enable_lint",
+                             "expected_libs_and_assets",
+                             "expected_libs_and_assets_base",
+                             "expected_proguard_config",
+                             "expected_proguard_config_base",
                              "keystore_name",
                              "keystore_password",
                              "keystore_path",
+                             "lint_baseline_file",
+                             "lint_min_sdk_version",
+                             "lint_suppressions_file",
+                             "lint_suppressions_dep",
                              "min_sdk_version",
                              "proguard_android_sdk_dep",
-                             "proguard_jar_path",
-                             "sign_bundle",
-                             "static_library_proguard_disabled",
                              "static_library_provider",
-                             "verify_proguard_flags",
+                             "static_library_synchronized_proguard",
+                             "version_code",
                            ])
     command_line_flags_file = "chrome-command-line"
     proguard_enabled = !is_java_debug
     enable_language_splits = true
     extra_modules = _extra_modules
-    system_image_locale_whitelist = android_non_bundle_locales
+    system_image_locale_allowlist = locales - android_bundle_only_locales
     is_multi_abi = _is_multi_abi
+    validate_services = _enable_chrome_module
 
-    # NOTE: Only sign bundle for official builds since this is very slow.
-    if (enable_chrome_android_internal && use_signing_keys &&
-        is_official_build) {
-      sign_bundle = true
-      keystore_path = chrome_keystore_path
-      keystore_name = chrome_keystore_name
-      keystore_password = chrome_keystore_password
-    }
+    # For this to be respected, it must also be set on the base module target.
+    strip_unused_resources = is_official_build
+
+    # List of DFMs that are installed by default by wrapper scripts, to make
+    # testing easier. This removes the need to manually specify, e.g.,
+    # "-m dev_ui" on every install or run.
+    default_modules_for_testing = [ "dev_ui" ]
   }
 }

@@ -91,10 +91,10 @@ TEST(RuleParserTest, UrlRuleMatchCase) {
   }
 }
 
-TEST(RuleParserTest, ParseWhitelistUrlRule) {
+TEST(RuleParserTest, ParseAllowlistUrlRule) {
   static const char* kLine = "@@?param=";
   UrlRule expected_rule;
-  expected_rule.is_whitelist = true;
+  expected_rule.is_allowlist = true;
   expected_rule.url_pattern = kLine + 2;
   expected_rule.url_pattern_type =
       url_pattern_index::proto::URL_PATTERN_TYPE_SUBSTRING;
@@ -227,7 +227,7 @@ TEST(RuleParserTest, ParseUrlRuleAnchors) {
 TEST(RuleParserTest, ParseUrlRuleWithBookmark) {
   static const char* kLine = "@@example.com^*#-$image";
   UrlRule expected_rule;
-  expected_rule.is_whitelist = true;
+  expected_rule.is_allowlist = true;
   expected_rule.type_mask =
       type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_IMAGE);
   expected_rule.url_pattern = "example.com^*#-";
@@ -322,15 +322,15 @@ TEST(RuleParserTest, ParseCssRules) {
   expected_rule.domains.push_back(kTestDomain);
   ParseAndExpectCssRule(kTestDomain + "##" + kCssSelector, expected_rule);
 
-  expected_rule.is_whitelist = true;
+  expected_rule.is_allowlist = true;
   ParseAndExpectCssRule(kTestDomain + "#@#" + kCssSelector, expected_rule);
 
-  expected_rule.is_whitelist = false;
+  expected_rule.is_allowlist = false;
   expected_rule.domains.push_back("~" + kTestSubDomain);
   ParseAndExpectCssRule(
       kTestDomain + ",~" + kTestSubDomain + "##" + kCssSelector, expected_rule);
 
-  expected_rule.is_whitelist = true;
+  expected_rule.is_allowlist = true;
   ParseAndExpectCssRule(
       kTestDomain + ",~" + kTestSubDomain + "#@#" + kCssSelector,
       expected_rule);
@@ -347,14 +347,14 @@ TEST(RuleParserTest, ParseErrors) {
       {"", RuleParser::ParseError::EMPTY_RULE, 0},
       {"    ", RuleParser::ParseError::EMPTY_RULE, 0},
       {"   \t ", RuleParser::ParseError::EMPTY_RULE, 0},
-      {"@", RuleParser::ParseError::BAD_WHITELIST_SYNTAX, 1},
-      {"@http://example.com", RuleParser::ParseError::BAD_WHITELIST_SYNTAX, 1},
+      {"@", RuleParser::ParseError::BAD_ALLOWLIST_SYNTAX, 1},
+      {"@http://example.com", RuleParser::ParseError::BAD_ALLOWLIST_SYNTAX, 1},
       {"?opt=$unknown_option", RuleParser::ParseError::UNKNOWN_OPTION, 6},
       {"example.com$image,dtd", RuleParser::ParseError::DEPRECATED_OPTION, 18},
-      {"?opt=$elemhide", RuleParser::ParseError::WHITELIST_ONLY_OPTION, 6},
-      {"?opt=$generichide", RuleParser::ParseError::WHITELIST_ONLY_OPTION, 6},
-      {"?opt=$generblock", RuleParser::ParseError::WHITELIST_ONLY_OPTION, 6},
-      {"?opt=$~document", RuleParser::ParseError::WHITELIST_ONLY_OPTION, 7},
+      {"?opt=$elemhide", RuleParser::ParseError::ALLOWLIST_ONLY_OPTION, 6},
+      {"?opt=$generichide", RuleParser::ParseError::ALLOWLIST_ONLY_OPTION, 6},
+      {"?opt=$generblock", RuleParser::ParseError::ALLOWLIST_ONLY_OPTION, 6},
+      {"?opt=$~document", RuleParser::ParseError::ALLOWLIST_ONLY_OPTION, 7},
       {"~host$sitekey=1", RuleParser::ParseError::UNSUPPORTED_FEATURE, 6},
       {"?param=$~match-case", RuleParser::ParseError::NOT_A_TRISTATE_OPTION, 9},
       {"?param=$domain", RuleParser::ParseError::NO_VALUE_PROVIDED, 8},

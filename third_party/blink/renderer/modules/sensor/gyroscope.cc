@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/gyroscope.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 using device::mojom::blink::SensorType;
 
@@ -31,24 +31,27 @@ Gyroscope::Gyroscope(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::GYROSCOPE,
-             {mojom::FeaturePolicyFeature::kGyroscope}) {}
+             {mojom::blink::PermissionsPolicyFeature::kGyroscope}) {}
 
-double Gyroscope::x(bool& is_null) const {
-  INIT_IS_NULL_AND_RETURN(is_null, 0.0);
-  return GetReading().gyro.x;
+absl::optional<double> Gyroscope::x() const {
+  if (hasReading())
+    return GetReading().gyro.x;
+  return absl::nullopt;
 }
 
-double Gyroscope::y(bool& is_null) const {
-  INIT_IS_NULL_AND_RETURN(is_null, 0.0);
-  return GetReading().gyro.y;
+absl::optional<double> Gyroscope::y() const {
+  if (hasReading())
+    return GetReading().gyro.y;
+  return absl::nullopt;
 }
 
-double Gyroscope::z(bool& is_null) const {
-  INIT_IS_NULL_AND_RETURN(is_null, 0.0);
-  return GetReading().gyro.z;
+absl::optional<double> Gyroscope::z() const {
+  if (hasReading())
+    return GetReading().gyro.z;
+  return absl::nullopt;
 }
 
-void Gyroscope::Trace(blink::Visitor* visitor) {
+void Gyroscope::Trace(Visitor* visitor) const {
   Sensor::Trace(visitor);
 }
 

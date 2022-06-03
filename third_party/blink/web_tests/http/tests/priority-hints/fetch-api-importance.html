@@ -51,7 +51,7 @@
     promise_test(async () => {
       const url = test.request_info instanceof Request ?
                     test.request_info.url : test.request_info;
-      const priorityPromise = internals.getResourcePriority(url, document);
+      const priorityPromise = internals.getInitialResourcePriority(url, document);
       const response = await fetch(test.request_info, test.request_init);
       const priority = await priorityPromise;
       assert_equals(priority, test.expected_priority);

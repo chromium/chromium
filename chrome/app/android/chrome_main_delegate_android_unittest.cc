@@ -4,6 +4,8 @@
 
 #include "chrome/app/android/chrome_main_delegate_android.h"
 
+#include <memory>
+
 #include "base/base_paths_android.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,8 +20,8 @@ class ChromeMainDelegateAndroidTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(mock_data_dir_.CreateUniqueTempDir());
-    path_override_.reset(new base::ScopedPathOverride(
-        base::DIR_ANDROID_APP_DATA, mock_data_dir_.GetPath()));
+    path_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_ANDROID_APP_DATA, mock_data_dir_.GetPath());
   }
 
   base::FilePath dataDir() const { return mock_data_dir_.GetPath(); }

@@ -49,6 +49,9 @@ class LargeIconCacheTest : public PlatformTest {
     large_icon_cache_.reset(new LargeIconCache);
   }
 
+  LargeIconCacheTest(const LargeIconCacheTest&) = delete;
+  LargeIconCacheTest& operator=(const LargeIconCacheTest&) = delete;
+
   ~LargeIconCacheTest() override {}
 
  protected:
@@ -58,9 +61,6 @@ class LargeIconCacheTest : public PlatformTest {
       expected_fallback_icon_style_;
 
   bool is_callback_invoked_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeIconCacheTest);
 };
 
 TEST_F(LargeIconCacheTest, EmptyCache) {

@@ -6,7 +6,6 @@
 #define BASE_TASK_SCOPED_SET_TASK_PRIORITY_FOR_CURRENT_THREAD_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/task/task_traits.h"
 
 namespace base {
@@ -16,17 +15,21 @@ class BASE_EXPORT ScopedSetTaskPriorityForCurrentThread {
  public:
   // Within the scope of this object, GetTaskPriorityForCurrentThread() will
   // return |priority|.
-  ScopedSetTaskPriorityForCurrentThread(TaskPriority priority);
+  explicit ScopedSetTaskPriorityForCurrentThread(TaskPriority priority);
+
+  ScopedSetTaskPriorityForCurrentThread(
+      const ScopedSetTaskPriorityForCurrentThread&) = delete;
+  ScopedSetTaskPriorityForCurrentThread& operator=(
+      const ScopedSetTaskPriorityForCurrentThread&) = delete;
+
   ~ScopedSetTaskPriorityForCurrentThread();
 
  private:
   const TaskPriority priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetTaskPriorityForCurrentThread);
 };
 
 // Returns the priority of the task running on the current thread,
-// or TaskPriority::USER_VISIBLE if none.
+// or TaskPriority::USER_BLOCKING by default if none.
 BASE_EXPORT TaskPriority GetTaskPriorityForCurrentThread();
 
 }  // namespace internal

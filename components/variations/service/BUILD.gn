@@ -9,13 +9,11 @@ declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
   # Note: this setting is ignored if is_chrome_branded.
-  # TODO(thakis): It's strange this is called "_like_official_build" but then
-  # checks is_chrome_branded, not is_official_build.
-  fieldtrial_testing_like_official_build = is_chrome_branded
+  disable_fieldtrial_testing_config = false
 }
 
 fieldtrial_testing_enabled =
-    !fieldtrial_testing_like_official_build && !is_chrome_branded
+    !disable_fieldtrial_testing_config && !is_chrome_branded
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -38,8 +36,10 @@ static_library("service") {
 
   deps = [
     ":buildflags",
+    ":constants",
     "//base",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/encrypted_messages",
     "//components/language/core/browser",
     "//components/metrics",
@@ -67,6 +67,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":constants",
     ":service",
     "//base",
     "//base/test:test_support",
@@ -74,7 +75,9 @@ source_set("unit_tests") {
     "//components/metrics:test_support",
     "//components/prefs:test_support",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/variations/proto",
+    "//components/version_info",
     "//components/web_resource:test_support",
     "//net",
     "//net:test_support",
@@ -82,4 +85,13 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
+}
+
+static_library("constants") {
+  sources = [
+    "variations_safe_mode_constants.cc",
+    "variations_safe_mode_constants.h",
+  ]
+
+  deps = [ "//base" ]
 }

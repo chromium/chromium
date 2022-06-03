@@ -1,0 +1,40 @@
+noparent = True
+
+include_rules = [
+  "-chrome",
+  "+base/android/java/src/org/chromium/base",
+  "+base/test/android/junit",
+  "+chrome/browser/android/crypto/java",
+  '+chrome/browser/commerce/android/java',
+  "+chrome/browser/contextmenu/java",
+  "+chrome/browser/endpoint_fetcher",
+  "+chrome/browser/tab/java",
+  "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
+  "+chrome/browser/preferences/android/java",
+  "+chrome/browser/profiles/android/java",
+  "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/flags/android/java",
+  "+components/browser_ui/util/android/java",
+  "+components/embedder_support/android/java",
+  "+components/external_intents/android/java",
+  "+components/find_in_page/android/java",
+  "+components/navigation_interception/android/java",
+  "+components/security_state/content/android/java",
+  "+content/public/android/java/src/org/chromium/content_public",
+  "+ui/android/java/src/org/chromium/ui/base",
+  "+ui/android/java/src/org/chromium/ui/text",
+  "+ui/android/java/src/org/chromium/ui/util",
+  "+ui/android/java/src/org/chromium/ui/widget",
+  "+url/android/java",
+]
+
+specific_include_rules = {
+  'Tab\.java': [
+    "-components",
+    "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
+  ],
+
+  'CurrentTabObserverTest.java': [
+    "+base/test/android/junit",
+  ]
+}

@@ -47,14 +47,15 @@ class Page;
 
 class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
                                       public Supplement<Page> {
-  USING_GARBAGE_COLLECTED_MIXIN(DatabaseClient);
-
  public:
   static const char kSupplementName[];
 
   DatabaseClient();
 
-  void Trace(blink::Visitor*) override;
+  DatabaseClient(const DatabaseClient&) = delete;
+  DatabaseClient& operator=(const DatabaseClient&) = delete;
+
+  void Trace(Visitor*) const override;
 
   bool AllowDatabase(ExecutionContext*);
 
@@ -70,8 +71,6 @@ class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
 
  private:
   Member<InspectorDatabaseAgent> inspector_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseClient);
 };
 
 MODULES_EXPORT void ProvideDatabaseClientTo(Page&, DatabaseClient*);

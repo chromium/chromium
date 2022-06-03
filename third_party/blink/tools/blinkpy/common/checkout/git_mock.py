@@ -11,7 +11,11 @@ class MockGit(object):
     # Arguments are listed below, even if they're unused, in order to match
     # the Git class. pylint: disable=unused-argument
 
-    def __init__(self, cwd=None, filesystem=None, executive=None, platform=None):
+    def __init__(self,
+                 cwd=None,
+                 filesystem=None,
+                 executive=None,
+                 platform=None):
         self.checkout_root = '/mock-checkout'
         self.cwd = cwd or self.checkout_root
         self.added_paths = set()
@@ -20,7 +24,12 @@ class MockGit(object):
         self._executable_name = 'git'
         self._local_commits = []
 
-    def run(self, command_args, cwd=None, stdin=None, decode_output=True, return_exit_code=False):
+    def run(self,
+            command_args,
+            cwd=None,
+            stdin=None,
+            decode_output=True,
+            return_exit_code=False):
         full_command_args = [self._executable_name] + command_args
         cwd = cwd or self.checkout_root
         return self._executive.run_command(
@@ -87,7 +96,8 @@ class MockGit(object):
 
     def move(self, origin, destination):
         if self._filesystem:
-            self._filesystem.move(self.absolute_path(origin), self.absolute_path(destination))
+            self._filesystem.move(
+                self.absolute_path(origin), self.absolute_path(destination))
 
     def changed_files(self, diff_filter='ADM'):
         return []

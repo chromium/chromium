@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -99,9 +98,8 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
   EXPECT_EQ("profile.content_settings.exceptions.test", info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.test",
             info->default_value_pref_name());
-  int setting;
-  ASSERT_TRUE(info->initial_default_value()->GetAsInteger(&setting));
-  EXPECT_EQ(999, setting);
+  ASSERT_TRUE(info->initial_default_value()->is_int());
+  EXPECT_EQ(999, info->initial_default_value()->GetInt());
 #if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(PrefRegistry::LOSSY_PREF, info->GetPrefRegistrationFlags());
 #else

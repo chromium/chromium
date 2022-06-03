@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -74,14 +73,15 @@ class SyncEngine
   class DriveServiceFactory {
    public:
     DriveServiceFactory() {}
+
+    DriveServiceFactory(const DriveServiceFactory&) = delete;
+    DriveServiceFactory& operator=(const DriveServiceFactory&) = delete;
+
     virtual ~DriveServiceFactory() {}
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         base::SequencedTaskRunner* blocking_task_runner);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DriveServiceFactory);
   };
 
   static std::unique_ptr<SyncEngine> CreateForBrowserContext(
@@ -89,6 +89,9 @@ class SyncEngine
       TaskLogger* task_logger);
   static void AppendDependsOnFactories(
       std::set<BrowserContextKeyedServiceFactory*>* factories);
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
 
   ~SyncEngine() override;
   void Reset();
@@ -108,31 +111,28 @@ class SyncEngine
   // RemoteFileSyncService overrides.
   void AddServiceObserver(SyncServiceObserver* observer) override;
   void AddFileStatusObserver(FileStatusObserver* observer) override;
-  void RegisterOrigin(const GURL& origin,
-                      const SyncStatusCallback& callback) override;
-  void EnableOrigin(const GURL& origin,
-                    const SyncStatusCallback& callback) override;
-  void DisableOrigin(const GURL& origin,
-                     const SyncStatusCallback& callback) override;
+  void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void UninstallOrigin(const GURL& origin,
                        UninstallFlag flag,
-                       const SyncStatusCallback& callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+                       SyncStatusCallback callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
   RemoteServiceState GetCurrentState() const override;
-  void GetOriginStatusMap(const StatusMapCallback& callback) override;
-  void DumpFiles(const GURL& origin, const ListCallback& callback) override;
-  void DumpDatabase(const ListCallback& callback) override;
+  void GetOriginStatusMap(StatusMapCallback callback) override;
+  void DumpFiles(const GURL& origin, ListCallback callback) override;
+  void DumpDatabase(ListCallback callback) override;
   void SetSyncEnabled(bool enabled) override;
-  void PromoteDemotedChanges(const base::Closure& callback) override;
+  void PromoteDemotedChanges(base::OnceClosure callback) override;
 
   // LocalChangeProcessor overrides.
   void ApplyLocalChange(const FileChange& local_change,
                         const base::FilePath& local_path,
                         const SyncFileMetadata& local_metadata,
                         const storage::FileSystemURL& url,
-                        const SyncStatusCallback& callback) override;
+                        SyncStatusCallback callback) override;
 
   // drive::DriveNotificationObserver overrides.
   void OnNotificationReceived(
@@ -148,10 +148,8 @@ class SyncEngine
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // IdentityManager::Observer overrides.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   class WorkerObserver;
@@ -183,7 +181,7 @@ class SyncEngine
   void UpdateServiceState(RemoteServiceState state,
                           const std::string& description);
 
-  SyncStatusCallback TrackCallback(const SyncStatusCallback& callback);
+  SyncStatusCallback TrackCallback(SyncStatusCallback callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
@@ -233,7 +231,6 @@ class SyncEngine
   CallbackTracker callback_tracker_;
 
   base::WeakPtrFactory<SyncEngine> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace drive_backend

@@ -71,20 +71,15 @@ class CORE_EXPORT ScriptValue final {
   ScriptValue() = default;
 
   ScriptValue(v8::Isolate* isolate, v8::Local<v8::Value> value)
-      : isolate_(isolate),
-        value_(
-            MakeGarbageCollected<WorldSafeV8ReferenceWrapper>(isolate, value)) {
+      : isolate_(isolate), value_(isolate, value) {
     DCHECK(isolate_);
   }
 
   template <typename T>
   ScriptValue(v8::Isolate* isolate, v8::MaybeLocal<T> value)
       : isolate_(isolate),
-        value_(value.IsEmpty()
-                   ? MakeGarbageCollected<WorldSafeV8ReferenceWrapper>()
-                   : MakeGarbageCollected<WorldSafeV8ReferenceWrapper>(
-                         isolate,
-                         value.ToLocalChecked())) {
+        value_(isolate,
+               value.IsEmpty() ? v8::Local<T>() : value.ToLocalChecked()) {
     DCHECK(isolate_);
   }
 
@@ -104,7 +99,7 @@ class CORE_EXPORT ScriptValue final {
       return value.IsEmpty();
     if (value.IsEmpty())
       return false;
-    return *value_ == *value.value_;
+    return value_ == value.value_;
   }
 
   bool operator!=(const ScriptValue& value) const { return !operator==(value); }
@@ -141,11 +136,11 @@ class CORE_EXPORT ScriptValue final {
     return !value.IsEmpty() && value->IsObject();
   }
 
-  bool IsEmpty() const { return !value_ || value_->IsEmpty(); }
+  bool IsEmpty() const { return value_.IsEmpty(); }
 
   void Clear() {
     isolate_ = nullptr;
-    value_.Clear();
+    value_.Reset();
   }
 
   v8::Local<v8::Value> V8Value() const;
@@ -158,54 +153,11 @@ class CORE_EXPORT ScriptValue final {
 
   static ScriptValue CreateNull(v8::Isolate*);
 
-  void Trace(Visitor* visitor) { visitor->Trace(value_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
-  // WorldSafeV8ReferenceWrapper wraps a WorldSafeV8Reference so that it can be
-  // used on both the stack and heaps. WorldSafeV8Reference cannot be used on
-  // the stack because the conservative scanning does not know how to trace
-  // TraceWrapperV8Reference.
-  class CORE_EXPORT WorldSafeV8ReferenceWrapper
-      : public GarbageCollected<WorldSafeV8ReferenceWrapper> {
-   public:
-    WorldSafeV8ReferenceWrapper() = default;
-    WorldSafeV8ReferenceWrapper(v8::Isolate* isolate,
-                                v8::Local<v8::Value> value)
-        : value_(isolate, value) {}
-
-    virtual ~WorldSafeV8ReferenceWrapper() = default;
-    void Trace(blink::Visitor* visitor) { visitor->Trace(value_); }
-
-    v8::Local<v8::Value> Get(ScriptState* script_state) const {
-      return value_.Get(script_state);
-    }
-
-    v8::Local<v8::Value> GetAcrossWorld(ScriptState* script_state) const {
-      return value_.GetAcrossWorld(script_state);
-    }
-
-    bool IsEmpty() const { return value_.IsEmpty(); }
-
-    bool operator==(const WorldSafeV8ReferenceWrapper& other) const {
-      return value_ == other.value_;
-    }
-
-   private:
-    WorldSafeV8Reference<v8::Value> value_;
-  };
-
   v8::Isolate* isolate_ = nullptr;
-  Member<WorldSafeV8ReferenceWrapper> value_;
-};
-
-template <>
-struct NativeValueTraits<ScriptValue>
-    : public NativeValueTraitsBase<ScriptValue> {
-  static inline ScriptValue NativeValue(v8::Isolate* isolate,
-                                        v8::Local<v8::Value> value,
-                                        ExceptionState& exception_state) {
-    return ScriptValue(isolate, value);
-  }
+  WorldSafeV8Reference<v8::Value> value_;
 };
 
 }  // namespace blink

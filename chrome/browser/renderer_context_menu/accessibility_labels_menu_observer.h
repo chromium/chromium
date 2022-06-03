@@ -8,13 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <vector>
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "base/timer/timer.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
@@ -26,6 +20,12 @@ class Profile;
 class AccessibilityLabelsMenuObserver : public RenderViewContextMenuObserver {
  public:
   explicit AccessibilityLabelsMenuObserver(RenderViewContextMenuProxy* proxy);
+
+  AccessibilityLabelsMenuObserver(const AccessibilityLabelsMenuObserver&) =
+      delete;
+  AccessibilityLabelsMenuObserver& operator=(
+      const AccessibilityLabelsMenuObserver&) = delete;
+
   ~AccessibilityLabelsMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -45,8 +45,6 @@ class AccessibilityLabelsMenuObserver : public RenderViewContextMenuObserver {
   // The interface to add a context-menu item and update it. This class uses
   // this interface to avoid accessing context-menu items directly.
   RenderViewContextMenuProxy* proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsMenuObserver);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_MENU_OBSERVER_H_

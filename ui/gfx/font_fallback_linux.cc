@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -57,6 +57,8 @@ class TypefaceCacheKey {
  public:
   TypefaceCacheKey(const base::FilePath& font_path, int ttc_index)
       : font_path_(font_path), ttc_index_(ttc_index) {}
+  TypefaceCacheKey(const TypefaceCacheKey&) = default;
+  TypefaceCacheKey& operator=(const TypefaceCacheKey&) = default;
 
   const base::FilePath& font_path() const { return font_path_; }
   int ttc_index() const { return ttc_index_; }
@@ -69,8 +71,6 @@ class TypefaceCacheKey {
  private:
   base::FilePath font_path_;
   int ttc_index_;
-
-  DISALLOW_ASSIGN(TypefaceCacheKey);
 };
 
 // Returns a SkTypeface for a given font path and ttc_index. The typeface is
@@ -116,6 +116,9 @@ class FallbackFontKey {
       : locale_(locale), font_(font) {}
 
   FallbackFontKey(const FallbackFontKey&) = default;
+
+  FallbackFontKey& operator=(const FallbackFontKey&) = delete;
+
   ~FallbackFontKey() = default;
 
   bool operator<(const FallbackFontKey& other) const {
@@ -131,8 +134,6 @@ class FallbackFontKey {
  private:
   std::string locale_;
   Font font_;
-
-  DISALLOW_ASSIGN(FallbackFontKey);
 };
 
 class FallbackFontEntry {
@@ -151,6 +152,8 @@ class FallbackFontEntry {
         ttc_index_(other.ttc_index_),
         font_params_(other.font_params_),
         charset_(FcCharSetCopy(other.charset_)) {}
+
+  FallbackFontEntry& operator=(const FallbackFontEntry&) = delete;
 
   ~FallbackFontEntry() { FcCharSetDestroy(charset_); }
 
@@ -173,13 +176,11 @@ class FallbackFontEntry {
 
   // Font code points coverage.
   FcCharSet* charset_;
-
-  DISALLOW_ASSIGN(FallbackFontEntry);
 };
 
 using FallbackFontEntries = std::vector<FallbackFontEntry>;
 using FallbackFontEntriesCache =
-    base::MRUCache<FallbackFontKey, FallbackFontEntries>;
+    base::LRUCache<FallbackFontKey, FallbackFontEntries>;
 
 // The fallback font cache is a mapping from a font to the potential fallback
 // fonts with their codepoint coverage.
@@ -193,7 +194,7 @@ FallbackFontEntriesCache* GetFallbackFontEntriesCacheInstance() {
 // The fallback fonts cache is a mapping from a font family name to its
 // potential fallback fonts.
 using FallbackFontList = std::vector<Font>;
-using FallbackFontListCache = base::MRUCache<std::string, FallbackFontList>;
+using FallbackFontListCache = base::LRUCache<std::string, FallbackFontList>;
 
 FallbackFontListCache* GetFallbackFontListCacheInstance() {
   constexpr int kFallbackCacheSize = 64;
@@ -425,6 +426,9 @@ class CachedFontSet {
     return base::WrapUnique(new CachedFontSet(font_set));
   }
 
+  CachedFontSet(const CachedFontSet&) = delete;
+  CachedFontSet& operator=(const CachedFontSet&) = delete;
+
   ~CachedFontSet() {
     fallback_list_.clear();
     FcFontSetDestroy(font_set_);
@@ -502,8 +506,6 @@ class CachedFontSet {
   // If the FcFontSet is ever destroyed, the fallback list
   // must be cleared first.
   std::vector<CachedFont> fallback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontSet);
 };
 
 typedef std::map<std::string, std::unique_ptr<CachedFontSet>> FontSetCache;
@@ -514,6 +516,8 @@ base::LazyInstance<FontSetCache>::Leaky g_font_sets_by_locale =
 
 FallbackFontData::FallbackFontData() = default;
 FallbackFontData::FallbackFontData(const FallbackFontData& other) = default;
+FallbackFontData& FallbackFontData::operator=(const FallbackFontData& other) =
+    default;
 
 bool GetFallbackFontForChar(UChar32 c,
                             const std::string& locale,

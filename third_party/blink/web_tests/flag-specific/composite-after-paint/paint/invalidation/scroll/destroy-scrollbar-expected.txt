@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "VerticalScrollbar",
-          "rect": [185, 100, 15, 200],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [185, 100, 15, 200]
       ]
     }
   ]

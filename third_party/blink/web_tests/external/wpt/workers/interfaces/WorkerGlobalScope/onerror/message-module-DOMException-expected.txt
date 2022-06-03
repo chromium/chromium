@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL Throw DOMException-TypeError in toplevel: module: listener assert_regexp_match: e.message should contain the message of the thrown error expected object "/Throw in/" but got "Uncaught "
+FAIL Throw DOMException-TypeError in toplevel: module: handler assert_regexp_match: e.message should contain the message of the thrown error expected object "/Throw in/" but got "Uncaught "
+PASS Throw DOMException-TypeError in setTimeout-function: module: listener
+PASS Throw DOMException-TypeError in setTimeout-function: module: handler
+PASS Throw DOMException-TypeError in setTimeout-string: module: listener
+PASS Throw DOMException-TypeError in setTimeout-string: module: handler
+PASS Throw DOMException-TypeError in onmessage: module: listener
+PASS Throw DOMException-TypeError in onmessage: module: handler
+PASS Throw DOMException-TypeError in onerror: module: listener
+PASS Throw DOMException-TypeError in onerror: module: handler
+Harness: the test ran to completion.
+

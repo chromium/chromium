@@ -4,8 +4,8 @@
 
 #include "ash/media/media_controller_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/media_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,13 +16,16 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/mojom/constants.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "ui/base/accelerators/media_keys_util.h"
 
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kDefaultSeekTime =
+    base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds);
 
 bool IsMediaSessionActionEligibleForKeyControl(
     media_session::mojom::MediaSessionAction action) {
@@ -89,6 +92,13 @@ void MediaControllerImpl::NotifyCaptureState(
     observer.OnMediaCaptureChanged(capture_states);
 }
 
+void MediaControllerImpl::NotifyVmMediaNotificationState(bool camera,
+                                                         bool mic,
+                                                         bool camera_and_mic) {
+  for (auto& observer : observers_)
+    observer.OnVmMediaNotificationChanged(camera, mic, camera_and_mic);
+}
+
 void MediaControllerImpl::HandleMediaPlayPause() {
   if (Shell::Get()->session_controller()->IsScreenLocked() &&
       !AreLockScreenMediaKeysEnabled()) {
@@ -125,6 +135,81 @@ void MediaControllerImpl::HandleMediaPlayPause() {
 
   if (client_)
     client_->HandleMediaPlayPause();
+}
+
+void MediaControllerImpl::HandleMediaPlay() {
+  if (Shell::Get()->session_controller()->IsScreenLocked() &&
+      !AreLockScreenMediaKeysEnabled()) {
+    return;
+  }
+
+  ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kPlay);
+
+  // If the |client_| is force handling the keys then we should forward them.
+  if (client_ && force_media_client_key_handling_) {
+    client_->HandleMediaPlay();
+    return;
+  }
+
+  // If media session media key handling is enabled. Fire play using the media
+  // session service.
+  if (ShouldUseMediaSession()) {
+    GetMediaSessionController()->Resume();
+    return;
+  }
+
+  if (client_)
+    client_->HandleMediaPlay();
+}
+
+void MediaControllerImpl::HandleMediaPause() {
+  if (Shell::Get()->session_controller()->IsScreenLocked() &&
+      !AreLockScreenMediaKeysEnabled()) {
+    return;
+  }
+
+  ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kPause);
+
+  // If the |client_| is force handling the keys then we should forward them.
+  if (client_ && force_media_client_key_handling_) {
+    client_->HandleMediaPause();
+    return;
+  }
+
+  // If media session media key handling is enabled. Fire pause using the media
+  // session service.
+  if (ShouldUseMediaSession()) {
+    GetMediaSessionController()->Suspend();
+    return;
+  }
+
+  if (client_)
+    client_->HandleMediaPause();
+}
+
+void MediaControllerImpl::HandleMediaStop() {
+  if (Shell::Get()->session_controller()->IsScreenLocked() &&
+      !AreLockScreenMediaKeysEnabled()) {
+    return;
+  }
+
+  ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kStop);
+
+  // If the |client_| is force handling the keys then we should forward them.
+  if (client_ && force_media_client_key_handling_) {
+    client_->HandleMediaStop();
+    return;
+  }
+
+  // If media session media key handling is enabled. Fire stop using the media
+  // session service.
+  if (ShouldUseMediaSession()) {
+    GetMediaSessionController()->Stop();
+    return;
+  }
+
+  if (client_)
+    client_->HandleMediaStop();
 }
 
 void MediaControllerImpl::HandleMediaNextTrack() {
@@ -177,6 +262,56 @@ void MediaControllerImpl::HandleMediaPrevTrack() {
     client_->HandleMediaPrevTrack();
 }
 
+void MediaControllerImpl::HandleMediaSeekBackward() {
+  if (Shell::Get()->session_controller()->IsScreenLocked() &&
+      !AreLockScreenMediaKeysEnabled()) {
+    return;
+  }
+
+  ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kSeekBackward);
+
+  // If the |client_| is force handling the keys then we should forward them.
+  if (client_ && force_media_client_key_handling_) {
+    client_->HandleMediaSeekBackward();
+    return;
+  }
+
+  // If media session media key handling is enabled. Seek backward with
+  // kDefaultSeekTime using the media session service.
+  if (ShouldUseMediaSession()) {
+    GetMediaSessionController()->Seek(kDefaultSeekTime * -1);
+    return;
+  }
+
+  if (client_)
+    client_->HandleMediaSeekBackward();
+}
+
+void MediaControllerImpl::HandleMediaSeekForward() {
+  if (Shell::Get()->session_controller()->IsScreenLocked() &&
+      !AreLockScreenMediaKeysEnabled()) {
+    return;
+  }
+
+  ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kSeekForward);
+
+  // If the |client_| is force handling the keys then we should forward them.
+  if (client_ && force_media_client_key_handling_) {
+    client_->HandleMediaSeekForward();
+    return;
+  }
+
+  // If media session media key handling is enabled. Seek forward with
+  // kDefaultSeekTime using the media session service.
+  if (ShouldUseMediaSession()) {
+    GetMediaSessionController()->Seek(kDefaultSeekTime);
+    return;
+  }
+
+  if (client_)
+    client_->HandleMediaSeekForward();
+}
+
 void MediaControllerImpl::RequestCaptureState() {
   if (client_)
     client_->RequestCaptureState();
@@ -226,7 +361,7 @@ MediaControllerImpl::GetMediaSessionController() {
   if (!Shell::HasInstance())
     return nullptr;
 
-  media_session::mojom::MediaSessionService* service =
+  media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
   if (!service)
     return nullptr;
@@ -239,8 +374,8 @@ MediaControllerImpl::GetMediaSessionController() {
       media_session_controller_remote_.BindNewPipeAndPassReceiver());
 
   media_session_controller_remote_.set_disconnect_handler(
-      base::BindRepeating(&MediaControllerImpl::OnMediaSessionControllerError,
-                          base::Unretained(this)));
+      base::BindOnce(&MediaControllerImpl::OnMediaSessionControllerError,
+                     base::Unretained(this)));
 
   BindMediaControllerObserver();
 

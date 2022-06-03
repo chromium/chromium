@@ -11,7 +11,9 @@
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -71,6 +73,9 @@ class FeatureProviderStatic {
     }
   }
 
+  FeatureProviderStatic(const FeatureProviderStatic&) = delete;
+  FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
+
   FeatureProvider* GetFeatures(const std::string& name) const {
     auto it = feature_providers_.find(name);
     if (it == feature_providers_.end())
@@ -80,8 +85,6 @@ class FeatureProviderStatic {
 
  private:
   std::map<std::string, std::unique_ptr<FeatureProvider>> feature_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureProviderStatic);
 };
 
 base::LazyInstance<FeatureProviderStatic>::Leaky g_feature_provider_static =
@@ -196,11 +199,11 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
 
 void FeatureProvider::AddFeature(base::StringPiece name,
                                  std::unique_ptr<Feature> feature) {
-  features_[name.as_string()] = std::move(feature);
+  features_[std::string(name)] = std::move(feature);
 }
 
 void FeatureProvider::AddFeature(base::StringPiece name, Feature* feature) {
-  features_[name.as_string()] = std::unique_ptr<Feature>(feature);
+  features_[std::string(name)] = base::WrapUnique(feature);
 }
 
 }  // namespace extensions

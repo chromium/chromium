@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/mac/availability.h"
+#include <os/availability.h>
+
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#import "ui/base/cocoa/touch_bar_forward_declarations.h"
 
 namespace {
 
@@ -63,7 +62,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
     return nil;
 
   bool buttonExists = false;
-  base::string16 buttonLabel;
+  std::u16string buttonLabel;
   bool isButtonEnabled = false;
   bool isButtonDefault = false;
   _bridge->host()->GetDialogButtonInfo(type, &buttonExists, &buttonLabel,

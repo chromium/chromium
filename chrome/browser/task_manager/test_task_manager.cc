@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/test_task_manager.h"
 
+#include "base/timer/mock_timer.h"
+
 namespace task_manager {
 
 TestTaskManager::TestTaskManager()
@@ -78,16 +80,12 @@ bool TestTaskManager::IsTaskOnBackgroundedProcess(TaskId task_id) const {
   return false;
 }
 
-const base::string16& TestTaskManager::GetTitle(TaskId task_id) const {
+const std::u16string& TestTaskManager::GetTitle(TaskId task_id) const {
   return title_;
 }
 
-const std::string& TestTaskManager::GetTaskNameForRappor(TaskId task_id) const {
-  return rappor_sample_;
-}
-
-base::string16 TestTaskManager::GetProfileName(TaskId task_id) const {
-  return base::string16();
+std::u16string TestTaskManager::GetProfileName(TaskId task_id) const {
+  return std::u16string();
 }
 
 const gfx::ImageSkia& TestTaskManager::GetIcon(TaskId task_id) const {

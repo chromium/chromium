@@ -22,6 +22,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageHandler
  public:
   explicit PipeControlMessageHandler(
       PipeControlMessageHandlerDelegate* delegate);
+
+  PipeControlMessageHandler(const PipeControlMessageHandler&) = delete;
+  PipeControlMessageHandler& operator=(const PipeControlMessageHandler&) =
+      delete;
+
   ~PipeControlMessageHandler() override;
 
   // Sets the description for this handler. Used only when reporting validation
@@ -46,8 +51,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageHandler
 
   std::string description_;
   PipeControlMessageHandlerDelegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeControlMessageHandler);
 };
 
 }  // namespace mojo

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/month_input_type.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -65,7 +66,7 @@ double MonthInputType::ValueAsDate() const {
 }
 
 String MonthInputType::SerializeWithDate(
-    const base::Optional<base::Time>& value) const {
+    const absl::optional<base::Time>& value) const {
   DateComponents date;
   if (!value ||
       !date.SetMillisecondsSinceEpochForMonth(value->ToJsTimeIgnoringNull()))
@@ -166,6 +167,10 @@ bool MonthInputType::IsValidFormat(bool has_year,
                                    bool has_minute,
                                    bool has_second) const {
   return has_year && has_month;
+}
+
+String MonthInputType::AriaLabelForPickerIndicator() const {
+  return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_MONTH_PICKER);
 }
 
 }  // namespace blink

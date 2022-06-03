@@ -10,9 +10,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/android/chrome_jni_headers/DownloadUtils_jni.h"
-#include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/download/android/jni_headers/MimeUtils_jni.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_utils.h"
@@ -32,15 +32,6 @@ namespace {
 int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
 const char kAutoResumptionSizeLimitParamName[] = "AutoResumptionSizeLimit";
 }  // namespace
-
-static ScopedJavaLocalRef<jstring> JNI_DownloadUtils_GetFailStateMessage(
-    JNIEnv* env,
-    jint fail_state) {
-  base::string16 message = OfflineItemUtils::GetFailStateMessage(
-      static_cast<offline_items_collection::FailState>(fail_state));
-  l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED, message);
-  return ConvertUTF16ToJavaString(env, message);
-}
 
 static jint JNI_DownloadUtils_GetResumeMode(
     JNIEnv* env,
@@ -80,16 +71,19 @@ void DownloadUtils::OpenDownload(download::DownloadItem* item,
   JNIEnv* env = base::android::AttachCurrentThread();
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
-  bool is_off_the_record =
-      browser_context ? browser_context->IsOffTheRecord() : false;
   std::string original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
                                  ? std::string()
                                  : item->GetOriginalUrl().spec();
+  base::android::ScopedJavaLocalRef<jobject> otr_profile_id;
+  if (browser_context && browser_context->IsOffTheRecord()) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    otr_profile_id = profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
+  }
 
   Java_DownloadUtils_openDownload(
       env, ConvertUTF8ToJavaString(env, item->GetTargetFilePath().value()),
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
-      ConvertUTF8ToJavaString(env, item->GetGuid()), is_off_the_record,
+      ConvertUTF8ToJavaString(env, item->GetGuid()), otr_profile_id,
       ConvertUTF8ToJavaString(env, original_url),
       ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
       static_cast<jint>(open_source));
@@ -127,7 +121,7 @@ void DownloadUtils::ShowDownloadManager(bool show_prefetched_content,
                                         DownloadOpenSource open_source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadUtils_showDownloadManager(
-      env, nullptr, nullptr, static_cast<jint>(open_source),
+      env, nullptr, nullptr, nullptr, static_cast<jint>(open_source),
       static_cast<jboolean>(show_prefetched_content));
 }
 

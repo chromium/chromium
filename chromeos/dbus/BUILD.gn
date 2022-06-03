@@ -2,40 +2,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("use_real_dbus_clients.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
-
-declare_args() {
-  # Instantiate real D-Bus clients instead of fakes.
-  use_real_dbus_clients = false
-}
 
 component("dbus") {
   output_name = "chromeos_dbus"  # Avoid conflict with //dbus
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   public_deps = [
     ":common",
+    "//chromeos/dbus/arc",
+    "//chromeos/dbus/cicerone",
+    "//chromeos/dbus/concierge",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
+    "//chromeos/dbus/init",
+    "//chromeos/dbus/lorgnette_manager",
+    "//chromeos/dbus/seneschal",
     "//chromeos/dbus/shill",
     "//dbus",
   ]
   deps = [
-    ":anomaly_detector_proto",
-    ":cicerone_proto",
-    ":concierge_proto",
     ":metrics_event_proto",
-    ":oobe_config_proto",
     ":plugin_vm_service_proto",
-    ":runtime_probe_proto",
-    ":seneschal_proto",
-    ":smbprovider_proto",
-    ":update_engine_proto",
     ":vm_applications_apps_proto",
-    ":vm_plugin_dispatcher_proto",
+    ":vm_disk_management_proto",
+    ":vm_permission_service_proto",
+    ":vm_sk_forwarding_proto",
     "//base",
+    "//chromeos/dbus/anomaly_detector",
+    "//chromeos/dbus/anomaly_detector:proto",
+    "//chromeos/dbus/cec_service",
+    "//chromeos/dbus/chunneld",
+    "//chromeos/dbus/chunneld:proto",
+    "//chromeos/dbus/cros_disks",
+    "//chromeos/dbus/easy_unlock",
+    "//chromeos/dbus/fwupd",
+    "//chromeos/dbus/gnubby",
+    "//chromeos/dbus/image_burner",
+    "//chromeos/dbus/image_loader",
+    "//chromeos/dbus/oobe_config",
+    "//chromeos/dbus/oobe_config:proto",
+    "//chromeos/dbus/runtime_probe",
+    "//chromeos/dbus/runtime_probe:proto",
+    "//chromeos/dbus/smbprovider",
+    "//chromeos/dbus/smbprovider:proto",
+    "//chromeos/dbus/update_engine",
+    "//chromeos/dbus/update_engine:proto",
+    "//chromeos/dbus/util",
+    "//chromeos/dbus/virtual_file_provider",
+    "//chromeos/dbus/vm_plugin_dispatcher",
+    "//chromeos/dbus/vm_plugin_dispatcher:proto",
     "//components/account_id",
     "//components/device_event_log",
     "//components/policy/proto",
@@ -43,110 +63,15 @@ component("dbus") {
     "//url",
   ]
   sources = [
-    "anomaly_detector_client.cc",
-    "anomaly_detector_client.h",
-    "arc_appfuse_provider_client.cc",
-    "arc_appfuse_provider_client.h",
-    "arc_camera_client.cc",
-    "arc_camera_client.h",
-    "arc_keymaster_client.cc",
-    "arc_keymaster_client.h",
-    "arc_midis_client.cc",
-    "arc_midis_client.h",
-    "arc_obb_mounter_client.cc",
-    "arc_obb_mounter_client.h",
-    "arc_oemcrypto_client.cc",
-    "arc_oemcrypto_client.h",
-    "cec_service_client.cc",
-    "cec_service_client.h",
-    "cicerone_client.cc",
-    "cicerone_client.h",
-    "concierge_client.cc",
-    "concierge_client.h",
-    "cros_disks_client.cc",
-    "cros_disks_client.h",
-    "dbus_client_implementation_type.h",
     "dbus_clients_browser.cc",
     "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "easy_unlock_client.cc",
-    "easy_unlock_client.h",
-    "fake_anomaly_detector_client.cc",
-    "fake_anomaly_detector_client.h",
-    "fake_arc_appfuse_provider_client.cc",
-    "fake_arc_appfuse_provider_client.h",
-    "fake_arc_camera_client.cc",
-    "fake_arc_camera_client.h",
-    "fake_arc_keymaster_client.cc",
-    "fake_arc_keymaster_client.h",
-    "fake_arc_midis_client.cc",
-    "fake_arc_midis_client.h",
-    "fake_arc_obb_mounter_client.cc",
-    "fake_arc_obb_mounter_client.h",
-    "fake_arc_oemcrypto_client.cc",
-    "fake_arc_oemcrypto_client.h",
-    "fake_cec_service_client.cc",
-    "fake_cec_service_client.h",
-    "fake_cicerone_client.cc",
-    "fake_cicerone_client.h",
-    "fake_concierge_client.cc",
-    "fake_concierge_client.h",
-    "fake_cros_disks_client.cc",
-    "fake_cros_disks_client.h",
-    "fake_easy_unlock_client.cc",
-    "fake_easy_unlock_client.h",
-    "fake_gnubby_client.cc",
-    "fake_gnubby_client.h",
-    "fake_image_burner_client.cc",
-    "fake_image_burner_client.h",
-    "fake_image_loader_client.cc",
-    "fake_image_loader_client.h",
-    "fake_lorgnette_manager_client.cc",
-    "fake_lorgnette_manager_client.h",
-    "fake_oobe_configuration_client.cc",
-    "fake_oobe_configuration_client.h",
-    "fake_runtime_probe_client.cc",
-    "fake_runtime_probe_client.h",
-    "fake_seneschal_client.cc",
-    "fake_seneschal_client.h",
-    "fake_smb_provider_client.cc",
-    "fake_smb_provider_client.h",
-    "fake_update_engine_client.cc",
-    "fake_update_engine_client.h",
-    "fake_virtual_file_provider_client.cc",
-    "fake_virtual_file_provider_client.h",
-    "fake_vm_plugin_dispatcher_client.cc",
-    "fake_vm_plugin_dispatcher_client.h",
-    "gnubby_client.cc",
-    "gnubby_client.h",
-    "image_burner_client.cc",
-    "image_burner_client.h",
-    "image_loader_client.cc",
-    "image_loader_client.h",
-    "lorgnette_manager_client.cc",
-    "lorgnette_manager_client.h",
-    "oobe_configuration_client.cc",
-    "oobe_configuration_client.h",
-    "runtime_probe_client.cc",
-    "runtime_probe_client.h",
-    "seneschal_client.cc",
-    "seneschal_client.h",
-    "smb_provider_client.cc",
-    "smb_provider_client.h",
-    "update_engine_client.cc",
-    "update_engine_client.h",
     "usb/fake_usbguard_client.cc",
     "usb/fake_usbguard_client.h",
     "usb/usbguard_client.cc",
     "usb/usbguard_client.h",
     "usb/usbguard_observer.h",
-    "util/version_loader.cc",
-    "util/version_loader.h",
-    "virtual_file_provider_client.cc",
-    "virtual_file_provider_client.h",
-    "vm_plugin_dispatcher_client.cc",
-    "vm_plugin_dispatcher_client.h",
   ]
 }
 
@@ -161,9 +86,7 @@ component("common") {
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
 
   all_dependent_configs = [ ":use_real_dbus_clients_config" ]
-  public_deps = [
-    "//chromeos/dbus/constants",
-  ]
+  public_deps = [ "//chromeos/dbus/constants" ]
 
   deps = [
     "//base",
@@ -175,9 +98,8 @@ component("common") {
     "blocking_method_caller.cc",
     "blocking_method_caller.h",
     "dbus_client.h",
-    "dbus_method_call_status.cc",
+    "dbus_client_implementation_type.h",
     "dbus_method_call_status.h",
-    "initialize_dbus_client.h",
     "pipe_reader.cc",
     "pipe_reader.h",
   ]
@@ -204,20 +126,39 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":dbus",
-    ":oobe_config_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/biod:test_support",
+    "//chromeos/dbus/cec_service:unit_tests",
+    "//chromeos/dbus/cros_disks:unit_tests",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:attestation_proto",
-    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/dlcservice:unit_tests",
+    "//chromeos/dbus/easy_unlock:unit_tests",
+    "//chromeos/dbus/fwupd:test_support",
+    "//chromeos/dbus/gnubby:unit_tests",
+    "//chromeos/dbus/hermes:test_support",
+    "//chromeos/dbus/ip_peripheral:test_support",
+    "//chromeos/dbus/lorgnette_manager:test_support",
+    "//chromeos/dbus/oobe_config:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
+    "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/rmad:test_support",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/shill:test_support",
+    "//chromeos/dbus/system_clock:unit_tests",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//chromeos/dbus/u2f",
+    "//chromeos/dbus/u2f:u2f_proto",
+    "//chromeos/dbus/update_engine:unit_tests",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/dbus/util:unit_tests",
     "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
@@ -226,32 +167,25 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/icu",
   ]
+  if (is_cfm) {
+    deps += [ "//chromeos/dbus/chromebox_for_meetings:unit_tests" ]
+  }
   sources = [
     "audio/cras_audio_client_unittest.cc",
     "authpolicy/fake_authpolicy_client_unittest.cc",
     "biod/biod_client_unittest.cc",
     "biod/fake_biod_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
-    "cec_service_client_unittest.cc",
-    "cros_disks_client_unittest.cc",
-    "cryptohome/fake_cryptohome_client_unittest.cc",
     "dbus_thread_manager_unittest.cc",
-    "fake_easy_unlock_client_unittest.cc",
-    "fake_gnubby_client_unittest.cc",
     "native_timer_unittest.cc",
-    "oobe_configuration_client_unittest.cc",
     "pipe_reader_unittest.cc",
-    "update_engine_client_unittest.cc",
-    "util/version_loader_unittest.cc",
+    "tpm_manager/tpm_manager_client_unittest.cc",
+    "userdataauth/arc_quota_client_unittest.cc",
+    "userdataauth/cryptohome_misc_client_unittest.cc",
+    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
+    "userdataauth/install_attributes_client_unittest.cc",
+    "userdataauth/userdataauth_client_unittest.cc",
   ]
-}
-
-proto_library("anomaly_detector_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/anomaly_detector/anomaly_detector.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/anomaly_detector"
 }
 
 proto_library("cicerone_proto") {
@@ -271,77 +205,47 @@ proto_library("concierge_proto") {
 }
 
 proto_library("metrics_event_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto",
-  ]
+  sources =
+      [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
 
   proto_out_dir = "chromeos/dbus/metrics_event"
 }
 
-proto_library("oobe_config_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/oobe_config/oobe_config.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/oobe_config"
-}
-
 proto_library("plugin_vm_service_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/plugin_vm_service/plugin_vm_service.proto",
-  ]
+  sources = [ "//third_party/cros_system_api/dbus/plugin_vm_service/plugin_vm_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/plugin_vm_service"
 }
 
-proto_library("runtime_probe_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/runtime_probe/runtime_probe.proto",
-  ]
-
-  # chromeos side uses full runtime, so we don't specify lite runtime in proto
-  # file, instead we specify lite runtime here.
-  cc_generator_options = "lite=true:"
-
-  proto_out_dir = "chromeos/dbus/runtime_probe"
-}
-
 proto_library("seneschal_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto",
-  ]
+  sources =
+      [ "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/seneschal"
 }
 
-proto_library("smbprovider_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/smbprovider/directory_entry.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/smbprovider"
-}
-
-proto_library("update_engine_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/update_engine/update_engine.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/update_engine"
-}
-
 proto_library("vm_applications_apps_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/vm_applications/apps.proto",
-  ]
+  sources = [ "//third_party/cros_system_api/dbus/vm_applications/apps.proto" ]
 
   proto_out_dir = "chromeos/dbus/vm_applications"
 }
 
-proto_library("vm_plugin_dispatcher_proto") {
+proto_library("vm_disk_management_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_disk_management/disk_management.proto" ]
+
+  proto_out_dir = "chromeos/dbus/vm_disk_management"
+}
+
+proto_library("vm_sk_forwarding_proto") {
   sources = [
-    "//third_party/cros_system_api/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.proto",
+    "//third_party/cros_system_api/dbus/vm_sk_forwarding/sk_forwarding.proto",
   ]
 
-  proto_out_dir = "chromeos/dbus/vm_plugin_dispatcher"
+  proto_out_dir = "chromeos/dbus/vm_sk_forwarding"
+}
+
+proto_library("vm_permission_service_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_permission_service/vm_permission_service.proto" ]
+
+  proto_out_dir = "chromeos/dbus/vm_permission_service"
 }

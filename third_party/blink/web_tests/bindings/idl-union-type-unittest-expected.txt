@@ -60,12 +60,12 @@ PASS unionTypesTest.nodeListOrElementOrNullArg(undefined) is "null or undefined 
 PASS unionTypesTest.nodeListOrElementOrNullArg(null) is "null or undefined is passed"
 PASS unionTypesTest.nodeListOrElementOrNullArg(nodeList) is "nodelist is passed"
 PASS unionTypesTest.nodeListOrElementOrNullArg(element) is "element is passed"
-PASS unionTypesTest.nodeListOrElementOrNullArg(3.14) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
-PASS unionTypesTest.nodeListOrElementOrNullArg("foo") threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
-PASS unionTypesTest.nodeListOrElementOrNullArg({}) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
-PASS unionTypesTest.nodeListOrElementOrNullArg([]) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
-PASS unionTypesTest.nodeListOrElementArg(undefined) threw exception TypeError: Failed to execute 'nodeListOrElementArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
-PASS unionTypesTest.nodeListOrElementArg(null) threw exception TypeError: Failed to execute 'nodeListOrElementArg' on 'UnionTypesTest': The provided value is not of type '(NodeList or Element)'.
+PASS unionTypesTest.nodeListOrElementOrNullArg(3.14) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
+PASS unionTypesTest.nodeListOrElementOrNullArg("foo") threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
+PASS unionTypesTest.nodeListOrElementOrNullArg({}) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
+PASS unionTypesTest.nodeListOrElementOrNullArg([]) threw exception TypeError: Failed to execute 'nodeListOrElementOrNullArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
+PASS unionTypesTest.nodeListOrElementArg(undefined) threw exception TypeError: Failed to execute 'nodeListOrElementArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
+PASS unionTypesTest.nodeListOrElementArg(null) threw exception TypeError: Failed to execute 'nodeListOrElementArg' on 'UnionTypesTest': The provided value is not of type '(Element or NodeList)'..
 PASS unionTypesTest.nodeListOrElementArg(nodeList) is "nodelist is passed"
 PASS unionTypesTest.nodeListOrElementArg(element) is "element is passed"
 

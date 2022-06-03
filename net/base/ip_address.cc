@@ -7,8 +7,11 @@
 #include <algorithm>
 #include <climits>
 
+#include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +21,8 @@
 
 namespace net {
 namespace {
+
+bool g_consider_loopback_ip_to_be_publicly_routable_for_testing = false;
 
 // The prefix for IPv6 mapped IPv4 addresses.
 // https://tools.ietf.org/html/rfc4291#section-2.5.5.2
@@ -116,9 +121,7 @@ bool ParseIPLiteralToBytes(const base::StringPiece& ip_literal,
   // a colon however, it must be an IPv6 address.
   if (ip_literal.find(':') != base::StringPiece::npos) {
     // GURL expects IPv6 hostnames to be surrounded with brackets.
-    std::string host_brackets = "[";
-    ip_literal.AppendToString(&host_brackets);
-    host_brackets.push_back(']');
+    std::string host_brackets = base::StrCat({"[", ip_literal, "]"});
     url::Component host_comp(0, host_brackets.size());
 
     // Try parsing the hostname as an IPv6 literal.
@@ -233,12 +236,22 @@ bool IPAddress::IsValid() const {
 }
 
 bool IPAddress::IsPubliclyRoutable() const {
+  if (g_consider_loopback_ip_to_be_publicly_routable_for_testing &&
+      IsLoopback()) {
+    return true;
+  }
+
   if (IsIPv4()) {
     return IsPubliclyRoutableIPv4(ip_address_);
   } else if (IsIPv6()) {
     return IsPubliclyRoutableIPv6(ip_address_);
   }
   return true;
+}
+
+// static
+void IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting() {
+  g_consider_loopback_ip_to_be_publicly_routable_for_testing = true;
 }
 
 bool IPAddress::IsZero() const {
@@ -425,7 +438,7 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                               prefix_length_in_bits);
 }
 
-bool ParseCIDRBlock(const std::string& cidr_literal,
+bool ParseCIDRBlock(base::StringPiece cidr_literal,
                     IPAddress* ip_address,
                     size_t* prefix_length_in_bits) {
   // We expect CIDR notation to match one of these two templates:

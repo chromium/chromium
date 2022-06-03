@@ -5,156 +5,155 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/media/router/media_router_feature.h"       // nogncheck
-#include "chrome/browser/media/router/mojo/media_router_desktop.h"  // nogncheck
-#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "build/chromeos_buildflags.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if defined(OS_CHROMEOS)
-#include "base/task/post_task.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
+#include "ash/webui/camera_app_ui/camera_app_ui.h"
+#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
+#include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#include "chromeos/language/language_packs/language_packs_impl.h"
+#include "chromeos/language/public/mojom/language_packs.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/chromeos_camera/camera_app_helper_impl.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/media_device_id.h"
-#include "content/public/browser/video_capture_service.h"
+#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
-#include "media/capture/video/chromeos/camera_app_device_provider_impl.h"
-#include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ash/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"  // nogncheck
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #endif
+
+#if BUILDFLAG(PLATFORM_CFM)
+#include "chromeos/components/chromebox_for_meetings/features/features.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
 namespace {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Resolves InputEngineManager receiver in InputMethodManager.
 void BindInputEngineManager(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
-  chromeos::input_method::InputMethodManager::Get()->ConnectInputEngineManager(
+  ash::input_method::InputMethodManager::Get()->ConnectInputEngineManager(
       std::move(receiver));
+}
+
+void BindLanguagePacks(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver) {
+  chromeos::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
+      std::move(receiver));
+}
+
+void BindMachineLearningService(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<
+        chromeos::machine_learning::mojom::MachineLearningService> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  chromeos::machine_learning::ServiceConnection::GetInstance()
+      ->BindMachineLearningService(std::move(receiver));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Translates the renderer-side source ID to video device id.
-void TranslateVideoDeviceId(
-    const std::string& salt,
-    const url::Origin& origin,
-    const std::string& source_id,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback) {
-  auto callback_on_io_thread = base::BindOnce(
-      [](const std::string& salt, const url::Origin& origin,
-         const std::string& source_id,
-         base::OnceCallback<void(const base::Optional<std::string>&)>
-             callback) {
-        content::GetMediaDeviceIDForHMAC(
-            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
-            std::move(origin), source_id, std::move(callback));
-      },
-      salt, std::move(origin), source_id, std::move(callback));
-  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                 std::move(callback_on_io_thread));
+void BindGoogleTtsStream(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver) {
+  TtsEngineExtensionObserverChromeOS::GetInstance(
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
+      ->BindGoogleTtsStream(std::move(receiver));
 }
 
-void HandleCameraResult(
-    content::BrowserContext* context,
-    uint32_t intent_id,
-    arc::mojom::CameraIntentAction action,
-    const std::vector<uint8_t>& data,
-    chromeos_camera::mojom::CameraAppHelper::HandleCameraResultCallback
-        callback) {
-  auto* intent_helper =
-      arc::ArcIntentHelperBridge::GetForBrowserContext(context);
-  intent_helper->HandleCameraResult(intent_id, action, data,
-                                    std::move(callback));
+void BindRemoteAppsFactory(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
+        pending_receiver) {
+  // |remote_apps_manager| will be null in non-managed guest sessions, but this
+  // is already checked in |RemoteAppsImpl::IsAllowed()|.
+  ash::RemoteAppsManager* remote_apps_manager =
+      ash::RemoteAppsManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  DCHECK(remote_apps_manager);
+  remote_apps_manager->BindInterface(std::move(pending_receiver));
 }
 
-// Connects to CameraAppDeviceProvider which could be used to get
-// CameraAppDevice from video capture service through CameraAppDeviceBridge.
-void ConnectToCameraAppDeviceProvider(
-    content::RenderFrameHost* source,
-    mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
-  mojo::PendingRemote<cros::mojom::CameraAppDeviceBridge> device_bridge;
-  auto device_bridge_receiver = device_bridge.InitWithNewPipeAndPassReceiver();
-
-  // Connects to CameraAppDeviceBridge from video_capture service.
-  content::GetVideoCaptureService().ConnectToCameraAppDeviceBridge(
-      std::move(device_bridge_receiver));
-
-  auto security_origin = source->GetLastCommittedOrigin();
-  auto media_device_id_salt =
-      source->GetProcess()->GetBrowserContext()->GetMediaDeviceIDSalt();
-
-  auto mapping_callback =
-      base::BindRepeating(&TranslateVideoDeviceId, media_device_id_salt,
-                          std::move(security_origin));
-
-  auto camera_app_device_provider =
-      std::make_unique<media::CameraAppDeviceProviderImpl>(
-          std::move(device_bridge), std::move(mapping_callback));
-  mojo::MakeSelfOwnedReceiver(std::move(camera_app_device_provider),
-                              std::move(receiver));
+void BindEnhancedNetworkTts(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
+        receiver) {
+  ash::enhanced_network_tts::EnhancedNetworkTtsImpl::GetInstance()
+      .BindReceiverAndURLFactory(
+          std::move(receiver),
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
+              ->GetURLLoaderFactory());
 }
 
-// Connects to CameraAppHelper that could handle camera intents.
-void ConnectToCameraAppHelper(
-    content::RenderFrameHost* source,
-    mojo::PendingReceiver<chromeos_camera::mojom::CameraAppHelper> receiver) {
-  auto handle_result_callback = base::BindRepeating(
-      &HandleCameraResult, source->GetProcess()->GetBrowserContext());
-  auto camera_app_helper =
-      std::make_unique<chromeos_camera::CameraAppHelperImpl>(
-          std::move(handle_result_callback));
-  mojo::MakeSelfOwnedReceiver(std::move(camera_app_helper),
-                              std::move(receiver));
-}
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 void PopulateChromeFrameBindersForExtension(
-    service_manager::BinderMapWithContext<content::RenderFrameHost*>*
-        binder_map,
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
     content::RenderFrameHost* render_frame_host,
     const Extension* extension) {
   DCHECK(extension);
-  auto* context = render_frame_host->GetProcess()->GetBrowserContext();
-  if (media_router::MediaRouterEnabled(context) &&
-      extension->permissions_data()->HasAPIPermission(
-          APIPermission::kMediaRouterPrivate)) {
-    binder_map->Add<media_router::mojom::MediaRouter>(
-        base::BindRepeating(&media_router::MediaRouterDesktop::BindToReceiver,
-                            base::RetainedRef(extension), context));
-  }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Registry InputEngineManager for official Google XKB Input only.
-  if (extension->id() == chromeos::extension_ime_util::kXkbExtensionId) {
+  if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
     binder_map->Add<chromeos::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
+    binder_map->Add<chromeos::language::mojom::LanguagePacks>(
+        base::BindRepeating(&BindLanguagePacks));
+    binder_map->Add<chromeos::machine_learning::mojom::MachineLearningService>(
+        base::BindRepeating(&BindMachineLearningService));
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if BUILDFLAG(PLATFORM_CFM)
+  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices) &&
+      chromeos::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
+    binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
+        base::BindRepeating(
+            [](content::RenderFrameHost* frame_host,
+               mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+                   receiver) {
+              chromeos::cfm::ServiceConnection::GetInstance()
+                  ->BindServiceContext(std::move(receiver));
+            }));
+  }
+#endif  // BUILDFLAG(PLATFORM_CFM)
+
   if (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kMediaPerceptionPrivate)) {
+          mojom::APIPermissionID::kMediaPerceptionPrivate)) {
     extensions::ExtensionsAPIClient* client =
         extensions::ExtensionsAPIClient::Get();
     extensions::MediaPerceptionAPIDelegate* delegate = nullptr;
@@ -172,14 +171,23 @@ void PopulateChromeFrameBindersForExtension(
     }
   }
 
-  if (extension->id().compare(extension_misc::kCameraAppId) == 0 ||
-      extension->id().compare(extension_misc::kCameraAppDevId) == 0) {
-    binder_map->Add<cros::mojom::CameraAppDeviceProvider>(
-        base::BindRepeating(&ConnectToCameraAppDeviceProvider));
-    binder_map->Add<chromeos_camera::mojom::CameraAppHelper>(
-        base::BindRepeating(&ConnectToCameraAppHelper));
+  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
+    binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
+        base::BindRepeating(&BindGoogleTtsStream));
   }
-#endif
+
+  if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
+    binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
+        base::BindRepeating(&BindRemoteAppsFactory));
+  }
+
+  // Limit the binding to EnhancedNetworkTts Extension.
+  if (features::IsEnhancedNetworkVoicesEnabled() &&
+      extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
+    binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
+        base::BindRepeating(&BindEnhancedNetworkTts));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace extensions

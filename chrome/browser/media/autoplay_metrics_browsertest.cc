@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -31,8 +33,6 @@ class AutoplayMetricsBrowserTest : public InProcessBrowserTest {
   void TryAutoplay(ukm::TestUkmRecorder& ukm_recorder,
                    const content::ToRenderFrameHost& adapter) {
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                          base::TimeDelta::FromSeconds(10));
     ukm_recorder.SetOnAddEntryCallback(Entry::kEntryName,
                                        run_loop.QuitClosure());
     EXPECT_TRUE(ExecuteScriptWithoutUserGesture(adapter.render_frame_host(),
@@ -56,15 +56,22 @@ class AutoplayMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* first_child() const {
-    return web_contents()->GetAllFrames()[1];
+    return ChildFrameAt(web_contents(), 0);
   }
 
   content::RenderFrameHost* second_child() const {
-    return web_contents()->GetAllFrames()[2];
+    return ChildFrameAt(first_child(), 0);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutoplayMetricsBrowserTest, RecordAutoplayAttemptUkm) {
+// Flaky on various platforms. https://crbug.com/1101841
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_RecordAutoplayAttemptUkm DISABLED_RecordAutoplayAttemptUkm
+#else
+#define MAYBE_RecordAutoplayAttemptUkm RecordAutoplayAttemptUkm
+#endif
+IN_PROC_BROWSER_TEST_F(AutoplayMetricsBrowserTest,
+                       MAYBE_RecordAutoplayAttemptUkm) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   GURL main_url(embedded_test_server()->GetURL("example.com",
                                                "/media/autoplay_iframe.html"));

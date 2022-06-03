@@ -7,13 +7,13 @@ test(function() {
   var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
   assert_equals(svg.suspendRedraw.length, 1);
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     svg.suspendRedraw();
   });
   svg.suspendRedraw(0);
 
   assert_equals(svg.unsuspendRedraw.length, 1);
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     svg.unsuspendRedraw();
   });
   svg.unsuspendRedraw(0);

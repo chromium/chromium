@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/host_resolver_resource.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/proxy/net_address_resource.h"
 #include "ppapi/shared_impl/tracked_callback.h"

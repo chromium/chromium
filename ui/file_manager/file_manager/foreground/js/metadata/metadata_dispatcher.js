@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
+
+import {ExifParser} from './exif_parser.js';
+import {Id3Parser} from './id3_parser.js';
+import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
+import {MetadataParser} from './metadata_parser.js';
+import {MpegParser} from './mpeg_parser.js';
+
 // All of these scripts could be imported with a single call to importScripts,
 // but then load and compile time errors would all be reported from the same
 // line. Note: update component_extension_resources.grd when adding new parsers.
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/metadata_parser.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/byte_reader.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/exif_parser.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_parsers.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/mpeg_parser.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/id3_parser.js');
+
 
 /**
  * Dispatches metadata requests to the correct parser.
@@ -195,7 +192,7 @@ class MetadataDispatcher {
 
       // Step two, turn the url into an entry.
       function getEntry(parser) {
-        webkitResolveLocalFileSystemURL(fileURL, entry => {
+        globalThis.webkitResolveLocalFileSystemURL(fileURL, entry => {
           nextStep(entry, parser);
         }, onError);
       },

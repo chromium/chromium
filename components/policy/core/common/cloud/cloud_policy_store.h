@@ -10,15 +10,17 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_export.h"
 
 namespace enterprise_management {
 class PolicyData;
+class PolicyFetchResponse;
 }
 
 namespace policy {
@@ -59,36 +61,67 @@ class POLICY_EXPORT CloudPolicyStore {
 
     // Called upon encountering errors.
     virtual void OnStoreError(CloudPolicyStore* store) = 0;
+
+    // Called upon store destruction.
+    virtual void OnStoreDestruction(CloudPolicyStore* store);
   };
 
   CloudPolicyStore();
+  CloudPolicyStore(const CloudPolicyStore&) = delete;
+  CloudPolicyStore& operator=(const CloudPolicyStore&) = delete;
   virtual ~CloudPolicyStore();
 
   // Indicates whether the store has been fully initialized. This is
   // accomplished by calling Load() after startup.
-  bool is_initialized() const { return is_initialized_; }
+  bool is_initialized() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_initialized_;
+  }
 
   base::WeakPtr<CloudExternalDataManager> external_data_manager() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return external_data_manager_;
   }
 
-  const PolicyMap& policy_map() const { return policy_map_; }
+  const PolicyMap& policy_map() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return policy_map_;
+  }
   bool has_policy() const {
-    return policy_.get() != NULL;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_EQ(policy_.get() != nullptr,
+              policy_fetch_response_.get() != nullptr);
+    return policy_.get() != nullptr;
   }
   const enterprise_management::PolicyData* policy() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return policy_.get();
   }
+  const enterprise_management::PolicyFetchResponse* policy_fetch_response()
+      const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return policy_fetch_response_.get();
+  }
   bool is_managed() const;
-  Status status() const { return status_; }
+  Status status() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return status_;
+  }
+  bool first_policies_loaded() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return first_policies_loaded_;
+  }
   CloudPolicyValidatorBase::Status validation_status() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return validation_result_.get() ? validation_result_->status
                                     : CloudPolicyValidatorBase::VALIDATION_OK;
   }
   const CloudPolicyValidatorBase::ValidationResult* validation_result() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return validation_result_.get();
   }
   const std::string& policy_signature_public_key() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return policy_signature_public_key_;
   }
 
@@ -119,7 +152,10 @@ class POLICY_EXPORT CloudPolicyStore {
 
   // The invalidation version of the last policy stored. This value can be read
   // by observers to determine which version of the policy is now available.
-  int64_t invalidation_version() { return invalidation_version_; }
+  int64_t invalidation_version() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return invalidation_version_;
+  }
 
   // Indicate that external data referenced by policies in this store is managed
   // by |external_data_manager|. The |external_data_manager| will be notified
@@ -127,18 +163,30 @@ class POLICY_EXPORT CloudPolicyStore {
   void SetExternalDataManager(
       base::WeakPtr<CloudExternalDataManager> external_data_manager);
 
-  // Replaces |policy_map_| and calls the registered observers, simulating a
-  // successful load of |policy_map| from persistent storage.
-  // TODO(bartfab): This override is only needed because there are no policies
-  // that reference external data and therefore, no ExternalDataFetchers in the
-  // |policy_map_|. Once the first such policy is added, use that policy in
-  // tests and remove the override.
-  void SetPolicyMapForTesting(const PolicyMap& policy_map);
+  // Sets whether or not the first policies for this policy store were loaded.
+  void SetFirstPoliciesLoaded(bool loaded);
+
+  // Test helper to set |policy_|.
+  void set_policy_data_for_testing(
+      std::unique_ptr<enterprise_management::PolicyData> policy);
 
  protected:
   // Invokes the corresponding callback on all registered observers.
   void NotifyStoreLoaded();
   void NotifyStoreError();
+  void NotifyStoreDestruction();
+
+  // Updates whether or not the first policies were loaded.
+  virtual void UpdateFirstPoliciesLoaded();
+
+  void SetPolicy(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>
+          policy_fetch_response,
+      std::unique_ptr<enterprise_management::PolicyData> policy_data);
+  void ResetPolicy();
+
+  // Assert non-concurrent usage in debug builds.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Manages external data referenced by policies.
   base::WeakPtr<CloudExternalDataManager> external_data_manager_;
@@ -146,18 +194,17 @@ class POLICY_EXPORT CloudPolicyStore {
   // Decoded version of the currently effective policy.
   PolicyMap policy_map_;
 
-  // Currently effective policy.
-  std::unique_ptr<enterprise_management::PolicyData> policy_;
-
   // Latest status code.
-  Status status_;
+  Status status_ = STATUS_OK;
+
+  bool first_policies_loaded_ = false;
 
   // Latest validation result.
   std::unique_ptr<CloudPolicyValidatorBase::ValidationResult>
       validation_result_;
 
   // The invalidation version of the last policy stored.
-  int64_t invalidation_version_;
+  int64_t invalidation_version_ = 0;
 
   // The public part of signing key that is used by the currently effective
   // policy. The subclasses should keep its value up to date to correspond to
@@ -169,11 +216,15 @@ class POLICY_EXPORT CloudPolicyStore {
  private:
   // Whether the store has completed asynchronous initialization, which is
   // triggered by calling Load().
-  bool is_initialized_;
+  bool is_initialized_ = false;
+
+  // Currently effective policy. Should be always in sync and kept private.
+  // Use `SetPolicy()` and `ResetPolicy()` to alter the fields.
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      policy_fetch_response_;
+  std::unique_ptr<enterprise_management::PolicyData> policy_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyStore);
 };
 
 }  // namespace policy

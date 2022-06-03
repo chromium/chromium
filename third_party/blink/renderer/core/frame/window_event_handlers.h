@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_EVENT_HANDLERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_EVENT_HANDLERS_H_
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -55,6 +56,7 @@ class WindowEventHandlers {
   DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(rejectionhandled,
                                                 kRejectionhandled)
   DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(storage, kStorage)
+  DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)
   DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(unhandledrejection,
                                                 kUnhandledrejection)
   DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(unload, kUnload)
@@ -62,4 +64,4 @@ class WindowEventHandlers {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_EVENT_HANDLERS_H_

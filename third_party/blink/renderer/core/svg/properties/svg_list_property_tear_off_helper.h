@@ -32,53 +32,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_TEAR_OFF_HELPER_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_property_tear_off.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
 
-template <typename ItemProperty>
-class ListItemPropertyTraits {
-  STATIC_ONLY(ListItemPropertyTraits);
-
- public:
-  typedef ItemProperty ItemPropertyType;
-  typedef typename ItemPropertyType::TearOffType ItemTearOffType;
-
-  static ItemPropertyType* GetValueForInsertionFromTearOff(
-      ItemTearOffType* new_item,
-      SVGAnimatedPropertyBase* binding) {
-    // |newItem| is immutable, OR
-    // |newItem| belongs to a SVGElement, but it does not belong to an animated
-    // list, e.g. "textElement.x.baseVal.appendItem(rectElement.width.baseVal)"
-    // Spec: If newItem is already in a list, then a new object is created with
-    // the same values as newItem and this item is inserted into the list.
-    // Otherwise, newItem itself is inserted into the list.
-    if (new_item->IsImmutable() || new_item->Target()->OwnerList() ||
-        new_item->ContextElement()) {
-      // We have to copy the incoming |newItem|,
-      // Otherwise we'll end up having two tearoffs that operate on the same
-      // SVGProperty. Consider the example below: SVGRectElements
-      // SVGAnimatedLength 'width' property baseVal points to the same tear off
-      // object that's inserted into SVGTextElements SVGAnimatedLengthList 'x'.
-      // textElement.x.baseVal.getItem(0).value += 150 would mutate the
-      // rectElement width _and_ the textElement x list. That's obviously wrong,
-      // take care of that.
-      return new_item->Target()->Clone();
-    }
-
-    new_item->Bind(binding);
-    return new_item->Target();
-  }
-};
-
+// This is an implementation of the SVG*List property spec:
+// https://svgwg.org/svg2-draft/types.html#ListInterfaces
 template <typename Derived, typename ListProperty>
 class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
  public:
   typedef ListProperty ListPropertyType;
   typedef typename ListPropertyType::ItemPropertyType ItemPropertyType;
   typedef typename ItemPropertyType::TearOffType ItemTearOffType;
-  typedef ListItemPropertyTraits<ItemPropertyType> ItemTraits;
 
   // SVG*List DOM interface:
 
@@ -101,16 +68,25 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
       return nullptr;
     }
     DCHECK(item);
-    ItemPropertyType* value = ToDerived()->Target()->Initialize(
-        GetValueForInsertionFromTearOff(item));
+    ItemPropertyType* value = GetValueForInsertionFromTearOff(item);
+    // Spec: Clears all existing current items from the list and re-initializes
+    // the list to hold the single item specified by the parameter.
+    ListPropertyType* list = ToDerived()->Target();
+    list->Clear();
+    list->Append(value);
     ToDerived()->CommitChange();
-    return CreateItemTearOff(value);
+    return AttachedItemTearOff(value);
   }
 
   ItemTearOffType* getItem(uint32_t index, ExceptionState& exception_state) {
-    ItemPropertyType* value =
-        ToDerived()->Target()->GetItem(index, exception_state);
-    return CreateItemTearOff(value);
+    ListPropertyType* list = ToDerived()->Target();
+    if (index >= list->length()) {
+      SVGPropertyTearOffBase::ThrowIndexSize(exception_state, index,
+                                             list->length());
+      return nullptr;
+    }
+    ItemPropertyType* value = list->at(index);
+    return AttachedItemTearOff(value);
   }
 
   ItemTearOffType* insertItemBefore(ItemTearOffType* item,
@@ -121,10 +97,18 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
       return nullptr;
     }
     DCHECK(item);
-    ItemPropertyType* value = ToDerived()->Target()->InsertItemBefore(
-        GetValueForInsertionFromTearOff(item), index);
+    ItemPropertyType* value = GetValueForInsertionFromTearOff(item);
+    ListPropertyType* list = ToDerived()->Target();
+    // Spec: If the index is greater than or equal to length, then the new item
+    // is appended to the end of the list.
+    index = std::min(index, list->length());
+    // Spec: Inserts a new item into the list at the specified position. The
+    // index of the item before which the new item is to be inserted. The first
+    // item is number 0. If the index is equal to 0, then the new item is
+    // inserted at the front of the list.
+    list->Insert(index, value);
     ToDerived()->CommitChange();
-    return CreateItemTearOff(value);
+    return AttachedItemTearOff(value);
   }
 
   ItemTearOffType* replaceItem(ItemTearOffType* item,
@@ -134,18 +118,25 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
       SVGPropertyTearOffBase::ThrowReadOnly(exception_state);
       return nullptr;
     }
+    ListPropertyType* list = ToDerived()->Target();
+    if (index >= list->length()) {
+      SVGPropertyTearOffBase::ThrowIndexSize(exception_state, index,
+                                             list->length());
+      return nullptr;
+    }
     DCHECK(item);
-    ItemPropertyType* value = ToDerived()->Target()->ReplaceItem(
-        GetValueForInsertionFromTearOff(item), index, exception_state);
+    ItemPropertyType* value = GetValueForInsertionFromTearOff(item);
+    list->Replace(index, value);
     ToDerived()->CommitChange();
-    return CreateItemTearOff(value);
+    return AttachedItemTearOff(value);
   }
 
-  bool AnonymousIndexedSetter(uint32_t index,
-                              ItemTearOffType* item,
-                              ExceptionState& exception_state) {
+  IndexedPropertySetterResult AnonymousIndexedSetter(
+      uint32_t index,
+      ItemTearOffType* item,
+      ExceptionState& exception_state) {
     replaceItem(item, index, exception_state);
-    return true;
+    return IndexedPropertySetterResult::kIntercepted;
   }
 
   ItemTearOffType* removeItem(uint32_t index, ExceptionState& exception_state) {
@@ -153,10 +144,16 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
       SVGPropertyTearOffBase::ThrowReadOnly(exception_state);
       return nullptr;
     }
-    ItemPropertyType* value =
-        ToDerived()->Target()->RemoveItem(index, exception_state);
+    ListPropertyType* list = ToDerived()->Target();
+    if (index >= list->length()) {
+      SVGPropertyTearOffBase::ThrowIndexSize(exception_state, index,
+                                             list->length());
+      return nullptr;
+    }
+    ItemPropertyType* value = list->at(index);
+    list->Remove(index);
     ToDerived()->CommitChange();
-    return CreateItemTearOff(value);
+    return DetachedItemTearOff(value);
   }
 
   ItemTearOffType* appendItem(ItemTearOffType* item,
@@ -166,10 +163,10 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
       return nullptr;
     }
     DCHECK(item);
-    ItemPropertyType* value = ToDerived()->Target()->AppendItem(
-        GetValueForInsertionFromTearOff(item));
+    ItemPropertyType* value = GetValueForInsertionFromTearOff(item);
+    ToDerived()->Target()->Append(value);
     ToDerived()->CommitChange();
-    return CreateItemTearOff(value);
+    return AttachedItemTearOff(value);
   }
 
  protected:
@@ -180,19 +177,39 @@ class SVGListPropertyTearOffHelper : public SVGPropertyTearOff<ListProperty> {
                                              binding,
                                              property_is_anim_val) {}
 
-  ItemPropertyType* GetValueForInsertionFromTearOff(ItemTearOffType* new_item) {
-    return ItemTraits::GetValueForInsertionFromTearOff(
-        new_item, ToDerived()->GetBinding());
-  }
-
-  ItemTearOffType* CreateItemTearOff(ItemPropertyType* value) {
-    if (!value)
-      return nullptr;
-
-    if (value->OwnerList() == ToDerived()->Target()) {
-      return MakeGarbageCollected<ItemTearOffType>(
-          value, ToDerived()->GetBinding(), ToDerived()->PropertyIsAnimVal());
+  ItemPropertyType* GetValueForInsertionFromTearOff(
+      ItemTearOffType* item_tear_off) {
+    ItemPropertyType* item = item_tear_off->Target();
+    // |new_item| is immutable, OR
+    // |new_item| belongs to a SVGElement, but it does not belong to an animated
+    // list, e.g. "textElement.x.baseVal.appendItem(rectElement.width.baseVal)"
+    // Spec: If |new_item| is already in a list, then a new object is created
+    // with the same values as |new_item| and this item is inserted into the
+    // list. Otherwise, |new_item| itself is inserted into the list.
+    if (item_tear_off->IsImmutable() || item->OwnerList() ||
+        item_tear_off->ContextElement()) {
+      // We have to copy the incoming |new_item|,
+      // otherwise we'll end up having two tear-offs that operate on the same
+      // SVGProperty. Consider the example below: SVGRectElements
+      // SVGAnimatedLength 'width' property baseVal points to the same tear-off
+      // object that's inserted into SVGTextElements SVGAnimatedLengthList 'x'.
+      // textElement.x.baseVal.getItem(0).value += 150 would mutate the
+      // rectElement width _and_ the textElement x list. That's obviously wrong,
+      // take care of that.
+      return item->Clone();
     }
+    item_tear_off->Bind(ToDerived()->GetBinding());
+    return item;
+  }
+  ItemTearOffType* AttachedItemTearOff(ItemPropertyType* value) {
+    DCHECK(value);
+    DCHECK_EQ(value->OwnerList(), ToDerived()->Target());
+    return MakeGarbageCollected<ItemTearOffType>(
+        value, ToDerived()->GetBinding(), ToDerived()->PropertyIsAnimVal());
+  }
+  ItemTearOffType* DetachedItemTearOff(ItemPropertyType* value) {
+    DCHECK(value);
+    DCHECK_EQ(value->OwnerList(), nullptr);
     return MakeGarbageCollected<ItemTearOffType>(value, nullptr,
                                                  kPropertyIsNotAnimVal);
   }

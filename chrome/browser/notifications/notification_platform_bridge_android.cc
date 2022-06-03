@@ -11,21 +11,23 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/strings/nullable_string16.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "chrome/android/chrome_jni_headers/ActionInfo_jni.h"
 #include "chrome/android/chrome_jni_headers/NotificationPlatformBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/common/notifications/notification_constants.h"
+#include "chrome/common/notifications/notification_operation.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,10 +48,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-// Value used to represent the absence of a button index following a user
-// interaction with a notification.
-constexpr int kNotificationInvalidButtonIndex = -1;
-
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.notifications
 enum NotificationActionType {
@@ -64,7 +62,7 @@ ScopedJavaLocalRef<jobject> JNI_NotificationPlatformBridge_ConvertToJavaBitmap(
   SkBitmap skbitmap = icon.AsBitmap();
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!skbitmap.drawsNothing())
-    j_bitmap = gfx::ConvertToJavaBitmap(&skbitmap);
+    j_bitmap = gfx::ConvertToJavaBitmap(skbitmap);
   return j_bitmap;
 }
 
@@ -171,7 +169,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   std::string webapk_package =
       ConvertJavaStringToUTF8(env, java_webapk_package);
 
-  base::Optional<base::string16> reply;
+  absl::optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
 
@@ -180,7 +178,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   regenerated_notification_infos_[notification_id] =
       RegeneratedNotificationInfo(scope_url, webapk_package);
 
-  base::Optional<int> action_index;
+  absl::optional<int> action_index;
   if (java_action_index != kNotificationInvalidButtonIndex)
     action_index = java_action_index;
 
@@ -191,11 +189,11 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
       JavaToNotificationType(java_notification_type);
 
   profile_manager->LoadProfile(
-      profile_id, incognito,
-      base::Bind(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                 NotificationCommon::OPERATION_CLICK, notification_type, origin,
-                 notification_id, std::move(action_index), std::move(reply),
-                 base::nullopt /* by_user */));
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kClick, notification_type, origin,
+                     notification_id, std::move(action_index), std::move(reply),
+                     absl::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::
@@ -240,12 +238,12 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
       JavaToNotificationType(java_notification_type);
 
   profile_manager->LoadProfile(
-      profile_id, incognito,
-      base::Bind(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                 NotificationCommon::OPERATION_CLOSE, notification_type,
-                 GURL(ConvertJavaStringToUTF8(env, java_origin)),
-                 notification_id, base::nullopt /* action index */,
-                 base::nullopt /* reply */, by_user));
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kClose, notification_type,
+                     GURL(ConvertJavaStringToUTF8(env, java_origin)),
+                     notification_id, absl::nullopt /* action index */,
+                     absl::nullopt /* reply */, by_user));
 }
 
 void NotificationPlatformBridgeAndroid::Display(
@@ -257,9 +255,9 @@ void NotificationPlatformBridgeAndroid::Display(
 
   JNIEnv* env = AttachCurrentThread();
 
-  GURL origin_url(notification.origin_url().GetOrigin());
+  GURL origin_url(notification.origin_url().DeprecatedGetOriginAsURL());
 
-  // TODO(knollr): Reconsider the meta-data system to try to remove this branch.
+  // TODO(peter): Reconsider the meta-data system to try to remove this branch.
   const PersistentNotificationMetadata* persistent_notification_metadata =
       PersistentNotificationMetadata::From(metadata.get());
 
@@ -276,6 +274,8 @@ void NotificationPlatformBridgeAndroid::Display(
       ConvertUTF8ToJavaString(env, notification.id());
   ScopedJavaLocalRef<jstring> j_origin =
       ConvertUTF8ToJavaString(env, origin_url.spec());
+  ScopedJavaLocalRef<jobject> android_profile =
+      ProfileAndroid::FromProfile(profile)->GetJavaObject();
   ScopedJavaLocalRef<jstring> title =
       ConvertUTF16ToJavaString(env, notification.title());
   ScopedJavaLocalRef<jstring> body =
@@ -284,17 +284,17 @@ void NotificationPlatformBridgeAndroid::Display(
   ScopedJavaLocalRef<jobject> image;
   SkBitmap image_bitmap = notification.image().AsBitmap();
   if (!image_bitmap.drawsNothing())
-    image = gfx::ConvertToJavaBitmap(&image_bitmap);
+    image = gfx::ConvertToJavaBitmap(image_bitmap);
 
   ScopedJavaLocalRef<jobject> notification_icon;
   SkBitmap notification_icon_bitmap = notification.icon().AsBitmap();
   if (!notification_icon_bitmap.drawsNothing())
-    notification_icon = gfx::ConvertToJavaBitmap(&notification_icon_bitmap);
+    notification_icon = gfx::ConvertToJavaBitmap(notification_icon_bitmap);
 
   ScopedJavaLocalRef<jobject> badge;
   SkBitmap badge_bitmap = notification.small_image().AsBitmap();
   if (!badge_bitmap.drawsNothing())
-    badge = gfx::ConvertToJavaBitmap(&badge_bitmap);
+    badge = gfx::ConvertToJavaBitmap(badge_bitmap);
 
   ScopedJavaLocalRef<jobjectArray> actions =
       ConvertToJavaActionInfos(notification.buttons());
@@ -309,13 +309,13 @@ void NotificationPlatformBridgeAndroid::Display(
 
   Java_NotificationPlatformBridge_displayNotification(
       env, java_object_, j_notification_id, j_notification_type, j_origin,
-      j_scope_url, j_profile_id, profile->IsOffTheRecord(), title, body, image,
+      j_scope_url, j_profile_id, android_profile, title, body, image,
       notification_icon, badge, vibration_pattern,
       notification.timestamp().ToJavaTime(), notification.renotify(),
       notification.silent(), actions);
 
   regenerated_notification_infos_[notification.id()] =
-      RegeneratedNotificationInfo(scope_url, base::nullopt);
+      RegeneratedNotificationInfo(scope_url, absl::nullopt);
 }
 
 void NotificationPlatformBridgeAndroid::Close(
@@ -358,8 +358,8 @@ void NotificationPlatformBridgeAndroid::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
   std::set<std::string> displayed_notifications;
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(std::move(callback), std::move(displayed_notifications),
                      false /* supports_synchronization */));
 }
@@ -381,7 +381,7 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     RegeneratedNotificationInfo(
         const GURL& service_worker_scope,
-        const base::Optional<std::string>& webapk_package)
+        const absl::optional<std::string>& webapk_package)
     : service_worker_scope(service_worker_scope),
       webapk_package(webapk_package) {}
 

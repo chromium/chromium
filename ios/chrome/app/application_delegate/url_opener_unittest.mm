@@ -6,17 +6,20 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #include "ios/chrome/app/application_delegate/startup_information.h"
+#include "ios/chrome/app/application_delegate/url_opener_params.h"
 #include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
+#import "ios/chrome/browser/ui/main/test/fake_connection_information.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/testing/open_url_context.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/mac/url_conversions.h"
 #include "testing/gtest_mac.h"
@@ -35,13 +38,18 @@ enum class ExternalFilesLoadedInWebStateFeature {
   Enabled,
 };
 
+#pragma mark - stubs and test fakes
+
 @interface StubStartupInformation : NSObject <StartupInformation>
 @end
 @implementation StubStartupInformation
-@synthesize isPresentingFirstRunUI = _isPresentingFirstRunUI;
+@synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
-@synthesize startupParameters = _startupParameters;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
+@synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize restoreHelper = _restoreHelper;
+
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return nil;
 }
@@ -62,7 +70,13 @@ enum class ExternalFilesLoadedInWebStateFeature {
 - (void)stopChromeMain {
 }
 
+- (NSDictionary*)launchOptions {
+  return @{};
+}
+
 @end
+
+#pragma mark -
 
 class URLOpenerTest : public PlatformTest {
  private:
@@ -77,6 +91,8 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
 
   id<StartupInformation> startupInformation =
       [[StubStartupInformation alloc] init];
+  id<ConnectionInformation> connectionInformation =
+      [[FakeConnectionInformation alloc] init];
 
   // The array with the different states to tests (active, not active).
   NSArray* applicationStatesToTest = @[ @YES, @NO ];
@@ -118,7 +134,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
   };
 
   NSArray* sourcesToTest = @[
-    [NSNull null], @"", @"com.google.GoogleMobile", @"com.google.GooglePlus",
+    @"", @"com.google.GoogleMobile", @"com.google.GooglePlus",
     @"com.google.SomeOtherProduct", @"com.apple.mobilesafari",
     @"com.othercompany.otherproduct"
   ];
@@ -136,41 +152,46 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
       for (id annotation in annotationsToTest) {
         for (NSNumber* applicationActive in applicationStatesToTest) {
           BOOL applicationIsActive = [applicationActive boolValue];
-
-          startupInformation.startupParameters = nil;
+          connectionInformation.startupParameters = nil;
           [tabOpener resetURL];
           NSURL* testUrl = urlString == [NSNull null]
                                ? nil
                                : [NSURL URLWithString:urlString];
           BOOL isValid = [[urlsToTest objectForKey:urlString] boolValue];
-          NSMutableDictionary* options = [[NSMutableDictionary alloc] init];
-          if (source != [NSNull null]) {
-            [options setObject:source
-                        forKey:UIApplicationOpenURLOptionsSourceApplicationKey];
-          }
-          if (annotation != [NSNull null]) {
-            [options setObject:annotation
-                        forKey:UIApplicationOpenURLOptionsAnnotationKey];
-          }
+
+          TestSceneOpenURLOptions* options =
+              [[TestSceneOpenURLOptions alloc] init];
+          options.sourceApplication = source;
+          options.annotation = annotation;
+
+          TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
+          context.URL = testUrl;
+          context.options = (id)options;  //< Unsafe cast intended.
+
+          URLOpenerParams* urlOpenerParams = [[URLOpenerParams alloc]
+              initWithUIOpenURLContext:(id)context];  //< Unsafe cast intended.
+
           ChromeAppStartupParameters* params = [ChromeAppStartupParameters
               newChromeAppStartupParametersWithURL:testUrl
                              fromSourceApplication:nil];
 
           // Action.
-          BOOL result = [URLOpener openURL:testUrl
+          BOOL result = [URLOpener openURL:urlOpenerParams
                          applicationActive:applicationIsActive
-                                   options:options
                                  tabOpener:tabOpener
-                        startupInformation:startupInformation];
+                     connectionInformation:connectionInformation
+                        startupInformation:startupInformation
+                               prefService:nil
+                                 initStage:InitStageFinal];
 
           // Tests.
           EXPECT_EQ(isValid, result);
           if (!applicationIsActive) {
             if (result)
               EXPECT_EQ([params externalURL],
-                        startupInformation.startupParameters.externalURL);
+                        connectionInformation.startupParameters.externalURL);
             else
-              EXPECT_EQ(nil, startupInformation.startupParameters);
+              EXPECT_EQ(nil, connectionInformation.startupParameters);
           } else if (result) {
             if ([params completeURL].SchemeIsFile()) {
               // External file:// URL will be loaded by WebState, which expects
@@ -187,7 +208,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
                         tabOpener.urlLoadParams.web_params.url);
             }
             tabOpener.completionBlock();
-            EXPECT_EQ(nil, startupInformation.startupParameters);
+            EXPECT_EQ(nil, connectionInformation.startupParameters);
           }
         }
       }
@@ -203,15 +224,18 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
     UIApplicationLaunchOptionsURLKey : url,
     UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
   };
+  URLOpenerParams* urlOpenerParams =
+      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
 
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  [[[startupInformationMock expect] andReturnValue:@NO] isPresentingFirstRunUI];
   [[startupInformationMock expect] resetFirstUserActionRecorder];
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   __block ChromeAppStartupParameters* params = nil;
-  [[startupInformationMock expect]
+  [[connectionInformationMock expect]
       setStartupParameters:[OCMArg checkWithBlock:^(
                                        ChromeAppStartupParameters* p) {
         params = p;
@@ -219,17 +243,18 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
         EXPECT_EQ(p.callerApp, CALLER_APP_APPLE_MOBILESAFARI);
         return YES;
       }]];
-  [[[startupInformationMock expect] andReturn:params] startupParameters];
+  [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
+  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
-  [URLOpener handleLaunchOptions:launchOptions
-               applicationActive:NO
+  [URLOpener handleLaunchOptions:urlOpenerParams
                        tabOpener:tabOpenerMock
+           connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -242,14 +267,17 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
   // objects.
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
 
   // Action.
   [URLOpener handleLaunchOptions:nil
-               applicationActive:YES
                        tabOpener:nil
+           connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with no
@@ -260,14 +288,18 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   NSDictionary* launchOptions = @{
     UIApplicationLaunchOptionsURLKey : url,
   };
+  URLOpenerParams* urlOpenerParams =
+      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
 
   MockTabOpener* tabOpenerMock = [[MockTabOpener alloc] init];
 
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  [[[startupInformationMock expect] andReturnValue:@NO] isPresentingFirstRunUI];
+  [[startupInformationMock expect] resetFirstUserActionRecorder];
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   __block ChromeAppStartupParameters* params = nil;
-  [[startupInformationMock expect]
+  [[connectionInformationMock expect]
       setStartupParameters:[OCMArg checkWithBlock:^(
                                        ChromeAppStartupParameters* p) {
         params = p;
@@ -275,20 +307,18 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
         EXPECT_EQ(p.callerApp, CALLER_APP_NOT_AVAILABLE);
         return YES;
       }]];
-#if DCHECK_IS_ON()
-  // This function is called in a DCHECK.
-  [[[startupInformationMock expect] andReturn:params] startupParameters];
-#endif
+  [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:YES];
+  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
-  [URLOpener handleLaunchOptions:launchOptions
-               applicationActive:YES
+  [URLOpener handleLaunchOptions:urlOpenerParams
                        tabOpener:tabOpenerMock
+           connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -300,19 +330,24 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
   NSDictionary* launchOptions = @{
     UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
   };
+  URLOpenerParams* urlOpenerParams =
+      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
 
   // Creates a mock with no stub. This test will pass only if we don't use these
   // objects.
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
 
   // Action.
-  [URLOpener handleLaunchOptions:launchOptions
-               applicationActive:YES
+  [URLOpener handleLaunchOptions:urlOpenerParams
                        tabOpener:nil
+           connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with a bad
@@ -324,26 +359,74 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
     UIApplicationLaunchOptionsURLKey : url,
     UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
   };
+  URLOpenerParams* urlOpenerParams =
+      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
 
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
   [[startupInformationMock expect] resetFirstUserActionRecorder];
-  [[[startupInformationMock expect] andReturnValue:@NO] isPresentingFirstRunUI];
-  [[startupInformationMock expect] setStartupParameters:[OCMArg isNil]];
-  [[[startupInformationMock expect] andReturn:nil] startupParameters];
+
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
+  [[connectionInformationMock expect] setStartupParameters:[OCMArg isNil]];
+  [[[connectionInformationMock expect] andReturn:nil] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
+  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
-  [URLOpener handleLaunchOptions:launchOptions
-               applicationActive:NO
+  [URLOpener handleLaunchOptions:urlOpenerParams
                        tabOpener:tabOpenerMock
+           connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
+}
+
+// Tests URL is not opened if the FRE is presented.
+TEST_F(URLOpenerTest, PresentingFirstRunUI) {
+  // Setup.
+  NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
+  NSDictionary* launchOptions = @{
+    UIApplicationLaunchOptionsURLKey : url,
+    UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
+  };
+  URLOpenerParams* urlOpenerParams =
+      [[URLOpenerParams alloc] initWithLaunchOptions:launchOptions];
+  id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
+  id startupInformationMock =
+      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
+  __block ChromeAppStartupParameters* params = nil;
+  [[connectionInformationMock expect]
+      setStartupParameters:[OCMArg checkWithBlock:^(
+                                       ChromeAppStartupParameters* p) {
+        params = p;
+        EXPECT_NSEQ(net::NSURLWithGURL(p.completeURL), url);
+        EXPECT_EQ(p.callerApp, CALLER_APP_APPLE_MOBILESAFARI);
+        return YES;
+      }]];
+  [[[connectionInformationMock expect] andReturn:params] startupParameters];
+
+  id appStateMock = [OCMockObject mockForClass:[AppState class]];
+  [[[appStateMock stub] andReturnValue:@(InitStageFirstRun)] initStage];
+
+  // Action.
+  [URLOpener handleLaunchOptions:urlOpenerParams
+                       tabOpener:tabOpenerMock
+           connectionInformation:connectionInformationMock
+              startupInformation:startupInformationMock
+                        appState:appStateMock
+                     prefService:nil];
+
+  // Test.
+  EXPECT_OCMOCK_VERIFY(tabOpenerMock);
+  EXPECT_OCMOCK_VERIFY(startupInformationMock);
+  EXPECT_OCMOCK_VERIFY(appStateMock);
 }

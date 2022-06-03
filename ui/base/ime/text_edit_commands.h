@@ -56,6 +56,11 @@ enum class TextEditCommand {
   MOVE_WORD_LEFT_AND_MODIFY_SELECTION,
   MOVE_WORD_RIGHT,
   MOVE_WORD_RIGHT_AND_MODIFY_SELECTION,
+  // On Mac, scroll commands have different shortcuts as move commands.
+  SCROLL_PAGE_DOWN,
+  SCROLL_PAGE_UP,
+  SCROLL_TO_BEGINNING_OF_DOCUMENT,
+  SCROLL_TO_END_OF_DOCUMENT,
   UNDO,
   REDO,
   CUT,
@@ -71,6 +76,13 @@ enum class TextEditCommand {
   // LAST_COMMAND must be the last one. Add new command before it.
   LAST_COMMAND,
   INVALID_COMMAND = LAST_COMMAND,
+
+  // Below are commands on Mac with default system key bindings that are
+  // not supported yet.
+  //
+  // centerSelectionInVisibleArea                      Ctrl + L
+  // complete                                          Option + Esc
+  // deleteBackwardByDecomposingPreviousCharacter      Ctrl + Delete
 };
 
 }  // namespace ui

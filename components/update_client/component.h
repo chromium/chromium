@@ -14,15 +14,14 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -36,8 +35,8 @@ class Configurator;
 struct CrxUpdateItem;
 struct UpdateContext;
 
-// Describes a CRX component managed by the UpdateEngine. Each |Component| is
-// associated with an UpdateContext.
+// Describes a CRX component managed by the UpdateEngine. Each instance of
+// this class is associated with one instance of UpdateContext.
 class Component {
  public:
   using Events = UpdateClient::Observer::Events;
@@ -45,6 +44,8 @@ class Component {
   using CallbackHandleComplete = base::OnceCallback<void()>;
 
   Component(const UpdateContext& update_context, const std::string& id);
+  Component(const Component&) = delete;
+  Component& operator=(const Component&) = delete;
   ~Component();
 
   // Handles the current state of the component and makes it transition
@@ -54,13 +55,20 @@ class Component {
   CrxUpdateItem GetCrxUpdateItem() const;
 
   // Sets the uninstall state for this component.
-  void Uninstall(const base::Version& cur_version, int reason);
+  void Uninstall(const CrxComponent& crx_component, int reason);
+
+  // Set the registration state for this component.
+  void Registration(const CrxComponent& crx_component);
 
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(
-      const base::Optional<ProtocolParser::Result>& result,
+      const absl::optional<ProtocolParser::Result>& result,
       ErrorCategory error_category,
       int error);
+
+  // Called by the UpdateEngine when a component enters a wait for throttling
+  // purposes.
+  void NotifyWait();
 
   // Returns true if the component has reached a final state and no further
   // handling and state transitions are possible.
@@ -76,7 +84,7 @@ class Component {
 
   std::string id() const { return id_; }
 
-  const base::Optional<CrxComponent>& crx_component() const {
+  const absl::optional<CrxComponent>& crx_component() const {
     return crx_component_;
   }
   void set_crx_component(const CrxComponent& crx_component) {
@@ -165,7 +173,7 @@ class Component {
     Component& component() { return component_; }
     const Component& component() const { return component_; }
 
-    base::ThreadChecker thread_checker_;
+    SEQUENCE_CHECKER(sequence_checker_);
 
     const ComponentState state_;
 
@@ -179,69 +187,69 @@ class Component {
   class StateNew : public State {
    public:
     explicit StateNew(Component* component);
+    StateNew(const StateNew&) = delete;
+    StateNew& operator=(const StateNew&) = delete;
     ~StateNew() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    DISALLOW_COPY_AND_ASSIGN(StateNew);
   };
 
   class StateChecking : public State {
    public:
     explicit StateChecking(Component* component);
+    StateChecking(const StateChecking&) = delete;
+    StateChecking& operator=(const StateChecking&) = delete;
     ~StateChecking() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    void UpdateCheckComplete();
-
-    DISALLOW_COPY_AND_ASSIGN(StateChecking);
   };
 
   class StateUpdateError : public State {
    public:
     explicit StateUpdateError(Component* component);
+    StateUpdateError(const StateUpdateError&) = delete;
+    StateUpdateError& operator=(const StateUpdateError&) = delete;
     ~StateUpdateError() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    DISALLOW_COPY_AND_ASSIGN(StateUpdateError);
   };
 
   class StateCanUpdate : public State {
    public:
     explicit StateCanUpdate(Component* component);
+    StateCanUpdate(const StateCanUpdate&) = delete;
+    StateCanUpdate& operator=(const StateCanUpdate&) = delete;
     ~StateCanUpdate() override;
 
    private:
     // State overrides.
     void DoHandle() override;
     bool CanTryDiffUpdate() const;
-
-    DISALLOW_COPY_AND_ASSIGN(StateCanUpdate);
   };
 
   class StateUpToDate : public State {
    public:
     explicit StateUpToDate(Component* component);
+    StateUpToDate(const StateUpToDate&) = delete;
+    StateUpToDate& operator=(const StateUpToDate&) = delete;
     ~StateUpToDate() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    DISALLOW_COPY_AND_ASSIGN(StateUpToDate);
   };
 
   class StateDownloadingDiff : public State {
    public:
     explicit StateDownloadingDiff(Component* component);
+    StateDownloadingDiff(const StateDownloadingDiff&) = delete;
+    StateDownloadingDiff& operator=(const StateDownloadingDiff&) = delete;
     ~StateDownloadingDiff() override;
 
    private:
@@ -251,20 +259,19 @@ class Component {
     // Called when progress is being made downloading a CRX. Can be called
     // multiple times due to how the CRX downloader switches between
     // different downloaders and fallback urls.
-    void DownloadProgress(const std::string& id);
+    void DownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
-    void DownloadComplete(const std::string& id,
-                          const CrxDownloader::Result& download_result);
+    void DownloadComplete(const CrxDownloader::Result& download_result);
 
     // Downloads updates for one CRX id only.
-    std::unique_ptr<CrxDownloader> crx_downloader_;
-
-    DISALLOW_COPY_AND_ASSIGN(StateDownloadingDiff);
+    scoped_refptr<CrxDownloader> crx_downloader_;
   };
 
   class StateDownloading : public State {
    public:
     explicit StateDownloading(Component* component);
+    StateDownloading(const StateDownloading&) = delete;
+    StateDownloading& operator=(const StateDownloading&) = delete;
     ~StateDownloading() override;
 
    private:
@@ -274,76 +281,91 @@ class Component {
     // Called when progress is being made downloading a CRX. Can be called
     // multiple times due to how the CRX downloader switches between
     // different downloaders and fallback urls.
-    void DownloadProgress(const std::string& id);
+    void DownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
-    void DownloadComplete(const std::string& id,
-                          const CrxDownloader::Result& download_result);
+    void DownloadComplete(const CrxDownloader::Result& download_result);
 
     // Downloads updates for one CRX id only.
-    std::unique_ptr<CrxDownloader> crx_downloader_;
-
-    DISALLOW_COPY_AND_ASSIGN(StateDownloading);
+    scoped_refptr<CrxDownloader> crx_downloader_;
   };
 
   class StateUpdatingDiff : public State {
    public:
     explicit StateUpdatingDiff(Component* component);
+    StateUpdatingDiff(const StateUpdatingDiff&) = delete;
+    StateUpdatingDiff& operator=(const StateUpdatingDiff&) = delete;
     ~StateUpdatingDiff() override;
 
    private:
     // State overrides.
     void DoHandle() override;
 
+    void InstallProgress(int install_progress);
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
                          int extra_code1);
-
-    DISALLOW_COPY_AND_ASSIGN(StateUpdatingDiff);
   };
 
   class StateUpdating : public State {
    public:
     explicit StateUpdating(Component* component);
+    StateUpdating(const StateUpdating&) = delete;
+    StateUpdating& operator=(const StateUpdating&) = delete;
     ~StateUpdating() override;
 
    private:
     // State overrides.
     void DoHandle() override;
 
+    void InstallProgress(int install_progress);
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
                          int extra_code1);
-
-    DISALLOW_COPY_AND_ASSIGN(StateUpdating);
   };
 
   class StateUpdated : public State {
    public:
     explicit StateUpdated(Component* component);
+    StateUpdated(const StateUpdated&) = delete;
+    StateUpdated& operator=(const StateUpdated&) = delete;
     ~StateUpdated() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    DISALLOW_COPY_AND_ASSIGN(StateUpdated);
   };
 
   class StateUninstalled : public State {
    public:
     explicit StateUninstalled(Component* component);
+    StateUninstalled(const StateUninstalled&) = delete;
+    StateUninstalled& operator=(const StateUninstalled&) = delete;
     ~StateUninstalled() override;
 
    private:
     // State overrides.
     void DoHandle() override;
+  };
 
-    DISALLOW_COPY_AND_ASSIGN(StateUninstalled);
+  class StateRegistration : public State {
+   public:
+    explicit StateRegistration(Component* component);
+
+    StateRegistration(const StateRegistration&) = delete;
+    StateRegistration& operator=(const StateRegistration&) = delete;
+
+    ~StateRegistration() override;
+
+   private:
+    // State overrides.
+    void DoHandle() override;
   };
 
   class StateRun : public State {
    public:
     explicit StateRun(Component* component);
+    StateRun(const StateRun&) = delete;
+    StateRun& operator=(const StateRun&) = delete;
     ~StateRun() override;
 
    private:
@@ -355,8 +377,6 @@ class Component {
     // Runs the action referred by the |action_run_| member of the Component
     // class.
     std::unique_ptr<ActionRunner> action_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(StateRun);
   };
 
   // Returns true is the update payload for this component can be downloaded
@@ -370,6 +390,9 @@ class Component {
   void ChangeState(std::unique_ptr<State> next_state);
 
   // Notifies registered observers about changes in the state of the component.
+  // If an UpdateClient::CrxStateChangeCallback is provided as an argument to
+  // UpdateClient::Install or UpdateClient::Update function calls, then the
+  // callback is invoked as well.
   void NotifyObservers(Events event) const;
 
   void SetParseResult(const ProtocolParser::Result& result);
@@ -380,14 +403,17 @@ class Component {
   base::Value MakeEventDownloadMetrics(
       const CrxDownloader::DownloadMetrics& download_metrics) const;
   base::Value MakeEventUninstalled() const;
+  base::Value MakeEventRegistration() const;
   base::Value MakeEventActionRun(bool succeeded,
                                  int error_code,
                                  int extra_code1) const;
 
-  base::ThreadChecker thread_checker_;
+  std::unique_ptr<CrxInstaller::InstallParams> install_params() const;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const std::string id_;
-  base::Optional<CrxComponent> crx_component_;
+  absl::optional<CrxComponent> crx_component_;
 
   // The status of the updatecheck response.
   std::string status_;
@@ -424,6 +450,17 @@ class Component {
 
   base::FilePath crx_path_;
 
+  // The byte counts below are valid for the current url being fetched.
+  // |total_bytes| is equal to the size of the CRX file and |downloaded_bytes|
+  // represents how much has been downloaded up to that point. A value of -1
+  // means that the byte count is unknown.
+  int64_t downloaded_bytes_ = -1;
+  int64_t total_bytes_ = -1;
+
+  // Install progress, in the range of [0, 100]. A value of -1 means that the
+  // progress is unknown.
+  int install_progress_ = -1;
+
   // The error information for full and differential updates.
   // The |error_category| contains a hint about which module in the component
   // updater generated the error. The |error_code| constains the error and
@@ -437,6 +474,14 @@ class Component {
   int diff_error_code_ = 0;
   int diff_extra_code1_ = 0;
 
+  // Contains app-specific custom response attributes from the server, sent in
+  // the last update check.
+  std::map<std::string, std::string> custom_attrs_;
+
+  // Contains the optional |run| and |arguments| values in the update response
+  // manifest. This data is provided as an argument to the |Install| call.
+  absl::optional<CrxInstaller::InstallParams> install_params_;
+
   // Contains the events which are therefore serialized in the requests.
   std::vector<base::Value> events_;
 
@@ -444,15 +489,11 @@ class Component {
   std::unique_ptr<State> state_;
   const UpdateContext& update_context_;
 
-  base::OnceClosure update_check_complete_;
-
   ComponentState previous_state_ = ComponentState::kLastStatus;
 
   // True if this component has reached a final state because all its states
   // have been handled.
   bool is_handled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Component);
 };
 
 using IdToComponentPtrMap = std::map<std::string, std::unique_ptr<Component>>;

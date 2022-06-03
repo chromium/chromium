@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -33,7 +32,7 @@ class MEDIA_GPU_EXPORT PromotionHintAggregator {
   };
 
   // Pass the hint by value to permit thread-hopping callbacks.
-  using NotifyPromotionHintCB = base::Callback<void(Hint hint)>;
+  using NotifyPromotionHintCB = base::RepeatingCallback<void(Hint hint)>;
 
   virtual ~PromotionHintAggregator() = default;
 

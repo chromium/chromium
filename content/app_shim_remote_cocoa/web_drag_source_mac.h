@@ -52,6 +52,9 @@ CONTENT_EXPORT
   // Our pasteboard.
   base::scoped_nsobject<NSPasteboard> _pasteboard;
 
+  // Change count associated with this pasteboard owner change.
+  int _changeCount;
+
   // A mask of the allowed drag operations.
   NSDragOperation _dragOperationMask;
 
@@ -68,24 +71,19 @@ CONTENT_EXPORT
 // Initialize a WebDragSource object for a drag (originating on the given
 // contentsView and with the given dropData and pboard). Fill the pasteboard
 // with data types appropriate for dropData.
-- (id)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-              view:(NSView*)contentsView
-          dropData:(const content::DropData*)dropData
-             image:(NSImage*)image
-            offset:(NSPoint)offset
-        pasteboard:(NSPasteboard*)pboard
- dragOperationMask:(NSDragOperation)dragOperationMask;
+- (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
+                        view:(NSView*)contentsView
+                    dropData:(const content::DropData*)dropData
+                       image:(NSImage*)image
+                      offset:(NSPoint)offset
+                  pasteboard:(NSPasteboard*)pboard
+           dragOperationMask:(NSDragOperation)dragOperationMask;
 
 // Call when the web contents is gone.
 - (void)clearHostAndWebContentsView;
 
 // Returns a mask of the allowed drag operations.
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
-
-// Call when asked to do a lazy write to the pasteboard; hook up to
-// -pasteboard:provideDataForType: (on the contentsView).
-- (void)lazyWriteToPasteboard:(NSPasteboard*)pboard
-                      forType:(NSString*)type;
 
 // Start the drag (on the originally provided contentsView); can do this right
 // after -initWithContentsView:....
@@ -95,6 +93,9 @@ CONTENT_EXPORT
 // -draggedImage:endedAt:operation:.
 - (void)endDragAt:(NSPoint)screenPoint
         operation:(NSDragOperation)operation;
+
+// Remove this WebDragSource as the owner of the drag pasteboard.
+- (void)clearPasteboard;
 
 // Call to drag a promised file to the given path (should be called before
 // -endDragAt:...); hook up to -namesOfPromisedFilesDroppedAtDestination:.

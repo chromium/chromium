@@ -12,15 +12,15 @@
 
       //# sourceURL=console-viewport-stick-to-bottom-onload.js
     `);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
-  var viewport = Console.ConsoleView.instance()._viewport;
+  var viewport = Console.ConsoleView.instance().viewport;
   ConsoleTestRunner.waitForConsoleMessagesPromise(150);
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 
   TestRunner.addResult(
-      'Is at bottom: ' + viewport.element.isScrolledToBottom() + ', should stick: ' + viewport.stickToBottom());
+    'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom());
   TestRunner.completeTest();
 })();

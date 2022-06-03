@@ -8,11 +8,21 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/common/content_export.h"
-
-class GURL;
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
+
+class WebBundleURLLoaderFactory;
+
+using WebBundleDoneCallback = base::OnceCallback<void(
+    const GURL& target_inner_url,
+    std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory)>;
+
 namespace web_bundle_utils {
 
 // The "application/webbundle" MIME type must have a "v" parameter whose value
@@ -32,6 +42,23 @@ namespace web_bundle_utils {
 // https://android.googlesource.com/platform/frameworks/base/+/4ab9511/services/core/java/com/android/server/IntentResolver.java#398
 constexpr char kWebBundleFileMimeTypeWithoutParameters[] =
     "application/webbundle";
+
+constexpr char kNoSniffErrorMessage[] =
+    "Web Bundle response must have \"X-Content-Type-Options: nosniff\" header.";
+
+constexpr char kNoPrimaryUrlErrorMessage[] =
+    "Web Bundle is missing the Primary URL to navigate to.";
+
+extern const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
+
+// Adds |error_message| to the console and calls OnComplete() of |client|.
+void CompleteWithInvalidWebBundleError(
+    mojo::Remote<network::mojom::URLLoaderClient> client,
+    int frame_tree_node_id,
+    const std::string& error_message);
+
+std::string GetMetadataParseErrorMessage(
+    const web_package::mojom::BundleMetadataParseErrorPtr& metadata_error);
 
 // On Android, returns true if the url scheme is file or content. On other
 // platforms, returns true if the url scheme is file.

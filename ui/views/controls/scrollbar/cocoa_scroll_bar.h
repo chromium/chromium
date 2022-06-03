@@ -6,12 +6,10 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_COCOA_SCROLL_BAR_H_
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #import "components/remote_cocoa/app_shim/views_scrollbar_bridge.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/mac/cocoa_scrollbar_painter.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/views_export.h"
 
@@ -28,6 +26,10 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   METADATA_HEADER(CocoaScrollBar);
 
   explicit CocoaScrollBar(bool horizontal);
+
+  CocoaScrollBar(const CocoaScrollBar&) = delete;
+  CocoaScrollBar& operator=(const CocoaScrollBar&) = delete;
+
   ~CocoaScrollBar() override;
 
   // ScrollBar:
@@ -40,6 +42,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   void OnScrollerStyleChanged() override;
 
   // View:
+  bool GetCanProcessEventsWithinSubtree() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -62,7 +65,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   bool IsScrollbarFullyHidden() const;
 
   // Get the parameters for painting.
-  gfx::CocoaScrollbarPainter::Params GetPainterParams() const;
+  ui::NativeTheme::ExtraParams GetPainterParams() const;
 
  protected:
   // ScrollBar:
@@ -127,8 +130,6 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
 
   // The bridge for NSScroller.
   base::scoped_nsobject<ViewsScrollbarBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBar);
 };
 
 }  // namespace views

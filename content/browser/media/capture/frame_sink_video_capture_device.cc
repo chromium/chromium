@@ -5,32 +5,38 @@
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/token.h"
+#include "build/build_config.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
-#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/device_service.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
+#if !defined(OS_ANDROID)
+#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#endif
+
 namespace content {
 
 namespace {
 
+#if !defined(OS_ANDROID)
 constexpr int32_t kMouseCursorStackingIndex = 1;
+#endif
 
 // Transfers ownership of an object to a std::unique_ptr with a custom deleter
 // that ensures the object is destroyed on the UI BrowserThread.
@@ -44,7 +50,7 @@ std::unique_ptr<T, BrowserThread::DeleteOnUIThread> RescopeToUIThread(
 // complete. VideoFrameReceiver requires owning an object that it will destroy
 // once consumption is complete. This class adapts between that scheme and
 // running a "done callback" to notify that consumption is complete.
-class ScopedFrameDoneHelper
+class ScopedFrameDoneHelper final
     : public base::ScopedClosureRunner,
       public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
@@ -59,13 +65,34 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
+viz::mojom::SubTargetPtr ToSubTargetPtr(
+    const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target) {
+  // Recall that either |subtree_capture_id| or |crop_id| is set,
+  // or neither, but never both. This was verified in |target|'s ctor,
+  // but is reiterated here for clarity's sake.
+  DCHECK(!target.subtree_capture_id.is_valid() || target.crop_id.is_zero());
+
+  if (target.subtree_capture_id.is_valid()) {
+    return viz::mojom::SubTarget::NewSubtreeCaptureId(
+        target.subtree_capture_id);
+  }
+  if (!target.crop_id.is_zero()) {
+    return viz::mojom::SubTarget::NewRegionCaptureCropId(target.crop_id);
+  }
+  return nullptr;
+}
+
 }  // namespace
 
+#if !defined(OS_ANDROID)
 FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice()
     : cursor_controller_(
           RescopeToUIThread(std::make_unique<MouseCursorOverlayController>())) {
   DCHECK(cursor_controller_);
 }
+#else
+FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice() = default;
+#endif
 
 FrameSinkVideoCaptureDevice::~FrameSinkVideoCaptureDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,7 +129,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   capturer_->SetFormat(capture_params_.requested_format.pixel_format,
                        gfx::ColorSpace::CreateREC709());
   capturer_->SetMinCapturePeriod(
-      base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
+      base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
           capture_params_.requested_format.frame_rate)));
   const auto& constraints = capture_params_.SuggestConstraints();
@@ -110,16 +137,18 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.max_frame_size,
                                       constraints.fixed_aspect_ratio);
 
-  if (target_.is_valid()) {
-    capturer_->ChangeTarget(target_);
+  if (target_.frame_sink_id.is_valid()) {
+    capturer_->ChangeTarget(target_.frame_sink_id, ToSubTargetPtr(target_));
   }
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+#if !defined(OS_ANDROID)
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&MouseCursorOverlayController::Start,
                      cursor_controller_->GetWeakPtr(),
                      capturer_->CreateOverlay(kMouseCursorStackingIndex),
                      base::ThreadTaskRunnerHandle::Get()));
+#endif
 
   receiver_->OnStarted();
 
@@ -162,6 +191,16 @@ void FrameSinkVideoCaptureDevice::Resume() {
   MaybeStartConsuming();
 }
 
+void FrameSinkVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
+}
+
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -170,9 +209,11 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
     wake_lock_.reset();
   }
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&MouseCursorOverlayController::Stop,
+#if !defined(OS_ANDROID)
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&MouseCursorOverlayController::Stop,
                                 cursor_controller_->GetWeakPtr()));
+#endif
 
   MaybeStopConsuming();
   capturer_.reset();
@@ -182,8 +223,9 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
   }
 }
 
-void FrameSinkVideoCaptureDevice::OnUtilizationReport(int frame_feedback_id,
-                                                      double utilization) {
+void FrameSinkVideoCaptureDevice::OnUtilizationReport(
+    int frame_feedback_id,
+    media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Assumption: The mojo InterfacePtr in |frame_callbacks_| should be valid at
@@ -191,7 +233,7 @@ void FrameSinkVideoCaptureDevice::OnUtilizationReport(int frame_feedback_id,
   // VideoFrameReceiver signals it is done consuming the frame.
   const auto index = static_cast<size_t>(frame_feedback_id);
   DCHECK_LT(index, frame_callbacks_.size());
-  frame_callbacks_[index]->ProvideFeedback(utilization);
+  frame_callbacks_[index]->ProvideFeedback(feedback);
 }
 
 void FrameSinkVideoCaptureDevice::OnFrameCaptured(
@@ -231,12 +273,14 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   }
   const BufferId buffer_id = static_cast<BufferId>(index);
 
-  // Set the INTERACTIVE_CONTENT frame metadata.
-  media::VideoFrameMetadata modified_metadata;
-  modified_metadata.MergeInternalValuesFrom(info->metadata);
-  modified_metadata.SetBoolean(media::VideoFrameMetadata::INTERACTIVE_CONTENT,
-                               cursor_controller_->IsUserInteractingWithView());
-  info->metadata = modified_metadata.GetInternalValues().Clone();
+#if !defined(OS_ANDROID)
+  info->metadata.interactive_content =
+      cursor_controller_->IsUserInteractingWithView();
+#else
+  // Since we don't have a cursor controller, on Android we'll just always
+  // assume the user is interacting with the view.
+  info->metadata.interactive_content = true;
+#endif
 
   // Pass the video frame to the VideoFrameReceiver. This is done by first
   // passing the shared memory buffer handle and then notifying it that a new
@@ -245,12 +289,14 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
       buffer_id,
       media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(std::move(data)));
   receiver_->OnFrameReadyInBuffer(
-      buffer_id, buffer_id,
-      std::make_unique<ScopedFrameDoneHelper>(
-          media::BindToCurrentLoop(base::BindOnce(
-              &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
-              weak_factory_.GetWeakPtr(), buffer_id))),
-      std::move(info));
+      media::ReadyFrameInBuffer(
+          buffer_id, buffer_id,
+          std::make_unique<ScopedFrameDoneHelper>(
+              media::BindToCurrentLoop(base::BindOnce(
+                  &FrameSinkVideoCaptureDevice::OnFramePropagationComplete,
+                  weak_factory_.GetWeakPtr(), buffer_id))),
+          std::move(info)),
+      {});
 }
 
 void FrameSinkVideoCaptureDevice::OnStopped() {
@@ -263,24 +309,38 @@ void FrameSinkVideoCaptureDevice::OnStopped() {
   OnFatalError("Capturer service cannot continue.");
 }
 
-void FrameSinkVideoCaptureDevice::OnTargetChanged(
-    const viz::FrameSinkId& frame_sink_id) {
+void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  target_ = frame_sink_id;
-  if (capturer_) {
-    if (target_.is_valid()) {
-      capturer_->ChangeTarget(target_);
+  if (receiver_) {
+    if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+      receiver_->OnLog(message);
     } else {
-      capturer_->ChangeTarget(base::nullopt);
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&media::VideoFrameReceiver::OnLog,
+                         base::Unretained(receiver_.get()), message));
     }
+  }
+}
+
+void FrameSinkVideoCaptureDevice::OnTargetChanged(
+    const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  target_ = target;
+  if (capturer_) {
+    capturer_->ChangeTarget(
+        target_.frame_sink_id.is_valid()
+            ? absl::make_optional<viz::FrameSinkId>(target_.frame_sink_id)
+            : absl::nullopt,
+        ToSubTargetPtr(target_));
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnTargetChanged(viz::FrameSinkId());
+  OnTargetChanged(VideoCaptureTarget());
   OnFatalError("Capture target has been permanently lost.");
 }
 
@@ -298,8 +358,8 @@ void FrameSinkVideoCaptureDevice::CreateCapturerViaGlobalManager(
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
   // Send the receiver to UI thread because that's where HostFrameSinkManager
   // lives.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
                  receiver) {
@@ -363,8 +423,8 @@ void FrameSinkVideoCaptureDevice::RequestWakeLock() {
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
   auto receiver = wake_lock_provider.BindNewPipeAndPassReceiver();
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&BindWakeLockProvider, std::move(receiver)));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BindWakeLockProvider, std::move(receiver)));
   wake_lock_provider->GetWakeLockWithoutContext(
       device::mojom::WakeLockType::kPreventDisplaySleep,
       device::mojom::WakeLockReason::kOther, "screen capture",

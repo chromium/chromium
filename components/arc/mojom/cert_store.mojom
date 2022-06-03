@@ -75,7 +75,7 @@ struct Certificate {
 interface CertStoreHost {
   // The helper method, which does not correspond to keymaster interface.
   // It returns a list of Chrome OS corporate usage client certificates if
-  // any Android app is whitelisted to use them, otherwise returns an
+  // any Android app is allowlisted to use them, otherwise returns an
   // empty list.
   ListCertificates@0() => (array<Certificate> certs);
 
@@ -111,10 +111,10 @@ interface CertStoreHost {
 // Next method ID: 4
 interface CertStoreInstance {
   // DEPRECATED: Please use Init@3 instead.
-  InitDeprecated@0(CertStoreHost host_ptr);
+  InitDeprecated@0(pending_remote<CertStoreHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@3(CertStoreHost host_ptr) => ();
+  [MinVersion=1] Init@3(pending_remote<CertStoreHost> host_remote) => ();
 
   // Informs the key permissions are changed: only listed packages are allowed
   // to use exposed certificates.
@@ -134,5 +134,5 @@ interface SmartCardManagerHost {
 // Next method ID: 1
 interface SmartCardManagerInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(SmartCardManagerHost host_ptr) => ();
+  Init@0(pending_remote<SmartCardManagerHost> host_remote) => ();
 };

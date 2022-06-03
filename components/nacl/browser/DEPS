@@ -7,5 +7,5 @@ include_rules = [
   "+ppapi/host",
   "+ppapi/proxy",
   "+ppapi/shared_impl",
-  "+services/service_manager/sandbox",
+  "+sandbox/policy",
 ]

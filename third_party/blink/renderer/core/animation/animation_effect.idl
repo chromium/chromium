@@ -34,5 +34,5 @@
 interface AnimationEffect {
     EffectTiming getTiming();
     ComputedEffectTiming getComputedTiming();
-    [RaisesException] void updateTiming(optional OptionalEffectTiming timing);
+    [RaisesException] void updateTiming(optional OptionalEffectTiming timing = {});
 };

@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 15: Uncaught TypeError: host1.createShadowRoot is not a function
-Touch event should be fired in Shadow DOM.
-
-Elements in ShadowDOM should not be revealed in touchTarget if it's examined in non shadow tree.
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

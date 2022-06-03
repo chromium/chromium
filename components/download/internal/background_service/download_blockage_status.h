@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_BLOCKAGE_STATUS_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_BLOCKAGE_STATUS_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
-
 namespace download {
 
 // A helper class representing various conditions where a download can be

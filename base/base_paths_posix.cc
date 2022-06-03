@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
@@ -37,7 +38,7 @@ bool PathProviderPosix(int key, FilePath* result) {
   switch (key) {
     case FILE_EXE:
     case FILE_MODULE: {  // TODO(evanm): is this correct?
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
       FilePath bin_dir;
       if (!ReadSymbolicLink(FilePath(kProcSelfExe), &bin_dir)) {
         NOTREACHED() << "Unable to resolve " << kProcSelfExe << ".";
@@ -76,7 +77,7 @@ bool PathProviderPosix(int key, FilePath* result) {
       return true;
 #endif
     }
-    case DIR_SOURCE_ROOT: {
+    case DIR_SRC_TEST_DATA_ROOT: {
       // Allow passing this in the environment, for more flexibility in build
       // tree configurations (sub-project builds, gyp --output_dir, etc.)
       std::unique_ptr<Environment> env(Environment::Create());

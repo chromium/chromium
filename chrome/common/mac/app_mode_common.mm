@@ -25,6 +25,9 @@ NSString* const kCFBundleTypeIconFileKey = @"CFBundleTypeIconFile";
 NSString* const kCFBundleTypeNameKey = @"CFBundleTypeName";
 NSString* const kCFBundleTypeMIMETypesKey = @"CFBundleTypeMIMETypes";
 NSString* const kCFBundleTypeRoleKey = @"CFBundleTypeRole";
+NSString* const kCFBundleURLNameKey = @"CFBundleURLName";
+NSString* const kCFBundleURLSchemesKey = @"CFBundleURLSchemes";
+NSString* const kCFBundleURLTypesKey = @"CFBundleURLTypes";
 NSString* const kBundleTypeRoleViewer = @"Viewer";
 
 NSString* const kCFBundleDisplayNameKey = @"CFBundleDisplayName";

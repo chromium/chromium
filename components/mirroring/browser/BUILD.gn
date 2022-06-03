@@ -6,8 +6,6 @@ import("//testing/test.gni")
 
 source_set("browser") {
   sources = [
-    "cast_remoting_sender.cc",
-    "cast_remoting_sender.h",
     "single_client_video_capture_host.cc",
     "single_client_video_capture_host.h",
   ]
@@ -29,10 +27,7 @@ source_set("browser") {
 
 source_set("unittests") {
   testonly = true
-  sources = [
-    "cast_remoting_sender_unittest.cc",
-    "single_client_video_capture_host_unittest.cc",
-  ]
+  sources = [ "single_client_video_capture_host_unittest.cc" ]
 
   deps = [
     ":browser",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -23,25 +24,26 @@ source_set("socket") {
     "udp_socket.h",
   ]
 
-  if (is_chromeos) {
+  deps = [
+    "//build:chromeos_buildflags",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser/api",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  if (is_chromeos_ash) {
     sources += [
       "app_firewall_hole_manager.cc",
       "app_firewall_hole_manager.h",
     ]
+
+    deps += [
+      "//chromeos/network",
+      "//components/keyed_service/content",
+    ]
   }
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
-  deps = [
-    "//content/public/browser",
-    "//content/public/common",
-    "//extensions/common/api",
-  ]
-
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

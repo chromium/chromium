@@ -64,7 +64,7 @@ class MIDIInput final : public MIDIPort {
                           size_t length,
                           base::TimeTicks time_stamp);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   void AddedEventListener(const AtomicString& event_type,

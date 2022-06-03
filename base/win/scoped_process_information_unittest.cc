@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/test/multiprocess_test.h"
 #include "testing/multiprocess_func_list.h"

@@ -6,12 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PORTAL_PORTAL_CONTENTS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -20,10 +21,8 @@ namespace blink {
 class Document;
 class HTMLPortalElement;
 class KURL;
+class PortalActivationDelegate;
 class RemoteFrame;
-class ScriptPromise;
-class ScriptPromiseResolver;
-class ScriptState;
 class SecurityOrigin;
 struct BlinkTransferableMessage;
 
@@ -40,7 +39,7 @@ class PortalContents : public GarbageCollected<PortalContents>,
  public:
   PortalContents(
       HTMLPortalElement& portal_element,
-      const base::UnguessableToken& portal_token,
+      const PortalToken& portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> remote_portal,
       mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
           portal_client_receiver);
@@ -50,11 +49,11 @@ class PortalContents : public GarbageCollected<PortalContents>,
   bool IsValid() const { return remote_portal_.is_bound(); }
 
   // Returns true if this contents is currently being activated.
-  bool IsActivating() const { return activate_resolver_; }
+  bool IsActivating() const { return activation_delegate_; }
 
   // Returns an unguessable token which uniquely identifies the contents, if
   // valid.
-  const base::UnguessableToken& GetToken() const { return portal_token_; }
+  const absl::optional<PortalToken>& GetToken() const { return portal_token_; }
 
   // Returns the RemoteFrame associated with this portal, if any.
   RemoteFrame* GetFrame() const;
@@ -62,13 +61,11 @@ class PortalContents : public GarbageCollected<PortalContents>,
   // Activates the portal contents, and produces a promise which resolves when
   // complete. The caller is expected to do all necessary preflight checks in
   // advance.
-  ScriptPromise Activate(ScriptState*, BlinkTransferableMessage data);
+  void Activate(BlinkTransferableMessage data, PortalActivationDelegate*);
 
   // Posts a message which will be delivered in the guest contents via the
   // PortalHost object.
-  void PostMessageToGuest(
-      BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& target_origin);
+  void PostMessageToGuest(BlinkTransferableMessage message);
 
   // Request navigation to the specified URL. May be a no-op if navigation to
   // this URL is not permitted.
@@ -79,14 +76,17 @@ class PortalContents : public GarbageCollected<PortalContents>,
   // down.
   void Destroy();
 
+  // Called when the connection to the browser-side Portal object is lost.
+  // Cleans up any remaining state.
+  void DisconnectHandler();
+
   // blink::mojom::PortalClient implementation
   void ForwardMessageFromGuest(
       BlinkTransferableMessage message,
-      const scoped_refptr<const SecurityOrigin>& source_origin,
-      const scoped_refptr<const SecurityOrigin>& target_origin) override;
+      const scoped_refptr<const SecurityOrigin>& source_origin) override;
   void DispatchLoadEvent() override;
 
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
  private:
   // Returns the document which controls the lifetime of this portal (usually,
@@ -97,21 +97,24 @@ class PortalContents : public GarbageCollected<PortalContents>,
   void OnActivateResponse(mojom::blink::PortalActivateResult);
 
   // The document which owns this contents.
-  // TODO(jbroman): Should this be a DocumentShutdownObserver instead?
+  // TODO(jbroman): Should this be a ExecutionContextLifecycleObserver instead?
   Member<Document> document_;
 
-  // The element which owns this contents, if any.
+  // The element which owns this contents, if any. This is set to nullptr once
+  // Destroy has been called.
   Member<HTMLPortalElement> portal_element_;
 
   // Set if the portal contents is currently being activated.
   // If so it will be the activating portal contents of the associated
   // DocumentPortals.
-  Member<ScriptPromiseResolver> activate_resolver_;
+  Member<PortalActivationDelegate> activation_delegate_;
 
-  // Uniquely identifies the portal, this token is used by the browser process
-  // to reference this portal when communicating with the renderer.
-  base::UnguessableToken portal_token_;
+  // Uniquely identifies the portal. This token is used by the browser process
+  // to reference this portal when communicating with the renderer. This is set
+  // to absl::nullopt once Destroy has been called.
+  absl::optional<PortalToken> portal_token_;
 
+  // Both of these will be reset once Destroy has been called.
   mojo::AssociatedRemote<mojom::blink::Portal> remote_portal_;
   mojo::AssociatedReceiver<mojom::blink::PortalClient> portal_client_receiver_;
 };

@@ -5,7 +5,6 @@
 #ifndef BASE_TRACE_EVENT_AUTO_OPEN_CLOSE_EVENT_H_
 #define BASE_TRACE_EVENT_AUTO_OPEN_CLOSE_EVENT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -38,6 +37,8 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
     base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
         weak_factory_.GetWeakPtr());
   }
+  AutoOpenCloseEvent(const AutoOpenCloseEvent&) = delete;
+  AutoOpenCloseEvent& operator=(const AutoOpenCloseEvent&) = delete;
   ~AutoOpenCloseEvent() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
@@ -71,8 +72,6 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
   base::TimeTicks start_time_;
   base::ThreadChecker thread_checker_;
   WeakPtrFactory<AutoOpenCloseEvent> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoOpenCloseEvent);
 };
 
 }  // namespace trace_event

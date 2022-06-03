@@ -5,7 +5,7 @@
 #include "ui/compositor/compositor_lock.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "cc/trees/layer_tree_host.h"
 
 namespace ui {

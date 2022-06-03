@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -26,6 +27,8 @@ import java.util.regex.Pattern;
  * Common text utilities used by autofill assistant.
  */
 public class AssistantTextUtils {
+    private static final String TAG = "AutofillAssistant";
+
     /** Bold tags of the form <b>...</b>. */
     private static final SpanApplier.SpanInfo BOLD_SPAN_INFO =
             new SpanApplier.SpanInfo("<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD));
@@ -33,7 +36,7 @@ public class AssistantTextUtils {
     private static final SpanApplier.SpanInfo ITALIC_SPAN_INFO =
             new SpanApplier.SpanInfo("<i>", "</i>", new StyleSpan(Typeface.ITALIC));
     /** Links of the form <link0>...</link0>. */
-    private static final Pattern LINK_PATTERN = Pattern.compile("<link(\\d+)>");
+    private static final Pattern LINK_START_PATTERN = Pattern.compile("<link(\\d+)>");
 
     /**
      * Sets the text of {@code view} by automatically applying all special appearance tags in {@code
@@ -54,7 +57,7 @@ public class AssistantTextUtils {
 
         // We first collect the link IDs into a set to allow multiple links with same ID.
         Set<Integer> linkIds = new HashSet<>();
-        Matcher matcher = LINK_PATTERN.matcher(text);
+        Matcher matcher = LINK_START_PATTERN.matcher(text);
         while (matcher.find()) {
             linkIds.add(Integer.parseInt(matcher.group(1)));
         }
@@ -68,8 +71,21 @@ public class AssistantTextUtils {
                     })));
         }
 
+        List<SpanApplier.SpanInfo> successfulSpans = new ArrayList<>();
+        for (SpanApplier.SpanInfo info : spans) {
+            try {
+                SpanApplier.applySpans(text, info);
+
+                // Apply successful. Add the info to the list.
+                successfulSpans.add(info);
+            } catch (IllegalArgumentException e) {
+                Log.d(TAG, "Mismatching span", e);
+            }
+        }
         view.setText(SpanApplier.applySpans(
-                text, spans.toArray(new SpanApplier.SpanInfo[spans.size()])));
-        view.setMovementMethod(linkIds.isEmpty() ? null : LinkMovementMethod.getInstance());
+                text, successfulSpans.toArray(new SpanApplier.SpanInfo[successfulSpans.size()])));
+        if (!linkIds.isEmpty()) {
+            view.setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 }

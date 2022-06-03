@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/image_fetcher/core/cache/image_store_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace image_fetcher {
@@ -35,14 +36,18 @@ constexpr char kNetworkRequestStatusCodes[] = "ImageFetcher.RequestStatusCode";
 class ImageFetcherMetricsReporterTest : public testing::Test {
  public:
   ImageFetcherMetricsReporterTest() {}
+
+  ImageFetcherMetricsReporterTest(const ImageFetcherMetricsReporterTest&) =
+      delete;
+  ImageFetcherMetricsReporterTest& operator=(
+      const ImageFetcherMetricsReporterTest&) = delete;
+
   ~ImageFetcherMetricsReporterTest() override = default;
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherMetricsReporterTest);
 };
 
 TEST_F(ImageFetcherMetricsReporterTest, TestReportEvent) {
@@ -160,6 +165,15 @@ TEST_F(ImageFetcherMetricsReporterTest, TestReportReponseStatusCode) {
   ImageFetcherMetricsReporter::ReportRequestStatusCode(kUmaClientNameOther,
                                                        200);
   histogram_tester().ExpectTotalCount(kNetworkRequestStatusCodes, 1);
+}
+
+TEST_F(ImageFetcherMetricsReporterTest, ReportCacheStatus) {
+  ImageFetcherMetricsReporter::ReportCacheStatus(CacheOption::kHoldUntilExpired,
+                                                 1024 * 1024 /*bytes*/, 10);
+  histogram_tester().ExpectBucketCount(
+      "ImageFetcher.CacheSize.HoldUntilExpired", 1024 /*kb*/, 1);
+  histogram_tester().ExpectBucketCount(
+      "ImageFetcher.CacheMetadataCount.HoldUntilExpired", 10, 1);
 }
 
 }  // namespace image_fetcher

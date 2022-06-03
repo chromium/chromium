@@ -8,9 +8,12 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,13 +27,18 @@ class MediaStreamManager;
 
 // MediaStreamDispatcherHost is a delegate for Media Stream API messages used by
 // MediaStreamImpl.  There is one MediaStreamDispatcherHost per
-// RenderProcessHost, the former owned by the latter.
+// RenderFrameHost, the former owned by the latter.
 class CONTENT_EXPORT MediaStreamDispatcherHost
     : public blink::mojom::MediaStreamDispatcherHost {
  public:
   MediaStreamDispatcherHost(int render_process_id,
                             int render_frame_id,
                             MediaStreamManager* media_stream_manager);
+
+  MediaStreamDispatcherHost(const MediaStreamDispatcherHost&) = delete;
+  MediaStreamDispatcherHost& operator=(const MediaStreamDispatcherHost&) =
+      delete;
+
   ~MediaStreamDispatcherHost() override;
   static void Create(
       int render_process_id,
@@ -38,6 +46,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver);
 
+  void OnWebContentsFocused();
   void set_salt_and_origin_callback_for_testing(
       MediaDeviceSaltAndOriginCallback callback) {
     salt_and_origin_callback_ = std::move(callback);
@@ -49,6 +58,12 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 
  private:
   friend class MockMediaStreamDispatcherHost;
+
+  class Broker;
+  struct PendingAccessRequest;
+  using RequestsQueue =
+      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
+  RequestsQueue pending_requests_;
 
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();
@@ -65,17 +80,20 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void CancelRequest(int32_t request_id) override;
   void StopStreamDevice(
       const std::string& device_id,
-      const base::Optional<base::UnguessableToken>& session_id) override;
+      const absl::optional<base::UnguessableToken>& session_id) override;
   void OpenDevice(int32_t request_id,
                   const std::string& device_id,
                   blink::mojom::MediaStreamType type,
                   OpenDeviceCallback callback) override;
   void CloseDevice(const std::string& label) override;
   void SetCapturingLinkSecured(
-      const base::Optional<base::UnguessableToken>& session_id,
+      const absl::optional<base::UnguessableToken>& session_id,
       blink::mojom::MediaStreamType type,
       bool is_secure) override;
   void OnStreamStarted(const std::string& label) override;
+#if !defined(OS_ANDROID)
+  void FocusCapturedSurface(const std::string& label, bool focus) override;
+#endif
 
   void DoGenerateStream(
       int32_t request_id,
@@ -95,6 +113,12 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void OnDeviceChanged(const std::string& label,
                        const blink::MediaStreamDevice& old_device,
                        const blink::MediaStreamDevice& new_device);
+  void OnDeviceRequestStateChange(
+      const std::string& label,
+      const blink::MediaStreamDevice& device,
+      const blink::mojom::MediaStreamStateChange new_state);
+  void OnDeviceCaptureHandleChange(const std::string& label,
+                                   const blink::MediaStreamDevice& device);
 
   static int next_requester_id_;
 
@@ -106,9 +130,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
 
-  base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
+  scoped_refptr<Broker> broker_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDispatcherHost);
+  base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 };
 
 }  // namespace content

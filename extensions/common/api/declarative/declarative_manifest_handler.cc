@@ -17,7 +17,7 @@ DeclarativeManifestHandler::~DeclarativeManifestHandler() {
 }
 
 bool DeclarativeManifestHandler::Parse(Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   const base::Value* event_rules = NULL;
   CHECK(extension->manifest()->Get(manifest_keys::kEventRules, &event_rules));
   std::unique_ptr<DeclarativeManifestData> data =

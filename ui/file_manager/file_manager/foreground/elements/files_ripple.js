@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * Files ripple.
  *
  * Circle ripple effect with burst animation.
  */
-var FilesRipple = Polymer({
+Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-ripple',
 
   properties: {
@@ -15,8 +20,8 @@ var FilesRipple = Polymer({
       type: Boolean,
       readOnly: true,
       value: false,
-      reflectToAttribute: true
-    }
+      reflectToAttribute: true,
+    },
   },
 
   /**
@@ -27,8 +32,8 @@ var FilesRipple = Polymer({
   pressAnimationPromise_: null,
 
   ready: function() {
-    /** @type {HTMLElement} */
-    this.ripple_ = this.$.ripple;
+    /** @type {!HTMLElement} */
+    this.ripple_ = assertInstanceof(this.$.ripple, HTMLElement);
   },
 
   attached: function() {
@@ -120,3 +125,5 @@ var FilesRipple = Polymer({
     });
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_ripple.js

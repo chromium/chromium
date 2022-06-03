@@ -5,6 +5,8 @@
 // Contains various validation functions for the Webgpu service.
 
 #include "gpu/command_buffer/service/webgpu_cmd_validation.h"
+
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 
 namespace gpu {

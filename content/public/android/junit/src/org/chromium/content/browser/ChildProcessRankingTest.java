@@ -13,8 +13,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.TestChildProcessConnection;
 import org.chromium.content_public.browser.ChildProcessImportance;
 
 /** Unit tests for ChildProessRanking */
@@ -102,49 +102,35 @@ public class ChildProcessRankingTest {
 
         // Insert in lowest ranked to highest ranked order.
 
-        // Invisible subframe outside of viewport.
-        ranking.addConnection(c1, false /* foreground */, 2 /* frameDepth */,
-                false /* intersectsViewport */, ChildProcessImportance.NORMAL);
-        ranking.addConnection(c2, false /* foreground */, 1 /* frameDepth */,
-                false /* intersectsViewport */, ChildProcessImportance.NORMAL);
-
-        // Invisible subframe inside viewport.
-        ranking.addConnection(c3, false /* foreground */, 2 /* frameDepth */,
-                true /* intersectsViewport */, ChildProcessImportance.NORMAL);
-        ranking.addConnection(c4, false /* foreground */, 1 /* frameDepth */,
+        // Invisible frame.
+        ranking.addConnection(c1, false /* foreground */, 0 /* frameDepth */,
                 true /* intersectsViewport */, ChildProcessImportance.NORMAL);
 
         // Visible subframe outside viewport.
-        ranking.addConnection(c5, true /* foreground */, 2 /* frameDepth */,
+        ranking.addConnection(c2, true /* foreground */, 2 /* frameDepth */,
                 false /* intersectsViewport */, ChildProcessImportance.NORMAL);
-        ranking.addConnection(c6, true /* foreground */, 1 /* frameDepth */,
+        ranking.addConnection(c3, true /* foreground */, 1 /* frameDepth */,
                 false /* intersectsViewport */, ChildProcessImportance.NORMAL);
-
-        // Invisible main frame.
-        ranking.addConnection(c7, false /* foreground */, 0 /* frameDepth */,
-                true /* intersectsViewport */, ChildProcessImportance.NORMAL);
 
         // Visible subframe inside viewport.
-        ranking.addConnection(c8, true /* foreground */, 2 /* frameDepth */,
+        ranking.addConnection(c4, true /* foreground */, 2 /* frameDepth */,
                 true /* intersectsViewport */, ChildProcessImportance.NORMAL);
-        ranking.addConnection(c9, true /* foreground */, 1 /* frameDepth */,
+        ranking.addConnection(c5, true /* foreground */, 1 /* frameDepth */,
                 true /* intersectsViewport */, ChildProcessImportance.NORMAL);
 
         // Visible main frame.
-        ranking.addConnection(c10, true /* foreground */, 0 /* frameDepth */,
+        ranking.addConnection(c6, true /* foreground */, 0 /* frameDepth */,
                 true /* intersectsViewport */, ChildProcessImportance.NORMAL);
 
         if (enableGroupImportanceAfter) {
-            assertNotInGroup(
-                    new ChildProcessConnection[] {c10, c9, c8, c7, c6, c5, c4, c3, c2, c1});
+            assertNotInGroup(new ChildProcessConnection[] {c6, c5, c4, c3, c2, c1});
             ranking.enableServiceGroupImportance();
         }
 
-        assertRankingAndRemoveAll(
-                ranking, new ChildProcessConnection[] {c10, c9, c8, c7, c6, c5, c4, c3, c2, c1});
+        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c6, c5, c4, c3, c2, c1});
 
-        assertNotInGroup(new ChildProcessConnection[] {c10, c9, c8});
-        assertInGroupOrderedByImportance(new ChildProcessConnection[] {c7, c6, c5, c4, c3, c2, c1});
+        assertNotInGroup(new ChildProcessConnection[] {c6, c5, c4});
+        assertInGroupOrderedByImportance(new ChildProcessConnection[] {c3, c2, c1});
     }
 
     @Test

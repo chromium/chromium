@@ -5,9 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_RENDER_WIDGET_HOST_CONNECTOR_BROWSERTEST_H_
 #define CONTENT_BROWSER_ANDROID_RENDER_WIDGET_HOST_CONNECTOR_BROWSERTEST_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "content/browser/android/ime_adapter_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -19,6 +16,10 @@ namespace content {
 class RenderWidgetHostConnectorTest : public ContentBrowserTest {
  public:
   RenderWidgetHostConnectorTest();
+
+  RenderWidgetHostConnectorTest(const RenderWidgetHostConnectorTest&) = delete;
+  RenderWidgetHostConnectorTest& operator=(
+      const RenderWidgetHostConnectorTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override;
@@ -42,9 +43,6 @@ class RenderWidgetHostConnectorTest : public ContentBrowserTest {
     // testing.
     return rwhva->ime_adapter_for_testing();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostConnectorTest);
 };
 
 }  // namespace content

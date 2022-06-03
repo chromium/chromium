@@ -10,11 +10,16 @@ enum ParityType {
   "odd",
 };
 
+enum FlowControlType {
+  "none",
+  "hardware",
+};
+
 dictionary SerialOptions {
-  required [EnforceRange] unsigned long baudrate;
-  [EnforceRange] octet databits = 8;
-  [EnforceRange] octet stopbits = 1;
+  required [EnforceRange] unsigned long baudRate;
+  [EnforceRange] octet dataBits = 8;
+  [EnforceRange] octet stopBits = 1;
   ParityType parity = "none";
-  [EnforceRange] unsigned long buffersize = 255;
-  boolean rtscts = false;
+  [EnforceRange] unsigned long bufferSize = 255;
+  FlowControlType flowControl = "none";
 };

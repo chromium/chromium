@@ -37,7 +37,6 @@ typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 typedef UIView<CRWScrollableContent> CRWContentView;
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -53,7 +52,6 @@ class NavigationManager;
 class SessionCertificatePolicyCache;
 class WebFrame;
 class WebFramesManager;
-class WebInterstitial;
 class WebStateDelegate;
 class WebStateObserver;
 class WebStatePolicyDecider;
@@ -89,6 +87,9 @@ class WebState : public base::SupportsUserData {
                   ui::PageTransition transition,
                   bool is_renderer_initiated);
     OpenURLParams(const OpenURLParams& params);
+    OpenURLParams& operator=(const OpenURLParams& params);
+    OpenURLParams(OpenURLParams&& params);
+    OpenURLParams& operator=(OpenURLParams&& params);
     ~OpenURLParams();
 
     // The URL/virtualURL/referrer to be opened.
@@ -111,6 +112,10 @@ class WebState : public base::SupportsUserData {
   class InterfaceBinder {
    public:
     explicit InterfaceBinder(WebState* web_state);
+
+    InterfaceBinder(const InterfaceBinder&) = delete;
+    InterfaceBinder& operator=(const InterfaceBinder&) = delete;
+
     ~InterfaceBinder();
 
     template <typename Interface>
@@ -144,8 +149,6 @@ class WebState : public base::SupportsUserData {
 
     WebState* const web_state_;
     std::map<std::string, Callback> callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(InterfaceBinder);
   };
 
   // Creates a new WebState.
@@ -157,11 +160,60 @@ class WebState : public base::SupportsUserData {
       const CreateParams& params,
       CRWSessionStorage* session_storage);
 
+  WebState(const WebState&) = delete;
+  WebState& operator=(const WebState&) = delete;
+
   ~WebState() override {}
+
+  // A callback that returns a pointer to a WebState. The callback can always be
+  // used, but it may return nullptr if the info used to instantiate the
+  // callback can no longer be used to return a WebState.
+  using Getter = base::RepeatingCallback<WebState*(void)>;
+  // Use this variant for instances that will only run the callback a single
+  // time.
+  using OnceGetter = base::OnceCallback<WebState*(void)>;
+
+  // Creates default WebState getters that return this WebState, or nullptr if
+  // the WebState has been deallocated.
+  virtual Getter CreateDefaultGetter() = 0;
+  virtual OnceGetter CreateDefaultOnceGetter() = 0;
 
   // Gets/Sets the delegate.
   virtual WebStateDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebStateDelegate* delegate) = 0;
+
+  // Returns whether the WebState is realized.
+  //
+  // What does "realized" mean? When creating a WebState from session storage
+  // with |CreateWithStorageSession()|, it may not yet have been fully created.
+  // Instead, it has all information to fully instantiate it and its history
+  // available, but the underlying objects (WKWebView, NavigationManager, ...)
+  // have not been created.
+  //
+  // This is an optimisation to reduce the amount of memory consumed by tabs
+  // that have been restored after the browser has been shutdown. If the user
+  // has many tabs, but only consult a subset of them, then there is no point
+  // in creating them eagerly at startup. Instead, the creation is delayed
+  // until the tabs are activated by the user.
+  //
+  // When the WebState becomes realized, the WebStateRealized() event will be
+  // sent to all its WebStateObservers. They can listen to that event if they
+  // need to support this optimisation (by delaying the creation of their own
+  // state until the WebState is really used).
+  //
+  // See //docs/ios/unrealized_web_state.md for more information.
+  virtual bool IsRealized() const = 0;
+
+  // Forcefully bring the WebState in "realized" state. This method can safely
+  // be called multiple time on a WebState, though it should not be necessary
+  // to call it as the WebState will lazily switch to "realized" state when
+  // needed.
+  //
+  // Returns `this` so that the method can be chained such as:
+  //
+  //    WebState* web_state = ...;
+  //    web_state->ForceRealized()->SetDelegate(this);
+  virtual WebState* ForceRealized() = 0;
 
   // Whether or not a web view is allowed to exist in this WebState. Defaults
   // to false; this should be enabled before attempting to access the view.
@@ -172,6 +224,13 @@ class WebState : public base::SupportsUserData {
   // been purged due to low memory, this will recreate it. It is up to the
   // caller to size the view.
   virtual UIView* GetView() = 0;
+
+  // Notifies the WebState that the WebContent is covered. Triggers
+  // visibilitychange event.
+  virtual void DidCoverWebContent() = 0;
+  // Notifies the WebState that the WebContent is no longer covered. Triggers
+  // visibilitychange event.
+  virtual void DidRevealWebContent() = 0;
 
   // Must be called when the WebState becomes shown/hidden.
   virtual void WasShown() = 0;
@@ -230,8 +289,8 @@ class WebState : public base::SupportsUserData {
   // NOTE: Integer values will be returned as Type::DOUBLE because of underlying
   // library limitation.
   typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
-  virtual void ExecuteJavaScript(const base::string16& javascript) = 0;
-  virtual void ExecuteJavaScript(const base::string16& javascript,
+  virtual void ExecuteJavaScript(const std::u16string& javascript) = 0;
+  virtual void ExecuteJavaScript(const std::u16string& javascript,
                                  JavaScriptResultCallback callback) = 0;
 
   // Asynchronously executes |javaScript| in the main frame's context,
@@ -246,7 +305,7 @@ class WebState : public base::SupportsUserData {
 
   // Returns the current navigation title. This could be the title of the page
   // if it is available or the URL.
-  virtual const base::string16& GetTitle() const = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
   // Returns true if the current page is loading.
   virtual bool IsLoading() const = 0;
@@ -291,33 +350,24 @@ class WebState : public base::SupportsUserData {
   // TODO(crbug.com/457679): Figure out a clean API for this.
   virtual GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const = 0;
 
-  // Returns true if a WebInterstitial is currently displayed.
-  virtual bool IsShowingWebInterstitial() const = 0;
-
-  // Returns the currently visible WebInterstitial if one is shown.
-  virtual WebInterstitial* GetWebInterstitial() const = 0;
-
   // Callback used to handle script commands. |message| is the JS message sent
   // from the |sender_frame| in the page, |page_url| is the URL of page's main
   // frame, |user_is_interacting| indicates if the user is interacting with the
   // page.
   // TODO(crbug.com/881813): remove |page_url|.
-  using ScriptCommandCallbackSignature =
-      void(const base::DictionaryValue& message,
-           const GURL& page_url,
-           bool user_is_interacting,
-           web::WebFrame* sender_frame);
+  using ScriptCommandCallbackSignature = void(const base::Value& message,
+                                              const GURL& page_url,
+                                              bool user_is_interacting,
+                                              web::WebFrame* sender_frame);
   using ScriptCommandCallback =
       base::RepeatingCallback<ScriptCommandCallbackSignature>;
-  using ScriptCommandSubscription =
-      base::CallbackList<ScriptCommandCallbackSignature>::Subscription;
   // Registers |callback| for JS message whose 'command' matches
-  // |command_prefix|. The returned ScriptCommandSubscription should be stored
-  // by the caller. When the description object is destroyed, it will unregister
-  // |callback| if this WebState is still alive, and do nothing if this WebState
-  // is already destroyed. Therefore if the caller want to stop receiving JS
-  // messages it can just destroy the subscription object.
-  virtual std::unique_ptr<ScriptCommandSubscription> AddScriptCommandCallback(
+  // |command_prefix|. The returned subscription should be stored by the caller.
+  // When the description object is destroyed, it will unregister |callback| if
+  // this WebState is still alive, and do nothing if this WebState is already
+  // destroyed. Therefore if the caller want to stop receiving JS messages it
+  // can just destroy the subscription.
+  virtual base::CallbackListSubscription AddScriptCommandCallback(
       const ScriptCommandCallback& callback,
       const std::string& command_prefix) WARN_UNUSED_RESULT = 0;
 
@@ -333,7 +383,6 @@ class WebState : public base::SupportsUserData {
   //      the security state (e.g. a non-secure form element is edited).
   virtual void DidChangeVisibleSecurityState() = 0;
 
- public:
   virtual InterfaceBinder* GetInterfaceBinderForMainFrame();
 
   // Whether this WebState was created with an opener.
@@ -356,11 +405,25 @@ class WebState : public base::SupportsUserData {
   virtual void TakeSnapshot(const gfx::RectF& rect,
                             SnapshotCallback callback) = 0;
 
+  // Creates PDF representation of the web page and invokes the |callback| with
+  // the NSData of the PDF or nil if a PDF couldn't be generated.
+  virtual void CreateFullPagePdf(
+      base::OnceCallback<void(NSData*)> callback) = 0;
+
   // Adds and removes observers for page navigation notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be
   // sure to remove the observer before they go away.
   virtual void AddObserver(WebStateObserver* observer) = 0;
   virtual void RemoveObserver(WebStateObserver* observer) = 0;
+
+  // Instructs the delegate to close this web state. Called when the page calls
+  // wants to close self by calling window.close() JavaScript API.
+  virtual void CloseWebState() = 0;
+
+  // Injects an opaque NSData block into a WKWebView to restore or serialize.
+  // Returns true if this operation succeeds, and false otherwise.
+  virtual bool SetSessionStateData(NSData* data) = 0;
+  virtual NSData* SessionStateData() = 0;
 
  protected:
   friend class WebStatePolicyDecider;
@@ -373,9 +436,6 @@ class WebState : public base::SupportsUserData {
   virtual void RemovePolicyDecider(WebStatePolicyDecider* decider) = 0;
 
   WebState() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebState);
 };
 
 }  // namespace web

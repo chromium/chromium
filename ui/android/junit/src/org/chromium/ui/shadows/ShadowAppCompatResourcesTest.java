@@ -8,7 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

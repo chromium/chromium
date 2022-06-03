@@ -55,7 +55,7 @@ bool ListValueContainsUrl(const base::ListValue* list, const GURL& url) {
   if (!list)
     return false;
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     std::string url_text;
     if (list->GetString(i, &url_text) && url == url_text)
       return true;
@@ -120,8 +120,8 @@ class SettingsResetPromptModelTest
     ASSERT_TRUE(template_url_service);
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("TestEngine"));
-    data.SetKeyword(base::ASCIIToUTF16("TestEngine"));
+    data.SetShortName(u"TestEngine");
+    data.SetKeyword(u"TestEngine");
     data.SetURL(default_search);
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
@@ -411,8 +411,8 @@ TEST_P(ResetStatesTest, PerformReset) {
 
   ModelPointer model = CreateModel(reset_urls, std::move(profile_resetter));
   model->PerformReset(std::make_unique<BrandcodedDefaultSettings>(),
-                      base::Bind(&SettingsResetPromptModelTest::OnResetDone,
-                                 base::Unretained(this)));
+                      base::BindOnce(&SettingsResetPromptModelTest::OnResetDone,
+                                     base::Unretained(this)));
   EXPECT_EQ(reset_callbacks_, 1);
 }
 

@@ -27,9 +27,7 @@ HWND FindRunningChromeWindow(const base::FilePath& user_data_dir);
 // Attempts to send the current command line to an already running instance of
 // Chrome via a WM_COPYDATA message.
 // Returns true if a running Chrome is found and successfully notified.
-// |fast_start| is true when this is being called on the window fast start path.
-NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window,
-                                                bool fast_start);
+NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window);
 
 // Changes the notification timeout to |new_timeout|, returns the old timeout.
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout);

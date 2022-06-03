@@ -11,6 +11,7 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -31,13 +32,34 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
         mClient = client;
     }
 
-    public View onCreateView() {
+    @Deprecated
+    public final View onCreateView() {
+        return onCreateView(/*container=*/null, /*savedInstanceState=*/null);
+    }
+
+    public View onCreateView(ViewGroup container, Bundle savedInstanceState) {
         return null;
     }
 
     public final Activity getActivity() {
         try {
             return ObjectWrapper.unwrap(mClient.getActivity(), Activity.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public final View getView() {
+        try {
+            return ObjectWrapper.unwrap(mClient.getView(), View.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public void removeFragmentFromFragmentManager() {
+        try {
+            mClient.removeFragmentFromFragmentManager();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -129,7 +151,7 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
         }
     }
 
-    public void onSaveInstaceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         try {
             mClient.superOnSaveInstanceState(ObjectWrapper.wrap(outState));
         } catch (RemoteException e) {
@@ -176,9 +198,11 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     // IRemoteFragment implementation below.
 
     @Override
-    public final IObjectWrapper handleOnCreateView() {
+    public final IObjectWrapper handleOnCreateView(
+            IObjectWrapper container, IObjectWrapper savedInstanceState) {
         StrictModeWorkaround.apply();
-        return ObjectWrapper.wrap(onCreateView());
+        return ObjectWrapper.wrap(onCreateView(ObjectWrapper.unwrap(container, ViewGroup.class),
+                ObjectWrapper.unwrap(savedInstanceState, Bundle.class)));
     }
 
     @Override
@@ -244,7 +268,7 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     @Override
     public final void handleOnSaveInstanceState(IObjectWrapper outState) {
         StrictModeWorkaround.apply();
-        onSaveInstaceState(ObjectWrapper.unwrap(outState, Bundle.class));
+        onSaveInstanceState(ObjectWrapper.unwrap(outState, Bundle.class));
     }
 
     @Override

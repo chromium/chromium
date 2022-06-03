@@ -4,91 +4,145 @@
 
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
+#include "base/guid.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "content/browser/dom_storage/session_storage_context_mojo.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "storage/browser/test/mock_special_storage_policy.h"
+#include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/site_instance_impl.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
+#include "url/origin.h"
 
 namespace content {
+
+constexpr const int kTestProcessIdOrigin1 = 11;
+constexpr const int kTestProcessIdOrigin2 = 12;
 
 class DOMStorageContextWrapperTest : public testing::Test {
  public:
   DOMStorageContextWrapperTest() = default;
 
   void SetUp() override {
-    storage_policy_ = new MockSpecialStoragePolicy();
-    fake_mojo_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    auto* session_storage_context = new SessionStorageContextMojo(
-        /*partition_path=*/base::FilePath(),
-        base::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::ThreadPool(),
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        fake_mojo_task_runner_, SessionStorageContextMojo::BackingMode::kNoDisk,
-        /*leveldb_name=*/"");
-    session_storage_context->PretendToConnectForTesting();
-    context_ = new DOMStorageContextWrapper(
-        fake_mojo_task_runner_, session_storage_context,
-        mojo::Remote<storage::mojom::LocalStorageControl>(),
-        /*special_storage_policy=*/nullptr);
+    context_ = base::MakeRefCounted<DOMStorageContextWrapper>(
+        /*partition=*/nullptr);
+
+    auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    security_policy->Add(kTestProcessIdOrigin1, &browser_context_);
+    security_policy->Add(kTestProcessIdOrigin2, &browser_context_);
+    security_policy->AddFutureIsolatedOrigins(
+        {test_storage_key1_.origin(), test_storage_key2_.origin()},
+        ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+    IsolationContext isolation_context(BrowsingInstanceId(1),
+                                       &browser_context_);
+    security_policy->LockProcessForTesting(
+        isolation_context, kTestProcessIdOrigin1,
+        test_storage_key1_.origin().GetURL());
+    security_policy->LockProcessForTesting(
+        isolation_context, kTestProcessIdOrigin2,
+        test_storage_key2_.origin().GetURL());
   }
 
   void TearDown() override {
     context_->Shutdown();
     context_.reset();
-    fake_mojo_task_runner_->RunUntilIdle();
     base::RunLoop().RunUntilIdle();
+
+    auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    security_policy->Remove(kTestProcessIdOrigin1);
+    security_policy->Remove(kTestProcessIdOrigin2);
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::TestSimpleTaskRunner> fake_mojo_task_runner_;
-  scoped_refptr<MockSpecialStoragePolicy> storage_policy_;
-  scoped_refptr<DOMStorageContextWrapper> context_;
+  void OnBadMessage(const std::string& reason) {
+    bad_message_called_ = true;
+    bad_message_ = reason;
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(DOMStorageContextWrapperTest);
+  mojo::ReportBadMessageCallback MakeBadMessageCallback() {
+    return base::BindOnce(&DOMStorageContextWrapperTest::OnBadMessage,
+                          base::Unretained(this));
+  }
+
+  ChildProcessSecurityPolicyImpl::Handle CreateSecurityPolicyHandle(
+      int process_id) {
+    return ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
+        process_id);
+  }
+
+  const std::string test_namespace_id_{base::GenerateGUID()};
+  const blink::StorageKey test_storage_key1_{
+      blink::StorageKey::CreateFromStringForTesting("https://host1.com/")};
+  const blink::StorageKey test_storage_key2_{
+      blink::StorageKey::CreateFromStringForTesting("https://host2.com/")};
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestBrowserContext browser_context_;
+  scoped_refptr<DOMStorageContextWrapper> context_;
+  bool bad_message_called_ = false;
+  std::string bad_message_;
 };
 
-TEST_F(DOMStorageContextWrapperTest, BadMessageScheduling) {
-  // This is a regression test for https://crbug.com/916523, which verifies that
-  // when SessionStorageContextMojo invokes its bad-message callback on the
-  // main task runner rather than SessionStorageContextMojo's internal task
-  // runner. This is necessary because the bad-message callback is associated
-  // with StoragePartitionImpl's ReceiverSet which lives on the main thread.
-  mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace_remote;
-  bool called = false;
-  // This call is invalid because |CreateSessionNamespace| was never called on
-  // the SessionStorage context.
-  context_->OpenSessionStorage(
-      0, "nonexistant-namespace",
-      base::BindLambdaForTesting(
-          [&called](const std::string& message) { called = true; }),
-      ss_namespace_remote.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(called);
-  fake_mojo_task_runner_->RunPendingTasks();
+// Tries to open a local storage area with a process that is locked to a
+// different StorageKey and verifies the bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       OpenLocalStorageProcessLockedToOtherStorageKey) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->OpenLocalStorage(test_storage_key2_, absl::nullopt,
+                             area.BindNewPipeAndPassReceiver(),
+                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                             MakeBadMessageCallback());
+  EXPECT_TRUE(bad_message_called_);
+  EXPECT_EQ(bad_message_,
+            "Access denied for localStorage request due to "
+            "ChildProcessSecurityPolicy.");
+}
 
-  // There should not be an error yet, as the callback has to run on
-  // 'this' task runner and not the fake one.
-  EXPECT_FALSE(called);
+// Tries to open a local storage area with a process that is locked to a
+// different LocalFrameToken and verifies there isn't a bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       OpenLocalStorageProcessLockedToOtherLocalFrameToken) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->OpenLocalStorage(test_storage_key2_, blink::LocalFrameToken(),
+                             area.BindNewPipeAndPassReceiver(),
+                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                             MakeBadMessageCallback());
+  EXPECT_FALSE(bad_message_called_);
+}
 
-  // Cycle the current task runner.
-  base::RunLoop loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   loop.QuitClosure());
-  loop.Run();
+// Tries to open a session storage area with a process that is locked to a
+// different StorageKey and verifies the bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       BindStorageAreaProcessLockedToOtherStorageKey) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->BindStorageArea(test_storage_key2_, absl::nullopt,
+                            test_namespace_id_,
+                            area.BindNewPipeAndPassReceiver(),
+                            CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                            MakeBadMessageCallback());
+  EXPECT_TRUE(bad_message_called_);
+  EXPECT_EQ(bad_message_,
+            "Access denied for sessionStorage request due to "
+            "ChildProcessSecurityPolicy.");
+}
 
-  // The callback should have run now.
-  EXPECT_TRUE(called);
+// Tries to open a session storage area with a process that is locked to a
+// different LocalFrameToken and verifies there isn't a bad message callback.
+TEST_F(DOMStorageContextWrapperTest,
+       BindStorageAreaProcessLockedToOtherLocalFrameToken) {
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context_->BindStorageArea(test_storage_key2_, blink::LocalFrameToken(),
+                            test_namespace_id_,
+                            area.BindNewPipeAndPassReceiver(),
+                            CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
+                            MakeBadMessageCallback());
+  EXPECT_FALSE(bad_message_called_);
 }
 
 }  // namespace content

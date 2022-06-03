@@ -7,8 +7,6 @@
 
 /** @fileoverview Interface for settingsPrivate that can be overriden. */
 
-assertNotReached('Interface file for Closure Compiler should not be executed.');
-
 /** @interface */
 function SettingsPrivate() {}
 
@@ -22,14 +20,14 @@ SettingsPrivate.prototype = {
    *     was set or not.
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-setPref
    */
-  setPref: assertNotReached,
+  setPref: function(name, value, pageId, callback) {},
 
   /**
    * Gets an array of all the prefs.
    * @param {function(!Array<!chrome.settingsPrivate.PrefObject>):void} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-getAllPrefs
    */
-  getAllPrefs: assertNotReached,
+  getAllPrefs: function(callback) {},
 
   /**
    * Gets the value of a specific pref.
@@ -37,7 +35,7 @@ SettingsPrivate.prototype = {
    * @param {function(!chrome.settingsPrivate.PrefObject):void} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-getPref
    */
-  getPref: assertNotReached,
+  getPref: function(name, callback) {},
 
   /**
    * Gets the default page zoom factor. Possible values are currently between
@@ -45,7 +43,7 @@ SettingsPrivate.prototype = {
    * @param {function(number):void} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-getDefaultZoom
    */
-  getDefaultZoom: assertNotReached,
+  getDefaultZoom: function(callback) {},
 
   /**
    * Sets the page zoom factor. Must be less than 0.001 different than a value
@@ -54,7 +52,7 @@ SettingsPrivate.prototype = {
    * @param {function(boolean):void=} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-setDefaultZoom
    */
-  setDefaultZoom: assertNotReached,
+  setDefaultZoom: function(zoom, callback) {},
 };
 
 /**

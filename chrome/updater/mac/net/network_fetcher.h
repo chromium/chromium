@@ -11,8 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/network.h"
 
@@ -35,6 +33,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
   void PostRequest(
       const GURL& url,
       const std::string& post_data,
+      const std::string& content_type,
       const base::flat_map<std::string, std::string>& post_additional_headers,
       update_client::NetworkFetcher::ResponseStartedCallback
           response_started_callback,

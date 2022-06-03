@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "media/gpu/h264_dpb.h"
 
 namespace media {
@@ -33,6 +33,8 @@ H264Picture::H264Picture()
       idr(false),
       idr_pic_id(0),
       ref(false),
+      ref_pic_list_modification_flag_l0(0),
+      abs_diff_pic_num_minus1(0),
       long_term(false),
       outputted(false),
       mem_mgmt_5(false),
@@ -51,6 +53,10 @@ V4L2H264Picture* H264Picture::AsV4L2H264Picture() {
 }
 
 VaapiH264Picture* H264Picture::AsVaapiH264Picture() {
+  return nullptr;
+}
+
+D3D11H264Picture* H264Picture::AsD3D11H264Picture() {
   return nullptr;
 }
 
@@ -97,12 +103,12 @@ void H264DPB::DeleteUnused() {
   UpdatePicPositions();
 }
 
-void H264DPB::StorePic(const scoped_refptr<H264Picture>& pic) {
+void H264DPB::StorePic(scoped_refptr<H264Picture> pic) {
   DCHECK_LT(pics_.size(), max_num_pics_);
   DVLOG(3) << "Adding PicNum: " << pic->pic_num << " ref: " << (int)pic->ref
            << " longterm: " << (int)pic->long_term << " to DPB";
   pic->dpb_position = pics_.size();
-  pics_.push_back(pic);
+  pics_.push_back(std::move(pic));
 }
 
 int H264DPB::CountRefPics() {

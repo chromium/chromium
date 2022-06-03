@@ -148,14 +148,14 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
   // check the index of the element in the descendants of the ancestors with
   // the same type.
   let ancestor = element.parentNode;
-  while (!!ancestor && ancestor.nodeType == Node.ELEMENT_NODE &&
+  while (!!ancestor && ancestor.nodeType === Node.ELEMENT_NODE &&
          (!ancestor.hasAttribute('id') ||
-          __gCrWeb.common.trim(ancestor.id) == '')) {
+          __gCrWeb.common.trim(ancestor.id) === '')) {
     ancestor = ancestor.parentNode;
   }
   const query = element.tagName;
   let ancestorId = '';
-  if (!ancestor || ancestor.nodeType != Node.ELEMENT_NODE) {
+  if (!ancestor || ancestor.nodeType !== Node.ELEMENT_NODE) {
     ancestor = document.body;
   }
   if (ancestor.hasAttribute('id')) {
@@ -220,12 +220,12 @@ __gCrWeb.form.getFieldName = function(element) {
 __gCrWeb.form.getFormIdentifier = function(form) {
   if (!form) return '';
   let name = form.getAttribute('name');
-  if (name && name.length != 0 &&
+  if (name && name.length !== 0 &&
       form.ownerDocument.forms.namedItem(name) === form) {
     return name;
   }
   name = form.getAttribute('id');
-  if (name && name.length != 0 &&
+  if (name && name.length !== 0 &&
       form.ownerDocument.getElementById(name) === form) {
     return name;
   }
@@ -233,8 +233,8 @@ __gCrWeb.form.getFormIdentifier = function(form) {
   // identified from the name. A last resort is to take the index number of
   // the form in document.forms. ids are not supposed to begin with digits (by
   // HTML 4 spec) so this is unlikely to match a true id.
-  for (let idx = 0; idx != document.forms.length; idx++) {
-    if (document.forms[idx] == form) {
+  for (let idx = 0; idx !== document.forms.length; idx++) {
+    if (document.forms[idx] === form) {
       return __gCrWeb.form.kNamelessFormIDPrefix + idx;
     }
   }
@@ -259,12 +259,32 @@ __gCrWeb.form.getFormElementFromIdentifier = function(name) {
   }
   // Second attempt is from the prefixed index position of the form in
   // document.forms.
-  if (name.indexOf(__gCrWeb.form.kNamelessFormIDPrefix) == 0) {
+  if (name.indexOf(__gCrWeb.form.kNamelessFormIDPrefix) === 0) {
     const nameAsInteger =
         0 | name.substring(__gCrWeb.form.kNamelessFormIDPrefix.length);
-    if (__gCrWeb.form.kNamelessFormIDPrefix + nameAsInteger == name &&
+    if (__gCrWeb.form.kNamelessFormIDPrefix + nameAsInteger === name &&
         nameAsInteger < document.forms.length) {
       return document.forms[nameAsInteger];
+    }
+  }
+  return null;
+};
+
+/**
+ * Returns the form element from an unique form id.
+ *
+ * @param {number} identifier An ID string obtained via getFormIdentifier.
+ * @return {HTMLFormElement} The original form element, if it can be determined.
+ */
+__gCrWeb.form.getFormElementFromUniqueFormId = function(identifier) {
+  if (identifier.toString() === __gCrWeb.fill.RENDERER_ID_NOT_SET) {
+    return null;
+  }
+  const forms = document.forms;
+  for (let i = 0; i < forms.length; i++) {
+    const form = forms[i];
+    if (identifier.toString() === __gCrWeb.fill.getUniqueID(form)) {
+      return form;
     }
   }
   return null;

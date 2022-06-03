@@ -174,7 +174,7 @@ def main(args):
   retval = 0
   lib_files = PartitionFiles(options.sources)
   directory_list = GetDirectoryList(PPAPI_DIR, relative_to=SRC_DIR)
-  for lib_name, filenames in lib_files.iteritems():
+  for lib_name, filenames in iter(lib_files.items()):
     if not filenames:
       continue
 

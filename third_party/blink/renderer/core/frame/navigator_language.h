@@ -19,12 +19,11 @@ class CORE_EXPORT NavigatorLanguage : public GarbageCollectedMixin {
   const Vector<String>& languages();
   bool IsLanguagesDirty() const;
   void SetLanguagesDirty();
-  AtomicString SerializeLanguagesForClientHintHeader();
 
   // Accepts a comma-separated list of languages.
   void SetLanguagesForTesting(const String& languages);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   virtual String GetAcceptLanguages() = 0;

@@ -6,10 +6,36 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/logging.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
+
+namespace {
+// Some Display Controllers (e.g. Intel Gen 9.5) don't support AR/B30
+// framebuffers, only XR/B30; this function indicates if an opaque format should
+// be used instead of the non-opaque |buffer_format| for AddFramebuffer2().
+bool ForceUsingOpaqueFormatWorkaround(
+    const scoped_refptr<ui::DrmDevice>& drm_device,
+    uint32_t drm_fourcc) {
+  constexpr uint32_t kHighBitDepthARGBFormats[] = {
+      DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010, DRM_FORMAT_RGBA1010102,
+      DRM_FORMAT_BGRA1010102};
+  const bool is_high_bit_depth_format_with_alpha =
+      base::Contains(kHighBitDepthARGBFormats, drm_fourcc);
+  if (!is_high_bit_depth_format_with_alpha)
+    return false;
+
+  const std::vector<uint32_t>& supported_formats =
+      drm_device->plane_manager()->GetSupportedFormats();
+  return !base::Contains(supported_formats, drm_fourcc);
+}
+
+}  // namespace
 
 namespace ui {
 
@@ -28,8 +54,16 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
       modifiers[i] = params.modifier;
   }
 
+  const auto buffer_format = GetBufferFormatFromFourCCFormat(params.format);
+  const uint32_t opaque_format =
+      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
+  const auto drm_format =
+      ForceUsingOpaqueFormatWorkaround(drm_device, params.format)
+          ? opaque_format
+          : params.format;
+
   uint32_t framebuffer_id = 0;
-  if (!drm_device->AddFramebuffer2(params.width, params.height, params.format,
+  if (!drm_device->AddFramebuffer2(params.width, params.height, drm_format,
                                    params.handles, params.strides,
                                    params.offsets, modifiers, &framebuffer_id,
                                    params.flags)) {
@@ -37,10 +71,8 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     return nullptr;
   }
 
-  uint32_t opaque_format = GetFourCCFormatForOpaqueFramebuffer(
-      GetBufferFormatFromFourCCFormat(params.format));
   uint32_t opaque_framebuffer_id = 0;
-  if (opaque_format != params.format &&
+  if (opaque_format != drm_format &&
       !drm_device->AddFramebuffer2(params.width, params.height, opaque_format,
                                    params.handles, params.strides,
                                    params.offsets, modifiers,
@@ -51,22 +83,23 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   }
 
   return base::MakeRefCounted<DrmFramebuffer>(
-      std::move(drm_device), framebuffer_id, params.format,
-      opaque_framebuffer_id, opaque_format, params.modifier,
-      params.preferred_modifiers, gfx::Size(params.width, params.height));
+      std::move(drm_device), framebuffer_id, drm_format, opaque_framebuffer_id,
+      opaque_format, params.modifier, params.preferred_modifiers,
+      gfx::Size(params.width, params.height));
 }
 
 // static
 scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     scoped_refptr<DrmDevice> drm,
     const GbmBuffer* buffer,
+    const gfx::Size& framebuffer_size,
     std::vector<uint64_t> preferred_modifiers) {
-  gfx::Size size = buffer->GetSize();
+  DCHECK(gfx::Rect(buffer->GetSize()).Contains(gfx::Rect(framebuffer_size)));
   AddFramebufferParams params;
   params.format = buffer->GetFormat();
   params.modifier = buffer->GetFormatModifier();
-  params.width = size.width();
-  params.height = size.height();
+  params.width = framebuffer_size.width();
+  params.height = framebuffer_size.height();
   params.num_planes = buffer->GetNumPlanes();
   params.preferred_modifiers = preferred_modifiers;
   for (size_t i = 0; i < params.num_planes; ++i) {
@@ -81,8 +114,9 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   // behavior doing the right thing.
   params.flags = 0;
   if (drm->allow_addfb2_modifiers() &&
-      params.modifier != DRM_FORMAT_MOD_INVALID)
+      params.modifier != DRM_FORMAT_MOD_INVALID) {
     params.flags |= DRM_MODE_FB_MODIFIERS;
+  }
 
   return AddFramebuffer(std::move(drm), params);
 }
@@ -102,7 +136,8 @@ DrmFramebuffer::DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
       opaque_framebuffer_pixel_format_(opaque_framebuffer_pixel_format),
       format_modifier_(format_modifier),
       preferred_modifiers_(modifiers),
-      size_(size) {}
+      size_(size),
+      modeset_sequence_id_at_allocation_(drm_device_->modeset_sequence_id()) {}
 
 DrmFramebuffer::~DrmFramebuffer() {
   if (!drm_device_->RemoveFramebuffer(framebuffer_id_))

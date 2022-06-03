@@ -1,0 +1,58 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [458, 345],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [315, 315],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [458, 0],
+      "bounds": [22, 255],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
+      "position": [8, 8],
+      "bounds": [225, 225],
+      "backgroundColor": "#00000099"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [110, 110, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    }
+  ]
+}
+

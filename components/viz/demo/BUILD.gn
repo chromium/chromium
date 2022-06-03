@@ -51,12 +51,11 @@ static_library("service") {
 }
 
 executable("viz_demo") {
-  sources = [
-    "demo_main.cc",
-  ]
+  sources = [ "demo_main.cc" ]
 
   deps = [
     "//base",
+    "//base:base_static",
     "//base:i18n",
     "//build/win:default_exe_manifest",
     "//components/viz/demo:host",
@@ -69,14 +68,6 @@ executable("viz_demo") {
     "//ui/events/platform",
     "//ui/platform_window",
   ]
-
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/platform_window/x11",
-    ]
-    configs += [ "//build/config/linux:x11" ]
-  }
 
   if (is_win) {
     deps += [ "//ui/platform_window/win" ]

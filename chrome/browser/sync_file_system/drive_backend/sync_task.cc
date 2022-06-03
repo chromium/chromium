@@ -33,7 +33,7 @@ void ExclusiveTask::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
 
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(task_blocker),
-      base::Bind(&CallRunExclusive, weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CallRunExclusive, weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace drive_backend

@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/services/app_service/public/cpp",
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/public",
+  "+net", 
+  "+services/network",
+  "+third_party/skia/include",
+]

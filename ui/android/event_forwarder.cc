@@ -72,6 +72,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jfloat raw_pos_y,
                                       jint android_tool_type_0,
                                       jint android_tool_type_1,
+                                      jint android_gesture_classification,
                                       jint android_button_state,
                                       jint android_meta_state,
                                       jboolean for_touch_handle) {
@@ -84,9 +85,9 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
   ui::MotionEventAndroid event(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       time_ms, android_action, pointer_count, history_size, action_index,
-      0 /* action_button */, android_button_state, android_meta_state,
-      raw_pos_x - pos_x_0, raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
-      &pointer1);
+      0 /* action_button */, android_gesture_classification,
+      android_button_state, android_meta_state, raw_pos_x - pos_x_0,
+      raw_pos_y - pos_y_0, for_touch_handle, &pointer0, &pointer1);
   return view_->OnTouchEvent(event);
 }
 
@@ -113,10 +114,10 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
   ui::MotionEventAndroid event(
       env, nullptr /* event */, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       time_ms, android_action, 1 /* pointer_count */, 0 /* history_size */,
-      0 /* action_index */, android_action_button, android_button_state,
-      android_meta_state, 0 /* raw_offset_x_pixels */,
-      0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
-      nullptr);
+      0 /* action_index */, android_action_button,
+      0 /* gesture_classification */, android_button_state, android_meta_state,
+      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
+      false /* for_touch_handle */, &pointer, nullptr);
   view_->OnMouseEvent(event);
 }
 
@@ -132,7 +133,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
-  std::vector<base::string16> mime_types;
+  std::vector<std::u16string> mime_types;
   AppendJavaStringArrayToStringVector(env, j_mimeTypes, &mime_types);
 
   DragEventAndroid event(env, action, location, root_location, mime_types,
@@ -168,7 +169,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid event(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
-      time_ms, 0, 1, 0, 0, 0, 0, 0, 0, 0, false, &pointer0, nullptr);
+      time_ms, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0, nullptr);
   return view_->OnGenericMotionEvent(event);
 }
 

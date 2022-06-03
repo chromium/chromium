@@ -10,7 +10,7 @@
   let metrics = (await model.requestMetrics()).metrics;
 
   TestRunner.addResult('\nMetrics reported:');
-  TestRunner.addResults(metrics.keysArray().sort());
+  TestRunner.addResults([...metrics.keys()].sort());
 
   TestRunner.completeTest();
 })();

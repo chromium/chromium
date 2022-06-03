@@ -28,6 +28,8 @@
 
 #include <cstdint>
 #include <iosfwd>
+#include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -57,6 +59,17 @@ inline TextDirection DirectionFromLevel(unsigned level) {
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, TextDirection);
 
+inline base::i18n::TextDirection ToBaseTextDirection(TextDirection direction) {
+  switch (direction) {
+    case TextDirection::kLtr:
+      return base::i18n::TextDirection::LEFT_TO_RIGHT;
+    case TextDirection::kRtl:
+      return base::i18n::TextDirection::RIGHT_TO_LEFT;
+  }
+  NOTREACHED();
+  return base::i18n::TextDirection::UNKNOWN_DIRECTION;
+}
+
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_DIRECTION_H_

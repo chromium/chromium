@@ -5,7 +5,7 @@
 #ifndef NET_CERT_INTERNAL_REVOCATION_UTIL_H_
 #define NET_CERT_INTERNAL_REVOCATION_UTIL_H_
 
-#include "base/optional.h"
+#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 
 namespace base {

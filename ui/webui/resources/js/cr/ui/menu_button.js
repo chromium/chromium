@@ -2,25 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../../assert.js">
-
+// #import {assert} from '../../assert.m.js';
+// #import {isWindows} from '../../cr.m.js';
+// #import {EventTracker} from '../../event_tracker.m.js'
+// #import {define as crUiDefine, decorate} from '../ui.m.js';
+// #import {positionPopupAroundElement, AnchorType} from './position_util.m.js';
+// #import {Menu} from './menu.m.js';
+// #import {MenuItem} from './menu_item.m.js';
 
 cr.define('cr.ui', function() {
-  /** @const */
-  const Menu = cr.ui.Menu;
+  /* #ignore */ const Menu = cr.ui.Menu;
 
   /**
    * Enum for type of hide. Delayed is used when called by clicking on a
    * checkable menu item.
    * @enum {number}
    */
-  const HideType = {
+  /* #export */ const HideType = {
     INSTANT: 0,
     DELAYED: 1,
   };
 
   /** @const */
-  const positionPopupAroundElement = cr.ui.positionPopupAroundElement;
+  /* #ignore */ const positionPopupAroundElement =
+      /* #ignore */ cr.ui.positionPopupAroundElement;
 
   /**
    * Creates a new menu button element.
@@ -29,7 +34,7 @@ cr.define('cr.ui', function() {
    * @extends {HTMLButtonElement}
    * @implements {EventListener}
    */
-  const MenuButton = cr.ui.define('button');
+  /* #export */ const MenuButton = cr.ui.define('button');
 
   MenuButton.prototype = {
     __proto__: HTMLButtonElement.prototype,
@@ -37,7 +42,7 @@ cr.define('cr.ui', function() {
     /**
      * Initializes the menu button.
      */
-    decorate: function() {
+    decorate() {
       // Listen to the touch events on the document so that we can handle it
       // before cancelled by other UI components.
       this.ownerDocument.addEventListener('touchstart', this);
@@ -58,7 +63,7 @@ cr.define('cr.ui', function() {
 
       // An event tracker for events we only connect to while the menu is
       // displayed.
-      this.showingEvents_ = new EventTracker();
+      this.showingEvents_ = new cr.EventTracker();
 
       this.anchorType = cr.ui.AnchorType.BELOW;
       this.invertLeftRight = false;
@@ -72,7 +77,7 @@ cr.define('cr.ui', function() {
       return this.menu_;
     },
     set menu(menu) {
-      if (typeof menu == 'string' && menu[0] == '#') {
+      if (typeof menu === 'string' && menu[0] === '#') {
         menu = assert(this.ownerDocument.getElementById(menu.slice(1)));
         cr.ui.decorate(menu, Menu);
       }
@@ -97,7 +102,7 @@ cr.define('cr.ui', function() {
      * @return {boolean}
      * @private
      */
-    shouldDismissMenu_: function(e) {
+    shouldDismissMenu_(e) {
       // The menu is dismissed when clicking outside the menu.
       // The button is excluded here because it should toggle show/hide the
       // menu and handled separately.
@@ -109,7 +114,7 @@ cr.define('cr.ui', function() {
      * Handles event callbacks.
      * @param {Event} e The event object.
      */
-    handleEvent: function(e) {
+    handleEvent(e) {
       if (!this.menu) {
         return;
       }
@@ -123,7 +128,7 @@ cr.define('cr.ui', function() {
           }
           break;
         case 'mousedown':
-          if (e.currentTarget == this.ownerDocument) {
+          if (e.currentTarget === this.ownerDocument) {
             if (this.shouldDismissMenu_(e)) {
               this.hideMenuWithoutTakingFocus_();
             } else {
@@ -132,8 +137,8 @@ cr.define('cr.ui', function() {
           } else {
             if (this.isMenuShown()) {
               this.hideMenuWithoutTakingFocus_();
-            } else if (e.button == 0) {  // Only show the menu when using left
-                                         // mouse button.
+            } else if (e.button === 0) {  // Only show the menu when using left
+                                          // mouse button.
               this.showMenu(false, {x: e.screenX, y: e.screenY});
 
               // Prevent the button from stealing focus on mousedown.
@@ -147,7 +152,7 @@ cr.define('cr.ui', function() {
         case 'keydown':
           this.handleKeyDown(e);
           // If the menu is visible we let it handle all the keyboard events.
-          if (this.isMenuShown() && e.currentTarget == this.ownerDocument) {
+          if (this.isMenuShown() && e.currentTarget === this.ownerDocument) {
             this.menu.handleKeyDown(e);
             e.preventDefault();
             e.stopPropagation();
@@ -182,7 +187,7 @@ cr.define('cr.ui', function() {
           }
           break;
         case 'scroll':
-          if (!(e.target == this.menu || this.menu.contains(e.target))) {
+          if (!(e.target === this.menu || this.menu.contains(e.target))) {
             this.hideMenu();
           }
           break;
@@ -214,7 +219,7 @@ cr.define('cr.ui', function() {
      * @param {{x: number, y: number}=} opt_mousePos The position of the mouse
      *     when shown (in screen coordinates).
      */
-    showMenu: function(shouldSetFocus, opt_mousePos) {
+    showMenu(shouldSetFocus, opt_mousePos) {
       this.hideMenu();
 
       this.menu.updateCommands(this);
@@ -253,7 +258,7 @@ cr.define('cr.ui', function() {
      * @param {cr.ui.HideType=} opt_hideType Type of hide.
      *     default: cr.ui.HideType.INSTANT.
      */
-    hideMenu: function(opt_hideType) {
+    hideMenu(opt_hideType) {
       this.hideMenuInternal_(true, opt_hideType);
     },
 
@@ -263,7 +268,7 @@ cr.define('cr.ui', function() {
      * @param {cr.ui.HideType=} opt_hideType Type of hide.
      *     default: cr.ui.HideType.INSTANT.
      */
-    hideMenuWithoutTakingFocus_: function(opt_hideType) {
+    hideMenuWithoutTakingFocus_(opt_hideType) {
       this.hideMenuInternal_(false, opt_hideType);
     },
 
@@ -274,13 +279,13 @@ cr.define('cr.ui', function() {
      * @param {cr.ui.HideType=} opt_hideType Type of hide.
      *     default: cr.ui.HideType.INSTANT.
      */
-    hideMenuInternal_: function(shouldTakeFocus, opt_hideType) {
+    hideMenuInternal_(shouldTakeFocus, opt_hideType) {
       if (!this.isMenuShown()) {
         return;
       }
 
       this.removeAttribute('menu-shown');
-      if (opt_hideType == HideType.DELAYED) {
+      if (opt_hideType === HideType.DELAYED) {
         this.menu.classList.add('hide-delayed');
       } else {
         this.menu.classList.remove('hide-delayed');
@@ -305,7 +310,7 @@ cr.define('cr.ui', function() {
     /**
      * Whether the menu is shown.
      */
-    isMenuShown: function() {
+    isMenuShown() {
       return this.hasAttribute('menu-shown');
     },
 
@@ -314,7 +319,7 @@ cr.define('cr.ui', function() {
      * advanced positioning logic to ensure the menu fits in the viewport.
      * @private
      */
-    positionMenu_: function() {
+    positionMenu_() {
       positionPopupAroundElement(
           this, this.menu, this.anchorType, this.invertLeftRight);
     },
@@ -322,7 +327,7 @@ cr.define('cr.ui', function() {
     /**
      * Handles the keydown event for the menu button.
      */
-    handleKeyDown: function(e) {
+    handleKeyDown(e) {
       switch (e.key) {
         case 'ArrowDown':
         case 'ArrowUp':
@@ -345,6 +350,8 @@ cr.define('cr.ui', function() {
   };
 
   // Export
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     HideType: HideType,
     MenuButton: MenuButton,

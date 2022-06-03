@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -23,6 +22,11 @@ using bookmarks::TestBookmarkClient;
 class TestComboboxModelObserver : public ui::ComboboxModelObserver {
  public:
   TestComboboxModelObserver() : changed_(false) {}
+
+  TestComboboxModelObserver(const TestComboboxModelObserver&) = delete;
+  TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =
+      delete;
+
   ~TestComboboxModelObserver() override {}
 
   // Returns whether the model changed and clears changed state.
@@ -39,18 +43,19 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
 
  private:
   bool changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModelObserver);
 };
 
 class RecentlyUsedFoldersComboModelTest : public testing::Test {
  public:
   RecentlyUsedFoldersComboModelTest() = default;
 
+  RecentlyUsedFoldersComboModelTest(const RecentlyUsedFoldersComboModelTest&) =
+      delete;
+  RecentlyUsedFoldersComboModelTest& operator=(
+      const RecentlyUsedFoldersComboModelTest&) = delete;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyUsedFoldersComboModelTest);
 };
 
 // Verifies there are no duplicate nodes in the model.
@@ -58,10 +63,9 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
   std::unique_ptr<BookmarkModel> bookmark_model(
       TestBookmarkClient::CreateModel());
   const BookmarkNode* new_node = bookmark_model->AddURL(
-      bookmark_model->bookmark_bar_node(), 0, base::ASCIIToUTF16("a"),
-      GURL("http://a"));
+      bookmark_model->bookmark_bar_node(), 0, u"a", GURL("http://a"));
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
-  std::set<base::string16> items;
+  std::set<std::u16string> items;
   for (int i = 0; i < model.GetItemCount(); ++i) {
     if (!model.IsItemSeparatorAt(i))
       EXPECT_EQ(0u, items.count(model.GetItemAt(i)));
@@ -72,12 +76,11 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
 TEST_F(RecentlyUsedFoldersComboModelTest, NotifyObserver) {
   std::unique_ptr<BookmarkModel> bookmark_model(
       TestBookmarkClient::CreateModel());
-  const BookmarkNode* folder = bookmark_model->AddFolder(
-      bookmark_model->bookmark_bar_node(), 0, base::ASCIIToUTF16("a"));
-  const BookmarkNode* sub_folder = bookmark_model->AddFolder(
-      folder, 0, base::ASCIIToUTF16("b"));
-  const BookmarkNode* new_node = bookmark_model->AddURL(
-      sub_folder, 0, base::ASCIIToUTF16("a"), GURL("http://a"));
+  const BookmarkNode* folder =
+      bookmark_model->AddFolder(bookmark_model->bookmark_bar_node(), 0, u"a");
+  const BookmarkNode* sub_folder = bookmark_model->AddFolder(folder, 0, u"b");
+  const BookmarkNode* new_node =
+      bookmark_model->AddURL(sub_folder, 0, u"a", GURL("http://a"));
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
   TestComboboxModelObserver observer;
   model.AddObserver(&observer);

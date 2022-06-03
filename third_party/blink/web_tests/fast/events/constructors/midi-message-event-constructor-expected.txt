@@ -13,7 +13,7 @@ PASS new MIDIMessageEvent('eventType', { data: data }).data == '0,0,0,0,0,0,0,0,
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).bubbles is true
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).cancelable is true
 PASS new MIDIMessageEvent('eventType', { bubbles: true, cancelable: true, data: data }).data == '0,0,0' is true
-PASS new MIDIMessageEvent('eventType', { data: data }) threw exception TypeError: Failed to construct 'MIDIMessageEvent': The provided ArrayBufferView value must not be shared..
+PASS new MIDIMessageEvent('eventType', { data: data }) threw exception TypeError: Failed to construct 'MIDIMessageEvent': Failed to read the 'data' property from 'MIDIMessageEventInit': The provided Uint8Array value must not be shared..
 PASS successfullyParsed is true
 
 TEST COMPLETE

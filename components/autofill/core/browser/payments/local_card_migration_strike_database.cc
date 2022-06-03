@@ -20,27 +20,25 @@ LocalCardMigrationStrikeDatabase::LocalCardMigrationStrikeDatabase(
   RemoveExpiredStrikes();
 }
 
-LocalCardMigrationStrikeDatabase::~LocalCardMigrationStrikeDatabase() {}
+LocalCardMigrationStrikeDatabase::~LocalCardMigrationStrikeDatabase() = default;
 
-std::string LocalCardMigrationStrikeDatabase::GetProjectPrefix() {
+std::string LocalCardMigrationStrikeDatabase::GetProjectPrefix() const {
   return "LocalCardMigration";
 }
 
-int LocalCardMigrationStrikeDatabase::GetMaxStrikesLimit() {
+int LocalCardMigrationStrikeDatabase::GetMaxStrikesLimit() const {
   return 6;
 }
 
-int64_t LocalCardMigrationStrikeDatabase::GetExpiryTimeMicros() {
+absl::optional<base::TimeDelta>
+LocalCardMigrationStrikeDatabase::GetExpiryTimeDelta() const {
   // Ideally, we should be able to annotate cards deselected at migration time
   // as cards the user is not interested in uploading.  Until then, we have been
-  // asked to not expire local card migration strikes based on a time limit.
-  // This option does not yet exist, so as a workaround the expiry time is set
-  // to the maximum amount (roughly 292,000 years).
-  // TODO(jsaul): Create an option to disable expiry time completely.
-  return std::numeric_limits<int64_t>::max();
+  // asked to not expire local card migration strikes.
+  return absl::nullopt;
 }
 
-bool LocalCardMigrationStrikeDatabase::UniqueIdsRequired() {
+bool LocalCardMigrationStrikeDatabase::UniqueIdsRequired() const {
   return false;
 }
 

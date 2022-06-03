@@ -28,7 +28,7 @@
 
 // https://www.w3.org/TR/webdatabase/#sqlerror
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SQLError {
     readonly attribute unsigned long code;
     readonly attribute DOMString message;

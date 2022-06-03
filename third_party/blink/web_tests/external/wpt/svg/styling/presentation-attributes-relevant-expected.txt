@@ -1,0 +1,73 @@
+This is a testharness.js-based test.
+Found 69 tests; 66 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS alignment-baseline presentation attribute supported on a relevant element
+PASS baseline-shift presentation attribute supported on a relevant element
+PASS clip-path presentation attribute supported on a relevant element
+PASS clip-rule presentation attribute supported on a relevant element
+PASS color presentation attribute supported on a relevant element
+PASS color-interpolation-filters presentation attribute supported on a relevant element
+PASS color-interpolation presentation attribute supported on a relevant element
+PASS cursor presentation attribute supported on a relevant element
+PASS cx presentation attribute supported on a relevant element
+PASS cy presentation attribute supported on a relevant element
+PASS direction presentation attribute supported on a relevant element
+PASS display presentation attribute supported on a relevant element
+PASS d presentation attribute supported on a relevant element
+PASS dominant-baseline presentation attribute supported on a relevant element
+PASS fill presentation attribute supported on a relevant element
+PASS fill-opacity presentation attribute supported on a relevant element
+PASS fill-rule presentation attribute supported on a relevant element
+PASS filter presentation attribute supported on a relevant element
+PASS flood-color presentation attribute supported on a relevant element
+PASS flood-opacity presentation attribute supported on a relevant element
+PASS font-family presentation attribute supported on a relevant element
+PASS font-size presentation attribute supported on a relevant element
+FAIL font-size-adjust presentation attribute supported on a relevant element assert_true: Presentation attribute font-size-adjust="0.5" should be supported on text element expected true got false
+PASS font-stretch presentation attribute supported on a relevant element
+PASS font-style presentation attribute supported on a relevant element
+PASS font-variant presentation attribute supported on a relevant element
+PASS font-weight presentation attribute supported on a relevant element
+PASS height presentation attribute supported on a relevant element
+PASS image-rendering presentation attribute supported on a relevant element
+PASS letter-spacing presentation attribute supported on a relevant element
+PASS lighting-color presentation attribute supported on a relevant element
+PASS marker-end presentation attribute supported on a relevant element
+PASS marker-mid presentation attribute supported on a relevant element
+PASS marker-start presentation attribute supported on a relevant element
+PASS mask-type presentation attribute supported on a relevant element
+PASS mask presentation attribute supported on a relevant element
+PASS opacity presentation attribute supported on a relevant element
+PASS overflow presentation attribute supported on a relevant element
+PASS paint-order presentation attribute supported on a relevant element
+PASS pointer-events presentation attribute supported on a relevant element
+PASS r presentation attribute supported on a relevant element
+PASS rx presentation attribute supported on a relevant element
+PASS ry presentation attribute supported on a relevant element
+PASS shape-rendering presentation attribute supported on a relevant element
+PASS stop-color presentation attribute supported on a relevant element
+PASS stop-opacity presentation attribute supported on a relevant element
+PASS stroke presentation attribute supported on a relevant element
+PASS stroke-dasharray presentation attribute supported on a relevant element
+PASS stroke-dashoffset presentation attribute supported on a relevant element
+PASS stroke-linecap presentation attribute supported on a relevant element
+PASS stroke-linejoin presentation attribute supported on a relevant element
+PASS stroke-miterlimit presentation attribute supported on a relevant element
+PASS stroke-opacity presentation attribute supported on a relevant element
+PASS stroke-width presentation attribute supported on a relevant element
+PASS text-anchor presentation attribute supported on a relevant element
+PASS text-decoration presentation attribute supported on a relevant element
+FAIL text-overflow presentation attribute supported on a relevant element assert_true: Presentation attribute text-overflow="ellipsis" should be supported on text element expected true got false
+PASS text-rendering presentation attribute supported on a relevant element
+PASS transform-origin presentation attribute supported on a relevant element
+PASS transform presentation attribute supported on a relevant element
+PASS unicode-bidi presentation attribute supported on a relevant element
+PASS vector-effect presentation attribute supported on a relevant element
+PASS visibility presentation attribute supported on a relevant element
+FAIL white-space presentation attribute supported on a relevant element assert_true: Presentation attribute white-space="pre" should be supported on text element expected true got false
+PASS width presentation attribute supported on a relevant element
+PASS word-spacing presentation attribute supported on a relevant element
+PASS writing-mode presentation attribute supported on a relevant element
+PASS x presentation attribute supported on a relevant element
+PASS y presentation attribute supported on a relevant element
+Harness: the test ran to completion.
+

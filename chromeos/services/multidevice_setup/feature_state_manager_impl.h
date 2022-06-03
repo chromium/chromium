@@ -6,12 +6,13 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/timer/timer.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -32,18 +33,31 @@ class FeatureStateManagerImpl : public FeatureStateManager,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<FeatureStateManager> BuildInstance(
+    static std::unique_ptr<FeatureStateManager> Create(
         PrefService* pref_service,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
-        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker);
+        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        bool is_secondary_user);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<FeatureStateManager> CreateInstance(
+        PrefService* pref_service,
+        HostStatusProvider* host_status_provider,
+        device_sync::DeviceSyncClient* device_sync_client,
+        AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        bool is_secondary_user) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  FeatureStateManagerImpl(const FeatureStateManagerImpl&) = delete;
+  FeatureStateManagerImpl& operator=(const FeatureStateManagerImpl&) = delete;
 
   ~FeatureStateManagerImpl() override;
 
@@ -52,7 +66,9 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       PrefService* pref_service,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
-      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker);
+      AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
+      WifiSyncFeatureManager* wifi_sync_feature_manager,
+      bool is_secondary_user);
 
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
@@ -81,10 +97,21 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   bool RequiresFurtherSetup(mojom::Feature feature);
   mojom::FeatureState GetEnabledOrDisabledState(mojom::Feature feature);
 
+  // Log the feature states in |cached_feature_state_map_|. Called 1) on
+  // sign-in, 2) when at least one feature state changes, and 3) every 30
+  // minutes. The latter is necessary to capture users who stay logged in longer
+  // than UMA aggregation periods and don't change feature state.
+  void LogFeatureStates() const;
+
   PrefService* pref_service_;
   HostStatusProvider* host_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
+  WifiSyncFeatureManager* wifi_sync_feature_manager_;
+
+  // Certain features may be unavailable to secondary users logged into a
+  // Chromebook. Currently, such features include PhoneHub and its subfeatures.
+  const bool is_secondary_user_;
 
   // Map from feature to the pref name which indicates the enabled/disabled
   // boolean state for the feature.
@@ -99,9 +126,9 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   // so that observers can be notified.
   FeatureStatesMap cached_feature_state_map_;
 
-  PrefChangeRegistrar registrar_;
+  base::RepeatingTimer feature_state_metric_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(FeatureStateManagerImpl);
+  PrefChangeRegistrar registrar_;
 };
 
 }  // namespace multidevice_setup

@@ -4,7 +4,7 @@
 
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace content {
 
@@ -32,11 +32,10 @@ bool DecodeVarInt(base::StringPiece* from, int64_t* into) {
   int shift = 0;
   uint64_t ret = 0;
   do {
-    if (it == from->end())
+    // Shifting 64 or more bits is undefined behavior.
+    if (it == from->end() || shift >= 64)
       return false;
 
-    // Shifting 64 or more bits is undefined behavior.
-    DCHECK_LT(shift, 64);
     unsigned char c = *it;
     ret |= static_cast<uint64_t>(c & 0x7f) << shift;
     shift += 7;

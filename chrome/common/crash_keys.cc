@@ -6,29 +6,48 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/flags_ui/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/chrome_switches.h"
-#include "components/crash/content/app/crash_switches.h"
+#include "components/crash/core/app/crash_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "ui/gl/gl_switches.h"
 #endif
 
 namespace crash_keys {
+namespace {
+
+#if defined(OS_CHROMEOS)
+// ChromeOS uses --enable-features and --disable-features more heavily than
+// most platforms, and the results don't fit into the default 64 bytes. So they
+// are listed in special, larger CrashKeys and excluded from the default
+// "switches".
+void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
+  static crash_reporter::CrashKeyString<150> enable_features_key(
+      "commandline-enabled-features");
+  enable_features_key.Set(
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+
+  static crash_reporter::CrashKeyString<150> disable_features_key(
+      "commandline-disabled-features");
+  disable_features_key.Set(
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+}
+#endif
 
 // Return true if we DON'T want to upload this flag to the crash server.
-static bool IsBoringSwitch(const std::string& flag) {
+bool IsBoringSwitch(const std::string& flag) {
   static const char* const kIgnoreSwitches[] = {
     switches::kEnableLogging,
     switches::kFlagSwitchesBegin,
@@ -37,15 +56,21 @@ static bool IsBoringSwitch(const std::string& flag) {
     switches::kProcessType,
     switches::kV,
     switches::kVModule,
-#if defined(OS_MACOSX)
+    // This is a serialized buffer which won't fit in the default 64 bytes
+    // anyways. Should be switches::kGpuPreferences but we run into linking
+    // errors on Windows if we try to use that directly.
+    "gpu-preferences",
+#if defined(OS_CHROMEOS)
+    switches::kEnableFeatures,
+    switches::kDisableFeatures,
+#endif
+#if defined(OS_MAC)
     switches::kMetricsClientID,
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     // --crash-loop-before is a "boring" switch because it is redundant;
     // crash_reporter separately informs the crash server if it is doing
     // crash-loop handling.
     crash_reporter::switches::kCrashLoopBefore,
-    switches::kPpapiFlashArgs,
-    switches::kPpapiFlashPath,
     switches::kRegisterPepperPlugins,
     switches::kUseGL,
     switches::kUserDataDir,
@@ -82,8 +107,13 @@ static bool IsBoringSwitch(const std::string& flag) {
   return false;
 }
 
+}  // namespace
+
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
-  return SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
+#if defined(OS_CHROMEOS)
+  HandleEnableDisableFeatures(command_line);
+#endif
+  SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
 }
 
 void SetActiveExtensions(const std::set<std::string>& extensions) {

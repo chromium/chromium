@@ -20,13 +20,12 @@ namespace extensions {
 template <typename T>
 RequestQueue<T>::RequestQueue(
     const net::BackoffEntry::Policy* const backoff_policy,
-    const base::Closure& start_request_callback)
+    const base::RepeatingClosure& start_request_callback)
     : backoff_policy_(backoff_policy),
       start_request_callback_(start_request_callback) {}
 
 template <typename T>
-RequestQueue<T>::~RequestQueue() {
-}
+RequestQueue<T>::~RequestQueue() = default;
 
 template <typename T>
 T* RequestQueue<T>::active_request() {
@@ -92,10 +91,9 @@ void RequestQueue<T>::StartNextRequest() {
   if (next_release > now) {
     // Not ready for the next update check yet, call this method when it is
     // time.
-    timer_.Start(
-        FROM_HERE,
-        next_release - now,
-        base::Bind(&RequestQueue<T>::StartNextRequest, base::Unretained(this)));
+    timer_.Start(FROM_HERE, next_release - now,
+                 base::BindOnce(&RequestQueue<T>::StartNextRequest,
+                                base::Unretained(this)));
     return;
   }
 

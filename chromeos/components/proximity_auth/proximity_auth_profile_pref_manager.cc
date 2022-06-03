@@ -8,17 +8,20 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace proximity_auth {
+namespace {
+
+using chromeos::multidevice_setup::mojom::Feature;
+using chromeos::multidevice_setup::mojom::FeatureState;
+}  // namespace
 
 ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(
     PrefService* pref_service,
@@ -61,9 +64,9 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
     return;
   }
 
-  base::Closure on_pref_changed_callback =
-      base::Bind(&ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
-                 weak_ptr_factory_.GetWeakPtr());
+  auto on_pref_changed_callback = base::BindRepeating(
+      &ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
+      weak_ptr_factory_.GetWeakPtr());
 
   registrar_.Init(pref_service_);
   registrar_.Add(chromeos::multidevice_setup::kSmartLockAllowedPrefName,
@@ -89,6 +92,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
   user_prefs_dict->SetKey(
       chromeos::multidevice_setup::kSmartLockEnabledPrefName,
       base::Value(IsEasyUnlockEnabled()));
+  user_prefs_dict->SetKey(prefs::kSmartLockEligiblePrefName,
+                          base::Value(IsSmartLockEligible()));
   user_prefs_dict->SetKey(
       chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
       base::Value(IsChromeOSLoginAllowed()));
@@ -106,8 +111,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
 
   DictionaryPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateUserPrefs);
-  update->SetWithoutPathExpansion(account_id_.GetUserEmail(),
-                                  std::move(user_prefs_dict));
+  update->SetKey(account_id_.GetUserEmail(),
+                 base::Value::FromUniquePtrValue(std::move(user_prefs_dict)));
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockAllowed() const {
@@ -123,9 +128,39 @@ void ProximityAuthProfilePrefManager::SetIsEasyUnlockEnabled(
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
-  return multidevice_setup_client_->GetFeatureState(
-             chromeos::multidevice_setup::mojom::Feature::kSmartLock) ==
-         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+  // Note: if GetFeatureState() is called in the first few hundred milliseconds
+  // of user session startup, it can incorrectly return a feature-default state
+  // of kProhibitedByPolicy. See https://crbug.com/1154766 for more.
+  return multidevice_setup_client_->GetFeatureState(Feature::kSmartLock) ==
+         FeatureState::kEnabledByUser;
+}
+
+bool ProximityAuthProfilePrefManager::IsSmartLockEligible() const {
+  switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
+    case FeatureState::kUnavailableNoVerifiedHost:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
+      FALLTHROUGH;
+    case FeatureState::kNotSupportedByChromebook:
+      FALLTHROUGH;
+    case FeatureState::kNotSupportedByPhone:
+      return false;
+
+    case FeatureState::kProhibitedByPolicy:
+      FALLTHROUGH;
+    case FeatureState::kDisabledByUser:
+      FALLTHROUGH;
+    case FeatureState::kEnabledByUser:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableInsufficientSecurity:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableSuiteDisabled:
+      FALLTHROUGH;
+    case FeatureState::kFurtherSetupRequired:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableTopLevelFeatureDisabled:
+      return true;
+  }
 }
 
 void ProximityAuthProfilePrefManager::SetEasyUnlockEnabledStateSet() const {
@@ -175,7 +210,10 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
   // This is persisted within SyncPrefsToLocalState() instead, since the local
   // state must act as the source of truth for this pref.
-  NOTREACHED();
+
+  // TODO(crbug.com/1152491): Add a NOTREACHED() to ensure this method is not
+  // called. It is currently incorrectly, though harmlessly, called by virtual
+  // Chrome OS on Linux.
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
@@ -190,10 +228,9 @@ bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
     return false;
   }
 
-  bool pref_value = false;
-  current_user_prefs->GetBooleanWithoutPathExpansion(
-      prefs::kProximityAuthHasShownLoginDisabledMessage, &pref_value);
-  return pref_value;
+  return current_user_prefs
+      ->FindBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage)
+      .value_or(false);
 }
 
 void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(

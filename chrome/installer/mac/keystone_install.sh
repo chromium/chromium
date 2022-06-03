@@ -595,10 +595,9 @@ main() {
 
   trap cleanup EXIT HUP INT QUIT TERM
 
-  readonly PRODUCT_NAME="Google Chrome"
-  readonly APP_DIR="${PRODUCT_NAME}.app"
-  readonly ALTERNATE_APP_DIR="${PRODUCT_NAME} Canary.app"
-  readonly FRAMEWORK_NAME="${PRODUCT_NAME} Framework"
+  readonly APP_DIR_NAMES=( "Google Chrome.app" "Google Chrome Beta.app"
+                           "Google Chrome Dev.app" "Google Chrome Canary.app" )
+  readonly FRAMEWORK_NAME="Google Chrome Framework"
   readonly FRAMEWORK_DIR="${FRAMEWORK_NAME}.framework"
   readonly PATCH_DIR=".patch"
   readonly CONTENTS_DIR="Contents"
@@ -617,6 +616,7 @@ main() {
   readonly KS_PRODUCT_KEY="KSProductID"
   readonly KS_URL_KEY="KSUpdateURL"
   readonly KS_BRAND_KEY="KSBrandID"
+  readonly USER_DATA_DIR_PATH_KEY="CrProductDirName"
 
   readonly QUARANTINE_ATTR="com.apple.quarantine"
 
@@ -705,29 +705,28 @@ main() {
 
   local update_version_app update_version_ks product_id update_layout_new
   if [[ -z "${is_patch}" ]]; then
-    update_app="${update_dmg_mount_point}/${APP_DIR}"
+    local found_app
+    for app_dir_name in "${APP_DIR_NAMES[@]}"; do
+      note "looking for ${app_dir_name}"
+      update_app="${update_dmg_mount_point}/${app_dir_name}"
+
+      if [[ -d "${update_app}" ]]; then
+        note "found ${app_dir_name}"
+        found_app="y"
+        break
+      fi
+    done
+
+    if [[ -z "${found_app}" ]]; then
+      err "couldn't locate any app on the update dmg"
+      exit 2
+    fi
     note "update_app = ${update_app}"
 
     # Make sure that it's an absolute path.
     if [[ "${update_app:0:1}" != "/" ]]; then
       err "update_app must be an absolute path"
       exit 2
-    fi
-
-    # Make sure there's something to copy from.
-    if ! [[ -d "${update_app}" ]]; then
-      update_app="${update_dmg_mount_point}/${ALTERNATE_APP_DIR}"
-      note "update_app = ${update_app}"
-
-      if [[ "${update_app:0:1}" != "/" ]]; then
-        err "update_app (alternate) must be an absolute path"
-        exit 2
-      fi
-
-      if ! [[ -d "${update_app}" ]]; then
-        err "update_app must be a directory"
-        exit 2
-      fi
     fi
 
     # Get some information about the update.
@@ -1120,8 +1119,12 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     # exists, and ${installed_app} needs to be used as input to dirpatcher
     # in any event.  The new application will be rsynced into place once
     # dirpatcher creates it.
+
     ensure_temp_dir
-    update_app="${g_temp_dir}/${APP_DIR}"
+    # The name of the app for ${update_app} does not matter, as the user's
+    # choice of name for their installed app will not be changed. Choose the
+    # first of the ${APP_DIR_NAMES} as an arbitrary choice.
+    update_app="${g_temp_dir}/${APP_DIR_NAMES[0]}"
     note "update_app = ${update_app}"
 
     note "dirpatching app directory"
@@ -1249,6 +1252,13 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   note "tag = ${tag}"
   note "tag_key = ${tag_key}"
 
+  # The user data dir path key is only present for some Chromes.  Suppress
+  # stderr to prevent Keystone from seeing possible error output.
+  local is_sxs_capable
+  is_sxs_capable="$(infoplist_read "${installed_app_plist}" \
+      "${USER_DATA_DIR_PATH_KEY}" 2> /dev/null || true)"
+  note "is_sxs_capable = ${is_sxs_capable}"
+
   # Make sure that the update was successful by comparing the version found in
   # the update with the version now on disk.
   if [[ "${new_version_ks}" != "${update_version_ks}" ]]; then
@@ -1291,19 +1301,19 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   local ksadmin_brand_plist_path
   local ksadmin_brand_key
 
-  # Only the stable channel, identified by an empty channel string, has a
-  # brand code. On the beta and dev channels, remove the brand plist if
-  # present. Its presence means that the ticket used to manage a
-  # stable-channel Chrome but the user has since replaced it with a beta or
-  # dev channel version. Since the canary channel can run side-by-side with
-  # another Chrome installation, don't remove the brand plist on that channel,
-  # but skip the rest of the brand logic.
-  if [[ "${channel}" = "beta" ]] || [[ "${channel}" = "dev" ]]; then
+  # Only side-by-side capable channels, either the stable channel (identified by
+  # an empty channel string) or a Chrome that has a custom user data dir, has a
+  # brand code. On non-side-by-side beta and dev channels, remove the brand
+  # plist if present. Its presence means that the ticket used to manage a
+  # stable-channel Chrome but the user has since replaced it with a beta or dev
+  # channel version. With side-by-side channels, don't remove the brand plist on
+  # that channel, but skip the rest of the brand logic.
+  if [[ -n "${is_sxs_capable}" ]]; then
+    # Side-by-side capable Chrome.
+    note "skipping brand code on side-by-side channel ${channel}"
+  elif [[ "${channel}" = "beta" ]] || [[ "${channel}" = "dev" ]]; then
     note "defeating brand code on channel ${channel}"
     rm -f "${brand_plist_path}" 2>/dev/null || true
-  elif [[ -n "${channel}" ]]; then
-    # Canary channel.
-    note "skipping brand code on channel ${channel}"
   else
     # Stable channel.
     # If the user manually updated their copy of Chrome, there might be new

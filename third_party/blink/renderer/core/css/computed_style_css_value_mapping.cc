@@ -34,7 +34,7 @@
 namespace blink {
 
 const CSSValue* ComputedStyleCSSValueMapping::Get(
-    const AtomicString custom_property_name,
+    const AtomicString& custom_property_name,
     const ComputedStyle& style,
     const PropertyRegistry* registry) {
   CustomProperty custom_property(custom_property_name, registry);
@@ -47,42 +47,11 @@ ComputedStyleCSSValueMapping::GetVariables(const ComputedStyle& style,
                                            const PropertyRegistry* registry) {
   HeapHashMap<AtomicString, Member<const CSSValue>> variables;
 
-  StyleInheritedVariables* inherited = style.InheritedVariables();
-
-  if (inherited) {
-    for (const auto& name : inherited->GetCustomPropertyNames()) {
-      const CSSValue* value =
-          ComputedStyleCSSValueMapping::Get(name, style, registry);
-      if (value)
-        variables.Set(name, value);
-    }
-  }
-
-  StyleNonInheritedVariables* non_inherited = style.NonInheritedVariables();
-
-  if (non_inherited) {
-    for (const auto& name : non_inherited->GetCustomPropertyNames()) {
-      const CSSValue* value =
-          ComputedStyleCSSValueMapping::Get(name, style, registry);
-      if (value)
-        variables.Set(name, value);
-    }
-  }
-
-  // Registered properties with initial values are not stored explicitly on
-  // each computed style. Their initialness is instead indicated by the
-  // absence of that property on the computed style. This means that registered
-  // properties with an implicit initial value will not appear in the result of
-  // Style[Non]InheritedVariables::GetCustomPropertyNames, so we need to
-  // iterate though all registrations and add the initial values, if necessary.
-  if (registry) {
-    for (const auto& entry : *registry) {
-      if (variables.Contains(entry.key))
-        continue;
-      const CSSValue* initial = entry.value->Initial();
-      if (initial)
-        variables.Set(entry.key, initial);
-    }
+  for (const AtomicString& name : style.GetVariableNames()) {
+    const CSSValue* value =
+        ComputedStyleCSSValueMapping::Get(name, style, registry);
+    if (value)
+      variables.Set(name, value);
   }
 
   return variables;

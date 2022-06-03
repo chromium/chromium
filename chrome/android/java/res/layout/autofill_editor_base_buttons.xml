@@ -18,7 +18,7 @@
         android:paddingEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:paddingTop="@dimen/editor_dialog_section_buttons_vertical_padding"
         android:paddingBottom="@dimen/editor_dialog_section_buttons_vertical_padding"
-        android:background="@color/modern_primary_color"
+        android:background="@color/default_bg_color"
         app:stackedMargin="@dimen/infobar_margin_between_stacked_buttons"
         app:primaryButtonText="@string/done"
         app:secondaryButtonText="@string/cancel"

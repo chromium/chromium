@@ -11,12 +11,13 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -38,7 +39,7 @@ std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
   if (!struct_reader->PopUint32(&size))
     return nullptr;
 
-  std::unique_ptr<base::Value> value = nullptr;
+  std::unique_ptr<base::Value> value;
   switch (type) {
     case bluez::BluetoothServiceAttributeValueBlueZ::NULLTYPE: {
       break;
@@ -185,6 +186,7 @@ BluetoothDeviceClient::Properties::Properties(
     const PropertyChangedCallback& callback)
     : dbus::PropertySet(object_proxy, interface_name, callback) {
   RegisterProperty(bluetooth_device::kAddressProperty, &address);
+  RegisterProperty(bluetooth_device::kAddressTypeProperty, &address_type);
   RegisterProperty(bluetooth_device::kNameProperty, &name);
   RegisterProperty(bluetooth_device::kIconProperty, &icon);
   RegisterProperty(bluetooth_device::kClassProperty, &bluetooth_class);
@@ -193,6 +195,7 @@ BluetoothDeviceClient::Properties::Properties(
   RegisterProperty(bluetooth_device::kUUIDsProperty, &uuids);
   RegisterProperty(bluetooth_device::kPairedProperty, &paired);
   RegisterProperty(bluetooth_device::kConnectedProperty, &connected);
+  RegisterProperty(bluetooth_device::kConnectedLEProperty, &connected_le);
   RegisterProperty(bluetooth_device::kTrustedProperty, &trusted);
   RegisterProperty(bluetooth_device::kBlockedProperty, &blocked);
   RegisterProperty(bluetooth_device::kAliasProperty, &alias);
@@ -210,6 +213,8 @@ BluetoothDeviceClient::Properties::Properties(
                    &advertising_data_flags);
   RegisterProperty(bluetooth_device::kMTUProperty, &mtu);
   RegisterProperty(bluetooth_device::kEIRProperty, &eir);
+  RegisterProperty(bluetooth_device::kIsBlockedByPolicyProperty,
+                   &is_blocked_by_policy);
 }
 
 BluetoothDeviceClient::Properties::~Properties() = default;
@@ -219,6 +224,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
                                   public dbus::ObjectManager::Interface {
  public:
   BluetoothDeviceClientImpl() : object_manager_(nullptr) {}
+
+  BluetoothDeviceClientImpl(const BluetoothDeviceClientImpl&) = delete;
+  BluetoothDeviceClientImpl& operator=(const BluetoothDeviceClientImpl&) =
+      delete;
 
   ~BluetoothDeviceClientImpl() override {
     // There is an instance of this client that is created but not initialized
@@ -246,11 +255,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
       dbus::ObjectProxy* object_proxy,
       const dbus::ObjectPath& object_path,
       const std::string& interface_name) override {
-    Properties* properties =
-        new Properties(object_proxy, interface_name,
-                       base::Bind(&BluetoothDeviceClientImpl::OnPropertyChanged,
-                                  weak_ptr_factory_.GetWeakPtr(), object_path));
-    return static_cast<dbus::PropertySet*>(properties);
+    return new Properties(
+        object_proxy, interface_name,
+        base::BindRepeating(&BluetoothDeviceClientImpl::OnPropertyChanged,
+                            weak_ptr_factory_.GetWeakPtr(), object_path));
   }
 
   // BluetoothDeviceClient override.
@@ -298,11 +306,58 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   }
 
   // BluetoothDeviceClient override.
+  void ConnectLE(const dbus::ObjectPath& object_path,
+                 base::OnceClosure callback,
+                 ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
+                                 bluetooth_device::kConnectLE);
+
+    dbus::ObjectProxy* object_proxy =
+        object_manager_->GetObjectProxy(object_path);
+    if (!object_proxy) {
+      std::move(error_callback).Run(kUnknownDeviceError, "");
+      return;
+    }
+
+    // ConnectLE may take an arbitrary length of time, so use no timeout.
+    object_proxy->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  // BluetoothDeviceClient override.
   void Disconnect(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
                                  bluetooth_device::kDisconnect);
+
+    dbus::ObjectProxy* object_proxy =
+        object_manager_->GetObjectProxy(object_path);
+    if (!object_proxy) {
+      std::move(error_callback).Run(kUnknownDeviceError, "");
+      return;
+    }
+
+    object_proxy->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  // BluetoothDeviceClient override.
+  void DisconnectLE(const dbus::ObjectPath& object_path,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
+                                 bluetooth_device::kDisconnectLE);
 
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(object_path);
@@ -368,9 +423,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnDisconnectProfileSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnDisconnectProfileError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -509,8 +565,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothDeviceClientImpl::OnGetServiceRecordsSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnGetServiceRecordsError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -606,6 +663,20 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     std::move(callback).Run();
   }
 
+  void OnDisconnectProfileSuccess(base::OnceClosure callback,
+                                  base::Time time_started,
+                                  dbus::Response* response) {
+    DCHECK(response);
+    RecordSuccess(kDisconnectProfileMethod, time_started);
+    std::move(callback).Run();
+  }
+
+  void OnDisconnectProfileError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kDisconnectProfileMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
   // Called when a response for the GetConnInfo method is received.
   void OnGetConnInfoSuccess(ConnInfoCallback callback,
                             dbus::Response* response) {
@@ -628,7 +699,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   }
 
   void OnGetServiceRecordsSuccess(ServiceRecordsCallback callback,
+                                  base::Time start_time,
                                   dbus::Response* response) {
+    RecordSuccess(kGetServiceRecordsMethod, start_time);
     ServiceRecordList records;
     if (!response) {
       LOG(ERROR) << "GetServiceRecords succeeded, but no response received.";
@@ -639,9 +712,16 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     dbus::MessageReader reader(response);
     if (!ReadRecordsFromMessage(&reader, &records)) {
       std::move(callback).Run(ServiceRecordList());
+      return;
     }
 
     std::move(callback).Run(records);
+  }
+
+  void OnGetServiceRecordsError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kGetServiceRecordsMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   // Called when a response for a failed method call is received.
@@ -670,8 +750,6 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDeviceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceClientImpl);
 };
 
 BluetoothDeviceClient::BluetoothDeviceClient() = default;

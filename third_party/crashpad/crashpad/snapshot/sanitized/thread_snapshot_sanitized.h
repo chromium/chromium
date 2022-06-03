@@ -34,6 +34,9 @@ class ThreadSnapshotSanitized final : public ThreadSnapshot {
   //!     thread's stacks. \see internal::MemorySnapshotSanitized.
   ThreadSnapshotSanitized(const ThreadSnapshot* snapshot, RangeSet* ranges);
 
+  ThreadSnapshotSanitized(const ThreadSnapshotSanitized&) = delete;
+  ThreadSnapshotSanitized& operator=(const ThreadSnapshotSanitized&) = delete;
+
   ~ThreadSnapshotSanitized() override;
 
   // ThreadSnapshot:
@@ -49,8 +52,6 @@ class ThreadSnapshotSanitized final : public ThreadSnapshot {
  private:
   const ThreadSnapshot* snapshot_;
   MemorySnapshotSanitized stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotSanitized);
 };
 
 }  // namespace internal

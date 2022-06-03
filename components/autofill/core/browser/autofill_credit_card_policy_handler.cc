@@ -22,11 +22,8 @@ void AutofillCreditCardPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  bool autofill_credit_card_enabled;
-  if (value && value->GetAsBoolean(&autofill_credit_card_enabled) &&
-      !autofill_credit_card_enabled) {
+  if (value && value->is_bool() && !value->GetBool())
     prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
-  }
 }
 
 }  // namespace autofill

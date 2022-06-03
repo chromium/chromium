@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests "reload" from within inspector window while on pause.`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-reload-breakpoints-with-source-maps.html');
@@ -15,11 +15,11 @@
     SourcesTestRunner.showScriptSource('source1.js', step2);
   }
 
-  function step2(sourceFrame) {
+  async function step2(sourceFrame) {
     SourcesTestRunner.waitBreakpointSidebarPane()
         .then(waitUntilReady)
         .then(onBreakpointsReady);
-    SourcesTestRunner.setBreakpoint(sourceFrame, 14, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 14, '', true);
 
     function onBreakpointsReady() {
       SourcesTestRunner.dumpBreakpointSidebarPane('before reload:');
@@ -40,12 +40,10 @@
   function waitUntilReady() {
     var expectedBreakpointLocations = [[16, 4]];
     var paneElement =
-        self.runtime.sharedInstance(Sources.JavaScriptBreakpointsSidebarPane)
-            .contentElement;
+        Sources.JavaScriptBreakpointsSidebarPane.instance().contentElement;
     var entries = Array.from(paneElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
-      var uiLocation =
-          entry[Sources.JavaScriptBreakpointsSidebarPane._locationSymbol];
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);
       if (Bindings.CompilerScriptMapping.StubProjectID ===
           uiLocation.uiSourceCode.project().id())
         return SourcesTestRunner.waitBreakpointSidebarPane().then(

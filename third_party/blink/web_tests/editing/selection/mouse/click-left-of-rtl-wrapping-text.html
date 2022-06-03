@@ -1,154 +1,57 @@
-﻿<!doctype html>
-<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<!doctype html>
+<script src="../../../resources/ahem.js"></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-test(() => {
-  if (!window.eventSender) {
-    assert_no_reached('This test requires eventSender.');
-    return;
-  }
+// Test clicking on the left of RTL text puts the caret at the end of the line.
 
-  function testClickLeft(selection, lines, rowIndexToClick) {
-    const doc = selection.document;
-    const container = doc.querySelector('div');
-    // Adjust width to have |lines| of lines.
-    // Since the Ahem font doesn't cover characters used in test,
-    // we need to calc width depending on each platform.
-    const heightOfLine = container.offsetHeight;
-    let width = 5;
-    do {
-      container.style.width = `${width}px`;
-      width++;
-    } while (container.offsetHeight > heightOfLine * lines);
-    container.style.width = `${width + 1}px`;
+function testClickLeft(lineNumber, numberOfLines, width, sample, expected) {
+    const kLineHeight = 20;
+    const kStyle = [
+        'direction: rtl;',
+        `font: 10px/${kLineHeight}px Ahem;`,
+        'line-break: normal;',
+        `width: ${width}ch;`,
+    ].join('');
+    selection_test(
+        [
+            `<style>div {${kStyle}}</style>`,
+            `<div contenteditable><bdo dir="rtl">${sample}</bdo></div>`,
+        ],
+        selection => {
+            const target = selection.document.querySelector('div');
+            if (!window.eventSender)
+                throw 'This test requires eventSender.';
+            assert_equals(target.offsetHeight, numberOfLines * kLineHeight);
+            const offsetY = (lineNumber - 1)  * kLineHeight;
+            eventSender.leapForward(9999); // reset mouse click
+            eventSender.mouseMoveTo(
+                selection.computeLeft(target) + 3,
+                selection.computeTop(target) + offsetY + kLineHeight / 2);
+            eventSender.mouseDown();
+            eventSender.mouseUp();
+        },
+        [
+            `<style>div {${kStyle}}</style>`,
+            `<div contenteditable><bdo dir="rtl">${expected}</bdo></div>`,
+        ],
+        `Click left at line ${lineNumber}/${numberOfLines}`);
+}
 
-    // Click left of the |rowIndexToClick|th line.
-    eventSender.mouseMoveTo(
-      doc.offsetLeft + container.offsetLeft + 3,
-      doc.offsetTop + container.offsetTop + heightOfLine/2 + rowIndexToClick * heightOfLine);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
+// 2 lines
+testClickLeft(1, 2, 2, 'A BC', 'A| BC');
+testClickLeft(2, 2, 2, 'A BC', 'A BC|');
 
-    // Remove width from style to clean result DOM.
-    container.style.removeProperty('width');
-    return heightOfLine;
-  }
+// 3 lines
+testClickLeft(1, 3, 4, 'AB CDEF GHI', 'AB| CDEF GHI');
+testClickLeft(2, 3, 4, 'AB CDEF GHI', 'AB CDEF| GHI');
+testClickLeft(3, 3, 4, 'AB CDEF GHI', 'AB CDEF GHI|');
 
-  assert_selection(
-    '<div contenteditable dir="rtl">&#1498; &#1500;&#1499;</div>',
-    selection => testClickLeft(selection, 2, 0),
-    '<div contenteditable dir="rtl" style>ך |לכ</div>');
-
-  assert_selection(
-    '<div contenteditable dir="rtl">&#1498; &#1500;&#1499;</div>',
-    selection => testClickLeft(selection, 2, 1),
-    '<div contenteditable dir="rtl" style>ך לכ|</div>');
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1499;&#1499; &#1499;&#1499;&#1499;&#1499; &#1499;&#1499;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 3, 0),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'ככ |ככככ כככ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1499;&#1499; &#1499;&#1499;&#1499;&#1499; &#1499;&#1499;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 3, 1),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'ככ ככככ |כככ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1499;&#1499; &#1499;&#1499;&#1499;&#1499; &#1499;&#1499;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 3, 2),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'ככ ככככ כככ|',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 5, 0),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'גכ |יגכ יגכ יגכ יגכ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 5, 1),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'גכ יגכ |יגכ יגכ יגכ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 5, 2),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'גכ יגכ יגכ |יגכ יגכ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 5, 3),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'גכ יגכ יגכ יגכ |יגכ',
-       '</div>'
-    ].join(''));
-
-  assert_selection(
-    [
-      '<div contenteditable dir="rtl">',
-        '&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499; &#1497;&#1490;&#1499;',
-       '</div>'
-    ].join(''),
-    selection => testClickLeft(selection, 5, 4),
-    [
-      '<div contenteditable dir="rtl" style>',
-        'גכ יגכ יגכ יגכ יגכ|',
-       '</div>'
-    ].join(''));
-
-}, 'This tests clicking on the left of RTL text puts the caret at the end of the line');
+// 5 lines
+testClickLeft(1, 5, 4, 'AB CDE FGH IJK LMN', 'AB| CDE FGH IJK LMN');
+testClickLeft(2, 5, 4, 'AB CDE FGH IJK LMN', 'AB CDE| FGH IJK LMN');
+testClickLeft(3, 5, 4, 'AB CDE FGH IJK LMN', 'AB CDE FGH| IJK LMN');
+testClickLeft(4, 5, 4, 'AB CDE FGH IJK LMN', 'AB CDE FGH IJK| LMN');
+testClickLeft(5, 5, 4, 'AB CDE FGH IJK LMN', 'AB CDE FGH IJK LMN|');
 </script>

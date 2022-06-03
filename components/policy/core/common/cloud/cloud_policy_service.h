@@ -10,12 +10,12 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -31,7 +31,7 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   // Callback invoked once the unregister attempt has completed. Passed bool
   // parameter is true if unregistering was successful (no error).
-  using UnregisterCallback = base::Callback<void(bool)>;
+  using UnregisterCallback = base::OnceCallback<void(bool)>;
 
   class POLICY_EXPORT Observer {
    public:
@@ -52,6 +52,8 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
                      const std::string& settings_entity_id,
                      CloudPolicyClient* client,
                      CloudPolicyStore* store);
+  CloudPolicyService(const CloudPolicyService&) = delete;
+  CloudPolicyService& operator=(const CloudPolicyService&) = delete;
   ~CloudPolicyService() override;
 
   // Refreshes policy. |callback| will be invoked after the operation completes
@@ -61,7 +63,7 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // Unregisters the device. |callback| will be invoked after the operation
   // completes or aborts because of errors. All pending refresh policy requests
   // will be aborted, and no further refresh policy requests will be allowed.
-  void Unregister(const UnregisterCallback& callback);
+  void Unregister(UnregisterCallback callback);
 
   // Adds/Removes an Observer for this object.
   void AddObserver(Observer* observer);
@@ -78,12 +80,16 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   void ReportValidationResult(CloudPolicyStore* store);
 
-  bool IsInitializationComplete() const { return initialization_complete_; }
+  bool IsInitializationComplete() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return initialization_complete_;
+  }
 
   // If initial policy refresh was completed returns its result.
   // This allows ChildPolicyObserver to know whether policy was fetched before
   // profile creation.
-  base::Optional<bool> initial_policy_refresh_result() const {
+  absl::optional<bool> initial_policy_refresh_result() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return initial_policy_refresh_result_;
   }
 
@@ -99,6 +105,9 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // Invokes the unregister callback and clears unregister state. The |success|
   // flag is passed through to the unregister callback.
   void UnregisterCompleted(bool success);
+
+  // Assert non-concurrent usage in debug builds.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The policy type that will be fetched by the |client_|, with the optional
   // |settings_entity_id_|.
@@ -138,7 +147,7 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
 
   // Set to true if initial policy refresh was successful. Set to false
   // otherwise.
-  base::Optional<bool> initial_policy_refresh_result_;
+  absl::optional<bool> initial_policy_refresh_result_;
 
   // Observers who will receive notifications when the service has finished
   // initializing.
@@ -148,8 +157,6 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // reported once if the validated policy's data signature matches with this
   // one. Will be cleared once we send the validation report.
   std::string policy_pending_validation_signature_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyService);
 };
 
 }  // namespace policy

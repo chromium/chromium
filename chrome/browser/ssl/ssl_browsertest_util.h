@@ -88,6 +88,28 @@ class SecurityStateWebContentsObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+// Returns true if Chrome will use its builtin cert verifier rather than the
+// operating system's default.
+bool UsingBuiltinCertVerifier();
+
+// SystemSupportsHardFailRevocationChecking returns true iff the current
+// operating system supports revocation checking and can distinguish between
+// situations where a given certificate lacks any revocation information (eg:
+// no CRLDistributionPoints and no OCSP Responder AuthorityInfoAccess) and when
+// revocation information cannot be obtained (eg: the CRL was unreachable).
+// If it does not, then tests which rely on 'hard fail' behaviour should be
+// skipped.
+bool SystemSupportsHardFailRevocationChecking();
+
+// SystemUsesChromiumEVMetadata returns true iff the current operating system
+// uses Chromium's EV metadata (i.e. EVRootCAMetadata). If it does not, then
+// several tests are effected because our testing EV certificate won't be
+// recognised as EV.
+bool SystemUsesChromiumEVMetadata();
+
+// Returns true iff OCSP stapling is supported on this operating system.
+bool SystemSupportsOCSPStapling();
+
 // Returns |true| if the default CertVerifier used by the NetworkService is
 // expected to support blocking certificates that appear within a CRLSet.
 bool CertVerifierSupportsCRLSetBlocking();

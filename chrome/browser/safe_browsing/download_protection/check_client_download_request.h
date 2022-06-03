@@ -11,18 +11,22 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
-#include "components/safe_browsing/proto/webprotect.pb.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
+
+namespace profile {
+class Profile;
+}
 
 namespace safe_browsing {
 
@@ -35,6 +39,11 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckClientDownloadRequest(const CheckClientDownloadRequest&) = delete;
+  CheckClientDownloadRequest& operator=(const CheckClientDownloadRequest&) =
+      delete;
+
   ~CheckClientDownloadRequest() override;
 
   // download::DownloadItem::Observer:
@@ -43,16 +52,13 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   static bool IsSupportedDownload(const download::DownloadItem& item,
                                   const base::FilePath& target_path,
-                                  DownloadCheckResultReason* reason,
-                                  ClientDownloadRequest::DownloadType* type);
+                                  DownloadCheckResultReason* reason);
 
  private:
   // CheckClientDownloadRequestBase overrides:
-  bool IsSupportedDownload(DownloadCheckResultReason* reason,
-                           ClientDownloadRequest::DownloadType* type) override;
-  content::BrowserContext* GetBrowserContext() override;
+  bool IsSupportedDownload(DownloadCheckResultReason* reason) override;
+  content::BrowserContext* GetBrowserContext() const override;
   bool IsCancelled() override;
-  void PopulateRequest(ClientDownloadRequest* request) override;
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;
 
   void NotifySendRequest(const ClientDownloadRequest* request) override;
@@ -62,33 +68,27 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
                                   const std::string& request_data,
                                   const std::string& response_body) override;
 
-  // Returns true if the CheckClientDownloadRequest returned the
-  // ASYNC_SCANNING result while it does deep scanning.
-  bool MaybeReturnAsynchronousVerdict(
-      DownloadCheckResultReason reason) override;
-
   // Uploads the binary for deep scanning if the reason and policies indicate
-  // it should be.
-  bool ShouldUploadBinary(DownloadCheckResultReason reason) override;
+  // it should be. ShouldUploadBinary will returns the settings to apply for
+  // deep scanning if it should occur, or absl::nullopt if no scan should be
+  // done.
+  absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
+      DownloadCheckResultReason reason) override;
   void UploadBinary(DownloadCheckResult result,
-                    DownloadCheckResultReason reason) override;
+                    DownloadCheckResultReason reason,
+                    enterprise_connectors::AnalysisSettings settings) override;
 
   // Called when this request is completed.
   void NotifyRequestFinished(DownloadCheckResult result,
                              DownloadCheckResultReason reason) override;
 
-  // Returns true when the file should be uploaded for a DLP compliance scan.
-  // This consults the CheckContentCompliance enterprise policy.
-  bool ShouldUploadForDlpScan();
+  // Called when finishing the download, to decide whether to prompt the user
+  // for deep scanning or not.
+  bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
 
-  // Returns true when the file should be uploaded for a malware scan. This
-  // consults the SendFilesForMalwareCheck enterprise policy.
-  bool ShouldUploadForMalwareScan(DownloadCheckResultReason reason);
+  bool IsAllowlistedByPolicy() const override;
 
-  // Called when deep scanning is complete. Where appropriate, it updates the
-  // download UX, and sends a real time report about the download.
-  void OnDeepScanningComplete(BinaryUploadService::Result result,
-                              DeepScanningClientResponse response);
+  bool IsUnderAdvancedProtection(Profile* profile) const;
 
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.
@@ -98,14 +98,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   // Upload start time used for UMA duration histograms.
   base::TimeTicks upload_start_time_;
 
-  // When uploading files for deep scanning, we need to preserve the original
-  // result and reason from the server, just in case deep scanning fails.
-  DownloadCheckResult saved_result_;
-  DownloadCheckResultReason saved_reason_;
-
   base::WeakPtrFactory<CheckClientDownloadRequest> weakptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckClientDownloadRequest);
 };
 
 }  // namespace safe_browsing

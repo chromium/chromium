@@ -38,6 +38,7 @@ MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
     g_multi_user_window_manager_instance = new MultiUserWindowManagerHelper(
         std::make_unique<MultiUserWindowManagerStub>());
   }
+  g_multi_user_window_manager_instance->Init();
   return g_multi_user_window_manager_instance;
 }
 
@@ -69,6 +70,7 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest(
     DeleteInstance();
   g_multi_user_window_manager_instance =
       new MultiUserWindowManagerHelper(account_id);
+  g_multi_user_window_manager_instance->Init();
 }
 
 // static
@@ -78,6 +80,12 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest(
     DeleteInstance();
   g_multi_user_window_manager_instance =
       new MultiUserWindowManagerHelper(std::move(window_manager));
+  g_multi_user_window_manager_instance->Init();
+}
+
+void MultiUserWindowManagerHelper::Init() {
+  if (multi_profile_support_)
+    multi_profile_support_->Init();
 }
 
 void MultiUserWindowManagerHelper::AddUser(content::BrowserContext* profile) {
@@ -97,7 +105,6 @@ MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
     const AccountId& account_id)
     : multi_profile_support_(
           std::make_unique<MultiProfileSupport>(account_id)) {
-  multi_profile_support_->Init();
 }
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(

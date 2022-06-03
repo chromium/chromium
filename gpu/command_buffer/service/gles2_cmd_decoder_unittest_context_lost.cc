@@ -132,7 +132,8 @@ class GLES2DecoderLostContextTest : public GLES2DecoderManualInitTest {
 
 TEST_P(GLES2DecoderLostContextTest, LostFromMakeCurrent) {
   Init(false);  // without robustness
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   // Expect the group to be lost.
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kUnknown)).Times(1);
   decoder_->MakeCurrent();
@@ -149,7 +150,8 @@ TEST_P(GLES2DecoderLostContextTest, LostFromMakeCurrentWithRobustness) {
   // If we can't make the context current, we cannot query the robustness
   // extension.
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB()).Times(0);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   // Expect the group to be lost.
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kUnknown)).Times(1);
   decoder_->MakeCurrent();
@@ -190,7 +192,8 @@ TEST_P(GLES2DecoderLostContextTest, TextureDestroyAfterLostFromMakeCurrent) {
   GenHelper<cmds::DeleteTexturesImmediate>(kClientTextureId);
 
   // Force context lost for MakeCurrent().
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   // Expect the group to be lost.
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kUnknown)).Times(1);
 
@@ -245,7 +248,8 @@ TEST_P(GLES2DecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   EXPECT_CALL(*gl_, DeleteSync(kGlSync)).Times(0).RetiresOnSaturation();
 
   // Force context lost for MakeCurrent().
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   // Expect the group to be lost.
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kUnknown)).Times(1);
 
@@ -259,7 +263,8 @@ TEST_P(GLES2DecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
 TEST_P(GLES2DecoderLostContextTest, LostFromResetAfterMakeCurrent) {
   Init(true);  // with robustness
   InSequence seq;
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
       .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_KHR));
   // Expect the group to be lost.

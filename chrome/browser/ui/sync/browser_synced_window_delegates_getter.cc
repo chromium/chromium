@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sync/browser_synced_window_delegates_getter.h"
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"

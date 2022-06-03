@@ -83,7 +83,8 @@ class FakeTransport : public Transport {
     return received_messages_;
   }
 
-  void set_on_message_callback(const base::Closure& on_message_callback) {
+  void set_on_message_callback(
+      const base::RepeatingClosure& on_message_callback) {
     on_message_callback_ = on_message_callback;
   }
 
@@ -96,7 +97,7 @@ class FakeTransport : public Transport {
   bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override {
     received_messages_.push_back(
         std::make_unique<jingle_xmpp::XmlElement>(*transport_info));
-    if (!on_message_callback_.is_null())
+    if (on_message_callback_)
       on_message_callback_.Run();
     return true;
   }
@@ -104,7 +105,7 @@ class FakeTransport : public Transport {
  private:
   SendTransportInfoCallback send_transport_info_callback_;
   std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> received_messages_;
-  base::Closure on_message_callback_;
+  base::RepeatingClosure on_message_callback_;
 };
 
 class FakePlugin : public SessionPlugin {
@@ -195,17 +196,18 @@ class JingleSessionTest : public testing::Test {
     FakeSignalStrategy::Connect(host_signal_strategy_.get(),
                                 client_signal_strategy_.get());
 
-    host_server_.reset(new JingleSessionManager(host_signal_strategy_.get()));
+    host_server_ =
+        std::make_unique<JingleSessionManager>(host_signal_strategy_.get());
     host_server_->AcceptIncoming(
-        base::Bind(&MockSessionManagerListener::OnIncomingSession,
-                   base::Unretained(&host_server_listener_)));
+        base::BindRepeating(&MockSessionManagerListener::OnIncomingSession,
+                            base::Unretained(&host_server_listener_)));
 
     std::unique_ptr<AuthenticatorFactory> factory(
         new FakeHostAuthenticatorFactory(messages_till_start, auth_config));
     host_server_->set_authenticator_factory(std::move(factory));
 
-    client_server_.reset(
-        new JingleSessionManager(client_signal_strategy_.get()));
+    client_server_ =
+        std::make_unique<JingleSessionManager>(client_signal_strategy_.get());
   }
 
   void CreateSessionManagers(FakeAuthenticator::Config auth_config) {
@@ -425,7 +427,7 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqsDestroyOnFirstMessage) {
   host_transport_.send_transport_info_callback().Run(CreateTransportInfo("2"));
 
   // Destroy the session as soon as the first message is received.
-  client_transport_.set_on_message_callback(base::Bind(
+  client_transport_.set_on_message_callback(base::BindRepeating(
       &JingleSessionTest::DeleteClientSession, base::Unretained(this)));
 
   base::RunLoop().RunUntilIdle();
@@ -579,7 +581,7 @@ TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
   EXPECT_TRUE(client_transport_.received_messages().empty());
 
   // Destroy the session as soon as the first message is received.
-  client_transport_.set_on_message_callback(base::Bind(
+  client_transport_.set_on_message_callback(base::BindRepeating(
       &JingleSessionTest::DeleteClientSession, base::Unretained(this)));
 
   // Resume authentication.

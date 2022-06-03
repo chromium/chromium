@@ -9,15 +9,18 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
+#include "chromeos/services/device_sync/async_execution_time_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
+#include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "chromeos/services/device_sync/device_sync_type_converters.h"
+#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
 
 namespace chromeos {
 
@@ -25,13 +28,23 @@ namespace device_sync {
 
 namespace {
 
-// Timeout values for the asynchronous operations of fetching client app
-// metadata and making the network request.
-// TODO(https://crbug.com/933656): Tune this value.
-constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
-    base::TimeDelta::FromSeconds(60);
+// TODO(https://crbug.com/933656): Use async execution time metrics to tune
+// these timeout values.
 constexpr base::TimeDelta kWaitingForGetDevicesActivityStatusResponseTimeout =
-    base::TimeDelta::FromSeconds(10);
+    kMaxAsyncExecutionTime;
+
+void RecordGetDevicesActivityStatusMetrics(
+    const base::TimeDelta& execution_time,
+    CryptAuthApiCallResult result) {
+  LogAsyncExecutionTimeMetric(
+      "CryptAuth.DeviceSyncV2.DeviceActivityGetter.ExecutionTime."
+      "GetDevicesActivityStatus",
+      execution_time);
+  LogCryptAuthApiCallSuccessMetric(
+      "CryptAuth.DeviceSyncV2.DeviceActivityGetter.ApiCallResult."
+      "GetDevicesActivityStatus",
+      result);
+}
 
 }  // namespace
 
@@ -46,16 +59,14 @@ void CryptAuthDeviceActivityGetterImpl::Factory::SetFactoryForTesting(
 }
 
 // static
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 CryptAuthDeviceActivityGetterImpl::GetTimeoutForState(State state) {
   switch (state) {
-    case State::kWaitingForClientAppMetadata:
-      return kWaitingForClientAppMetadataTimeout;
     case State::kWaitingForGetDevicesActivityStatusResponse:
       return kWaitingForGetDevicesActivityStatusResponseTimeout;
     default:
       // Signifies that there should not be a timeout.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -63,28 +74,26 @@ CryptAuthDeviceActivityGetterImpl::Factory::~Factory() = default;
 
 std::unique_ptr<CryptAuthDeviceActivityGetter>
 CryptAuthDeviceActivityGetterImpl::Factory::Create(
+    const std::string& instance_id,
+    const std::string& instance_id_token,
     CryptAuthClientFactory* client_factory,
-    ClientAppMetadataProvider* client_app_metadata_provider,
-    CryptAuthGCMManager* gcm_manager,
     std::unique_ptr<base::OneShotTimer> timer) {
   if (test_factory_)
-    return test_factory_->BuildInstance(client_factory,
-                                        client_app_metadata_provider,
-                                        gcm_manager, std::move(timer));
+    return test_factory_->CreateInstance(instance_id, instance_id_token,
+                                         client_factory, std::move(timer));
 
   return base::WrapUnique(new CryptAuthDeviceActivityGetterImpl(
-      client_factory, client_app_metadata_provider, gcm_manager,
-      std::move(timer)));
+      instance_id, instance_id_token, client_factory, std::move(timer)));
 }
 
 CryptAuthDeviceActivityGetterImpl::CryptAuthDeviceActivityGetterImpl(
+    const std::string& instance_id,
+    const std::string& instance_id_token,
     CryptAuthClientFactory* client_factory,
-    ClientAppMetadataProvider* client_app_metadata_provider,
-    CryptAuthGCMManager* gcm_manager,
     std::unique_ptr<base::OneShotTimer> timer)
-    : client_factory_(client_factory),
-      client_app_metadata_provider_(client_app_metadata_provider),
-      gcm_manager_(gcm_manager),
+    : instance_id_(instance_id),
+      instance_id_token_(instance_id_token),
+      client_factory_(client_factory),
       timer_(std::move(timer)) {
   DCHECK(client_factory);
 }
@@ -97,63 +106,37 @@ void CryptAuthDeviceActivityGetterImpl::SetState(State state) {
 
   PA_LOG(INFO) << "Transitioning from " << state_ << " to " << state;
   state_ = state;
+  last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  base::Optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
-  // TODO(https://crbug.com/936273): Add metrics to track failure rates due to
-  // async timeouts.
   timer_->Start(FROM_HERE, *timeout_for_state,
                 base::BindOnce(&CryptAuthDeviceActivityGetterImpl::OnTimeout,
                                base::Unretained(this)));
 }
 
 void CryptAuthDeviceActivityGetterImpl::OnAttemptStarted() {
-  // GCM registration is expected to be completed before the first enrollment.
-  DCHECK(!gcm_manager_->GetRegistrationId().empty())
-      << "Device activity status requested before GCM registration complete.";
-  SetState(State::kWaitingForClientAppMetadata);
-
-  client_app_metadata_provider_->GetClientAppMetadata(
-      gcm_manager_->GetRegistrationId(),
-      base::BindOnce(
-          &CryptAuthDeviceActivityGetterImpl::OnClientAppMetadataFetched,
-          callback_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CryptAuthDeviceActivityGetterImpl::OnClientAppMetadataFetched(
-    const base::Optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
-  DCHECK(state_ == State::kWaitingForClientAppMetadata);
-
-  if (!client_app_metadata) {
-    OnAttemptError(NetworkRequestError::kUnknown);
-    return;
-  }
-
   cryptauthv2::GetDevicesActivityStatusRequest request;
-
   request.mutable_context()->mutable_client_metadata()->set_retry_count(0);
   request.mutable_context()->mutable_client_metadata()->set_invocation_reason(
       cryptauthv2::ClientMetadata::INVOCATION_REASON_UNSPECIFIED);
-
   request.mutable_context()->set_group(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(
           CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether));
-  request.mutable_context()->set_device_id(
-      client_app_metadata.value().instance_id());
-  request.mutable_context()->set_device_id_token(
-      client_app_metadata.value().instance_id_token());
+  request.mutable_context()->set_device_id(instance_id_);
+  request.mutable_context()->set_device_id_token(instance_id_token_);
 
   SetState(State::kWaitingForGetDevicesActivityStatusResponse);
 
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->GetDevicesActivityStatus(
       request,
-      base::Bind(
+      base::BindOnce(
           &CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess,
           base::Unretained(this)),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusFailure,
           base::Unretained(this)));
 }
@@ -162,6 +145,12 @@ void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess(
     const cryptauthv2::GetDevicesActivityStatusResponse& response) {
   DCHECK(state_ == State::kWaitingForGetDevicesActivityStatusResponse);
 
+  RecordGetDevicesActivityStatusMetrics(
+      base::TimeTicks::Now() - last_state_change_timestamp_,
+      CryptAuthApiCallResult::kSuccess);
+
+  PA_LOG(VERBOSE) << "GetDevicesActivityStatus response:\n" << response;
+
   DeviceActivityStatusResult device_activity_statuses;
 
   for (const cryptauthv2::DeviceActivityStatus& device_activity_status :
@@ -169,7 +158,11 @@ void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess(
     device_activity_statuses.emplace_back(mojom::DeviceActivityStatus::New(
         device_activity_status.device_id(),
         base::Time::FromTimeT(device_activity_status.last_activity_time_sec()),
-        std::move(device_activity_status.connectivity_status())));
+        std::move(device_activity_status.connectivity_status()),
+        base::Time::FromTimeT(
+            device_activity_status.last_update_time().seconds()) +
+            base::Nanoseconds(
+                device_activity_status.last_update_time().nanos())));
   }
 
   cryptauth_client_.reset();
@@ -180,10 +173,23 @@ void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess(
 void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusFailure(
     NetworkRequestError error) {
   DCHECK(state_ == State::kWaitingForGetDevicesActivityStatusResponse);
+
+  RecordGetDevicesActivityStatusMetrics(
+      base::TimeTicks::Now() - last_state_change_timestamp_,
+      CryptAuthApiCallResultFromNetworkRequestError(error));
+
   OnAttemptError(error);
 }
 
 void CryptAuthDeviceActivityGetterImpl::OnTimeout() {
+  DCHECK_EQ(state_, State::kWaitingForGetDevicesActivityStatusResponse);
+  PA_LOG(ERROR) << "Timed out in state " << state_ << ".";
+
+  base::TimeDelta execution_time =
+      base::TimeTicks::Now() - last_state_change_timestamp_;
+  RecordGetDevicesActivityStatusMetrics(execution_time,
+                                        CryptAuthApiCallResult::kTimeout);
+
   OnAttemptError(NetworkRequestError::kUnknown);
 }
 
@@ -200,9 +206,6 @@ std::ostream& operator<<(
   switch (state) {
     case CryptAuthDeviceActivityGetterImpl::State::kNotStarted:
       stream << "[DeviceActivityGetter state: Not started]";
-      break;
-    case CryptAuthDeviceActivityGetterImpl::State::kWaitingForClientAppMetadata:
-      stream << "[DeviceActivityGetter state: Waiting for client app metadata]";
       break;
     case CryptAuthDeviceActivityGetterImpl::State::
         kWaitingForGetDevicesActivityStatusResponse:

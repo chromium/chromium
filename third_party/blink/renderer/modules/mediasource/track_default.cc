@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediasource/track_default.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
@@ -13,19 +13,16 @@
 
 namespace blink {
 
-const AtomicString& TrackDefault::AudioKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, audio, ("audio"));
-  return audio;
+AtomicString TrackDefault::AudioKeyword() {
+  return "audio";
 }
 
-const AtomicString& TrackDefault::VideoKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, video, ("video"));
-  return video;
+AtomicString TrackDefault::VideoKeyword() {
+  return "video";
 }
 
-const AtomicString& TrackDefault::TextKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, text, ("text"));
-  return text;
+AtomicString TrackDefault::TextKeyword() {
+  return "text";
 }
 
 ScriptValue TrackDefault::kinds(ScriptState* script_state) const {

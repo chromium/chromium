@@ -12,8 +12,6 @@ struct wl_client;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kZcrKeyboardConfigurationVersion = 2;
-
 void bind_keyboard_configuration(wl_client* client,
                                  void* data,
                                  uint32_t version,

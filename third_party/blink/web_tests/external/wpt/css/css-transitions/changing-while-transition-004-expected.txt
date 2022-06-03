@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Unsettign transition should not affect in-flight transitions assert_equals: Even after unsetting transition, the transition should be 50% complete expected "50px" but got "100px"
+Harness: the test ran to completion.
+

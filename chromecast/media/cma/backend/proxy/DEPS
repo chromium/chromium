@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/cast_core/public/src/proto",
+  "+third_party/protobuf",
+]

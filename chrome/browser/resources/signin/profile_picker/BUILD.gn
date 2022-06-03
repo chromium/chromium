@@ -1,0 +1,180 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../tools/optimize_webui.gni")
+
+assert(!is_chromeos_ash)
+
+preprocess_folder = "preprocessed"
+
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
+  optimize_webui("build") {
+    host = "profile-picker"
+    js_module_in_files = [
+      "profile_picker.js",
+      "lazy_load.js",
+    ]
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    out_manifest = "$target_gen_dir/$build_manifest"
+    js_out_files = [
+      "profile_picker.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
+
+    deps = [ ":build_ts" ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+    ]
+  }
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "profile_picker"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "profile_picker.html",
+    "images/left_banner_image.svg",
+    "images/right_banner_image.svg",
+    "images/dark_mode_left_banner_image.svg",
+    "images/dark_mode_right_banner_image.svg",
+    "profile_creation_flow/images/banner_dark_image.svg",
+    "profile_creation_flow/images/banner_light_image.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "profile_picker.rollup.js|profile_picker.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  }
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "ensure_lazy_loaded.ts",
+    "icons.ts",
+    "lazy_load.ts",
+    "manage_profiles_browser_proxy.ts",
+    "navigation_mixin.ts",
+    "policy_helper.ts",
+    "profile_picker.ts",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "profile_picker_app.ts",
+    "profile_picker_main_view.ts",
+    "profile_card.ts",
+    "profile_card_menu.ts",
+    "profile_creation_flow/local_profile_customization.ts",
+    "profile_creation_flow/profile_type_choice.ts",
+    "profile_picker_shared_css.ts",
+    "profile_creation_flow/shared_css.ts",
+    "profile_switch.ts",
+  ]
+  if (is_chromeos_lacros) {
+    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
+  }
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/profile_picker_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/profile_picker_resources.h",
+    "grit/profile_picker_resources_map.cc",
+    "grit/profile_picker_resources_map.h",
+    "profile_picker_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "ensure_lazy_loaded.ts",
+    "icons.ts",
+    "lazy_load.ts",
+    "manage_profiles_browser_proxy.ts",
+    "navigation_mixin.ts",
+    "policy_helper.ts",
+    "profile_card.ts",
+    "profile_card_menu.ts",
+    "profile_creation_flow/local_profile_customization.ts",
+    "profile_creation_flow/profile_type_choice.ts",
+    "profile_creation_flow/shared_css.ts",
+    "profile_picker_app.ts",
+    "profile_picker.ts",
+    "profile_picker_main_view.ts",
+    "profile_picker_shared_css.ts",
+    "profile_switch.ts",
+  ]
+  if (is_chromeos_lacros) {
+    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
+  }
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+}
+
+group("web_components") {
+  public_deps = [
+    ":web_components_local",
+    "profile_creation_flow:web_components",
+  ]
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "profile_card.ts",
+    "profile_card_menu.ts",
+    "profile_picker_app.ts",
+    "profile_picker_main_view.ts",
+    "profile_picker_shared_css.ts",
+    "profile_switch.ts",
+  ]
+}

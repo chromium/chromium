@@ -25,6 +25,29 @@ cd woff2
 make clean all
 ```
 
+Alternatively, if Brotli is already installed on your system you can use CMake
+to build executables and libraries:
+
+```
+git clone https://github.com/google/woff2.git
+cd woff2
+mkdir out
+cd out
+cmake ..
+make
+make install
+```
+
+By default, shared libraries are built. To use static linkage, do:
+
+```
+cd woff2
+mkdir out-static
+cmake -DBUILD_SHARED_LIBS=OFF ..
+make
+make install
+```
+
 ## Run
 
 Ensure the binaries from the build process are in your $PATH, then:

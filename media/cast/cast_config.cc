@@ -23,10 +23,14 @@ VideoCodecParams::~VideoCodecParams() = default;
 FrameSenderConfig::FrameSenderConfig()
     : sender_ssrc(0),
       receiver_ssrc(0),
-      min_playout_delay(
-          base::TimeDelta::FromMilliseconds(kDefaultRtpMaxDelayMs)),
-      max_playout_delay(
-          base::TimeDelta::FromMilliseconds(kDefaultRtpMaxDelayMs)),
+      // In production, these values are overridden by the mirror settings
+      // and potentially the mirroring session parameters, however we provide
+      // a reasonable default here for some use cases, such as tests.
+      // All three delays are set to the same value due to adaptive latency
+      // being disabled in Chrome. This will be fixed as part of the migration
+      // to libcast.
+      min_playout_delay(base::Milliseconds(kDefaultRtpMaxDelayMs)),
+      max_playout_delay(min_playout_delay),
       animated_playout_delay(min_playout_delay),
       rtp_payload_type(RtpPayloadType::UNKNOWN),
       use_external_encoder(false),

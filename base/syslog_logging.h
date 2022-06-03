@@ -38,16 +38,17 @@ void BASE_EXPORT ResetEventSourceForTesting();
 class BASE_EXPORT EventLogMessage {
  public:
   EventLogMessage(const char* file, int line, LogSeverity severity);
-
+  EventLogMessage(const EventLogMessage&) = delete;
+  EventLogMessage& operator=(const EventLogMessage&) = delete;
   ~EventLogMessage();
 
   std::ostream& stream() { return log_message_.stream(); }
 
  private:
   LogMessage log_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLogMessage);
 };
+
+void BASE_EXPORT SetSyslogLoggingForTesting(bool logging_enabled);
 
 }  // namespace logging
 

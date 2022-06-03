@@ -8,8 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/metrics/field_trial.h"
 #include "components/variations/active_field_trials.h"
 
 // This file provides various helpers that extend the functionality around
@@ -36,15 +36,11 @@
 //  std::string value = GetVariationParamValue("trial", "param_x");
 //  // use |value|, which will be "" if it does not exist
 //
-// VariationID id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial",
-//                                       "group1");
+// VariationID id = GetGoogleVariationID(
+//     GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial", "group1");
 // if (id != variations::EMPTY_ID) {
 //   // use |id|
 // }
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace variations {
 
@@ -55,16 +51,31 @@ const VariationID EMPTY_ID = 0;
 // A key into the Associate/Get methods for VariationIDs. This is used to create
 // separate ID associations for separate parties interested in VariationIDs.
 enum IDCollectionKey {
-  // This collection is used by Google web properties, transmitted through the
-  // X-Client-Data header.
-  GOOGLE_WEB_PROPERTIES,
+  // The IDs in this collection are used by Google web properties and are
+  // transmitted via the X-Client-Data header. These IDs are transmitted in
+  // first- and third-party contexts.
+  GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+  // The IDs in this collection are used by Google web properties and are
+  // transmitted via the X-Client-Data header. When kRestrictGoogleWebVisibility
+  // is enabled, these IDs are transmitted in only first-party contexts;
+  // otherwise, these IDs are transmitted in first- and third-party contexts.
+  GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
   // This collection is used by Google web properties for signed in users only,
   // transmitted through the X-Client-Data header.
   GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-  // This collection is used by Google web properties for IDs that trigger
-  // server side experimental behavior, transmitted through the
-  // X-Client-Data header.
-  GOOGLE_WEB_PROPERTIES_TRIGGER,
+  // The IDs in this collection are used by Google web properties to trigger
+  // server-side experimental behavior and are transmitted via the X-Client-Data
+  // header. These IDs are transmitted in first- and third-party contexts.
+  GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+  // The IDs in this collection are used by Google web properties to trigger
+  // server-side experimental behavior and are transmitted via the X-Client-Data
+  // header. When kRestrictGoogleWebVisibility is enabled, these IDs are
+  // transmitted in only first-party contexts; otherwise, these IDs are
+  // transmitted in first- and third-party contexts.
+  GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
+  // This collection is used by the Google App and is passed at the time
+  // the cross-app communication is triggered.
+  GOOGLE_APP,
   // The total count of collections.
   ID_COLLECTION_COUNT,
 };
@@ -76,18 +87,21 @@ enum IDCollectionKey {
 // the trial and append groups) and needs to have a variations::VariationID
 // associated with it so Google servers can recognize the FieldTrial.
 // Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationID(IDCollectionKey key,
                                 const std::string& trial_name,
                                 const std::string& group_name,
                                 VariationID id);
 
 // As above, but overwrites any previously set id. Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationIDForce(IDCollectionKey key,
                                      const std::string& trial_name,
                                      const std::string& group_name,
                                      VariationID id);
 
 // As above, but takes an ActiveGroupId hash pair, rather than the string names.
+COMPONENT_EXPORT(VARIATIONS)
 void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
                                            const ActiveGroupId& active_group,
                                            VariationID id);
@@ -98,47 +112,57 @@ void AssociateGoogleVariationIDForceHashes(IDCollectionKey key,
 // for the named group. This API can be nicely combined with
 // FieldTrial::GetActiveFieldTrialGroups() to enumerate the variation IDs for
 // all active FieldTrial groups. Thread safe.
+COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationID(IDCollectionKey key,
                                  const std::string& trial_name,
                                  const std::string& group_name);
 
 // Same as GetGoogleVariationID(), but takes in a hashed |active_group| rather
 // than the string trial and group name.
+COMPONENT_EXPORT(VARIATIONS)
 VariationID GetGoogleVariationIDFromHashes(IDCollectionKey key,
                                            const ActiveGroupId& active_group);
 
 // Deprecated. Use base::AssociateFieldTrialParams() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool AssociateVariationParams(const std::string& trial_name,
                               const std::string& group_name,
                               const std::map<std::string, std::string>& params);
 
 // Deprecated. Use base::GetFieldTrialParams() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParams(const std::string& trial_name,
                         std::map<std::string, std::string>* params);
 
 // Deprecated. Use base::GetFieldTrialParamsByFeature() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParamsByFeature(const base::Feature& feature,
                                  std::map<std::string, std::string>* params);
 
 // Deprecated. Use base::GetFieldTrialParamValue() instead.
+COMPONENT_EXPORT(VARIATIONS)
 std::string GetVariationParamValue(const std::string& trial_name,
                                    const std::string& param_name);
 
 // Deprecated. Use base::GetFieldTrialParamValueByFeature() instead.
+COMPONENT_EXPORT(VARIATIONS)
 std::string GetVariationParamValueByFeature(const base::Feature& feature,
                                             const std::string& param_name);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsInt() instead.
+COMPONENT_EXPORT(VARIATIONS)
 int GetVariationParamByFeatureAsInt(const base::Feature& feature,
                                     const std::string& param_name,
                                     int default_value);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsDouble() instead.
+COMPONENT_EXPORT(VARIATIONS)
 double GetVariationParamByFeatureAsDouble(const base::Feature& feature,
                                           const std::string& param_name,
                                           double default_value);
 
 // Deprecated. Use base::GetFieldTrialParamByFeatureAsBool() instead.
+COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParamByFeatureAsBool(const base::Feature& feature,
                                       const std::string& param_name,
                                       bool default_value);
@@ -148,11 +172,11 @@ namespace testing {
 
 // Clears all of the mapped associations. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
-void ClearAllVariationIDs();
+COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationIDs();
 
 // Clears all of the associated params. Deprecated, use ScopedFeatureList
 // instead as it does a lot of work for you automatically.
-void ClearAllVariationParams();
+COMPONENT_EXPORT(VARIATIONS) void ClearAllVariationParams();
 
 }  // namespace testing
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
@@ -36,11 +35,17 @@ class MEDIA_EXPORT AudioPushFifo final {
   // |callback|.
   explicit AudioPushFifo(const OutputCallback& callback);
 
+  AudioPushFifo(const AudioPushFifo&) = delete;
+  AudioPushFifo& operator=(const AudioPushFifo&) = delete;
+
   ~AudioPushFifo();
 
   // Returns the number of frames in each AudioBus delivered to the
   // OutputCallback.
   int frames_per_buffer() const { return frames_per_buffer_; }
+
+  // The number of frames currently queued in this FIFO.
+  int queued_frames() const { return queued_frames_; }
 
   // Must be called at least once before the first call to Push().  May be
   // called later (e.g., to support an audio format change).
@@ -66,8 +71,6 @@ class MEDIA_EXPORT AudioPushFifo final {
   // Queue of frames pending for delivery.
   std::unique_ptr<AudioBus> audio_queue_;
   int queued_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPushFifo);
 };
 
 }  // namespace media

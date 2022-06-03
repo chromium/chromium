@@ -11,9 +11,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -21,6 +21,7 @@ class PrefService;
 namespace base {
 class Clock;
 class SequencedTaskRunner;
+class TimeTicks;
 }  // namespace base
 
 namespace image_fetcher {
@@ -42,11 +43,15 @@ class ImageCache : public base::RefCounted<ImageCache> {
              base::Clock* clock,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  ImageCache(const ImageCache&) = delete;
+  ImageCache& operator=(const ImageCache&) = delete;
+
   // Adds or updates the image data for the |url|. If the class hasn't been
   // initialized yet, the call is queued.
   void SaveImage(std::string url,
                  std::string image_data,
-                 bool needs_transcoding);
+                 bool needs_transcoding,
+                 ExpirationInterval expiration_interval);
 
   // Loads the image data for the |url| and passes it to |callback|. If there's
   // no image in the cache, then an empty string is returned. If |read_only|
@@ -73,7 +78,8 @@ class ImageCache : public base::RefCounted<ImageCache> {
   // Saves the |image_data| for |url|.
   void SaveImageImpl(const std::string& url,
                      std::string image_data,
-                     bool needs_transcoding);
+                     bool needs_transcoding,
+                     ExpirationInterval expiration_interval);
   // Loads the data for |url|, calls the user back before updating metadata.
   void LoadImageImpl(bool read_only,
                      const std::string& url,
@@ -85,7 +91,7 @@ class ImageCache : public base::RefCounted<ImageCache> {
       const std::string& key,
       ImageDataCallback callback,
       base::TimeTicks start_time,
-      base::Optional<CachedImageMetadataProto> metadata);
+      absl::optional<CachedImageMetadataProto> metadata);
   // Deletes the data for |url|.
   void DeleteImageImpl(const std::string& url);
 
@@ -120,8 +126,6 @@ class ImageCache : public base::RefCounted<ImageCache> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ImageCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageCache);
 };
 
 }  // namespace image_fetcher

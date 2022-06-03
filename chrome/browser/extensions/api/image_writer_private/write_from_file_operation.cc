@@ -35,11 +35,12 @@ void WriteFromFileOperation::StartImpl() {
   }
 
   PostTask(base::BindOnce(
-      &WriteFromFileOperation::Unzip, this,
-      base::Bind(
+      &WriteFromFileOperation::Extract, this,
+      base::BindOnce(
           &WriteFromFileOperation::Write, this,
-          base::Bind(&WriteFromFileOperation::VerifyWrite, this,
-                     base::Bind(&WriteFromFileOperation::Finish, this)))));
+          base::BindOnce(
+              &WriteFromFileOperation::VerifyWrite, this,
+              base::BindOnce(&WriteFromFileOperation::Finish, this)))));
 }
 
 }  // namespace image_writer

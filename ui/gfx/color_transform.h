@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/gfx_export.h"
@@ -17,13 +16,24 @@ namespace gfx {
 
 class GFX_EXPORT ColorTransform {
  public:
-  enum class Intent { INTENT_ABSOLUTE, INTENT_PERCEPTUAL, TEST_NO_OPT };
+  struct Options {
+    // Used in testing to verify that optimizations have no effect.
+    bool disable_optimizations = false;
+
+    // Used to adjust the transfer and range adjust matrices.
+    uint32_t src_bit_depth = kDefaultBitDepth;
+    uint32_t dst_bit_depth = kDefaultBitDepth;
+  };
 
   // TriStimulus is a color coordinate in any color space.
   // Channel order is XYZ, RGB or YUV.
   typedef Point3F TriStim;
 
   ColorTransform();
+
+  ColorTransform(const ColorTransform&) = delete;
+  ColorTransform& operator=(const ColorTransform&) = delete;
+
   virtual ~ColorTransform();
   virtual gfx::ColorSpace GetSrcColorSpace() const = 0;
   virtual gfx::ColorSpace GetDstColorSpace() const = 0;
@@ -33,7 +43,6 @@ class GFX_EXPORT ColorTransform {
 
   // Return GLSL shader source that defines a function DoColorConversion that
   // converts a vec3 according to this transform.
-  virtual bool CanGetShaderSource() const = 0;
   virtual std::string GetShaderSource() const = 0;
 
   // Return SKSL shader sources that modifies an "inout half4 color" according
@@ -45,13 +54,24 @@ class GFX_EXPORT ColorTransform {
 
   virtual size_t NumberOfStepsForTesting() const = 0;
 
+  // Two special cases:
+  // 1. If no source color space is specified (i.e., src.IsValid() is false), do
+  // no transformation.
+  // 2. If the target color space is not defined (i.e., dst.IsValid() is false),
+  // just apply the range adjust and inverse transfer matrices. This can be used
+  // for YUV to RGB color conversion.
   static std::unique_ptr<ColorTransform> NewColorTransform(
-      const ColorSpace& from,
-      const ColorSpace& to,
-      Intent intent);
+      const ColorSpace& src,
+      const ColorSpace& dst);
+
+  static std::unique_ptr<ColorTransform> NewColorTransform(
+      const ColorSpace& src,
+      const ColorSpace& dst,
+      const Options& options);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ColorTransform);
+  // The default bit depth assumed by NewColorTransform().
+  static constexpr int kDefaultBitDepth = 8;
 };
 
 }  // namespace gfx

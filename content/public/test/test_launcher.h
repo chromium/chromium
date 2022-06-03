@@ -13,7 +13,6 @@
 
 namespace base {
 class CommandLine;
-class FilePath;
 struct TestResult;
 }
 
@@ -24,9 +23,12 @@ struct ContentMainParams;
 class TestLauncherDelegate {
  public:
   virtual int RunTestSuite(int argc, char** argv) = 0;
-  virtual bool AdjustChildProcessCommandLine(
-      base::CommandLine* command_line,
-      const base::FilePath& temp_data_dir) = 0;
+
+  // Returns the command line switch used to specify the user data directory.
+  // The default implementation returns an empty string, which means no user
+  // data directory.
+  virtual std::string GetUserDataDirectoryCommandLineSwitch();
+
 #if !defined(OS_ANDROID)
   // Android browser tests set the ContentMainDelegate itself for the test
   // harness to use, and do not go through ContentMain() in TestLauncher.
@@ -70,10 +72,11 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
 TestLauncherDelegate* GetCurrentTestLauncherDelegate();
 
-#if !defined(OS_ANDROID)
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-ContentMainParams* GetContentMainParams();
+#if !defined(OS_ANDROID)
+// Returns a copy of the ContentMainParams initialized before launching tests.
+ContentMainParams CopyContentMainParams();
 #endif
 
 // Returns true if the currently running test has a prefix that indicates it

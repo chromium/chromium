@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/utility/image_writer/error_messages.h"
+#include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer.h"
 #include "chrome/utility/image_writer/image_writer_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +70,7 @@ class MockHandler : public ImageWriterHandler {
 // the write completes.
 class VerifyingHandler : public MockHandler {
  public:
-  VerifyingHandler() : image_writer_(NULL), verified_(false) {}
+  VerifyingHandler() : image_writer_(nullptr), verified_(false) {}
 
   void SendSucceeded() override {
     MockHandler::SendSucceeded();
@@ -118,7 +118,7 @@ TEST_F(ImageWriterUtilityTest, WriteInvalidImageFile) {
   EXPECT_CALL(mock_handler, SendSucceeded()).Times(0);
   EXPECT_CALL(mock_handler, SendFailed(error::kOpenImage)).Times(1);
 
-  ASSERT_TRUE(base::DeleteFile(image_path_, false));
+  ASSERT_TRUE(base::DeleteFile(image_path_));
   image_writer.Write();
   base::RunLoop().RunUntilIdle();
 }
@@ -131,7 +131,7 @@ TEST_F(ImageWriterUtilityTest, WriteInvalidDeviceFile) {
   EXPECT_CALL(mock_handler, SendSucceeded()).Times(0);
   EXPECT_CALL(mock_handler, SendFailed(error::kOpenDevice)).Times(1);
 
-  ASSERT_TRUE(base::DeleteFile(device_path_, false));
+  ASSERT_TRUE(base::DeleteFile(device_path_));
   image_writer.Write();
   base::RunLoop().RunUntilIdle();
 }
@@ -162,7 +162,7 @@ TEST_F(ImageWriterUtilityTest, VerifyInvalidImageFile) {
   EXPECT_CALL(mock_handler, SendSucceeded()).Times(0);
   EXPECT_CALL(mock_handler, SendFailed(error::kOpenImage)).Times(1);
 
-  ASSERT_TRUE(base::DeleteFile(image_path_, false));
+  ASSERT_TRUE(base::DeleteFile(image_path_));
 
   image_writer.Verify();
 
@@ -177,7 +177,7 @@ TEST_F(ImageWriterUtilityTest, VerifyInvalidDeviceFile) {
   EXPECT_CALL(mock_handler, SendSucceeded()).Times(0);
   EXPECT_CALL(mock_handler, SendFailed(error::kOpenDevice)).Times(1);
 
-  ASSERT_TRUE(base::DeleteFile(device_path_, false));
+  ASSERT_TRUE(base::DeleteFile(device_path_));
 
   image_writer.Verify();
 

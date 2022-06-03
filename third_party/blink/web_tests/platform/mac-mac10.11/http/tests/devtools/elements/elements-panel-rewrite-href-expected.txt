@@ -1,7 +1,0 @@
-Tests that src and href element targets are rewritten properly.
-
- javascript:alert('foo') 
-http://127.0.0.1:8000/devtools/elements/script.js
-http://127.0.0.1:8000/devtools/elements/stylesheet.css
-http://127.0.0.1:8000/devtools/elements/target.html
-

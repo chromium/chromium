@@ -5,17 +5,18 @@
   @UIA-WIN-ALLOW:Scroll.VerticalScrollPercent=*
   @UIA-WIN-ALLOW:Scroll.VerticalViewSize=*
   @UIA-WIN-ALLOW:Scroll.VerticallyScrollable=*
+  @UIA-WIN-ALLOW:ClassName*
  -->
 <!DOCTYPE html>
 <html>
   <body>
-    <div aria-label='not'>
+    <div class='not'>
       not scrollable
     </div>
-    <div style='width:100px; overflow:auto' aria-label='x'>
+    <div style='width:100px; overflow:auto' class='x'>
         <div style='width:200px; height:100px'></div>
     </div>
-    <div style='height:100px; overflow:auto' aria-label='y'>
+    <div style='height:100px; overflow:auto' class='y'>
         <div style='width:100px; height:200px'></div>
     </div>
   </body>

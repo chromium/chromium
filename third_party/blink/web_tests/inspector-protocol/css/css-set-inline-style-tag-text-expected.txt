@@ -1,0 +1,18 @@
+The test verifies functionality of protocol method CSS.setStyleTexts and DOM.undo.
+==== Initial style sheet text ====
+
+#test { color: green; }
+
+==== Style sheet text ====
+
+#test {color: blue;}
+
+Dumping matched rules: 
+*#test* {    regular
+    color: blue; @[1:7-1:19]
+    color: blue; @[undefined-undefined]
+}
+Dumping inherited rules: 
+==== Style sheet text after clearing the stylesheet and DOM.Undo ====
+<empty>
+

@@ -4,7 +4,7 @@
 
 #include "chromeos/dbus/biod/test_utils.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {

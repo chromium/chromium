@@ -8,14 +8,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "url/gurl.h"
 
-using content_settings::ResourceIdentifier;
 using content_settings::RuleIterator;
 
 namespace {
@@ -24,6 +24,10 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
  public:
   explicit InstalledWebappIterator(InstalledWebappProvider::RuleList rules)
       : rules_(std::move(rules)) {}
+
+  InstalledWebappIterator(const InstalledWebappIterator&) = delete;
+  InstalledWebappIterator& operator=(const InstalledWebappIterator&) = delete;
+
   ~InstalledWebappIterator() override = default;
 
   bool HasNext() const override { return index_ < rules_.size(); }
@@ -36,15 +40,26 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
 
     return content_settings::Rule(
         ContentSettingsPattern::FromURLNoWildcard(origin),
-        ContentSettingsPattern::Wildcard(), base::Value(setting));
+        ContentSettingsPattern::Wildcard(), base::Value(setting), base::Time(),
+        content_settings::SessionModel::Durable);
   }
 
  private:
   size_t index_ = 0;
   InstalledWebappProvider::RuleList rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappIterator);
 };
+
+bool IsSupportedContentType(ContentSettingsType content_type) {
+  switch (content_type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      return true;
+    case ContentSettingsType::GEOLOCATION:
+      return base::FeatureList::IsEnabled(
+          chrome::android::kTrustedWebActivityLocationDelegation);
+    default:
+      return false;
+  }
+}
 
 }  // namespace
 
@@ -57,22 +72,23 @@ InstalledWebappProvider::~InstalledWebappProvider() {
 
 std::unique_ptr<RuleIterator> InstalledWebappProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
-  if (content_type != ContentSettingsType::NOTIFICATIONS || incognito) {
+  if (incognito)
     return nullptr;
-  }
 
-  return std::make_unique<InstalledWebappIterator>(
-      InstalledWebappBridge::GetInstalledWebappNotificationPermissions());
+  if (IsSupportedContentType(content_type)) {
+    return std::make_unique<InstalledWebappIterator>(
+        InstalledWebappBridge::GetInstalledWebappPermissions(content_type));
+  }
+  return nullptr;
 }
 
 bool InstalledWebappProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
-    std::unique_ptr<base::Value>&& value) {
+    std::unique_ptr<base::Value>&& value,
+    const content_settings::ContentSettingConstraints& constraints) {
   // You can't set settings through this provider.
   return false;
 }
@@ -87,7 +103,7 @@ void InstalledWebappProvider::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
-void InstalledWebappProvider::Notify() {
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  ContentSettingsType::NOTIFICATIONS, std::string());
+void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(), content_type);
 }

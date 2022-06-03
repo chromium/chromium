@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module schema_org.mojom;
+
+// Due to the restriction of AppIndexing, all elements should be of the
+// same type. Non-array values are converted to arrays of one element.
+union Values {
+  array<bool> bool_values;
+  array<int64> long_values;
+  array<string> string_values;
+  array<Entity> entity_values;
+};
+
+// Key-value pair for the attributes of an |Entity|.
+struct Property {
+  string name;
+  Values values;
+};
+
+// Top-level metadata entry using schema.org vocabulary.
+// Tree structure of entities is possible.
+// Ref: https://developers.google.com/schemas/formats/json-ld
+struct Entity {
+  string type;  // Correspond to the "@type" key, defined in JSON-LD.
+  array<Property> properties;
+};

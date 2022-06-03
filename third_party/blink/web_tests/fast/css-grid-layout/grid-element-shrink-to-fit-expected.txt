@@ -1,8 +1,0 @@
-This test checks that the shrink-to-fit behavior is applied to the float and out-of-flow positioned elements.
-
-The following grids should be 400px * 400px, except the first one which uses 'relative' positioning.
-
-PASS
-PASS
-PASS
-PASS

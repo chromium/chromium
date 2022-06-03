@@ -8,20 +8,26 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-export {afterNextRender, beforeNextRender} from './lib/utils/render-status.js';
-export {animationFrame, idlePeriod, microTask} from './lib/utils/async.js';
 import * as gestures from './lib/utils/gestures.js';
-export {gestures};
-export {Base} from './polymer-legacy.js';
-export {dashToCamelCase} from './lib/utils/case-map.js';
-export {Debouncer, enqueueDebouncer} from './lib/utils/debounce.js';
-export {dom, flush} from './lib/legacy/polymer.dom.js';
-export {html} from './lib/utils/html-tag.js';
-export {matches, translate} from './lib/utils/path.js';
+
+export {DomIf} from './lib/elements/dom-if.js';
+export {DomRepeat} from './lib/elements/dom-repeat.js';
+export {mixinBehaviors} from './lib/legacy/class.js';
 export {OptionalMutableDataBehavior} from './lib/legacy/mutable-data-behavior.js';
 export {Polymer} from './lib/legacy/polymer-fn.js';
-export {PolymerElement} from './polymer-element.js';
-export {TemplateInstanceBase, templatize} from './lib/utils/templatize.js';
+export {dom, flush} from './lib/legacy/polymer.dom.js';
 export {Templatizer} from './lib/legacy/templatizer-behavior.js';
 export {calculateSplices} from './lib/utils/array-splice.js';
+export {animationFrame, idlePeriod, microTask, timeOut} from './lib/utils/async.js';
+export {dashToCamelCase} from './lib/utils/case-map.js';
+export {Debouncer, enqueueDebouncer} from './lib/utils/debounce.js';
+export {FlattenedNodesObserver} from './lib/utils/flattened-nodes-observer.js';
+export {html} from './lib/utils/html-tag.js';
+export {dedupingMixin} from './lib/utils/mixin.js';
+export {get, matches, translate} from './lib/utils/path.js';
+export {afterNextRender, beforeNextRender} from './lib/utils/render-status.js';
 export {useShadow} from './lib/utils/settings.js';
+export {TemplateInstanceBase, templatize} from './lib/utils/templatize.js';
+export {PolymerElement} from './polymer-element.js';
+export {Base} from './polymer-legacy.js';
+export {gestures};

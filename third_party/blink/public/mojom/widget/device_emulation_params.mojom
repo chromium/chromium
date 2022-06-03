@@ -1,0 +1,52 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/display/mojom/screen_orientation.mojom";
+
+enum EmulatedScreenType { kDesktop, kMobile };
+
+struct DeviceEmulationParams {
+  EmulatedScreenType screen_type;
+
+  // Emulated screen size. Typically full / physical size of the device screen
+  // in DIP. Empty size means using default value: original one for kDesktop
+  // screen position, equal to |view_size| for kMobile.
+  gfx.mojom.Size screen_size;
+
+  // Position of view on the screen. Missing position means using default value:
+  // original one for kDesktop screen position, (0, 0) for kMobile.
+  gfx.mojom.Point? view_position;
+
+  // Emulated view size. A width or height of 0 means no override in that
+  // dimension, but the other can still be applied. When both are 0, then the
+  // |scale| will be applied to the view instead.
+  gfx.mojom.Size view_size;
+
+  // If zero, the original device scale factor is preserved.
+  float device_scale_factor;
+
+  // Scale the contents of the main frame. The view's size will be scaled by
+  // this number when they are not specified in |view_size|.
+  float scale;
+
+  // Forced viewport offset for screenshots during emulation, (-1, -1) for
+  // disabled.
+  gfx.mojom.PointF viewport_offset;
+
+  // Viewport scale for screenshots during emulation, 0 for current.
+  float viewport_scale;
+
+  // Optional screen orientation type, with ScreenOrientation::Undefined
+  // value meaning no emulation necessary.
+  display.mojom.ScreenOrientation screen_orientation_type;
+
+  // Screen orientation angle, used together with screen_orientation_type.
+  uint32 screen_orientation_angle;
+
+  // Screen window segments dimensions.
+  array<gfx.mojom.Rect> window_segments;
+};

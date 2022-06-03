@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
-#include "content/renderer/pepper/gfx_conversion.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
@@ -29,7 +29,7 @@ class PepperGraphics2DHostTest : public testing::Test {
     return PepperGraphics2DHost::ConvertToLogicalPixels(scale, op_rect, delta);
   }
 
-  PepperGraphics2DHostTest() : renderer_ppapi_host_(nullptr, 12345) {}
+  PepperGraphics2DHostTest() : renderer_ppapi_host_(nullptr, nullptr, 12345) {}
 
   ~PepperGraphics2DHostTest() override {
     ppapi::ProxyAutoLock proxy_lock;

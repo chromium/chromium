@@ -5,18 +5,14 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
-#include "ui/wm/core/default_screen_position_client.h"
 
 namespace wm {
 
 typedef aura::test::AuraTestBase CoordinateConversionTest;
 
 TEST_F(CoordinateConversionTest, ConvertRect) {
-  DefaultScreenPositionClient screen_position_client;
-  aura::client::SetScreenPositionClient(root_window(), &screen_position_client);
   aura::Window* w = aura::test::CreateTestWindowWithBounds(
       gfx::Rect(10, 20, 100, 200), root_window());
 
@@ -35,8 +31,6 @@ TEST_F(CoordinateConversionTest, ConvertRect) {
   gfx::Rect r4(-10, -20, 100, 200);
   ConvertRectToScreen(w, &r4);
   EXPECT_EQ("0,0 100x200", r4.ToString());
-
-  aura::client::SetScreenPositionClient(root_window(), nullptr);
 }
 
 }  // namespace wm

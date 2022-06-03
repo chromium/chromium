@@ -1,1 +1,0 @@
-window.innerWidth should be equal to 300. Got 800

@@ -12,7 +12,7 @@ function onMessage(event) {
 function report(data) {
   window.parent.postMessage(
     data,
-    BASE_ORIGIN);
+    document.location.origin);
 }
 function onload() {
   window.addEventListener('message', onMessage, false);

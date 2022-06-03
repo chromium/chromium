@@ -7,11 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -30,6 +28,8 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class ClientDataDelegate;
+
 // Helper class that registers a CloudPolicyClient. It fetches an OAuth2 token
 // for the DM service if needed, and checks with Gaia if the account has policy
 // management enabled.
@@ -41,6 +41,10 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   CloudPolicyClientRegistrationHelper(
       CloudPolicyClient* client,
       enterprise_management::DeviceRegisterRequest::Type registration_type);
+  CloudPolicyClientRegistrationHelper(
+      const CloudPolicyClientRegistrationHelper&) = delete;
+  CloudPolicyClientRegistrationHelper& operator=(
+      const CloudPolicyClientRegistrationHelper&) = delete;
   ~CloudPolicyClientRegistrationHelper() override;
 
   // Starts the client registration process. This version uses the
@@ -53,9 +57,11 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
 
   // Starts the device registration with an token enrollment process.
   // |callback| is invoked when the registration is complete.
-  void StartRegistrationWithEnrollmentToken(const std::string& token,
-                                            const std::string& client_id,
-                                            base::OnceClosure callback);
+  void StartRegistrationWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
+      base::OnceClosure callback);
 
  private:
   class IdentityManagerHelper;
@@ -90,8 +96,6 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   CloudPolicyClient* client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyClientRegistrationHelper);
 };
 
 }  // namespace policy

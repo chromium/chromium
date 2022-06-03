@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -26,6 +25,9 @@ namespace media {
 struct NativePixmapAndSizeInfo;
 class ScopedVASurface;
 class VaapiWrapper;
+
+enum class VaapiFunctions;
+using ReportErrorToUMACB = base::RepeatingCallback<void(VaapiFunctions)>;
 
 struct VAContextAndScopedVASurfaceDeleter {
   void operator()(ScopedVASurface* scoped_va_surface) const;
@@ -56,11 +58,14 @@ enum class VaapiImageDecodeStatus : uint32_t {
 // call the methods on any thread, but calls must be synchronized externally.
 class VaapiImageDecoder {
  public:
+  VaapiImageDecoder(const VaapiImageDecoder&) = delete;
+  VaapiImageDecoder& operator=(const VaapiImageDecoder&) = delete;
+
   virtual ~VaapiImageDecoder();
 
   // Initializes |vaapi_wrapper_| in kDecode mode with the
   // appropriate VAAPI profile and |error_uma_cb| for error reporting.
-  virtual bool Initialize(const base::RepeatingClosure& error_uma_cb);
+  virtual bool Initialize(const ReportErrorToUMACB& error_uma_cb);
 
   // Decodes a picture. It will fill VA-API parameters and call the
   // corresponding VA-API methods according to the image in |encoded_image|.
@@ -110,8 +115,6 @@ class VaapiImageDecoder {
 
   // The VA profile used for the current image decoder.
   const VAProfile va_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecoder);
 };
 
 }  // namespace media

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
@@ -15,15 +14,14 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
-#include "chrome/common/web_application_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
@@ -39,7 +37,7 @@ using apps_helper::FixNTPOrdinalCollisions;
 using apps_helper::GetAppLaunchOrdinalForApp;
 using apps_helper::IncognitoDisableApp;
 using apps_helper::IncognitoEnableApp;
-using apps_helper::InstallApp;
+using apps_helper::InstallHostedApp;
 using apps_helper::InstallPlatformApp;
 using apps_helper::SetAppLaunchOrdinalForApp;
 using apps_helper::SetPageOrdinalForApp;
@@ -55,15 +53,14 @@ extensions::ExtensionRegistry* GetExtensionRegistry(Profile* profile) {
 
 class TwoClientExtensionAppsSyncTest : public SyncTest {
  public:
-  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
+  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientExtensionAppsSyncTest() override {}
+  TwoClientExtensionAppsSyncTest(const TwoClientExtensionAppsSyncTest&) =
+      delete;
+  TwoClientExtensionAppsSyncTest& operator=(
+      const TwoClientExtensionAppsSyncTest&) = delete;
 
-  // Needed for AwaitQuiescence().
-  bool TestUsesSelfNotifications() override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionAppsSyncTest);
+  ~TwoClientExtensionAppsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
@@ -80,8 +77,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
   const int kNumApps = 5;
   for (int i = 0; i < kNumApps; ++i) {
-    InstallApp(GetProfile(0), i);
-    InstallApp(GetProfile(1), i);
+    InstallHostedApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(1), i);
   }
 
   ASSERT_TRUE(SetupSync());
@@ -98,18 +95,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, StartWithDifferentApps) {
 
   const int kNumCommonApps = 5;
   for (int j = 0; j < kNumCommonApps; ++i, ++j) {
-    InstallApp(GetProfile(0), i);
-    InstallApp(GetProfile(1), i);
+    InstallHostedApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(1), i);
   }
 
   const int kNumProfile0Apps = 10;
   for (int j = 0; j < kNumProfile0Apps; ++i, ++j) {
-    InstallApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(0), i);
   }
 
   const int kNumProfile1Apps = 10;
   for (int j = 0; j < kNumProfile1Apps; ++i, ++j) {
-    InstallApp(GetProfile(1), i);
+    InstallHostedApp(GetProfile(1), i);
   }
 
   const int kNumPlatformApps = 5;
@@ -133,20 +130,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
   const int kNumCommonApps = 5;
   for (int j = 0; j < kNumCommonApps; ++i, ++j) {
-    InstallApp(GetProfile(0), i);
-    InstallApp(GetProfile(1), i);
+    InstallHostedApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(1), i);
   }
 
   ASSERT_TRUE(SetupSync());
 
   const int kNumProfile0Apps = 10;
   for (int j = 0; j < kNumProfile0Apps; ++i, ++j) {
-    InstallApp(GetProfile(0), i);
+    InstallHostedApp(GetProfile(0), i);
   }
 
   const int kNumProfile1Apps = 10;
   for (int j = 0; j < kNumProfile1Apps; ++i, ++j) {
-    InstallApp(GetProfile(1), i);
+    InstallHostedApp(GetProfile(1), i);
   }
 
   ASSERT_TRUE(AppsMatchChecker().Wait());
@@ -157,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
 
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
@@ -167,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Uninstall)) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   UninstallApp(GetProfile(0), 0);
@@ -184,31 +181,33 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   UninstallApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 1);
+  InstallHostedApp(GetProfile(0), 1);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Merge)) {
+// TODO(https://crbug.com/1265969): Change back to E2E_ENABLED when flakiness is
+// fixed.
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ONLY(Merge)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   UninstallApp(GetProfile(0), 0);
 
-  InstallApp(GetProfile(0), 1);
-  InstallApp(GetProfile(0), 2);
+  InstallHostedApp(GetProfile(0), 1);
+  InstallHostedApp(GetProfile(0), 2);
 
-  InstallApp(GetProfile(1), 2);
-  InstallApp(GetProfile(1), 3);
+  InstallHostedApp(GetProfile(1), 2);
+  InstallHostedApp(GetProfile(1), 3);
 
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
@@ -219,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   DisableApp(GetProfile(0), 0);
@@ -235,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   IncognitoEnableApp(GetProfile(0), 0);
@@ -256,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
   syncer::StringOrdinal initial_page =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   syncer::StringOrdinal second_page = initial_page.CreateAfter();
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
-  InstallApp(GetProfile(0), 0);
+  InstallHostedApp(GetProfile(0), 0);
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   syncer::StringOrdinal initial_position =
@@ -322,8 +321,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateLaunchType)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
-  // Wait until sync settles before we override the apps below.
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
   // Change the launch type to window.
@@ -374,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
   extensions::ExtensionSyncData invalid_launch_type_data(
       *extension, original_data.enabled(), original_data.disable_reasons(),
       original_data.incognito_enabled(), original_data.remote_install(),
-      original_data.app_launch_ordinal(), original_data.page_ordinal(),
-      extensions::NUM_LAUNCH_TYPES);
+      original_data.update_url(), original_data.app_launch_ordinal(),
+      original_data.page_ordinal(), extensions::NUM_LAUNCH_TYPES);
   extension_sync_service->ApplySyncData(invalid_launch_type_data);
 
   // The launch type should remain the same.

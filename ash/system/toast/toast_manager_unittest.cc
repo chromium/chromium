@@ -4,20 +4,26 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
+#include <string>
+
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -31,6 +37,10 @@ class DummyEvent : public ui::Event {
 class ToastManagerImplTest : public AshTestBase {
  public:
   ToastManagerImplTest() = default;
+
+  ToastManagerImplTest(const ToastManagerImplTest&) = delete;
+  ToastManagerImplTest& operator=(const ToastManagerImplTest&) = delete;
+
   ~ToastManagerImplTest() override = default;
 
  private:
@@ -60,26 +70,29 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay ? overlay->widget_for_testing() : nullptr;
   }
 
-  ToastOverlayButton* GetDismissButton() {
+  views::LabelButton* GetDismissButton() {
     ToastOverlay* overlay = GetCurrentOverlay();
     DCHECK(overlay);
     return overlay->dismiss_button_for_testing();
   }
 
-  base::string16 GetCurrentText() {
+  std::u16string GetCurrentText() {
     ToastOverlay* overlay = GetCurrentOverlay();
-    return overlay ? overlay->text_ : base::string16();
+    return overlay ? overlay->text_ : std::u16string();
   }
 
-  base::Optional<base::string16> GetCurrentDismissText() {
+  absl::optional<std::u16string> GetCurrentDismissText() {
     ToastOverlay* overlay = GetCurrentOverlay();
-    return overlay ? overlay->dismiss_text_ : base::string16();
+    return overlay ? overlay->dismiss_text_ : std::u16string();
   }
 
   void ClickDismissButton() {
-    ToastOverlay* overlay = GetCurrentOverlay();
-    if (overlay)
-      overlay->ClickDismissButtonForTesting(DummyEvent());
+    views::LabelButton* dismiss_button = GetDismissButton();
+    const gfx::Point button_center =
+        dismiss_button->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(button_center);
+    event_generator->ClickLeftButton();
   }
 
   std::string ShowToast(const std::string& text,
@@ -87,15 +100,15 @@ class ToastManagerImplTest : public AshTestBase {
                         bool visible_on_lock_screen = false) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
-                              base::string16(), visible_on_lock_screen));
+                              std::u16string(), visible_on_lock_screen));
     return id;
   }
 
   std::string ShowToastWithDismiss(
       const std::string& text,
       int32_t duration,
-      const base::Optional<std::string>& dismiss_text) {
-    base::Optional<base::string16> localized_dismiss;
+      const absl::optional<std::string>& dismiss_text) {
+    absl::optional<std::u16string> localized_dismiss;
     if (dismiss_text.has_value())
       localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
 
@@ -117,8 +130,6 @@ class ToastManagerImplTest : public AshTestBase {
  private:
   ToastManagerImpl* manager_ = nullptr;
   unsigned int serial_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastManagerImplTest);
 };
 
 TEST_F(ToastManagerImplTest, ShowAndCloseAutomatically) {
@@ -166,7 +177,7 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
 
 // TODO(crbug.com/959781): Test is flaky.
 TEST_F(ToastManagerImplTest, DISABLED_NullMessageHasNoDismissButton) {
-  ShowToastWithDismiss("DUMMY", 10, base::Optional<std::string>());
+  ShowToastWithDismiss("DUMMY", 10, absl::optional<std::string>());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDismissButton());
 }
@@ -178,17 +189,17 @@ TEST_F(ToastManagerImplTest, DISABLED_QueueMessage) {
   ShowToast("DUMMY3", 10);
 
   EXPECT_EQ(1, GetToastSerial());
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY1"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY1", GetCurrentText());
 
   while (GetToastSerial() != 2)
     base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY2"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY2", GetCurrentText());
 
   while (GetToastSerial() != 3)
     base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY3"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY3", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, PositionWithVisibleBottomShelf) {
@@ -213,6 +224,109 @@ TEST_F(ToastManagerImplTest, PositionWithVisibleBottomShelf) {
   EXPECT_EQ(
       root_bounds.bottom() - shelf_bounds.height() - ToastOverlay::kOffset,
       toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatShown) {
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatExtended) {
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  hotseat->SetState(HotseatState::kExtended);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(GetPrimaryWorkAreaInsets()->user_work_area_bounds().height() -
+                hotseat->GetHotseatSize() - ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
+  UpdateDisplay("600x400,600x400");
+  Shelf* shelf = GetPrimaryShelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
+}
+
+TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
+  UpdateDisplay("600x400,600x400");
+  Shelf* const shelf =
+      Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+          ->shelf();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
+
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+  EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
+
+  tablet_mode_controller->SetEnabledForTest(true);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+
+  hotseat->SetState(HotseatState::kExtended);
+  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+
+  gfx::Rect toast_bounds = GetCurrentWidget()->GetWindowBoundsInScreen();
+  gfx::Rect hotseat_bounds = hotseat->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
+  EXPECT_FALSE(toast_bounds.Intersects(hotseat_bounds));
+  EXPECT_EQ(hotseat->GetTargetBounds().y() -
+                GetPrimaryWorkAreaInsets()->user_work_area_bounds().y() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
 }
 
 TEST_F(ToastManagerImplTest, PositionWithAutoHiddenBottomShelf) {
@@ -319,15 +433,15 @@ TEST_F(ToastManagerImplTest, CancelToast) {
   std::string id3 = ShowToast("TEXT3", ToastData::kInfiniteDuration);
 
   // Confirm that the first toast is shown.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
   // Cancel the queued toast.
   CancelToast(id2);
   // Confirm that the shown toast is still visible.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
   // Cancel the shown toast.
   CancelToast(id1);
   // Confirm that the next toast is visible.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT3"), GetCurrentText());
+  EXPECT_EQ(u"TEXT3", GetCurrentText());
   // Cancel the shown toast.
   CancelToast(id3);
   // Confirm that the shown toast disappears.
@@ -348,7 +462,7 @@ TEST_F(ToastManagerImplTest, ShowToastOnLockScreen) {
   // Simulate device unlock.
   ChangeLockState(false);
   EXPECT_TRUE(GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, ShowSupportedToastOnLockScreen) {
@@ -360,13 +474,13 @@ TEST_F(ToastManagerImplTest, ShowSupportedToastOnLockScreen) {
                               /*visible_on_lock_screen=*/true);
   // Confirm it's visible and not queued.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device unlock.
   ChangeLockState(false);
   // Confirm that the toast is still visible.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, DeferToastByLockScreen) {
@@ -374,19 +488,19 @@ TEST_F(ToastManagerImplTest, DeferToastByLockScreen) {
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/true);
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device lock.
   ChangeLockState(true);
   // Confirm that it gets hidden.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device unlock.
   ChangeLockState(false);
   // Confirm that it gets visible again.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
@@ -394,7 +508,7 @@ TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/false);
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device lock.
   ChangeLockState(true);
@@ -405,7 +519,7 @@ TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
   ChangeLockState(false);
   // Confirm that it gets visible again.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 }  // namespace ash

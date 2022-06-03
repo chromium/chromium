@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_user_settings_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

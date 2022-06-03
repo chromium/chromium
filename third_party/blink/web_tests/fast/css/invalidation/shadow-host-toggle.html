@@ -5,7 +5,7 @@
     if (window.testRunner)
         testRunner.dumpAsText();
     var host = document.querySelector('div');
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = '<style>:host(.enabled) #foo { background: green;}</style><div id="foo"></div>';
     
     var foo = root.querySelector("#foo");

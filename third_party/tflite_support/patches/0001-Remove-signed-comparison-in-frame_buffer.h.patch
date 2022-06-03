@@ -1,0 +1,25 @@
+From 368b317061ba7deb1f42c52c5443c261bb6c03ea Mon Sep 17 00:00:00 2001
+From: Daniel Rubery <drubery@chromium.org>
+Date: Thu, 6 May 2021 11:40:37 -0700
+Subject: [PATCH] Remove signed comparison in frame_buffer.h
+
+---
+ .../tensorflow_lite_support/cc/task/vision/core/frame_buffer.h  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+index 22f63fc34d36..42ac080c4749 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+@@ -246,7 +246,7 @@ class FrameBuffer {
+ 
+   // Returns plane indexed by the input `index`.
+   const Plane plane(int index) const {
+-    if (index > -1 && index < planes_.size()) {
++    if (index > -1 && static_cast<size_t>(index) < planes_.size()) {
+       return planes_[index];
+     }
+     return {};
+-- 
+2.31.1.607.g51e8a6a459-goog
+

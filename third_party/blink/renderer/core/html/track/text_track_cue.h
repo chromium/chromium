@@ -40,7 +40,7 @@ namespace blink {
 
 class TextTrack;
 
-class TextTrackCue : public EventTargetWithInlineData {
+class CORE_EXPORT TextTrackCue : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -80,9 +80,14 @@ class TextTrackCue : public EventTargetWithInlineData {
   virtual void UpdateDisplay(HTMLDivElement& container) = 0;
 
   // Marks the nodes of the display tree as past or future relative to
-  // movieTime. If updateDisplay() has not been called there is no display
+  // movieTime. If |updateDisplay| has not been called there is no display
   // tree and nothing is done.
   virtual void UpdatePastAndFutureNodes(double movie_time) = 0;
+
+  // Returns the first timestamp value greater than the given time at which an
+  // inter-cue update occurs, if such a timestamp exists.
+  virtual absl::optional<double> GetNextIntraCueTime(
+      double movie_time) const = 0;
 
   // FIXME: Refactor to eliminate removeDisplayTree(). https://crbug.com/322434
   enum RemovalNotification { kDontNotifyRegion, kNotifyRegion };
@@ -97,7 +102,7 @@ class TextTrackCue : public EventTargetWithInlineData {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(enter, kEnter)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(exit, kExit)
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   TextTrackCue(double start, double end);

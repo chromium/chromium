@@ -14,7 +14,7 @@
 
 #include "util/thread/worker_thread.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "util/thread/thread.h"
 
 namespace crashpad {

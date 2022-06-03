@@ -7,12 +7,13 @@ package org.chromium.cronet_sample_apk;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;

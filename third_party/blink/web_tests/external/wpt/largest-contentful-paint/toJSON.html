@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <meta charset=utf-8>
 <title>Largest Contentful Paint: toJSON</title>
 <body>
@@ -7,9 +7,7 @@
 <p>Text!</p>
 <script>
   async_test(function (t) {
-    if (!window.LargestContentfulPaint) {
-      assert_unreached("LargestContentfulPaint is not implemented");
-    }
+    assert_implements(window.LargestContentfulPaint, "LargestContentfulPaint is not implemented");
     const observer = new PerformanceObserver(
       t.step_func_done(function(entryList) {
         const entry = entryList.getEntries()[0];
@@ -28,12 +26,12 @@
           'size',
           'id',
           'url',
-          'element',
         ];
         for (const key of keys) {
           assert_equals(json[key], entry[key],
             'LargestContentfulPaint ${key} entry does not match its toJSON value');
         }
+        assert_equals(json['element'], undefined, 'toJSON should not include element');
       })
     );
     observer.observe({type: 'largest-contentful-paint', buffered: true});

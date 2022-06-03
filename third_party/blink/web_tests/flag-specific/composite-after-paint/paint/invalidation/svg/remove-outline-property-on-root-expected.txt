@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [0, 0, 118, 118],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [0, 0, 118, 118]
       ]
     }
   ]

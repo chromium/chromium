@@ -10,6 +10,10 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
+import "action_strategy.proto";
+import "action_value.proto";
+import "cud_condition.proto";
+import "dom_action.proto";
 import "generic_ui.proto";
 import "model.proto";
 import "view_layout.proto";
@@ -52,6 +56,14 @@ message ClientContextProto {
   // True if the script was triggered by a direct action.
   optional bool is_direct_action = 9;
 
+  // True if this an in-Chrome triggered flow, rather than an externally
+  // triggered one.
+  optional bool is_in_chrome_triggered = 17;
+
+  // The type of trigger script that was shown and accepted at the beginning of
+  // this flow, if any.
+  optional TriggerScriptProto.TriggerUIType trigger_ui_type = 18;
+
   message DeviceContextProto {
     message VersionProto {
       // The Android SDK version of the device.
@@ -66,6 +78,50 @@ message ClientContextProto {
     optional string model = 3;
   }
   optional DeviceContextProto device_context = 11;
+
+  enum AccountsMatchingStatus {
+    // The account was not present in the intent.
+    UNKNOWN = 0;
+
+    // The account in the intent and the current chrome account match.
+    ACCOUNTS_MATCHING = 1;
+
+    // The account in the intent and the current chrome account DON'T match.
+    ACCOUNTS_NOT_MATCHING = 2;
+  }
+  // Whether the account from the intent and the chrome account match.
+  optional AccountsMatchingStatus accounts_matching_status = 12;
+
+  // Whether a11y (talkback and touch exploration) is enabled or not.
+  optional bool accessibility_enabled = 13;
+
+  enum SignedIntoChromeStatus {
+    UNDEFINED = 0;
+
+    // There is no account signed into Chrome.
+    NOT_SIGNED_IN = 1;
+
+    // An account is signed into Chrome.
+    SIGNED_IN = 2;
+  }
+  optional SignedIntoChromeStatus signed_into_chrome_status = 14;
+
+  // The size of the current Chrome window. This not only includes the part of
+  // the window that renders the website but also everything around it
+  // (toolbars, omnibox, ...).
+  message WindowSize {
+    optional int32 height_pixels = 1;
+    optional int32 width_pixels = 2;
+  }
+  optional WindowSize window_size = 15;
+
+  // The current orientation of the device.
+  enum ScreenOrientation {
+    UNDEFINED_ORIENTATION = 0;
+    PORTRAIT = 1;
+    LANDSCAPE = 2;
+  }
+  optional ScreenOrientation screen_orientation = 16;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -76,6 +132,18 @@ message SupportsScriptRequestProto {
   repeated ScriptParameterProto script_parameters = 2;
 
   optional ClientContextProto client_context = 3;
+}
+
+// Parameters for testers and developers of implicit triggering. This proto can
+// be specified via the base64-encoded command line switch
+// --autofill-assistant-implicit-triggering-debug-parameters. Values will take
+// precedence over existing values in case of conflict.
+message ImplicitTriggeringDebugParametersProto {
+  // The list of additional script parameters to send to the backend. This is
+  // mainly intended to allow specifying DEBUG_SOCKET_ID and DEBUG_BUNDLE_ID.
+  // Note: only a small set of parameters is allowlisted for GetTriggerScripts,
+  // see components/autofill_assistant/browser/script_parameters.cc
+  repeated ScriptParameterProto additional_script_parameters = 1;
 }
 
 message ScriptParameterProto {
@@ -93,12 +161,23 @@ message SupportsScriptResponseProto {
   optional ScriptTimeoutError script_timeout_error = 2;
 
   optional ClientSettingsProto client_settings = 3;
+
+  // The ScriptStoreConfig to use with the initial GetActions request.
+  optional ScriptStoreConfig script_store_config = 6;
+
+  reserved 4, 5;
 }
 
 // Overlay image to be drawn on top of full overlays.
 message OverlayImageProto {
-  // The image to display. If set, |image_size| is mandatory.
-  optional string image_url = 1;
+  // TODO(b/170202574): Remove legacy |image_url|.
+  // If set, |image_size| is mandatory.
+  oneof image {
+    // Deprecated, but currently still supported. The image to display.
+    string image_url = 1;
+    // The image to display.
+    DrawableProto image_drawable = 8;
+  }
   // The size of the image to display.
   optional ClientDimensionProto image_size = 2;
   // The margin between the top of the page (anchor) and the image.
@@ -114,8 +193,14 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
+// Next ID: 24
 message ClientSettingsProto {
-  reserved 10, 11;
+  message IntegrationTestSettings {
+    // Disables animations for the poodle and the progress bar.
+    optional bool disable_header_animations = 1;
+    // Disables change animations in the actions carousel.
+    optional bool disable_carousel_change_animations = 2;
+  }
 
   // Time between two periodic script precondition checks.
   optional int32 periodic_script_check_interval_ms = 1;
@@ -143,13 +228,8 @@ message ClientSettingsProto {
   // become stable.
   optional int32 box_model_check_count = 7;
 
-  // Time to wait between two checks of the document state, when waiting for the
-  // document to become ready.
-  optional int32 document_ready_check_interval_ms = 8;
-
-  // Maximum number of checks to run while waiting for the document to become
-  // ready.
-  optional int32 document_ready_check_count = 9;
+  // Maximum time to wait until document has reached "ready" state.
+  optional int32 document_ready_check_timeout_ms = 20;
 
   // How much time to give users to tap undo when they tap a cancel button.
   optional int32 cancel_delay_ms = 12;
@@ -168,6 +248,131 @@ message ClientSettingsProto {
 
   // Optional image drawn on top of overlays.
   optional OverlayImageProto overlay_image = 16;
+
+  // Optional settings intended for integration tests.
+  optional IntegrationTestSettings integration_test_settings = 17;
+
+  // Optional setting defining the size of the bottom sheet when Talkback is
+  // enabled as a fraction of the available height. When set, the bottomsheet
+  // will stop resizing automatically in talkback mode. It will always have the
+  // specified size instead.
+  optional float talkback_sheet_size_fraction = 18;
+
+  // Strings to define the back button behaviour. This will show the user a
+  // message with an Undo button. If this setting is not present, the back
+  // button will show a Snackbar with Undo option.
+  message BackButtonSettings {
+    // The message being shown in the header.
+    optional string message = 1;
+
+    // The label of the highlighted "Undo" action.
+    optional string undo_label = 2;
+  }
+  optional BackButtonSettings back_button_settings = 19;
+
+  // Settings to define the behavior for showing warnings about slow connection
+  // and/or websites to users.
+  message SlowWarningSettings {
+    enum MessageMode {
+      UNKNOWN = 0;
+      // The warning message will be appended to the existing status message.
+      CONCATENATE = 1;
+      // The warning message will replace the current status message.
+      REPLACE = 2;
+    }
+    // Whether to show warnings related to a slow connection to the user.
+    optional bool enable_slow_connection_warnings = 1;
+    // Whether to show warnings related to a slow website to the user.
+    optional bool enable_slow_website_warnings = 2;
+    // If true, only one warning will be shown to the user, i.e. either the slow
+    // connection or website, depending on which one triggers first.
+    optional bool only_show_warning_once = 3;
+    // If true, the slow connection warning will be shown only once.
+    optional bool only_show_connection_warning_once = 4;
+    // If true, the website warning will be shown only once.
+    optional bool only_show_website_warning_once = 5;
+    // Defines the maximum wait on a dom find element operation before showing
+    // the slow website warning.
+    optional int32 warning_delay_ms = 6;
+    // Defines the threshold above which a roundtrip is considered too slow.
+    optional int32 slow_roundtrip_threshold_ms = 7;
+    // Defines the number of consecutive slow roundtrips allowed before showing
+    // the slow connection warning.
+    optional int32 max_consecutive_slow_roundtrips = 8;
+    // The message to show as a warning to inform the user of a slow connection.
+    // If this is not set, no warning will be shown in case of slow connection.
+    optional string slow_connection_message = 9;
+    // The message to show as a warning to inform the user of a slow website.
+    // If this is not set, no warning will be shown in case of a slow website.
+    optional string slow_website_message = 10;
+    // The minimum duration that the message will be shown for (only applies to
+    // the slow connection messages).
+    optional int32 minimum_warning_message_duration_ms = 11;
+    // Whether the warning message should replace the current status message or
+    // should be concatenated.
+    optional MessageMode message_mode = 12;
+  }
+  optional SlowWarningSettings slow_warning_settings = 21;
+
+  // Strings that are needed for Chrome Client UI.
+  enum DisplayStringId {
+    // Unspecified value
+    UNSPECIFIED = 0;
+
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because of a user action.
+    GIVE_UP = 1;
+
+    // Text label shown next to an UNDO button when user action indicate they
+    // want to continue on their own.
+    MAYBE_GIVE_UP = 2;
+
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because something went wrong.
+    DEFAULT_ERROR = 3;
+
+    // Text on the payment request primary button to confirm payment information
+    PAYMENT_INFO_CONFIRM = 4;
+
+    // Generic label for a button to continue to the next screen.
+    CONTINUE_BUTTON = 5;
+
+    // Text label that is shown when stopping the Autofill Assistant.
+    STOPPED = 6;
+
+    // Option shown in the menu when clicking the Autofill Assistant profile
+    // icon. Clicking this option will open a feedback sharing dialog.
+    SEND_FEEDBACK = 7;
+
+    // A generic term for Close on buttons and menus.
+    CLOSE = 8;
+
+    // Title for Chrome's Settings.
+    SETTINGS = 9;
+
+    // Undo message for snackbar.
+    UNDO = 10;
+  }
+
+  // A Chrome display string along with its ID. This is used to create a map of
+  // display strings below.
+  message DisplayString {
+    optional DisplayStringId id = 1;
+    optional string value = 2;
+  }
+  // A map of display strings keyed by the ID. Note that the locale of these
+  // strings must be provided in |display_strings_locale|. These strings are
+  // ignored if locale is not provided.
+  repeated DisplayString display_strings = 22;
+
+  // The locale of |display_strings|. If |display_strings_locale| is not
+  // provided, we ignore |display_strings|. When locale
+  // is updated/switched to a new locale, we replace the set of
+  // |display_strings|, even if empty. The provided locale should be in BCP 47
+  // format, e.g. "en-US".
+  optional string display_strings_locale = 23;
+
+  reserved 8 to 11;
 }
 
 message ScriptTimeoutError {
@@ -192,18 +397,10 @@ message SupportedScriptProto {
     // be executed. No precondition means that a script can run in any case.
     optional ScriptPreconditionProto precondition = 3;
 
-    // Text display at the same time as the script is proposed. If more than one
-    // script has an initial prompt, the prompt of the highest-priority script
-    // wins.
-    optional string initial_prompt = 4;
-
     // Display priority of the script. Lowest number has highest priority, which
     // means a script with priority 0 should be displayed before a script with
     // priority 1.
     optional int32 priority = 5;
-
-    // An optional chip to display.
-    optional ChipProto chip = 12;
 
     // Optionally map this script to a direct action.
     optional DirectActionProto direct_action = 13;
@@ -222,123 +419,27 @@ message SupportedScriptProto {
     // Show the UI if it's not shown yet. Setting this to false is useful for
     // scripts started by direct actions.
     optional bool needs_ui = 15 [default = true];
+
+    reserved 1, 2, 4, 6, 7, 10 to 12, 16 to 18;
   }
   optional PresentationProto presentation = 2;
-}
 
-// A message to describe a chip.
-message ChipProto {
-  // The type of the chip.
-  optional ChipType type = 1;
-
-  // The icon shown on the chip. Not required if text is set.
-  optional ChipIcon icon = 2;
-
-  // The text shown on the chip. Not required if icon is set.
-  optional string text = 3;
-
-  // Whether the chip is sticky. When the bottom sheet is configured with the
-  // ConfigureBottomSheetProto::PeekMode::HANDLE_HEADER peek mode and the
-  // sheet is minimized, the first sticky action will be displayed instead of
-  // the profile icon.
-  optional bool sticky = 4;
-}
-
-enum ChipType {
-  UNKNOWN_CHIP_TYPE = 0;
-
-  // Chip is a highlighted (blue) action chip.
-  HIGHLIGHTED_ACTION = 1;
-
-  // Chip is a suggestion.
-  SUGGESTION = 2;
-
-  // Chip is a normal action chip.
-  NORMAL_ACTION = 3;
-
-  // A cancel chip, which closes AA in a way that allows the user to undo.
-  //
-  // The action associated with the chip is only executed after enough time has
-  // passed that undo is not possible.
-  //
-  // The presence of this chip inhibit the addition of an implicit close or
-  // cancel button.
-  CANCEL_ACTION = 4;
-
-  // A close chip, which closes AA immediately.
-  //
-  // The presence of this chip inhibit the addition of an implicit close or
-  // cancel button. Otherwise, buttons of this type work and look like a
-  // NORMAL_ACTION.
-  CLOSE_ACTION = 5;
-
-  // Chip is a highlighted (blue) action chip.
-  //
-  // The presence of this chip inhibit the addition of an implicit close or
-  // cancel button. Otherwise, buttons of this type work and look like a
-  // HIGHLIGHTED_ACTION.
-  DONE_ACTION = 6;
-}
-
-enum ChipIcon {
-  NO_ICON = 0;
-
-  // https://icons.googleplex.com/#icon=ic_clear
-  ICON_CLEAR = 1;
-
-  // https://icons.googleplex.com/#icon=ic_done
-  ICON_DONE = 2;
-
-  // https://icons.googleplex.com/#icon=ic_refresh
-  ICON_REFRESH = 3;
-}
-
-enum ScriptStatusProto {
-  // Never explicitly set. Reading this value means the enum field is either
-  // not set or set to a value not listed here.
-  UNKNOWN_SCRIPT_STATUS = 0;
-  // The script finished successfully.
-  SCRIPT_STATUS_SUCCESS = 1;
-  // The script failed.
-  SCRIPT_STATUS_FAILURE = 2;
-  // The user cancelled the script.
-  SCRIPT_STATUS_CANCELLED = 3;
-  // The script is currently running.
-  SCRIPT_STATUS_RUNNING = 4;
-  // The script was not run.
-  SCRIPT_STATUS_NOT_RUN = 5;
-}
-
-// Condition on the status of a previous script run.
-message ScriptStatusMatchProto {
-  enum Comparator {
-    UNSPECIFIED = 0;
-    EQUAL = 1;
-    DIFFERENT = 2;
-  }
-
-  // Required. Path of the script whose status should be checked.
-  optional string script = 1;
-
-  // Required. The status the script should have for the condition to hold.
-  optional ScriptStatusProto status = 2;
-
-  // Optional. The comparison performed when checking the status. It will be
-  // interpreted as EQUAL if not set.
-  optional Comparator comparator = 3;
+  reserved 3;
 }
 
 message ScriptPreconditionProto {
-  // Combined with AND: the elements referenced here must be present.
-  repeated ElementReferenceProto elements_exist = 3;
   // Pattern of the path parts of the URL, including query and '#''.
   repeated string path_pattern = 5;
   // Domain (exact match) excluding the last '/' character.
   repeated string domain = 6;
+
   // Combined with AND: all matches must be true for precondition to hold.
   repeated ScriptParameterMatchProto script_parameter_match = 7;
-  repeated ScriptStatusMatchProto script_status_match = 8;
-  repeated FormValueMatchProto form_value_match = 9;
+
+  // Script can only run if the given condition match.
+  optional ElementConditionProto element_condition = 10;
+
+  reserved 3, 8, 9;
 }
 
 message ScriptParameterMatchProto {
@@ -351,17 +452,6 @@ message ScriptParameterMatchProto {
   // Checks whether the script parameter has exact value. Empty or missing value
   // is treated as wildcard - any value will pass.
   optional string value_equals = 3;
-}
-
-message FormValueMatchProto {
-  // Required. The selector associated to the form element whose value should be
-  // checked.
-  optional ElementReferenceProto element = 1;
-
-  // Optional value. If specified, the element value must match the given value,
-  // even if it's empty. If not specified, we just check that the element value
-  // is non empty.
-  optional string value = 2;
 }
 
 enum PolicyType {
@@ -387,19 +477,37 @@ message ScriptActionRequestProto {
   }
 }
 
+// Message specifying how to retrieve the scripts. If bundle_path is set, it
+// will read that bundle with the associated version.
+message ScriptStoreConfig {
+  optional string bundle_path = 2;
+  optional int64 bundle_version = 3;
+}
+
 // Initial request to get a script's actions.
 message InitialScriptActionsRequestProto {
   message QueryProto {
     // The backend expects the |script_path| to be a repeated field. This field
     // is expected to contain only one element.
     repeated string script_path = 1;
-    // The exact URL on which the script is triggered.
+    // The exact URL on which the script was initially started.
     optional string url = 2;
     optional PolicyType policy = 3;
   }
   optional QueryProto query = 3;
 
   repeated ScriptParameterProto script_parameters = 2;
+
+  // Specify a bundle and version to run.
+  optional ScriptStoreConfig script_store_config = 6;
+}
+
+message RoundtripTimingStats {
+  // Reports how long it took for the previous roundtrip to the backend to
+  // complete.
+  optional int64 roundtrip_time_ms = 1;
+  // Reports the total client processing time for the executed batch of actions.
+  optional int64 client_time_ms = 2;
 }
 
 // Next request to get a script's actions.
@@ -408,6 +516,11 @@ message NextScriptActionsRequestProto {
   // field must be in the same order as the actions in the original response.
   // It may have less actions in case of failure.
   repeated ProcessedActionProto processed_actions = 1;
+  // Contains all roundtrip level (as opposed to action level) timing stats.
+  optional RoundtripTimingStats timing_stats = 2;
+  // Tracks whether the last roundtrip triggered a slow connection warning and
+  // whether it was shown to the user.
+  optional SlowWarningStatus slow_connection_warning = 34;
 }
 
 // Response of a script's actions.
@@ -435,6 +548,227 @@ message ActionsResponseProto {
   // the backend.
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
+
+  reserved 1, 6 to 10;
+}
+
+// RPC request to fetch the available trigger scripts for a particular domain.
+message GetTriggerScriptsRequestProto {
+  // The exact url for which to fetch the trigger scripts.
+  optional string url = 1;
+  // The client context.
+  // NOTE: Currently, this will only contain the Chrome version number for
+  // privacy reasons.
+  optional ClientContextProto client_context = 2;
+  // Optional script parameters.
+  repeated ScriptParameterProto script_parameters = 3;
+}
+
+// The RPC response to a |GetTriggerScriptsRequestProto|.
+message GetTriggerScriptsResponseProto {
+  // The available trigger scripts, if any.
+  repeated TriggerScriptProto trigger_scripts = 1;
+
+  // A list of additional domains and subdomains. Trigger scripts will
+  // automatically cancel the ongoing session if the user navigates away from
+  // the original domain or any of the additional domains.
+  repeated string additional_allowed_domains = 2;
+
+  // The amount of time a trigger script may evaluate trigger conditions while
+  // invisible. If a trigger script is invisible for this amount of time, it
+  // will automatically finish with TRIGGER_CONDITION_TIMEOUT.
+  // If not specified, there is no automatic timeout.
+  //
+  // This is only counted while no trigger script is shown, and the time is
+  // reset on tab switch and whenever a trigger script is hidden. Note that this
+  // only counts the time in-between checks, so the actual timeout will be
+  // slightly longer.
+  optional int32 trigger_condition_timeout_ms = 3;
+
+  // The amount of time between consecutive checks of trigger conditions. Should
+  // not be too small to limit performance impact.
+  optional int32 trigger_condition_check_interval_ms = 4 [default = 1000];
+
+  // The list of script parameters for the client to use. This can be different
+  // from the list the client sent in the GetTriggerScriptsRequest.
+  //
+  // For some flows, the GetTriggerScripts RPC is the first and only
+  // communication with the backend prior to the start of the regular flow. As
+  // such, the backend needs to send any additional script parameters (such as
+  // appropriate overlay colors) back to the client such that the regular flows
+  // are guaranteed to have a full set of script parameters when/if they start.
+  repeated ScriptParameterProto script_parameters = 5;
+}
+
+// A trigger script contains the full specification for a trigger script that is
+// run when a specific condition is true, prior to the full run.
+message TriggerScriptProto {
+  enum TriggerScriptAction {
+    UNDEFINED = 0;
+    // The current trigger script is cancelled. If the prompt is not currently
+    // being shown, this has no effect. If the prompt is currently being shown,
+    // the prompt is hidden and the trigger script is restarted once the trigger
+    // condition has become false again.
+    NOT_NOW = 1;
+    // Cancels the current trigger script and does not restart it for this
+    // session.
+    CANCEL_SESSION = 2;
+    // Cancels the current trigger script and prevents trigger scripts from ever
+    // running again. TODO(b/172039582): allow a per-domain opt-out.
+    CANCEL_FOREVER = 3;
+    // Displays a popup to give users additional cancel options.
+    SHOW_CANCEL_POPUP = 4;
+    // Stop the trigger script and start the regular script.
+    ACCEPT = 5;
+  }
+
+  // Set of TriggerUIType to group UKM metrics by.
+  //
+  // The set of available values is defined by AutofillAssistantTriggerUIType in
+  // tools/metrics/histograms/enums.xml
+  enum TriggerUIType {
+    UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+
+    // Explicit trigger requests by some external trigger surface, i.e., a link
+    // or button.
+    SHOPPING_CART_FIRST_TIME_USER = 1;
+    SHOPPING_CART_RETURNING_USER = 2;
+    SHOPPING_CHECKOUT_FIRST_TIME_USER = 3;
+    SHOPPING_CHECKOUT_RETURNING_USER = 4;
+    FOOD_ORDERING_CART_FIRST_TIME_USER = 9;
+    FOOD_ORDERING_CART_RETURNING_USER = 10;
+
+    // Implicit trigger requests started by Chrome itself.
+    IN_CHROME_SHOPPING_CART_FIRST_TIME_USER = 5;
+    IN_CHROME_SHOPPING_CART_RETURNING_USER = 6;
+    IN_CHROME_SHOPPING_CHECKOUT_FIRST_TIME_USER = 7;
+    IN_CHROME_SHOPPING_CHECKOUT_RETURNING_USER = 8;
+    IN_CHROME_FOOD_ORDERING_CART_FIRST_TIME_USER = 11;
+    IN_CHROME_FOOD_ORDERING_CART_RETURNING_USER = 12;
+  }
+
+  // The |trigger_condition| must be true for the script to trigger.
+  optional TriggerScriptConditionProto trigger_condition = 1;
+
+  // The user interface to show.
+  optional TriggerScriptUIProto user_interface = 3;
+
+  // What should happen if the user swipe-dismisses the bottom sheet.
+  optional TriggerScriptAction on_swipe_to_dismiss = 4
+      [default = CANCEL_SESSION];
+
+  // An identifier for the type of trigger UI this trigger represents, for UKM.
+  optional TriggerUIType trigger_ui_type = 7;
+
+  reserved 2, 5, 6;
+}
+
+message TriggerScriptConditionProto {
+  message DocumentReadyStateCondition {
+    // The minimum document ready state for the condition to be true.
+    optional DocumentReadyState min_document_ready_state = 1;
+
+    // If specified, check the document in the given frame, instead
+    // of the main document.
+    optional SelectorProto frame = 2;
+  }
+
+  oneof type {
+    // The condition matches if all of these conditions match.
+    TriggerScriptConditionsProto all_of = 1;
+    // The condition matches if at least one of these conditions matches.
+    TriggerScriptConditionsProto any_of = 2;
+    // The condition matches if none of these conditions match.
+    TriggerScriptConditionsProto none_of = 3;
+
+    // The condition matches if the specified selector matches the current DOM..
+    SelectorProto selector = 8;
+    // The condition matches if the user has stored login credentials for the
+    // domain.
+    Empty stored_login_credentials = 5;
+    // The condition matches if the user has never seen a trigger script before.
+    Empty is_first_time_user = 6;
+    // The condition matches if the client is in the specified experiment.
+    int32 experiment_id = 7;
+    // The condition matches if the keyboard is hidden.
+    Empty keyboard_hidden = 9;
+    // The condition describes a parameter value that must be set to trigger.
+    ScriptParameterMatchProto script_parameter_match = 10;
+    // Pattern of the path parts of the URL, including query and '#'.
+    string path_pattern = 11;
+    // Domain (exact match), including the scheme (e.g.
+    // "https://www.example.com").
+    string domain_with_scheme = 12;
+    // The condition matches if the DOM state of the specified frame matches
+    // |document_ready_state|.
+    DocumentReadyStateCondition document_ready_state = 13;
+  }
+
+  reserved 4;
+}
+
+message TriggerScriptConditionsProto {
+  repeated TriggerScriptConditionProto conditions = 1;
+}
+
+message TriggerScriptUIProto {
+  message ProgressBar {
+    repeated DrawableProto step_icons = 1;
+    optional int32 active_step = 2;
+  }
+
+  message TriggerChip {
+    optional ChipProto chip = 1;
+    optional TriggerScriptProto.TriggerScriptAction action = 2;
+  }
+  message Popup {
+    message Choice {
+      // The text to display.
+      optional string text = 1;
+      // The action to execute if this popup item is selected.
+      optional TriggerScriptProto.TriggerScriptAction action = 2;
+    }
+    // The available popup items.
+    repeated Choice choices = 1;
+  }
+
+  // The status message to display.
+  optional string status_message = 1;
+  // The callout to display. If not specified, no callout will be shown.
+  optional string callout_message = 2;
+  // The progress bar to display. If not specified, no progress bar will be
+  // shown.
+  optional ProgressBar progress_bar = 3;
+  // The cancel popup, usually associated with a particular chip.
+  optional Popup cancel_popup = 4;
+  // The available left-aligned chips, specified in order from left to right.
+  repeated TriggerChip left_aligned_chips = 5;
+  // The available right-aligned chips, specified in order from left to right.
+  repeated TriggerChip right_aligned_chips = 6;
+  // The status message to display when transitioning from this trigger script
+  // to the regular script.
+  optional string regular_script_loading_status_message = 7;
+  // Whether the visual viewport should be resized to allow scrolling to the
+  // bottom of the page while the trigger script is being displayed.
+  optional bool resize_visual_viewport = 8;
+  // Whether the bottom sheet should temporarily disappear when scrolling down
+  // the website, to move out of the way. This setting is ignored if
+  // |ui_timeout_ms| is specified.
+  //
+  // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
+  // This allows the backend setting both to true and letting chrome choose
+  // scroll_to_hide if it is supported.
+  optional bool scroll_to_hide = 9;
+  // The amount of time that the UI may be shown to the user. If not specified,
+  // there is no limit. This is intended for websites where the UI could block
+  // important parts of the website underneath and |scroll_to_hide| does not
+  // mitigate the issue. If this field is specified, |scroll_to_hide| will be
+  // ignored. |resize_visual_viewport| will be applied if requested.
+  //
+  // Once hidden, the UI may be shown again the next time the trigger condition
+  // is true (same behavior as NOT_NOW). Note that the timeout is disabled if
+  // the user taps either the overflow icon or the confirm chip.
+  optional int32 ui_timeout_ms = 10;
 }
 
 // An action could be performed.
@@ -447,21 +781,17 @@ message ActionProto {
   optional bytes server_payload = 4;
 
   oneof action_info {
-    ClickProto click = 5;
-    SetFormFieldValueProto set_form_value = 6;
     SelectOptionProto select_option = 7;
     NavigateProto navigate = 9;
     PromptProto prompt = 10;
     TellProto tell = 11;
-    FocusElementProto focus_element = 12;
+    ShowCastProto show_cast = 12;
     WaitForDomProto wait_for_dom = 19;
     UseCreditCardProto use_card = 28;
     UseAddressProto use_address = 29;
     UploadDomProto upload_dom = 18;
     ShowProgressBarProto show_progress_bar = 24;
-    HighlightElementProto highlight_element = 31;
     ShowDetailsProto show_details = 32;
-    ResetProto reset = 34;
     StopProto stop = 35;
     CollectUserDataProto collect_user_data = 36;
     SetAttributeProto set_attribute = 37;
@@ -472,6 +802,45 @@ message ActionProto {
     ShowFormProto show_form = 43;
     PopupMessageProto popup_message = 44;
     WaitForDocumentProto wait_for_document = 45;
+    ShowGenericUiProto show_generic_ui = 49;
+    GeneratePasswordForFormFieldProto generate_password_for_form_field = 52;
+    SaveGeneratedPasswordProto save_generated_password = 53;
+    ConfigureUiStateProto configure_ui_state = 54;
+    PresaveGeneratedPasswordProto presave_generated_password = 55;
+    GetElementStatusProto get_element_status = 56;
+    ScrollIntoViewProto scroll_into_view = 57;
+    WaitForDocumentToBecomeInteractiveProto
+        wait_for_document_to_become_interactive = 58;
+    WaitForDocumentToBecomeCompleteProto wait_for_document_to_become_complete =
+        59;
+    SendClickEventProto send_click_event = 60;
+    SendTapEventProto send_tap_event = 61;
+    JsClickProto js_click = 62;
+    SendKeystrokeEventsProto send_keystroke_events = 63;
+    SendChangeEventProto send_change_event = 64;
+    SetElementAttributeProto set_element_attribute = 65;
+    SelectFieldValueProto select_field_value = 66;
+    FocusFieldProto focus_field = 67;
+    WaitForElementToBecomeStableProto wait_for_element_to_become_stable = 68;
+    CheckElementIsOnTopProto check_element_is_on_top = 69;
+    ReleaseElementsProto release_elements = 70;
+    DispatchJsEventProto dispatch_js_event = 72;
+    SendKeyEventProto send_key_event = 73;
+    SelectOptionElementProto select_option_element = 74;
+    CheckElementTagProto check_element_tag = 75;
+    CheckOptionElementProto check_option_element = 76;
+    SetPersistentUiProto set_persistent_ui = 77;
+    ClearPersistentUiProto clear_persistent_ui = 78;
+    ScrollIntoViewIfNeededProto scroll_into_view_if_needed = 79;
+    ScrollWindowProto scroll_window = 80;
+    ScrollContainerProto scroll_container = 81;
+    SetTouchableAreaProto set_touchable_area = 82;
+    DeleteSelectedPasswordProto delete_password = 83;
+    EditSelectedPasswordProto edit_password = 84;
+    BlurFieldProto blur_field = 85;
+    ResetPendingCredentialsProto reset_pending_credentials = 86;
+    SaveSubmittedPasswordProto save_submitted_password = 87;
+    UpdateClientSettingsProto update_client_settings = 89;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -479,7 +848,8 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 47;
+  reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
+      51, 71, 88;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -498,12 +868,50 @@ message CollectUserDataResultProto {
   optional int32 terms_link = 5;
   // The payload of the chosen login option.
   optional bytes login_payload = 6;
-  // The start of the date/time range, if requested.
-  optional DateTimeProto date_time_start = 7;
-  // The end of the date/time range, if requested.
-  optional DateTimeProto date_time_end = 8;
   // The values obtained by the generic user interface.
   optional ModelProto model = 9;
+  // The memory keys of all non-empty text inputs, corresponding to the memory
+  // keys specified in |TextInputProto|. The values themselves are stored in the
+  // client and do not leave the device.
+  repeated string set_text_input_memory_keys = 10;
+  // The start date of the date/time range, if requested.
+  optional DateProto date_range_start_date = 11;
+  // The index of the selected timeslot for the start of the date/time range.
+  optional int32 date_range_start_timeslot = 12;
+  // The end date of the date/time range, if requested.
+  optional DateProto date_range_end_date = 13;
+  // The index of the selected timeslot for the end of the date/time range.
+  optional int32 date_range_end_timeslot = 14;
+  // The values obtained from the additional sections.
+  repeated ModelProto.ModelValue additional_sections_values = 15;
+  // Indicates whether the UI was shown to the user. This can be false if
+  // only the login section was requested and the choice was implicitly made.
+  optional bool shown_to_user = 16;
+  // Indicates that the chosen login option was missing the username.
+  optional bool login_missing_username = 17;
+
+  reserved 7, 8, 18 to 20;
+}
+
+message ActionTimingStats {
+  // Requested delay before executing the action.
+  optional int64 delay_ms = 1;
+  // Time actively spent by the client to execute the action.
+  optional int64 active_time_ms = 2;
+  // Time spent waiting for users to complete a task and/or for website
+  // loading/navigation.
+  optional int64 wait_time_ms = 3;
+}
+
+// Enum used to track the slow warnings that can trigger due to slow connection
+// or long running wait for dom actions.
+enum SlowWarningStatus {
+  // The warning wasn't triggered.
+  NO_WARNING = 0;
+  // The warning was triggered but not shown to the user.
+  WARNING_TRIGGERED = 1;
+  // The warning was triggered and shown to the user.
+  WARNING_SHOWN = 2;
 }
 
 message ProcessedActionProto {
@@ -515,18 +923,24 @@ message ProcessedActionProto {
   optional ProcessedActionStatusDetailsProto status_details = 19;
 
   oneof result_data {
-    PromptProto.Choice prompt_choice = 5;
-    string html_source = 12;
+    PromptProto.Result prompt_choice = 5;
     // Should be set as a result of CollectUserDataAction.
     CollectUserDataResultProto collect_user_data_result = 15;
-    // Should be set as a result of SetFormFieldValueAction.
-    SetFormFieldValueProto.Result set_form_field_value_result = 17;
     // May be set as a result of WaitForDomProto.
     WaitForDomProto.Result wait_for_dom_result = 22;
     // Should be set as a result of FormAction.
     FormProto.Result form_result = 21;
-
     WaitForDocumentProto.Result wait_for_document_result = 25;
+    // Should be set as a result of ShowGenericUiProto.
+    ShowGenericUiProto.Result show_generic_ui_result = 28;
+    // Should be set as a result of GetElementStatusProto.
+    GetElementStatusProto.Result get_element_status_result = 31;
+    // Should be set as a result of UploadDomProto.
+    UploadDomProto.Result upload_dom_result = 33;
+    // Should be set as a result of CheckOptionElementProto.
+    CheckOptionElementProto.Result check_option_element_result = 35;
+    // Should be set as a result of SendKeystrokeEventsProto.
+    SendKeystrokeEventsProto.Result send_key_stroke_events_result = 36;
   }
 
   // Reports information about navigation that happened while
@@ -537,10 +951,14 @@ message ProcessedActionProto {
   // include the delay specified in action.delay_ms.
   optional int64 run_time_ms = 23;
 
-  // If true, the user triggered, during the client action, at least one user
-  // action, such as a prompt choice, through a direct action instead of
-  // selecting a chip on the UI. This is meant for monitoring and debugging.
-  optional bool direct_action = 24;
+  // Collects the timing stats related to the action execution.
+  optional ActionTimingStats timing_stats = 32;
+
+  // Tracks whether the action triggered a slow website warning and whether it
+  // was shown to the user.
+  optional SlowWarningStatus slow_warning_status = 34;
+
+  reserved 3, 4, 6 to 14, 16 to 18, 24, 26, 27, 29, 30;
 }
 
 // Extended information about the action status, which provides more details
@@ -560,6 +978,14 @@ message ProcessedActionStatusDetailsProto {
 
   // More information included for autofill related errors.
   optional AutofillErrorInfoProto autofill_error_info = 3;
+
+  // Additional information from the |WebController|.
+  optional WebControllerErrorInfoProto web_controller_error_info = 5;
+
+  // Additional information from the |ElementFinder|.
+  repeated ElementFinderInfoProto element_finder_info = 6;
+
+  reserved 4;
 }
 
 message NavigationInfoProto {
@@ -619,6 +1045,32 @@ message UnexpectedErrorInfoProto {
 
 // Message to report autofill related errors for debugging purposes.
 message AutofillErrorInfoProto {
+  message AutofillFieldError {
+    // The field the error occurred for.
+    optional SelectorProto field = 1;
+
+    // The value expression associated with the field that caused the error.
+    optional string value_expression = 5;
+
+    oneof error_type {
+      // No fallback value for this field.
+      bool no_fallback_value = 3;
+
+      // The status of the action.
+      ProcessedActionStatusProto status = 4;
+
+      // The field was required and expected to be filled during the fallback
+      // flow but was empty in the end.
+      bool empty_after_fallback = 6;
+
+      // The field was expected to be cleared during the fallback flow but
+      // still had a value in the end.
+      bool filled_after_clear = 7;
+    }
+
+    reserved 2;
+  }
+
   // Comma separated list of address keys in the client memory when the
   // unexpected error occurred. Memory values are never reported this way since
   // they may contain PII. Only the address key names!
@@ -633,111 +1085,150 @@ message AutofillErrorInfoProto {
 
   // Error status of the Chrome autofill attempt.
   optional ProcessedActionStatusProto autofill_error_status = 4;
+
+  // Errors that occurred during fallback filling of autofill fields.
+  repeated AutofillFieldError autofill_field_error = 5;
+
+  // These values should match the values in FullCardRequest::FailureType.
+  enum GetFullCardFailureType {
+    UNKNOWN_FAILURE_TYPE = 0;
+
+    // The user closed the prompt. The following scenarios are possible:
+    // 1) The user declined to enter their CVC and closed the prompt.
+    // 2) The user provided their CVC, got auth declined and then closed the
+    //    prompt without attempting a second time.
+    // 3) The user provided their CVC and closed the prompt before waiting for
+    //    the result.
+    PROMPT_CLOSED = 1;
+
+    // The card could not be looked up due to card auth declined or failed.
+    VERIFICATION_DECLINED = 2;
+
+    // The request failed for technical reasons, such as a closing page or lack
+    // of network connection.
+    GENERIC_FAILURE = 3;
+  }
+  // Failure type from the |FullCardRequest|.
+  optional GetFullCardFailureType get_full_card_failure_type = 6;
 }
 
-// Next: 22
-enum ProcessedActionStatusProto {
-  UNKNOWN_ACTION_STATUS = 0;
+// Message to report errors related to WebController execution.
+message WebControllerErrorInfoProto {
+  enum WebAction {
+    UNSPECIFIED_WEB_ACTION = 0;
 
-  // Element could not be found.
-  ELEMENT_RESOLUTION_FAILED = 1;
+    // Scroll an element into view by centering it on the page. This uses
+    // native JS functionality.
+    SCROLL_INTO_VIEW = 1;
 
-  // The action was applied successfully.
-  ACTION_APPLIED = 2;
+    // Waiting for the document ready state to be interactive.
+    WAIT_FOR_DOCUMENT_TO_BECOME_INTERACTIVE = 2;
 
-  // The action failed (generic error).
-  //
-  // This usually means that the client needs to be fixed: either the error
-  // should be assigned a more specific error code, or a bug in the client code
-  // needs to be fixed.
-  //
-  // ProcessedActionProto.UnexpectedErrorInfoProto contains more details.
-  OTHER_ACTION_STATUS = 3;
+    // Send a click or tap event to an element.
+    CLICK_OR_TAP_ELEMENT = 3;
 
-  // The action failed to collect the requested user data.
-  COLLECT_USER_DATA_ERROR = 4;
+    // Select an option from an HTML dropdown.
+    SELECT_OPTION = 4;
 
-  // Server asked the client to execute an unknown or unsupported action.
-  UNSUPPORTED_ACTION = 5;
+    // Scroll the element into view with padding. This uses native JS
+    // functionality for the initial scrolling and calculates the scrolling
+    // for padding manually.
+    SCROLL_INTO_VIEW_WITH_PADDING = 6;
 
-  // The action decided to fallback to manual mode, stopping the script.
-  //
-  // This can happen:
-  // - if an autofill action or an update details action cancels the script,
-  //   possibly, not necessarily, as a result of a user action.
-  // - if an interrupt explicitly stops the main script, for wait for dom
-  MANUAL_FALLBACK = 6;
+    // Get the |value| attribute of an element.
+    GET_FIELD_VALUE = 7;
 
-  // The WaitForDom action failed because an interrupt that ran during
-  // that action failed.
-  INTERRUPT_FAILED = 7;
+    // Get any attribute of an element.
+    GET_STRING_ATTRIBUTE = 8;
 
-  // The script was canceled by the user, while it was running.
-  //
-  // This only report such events that happen while a script is running. It can
-  // affect any action. It is a signal that the action or script ran in an
-  // abnormal situation and its outcome cannot be trusted.
-  USER_ABORTED_ACTION = 8;
+    // Select an element's value. This does only work for text elements.
+    SELECT_FIELD_VALUE = 9;
 
-  // The Autofill Action failed to get the full card information.
-  //
-  // Possible causes:
-  // - the user filled in the wrong CVC number.
-  // - the card has expired
-  GET_FULL_CARD_FAILED = 9;
+    // Set the |value| attribute of an element.
+    SET_VALUE_ATTRIBUTE = 10;
 
-  // The action did not have what it needs. This is generally a bug in the
-  // script.
-  //
-  // This is currently returned by the autofill action, when it could not find
-  // the credit card or the address it needs in the client memory. This is
-  // usually the sign that the CollectUserDataAction was not run or failed.
-  //
-  PRECONDITION_FAILED = 10;
+    // Set any attribute of an element.
+    SET_ATTRIBUTE = 11;
 
-  // The action definition returned by the server was rejected.
-  INVALID_ACTION = 11;
+    // Send a series of keystroke inputs. This requires an element to have
+    // focus to receive them.
+    SEND_KEYBOARD_INPUT = 12;
 
-  // Executing the action as defined is unsupported.
-  UNSUPPORTED = 12;
+    // Get the outer HTML of an element.
+    GET_OUTER_HTML = 13;
 
-  // Timed out waiting for the document to load.
-  TIMED_OUT = 13;
+    // Get the tag of an element.
+    GET_ELEMENT_TAG = 14;
 
-  // Failed to get a stable position for the element, usually to click on it.
-  ELEMENT_UNSTABLE = 14;
+    // Set active focus on a field.
+    FOCUS_FIELD = 15;
 
-  reserved 15;
+    // Wait for an element position to stabilize before clicking or a tapping.
+    // Fails with ELEMENT_UNSTABLE.
+    WAIT_UNTIL_ELEMENT_IS_STABLE = 16;
 
-  // The value passed to the select option action does not exist in the element.
-  // This is usually a scripting error.
-  OPTION_VALUE_NOT_FOUND = 16;
+    // Check that the element is on top, usually as part of clicking.
+    // Fails with ELEMENT_NOT_ON_TOP.
+    ON_TOP = 17;
 
-  // The client got an unexpected error from a JavaScript snippet executed
-  // through devtools. This means that there's a bug in the client code.
-  //
-  // ProcessedActionProto.UnexpectedErrorInfoProto contains more details.
-  UNEXPECTED_JS_ERROR = 17;
+    // Waiting for a certain document ready state failed.
+    WAIT_FOR_DOCUMENT_READY_STATE = 18;
 
-  // There were more than one matching element in the DOM in a context where
-  // only one is supported. This is generally a scripting error: the selector is
-  // not specific enough.
-  TOO_MANY_ELEMENTS = 18;
+    // Trigger a change event.
+    SEND_CHANGE_EVENT = 19;
 
-  // The browser failed to navigate to a new document for its main frame. Note
-  // that this doesn't include page load errors, which are reported as
-  // TIMED_OUT.
-  NAVIGATION_ERROR = 19;
+    // Dispatch a 'duplexweb' event on document.
+    DISPATCH_EVENT_ON_DOCUMENT = 20;
 
-  // A selector included into the current action is invalid.
-  INVALID_SELECTOR = 20;
+    // Send a single key event.
+    SEND_KEY_EVENT = 21;
 
-  // The requested autofill info (e.g., Chrome password manager login) was not
-  // available. It might have been recently deleted.
-  AUTOFILL_INFO_NOT_AVAILABLE = 21;
+    // Set the selected option of an element.
+    SELECT_OPTION_ELEMENT = 22;
 
-  // An unexpected error occurred during element resolution.
-  FRAME_HOST_NOT_FOUND = 22;
+    // Send a JS click to the element.
+    JS_CLICK_ELEMENT = 23;
+
+    // Check the selected option of an element.
+    CHECK_OPTION_ELEMENT = 24;
+
+    // Scroll an element into view only if needed.
+    SCROLL_INTO_VIEW_IF_NEEDED = 25;
+
+    // Scroll the window of a frame by a certain amount.
+    SCROLL_WINDOW = 26;
+
+    // Scroll the container by a certain amount.
+    SCROLL_CONTAINER = 27;
+
+    // Blur an element that might have focus to remove its focus.
+    BLUR_FIELD = 28;
+
+    reserved 5;
+  }
+
+  // The web-action that failed. This is usually a step in an execution chain
+  // for an action.
+  optional WebAction failed_web_action = 1;
+}
+
+message ElementFinderInfoProto {
+  // Tracking ID of the |Selector|.
+  optional int64 tracking_id = 1;
+
+  // If the Selector fails to be resolved, this index holds the starting index
+  // of filters currently being applied.
+  optional int32 failed_filter_index_range_start = 2;
+
+  // If a filter failed, this index holds the filter that was supposed to be
+  // applied next.
+  optional int32 failed_filter_index_range_end = 3;
+
+  // The original status of |ElementFinder|.
+  optional ProcessedActionStatusProto status = 4;
+
+  // If set, the document could not be resolved.
+  optional bool get_document_failed = 5;
 }
 
 // The pseudo type values come from
@@ -761,77 +1252,286 @@ enum PseudoType {
   INPUT_LIST_BUTTON = 15;
 }
 
-// A reference to an unique element on the page, possibly nested in frames.
-message ElementReferenceProto {
-  // A sequence of CSS selectors. Any non-final CSS selector is expected to
-  // arrive at a frame or an iframe, i.e. an element that contains another
-  // document.
-  // APIs are free to reject element references that do not refer to unique
-  // elements (i.e. resolve to more than one element on the page).
-  repeated string selectors = 2;
+// A reference to one or more elements on the page, possibly nested in frames.
+// Next ID: 15
+message SelectorProto {
+  // Filters for the element on the page. Filter are applied sequentially, using
+  // the output of the previous filter as input. The root of these filters is
+  // the main frame's document.
+  repeated Filter filters = 9;
 
-  // If non-empty, only take into accounts the elements matched by selector
-  // whose inner text matches the given JavaScript regex. This does a search,
-  // not a full match. Add ^ and $ as necessary.
+  // An ID that's used to identify selector in logs, as they pass through
+  // different layers. It is passed to the client only as FYI. Client might
+  // choose to echo back these ids when reporting specific selectors as
+  // matching or not matching.
+  optional int64 tracking_id = 10;
+
+  // A filter that starts with one or more elements and returns one on more
+  // elements. Filters are meant to be applied sequentially.
   //
-  // This is used to filter the elements matching the last selector, before
-  // trying to get the pseudo_type, if any was set.
-  optional string inner_text_pattern = 4;
+  // The returned elements will be sorted by their order in the document.
+  // Elements that were matched via the labelled filter will have the same order
+  // as their label.
+  message Filter {
+    oneof filter {
+      // Enter the document of an iframe or shadow root. The next filters apply
+      // to the document inside of the iframe(s) or on the shadow element.
+      //
+      // Fails if there are more than one match.
+      EmptyFilter enter_frame = 1;
 
-  // If non-empty, only take into accounts the elements matched by selector
-  // whose value matches the given JavaScript regex. This does a search,
-  // not a full match. Add ^ and $ as necessary.
-  //
-  // This is used to filter the elements matching the last selector, before
-  // trying to get the pseudo_type, if any was set.
-  optional string value_pattern = 6;
+      // Evaluate the given CSS selector on all start elements and use
+      // the result as end elements.
+      string css_selector = 2;
 
-  // Specifies whether the matched element(s) must be visible.
-  //
-  // Visibility applies to the element matched in selectors; the pseudo type is
-  // checked afterwards.
-  optional VisibilityRequirement visibility_requirement = 5;
+      // Check the inner text of all start elements, using the Javascript
+      // innerText property. Keep only the element whose innerText match the
+      // given regular expression.
+      TextFilter inner_text = 3;
 
-  // An optional pseudo type. This pseudo type is associated to the final
-  // element matched, which means that we currently don't handle matching an
-  // element inside a pseudo element.
-  optional PseudoType pseudo_type = 3;
-}
+      // Check the value of all start elements, using the Javascript value
+      // property. Keep only the element whose value property match the given
+      // regular expression.
+      TextFilter value = 4;
 
-enum VisibilityRequirement {
-  UNSPECIFIED_VISIBILITY = 0;
+      // Select the pseudo-element of the given type associated with the current
+      // elements.
+      PseudoType pseudo_type = 5;
 
-  // Element must be visible. Visible elements are elements that have a box
-  // model. The box model is not checked at all, so an element with a zero size
-  // bounding box is considered visible.
-  MUST_BE_VISIBLE = 1;
+      // Only keep elements that have a box model, even if it is empty.
+      //
+      // This is the equivalent of the old MUST_BE_VISIBLE flag. It's been
+      // renamed as having a bounding box is not enough to imply visibility.
+      BoundingBoxFilter bounding_box = 6;
 
-  // It's enough for the element to exist in the DOM tree for it to match.
-  MUST_EXIST = 2;
-}
+      // Take the nth match. Fails with ELEMENT_RESOLUTION_FAILED if there are
+      // not enough matches.
+      NthMatchFilter nth_match = 7;
 
-// Contain all arguments to perform a click.
-message ClickProto {
-  enum ClickType {
-    NOT_SET = 0;
-    TAP = 1;
-    JAVASCRIPT = 2;
-    CLICK = 3;
+      // Only keep elements that have a pseudo-element with the given content.
+      //
+      // This only works with BEFORE and AFTER.
+      //
+      // Note that this just filters out elements. It doesn't select the
+      // pseudo-element; use pseudo_type for that.
+      //
+      // Deprecated: prefer css_style. This should be removed in Chrome M89.
+      PseudoElementContent pseudo_element_content = 8;
+
+      // Go from label to the labelled control. Only works starting with current
+      // elements that are LABEL.
+      //
+      // For example if we have:
+      //  <label for="someid">First Name</label>...<input id="someid" ...>
+      // then labelled, goes from the label to the form element.
+      //
+      // So, the form element can be accessed as "label~=/FirstName/ labelled".
+      // This is especially useful in situations where someid can change.
+      //
+      // The same selector also works in the case where the element is inside of
+      // the label, so we don't need to worry which implementation is used when
+      // building the selector:
+      //   <label>First Name <input ...></label>
+      EmptyFilter labelled = 9;
+
+      // Only keep results that match the given CSS selector.
+      string match_css_selector = 11;
+
+      // Only keep elements whose computed style match the given filter. This is
+      // based on Window.computedStyle()
+      CssStyleFilter css_style = 12;
+
+      // Filter out elements whose center point are covered by another element.
+      //
+      // This first calls Element.scrollIntoViewIfNeeded to make sure the
+      // element can be moved to the viewport, then calls
+      // DocumentOrShadowDom.getElementFromPoint and compares the result with
+      // the expected element. If the element at point is not the element, a
+      // descendant of the element or a label of the element, there is an
+      // overlay.
+      //
+      // Note that:
+      //
+      // - this filter will also weed out elements with no bounding box. Check
+      // with bounding_box { } first.
+      //
+      // - this filter will also weed out elements that cannot be scrolled into
+      // the viewport.
+      //
+      // - an element might be covered by an overlay and still be visible if the
+      // overlay is transparent. An element might be covered by an overlay and
+      // still be clickable, if the overlay intercepts and forwards events.
+      // Overlays with pointer-events set to none are ignored.
+      //
+      // - an element might be only partially covered by an overlay. This filter
+      // only checks the center of the element, since this is where the click
+      // action sends its clicks or taps.
+      //
+      // - this filter only detects overlays in the current frame. To detect
+      // overlays that cover the frame element itself, apply this filter on the
+      // frame element before calling enter_frame.
+      OnTopFilter on_top = 13;
+
+      // Filtering against an element property.
+      //
+      // This filter replaces |inner_text| and |value|.
+      PropertyFilter property = 14;
+    }
+
+    reserved 10;
   }
-  optional ElementReferenceProto element_to_click = 1;
-  optional ClickType click_type = 2;
+
+  // A regular expression value for filtering.
+  message PropertyFilter {
+    // The property to filter against.
+    optional string property = 1;
+
+    oneof value {
+      TextFilter text_filter = 2;
+      AutofillValueRegexp autofill_value_regexp = 3;
+    }
+  }
+
+  // A way of filtering elements by their pseudo-element content.
+  message PseudoElementContent {
+    optional PseudoType pseudo_type = 1;
+    optional TextFilter content = 2;
+  }
+
+  // Only keep elements whose computed style match the given filter. This is
+  // based on Window.computedStyle()
+  //
+  // See
+  // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
+  message CssStyleFilter {
+    // CSS property name.
+    optional string property = 3;
+
+    // Name of the pseudo-element whose style should be checked. Leave it unset
+    // or set to the empty string to check the style of the real element.
+    //
+    // This is the pseudoElt argument of JavaScript's
+    // window.getComputedStyle(element, [, pseudoElt]).
+    optional string pseudo_element = 4;
+
+    // By default the text filter in |value| must match. Set this to false to
+    // require the text condition not to match.
+    optional bool should_match = 5 [default = true];
+
+    // CSS property value match.
+    //
+    // Valid computed CSS properties always have a value, even if it's a default
+    // value. The default value depends on the property.
+    optional TextFilter value = 6;
+
+    reserved 1, 2;
+  }
+
+  // Only keep elements that have a bounding box.
+  message BoundingBoxFilter {
+    // If require_nonempty=false, which is the default, require elements to have
+    // at least one bounding rect returned by Element.getClientRects()
+    //
+    // If require_nonempty=true, additionally require the element's bounding
+    // client rect to have a nonzero width and height.
+    optional bool require_nonempty = 1;
+  }
+
+  // Filter out elements covered by other elements, such as overlays.
+  message OnTopFilter {
+    // If true, scroll the element into view before checking whether
+    // it's on top.
+    //
+    // The logic for checking whether an element is on top only works on
+    // elements that are positioned within the current viewport. Setting it to
+    // false turns off automatic scrolling to make the element visible, so the
+    // caller must make sure it's already the case.
+    optional bool scroll_into_view_if_needed = 1 [default = true];
+
+    // If true and the element cannot be scrolled into view, so the filter
+    // cannot check whether the element is on top, keep the element in the match
+    // set.
+    //
+    // This can be combined with scroll_into_view_if_needed=false to make
+    // this filter best effort and only check elements that are already in view.
+    optional bool accept_element_if_not_in_view = 2;
+  }
+
+  message EmptyFilter {}
+
+  message NthMatchFilter {
+    // Take the match at the given |index|.
+    optional int32 index = 1;
+  }
+
+  reserved 1 to 8;
 }
 
-// Contain all arguments to perform a select option action.
+enum OptionalStep {
+  STEP_UNSPECIFIED = 0;
+  SKIP_STEP = 1;
+  REPORT_STEP_RESULT = 2;
+  REQUIRE_STEP_SUCCESS = 3;
+}
+
+// Contain all arguments to perform a select option action. This action also
+// fires a "change" event on the element. If the option is not found, an
+// |OPTION_VALUE_NOT_FOUND| error is returned. If the action is used on an
+// element that is not an HTML <select> element, an |INVALID_TARGET| error is
+// returned.
 message SelectOptionProto {
   // The drop down element on which to select an option.
-  optional ElementReferenceProto element = 2;
-  // Value of the option to use.
-  optional string selected_option = 3;
+  optional SelectorProto element = 2;
+
+  oneof value {
+    // Value of the option to use.
+    TextFilter text_filter_value = 7;
+    // A value from an Autofill source. Note that this must be preceded by a
+    // |CollectUserDataAction|.
+    AutofillValueRegexp autofill_regexp_value = 8;
+  }
+
+  // Defines which attribute to use for comparing the option to the expected
+  // value.
+  enum OptionComparisonAttribute {
+    NOT_SET = 0;
+    // Compare the option's value.
+    VALUE = 1;
+    // Compare the option's label.
+    LABEL = 2;
+  }
+  optional OptionComparisonAttribute option_comparison_attribute = 6;
+
+  // If |strict|, only one match is allowed. Multiple matches will return a
+  // |TOO_MANY_OPTION_VALUES_FOUND| error. If not |strict| and multiple matches
+  // are found, the first one is selected.
+  optional bool strict = 9;
+
+  reserved 1, 3 to 5;
+}
+
+// Contains an update to ClientSettings. This is used to update Display Strings
+// for locales from the backend.
+message UpdateClientSettingsProto {
+  // The new ClientSettings to be used. Please see comments on how display
+  // strings are updated for display string locales in the description of
+  // |ClientSettingsProto|.
+  optional ClientSettingsProto client_settings = 1;
 }
 
 // Contain a localized text message from the server.
 message TellProto {
+  message TextToSpeech {
+    // Optional field to override the text to synthesize and play using
+    // TTS ('message' is used as the default text to play).
+    optional string tts_message = 1;
+
+    // Whether the current TTS message should be played immediately or not. If
+    // this is false, the message will instead only play when the user taps the
+    // TTS icon.
+    optional bool play_now = 2;
+  }
+
   // The message to show in the status bar. The behavior is now the following
   //
   //  * If the field is set, the status bar is updated (explicitly setting an
@@ -842,10 +1542,13 @@ message TellProto {
   // Show the UI if it's not shown yet, such as when a script has been started
   // by a direct action.
   optional bool needs_ui = 2 [default = true];
+
+  // Config for TextToSpeech (TTS) functionality.
+  optional TextToSpeech text_to_speech = 3;
 }
 
-// Contain all arguments to focus on an element.
-message FocusElementProto {
+// Contain all arguments to show cast on an element.
+message ShowCastProto {
   message TopPadding {
     oneof top_padding {
       // Padding in CSS pixels. Eg. 20.
@@ -854,23 +1557,40 @@ message FocusElementProto {
       float ratio = 2;
     }
   }
-  // Element to focus on.
-  optional ElementReferenceProto element = 1;
 
-  // Optional title to show in the status bar.
-  optional string title = 2;
-
-  // Restrict interaction to the area spanned by the given elements.
-  //
-  // Deprecated: use touchable_element_area instead. Ignored if
-  // touchable_element_area is non-empty.
-  repeated ElementReferenceProto deprecated_touchable_elements = 5;
+  // Element to scroll to.
+  optional SelectorProto element_to_present = 1;
 
   // Restrict interaction to a series of rectangular areas.
   optional ElementAreaProto touchable_element_area = 6;
 
   // The padding that will be added between the focused element and the top.
+  // If |container| is specified, this will indicate the padding between the
+  // focused element and the top of the container instead.
   optional TopPadding top_padding = 7;
+
+  // Configure whether the scrolling should wait for the element to be stable
+  // before scrolling.
+  //
+  // If set to REQUIRE_STEP_SUCCESS, scrolling may fail with ELEMENT_UNSTABLE.
+  optional OptionalStep wait_for_stable_element = 9;
+
+  // Maximum rounds to stable check.
+  optional int32 stable_check_max_rounds = 10 [default = 50];
+
+  // Interval for stable check in ms.
+  optional int32 stable_check_interval_ms = 11 [default = 200];
+
+  // Optional: the container to be scrolled to focus |element_to_present|. If
+  // not set, the window will be scrolled.
+  optional SelectorProto container = 12;
+
+  reserved 2 to 5, 8;
+}
+
+// Set the touchable and restricted area of the overlay.
+message SetTouchableAreaProto {
+  optional ElementAreaProto element_area = 1;
 }
 
 // An area made up of rectangles whole border are made defined by the position
@@ -880,7 +1600,7 @@ message ElementAreaProto {
   //
   // The rectangle is the smallest rectangle that includes all listed elements.
   message Rectangle {
-    repeated ElementReferenceProto elements = 1;
+    repeated SelectorProto elements = 1;
 
     // If true, the width of the rectangle always corresponds to the width of
     // the screen.
@@ -895,101 +1615,111 @@ message ElementAreaProto {
   repeated Rectangle restricted = 2;
 }
 
+// Message used to indicate what form fields should be filled with what
+// information coming from either the address or the credit card.
+message RequiredFieldProto {
+  // A value expression containing any number of |key| placeholders, where the
+  // |key| is an integer corresponding to entries from field_types.h or
+  // |AutofillFormatProto::AutofillAssistantCustomField|.
+  // Example:
+  // * 3 -> First name.
+  // * 51 -> Full card name.
+  // Note that the set of actually available fields are outside of our
+  // control and are retrieved automatically.
+  // An empty value expression will clear the field.
+  optional ValueExpression value_expression = 12;
+
+  // The element to fill.
+  optional SelectorProto element = 2;
+
+  // The strategy used to execute filling the value.
+  // This is only considered for text fields and ignored for dropdowns.
+  optional KeyboardValueFillStrategy fill_strategy = 7;
+
+  // Delay between two key presses when simlulating.
+  // This is only considered for text fields and ignored for dropdowns.
+  optional int32 delay_in_millisecond = 4 [default = 20];
+
+  // The strategy used to select a value option. If no
+  // |option_comparison_value_expression_re2| is set, this is used to
+  // differentiate between "starts with" and "match".
+  optional DropdownSelectStrategy select_strategy = 8;
+
+  // The attribute to compare for selecting an option.
+  // This is only considered for dropdowns and ignored for text fields. If set,
+  // takes precedence over |select_strategy|.
+  optional SelectOptionProto.OptionComparisonAttribute
+      option_comparison_attribute = 13;
+
+  // In case of a dropdown, this should be used instead of the
+  // |value_expression_proto|. If it's empty, |value_expression_proto| will be
+  // used. This is only considered for dropdowns and ignored for text fields.
+  optional ValueExpressionRegexp option_comparison_value_expression_re2 = 14;
+
+  // Fill in the value even if it's non-empty. This is useful to work around
+  // cases where the way Autofill sets the field doesn't work on the website.
+  optional bool forced = 5;
+
+  // The field is optional. If there is no value from Autofill available or
+  // the element is not found, the field will be skipped.
+  optional bool is_optional = 11;
+
+  // For JavaScript implemented dropdowns. This first clicks on the |element|,
+  // then waits for |option_element_to_click| to appear and clicks it. The
+  // selector must match a generic option, an |inner_text_pattern| will be
+  // added to this element reference to match a single option.
+  // Both clicks use the same |click_type|.
+  optional SelectorProto option_element_to_click = 9;
+  optional ClickType click_type = 10;
+
+  reserved 1, 3, 6;
+}
+
 // Fill a form with an address if there is, otherwise fail this action.
 message UseAddressProto {
-  // Message used to indicate what form fields should be filled with what
-  // information coming from the address.
-  message RequiredField {
-    enum AddressField {
-      UNDEFINED = 0;
-      FIRST_NAME = 1;
-      LAST_NAME = 2;
-      FULL_NAME = 3;
-      PHONE_NUMBER = 4;
-      EMAIL = 5;
-      ORGANIZATION = 6;
-      COUNTRY_CODE = 7;
-      REGION = 8;  // e.g. state
-      STREET_ADDRESS = 9;
-      LOCALITY = 10;  // e.g. city
-      DEPENDANT_LOCALITY = 11;
-      POSTAL_CODE = 12;
-    }
-
-    optional AddressField address_field = 1;
-
-    optional ElementReferenceProto element = 2;
-
-    // Whether we should simulate actual key presses when filling |element| with
-    // its corresponding value.
-    optional bool simulate_key_presses = 3;
-
-    // Delay between two key presses when simlulating.
-    optional int32 delay_in_millisecond = 4 [default = 20];
-
-    // Fill in the fill even if it's non-empty. This is useful to work around
-    // cases where the way autofill sets the field doesn't work on the website.
-    // Usually used together with simulate_key_presses.
-    optional bool forced = 5;
+  oneof address_source {
+    // The client memory key from which to retrieve the address.
+    string name = 1;
+    // The client model identifier from which to retrieve the address.
+    string model_identifier = 9;
   }
 
-  // An optional name to allow to handle multiple addresses selection (for
-  // instance a billing and a delivery address).
-  optional string name = 1;
-
-  // An optional message to show to the user when asking to select an address.
-  // TODO(crbug.com/806868): Make the prompt a required field.
-  optional string prompt = 2;
-
   // Reference to an element in the form that should be filled.
-  optional ElementReferenceProto form_field_element = 4;
+  optional SelectorProto form_field_element = 4;
 
   // An optional list of fields that should be filled by this action.
-  repeated RequiredField required_fields = 6;
+  repeated RequiredFieldProto required_fields = 6;
+
+  // If true, this skips the Autofill step jumping straight to the
+  // |required_fields|.
+  optional bool skip_autofill = 10;
+
+  reserved 2, 7, 8;
 }
 
 // Fill a form with a credit card if there is one stored in client memory,
 // otherwise fail this action.
 message UseCreditCardProto {
-  // Message used to indicate what form fields should be filled with what
-  // information.
-  message RequiredField {
-    enum CardField {
-      UNDEFINED = 0;
-      CREDIT_CARD_VERIFICATION_CODE = 1;
-      CREDIT_CARD_EXP_MONTH = 2;
-      CREDIT_CARD_EXP_2_DIGIT_YEAR = 3;
-      CREDIT_CARD_EXP_4_DIGIT_YEAR = 4;
-      CREDIT_CARD_CARD_HOLDER_NAME = 5;
-      CREDIT_CARD_NUMBER = 6;
-      CREDIT_CARD_EXP_MM_YY = 7;
-    }
-
-    optional CardField card_field = 1;
-
-    optional ElementReferenceProto element = 2;
-
-    // Whether we should simulate actual key presses when filling |element| with
-    // its corresponding value.
-    optional bool simulate_key_presses = 3;
-
-    // Delay between two key presses when simlulating.
-    optional int32 delay_in_millisecond = 4 [default = 20];
-
-    // Fill in the fill even if it's non-empty. This is useful to work around
-    // cases where the way autofill sets the field doesn't work on the website.
-    // Usually used together with simulate_key_presses.
-    optional bool forced = 5;
-  }
-
-  // An optional message to show to the user when asking to select a card.
-  // TODO(crbug.com/806868): Make the prompt a required field.
-  optional string prompt = 1;
+  // The client model identifier from which to retrieve the credit card.
+  // If not specified, will use the card stored in client memory instead.
+  optional string model_identifier = 4;
 
   // A reference to the card number field in the form that should be filled.
-  optional ElementReferenceProto form_field_element = 3;
+  optional SelectorProto form_field_element = 3;
 
-  repeated RequiredField required_fields = 7;
+  repeated RequiredFieldProto required_fields = 7;
+
+  // If true, this skips the Autofill step jumping straight to the
+  // |required_fields|.
+  optional bool skip_autofill = 8;
+
+  // If true, this skips resolving the CreditCard. The card can be used to fill
+  // fields like name or expiration date. Be aware that you cannot fill CVC or
+  // credit card number without resolving the card.
+  // This skips the autofill step, regardless of |skip_autofill|.
+  optional bool skip_resolve = 9;
+
+  reserved 1, 5, 6;
 }
 
 // Ask Chrome to wait for an element in the DOM. This can be used to only
@@ -998,51 +1728,20 @@ message WaitForDomProto {
   // Fail after waiting this amount of time.
   optional int32 timeout_ms = 1;
 
-  oneof wait_on {
-    // Wait until there exists at least one element that matches the given
-    // selector.
-    ElementReferenceProto wait_until = 5;
-
-    // Wait as long as there's at least one element that matches the given
-    // reference.
-    ElementReferenceProto wait_while = 6;
-
-    // Wait until at least one condition is met.
-    //
-    // If, at the end of the timeout, no conditions are not met, the action
-    // returns ELEMENT_RESOLUTION_FAILED.
-    ElementConditions wait_for_any = 7;
-
-    // Wait until all conditions are met.
-    //
-    // If, at the end of the timeout, not all condition are met, the action
-    // returns ELEMENT_RESOLUTION_FAILED.
-    ElementConditions wait_for_all = 8;
-  }
+  // Wait until this condition becomes true. If, at the end of the timeout, the
+  // condition is not true, returns ELEMENT_RESOLUTION_FAILED.
+  // The |wait_condition| can be used to store matches on the client by
+  // annotating a |match| condition with a |client_id|. Note that matches that
+  // were not found will be removed from the store, e.g. if they were entered
+  // by a previous |WaitForDomProto|. The store also gets updated if the action
+  // fails.
+  optional ElementConditionProto wait_condition = 9;
 
   // If true, run scripts flagged with 'interrupt=true' as soon as their
   // preconditions match.
   optional bool allow_interrupt = 3;
 
-  reserved 4;
-
-  // Multiple element conditions.
-  message ElementConditions { repeated ElementCondition conditions = 1; }
-
-  // A single element condition.
-  message ElementCondition {
-    oneof condition {
-      // There must be at least one matching element.
-      ElementReferenceProto must_match = 1;
-
-      // There must not be any matching elements.
-      ElementReferenceProto must_not_match = 2;
-    }
-
-    // If this condition is met and this is nonempty, put the following payload
-    // into the result.
-    optional bytes server_payload = 5;
-  }
+  reserved 4 to 8;
 
   // Result to include into ProcessedActionProto.
   message Result {
@@ -1051,32 +1750,115 @@ message WaitForDomProto {
   }
 }
 
+// A condition that expects a specific combination of elements. An empty
+// condition is true.
+message ElementConditionProto {
+  oneof type {
+    // The condition matches if all of these conditions match.
+    ElementConditionsProto all_of = 1;
+
+    // The condition matches if at least one of these conditions matches.
+    ElementConditionsProto any_of = 2;
+
+    // The condition matches if none of these conditions match.
+    ElementConditionsProto none_of = 3;
+
+    // The condition matches if the given element exists. An empty
+    // ElementReference never match.
+    SelectorProto match = 4;
+  }
+
+  // A payload that identifies this condition. WaitForDom puts this payload
+  // into the result. This is ignored outside of WaitForDom.
+  optional bytes payload = 5;
+
+  // Optional. If set, the element of |match| will be stored under this
+  // identifier on the client. If |require_unique_element| is not set to true,
+  // the first match will be stored.
+  optional ClientIdProto client_id = 6;
+
+  // Optional. If set to true, the finding of element of |match| will be done
+  // in a strict manner, failing if multiple elements match the Selector. By
+  // default the matching is non-strict, selecting the first match.
+  optional bool require_unique_element = 7;
+}
+
+message ElementConditionsProto {
+  repeated ElementConditionProto conditions = 1;
+}
+
 // Volatile upload of a portion of the dom for backend analysis, does not store
 // anything.
 message UploadDomProto {
+  message Result {
+    // The outer HTML of the element(s) matched by |tree_root|.
+    repeated string outer_htmls = 1;
+  }
+
   // The element that should be a root of uploaded DOM. If empty then the whole
   // page is returned.
-  optional ElementReferenceProto tree_root = 1;
+  optional SelectorProto tree_root = 1;
+
+  // Whether |tree_root| can match multiple elements. If false and multiple
+  // elements are matched, this action will fail with TOO_MANY_MATCHES.
+  optional bool can_match_multiple_elements = 2;
+
+  // Whether innerText of DOM should be included.
+  optional bool include_all_inner_text = 3;
 }
 
 // Shows the progress bar.
 message ShowProgressBarProto {
-  // Message to show on the progress bar while loading.
-  optional string message = 3;
+  oneof progress_indicator {
+    // Value between 0 and |N| (where N is the size of the initial
+    // |step_icons|) indicating the current step the flow is in, marking
+    // all previous steps as complete. The active step will not be marked as
+    // complete but instead be marked as active with a pulsating animation.
+    // Setting the value to |N| or -1 will mark all steps as complete with no
+    // step being active anymore.
+    int32 active_step = 8;
 
-  // Value between 0 and 100 indicating the current progress. Values above 100
-  // will be capped to 100, values below 0 will be capped to 0 by the client.
-  // NOTE: Setting |progress| to 100 is an equivalent of setting |done| to true.
-  optional int32 progress = 6;
+    // The string reference of an icon defined in the
+    // |StepProgressBarConfiguration|. This sets the |active_step| to that icon
+    // with the same logic as |active_step| itself.
+    string active_step_identifier = 11;
+
+    // Completes the progress in whichever progress bar is active.
+    bool complete_progress = 12;
+  }
+
+  // Whether the step progress bar should go into an error state.
+  // If the active step is smaller than |N|, this will simply mark the last icon
+  // as failed. If the active step is |N|, meaning that all steps have been
+  // completed, this will mark the entire progress bar as failed.
+  optional bool error_state = 10;
 
   // Hide the progress bar in the UI.
   optional bool hide = 7;
-}
 
-// Contain all arguments to perform a highlight element action.
-message HighlightElementProto {
-  // The element to highlight.
-  optional ElementReferenceProto element = 1;
+  message StepProgressBarIcon {
+    optional DrawableProto icon = 1;
+
+    // The reference identifier of this step.
+    optional string identifier = 2;
+  }
+
+  // The configuration of the step progress bar. Only has an impact if the new
+  // progress bar is being used. This configuration should only be sent once in
+  // the initial call of the progress bar, as each appearance may cause the
+  // progress bar being rerendered. The previous configuration will be carried
+  // over in each new progress |ShowProgressBarAction|.
+  message StepProgressBarConfiguration {
+    // Set the icons for the new progress bar. The size of the |step_icons|
+    // gives the length of the progress bar. As such an empty list is not
+    // supported. The list needs to be at least 2 items long.
+    repeated StepProgressBarIcon annotated_step_icons = 3;
+
+    reserved 1, 2;
+  }
+  optional StepProgressBarConfiguration step_progress_bar_configuration = 9;
+
+  reserved 1 to 6;
 }
 
 // Controls the browser navigation.
@@ -1149,7 +1931,7 @@ message WaitForDocumentProto {
 
   // If specified, check the document in the given frame, instead
   // of the main document.
-  optional ElementReferenceProto frame = 2;
+  optional SelectorProto frame = 2;
 
   // The minimum ready state needed to satisfy the requirement.
   optional DocumentReadyState min_ready_state = 3
@@ -1167,7 +1949,123 @@ message WaitForDocumentProto {
   }
 }
 
-// Allow choosing one or more possibility. If FocusElement was called just
+// Show backend-specified user interface elements to the user.
+//
+// Note that this action will behave similar to a prompt, i.e., it requires a
+// specific EndAction interaction (usually tied to tapping a Chip) to end.
+//
+// Client errors:
+//   INVALID_ACTION if |generic_user_interface| was ill-defined or incomplete,
+//   or if the client failed to instantiate the UI for some reason. The Chrome
+//   log should contain additional information about the issue, if verbose
+//   logging is enabled (suggested level: 2 or 3).
+message ShowGenericUiProto {
+  message RequestAutofillCreditCards { optional string model_identifier = 1; }
+  message RequestAutofillProfiles { optional string model_identifier = 1; }
+  message RequestLoginOptions {
+    message PasswordManagerLogins {
+      optional string sublabel = 1;
+      optional bytes payload = 2;
+    }
+    message LoginOption {
+      oneof type {
+        LoginOptionProto custom_login_option = 1;
+        PasswordManagerLogins password_manager_logins = 2;
+      }
+    }
+
+    repeated LoginOption login_options = 1;
+    optional string model_identifier = 2;
+  }
+  message RequestUserData {
+    message AdditionalValue {
+      // The client memory identifier (from |UserData|).
+      optional string source_identifier = 1;
+      // The model identifier to write the value to (to |UserModel|).
+      optional string model_identifier = 2;
+    }
+    // Additional values to write from |UserData| to |UserModel|.
+    repeated AdditionalValue additional_values = 1;
+  }
+  message Result {
+    // The model containing the values for all keys specified in
+    // |output_model_identifiers|.
+    optional ModelProto model = 1;
+    // Set to true if the action was interrupted by a navigation event.
+    optional bool navigation_ended = 2;
+  }
+
+  // The generic user interface to show.
+  optional GenericUserInterfaceProto generic_user_interface = 1;
+
+  // The set of model identifiers to write to the result. Note: this must be a
+  // subset of the input model identifiers!
+  repeated string output_model_identifiers = 2;
+
+  // If specified, available autofill credit cards will be provided and
+  // auto-updated in the specified |model_identifier|.
+  optional RequestAutofillCreditCards request_credit_cards = 3;
+
+  // If specified, available autofill profiles will be provided and auto-updated
+  // in the specified |model_identifier|.
+  optional RequestAutofillProfiles request_profiles = 4;
+
+  // If specified, available login options (including those provided by password
+  // manager) will be provided and auto-updated in the specified
+  // |model_identifier|.
+  optional RequestLoginOptions request_login_options = 5;
+
+  message PeriodicElementChecks {
+    message ElementCheck {
+      // The element condition to be checked during the action.
+      optional ElementConditionProto element_condition = 1;
+      // The model identifier to write the result to.
+      optional string model_identifier = 2;
+    }
+    repeated ElementCheck element_checks = 1;
+  }
+  optional PeriodicElementChecks periodic_element_checks = 6;
+  // When set to true, end this action on navigation events. The result will
+  // have |navigation_ended| set to true.
+  optional bool end_on_navigation = 7;
+  // If true, run scripts flagged with |interrupt=true| as soon as their
+  // preconditions match, then go back to the parent action.
+  optional bool allow_interrupt = 8;
+  // If specified, will write the requested values from |UserData| to
+  // |UserModel|. Will fail the action with PRECONDITION_FAILED if any of the
+  // requested values is missing. Note that all values will have
+  // |is_client_side_only| set to true.
+  optional RequestUserData request_user_data = 9;
+
+  reserved 10;
+}
+
+// Show backend-specified user interface elements to the user until dismissed.
+//
+// The UI will be shown until cleared by ClearPersistentUi or overwritten
+// by a subsequent SetPersistentUi.
+// The Ui is also cleared at the end of the script if it ended in error or if
+// the last action had |clean_contextual_ui| = true.
+//
+// Client errors:
+//   INVALID_ACTION if |generic_user_interface| was ill-defined or incomplete,
+//   or if the client failed to instantiate the UI for some reason. The Chrome
+//   log should contain additional information about the issue, if verbose
+//   logging is enabled (suggested level: 2 or 3).
+message SetPersistentUiProto {
+  // Required. The generic user interface to show.
+  //
+  // The following interaction callbacks aren't supported:
+  // - SetUserActions
+  // - ToggleUserAction
+  // - EndAction
+  optional GenericUserInterfaceProto generic_user_interface = 1;
+}
+
+// Clears the Ui set by SetPersistentUi.
+message ClearPersistentUiProto {}
+
+// Allow choosing one or more possibility. If ShowCast was called just
 // before, allow interaction with the touchable element area, otherwise don't
 // allow any interactions.
 message PromptProto {
@@ -1177,7 +2075,7 @@ message PromptProto {
   // A choice that can be triggered:
   // - by clicking on a chip, if a chip is set
   // - by triggering a direct action, if direct action names are set
-  // - indirectly, DOM change, if auto_select_if_element_exists if set
+  // - indirectly, DOM change, if auto_select_when if set
   //
   // One of these protos must is transmitted as-is back to the server as part of
   // ProcessedActionProto.
@@ -1185,17 +2083,11 @@ message PromptProto {
     // The chip to display to the UI.
     optional ChipProto chip = 11;
 
-    // Map this choice to a direct action.
-    optional DirectActionProto direct_action = 12;
+    // Auto-select this choice when the condition is met.
+    optional ElementConditionProto auto_select_when = 15;
 
-    // Auto-select this choice if the given element exist.
-    optional ElementReferenceProto auto_select_if_element_exists = 4;
-
-    // The chip is only visible or enabled if all the given element exists.
-    repeated ElementReferenceProto show_only_if_element_exists = 6;
-
-    // The chip is only visible or enabled if all the form values match.
-    repeated FormValueMatchProto show_only_if_form_value_matches = 8;
+    // This chip is only visible or enabled if this condition is met.
+    optional ElementConditionProto show_only_when = 16;
 
     // Disable the chip instead of hiding it completely, if the preconditions
     // don't match.
@@ -1205,16 +2097,67 @@ message PromptProto {
     // be transmitted as-is by the client without interpreting.
     optional bytes server_payload = 5;
 
-    reserved 13;
+    reserved 4, 6, 8, 12 to 14, 17;
   }
   repeated Choice choices = 4;
 
   // If true, run scripts flagged with 'interrupt=true' as soon as their
   // preconditions match, then go back to the prompt.
   optional bool allow_interrupt = 5;
+
+  // If this is true, then we do not force expand the sheet when entering the
+  // prompt state. When false or not set, this keeps the default behavior.
+  optional bool disable_force_expand_sheet = 6;
+
+  // If this is true, go into browse mode where navigation and user gestures
+  // like go_back do not shut down autofill assistant.
+  // TODO(marianfe): Consider introducing a BrowseAction instead.
+  optional bool browse_mode = 7;
+
+  // EXPERIMENTAL.
+  // Only relevant if |browse_mode| is true. If set, the bottom sheet will
+  // completely disappear when the action starts, and re-appear when the action
+  // ends.
+  //
+  // Note: invisible prompts can't show chips to the user. This flag is intended
+  // to be used with prompts that exclusively use choices which are
+  // auto-selected based on DOM state, i.e., |auto_select_when|.
+  optional bool browse_mode_invisible = 10;
+
+  // When set to true, end prompt on navigation events happening during a prompt
+  // action. The result sent back to the server in
+  // ProcessedActionProto.prompt_choice will have |navigation_ended| set to
+  // true.
+  optional bool end_on_navigation = 8;
+
+  // A list of domains and subdomains to allow users to navigate to when in
+  // browse mode.
+  repeated string browse_domains_allowlist = 9;
+
+  // Result to pass to ProcessedActionProto.
+  message Result {
+    // This field is only used when crafting a response Choice for the server
+    // when the |end_on_navigation| option is set. It means there was a
+    // navigation event while in prompt mode that ended the action.
+    optional bool navigation_ended = 2;
+
+    // Server payload originally found in Choice.server_payload. This should be
+    // transmitted as-is by the client without interpreting.
+    optional bytes server_payload = 5;
+
+    reserved 1;
+  }
 }
 
 message ContactDetailsProto {
+  // A subset of fields available for autofill profiles. See
+  // |components/autofill/code/browser/field_types.h|.
+  enum AutofillContactField {
+    NAME_FULL = 7;
+    EMAIL_ADDRESS = 9;
+    PHONE_HOME_WHOLE_NUMBER = 14;
+  }
+
   // Data saved under this name can be reused by UseAddressAction.
   optional string contact_details_name = 1;
   // If true asks user for full name.
@@ -1223,34 +2166,24 @@ message ContactDetailsProto {
   optional bool request_payer_email = 3;
   // If true asks user for phone.
   optional bool request_payer_phone = 4;
-}
-
-// A generic read-only popup message.
-message InfoPopupProto {
-  // The title of the popup window.
-  optional string title = 1;
-  // The text of the popup window.
-  optional string text = 2;
-
-  message DialogButton {
-    message CloseDialog {}
-    message OpenUrlInCCT { optional string url = 1; }
-
-    // The action to be executed on click.
-    oneof click_action {
-      // Closes the popup.
-      CloseDialog close_dialog = 4;
-      // Opens the specified url into a new CCT.
-      OpenUrlInCCT open_url_in_cct = 5;
-    }
-    optional string label = 1;
-  }
-  // Optional: adds a positive button.
-  optional DialogButton positive_button = 3;
-  // Optional: adds a negative button.
-  optional DialogButton negative_button = 4;
-  // Optional: adds a neutral button.
-  optional DialogButton neutral_button = 5;
+  // This controls the summary of the selected contact in the collapsed contact
+  // section (one line per field, in the order specified, up to and including
+  // |max_number_summary_fields| lines).
+  repeated AutofillContactField summary_fields = 5;
+  // The maximum number of lines for the selected contact in the collapsed
+  // contact section.
+  optional int32 max_number_summary_lines = 6;
+  // This controls the full description of contacts in the expanded contact
+  // section (one line per field, in the order specified, up to and including
+  // |max_number_full_lines| lines).
+  repeated AutofillContactField full_fields = 7;
+  // The maximum number of lines for contacts in the expanded contact section.
+  optional int32 max_number_full_lines = 8;
+  // If present, it will be used as the title to be displayed for the contact
+  // details section instead of the default one.
+  optional string contact_details_section_title = 9;
+  // Defines how to evaluate validity of this contact.
+  repeated RequiredDataPiece required_data_piece = 10;
 }
 
 message LoginDetailsProto {
@@ -1272,12 +2205,20 @@ message LoginDetailsProto {
     optional string sublabel = 7;
     optional string sublabel_accessibility_hint = 8;
 
+    // The optional content description of the edit button. There are three
+    // possible states:
+    // - unset: the content description will be inferred from the button.
+    // - set to empty string: this button is not important for a11y.
+    // - set to non-empty string: the button will have the specified content
+    // description.
+    optional string edit_button_content_description = 10;
+
     // If the option was chosen, this payload will be returned to the server.
     optional bytes payload = 1;
 
-    // Whether the UI should automatically choose this login option if it is the
-    // only available choice.
-    optional bool choose_automatically_if_no_other_options = 2;
+    // Whether the UI should automatically choose this login option if no
+    // password manager login options are available.
+    optional bool choose_automatically_if_no_stored_login = 2;
 
     // Determines the priority with which to pre-select this login choice.
     // The lower the value, the higher the priority.
@@ -1286,6 +2227,8 @@ message LoginDetailsProto {
       LoginOptionCustomProto custom = 4;
       LoginOptionPasswordManagerProto password_manager = 5;
     }
+
+    reserved 9;
   }
   // The title for the login selection (e.g., 'Login details for <domain>').
   optional string section_title = 1;
@@ -1294,18 +2237,43 @@ message LoginDetailsProto {
 }
 
 message DateTimeRangeProto {
-  // The start value of the date/time range.
-  optional DateTimeProto start = 1;
-  // The end value of the date/time range.
-  optional DateTimeProto end = 2;
-  // The minimum allowed value of the date/time range.
-  optional DateTimeProto min = 3;
-  // The maximum allowed value of the date/time range.
-  optional DateTimeProto max = 4;
-  // The label of the start date/time value (e.g., 'Pick-up').
-  optional string start_label = 5;
-  // The label of the end date/time value (e.g., 'Return').
-  optional string end_label = 6;
+  message TimeSlot {
+    // The label to display.
+    optional string label = 1;
+    // The comparison value to be used to compare this timeslot
+    // to others. Smaller values indicate earlier times. This will be used to
+    // prevent start > end and vice-versa.
+    optional int32 comparison_value = 2;
+  }
+
+  // The initial start date of the date/time range.
+  optional DateProto start_date = 15;
+  // The index of the initial start time slot to select.
+  optional int32 start_time_slot = 13;
+  // The initial end date of the date/time range.
+  optional DateProto end_date = 16;
+  // The index of the initial end time slot to select.
+  optional int32 end_time_slot = 14;
+  // The minimum allowed date of the date/time range.
+  optional DateProto min_date = 3;
+  // The maximum allowed date of the date/time range.
+  optional DateProto max_date = 4;
+  // The label for the start date (e.g., 'Pick up date').
+  optional string start_date_label = 8;
+  // The label for the start time (e.g., 'Pick up time').
+  optional string start_time_label = 9;
+  // The label for the end date (e.g., 'Drop off date').
+  optional string end_date_label = 10;
+  // The label for the end time (e.g., 'Drop off time').
+  optional string end_time_label = 11;
+  // The time slots to offer (e.g., 08:00 AM, 08:30 AM, ...)
+  repeated TimeSlot time_slots = 12;
+  // The error message to display if the date is not set.
+  optional string date_not_set_error = 17;
+  // The error message to display if the time is not set.
+  optional string time_not_set_error = 18;
+
+  reserved 1, 2, 5, 6, 7;
 }
 
 // A section showing a simple text message.
@@ -1344,12 +2312,73 @@ message UserFormSectionProto {
   oneof section {
     StaticTextSectionProto static_text_section = 2;
     TextInputSectionProto text_input_section = 3;
+    PopupListSectionProto popup_list_section = 4;
   }
+  // Whether to send the result values to the backend.
+  optional bool send_result_to_backend = 5;
+}
+
+// A section that when tapped presents the user a popup with a list of options.
+// The selected option is displayed in the section.
+message PopupListSectionProto {
+  // The key used to store the selection in CollectUserDataResultProto
+  optional string additional_value_key = 1;
+
+  // The name of the items to be displayed
+  repeated string item_names = 2;
+
+  // The list of the indexes of the items to be initially selected.
+  repeated int32 initial_selection = 3;
+
+  // Whether to allow the selection of multiple items or just one.
+  optional bool allow_multiselect = 4;
+
+  // Whether the selection of this section is required to proceed.
+  optional bool selection_mandatory = 5 [default = true];
+
+  // The error message displayed when the selection is mandatory and missing.
+  // Ignored if |selection_mandatory| is false.
+  optional string no_selection_error_message = 6;
+}
+
+message AutofillEntryProto {
+  // The value that this data point holds.
+  optional string value = 1;
+  // The value should be used exactly as specified. Use this only in
+  // exceptional circumstances, as you will lose any of the additional
+  // processing done automatically by Autofill, such as:
+  // - Setting a NAME_FULL will split it and also set NAME_FIRST, NAME_MIDDLE
+  //   and NAME_LAST as applicable.
+  // - Setting a PHONE_HOME_WHOLE_NUMBER will also set PHONE_HOME_NUMBER,
+  //   PHONE_HOME_CITY_CODE, PHONE_HOME_COUNTRY_CODE and
+  //   PHONE_HOME_CITY_AND_NUMBER.
+  optional bool raw = 2;
+}
+
+message ProfileProto {
+  // The values, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> values = 2;
+  // The identifier for this set of profile data.
+  optional string identifier = 3;
+
+  reserved 1;
+}
+
+message PaymentInstrumentProto {
+  // The values for the card, where the key is one of autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> card_values = 2;
+  // The values for the billing address, where the key is one of
+  // autofill::ServerFieldType.
+  map<int32, AutofillEntryProto> address_values = 3;
+  // The identifier for this payment instrument (credit card + billing address).
+  optional string identifier = 4;
+
+  reserved 1;
 }
 
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
-// Next: 22
+// Next: 38
 message CollectUserDataProto {
   enum TermsAndConditionsState {
     // No choice has been made yet.
@@ -1368,6 +2397,9 @@ message CollectUserDataProto {
   // specified name. If empty we won't ask for the shipping address. Data saved
   // under this name can be reused by UseAddressAction.
   optional string shipping_address_name = 3;
+  // If present, it will be used as the title to be displayed for the shipping
+  // address section instead of the default one.
+  optional string shipping_address_section_title = 32;
   // When 'true' will ask for the credit card.
   optional bool request_payment_method = 4;
   // If non-empty, the UI will filter the available basic-card networks
@@ -1375,8 +2407,9 @@ message CollectUserDataProto {
   repeated string supported_basic_card_networks = 6;
   // Contact details that should be gathered.
   optional ContactDetailsProto contact_details = 5;
-  // Override for the text of the confirm button.
-  optional string confirm_button_text = 7;
+  // Optional specification for the confirm button (defaults to standard confirm
+  // chip if not specified).
+  optional ChipProto confirm_chip = 33;
   // The initial state of the terms & conditions choice.
   optional TermsAndConditionsState terms_and_conditions_state = 8;
   // When 'false', hide the terms and conditions box in the UI.
@@ -1398,18 +2431,12 @@ message CollectUserDataProto {
   // Privacy notice telling users that autofill assistant will send personal
   // data to a third party’s website.
   optional string privacy_notice_text = 21;
-  // Optionally allows confiriming through the given direct actions.
-  optional DirectActionProto confirm_direct_action = 10;
   // Additional actions available to the user. This can be used for instance to
   // display a "Show terms" button that will navigate the user to the terms and
   // conditions page when clicked.
   repeated UserActionProto additional_actions = 11;
-  // Optionally requests a payment method with a billing address that has a
-  // postcode value.
-  optional bool require_billing_postal_code = 14;
-  // The error message to display when the billing address is missing the
-  // postal code. This field is mandatory if |require_postal_code| is true.
-  optional string billing_postal_code_missing_text = 15;
+  // The error message to display when the selected credit card is expired.
+  optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
   optional LoginDetailsProto login_details = 16;
   // The date/time range that should be gathered.
@@ -1418,12 +2445,64 @@ message CollectUserDataProto {
   repeated UserFormSectionProto additional_prepended_sections = 18;
   // An optional list of additional sections, which is below all other sections.
   repeated UserFormSectionProto additional_appended_sections = 19;
-  // Backend-configured user interface to show.
-  optional GenericUserInterfaceProto generic_user_interface = 22;
-}
+  // Backend-configured user interface to show below
+  // |additional_prepended_sections|.
+  optional GenericUserInterfaceProto generic_user_interface_prepended = 22;
+  // Backend-configured user interface to show below
+  // |additional_appended_sections|.
+  optional GenericUserInterfaceProto generic_user_interface_appended = 25;
+  // Optional. Text to be shown in a separate info section.
+  optional string info_section_text = 24;
+  // Optional. If true the text in the info section will be centered.
+  optional bool info_section_text_center = 31;
+  // Optional. If specified, the continue button will only be enabled if the
+  // boolean at this location is true (and everything else is valid too).
+  optional string additional_model_identifier_to_check = 27;
+  // Clears any previously selected credit card. The client will revert to
+  // default-selecting the card instead. NOTE: When clearing the credit card
+  // selection, the billing address should also be cleared!
+  optional bool clear_previous_credit_card_selection = 28;
+  // Clears the previously selected login option, if any. The client will revert
+  // to default-selecting the login option instead.
+  optional bool clear_previous_login_selection = 29;
+  // The names of the selected profiles to clear. Should be a subset of
+  // {billing_address_name, shipping_address_name,
+  // contact_details.contact_details_name}. NOTE: when clearing the billing
+  // address, the selected credit card should also be cleared!
+  repeated string clear_previous_profile_selection = 30;
+  // Defines how to evaluate validitiy of an address or credit card.
+  repeated RequiredDataPiece required_shipping_address_data_piece = 34;
+  repeated RequiredDataPiece required_credit_card_data_piece = 35;
+  repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
-// Resets Autofill Assistant: clears any state and server payload.
-message ResetProto {}
+  message UserDataProto {
+    // Available contacts to select.
+    repeated ProfileProto available_contacts = 1;
+    // The identifier of the contact to select. If not specified, the client
+    // will use its own heuristics to select a default contact.
+    optional string selected_contact_identifier = 5;
+
+    // Available (shipping) addresses to select.
+    repeated ProfileProto available_addresses = 4;
+    // The identifier of the shipping address to select. If not specified, the
+    // client will use its own heuristics to select a default shipping address.
+    optional string selected_shipping_address_identifier = 6;
+
+    // Available payment instruments to select.
+    repeated PaymentInstrumentProto available_payment_instruments = 2;
+    // The identifier of the payment instrument to select. If not specified,
+    // the client will use its own heuristics to select a default payment
+    // instrument.
+    optional string selected_payment_instrument_identifier = 7;
+
+    // The locale to be used when creating this data. This can have influence
+    // on the potential processing by Autofill.
+    optional string locale = 3;
+  }
+  optional UserDataProto user_data = 37;
+
+  reserved 7, 10, 14, 15, 26;
+}
 
 // Stop Autofill Assistant.
 message StopProto {
@@ -1431,33 +2510,14 @@ message StopProto {
   // Assistant.
   optional bool close_cct = 2;
 
+  // Whether to show the feedback chip once Autofill Assistant has stopped.
+  // Note that this is only relevant if the UI is still being shown after the
+  // stop, which happens only if:
+  // - close_cct is false.
+  // - The action preceding this one is a Tell action.
+  optional bool show_feedback_chip = 3;
+
   reserved 1;  // stop_action_type
-}
-
-message DateProto {
-  optional int64 year = 1;
-
-  // Month of the year in the range [1-12].
-  optional int32 month = 2;
-
-  // Day of the month in the range [1-31].
-  optional int32 day = 3;
-}
-
-message TimeProto {
-  // Hour in the range [0-23].
-  optional int32 hour = 1;
-
-  // Minute in the range [0-59].
-  optional int32 minute = 2;
-
-  // Second in the range [0-59].
-  optional int32 second = 3;
-}
-
-message DateTimeProto {
-  optional DateProto date = 1;
-  optional TimeProto time = 2;
 }
 
 message DetailsChangesProto {
@@ -1481,11 +2541,8 @@ message DetailsChangesProto {
 message DetailsProto {
   optional string title = 1;
 
-  oneof image {
-    string image_url = 2;
-    // When set to true shows placeholder in place of an image.
-    bool show_image_placeholder = 10;
-  }
+  optional string image_url = 2;
+
   // Specifies the hint for accessibility. If set to empty, the image will not
   // be announced by accessibility.
   optional string image_accessibility_hint = 14;
@@ -1524,17 +2581,30 @@ message DetailsProto {
   optional DateTimeProto datetime = 3;
   optional string description = 4;
 
-  // Asks the UI to show animated placeholders for missing fields.
-  // The placeholder will be shown on effectively missing:
-  // * title
-  // * image
-  // * description line (1, 2 or 3)
-  // TODO(crbug.com/806868): Make the fields for displaying placeholders
-  // configurable by the server.
-  optional bool animate_placeholders = 11;
+  // The configuration for the placeholders.
+  message PlaceholdersConfiguration {
+    // Show a placeholder if |DetailsProto.image_url| is empty.
+    optional bool show_image_placeholder = 1;
+
+    // Show a placeholder if |DetailsProto.title| is empty.
+    optional bool show_title_placeholder = 2;
+
+    // Show a placeholder if |DetailsProto.description_line_1| is empty.
+    optional bool show_description_line_1_placeholder = 3;
+
+    // Show a placeholder if |DetailsProto.description_line_2| is empty.
+    optional bool show_description_line_2_placeholder = 4;
+
+    // Show a placeholder if |DetailsProto.description_line_3| is empty.
+    optional bool show_description_line_3_placeholder = 5;
+  }
+
+  // The placeholders configuration. Note that a placeholder will be shown only
+  // if the associated data is empty.
+  optional PlaceholdersConfiguration placeholders = 15;
 
   // Deprecated, no longer supported.
-  reserved 5;
+  reserved 5, 10, 11;
 }
 
 // Show contextual information.
@@ -1551,49 +2621,83 @@ message ShowDetailsProto {
   // Flags indicating which parts of the details (if any) have changed.
   // This field is taken into account only if |details| is filled.
   optional DetailsChangesProto change_flags = 2;
+
+  // Whether the details should be added/appended instead of replacing the
+  // current details.
+  optional bool append = 6;
+
+  // If set, add a delay of |delay_ms| before setting/appending the details.
+  //
+  // The details will never be shown if another ShowDetailsProto action with
+  // |append| = false is sent after this action and before the delay is reached.
+  //
+  // Note that it's not possible to delay the clearing of the details. If
+  // |data_to_show| is not set, then the details will be cleared directly.
+  optional int32 delay_ms = 7;
 }
 
-// Set the value of an form element.
-message SetFormFieldValueProto {
-  message Result { optional bool fallback_to_simulate_key_presses = 1; }
-  message KeyPress {
-    oneof keypress {
-      // Text to insert as-is into a form field.
-      string text = 1;
-      // DEPRECATED: A single US-ASCII character (e.g., 13 for carriage return).
-      int32 keycode = 2;
-      // Text as generated by processing a virtual key code with a keyboard
-      // layout. This can also be used for keyboard control sequences such
-      // as "\r" or "\t".
-      string keyboard_input = 3;
-      // Use the username from the Chrome password manager login previously
-      // selected in a CollectUserDataAction.
-      bool use_username = 4;
-      // Use the password from the Chrome password manager login previously
-      // selected in a CollectUserDataAction.
-      bool use_password = 5;
-      // Use the value stored at the specified memory location.
-      string client_memory_key = 6;
-    }
+// Asks the password manager to generate a suitable password for |element|. The
+// generated password can be filled in subsequent actions.
+message GeneratePasswordForFormFieldProto {
+  // A reference to the form element for which to generate a password.
+  optional SelectorProto element = 1;
+  // The client memory key to store the generated password.
+  optional string memory_key = 2;
+}
+
+// Presaves generated password to the password store.
+// Presaving stores a generated password with empty username.
+// Only possible if a password has already been generated using
+// |GeneratePasswordForFormFieldProto|.
+message PresaveGeneratedPasswordProto {
+  // The client memory key of the stored password.
+  optional string memory_key = 1;
+}
+
+// Asks the password save manager to save generated password after successful
+// submission.
+message SaveGeneratedPasswordProto {
+  // The client memory key of stored password.
+  optional string memory_key = 1;
+}
+
+// Deletes password for |UserData::selected_login_| from Chrome Password
+// Manager. For flows, other than password change, |CollectUserData| must be
+// called before |DeleteSelectedPasswowrd|.
+message DeleteSelectedPasswordProto {}
+
+// Edits password for |UserData::selected_login_| in Chrome Password Manager.
+// For flows, other than password change, |CollectUserData| must be
+// called before |DeleteSelectedPasswowrd|.
+message EditSelectedPasswordProto {
+  // The client memory key where the new password is stored.
+  optional string memory_key = 1;
+}
+
+// Clears potentially submitted or pending forms in password manager. Used to
+// make password manager "forget" about any previously processed form that
+// is pending or submitted.
+message ResetPendingCredentialsProto {}
+
+// Saves the current submitted password to the password store. The action
+// fails if the password manager has no record of a submitted password.
+message SaveSubmittedPasswordProto {}
+
+// Configures the UI of the autofill assistant client.
+message ConfigureUiStateProto {
+  enum OverlayBehavior {
+    // The overlay is decided according to the state the client is in.
+    DEFAULT = 0;
+    // The overlay is always hidden.
+    HIDDEN = 1;
   }
-
-  // A reference to the form element whose value should be set.
-  optional ElementReferenceProto element = 1;
-
-  // The value to set.
-  repeated KeyPress value = 2;
-
-  // Whether to send key press events when setting values to HTML fields.
-  optional bool simulate_key_presses = 5;
-
-  // Delay between two key presses when simlulating.
-  optional int32 delay_in_millisecond = 6 [default = 20];
+  optional OverlayBehavior overlay_behavior = 1;
 }
 
 // Set an element attribute to a specific value.
 message SetAttributeProto {
   // A reference to the form element whose attribute should be set.
-  optional ElementReferenceProto element = 1;
+  optional SelectorProto element = 1;
 
   // The attribute to set, e.g. ["style", "position"] to change
   // element.style.position.
@@ -1619,7 +2723,9 @@ message ShowInfoBoxProto {
 }
 
 // Allow scripts to configure the peek height of the sheet and whether we should
-// resize the viewport by this peek height.
+// resize the viewport by this peek height. If talkback is enabled, the mode is
+// set to RESIZE_VISUAL_VIEWPORT. Changes to the mode are only applied after
+// talkback is disabled.
 message ConfigureBottomSheetProto {
   enum ViewportResizing {
     // Don't change resizing configuration.
@@ -1659,15 +2765,25 @@ message ConfigureBottomSheetProto {
   // cautiously.
   optional ViewportResizing viewport_resizing = 1;
 
-  // Set the peek mode. This will change the peek height of the sheet. If
-  // viewport_resizing is set to RESIZE_LAYOUT_VIEWPORT or was set by a previous
-  // ConfigureBottomSheet action, the viewport will be resized to match the new
-  // peek height.
+  // Set the peek mode. This will change the peek mode of the sheet without
+  // actually updating the sheet to that setting. If viewport_resizing is set
+  // to RESIZE_LAYOUT_VIEWPORT or was set by a previous ConfigureBottomSheet
+  // action, the viewport will be resized to match the new peek height.
   optional PeekMode peek_mode = 2;
 
   // Maximum time to wait for the window to resize before continuing with the
   // script. If 0 or unset, the action doesn't wait.
   optional int32 resize_timeout_ms = 3;
+
+  // Option to automatically expand or collapse the sheet or leave as is.
+  oneof apply_state {
+    // Go to the expanded state (same as if the user swiped the bottom sheet
+    // up).
+    bool expand = 4;
+    // Go to the peek state (same as if the user swiped the bottom
+    // sheet down).
+    bool collapse = 5;
+  }
 }
 
 // Allow scripts to display a form with multiple inputs.
@@ -1679,8 +2795,7 @@ message ShowFormProto {
   // form inputs are valid.
   optional ChipProto chip = 2;
 
-  // Optionally allow confirming the prompt using given direct actions.
-  optional DirectActionProto direct_action = 3;
+  reserved 3;
 }
 
 message FormProto {
@@ -1756,6 +2871,12 @@ message CounterInputProto {
     // must contain |initial_value| or it will otherwise default to the first
     // value.
     optional int32 initial_value = 4 [default = 0];
+
+    // The weight of adding 1 in this counter. Defaults to 1. Incrementing by 1
+    // in counter has an effect of incrementing by |size| in the counter
+    // section. For example, a family ticket in showtimes counts as |size|
+    // tickets in total amount restriction.
+    optional int32 size = 9 [default = 1];
 
     reserved 7;
   }
@@ -1907,32 +3028,6 @@ message SelectionInputProto {
   optional int32 min_selected_choices = 4 [default = 1];
 }
 
-// Defines a mapping to an Android Q direct action.
-message DirectActionProto {
-  // Map to direct actions with the given names.
-  repeated string names = 1;
-
-  // Arguments to report as required for the direct action.
-  //
-  // This is included into the definition reported to the caller without being
-  // interpreted. Requirement is not enforced.
-  repeated string required_arguments = 2;
-
-  // Arguments to report as optional for the direct action.
-  //
-  // This is included into the definition reported to the caller without being
-  // interpreted.
-  repeated string optional_arguments = 3;
-}
-
-// An action that can be performed via the UI and/or via Direct Actions (in
-// Android Q+).
-message UserActionProto {
-  optional ChipProto chip = 1;
-
-  optional DirectActionProto direct_action = 2;
-}
-
 // Action to show a popup bubble on top of the bottom sheet, anchored at the
 // icon. Setting an empty message will remove any existing and visible popup
 // message. A second action replaces a previously shown message.
@@ -1940,3 +3035,96 @@ message PopupMessageProto {
   // Message to show in the popup.
   optional string message = 1;
 }
+
+// Action to get an element's status.
+message GetElementStatusProto {
+  oneof element {
+    SelectorProto selector = 1;
+    ClientIdProto client_id = 5;
+  }
+
+  optional ValueMatch expected_value_match = 2;
+  optional ValueSource value_source = 4;
+
+  // If set and a mismatch happens, the action will report a failure status
+  // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
+  // fail and simply report the result.
+  optional bool mismatch_should_fail = 3;
+
+  // The result that gets sent as part of |ProcessedActionProto.result_data|.
+  message Result {
+    // The field is considered not empty.
+    optional bool not_empty = 1;
+    // The field matches the expected input.
+    optional bool match_success = 2;
+    // The field was expected to match an empty expectation. For a value this
+    // means an empty expected value, for a RegExp this means the extracted
+    // match was empty.
+    optional bool expected_empty_match = 4;
+
+    // For logging and debugging.
+    repeated ComparisonReport reports = 3;
+  }
+
+  enum ValueSource {
+    NOT_SET = 0;
+    // Compare the element's |value| attribute against this expected match.
+    VALUE = 1;
+    // Compare the element's |innerText| attribute against this expected match.
+    INNER_TEXT = 2;
+  }
+
+  message MatchOptions {
+    optional bool case_sensitive = 1;
+    optional bool remove_space = 2;
+    optional string find_and_remove_re2 = 3;
+  }
+
+  message MatchExpectation {
+    optional MatchOptions match_options = 1;
+
+    oneof match_level {
+      bool full_match = 2;
+      bool contains = 3;
+      bool starts_with = 4;
+      bool ends_with = 5;
+    }
+  }
+
+  message TextMatch {
+    oneof value_source {
+      // A regular expression.
+      string re2 = 4;
+      // A value resolvable to a text. May require to be preceded by a
+      // |CollectUserDataAction|.
+      TextValue text_value = 5;
+    }
+
+    // Optional. The expectations to declare this as a matching success. If
+    // left empty, the action will always be treated as successful.
+    optional MatchExpectation match_expectation = 3;
+
+    reserved 1, 2;
+  }
+
+  message ValueMatch { optional TextMatch text_match = 1; }
+
+  message ComparisonReport {
+    optional MatchOptions match_options = 1;
+
+    optional bool full_match = 2;
+    optional bool contains = 3;
+    optional bool starts_with = 4;
+    optional bool ends_with = 5;
+
+    optional bool empty = 6;
+    optional bool expected_empty_match = 7;
+  }
+}
+
+message ReleaseElementsProto {
+  repeated ClientIdProto client_ids = 1;
+}
+
+// Action to unconditionally dispatch a custom JS event 'duplexweb' on document.
+message DispatchJsEventProto {}

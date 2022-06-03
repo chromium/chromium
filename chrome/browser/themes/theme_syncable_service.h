@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error.h"
@@ -24,27 +26,61 @@ namespace sync_pb {
 class ThemeSpecifics;
 }
 
-class ThemeSyncableService : public syncer::SyncableService {
+class ThemeSyncableService : public syncer::SyncableService,
+                             public ThemeServiceObserver {
  public:
-  ThemeSyncableService(Profile* profile,  // Same profile used by theme_service.
-                       ThemeService* theme_service);
+  // State of local theme after applying sync changes.
+  enum class ThemeSyncState {
+    // The remote theme has been applied locally or the other way around (or
+    // there was no change to apply).
+    kApplied,
+    // Remote theme failed to apply locally.
+    kFailed,
+    // Remote theme is an extension theme that is not installed locally, yet.
+    // Theme sync triggered the installation that may not be applied yet (as
+    // extension installation is in nature async and also can fail).
+    kWaitingForExtensionInstallation
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when theme sync gets started. Observers that register after theme
+    // sync gets started are never called, they should check
+    // GetThemeSyncStartState() before registering, instead.
+    virtual void OnThemeSyncStarted(ThemeSyncState state) = 0;
+  };
+
+  // `profile` may be nullptr in tests (and is the one used by theme_service,
+  // otherwise).
+  ThemeSyncableService(Profile* profile, ThemeService* theme_service);
+
+  ThemeSyncableService(const ThemeSyncableService&) = delete;
+  ThemeSyncableService& operator=(const ThemeSyncableService&) = delete;
+
   ~ThemeSyncableService() override;
 
   static syncer::ModelType model_type() { return syncer::THEMES; }
 
-  // Called by ThemeService when user changes theme.
-  void OnThemeChange();
+  // ThemeServiceObserver implementation.
+  void OnThemeChanged() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  void NotifyOnSyncStartedForTesting(ThemeSyncState startup_state);
+
+  // Returns the theme sync startup state or nullopt if it has not started yet.
+  absl::optional<ThemeSyncState> GetThemeSyncStartState();
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  syncer::SyncMergeResult MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override;
-  syncer::SyncError ProcessSyncChanges(
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -64,10 +100,11 @@ class ThemeSyncableService : public syncer::SyncableService {
 
   // Set theme from theme specifics in |sync_data| using
   // SetCurrentThemeFromThemeSpecifics() if it's different from |current_specs|.
-  void MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
-                     const syncer::SyncData& sync_data);
-
-  void SetCurrentThemeFromThemeSpecifics(
+  // Returns the state of themes after the operation.
+  ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
+                               const syncer::SyncData& sync_data);
+  // Returns the state of themes after the operation.
+  ThemeSyncState SetCurrentThemeFromThemeSpecifics(
       const sync_pb::ThemeSpecifics& theme_specifics);
 
   // If the current theme is syncable, fills in the passed |theme_specifics|
@@ -77,12 +114,16 @@ class ThemeSyncableService : public syncer::SyncableService {
       sync_pb::ThemeSpecifics* theme_specifics) const;
 
   // Updates theme specifics in sync to |theme_specifics|.
-  syncer::SyncError ProcessNewTheme(
+  absl::optional<syncer::ModelError> ProcessNewTheme(
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
+  void NotifyOnSyncStarted(ThemeSyncState startup_state);
+
   Profile* const profile_;
   ThemeService* const theme_service_;
+
+  base::ObserverList<Observer> observer_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;
@@ -91,11 +132,12 @@ class ThemeSyncableService : public syncer::SyncableService {
   // we're not on one.
   bool use_system_theme_by_default_;
 
+  // Captures the state of theme sync after initial data merge.
+  absl::optional<ThemeSyncState> startup_state_;
+
   base::ThreadChecker thread_checker_;
 
   FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeSyncableService);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_

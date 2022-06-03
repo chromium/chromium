@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
 bool ShouldOfferSharedClipboard(content::BrowserContext* browser_context,
-                                const base::string16& text);
+                                const std::u16string& text);
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UTILS_H_

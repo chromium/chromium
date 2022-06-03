@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -18,6 +18,8 @@ class VideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<VideoFramePool::PoolImpl> {
  public:
   PoolImpl();
+  PoolImpl(const PoolImpl&) = delete;
+  PoolImpl& operator=(const PoolImpl&) = delete;
 
   // See VideoFramePool::CreateFrame() for usage. Attempts to keep |frames_| in
   // LRU order by always pulling from the back of |frames_|.
@@ -64,8 +66,6 @@ class VideoFramePool::PoolImpl
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PoolImpl);
 };
 
 VideoFramePool::PoolImpl::PoolImpl()
@@ -85,17 +85,15 @@ scoped_refptr<VideoFrame> VideoFramePool::PoolImpl::CreateFrame(
   DCHECK(!is_shutdown_);
 
   scoped_refptr<VideoFrame> frame;
-  while (!frame && !frames_.empty()) {
+  while (!frames_.empty()) {
     scoped_refptr<VideoFrame> pool_frame = std::move(frames_.back().frame);
     frames_.pop_back();
 
-    if (pool_frame->format() == format &&
-        pool_frame->coded_size() == coded_size &&
-        pool_frame->visible_rect() == visible_rect &&
-        pool_frame->natural_size() == natural_size) {
+    if (pool_frame->IsSameAllocation(format, coded_size, visible_rect,
+                                     natural_size)) {
       frame = pool_frame;
       frame->set_timestamp(timestamp);
-      frame->metadata()->Clear();
+      frame->clear_metadata();
       break;
     }
   }
@@ -134,7 +132,7 @@ void VideoFramePool::PoolImpl::FrameReleased(scoped_refptr<VideoFrame> frame) {
   // After this loop, |stale_index| is the index of the oldest non-stale frame.
   // Such an index must exist because |frame| is never stale.
   int stale_index = -1;
-  constexpr base::TimeDelta kStaleFrameLimit = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kStaleFrameLimit = base::Seconds(10);
   while (now - frames_[++stale_index].last_use_time > kStaleFrameLimit) {
     // Last frame should never be included since we just added it.
     DCHECK_LE(static_cast<size_t>(stale_index), frames_.size());

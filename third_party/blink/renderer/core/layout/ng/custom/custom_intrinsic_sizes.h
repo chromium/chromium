@@ -15,7 +15,7 @@ class CustomLayoutChild;
 
 // This represents the result of intrinsicSizes (on a LayoutChild).
 //
-// This should eventually mirror the information in a MinMaxSize, it has the
+// This should mirror the information in a MinMaxSize, and it has the
 // additional capability that it is exposed to web developers.
 class CustomIntrinsicSizes : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,7 +37,7 @@ class CustomIntrinsicSizes : public ScriptWrappable {
 
   bool IsValid() const { return token_->IsValid(); }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<CustomLayoutChild> child_;

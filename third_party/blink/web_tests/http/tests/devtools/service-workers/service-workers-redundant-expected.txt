@@ -3,6 +3,7 @@ ServiceWorkers must be shown correctly even if there is a redundant worker.
 The first ServiceWorker is activated.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source
@@ -16,10 +17,32 @@ Push
 Push
 Sync
 Sync
+Periodic Sync
+Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 The second Serviceworker is installed.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source
@@ -32,16 +55,36 @@ stop
 skipWaiting
 Received
 Clients
-http://127.0.0.1:8000/devtools/resources/inspected-page.html
-focus
 Push
 Push
 Sync
 Sync
+Periodic Sync
+Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 The first ServiceWorker worker became redundant and stopped.
 ==== ServiceWorkersView ====
 http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-redundant-scope/
+Network requests
 Update
 Unregister
 Source
@@ -55,5 +98,26 @@ Push
 Push
 Sync
 Sync
+Periodic Sync
+Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 

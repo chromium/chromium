@@ -5,6 +5,7 @@
   "description" : "Preferences API Test Extension (clear)",
   "permissions": [ "privacy" ],
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": false
   }
 }

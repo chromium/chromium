@@ -12,7 +12,7 @@ if (window.testRunner)
 
 function runTest() {
     var out = document.getElementById("out");
-    var root = out.createShadowRoot();
+    var root = out.attachShadow({mode: 'open'});
     var sel = root.getSelection();
     document.body.removeChild(out);
     root = sel = out = null;

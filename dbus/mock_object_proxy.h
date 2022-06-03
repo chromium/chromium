@@ -66,6 +66,14 @@ class MockObjectProxy : public ObjectProxy {
                     ErrorCallback* error_callback));
 
   // This method is not mockable because it takes a move-only argument. To work
+  // around this, WaitForServiceToBeAvailable() implementation here calls
+  // DoWaitForServiceToBeAvailable() which is mockable.
+  void WaitForServiceToBeAvailable(
+      WaitForServiceToBeAvailableCallback callback) override;
+  MOCK_METHOD1(DoWaitForServiceToBeAvailable,
+               void(WaitForServiceToBeAvailableCallback* callback));
+
+  // This method is not mockable because it takes a move-only argument. To work
   // around this, ConnectToSignal() implementation here calls
   // DoConnectToSignal() which is mockable.
   void ConnectToSignal(const std::string& interface_name,

@@ -6,7 +6,6 @@
 #define CHROME_TEST_CHROMEDRIVER_WINDOW_COMMANDS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/values.h"
@@ -22,12 +21,12 @@ class Status;
 class Timeout;
 class WebView;
 
-typedef base::Callback<Status(Session* session,
-                              WebView* web_view,
-                              const base::DictionaryValue&,
-                              std::unique_ptr<base::Value>*,
-                              Timeout*)>
-    WindowCommand;
+using WindowCommand =
+    base::RepeatingCallback<Status(Session* session,
+                                   WebView* web_view,
+                                   const base::DictionaryValue&,
+                                   std::unique_ptr<base::Value>*,
+                                   Timeout*)>;
 
 // Execute a Window Command on the target window.
 Status ExecuteWindowCommand(const WindowCommand& command,
@@ -243,19 +242,6 @@ Status ExecuteSendKeysToActiveElement(Session* session,
                                       std::unique_ptr<base::Value>* value,
                                       Timeout* timeout);
 
-// Gets the status of the application cache (window.applicationCache.status).
-Status ExecuteGetAppCacheStatus(Session* session,
-                                WebView* web_view,
-                                const base::DictionaryValue& params,
-                                std::unique_ptr<base::Value>* value,
-                                Timeout* timeout);
-
-Status ExecuteIsBrowserOnline(Session* session,
-                              WebView* web_view,
-                              const base::DictionaryValue& params,
-                              std::unique_ptr<base::Value>* value,
-                              Timeout* timeout);
-
 Status ExecuteGetStorageItem(const char* storage,
                              Session* session,
                              WebView* web_view,
@@ -303,6 +289,18 @@ Status ExecuteScreenshot(Session* session,
                          const base::DictionaryValue& params,
                          std::unique_ptr<base::Value>* value,
                          Timeout* timeout);
+
+Status ExecuteFullPageScreenshot(Session* session,
+                                 WebView* web_view,
+                                 const base::DictionaryValue& params,
+                                 std::unique_ptr<base::Value>* value,
+                                 Timeout* timeout);
+
+Status ExecutePrint(Session* session,
+                    WebView* web_view,
+                    const base::DictionaryValue& params,
+                    std::unique_ptr<base::Value>* value,
+                    Timeout* timeout);
 
 // Retrieve all cookies visible to the current page.
 Status ExecuteGetCookies(Session* session,

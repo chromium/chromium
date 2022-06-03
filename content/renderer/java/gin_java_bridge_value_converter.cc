@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
@@ -76,6 +75,9 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
         new TypedArraySerializerImpl<ElementType, ListType>(typed_array));
   }
 
+  TypedArraySerializerImpl(const TypedArraySerializerImpl&) = delete;
+  TypedArraySerializerImpl& operator=(const TypedArraySerializerImpl&) = delete;
+
   void serializeTo(char* data,
                    size_t data_length,
                    base::ListValue* out) override {
@@ -84,7 +86,14 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
                      *end = element + typed_array_->Length();
          element != end;
          ++element) {
-      out->Append(std::make_unique<base::Value>(ListType(*element)));
+      // Serialize the uint32 value as the binary type since base::Value
+      // supports only int for the integer type, and the uint8 and the uint16
+      // with Base::Value since they fit into int.
+      if (std::is_same<ElementType, uint32_t>::value) {
+        out->Append(GinJavaBridgeValue::CreateUInt32Value(*element));
+      } else {
+        out->Append(std::make_unique<base::Value>(ListType(*element)));
+      }
     }
   }
 
@@ -93,28 +102,31 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
       : typed_array_(typed_array) {}
 
   v8::Local<v8::TypedArray> typed_array_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedArraySerializerImpl);
 };
 
 // static
 std::unique_ptr<TypedArraySerializer> TypedArraySerializer::Create(
     v8::Local<v8::TypedArray> typed_array) {
-  if (typed_array->IsInt8Array() ||
-      typed_array->IsUint8Array() ||
-      typed_array->IsUint8ClampedArray()) {
-    return TypedArraySerializerImpl<char, int>::Create(typed_array);
-  } else if (typed_array->IsInt16Array() || typed_array->IsUint16Array()) {
+  if (typed_array->IsInt8Array()) {
+    return TypedArraySerializerImpl<int8_t, int>::Create(typed_array);
+  } else if (typed_array->IsUint8Array() ||
+             typed_array->IsUint8ClampedArray()) {
+    return TypedArraySerializerImpl<uint8_t, int>::Create(typed_array);
+  } else if (typed_array->IsInt16Array()) {
     return TypedArraySerializerImpl<int16_t, int>::Create(typed_array);
-  } else if (typed_array->IsInt32Array() || typed_array->IsUint32Array()) {
+  } else if (typed_array->IsUint16Array()) {
+    return TypedArraySerializerImpl<uint16_t, int>::Create(typed_array);
+  } else if (typed_array->IsInt32Array()) {
     return TypedArraySerializerImpl<int32_t, int>::Create(typed_array);
+  } else if (typed_array->IsUint32Array()) {
+    return TypedArraySerializerImpl<uint32_t, int>::Create(typed_array);
   } else if (typed_array->IsFloat32Array()) {
     return TypedArraySerializerImpl<float, double>::Create(typed_array);
   } else if (typed_array->IsFloat64Array()) {
     return TypedArraySerializerImpl<double, double>::Create(typed_array);
   }
   NOTREACHED();
-  return std::unique_ptr<TypedArraySerializer>();
+  return nullptr;
 }
 
 }  // namespace

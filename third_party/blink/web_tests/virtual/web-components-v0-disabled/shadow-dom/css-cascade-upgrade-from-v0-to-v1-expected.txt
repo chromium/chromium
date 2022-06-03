@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 12: Uncaught TypeError: host.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL css-cascade-upgrade-from-v0-to-v1 Uncaught TypeError: host.createShadowRoot is not a function
-Harness: the test ran to completion.
-

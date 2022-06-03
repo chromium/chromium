@@ -1,0 +1,13 @@
+Test multiple CSS.takeComputedStyleUpdates commands at the same time.
+Sending a request before the previous one is resolved should fail with an error message:
+{
+    code : -32000
+    message : A previous request has not been resolved yet.
+}
+[
+]
+Updated nodes should contain the first item: true
+Updated nodes should contain the second item: true
+Updated nodes should not contain the third item: true
+Updated nodes should not contain the fourth item: true
+

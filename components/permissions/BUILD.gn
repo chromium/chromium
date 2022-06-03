@@ -1,0 +1,289 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(698985): Make `permissions_common` source_set.
+component("permissions_common") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "permission_request_enums.h",
+    "request_type.h",
+  ]
+  defines = [ "IS_PERMISSIONS_COMMON_IMPL" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
+}
+
+source_set("permissions") {
+  sources = [
+    "bluetooth_delegate_impl.cc",
+    "bluetooth_delegate_impl.h",
+    "chooser_controller.cc",
+    "chooser_controller.h",
+    "chooser_title_util.cc",
+    "chooser_title_util.h",
+    "constants.cc",
+    "constants.h",
+    "contexts/accessibility_permission_context.cc",
+    "contexts/accessibility_permission_context.h",
+    "contexts/bluetooth_chooser_context.cc",
+    "contexts/bluetooth_chooser_context.h",
+    "contexts/camera_pan_tilt_zoom_permission_context.cc",
+    "contexts/camera_pan_tilt_zoom_permission_context.h",
+    "contexts/clipboard_read_write_permission_context.cc",
+    "contexts/clipboard_read_write_permission_context.h",
+    "contexts/clipboard_sanitized_write_permission_context.cc",
+    "contexts/clipboard_sanitized_write_permission_context.h",
+    "contexts/font_access_permission_context.cc",
+    "contexts/font_access_permission_context.h",
+    "contexts/geolocation_permission_context.cc",
+    "contexts/geolocation_permission_context.h",
+    "contexts/midi_permission_context.cc",
+    "contexts/midi_permission_context.h",
+    "contexts/midi_sysex_permission_context.cc",
+    "contexts/midi_sysex_permission_context.h",
+    "contexts/nfc_permission_context.cc",
+    "contexts/nfc_permission_context.h",
+    "contexts/payment_handler_permission_context.cc",
+    "contexts/payment_handler_permission_context.h",
+    "contexts/sensor_permission_context.cc",
+    "contexts/sensor_permission_context.h",
+    "contexts/wake_lock_permission_context.cc",
+    "contexts/wake_lock_permission_context.h",
+    "contexts/webxr_permission_context.cc",
+    "contexts/webxr_permission_context.h",
+    "object_permission_context_base.cc",
+    "object_permission_context_base.h",
+    "permission_actions_history.cc",
+    "permission_actions_history.h",
+    "permission_auditing_database.cc",
+    "permission_auditing_database.h",
+    "permission_auditing_service.cc",
+    "permission_auditing_service.h",
+    "permission_context_base.cc",
+    "permission_context_base.h",
+    "permission_decision_auto_blocker.cc",
+    "permission_decision_auto_blocker.h",
+    "permission_manager.cc",
+    "permission_manager.h",
+    "permission_prompt.h",
+    "permission_request.cc",
+    "permission_request.h",
+    "permission_request_id.cc",
+    "permission_request_id.h",
+    "permission_request_manager.cc",
+    "permission_request_manager.h",
+    "permission_result.cc",
+    "permission_result.h",
+    "permission_ui_selector.cc",
+    "permission_ui_selector.h",
+    "permission_uma_util.cc",
+    "permission_uma_util.h",
+    "permission_usage_session.cc",
+    "permission_usage_session.h",
+    "permission_util.cc",
+    "permission_util.h",
+    "permissions_client.cc",
+    "permissions_client.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "quota_permission_context_impl.cc",
+    "quota_permission_context_impl.h",
+    "request_type.cc",
+    "request_type.h",
+    "switches.cc",
+    "switches.h",
+  ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/autofill_assistant/browser/public:public",
+    "//components/back_forward_cache",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/content",
+    "//components/permissions/prediction_service",
+    "//components/permissions/vector_icons",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//components/ukm/content",
+    "//components/url_formatter",
+    "//components/variations",
+    "//components/vector_icons",
+    "//components/webrtc:media_stream_device_enumerator",
+    "//content/public/browser",
+    "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
+    "//services/device/public/cpp/geolocation",
+    "//services/device/public/mojom",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//sql",
+    "//third_party/blink/public/common",
+    "//third_party/sqlite",
+    "//ui/base",
+    "//url",
+  ]
+  if (is_mac) {
+    sources += [
+      "contexts/geolocation_permission_context_mac.cc",
+      "contexts/geolocation_permission_context_mac.h",
+    ]
+  }
+  if (is_android) {
+    sources += [
+      "android/android_permission_util.cc",
+      "android/android_permission_util.h",
+      "android/bluetooth_chooser_android.cc",
+      "android/bluetooth_chooser_android.h",
+      "android/bluetooth_chooser_android_delegate.h",
+      "android/bluetooth_scanning_prompt_android.cc",
+      "android/bluetooth_scanning_prompt_android.h",
+      "android/bluetooth_scanning_prompt_android_delegate.h",
+      "android/permission_dialog_delegate.cc",
+      "android/permission_dialog_delegate.h",
+      "android/permission_prompt_android.cc",
+      "android/permission_prompt_android.h",
+      "android/permissions_android_feature_list.cc",
+      "android/permissions_android_feature_list.h",
+      "contexts/geolocation_permission_context_android.cc",
+      "contexts/geolocation_permission_context_android.h",
+      "contexts/nfc_permission_context_android.cc",
+      "contexts/nfc_permission_context_android.h",
+    ]
+    deps += [
+      "//components/infobars/core",
+      "//components/location/android:location_settings_dialog_enums_java",
+      "//components/location/android:settings",
+      "//components/permissions/android:jni_headers",
+      "//components/permissions/android:native",
+      "//components/prefs",
+      "//components/resources:android_resources",
+      "//components/security_state/core:core",
+      "//ui/android",
+    ]
+  } else {
+    sources += [
+      "bluetooth_chooser_controller.cc",
+      "bluetooth_chooser_controller.h",
+      "bluetooth_chooser_desktop.cc",
+      "bluetooth_chooser_desktop.h",
+      "bluetooth_scanning_prompt_controller.cc",
+      "bluetooth_scanning_prompt_controller.h",
+      "bluetooth_scanning_prompt_desktop.cc",
+      "bluetooth_scanning_prompt_desktop.h",
+      "permission_prompt_impl.cc",
+    ]
+  }
+  public_deps = [ ":permissions_common" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_permission_prompt.cc",
+    "test/mock_permission_prompt.h",
+    "test/mock_permission_prompt_factory.cc",
+    "test/mock_permission_prompt_factory.h",
+    "test/mock_permission_request.cc",
+    "test/mock_permission_request.h",
+    "test/object_permission_context_base_mock_permission_observer.cc",
+    "test/object_permission_context_base_mock_permission_observer.h",
+    "test/permission_request_observer.cc",
+    "test/permission_request_observer.h",
+    "test/test_permissions_client.cc",
+    "test/test_permissions_client.h",
+  ]
+  if (!is_android) {
+    sources += [
+      "fake_bluetooth_chooser_controller.cc",
+      "fake_bluetooth_chooser_controller.h",
+      "fake_usb_chooser_controller.cc",
+      "fake_usb_chooser_controller.h",
+      "mock_chooser_controller_view.cc",
+      "mock_chooser_controller_view.h",
+    ]
+  }
+
+  deps = [
+    ":permissions",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
+    "//components/ukm/content",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//services/device/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+  if (is_android) {
+    deps += [ "//components/resources:android_resources" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
+    "contexts/geolocation_permission_context_unittest.cc",
+    "contexts/midi_permission_context_unittest.cc",
+    "contexts/midi_sysex_permission_context_unittest.cc",
+    "contexts/nfc_permission_context_unittest.cc",
+    "contexts/wake_lock_permission_context_unittest.cc",
+    "object_permission_context_base_unittest.cc",
+    "permission_actions_history_unittest.cc",
+    "permission_auditing_database_unittest.cc",
+    "permission_auditing_service_unittest.cc",
+    "permission_context_base_unittest.cc",
+    "permission_decision_auto_blocker_unittest.cc",
+    "permission_manager_unittest.cc",
+    "permission_request_manager_unittest.cc",
+    "permission_uma_util_unittest.cc",
+  ]
+  if (!is_android) {
+    sources += [
+      "bluetooth_chooser_controller_unittest.cc",
+      "bluetooth_scanning_prompt_controller_unittest.cc",
+    ]
+  }
+  if (is_android) {
+    sources += [ "android/permission_dialog_delegate_unittest.cc" ]
+  }
+  deps = [
+    ":permissions",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/content",
+    "//components/prefs:test_support",
+    "//components/ukm:test_support",
+    "//components/ukm/content",
+    "//components/variations",
+    "//components/webrtc",
+    "//content/test:test_support",
+    "//services/device/public/cpp:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gtest",
+    "//third_party/sqlite",
+    "//url",
+  ]
+  if (is_android) {
+    deps += [
+      "//components/location/android:location_settings_dialog_enums_java",
+      "//components/location/android:test_support",
+      "//components/permissions/android:test_support",
+    ]
+  }
+}

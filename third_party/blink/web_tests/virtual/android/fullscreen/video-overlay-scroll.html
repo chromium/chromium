@@ -8,7 +8,7 @@
       testRunner.dumpAsText();
 
     window.scrollTo(0, 1000);
-    waitForEventAndEnd(document, 'fullscreenchange', function(){
+    waitForEventOnceAndEnd(document, 'fullscreenchange', function(){
       testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
     });
 

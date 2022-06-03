@@ -7,27 +7,42 @@
   <message name="IDS_CRASH_CRASH_COUNT_BANNER_FORMAT" desc="Format for crash count banner on chrome://crashes">
     Crashes (<ph name="CRASH_COUNT">$1<ex>3</ex></ph>)
   </message>
-  <message name="IDS_CRASH_CRASH_HEADER_FORMAT" desc="Format for crash entry headings on chrome://crashes">
-    Uploaded Crash Report ID <ph name="CRASH_ID">$1<ex>8fa95dbb6f2ec862</ex></ph> (Local Context: <ph name="CRASH_LOCAL_ID">$2<ex>123456-789789</ex></ph>)
+
+  <message name="IDS_CRASH_SHOW_DEVELOPER_DETAILS" desc="Label for button that shows advanced developer information on chrome://crashes">
+    Show developer details
   </message>
-  <message name="IDS_CRASH_CRASH_HEADER_FORMAT_LOCAL_ONLY" desc="Format for crash entry headings on chrome://crashes that have not been uploaded">
-    Local Context <ph name="CRASH_LOCAL_ID">$1<ex>123456-789789</ex></ph>
+
+  <message name="IDS_CRASH_CAPTURE_TIME_FORMAT" desc="Format for the time at which the crash report was captured, to display on chrome://crashes">
+    Crash from <ph name="CRASH_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph>
   </message>
-  <message name="IDS_CRASH_UPLOAD_TIME_FORMAT" desc="Format for crash report upload time displayed on chrome://crashes">
-    Crash report uploaded on <ph name="UPLOAD_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph>
+  <message name="IDS_CRASH_REPORT_STATUS" desc="Label on chrome://crashes for the status of a crash report.">
+    Status:
   </message>
-  <message name="IDS_CRASH_CAPTURE_AND_UPLOAD_TIME_FORMAT" desc="Format for the time and date at which the crash report was captured, and subsequently uploaded, to display on chrome://crashes">
-    Crash report captured on <ph name="CRASH_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph>, uploaded on <ph name="UPLOAD_TIME">$2<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph>
+  <message name="IDS_CRASH_REPORT_STATUS_NOT_UPLOADED" desc="Value on chrome://crashes for the 'not uploaded' status of a crash report.">
+    Not uploaded
   </message>
-  <message name="IDS_CRASH_CRASH_NOT_UPLOADED" desc="Format for crash entry occurrence on chrome://crashes that was not uploaded to the server">
-    Crash report captured on <ph name="CRASH_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph> was not uploaded
+  <message name="IDS_CRASH_REPORT_STATUS_PENDING" desc="Value on chrome://crashes for the 'pending' status of a crash report.">
+    Not yet uploaded, or ignored
   </message>
-  <message name="IDS_CRASH_CRASH_PENDING" desc="Format for crash entry occurrence on chrome://crashes that has been captured, but not yet uploaded or ignored">
-    Crash report captured on <ph name="CRASH_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph> (not yet uploaded or ignored)
+  <message name="IDS_CRASH_REPORT_STATUS_PENDING_USER_REQUESTED" desc="Value on chrome://crashes for the 'pending user requested' status of a crash report.">
+    Upload requested by user
   </message>
-  <message name="IDS_CRASH_CRASH_USER_REQUESTED" desc="Format for crash entry occurrence on chrome://crashes that has been requested to be uploaded by user">
-    Crash report captured on <ph name="CRASH_TIME">$1<ex>Tuesday, January 25, 2011 2:58:02 PM</ex></ph> (upload requested by user, not yet uploaded)
+  <message name="IDS_CRASH_REPORT_STATUS_UPLOADED" desc="Value on chrome://crashes for the 'uploaded' status of a crash report.">
+    Uploaded
   </message>
+  <message name="IDS_CRASH_REPORT_UPLOADED_ID" desc="Label on chrome://crashes for the identifier for an uploaded crash report on chrome://crashes">
+    Uploaded Crash Report ID:
+  </message>
+  <message name="IDS_CRASH_REPORT_UPLOADED_TIME" desc="Label on chrome://crashes for the time at which the crash report was uploaded.">
+    Upload Time:
+  </message>
+  <message name="IDS_CRASH_REPORT_LOCAL_ID" desc="Label on chrome://crashes for the identifier of a crash report on the user's machine">
+    Local Crash Context:
+  </message>
+  <message name="IDS_CRASH_REPORT_FILE_SIZE" desc="Label on chrome://crashes for the file size of a crash report on the user's machine">
+    Size:
+  </message>
+
   <message name="IDS_CRASH_BUG_LINK_LABEL" desc="Link text for filing a crash bug on chrome://crashes">
     Provide additional details
   </message>
@@ -42,8 +57,5 @@
   </message>
   <message name="IDS_CRASH_UPLOAD_NOW_LINK_TEXT" desc="Link text for manual uploads of a crash report">
     Send now
-  </message>
-  <message name="IDS_CRASH_SIZE_MESSAGE" desc="Format for displaying file size information for not uploaded crash reports.">
-    The size on the local storage is <ph name="CRASH_SIZE">$1<ex>10 kB</ex></ph>.
   </message>
 </grit-part>

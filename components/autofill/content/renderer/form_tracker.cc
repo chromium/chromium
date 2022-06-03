@@ -5,13 +5,14 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_user_gesture_indicator.h"
 #include "ui/base/page_transition_types.h"
 
 using blink::WebDocumentLoader;
@@ -70,8 +71,7 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   // that pastes aren't necessarily user gestures because Blink's conception of
   // user gestures is centered around creating new windows/tabs.
   if (user_gesture_required_ &&
-      !blink::WebUserGestureIndicator::IsProcessingUserGesture(
-          render_frame()->GetWebFrame()) &&
+      !render_frame()->GetWebFrame()->HasTransientUserActivation() &&
       !render_frame()->IsPasting())
     return;
 
@@ -106,6 +106,21 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
                                 Observer::ElementChangeSource::SELECT_CHANGED));
 }
 
+void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  DCHECK(element.IsAutofilled());
+
+  if (ignore_control_changes_)
+    return;
+
+  ResetLastInteractedElements();
+  if (element.Form().IsNull())
+    last_interacted_formless_element_ = element;
+  else
+    last_interacted_form_ = element.Form();
+  TrackElement();
+}
+
 void FormTracker::FireProbablyFormSubmittedForTesting() {
   FireProbablyFormSubmitted();
 }
@@ -128,20 +143,19 @@ void FormTracker::FormControlDidChangeImpl(
   }
 }
 
-void FormTracker::DidCommitProvisionalLoad(bool is_same_document_navigation,
-                                           ui::PageTransition transition) {
+void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (!is_same_document_navigation) {
-    ResetLastInteractedElements();
-    return;
-  }
+  ResetLastInteractedElements();
+}
 
+void FormTracker::DidFinishSameDocumentNavigation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   FireSubmissionIfFormDisappear(SubmissionSource::SAME_DOCUMENT_NAVIGATION);
 }
 
 void FormTracker::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   blink::WebLocalFrame* navigated_frame = render_frame()->GetWebFrame();
   // Ony handle main frame.
@@ -161,7 +175,7 @@ void FormTracker::DidStartNavigation(
   }
 }
 
-void FormTracker::FrameDetached() {
+void FormTracker::WillDetach() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   FireInferredFormSubmission(SubmissionSource::FRAME_DETACHED);
 }
@@ -178,6 +192,16 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
 
 void FormTracker::WillSubmitForm(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+
+  // A form submission may target a frame other than the frame that owns |form|.
+  // The WillSubmitForm() event is only fired on the target frame's FormTracker
+  // (provided that both have the same origin). In such a case, we ignore the
+  // form submission event. If we didn't, we would send |form| to an
+  // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
+  // this form before. See crbug.com/1240247#c13 for details.
+  if (!form_util::IsOwnedByFrame(form, render_frame()))
+    return;
+
   FireFormSubmitted(form);
 }
 
@@ -193,6 +217,11 @@ void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
 }
 
 void FormTracker::FireProbablyFormSubmitted() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillProbableFormSubmissionInBrowser)) {
+    return;
+  }
+
   for (auto& observer : observers_)
     observer.OnProbablyFormSubmitted();
   ResetLastInteractedElements();
@@ -218,9 +247,10 @@ bool FormTracker::CanInferFormSubmitted() {
   // form is now gone, either invisible or removed from the DOM.
   // Otherwise (i.e., there is no form tag), we check if the last element the
   // user has interacted with are gone, to decide if submission has occurred.
-  if (!last_interacted_form_.IsNull())
-    return !form_util::AreFormContentsVisible(last_interacted_form_);
-  else if (!last_interacted_formless_element_.IsNull())
+  if (!last_interacted_form_.IsNull()) {
+    return !base::ranges::any_of(last_interacted_form_.GetFormControlElements(),
+                                 &form_util::IsWebElementVisible);
+  } else if (!last_interacted_formless_element_.IsNull())
     return !form_util::IsWebElementVisible(last_interacted_formless_element_);
 
   return false;

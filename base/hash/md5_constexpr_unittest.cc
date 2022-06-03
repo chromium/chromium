@@ -4,8 +4,8 @@
 
 #include "base/hash/md5_constexpr.h"
 
+#include "base/cxx17_backports.h"
 #include "base/hash/md5.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

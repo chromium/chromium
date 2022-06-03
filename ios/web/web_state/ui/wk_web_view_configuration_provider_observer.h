@@ -21,13 +21,15 @@ class WKWebViewConfigurationProviderObserver {
       WKWebViewConfigurationProvider* config_provider,
       WKWebViewConfiguration* new_config) {}
 
+  WKWebViewConfigurationProviderObserver(
+      const WKWebViewConfigurationProviderObserver&) = delete;
+  WKWebViewConfigurationProviderObserver& operator=(
+      const WKWebViewConfigurationProviderObserver&) = delete;
+
   virtual ~WKWebViewConfigurationProviderObserver() = default;
 
  protected:
   WKWebViewConfigurationProviderObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WKWebViewConfigurationProviderObserver);
 };
 
 }  // namespace web

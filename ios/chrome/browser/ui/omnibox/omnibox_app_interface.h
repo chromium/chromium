@@ -13,6 +13,10 @@
 // Rewrite google URLs to localhost so they can be loaded by the test server.
 + (void)rewriteGoogleURLToLocalhost;
 
+// Forces a variation to be used on the current HTTP header provider. Returns
+// YES if the forcing was successful.
++ (BOOL)forceVariationID:(int)variationID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_APP_INTERFACE_H_

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/jumbo.gni")
 import("//third_party/blink/renderer/config.gni")
 
 blink_core_output_dir = "$root_gen_dir/third_party/blink/renderer/core"
@@ -19,14 +18,16 @@ core_config_add = [
 ]
 core_config_remove = []
 
-# Compute the optimization level. The GYP code sets "optimize: max" which sets
-# speed-over-size optimization for official builds on Windows only. The GN's
-# build optimize_max config applies this optimization on all platforms, so
-# compute how to modify the config list to duplicate the GYP behavior.
-# TODO revisit this behavior, as the Windows-specific part seems suspicious.
-if (is_win && is_official_build) {
+# Compute the optimization level. `optimize_max` ensures that speed is preferred
+# over size on all platforms.
+# TODO(crbug.com/1125115): It's unclear if the perf vs size win here is a good
+# trade-off for Android. Investigate that.
+if (!is_debug && !optimize_for_size) {
   core_config_remove += [ "//build/config/compiler:default_optimization" ]
   core_config_add += [ "//build/config/compiler:optimize_max" ]
+}
+if (using_mismatched_sample_profile) {
+  core_config_remove += [ "//build/config/compiler:afdo_optimize_size" ]
 }
 
 core_config_remove += [ "//build/config/compiler:default_symbols" ]
@@ -53,24 +54,23 @@ core_config_add += blink_symbols_config
 #      Normal meaning if defined. If undefined, defaults to everything in core.
 template("blink_core_sources") {
   if (is_component_build) {
-    target_type = "jumbo_source_set"
+    target_type = "source_set"
   } else {
-    target_type = "jumbo_static_library"
+    target_type = "static_library"
   }
   target(target_type, target_name) {
     # The visibility will get overridden by forward_variables_from below if the
     # invoker defined it.
     visibility = [ "//third_party/blink/renderer/core/*" ]
 
-    deps = [
-      "//third_party/blink/renderer/core:prerequisites",
-    ]
+    deps = [ "//third_party/blink/renderer/core:prerequisites" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
 
     public_deps = [
       "//third_party/blink/renderer/core:all_generators",
+      "//third_party/blink/renderer/core:core_common",
     ]
     if (defined(invoker.public_deps)) {
       public_deps += invoker.public_deps
@@ -91,33 +91,4 @@ set_defaults("blink_core_sources") {
   # is the list normally applied to static libraries and source sets.
   configs = default_compiler_configs - core_config_remove + core_config_add
   configs += [ "//third_party/blink/renderer/core:blink_core_pch" ]
-}
-
-template("blink_core_tests") {
-  jumbo_source_set(target_name) {
-    # The visibility will get overridden by forward_variables_from below if the
-    # invoker defined it.
-    visibility = [ "//third_party/blink/renderer/core/*" ]
-    testonly = true
-
-    deps = [
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/blink/renderer/core",
-    ]
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-
-    # Take everything else not handled above from the invoker.
-    forward_variables_from(invoker, "*", [ "deps" ])
-  }
-}
-set_defaults("blink_core_tests") {
-  configs = default_compiler_configs
-  configs += [
-    "//third_party/blink/renderer:config",
-    "//third_party/blink/renderer/core:blink_core_pch",
-    "//third_party/blink/renderer:inside_blink",
-  ]
 }

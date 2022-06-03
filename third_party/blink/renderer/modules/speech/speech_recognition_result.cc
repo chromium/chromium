@@ -45,7 +45,7 @@ SpeechRecognitionResult::SpeechRecognitionResult(
     bool final)
     : final_(final), alternatives_(alternatives) {}
 
-void SpeechRecognitionResult::Trace(blink::Visitor* visitor) {
+void SpeechRecognitionResult::Trace(Visitor* visitor) const {
   visitor->Trace(alternatives_);
   ScriptWrappable::Trace(visitor);
 }

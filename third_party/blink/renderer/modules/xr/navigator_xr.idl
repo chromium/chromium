@@ -4,8 +4,8 @@
 
 // https://immersive-web.github.io/webxr/#navigator-xr-attribute
 [
-    ImplementedAs=NavigatorXR
+    ImplementedAs=XRSystem
 ] partial interface Navigator {
     // Latest API
-    [SecureContext, RuntimeEnabled=WebXR, MeasureAs=NavigatorXR, SameObject] readonly attribute XR xr;
+    [SecureContext, RuntimeEnabled=WebXR, MeasureAs=NavigatorXR, SameObject] readonly attribute XRSystem xr;
 };

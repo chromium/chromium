@@ -1,0 +1,56 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+
+<body onload="onLoad()">
+  <h2>Default action on Context Menu for misspelled word prevented</h2>
+  <p>
+    If there is
+    a contextmenu handler that prevents the default action then when mouse is
+    positioned on a misspelled word and right click is pressed, the misspelled word
+    should not be selected.
+  </p>
+  <div id="text" contenteditable>
+    Wellcome
+  </div>
+<script>
+  function onLoad(){
+    let textDiv = document.getElementById("text");
+    let finishedContextMenuEvent = false;
+    textDiv.addEventListener("contextmenu", (event)=>{
+      event.preventDefault();
+      finishedContextMenuEvent = true;
+    });
+    function inject_actions(x, y){
+      return new Promise((resolve, reject)=>{
+        if(chrome.gpuBenchmarking){
+           chrome.gpuBenchmarking.pointerActionSequence( [
+            {source: 'mouse',
+             actions: [
+                { name: 'pointerDown', x: x, y: y, button: 2 /*RIGHT button*/},
+                { name: 'pointerUp', x: x, y: y, button: 2 /*RIGHT button*/}
+             ]
+            }], resolve);
+         }
+         else
+          reject();
+      });
+    }
+    promise_test((test) => new Promise(async (resolve, reject)=>{
+      let bounding_rect = textDiv.getBoundingClientRect();
+      let x = bounding_rect.x;
+      let y = bounding_rect.y + 10;
+      // right click on misspelled word "Wellcome"
+      await inject_actions(x, y);
+      await waitFor(() => finishedContextMenuEvent, "ContextMenu event not fired");
+      test.step(() => {
+        let selection = getSelection();
+        assert_equals(selection.type, "Caret", "The cursor should be on text");
+        assert_true(selection.isCollapsed, "The selection should be empty");
+      });
+      resolve();
+    }), "No word selection if right click on misspelled word and contextmenu action prevented");
+  }
+</script>
+</body>

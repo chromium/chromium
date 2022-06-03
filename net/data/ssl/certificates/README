@@ -10,8 +10,6 @@ unit tests.
 - google.single.der
 - google.single.pem
 - thawte.single.pem : Certificates for testing parsing of different formats.
-- login.trustwave.com.pem :
-     Certificate for testing EV with multiple OIDs. Regression test for crbug.com/705285
 
 - googlenew.chain.pem : The refreshed Google certificate
      (valid until Sept 30 2013).
@@ -53,9 +51,9 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- daltonridgeapts.com-chain.pem : A long-lived (39 month), BR compliant,
-     non-EV certificate, issued by a public trust anchor, and valid for the
-     domain daltonridgeapts.com.
+- cert-manager.com-chain.pem : An OV certificate issued by a public trust
+    anchor valid for the domain ov-validation.cert-manager.com, and which
+    expires on 2022-06-22.
 
 - gms.hongleong.com.my-verisign-chain.pem: A certificate chain for
   gms.hongleong.com.my issued by VeriSign Class 3 Public Primary Certification
@@ -104,7 +102,7 @@ unit tests.
      converting a subject/issuer name to their stringized form.
 
 - ocsp-test-root.pem : A root certificate for the code in
-      net/tools/testserver/minica.py
+      net/data/ssl/scripts/minica.py and net::EmbeddedTestServer.
 
 - websocket_cacert.pem : The testing root CA for testing WebSocket client
      certificate authentication.
@@ -117,6 +115,11 @@ unit tests.
 - no_subject_common_name_cert.pem: Used to test the function that generates a
   NSS certificate nickname for a user certificate. This certificate's Subject
   field doesn't have a common name.
+
+- ct-test-embedded-with-uids.pem: A certificate with embedded SCT and
+  issuer/subject unique IDs. This certificate should only be used in parsing
+  tests and otherwise kept fixed. The signature, etc., are intentionally
+  invalid.
 
 ===== From net/data/ssl/scripts/generate-quic-chain.sh
 - quic-chain.pem
@@ -207,6 +210,14 @@ unit tests.
     the correctly ordered, filtered certificate chain is returned during
     verification, regardless of the order in which the intermediate/root CA
     certificates are provided.
+
+- ev_test.pem
+- ev_test_state_only.pem
+     Certificates for testing EV display (including regression test for
+     https://crbug.com/1069113).
+
+- ev-multi-oid.pem :
+     Certificate for testing EV with multiple OIDs. Regression test for crbug.com/705285
 
 ===== From net/data/ssl/scripts/generate-weak-test-chains.sh
 - 2048-rsa-root.pem

@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <vector>
-
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
@@ -40,11 +38,9 @@ class CC_EXPORT LayerTreeSettings {
   // When |enable_early_damage_check| is true, the early damage check is
   // performed if one of the last |damaged_frame_limit| frames had no damage.
   int damaged_frame_limit = 3;
-  bool enable_latency_recovery = true;
   bool can_use_lcd_text = true;
-  bool gpu_rasterization_forced = false;
   bool gpu_rasterization_disabled = false;
-  int gpu_rasterization_msaa_sample_count = 0;
+  int gpu_rasterization_msaa_sample_count = -1;
   float gpu_rasterization_skewport_target_time_in_seconds = 0.2f;
   bool create_low_res_tiling = false;
   bool use_stream_video_draw_quad = false;
@@ -59,12 +55,10 @@ class CC_EXPORT LayerTreeSettings {
   base::TimeDelta scrollbar_fade_duration;
   base::TimeDelta scrollbar_thinning_duration;
   bool scrollbar_flash_after_any_scroll_update = false;
-  bool scrollbar_flash_when_mouse_enter = false;
   SkColor solid_color_scrollbar_color = SK_ColorWHITE;
   base::TimeDelta scroll_animation_duration_for_testing;
   bool timeout_and_draw_when_animation_checkerboards = true;
   bool layers_always_allowed_lcd_text = false;
-  float minimum_contents_scale = 0.0625f;
   float low_res_contents_scale_factor = 0.25f;
   float top_controls_show_threshold = 0.5f;
   float top_controls_hide_threshold = 0.5f;
@@ -89,7 +83,6 @@ class CC_EXPORT LayerTreeSettings {
   bool use_zero_copy = false;
   bool use_partial_raster = false;
   bool enable_elastic_overscroll = false;
-  bool ignore_root_layer_flings = false;
   size_t scheduled_raster_task_limit = 32;
   bool use_occlusion_for_tile_prioritization = false;
   bool use_layer_lists = false;
@@ -104,6 +97,11 @@ class CC_EXPORT LayerTreeSettings {
   // Image Decode Service and raster tiles without images until the decode is
   // ready.
   bool enable_checker_imaging = false;
+
+  // When content needs a wide color gamut, raster in wide if available.
+  // But when the content is sRGB, some situations prefer to raster in
+  // wide while others prefer to raster in sRGB.
+  bool prefer_raster_in_srgb = false;
 
   // The minimum size of an image we should considering decoding using the
   // deferred path.
@@ -134,7 +132,17 @@ class CC_EXPORT LayerTreeSettings {
 
   // Determines whether mouse interactions on composited scrollbars are handled
   // on the compositor thread.
-  bool compositor_threaded_scrollbar_scrolling = false;
+  bool compositor_threaded_scrollbar_scrolling = true;
+
+  // If enabled, the scroll deltas will be a percentage of the target scroller.
+  bool percent_based_scrolling = false;
+
+  // Determines whether animated scrolling is supported. If true, and the
+  // incoming gesture scroll is of a type that would normally be animated (e.g.
+  // coarse granularity scrolls like those coming from an external mouse wheel),
+  // the scroll will be performed smoothly using the animation system rather
+  // than instantly.
+  bool enable_smooth_scroll = false;
 
   // Whether layer tree commits should be made directly to the active
   // tree on the impl thread. If |false| LayerTreeHostImpl creates a
@@ -171,6 +179,28 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether experimental de-jelly effect is allowed.
   bool allow_de_jelly_effect = false;
+
+  // Whether the compositor should attempt to sync with the scroll handlers
+  // before submitting a frame.
+  bool enable_synchronized_scrolling = true;
+
+#if DCHECK_IS_ON()
+  // Whether to check if any double blur exists.
+  bool log_on_ui_double_background_blur = false;
+#endif
+
+  // When enabled, enforces new interoperable semantics for 3D transforms.
+  // See crbug.com/1008483.
+  bool enable_backface_visibility_interop = false;
+
+  // Enables ThrottleDecider which produces a list of FrameSinkIds that are
+  // candidates for throttling.
+  // LayerTreeHostSingleThreadClient::FrameSinksToThrottleUpdated() will be
+  // called with candidates.
+  bool enable_compositing_based_throttling = false;
+
+  // Whether it is a LayerTree for ui.
+  bool is_layer_tree_for_ui = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

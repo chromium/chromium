@@ -13,11 +13,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/nss_crypto_module_delegate.h"
 #include "crypto/nss_util.h"
@@ -49,10 +50,9 @@ class ClientCertIdentityNSS : public ClientCertIdentity {
                              private_key_callback) override {
     // Caller is responsible for keeping the ClientCertIdentity alive until
     // the |private_key_callback| is run, so it's safe to use Unretained here.
-    base::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&FetchClientCertPrivateKey,
                        base::Unretained(certificate()), cert_certificate_.get(),
                        password_delegate_),
@@ -78,10 +78,9 @@ void ClientCertStoreNSS::GetClientCerts(const SSLCertRequestInfo& request,
   scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate> password_delegate;
   if (!password_delegate_factory_.is_null())
     password_delegate = password_delegate_factory_.Run(request.host_and_port);
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(),
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread,
                      // Caller is responsible for keeping the ClientCertStore
                      // alive until the callback is run.
@@ -121,9 +120,8 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     intermediates.reserve(nss_intermediates.size());
     for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
       bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-          X509Certificate::CreateCertBufferFromBytes(
-              reinterpret_cast<const char*>(nss_intermediate->derCert.data),
-              nss_intermediate->derCert.len));
+          X509Certificate::CreateCertBufferFromBytes(base::make_span(
+              nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
       if (!intermediate_cert_handle)
         break;
       intermediates.push_back(std::move(intermediate_cert_handle));

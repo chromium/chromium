@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "components/download/internal/background_service/blob_task_proxy.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -110,8 +112,8 @@ size_t InMemoryDownloadImpl::EstimateMemoryUsage() const {
 
 void InMemoryDownloadImpl::OnDataReceived(base::StringPiece string_piece,
                                           base::OnceClosure resume) {
-  size_t size = string_piece.as_string().size();
-  data_.append(string_piece.as_string().data(), size);
+  size_t size = string_piece.size();
+  data_.append(std::string(string_piece).data(), size);
   bytes_downloaded_ += size;
 
   if (paused_) {
@@ -203,6 +205,10 @@ void InMemoryDownloadImpl::SendRequest() {
   if (request_body_) {
     request->request_body = std::move(request_body_);
     request->enable_upload_progress = true;
+  }
+  if (request_params_.isolation_info) {
+    request->site_for_cookies =
+        request_params_.isolation_info->site_for_cookies();
   }
 
   url_chain_.push_back(request_params_.url);

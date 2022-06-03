@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS HTTP cache is shared between same-site top-level frames
+FAIL HTTP cache is not shared between cross-site top-level frames assert_equals: Response 3 header server-request-count is "2", not "3" expected "3" but got "2"
+PASS HTTP cache is shared between same-site frames with same-site top-level frames
+FAIL HTTP cache is not shared between same-site frames with cross-site top-level frames assert_equals: Response 3 header server-request-count is "2", not "3" expected "3" but got "2"
+Harness: the test ran to completion.
+

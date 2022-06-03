@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<script src="deferred-promise-utils.js"></script>
+<audio controls id="beat" src="./bear-av1-opus.mp4" loop></audio>
+<script>
+
+const params = new URLSearchParams(location.search);
+
+// The main test page (restriction-audio-setSinkId.https.html) loads the
+// initiator page, then the initiator page will prerender itself with the
+// `prerendering` parameter.
+const isPrerendering = params.has('prerendering');
+
+if (!isPrerendering) {
+  loadInitiatorPage();
+} else {
+  const prerenderEventCollector = new PrerenderEventCollector();
+
+  const promise = beat.setSinkId(
+      params.get('sinkId') === 'invalid' ? 'fakeId' : '');
+  prerenderEventCollector.start(promise, 'Audio.setSinkId');
+}
+</script>

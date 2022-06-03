@@ -4,7 +4,7 @@
 
 #include "components/reading_list/core/reading_list_model.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 ReadingListModel::ReadingListModel() : current_batch_updates_count_(0) {}
 
@@ -75,7 +75,26 @@ void ReadingListModel::LeavingBatchUpdates() {
     observer.ReadingListModelCompletedBatchUpdates(this);
 }
 
+ReadingListModel::ScopedReadingListBatchUpdate::ScopedReadingListBatchUpdate(
+    ReadingListModel* model)
+    : model_(model) {
+  model->AddObserver(this);
+}
+
 ReadingListModel::ScopedReadingListBatchUpdate::
     ~ScopedReadingListBatchUpdate() {
+  if (model_) {
+    model_->EndBatchUpdates();
+    model_->RemoveObserver(this);
+  }
+}
+
+void ReadingListModel::ScopedReadingListBatchUpdate::ReadingListModelLoaded(
+    const ReadingListModel* model) {}
+
+void ReadingListModel::ScopedReadingListBatchUpdate::
+    ReadingListModelBeingShutdown(const ReadingListModel* model) {
   model_->EndBatchUpdates();
+  model_->RemoveObserver(this);
+  model_ = nullptr;
 }

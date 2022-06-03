@@ -6,7 +6,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Button: '
 ++++++AXButton AXTitle='Button:'
-++++AXCheckBox AXTitle='Checkbox:' AXValue='0'
+++++AXCheckBox AXTitle='Checkbox:' AXValue=0
 ++++AXGroup
 ++++++AXStaticText AXValue='Color: '
 ++++++AXColorWell AXTitle='Color:' AXValue='rgb 0.00000 0.00000 0.00000 1'
@@ -20,7 +20,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
 ++++++AXButton AXTitle='Image:'
-++++++++AXImage
+++++++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
 ++++++++AXStaticText AXValue='Submit'
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '
@@ -28,10 +28,10 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Password: '
 ++++++AXTextField AXTitle='Password:'
-++++AXRadioButton AXTitle='Radio:' AXValue='0'
+++++AXRadioButton AXTitle='Radio:' AXValue=0
 ++++AXGroup
 ++++++AXStaticText AXValue='Range: '
-++++++AXSlider AXTitle='Range:' AXValue='50'
+++++++AXSlider AXTitle='Range:' AXValue=50
 ++++AXGroup
 ++++++AXStaticText AXValue='Reset: '
 ++++++AXButton AXTitle='Reset:'

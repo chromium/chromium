@@ -1,36 +1,14 @@
-<!-- TODO(crbug.com/603217): Use i18n instead of string literals. Figure out
-                             what i18n to use for keypad, ie, does 1 ABC make
-                             sense in every scenario? -->
+<link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
+<link rel="import" href="../../../cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
+<link rel="import" href="../../../cr_elements/icons.html">
+<link rel="import" href="../../../cr_elements/shared_vars_css.html">
+<link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-
-<iron-iconset-svg name="pin-keyboard" size="24">
-  <svg>
-    <defs>
-      <!--
-      Inlined from Polymer's iron-icons to avoid importing everything.
-      See http://goo.gl/Y1OdAq for instructions on adding additional icons.
-      -->
-      <g id="arrow-forward">
-        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z">
-        </path>
-      </g>
-      <g id="backspace">
-        <path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z">
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
+<link rel="import" href="pin_keyboard_icon.html">
 
 <dom-module id="pin-keyboard">
   <template>
@@ -71,13 +49,14 @@
       }
 
       .bottom-row {
-        margin-bottom: 16px;
+        margin-bottom: 0;
       }
 
       #backspaceButton {
         --cr-icon-button-fill-color: var(--pin-keyboard-backspace-color,
-            var(--google-grey-700));
+                                         var(--cros-icon-color-primary));
         --cr-icon-button-size: 48px;
+        --cr-icon-button-transition: none;
         height: var(--pin-button-size);
         margin: 0 var(--pin-button-horizontal-margin);
         opacity: var(--pin-keyboard-backspace-opacity, --dark-primary-opacity);
@@ -94,7 +73,6 @@
         border: 0;
         box-shadow: none;
         box-sizing: border-box;
-        color: var(--google-grey-900);
         display: flex;
         flex-direction: column;
         font-weight: 400;
@@ -105,6 +83,9 @@
         opacity: 0.87;
         padding: 0;
         width: var(--pin-button-size);
+
+        --ink-color: var(--cros-ripple-color);
+        --paper-ripple-opacity: 1;
       }
 
       :host-context(.focus-outline-visible) .digit-button:focus {
@@ -116,7 +97,8 @@
       }
 
       inner-text.letter {
-        color: var(--pin-keyboard-letter-color, var(--google-grey-700));
+        color: var(--pin-keyboard-letter-color,
+                   var(--cros-text-color-secondary));
         font-size: 12px;
       }
 
@@ -129,28 +111,26 @@
       }
 
       .number {
-        color: var(--pin-keyboard-number-color, var(--paper-blue-grey-700));
+        color: var(--pin-keyboard-number-color, var(--cros-text-color-primary));
         font-size: 20px;
       }
 
-      paper-ripple {
-        --paper-ripple-opacity: .15;
-        color: var(--google-grey-900);
+      #pinInput::part(input) {
+        font-size: 18px;
       }
 
       #pinInput {
         --cr-input-error-display: none;
-        --cr-input-input: {
-          font-size: 28px;
-          letter-spacing: 18px;
-        };
-        --cr-input-padding-bottom: 1px;
+        --cr-input-letter-spacing: var(--pin-keyboard-input-letter-spacing,
+                                       18px);
         --cr-input-padding-end: 0;
         --cr-input-padding-start: 0;
-        --cr-input-padding-top: 1px;
-        background-color: white;
+        --cr-search-field-placeholder-color:
+            var(--cros-textfield-input-color-disabled);
+        background-color: var(--cros-textfield-background-color);
         border: 0;
         box-sizing: border-box;
+        color: var(--cros-textfield-input-color);
         font-face: Roboto-Regular;
         font-size: 13px;
         left: 0;
@@ -178,110 +158,116 @@
       }
     </style>
 
-    <div id="root" on-tap="onRootTap_">
+    <div id="root" on-click="onRootTap_">
       <div id="pinInputDiv">
         <cr-input id="pinInput" type="password" value="{{value}}"
             is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
-            make-contrast$="[[hasInputOrFocus_(value, focused_)]]" invalid="[[hasError]]"
+            make-contrast$="[[hasInputOrFocus_(value, focused_)]]"
+            invalid="[[hasError]]"
             placeholder="[[getInputPlaceholder_(enablePassword,
-                enablePlaceholder)]]"
+                enablePlaceholder)]]" inputmode="none"
             on-keydown="onInputKeyDown_" force-underline="true"
             disabled="[[disabled]]">
         </cr-input>
+        <slot select="[problem]"></slot>
       </div>
-      <slot select="[problem]"></slot>
       <div id="rowsContainer">
         <div class="row">
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="1"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="1"
+              id="digitButton1" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
             <inner-text class="letter empty"
                 hidden="[[!enableLetters]]">ABC</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="2"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="2"
+              id="digitButton2" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">ABC</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="3"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="3"
+              id="digitButton3" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">DEF</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
         </div>
         <div class="row">
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="4"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="4"
+              id="digitButton4" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">GHI</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="5"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="5"
+              id="digitButton5" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">JKL</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="6"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="6"
+              id="digitButton6" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">MNO</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
         </div>
         <div class="row">
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="7"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="7"
+              id="digitButton7" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">PQRS</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="8"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="8"
+              id="digitButton8" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">TUV</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="9"
-              noink disabled="[[disabled]]">
+          <cr-button class="digit-button" on-click="onNumberTap_" value="9"
+              id="digitButton9" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
             <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
             <inner-text class="letter"
                 hidden="[[!enableLetters]]">WXYZ</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
           </cr-button>
         </div>
         <div class="row bottom-row">
-          <div class="digit-button"></div>
-          <cr-button class="digit-button" on-tap="onNumberTap_" value="0"
-              noink disabled="[[disabled]]">
-            <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
-            <inner-text class="letter"
-                hidden="[[!enableLetters]]">+</inner-text>
-            <paper-ripple class="circle"></paper-ripple>
-          </cr-button>
           <cr-icon-button id="backspaceButton"
               disabled$="[[!hasInput_(value)]]"
               iron-icon="pin-keyboard:backspace"
-              on-tap="onBackspaceTap_"
+              on-click="onBackspaceTap_"
               on-pointerdown="onBackspacePointerDown_"
               on-pointerout="clearAndReset_"
               on-pointerup="onBackspacePointerUp_"
               on-contextmenu="onBackspaceContextMenu_"
-              title="[[i18n('pinKeyboardDeleteAccessibleName')]]">
+              title="[[i18n('pinKeyboardDeleteAccessibleName')]]"
+              custom-tab-index="-1">
           </cr-icon-button>
+          <cr-button class="digit-button" on-click="onNumberTap_" value="0"
+              id="digitButton0" disabled="[[disabled]]" circle-ripple
+              custom-tab-index="-1">
+            <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">+</inner-text>
+          </cr-button>
+          <div class="digit-button"></div>
         </div>
       </div>
     </div>
   </template>
   <script src="pin_keyboard.js"></script>
 </dom-module>
+
+<!-- TODO(crbug.com/603217): Use i18n instead of string literals. Figure out
+                             what i18n to use for keypad, ie, does 1 ABC make
+                             sense in every scenario? -->

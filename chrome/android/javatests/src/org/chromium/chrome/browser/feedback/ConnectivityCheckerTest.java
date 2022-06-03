@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.feedback;
 
 import static org.chromium.chrome.browser.feedback.ConnectivityCheckerTestRule.TIMEOUT_MS;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -154,8 +154,9 @@ public class ConnectivityCheckerTest {
             if (useSystemStack) {
                 ConnectivityChecker.checkConnectivitySystemNetworkStack(url, timeoutMs, callback);
             } else {
+                // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                 ConnectivityChecker.checkConnectivityChromeNetworkStack(
-                        Profile.getLastUsedProfile(), url, timeoutMs, callback);
+                        Profile.getLastUsedRegularProfile(), url, timeoutMs, callback);
             }
         });
 

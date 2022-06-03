@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_fetcher_delegate.h"
 
@@ -21,7 +20,6 @@ class Value;
 
 namespace net {
 class URLRequestContextGetter;
-class URLRequestStatus;
 }  // namespace net
 
 namespace cloud_print {
@@ -49,31 +47,17 @@ class CloudPrintURLFetcher
     RETRY_REQUEST,
   };
 
-  enum RequestType {
-    REQUEST_AUTH_CODE,
-    REQUEST_REGISTER,
-    REQUEST_UNREGISTER,
-    REQUEST_UPDATE_PRINTER,
-    REQUEST_UPDATE_JOB,
-    REQUEST_USER_MESSAGE,
-    REQUEST_TICKET,
-    REQUEST_DATA,
-    REQUEST_JOB_FETCH,
-    REQUEST_MAX,
-  };
-
   class Delegate {
    public:
     // Override this to handle the raw response as it is available. No response
     // error checking is done before this method is called. If the delegate
     // returns CONTINUE_PROCESSING, we will then check for network
     // errors. Most implementations will not override this.
-    virtual ResponseAction HandleRawResponse(
-        const net::URLFetcher* source,
-        const GURL& url,
-        const net::URLRequestStatus& status,
-        int response_code,
-        const std::string& data);
+    virtual ResponseAction HandleRawResponse(const net::URLFetcher* source,
+                                             const GURL& url,
+                                             net::Error error,
+                                             int response_code,
+                                             const std::string& data);
 
     // This will be invoked only if HandleRawResponse returns
     // CONTINUE_PROCESSING AND if there are no network errors and the HTTP
@@ -108,7 +92,7 @@ class CloudPrintURLFetcher
 
     // Authentication information may change between retries.
     // CloudPrintURLFetcher will request auth info before sending any request.
-    virtual std::string GetAuthHeader() = 0;
+    virtual std::string GetAuthHeaderValue() = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -121,18 +105,16 @@ class CloudPrintURLFetcher
 
   bool IsSameRequest(const net::URLFetcher* source);
 
-  void StartGetRequest(RequestType type,
-                       const GURL& url,
-                       Delegate* delegate,
-                       int max_retries,
-                       const std::string& additional_headers);
-  void StartPostRequest(RequestType type,
-                        const GURL& url,
+  void StartGetRequest(const GURL& url, Delegate* delegate, int max_retries);
+  void StartGetRequestWithAcceptHeader(const GURL& url,
+                                       Delegate* delegate,
+                                       int max_retries,
+                                       const std::string& accept_header);
+  void StartPostRequest(const GURL& url,
                         Delegate* delegate,
                         int max_retries,
                         const std::string& post_data_mime_type,
-                        const std::string& post_data,
-                        const std::string& additional_headers);
+                        const std::string& post_data);
 
   // net::URLFetcherDelegate implementation.
   void OnURLFetchComplete(const net::URLFetcher* source) override;
@@ -147,25 +129,22 @@ class CloudPrintURLFetcher
   virtual net::URLRequestContextGetter* GetRequestContextGetter();
 
  private:
-  void StartRequestHelper(RequestType type,
-                          const GURL& url,
+  void StartRequestHelper(const GURL& url,
                           net::URLFetcher::RequestType request_type,
                           Delegate* delegate,
                           int max_retries,
                           const std::string& post_data_mime_type,
                           const std::string& post_data,
-                          const std::string& additional_headers);
+                          const std::string& additional_accept_header);
   void SetupRequestHeaders();
 
   std::unique_ptr<net::URLFetcher> request_;
   Delegate* delegate_;
   int num_retries_;
-  std::string additional_headers_;
+  std::string additional_accept_header_;
   std::string post_data_mime_type_;
   std::string post_data_;
 
-  RequestType type_;
-  base::Time start_time_;
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
 };
 

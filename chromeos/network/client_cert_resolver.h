@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
  public:
   class Observer {
    public:
+    Observer& operator=(const Observer&) = delete;
+
     // Called every time resolving of client certificate patterns finishes,
     // no resolve requests are pending and no tasks are running.
     // |network_properties_changed| will be true if any network properties were
@@ -54,12 +56,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
    protected:
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_ASSIGN(Observer);
   };
 
   ClientCertResolver();
+
+  ClientCertResolver(const ClientCertResolver&) = delete;
+  ClientCertResolver& operator=(const ClientCertResolver&) = delete;
+
   ~ClientCertResolver() override;
 
   void Init(NetworkStateHandler* network_state_handler,
@@ -88,6 +91,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
       const client_cert::ConfigType client_cert_type,
       const client_cert::ClientCertConfig& client_cert_config,
       base::DictionaryValue* shill_properties);
+
+  // Allows overwriting the function which gets the client certificate
+  // provisioning profile id of a certificate. This is necessary for unit tests,
+  // because there we use an NSS soft token which does not support the custom
+  // attributes used for storing the id. Calling this will overwrite the
+  // behavior until the returned ScopedClosureRunner is destructed, which will
+  // reset to the original behavior.
+  using ProvisioningProfileIdGetter =
+      base::RepeatingCallback<std::string(CERTCertificate* cert)>;
+  static base::ScopedClosureRunner SetProvisioningIdForCertGetterForTesting(
+      ProvisioningProfileIdGetter getter);
 
  private:
   // NetworkStateHandlerObserver overrides
@@ -152,8 +166,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ClientCertResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertResolver);
 };
 
 }  // namespace chromeos

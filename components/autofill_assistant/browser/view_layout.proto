@@ -28,6 +28,12 @@ message ViewProto {
     DividerViewProto divider_view = 6;
     // A regular image view.
     ImageViewProto image_view = 7;
+    // A text input view.
+    TextInputViewProto text_input_view = 8;
+    // A vertical expander with fixed title, collapsed, and expanded sections.
+    VerticalExpanderViewProto vertical_expander_view = 9;
+    // A toggle button (checkbox or radio button).
+    ToggleButtonViewProto toggle_button_view = 10;
   }
 }
 
@@ -48,6 +54,7 @@ message ClientDimensionProto {
     float width_factor = 2;
     // Factor to multiply with the client's total height.
     float height_factor = 3;
+    int32 size_in_pixel = 4;
   }
 }
 
@@ -66,8 +73,36 @@ message BitmapDrawableProto {
   optional ClientDimensionProto height = 3;
 }
 
+message FaviconDrawableProto {
+  optional ClientDimensionProto diameter_size = 1;
+  // If true, we always use the monogram, even if the favicon is available.
+  optional bool force_monogram = 2;
+  // If set, this url is used to fetch favicon, otherwise current url is used to
+  // fetch favicon.
+  optional string website_url = 3;
+}
+
 // A drawable for use in backgrounds or in image views.
 message DrawableProto {
+  enum Icon {
+    DRAWABLE_ICON_UNDEFINED = 0;
+    PROGRESSBAR_DEFAULT_INITIAL_STEP = 1;
+    PROGRESSBAR_DEFAULT_DATA_COLLECTION = 2;
+    PROGRESSBAR_DEFAULT_PAYMENT = 3;
+    PROGRESSBAR_DEFAULT_FINAL_STEP = 4;
+    SITTING_PERSON = 5;
+    TICKET_STUB = 6;
+    SHOPPING_BASKET = 7;
+    FAST_FOOD = 8;
+    LOCAL_DINING = 9;
+    COGWHEEL = 10;
+    KEY = 11;
+    CAR = 12;
+    GROCERY = 13;
+    VISIBILITY_ON = 14;
+    VISIBILITY_OFF = 15;
+  }
+
   oneof drawable {
     // The resource identifier of a drawable.
     string resource_identifier = 1;
@@ -75,6 +110,12 @@ message DrawableProto {
     BitmapDrawableProto bitmap = 2;
     // A shape, e.g., a rounded rectangle.
     ShapeDrawableProto shape = 3;
+    // An icon from a predefined set of known icons.
+    Icon icon = 4;
+    // A Base64 encoded image string.
+    bytes base64 = 5;
+    // The favicon for a given URL.
+    FaviconDrawableProto favicon = 6;
   }
 }
 
@@ -86,6 +127,16 @@ message ViewAttributesProto {
   optional int32 padding_bottom = 4;
 
   optional DrawableProto background = 5;
+  // The content description for this view. There are three possible states:
+  // - unset: content description is auto-inferred by android a11y.
+  // - set to empty string: this view is not important for a11y.
+  // - set to non-empty string: the view will have the specified content
+  // description.
+  optional string content_description = 6;
+  // Whether the view is initially visible or not.
+  optional bool visible = 7 [default = true];
+  // Whether the view is initially enabled or not.
+  optional bool enabled = 8 [default = true];
 }
 
 // Parameters configuring how views attach to their parents.
@@ -127,13 +178,22 @@ message ViewLayoutParamsProto {
 
   // A bit-wise OR of the desired |Gravity| values.
   optional int32 layout_gravity = 7;
+
+  // The minimum width of the view, in dp.
+  optional int32 minimum_width = 9;
+
+  // The minimum height of the view, in dp.
+  optional int32 minimum_height = 10;
 }
 
 message ViewContainerProto {
   // The list of views to add to this container.
   repeated ViewProto views = 1;
 
-  oneof container { LinearLayoutProto linear_layout = 2; }
+  oneof container {
+    LinearLayoutProto linear_layout = 2;
+    VerticalExpanderAccordionProto expander_accordion = 3;
+  }
 }
 
 message LinearLayoutProto {
@@ -145,9 +205,51 @@ message LinearLayoutProto {
   optional Orientation orientation = 1;
 }
 
+// A vertical expander is a special type of vertical linear layout. It has two
+// expansion states (expanded vs. collapsed) and toggles between them by tapping
+// the title widget. For user guidance, a chevron is shown in the title to
+// indicate the current state.
+message VerticalExpanderViewProto {
+  enum ChevronStyle {
+    // Automatic: will show the chevron only if |expanded_view| is set.
+    NOT_SET_AUTOMATIC = 0;
+    ALWAYS = 1;
+    NEVER = 2;
+  }
+
+  // The view to show in the expander title.
+  optional ViewProto title_view = 1;
+
+  // The view to show in the collapsed state.
+  optional ViewProto collapsed_view = 2;
+
+  // The view to show in the expanded state.
+  optional ViewProto expanded_view = 3;
+
+  // The chevron style controls when to show the expand/collapse chevron.
+  optional ChevronStyle chevron_style = 4;
+}
+
+// This is a special type of linear layout that implements accordion-like
+// functionality for all child vertical expanders, i.e., it ensures that at
+// most one child vertical expander is expanded at any time.
+message VerticalExpanderAccordionProto {
+  optional LinearLayoutProto.Orientation orientation = 2;
+}
+
 message TextViewProto {
-  optional string text = 1;
+  oneof kind {
+    // Static text.
+    string text = 1;
+    // Dynamic text. Will update automatically to track the value. Should point
+    // to a single string value. If specified, view identifier is mandatory!
+    string model_identifier = 3;
+  }
   optional string text_appearance = 2;
+  // The text alignment as a bit-wise OR of ViewLayoutParamsProto.Gravity
+  // values. The default is START|TOP (i.e., top-left-aligned for western
+  // locales).
+  optional int32 text_alignment = 4 [default = 8388659];
 }
 
 message DividerViewProto {}
@@ -156,4 +258,85 @@ message ImageViewProto {
   optional DrawableProto image = 1;
 }
 
-message CheckBoxViewProto {}
+// A text input widget. Note: View identifier is mandatory!
+message TextInputViewProto {
+  // This mirrors the type hints specified in
+  // https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorFieldModel.java
+  enum InputTypeHint {
+    // No special formatting rules.
+    NONE = 0;
+    PHONE = 1;
+    EMAIL = 2;
+    // A multi-line address field that may include numbers.
+    STREET_LINES = 3;
+    PERSON_NAME = 4;
+    // A region or administrative area, e.g., a state or a province.
+    REGION = 5;
+    ALPHA_NUMERIC = 6;
+  }
+
+  // The hint to display when the input is empty.
+  optional string hint = 1;
+  // A type hint that the widget may interpret to provide optimized controls.
+  // Note that the actual impact is version-dependent and not all hints may be
+  // supported, in which case a regular text input field will be displayed.
+  optional InputTypeHint type = 2;
+  // Both input and output. The model identifier containing this view's text.
+  // Should point to a single string value.
+  optional string model_identifier = 3;
+}
+
+// A generic read-only popup message.
+message InfoPopupProto {
+  // The title of the popup window.
+  optional string title = 1;
+  // The text of the popup window.
+  optional string text = 2;
+
+  message DialogButton {
+    message CloseDialog {}
+    message OpenUrlInCCT { optional string url = 1; }
+
+    // The action to be executed on click.
+    oneof click_action {
+      // Closes the popup.
+      CloseDialog close_dialog = 4;
+      // Opens the specified url into a new CCT.
+      OpenUrlInCCT open_url_in_cct = 5;
+    }
+    optional string label = 1;
+  }
+  // Optional: adds a positive button.
+  optional DialogButton positive_button = 3;
+  // Optional: adds a negative button.
+  optional DialogButton negative_button = 4;
+  // Optional: adds a neutral button.
+  optional DialogButton neutral_button = 5;
+}
+
+// A toggle button (either a radio button or a check box). Note: view identifier
+// is mandatory!
+message ToggleButtonViewProto {
+  message CheckBox {}
+  message RadioButton {
+    // This is an arbitrary string that should be shared among all radio buttons
+    // belonging to the same exclusion group.
+    optional string radio_group_identifier = 1;
+  }
+
+  // The type of toggle button.
+  oneof kind {
+    CheckBox check_box = 1;
+    RadioButton radio_button = 2;
+  }
+
+  // The view to display to the left of the toggle (if any).
+  optional ViewProto left_content_view = 3;
+
+  // The view to display to the right of the toggle (if any).
+  optional ViewProto right_content_view = 4;
+
+  // The model identifier to keep in sync with the selection. Should point to a
+  // single bool value.
+  optional string model_identifier = 5;
+}

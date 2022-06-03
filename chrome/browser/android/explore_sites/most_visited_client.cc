@@ -4,18 +4,17 @@
 
 #include "chrome/browser/android/explore_sites/most_visited_client.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/android/explore_sites/explore_sites_feature.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace explore_sites {
-using chrome::android::explore_sites::GetMostLikelyVariation;
-using chrome::android::explore_sites::MostLikelyVariation;
 
 std::unique_ptr<MostVisitedClient> MostVisitedClient::Create() {
-  if (GetMostLikelyVariation() == MostLikelyVariation::NONE)
+  if (!base::FeatureList::IsEnabled(chrome::android::kExploreSites))
     return nullptr;
 
   // note: wrap_unique is used because the constructor is private.
@@ -28,7 +27,7 @@ GURL MostVisitedClient::GetExploreSitesUrl() const {
   return GURL(chrome::kChromeUINativeExploreURL);
 }
 
-base::string16 MostVisitedClient::GetExploreSitesTitle() const {
+std::u16string MostVisitedClient::GetExploreSitesTitle() const {
   return l10n_util::GetStringUTF16(IDS_NTP_EXPLORE_SITES_TILE_TITLE);
 }
 

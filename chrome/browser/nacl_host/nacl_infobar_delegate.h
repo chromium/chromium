@@ -7,25 +7,28 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 class NaClInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a NaCl infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+
+  NaClInfoBarDelegate(const NaClInfoBarDelegate&) = delete;
+  NaClInfoBarDelegate& operator=(const NaClInfoBarDelegate&) = delete;
 
  private:
   NaClInfoBarDelegate();
   ~NaClInfoBarDelegate() override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  int GetButtons() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClInfoBarDelegate);
+  std::u16string GetMessageText() const override;
+  int GetButtons() const override;
 };
 
 #endif  // CHROME_BROWSER_NACL_HOST_NACL_INFOBAR_DELEGATE_H_

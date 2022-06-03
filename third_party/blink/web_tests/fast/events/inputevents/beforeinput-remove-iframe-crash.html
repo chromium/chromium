@@ -26,7 +26,7 @@ test(function() {
         });
 
         editable.focus();
-        beforeInputTrigger(childDocument, editable);
+        beforeInputTrigger(childDocument, editable, iframe.contentWindow.testRunner);
 
         if (iframe.parentNode)
             iframe.remove();
@@ -39,7 +39,7 @@ test(function() {
     testBeforeInputCrash(1, () => eventSender.keyDown('Delete'), 'Testing deleteCharacterForward');
 
     // Styling command.
-    testBeforeInputCrash(1, (childDocument, editable) => {
+    testBeforeInputCrash(1, (childDocument, editable, testRunner) => {
         var selection = childDocument.getSelection();
         selection.collapse(editable, 0);
         selection.extend(editable, 1);
@@ -47,7 +47,7 @@ test(function() {
     }, 'Testing bold');
 
     // Cut & Paste.
-    testBeforeInputCrash(1, (childDocument, editable) => {
+    testBeforeInputCrash(1, (childDocument, editable, testRunner) => {
         var selection = childDocument.getSelection();
         selection.collapse(editable, 0);
         selection.extend(editable, 1);
@@ -56,11 +56,11 @@ test(function() {
     testBeforeInputCrash(1, () => eventSender.keyDown('Paste'), 'Testing insertFromPaste');
 
     // Undo & Redo.
-    testBeforeInputCrash(2, () => {
+    testBeforeInputCrash(2, (childDocument, editable, testRunner) => {
         eventSender.keyDown('a');
         testRunner.execCommand('undo');
     }, 'Testing undo');
-    testBeforeInputCrash(3, () => {
+    testBeforeInputCrash(3, (childDocument, editable, testRunner) => {
         eventSender.keyDown('a');
         testRunner.execCommand('undo');
         testRunner.execCommand('redo');

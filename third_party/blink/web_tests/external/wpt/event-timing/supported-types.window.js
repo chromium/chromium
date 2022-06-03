@@ -1,6 +1,7 @@
 test(() => {
-  if (typeof PerformanceObserver.supportedEntryTypes === "undefined")
-    assert_unreached("supportedEntryTypes is not supported.");
+  assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+  assert_implements(typeof PerformanceObserver.supportedEntryTypes !== "undefined",
+      'supportedEntryTypes is not supported');
   const types = PerformanceObserver.supportedEntryTypes;
   assert_true(types.includes("first-input"),
     "There should be 'first-input' in PerformanceObserver.supportedEntryTypes");

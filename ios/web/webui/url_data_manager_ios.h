@@ -26,6 +26,10 @@ class WebUIIOSDataSource;
 class URLDataManagerIOS : public base::SupportsUserData::Data {
  public:
   explicit URLDataManagerIOS(BrowserState* browser_state);
+
+  URLDataManagerIOS(const URLDataManagerIOS&) = delete;
+  URLDataManagerIOS& operator=(const URLDataManagerIOS&) = delete;
+
   ~URLDataManagerIOS() override;
 
   // Adds a DataSource to the collection of data sources. This *must* be invoked
@@ -78,8 +82,6 @@ class URLDataManagerIOS : public base::SupportsUserData::Data {
   // |data_sources_| that are no longer referenced and scheduled for deletion.
   // Protected by g_delete_lock in the .cc file.
   static URLDataSources* data_sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDataManagerIOS);
 };
 
 }  // namespace web

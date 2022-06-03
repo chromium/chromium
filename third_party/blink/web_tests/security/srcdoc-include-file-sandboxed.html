@@ -28,7 +28,7 @@
     );
   };
 
-  async_test(async function(t) {
+  promise_test(async function(t) {
     // 1. Initial navigation to about:srcdoc.
     assert_equals("error", await message());
 
@@ -47,7 +47,5 @@
     //    (4).
     iframe.srcdoc = iframe.srcdoc;
     assert_equals("error", await message());
-
-    t.done();
   });
 </script>

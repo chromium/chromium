@@ -15,7 +15,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
     <td style="font-size: 11px; padding: 5px;">SDL (partial) </td>
     <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - AudioWorkletNode ROUGHLY equivalent</td>
-    <td style="font-size: 11px; padding: 5px;">Still being standardized. </td>
+    <td style="font-size: 11px; padding: 5px;">The AudioWorkletSpec is done, but AudioDeviceClient may be a better fit for this API. The AudioDeviceClient is still being specified by the community. The worklet may not be the rough equivalent for this API. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -82,7 +82,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - WebAudio only uses 32-bit float, PPAPI does 16-bit int.</td>
-    <td style="font-size: 11px; padding: 5px;">PPAPI theoretically supports multiple sampling sizes. In practice, it only supports 16-bit samples. Unfortunately, developers have requested 16-bit sample sizes to save on memory use. </td>
+    <td style="font-size: 11px; padding: 5px;">PPAPI theoretically supports multiple sampling sizes. In practice, it only supports 16-bit samples. Unfortunately, developers have requested 16-bit sample sizes to save on memory use. The next version of the Web Audio spec will implement support for 16-bit samples. An optimization for AudioBuffer could be implemented similar to Firefox by using 16-bit buffer for audio that comes from decodeAudioData </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -125,7 +125,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Only 32-bit float samples supported</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">The next version of the Web Audio spec will implement support for 16-bit samples. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -149,15 +149,15 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
     <td style="font-size: 11px; padding: 5px;">AudioContext.sampleRate (from default construct) </td>
-    <td style="font-size: 11px; padding: 5px;">An AudioContext will have the preferred sampling rate by default. </td>
+    <td style="font-size: 11px; padding: 5px;">An AudioContext will have the preferred sampling rate that matchs the actual sample rate of the hardware audio device by default. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">RecommendSampleFrameCount </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No mechanism to get a recommended buffer size.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the planned AudioDeviceClient</td>
+    <td style="font-size: 11px; padding: 5px;">There is an open issue to allow a user-specified size, but that is still being defined. This is probably best handled with AudioDeviceClient which can tell you what the appropriate size would be for the given hardware. </td>
   </tr>
 
 </table>
@@ -184,8 +184,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">PPAPI provides a way to override the source filename and line number in a console message. 
-(Though JS API provides way to style text). </td>
+    <td style="font-size: 11px; padding: 5px;">The Console API is regarded as a sufficiently complete replacement, unless there are specific use cases raised by developers for the functionality provided by LogWithSource. DevTools Source Maps can be used to debug transpiled JavaScript in their original source language. </td>
   </tr>
 
 </table>
@@ -246,7 +245,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">FileReader / FileWrite (Entry.createReader / Entry.createWriter) </td>
+    <td style="font-size: 11px; padding: 5px;">window.chooseFileSystemEntries() </td>
     <td style="font-size: 11px; padding: 5px;">Create and open are used differently, but the pieces are of equal power. </td>
   </tr>
 
@@ -254,7 +253,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Open </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">FileReader / FileWrite (Entry.createReader / Entry.createWriter) </td>
+    <td style="font-size: 11px; padding: 5px;">window.chooseFileSystemEntries() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -262,31 +261,31 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Query </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getMetadata </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">Blob.size, FileSystemHandle.getFile(), FileSystemHandle.getDirectory(), File.lastModified </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - Blob.type can also be used to check the MIME type. The file system type, creation time, and last access time can not be determined with the Native File System API.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Touch </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - No direct equivalent, but no access time either.</td>
-    <td style="font-size: 11px; padding: 5px;">Modify time can be bumped by writing. </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemDirectoryHandle.getFile("name", {create: true}) </td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Read </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getFile + Blob.slice + FileReader.getBinaryData </td>
-    <td style="font-size: 11px; padding: 5px;">Note, this API requires an extra copy to get a read into linear memory, and may be worse than that if Blob slices are not optimizes to use mmap. </td>
+    <td style="font-size: 11px; padding: 5px;">Blob.slice().arrayBuffer() </td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Write </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">FileWriter.seek + FileWriter.write 'write*' Events </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemWriter.write() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -294,31 +293,31 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetLength </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">FileWriter.truncate + 'write*' Events </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemWriter.truncate() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Flush </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent, no way to flush.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial)</td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - Files are flushed when FileSystemWrite.close() is called</td>
+    <td style="font-size: 11px; padding: 5px;">This is intended by design because the Native File System API files are exposed to the OS, therefore a Safe Browsing check needs to be performed before data is shown to the OS. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">No equivalent, open files and directories are implicitly closed. </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemWriter.close() </td>
+    <td style="font-size: 11px; padding: 5px;">Does not cancel pending operations, but flushes any data written so far to disk. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">ReadToArray </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent.</td>
+    <td style="font-size: 11px; padding: 5px;">Blob.slice().arrayBuffer() or Blob.arrayBuffer() </td>
     <td style="font-size: 11px; padding: 5px;">Allows multiple subrange reads in parallel. </td>
   </tr>
 
@@ -337,7 +336,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getFile(..., {create:true}) </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemDirectoryHandle.getFile("name", {create: true}) </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -353,7 +352,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetName </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.name </td>
+    <td style="font-size: 11px; padding: 5px;">File.name </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -361,23 +360,23 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetPath </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.fullPath </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - With the Native File System API, the relative path of a file can be determined from reference to a directory that contains the file using FileSystemHandle.resolve(FileSystemHandle)</td>
+    <td style="font-size: 11px; padding: 5px;">The absolute path of a file cannot be determined, and the user has to grant permission to access the directory containing the file. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetParent </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getParent </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - With the Native File System API, the relative path of a file can be determined from reference to a directory that contains the file using FileSystemHandle.resolve(FileSystemHandle)</td>
+    <td style="font-size: 11px; padding: 5px;">The user has to grant permission to access the directory containing the file. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">MakeDirectory </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getDirectory(..., {create:true}) </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemHandle.getDirectory(..., {createIfNotExists: true}) </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -385,7 +384,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Touch </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - No direct equivalent, but no access time either.</td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemDirectoryHandle.getFile("name", {create: true}) </td>
     <td style="font-size: 11px; padding: 5px;">Modify time can be bumped by writing. </td>
   </tr>
 
@@ -393,31 +392,31 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Delete </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.remove </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemDirectoryHandle.removeEntry() </td>
+    <td style="font-size: 11px; padding: 5px;">Unlike the PPAPI, directories do not have to be empty. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Rename </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Entry.moveTo </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - With the Native File System API, the file can be written with the new name using a combination of FileSystemFileHandle.getFile() for the new name and FileSystemFileHandle.createWriter().write() with the contents of the old file. Then FileSystemDirectoryHandle.removeEntry() to delete the old file.</td>
+    <td style="font-size: 11px; padding: 5px;">There is not a direct API that will do this in one step in the Native File System API. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Query </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">Entry.getMetadata </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - JS API has file size and last modified date, but doesn't have creation date and last accessed date.</td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial)</td>
+    <td style="font-size: 11px; padding: 5px;">Blob.size, FileSystemHandle.getFile(), FileSystemHandle.getDirectory(), File.lastModified </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - Blob.type can also be used to check the MIME type. The file system type, creation time, and last access time can not be determined with the Native File System API.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">ReadDirectoryEntries </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">FS (partial) </td>
-    <td style="font-size: 11px; padding: 5px;">Directory.readEntries </td>
+    <td style="font-size: 11px; padding: 5px;">FileSystemDirectoryHandle.getEntries() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -445,7 +444,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td style="font-size: 11px; padding: 5px;">window.requestFileSystem </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Filesystems API is chrome only. IndexedDB has additional performance limitations around subrange writes.</td>
+    <td style="font-size: 11px; padding: 5px;">JS API does both in one step </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -507,7 +506,7 @@
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
     <td style="font-size: 11px; padding: 5px;">Gamepad.* </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - PPAPI exposes a timestamp value, but the JS API doesn't provide this (though it is spec'd).</td>
+    <td style="font-size: 11px; padding: 5px;">The Gamepad object exposes a timestamp relative to navigationStart. It is updated when data is received from the hardware https://www.w3.org/TR/gamepad/#gamepad-interface </td>
   </tr>
 
 </table>
@@ -541,7 +540,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">PaintImageData </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.putImageData </td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.putImageData </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -549,15 +548,15 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Scroll </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.scrollIntoView </td>
-    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - Not an exact match (might have to resort to getImageData + putImageData which will be slow). Not a cross-browser standard.</td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.scrollIntoView, CanvasRenderingContext2D.drawImage </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - Can be implemented by drawing the canvas onto itself, with an offset, using drawImage, and then filling in the rest.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">ReplaceContents </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.drawImage </td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.drawImage </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -565,15 +564,23 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Flush </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Only returning to the event loop triggers the flush.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">No direct equivalent </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) -
+    There is always an implicit flush at the end of draw code; this is unlikely
+    to change. However, the combination of 
+    <a href="https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface">
+      OffscreenCanvas
+    </a> and 
+    <a href="https://html.spec.whatwg.org/multipage/canvas.html#the-imagebitmap-rendering-context">
+      ImageBitmapRenderingContext 
+    </a>provide similar functionality.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetScale </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.scale </td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.scale </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -581,7 +588,7 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetScale </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.currentTransform </td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.currentTransform </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -589,9 +596,9 @@
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetLayerTransform </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">SDL </td>
-    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2d.setTransform
-CanvasRenderingContext2d.scale
-CanvasRenderingContext2d.translate </td>
+    <td style="font-size: 11px; padding: 5px;">CanvasRenderingContext2D.setTransform
+CanvasRenderingContext2D.scale
+CanvasRenderingContext2D.translate </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -609,9 +616,9 @@ CanvasRenderingContext2d.translate </td>
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetAttribMaxValue </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Canvas.getContext lets you set booleans requesting depth / stencil buffers of certain sizes, but does not have a way to query what's possible (or get anything other than on or off for each)</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">OpenGL ES 3.0 </td>
+    <td style="font-size: 11px; padding: 5px;">WebGL 2.0 </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - WebGL 2.0 and Emscripten's exposure of OpenGL ES 3.0 support user-defined multisampled framebuffers, in which all of the parameters configurable via PPAPI can be set.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -658,8 +665,16 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SwapBuffers </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No way to explicitly flip a frame, must return to the event loop.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">No direct equivalent </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) -
+    There is always an implicit flush at the end of draw code; this is unlikely
+    to change. However, the combination of 
+    <a href="https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface">
+      OffscreenCanvas
+    </a> and 
+    <a href="https://html.spec.whatwg.org/multipage/canvas.html#the-imagebitmap-rendering-context">
+      ImageBitmapRenderingContext
+    </a> provide similar functionality.</td>
   </tr>
 
 </table>
@@ -870,16 +885,16 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetTicks </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - deltaMode kinda of contains this info, but incompletely.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - deltaMode kind of contains this info, but incompletely.</td>
+    <td style="font-size: 11px; padding: 5px;">There is discussion on implementing a WheelEvent.deltaMode API: https://github.com/w3c/uievents/issues/181#issuecomment-537811017 </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetScrollByPage </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - deltaMode kinda of contains this info, but incompletely.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - deltaMode kind of contains this info, but incompletely.</td>
+    <td style="font-size: 11px; padding: 5px;">There is discussion on implementing a WheelEvent.deltaMode API: https://github.com/w3c/uievents/issues/181#issuecomment-537811017 </td>
   </tr>
 
 </table>
@@ -1008,7 +1023,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No direct equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">This data can potentially be retrieved from CompositionEvent.data. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1062,6 +1077,46 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-size: 11px; padding: 5px;">NaCl apps can be registered to handle a particular mime type and own the whole document. </td>
   </tr>
 
+  <tr bgcolor="#fcfcfc">
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">DidCreate </td>
+    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td style="font-size: 11px; padding: 5px;">&lt;Element&gt;[key] </td>
+    <td style="font-size: 11px; padding: 5px;">General DOM access lets you fish out tag attributes </td>
+  </tr>
+
+  <tr bgcolor="#fcfcfc">
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">DidDestroy </td>
+    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td style="font-size: 11px; padding: 5px;">Not triggered for NaCl </td>
+  </tr>
+
+  <tr bgcolor="#fcfcfc">
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">DidChangeView </td>
+    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td style="font-size: 11px; padding: 5px;">Element 'resize' Event </td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
+  </tr>
+
+  <tr bgcolor="#fcfcfc">
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">DidChangeFocus </td>
+    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td style="font-size: 11px; padding: 5px;">Element 'focus', 'focusin', 'focusout' Events </td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
+  </tr>
+
+  <tr bgcolor="#fcfcfc">
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">HandleDocumentLoad </td>
+    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">N/A </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No way to register as a mime type handler</td>
+    <td style="font-size: 11px; padding: 5px;">NaCl modules via apps + a manifest entry can be set up to handle particular mime types. </td>
+  </tr>
+
 </table>
 <h3>PPB_MediaStreamAudioTrack</h3>
 <table>
@@ -1077,47 +1132,15 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Configure </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">getUserMedia() </td>
+    <td style="font-size: 11px; padding: 5px;">The constraints from getUserMedia() can provide the configuration values to use in MediaStreamTrack. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetAttrib </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStreamSettings.channelCount </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStreamSettings.sampleSize </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStreamSettings.sampleRate </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - no equivalent to PP_MEDIASTREAMAUDIOTRACK_ATTRIB_BUFFERS</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - no equivalent to PP_MEDIASTREAMAUDIOTRACK_ATTRIB_DURATION</td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.getSettings() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1125,7 +1148,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetId </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStream.id </td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.id </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1133,7 +1156,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">HasEnded </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStream.ended </td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.readyState </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1157,7 +1180,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.stop() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1176,16 +1199,16 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;">Ability to create synthetic stream. </td>
+    <td style="font-size: 11px; padding: 5px;">Canvas Capture </td>
+    <td style="font-size: 11px; padding: 5px;">Canvas Capture provides the ability to introduce video frames programatically. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Configure </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">applyConstraints(), getUserMedia() </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - The extent of configurations available in the Web API may differ from the PPAPI.</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1209,7 +1232,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - no equivalent to PP_MEDIASTREAMVIDEOTRACK_ATTRIB_BUFFERED_FRAMES</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">MediaStream cannot be preloaded, so it will never buffer: https://www.w3.org/TR/mediacapture-streams/#mediastreams-in-media-elements </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1224,7 +1247,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetId </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStream.id </td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.id </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1232,7 +1255,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">HasEnded </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">MediaStream.ended </td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.readyState </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1256,7 +1279,7 @@ CanvasRenderingContext2d.translate </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td style="font-size: 11px; padding: 5px;">MediaStreamTrack.stop() </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1450,7 +1473,7 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Without offscreen canvas, rendering must be done on the main thread.</td>
+    <td style="font-size: 11px; padding: 5px;">OffscreenCanvas </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1469,32 +1492,32 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetTextInputType </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent hints to browser about canvas containing input.</td>
-    <td style="font-size: 11px; padding: 5px;">Some developers would like to either be able to hint in this fashion, or preferably the ability to intercept and display IME events / output inline inside a canvas. </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Potentially filled by Input Method Editor API</td>
+    <td style="font-size: 11px; padding: 5px;">Some developers would like to either be able to hint in this fashion, or preferrably the ability to intercept and display IME events / output inline inside a canvas. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">UpdateCaretPosition </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent hints to browser about canvas containing input.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Potentially filled by Input Method Editor API</td>
+    <td style="font-size: 11px; padding: 5px;">https://www.w3.org/TR/ime-api/ </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">CancelCompositionText </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent hints to browser about canvas containing input.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Potentially filled by Input Method Editor API</td>
+    <td style="font-size: 11px; padding: 5px;">https://www.w3.org/TR/ime-api/ </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">UpdateSurroundingText </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent hints to browser about canvas containing input.</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Potentially filled by Input Method Editor API</td>
+    <td style="font-size: 11px; padding: 5px;">https://www.w3.org/TR/ime-api/ </td>
   </tr>
 
 </table>
@@ -1552,8 +1575,8 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No Fetch API equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">FetchObserver </td>
+    <td style="font-size: 11px; padding: 5px;">Not specced or implemented yet; https://github.com/whatwg/fetch/issues/607 </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1568,8 +1591,8 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No Fetch API equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">FetchObserver </td>
+    <td style="font-size: 11px; padding: 5px;">Not specced or implemented yet; https://github.com/whatwg/fetch/issues/607 </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1624,7 +1647,7 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No Fetch API equivalent</td>
+    <td style="font-size: 11px; padding: 5px;">Fetch API: AbortSignal and AbortController </td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -1652,7 +1675,7 @@ CSS3 supports specifying the hotspot. </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">embind </td>
     <td style="font-size: 11px; padding: 5px;">Fetch Request </td>
-    <td style="font-size: 11px; padding: 5px;">No way to stream to a file. </td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1691,8 +1714,8 @@ CSS3 supports specifying the hotspot. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">AppendFileToBody </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No direct equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">fetch() upload streaming </td>
+    <td style="font-size: 11px; padding: 5px;">https://www.chromestatus.com/feature/5274139738767360 </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -1942,56 +1965,56 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using VideoDecoder()</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Initialize </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using VideoDecoder() initialization parameters (VideoDecoderInitParameters)</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Decode </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using ReadableStream.pipeThrough(VideoDecoder)</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetPicture </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using ReadableStream.pipeThrough(VideoDecoder).pipeTo(VideoTrackWriter().writable)</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">RecyclePicture </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API. The current design will automatically recycle the pictures and keep the decoding process going.</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Flush </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API. The API will be called Flush(), however there is still discussion on how it will be sequenced in relation to decode calls.</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Reset </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API by destroying the VideoDecoder instance and creating a new one. This won't be as efficient as a dedicated reset method, but the semantics for a Reset() API is still being discussed.</td>
+    <td style="font-size: 11px; padding: 5px;">https://github.com/WICG/web-codecs/blob/master/explainer.md#example-of-decode-for-low-latency-live-streaming-or-cloud-gaming </td>
   </tr>
 
 </table>
@@ -2009,23 +2032,23 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;">Overlap with MediaRecorder API, but not exact. </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using VideoEncoder()</td>
+    <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetSupportedProfiles </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - navigator.mediaCapabilities.encodingInfo()</td>
+    <td style="font-size: 11px; padding: 5px;">The supported profiles have to be checked one by one. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Initialize </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using VideoEncoder() initialization parameters</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2034,7 +2057,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">It is unlikely that the frame pool used internally by the Web Codecs API is exposed. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
@@ -2042,14 +2065,14 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-size: 11px; padding: 5px;">It is unlikely that the frame pool used internally by the Web Codecs API is exposed. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetVideoFrame </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API by using ReadableStream.pipeThrough(VideoEncoder). This would directly encode the data in the Readable stream instead of grabbing a single frame to fill with data before encoding.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2057,7 +2080,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Encode </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API using ReadableStream.pipeThrough(VideoEncoder)</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2065,23 +2088,23 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetBitstreamBuffer </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API. The current design will automatically go through the encoded bitstream buffer that is piped through.</td>
+    <td style="font-size: 11px; padding: 5px;">The WebCodecs API currently assumes that bitstream buffer can be copied rather than pooled, so it will not need to be recycled. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">RecycleBitstreamBuffer </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API. The current design will automatically recycle the buffer to keep the encoding process going.</td>
+    <td style="font-size: 11px; padding: 5px;">This is unlikely to change in the future as performance implications are smaller. </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">RequestEncodingParametersChange </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled by the proposed Web Codecs API. Certain parameters will have the capability of being changed on the fly, while others will require the encoder to be torn down.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2089,7 +2112,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API by using VideoEncoder.Close()</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2108,7 +2131,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetTimestamp </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2116,7 +2139,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetTimestamp </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2124,7 +2147,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetFormat </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2132,7 +2155,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetSize </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2140,7 +2163,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetDataBuffer </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2148,7 +2171,7 @@ Future multiple memories or memory mapping might improve this. </td>
     <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetDataBufferSize </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No equivalent</td>
+    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - Would be handled with the proposed WebCodecs API.</td>
     <td style="font-size: 11px; padding: 5px;"> </td>
   </tr>
 
@@ -2431,7 +2454,7 @@ WebSocket 'close' Event </td>
     <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;"> </td>
     <td style="font-size: 11px; padding: 5px;">N/A </td>
     <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP - No way to register as a mime type handler</td>
-    <td style="font-size: 11px; padding: 5px;">NaCl modules via apps + a manifest entry can be set up to handle particular mime types. </td>
+    <td style="font-size: 11px; padding: 5px;">NaCl Modules via apps + a manifest entry can be set up to handle particular mime types. </td>
   </tr>
 
 </table>

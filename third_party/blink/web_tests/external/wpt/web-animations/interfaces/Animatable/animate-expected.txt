@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 142 tests; 138 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 151 tests; 148 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Element.animate() creates an Animation object
 PASS Element.animate() creates an Animation object in the relevant realm of the target element
 PASS Element.animate() creates an Animation object with a KeyframeEffect
@@ -132,15 +132,30 @@ PASS Element.animate() correctly sets the id attribute when no id is specified
 PASS Element.animate() correctly sets the id attribute
 PASS Element.animate() correctly sets the Animation's timeline
 PASS Element.animate() correctly sets the Animation's timeline when triggered on an element in a different document
+PASS Element.animate() correctly sets the Animation's timeline with no timeline parameter in KeyframeAnimationOptions.
+PASS Element.animate() correctly sets the Animation's timeline with undefined timeline in KeyframeAnimationOptions.
+PASS Element.animate() correctly sets the Animation's timeline with null timeline in KeyframeAnimationOptions.
+PASS Element.animate() correctly sets the Animation's timeline with DocumentTimeline in KeyframeAnimationOptions.
 PASS Element.animate() calls play on the Animation
 PASS Element.animate() does NOT trigger a style change event
 PASS animate() with pseudoElement parameter creates an Animation object
 PASS animate() with pseudoElement parameter without content creates an Animation object
-PASS animate() with pseudoElement parameter  creates an Animation object for ::marker
-PASS animate() with pseudoElement parameter  creates an Animation object for ::first-line
-FAIL animate() with pseudoElement an Animation object targeting the correct pseudo-element assert_equals: The returned Animation targets the correct selector expected (string) "::before" but got (undefined) undefined
-FAIL animate() with pseudoElement without content creates an Animation object targeting the correct pseudo-element assert_equals: The returned Animation targets the correct selector expected (string) "::before" but got (undefined) undefined
-FAIL animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::marker assert_equals: The returned Animation targets the correct selector expected (string) "::marker" but got (undefined) undefined
-FAIL animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::first-line assert_equals: The returned Animation targets the correct selector expected (string) "::first-line" but got (undefined) undefined
+PASS animate() with pseudoElement parameter creates an Animation object for ::marker
+PASS animate() with pseudoElement parameter creates an Animation object for ::first-line
+PASS animate() with pseudoElement an Animation object targeting the correct pseudo-element
+PASS animate() with pseudoElement without content creates an Animation object targeting the correct pseudo-element
+PASS animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::marker
+PASS animate() with pseudoElement an Animation object targeting the correct pseudo-element for ::first-line
+FAIL animate() with a non-null invalid pseudoElement '' throws a SyntaxError assert_throws_dom: function "() => {
+      div.animate(null, {pseudoElement: pseudo});
+    }" did not throw
+PASS animate() with a non-null invalid pseudoElement 'before' throws a SyntaxError
+PASS animate() with a non-null invalid pseudoElement ':abc' throws a SyntaxError
+FAIL animate() with a non-null invalid pseudoElement '::abc' throws a SyntaxError assert_throws_dom: function "() => {
+      div.animate(null, {pseudoElement: pseudo});
+    }" did not throw
+FAIL animate() with a non-null invalid pseudoElement '::placeholder' throws a SyntaxError assert_throws_dom: function "() => {
+      div.animate(null, {pseudoElement: pseudo});
+    }" did not throw
 Harness: the test ran to completion.
 

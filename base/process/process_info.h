@@ -26,6 +26,9 @@ BASE_EXPORT IntegrityLevel GetCurrentProcessIntegrityLevel();
 // Determines whether the current process is elevated.
 BASE_EXPORT bool IsCurrentProcessElevated();
 
+// Determines whether the current process is running within an App Container.
+BASE_EXPORT bool IsCurrentProcessInAppContainer();
+
 #endif  // defined(OS_WIN)
 
 }  // namespace base

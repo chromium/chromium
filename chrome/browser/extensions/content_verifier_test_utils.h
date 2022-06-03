@@ -14,14 +14,14 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
-#include "chrome/browser/extensions/policy_extension_reinstaller.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/content_verify_job.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -36,6 +36,10 @@ namespace content_verifier_test {
 class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
  public:
   DownloaderTestDelegate();
+
+  DownloaderTestDelegate(const DownloaderTestDelegate&) = delete;
+  DownloaderTestDelegate& operator=(const DownloaderTestDelegate&) = delete;
+
   ~DownloaderTestDelegate();
 
   // This makes it so that update check requests for |extension_id| will return
@@ -58,9 +62,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 
   // The prepared responses - this maps an extension id to a (version string,
   // crx file path) pair.
-  std::map<std::string, std::pair<ExtensionId, base::FilePath>> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloaderTestDelegate);
+  std::map<ExtensionId, std::pair<base::Version, base::FilePath>> responses_;
 };
 
 // This lets us simulate a policy-installed extension being "force" installed;
@@ -68,19 +70,21 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 class ForceInstallProvider : public ManagementPolicy::Provider {
  public:
   explicit ForceInstallProvider(const ExtensionId& id);
+
+  ForceInstallProvider(const ForceInstallProvider&) = delete;
+  ForceInstallProvider& operator=(const ForceInstallProvider&) = delete;
+
   ~ForceInstallProvider() override;
 
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayModifySettings(const Extension* extension,
-                             base::string16* error) const override;
+                             std::u16string* error) const override;
   bool MustRemainEnabled(const Extension* extension,
-                         base::string16* error) const override;
+                         std::u16string* error) const override;
 
  private:
   // The extension id we want to disallow uninstall/disable for.
   ExtensionId id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForceInstallProvider);
 };
 
 // A helper for intercepting the normal action that
@@ -89,6 +93,9 @@ class ForceInstallProvider : public ManagementPolicy::Provider {
 class DelayTracker {
  public:
   DelayTracker();
+
+  DelayTracker(const DelayTracker&) = delete;
+  DelayTracker& operator=(const DelayTracker&) = delete;
 
   ~DelayTracker();
 
@@ -99,10 +106,8 @@ class DelayTracker {
 
  private:
   std::vector<base::TimeDelta> calls_;
-  base::Optional<base::OnceClosure> saved_callback_;
-  PolicyExtensionReinstaller::ReinstallCallback action_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayTracker);
+  absl::optional<base::OnceClosure> saved_callback_;
+  CorruptedExtensionReinstaller::ReinstallCallback action_;
 };
 
 }  // namespace content_verifier_test

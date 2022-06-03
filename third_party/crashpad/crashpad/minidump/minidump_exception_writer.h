@@ -23,7 +23,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_thread_id_map.h"
 
@@ -37,6 +36,10 @@ class MinidumpMemoryListWriter;
 class MinidumpExceptionWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpExceptionWriter();
+
+  MinidumpExceptionWriter(const MinidumpExceptionWriter&) = delete;
+  MinidumpExceptionWriter& operator=(const MinidumpExceptionWriter&) = delete;
+
   ~MinidumpExceptionWriter() override;
 
   //! \brief Initializes the MINIDUMP_EXCEPTION_STREAM based on \a
@@ -117,8 +120,6 @@ class MinidumpExceptionWriter final : public internal::MinidumpStreamWriter {
  private:
   MINIDUMP_EXCEPTION_STREAM exception_;
   std::unique_ptr<MinidumpContextWriter> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpExceptionWriter);
 };
 
 }  // namespace crashpad

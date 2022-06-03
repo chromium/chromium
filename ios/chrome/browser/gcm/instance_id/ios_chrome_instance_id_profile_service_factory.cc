@@ -15,7 +15,7 @@
 // static
 instance_id::InstanceIDProfileService*
 IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<instance_id::InstanceIDProfileService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -43,8 +43,8 @@ IOSChromeInstanceIDProfileServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   DCHECK(!context->IsOffTheRecord());
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<instance_id::InstanceIDProfileService>(
       IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state)
           ->driver(),

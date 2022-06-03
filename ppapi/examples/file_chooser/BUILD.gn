@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("file_chooser") {
   output_name = "ppapi_example_file_chooser"
-  sources = [
-    "file_chooser.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "file_chooser.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

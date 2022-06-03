@@ -4,15 +4,16 @@
 
 #include "components/sync/driver/non_ui_syncable_service_based_model_type_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/model_impl/forwarding_model_type_controller_delegate.h"
-#include "components/sync/model_impl/proxy_model_type_controller_delegate.h"
-#include "components/sync/model_impl/syncable_service_based_bridge.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/syncable_service_based_bridge.h"
 
 namespace syncer {
 
@@ -43,6 +44,9 @@ class BridgeBuilder {
                        base::Unretained(this), type, std::move(store_factory),
                        std::move(syncable_service_provider), dump_stack));
   }
+
+  BridgeBuilder(const BridgeBuilder&) = delete;
+  BridgeBuilder& operator=(const BridgeBuilder&) = delete;
 
   ~BridgeBuilder() { DCHECK(task_runner_->RunsTasksInCurrentSequence()); }
 
@@ -76,8 +80,6 @@ class BridgeBuilder {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<ModelTypeSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(BridgeBuilder);
 };
 
 // This is a slightly adapted version of base::OnTaskRunnerDeleter: The one
@@ -158,6 +160,6 @@ NonUiSyncableServiceBasedModelTypeController::
 }
 
 NonUiSyncableServiceBasedModelTypeController::
-    ~NonUiSyncableServiceBasedModelTypeController() {}
+    ~NonUiSyncableServiceBasedModelTypeController() = default;
 
 }  // namespace syncer

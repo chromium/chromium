@@ -16,6 +16,11 @@ class Profile;
 class ProfileBasedBrowsingHistoryDriver
     : public history::BrowsingHistoryDriver {
  public:
+  ProfileBasedBrowsingHistoryDriver(const ProfileBasedBrowsingHistoryDriver&) =
+      delete;
+  ProfileBasedBrowsingHistoryDriver& operator=(
+      const ProfileBasedBrowsingHistoryDriver&) = delete;
+
   // BrowsingHistoryDriver implementation.
   void OnRemoveVisits(
       const std::vector<history::ExpireHistoryArgs>& expire_list) override;
@@ -25,15 +30,12 @@ class ProfileBasedBrowsingHistoryDriver
   void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
       const syncer::SyncService* sync_service,
       history::WebHistoryService* history_service,
-      base::Callback<void(bool)> callback) override;
+      base::OnceCallback<void(bool)> callback) override;
 
   virtual Profile* GetProfile() = 0;
 
  protected:
   ProfileBasedBrowsingHistoryDriver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileBasedBrowsingHistoryDriver);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_PROFILE_BASED_BROWSING_HISTORY_DRIVER_H_

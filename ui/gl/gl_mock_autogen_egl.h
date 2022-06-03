@@ -121,6 +121,11 @@ MOCK_METHOD6(GetFrameTimestampsANDROID,
                         EGLnsecsANDROID* values));
 MOCK_METHOD3(GetFrameTimestampSupportedANDROID,
              EGLBoolean(EGLDisplay dpy, EGLSurface surface, EGLint timestamp));
+MOCK_METHOD4(GetMscRateANGLE,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLSurface surface,
+                        EGLint* numerator,
+                        EGLint* denominator));
 MOCK_METHOD1(GetNativeClientBufferANDROID,
              EGLClientBuffer(const struct AHardwareBuffer* ahardwarebuffer));
 MOCK_METHOD3(GetNextFrameIdANDROID,
@@ -144,6 +149,7 @@ MOCK_METHOD5(GetSyncValuesCHROMIUM,
                         EGLuint64CHROMIUM* ust,
                         EGLuint64CHROMIUM* msc,
                         EGLuint64CHROMIUM* sbc));
+MOCK_METHOD1(HandleGPUSwitchANGLE, void(EGLDisplay dpy));
 MOCK_METHOD3(ImageFlushExternalEXT,
              EGLBoolean(EGLDisplay dpy,
                         EGLImageKHR image,
@@ -174,7 +180,19 @@ MOCK_METHOD4(QueryContext,
                         EGLint attribute,
                         EGLint* value));
 MOCK_METHOD2(QueryDebugKHR, EGLBoolean(EGLint attribute, EGLAttrib* value));
+MOCK_METHOD3(QueryDeviceAttribEXT,
+             EGLBoolean(EGLDeviceEXT device,
+                        EGLint attribute,
+                        EGLAttrib* value));
+MOCK_METHOD3(QueryDevicesEXT,
+             EGLBoolean(EGLint max_devices,
+                        EGLDeviceEXT* devices,
+                        EGLint* num_devices));
+MOCK_METHOD2(QueryDeviceStringEXT,
+             const char*(EGLDeviceEXT device, EGLint name));
 MOCK_METHOD3(QueryDisplayAttribANGLE,
+             EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
+MOCK_METHOD3(QueryDisplayAttribEXT,
              EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
 MOCK_METHOD4(QueryStreamKHR,
              EGLBoolean(EGLDisplay dpy,
@@ -199,6 +217,8 @@ MOCK_METHOD4(QuerySurfacePointerANGLE,
                         EGLSurface surface,
                         EGLint attribute,
                         void** value));
+MOCK_METHOD2(ReacquireHighPowerGPUANGLE, void(EGLDisplay dpy, EGLContext ctx));
+MOCK_METHOD2(ReleaseHighPowerGPUANGLE, void(EGLDisplay dpy, EGLContext ctx));
 MOCK_METHOD3(ReleaseTexImage,
              EGLBoolean(EGLDisplay dpy, EGLSurface surface, EGLint buffer));
 MOCK_METHOD0(ReleaseThread, EGLBoolean());

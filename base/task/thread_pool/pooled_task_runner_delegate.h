@@ -22,15 +22,17 @@ class BASE_EXPORT PooledTaskRunnerDelegate {
   PooledTaskRunnerDelegate();
   virtual ~PooledTaskRunnerDelegate();
 
-  // Returns true if a PooledTaskRunnerDelegate instance exists in the
-  // process. This is needed in case of unit tests wherein a TaskRunner
-  // outlives the ThreadPoolInstance that created it.
-  static bool Exists();
+  // Returns true if the current PooledTaskRunnerDelegate instance in the
+  // process matches `delegate`. This is needed in case of unit tests wherein
+  // a TaskRunner outlives the ThreadPoolInstance that created it, in which case
+  // the current delegate would be null (and not match) or even have been
+  // re-initialized to a new delegate in a following test.
+  static bool MatchesCurrentDelegate(PooledTaskRunnerDelegate* delegate);
 
-  // Returns true if |task_source| currently running must return ASAP.
+  // Returns true if |task_source| currently running *must* return ASAP.
   // Thread-safe but may return an outdated result (if a task unnecessarily
   // yields due to this, it will simply be re-scheduled).
-  virtual bool ShouldYield(const TaskSource* task_source) const = 0;
+  virtual bool ShouldYield(const TaskSource* task_source) = 0;
 
   // Invoked when a |task| is posted to the PooledParallelTaskRunner or
   // PooledSequencedTaskRunner. The implementation must post |task| to
@@ -56,6 +58,8 @@ class BASE_EXPORT PooledTaskRunnerDelegate {
   // thread group.
   virtual void UpdatePriority(scoped_refptr<TaskSource> task_source,
                               TaskPriority priority) = 0;
+  virtual void UpdateJobPriority(scoped_refptr<TaskSource> task_source,
+                                 TaskPriority priority) = 0;
 };
 
 }  // namespace internal

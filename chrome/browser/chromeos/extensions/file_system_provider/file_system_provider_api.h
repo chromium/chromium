@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
+#include "extensions/browser/extension_function.h"
 
 namespace extensions {
 
@@ -49,14 +49,14 @@ class FileSystemProviderGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderNotifyFunction : public ChromeAsyncExtensionFunction {
+class FileSystemProviderNotifyFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.notify",
                              FILESYSTEMPROVIDER_NOTIFY)
 
  protected:
   ~FileSystemProviderNotifyFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   // Called when notifying is completed.

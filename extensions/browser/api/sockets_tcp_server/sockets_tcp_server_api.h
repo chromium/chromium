@@ -19,9 +19,9 @@ class ResumableTCPServerSocket;
 namespace extensions {
 namespace api {
 
-class TCPServerSocketAsyncApiFunction : public SocketAsyncApiFunction {
+class TCPServerSocketApiFunction : public SocketApiFunction {
  protected:
-  ~TCPServerSocketAsyncApiFunction() override;
+  ~TCPServerSocketApiFunction() override;
 
   std::unique_ptr<SocketResourceManagerInterface> CreateSocketResourceManager()
       override;
@@ -29,7 +29,7 @@ class TCPServerSocketAsyncApiFunction : public SocketAsyncApiFunction {
   ResumableTCPServerSocket* GetTcpSocket(int socket_id);
 };
 
-class SocketsTcpServerCreateFunction : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerCreateFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.create",
                              SOCKETS_TCP_SERVER_CREATE)
@@ -39,16 +39,14 @@ class SocketsTcpServerCreateFunction : public TCPServerSocketAsyncApiFunction {
  protected:
   ~SocketsTcpServerCreateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SocketsTcpServerUnitTest, Create);
-  std::unique_ptr<sockets_tcp_server::Create::Params> params_;
 };
 
-class SocketsTcpServerUpdateFunction : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerUpdateFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.update",
                              SOCKETS_TCP_SERVER_UPDATE)
@@ -58,16 +56,11 @@ class SocketsTcpServerUpdateFunction : public TCPServerSocketAsyncApiFunction {
  protected:
   ~SocketsTcpServerUpdateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::Update::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsTcpServerSetPausedFunction
-    : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerSetPausedFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.setPaused",
                              SOCKETS_TCP_SERVER_SETPAUSED)
@@ -77,16 +70,11 @@ class SocketsTcpServerSetPausedFunction
  protected:
   ~SocketsTcpServerSetPausedFunction() override;
 
-  // AsyncApiFunction
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::SetPaused::Params> params_;
-  TCPServerSocketEventDispatcher* socket_event_dispatcher_;
+  // SocketApiFunction
+  ResponseAction Work() override;
 };
 
-class SocketsTcpServerListenFunction : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerListenFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.listen",
                              SOCKETS_TCP_SERVER_LISTEN)
@@ -96,9 +84,8 @@ class SocketsTcpServerListenFunction : public TCPServerSocketAsyncApiFunction {
  protected:
   ~SocketsTcpServerListenFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 
  private:
   void OnCompleted(int result, const std::string& error_msg);
@@ -107,8 +94,7 @@ class SocketsTcpServerListenFunction : public TCPServerSocketAsyncApiFunction {
   TCPServerSocketEventDispatcher* socket_event_dispatcher_;
 };
 
-class SocketsTcpServerDisconnectFunction
-    : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerDisconnectFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.disconnect",
                              SOCKETS_TCP_SERVER_DISCONNECT)
@@ -118,15 +104,11 @@ class SocketsTcpServerDisconnectFunction
  protected:
   ~SocketsTcpServerDisconnectFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::Disconnect::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsTcpServerCloseFunction : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerCloseFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.close",
                              SOCKETS_TCP_SERVER_CLOSE)
@@ -136,15 +118,11 @@ class SocketsTcpServerCloseFunction : public TCPServerSocketAsyncApiFunction {
  protected:
   ~SocketsTcpServerCloseFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::Close::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsTcpServerGetInfoFunction : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerGetInfoFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.getInfo",
                              SOCKETS_TCP_SERVER_GETINFO)
@@ -154,16 +132,11 @@ class SocketsTcpServerGetInfoFunction : public TCPServerSocketAsyncApiFunction {
  protected:
   ~SocketsTcpServerGetInfoFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<sockets_tcp_server::GetInfo::Params> params_;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
-class SocketsTcpServerGetSocketsFunction
-    : public TCPServerSocketAsyncApiFunction {
+class SocketsTcpServerGetSocketsFunction : public TCPServerSocketApiFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("sockets.tcpServer.getSockets",
                              SOCKETS_TCP_SERVER_GETSOCKETS)
@@ -173,9 +146,8 @@ class SocketsTcpServerGetSocketsFunction
  protected:
   ~SocketsTcpServerGetSocketsFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // SocketApiFunction:
+  ResponseAction Work() override;
 };
 
 }  // namespace api

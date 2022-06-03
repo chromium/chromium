@@ -28,11 +28,11 @@ namespace net {
 
 namespace {
 
-void MatchDomainUserAfterSplit(const base::string16& combined,
-                               const base::string16& expected_domain,
-                               const base::string16& expected_user) {
-  base::string16 actual_domain;
-  base::string16 actual_user;
+void MatchDomainUserAfterSplit(const std::u16string& combined,
+                               const std::u16string& expected_domain,
+                               const std::u16string& expected_user) {
+  std::u16string actual_domain;
+  std::u16string actual_user;
   SplitDomainAndUser(combined, &actual_domain, &actual_user);
   EXPECT_EQ(expected_domain, actual_domain);
   EXPECT_EQ(expected_user, actual_user);
@@ -49,10 +49,8 @@ void UnexpectedCallback(int result) {
 }  // namespace
 
 TEST(HttpAuthSSPITest, SplitUserAndDomain) {
-  MatchDomainUserAfterSplit(STRING16_LITERAL("foobar"), STRING16_LITERAL(""),
-                            STRING16_LITERAL("foobar"));
-  MatchDomainUserAfterSplit(STRING16_LITERAL("FOO\\bar"),
-                            STRING16_LITERAL("FOO"), STRING16_LITERAL("bar"));
+  MatchDomainUserAfterSplit(u"foobar", u"", u"foobar");
+  MatchDomainUserAfterSplit(u"FOO\\bar", u"FOO", u"bar");
 }
 
 TEST(HttpAuthSSPITest, DetermineMaxTokenLength_Normal) {
@@ -215,7 +213,9 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds) {
 
 // Test NetLogs produced while going through a full Negotiate handshake.
 TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
-  RecordingBoundTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource net_log_with_source =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   MockSSPILibrary mock_library{NEGOSSP_NAME};
   HttpAuthSSPI auth_sspi(&mock_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
   std::string first_challenge_text = "Negotiate";
@@ -228,7 +228,7 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
   ASSERT_EQ(OK,
             auth_sspi.GenerateAuthToken(
                 nullptr, "HTTP/intranet.google.com", std::string(), &auth_token,
-                net_log.bound(), base::BindOnce(&UnexpectedCallback)));
+                net_log_with_source, base::BindOnce(&UnexpectedCallback)));
 
   // The token is the ASCII string "Response" in base64.
   std::string second_challenge_text = "Negotiate UmVzcG9uc2U=";
@@ -239,10 +239,10 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
   ASSERT_EQ(OK,
             auth_sspi.GenerateAuthToken(
                 nullptr, "HTTP/intranet.google.com", std::string(), &auth_token,
-                net_log.bound(), base::BindOnce(&UnexpectedCallback)));
+                net_log_with_source, base::BindOnce(&UnexpectedCallback)));
 
-  auto entries =
-      net_log.GetEntriesWithType(NetLogEventType::AUTH_LIBRARY_ACQUIRE_CREDS);
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_LIBRARY_ACQUIRE_CREDS);
   ASSERT_EQ(2u, entries.size());  // BEGIN and END.
   auto expected = base::JSONReader::Read(R"(
     {
@@ -254,9 +254,21 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
   )");
   EXPECT_EQ(expected, entries[1].params);
 
-  entries =
-      net_log.GetEntriesWithType(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX);
+  entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX);
   ASSERT_EQ(4u, entries.size());
+
+  expected = base::JSONReader::Read(R"(
+    {
+       "flags": {
+          "delegated": false,
+          "mutual": false,
+          "value": "0x00000000"
+       },
+       "spn": "HTTP/intranet.google.com"
+    }
+  )");
+  EXPECT_EQ(expected, entries[0].params);
 
   expected = base::JSONReader::Read(R"(
     {

@@ -37,6 +37,7 @@ using absl::base_internal::SpinLock;
 using absl::base_internal::SpinLockHolder;
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 namespace {
 
@@ -193,11 +194,10 @@ RandenPoolEntry* PoolAlignedAlloc() {
   // Not all the platforms that we build for have std::aligned_alloc, however
   // since we never free these objects, we can over allocate and munge the
   // pointers to the correct alignment.
-  void* memory = std::malloc(sizeof(RandenPoolEntry) + kAlignment);
-  auto x = reinterpret_cast<intptr_t>(memory);
+  intptr_t x = reinterpret_cast<intptr_t>(
+      new char[sizeof(RandenPoolEntry) + kAlignment]);
   auto y = x % kAlignment;
-  void* aligned =
-      (y == 0) ? memory : reinterpret_cast<void*>(x + kAlignment - y);
+  void* aligned = reinterpret_cast<void*>(y == 0 ? x : (x + kAlignment - y));
   return new (aligned) RandenPoolEntry();
 }
 
@@ -249,4 +249,5 @@ template class RandenPool<uint32_t>;
 template class RandenPool<uint64_t>;
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

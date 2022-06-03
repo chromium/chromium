@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/overlays/overlay_callback_manager_impl.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 OverlayCallbackManagerImpl::OverlayCallbackManagerImpl() = default;
 
@@ -39,10 +39,12 @@ void OverlayCallbackManagerImpl::AddCompletionCallback(
 void OverlayCallbackManagerImpl::DispatchResponse(
     std::unique_ptr<OverlayResponse> response) {
   DCHECK(response);
-  dispatch_callback_storage_.DispatchResponse(response.get());
+  for (auto& callback : dispatch_callbacks_) {
+    callback.Run(response.get());
+  }
 }
 
-OverlayDispatchCallbackStorage*
-OverlayCallbackManagerImpl::GetDispatchCallbackStorage() {
-  return &dispatch_callback_storage_;
+void OverlayCallbackManagerImpl::AddDispatchCallback(
+    OverlayDispatchCallback callback) {
+  dispatch_callbacks_.emplace_back(std::move(callback));
 }

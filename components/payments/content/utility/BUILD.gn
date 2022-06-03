@@ -39,9 +39,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("payment_method_manifest_fuzzer") {
-  sources = [
-    "payment_method_manifest_parser_fuzzer.cc",
-  ]
+  sources = [ "payment_method_manifest_parser_fuzzer.cc" ]
   deps = [
     ":utility",
     "//base",
@@ -55,9 +53,7 @@ fuzzer_test("payment_method_manifest_fuzzer") {
 }
 
 fuzzer_test("payment_web_app_manifest_fuzzer") {
-  sources = [
-    "payment_web_app_manifest_parser_fuzzer.cc",
-  ]
+  sources = [ "payment_web_app_manifest_parser_fuzzer.cc" ]
   deps = [
     ":utility",
     "//base",
@@ -70,9 +66,7 @@ fuzzer_test("payment_web_app_manifest_fuzzer") {
 }
 
 fuzzer_test("fingerprint_fuzzer") {
-  sources = [
-    "fingerprint_parser_fuzzer.cc",
-  ]
+  sources = [ "fingerprint_parser_fuzzer.cc" ]
   deps = [
     ":utility",
     "//base",

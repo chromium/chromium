@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
@@ -46,8 +45,6 @@ class FakeImageDecoder;
 
 namespace {
 
-const GURL kImageUrl = GURL("http://gstatic.img.com/foo.jpg");
-
 constexpr char kUmaClientName[] = "TestUma";
 constexpr char kImageData[] = "data";
 constexpr char kImageDataOther[] = "other";
@@ -62,6 +59,9 @@ const char kNetworkLoadHistogramName[] =
 class CachedImageFetcherTest : public testing::Test {
  public:
   CachedImageFetcherTest() {}
+
+  CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
+  CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;
 
   ~CachedImageFetcherTest() override {
     cached_image_fetcher_.reset();
@@ -91,11 +91,13 @@ class CachedImageFetcherTest : public testing::Test {
         base::SequencedTaskRunnerHandle::Get());
 
     // Use an initial request to start the cache up.
-    image_cache_->SaveImage(kImageUrl.spec(), kImageData,
-                            /* needs_transcoding */ false);
+    const std::string kImageUrl("http://gstatic.img.com/foo.jpg");
+    image_cache_->SaveImage(kImageUrl, kImageData,
+                            /* needs_transcoding */ false,
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-    image_cache_->DeleteImage(kImageUrl.spec());
+    image_cache_->DeleteImage(kImageUrl);
     RunUntilIdle();
 
     shared_factory_ =
@@ -144,8 +146,6 @@ class CachedImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherTest);
 };
 
 MATCHER(EmptyImage, "") {
@@ -164,8 +164,10 @@ MATCHER(NonEmptyString, "") {
 // that they both can use what's inside.
 TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   // Save the image in the database.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ false);
+                           /* needs_transcoding */ false,
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -188,8 +190,10 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
 
 TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
   // Save the image in the database.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ true);
+                           /* needs_transcoding */ true,
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
 
   base::MockCallback<ImageDataFetcherCallback> data_callback;
@@ -214,8 +218,10 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheNeedsTranscoding) {
 TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
   CreateCachedImageFetcher(/* read_only */ true);
   // Save the image in the database.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ false);
+                           /* needs_transcoding */ false,
+                           /* expiration_interval */ absl::nullopt);
   test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
   RunUntilIdle();
   {
@@ -255,6 +261,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
 
 TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
   // Expect the image to be fetched by URL.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
     test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 
@@ -305,6 +312,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
 TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
   CreateCachedImageFetcher(/* read_only */ true);
   // Expect the image to be fetched by URL.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
     test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 
@@ -338,6 +346,7 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {
 }
 
 TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
     test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
     image_decoder()->SetDecodingValid(false);
@@ -366,8 +375,10 @@ TEST_F(CachedImageFetcherTest, FetchImageWithoutTranscodingDoesNotDecode) {
 
 TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
   // Save the image in the database.
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(kImageUrl.spec(), kImageDataOther,
-                           /* needs_transcoding */ false);
+                           /* needs_transcoding */ false,
+                           /* expiration_interval */ absl::nullopt);
   RunUntilIdle();
   test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
 

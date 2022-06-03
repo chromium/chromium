@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <style>
-div {
+body {
+  margin: 0;
+}
+#scaled {
+  transform-origin: top left;
   transform: scale(0.2);
   width: 150px;
   height: 200px;
@@ -8,12 +12,17 @@ div {
 iframe {
   width: 150px;
   height: 200px;
+  border: 0;
+}
+#spacer {
+  height: 10000px;
 }
 </style>
 <html>
 <body>
-<div>
+<div id=scaled>
 <iframe src="about:blank"></iframe>
 </div>
+<div id=spacer></div>
 </body>
 </html>

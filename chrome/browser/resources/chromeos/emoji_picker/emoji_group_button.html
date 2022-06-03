@@ -1,0 +1,33 @@
+<style>
+  :host {
+    display: flex;
+    height: var(--emoji-size);
+    justify-content: center;
+    scroll-snap-align: none;
+    width: var(--emoji-size);
+  }
+
+  #group-button {
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-icon-size: 20px;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+  }
+
+  #group-button.emoji-group-active {
+    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+  }
+
+</style>
+
+<cr-icon-button
+    id="group-button"
+    iron-icon="[[icon]]"
+    class$="[[_className(active)]]"
+    on-click="handleClick"
+    aria-label="[[name]]"
+    disabled="[[disabled]]"
+    >
+</cr-icon-button>

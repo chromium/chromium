@@ -8,7 +8,7 @@ For more details on the API see:
 https://chromium.googlesource.com/catapult.git/+/HEAD/dashboard/dashboard/api/README.md
 """
 
-import urllib
+import six.moves.urllib.parse  # pylint: disable=import-error
 
 from core.services import request
 
@@ -82,7 +82,8 @@ def Timeseries(test_path, days=30):
     KeyError if the test_path is not found.
   """
   try:
-    return Request('/api/timeseries/%s' % urllib.quote(test_path),
+    return Request('/api/timeseries/%s' %
+                   six.moves.urllib.parse.quote(test_path),
                    params={'num_days': days})
   except request.ClientError as exc:
     if 'Invalid test_path' in exc.json['error']:

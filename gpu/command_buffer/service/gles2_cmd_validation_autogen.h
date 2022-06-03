@@ -152,72 +152,6 @@ class MapBufferAccessValidator {
 };
 MapBufferAccessValidator map_buffer_access;
 
-class MatrixModeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-MatrixModeValidator matrix_mode;
-
-class PathCoordTypeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathCoordTypeValidator path_coord_type;
-
-class PathCoverModeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathCoverModeValidator path_cover_mode;
-
-class PathFillModeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathFillModeValidator path_fill_mode;
-
-class PathFragmentInputGenModeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathFragmentInputGenModeValidator path_fragment_input_gen_mode;
-
-class PathInstancedCoverModeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathInstancedCoverModeValidator path_instanced_cover_mode;
-
-class PathNameTypeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathNameTypeValidator path_name_type;
-
-class PathParameterValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathParameterValidator path_parameter;
-
-class PathParameterCapValuesValidator {
- public:
-  bool IsValid(const GLint value) const;
-};
-PathParameterCapValuesValidator path_parameter_cap_values;
-
-class PathParameterJoinValuesValidator {
- public:
-  bool IsValid(const GLint value) const;
-};
-PathParameterJoinValuesValidator path_parameter_join_values;
-
-class PathTransformTypeValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-PathTransformTypeValidator path_transform_type;
-
 ValueValidator<GLenum> pixel_store;
 class PixelStoreAlignmentValidator {
  public:
@@ -313,6 +247,7 @@ TextureCompareFuncValidator texture_compare_func;
 
 ValueValidator<GLenum> texture_compare_mode;
 ValueValidator<GLenum> texture_depth_renderable_internal_format;
+ValueValidator<GLenum> texture_fbo_target;
 ValueValidator<GLenum> texture_format;
 ValueValidator<GLenum> texture_internal_format;
 ValueValidator<GLenum> texture_internal_format_storage;

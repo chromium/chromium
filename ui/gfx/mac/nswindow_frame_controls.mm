@@ -4,7 +4,8 @@
 
 #import "ui/gfx/mac/nswindow_frame_controls.h"
 
-#import "base/mac/sdk_forward_declarations.h"
+#import <AppKit/AppKit.h>
+
 #include "ui/gfx/geometry/size.h"
 
 namespace {

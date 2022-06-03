@@ -1,6 +1,6 @@
-document
-++group Name='label'
-++group
-++group Name='title'
-++group IsControlElement=false
-++++description Name='description'
+Document
+++Group Name='label'
+++Group
+++Group Name='title'
+++Group IsControlElement=false
+++++Text Name='description'

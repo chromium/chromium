@@ -101,24 +101,18 @@ breakpoints on the un-minified version.
 
 ### Gzip compression of web resources
 
-In certain cases, it might be preferable to leave web resources compressed on
-disk and inflate them when needed (i.e. when a user wants to see a page).
-
-In this case, you can run `gzip --rsyncable` on a resource before it's put into
-a .pak file via GRIT with this syntax:
+As of [r761031](https://chromium.googlesource.com/chromium/src/+/6b83ee683f6c545be29ee807c6d0b6ac1508a549)
+all HTML, JS, CSS and SVG resources are compressed by default with gzip
+Previously this was only happening if the `compress="gzip"` attribute was
+specified as follows in the corresponding .grd file:
 
 ```xml
 <include name="IDR_MY_PAGE" file="my/page.html" type="BINDATA" compress="gzip" />
 ```
 
-Gzip is currently set up to apply to a whole WebUI's data source, though it's
-possible to exclude specific paths for things like dynamically generated content
-(i.e. many pages load translations dynamically from a path named "strings.js").
+This is no longer necessary, and should be omitted. Only specify the `compress`
+attribute if the value is `false` or `brotli`.
 
-To mark a WebUI's resources compressed, you'll need to do something like:
-
-```c++
-WebUIDataSource* data_source = WebUIDataSource::Create(...);
-data_source->SetDefaultResource(IDR_MY_PAGE);
-data_source->UseGzip();  // Optional callback if exclusions are needed.
-```
+Compressed resources are uncompressed at a fairly low layer within
+ResourceBundle, and WebUI authors typically do not need to do anything special
+to serve those files to the UI.

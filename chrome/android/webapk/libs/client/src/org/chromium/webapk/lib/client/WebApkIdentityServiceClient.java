@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.chromium.base.task.TaskTraits;
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 
 /**

@@ -13,15 +13,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
 
 namespace {
-
-static const int kDefaultTimeout = 60000;
 
 bool IsProcessRunning(HANDLE process) {
   DWORD exit_code = 0;
@@ -71,10 +71,9 @@ std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
 }
 
 std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
-  return (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED) ?
-      MakePathToSysWow64(name, is_obj_man_path) :
-      MakePathToSys32(name, is_obj_man_path);
+  return (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
+             ? MakePathToSysWow64(name, is_obj_man_path)
+             : MakePathToSys32(name, is_obj_man_path);
 }
 
 BrokerServices* GetBroker() {
@@ -103,9 +102,9 @@ TestRunner::TestRunner(JobLevel job_level,
       no_sandbox_(false),
       disable_csrss_(true),
       target_process_id_(0) {
-  broker_ = NULL;
+  broker_ = nullptr;
   policy_.reset();
-  timeout_ = kDefaultTimeout;
+  timeout_ = TestTimeouts::test_launcher_timeout();
   state_ = AFTER_REVERT;
   is_async_= false;
   kill_on_destruction_ = true;
@@ -158,8 +157,7 @@ bool TestRunner::AddRuleSys32(TargetPolicy::Semantics semantics,
   if (!AddRule(TargetPolicy::SUBSYS_FILES, semantics, win32_path.c_str()))
     return false;
 
-  if (base::win::OSInfo::GetInstance()->wow64_status() !=
-      base::win::OSInfo::WOW64_ENABLED)
+  if (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     return true;
 
   win32_path = MakePathToSysWow64(pattern, false);
@@ -178,8 +176,7 @@ bool TestRunner::AddFsRule(TargetPolicy::Semantics semantics,
 }
 
 int TestRunner::RunTest(const wchar_t* command) {
-  if (MAX_STATE > 10)
-    return SBOX_TEST_INVALID_PARAMETER;
+  DCHECK_LE(MAX_STATE, 10);
 
   wchar_t state_number[2];
   state_number[0] = static_cast<wchar_t>(L'0' + state_);
@@ -250,10 +247,10 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 
   if (::IsDebuggerPresent()) {
     // Don't kill the target process on a time-out while we are debugging.
-    timeout_ = INFINITE;
+    timeout_ = base::TimeDelta::Max();
   }
 
-  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_)) {
+  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_ms())) {
     ::TerminateProcess(target.hProcess, static_cast<UINT>(SBOX_TEST_TIMED_OUT));
     ::CloseHandle(target.hProcess);
     ::CloseHandle(target.hThread);
@@ -274,7 +271,24 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 }
 
 void TestRunner::SetTimeout(DWORD timeout_ms) {
-  timeout_ = timeout_ms;
+  SetTimeout(timeout_ms == INFINITE ? base::TimeDelta::Max()
+                                    : base::Milliseconds(timeout_ms));
+}
+
+void TestRunner::SetTimeout(base::TimeDelta timeout) {
+  // We do not take -ve timeouts.
+  DCHECK(timeout >= base::TimeDelta());
+  // We need millisecond DWORDS but also cannot take exactly INFINITE,
+  // for that should supply ::Max().
+  DCHECK(timeout.is_inf() || timeout < base::Milliseconds(UINT_MAX));
+  timeout_ = timeout;
+}
+
+DWORD TestRunner::timeout_ms() {
+  if (timeout_.is_inf())
+    return INFINITE;
+  else
+    return static_cast<DWORD>(timeout_.InMilliseconds());
 }
 
 void TestRunner::SetTestState(SboxTestsState desired_state) {

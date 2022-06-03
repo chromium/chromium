@@ -5,7 +5,7 @@
 #include "components/invalidation/impl/invalidation_service_util.h"
 
 #include "base/base64.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/rand_util.h"
 
 namespace invalidation {

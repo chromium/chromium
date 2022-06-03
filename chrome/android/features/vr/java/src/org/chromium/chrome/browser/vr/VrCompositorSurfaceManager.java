@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.vr;
 
+import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.view.Surface;
 import android.view.View;
@@ -75,8 +76,14 @@ public class VrCompositorSurfaceManager implements CompositorSurfaceManager {
 
     @Override
     public void shutDown() {
-        if (mSurfaceState == SurfaceState.PROVIDED) mClient.surfaceDestroyed(mSurface);
+        if (mSurfaceState == SurfaceState.PROVIDED) mClient.surfaceDestroyed(mSurface, true);
         mSurfaceState = SurfaceState.NOT_REQUESTED;
+    }
+
+    @Override
+    public int getFormatOfOwnedSurface() {
+        if (mSurface == null) return PixelFormat.UNKNOWN;
+        return mFormat;
     }
 
     @Override
@@ -96,9 +103,6 @@ public class VrCompositorSurfaceManager implements CompositorSurfaceManager {
 
     @Override
     public void recreateSurface() {}
-
-    @Override
-    public void recreateTranslucentSurfaceForSurfaceControl() {}
 
     @Override
     public void setBackgroundDrawable(Drawable background) {}

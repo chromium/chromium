@@ -1,0 +1,4 @@
+[document web]
+++[section]
+++++[push button] name='visible text'
+++++++[document web] name='visible text'

@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 
@@ -56,6 +54,8 @@ class WindowController {
       const base::ListValue* types);
 
   WindowController(ui::BaseWindow* window, Profile* profile);
+  WindowController(const WindowController&) = delete;
+  WindowController& operator=(const WindowController&) = delete;
   virtual ~WindowController();
 
   ui::BaseWindow* window() const { return window_; }
@@ -89,11 +89,12 @@ class WindowController {
   // Returns true if the window type of the controller matches the |filter|.
   bool MatchesFilter(TypeFilter filter) const;
 
+  // Notifies that a window's bounds are changed.
+  void NotifyWindowBoundsChanged();
+
  private:
   ui::BaseWindow* window_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowController);
 };
 
 }  // namespace extensions

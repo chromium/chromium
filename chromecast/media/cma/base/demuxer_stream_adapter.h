@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_MEDIA_CMA_BASE_DEMUXER_STREAM_ADAPTER_H_
 #define CHROMECAST_MEDIA_CMA_BASE_DEMUXER_STREAM_ADAPTER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -38,20 +36,24 @@ class DemuxerStreamAdapter : public CodedFrameProvider {
       const scoped_refptr<BalancedMediaTaskRunnerFactory>&
           media_task_runner_factory,
       ::media::DemuxerStream* demuxer_stream);
+
+  DemuxerStreamAdapter(const DemuxerStreamAdapter&) = delete;
+  DemuxerStreamAdapter& operator=(const DemuxerStreamAdapter&) = delete;
+
   ~DemuxerStreamAdapter() override;
 
   // CodedFrameProvider implementation.
-  void Read(const ReadCB& read_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
+  void Read(ReadCB read_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
 
  private:
   void ResetMediaTaskRunner();
 
-  void ReadInternal(const ReadCB& read_cb);
-  void RequestBuffer(const ReadCB& read_cb);
+  void ReadInternal(ReadCB read_cb);
+  void RequestBuffer(ReadCB read_cb);
 
   // Callback invoked from the demuxer stream to signal a buffer is ready.
-  void OnNewBuffer(const ReadCB& read_cb,
+  void OnNewBuffer(ReadCB read_cb,
                    ::media::DemuxerStream::Status status,
                    scoped_refptr<::media::DecoderBuffer> input);
 
@@ -77,7 +79,7 @@ class DemuxerStreamAdapter : public CodedFrameProvider {
 
   // In case of a pending flush operation, this is the callback
   // that is invoked when flush is completed.
-  base::Closure flush_cb_;
+  base::OnceClosure flush_cb_;
 
   // Audio/video configuration that applies to the next frame.
   ::media::AudioDecoderConfig audio_config_;
@@ -85,8 +87,6 @@ class DemuxerStreamAdapter : public CodedFrameProvider {
 
   base::WeakPtr<DemuxerStreamAdapter> weak_this_;
   base::WeakPtrFactory<DemuxerStreamAdapter> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapter);
 };
 
 }  // namespace media

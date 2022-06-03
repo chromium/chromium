@@ -6,9 +6,10 @@ package org.chromium.android_webview.test;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 
 import java.util.Locale;
 
@@ -73,8 +73,18 @@ public class AwZoomTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> view.getVisibility());
     }
 
-    private View getZoomControlsOnUiThread() throws Throwable {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getZoomControlsForTest());
+    private View getZoomControlsViewOnUiThread() throws Throwable {
+        return ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getZoomControlsViewForTest());
+    }
+
+    private boolean canZoomInUsingZoomControls() throws Throwable {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.getZoomControlsForTest().canZoomIn());
+    }
+
+    private boolean canZoomOutUsingZoomControls() throws Throwable {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.getZoomControlsForTest().canZoomOut());
     }
 
     private void invokeZoomPickerOnUiThread() {
@@ -195,7 +205,6 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @RetryOnFailure
     public void testZoomControls() throws Throwable {
         AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         webSettings.setUseWideViewPort(true);
@@ -215,15 +224,41 @@ public class AwZoomTest {
 
         // With DisplayZoomControls set to false, attempts to display zoom
         // controls must be ignored.
-        Assert.assertNull(getZoomControlsOnUiThread());
+        Assert.assertNull(getZoomControlsViewOnUiThread());
         invokeZoomPickerOnUiThread();
-        Assert.assertNull(getZoomControlsOnUiThread());
+        Assert.assertNull(getZoomControlsViewOnUiThread());
 
         webSettings.setDisplayZoomControls(true);
-        Assert.assertNull(getZoomControlsOnUiThread());
+        Assert.assertNull(getZoomControlsViewOnUiThread());
         invokeZoomPickerOnUiThread();
-        View zoomControls = getZoomControlsOnUiThread();
+        View zoomControls = getZoomControlsViewOnUiThread();
         Assert.assertEquals(View.VISIBLE, getVisibilityOnUiThread(zoomControls));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testZoomControlsUiIsUpdatedOnChanges() throws Throwable {
+        AwSettings webSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        webSettings.setDisplayZoomControls(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setUseWideViewPort(true);
+        Assert.assertFalse(canZoomInUsingZoomControls());
+        Assert.assertFalse(canZoomOutUsingZoomControls());
+        final float pageMinimumScale = 0.5f;
+        mActivityTestRule.loadDataSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                getZoomableHtml(pageMinimumScale), "text/html", false);
+        waitForScaleToBecome(pageMinimumScale);
+        Assert.assertTrue(canZoomInUsingZoomControls());
+        Assert.assertFalse(canZoomOutUsingZoomControls());
+
+        zoomInOnUiThreadAndWait();
+        Assert.assertTrue(canZoomInUsingZoomControls());
+        Assert.assertTrue(canZoomOutUsingZoomControls());
+
+        zoomOutOnUiThreadAndWait();
+        Assert.assertTrue(canZoomInUsingZoomControls());
+        Assert.assertFalse(canZoomOutUsingZoomControls());
     }
 
     @Test
@@ -240,9 +275,9 @@ public class AwZoomTest {
         Assert.assertTrue(webSettings.supportZoom());
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(true);
-        Assert.assertNull(getZoomControlsOnUiThread());
+        Assert.assertNull(getZoomControlsViewOnUiThread());
         invokeZoomPickerOnUiThread();
-        View zoomControls = getZoomControlsOnUiThread();
+        View zoomControls = getZoomControlsViewOnUiThread();
         Assert.assertEquals(View.GONE, getVisibilityOnUiThread(zoomControls));
     }
 

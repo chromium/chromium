@@ -11,7 +11,7 @@
 registration requests on a page, you might need to disable or significantly
 increase that limit for the tests below to run.</p>
 
-<script type='text/javascript'>
+<script>
 test(() => {
   assert_idl_attribute(navigator, 'registerProtocolHandler');
 }, 'the registerProtocolHandler method should exist on the navigator object');
@@ -21,8 +21,13 @@ test(() => {
 }, 'the unregisterProtocolHandler method should exist on the navigator object');
 
 /* URL argument */
-const valid_urls = [
+[
   '%s',
+  'foo/%s',
+  `%s${location.href}`,
+  location.href.replace(location.protocol,
+    `${location.protocol[0]}%s${location.protocol.substring(1)}`),
+  location.href.replace(location.protocol, `${location.protocol}%s`),
   location.href + '/%s',
   location.href + '#%s',
   location.href + '?foo=%s',
@@ -30,8 +35,7 @@ const valid_urls = [
   location.href + '/%s/bar/baz/',
   location.href + '/%s/bar/baz/?foo=1337&bar#baz',
   location.href + '/%s/foo/%s/',
-];
-for (const url of valid_urls) {
+].forEach(url => {
   test(() => {
     navigator.registerProtocolHandler('tel', url, 'foo');
   }, 'registerProtocolHandler: Valid URL "' + url + '" should work.');
@@ -39,52 +43,60 @@ for (const url of valid_urls) {
   test(() => {
     navigator.unregisterProtocolHandler('tel', url);
   }, 'unregisterProtocolHandler: Valid URL "' + url + '" should work.');
-}
+});
 
-const invalid_urls1 = [
+/* Invalid URLs */
+[
   '',
   '%S',
+  'http://%s.com',
+  'http://%s.example.com',
+  location.href.replace(location.hostname, `%s${location.hostname}`),
+  location.href.replace(location.port, `%s${location.port}`),
   location.href + '',
   location.href + '/%',
   location.href + '/%a',
   'http://example.com',
   'http://[v8.:::]//url=%s',
-];
-
-for (const url of invalid_urls1) {
+  'https://test:test/',
+].forEach(url => {
   test(() => {
-    assert_throws('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
-  }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
+    assert_throws_dom('SYNTAX_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('x', url, 'foo'); });
+  }, `registerProtocolHandler: Invalid URL "${url}" should throw (but after scheme)`);
 
   test(() => {
-    assert_throws('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
-  }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SYNTAX_ERR.');
-}
+    assert_throws_dom('SYNTAX_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('x', url, 'foo'); });
+  }, `unregisterProtocolHandler: Invalid URL "${url}" should throw (but after scheme)`);
+});
 
-const invalid_urls2 = [
-  'http://%s.com',
-  'http://%s.example.com',
+[
   'http://example.com/%s',
   'https://example.com/%s',
   'http://foobar.example.com/%s',
   'mailto:%s@example.com',
   'mailto:%s',
-];
-for (const url of invalid_urls2) {
+  `ftp://${location.host}/%s`,
+  `chrome://${location.host}/%s`,
+  `foo://${location.host}/%s`,
+  URL.createObjectURL(new Blob()) + "#%s",
+].forEach(url => {
+  const title = url.startsWith("blob:") ? "blob: URL" : url;
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
-  }, 'registerProtocolHandler: Invalid URL "' + url + '" should throw SECURITY_ERR.');
+    assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler('mailto', url, 'foo'); });
+  }, `registerProtocolHandler: Invalid URL "${title}" should throw SECURITY_ERR.`);
 
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
-  }, 'unregisterProtocolHandler: Invalid URL "' + url + '" should throw SECURITY_ERR.');
-}
+    assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler('mailto', url); });
+  }, `unregisterProtocolHandler: Invalid URL "${title}" should throw SECURITY_ERR.`);
+});
 
 /* Protocol argument */
 
 /* Overriding any of the following protocols must never be allowed. That would
  * break the browser. */
-const denylist = [
+[
   'about',
   'attachment',
   'blob',
@@ -99,6 +111,7 @@ const denylist = [
   'livescript',
   'mid',
   'mocha',
+  'moz-icon',
   'opera',
   'operamail',
   'res',
@@ -110,9 +123,9 @@ const denylist = [
   'ws',
   'wss',
   'wyciwyg',
-  /*other invalid schemes*/
+  /* other invalid schemes */
   'unrecognized',
-  'mаilto', /*a cyrillic "а"*/
+  'mаilto', /* a cyrillic "а" */
   'mailto:',
   'mailto://',
   'mailto' + String.fromCharCode(0),
@@ -122,23 +135,38 @@ const denylist = [
   'ssh:/',
   'magnet:+',
   'tel:sip',
+  'foo',
+  'fweb+oo',
+  /* web+ prefixed schemes must be followed by 1+ ascii alphas */
   'web+',
-];
-for (const scheme of denylist) {
+  'web+1',
+  'web+namewithid123',
+  'web+namewithtrailingspace ',
+  'web+préfixewithaccent',     // é is not ascii alpha
+  'web+Kelvinsign',            // ASCII-lower KELVIN SIGN is not k
+  'web+latinsmallletterlongſ', // ASCII-lower LATIN SMALL LETTER LONG S is not s
+  'web+dots.are.forbidden',
+  'web+dashes-are-forbidden',
+  'web+underscores_are_forbidden',
+  'web+spaces are forbidden',
+  'web+non*alpha*are*forbidden',
+  'web+digits123areforbidden',
+].forEach(scheme => {
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.registerProtocolHandler(scheme, location.href + '/%s', 'foo'); });
+    // https://test:test/ does not parse and does not contain %s, but the scheme check happens first
+    assert_throws_dom('SECURITY_ERR', () => { navigator.registerProtocolHandler(scheme, 'https://test:test/', 'foo'); });
   }, 'registerProtocolHandler: Attempting to override the "' + scheme + '" protocol should throw SECURITY_ERR.');
 
   test(() => {
-    assert_throws('SECURITY_ERR', () => { navigator.unregisterProtocolHandler(scheme, location.href + '/%s'); });
+    assert_throws_dom('SECURITY_ERR', () => { navigator.unregisterProtocolHandler(scheme, 'https://test:test/'); });
   }, 'unregisterProtocolHandler: Attempting to override the "' + scheme + '" protocol should throw SECURITY_ERR.');
-}
+});
 
 /* The following protocols must be possible to override.
  * We're just testing that the call goes through here. Whether or not they
  * actually work as handlers is covered by the interactive tests. */
 
-const safelist = [
+[
   /* safelisted schemes listed in
    * https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme */
   'bitcoin',
@@ -148,6 +176,7 @@ const safelist = [
   'ircs',
   'magnet',
   'mailto',
+  'matrix',
   'mms',
   'news',
   'nntp',
@@ -161,18 +190,22 @@ const safelist = [
   'webcal',
   'wtai',
   'xmpp',
-  /*other valid schemes*/
+  /* other valid schemes */
   'BitcoIn',
   'Irc',
   'MagneT',
+  'Matrix',
   'SmsTo',
   'TEL',
   'teL',
   'WebCAL',
   'WTAI',
   'web+myprotocol',
-];
-for (const scheme of safelist) {
+  'web+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', // all alphas
+  'web+UpperCasedIsLowercased',
+  'WEB+seeabove',
+  'WeB+SeEaBoVe'
+].forEach(scheme => {
   test(() => {
     navigator.registerProtocolHandler(scheme, location.href + '/%s', "foo");
   }, 'registerProtocolHandler: overriding the "' + scheme + '" protocol should work');
@@ -180,5 +213,5 @@ for (const scheme of safelist) {
   test(() => {
     navigator.unregisterProtocolHandler(scheme, location.href + '/%s');
   }, 'unregisterProtocolHandler: overriding the "' + scheme + '" protocol should work');
-}
+});
 </script>

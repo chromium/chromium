@@ -1,0 +1,159 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<div><div>Line 2</div></div></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1</span></div></blockquote><div><span><div><div>Line 2',
+                '</div></div></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by nested divs');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<div>Line 2</div></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1</span></div></blockquote><div><span><div>Line 2',
+                '</div></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by div');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/>Line 2</span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>Line 2',
+                '</span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<div><i>Line 2</i></div></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1</span></div></blockquote><div><span><div><i>Line 2',
+                '</i></div></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by div and inline elements');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><i>Line 2</i></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span><i>Line 2',
+                '</i></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and inline elements');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><input value="text"></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<input value="text"></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and input element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><textarea></textarea></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<textarea></textarea></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and textarea element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>Line|<span> 1<br/><i><textarea></textarea></i></span></div>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+                '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<div>Line|<span> 1<br></span></div></blockquote><div><span>',
+                '<i><textarea></textarea></i></span></div>',
+        '</div>',
+    ],
+    'Indent content enclosed inside inline separated by br and textarea element wrapped inside inline');
+
+// The below test is from a clusterfuzz test and the expected result is not accurate, but it avoids the crash.
+// Perhaps we should modify/rewrite the indent command to properly handle this weird selection cases.
+selection_test(
+    [
+        '<pre contenteditable>',
+            '^hello',
+            '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">',
+            '<foreignObject x="20" y="20" width="80" height="80">',
+            'Test|',
+            '</foreignObject>',
+            '</svg>',
+        '</pre>',
+    ],
+    'indent',
+    [
+    '<pre contenteditable>',
+            '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">^hello',
+            '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">',
+            '<foreignobject height="80" width="80" x="20" y="20">Test|</foreignobject>',
+            '</svg></blockquote>',
+        '</pre>',
+    ],
+    'Indent content spanning across different selection contexts');
+
+</script>

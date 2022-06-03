@@ -19,13 +19,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using extensions::Extension;
 
 namespace browser_sync {
 
 namespace {
+
+using extensions::Extension;
+
+using ::testing::Contains;
+using ::testing::Key;
 
 namespace keys = extensions::manifest_keys;
 
@@ -36,11 +40,12 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
   path = path.AppendASCII(name);
 
   base::DictionaryValue value;
+  value.SetInteger(keys::kManifestVersion, 2);
   value.SetString(keys::kVersion, "1.0.0.0");
   value.SetString(keys::kName, name);
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
-      path, extensions::Manifest::INVALID_LOCATION, value,
+      path, extensions::mojom::ManifestLocation::kInvalidLocation, value,
       Extension::NO_FLAGS, &error));
   EXPECT_TRUE(error.empty());
   return extension;
@@ -49,10 +54,14 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
 // Fire a bookmarks API event from the given extension the given
 // number of times.
 template <class T>
-void FireBookmarksApiEvent(
-    const scoped_refptr<Extension>& extension, int repeats) {
-  scoped_refptr<T> bookmarks_function(new T());
-  bookmarks_function->set_name(T::function_name());
+void FireBookmarksApiEvent(const scoped_refptr<Extension>& extension,
+                           int repeats) {
+  scoped_refptr<extensions::BookmarksFunction> bookmarks_function(new T());
+  bookmarks_function->set_histogram_value(T::static_histogram_value());
+  bookmarks_function->SetName(T::static_function_name());
+  // |bookmarks_function| won't be run, just passed to Notify(), so calling
+  // ignore_did_respond_for_testing() is needed to avoid a DCHECK failure.
+  bookmarks_function->ignore_did_respond_for_testing();
   for (int i = 0; i < repeats; i++) {
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
@@ -83,14 +92,11 @@ class SyncChromeExtensionsActivityMonitorTest : public testing::Test {
   const std::string& id2_;
 };
 
-// NOTE: The tests below are DISABLED because they're flaky:
-// https://code.google.com/p/chromium/issues/detail?id=172002
-
 // Fire some mutating bookmark API events with extension 1, then fire
 // some mutating and non-mutating bookmark API events with extension
 // 2.  Only the mutating events should be recorded by the
 // syncer::ExtensionsActivityMonitor.
-TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Basic) {
+TEST_F(SyncChromeExtensionsActivityMonitorTest, Basic) {
   FireBookmarksApiEvent<extensions::BookmarksRemoveFunction>(extension1_, 1);
   FireBookmarksApiEvent<extensions::BookmarksMoveFunction>(extension1_, 1);
   FireBookmarksApiEvent<extensions::BookmarksUpdateFunction>(extension1_, 2);
@@ -98,12 +104,12 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Basic) {
   FireBookmarksApiEvent<extensions::BookmarksSearchFunction>(extension1_, 5);
   const uint32_t writes_by_extension1 = 1 + 1 + 2 + 3;
 
-  FireBookmarksApiEvent<extensions::BookmarksRemoveTreeFunction>(
-      extension2_, 8);
-  FireBookmarksApiEvent<extensions::BookmarksGetSubTreeFunction>(
-      extension2_, 13);
-  FireBookmarksApiEvent<extensions::BookmarksGetChildrenFunction>(
-      extension2_, 21);
+  FireBookmarksApiEvent<extensions::BookmarksRemoveTreeFunction>(extension2_,
+                                                                 8);
+  FireBookmarksApiEvent<extensions::BookmarksGetSubTreeFunction>(extension2_,
+                                                                 13);
+  FireBookmarksApiEvent<extensions::BookmarksGetChildrenFunction>(extension2_,
+                                                                  21);
   FireBookmarksApiEvent<extensions::BookmarksGetTreeFunction>(extension2_, 33);
   const uint32_t writes_by_extension2 = 8;
 
@@ -111,8 +117,8 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Basic) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(2U, results.size());
-  EXPECT_TRUE(results.find(id1_) != results.end());
-  EXPECT_TRUE(results.find(id2_) != results.end());
+  EXPECT_THAT(results, Contains(Key(id1_)));
+  EXPECT_THAT(results, Contains(Key(id2_)));
   EXPECT_EQ(writes_by_extension1, results[id1_].bookmark_write_count);
   EXPECT_EQ(writes_by_extension2, results[id2_].bookmark_write_count);
 }
@@ -121,7 +127,7 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Basic) {
 // get the records, fire some more mutating and non-mutating events,
 // and put the old records back.  Those should be merged with the new
 // records correctly.
-TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Put) {
+TEST_F(SyncChromeExtensionsActivityMonitorTest, Put) {
   FireBookmarksApiEvent<extensions::BookmarksCreateFunction>(extension1_, 5);
   FireBookmarksApiEvent<extensions::BookmarksMoveFunction>(extension2_, 8);
 
@@ -151,7 +157,7 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_Put) {
 // Fire some mutating bookmark API events and get the records multiple
 // times.  The mintor should correctly clear its records every time
 // they're returned.
-TEST_F(SyncChromeExtensionsActivityMonitorTest, DISABLED_MultiGet) {
+TEST_F(SyncChromeExtensionsActivityMonitorTest, MultiGet) {
   FireBookmarksApiEvent<extensions::BookmarksCreateFunction>(extension1_, 5);
 
   syncer::ExtensionsActivity::Records results;

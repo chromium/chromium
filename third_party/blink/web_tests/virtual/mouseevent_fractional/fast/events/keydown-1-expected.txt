@@ -1,5 +1,0 @@
-This tests that keydown events aren't sent to the main frame for command key presses that occur when a subframe is first responder. To run it manually, click inside the subframe, type a few characters, then do Command-A to Select All. Only the subframe should report a keydown event.
-
-keydown in subframe: [object KeyboardEvent]
-keydown in subframe: [object KeyboardEvent]
-This sentence should not end with a period

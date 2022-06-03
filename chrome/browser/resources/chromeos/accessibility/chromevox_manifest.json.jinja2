@@ -1,0 +1,76 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "__MSG_CHROMEVOX_NAME__",
+  "version": "{{set_version}}",
+  "description": "__MSG_CHROMEVOX_DESCRIPTION__",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "page": "chromevox/background/background.html"
+  },
+  "bluetooth": {},
+  "permissions": [
+    "accessibilityPrivate",
+    "audio",
+    "bluetoothPrivate",
+    "brailleDisplayPrivate",
+    "clipboardRead",
+    "chromeosInfoPrivate",
+    "commandLinePrivate",
+    "downloads",
+    "loginState",
+    "metricsPrivate",
+    "notifications",
+    "settingsPrivate",
+    "storage",
+    "tabs",
+    "tts",
+    "virtualKeyboardPrivate",
+    "chrome://resources/",
+    "https://docs.google.com/*",
+    "https://docs.sandbox.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://docs.google.com/*",
+        "https://docs.sandbox.google.com/*"
+      ],
+      "all_frames": true,
+      "js": [
+{% if is_js_compressed == '1' %}
+        "chromevox/chromeVoxChromePageScript.js"
+{% else %}
+        "chromevox/closure/closure_preinit.js",
+        "chromevox/closure/base.js",
+        "chromevox/deps.js",
+        "chromevox/injected/loader.js"
+{% endif %}
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    "chromevox/injected/api.js"
+  ],
+  "automation": {
+    "desktop": true
+  },
+  "options_page": "chromevox/options/options.html",
+  "default_locale": "en",
+  "icons": {
+    "16": "chromevox/images/chromevox-16.png",
+    "48": "chromevox/images/chromevox-48.png",
+    "128": "chromevox/images/chromevox-128.png"
+  },
+  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources;",
+  "externally_connectable": {
+    "ids": [
+      // Braille IME.
+      "jddehjeebkoimngcbdkaahpobgicbffp"
+    ]
+  }
+}

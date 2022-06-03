@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+const htmlTemplate = html`{__html_template__}`;
+
 /**
  * A button used inside PanelItem with varying display characteristics.
  */
-class PanelButton extends HTMLElement {
+export class PanelButton extends HTMLElement {
   constructor() {
     super();
     this.createElement_();
@@ -16,68 +20,8 @@ class PanelButton extends HTMLElement {
    * @private
    */
   createElement_() {
-    const template = document.createElement('template');
-    template.innerHTML = PanelButton.html_();
-    const fragment = template.content.cloneNode(true);
+    const fragment = htmlTemplate.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
-  }
-
-  /**
-   * Get the custom element template string.
-   * @private
-   * @return {string}
-   */
-  static html_() {
-    return `<style>
-              cr-icon-button, cr-button {
-                margin-inline-start: 0px;
-              }
-
-              @keyframes setcollapse {
-                from {
-                  transform: rotate(0deg);
-                }
-                to {
-                  transform: rotate(180deg);
-                }
-              }
-
-              @keyframes setexpand {
-                from {
-                  transform: rotate(-180deg);
-                }
-                to {
-                  transform: rotate(0deg);
-                }
-              }
-
-              :host([data-category='expand']) {
-                  animation: setexpand 200ms forwards;
-              }
-
-              :host([data-category='collapse']) {
-                  animation: setcollapse 200ms forwards;
-              }
-
-              :host {
-                flex-shrink: 0;
-                position: relative;
-              }
-
-              :host(:not([data-category='dismiss'])) {
-                width: 36px;
-              }
-
-              :host([data-category='dismiss']) #icon {
-                display: none;
-              }
-
-              :host(:not([data-category='dismiss'])) #dismiss {
-                display: none;
-              }
-            </style>
-            <cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
-            <cr-icon-button id='icon'></cr-icon-button>`;
   }
 
   /**
@@ -118,3 +62,5 @@ class PanelButton extends HTMLElement {
 }
 
 window.customElements.define('xf-button', PanelButton);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js

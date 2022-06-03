@@ -44,6 +44,8 @@ class PLATFORM_EXPORT ContentType {
   const String& Raw() const { return type_; }
 
  private:
+  void ParseParameters(Vector<String>& result) const;
+
   String type_;
 };
 

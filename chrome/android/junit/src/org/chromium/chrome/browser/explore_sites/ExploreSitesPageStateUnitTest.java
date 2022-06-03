@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.explore_sites;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;

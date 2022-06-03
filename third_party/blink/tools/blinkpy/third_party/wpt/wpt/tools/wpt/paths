@@ -1,7 +1,0 @@
-tools/ci/
-tools/docker/
-tools/lint/
-tools/manifest/
-tools/serve/
-tools/taskcluster/
-tools/wpt/

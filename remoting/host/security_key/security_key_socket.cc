@@ -4,10 +4,11 @@
 
 #include "remoting/host/security_key/security_key_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -29,12 +30,12 @@ const char kSshError[] = {0x05};
 
 SecurityKeySocket::SecurityKeySocket(std::unique_ptr<net::StreamSocket> socket,
                                      base::TimeDelta timeout,
-                                     const base::Closure& timeout_callback)
+                                     base::OnceClosure timeout_callback)
     : socket_(std::move(socket)),
       read_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
           kRequestReadBufferLength)) {
-  timer_.reset(new base::OneShotTimer());
-  timer_->Start(FROM_HERE, timeout, timeout_callback);
+  timer_ = std::make_unique<base::OneShotTimer>();
+  timer_->Start(FROM_HERE, timeout, std::move(timeout_callback));
 }
 
 SecurityKeySocket::~SecurityKeySocket() {
@@ -78,12 +79,12 @@ void SecurityKeySocket::SendSshError() {
 }
 
 void SecurityKeySocket::StartReadingRequest(
-    const base::Closure& request_received_callback) {
+    base::OnceClosure request_received_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(request_received_callback_.is_null());
+  DCHECK(!request_received_callback_);
 
   waiting_for_request_ = true;
-  request_received_callback_ = request_received_callback;
+  request_received_callback_ = std::move(request_received_callback);
 
   DoRead();
 }
@@ -113,7 +114,7 @@ void SecurityKeySocket::DoWrite() {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("security_key_socket", R"(
         semantics {
-          sender: "Security Key Socket"
+          sender: "Chrome Remote Desktop"
           description:
             "This request performs the communication between processes when "
             "handling security key (gnubby) authentication."
@@ -135,7 +136,7 @@ void SecurityKeySocket::DoWrite() {
         })");
   int result = socket_->Write(
       write_buffer_.get(), write_buffer_->BytesRemaining(),
-      base::Bind(&SecurityKeySocket::OnDataWritten, base::Unretained(this)),
+      base::BindOnce(&SecurityKeySocket::OnDataWritten, base::Unretained(this)),
       traffic_annotation);
   if (result != net::ERR_IO_PENDING) {
     OnDataWritten(result);
@@ -176,7 +177,7 @@ void SecurityKeySocket::DoRead() {
 
   int result = socket_->Read(
       read_buffer_.get(), kRequestReadBufferLength,
-      base::Bind(&SecurityKeySocket::OnDataRead, base::Unretained(this)));
+      base::BindOnce(&SecurityKeySocket::OnDataRead, base::Unretained(this)));
   if (result != net::ERR_IO_PENDING) {
     OnDataRead(result);
   }

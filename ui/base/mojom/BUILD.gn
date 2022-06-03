@@ -7,30 +7,51 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
   sources = [
-    "cursor.mojom",
     "ui_base_types.mojom",
     "window_open_disposition.mojom",
   ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//skia/public/mojom",
-    "//ui/gfx/geometry/mojom",
-    "//url/mojom:url_mojom_gurl",
-  ]
-}
+  if (is_mac) {
+    sources += [ "attributed_string.mojom" ]
+    public_deps = [
+      "//mojo/public/mojom/base",
+      "//ui/gfx/range/mojom",
+    ]
+  }
 
-source_set("unittests") {
-  testonly = true
-  sources = [
-    "cursor_mojom_traits_unittest.cc",
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ui.mojom.DialogButton"
+          cpp = "::ui::DialogButton"
+        },
+        {
+          mojom = "ui.mojom.MenuSourceType"
+          cpp = "::ui::MenuSourceType"
+        },
+        {
+          mojom = "ui.mojom.ModalType"
+          cpp = "::ui::ModalType"
+        },
+      ]
+      traits_headers = [ "ui_base_types_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "ui.mojom.WindowOpenDisposition"
+          cpp = "::WindowOpenDisposition"
+        },
+      ]
+      traits_headers = [ "window_open_disposition_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/base" ]
+    },
   ]
-  deps = [
-    ":mojom",
-    "//skia/public/mojom",
-    "//testing/gtest",
-    "//ui/base",
-    "//ui/events",
-    "//ui/gfx/geometry/mojom:mojom_traits",
-  ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+  webui_module_path = "chrome://resources/mojo/ui/base/mojom"
 }

@@ -34,8 +34,6 @@ SVGResource* CSSURIValue::EnsureResourceReference() const {
 }
 
 void CSSURIValue::ReResolveUrl(const Document& document) const {
-  if (is_local_)
-    return;
   KURL url = document.CompleteURL(relative_url_);
   AtomicString url_string(url.GetString());
   if (url_string == absolute_url_)
@@ -49,8 +47,8 @@ String CSSURIValue::CustomCSSText() const {
 }
 
 AtomicString CSSURIValue::FragmentIdentifier() const {
-  if (is_local_)
-    return AtomicString(relative_url_.GetString().Substring(1));
+  // Always use KURL's FragmentIdentifier to ensure that we're handling the
+  // fragment in a consistent manner.
   return AtomicString(AbsoluteUrl().FragmentIdentifier());
 }
 
@@ -83,7 +81,7 @@ CSSURIValue* CSSURIValue::ValueWithURLMadeAbsolute(
       AtomicString(KURL(base_url, relative_url_, charset).GetString()));
 }
 
-void CSSURIValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSURIValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(resource_);
   CSSValue::TraceAfterDispatch(visitor);
 }

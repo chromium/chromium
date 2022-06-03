@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_QUEUED_DISPLAY_CHANGE_H_
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 

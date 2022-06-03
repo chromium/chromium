@@ -1,0 +1,17 @@
+<!--
+@AURALINUX-ALLOW:focus*
+@AURALINUX-ALLOW:hidden*
+@AURALINUX-ALLOW:showing
+@AURALINUX-ALLOW:visible
+-->
+<html>
+<body>
+<div aria-hidden="true">
+  <input id="input1" aria-label="input 1">
+  <input id="input2" aria-label="input 2">
+</div>
+<script>
+  document.getElementById("input2").focus();
+</script>
+</body>
+</html>

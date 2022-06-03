@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 21: Uncaught TypeError: host.createShadowRoot is not a function
-Tests to ensure ShadowRoot.getElementById works even if a ShadowRoot is orphan.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

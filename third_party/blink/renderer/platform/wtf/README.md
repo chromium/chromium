@@ -84,22 +84,21 @@ but it moved to Source/WTF/wtf in 2011-2012, then to Source/wtf in 2013.
 Blink forked WebKit in 2013. In 2017, the directory finally [moved to the
 current location][4] platform/wtf.
 
-[the directory listing]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/
-[base]: https://cs.chromium.org/chromium/src/base/
-[Vector]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/vector.h
-[HashSet]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/hash_set.h
-[HashMap]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/hash_map.h
-[Deque]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/deque.h
-[String]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/wtf_string.h
-[AtomicString]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/atomic_string.h
-[StringBuilder]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/string_builder.h
-[RefCounted]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/ref_counted.h
-[allocator.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/allocator.h
-[functional.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/functional.h
-[threading.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/threading.h
-[threading_primitives.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/threading_primitives.h
-[build_config.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/build_config.h
-[std_lib_extras.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/std_lib_extras.h
+[the directory listing]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/
+[base]: https://source.chromium.org/chromium/chromium/src/+/master:base/
+[Vector]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/vector.h
+[HashSet]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/hash_set.h
+[HashMap]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/hash_map.h
+[Deque]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/deque.h
+[String]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/text/wtf_string.h
+[AtomicString]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/text/atomic_string.h
+[StringBuilder]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/text/string_builder.h
+[RefCounted]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/ref_counted.h
+[allocator.h]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/allocator/allocator.h
+[functional.h]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/functional.h
+[threading.h]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/threading.h
+[threading_primitives.h]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/threading_primitives.h
+[std_lib_extras.h]: https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/platform/wtf/std_lib_extras.h
 [1]: https://chromium.googlesource.com/chromium/src/+/e372c152fc6e57743ebc508fe17f6eb131b4ff8d
 [2]: https://chromium.googlesource.com/chromium/src/+/547a6ca360a56fbee3d5ea4a71ba18f91622455c
 [3]: https://chromium.googlesource.com/chromium/src/+/478890427ee03fd88e6f0f58ee8220512044bed9/third_party/WebKit/WebCore/kwq/KWQAssertions.h

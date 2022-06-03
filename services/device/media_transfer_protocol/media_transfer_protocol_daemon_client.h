@@ -19,10 +19,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/public/mojom/mtp_file_entry.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Only used on ChromeOS"
 #endif
 
@@ -90,6 +91,11 @@ class MediaTransferProtocolDaemonClient {
   using MTPStorageEventHandler =
       base::RepeatingCallback<void(bool is_attach,
                                    const std::string& storage_name)>;
+
+  MediaTransferProtocolDaemonClient(const MediaTransferProtocolDaemonClient&) =
+      delete;
+  MediaTransferProtocolDaemonClient& operator=(
+      const MediaTransferProtocolDaemonClient&) = delete;
 
   virtual ~MediaTransferProtocolDaemonClient();
 
@@ -205,9 +211,6 @@ class MediaTransferProtocolDaemonClient {
  protected:
   // Create() should be used instead.
   MediaTransferProtocolDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaTransferProtocolDaemonClient);
 };
 
 }  // namespace device

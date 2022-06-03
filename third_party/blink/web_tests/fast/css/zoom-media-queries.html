@@ -4,7 +4,7 @@
 </style>
 <script src="../../resources/js-test.js"></script>
 <script>
-    if (!window.eventSender) {
+    if (!window.testRunner) {
         document.write("This test does not work in manual mode.");
     } else {
         if (window.testRunner)
@@ -24,8 +24,8 @@
         var maxZoomLevel = 20;
         var zoomLevel = 0;
         while (zoomLevel < maxZoomLevel) {
-            debug("eventSender.zoomPageIn()");
-            eventSender.zoomPageIn();
+            debug("testRunner.zoomPageIn()");
+            testRunner.zoomPageIn();
             zoomLevel++;
 
             if (matchMedia("(max-width: 300px)").matches)
@@ -47,8 +47,8 @@
         // As soon as we zoom back out, both should stop matching
         // and continue to not match.
         while (zoomLevel > 0) {
-            debug("eventSender.zoomPageOut()");
-            eventSender.zoomPageOut();
+            debug("testRunner.zoomPageOut()");
+            testRunner.zoomPageOut();
             zoomLevel--;
 
             shouldBeFalse(

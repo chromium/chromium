@@ -14,11 +14,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Manages Journey related signals, specifically those related to tab engagement.
  */
-public class JourneyManager implements Destroyable {
+public class JourneyManager implements DestroyObserver {
     @VisibleForTesting
     static final String PREFS_FILE = "last_engagement_for_tab_id_pref";
 
@@ -111,7 +111,9 @@ public class JourneyManager implements Destroyable {
 
             @Override
             public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame() || navigationHandle.isSameDocument()) return;
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                    return;
+                }
 
                 mDidFirstPaintPerTab.put(tab.getId(), false);
             }
@@ -174,7 +176,7 @@ public class JourneyManager implements Destroyable {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mTabModelSelectorTabObserver.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);

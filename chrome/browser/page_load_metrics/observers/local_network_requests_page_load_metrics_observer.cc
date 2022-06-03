@@ -359,7 +359,7 @@ LocalNetworkRequestsPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   // what we have now and treat changes to this navigation as new page loads.
   if (GetDelegate().DidCommit()) {
     RecordHistograms();
-    RecordUkmMetrics(GetDelegate().GetSourceId());
+    RecordUkmMetrics(GetDelegate().GetPageUkmSourceId());
     ClearLocalState();
   }
 
@@ -401,7 +401,7 @@ void LocalNetworkRequestsPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (GetDelegate().DidCommit()) {
     RecordHistograms();
-    RecordUkmMetrics(GetDelegate().GetSourceId());
+    RecordUkmMetrics(GetDelegate().GetPageUkmSourceId());
   }
 }
 

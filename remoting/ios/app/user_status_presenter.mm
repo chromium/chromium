@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/app/user_status_presenter.h"
 
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
-
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface UserStatusPresenter () {
   BOOL _isStarted;
@@ -80,7 +80,7 @@
   MDCSnackbarMessage* message = [[MDCSnackbarMessage alloc] init];
   message.text = l10n_util::GetNSStringF(
       IDS_LOG_IN_ACCOUNT_DESCRIPTION, base::SysNSStringToUTF16(user.userEmail));
-  [MDCSnackbarManager showMessage:message];
+  [MDCSnackbarManager.defaultManager showMessage:message];
 }
 
 @end

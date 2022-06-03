@@ -42,7 +42,7 @@ bool ScriptableDocumentParser::IsParsingAtLineNumber() const {
   return IsParsing() && !IsWaitingForScripts() && !IsExecutingScript();
 }
 
-void ScriptableDocumentParser::Trace(Visitor* visitor) {
+void ScriptableDocumentParser::Trace(Visitor* visitor) const {
   visitor->Trace(inline_script_cache_handler_);
   DecodedDataDocumentParser::Trace(visitor);
 }

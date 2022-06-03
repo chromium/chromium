@@ -78,7 +78,7 @@ link](/docs/memory/investigating_heap_dump_example.md).
   This interface surfaces all available information, but can be overwhelming and
   is usually unnecessary for investigating heap dumps.
     * Important note: Heap profiling in the field uses
-      [poison process sampling](https://bugs.chromium.org/p/chromium/issues/detail?id=810748)
+      [Poisson process sampling](https://bugs.chromium.org/p/chromium/issues/detail?id=810748)
       with a rate parameter of 10000. This means that for large/frequent allocations
       [e.g. >100 MB], the noise will be quite small [much less than 1%]. But
       there is noise so counts will not be exact.

@@ -13,8 +13,8 @@
         {
             "name": "<color>",
             "field_template": "external",
-            "type_name": "Color",
-            "include_paths": ["third_party/blink/renderer/platform/graphics/color.h"],
+            "type_name": "StyleColor",
+            "include_paths": ["third_party/blink/renderer/core/css/style_color.h"],
         }
     ]
 }

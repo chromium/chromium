@@ -73,10 +73,10 @@ void CryptAuthEnrollerImpl::Enroll(
     const std::string& user_private_key,
     const cryptauth::GcmDeviceInfo& device_info,
     cryptauth::InvocationReason invocation_reason,
-    const EnrollmentFinishedCallback& callback) {
-  if (!callback_.is_null()) {
+    EnrollmentFinishedCallback callback) {
+  if (enroll_called_) {
     PA_LOG(ERROR) << "Enroll() already called. Do not reuse.";
-    callback.Run(false);
+    std::move(callback).Run(false);
     return;
   }
 
@@ -84,16 +84,17 @@ void CryptAuthEnrollerImpl::Enroll(
   user_private_key_ = user_private_key;
   device_info_ = device_info;
   invocation_reason_ = invocation_reason;
-  callback_ = callback;
+  callback_ = std::move(callback);
+  enroll_called_ = true;
 
   if (!ValidateDeviceInfo(device_info)) {
-    callback.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
   secure_message_delegate_->GenerateKeyPair(
-      base::Bind(&CryptAuthEnrollerImpl::OnKeyPairGenerated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnKeyPairGenerated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnKeyPairGenerated(const std::string& public_key,
@@ -109,10 +110,10 @@ void CryptAuthEnrollerImpl::OnKeyPairGenerated(const std::string& public_key,
   request.set_invocation_reason(invocation_reason_);
   cryptauth_client_->SetupEnrollment(
       request,
-      base::Bind(&CryptAuthEnrollerImpl::OnSetupEnrollmentSuccess,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&CryptAuthEnrollerImpl::OnSetupEnrollmentFailure,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnSetupEnrollmentSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&CryptAuthEnrollerImpl::OnSetupEnrollmentFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnSetupEnrollmentSuccess(
@@ -120,13 +121,13 @@ void CryptAuthEnrollerImpl::OnSetupEnrollmentSuccess(
   if (response.status() != kResponseStatusOk) {
     PA_LOG(WARNING) << "Unexpected status for SetupEnrollment: "
                     << response.status();
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
   if (response.infos_size() == 0) {
     PA_LOG(ERROR) << "No response info returned by server for SetupEnrollment";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -137,14 +138,14 @@ void CryptAuthEnrollerImpl::OnSetupEnrollmentSuccess(
 
   secure_message_delegate_->DeriveKey(
       session_private_key_, setup_info_.server_ephemeral_key(),
-      base::Bind(&CryptAuthEnrollerImpl::OnKeyDerived,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnKeyDerived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnSetupEnrollmentFailure(
     NetworkRequestError error) {
   PA_LOG(WARNING) << "SetupEnrollment API failed with error: " << error;
-  callback_.Run(false);
+  std::move(callback_).Run(false);
 }
 
 void CryptAuthEnrollerImpl::OnKeyDerived(const std::string& symmetric_key) {
@@ -157,7 +158,7 @@ void CryptAuthEnrollerImpl::OnKeyDerived(const std::string& symmetric_key) {
   device_info_.set_key_handle(user_public_key_);
 
   // Hash the symmetric key and add it to the |device_info_| to be uploaded.
-  device_info_.set_device_master_key_hash(
+  device_info_.set_device_authzen_key_hash(
       crypto::SHA256HashString(symmetric_key));
 
   // The server verifies that the access token set here and in the header
@@ -175,15 +176,15 @@ void CryptAuthEnrollerImpl::OnKeyDerived(const std::string& symmetric_key) {
   // sent to CryptAuth.
   secure_message_delegate_->CreateSecureMessage(
       device_info_.SerializeAsString(), user_private_key_, options,
-      base::Bind(&CryptAuthEnrollerImpl::OnInnerSecureMessageCreated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnInnerSecureMessageCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnInnerSecureMessageCreated(
     const std::string& inner_message) {
   if (inner_message.empty()) {
     PA_LOG(ERROR) << "Error creating inner message";
-    callback_.Run(false);
+    std::move(callback_).Run(false);
     return;
   }
 
@@ -196,8 +197,8 @@ void CryptAuthEnrollerImpl::OnInnerSecureMessageCreated(
   // symmetric session key.
   secure_message_delegate_->CreateSecureMessage(
       inner_message, symmetric_key_, options,
-      base::Bind(&CryptAuthEnrollerImpl::OnOuterSecureMessageCreated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnOuterSecureMessageCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnOuterSecureMessageCreated(
@@ -213,10 +214,10 @@ void CryptAuthEnrollerImpl::OnOuterSecureMessageCreated(
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->FinishEnrollment(
       request,
-      base::Bind(&CryptAuthEnrollerImpl::OnFinishEnrollmentSuccess,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&CryptAuthEnrollerImpl::OnFinishEnrollmentFailure,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollerImpl::OnFinishEnrollmentSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&CryptAuthEnrollerImpl::OnFinishEnrollmentFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CryptAuthEnrollerImpl::OnFinishEnrollmentSuccess(
@@ -229,14 +230,14 @@ void CryptAuthEnrollerImpl::OnFinishEnrollmentSuccess(
   }
 
   RecordEnrollmentResult(success);
-  callback_.Run(success);
+  std::move(callback_).Run(success);
 }
 
 void CryptAuthEnrollerImpl::OnFinishEnrollmentFailure(
     NetworkRequestError error) {
   PA_LOG(WARNING) << "FinishEnrollment API failed with error: " << error;
   RecordEnrollmentResult(false /* success */);
-  callback_.Run(false);
+  std::move(callback_).Run(false);
 }
 
 }  // namespace device_sync

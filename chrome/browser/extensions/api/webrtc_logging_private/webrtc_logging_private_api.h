@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/media/webrtc/audio_debug_recordings_handler.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/common/extensions/api/webrtc_logging_private.h"
+#include "extensions/browser/extension_function.h"
 #include "media/media_buildflags.h"
 
 namespace content {
@@ -21,20 +21,22 @@ class RenderProcessHost;
 
 namespace extensions {
 
-class WebrtcLoggingPrivateFunction : public ChromeAsyncExtensionFunction {
+class WebrtcLoggingPrivateFunction : public ExtensionFunction {
  protected:
   ~WebrtcLoggingPrivateFunction() override {}
 
   // Returns the RenderProcessHost associated with the given |request|
-  // authorized by the |security_origin|. Returns null if unauthorized or
-  // the RPH does not exist.
+  // authorized by the |security_origin|. Returns null and sets |*error| to an
+  // appropriate error if unauthorized or the RPH does not exist.
   content::RenderProcessHost* RphFromRequest(
       const api::webrtc_logging_private::RequestInfo& request,
-      const std::string& security_origin);
+      const std::string& security_origin,
+      std::string* error);
 
   WebRtcLoggingController* LoggingControllerFromRequest(
       const api::webrtc_logging_private::RequestInfo& request,
-      const std::string& security_origin);
+      const std::string& security_origin,
+      std::string* error);
 };
 
 class WebrtcLoggingPrivateFunctionWithGenericCallback
@@ -45,11 +47,13 @@ class WebrtcLoggingPrivateFunctionWithGenericCallback
   // Finds the appropriate logging controller for performing the task and
   // prepares a generic callback object for when the task is completed.  If the
   // logging controller can't be found for the given request+origin, the
-  // returned ptr will be null.
+  // returned ptr will be null and |*error| will be set to an appropriate error
+  // message.
   WebRtcLoggingController* PrepareTask(
       const api::webrtc_logging_private::RequestInfo& request,
       const std::string& security_origin,
-      WebRtcLoggingController::GenericDoneCallback* callback);
+      WebRtcLoggingController::GenericDoneCallback* callback,
+      std::string* error);
 
   // Must be called on UI thread.
   void FireCallback(bool success, const std::string& error_message);
@@ -88,7 +92,7 @@ class WebrtcLoggingPrivateSetMetaDataFunction
   ~WebrtcLoggingPrivateSetMetaDataFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStartFunction
@@ -102,7 +106,7 @@ class WebrtcLoggingPrivateStartFunction
   ~WebrtcLoggingPrivateStartFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateSetUploadOnRenderCloseFunction
@@ -116,7 +120,7 @@ class WebrtcLoggingPrivateSetUploadOnRenderCloseFunction
   ~WebrtcLoggingPrivateSetUploadOnRenderCloseFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStopFunction
@@ -130,7 +134,7 @@ class WebrtcLoggingPrivateStopFunction
   ~WebrtcLoggingPrivateStopFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStoreFunction
@@ -144,7 +148,7 @@ class WebrtcLoggingPrivateStoreFunction
   ~WebrtcLoggingPrivateStoreFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateUploadStoredFunction
@@ -158,7 +162,7 @@ class WebrtcLoggingPrivateUploadStoredFunction
   ~WebrtcLoggingPrivateUploadStoredFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateUploadFunction
@@ -172,7 +176,7 @@ class WebrtcLoggingPrivateUploadFunction
   ~WebrtcLoggingPrivateUploadFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateDiscardFunction
@@ -186,7 +190,7 @@ class WebrtcLoggingPrivateDiscardFunction
   ~WebrtcLoggingPrivateDiscardFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStartRtpDumpFunction
@@ -200,7 +204,7 @@ class WebrtcLoggingPrivateStartRtpDumpFunction
   ~WebrtcLoggingPrivateStartRtpDumpFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStopRtpDumpFunction
@@ -214,7 +218,7 @@ class WebrtcLoggingPrivateStopRtpDumpFunction
   ~WebrtcLoggingPrivateStopRtpDumpFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStartAudioDebugRecordingsFunction
@@ -228,7 +232,7 @@ class WebrtcLoggingPrivateStartAudioDebugRecordingsFunction
   ~WebrtcLoggingPrivateStartAudioDebugRecordingsFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStopAudioDebugRecordingsFunction
@@ -242,7 +246,7 @@ class WebrtcLoggingPrivateStopAudioDebugRecordingsFunction
   ~WebrtcLoggingPrivateStopAudioDebugRecordingsFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcLoggingPrivateStartEventLoggingFunction
@@ -256,7 +260,7 @@ class WebrtcLoggingPrivateStartEventLoggingFunction
   ~WebrtcLoggingPrivateStartEventLoggingFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
   // If |success|, |log_id| must hold the ID. Otherwise, |error_message| must
   // hold a non-empty error message.
@@ -277,7 +281,7 @@ class WebrtcLoggingPrivateGetLogsDirectoryFunction
   ~WebrtcLoggingPrivateGetLogsDirectoryFunction() override {}
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
   // Must be called on UI thread.
   void FireErrorCallback(const std::string& error_message);

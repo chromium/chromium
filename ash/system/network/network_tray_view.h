@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {
@@ -25,16 +24,25 @@ class NetworkTrayView : public TrayItemView,
                         public SessionObserver,
                         public TrayNetworkStateObserver {
  public:
+  NetworkTrayView(const NetworkTrayView&) = delete;
+  NetworkTrayView& operator=(const NetworkTrayView&) = delete;
+
   ~NetworkTrayView() override;
 
   NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type);
+
+  std::u16string GetAccessibleNameString() const;
 
   const char* GetClassName() const override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
+
+  // TrayItemView:
+  void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
@@ -58,17 +66,15 @@ class NetworkTrayView : public TrayItemView,
 
   // The name provided by GetAccessibleNodeData, which includes the network
   // name and connection state.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // The description provided by GetAccessibleNodeData. For wifi networks this
   // is the signal strength of the network. Otherwise it is empty.
-  base::string16 accessible_description_;
+  std::u16string accessible_description_;
 
   // The tooltip for the icon. Includes the network name and signal strength
   // (for wireless networks).
-  base::string16 tooltip_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkTrayView);
+  std::u16string tooltip_;
 };
 
 }  // namespace tray

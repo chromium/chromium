@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">अरेरे! यादृच्छिक RSA खासगी की व्युत्पन्न करण्यात अयशस्वी.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL समर्थित नाही.</translation>
-<translation id="149347756975725155">एक्स्टेंशन प्रतीक '<ph name="ICON" />' लोड करणे शक्य नाही.</translation>
 <translation id="1803557475693955505">'पार्श्वभूमी पृष्ठ '<ph name="BACKGROUND_PAGE" />'  लोड करणे शक्य नाही.</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">खासगी की वाचण्यात अयशस्वी.</translation>
 <translation id="6391538222494443604">इनपुट डिरेक्टरी अस्तित्वात असणे आवश्यक आहे.</translation>
 <translation id="641087317769093025">एक्स्टेंशन अनझिप करणे शक्य झाले नाही</translation>
-<translation id="6413453408918378296">आयकन पुरेसा दृश्यमान नाही '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> तुमच्या एका किंवा अधिक डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
 <translation id="657064425229075395">पार्श्वभूमी स्क्रिप्‍ट '<ph name="BACKGROUND_SCRIPT" />' लोड करू शकले नाही.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />) कडील <ph name="PRODUCT_NAME" /></translation>
@@ -53,7 +51,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
 <translation id="7068383018033524534">मॅनिफेस्ट फाइल चुकीची आहे</translation>
 <translation id="7217838517480956708">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
-<translation id="7612608473764576263">खाजगी की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
+<translation id="7612608473764576263">प्रायव्हेट की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
 <translation id="7939686037314084444">एक्सटेंशन योग्यरित्या लोड होऊ शकले नाही. हे कदाचित नेटवर्क विनंत्या व्यत्यय आणू शकत नाही.</translation>
 <translation id="7972881773422714442">पर्याय: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">वापरकर्ता-समोरील</translation>

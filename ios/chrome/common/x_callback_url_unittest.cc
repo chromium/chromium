@@ -4,8 +4,7 @@
 
 #include "ios/chrome/common/x_callback_url.h"
 
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -42,7 +41,7 @@ TEST_F(XCallbackURLTest, URLWithScheme) {
   const XCallbackURLEncodeTestCase test_cases[] = {
       {
           "chrome",
-          nullptr,
+          "",
           GURL(),
           GURL(),
           GURL(),

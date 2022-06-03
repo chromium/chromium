@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "net/dns/dns_response.h"
+#include "net/dns/https_record_rdata.h"
 #include "net/dns/record_rdata.h"
 
 namespace net {
@@ -35,8 +36,9 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   std::unique_ptr<const RecordRdata> rdata;
 
   if (!parser->ReadRecord(&record))
-    return std::unique_ptr<const RecordParsed>();
+    return nullptr;
 
+  bool unrecognized_type = false;
   switch (record.type) {
     case ARecordRdata::kType:
       rdata = ARecordRdata::Create(record.rdata, *parser);
@@ -62,16 +64,23 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
     case OptRecordRdata::kType:
       rdata = OptRecordRdata::Create(record.rdata, *parser);
       break;
-    case EsniRecordRdata::kType:
-      rdata = EsniRecordRdata::Create(record.rdata, *parser);
+    case IntegrityRecordRdata::kType:
+      rdata = IntegrityRecordRdata::Create(record.rdata);
+      break;
+    case HttpsRecordRdata::kType:
+      rdata = HttpsRecordRdata::Parse(record.rdata);
       break;
     default:
       DVLOG(1) << "Unknown RData type for received record: " << record.type;
-      return std::unique_ptr<const RecordParsed>();
+      rdata = nullptr;
+      unrecognized_type = true;
+      break;
   }
 
-  if (!rdata.get())
-    return std::unique_ptr<const RecordParsed>();
+  // If a recognized type has a malformed rdata, consider the whole record
+  // malformed.
+  if (!rdata.get() && !unrecognized_type)
+    return nullptr;
 
   return std::unique_ptr<const RecordParsed>(
       new RecordParsed(record.name, record.type, record.klass, record.ttl,
@@ -88,10 +97,9 @@ bool RecordParsed::IsEqual(const RecordParsed* other, bool is_mdns) const {
     other_klass &= dns_protocol::kMDnsClassMask;
   }
 
-  return name_ == other->name_ &&
-      klass == other_klass &&
-      type_ == other->type_ &&
-      rdata_->IsEqual(other->rdata_.get());
+  return name_ == other->name_ && klass == other_klass &&
+         type_ == other->type_ && !!rdata_ == !!other->rdata_ &&
+         (!rdata_ || rdata_->IsEqual(other->rdata_.get()));
 }
 
 }  // namespace net

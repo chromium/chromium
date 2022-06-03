@@ -45,11 +45,7 @@
           aria-label="$i18n{back}" on-click="onCloseButtonTap_">
       </cr-icon-button>
       <template is="dom-if" if="[[!extensionInfo.isPlaceholder]]">
-        <img id="icon" src="[[extensionInfo.iconUrl]]"
-            alt$="[[appOrExtension(
-                extensionInfo.type,
-                '$i18nPolymer{appIcon}',
-                '$i18nPolymer{extensionIcon}')]]">
+        <img id="icon" src="[[extensionInfo.iconUrl]]" alt="">
       </template>
       <div class="cr-title-text">
         [[getActivityLogHeading_(extensionInfo)]]

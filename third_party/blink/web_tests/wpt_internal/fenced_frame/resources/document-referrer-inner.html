@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the value of document.referrer</title>
+
+<body>
+<script>
+async function init() { // Needed in order to use top-level await.
+  // This file is meant to run in a <fencedframe>. It reports back to the
+  // outermost page the value of `document.referrer` in:
+  //   1.) Top-level fenced frames
+  //   2.) Nested iframes inside a fenced frame
+  //   3.) Nested fenced frames
+  //   4.) Top-level fenced frames after initial navigation
+  const referrer_key = KEYS["document.referrer"];
+  const referrer_ack_key = KEYS["document.referrer ACK"];
+
+  // Send the value of `document.referrer` to the server for checking.
+  writeValueToServer(referrer_key, document.referrer);
+
+  // Wait for ACK, so we know that the outer page has read the last value from
+  // the `referrer_key` stash and we can write to it again.
+  await nextValueFromServer(referrer_ack_key);
+
+  // Now test `document.referrer` inside an iframe.
+  const iframe = document.createElement('iframe');
+  iframe.src = "simple-report-document-referrer.html";
+  const load_promise = new Promise((resolve, reject) => {
+    iframe.onload = resolve;
+    iframe.onerror = reject;
+  });
+  document.body.append(iframe);
+
+  await load_promise;
+
+  // Wait for ACK, so we know that the outer page has read the last value from
+  // the `referrer_key` stash that the iframe above wrote to, and we can write
+  // to it again.
+  await nextValueFromServer(referrer_ack_key);
+
+  attachFencedFrame("simple-report-document-referrer.html");
+
+  // Wait for ACK, so we know that the outer page has read the last value from
+  // the `referrer_key` stash that the nested fenced frame wrote to, and we can
+  // can write to it again.
+  await nextValueFromServer(referrer_ack_key);
+
+  location.href = "simple-report-document-referrer.html";
+}
+
+init();
+</script>
+</body>

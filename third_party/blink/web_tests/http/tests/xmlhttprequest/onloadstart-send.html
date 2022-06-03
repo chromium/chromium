@@ -14,7 +14,7 @@ testAsync.step(() => {
     xhr.onloadstart = testAsync.step_func(() => {
         assert_equals(xhr.readyState, XMLHttpRequest.OPENED);
         // Step 2 of send(): "If the send() flag is set, throw an InvalidStateError exception."
-        assert_throws('InvalidStateError', () => { xhr.send(); });
+        assert_throws_dom('InvalidStateError', () => { xhr.send(); });
     });
     xhr.onloadend = testAsync.step_func(() => {
         assert_equals(xhr.readyState, XMLHttpRequest.DONE);

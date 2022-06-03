@@ -1,12 +1,11 @@
-# tags: [ Android Fuchsia IOS IOS12.2 IOS13.0 Linux Mac Mac10.10 Mac10.11 Mac10.12 Retina
-#         Mac10.13 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
-# results: [ Timeout Crash Pass Failure Slow Skip ]
+# results: [ Skip ]
 
 # This file controls which subdirectories of the w3c test repos we import.
 #
-# This file acts as a blacklist; directories and files not listed here will
-# automatically be found and imported.
+# This file acts as a list of exclusions; directories and files not listed here
+# will automatically be found and imported.
 #
 # Tests that are imported but not run are listed in NeverFixTests. This can be
 # used to make it easier to work on getting them running and passing.
@@ -16,27 +15,21 @@
 
 external/wpt/.codecov.yml [ Skip ]
 external/wpt/.github [ Skip ]
-external/wpt/.gitmodules [ Skip ]
 external/wpt/CODEOWNERS [ Skip ]
-external/wpt/WebIDL/invalid [ Skip ]
-external/wpt/WebIDL/readme.txt [ Skip ]
-external/wpt/WebIDL/testable_assertions.txt [ Skip ]
-external/wpt/WebIDL/valid [ Skip ]
-external/wpt/accname [ Skip ]
+external/wpt/webidl/invalid [ Skip ]
+external/wpt/webidl/readme.txt [ Skip ]
+external/wpt/webidl/testable_assertions.txt [ Skip ]
+external/wpt/webidl/valid [ Skip ]
 external/wpt/annotation-model [ Skip ]
 external/wpt/annotation-protocol [ Skip ]
 external/wpt/annotation-vocab [ Skip ]
-external/wpt/check_stability.ini [ Skip ]
-external/wpt/config.default.json [ Skip ]
 external/wpt/conformance-checkers [ Skip ]
-external/wpt/core-aam [ Skip ]
 external/wpt/css/.htaccess [ Skip ]
 external/wpt/css/CSS1 [ Skip ]
 external/wpt/css/CSS2/LICENSE-BSD [ Skip ]
 external/wpt/css/CSS2/LICENSE-W3CD [ Skip ]
 external/wpt/css/CSS2/LICENSE-W3CTS [ Skip ]
 external/wpt/css/CSS2/Makefile [ Skip ]
-external/wpt/css/CSS2/backgrounds [ Skip ]
 external/wpt/css/CSS2/bidi-005.xht [ Skip ]
 external/wpt/css/CSS2/bidi-006.xht [ Skip ]
 external/wpt/css/CSS2/bidi-007.xht [ Skip ]
@@ -45,8 +38,6 @@ external/wpt/css/CSS2/bidi-009.xht [ Skip ]
 external/wpt/css/CSS2/bidi-010.xht [ Skip ]
 external/wpt/css/CSS2/bidi-overflow-scroll-001.xht [ Skip ]
 external/wpt/css/CSS2/bidi-text [ Skip ]
-external/wpt/css/CSS2/border-seams-001.xht [ Skip ]
-external/wpt/css/CSS2/borders [ Skip ]
 external/wpt/css/CSS2/box [ Skip ]
 external/wpt/css/CSS2/box-display [ Skip ]
 external/wpt/css/CSS2/colors [ Skip ]
@@ -77,7 +68,6 @@ external/wpt/css/CSS2/section-index.xht [ Skip ]
 external/wpt/css/CSS2/selector [ Skip ]
 external/wpt/css/CSS2/selectors [ Skip ]
 external/wpt/css/CSS2/syntax [ Skip ]
-external/wpt/css/CSS2/tables [ Skip ]
 external/wpt/css/CSS2/ui [ Skip ]
 external/wpt/css/CSS2/values [ Skip ]
 external/wpt/css/CSS2/visudet [ Skip ]
@@ -86,15 +76,10 @@ external/wpt/css/CSS2/visuren [ Skip ]
 external/wpt/css/CSS2/zindex [ Skip ]
 external/wpt/css/CSS2/zorder [ Skip ]
 external/wpt/css/WOFF2 [ Skip ]
-external/wpt/css/compositing [ Skip ]
-external/wpt/css/css-counter-styles [ Skip ]
 external/wpt/css/css-display/run-in [ Skip ]
 external/wpt/css/css-exclusions [ Skip ]
 external/wpt/css/css-gcpm [ Skip ]
-external/wpt/css/css-page [ Skip ]
-external/wpt/css/css-regions [ Skip ]
 external/wpt/css/css-round-display [ Skip ]
-external/wpt/css/css-ruby [ Skip ]
 external/wpt/css/css-speech [ Skip ]
 external/wpt/css/tools [ Skip ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/README [ Skip ]
@@ -116,9 +101,6 @@ external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/transforms [ Sk
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/ui3 [ Skip ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/values3 [ Skip ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/will-change [ Skip ]
-external/wpt/docs [ Skip ]
-external/wpt/dpub-aam [ Skip ]
-external/wpt/dpub-aria [ Skip ]
 external/wpt/html-longdesc [ Skip ]
 external/wpt/infrastructure/metadata/infrastructure/browsers/firefox [ Skip ]
 external/wpt/infrastructure/browsers/firefox [ Skip ]
@@ -126,12 +108,7 @@ external/wpt/js [ Skip ]
 external/wpt/old-tests [ Skip ]
 external/wpt/proximity [ Skip ]
 external/wpt/resources/test [ Skip ]
-external/wpt/resources/webidl2/test [ Skip ]
-external/wpt/serve.py [ Skip ]
-external/wpt/server-side.md [ Skip ]
-external/wpt/svg-aam [ Skip ]
 external/wpt/svg/import [ Skip ]
-external/wpt/wai-aria [ Skip ]
 external/wpt/webgl [ Skip ]
 
 # Exceptions for individual files that fail due to bugs in the
@@ -139,11 +116,6 @@ external/wpt/webgl [ Skip ]
 # fixed. Please include an explanation, ideally with a crbug reference
 # (if it's a blink/test tooling issue) or an upstream bug reference
 # (if the test itself is buggy).
-
-# wpt.config.json overrides the following files with LayoutTests/resources
-# files. Having unused files would be confusing.
-external/wpt/resources/testdriver-vendor.js [ Skip ]
-external/wpt/resources/testharnessreport.js [ Skip ]
 
 # crbug.com/490939: The following tests are too large.  They cause time out frequently.
 # [ Slow ] didn't help the following svg-in-*.html tests.
@@ -156,28 +128,10 @@ external/wpt/html/rendering/replaced-elements/svg-embedded-sizing/svg-in-object-
 
 # The wpt tools (including manifest and wptserve) are checked in to
 # blinkpy/third_party/wpt so that we can manually update them and keep
-# a stable pinned version. This manual import supports the legacy layout
-# test runner (run_web_tests).
-# The tools directory is also automatically imported alongside the tests
-# in order to run wptrunner in the Chromium CQ. The following exceptions
-# are for directories we don't need.
-external/wpt/tools/ci/tests [ Skip ]
-external/wpt/tools/gitignore/tests [ Skip ]
-external/wpt/tools/lint/tests [ Skip ]
-external/wpt/tools/manifest/tests [ Skip ]
-external/wpt/tools/pywebsocket/example [ Skip ]
-external/wpt/tools/pywebsocket/tests [ Skip ]
-external/wpt/tools/scripts [ Skip ]
-external/wpt/tools/wpt/tests [ Skip ]
-external/wpt/tools/wptrunner/docs [ Skip ]
-external/wpt/tools/wptrunner/test [ Skip ]
-external/wpt/tools/wptrunner/wptrunner/browsers/sauce_setup [ Skip ]
-external/wpt/tools/wptrunner/wptrunner/tests [ Skip ]
-external/wpt/tools/wptserve/docs [ Skip ]
-external/wpt/tools/wptserve/tests [ Skip ]
-# These two files contain comments that look like version control markers
-external/wpt/tools/third_party/hyper/hyper/packages/rfc3986/__init__.py [ Skip ]
-external/wpt/tools/third_party/pytest/src/_pytest/_argcomplete.py [ Skip ]
+# a stable pinned version.
+external/wpt/tools [ Skip ]
+external/wpt/wpt [ Skip ]
+external/wpt/wpt.py [ Skip ]
 
 # The outputs of these tests contain random values generated by token()
 # in common/utils.js. These could be imported if the results for
@@ -208,8 +162,6 @@ external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Skip
 external/wpt/css/css-text/text-transform/text-transform-fullwidth-002.xht [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-fullwidth-004.xht [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-fullwidth-005.xht [ Skip ]
-external/wpt/css/css-text/white-space/white-space-collapsing-discard-001.xht [ Skip ]
-external/wpt/css/css-text/white-space/white-space-collapsing-preserve-breaks-001.xht [ Skip ]
 
 # CSS Writing Modes Level 4: Following tests require writing-mode: sideways-*, which we do not plan to support today.
 external/wpt/css/css-writing-modes/block-flow-direction-slr-043.xht [ Skip ]
@@ -300,33 +252,8 @@ external/wpt/css/css-writing-modes/vertical-alignment-srl-034.xht [ Skip ]
 external/wpt/css/css-writing-modes/vertical-alignment-srl-036.xht [ Skip ]
 external/wpt/css/css-writing-modes/vertical-alignment-srl-038.xht [ Skip ]
 external/wpt/css/css-writing-modes/vertical-alignment-srl-040.xht [ Skip ]
-external/wpt/css/css-writing-modes/wm-propagation-body-008.xht [ Skip ]
 external/wpt/css/css-writing-modes/writing-mode-parsing-sideways-lr-001.html [ Skip ]
 external/wpt/css/css-writing-modes/writing-mode-parsing-sideways-rl-001.html [ Skip ]
-
-# CSS Writing Modes Level 3: Following tests require applying writing-mode to table-cell, which we do not support today. crbug.com/409155
-external/wpt/css/css-writing-modes/block-flow-direction-vlr-018.xht [ Skip ]
-external/wpt/css/css-writing-modes/block-flow-direction-vrl-017.xht [ Skip ]
-external/wpt/css/css-writing-modes/line-box-direction-vlr-016.xht [ Skip ]
-external/wpt/css/css-writing-modes/line-box-direction-vrl-015.xht [ Skip ]
-external/wpt/css/css-writing-modes/table-cell-001.html [ Skip ]
-external/wpt/css/css-writing-modes/table-cell-002.html [ Skip ]
-
-# CSS Writing Modes Level 3: Following tests require bottom-to-top or mixed ordering of table cells, which we do not support today. crbug.com/409155
-external/wpt/css/css-writing-modes/table-column-order-002.xht [ Skip ]
-external/wpt/css/css-writing-modes/table-column-order-003.xht [ Skip ]
-external/wpt/css/css-writing-modes/table-column-order-004.xht [ Skip ]
-external/wpt/css/css-writing-modes/table-column-order-005.xht [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-001-ref.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-002-ref.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vlr-001.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vlr-002.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vlr-003.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vlr-004.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vrl-001.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vrl-002.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vrl-003.html [ Skip ]
-external/wpt/css/css-writing-modes/table-progression-vrl-004.html [ Skip ]
 
 # CSS Writing Modes Level 3: Following tests require new definition of ch unit, which we do not support today. crbug.com/409155
 external/wpt/css/css-writing-modes/ch-units-vrl-001.html [ Skip ]
@@ -367,7 +294,6 @@ external/wpt/html/browsers/history/the-history-interface/joint_session_history/0
 external/wpt/html/browsers/history/the-history-interface/traverse_the_history_1.html [ Skip ]
 external/wpt/html/browsers/history/the-history-interface/traverse_the_history_write_after_load_1.html [ Skip ]
 external/wpt/html/semantics/document-metadata/the-style-element/style-error-01.html [ Skip ]
-external/wpt/svg/linking/scripted [ Skip ]
 
 # Manual tests that fail as TIMEOUT or NOTRUN. Consider adding wpt_automation.
 external/wpt/FileAPI/BlobURL/test2-manual.html [ Skip ]
@@ -426,12 +352,6 @@ external/wpt/html/editing/dnd/the-dropzone-attribute/dropzone_attribute_value_mu
 external/wpt/html/editing/dnd/the-dropzone-attribute/dropzone_attribute_value_multiple_values_move_copy-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-dropzone-attribute/dropzone_attribute_value_not_specified-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-dropzone-attribute/dropzone_attribute_value_unordered_unique_space_separated-manual.html [ Skip ]
-external/wpt/html/editing/focus/focus-01-manual.html [ Skip ]
-external/wpt/html/editing/focus/focus-02-manual.html [ Skip ]
-external/wpt/html/editing/focus/sequential-focus-navigation-and-the-tabindex-attribute/focus-tabindex-negative-manual.html [ Skip ]
-external/wpt/html/editing/focus/sequential-focus-navigation-and-the-tabindex-attribute/focus-tabindex-order-manual.html [ Skip ]
-external/wpt/html/editing/focus/sequential-focus-navigation-and-the-tabindex-attribute/focus-tabindex-positive-manual.html [ Skip ]
-external/wpt/html/editing/focus/sequential-focus-navigation-and-the-tabindex-attribute/focus-tabindex-zero-manual.html [ Skip ]
 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/stable-state-beforeunload-manual.html [ Skip ]
 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/stable-state-print-manual.html [ Skip ]
 external/wpt/html/semantics/forms/constraints/tooLong-input-email-delete-manual.html [ Skip ]
@@ -446,28 +366,6 @@ external/wpt/html/semantics/forms/the-input-element/maxlength-manual.html [ Skip
 external/wpt/html/semantics/forms/the-textarea-element/textarea-select-event-manual.html [ Skip ]
 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-novalue-manual.html [ Skip ]
 external/wpt/html/webappapis/scripting/event-loops/task_microtask_ordering-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_element_haspointercapture_release_pending_capture-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_pointerId_scope-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_releasepointercapture_release_right_after_capture-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_setpointercapture_override_pending_capture_element-manual.html [ Skip ]
-external/wpt/pointerevents/pointerevent_setpointercapture_to_same_element_twice-manual.html [ Skip ]
-external/wpt/touch-events/multi-touch-interactions-manual.html [ Skip ]
-external/wpt/touch-events/multi-touch-interfaces-manual.html [ Skip ]
-external/wpt/touch-events/single-touch-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/focus-events/focus-contained-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/focus-events/legacy-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/click-on-body-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/click-on-div-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/click-on-html-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/click-order-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/mouseevents-mousemove-manual.htm [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/mousemove-across-manual.html [ Skip ]
-external/wpt/uievents/order-of-events/mouse-events/mousemove-between-manual.html [ Skip ]
-
-# Tests that fail in content_shell but pass when run manually.
-external/wpt/client-hints/accept_ch_lifetime.https.html [ Skip ]
-external/wpt/client-hints/accept_ch.https.html [ Skip ]
 
 # TODO(crbug.com/974254): Remove the following once we can handle spaces in test names.
 external/wpt/webdriver/tests/element_clear/clear.py [ Skip ]
@@ -479,6 +377,7 @@ external/wpt/webdriver/tests/find_elements_from_element/find.py [ Skip ]
 external/wpt/webdriver/tests/new_session/invalid_capabilities.py [ Skip ]
 external/wpt/webdriver/tests/new_session/response.py [ Skip ]
 external/wpt/webdriver/tests/send_alert_text/send.py [ Skip ]
+external/wpt/webdriver/tests/bidi/session_subscribe/subscribe.py [ Skip ]
 
 # WebVr was never supported on Chrome more than as an experimental feature,
 # and even that level of support is now removed. WebVr was replaced with WebXr.
@@ -488,3 +387,67 @@ external/wpt/feature-policy/reporting/vr-reporting.https.html [ Skip ]
 external/wpt/feature-policy/reporting/vr-reporting.https.html.headers [ Skip ]
 external/wpt/feature-policy/reporting/vr-report-only.https.html [ Skip ]
 external/wpt/feature-policy/reporting/vr-report-only.https.html.headers [ Skip ]
+
+# Manual tests related to accessibility for which we have parallel coverage,
+# e.g. porting them to content browser tests.
+external/wpt/accname [ Skip ]
+
+# Other manual tests related to accessibility.
+external/wpt/core-aam [ Skip ]
+external/wpt/dpub-aam [ Skip ]
+external/wpt/dpub-aria [ Skip ]
+external/wpt/svg-aam [ Skip ]
+external/wpt/wai-aria [ Skip ]
+
+# Manual tests for CSS Paged Media.
+external/wpt/css/css-page/forced-page-breaks-002.xht [ Skip ]
+external/wpt/css/css-page/page-background-000.xht [ Skip ]
+external/wpt/css/css-page/page-borders-000.xht [ Skip ]
+external/wpt/css/css-page/page-counters-000.xht [ Skip ]
+external/wpt/css/css-page/page-margin-003.xht [ Skip ]
+external/wpt/css/css-page/page-name-000.xht [ Skip ]
+external/wpt/css/css-page/page-properties-000.xht [ Skip ]
+external/wpt/css/css-page/page-size-000.xht [ Skip ]
+external/wpt/css/css-page/page-size-001.xht [ Skip ]
+external/wpt/css/css-page/page-size-002.xht [ Skip ]
+external/wpt/css/css-page/page-size-003.xht [ Skip ]
+external/wpt/css/css-page/page-size-004.xht [ Skip ]
+external/wpt/css/css-page/page-size-005.xht [ Skip ]
+external/wpt/css/css-page/page-size-006.xht [ Skip ]
+external/wpt/css/css-page/page-size-007.xht [ Skip ]
+external/wpt/css/css-page/page-size-008.xht [ Skip ]
+external/wpt/css/css-page/page-size-009.xht [ Skip ]
+external/wpt/css/css-page/page-size-010.xht [ Skip ]
+external/wpt/css/css-page/page-size-011.xht [ Skip ]
+external/wpt/css/css-page/page-size-012.xht [ Skip ]
+
+# This test includes arbitrary html in unit test names (via parametrize) which
+# is currently not well handled in WebDriverExpectations, and causes Lint error
+# crbug.com/1167318
+external/wpt/webdriver/tests/find_element_from_shadow_root/find.py [ Skip ]
+external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]
+
+# Sheriff 09/2021, crbug.com/1249864
+external/wpt/webdriver/tests/bidi/new_session/connect.py [ Skip ]
+external/wpt/webdriver/tests/bidi/log_entry_added/console.py [ Skip ]
+
+# Sheriff 16/09/2021, crbug.com/1250215
+external/wpt/html/dom/idlharness.worker.html [ Skip ]
+external/wpt/html/dom/idlharness.https.html [ Skip ]
+external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Skip ]
+external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Skip ]
+external/wpt/payment-handler/idlharness.https.any.serviceworker.html [ Skip ]
+external/wpt/payment-request/idlharness.https.window.html [ Skip ]
+external/wpt/private-click-measurement/idlharness.window.html [ Skip ]
+external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Skip ]
+external/wpt/service-workers/idlharness.https.any.worker.html [ Skip ]
+external/wpt/streams/idlharness.any.html [ Skip ]
+external/wpt/streams/idlharness.any.sharedworker.html [ Skip ]
+external/wpt/webhid/idlharness.https.window.html [ Skip ]
+external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Skip ]
+external/wpt/webtransport/idlharness.any.html [ Skip ]
+external/wpt/webtransport/idlharness.any.sharedworker.html [ Skip ]
+external/wpt/webtransport/idlharness.any.worker.html [ Skip ]
+virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Skip ]
+virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Skip ]
+virtual/portals/external/wpt/portals/idlharness.window.html [ Skip ]

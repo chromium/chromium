@@ -1,0 +1,9 @@
+cablev2_authenticator_module_desc = {
+  name = "cablev2_authenticator"
+  android_manifest = "//chrome/android/modules/cablev2_authenticator/internal/java/AndroidManifest.xml"
+  java_deps = [ "//chrome/android/modules/cablev2_authenticator/internal:java" ]
+  native_deps =
+      [ "//chrome/android/modules/cablev2_authenticator/internal:native" ]
+  load_native_on_get_impl = true
+  uses_split = "chrome"
+}

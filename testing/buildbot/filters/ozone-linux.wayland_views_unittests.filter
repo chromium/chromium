@@ -1,0 +1,8 @@
+# Tests that cannot work on Wayland.
+
+# Tests activation of windows.  Wayland doesn't allow the client to activate its
+# windows so this test makes no sense.
+-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
+
+# Tests behaviour that is specific for X11.
+-DesktopWidgetTest.GetWindowPlacement

@@ -1,0 +1,21 @@
+<!--
+@BLINK-ALLOW:selectedFromFocus*
+@MAC-ALLOW:AXSelected=*
+@WAIT-FOR:Done
+-->
+<html>
+<body>
+  <div role="tablist">
+    <button role="tab" id="tab1">tab1</button>
+    <button role="tab" aria-selected="true">tab2</button>
+    <button role="tab">tab3</button>
+  </div>
+</body>
+
+<script>
+  // Setting focus on "tab1" will result it being selected.
+  document.getElementById("tab1").focus();
+  document.body.appendChild(document.createTextNode("Done"));
+</script>
+
+</html>

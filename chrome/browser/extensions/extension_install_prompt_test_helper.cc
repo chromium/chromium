@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,24 +19,51 @@ ExtensionInstallPromptTestHelper::~ExtensionInstallPromptTestHelper() {}
 
 ExtensionInstallPrompt::DoneCallback
 ExtensionInstallPromptTestHelper::GetCallback() {
-  return base::Bind(&ExtensionInstallPromptTestHelper::HandleResult,
-                    base::Unretained(this));
+  return base::BindOnce(&ExtensionInstallPromptTestHelper::HandlePayload,
+                        base::Unretained(this));
 }
 
-ExtensionInstallPrompt::Result
-ExtensionInstallPromptTestHelper::result() const {
-  if (!result_.get()) {
-    ADD_FAILURE() << "Result was never set!";
+ExtensionInstallPrompt::DoneCallbackPayload
+ExtensionInstallPromptTestHelper::payload() const {
+  if (!payload_.get()) {
+    ADD_FAILURE() << "Payload was never set!";
+    return ExtensionInstallPrompt::DoneCallbackPayload(
+        ExtensionInstallPrompt::Result::ACCEPTED);  // Avoid crashing.
+  }
+  return *payload_;
+}
+
+ExtensionInstallPrompt::Result ExtensionInstallPromptTestHelper::result()
+    const {
+  if (!payload_.get()) {
+    ADD_FAILURE() << "Payload was never set!";
     return ExtensionInstallPrompt::Result::ACCEPTED;  // Avoid crashing.
   }
-  return *result_;
+  return payload_->result;
 }
 
-void ExtensionInstallPromptTestHelper::HandleResult(
-    ExtensionInstallPrompt::Result result) {
-  if (result_.get())
-    ADD_FAILURE() << "HandleResult() called twice!";
+std::string ExtensionInstallPromptTestHelper::justification() const {
+  if (!payload_.get()) {
+    ADD_FAILURE() << "Payload was never set!";
+    return std::string();  // Avoid crashing.
+  }
+  return payload_->justification;
+}
+
+void ExtensionInstallPromptTestHelper::ClearPayloadForTesting() {
+  if (!payload_.get()) {
+    ADD_FAILURE() << "Payload was never set!";
+    return;
+  }
+  payload_.reset();
+}
+
+void ExtensionInstallPromptTestHelper::HandlePayload(
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload_.get())
+    ADD_FAILURE() << "HandlePayload() called twice!";
   if (quit_closure_)
     std::move(quit_closure_).Run();
-  result_.reset(new ExtensionInstallPrompt::Result(result));
+  payload_ = std::make_unique<ExtensionInstallPrompt::DoneCallbackPayload>(
+      std::move(payload));
 }

@@ -28,7 +28,8 @@ enum class AshPipEvents {
   CHROME_PIP_START = 4,
   CHROME_PIP_END = 5,
   FREE_RESIZE = 6,
-  kMaxValue = FREE_RESIZE
+  CHROME_RESIZE_HANDLE_RESIZE = 7,
+  kMaxValue = CHROME_RESIZE_HANDLE_RESIZE
 };
 
 // This enum should be kept in sync with the AshPipPosition enum in

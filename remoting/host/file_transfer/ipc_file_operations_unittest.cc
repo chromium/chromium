@@ -4,12 +4,14 @@
 
 #include "remoting/host/file_transfer/ipc_file_operations.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -18,6 +20,7 @@
 #include "remoting/host/file_transfer/fake_file_chooser.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
+#include "remoting/host/file_transfer/test_byte_vector_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -48,6 +51,9 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
             std::make_unique<LocalFileOperations>(std::move(ui_task_runner))),
         file_operations_(ipc_file_operations_factory_.CreateFileOperations()) {}
 
+  IpcTestBridge(const IpcTestBridge&) = delete;
+  IpcTestBridge& operator=(const IpcTestBridge&) = delete;
+
   ~IpcTestBridge() override = default;
 
   // IpcFileOperations::RequestHandler implementation.
@@ -61,7 +67,8 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
                  const base::FilePath& filename) override {
     session_file_operations_handler_.WriteFile(file_id, filename);
   }
-  void WriteChunk(std::uint64_t file_id, std::string data) override {
+  void WriteChunk(std::uint64_t file_id,
+                  std::vector<std::uint8_t> data) override {
     session_file_operations_handler_.WriteChunk(file_id, std::move(data));
   }
   void Close(std::uint64_t file_id) override {
@@ -94,8 +101,6 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
   IpcFileOperationsFactory ipc_file_operations_factory_;
   SessionFileOperationsHandler session_file_operations_handler_;
   std::unique_ptr<FileOperations> file_operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcTestBridge);
 };
 
 }  // namespace
@@ -103,14 +108,21 @@ class IpcTestBridge : public IpcFileOperations::RequestHandler,
 class IpcFileOperationsTest : public testing::Test {
  public:
   IpcFileOperationsTest();
+
+  IpcFileOperationsTest(const IpcFileOperationsTest&) = delete;
+  IpcFileOperationsTest& operator=(const IpcFileOperationsTest&) = delete;
+
   ~IpcFileOperationsTest() override;
 
  protected:
   const base::FilePath kTestFilename =
       base::FilePath::FromUTF8Unsafe("test-file.txt");
-  const std::string kTestDataOne = "this is the first test string";
-  const std::string kTestDataTwo = "this is the second test string";
-  const std::string kTestDataThree = "this is the third test string";
+  const std::vector<std::uint8_t> kTestDataOne =
+      ByteArrayFrom("this is the first test string");
+  const std::vector<std::uint8_t> kTestDataTwo =
+      ByteArrayFrom("this is the second test string");
+  const std::vector<std::uint8_t> kTestDataThree =
+      ByteArrayFrom("this is the third test string");
 
   base::FilePath TestDir();
 
@@ -118,8 +130,6 @@ class IpcFileOperationsTest : public testing::Test {
   base::ScopedPathOverride scoped_path_override_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FileOperations> file_operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcFileOperationsTest);
 };
 
 IpcFileOperationsTest::IpcFileOperationsTest()
@@ -144,7 +154,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
       file_operations_->CreateWriter();
   ASSERT_EQ(FileOperations::kCreated, writer->state());
 
-  base::Optional<FileOperations::Writer::Result> open_result;
+  absl::optional<FileOperations::Writer::Result> open_result;
   writer->Open(kTestFilename,
                BindLambda([&](FileOperations::Writer::Result result) {
                  open_result = std::move(result);
@@ -156,7 +166,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
   ASSERT_TRUE(*open_result);
 
   for (const auto& chunk : {kTestDataOne, kTestDataTwo, kTestDataThree}) {
-    base::Optional<FileOperations::Writer::Result> write_result;
+    absl::optional<FileOperations::Writer::Result> write_result;
     writer->WriteChunk(chunk,
                        BindLambda([&](FileOperations::Writer::Result result) {
                          write_result = std::move(result);
@@ -168,7 +178,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
     ASSERT_TRUE(*write_result);
   }
 
-  base::Optional<FileOperations::Writer::Result> close_result;
+  absl::optional<FileOperations::Writer::Result> close_result;
   writer->Close(BindLambda([&](FileOperations::Writer::Result result) {
     close_result = std::move(result);
   }));
@@ -179,7 +189,8 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
   std::string actual_file_data;
   ASSERT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilename),
                                      &actual_file_data));
-  EXPECT_EQ(kTestDataOne + kTestDataTwo + kTestDataThree, actual_file_data);
+  EXPECT_EQ(ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree),
+            ByteArrayFrom(actual_file_data));
 }
 
 // Verifies that dropping early cancels the remote writer.
@@ -187,7 +198,7 @@ TEST_F(IpcFileOperationsTest, DroppingCancelsRemote) {
   std::unique_ptr<FileOperations::Writer> writer =
       file_operations_->CreateWriter();
 
-  base::Optional<FileOperations::Writer::Result> open_result;
+  absl::optional<FileOperations::Writer::Result> open_result;
   writer->Open(kTestFilename,
                BindLambda([&](FileOperations::Writer::Result result) {
                  open_result = std::move(result);
@@ -196,7 +207,7 @@ TEST_F(IpcFileOperationsTest, DroppingCancelsRemote) {
   ASSERT_TRUE(open_result && *open_result);
 
   for (const auto& chunk : {kTestDataOne, kTestDataTwo, kTestDataThree}) {
-    base::Optional<FileOperations::Writer::Result> write_result;
+    absl::optional<FileOperations::Writer::Result> write_result;
     writer->WriteChunk(chunk,
                        BindLambda([&](FileOperations::Writer::Result result) {
                          write_result = std::move(result);
@@ -216,7 +227,7 @@ TEST_F(IpcFileOperationsTest, CancelsWhileOperationPending) {
   std::unique_ptr<FileOperations::Writer> writer =
       file_operations_->CreateWriter();
 
-  base::Optional<FileOperations::Writer::Result> open_result;
+  absl::optional<FileOperations::Writer::Result> open_result;
   writer->Open(kTestFilename,
                BindLambda([&](FileOperations::Writer::Result result) {
                  open_result = std::move(result);
@@ -224,8 +235,8 @@ TEST_F(IpcFileOperationsTest, CancelsWhileOperationPending) {
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
-  base::Optional<FileOperations::Writer::Result> write_result;
-  writer->WriteChunk(std::string(kTestDataOne),
+  absl::optional<FileOperations::Writer::Result> write_result;
+  writer->WriteChunk(kTestDataOne,
                      BindLambda([&](FileOperations::Writer::Result result) {
                        write_result = std::move(result);
                      }));
@@ -241,16 +252,19 @@ TEST_F(IpcFileOperationsTest, CancelsWhileOperationPending) {
 // Verifies that a file can be successfully read in three chunks.
 TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
   base::FilePath path = TestDir().Append(kTestFilename);
-  std::string contents = kTestDataOne + kTestDataTwo + kTestDataThree;
-  ASSERT_EQ(static_cast<int>(contents.size()),
-            base::WriteFile(path, contents.data(), contents.size()));
+  std::vector<std::uint8_t> contents =
+      ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
+  ASSERT_EQ(
+      static_cast<int>(contents.size()),
+      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
+                      contents.size()));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
   ASSERT_EQ(FileOperations::kCreated, reader->state());
 
   FakeFileChooser::SetResult(path);
-  base::Optional<FileOperations::Reader::OpenResult> open_result;
+  absl::optional<FileOperations::Reader::OpenResult> open_result;
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
@@ -261,7 +275,7 @@ TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
   ASSERT_TRUE(*open_result);
 
   for (const auto& chunk : {kTestDataOne, kTestDataTwo, kTestDataThree}) {
-    base::Optional<FileOperations::Reader::ReadResult> read_result;
+    absl::optional<FileOperations::Reader::ReadResult> read_result;
     reader->ReadChunk(
         chunk.size(),
         BindLambda([&](FileOperations::Reader::ReadResult result) {
@@ -280,22 +294,25 @@ TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
 TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
   constexpr std::size_t kOverreadAmount = 5;
   base::FilePath path = TestDir().Append(kTestFilename);
-  std::string contents = kTestDataOne + kTestDataTwo + kTestDataThree;
-  ASSERT_EQ(static_cast<int>(contents.size()),
-            base::WriteFile(path, contents.data(), contents.size()));
+  std::vector<std::uint8_t> contents =
+      ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
+  ASSERT_EQ(
+      static_cast<int>(contents.size()),
+      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
+                      contents.size()));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
 
   FakeFileChooser::SetResult(path);
-  base::Optional<FileOperations::Reader::OpenResult> open_result;
+  absl::optional<FileOperations::Reader::OpenResult> open_result;
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
-  base::Optional<FileOperations::Reader::ReadResult> read_result;
+  absl::optional<FileOperations::Reader::ReadResult> read_result;
   reader->ReadChunk(
       contents.size() +
           kOverreadAmount,  // Attempt to read more than is in file.
@@ -330,14 +347,14 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesZeroSize) {
       file_operations_->CreateReader();
 
   FakeFileChooser::SetResult(path);
-  base::Optional<FileOperations::Reader::OpenResult> open_result;
+  absl::optional<FileOperations::Reader::OpenResult> open_result;
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
-  base::Optional<FileOperations::Reader::ReadResult> read_result;
+  absl::optional<FileOperations::Reader::ReadResult> read_result;
   reader->ReadChunk(kChunkSize,
                     BindLambda([&](FileOperations::Reader::ReadResult result) {
                       read_result = std::move(result);
@@ -356,7 +373,7 @@ TEST_F(IpcFileOperationsTest, ReaderPropagatesError) {
 
   // Currently non-existent file.
   FakeFileChooser::SetResult(TestDir().Append(kTestFilename));
-  base::Optional<FileOperations::Reader::OpenResult> open_result;
+  absl::optional<FileOperations::Reader::OpenResult> open_result;
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));

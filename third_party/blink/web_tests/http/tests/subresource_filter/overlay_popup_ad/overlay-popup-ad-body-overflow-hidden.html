@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  position: absolute;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0" overflow="hidden">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<!-- To contain the overlay popup iframe -->
+<div></div>
+
+<script>
+promise_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  document.body.style.overflow = "hidden";
+
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate.
+  await forceLayoutUpdate();
+
+  // Expect the OverlayPopupAd UseCounter.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test UseCounter for overlay-popup-ad when the frame has position:absolute and the <body> has overflow:hidden.");
+</script>
+</body>
+</html>

@@ -10,24 +10,19 @@
     android:id="@+id/toggleable_flag"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
     android:orientation="vertical">
 
-    <!-- horizontal divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"/>
-
+    <!-- A compound drawable will be populated at runtime, but it's OK to configure drawablePadding now. -->
     <TextView
         android:id="@+id/flag_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textIsSelectable="true"
         android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:paddingBottom="2dp"
-        android:paddingTop="2dp" />
+        android:textAppearance="@style/MediumText"
+        android:drawablePadding="4dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
     <TextView
         android:id="@+id/flag_description"

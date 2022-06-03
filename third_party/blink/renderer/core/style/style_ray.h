@@ -27,7 +27,7 @@ class StyleRay : public BasicShape {
   RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float) override;
   bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kStyleRayType; }
@@ -49,4 +49,4 @@ struct DowncastTraits<StyleRay> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_RAY_H_

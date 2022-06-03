@@ -7,5 +7,5 @@
 dictionary GPURenderBundleEncoderDescriptor : GPUObjectDescriptorBase {
     required sequence<GPUTextureFormat> colorFormats;
     GPUTextureFormat depthStencilFormat;
-    unsigned long sampleCount = 1;
+    GPUSize32 sampleCount = 1;
 };

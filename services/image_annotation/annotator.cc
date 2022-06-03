@@ -10,17 +10,20 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/image_annotation/image_annotation_metrics.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -28,13 +31,51 @@ namespace image_annotation {
 
 namespace {
 
-constexpr size_t kMaxResponseSize = 1024 * 1024;  // 1MB.
+constexpr size_t kImageAnnotationMaxResponseSize = 1024 * 1024;  // 1MB.
+constexpr size_t kServerLangsMaxResponseSize = 1024;             // 1KB.
 
 // For a given source ID and requested description language, returns the unique
 // image ID string that can be used to look up results from a server response.
 std::string MakeImageId(const std::string& source_id,
                         const std::string& desc_lang_tag) {
   return source_id + (desc_lang_tag.empty() ? "" : " " + desc_lang_tag);
+}
+
+std::string NormalizeLanguageCode(std::string language) {
+  // Remove anything after a comma, in case we got more than one language
+  // like "de,de-DE".
+  language = language.substr(0, language.find(','));
+
+  // Split based on underscore or dash so that we catch both
+  // "zh_CN" and "zh-CN".
+  const std::vector<std::string> tokens = base::SplitString(
+      language, "-_", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (tokens.size() == 0)
+    return "";
+
+  // Normalize the language portion to lowercase.
+  const std::string language_only = base::ToLowerASCII(tokens[0]);
+
+  // For every language other than "zh" (Chinese), return only the language
+  // and strip the locale. Image descriptions don't changed based on locale,
+  // but zh-CN and zh-TW use different character sets.
+  if (tokens.size() == 1 || language_only != "zh")
+    return language_only;
+
+  // Normalize the locale to uppercase.
+  std::string locale_only = base::ToUpperASCII(tokens[1]);
+
+  // Map several Chinese locales to the two most common ones used for
+  // Simplified and Traditional.
+  if (locale_only == "CN" || locale_only == "HANS" || locale_only == "SG") {
+    return "zh-CN";
+  } else if (locale_only == "TW" || locale_only == "HANT" ||
+             locale_only == "MO" || locale_only == "HK") {
+    return "zh-TW";
+  }
+
+  return "zh";
 }
 
 // The server returns separate OCR results for each region of the image; we
@@ -189,6 +230,38 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
   return {adult, std::move(results)};
 }
 
+// Extracts annotations from the given icon engine result.
+mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
+  mojom::AnnotationPtr result;
+  if (!icon_engine.is_dict())
+    return {};
+
+  const base::Value* const icon_list = icon_engine.FindKey("icon");
+  if (!icon_list || !icon_list->is_list())
+    return {};
+
+  for (const base::Value& icon : icon_list->GetList()) {
+    if (!icon.is_dict())
+      continue;
+
+    const base::Value* const icon_type = icon.FindKey("iconType");
+    if (!icon_type || !icon_type->is_string())
+      continue;
+
+    std::string icon_type_value = icon_type->GetString();
+
+    const base::Value* const score = icon.FindKey("score");
+    if (!score || (!score->is_double() && !score->is_int()))
+      continue;
+
+    // Only return the first matching icon.
+    auto type = mojom::AnnotationType::kIcon;
+    return mojom::Annotation::New(type, score->GetDouble(), icon_type_value);
+  }
+
+  return {};
+}
+
 // Returns the integer status code for this engine, or -1 if no status can be
 // extracted.
 int ExtractStatusCode(const base::Value* const status_dict) {
@@ -248,6 +321,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     bool adult = false;
     std::vector<mojom::AnnotationPtr> annotations;
     mojom::AnnotationPtr ocr_annotation;
+    mojom::AnnotationPtr icon_annotation;
     for (const base::Value& engine_result : engine_results->GetList()) {
       if (!engine_result.is_dict())
         continue;
@@ -265,6 +339,8 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
       const base::Value* const desc_engine =
           engine_result.FindKey("descriptionEngine");
       const base::Value* const ocr_engine = engine_result.FindKey("ocrEngine");
+      const base::Value* const icon_engine =
+          engine_result.FindKey("iconEngine");
 
       if (desc_engine) {
         // Add description annotations and update the adult image flag.
@@ -281,6 +357,10 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
           ocr_annotation =
               ParseJsonOcrAnnotation(*ocr_engine, min_ocr_confidence);
         }
+      } else if (icon_engine) {
+        if (status_code <= 0) {
+          icon_annotation = ParseJsonIconAnnotations(*icon_engine);
+        }
       }
 
       ReportEngineKnown(ocr_engine || desc_engine);
@@ -293,6 +373,19 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
         return a->type == mojom::AnnotationType::kOcr;
       });
       annotations.push_back(std::move(ocr_annotation));
+    }
+
+    // Remove labels and captions if the image is detected
+    // as an icon. Don't remove OCR as any text in the icon might
+    // be useful.
+    // TODO(accessibility): consider filtering some icon types here e.g.
+    // information.
+    if (!icon_annotation.is_null()) {
+      base::EraseIf(annotations, [](const mojom::AnnotationPtr& a) {
+        return a->type == mojom::AnnotationType::kLabel ||
+               a->type == mojom::AnnotationType::kCaption;
+      });
+      annotations.push_back(std::move(icon_annotation));
     }
 
     if (adult) {
@@ -315,6 +408,8 @@ static_assert(Annotator::kDescMinDimension > 0,
               "Description engine must accept images of some sizes.");
 static_assert(Annotator::kDescMaxAspectRatio > 0.0,
               "Description engine must accept images of some aspect ratios.");
+static_assert(Annotator::kIconMinDimension > 0,
+              "Icon engine must accept images of some sizes.");
 
 Annotator::ClientRequestInfo::ClientRequestInfo(
     mojo::PendingRemote<mojom::ImageProcessor> in_image_processor,
@@ -327,10 +422,12 @@ Annotator::ClientRequestInfo::~ClientRequestInfo() = default;
 Annotator::ServerRequestInfo::ServerRequestInfo(
     const std::string& in_source_id,
     const bool in_desc_requested,
+    const bool in_icon_requested,
     const std::string& in_desc_lang_tag,
     const std::vector<uint8_t>& in_image_bytes)
     : source_id(in_source_id),
       desc_requested(in_desc_requested),
+      icon_requested(in_icon_requested),
       desc_lang_tag(in_desc_lang_tag),
       image_bytes(in_image_bytes) {}
 
@@ -340,7 +437,8 @@ Annotator::ServerRequestInfo& Annotator::ServerRequestInfo::operator=(
 Annotator::ServerRequestInfo::~ServerRequestInfo() = default;
 
 Annotator::Annotator(
-    GURL server_url,
+    GURL pixels_server_url,
+    GURL langs_server_url,
     std::string api_key,
     const base::TimeDelta throttle,
     const int batch_size,
@@ -349,15 +447,18 @@ Annotator::Annotator(
     std::unique_ptr<Client> client)
     : client_(std::move(client)),
       url_loader_factory_(std::move(url_loader_factory)),
-      server_request_timer_(
-          FROM_HERE,
-          throttle,
-          base::BindRepeating(&Annotator::SendRequestBatchToServer,
-                              base::Unretained(this))),
-      server_url_(std::move(server_url)),
+      pixels_server_url_(std::move(pixels_server_url)),
+      langs_server_url_(std::move(langs_server_url)),
       api_key_(std::move(api_key)),
       batch_size_(batch_size),
-      min_ocr_confidence_(min_ocr_confidence) {}
+      min_ocr_confidence_(min_ocr_confidence),
+      server_languages_({"de", "en", "es", "fr", "hi", "it"}) {
+  server_request_timer_ = std::make_unique<base::RepeatingTimer>(
+      FROM_HERE, throttle,
+      base::BindRepeating(&Annotator::SendRequestBatchToServer,
+                          weak_factory_.GetWeakPtr()));
+  FetchServerLanguages();
+}
 
 Annotator::~Annotator() {
   // Report any clients still connected at service shutdown.
@@ -375,10 +476,17 @@ void Annotator::BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver) {
 
 void Annotator::AnnotateImage(
     const std::string& source_id,
-    const std::string& description_language_tag,
+    const std::string& page_language,
     mojo::PendingRemote<mojom::ImageProcessor> image_processor,
     AnnotateImageCallback callback) {
-  const RequestKey request_key(source_id, description_language_tag);
+  // Compute the desired language for the description result, based on the
+  // page language, the accept languages, the top languages, and the
+  // server languages.
+  const std::string preferred_language =
+      ComputePreferredLanguage(page_language);
+  client_->RecordLanguageMetrics(page_language, preferred_language);
+
+  const RequestKey request_key(source_id, preferred_language);
 
   // Return cached results if they exist.
   const auto cache_lookup = cached_results_.find(request_key);
@@ -397,7 +505,7 @@ void Annotator::AnnotateImage(
   // reassign local processing (for other interested clients) if the dead image
   // processor was responsible for some ongoing work.
   request_info_list.back().image_processor.set_disconnect_handler(
-      base::BindOnce(&Annotator::RemoveRequestInfo, base::Unretained(this),
+      base::BindOnce(&Annotator::RemoveRequestInfo, weak_factory_.GetWeakPtr(),
                      request_key, --request_info_list.end(),
                      true /* canceled */));
 
@@ -412,9 +520,9 @@ void Annotator::AnnotateImage(
   // TODO(crbug.com/916420): first query the public result cache by URL to
   // improve latency.
 
-  request_info_list.back().image_processor->GetJpgImageData(
-      base::BindOnce(&Annotator::OnJpgImageDataReceived, base::Unretained(this),
-                     request_key, --request_info_list.end()));
+  request_info_list.back().image_processor->GetJpgImageData(base::BindOnce(
+      &Annotator::OnJpgImageDataReceived, weak_factory_.GetWeakPtr(),
+      request_key, --request_info_list.end()));
 }
 
 // static
@@ -433,6 +541,23 @@ bool Annotator::IsWithinDescPolicy(const int32_t width, const int32_t height) {
 }
 
 // static
+bool Annotator::IsWithinIconPolicy(const int32_t width, const int32_t height) {
+  if (width < kIconMinDimension || height < kIconMinDimension ||
+      width > kIconMaxDimension || height > kIconMaxDimension) {
+    return false;
+  }
+
+  // Can't be 0 or inf because |kIconMinDimension| is guaranteed positive (via a
+  // static_assert).
+  const double aspect_ratio = static_cast<double>(width) / height;
+  if (aspect_ratio < 1.0 / kIconMaxAspectRatio ||
+      aspect_ratio > kIconMaxAspectRatio)
+    return false;
+
+  return true;
+}
+
+// static
 std::string Annotator::FormatJsonRequest(
     const std::deque<ServerRequestInfo>::iterator begin,
     const std::deque<ServerRequestInfo>::iterator end) {
@@ -440,7 +565,7 @@ std::string Annotator::FormatJsonRequest(
   for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; ++it) {
     // Re-encode image bytes into base64, which can be represented in JSON.
     std::string base64_data;
-    Base64Encode(
+    base::Base64Encode(
         base::StringPiece(reinterpret_cast<const char*>(it->image_bytes.data()),
                           it->image_bytes.size()),
         &base64_data);
@@ -474,6 +599,17 @@ std::string Annotator::FormatJsonRequest(
     }
     ReportImageRequestIncludesDesc(it->desc_requested);
 
+    // Request icon classification.
+    // TODO(accessibility): Maybe only do this for certain
+    // file sizes?
+    if (it->icon_requested) {
+      base::Value icon_params(base::Value::Type::DICTIONARY);
+      base::Value engine_params(base::Value::Type::DICTIONARY);
+      engine_params.SetKey("iconParameters", std::move(icon_params));
+      engine_params_list.Append(std::move(engine_params));
+    }
+    ReportImageRequestIncludesIcon(it->icon_requested);
+
     base::Value image_request(base::Value::Type::DICTIONARY);
     image_request.SetKey(
         "imageId", base::Value(MakeImageId(it->source_id, it->desc_lang_tag)));
@@ -497,9 +633,7 @@ std::string Annotator::FormatJsonRequest(
 // static
 std::unique_ptr<network::SimpleURLLoader> Annotator::MakeRequestLoader(
     const GURL& server_url,
-    const std::string& api_key,
-    const std::deque<ServerRequestInfo>::iterator begin,
-    const std::deque<ServerRequestInfo>::iterator end) {
+    const std::string& api_key) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
 
@@ -514,12 +648,10 @@ std::unique_ptr<network::SimpleURLLoader> Annotator::MakeRequestLoader(
     resource_request->headers.SetHeader(kGoogApiKeyHeader, api_key);
   }
 
-  // TODO(crbug.com/916420): update this annotation to be more general and to
-  //                         reflect specfics of the UI when it is implemented.
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("image_annotation", R"(
         semantics {
-          sender: "Image Annotation"
+          sender: "Get Image Descriptions from Google"
           description:
             "Chrome can provide image labels (which include detected objects, "
             "extracted text and generated captions) to screen readers (for "
@@ -528,9 +660,13 @@ std::unique_ptr<network::SimpleURLLoader> Annotator::MakeRequestLoader(
             "URLs and pixels of all images on the page to Google's servers, "
             "which will return labels for content identified inside the "
             "images. This content is made accessible to screen reading "
-            "software."
+            "software. Chrome fetches the list of supported languages from "
+            "the servers and uses that to determine what language to request "
+            "descriptions in."
           trigger: "A page containing images is loaded for a user who has "
-                   "automatic image labeling enabled."
+                   "automatic image labeling enabled. At most once per day, "
+                   "Chrome fetches the list of supported languages as a "
+                   "separate network request."
           data: "Image pixels and URLs. No user identifier is sent along with "
                 "the data."
           destination: GOOGLE_OWNED_SERVICE
@@ -539,19 +675,17 @@ std::unique_ptr<network::SimpleURLLoader> Annotator::MakeRequestLoader(
           cookies_allowed: NO
           setting:
             "You can enable or disable this feature via the context menu "
-            "for images, or via 'Image Labeling' in Chrome's settings under "
-            "Accessibility. This feature is disabled by default."
-          policy_exception_justification: "Policy to come; feature not yet "
-                                          "complete."
+            "for images, or via 'Get Image Descriptions' in Chrome's "
+            "settings under Accessibility. This feature is disabled by default."
+          chrome_policy {
+            AccessibilityImageLabelsEnabled {
+              AccessibilityImageLabelsEnabled: false
+            }
+          }
         })");
 
-  auto url_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
-
-  url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
-                                    "application/json");
-
-  return url_loader;
+  return network::SimpleURLLoader::Create(std::move(resource_request),
+                                          traffic_annotation);
 }
 
 void Annotator::OnJpgImageDataReceived(
@@ -561,7 +695,7 @@ void Annotator::OnJpgImageDataReceived(
     const int32_t width,
     const int32_t height) {
   const std::string& source_id = request_key.first;
-  const std::string& desc_lang_tag = request_key.second;
+  const std::string& request_language = request_key.second;
 
   ReportPixelFetchSuccess(!image_bytes.empty());
 
@@ -577,17 +711,18 @@ void Annotator::OnJpgImageDataReceived(
 
   // Schedule a server request for this image.
   server_request_queue_.emplace_front(
-      source_id, IsWithinDescPolicy(width, height), desc_lang_tag, image_bytes);
+      source_id, IsWithinDescPolicy(width, height),
+      IsWithinIconPolicy(width, height), request_language, image_bytes);
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.
-  if (!server_request_timer_.IsRunning())
-    server_request_timer_.Reset();
+  if (!server_request_timer_->IsRunning())
+    server_request_timer_->Reset();
 }
 
 void Annotator::SendRequestBatchToServer() {
   if (server_request_queue_.empty()) {
-    server_request_timer_.Stop();
+    server_request_timer_->Stop();
     return;
   }
 
@@ -604,14 +739,17 @@ void Annotator::SendRequestBatchToServer() {
   }
 
   // Kick off server communication.
-  ongoing_server_requests_.push_back(
-      MakeRequestLoader(server_url_, api_key_, begin, end));
+  std::unique_ptr<network::SimpleURLLoader> url_loader =
+      MakeRequestLoader(pixels_server_url_, api_key_);
+  url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
+                                    "application/json");
+  ongoing_server_requests_.push_back(std::move(url_loader));
   ongoing_server_requests_.back()->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&Annotator::OnServerResponseReceived,
-                     base::Unretained(this), request_keys,
+                     weak_factory_.GetWeakPtr(), request_keys,
                      --ongoing_server_requests_.end()),
-      kMaxResponseSize);
+      kImageAnnotationMaxResponseSize);
 
   server_request_queue_.erase(begin, end);
 }
@@ -640,15 +778,15 @@ void Annotator::OnServerResponseReceived(
   ReportServerResponseSizeBytes(json_response->size());
 
   // Send JSON string to a dedicated service for safe parsing.
-  GetJsonParser()->Parse(*json_response,
-                         base::BindOnce(&Annotator::OnResponseJsonParsed,
-                                        base::Unretained(this), request_keys));
+  GetJsonParser()->Parse(
+      *json_response, base::BindOnce(&Annotator::OnResponseJsonParsed,
+                                     weak_factory_.GetWeakPtr(), request_keys));
 }
 
 void Annotator::OnResponseJsonParsed(
     const std::set<RequestKey>& request_keys,
-    const base::Optional<base::Value> json_data,
-    const base::Optional<std::string>& error) {
+    const absl::optional<base::Value> json_data,
+    const absl::optional<std::string>& error) {
   const bool success = json_data.has_value() && !error.has_value();
   ReportJsonParseSuccess(success);
 
@@ -685,8 +823,11 @@ void Annotator::ProcessResults(
     // |request_infos_|, and this method should only execute once per request
     // key.
     const auto request_info_it = request_infos_.find(request_key);
-    if (request_info_it == request_infos_.end())
+    if (request_info_it == request_infos_.end()) {
+      LOG(ERROR) << "Could not find request key in request_infos_: "
+                 << request_key.first << "," << request_key.second;
       continue;
+    }
 
     const auto image_result = result_lookup != results.end()
                                   ? result_lookup->second.Clone()
@@ -747,10 +888,128 @@ void Annotator::RemoveRequestInfo(
           &request_info_list.front().image_processor;
 
       request_info_list.front().image_processor->GetJpgImageData(base::BindOnce(
-          &Annotator::OnJpgImageDataReceived, base::Unretained(this),
+          &Annotator::OnJpgImageDataReceived, weak_factory_.GetWeakPtr(),
           request_key, request_info_list.begin()));
     }
   }
+}
+
+std::string Annotator::ComputePreferredLanguage(
+    const std::string& in_page_language) const {
+  DCHECK(!server_languages_.empty());
+  if (in_page_language.empty())
+    return "";
+
+  std::string page_language = NormalizeLanguageCode(in_page_language);
+  std::vector<std::string> accept_languages = client_->GetAcceptLanguages();
+  std::transform(accept_languages.begin(), accept_languages.end(),
+                 accept_languages.begin(), NormalizeLanguageCode);
+  std::vector<std::string> top_languages = client_->GetTopLanguages();
+  std::transform(top_languages.begin(), top_languages.end(),
+                 top_languages.begin(), NormalizeLanguageCode);
+
+  // If the page language is a server language and it's in the list of accept
+  // languages or top languages for this user, return that.
+  if (base::Contains(server_languages_, page_language) &&
+      (base::Contains(accept_languages, page_language) ||
+       base::Contains(top_languages, page_language))) {
+    return page_language;
+  }
+
+  // Otherwise, ignore the page language and compute the best language
+  // for this user. The accept languages are the ones the user can
+  // explicitly choose, so pick the first accept language that's a
+  // top language and a server language.
+  if (!top_languages.empty()) {
+    for (const std::string& accept_language : accept_languages) {
+      if (base::Contains(server_languages_, accept_language) &&
+          base::Contains(top_languages, accept_language)) {
+        return accept_language;
+      }
+    }
+  }
+
+  // Sometimes the top languages are empty. Try any accept language that's
+  // a server language.
+  for (const std::string& accept_language : accept_languages) {
+    if (base::Contains(server_languages_, accept_language))
+      return accept_language;
+  }
+
+  // If that still fails, try any top language that's a server language.
+  for (const std::string& top_language : top_languages) {
+    if (base::Contains(server_languages_, top_language))
+      return top_language;
+  }
+
+  // If all else fails, return the first accept language. The server can
+  // still do OCR and it can log this language request.
+  if (!accept_languages.empty())
+    return accept_languages[0];
+
+  // If that fails, return the page language. The server can
+  // still do OCR and it can log this language request.
+  return page_language;
+}
+
+void Annotator::FetchServerLanguages() {
+  if (langs_server_url_.is_empty())
+    return;
+
+  langs_url_loader_ = MakeRequestLoader(langs_server_url_, api_key_);
+  langs_url_loader_->AttachStringForUpload("", "application/json");
+  langs_url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&Annotator::OnServerLangsResponseReceived,
+                     weak_factory_.GetWeakPtr()),
+      kServerLangsMaxResponseSize);
+}
+
+void Annotator::OnServerLangsResponseReceived(
+    const std::unique_ptr<std::string> json_response) {
+  if (!json_response) {
+    DVLOG(1) << "Failed to get languages from the server.";
+    return;
+  }
+
+  GetJsonParser()->Parse(
+      *json_response,
+      base::BindOnce(&Annotator::OnServerLangsResponseJsonParsed,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void Annotator::OnServerLangsResponseJsonParsed(
+    absl::optional<base::Value> json_data,
+    const absl::optional<std::string>& error) {
+  if (!json_data.has_value() || error.has_value()) {
+    DVLOG(1) << "Parsing server langs response JSON failed with error: "
+             << error.value_or("No reason reported.");
+    return;
+  }
+
+  const base::Value* const langs = json_data->FindKey("langs");
+  if (!langs || !langs->is_list()) {
+    DVLOG(1) << "No langs in response JSON";
+    return;
+  }
+
+  std::vector<std::string> new_server_languages;
+  for (const base::Value& lang : langs->GetList()) {
+    if (!lang.is_string()) {
+      DVLOG(1) << "Lang in response JSON is not a string";
+      return;
+    }
+    new_server_languages.push_back(lang.GetString());
+  }
+
+  if (!base::Contains(new_server_languages, "en")) {
+    DVLOG(1) << "Server langs don't even include 'en', rejecting";
+    return;
+  }
+
+  // Only swap in the new languages at the end, if all of the other
+  // checks passed.
+  server_languages_.swap(new_server_languages);
 }
 
 }  // namespace image_annotation

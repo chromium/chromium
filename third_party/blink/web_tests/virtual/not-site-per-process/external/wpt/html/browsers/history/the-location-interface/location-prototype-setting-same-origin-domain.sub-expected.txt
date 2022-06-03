@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Same-origin-domain prerequisite check: the original prototype is accessible
+PASS Same-origin-domain: setting the prototype to an empty object via Object.setPrototypeOf should throw a TypeError
+PASS Same-origin-domain: setting the prototype to an empty object via __proto__ should throw a TypeError
+PASS Same-origin-domain: setting the prototype to an empty object via Reflect.setPrototypeOf should return false
+PASS Same-origin-domain: the prototype must still be its original value
+PASS Same-origin-domain: setting the prototype to its original value via Object.setPrototypeOf should not throw
+PASS Same-origin-domain: setting the prototype to its original value via __proto__ should not throw
+PASS Same-origin-domain: setting the prototype to its original value via Reflect.setPrototypeOf should return true
+Harness: the test ran to completion.
+

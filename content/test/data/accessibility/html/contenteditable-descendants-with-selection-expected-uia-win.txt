@@ -1,19 +1,19 @@
-document
-++group
-++++group IsControlElement=false
-++++++description Name='A contenteditable with a '
-++++++link Name='link'
-++++++++description Name='link' IsControlElement=false
-++++++description Name=' and an '
-++++++img Name='Image'
-++++++description Name=' and a '
-++++++button Name='Button'
-++++++description Name='.'
-++++grid Grid.ColumnCount=1 Grid.RowCount=1 Table.RowOrColumnMajor='RowMajor'
-++++++row IsControlElement=false
-++++++++gridcell Name='Always expose editable tables as tables.' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++++description Name='Always expose editable tables as tables.' IsControlElement=false
-++++list
-++++++listitem
-++++++++description Name='1. '
-++++++++description Name='Editable list item.' IsControlElement=false
+Document
+++Group
+++++Group IsControlElement=false
+++++++Text Name='A contenteditable with a '
+++++++Hyperlink Name='link'
+++++++++Text Name='link' IsControlElement=false
+++++++Text Name=' and an '
+++++++Image Name='Image'
+++++++Text Name=' and a '
+++++++Button Name='Button'
+++++++Text Name='.'
+++++Table Grid.ColumnCount=1 Grid.RowCount=1 Table.RowOrColumnMajor='RowMajor'
+++++++DataItem IsControlElement=false
+++++++++DataItem Name='Always expose editable tables as tables.' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++++Text Name='Always expose editable tables as tables.' IsControlElement=false
+++++List
+++++++ListItem Name='Editable list item.'
+++++++++Text Name='1. ' IsControlElement=false
+++++++++Text Name='Editable list item.' IsControlElement=false

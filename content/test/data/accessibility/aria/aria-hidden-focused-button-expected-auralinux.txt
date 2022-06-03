@@ -1,0 +1,3 @@
+[document web] focusable showing visible
+++[push button] name='Button 1' focusable hidden:true
+++[push button] name='Button 2' focusable focused showing visible

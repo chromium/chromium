@@ -17,7 +17,7 @@
             logResult(false, "Element.prototype.webkitRequestFullScreen == undefined");
             endTest();
         } else {
-            waitForEventAndEnd(document, 'webkitfullscreenchange');
+            waitForEventOnceAndEnd(document, 'webkitfullscreenchange');
             runWithKeyDown(function(){video.webkitRequestFullScreen()});
         }
     </script>

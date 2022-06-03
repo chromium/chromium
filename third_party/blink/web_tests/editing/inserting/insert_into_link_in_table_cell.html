@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// >This tests for a crash when pasting content into a link inside a table cell.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<table border="1"><tbody><tr>',
+                '<td><a href="#">a|b</a></td>',
+            '</tr></tbody></table>',
+        '</div>',
+    ],
+    'InsertHTML XY',
+    [
+        '<div contenteditable>',
+            '<table border="1"><tbody><tr>',
+                '<td><a href="#">aXY|b</a></td>',
+            '</tr></tbody></table>',
+        '</div>',
+    ],
+    'Insert into link inside a table cell');
+</script>

@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,10 +12,12 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "net/base/url_util.h"
 
 namespace {
 const char kEntryURLQueryParam[] = "entryURL";
+const char kReloadURLQueryParam[] = "reload";
 const char kVirtualURLQueryParam[] = "virtualURL";
 }
 
@@ -36,6 +38,15 @@ GURL OfflineURLForPath(const base::FilePath& distilled_path,
 
   page_url = net::AppendQueryParameter(page_url, kVirtualURLQueryParam,
                                        virtual_url.spec());
+
+  return page_url;
+}
+
+GURL OfflineReloadURLForURL(const GURL& entry_url) {
+  DCHECK(entry_url.is_valid());
+  GURL page_url(kChromeUIOfflineURL);
+  page_url = net::AppendQueryParameter(page_url, kReloadURLQueryParam,
+                                       entry_url.spec());
 
   return page_url;
 }
@@ -80,8 +91,27 @@ GURL FileURLForDistilledURL(const GURL& distilled_url,
   return file_url;
 }
 
+GURL ReloadURLForOfflineURL(const GURL& offline_url) {
+  std::string reload_url_string;
+  if (net::GetValueForKeyInQuery(offline_url, kReloadURLQueryParam,
+                                 &reload_url_string)) {
+    GURL reload_url = GURL(reload_url_string);
+    if (reload_url.is_valid()) {
+      return reload_url;
+    }
+  }
+  return GURL::EmptyGURL();
+}
+
 bool IsOfflineURL(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) && url.host() == kChromeUIOfflineHost;
 }
 
+bool IsOfflineEntryURL(const GURL& url) {
+  return IsOfflineURL(url) && EntryURLForOfflineURL(url).is_valid();
+}
+
+bool IsOfflineReloadURL(const GURL& url) {
+  return IsOfflineURL(url) && ReloadURLForOfflineURL(url).is_valid();
+}
 }

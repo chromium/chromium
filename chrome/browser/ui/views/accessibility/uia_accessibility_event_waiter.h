@@ -24,8 +24,8 @@
 
 struct UiaAccessibilityWaiterInfo {
   HWND hwnd;
-  base::string16 role;
-  base::string16 name;
+  std::wstring role;
+  std::wstring name;
   ax::mojom::Event event;
 };
 
@@ -78,6 +78,10 @@ class UiaAccessibilityEventWaiter {
                          public IUIAutomationEventHandler {
      public:
       EventHandler();
+
+      EventHandler(const EventHandler&) = delete;
+      EventHandler& operator=(const EventHandler&) = delete;
+
       virtual ~EventHandler();
 
       void Init(UiaAccessibilityEventWaiter::Thread* owner,
@@ -92,23 +96,23 @@ class UiaAccessibilityEventWaiter {
       END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
-      STDMETHOD(HandleFocusChangedEvent)(IUIAutomationElement* sender) override;
+      IFACEMETHODIMP HandleFocusChangedEvent(
+          IUIAutomationElement* sender) override;
 
       // IUIAutomationPropertyChangedEventHandler interface.
-      STDMETHOD(HandlePropertyChangedEvent)
-      (IUIAutomationElement* sender,
-       PROPERTYID property_id,
-       VARIANT new_value) override;
+      IFACEMETHODIMP HandlePropertyChangedEvent(IUIAutomationElement* sender,
+                                                PROPERTYID property_id,
+                                                VARIANT new_value) override;
 
       // IUIAutomationStructureChangedEventHandler interface.
-      STDMETHOD(HandleStructureChangedEvent)
-      (IUIAutomationElement* sender,
-       StructureChangeType change_type,
-       SAFEARRAY* runtime_id) override;
+      IFACEMETHODIMP HandleStructureChangedEvent(
+          IUIAutomationElement* sender,
+          StructureChangeType change_type,
+          SAFEARRAY* runtime_id) override;
 
       // IUIAutomationEventHandler interface.
-      STDMETHOD(HandleAutomationEvent)
-      (IUIAutomationElement* sender, EVENTID event_id) override;
+      IFACEMETHODIMP HandleAutomationEvent(IUIAutomationElement* sender,
+                                           EVENTID event_id) override;
 
       // Points to the waiter to receive notifications.
       UiaAccessibilityEventWaiter::Thread* owner_ = nullptr;
@@ -117,8 +121,6 @@ class UiaAccessibilityEventWaiter {
       bool MatchesNameRole(IUIAutomationElement* sender);
 
       Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
-
-      DISALLOW_COPY_AND_ASSIGN(EventHandler);
     };
     Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
   };

@@ -11,7 +11,7 @@ Returning 'true': the error should not be reported in the console as an unhandle
 
 
 
-window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 14)
+window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 34)
 Stack Trace:
 SyntaxError: Unexpected token '%'
     at window-onerror-11.html:31:24
@@ -20,7 +20,7 @@ Returning 'true': the error should not be reported in the console as an unhandle
 
 
 
-window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 14)
+window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 52)
 Stack Trace:
 SyntaxError: Unexpected token '%'
     at window-onerror-11.html:31:24

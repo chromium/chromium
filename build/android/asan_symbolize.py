@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -23,7 +23,18 @@ with host_paths.SysPath(
   import symbol
 
 
-_RE_ASAN = re.compile(r'(.*?)(#\S*?)\s+(\S*?)\s+\((.*?)\+(.*?)\)')
+_RE_ASAN = re.compile(
+    r"""
+    (?P<prefix>.*?)
+    (?P<pos>\#\S*?)          # position of the call in stack.
+                             # escape the char "#" due to the VERBOSE flag.
+    \s+(\S*?)\s+
+    \(                       # match the char "(".
+        (?P<lib>.*?)         # library path.
+        \+0[xX](?P<addr>.*?) # address of the symbol in hex.
+                             # the prefix "0x" is skipped.
+    \)                       # match the char ")".
+    """, re.VERBOSE)
 
 # This named tuple models a parsed Asan log line.
 AsanParsedLine = collections.namedtuple('AsanParsedLine',
@@ -38,10 +49,11 @@ def _ParseAsanLogLine(line):
   m = re.match(_RE_ASAN, line)
   if not m:
     return None
-  return AsanParsedLine(prefix=m.group(1),
-                        library=m.group(4),
-                        pos=m.group(2),
-                        rel_address='%08x' % int(m.group(5), 16))
+  return AsanParsedLine(prefix=m.group('prefix'),
+                        library=m.group('lib'),
+                        pos=m.group('pos'),
+                        rel_address='%08x' % int(m.group('addr'), 16))
+
 
 def _FindASanLibraries():
   asan_lib_dir = os.path.join(host_paths.DIR_SOURCE_ROOT,
@@ -86,7 +98,7 @@ def _PrintSymbolized(asan_input, arch):
   # Maps library -> { address -> [(symbol, location, obj_sym_with_offset)...] }
   all_symbols = collections.defaultdict(dict)
 
-  for library, items in libraries.iteritems():
+  for library, items in libraries.items():
     libname = _TranslateLibPath(library, asan_libs)
     lib_relative_addrs = set([i.rel_address for i in items])
     # pylint: disable=no-member
@@ -128,7 +140,7 @@ def main():
   constants.CheckOutputDirectory()
 
   if options.logcat:
-    asan_input = file(options.logcat, 'r')
+    asan_input = open(options.logcat, 'r')
   else:
     asan_input = sys.stdin
 

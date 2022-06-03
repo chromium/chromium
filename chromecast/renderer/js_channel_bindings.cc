@@ -23,6 +23,7 @@ JsChannelBindings::JsChannelBindings(
 
 JsChannelBindings::~JsChannelBindings() = default;
 
+// static
 void JsChannelBindings::Create(content::RenderFrame* render_frame) {
   content::RenderThread* render_thread = content::RenderThread::Get();
 
@@ -50,6 +51,17 @@ void JsChannelBindings::DidClearWindowObject() {
 
 void JsChannelBindings::OnDestruct() {
   delete this;
+}
+
+void JsChannelBindings::DidCreateScriptContext(v8::Local<v8::Context> context,
+                                               int32_t world_id) {
+  // World 0 is the "main" world that page JS uses. Non-zero IDs indicate worker
+  // threads or context scripts.
+  if (world_id == 0 && !did_create_script_context_) {
+    did_create_script_context_ = true;
+    for (auto& channel : channels_)
+      Install(channel.first);
+  }
 }
 
 void JsChannelBindings::Install(const std::string& channel) {
@@ -89,7 +101,8 @@ void JsChannelBindings::CreateChannel(
     mojo::PendingRemote<mojom::JsChannel> pipe) {
   channels_.push_back(
       std::make_pair(channel, mojo::Remote<mojom::JsChannel>(std::move(pipe))));
-  Install(channel);
+  if (did_create_script_context_)
+    Install(channel);
 }
 
 void JsChannelBindings::RemoveChannel(const std::string& channel) {
@@ -99,6 +112,9 @@ void JsChannelBindings::RemoveChannel(const std::string& channel) {
       break;
     }
   }
+
+  if (!did_create_script_context_)
+    return;
 
   // Remove V8 object.
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();

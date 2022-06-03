@@ -5,9 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  deps = [
-    ":explore_sites_internals",
-  ]
+  deps = [ ":explore_sites_internals" ]
 }
 
 js_library("explore_sites_internals") {

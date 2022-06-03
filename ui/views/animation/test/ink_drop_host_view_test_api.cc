@@ -4,45 +4,44 @@
 
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 
+#include <utility>
+
 namespace views {
 namespace test {
 
-InkDropHostViewTestApi::InkDropHostViewTestApi(InkDropHostView* host_view)
-    : host_view_(host_view) {}
+InkDropHostTestApi::InkDropHostTestApi(InkDropHost* ink_drop_host)
+    : ink_drop_host_(ink_drop_host) {}
 
-InkDropHostViewTestApi::~InkDropHostViewTestApi() = default;
+InkDropHostTestApi::~InkDropHostTestApi() = default;
 
-void InkDropHostViewTestApi::SetInkDropMode(InkDropMode ink_drop_mode) {
-  host_view_->SetInkDropMode(ink_drop_mode);
+void InkDropHostTestApi::SetInkDropMode(InkDropMode ink_drop_mode) {
+  ink_drop_host_->SetMode(ink_drop_mode);
 }
 
-void InkDropHostViewTestApi::SetInkDrop(std::unique_ptr<InkDrop> ink_drop,
-                                        bool handles_gesture_events) {
-  host_view_->SetInkDropMode(handles_gesture_events
-                                 ? InkDropMode::ON
-                                 : InkDropMode::ON_NO_GESTURE_HANDLER);
-  host_view_->ink_drop_ = std::move(ink_drop);
+void InkDropHostTestApi::SetInkDrop(std::unique_ptr<InkDrop> ink_drop,
+                                    bool handles_gesture_events) {
+  ink_drop_host_->SetMode(
+      handles_gesture_events
+          ? views::InkDropHost::InkDropMode::ON
+          : views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  ink_drop_host_->ink_drop_ = std::move(ink_drop);
 }
 
-void InkDropHostViewTestApi::SetInkDrop(std::unique_ptr<InkDrop> ink_drop) {
+void InkDropHostTestApi::SetInkDrop(std::unique_ptr<InkDrop> ink_drop) {
   SetInkDrop(std::move(ink_drop), true);
 }
 
-bool InkDropHostViewTestApi::HasInkDrop() const {
-  return host_view_->HasInkDrop();
+bool InkDropHostTestApi::HasInkDrop() const {
+  return ink_drop_host_->HasInkDrop();
 }
 
-InkDrop* InkDropHostViewTestApi::GetInkDrop() {
-  return host_view_->GetInkDrop();
+InkDrop* InkDropHostTestApi::GetInkDrop() {
+  return ink_drop_host_->GetInkDrop();
 }
 
-gfx::Point InkDropHostViewTestApi::GetInkDropCenterBasedOnLastEvent() const {
-  return host_view_->GetInkDropCenterBasedOnLastEvent();
-}
-
-void InkDropHostViewTestApi::AnimateInkDrop(InkDropState state,
-                                            const ui::LocatedEvent* event) {
-  host_view_->AnimateInkDrop(state, event);
+void InkDropHostTestApi::AnimateToState(InkDropState state,
+                                        const ui::LocatedEvent* event) {
+  ink_drop_host_->AnimateToState(state, event);
 }
 
 }  // namespace test

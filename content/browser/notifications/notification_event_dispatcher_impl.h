@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_database_data.h"
@@ -28,13 +27,18 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   // on the UI thread.
   static NotificationEventDispatcherImpl* GetInstance();
 
+  NotificationEventDispatcherImpl(const NotificationEventDispatcherImpl&) =
+      delete;
+  NotificationEventDispatcherImpl& operator=(
+      const NotificationEventDispatcherImpl&) = delete;
+
   // NotificationEventDispatcher implementation.
   void DispatchNotificationClickEvent(
       BrowserContext* browser_context,
       const std::string& notification_id,
       const GURL& origin,
-      const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const absl::optional<int>& action_index,
+      const absl::optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) override;
   void DispatchNotificationCloseEvent(
       BrowserContext* browser_context,
@@ -82,8 +86,6 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   std::map<std::string,
            mojo::Remote<blink::mojom::NonPersistentNotificationListener>>
       non_persistent_notification_listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationEventDispatcherImpl);
 };
 
 }  // namespace content

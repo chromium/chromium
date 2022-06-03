@@ -8,17 +8,13 @@
 #include "components/sync/driver/data_type_manager.h"
 
 #include <map>
-#include <vector>
 
-#include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
-#include "components/sync/driver/model_association_manager.h"
+#include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
 
 namespace syncer {
@@ -29,20 +25,19 @@ class DataTypeEncryptionHandler;
 class DataTypeManagerObserver;
 struct DataTypeConfigurationStats;
 
-// List of data types grouped by priority and ordered from high priority to
-// low priority.
-using TypeSetPriorityList = base::queue<ModelTypeSet>;
-
 class DataTypeManagerImpl : public DataTypeManager,
-                            public ModelAssociationManagerDelegate {
+                            public ModelLoadManagerDelegate {
  public:
   DataTypeManagerImpl(
-      ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const DataTypeController::TypeMap* controllers,
       const DataTypeEncryptionHandler* encryption_handler,
       ModelTypeConfigurer* configurer,
       DataTypeManagerObserver* observer);
+
+  DataTypeManagerImpl(const DataTypeManagerImpl&) = delete;
+  DataTypeManagerImpl& operator=(const DataTypeManagerImpl&) = delete;
+
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
@@ -56,33 +51,18 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   void Stop(ShutdownReason reason) override;
   ModelTypeSet GetActiveDataTypes() const override;
-  bool IsNigoriEnabled() const override;
+  ModelTypeSet GetPurgedDataTypes() const override;
   State state() const override;
 
-  // |ModelAssociationManagerDelegate| implementation.
-  void OnSingleDataTypeWillStart(ModelType type) override;
+  // |ModelLoadManagerDelegate| implementation.
   void OnAllDataTypesReadyForConfigure() override;
-  void OnSingleDataTypeAssociationDone(
-      ModelType type,
-      const DataTypeAssociationStats& association_stats) override;
-  void OnModelAssociationDone(
-      const DataTypeManager::ConfigureResult& result) override;
   void OnSingleDataTypeWillStop(ModelType type,
                                 const SyncError& error) override;
 
-  // Used by unit tests. TODO(sync) : This would go away if we made
-  // this class be able to do Dependency injection. crbug.com/129212.
-  ModelAssociationManager* GetModelAssociationManagerForTesting() {
-    return &model_association_manager_;
+  bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
+  ConfigureReason last_configure_reason_for_test() {
+    return last_requested_context_.reason;
   }
-
- protected:
-  // Returns the priority types (control + priority user types).
-  // Virtual for overriding during tests.
-  virtual ModelTypeSet GetPriorityTypes() const;
-
-  // The set of types whose initial download of sync data has completed.
-  ModelTypeSet downloaded_types_;
 
  private:
   enum DataTypeConfigState {
@@ -91,8 +71,6 @@ class DataTypeManagerImpl : public DataTypeManager,
     CONFIGURE_INACTIVE,  // Already configured or to be configured in future.
                          // Data of such types is left as it is, no
                          // downloading or purging.
-    CONFIGURE_CLEAN,     // Actively being configured but requiring unapply
-                         // and GetUpdates first (e.g. for persistence errors).
     DISABLED,            // Not syncing. Disabled by user.
     FATAL,               // Not syncing due to unrecoverable error.
     CRYPTO,              // Not syncing due to a cryptographer error.
@@ -100,18 +78,25 @@ class DataTypeManagerImpl : public DataTypeManager,
   };
   using DataTypeConfigStateMap = std::map<ModelType, DataTypeConfigState>;
 
-  // Helper enum for identifying which types within a priority group to
-  // associate.
-  enum AssociationGroup {
-    // Those types that were already downloaded and didn't have an error at
-    // configuration time. Corresponds with AssociationTypesInfo's
-    // |ready_types|. These types can start associating as soon as the
-    // ModelAssociationManager is not busy.
-    READY_AT_CONFIG,
-    // All other types, including first time sync types and those that have
-    // encountered an error. These types must wait until the syncer has done
-    // any db changes and/or downloads before associating.
-    UNREADY_AT_CONFIG,
+  struct AssociationTypesInfo {
+    AssociationTypesInfo();
+    AssociationTypesInfo(const AssociationTypesInfo& other);
+    ~AssociationTypesInfo();
+
+    // Pending types. This is generally the same as
+    // |configuration_types_queue_.front()|.
+    ModelTypeSet types;
+    // Types that have just been downloaded. This includes types that had
+    // previously encountered an error and had to be purged.
+    // This is a subset of |types|.
+    ModelTypeSet first_sync_types;
+    // Time at which |types| began downloading.
+    base::Time download_start_time;
+    // Time at which |types| finished downloading.
+    base::Time download_ready_time;
+    // The set of types that are higher priority, and were therefore blocking
+    // the download of |types|.
+    ModelTypeSet higher_priority_types_before;
   };
 
   // Return model types in |state_map| that match |state|.
@@ -124,17 +109,13 @@ class DataTypeManagerImpl : public DataTypeManager,
                                 ModelTypeSet types,
                                 DataTypeConfigStateMap* state_map);
 
-  // Prepare the parameters for the configurer's configuration. Returns the set
-  // of types that are already ready for association.
-  ModelTypeSet PrepareConfigureParams(
-      ModelTypeConfigurer::ConfigureParams* params);
-
-  // Abort configuration and stop all data types due to configuration errors.
-  void Abort(ConfigureStatus status);
+  // Prepare the parameters for the configurer's configuration.
+  ModelTypeConfigurer::ConfigureParams PrepareConfigureParams(
+      const AssociationTypesInfo& association_types_info);
 
   // Divide |types| into sets by their priorities and return the sets from
   // high priority to low priority.
-  TypeSetPriorityList PrioritizeTypes(const ModelTypeSet& types);
+  base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types);
 
   // Update precondition state of types in data_type_status_table_ to match
   // value of DataTypeController::GetPreconditionState().
@@ -145,16 +126,13 @@ class DataTypeManagerImpl : public DataTypeManager,
   // was an actual change.
   bool UpdatePreconditionError(ModelType type);
 
-  // Post a task to reconfigure when no downloading or association are running.
+  // Starts a reconfiguration if it's required and no configuration is running.
   void ProcessReconfigure();
 
-  // Programmatically force reconfiguration of data type (if needed).
+  // Programmatically force reconfiguration of all data types (if needed).
   void ForceReconfiguration();
 
   void Restart();
-  void DownloadReady(ModelTypeSet types_to_download,
-                     ModelTypeSet first_sync_types,
-                     ModelTypeSet failed_configuration_types);
 
   void NotifyStart();
   void NotifyDone(const ConfigureResult& result);
@@ -162,69 +140,76 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ConfigureImpl(ModelTypeSet desired_types,
                      const ConfigureContext& context);
 
-  // Calls data type controllers of requested types to register with backend.
-  void RegisterTypesWithBackend();
+  // Calls data type controllers of requested types to connect.
+  void ConnectDataTypes();
 
   DataTypeConfigStateMap BuildDataTypeConfigStateMap(
       const ModelTypeSet& types_being_configured) const;
 
-  // Start download of next set of types in |download_types_queue_| (if
-  // any exist, does nothing otherwise).
-  // Will kick off association of any new ready types.
-  void StartNextDownload(ModelTypeSet high_priority_types_before);
+  // Start configuration of next set of types in |configuration_types_queue_|
+  // (if any exist, does nothing otherwise).
+  void StartNextConfiguration(ModelTypeSet higher_priority_types_before);
+  void ConfigurationCompleted(AssociationTypesInfo association_types_info,
+                              ModelTypeSet configured_types,
+                              ModelTypeSet succeeded_configuration_types,
+                              ModelTypeSet failed_configuration_types);
 
-  // Start association of next batch of data types after association of
-  // previous batch finishes. |group| controls which set of types within
-  // an AssociationTypesInfo to associate. Does nothing if model associator
-  // is busy performing association.
-  void StartNextAssociation(AssociationGroup group);
+  void RecordConfigurationStats(
+      const AssociationTypesInfo& association_types_info);
+  void RecordConfigurationStatsImpl(
+      const AssociationTypesInfo& association_types_info,
+      ModelType type,
+      ModelTypeSet same_priority_types_configured_before);
 
   void StopImpl(ShutdownReason reason);
 
-  // Returns the currently enabled types.
   ModelTypeSet GetEnabledTypes() const;
 
-  ModelTypeConfigurer* configurer_;
+  ModelTypeConfigurer* const configurer_;
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const DataTypeController::TypeMap* controllers_;
-  State state_;
+  const DataTypeController::TypeMap* const controllers_;
+
+  State state_ = DataTypeManager::STOPPED;
+
+  // The set of types whose initial download of sync data has completed.
+  // Note: This class mostly doesn't handle control types (i.e. NIGORI) -
+  // |controllers_| doesn't contain an entry for NIGORI, and by the time this
+  // class gets instantiated, NIGORI is already up and running. It still has to
+  // be maintained as part of |downloaded_types_|, however, since in some edge
+  // cases (notably PurgeForMigration()), this class might have to trigger a
+  // re-download of NIGORI data.
+  ModelTypeSet downloaded_types_ = ControlTypes();
 
   // Types that requested in current configuration cycle.
   ModelTypeSet last_requested_types_;
 
   // Context information (e.g. the reason) for the last reconfigure attempt.
-  // Note: this will be set to a valid value only when |needs_reconfigure_| is
-  // set.
   ConfigureContext last_requested_context_;
 
-  // A set of types that were enabled at the time initialization with the
-  // |model_association_manager_| was last attempted.
+  // A set of types that were enabled at the time of Restart().
   ModelTypeSet last_enabled_types_;
 
   // A set of types that should be redownloaded even if initial sync is
   // completed for them.
-  // TODO(crbug.com/967677): Once all datatypes are in USS, we should redesign
-  // this class and for example compute |downloaded_types_|'s initial value
-  // only after all datatypes have loaded for the first time.
   ModelTypeSet force_redownload_types_;
 
   // Whether an attempt to reconfigure was made while we were busy configuring.
   // The |last_requested_types_| will reflect the newest set of requested types.
-  bool needs_reconfigure_;
+  bool needs_reconfigure_ = false;
 
   // The last time Restart() was called.
   base::Time last_restart_time_;
 
-  // Sync's datatype debug info listener, which we pass model association
+  // Sync's datatype debug info listener, which we pass model configuration
   // statistics to.
   const WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
 
-  // The manager that handles the model association of the individual types.
-  ModelAssociationManager model_association_manager_;
+  // The manager that loads the local models of the data types.
+  ModelLoadManager model_load_manager_;
 
-  // DataTypeManager must have only one observer -- the ProfileSyncService that
+  // DataTypeManager must have only one observer -- the SyncServiceImpl that
   // created it and manages its lifetime.
   DataTypeManagerObserver* const observer_;
 
@@ -232,56 +217,17 @@ class DataTypeManagerImpl : public DataTypeManager,
   // configuring backend.
   DataTypeStatusTable data_type_status_table_;
 
-  // Types waiting to be downloaded.
-  TypeSetPriorityList download_types_queue_;
-
-  // Types waiting for association and related time tracking info.
-  struct AssociationTypesInfo {
-    AssociationTypesInfo();
-    AssociationTypesInfo(const AssociationTypesInfo& other);
-    ~AssociationTypesInfo();
-
-    // Types to associate.
-    ModelTypeSet types;
-    // Types that have just been downloaded and are being associated for the
-    // first time. This includes types that had previously encountered an error
-    // and had to be purged/unapplied from the sync db.
-    // This is a subset of |types|.
-    ModelTypeSet first_sync_types;
-    // Types that were already ready for association at configuration time.
-    ModelTypeSet ready_types;
-    // Time at which |types| began downloading.
-    base::Time download_start_time;
-    // Time at which |types| finished downloading.
-    base::Time download_ready_time;
-    // Time at which the association for |read_types| began.
-    base::Time ready_association_request_time;
-    // Time at which the association for |types| began (not relevant to
-    // |ready_types|.
-    base::Time full_association_request_time;
-    // The set of types that are higher priority (and were therefore blocking)
-    // the association of |types|.
-    ModelTypeSet high_priority_types_before;
-    // The subset of |types| that were successfully configured.
-    ModelTypeSet configured_types;
-  };
-  base::queue<AssociationTypesInfo> association_types_queue_;
+  // Types waiting to be configured, prioritized (highest priority first).
+  base::queue<ModelTypeSet> configuration_types_queue_;
 
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
   const DataTypeEncryptionHandler* encryption_handler_;
 
-  // Association and time stats of data type configuration.
-  std::vector<DataTypeConfigurationStats> configuration_stats_;
-
-  // Configuration process is started when ModelAssociationManager notifies
-  // DataTypeManager that all types are ready for configure.
-  // This flag ensures that this process is started only once.
-  bool download_started_;
+  // Timing stats of data type configuration.
+  std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeManagerImpl);
 };
 
 }  // namespace syncer

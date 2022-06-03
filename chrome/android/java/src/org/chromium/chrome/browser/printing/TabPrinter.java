@@ -55,12 +55,12 @@ public class TabPrinter implements Printable {
     @Override
     public String getTitle() {
         Tab tab = mTab.get();
-        if (tab == null) return mDefaultTitle;
+        if (tab == null || !tab.isInitialized()) return mDefaultTitle;
 
         String title = tab.getTitle();
         if (!TextUtils.isEmpty(title)) return title;
 
-        String url = tab.getUrl();
+        String url = tab.getUrl().getSpec();
         if (!TextUtils.isEmpty(url)) return url;
 
         return mDefaultTitle;

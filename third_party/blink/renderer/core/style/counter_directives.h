@@ -28,11 +28,11 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/clamped_math.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
@@ -42,65 +42,61 @@ class CounterDirectives {
   DISALLOW_NEW();
 
  public:
-  CounterDirectives()
-      : is_reset_set_(false),
-        is_increment_set_(false),
-        reset_value_(0),
-        increment_value_(0) {}
+  CounterDirectives() = default;
 
   // FIXME: The code duplication here could possibly be replaced by using two
   // maps, or by using a container that held two generic Directive objects.
 
-  bool IsReset() const { return is_reset_set_; }
-  int ResetValue() const { return reset_value_; }
-  void SetResetValue(int value) {
-    reset_value_ = value;
-    is_reset_set_ = true;
-  }
-  void ClearReset() {
-    reset_value_ = 0;
-    is_reset_set_ = false;
-  }
+  bool IsReset() const { return !!reset_value_; }
+  int ResetValue() const { return *reset_value_; }
+  void SetResetValue(int value) { reset_value_ = value; }
+  void ClearReset() { reset_value_.reset(); }
   void InheritReset(const CounterDirectives& parent) {
     reset_value_ = parent.reset_value_;
-    is_reset_set_ = parent.is_reset_set_;
   }
 
-  bool IsIncrement() const { return is_increment_set_; }
-  int IncrementValue() const { return increment_value_; }
+  bool IsIncrement() const { return !!increment_value_; }
+  int IncrementValue() const { return *increment_value_; }
   void AddIncrementValue(int value) {
-    increment_value_ = clampTo<int>((double)increment_value_ + value);
-    is_increment_set_ = true;
+    increment_value_ = base::ClampAdd(increment_value_.value_or(0), value);
   }
-  void ClearIncrement() {
-    increment_value_ = 0;
-    is_increment_set_ = false;
-  }
+  void ClearIncrement() { increment_value_.reset(); }
   void InheritIncrement(const CounterDirectives& parent) {
     increment_value_ = parent.increment_value_;
-    is_increment_set_ = parent.is_increment_set_;
   }
 
-  bool IsDefined() const { return IsReset() || IsIncrement(); }
+  bool IsSet() const { return !!set_value_; }
+  int SetValue() const { return *set_value_; }
+  void SetSetValue(int value) { set_value_ = value; }
+  void ClearSet() { set_value_.reset(); }
+  void InheritSet(const CounterDirectives& parent) {
+    set_value_ = parent.set_value_;
+  }
+
+  bool IsDefined() const { return IsReset() || IsIncrement() || IsSet(); }
 
   int CombinedValue() const {
-    DCHECK(is_reset_set_ || !reset_value_);
-    DCHECK(is_increment_set_ || !increment_value_);
+    // If there is a counter-set, it overrides over values.
+    // https://drafts.csswg.org/css-lists-3/#auto-numbering
+    if (IsSet())
+      return SetValue();
+
     // According to the spec, if an increment would overflow or underflow the
     // counter, we are allowed to ignore the increment.
     // https://drafts.csswg.org/css-lists-3/#valdef-counter-reset-custom-ident-integer
-    return base::CheckAdd(reset_value_, increment_value_)
-        .ValueOrDefault(reset_value_);
+    return base::CheckAdd(reset_value_.value_or(0),
+                          increment_value_.value_or(0))
+        .ValueOrDefault(reset_value_.value_or(0));
   }
 
+  friend bool operator==(const CounterDirectives&, const CounterDirectives&);
+
  private:
-  bool is_reset_set_;
-  bool is_increment_set_;
-  int reset_value_;
-  int increment_value_;
+  absl::optional<int> reset_value_;
+  absl::optional<int> increment_value_;
+  absl::optional<int> set_value_;
 };
 
-bool operator==(const CounterDirectives&, const CounterDirectives&);
 inline bool operator!=(const CounterDirectives& a, const CounterDirectives& b) {
   return !(a == b);
 }

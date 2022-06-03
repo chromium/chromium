@@ -24,6 +24,10 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
 
+namespace base {
+class Clock;
+}
+
 namespace net {
 class NetLog;
 }  // namespace net
@@ -35,6 +39,10 @@ namespace disk_cache {
 class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
  public:
   explicit MemBackendImpl(net::NetLog* net_log);
+
+  MemBackendImpl(const MemBackendImpl&) = delete;
+  MemBackendImpl& operator=(const MemBackendImpl&) = delete;
+
   ~MemBackendImpl() override;
 
   // Returns an instance of a Backend implemented only in memory. The returned
@@ -72,7 +80,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   void OnEntryDoomed(MemEntryImpl* entry);
 
   // Adjust the current size of this backend by |delta|. This is used to
-  // determine if eviction is neccessary and when eviction is finished.
+  // determine if eviction is necessary and when eviction is finished.
   void ModifyStorageSize(int32_t delta);
 
   // Returns true if the cache's size is greater than the maximum allowed
@@ -82,6 +90,9 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // Sets a callback to be posted after we are destroyed. Should be called at
   // most once.
   void SetPostCleanupCallback(base::OnceClosure cb);
+
+  static base::Time Now(const base::WeakPtr<MemBackendImpl>& self);
+  void SetClockForTesting(base::Clock* clock);  // doesn't take ownership.
 
   // Backend interface.
   int32_t GetEntryCount() const override;
@@ -112,9 +123,6 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(base::StringPairs* stats) override {}
   void OnExternalCacheHit(const std::string& key) override;
-  size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const override;
 
  private:
   class MemIterator;
@@ -132,6 +140,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
+  base::Clock* custom_clock_for_testing_;  // usually nullptr.
+
   EntryMap entries_;
 
   // Stored in increasing order of last use time, from least recently used to
@@ -147,8 +157,6 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   base::MemoryPressureListener memory_pressure_listener_;
 
   base::WeakPtrFactory<MemBackendImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MemBackendImpl);
 };
 
 }  // namespace disk_cache

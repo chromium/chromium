@@ -5,22 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 
-#include "base/macros.h"
-#include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/events/pointer_event.h"
-#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
 class LocalFrame;
 class MouseEventManager;
+class GestureManager;
+class WebPointerProperties;
 
 // This class takes care of dispatching all pointer events and keeps track of
 // properties of active pointer events.
@@ -28,7 +24,9 @@ class CORE_EXPORT PointerEventManager final
     : public GarbageCollected<PointerEventManager> {
  public:
   PointerEventManager(LocalFrame&, MouseEventManager&);
-  void Trace(blink::Visitor*);
+  PointerEventManager(const PointerEventManager&) = delete;
+  PointerEventManager& operator=(const PointerEventManager&) = delete;
+  void Trace(Visitor*) const;
 
   // This is the unified path for handling all input device events. This may
   // cause firing DOM pointerevents, mouseevent, and touch events accordingly.
@@ -45,7 +43,6 @@ class CORE_EXPORT PointerEventManager final
   // in this function.
   WebInputEventResult SendMousePointerEvent(
       Element* target,
-      const String& canvas_region_id,
       const WebInputEvent::Type,
       const WebMouseEvent&,
       const Vector<WebMouseEvent>& coalesced_events,
@@ -59,7 +56,6 @@ class CORE_EXPORT PointerEventManager final
   // and their corresponding boundary events will be handled altogether by
   // sendMousePointerEvent function.
   void SendMouseAndPointerBoundaryEvents(Element* entered_element,
-                                         const String& canvas_region_id,
                                          const WebMouseEvent&);
 
   WebInputEventResult DirectDispatchMousePointerEvent(
@@ -67,15 +63,17 @@ class CORE_EXPORT PointerEventManager final
       const WebMouseEvent&,
       const AtomicString& event_type,
       const Vector<WebMouseEvent>& coalesced_events,
-      const Vector<WebMouseEvent>& predicted_events,
-      const String& canvas_node_id = String());
+      const Vector<WebMouseEvent>& predicted_events);
 
   // Resets the internal state of this object.
   void Clear();
 
   void ElementRemoved(Element*);
 
-  bool SetPointerCapture(PointerId, Element*);
+  // Starts capturing of all events with the given |PointerId| to the given
+  // |Element|.  The paramenter |explicit_capture| identifies if this call was
+  // triggered by an explicit |elem.setPointerCapture()| call from JS.
+  bool SetPointerCapture(PointerId, Element*, bool explicit_capture);
   bool ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
 
@@ -107,12 +105,17 @@ class CORE_EXPORT PointerEventManager final
   // function.
   WebInputEventResult FlushEvents();
 
- private:
-  class EventTargetAttributes {
-    DISALLOW_NEW();
+  void SetGestureManager(GestureManager* gesture_manager);
 
+  // Returns the id of the pointer event corresponding to the given pointer
+  // properties if exists otherwise s_invalidId.
+  int GetPointerEventId(
+      const WebPointerProperties& web_pointer_properties) const;
+
+ private:
+  class EventTargetAttributes : public GarbageCollected<EventTargetAttributes> {
    public:
-    void Trace(blink::Visitor* visitor) { visitor->Trace(target); }
+    void Trace(Visitor* visitor) const { visitor->Trace(target); }
     Member<Element> target;
     EventTargetAttributes() : target(nullptr) {}
     EventTargetAttributes(Element* target) : target(target) {}
@@ -126,11 +129,15 @@ class CORE_EXPORT PointerEventManager final
                   WTF::IntHash<int64_t>,
                   WTF::UnsignedWithZeroKeyHashTraits<int64_t>>;
   using PointerCapturingMap = PointerIdKeyMap<Member<Element>>;
-  using ElementUnderPointerMap = PointerIdKeyMap<EventTargetAttributes>;
+  using ElementUnderPointerMap = PointerIdKeyMap<Member<EventTargetAttributes>>;
 
   class PointerEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
    public:
     PointerEventBoundaryEventDispatcher(PointerEventManager*, PointerEvent*);
+    PointerEventBoundaryEventDispatcher(
+        const PointerEventBoundaryEventDispatcher&) = delete;
+    PointerEventBoundaryEventDispatcher& operator=(
+        const PointerEventBoundaryEventDispatcher&) = delete;
 
    protected:
     void DispatchOut(EventTarget*, EventTarget* related_target) override;
@@ -149,9 +156,8 @@ class CORE_EXPORT PointerEventManager final
                   EventTarget* related_target,
                   const AtomicString&,
                   bool check_for_listener);
-    Member<PointerEventManager> pointer_event_manager_;
-    Member<PointerEvent> pointer_event_;
-    DISALLOW_COPY_AND_ASSIGN(PointerEventBoundaryEventDispatcher);
+    PointerEventManager* pointer_event_manager_;
+    PointerEvent* pointer_event_;
   };
 
   // Sends pointercancels for existing PointerEvents that are interrupted.
@@ -168,8 +174,7 @@ class CORE_EXPORT PointerEventManager final
       const AtomicString& mouse_event_name,
       const WebMouseEvent&,
       const Vector<WebMouseEvent>& coalesced_events,
-      const Vector<WebMouseEvent>& predicted_events,
-      const String& canvas_region_id);
+      const Vector<WebMouseEvent>& predicted_events);
 
   // Returns PointerEventTarget for a WebTouchPoint, hit-testing as necessary.
   event_handling_util::PointerEventTarget ComputePointerEventTarget(
@@ -212,7 +217,6 @@ class CORE_EXPORT PointerEventManager final
   Element* ProcessCaptureAndPositionOfPointerEvent(
       PointerEvent*,
       Element* hit_test_target,
-      const String& canvas_region_id = String(),
       const WebMouseEvent* = nullptr);
 
   void RemoveTargetFromPointerCapturingMapping(PointerCapturingMap&,
@@ -279,7 +283,7 @@ class CORE_EXPORT PointerEventManager final
   bool skip_touch_filter_discrete_ = false;
   bool skip_touch_filter_all_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(PointerEventManager);
+  Member<GestureManager> gesture_manager_;
 };
 
 }  // namespace blink

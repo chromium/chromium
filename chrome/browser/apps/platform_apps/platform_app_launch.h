@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
 class GURL;
 class Profile;
 
@@ -14,6 +16,10 @@ namespace base {
 class CommandLine;
 class FilePath;
 }  // namespace base
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace apps {
 
@@ -30,6 +36,14 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 // and false otherwise.
 bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id);
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Opens the deprecated Chrome Apps flow if |app_id| refers to a Chrome App and
+// Chrome Apps are deprecated on the |profile|. Returns true if that was the
+// case, or false otherwise.
+bool OpenDeprecatedApplicationPrompt(Profile* profile,
+                                     const std::string& app_id);
+#endif
+
 // Tries to open |app_id|, and prompts the user if the app is disabled. Returns
 // true if the app was successfully opened and false otherwise.
 // Handles the case If |app_id| is a disabled or terminated platform app.
@@ -40,9 +54,10 @@ bool OpenExtensionApplicationWithReenablePrompt(
     const base::FilePath& current_directory);
 
 // Tries to open an application window by app's |url|.
-// Returns true if |url| was successfully opened in a window, and false
-// otherwise.
-bool OpenExtensionAppShortcutWindow(Profile* profile, const GURL& url);
+// Returns web contents if |url| was successfully opened in a window, and
+// nullptr otherwise.
+content::WebContents* OpenExtensionAppShortcutWindow(Profile* profile,
+                                                     const GURL& url);
 
 // Records the restored app launch for UMA.
 void RecordExtensionAppLaunchOnTabRestored(Profile* profile, const GURL& url);

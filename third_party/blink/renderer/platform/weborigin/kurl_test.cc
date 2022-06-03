@@ -35,10 +35,14 @@
 
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/gurl.h"
+#include "url/gurl_abstract_tests.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -257,7 +261,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   UChar invalid_expected_helper[6] = {0x00e4, 0x00a0, 0x00e5,
                                       0x00a5, 0x00bd, 0};
   String invalid_expected(
-      reinterpret_cast<const ::UChar*>(invalid_expected_helper), 5);
+      reinterpret_cast<const ::UChar*>(invalid_expected_helper), 5u);
   EXPECT_EQ(invalid_expected, invalid);
 }
 
@@ -295,7 +299,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
 
   // Also test that it gets converted to UTF-8 properly.
   UChar wide_input_helper[3] = {0x4f60, 0x597d, 0};
-  String wide_input(reinterpret_cast<const ::UChar*>(wide_input_helper), 2);
+  String wide_input(reinterpret_cast<const ::UChar*>(wide_input_helper), 2u);
   String wide_reference("%E4%BD%A0%E5%A5%BD");
   String wide_output = EncodeWithURLEscapeSequences(wide_input);
   EXPECT_EQ(wide_reference, wide_output);
@@ -447,6 +451,13 @@ TEST(KURLTest, AbsolutePotentiallyDanglingMarkup) {
               input.PotentiallyDanglingMarkup());
     EXPECT_FALSE(expected.PotentiallyDanglingMarkup());
   }
+}
+
+TEST(KURLTest, PotentiallyDanglingMarkupAfterFragmentRemoval) {
+  KURL url("ht\ntps://example.com/yay?<boo#foo");
+  EXPECT_TRUE(url.PotentiallyDanglingMarkup());
+  url.RemoveFragmentIdentifier();
+  EXPECT_TRUE(url.PotentiallyDanglingMarkup());
 }
 
 TEST(KURLTest, ResolveEmpty) {
@@ -770,10 +781,12 @@ TEST(KURLTest, DeepCopyInnerURL) {
 
 TEST(KURLTest, LastPathComponent) {
   const KURL url1("http://host/path/to/file.txt");
+  EXPECT_TRUE(url1.IsValid());
   EXPECT_EQ("file.txt", url1.LastPathComponent());
 
   const KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(String(), invalid_utf8.LastPathComponent());
+  EXPECT_FALSE(invalid_utf8.IsValid());
+  EXPECT_EQ("", invalid_utf8.LastPathComponent());
 }
 
 TEST(KURLTest, IsHierarchical) {
@@ -782,9 +795,10 @@ TEST(KURLTest, IsHierarchical) {
   // url never has a valid hostname (the inner URL does)."
   const char* standard_urls[] = {
       "http://host/path/to/file.txt",
+      "http://a@9%aa%:/path/to/file.txt",  // Invalid, but hierarchical.
       "ftp://andrew.cmu.edu/foo",
       "file:///path/to/resource",
-      "file://hostname/etc/"
+      "file://hostname/etc/",
       "filesystem:http://www.google.com/type/",
       "filesystem:http://user:pass@google.com:21/blah#baz",
   };
@@ -800,7 +814,6 @@ TEST(KURLTest, IsHierarchical) {
   const char* nonstandard_urls[] = {
       "blob:null/guid-goes-here",
       "blob:http://example.com/guid-goes-here",
-      "http://a@9%aa%:/path/to/file.txt",
       "about:blank://hostname",
       "about:blank",
       "javascript:void(0);",
@@ -821,7 +834,7 @@ TEST(KURLTest, PathAfterLastSlash) {
   EXPECT_EQ(20u, url1.PathAfterLastSlash());
 
   KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(0u, invalid_utf8.PathAfterLastSlash());
+  EXPECT_EQ(22u, invalid_utf8.PathAfterLastSlash());
 }
 
 TEST(KURLTest, ProtocolIsInHTTPFamily) {
@@ -849,28 +862,236 @@ TEST(KURLTest, ProtocolIs) {
   EXPECT_EQ(capital.Protocol(), "http");
 }
 
-TEST(KURLTest, strippedForUseAsReferrer) {
+TEST(KURLTest, urlStrippedForUseAsReferrer) {
   struct ReferrerCase {
-    const char* input;
-    const char* output;
+    const String input;
+    const String output;
   } referrer_cases[] = {
-      {"data:text/html;charset=utf-8,<html></html>", ""},
-      {"javascript:void(0);", ""},
-      {"about:config", ""},
+      {"data:text/html;charset=utf-8,<html></html>", String()},
+      {"javascript:void(0);", String()},
+      {"about:config", String()},
       {"https://www.google.com/", "https://www.google.com/"},
       {"http://me@news.google.com:8888/", "http://news.google.com:8888/"},
       {"http://:pass@news.google.com:8888/foo",
        "http://news.google.com:8888/foo"},
       {"http://me:pass@news.google.com:8888/", "http://news.google.com:8888/"},
       {"https://www.google.com/a?f#b", "https://www.google.com/a?f"},
-      {"file:///tmp/test.html", ""},
+      {"file:///tmp/test.html", String()},
       {"https://www.google.com/#", "https://www.google.com/"},
   };
 
-  for (size_t i = 0; i < base::size(referrer_cases); i++) {
-    const KURL kurl(referrer_cases[i].input);
-    EXPECT_EQ(referrer_cases[i].output, kurl.StrippedForUseAsReferrer().Utf8());
+  for (const ReferrerCase& referrer_case : referrer_cases) {
+    const KURL kurl(referrer_case.input);
+    EXPECT_EQ(KURL(referrer_case.output), kurl.UrlStrippedForUseAsReferrer());
   }
+}
+
+TEST(KURLTest, urlStrippedForUseAsReferrerRespectsReferrerScheme) {
+  const KURL example_http_url = KURL("http://example.com/");
+  const KURL foobar_url = KURL("foobar://somepage/");
+  const String foobar_scheme = String::FromUTF8("foobar");
+
+  EXPECT_EQ("", foobar_url.StrippedForUseAsReferrer().Utf8());
+
+  SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);
+  EXPECT_EQ("foobar://somepage/", foobar_url.StrippedForUseAsReferrer());
+  SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(foobar_scheme);
+}
+
+TEST(KURLTest, strippedForUseAsReferrer) {
+  struct ReferrerCase {
+    const char* input;
+    const String output;
+  } referrer_cases[] = {
+      {"data:text/html;charset=utf-8,<html></html>", String()},
+      {"javascript:void(0);", String()},
+      {"about:config", String()},
+      {"https://www.google.com/", "https://www.google.com/"},
+      {"http://me@news.google.com:8888/", "http://news.google.com:8888/"},
+      {"http://:pass@news.google.com:8888/foo",
+       "http://news.google.com:8888/foo"},
+      {"http://me:pass@news.google.com:8888/", "http://news.google.com:8888/"},
+      {"https://www.google.com/a?f#b", "https://www.google.com/a?f"},
+      {"file:///tmp/test.html", String()},
+      {"https://www.google.com/#", "https://www.google.com/"},
+  };
+
+  for (const ReferrerCase& referrer_case : referrer_cases) {
+    const KURL kurl(referrer_case.input);
+    EXPECT_EQ(referrer_case.output, kurl.StrippedForUseAsReferrer());
+  }
+}
+
+TEST(KURLTest, ThreadSafesStaticKurlGetters) {
+#if DCHECK_IS_ON()
+  // Simulate the static getters being called during/after threads have been
+  // started, so that StaticSingleton's thread checks will be applied.
+  WTF::WillCreateThread();
+#endif
+
+  // Take references to the static KURLs, so that each has two references to
+  // its internal StringImpl, rather than one.
+  KURL blank_url = BlankURL();
+  EXPECT_FALSE(blank_url.IsEmpty());
+  KURL srcdoc_url = SrcdocURL();
+  EXPECT_FALSE(srcdoc_url.IsEmpty());
+  KURL null_url = NullURL();
+  EXPECT_TRUE(null_url.IsNull());
+
+  auto thread =
+      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread));
+  thread->GetTaskRunner()->PostTask(FROM_HERE, base::BindOnce([]() {
+                                      // Reference each of the static KURLs
+                                      // again, from the background thread,
+                                      // which should succeed without thread
+                                      // verifier checks firing.
+                                      KURL blank_url = BlankURL();
+                                      EXPECT_FALSE(blank_url.IsEmpty());
+                                      KURL srcdoc_url = SrcdocURL();
+                                      EXPECT_FALSE(srcdoc_url.IsEmpty());
+                                      KURL null_url = NullURL();
+                                      EXPECT_TRUE(null_url.IsNull());
+                                    }));
+
+#if DCHECK_IS_ON()
+  // Restore the IsBeforeThreadCreated() flag.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
+}
+
+// Setting protocol to "file" should not work if the URL has credentials or a
+// port.
+TEST(KURLTest, FailToSetProtocolToFile) {
+  constexpr const char* kShouldNotChange[] = {
+      "http://foo@localhost/",
+      "http://:bar@localhost/",
+      "http://localhost:8000/",
+  };
+
+  for (const char* url_string : kShouldNotChange) {
+    KURL url(url_string);
+    auto port_before = url.Port();
+    auto user_before = url.User();
+    auto pass_before = url.Pass();
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << url_string;
+    EXPECT_EQ(url.Protocol(), "http") << "with url " << url_string;
+
+    EXPECT_EQ(url.Port(), port_before) << "with url " << url_string;
+    EXPECT_EQ(url.User(), user_before) << "with url " << url_string;
+    EXPECT_EQ(url.Pass(), pass_before) << "with url " << url_string;
+  }
+}
+
+// If the source URL is invalid, then it behaves like it has an empty
+// protocol, so the conversion to a file URL can go ahead.
+TEST(KURL, SetProtocolToFileFromInvalidURL) {
+  enum ValidAfterwards {
+    kValid,
+    kInvalid,
+  };
+  struct URLAndExpectedValidity {
+    const char* const url;
+    const ValidAfterwards validity;
+  };
+
+  // The URLs are reparsed when the protocol is changed, and most of
+  // them are converted to a form which is valid. The second argument
+  // reflects the validity after the transformation. All the URLs are
+  // invalid before it.
+  constexpr URLAndExpectedValidity kInvalidURLs[] = {
+      {"http://@/", kValid},          {"http://@@/", kValid},
+      {"http://::/", kInvalid},       {"http://:/", kValid},
+      {"http://:@/", kValid},         {"http://@:/", kValid},
+      {"http://:@:/", kValid},        {"http://foo@/", kValid},
+      {"http://localhost:/", kValid},
+  };
+
+  for (const auto& invalid_url : kInvalidURLs) {
+    KURL url(invalid_url.url);
+
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.Protocol(), invalid_url.validity == kValid ? "file" : "")
+        << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.IsValid() ? kValid : kInvalid, invalid_url.validity)
+        << "with url " << invalid_url.url;
+  }
+}
+
+TEST(KURLTest, SetProtocolToFromFile) {
+  struct Case {
+    const char* const url;
+    const char* const new_protocol;
+  };
+  constexpr Case kCases[] = {
+      {"http://localhost/path", "file"},
+      {"file://example.com/path", "http"},
+  };
+
+  for (const auto& test_case : kCases) {
+    KURL url(test_case.url);
+    EXPECT_TRUE(url.SetProtocol(test_case.new_protocol));
+    EXPECT_EQ(url.Protocol(), test_case.new_protocol);
+
+    EXPECT_EQ(url.GetPath(), "/path");
+  }
+}
+
+TEST(KURLTest, FailToSetProtocolFromFile) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("http"));
+  EXPECT_EQ(url.Protocol(), "file");
+
+  EXPECT_EQ(url.GetPath(), "/path");
+}
+
+// According to the URL standard https://url.spec.whatwg.org/#scheme-state
+// switching between special and non-special schemes shouldn't work, but for now
+// we are retaining it for backwards-compatibility.
+// TODO(ricea): Change these tests if we change the behaviour.
+TEST(KURLTest, SetFileProtocolFromNonSpecial) {
+  KURL url("non-special-scheme://foo:bar@example.com:8000/path");
+  EXPECT_TRUE(url.SetProtocol("file"));
+
+  // The URL is now invalid, so the protocol is empty. This is different from
+  // what happens in the case with special schemes.
+  EXPECT_EQ(url.Protocol(), "");
+  EXPECT_EQ(url.User(), "");
+  EXPECT_TRUE(url.Pass().IsNull());
+  EXPECT_EQ(url.Host(), "");
+  EXPECT_EQ(url.Port(), 0);
+  EXPECT_EQ(url.GetPath(), "");
+}
+
+TEST(KURLTest, SetFileProtocolToNonSpecial) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
+  EXPECT_EQ(url.Protocol(), "non-special-scheme");
+  EXPECT_EQ(url.GetPath(), "///path");
+}
+
+TEST(KURLTest, InvalidKURLToGURL) {
+  // This contains an invalid percent escape (%T%) and also a valid
+  // percent escape that's not 7-bit ascii (%ae), so that the unescaped
+  // host contains both an invalid percent escape and invalid UTF-8.
+  KURL kurl("http://%T%Ae");
+  EXPECT_FALSE(kurl.IsValid());
+
+  // KURL returns empty strings for components on invalid urls.
+  EXPECT_EQ(kurl.Protocol(), "");
+  EXPECT_EQ(kurl.Host(), "");
+
+  // This passes the original internal url to GURL, check that it arrives
+  // in an internally self-consistent state.
+  GURL gurl = kurl;
+  EXPECT_FALSE(gurl.is_valid());
+  EXPECT_TRUE(gurl.SchemeIs(url::kHttpScheme));
+
+  // GURL exposes host for invalid hosts. The invalid percent escape
+  // becomes an escaped percent sign (%25), and the invalid UTF-8
+  // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
+  EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
 }
 
 enum class PortIsValid {
@@ -879,12 +1100,17 @@ enum class PortIsValid {
   kAlways,
 
   // SetHostAndPort() truncates to the initial numerical prefix, and then does
-  // strict checking. kInSetHostAndPort is used for ports which are considered
-  // valid by SetHostAndPort() but not by the constructor. In this case, the
-  // expected value is the same as for SetPort().
+  // strict checking. However, unlike the constructor, invalid ports are
+  // ignored.
+  //
+  // kInSetHostAndPort is used for ports which are considered valid by
+  // SetHostAndPort() but not by the constructor. In this case, the expected
+  // value is the same as for SetPort().
   kInSetHostAndPort,
 
-  // SetPort() considers all input valid.
+  // SetPort() truncates to the initial numerical prefix, and then truncates
+  // the numerical port value to a uint16_t. If such a prefix is empty, then
+  // the call is ignored.
   kInSetPort
 };
 
@@ -895,6 +1121,9 @@ struct PortTestCase {
   const PortIsValid is_valid;
 };
 
+// port used if SetHostAndPort/SetPort is a no-op
+constexpr int kNoopPort = 8888;
+
 // The tested behaviour matches the implementation. It doesn't necessarily match
 // the URL Standard.
 const PortTestCase port_test_cases[] = {
@@ -904,18 +1133,20 @@ const PortTestCase port_test_cases[] = {
     {"0", 0, 0, PortIsValid::kAlways},
     {"1", 1, 1, PortIsValid::kAlways},
     {"00000000000000000000000000000000000443", 443, 443, PortIsValid::kAlways},
-    {"+80", 0, 0, PortIsValid::kInSetHostAndPort},
-    {"-80", 0, 0, PortIsValid::kInSetHostAndPort},
+    {"+80", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"-80", 0, kNoopPort, PortIsValid::kInSetPort},
     {"443e0", 0, 443, PortIsValid::kInSetHostAndPort},
     {"0x80", 0, 0, PortIsValid::kInSetHostAndPort},
     {"8%30", 0, 8, PortIsValid::kInSetHostAndPort},
-    {" 443", 0, 0, PortIsValid::kInSetHostAndPort},
+    {" 443", 0, kNoopPort, PortIsValid::kInSetPort},
     {"443 ", 0, 443, PortIsValid::kInSetHostAndPort},
-    {":443", 0, 0, PortIsValid::kInSetHostAndPort},
-    {"65535", 65535, 65535, PortIsValid::kAlways},
+    {":443", 0, kNoopPort, PortIsValid::kInSetPort},
     {"65534", 65534, 65534, PortIsValid::kAlways},
+    {"65535", 65535, 65535, PortIsValid::kAlways},
+    {"65535junk", 0, 65535, PortIsValid::kInSetHostAndPort},
     {"65536", 0, 0, PortIsValid::kInSetPort},
     {"65537", 0, 1, PortIsValid::kInSetPort},
+    {"65537junk", 0, 1, PortIsValid::kInSetPort},
     {"2147483647", 0, 65535, PortIsValid::kInSetPort},
     {"2147483648", 0, 0, PortIsValid::kInSetPort},
     {"2147483649", 0, 1, PortIsValid::kInSetPort},
@@ -959,7 +1190,7 @@ TEST_P(KURLPortTest, ConstructRelative) {
 
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
-  KURL url("http://a:8888/");
+  KURL url("http://a:" + String::Number(kNoopPort) + "/");
   url.SetPort(param.input);
   EXPECT_EQ(url.Port(), param.set_port_output);
   EXPECT_EQ(url.IsValid(), true);
@@ -967,24 +1198,22 @@ TEST_P(KURLPortTest, SetPort) {
 
 TEST_P(KURLPortTest, SetHostAndPort) {
   const auto& param = GetParam();
-  KURL url("http://a:8888/");
+  KURL url("http://a:" + String::Number(kNoopPort) + "/");
   url.SetHostAndPort(String("a:") + param.input);
   switch (param.is_valid) {
     case PortIsValid::kAlways:
       EXPECT_EQ(url.Port(), param.constructor_output);
-      EXPECT_EQ(url.IsValid(), true);
       break;
 
     case PortIsValid::kInSetHostAndPort:
       EXPECT_EQ(url.Port(), param.set_port_output);
-      EXPECT_EQ(url.IsValid(), true);
       break;
 
     case PortIsValid::kInSetPort:
-      EXPECT_EQ(url.Port(), param.constructor_output);
-      EXPECT_EQ(url.IsValid(), false);
+      EXPECT_EQ(url.Port(), kNoopPort);
       break;
   }
+  EXPECT_EQ(url.IsValid(), true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -992,3 +1221,29 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(port_test_cases));
 
 }  // namespace blink
+
+// Apparently INSTANTIATE_TYPED_TEST_SUITE_P needs to be used in the same
+// namespace as where the typed test suite was defined.
+namespace url {
+
+class KURLTestTraits {
+ public:
+  using UrlType = blink::KURL;
+
+  static UrlType CreateUrlFromString(base::StringPiece s) {
+    return blink::KURL(String::FromUTF8(s));
+  }
+
+  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankURL(); }
+
+  static bool IsAboutSrcdoc(const UrlType& url) {
+    return url.IsAboutSrcdocURL();
+  }
+
+  // Only static members.
+  KURLTestTraits() = delete;
+};
+
+INSTANTIATE_TYPED_TEST_SUITE_P(KURL, AbstractUrlTest, KURLTestTraits);
+
+}  // namespace url

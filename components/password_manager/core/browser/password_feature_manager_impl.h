@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {
@@ -22,24 +21,38 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
  public:
   PasswordFeatureManagerImpl(PrefService* pref_service,
                              const syncer::SyncService* sync_service);
+
+  PasswordFeatureManagerImpl(const PasswordFeatureManagerImpl&) = delete;
+  PasswordFeatureManagerImpl& operator=(const PasswordFeatureManagerImpl&) =
+      delete;
+
   ~PasswordFeatureManagerImpl() override = default;
 
   bool IsGenerationEnabled() const override;
 
-  bool ShouldCheckReuseOnLeakDetection() const override;
-
   bool IsOptedInForAccountStorage() const override;
   bool ShouldShowAccountStorageOptIn() const override;
-  void SetAccountStorageOptIn(bool opt_in) override;
+  bool ShouldShowAccountStorageReSignin(
+      const GURL& current_page_url) const override;
+  void OptInToAccountStorage() override;
+  void OptOutOfAccountStorageAndClearSettings() override;
 
-  void SetDefaultPasswordStore(
-      const autofill::PasswordForm::Store& store) override;
-  autofill::PasswordForm::Store GetDefaultPasswordStore() const override;
+  bool ShouldShowAccountStorageBubbleUi() const override;
+
+  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
+
+  void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
+  PasswordForm::Store GetDefaultPasswordStore() const override;
+  bool IsDefaultPasswordStoreSet() const override;
+  metrics_util::PasswordAccountStorageUsageLevel
+  ComputePasswordAccountStorageUsageLevel() const override;
+
+  void RecordMoveOfferedToNonOptedInUser() override;
+  int GetMoveOfferedToNonOptedInUserCount() const override;
 
  private:
   PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordFeatureManagerImpl);
 };
 
 }  // namespace password_manager

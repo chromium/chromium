@@ -91,7 +91,7 @@ void PlaceHolderBytesConsumer::Update(BytesConsumer* consumer) {
   }
 }
 
-void PlaceHolderBytesConsumer::Trace(blink::Visitor* visitor) {
+void PlaceHolderBytesConsumer::Trace(Visitor* visitor) const {
   visitor->Trace(underlying_);
   visitor->Trace(client_);
   BytesConsumer::Trace(visitor);

@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 'use strict';
 
 test(() => {
@@ -6,7 +6,7 @@ test(() => {
   const writer = ws.getWriter();
   writer.releaseLock();
 
-  assert_throws(new TypeError(), () => writer.desiredSize, 'desiredSize should throw a TypeError');
+  assert_throws_js(TypeError, () => writer.desiredSize, 'desiredSize should throw a TypeError');
 }, 'desiredSize on a released writer');
 
 test(() => {
@@ -194,8 +194,8 @@ promise_test(t => {
   writer3.abort(abortError);
 
   return writer1.closed
-      .then(() => promise_rejects(t, abortError, writer2.closed, 'writer2.closed should be rejected'))
-      .then(() => promise_rejects(t, abortError, writer3.closed, 'writer3.closed should be rejected'));
+      .then(() => promise_rejects_exactly(t, abortError, writer2.closed, 'writer2.closed should be rejected'))
+      .then(() => promise_rejects_exactly(t, abortError, writer3.closed, 'writer3.closed should be rejected'));
 }, 'methods should not not have .apply() or .call() called');
 
 promise_test(() => {

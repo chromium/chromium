@@ -13,7 +13,7 @@ and documented in
 `//chrome/android/javatests/src/org/chromium/chrome/browser/vr/*.md`) for
 use in browser tests in order to test XR features on desktop platforms.
 
-[vr android dir]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr
+[vr android dir]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr
 
 This is pretty much a direct port, with the same JavaScript/HTML files being
 used for both and the Java/C++ code being functionally equivalent to each other,
@@ -107,16 +107,16 @@ You should consider using the standard IN_PROC_BROWSER_TEST_F macros instead.
 Small snippets of runtime-specific code are acceptable, but if it affects
 readability significantly, the tests should probably remain separate.
 
-Most tests simply use the standard `WebXrVrOpenVrBrowserTest` and
-`WebXrVrWmrBrowserTest` classes. In this case, you can instead use the
-`WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F` macro, which only needs to take the test
-name, further cutting down on boilerplate code.
+Most tests simply use the standard `WebXrVrOpenXrBrowserTest` class.
+In this case, you can instead use the `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`
+macro, which only needs to take the test name, further cutting down on
+boilerplate code.
 
 You can also use `WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F` if you
 want the same functionality as `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`, but
 also want the test run in Incognito mode in addition to regular Chrome.
 
-[multi class macros]: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/vr/test/multi_class_browser_test.h
+[multi class macros]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/multi_class_browser_test.h
 
 ## Test Class Names
 
@@ -128,9 +128,9 @@ functions are named in the following order:
 3. "BrowserTest"
 4. Optional Descriptor/special flags
 
-For example, `WebXrVrOpenVrBrowserTest` is meant for testing the WebXR for VR
-feature using the OpenVR runtime with standard flags enabled, i.e. the flags
-required for using WebXR and the OpenVR runtime with other runtimes disabled.
+For example, `WebXrVrOpenXrBrowserTest` is meant for testing the WebXR for VR
+feature using the OpenXR runtime with standard flags enabled, i.e. the flags
+required for using WebXR and the OpenXR runtime with other runtimes disabled.
 `WebXrVrRuntimelessBrowserTestSensorless` on the other hand would be for
 testing WebVR for VR without any runtimes and with the orientation sensor
 device explicitly disabled.
@@ -145,7 +145,7 @@ being tested. Details about what goes on under the hood can be found in
 [`//chrome/browser/vr/test/xr_browser_test_details.md`][xr details], but below
 is a quick guide on how to use them.
 
-[xr details]: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/vr/test/xr_browser_test_details.md
+[xr details]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/xr_browser_test_details.md
 
 In order to let a test provide data to a runtime, it must create an instance of
 [`MockXRDeviceHookBase`][xr hook base] or some subclass of it. This should be
@@ -153,7 +153,7 @@ created at the beginning of the test before any attempts to enter VR are made,
 as there are currently assumptions that prevent switching to or from the mock
 runtimes once they have been attempted to be started.
 
-[xr hook base]: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/vr/test/mock_xr_device_hook_base.h
+[xr hook base]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/test/mock_xr_device_hook_base.h
 
 Once created, the runtime being used will call the various functions inherited
 from [`VRTestHook`][vr test hook] whenever it would normally acquire or submit
@@ -162,23 +162,9 @@ called every time the runtime would normally check the state of a real
 controller, and `OnFrameSubmitted()` will be called each time the runtime
 submits a finished frame to the headset.
 
-[vr test hook]: https://chromium.googlesource.com/chromium/src/+/master/device/vr/test/test_hook.h
+[vr test hook]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/test/test_hook.h
 
 For real examples on how to use the input capabilities, look at the tests in
 [`//chrome/browser/vr/webxr_vr_input_browser_test.cc`][input test].
 
-[input test]: https://chromium.googlesource.com/chromium/src/+/master/chrome/browser/vr/webxr_vr_input_browser_test.cc
-
-### Assumptions
-
-There are currently several assumptions made that must be adhered to in order
-for input to work properly in both OpenVR and Windows Mixed Reality.
-
-#### WMR and Incomplete Gamepads
-
-OpenVR supports arbitrary controller mappings, but WMR only supports one actual
-controller type (+ voice input). What this means is that WMR will always report
-a certain set of buttons and axes when a controller is connected, regardless of
-which buttons and axes are set as supported. This means that tests involving
-things not supported by WMR (e.g. a third touchpad/joystick) must be restricted
-to OpenVR.
+[input test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/vr/webxr_vr_input_browser_test.cc

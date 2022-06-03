@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ACTIVE_STYLE_SHEETS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -27,8 +28,8 @@ CompareActiveStyleSheets(const ActiveStyleSheetVector& old_style_sheets,
                          const ActiveStyleSheetVector& new_style_sheets,
                          HeapHashSet<Member<RuleSet>>& changed_rule_sets);
 
-bool ClearMediaQueryDependentRuleSets(
-    const ActiveStyleSheetVector& active_style_sheets);
+bool AffectedByMediaValueChange(const ActiveStyleSheetVector& active_sheets,
+                                MediaValueChange change);
 
 }  // namespace blink
 

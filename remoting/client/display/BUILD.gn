@@ -30,10 +30,11 @@ source_set("display") {
     "sys_opengl.h",
   ]
 
-  public_deps = [
-    "//remoting/proto",
-  ]
+  public_deps = [ "//remoting/proto" ]
   deps = [
+    "//base",
+    "//remoting/base",
+    "//remoting/client/ui:ui_manipulation",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -45,16 +46,16 @@ source_set("display") {
     libs = [ "GLESv2" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     libs = [ "GL" ]
   }
 
   if (is_mac) {
-    libs = [ "OpenGL.framework" ]
+    frameworks = [ "OpenGL.framework" ]
   }
 
   if (is_ios) {
-    libs = [
+    frameworks = [
       "GLKit.framework",
       "OpenGLES.framework",
     ]
@@ -91,6 +92,8 @@ if (is_win) {
 
     deps = [
       ":display",
+      "//base",
+      "//base/test:test_support",
       "//remoting/proto",
       "//testing/gmock",
       "//testing/gtest",

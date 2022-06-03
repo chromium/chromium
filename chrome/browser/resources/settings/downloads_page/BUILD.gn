@@ -2,45 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":downloads_browser_proxy",
-    ":downloads_page",
-  ]
-  if (is_chromeos) {
-    deps += [ ":smb_shares_page" ]
-  }
-}
-
-js_library("downloads_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-if (is_chromeos) {
-  js_library("smb_shares_page") {
-    deps = [
-      "..:route",
-      "../chromeos/localized_link:localized_link",
-      "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy",
-      "//ui/webui/resources/js:web_ui_listener_behavior",
-    ]
-  }
-}
-
-js_library("downloads_page") {
-  deps = [
-    ":downloads_browser_proxy",
-    "..:page_visibility",
-    "..:route",
-    "../prefs:prefs_behavior",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
+html_to_js("web_components") {
+  js_files = [ "downloads_page.ts" ]
 }

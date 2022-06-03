@@ -5,69 +5,12 @@
 #import "chrome/browser/ui/cocoa/l10n_util.h"
 
 #include "base/i18n/rtl.h"
-#include "base/mac/availability.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "third_party/google_toolbox_for_mac/src/AppKit/GTMUILocalizerAndLayoutTweaker.h"
 
 namespace cocoa_l10n_util {
-
-NSInteger CompareFrameY(id view1, id view2, void* context) {
-  CGFloat y1 = NSMinY([view1 frame]);
-  CGFloat y2 = NSMinY([view2 frame]);
-  if (y1 < y2)
-    return NSOrderedAscending;
-  else if (y1 > y2)
-    return NSOrderedDescending;
-  else
-    return NSOrderedSame;
-}
-
-NSSize WrapOrSizeToFit(NSView* view) {
-  if ([view isKindOfClass:[NSTextField class]]) {
-    NSTextField* textField = static_cast<NSTextField*>(view);
-    if ([textField isEditable])
-      return NSZeroSize;
-    CGFloat heightChange =
-        [GTMUILocalizerAndLayoutTweaker sizeToFitFixedWidthTextField:textField];
-    return NSMakeSize(0.0, heightChange);
-  }
-  if ([view isKindOfClass:[NSMatrix class]]) {
-    NSMatrix* radioGroup = static_cast<NSMatrix*>(view);
-    [GTMUILocalizerAndLayoutTweaker wrapRadioGroupForWidth:radioGroup];
-    return [GTMUILocalizerAndLayoutTweaker sizeToFitView:view];
-  }
-  if ([view isKindOfClass:[NSButton class]]) {
-    NSButton* button = static_cast<NSButton*>(view);
-    NSButtonCell* buttonCell = [button cell];
-    // Decide it's a checkbox via showsStateBy and highlightsBy.
-    if (([buttonCell showsStateBy] == NSCellState) &&
-        ([buttonCell highlightsBy] == NSCellState)) {
-      [GTMUILocalizerAndLayoutTweaker wrapButtonTitleForWidth:button];
-      return [GTMUILocalizerAndLayoutTweaker sizeToFitView:view];
-    }
-  }
-  return [GTMUILocalizerAndLayoutTweaker sizeToFitView:view];
-}
-
-CGFloat VerticallyReflowGroup(NSArray* views) {
-  views = [views sortedArrayUsingFunction:CompareFrameY
-                                  context:NULL];
-  CGFloat localVerticalShift = 0;
-  for (NSInteger index = [views count] - 1; index >= 0; --index) {
-    NSView* view = [views objectAtIndex:index];
-
-    NSSize delta = WrapOrSizeToFit(view);
-    localVerticalShift += delta.height;
-    if (localVerticalShift) {
-      NSPoint origin = [view frame].origin;
-      origin.y -= localVerticalShift;
-      [view setFrameOrigin:origin];
-    }
-  }
-  return localVerticalShift;
-}
 
 NSString* TooltipForURLAndTitle(NSString* url, NSString* title) {
   if ([title length] == 0)

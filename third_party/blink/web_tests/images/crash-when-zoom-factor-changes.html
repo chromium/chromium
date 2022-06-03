@@ -2,7 +2,8 @@
 <img alt="SPIEGEL ONLIN"><img src=""><img alt="SPIEGEL ONLIN">
 <p>crbug.com/445304: Should not crash when zoom factor changes. </p>
 <script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-    eventSender.setPageZoomFactor(0.75);
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.setPageZoomFactor(0.75);
+  }
 </script>

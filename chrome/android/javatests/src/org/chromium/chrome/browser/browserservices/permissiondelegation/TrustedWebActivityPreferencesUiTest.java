@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,39 +16,36 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.browserservices.Origin;
-import org.chromium.chrome.browser.settings.ChromeImageViewPreference;
-import org.chromium.chrome.browser.settings.ExpandablePreferenceGroup;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.website.SingleCategoryPreferences;
-import org.chromium.chrome.browser.settings.website.SingleWebsitePreferences;
-import org.chromium.chrome.browser.settings.website.SiteSettingsCategory;
-import org.chromium.chrome.browser.settings.website.SiteSettingsTestUtils;
-import org.chromium.chrome.browser.settings.website.Website;
-import org.chromium.chrome.browser.settings.website.WebsiteAddress;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.site_settings.SiteSettingsTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
+import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for TrustedWebActivity functionality under Settings > Site Settings.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
 @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
 public class TrustedWebActivityPreferencesUiTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private String mPackage;
     private TrustedWebActivityPermissionManager mPermissionMananger;
@@ -56,7 +55,7 @@ public class TrustedWebActivityPreferencesUiTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
-        mPermissionMananger = ChromeApplication.getComponent().resolveTwaPermissionManager();
+        mPermissionMananger = ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
     }
 
     /**
@@ -67,43 +66,45 @@ public class TrustedWebActivityPreferencesUiTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testSingleCategoryManagedBy() throws Exception {
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P,
+            message = "This test is disabled on Android O because of https://crbug.com/1202711")
+    public void
+    testSingleCategoryManagedBy() throws Exception {
         final String site = "http://example.com";
         final Origin origin = Origin.create(site);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionMananger.updatePermission(origin, mPackage, true));
+                ()
+                        -> mPermissionMananger.updatePermission(
+                                origin, mPackage, ContentSettingsType.NOTIFICATIONS, true));
 
         SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
                 SiteSettingsCategory.Type.NOTIFICATIONS);
         final String groupName = "managed_group";
 
-        final SingleCategoryPreferences websitePreferences =
+        final SingleCategorySettings websitePreferences =
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    final SingleCategoryPreferences preferences =
-                            (SingleCategoryPreferences) settingsActivity.getMainFragment();
+                    final SingleCategorySettings preferences =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
                     final ExpandablePreferenceGroup group =
                             (ExpandablePreferenceGroup) preferences.findPreference(groupName);
                     preferences.onPreferenceClick(group);
                     return preferences;
                 });
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                // The preference group gets recreated in onPreferenceClick, so we need to find it
-                // again.
-                final ExpandablePreferenceGroup group =
-                        (ExpandablePreferenceGroup) websitePreferences.findPreference(groupName);
-                return group.isExpanded();
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            // The preference group gets recreated in onPreferenceClick, so we need to find it
+            // again.
+            final ExpandablePreferenceGroup group =
+                    (ExpandablePreferenceGroup) websitePreferences.findPreference(groupName);
+            return group.isExpanded();
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final ExpandablePreferenceGroup group =
                     (ExpandablePreferenceGroup) websitePreferences.findPreference(groupName);
             Assert.assertEquals(1, group.getPreferenceCount());
-            android.support.v7.preference.Preference preference = group.getPreference(0);
+            androidx.preference.Preference preference = group.getPreference(0);
             CharSequence title = preference.getTitle();
             Assert.assertEquals("example.com", title.toString());
         });
@@ -125,7 +126,9 @@ public class TrustedWebActivityPreferencesUiTest {
         final Origin origin = Origin.create(site);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionMananger.updatePermission(origin, mPackage, true));
+                ()
+                        -> mPermissionMananger.updatePermission(
+                                origin, mPackage, ContentSettingsType.NOTIFICATIONS, true));
 
         WebsiteAddress address = WebsiteAddress.create(site);
         Website website = new Website(address, address);
@@ -133,8 +136,8 @@ public class TrustedWebActivityPreferencesUiTest {
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final SingleWebsitePreferences websitePreferences =
-                    (SingleWebsitePreferences) settingsActivity.getMainFragment();
+            final SingleWebsiteSettings websitePreferences =
+                    (SingleWebsiteSettings) settingsActivity.getMainFragment();
             final ChromeImageViewPreference notificationPreference =
                     (ChromeImageViewPreference) websitePreferences.findPreference(
                             "push_notifications_list");

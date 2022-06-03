@@ -8,8 +8,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,12 +29,14 @@ namespace {
 class ErrorBadge : public GlobalError {
  public:
   explicit ErrorBadge(WarningBadgeService* badge_service);
+  ErrorBadge(const ErrorBadge&) = delete;
+  ErrorBadge& operator=(const ErrorBadge&) = delete;
   ~ErrorBadge() override;
 
   // Implementation for GlobalError:
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
 
   bool HasBubbleView() override;
@@ -47,8 +48,6 @@ class ErrorBadge : public GlobalError {
 
  private:
   WarningBadgeService* badge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorBadge);
 };
 
 ErrorBadge::ErrorBadge(WarningBadgeService* badge_service)
@@ -66,7 +65,7 @@ int ErrorBadge::MenuItemCommandID() {
   return GetMenuItemCommandID();
 }
 
-base::string16 ErrorBadge::MenuItemLabel() {
+std::u16string ErrorBadge::MenuItemLabel() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM);
 }
 
@@ -101,10 +100,9 @@ int ErrorBadge::GetMenuItemCommandID() {
 
 }  // namespace
 
-WarningBadgeService::WarningBadgeService(Profile* profile)
-    : profile_(profile), warning_service_observer_(this) {
+WarningBadgeService::WarningBadgeService(Profile* profile) : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  warning_service_observer_.Add(WarningService::Get(profile_));
+  warning_service_observation_.Observe(WarningService::Get(profile_));
 }
 
 WarningBadgeService::~WarningBadgeService() {

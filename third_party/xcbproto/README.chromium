@@ -1,0 +1,14 @@
+Name: xcbproto
+Short Name: xcbproto
+URL: https://gitlab.freedesktop.org/xorg/proto/xcbproto
+Version: 496e3ce329c3cc9b32af4054c30fa0f306deb007
+CPEPrefix: unknown
+Security Critical: no
+License: MIT
+License File: NOT_SHIPPED
+
+Description:
+XML-XCB protocol descriptions
+
+Updating:
+Run third_party/xcbproto/update.sh

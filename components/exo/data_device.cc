@@ -4,28 +4,59 @@
 
 #include "components/exo/data_device.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/run_loop.h"
 #include "components/exo/data_device_delegate.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/seat.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 namespace exo {
+namespace {
 
-DataDevice::DataDevice(DataDeviceDelegate* delegate,
-                       Seat* seat,
-                       FileHelper* file_helper)
-    : delegate_(delegate), seat_(seat), file_helper_(file_helper) {
+using ::ui::mojom::DragOperation;
+
+constexpr int kDataDeviceSeatObserverPriority = 0;
+static_assert(Seat::IsValidObserverPriority(kDataDeviceSeatObserverPriority),
+              "kDataDeviceSeatObserverPriority is not in the valid range.");
+
+constexpr base::TimeDelta kDataOfferDestructionTimeout =
+    base::Milliseconds(1000);
+
+DragOperation DndActionToDragOperation(DndAction dnd_action) {
+  switch (dnd_action) {
+    case DndAction::kMove:
+      return DragOperation::kMove;
+    case DndAction::kCopy:
+      return DragOperation::kCopy;
+    case DndAction::kAsk:
+      return DragOperation::kLink;
+    case DndAction::kNone:
+      return DragOperation::kNone;
+  }
+}
+
+}  // namespace
+
+DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
+    : delegate_(delegate), seat_(seat), drop_succeeded_(false) {
   WMHelper::GetInstance()->AddDragDropObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 
-  seat_->AddObserver(this);
+  seat_->AddObserver(this, kDataDeviceSeatObserverPriority);
 
-  OnSurfaceFocusing(seat_->GetFocusedSurface());
+  OnSurfaceFocused(seat_->GetFocusedSurface());
 }
 
 DataDevice::~DataDevice() {
@@ -40,12 +71,11 @@ DataDevice::~DataDevice() {
 void DataDevice::StartDrag(DataSource* source,
                            Surface* origin,
                            Surface* icon,
-                           ui::DragDropTypes::DragEventSource event_source) {
+                           ui::mojom::DragEventSource event_source) {
   seat_->StartDrag(source, origin, icon, event_source);
 }
 
-void DataDevice::SetSelection(DataSource* source, uint32_t serial) {
-  // TODO(hirono): Check if serial is valid. crbug.com/746111
+void DataDevice::SetSelection(DataSource* source) {
   seat_->SetSelection(source);
 }
 
@@ -67,32 +97,37 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
     dnd_actions.insert(DndAction::kAsk);
   }
 
-  data_offer_ = std::make_unique<ScopedDataOffer>(
-      delegate_->OnDataOffer(DataOffer::DRAG_DROP), this);
-  data_offer_->get()->SetDropData(file_helper_, event.data());
+  data_offer_ =
+      std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
+  data_offer_->get()->SetDropData(seat_->data_exchange_delegate(),
+                                  surface->window(), event.data());
   data_offer_->get()->SetSourceActions(dnd_actions);
   data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());
 }
 
-int DataDevice::OnDragUpdated(const ui::DropTargetEvent& event) {
+aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
   if (!data_offer_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return aura::client::DragUpdateInfo();
+
+  ui::EndpointType endpoint_type = ui::EndpointType::kDefault;
+  Surface* surface = GetEffectiveTargetForEvent(event);
+  if (surface) {
+    endpoint_type =
+        seat_->data_exchange_delegate()->GetDataTransferEndpointType(
+            surface->window());
+  }
+  aura::client::DragUpdateInfo drag_info(
+      ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
 
   delegate_->OnMotion(event.time_stamp(), event.location_f());
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
-  switch (data_offer_->get()->dnd_action()) {
-    case DndAction::kMove:
-      return ui::DragDropTypes::DRAG_MOVE;
-    case DndAction::kCopy:
-      return ui::DragDropTypes::DRAG_COPY;
-    case DndAction::kAsk:
-      return ui::DragDropTypes::DRAG_LINK;
-    case DndAction::kNone:
-      return ui::DragDropTypes::DRAG_NONE;
-  }
+  drag_info.drag_operation = static_cast<int>(
+      DndActionToDragOperation(data_offer_->get()->dnd_action()));
+  return drag_info;
 }
 
 void DataDevice::OnDragExited() {
@@ -103,13 +138,45 @@ void DataDevice::OnDragExited() {
   data_offer_.reset();
 }
 
-int DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
   if (!data_offer_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
+
+  DndAction dnd_action = data_offer_->get()->dnd_action();
 
   delegate_->OnDrop();
-  data_offer_.reset();
-  return ui::DragDropTypes::DRAG_NONE;
+
+  // TODO(crbug.com/1160925): Avoid using nested loop by adding asynchronous
+  // callback to aura::client::DragDropDelegate.
+  base::WeakPtr<DataDevice> alive(weak_factory_.GetWeakPtr());
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), kDataOfferDestructionTimeout);
+  quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
+
+  if (!alive)
+    return DragOperation::kNone;
+
+  if (quit_closure_) {
+    // DataOffer not destroyed by the client until the timeout.
+    quit_closure_.Reset();
+    data_offer_.reset();
+    drop_succeeded_ = false;
+  }
+
+  if (!drop_succeeded_)
+    return DragOperation::kNone;
+
+  return DndActionToDragOperation(dnd_action);
+}
+
+WMHelper::DragDropObserver::DropCallback DataDevice::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  base::ScopedClosureRunner drag_exit(
+      base::BindOnce(&DataDevice::OnDragExited, weak_factory_.GetWeakPtr()));
+  return base::BindOnce(&DataDevice::PerformDropOrExitDrag,
+                        drop_weak_factory_.GetWeakPtr(), std::move(drag_exit));
 }
 
 void DataDevice::OnClipboardDataChanged() {
@@ -118,7 +185,7 @@ void DataDevice::OnClipboardDataChanged() {
   SetSelectionToCurrentClipboardData();
 }
 
-void DataDevice::OnSurfaceFocusing(Surface* surface) {
+void DataDevice::OnSurfaceFocused(Surface* surface) {
   Surface* next_focused_surface =
       surface && delegate_->CanAcceptDataEventsForSurface(surface) ? surface
                                                                    : nullptr;
@@ -137,11 +204,14 @@ void DataDevice::OnSurfaceFocusing(Surface* surface) {
     SetSelectionToCurrentClipboardData();
 }
 
-void DataDevice::OnSurfaceFocused(Surface* surface) {}
-
 void DataDevice::OnDataOfferDestroying(DataOffer* data_offer) {
-  if (data_offer_ && data_offer_->get() == data_offer)
+  if (data_offer_ && data_offer_->get() == data_offer) {
+    drop_succeeded_ = data_offer_->get()->finished();
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
     data_offer_.reset();
+  }
+  drop_weak_factory_.InvalidateWeakPtrs();
 }
 
 void DataDevice::OnSurfaceDestroying(Surface* surface) {
@@ -162,10 +232,21 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 }
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
-  DataOffer* data_offer = delegate_->OnDataOffer(DataOffer::COPY_PASTE);
-  data_offer->SetClipboardData(file_helper_,
-                               *ui::Clipboard::GetForCurrentThread());
+  DCHECK(focused_surface_);
+  DataOffer* data_offer = delegate_->OnDataOffer();
+  data_offer->SetClipboardData(
+      seat_->data_exchange_delegate(), *ui::Clipboard::GetForCurrentThread(),
+      seat_->data_exchange_delegate()->GetDataTransferEndpointType(
+          focused_surface_->get()->window()));
   delegate_->OnSelection(*data_offer);
+}
+
+void DataDevice::PerformDropOrExitDrag(
+    base::ScopedClosureRunner exit_drag,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op) {
+  output_drag_op = OnPerformDrop(event);
+  exit_drag.ReplaceClosure(base::DoNothing());
 }
 
 }  // namespace exo

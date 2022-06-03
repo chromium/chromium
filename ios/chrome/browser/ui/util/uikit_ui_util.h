@@ -10,10 +10,9 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/web/common/uikit_ui_util.h"
 
 // UI Util containing functions that require UIKit.
-
-enum { FONT_HELVETICA, FONT_HELVETICA_NEUE, FONT_HELVETICA_NEUE_LIGHT };
 
 // Utility function to set the |element|'s accessibility label to the localized
 // message corresponding to |idsAccessibilityLabel| and its accessibility
@@ -29,18 +28,6 @@ void SetA11yLabelAndUiAutomationName(
     int idsAccessibilityLabel,
     NSString* englishUiAutomationName);
 
-// Sets the given |button|'s width to exactly fit its image and text.  Does not
-// modify the button's height.
-void GetSizeButtonWidthToFit(UIButton* button);
-
-// Translates the given |view|'s frame.  Sets a new frame instead of applying a
-// transform to the existing frame.
-void TranslateFrame(UIView* view, UIOffset offset);
-
-// Returns a UIFont. |fontFace| is one of the defined enumerated values
-// to avoid spelling mistakes.
-UIFont* GetUIFont(int fontFace, bool isBold, CGFloat fontSize);
-
 // Sets dynamic font for the given |font| on iOS 11+ on the givel |label| or
 // |textField|. Use |maybe| versions to keep code short when dynamic types are
 // not in use yet.
@@ -50,12 +37,6 @@ void SetUITextFieldScaledFont(UITextField* textField, UIFont* font);
 void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UITextField* textField,
                                    UIFont* font);
-
-// Adds a border shadow around |view|.
-void AddBorderShadow(UIView* view, CGFloat offset, UIColor* color);
-
-// Adds a rounded-rectangle border shadow around a view.
-void AddRoundedBorderShadow(UIView* view, CGFloat radius, UIColor* color);
 
 enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
@@ -92,13 +73,6 @@ UIImage* CaptureView(UIView* view, CGFloat scale);
 // Converts input image and returns a grey scaled version.
 UIImage* GreyImage(UIImage* image);
 
-// Returns the color that should be used for the background of all Settings
-// pages.
-UIColor* GetSettingsBackgroundColor();
-
-// Returns the color used as the main color for primary action buttons.
-UIColor* GetPrimaryActionButtonColor();
-
 // Returns an UIColor with |rgb| and |alpha|. The caller should pass the RGB
 // value in hexadecimal as this is the typical way they are provided by UX.
 // For example a call to |UIColorFromRGB(0xFF7D40, 1.0)| returns an orange
@@ -109,11 +83,6 @@ inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
                           blue:((CGFloat)(rgb & 0x0000FF)) / 255.0
                          alpha:alpha];
 }
-
-// Returns whether an image contains an alpha channel. If yes, displaying the
-// image will require blending.
-// Intended for use in debug.
-BOOL ImageHasAlphaChannel(UIImage* image);
 
 // Returns the image from the shared resource bundle with the image id
 // |imageID|. If |reversable| is YES and RTL layout is in use, the image
@@ -150,22 +119,6 @@ UIImage* ResizeImage(UIImage* image,
                      ProjectionMode projectionMode,
                      BOOL opaque);
 
-// Returns a slightly blurred image darkened enough to provide contrast for
-// white text to be readable.
-UIImage* DarkenImage(UIImage* image);
-
-// Applies various effects to an image. This method can apply a blur over a
-// |radius|, superimpose a |tintColor| (an alpha of 0.6 on the color is a good
-// approximation to look like iOS tint colors) or saturate the image colors by
-// applying a |saturationDeltaFactor| (negative to desaturate, positive to
-// saturate). The optional |maskImage| is used to limit the effect of the blur
-// and/or saturation to a portion of the image.
-UIImage* BlurImage(UIImage* image,
-                   CGFloat blurRadius,
-                   UIColor* tintColor,
-                   CGFloat saturationDeltaFactor,
-                   UIImage* maskImage);
-
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are
 // ignored. If the color has alpha value of less than one, then the entire
@@ -176,11 +129,8 @@ UIImage* TintImage(UIImage* image, UIColor* color);
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view);
 
-// Returns a cropped image using |cropRect| on |image|.
-UIImage* CropImage(UIImage* image, const CGRect& cropRect);
-
-// Returns the interface orientation of the app.
-UIInterfaceOrientation GetInterfaceOrientation();
+// Returns the interface orientation of the given window in the app.
+UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
 
 // Returns the height of the keyboard in the current orientation.
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue);
@@ -192,42 +142,31 @@ UIImage* ImageWithColor(UIColor* color);
 // down. If the source image is not square, the image is first cropped.
 UIImage* CircularImageFromImage(UIImage* image, CGFloat width);
 
-// Returns the linear interpolated color from |firstColor| to |secondColor| by
-// the given |fraction|. Requires that both colors are in RGB or monochrome
-// color space. |fraction| is a decimal value between 0.0 and 1.0.
-UIColor* InterpolateFromColorToColor(UIColor* firstColor,
-                                     UIColor* secondColor,
-                                     CGFloat fraction);
+// Returns true if the window is in portrait orientation or if orientation is
+// unknown.
+bool IsPortrait(UIWindow* window);
+
+// Returns true if the window is in landscape orientation.
+bool IsLandscape(UIWindow* window);
 
 // Whether the |environment| has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 
-// Whether the main application window's rootViewController has a compact
-// horizontal size class.
-bool IsCompactWidth();
-
-// Whether the |environment| has a compact iPad horizontal size class.
-bool IsCompactTablet(id<UITraitEnvironment> environment);
-
-// Whether the main application window's rootViewController has a compact
-// iPad horizontal size class.
-bool IsCompactTablet();
-
-// Whether the main application window's rootViewController has a compact
-// vertical size class.
-bool IsCompactHeight();
+// Whether the |traitCollection| has a compact horizontal size class.
+bool IsCompactWidth(UITraitCollection* traitCollection);
 
 // Whether the |environment| has a compact vertical size class.
 bool IsCompactHeight(id<UITraitEnvironment> environment);
 
-// Whether toolbar should be shown in compact mode.
-bool ShouldShowCompactToolbar();
+// Whether the |traitCollection| has a compact vertical size class.
+bool IsCompactHeight(UITraitCollection* traitCollection);
+
+// Whether toolbar should be shown in compact mode in |environment|.
+bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment);
+
 // Whether toolbar should be shown in compact mode in |traitCollection|.
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection);
 
-// Whether the the main application window's rootViewController has a regular
-// vertical and regular horizontal size class.
-bool IsRegularXRegularSizeClass();
 // Whether the |environment| has a regular vertical and regular horizontal
 // size class.
 bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
@@ -235,13 +174,13 @@ bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
 // size class.
 bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
 
-// Returns whether the toolbar is split between top and bottom toolbar or if it
-// is displayed as only one toolbar.
-bool IsSplitToolbarMode();
-
 // Returns whether the |environment|'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment);
+
+// Returns whether the |traitCollection|'s toolbar is split between top and
+// bottom toolbar or if it is displayed as only one toolbar.
+bool IsSplitToolbarMode(UITraitCollection* traitCollection);
 
 // Returns the current first responder for keyWindow.
 UIResponder* GetFirstResponder();
@@ -259,5 +198,21 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 // As an easter egg, show a smiley face instead of the count if the user has
 // more than 99 tabs open.
 NSString* TextForTabCount(long count);
+
+// Adds |item| to the global Edit Menu configuration (UIMenuController). No-op
+// if a UIMenuItem with the same selector as |item| has already been registered.
+void RegisterEditMenuItem(UIMenuItem* item);
+
+// Finds the root of |view|'s view hierarchy -- its window if it has one, or
+// the first (recursive) superview with no superview.
+UIView* ViewHierarchyRootForView(UIView* view);
+
+// Creates and inits a medium-sized UIActivityIndicatorView, regardless of iOS
+// version.
+UIActivityIndicatorView* GetMediumUIActivityIndicatorView();
+
+// Creates and inits a large-sized UIActivityIndicatorView, regardless of iOS
+// version.
+UIActivityIndicatorView* GetLargeUIActivityIndicatorView();
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_UIKIT_UI_UTIL_H_

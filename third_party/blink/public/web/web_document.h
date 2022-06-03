@@ -31,8 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 
+#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
@@ -45,12 +48,20 @@ namespace blink {
 class Document;
 class WebElement;
 class WebFormElement;
+class WebFormControlElement;
 class WebElementCollection;
 class WebString;
 class WebURL;
 struct WebDistillabilityFeatures;
 
 using WebStyleSheetKey = WebString;
+
+// An enumeration used to enumerate usage of APIs that may prevent a document
+// from entering the back forward cache. |kAllow| means usage of the API will
+// not restrict the back forward cache. |kPossiblyDisallow| means usage of the
+// API will be marked as such and the back forward cache may not allow the
+// document to enter at its discretion.
+enum class BackForwardCacheAware { kAllow, kPossiblyDisallow };
 
 // Provides readonly access to some properties of a DOM document.
 class WebDocument : public WebNode {
@@ -74,8 +85,8 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebString Encoding() const;
   BLINK_EXPORT WebString ContentLanguage() const;
   BLINK_EXPORT WebString GetReferrer() const;
-  BLINK_EXPORT base::Optional<SkColor> ThemeColor() const;
-  // The url of the OpenSearch Desription Document (if any).
+  BLINK_EXPORT absl::optional<SkColor> ThemeColor();
+  // The url of the OpenSearch Description Document (if any).
   BLINK_EXPORT WebURL OpenSearchDescriptionURL() const;
 
   // Returns the frame the document belongs to or 0 if the document is
@@ -87,10 +98,10 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebURL BaseURL() const;
   BLINK_EXPORT ukm::SourceId GetUkmSourceId() const;
 
-  // The firstPartyForCookies is used to compute whether this document
+  // The SiteForCookies is used to compute whether this document
   // appears in a "third-party" context for the purpose of third-party
   // cookie blocking.
-  BLINK_EXPORT WebURL SiteForCookies() const;
+  BLINK_EXPORT net::SiteForCookies SiteForCookies() const;
 
   BLINK_EXPORT WebSecurityOrigin TopFrameOrigin() const;
   BLINK_EXPORT WebElement DocumentElement() const;
@@ -98,19 +109,23 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebElement Head();
   BLINK_EXPORT WebString Title() const;
   BLINK_EXPORT WebString ContentAsTextForTesting() const;
-  BLINK_EXPORT WebElementCollection All();
-  BLINK_EXPORT void Forms(WebVector<WebFormElement>&) const;
+  BLINK_EXPORT WebElementCollection All() const;
+  BLINK_EXPORT WebVector<WebFormElement> Forms() const;
   BLINK_EXPORT WebURL CompleteURL(const WebString&) const;
   BLINK_EXPORT WebElement GetElementById(const WebString&) const;
   BLINK_EXPORT WebElement FocusedElement() const;
-  BLINK_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy() const;
-  BLINK_EXPORT WebString OutgoingReferrer();
+
+  // The unassociated form controls are form control elements that are not
+  // associated to a <form> element.
+  BLINK_EXPORT WebVector<WebFormControlElement> UnassociatedFormControls()
+      const;
 
   // Inserts the given CSS source code as a style sheet in the document.
-  BLINK_EXPORT WebStyleSheetKey InsertStyleSheet(
-      const WebString& source_code,
-      const WebStyleSheetKey* = nullptr,
-      CSSOrigin = kAuthorOrigin);
+  BLINK_EXPORT WebStyleSheetKey
+  InsertStyleSheet(const WebString& source_code,
+                   const WebStyleSheetKey* = nullptr,
+                   CSSOrigin = kAuthorOrigin,
+                   BackForwardCacheAware = BackForwardCacheAware::kAllow);
 
   // Removes the CSS which was previously inserted by a call to
   // InsertStyleSheet().
@@ -124,11 +139,30 @@ class WebDocument : public WebNode {
 
   BLINK_EXPORT WebVector<WebDraggableRegion> DraggableRegions() const;
 
-  BLINK_EXPORT WebURL CanonicalUrlForSharing() const;
-
   BLINK_EXPORT WebDistillabilityFeatures DistillabilityFeatures();
 
   BLINK_EXPORT void SetShowBeforeUnloadDialog(bool show_dialog);
+
+  // See cc/paint/element_id.h for the definition of these id.
+  BLINK_EXPORT uint64_t GetVisualViewportScrollingElementIdForTesting();
+
+  BLINK_EXPORT bool IsLoaded();
+
+  // Returns true if the document is in prerendering.
+  BLINK_EXPORT bool IsPrerendering();
+
+  // Return true if  accessibility processing has been enabled.
+  BLINK_EXPORT bool IsAccessibilityEnabled();
+
+  // Adds `callback` to the post-prerendering activation steps.
+  // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
+  BLINK_EXPORT void AddPostPrerenderingActivationStep(
+      base::OnceClosure callback);
+
+  // Sets a cookie manager which can be used for this document.
+  BLINK_EXPORT void SetCookieManager(
+      CrossVariantMojoRemote<
+          network::mojom::RestrictedCookieManagerInterfaceBase> cookie_manager);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);
@@ -141,4 +175,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebDocument);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_

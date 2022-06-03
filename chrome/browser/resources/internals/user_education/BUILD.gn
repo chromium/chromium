@@ -1,0 +1,59 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+html_to_js("components") {
+  js_files = [ "user_education_internals.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [ ":user_education_internals" ]
+}
+
+js_library("user_education_internals") {
+  deps = [
+    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+grd_prefix = "user_education_internals"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/preprocessed"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "user_education_internals.js" ]
+  deps = [ ":components" ]
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "$grd_prefix"
+  out_grd = "$target_gen_dir/mojo_resources.grdp"
+  input_files = [ "user_education_internals.mojom-webui.js" ]
+  input_files_base_dir = rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/internals/user_education",
+          root_build_dir)
+  resource_path_prefix = "chrome/browser/ui/webui/internals/user_education"
+  deps = [
+    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_webui_js",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "$grd_prefix"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+  deps = [ ":preprocess_gen" ]
+  resource_path_prefix = "user-education"
+}

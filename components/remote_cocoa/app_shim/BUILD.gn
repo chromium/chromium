@@ -26,6 +26,8 @@ component("app_shim") {
     "bridged_content_view_touch_bar.mm",
     "browser_native_widget_window_mac.h",
     "browser_native_widget_window_mac.mm",
+    "certificate_viewer.h",
+    "certificate_viewer.mm",
     "color_panel_bridge.h",
     "color_panel_bridge.mm",
     "drag_drop_client.h",
@@ -48,6 +50,8 @@ component("app_shim") {
     "views_nswindow_delegate.mm",
     "views_scrollbar_bridge.h",
     "views_scrollbar_bridge.mm",
+    "window_controls_overlay_nsview.h",
+    "window_controls_overlay_nsview.mm",
     "window_move_loop.h",
     "window_move_loop.mm",
     "window_touch_bar_delegate.h",
@@ -59,15 +63,19 @@ component("app_shim") {
     "//components/crash/core/common",
     "//components/remote_cocoa/common:mojo",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//ui/accelerated_widget_mac",
     "//ui/base",
+    "//ui/base/dragdrop:types",
     "//ui/base/ime:ime",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx/geometry",
     "//ui/strings:ui_strings_grit",
   ]
-  libs = [
+  frameworks = [
     "Cocoa.framework",
     "QuartzCore.framework",
+    "SecurityInterface.framework",
   ]
 }

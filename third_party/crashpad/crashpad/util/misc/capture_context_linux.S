@@ -28,7 +28,11 @@
   .globl CAPTURECONTEXT_SYMBOL2
 #if defined(__i386__) || defined(__x86_64__)
   .balign 16, 0x90
-#elif defined(__arm__) || defined(__aarch64__) || defined(__mips__)
+#elif defined(__arm__) || defined(__aarch64__)
+  .balign 4, 0x0
+  .type CAPTURECONTEXT_SYMBOL, %function
+  .type CAPTURECONTEXT_SYMBOL2, %function
+#elif defined(__mips__)
   .balign 4, 0x0
 #endif
 

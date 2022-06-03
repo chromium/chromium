@@ -21,11 +21,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELLIPSE_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELLIPSE_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedLength;
 
 class SVGEllipseElement final : public SVGGeometryElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,7 +41,7 @@ class SVGEllipseElement final : public SVGGeometryElement {
   SVGAnimatedLength* rx() const { return rx_.Get(); }
   SVGAnimatedLength* ry() const { return ry_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void CollectStyleForPresentationAttribute(
@@ -48,7 +49,7 @@ class SVGEllipseElement final : public SVGGeometryElement {
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool SelfHasRelativeLengths() const override;
 

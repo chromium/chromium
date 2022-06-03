@@ -1,21 +1,4 @@
-This test checks that fr tracks are properly sized whenever grid have intrinsic sizes.
+This test checks that fr tracks are properly sized when the grid container is under a fill-available constraint.
 
 XXX XXX
-PASS
-XXX XXX
-PASS
-XXX XXX
-PASS
-XXX XXX
-PASS
-XXX XXX
-PASS
-XXX XXXX XX X XX XXX
-PASS
-XXX XXXX XX X XX XXX
-PASS
-XXXX
-XXXX XX XX
-XXX XX X
-XXXX XXX XXXX XXX XXXX
 PASS

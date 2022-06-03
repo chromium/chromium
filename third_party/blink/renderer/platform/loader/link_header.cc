@@ -7,7 +7,6 @@
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
@@ -92,7 +91,7 @@ void LinkHeader::SetValue(LinkParameterName name, const String& value) {
 template <typename Iterator>
 LinkHeader::LinkHeader(Iterator begin, Iterator end) : is_valid_(true) {
   std::string url;
-  std::unordered_map<std::string, base::Optional<std::string>> params;
+  std::unordered_map<std::string, absl::optional<std::string>> params;
   is_valid_ = link_header_util::ParseLinkHeaderValue(begin, end, &url, &params);
   if (!is_valid_)
     return;

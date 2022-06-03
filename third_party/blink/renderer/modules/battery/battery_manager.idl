@@ -7,7 +7,7 @@
     ActiveScriptWrappable,
     Exposed=Window
 ] interface BatteryManager : EventTarget {
-    [HighEntropy, Measure] readonly attribute boolean charging;
+    [HighEntropy=Direct, Measure] readonly attribute boolean charging;
     [HighEntropy, Measure] readonly attribute unrestricted double chargingTime;
     [HighEntropy, Measure] readonly attribute unrestricted double dischargingTime;
     [HighEntropy, Measure] readonly attribute double level;

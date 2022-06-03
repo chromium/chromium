@@ -25,13 +25,13 @@
     // objects implementing this interface also implement the interfaces given below
 
     // TODO(foolip): vendorSub should be on NavigatorID.
-    [HighEntropy, MeasureAs=NavigatorVendorSub] readonly attribute DOMString vendorSub;
+    [HighEntropy=Direct, MeasureAs=NavigatorVendorSub] readonly attribute DOMString vendorSub;
 
     // TODO(foolip): productSub and vendor are not yet in the spec:
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=27954
-    [HighEntropy, MeasureAs=NavigatorProductSub] readonly attribute DOMString productSub;
+    [HighEntropy=Direct, MeasureAs=NavigatorProductSub] readonly attribute DOMString productSub;
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=27786
-    [HighEntropy, MeasureAs=NavigatorVendor] readonly attribute DOMString vendor;
+    [HighEntropy=Direct, MeasureAs=NavigatorVendor] readonly attribute DOMString vendor;
 };
 
 Navigator includes NavigatorConcurrentHardware;
@@ -41,4 +41,4 @@ Navigator includes NavigatorID;
 Navigator includes NavigatorLanguage;
 Navigator includes NavigatorOnLine;
 Navigator includes NavigatorAutomationInformation;
-Navigator includes NavigatorUserAgent;
+Navigator includes NavigatorUA;

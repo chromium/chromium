@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.url.URI;
 
-import java.net.URI;
 import java.net.URLDecoder;
 
 @RunWith(BaseJUnit4ClassRunner.class)

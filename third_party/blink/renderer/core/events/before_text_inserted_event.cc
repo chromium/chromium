@@ -43,7 +43,7 @@ const AtomicString& BeforeTextInsertedEvent::InterfaceName() const {
   return event_interface_names::kEvent;
 }
 
-void BeforeTextInsertedEvent::Trace(blink::Visitor* visitor) {
+void BeforeTextInsertedEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

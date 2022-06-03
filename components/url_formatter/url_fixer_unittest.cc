@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -260,18 +260,6 @@ static const SegmentCase segment_cases[] = {
         url::Component(43, 17),            // query
         url::Component(),                  // ref
     },
-    {
-        "chrome-devtools://bundled/devtools/inspector.html?ws=localhost:9221",
-        "devtools",
-        url::Component(),        // scheme
-        url::Component(),        // username
-        url::Component(),        // password
-        url::Component(18, 7),   // host
-        url::Component(),        // port
-        url::Component(25, 24),  // path
-        url::Component(50, 17),  // query
-        url::Component(),        // ref
-    },
 };
 
 typedef testing::Test URLFixerTest;
@@ -282,6 +270,8 @@ TEST(URLFixerTest, SegmentURL) {
 
   for (size_t i = 0; i < base::size(segment_cases); ++i) {
     SegmentCase value = segment_cases[i];
+    SCOPED_TRACE(testing::Message() << "test #" << i << ": " << value.input);
+
     result = url_formatter::SegmentURL(value.input, &parts);
     EXPECT_EQ(value.result, result);
     EXPECT_EQ(value.scheme, parts.scheme);
@@ -395,15 +385,8 @@ struct FixupCase {
     // Devtools scheme.
     {"devtools://bundled/devtools/node.html",
      "devtools://bundled/devtools/node.html"},
-    // Devtools fallback scheme.
-    {"chrome-devtools://bundled/devtools/toolbox.html",
-     "devtools://bundled/devtools/toolbox.html"},
     // Devtools scheme with websocket query.
     {"devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid",
-     "devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid"},
-    // Devtools fallback scheme with websocket query.
-    {"chrome-devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/"
-     "guid",
      "devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid"},
     // host:123 should be rewritten to http://host:123/, but only if the port
     // number is valid - in particular telephone numbers are not port numbers
@@ -532,7 +515,7 @@ TEST(URLFixerTest, FixupFile) {
 
     // Much of the work here comes from GURL's canonicalization stage.
     {"file://C:/foo/bar", "file:///C:/foo/bar"},
-    {"file:c:", "file:///C:/"},
+    {"file:c:", "file:///C:"},
     {"file:c:WINDOWS", "file:///C:/WINDOWS"},
     {"file:c|Program Files", "file:///C:/Program%20Files"},
     {"file:/file", "file://file/"},
@@ -545,7 +528,7 @@ TEST(URLFixerTest, FixupFile) {
   };
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #define HOME "/Users/"
 #else
 #define HOME "/home/"
@@ -573,7 +556,7 @@ TEST(URLFixerTest, FixupFile) {
                   .possibly_invalid_spec());
   }
 
-  EXPECT_TRUE(base::DeleteFile(original, false));
+  EXPECT_TRUE(base::DeleteFile(original));
 }
 
 TEST(URLFixerTest, FixupRelativeFile) {
@@ -602,7 +585,7 @@ TEST(URLFixerTest, FixupRelativeFile) {
       url_formatter::FixupRelativeFile(temp_dir_.GetPath(), file_part)
           .possibly_invalid_spec(),
       full_path));
-  EXPECT_TRUE(base::DeleteFile(full_path, false));
+  EXPECT_TRUE(base::DeleteFile(full_path));
 
   // create a filename we know doesn't exist and make sure it doesn't get
   // fixed up to a file URL
@@ -655,8 +638,8 @@ TEST(URLFixerTest, FixupRelativeFile) {
       full_path));
 
   // done with the subdir
-  EXPECT_TRUE(base::DeleteFile(full_path, false));
-  EXPECT_TRUE(base::DeleteFileRecursively(new_dir));
+  EXPECT_TRUE(base::DeleteFile(full_path));
+  EXPECT_TRUE(base::DeletePathRecursively(new_dir));
 
   // Test that an obvious HTTP URL isn't accidentally treated as an absolute
   // file path (on account of system-specific craziness).

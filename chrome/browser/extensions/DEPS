@@ -1,7 +1,8 @@
 include_rules = [
+  "+components/crash/content/browser/error_reporting",
+  "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
-  "+services/network",
-  "+third_party/ink/grit",
+  "+services/network/public",
   "+ui/base",
 
   # For access to testing command line switches.
@@ -10,7 +11,7 @@ include_rules = [
   # The extensions system should not depend on Chrome Platform Apps (or any
   # other component of the apps system).
   # https://crbug.com/873872.
-  "-chrome/browser/apps/",
+  "-chrome/browser/apps",
 ]
 specific_include_rules = {
   ".*test(_chromeos)?\.(cc|h)$": [
@@ -20,7 +21,13 @@ specific_include_rules = {
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
   ],
 
+  "content_script_apitest.cc": [
+    "+components/web_package",
+  ],
   "extension_protocols_unittest\.cc": [
+    "+services/network/test",
+  ],
+  "extension_gcm_app_handler_unittest\.cc": [
     "+services/network/test",
   ],
   "zipfile_installer_unittest.cc": [
@@ -29,9 +36,62 @@ specific_include_rules = {
   "test_extension_system.cc": [
     "+services/data_decoder",
   ],
-  "cross_origin_read_blocking_browsertest.cc": [
-    # Mostly for helping the test verify UMA values from
-    # network::CrossOriginReadBlocking::Action enum.
-    "+services/network/cross_origin_read_blocking.h"
+  "updater/extension_updater_unittest\.cc": [
+    "+services/network/test",
+  ],
+
+  "chrome_extension_cookies\.h": [
+    # TODO(crbug.com/1049894): Remove.
+    "+services/network/cookie_settings.h",
+  ],
+
+  "chrome_extension_cookies\.cc": [
+    # TODO(crbug.com/1049894): Remove.
+    "+services/network/cookie_manager.h",
+    "+services/network/restricted_cookie_manager.h",
+  ],
+
+  "webstore_private_apitest.cc" : [
+    # TODO(crbug/1095814): Remove this layering violation.
+    "+chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h",
+  ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "browsertest_util\.cc": [
+    "+chrome/browser/apps/app_service/app_launch_params.h",
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/app_service/browser_app_launcher.h",
+  ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "chrome_extension_host_delegate\.cc": [
+    "+chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h",
+  ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "extension_apitest\.cc": [
+    "+chrome/browser/apps/app_service/app_launch_params.h",
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/app_service/browser_app_launcher.h",
+  ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "extension_browsertest\.cc": [
+    "+chrome/browser/apps/app_service/app_launch_params.h",
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/app_service/browser_app_launcher.h",
+  ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "external_pref_loader\.cc": [
+    "+chrome/browser/apps/user_type_filter.h",
   ],
 }

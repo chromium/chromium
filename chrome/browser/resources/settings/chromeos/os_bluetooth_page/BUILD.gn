@@ -1,0 +1,126 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("../os_settings.gni")
+
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [
+    ":os_bluetooth_change_device_name_dialog",
+    ":os_bluetooth_device_detail_subpage",
+    ":os_bluetooth_devices_subpage",
+    ":os_bluetooth_page",
+    ":os_bluetooth_pairing_dialog",
+    ":os_bluetooth_summary",
+    ":os_paired_bluetooth_list",
+    ":os_paired_bluetooth_list_item",
+    ":settings_fast_pair_toggle",
+  ]
+}
+
+js_library("os_bluetooth_page") {
+  deps = [
+    ":os_bluetooth_devices_subpage",
+    ":os_bluetooth_pairing_dialog",
+    ":os_bluetooth_summary",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_devices_subpage") {
+  deps = [
+    ":os_paired_bluetooth_list",
+    ":settings_fast_pair_toggle",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_summary") {
+  deps = [
+    "..:os_route.m",
+    "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_paired_bluetooth_list") {
+  deps = [
+    ":os_paired_bluetooth_list_item",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+  ]
+}
+
+js_library("os_paired_bluetooth_list_item") {
+  deps = [
+    "..:os_route.m",
+    "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_icon",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_device_detail_subpage") {
+  deps = [
+    ":os_bluetooth_change_device_name_dialog",
+    "..:os_route.m",
+    "..:route_observer_behavior",
+    "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_change_device_name_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_pairing_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+}
+
+js_library("settings_fast_pair_toggle") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "os_paired_bluetooth_list_item.js",
+    "os_paired_bluetooth_list.js",
+    "os_bluetooth_devices_subpage.js",
+    "os_bluetooth_page.js",
+    "os_bluetooth_summary.js",
+    "os_bluetooth_device_detail_subpage.js",
+    "os_bluetooth_change_device_name_dialog.js",
+    "os_bluetooth_pairing_dialog.js",
+    "settings_fast_pair_toggle.js",
+  ]
+}

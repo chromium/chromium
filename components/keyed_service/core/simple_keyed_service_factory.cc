@@ -5,7 +5,7 @@
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"

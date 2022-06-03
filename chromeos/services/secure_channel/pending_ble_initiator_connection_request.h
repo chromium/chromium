@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_ble_connection_request_base.h"
@@ -23,19 +22,32 @@ class PendingBleInitiatorConnectionRequest
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<PendingConnectionRequest<BleInitiatorFailureType>>
+    Create(std::unique_ptr<ClientConnectionParameters>
+               client_connection_parameters,
+           ConnectionPriority connection_priority,
+           PendingConnectionRequestDelegate* delegate,
+           scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
     virtual std::unique_ptr<PendingConnectionRequest<BleInitiatorFailureType>>
-    BuildInstance(std::unique_ptr<ClientConnectionParameters>
-                      client_connection_parameters,
-                  ConnectionPriority connection_priority,
-                  PendingConnectionRequestDelegate* delegate,
-                  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    CreateInstance(
+        std::unique_ptr<ClientConnectionParameters>
+            client_connection_parameters,
+        ConnectionPriority connection_priority,
+        PendingConnectionRequestDelegate* delegate,
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  PendingBleInitiatorConnectionRequest(
+      const PendingBleInitiatorConnectionRequest&) = delete;
+  PendingBleInitiatorConnectionRequest& operator=(
+      const PendingBleInitiatorConnectionRequest&) = delete;
 
   ~PendingBleInitiatorConnectionRequest() override;
 
@@ -54,8 +66,6 @@ class PendingBleInitiatorConnectionRequest
 
   size_t num_empty_scan_failures_ = 0u;
   size_t num_gatt_failures_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleInitiatorConnectionRequest);
 };
 
 }  // namespace secure_channel

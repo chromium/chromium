@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_POWER_HANDLER_H_
 
 #include <memory>
+#include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -22,7 +21,7 @@ class PrefService;
 namespace base {
 class ListValue;
 class TimeTicks;
-}
+}  // namespace base
 
 namespace chromeos {
 namespace settings {
@@ -38,13 +37,18 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     DISPLAY_OFF_SLEEP = 0,
     DISPLAY_OFF = 1,
     DISPLAY_ON = 2,
-    OTHER = 3,
+    SHUT_DOWN = 3,
+    STOP_SESSION = 4,
   };
 
   // WebUI message name and dictionary keys. Shared with tests.
   static const char kPowerManagementSettingsChangedName[];
-  static const char kIdleBehaviorKey[];
-  static const char kIdleControlledKey[];
+  static const char kPossibleAcIdleBehaviorsKey[];
+  static const char kPossibleBatteryIdleBehaviorsKey[];
+  static const char kAcIdleManagedKey[];
+  static const char kBatteryIdleManagedKey[];
+  static const char kCurrentAcIdleBehaviorKey[];
+  static const char kCurrentBatteryIdleBehaviorKey[];
   static const char kLidClosedBehaviorKey[];
   static const char kLidClosedControlledKey[];
   static const char kHasLidKey[];
@@ -53,19 +57,27 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   class TestAPI {
    public:
     explicit TestAPI(PowerHandler* handler);
+
+    TestAPI(const TestAPI&) = delete;
+    TestAPI& operator=(const TestAPI&) = delete;
+
     ~TestAPI();
 
     void RequestPowerManagementSettings();
-    void SetIdleBehavior(IdleBehavior behavior);
+    // Sets AC idle behavior to |behavior| if |when_on_ac| is true. Otherwise
+    // sets battery idle behavior to |behavior|.
+    void SetIdleBehavior(IdleBehavior behavior, bool when_on_ac);
     void SetLidClosedBehavior(PowerPolicyController::Action behavior);
 
    private:
     PowerHandler* handler_;  // Not owned.
-
-    DISALLOW_COPY_AND_ASSIGN(TestAPI);
   };
 
   explicit PowerHandler(PrefService* prefs);
+
+  PowerHandler(const PowerHandler&) = delete;
+  PowerHandler& operator=(const PowerHandler&) = delete;
+
   ~PowerHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -77,9 +89,36 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void PowerManagerRestarted() override;
   void LidEventReceived(PowerManagerClient::LidState state,
-                        const base::TimeTicks& timestamp) override;
+                        base::TimeTicks timestamp) override;
 
  private:
+  enum class PowerSource { kAc, kBattery };
+
+  // Struct holding possible idle behaviors and the current behavior while
+  // charging/when on battery.
+  struct IdleBehaviorInfo {
+    IdleBehaviorInfo();
+    IdleBehaviorInfo(const std::set<IdleBehavior>& possible_behaviors,
+                     const IdleBehavior& current_behavior,
+                     const bool is_managed);
+
+    IdleBehaviorInfo(const IdleBehaviorInfo& o);
+    ~IdleBehaviorInfo();
+
+    bool operator==(const IdleBehaviorInfo& o) const {
+      return (possible_behaviors == o.possible_behaviors &&
+              current_behavior == o.current_behavior &&
+              is_managed == o.is_managed);
+    }
+
+    // All possible idle behaviors.
+    std::set<IdleBehavior> possible_behaviors;
+    // Current idle behavior.
+    IdleBehavior current_behavior = IdleBehavior::DISPLAY_OFF_SLEEP;
+    // Whether enterpise policy manages idle behavior.
+    bool is_managed = false;
+  };
+
   // Handler to request updating the power status.
   void HandleUpdatePowerStatus(const base::ListValue* args);
 
@@ -107,15 +146,24 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback used to receive switch states from PowerManagerClient.
   void OnGotSwitchStates(
-      base::Optional<PowerManagerClient::SwitchStates> result);
+      absl::optional<PowerManagerClient::SwitchStates> result);
 
-  PrefService* prefs_;              // Not owned.
+  // Returns all possible idle behaviors (that a user can choose from) and
+  // current idle behavior based on enterprise policy and other factors when on
+  // |power_source|.
+  IdleBehaviorInfo GetAllowedIdleBehaviors(PowerSource power_source);
+
+  // Returns true if the enterprise policy enforces any settings that can impact
+  // the idle behavior of the device when on |power_source|.
+  bool IsIdleManaged(PowerSource power_source);
+
+  PrefService* const prefs_;
 
   // Used to watch power management prefs for changes so the UI can be notified.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // Last lid state received from powerd.
   PowerManagerClient::LidState lid_state_ = PowerManagerClient::LidState::OPEN;
@@ -123,16 +171,14 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // Last values sent by SendPowerManagementSettings(), cached here so
   // SendPowerManagementSettings() can avoid spamming the UI after this class
   // changes multiple prefs at once.
-  IdleBehavior last_idle_behavior_ = IdleBehavior::DISPLAY_OFF_SLEEP;
+  IdleBehaviorInfo last_ac_idle_info_;
+  IdleBehaviorInfo last_battery_idle_info_;
   PowerPolicyController::Action last_lid_closed_behavior_ =
       PowerPolicyController::ACTION_SUSPEND;
-  bool last_idle_controlled_ = false;
   bool last_lid_closed_controlled_ = false;
   bool last_has_lid_ = true;
 
   base::WeakPtrFactory<PowerHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerHandler);
 };
 
 }  // namespace settings

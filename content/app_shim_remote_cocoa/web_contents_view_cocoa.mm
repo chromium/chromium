@@ -4,8 +4,9 @@
 
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 
+#import "content/browser/web_contents/web_contents_view_mac.h"
+
 #import "base/mac/mac_util.h"
-#include "base/mac/sdk_forward_declarations.h"
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
@@ -14,18 +15,100 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/dragdrop/cocoa_dnd_util.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 
 using remote_cocoa::mojom::DraggingInfo;
 using remote_cocoa::mojom::SelectionDirection;
 using remote_cocoa::mojom::Visibility;
 using content::DropData;
 
+namespace {
+// Time to delay clearing the pasteboard for after a drag ends. This is
+// required because Safari requests data from multiple processes, and clearing
+// the pasteboard after the first access results in unreliable drag operations
+// (http://crbug.com/1227001).
+const int64_t kPasteboardClearDelay = 0.5 * NSEC_PER_SEC;
+}
+
+namespace remote_cocoa {
+
+// DroppedScreenShotCopierMac is a utility to copy screenshots to a usable
+// directory for PWAs. When screenshots are taken and dragged directly on to an
+// application, the resulting file can only be opened by the application that it
+// is passed to. For PWAs, this means that the file dragged to the PWA is not
+// accessible by the browser, resulting in a failure to open the file. This
+// class works around that problem by copying such screenshot files.
+// https://crbug.com/1148078
+class DroppedScreenShotCopierMac {
+ public:
+  DroppedScreenShotCopierMac() = default;
+  ~DroppedScreenShotCopierMac() {
+    if (temp_dir_) {
+      base::ScopedAllowBlocking allow_io;
+      temp_dir_.reset();
+    }
+  }
+
+  // Examine all entries in `drop_data.filenames`. If any of them look like a
+  // screenshot file, copy the file to a temporary directory. This temporary
+  // directory (and its contents) will be kept alive until `this` is destroyed.
+  void CopyScreenShotsInDropData(content::DropData& drop_data) {
+    for (auto& file_info : drop_data.filenames) {
+      if (IsPathScreenShot(file_info.path)) {
+        base::ScopedAllowBlocking allow_io;
+        if (!temp_dir_) {
+          auto new_temp_dir = std::make_unique<base::ScopedTempDir>();
+          if (!new_temp_dir->CreateUniqueTempDir())
+            return;
+          temp_dir_ = std::move(new_temp_dir);
+        }
+        base::FilePath copy_path =
+            temp_dir_->GetPath().Append(file_info.path.BaseName());
+        if (base::CopyFile(file_info.path, copy_path))
+          file_info.path = copy_path;
+      }
+    }
+  }
+
+ private:
+  bool IsPathScreenShot(const base::FilePath& path) const {
+    const std::string& value = path.value();
+    size_t found_var = value.find("/var");
+    if (found_var != 0)
+      return false;
+    size_t found_screencaptureui = value.find("screencaptureui");
+    if (found_screencaptureui == std::string::npos)
+      return false;
+    return true;
+  }
+
+  std::unique_ptr<base::ScopedTempDir> temp_dir_;
+};
+
+}  // namespace remote_cocoa
+
+// Ensure that the ui::DragDropTypes::DragOperation enum values stay in sync
+// with NSDragOperation constants, since the code below uses
+// NSDragOperationToDragOperation to filter invalid values.
+#define STATIC_ASSERT_ENUM(a, b)                            \
+  static_assert(static_cast<int>(a) == static_cast<int>(b), \
+                "enum mismatch: " #a)
+STATIC_ASSERT_ENUM(NSDragOperationNone, ui::DragDropTypes::DRAG_NONE);
+STATIC_ASSERT_ENUM(NSDragOperationCopy, ui::DragDropTypes::DRAG_COPY);
+STATIC_ASSERT_ENUM(NSDragOperationLink, ui::DragDropTypes::DRAG_LINK);
+STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewCocoa
 
-@implementation WebContentsViewCocoa
+@implementation WebContentsViewCocoa {
+  BOOL _inFullScreenTransition;
+}
 
-- (id)initWithViewsHostableView:(ui::ViewsHostableView*)v {
+- (instancetype)initWithViewsHostableView:(ui::ViewsHostableView*)v {
   self = [super initWithFrame:NSZeroRect];
   if (self != nil) {
     _viewsHostableView = v;
@@ -47,6 +130,12 @@ using content::DropData;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   [super dealloc];
+}
+
+- (void)enableDroppedScreenShotCopier {
+  DCHECK(!_droppedScreenShotCopier);
+  _droppedScreenShotCopier =
+      std::make_unique<remote_cocoa::DroppedScreenShotCopierMac>();
 }
 
 - (void)populateDraggingInfo:(DraggingInfo*)info
@@ -71,7 +160,8 @@ using content::DropData;
     ui::PopulateURLAndTitleFromPasteboard(&url, NULL, pboard, YES);
     info->url.emplace(url);
   }
-  info->operation_mask = [nsInfo draggingSourceOperationMask];
+  info->operation_mask = ui::DragDropTypes::NSDragOperationToDragOperation(
+      [nsInfo draggingSourceOperationMask]);
 }
 
 - (BOOL)allowsVibrancy {
@@ -84,13 +174,11 @@ using content::DropData;
 
 // Registers for the view for the appropriate drag types.
 - (void)registerDragTypes {
-  NSArray* types =
-      [NSArray arrayWithObjects:ui::kChromeDragDummyPboardType,
-                                kWebURLsWithTitlesPboardType, NSURLPboardType,
-                                NSStringPboardType, NSHTMLPboardType,
-                                NSRTFPboardType, NSFilenamesPboardType,
-                                ui::kWebCustomDataPboardType, nil];
-  [self registerForDraggedTypes:types];
+  [self registerForDraggedTypes:@[
+    ui::kChromeDragDummyPboardType, kWebURLsWithTitlesPboardType,
+    NSURLPboardType, NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
+    NSFilenamesPboardType, ui::kWebCustomDataPboardType
+  ]];
 }
 
 - (void)mouseEvent:(NSEvent*)theEvent {
@@ -114,24 +202,23 @@ using content::DropData;
   return _mouseDownCanMoveWindow;
 }
 
-- (void)pasteboard:(NSPasteboard*)sender provideDataForType:(NSString*)type {
-  [_dragSource lazyWriteToPasteboard:sender forType:type];
-}
-
 - (void)startDragWithDropData:(const DropData&)dropData
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
                        offset:(NSPoint)offset {
   if (!_host)
     return;
-  _dragSource.reset([[WebDragSource alloc]
-           initWithHost:_host
-                   view:self
-               dropData:&dropData
-                  image:image
-                 offset:offset
-             pasteboard:[NSPasteboard pasteboardWithName:NSDragPboard]
-      dragOperationMask:operationMask]);
+
+  NSPasteboard* pasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+  [pasteboard clearContents];
+
+  _dragSource.reset([[WebDragSource alloc] initWithHost:_host
+                                                   view:self
+                                               dropData:&dropData
+                                                  image:image
+                                                 offset:offset
+                                             pasteboard:pasteboard
+                                      dragOperationMask:operationMask]);
   [_dragSource startDrag];
 }
 
@@ -151,10 +238,23 @@ using content::DropData;
 - (void)draggedImage:(NSImage*)anImage
              endedAt:(NSPoint)screenPoint
            operation:(NSDragOperation)operation {
-  [_dragSource endDragAt:screenPoint operation:operation];
+  [_dragSource
+      endDragAt:screenPoint
+      operation:ui::DragDropTypes::NSDragOperationToDragOperation(operation)];
 
-  // Might as well throw out this object now.
-  _dragSource.reset();
+  WebDragSource* currentDragSource = _dragSource.get();
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)kPasteboardClearDelay),
+      dispatch_get_main_queue(), ^{
+        if (_dragSource.get() == currentDragSource) {
+          // Clear the drag pasteboard. Even though this is called in dealloc,
+          // we need an explicit call because NSPasteboard can retain the drag
+          // source.
+          [_dragSource clearPasteboard];
+          _dragSource.reset();
+        }
+      });
 }
 
 // Called when a drag initiated in our view moves.
@@ -183,6 +283,12 @@ using content::DropData;
   DropData dropData;
   content::PopulateDropDataFromPasteboard(&dropData,
                                           [sender draggingPasteboard]);
+
+  // Work around screen shot drag-drop permission bugs.
+  // https://crbug.com/1148078
+  if (_droppedScreenShotCopier)
+    _droppedScreenShotCopier->CopyScreenShotsInDropData(dropData);
+
   _host->SetDropData(dropData);
 
   auto draggingInfo = DraggingInfo::New();
@@ -236,9 +342,8 @@ using content::DropData;
   if (![[self subviews] containsObject:view])
     return;
 
-  NSSelectionDirection ns_direction =
-      static_cast<NSSelectionDirection>([[[notification userInfo]
-          objectForKey:kSelectionDirection] unsignedIntegerValue]);
+  NSSelectionDirection ns_direction = static_cast<NSSelectionDirection>(
+      [[notification userInfo][kSelectionDirection] unsignedIntegerValue]);
 
   SelectionDirection direction;
   switch (ns_direction) {
@@ -258,7 +363,7 @@ using content::DropData;
 }
 
 - (void)updateWebContentsVisibility {
-  if (!_host)
+  if (!_host || _inFullScreenTransition)
     return;
   Visibility visibility = Visibility::kVisible;
   if ([self isHiddenOrHasHiddenAncestor] || ![self window])
@@ -291,22 +396,57 @@ using content::DropData;
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
 
+  _inFullScreenTransition = NO;
   if (oldWindow) {
-    [notificationCenter
-        removeObserver:self
-                  name:NSWindowDidChangeOcclusionStateNotification
-                object:oldWindow];
+    NSArray* notificationsToRemove = @[
+      NSWindowDidChangeOcclusionStateNotification,
+      NSWindowWillEnterFullScreenNotification,
+      NSWindowDidEnterFullScreenNotification,
+      NSWindowWillExitFullScreenNotification,
+      NSWindowDidExitFullScreenNotification
+    ];
+    for (NSString* notificationName in notificationsToRemove) {
+      [notificationCenter removeObserver:self
+                                    name:notificationName
+                                  object:oldWindow];
+    }
   }
   if (newWindow) {
     [notificationCenter addObserver:self
                            selector:@selector(windowChangedOcclusionState:)
                                name:NSWindowDidChangeOcclusionStateNotification
                              object:newWindow];
+    // The fullscreen transition causes spurious occlusion notifications.
+    // See https://crbug.com/1081229
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillEnterFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidEnterFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionStarted:)
+                               name:NSWindowWillExitFullScreenNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(fullscreenTransitionComplete:)
+                               name:NSWindowDidExitFullScreenNotification
+                             object:newWindow];
   }
 }
 
 - (void)windowChangedOcclusionState:(NSNotification*)notification {
   [self updateWebContentsVisibility];
+}
+
+- (void)fullscreenTransitionStarted:(NSNotification*)notification {
+  _inFullScreenTransition = YES;
+}
+
+- (void)fullscreenTransitionComplete:(NSNotification*)notification {
+  _inFullScreenTransition = NO;
 }
 
 - (void)viewDidMoveToWindow {

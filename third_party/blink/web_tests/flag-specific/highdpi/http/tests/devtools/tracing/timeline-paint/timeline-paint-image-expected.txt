@@ -1,0 +1,36 @@
+Tests the Timeline API instrumentation of a paint image event
+
+
+PaintImage Properties:
+{
+    data : {
+        height : 45
+        nodeId : <number>
+        srcHeight : 21
+        srcWidth : 19
+        url : .../devtools/tracing/resources/test.png
+        width : 60
+        x : 0
+        y : 150
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "PaintImage"
+}
+PaintImage Properties:
+{
+    data : {
+        height : 30
+        nodeId : <number>
+        srcHeight : 21
+        srcWidth : 19
+        url : .../devtools/tracing/resources/test.png
+        width : 45
+        x : 150
+        y : 150
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "PaintImage"
+}
+

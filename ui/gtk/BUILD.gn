@@ -1,0 +1,155 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
+import("//tools/generate_stubs/rules.gni")
+
+assert(is_linux || is_chromeos_lacros || is_chromeos,
+       "This file should only be referenced on Linux")
+
+source_set("gtk_types") {
+  visibility = [ ":gtk_stubs" ]
+  public = [ "gtk_types.h" ]
+}
+
+generate_stubs("gtk_stubs") {
+  visibility = [ ":gtk" ]
+  sigs = [
+    "gdk_pixbuf.sigs",
+    "gdk.sigs",
+    "gsk.sigs",
+    "gtk.sigs",
+    "gio.sigs",
+  ]
+  extra_header = "gtk.fragment"
+  output_name = "gtk_stubs"
+  public_deps = [
+    ":gtk_types",
+    "//build/config/linux/gtk",
+    "//build/config/linux/gtk:gtkprint",
+  ]
+  logging_function = "LogNoop()"
+  logging_include = "ui/gtk/log_noop.h"
+}
+
+component("gtk") {
+  public = [ "gtk_ui_factory.h" ]
+
+  sources = [
+    "gtk_color_mixers.cc",
+    "gtk_color_mixers.h",
+    "gtk_compat.cc",
+    "gtk_compat.h",
+    "gtk_key_bindings_handler.cc",
+    "gtk_key_bindings_handler.h",
+    "gtk_ui.cc",
+    "gtk_ui.h",
+    "gtk_ui_factory.cc",
+    "gtk_ui_platform.h",
+    "gtk_util.cc",
+    "gtk_util.h",
+    "input_method_context_impl_gtk.cc",
+    "input_method_context_impl_gtk.h",
+    "native_theme_gtk.cc",
+    "native_theme_gtk.h",
+    "nav_button_provider_gtk.cc",
+    "nav_button_provider_gtk.h",
+    "printing/print_dialog_gtk.cc",
+    "printing/print_dialog_gtk.h",
+    "printing/printing_gtk_util.cc",
+    "printing/printing_gtk_util.h",
+    "select_file_dialog_impl.cc",
+    "select_file_dialog_impl.h",
+    "select_file_dialog_impl_gtk.cc",
+    "select_file_dialog_impl_gtk.h",
+    "select_file_dialog_impl_kde.cc",
+    "select_file_dialog_impl_portal.cc",
+    "select_file_dialog_impl_portal.h",
+    "settings_provider.h",
+    "settings_provider_gtk.cc",
+    "settings_provider_gtk.h",
+    "window_frame_provider_gtk.cc",
+    "window_frame_provider_gtk.h",
+  ]
+  defines = [ "IS_GTK_IMPL" ]
+  configs += [ "//build/config/linux/pangocairo" ]
+  if (use_gio) {
+    sources += [
+      "settings_provider_gsettings.cc",
+      "settings_provider_gsettings.h",
+    ]
+    configs += [ "//build/linux:gio_config" ]
+  }
+
+  deps = [
+    ":gtk_stubs",
+    "//base",
+    "//components/dbus/thread_linux",
+    "//dbus",
+    "//skia",
+
+    # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
+    # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
+    # our own through the indirect dependency to harfbuzz-ng here.
+    "//third_party:freetype_harfbuzz",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:buildflags",
+    "//ui/base/cursor:theme_manager",
+    "//ui/base/ime",
+    "//ui/base/ime/linux",
+    "//ui/color",
+    "//ui/color:mixers",
+    "//ui/display",
+    "//ui/events",
+    "//ui/events:dom_keyboard_layout",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+    "//ui/gfx:native_widget_types",
+    "//ui/gfx/geometry",
+    "//ui/native_theme",
+    "//ui/shell_dialogs",
+    "//ui/strings",
+    "//ui/views",
+    "//url",
+  ]
+
+  if (enable_basic_printing) {
+    deps += [ "//printing" ]
+  }
+
+  if (use_cups) {
+    deps += [ "//printing/mojom" ]
+  }
+
+  if (ozone_platform_x11) {
+    sources += [
+      "x/gtk_event_loop_x11.cc",
+      "x/gtk_event_loop_x11.h",
+      "x/gtk_ui_platform_x11.cc",
+      "x/gtk_ui_platform_x11.h",
+    ]
+    deps += [
+      "//ui/base/x",
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+      "//ui/platform_window/x11",
+    ]
+  }
+
+  if (ozone_platform_wayland) {
+    sources += [
+      "wayland/gtk_ui_platform_wayland.cc",
+      "wayland/gtk_ui_platform_wayland.h",
+    ]
+  }
+
+  # TODO: This should be removed.
+  deps += [ "//ui/ozone" ]
+}

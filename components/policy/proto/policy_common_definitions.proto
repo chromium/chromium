@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
 
+option go_package="chromium/policy/enterprise_management_proto";
+
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 

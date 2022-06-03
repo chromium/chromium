@@ -1,0 +1,36 @@
+Tests that RemoteObjectId is unique across processes.
+Navigating twice to ensure fresh process
+Runtime.evaluate {
+    id : <number>
+    result : {
+        result : {
+            className : Object
+            description : Object
+            objectId : <string>
+            type : object
+        }
+    }
+    sessionId : <string>
+}
+Navigating cross-process
+Runtime.evaluate {
+    id : <number>
+    result : {
+        result : {
+            className : Object
+            description : Object
+            objectId : <string>
+            type : object
+        }
+    }
+    sessionId : <string>
+}
+Runtime.callFunctionOn {
+    error : {
+        code : -32000
+        message : Cannot find context with specified id
+    }
+    id : <number>
+    sessionId : <string>
+}
+

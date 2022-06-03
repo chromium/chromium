@@ -6,10 +6,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,8 +18,9 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #include "ui/events/base_event_utils.h"
@@ -88,17 +87,22 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
         base_path, base::FilePath(FILE_PATH_LITERAL("iframe.html")));
   }
 
+  ChromeRenderWidgetHostViewMacHistorySwiperTest(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+  ChromeRenderWidgetHostViewMacHistorySwiperTest& operator=(
+      const ChromeRenderWidgetHostViewMacHistorySwiperTest&) = delete;
+
   void SetUpOnMainThread() override {
     event_queue_.reset([[NSMutableArray alloc] init]);
     touch_ = CGPointMake(0.5, 0.5);
 
     // Ensure that the navigation stack is not empty.
-    ui_test_utils::NavigateToURL(browser(), url1_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
     ASSERT_EQ(url1_, GetWebContents()->GetURL());
-    ui_test_utils::NavigateToURL(browser(), url2_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
     ASSERT_EQ(url2_, GetWebContents()->GetURL());
 
-    mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
+    mock_clock_.Advance(base::Milliseconds(100));
     ui::SetEventTickClockForTesting(&mock_clock_);
   }
 
@@ -335,7 +339,7 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   // Replays the events from the queue.
   void RunQueuedEvents() {
     while ([event_queue_ count] > 0) {
-      QueuedEvent* queued_event = [event_queue_ objectAtIndex:0];
+      QueuedEvent* queued_event = [event_queue_ firstObject];
       NSEvent* event = queued_event.event;
       NSView* view = GetWebContents()
                          ->GetRenderViewHost()
@@ -380,7 +384,7 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   }
 
   void ExpectUrlAndOffset(const GURL& url, int offset) {
-    content::WaitForLoadStop(GetWebContents());
+    EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
     EXPECT_EQ(url, GetWebContents()->GetURL());
 
     const int scroll_offset = GetScrollTop();
@@ -395,9 +399,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   base::scoped_nsobject<NSMutableArray> event_queue_;
   // The current location of the user's fingers on the track pad.
   CGPoint touch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderWidgetHostViewMacHistorySwiperTest);
 };
 
 // The ordering, timing, and parameters of the events was determined by
@@ -681,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   QueueEndEvents();
   RunQueuedEvents();
 
-  content::WaitForLoadStop(GetWebContents());
+  EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
   EXPECT_EQ(url2_, GetWebContents()->GetURL());
 
   // Depending on the timing of the IPCs, some of the initial events might be
@@ -744,19 +745,19 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // Initial movements are vertical, and scroll the iframe. Subsequent movements
 // are horizontal, and should not trigger history swiping.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       TestIframeHistorySwiping) {
+                       DISABLED_TestIframeHistorySwiping) {
   if (!IsHistorySwipingSupported())
     return;
 
-  ui_test_utils::NavigateToURL(browser(), url_iframe_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
   content::InputEventAckWaiter wheel_end_ack_waiter(
       GetWebContents()->GetRenderViewHost()->GetWidget(),
-      base::BindRepeating([](content::InputEventAckSource,
-                             content::InputEventAckState,
+      base::BindRepeating([](blink::mojom::InputEventResultSource,
+                             blink::mojom::InputEventResultState,
                              const blink::WebInputEvent& event) {
-        return event.GetType() == blink::WebInputEvent::kMouseWheel &&
+        return event.GetType() == blink::WebInputEvent::Type::kMouseWheel &&
                static_cast<const blink::WebMouseWheelEvent&>(event).phase ==
                    blink::WebMouseWheelEvent::kPhaseEnded;
       }));
@@ -773,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   // Wait for the scroll to end.
   wheel_end_ack_waiter.Wait();
 
-  content::WaitForLoadStop(GetWebContents());
+  EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
   EXPECT_EQ(url_iframe_, GetWebContents()->GetURL());
 }
 
@@ -798,15 +799,17 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   ExpectUrlAndOffset(url1_, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       InnerScrollersOverscrollBehaviorPreventsNavigation) {
+// TODO(crbug.com/1070405): flaky.
+IN_PROC_BROWSER_TEST_F(
+    ChromeRenderWidgetHostViewMacHistorySwiperTest,
+    DISABLED_InnerScrollersOverscrollBehaviorPreventsNavigation) {
   if (!IsHistorySwipingSupported())
     return;
 
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
-  ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior));
   ASSERT_EQ(url_overscroll_behavior, GetWebContents()->GetURL());
 
   QueueBeginningEvents(1, 0);

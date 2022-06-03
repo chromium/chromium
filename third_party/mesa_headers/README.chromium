@@ -1,5 +1,6 @@
 Name: mesa_headers
 Version: 9.0.3
+CPEPrefix: cpe:/a:mesa3d:mesa:9.0.3
 URL: http://www.mesa3d.org/
 License: MIT and SGI Free Software B License Version 2.0
 Security Critical: Yes

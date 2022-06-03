@@ -1,0 +1,7 @@
+include_rules = [
+  "+crypto",
+  "+net",
+  "+mojo/public/cpp",
+  "+services/network/public",
+  "+services/network/test"
+]

@@ -6,13 +6,9 @@
 #define ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "ui/base/cursor/cursor_loader.h"
 #include "ui/display/display.h"
 #include "ui/wm/core/native_cursor_manager.h"
-
-namespace ui {
-class ImageCursors;
-}
 
 namespace ash {
 
@@ -23,6 +19,10 @@ namespace ash {
 class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  public:
   NativeCursorManagerAsh();
+
+  NativeCursorManagerAsh(const NativeCursorManagerAsh&) = delete;
+  NativeCursorManagerAsh& operator=(const NativeCursorManagerAsh&) = delete;
+
   ~NativeCursorManagerAsh() override;
 
   // Toggle native cursor enabled/disabled.
@@ -31,8 +31,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
   // the cursor.
   void SetNativeCursorEnabled(bool enabled);
 
-  // Returns the scale and rotation of the currently loaded cursor.
-  float GetScale() const;
+  // Returns the rotation of the currently loaded cursor.
   display::Display::Rotation GetRotation() const;
 
   // Overridden from ::wm::NativeCursorManager:
@@ -56,9 +55,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   bool native_cursor_enabled_;
 
-  std::unique_ptr<ui::ImageCursors> image_cursors_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeCursorManagerAsh);
+  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 }  // namespace ash

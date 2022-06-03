@@ -1,0 +1,10 @@
+Tests render-blocking status of HTML based script in traces.
+Recording started
+Tracing complete
+empty.js?async: potentially_blocking
+empty.js?async_module: potentially_blocking
+empty.js?blocking: blocking
+empty.js?defer: non_blocking
+empty.js?in_body_parser_blocking: in_body_parser_blocking
+empty.js?module: non_blocking
+

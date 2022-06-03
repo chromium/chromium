@@ -30,8 +30,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -58,32 +58,25 @@ class WebDOMMessageEvent : public WebDOMEvent {
       const WebFrame* source_frame = nullptr,
       const WebDocument& target_document = WebDocument(),
       WebVector<MessagePortChannel> ports = WebVector<MessagePortChannel>());
-  BLINK_EXPORT WebDOMMessageEvent(
-      TransferableMessage,
-      const WebString& origin = WebString(),
-      const WebFrame* source_frame = nullptr,
-      const WebDocument& target_document = WebDocument());
   WebDOMMessageEvent() = default;
 
   BLINK_EXPORT WebString Origin() const;
 
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id() const {
+  absl::optional<base::UnguessableToken> locked_agent_cluster_id() const {
     return locked_agent_cluster_id_;
   }
 
-  // The |encoded_message| in the returned message is only valid as long as this
-  // WebDOMMessageEvent is still valid, unless EnsureDataIsOwned is called on
-  // the returned message.
-  BLINK_EXPORT TransferableMessage AsMessage();
-
 #if INSIDE_BLINK
-  explicit WebDOMMessageEvent(MessageEvent* e) : WebDOMEvent(e) {}
+  explicit WebDOMMessageEvent(
+      MessageEvent* e,
+      absl::optional<base::UnguessableToken> locked_agent_cluster_id)
+      : WebDOMEvent(e), locked_agent_cluster_id_(locked_agent_cluster_id) {}
 #endif
 
  private:
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id_;
+  absl::optional<base::UnguessableToken> locked_agent_cluster_id_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOM_MESSAGE_EVENT_H_

@@ -4,18 +4,20 @@
 
 #include "third_party/blink/renderer/modules/nfc/ndef_reading_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_reading_event_init.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
-#include "third_party/blink/renderer/modules/nfc/ndef_reading_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 // static
-NDEFReadingEvent* NDEFReadingEvent::Create(const AtomicString& event_type,
+NDEFReadingEvent* NDEFReadingEvent::Create(const ScriptState* script_state,
+                                           const AtomicString& event_type,
                                            const NDEFReadingEventInit* init,
                                            ExceptionState& exception_state) {
-  NDEFMessage* message =
-      NDEFMessage::Create(nullptr, init->message(), exception_state);
+  NDEFMessage* message = NDEFMessage::Create(
+      script_state, init->message(), exception_state, /*records_depth=*/0U);
   if (exception_state.HadException())
     return nullptr;
   DCHECK(message);
@@ -42,7 +44,7 @@ const AtomicString& NDEFReadingEvent::InterfaceName() const {
   return event_interface_names::kNDEFReadingEvent;
 }
 
-void NDEFReadingEvent::Trace(blink::Visitor* visitor) {
+void NDEFReadingEvent::Trace(Visitor* visitor) const {
   visitor->Trace(message_);
   Event::Trace(visitor);
 }

@@ -5,7 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "downloads.mojom",
-  ]
+  sources = [ "downloads.mojom" ]
+  webui_module_path = "/"
 }

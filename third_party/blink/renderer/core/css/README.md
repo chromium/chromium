@@ -1,6 +1,6 @@
 # CSS
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/css/README.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/css/README.md)
 
 The `Source/core/css` directory contains the implementation of CSS.
 

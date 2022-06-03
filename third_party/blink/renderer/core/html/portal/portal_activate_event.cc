@@ -7,11 +7,12 @@
 #include <utility>
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_portal_activate_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
-#include "third_party/blink/renderer/core/html/portal/portal_activate_event_init.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -20,7 +21,7 @@ namespace blink {
 
 PortalActivateEvent* PortalActivateEvent::Create(
     LocalFrame* frame,
-    const base::UnguessableToken& predecessor_portal_token,
+    const PortalToken& predecessor_portal_token,
     mojo::PendingAssociatedRemote<mojom::blink::Portal> predecessor_portal,
     mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
         predecessor_portal_client_receiver,
@@ -43,7 +44,7 @@ PortalActivateEvent* PortalActivateEvent::Create(
 
 PortalActivateEvent::PortalActivateEvent(
     Document* document,
-    const base::UnguessableToken& predecessor_portal_token,
+    const PortalToken& predecessor_portal_token,
     mojo::PendingAssociatedRemote<mojom::blink::Portal> predecessor_portal,
     mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
         predecessor_portal_client_receiver,
@@ -89,7 +90,7 @@ ScriptValue PortalActivateEvent::data(ScriptState* script_state) {
       result.stored_value->value;
 
   if (!result.is_new_entry)
-    return ScriptValue(isolate, relevant_data.NewLocal(isolate));
+    return ScriptValue(isolate, relevant_data.Get(isolate));
 
   v8::Local<v8::Value> value;
   if (data_) {
@@ -101,11 +102,11 @@ ScriptValue PortalActivateEvent::data(ScriptState* script_state) {
     value = data_from_init_.GetAcrossWorld(script_state);
   }
 
-  relevant_data.Set(isolate, value);
+  relevant_data.Reset(isolate, value);
   return ScriptValue(isolate, value);
 }
 
-void PortalActivateEvent::Trace(blink::Visitor* visitor) {
+void PortalActivateEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
   visitor->Trace(document_);
   visitor->Trace(adopted_portal_);
@@ -121,6 +122,14 @@ const AtomicString& PortalActivateEvent::InterfaceName() const {
 
 HTMLPortalElement* PortalActivateEvent::adoptPredecessor(
     ExceptionState& exception_state) {
+  if (!RuntimeEnabledFeatures::PortalsEnabled(
+          document_ ? document_->GetExecutionContext() : nullptr)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Portals is not enabled in this document.");
+    return nullptr;
+  }
+
   if (!predecessor_portal_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -131,7 +140,7 @@ HTMLPortalElement* PortalActivateEvent::adoptPredecessor(
 
   DCHECK(!adopted_portal_);
   adopted_portal_ = MakeGarbageCollected<HTMLPortalElement>(
-      *document_, predecessor_portal_token_, std::move(predecessor_portal_),
+      *document_, &predecessor_portal_token_, std::move(predecessor_portal_),
       std::move(predecessor_portal_client_receiver_));
   std::move(on_portal_activated_callback_)
       .Run(mojom::blink::PortalActivateResult::kPredecessorWasAdopted);

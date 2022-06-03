@@ -6,8 +6,8 @@ if (window.testRunner)
 
 function go() {
     var oSVGPolygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-    var oSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    var oSVGPoint1 = oSVGPath.getPointAtLength(0.0);
+    var svgRoot = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    var oSVGPoint1 = svgRoot.createSVGPoint();
     oSVGPolygon.points.initialize(oSVGPoint1);
     oSVGPolygon.points.removeItem(-9223372036854775802);
     alert("Accessing old oSVGPoint1.x: " + oSVGPoint1.x);

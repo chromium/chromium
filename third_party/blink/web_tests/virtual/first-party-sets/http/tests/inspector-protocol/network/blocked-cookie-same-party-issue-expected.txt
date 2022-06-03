@@ -1,0 +1,50 @@
+Verifies that making cross-party requests with SameParty cookies results in a blocked cookie issue
+
+Javascript initiated subresource associated cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyFromCrossPartyContext
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            sameSite : None
+            secure : true
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+    }
+]
+Issue reported: {
+    code : SameSiteCookieIssue
+    details : {
+        sameSiteCookieIssueDetails : {
+            cookie : {
+                domain : cookie.test
+                name : name
+                path : /inspector-protocol/network/resources
+            }
+            cookieExclusionReasons : [
+                [0] : ExcludeSamePartyCrossPartyContext
+            ]
+            cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/hello-world.html
+            cookieWarningReasons : [
+            ]
+            operation : ReadCookie
+            request : {
+                requestId : <string>
+                url : https://cookie.test:8443/inspector-protocol/network/resources/hello-world.html
+            }
+            siteForCookies : https://thirdparty.test/
+        }
+    }
+}
+

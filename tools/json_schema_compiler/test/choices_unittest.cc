@@ -26,21 +26,22 @@ using json_schema_compiler::test_util::Vector;
 TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
   {
     std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        *List(std::make_unique<base::Value>(true))));
+        List(std::make_unique<base::Value>(true))->GetList()));
     EXPECT_FALSE(params);
   }
   {
-    std::unique_ptr<TakesIntegers::Params> params(
-        TakesIntegers::Params::Create(*List(std::make_unique<base::Value>(6))));
+    std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
+        List(std::make_unique<base::Value>(6))->GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->nums.as_integers);
     EXPECT_EQ(6, *params->nums.as_integer);
   }
   {
-    std::unique_ptr<TakesIntegers::Params> params(
-        TakesIntegers::Params::Create(*List(List(
-            std::make_unique<base::Value>(2), std::make_unique<base::Value>(6),
-            std::make_unique<base::Value>(8)))));
+    std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
+        List(List(std::make_unique<base::Value>(2),
+                  std::make_unique<base::Value>(6),
+                  std::make_unique<base::Value>(8)))
+            ->GetList()));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->nums.as_integers);
     EXPECT_EQ(Vector(2, 6, 8), *params->nums.as_integers);
@@ -50,8 +51,9 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
 TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
   {
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(*List(
-            Dictionary("strings", std::make_unique<base::Value>("asdf")))));
+        choices::ObjectWithChoices::Params::Create(
+            List(Dictionary("strings", std::make_unique<base::Value>("asdf")))
+                ->GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
@@ -60,8 +62,9 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
   {
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
-            *List(Dictionary("strings", std::make_unique<base::Value>("asdf"),
-                             "integers", std::make_unique<base::Value>(6)))));
+            List(Dictionary("strings", std::make_unique<base::Value>("asdf"),
+                            "integers", std::make_unique<base::Value>(6)))
+                ->GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
@@ -81,7 +84,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(*params_value));
+        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
     EXPECT_FALSE(params.get());
   }
   {
@@ -91,7 +94,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(*params_value));
+        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
     EXPECT_FALSE(params.get());
   }
   {
@@ -100,7 +103,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(*params_value));
+        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
     EXPECT_FALSE(params.get());
   }
 }
@@ -110,13 +113,13 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
                                             std::string("of"),
                                             std::string("strings"));
 
-  auto strings_value = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < strings.size(); ++i)
-    strings_value->AppendString(strings[i]);
+  base::Value strings_value(base::Value::Type::LIST);
+  for (const auto& string : strings)
+    strings_value.Append(string);
 
   base::DictionaryValue value;
   value.SetInteger("integers", 4);
-  value.Set("strings", std::move(strings_value));
+  value.SetKey("strings", std::move(strings_value));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
@@ -130,14 +133,14 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
-  auto strings_value = std::make_unique<base::ListValue>();
-  strings_value->AppendString("list");
-  strings_value->AppendString("of");
-  strings_value->AppendString("strings");
+  base::Value strings_value(base::Value::Type::LIST);
+  strings_value.Append("list");
+  strings_value.Append("of");
+  strings_value.Append("strings");
 
   base::DictionaryValue value;
   value.SetInteger("integers", 5);
-  value.Set("strings", std::move(strings_value));
+  value.SetKey("strings", std::move(strings_value));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
@@ -153,9 +156,9 @@ TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
     std::unique_ptr<base::Value> results_value = results.ToValue();
     ASSERT_TRUE(results_value);
 
-    base::ListValue expected;
-    expected.AppendInteger(1);
-    expected.AppendInteger(2);
+    base::Value expected(base::Value::Type::LIST);
+    expected.Append(1);
+    expected.Append(2);
 
     EXPECT_TRUE(expected.Equals(results_value.get()));
   }
@@ -177,8 +180,8 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
   // NestedChoices.
   {
     // The plain integer choice.
-    std::unique_ptr<base::Value> value = ReadJson("42");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    base::Value value = ReadJson("42");
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     ASSERT_TRUE(obj->as_integer);
@@ -186,13 +189,13 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_choice2);
     EXPECT_EQ(42, *obj->as_integer);
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 
   {
     // The string choice within the first choice.
-    std::unique_ptr<base::Value> value = ReadJson("\"foo\"");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    base::Value value = ReadJson("\"foo\"");
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     EXPECT_FALSE(obj->as_integer);
@@ -202,13 +205,13 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_choice1->as_boolean);
     EXPECT_EQ("foo", *obj->as_choice1->as_string);
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 
   {
     // The boolean choice within the first choice.
-    std::unique_ptr<base::Value> value = ReadJson("true");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    base::Value value = ReadJson("true");
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     EXPECT_FALSE(obj->as_integer);
@@ -218,37 +221,37 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     ASSERT_TRUE(obj->as_choice1->as_boolean);
     EXPECT_TRUE(*obj->as_choice1->as_boolean);
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 
   {
     // The double choice within the second choice.
-    std::unique_ptr<base::Value> value = ReadJson("42.0");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    base::Value value = ReadJson("42.0");
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    ASSERT_TRUE(obj->as_choice2->as_double);
+    ASSERT_TRUE(obj->as_choice2->as_double_);
     EXPECT_FALSE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
-    EXPECT_EQ(42.0, *obj->as_choice2->as_double);
+    EXPECT_EQ(42.0, *obj->as_choice2->as_double_);
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 
   {
     // The ChoiceType choice within the second choice.
-    std::unique_ptr<base::Value> value =
+    base::Value value =
         ReadJson("{\"integers\": [1, 2], \"strings\": \"foo\"}");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    EXPECT_FALSE(obj->as_choice2->as_double);
+    EXPECT_FALSE(obj->as_choice2->as_double_);
     ASSERT_TRUE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
     {
@@ -262,29 +265,29 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
       EXPECT_EQ("foo", *choice_type->strings->as_string);
     }
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 
   {
     // The array of ChoiceTypes within the second choice.
-    std::unique_ptr<base::Value> value = ReadJson(
+    base::Value value = ReadJson(
         "["
         "  {\"integers\": [1, 2], \"strings\": \"foo\"},"
         "  {\"integers\": 3, \"strings\": [\"bar\", \"baz\"]}"
         "]");
-    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(*value);
+    std::unique_ptr<NestedChoice> obj = NestedChoice::FromValue(value);
 
     ASSERT_TRUE(obj);
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    EXPECT_FALSE(obj->as_choice2->as_double);
+    EXPECT_FALSE(obj->as_choice2->as_double_);
     EXPECT_FALSE(obj->as_choice2->as_choice_type);
     ASSERT_TRUE(obj->as_choice2->as_choice_types);
     // Bleh too much effort to test everything.
     ASSERT_EQ(2u, obj->as_choice2->as_choice_types->size());
 
-    EXPECT_EQ(*value, *obj->ToValue());
+    EXPECT_EQ(value, *obj->ToValue());
   }
 }
 

@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/nacl/loader/nacl_validation_db.h"
 #include "crypto/nss_util.h"
 #include "native_client/src/public/validation_cache.h"

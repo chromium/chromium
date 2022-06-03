@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/util/generate_wrapper.gni")
+
+# Generates a script in the bin directory that runs
+# //build/lacros/lacros_resource_sizes.py for the provided configuration.
+template("lacros_resource_sizes_test") {
+  generate_wrapper(target_name) {
+    forward_variables_from(invoker, [ "data_deps" ])
+    executable = "//build/lacros/lacros_resource_sizes.py"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
+
+    deps = [ "//build/lacros:lacros_resource_sizes_py" ]
+    executable_args = [
+      "--chromium-output-directory",
+      "@WrappedPath(.)",
+    ]
+  }
+}

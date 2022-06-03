@@ -5,7 +5,6 @@
 #include "chromeos/services/multidevice_setup/privileged_host_device_setter_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_base.h"
 
@@ -18,13 +17,14 @@ PrivilegedHostDeviceSetterImpl::Factory*
     PrivilegedHostDeviceSetterImpl::Factory::test_factory_ = nullptr;
 
 // static
-PrivilegedHostDeviceSetterImpl::Factory*
-PrivilegedHostDeviceSetterImpl::Factory::Get() {
+std::unique_ptr<PrivilegedHostDeviceSetterBase>
+PrivilegedHostDeviceSetterImpl::Factory::Create(
+    MultiDeviceSetupBase* multidevice_setup) {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance(multidevice_setup);
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(
+      new PrivilegedHostDeviceSetterImpl(multidevice_setup));
 }
 
 // static
@@ -35,13 +35,6 @@ void PrivilegedHostDeviceSetterImpl::Factory::SetFactoryForTesting(
 
 PrivilegedHostDeviceSetterImpl::Factory::~Factory() = default;
 
-std::unique_ptr<PrivilegedHostDeviceSetterBase>
-PrivilegedHostDeviceSetterImpl::Factory::BuildInstance(
-    MultiDeviceSetupBase* multidevice_setup) {
-  return base::WrapUnique(
-      new PrivilegedHostDeviceSetterImpl(multidevice_setup));
-}
-
 PrivilegedHostDeviceSetterImpl::PrivilegedHostDeviceSetterImpl(
     MultiDeviceSetupBase* multidevice_setup)
     : multidevice_setup_(multidevice_setup) {}
@@ -49,10 +42,10 @@ PrivilegedHostDeviceSetterImpl::PrivilegedHostDeviceSetterImpl(
 PrivilegedHostDeviceSetterImpl::~PrivilegedHostDeviceSetterImpl() = default;
 
 void PrivilegedHostDeviceSetterImpl::SetHostDevice(
-    const std::string& host_device_id,
+    const std::string& host_instance_id_or_legacy_device_id,
     SetHostDeviceCallback callback) {
-  multidevice_setup_->SetHostDeviceWithoutAuthToken(host_device_id,
-                                                    std::move(callback));
+  multidevice_setup_->SetHostDeviceWithoutAuthToken(
+      host_instance_id_or_legacy_device_id, std::move(callback));
 }
 
 }  // namespace multidevice_setup

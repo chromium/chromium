@@ -8,10 +8,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -37,27 +35,22 @@ class TreeView;
 // cookies of the current tab contents. To display the dialog, invoke
 // ShowCollectedCookiesDialog() on the delegate of the WebContents's
 // content settings tab helper.
-class CollectedCookiesViews
-    : public views::DialogDelegateView,
-      public views::ButtonListener,
-      public views::TabbedPaneListener,
-      public views::TreeViewController,
-      public content::WebContentsUserData<CollectedCookiesViews> {
+class CollectedCookiesViews : public views::DialogDelegateView,
+                              public views::TabbedPaneListener,
+                              public views::TreeViewController {
  public:
+  METADATA_HEADER(CollectedCookiesViews);
+  CollectedCookiesViews(const CollectedCookiesViews&) = delete;
+  CollectedCookiesViews& operator=(const CollectedCookiesViews&) = delete;
   ~CollectedCookiesViews() override;
 
   // Use BrowserWindow::ShowCollectedCookiesDialog to show.
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
-  // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
-  bool Accept() override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  void DeleteDelegate() override;
+  static CollectedCookiesViews* GetDialogForTesting(
+      content::WebContents* web_contents);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void set_status_changed_for_testing() { status_changed_ = true; }
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -67,19 +60,15 @@ class CollectedCookiesViews
 
   // views::View:
   gfx::Size GetMinimumSize() const override;
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
 
  private:
-  friend class CollectedCookiesViewsTest;
-  friend class content::WebContentsUserData<CollectedCookiesViews>;
+  class WebContentsUserData;
 
   explicit CollectedCookiesViews(content::WebContents* web_contents);
 
-  void Init();
+  void OnDialogClosed();
 
   std::unique_ptr<views::View> CreateAllowedPane();
-
   std::unique_ptr<views::View> CreateBlockedPane();
 
   // Creates and returns the "buttons pane", which is the view in the
@@ -128,16 +117,6 @@ class CollectedCookiesViews
   views::View* blocked_buttons_pane_ = nullptr;
 
   bool status_changed_ = false;
-
-  // This bit is set to true when the widget is shutting down or when |this|'s
-  // destructor has been called. Either the Widget or the WebContents may be the
-  // first to shut down, and this prevents double-destruction of this or
-  // double-closing of the widget.
-  bool destroying_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COLLECTED_COOKIES_VIEWS_H_

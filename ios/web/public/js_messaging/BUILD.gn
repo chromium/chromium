@@ -8,8 +8,12 @@ source_set("js_messaging") {
     "//ios/web/public/",
     "//url",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 
   sources = [
+    "java_script_feature.h",
+    "java_script_feature_util.h",
+    "script_message.h",
     "web_frame.h",
     "web_frame_user_data.h",
     "web_frame_util.h",

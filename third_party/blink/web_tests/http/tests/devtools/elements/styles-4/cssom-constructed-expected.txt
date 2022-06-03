@@ -4,16 +4,12 @@ Tests that constructed stylesheets appear properly.
 element.style { ()
 
 [expanded] 
-div { ()
+div { (constructed stylesheet)
     color: red;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
+StyleSheetChanged triggered
 

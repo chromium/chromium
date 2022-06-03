@@ -6,6 +6,7 @@
 // https://w3c.github.io/media-source/#trackdefaultlist
 
 [
+    Exposed=Window,
     RuntimeEnabled=MediaSourceExperimental
 ] interface TrackDefaultList {
     [RaisesException] constructor(optional sequence<TrackDefault> trackDefaults = []);

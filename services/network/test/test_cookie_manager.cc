@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_inclusion_status.h"
 
 namespace network {
 
@@ -17,18 +18,18 @@ TestCookieManager::~TestCookieManager() = default;
 
 void TestCookieManager::SetCanonicalCookie(
     const net::CanonicalCookie& cookie,
-    const std::string& source_scheme,
+    const GURL& source_url,
     const net::CookieOptions& cookie_options,
     SetCanonicalCookieCallback callback) {
   if (callback) {
-    std::move(callback).Run(net::CanonicalCookie::CookieInclusionStatus(
-        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
+    std::move(callback).Run(net::CookieAccessResult(net::CookieInclusionStatus(
+        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)));
   }
 }
 
 void TestCookieManager::AddCookieChangeListener(
     const GURL& url,
-    const base::Optional<std::string>& name,
+    const absl::optional<std::string>& name,
     mojo::PendingRemote<network::mojom::CookieChangeListener> listener) {
   mojo::Remote<network::mojom::CookieChangeListener> listener_remote(
       std::move(listener));

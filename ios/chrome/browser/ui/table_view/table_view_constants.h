@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString* const kTableViewIllustratedEmptyViewID;
 extern NSString* const kTableViewEmptyViewID;
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_TABLE_VIEW_CONSTANTS_H_

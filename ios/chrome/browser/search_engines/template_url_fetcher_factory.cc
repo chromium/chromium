@@ -15,7 +15,7 @@ namespace ios {
 
 // static
 TemplateURLFetcher* TemplateURLFetcherFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<TemplateURLFetcher*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -40,7 +40,7 @@ TemplateURLFetcherFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return std::make_unique<TemplateURLFetcher>(
       TemplateURLServiceFactory::GetForBrowserState(
-          static_cast<ios::ChromeBrowserState*>(context)));
+          static_cast<ChromeBrowserState*>(context)));
 }
 
 web::BrowserState* TemplateURLFetcherFactory::GetBrowserStateToUse(

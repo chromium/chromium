@@ -11,12 +11,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/input_stream.h"
 #include "content/public/browser/download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -41,7 +42,7 @@ class MockDownloadManager : public DownloadManager {
     GURL site_url;
     GURL tab_url;
     GURL tab_referrer_url;
-    base::Optional<url::Origin> request_initiator;
+    absl::optional<url::Origin> request_initiator;
     std::string mime_type;
     std::string original_mime_type;
     base::Time start_time;
@@ -58,6 +59,7 @@ class MockDownloadManager : public DownloadManager {
     base::Time last_access_time;
     bool transient;
     std::vector<download::DownloadItem::ReceivedSlice> received_slices;
+    download::DownloadItemRerouteInfo reroute_info;
 
     CreateDownloadItemAdapter(
         const std::string& guid,
@@ -69,7 +71,7 @@ class MockDownloadManager : public DownloadManager {
         const GURL& site_url,
         const GURL& tab_url,
         const GURL& tab_refererr_url,
-        const base::Optional<url::Origin>& request_initiator,
+        const absl::optional<url::Origin>& request_initiator,
         const std::string& mime_type,
         const std::string& original_mime_type,
         base::Time start_time,
@@ -86,7 +88,9 @@ class MockDownloadManager : public DownloadManager {
         base::Time last_access_time,
         bool transient,
         const std::vector<download::DownloadItem::ReceivedSlice>&
-            received_slices);
+            received_slices,
+        const download::DownloadItemRerouteInfo& reroute_info);
+
     // Required by clang compiler.
     CreateDownloadItemAdapter(const CreateDownloadItemAdapter& rhs);
     ~CreateDownloadItemAdapter();
@@ -131,7 +135,7 @@ class MockDownloadManager : public DownloadManager {
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -147,8 +151,8 @@ class MockDownloadManager : public DownloadManager {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
 
   MOCK_METHOD1(MockCreateDownloadItem,
                download::DownloadItem*(CreateDownloadItemAdapter adapter));

@@ -1,4 +1,3 @@
-CONSOLE WARNING: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 1: Uncaught NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'blob:https://cloud-cuckoo-land.google:2112/456789'.
+CONSOLE ERROR: Uncaught NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'blob:https://cloud-cuckoo-land.google:2112/456789'.
 This tests an isolated script's ability to XHR a blob that is in its security origin, which is not the same as the document's security origin.
 We pass if there are no 'Not allowed to load' console errors. (This will still show one console error as the blob is not available)

@@ -1,0 +1,64 @@
+Tests download is canceled when behavior is set to deny.
+Downloading via a navigation: 
+{
+    method : Page.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+    }
+    sessionId : <string>
+}
+{
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+{
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : canceled
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link: 
+{
+    method : Page.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.text
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+    }
+    sessionId : <string>
+}
+{
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+{
+    method : Page.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : canceled
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+

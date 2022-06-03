@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import android.support.design.widget.TabLayout;
-import android.support.v7.widget.RecyclerView;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.TabLayoutCallbacks;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -47,20 +47,24 @@ class KeyboardAccessoryProperties {
             new WritableObjectPropertyKey<>("tab_layout_item");
     static final WritableObjectPropertyKey<Runnable> SHOW_KEYBOARD_CALLBACK =
             new WritableObjectPropertyKey<>("keyboard_callback");
-    @VisibleForTesting
     static final ReadableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
-            new WritableBooleanPropertyKey("skip_all_animations_for_testing");
+            new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
+    static final WritableObjectPropertyKey<Callback<Integer>> OBFUSCATED_CHILD_AT_CALLBACK =
+            new WritableObjectPropertyKey<>("obfuscated_child_at_callback");
+    static final WritableBooleanPropertyKey SHOW_SWIPING_IPH =
+            new WritableBooleanPropertyKey("show_swiping_iph");
 
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel
                 .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
                         BOTTOM_OFFSET_PX, TAB_LAYOUT_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
-                        SHOW_KEYBOARD_CALLBACK)
+                        SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
                 .with(KEYBOARD_TOGGLE_VISIBLE, false)
-                .with(DISABLE_ANIMATIONS_FOR_TESTING, false);
+                .with(DISABLE_ANIMATIONS_FOR_TESTING, false)
+                .with(SHOW_SWIPING_IPH, false);
     }
 
     /**

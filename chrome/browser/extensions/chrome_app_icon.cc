@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/extension_registry.h"
@@ -15,7 +16,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #endif
 
@@ -29,6 +30,11 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
  public:
   explicit RoundedCornersImageSource(const gfx::ImageSkia& icon)
       : gfx::CanvasImageSource(icon.size()), icon_(icon) {}
+
+  RoundedCornersImageSource(const RoundedCornersImageSource&) = delete;
+  RoundedCornersImageSource& operator=(const RoundedCornersImageSource&) =
+      delete;
+
   ~RoundedCornersImageSource() override {}
 
  private:
@@ -55,8 +61,6 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
   }
 
   gfx::ImageSkia icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedCornersImageSource);
 };
 
 }  // namespace
@@ -64,26 +68,26 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
 // static
 void ChromeAppIcon::ApplyEffects(int resource_size_in_dip,
                                  const ResizeFunction& resize_function,
-                                 bool apply_chrome_badge,
                                  bool app_launchable,
                                  bool from_bookmark,
+                                 Badge badge_type,
                                  gfx::ImageSkia* image_skia) {
   if (!resize_function.is_null()) {
     resize_function.Run(gfx::Size(resource_size_in_dip, resource_size_in_dip),
                         image_skia);
   }
 
-#if defined(OS_CHROMEOS)
-  if (apply_chrome_badge) {
-    util::ApplyChromeBadge(image_skia);
-  }
-#endif
-
   if (!app_launchable) {
     constexpr color_utils::HSL shift = {-1, 0, 0.6};
     *image_skia =
         gfx::ImageSkiaOperations::CreateHSLShiftedImage(*image_skia, shift);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Badge should be added after graying out the icon to have a crisp look.
+  if (badge_type != Badge::kNone)
+    util::ApplyBadge(image_skia, badge_type);
+#endif
 
   if (from_bookmark) {
     *image_skia =
@@ -142,20 +146,23 @@ void ChromeAppIcon::UpdateIcon() {
 
   image_skia_ = icon_->image_skia();
 
-  bool apply_chrome_badge = false;
-#if defined(OS_CHROMEOS)
-  icon_is_badged_ = util::ShouldApplyChromeBadge(browser_context_, app_id_);
-  apply_chrome_badge = icon_is_badged_;
-#endif
-
+  Badge badge_type = Badge::kNone;
   bool app_launchable = util::IsAppLaunchable(app_id_, browser_context_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  has_chrome_badge_ = util::ShouldApplyChromeBadge(browser_context_, app_id_);
+  if (!app_launchable) {
+    badge_type = Badge::kBlocked;
+  } else if (has_chrome_badge_) {
+    badge_type = Badge::kChrome;
+  }
+#endif
 
   const Extension* extension =
       ExtensionRegistry::Get(browser_context_)->GetInstalledExtension(app_id_);
   bool from_bookmark = extension && extension->from_bookmark();
 
-  ApplyEffects(resource_size_in_dip_, resize_function_, apply_chrome_badge,
-               app_launchable, from_bookmark, &image_skia_);
+  ApplyEffects(resource_size_in_dip_, resize_function_, app_launchable,
+               from_bookmark, badge_type, &image_skia_);
 
   delegate_->OnIconUpdated(this);
 }

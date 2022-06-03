@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/observer_list.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -34,11 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothProfileManagerClient
   void RegisterProfile(const dbus::ObjectPath& profile_path,
                        const std::string& uuid,
                        const Options& options,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override;
   void UnregisterProfile(const dbus::ObjectPath& profile_path,
-                         const base::Closure& callback,
-                         const ErrorCallback& error_callback) override;
+                         base::OnceClosure callback,
+                         ErrorCallback error_callback) override;
 
   // Register, unregister and retrieve pointers to profile server providers.
   void RegisterProfileServiceProvider(

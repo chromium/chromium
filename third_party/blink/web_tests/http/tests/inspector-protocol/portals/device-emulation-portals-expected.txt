@@ -1,0 +1,26 @@
+Tests that device emulation affects portals.
+Loading portal host
+Location: http://devtools.oopif-a.test:8000/inspector-protocol/resources/test-page.html
+Creating portal
+Portal location: http://devtools.oopif-b.test:8000/inspector-protocol/resources/test-page.html
+Metrics:
+width             = 800
+height            = 600
+orientation type  = landscape-secondary
+orientation angle = 270
+Portal metrics:
+width             = 800
+height            = 600
+orientation type  = landscape-secondary
+orientation angle = 270
+Metrics:
+width             = 500
+height            = 200
+orientation type  = portrait-primary
+orientation angle = 0
+Portal metrics:
+width             = 500
+height            = 200
+orientation type  = portrait-primary
+orientation angle = 0
+

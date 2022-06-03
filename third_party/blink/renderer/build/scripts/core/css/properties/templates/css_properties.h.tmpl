@@ -22,13 +22,14 @@ class CSSParserLocalContext;
 class CSSValue;
 class LayoutObject;
 class Node;
-class SVGComputedStyle;
 
 namespace {{namespace}} {
 
 {% for property in properties %}
 {% set class_name = property.name.to_upper_camel_case() %}
 {% set is_alias = property.alias_for %}
+{% set is_surrogate = property.surrogate_for or
+    (property.logical_property_group and property.logical_property_group.is_logical) %}
 {% set property_id = 'CSSPropertyID::' + property.enum_key %}
 {% set separator = '\'' + (property.separator or '\\0') + '\'' %}
 {% set flags = [
@@ -39,8 +40,20 @@ namespace {{namespace}} {
   (property.inherited and 'kInherited' or ''),
   (property.visited and 'kVisited' or ''),
   (property.is_internal and 'kInternal' or ''),
-  (property.affected_by_forced_colors and 'kIsAffectedByForcedColors' or ''),
-  (property.ua and 'kUA' or ''),
+  (property.is_animation_property and 'kAnimation' or ''),
+  (property.valid_for_first_letter and 'kValidForFirstLetter' or ''),
+  (property.valid_for_first_line and 'kValidForFirstLine' or ''),
+  (property.valid_for_cue and 'kValidForCue' or ''),
+  (property.valid_for_marker and 'kValidForMarker' or ''),
+  (is_surrogate and 'kSurrogate' or ''),
+  (property.font and 'kAffectsFont' or ''),
+  (property.is_background and 'kBackground' or ''),
+  (property.is_border and 'kBorder' or ''),
+  (property.is_border_radius and 'kBorderRadius' or ''),
+  (property.is_highlight_colors and 'kHighlightColors' or ''),
+  (property.tree_scoped_value and 'kTreeScopedValue' or ''),
+  (property.valid_for_highlight and 'kValidForHighlight' or ''),
+  (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
 ] | reject('==', '') | join(' | ') %}
 {% set ctor_args = (not is_alias and [property_id, flags, separator] or []) %}
 // {{property.name}}
@@ -50,7 +63,7 @@ class {{class_name}} final : public {{property.superclass}} {
   const char* GetPropertyName() const override;
   const WTF::AtomicString& GetPropertyNameAtomicString() const override;
   const char* GetJSPropertyName() const override;
-  {% if property.is_internal or property.runtime_flag %}
+  {% if property.is_internal or property.runtime_flag and not property.in_origin_trial%}
   CSSExposure Exposure() const override;
   {% endif %}
   {% if property.in_origin_trial %}
@@ -70,17 +83,18 @@ class {{class_name}} final : public {{property.superclass}} {
   {% if property.unvisited_property %}
   const CSSProperty* GetUnvisitedProperty() const override;
   {% endif %}
-  {% if property.ua_property %}
-  const CSSProperty* GetUAProperty() const override;
+  {% if is_surrogate %}
+  const CSSProperty* SurrogateFor(TextDirection, blink::WritingMode) const override;
   {% endif %}
   {% for property_method in property.property_methods %}
   {{property_method.return_type}} {{property_method.name}}{{property_method.parameters}} const override;
   {% endfor %}
-  {% if property.direction_aware_options %}
+  {% if property.logical_property_group %}
+  bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
+    {% if property.logical_property_group.is_logical %}
   const CSSProperty& ResolveDirectionAwareProperty(TextDirection, blink::WritingMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
-      const SVGComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style) const override {
     // Directional properties are resolved by CSSDirectionAwareResolver
@@ -88,11 +102,15 @@ class {{class_name}} final : public {{property.superclass}} {
     NOTREACHED();
     return nullptr;
   }
+    {% endif %}
   {% endif %}
   {% if property.style_builder_declare %}
   void ApplyInitial(StyleResolverState&) const override;
   void ApplyInherit(StyleResolverState&) const override;
-  void ApplyValue(StyleResolverState&, const CSSValue&) const  override;
+  void ApplyValue(StyleResolverState&, const CSSValue&) const override;
+  {% if property.tree_scoped_value %}
+  void ApplyValue(StyleResolverState&, const ScopedCSSValue&) const override;
+  {% endif %}
   {% endif %}
   {% endif %} {# not is_alias #}
 };

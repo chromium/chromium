@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -18,17 +19,19 @@ source_set("audio") {
     "pref_names.h",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 
   deps = [
     "//components/prefs",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/audio" ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/components/audio",
+      "//content/public/browser",
+    ]
     sources += [ "audio_service_chromeos.cc" ]
   } else {
     sources += [ "audio_service.cc" ]

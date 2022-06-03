@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider.h"
@@ -20,17 +19,28 @@ class EligibleHostDevicesProviderImpl
     : public EligibleHostDevicesProvider,
       public device_sync::DeviceSyncClient::Observer {
  public:
+  static constexpr base::TimeDelta kInactiveDeviceThresholdInDays =
+      base::Days(30);
+
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<EligibleHostDevicesProvider> BuildInstance(
+    static std::unique_ptr<EligibleHostDevicesProvider> Create(
         device_sync::DeviceSyncClient* device_sync_client);
+    static void SetFactoryForTesting(Factory* factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<EligibleHostDevicesProvider> CreateInstance(
+        device_sync::DeviceSyncClient* device_sync_client) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  EligibleHostDevicesProviderImpl(const EligibleHostDevicesProviderImpl&) =
+      delete;
+  EligibleHostDevicesProviderImpl& operator=(
+      const EligibleHostDevicesProviderImpl&) = delete;
 
   ~EligibleHostDevicesProviderImpl() override;
 
@@ -50,15 +60,13 @@ class EligibleHostDevicesProviderImpl
 
   void OnGetDevicesActivityStatus(
       device_sync::mojom::NetworkRequestResult,
-      base::Optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
+      absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
 
   device_sync::DeviceSyncClient* device_sync_client_;
 
   multidevice::RemoteDeviceRefList eligible_devices_from_last_sync_;
   multidevice::DeviceWithConnectivityStatusList
       eligible_active_devices_from_last_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(EligibleHostDevicesProviderImpl);
 };
 
 }  // namespace multidevice_setup

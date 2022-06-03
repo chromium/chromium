@@ -1,23 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="browser_service.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="searched_label.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="strings.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/icon.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<!-- Lazy loaded: cr-icon-button. -->
-
-<dom-module id="history-item">
-  <template>
     <style include="shared-style cr-icons">
       :host {
         display: block;
@@ -115,6 +95,17 @@
         --cr-icon-button-size: 32px;
       }
 
+      #debug-container {
+        color: var(--history-item-time-color);
+        display: flex;
+        padding-inline-start: 22px;
+        pointer-events: auto;
+      }
+
+      .debug-info:not(:first-child) {
+        margin-inline-start: 15px;
+      }
+
       #time-gap-separator {
         border-inline-start: 1px solid #888;
         height: 15px;
@@ -143,10 +134,14 @@
         clip: rect(auto 999px 500px -5px); /* Clip the top edge. */
       }
 
+      :host-context([enable-branding-update]):host([is-card-start]) #background-clip {
+        clip: auto;
+      }
+
       #background {
-        @apply --cr-card-elevation;
         background-color: var(--cr-card-background-color);
         bottom: 0;
+        box-shadow: var(--cr-card-shadow);
         left: 0;
         position: absolute;
         right: 0;
@@ -174,57 +169,83 @@
       <div id="background-clip" aria-hidden="true">
         <div id="background"></div>
       </div>
-      <div id="date-accessed" class="card-title" role="heading" aria-level="2">
-        [[cardTitle_(numberOfItems, item.dateRelativeDay, searchTerm)]]
+      <div id="date-accessed" class="card-title" role="row">
+        <div role="rowheader">
+          <div role="heading" aria-level="2">
+            [[cardTitle_(numberOfItems, searchTerm, item.dateRelativeDay)]]
+          </div>
+        </div>
       </div>
-      <div id="item-container" focus-row-container
-          on-mousedown="onItemMousedown_"
-          on-click="onItemClick_">
-        <div role="gridcell">
-          <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
-              focus-row-control focus-type="cr-checkbox"
-              on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
-              on-change="onCheckboxChange_" class="no-label"
-              hidden="[[selectionNotAllowed_]]"
-              disabled="[[selectionNotAllowed_]]"
-              aria-label$="[[getEntrySummary_(item)]]"></cr-checkbox>
+      <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
+        <div id="item-container" focus-row-container>
+          <div role="gridcell">
+            <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
+                focus-row-control focus-type="cr-checkbox"
+                on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
+                on-change="onCheckboxChange_" class="no-label"
+                hidden="[[selectionNotAllowed_]]"
+                disabled="[[selectionNotAllowed_]]">
+              [[getEntrySummary_(item)]]
+            </cr-checkbox>
+          </div>
+          <!-- ARIA hidden to avoid redundancy since timestamp is already part of
+              |getEntrySummary_|. -->
+          <span id="time-accessed" aria-hidden="true">
+            [[item.readableTimestamp]]
+          </span>
+          <div id="title-and-domain" role="gridcell">
+            <a href="[[item.url]]" id="link" class="website-link"
+                focus-row-control focus-type="link"
+                title="[[item.title]]" on-click="onLinkClick_"
+                on-contextmenu="onLinkRightClick_"
+                aria-describedby$="[[ariaDescribedByForHeading_]]">
+              <div class="website-icon" id="icon"></div>
+              <history-searched-label class="website-title" title="[[item.title]]"
+                  search-term="[[searchTerm]]"></history-searched-label>
+            </a>
+            <span id="domain">[[item.domain]]</span>
+          </div>
+          <div id="star-container">
+            <template is="dom-if" if="[[item.starred]]">
+              <div role="gridcell">
+                <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                    focus-row-control focus-type="star"
+                    title="$i18n{removeBookmark}"
+                    on-click="onRemoveBookmarkTap_"
+                    aria-describedby$="[[ariaDescribedByForHeading_]]">
+                </cr-icon-button>
+              </div>
+            </template>
+          </div>
+          <div role="gridcell">
+            <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
+                focus-row-control focus-type="cr-menu-button"
+                title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
+                aria-haspopup="menu"
+                aria-describedby$="[[ariaDescribedByForHeading_]]">
+            </cr-icon-button>
+          </div>
         </div>
-        <!-- ARIA hidden to avoid redundancy since timestamp is already part of
-             |getEntrySummary_|. -->
-        <span id="time-accessed" aria-hidden="true">
-          [[item.readableTimestamp]]
-        </span>
-        <div id="title-and-domain" role="gridcell">
-          <a href="[[item.url]]" id="link" class="website-link"
-              focus-row-control focus-type="link"
-              title="[[item.title]]" on-click="onLinkClick_"
-              on-contextmenu="onLinkRightClick_">
-            <div class="website-icon" id="icon"></div>
-            <history-searched-label class="website-title" title="[[item.title]]"
-                search-term="[[searchTerm]]"></history-searched-label>
-          </a>
-          <span id="domain">[[item.domain]]</span>
-        </div>
-        <div id="star-container">
-          <template is="dom-if" if="[[item.starred]]">
-            <div role="gridcell">
-              <cr-icon-button id="bookmark-star" iron-icon="cr:star"
-                  focus-row-control focus-type="star"
-                  title="$i18n{removeBookmark}"
-                  on-click="onRemoveBookmarkTap_">
-              </cr-icon-button>
+        <template is="dom-if" if="[[item.debug]]">
+          <div id="debug-container" aria-hidden="true">
+            <div class="debug-info">DEBUG</div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              in local data
             </div>
-          </template>
-        </div>
-        <div role="gridcell">
-          <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
-              focus-row-control focus-type="cr-menu-button"
-              title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
-              aria-haspopup="menu"></cr-icon-button>
-        </div>
+            <div class="debug-info" hidden="[[!item.isUrlInRemoteUserData]]">
+              in remote data
+            </div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              typed count: [[item.debug.typedCount]]
+            </div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              visit count: [[item.debug.visitCount]]
+            </div>
+          </div>
+        </template>
+        <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
       </div>
-      <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
     </div>
-  </template>
-  <script src="history_item.js"></script>
-</dom-module>

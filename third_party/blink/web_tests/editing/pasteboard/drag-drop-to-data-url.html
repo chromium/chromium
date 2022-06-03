@@ -26,7 +26,7 @@ function dragDropIt() {
 
     eventSender.leapForward(500);
     var framex = target.offsetLeft + 10;
-    var framey = target.offsetTop + t.offsetHeight / 2;
+    var framey = target.offsetTop + target.offsetHeight / 2;
     eventSender.mouseMoveTo(framex, framey);
     setTimeout(dropIt, 0);
 }

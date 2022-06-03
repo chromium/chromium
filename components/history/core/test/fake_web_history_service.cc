@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -47,10 +46,13 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
               const GURL& url,
               bool emulate_success,
               int emulate_response_code,
-              const WebHistoryService::CompletionCallback& callback,
+              WebHistoryService::CompletionCallback callback,
               base::Time begin,
               base::Time end,
               int max_count);
+
+  FakeRequest(const FakeRequest&) = delete;
+  FakeRequest& operator=(const FakeRequest&) = delete;
 
   // WebHistoryService::Request implementation.
   bool IsPending() override;
@@ -67,14 +69,12 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   GURL url_;
   bool emulate_success_;
   int emulate_response_code_;
-  const WebHistoryService::CompletionCallback& callback_;
+  WebHistoryService::CompletionCallback callback_;
   base::Time begin_;
   base::Time end_;
   int max_count_;
   bool is_pending_;
   std::string response_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRequest);
 };
 
 FakeWebHistoryService::FakeRequest::FakeRequest(
@@ -82,7 +82,7 @@ FakeWebHistoryService::FakeRequest::FakeRequest(
     const GURL& url,
     bool emulate_success,
     int emulate_response_code,
-    const WebHistoryService::CompletionCallback& callback,
+    WebHistoryService::CompletionCallback callback,
     base::Time begin,
     base::Time end,
     int max_count)
@@ -90,7 +90,7 @@ FakeWebHistoryService::FakeRequest::FakeRequest(
       url_(url),
       emulate_success_(emulate_success),
       emulate_response_code_(emulate_response_code),
-      callback_(callback),
+      callback_(std::move(callback)),
       begin_(begin),
       end_(end),
       max_count_(max_count),
@@ -172,7 +172,7 @@ void FakeWebHistoryService::FakeRequest::SetUserAgent(
 
 void FakeWebHistoryService::FakeRequest::Start() {
   is_pending_ = true;
-  callback_.Run(this, emulate_success_);
+  std::move(callback_).Run(this, emulate_success_);
 }
 
 // FakeWebHistoryService -------------------------------------------------------
@@ -212,7 +212,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
                                         base::Time end,
                                         size_t count,
                                         bool* more_results_left) {
-  // Make sure that |visits_| is sorted in reverse chronological order before we
+  // Make sure that `visits_` is sorted in reverse chronological order before we
   // return anything. This means that the most recent results are returned
   // first.
   std::sort(visits_.begin(), visits_.end(),
@@ -222,7 +222,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   *more_results_left = false;
   std::vector<Visit> result;
   for (const Visit& visit : visits_) {
-    // |begin| is inclusive, |end| is exclusive.
+    // `begin` is inclusive, `end` is exclusive.
     if (visit.timestamp >= begin && visit.timestamp < end) {
       // We found another valid result, but cannot return it because we've
       // reached max count.
@@ -246,12 +246,12 @@ base::Time FakeWebHistoryService::GetTimeForKeyInQuery(
   int64_t us;
   if (!base::StringToInt64(value, &us))
      return base::Time();
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMicroseconds(us);
+  return base::Time::UnixEpoch() + base::Microseconds(us);
 }
 
 FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(
     const GURL& url,
-    const CompletionCallback& callback,
+    CompletionCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   // Find the time range endpoints in the URL.
   base::Time begin = GetTimeForKeyInQuery(url, "min");
@@ -266,7 +266,7 @@ FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(
     base::StringToInt(max_count_str, &max_count);
 
   return new FakeRequest(this, url, emulate_success_, emulate_response_code_,
-                         callback, begin, end, max_count);
+                         std::move(callback), begin, end, max_count);
 }
 
 bool FakeWebHistoryService::IsWebAndAppActivityEnabled() {

@@ -17,23 +17,7 @@
             event.initEvent( 'click', true, true );
             document.getElementById('anchorLink').dispatchEvent(event);
 
-            start = new Date();
-            myInterval = setInterval(checkIfDone, 1);
-        }
-
-        checkIfDone = function()
-        {
-            var numOpenWindows = testRunner.windowCount();
-            var now = new Date();
-            if (numOpenWindows == 2) {
-                log("Test PASSED");
-                clearInterval(myInterval);
-                testRunner.notifyDone();            
-            } else if (now - start > 10000) {
-                log('TEST FAILED: Window count ' + numOpenWindows);
-                clearInterval(myInterval);
-                testRunner.notifyDone();
-            }
+            parent.postMessage("clicked", "*");
         }
     </script>
 </head>

@@ -31,8 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 
@@ -46,21 +47,9 @@ namespace blink {
 // alive until WorkerScriptLoadFailed() or WorkerContextDestroyed() is called).
 class WebSharedWorkerClient {
  public:
-  virtual void CountFeature(mojom::WebFeature) = 0;
-  virtual void WorkerContextClosed() = 0;
   virtual void WorkerContextDestroyed() = 0;
-  virtual void WorkerReadyForInspection(
-      mojo::ScopedMessagePipeHandle devtools_agent_ptr_info,
-      mojo::ScopedMessagePipeHandle devtools_agent_host_request) {}
-  virtual void WorkerScriptLoadFailed() = 0;
-  virtual void WorkerScriptEvaluated(bool success) = 0;
-
-  // Called on the main thread during initialization. Creates a new
-  // WebWorkerFetchContext for the shared worker. This is passed to the worker
-  // thread and used loading requests from the shared worker.
-  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() = 0;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_

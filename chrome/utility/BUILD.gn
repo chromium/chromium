@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/assistant/assistant.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -30,23 +30,26 @@ static_library("utility") {
   public_deps = []
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/qrcode_generator",
     "//components/mirroring/service:mirroring_service",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
+    "//components/services/language_detection",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
     "//components/services/unzip:lib",
     "//components/strings",
     "//components/url_formatter",
+    "//components/webapps/services/web_app_origin_association:lib",
     "//content/public/child",
     "//content/public/common",
     "//content/public/utility",
-    "//device/vr/buildflags",
     "//extensions/buildflags",
     "//ipc",
     "//media",
@@ -57,6 +60,7 @@ static_library("utility") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//sql",
+    "//third_party/blink/public/common",
     "//third_party/zlib/google:zip",
     "//ui/base:buildflags",
   ]
@@ -68,63 +72,69 @@ static_library("utility") {
     ]
   }
 
+  if (is_mac) {
+    deps += [ "//chrome/services/mac_notifications" ]
+  }
+
   if (!is_android) {
     sources += [
       "importer/bookmark_html_reader.cc",
       "importer/bookmark_html_reader.h",
       "importer/bookmarks_file_importer.cc",
       "importer/bookmarks_file_importer.h",
-      "importer/edge_database_reader_win.cc",
-      "importer/edge_database_reader_win.h",
-      "importer/edge_importer_win.cc",
-      "importer/edge_importer_win.h",
       "importer/external_process_importer_bridge.cc",
       "importer/external_process_importer_bridge.h",
       "importer/favicon_reencode.cc",
       "importer/favicon_reencode.h",
       "importer/firefox_importer.cc",
       "importer/firefox_importer.h",
-      "importer/ie_importer_win.cc",
-      "importer/ie_importer_win.h",
       "importer/importer.cc",
       "importer/importer.h",
       "importer/importer_creator.cc",
       "importer/importer_creator.h",
-      "importer/nss_decryptor.cc",
-      "importer/nss_decryptor.h",
-      "importer/nss_decryptor_mac.h",
-      "importer/nss_decryptor_mac.mm",
-      "importer/nss_decryptor_win.cc",
-      "importer/nss_decryptor_win.h",
       "importer/profile_import_impl.cc",
       "importer/profile_import_impl.h",
-      "importer/safari_importer.h",
-      "importer/safari_importer.mm",
     ]
+    if (is_mac) {
+      sources += [
+        "importer/safari_importer.h",
+        "importer/safari_importer.mm",
+      ]
+    }
+    if (!is_mac && !is_fuchsia) {
+      # NSS decryptor depends on system NSS that is not available on MacOS or
+      # Fuchsia.
+      sources += [
+        "importer/nss_decryptor.cc",
+        "importer/nss_decryptor.h",
+      ]
+    }
+    if (is_win) {
+      sources += [
+        "importer/edge_database_reader_win.cc",
+        "importer/edge_database_reader_win.h",
+        "importer/edge_importer_win.cc",
+        "importer/edge_importer_win.h",
+        "importer/ie_importer_win.cc",
+        "importer/ie_importer_win.h",
+        "importer/nss_decryptor_win.cc",
+        "importer/nss_decryptor_win.h",
+      ]
+    }
     deps += [
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
+      "//chrome/services/speech:lib",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
     ]
   }
 
   if (enable_extensions) {
-    sources += [
-      "image_writer/disk_unmounter_mac.cc",
-      "image_writer/disk_unmounter_mac.h",
-      "image_writer/error_messages.cc",
-      "image_writer/error_messages.h",
-      "image_writer/image_writer.cc",
-      "image_writer/image_writer.h",
-      "image_writer/image_writer_handler.cc",
-      "image_writer/image_writer_handler.h",
-      "image_writer/image_writer_mac.cc",
-      "image_writer/image_writer_win.cc",
-    ]
     deps += [
       "//chrome/common/extensions/api",
       "//chrome/services/removable_storage_writer:lib",
+      "//chrome/utility/image_writer",
     ]
 
     public_deps += [
@@ -144,25 +154,33 @@ static_library("utility") {
       deps += [ "//chrome/services/util_win:lib" ]
     }
 
-    if (is_win || is_mac) {
+    if (is_win || is_mac || is_fuchsia) {
       deps += [ "//components/wifi" ]
-    } else {
-      sources += [ "image_writer/image_writer_stub.cc" ]
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
+      "//ash/services/ime:lib",
+      "//ash/services/ime/public/mojom",
+      "//ash/services/quick_pair",
+      "//ash/services/recording",
       "//chrome/services/file_util",
+      "//chrome/services/sharing",
       "//chromeos/assistant:buildflags",
-      "//chromeos/services/ime:lib",
-      "//chromeos/services/ime/public/mojom",
+      "//chromeos/components/local_search_service:local_search_service",
+      "//chromeos/components/local_search_service/public/mojom",
+      "//chromeos/services/nearby/public/mojom:mojom",
+      "//chromeos/services/tts",
+      "//chromeos/services/tts/public/mojom",
     ]
 
     if (enable_cros_libassistant) {
       deps += [
         "//chromeos/services/assistant/audio_decoder:lib",
         "//chromeos/services/assistant/public/mojom",
+        "//chromeos/services/libassistant",
+        "//chromeos/services/libassistant/public/mojom",
       ]
     }
   }
@@ -180,11 +198,15 @@ static_library("utility") {
 
   if (enable_basic_printing) {
     deps += [
-      "//components/services/pdf_compositor",
-      "//components/services/pdf_compositor/public/mojom",
+      "//components/services/print_compositor",
+      "//components/services/print_compositor/public/mojom",
     ]
 
-    if (is_chromeos) {
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      deps += [ "//chrome/services/printing:lib" ]
+    }
+
+    if (is_chromeos_ash) {
       deps += [
         "//chrome/services/ipp_parser",
         "//chrome/services/ipp_parser/public/mojom",
@@ -193,13 +215,13 @@ static_library("utility") {
   }
 
   if (enable_print_preview) {
-    deps += [ "//chrome/services/printing:lib" ]
-
     if (is_win) {
       sources += [
         "printing_handler.cc",
         "printing_handler.h",
       ]
+      public_deps += [ "//chrome/common:cloud_print_utility_mojom" ]
+      deps += [ "//printing/backend" ]
     }
   }
 
@@ -212,12 +234,5 @@ static_library("utility") {
 
   if (is_android || enable_extensions) {
     deps += [ "//chrome/services/media_gallery_util:lib" ]
-  }
-
-  if (enable_vr && !is_android) {
-    deps += [
-      "//chrome/services/isolated_xr_device:lib",
-      "//device/vr/public/mojom",
-    ]
   }
 }

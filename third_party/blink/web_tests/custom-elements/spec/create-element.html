@@ -37,7 +37,7 @@ function setup(w) {
 }
 
 test_with_window((w) => {
-  assert_throws_dom_exception(w, 'InvalidCharacterError', () => {
+  assert_throws_dom('InvalidCharacterError', w.DOMException, () => {
     w.document.createElement('.invalid.name.');
   });
 }, 'createElement   1. If localName does not match the Name production, then throw an InvalidCharacterError');
@@ -72,7 +72,7 @@ test_with_window((w) => {
 
 test_with_window((w) => {
   setup(w);
-  assert_equals(w.document.createElementNS('http://www.w3.org/1999/xhtml', 'a-A').constructor, w.HTMLElement);
+  assert_equals(w.document.createElementNS('http://www.w3.org/1999/xhtml', 'a-A').constructor, w.HTMLUnknownElement);
   assert_true(w.document.createElementNS('http://www.w3.org/1999/xhtml', 'dIv', {is: 'b-b'}) instanceof w.HTMLUnknownElement);
 }, 'createElementNS 4. If \'is\' is non-null and definition is null, then throw a NotFoundError');
 

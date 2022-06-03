@@ -28,18 +28,22 @@ package-lock.json
 */site/
 */templates/
 
+# font-roboto
+font-roboto/*
+
 # html-imports
 html-imports/src/*
 html-imports/gulpfile.js
-
-# iron-autogrow-textarea
-iron-autogrow-textarea/*
+html-imports/externs/*
 
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
 # iron-form-element-behavior
 iron-form-element-behavior/*
+
+# iron-validatable-behavior
+iron-validatable-behavior/*
 
 # iron-test-helpers
 iron-test-helpers/iron-test-helpers.html
@@ -51,21 +55,19 @@ paper-behaviors/paper-button-behavior.html
 paper-behaviors/paper-checked-element-behavior.html
 paper-behaviors/paper-inky-focus-behavior.html
 
-# paper-input
-paper-input/all-imports.html
-paper-input/paper-input-behavior.html
-paper-input/paper-input-char-counter.html
-paper-input/paper-input.html
-paper-input/paper-textarea.html
-
 # paper-spinner
 paper-spinner/paper-spinner.html
 
 # paper-styles
-paper-styles/classes/global.html
-paper-styles/element-styles/paper-item-styles.html
+paper-styles/classes/*
+paper-styles/default-theme.html
+paper-styles/element-styles/*
 paper-styles/paper-styles-classes.html
 paper-styles/paper-styles.html
+paper-styles/typography.html
+
+# Polymer 1
+polymer/*
 
 # neon-animations
 neon-animation/animations/cascaded-animation.html

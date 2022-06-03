@@ -1,11 +1,12 @@
 rootWebArea
 ++genericContainer ignored
-++++table
-++++++rowGroup
-++++++++row selected=false
-++++++++++cell name='Fred' selected=false
-++++++++++++staticText name='Fred'
-++++++++++++++inlineTextBox name='Fred'
-++++++++++cell name='Jackson' selected=false
-++++++++++++staticText name='Jackson'
-++++++++++++++inlineTextBox name='Jackson'
+++++genericContainer ignored
+++++++table
+++++++++rowGroup
+++++++++++row
+++++++++++++cell name='Fred'
+++++++++++++++staticText name='Fred'
+++++++++++++++++inlineTextBox name='Fred'
+++++++++++++cell name='Jackson'
+++++++++++++++staticText name='Jackson'
+++++++++++++++++inlineTextBox name='Jackson'

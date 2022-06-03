@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/text_button.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/vr/elements/rect.h"
 
 namespace vr {
@@ -38,7 +38,7 @@ TextButton::TextButton(float text_size, AudioDelegate* audio_delegate)
 
 TextButton::~TextButton() = default;
 
-void TextButton::SetText(const base::string16& text) {
+void TextButton::SetText(const std::u16string& text) {
   text_->SetText(text);
 }
 

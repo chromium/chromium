@@ -53,7 +53,7 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
   void* next_cmd =
       cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
               static_cast<GLuint>(13), static_cast<GLuint>(14),
-              static_cast<GLuint>(15), data);
+              static_cast<GLuint>(15), static_cast<MailboxFlags>(16), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::AssociateMailboxImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
@@ -63,6 +63,7 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
   EXPECT_EQ(static_cast<GLuint>(13), cmd.id);
   EXPECT_EQ(static_cast<GLuint>(14), cmd.generation);
   EXPECT_EQ(static_cast<GLuint>(15), cmd.usage);
+  EXPECT_EQ(static_cast<MailboxFlags>(16), cmd.flags);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
@@ -79,14 +80,30 @@ TEST_F(WebGPUFormatTest, DissociateMailbox) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(WebGPUFormatTest, DissociateMailboxForPresent) {
+  cmds::DissociateMailboxForPresent& cmd =
+      *GetBufferAs<cmds::DissociateMailboxForPresent>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
+              static_cast<GLuint>(13), static_cast<GLuint>(14));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::DissociateMailboxForPresent::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.device_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.device_generation);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.texture_id);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.texture_generation);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(WebGPUFormatTest, RequestAdapter) {
   cmds::RequestAdapter& cmd = *GetBufferAs<cmds::RequestAdapter>();
   void* next_cmd =
-      cmd.Set(&cmd, static_cast<uint32_t>(11), static_cast<uint32_t>(12));
+      cmd.Set(&cmd, static_cast<uint64_t>(11), static_cast<uint32_t>(12));
   EXPECT_EQ(static_cast<uint32_t>(cmds::RequestAdapter::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<uint32_t>(11), cmd.request_adapter_serial);
+  EXPECT_EQ(static_cast<uint64_t>(11), cmd.request_adapter_serial);
   EXPECT_EQ(static_cast<uint32_t>(12), cmd.power_preference);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
@@ -94,18 +111,21 @@ TEST_F(WebGPUFormatTest, RequestAdapter) {
 TEST_F(WebGPUFormatTest, RequestDevice) {
   cmds::RequestDevice& cmd = *GetBufferAs<cmds::RequestDevice>();
   void* next_cmd =
-      cmd.Set(&cmd, static_cast<uint32_t>(11), static_cast<uint32_t>(12),
+      cmd.Set(&cmd, static_cast<uint64_t>(11), static_cast<uint32_t>(12),
               static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-              static_cast<uint32_t>(15));
+              static_cast<uint32_t>(15), static_cast<uint32_t>(16),
+              static_cast<uint32_t>(17));
   EXPECT_EQ(static_cast<uint32_t>(cmds::RequestDevice::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<uint32_t>(11), cmd.request_device_serial);
+  EXPECT_EQ(static_cast<uint64_t>(11), cmd.request_device_serial);
   EXPECT_EQ(static_cast<uint32_t>(12), cmd.adapter_service_id);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.request_device_properties_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14),
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.device_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.device_generation);
+  EXPECT_EQ(static_cast<uint32_t>(15), cmd.request_device_properties_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(16),
             cmd.request_device_properties_shm_offset);
-  EXPECT_EQ(static_cast<uint32_t>(15), cmd.request_device_properties_size);
+  EXPECT_EQ(static_cast<uint32_t>(17), cmd.request_device_properties_size);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

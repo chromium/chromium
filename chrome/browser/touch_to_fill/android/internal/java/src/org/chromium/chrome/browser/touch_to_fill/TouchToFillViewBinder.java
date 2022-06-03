@@ -15,7 +15,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.He
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
-import static org.chromium.chrome.browser.util.UrlUtilities.stripScheme;
+import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -25,11 +25,11 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.favicon.FaviconUtils;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -126,16 +126,14 @@ class TouchToFillViewBinder {
         } else if (propertyKey == FORMATTED_ORIGIN) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(model.get(FORMATTED_ORIGIN));
-            pslOriginText.setVisibility(
-                    credential.isPublicSuffixMatch() ? View.VISIBLE : View.GONE);
+            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
         } else if (propertyKey == CREDENTIAL) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             String formattedOrigin = stripScheme(credential.getOriginUrl());
             formattedOrigin =
                     formattedOrigin.replaceFirst("/$", ""); // Strip possibly trailing slash.
             pslOriginText.setText(formattedOrigin);
-            pslOriginText.setVisibility(
-                    credential.isPublicSuffixMatch() ? View.VISIBLE : View.GONE);
+            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
 
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getFormattedUsername());

@@ -2,4 +2,3 @@
 ++[paragraph] offset=0 language=es-ES
 ++++[static] name='Espanyol' offset=0 language=es-ES
 ++[static] name='Comment allez-vous?' offset=0 language=fr-FR
-

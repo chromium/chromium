@@ -31,7 +31,5 @@ static_library("renderer") {
     "//v8",
   ]
 
-  public_deps = [
-    "//ipc",
-  ]
+  public_deps = [ "//ipc" ]
 }

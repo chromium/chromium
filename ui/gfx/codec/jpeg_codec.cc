@@ -7,8 +7,9 @@
 #include <setjmp.h>
 
 #include <memory>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "ui/gfx/codec/vector_wstream.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -15,8 +14,8 @@ namespace views {
 class FocusManager;
 class Widget;
 
-// A factory to create FocusManager. This is used in unit tests
-// to inject a custom factory.
+// A factory to create FocusManager. This can be used to inject a custom
+// factory.
 class VIEWS_EXPORT FocusManagerFactory {
  public:
   // Create a FocusManager for the given |widget| using the installed Factory.
@@ -28,13 +27,13 @@ class VIEWS_EXPORT FocusManagerFactory {
 
  protected:
   FocusManagerFactory();
+
+  FocusManagerFactory(const FocusManagerFactory&) = delete;
+  FocusManagerFactory& operator=(const FocusManagerFactory&) = delete;
   virtual ~FocusManagerFactory();
 
   // Create a FocusManager for the given |widget|.
   virtual std::unique_ptr<FocusManager> CreateFocusManager(Widget* widget) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FocusManagerFactory);
 };
 
 }  // namespace views

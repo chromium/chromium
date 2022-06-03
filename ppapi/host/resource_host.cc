@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/host/resource_message_filter.h"

@@ -1,0 +1,158 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Language files used in //chrome/android:base_module_java
+android_library("base_module_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLocaleUtils.java",
+    "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleController.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageSplitInstaller.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/preferences:java",
+    "//components/language/android:language_bridge_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
+    "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/AppLanguagePreferenceDelegate.java",
+    "java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageItem.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageItemListFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageItemListPreference.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageItemPickerPreference.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageSettings.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguagesManager.java",
+    "java/src/org/chromium/chrome/browser/language/settings/NeverTranslateListFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/SelectLanguageFragment.java",
+
+    # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
+    "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+  ]
+  deps = [
+    ":base_module_java",
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/language/android:language_bridge_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.language"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/accept_languages_item.xml",
+    "java/res/layout/accept_languages_list.xml",
+    "java/res/layout/add_languages_main.xml",
+    "java/res/layout/app_language_confirm_content.xml",
+    "java/res/layout/app_language_prompt_content.xml",
+    "java/res/layout/app_language_prompt_row.xml",
+    "java/res/layout/language_ask_prompt_content.xml",
+    "java/res/layout/language_ask_prompt_row.xml",
+    "java/res/layout/language_ask_prompt_row_separator.xml",
+    "java/res/layout/language_list_with_add_button.xml",
+    "java/res/layout/languages_preference.xml",
+    "java/res/layout/preference_category_no_title_or_padding.xml",
+    "java/res/menu/languages_action_bar_menu.xml",
+    "java/res/xml/languages_detailed_preferences.xml",
+    "java/res/xml/languages_preferences.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
+    "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
+    "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
+  ]
+  deps = [
+    ":base_module_java",
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
+    "//components/language/android:language_bridge_java",
+    "//components/language/android:language_bridge_javatests",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

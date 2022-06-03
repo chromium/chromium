@@ -1,0 +1,58 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  sources = [
+    "save_password_infobar_banner_overlay_mediator.h",
+    "save_password_infobar_banner_overlay_mediator.mm",
+    "update_password_infobar_banner_overlay_mediator.h",
+    "update_password_infobar_banner_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "save_password_infobar_banner_overlay_mediator_unittest.mm",
+    "update_password_infobar_banner_overlay_mediator_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":passwords",
+    "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/infobars/core",
+    "//components/password_manager/core/browser:test_support",
+    "//components/strings:components_strings_grit",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//ios/chrome/browser/ui/resources:password_key",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

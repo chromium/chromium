@@ -1,0 +1,38 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("startup") {
+  output_name = "chromeos_startup"
+  defines = [ "IS_CHROMEOS_STARTUP_IMPL" ]
+  deps = [
+    ":constants",
+    "//base",
+  ]
+  sources = [
+    "startup.cc",
+    "startup.h",
+  ]
+}
+
+component("constants") {
+  output_name = "chromeos_startup_constants"
+  defines = [ "IS_CHROMEOS_STARTUP_CONSTANTS_IMPL" ]
+  deps = [ "//base" ]
+  sources = [
+    "startup_switches.cc",
+    "startup_switches.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":constants",
+    ":startup",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [ "startup_unittest.cc" ]
+}

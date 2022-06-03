@@ -6,6 +6,8 @@
 </head>
 <body>
 <script>
+setup({single_test: true});
+
 var docType = window.document.implementation.createDocumentType("aDocTypeName", "aPublicID", "aSystemID");
 var serializer = new XMLSerializer();
 

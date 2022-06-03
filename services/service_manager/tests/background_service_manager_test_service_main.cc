@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/background.test-mojom.h"
 
@@ -19,11 +19,14 @@ namespace service_manager {
 // parent background service manager.
 class TestClient : public Service, public mojom::TestService {
  public:
-  TestClient(mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {
+  explicit TestClient(mojo::PendingReceiver<mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)) {
     registry_.AddInterface(base::BindRepeating(
         &TestClient::BindTestServiceReceiver, base::Unretained(this)));
   }
+
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
 
   ~TestClient() override = default;
 
@@ -43,18 +46,17 @@ class TestClient : public Service, public mojom::TestService {
     receivers_.Add(this, std::move(receiver));
   }
 
-  void Quit() override { service_binding_.RequestClose(); }
+  void Quit() override { service_receiver_.RequestClose(); }
 
-  ServiceBinding service_binding_;
+  ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::TestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 }  // namespace service_manager
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  service_manager::TestClient(std::move(request)).RunUntilTermination();
+  service_manager::TestClient(std::move(receiver)).RunUntilTermination();
 }

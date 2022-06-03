@@ -5,20 +5,15 @@ element.style { ()
 
 [expanded] 
 #inspected { (<style>)
-    margin-top: 10px;
     padding: 10px 50px !important;
         padding-top: 10px !important;
         padding-right: 50px !important;
         padding-bottom: 10px !important;
         padding-left: 50px !important;
+    margin-top: 10px;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

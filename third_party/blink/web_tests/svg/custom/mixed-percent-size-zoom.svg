@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="width: 300px; height: 100%;">
+<script xmlns="http://www.w3.org/1999/xhtml" src="../../resources/testharness.js" />
+<script xmlns="http://www.w3.org/1999/xhtml" src="../../resources/testharnessreport.js" />
+<style>
+  :root {
+    overflow: hidden;
+  }
+</style>
+<script>
+  if (window.testRunner) {
+    // Zoom the page in to 120%.
+    testRunner.zoomPageIn();
+  }
+
+  test(function() {
+    var boundingClientRect = document.documentElement.getBoundingClientRect();
+    assert_equals(boundingClientRect.width, 300);
+    assert_approx_equals(boundingClientRect.height, window.outerHeight, 0.1);
+  }, 'Only relative units (on the root) should equal the window size in the presence of zoom');
+</script>
+</svg>

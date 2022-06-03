@@ -5,14 +5,13 @@
 #include "chromeos/services/secure_channel/ble_advertiser_impl.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/services/secure_channel/shared_resource_scheduler.h"
 #include "chromeos/services/secure_channel/timer_factory.h"
@@ -36,12 +35,21 @@ BleAdvertiserImpl::ActiveAdvertisementRequest::~ActiveAdvertisementRequest() =
 BleAdvertiserImpl::Factory* BleAdvertiserImpl::Factory::test_factory_ = nullptr;
 
 // static
-BleAdvertiserImpl::Factory* BleAdvertiserImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<BleAdvertiser> BleAdvertiserImpl::Factory::Create(
+    Delegate* delegate,
+    BluetoothHelper* bluetooth_helper,
+    BleSynchronizerBase* ble_synchronizer_base,
+    TimerFactory* timer_factory,
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(delegate, bluetooth_helper,
+                                         ble_synchronizer_base, timer_factory,
+                                         sequenced_task_runner);
+  }
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(
+      new BleAdvertiserImpl(delegate, bluetooth_helper, ble_synchronizer_base,
+                            timer_factory, sequenced_task_runner));
 }
 
 // static
@@ -54,25 +62,14 @@ BleAdvertiserImpl::Factory::~Factory() = default;
 // static
 const int64_t BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot = 10;
 
-std::unique_ptr<BleAdvertiser> BleAdvertiserImpl::Factory::BuildInstance(
-    Delegate* delegate,
-    BleServiceDataHelper* ble_service_data_helper,
-    BleSynchronizerBase* ble_synchronizer_base,
-    TimerFactory* timer_factory,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
-  return base::WrapUnique(new BleAdvertiserImpl(
-      delegate, ble_service_data_helper, ble_synchronizer_base, timer_factory,
-      sequenced_task_runner));
-}
-
 BleAdvertiserImpl::BleAdvertiserImpl(
     Delegate* delegate,
-    BleServiceDataHelper* ble_service_data_helper,
+    BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
     TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : BleAdvertiser(delegate),
-      ble_service_data_helper_(ble_service_data_helper),
+      bluetooth_helper_(bluetooth_helper),
       ble_synchronizer_base_(ble_synchronizer_base),
       timer_factory_(timer_factory),
       sequenced_task_runner_(sequenced_task_runner),
@@ -121,7 +118,7 @@ void BleAdvertiserImpl::UpdateAdvertisementRequestPriority(
     NOTREACHED();
   }
 
-  base::Optional<size_t> index_for_active_request =
+  absl::optional<size_t> index_for_active_request =
       GetIndexForActiveRequest(request);
 
   if (!index_for_active_request) {
@@ -182,7 +179,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
   }
   all_requests_.erase(request);
 
-  base::Optional<size_t> index_for_active_request =
+  absl::optional<size_t> index_for_active_request =
       GetIndexForActiveRequest(request);
 
   // If the request is not currently active, remove it from the scheduler and
@@ -201,7 +198,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
 
 bool BleAdvertiserImpl::ReplaceLowPriorityAdvertisementIfPossible(
     ConnectionPriority connection_priority) {
-  base::Optional<size_t> index_with_lower_priority =
+  absl::optional<size_t> index_with_lower_priority =
       GetIndexWithLowerPriority(connection_priority);
   if (!index_with_lower_priority)
     return false;
@@ -214,10 +211,10 @@ bool BleAdvertiserImpl::ReplaceLowPriorityAdvertisementIfPossible(
   return true;
 }
 
-base::Optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
+absl::optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
     ConnectionPriority connection_priority) {
   ConnectionPriority lowest_priority = ConnectionPriority::kHigh;
-  base::Optional<size_t> index_with_lowest_priority;
+  absl::optional<size_t> index_with_lowest_priority;
 
   // Loop through |active_advertisement_requests_|, searching for the entry with
   // the lowest priority.
@@ -236,13 +233,13 @@ base::Optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
   // requests have high priority, so they should not be replaced with the new
   // connection attempt.
   if (!index_with_lowest_priority)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If the lowest priority in |active_advertisement_requests_| is at least as
   // high as |connection_priority|, this slot shouldn't be replaced with the
   // new connection attempt.
   if (lowest_priority >= connection_priority)
-    return base::nullopt;
+    return absl::nullopt;
 
   return *index_with_lowest_priority;
 }
@@ -275,9 +272,8 @@ void BleAdvertiserImpl::AddActiveAdvertisementRequest(size_t index_to_add) {
   std::unique_ptr<base::OneShotTimer> timer =
       timer_factory_->CreateOneShotTimer();
   timer->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kNumSecondsPerAdvertisementTimeslot),
-      base::Bind(
+      FROM_HERE, base::Seconds(kNumSecondsPerAdvertisementTimeslot),
+      base::BindOnce(
           &BleAdvertiserImpl::StopAdvertisementRequestAndUpdateActiveRequests,
           base::Unretained(this), index_to_add,
           false /* replaced_by_higher_priority_advertisement */,
@@ -293,7 +289,7 @@ void BleAdvertiserImpl::AttemptToAddActiveAdvertisement(size_t index_to_add) {
   const DeviceIdPair pair =
       active_advertisement_requests_[index_to_add]->device_id_pair;
   std::unique_ptr<DataWithTimestamp> service_data =
-      ble_service_data_helper_->GenerateForegroundAdvertisement(pair);
+      bluetooth_helper_->GenerateForegroundAdvertisement(pair);
 
   // If an advertisement could not be created, the request is immediately
   // removed. It's also tracked to prevent future operations from referencing
@@ -316,11 +312,11 @@ void BleAdvertiserImpl::AttemptToAddActiveAdvertisement(size_t index_to_add) {
   }
 
   active_advertisements_[index_to_add] =
-      ErrorTolerantBleAdvertisementImpl::Factory::Get()->BuildInstance(
+      ErrorTolerantBleAdvertisementImpl::Factory::Create(
           pair, std::move(service_data), ble_synchronizer_base_);
 }
 
-base::Optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
+absl::optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
     const DeviceIdPair& request) {
   for (size_t i = 0; i < active_advertisement_requests_.size(); ++i) {
     auto& active_request = active_advertisement_requests_[i];
@@ -328,7 +324,7 @@ base::Optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
       return i;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void BleAdvertiserImpl::StopAdvertisementRequestAndUpdateActiveRequests(
@@ -368,8 +364,8 @@ void BleAdvertiserImpl::StopActiveAdvertisement(size_t index) {
     return;
 
   active_advertisement->Stop(
-      base::Bind(&BleAdvertiserImpl::OnActiveAdvertisementStopped,
-                 base::Unretained(this), index));
+      base::BindOnce(&BleAdvertiserImpl::OnActiveAdvertisementStopped,
+                     base::Unretained(this), index));
 }
 
 void BleAdvertiserImpl::OnActiveAdvertisementStopped(size_t index) {

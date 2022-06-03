@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<body>
+  <div id="nothing"></div>
+  <div id="container">
+    <div id="target">
+      This is a test to see if a page with a div with a property starting with
+      _reactListening is detected as using the React JavaScript framework.
+    </div>
+  </div>
+  <script>
+    document.getElementById("target")._reactListening123test = "test";
+  </script>
+</body>

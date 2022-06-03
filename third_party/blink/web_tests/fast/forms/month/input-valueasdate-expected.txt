@@ -15,10 +15,10 @@ Sets an Epoch Date:
 PASS input.value is "1970-01"
 PASS input.valueAsDate.getTime() is 0
 Sets a number 0:
-PASS input.valueAsDate = 0 threw exception TypeError: Failed to set the 'valueAsDate' property on 'HTMLInputElement': The provided value is not a Date..
+PASS input.valueAsDate = 0 threw exception TypeError: Failed to set the 'valueAsDate' property on 'HTMLInputElement': Failed to convert value to 'object'..
 Sets other types:
 PASS input.value is ""
-PASS input.valueAsDate = undefined threw exception TypeError: Failed to set the 'valueAsDate' property on 'HTMLInputElement': The provided value is not a Date..
+PASS input.value is ""
 PASS input.valueAsDate = document threw exception TypeError: Failed to set the 'valueAsDate' property on 'HTMLInputElement': The provided value is not a Date..
 PASS successfullyParsed is true
 

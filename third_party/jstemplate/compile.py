@@ -6,6 +6,7 @@
 """Combines the javascript files needed by jstemplate into a single file."""
 
 import httplib
+import sys
 import urllib
 
 

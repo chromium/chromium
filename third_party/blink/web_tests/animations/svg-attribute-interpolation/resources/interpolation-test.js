@@ -193,7 +193,7 @@
 
     var result = null;
     if (attributeName === 'd')
-      result = element.getAttribute('d');
+      result = getComputedStyle(element).getPropertyValue('d');
     else if (attributeName === 'points')
       result = element['animatedPoints'];
     else
@@ -381,7 +381,7 @@
       var toText = isNeutralKeyframe(params.to) ? 'neutral' : `${params.toComposite} [${params.to}]`;
       var description = `Interpolate attribute <${params.property}> ${underlyingText}from ${fromText} to ${toText}`;
 
-    if (rebaselineTests) {
+      if (rebaselineTests) {
         var rebaseline = createElement('pre', rebaselineContainer);
 
         var assertionCode =

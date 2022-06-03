@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -61,19 +61,19 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   }
 
   // WorkerGlobalScope
-  void Initialize(const KURL& response_url,
-                  network::mojom::ReferrerPolicy response_referrer_policy,
-                  network::mojom::IPAddressSpace response_address_space,
-                  const Vector<CSPHeaderAndType>& response_csp_headers,
-                  const Vector<String>* response_origin_trial_tokens,
-                  int64_t appcache_id) override {
+  void Initialize(
+      const KURL& response_url,
+      network::mojom::ReferrerPolicy response_referrer_policy,
+      network::mojom::IPAddressSpace response_address_space,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+      const Vector<String>* response_origin_trial_tokens) override {
     InitializeURL(response_url);
     SetReferrerPolicy(response_referrer_policy);
-    GetSecurityContext().SetAddressSpace(response_address_space);
+    SetAddressSpace(response_address_space);
 
     // These should be called after SetAddressSpace() to correctly override the
     // address space by the "treat-as-public-address" CSP directive.
-    InitContentSecurityPolicyFromVector(response_csp_headers);
+    InitContentSecurityPolicyFromVector(std::move(response_csp));
     BindContentSecurityPolicyToExecutionContext();
 
     OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
@@ -84,6 +84,8 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   }
   void FetchAndRunClassicScript(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override {
@@ -91,13 +93,28 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   }
   void FetchAndRunModuleScript(
       const KURL& module_url_record,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode) override {
+      network::mojom::CredentialsMode,
+      RejectCoepUnsafeNone reject_coep_unsafe_none) override {
     NOTREACHED();
   }
+  bool IsOffMainThreadScriptFetchDisabled() override { return true; }
 
   void ExceptionThrown(ErrorEvent*) override {}
+
+  // Returns a token uniquely identifying this fake worker.
+  WorkerToken GetWorkerToken() const final { return token_; }
+  bool CrossOriginIsolatedCapability() const final { return false; }
+  bool DirectSocketCapability() const final { return false; }
+  ExecutionContextToken GetExecutionContextToken() const final {
+    return token_;
+  }
+
+ private:
+  SharedWorkerToken token_;
 };
 
 class WorkerThreadForTest : public WorkerThread {
@@ -115,18 +132,16 @@ class WorkerThreadForTest : public WorkerThread {
   }
   void ClearWorkerBackingThread() override { worker_backing_thread_.reset(); }
 
-  void StartWithSourceCode(
-      const SecurityOrigin* security_origin,
-      const String& source,
-      const KURL& script_url = KURL("http://fake.url/"),
-      WorkerClients* worker_clients = nullptr) {
-    Vector<CSPHeaderAndType> headers{
-        {"contentSecurityPolicy", kContentSecurityPolicyHeaderTypeReport}};
+  void StartWithSourceCode(const SecurityOrigin* security_origin,
+                           const String& source,
+                           const KURL& script_url = KURL("http://fake.url/"),
+                           WorkerClients* worker_clients = nullptr) {
     auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        script_url, mojom::ScriptType::kClassic,
-        OffMainThreadWorkerScriptFetchOption::kDisabled,
-        "fake global scope name", "fake user agent",
-        nullptr /* web_worker_fetch_context */, headers,
+        script_url, mojom::blink::ScriptType::kClassic,
+        "fake global scope name", "fake user agent", UserAgentMetadata(),
+        nullptr /* web_worker_fetch_context */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin,
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin), worker_clients,
@@ -134,7 +149,10 @@ class WorkerThreadForTest : public WorkerThread {
         network::mojom::IPAddressSpace::kLocal, nullptr,
         base::UnguessableToken::Create(),
         std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
-        kV8CacheOptionsDefault, nullptr /* worklet_module_responses_map */);
+        mojom::blink::V8CacheOptions::kDefault,
+        nullptr /* worklet_module_responses_map */);
+    // Create a dummy parent context.
+    creation_params->parent_context_token = LocalFrameToken();
 
     Start(std::move(creation_params),
           WorkerBackingThreadStartupData::CreateDefault(),
@@ -175,7 +193,7 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
   MOCK_METHOD1(DidCreateWorkerGlobalScope, void(WorkerOrWorkletGlobalScope*));
   MOCK_METHOD2(WillEvaluateClassicScriptMock,
                void(size_t scriptSize, size_t cachedMetadataSize));
-  MOCK_METHOD1(DidEvaluateClassicScript, void(bool success));
+  MOCK_METHOD1(DidEvaluateTopLevelScript, void(bool success));
   MOCK_METHOD0(DidCloseWorkerGlobalScope, void());
   MOCK_METHOD0(WillDestroyWorkerGlobalScope, void());
   MOCK_METHOD0(DidTerminateWorkerThread, void());

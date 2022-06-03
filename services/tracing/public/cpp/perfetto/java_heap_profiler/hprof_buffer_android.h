@@ -5,8 +5,6 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_BUFFER_ANDROID_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_BUFFER_ANDROID_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
@@ -26,6 +24,13 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofBuffer {
   uint32_t GetTwoBytes();
   uint32_t GetFourBytes();
   uint64_t GetId();
+
+  // Read in the next |num_bytes| as an uint32_t.
+  uint32_t GetUInt32FromBytes(size_t num_bytes);
+
+  // Read in the next |num_bytes| as an uint64_t.
+  uint64_t GetUInt64FromBytes(size_t num_bytes);
+
   bool HasRemaining();
   void set_id_size(unsigned id_size);
   void set_position(size_t new_position);
@@ -44,12 +49,6 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofBuffer {
 
  private:
   unsigned char GetByte();
-
-  // Read in the next |num_bytes| as an uint32_t.
-  uint32_t GetUInt32FromBytes(size_t num_bytes);
-
-  // Read in the next |num_bytes| as an uint64_t.
-  uint64_t GetUInt64FromBytes(size_t num_bytes);
 
   // The ID size in bytes of the objects in the hprof, valid values are 4 and 8.
   unsigned object_id_size_in_bytes_ = 4;

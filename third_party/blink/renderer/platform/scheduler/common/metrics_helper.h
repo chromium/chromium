@@ -5,9 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_METRICS_HELPER_H_
 
-#include "base/optional.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/time/time.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/thread_metrics.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
@@ -40,17 +38,17 @@ class PLATFORM_EXPORT MetricsHelper {
 
  public:
   MetricsHelper(ThreadType thread_type, bool has_cpu_timing_for_each_task);
+  MetricsHelper(const MetricsHelper&) = delete;
+  MetricsHelper& operator=(const MetricsHelper&) = delete;
   ~MetricsHelper();
 
  protected:
   bool ShouldDiscardTask(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   // Record task metrics which are shared between threads.
   void RecordCommonTaskMetrics(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
@@ -72,8 +70,6 @@ class PLATFORM_EXPORT MetricsHelper {
       background_thread_task_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       background_thread_task_cpu_duration_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsHelper);
 };
 
 }  // namespace scheduler

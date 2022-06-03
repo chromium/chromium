@@ -33,12 +33,17 @@ class CupsProxyServiceDelegateImpl
   CupsProxyServiceDelegateImpl();
   ~CupsProxyServiceDelegateImpl() override;
 
+  bool IsPrinterAccessAllowed() const override;
+
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, nullptr otherwise.
-  base::Optional<Printer> GetPrinter(const std::string& id) override;
+  absl::optional<Printer> GetPrinter(const std::string& id) override;
 
   // Get the currently known list of printers.
   std::vector<Printer> GetPrinters(PrinterClass printer_class) override;
+
+  // Get the recently used printer list from print_preview_sticky_settings.
+  std::vector<std::string> GetRecentlyUsedPrinters() override;
 
   // Returns whether |printer| is currently installed in CUPS with this config.
   bool IsPrinterInstalled(const Printer& printer) override;
@@ -55,11 +60,9 @@ class CupsProxyServiceDelegateImpl
 
  private:
   // Conducts SetupPrinter call on UI thread.
-  void SetupPrinterOnThread(const Printer& printer,
-                            scoped_refptr<base::SequencedTaskRunner> cb_runner,
-                            cups_proxy::SetupPrinterCallback cb);
-  void OnSetupPrinter(scoped_refptr<base::SequencedTaskRunner> cb_runner,
-                      cups_proxy::SetupPrinterCallback cb,
+  void SetupPrinterOnUIThread(const Printer& printer,
+                              cups_proxy::SetupPrinterCallback cb);
+  void OnSetupPrinter(cups_proxy::SetupPrinterCallback cb,
                       PrinterSetupResult result);
 
   // Current/active Profile. Not owned.

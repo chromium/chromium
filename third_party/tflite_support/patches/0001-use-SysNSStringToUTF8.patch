@@ -1,0 +1,29 @@
+From e4b8790a56487279b084fb59a2186a8bfd24b838 Mon Sep 17 00:00:00 2001
+From: Michael Crouse <mcrouse@chromium.org>
+Date: Thu, 7 Jan 2021 08:20:06 -0800
+Subject: [PATCH] use SysNSStringToUTF8
+
+---
+ .../tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm b/third_party/tflite-support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
+index 2a11bb673047..b82be34a9ab9 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
++++ b/third_party/tflite-support/src/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm
+@@ -12,10 +12,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ==============================================================================*/
++#inmport "base/strings/sys_string_conversions.h"
+ #import "third_party/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
+ 
+ std::string MakeString(NSString* str) {
+-  return std::string([str UTF8String]);
++  return SysNSStringToUTF8(str); 
+ }
+ 
+ NSString* MakeNSString(const std::string& str) {
+-- 
+2.29.2.729.g45daf8777d-goog
+

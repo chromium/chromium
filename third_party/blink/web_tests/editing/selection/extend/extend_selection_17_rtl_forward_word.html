@@ -48,7 +48,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\u202Bcar^ \u05D3\u05D4\u05D5| \u05D0\u05D1\u05D2.\u202C</div>'
-      : '<div contenteditable dir="rtl">\u202Bcar^ \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2.\u202C</div>',
+      : '<div contenteditable dir="rtl">\u202Bcar^ |\u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2.\u202C</div>',
   `${behavior} 17-4 rtl forward word`);
 
 selection_test(
@@ -78,7 +78,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5| \u05D0\u05D1\u05D2.\u202C</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5^ \u05D0\u05D1\u05D2|.\u202C</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5^ \u05D0\u05D1\u05D2|.\u202C</div>'
+      : '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5^ |\u05D0\u05D1\u05D2.\u202C</div>',
   `${behavior} 17-8 rtl forward word`);
 
 selection_test(

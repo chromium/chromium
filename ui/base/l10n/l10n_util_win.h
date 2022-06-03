@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace l10n_util {
 
@@ -19,17 +18,17 @@ namespace l10n_util {
 // (e.g. WS_EX_LAYOUTRTL, WS_EX_RTLREADING, etc.) when creating a window.
 // Callers should OR this value into their extended style value when creating
 // a window.
-UI_BASE_EXPORT int GetExtendedStyles();
+COMPONENT_EXPORT(UI_BASE) int GetExtendedStyles();
 
 // TODO(xji):
 // This is a temporary name, it will eventually replace GetExtendedStyles
-UI_BASE_EXPORT int GetExtendedTooltipStyles();
+COMPONENT_EXPORT(UI_BASE) int GetExtendedTooltipStyles();
 
 // Give an HWND, this function sets the WS_EX_LAYOUTRTL extended style for the
 // underlying window. When this style is set, the UI for the window is going to
 // be mirrored. This is generally done for the UI of right-to-left languages
 // such as Hebrew.
-UI_BASE_EXPORT void HWNDSetRTLLayout(HWND hwnd);
+COMPONENT_EXPORT(UI_BASE) void HWNDSetRTLLayout(HWND hwnd);
 
 // See http://blogs.msdn.com/oldnewthing/archive/2005/09/15/467598.aspx
 // and  http://blogs.msdn.com/oldnewthing/archive/2006/06/26/647365.aspx
@@ -40,18 +39,21 @@ UI_BASE_EXPORT void HWNDSetRTLLayout(HWND hwnd);
 // override_font_family and font_size_scaler are not null, they'll be
 // filled with the font family name and the size scaler.  The output
 // parameters are not modified if the return value is false.
-UI_BASE_EXPORT bool NeedOverrideDefaultUIFont(
-    base::string16* override_font_family,
-    double* font_size_scaler);
+COMPONENT_EXPORT(UI_BASE)
+bool NeedOverrideDefaultUIFont(std::wstring* override_font_family,
+                               double* font_size_scaler);
 
 // Allow processes to override the configured locale with the user's Windows UI
 // languages.  This function should generally be called once early in
 // Application startup.
-UI_BASE_EXPORT void OverrideLocaleWithUILanguageList();
+COMPONENT_EXPORT(UI_BASE) void OverrideLocaleWithUILanguageList();
 
 // Retrieve the locale override, or an empty vector if the locale has not been
 // or failed to be overridden.
-UI_BASE_EXPORT const std::vector<std::string>& GetLocaleOverrides();
+COMPONENT_EXPORT(UI_BASE) const std::vector<std::string>& GetLocaleOverrides();
+
+// Pulls resource string from the string bundle and returns it.
+COMPONENT_EXPORT(UI_BASE) std::wstring GetWideString(int message_id);
 
 }  // namespace l10n_util
 

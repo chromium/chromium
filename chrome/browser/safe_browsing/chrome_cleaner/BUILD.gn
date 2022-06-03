@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("public") {
@@ -21,13 +20,15 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//chrome/common:constants",
     "//components/chrome_cleaner/public/constants",
+    "//components/prefs:prefs",
     "//components/variations",
     "//url",
   ]
 }
 
-jumbo_static_library("chrome_cleaner") {
+static_library("chrome_cleaner") {
   sources = [
     "chrome_cleaner_controller_impl_win.cc",
     "chrome_cleaner_controller_impl_win.h",
@@ -54,9 +55,10 @@ jumbo_static_library("chrome_cleaner") {
   ]
 
   deps = [
-    # TODO(crbug.com/920223): Break dependency cycles with //chrome/browser
+    # TODO(crbug.com/925153): Break dependency cycles with //chrome/browser
     ":public",
-    "//chrome/browser/extensions",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/common",
@@ -64,12 +66,10 @@ jumbo_static_library("chrome_cleaner") {
     "//components/chrome_cleaner/public/constants",
     "//components/chrome_cleaner/public/proto",
     "//components/component_updater",
-    "//components/crx_file",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/safe_browsing/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/public/browser",
-    "//extensions/browser",
     "//third_party/protobuf:protobuf_lite",
   ]
 }

@@ -29,6 +29,8 @@ chrome.test.runTests([
           chrome.tabs.onUpdated,
           function(tabId, changeInfo, tab) {
         if ('discarded' in changeInfo) {
+          assertTrue('status' in changeInfo);
+
           // Make sure it's the right tab.
           assertEq(testTab.index, tab.index);
           assertEq(testTab.windowId, tab.windowId);
@@ -36,6 +38,7 @@ chrome.test.runTests([
           // Make sure the discarded state changed correctly.
           assertTrue(changeInfo.discarded);
           assertTrue(tab.discarded);
+          assertEq('unloaded', tab.status);
 
           onUpdatedCompleted();
         }

@@ -7,7 +7,7 @@
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
-#import "ios/chrome/common/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -95,6 +95,10 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
 
 class FaviconLoaderTest : public PlatformTest,
                           public ::testing::WithParamInterface<FaviconUrlType> {
+ public:
+  FaviconLoaderTest(const FaviconLoaderTest&) = delete;
+  FaviconLoaderTest& operator=(const FaviconLoaderTest&) = delete;
+
  protected:
   FaviconLoaderTest() : favicon_loader_(&large_icon_service_) {}
 
@@ -114,9 +118,6 @@ class FaviconLoaderTest : public PlatformTest,
                                         callback);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FaviconLoaderTest);
 };
 
 // Tests that image is returned when a favicon is retrieved from

@@ -33,6 +33,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -43,56 +44,60 @@ MatchedProperties::MatchedProperties() {
   memset(&types_, 0, sizeof(types_));
 }
 
-void MatchedProperties::Trace(blink::Visitor* visitor) {
+void MatchedProperties::Trace(Visitor* visitor) const {
   visitor->Trace(properties);
 }
 
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
-    unsigned link_match_type,
-    ValidPropertyFilter valid_property_filter) {
+    const AddMatchedPropertiesOptions& options) {
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = link_match_type;
+  new_properties.types_.link_match_type = options.GetLinkMatchType();
   new_properties.types_.valid_property_filter =
       static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          valid_property_filter);
-  // TODO(andruud): MatchedProperties are stored here in reverse order.
-  // Reevaluate this when cascade has shipped.
-  new_properties.types_.tree_order =
-      std::numeric_limits<uint16_t>::max() - current_tree_order_;
+          options.GetValidPropertyFilter());
+  new_properties.types_.layer_order =
+      ClampTo<uint16_t>(options.GetLayerOrder());
+  new_properties.types_.is_inline_style = options.IsInlineStyle();
+  new_properties.types_.origin = current_origin_;
+  new_properties.types_.tree_order = current_tree_order_;
 }
 
 void MatchResult::FinishAddingUARules() {
-  ua_range_end_ = matched_properties_.size();
+  DCHECK_EQ(current_origin_, CascadeOrigin::kUserAgent);
+  current_origin_ = CascadeOrigin::kUser;
 }
 
 void MatchResult::FinishAddingUserRules() {
-  // Don't add empty ranges.
-  if (user_range_ends_.IsEmpty() &&
-      ua_range_end_ == matched_properties_.size())
-    return;
-  if (!user_range_ends_.IsEmpty() &&
-      user_range_ends_.back() == matched_properties_.size())
-    return;
-  user_range_ends_.push_back(matched_properties_.size());
-  current_tree_order_ = clampTo<uint16_t>(user_range_ends_.size());
+  DCHECK_EQ(current_origin_, CascadeOrigin::kUser);
+  current_origin_ = CascadeOrigin::kAuthor;
 }
 
-void MatchResult::FinishAddingAuthorRulesForTreeScope() {
-  // Don't add empty ranges.
-  if (author_range_ends_.IsEmpty() && user_range_ends_.IsEmpty() &&
-      ua_range_end_ == matched_properties_.size())
-    return;
-  if (author_range_ends_.IsEmpty() && !user_range_ends_.IsEmpty() &&
-      user_range_ends_.back() == matched_properties_.size())
-    return;
-  if (!author_range_ends_.IsEmpty() &&
-      author_range_ends_.back() == matched_properties_.size())
-    return;
-  author_range_ends_.push_back(matched_properties_.size());
-  current_tree_order_ = clampTo<uint16_t>(author_range_ends_.size());
+void MatchResult::FinishAddingAuthorRulesForTreeScope(
+    const TreeScope& tree_scope) {
+  DCHECK_EQ(current_origin_, CascadeOrigin::kAuthor);
+  tree_scopes_.push_back(&tree_scope);
+  current_tree_order_ = base::ClampAdd(current_tree_order_, 1);
+}
+
+MatchedExpansionsRange MatchResult::Expansions(const Document& document,
+                                               CascadeFilter filter) const {
+  return MatchedExpansionsRange(
+      MatchedExpansionsIterator(matched_properties_.begin(), document, filter,
+                                0),
+      MatchedExpansionsIterator(matched_properties_.end(), document, filter,
+                                matched_properties_.size()));
+}
+
+void MatchResult::Reset() {
+  matched_properties_.clear();
+  is_cacheable_ = true;
+  depends_on_container_queries_ = false;
+  current_origin_ = CascadeOrigin::kUserAgent;
+  current_tree_order_ = 0;
+  tree_scopes_.clear();
 }
 
 }  // namespace blink

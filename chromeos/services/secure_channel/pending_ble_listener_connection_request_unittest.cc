@@ -26,6 +26,12 @@ const char kTestFeature[] = "testFeature";
 
 class SecureChannelPendingBleListenerConnectionRequestTest
     : public testing::Test {
+ public:
+  SecureChannelPendingBleListenerConnectionRequestTest(
+      const SecureChannelPendingBleListenerConnectionRequestTest&) = delete;
+  SecureChannelPendingBleListenerConnectionRequestTest& operator=(
+      const SecureChannelPendingBleListenerConnectionRequestTest&) = delete;
+
  protected:
   SecureChannelPendingBleListenerConnectionRequestTest() = default;
   ~SecureChannelPendingBleListenerConnectionRequestTest() override = default;
@@ -42,13 +48,13 @@ class SecureChannelPendingBleListenerConnectionRequestTest
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
     pending_ble_listener_request_ =
-        PendingBleListenerConnectionRequest::Factory::Get()->BuildInstance(
+        PendingBleListenerConnectionRequest::Factory::Create(
             std::move(fake_client_connection_parameters),
             ConnectionPriority::kLow,
             fake_pending_connection_request_delegate_.get(), mock_adapter_);
   }
 
-  const base::Optional<
+  const absl::optional<
       PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
@@ -56,7 +62,7 @@ class SecureChannelPendingBleListenerConnectionRequestTest
             pending_ble_listener_request_->GetRequestId());
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() {
     return fake_client_connection_parameters_->failure_reason();
   }
@@ -75,9 +81,6 @@ class SecureChannelPendingBleListenerConnectionRequestTest
 
   std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
       pending_ble_listener_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelPendingBleListenerConnectionRequestTest);
 };
 
 TEST_F(SecureChannelPendingBleListenerConnectionRequestTest,

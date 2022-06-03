@@ -35,6 +35,10 @@ var createCredentialDefaultArgs = {
                 alg: cose_alg_ECDSA_w_SHA256,
             }],
 
+            authenticatorSelection: {
+                requireResidentKey: false,
+            },
+
             timeout: 60000, // 1 minute
             excludeCredentials: [] // No excludeList
         }
@@ -65,7 +69,7 @@ function createCredential(opts) {
     createArgs.options.publicKey.user.id = new Uint8Array(16);
 
     // change the defaults with any options that were passed in
-    extendObject (createArgs, opts);
+    extendObject(createArgs, opts);
 
     // create the credential, return the Promise
     return navigator.credentials.create(createArgs.options);
@@ -244,7 +248,11 @@ class TestCase {
      * expects the test to fail
      */
     testFails(t, testDesc, expectedErr) {
-        return promise_rejects(t, expectedErr, this.doIt(), "Expected bad parameters to fail");
+        if (typeof expectedErr == "string") {
+            return promise_rejects_dom(t, expectedErr, this.doIt(), "Expected  bad parameters to fail");
+        }
+
+        return promise_rejects_js(t, expectedErr, this.doIt(), "Expected bad parameters to fail");
     }
 
     /**
@@ -336,7 +344,8 @@ function cloneObject(o) {
 function extendObject(dst, src) {
     Object.keys(src).forEach(function(key) {
         if (isSimpleObject(src[key])) {
-            extendObject (dst[key], src[key]);
+            dst[key] ||= {};
+            extendObject(dst[key], src[key]);
         } else {
             dst[key] = src[key];
         }
@@ -416,6 +425,9 @@ class GetCredentialsTest extends TestCase {
 
         this.credentialPromiseList = [];
 
+        // set to true to pass an empty allowCredentials list to credentials.get
+        this.isResidentKeyTest = false;
+
         // enable the constructor to modify the default testObject
         // would prefer to do this in the super class, but have to call super() before using `this.*`
         if (arguments.length) {
@@ -460,7 +472,9 @@ class GetCredentialsTest extends TestCase {
                         type: "public-key"
                     };
                 });
-                this.testObject.options.publicKey.allowCredentials = idList;
+                if (!this.isResidentKeyTest) {
+                    this.testObject.options.publicKey.allowCredentials = idList;
+                }
                 // return super.test(desc);
             })
             .catch((err) => {
@@ -471,6 +485,11 @@ class GetCredentialsTest extends TestCase {
     validateRet(ret) {
         validatePublicKeyCredential(ret);
         validateAuthenticatorAssertionResponse(ret.response);
+    }
+
+    setIsResidentKeyTest(isResidentKeyTest) {
+        this.isResidentKeyTest = isResidentKeyTest;
+        return this;
     }
 }
 
@@ -531,63 +550,57 @@ function validateAuthenticatorAssertionResponse(assert) {
     // TODO: parseAuthenticatorData() and make sure flags are correct
 }
 
-//************* BEGIN DELETE AFTER 1/1/2018 *************** //
-// XXX for development mode only!!
-// debug() for debugging purposes... we can drop this later if it is considered ugly
-// note that debug is currently an empty function (i.e. - prints no output)
-// and debug only prints output if the polyfill is loaded
-var debug = function() {};
-// if the WebAuthn API doesn't exist load a polyfill for testing
-// note that the polyfill only gets loaded if navigator.credentials create doesn't exist
-// AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
-function ensureInterface() {
-    if (typeof navigator.credentials === "object" && typeof navigator.credentials.create !== "function") {
-        // debug = onsole.log;
+function defaultAuthenticatorArgs() {
+  return {
+    protocol: 'ctap1/u2f',
+    transport: 'usb',
+    hasResidentKey: false,
+    hasUserVerification: false,
+    isUserVerified: false,
+  };
+}
 
-        return loadJavaScript("/webauthn/webauthn-polyfill/webauthn-polyfill.js")
-            .then(() => {
-                return loadJavaScript("/webauthn/webauthn-soft-authn/soft-authn.js");
-            });
-    } else {
-        return Promise.resolve();
+function standardSetup(cb, options = {}) {
+  // Setup an automated testing environment if available.
+  let authenticatorArgs = Object.assign(defaultAuthenticatorArgs(), options);
+  window.test_driver.add_virtual_authenticator(authenticatorArgs)
+      .then(authenticator => {
+        cb();
+        // XXX add a subtest to clean up the virtual authenticator since
+        // testharness does not support waiting for promises on cleanup.
+        promise_test(
+            () =>
+                window.test_driver.remove_virtual_authenticator(authenticator),
+            'Clean up the test environment');
+      })
+      .catch(error => {
+        if (error !==
+            'error: Action add_virtual_authenticator not implemented') {
+          throw error;
+        }
+        // The protocol is not available. Continue manually.
+        cb();
+      });
+}
+
+// virtualAuthenticatorPromiseTest runs |testCb| in a promise_test with a
+// virtual authenticator set up before and destroyed after the test, if the
+// virtual testing API is available. In manual tests, setup and teardown is
+// skipped.
+function virtualAuthenticatorPromiseTest(
+    testCb, options = {}, name = 'Virtual Authenticator Test') {
+  let authenticatorArgs = Object.assign(defaultAuthenticatorArgs(), options);
+  promise_test(async t => {
+    try {
+      let authenticator =
+          await window.test_driver.add_virtual_authenticator(authenticatorArgs);
+      t.add_cleanup(
+          () => window.test_driver.remove_virtual_authenticator(authenticator));
+    } catch (error) {
+      if (error !== 'error: Action add_virtual_authenticator not implemented') {
+        throw error;
+      }
     }
+    return testCb(t);
+  }, name);
 }
-
-function loadJavaScript(path) {
-    return new Promise((resolve, reject) => {
-        // dynamic loading of polyfill script by creating new <script> tag and seeing the src=
-        var scriptElem = document.createElement("script");
-        if (typeof scriptElem !== "object") {
-            debug("ensureInterface: Error creating script element while attempting loading polyfill");
-            return reject(new Error("ensureInterface: Error creating script element while loading polyfill"));
-        }
-        scriptElem.type = "application/javascript";
-        scriptElem.onload = function() {
-            debug("!!! Loaded " + path + " ...");
-            return resolve();
-        };
-        scriptElem.onerror = function() {
-            debug("navigator.credentials.create does not exist");
-            resolve();
-        };
-        scriptElem.src = path;
-        if (document.body) {
-            document.body.appendChild(scriptElem);
-        } else {
-            debug("ensureInterface: DOM has no body");
-            return reject(new Error("ensureInterface: DOM has no body"));
-        }
-    });
-}
-
-function standardSetup(cb) {
-    return ensureInterface()
-        .then(() => {
-            if (cb) return cb();
-        });
-}
-//************* END DELETE AFTER 1/1/2018 *************** //
-
-/* JSHINT */
-/* globals promise_rejects, assert_class_string, assert_equals, assert_idl_attribute, assert_readonly, promise_test */
-/* exported standardSetup, CreateCredentialsTest, GetCredentialsTest */

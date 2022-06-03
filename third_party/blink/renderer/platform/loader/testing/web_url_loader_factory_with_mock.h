@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 
 namespace blink {
@@ -21,8 +21,10 @@ class WebURLLoaderFactoryWithMock : public WebURLLoaderFactory {
 
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>)
-      override;
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
+      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      WebBackForwardCacheLoaderHelper) override;
 
  private:
   // Not owned. The mock factory should outlive |this|.

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that evaluating object literal in the console correctly reported.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
 
@@ -21,13 +21,13 @@
   var current = -1;
   loopOverCommands();
 
-  function loopOverCommands() {
+  async function loopOverCommands() {
     ++current;
 
     if (current < commands.length) {
       ConsoleTestRunner.evaluateInConsole(commands[current], loopOverCommands);
     } else {
-      ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+      await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
       TestRunner.completeTest();
     }
   }

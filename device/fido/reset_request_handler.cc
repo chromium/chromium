@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -61,7 +61,7 @@ void ResetRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
 
 void ResetRequestHandler::OnResetComplete(
     CtapDeviceResponseCode status,
-    base::Optional<pin::EmptyResponse> response) {
+    absl::optional<pin::EmptyResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK(processed_touch_);
 

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL a default prototype object should be provided if one is not specified document.registerElement is not a function
-Harness: the test ran to completion.
-

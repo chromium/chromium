@@ -46,7 +46,7 @@ For the mapping 'lang' to policy_templates filename see crbug.com/806577.
     <file path="policy_templates_zh-CN.xtb" lang="zh-CN" />
     <file path="policy_templates_zh-TW.xtb" lang="zh-TW" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <structures fallback_to_english="true">
       <!-- List of policies and placeholder texts. This item should precede any
       message definitions. -->

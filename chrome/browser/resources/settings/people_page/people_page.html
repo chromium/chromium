@@ -1,56 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/icon.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="profile_info_browser_proxy.html">
-<link rel="import" href="sync_browser_proxy.html">
-<link rel="import" href="sync_page.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../open_window_proxy.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="signout_dialog.html">
-<link rel="import" href="sync_controls.html">
-
-<if expr="chromeos">
-<link rel="import" href="account_manager.html">
-<link rel="import" href="account_manager_browser_proxy.html">
-<link rel="import" href="change_picture.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/cr_picture/cr_png_behavior.html">
-<link rel="import" href="fingerprint_list.html">
-<link rel="import" href="kerberos_accounts.html">
-<link rel="import" href="lock_screen.html">
-<link rel="import" href="lock_state_behavior.html">
-<link rel="import" href="users_page.html">
-<link rel="import" href="../parental_controls_page/parental_controls_page.html">
-</if>
-<if expr="not chromeos">
-<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
-<link rel="import" href="import_data_dialog.html">
-</if>
-
-<dom-module id="settings-people-page">
-  <template>
-    <style include="settings-shared iron-flex">
-      setting-box.middle {
-        /* Per spec, middle text is indented 20px in this section. */
-        margin-inline-start: 20px;
-      }
-
+    <style include="cr-shared-style settings-shared iron-flex">
       .sync-row {
         align-items: center;
         flex: auto;
@@ -65,9 +13,7 @@
       }
 
       #sync-setup {
-        --cr-secondary-text: {
-          color: var(--settings-error-color);
-        }
+        --cr-secondary-text-color: var(--settings-error-color);
       }
 
       cr-link-row {
@@ -82,7 +28,6 @@
         width: 40px;
       }
 
-<if expr="not chromeos">
       #toast {
         left: 0;
         z-index: 1;
@@ -104,14 +49,12 @@
         font-size: 1.1rem;
         line-height: 1.625rem;
       }
-</if>
     </style>
     <settings-animated-pages id="pages" section="people"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-<if expr="not chromeos">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
-            syncStatus.syncSystemEnabled, syncStatus.signinAllowed)]]">
+            syncStatus.syncSystemEnabled)]]">
           <settings-sync-account-control
               sync-status="[[syncStatus]]"
               prefs="{{prefs}}"
@@ -123,79 +66,43 @@
                   "$i18n{peopleSignInPromptSecondaryWithNoAccount}">
           </settings-sync-account-control>
         </template>
-        <template is="dom-if" if="[[!diceEnabled_]]">
-</if>
-          <div id="picture-subpage-trigger" class="settings-box first two-line">
-            <template is="dom-if" if="[[syncStatus]]">
-              <div id="profile-icon" on-click="onProfileTap_"
+        <template is="dom-if" if="[[!shouldShowSyncAccountControl_(
+            syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
+          <div id="profile-row" class="cr-row first two-line"
                   actionable$="[[isProfileActionable_]]"
+                  on-click="onProfileTap_">
+            <template is="dom-if" if="[[syncStatus]]">
+              <div id="profile-icon"
                   style="background-image: [[getIconImageSet_(
                       profileIconUrl_)]]">
               </div>
-              <div class="middle two-line no-min-width"
-                  id="profile-row"
-                  on-click="onProfileTap_"
-                  actionable$="[[isProfileActionable_]]">
-                <div class="flex text-elide settings-box-text">
-                  <span id="profile-name">[[profileName_]]</span>
-                  <div class="secondary" hidden="[[!syncStatus.signedIn]]">
-                    [[syncStatus.signedInUsername]]
-                  </div>
-                </div>
-<if expr="not chromeos">
-                <cr-icon-button class="subpage-arrow"
-                    aria-label="$i18n{editPerson}"
-                    aria-describedby="profile-name"
-                    aria-roledescription="$i18n{subpageArrowRoleDescription}">
-                </cr-icon-button>
-</if>
+              <div class="flex cr-row-gap cr-padded-text text-elide">
+                <span id="profile-name">[[profileName_]]</span>
+<!-- When the user is signed-in, the settings-sync-account-control is always
+shown on non-ChromeOS platforms -->
 <if expr="chromeos">
-                <cr-icon-button class$="[[profileRowIconClass_]]"
-                    id="profile-subpage-arrow"
-                    hidden="[[!isProfileActionable_]]"
-                    aria-label$="[[profileRowIconAriaLabel_]]"
-                    aria-describedby="profile-name"></cr-icon-button>
+                <div class="secondary" hidden="[[!syncStatus.signedIn]]">
+                  [[syncStatus.signedInUsername]]
+                </div>
 </if>
               </div>
 <if expr="not chromeos">
-              <template is="dom-if" if="[[showSignin_(syncStatus)]]">
-                <div class="separator"></div>
-                <cr-button class="action-button" on-click="onSigninTap_"
-                    disabled="[[syncStatus.firstSetupInProgress]]">
-                  $i18n{syncSignin}
-                </cr-button>
-              </template>
-              <template is="dom-if" if="[[syncStatus.signedIn]]">
-                <div class="separator"></div>
-                <cr-button id="disconnectButton" on-click="onDisconnectTap_"
-                    disabled="[[syncStatus.firstSetupInProgress]]">
-                  $i18n{syncDisconnect}
-                </cr-button>
-              </template>
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="$i18n{editPerson}"
+                  aria-describedby="profile-name"
+                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
+              </cr-icon-button>
+</if>
+<if expr="chromeos">
+              <cr-icon-button class="icon-external"
+                  id="profile-subpage-arrow"
+                  hidden="[[!isProfileActionable_]]"
+                  aria-label="$i18n{accountManagerSubMenuLabel}"
+                  aria-describedby="profile-name"></cr-icon-button>
 </if>
             </template>
           </div>
-<if expr="not chromeos">
-        </template> <!-- if="[[!diceEnabled_]]" -->
-</if>
-
-        <template is="dom-if" if="[[!syncStatus.signedIn]]">
-<if expr="not chromeos">
-          <template is="dom-if" if="[[!diceEnabled_]]">
-</if>
-            <div class="settings-box two-line" id="sync-overview"
-                hidden="[[!syncStatus.signinAllowed]]">
-              <div class="start settings-box-text">
-                $i18n{syncOverview}
-                <a target="_blank" href="$i18n{syncLearnMoreUrl}">
-                  $i18n{learnMore}
-                </a>
-              </div>
-            </div>
-<if expr="not chromeos">
-          </template> <!-- if="[[!diceEnabled_]]" -->
-</if>
-        </template>
+        </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
@@ -205,62 +112,19 @@
         </cr-link-row>
 
 <if expr="not chromeos">
-        <template is="dom-if" if="[[diceEnabled_]]">
+        <template is="dom-if" if="[[signinAllowed_]]">
           <cr-link-row id="manage-google-account"
               label="$i18n{manageGoogleAccount}"
               hidden="[[!shouldShowGoogleAccount_]]"
               on-click="openGoogleAccount_" external></cr-link-row>
 
-          <div class="settings-box" id="edit-profile" on-click="onProfileTap_"
-              actionable>
-            <div class="start settings-box-text">
-              $i18n{profileNameAndPicture}
-            </div>
-            <cr-icon-button class="subpage-arrow" aria-label="$i18n{editPerson}"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
-            </cr-icon-button>
-          </div>
+          <cr-link-row id="edit-profile"
+              label="$i18n{profileNameAndPicture}"
+              on-click="onProfileTap_" ></cr-link-row>
         </template>
 </if>
 
-<if expr="chromeos">
-        <cr-link-row id="lock-screen-subpage-trigger" class="hr"
-            on-click="onConfigureLockTap_"
-            label="[[selectLockScreenTitleString(hasPinLogin)]]"
-            sub-label="[[getPasswordState_(hasPin,
-                prefs.settings.enable_screen_lock.value)]]"
-            role-description="$i18n{subpageArrowRoleDescription}"
-            hidden="[[!pageVisibility.people.lockScreen]]"></cr-link-row>
-
-        <template is="dom-if" if="[[pageVisibility.people.googleAccounts]]">
-          <cr-link-row id="account-manager-subpage-trigger" class="hr"
-              on-click="onAccountManagerTap_"
-              label="$i18n{accountManagerSubMenuLabel}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[showParentalControls_]]">
-          <settings-parental-controls-page>
-          </settings-parental-controls-page>
-        </template>
-        <cr-link-row id="manage-other-people-subpage-trigger"
-            label="$i18n{manageOtherPeople}" on-click="onManageOtherPeople_"
-            role-description="$i18n{subpageArrowRoleDescription}"
-            hidden="[[!pageVisibility.people.manageUsers]]">
-        </cr-link-row>
-
-        <template is="dom-if" if="[[pageVisibility.people.kerberosAccounts]]">
-          <cr-link-row id="kerberos-accounts-subpage-trigger" class="hr"
-              on-click="onKerberosAccountsTap_"
-              label="$i18n{kerberosAccountsSubMenuLabel}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-            <cr-policy-indicator indicator-type="userPolicy">
-            </cr-policy-indicator>
-          </cr-link-row>
-        </template>
-</if>
-
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataTap_"></cr-link-row>
@@ -273,11 +137,9 @@
             page-title="$i18n{syncPageTitle}"
             learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
           <settings-sync-page
-<if expr="not chromeos">
-              dice-enabled="[[diceEnabled_]]"
-</if>
               sync-status="[[syncStatus]]" prefs="{{prefs}}"
-              page-visibility="[[pageVisibility.privacy]]">
+              page-visibility="[[pageVisibility.privacy]]"
+              focus-config="[[focusConfig_]]">
           </settings-sync-page>
         </settings-subpage>
       </template>
@@ -291,67 +153,11 @@
         </settings-subpage>
       </template>
 
-<if expr="chromeos">
-      <template is="dom-if" if="[[pageVisibility.people.lockScreen]]">
-        <template is="dom-if" route-path="/lockScreen">
-          <settings-subpage
-              page-title="[[selectLockScreenTitleString(hasPinLogin)]]"
-              associated-control="[[$$('#lock-screen-subpage-trigger')]]">
-            <settings-lock-screen
-                prefs="{{prefs}}" auth-token="{{authToken_}}">
-            </settings-lock-screen>
-          </settings-subpage>
-        </template>
-        <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-          <template is="dom-if" route-path="/lockScreen/fingerprint" no-search>
-            <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
-              <settings-fingerprint-list auth-token="[[authToken_]]">
-              </settings-fingerprint-list>
-            </settings-subpage>
-          </template>
-        </template>
-      </template>
-      <template is="dom-if" if="[[pageVisibility.people.manageUsers]]">
-        <template is="dom-if" route-path="/accounts">
-          <settings-subpage
-              associated-control=
-                  "[[$$('#manage-other-people-subpage-trigger')]]"
-              page-title="$i18n{manageOtherPeople}">
-            <settings-users-page prefs="{{prefs}}">
-            </settings-users-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" route-path="/changePicture">
-        <settings-subpage
-          associated-control="[[$$('#picture-subpage-trigger')]]"
-          page-title="$i18n{changePictureTitle}">
-          <settings-change-picture></settings-change-picture>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" if="[[pageVisibility.people.googleAccounts]]">
-        <template is="dom-if" route-path="/accountManager">
-          <settings-subpage
-              associated-control="[[$$('#account-manager-subpage-trigger')]]"
-              page-title="$i18n{accountManagerPageTitle}">
-            <settings-account-manager></settings-account-manager>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" if="[[pageVisibility.people.kerberosAccounts]]">
-        <template is="dom-if" route-path="/kerberosAccounts">
-          <settings-subpage
-              associated-control="[[$$('#kerberos-accounts-subpage-trigger')]]"
-              page-title="$i18n{kerberosAccountsPageTitle}">
-            <settings-kerberos-accounts></settings-kerberos-accounts>
-          </settings-subpage>
-        </template>
-      </template>
-</if>
 <if expr="not chromeos">
       <template is="dom-if" route-path="/manageProfile">
         <settings-subpage
-            associated-control="[[getEditPersonAssocControl_(diceEnabled_)]]"
+            associated-control=
+                "[[getEditPersonAssocControl_(signinAllowed_)]]"
             page-title="$i18n{editPerson}">
           <settings-manage-profile profile-name="[[profileName_]]"
               sync-status="[[syncStatus]]">
@@ -372,11 +178,6 @@
           on-close="onImportDataDialogClosed_">
       </settings-import-data-dialog>
     </template>
-<if expr="not chromeos">
     <cr-toast duration="3000" id="toast">
       <span>$i18n{syncSettingsSavedToast}</span>
     </cr-toast>
-</if>
-  </template>
-  <script src="people_page.js"></script>
-</dom-module>

@@ -15,10 +15,10 @@ class PrefService;
 
 namespace weblayer {
 
-base::TimeTicks GetMainEntryPointTimeTicks() {
+base::TimeTicks GetApplicationStartTime() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::TimeTicks::FromUptimeMillis(
-      Java_UmaUtils_getMainEntryPointTicks(env));
+      Java_UmaUtils_getApplicationStartTime(env));
 }
 
 }  // namespace weblayer

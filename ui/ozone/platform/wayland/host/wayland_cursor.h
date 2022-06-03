@@ -5,19 +5,17 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_H_
 
-#include <wayland-client.h>
-
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 
 class SkBitmap;
+
+struct wl_cursor;
 
 namespace gfx {
 class Point;
@@ -26,43 +24,83 @@ class Point;
 namespace ui {
 
 class WaylandConnection;
-class WaylandShm;
+class WaylandPointer;
+
+// Interface through which WaylandCursor notifies the listener that it has
+// attached another buffer to the pointer surface.  The listener may free the
+// previous buffer if it was holding it.
+class WaylandCursorBufferListener {
+ public:
+  // Tells the listener that a new buffer is attached.  |cursor_data| may be
+  // non-nullptr if the platform shape is used, or nullptr if the cursor has
+  // been hidden, or a custom bitmap has been set.
+  virtual void OnCursorBufferAttached(wl_cursor* cursor_data) = 0;
+
+ protected:
+  virtual ~WaylandCursorBufferListener() = default;
+};
 
 // Manages the actual visual representation (what users see drawn) of the
 // 'pointer' (which is the Wayland term for mouse/mice).
-//
-// An instance of this class is aggregated by an instance of WaylandPointer
-// and is exposed for updating the pointer bitmap with the single method call.
 //
 // Encapsulates the low-level job such as surface and buffer management and
 // Wayland protocol calls.
 class WaylandCursor {
  public:
-  WaylandCursor();
-  ~WaylandCursor();
+  WaylandCursor(WaylandPointer* pointer, WaylandConnection* connection);
 
-  void Init(wl_pointer* pointer, WaylandConnection* connection);
+  WaylandCursor(const WaylandCursor&) = delete;
+  WaylandCursor& operator=(const WaylandCursor&) = delete;
+
+  ~WaylandCursor();
 
   // Updates wl_pointer's visual representation with the given bitmap
   // image set and hotspot.
+  // The cursor bitmap should already match the device scale factor.
+  // `buffer_scale` should match the scale of the window surface, so that we
+  // can pass this information to the compositor which will avoid scaling it
+  // again.
   void UpdateBitmap(const std::vector<SkBitmap>& bitmaps,
-                    const gfx::Point& hotspot,
-                    uint32_t serial);
+                    const gfx::Point& hotspot_in_dips,
+                    int buffer_scale);
+
+  // Takes data managed by the platform (without taking ownership).
+  void SetPlatformShape(wl_cursor* cursor_data,
+                        int buffer_scale);
+
+  void set_listener(WaylandCursorBufferListener* listener) {
+    listener_ = listener;
+  }
 
  private:
   // wl_buffer_listener:
   static void OnBufferRelease(void* data, wl_buffer* wl_buffer);
 
-  void HideCursor(uint32_t serial);
+  void HideCursor();
 
-  WaylandShm* shm_ = nullptr;            // Owned by WaylandConnection.
-  wl_pointer* input_pointer_ = nullptr;  // Owned by WaylandPointer.
+  // Prepares the platform cursor data for use.  Starts animation if needed.
+  void SetPlatformShapeInternal();
+
+  // Does all Wayland-level calls necessary to update the cursor shape.
+  void AttachAndCommit(wl_buffer* buffer,
+                       uint32_t buffer_width,
+                       uint32_t buffer_height,
+                       uint32_t hotspot_x_dip,
+                       uint32_t hotspot_y_dip);
+
+  WaylandPointer* const pointer_;
+  WaylandConnection* const connection_;
+  const wl::Object<wl_surface> pointer_surface_;
 
   // Holds the buffers and their memory until the compositor releases them.
   base::flat_map<wl_buffer*, WaylandShmBuffer> buffers_;
-  wl::Object<wl_surface> pointer_surface_;
+  WaylandCursorBufferListener* listener_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandCursor);
+  // Current platform cursor.
+  wl_cursor* cursor_data_ = nullptr;
+  size_t current_image_index_ = 0;
+  int buffer_scale_ = 1;
+  base::RepeatingTimer animation_timer_;
 };
 
 }  // namespace ui

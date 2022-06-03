@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cros_disks_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -522,6 +522,7 @@ class DiskMountManagerTest : public testing::Test {
   // Adds a test observer to the disk mount manager.
   void SetUp() override {
     fake_cros_disks_client_ = new FakeCrosDisksClient;
+    DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetCrosDisksClient(
         std::unique_ptr<CrosDisksClient>(fake_cros_disks_client_));
     PowerManagerClient::InitializeFake();
@@ -530,8 +531,8 @@ class DiskMountManagerTest : public testing::Test {
 
     InitDisksAndMountPoints();
 
-    observer_.reset(
-        new MockDiskMountManagerObserver(DiskMountManager::GetInstance()));
+    observer_ = std::make_unique<MockDiskMountManagerObserver>(
+        DiskMountManager::GetInstance());
     DiskMountManager::GetInstance()->AddObserver(observer_.get());
   }
 
@@ -1665,6 +1666,42 @@ TEST_F(DiskMountManagerTest, Mount_RemountPreservesFirstMount) {
   EXPECT_EQ(2, fake_cros_disks_client_->get_device_properties_success_count());
   EXPECT_FALSE(
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_first_mount());
+}
+
+TEST_F(DiskMountManagerTest, Mount_DefersDuringGetDeviceProperties) {
+  DiskMountManager* manager = DiskMountManager::GetInstance();
+
+  // When a disk is added, we call GetDeviceProperties() before updating our
+  // DiskMap. If the disk is mounted before this asynchronous call returns, we
+  // defer sending the mount event so that clients are able to access the disk
+  // information immediately.
+
+  fake_cros_disks_client_->NotifyMountEvent(CROS_DISKS_DISK_REMOVED,
+                                            kDevice1SourcePath);
+  EXPECT_EQ(nullptr, manager->FindDiskBySourcePath(kDevice1SourcePath));
+
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  DiskInfo disk_info(kDevice1SourcePath, response.get());
+  fake_cros_disks_client_->set_next_get_device_properties_disk_info(&disk_info);
+  fake_cros_disks_client_->NotifyMountEvent(CROS_DISKS_DISK_ADDED,
+                                            kDevice1SourcePath);
+  fake_cros_disks_client_->NotifyMountCompleted(
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
+      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+
+  // The mount event will not have fired yet as we are still waiting for
+  // GetDeviceProperties() to return.
+  EXPECT_EQ(0u,
+            observer_->CountMountEvents(DiskMountManager::MOUNTING,
+                                        MOUNT_ERROR_NONE, kDevice1MountPath));
+  base::RunLoop().RunUntilIdle();
+
+  // We have fired 3 events: disk removed -> disk added -> mounting
+  const MountEvent& mount_event = observer_->GetMountEvent(2);
+  EXPECT_EQ(DiskMountManager::MOUNTING, mount_event.event);
+  EXPECT_EQ(kDevice1MountPath, mount_event.mount_point.mount_path);
+  // The test OnMountEvent() finds the matching disk when it is called.
+  EXPECT_NE(nullptr, mount_event.disk);
 }
 
 }  // namespace

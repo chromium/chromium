@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/filters/ffmpeg_glue.h"
@@ -23,9 +22,16 @@ class DataSource;
 // sequenced blocking pool.
 class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
  public:
+  BlockingUrlProtocol() = delete;
+
   // Implements FFmpegURLProtocol using the given |data_source|. |error_cb| is
   // fired any time DataSource::Read() returns an error.
-  BlockingUrlProtocol(DataSource* data_source, const base::Closure& error_cb);
+  BlockingUrlProtocol(DataSource* data_source,
+                      const base::RepeatingClosure& error_cb);
+
+  BlockingUrlProtocol(const BlockingUrlProtocol&) = delete;
+  BlockingUrlProtocol& operator=(const BlockingUrlProtocol&) = delete;
+
   virtual ~BlockingUrlProtocol();
 
   // Aborts any pending reads by returning a read error. After this method
@@ -51,7 +57,7 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
   base::Lock data_source_lock_;
   DataSource* data_source_;
 
-  base::Closure error_cb_;
+  base::RepeatingClosure error_cb_;
   const bool is_streaming_;
 
   // Used to unblock the thread during shutdown and when reads complete.
@@ -63,8 +69,6 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
 
   // Cached position within the data source.
   int64_t read_position_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BlockingUrlProtocol);
 };
 
 }  // namespace media

@@ -12,8 +12,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
-#import "ios/chrome/browser/download/google_drive_app_util.h"
+#import "ios/chrome/browser/download/external_app_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
@@ -46,9 +47,13 @@ void DownloadManagerMediator::SetDownloadTask(web::DownloadTask* task) {
   }
 }
 
+base::FilePath DownloadManagerMediator::GetDownloadPath() {
+  return download_path_;
+}
+
 void DownloadManagerMediator::StartDowloading() {
   base::FilePath download_dir;
-  if (!GetDownloadsDirectory(&download_dir)) {
+  if (!GetTempDownloadsDirectory(&download_dir)) {
     [consumer_ setState:kDownloadManagerStateFailed];
     return;
   }
@@ -58,9 +63,8 @@ void DownloadManagerMediator::StartDowloading() {
   // "Start Download" button.
   [consumer_ setState:kDownloadManagerStateInProgress];
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&base::CreateDirectory, download_dir),
       base::BindOnce(&DownloadManagerMediator::DownloadWithDestinationDir,
                      weak_ptr_factory_.GetWeakPtr(), download_dir, task_));
@@ -80,30 +84,10 @@ void DownloadManagerMediator::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  base::string16 file_name = task_->GetSuggestedFilename();
+  std::u16string file_name = task_->GetSuggestedFilename();
+  DCHECK(!file_name.empty());
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
-  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
-  writer->Initialize(base::BindRepeating(
-      &DownloadManagerMediator::DownloadWithWriter,
-      weak_ptr_factory_.GetWeakPtr(), base::Passed(std::move(writer)), task_));
-}
-
-void DownloadManagerMediator::DownloadWithWriter(
-    std::unique_ptr<net::URLFetcherFileWriter> writer,
-    web::DownloadTask* task,
-    int writer_initialization_status) {
-  if (task_ != task) {
-    // Download task has been replaced, so simply ignore the old download.
-    return;
-  }
-
-  if (writer_initialization_status == net::OK) {
-    task_->Start(std::move(writer));
-  } else {
-    [consumer_ setState:kDownloadManagerStateFailed];
-  }
+  task->Start(path, web::DownloadTask::Destination::kToDisk);
 }
 
 void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
@@ -116,10 +100,22 @@ void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
 
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
+
+  if (state == kDownloadManagerStateSucceeded) {
+    download_path_ = task_->GetResponsePath();
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(base::PathExists, download_path_),
+        base::BindOnce(
+            &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
+            weak_ptr_factory_.GetWeakPtr(), download_path_));
+  }
+
   if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
-
   [consumer_ setState:state];
   [consumer_ setCountOfBytesReceived:task_->GetReceivedBytes()];
   [consumer_ setCountOfBytesExpectedToReceive:task_->GetTotalBytes()];
@@ -132,6 +128,32 @@ void DownloadManagerMediator::UpdateConsumer() {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                     l10n_util::GetNSString(a11y_announcement));
   }
+}
+
+void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
+    base::FilePath download_path,
+    bool file_exists) {
+  if (!file_exists || !task_)
+    return;
+
+  base::FilePath user_download_path;
+  GetDownloadsDirectory(&user_download_path);
+  user_download_path = user_download_path.Append(
+      base::UTF16ToUTF8(task_->GetSuggestedFilename()));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::Move, download_path, user_download_path),
+      base::BindOnce(&DownloadManagerMediator::RestoreDownloadPath,
+                     weak_ptr_factory_.GetWeakPtr(), user_download_path));
+}
+
+void DownloadManagerMediator::RestoreDownloadPath(
+    base::FilePath user_download_path,
+    bool moveCompleted) {
+  DCHECK(moveCompleted);
+  download_path_ = user_download_path;
 }
 
 DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {

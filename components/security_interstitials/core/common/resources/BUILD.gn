@@ -13,9 +13,13 @@ js_type_check("closure_compile") {
 
 js_library("interstitial_common") {
   deps = [
+    "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
     "//ui/webui/resources/js:webui_resource_test",
   ]
+  if (is_ios) {
+    deps += [ "//ui/webui/resources/js/ios:web_ui" ]
+  }
 }
 
 js_library("interstitial_mobile_nav") {

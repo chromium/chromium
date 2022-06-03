@@ -5,18 +5,19 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
-#include "content/common/text_input_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/selection_bound.h"
-
-struct WidgetHostMsg_SelectionBounds_Params;
 
 namespace content {
 
@@ -69,11 +70,15 @@ class CONTENT_EXPORT TextInputManager {
   struct SelectionRegion {
     SelectionRegion();
     SelectionRegion(const SelectionRegion& other);
+    SelectionRegion& operator=(const SelectionRegion& other);
 
     // The begining of the selection region.
     gfx::SelectionBound anchor;
     // The end of the selection region (caret position).
     gfx::SelectionBound focus;
+
+    // The bounding box of the selection region.
+    gfx::Rect bounding_box;
 
     // The following variables are only used on Mac platform.
     // The current caret bounds.
@@ -103,14 +108,14 @@ class CONTENT_EXPORT TextInputManager {
     TextSelection(const TextSelection& other);
     ~TextSelection();
 
-    void SetSelection(const base::string16& text,
+    void SetSelection(const std::u16string& text,
                       size_t offset,
                       const gfx::Range& range);
 
-    const base::string16& selected_text() const { return selected_text_; }
+    const std::u16string& selected_text() const { return selected_text_; }
     size_t offset() const { return offset_; }
     const gfx::Range& range() const { return range_; }
-    const base::string16& text() const { return text_; }
+    const std::u16string& text() const { return text_; }
 
    private:
     // The offset of the text stored in |text| relative to the start of the web
@@ -124,14 +129,18 @@ class CONTENT_EXPORT TextInputManager {
     // and |range_|. It will be an empty string if either |text_| or |range_|
     // are empty of this selection information is invalid (i.e., |range_| does
     // not cover any of |text_|.
-    base::string16 selected_text_;
+    std::u16string selected_text_;
 
     // Part of the text on the page which includes the highlighted text plus
     // possibly several characters before and after it.
-    base::string16 text_;
+    std::u16string text_;
   };
 
   explicit TextInputManager(bool should_do_learning);
+
+  TextInputManager(const TextInputManager&) = delete;
+  TextInputManager& operator=(const TextInputManager&) = delete;
+
   ~TextInputManager();
 
   // Returns the currently active widget, i.e., the RWH which is associated with
@@ -148,7 +157,20 @@ class CONTENT_EXPORT TextInputManager {
   // Returns the currently stored TextInputState for |active_view_|. A state of
   // nullptr can be interpreted as a ui::TextInputType of
   // ui::TEXT_INPUT_TYPE_NONE.
-  const TextInputState* GetTextInputState() const;
+  const ui::mojom::TextInputState* GetTextInputState() const;
+
+  // Returns the current autocorrect range, or an empty range if no autocorrect
+  // range is currently present.
+  gfx::Range GetAutocorrectRange() const;
+
+  // Returns the grammar fragment which contains |range|. If non-existent,
+  // returns an empty Fragment.
+  absl::optional<ui::GrammarFragment> GetGrammarFragment(
+      gfx::Range range) const;
+
+  // Returns if the given |range| is overlapping with any existing spellcheck
+  // markers.
+  bool OverlapsWithSpellCheckMarker(const gfx::Range range) const;
 
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
@@ -166,13 +188,19 @@ class CONTENT_EXPORT TextInputManager {
   const TextSelection* GetTextSelection(
       RenderWidgetHostViewBase* view = nullptr) const;
 
+  // Returns the bounds of the text control in the root frame.
+  const absl::optional<gfx::Rect> GetTextControlBounds() const;
+
+  // Returns the bounds of the selected text in the root frame.
+  const absl::optional<gfx::Rect> GetTextSelectionBounds() const;
+
   // ---------------------------------------------------------------------------
   // The following methods are called by RWHVs on the tab to update their IME-
   // related state.
 
   // Updates the TextInputState for |view|.
   void UpdateTextInputState(RenderWidgetHostViewBase* view,
-                            const TextInputState& state);
+                            const ui::mojom::TextInputState& state);
 
   // The current IME composition has been cancelled on the renderer side for
   // the widget corresponding to |view|.
@@ -181,9 +209,13 @@ class CONTENT_EXPORT TextInputManager {
   // Updates the selection bounds for the |view|. In Aura, selection bounds are
   // used to provide the InputMethod with the position of the caret, e.g., in
   // setting the position of the ui::ImeWindow.
-  void SelectionBoundsChanged(
-      RenderWidgetHostViewBase* view,
-      const WidgetHostMsg_SelectionBounds_Params& params);
+  void SelectionBoundsChanged(RenderWidgetHostViewBase* view,
+                              const gfx::Rect& anchor_rect,
+                              base::i18n::TextDirection anchor_dir,
+                              const gfx::Rect& focus_rect,
+                              base::i18n::TextDirection focus_dir,
+                              const gfx::Rect& bounding_box,
+                              bool is_anchor_first);
 
   // Notify observers that the selection bounds have been updated. This is also
   // called when a view with a selection is reactivated.
@@ -197,7 +229,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // Updates the new text selection information for the |view|.
   void SelectionChanged(RenderWidgetHostViewBase* view,
-                        const base::string16& text,
+                        const std::u16string& text,
                         size_t offset,
                         const gfx::Range& range);
 
@@ -251,7 +283,7 @@ class CONTENT_EXPORT TextInputManager {
   // The following maps track corresponding IME state for views. For each view,
   // the values in the map are initialized and cleared in Register and
   // Unregister methods, respectively.
-  ViewMap<TextInputState> text_input_state_map_;
+  ViewMap<ui::mojom::TextInputStatePtr> text_input_state_map_;
   ViewMap<SelectionRegion> selection_region_map_;
   ViewMap<CompositionRangeInfo> composition_range_info_map_;
   ViewMap<TextSelection> text_selection_map_;
@@ -261,8 +293,6 @@ class CONTENT_EXPORT TextInputManager {
   bool should_do_learning_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManager);
 };
 }
 

@@ -6,7 +6,9 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SURFACE_INFO_MOJOM_TRAITS_H_
 
 #include "components/viz/common/surfaces/surface_info.h"
+#include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/surface_info.mojom-shared.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
 

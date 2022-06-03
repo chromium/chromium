@@ -4,6 +4,8 @@
 
 #include "components/ui_devtools/views/window_element.h"
 
+#include <memory>
+
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "ui/aura/window.h"
@@ -16,20 +18,26 @@ using ::testing::_;
 class WindowElementTest : public views::ViewsTestBase {
  public:
   WindowElementTest() {}
+
+  WindowElementTest(const WindowElementTest&) = delete;
+  WindowElementTest& operator=(const WindowElementTest&) = delete;
+
   ~WindowElementTest() override {}
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    window_.reset(new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL));
+    window_ = std::make_unique<aura::Window>(nullptr,
+                                             aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     aura::Window* root_window = GetContext();
     DCHECK(root_window);
     root_window->AddChild(window_.get());
-    delegate_.reset(new testing::NiceMock<MockUIElementDelegate>);
+    delegate_ = std::make_unique<testing::NiceMock<MockUIElementDelegate>>();
     // |OnUIElementAdded| is called on element creation.
     EXPECT_CALL(*delegate_, OnUIElementAdded(_, _)).Times(1);
-    element_.reset(new WindowElement(window_.get(), delegate_.get(), nullptr));
+    element_ = std::make_unique<WindowElement>(window_.get(), delegate_.get(),
+                                               nullptr);
   }
 
   void TearDown() override {
@@ -49,8 +57,6 @@ class WindowElementTest : public views::ViewsTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<WindowElement> element_;
   std::unique_ptr<MockUIElementDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowElementTest);
 };
 
 TEST_F(WindowElementTest, SettingsBoundsOnWindowCallsDelegate) {

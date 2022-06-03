@@ -7,14 +7,20 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/callback.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/object_watcher.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
 
@@ -43,14 +49,19 @@ const REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
 // Watches for modifications to a key.
 class RegKey::Watcher : public ObjectWatcher::Delegate {
  public:
-  Watcher() {}
-  ~Watcher() override {}
+  Watcher() = default;
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
+  ~Watcher() override = default;
 
   bool StartWatching(HKEY key, ChangeCallback callback);
 
-  // Implementation of ObjectWatcher::Delegate.
+  // ObjectWatcher::Delegate:
   void OnObjectSignaled(HANDLE object) override {
-    DCHECK(watch_event_.IsValid() && watch_event_.Get() == object);
+    DCHECK(watch_event_.IsValid());
+    DCHECK_EQ(watch_event_.Get(), object);
     std::move(callback_).Run();
   }
 
@@ -58,7 +69,6 @@ class RegKey::Watcher : public ObjectWatcher::Delegate {
   ScopedHandle watch_event_;
   ObjectWatcher object_watcher_;
   ChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
@@ -71,12 +81,13 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   if (!watch_event_.IsValid())
     return false;
 
-  DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
-                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  const DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
+                       REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
 
   // Watch the registry key for a change of value.
   LONG result =
-      RegNotifyChangeKeyValue(key, TRUE, filter, watch_event_.Get(), TRUE);
+      RegNotifyChangeKeyValue(key, /*bWatchSubtree=*/TRUE, filter,
+                              watch_event_.Get(), /*fAsynchronous=*/TRUE);
   if (result != ERROR_SUCCESS) {
     watch_event_.Close();
     return false;
@@ -88,12 +99,11 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
 
 // RegKey ----------------------------------------------------------------------
 
-RegKey::RegKey() : key_(nullptr), wow64access_(0) {}
+RegKey::RegKey() = default;
 
-RegKey::RegKey(HKEY key) : key_(key), wow64access_(0) {}
+RegKey::RegKey(HKEY key) : key_(key) {}
 
-RegKey::RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access)
-    : key_(nullptr), wow64access_(0) {
+RegKey::RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access) {
   if (rootkey) {
     if (access & (KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK))
       Create(rootkey, subkey, access);
@@ -103,6 +113,22 @@ RegKey::RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access)
     DCHECK(!subkey);
     wow64access_ = access & kWow64AccessMask;
   }
+}
+
+RegKey::RegKey(RegKey&& other) noexcept
+    : key_(other.key_),
+      wow64access_(other.wow64access_),
+      key_watcher_(std::move(other.key_watcher_)) {
+  other.key_ = nullptr;
+  other.wow64access_ = 0;
+}
+
+RegKey& RegKey::operator=(RegKey&& other) {
+  Close();
+  std::swap(key_, other.key_);
+  std::swap(wow64access_, other.wow64access_);
+  key_watcher_ = std::move(other.key_watcher_);
+  return *this;
 }
 
 RegKey::~RegKey() {
@@ -419,7 +445,7 @@ LONG RegKey::WriteValue(const wchar_t* name,
 
 bool RegKey::StartWatching(ChangeCallback callback) {
   if (!key_watcher_)
-    key_watcher_.reset(new Watcher());
+    key_watcher_ = std::make_unique<Watcher>();
 
   if (!key_watcher_->StartWatching(key_, std::move(callback)))
     return false;

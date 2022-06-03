@@ -14,11 +14,13 @@ TestNetworkErrorLoggingService::TestNetworkErrorLoggingService() = default;
 TestNetworkErrorLoggingService::~TestNetworkErrorLoggingService() = default;
 
 void TestNetworkErrorLoggingService::OnHeader(
+    const NetworkIsolationKey& network_isolation_key,
     const url::Origin& origin,
     const IPAddress& received_ip_address,
     const std::string& value) {
   VLOG(1) << "Received NEL policy for " << origin;
   Header header;
+  header.network_isolation_key = network_isolation_key;
   header.origin = origin;
   header.received_ip_address = received_ip_address;
   header.value = value;

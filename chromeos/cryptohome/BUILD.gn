@@ -14,59 +14,41 @@ component("cryptohome") {
     "//chromeos/dbus:common",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/userdataauth:userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
     "//components/account_id",
     "//components/device_event_log",
     "//components/user_manager",
   ]
   sources = [
-    "async_method_caller.cc",
-    "async_method_caller.h",
     "cryptohome_parameters.cc",
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
     "cryptohome_util.h",
-    "homedir_methods.cc",
-    "homedir_methods.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  public_deps = [
-    ":cryptohome",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/account_id",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  sources = [
-    "mock_async_method_caller.cc",
-    "mock_async_method_caller.h",
-    "mock_homedir_methods.cc",
-    "mock_homedir_methods.h",
+    "userdataauth_util.cc",
+    "userdataauth_util.h",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   deps = [
-    ":test_support",
+    ":cryptohome",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/userdataauth:userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
     "//testing/gtest:gtest",
   ]
   sources = [
     "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
+    "userdataauth_util_unittest.cc",
   ]
 }

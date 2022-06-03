@@ -5,14 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_REMOTE_MEDIA_STREAM_TRACK_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_REMOTE_MEDIA_STREAM_TRACK_ADAPTER_H_
 
-#include "base/logging.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -35,23 +38,27 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
       WebRtcMediaStreamTrackType* webrtc_track)
       : main_thread_(main_thread),
         webrtc_track_(webrtc_track),
-        id_(WebString::FromUTF8(webrtc_track->id())) {}
+        id_(String::FromUTF8(webrtc_track->id())) {}
+
+  RemoteMediaStreamTrackAdapter(const RemoteMediaStreamTrackAdapter&) = delete;
+  RemoteMediaStreamTrackAdapter& operator=(
+      const RemoteMediaStreamTrackAdapter&) = delete;
 
   const scoped_refptr<WebRtcMediaStreamTrackType>& observed_track() {
     return webrtc_track_;
   }
 
-  WebMediaStreamTrack* web_track() {
+  MediaStreamComponent* track() {
     DCHECK(main_thread_->BelongsToCurrentThread());
-    DCHECK(!web_track_.IsNull());
-    return &web_track_;
+    DCHECK(component_);
+    return component_;
   }
 
-  WebString id() const { return id_; }
+  String id() const { return id_; }
 
   bool initialized() const {
     DCHECK(main_thread_->BelongsToCurrentThread());
-    return !web_track_.IsNull();
+    return !!component_;
   }
 
   void Initialize() {
@@ -69,14 +76,14 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
     DCHECK(main_thread_->BelongsToCurrentThread());
   }
 
-  void InitializeWebTrack(WebMediaStreamSource::Type type) {
+  void InitializeTrack(MediaStreamSource::StreamType type) {
     DCHECK(main_thread_->BelongsToCurrentThread());
-    DCHECK(web_track_.IsNull());
+    DCHECK(!component_);
 
-    WebMediaStreamSource web_source;
-    web_source.Initialize(id_, type, id_, true /* remote */);
-    web_track_.Initialize(id_, web_source);
-    DCHECK(!web_track_.IsNull());
+    auto* source = MakeGarbageCollected<MediaStreamSource>(id_, type, id_,
+                                                           true /*remote*/);
+    component_ = MakeGarbageCollected<MediaStreamComponent>(id_, source);
+    DCHECK(component_);
   }
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
@@ -88,12 +95,10 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
 
  private:
   const scoped_refptr<WebRtcMediaStreamTrackType> webrtc_track_;
-  WebMediaStreamTrack web_track_;
+  CrossThreadPersistent<MediaStreamComponent> component_;
   // const copy of the webrtc track id that allows us to check it from both the
   // main and signaling threads without incurring a synchronous thread hop.
-  const WebString id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteMediaStreamTrackAdapter);
+  const String id_;
 };
 
 class MODULES_EXPORT RemoteVideoTrackAdapter
@@ -102,7 +107,8 @@ class MODULES_EXPORT RemoteVideoTrackAdapter
   // Called on the signaling thread.
   RemoteVideoTrackAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
-      webrtc::VideoTrackInterface* webrtc_track);
+      webrtc::VideoTrackInterface* webrtc_track,
+      scoped_refptr<MetronomeProvider> metronome_provider);
 
  protected:
   ~RemoteVideoTrackAdapter() override;
@@ -110,6 +116,8 @@ class MODULES_EXPORT RemoteVideoTrackAdapter
  private:
   void InitializeWebVideoTrack(std::unique_ptr<TrackObserver> observer,
                                bool enabled);
+
+  const scoped_refptr<MetronomeProvider> metronome_provider_;
 };
 
 // RemoteAudioTrackAdapter is responsible for listening on state
@@ -123,6 +131,9 @@ class MODULES_EXPORT RemoteAudioTrackAdapter
   RemoteAudioTrackAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
       webrtc::AudioTrackInterface* webrtc_track);
+
+  RemoteAudioTrackAdapter(const RemoteAudioTrackAdapter&) = delete;
+  RemoteAudioTrackAdapter& operator=(const RemoteAudioTrackAdapter&) = delete;
 
   void Unregister();
 
@@ -144,8 +155,6 @@ class MODULES_EXPORT RemoteAudioTrackAdapter
 #endif
 
   webrtc::MediaStreamTrackInterface::TrackState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteAudioTrackAdapter);
 };
 
 }  // namespace blink

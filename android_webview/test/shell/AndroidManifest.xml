@@ -26,20 +26,30 @@
       android:hardwareAccelerated="true">
     <activity android:name="org.chromium.android_webview.shell.AwShellActivity"
         android:label="Android WebView Test Shell"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize">
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+      <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="http" />
+          <data android:scheme="https" />
+      </intent-filter>
     </activity>
     <activity android:name="org.chromium.android_webview.test.AwTestRunnerActivity"
-        android:label="AwTestRunnerActivity">
+        android:label="AwTestRunnerActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.FRAMEWORK_INSTRUMENTATION_TEST" />
       </intent-filter>
     </activity>
+
     <provider android:name="org.chromium.android_webview.test.TestContentProvider"
         android:authorities="org.chromium.android_webview.test.TestContentProvider" />
     <!-- Some tests require 3 sandboxed services -->
@@ -69,7 +79,52 @@
     <service android:name="org.chromium.android_webview.services.VariationsSeedServer"
              android:exported="true"
              android:process=":webview_service" />
+    <service android:name="org.chromium.android_webview.services.MetricsUploadService"
+             android:exported="true"/>
+    <service android:name="org.chromium.android_webview.services.MetricsBridgeService"
+             android:exported="true"
+             android:process=":webview_service" />
+    <service android:name="org.chromium.android_webview.test.services.MockMetricsBridgeService"
+             android:exported="true" />
     <service android:name="org.chromium.android_webview.test.services.MockVariationsSeedServer"
              android:exported="true" />
+    <service android:name="org.chromium.android_webview.services.ComponentsProviderService"
+             android:exported="true"
+             android:process=":webview_service" />
+    <service android:name="org.chromium.android_webview.test.component_updater.MockComponentsProviderService"
+             android:process=":webview_service"/>
+    <service android:name="org.chromium.android_webview.nonembedded.AwComponentUpdateService"
+             android:permission="android.permission.BIND_JOB_SERVICE"
+             android:exported="false"
+             android:process=":webview_apk"/>
+    <service android:name="org.chromium.android_webview.test.services.MockAwComponentUpdateService"
+             android:exported="false"/>
+    <!-- Components for Developer UI, make sure that any changes in these components reflect
+         the corresponding original components in nonembedded/java/AndroidManifest.xml -->
+    <activity android:name="org.chromium.android_webview.devui.MainActivity"
+              android:theme="@style/Theme.DevUi.DayNight"
+              android:launchMode="singleTask"
+              android:windowSoftInputMode="adjustPan">
+    </activity>
+    <provider android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
+              android:exported="true"
+              android:authorities="org.chromium.android_webview.shell.DeveloperModeContentProvider"/>
+    <service android:name="org.chromium.android_webview.services.DeveloperUiService"
+                         android:exported="true" />
+    <activity-alias android:name="org.chromium.android_webview.devui.DeveloperModeState"
+                      android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
+                      android:enabled="false" />
+    <!-- End of Developer UI related components -->
+    <!-- Components for SafeMode, make sure that any changes in these components reflect
+         the corresponding original components in nonembedded/java/AndroidManifest.xml -->
+    <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+              android:exported="true"
+              android:authorities="org.chromium.android_webview.shell.SafeModeContentProvider"/>
+    <service android:name="org.chromium.android_webview.services.SafeModeService"
+                         android:exported="true" />
+    <activity-alias android:name="org.chromium.android_webview.SafeModeState"
+                      android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
+                      android:enabled="false" />
+    <!-- End of SafeMode related components -->
   </application>
 </manifest>

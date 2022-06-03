@@ -4,8 +4,10 @@
 
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #import "ios/web/common/crw_content_view.h"
+#import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -14,12 +16,11 @@
 #error "This file requires ARC support."
 #endif
 
-@interface CRWWebControllerContainerView ()
+@interface CRWWebControllerContainerView () <CRWViewportAdjustmentContainer>
 
 // Redefine properties as readwrite.
 @property(nonatomic, strong, readwrite)
     CRWWebViewContentView* webViewContentView;
-@property(nonatomic, strong, readwrite) CRWContentView* transientContentView;
 
 // Convenience getter for the proxy object.
 @property(nonatomic, weak, readonly) CRWWebViewProxyImpl* contentViewProxy;
@@ -28,7 +29,6 @@
 
 @implementation CRWWebControllerContainerView
 @synthesize webViewContentView = _webViewContentView;
-@synthesize transientContentView = _transientContentView;
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithDelegate:
@@ -60,19 +60,20 @@
 
 #pragma mark Accessors
 
+- (UIView<CRWViewportAdjustment>*)fullscreenViewportAdjuster {
+  if (![self.webViewContentView
+          conformsToProtocol:@protocol(CRWViewportAdjustment)]) {
+    return nil;
+  }
+  return self.webViewContentView;
+}
+
 - (void)setWebViewContentView:(CRWWebViewContentView*)webViewContentView {
   if (![_webViewContentView isEqual:webViewContentView]) {
     [_webViewContentView removeFromSuperview];
     _webViewContentView = webViewContentView;
     [_webViewContentView setFrame:self.bounds];
     [self addSubview:_webViewContentView];
-  }
-}
-
-- (void)setTransientContentView:(CRWContentView*)transientContentView {
-  if (![_transientContentView isEqual:transientContentView]) {
-    [_transientContentView removeFromSuperview];
-    _transientContentView = transientContentView;
   }
 }
 
@@ -98,20 +99,10 @@
   // layout updates need to occur despite the bounds size staying constant.
   self.webViewContentView.frame = self.bounds;
   [self.webViewContentView setNeedsLayout];
-
-  // TODO(crbug.com/570114): Move adding of the following subviews to another
-  // place.
-  // transientContentView layout.
-  if (self.transientContentView) {
-    if (!self.transientContentView.superview)
-      [self addSubview:self.transientContentView];
-    [self bringSubviewToFront:self.transientContentView];
-    self.transientContentView.frame = self.bounds;
-  }
 }
 
 - (BOOL)isViewAlive {
-  return self.webViewContentView || self.transientContentView;
+  return self.webViewContentView;
 }
 
 - (void)willMoveToWindow:(UIWindow*)newWindow {
@@ -147,29 +138,15 @@
 
 - (void)resetContent {
   self.webViewContentView = nil;
-  self.transientContentView = nil;
   self.contentViewProxy.contentView = nil;
 }
 
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView {
   DCHECK(webViewContentView);
   self.webViewContentView = webViewContentView;
-  self.transientContentView = nil;
   self.contentViewProxy.contentView = self.webViewContentView;
   [self updateWebViewContentViewForContainerWindow:self.window];
   [self setNeedsLayout];
-}
-
-- (void)displayTransientContent:(CRWContentView*)transientContentView {
-  DCHECK(transientContentView);
-  self.transientContentView = transientContentView;
-  self.contentViewProxy.contentView = self.transientContentView;
-  [self setNeedsLayout];
-}
-
-- (void)clearTransientContentView {
-  self.transientContentView = nil;
-  self.contentViewProxy.contentView = self.webViewContentView;
 }
 
 #pragma mark UIView (printing)

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that source data is extracted correctly from stylesheets with @keyframes rules.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -25,8 +25,8 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
     },
 
-    function testDumpStyles(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true);
+    async function testDumpStyles(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true);
       next();
     }
   ]);

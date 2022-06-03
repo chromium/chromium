@@ -1,0 +1,18 @@
+Tests that Page.getLayoutMetrics returns reasonable values.
+LayoutViewport: {
+    clientHeight : 900
+    clientWidth : 1178
+    pageX : 0
+    pageY : 300
+}
+VisualViewport: {
+    clientHeight : 900
+    clientWidth : 1178
+    offsetX : 0
+    offsetY : 0
+    pageX : 0
+    pageY : 200
+    scale : 1
+    zoom : 1
+}
+

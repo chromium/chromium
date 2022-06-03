@@ -27,12 +27,12 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -80,7 +80,7 @@ double CalcHue(double temp1, double temp2, double hue_val) {
 }
 
 int ColorFloatToRGBAByte(float f) {
-  return clampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
+  return ClampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
 }
 
 // originally moved here from the CSS parser
@@ -142,13 +142,13 @@ inline const NamedColor* FindNamedColor(const String& name) {
 }  // namespace
 
 RGBA32 MakeRGB(int r, int g, int b) {
-  return 0xFF000000 | clampTo(r, 0, 255) << 16 | clampTo(g, 0, 255) << 8 |
-         clampTo(b, 0, 255);
+  return 0xFF000000 | ClampTo(r, 0, 255) << 16 | ClampTo(g, 0, 255) << 8 |
+         ClampTo(b, 0, 255);
 }
 
 RGBA32 MakeRGBA(int r, int g, int b, int a) {
-  return clampTo(a, 0, 255) << 24 | clampTo(r, 0, 255) << 16 |
-         clampTo(g, 0, 255) << 8 | clampTo(b, 0, 255);
+  return ClampTo(a, 0, 255) << 24 | ClampTo(r, 0, 255) << 16 |
+         ClampTo(g, 0, 255) << 8 | ClampTo(b, 0, 255);
 }
 
 RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
@@ -259,6 +259,10 @@ bool Color::SetNamedColor(const String& name) {
   const NamedColor* found_color = FindNamedColor(name);
   color_ = found_color ? found_color->argb_value : 0;
   return found_color;
+}
+
+Color::operator SkColor() const {
+  return SkColorSetARGB(Alpha(), Red(), Green(), Blue());
 }
 
 Color Color::Light() const {

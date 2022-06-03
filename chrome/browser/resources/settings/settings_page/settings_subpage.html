@@ -1,32 +1,19 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/find_shortcut_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-subpage">
-  <template>
     <style include="cr-shared-style settings-shared">
       :host {
-        background-color: var(--cr-card-background-color);
         box-sizing: border-box;
         display: block;
         left: 0;
-        min-height: calc(100vh - var(--cr-toolbar-height));
+        min-height: calc(100vh - var(--cr-toolbar-height) -
+            var(--cr-toolbar-padding-top, 0px));
         padding-bottom: 60px;
         position: absolute;
         right: 0;
         top: 0;
-        @apply --cr-card-elevation;
+      }
+
+      :host(:not(.multi-card)) {
+        background-color: var(--cr-card-background-color);
+        box-shadow: var(--cr-card-shadow);
       }
 
       #headerLine {
@@ -36,11 +23,12 @@
       }
 
       #learnMore {
-        @apply --cr-paper-icon-button-margin;
         align-items: center;
         display: flex;
         height: var(--cr-icon-ripple-size);
         justify-content: center;
+        margin-inline-end: var(--cr-icon-ripple-margin);
+        margin-inline-start: var(--cr-icon-button-margin-start);
         position: relative;  /* Needed for paper-ripple. */
         width: var(--cr-icon-ripple-size);
       }
@@ -52,14 +40,15 @@
         width: 36px;
       }
 
-      cr-icon-button {
+      #closeButton {
         /* Centers the ripple on the icon with appropriate margin on right. */
         margin-inline-end: 10px;
         margin-inline-start: -10px;
       }
 
       paper-spinner-lite {
-        @apply --cr-icon-height-width;
+        height: var(--cr-icon-size);
+        width: var(--cr-icon-size);
       }
 
       h1 {
@@ -71,20 +60,22 @@
         margin-inline-start: 16px;
       }
     </style>
-    <div class="settings-box first" id="headerLine">
+    <div class="cr-row first" id="headerLine">
       <cr-icon-button class="icon-arrow-back" id="closeButton"
-          on-click="onTapBack_" aria-label="$i18n{back}"></cr-icon-button>
+          hidden="[[hideCloseButton]]" on-click="onBackClick_"
+          aria-label$="[[getBackButtonAriaLabel_(pageTitle)]]"
+          aria-roledescription$=
+              "[[getBackButtonAriaRoleDescription_(pageTitle)]]">
+      </cr-icon-button>
       <template is="dom-if" if="[[titleIcon]]">
         <img id="title-icon" src="[[titleIcon]]" aria-hidden="true">
       </template>
       <h1 class="cr-title-text">[[pageTitle]]</h1>
       <slot name="subpage-title-extra"></slot>
       <template is="dom-if" if="[[learnMoreUrl]]">
-        <a id="learnMore" aria-label="$i18n{learnMore}"
-            href="[[learnMoreUrl]]" target="_blank">
-          <iron-icon icon="cr:help-outline"></iron-icon>
-          <paper-ripple class="circle" center></paper-ripple>
-        </a>
+        <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
+            aria-label="$i18n{learnMore}" on-click="onHelpClick_">
+        </cr-icon-button>
       </template>
       <template is="dom-if" if="[[searchLabel]]">
         <cr-search-field label="[[searchLabel]]"
@@ -98,6 +89,3 @@
       </template>
     </div>
     <slot></slot>
-  </template>
-  <script src="settings_subpage.js"></script>
-</dom-module>

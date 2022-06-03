@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.BlackTitle1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:singleLine="true"/>
 
         <TextView
@@ -41,7 +41,7 @@
             android:id="@+id/domain_row"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.BlackBody"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:visibility="gone" />
     </LinearLayout>
 

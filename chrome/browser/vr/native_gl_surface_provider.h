@@ -8,7 +8,7 @@
 #include "chrome/browser/vr/skia_surface_provider.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace vr {
 
@@ -22,7 +22,7 @@ class VR_UI_EXPORT NativeGlSurfaceProvider : public SkiaSurfaceProvider {
   GLuint FlushSurface(SkSurface* surface, GLuint reuse_texture_id) override;
 
  private:
-  sk_sp<GrContext> gr_context_;
+  sk_sp<GrDirectContext> gr_context_;
   GLint main_fbo_ = 0;
 };
 

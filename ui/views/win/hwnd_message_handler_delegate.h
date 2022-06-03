@@ -17,7 +17,7 @@ class Insets;
 class Point;
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 class Accelerator;
@@ -26,7 +26,7 @@ class KeyEvent;
 class MouseEvent;
 class ScrollEvent;
 class TouchEvent;
-}
+}  // namespace ui
 
 namespace views {
 
@@ -82,8 +82,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // window.
   virtual int GetInitialShowState() const = 0;
 
-  virtual bool WillProcessWorkAreaChange() const = 0;
-
   virtual int GetNonClientComponent(const gfx::Point& point) const = 0;
   virtual void GetWindowMask(const gfx::Size& size, SkPath* mask) = 0;
 
@@ -124,7 +122,7 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   // Called when a well known "app command" from the system was performed.
   // Returns true if the command was handled.
-  virtual bool HandleAppCommand(short command) = 0;
+  virtual bool HandleAppCommand(int command) = 0;
 
   // Called from WM_CANCELMODE.
   virtual void HandleCancelMode() = 0;
@@ -171,10 +169,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   // Called when the system's work area has changed.
   virtual void HandleWorkAreaChanged() = 0;
-
-  // Called when the window's visibility is changing. |visible| holds the new
-  // state.
-  virtual void HandleVisibilityChanging(bool visible) = 0;
 
   // Called when the window's visibility changed. |visible| holds the new state.
   virtual void HandleVisibilityChanged(bool visible) = 0;
@@ -242,9 +236,7 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   // Like PreHandleMSG, but called after HWNDMessageHandler's built-in handling
   // has run and after DefWindowProc.
-  virtual void PostHandleMSG(UINT message,
-                             WPARAM w_param,
-                             LPARAM l_param) = 0;
+  virtual void PostHandleMSG(UINT message, WPARAM w_param, LPARAM l_param) = 0;
 
   // Called when a scroll event is received. Returns true if the event was
   // handled by the delegate.

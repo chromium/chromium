@@ -4,7 +4,7 @@
 
 #include "components/chromeos_camera/common/jpeg_encode_accelerator_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace mojo {
 

@@ -1,15 +1,27 @@
 This is a testharness.js-based test.
-PASS bufferedAmount initial value should be 0 for both peers
-PASS bufferedAmount should increase to byte length of encoded unicode string sent
-PASS bufferedAmount should increase to byte length of buffer sent
-FAIL bufferedAmount should increase to size of blob sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-FAIL bufferedAmount should increase by byte length for each message sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-PASS bufferedAmount should not decrease immediately after initiating closure
-PASS bufferedAmount should not decrease after closing the peer connection
-PASS Data channel bufferedamountlow event fires after send() is complete
-PASS Data channel bufferedamount is data.length on send(data)
-PASS Data channel bufferedamount returns the same amount if no more data is sent on the channel
-PASS Data channel bufferedamountlow event fires only once after multiple consecutive send() calls
-PASS Data channel bufferedamountlow event fires after each sent message
+PASS datachannel bufferedAmount initial value should be 0 for both peers
+PASS datachannel bufferedAmount should increase to byte length of encodedunicode string sent
+PASS datachannel bufferedAmount should increase to byte length of buffer sent
+FAIL datachannel bufferedAmount should increase to size of blob sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+FAIL datachannel bufferedAmount should increase by byte length for each message sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+PASS datachannel bufferedAmount should not decrease immediately after initiating closure
+PASS datachannel bufferedAmount should not decrease after closing the peer connection
+PASS datachannel bufferedamountlow event fires after send() is complete
+PASS datachannel bufferedamount is data.length on send(data)
+PASS datachannel bufferedamount returns the same amount if no more data is
+PASS datachannel bufferedamountlow event fires only once after multiple consecutive send() calls
+PASS datachannel bufferedamountlow event fires after each sent message
+PASS negotiated datachannel bufferedAmount initial value should be 0 for both peers
+PASS negotiated datachannel bufferedAmount should increase to byte length of encodedunicode string sent
+PASS negotiated datachannel bufferedAmount should increase to byte length of buffer sent
+FAIL negotiated datachannel bufferedAmount should increase to size of blob sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+FAIL negotiated datachannel bufferedAmount should increase by byte length for each message sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+PASS negotiated datachannel bufferedAmount should not decrease immediately after initiating closure
+PASS negotiated datachannel bufferedAmount should not decrease after closing the peer connection
+PASS negotiated datachannel bufferedamountlow event fires after send() is complete
+PASS negotiated datachannel bufferedamount is data.length on send(data)
+PASS negotiated datachannel bufferedamount returns the same amount if no more data is
+PASS negotiated datachannel bufferedamountlow event fires only once after multiple consecutive send() calls
+PASS negotiated datachannel bufferedamountlow event fires after each sent message
 Harness: the test ran to completion.
 

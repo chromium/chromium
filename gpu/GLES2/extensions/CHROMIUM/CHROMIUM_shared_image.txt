@@ -81,6 +81,10 @@ New Procedures and Functions
 
     mode - the access mode with which to begin access.
 
+    This function indicates that the calling context will access the SharedImage
+    bound to <texture> until glEndSharedImageAccessDirectCHROMIUM is called, or
+    the calling context deletes <texture>.
+
     INVALID_OPERATION is generated if the texture id indicated is not
     backed by a shared image.
 
@@ -93,8 +97,9 @@ New Procedures and Functions
     scope.
 
     INVALID_ENUM is generated if <mode> is not one of
-    SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM or
-    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM.
+    SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM, or
+    SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
 
     The command
 
@@ -112,6 +117,7 @@ New Tokens
     Accepted by the <mode> parameter of BeginSharedImageAccessCHROMIUM:
     SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM        0x8AF6
     SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM   0x8AF7
+    SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM     0x8AF8
 
 Errors
 
@@ -125,3 +131,4 @@ Revision History
 
     2018-10-15   Created.
     2018-10-31   Added Begin/End calls.
+    2020-06-21   Added mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.

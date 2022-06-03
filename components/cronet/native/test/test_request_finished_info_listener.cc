@@ -4,7 +4,7 @@
 
 #include "components/cronet/native/test/test_request_finished_info_listener.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace cronet {
 namespace test {

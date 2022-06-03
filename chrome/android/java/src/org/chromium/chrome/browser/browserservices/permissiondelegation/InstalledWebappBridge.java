@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
+import android.net.Uri;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.browserservices.Origin;
-import org.chromium.chrome.browser.settings.website.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.Origin;
 
 /**
  * Provides Trusted Web Activity Client App permissions for native. The C++ counterpart is the
@@ -40,10 +43,17 @@ public class InstalledWebappBridge {
         }
     }
 
-    public static void notifyPermissionsChange() {
+    public static void notifyPermissionsChange(@ContentSettingsType int type) {
         if (sNativeInstalledWebappProvider == 0) return;
 
-        InstalledWebappBridgeJni.get().notifyPermissionsChange(sNativeInstalledWebappProvider);
+        InstalledWebappBridgeJni.get().notifyPermissionsChange(
+                sNativeInstalledWebappProvider, type);
+    }
+
+    public static void onGetPermissionResult(long callback, boolean allow) {
+        if (callback == 0) return;
+
+        InstalledWebappBridgeJni.get().notifyPermissionResult(callback, allow);
     }
 
     @CalledByNative
@@ -52,8 +62,8 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    private static Permission[] getNotificationPermissions() {
-        return TrustedWebActivityPermissionManager.get().getNotificationPermissions();
+    private static Permission[] getPermissions(@ContentSettingsType int type) {
+        return TrustedWebActivityPermissionManager.get().getPermissions(type);
     }
 
     @CalledByNative
@@ -66,8 +76,19 @@ public class InstalledWebappBridge {
         return permission.setting;
     }
 
+    @CalledByNative
+    private static void decidePermission(String url, long callback) {
+        Origin origin = Origin.create(Uri.parse(url));
+        if (origin == null) {
+            onGetPermissionResult(callback, false);
+            return;
+        }
+        PermissionUpdater.get().getLocationPermission(origin, callback);
+    }
+
     @NativeMethods
     interface Natives {
-        void notifyPermissionsChange(long provider);
+        void notifyPermissionsChange(long provider, int type);
+        void notifyPermissionResult(long callback, boolean allow);
     }
 }

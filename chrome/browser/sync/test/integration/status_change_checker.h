@@ -8,6 +8,13 @@
 #include <iosfwd>
 
 #include "base/run_loop.h"
+#include "base/time/time.h"
+
+namespace switches {
+
+extern const char kStatusChangeCheckerTimeoutInSeconds[];
+
+}  // namespace switches
 
 // Interface for a helper class that can pump the message loop while waiting
 // for a certain state transition to take place.
@@ -17,14 +24,12 @@
 //
 // The instances of this class are intended to be single-use.  It doesn't make
 // sense to call StartBlockingWait() more than once.
+//
+// |switches::kStatusChangeCheckerTimeoutInSeconds| can be passed to the command
+// line to override the timeout used by instances of this class.
 class StatusChangeChecker {
  public:
   StatusChangeChecker();
-
-  // Returns whether the state the checker is currently in is its desired
-  // configuration. |os| must not be null and allows subclasses to provide
-  // details about why the condition was not satisfied. |os| must not be null.
-  virtual bool IsExitConditionSatisfied(std::ostream* os) = 0;
 
   // Block if IsExitConditionSatisfied() is currently false until TimedOut()
   // becomes true. Checkers should call CheckExitCondition upon changes, which
@@ -38,12 +43,21 @@ class StatusChangeChecker {
  protected:
   virtual ~StatusChangeChecker();
 
-  // Stop the nested running of the message loop started in StartBlockingWait().
-  void StopWaiting();
+  // Returns whether the state the checker is currently in is its desired
+  // configuration. |os| must not be null and allows subclasses to provide
+  // details about why the condition was not satisfied. |os| must not be null.
+  virtual bool IsExitConditionSatisfied(std::ostream* os) = 0;
 
   // Checks IsExitConditionSatisfied() and calls StopWaiting() if it returns
   // true.
   virtual void CheckExitCondition();
+
+  // Called when Wait() is done, i.e. from StopWaiting(). Subclasses can
+  // override this to capture state at exactly the time that the exit condition
+  // is satisfied. This does *not* get called in the timeout case.
+  // If the exit condition is already satisfied at the time Wait() is called,
+  // then this is called immediately.
+  virtual void WaitDone() {}
 
  private:
   // Helper function to start running the nested run loop (run_loop_).
@@ -54,11 +68,17 @@ class StatusChangeChecker {
   // The timeout length is specified with GetTimeoutDuration().
   void StartBlockingWait();
 
+  // Stop the nested running of the message loop started in StartBlockingWait().
+  void StopWaiting();
+
   // Called when the blocking wait timeout is exceeded.
   void OnTimeout();
 
+  const base::TimeDelta timeout_;
   base::RunLoop run_loop_;
-  bool timed_out_;
+  bool timed_out_ = false;
+
+  bool wait_done_called_ = false;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_STATUS_CHANGE_CHECKER_H_

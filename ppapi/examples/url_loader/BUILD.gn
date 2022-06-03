@@ -14,20 +14,12 @@ group("url_loader") {
 
 ppapi_example("file") {
   output_name = "ppapi_example_url_loader"
-  sources = [
-    "streaming.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "streaming.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }
 
 ppapi_example("streaming") {
   output_name = "ppapi_example_file"
-  sources = [
-    "stream_to_file.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "stream_to_file.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

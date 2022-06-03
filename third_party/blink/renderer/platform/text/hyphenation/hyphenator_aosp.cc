@@ -111,10 +111,10 @@ Hyphenator* Hyphenator::loadBinary(const uint8_t* patternData) {
 
 void Hyphenator::hyphenate(Vector<uint8_t>* result,
                            const uint16_t* word,
-                           size_t len) {
+                           wtf_size_t len) {
   result->clear();
   result->resize(len);
-  const size_t paddedLen = len + 2;  // start and stop code each count for 1
+  const wtf_size_t paddedLen = len + 2;  // start and stop code each count for 1
   if (patternData != nullptr && (int)len >= MIN_PREFIX + MIN_SUFFIX &&
       paddedLen <= MAX_HYPHENATED_SIZE) {
     uint16_t alpha_codes[MAX_HYPHENATED_SIZE];
@@ -132,16 +132,16 @@ void Hyphenator::hyphenate(Vector<uint8_t>* result,
 // hyphenation, as recommended in UAX #14 (Use of Soft Hyphen)
 void Hyphenator::hyphenateSoft(uint8_t* result,
                                const uint16_t* word,
-                               size_t len) {
+                               wtf_size_t len) {
   result[0] = 0;
-  for (size_t i = 1; i < len; i++) {
+  for (wtf_size_t i = 1; i < len; i++) {
     result[i] = word[i - 1] == CHAR_SOFT_HYPHEN;
   }
 }
 
 bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
                                 const uint16_t* word,
-                                size_t len) {
+                                wtf_size_t len) {
   const Header* header = getHeader();
   // TODO: check header magic
   uint32_t alphabetVersion = header->alphabetVersion();
@@ -150,7 +150,7 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
     uint32_t min_codepoint = alphabet->min_codepoint;
     uint32_t max_codepoint = alphabet->max_codepoint;
     alpha_codes[0] = 0;  // word start
-    for (size_t i = 0; i < len; i++) {
+    for (wtf_size_t i = 0; i < len; i++) {
       uint16_t c = word[i];
       if (c < min_codepoint || c >= max_codepoint) {
         return false;
@@ -169,7 +169,7 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
     const uint32_t* begin = alphabet->data;
     const uint32_t* end = begin + n_entries;
     alpha_codes[0] = 0;
-    for (size_t i = 0; i < len; i++) {
+    for (wtf_size_t i = 0; i < len; i++) {
       uint16_t c = word[i];
       auto* p = std::lower_bound(begin, end, c << 11);
       if (p == end) {
@@ -195,7 +195,7 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
  **/
 void Hyphenator::hyphenateFromCodes(uint8_t* result,
                                     const uint16_t* codes,
-                                    size_t len) {
+                                    wtf_size_t len) {
   const Header* header = getHeader();
   const Trie* trie = header->trieTable();
   const Pattern* pattern = header->patternTable();
@@ -203,10 +203,10 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   uint32_t link_shift = trie->link_shift;
   uint32_t link_mask = trie->link_mask;
   uint32_t pattern_shift = trie->pattern_shift;
-  size_t maxOffset = len - MIN_SUFFIX - 1;
-  for (size_t i = 0; i < len - 1; i++) {
+  wtf_size_t maxOffset = len - MIN_SUFFIX - 1;
+  for (wtf_size_t i = 0; i < len - 1; i++) {
     uint32_t node = 0;  // index into Trie table
-    for (size_t j = i; j < len; j++) {
+    for (wtf_size_t j = i; j < len; j++) {
       uint16_t c = codes[j];
       uint32_t entry = trie->data[node + c];
       if ((entry & char_mask) == c) {
@@ -237,7 +237,7 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   }
   // Since the above calculation does not modify values outside
   // [MIN_PREFIX, len - MIN_SUFFIX], they are left as 0.
-  for (size_t i = MIN_PREFIX; i < maxOffset; i++) {
+  for (wtf_size_t i = MIN_PREFIX; i < maxOffset; i++) {
     result[i] &= 1;
   }
 }

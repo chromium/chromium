@@ -44,7 +44,9 @@ class COMPOSITOR_EXPORT LayerDelegate {
   virtual void OnLayerAlphaShapeChanged();
 
   // Invoked when whether the layer fills its bounds opaquely or not changed.
-  virtual void OnLayerFillsBoundsOpaquelyChanged();
+  // |reason| indicates whether the property was changed directly or by an
+  // animation.
+  virtual void OnLayerFillsBoundsOpaquelyChanged(PropertyChangeReason reason);
 
   // Called when it is a good opportunity for the delegate to update any visual
   // state or schedule any additional regions to be painted. Soon after this is

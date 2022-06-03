@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/trace_event/trace_event_filter.h"
 
 namespace base {
@@ -31,6 +30,8 @@ class TestEventFilter : public TraceEventFilter {
       const std::string& predicate_name);
 
   TestEventFilter();
+  TestEventFilter(const TestEventFilter&) = delete;
+  TestEventFilter& operator=(const TestEventFilter&) = delete;
   ~TestEventFilter() override;
 
   // TraceEventFilter implementation.
@@ -43,8 +44,6 @@ class TestEventFilter : public TraceEventFilter {
 
  private:
   static bool filter_return_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventFilter);
 };
 
 }  // namespace trace_event

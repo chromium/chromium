@@ -13,8 +13,8 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/tests/shutdown/shutdown.test-mojom.h"
 
 namespace service_manager {
@@ -23,12 +23,16 @@ class ShutdownClientApp : public Service,
                           public mojom::ShutdownTestClientController,
                           public mojom::ShutdownTestClient {
  public:
-  explicit ShutdownClientApp(mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {
+  explicit ShutdownClientApp(mojo::PendingReceiver<mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)) {
     registry_.AddInterface<mojom::ShutdownTestClientController>(
         base::BindRepeating(&ShutdownClientApp::Create,
                             base::Unretained(this)));
   }
+
+  ShutdownClientApp(const ShutdownClientApp&) = delete;
+  ShutdownClientApp& operator=(const ShutdownClientApp&) = delete;
+
   ~ShutdownClientApp() override = default;
 
  private:
@@ -47,7 +51,7 @@ class ShutdownClientApp : public Service,
   // mojom::ShutdownTestClientController:
   void ConnectAndWait(ConnectAndWaitCallback callback) override {
     mojo::Remote<mojom::ShutdownTestService> service;
-    service_binding_.GetConnector()->BindInterface(
+    service_receiver_.GetConnector()->BindInterface(
         "shutdown_service", service.BindNewPipeAndPassReceiver());
 
     mojo::Receiver<mojom::ShutdownTestClient> client_receiver(this);
@@ -61,16 +65,15 @@ class ShutdownClientApp : public Service,
     std::move(callback).Run();
   }
 
-  ServiceBinding service_binding_;
+  ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::ShutdownTestClientController> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownClientApp);
 };
 
 }  // namespace service_manager
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  service_manager::ShutdownClientApp(std::move(request)).RunUntilTermination();
+  service_manager::ShutdownClientApp(std::move(receiver)).RunUntilTermination();
 }

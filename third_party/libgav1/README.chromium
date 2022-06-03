@@ -1,0 +1,28 @@
+Name: libgav1
+Short Name: libgav1
+URL: https://chromium.googlesource.com/codecs/libgav1/
+Version: 0
+Date: Friday October 29 2021
+Branch: master
+Commit: 58d08dbd45a3ee707e76f32a9c04d770c3d22e38
+License: Apache 2.0
+License File: libgav1/LICENSE
+Security Critical: yes
+Source: https://chromium.googlesource.com/codecs/libgav1/
+
+Description:
+A Main profile (0) & High profile (1) compliant AV1 decoder.
+
+Please follow these steps to update libgav1 src code
+1. Update the code:
+  roll_dep.py \
+  -r <libgav1 OWNER> \
+  --log-limit 20 \
+  --roll-to <libgav1 hash> \
+  src/third_party/libgav1/src
+
+  Use the generated commit message for the roll.
+
+2. Generate .gni and update Date and Commit in README.chromium
+  cd third_party/libgav1
+  go run generate_libgav1_src_gni.go

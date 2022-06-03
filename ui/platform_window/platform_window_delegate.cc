@@ -4,20 +4,46 @@
 
 #include "ui/platform_window/platform_window_delegate.h"
 
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
+
+PlatformWindowDelegate::BoundsChange::BoundsChange() = default;
+
+PlatformWindowDelegate::BoundsChange::BoundsChange(const gfx::Rect& bounds)
+    : bounds(bounds) {}
+
+PlatformWindowDelegate::BoundsChange::~BoundsChange() = default;
 
 PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;
 
-base::Optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
-  return base::nullopt;
+absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
+  return absl::nullopt;
 }
 
-base::Optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
-  return base::nullopt;
+absl::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
+  return absl::nullopt;
+}
+
+SkPath PlatformWindowDelegate::GetWindowMaskForWindowShapeInPixels() {
+  return SkPath();
+}
+
+void PlatformWindowDelegate::OnSurfaceFrameLockingChanged(bool lock) {}
+
+absl::optional<MenuType> PlatformWindowDelegate::GetMenuType() {
+  return absl::nullopt;
+}
+
+void PlatformWindowDelegate::OnOcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {}
+
+absl::optional<OwnedWindowAnchor>
+PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInPx() {
+  return absl::nullopt;
 }
 
 }  // namespace ui

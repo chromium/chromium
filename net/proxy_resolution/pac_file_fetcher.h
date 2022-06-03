@@ -9,8 +9,10 @@
 #ifndef NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 #define NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "net/base/completion_once_callback.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -24,8 +26,12 @@ class URLRequestContext;
 // timeouts, maximum size constraints, content encoding, etc..
 class NET_EXPORT_PRIVATE PacFileFetcher {
  public:
+  PacFileFetcher();
+  PacFileFetcher(const PacFileFetcher&) = delete;
+  PacFileFetcher& operator=(const PacFileFetcher&) = delete;
+
   // Destruction should cancel any outstanding requests.
-  virtual ~PacFileFetcher() {}
+  virtual ~PacFileFetcher();
 
   // Downloads the given PAC URL, and invokes |callback| on completion.
   // Returns OK on success, otherwise the error code. If the return code is
@@ -46,7 +52,7 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   //
   // Only one fetch is allowed to be outstanding at a time.
   virtual int Fetch(const GURL& url,
-                    base::string16* utf16_text,
+                    std::u16string* utf16_text,
                     CompletionOnceCallback callback,
                     const NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
@@ -62,6 +68,15 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   // called.  Must be called before the URLRequestContext the fetcher was
   // created with is torn down.
   virtual void OnShutdown() = 0;
+
+  const IsolationInfo& isolation_info() const { return isolation_info_; }
+
+ private:
+  // Transient IsolationInfo used to fetch PAC scripts and resolve hostnames.
+  // Safe to reuse because delays for WPAD fetches don't provide information
+  // to the web platform useful to attackers, and WPAD fetches uniformly
+  // block all network requests.
+  const IsolationInfo isolation_info_ = IsolationInfo::CreateTransient();
 };
 
 }  // namespace net

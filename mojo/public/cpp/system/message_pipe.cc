@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/system/message_pipe.h"
 
+#include <cstring>
+
 #include "base/numerics/safe_math.h"
 
 namespace mojo {
@@ -15,7 +17,7 @@ MojoResult WriteMessageRaw(MessagePipeHandle message_pipe,
                            size_t num_handles,
                            MojoWriteMessageFlags flags) {
   ScopedMessageHandle message_handle;
-  MojoResult rv = CreateMessage(&message_handle);
+  MojoResult rv = CreateMessage(&message_handle, MOJO_CREATE_MESSAGE_FLAG_NONE);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
 
   MojoAppendMessageDataOptions append_options;

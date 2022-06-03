@@ -5,22 +5,19 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 
 #include "ash/assistant/model/assistant_ui_model_observer.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 
 namespace ash {
 
-AssistantUiModel::AssistantUiModel()
-    : ui_mode_(app_list_features::IsAssistantLauncherUIEnabled()
-                   ? AssistantUiMode::kLauncherEmbeddedUi
-                   : AssistantUiMode::kMainUi) {}
+AssistantUiModel::AssistantUiModel() = default;
 
 AssistantUiModel::~AssistantUiModel() = default;
 
-void AssistantUiModel::AddObserver(AssistantUiModelObserver* observer) {
+void AssistantUiModel::AddObserver(AssistantUiModelObserver* observer) const {
   observers_.AddObserver(observer);
 }
 
-void AssistantUiModel::RemoveObserver(AssistantUiModelObserver* observer) {
+void AssistantUiModel::RemoveObserver(
+    AssistantUiModelObserver* observer) const {
   observers_.RemoveObserver(observer);
 }
 
@@ -35,17 +32,17 @@ void AssistantUiModel::SetUiMode(AssistantUiMode ui_mode,
 
 void AssistantUiModel::SetVisible(AssistantEntryPoint entry_point) {
   SetVisibility(AssistantVisibility::kVisible, entry_point,
-                /*exit_point=*/base::nullopt);
+                /*exit_point=*/absl::nullopt);
 }
 
-void AssistantUiModel::SetHidden(AssistantExitPoint exit_point) {
-  SetVisibility(AssistantVisibility::kHidden,
-                /*entry_point=*/base::nullopt, exit_point);
+void AssistantUiModel::SetClosing(AssistantExitPoint exit_point) {
+  SetVisibility(AssistantVisibility::kClosing,
+                /*entry_point=*/absl::nullopt, exit_point);
 }
 
 void AssistantUiModel::SetClosed(AssistantExitPoint exit_point) {
   SetVisibility(AssistantVisibility::kClosed,
-                /*entry_point=*/base::nullopt, exit_point);
+                /*entry_point=*/absl::nullopt, exit_point);
 }
 
 void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
@@ -58,8 +55,8 @@ void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
 
 void AssistantUiModel::SetVisibility(
     AssistantVisibility visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (visibility == visibility_)
     return;
 
@@ -86,8 +83,8 @@ void AssistantUiModel::NotifyUiModeChanged(bool due_to_interaction) {
 
 void AssistantUiModel::NotifyUiVisibilityChanged(
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   for (AssistantUiModelObserver& observer : observers_)
     observer.OnUiVisibilityChanged(visibility_, old_visibility, entry_point,
                                    exit_point);

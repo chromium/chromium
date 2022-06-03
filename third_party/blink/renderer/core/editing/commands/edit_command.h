@@ -55,7 +55,7 @@ class CORE_EXPORT EditCommand : public GarbageCollected<EditCommand> {
   // |TypingCommand| will return the text of the last |commands_|.
   virtual String TextDataForInputEvent() const;
 
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
   bool SelectionIsDirectional() const { return selection_is_directional_; }
   void SetSelectionIsDirectional(bool is_directional) {
     selection_is_directional_ = is_directional;

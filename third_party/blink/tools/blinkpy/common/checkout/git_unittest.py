@@ -15,7 +15,6 @@ from blinkpy.common.checkout.git import Git
 # These tests could likely be run on Windows if we first used Git.find_executable_name.
 @unittest.skipIf(sys.platform == 'win32', 'fails on Windows')
 class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
-
     def setUp(self):
         self.executive = Executive()
         self.filesystem = FileSystem()
@@ -23,22 +22,35 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self.original_cwd = self.filesystem.getcwd()
 
         # Set up fresh git repository with one commit.
-        self.untracking_checkout_path = self._mkdtemp(suffix='-git_unittest_untracking')
+        self.untracking_checkout_path = self._mkdtemp(
+            suffix='-git_unittest_untracking')
         self._run(['git', 'init', self.untracking_checkout_path])
 
         self._chdir(self.untracking_checkout_path)
+        # Explicitly create the default branch instead of relying on
+        # init.defaultBranch. We don't use the new --initial-branch flag with
+        # `git init` to keep the tests compatible with older versions of git.
+        self._run(['git', 'checkout', '-b', 'main'])
         self._set_user_config()
         self._write_text_file('foo_file', 'foo')
         self._run(['git', 'add', 'foo_file'])
         self._run(['git', 'commit', '-am', 'dummy commit'])
-        self.untracking_git = Git(cwd=self.untracking_checkout_path, filesystem=self.filesystem, executive=self.executive)
+        self.untracking_git = Git(cwd=self.untracking_checkout_path,
+                                  filesystem=self.filesystem,
+                                  executive=self.executive)
 
         # Then set up a second git repo that tracks the first one.
-        self.tracking_git_checkout_path = self._mkdtemp(suffix='-git_unittest_tracking')
-        self._run(['git', 'clone', '--quiet', self.untracking_checkout_path, self.tracking_git_checkout_path])
+        self.tracking_git_checkout_path = self._mkdtemp(
+            suffix='-git_unittest_tracking')
+        self._run([
+            'git', 'clone', '--quiet', self.untracking_checkout_path,
+            self.tracking_git_checkout_path
+        ])
         self._chdir(self.tracking_git_checkout_path)
         self._set_user_config()
-        self.tracking_git = Git(cwd=self.tracking_git_checkout_path, filesystem=self.filesystem, executive=self.executive)
+        self.tracking_git = Git(cwd=self.tracking_git_checkout_path,
+                                filesystem=self.filesystem,
+                                executive=self.executive)
 
     def tearDown(self):
         self._chdir(self.original_cwd)
@@ -47,7 +59,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
 
     def _set_user_config(self):
         self._run(['git', 'config', '--local', 'user.name', 'Fake'])
-        self._run(['git', 'config', '--local', 'user.email', 'fake@example.com'])
+        self._run(
+            ['git', 'config', '--local', 'user.email', 'fake@example.com'])
 
     def _chdir(self, path):
         self.filesystem.chdir(path)
@@ -133,7 +146,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
 
     def test_remote_branch_ref(self):
         # This tests a protected method. pylint: disable=protected-access
-        self.assertEqual(self.tracking_git._remote_branch_ref(), 'refs/remotes/origin/master')
+        self.assertEqual(self.tracking_git._remote_branch_ref(),
+                         'refs/remotes/origin/main')
         self._chdir(self.untracking_checkout_path)
         self.assertRaises(ScriptError, self.untracking_git._remote_branch_ref)
 
@@ -144,7 +158,7 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self._run(['git', 'add', 'test_file_commit1'])
         git.commit_locally_with_message('message')
         patch = git.create_patch()
-        self.assertNotRegexpMatches(patch, r'Subversion Revision:')
+        self.assertNotRegexpMatches(patch, b'Subversion Revision:')
 
     def test_patches_have_filenames_with_prefixes(self):
         self._chdir(self.tracking_git_checkout_path)
@@ -156,7 +170,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         # Even if diff.noprefix is enabled, create_patch() produces diffs with prefixes.
         self._run(['git', 'config', 'diff.noprefix', 'true'])
         patch = git.create_patch()
-        self.assertRegexpMatches(patch, r'^diff --git a/test_file_commit1 b/test_file_commit1')
+        self.assertRegexpMatches(
+            patch, b'^diff --git a/test_file_commit1 b/test_file_commit1')
 
     def test_rename_files(self):
         self._chdir(self.tracking_git_checkout_path)
@@ -165,7 +180,7 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.commit_locally_with_message('message')
 
         patch = git.create_patch(changed_files=git.changed_files())
-        self.assertTrue('rename from' in patch)
+        self.assertTrue(b'rename from' in patch)
 
     def test_commit_position_from_git_log(self):
         # This tests a protected method. pylint: disable=protected-access
@@ -180,7 +195,7 @@ Date:   Mon Sep 28 19:10:30 2015 -0700
 
     Review URL: https://codereview.chromium.org/999999999
 
-    Cr-Commit-Position: refs/heads/master@{#1234567}
+    Cr-Commit-Position: refs/heads/main@{#1234567}
 """
         self._chdir(self.tracking_git_checkout_path)
         git = self.tracking_git
@@ -188,9 +203,10 @@ Date:   Mon Sep 28 19:10:30 2015 -0700
 
 
 class GitTestWithMock(unittest.TestCase):
-
     def make_git(self):
-        git = Git(cwd='.', executive=MockExecutive(), filesystem=MockFileSystem())
+        git = Git(cwd='.',
+                  executive=MockExecutive(),
+                  filesystem=MockFileSystem())
         return git
 
     def test_unstaged_files(self):
@@ -206,8 +222,7 @@ class GitTestWithMock(unittest.TestCase):
         ]
         git.run = lambda args: '\x00'.join(status_lines) + '\x00'
         self.assertEqual(
-            git.unstaged_changes(),
-            {
+            git.unstaged_changes(), {
                 'd/modified.txt': 'M',
                 'd/deleted.txt': 'D',
                 'd/untracked.txt': '?',

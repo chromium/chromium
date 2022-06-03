@@ -43,12 +43,12 @@ namespace blink {
 
 static const int kMaxRecursionDepth = 3;
 static const base::TimeDelta kProgressNotificationInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 static constexpr uint64_t kMaxTruncateLength =
     std::numeric_limits<uint64_t>::max();
 
 FileWriter::FileWriter(ExecutionContext* context)
-    : ContextLifecycleObserver(context),
+    : ExecutionContextLifecycleObserver(context),
       ready_state_(kInit),
       operation_in_progress_(kOperationNone),
       queued_operation_(kOperationNone),
@@ -67,7 +67,7 @@ const AtomicString& FileWriter::InterfaceName() const {
   return event_target_names::kFileWriter;
 }
 
-void FileWriter::ContextDestroyed(ExecutionContext*) {
+void FileWriter::ContextDestroyed() {
   Dispose();
 }
 
@@ -335,12 +335,12 @@ void FileWriter::Dispose() {
   queued_operation_ = kOperationNone;
 }
 
-void FileWriter::Trace(blink::Visitor* visitor) {
+void FileWriter::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(blob_being_written_);
   EventTargetWithInlineData::Trace(visitor);
   FileWriterBase::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

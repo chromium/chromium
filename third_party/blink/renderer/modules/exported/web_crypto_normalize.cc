@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -46,19 +47,19 @@ WebCryptoAlgorithm NormalizeCryptoAlgorithm(
     int* exception_code,
     WebString* error_details,
     v8::Isolate* isolate) {
-  // FIXME: Avoid using NonThrowableExceptionState.
-  NonThrowableExceptionState exception_state;
-  Dictionary algorithm_dictionary(isolate, algorithm_object, exception_state);
-  if (!algorithm_dictionary.IsUndefinedOrNull() &&
-      !algorithm_dictionary.IsObject())
-    return WebCryptoAlgorithm();
+  ExceptionState exception_state(isolate, ExceptionState::kQueryContext,
+                                 "WebCryptoAlgorithm", "NormalizeAlgorithm");
+
+  V8AlgorithmIdentifier* algorithm_identifier =
+      MakeGarbageCollected<V8AlgorithmIdentifier>(
+          ScriptValue(isolate, algorithm_object));
+
   WebCryptoAlgorithm algorithm;
-  AlgorithmError error;
-  AlgorithmIdentifier algorithm_identifier;
-  algorithm_identifier.SetDictionary(algorithm_dictionary);
-  if (!NormalizeAlgorithm(algorithm_identifier, operation, algorithm, &error)) {
-    *exception_code = WebCryptoErrorToExceptionCode(error.error_type);
-    *error_details = error.error_details;
+  if (!NormalizeAlgorithm(isolate, algorithm_identifier, operation, algorithm,
+                          exception_state)) {
+    *exception_code = exception_state.Code();
+    *error_details = exception_state.Message();
+    exception_state.ClearException();
     return WebCryptoAlgorithm();
   }
 

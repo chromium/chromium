@@ -14,6 +14,7 @@
 
 #include <cassert>
 
+#include "RecordInfo.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/Attr.h"
 
@@ -35,105 +36,149 @@ extern const char kConstReverseIteratorName[];
 extern const char kReverseIteratorName[];
 
 class Config {
+ private:
+  // Checks that the namespace matches the expected namespace and that the type
+  // takes at least |expected_minimum_arg_count| template arguments. If both
+  // requirements are fulfilled, populates |args| with the first
+  // |expected_minimum_arg_count| template arguments. Verifying only the minimum
+  // expected argument keeps the plugin resistant to changes in the type
+  // definitions (to some extent)
+  static bool VerifyNamespaceAndArgCount(std::string expected_ns_name,
+                                         int expected_minimum_arg_count,
+                                         llvm::StringRef ns_name,
+                                         RecordInfo* info,
+                                         RecordInfo::TemplateArgs* args) {
+    return (ns_name == expected_ns_name) &&
+           info->GetTemplateArgs(expected_minimum_arg_count, args);
+  }
+
  public:
-  static bool IsMember(const std::string& name) {
-    return name == "Member";
+  static bool IsMember(llvm::StringRef name,
+                       llvm::StringRef ns_name,
+                       RecordInfo* info,
+                       RecordInfo::TemplateArgs* args) {
+    if (name == "Member") {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicMember") {
+      if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
+        return false;
+      return (*args)[1]->getAsRecordDecl()->getName() == "StrongMemberTag";
+    }
+    return false;
   }
 
-  static bool IsWeakMember(const std::string& name) {
-    return name == "WeakMember";
+  static bool IsWeakMember(llvm::StringRef name,
+                           llvm::StringRef ns_name,
+                           RecordInfo* info,
+                           RecordInfo::TemplateArgs* args) {
+    if (name == "WeakMember") {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicMember") {
+      if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
+        return false;
+      return (*args)[1]->getAsRecordDecl()->getName() == "WeakMemberTag";
+    }
+    return false;
   }
 
-  static bool IsMemberHandle(const std::string& name) {
-    return IsMember(name) ||
-           IsWeakMember(name);
+  static bool IsPersistent(llvm::StringRef name,
+                           llvm::StringRef ns_name,
+                           RecordInfo* info,
+                           RecordInfo::TemplateArgs* args) {
+    if ((name == "Persistent") || (name == "WeakPersistent")) {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicPersistent") {
+      return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
+    }
+    return false;
   }
 
-  static bool IsPersistent(const std::string& name) {
-    return name == "Persistent" ||
-           name == "WeakPersistent" ;
+  static bool IsCrossThreadPersistent(llvm::StringRef name,
+                                      llvm::StringRef ns_name,
+                                      RecordInfo* info,
+                                      RecordInfo::TemplateArgs* args) {
+    if ((name == "CrossThreadPersistent") ||
+        (name == "CrossThreadWeakPersistent")) {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicCrossThreadPersistent") {
+      return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
+    }
+    return false;
   }
 
-  static bool IsCrossThreadPersistent(const std::string& name) {
-    return name == "CrossThreadPersistent" ||
-           name == "CrossThreadWeakPersistent" ;
+  static bool IsRefPtr(llvm::StringRef name) { return name == "scoped_refptr"; }
+
+  static bool IsWeakPtr(llvm::StringRef name) { return name == "WeakPtr"; }
+
+  static bool IsRefOrWeakPtr(llvm::StringRef name) {
+    return IsRefPtr(name) || IsWeakPtr(name);
   }
 
-  static bool IsRefPtr(const std::string& name) {
-    return name == "RefPtr";
-  }
-
-  static bool IsUniquePtr(const std::string& name) {
+  static bool IsUniquePtr(llvm::StringRef name) {
     return name == "unique_ptr";
   }
 
-  static bool IsTraceWrapperV8Reference(const std::string& name) {
-    return name == "TraceWrapperV8Reference";
+  static bool IsTraceWrapperV8Reference(llvm::StringRef name,
+                                        llvm::StringRef ns_name,
+                                        RecordInfo* info,
+                                        RecordInfo::TemplateArgs* args) {
+    return name == "TraceWrapperV8Reference" &&
+           VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
   }
 
-  static bool IsWTFCollection(const std::string& name) {
+  static bool IsWTFCollection(llvm::StringRef name) {
     return name == "Vector" ||
            name == "Deque" ||
            name == "HashSet" ||
-           name == "ListHashSet" ||
            name == "LinkedHashSet" ||
            name == "HashCountedSet" ||
            name == "HashMap";
   }
 
-  static bool IsGCCollection(const std::string& name) {
+  static bool IsGCCollection(llvm::StringRef name) {
     return name == "HeapVector" || name == "HeapDeque" ||
-           name == "HeapHashSet" || name == "HeapListHashSet" ||
-           name == "HeapLinkedHashSet" || name == "HeapHashCountedSet" ||
-           name == "HeapHashMap";
+           name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
+           name == "HeapHashCountedSet" || name == "HeapHashMap";
   }
 
-  static bool IsGCCollectionWithUnsafeIterator(const std::string& name) {
-    if (!IsGCCollection(name))
-      return false;
-    // The list hash set iterators refer to the set, not the
-    // backing store and are consequently safe.
-    if (name == "HeapListHashSet" || name == "PersistentHeapListHashSet")
-      return false;
-    return true;
-  }
-
-  static bool IsHashMap(const std::string& name) {
-    return name == "HashMap" ||
-           name == "HeapHashMap" ||
-           name == "PersistentHeapHashMap";
+  static bool IsHashMap(llvm::StringRef name) {
+    return name == "HashMap" || name == "HeapHashMap";
   }
 
   // Assumes name is a valid collection name.
-  static size_t CollectionDimension(const std::string& name) {
+  static size_t CollectionDimension(llvm::StringRef name) {
     return (IsHashMap(name) || name == "pair") ? 2 : 1;
   }
 
-  static bool IsRefCountedBase(const std::string& name) {
+  static bool IsRefCountedBase(llvm::StringRef name) {
     return name == "RefCounted" ||
            name == "ThreadSafeRefCounted";
   }
 
-  static bool IsGCSimpleBase(const std::string& name) {
+  static bool IsGCSimpleBase(llvm::StringRef name) {
     return name == "GarbageCollected";
   }
 
-  static bool IsGCMixinBase(const std::string& name) {
+  static bool IsGCMixinBase(llvm::StringRef name) {
     return name == "GarbageCollectedMixin";
   }
 
-  static bool IsGCBase(const std::string& name) {
+  static bool IsGCBase(llvm::StringRef name) {
     return IsGCSimpleBase(name) || IsGCMixinBase(name);
   }
 
-  static bool IsIterator(const std::string& name) {
+  static bool IsIterator(llvm::StringRef name) {
     return name == kIteratorName || name == kConstIteratorName ||
            name == kReverseIteratorName || name == kConstReverseIteratorName;
   }
 
   // Returns true of the base classes that do not need a vtable entry for trace
   // because they cannot possibly initiate a GC during construction.
-  static bool IsSafePolymorphicBase(const std::string& name) {
+  static bool IsSafePolymorphicBase(llvm::StringRef name) {
     return IsGCBase(name) || IsRefCountedBase(name);
   }
 
@@ -155,7 +200,7 @@ class Config {
            IsIgnoreAnnotated(decl);
   }
 
-  static bool IsVisitor(const std::string& name) {
+  static bool IsVisitor(llvm::StringRef name) {
     return name == "Visitor" || name == "VisitorHelper";
   }
 

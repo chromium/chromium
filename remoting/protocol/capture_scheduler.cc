@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -44,12 +44,12 @@ namespace remoting {
 namespace protocol {
 
 // We assume that the number of available cores is constant.
-CaptureScheduler::CaptureScheduler(const base::Closure& capture_closure)
+CaptureScheduler::CaptureScheduler(
+    const base::RepeatingClosure& capture_closure)
     : capture_closure_(capture_closure),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       capture_timer_(new base::OneShotTimer()),
-      minimum_interval_(
-          base::TimeDelta::FromMilliseconds(kDefaultMinimumIntervalMs)),
+      minimum_interval_(base::Milliseconds(kDefaultMinimumIntervalMs)),
       num_of_processors_(base::SysInfo::NumberOfProcessors()),
       capture_time_(kStatisticsWindow),
       encode_time_(kStatisticsWindow),
@@ -157,19 +157,18 @@ void CaptureScheduler::ScheduleNextCapture() {
   // Delay by an amount chosen such that if capture and encode times
   // continue to follow the averages, then we'll consume the target
   // fraction of CPU across all cores.
-  base::TimeDelta delay =
-      std::max(minimum_interval_,
-               base::TimeDelta::FromMilliseconds(
-                   (capture_time_.Average() + encode_time_.Average()) /
-                   (kRecordingCpuConsumption * num_of_processors_)));
+  base::TimeDelta delay = std::max(
+      minimum_interval_,
+      base::Milliseconds((capture_time_.Average() + encode_time_.Average()) /
+                         (kRecordingCpuConsumption * num_of_processors_)));
 
   // Account for the time that has passed since the last capture.
   delay = std::max(base::TimeDelta(), delay - (tick_clock_->NowTicks() -
                                                last_capture_started_time_));
 
-  capture_timer_->Start(
-      FROM_HERE, delay,
-      base::Bind(&CaptureScheduler::CaptureNextFrame, base::Unretained(this)));
+  capture_timer_->Start(FROM_HERE, delay,
+                        base::BindOnce(&CaptureScheduler::CaptureNextFrame,
+                                       base::Unretained(this)));
 }
 
 void CaptureScheduler::CaptureNextFrame() {

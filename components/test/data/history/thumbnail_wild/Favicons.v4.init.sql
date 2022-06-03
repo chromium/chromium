@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.WildSchema
+-- unit_tests --gtest_filter=FaviconDatabaseTest.WildSchema
 --
 -- Based on version 3 and 4 schema found in the wild by error
 -- diagnostics.  Combined because they were the same except for

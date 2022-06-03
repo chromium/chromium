@@ -57,19 +57,6 @@ TEST_F(CrTrackingAreaTest, OwnerStopsForwarding) {
   EXPECT_EQ(1U, [owner_ messageCount]);
 }
 
-TEST_F(CrTrackingAreaTest, OwnerAutomaticallyStopsForwardingOnClose) {
-  [test_window() orderFront:nil];
-  [trackingArea_ clearOwnerWhenWindowWillClose:test_window()];
-
-  [[trackingArea_ owner] performMessage];
-  EXPECT_EQ(1U, [owner_ messageCount]);
-
-  [test_window() close];
-
-  [[trackingArea_ owner] performMessage];
-  EXPECT_EQ(1U, [owner_ messageCount]);
-}
-
 TEST_F(CrTrackingAreaTest, ScoperInit) {
   {
     ScopedCrTrackingArea scoper([trackingArea_ retain]);

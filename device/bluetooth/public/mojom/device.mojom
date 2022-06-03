@@ -6,6 +6,13 @@ module bluetooth.mojom;
 
 import "device/bluetooth/public/mojom/uuid.mojom";
 
+// Important note: the byte arrays which can be accessed from this interface
+// (including "service data", "characteristics", and "descriptors") are
+// arbitrary binary blobs of data provided by a likely untrustworthy device.
+// Clients are responsible for safely parsing this information; please see
+// "The Rule of 2" (//docs/security/rule-of-2.md). C++ clients must parse these
+// blobs in a sandboxed process.
+
 // Values representing the possible properties of a characteristic, which
 // define how the characteristic can be used. Each of these properties serve
 // a role as defined in the Bluetooth Specification.
@@ -60,6 +67,17 @@ struct DeviceInfo {
   string address;
   bool is_gatt_connected;
   RSSIWrapper? rssi;
+  // Returns the list of service UUIDs that the device supports.
+  // See device::BluetoothDevice::GetUUIDs().
+  array<UUID> service_uuids;
+
+  // Important: the blobs associated with each key are arbitrary and untrusted.
+  // Please refer to the note on "The Rule of 2" at the top of this file.
+  map<uint16, array<uint8>> manufacturer_data_map;
+
+  // Important: the blobs associated with each UUID are arbitrary and untrusted.
+  // Please refer to the note on "The Rule of 2" at the top of this file.
+  map<UUID, array<uint8>> service_data_map;
 };
 
 struct ServiceInfo {
@@ -72,12 +90,18 @@ struct CharacteristicInfo {
   string id;
   UUID uuid;
   uint32 properties;
+
+  // Important: this blob is arbitrary and untrusted. Please refer to the note
+  // on "The Rule of 2" at the top of this file.
   array<uint8> last_known_value;
 };
 
 struct DescriptorInfo {
   string id;
   UUID uuid;
+
+  // Important: this blob is arbitrary and untrusted. Please refer to the note
+  // on "The Rule of 2" at the top of this file.
   array<uint8> last_known_value;
 };
 
@@ -120,12 +144,16 @@ interface Device {
   // Reads the value for the GATT Descriptor with |descriptor_id| in the GATT
   // Characteristic with |characteristic_id| in the GATT Service with
   // |service_id|.
+  // Important: the returned |value| blob is arbitrary and untrusted. Please
+  // refer to the note on "The Rule of 2" at the top of this file.
   ReadValueForDescriptor(string service_id, string characteristic_id,
       string descriptor_id) => (GattResult result, array<uint8>? value);
 
   // Writes the |value| for the GATT Descriptor with |descriptor_id| in the GATT
   // Characteristic with |characteristic_id| in the GATT Service with
   // |service_id|.
+  // Important: the returned |value| blob is arbitrary and untrusted. Please
+  // refer to the note on "The Rule of 2" at the top of this file.
   WriteValueForDescriptor(string service_id, string characteristic_id,
       string descriptor_id, array<uint8> value) => (GattResult result);
 };

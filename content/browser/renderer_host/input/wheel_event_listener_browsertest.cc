@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 using blink::WebInputEvent;
 
@@ -50,16 +53,21 @@ namespace content {
 
 class WheelEventListenerBrowserTest : public ContentBrowserTest {
  public:
-  WheelEventListenerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kPassiveDocumentWheelEventListeners}, {});
-  }
-  ~WheelEventListenerBrowserTest() override {}
+  WheelEventListenerBrowserTest() = default;
+
+  WheelEventListenerBrowserTest(const WheelEventListenerBrowserTest&) = delete;
+  WheelEventListenerBrowserTest& operator=(
+      const WheelEventListenerBrowserTest&) = delete;
+
+  ~WheelEventListenerBrowserTest() override = default;
 
  protected:
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void LoadURL(const std::string& page_data) {
@@ -69,7 +77,7 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -80,16 +88,16 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
   void ScrollByMouseWheel() {
     // Send a wheel event and wait for its ack.
     auto wheel_msg_watcher = std::make_unique<InputMsgWatcher>(
-        GetWidgetHost(), blink::WebInputEvent::kMouseWheel);
+        GetWidgetHost(), blink::WebInputEvent::Type::kMouseWheel);
     double x = 10;
     double y = 10;
     blink::WebMouseWheelEvent wheel_event =
-        SyntheticWebMouseWheelEventBuilder::Build(
+        blink::SyntheticWebMouseWheelEventBuilder::Build(
             x, y, x, y, -20, -20, 0,
-            ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
+            ui::ScrollGranularity::kScrollByPrecisePixel);
     wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
     GetWidgetHost()->ForwardWheelEvent(wheel_event);
-    EXPECT_EQ(INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING,
+    EXPECT_EQ(blink::mojom::InputEventResultState::kSetNonBlocking,
               wheel_msg_watcher->WaitForAck());
   }
 
@@ -106,7 +114,6 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(WheelEventListenerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WheelEventListenerBrowserTest,

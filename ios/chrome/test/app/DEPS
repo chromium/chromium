@@ -1,0 +1,9 @@
+specific_include_rules = {
+"sync_test_util\.h": [
+    "+third_party/metrics_proto",
+  ],
+"chrome_test_util\.mm": [
+    "+components/previous_session_info/previous_session_info.h",
+    "+components/previous_session_info/previous_session_info_private.h",
+  ],
+}

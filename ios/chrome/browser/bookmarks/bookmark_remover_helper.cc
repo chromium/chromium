@@ -5,15 +5,15 @@
 #include "ios/chrome/browser/bookmarks/bookmark_remover_helper.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
-BookmarkRemoverHelper::BookmarkRemoverHelper(
-    ios::ChromeBrowserState* browser_state)
+BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
   DCHECK(browser_state_);
 }

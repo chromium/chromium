@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/unified_system_info_view.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -17,98 +17,120 @@
 
 namespace ash {
 
-class UnifiedSystemInfoViewTest : public AshTestBase {
+class UnifiedSystemInfoViewTest : public AshTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   UnifiedSystemInfoViewTest() = default;
+  UnifiedSystemInfoViewTest(const UnifiedSystemInfoViewTest&) = delete;
+  UnifiedSystemInfoViewTest& operator=(const UnifiedSystemInfoViewTest&) =
+      delete;
   ~UnifiedSystemInfoViewTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
+
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(
+        features::kManagedDeviceUIRedesign, IsManagedDeviceUIRedesignEnabled());
+
     model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
     info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
-
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndDisableFeature(
-        features::kManagedDeviceUIRedesign);
   }
+
+  bool IsManagedDeviceUIRedesignEnabled() const { return GetParam(); }
 
   void TearDown() override {
     info_view_.reset();
     controller_.reset();
     model_.reset();
+    scoped_feature_list_.reset();
     AshTestBase::TearDown();
   }
 
  protected:
   UnifiedSystemInfoView* info_view() { return info_view_.get(); }
+  EnterpriseDomainModel* enterprise_domain() {
+    return Shell::Get()->system_tray_model()->enterprise_domain();
+  }
 
  private:
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemInfoView> info_view_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoViewTest);
 };
 
-TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UnifiedSystemInfoViewTest,
+    testing::Bool() /* IsManagedDeviceUIRedesignEnabled() */);
+
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   // By default, EnterpriseManagedView is not shown.
   EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
 
   // Simulate enterprise information becoming available.
-  const bool active_directory = false;
-  Shell::Get()
-      ->system_tray_model()
-      ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain("example.com", active_directory);
+  enterprise_domain()->SetEnterpriseDomainInfo(
+      "example.com", /*active_directory_managed=*/false);
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
 }
 
-TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
   // Active directory information becoming available.
   const std::string empty_domain;
-  const bool active_directory = true;
-  Shell::Get()
-      ->system_tray_model()
-      ->enterprise_domain()
-      ->SetEnterpriseDisplayDomain(empty_domain, active_directory);
+  enterprise_domain()->SetEnterpriseDomainInfo(
+      empty_domain, /*active_directory_managed=*/true);
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
+}
+
+TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
+  // By default, EnterpriseManagedView is not shown.
+  EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
+
+  // Simulate enterprise information becoming available.
+  enterprise_domain()->SetEnterpriseAccountDomainInfo("example.com");
+
+  // EnterpriseManagedView should be shown if the feature is enabled.
+  EXPECT_EQ(IsManagedDeviceUIRedesignEnabled(),
+            info_view()->enterprise_managed_->GetVisible());
 }
 
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
 
-TEST_F(UnifiedSystemInfoViewNoSessionTest, SupervisedVisible) {
-  std::unique_ptr<UnifiedSystemTrayModel> model_ =
-      std::make_unique<UnifiedSystemTrayModel>(nullptr);
-  std::unique_ptr<UnifiedSystemTrayController> controller_ =
-      std::make_unique<UnifiedSystemTrayController>(model_.get());
+TEST_F(UnifiedSystemInfoViewNoSessionTest, ChildVisible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kManagedDeviceUIRedesign);
+  auto model = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+  auto controller = std::make_unique<UnifiedSystemTrayController>(model.get());
 
   SessionControllerImpl* session = Shell::Get()->session_controller();
   ASSERT_FALSE(session->IsActiveUserSessionStarted());
 
   // Before login the supervised user view is invisible.
-  std::unique_ptr<UnifiedSystemInfoView> info_view_;
-  info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
-  EXPECT_FALSE(info_view_->supervised_->GetVisible());
-  info_view_.reset();
+  {
+    auto info_view = std::make_unique<UnifiedSystemInfoView>(controller.get());
+    EXPECT_FALSE(info_view->supervised_->GetVisible());
+  }
 
   // Simulate a supervised user logging in.
   TestSessionControllerClient* client = GetSessionControllerClient();
   client->Reset();
-  client->AddUserSession("child@test.com", user_manager::USER_TYPE_SUPERVISED);
+  client->AddUserSession("child@test.com", user_manager::USER_TYPE_CHILD);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
   UserSession user_session = *session->GetUserSession(0);
   user_session.custodian_email = "parent@test.com";
   session->UpdateUserSession(std::move(user_session));
 
   // Now the supervised user view is visible.
-  info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
-  ASSERT_TRUE(info_view_->supervised_->GetVisible());
+  {
+    auto info_view = std::make_unique<UnifiedSystemInfoView>(controller.get());
+    EXPECT_TRUE(info_view->supervised_->GetVisible());
+  }
 }
 
 }  // namespace ash

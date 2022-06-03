@@ -11,6 +11,7 @@ static_library("pref_registry") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/prefs",
   ]
 }

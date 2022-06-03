@@ -39,7 +39,8 @@ class RangeBoundaryPoint {
  public:
   explicit RangeBoundaryPoint(Node& container);
 
-  explicit RangeBoundaryPoint(const RangeBoundaryPoint&);
+  RangeBoundaryPoint(const RangeBoundaryPoint&);
+  RangeBoundaryPoint& operator=(const RangeBoundaryPoint&);
 
   bool IsConnected() const;
   const Position ToPosition() const;
@@ -59,7 +60,7 @@ class RangeBoundaryPoint {
   void InvalidateOffset();
   void MarkValid() const;
 
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(container_node_);
     visitor->Trace(child_before_boundary_);
   }
@@ -83,11 +84,11 @@ inline RangeBoundaryPoint::RangeBoundaryPoint(Node& container)
       dom_tree_version_(DomTreeVersion()),
       offset_in_container_(0) {}
 
-inline RangeBoundaryPoint::RangeBoundaryPoint(const RangeBoundaryPoint& other)
-    : container_node_(other.Container()),
-      child_before_boundary_(other.ChildBefore()),
-      dom_tree_version_(other.dom_tree_version_),
-      offset_in_container_(other.Offset()) {}
+inline RangeBoundaryPoint::RangeBoundaryPoint(const RangeBoundaryPoint&) =
+    default;
+
+inline RangeBoundaryPoint& RangeBoundaryPoint::operator=(
+    const RangeBoundaryPoint& other) = default;
 
 inline Node& RangeBoundaryPoint::Container() const {
   return *container_node_;
@@ -222,4 +223,4 @@ inline bool operator==(const RangeBoundaryPoint& a,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_BOUNDARY_POINT_H_

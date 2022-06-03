@@ -49,7 +49,7 @@ class RTCSessionDescriptionRequest
   virtual void RequestSucceeded(RTCSessionDescriptionPlatform*) = 0;
   virtual void RequestFailed(const webrtc::RTCError&) = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
  protected:
   RTCSessionDescriptionRequest() = default;

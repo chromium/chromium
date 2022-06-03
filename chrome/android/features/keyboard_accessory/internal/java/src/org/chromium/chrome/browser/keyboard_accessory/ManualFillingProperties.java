@@ -32,6 +32,8 @@ class ManualFillingProperties {
             new PropertyModel.WritableBooleanPropertyKey("portrait_orientation");
     static final PropertyModel.WritableIntPropertyKey KEYBOARD_EXTENSION_STATE =
             new PropertyModel.WritableIntPropertyKey("keyboard_extension_state");
+    static final PropertyModel.WritableBooleanPropertyKey SUPPRESSED_BY_BOTTOM_SHEET =
+            new PropertyModel.WritableBooleanPropertyKey("suppressed_by_bottom_sheet");
 
     /**
      * Properties that a given state enforces. Must be between 0x0 and 0x100.
@@ -69,10 +71,12 @@ class ManualFillingProperties {
 
     static PropertyModel createFillingModel() {
         return new PropertyModel
-                .Builder(SHOW_WHEN_VISIBLE, KEYBOARD_EXTENSION_STATE, PORTRAIT_ORIENTATION)
+                .Builder(SHOW_WHEN_VISIBLE, KEYBOARD_EXTENSION_STATE, PORTRAIT_ORIENTATION,
+                        SUPPRESSED_BY_BOTTOM_SHEET)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
+                .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .build();
     }
 

@@ -9,8 +9,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -51,6 +50,12 @@ class AutofillWalletMetadataSyncBridge
   AutofillWalletMetadataSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
+
+  AutofillWalletMetadataSyncBridge(const AutofillWalletMetadataSyncBridge&) =
+      delete;
+  AutofillWalletMetadataSyncBridge& operator=(
+      const AutofillWalletMetadataSyncBridge&) = delete;
+
   ~AutofillWalletMetadataSyncBridge() override;
 
   base::WeakPtr<AutofillWalletMetadataSyncBridge> GetWeakPtr() {
@@ -60,10 +65,10 @@ class AutofillWalletMetadataSyncBridge
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -100,7 +105,7 @@ class AutofillWalletMetadataSyncBridge
   // |callback|. If |storage_keys_set| is not set, it returns all data entries.
   // Otherwise, it returns only entries with storage key in |storage_keys_set|.
   void GetDataImpl(
-      base::Optional<std::unordered_set<std::string>> storage_keys_set,
+      absl::optional<std::unordered_set<std::string>> storage_keys_set,
       DataCallback callback);
 
   // Uploads local data that is not part of |entity_data| sent from the server
@@ -111,7 +116,7 @@ class AutofillWalletMetadataSyncBridge
   // Merges remote changes, specified in |entity_data|, with the local DB and,
   // potentially, writes changes to the local DB and/or commits updates of
   // entities from |entity_data| up to sync.
-  base::Optional<syncer::ModelError> MergeRemoteChanges(
+  absl::optional<syncer::ModelError> MergeRemoteChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data);
 
@@ -124,9 +129,9 @@ class AutofillWalletMetadataSyncBridge
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
 
-  ScopedObserver<AutofillWebDataBackend,
-                 AutofillWebDataServiceObserverOnDBSequence>
-      scoped_observer_{this};
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   // Cache of the local data that allows figuring out the diff for local
   // changes; keyed by storage keys.
@@ -137,8 +142,6 @@ class AutofillWalletMetadataSyncBridge
 
   base::WeakPtrFactory<AutofillWalletMetadataSyncBridge> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridge);
 };
 
 }  // namespace autofill

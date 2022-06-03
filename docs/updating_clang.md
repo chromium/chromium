@@ -7,62 +7,48 @@ describes how to build a package at a newer revision and update Chromium to it.
 An archive of all packages built so far is at https://is.gd/chromeclang
 
 1.  Check that https://ci.chromium.org/p/chromium/g/chromium.clang/console
-    looks reasonably green.
+    looks reasonably green. Red bots with seemingly normal test failures are
+    usually ok, that likely means the test is broken with the stable Clang as
+    well.
 1.  Sync your Chromium tree to the latest revision to pick up any plugin
-    changes
-1.  Run `python tools/clang/scripts/upload_revision.py NNNN`
-    with the target LLVM SVN revision number. This creates a roll CL on a new
-    branch, uploads it and starts tryjobs that build the compiler binaries into
-    a staging bucket on Google Cloud Storage (GCS).
-1.  If the clang upload try bots succeed, copy the binaries from the staging
-    bucket to the production one. For example:
-
-    ```shell
-    $ export rev=123456-abcd1234-1
-    $ for x in Linux_x64 Mac Win ; do \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/clang-$rev.tgz \
-            gs://chromium-browser-clang/$x/clang-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/clang-$rev-buildlog.txt \
-            gs://chromium-browser-clang/$x/clang-$rev-buildlog.txt ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/clang-tidy-$rev.tgz \
-            gs://chromium-browser-clang/$x/clang-tidy-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/llvmobjdump-$rev.tgz \
-            gs://chromium-browser-clang/$x/llvmobjdump-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/translation_unit-$rev.tgz \
-            gs://chromium-browser-clang/$x/translation_unit-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/llvm-code-coverage-$rev.tgz \
-            gs://chromium-browser-clang/$x/llvm-code-coverage-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/libclang-$rev.tgz \
-            gs://chromium-browser-clang/$x/libclang-$rev.tgz ; \
-        done && gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/Mac/lld-$rev.tgz \
-            gs://chromium-browser-clang/Mac/lld-$rev.tgz
-    ```
-
-    **Note** that writing to this bucket requires special permissions. File a
+    changes.
+1.  Run [go/chrome-push-clang-to-goma](https://goto.google.com/chrome-push-clang-to-goma).
+    This takes a recent dry run CL to update clang, and if the trybots were
+    successful it will copy the binaries from the staging bucket to the
+    production one. Writing to this bucket requires special permissions. File a
     bug at g.co/bugatrooper if you don't have these already (e.g.,
-    https://crbug.com/1034081).
-
-1.  Run the goma package update script to push these packages to goma. If you do
-    not have the necessary credentials to do the upload, ask clang@chromium.org
-    to find someone who does
-1.  Run an exhaustive set of try jobs to test the new compiler:
-
-    ```shell
-    git cl try &&
-    git cl try -B chromium/try -b mac_chromium_asan_rel_ng \
-      -b linux_chromium_cfi_rel_ng \
-      -b linux_chromium_chromeos_asan_rel_ng -b linux_chromium_msan_rel_ng \
-      -b linux_chromium_chromeos_msan_rel_ng -b linux-chromeos-dbg \
-      -b win-asan -b chromeos-amd64-generic-cfi-thin-lto-rel \
-      -b linux_chromium_compile_dbg_32_ng -b win7-rel \
-      -b win-angle-deqp-rel-64 &&
-    git cl try -B chrome/try -b iphone-device -b ipad-device \
-      -b linux-chromeos-chrome
-    ```
-
-1.  Commit roll CL from the first step
+    https://crbug.com/1034081). Then it will push the packages to goma. If you
+    do not have the necessary credentials to do the upload, ask
+    clang@chromium.org to find someone who does.
+    *   Alternatively, to create your own roll CL, you can manually run
+	`tools/clang/scripts/upload_revision.py` with a recent upstream LLVM
+	commit hash as the argument. After the `*_upload_clang` trybots are
+	successfully finished, run
+	[go/chrome-promote-clang](https://goto.google.com/chrome-promote-clang)
+	on the new Clang package name.
+1.  Run an exhaustive set of try jobs to test the new compiler. The CL
+    description created previously by upload_revision.py includes
+    `Cq-Include-Trybots:` lines for all needed bots, so it's sufficient to just
+    run `git cl try` (or hit "CQ DRY RUN" on gerrit).
+1.  Commit the roll CL from the previous step.
 1.  The bots will now pull the prebuilt binary, and goma will have a matching
     binary, too.
+
+## Performance regressions
+
+After doing a clang roll, you may get a performance bug assigned to you
+([example](https://crbug.com/1094671)). Some performance noise is expected
+while doing a clang roll.
+
+You can check all performance data for a clang roll via
+`https://chromeperf.appspot.com/group_report?rev=XXXXXX`, where `XXXXXX` is the
+revision number, e.g. `778090` for the example bug (look in the first message
+of the performance bug to find this). Click the checkboxes to display graphs.
+Hover over points in the graph to see the value and error.
+
+Serious regressions require bisecting upstream commits (TODO: how to repro?).
+If the regressions look insignificant and there is green as well as red, you
+can close the bug as "WontFix" with an explanation.
 
 ## Adding files to the clang package
 

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Verify write and read clipboard given arbitrary raw input: Async Clipboard raw write -> Async Clipboard raw read tests
-Harness: the test ran to completion.
-

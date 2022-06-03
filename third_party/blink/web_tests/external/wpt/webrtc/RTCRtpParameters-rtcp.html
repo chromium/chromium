@@ -27,7 +27,6 @@
         sequence<RTCRtpHeaderExtensionParameters> headerExtensions;
         RTCRtcpParameters                         rtcp;
         sequence<RTCRtpCodecParameters>           codecs;
-        RTCDegradationPreference                  degradationPreference;
       };
 
       dictionary RTCRtcpParameters {
@@ -74,7 +73,7 @@
       rtcp.cname = `${rtcp.cname}-modified`;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
   }, `setParameters() with modified rtcp.cname should reject with InvalidModificationError`);
 
@@ -98,7 +97,7 @@
       rtcp.reducedSize = !rtcp.reducedSize;
     }
 
-    return promise_rejects(t, 'InvalidModificationError',
+    return promise_rejects_dom(t, 'InvalidModificationError',
       sender.setParameters(param));
   }, `setParameters() with modified rtcp.reducedSize should reject with InvalidModificationError`);
 

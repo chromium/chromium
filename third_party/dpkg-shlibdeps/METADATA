@@ -1,0 +1,17 @@
+name: "dpkg"
+description:
+    "package manager for Debian"
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://wiki.debian.org/Teams/Dpkg"
+  }
+  url {
+    type: GIT
+    value: "https://git.dpkg.org/git/dpkg/dpkg.git"
+  }
+  version: "a0828e04289639f875cb924f8d1a65a634683b19"
+  last_upgrade_date { year: 2020 month: 1 day: 9 }
+  license_type: RESTRICTED
+}

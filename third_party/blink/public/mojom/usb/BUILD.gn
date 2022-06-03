@@ -11,9 +11,7 @@ mojom("usb") {
   # target in the parent directory. But as we need |scramble_message_ids| to
   # be "false" for its mojom JS file will be used in external WPT tests.
   # To limit this option's influence scope, we make it a separate target.
-  sources = [
-    "web_usb_service.mojom",
-  ]
+  sources = [ "web_usb_service.mojom" ]
 
   deps = [
     "//mojo/public/mojom/base",

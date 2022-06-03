@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Test getting an exception when calling start() in the Speech JavaScript API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+test(() => {
+  assert_true('webkitSpeechRecognition' in self);
+  assert_false(webkitSpeechRecognition == null);
+}, "Check availability of constructors");
+
+async_test(t => {
+  const r = new webkitSpeechRecognition();
+  // Set default handlers.
+  for (const prop in r) {
+    if (prop.match('^on')) {
+      r[prop] = () => {
+        if (event.type === 'end') {
+          r.start();
+          r.abort();
+          r.onend = () => t.done();
+        } else {
+          assert_throws_dom('InvalidStateError', () => r.start());
+        }
+      }
+    }
+  }
+  r.start();
+  assert_throws_dom('InvalidStateError', () => r.start());
+}, "Double start");
+
+</script>

@@ -6,9 +6,6 @@
 #define CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 
 #import <Cocoa/Cocoa.h>
-#include <vector>
-
-#include "base/files/file_path.h"
 
 class AppShimController;
 
@@ -19,7 +16,7 @@ class AppShimController;
  @private
   AppShimController* _appShimController;  // Weak, owns |this|
 }
-- (id)initWithController:(AppShimController*)controller;
+- (instancetype)initWithController:(AppShimController*)controller;
 @end
 
 #endif  // CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_

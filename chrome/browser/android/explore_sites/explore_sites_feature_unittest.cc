@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {
@@ -62,45 +62,6 @@ TEST(ExploreSitesFeatureTest, ExploreSitesDenseVariationOriginal) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kExploreSites);
   EXPECT_EQ(DenseVariation::ORIGINAL, GetDenseVariation());
-}
-
-TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconArrow) {
-  std::map<std::string, std::string> parameters;
-  parameters[kExploreSitesVariationParameterName] =
-      kExploreSitesVariationMostLikelyTile;
-  parameters[kExploreSitesMostLikelyVariationParameterName] =
-      kExploreSitesMostLikelyVariationIconArrow;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
-                                                         parameters);
-  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
-  EXPECT_EQ(MostLikelyVariation::ICON_ARROW, GetMostLikelyVariation());
-}
-
-TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconDots) {
-  std::map<std::string, std::string> parameters;
-  parameters[kExploreSitesVariationParameterName] =
-      kExploreSitesVariationMostLikelyTile;
-  parameters[kExploreSitesMostLikelyVariationParameterName] =
-      kExploreSitesMostLikelyVariationIconDots;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
-                                                         parameters);
-  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
-  EXPECT_EQ(MostLikelyVariation::ICON_DOTS, GetMostLikelyVariation());
-}
-
-TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconGrouped) {
-  std::map<std::string, std::string> parameters;
-  parameters[kExploreSitesVariationParameterName] =
-      kExploreSitesVariationMostLikelyTile;
-  parameters[kExploreSitesMostLikelyVariationParameterName] =
-      kExploreSitesMostLikelyVariationIconGrouped;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
-                                                         parameters);
-  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
-  EXPECT_EQ(MostLikelyVariation::ICON_GROUPED, GetMostLikelyVariation());
 }
 
 TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithBogus) {

@@ -33,6 +33,10 @@ namespace protocol {
 // an authentication key, which is used to establish the connection.
 class ThirdPartyAuthenticatorBase : public Authenticator {
  public:
+  ThirdPartyAuthenticatorBase(const ThirdPartyAuthenticatorBase&) = delete;
+  ThirdPartyAuthenticatorBase& operator=(const ThirdPartyAuthenticatorBase&) =
+      delete;
+
   ~ThirdPartyAuthenticatorBase() override;
 
   // Authenticator interface.
@@ -40,7 +44,7 @@ class ThirdPartyAuthenticatorBase : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
-                      const base::Closure& resume_callback) override;
+                      base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -55,14 +59,12 @@ class ThirdPartyAuthenticatorBase : public Authenticator {
   explicit ThirdPartyAuthenticatorBase(State initial_state);
 
   // Gives the message to the underlying authenticator for processing.
-  void ProcessUnderlyingMessage(
-      const jingle_xmpp::XmlElement* message,
-      const base::Closure& resume_callback);
+  void ProcessUnderlyingMessage(const jingle_xmpp::XmlElement* message,
+                                base::OnceClosure resume_callback);
 
   // Processes the token-related elements of the message.
-  virtual void ProcessTokenMessage(
-      const jingle_xmpp::XmlElement* message,
-      const base::Closure& resume_callback) = 0;
+  virtual void ProcessTokenMessage(const jingle_xmpp::XmlElement* message,
+                                   base::OnceClosure resume_callback) = 0;
 
   // Adds the token related XML elements to the message.
   virtual void AddTokenElements(jingle_xmpp::XmlElement* message) = 0;
@@ -71,9 +73,6 @@ class ThirdPartyAuthenticatorBase : public Authenticator {
   State token_state_;
   bool started_;
   RejectionReason rejection_reason_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyAuthenticatorBase);
 };
 
 }  // namespace protocol

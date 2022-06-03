@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -269,6 +268,12 @@ WifiPHYLayerProtocol GetWifiPHYLayerProtocol() {
       return WIFI_PHY_LAYER_PROTOCOL_G;
     case dot11_phy_type_ht:
       return WIFI_PHY_LAYER_PROTOCOL_N;
+    case dot11_phy_type_vht:
+      return WIFI_PHY_LAYER_PROTOCOL_AC;
+    case dot11_phy_type_dmg:
+      return WIFI_PHY_LAYER_PROTOCOL_AD;
+    case dot11_phy_type_he:
+      return WIFI_PHY_LAYER_PROTOCOL_AX;
     default:
       return WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
   }

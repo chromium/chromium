@@ -119,6 +119,8 @@ void AppendInstruction(std::string* dst, size_t pc, const sock_filter& insn) {
       } else if ((insn.k & SECCOMP_RET_ACTION) == SECCOMP_RET_TRACE) {
         base::StringAppendF(dst, "Trace #%" PRIu32 "\n",
                             insn.k & SECCOMP_RET_DATA);
+      } else if (insn.k == SECCOMP_RET_USER_NOTIF) {
+        base::StringAppendF(dst, "UserNotif\n");
       } else if (insn.k == SECCOMP_RET_ALLOW) {
         base::StringAppendF(dst, "Allowed\n");
       } else if (insn.k == SECCOMP_RET_KILL) {

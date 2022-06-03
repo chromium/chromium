@@ -19,7 +19,7 @@
 // static
 TextToSpeechPlaybackController*
 TextToSpeechPlaybackControllerFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<TextToSpeechPlaybackController*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

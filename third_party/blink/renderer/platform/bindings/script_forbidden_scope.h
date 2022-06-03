@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_FORBIDDEN_SCOPE_H_
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -18,18 +17,20 @@ namespace blink {
 // Scoped disabling of script execution.
 class PLATFORM_EXPORT ScriptForbiddenScope final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(ScriptForbiddenScope);
 
  public:
   ScriptForbiddenScope() { Enter(); }
+  ScriptForbiddenScope(const ScriptForbiddenScope&) = delete;
+  ScriptForbiddenScope& operator=(const ScriptForbiddenScope&) = delete;
   ~ScriptForbiddenScope() { Exit(); }
 
   class PLATFORM_EXPORT AllowUserAgentScript final {
     STACK_ALLOCATED();
-    DISALLOW_COPY_AND_ASSIGN(AllowUserAgentScript);
 
    public:
     AllowUserAgentScript() : saved_counter_(&GetMutableCounter(), 0) {}
+    AllowUserAgentScript(const AllowUserAgentScript&) = delete;
+    AllowUserAgentScript& operator=(const AllowUserAgentScript&) = delete;
     ~AllowUserAgentScript() { DCHECK(!IsScriptForbidden()); }
 
    private:

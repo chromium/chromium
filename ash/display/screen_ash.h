@@ -6,9 +6,9 @@
 #define ASH_DISPLAY_SCREEN_ASH_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/display/screen.h"
 
 namespace display {
@@ -27,12 +27,19 @@ namespace ash {
 class ASH_EXPORT ScreenAsh : public display::Screen {
  public:
   ScreenAsh();
+
+  ScreenAsh(const ScreenAsh&) = delete;
+  ScreenAsh& operator=(const ScreenAsh&) = delete;
+
   ~ScreenAsh() override;
 
   // display::Screen overrides:
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override;
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override;
   int GetNumDisplays() const override;
   const std::vector<display::Display>& GetAllDisplays() const override;
   display::Display GetDisplayNearestWindow(
@@ -46,16 +53,13 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
   void RemoveObserver(display::DisplayObserver* observer) override;
 
   // CreateDisplayManager with a ScreenAsh instance.
-  static display::DisplayManager* CreateDisplayManager();
+  static std::unique_ptr<display::DisplayManager> CreateDisplayManager();
 
   // Create a screen instance to be used during shutdown.
   static void CreateScreenForShutdown();
 
   // Test helpers may need to clean up the ScreenForShutdown between tests.
   static void DeleteScreenForShutdown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenAsh);
 };
 
 }  // namespace ash

@@ -11,8 +11,8 @@ import android.os.Bundle;
 import android.os.Process;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.chrome.browser.util.IntentUtils;
 
 /**
  * Kills and (optionally) restarts the main Chrome process, then immediately kills itself.

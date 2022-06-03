@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    a:name="circle_loader"
+    a:width="200dp"
+    a:viewportWidth="200"
+    a:height="200dp"
+    a:viewportHeight="200"
+    tools:targetApi="21">
+    <group
+        a:name="circle"
+        a:translateX="100"
+        a:translateY="99.5" >
+        <path
+            a:name="ellipse_path_1"
+            a:strokeColor="#FFE8EAEC"
+            a:strokeWidth="4"
+            a:pathData="M 0.0,-80.0 c 44.182779984,0.0 80.0,35.817220016 80.0,80.0 c 0.0,44.182779984 -35.817220016,80.0 -80.0,80.0 c -44.182779984,0.0 -80.0,-35.817220016 -80.0,-80.0 c 0.0,-44.182779984 35.817220016,-80.0 80.0,-80.0 Z" />
+    </group>
+    <group
+        a:name="circlegreen"
+        a:translateX="100"
+        a:translateY="99.5"
+        a:rotation="-116" >
+        <path
+            a:name="ellipse_path_2"
+            a:strokeColor="#FF33A752"
+            a:strokeWidth="4"
+            a:trimPathEnd="0.2"
+            a:pathData="M 0.0,-80.0 c 44.182779984,0.0 80.0,35.817220016 80.0,80.0 c 0.0,44.182779984 -35.817220016,80.0 -80.0,80.0 c -44.182779984,0.0 -80.0,-35.817220016 -80.0,-80.0 c 0.0,-44.182779984 35.817220016,-80.0 80.0,-80.0 Z" />
+    </group>
+    <group
+        a:name="circleyellow"
+        a:translateX="100"
+        a:translateY="99.5"
+        a:rotation="-84" >
+        <path
+            a:name="ellipse_path_3"
+            a:strokeColor="#FFFABB05"
+            a:strokeWidth="4"
+            a:trimPathEnd="0.2"
+            a:pathData="M 0.0,-80.0 c 44.182779984,0.0 80.0,35.817220016 80.0,80.0 c 0.0,44.182779984 -35.817220016,80.0 -80.0,80.0 c -44.182779984,0.0 -80.0,-35.817220016 -80.0,-80.0 c 0.0,-44.182779984 35.817220016,-80.0 80.0,-80.0 Z" />
+    </group>
+    <group
+        a:name="circlered"
+        a:translateX="100"
+        a:translateY="99.5"
+        a:rotation="-18" >
+        <path
+            a:name="ellipse_path_4"
+            a:strokeColor="#FFEA4334"
+            a:strokeWidth="4"
+            a:trimPathEnd="0.1"
+            a:pathData="M 0.0,-80.0 c 44.182779984,0.0 80.0,35.817220016 80.0,80.0 c 0.0,44.182779984 -35.817220016,80.0 -80.0,80.0 c -44.182779984,0.0 -80.0,-35.817220016 -80.0,-80.0 c 0.0,-44.182779984 35.817220016,-80.0 80.0,-80.0 Z" />
+    </group>
+    <group
+        a:name="circleblue"
+        a:translateX="100"
+        a:translateY="99.5" >
+        <path
+            a:name="ellipse_path_5"
+            a:trimPathEnd="0.1"
+            a:strokeColor="#FF4185F3"
+            a:strokeWidth="4"
+            a:pathData="M 0.0,-80.0 c 44.182779984,0.0 80.0,35.817220016 80.0,80.0 c 0.0,44.182779984 -35.817220016,80.0 -80.0,80.0 c -44.182779984,0.0 -80.0,-35.817220016 -80.0,-80.0 c 0.0,-44.182779984 35.817220016,-80.0 80.0,-80.0 Z" />
+    </group>
+</vector>

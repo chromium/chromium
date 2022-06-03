@@ -1,0 +1,4 @@
+Tests that Page.navigate() returns the results that match referrer-policy configs
+Request referrer: https://www.google.com/
+Request referrer-policy: origin
+

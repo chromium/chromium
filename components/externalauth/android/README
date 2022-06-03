@@ -1,0 +1,4 @@
+The externalauth component provides utilities for external authentication, such
+as whether the current Chrome build is Google-signed, or whether Google Play
+Services is available. ExternalAuthUtils is the main class of the component, and
+the other classes are helpers used by ExternalAuthUtils and its callers.

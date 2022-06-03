@@ -45,10 +45,10 @@
             
 
                 // Test zooming wont reset scroll position.
-                if (window.eventSender) {
+                if (window.testRunner) {
                     window.scrollTo(expectedScrollX, expectedScrollY);
-                    eventSender.zoomPageIn();
-                    eventSender.zoomPageOut();
+                    testRunner.zoomPageIn();
+                    testRunner.zoomPageOut();
                     assertClose("zoom in and out preserve scroll position", window.scrollX,expectedScrollX);
                 }
                

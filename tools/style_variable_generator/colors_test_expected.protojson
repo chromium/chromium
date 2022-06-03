@@ -1,0 +1,36 @@
+# This file is generated from:
+#   additional_colors_test.json5
+#   colors_test.json5
+#   colors_test_palette.json5
+palette_colors: [
+  {
+    key: "google_grey_900",
+    value: {
+      light_value: 0xFF202124,
+      dark_value: 0xFF202124
+    }
+  }
+]
+test_colors: [
+  {
+    key: "text_color_primary",
+    value: {
+      light_value: 0xFF202124,
+      dark_value: 0xFFFFFFFF
+    }
+  },
+  {
+    key: "toggle_color",
+    value: {
+      light_value: 0x19202124,
+      dark_value: 0x60FFFFFF
+    }
+  },
+  {
+    key: "text_color",
+    value: {
+      light_value: 0xFF000000,
+      dark_value: 0xFFFFFFFF
+    }
+  }
+]

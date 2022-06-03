@@ -1,11 +1,4 @@
 <!DOCTYPE HTML>
-
-<!-- READ BEFORE UPDATING:
-If this test is updated make sure to increment the "revision" value of the
-associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
-that the baseline images are regenerated on the next run.
--->
-
 <html>
 <head>
 <meta name="viewport" content="initial-scale=1">
@@ -35,6 +28,9 @@ var QueryString = function() {
 }();
 
 function CrashGpuProcess() {
+  // Ensure we only get one crash in case of multiple canplaythrough events.
+  video.removeEventListener('canplaythrough', CrashGpuProcess, false);
+
   // Create a canvas element and webgl context -- without a context, we won't
   // get a webglcontextlost event.
   var canvas = document.createElement('canvas');
@@ -71,6 +67,12 @@ function Main() {
     console.log('Video playback failed: ' + e.code + ', "' + e.message + '"');
     domAutomationController.send('ERROR');
   }, false);
+
+  // We set a poster and preload=metadata to ensure that no frames are decoded
+  // before the gpu crash -- otherwise the media pipeline can't guarantee that
+  // we'll fall over to the software decoder.
+  video.poster = 'single_face.jpg';
+  video.preload = 'metadata';
 
   // src needs to be set after listeners are added.
   video.src = QueryString.src;

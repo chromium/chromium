@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL tlsVersion is acceptable on data-only promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'transport')"
+FAIL tlsVersion is acceptable on video-only promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL dtlsCipher is acceptable on data-only promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'transport')"
+FAIL dtlsCipher is acceptable on video-only promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL srtpCipher is acceptable on data-only promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'transport')"
+FAIL srtpCipher is acceptable on video-only promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL tlsGroup is acceptable on data-only promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'transport')"
+FAIL tlsGroup is acceptable on video-only promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+

@@ -8,7 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/sync/model/fake_sync_change_processor.h"
-#include "components/sync/model/sync_error_factory_mock.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_error_factory_mock.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -64,10 +66,7 @@ class ExtensionDisabledGlobalErrorTest
         test_dir.AppendASCII("v1"),
         scoped_temp_dir_.GetPath().AppendASCII("permissions1.crx"), pem_path,
         base::FilePath());
-    path_v2_ = PackExtensionWithOptions(
-        test_dir.AppendASCII("v2"),
-        scoped_temp_dir_.GetPath().AppendASCII("permissions2.crx"), pem_path,
-        base::FilePath());
+    path_v2_ = test_dir.AppendASCII("v2.crx");
     path_v3_ = PackExtensionWithOptions(
         test_dir.AppendASCII("v3"),
         scoped_temp_dir_.GetPath().AppendASCII("permissions3.crx"), pem_path,
@@ -190,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   int starting_tab_count = browser()->tab_strip_model()->count();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   int tab_count = browser()->tab_strip_model()->count();
   EXPECT_EQ(starting_tab_count + 1, tab_count);
 
@@ -232,13 +231,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
         if (path == "/autoupdate/updates.xml") {
           content::URLLoaderInterceptor::WriteResponse(
               test_data_dir_.AppendASCII("permissions_increase")
-                  .AppendASCII("updates.xml"),
+                  .AppendASCII("updates.json"),
               params->client.get());
           return true;
         } else if (path == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(
-              scoped_temp_dir_.GetPath().AppendASCII("permissions2.crx"),
-              params->client.get());
+          content::URLLoaderInterceptor::WriteResponse(path_v2_,
+                                                       params->client.get());
           return true;
         }
         return false;
@@ -282,9 +280,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
               params->client.get());
           return true;
         } else if (path == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(
-              scoped_temp_dir_.GetPath().AppendASCII("permissions2.crx"),
-              params->client.get());
+          content::URLLoaderInterceptor::WriteResponse(path_v2_,
+                                                       params->client.get());
           return true;
         }
         return false;
@@ -299,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   specifics.mutable_extension()->set_update_url(
       "http://localhost/autoupdate/updates.xml");
   specifics.mutable_extension()->set_version("2");
-  syncer::SyncData sync_data =
-      syncer::SyncData::CreateRemoteData(1234567, specifics);
+  syncer::SyncData sync_data = syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 
   ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
   sync_service->MergeDataAndStartSyncing(

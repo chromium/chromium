@@ -3,7 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
+from __future__ import print_function
+
 import json
 import os
 import sys
@@ -20,15 +21,16 @@ def StandardIsolatedScriptMerge(output_json, summary_json, jsons_to_merge):
       written.
     jsons_to_merge: A list of paths to JSON files that should be merged.
   """
-  # summary.json is produced by swarming.py itself. We are mostly interested
+  # summary.json is produced by swarming client itself. We are mostly interested
   # in the number of shards.
   try:
     with open(summary_json) as f:
       summary = json.load(f)
   except (IOError, ValueError):
-    print >> sys.stderr, (
+    print((
         'summary.json is missing or can not be read',
-        'Something is seriously wrong with swarming_client/ or the bot.')
+        'Something is seriously wrong with swarming client or the bot.'),
+        file=sys.stderr)
     return 1
 
   missing_shards = []
@@ -81,10 +83,10 @@ def find_shard_output_path(index, task_id, jsons_to_merge):
            os.path.basename(os.path.dirname(j)) == task_id))]
 
   if not matching_json_files:
-    print >> sys.stderr, 'shard %s test output missing' % index
+    print('shard %s test output missing' % index, file=sys.stderr)
     return None
   elif len(matching_json_files) > 1:
-    print >> sys.stderr, 'duplicate test output for shard %s' % index
+    print('duplicate test output for shard %s' % index, file=sys.stderr)
     return None
 
   return matching_json_files[0]

@@ -39,12 +39,15 @@ const UChar32 kRisS = 0x1F1F8;
 
 class BackwardGraphemeBoundaryStatemachineTest
     : public GraphemeStateMachineTestBase {
+ public:
+  BackwardGraphemeBoundaryStatemachineTest(
+      const BackwardGraphemeBoundaryStatemachineTest&) = delete;
+  BackwardGraphemeBoundaryStatemachineTest& operator=(
+      const BackwardGraphemeBoundaryStatemachineTest&) = delete;
+
  protected:
   BackwardGraphemeBoundaryStatemachineTest() = default;
   ~BackwardGraphemeBoundaryStatemachineTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackwardGraphemeBoundaryStatemachineTest);
 };
 
 TEST_F(BackwardGraphemeBoundaryStatemachineTest, DoNothingCase) {

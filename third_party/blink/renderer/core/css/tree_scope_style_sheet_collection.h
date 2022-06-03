@@ -49,14 +49,11 @@ class CORE_EXPORT TreeScopeStyleSheetCollection : public StyleSheetCollection {
   bool HasStyleSheetCandidateNodes() const {
     return !style_sheet_candidate_nodes_.IsEmpty();
   }
-  bool HasStyleSheets() const;
-
-  bool MediaQueryAffectingValueChanged();
 
   virtual bool IsShadowTreeStyleSheetCollection() const { return false; }
   void UpdateStyleSheetList();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit TreeScopeStyleSheetCollection(TreeScope&);
@@ -75,4 +72,4 @@ class CORE_EXPORT TreeScopeStyleSheetCollection : public StyleSheetCollection {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_TREE_SCOPE_STYLE_SHEET_COLLECTION_H_

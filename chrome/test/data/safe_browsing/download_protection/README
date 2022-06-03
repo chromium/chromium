@@ -25,3 +25,4 @@ generated with the following commands:
 - zip zipfile_one_unsigned_binary.zip unsigned.exe
 - zip zipfile_two_binaries_one_signed.zip unsigned.exe signed.exe
 - zip -e encrypted.zip signed.exe
+- cp encrypted.zip encrypter_zip_no_extension

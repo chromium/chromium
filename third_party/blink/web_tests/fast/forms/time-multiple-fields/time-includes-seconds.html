@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1182180">
+
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<input type=time step=1 id=secondstep value="12:34:56">
+<input type=time step="0.001" id=msstep value="12:34:56.789">
+
+<script>
+test(() => {
+  secondstep.focus();
+  eventSender.keyDown('ArrowRight');
+  eventSender.keyDown('ArrowRight');
+  eventSender.keyDown('0');
+  assert_equals(secondstep.value, '12:34:00');
+}, `<input type=time> should always include seconds in .value if the seconds portion is visible.`);
+
+test(() => {
+  msstep.focus();
+  eventSender.keyDown('ArrowRight');
+  eventSender.keyDown('ArrowRight');
+  eventSender.keyDown('ArrowRight');
+  eventSender.keyDown('0');
+  assert_equals(msstep.value, '12:34:56.000');
+}, `<input type=time> should always include milliseconds in .value if the milliseconds portion is visible.`);
+</script>

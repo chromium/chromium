@@ -1,0 +1,10 @@
+<style>
+ul::before { content: counter(section); -webkit-column-count: 65536;}
+</style>
+<script>
+function boom() {
+  let ul = document.createElement('ul');
+  document.documentElement.appendChild(ul);
+}
+window.onload = boom;
+</script>

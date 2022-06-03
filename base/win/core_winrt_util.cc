@@ -4,26 +4,19 @@
 
 #include "base/win/core_winrt_util.h"
 
+#include "base/threading/scoped_thread_priority.h"
+
 namespace {
 
 FARPROC LoadComBaseFunction(const char* function_name) {
-  static HMODULE const handle =
-      ::LoadLibraryEx(L"combase.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+  static HMODULE const handle = []() {
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    return ::LoadLibraryEx(L"combase.dll", nullptr,
+                           LOAD_LIBRARY_SEARCH_SYSTEM32);
+  }();
   return handle ? ::GetProcAddress(handle, function_name) : nullptr;
-}
-
-decltype(&::RoInitialize) GetRoInitializeFunction() {
-  static decltype(&::RoInitialize) const function =
-      reinterpret_cast<decltype(&::RoInitialize)>(
-          LoadComBaseFunction("RoInitialize"));
-  return function;
-}
-
-decltype(&::RoUninitialize) GetRoUninitializeFunction() {
-  static decltype(&::RoUninitialize) const function =
-      reinterpret_cast<decltype(&::RoUninitialize)>(
-          LoadComBaseFunction("RoUninitialize"));
-  return function;
 }
 
 decltype(&::RoActivateInstance) GetRoActivateInstanceFunction() {
@@ -47,21 +40,7 @@ namespace win {
 
 bool ResolveCoreWinRTDelayload() {
   // TODO(finnur): Add AssertIOAllowed once crbug.com/770193 is fixed.
-  return GetRoInitializeFunction() && GetRoUninitializeFunction() &&
-         GetRoActivateInstanceFunction() && GetRoGetActivationFactoryFunction();
-}
-
-HRESULT RoInitialize(RO_INIT_TYPE init_type) {
-  auto ro_initialize_func = GetRoInitializeFunction();
-  if (!ro_initialize_func)
-    return E_FAIL;
-  return ro_initialize_func(init_type);
-}
-
-void RoUninitialize() {
-  auto ro_uninitialize_func = GetRoUninitializeFunction();
-  if (ro_uninitialize_func)
-    ro_uninitialize_func();
+  return GetRoActivateInstanceFunction() && GetRoGetActivationFactoryFunction();
 }
 
 HRESULT RoGetActivationFactory(HSTRING class_id,

@@ -20,7 +20,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/buildflag.h"
 #include "net/base/host_mapping_rules.h"
@@ -36,12 +35,10 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
-namespace trace_event {
-class ProcessMemoryDump;
-}
 }
 
 namespace net {
@@ -51,7 +48,6 @@ class CertVerifier;
 class ClientSocketFactory;
 class ClientSocketPool;
 class ClientSocketPoolManager;
-class CTVerifier;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpNetworkSessionPeer;
@@ -70,6 +66,7 @@ class QuicCryptoClientStreamFactory;
 #if BUILDFLAG(ENABLE_REPORTING)
 class ReportingService;
 #endif
+class SCTAuditingDelegate;
 class SocketPerformanceWatcherFactory;
 class SSLConfigService;
 class TransportSecurityState;
@@ -83,91 +80,112 @@ const uint32_t kSpdyMaxHeaderListSize = 256 * 1024;
 // Specifies the maximum concurrent streams server could send (via push).
 const uint32_t kSpdyMaxConcurrentPushedStreams = 1000;
 
-// This class holds session objects used by HttpNetworkTransaction objects.
-class NET_EXPORT HttpNetworkSession {
- public:
   // Self-contained structure with all the simple configuration options
   // supported by the HttpNetworkSession.
-  struct NET_EXPORT Params {
-    Params();
-    Params(const Params& other);
-    ~Params();
+struct NET_EXPORT HttpNetworkSessionParams {
+  HttpNetworkSessionParams();
+  HttpNetworkSessionParams(const HttpNetworkSessionParams& other);
+  ~HttpNetworkSessionParams();
 
-    bool enable_server_push_cancellation;
-    HostMappingRules host_mapping_rules;
-    bool ignore_certificate_errors;
-    uint16_t testing_fixed_http_port;
-    uint16_t testing_fixed_https_port;
-    bool enable_user_alternate_protocol_ports;
+  bool enable_server_push_cancellation;
+  HostMappingRules host_mapping_rules;
+  bool ignore_certificate_errors;
+  uint16_t testing_fixed_http_port;
+  uint16_t testing_fixed_https_port;
+  bool enable_user_alternate_protocol_ports;
 
-    // Use SPDY ping frames to test for connection health after idle.
-    bool enable_spdy_ping_based_connection_checking;
-    bool enable_http2;
-    size_t spdy_session_max_recv_window_size;
-    // Maximum number of capped frames that can be queued at any time.
-    int spdy_session_max_queued_capped_frames;
-    // HTTP/2 connection settings.
-    // Unknown settings will still be sent to the server.
-    // Might contain unknown setting identifiers from a predefined set that
-    // servers are supposed to ignore, see
-    // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-    // The same setting will be sent on every connection to prevent the retry
-    // logic from hiding broken servers.
-    spdy::SettingsMap http2_settings;
-    // If set, an HTTP/2 frame with a reserved frame type will be sent after
-    // every HEADERS and SETTINGS frame.  See
-    // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-    // The same frame will be sent out on all connections to prevent the retry
-    // logic from hiding broken servers.
-    base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
-    // Source of time for SPDY connections.
-    SpdySessionPool::TimeFunc time_func;
-    // Whether to enable HTTP/2 Alt-Svc entries.
-    bool enable_http2_alternative_service;
-    // Whether to enable Websocket over HTTP/2.
-    bool enable_websocket_over_http2;
+  // Use SPDY ping frames to test for connection health after idle.
+  bool enable_spdy_ping_based_connection_checking;
+  bool enable_http2;
+  size_t spdy_session_max_recv_window_size;
+  // Maximum number of capped frames that can be queued at any time.
+  int spdy_session_max_queued_capped_frames;
+  // Whether SPDY pools should mark sessions as going away upon relevant network
+  // changes (instead of closing them). Default value is OS specific.
+  bool spdy_go_away_on_ip_change;
+  // HTTP/2 connection settings.
+  // Unknown settings will still be sent to the server.
+  // Might contain unknown setting identifiers from a predefined set that
+  // servers are supposed to ignore, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  // The same setting will be sent on every connection to prevent the retry
+  // logic from hiding broken servers.
+  spdy::SettingsMap http2_settings;
+  // If true, a setting parameter with reserved identifier will be sent in every
+  // initial SETTINGS frame, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  // The setting identifier and value will be drawn independently for each
+  // connection to prevent tracking of the client.
+  bool enable_http2_settings_grease;
+  // If set, an HTTP/2 frame with a reserved frame type will be sent after
+  // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame.
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  // The same frame will be sent out on all connections to prevent the retry
+  // logic from hiding broken servers.
+  absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+  // If set, the HEADERS frame carrying a request without body will not have
+  // the END_STREAM flag set.  The stream will be closed by a subsequent empty
+  // DATA frame with END_STREAM.  Does not affect bidirectional or proxy
+  // streams.
+  // If unset, the HEADERS frame will have the END_STREAM flag set on.
+  // This is useful in conjunction with |greased_http2_frame| so that a frame
+  // of reserved type can be sent out even on requests without a body.
+  bool http2_end_stream_with_data_frame;
+  // Source of time for SPDY connections.
+  SpdySessionPool::TimeFunc time_func;
+  // Whether to enable HTTP/2 Alt-Svc entries.
+  bool enable_http2_alternative_service;
+  // Whether to enable Websocket over HTTP/2.
+  bool enable_websocket_over_http2;
 
-    // Enables 0-RTT support.
-    bool enable_early_data;
+  // Enables 0-RTT support.
+  bool enable_early_data;
 
-    // Enables QUIC support.
-    bool enable_quic;
+  // Enables QUIC support.
+  bool enable_quic;
 
-    // If true, HTTPS URLs can be sent to QUIC proxies.
-    bool enable_quic_proxies_for_https_urls;
+  // If true, HTTPS URLs can be sent to QUIC proxies.
+  bool enable_quic_proxies_for_https_urls;
 
-    // If non-empty, QUIC will only be spoken to hosts in this list.
-    base::flat_set<std::string> quic_host_allowlist;
+  // If non-empty, QUIC will only be spoken to hosts in this list.
+  base::flat_set<std::string> quic_host_allowlist;
 
-    // If true, idle sockets won't be closed when memory pressure happens.
-    bool disable_idle_sockets_close_on_memory_pressure;
+  // If true, idle sockets won't be closed when memory pressure happens.
+  bool disable_idle_sockets_close_on_memory_pressure;
 
-    bool key_auth_cache_server_entries_by_network_isolation_key;
-  };
+  bool key_auth_cache_server_entries_by_network_isolation_key;
+
+  // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
+  // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE
+  // frames any longer if SETTINGS_DEPRECATE_HTTP2_PRIORITIES is missing or
+  // has zero 0, but continue and also stop sending HTTP/2-style priority
+  // information in HEADERS frames and PRIORITY frames if it has value 1.
+  bool enable_priority_update;
+};
 
   // Structure with pointers to the dependencies of the HttpNetworkSession.
   // These objects must all outlive the HttpNetworkSession.
-  struct NET_EXPORT Context {
-    Context();
-    Context(const Context& other);
-    ~Context();
+struct NET_EXPORT HttpNetworkSessionContext {
+  HttpNetworkSessionContext();
+  HttpNetworkSessionContext(const HttpNetworkSessionContext& other);
+  ~HttpNetworkSessionContext();
 
-    ClientSocketFactory* client_socket_factory;
-    HostResolver* host_resolver;
-    CertVerifier* cert_verifier;
-    TransportSecurityState* transport_security_state;
-    CTVerifier* cert_transparency_verifier;
-    CTPolicyEnforcer* ct_policy_enforcer;
-    ProxyResolutionService* proxy_resolution_service;
-    ProxyDelegate* proxy_delegate;
-    const HttpUserAgentSettings* http_user_agent_settings;
-    SSLConfigService* ssl_config_service;
-    HttpAuthHandlerFactory* http_auth_handler_factory;
-    HttpServerProperties* http_server_properties;
-    NetLog* net_log;
-    SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
-    NetworkQualityEstimator* network_quality_estimator;
-    QuicContext* quic_context;
+  ClientSocketFactory* client_socket_factory;
+  HostResolver* host_resolver;
+  CertVerifier* cert_verifier;
+  TransportSecurityState* transport_security_state;
+  CTPolicyEnforcer* ct_policy_enforcer;
+  SCTAuditingDelegate* sct_auditing_delegate;
+  ProxyResolutionService* proxy_resolution_service;
+  ProxyDelegate* proxy_delegate;
+  const HttpUserAgentSettings* http_user_agent_settings;
+  SSLConfigService* ssl_config_service;
+  HttpAuthHandlerFactory* http_auth_handler_factory;
+  HttpServerProperties* http_server_properties;
+  NetLog* net_log;
+  SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
+  NetworkQualityEstimator* network_quality_estimator;
+  QuicContext* quic_context;
 #if BUILDFLAG(ENABLE_REPORTING)
     ReportingService* reporting_service;
     NetworkErrorLoggingService* network_error_logging_service;
@@ -175,15 +193,19 @@ class NET_EXPORT HttpNetworkSession {
 
     // Optional factory to use for creating QuicCryptoClientStreams.
     QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory;
-  };
+};
 
+// This class holds session objects used by HttpNetworkTransaction objects.
+class NET_EXPORT HttpNetworkSession {
+ public:
   enum SocketPoolType {
     NORMAL_SOCKET_POOL,
     WEBSOCKET_SOCKET_POOL,
     NUM_SOCKET_POOL_TYPES
   };
 
-  HttpNetworkSession(const Params& params, const Context& context);
+  HttpNetworkSession(const HttpNetworkSessionParams& params,
+                     const HttpNetworkSessionContext& context);
   ~HttpNetworkSession();
 
   HttpAuthCache* http_auth_cache() { return &http_auth_cache_; }
@@ -202,7 +224,7 @@ class NET_EXPORT HttpNetworkSession {
 
   CertVerifier* cert_verifier() { return cert_verifier_; }
   ProxyResolutionService* proxy_resolution_service() {
-      return proxy_resolution_service_;
+    return proxy_resolution_service_;
   }
   SSLConfigService* ssl_config_service() { return ssl_config_service_; }
   WebSocketEndpointLockManager* websocket_endpoint_lock_manager() {
@@ -238,28 +260,29 @@ class NET_EXPORT HttpNetworkSession {
 
   // Creates a Value summary of the state of the QUIC sessions and
   // configuration.
-  std::unique_ptr<base::Value> QuicInfoToValue() const;
+  base::Value QuicInfoToValue() const;
 
-  void CloseAllConnections();
-  void CloseIdleConnections();
+  void CloseAllConnections(int net_error, const char* net_log_reason_utf8);
+  void CloseIdleConnections(const char* net_log_reason_utf8);
 
   // Returns the original Params used to construct this session.
-  const Params& params() const { return params_; }
+  const HttpNetworkSessionParams& params() const { return params_; }
   // Returns the original Context used to construct this session.
-  const Context& context() const { return context_; }
+  const HttpNetworkSessionContext& context() const { return context_; }
 
   void SetServerPushDelegate(std::unique_ptr<ServerPushDelegate> push_delegate);
 
-  // Populates |*alpn_protos| with protocols to be used with ALPN.
-  void GetAlpnProtos(NextProtoVector* alpn_protos) const;
+  // Returns protocols to be used with ALPN.
+  const NextProtoVector& GetAlpnProtos() const { return next_protos_; }
+
+  // Returns ALPS data to be sent to server for each NextProto.
+  // Data might be empty.
+  const SSLConfig::ApplicationSettings& GetApplicationSettings() const {
+    return application_settings_;
+  }
 
   // Populates |server_config| and |proxy_config| based on this session.
   void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;
@@ -312,9 +335,10 @@ class NET_EXPORT HttpNetworkSession {
   std::map<HttpResponseBodyDrainer*, std::unique_ptr<HttpResponseBodyDrainer>>
       response_drainers_;
   NextProtoVector next_protos_;
+  SSLConfig::ApplicationSettings application_settings_;
 
-  Params params_;
-  Context context_;
+  HttpNetworkSessionParams params_;
+  HttpNetworkSessionContext context_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

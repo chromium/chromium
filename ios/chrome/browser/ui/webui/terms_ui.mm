@@ -25,6 +25,9 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   // Construct a data source for the specified |source_name|.
   explicit TermsUIHTMLSource(const std::string& source_name);
 
+  TermsUIHTMLSource(const TermsUIHTMLSource&) = delete;
+  TermsUIHTMLSource& operator=(const TermsUIHTMLSource&) = delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
@@ -41,8 +44,6 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   ~TermsUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TermsUIHTMLSource);
 };
 
 }  // namespace
@@ -89,10 +90,10 @@ bool TermsUIHTMLSource::ShouldDenyXFrameOptions() const {
   return web::URLDataSourceIOS::ShouldDenyXFrameOptions();
 }
 
-TermsUI::TermsUI(web::WebUIIOS* web_ui, const std::string& name)
-    : web::WebUIIOSController(web_ui) {
-  web::URLDataSourceIOS::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
-                             new TermsUIHTMLSource(name));
+TermsUI::TermsUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
+  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+                             new TermsUIHTMLSource(host));
 }
 
 TermsUI::~TermsUI() {}

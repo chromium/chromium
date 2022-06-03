@@ -59,6 +59,20 @@ specific_include_rules = {
 }
 ```
 
+To add different dependencies for Java instrumentation and unit tests, the
+following regular expressions may be useful:
+
+```
+specific_include_rules = {
+  '.*UnitTest\.java': [
+    # Rules for unit tests.
+  ],
+  '.*(?<!Unit)Test\.java': [
+    # Rules for instrumentation tests.
+  ],
+}
+```
+
 You can optionally ignore the rules inherited from parent directories, similar
 to "set noparent" in OWNERS files. For example, adding `noparent = True` in
 //ash/components/DEPS will cause rules from //ash/DEPS to be ignored, thereby

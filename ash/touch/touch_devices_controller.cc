@@ -6,12 +6,14 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -19,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
@@ -32,13 +33,20 @@ PrefService* GetActivePrefService() {
 }  // namespace
 
 // static
-void TouchDevicesController::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
+void TouchDevicesController::RegisterProfilePrefs(PrefRegistrySimple* registry,
+                                                  bool for_test) {
   registry->RegisterBooleanPref(
       prefs::kTapDraggingEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(prefs::kTouchpadEnabled, true);
   registry->RegisterBooleanPref(prefs::kTouchscreenEnabled, true);
+  if (for_test) {
+    registry->RegisterBooleanPref(
+        prefs::kNaturalScroll,
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            chromeos::switches::kNaturalScrollDefault),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  }
 }
 
 TouchDevicesController::TouchDevicesController() {
@@ -164,23 +172,11 @@ void TouchDevicesController::UpdateTapDraggingEnabled() {
 }
 
 void TouchDevicesController::UpdateTouchpadEnabled() {
-  bool enabled = GetTouchpadEnabled(TouchDeviceEnabledSource::GLOBAL) &&
-                 GetTouchpadEnabled(TouchDeviceEnabledSource::USER_PREF);
-  ui::InputController* input_controller =
-      ui::OzonePlatform::GetInstance()->GetInputController();
-  const bool old_value = input_controller->IsInternalTouchpadEnabled();
-  input_controller->SetInternalTouchpadEnabled(enabled);
-  if (old_value == input_controller->IsInternalTouchpadEnabled())
-    return;  // Value didn't actually change.
-
-  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
-  if (!cursor_manager)
-    return;
-
-  if (enabled)
-    cursor_manager->ShowCursor();
-  else
-    cursor_manager->HideCursor();
+  ui::OzonePlatform::GetInstance()
+      ->GetInputController()
+      ->SetInternalTouchpadEnabled(
+          GetTouchpadEnabled(TouchDeviceEnabledSource::GLOBAL) &&
+          GetTouchpadEnabled(TouchDeviceEnabledSource::USER_PREF));
 }
 
 void TouchDevicesController::UpdateTouchscreenEnabled() {

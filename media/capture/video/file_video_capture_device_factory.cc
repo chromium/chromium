@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/file_video_capture_device.h"
@@ -22,7 +23,6 @@ base::FilePath GetFilePathFromCommandLine() {
   base::FilePath command_line_file_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           switches::kUseFileForFakeVideoCapture);
-  CHECK(!command_line_file_path.empty());
   return command_line_file_path;
 }
 
@@ -40,50 +40,37 @@ std::unique_ptr<VideoCaptureDevice> FileVideoCaptureDeviceFactory::CreateDevice(
 #endif
 }
 
-void FileVideoCaptureDeviceFactory::GetDeviceDescriptors(
-    VideoCaptureDeviceDescriptors* device_descriptors) {
+void FileVideoCaptureDeviceFactory::GetDevicesInfo(
+    GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(device_descriptors->empty());
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlocking allow_blocking;
 
-  const base::FilePath command_line_file_path = GetFilePathFromCommandLine();
-  device_descriptors->emplace_back(
+  std::vector<VideoCaptureDeviceInfo> devices_info;
+
+  auto api =
 #if defined(OS_WIN)
-      base::SysWideToUTF8(command_line_file_path.value()),
-      kFileVideoCaptureDeviceName, VideoCaptureApi::WIN_DIRECT_SHOW
-#elif defined(OS_MACOSX)
-      command_line_file_path.value(), kFileVideoCaptureDeviceName,
-      VideoCaptureApi::MACOSX_AVFOUNDATION
-#elif defined(OS_LINUX)
-      command_line_file_path.value(), kFileVideoCaptureDeviceName,
-      VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE
+      VideoCaptureApi::WIN_DIRECT_SHOW;
+#elif defined(OS_MAC)
+      VideoCaptureApi::MACOSX_AVFOUNDATION;
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+      VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
 #else
-      command_line_file_path.value(), kFileVideoCaptureDeviceName,
-      VideoCaptureApi::UNKNOWN
+      VideoCaptureApi::UNKNOWN;
 #endif
-      );
-}
 
-void FileVideoCaptureDeviceFactory::GetSupportedFormats(
-    const VideoCaptureDeviceDescriptor& device_descriptor,
-    VideoCaptureFormats* supported_formats) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
+  devices_info.emplace_back(
+      VideoCaptureDeviceDescriptor(GetFilePathFromCommandLine().AsUTF8Unsafe(),
+                                   kFileVideoCaptureDeviceName, api));
 
   VideoCaptureFormat capture_format;
   if (!FileVideoCaptureDevice::GetVideoCaptureFormat(
-        GetFilePathFromCommandLine(), &capture_format)) {
+          GetFilePathFromCommandLine(), &capture_format)) {
+    std::move(callback).Run({});
     return;
   }
+  devices_info.back().supported_formats.push_back(capture_format);
 
-  supported_formats->push_back(capture_format);
-}
-
-void FileVideoCaptureDeviceFactory::GetCameraLocationsAsync(
-    std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
-    DeviceDescriptorsCallback result_callback) {
-  std::move(result_callback).Run(std::move(device_descriptors));
+  std::move(callback).Run(std::move(devices_info));
 }
 
 }  // namespace media

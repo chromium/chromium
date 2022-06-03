@@ -6,8 +6,9 @@
 
   iron-icon {
     --iron-icon-fill-color: var(--google-grey-refresh-700);
-    @apply --cr-icon-height-width;
     flex-shrink: 0;
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
   }
 
   iron-icon[icon='cr:warning'] {
@@ -41,7 +42,6 @@
   }
 
   .error-item {
-    @apply --cr-section;
     padding-inline-start: 0;
   }
 
@@ -127,7 +127,7 @@
       <div id="errorsList">
         <template is="dom-repeat" items="[[entries_]]">
           <div class="item-container">
-            <div class$="error-item
+            <div class$="cr-row error-item
                 [[computeErrorClass_(item, selectedEntry_)]]">
               <div actionable class="start" on-click="onErrorItemAction_"
                   on-keydown="onErrorItemAction_" tabindex="0"

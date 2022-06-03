@@ -20,13 +20,13 @@ struct SSLConfig {
   bool sha1_local_anchors_enabled = false;
   bool symantec_enforcement_disabled = false;
 
-  // If true, enables TLS 1.3 downgrade hardening for connections using local
-  // trust anchors. (Hardening for known roots is always enabled.)
-  bool tls13_hardening_for_local_anchors_enabled = false;
-
   // SSL 2.0 and 3.0 are not supported. Note these lines must be kept in sync
   // with net/ssl/ssl_config.cc.
   SSLVersion version_min = kTLS1;
+  // version_min_warn is the minimum protocol version that won't cause cert
+  // errors (e.g., in Chrome we'll show a security interstitial for connections
+  // using a version lower than version_min_warn).
+  SSLVersion version_min_warn = kTLS12;
   SSLVersion version_max = kTLS13;
 
   // Though cipher suites are sent in TLS as "uint8_t CipherSuite[2]", in
@@ -38,11 +38,14 @@ struct SSLConfig {
 
   // Patterns for matching hostnames to determine when to allow connection
   // coalescing when client certificates are also in use. Patterns follow
-  // the rules for host matching from the URL Blacklist filter format:
+  // the rules for host matching from the URL Blocklist filter format:
   // "example.com" matches "example.com" and all subdomains, while
   // ".example.net" matches exactly "example.net". Hostnames must be
   // canonicalized according to the rules used by GURL.
   array<string> client_cert_pooling_policy;
+
+  // If false, disables post-quantum key agreement in TLS connections.
+  bool cecpq2_enabled = true;
 };
 
 // Receives SSL configuration updates.

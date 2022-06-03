@@ -1,0 +1,18 @@
+include_rules = [
+    "+cc",
+    "-cc/ipc",
+    "-cc/mojom",
+    "-cc/test",
+    "+components/viz/common",
+    "+gpu/command_buffer/client/shared_memory_limits.h",
+    "+gpu/command_buffer/common/context_creation_attribs.h",
+    "+gpu/ipc/client/gpu_channel_host.h",
+    "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
+    "+services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h",
+    "+ui/base/ime/text_input_mode.h",
+    "+ui/base/ime/text_input_type.h",
+    "+ui/base/ime/mojom/text_input_state.mojom-blink.h",
+    "+ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h",
+    "+ui/display/screen_info.h",
+    "+ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h",
+]

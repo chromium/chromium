@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "minidump/minidump_extensions.h"
 #include "snapshot/minidump/minidump_annotation_reader.h"
 #include "snapshot/minidump/minidump_simple_string_dictionary_reader.h"

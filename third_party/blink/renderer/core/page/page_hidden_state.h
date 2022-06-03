@@ -36,7 +36,7 @@
 
 namespace blink {
 
-CORE_EXPORT String PageHiddenStateString(bool visible);
+CORE_EXPORT AtomicString PageHiddenStateString(bool visible);
 
 }  // namespace blink
 

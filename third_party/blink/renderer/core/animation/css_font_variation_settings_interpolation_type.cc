@@ -10,43 +10,53 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
-class CSSFontVariationSettingsNonInterpolableValue
+class CSSFontVariationSettingsNonInterpolableValue final
     : public NonInterpolableValue {
  public:
   ~CSSFontVariationSettingsNonInterpolableValue() final = default;
 
   static scoped_refptr<CSSFontVariationSettingsNonInterpolableValue> Create(
-      Vector<AtomicString> tags) {
+      Vector<uint32_t> tags) {
     return base::AdoptRef(
         new CSSFontVariationSettingsNonInterpolableValue(std::move(tags)));
   }
 
-  const Vector<AtomicString> Tags() const { return tags_; }
+  const Vector<uint32_t>& Tags() const { return tags_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSFontVariationSettingsNonInterpolableValue(Vector<AtomicString> tags)
+  explicit CSSFontVariationSettingsNonInterpolableValue(Vector<uint32_t> tags)
       : tags_(std::move(tags)) {
     DCHECK_GT(tags_.size(), 0u);
   }
 
-  const Vector<AtomicString> tags_;
+  const Vector<uint32_t> tags_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(
     CSSFontVariationSettingsNonInterpolableValue);
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(
-    CSSFontVariationSettingsNonInterpolableValue);
+template <>
+struct DowncastTraits<CSSFontVariationSettingsNonInterpolableValue> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() ==
+           CSSFontVariationSettingsNonInterpolableValue::static_type_;
+  }
+};
 
-static const Vector<AtomicString> GetTags(
+static const Vector<uint32_t> GetTags(
     const NonInterpolableValue& non_interpolable_value) {
-  return ToCSSFontVariationSettingsNonInterpolableValue(non_interpolable_value)
+  return To<CSSFontVariationSettingsNonInterpolableValue>(
+             non_interpolable_value)
       .Tags();
 }
 
@@ -55,10 +65,10 @@ static bool TagsMatch(const NonInterpolableValue& a,
   return GetTags(a) == GetTags(b);
 }
 
-class UnderlyingTagsChecker : public InterpolationType::ConversionChecker {
+class UnderlyingTagsChecker final
+    : public InterpolationType::ConversionChecker {
  public:
-  explicit UnderlyingTagsChecker(const Vector<AtomicString>& tags)
-      : tags_(tags) {}
+  explicit UnderlyingTagsChecker(const Vector<uint32_t>& tags) : tags_(tags) {}
   ~UnderlyingTagsChecker() final = default;
 
  private:
@@ -67,10 +77,10 @@ class UnderlyingTagsChecker : public InterpolationType::ConversionChecker {
     return tags_ == GetTags(*underlying.non_interpolable_value);
   }
 
-  const Vector<AtomicString> tags_;
+  const Vector<uint32_t> tags_;
 };
 
-class InheritedFontVariationSettingsChecker
+class InheritedFontVariationSettingsChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit InheritedFontVariationSettingsChecker(
@@ -97,7 +107,7 @@ static InterpolationValue ConvertFontVariationSettings(
   }
   wtf_size_t length = settings->size();
   auto numbers = std::make_unique<InterpolableList>(length);
-  Vector<AtomicString> tags;
+  Vector<uint32_t> tags;
   for (wtf_size_t i = 0; i < length; ++i) {
     numbers->Set(i,
                  std::make_unique<InterpolableNumber>(settings->at(i).Value()));
@@ -138,23 +148,11 @@ CSSFontVariationSettingsInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
-  const auto* list = DynamicTo<CSSValueList>(value);
-  if (!list) {
-    return nullptr;
-  }
-  wtf_size_t length = list->length();
-  auto numbers = std::make_unique<InterpolableList>(length);
-  Vector<AtomicString> tags;
-  for (wtf_size_t i = 0; i < length; ++i) {
-    const auto& item = To<cssvalue::CSSFontVariationValue>(list->Item(i));
-    numbers->Set(i, std::make_unique<InterpolableNumber>(item.Value()));
-    tags.push_back(item.Tag());
-  }
-  return InterpolationValue(
-      std::move(numbers),
-      CSSFontVariationSettingsNonInterpolableValue::Create(std::move(tags)));
+  scoped_refptr<FontVariationSettings> settings =
+      StyleBuilderConverter::ConvertFontVariationSettings(*state, value);
+  return ConvertFontVariationSettings(settings.get());
 }
 
 InterpolationValue CSSFontVariationSettingsInterpolationType::
@@ -194,18 +192,18 @@ void CSSFontVariationSettingsInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const InterpolableList& numbers = ToInterpolableList(interpolable_value);
-  const Vector<AtomicString>& tags = GetTags(*non_interpolable_value);
+  const auto& numbers = To<InterpolableList>(interpolable_value);
+  const Vector<uint32_t>& tags = GetTags(*non_interpolable_value);
   DCHECK_EQ(numbers.length(), tags.size());
 
   scoped_refptr<FontVariationSettings> settings =
       FontVariationSettings::Create();
   wtf_size_t length = numbers.length();
-  // Do clampTo here, which follows the same logic as ConsumeFontVariationTag.
+  // Do ClampTo here, which follows the same logic as ConsumeFontVariationTag.
   for (wtf_size_t i = 0; i < length; ++i) {
     settings->Append(FontVariationAxis(
         tags[i],
-        clampTo<float>(ToInterpolableNumber(numbers.Get(i))->Value())));
+        ClampTo<float>(To<InterpolableNumber>(numbers.Get(i))->Value())));
   }
   state.GetFontBuilder().SetVariationSettings(settings);
 }

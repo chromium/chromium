@@ -46,11 +46,10 @@
  * F. Private APIs
  * G. Enums
  *
- * The best practices for each are described in more detail below.  It
- * should be noted that, due to historical reasons, and the evolutionary
- * nature of this file, much this file currently violates the best practices
- * described below. As changes are made, the changes should adhere to the
- * best practices.
+ * The best practices for each are described in more detail below. It should be
+ * noted that, due to historical reasons, and the evolutionary nature of this
+ * file, much this file currently violates the best practices described below.
+ * As changes are made, the changes should adhere to the best practices.
  *
  * A. When to Add Packages to this File?
  * Packages in chrome.experimental.* should *not* be added to this file. The
@@ -64,10 +63,10 @@
  * these cases, use comments to describe the situation.
  *
  * B. Optional Parameters
- * The Chrome extension APIs make extensive use of optional parameters that
- * are not at the end of the parameter list, "interior optional parameters",
- * while the JS Compiler's type system requires optional parameters to be
- * at the end. This creates a bit of tension:
+ * The Chrome extension APIs make extensive use of interior optional parameters
+ * that are not at the end of the parameter list, while the JS Compiler's type
+ * system requires optional parameters to be at the end. This creates a bit of
+ * tension:
  *
  * 1. If a method has N required params, then the parameter declarations
  *    should have N required params.
@@ -78,13 +77,13 @@
  *    b. the type should include both types, in the same order as the parts
  *       of the name, even when one type subsumes the other, eg, {string|*}
  *       or {Object|function(string)}.
- * See chrome.runtime.sendMessage for a complex example as sendMessage
- * takes three params with the first and third being optional.
+ * See chrome.runtime.sendMessage for a complex example as sendMessage takes
+ * three params with the first and third being optional.
  *
  * C. Pseudo-types
- * The Chrome APIs define many types are that actually pseudo-types, that
- * is, they can't be instantiated by name. The extension APIs also pass
- * untyped objects (a bag of properties) to callbacks.
+ * The Chrome APIs define many types that are actually pseudo-types, that
+ * is, they can't be instantiated by name. The extension APIs also pass untyped
+ * objects (a bag of properties) to callbacks.
  *
  * The Chrome extension APIs include at least three different situations:
  *
@@ -165,7 +164,7 @@
  *
  * D. Events
  * Most packages define a set of events with the standard set of methods:
- * addListener, removeListener, hasListener and hasListeners.  ChromeVoidEvent
+ * addListener, removeListener, hasListener and hasListeners. ChromeVoidEvent
  * is the appropriate type when an event's listeners do not take any
  * parameters, however, many events take parameters specific to that event.
  *
@@ -181,8 +180,8 @@
  * ChromeBaseEventNoListeners for an example.
  *
  * E. Nullability
- * We treat the Chrome Extension API pages as "the truth".  Not-null types
- * should be used in the following situations:
+ * We treat the Chrome Extension API pages as "the truth". Not-null types should
+ * be used in the following situations:
  *
  * 1. Parameters and return values that are not explicitly declared to handle
  *    null.
@@ -232,44 +231,6 @@ if (Math.random() < 1) {  // always true but the compiler doesn't know that
   throw 'Externs file "chrome_extensions.js" should not be executed';
 }
 
-
-/**
- * @see https://developer.chrome.com/extensions/accessibilityFeatures
- * @const
- */
-chrome.accessibilityFeatures = {};
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.spokenFeedback;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.largeCursor;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.stickyKeys;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.highContrast;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.screenMagnifier;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.autoclick;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.virtualKeyboard;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.animationPolicy;
 
 
 /**
@@ -2164,6 +2125,32 @@ chrome.devtools.inspectedWindow.onResourceContentCommitted;
 
 
 /**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/
+ * @const
+ */
+chrome.devtools.network = {};
+
+/**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/#type-Request
+ * @constructor
+ */
+chrome.devtools.network.Request = function() {};
+
+/**
+ * @interface
+ * @extends {ChromeBaseEvent<
+ *     function(!chrome.devtools.network.Request)>}
+ */
+chrome.devtools.network.RequestEvent = function() {};
+
+/**
+ * @see https://developer.chrome.com/docs/extensions/reference/devtools_network/#event-onRequestFinished
+ * @type {!chrome.devtools.network.RequestEvent}
+ */
+chrome.devtools.network.onRequestFinished
+
+
+/**
  * @see https://developer.chrome.com/extensions/enterprise_platformKeys
  * @const
  */
@@ -2340,6 +2327,121 @@ chrome.enterprise.reportingPrivate.uploadChromeDesktopReport = function(
 chrome.enterprise.reportingPrivate.getDeviceId = function(callback) {};
 
 /**
+ * Returns a random secret stored in a platform specific storage.
+ * @param {(function(!ArrayBuffer): void)=} callback Called with the result.
+ */
+chrome.enterprise.reportingPrivate.getPersistentSecret = function(callback) {};
+
+/**
+ * Returns byte string associated with the data item stored in a platform
+ * specific storage.
+ * @param {!string} item Item name (can have containers separated by '/').
+ * @param {(function((!ArrayBuffer|undefined)): void)=} callback Called back with the
+ *     response.
+ */
+chrome.enterprise.reportingPrivate.getDeviceData = function(item, callback) {};
+
+/**
+ * Stores byte string associated with the data item in a platform
+ * specific storage.
+ * @param {!string} item Item name (can have containers separated by '/').
+ * @param {!ArrayBuffer|undefined} data Byte string to associate with the data item.
+ * @param {(function(): void)=} callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.setDeviceData = function(
+    item, data, callback) {};
+
+/**
+ * Represents a device info property type.
+ * @enum {string}
+ */
+chrome.enterprise.reportingPrivate.SettingValue = {
+  UNKNOWN: '',
+  DISABLED: '',
+  ENABLED: '',
+};
+
+/**
+ * Type of the object returned by getDeviceInfo.
+ * @typedef {?{
+ *   osName: string,
+ *   osVersion: string,
+ *   deviceHostName: string,
+ *   deviceModel: string,
+ *   serialNumber: string,
+ *   screenLockSecured: chrome.enterprise.reportingPrivate.SettingValue,
+ *   diskEncrypted: chrome.enterprise.reportingPrivate.SettingValue,
+ *   macAddresses: (!Array<string>|undefined),
+ * }}
+ */
+chrome.enterprise.reportingPrivate.DeviceInfo;
+
+/**
+ * Returns the device information object.
+ * @param {(function(!chrome.enterprise.reportingPrivate.DeviceInfo): void)=}
+ *     callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.getDeviceInfo = function(callback) {};
+
+/**
+ * Represents possible states for the EnterpriseRealTimeUrlCheckMode policy
+ * @enum {number}
+ */
+chrome.enterprise.reportingPrivate.RealtimeUrlCheckMode = {
+  DISABLED: 0,
+  ENABLED_MAIN_FRAME: 0,
+};
+
+/**
+ * Type of the object returned by getContextInfo.
+ * @typedef {?{
+ *   browserAffiliationIds: (!Array<string>|undefined),
+ *   profileAffiliationIds: (!Array<string>|undefined),
+ *   onFileAttachedProviders: (!Array<string>|undefined),
+ *   onFileDownloadedProviders: (!Array<string>|undefined),
+ *   onBulkDataEntryProviders: (!Array<string>|undefined),
+ *   onSecurityEventProviders: (!Array<string>|undefined),
+ *   realtimeUrlCheckMode: chrome.enterprise.reportingPrivate.RealtimeUrlCheckMode,
+ *   browserVersion: string,
+ * }}
+ */
+chrome.enterprise.reportingPrivate.ContextInfo;
+
+/**
+ * Returns the context information object.
+ * @param {(function(!chrome.enterprise.reportingPrivate.ContextInfo): void)}
+ *     callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.getContextInfo = function(callback) {};
+
+
+/**
+ * Possible states for the Certificate status.
+ * @enum {number}
+ */
+chrome.enterprise.reportingPrivate.CertificateStatus = {
+  OK: 0,
+  POLICY_UNSET: 1,
+};
+
+/**
+ * Type of the object returned by getCertificate.
+ * @typedef {?{
+ *   status: chrome.enterprise.reportingPrivate.CertificateStatus,
+ *   encodedCertificate: (!ArrayBuffer|undefined),
+ * }}
+ */
+chrome.enterprise.reportingPrivate.Certificate;
+
+/**
+ * Returns the certificate object.
+ * @param {!string} url URL for which certificate needs to be fetched.
+ * @param {(function(!chrome.enterprise.reportingPrivate.Certificate): void)}
+ *     callback Called back with the response.
+ */
+chrome.enterprise.reportingPrivate.getCertificate = function(url, callback) {};
+
+/**
  * @see https://developer.chrome.com/extensions/extension.html
  * @const
  */
@@ -2472,6 +2574,49 @@ chrome.extension.onRequest;
 /** @type {!ChromeEvent} */
 chrome.extension.onRequestExternal;
 
+/**
+ * @see https://developer.chrome.com/extensions/runtime.html
+ * @const
+ */
+chrome.runtime = {};
+
+
+/** @type {{message:(string|undefined)}|undefined} */
+chrome.runtime.lastError;
+
+
+/**
+ * @param {string|!Object=} opt_extensionIdOrConnectInfo Either the
+ *     extensionId to connect to, in which case connectInfo params can be
+ *     passed in the next optional argument, or the connectInfo params.
+ * @param {!Object=} opt_connectInfo The connectInfo object,
+ *     if arg1 was the extensionId to connect to.
+ * @return {!Port} New port.
+ */
+chrome.runtime.connect = function(
+    opt_extensionIdOrConnectInfo, opt_connectInfo) {};
+
+
+/**
+ * @param {string|*} extensionIdOrMessage Either the extensionId to send the
+ *     message to, in which case the message is passed as the next arg, or the
+ *     message itself.
+ * @param {(*|!Object|function(*): void)=} opt_messageOrOptsOrCallback
+ *     One of:
+ *     The message, if arg1 was the extensionId.
+ *     The options for message sending, if arg1 was the message and this
+ *     argument is not a function.
+ *     The callback, if arg1 was the message and this argument is a function.
+ * @param {(!Object|function(*): void)=} opt_optsOrCallback
+ *     Either the options for message sending, if arg2 was the message,
+ *     or the callback.
+ * @param {function(*): void=} opt_callback The callback function which
+ *     takes a JSON response object sent by the handler of the request.
+ * @return {undefined}
+ */
+chrome.runtime.sendMessage = function(
+    extensionIdOrMessage, opt_messageOrOptsOrCallback, opt_optsOrCallback,
+    opt_callback) {};
 
 
 /** @type {string} */
@@ -2517,12 +2662,20 @@ chrome.runtime.Manifest.prototype.name;
 chrome.runtime.Manifest.prototype.version;
 
 
+/** @type {string|undefined} */
+chrome.runtime.Manifest.prototype.version_name;
+
+
 /** @type {number|undefined} */
 chrome.runtime.Manifest.prototype.manifest_version;
 
 
 /** @type {string|undefined} */
 chrome.runtime.Manifest.prototype.description;
+
+
+/** @type {!Object<string, string>} */
+chrome.runtime.Manifest.prototype.icons;
 
 
 /** @type {!chrome.runtime.Manifest.Oauth2|undefined} */
@@ -2546,6 +2699,9 @@ chrome.runtime.Manifest.prototype.kiosk_only;
  * @type {boolean|undefined}
  */
 chrome.runtime.Manifest.prototype.kiosk_enabled;
+
+/** @type {string|undefined} */
+chrome.runtime.Manifest.prototype.replacement_web_app;
 
 
 
@@ -2653,8 +2809,63 @@ chrome.runtime.sendNativeMessage = function(
 
 
 /**
- *
- * @param {function(!Object)} callback
+ * The operating system chrome is running on.
+ * @see https://developer.chrome.com/apps/runtime#type-PlatformOs
+ * @enum {string}
+ */
+chrome.runtime.PlatformOs = {
+  ANDROID: '',
+  CROS: '',
+  LINUX: '',
+  MAC: '',
+  OPENBSD: '',
+  WIN: '',
+};
+
+
+/**
+ * The machine's processor architecture.
+ * @see https://developer.chrome.com/apps/runtime#type-PlatformArch
+ * @enum {string}
+ */
+chrome.runtime.PlatformArch = {
+  ARM: '',
+  ARM64: '',
+  MIPS: '',
+  MIPS64: '',
+  X86_32: '',
+  X86_64: '',
+};
+
+
+/**
+ * The native client architecture.
+ * @see https://developer.chrome.com/apps/runtime#type-PlatformNaclArch
+ * @enum {string}
+ */
+chrome.runtime.PlatformNaclArch = {
+  ARM: '',
+  MIPS: '',
+  MIPS64: '',
+  X86_32: '',
+  X86_64: '',
+};
+
+
+/**
+ * @see https://developer.chrome.com/apps/runtime#type-PlatformInfo
+ * @typedef {{
+ *   os: !chrome.runtime.PlatformOs,
+ *   arch: !chrome.runtime.PlatformArch,
+ *   nacl_arch: !chrome.runtime.PlatformNaclArch,
+ * }}
+ */
+chrome.runtime.PlatformInfo;
+
+
+/**
+ * @see https://developer.chrome.com/extensions/runtime#type-PlatformInfo
+ * @param {function(!chrome.runtime.PlatformInfo)} callback
  * @return {undefined}
  */
 chrome.runtime.getPlatformInfo = function(callback) {};
@@ -2673,6 +2884,10 @@ chrome.runtime.onConnect;
 
 /** @type {!chrome.runtime.PortEvent} */
 chrome.runtime.onConnectExternal;
+
+
+/** @type {!chrome.runtime.PortEvent} */
+chrome.runtime.onConnectNative;
 
 
 /** @type {!ChromeObjectEvent} */
@@ -2741,6 +2956,13 @@ chrome.tabs.TabStatus = {
   COMPLETE: '',
   LOADING: '',
 };
+
+
+/**
+ * @const {number}
+ * @see https://developer.chrome.com/extensions/tabs#property-TAB_ID_NONE
+ */
+chrome.tabs.TAB_ID_NONE = -1;
 
 
 /**
@@ -2929,8 +3151,8 @@ chrome.tabs.HighlightInfo;
 /**
  * @see https://developer.chrome.com/extensions/tabs#method-highlight
  * @param {!chrome.tabs.HighlightInfo} highlightInfo
- * @param {function(!ChromeWindow): void} callback Callback function invoked
- *    with each appropriate Window.
+ * @param {function(!ChromeWindow): void=} callback Callback function invoked
+ *    for each window whose tabs were highlighted.
  * @return {undefined}
  */
 chrome.tabs.highlight = function(highlightInfo, callback) {};
@@ -3388,9 +3610,12 @@ chrome.pageAction.hide = function(tabId) {};
 /**
  * @param {Object} details An object which has 'tabId' and either
  *     'imageData' or 'path'.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs setting the icon, chrome.runtime.lastError will be set to the error
+ * message.
  * @return {undefined}
  */
-chrome.pageAction.setIcon = function(details) {};
+chrome.pageAction.setIcon = function(details, callback) {};
 
 
 /**
@@ -3409,9 +3634,12 @@ chrome.pageAction.setTitle = function(details) {};
 
 /**
  * @param {number} tabId Tab Id.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs showing the pageAction, chrome.runtime.lastError will be set to the
+ * error message.
  * @return {undefined}
  */
-chrome.pageAction.show = function(tabId) {};
+chrome.pageAction.show = function(tabId, callback) {};
 
 
 /** @type {!ChromeEvent} */
@@ -3903,7 +4131,7 @@ chrome.contextMenus.removeAll = function(opt_callback) {};
 
 /**
  * @interface
- * @extends {ChromeBaseEvent<function(!Object, !Tab=)>}
+ * @extends {ChromeBaseEvent<function(!OnClickData, !Tab=)>}
  * @see https://developer.chrome.com/extensions/contextMenus#event-onClicked
  */
 chrome.contextMenus.ClickedEvent = function() {};
@@ -4040,7 +4268,7 @@ chrome.management.InstallOptions;
 /**
  * @param {function(!Array<!ExtensionInfo>): void=} opt_callback Optional
  *     callback function.
- * @return {!Array<!ExtensionInfo>}
+ * @return {undefined}
  */
 chrome.management.getAll = function(opt_callback) {};
 
@@ -4149,6 +4377,20 @@ chrome.management.setLaunchType = function(id, launchType, opt_callback) {};
 chrome.management.generateAppForLink = function(url, title, opt_callback) {};
 
 
+/**
+ * @param {function():void=} callback
+ * @return {undefined}
+ */
+chrome.management.installReplacementWebApp = function(callback) {};
+
+/**
+ * Event whose listeners take an ExtensionInfo parameter.
+ * @interface
+ * @extends {ChromeBaseEvent<function(!ExtensionInfo)>}
+ */
+function ChromeExtensionInfoEvent() {};
+
+
 /** @type {!ChromeExtensionInfoEvent} */
 chrome.management.onInstalled;
 
@@ -4196,151 +4438,6 @@ chrome.idle.getAutoLockDelay = function(callback) {};
 
 /** @type {!ChromeEvent} */
 chrome.idle.onStateChanged;
-
-
-/**
- * Chrome Text-to-Speech API.
- * @const
- * @see https://developer.chrome.com/extensions/tts.html
- */
-chrome.tts = {};
-
-
-
-/**
- * An event from the TTS engine to communicate the status of an utterance.
- * @constructor
- */
-function TtsEvent() {}
-
-
-/** @type {string} */
-TtsEvent.prototype.type;
-
-
-/** @type {number} */
-TtsEvent.prototype.charIndex;
-
-
-/** @type {string} */
-TtsEvent.prototype.errorMessage;
-
-
-/**
- * The speech options for the TTS engine.
- * @record
- * @see https://developer.chrome.com/apps/tts#type-TtsOptions
- */
-function TtsOptions() {}
-
-/** @type {boolean|undefined} */
-TtsOptions.prototype.enqueue;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.voiceName;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.extensionId;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.lang;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.rate;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.pitch;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.volume;
-
-/** @type {!Array<string>|undefined} */
-TtsOptions.prototype.requiredEventTypes;
-
-/** @type {!Array<string>|undefined} */
-TtsOptions.prototype.desiredEventTypes;
-
-/** @type {!function(!TtsEvent)|undefined} */
-TtsOptions.prototype.onEvent;
-
-
-/**
- * A description of a voice available for speech synthesis.
- * @constructor
- */
-function TtsVoice() {}
-
-
-/** @type {string} */
-TtsVoice.prototype.voiceName;
-
-
-/** @type {string} */
-TtsVoice.prototype.lang;
-
-
-/** @type {string} */
-TtsVoice.prototype.gender;
-
-
-/** @type {string} */
-TtsVoice.prototype.extensionId;
-
-
-/** @type {Array<string>} */
-TtsVoice.prototype.eventTypes;
-
-
-/**
- * Gets an array of all available voices.
- * @param {function(Array<TtsVoice>)=} opt_callback An optional callback
- *     function.
- * @return {undefined}
- */
-chrome.tts.getVoices = function(opt_callback) {};
-
-
-/**
- * Checks if the engine is currently speaking.
- * @param {function(boolean)=} opt_callback The callback function.
- * @return {undefined}
- */
-chrome.tts.isSpeaking = function(opt_callback) {};
-
-
-/**
- * Speaks text using a text-to-speech engine.
- * @param {string} utterance The text to speak, either plain text or a complete,
- *     well-formed SSML document. Speech engines that do not support SSML will
- *     strip away the tags and speak the text. The maximum length of the text is
- *     32,768 characters.
- * @param {TtsOptions=} options The speech options.
- * @param {function()=} callback Called right away, before speech finishes.
- * @return {undefined}
- */
-chrome.tts.speak = function(utterance, options, callback) {};
-
-
-/**
- * Stops any current speech.
- * @return {undefined}
- */
-chrome.tts.stop = function() {};
-
-
-/**
- * @const
- * @see https://developer.chrome.com/extensions/ttsEngine.html
- */
-chrome.ttsEngine = {};
-
-
-/** @type {!ChromeEvent} */
-chrome.ttsEngine.onSpeak;
-
-
-/** @type {!ChromeEvent} */
-chrome.ttsEngine.onStop;
 
 
 /**
@@ -4642,11 +4739,32 @@ chrome.identity.launchWebAuthFlow = function(details, callback) {};
 chrome.identity.WebAuthFlowDetails;
 
 
+/** @typedef {?{id: string, email: string}} */
+chrome.identity.ProfileUserInfo;
+
 /**
- * @param {function(!Object):void} callback
+ * @enum {string}
+ * See https://developer.chrome.com/docs/extensions/reference/identity/#type-AccountStatus
+ */
+chrome.identity.AccountStatus = {
+  SYNC: '',
+  ANY: '',
+};
+
+/**
+ * See https://developer.chrome.com/docs/extensions/reference/identity/#type-ProfileDetails
+ * @typedef {{accountStatus: (!chrome.identity.AccountStatus|undefined)}}
+ */
+chrome.identity.ProfileDetails;
+
+/**
+ * @param {!chrome.identity.ProfileDetails|function(!chrome.identity.ProfileUserInfo):void} accountStatusOrCallback
+ *     Either the accountStatus of the primary profile account or the callback
+ * @param {function(!chrome.identity.ProfileUserInfo):void=} opt_callback if
+ *     the accountStatus is provided
  * @return {undefined}
  */
-chrome.identity.getProfileUserInfo = function(callback) {};
+chrome.identity.getProfileUserInfo = function(accountStatusOrCallback, opt_callback) {};
 
 
 
@@ -4867,6 +4985,57 @@ chrome.input.ime.setComposition = function(parameters, opt_callback) {};
  * @return {undefined}
  */
 chrome.input.ime.setCursorPosition = function(parameters, opt_callback) {};
+
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/input.ime#type-AssistiveWindowType
+ */
+chrome.input.ime.AssistiveWindowType = {
+  UNDO: '',
+};
+
+
+/**
+ * Properties of the assistive window.
+ * @typedef {{
+ *   type: !chrome.input.ime.AssistiveWindowType,
+ *   visible: boolean
+ * }}
+ * @see https://developer.chrome.com/extensions/input.ime#type-AssistiveWindowProperties
+ */
+chrome.input.ime.AssistiveWindowProperties;
+
+
+/**
+ * Shows/Hides an assistive window with the given properties.
+ * @param {{
+ *   contextID: number,
+ *   properties: !chrome.input.ime.AssistiveWindowProperties
+ * }} parameters
+ * @param {function(boolean): void=} callback Called when the operation
+ *     completes.
+ * @see https://developer.chrome.com/extensions/input.ime#method-setAssistiveWindowProperties
+ */
+chrome.input.ime.setAssistiveWindowProperties = function(
+    parameters, callback) {};
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/input.ime#type-AssistiveWindowButton
+ */
+chrome.input.ime.AssistiveWindowButton = {
+  UNDO: '',
+  ADD_TO_DICTIONARY: '',
+};
+
+
+/**
+ * This event is sent when a button in an assistive window is clicked.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/input.ime#event-onAssistiveWindowButtonClicked
+ */
+chrome.input.ime.onAssistiveWindowButtonClicked;
 
 
 /**
@@ -6866,60 +7035,60 @@ chrome.system.display.clearTouchCalibration = function(id) {};
  */
 chrome.system.display.onDisplayChanged;
 
+/**
+ * @const
+ * @see https://developer.chrome.com/extensions/system_memory
+ */
+chrome.system.memory = {};
+
+/**
+ * Get physical memory information.
+ * @param {function(!chrome.system.memory.MemoryInfo)} callback
+ * @return {undefined}
+ */
+chrome.system.memory.getInfo = function(callback) {};
+
+/**
+ * @constructor
+ */
+chrome.system.memory.MemoryInfo = function() {};
+
+
+/** @type {number} */
+chrome.system.memory.MemoryInfo.prototype.capacity;
+
+
+/** @type {number} */
+chrome.system.memory.MemoryInfo.prototype.availableCapacity;
 
 /**
  * @const
- * @see https://developer.chrome.com/apps/system_powerSource
+ * @see http://developer.chrome.com/apps/system_network.html
  */
-chrome.system.powerSource = {};
+chrome.system.network = {};
 
 /**
- * @enum {string}
+ * @param {function(!Array<!chrome.system.network.NetworkInterface>)} callback
+ * @return {undefined}
  */
-chrome.system.powerSource.PowerSourceType = {
-  UNKNOWN: '',
-  MAINS: '',
-  USB: '',
-};
+chrome.system.network.getNetworkInterfaces = function(callback) {};
 
 /**
- * PowerSourceInfo
- * @constructor
+ * @interface
  */
-chrome.system.powerSource.PowerSourceInfo = function() {};
-
-/** @type {!chrome.system.powerSource.PowerSourceType} */
-chrome.system.powerSource.PowerSourceInfo.prototype.type;
-
-/** @type {number|undefined} */
-chrome.system.powerSource.PowerSourceInfo.prototype.maxPower;
-
-/** @type {boolean} */
-chrome.system.powerSource.PowerSourceInfo.prototype.active;
+chrome.system.network.NetworkInterface = function() {};
 
 /**
- * Requests information on attached power sources.
- *
- * @param {function(!Array<!chrome.system.powerSource.PowerSourceType>):void}
- *     callback The callback to invoke with the results or undefined if the
- *     power source information is not known.
+ * @const {string} The underlying name of the adapter. On *nix, this will
+ *     typically be "eth0", "wlan0", etc.
  */
-chrome.system.powerSource.getPowerSourceInfo = function(callback) {};
+chrome.system.network.NetworkInterface.prototype.name;
 
-/**
- * Requests a power source status update. Resulting power source
- * status updates are observable using onPowerChanged.
- */
-chrome.system.powerSource.requestStatusUpdate = function() {};
+/** @const {string} The available IPv4/6 address. */
+chrome.system.network.NetworkInterface.prototype.address;
 
-/**
- * Event for changes in the set of connected power sources.
- *
- * It takes an additional, optional `extraInfoSpec` argument, which we ignore.
- * @type {!ChromeBaseEvent<function(string,
- *     !chrome.system.powerSource.PowerSourceInfo): (boolean|undefined)>}
- */
-chrome.system.powerSource.onPowerChanged;
+/** @const {number} The prefix length */
+chrome.system.network.NetworkInterface.prototype.prefixLength;
 
 
 /**
@@ -7342,15 +7511,6 @@ ChromeWindow.prototype.state;
 ChromeWindow.prototype.alwaysOnTop;
 
 
-
-/**
- * Event whose listeners take an ExtensionInfo parameter.
- * @interface
- * @extends {ChromeBaseEvent<function(!ExtensionInfo)>}
- */
-function ChromeExtensionInfoEvent() {}
-
-
 /**
  * @see http://developer.chrome.com/extensions/pushMessaging.html
  * @const
@@ -7495,7 +7655,7 @@ CookieStore.prototype.tabIds;
 
 
 /**
- * @see https://developer.chrome.com/extensions/dev/contextMenus.html#type-OnClickData
+ * @see https://developer.chrome.com/docs/extensions/reference/contextMenus/#type-OnClickData
  * @constructor
  */
 function OnClickData() {}
@@ -7730,6 +7890,10 @@ ChromeKeyboardEvent.prototype.altKey;
 
 
 /** @type {boolean|undefined} */
+ChromeKeyboardEvent.prototype.altgrKey;
+
+
+/** @type {boolean|undefined} */
 ChromeKeyboardEvent.prototype.ctrlKey;
 
 
@@ -7876,11 +8040,23 @@ ProxyConfig.prototype.mode;
  * Listener will receive an object that maps each key to its StorageChange,
  * and the namespace ("sync" or "local") of the storage area the changes
  * are for.
- * @see https://developer.chrome.com/extensions/storage.html
+ * @see https://developer.chrome.com/extensions/storage#event-onChanged
  * @interface
  * @extends {ChromeBaseEvent<function(!Object<string, !StorageChange>, string)>}
  */
 function StorageChangeEvent() {}
+
+
+/**
+ * The event listener for StorageArea receives an Object mapping each
+ * key that changed to its corresponding StorageChange for that item.
+ *
+ * Listener will receive an object that maps each key to its StorageChange.
+ * @see https://developer.chrome.com/extensions/storage#type-StorageArea
+ * @interface
+ * @extends {ChromeBaseEvent<function(!Object<string, !StorageChange>)>}
+ */
+function StorageAreaChangeEvent() {}
 
 
 /**
@@ -7957,6 +8133,12 @@ StorageArea.prototype.remove = function(keys, opt_callback) {};
  */
 StorageArea.prototype.clear = function(opt_callback) {};
 
+
+/**
+ * Fired when one or more items change.
+ * @type {!StorageAreaChangeEvent}
+ */
+StorageArea.prototype.onChanged;
 
 
 /**
@@ -9744,36 +9926,6 @@ chrome.serial.onReceiveError;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/** @const */
-chrome.screenlockPrivate = {};
-
-
-/**
- * @param {string} message Displayed on the unlock screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.showMessage = function(message) {};
-
-
-/**
- * @param {function(boolean)} callback
- * @return {undefined}
- */
-chrome.screenlockPrivate.getLocked = function(callback) {};
-
-
-/**
- * @param {boolean} locked If true and the screen is unlocked, locks the screen.
- *     If false and the screen is locked, unlocks the screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.setLocked = function(locked) {};
-
-
-/** @type {!ChromeBooleanEvent} */
-chrome.screenlockPrivate.onChanged;
-
-
 /**
  * @const
  */
@@ -10480,88 +10632,6 @@ chrome.inlineInstallPrivate = {};
  * @return {undefined}
  */
 chrome.inlineInstallPrivate.install = function(id, opt_callback) {};
-
-
-/**
- * @see https://cs.chromium.org/chromium/src/chrome/common/extensions/api/input_method_private.json
- */
-chrome.inputMethodPrivate = {};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.InputContextType = {
-  TEXT: '',
-  SEARCH: '',
-  TEL: '',
-  URL: '',
-  EMAIL: '',
-  NUMBER: '',
-  PASSWORD: '',
-};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.AutoCapitalizeType = {
-  OFF: '',
-  CHARACTERS: '',
-  WORDS: '',
-  SENTENCES: '',
-};
-
-
-/**
- * @enum {string}
- */
-chrome.inputMethodPrivate.FocusReason = {
-  MOUSE: '',
-  TOUCH: '',
-  PEN: '',
-  OTHER: '',
-};
-
-
-/** @constructor */
-chrome.inputMethodPrivate.InputContext = function() {};
-
-
-/** @type {number} */
-chrome.inputMethodPrivate.InputContext.prototype.contextID;
-
-
-/** @type {chrome.inputMethodPrivate.InputContextType} */
-chrome.inputMethodPrivate.InputContext.prototype.type;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.autoCorrect;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.autoComplete;
-
-
-/** @type {chrome.inputMethodPrivate.AutoCapitalizeType} */
-chrome.inputMethodPrivate.InputContext.prototype.autoCapitalize;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.spellCheck;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.shouldDoLearning;
-
-
-/** @type {chrome.inputMethodPrivate.FocusReason} */
-chrome.inputMethodPrivate.InputContext.prototype.focusReason;
-
-
-/** @type {boolean} */
-chrome.inputMethodPrivate.InputContext.prototype.hasBeenPassword;
 
 
 /**

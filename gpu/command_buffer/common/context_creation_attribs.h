@@ -16,9 +16,9 @@ namespace gpu {
 enum ContextType {
   CONTEXT_TYPE_WEBGL1,
   CONTEXT_TYPE_WEBGL2,
-  CONTEXT_TYPE_WEBGL2_COMPUTE,
   CONTEXT_TYPE_OPENGLES2,
   CONTEXT_TYPE_OPENGLES3,
+  CONTEXT_TYPE_OPENGLES31_FOR_TESTING,
   CONTEXT_TYPE_WEBGPU,
   CONTEXT_TYPE_LAST = CONTEXT_TYPE_WEBGPU
 };
@@ -28,8 +28,9 @@ GPU_EXPORT bool IsWebGLContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGL1OrES2ContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGL2OrES3ContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGL2OrES3OrHigherContextType(ContextType context_type);
-GPU_EXPORT bool IsWebGL2ComputeContextType(ContextType context_type);
+GPU_EXPORT bool IsES31ForTestingContextType(ContextType context_type);
 GPU_EXPORT bool IsWebGPUContextType(ContextType context_type);
+GPU_EXPORT const char* ContextTypeToLabel(ContextType context_type);
 
 enum ColorSpace {
   COLOR_SPACE_UNSPECIFIED,
@@ -62,6 +63,7 @@ struct GPU_EXPORT ContextCreationAttribs {
   bool own_offscreen_surface = false;
   bool single_buffer = false;
   bool enable_gles2_interface = true;
+  bool enable_grcontext = false;
   bool enable_raster_interface = false;
   bool enable_oop_rasterization = false;
   bool enable_swap_timestamps_if_supported = false;

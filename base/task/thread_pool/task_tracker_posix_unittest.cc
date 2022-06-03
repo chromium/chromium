@@ -9,9 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
@@ -36,16 +35,17 @@ class ThreadPoolTaskTrackerPosixTest : public testing::Test {
   ThreadPoolTaskTrackerPosixTest() : service_thread_("ServiceThread") {
     Thread::Options service_thread_options;
     service_thread_options.message_pump_type = MessagePumpType::IO;
-    service_thread_.StartWithOptions(service_thread_options);
+    service_thread_.StartWithOptions(std::move(service_thread_options));
     tracker_.set_io_thread_task_runner(service_thread_.task_runner());
   }
+  ThreadPoolTaskTrackerPosixTest(const ThreadPoolTaskTrackerPosixTest&) =
+      delete;
+  ThreadPoolTaskTrackerPosixTest& operator=(
+      const ThreadPoolTaskTrackerPosixTest&) = delete;
 
  protected:
   Thread service_thread_;
-  TaskTrackerPosix tracker_{"Test"};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolTaskTrackerPosixTest);
+  TaskTrackerPosix tracker_;
 };
 
 }  // namespace
@@ -56,8 +56,8 @@ TEST_F(ThreadPoolTaskTrackerPosixTest, RunTask) {
   Task task(
       FROM_HERE,
       BindOnce([](bool* did_run) { *did_run = true; }, Unretained(&did_run)),
-      TimeDelta());
-  constexpr TaskTraits default_traits = {ThreadPool()};
+      TimeTicks::Now(), TimeDelta());
+  constexpr TaskTraits default_traits;
 
   EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));
 
@@ -77,8 +77,8 @@ TEST_F(ThreadPoolTaskTrackerPosixTest, FileDescriptorWatcher) {
   Task task(FROM_HERE,
             BindOnce(IgnoreResult(&FileDescriptorWatcher::WatchReadable),
                      fds[0], DoNothing()),
-            TimeDelta());
-  constexpr TaskTraits default_traits = {ThreadPool()};
+            TimeTicks::Now(), TimeDelta());
+  constexpr TaskTraits default_traits;
 
   EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));
 

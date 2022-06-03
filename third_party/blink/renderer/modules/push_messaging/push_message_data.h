@@ -14,11 +14,11 @@
 
 namespace blink {
 
-class ArrayBufferOrArrayBufferViewOrUSVString;
 class Blob;
 class DOMArrayBuffer;
 class ExceptionState;
 class ScriptState;
+class V8UnionArrayBufferOrArrayBufferViewOrUSVString;
 
 class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,7 +26,7 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
  public:
   static PushMessageData* Create(const String& data);
   static PushMessageData* Create(
-      const ArrayBufferOrArrayBufferViewOrUSVString& data);
+      const V8UnionArrayBufferOrArrayBufferViewOrUSVString* data);
 
   PushMessageData(const char* data, unsigned bytes_size);
   ~PushMessageData() override;

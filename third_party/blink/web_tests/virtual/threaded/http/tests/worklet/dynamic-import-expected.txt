@@ -1,0 +1,9 @@
+CONSOLE MESSAGE: This test logs a result once from each PaintWorkletGlobalScope
+CONSOLE ERROR: TypeError: import() is disallowed on WorkletGlobalScope.
+CONSOLE ERROR: TypeError: import() is disallowed on WorkletGlobalScope.
+CONSOLE ERROR: TypeError: import() is disallowed on WorkletGlobalScope.
+CONSOLE ERROR: TypeError: import() is disallowed on WorkletGlobalScope.
+This is a testharness.js-based test.
+PASS Dynamic import() on WorkletGlobalScope should reject the promise.
+Harness: the test ran to completion.
+

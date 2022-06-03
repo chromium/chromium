@@ -16,14 +16,14 @@ namespace policy {
 // Data signing interface.
 class POLICY_EXPORT SigningService {
  public:
-  using SigningCallback = base::Callback<void(bool success,
-       enterprise_management::SignedData signed_data)>;
+  using SigningCallback =
+      base::OnceCallback<void(bool success,
+                              enterprise_management::SignedData signed_data)>;
 
   virtual ~SigningService() = default;
 
   // Signs |data| and calls |callback| with the signed data.
-  virtual void SignData(const std::string& data,
-                        const SigningCallback& callback) = 0;
+  virtual void SignData(const std::string& data, SigningCallback callback) = 0;
 };
 
 } // namespace policy

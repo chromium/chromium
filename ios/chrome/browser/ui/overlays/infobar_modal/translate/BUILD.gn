@@ -1,0 +1,65 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate") {
+  sources = [
+    "translate_infobar_modal_overlay_coordinator.h",
+    "translate_infobar_modal_overlay_coordinator.mm",
+    "translate_infobar_modal_overlay_mediator.h",
+    "translate_infobar_modal_overlay_mediator.mm",
+    "translate_infobar_modal_overlay_mediator_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/translate:public",
+    "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "translate_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":translate",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//components/translate/core/browser:browser",
+    "//components/translate/core/browser:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/translate:test_support",
+    "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
+    "//ios/chrome/browser/ui/infobars/modals/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

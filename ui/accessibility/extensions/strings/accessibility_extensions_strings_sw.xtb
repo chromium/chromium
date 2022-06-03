@@ -7,18 +7,18 @@
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="1588438908519853928">Ya kawaida</translation>
 <translation id="1591070050619849194">Zima uhuishaji wa picha zote.</translation>
-<translation id="1703735871906654364">Kuvinjari kwa Kareti</translation>
+<translation id="1703735871906654364">Kuvinjari kwa Kibodi</translation>
 <translation id="1791496371305830581">Ruhusu picha zote zilizouhuishwa.</translation>
 <translation id="1996252509865389616">Ungependa kuwasha?</translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2179565792157161713">Fungua Maelezo Marefu Katika Kichupo Kipya</translation>
 <translation id="2223143012868735942">Kichujio cha rangi kinachoweza kugeuzwa ili kifae kinachotumiwa kwenye kurasa za wavuti ili kuboresha mwonekano wa rangi.</translation>
-<translation id="2394933097471027016">Jaribu sasa - Kuvinjari kwa Kareti huwa kumewashwa kwenye ukurasa huu wakati wowote!</translation>
+<translation id="2394933097471027016">Jaribu sasa - Kuvinjari kwa Kibodi huwa kumewashwa kwenye ukurasa huu wakati wowote!</translation>
 <translation id="2471847333270902538">Mpango wa rangi wa <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">Shikilia chini &lt;span class='key'&gt;Chaguo&lt;/span&gt; ili kusogea kwa maneno.</translation>
 <translation id="2795227192542594043">Kiendelezi hiki kinakupa kielekezi cha kusogeza katika ukurasa wa wavuti, na kukuruhusu kuchagua maandishi kwa kibodi.</translation>
 <translation id="2808027189040546825">Hatua ya 1: Chagua safu mlalo yenye nyota zilizofifia zaidi:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Unapofikia kiungo au kidhibiti, kinaangaziwa kiotomatiki.  Bonyeza &lt;span class='key'&gt;Enter&lt;/span&gt; ili kubofya kiungo au kitufe. &lt;/p&gt; &lt;p&gt;   Kidhibiti kilichoangaziwa (kama vile kikasha cha maandishi au kikasha cha orodha) kinapopiga picha vitufe vya vishale, bonyeza &lt;span class='key'&gt;Esc&lt;/span&gt; ukifuatisha kishale cha kushoto au kulia ili kuendelea Kuvinjari kwa Kareti. &lt;/p&gt; &lt;p&gt;   Njia nyingine, bonyeza &lt;span class='key'&gt;Kichupo&lt;/span&gt; ili kuhamisha kidhibiti kinachofuata kinachoweza kuangaziwa. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Unapofikia kiungo au kidhibiti, kinaangaziwa kiotomatiki. Bonyeza &lt;span class='key'&gt;Enter&lt;/span&gt; ili ubofye kiungo au kitufe. &lt;/p&gt; &lt;p&gt;Kidhibiti kilichoangaziwa (kama vile kikasha cha maandishi au cha orodha) kinaponasa vitufe vya vishale, bonyeza &lt;span class='key'&gt;Esc&lt;/span&gt; ukifuatisha kishale cha kushoto au kulia ili kuendelea Kuvinjari kwa Kibodi. &lt;/p&gt; &lt;p&gt; Njia nyingine, bonyeza &lt;span class='key'&gt;Kichupo&lt;/span&gt; ili kuhamisha kidhibiti kinachofuata kinachoweza kuangaziwa. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Usanidi</translation>
 <translation id="3410969471888629217">Sahau ugeuzaji wa tovuti ili zikufae</translation>
 <translation id="3435896845095436175">Washa</translation>
@@ -31,8 +31,8 @@
 <translation id="4769065380738716500">Picha zimebadilishwa kwa maandishi yao ya alt.</translation>
 <translation id="4896660567607030658">Hakuna maoni, onyesha tu kielekezi.</translation>
 <translation id="4937901943818762779">Ruhusu picha zilizouhuishwa, lakini mara moja pekee.</translation>
-<translation id="4949131196216960195">Bonyeza &lt;span class='key'&gt;Tafuta&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (kitufe cha 'Ongeza Mwangaza' au F7) ili uwashe 'Kuvinjari kwa Kareti'. Ibonyeze tena ili uizime.</translation>
-<translation id="4954450790315188152">Kuvinjari kwa Kareti kunapowashwa:</translation>
+<translation id="4949131196216960195">Bonyeza &lt;span class='key'&gt;Tafuta&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (kitufe cha 'Ongeza Mwangaza' au F7) ili uwashe 'Kuvinjari kwa Kibodi'. Zibonyeze tena ili uzime.</translation>
+<translation id="4954450790315188152">Wakati kipengele cha Kuvinjari kwa Kibodi kimewashwa:</translation>
 <translation id="5041932793799765940">Marekebisho ya rangi</translation>
 <translation id="5094574508723441140">Utofautishaji ulioongezeka</translation>
 <translation id="5173942593318174089">Angazia kilipo kielekezi kwa uhuishaji.</translation>
@@ -60,9 +60,9 @@
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="786423340267544509">Ongeza mpaka kwenye vipengee vilivyo na vipengele vya aria-describedat au longdesc.</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
-<translation id="8260673944985561857">Chaguo za Kuvinjari za Kareti</translation>
+<translation id="8260673944985561857">Chaguo za Kuvinjari kwa Kibodi</translation>
 <translation id="8321034316479930120">Sera ya Uhuishaji</translation>
 <translation id="8480209185614411573">Utofautishaji wa Juu</translation>
-<translation id="8609925175482059018">Bonyeza &lt;span class='key'&gt;F7&lt;/span&gt; ili kuwasha Kuvinjari kwa Kareti. Kibonyeze tena ili kuizima.</translation>
+<translation id="8609925175482059018">Bonyeza &lt;span class='key'&gt;F7&lt;/span&gt; ili uwashe Kuvinjari kwa Kibodi. Kibonyeze tena ili uzime.</translation>
 <translation id="894241283505723656">Maelezo Marefu katika Menyu ya Muktadha</translation>
 </translationbundle>

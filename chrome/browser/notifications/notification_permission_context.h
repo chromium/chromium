@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PERMISSION_CONTEXT_H_
 
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/permissions/permission_context_base.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_context_base.h"
 #include "extensions/buildflags/buildflags.h"
 
 class GURL;
-class Profile;
 
 // This permission context is responsible for getting, deciding on and updating
 // the notification permission for a particular website or extension. This
@@ -83,14 +82,16 @@ class Profile;
 //
 // Extensions that do not declare the "notifications" permission in their
 // manifest will be treated as regular websites.
-class NotificationPermissionContext : public PermissionContextBase {
+class NotificationPermissionContext
+    : public permissions::PermissionContextBase {
  public:
   // Helper method for updating the permission state of |origin| to |setting|.
-  static void UpdatePermission(Profile* profile,
+  static void UpdatePermission(content::BrowserContext* browser_context,
                                const GURL& origin,
                                ContentSetting setting);
 
-  explicit NotificationPermissionContext(Profile* profile);
+  explicit NotificationPermissionContext(
+      content::BrowserContext* browser_context);
   ~NotificationPermissionContext() override;
 
   // PermissionContextBase implementation.
@@ -98,8 +99,6 @@ class NotificationPermissionContext : public PermissionContextBase {
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-  void ResetPermission(const GURL& requesting_origin,
-                       const GURL& embedder_origin) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationPermissionContextTest,
@@ -114,15 +113,13 @@ class NotificationPermissionContext : public PermissionContextBase {
 #endif
 
   // PermissionContextBase implementation.
-  void DecidePermission(content::WebContents* web_contents,
-                        const PermissionRequestID& id,
-                        const GURL& requesting_origin,
-                        const GURL& embedding_origin,
-                        bool user_gesture,
-                        BrowserPermissionCallback callback) override;
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedder_origin,
-                            ContentSetting content_setting) override;
+  void DecidePermission(
+      content::WebContents* web_contents,
+      const permissions::PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      bool user_gesture,
+      permissions::BrowserPermissionCallback callback) override;
   bool IsRestrictedToSecureOrigins() const override;
 
   base::WeakPtrFactory<NotificationPermissionContext> weak_factory_ui_thread_{

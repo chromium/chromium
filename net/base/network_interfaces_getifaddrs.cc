@@ -24,16 +24,26 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces_posix.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <net/if_media.h>
 #include <netinet/in_var.h>
 #include <sys/ioctl.h>
 #endif  // !OS_IOS
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+// Declare getifaddrs() and freeifaddrs() weakly as they're only available
+// on Android N+.
+extern "C" {
+int getifaddrs(struct ifaddrs** __list_ptr) __attribute__((weak_import));
+void freeifaddrs(struct ifaddrs* __ptr) __attribute__((weak_import));
+}
+#endif  // OS_ANDROID
+
 namespace net {
 namespace internal {
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 
 // MacOSX implementation of IPAttributesGetter which calls ioctl() on socket to
 // retrieve IP attributes.
@@ -120,7 +130,7 @@ IPAttributesGetterMac::GetNetworkInterfaceType(const ifaddrs* if_addr) {
   return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 }
 
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
 bool IfaddrsToNetworkInterfaceList(int policy,
                                    const ifaddrs* interfaces,
@@ -209,7 +219,18 @@ bool IfaddrsToNetworkInterfaceList(int policy,
 
 }  // namespace internal
 
+// This version of GetNetworkList() can only be called on Android N+, so give it
+// a different and internal name so it isn't invoked mistakenly.
+#if defined(OS_ANDROID)
+namespace internal {
+bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks, int policy) {
+  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
+            base::android::SDK_VERSION_NOUGAT);
+  DCHECK(getifaddrs);
+  DCHECK(freeifaddrs);
+#else
 bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
+#endif
   if (networks == NULL)
     return false;
 
@@ -225,7 +246,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 
   std::unique_ptr<internal::IPAttributesGetter> ip_attributes_getter;
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   ip_attributes_getter = std::make_unique<internal::IPAttributesGetterMac>();
 #endif
 
@@ -235,9 +256,14 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   return result;
 }
 
+#if defined(OS_ANDROID)
+}  // namespace internal
+// For Android use GetWifiSSID() impl in network_interfaces_linux.cc.
+#else
 std::string GetWifiSSID() {
   NOTIMPLEMENTED();
   return std::string();
 }
+#endif
 
 }  // namespace net

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test origin header /html/semantics/links/downloading-resources/resources/ assert_equals: Correct origin header result expected "null" but got "http://web-platform.test:8001"
+Harness: the test ran to completion.
+

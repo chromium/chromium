@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Fetch Standard (https://fetch.spec.whatwg.org/)
 
 typedef (sequence<sequence<ByteString>> or record<ByteString, ByteString>) HeadersInit;
@@ -9,15 +9,17 @@ typedef (sequence<sequence<ByteString>> or record<ByteString, ByteString>) Heade
 interface Headers {
   constructor(optional HeadersInit init);
 
-  void append(ByteString name, ByteString value);
-  void delete(ByteString name);
+  undefined append(ByteString name, ByteString value);
+  undefined delete(ByteString name);
   ByteString? get(ByteString name);
   boolean has(ByteString name);
-  void set(ByteString name, ByteString value);
+  undefined set(ByteString name, ByteString value);
   iterable<ByteString, ByteString>;
 };
 
-typedef (Blob or BufferSource or FormData or URLSearchParams or ReadableStream or USVString) BodyInit;
+typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHttpRequestBodyInit;
+
+typedef (ReadableStream or XMLHttpRequestBodyInit) BodyInit;
 interface mixin Body {
   readonly attribute ReadableStream? body;
   readonly attribute boolean bodyUsed;
@@ -70,7 +72,7 @@ dictionary RequestInit {
   any window; // can only be set to null
 };
 
-enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "image", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
+enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report", "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache", "only-if-cached" };

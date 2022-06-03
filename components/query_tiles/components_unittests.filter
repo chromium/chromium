@@ -1,0 +1,7 @@
+CachedImageLoaderTest.*
+TileFetcherTest.*
+TileGroupTest.*
+TileManagerTest.*
+TileProtoConversionTest.*
+TileStoreTest.*
+TileTest.*

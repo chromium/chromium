@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body onload="loaded()">
+  <button id="outerButton" aria-label="Should be in tree"></button>
+  <div id="dialogContainer">
+    <div role="dialog" aria-label="modal dialog" aria-modal="true">
+      <button id="innerButton">Inner Button</button>
+    </div>
+  </div>
+
+  <script>
+    // Test that when an active ARIA modal dialog is removed from the tree, the
+    // tree is no longer pruned.
+
+    // Note: This test checks an edge case in the aria-modal pruning logic. This
+    // logic currently only runs on Mac, so there are only mac expectations for
+    // this test. See aria-modal.html for more information on tree pruning.
+    function loaded() {
+      innerButton.focus();
+      dialogContainer.remove();
+    }
+  </script>
+</body>
+</html>

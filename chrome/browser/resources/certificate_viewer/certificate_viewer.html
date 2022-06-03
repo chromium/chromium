@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <title id="title"></title>
+    <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+    <link rel="stylesheet" href="chrome://resources/css/tabs.css">
+    <link rel="stylesheet" href="chrome://resources/css/tree.css">
+    <link rel="stylesheet" href="certificate_viewer.css">
+    <script type="module" src="certificate_viewer.js"></script>
+  </head>
+  <body>
+    <tabbox id="tabbox">
+      <tabs id="tabs" class="new-style-tabs" role="tablist">
+        <tab id="general-tab" role="tab" aria-controls="general" tabindex="0">
+          $i18n{general}
+        </tab>
+        <tab id="details-tab" role="tab" aria-controls="details">
+          $i18n{details}
+        </tab>
+      </tabs>
+      <tabpanels id="tabpanels" class="new-style-tabs">
+        <!-- General -->
+        <tabpanel id="general" aria-labelledby="general-tab">
+          <!-- Usages -->
+          <h3 id="usages-title" role="heading">$i18n{usages}</h3>
+          <div id="usages"></div>
+
+          <div class="groups">
+            <!-- Issued to -->
+            <div>
+              <h3 role="heading">$i18n{issuedTo}</h3>
+            </div>
+            <div>
+              <div class="attribute">$i18n{cn}</div>
+              <div id="issued-cn" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{o}</div>
+              <div id="issued-o" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{ou}</div>
+              <div id="issued-ou" class="value"></div>
+            </div>
+
+            <!-- Issued by -->
+            <div>
+              <h3 role="heading">$i18n{issuedBy}</h3>
+            </div>
+            <div>
+              <div class="attribute">$i18n{cn}</div>
+              <div id="issuer-cn" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{o}</div>
+              <div id="issuer-o" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{ou}</div>
+              <div id="issuer-ou" class="value"></div>
+            </div>
+
+            <!-- Validity -->
+            <div>
+              <h3 role="heading">$i18n{validity}</h3>
+            </div>
+            <div>
+              <div class="attribute">$i18n{issuedOn}</div>
+              <div id="issue-date" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{expiresOn}</div>
+              <div id="expiry-date" class="value"></div>
+            </div>
+
+            <!-- Fingerprints -->
+            <div>
+              <h3 role="heading">$i18n{fingerprints}</h3>
+            </div>
+            <div>
+              <div class="attribute">$i18n{sha256}</div>
+              <div id="sha256" class="value"></div>
+            </div>
+            <div>
+              <div class="attribute">$i18n{sha1}</div>
+              <div id="sha1" class="value"></div>
+            </div>
+          </div>
+        </tabpanel>
+
+        <!-- Details -->
+        <tabpanel id="details" aria-labelledby="details-tab">
+          <div id="hierarchy-section" class="vertical-box">
+            <h3 id="hierarchy-label" role="heading">$i18n{hierarchy}</h3>
+            <tree id="hierarchy" class="section-contents"
+                  aria-labelledby="hierarchy-label"
+                  icon-visibility='hidden'></tree>
+          </div>
+          <div id="cert-fields-section" class="vertical-box">
+            <h3 id="cert-fields-label" role="heading">$i18n{certFields}</h3>
+            <tree id="cert-fields" class="section-contents"
+                  aria-labelledby="cert-fields-label"
+                  icon-visibility='hidden'></tree>
+          </div>
+          <div id="cert-field-value-section" class="vertical-box">
+            <h3 id="cert-field-value-label" role="heading">
+              $i18n{certFieldVal}
+            </h3>
+            <div id="cert-field-value" class="section-contents" tabindex="0"
+                 aria-live="polite" aria-atomic="true" aria-readonly="true"
+                 aria-labelledby="cert-field-value-label" role="textbox"></div>
+            <div>
+              <button id="export">$i18n{export}</button>
+            </div>
+          </div>
+        </tabpanel>
+      </tabpanels>
+    </tabbox>
+  </body>
+</html>

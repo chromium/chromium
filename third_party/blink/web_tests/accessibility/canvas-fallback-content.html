@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+pc<!DOCTYPE HTML>
 <html>
 <body>
 <script src="../resources/testharness.js"></script>
@@ -39,7 +39,10 @@ myelement {
 <div id="console"></div>
 <script>
   function check(id, expectedRole) {
+      console.log('Checking for ' + expectedRole + ' at #' + id);
       var axElement = accessibilityController.accessibleElementById(id);
+      assert_true(Boolean(axElement));
+      assert_equals(axElement.role, expectedRole, id);
       var element = document.getElementById(id);
       // TODO(crbug.com/930327): focus() triggers a lifecycle update without updating observers.
       // Make sure to get the axElement before calling focus(), to trigger a full update cycle.
@@ -77,10 +80,12 @@ test((t) => {
 
     // Check that the role is updated when the element changes.
     document.getElementById('focusable1').setAttribute('role', 'button');
-    check("focusable1", "AXRole: AXButton", t);
-
     document.getElementById('focusable2').setAttribute('role', 'button');
-    check("focusable2", "AXRole: AXButton", t, true);
+    // Role changes do not take effect immediately.
+    requestAnimationFrame(() => {
+      check("focusable1", "AXRole: AXButton", t);
+      check("focusable2", "AXRole: AXButton", t,);
+    });
 }, "This test makes sure that focusable elements in canvas fallback content are accessible.");
 
 

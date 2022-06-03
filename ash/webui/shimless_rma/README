@@ -1,0 +1,4 @@
+Shimless RMA is a SWA wizard that guides repair technicians through step-by-step repair flow.
+
+Provides chrome://shimless-rma WebUI and mojo backend interfaces that allows the Shimless RMA app to communicate with Dbus.
+Most of the of the WebUI code is under resources/ directory and backend is under backend/ directory.

@@ -12,29 +12,29 @@
 <script>
     description("Make sure that a debug assert is not triggered when a call to LayoutBlockFlow::deleteLineBoxTree calls AccessibilityRenderObject::accessibilityIsIgnored which may require the AXObject for a node that is being deleted.");
 
-    var label = document.createElement('label');
-    label.style.position = 'fixed';
-    document.body.appendChild(label);
+    var span = document.createElement('span');
+    span.style.position = 'fixed';
+    document.body.appendChild(span);
 
     var progress = document.createElement('progress');
     progress.style.display = 'block';
-    label.appendChild(progress);
+    span.appendChild(progress);
 
     var kbd = document.createElement('kbd');
-    label.appendChild(kbd);
+    span.appendChild(kbd);
 
-    var labelShadow = label.createShadowRoot();
+    var spanShadow = span.attachShadow({mode: 'open'});
 
     var select = document.createElement('select');
     select.setAttribute('multiple', 'multiple');
-    labelShadow.appendChild(select);
+    spanShadow.appendChild(select);
 
     var shadow = document.createElement('shadow');
-    labelShadow.appendChild(shadow);
+    spanShadow.appendChild(shadow);
 
     select.focus();
 
-    document.body.removeChild(label);
+    document.body.removeChild(span);
 
 </script>
 </body>

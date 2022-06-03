@@ -1,5 +1,5 @@
 /*
- * runsuite.c: C program to run libxml2 againts published testsuites
+ * runsuite.c: C program to run libxml2 against published testsuites
  *
  * See Copyright for the status of this software.
  *
@@ -217,13 +217,13 @@ initializeLibxml2(void) {
     * Deactivate the cache if created; otherwise we have to create/free it
     * for every test, since it will confuse the memory leak detection.
     * Note that normally this need not be done, since the cache is not
-    * created until set explicitely with xmlXPathContextSetCache();
-    * but for test purposes it is sometimes usefull to activate the
+    * created until set explicitly with xmlXPathContextSetCache();
+    * but for test purposes it is sometimes useful to activate the
     * cache by default for the whole library.
     */
     if (ctxtXPath->cache != NULL)
 	xmlXPathContextSetCache(ctxtXPath, 0, -1, 0);
-    /* used as default nanemspace in xstc tests */
+    /* used as default namespace in xstc tests */
     xmlXPathRegisterNs(ctxtXPath, BAD_CAST "ts", BAD_CAST "TestSuite");
     xmlXPathRegisterNs(ctxtXPath, BAD_CAST "xlink",
                        BAD_CAST "http://www.w3.org/1999/xlink");
@@ -296,7 +296,7 @@ getString(xmlNodePtr cur, const char *xpath) {
  ************************************************************************/
 
 static int
-xsdIncorectTestCase(xmlNodePtr cur) {
+xsdIncorrectTestCase(xmlNodePtr cur) {
     xmlNodePtr test;
     xmlBufferPtr buf;
     xmlRelaxNGParserCtxtPtr pctxt;
@@ -332,7 +332,7 @@ xsdIncorectTestCase(xmlNodePtr cur) {
     rng = xmlRelaxNGParse(pctxt);
     xmlRelaxNGFreeParserCtxt(pctxt);
     if (rng != NULL) {
-	test_log("Failed to detect incorect RNG line %ld\n",
+	test_log("Failed to detect incorrect RNG line %ld\n",
 		    xmlGetLineNo(test));
         ret = 1;
 	goto done;
@@ -438,7 +438,7 @@ xsdTestCase(xmlNodePtr tst) {
 
     cur = getNext(tst, "./correct[1]");
     if (cur == NULL) {
-        return(xsdIncorectTestCase(tst));
+        return(xsdIncorrectTestCase(tst));
     }
 
     test = getNext(cur, "./*");

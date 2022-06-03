@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that XHRs are not added to resourceTreeModel. https://bugs.webkit.org/show_bug.cgi?id=60321\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('resources');
 
   NetworkTestRunner.makeSimpleXHR('GET', 'resources/resource.php', false, step2);

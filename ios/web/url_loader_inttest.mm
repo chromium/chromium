@@ -5,13 +5,15 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_client.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,11 +38,11 @@ TEST_F(URLLoaderTest, Basic) {
       std::make_unique<network::ResourceRequest>();
   request->url = server_.GetURL("/echo");
   // Adds kCorsExemptHeaderName into the cors_exempt_headers, that use should be
-  // allowed by TestBrowserState. If BrowserState implementation does not
+  // allowed by FakeBrowserState. If BrowserState implementation does not
   // permit to use this header in |cors_exempt_headers| explicitly, the request
   // fails with net::ERR_INVALID_ARGUMENT.
   request->cors_exempt_headers.SetHeader(
-      TestBrowserState::kCorsExemptTestHeaderName, "Test");
+      FakeBrowserState::kCorsExemptTestHeaderName, "Test");
   auto loader = network::SimpleURLLoader::Create(std::move(request),
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string result;

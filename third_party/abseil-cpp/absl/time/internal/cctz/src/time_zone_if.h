@@ -20,10 +20,12 @@
 #include <memory>
 #include <string>
 
+#include "absl/base/config.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace time_internal {
 namespace cctz {
 
@@ -38,8 +40,7 @@ class TimeZoneIf {
 
   virtual time_zone::absolute_lookup BreakTime(
       const time_point<seconds>& tp) const = 0;
-  virtual time_zone::civil_lookup MakeTime(
-      const civil_second& cs) const = 0;
+  virtual time_zone::civil_lookup MakeTime(const civil_second& cs) const = 0;
 
   virtual bool NextTransition(const time_point<seconds>& tp,
                               time_zone::civil_transition* trans) const = 0;
@@ -55,18 +56,22 @@ class TimeZoneIf {
 
 // Convert between time_point<seconds> and a count of seconds since the
 // Unix epoch.  We assume that the std::chrono::system_clock and the
-// Unix clock are second aligned, but not that they share an epoch.
+// Unix clock are second aligned, and that the results are representable.
+// (That is, that they share an epoch, which is required since C++20.)
 inline std::int_fast64_t ToUnixSeconds(const time_point<seconds>& tp) {
   return (tp - std::chrono::time_point_cast<seconds>(
-                   std::chrono::system_clock::from_time_t(0))).count();
+                   std::chrono::system_clock::from_time_t(0)))
+      .count();
 }
 inline time_point<seconds> FromUnixSeconds(std::int_fast64_t t) {
   return std::chrono::time_point_cast<seconds>(
-             std::chrono::system_clock::from_time_t(0)) + seconds(t);
+             std::chrono::system_clock::from_time_t(0)) +
+         seconds(t);
 }
 
 }  // namespace cctz
 }  // namespace time_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_TIME_INTERNAL_CCTZ_TIME_ZONE_IF_H_

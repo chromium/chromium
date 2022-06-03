@@ -41,4 +41,4 @@ inline const ComputedStyle& LayoutObject::StyleRef(bool first_line) const {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_INLINES_H_

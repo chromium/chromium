@@ -16,7 +16,7 @@ namespace gin {
 template<typename T>
 class Handle {
  public:
-  Handle() : object_(NULL) {}
+  Handle() : object_(nullptr) {}
 
   Handle(v8::Local<v8::Value> wrapper, T* object)
     : wrapper_(wrapper),

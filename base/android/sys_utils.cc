@@ -10,7 +10,7 @@
 #include "base/base_jni_headers/SysUtils_jni.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace android {
@@ -23,6 +23,12 @@ bool SysUtils::IsLowEndDeviceFromJni() {
 bool SysUtils::IsCurrentlyLowMemory() {
   JNIEnv* env = AttachCurrentThread();
   return Java_SysUtils_isCurrentlyLowMemory(env);
+}
+
+// static
+int SysUtils::AmountOfPhysicalMemoryKB() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_SysUtils_amountOfPhysicalMemoryKB(env);
 }
 
 // Logs the number of minor / major page faults to tracing (and also the time to

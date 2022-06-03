@@ -1,0 +1,34 @@
+<html>
+    <script>
+        var functionToRun = '';
+        function runFunctionOnClick() {
+            eval(functionToRun);
+        }
+
+        window.addEventListener('load', () => {
+            window.addEventListener('click', runFunctionOnClick);
+        });
+
+        function requestEME() {
+            var capabilities = [{ contentType: 'audio/webm; codecs="opus"' }];
+            navigator.requestMediaKeySystemAccess(
+                "com.widevine.alpha", [{
+                    distinctiveIdentifier: "required",
+                    persistentState: "required",
+                    audioCapabilities: capabilities,
+                    label: "'distinctiveIdentifier' and 'persistentState' required"
+                }]
+            ).then(
+                _ => {
+                    document.title = "Granted"; document.body.innerText = "Granted";
+                },
+                _ => {
+                    document.title = "Denied"; document.body.innerText = "Denied";
+                }
+            );
+        }
+    </script>
+<body>
+    This page tests for EME permissions with user gesture
+</body>
+</html>

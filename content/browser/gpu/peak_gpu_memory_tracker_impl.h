@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_GPU_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
 #define CONTENT_BROWSER_GPU_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 
@@ -13,34 +15,38 @@ namespace content {
 
 // Tracks the peak memory of the GPU service for its lifetime. Upon its
 // destruction a report will be requested from the GPU service. The peak will be
-// reported to the provided PeakMemoryCallback. This will occur on the thread
-// that this was created on.
+// reported to UMA Histograms.
 //
-// If the GPU is lost during this objects lifetime, upon destruction the
-// PeakMemoryCallback will be ran with "0" as the reported peak usage. The same
-// for if there is never a successful GPU connection.
+// If the GPU is lost during this objects lifetime, upon destruction there will
+// be no report to UMA Histograms. The same for if there is never a successful
+// GPU connection.
 //
 // This is instaniated via PeakGpuMemoryTracker::Create.
 class CONTENT_EXPORT PeakGpuMemoryTrackerImpl : public PeakGpuMemoryTracker {
  public:
   // Requests the GPU service to begin peak memory tracking.
-  PeakGpuMemoryTrackerImpl(PeakMemoryCallback callback);
-  // Requests the GPU service provides the peak memory, the result is passed to
-  // |callback_|.
+  PeakGpuMemoryTrackerImpl(PeakGpuMemoryTracker::Usage usage);
+  // Requests the GPU service provides the peak memory, the result is presented
+  // to UMA Histograms.
   ~PeakGpuMemoryTrackerImpl() override;
 
   PeakGpuMemoryTrackerImpl(const PeakGpuMemoryTrackerImpl*) = delete;
   PeakGpuMemoryTrackerImpl& operator=(const PeakGpuMemoryTrackerImpl&) = delete;
 
   void Cancel() override;
-  void SetCallback(PeakMemoryCallback callback) override;
 
  private:
+  friend class PeakGpuMemoryTrackerImplTest;
+
+  // A callback which will be run after receiving a callback from the
+  // GpuService. For use by tests to synchronize work done on the IO thread.
+  base::OnceClosure post_gpu_service_callback_for_testing_ = base::DoNothing();
+
   // Provides the unique identifier for each PeakGpuMemoryTrackerImpl.
   static uint32_t next_sequence_number_;
 
-  PeakMemoryCallback callback_;
-  scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
+  bool canceled_ = false;
+  PeakGpuMemoryTracker::Usage usage_;
   uint32_t sequence_num_ = next_sequence_number_++;
 };
 

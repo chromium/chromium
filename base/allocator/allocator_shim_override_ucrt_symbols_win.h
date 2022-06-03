@@ -5,14 +5,28 @@
 // This header defines symbols to override the same functions in the Visual C++
 // CRT implementation.
 
-#ifdef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
-#error This header is meant to be included only once by allocator_shim.cc
-#endif
+#ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_
 
 #include <malloc.h>
 
 #include <windows.h>
+
+#include "base/allocator/allocator_shim_internals.h"
+
+// Even though most C++ allocation operators can be left alone since the
+// interception works at a lower level, these ones should be
+// overridden. Otherwise they redirect to malloc(), which is configured to crash
+// with an OOM in failure cases, such as allocation requests that are too large.
+SHIM_ALWAYS_EXPORT void* operator new(size_t size,
+                                      const std::nothrow_t&) __THROW {
+  return ShimCppNewNoThrow(size);
+}
+
+SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
+                                        const std::nothrow_t&) __THROW {
+  return ShimCppNewNoThrow(size);
+}
 
 extern "C" {
 
@@ -103,6 +117,18 @@ __declspec(restrict) void* _recalloc_base(void* block,
   return new_block;
 }
 
+__declspec(restrict) void* _malloc_base(size_t size) {
+  return malloc(size);
+}
+
+__declspec(restrict) void* _calloc_base(size_t n, size_t size) {
+  return calloc(n, size);
+}
+
+void _free_base(void* block) {
+  free(block);
+}
+
 __declspec(restrict) void* _recalloc(void* block, size_t count, size_t size) {
   return _recalloc_base(block, count, size);
 }
@@ -147,28 +173,6 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
   __builtin_unreachable();
 }
 
-// The symbols
-//   * __acrt_heap
-//   * __acrt_initialize_heap
-//   * __acrt_uninitialize_heap
-//   * _get_heap_handle
-// must be overridden all or none, as they are otherwise supplied
-// by heap_handle.obj in the ucrt.lib file.
-HANDLE __acrt_heap = nullptr;
-
-bool __acrt_initialize_heap() {
-  __acrt_heap = ::HeapCreate(0, 0, 0);
-  return true;
-}
-
-bool __acrt_uninitialize_heap() {
-  ::HeapDestroy(__acrt_heap);
-  __acrt_heap = nullptr;
-  return true;
-}
-
-intptr_t _get_heap_handle(void) {
-  return reinterpret_cast<intptr_t>(__acrt_heap);
-}
-
 }  // extern "C"
+
+#endif  // BASE_ALLOCATOR_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_

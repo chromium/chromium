@@ -6,6 +6,7 @@
 #define BASE_I18N_ICU_UTIL_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"
@@ -24,8 +25,9 @@ BASE_I18N_EXPORT bool InitializeICU();
 
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 // Loads ICU's extra data tables from disk for the current process. If used must
-// be called before InitializeICU().
-BASE_I18N_EXPORT bool InitializeExtraICU();
+// be called before InitializeICU(). |split_name| is used on Android to find the
+// asset file.
+BASE_I18N_EXPORT bool InitializeExtraICU(const std::string& split_name);
 
 // Returns the PlatformFile and Region that was initialized by InitializeICU()
 // or InitializeExtraICU(). Use with InitializeICUWithFileDescriptor() or
@@ -49,6 +51,11 @@ BASE_I18N_EXPORT bool InitializeExtraICUWithFileDescriptor(
     const MemoryMappedFile::Region& data_region);
 
 BASE_I18N_EXPORT void ResetGlobalsForTesting();
+
+#if defined(OS_FUCHSIA)
+// Overrides the directory used by ICU for external time zone data.
+BASE_I18N_EXPORT void SetIcuTimeZoneDataDirForTesting(const char* dir);
+#endif  // defined(OS_FUCHSIA)
 #endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
 // In a test binary, initialize functions might be called twice.

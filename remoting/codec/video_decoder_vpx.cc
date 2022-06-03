@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/base/util.h"

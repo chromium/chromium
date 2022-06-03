@@ -12,12 +12,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TabGroup;
 class TabGroupController;
 
 namespace tab_groups {
+enum class TabGroupColorId;
 class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
@@ -37,18 +38,18 @@ class TabGroupModel {
   // initially be empty, but the expectation is that at least one tab will be
   // added to it immediately.
   TabGroup* AddTabGroup(
-      tab_groups::TabGroupId id,
-      base::Optional<tab_groups::TabGroupVisualData> visual_data);
+      const tab_groups::TabGroupId& id,
+      absl::optional<tab_groups::TabGroupVisualData> visual_data);
 
   // Returns whether a tab group with the given |id| exists.
-  bool ContainsTabGroup(tab_groups::TabGroupId id) const;
+  bool ContainsTabGroup(const tab_groups::TabGroupId& id) const;
 
   // Returns the tab group with the given |id|. The group must exist.
-  TabGroup* GetTabGroup(tab_groups::TabGroupId id) const;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const;
 
   // Removes the tab group with the given |id| from the registry. Should be
   // called whenever the group becomes empty.
-  void RemoveTabGroup(tab_groups::TabGroupId id);
+  void RemoveTabGroup(const tab_groups::TabGroupId& id);
 
   std::vector<tab_groups::TabGroupId> ListTabGroups() const;
 
@@ -56,6 +57,11 @@ class TabGroupModel {
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroup>> groups_;
 
   TabGroupController* controller_;
+
+  // Returns the least-used color in the color set, breaking ties toward the
+  // first color in the set. Used to initialize a new group's color, which
+  // should be as distinct from the other groups as possible.
+  tab_groups::TabGroupColorId GetNextColor() const;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_MODEL_H_

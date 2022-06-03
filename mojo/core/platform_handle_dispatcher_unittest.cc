@@ -27,8 +27,8 @@ TEST(PlatformHandleDispatcherTest, Basic) {
   static const char kHelloWorld[] = "hello world";
 
   base::FilePath unused;
-  base::ScopedFILE fp(
-      CreateAndOpenTemporaryFileInDir(temp_dir.GetPath(), &unused));
+  base::ScopedFILE fp =
+      CreateAndOpenTemporaryStreamInDir(temp_dir.GetPath(), &unused);
   ASSERT_TRUE(fp);
   EXPECT_EQ(sizeof(kHelloWorld),
             fwrite(kHelloWorld, 1, sizeof(kHelloWorld), fp.get()));
@@ -69,8 +69,8 @@ TEST(PlatformHandleDispatcherTest, Serialization) {
   static const char kFooBar[] = "foo bar";
 
   base::FilePath unused;
-  base::ScopedFILE fp(
-      CreateAndOpenTemporaryFileInDir(temp_dir.GetPath(), &unused));
+  base::ScopedFILE fp =
+      CreateAndOpenTemporaryStreamInDir(temp_dir.GetPath(), &unused);
   EXPECT_EQ(sizeof(kFooBar), fwrite(kFooBar, 1, sizeof(kFooBar), fp.get()));
 
   scoped_refptr<PlatformHandleDispatcher> dispatcher =

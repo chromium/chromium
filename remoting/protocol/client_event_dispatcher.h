@@ -18,6 +18,10 @@ namespace protocol {
 class ClientEventDispatcher : public ChannelDispatcherBase, public InputStub {
  public:
   ClientEventDispatcher();
+
+  ClientEventDispatcher(const ClientEventDispatcher&) = delete;
+  ClientEventDispatcher& operator=(const ClientEventDispatcher&) = delete;
+
   ~ClientEventDispatcher() override;
 
   // InputStub implementation.
@@ -28,8 +32,6 @@ class ClientEventDispatcher : public ChannelDispatcherBase, public InputStub {
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientEventDispatcher);
 };
 
 }  // namespace protocol

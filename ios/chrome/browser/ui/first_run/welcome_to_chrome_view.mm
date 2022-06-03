@@ -4,21 +4,25 @@
 
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 
+#import <MaterialComponents/MaterialTypography.h>
+
+#include <ostream>
+
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
+#include "base/ios/ns_range.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "ios/chrome/browser/ui/elements/text_view_selection_disabled.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/util/CRUILabel+AttributeUtils.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
-#import "ios/chrome/browser/ui/util/label_observer.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -48,6 +52,33 @@ SizeClassIdiom GetSizeClassIdiom(UIUserInterfaceSizeClass size_class) {
   }
 }
 
+// Sets the line height for |label| via attributed text.
+void SetLabelLineHeight(UILabel* label, CGFloat line_height) {
+  NSMutableAttributedString* updated_text = [label.attributedText mutableCopy];
+  if (updated_text.length == 0)
+    return;
+
+  NSParagraphStyle* style =
+      [updated_text attribute:NSParagraphStyleAttributeName
+                      atIndex:0
+               effectiveRange:nullptr];
+  if (!style)
+    style = [NSParagraphStyle defaultParagraphStyle];
+
+  NSMutableParagraphStyle* updated_style = [style mutableCopy];
+  [updated_style setMinimumLineHeight:line_height];
+  [updated_style setMaximumLineHeight:line_height];
+  [updated_text addAttribute:NSParagraphStyleAttributeName
+                       value:updated_style
+                       range:NSMakeRange(0, [updated_text length])];
+
+  label.attributedText = updated_text;
+}
+
+// Tags used to embed TOS link.
+NSString* const kBeginTOSLinkTag = @"BEGIN_LINK_TOS[ \t]*";
+NSString* const kEndTOSLinkTag = @"[ \t]*END_LINK_TOS";
+
 // Accessibility identifier for the checkbox button.
 NSString* const kUMAMetricsButtonAccessibilityIdentifier =
     @"UMAMetricsButtonAccessibilityIdentifier";
@@ -61,9 +92,10 @@ const CGFloat kContainerViewCompactWidthPercentage = 0.8;
 
 // Layout constants.
 const CGFloat kImageTopPadding[SIZE_CLASS_COUNT] = {32.0, 50.0};
-const CGFloat kTOSLabelTopPadding[SIZE_CLASS_COUNT] = {34.0, 40.0};
+const CGFloat kTOSTextViewTopPadding[SIZE_CLASS_COUNT] = {34.0, 40.0};
 const CGFloat kOptInLabelPadding[SIZE_CLASS_COUNT] = {10.0, 14.0};
 const CGFloat kCheckBoxPadding[SIZE_CLASS_COUNT] = {10.0, 16.0};
+const CGFloat kManagedLabelPadding[SIZE_CLASS_COUNT] = {14.0, 20.0};
 const CGFloat kOKButtonBottomPadding[SIZE_CLASS_COUNT] = {32.0, 32.0};
 const CGFloat kOKButtonHeight[SIZE_CLASS_COUNT] = {36.0, 54.0};
 // Multiplier matches that used in LaunchScreen.xib to determine size of logo.
@@ -71,10 +103,11 @@ const CGFloat kAppLogoProportionMultiplier = 0.381966;
 
 // Font sizes.
 const CGFloat kTitleLabelFontSize[SIZE_CLASS_COUNT] = {24.0, 36.0};
-const CGFloat kTOSLabelFontSize[SIZE_CLASS_COUNT] = {14.0, 21.0};
-const CGFloat kTOSLabelLineHeight[SIZE_CLASS_COUNT] = {20.0, 32.0};
+const CGFloat kTOSTOSTextViewFontSize[SIZE_CLASS_COUNT] = {14.0, 21.0};
 const CGFloat kOptInLabelFontSize[SIZE_CLASS_COUNT] = {13.0, 19.0};
 const CGFloat kOptInLabelLineHeight[SIZE_CLASS_COUNT] = {18.0, 26.0};
+const CGFloat kManagedLabelFontSize[SIZE_CLASS_COUNT] = {13.0, 19.0};
+const CGFloat kManagedLabelLineHeight[SIZE_CLASS_COUNT] = {18.0, 26.0};
 const CGFloat kOKButtonTitleLabelFontSize[SIZE_CLASS_COUNT] = {14.0, 20.0};
 
 // Animation constants
@@ -86,43 +119,39 @@ const CGFloat kAnimationDelay = .5;
 NSString* const kAppLogoImageName = @"launchscreen_app_logo";
 NSString* const kCheckBoxImageName = @"checkbox";
 NSString* const kCheckBoxCheckedImageName = @"checkbox_checked";
+NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
-// Constants for the Terms of Service and Privacy Notice URLs in the
-// first run experience.
+// Constant for the Terms of Service URL in the first run experience.
 const char kTermsOfServiceUrl[] = "internal://terms-of-service";
-const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 
 }  // namespace
 
-@interface WelcomeToChromeView () {
+@interface WelcomeToChromeView () <UITextViewDelegate> {
   UIView* _containerView;
   UILabel* _titleLabel;
   UIImageView* _imageView;
-  UILabel* _TOSLabel;
-  LabelLinkController* _TOSLabelLinkController;
   UIButton* _checkBoxButton;
   UILabel* _optInLabel;
+  UILabel* _managedLabel;
+  UIImageView* _enterpriseIcon;
   PrimaryActionButton* _OKButton;
 }
 
 // Subview properties are lazily instantiated upon their first use.
-
 // A container view used to layout and center subviews.
 @property(strong, nonatomic, readonly) UIView* containerView;
 // The "Welcome to Chrome" label that appears at the top of the view.
 @property(strong, nonatomic, readonly) UILabel* titleLabel;
 // The Chrome logo image view.
 @property(strong, nonatomic, readonly) UIImageView* imageView;
-// The "Terms of Service" label.
-@property(strong, nonatomic, readonly) UILabel* TOSLabel;
-// Observer for setting the size of the TOSLabel with cr_lineHeight.
-@property(strong, nonatomic) LabelObserver* TOSObserver;
+// The "Terms of Service" text view.
+@property(strong, nonatomic) TextViewSelectionDisabled* TOSTextView;
 // The stats reporting opt-in label.
 @property(strong, nonatomic, readonly) UILabel* optInLabel;
-// Observer for setting the size of the optInLabel with cr_lineHeight.
-@property(strong, nonatomic) LabelObserver* optInObserver;
 // The stats reporting opt-in checkbox button.
 @property(strong, nonatomic, readonly) UIButton* checkBoxButton;
+// The Chrome logo image view.
+@property(strong, nonatomic, readonly) UIImageView* enterpriseIcon;
 // The "Accept & Continue" button.
 @property(strong, nonatomic, readonly) PrimaryActionButton* OKButton;
 
@@ -130,9 +159,11 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 // subsequent subview layouts depend on the layouts that precede them.
 - (void)layoutTitleLabel;
 - (void)layoutImageView;
-- (void)layoutTOSLabel;
+- (void)layoutTOSTextView;
 - (void)layoutOptInLabel;
 - (void)layoutCheckBoxButton;
+- (void)layoutManagedLabel;
+- (void)layoutEnterpriseIcon;
 - (void)layoutContainerView;
 - (void)layoutOKButton;
 
@@ -142,8 +173,9 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 // Subview configuration methods.
 - (void)configureTitleLabel;
 - (void)configureImageView;
-- (void)configureTOSLabel;
+- (void)configureTOSTextView;
 - (void)configureOptInLabel;
+- (void)configureManagedLabel;
 - (void)configureContainerView;
 - (void)configureOKButton;
 
@@ -156,10 +188,6 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 @end
 
 @implementation WelcomeToChromeView
-
-@synthesize delegate = _delegate;
-@synthesize TOSObserver = _TOSObserver;
-@synthesize optInObserver = _optInObserver;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -175,9 +203,11 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   // Prepare for animation by making views (except for the logo) transparent
   // and finding the initial and final location of the logo.
   self.titleLabel.alpha = 0.0;
-  self.TOSLabel.alpha = 0.0;
+  self.TOSTextView.alpha = 0.0;
   self.optInLabel.alpha = 0.0;
   self.checkBoxButton.alpha = 0.0;
+  self.managedLabel.alpha = 0.0;
+  self.enterpriseIcon.alpha = 0.0;
   self.OKButton.alpha = 0.0;
 
   // Get final location of logo based on result from previously run
@@ -196,17 +226,14 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
                    animations:^{
                      [weakSelf imageView].frame = finalLogoFrame;
                      [weakSelf titleLabel].alpha = 1.0;
-                     [weakSelf TOSLabel].alpha = 1.0;
+                     [weakSelf TOSTextView].alpha = 1.0;
                      [weakSelf optInLabel].alpha = 1.0;
+                     [weakSelf managedLabel].alpha = 1.0;
+                     [weakSelf enterpriseIcon].alpha = 1.0;
                      [weakSelf checkBoxButton].alpha = 1.0;
                      [weakSelf OKButton].alpha = 1.0;
                    }
                    completion:nil];
-}
-
-- (void)dealloc {
-  [self.TOSObserver stopObserving];
-  [self.optInObserver stopObserving];
 }
 
 #pragma mark - Accessors
@@ -247,26 +274,16 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   return _imageView;
 }
 
-- (UILabel*)TOSLabel {
-  if (!_TOSLabel) {
-    _TOSLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    // Add an observer to the label to be able to keep the cr_lineHeight.
-    self.TOSObserver = [LabelObserver observerForLabel:_TOSLabel];
-    [self.TOSObserver startObserving];
-
-    [_TOSLabel setNumberOfLines:0];
-    [_TOSLabel setTextAlignment:NSTextAlignmentCenter];
+- (TextViewSelectionDisabled*)TOSTextView {
+  if (!_TOSTextView) {
+    _TOSTextView = [[TextViewSelectionDisabled alloc] initWithFrame:CGRectZero];
   }
-  return _TOSLabel;
+  return _TOSTextView;
 }
 
 - (UILabel*)optInLabel {
   if (!_optInLabel) {
     _optInLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    // Add an observer to the label to be able to keep the cr_lineHeight.
-    self.optInObserver = [LabelObserver observerForLabel:_optInLabel];
-    [self.optInObserver startObserving];
-
     [_optInLabel setNumberOfLines:0];
     [_optInLabel
         setText:l10n_util::GetNSString(IDS_IOS_FIRSTRUN_NEW_OPT_IN_LABEL)];
@@ -296,6 +313,25 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   return _checkBoxButton;
 }
 
+- (UILabel*)managedLabel {
+  if (!_managedLabel) {
+    _managedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    [_managedLabel setNumberOfLines:0];
+    [_managedLabel
+        setText:l10n_util::GetNSString(IDS_IOS_FIRSTRUN_BROWSER_MANAGED)];
+    [_managedLabel setTextAlignment:NSTextAlignmentNatural];
+  }
+  return _managedLabel;
+}
+
+- (UIImageView*)enterpriseIcon {
+  if (!_enterpriseIcon) {
+    UIImage* image = [UIImage imageNamed:kEnterpriseIconImageName];
+    _enterpriseIcon = [[UIImageView alloc] initWithImage:image];
+  }
+  return _enterpriseIcon;
+}
+
 - (PrimaryActionButton*)OKButton {
   if (!_OKButton) {
     _OKButton = [[PrimaryActionButton alloc] initWithFrame:CGRectZero];
@@ -314,6 +350,11 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   return _OKButton;
 }
 
+- (BOOL)isBrowserManaged {
+  return [[[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
+}
+
 #pragma mark - Layout
 
 - (void)willMoveToSuperview:(nullable UIView*)newSuperview {
@@ -328,9 +369,13 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   [self addSubview:self.containerView];
   [self.containerView addSubview:self.titleLabel];
   [self.containerView addSubview:self.imageView];
-  [self.containerView addSubview:self.TOSLabel];
+  [self.containerView addSubview:self.TOSTextView];
   [self.containerView addSubview:self.optInLabel];
   [self.containerView addSubview:self.checkBoxButton];
+  if ([self isBrowserManaged]) {
+    [self.containerView addSubview:self.managedLabel];
+    [self.containerView addSubview:self.enterpriseIcon];
+  }
   [self addSubview:self.OKButton];
   [self configureSubviews];
 }
@@ -341,12 +386,20 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 }
 
 - (void)layoutSubviews {
+  // TODO(crbug.com/1157934): This page should support dynamic type to respect
+  // the user's chosen font size. This layout might need to be changed for
+  // smaller screen sizes and large fonts, as it might not fit a single screen,
+  // especially with the "managed by organization" enterprise notice.
   [super layoutSubviews];
   [self layoutTitleLabel];
   [self layoutImageView];
-  [self layoutTOSLabel];
+  [self layoutTOSTextView];
   [self layoutOptInLabel];
   [self layoutCheckBoxButton];
+  if ([self isBrowserManaged]) {
+    [self layoutManagedLabel];
+    [self layoutEnterpriseIcon];
+  }
   [self layoutOKButtonAndContainerView];
 }
 
@@ -378,72 +431,19 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
       imageViewSize.width, imageViewSize.height));
 }
 
-- (void)layoutTOSLabel {
-  // The TOS label is centered and laid out below |imageView| as specified by
-  // kTOSLabelTopPadding.
+- (void)layoutTOSTextView {
+  // The TOSTextView is centered and laid out below |imageView| as specified by
+  // kTOSTextViewTopPadding.
   CGSize containerSize = self.containerView.bounds.size;
   containerSize.height = CGFLOAT_MAX;
-  self.TOSLabel.frame = {CGPointZero, containerSize};
-  NSString* TOSText = l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS);
-  NSRange tosLinkTextRange = NSMakeRange(NSNotFound, 0);
-  NSRange privacyLinkTextRange = NSMakeRange(NSNotFound, 0);
-  TOSText = ParseStringWithTag(TOSText, &tosLinkTextRange,
-                               @"BEGIN_LINK_TOS[ \t]*", @"[ \t]*END_LINK_TOS");
-  TOSText = ParseStringWithTag(TOSText, &privacyLinkTextRange,
-                               @"BEGIN_LINK_PRIVACY[ \t]*",
-                               @"[ \t]*END_LINK_PRIVACY");
-
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(tosLinkTextRange.location));
-  DCHECK_NE(0u, tosLinkTextRange.length);
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(privacyLinkTextRange.location));
-  DCHECK_NE(0u, privacyLinkTextRange.length);
-
-  self.TOSLabel.text = TOSText;
-  if (FixOrphanWord(self.TOSLabel)) {
-    // If a newline is inserted, check whether it was added mid-link and adjust
-    // |tosLinkTextRange| and |privacyLinkTextRange| accordingly.
-    NSRange newlineRange = [self.TOSLabel.text rangeOfString:@"\n"
-                                                     options:0
-                                                       range:tosLinkTextRange];
-    if (newlineRange.length) {
-      tosLinkTextRange.location++;
-      privacyLinkTextRange.location++;
-    }
-    newlineRange = [self.TOSLabel.text rangeOfString:@"\n"
-                                             options:0
-                                               range:privacyLinkTextRange];
-    if (newlineRange.length)
-      privacyLinkTextRange.location++;
-  }
-
-  __weak WelcomeToChromeView* weakSelf = self;
-  ProceduralBlockWithURL action = ^(const GURL& url) {
-    WelcomeToChromeView* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    if (url == kTermsOfServiceUrl) {
-      [[strongSelf delegate] welcomeToChromeViewDidTapTOSLink];
-    } else if (url == kPrivacyNoticeUrl) {
-      [[strongSelf delegate] welcomeToChromeViewDidTapPrivacyLink];
-    } else {
-      NOTREACHED();
-    }
-  };
-
-  _TOSLabelLinkController =
-      [[LabelLinkController alloc] initWithLabel:_TOSLabel action:action];
-  [_TOSLabelLinkController addLinkWithRange:tosLinkTextRange
-                                        url:GURL(kTermsOfServiceUrl)];
-  [_TOSLabelLinkController addLinkWithRange:privacyLinkTextRange
-                                        url:GURL(kPrivacyNoticeUrl)];
-  [_TOSLabelLinkController setLinkColor:[UIColor colorNamed:kBlueColor]];
-
-  CGSize TOSLabelSize = [self.TOSLabel sizeThatFits:containerSize];
-  CGFloat TOSLabelTopPadding = kTOSLabelTopPadding[[self heightSizeClassIdiom]];
-  self.TOSLabel.frame = AlignRectOriginAndSizeToPixels(
-      CGRectMake((containerSize.width - TOSLabelSize.width) / 2.0,
-                 CGRectGetMaxY(self.imageView.frame) + TOSLabelTopPadding,
-                 TOSLabelSize.width, TOSLabelSize.height));
+  CGSize TOSTextViewSize = [self.TOSTextView sizeThatFits:containerSize];
+  CGFloat TOSTextViewTopPadding =
+      kTOSTextViewTopPadding[[self heightSizeClassIdiom]];
+  CGRect frame =
+      CGRectMake((containerSize.width - TOSTextViewSize.width) / 2.0,
+                 CGRectGetMaxY(self.imageView.frame) + TOSTextViewTopPadding,
+                 TOSTextViewSize.width, TOSTextViewSize.height);
+  self.TOSTextView.frame = AlignRectOriginAndSizeToPixels(frame);
 }
 
 - (void)layoutOptInLabel {
@@ -463,9 +463,8 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
       base::i18n::IsRTL() ? 0.0f : optInLabelSidePadding;
   self.optInLabel.frame = AlignRectOriginAndSizeToPixels(
       CGRectMake(optInLabelOriginX,
-                 CGRectGetMaxY(self.TOSLabel.frame) + optInLabelTopPadding,
+                 CGRectGetMaxY(self.TOSTextView.frame) + optInLabelTopPadding,
                  optInLabelSize.width, optInLabelSize.height));
-  FixOrphanWord(self.optInLabel);
 }
 
 - (void)layoutCheckBoxButton {
@@ -495,15 +494,62 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
       base::i18n::IsRTL() ? smallHorizontalInset : largeHorizontalInset);
 }
 
-- (void)layoutContainerView {
-  // The container view is resized according to the final layout of
-  // |checkBoxButton|, which is its lowest subview.  The resized view is then
-  // centered horizontally and vertically. If necessary, it is shifted up to
-  // allow |kOptInLabelPadding| between |optInLabel| and |OKButton|.
-  CGSize containerViewSize = self.containerView.bounds.size;
-  containerViewSize.height = CGRectGetMaxY(self.checkBoxButton.frame);
+- (void)layoutManagedLabel {
+  // The managed label is laid out to the right (or left in RTL) of the
+  // enterprise icon and below |optInLabel| as specified by
+  // kManagedLabelPadding. It is aligned horizontally with |optInLabel|.
+  CGSize checkBoxSize =
+      [self.checkBoxButton imageForState:self.checkBoxButton.state].size;
+  CGFloat checkBoxPadding = kCheckBoxPadding[[self widthSizeClassIdiom]];
+  CGFloat managedLabelSidePadding = checkBoxSize.width + 2.0 * checkBoxPadding;
+  CGSize managedLabelSize = [self.managedLabel
+      sizeThatFits:CGSizeMake(CGRectGetWidth(self.optInLabel.bounds),
+                              CGFLOAT_MAX)];
+  CGFloat managedLabelTopPadding =
+      kManagedLabelPadding[[self heightSizeClassIdiom]];
+  CGFloat managedLabelOriginX =
+      base::i18n::IsRTL()
+          ? self.optInLabel.bounds.size.width - managedLabelSize.width
+          : managedLabelSidePadding;
 
-  CGFloat padding = kOptInLabelPadding[[self heightSizeClassIdiom]];
+  self.managedLabel.frame = AlignRectOriginAndSizeToPixels(CGRectMake(
+      managedLabelOriginX,
+      CGRectGetMaxY(self.checkBoxButton.frame) + managedLabelTopPadding,
+      managedLabelSize.width, managedLabelSize.height));
+}
+
+- (void)layoutEnterpriseIcon {
+  // The enterprise icon is laid out to the left of and is centered vertically
+  // with |managedLabel|, and is aligned horizontally with the checkbox image
+  // inside |checkBoxButton|.
+  CGSize enterpriseIconSize = self.enterpriseIcon.bounds.size;
+  CGFloat enterpriseIconOriginX =
+      CGRectGetMidX(self.checkBoxButton.imageView.frame) -
+      enterpriseIconSize.height / 2.0;
+  CGFloat enterpriseIconOriginY =
+      CGRectGetMidY(self.managedLabel.frame) - enterpriseIconSize.height / 2.0;
+
+  self.enterpriseIcon.frame = AlignRectOriginAndSizeToPixels(
+      CGRectMake(enterpriseIconOriginX, enterpriseIconOriginY,
+                 enterpriseIconSize.width, enterpriseIconSize.height));
+}
+
+- (void)layoutContainerView {
+  // The container view is resized according to the final layout of its lowest
+  // subview, which is |managedLabel| if the browser is managed and
+  // |checkBoxButton| if not. The resized view is then centered horizontally and
+  // vertically. If necessary, it is shifted up to allow either
+  // |kmanagedLabelPadding| or |kOptInLabelPadding| (depending if the browser is
+  // managed) between |optInLabel| and |OKButton|.
+  CGSize containerViewSize = self.containerView.bounds.size;
+  containerViewSize.height = [self isBrowserManaged]
+                                 ? CGRectGetMaxY(self.managedLabel.frame)
+                                 : CGRectGetMaxY(self.checkBoxButton.frame);
+
+  CGFloat padding = [self isBrowserManaged]
+                        ? kManagedLabelPadding[[self heightSizeClassIdiom]]
+                        : kOptInLabelPadding[[self heightSizeClassIdiom]];
+
   CGFloat originY = fmin(
       (CGRectGetHeight(self.bounds) - containerViewSize.height) / 2.0,
       CGRectGetMinY(self.OKButton.frame) - padding - containerViewSize.height);
@@ -537,8 +583,11 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   [self configureContainerView];
   [self configureTitleLabel];
   [self configureImageView];
-  [self configureTOSLabel];
+  [self configureTOSTextView];
   [self configureOptInLabel];
+  if ([self isBrowserManaged]) {
+    [self configureManagedLabel];
+  }
   [self configureOKButton];
   [self setNeedsLayout];
 }
@@ -560,17 +609,57 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
                  sideLength, sideLength));
 }
 
-- (void)configureTOSLabel {
-  self.TOSLabel.font = [[MDCTypography fontLoader]
-      regularFontOfSize:kTOSLabelFontSize[[self widthSizeClassIdiom]]];
-  self.TOSLabel.cr_lineHeight = kTOSLabelLineHeight[[self widthSizeClassIdiom]];
+- (void)configureTOSTextView {
+  self.TOSTextView.scrollEnabled = NO;
+  self.TOSTextView.editable = NO;
+  self.TOSTextView.adjustsFontForContentSizeCategory = YES;
+  self.TOSTextView.delegate = self;
+  self.TOSTextView.backgroundColor = UIColor.clearColor;
+  self.TOSTextView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+
+  const StringWithTag parsedString = ParseStringWithTag(
+      l10n_util::GetNSString(IDS_IOS_FIRSTRUN_AGREE_TO_TERMS), kBeginTOSLinkTag,
+      kEndTOSLinkTag);
+  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
+
+  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
+  NSURL* URL =
+      [NSURL URLWithString:base::SysUTF8ToNSString(kTermsOfServiceUrl)];
+  UIFont* font = [[MDCTypography fontLoader]
+      regularFontOfSize:kTOSTOSTextViewFontSize[[self widthSizeClassIdiom]]];
+  NSMutableParagraphStyle* style =
+      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  style.alignment = NSTextAlignmentCenter;
+
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
+  [attributedText addAttributes:@{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
+    NSParagraphStyleAttributeName : style,
+    NSFontAttributeName : font
+  }
+                          range:fullRange];
+  [attributedText addAttribute:NSLinkAttributeName
+                         value:URL
+                         range:parsedString.range];
+
+  self.TOSTextView.attributedText = attributedText;
 }
 
 - (void)configureOptInLabel {
   self.optInLabel.font = [[MDCTypography fontLoader]
       regularFontOfSize:kOptInLabelFontSize[[self widthSizeClassIdiom]]];
-  self.optInLabel.cr_lineHeight =
-      kOptInLabelLineHeight[[self widthSizeClassIdiom]];
+  SetLabelLineHeight(self.optInLabel,
+                     kOptInLabelLineHeight[[self widthSizeClassIdiom]]);
+}
+
+- (void)configureManagedLabel {
+  self.managedLabel.font = [[MDCTypography fontLoader]
+      regularFontOfSize:kManagedLabelFontSize[[self widthSizeClassIdiom]]];
+  self.managedLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  SetLabelLineHeight(self.managedLabel,
+                     kManagedLabelLineHeight[[self widthSizeClassIdiom]]);
 }
 
 - (void)configureContainerView {
@@ -595,7 +684,7 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 }
 
 - (SizeClassIdiom)widthSizeClassIdiom {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow* keyWindow = GetAnyKeyWindow();
   UIUserInterfaceSizeClass sizeClass = self.traitCollection.horizontalSizeClass;
   if (sizeClass == UIUserInterfaceSizeClassUnspecified)
     sizeClass = keyWindow.traitCollection.horizontalSizeClass;
@@ -603,7 +692,7 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 }
 
 - (SizeClassIdiom)heightSizeClassIdiom {
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow* keyWindow = GetAnyKeyWindow();
   UIUserInterfaceSizeClass sizeClass = self.traitCollection.verticalSizeClass;
   if (sizeClass == UIUserInterfaceSizeClassUnspecified)
     sizeClass = keyWindow.traitCollection.verticalSizeClass;
@@ -622,6 +711,20 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
 
 - (void)OKButtonWasTapped {
   [self.delegate welcomeToChromeViewDidTapOKButton:self];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(TextViewSelectionDisabled*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(textView == self.TOSTextView);
+  DCHECK(GURL(base::SysNSStringToUTF8(URL.absoluteString)) ==
+         kTermsOfServiceUrl);
+  [self.delegate welcomeToChromeViewDidTapTOSLink];
+  // Returns NO as the app is handling the opening of the URL.
+  return NO;
 }
 
 @end

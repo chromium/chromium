@@ -21,13 +21,13 @@ AnimationEvent::AnimationEvent(AnimationEvent::Type type,
 
 AnimationEvent::AnimationEvent(int timeline_id,
                                int animation_id,
-                               base::Optional<base::TimeDelta> local_time)
+                               absl::optional<base::TimeDelta> local_time)
     : type(TIME_UPDATED),
       // Initializing model_id with an invalid value (0).
       // Also initializing keyframe_id with 0 which in its case is a valid
       // value. However this is safe since keyframe_id and model_id are not used
       // when routing a TIME_UPDATED event.
-      uid({timeline_id, animation_id, 0, 0}),
+      uid({timeline_id, animation_id, 0}),
       group_id(),
       target_property(),
       monotonic_time(),
@@ -63,12 +63,12 @@ AnimationEvent& AnimationEvent::operator=(const AnimationEvent& other) {
 
 AnimationEvent::~AnimationEvent() = default;
 
-AnimationEvents::AnimationEvents() = default;
+AnimationEvents::AnimationEvents() : needs_time_updated_events_(false) {}
 
 AnimationEvents::~AnimationEvents() = default;
 
 bool AnimationEvents::IsEmpty() const {
-  return events_.empty();
+  return events_.empty() && !needs_time_updated_events_;
 }
 
 bool AnimationEvent::ShouldDispatchToKeyframeEffectAndModel() const {

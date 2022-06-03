@@ -11,11 +11,7 @@
 #include "third_party/skia/include/core/SkTypes.h"
 
 void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
-#if DCHECK_IS_ON()
-  int severity = logging::LOG_ERROR;
-#else
   int severity = logging::LOG_INFO;
-#endif
   if (severity < logging::GetMinLogLevel())
     return;
 
@@ -27,4 +23,20 @@ void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
   va_end(ap);
 
   logging::LogMessage(file, line, severity).stream() << msg;
+}
+
+void SkAbort_FileLine(const char* file, int line, const char* format, ...) {
+  int severity = logging::LOG_FATAL;
+
+  va_list ap;
+  va_start(ap, format);
+
+  std::string msg;
+  base::StringAppendV(&msg, format, ap);
+  va_end(ap);
+
+  logging::LogMessage(file, line, severity).stream() << msg;
+  sk_abort_no_print();
+  // Extra safety abort().
+  abort();
 }

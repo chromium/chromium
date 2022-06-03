@@ -6,9 +6,6 @@
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_
 
 #include <memory>
-#include <string>
-
-#include "base/macros.h"
 
 class ChromeAuthenticatorRequestDelegate;
 
@@ -26,21 +23,22 @@ class WebContents;
 class AuthenticatorRequestScheduler {
  public:
   AuthenticatorRequestScheduler() = default;
+
+  AuthenticatorRequestScheduler(const AuthenticatorRequestScheduler&) = delete;
+  AuthenticatorRequestScheduler& operator=(
+      const AuthenticatorRequestScheduler&) = delete;
+
   ~AuthenticatorRequestScheduler() = default;
 
   // Returns a nullptr delegate if there is already an ongoing request in the
   // same WebContents.
   static std::unique_ptr<ChromeAuthenticatorRequestDelegate>
-  CreateRequestDelegate(content::RenderFrameHost* render_frame_host,
-                        const std::string& relying_party_id);
+  CreateRequestDelegate(content::RenderFrameHost* render_frame_host);
 
   // Returns the current request delegate associated to the |web_contents| or
   // nullptr if there is none.
-  static ChromeAuthenticatorRequestDelegate* GetRequestDelegateForTest(
+  static ChromeAuthenticatorRequestDelegate* GetRequestDelegate(
       content::WebContents* web_contents);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestScheduler);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_

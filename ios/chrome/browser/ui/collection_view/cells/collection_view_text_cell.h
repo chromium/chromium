@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MDCCollectionViewCell.h"
+#import <MaterialComponents/MDCCollectionViewCell.h>
 
 // MDCCollectionViewCell that displays two text fields.
 @interface CollectionViewTextCell : MDCCollectionViewCell

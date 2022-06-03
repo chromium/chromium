@@ -7,10 +7,13 @@
 #include <algorithm>
 
 #include "ash/assistant/ui/logo_view/shape/shape.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -43,10 +46,6 @@ LogoViewImpl::LogoViewImpl()
 
 LogoViewImpl::~LogoViewImpl() {
   state_animator_.StopAnimator();
-}
-
-const char* LogoViewImpl::GetClassName() const {
-  return "LogoViewImpl";
 }
 
 void LogoViewImpl::SetState(LogoView::State state, bool animate) {
@@ -217,10 +216,13 @@ void LogoViewImpl::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void LogoViewImpl::VisibilityChanged(views::View* starting_from,
                                      bool is_visible) {
-  if (is_visible)
+  if (IsDrawn())
     state_animator_.StartAnimator();
   else
     state_animator_.StopAnimator();
 }
+
+BEGIN_METADATA(LogoViewImpl, LogoView)
+END_METADATA
 
 }  // namespace ash

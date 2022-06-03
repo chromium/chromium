@@ -2,31 +2,6 @@ Tests that different types of inline styles are correctly disambiguated and thei
 
 Stylesheet added:
   - isInline: false
-  - sourceURL: 
-  - hasSourceURL: false
-  - contents: 
-.inline-style-added-by-parser-in-document-write {
-   color: blue;
-}
-
-Stylesheet added:
-  - isInline: false
-  - sourceURL: 
-  - hasSourceURL: false
-  - contents: .inline-style-created-by-script {
-   color: orange;
-}
-Stylesheet added:
-  - isInline: true
-  - sourceURL: dynamic-style-tag.html
-  - hasSourceURL: false
-  - contents: 
-/* comment */.inline-style-added-by-parser {
-    color: red;
-}
-
-Stylesheet added:
-  - isInline: false
   - sourceURL: inlineStyleAddedByDocumentWrite.css
   - hasSourceURL: true
   - contents: 
@@ -34,6 +9,15 @@ Stylesheet added:
    color: yellow;
 }
 /*# sourceURL=inlineStyleAddedByDocumentWrite.css*/
+
+Stylesheet added:
+  - isInline: false
+  - sourceURL: 
+  - hasSourceURL: false
+  - contents: 
+.inline-style-added-by-parser-in-document-write {
+   color: blue;
+}
 
 Stylesheet added:
   - isInline: true
@@ -45,6 +29,22 @@ Stylesheet added:
 }
 /*# sourceURL=inlineStyleAddedByParser.css*/
 
+Stylesheet added:
+  - isInline: true
+  - sourceURL: dynamic-style-tag.html
+  - hasSourceURL: false
+  - contents: 
+/* comment */.inline-style-added-by-parser {
+    color: red;
+}
+
+Stylesheet added:
+  - isInline: false
+  - sourceURL: 
+  - hasSourceURL: false
+  - contents: .inline-style-created-by-script {
+   color: orange;
+}
 Stylesheet added:
   - isInline: false
   - sourceURL: inlineStyleCreatedByScript.css
@@ -84,10 +84,5 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 

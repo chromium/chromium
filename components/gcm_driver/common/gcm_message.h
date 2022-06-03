@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "components/gcm_driver/common/gcm_driver_export.h"
 
 namespace gcm {
@@ -35,7 +34,11 @@ struct GCM_DRIVER_EXPORT OutgoingMessage {
 struct GCM_DRIVER_EXPORT IncomingMessage {
   IncomingMessage();
   IncomingMessage(const IncomingMessage& other);
+  IncomingMessage(IncomingMessage&& other);
   ~IncomingMessage();
+
+  IncomingMessage& operator=(const IncomingMessage& other);
+  IncomingMessage& operator=(IncomingMessage&& other);
 
   MessageData data;
   std::string collapse_key;
@@ -46,32 +49,6 @@ struct GCM_DRIVER_EXPORT IncomingMessage {
   // Whether the contents of the message have been decrypted, and are
   // available in |raw_data|.
   bool decrypted = false;
-};
-
-// Message to be delivered to the other party via Web Push.
-struct GCM_DRIVER_EXPORT WebPushMessage {
-  WebPushMessage();
-  WebPushMessage(WebPushMessage&& other);
-  ~WebPushMessage();
-  WebPushMessage& operator=(WebPushMessage&& other);
-
-  // Urgency of a WebPushMessage as defined in RFC 8030 section 5.3.
-  // https://tools.ietf.org/html/rfc8030#section-5.3
-  enum class Urgency {
-    kVeryLow,
-    kLow,
-    kNormal,
-    kHigh,
-  };
-
-  // In seconds.
-  int time_to_live = kMaximumTTL;
-  std::string payload;
-  Urgency urgency = Urgency::kNormal;
-
-  static const int kMaximumTTL;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPushMessage);
 };
 
 }  // namespace gcm

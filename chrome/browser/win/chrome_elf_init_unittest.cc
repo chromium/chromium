@@ -5,10 +5,9 @@
 #include "chrome/browser/win/chrome_elf_init.h"
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"
@@ -22,6 +21,10 @@
 namespace {
 
 class ChromeBlacklistTrialTest : public testing::Test {
+ public:
+  ChromeBlacklistTrialTest(const ChromeBlacklistTrialTest&) = delete;
+  ChromeBlacklistTrialTest& operator=(const ChromeBlacklistTrialTest&) = delete;
+
  protected:
   ChromeBlacklistTrialTest() {}
   ~ChromeBlacklistTrialTest() override {}
@@ -32,12 +35,12 @@ class ChromeBlacklistTrialTest : public testing::Test {
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 
-    blacklist_registry_key_.reset(
-        new base::win::RegKey(HKEY_CURRENT_USER,
-                              install_static::GetRegistryPath()
-                                  .append(blacklist::kRegistryBeaconKeyName)
-                                  .c_str(),
-                              KEY_QUERY_VALUE | KEY_SET_VALUE));
+    blacklist_registry_key_ = std::make_unique<base::win::RegKey>(
+        HKEY_CURRENT_USER,
+        install_static::GetRegistryPath()
+            .append(blacklist::kRegistryBeaconKeyName)
+            .c_str(),
+        KEY_QUERY_VALUE | KEY_SET_VALUE);
   }
 
   DWORD GetBlacklistState() {
@@ -48,8 +51,8 @@ class ChromeBlacklistTrialTest : public testing::Test {
     return blacklist_state;
   }
 
-  base::string16 GetBlacklistVersion() {
-    base::string16 blacklist_version;
+  std::wstring GetBlacklistVersion() {
+    std::wstring blacklist_version;
     blacklist_registry_key_->ReadValue(blacklist::kBeaconVersion,
                                        &blacklist_version);
 
@@ -59,9 +62,6 @@ class ChromeBlacklistTrialTest : public testing::Test {
   std::unique_ptr<base::win::RegKey> blacklist_registry_key_;
   registry_util::RegistryOverrideManager override_manager_;
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBlacklistTrialTest);
 };
 
 // Ensure that the default trial sets up the blacklist beacons.
@@ -79,7 +79,7 @@ TEST_F(ChromeBlacklistTrialTest, DefaultRun) {
   // blacklist beacon was setup.
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
-  base::string16 version(base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring version(base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(version, GetBlacklistVersion());
 }
 
@@ -102,7 +102,7 @@ TEST_F(ChromeBlacklistTrialTest, BlacklistDisabledRun) {
   // values are indeed gone.
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_STATE_MAX),
             GetBlacklistState());
-  ASSERT_EQ(base::string16(), GetBlacklistVersion());
+  ASSERT_EQ(std::wstring(), GetBlacklistVersion());
 }
 
 TEST_F(ChromeBlacklistTrialTest, VerifyFirstRun) {
@@ -112,7 +112,7 @@ TEST_F(ChromeBlacklistTrialTest, VerifyFirstRun) {
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
 
-  base::string16 version(base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring version(base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(version, GetBlacklistVersion());
 }
 
@@ -147,8 +147,8 @@ TEST_F(ChromeBlacklistTrialTest, VersionChanged) {
   ASSERT_EQ(static_cast<DWORD>(blacklist::BLACKLIST_ENABLED),
             GetBlacklistState());
 
-  base::string16 expected_version(
-      base::UTF8ToUTF16(version_info::GetVersionNumber()));
+  std::wstring expected_version(
+      base::UTF8ToWide(version_info::GetVersionNumber()));
   ASSERT_EQ(expected_version, GetBlacklistVersion());
 
   // The counter should be reset.

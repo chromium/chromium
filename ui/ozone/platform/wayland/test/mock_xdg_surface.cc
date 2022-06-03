@@ -5,9 +5,9 @@
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
-#include "ui/ozone/platform/wayland/test/mock_xdg_popup.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/test_positioner.h"
+#include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
 
 namespace wl {
 
@@ -152,7 +152,7 @@ void GetXdgPopup(struct wl_client* client,
   }
 
   wl_resource* xdg_popup_resource =
-      CreateResourceWithImpl<::testing::NiceMock<MockXdgPopup>>(
+      CreateResourceWithImpl<::testing::NiceMock<TestXdgPopup>>(
           client, &xdg_popup_interface, wl_resource_get_version(resource),
           &kXdgPopupImpl, id, resource);
 
@@ -161,21 +161,21 @@ void GetXdgPopup(struct wl_client* client,
     return;
   }
 
-  auto* mock_xdg_popup = GetUserDataAs<MockXdgPopup>(xdg_popup_resource);
-  DCHECK(mock_xdg_popup);
+  auto* test_xdg_popup = GetUserDataAs<TestXdgPopup>(xdg_popup_resource);
+  DCHECK(test_xdg_popup);
 
   auto* positioner = GetUserDataAs<TestPositioner>(positioner_resource);
   DCHECK(positioner);
 
-  mock_xdg_popup->set_position(positioner->position());
-  if (mock_xdg_popup->size().IsEmpty() ||
-      mock_xdg_popup->anchor_rect().IsEmpty()) {
+  test_xdg_popup->set_position(positioner->position());
+  if (test_xdg_popup->size().IsEmpty() ||
+      test_xdg_popup->anchor_rect().IsEmpty()) {
     wl_resource_post_error(resource, XDG_WM_BASE_ERROR_INVALID_POSITIONER,
                            "Positioner object is not complete");
     return;
   }
 
-  mock_xdg_surface->set_xdg_popup(mock_xdg_popup);
+  mock_xdg_surface->set_xdg_popup(test_xdg_popup);
 }
 
 void GetZXdgPopupV6(struct wl_client* client,
@@ -197,7 +197,7 @@ void GetZXdgPopupV6(struct wl_client* client,
   }
 
   wl_resource* xdg_popup_resource =
-      CreateResourceWithImpl<::testing::NiceMock<MockXdgPopup>>(
+      CreateResourceWithImpl<::testing::NiceMock<TestXdgPopup>>(
           client, &zxdg_popup_v6_interface, wl_resource_get_version(resource),
           &kZxdgPopupV6Impl, id, resource);
 
@@ -206,21 +206,21 @@ void GetZXdgPopupV6(struct wl_client* client,
     return;
   }
 
-  auto* mock_xdg_popup = GetUserDataAs<MockXdgPopup>(xdg_popup_resource);
-  DCHECK(mock_xdg_popup);
+  auto* test_xdg_popup = GetUserDataAs<TestXdgPopup>(xdg_popup_resource);
+  DCHECK(test_xdg_popup);
 
   auto* positioner = GetUserDataAs<TestPositioner>(positioner_resource);
   DCHECK(positioner);
 
-  mock_xdg_popup->set_position(positioner->position());
-  if (mock_xdg_popup->size().IsEmpty() ||
-      mock_xdg_popup->anchor_rect().IsEmpty()) {
+  test_xdg_popup->set_position(positioner->position());
+  if (test_xdg_popup->size().IsEmpty() ||
+      test_xdg_popup->anchor_rect().IsEmpty()) {
     wl_resource_post_error(resource, ZXDG_SHELL_V6_ERROR_INVALID_POSITIONER,
                            "Positioner object is not complete");
     return;
   }
 
-  mock_xdg_surface->set_xdg_popup(mock_xdg_popup);
+  mock_xdg_surface->set_xdg_popup(test_xdg_popup);
 }
 
 const struct xdg_surface_interface kMockXdgSurfaceImpl = {

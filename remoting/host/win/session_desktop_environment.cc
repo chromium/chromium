@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/input_injector.h"

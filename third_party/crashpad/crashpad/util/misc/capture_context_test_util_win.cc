@@ -15,7 +15,7 @@
 #include "util/misc/capture_context_test_util.h"
 #include "util/win/context_wrappers.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {

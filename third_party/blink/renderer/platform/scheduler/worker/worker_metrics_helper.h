@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_METRICS_HELPER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
@@ -18,10 +19,11 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
  public:
   explicit WorkerMetricsHelper(ThreadType thread_type,
                                bool has_cpu_timing_for_each_task);
+  WorkerMetricsHelper(const WorkerMetricsHelper&) = delete;
+  WorkerMetricsHelper& operator=(const WorkerMetricsHelper&) = delete;
   ~WorkerMetricsHelper();
 
   void RecordTaskMetrics(
-      NonMainThreadTaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
@@ -37,9 +39,7 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
   scheduling_metrics::TaskDurationMetricReporter<FrameOriginType>
       background_dedicated_worker_per_parent_frame_status_duration_reporter_;
 
-  base::Optional<FrameOriginType> parent_frame_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerMetricsHelper);
+  absl::optional<FrameOriginType> parent_frame_type_;
 };
 
 }  // namespace scheduler

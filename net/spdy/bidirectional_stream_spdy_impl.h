@@ -22,14 +22,11 @@
 #include "net/spdy/spdy_read_queue.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_stream.h"
+#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 
 namespace base {
 class OneShotTimer;
 }  // namespace base
-
-namespace spdy {
-class SpdyHeaderBlock;
-}  // namespace spdy
 
 namespace net {
 
@@ -42,6 +39,10 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
  public:
   BidirectionalStreamSpdyImpl(const base::WeakPtr<SpdySession>& spdy_session,
                               NetLogSource source_dependency);
+
+  BidirectionalStreamSpdyImpl(const BidirectionalStreamSpdyImpl&) = delete;
+  BidirectionalStreamSpdyImpl& operator=(const BidirectionalStreamSpdyImpl&) =
+      delete;
 
   ~BidirectionalStreamSpdyImpl() override;
 
@@ -65,12 +66,13 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
 
   // SpdyStream::Delegate implementation:
   void OnHeadersSent() override;
+  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override;
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override;
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
   void OnClose(int status) override;
   bool CanGreaseFrameType() const override;
   NetLogSource source_dependency() const override;
@@ -132,8 +134,6 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   scoped_refptr<IOBuffer> pending_combined_buffer_;
 
   base::WeakPtrFactory<BidirectionalStreamSpdyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamSpdyImpl);
 };
 
 }  // namespace net

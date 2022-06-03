@@ -203,7 +203,7 @@ public class TestTouchUtils {
      * @param v The view to call performClick on.
      */
     public static void performClickOnMainSync(Instrumentation instrumentation, final View v) {
-        instrumentation.runOnMainSync(() -> v.performClick());
+        TestThreadUtils.runOnUiThreadBlocking(() -> { v.performClick(); });
     }
 
     /**

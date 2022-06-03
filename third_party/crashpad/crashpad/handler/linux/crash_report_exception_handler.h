@@ -18,7 +18,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "client/crash_report_database.h"
 #include "handler/crash_report_upload_thread.h"
 #include "handler/linux/exception_handler_server.h"
@@ -29,6 +28,9 @@
 #include "util/misc/uuid.h"
 
 namespace crashpad {
+
+class ProcessSnapshotLinux;
+class ProcessSnapshotSanitized;
 
 //! \brief An exception handler that writes crash reports for exceptions
 //!     to a CrashReportDatabase.
@@ -50,6 +52,12 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
   //!     To interoperate with Breakpad servers, the recommended practice is to
   //!     specify values for the `"prod"` and `"ver"` keys as process
   //!     annotations.
+  //! \param[in] attachments A vector of file paths that should be captured with
+  //!     each report at the time of the crash.
+  //! \param[in] write_minidump_to_database Whether the minidump shall be
+  //!     written to database.
+  //! \param[in] write_minidump_to_log Whether the minidump shall be written to
+  //!     log.
   //! \param[in] user_stream_data_sources Data sources to be used to extend
   //!     crash reports. For each crash report that is written, the data sources
   //!     are called in turn. These data sources may contribute additional
@@ -58,7 +66,14 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
       CrashReportDatabase* database,
       CrashReportUploadThread* upload_thread,
       const std::map<std::string, std::string>* process_annotations,
+      const std::vector<base::FilePath>* attachments,
+      bool write_minidump_to_database,
+      bool write_minidump_to_log,
       const UserStreamDataSources* user_stream_data_sources);
+
+  CrashReportExceptionHandler(const CrashReportExceptionHandler&) = delete;
+  CrashReportExceptionHandler& operator=(const CrashReportExceptionHandler&) =
+      delete;
 
   ~CrashReportExceptionHandler() override;
 
@@ -87,12 +102,20 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
       pid_t* requesting_thread_id,
       UUID* local_report_id = nullptr);
 
+  bool WriteMinidumpToDatabase(ProcessSnapshotLinux* process_snapshot,
+                               ProcessSnapshotSanitized* sanitized_snapshot,
+                               bool write_minidump_to_log,
+                               UUID* local_report_id);
+  bool WriteMinidumpToLog(ProcessSnapshotLinux* process_snapshot,
+                          ProcessSnapshotSanitized* sanitized_snapshot);
+
   CrashReportDatabase* database_;  // weak
   CrashReportUploadThread* upload_thread_;  // weak
   const std::map<std::string, std::string>* process_annotations_;  // weak
+  const std::vector<base::FilePath>* attachments_;  // weak
+  bool write_minidump_to_database_;
+  bool write_minidump_to_log_;
   const UserStreamDataSources* user_stream_data_sources_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportExceptionHandler);
 };
 
 }  // namespace crashpad

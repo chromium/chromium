@@ -40,7 +40,7 @@ test(function(t) {
     assert_array_equals(trySettingLineDash([1, -Infinity]), initialLineDash);
     assert_array_equals(trySettingLineDash([1, NaN]), initialLineDash);
     assert_array_equals(trySettingLineDash([1, 'string']), initialLineDash);
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       trySettingLineDashWithNoArgs();
     });
 

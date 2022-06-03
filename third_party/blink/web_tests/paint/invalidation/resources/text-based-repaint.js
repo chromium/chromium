@@ -52,7 +52,7 @@ function finishRepaintTest()
     if (!window.testRunner || !window.internals)
         return;
 
-    var flags = internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS;
+    var flags = internals.LAYER_TREE_INCLUDES_INVALIDATIONS;
 
     if (window.layerTreeAsTextAdditionalFlags)
         flags |= layerTreeAsTextAdditionalFlags;

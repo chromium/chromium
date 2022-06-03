@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/id_manager.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 namespace gles2 {

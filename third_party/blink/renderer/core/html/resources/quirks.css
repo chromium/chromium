@@ -21,6 +21,12 @@
  *
  */
 
+/* This sheet is appended to html.css before parsing which means the selectors
+   below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
 /* Give floated images margins of 3px */
 img[align="left" i] {
     margin-right: 3px;

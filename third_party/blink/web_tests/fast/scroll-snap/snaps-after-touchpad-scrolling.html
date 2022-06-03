@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+#scroller {
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
+  scroll-snap-type: x mandatory;
+
+  /* Ensure scroller gets composited scrolling when available. */
+  background: white;
+  contain: paint;
+}
+#space {
+  width: 2000px;
+  height: 2000px;
+}
+.target {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100px;
+  scroll-snap-align: start;
+  background-color: blue;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div class="target" style="left: 0px;"></div>
+  <div class="target" style="left: 120px;"></div>
+  <div class="target" style="left: 240px;"></div>
+</div>
+
+<script>
+const scroller = document.getElementById("scroller");
+
+function scrollLeft() {
+  return scroller.scrollLeft;
+}
+
+function touchpadScroll(delta, x, y, direction) {
+  // A touchpat scroll comes from mouse input with precise delta.
+  return smoothScroll(delta, x ,y , GestureSourceType.MOUSE_INPUT, direction,
+                      SPEED_INSTANT, true /* is precise delta */);
+}
+
+function cleanup() {
+  scroller.scrollTo(0, 0);
+  assert_approx_equals(scroller.scrollLeft, 0, 1);
+}
+
+promise_test (async t => {
+  t.add_cleanup(cleanup);
+  // scroll just 10px so the current snap point remains closest.
+  await touchpadScroll(10 /* pixels to scroll */, 50, 50, 'right');
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_approx_equals(scroller.scrollLeft, 0, 1);
+}, "Touchpad scrolling (right) should prefer the closest snap area regardless"
+   + " of scroll direction.");
+
+promise_test (async t => {
+  t.add_cleanup(cleanup);
+
+  scroller.scrollTo(120, 0);
+  assert_approx_equals(scroller.scrollLeft, 120, 1);
+
+  // Scroll passed the last snap point.
+  await touchpadScroll(10 /* pixels to scroll */, 50, 50, 'left');
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_approx_equals(scroller.scrollLeft, 120, 1);
+}, "Touchpad scrolling (left) should prefer the closest snap area regardless of"
+   + " scroll direction.");
+
+
+promise_test (async t => {
+  t.add_cleanup(cleanup);
+  // Scroll so we pass the second snap point and a closest to third.
+  await touchpadScroll(220 /* pixels to scroll */, 50, 50, 'right');
+  await waitForAnimationEndTimeBased(scrollLeft);
+  assert_approx_equals(scroller.scrollLeft, 240, 1);
+}, "Touchpad scrolling should prefer the closest snap point in scroll to the"
+   + " scroll end position.");
+
+</script>

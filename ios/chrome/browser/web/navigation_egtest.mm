@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/ios/ios_util.h"
+#import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -18,7 +20,8 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ContentSuggestionCollectionView;
+using base::test::ios::kWaitForUIElementTimeout;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::OmniboxText;
@@ -322,15 +325,13 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Tap the back button and verify NTP is loaded.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the forward button and verify test page is loaded.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  const NSTimeInterval kWaitForWebStateTimeout = 10;
-  [ChromeEarlGrey waitForWebStateContainingText:"pony"
-                                        timeout:kWaitForWebStateTimeout];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
 }
 
 #pragma mark window.location.hash operations
@@ -339,7 +340,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // and verifies the URLs and that hashchange event is fired.
 - (void)testWindowLocationChangeHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -383,7 +384,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // and verifies that going back returns to the replaced entry.
 - (void)testWindowLocationReplaceAndChangeHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -421,7 +422,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // only one entry in the history by navigating back.
 - (void)testWindowLocationChangeToSameHash {
   self.testServer->RegisterRequestHandler(
-      base::Bind(&WindowLocationHashHandlers));
+      base::BindRepeating(&WindowLocationHashHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL page1URL = self.testServer->GetURL(kPage1URL);
   const GURL hashChangedWithHistoryURL =
@@ -460,7 +461,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Navigates to a page that immediately redirects to another page via JavaScript
 // then verifies the browsing history.
 - (void)testJavaScriptRedirect {
-  self.testServer->RegisterRequestHandler(base::Bind(&RedirectHandlers));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&RedirectHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // A starting page.
   const GURL initialURL = self.testServer->GetURL(kDefaultPageURL);
@@ -518,7 +520,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 }
 
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel {
-  self.testServer->RegisterRequestHandler(base::Bind(&RedirectHandlers));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&RedirectHandlers));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL indexURL(self.testServer->GetURL(kRedirectIndexURL));
   const GURL destinationURL(self.testServer->GetURL(kDestinationURL));
@@ -589,6 +592,9 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
 
   [ChromeEarlGrey goForward];
+
+  // Navigating right after session restore seems to sometimes be slow, so wait with twice the
+  // usual timeout.
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
       assertWithMatcher:grey_notNil()];

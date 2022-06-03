@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/big_endian.h"
-#include "base/macros.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 
@@ -55,6 +54,9 @@ static const uint8_t kFeedbackSeq = 1;
 class TestRtcpPacketBuilder {
  public:
   TestRtcpPacketBuilder();
+
+  TestRtcpPacketBuilder(const TestRtcpPacketBuilder&) = delete;
+  TestRtcpPacketBuilder& operator=(const TestRtcpPacketBuilder&) = delete;
 
   void AddSr(uint32_t remote_ssrc, int number_of_report_blocks);
   void AddSrWithNtp(uint32_t remote_ssrc,
@@ -104,8 +106,6 @@ class TestRtcpPacketBuilder {
   char* ptr_of_length_;
   base::BigEndianWriter big_endian_writer_;
   base::BigEndianReader big_endian_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRtcpPacketBuilder);
 };
 
 }  // namespace cast

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 

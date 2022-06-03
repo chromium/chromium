@@ -7,11 +7,19 @@
 
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
-#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/sync/protocol/get_updates_caller_info.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/protocol/wifi_configuration_specifics.pb.h"
+#include "components/sync/protocol/workspace_desk_specifics.pb.h"
 
 // Keep this file in sync with the .proto files in this directory.
 //
@@ -31,6 +39,8 @@ const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type);
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type);
 
+const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type);
+
 const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
 
@@ -41,6 +51,9 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 
 const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
+
+const char* ProtoEnumToString(
+    sync_pb::SearchEngineSpecifics::ActiveStatus is_active);
 
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type);
 
@@ -65,14 +78,6 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::SingletonDebugEventType type);
 const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state);
 
 const char* ProtoEnumToString(sync_pb::TabNavigation::PasswordState state);
-
-const char* ProtoEnumToString(sync_pb::UserConsentSpecifics::Feature feature);
-
-const char* ProtoEnumToString(
-    sync_pb::UserEventSpecifics::Translation::Interaction interaction);
-
-const char* ProtoEnumToString(
-    sync_pb::UserEventSpecifics::UserConsent::Feature feature);
 
 const char* ProtoEnumToString(sync_pb::UserConsentTypes::ConsentStatus status);
 
@@ -99,7 +104,11 @@ const char* ProtoEnumToString(
     sync_pb::UserEventSpecifics::GaiaPasswordCaptured::EventTrigger trigger);
 
 const char* ProtoEnumToString(
-    sync_pb::WalletMaskedCreditCard::WalletCardClass wallet_card_class);
+    sync_pb::UserEventSpecifics::FlocIdComputed::EventTrigger trigger);
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
+        virtual_card_enrollment_state);
 
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardStatus wallet_card_status);
@@ -107,30 +116,42 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardType wallet_card_type);
 
+const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer);
+
 const char* ProtoEnumToString(
     sync_pb::WalletMetadataSpecifics::Type wallet_metadata_type);
+
+const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose);
 
 const char* ProtoEnumToString(
     sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode);
 
 const char* ProtoEnumToString(
-    sync_pb::WifiConfigurationSpecificsData::SecurityType security_type);
+    sync_pb::AutofillProfileSpecifics::VerificationStatus status);
 
 const char* ProtoEnumToString(
-    sync_pb::WifiConfigurationSpecificsData::AutomaticallyConnectOption
+    sync_pb::WifiConfigurationSpecifics::SecurityType security_type);
+
+const char* ProtoEnumToString(
+    sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption
         automatically_connect_option);
 
 const char* ProtoEnumToString(
-    sync_pb::WifiConfigurationSpecificsData::IsPreferredOption
-        is_preferred_option);
+    sync_pb::WifiConfigurationSpecifics::IsPreferredOption is_preferred_option);
 
 const char* ProtoEnumToString(
-    sync_pb::WifiConfigurationSpecificsData::MeteredOption metered_option);
+    sync_pb::WifiConfigurationSpecifics::MeteredOption metered_option);
 
 const char* ProtoEnumToString(
-    sync_pb::WifiConfigurationSpecificsData::ProxyConfiguration::ProxyOption
+    sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::ProxyOption
         proxy_option);
 
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowState window_state);
+
+const char* ProtoEnumToString(
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_

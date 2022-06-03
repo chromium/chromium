@@ -11,8 +11,8 @@
 #include <tuple>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/hash/hash.h"
-#include "base/logging.h"
 #include "base/token.h"
 
 namespace base {
@@ -22,8 +22,9 @@ struct UnguessableTokenHash;
 // UnguessableToken is, like Token, a randomly chosen 128-bit value. Unlike
 // Token, a new UnguessableToken is always generated at runtime from a
 // cryptographically strong random source (or copied or serialized and
-// deserialized from another such UnguessableToken). It can be used as part of a
-// larger aggregate type, or as an ID in and of itself.
+// deserialized from another such UnguessableToken). Also unlike Token, the ==
+// and != operators are constant time. It can be used as part of a larger
+// aggregate type, or as an ID in and of itself.
 //
 // An UnguessableToken is a strong *bearer token*. Bearer tokens are like HTTP
 // cookies: if a caller has the token, the callee thereby considers the caller
@@ -42,7 +43,7 @@ struct UnguessableTokenHash;
 // NOTE: It is illegal to send empty UnguessableTokens across processes, and
 // sending/receiving empty tokens should be treated as a security issue. If
 // there is a valid scenario for sending "no token" across processes, use
-// base::Optional instead of an empty token.
+// absl::optional instead of an empty token.
 
 class BASE_EXPORT UnguessableToken {
  public:
@@ -66,6 +67,11 @@ class BASE_EXPORT UnguessableToken {
   // Assign to it with Create() before using it.
   constexpr UnguessableToken() = default;
 
+  constexpr UnguessableToken(const UnguessableToken&) = default;
+  constexpr UnguessableToken& operator=(const UnguessableToken&) = default;
+  constexpr UnguessableToken(UnguessableToken&&) noexcept = default;
+  constexpr UnguessableToken& operator=(UnguessableToken&&) = default;
+
   // NOTE: Serializing an empty UnguessableToken is an illegal operation.
   uint64_t GetHighForSerialization() const {
     DCHECK(!is_empty());
@@ -78,24 +84,30 @@ class BASE_EXPORT UnguessableToken {
     return token_.low();
   }
 
-  bool is_empty() const { return token_.is_zero(); }
+  constexpr bool is_empty() const { return token_.is_zero(); }
 
   // Hex representation of the unguessable token.
   std::string ToString() const { return token_.ToString(); }
 
-  explicit operator bool() const { return !is_empty(); }
+  explicit constexpr operator bool() const { return !is_empty(); }
 
-  bool operator<(const UnguessableToken& other) const {
+  span<const uint8_t, 16> AsBytes() const { return token_.AsBytes(); }
+
+  constexpr bool operator<(const UnguessableToken& other) const {
     return token_ < other.token_;
   }
 
-  bool operator==(const UnguessableToken& other) const {
-    return token_ == other.token_;
-  }
+  bool operator==(const UnguessableToken& other) const;
 
   bool operator!=(const UnguessableToken& other) const {
     return !(*this == other);
   }
+
+#if defined(UNIT_TEST)
+  static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
+    return Deserialize(high, low);
+  }
+#endif
 
  private:
   friend struct UnguessableTokenHash;

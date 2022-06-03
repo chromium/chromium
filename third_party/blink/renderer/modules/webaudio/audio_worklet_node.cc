@@ -6,13 +6,16 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_param_descriptor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
@@ -21,6 +24,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -40,22 +44,26 @@ AudioWorkletHandler::AudioWorkletHandler(
   for (const auto& param_name : param_handler_map_.Keys()) {
     param_value_map_.Set(param_name,
                          std::make_unique<AudioFloatArray>(
-                             audio_utilities::kRenderQuantumFrames));
+                             GetDeferredTaskHandler().RenderQuantumFrames()));
   }
 
-  for (unsigned i = 0; i < options->numberOfInputs(); ++i) {
+  for (unsigned i = 0; i < options->numberOfInputs(); ++i)
     AddInput();
-  }
+  // The number of inputs does not change after the construnction, so it is
+  // safe to reserve the array capacity and size.
+  inputs_.ReserveInitialCapacity(options->numberOfInputs());
+  inputs_.resize(options->numberOfInputs());
 
-  if (options->hasOutputChannelCount()) {
-    is_output_channel_count_given_ = true;
-  }
+  is_output_channel_count_given_ = options->hasOutputChannelCount();
 
   for (unsigned i = 0; i < options->numberOfOutputs(); ++i) {
     // If |options->outputChannelCount| unspecified, all outputs are mono.
     AddOutput(is_output_channel_count_given_ ? options->outputChannelCount()[i]
                                              : 1);
   }
+  // Same for the outputs as well.
+  outputs_.ReserveInitialCapacity(options->numberOfOutputs());
+  outputs_.resize(options->numberOfOutputs());
 
   if (Context()->GetExecutionContext()) {
     // Cross-thread tasks between AWN/AWP is okay to be throttled, thus
@@ -69,6 +77,10 @@ AudioWorkletHandler::AudioWorkletHandler(
 }
 
 AudioWorkletHandler::~AudioWorkletHandler() {
+  inputs_.clear();
+  outputs_.clear();
+  param_handler_map_.clear();
+  param_value_map_.clear();
   Uninitialize();
 }
 
@@ -85,47 +97,45 @@ scoped_refptr<AudioWorkletHandler> AudioWorkletHandler::Create(
 void AudioWorkletHandler::Process(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
 
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "AudioWorkletHandler::Process");
+
   // Render and update the node state when the processor is ready with no error.
   // We also need to check if the global scope is valid before we request
   // the rendering in the AudioWorkletGlobalScope.
-  if (processor_ && !processor_->hasErrorOccured()) {
-    Vector<AudioBus*> input_buses;
-    Vector<AudioBus*> output_buses;
-    for (unsigned i = 0; i < NumberOfInputs(); ++i) {
-      // If the input is not connected, inform the processor of that
-      // fact by setting the bus to null.
-      AudioBus* bus = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
-      input_buses.push_back(bus);
-    }
+  if (processor_ && !processor_->hasErrorOccurred()) {
+    // If the input is not connected, inform the processor with nullptr.
+    for (unsigned i = 0; i < NumberOfInputs(); ++i)
+      inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
     for (unsigned i = 0; i < NumberOfOutputs(); ++i)
-      output_buses.push_back(Output(i).Bus());
+      outputs_[i] = WrapRefCounted(Output(i).Bus());
 
     for (const auto& param_name : param_value_map_.Keys()) {
       auto* const param_handler = param_handler_map_.at(param_name);
       AudioFloatArray* param_values = param_value_map_.at(param_name);
-      if (param_handler->HasSampleAccurateValues()) {
+      if (param_handler->HasSampleAccurateValues() &&
+          param_handler->IsAudioRate()) {
         param_handler->CalculateSampleAccurateValues(
             param_values->Data(), static_cast<uint32_t>(frames_to_process));
       } else {
         std::fill(param_values->Data(),
                   param_values->Data() + frames_to_process,
-                  param_handler->Value());
+                  param_handler->FinalValue());
       }
     }
 
     // Run the render code and check the state of processor. Finish the
     // processor if needed.
-    if (!processor_->Process(&input_buses, &output_buses, &param_value_map_) ||
-        processor_->hasErrorOccured()) {
+    if (!processor_->Process(inputs_, outputs_, param_value_map_) ||
+        processor_->hasErrorOccurred()) {
       FinishProcessorOnRenderThread();
     }
   } else {
     // The initialization of handler or the associated processor might not be
     // ready yet or it is in the error state. If so, zero out the connected
     // output.
-    for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
+    for (unsigned i = 0; i < NumberOfOutputs(); ++i)
       Output(i).Bus()->Zero();
-    }
   }
 }
 
@@ -139,7 +149,7 @@ void AudioWorkletHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   // not be dynamically changed.
   if (NumberOfInputs() == 1 && NumberOfOutputs() == 1 &&
       !is_output_channel_count_given_) {
-    DCHECK_EQ(input, &this->Input(0));
+    DCHECK_EQ(input, &Input(0));
     unsigned number_of_input_channels = Input(0).NumberOfChannels();
     if (number_of_input_channels != Output(0).NumberOfChannels()) {
       // This will propagate the channel count to any nodes connected further
@@ -148,14 +158,28 @@ void AudioWorkletHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
     }
   }
 
-  // If the node has zero output, it becomes the "automatic pull" node. This
-  // does not apply to the general case where we have outputs that aren't
-  // connected.
-  if (NumberOfOutputs() == 0) {
-    Context()->GetDeferredTaskHandler().AddAutomaticPullNode(this);
+  AudioHandler::CheckNumberOfChannelsForInput(input);
+  UpdatePullStatusIfNeeded();
+}
+
+void AudioWorkletHandler::UpdatePullStatusIfNeeded() {
+  Context()->AssertGraphOwner();
+
+  bool is_output_connected = false;
+  for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
+    if (Output(i).IsConnected()) {
+      is_output_connected = true;
+      break;
+    }
   }
 
-  AudioHandler::CheckNumberOfChannelsForInput(input);
+  // If no output is connected, add the node to the automatic pull list.
+  // Otherwise, remove it out of the list.
+  if (!is_output_connected) {
+    Context()->GetDeferredTaskHandler().AddAutomaticPullNode(this);
+  } else {
+    Context()->GetDeferredTaskHandler().RemoveAutomaticPullNode(this);
+  }
 }
 
 double AudioWorkletHandler::TailTime() const {
@@ -177,7 +201,7 @@ void AudioWorkletHandler::SetProcessorOnRenderThread(
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &AudioWorkletHandler::NotifyProcessorError, WrapRefCounted(this),
+            &AudioWorkletHandler::NotifyProcessorError, AsWeakPtr(),
             AudioWorkletProcessorErrorState::kConstructionError));
   }
 }
@@ -192,7 +216,7 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
-                            WrapRefCounted(this), error_state));
+                            AsWeakPtr(), error_state));
   }
 
   // TODO(hongchan): After this point, The handler has no more pending activity
@@ -208,7 +232,7 @@ void AudioWorkletHandler::NotifyProcessorError(
   if (!Context() || !Context()->GetExecutionContext() || !GetNode())
     return;
 
-  static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError();
+  static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError(error_state);
 }
 
 // ----------------------------------------------------------------
@@ -224,9 +248,13 @@ AudioWorkletNode::AudioWorkletNode(
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map;
   for (const auto& param_info : param_info_list) {
     String param_name = param_info.Name().IsolatedCopy();
+    AudioParamHandler::AutomationRate param_automation_rate(
+        AudioParamHandler::AutomationRate::kAudio);
+    if (param_info.AutomationRate() == "k-rate")
+      param_automation_rate = AudioParamHandler::AutomationRate::kControl;
     AudioParam* audio_param = AudioParam::Create(
         context, Uuid(), AudioParamHandler::kParamTypeAudioWorklet,
-        param_info.DefaultValue(), AudioParamHandler::AutomationRate::kAudio,
+        param_info.DefaultValue(), param_automation_rate,
         AudioParamHandler::AutomationRateMode::kVariable, param_info.MinValue(),
         param_info.MaxValue());
     audio_param->SetCustomParamName("AudioWorkletNode(\"" + name + "\")." +
@@ -243,11 +271,8 @@ AudioWorkletNode::AudioWorkletNode(
   }
   parameter_map_ = MakeGarbageCollected<AudioParamMap>(audio_param_map);
 
-  SetHandler(AudioWorkletHandler::Create(*this,
-                                         context.sampleRate(),
-                                         name,
-                                         param_handler_map,
-                                         options));
+  SetHandler(AudioWorkletHandler::Create(*this, context.sampleRate(), name,
+                                         param_handler_map, options));
 }
 
 AudioWorkletNode* AudioWorkletNode::Create(
@@ -310,6 +335,13 @@ AudioWorkletNode* AudioWorkletNode::Create(
     return nullptr;
   }
 
+  if (context->IsContextCleared()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "AudioWorkletNode cannot be created: No execution context available.");
+    return nullptr;
+  }
+
   auto* channel =
       MakeGarbageCollected<MessageChannel>(context->GetExecutionContext());
   MessagePortChannel processor_port_channel = channel->port2()->Disentangle();
@@ -343,9 +375,9 @@ AudioWorkletNode* AudioWorkletNode::Create(
   scoped_refptr<SerializedScriptValue> serialized_node_options =
       SerializedScriptValue::Serialize(
           isolate,
-          ToV8(options, script_state->GetContext()->Global(), isolate),
-          serialize_options,
-          exception_state);
+          ToV8Traits<AudioWorkletNodeOptions>::ToV8(script_state, options)
+              .ToLocalChecked(),
+          serialize_options, exception_state);
 
   // |serialized_node_options| can be nullptr if the option dictionary is not
   // valid.
@@ -360,11 +392,18 @@ AudioWorkletNode* AudioWorkletNode::Create(
                                            std::move(processor_port_channel),
                                            std::move(serialized_node_options));
 
+  {
+    // The node should be manually added to the automatic pull node list,
+    // even without a |connect()| call.
+    BaseAudioContext::GraphAutoLocker locker(context);
+    node->Handler().UpdatePullStatusIfNeeded();
+  }
+
   return node;
 }
 
 bool AudioWorkletNode::HasPendingActivity() const {
-  return !context()->IsContextClosed();
+  return !context()->IsContextCleared();
 }
 
 AudioParamMap* AudioWorkletNode::parameters() const {
@@ -375,15 +414,34 @@ MessagePort* AudioWorkletNode::port() const {
   return node_port_;
 }
 
-void AudioWorkletNode::FireProcessorError() {
-  DispatchEvent(*Event::Create(event_type_names::kProcessorerror));
+void AudioWorkletNode::FireProcessorError(
+    AudioWorkletProcessorErrorState error_state) {
+  DCHECK(IsMainThread());
+  DCHECK(error_state == AudioWorkletProcessorErrorState::kConstructionError ||
+         error_state == AudioWorkletProcessorErrorState::kProcessError);
+
+  String error_message = "an error thrown from ";
+  switch (error_state) {
+    case AudioWorkletProcessorErrorState::kNoError:
+      NOTREACHED();
+      return;
+    case AudioWorkletProcessorErrorState::kConstructionError:
+      error_message = error_message + "AudioWorkletProcessor constructor";
+      break;
+    case AudioWorkletProcessorErrorState::kProcessError:
+      error_message = error_message + "AudioWorkletProcessor::process() method";
+      break;
+  }
+  ErrorEvent* event = ErrorEvent::Create(
+      error_message, SourceLocation::Capture(GetExecutionContext()), nullptr);
+  DispatchEvent(*event);
 }
 
 scoped_refptr<AudioWorkletHandler> AudioWorkletNode::GetWorkletHandler() const {
   return WrapRefCounted(&static_cast<AudioWorkletHandler&>(Handler()));
 }
 
-void AudioWorkletNode::Trace(blink::Visitor* visitor) {
+void AudioWorkletNode::Trace(Visitor* visitor) const {
   visitor->Trace(parameter_map_);
   visitor->Trace(node_port_);
   AudioNode::Trace(visitor);

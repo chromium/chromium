@@ -6,21 +6,25 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_INTERFACE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/overlay_priority_hint.h"
 
 #if defined(OS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
@@ -29,6 +33,7 @@ class DisplayResourceProvider;
 }
 
 namespace viz {
+struct DebugRendererSettings;
 class OutputSurface;
 class RendererSettings;
 
@@ -39,7 +44,16 @@ class RendererSettings;
 // for overlay processing that each platform needs to implement.
 class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
  public:
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
+  using PlatformOverlayCandidate = CALayerOverlay;
+#elif defined(OS_WIN)
+  using PlatformOverlayCandidate = DCLayerOverlay;
+#else
+  // Default.
+  using PlatformOverlayCandidate = OverlayCandidate;
+#endif
+
+#if defined(OS_APPLE)
   using CandidateList = CALayerOverlayList;
 #elif defined(OS_WIN)
   using CandidateList = DCLayerOverlayList;
@@ -49,24 +63,32 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 #endif
 
   using FilterOperationsMap =
-      base::flat_map<RenderPassId, cc::FilterOperations*>;
+      base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
+
+  virtual bool DisableSplittingQuads() const;
 
   // Used by Window's DCLayerOverlay system and OverlayProcessorUsingStrategy.
   static void RecordOverlayDamageRectHistograms(
       bool is_overlay,
       bool has_occluding_surface_damage,
-      bool zero_damage_rect,
-      bool occluding_damage_equal_to_damage_rect);
+      bool zero_damage_rect);
 
   // Data needed to represent |OutputSurface| as an overlay plane. Due to the
   // default values for the primary plane, this is a partial list of
   // OverlayCandidate.
   struct VIZ_SERVICE_EXPORT OutputSurfaceOverlayPlane {
+    OutputSurfaceOverlayPlane();
+    OutputSurfaceOverlayPlane(const OutputSurfaceOverlayPlane&);
+    OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
+    ~OutputSurfaceOverlayPlane();
     // Display's rotation information.
     gfx::OverlayTransform transform;
     // Rect on the display to position to. This takes in account of Display's
     // rotation.
     gfx::RectF display_rect;
+    // Specifies the region within the buffer to be cropped and (maybe)scaled to
+    // place inside |display_rect|.
+    gfx::RectF uv_rect;
     // Size of output surface in pixels.
     gfx::Size resource_size;
     // Format of the buffer to scanout.
@@ -75,9 +97,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
     bool enable_blending;
+    // Opacity of the overlay independent of buffer alpha. When rendered:
+    // src-alpha = |opacity| * buffer-component-alpha.
+    float opacity;
     // TODO(weiliangc): Should be replaced by SharedImage mailbox.
     // Gpu fence to wait for before overlay is ready for display.
     unsigned gpu_fence_id;
+    // Mailbox corresponding to the buffer backing the primary plane.
+    gpu::Mailbox mailbox;
+    // Hints for overlay prioritization.
+    gfx::OverlayPriorityHint priority_hint;
+    // Specifies the rounded corners.
+    gfx::RRectF rounded_corners;
   };
 
   // TODO(weiliangc): Eventually the asymmetry between primary plane and
@@ -85,34 +116,49 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // API.
   static OutputSurfaceOverlayPlane ProcessOutputSurfaceAsOverlay(
       const gfx::Size& viewport_size,
+      const gfx::Size& resource_size,
       const gfx::BufferFormat& buffer_format,
       const gfx::ColorSpace& color_space,
-      bool has_alpha);
+      bool has_alpha,
+      float opacity,
+      const gpu::Mailbox& mailbox);
 
   static std::unique_ptr<OverlayProcessorInterface> CreateOverlayProcessor(
-      SkiaOutputSurface* skia_output_surface,
+      OutputSurface* output_surface,
       gpu::SurfaceHandle surface_handle,
       const OutputSurface::Capabilities& capabilities,
-      const RendererSettings& renderer_settings);
+      DisplayCompositorMemoryAndTaskController* display_controller,
+      gpu::SharedImageInterface* shared_image_interface,
+      const RendererSettings& renderer_settings,
+      const DebugRendererSettings* debug_settings);
 
-  virtual ~OverlayProcessorInterface() {}
+  OverlayProcessorInterface(const OverlayProcessorInterface&) = delete;
+  OverlayProcessorInterface& operator=(const OverlayProcessorInterface&) =
+      delete;
+
+  virtual ~OverlayProcessorInterface() = default;
 
   virtual bool IsOverlaySupported() const = 0;
+  // Returns a bounding rectangle of the last set of overlay planes scheduled.
+  // It's expected to be called after ProcessForOverlays at frame N-1 has been
+  // called and before GetAndResetOverlayDamage at frame N.
+  virtual gfx::Rect GetPreviousFrameOverlaysBoundingRect() const = 0;
   virtual gfx::Rect GetAndResetOverlayDamage() = 0;
 
   // Returns true if the platform supports hw overlays and surface occluding
   // damage rect needs to be computed since it will be used by overlay
   // processor.
-  virtual bool NeedsSurfaceOccludingDamageRect() const = 0;
+  virtual bool NeedsSurfaceDamageRectList() const = 0;
 
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
   virtual void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
-      RenderPassList* render_passes,
-      const SkMatrix44& output_color_matrix,
+      AggregatedRenderPassList* render_passes,
+      const skia::Matrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list,
       OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
@@ -120,21 +166,44 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // For Mac, if we successfully generated a candidate list for CALayerOverlay,
   // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the base::Optional instance so the instance can be reset.
+  // to the absl::optional instance so the instance can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   virtual void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
 
-  // These two functions are used by Android SurfaceControl.
+  // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
+  // candidates are stored inside DirectRenderer. Those overlay candidates are
+  // later sent over to the GPU thread by GLRenderer or SkiaRenderer. This
+  // helper function will be called by DirectRenderer to take these overlay
+  // candidates inside overlay processor to avoid sending over DirectRenderer
+  // implementation. This is overridden by each platform that is ready to send
+  // overlay candidates inside |OverlayProcessor|. Must be called before
+  // ScheduleOverlays().
+  virtual void TakeOverlayCandidates(CandidateList* candidate_list) {}
+
+  // TODO(weiliangc): Make it pure virtual after it is implemented by every
+  // subclass.
+  virtual void ScheduleOverlays(
+      DisplayResourceProvider* display_resource_provider);
+  // This is a signal from Display::DidReceiveSwapBuffersAck. This is used as
+  // approximate signale for when the overlays are presented.
+  virtual void OverlayPresentationComplete();
+
+  // These two functions are used by Android SurfaceControl, and SetViewportSize
+  // is also used for Windows DC layers.
   virtual void SetDisplayTransformHint(gfx::OverlayTransform transform) {}
   virtual void SetViewportSize(const gfx::Size& size) {}
 
- protected:
-  OverlayProcessorInterface() {}
+  // Overlay processor uses a frame counter to determine the potential power
+  // benefits of individual overlay candidates.
+  virtual void SetFrameSequenceNumber(uint64_t frame_sequence_number) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorInterface);
+  // If true, video capture is enabled for this frame.
+  virtual void SetIsVideoCaptureEnabled(bool enabled) {}
+
+ protected:
+  OverlayProcessorInterface() = default;
 };
 
 }  // namespace viz

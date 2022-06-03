@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/macros.h"
 #include "base/time/time.h"
 
 class GoogleServiceAuthError;
@@ -17,13 +18,18 @@ class OAuth2AccessTokenConsumer {
  public:
   // Structure representing information contained in OAuth2 access token.
   struct TokenResponse {
-    TokenResponse() = default;
-    TokenResponse(const std::string& access_token,
-                  const base::Time& expiration_time,
-                  const std::string& id_token);
+    TokenResponse();
+    TokenResponse(const TokenResponse& response);
+    TokenResponse(TokenResponse&& response);
+    ~TokenResponse();
+    TokenResponse& operator=(const TokenResponse& response);
+    TokenResponse& operator=(TokenResponse&& response);
 
     // OAuth2 access token.
     std::string access_token;
+
+    // OAuth2 refresh token.  May be empty.
+    std::string refresh_token;
 
     // The date until which the |access_token| can be used.
     // This value has a built-in safety margin, so it can be used as-is.
@@ -32,9 +38,43 @@ class OAuth2AccessTokenConsumer {
     // Contains extra information regarding the user's currently registered
     // services.
     std::string id_token;
+
+    // Helper class to make building TokenResponse objects clearer.
+    class Builder {
+     public:
+      Builder();
+      ~Builder();
+
+      Builder& WithAccessToken(const std::string& token);
+      Builder& WithRefreshToken(const std::string& token);
+      Builder& WithExpirationTime(const base::Time& time);
+      Builder& WithIdToken(const std::string& token);
+
+      TokenResponse build();
+
+     private:
+      std::string access_token_;
+      std::string refresh_token_;
+      base::Time expiration_time_;
+      std::string id_token_;
+    };
+
+   private:
+    friend class Builder;
+    friend class OAuth2AccessTokenConsumer;
+
+    TokenResponse(const std::string& access_token,
+                  const std::string& refresh_token,
+                  const base::Time& expiration_time,
+                  const std::string& id_token);
   };
 
   OAuth2AccessTokenConsumer() = default;
+
+  OAuth2AccessTokenConsumer(const OAuth2AccessTokenConsumer&) = delete;
+  OAuth2AccessTokenConsumer& operator=(const OAuth2AccessTokenConsumer&) =
+      delete;
+
   virtual ~OAuth2AccessTokenConsumer();
 
   // Success callback.
@@ -43,7 +83,8 @@ class OAuth2AccessTokenConsumer {
   // Failure callback.
   virtual void OnGetTokenFailure(const GoogleServiceAuthError& error);
 
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenConsumer);
+  // Returns the OAuth token consumer name, should be used for logging only.
+  virtual std::string GetConsumerName() const = 0;
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_CONSUMER_H_

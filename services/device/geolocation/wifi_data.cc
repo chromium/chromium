@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace device {
 

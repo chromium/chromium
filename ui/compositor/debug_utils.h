@@ -5,6 +5,8 @@
 #ifndef UI_COMPOSITOR_DEBUG_UTILS_H_
 #define UI_COMPOSITOR_DEBUG_UTILS_H_
 
+#include <sstream>
+
 #include "ui/compositor/compositor_export.h"
 
 namespace gfx {
@@ -18,6 +20,12 @@ class Layer;
 // Log the layer hierarchy. Mark layers which contain |mouse_location| with '*'.
 COMPOSITOR_EXPORT void PrintLayerHierarchy(const Layer* layer,
                                            const gfx::Point& mouse_location);
+
+// Print the layer hierarchy to |out|. Mark layers which contain
+// |mouse_location| with '*'.
+COMPOSITOR_EXPORT void PrintLayerHierarchy(const Layer* layer,
+                                           const gfx::Point& mouse_location,
+                                           std::ostringstream* out);
 
 }  // namespace ui
 

@@ -68,7 +68,7 @@ class SnapCoordinatorTest : public testing::Test,
   Document& GetDocument() { return page_holder_->GetDocument(); }
 
   void SetHTML(const char* html_content) {
-    GetDocument().documentElement()->SetInnerHTMLFromString(html_content);
+    GetDocument().documentElement()->setInnerHTML(html_content);
   }
 
   Element& SnapContainer() {
@@ -117,9 +117,7 @@ class SnapCoordinatorTest : public testing::Test,
   }
 
   void UpdateAllLifecyclePhasesForTest() {
-    GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentLifecycle::LifecycleUpdateReason::kTest);
-    GetDocument().View()->RunPostLifecycleSteps();
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
   const cc::SnapContainerData* GetSnapContainerData(LayoutBox& layout_box) {
@@ -209,7 +207,7 @@ TEST_F(SnapCoordinatorTest, UpdateStyleForSnapElement) {
 
   // Add a new snap element
   Element& container = *GetDocument().getElementById("snap-container");
-  container.SetInnerHTMLFromString(R"HTML(
+  container.setInnerHTML(R"HTML(
     <div style='scroll-snap-align: start;'>
         <div style='width:2000px; height:2000px;'></div>
     </div>
@@ -408,7 +406,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(192, 192, 116, 116), false,
                                  cc::ElementId(10));
@@ -442,7 +440,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(192, 192, 116, 116), false,
                                  cc::ElementId(10));
@@ -502,7 +500,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculationOnViewport) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(0, 0, width, height),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
 
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(200, 200, 100, 100), false,
@@ -541,7 +539,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculationWithBoxModel) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(20, 20, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   // rect.x = scroller.border + scroller.padding + area.left + area.margin
   //          - area.scroll-margin
   // rect.y = scroller.border + scroller.padding + area.top + area.margin
@@ -583,7 +581,7 @@ TEST_F(SnapCoordinatorTest, NegativeMarginSnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(208, 208, 84, 84), false,
                                  cc::ElementId(10));
@@ -630,7 +628,7 @@ TEST_F(SnapCoordinatorTest, AsymmetricalSnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(16, 10, width - 28, height - 24),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   cc::SnapAreaData expected_area(
       cc::ScrollSnapAlign(cc::SnapAlignment::kCenter),
       gfx::RectF(192, 198, 112, 108), false, cc::ElementId(10));
@@ -663,7 +661,7 @@ TEST_F(SnapCoordinatorTest, ScaledSnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
 
   // The area is scaled from center, so it pushes the area's top-left corner to
   // (50, 50).
@@ -701,7 +699,7 @@ TEST_F(SnapCoordinatorTest, VerticalRlSnapDataCalculation) {
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::Vector2dF(max_position.x(), max_position.y()));
   // Under vertical-rl writing mode, 'start' should align to the right
   // and 'end' should align to the left.
   cc::SnapAreaData expected_area(

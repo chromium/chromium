@@ -6,10 +6,14 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_TRANSFERABLE_RESOURCE_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/resource_format_mojom_traits.h"
+#include "services/viz/public/mojom/compositing/resource_format.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
@@ -17,13 +21,12 @@ namespace mojo {
 template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
-  static uint32_t id(const viz::TransferableResource& resource) {
+  static const viz::ResourceId& id(const viz::TransferableResource& resource) {
     return resource.id;
   }
 
-  static viz::mojom::ResourceFormat format(
-      const viz::TransferableResource& resource) {
-    return static_cast<viz::mojom::ResourceFormat>(resource.format);
+  static viz::ResourceFormat format(const viz::TransferableResource& resource) {
+    return resource.format;
   }
 
   static uint32_t filter(const viz::TransferableResource& resource) {
@@ -78,7 +81,12 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.color_space;
   }
 
-  static const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+      const viz::TransferableResource& resource) {
+    return resource.hdr_metadata;
+  }
+
+  static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;
   }

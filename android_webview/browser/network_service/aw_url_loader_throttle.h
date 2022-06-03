@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -23,6 +24,10 @@ class AwResourceContext;
 class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   explicit AwURLLoaderThrottle(AwResourceContext* aw_resource_context);
+
+  AwURLLoaderThrottle(const AwURLLoaderThrottle&) = delete;
+  AwURLLoaderThrottle& operator=(const AwURLLoaderThrottle&) = delete;
+
   ~AwURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle implementation:
@@ -33,15 +38,16 @@ class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
       std::vector<std::string>* to_be_removed_request_headers,
-      net::HttpRequestHeaders* modified_request_headers) override;
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
 
  private:
   void AddExtraHeadersIfNeeded(const GURL& url,
                                net::HttpRequestHeaders* headers);
 
   AwResourceContext* aw_resource_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwURLLoaderThrottle);
+  std::vector<std::string> added_headers_;
+  url::Origin original_origin_;
 };
 
 }  // namespace android_webview

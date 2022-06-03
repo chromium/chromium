@@ -33,11 +33,43 @@ namespace blink {
 
 class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
  public:
-  AudioDelayDSPKernel(double max_delay_time, float sample_rate);
+  AudioDelayDSPKernel(double max_delay_time,
+                      float sample_rate,
+                      unsigned render_quantum_frames);
 
+  // Process the delay.  Basically dispatches to either ProcessKRate or
+  // ProcessARate.
   void Process(const float* source,
                float* destination,
                uint32_t frames_to_process) override;
+
+  // Handles k-rate processing
+  void ProcessKRate(const float* source,
+                    float* destination,
+                    uint32_t frames_to_process);
+
+  // Handles a-rate processing
+  void ProcessARate(const float* source,
+                    float* destination,
+                    uint32_t frames_to_process);
+  // Main processing loop for ProcessARate using scalar operations.  Returns the
+  // new write_index.
+  int ProcessARateScalar(unsigned start,
+                         int w_index,
+                         float* destination,
+                         uint32_t frames_to_process) const;
+
+  // Vector version of ProcessARateScalar.  Returns the number of samples
+  // process by this function and the updated wirte_index_.
+  std::tuple<unsigned, int> ProcessARateVector(
+      float* destination,
+      uint32_t frames_to_process) const;
+
+  // Handle an NaN values in |delay_times|.  Replace NaN with |max_time|.
+  void HandleNaN(float* delay_times,
+                 uint32_t frames_to_process,
+                 float max_time);
+
   void Reset() override;
 
   float MaxDelayTime() const { return max_delay_time_; }
@@ -58,6 +90,7 @@ class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
   virtual void CalculateSampleAccurateValues(float* delay_times,
                                              uint32_t frames_to_process);
   virtual double DelayTime(float sample_rate);
+  virtual bool IsAudioRate();
 
   AudioFloatArray buffer_;
 
@@ -70,7 +103,13 @@ class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
 
   AudioFloatArray delay_times_;
 
-  size_t BufferLengthForDelay(double delay_time, double sample_rate) const;
+  // Temporary buffer used to hold the second sample for interpolation if
+  // needed.
+  AudioFloatArray temp_buffer_;
+
+  size_t BufferLengthForDelay(double delay_time,
+                              double sample_rate,
+                              unsigned render_quantum_frames) const;
 };
 
 }  // namespace blink

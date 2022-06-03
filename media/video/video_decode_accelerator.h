@@ -12,15 +12,16 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/overlay_info.h"
+#include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/picture.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -31,14 +32,20 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace gpu {
+class SharedImageStub;
+}
+
 namespace media {
+
+class CommandBufferHelper;
 
 // Video decoder interface.
 // This interface is extended by the various components that ultimately
 // implement the backend of PPB_VideoDecoder_Dev.
 class MEDIA_EXPORT VideoDecodeAccelerator {
  public:
-  // Specification of a decoding profile supported by an decoder.
+  // Specification of a decoding profile supported by a decoder.
   // |max_resolution| and |min_resolution| are inclusive.
   struct MEDIA_EXPORT SupportedProfile {
     SupportedProfile();
@@ -149,7 +156,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
 
     // The CDM that the VDA should use to decode encrypted streams. Must be
     // set to a valid ID if |is_encrypted|.
-    int cdm_id = CdmContext::kInvalidCdmId;
+    absl::optional<base::UnguessableToken> cdm_id;
 
     // Whether the client supports deferred initialization.
     bool is_deferred_initialization_allowed = false;
@@ -182,7 +189,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     gfx::ColorSpace target_color_space;
 
     // HDR metadata specified by the container.
-    base::Optional<HDRMetadata> hdr_metadata;
+    absl::optional<gfx::HDRMetadata> hdr_metadata;
   };
 
   // Interface for collaborating with picture interface to provide memory for
@@ -200,7 +207,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // call to VDA::Initialize returns true.
     // The default implementation is a NOTREACHED, since deferred initialization
     // is not supported by default.
-    virtual void NotifyInitializationComplete(bool success);
+    virtual void NotifyInitializationComplete(Status status);
 
     // Callback to tell client how many and what size of buffers to provide.
     // Note that the actual count provided through AssignPictureBuffers() can be
@@ -215,8 +222,10 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
                                        uint32_t texture_target) = 0;
 
     // This is the same as ProvidePictureBuffers() except that |visible_rect| is
-    // also included. The default implementation of VDA would call
-    // ProvidePictureBuffers().
+    // also included. The default implementation calls ProvidePictureBuffers()
+    // setting |dimensions| = GetRectSizeFromOrigin(|visible_rect|) when
+    // |texture_target| is GL_TEXTURE_EXTERNAL_OES; otherwise, it passes along
+    // all parameters to ProvidePictureBuffers() as they are.
     virtual void ProvidePictureBuffersWithVisibleRect(
         uint32_t requested_num_of_buffers,
         VideoPixelFormat format,
@@ -250,6 +259,14 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // Initialize() will not be reported here, but will instead be indicated by
     // a false return value there.
     virtual void NotifyError(Error error) = 0;
+
+    // Return the SharedImageStub through which SharedImages may be created.
+    // Default implementation returns nullptr.
+    virtual gpu::SharedImageStub* GetSharedImageStub() const;
+
+    // Return the CommandBufferHelper through which GL passthrough textures may
+    // be created. Default implementation returns nullptr.
+    virtual CommandBufferHelper* GetCommandBufferHelper() const;
 
    protected:
     virtual ~Client() {}
@@ -402,6 +419,19 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // Windows creates a BGRA texture.
   // TODO(dshwang): after moving to D3D11, remove this. crbug.com/438691
   virtual GLenum GetSurfaceInternalFormat() const;
+
+  // Returns true if the decoder supports SharedImage backed picture buffers.
+  // May be called on any thread at any time.
+  virtual bool SupportsSharedImagePictureBuffers() const;
+
+  enum class TextureAllocationMode {
+    kDoNotAllocateGLTextures,
+    kAllocateGLTextures
+  };
+
+  // Returns an enum used to allocate GL textures for shared images.
+  // May be called on any thread at any time.
+  virtual TextureAllocationMode GetSharedImageTextureAllocationMode() const;
 
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which

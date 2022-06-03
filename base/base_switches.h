@@ -8,6 +8,7 @@
 #define BASE_BASE_SWITCHES_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
@@ -18,6 +19,8 @@ extern const char kDisableLowEndDeviceMode[];
 extern const char kEnableCrashReporter[];
 extern const char kEnableFeatures[];
 extern const char kEnableLowEndDeviceMode[];
+extern const char kEnableBackgroundThreadPool[];
+extern const char kFieldTrialHandle[];
 extern const char kForceFieldTrials[];
 extern const char kFullMemoryCrashReport[];
 extern const char kLogBestEffortTasks[];
@@ -38,7 +41,10 @@ extern const char kDisableHighResTimer[];
 extern const char kDisableUsbKeyboardDetect[];
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kDisableDevShmUsage[];
 #endif
 
@@ -48,11 +54,22 @@ extern const char kEnableCrashReporterForTesting[];
 
 #if defined(OS_ANDROID)
 extern const char kEnableReachedCodeProfiler[];
-extern const char kOrderfileMemoryOptimization[];
+extern const char kReachedCodeSamplingIntervalUs[];
+extern const char kDefaultCountryCodeAtInstall[];
+extern const char kEnableIdleTracing[];
+extern const char kForceFieldTrialParams[];
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 extern const char kEnableThreadInstructionCount[];
+
+// TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
+// Crashpad is fully enabled on Linux.
+extern const char kEnableCrashpad[];
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kSchedulerBoostUrgent[];
 #endif
 
 }  // namespace switches

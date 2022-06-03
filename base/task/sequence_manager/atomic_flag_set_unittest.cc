@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::ElementsAre;

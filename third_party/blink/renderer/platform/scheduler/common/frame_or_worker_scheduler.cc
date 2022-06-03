@@ -52,18 +52,15 @@ FrameOrWorkerScheduler::~FrameOrWorkerScheduler() {
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
 FrameOrWorkerScheduler::RegisterFeature(SchedulingPolicy::Feature feature,
                                         SchedulingPolicy policy) {
-  DCHECK(!SchedulingPolicy::IsFeatureSticky(feature));
-  // We reset feature sets upon frame navigation, so having a document-bound
-  // weak pointer ensures that the feature handle associated with previous
-  // document can't influence the new one.
-  return SchedulingAffectingFeatureHandle(feature, policy,
-                                          GetDocumentBoundWeakPtr());
+  DCHECK(!scheduler::IsFeatureSticky(feature));
+  return SchedulingAffectingFeatureHandle(
+      feature, policy, GetSchedulingAffectingFeatureWeakPtr());
 }
 
 void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
-  DCHECK(SchedulingPolicy::IsFeatureSticky(feature));
+  DCHECK(scheduler::IsFeatureSticky(feature));
   OnStartedUsingFeature(feature, policy);
 }
 
@@ -88,11 +85,6 @@ void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
     observer.key->OnLifecycleStateChanged(
         CalculateLifecycleState(observer.value));
   }
-}
-
-base::WeakPtr<FrameOrWorkerScheduler>
-FrameOrWorkerScheduler::GetDocumentBoundWeakPtr() {
-  return nullptr;
 }
 
 base::WeakPtr<FrameOrWorkerScheduler> FrameOrWorkerScheduler::GetWeakPtr() {

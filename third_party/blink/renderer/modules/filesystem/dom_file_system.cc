@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -96,7 +97,7 @@ DOMFileSystem::DOMFileSystem(ExecutionContext* context,
                              mojom::blink::FileSystemType type,
                              const KURL& root_url)
     : DOMFileSystemBase(context, name, type, root_url),
-      ContextClient(context),
+      ExecutionContextClient(context),
       number_of_pending_callbacks_(0),
       root_entry_(
           MakeGarbageCollected<DirectoryEntry>(this, DOMFilePath::kRoot)) {}
@@ -174,14 +175,13 @@ void DOMFileSystem::ScheduleCallback(ExecutionContext* execution_context,
   execution_context->GetTaskRunner(TaskType::kFileReading)
       ->PostTask(FROM_HERE,
                  WTF::Bind(&RunCallback, WrapWeakPersistent(execution_context),
-                           WTF::Passed(std::move(task)),
-                           WTF::Passed(std::move(identifier))));
+                           std::move(task), std::move(identifier)));
 }
 
-void DOMFileSystem::Trace(blink::Visitor* visitor) {
+void DOMFileSystem::Trace(Visitor* visitor) const {
   visitor->Trace(root_entry_);
   DOMFileSystemBase::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

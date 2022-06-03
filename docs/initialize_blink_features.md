@@ -11,8 +11,8 @@ If you simply need to enable/disable the Blink feature you can simply use
 
 However, if there are side effects (e.g. you need to disable other features if
 this feature is also disabled), you should declare a custom enabler function in
-- [third_party/blink/public/platform/web_runtime_features.h][WebRuntimeFeatures.h]
-- [third_party/blink/public/platform/web_runtime_features.cc][WebRuntimeFeatures.cc]
+- [third_party/blink/public/platform/web_runtime_features.h][web_runtime_features.h]
+- [third_party/blink/renderer/platform/exported/web_runtime_features.cc][web_runtime_features.cc]
 
 ## Step 2: Determine how your feature is initialized.
 ### 1) Depends on OS-specific Macros:
@@ -26,19 +26,45 @@ Add your code to the function
 If your Blink feature has a custom enabler function, add a new entry to
 `blinkFeatureToBaseFeatureMapping`. For example, a new entry like this:
 ```
-{wf::EnableNewFeatureX, features::kNewFeatureX, kEnableOnly},
+{wf::EnableNewFeatureX, features::kNewFeatureX, kDefault},
 ```
 will call `wf::EnableNewFeatureX` to enable it only if `features::kNewFeatureX`
-is enabled.
+is enabled, or to set it to the same status as `features::kNewFeatureX` if its
+default status is overridden by any field trial or command line switch.
 
 If your Blink feature does not have a custom enabler function, you need to add
 the entry to `runtimeFeatureNameToChromiumFeatureMapping`. For example, a new
 entry like this:
 ```
-{"NewFeatureY", features::kNewFeatureY, kUseFeatureState},
+{"NewFeatureY", features::kNewFeatureY, kDefault},
 ```
-will call `wf::EnableFeatureFromString` with your feature name to set it to
-whichever state your `features::kNewFeatureY` is in.
+will call `wf::EnableFeatureFromString` with your feature name instead of
+`wf::EnableNewFeatureX` in the same cases as above.
+
+The following table summarizes the relationship between the default status of
+the Chromium feature and the status of the blink feature, when `kDefault` is
+specified, if **not overridden** by field trial or command line switches
+(horizontal headers: blink feature status; vertical headers: chromium feature
+default status):
+
+| |No status|`status:"test"`|`status:"experimental"`|`status:"stable"`|
+|---|---------|-----------------|--------------------------|-------------------|
+|`FEATURE_DISABLED_BY_DEFAULT`|Disabled everywhere|Blink feature is enabled for tests, or everywhere with `--enable-blink-test-features` [1]|Blink feature is enabled for tests, or everywhere with `--enable-experimental-web-platform-features` [1]|Blink feature is enabled everywhere [2]|
+|`FEATURE_ENABLED_BY_DEFAULT`|Enabled everywhere|Enabled everywhere|Enabled everywhere|Enabled everywhere|
+
+\[1]: `base::FeatureList::IsEnabled(features::kNewFeatureX)` is still
+false. These combinations are suitable for features there are fully implemented
+at blink side. Otherwise normally the blink feature should not have a status so
+that the Chromium feature can fully control the feature.
+
+\[2]: This combination is counter-intuitive and should be avoided.
+
+Field trial and command line switches can always override the Chromium feature
+status and the blink feature status.
+
+Besides `kDefault`, there are also other options for the relationship
+between the Chromium feature and the blink feature. These other options should
+only be used in rare cases when the default relationship doesn't work.
 
 For more detailed explanation on the options you have, read the comment in enum
 [RuntimeFeatureEnableOptions][EnableOptions].
@@ -68,9 +94,9 @@ command line switch. In this case, your custom logic should live here in
 [runtime_features]:<https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/runtime_features.cc>
 [RuntimeEnabledFeatures]:
 <https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md>
-[WebRuntimeFeatures.h]:
-<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/exported/web_runtime_features.h>
-[WebRuntimeFeatures.cc]:
+[web_runtime_features.h]:
+<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/public/platform/web_runtime_features.h>
+[web_runtime_features.cc]:
 <https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/exported/web_runtime_features.cc>
 [EnableFeatureFromString]:<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/public/platform/web_runtime_features.h#56>
 [SetRuntimeFeatureDefaultsForPlatform]:<https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/runtime_features.cc#46>

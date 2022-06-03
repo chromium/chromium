@@ -33,7 +33,7 @@ const ScriptValue PaymentMethodChangeEvent::methodDetails(
                      method_details_.GetAcrossWorld(script_state));
 }
 
-void PaymentMethodChangeEvent::Trace(Visitor* visitor) {
+void PaymentMethodChangeEvent::Trace(Visitor* visitor) const {
   visitor->Trace(method_details_);
   PaymentRequestUpdateEvent::Trace(visitor);
 }

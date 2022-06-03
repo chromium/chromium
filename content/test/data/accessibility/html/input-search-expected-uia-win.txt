@@ -1,3 +1,3 @@
-document LocalizedControlType='document'
-++group LocalizedControlType='group' IsControlElement=false
-++++searchbox LocalizedControlType='search box' Value.Value='Search terms'
+Document LocalizedControlType='document'
+++Group LocalizedControlType='group' IsControlElement=false
+++++Edit LocalizedControlType='search box' Value.Value='Search terms'

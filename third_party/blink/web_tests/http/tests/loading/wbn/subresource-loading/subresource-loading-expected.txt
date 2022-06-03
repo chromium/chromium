@@ -1,0 +1,10 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - TitleWasSet: Subresource loading with Web Bundles
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+CONSOLE MESSAGE: Hello from WebBundle
+CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn: http://127.0.0.1:8000/loading/wbn/resources/wbn/server/hello/notfound.js is not found in the WebBundle.
+

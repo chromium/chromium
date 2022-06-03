@@ -7,6 +7,8 @@
 #include <dbgeng.h>
 #include <windows.h>
 
+#include "base/strings/utf_string_conversions.h"
+
 namespace tools {
 namespace win {
 namespace chromeexts {
@@ -20,21 +22,30 @@ HwndCommand::HwndCommand() = default;
 HwndCommand::~HwndCommand() = default;
 
 HRESULT HwndCommand::Execute() {
+  auto remaining_arguments = command_line().GetArgs();
+  if (remaining_arguments.size() != 1) {
+    Printf("Only expected 1 argument. Got %d instead.\n",
+           remaining_arguments.size());
+    return E_FAIL;
+  }
+
+  std::string hwnd_expression = base::WideToASCII(remaining_arguments[0]);
+
   // While sizeof(HWND) can change between 32-bit and 64-bit platforms, Windows
   // only cares about the lower 32-bits. We evaluate as 64-bit as a convenience
   // and truncate the displayed hwnds to 32-bit below.
   // See https://msdn.microsoft.com/en-us/library/aa384203.aspx
   DEBUG_VALUE value;
-  HRESULT hr = debug_control()->Evaluate(args().c_str(), DEBUG_VALUE_INT64,
-                                         &value, nullptr);
+  HRESULT hr = GetDebugClientAs<IDebugControl>()->Evaluate(
+      hwnd_expression.c_str(), DEBUG_VALUE_INT64, &value, nullptr);
   if (FAILED(hr)) {
-    PrintErrorf("Unable to evaluate %s\n", args().c_str());
+    PrintErrorf("Unable to evaluate %s\n", hwnd_expression.c_str());
     return hr;
   }
 
   HWND hwnd = reinterpret_cast<HWND>(value.I64);
   if (!IsWindow(hwnd)) {
-    PrintErrorf("Not a window: %s\n", args().c_str());
+    PrintErrorf("Not a window: %s\n", hwnd_expression.c_str());
     return E_FAIL;
   }
 

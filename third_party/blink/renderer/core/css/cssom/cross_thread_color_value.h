@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_COLOR_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_COLOR_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
@@ -19,6 +18,8 @@ class CSSStyleValue;
 class CORE_EXPORT CrossThreadColorValue final : public CrossThreadStyleValue {
  public:
   explicit CrossThreadColorValue(Color value) : value_(value) {}
+  CrossThreadColorValue(const CrossThreadColorValue&) = delete;
+  CrossThreadColorValue& operator=(const CrossThreadColorValue&) = delete;
   ~CrossThreadColorValue() override = default;
 
   StyleValueType GetType() const override { return StyleValueType::kColorType; }
@@ -33,7 +34,6 @@ class CORE_EXPORT CrossThreadColorValue final : public CrossThreadStyleValue {
   friend class CrossThreadStyleValueTest;
 
   Color value_;
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadColorValue);
 };
 
 template <>

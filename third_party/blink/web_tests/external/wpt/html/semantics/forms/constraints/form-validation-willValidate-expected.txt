@@ -1,0 +1,77 @@
+This is a testharness.js-based test.
+Found 73 tests; 70 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS [INPUT in HIDDEN status] Must be barred from the constraint validation
+PASS [INPUT in BUTTON status] Must be barred from the constraint validation
+PASS [INPUT in RESET status] Must be barred from the constraint validation
+PASS [BUTTON in BUTTON status] Must be barred from the constraint validation
+PASS [BUTTON in RESET status] Must be barred from the constraint validation
+PASS [fieldset]  The willValidate attribute must be false since FIELDSET is not a submittable element
+PASS [output]  The willValidate attribute must be false since OUTPUT is not a submittable element
+PASS [object]  Must be barred from the constraint validation
+PASS [INPUT in TEXT status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in TEXT status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in TEXT status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in TEXT status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in SEARCH status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in SEARCH status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in SEARCH status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in SEARCH status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in TEL status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in TEL status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in TEL status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in TEL status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in URL status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in URL status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in URL status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in URL status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in EMAIL status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in EMAIL status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in EMAIL status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in EMAIL status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in PASSWORD status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in PASSWORD status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in PASSWORD status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in PASSWORD status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in DATETIME-LOCAL status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in DATETIME-LOCAL status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in DATETIME-LOCAL status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in DATETIME-LOCAL status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in DATE status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in DATE status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in DATE status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in DATE status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in MONTH status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in MONTH status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in MONTH status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in MONTH status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in WEEK status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in WEEK status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in WEEK status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in WEEK status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in TIME status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in TIME status] The willValidate attribute must be true if an element is mutable
+PASS [INPUT in TIME status] Must be barred from the constraint validation if it is readonly
+PASS [INPUT in TIME status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in COLOR status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in COLOR status] The willValidate attribute must be true if an element is mutable
+FAIL [INPUT in COLOR status] Must be not barred from the constraint validation even if it is readonly assert_true: The willValidate attribute should be true. expected true got false
+PASS [INPUT in COLOR status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in FILE status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in FILE status] The willValidate attribute must be true if an element is mutable
+FAIL [INPUT in FILE status] Must be not barred from the constraint validation even if it is readonly assert_true: The willValidate attribute should be true. expected true got false
+PASS [INPUT in FILE status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [INPUT in SUBMIT status] Must be barred from the constraint validation if it is disabled
+PASS [INPUT in SUBMIT status] The willValidate attribute must be true if an element is mutable
+FAIL [INPUT in SUBMIT status] Must be not barred from the constraint validation even if it is readonly assert_true: The willValidate attribute should be true. expected true got false
+PASS [INPUT in SUBMIT status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [BUTTON in SUBMIT status] Must be barred from the constraint validation
+PASS [BUTTON in SUBMIT status] The willValidate attribute must be true if an element is mutable
+PASS [BUTTON in SUBMIT status] The willValidate attribute must be false if it has a datalist ancestor
+PASS [select]  Must be barred from the constraint validation
+PASS [select]  The willValidate attribute must be true if an element is mutable
+PASS [select]  The willValidate attribute must be false if it has a datalist ancestor
+PASS [textarea]  Must be barred from the constraint validation
+PASS [textarea]  The willValidate attribute must be true if an element is mutable
+PASS [textarea]  The willValidate attribute must be false if it has a datalist ancestor
+Harness: the test ran to completion.
+

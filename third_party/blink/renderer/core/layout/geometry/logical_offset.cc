@@ -7,44 +7,17 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-PhysicalOffset LogicalOffset::ConvertToPhysical(WritingMode mode,
-                                                TextDirection direction,
-                                                PhysicalSize outer_size,
-                                                PhysicalSize inner_size) const {
-  switch (mode) {
-    case WritingMode::kHorizontalTb:
-      if (direction == TextDirection::kLtr)
-        return PhysicalOffset(inline_offset, block_offset);
-      return PhysicalOffset(outer_size.width - inline_offset - inner_size.width,
-                            block_offset);
-    case WritingMode::kVerticalRl:
-    case WritingMode::kSidewaysRl:
-      if (direction == TextDirection::kLtr) {
-        return PhysicalOffset(
-            outer_size.width - block_offset - inner_size.width, inline_offset);
-      }
-      return PhysicalOffset(
-          outer_size.width - block_offset - inner_size.width,
-          outer_size.height - inline_offset - inner_size.height);
-    case WritingMode::kVerticalLr:
-      if (direction == TextDirection::kLtr)
-        return PhysicalOffset(block_offset, inline_offset);
-      return PhysicalOffset(
-          block_offset, outer_size.height - inline_offset - inner_size.height);
-    case WritingMode::kSidewaysLr:
-      if (direction == TextDirection::kLtr) {
-        return PhysicalOffset(block_offset, outer_size.height - inline_offset -
-                                                inner_size.height);
-      }
-      return PhysicalOffset(block_offset, inline_offset);
-    default:
-      NOTREACHED();
-      return PhysicalOffset();
-  }
+PhysicalOffset LogicalOffset::ConvertToPhysical(
+    WritingDirectionMode writing_direction,
+    PhysicalSize outer_size,
+    PhysicalSize inner_size) const {
+  return WritingModeConverter(writing_direction, outer_size)
+      .ToPhysical(*this, inner_size);
 }
 
 String LogicalOffset::ToString() const {

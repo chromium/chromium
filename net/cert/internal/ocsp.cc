@@ -484,7 +484,7 @@ bool GetSubjectPublicKeyBytes(const der::Input& spki_tlv, der::Input* spk_tlv) {
   // ExtractSubjectPublicKeyFromSPKI() includes the unused bit count. For this
   // application, the unused bit count must be zero, and is not included in the
   // result.
-  if (!spk_strpiece.starts_with("\0"))
+  if (!base::StartsWith(spk_strpiece, "\0"))
     return false;
   spk_strpiece.remove_prefix(1);
 

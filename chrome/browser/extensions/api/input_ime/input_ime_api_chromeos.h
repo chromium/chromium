@@ -13,11 +13,11 @@
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #include "extensions/browser/extension_function.h"
 
-namespace chromeos {
-
+namespace ash {
+namespace input_method {
 class InputMethodEngine;
-
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 namespace extensions {
 
@@ -63,6 +63,30 @@ class InputImeSetCursorPositionFunction : public ExtensionFunction {
 
  protected:
   ~InputImeSetCursorPositionFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class InputImeSetAssistiveWindowPropertiesFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("input.ime.setAssistiveWindowProperties",
+                             INPUT_IME_SETASSISTIVEWINDOWPROPERTIES)
+
+ protected:
+  ~InputImeSetAssistiveWindowPropertiesFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class InputImeSetAssistiveWindowButtonHighlightedFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("input.ime.setAssistiveWindowButtonHighlighted",
+                             INPUT_IME_SETASSISTIVEWINDOWBUTTONHIGHLIGHTED)
+ protected:
+  ~InputImeSetAssistiveWindowButtonHighlightedFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -139,6 +163,11 @@ class InputMethodPrivateNotifyImeMenuItemActivatedFunction
  public:
   InputMethodPrivateNotifyImeMenuItemActivatedFunction() = default;
 
+  InputMethodPrivateNotifyImeMenuItemActivatedFunction(
+      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
+  InputMethodPrivateNotifyImeMenuItemActivatedFunction& operator=(
+      const InputMethodPrivateNotifyImeMenuItemActivatedFunction&) = delete;
+
  protected:
   ~InputMethodPrivateNotifyImeMenuItemActivatedFunction() override = default;
 
@@ -148,8 +177,6 @@ class InputMethodPrivateNotifyImeMenuItemActivatedFunction
  private:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.notifyImeMenuItemActivated",
                              INPUTMETHODPRIVATE_NOTIFYIMEMENUITEMACTIVATED)
-  DISALLOW_COPY_AND_ASSIGN(
-      InputMethodPrivateNotifyImeMenuItemActivatedFunction);
 };
 
 class InputMethodPrivateGetCompositionBoundsFunction
@@ -168,6 +195,10 @@ class InputMethodPrivateGetCompositionBoundsFunction
 class InputImeEventRouter : public InputImeEventRouterBase {
  public:
   explicit InputImeEventRouter(Profile* profile);
+
+  InputImeEventRouter(const InputImeEventRouter&) = delete;
+  InputImeEventRouter& operator=(const InputImeEventRouter&) = delete;
+
   ~InputImeEventRouter() override;
 
   bool RegisterImeExtension(
@@ -175,8 +206,9 @@ class InputImeEventRouter : public InputImeEventRouterBase {
       const std::vector<extensions::InputComponentInfo>& input_components);
   void UnregisterAllImes(const std::string& extension_id);
 
-  chromeos::InputMethodEngine* GetEngine(const std::string& extension_id);
-  input_method::InputMethodEngineBase* GetEngineIfActive(
+  ash::input_method::InputMethodEngine* GetEngine(
+      const std::string& extension_id);
+  ash::input_method::InputMethodEngine* GetEngineIfActive(
       const std::string& extension_id,
       std::string* error) override;
 
@@ -190,12 +222,10 @@ class InputImeEventRouter : public InputImeEventRouterBase {
 
  private:
   // The engine map from extension_id to an engine.
-  std::map<std::string, std::unique_ptr<chromeos::InputMethodEngine>>
+  std::map<std::string, std::unique_ptr<ash::input_method::InputMethodEngine>>
       engine_map_;
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImeEventRouter);
 };
 
 }  // namespace extensions

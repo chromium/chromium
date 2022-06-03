@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 // Hopefully enough bytes for uniqueness.
@@ -63,7 +63,10 @@ AckHandle::AckHandle(const std::string& state, base::Time timestamp)
     : state_(state), timestamp_(timestamp) {
 }
 
-AckHandle::~AckHandle() {
-}
+AckHandle::AckHandle(const AckHandle& other) = default;
 
-}  // namespace syncer
+AckHandle& AckHandle::operator=(const AckHandle& other) = default;
+
+AckHandle::~AckHandle() = default;
+
+}  // namespace invalidation

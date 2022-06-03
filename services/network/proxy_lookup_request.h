@@ -15,9 +15,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_isolation_key.h"
 #include "net/proxy_resolution/proxy_info.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
+
+namespace net {
+
+class ProxyResolutionRequest;
+
+}  // namespace net
 
 namespace network {
 
@@ -30,6 +35,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
       mojo::PendingRemote<mojom::ProxyLookupClient> proxy_lookup_client,
       NetworkContext* network_context,
       const net::NetworkIsolationKey& network_isolation_key);
+
+  ProxyLookupRequest(const ProxyLookupRequest&) = delete;
+  ProxyLookupRequest& operator=(const ProxyLookupRequest&) = delete;
+
   ~ProxyLookupRequest();
 
   // Starts looking up what proxy to use for |url|. On completion, will inform
@@ -50,9 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   mojo::Remote<mojom::ProxyLookupClient> proxy_lookup_client_;
 
   net::ProxyInfo proxy_info_;
-  std::unique_ptr<net::ProxyResolutionService::Request> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
+  std::unique_ptr<net::ProxyResolutionRequest> request_;
 };
 
 }  // namespace network

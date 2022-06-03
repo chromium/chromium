@@ -15,13 +15,21 @@
  * command if there might be other command listeners higher up in the DOM tree.
  */
 
+// clang-format off
+// #import {assert} from '../../assert.m.js';
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {KeyboardShortcutList} from './keyboard_shortcut_list.m.js';
+// #import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+// #import {MenuItem} from './menu_item.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
   /**
    * Creates a new command element.
    * @constructor
    * @extends {HTMLElement}
    */
-  const Command = cr.ui.define('command');
+  /* #export */ const Command = cr.ui.define('command');
 
   Command.prototype = {
     __proto__: HTMLElement.prototype,
@@ -29,7 +37,7 @@ cr.define('cr.ui', function() {
     /**
      * Initializes the command.
      */
-    decorate: function() {
+    decorate() {
       CommandManager.init(assert(this.ownerDocument));
 
       if (this.hasAttribute('shortcut')) {
@@ -43,7 +51,7 @@ cr.define('cr.ui', function() {
      * If the command is {@code disabled} this does nothing.
      * @param {HTMLElement=} opt_element Optional element to dispatch event on.
      */
-    execute: function(opt_element) {
+    execute(opt_element) {
       if (this.disabled) {
         return;
       }
@@ -61,7 +69,7 @@ cr.define('cr.ui', function() {
      * command can be executed or not.
      * @param {Node=} opt_node Node for which to actuate command state.
      */
-    canExecuteChange: function(opt_node) {
+    canExecuteChange(opt_node) {
       dispatchCanExecuteEvent(
           this, opt_node || this.ownerDocument.activeElement);
     },
@@ -103,7 +111,7 @@ cr.define('cr.ui', function() {
      * @param {!Event} e The key event object.
      * @return {boolean} Whether it matched or not.
      */
-    matchesEvent: function(e) {
+    matchesEvent(e) {
       if (!this.keyboardShortcuts_) {
         return false;
       }
@@ -113,23 +121,37 @@ cr.define('cr.ui', function() {
 
   /**
    * The label of the command.
+   * @type {string}
    */
-  cr.defineProperty(Command, 'label', cr.PropertyKind.ATTR);
+  Command.prototype.label;
+  Object.defineProperty(
+      Command.prototype, 'label',
+      cr.getPropertyDescriptor('label', cr.PropertyKind.ATTR));
 
   /**
    * Whether the command is disabled or not.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'disabled', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.disabled;
+  Object.defineProperty(
+      Command.prototype, 'disabled',
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is hidden or not.
    */
-  cr.defineProperty(Command, 'hidden', cr.PropertyKind.BOOL_ATTR);
+  Object.defineProperty(
+      Command.prototype, 'hidden',
+      cr.getPropertyDescriptor('hidden', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is checked or not.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'checked', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.checked;
+  Object.defineProperty(
+      Command.prototype, 'checked',
+      cr.getPropertyDescriptor('checked', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * The flag that prevents the shortcut text from being displayed on menu.
@@ -137,8 +159,12 @@ cr.define('cr.ui', function() {
    * If false, the keyboard shortcut text (eg. "Ctrl+X" for the cut command)
    * is displayed in menu when the command is associated with a menu item.
    * Otherwise, no text is displayed.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'hideShortcutText', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.hideShortcutText;
+  Object.defineProperty(
+      Command.prototype, 'hideShortcutText',
+      cr.getPropertyDescriptor('hideShortcutText', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Dispatches a canExecute event on the target.
@@ -189,11 +215,11 @@ cr.define('cr.ui', function() {
      * @suppress {checkTypes}
      * TODO(vitalyp): remove the suppression.
      */
-    handleFocus_: function(e) {
+    handleFocus_(e) {
       const target = e.target;
 
       // Ignore focus on a menu button or command item.
-      if (target.menu || target.command) {
+      if (target.menu || target.command || (target instanceof cr.ui.MenuItem)) {
         return;
       }
 
@@ -209,7 +235,7 @@ cr.define('cr.ui', function() {
      * Handles the keydown event and routes it to the right command.
      * @param {!Event} e The keydown event.
      */
-    handleKeyDown_: function(e) {
+    handleKeyDown_(e) {
       const target = e.target;
       const commands = Array.prototype.slice.call(
           target.ownerDocument.querySelectorAll('command'));
@@ -240,7 +266,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @class
    */
-  function CanExecuteEvent(command) {
+  /* #export */ function CanExecuteEvent(command) {
     const e = new Event('canExecute', {bubbles: true, cancelable: true});
     e.__proto__ = CanExecuteEvent.prototype;
     e.command = command;
@@ -274,6 +300,8 @@ cr.define('cr.ui', function() {
   };
 
   // Export
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     Command: Command,
     CanExecuteEvent: CanExecuteEvent,

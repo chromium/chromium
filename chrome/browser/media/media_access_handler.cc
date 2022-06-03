@@ -9,7 +9,6 @@
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
@@ -68,14 +67,13 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
     }
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
   // If either or both audio and video devices were requested but not
   // specified by id, get the default devices.
   if (get_default_audio_device || get_default_video_device) {
-    MediaCaptureDevicesDispatcher::GetInstance()->GetDefaultDevicesForProfile(
-        profile, get_default_audio_device, get_default_video_device, &devices);
+    MediaCaptureDevicesDispatcher::GetInstance()
+        ->GetDefaultDevicesForBrowserContext(
+            web_contents->GetBrowserContext(), get_default_audio_device,
+            get_default_video_device, &devices);
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;

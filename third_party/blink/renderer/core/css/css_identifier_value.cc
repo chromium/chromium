@@ -49,6 +49,9 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kFitContent:
       value_id_ = CSSValueID::kFitContent;
       break;
+    case Length::kContent:
+      value_id_ = CSSValueID::kContent;
+      break;
     case Length::kExtendToZoom:
       value_id_ = CSSValueID::kInternalExtendToZoom;
       break;
@@ -57,13 +60,14 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kCalculated:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
-    case Length::kMaxSizeNone:
+    case Length::kMinIntrinsic:
+    case Length::kNone:
       NOTREACHED();
       break;
   }
 }
 
-void CSSIdentifierValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSIdentifierValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
 }
 

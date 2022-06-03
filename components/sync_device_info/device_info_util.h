@@ -25,24 +25,25 @@ class DeviceInfoUtil {
   // can independently hash the tag to the same value.
   static const char kClientTagPrefix[];
 
-  // The delay between periodic updates to the entry corresponding to this
-  // device.
-  static const base::TimeDelta kPulseInterval;
-
   // The amount of time a device can go without an updates before we consider it
   // stale/inactive, and start ignoring it for active device counts.
   static const base::TimeDelta kActiveThreshold;
 
+  // The interval with which this device is updated to the sync servers if
+  // online and while sync is actively running (e.g. excludes backgrounded apps
+  // on Android).
+  static base::TimeDelta GetPulseInterval();
+
   // Determines the amount of time to wait before pulsing something with the
   // given |last_update| timestamp. This uses the current time from |now| along
-  // with |kDeviceInfoPulseInterval|, and will never return a negative delay.
+  // with |GetPulseInterval()|, and will never return a negative delay.
   // The smallest delay this function will return, even for something extremely
   // old will be a delay of 0 time units.
   static base::TimeDelta CalculatePulseDelay(const base::Time last_update,
                                              const base::Time now);
 
-  // Determines if the given |last_update| timestamp should be considerend
-  // active based on |kStaleDeviceInfoThreshold|, given the current time.
+  // Determines if the given |last_update| timestamp should be considered
+  // active based on |kActiveThreshold|, given the current time.
   static bool IsActive(const base::Time last_update, const base::Time now);
 
   // Formats ClientTag from DeviceInfoSpecifics.

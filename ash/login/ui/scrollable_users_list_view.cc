@@ -4,28 +4,29 @@
 
 #include "ash/login/ui/scrollable_users_list_view.h"
 
-#include <limits>
 #include <memory>
 
+#include "ash/controls/rounded_scroll_bar.h"
+#include "ash/login/ui/login_constants.h"
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
-#include "base/timer/timer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_shader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-#include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
@@ -49,20 +50,8 @@ constexpr int kExtraSmallVerticalDistanceBetweenUsersDp = 32;
 // small display style.
 constexpr int kExtraSmallGradientHeightDp = 112;
 
-// Thickness of scroll bar thumb.
-constexpr int kScrollThumbThicknessDp = 6;
-// Padding on the right of scroll bar thumb.
-constexpr int kScrollThumbPaddingDp = 8;
-// Radius of the scroll bar thumb.
-constexpr int kScrollThumbRadiusDp = 8;
-// Alpha of scroll bar thumb (43/255 = 17%).
-constexpr int kScrollThumbAlpha = 43;
-// How long for the scrollbar to hide after no scroll events have been received?
-constexpr base::TimeDelta kScrollThumbHideTimeout =
-    base::TimeDelta::FromMilliseconds(500);
-// How long for the scrollbar to fade away?
-constexpr base::TimeDelta kScrollThumbFadeDuration =
-    base::TimeDelta::FromMilliseconds(240);
+// Inset the scroll bar from the edges of the screen.
+constexpr gfx::Insets kVerticalScrollInsets(2, 0, 2, 8);
 
 constexpr char kScrollableUsersListContentViewName[] =
     "ScrollableUsersListContent";
@@ -72,6 +61,10 @@ class EnsureMinHeightView : public NonAccessibleView {
  public:
   EnsureMinHeightView()
       : NonAccessibleView(kScrollableUsersListContentViewName) {}
+
+  EnsureMinHeightView(const EnsureMinHeightView&) = delete;
+  EnsureMinHeightView& operator=(const EnsureMinHeightView&) = delete;
+
   ~EnsureMinHeightView() override = default;
 
   // NonAccessibleView:
@@ -86,30 +79,6 @@ class EnsureMinHeightView : public NonAccessibleView {
     }
     NonAccessibleView::Layout();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnsureMinHeightView);
-};
-
-class ScrollBarThumb : public views::BaseScrollBarThumb {
- public:
-  explicit ScrollBarThumb(views::ScrollBar* scroll_bar)
-      : BaseScrollBarThumb(scroll_bar) {}
-  ~ScrollBarThumb() override = default;
-
-  // views::BaseScrollBarThumb:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kScrollThumbThicknessDp, kScrollThumbThicknessDp);
-  }
-  void OnPaint(gfx::Canvas* canvas) override {
-    cc::PaintFlags fill_flags;
-    fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-    fill_flags.setColor(SkColorSetA(SK_ColorWHITE, kScrollThumbAlpha));
-    canvas->DrawRoundRect(GetLocalBounds(), kScrollThumbRadiusDp, fill_flags);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollBarThumb);
 };
 
 struct LayoutParams {
@@ -152,91 +121,6 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
   }
 }
 
-// Shows a scrollbar that automatically displays and hides itself when content
-// is scrolled.
-class UsersListScrollBar : public views::ScrollBar {
- public:
-  explicit UsersListScrollBar(bool horizontal)
-      : ScrollBar(horizontal),
-        hide_scrollbar_timer_(
-            FROM_HERE,
-            kScrollThumbHideTimeout,
-            base::BindRepeating(&UsersListScrollBar::HideScrollBar,
-                                base::Unretained(this))) {
-    SetThumb(new ScrollBarThumb(this));
-    GetThumb()->SetPaintToLayer();
-    GetThumb()->layer()->SetFillsBoundsOpaquely(false);
-    // The thumb is hidden by default.
-    GetThumb()->layer()->SetOpacity(0);
-  }
-  ~UsersListScrollBar() override = default;
-
-  // views::ScrollBar:
-  gfx::Rect GetTrackBounds() const override { return GetLocalBounds(); }
-  bool OverlapsContent() const override { return true; }
-  int GetThickness() const override {
-    return kScrollThumbThicknessDp + kScrollThumbPaddingDp;
-  }
-  void OnMouseEntered(const ui::MouseEvent& event) override {
-    mouse_over_scrollbar_ = true;
-    ShowScrollbar();
-  }
-  void OnMouseExited(const ui::MouseEvent& event) override {
-    mouse_over_scrollbar_ = false;
-    if (!hide_scrollbar_timer_.IsRunning())
-      hide_scrollbar_timer_.Reset();
-  }
-  void ScrollToPosition(int position) override {
-    ShowScrollbar();
-    views::ScrollBar::ScrollToPosition(position);
-  }
-  void ObserveScrollEvent(const ui::ScrollEvent& event) override {
-    // Scroll fling events are generated by moving a single finger over the
-    // trackpad; do not show the scrollbar for these events.
-    if (event.type() == ui::ET_SCROLL_FLING_CANCEL)
-      return;
-    ShowScrollbar();
-  }
-
- private:
-  void ShowScrollbar() {
-    bool currently_hidden =
-        base::IsApproximatelyEqual(GetThumb()->layer()->GetTargetOpacity(), 0.f,
-                                   std::numeric_limits<float>::epsilon());
-
-    if (!mouse_over_scrollbar_)
-      hide_scrollbar_timer_.Reset();
-
-    if (currently_hidden) {
-      ui::ScopedLayerAnimationSettings animation(
-          GetThumb()->layer()->GetAnimator());
-      animation.SetTransitionDuration(kScrollThumbFadeDuration);
-      GetThumb()->layer()->SetOpacity(1);
-    }
-  }
-
-  void HideScrollBar() {
-    // Never hide the scrollbar if the mouse is over it. The auto-hide timer
-    // will be reset when the mouse leaves the scrollable area.
-    if (mouse_over_scrollbar_)
-      return;
-
-    hide_scrollbar_timer_.Stop();
-    ui::ScopedLayerAnimationSettings animation(
-        GetThumb()->layer()->GetAnimator());
-    animation.SetTransitionDuration(kScrollThumbFadeDuration);
-    GetThumb()->layer()->SetOpacity(0);
-  }
-
-  // When the mouse is hovering over the scrollbar, the scrollbar should always
-  // be displayed.
-  bool mouse_over_scrollbar_ = false;
-  // Timer that will start the scrollbar's hiding animation when it reaches 0.
-  base::RetainingOneShotTimer hide_scrollbar_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersListScrollBar);
-};
-
 }  // namespace
 
 // static
@@ -250,11 +134,9 @@ ScrollableUsersListView::GradientParams::BuildForStyle(
               color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                         color_utils::SaturationRange::MUTED));
       SkColor tint_color = color_utils::GetResultingPaintColor(
-          SkColorSetA(login_constants::kDefaultBaseColor,
-                      login_constants::kTranslucentColorDarkenAlpha),
+          AshColorProvider::Get()->GetShieldLayerColor(
+              AshColorProvider::ShieldLayerType::kShield80),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));
-      tint_color =
-          SkColorSetA(tint_color, login_constants::kScrollTranslucentAlpha);
 
       GradientParams params;
       params.color_from = dark_muted_color;
@@ -305,10 +187,10 @@ ScrollableUsersListView::ScrollableUsersListView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   for (std::size_t i = 1u; i < users.size(); ++i) {
-    auto* view = new LoginUserView(
-        display_style, false /*show_dropdown*/, false /*show_domain*/,
-        base::BindRepeating(on_tap_user, i - 1), base::RepeatingClosure(),
-        base::RepeatingClosure());
+    auto* view =
+        new LoginUserView(display_style, false /*show_dropdown*/,
+                          base::BindRepeating(on_tap_user, i - 1),
+                          base::RepeatingClosure(), base::RepeatingClosure());
     user_views_.push_back(view);
     view->UpdateForUser(users[i], false /*animate*/);
     user_view_host_->AddChildView(view);
@@ -331,13 +213,15 @@ ScrollableUsersListView::ScrollableUsersListView(
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   ensure_min_height->AddChildView(user_view_host_);
   SetContents(std::move(ensure_min_height));
-  SetBackgroundColor(SK_ColorTRANSPARENT);
+  SetBackgroundColor(absl::nullopt);
   SetDrawOverflowIndicator(false);
 
-  SetVerticalScrollBar(std::make_unique<UsersListScrollBar>(false));
-  SetHorizontalScrollBar(std::make_unique<UsersListScrollBar>(true));
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  SetVerticalScrollBar(std::move(vertical_scroll));
+  SetHorizontalScrollBar(std::make_unique<RoundedScrollBar>(true));
 
-  observer_.Add(Shell::Get()->wallpaper_controller());
+  observation_.Observe(Shell::Get()->wallpaper_controller());
 }
 
 ScrollableUsersListView::~ScrollableUsersListView() = default;
@@ -351,6 +235,16 @@ LoginUserView* ScrollableUsersListView::GetUserView(
   return nullptr;
 }
 
+void ScrollableUsersListView::UpdateUserViewHostLayoutInsets() {
+  DCHECK(GetWidget());
+  bool should_show_landscape =
+      login_views_utils::ShouldShowLandscape(GetWidget());
+  LayoutParams layout_params = BuildLayoutForStyle(display_style_);
+  user_view_host_layout_->set_inside_border_insets(
+      should_show_landscape ? layout_params.insets_landscape
+                            : layout_params.insets_portrait);
+}
+
 void ScrollableUsersListView::Layout() {
   DCHECK(user_view_host_layout_);
 
@@ -362,13 +256,7 @@ void ScrollableUsersListView::Layout() {
       PreferredSizeChanged();
   }
 
-  // Update the user view layout.
-  bool should_show_landscape =
-      login_views_utils::ShouldShowLandscape(GetWidget());
-  LayoutParams layout_params = BuildLayoutForStyle(display_style_);
-  user_view_host_layout_->set_inside_border_insets(
-      should_show_landscape ? layout_params.insets_landscape
-                            : layout_params.insets_portrait);
+  UpdateUserViewHostLayoutInsets();
 
   // Layout everything.
   ScrollView::Layout();
@@ -422,13 +310,16 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(
-        SkColorSetA(login_constants::kDefaultBaseColor,
-                    login_constants::kNonBlurredWallpaperBackgroundAlpha));
-    canvas->DrawRoundRect(
-        render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,
-        flags);
+    flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
+        AshColorProvider::ShieldLayerType::kShield80));
+    canvas->DrawRoundRect(render_bounds,
+                          login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }
+}
+
+void ScrollableUsersListView::OnThemeChanged() {
+  views::ScrollView::OnThemeChanged();
+  gradient_params_ = GradientParams::BuildForStyle(display_style_);
 }
 
 // When the active user is updated, the wallpaper changes. The gradient color

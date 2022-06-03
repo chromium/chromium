@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,7 +21,17 @@
 
 namespace net {
 
+const char HttpRequestHeaders::kConnectMethod[] = "CONNECT";
+const char HttpRequestHeaders::kDeleteMethod[] = "DELETE";
 const char HttpRequestHeaders::kGetMethod[] = "GET";
+const char HttpRequestHeaders::kHeadMethod[] = "HEAD";
+const char HttpRequestHeaders::kOptionsMethod[] = "OPTIONS";
+const char HttpRequestHeaders::kPatchMethod[] = "PATCH";
+const char HttpRequestHeaders::kPostMethod[] = "POST";
+const char HttpRequestHeaders::kPutMethod[] = "PUT";
+const char HttpRequestHeaders::kTraceMethod[] = "TRACE";
+const char HttpRequestHeaders::kTrackMethod[] = "TRACK";
+const char HttpRequestHeaders::kAccept[] = "Accept";
 const char HttpRequestHeaders::kAcceptCharset[] = "Accept-Charset";
 const char HttpRequestHeaders::kAcceptEncoding[] = "Accept-Encoding";
 const char HttpRequestHeaders::kAcceptLanguage[] = "Accept-Language";
@@ -42,17 +53,15 @@ const char HttpRequestHeaders::kProxyAuthorization[] = "Proxy-Authorization";
 const char HttpRequestHeaders::kProxyConnection[] = "Proxy-Connection";
 const char HttpRequestHeaders::kRange[] = "Range";
 const char HttpRequestHeaders::kReferer[] = "Referer";
-const char HttpRequestHeaders::kSecOriginPolicy[] = "Sec-Origin-Policy";
 const char HttpRequestHeaders::kTransferEncoding[] = "Transfer-Encoding";
 const char HttpRequestHeaders::kUserAgent[] = "User-Agent";
 
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair() = default;
 
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(
-    const base::StringPiece& key, const base::StringPiece& value)
-    : key(key.data(), key.size()), value(value.data(), value.size()) {
-}
-
+    const base::StringPiece& key,
+    const base::StringPiece& value)
+    : key(key.data(), key.size()), value(value.data(), value.size()) {}
 
 HttpRequestHeaders::Iterator::Iterator(const HttpRequestHeaders& headers)
     : started_(false),
@@ -100,15 +109,19 @@ void HttpRequestHeaders::Clear() {
 
 void HttpRequestHeaders::SetHeader(const base::StringPiece& key,
                                    const base::StringPiece& value) {
-  DCHECK(HttpUtil::IsValidHeaderName(key)) << key;
-  DCHECK(HttpUtil::IsValidHeaderValue(value)) << key << ":" << value;
+  // Invalid header names or values could mean clients can attach
+  // browser-internal headers.
+  CHECK(HttpUtil::IsValidHeaderName(key)) << key;
+  CHECK(HttpUtil::IsValidHeaderValue(value)) << key << ":" << value;
   SetHeaderInternal(key, value);
 }
 
 void HttpRequestHeaders::SetHeaderIfMissing(const base::StringPiece& key,
                                             const base::StringPiece& value) {
-  DCHECK(HttpUtil::IsValidHeaderName(key));
-  DCHECK(HttpUtil::IsValidHeaderValue(value));
+  // Invalid header names or values could mean clients can attach
+  // browser-internal headers.
+  CHECK(HttpUtil::IsValidHeaderName(key));
+  CHECK(HttpUtil::IsValidHeaderValue(value));
   auto it = FindHeader(key);
   if (it == headers_.end())
     headers_.push_back(HeaderKeyValuePair(key, value));
@@ -187,21 +200,21 @@ std::string HttpRequestHeaders::ToString() const {
 base::Value HttpRequestHeaders::NetLogParams(
     const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("line", NetLogStringValue(request_line));
-  auto headers = std::make_unique<base::ListValue>();
-  for (auto it = headers_.begin(); it != headers_.end(); ++it) {
+  base::Value headers(base::Value::Type::LIST);
+  for (const auto& header : headers_) {
     std::string log_value =
-        ElideHeaderValueForNetLog(capture_mode, it->key, it->value);
-    headers->Append(
-        NetLogStringValue(base::StrCat({it->key, ": ", log_value})));
+        ElideHeaderValueForNetLog(capture_mode, header.key, header.value);
+    headers.Append(
+        NetLogStringValue(base::StrCat({header.key, ": ", log_value})));
   }
-  dict.Set("headers", std::move(headers));
-  return std::move(dict);
+  dict.SetKey("headers", std::move(headers));
+  return dict;
 }
 
-HttpRequestHeaders::HeaderVector::iterator
-HttpRequestHeaders::FindHeader(const base::StringPiece& key) {
+HttpRequestHeaders::HeaderVector::iterator HttpRequestHeaders::FindHeader(
+    const base::StringPiece& key) {
   for (auto it = headers_.begin(); it != headers_.end(); ++it) {
     if (base::EqualsCaseInsensitiveASCII(key, it->key))
       return it;
@@ -210,8 +223,8 @@ HttpRequestHeaders::FindHeader(const base::StringPiece& key) {
   return headers_.end();
 }
 
-HttpRequestHeaders::HeaderVector::const_iterator
-HttpRequestHeaders::FindHeader(const base::StringPiece& key) const {
+HttpRequestHeaders::HeaderVector::const_iterator HttpRequestHeaders::FindHeader(
+    const base::StringPiece& key) const {
   for (auto it = headers_.begin(); it != headers_.end(); ++it) {
     if (base::EqualsCaseInsensitiveASCII(key, it->key))
       return it;

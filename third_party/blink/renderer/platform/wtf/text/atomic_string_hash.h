@@ -73,4 +73,4 @@ struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
 
 using WTF::AtomicStringHash;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_HASH_H_

@@ -18,7 +18,7 @@ public class BatteryMonitorImpl implements BatteryMonitor {
 
     // Factory that created this instance and notifies it about battery status changes.
     private final BatteryMonitorFactory mFactory;
-    private QueryNextStatusResponse mCallback;
+    private QueryNextStatus_Response mCallback;
     private BatteryStatus mStatus;
     private boolean mHasStatusToReport;
     private boolean mSubscribed;
@@ -47,7 +47,7 @@ public class BatteryMonitorImpl implements BatteryMonitor {
     }
 
     @Override
-    public void queryNextStatus(QueryNextStatusResponse callback) {
+    public void queryNextStatus(QueryNextStatus_Response callback) {
         if (mCallback != null) {
             Log.e(TAG, "Overlapped call to queryNextStatus!");
             unsubscribe();

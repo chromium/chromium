@@ -32,12 +32,12 @@ void SelfCleaningTempDir::GetTopDirToCreate(
     } while (parent_dir != *base_dir && !base::PathExists(parent_dir));
     LOG_IF(WARNING, !base::DirectoryExists(parent_dir))
         << "A non-directory is at the base of the path leading to a desired "
-           "temp directory location: " << parent_dir.value();
+           "temp directory location: "
+        << parent_dir.value();
   }
 }
 
-SelfCleaningTempDir::SelfCleaningTempDir() {
-}
+SelfCleaningTempDir::SelfCleaningTempDir() {}
 
 SelfCleaningTempDir::~SelfCleaningTempDir() {
   if (!path().empty() && !Delete())
@@ -78,7 +78,7 @@ bool SelfCleaningTempDir::Delete() {
 
   // First try to recursively delete the leaf directory managed by our
   // base::ScopedTempDir.
-  if (!base::DeleteFileRecursively(path())) {
+  if (!base::DeletePathRecursively(path())) {
     // That failed, so schedule the temp dir and its contents for deletion after
     // reboot.
     LOG(WARNING) << "Failed to delete temporary directory " << path().value()
@@ -95,7 +95,7 @@ bool SelfCleaningTempDir::Delete() {
     do {
       if (!schedule_deletes && !RemoveDirectory(next_dir.value().c_str())) {
         PLOG_IF(WARNING, GetLastError() != ERROR_DIR_NOT_EMPTY)
-              << "Error removing directory " << next_dir.value().c_str();
+            << "Error removing directory " << next_dir.value().c_str();
         schedule_deletes = true;
       }
       if (schedule_deletes) {

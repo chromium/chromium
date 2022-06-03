@@ -42,17 +42,17 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
   if (!pref_service_)
     return nodes;
 
-  const base::ListValue* value =
+  const base::Value* value =
       pref_service_->GetList(prefs::kBookmarkEditorExpandedNodes);
   if (!value)
     return nodes;
 
   bool changed = false;
-  for (auto i = value->begin(); i != value->end(); ++i) {
-    std::string value;
+  for (const auto& entry : value->GetList()) {
     int64_t node_id;
     const BookmarkNode* node;
-    if (i->GetAsString(&value) && base::StringToInt64(value, &node_id) &&
+    const std::string* value_str = entry.GetIfString();
+    if (value_str && base::StringToInt64(*value_str, &node_id) &&
         (node = GetBookmarkNodeByID(bookmark_model_, node_id)) != nullptr &&
         node->is_folder()) {
       nodes.insert(node);

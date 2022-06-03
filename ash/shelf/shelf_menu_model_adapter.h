@@ -23,10 +23,16 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
                         views::View* menu_owner,
                         ui::MenuSourceType source_type,
                         base::OnceClosure on_menu_closed_callback,
-                        bool is_tablet_mode);
+                        bool is_tablet_mode,
+                        bool for_application_menu_items);
+
+  ShelfMenuModelAdapter(const ShelfMenuModelAdapter&) = delete;
+  ShelfMenuModelAdapter& operator=(const ShelfMenuModelAdapter&) = delete;
+
   ~ShelfMenuModelAdapter() override;
 
   // Overridden from AppMenuModelAdapter:
+  int GetCommandIdForHistograms(int command_id) override;
   void RecordHistogramOnMenuClosed() override;
 
   // Whether this is showing a menu for |view|.
@@ -36,7 +42,8 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
   // The view showing the context menu. Not owned.
   views::View* menu_owner_;
 
-  DISALLOW_COPY_AND_ASSIGN(ShelfMenuModelAdapter);
+  // True if this adapter was created for the shelf application menu items.
+  const bool for_application_menu_items_;
 };
 
 }  // namespace ash

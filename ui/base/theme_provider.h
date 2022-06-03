@@ -5,9 +5,9 @@
 #ifndef UI_BASE_THEME_PROVIDER_H_
 #define UI_BASE_THEME_PROVIDER_H_
 
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
-#include "ui/base/ui_base_export.h"
 
 namespace base {
 class RefCountedMemory;
@@ -32,7 +32,7 @@ namespace ui {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-class UI_BASE_EXPORT ThemeProvider {
+class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
  public:
   virtual ~ThemeProvider();
 
@@ -66,7 +66,7 @@ class UI_BASE_EXPORT ThemeProvider {
   // implementations of ThemeProvider. Returns NULL on error.
   virtual base::RefCountedMemory* GetRawData(
       int id,
-      ui::ScaleFactor scale_factor) const = 0;
+      ui::ResourceScaleFactor scale_factor) const = 0;
 };
 
 }  // namespace ui

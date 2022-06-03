@@ -4,14 +4,15 @@
 
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
+#include <sstream>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
-#include "base/task/post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -19,38 +20,16 @@
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_fetcher.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace {
-
-const base::Feature kHttpRetryFeature{"UMAHttpRetry",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Run ablation on UMA collector connectivity to client. This study will
-// ablate a clients upload of all logs that use |metrics::ReportingService|
-// to upload logs. This include |metrics::MetricsReportingService| for uploading
-// UMA logs. |ukm::UKMReportionService| for uploading UKM logs.
-// Rappor service use |rappor::LogUploader| which is not a
-// |metrics::ReportingService| so, it won't be ablated.
-// similar frequency.
-// To restrict the study to UMA or UKM, set the "service-affected" param.
-const base::Feature kAblateMetricsLogUploadFeature{
-    "AblateMetricsLogUpload", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Fraction of Collector uploads that should be failed artificially.
-constexpr base::FeatureParam<int> kParamFailureRate{
-    &kAblateMetricsLogUploadFeature, "failure-rate", 100};
-
-// HTTP Error code to pass when artificially failing uploads.
-constexpr base::FeatureParam<int> kParamErrorCode{
-    &kAblateMetricsLogUploadFeature, "error-code", 503};
-
-// Service type to ablate. Can be "UMA" or "UKM". Leave it empty to ablate all.
-constexpr base::FeatureParam<std::string> kParamAblateServiceType{
-    &kAblateMetricsLogUploadFeature, "service-type", ""};
 
 // Constants used for encrypting logs that are sent over HTTP. The
 // corresponding private key is used by the metrics server to decrypt logs.
@@ -182,6 +161,52 @@ bool EncryptAndBase64EncodeString(const std::string& plaintext,
   return true;
 }
 
+#ifndef NDEBUG
+void LogUploadingHistograms(const std::string& compressed_log_data) {
+  if (!VLOG_IS_ON(2))
+    return;
+
+  std::string uncompressed;
+  if (!compression::GzipUncompress(compressed_log_data, &uncompressed)) {
+    DVLOG(2) << "failed to uncompress log";
+    return;
+  }
+  metrics::ChromeUserMetricsExtension proto;
+  if (!proto.ParseFromString(uncompressed)) {
+    DVLOG(2) << "failed to parse uncompressed log";
+    return;
+  };
+  DVLOG(2) << "Uploading histograms...";
+
+  const base::StatisticsRecorder::Histograms histograms =
+      base::StatisticsRecorder::GetHistograms();
+  auto get_histogram_name = [&](uint64_t name_hash) -> std::string {
+    for (base::HistogramBase* histogram : histograms) {
+      if (histogram->name_hash() == name_hash)
+        return histogram->histogram_name();
+    }
+    return base::StrCat({"unnamed ", base::NumberToString(name_hash)});
+  };
+
+  for (int i = 0; i < proto.histogram_event_size(); i++) {
+    const metrics::HistogramEventProto& event = proto.histogram_event(i);
+
+    std::stringstream summary;
+    summary << " sum=" << event.sum();
+    for (int j = 0; j < event.bucket_size(); j++) {
+      const metrics::HistogramEventProto::Bucket& b = event.bucket(j);
+      // Empty fields have a specific meaning, see
+      // third_party/metrics_proto/histogram_event.proto.
+      summary << " bucket["
+              << (b.has_min() ? base::NumberToString(b.min()) : "..") << '-'
+              << (b.has_max() ? base::NumberToString(b.max()) : "..") << ")="
+              << (b.has_count() ? base::NumberToString(b.count()) : "(1)");
+    }
+    DVLOG(2) << get_histogram_name(event.name_hash()) << summary.str();
+  }
+}
+#endif
+
 }  // namespace
 
 namespace metrics {
@@ -220,13 +245,12 @@ void NetMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
                                       const std::string& log_signature,
                                       const ReportingInfo& reporting_info) {
   // If this attempt is a retry, there was a network error, the last attempt was
-  // over https, and there is an insecure url set, attempt this upload over
+  // over HTTPS, and there is an insecure URL set, then attempt this upload over
   // HTTP.
-  // Currently we only retry over HTTP if the retry-uma-over-http flag is set.
-  if (!insecure_server_url_.is_empty() && reporting_info.attempt_count() > 1 &&
+  if (reporting_info.attempt_count() > 1 &&
       reporting_info.last_error_code() != 0 &&
       reporting_info.last_attempt_was_https() &&
-      base::FeatureList::IsEnabled(kHttpRetryFeature)) {
+      !insecure_server_url_.is_empty()) {
     UploadLogToURL(compressed_log_data, log_hash, log_signature, reporting_info,
                    insecure_server_url_);
     return;
@@ -242,6 +266,13 @@ void NetMetricsLogUploader::UploadLogToURL(
     const ReportingInfo& reporting_info,
     const GURL& url) {
   DCHECK(!log_hash.empty());
+
+#ifndef NDEBUG
+  // For debug builds, you can use -vmodule=net_metrics_log_uploader=2
+  // to enable logging of uploaded histograms. You probably also want to use
+  // --force-enable-metrics-reporting, or metrics reporting may not be enabled.
+  LogUploadingHistograms(compressed_log_data);
+#endif
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
@@ -308,25 +339,6 @@ void NetMetricsLogUploader::UploadLogToURL(
     url_loader_->AttachStringForUpload(compressed_log_data, mime_type_);
   }
 
-  if (base::FeatureList::IsEnabled(kAblateMetricsLogUploadFeature)) {
-    int failure_rate = kParamFailureRate.Get();
-    std::string service_restrict = kParamAblateServiceType.Get();
-    bool should_ablate =
-        service_restrict.empty() ||
-        (service_type_ == MetricsLogUploader::UMA &&
-         service_restrict == "UMA") ||
-        (service_type_ == MetricsLogUploader::UKM && service_restrict == "UKM");
-    if (should_ablate && base::RandInt(0, 99) < failure_rate) {
-      // Simulate collector outage by not actually trying to upload the
-      // logs but instead call on_upload_complete_ immediately.
-      bool was_https = url.SchemeIs(url::kHttpsScheme);
-      url_loader_.reset();
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(on_upload_complete_, kParamErrorCode.Get(),
-                                    net::ERR_FAILED, was_https));
-      return;
-    }
-  }
   // It's safe to use |base::Unretained(this)| here, because |this| owns
   // the |url_loader_|, and the callback will be cancelled if the |url_loader_|
   // is destroyed.

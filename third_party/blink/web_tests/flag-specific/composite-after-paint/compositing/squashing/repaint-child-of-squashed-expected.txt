@@ -57,12 +57,8 @@ CASE 2, change color of "inner" to red
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='inner'",
-          "rect": [10, 10, 50, 50],
-          "reason": "background"
-        }
+      "invalidations": [
+        [10, 10, 50, 50]
       ]
     }
   ],

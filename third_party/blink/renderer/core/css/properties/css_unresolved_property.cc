@@ -27,8 +27,8 @@ const CSSUnresolvedProperty& CSSUnresolvedProperty::GetNonAliasProperty(
 
 const CSSUnresolvedProperty& CSSUnresolvedProperty::Get(CSSPropertyID id) {
   DCHECK_NE(id, CSSPropertyID::kInvalid);
-  DCHECK_LE(id, lastUnresolvedCSSProperty);
-  if (id <= lastCSSProperty)
+  DCHECK_LE(id, kLastUnresolvedCSSProperty);
+  if (id <= kLastCSSProperty)
     return GetNonAliasProperty(id);
   return *GetAliasProperty(id);
 }

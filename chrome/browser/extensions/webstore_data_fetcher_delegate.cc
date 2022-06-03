@@ -7,10 +7,11 @@
 namespace extensions {
 
 const char WebstoreDataFetcherDelegate::kAverageRatingKey[] = "average_rating";
-const char WebstoreDataFetcherDelegate::kIconUrlKey[] = "icon_url";
-const char WebstoreDataFetcherDelegate::kIdKey[] = "id";
 const char WebstoreDataFetcherDelegate::kExternalInstallDefaultButtonKey[] =
     "external_install_default_button";
+const char WebstoreDataFetcherDelegate::kFamilyUnsafeKey[] = "family_unsafe";
+const char WebstoreDataFetcherDelegate::kIconUrlKey[] = "icon_url";
+const char WebstoreDataFetcherDelegate::kIdKey[] = "id";
 const char WebstoreDataFetcherDelegate::kLocalizedDescriptionKey[] =
     "localized_description";
 const char WebstoreDataFetcherDelegate::kLocalizedNameKey[] = "localized_name";
@@ -21,5 +22,8 @@ const char WebstoreDataFetcherDelegate::kShowUserCountKey[] = "show_user_count";
 const char WebstoreDataFetcherDelegate::kUsersKey[] = "users";
 const char WebstoreDataFetcherDelegate::kVerifiedSiteKey[] = "verified_site";
 const char WebstoreDataFetcherDelegate::kVerifiedSitesKey[] = "verified_sites";
+
+const char WebstoreDataFetcherDelegate::kInvalidWebstoreResponseError[] =
+    "Invalid Chrome Web Store response";
 
 }  // namespace extensions

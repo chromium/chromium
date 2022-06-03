@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 
 using base::android::JavaParamRef;
@@ -22,24 +21,35 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
  public:
   explicit BrowsingHistoryBridge(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
-                                 bool is_incognito);
+                                 const JavaParamRef<jobject>& j_profile);
+
+  BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
+  BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;
+
   void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
 
   void QueryHistory(JNIEnv* env,
                     const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj,
-                    jstring j_query);
+                    jstring j_query,
+                    jboolean j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& j_result_obj);
+
+  void GetLastVisitToHostBeforeRecentNavigations(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& obj,
+      jstring j_host_name,
+      const JavaParamRef<jobject>& jcallback_);
 
   // Adds a HistoryEntry with the |j_url| and |j_native_timestamps| to the list
   // of items being removed. The removal will not be committed until
   // ::removeItems() is called.
   void MarkItemForRemoval(JNIEnv* env,
                           const JavaParamRef<jobject>& obj,
-                          jstring j_url,
+                          const JavaParamRef<jobject>& j_url,
                           const JavaParamRef<jlongArray>& j_native_timestamps);
 
   // Removes all items that have been marked for removal through
@@ -74,8 +84,6 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   Profile* profile_;
 
   base::OnceClosure query_history_continuation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HISTORY_BROWSING_HISTORY_BRIDGE_H_

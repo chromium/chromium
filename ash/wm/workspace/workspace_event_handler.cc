@@ -4,7 +4,6 @@
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
-#include "ash/public/cpp/touch_uma.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -97,15 +96,12 @@ void WorkspaceEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (click_component_ != HTCAPTION)
     return;
 
-  if (event->details().tap_count() != 2) {
-    TouchUMA::RecordGestureAction(GESTURE_FRAMEVIEW_TAP);
+  if (event->details().tap_count() != 2)
     return;
-  }
 
   if (click_component_ == previous_target_component) {
     base::RecordAction(
         base::UserMetricsAction("Caption_GestureTogglesMaximize"));
-    TouchUMA::RecordGestureAction(GESTURE_MAXIMIZE_DOUBLETAP);
     const WMEvent wm_event(WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);
     WindowState::Get(target)->OnWMEvent(&wm_event);
     event->StopPropagation();
@@ -147,7 +143,7 @@ void WorkspaceEventHandler::HandleResizeDoubleClick(WindowState* target_state,
         DCHECK_EQ(gfx::Size(), target->delegate()->GetMaximumSize());
         overview_controller->overview_session()
             ->SetWindowListNotAnimatedWhenExiting(target->GetRootWindow());
-        overview_controller->EndOverview();
+        overview_controller->EndOverview(OverviewEndAction::kSplitView);
       }
 
       const WMEvent wm_event(WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE);

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/highlight_button.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 
 // View for an action to launch the app from the widget. Represented as a
 // circular icon and a label. When tapped it calls |actionSelector| in |target|.

@@ -1,0 +1,13 @@
+Name: Setupdesign
+Short Name: setupdesign
+URL: https://android.googlesource.com/platform/external/setupdesign/
+Version: unknown
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+
+Description:
+This purely exists as a temporary workaround for the setupdesign library which
+only exists in //clank, but doesn't have a LICENSE file with it - for more
+context see crbug.com/1184792. This folder should be deleted when
+crbug.com/1186270 is resolved.

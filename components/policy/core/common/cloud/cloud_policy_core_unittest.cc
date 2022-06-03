@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
-#include "base/macros.h"
+#include "base/base64.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -21,6 +21,10 @@ namespace policy {
 
 class CloudPolicyCoreTest : public testing::Test,
                             public CloudPolicyCore::Observer {
+ public:
+  CloudPolicyCoreTest(const CloudPolicyCoreTest&) = delete;
+  CloudPolicyCoreTest& operator=(const CloudPolicyCoreTest&) = delete;
+
  protected:
   CloudPolicyCoreTest()
       : core_(dm_protocol::kChromeUserPolicyType,
@@ -74,9 +78,6 @@ class CloudPolicyCoreTest : public testing::Test,
   int refresh_scheduler_started_callback_count_;
   int core_disconnecting_callback_count_;
   int bad_callback_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyCoreTest);
 };
 
 TEST_F(CloudPolicyCoreTest, ConnectAndDisconnect) {
@@ -138,6 +139,13 @@ TEST_F(CloudPolicyCoreTest, RefreshScheduler) {
   EXPECT_EQ(1, refresh_scheduler_started_callback_count_);
   EXPECT_EQ(0, core_disconnecting_callback_count_);
   EXPECT_EQ(0, bad_callback_count_);
+}
+
+TEST_F(CloudPolicyCoreTest, DmProtocolBase64Constants) {
+  std::string encoded;
+  base::Base64Encode(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+                     &encoded);
+  EXPECT_EQ(encoded, dm_protocol::kChromeMachineLevelUserCloudPolicyTypeBase64);
 }
 
 }  // namespace policy

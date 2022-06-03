@@ -24,8 +24,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IFRAME_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IFRAME_ELEMENT_H_
 
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
-#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
@@ -38,31 +39,25 @@ class CORE_EXPORT HTMLIFrameElement final
     : public HTMLFrameElementBase,
       public Supplementable<HTMLIFrameElement> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(HTMLIFrameElement);
 
  public:
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   explicit HTMLIFrameElement(Document&);
   ~HTMLIFrameElement() override;
 
   DOMTokenList* sandbox() const;
-  // Support JS introspection of frame policy (e.g. feature policy)
+  // Support JS introspection of frame policy (e.g. permissions policy)
   DOMFeaturePolicy* featurePolicy();
 
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  ParsedFeaturePolicy ConstructContainerPolicy(
-      Vector<String>* /* messages */) const override;
-  DocumentPolicy::FeatureState ConstructRequiredPolicy() const override;
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
+  DocumentPolicyFeatureState ConstructRequiredPolicy() const override;
 
   FrameOwnerElementType OwnerType() const final {
     return FrameOwnerElementType::kIframe;
-  }
-
-  WebSandboxFlags sandbox_flags_converted_to_feature_policies() const {
-    return sandbox_flags_converted_to_feature_policies_;
   }
 
  private:
@@ -85,29 +80,28 @@ class CORE_EXPORT HTMLIFrameElement final
 
   network::mojom::ReferrerPolicy ReferrerPolicyAttribute() override;
 
+  network::mojom::blink::TrustTokenParamsPtr ConstructTrustTokenParams()
+      const override;
+
   // FrameOwner overrides:
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
-  bool DisallowDocumentAccess() const override {
-    return disallow_document_access_;
-  }
-  AtomicString RequiredCsp() const override { return required_csp_; }
+  void DidChangeAttributes() override;
 
   AtomicString name_;
   AtomicString required_csp_;
   AtomicString allow_;
   AtomicString required_policy_;  // policy attribute
+  // String attribute storing a JSON representation of the Trust Token
+  // parameters (in order to align with the fetch interface to the Trust Token
+  // API). If present, this is parsed in ConstructTrustTokenParams.
+  AtomicString trust_token_;
   bool allow_fullscreen_;
   bool allow_payment_request_;
   bool collapsed_by_client_;
-  bool disallow_document_access_;
+  bool anonymous_ = false;
   Member<HTMLIFrameElementSandbox> sandbox_;
   Member<DOMFeaturePolicy> policy_;
-  // This represents a subset of sandbox flags set through 'sandbox' attribute
-  // that will be converted to feature policies as part of the container
-  // policies.
-  WebSandboxFlags sandbox_flags_converted_to_feature_policies_ =
-      WebSandboxFlags::kNone;
 
   network::mojom::ReferrerPolicy referrer_policy_;
 };

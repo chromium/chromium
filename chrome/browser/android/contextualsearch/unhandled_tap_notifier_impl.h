@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_NOTIFIER_IMPL_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_NOTIFIER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"
@@ -14,6 +13,9 @@ namespace contextual_search {
 
 // Implements a Mojo service endpoint for the mojo unhandled-tap notifier
 // message.
+// TODO(donnd): remove this as part of removal of all JS APIs for Contextual
+// Search since their primary need was for translations which are now handled
+// directly within the Bar.
 class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
  public:
   // Creates an implementation that will scale tap locations by the given
@@ -22,6 +24,9 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
   // unhandled_tap_notifier service.
   UnhandledTapNotifierImpl(float device_scale_factor,
                            UnhandledTapCallback callback);
+
+  UnhandledTapNotifierImpl(const UnhandledTapNotifierImpl&) = delete;
+  UnhandledTapNotifierImpl& operator=(const UnhandledTapNotifierImpl&) = delete;
 
   ~UnhandledTapNotifierImpl() override;
 
@@ -35,8 +40,6 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
 
   // Callback to call when an unhandled tap notification takes place.
   UnhandledTapCallback unhandled_tap_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledTapNotifierImpl);
 };
 
 // static

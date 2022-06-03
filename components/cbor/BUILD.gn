@@ -19,9 +19,7 @@ component("cbor") {
 
   defines = [ "CBOR_IMPLEMENTATION" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -42,9 +40,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("reader_fuzzer") {
-  sources = [
-    "reader_fuzzer.cc",
-  ]
+  sources = [ "reader_fuzzer.cc" ]
   deps = [
     ":cbor",
     "//base",

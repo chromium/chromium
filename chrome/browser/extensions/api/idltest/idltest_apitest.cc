@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
 
@@ -18,7 +19,8 @@ class ExtensionIdltestApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionIdltestApiTest, IdlCompiler) {
-  EXPECT_TRUE(RunExtensionSubtest("idltest/binary_data", "binary.html"));
-  EXPECT_TRUE(RunExtensionSubtest("idltest/nocompile", "nocompile.html"));
-  EXPECT_TRUE(RunExtensionSubtest("idltest/nodefine", "nodefine.html"));
+  EXPECT_TRUE(
+      RunExtensionTest("idltest/binary_data", {.page_url = "binary.html"}));
+  EXPECT_TRUE(
+      RunExtensionTest("idltest/nocompile", {.page_url = "nocompile.html"}));
 }

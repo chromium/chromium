@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/services/app_service/public/cpp",
+  "+components/webapps/services/web_app_origin_association",
+  "+services/network/public/cpp",
+  "+url",
+]

@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: CSS Properties and Values API Level 1 (https://drafts.css-houdini.org/css-properties-values-api-1/)
 
 dictionary PropertyDefinition {
@@ -11,11 +11,7 @@ dictionary PropertyDefinition {
 };
 
 partial namespace CSS {
-  void registerProperty(PropertyDefinition definition);
-};
-
-partial interface CSSRule {
-    const unsigned short PROPERTY_RULE = 18;
+  undefined registerProperty(PropertyDefinition definition);
 };
 
 [Exposed=Window]

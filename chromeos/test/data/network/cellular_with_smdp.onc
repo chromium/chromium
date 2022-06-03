@@ -1,0 +1,10 @@
+{
+  "Type": "Cellular",
+  "GUID": "cellularGuid",
+  "Name": "Test cellular",
+  "Cellular": {
+    "AllowRoaming": true,
+    "AutoConnect": false,
+    "SMDPAddress" : "BogusSMDPAddress"
+  }
+}

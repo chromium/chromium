@@ -6,7 +6,6 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "storage/browser/quota/quota_settings.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
 namespace ui {
@@ -20,17 +19,9 @@ ViewsContentBrowserClient::~ViewsContentBrowserClient() {
 
 std::unique_ptr<content::BrowserMainParts>
 ViewsContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
-  return ViewsContentClientMainParts::Create(parameters, views_content_client_);
-}
-
-void ViewsContentBrowserClient::GetQuotaSettings(
-    content::BrowserContext* context,
-    content::StoragePartition* partition,
-    storage::OptionalQuotaSettingsCallback callback) {
-  storage::GetNominalDynamicSettings(
-      partition->GetPath(), context->IsOffTheRecord(),
-      storage::GetDefaultDeviceInfoHelper(), std::move(callback));
+    content::MainFunctionParams parameters) {
+  return ViewsContentClientMainParts::Create(std::move(parameters),
+                                             views_content_client_);
 }
 
 }  // namespace ui

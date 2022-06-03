@@ -4,7 +4,7 @@
 
 #include "components/sync/model/model_type_store_base.h"
 
-#include "components/sync/model_impl/in_memory_metadata_change_list.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 
 namespace syncer {
 
@@ -14,9 +14,9 @@ ModelTypeStoreBase::WriteBatch::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-ModelTypeStoreBase::WriteBatch::WriteBatch() {}
+ModelTypeStoreBase::WriteBatch::WriteBatch() = default;
 
-ModelTypeStoreBase::WriteBatch::~WriteBatch() {}
+ModelTypeStoreBase::WriteBatch::~WriteBatch() = default;
 
 void ModelTypeStoreBase::WriteBatch::TakeMetadataChangesFrom(
     std::unique_ptr<MetadataChangeList> mcl) {

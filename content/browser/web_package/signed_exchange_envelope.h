@@ -8,9 +8,7 @@
 #include <map>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
@@ -18,6 +16,7 @@
 #include "crypto/sha2.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,7 +35,7 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   //
   // This also performs the steps 1, 3 and 4 of "Cross-origin trust" validation.
   // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cross-origin-trust
-  static base::Optional<SignedExchangeEnvelope> Parse(
+  static absl::optional<SignedExchangeEnvelope> Parse(
       SignedExchangeVersion version,
       const signed_exchange_utils::URLWithRawString& fallback_url,
       base::StringPiece signature_header_field,
@@ -51,6 +50,9 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   // AddResponseHeader returns false on duplicated keys. |name| must be
   // lower-cased.
   bool AddResponseHeader(base::StringPiece name, base::StringPiece value);
+  // SetResponseHeader replaces existing value, if any. |name| must be
+  // lower-cased.
+  void SetResponseHeader(base::StringPiece name, base::StringPiece value);
   scoped_refptr<net::HttpResponseHeaders> BuildHttpResponseHeaders() const;
 
   const base::span<const uint8_t> cbor_header() const {

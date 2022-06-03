@@ -42,10 +42,10 @@ testScenarios1 =
 generate_tests(testPointInStroke, testScenarios1);
 
 test(function(t) {
-    assert_throws(new TypeError(), function() {ctx.isPointInStroke(null, 70, 20);});
-    assert_throws(new TypeError(), function() {ctx.isPointInStroke(undefined, 70, 20);});
-    assert_throws(new TypeError(), function() {ctx.isPointInStroke([], 20, 70);});
-    assert_throws(new TypeError(), function() {ctx.isPointInStroke({}, 120, 70);});
+    assert_throws_js(TypeError, function() {ctx.isPointInStroke(null, 70, 20);});
+    assert_throws_js(TypeError, function() {ctx.isPointInStroke(undefined, 70, 20);});
+    assert_throws_js(TypeError, function() {ctx.isPointInStroke([], 20, 70);});
+    assert_throws_js(TypeError, function() {ctx.isPointInStroke({}, 120, 70);});
 }, "isPointInStroke in Canvas throws exception with invalid parameters.");
 
 ctx.lineWidth = 10;

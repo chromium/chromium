@@ -1,0 +1,14 @@
+include_rules = [
+  "+content/public/android/java/src/org/chromium/content_public",
+  "+content/public/browser",
+  "+net",
+  "+ui/android",
+]
+
+specific_include_rules = {
+  "ssl_client_certificate_request_browsertest.cc" : [
+    "+content/public/common",
+    "+content/public/test",
+    "+content/shell",
+  ]
+}

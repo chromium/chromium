@@ -36,11 +36,8 @@ namespace blink {
 
 class CORE_EXPORT SpinButtonElement final : public HTMLDivElement,
                                             public PopupOpeningObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(SpinButtonElement);
-
  public:
   enum UpDownState {
-    kIndeterminate,  // Hovered, but the event is not handled.
     kDown,
     kUp,
   };
@@ -70,12 +67,12 @@ class CORE_EXPORT SpinButtonElement final : public HTMLDivElement,
 
   void Step(int amount);
 
-  bool WillRespondToMouseMoveEvents() override;
+  bool WillRespondToMouseMoveEvents() const override;
   bool WillRespondToMouseClickEvents() override;
 
   void ForwardEvent(Event&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DetachLayoutTree(bool performing_reattach) override;
@@ -91,15 +88,14 @@ class CORE_EXPORT SpinButtonElement final : public HTMLDivElement,
   void StartRepeatingTimer();
   void StopRepeatingTimer();
   void RepeatingTimerFired(TimerBase*);
-  void SetHovered(bool hovered) override;
-  bool ShouldRespondToMouseEvents();
+  bool ShouldRespondToMouseEvents() const;
   bool IsMouseFocusable() const override { return false; }
 
   Member<SpinButtonOwner> spin_button_owner_;
   bool capturing_;
   UpDownState up_down_state_;
   UpDownState press_starting_state_;
-  TaskRunnerTimer<SpinButtonElement> repeating_timer_;
+  HeapTaskRunnerTimer<SpinButtonElement> repeating_timer_;
 };
 
 template <>
@@ -112,4 +108,4 @@ struct DowncastTraits<SpinButtonElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SPIN_BUTTON_ELEMENT_H_

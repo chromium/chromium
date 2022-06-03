@@ -4,7 +4,7 @@
 
 #include "remoting/ios/display/gl_demo_screen.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/client/display/canvas.h"
 #include "remoting/client/display/gl_math.h"
 

@@ -30,36 +30,36 @@ TEST_F(QuicClockSkewDetectorTest, NoChange) {
 }
 
 TEST_F(QuicClockSkewDetectorTest, NoOffset) {
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(57);
+  base::TimeDelta delta = base::Seconds(57);
   EXPECT_FALSE(detector_.ClockSkewDetected(start_ticks_time_ + delta,
                                            start_wall_time_ + delta));
 }
 
 TEST_F(QuicClockSkewDetectorTest, SmallOffset) {
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(57);
+  base::TimeDelta delta = base::Milliseconds(57);
   EXPECT_FALSE(
       detector_.ClockSkewDetected(start_ticks_time_, start_wall_time_ + delta));
 }
 
 TEST_F(QuicClockSkewDetectorTest, ManySmallOffset) {
   for (int i = 0; i < 10; ++i) {
-    base::TimeDelta delta = base::TimeDelta::FromMilliseconds(500);
+    base::TimeDelta delta = base::Milliseconds(500);
     EXPECT_FALSE(detector_.ClockSkewDetected(start_ticks_time_,
                                              start_wall_time_ + i * delta));
   }
 }
 
 TEST_F(QuicClockSkewDetectorTest, LargeOffset) {
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(1001);
+  base::TimeDelta delta = base::Milliseconds(1001);
   EXPECT_TRUE(
       detector_.ClockSkewDetected(start_ticks_time_, start_wall_time_ + delta));
 }
 
 TEST_F(QuicClockSkewDetectorTest, LargeOffsetThenSmallOffset) {
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(1001);
+  base::TimeDelta delta = base::Milliseconds(1001);
   EXPECT_TRUE(
       detector_.ClockSkewDetected(start_ticks_time_, start_wall_time_ + delta));
-  base::TimeDelta small_delta = base::TimeDelta::FromMilliseconds(571001);
+  base::TimeDelta small_delta = base::Milliseconds(571001);
   EXPECT_FALSE(detector_.ClockSkewDetected(
       start_ticks_time_ + small_delta, start_wall_time_ + delta + small_delta));
 }

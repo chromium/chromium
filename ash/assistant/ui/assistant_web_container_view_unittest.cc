@@ -4,24 +4,42 @@
 
 #include "ash/assistant/ui/assistant_web_container_view.h"
 
-#include "ash/assistant/assistant_controller.h"
-#include "ash/assistant/assistant_ui_controller.h"
+#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/assistant_web_ui_controller.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
-#include "ash/public/cpp/assistant/assistant_settings.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
-#include "base/macros.h"
+#include "ash/test/ash_test_views_delegate.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
-#include "ui/events/test/event_generator.h"
+#include "chromeos/ui/frame/default_frame_header.h"
+#include "ui/views/window/frame_caption_button.h"
 
 namespace ash {
 
 namespace {
 
+class TestViewsDelegate : public ash::AshTestViewsDelegate {
+ public:
+  TestViewsDelegate() = default;
+  TestViewsDelegate(const TestViewsDelegate& other) = delete;
+  TestViewsDelegate& operator=(const TestViewsDelegate& other) = delete;
+  ~TestViewsDelegate() override = default;
+
+  // views::ViewsDelegate:
+  std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
+      views::Widget* widget) override {
+    return ash::Shell::Get()->CreateDefaultNonClientFrameView(widget);
+  }
+};
+
 class AssistantWebContainerViewTest : public AssistantAshTestBase {
  public:
   AssistantWebContainerViewTest() = default;
+
+  AssistantWebContainerViewTest(const AssistantWebContainerViewTest&) = delete;
+  AssistantWebContainerViewTest& operator=(
+      const AssistantWebContainerViewTest&) = delete;
+
   ~AssistantWebContainerViewTest() override = default;
 
  protected:
@@ -32,8 +50,20 @@ class AssistantWebContainerViewTest : public AssistantAshTestBase {
         ->GetViewForTest();
   }
 
+  void OpenAssistantSettings() {
+    Shell::Get()->assistant_controller()->OpenAssistantSettings();
+  }
+
+  views::FrameCaptionButton* GetBackButton(views::Widget* widget) {
+    views::NonClientView* non_client_view = widget->non_client_view();
+    NonClientFrameViewAsh* frame_view_ash =
+        static_cast<NonClientFrameViewAsh*>(non_client_view->frame_view());
+    return frame_view_ash->GetHeaderView()->GetFrameHeader()->GetBackButton();
+  }
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerViewTest);
+  std::unique_ptr<TestViewsDelegate> views_delegate_ =
+      std::make_unique<TestViewsDelegate>();
 };
 
 }  // namespace
@@ -82,22 +112,76 @@ TEST_F(AssistantWebContainerViewTest, CloseWindowByKeyEvent) {
   ASSERT_TRUE(view());
 
   // Close Assistant Settings UI by key event.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(view());
 }
 
-TEST_F(AssistantWebContainerViewTest, NoCaptionBarInAssistantWebView) {
+TEST_F(AssistantWebContainerViewTest, ShouldHaveBackButton) {
   // Show Assistant Settings UI.
   OpenAssistantSettings();
-  AssistantWebContainerView* container_view = view();
-  ASSERT_TRUE(container_view);
+  ASSERT_TRUE(view());
 
-  // AssistantWebContainerView's widget should have its own caption buttons in
-  // the ash frame view. Therefore the AssistantWebView should not have the
-  // caption bar.
-  ASSERT_FALSE(container_view->GetCaptionBarForTesting());
+  views::FrameCaptionButton* back_button = nullptr;
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+
+  view()->SetCanGoBackForTesting(/*can_go_back=*/true);
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_TRUE(back_button);
+  ASSERT_TRUE(back_button->GetVisible());
+
+  view()->SetCanGoBackForTesting(/*can_go_back=*/false);
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+}
+
+TEST_F(AssistantWebContainerViewTest, BackButtonShouldPaintAsActive) {
+  // Show Assistant Settings UI.
+  OpenAssistantSettings();
+  ASSERT_TRUE(view());
+
+  view()->SetCanGoBackForTesting(/*can_go_back=*/true);
+  views::FrameCaptionButton* back_button = GetBackButton(view()->GetWidget());
+  ASSERT_TRUE(back_button);
+  ASSERT_TRUE(back_button->GetVisible());
+  ASSERT_TRUE(back_button->GetPaintAsActive());
+
+  // Activate another window will paint the back button as inactive.
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  ASSERT_TRUE(back_button->GetVisible());
+  ASSERT_FALSE(back_button->GetPaintAsActive());
+
+  // Activate Assistant web container will paint the back button as active.
+  view()->GetWidget()->Activate();
+  ASSERT_TRUE(back_button->GetVisible());
+  ASSERT_TRUE(back_button->GetPaintAsActive());
+}
+
+TEST_F(AssistantWebContainerViewTest, ShouldRemoveBackButton) {
+  // Show Assistant Settings UI.
+  OpenAssistantSettings();
+  ASSERT_TRUE(view());
+
+  views::FrameCaptionButton* back_button = nullptr;
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+
+  view()->OpenUrl(GURL("test1"));
+  view()->DidStopLoading();
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
+
+  view()->SetCanGoBackForTesting(/*can_go_back=*/true);
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_TRUE(back_button);
+  ASSERT_TRUE(back_button->GetVisible());
+
+  // Open another URL will remove the back button.
+  view()->OpenUrl(GURL("test2"));
+  view()->DidStopLoading();
+  back_button = GetBackButton(view()->GetWidget());
+  ASSERT_FALSE(back_button);
 }
 
 }  // namespace ash

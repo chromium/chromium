@@ -4,7 +4,7 @@
 
 #include "base/containers/intrusive_heap.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 
 namespace base {

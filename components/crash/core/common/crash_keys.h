@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "components/crash/core/common/crash_export.h"
 
 namespace base {
 class CommandLine;
@@ -28,8 +29,9 @@ using SwitchFilterFunction = bool (*)(const std::string& flag);
 // Sets the "num-switches" key and a set of keys named using kSwitchFormat based
 // on the given |command_line|. If |skip_filter| is not null, ignore any switch
 // for which it returns true.
-void SetSwitchesFromCommandLine(const base::CommandLine& command_line,
-                                SwitchFilterFunction skip_filter);
+void CRASH_KEY_EXPORT
+SetSwitchesFromCommandLine(const base::CommandLine& command_line,
+                           SwitchFilterFunction skip_filter);
 
 // Clears all the CommandLine-related crash keys.
 void ResetCommandLineForTesting();
@@ -39,10 +41,11 @@ void ResetCommandLineForTesting();
 class ScopedPrinterInfo {
  public:
   explicit ScopedPrinterInfo(base::StringPiece data);
-  ~ScopedPrinterInfo();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrinterInfo);
+  ScopedPrinterInfo(const ScopedPrinterInfo&) = delete;
+  ScopedPrinterInfo& operator=(const ScopedPrinterInfo&) = delete;
+
+  ~ScopedPrinterInfo();
 };
 
 }  // namespace crash_keys

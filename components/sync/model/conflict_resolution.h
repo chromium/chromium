@@ -10,15 +10,12 @@ namespace syncer {
 // An enum to represent the resolution of a data conflict. We either:
 // 1) Use the local client data and update the server.
 // 2) Use the remote server data and update the client.
-// We use this enum for UMA and values shouldn't change.
 enum class ConflictResolution {
-  kChangesMatch,  // Exists for logging purposes.
+  kChangesMatch,
   kUseLocal,
   kUseRemote,
-  kUseNewDEPRECATED,  // Deprecated because it's not used in production code.
-  kIgnoreLocalEncryption,   // Exists for logging purposes.
-  kIgnoreRemoteEncryption,  // Exists for logging purposes.
-  kTypeSize,
+  kIgnoreLocalEncryption,
+  kIgnoreRemoteEncryption
 };
 
 }  // namespace syncer

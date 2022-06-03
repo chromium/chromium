@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests to make sure film strip and overview pane show if the other does not exist. http://crbug.com/723659\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
@@ -52,14 +52,14 @@
   TestRunner.completeTest();
 
   function isOverviewShowing() {
-    if (!networkPanel._overviewPane)
+    if (!networkPanel.overviewPane)
       return false;
-    return networkPanel._overviewPane.isShowing();
+    return networkPanel.overviewPane.isShowing();
   }
 
   function isFilmstripShowing() {
-    if (!networkPanel._filmStripView)
+    if (!networkPanel.filmStripView)
       return false;
-    return networkPanel._filmStripView.isShowing();
+    return networkPanel.filmStripView.isShowing();
   }
 })();

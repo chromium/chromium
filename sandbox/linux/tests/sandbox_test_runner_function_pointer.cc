@@ -4,7 +4,7 @@
 
 #include "sandbox/linux/tests/sandbox_test_runner_function_pointer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 
 namespace sandbox {

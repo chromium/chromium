@@ -12,6 +12,9 @@
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
+#include "chromecast/renderer/cast_activity_url_filter_manager.h"
+#include "chromecast/renderer/feature_manager_on_associated_interface.h"
+#include "chromecast/renderer/identification_settings_manager_store.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
@@ -19,11 +22,17 @@
 
 namespace extensions {
 class ExtensionsClient;
-class ExtensionsGuestViewContainerDispatcher;
 class CastExtensionsRendererClient;
 }  // namespace extensions
 
+#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
+namespace guest_view {
+class GuestViewContainerDispatcher;
+}
+#endif
+
 namespace chromecast {
+class IdentificationSettingsManager;
 class MemoryPressureObserverImpl;
 namespace media {
 class MediaCapsObserverImpl;
@@ -38,23 +47,23 @@ namespace shell {
 
 class CastContentRendererClient
     : public content::ContentRendererClient,
-      public mojom::ApplicationMediaCapabilitiesObserver {
+      public mojom::ApplicationMediaCapabilitiesObserver,
+      public IdentificationSettingsManagerStore {
  public:
   // Creates an implementation of CastContentRendererClient. Platform should
   // link in an implementation as needed.
   static std::unique_ptr<CastContentRendererClient> Create();
 
+  CastContentRendererClient(const CastContentRendererClient&) = delete;
+  CastContentRendererClient& operator=(const CastContentRendererClient&) =
+      delete;
+
   ~CastContentRendererClient() override;
 
   // ContentRendererClient implementation:
   void RenderThreadStarted() override;
-  void RenderViewCreated(content::RenderView* render_view) override;
+  void WebViewCreated(blink::WebView* web_view) override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  content::BrowserPluginDelegate* CreateBrowserPluginDelegate(
-      content::RenderFrame* render_frame,
-      const content::WebPluginInfo& info,
-      const std::string& mime_type,
-      const GURL& original_url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
   void AddSupportedKeySystems(
@@ -68,12 +77,18 @@ class CastContentRendererClient
   bool DeferMediaLoad(content::RenderFrame* render_frame,
                       bool render_frame_has_played_media_before,
                       base::OnceClosure closure) override;
+  std::unique_ptr<::media::Demuxer> OverrideDemuxerForUrl(
+      content::RenderFrame* render_frame,
+      const GURL& url,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   bool IsIdleMediaSuspendEnabled() override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
-  std::unique_ptr<content::URLLoaderThrottleProvider>
+  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
+  CreateWebSocketHandshakeThrottleProvider() override;
+  std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
-      content::URLLoaderThrottleProviderType type) override;
-  base::Optional<::media::AudioRendererAlgorithmParameters>
+      blink::URLLoaderThrottleProviderType type) override;
+  absl::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters) override;
 
@@ -85,10 +100,29 @@ class CastContentRendererClient
   virtual bool RunWhenInForeground(content::RenderFrame* render_frame,
                                    base::OnceClosure closure);
 
+  CastActivityUrlFilterManager* activity_url_filter_manager() {
+    return activity_url_filter_manager_.get();
+  }
+
+  // TODO(guohuideng): Move |feature_manager_on_associated_interface_| to
+  // private when we can.
+  FeatureManagerOnAssociatedInterface*
+      main_frame_feature_manager_on_associated_interface_{nullptr};
+
  private:
   // mojom::ApplicationMediaCapabilitiesObserver implementation:
   void OnSupportedBitstreamAudioCodecsChanged(
       const BitstreamAudioCodecsInfo& info) override;
+
+  bool CheckSupportedBitstreamAudioCodec(::media::AudioCodec codec,
+                                         bool check_spatial_rendering);
+
+  // IdentificationSettingsManagerStore implementation:
+  scoped_refptr<IdentificationSettingsManager>
+  GetSettingsManagerFromRenderFrameID(int render_frame_id) override;
+
+  // Called when a render frame is removed.
+  void OnRenderFrameRemoved(int render_frame_id);
 
   std::unique_ptr<media::MediaCapsObserverImpl> media_caps_observer_;
   std::unique_ptr<media::SupportedCodecProfileLevelsMemo> supported_profiles_;
@@ -102,7 +136,7 @@ class CastContentRendererClient
   std::unique_ptr<extensions::ExtensionsClient> extensions_client_;
   std::unique_ptr<extensions::CastExtensionsRendererClient>
       extensions_renderer_client_;
-  std::unique_ptr<extensions::ExtensionsGuestViewContainerDispatcher>
+  std::unique_ptr<guest_view::GuestViewContainerDispatcher>
       guest_view_container_dispatcher_;
 #endif
 
@@ -112,7 +146,9 @@ class CastContentRendererClient
 
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
 
-  DISALLOW_COPY_AND_ASSIGN(CastContentRendererClient);
+  base::flat_map<int, scoped_refptr<IdentificationSettingsManager>>
+      settings_managers_;
+  std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
 };
 
 }  // namespace shell

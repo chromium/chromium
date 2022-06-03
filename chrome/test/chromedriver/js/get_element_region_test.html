@@ -25,8 +25,8 @@ function testSvgElement() {
   var region = getElementRegion(document.getElementById('e'));
   assertEquals(0, region.left);
   assertEquals(0, region.top);
-  assertEquals(170, region.width);
-  assertEquals(110, region.height);
+  assertEquals(90, region.width);
+  assertEquals(40, region.height);
 }
 
 function testAreaPoly() {
@@ -71,6 +71,25 @@ function testScrolledOutOfView() {
   assertEquals(50, region.width);
   assertEquals(100, region.height);
   window.scrollTo(0, 0);
+}
+
+function testScrolledPartiallyOutOfView() {
+  // Scroll to an offset to make element with id=a partially visible.
+  document.body.style.paddingTop = '0.25px';
+  document.body.style.paddingLeft = '0.25px';
+  var elem = document.getElementById("check");
+  window.scrollTo(
+    elem.offsetLeft + elem.offsetWidth,
+    elem.offsetTop + elem.offsetHeight,
+  );
+  var region = getElementRegion(elem);
+  assertEquals(0, region.left);
+  assertEquals(0, region.top);
+  assertEquals(elem.offsetWidth, region.width);
+  assertEquals(elem.offsetHeight, region.height);
+  window.scrollTo(0, 0);
+  document.body.style.paddingTop = '';
+  document.body.style.paddingLeft = '';
 }
 
 function testFullOutOfView() {
@@ -140,7 +159,7 @@ function testAreaDefault() {
   <br>
   <div>
     <svg xmlns="http://www.w3.org/2000/svg" height="130px" width="300px">
-      <ellipse cx="150" cy="65" rx="85" ry="55" id="e">
+      <ellipse cx="150" cy="65" rx="45" ry="20" id="e">
       </ellipse>
     </svg>
   </div>
@@ -186,6 +205,8 @@ function testAreaDefault() {
   <!-- This element adds scroll to see how script handles viewport with scroll -->
   <div style="background-color:red;width:50px;height:50px;position:absolute;top:200vh;left:200vw;">
   </div>
+  <input type="checkbox" id="check">
+  <div style="height:4000px"></div>
 
 </div>
 </body>

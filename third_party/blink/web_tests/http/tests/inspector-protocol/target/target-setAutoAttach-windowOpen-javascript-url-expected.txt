@@ -1,0 +1,21 @@
+Tests that browser.Target.setAutoAttach() attaches early to window.open with javascript: urls.
+Opened popup window
+Attached to the popup window, waitingForDebugger=true
+globalVar = undefined
+Resumed popup window
+Received console message in the popup: {
+    method : Console.messageAdded
+    params : {
+        message : {
+            column : 34
+            level : log
+            line : 1
+            source : console-api
+            text : 123
+            url : 
+        }
+    }
+    sessionId : <string>
+}
+globalVar = 2020
+

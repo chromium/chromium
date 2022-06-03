@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/geoposition.h"
@@ -19,7 +21,7 @@ GeolocationOverrideManager::~GeolocationOverrideManager() {
 
 Status GeolocationOverrideManager::OverrideGeolocation(
     const Geoposition& geoposition) {
-  overridden_geoposition_.reset(new Geoposition(geoposition));
+  overridden_geoposition_ = std::make_unique<Geoposition>(geoposition);
   return ApplyOverrideIfNeeded();
 }
 
@@ -44,8 +46,8 @@ Status GeolocationOverrideManager::ApplyOverrideIfNeeded() {
     return Status(kOk);
 
   base::DictionaryValue params;
-  params.SetDouble("latitude", overridden_geoposition_->latitude);
-  params.SetDouble("longitude", overridden_geoposition_->longitude);
-  params.SetDouble("accuracy", overridden_geoposition_->accuracy);
+  params.SetDoubleKey("latitude", overridden_geoposition_->latitude);
+  params.SetDoubleKey("longitude", overridden_geoposition_->longitude);
+  params.SetDoubleKey("accuracy", overridden_geoposition_->accuracy);
   return client_->SendCommand("Page.setGeolocationOverride", params);
 }

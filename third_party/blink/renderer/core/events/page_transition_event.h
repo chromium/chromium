@@ -28,9 +28,10 @@
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/events/page_transition_event_init.h"
 
 namespace blink {
+
+class PageTransitionEventInit;
 
 class PageTransitionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -66,7 +67,7 @@ class PageTransitionEvent final : public Event {
 
   bool persisted() const { return persisted_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // TODO(rakina): change to PageTransitionEventPersistence.

@@ -42,8 +42,12 @@ class ErrorCollector(object):
     def turn_off_line_filtering(self):
         self.turned_off_filtering = True
 
-    def __call__(self, lineno, category, confidence, message):
-        self._errors.append('%s  [%s] [%d]' % (message, category, confidence))
+    def __call__(self,
+                 lineno=0,
+                 category='test/expectations',
+                 confidence=100,
+                 message=''):
+        self._errors.append('%s\n[%s] [%d]' % (message, category, confidence))
         return True
 
     def get_errors(self):
@@ -65,21 +69,21 @@ class TestExpectationsTestCase(unittest.TestCase):
         self._error_collector.reset_errors()
 
         host = MockHost()
-        checker = TestExpectationsChecker('test/TestExpectations',
-                                          self._error_collector, host=host)
+        checker = TestExpectationsChecker(
+            'test/TestExpectations', self._error_collector, host=host)
 
         # We should have a valid port, but override it with a test port so we
         # can check the lines.
         self.assertIsNotNone(checker._port_obj)
         checker._port_obj = host.port_factory.get('test-mac-mac10.10')
-
-        checker.check_test_expectations(expectations_str='\n'.join(lines),
-                                        tests=[self._test_file])
+        checker.check_test_expectations(
+            expectations_str='\n'.join(lines), tests=[self._test_file])
         checker.check_tabs(lines)
         if should_pass:
             self.assertEqual('', self._error_collector.get_errors())
         elif expected_output:
-            self.assertEqual(expected_output, self._error_collector.get_errors())
+            self.assertEqual(expected_output,
+                             self._error_collector.get_errors())
         else:
             self.assertNotEquals('', self._error_collector.get_errors())
 
@@ -90,14 +94,28 @@ class TestExpectationsTestCase(unittest.TestCase):
         self.assertFalse(self._error_collector.turned_off_filtering)
 
     def test_valid_expectations(self):
-        self.assert_lines_lint(['crbug.com/1234 [ Mac ] passes/text.html [ Pass Failure ]'], should_pass=True)
+        self.assert_lines_lint([
+            '# tags: [ Mac ]\n'
+            '# results: [ Pass Failure ]\n'
+            'crbug.com/1234 [ Mac ] passes/text.html [ Pass Failure ]'
+        ],
+                               should_pass=True)
 
     def test_invalid_expectations(self):
-        self.assert_lines_lint(['Bug(me) passes/text.html [ Give Up]'], should_pass=False)
+        self.assert_lines_lint(['Bug(me) passes/text.html [ Give Up]'],
+                               should_pass=False)
 
     def test_tab(self):
-        self.assert_lines_lint(['\twebkit.org/b/1 passes/text.html [ Pass ]'], should_pass=False,
-                               expected_output='Line contains tab character.  [whitespace/tab] [5]')
+        self.assert_lines_lint(
+            [
+                '# results: [ Pass ]\n'
+                '\tcrbug.com/b/1 passes/text.html [ Pass ]'
+            ],
+            should_pass=False,
+            expected_output='Line contains tab character.\n[whitespace/tab] [5]'
+        )
 
     def test_missing_expectation_not_allowed(self):
-        self.assert_lines_lint(['crbug.com/1234 [ Mac ] passes/text.html [ Missing ]'], should_pass=False)
+        self.assert_lines_lint(
+            ['crbug.com/1234 [ Mac ] passes/text.html [ Missing ]'],
+            should_pass=False)

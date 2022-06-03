@@ -42,7 +42,7 @@ ActionHandlersHandler::ActionHandlersHandler() = default;
 
 ActionHandlersHandler::~ActionHandlersHandler() = default;
 
-bool ActionHandlersHandler::Parse(Extension* extension, base::string16* error) {
+bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* entries = nullptr;
   if (!extension->manifest()->GetList(keys::kActionHandlers, &entries)) {
     *error = base::ASCIIToUTF16(errors::kInvalidActionHandlersType);

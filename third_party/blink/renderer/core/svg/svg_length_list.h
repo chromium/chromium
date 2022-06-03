@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -51,22 +52,22 @@ class SVGLengthList final
 
   // SVGPropertyBase:
   SVGPropertyBase* CloneForAnimation(const String&) const override;
-  SVGLengthList* Clone() override;
-  String ValueAsString() const override;
+  SVGLengthList* Clone() const override;
   SVGLengthMode UnitMode() const { return mode_; }
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from_value,
-                              SVGPropertyBase* to_value,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from_value,
+      const SVGPropertyBase* to_value,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedLengthList; }
-  AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
   // Create SVGLength items used to adjust the list length
@@ -74,12 +75,17 @@ class SVGLengthList final
   SVGLength* CreatePaddingItem() const override;
 
   template <typename CharType>
-  SVGParsingError ParseInternal(const CharType*& ptr, const CharType* end);
+  SVGParsingError ParseInternal(const CharType* ptr, const CharType* end);
 
   SVGLengthMode mode_;
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGLengthList);
+template <>
+struct DowncastTraits<SVGLengthList> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGLengthList::ClassType();
+  }
+};
 
 }  // namespace blink
 

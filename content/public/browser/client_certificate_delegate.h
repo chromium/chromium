@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLIENT_CERTIFICATE_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_CLIENT_CERTIFICATE_DELEGATE_H_
 
-#include "base/macros.h"
-
 namespace net {
 class SSLPrivateKey;
 class X509Certificate;
@@ -20,6 +18,11 @@ namespace content {
 class ClientCertificateDelegate {
  public:
   ClientCertificateDelegate() {}
+
+  ClientCertificateDelegate(const ClientCertificateDelegate&) = delete;
+  ClientCertificateDelegate& operator=(const ClientCertificateDelegate&) =
+      delete;
+
   virtual ~ClientCertificateDelegate() {}
 
   // Continue the request with |cert| and matching |key|. |cert| may be nullptr
@@ -28,9 +31,6 @@ class ClientCertificateDelegate {
   virtual void ContinueWithCertificate(
       scoped_refptr<net::X509Certificate> cert,
       scoped_refptr<net::SSLPrivateKey> key) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientCertificateDelegate);
 };
 
 }  // namespace content

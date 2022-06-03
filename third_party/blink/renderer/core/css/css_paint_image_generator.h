@@ -32,7 +32,7 @@ class CORE_EXPORT CSSPaintImageGenerator
     virtual ~Observer() = default;
 
     virtual void PaintImageGeneratorReady() = 0;
-    virtual void Trace(blink::Visitor* visitor) {}
+    virtual void Trace(Visitor* visitor) const {}
   };
 
   static CSSPaintImageGenerator* Create(const String& name,
@@ -62,7 +62,7 @@ class CORE_EXPORT CSSPaintImageGenerator
   virtual bool IsImageGeneratorReady() const = 0;
   virtual int WorkletId() const = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

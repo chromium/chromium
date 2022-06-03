@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS getAnimations for non-animated content
-PASS getAnimations for CSS Transitions
-FAIL CSS Transitions targetting (pseudo-)elements should have correct order after sorting assert_equals: Transition #1 has null pseudo type expected (object) null but got (undefined) undefined
-PASS Transitions are not returned after they have finished
-Harness: the test ran to completion.
-

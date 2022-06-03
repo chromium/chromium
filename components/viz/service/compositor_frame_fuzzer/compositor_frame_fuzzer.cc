@@ -27,9 +27,9 @@ struct Env {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     auto png_dir_path =
         command_line->HasSwitch("dump-to-png")
-            ? base::Optional<base::FilePath>(
+            ? absl::optional<base::FilePath>(
                   command_line->GetSwitchValuePath("dump-to-png"))
-            : base::nullopt;
+            : absl::nullopt;
 
     // Re-initialize logging in order to pick up any command-line parameters
     // (such as --v=1 to enable verbose logging).
@@ -59,7 +59,8 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   return 0;
 }
 
-DEFINE_BINARY_PROTO_FUZZER(const viz::proto::RenderPass& render_pass_spec) {
+DEFINE_BINARY_PROTO_FUZZER(
+    const viz::proto::CompositorRenderPass& render_pass_spec) {
   static base::NoDestructor<Env> env;
 
   viz::FuzzedData fuzzed_frame =

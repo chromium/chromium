@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_
 #define COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_
 
-#include "base/macros.h"
-#include "content/public/common/context_menu_params.h"
+#include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace content {
@@ -19,6 +18,9 @@ class WebContents;
 // Subclasses can override the behavior of showing/hiding a category.
 class ContextMenuContentType {
  public:
+  ContextMenuContentType(const ContextMenuContentType&) = delete;
+  ContextMenuContentType& operator=(const ContextMenuContentType&) = delete;
+
   virtual ~ContextMenuContentType();
 
   // Represents a group of menu items.
@@ -45,7 +47,8 @@ class ContextMenuContentType {
     ITEM_GROUP_DEVELOPER,
     ITEM_GROUP_DEVTOOLS_UNPACKED_EXT,
     ITEM_GROUP_PRINT_PREVIEW,
-    ITEM_GROUP_PASSWORD
+    ITEM_GROUP_PASSWORD,
+    ITEM_GROUP_EXISTING_LINK_TO_TEXT
   };
 
   // Returns if |group| is enabled.
@@ -68,8 +71,6 @@ class ContextMenuContentType {
   const content::ContextMenuParams params_;
   content::WebContents* const source_web_contents_;
   const bool supports_custom_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentType);
 };
 
 #endif  // COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_

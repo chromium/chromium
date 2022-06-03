@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewButtonStripElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 window.button_strip_test = {};
+const button_strip_test = window.button_strip_test;
 button_strip_test.suiteName = 'ButtonStripTest';
 /** @enum {string} */
 button_strip_test.TestNames = {
@@ -17,18 +20,21 @@ button_strip_test.TestNames = {
 };
 
 suite(button_strip_test.suiteName, function() {
-  /** @type {?PrintPreviewButtonStripElement} */
-  let buttonStrip = null;
+  /** @type {!PrintPreviewButtonStripElement} */
+  let buttonStrip;
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-    buttonStrip = document.createElement('print-preview-button-strip');
+    document.body.innerHTML = '';
+    buttonStrip = /** @type {!PrintPreviewButtonStripElement} */ (
+        document.createElement('print-preview-button-strip'));
 
     buttonStrip.destination = new Destination(
         'FooDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
         'FooName', DestinationConnectionStatus.ONLINE);
     buttonStrip.state = State.READY;
+    // No max sheets limit is specified.
+    buttonStrip.maxSheets = 0;
     document.body.appendChild(buttonStrip);
   });
 
@@ -37,7 +43,8 @@ suite(button_strip_test.suiteName, function() {
   test(
       assert(button_strip_test.TestNames.ButtonStripChangesForState),
       function() {
-        const printButton = buttonStrip.$$('.action-button');
+        const printButton =
+            buttonStrip.shadowRoot.querySelector('.action-button');
         assertFalse(printButton.disabled);
 
         buttonStrip.state = State.NOT_READY;
@@ -60,10 +67,14 @@ suite(button_strip_test.suiteName, function() {
     assertEquals(
         2, buttonStrip.shadowRoot.querySelectorAll('cr-button').length);
 
-    const firstButton = buttonStrip.$$('cr-button:not(:last-child)');
-    const lastButton = buttonStrip.$$('cr-button:last-child');
-    const printButton = buttonStrip.$$('cr-button.action-button');
-    const cancelButton = buttonStrip.$$('cr-button.cancel-button');
+    const firstButton =
+        buttonStrip.shadowRoot.querySelector('cr-button:not(:last-child)');
+    const lastButton =
+        buttonStrip.shadowRoot.querySelector('cr-button:last-child');
+    const printButton =
+        buttonStrip.shadowRoot.querySelector('cr-button.action-button');
+    const cancelButton =
+        buttonStrip.shadowRoot.querySelector('cr-button.cancel-button');
 
     if (isWindows) {
       // On Windows, the print button is on the left.
@@ -78,8 +89,10 @@ suite(button_strip_test.suiteName, function() {
   // Tests that the button strip fires print-requested and cancel-requested
   // events.
   test(assert(button_strip_test.TestNames.ButtonStripFiresEvents), function() {
-    const printButton = buttonStrip.$$('cr-button.action-button');
-    const cancelButton = buttonStrip.$$('cr-button.cancel-button');
+    const printButton =
+        buttonStrip.shadowRoot.querySelector('cr-button.action-button');
+    const cancelButton =
+        buttonStrip.shadowRoot.querySelector('cr-button.cancel-button');
 
     const whenPrintRequested = eventToPromise('print-requested', buttonStrip);
     printButton.click();

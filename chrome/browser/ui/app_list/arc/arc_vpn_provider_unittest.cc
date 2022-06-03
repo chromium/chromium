@@ -21,6 +21,10 @@ constexpr char kNonVpnPackageName[] = "non.vpn.app.package.name";
 class ArcVpnObserver : public app_list::ArcVpnProviderManager::Observer {
  public:
   ArcVpnObserver() = default;
+
+  ArcVpnObserver(const ArcVpnObserver&) = delete;
+  ArcVpnObserver& operator=(const ArcVpnObserver&) = delete;
+
   ~ArcVpnObserver() override = default;
 
   int GetArcVpnProviderUpdateCount(const std::string& package_name) {
@@ -51,8 +55,6 @@ class ArcVpnObserver : public app_list::ArcVpnProviderManager::Observer {
 
  private:
   std::map<std::string, int> arc_vpn_provider_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVpnObserver);
 };
 
 class ArcVpnProviderTest : public AppListTestBase {

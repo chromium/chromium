@@ -7,39 +7,55 @@
 #define UI_ACCESSIBILITY_ACCESSIBILITY_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_base_export.h"
 
 namespace switches {
 
-AX_EXPORT extern const char kEnableExperimentalAccessibilityFeatures[];
-AX_EXPORT extern const char kEnableExperimentalAccessibilityAutoclick[];
-AX_EXPORT extern const char kEnableExperimentalAccessibilityLabelsDebugging[];
-AX_EXPORT extern const char kEnableExperimentalAccessibilityLanguageDetection[];
-AX_EXPORT extern const char
+AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityAutoclick[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityDictationExtension[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityLabelsDebugging[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityLanguageDetection[];
+AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetectionDynamic[];
-AX_EXPORT extern const char kEnableExperimentalAccessibilitySwitchAccess[];
-AX_EXPORT extern const char kEnableExperimentalAccessibilitySwitchAccessText[];
-AX_EXPORT extern const char
-    kEnableExperimentalAccessibilityChromeVoxLanguageSwitching[];
-AX_EXPORT extern const char
-    kEnableExperimentalAccessibilityChromeVoxSubNodeLanguageSwitching[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilitySwitchAccessText[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation[];
+
+// Returns true if experimental accessibility dictation extension is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();
 
 // Returns true if experimental accessibility language detection is enabled.
-AX_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();
+AX_BASE_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();
 
 // Returns true if experimental accessibility language detection support for
 // dynamic content is enabled.
-AX_EXPORT bool IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
 
 // Returns true if experimental accessibility Switch Access text is enabled.
-AX_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
+AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
+
+// Returns true if experimental accessibility Switch Access multistep automation
+// is enabled.
+AX_BASE_EXPORT bool IsSwitchAccessMultistepAutomationEnabled();
 
 #if defined(OS_WIN)
-AX_EXPORT extern const char kEnableExperimentalUIAutomation[];
+AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
 #endif
 
 // Returns true if experimental support for UIAutomation is enabled.
-AX_EXPORT bool IsExperimentalAccessibilityPlatformUIAEnabled();
+AX_BASE_EXPORT bool IsExperimentalAccessibilityPlatformUIAEnabled();
+
+// Returns true if Switch Access point scanning is enabled.
+AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
+
+// Optionally disable AXMenuList, which makes the internal pop-up menu
+// UI for a select element directly accessible.
+AX_BASE_EXPORT extern const char kDisableAXMenuList[];
 
 }  // namespace switches
 

@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -18,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -42,7 +47,7 @@ class ExtensionResourceRequestPolicyTest : public ExtensionApiTest {
       const GURL& expected_navigation_url) {
     GURL main_url = embedded_test_server()->GetURL(
         "/frame_tree/page_with_two_frames_remote_and_local.html");
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
     // Navigate |target_frame_name| to |target_url|.
     content::WebContents* web_contents =
@@ -76,6 +81,67 @@ class ExtensionResourceRequestPolicyTest : public ExtensionApiTest {
     OpenUrlInSubFrameAndVerifyNavigationBlocked(target_url, "local-frame",
                                                 url_blocked_by_renderer);
   }
+
+  // Used to test that javascript history.back() navigations to a target
+  // non-web accessible resource are blocked, using remote and local iframes.
+  void OpenUrlInSubFrameAndVerifyBackNavigationBlocked(
+      const GURL& target_url,
+      const std::string& target_frame_id,
+      const GURL& expected_navigation_url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    // Load up an iframe we can navigate.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL(
+            "/frame_tree/page_with_two_frames_remote_and_local.html")));
+    const char kNavigateScriptTemplate[] = R"(
+      var iframe = document.getElementById($1);
+      iframe.src = $2;
+    )";
+
+    {
+      // Navigate the iframe to an inaccessible resource and expect an error.
+      content::TestNavigationObserver nav_observer(web_contents);
+      ASSERT_TRUE(content::ExecJs(
+          web_contents, content::JsReplace(kNavigateScriptTemplate,
+                                           target_frame_id, target_url)));
+      nav_observer.Wait();
+
+      EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+      EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+      EXPECT_EQ(expected_navigation_url, nav_observer.last_navigation_url());
+    }
+
+    {
+      // Navigate the iframe to an accessible page (about:blank).
+      content::TestNavigationObserver nav_observer(web_contents);
+      ASSERT_TRUE(content::ExecJs(
+          web_contents,
+          content::JsReplace(kNavigateScriptTemplate, target_frame_id,
+                             GURL("about:blank"))));
+      nav_observer.Wait();
+      EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    }
+
+    {
+      // Finally, trigger a back navigation which should lead to a blocked page.
+      const char kNavigateBackScriptTemplate[] = R"(
+        var iframe = document.getElementById($1);
+        iframe.contentWindow.history.back();
+      )";
+      content::TestNavigationObserver nav_observer(web_contents);
+      ASSERT_TRUE(content::ExecJs(
+          web_contents,
+          content::JsReplace(kNavigateBackScriptTemplate, target_frame_id)));
+      nav_observer.Wait();
+
+      EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+      EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+      EXPECT_EQ(expected_navigation_url, nav_observer.last_navigation_url());
+    }
+  }
 };
 
 // Note, this mostly tests the logic of chrome/renderer/extensions/
@@ -97,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, OriginPrivileges) {
   make_host_b_com.SetHostStr("b.com");
 
   // A web host that has permission.
-  ui_test_utils::NavigateToURL(
-      browser(), web_resource.ReplaceComponents(make_host_a_com));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), web_resource.ReplaceComponents(make_host_a_com)));
   std::string result;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -110,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, OriginPrivileges) {
   GURL non_existent_extension(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "non_existent_extension.html"));
-  ui_test_utils::NavigateToURL(browser(), non_existent_extension);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_existent_extension));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -127,8 +193,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, OriginPrivileges) {
             .AppendASCII("index.html"),
         &file_source));
   }
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(std::string("data:text/html;charset=utf-8,") + file_source));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL(std::string("data:text/html;charset=utf-8,") + file_source)));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -140,9 +207,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, OriginPrivileges) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("extension2")));
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://pbkkcbgdkliohhfaeefcijaghglkahja/index.html"));
+      GURL("chrome-extension://pbkkcbgdkliohhfaeefcijaghglkahja/index.html")));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -157,38 +224,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("hosted_app")));
 
   ASSERT_TRUE(
-      RunExtensionSubtest("extension_resource_request_policy/extension2/",
-                          "can_load_icons_from_hosted_apps.html"))
+      RunExtensionTest("extension_resource_request_policy/extension2/",
+                       {.page_url = "can_load_icons_from_hosted_apps.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Audio) {
-  EXPECT_TRUE(RunExtensionSubtest(
-      "extension_resource_request_policy/extension2", "audio.html"))
+  EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
+                               {.page_url = "audio.html"}))
       << message_;
 }
 
-#if defined(OS_MACOSX) || defined(OS_WIN)
-// http://crbug.com/238733 - Video is flaky on Mac and Win.
-#define MAYBE_Video DISABLED_Video
-#else
-#define MAYBE_Video Video
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, MAYBE_Video) {
-  EXPECT_TRUE(RunExtensionSubtest(
-      "extension_resource_request_policy/extension2", "video.html"))
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Video) {
+  EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
+                               {.page_url = "video.html"}))
       << message_;
 }
 
-// This test times out regularly on win_rel trybots. See http://crbug.com/122154
-#if defined(OS_WIN)
-#define MAYBE_WebAccessibleResources DISABLED_WebAccessibleResources
-#else
-#define MAYBE_WebAccessibleResources WebAccessibleResources
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
-                       MAYBE_WebAccessibleResources) {
+                       WebAccessibleResources) {
   std::string result;
   ASSERT_TRUE(LoadExtension(test_data_dir_
       .AppendASCII("extension_resource_request_policy")
@@ -197,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/accessible_resource.html"));
-  ui_test_utils::NavigateToURL(browser(), accessible_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), accessible_resource));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -207,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL xhr_accessible_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/xhr_accessible_resource.html"));
-  ui_test_utils::NavigateToURL(
-      browser(), xhr_accessible_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xhr_accessible_resource));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -218,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL xhr_inaccessible_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/xhr_inaccessible_resource.html"));
-  ui_test_utils::NavigateToURL(
-      browser(), xhr_inaccessible_resource);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), xhr_inaccessible_resource));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -229,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL nonaccessible_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/nonaccessible_resource.html"));
-  ui_test_utils::NavigateToURL(browser(), nonaccessible_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), nonaccessible_resource));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -239,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL nonexistent_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/nonexistent_resource.html"));
-  ui_test_utils::NavigateToURL(browser(), nonexistent_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), nonexistent_resource));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -250,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_newtab_override(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/accessible_history_navigation.html"));
-  ui_test_utils::NavigateToURL(browser(), newtab_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), newtab_page));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), accessible_newtab_override, 1);
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -297,9 +350,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   EXPECT_EQ(content::PAGE_TYPE_ERROR,
             controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ("chrome-error://chromewebdata/", result);
-  GURL nonaccessible_url = extension->GetResourceURL("/test2.png");
-  EXPECT_EQ(nonaccessible_url,
-            web_contents->GetMainFrame()->GetLastCommittedURL());
+  GURL invalid_url("chrome-extension://invalid/");
+  EXPECT_EQ(invalid_url, web_contents->GetMainFrame()->GetLastCommittedURL());
 
   // Redirects can sometimes occur before the load event, so use a
   // UrlLoadObserver instead of blocking waiting for two load events.
@@ -308,23 +360,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_client_redirect_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/accessible_redirect_resource.html"));
-  ui_test_utils::NavigateToURL(browser(), accessible_client_redirect_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), accessible_client_redirect_resource));
   accessible_observer.Wait();
   EXPECT_EQ(content::PAGE_TYPE_NORMAL,
             controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(accessible_url, web_contents->GetLastCommittedURL());
 
   ui_test_utils::UrlLoadObserver nonaccessible_observer(
-      nonaccessible_url, content::NotificationService::AllSources());
+      invalid_url, content::NotificationService::AllSources());
   GURL nonaccessible_client_redirect_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/nonaccessible_redirect_resource.html"));
-  ui_test_utils::NavigateToURL(browser(),
-                               nonaccessible_client_redirect_resource);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), nonaccessible_client_redirect_resource));
   nonaccessible_observer.Wait();
   EXPECT_EQ(content::PAGE_TYPE_ERROR,
             controller.GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(nonaccessible_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(invalid_url, web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
@@ -337,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL accessible_resource_with_csp(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/accessible_resource_with_csp.html"));
-  ui_test_utils::NavigateToURL(browser(), accessible_resource_with_csp);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), accessible_resource_with_csp));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -351,9 +405,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Iframe) {
   ASSERT_TRUE(LoadExtension(test_data_dir_
       .AppendASCII("extension_resource_request_policy")
       .AppendASCII("inaccessible")));
-  EXPECT_TRUE(RunExtensionSubtest(
-      "extension_resource_request_policy/web_accessible",
-      "iframe.html")) << message_;
+  EXPECT_TRUE(
+      RunExtensionTest("extension_resource_request_policy/web_accessible",
+                       {.page_url = "iframe.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
@@ -366,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       "/extensions/api_test/extension_resource_request_policy/"
       "iframe_navigate.html"));
 
-  ui_test_utils::NavigateToURL(browser(), iframe_navigate_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), iframe_navigate_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -374,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   GURL private_page(
       "chrome-extension://kegmjfcnjamahdnldjmlpachmpielcdk/private.html");
   ASSERT_TRUE(content::ExecuteScript(web_contents, "navigateFrameNow()"));
-  WaitForLoadStop(web_contents);
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_NE(private_page, web_contents->GetLastCommittedURL());
   std::string content;
   EXPECT_TRUE(ExecuteScriptAndExtractString(
@@ -405,8 +460,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
           .AppendASCII("inaccessible"));
 
   // Start with an http iframe.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   // Send it to a web accessible resource of a valid extension.
   GURL patsy_url = patsy->GetResourceURL("public.html");
@@ -510,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(
       extension->GetResourceURL("inaccessible-iframe-contents.html");
 
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Inject and submit a form that will navigate a new window to a
   // non-web-accessible-resource.  This replicates the repro steps
@@ -561,13 +616,13 @@ IN_PROC_BROWSER_TEST_F(
       "/service_worker/create_service_worker.html");
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), web_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_page_url));
   EXPECT_EQ("DONE", EvalJs(web_contents, "register('client_api_worker.js');"));
 
   // Load the page again so we are controlled.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ(true, content::EvalJs(web_contents,
                                   "!!navigator.serviceWorker.controller"));
 
@@ -611,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(
       "/service_worker/create_service_worker.html");
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), web_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_page_url));
   EXPECT_EQ("DONE",
             content::EvalJs(web_contents, "register('client_api_worker.js');"));
 
@@ -625,8 +680,7 @@ IN_PROC_BROWSER_TEST_F(
 
     GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     content::ServiceWorkerContext* context =
         storage_partition->GetServiceWorkerContext();
 
@@ -646,6 +700,126 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(web_page_url),
             nav_observer.last_initiator_origin().value());
+}
+
+// Tests that a page can't use history.back() on another page to navigate to a
+// non-web accessible resource of an extension.
+// Regression test for https://crbug.com/1043965.
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebNavigationToNonWebAccessibleResource_ViaHistoryBack) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Have a page open a new window with JS and retain a reference to it.
+  content::WebContentsAddedObserver new_window_observer;
+  content::WebContents* old_window =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      old_window,
+      content::JsReplace("var newWindow = open($1);", non_web_accessible_url)));
+  content::WebContents* new_window = new_window_observer.GetWebContents();
+  content::WaitForLoadStop(new_window);
+  // As this resource is non-web accessible, we expect an error page.
+  // NOTE: It would be nice to check for the actual ERR_BLOCKED_BY_CLIENT error,
+  // but the observer we are using to grab the new page doesn't keep track of
+  // the navigation handle or any of the specific error codes.
+  EXPECT_EQ(non_web_accessible_url, new_window->GetLastCommittedURL());
+  EXPECT_EQ(content::PAGE_TYPE_ERROR,
+            new_window->GetController().GetLastCommittedEntry()->GetPageType());
+
+  {
+    // Navigate the second window from the first to about:blank.
+    content::TestNavigationObserver nav_observer(new_window, 1);
+    ASSERT_TRUE(content::ExecJs(old_window,
+                                "newWindow.location.href = 'about:blank';"));
+    nav_observer.Wait();
+    EXPECT_EQ("about:blank", new_window->GetLastCommittedURL());
+  }
+
+  {
+    // Navigate the second window back using history, which should be blocked.
+    content::TestNavigationObserver nav_observer(new_window, 1);
+    ASSERT_TRUE(content::ExecJs(old_window, "newWindow.history.back();"));
+    nav_observer.Wait();
+    EXPECT_EQ(non_web_accessible_url, new_window->GetLastCommittedURL());
+
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+    EXPECT_EQ(non_web_accessible_url, nav_observer.last_navigation_url());
+  }
+}
+
+// Tests that a page can't use history.back() on a remote iframe to navigate to
+// a non-web accessible resource of an extension.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionResourceRequestPolicyTest,
+    WebNavigationToNonWebAccessibleResource_ViaHistoryBackRemoteIframe) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+
+  GURL inaccessible_resource =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  OpenUrlInSubFrameAndVerifyBackNavigationBlocked(
+      inaccessible_resource, "remote-frame", inaccessible_resource);
+}
+
+// Tests that a page can't use history.back() on a local iframe to navigate to a
+// non-web accessible resource of an extension.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionResourceRequestPolicyTest,
+    WebNavigationToNonWebAccessibleResource_ViaHistoryBackLocalIframe) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+
+  GURL inaccessible_resource =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+  GURL url_blocked_by_renderer("chrome-extension://invalid/");
+
+  OpenUrlInSubFrameAndVerifyBackNavigationBlocked(
+      inaccessible_resource, "local-frame", url_blocked_by_renderer);
+}
+
+// Regression test for crbug.com/649869. Ensures that on navigation to an
+// invalid extension resource (or more generally for navigations blocked by the
+// browser with net::ERR_BLOCKED_BY_CLIENT), the error page doesn't incorrectly
+// attribute extensions as the cause of the blocked request.
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       NavigationToInvalidExtensionPage) {
+  std::string url =
+      base::StringPrintf("chrome-extension://%s/manifest.json",
+                         crx_file::id_util::GenerateId("foo").c_str());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+
+  std::string body;
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "window.domAutomationController.send(document.body.textContent)",
+      &body));
+
+  std::string expected_error;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_error = "This page has been blocked by Chrome";
+#else
+  expected_error = "This page has been blocked by Chromium";
+#endif
+
+  EXPECT_TRUE(base::Contains(body, expected_error));
+  EXPECT_FALSE(
+      base::Contains(body, "This page has been blocked by an extension"));
+  EXPECT_FALSE(base::Contains(body, "Try disabling your extensions."));
 }
 
 }  // namespace extensions

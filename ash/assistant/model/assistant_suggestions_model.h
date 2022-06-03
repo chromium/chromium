@@ -5,62 +5,64 @@
 #ifndef ASH_ASSISTANT_MODEL_ASSISTANT_SUGGESTIONS_MODEL_H_
 #define ASH_ASSISTANT_MODEL_ASSISTANT_SUGGESTIONS_MODEL_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace ash {
 
 class AssistantSuggestionsModelObserver;
-class ProactiveSuggestions;
 
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantSuggestionsModel {
  public:
-  using AssistantSuggestion = chromeos::assistant::mojom::AssistantSuggestion;
-  using AssistantSuggestionPtr =
-      chromeos::assistant::mojom::AssistantSuggestionPtr;
+  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
 
   AssistantSuggestionsModel();
+
+  AssistantSuggestionsModel(const AssistantSuggestionsModel&) = delete;
+  AssistantSuggestionsModel& operator=(const AssistantSuggestionsModel&) =
+      delete;
+
   ~AssistantSuggestionsModel();
 
   // Adds/removes the specified suggestions model |observer|.
-  void AddObserver(AssistantSuggestionsModelObserver* observer);
-  void RemoveObserver(AssistantSuggestionsModelObserver* observer);
+  void AddObserver(AssistantSuggestionsModelObserver* observer) const;
+  void RemoveObserver(AssistantSuggestionsModelObserver* observer) const;
+
+  // Returns the AssistantSuggestion uniquely identified by |id|. Returns
+  // nullptr if not found.
+  const AssistantSuggestion* GetSuggestionById(
+      const base::UnguessableToken& id) const;
 
   // Sets the cache of conversation starters.
   void SetConversationStarters(
-      std::vector<AssistantSuggestionPtr> conversation_starters);
+      std::vector<AssistantSuggestion>&& conversation_starters);
 
-  // Returns the conversation starter uniquely identified by |id|.
-  const AssistantSuggestion* GetConversationStarterById(int id) const;
+  // Returns all cached conversation starters.
+  const std::vector<AssistantSuggestion>& GetConversationStarters() const;
 
-  // Returns all cached conversation starters, mapped to a unique id.
-  std::map<int, const AssistantSuggestion*> GetConversationStarters() const;
+  // Sets the cache of onboarding suggestions.
+  void SetOnboardingSuggestions(
+      std::vector<AssistantSuggestion>&& onboarding_suggestions);
 
-  // Sets the cache of proactive suggestions.
-  void SetProactiveSuggestions(
-      scoped_refptr<const ProactiveSuggestions> proactive_suggestions);
-
-  // Returns the cache of proactive suggestions.
-  scoped_refptr<const ProactiveSuggestions> GetProactiveSuggestions() const;
+  // Returns all cached onboarding suggestions.
+  const std::vector<AssistantSuggestion>& GetOnboardingSuggestions() const;
 
  private:
   void NotifyConversationStartersChanged();
-  void NotifyProactiveSuggestionsChanged(
-      const scoped_refptr<const ProactiveSuggestions>&
-          old_proactive_suggestions);
+  void NotifyOnboardingSuggestionsChanged();
 
-  std::vector<AssistantSuggestionPtr> conversation_starters_;
-  scoped_refptr<const ProactiveSuggestions> proactive_suggestions_;
+  std::vector<AssistantSuggestion> conversation_starters_;
+  std::vector<AssistantSuggestion> onboarding_suggestions_;
 
-  base::ObserverList<AssistantSuggestionsModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSuggestionsModel);
+  mutable base::ObserverList<AssistantSuggestionsModelObserver> observers_;
 };
 
 }  // namespace ash

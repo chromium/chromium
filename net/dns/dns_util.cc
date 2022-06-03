@@ -8,44 +8,32 @@
 #include <limits.h>
 
 #include <cstring>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
-
-namespace {
-
-// RFC 1035, section 2.3.4: labels 63 octets or less.
-// Section 3.1: Each label is represented as a one octet length field followed
-// by that number of octets.
-const int kMaxLabelLength = 63;
-
-// RFC 1035, section 4.1.4: the first two bits of a 16-bit name pointer are
-// ones.
-const uint16_t kFlagNamePointer = 0xc000;
-
-}  // namespace
 
 #if defined(OS_POSIX)
 #include <netinet/in.h>
-#if !defined(OS_NACL)
 #include <net/if.h>
 #if !defined(OS_ANDROID)
 #include <ifaddrs.h>
 #endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_NACL)
 #endif  // defined(OS_POSIX)
 
 #if defined(OS_ANDROID)
@@ -61,7 +49,7 @@ bool DNSDomainFromDot(const base::StringPiece& dotted,
                       std::string* out) {
   const char* buf = dotted.data();
   size_t n = dotted.size();
-  char label[kMaxLabelLength];
+  char label[dns_protocol::kMaxLabelLength];
   size_t labellen = 0; /* <= sizeof label */
   char name[dns_protocol::kMaxNameLength];
   size_t namelen = 0; /* <= sizeof name */
@@ -112,134 +100,21 @@ bool DNSDomainFromDot(const base::StringPiece& dotted,
   return true;
 }
 
-// Represents insecure DNS, DoT, and DoH services run by the same provider
-// and providing the same filtering behavior. These entries are used to
-// determine if insecure DNS or DoT services can be upgraded to associated
-// DoH services in automatic mode.
-struct DohUpgradeEntry {
-  DohUpgradeEntry(std::string provider,
-                  std::set<std::string> ip_strs,
-                  std::set<std::string> dns_over_tls_hostnames,
-                  DnsConfig::DnsOverHttpsServerConfig dns_over_https_config)
-      : provider(std::move(provider)),
-        dns_over_tls_hostnames(std::move(dns_over_tls_hostnames)),
-        dns_over_https_config(std::move(dns_over_https_config)) {
-    for (const std::string& ip_str : ip_strs) {
-      IPAddress ip_address;
-      bool success = ip_address.AssignFromIPLiteral(ip_str);
-      DCHECK(success);
-      ip_addresses.insert(ip_address);
-    }
-  }
-  DohUpgradeEntry(const DohUpgradeEntry& other) = default;
-  ~DohUpgradeEntry() = default;
-  const std::string provider;
-  std::set<IPAddress> ip_addresses;
-  const std::set<std::string> dns_over_tls_hostnames;
-  const DnsConfig::DnsOverHttpsServerConfig dns_over_https_config;
-};
-
-const std::vector<DohUpgradeEntry>& GetDohUpgradeList() {
-  // The provider names in these entries should be kept in sync with the
-  // DohProviderId histogram suffix list in
-  // tools/metrics/histograms/histograms.xml.
-  static const base::NoDestructor<std::vector<DohUpgradeEntry>>
-      upgradable_servers{{
-          DohUpgradeEntry(
-              "CleanBrowsingAdult",
-              {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",
-               "2a0d:2a00:2::1"},
-              {"adult-filter-dns.cleanbrowsing.org"} /* DoT hostname */,
-              {"https://doh.cleanbrowsing.org/doh/adult-filter{?dns}",
-               false /* use_post */}),
-          DohUpgradeEntry(
-              "CleanBrowsingFamily",
-              {"185.228.168.168", "185.228.169.168",
-               "2a0d:2a00:1::", "2a0d:2a00:2::"},
-              {"family-filter-dns.cleanbrowsing.org"} /* DoT hostname */,
-              {"https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-               false /* use_post */}),
-          DohUpgradeEntry(
-              "CleanBrowsingSecure",
-              {"185.228.168.9", "185.228.169.9", "2a0d:2a00:1::2",
-               "2a0d:2a00:2::2"},
-              {"security-filter-dns.cleanbrowsing.org"} /* DoT hostname */,
-              {"https://doh.cleanbrowsing.org/doh/security-filter{?dns}",
-               false /* use_post */}),
-          DohUpgradeEntry(
-              "Cloudflare",
-              {"1.1.1.1", "1.0.0.1", "2606:4700:4700::1111",
-               "2606:4700:4700::1001"},
-              {"one.one.one.one",
-               "1dot1dot1dot1.cloudflare-dns.com"} /* DoT hostname */,
-              {"https://chrome.cloudflare-dns.com/dns-query",
-               true /* use-post */}),
-          DohUpgradeEntry("Comcast",
-                          {"75.75.75.75", "75.75.76.76", "2001:558:feed::1",
-                           "2001:558:feed::2"},
-                          {"dot.xfinity.com"} /* DoT hostname */,
-                          {"https://doh.xfinity.com/dns-query{?dns}",
-                           false /* use_post */}),
-          DohUpgradeEntry(
-              "Dnssb",
-              {"185.222.222.222", "185.184.222.222", "2a09::", "2a09::1"},
-              {"dns.sb"} /* DoT hostname */,
-              {"https://doh.dns.sb/dns-query?no_ecs=true{&dns}",
-               false /* use_post */}),
-          DohUpgradeEntry(
-              "Google",
-              {"8.8.8.8", "8.8.4.4", "2001:4860:4860::8888",
-               "2001:4860:4860::8844"},
-              {"dns.google", "dns.google.com",
-               "8888.google"} /* DoT hostname */,
-              {"https://dns.google/dns-query{?dns}", false /* use_post */}),
-          DohUpgradeEntry("OpenDNS",
-                          {"208.67.222.222", "208.67.220.220",
-                           "2620:119:35::35", "2620:119:53::53"},
-                          {""} /* DoT hostname */,
-                          {"https://doh.opendns.com/dns-query{?dns}",
-                           false /* use_post */}),
-          DohUpgradeEntry(
-              "OpenDNSFamily",
-              {"208.67.222.123", "208.67.220.123", "2620:119:35::123",
-               "2620:119:53::123"},
-              {""} /* DoT hostname */,
-              {"https://doh.familyshield.opendns.com/dns-query{?dns}",
-               false /* use_post */}),
-          DohUpgradeEntry(
-              "Quad9Cdn",
-              {"9.9.9.11", "149.112.112.11", "2620:fe::11", "2620:fe::fe:11"},
-              {"dns11.quad9.net"} /* DoT hostname */,
-              {"https://dns11.quad9.net/dns-query", true /* use_post */}),
-          DohUpgradeEntry(
-              "Quad9Insecure",
-              {"9.9.9.10", "149.112.112.10", "2620:fe::10", "2620:fe::fe:10"},
-              {"dns10.quad9.net"} /* DoT hostname */,
-              {"https://dns10.quad9.net/dns-query", true /* use_post */}),
-          DohUpgradeEntry(
-              "Quad9Secure",
-              {"9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9"},
-              {"dns.quad9.net", "dns9.quad9.net"} /* DoT hostname */,
-              {"https://dns.quad9.net/dns-query", true /* use_post */}),
-      }};
-  return *upgradable_servers;
-}
-
-std::vector<const DohUpgradeEntry*> GetDohUpgradeEntriesFromNameservers(
+DohProviderEntry::List GetDohProviderEntriesFromNameservers(
     const std::vector<IPEndPoint>& dns_servers,
     const std::vector<std::string>& excluded_providers) {
-  const std::vector<DohUpgradeEntry>& upgradable_servers = GetDohUpgradeList();
-  std::vector<const DohUpgradeEntry*> entries;
+  const DohProviderEntry::List& providers = DohProviderEntry::GetList();
+  DohProviderEntry::List entries;
 
   for (const auto& server : dns_servers) {
-    for (const auto& upgrade_entry : upgradable_servers) {
-      if (base::Contains(excluded_providers, upgrade_entry.provider))
+    for (const auto* entry : providers) {
+      if (base::Contains(excluded_providers, entry->provider))
         continue;
 
       // DoH servers should only be added once.
-      if (base::Contains(upgrade_entry.ip_addresses, server.address()) &&
-          !base::Contains(entries, &upgrade_entry)) {
-        entries.push_back(&upgrade_entry);
+      if (base::Contains(entry->ip_addresses, server.address()) &&
+          !base::Contains(entries, entry)) {
+        entries.push_back(entry);
       }
     }
   }
@@ -272,25 +147,52 @@ bool IsValidHostLabelCharacter(char c, bool is_first_char) {
          (c >= '0' && c <= '9') || (!is_first_char && c == '-') || c == '_';
 }
 
-std::string DNSDomainToString(const base::StringPiece& domain) {
+absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,
+                                              bool require_complete) {
+  base::BigEndianReader reader(dns_name.data(), dns_name.length());
+  return DnsDomainToString(reader, require_complete);
+}
+
+absl::optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
+                                              bool require_complete) {
   std::string ret;
+  size_t octets_read = 0;
+  while (reader.remaining() > 0) {
+    // DNS name compression not allowed because it does not make sense without
+    // the context of a full DNS message.
+    if ((*reader.ptr() & dns_protocol::kLabelMask) ==
+        dns_protocol::kLabelPointer)
+      return absl::nullopt;
 
-  for (unsigned i = 0; i < domain.size() && domain[i]; i += domain[i] + 1) {
-#if CHAR_MIN < 0
-    if (domain[i] < 0)
-      return std::string();
-#endif
-    if (domain[i] > kMaxLabelLength)
-      return std::string();
+    base::StringPiece label;
+    if (!reader.ReadU8LengthPrefixed(&label))
+      return absl::nullopt;
 
-    if (i)
-      ret += ".";
+    // Final zero-length label not included in size enforcement.
+    if (label.size() != 0)
+      octets_read += label.size() + 1;
 
-    if (static_cast<unsigned>(domain[i]) + i + 1 > domain.size())
-      return std::string();
+    if (label.size() > dns_protocol::kMaxLabelLength)
+      return absl::nullopt;
+    if (octets_read > dns_protocol::kMaxNameLength)
+      return absl::nullopt;
 
-    domain.substr(i + 1, domain[i]).AppendToString(&ret);
+    if (label.size() == 0)
+      return ret;
+
+    if (!ret.empty())
+      ret.append(".");
+
+    ret.append(label.data(), label.size());
   }
+
+  if (require_complete)
+    return absl::nullopt;
+
+  // If terminating zero-length label was not included in the input, no need to
+  // recheck against max name length because terminating zero-length label does
+  // not count against the limit.
+
   return ret;
 }
 
@@ -301,7 +203,6 @@ std::string GetURLFromTemplateWithoutParameters(const string& server_template) {
   return url_string;
 }
 
-#if !defined(OS_NACL)
 namespace {
 
 bool GetTimeDeltaForConnectionTypeFromFieldTrial(
@@ -321,7 +222,7 @@ bool GetTimeDeltaForConnectionTypeFromFieldTrial(
   int64_t ms;
   if (!base::StringToInt64(group_parts[type_size], &ms))
     return false;
-  *out = base::TimeDelta::FromMilliseconds(ms);
+  *out = base::Milliseconds(ms);
   return true;
 }
 
@@ -336,7 +237,6 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
     out = default_delta;
   return out;
 }
-#endif  // !defined(OS_NACL)
 
 AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
                                               const AddressList& b) {
@@ -379,10 +279,10 @@ AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
 }
 
 std::string CreateNamePointer(uint16_t offset) {
-  DCHECK_LE(offset, 0x3fff);
-  offset |= kFlagNamePointer;
+  DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
   char buf[2];
   base::WriteBigEndian(buf, offset);
+  buf[0] |= dns_protocol::kLabelPointer;
   return std::string(buf, sizeof(buf));
 }
 
@@ -401,8 +301,11 @@ uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
       return dns_protocol::kTypePTR;
     case DnsQueryType::SRV:
       return dns_protocol::kTypeSRV;
-    case DnsQueryType::ESNI:
-      return dns_protocol::kExperimentalTypeEsniDraft4;
+    case DnsQueryType::INTEGRITY:
+      return dns_protocol::kExperimentalTypeIntegrity;
+    case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
+      return dns_protocol::kTypeHttps;
   }
 }
 
@@ -420,71 +323,70 @@ DnsQueryType AddressFamilyToDnsQueryType(AddressFamily address_family) {
   }
 }
 
-std::vector<DnsConfig::DnsOverHttpsServerConfig>
-GetDohUpgradeServersFromDotHostname(
+std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
     const std::string& dot_server,
     const std::vector<std::string>& excluded_providers) {
-  const std::vector<DohUpgradeEntry>& upgradable_servers = GetDohUpgradeList();
-  std::vector<DnsConfig::DnsOverHttpsServerConfig> doh_servers;
+  std::vector<DnsOverHttpsServerConfig> doh_servers;
 
   if (dot_server.empty())
     return doh_servers;
 
-  for (const auto& upgrade_entry : upgradable_servers) {
-    if (base::Contains(excluded_providers, upgrade_entry.provider))
+  for (const auto* entry : DohProviderEntry::GetList()) {
+    if (base::Contains(excluded_providers, entry->provider))
       continue;
 
-    if (base::Contains(upgrade_entry.dns_over_tls_hostnames, dot_server)) {
-      doh_servers.push_back(upgrade_entry.dns_over_https_config);
-      break;
+    if (base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
+      std::string server_method;
+      CHECK(dns_util::IsValidDohTemplate(entry->dns_over_https_template,
+                                         &server_method));
+      doh_servers.emplace_back(entry->dns_over_https_template,
+                               server_method == "POST");
     }
   }
   return doh_servers;
 }
 
-std::vector<DnsConfig::DnsOverHttpsServerConfig>
-GetDohUpgradeServersFromNameservers(
+std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
     const std::vector<IPEndPoint>& dns_servers,
     const std::vector<std::string>& excluded_providers) {
-  std::vector<const DohUpgradeEntry*> entries =
-      GetDohUpgradeEntriesFromNameservers(dns_servers, excluded_providers);
-  std::vector<DnsConfig::DnsOverHttpsServerConfig> doh_servers;
-  for (const auto* entry : entries) {
-    doh_servers.push_back(entry->dns_over_https_config);
-  }
+  const auto entries =
+      GetDohProviderEntriesFromNameservers(dns_servers, excluded_providers);
+  std::vector<DnsOverHttpsServerConfig> doh_servers;
+  doh_servers.reserve(entries.size());
+  std::transform(entries.begin(), entries.end(),
+                 std::back_inserter(doh_servers), [](const auto* entry) {
+                   std::string server_method;
+                   CHECK(dns_util::IsValidDohTemplate(
+                       entry->dns_over_https_template, &server_method));
+                   return DnsOverHttpsServerConfig(
+                       entry->dns_over_https_template, server_method == "POST");
+                 });
   return doh_servers;
 }
 
 std::string GetDohProviderIdForHistogramFromDohConfig(
-    const DnsConfig::DnsOverHttpsServerConfig& doh_server) {
-  const std::vector<DohUpgradeEntry>& upgradable_servers = GetDohUpgradeList();
-  for (const auto& upgrade_entry : upgradable_servers) {
-    if (doh_server.server_template ==
-        upgrade_entry.dns_over_https_config.server_template) {
-      return upgrade_entry.provider;
-    }
-  }
-  return "Other";
+    const DnsOverHttpsServerConfig& doh_server) {
+  const auto& entries = DohProviderEntry::GetList();
+  const auto it =
+      std::find_if(entries.begin(), entries.end(), [&](const auto* entry) {
+        return entry->dns_over_https_template == doh_server.server_template;
+      });
+  return it != entries.end() ? (*it)->provider : "Other";
 }
 
 std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver) {
-  std::vector<const DohUpgradeEntry*> entries =
-      GetDohUpgradeEntriesFromNameservers({nameserver}, {});
-  if (entries.size() == 0)
-    return "Other";
-  else
-    return entries[0]->provider;
+  const auto entries = GetDohProviderEntriesFromNameservers({nameserver}, {});
+  return entries.empty() ? "Other" : entries[0]->provider;
 }
 
-std::string SecureDnsModeToString(
-    const DnsConfig::SecureDnsMode secure_dns_mode) {
+std::string SecureDnsModeToString(const SecureDnsMode secure_dns_mode) {
   switch (secure_dns_mode) {
-    case DnsConfig::SecureDnsMode::OFF:
+    case SecureDnsMode::kOff:
       return "Off";
-    case DnsConfig::SecureDnsMode::AUTOMATIC:
+    case SecureDnsMode::kAutomatic:
       return "Automatic";
-    case DnsConfig::SecureDnsMode::SECURE:
+    case SecureDnsMode::kSecure:
       return "Secure";
   }
 }

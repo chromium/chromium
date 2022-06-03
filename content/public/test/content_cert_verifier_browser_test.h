@@ -17,6 +17,10 @@ namespace content {
 class CertVerifierBrowserTest : public ContentBrowserTest {
  public:
   CertVerifierBrowserTest();
+
+  CertVerifierBrowserTest(const CertVerifierBrowserTest&) = delete;
+  CertVerifierBrowserTest& operator=(const CertVerifierBrowserTest&) = delete;
+
   ~CertVerifierBrowserTest() override;
 
   // InProcessBrowserTest:
@@ -33,8 +37,6 @@ class CertVerifierBrowserTest : public ContentBrowserTest {
  private:
   bool mock_cert_verifier_disabled_ = false;
   ContentMockCertVerifier mock_cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertVerifierBrowserTest);
 };
 
 }  // namespace content

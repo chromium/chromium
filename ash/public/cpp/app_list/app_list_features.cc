@@ -4,25 +4,13 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace app_list_features {
 
-const base::Feature kEnableAnswerCard{"EnableAnswerCard",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnablePlayStoreAppSearch{
-    "EnablePlayStoreAppSearch", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableSettingsShortcutSearch{
-    "EnableSettingsShortcutSearch", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableZeroStateSuggestions{
-    "EnableZeroStateSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableAppListSearchAutocomplete{
-    "EnableAppListSearchAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppRanker{"EnableAppRanker",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableZeroStateAppsRanker{
@@ -30,62 +18,38 @@ const base::Feature kEnableZeroStateAppsRanker{
 const base::Feature kEnableQueryBasedMixedTypesRanker{
     "EnableQueryBasedMixedTypesRanker", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableZeroStateMixedTypesRanker{
-    "EnableZeroStateMixedTypesRanker", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableZeroStateMixedTypesRanker", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppReinstallZeroState{
     "EnableAppReinstallZeroState", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSuggestedFiles{"EnableSuggestedFiles",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableSuggestedLocalFiles{
+    "EnableSuggestedLocalFiles", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // "EnableEmbeddedAssistantUI" is used in finch experiment therefore we cannot
 // change it until fully launched. It is used to redirect Launcher search to
 // Assistant search.
 const base::Feature kEnableAssistantSearch{"EnableEmbeddedAssistantUI",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableAssistantLauncherUI{
-    "EnableAssistantLauncherUI", base::FEATURE_ENABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableAppGridGhost{"EnableAppGridGhost",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppListLaunchRecording{
     "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableSearchBoxSelection{"EnableSearchBoxSelection",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableAggregatedMlAppRanking{
-    "EnableAggregatedMlAppRanking", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kScalableAppList{"ScalableAppList",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kLauncherSettingsSearch{"LauncherSettingsSearch",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableExactMatchForNonLatinLocale{
+    "EnableExactMatchForNonLatinLocale", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAggregatedMlSearchRanking{
     "EnableAggregatedMlSearchRanking", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAnswerCardEnabled() {
-  // Not using local static variable to allow tests to change this value.
-  // Do not show answer card if the embedded Assistant UI is enabled.
-  return base::FeatureList::IsEnabled(kEnableAnswerCard) &&
-         !IsAssistantSearchEnabled();
-}
-
-bool IsPlayStoreAppSearchEnabled() {
-  // Not using local static variable to allow tests to change this value.
-  return base::FeatureList::IsEnabled(kEnablePlayStoreAppSearch);
-}
-
-bool IsAppDataSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppDataSearch);
-}
-
-bool IsSettingsShortcutSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSettingsShortcutSearch);
-}
-
-bool IsZeroStateSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableZeroStateSuggestions);
-}
-
-bool IsAppListSearchAutocompleteEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppListSearchAutocomplete);
-}
+const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableLauncherSearchNormalization{
+    "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCategoricalSearch{"CategoricalSearch",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kForceShowContinueSection{
+    "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -111,50 +75,36 @@ bool IsSuggestedFilesEnabled() {
   return base::FeatureList::IsEnabled(kEnableSuggestedFiles);
 }
 
+bool IsSuggestedLocalFilesEnabled() {
+  return base::FeatureList::IsEnabled(kEnableSuggestedLocalFiles);
+}
+
 bool IsAssistantSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableAssistantSearch);
 }
 
-bool IsAssistantLauncherUIEnabled() {
-  return IsAssistantSearchEnabled() ||
-         base::FeatureList::IsEnabled(kEnableAssistantLauncherUI);
-}
-
-bool IsAppGridGhostEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppGridGhost);
-}
-
-bool IsSearchBoxSelectionEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSearchBoxSelection);
-}
-
-bool IsAggregatedMlAppRankingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAggregatedMlAppRanking);
-}
-
-bool IsScalableAppListEnabled() {
-  return base::FeatureList::IsEnabled(kScalableAppList);
+bool IsLauncherSettingsSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherSettingsSearch);
 }
 
 bool IsFuzzyAppSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableFuzzyAppSearch);
 }
 
+bool IsExactMatchForNonLatinLocaleEnabled() {
+  return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);
+}
+
 bool IsAggregatedMlSearchRankingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAggregatedMlSearchRanking);
 }
 
-std::string AnswerServerUrl() {
-  const std::string experiment_url =
-      base::GetFieldTrialParamValueByFeature(kEnableAnswerCard, "ServerUrl");
-  if (!experiment_url.empty())
-    return experiment_url;
-  return "https://www.google.com/coac";
+bool IsNewDragSpecInLauncherEnabled() {
+  return base::FeatureList::IsEnabled(kNewDragSpecInLauncher);
 }
 
-std::string AnswerServerQuerySuffix() {
-  return base::GetFieldTrialParamValueByFeature(kEnableAnswerCard,
-                                                "QuerySuffix");
+bool IsLauncherSearchNormalizationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLauncherSearchNormalization);
 }
 
 std::string AppSearchResultRankerPredictorName() {
@@ -167,6 +117,20 @@ std::string AppSearchResultRankerPredictorName() {
 
 bool IsAppListLaunchRecordingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppListLaunchRecording);
+}
+
+bool IsCategoricalSearchEnabled() {
+  // Force categorical search for the latest version of the launcher.
+  return ash::features::IsProductivityLauncherEnabled() ||
+         base::FeatureList::IsEnabled(kCategoricalSearch);
+}
+
+std::string CategoricalSearchType() {
+  return GetFieldTrialParamValueByFeature(kCategoricalSearch, "ranking");
+}
+
+bool IsForceShowContinueSectionEnabled() {
+  return base::FeatureList::IsEnabled(kForceShowContinueSection);
 }
 
 }  // namespace app_list_features

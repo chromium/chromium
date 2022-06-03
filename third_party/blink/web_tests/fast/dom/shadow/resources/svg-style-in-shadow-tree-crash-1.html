@@ -11,7 +11,7 @@ document.registerElement("x-rect", {
   prototype: {
     __proto__: SVGRectElement.prototype,
     createdCallback: function() {
-      this.createShadowRoot();
+      this.attachShadow({mode: 'open'});
       this.shadowRoot.innerHTML =
         '<style>rect { fill: blue; }</style>' +
         '<rect width="100" height="100" x="0" y="0"></rect>';  

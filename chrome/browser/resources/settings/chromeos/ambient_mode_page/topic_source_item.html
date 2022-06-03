@@ -1,0 +1,36 @@
+<style include="settings-shared cr-shared-style iron-flex
+    cr-radio-button-style">
+  :host {
+    display: inline-flex;
+  }
+
+  #rowContainer {
+    /* Set height to 100% of parent to always capture click events. */
+    height: 100%;
+    padding-inline-end: var(--cr-icon-ripple-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<div id="rowContainer" class="layout horizontal center flex"
+    on-click="onItemClick_">
+  <!-- This item behaviors similar to a radio button and reuses disc and
+       label style in cr-radio-button-style. -->
+  <div class="disc-wrapper" aria-hidden="true">
+    <div class="disc-border"></div>
+    <div class="disc"></div>
+  </div>
+
+  <div id="labelWrapper" aria-hidden="true">
+    <div>[[getItemName_(item)]]</div>
+    <div class="cr-secondary-text">
+      [[getItemDescription_(item, hasGooglePhotosAlbums)]]
+    </div>
+  </div>
+
+  <cr-icon-button class="subpage-arrow" id="subpage-button"
+      on-click="onSubpageArrowClick_" tabindex$="[[tabindex]]"
+      aria-label$="[[buttonLabel]]"
+      disabled$="[[disabled]]">
+  </cr-icon-button>
+</div>

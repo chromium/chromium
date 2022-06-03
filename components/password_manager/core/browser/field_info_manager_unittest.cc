@@ -8,9 +8,13 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_field_info_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,13 +36,25 @@ MATCHER_P3(FieldInfoHasData, form_signature, field_signature, field_type, "") {
 class FieldInfoManagerTest : public testing::Test {
  public:
   FieldInfoManagerTest() {
-    test_data_.push_back({101u, 1u, USERNAME, Time::FromTimeT(1)});
-    test_data_.push_back({101u, 10u, PASSWORD, Time::FromTimeT(5)});
-    test_data_.push_back({102u, 1u, SINGLE_USERNAME, Time::FromTimeT(10)});
+    test_data_.push_back({autofill::FormSignature(101u),
+                          autofill::FieldSignature(1u), USERNAME,
+                          Time::FromTimeT(1)});
+    test_data_.push_back({autofill::FormSignature(101u),
+                          autofill::FieldSignature(10u), PASSWORD,
+                          Time::FromTimeT(5)});
+    test_data_.push_back({autofill::FormSignature(102u),
+                          autofill::FieldSignature(1u), SINGLE_USERNAME,
+                          Time::FromTimeT(10)});
 
-    store_ = new MockPasswordStore;
-    store_->Init(syncer::SyncableService::StartSyncFlare(), /*prefs=*/nullptr);
-    EXPECT_CALL(*store_, GetAllFieldInfoImpl());
+    store_ = new testing::StrictMock<MockPasswordStoreInterface>();
+#if !defined(OS_ANDROID)
+    EXPECT_CALL(*store_, GetFieldInfoStore)
+        .WillRepeatedly(testing::Return(&mock_field_store_));
+    EXPECT_CALL(mock_field_store_, GetAllFieldInfo);
+#else
+    EXPECT_CALL(*store_, GetFieldInfoStore)
+        .WillRepeatedly(testing::Return(nullptr));
+#endif
     field_info_manager_ = std::make_unique<FieldInfoManagerImpl>(store_);
     task_environment_.RunUntilIdle();
   }
@@ -48,18 +64,37 @@ class FieldInfoManagerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  scoped_refptr<MockPasswordStore> store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
+  MockFieldInfoStore mock_field_store_;
   std::vector<FieldInfo> test_data_;
   std::unique_ptr<FieldInfoManagerImpl> field_info_manager_;
 };
 
 TEST_F(FieldInfoManagerTest, AddFieldType) {
-  EXPECT_EQ(UNKNOWN_TYPE, field_info_manager_->GetFieldType(101u, 1u));
+  EXPECT_EQ(UNKNOWN_TYPE,
+            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
+                                              autofill::FieldSignature(1u)));
 
-  EXPECT_CALL(*store_, AddFieldInfoImpl(FieldInfoHasData(101u, 1u, PASSWORD)));
-  field_info_manager_->AddFieldType(101u, 1u, PASSWORD);
+#if defined(OS_ANDROID)
+  EXPECT_CALL(mock_field_store_, AddFieldInfo).Times(0);
+#else
+  EXPECT_CALL(mock_field_store_, AddFieldInfo(FieldInfoHasData(
+                                     autofill::FormSignature(101u),
+                                     autofill::FieldSignature(1u), PASSWORD)));
+#endif  //  !defined(OS_ANDROID)
+
+  field_info_manager_->AddFieldType(autofill::FormSignature(101u),
+                                    autofill::FieldSignature(1u), PASSWORD);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(PASSWORD, field_info_manager_->GetFieldType(101u, 1u));
+#if defined(OS_ANDROID)
+  EXPECT_EQ(UNKNOWN_TYPE,
+            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
+                                              autofill::FieldSignature(1u)));
+#else
+  EXPECT_EQ(PASSWORD,
+            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
+                                              autofill::FieldSignature(1u)));
+#endif  //  !defined(OS_ANDROID)
 }
 
 TEST_F(FieldInfoManagerTest, OnGetAllFieldInfo) {
@@ -71,7 +106,9 @@ TEST_F(FieldInfoManagerTest, OnGetAllFieldInfo) {
               field_info_manager_->GetFieldType(field_info.form_signature,
                                                 field_info.field_signature));
   }
-  EXPECT_EQ(UNKNOWN_TYPE, field_info_manager_->GetFieldType(1234u, 1u));
+  EXPECT_EQ(UNKNOWN_TYPE,
+            field_info_manager_->GetFieldType(autofill::FormSignature(1234u),
+                                              autofill::FieldSignature(1u)));
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
+#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,13 +40,12 @@ class WebState;
 
 // Provides common logic of password autofill suggestions for both ios/chrome
 // and ios/web_view.
+// TODO(crbug.com/1097353): Consider folding this class into
+// SharedPasswordController.
 @interface PasswordSuggestionHelper : NSObject
 
-// Creates an instance with the given delegate.
-- (instancetype)initWithDelegate:(id<PasswordSuggestionHelperDelegate>)delegate
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+// Delegate to receive callbacks.
+@property(nonatomic, weak) id<PasswordSuggestionHelperDelegate> delegate;
 
 // Retrieves suggestions as username and realm pairs
 // (defined in |password_manager::UsernameAndRealm|) and converts
@@ -53,20 +53,17 @@ class WebState;
 // items, |value| field will be the username and |displayDescription| will be
 // the realm.
 - (NSArray<FormSuggestion*>*)
-retrieveSuggestionsWithFormName:(NSString*)formName
-                fieldIdentifier:(NSString*)fieldIdentifier
-                      fieldType:(NSString*)fieldType;
+    retrieveSuggestionsWithFormID:(autofill::FormRendererId)formIdentifier
+                  fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
+                        fieldType:(NSString*)fieldType;
 
 // Checks if suggestions are available for the field.
 // |completion| will be called when the check is completed, with boolean
 // parameter indicating whether suggestions are available or not.
 // See //components/autofill/ios/form_util/form_activity_params.h for definition
 // of other parameters.
-- (void)checkIfSuggestionsAvailableForForm:(NSString*)formName
-                           fieldIdentifier:(NSString*)fieldIdentifier
-                                 fieldType:(NSString*)fieldType
-                                      type:(NSString*)type
-                                   frameID:(NSString*)frameID
+- (void)checkIfSuggestionsAvailableForForm:
+            (FormSuggestionProviderQuery*)formQuery
                                isMainFrame:(BOOL)isMainFrame
                                   webState:(web::WebState*)webState
                          completionHandler:
@@ -75,14 +72,14 @@ retrieveSuggestionsWithFormName:(NSString*)formName
 // Retrieves password form fill data for |username| for use in
 // |PasswordFormHelper|'s
 // -fillPasswordFormWithFillData:completionHandler:.
-- (std::unique_ptr<password_manager::FillData>)getFillDataForUsername:
+- (std::unique_ptr<password_manager::FillData>)passwordFillDataForUsername:
     (NSString*)username;
 
 // The following methods should be called to maintain the correct state along
 // with password forms.
 
 // Resets fill data, callbacks and state flags for new page. This method should
-// be called in password controller's -webState:didLoadPageWithSuccess:.
+// be called in password controller's -webState:didFinishNavigation:.
 - (void)resetForNewPage;
 
 // Prepares fill data with given password form data. Triggers callback for

@@ -8,10 +8,11 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/tests/lifecycle/app_client.h"
 #include "services/service_manager/tests/lifecycle/lifecycle.test-mojom.h"
 
@@ -20,10 +21,10 @@ namespace {
 class PackagedApp : public service_manager::Service,
                     public service_manager::test::mojom::LifecycleControl {
  public:
-  PackagedApp(service_manager::mojom::ServiceRequest request,
+  PackagedApp(mojo::PendingReceiver<service_manager::mojom::Service> receiver,
               base::OnceClosure service_manager_connection_closed_callback,
               base::OnceClosure destruct_callback)
-      : service_binding_(this, std::move(request)),
+      : service_receiver_(this, std::move(receiver)),
         service_manager_connection_closed_callback_(
             std::move(service_manager_connection_closed_callback)),
         destruct_callback_(std::move(destruct_callback)) {
@@ -32,6 +33,9 @@ class PackagedApp : public service_manager::Service,
     registry_.AddInterface<service_manager::test::mojom::LifecycleControl>(
         base::BindRepeating(&PackagedApp::Create, base::Unretained(this)));
   }
+
+  PackagedApp(const PackagedApp&) = delete;
+  PackagedApp& operator=(const PackagedApp&) = delete;
 
   ~PackagedApp() override = default;
 
@@ -57,7 +61,7 @@ class PackagedApp : public service_manager::Service,
   // LifecycleControl:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
 
-  void GracefulQuit() override { service_binding_.RequestClose(); }
+  void GracefulQuit() override { service_receiver_.RequestClose(); }
 
   void Crash() override {
     // When multiple instances are vended from the same package instance, this
@@ -68,8 +72,8 @@ class PackagedApp : public service_manager::Service,
   void CloseServiceManagerConnection() override {
     std::move(service_manager_connection_closed_callback_).Run();
 
-    if (service_binding_.is_bound())
-      service_binding_.Close();
+    if (service_receiver_.is_bound())
+      service_receiver_.Close();
 
     // This only closed our relationship with the service manager, existing
     // |receivers_| remain active.
@@ -77,14 +81,14 @@ class PackagedApp : public service_manager::Service,
   }
 
   void MaybeQuit() {
-    if (service_binding_.is_bound() || !receivers_.empty())
+    if (service_receiver_.is_bound() || !receivers_.empty())
       return;
 
     // Deletes |this|.
     std::move(destruct_callback_).Run();
   }
 
-  service_manager::ServiceBinding service_binding_;
+  service_manager::ServiceReceiver service_receiver_;
 
   service_manager::BinderRegistry registry_;
   mojo::ReceiverSet<service_manager::test::mojom::LifecycleControl> receivers_;
@@ -93,17 +97,20 @@ class PackagedApp : public service_manager::Service,
   base::OnceClosure service_manager_connection_closed_callback_;
   // Run when this object is destructed.
   base::OnceClosure destruct_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PackagedApp);
 };
 
 class Package : public service_manager::Service {
  public:
-  explicit Package(service_manager::mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)), app_client_(nullptr) {
+  explicit Package(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)),
+        app_client_(mojo::NullReceiver()) {
     app_client_.set_termination_closure(
         base::BindOnce(&Package::Terminate, base::Unretained(this)));
   }
+
+  Package(const Package&) = delete;
+  Package& operator=(const Package&) = delete;
 
   ~Package() override = default;
 
@@ -123,7 +130,7 @@ class Package : public service_manager::Service {
     ++service_manager_connection_refcount_;
     int id = next_id_++;
     auto app = std::make_unique<PackagedApp>(
-        service_manager::mojom::ServiceRequest(std::move(receiver)),
+        std::move(receiver),
         base::BindOnce(&Package::OnAppInstanceDisconnected,
                        base::Unretained(this)),
         base::BindOnce(&Package::DestroyAppInstance, base::Unretained(this),
@@ -134,7 +141,7 @@ class Package : public service_manager::Service {
 
   void OnAppInstanceDisconnected() {
     if (--service_manager_connection_refcount_ == 0)
-      service_binding_.RequestClose();
+      service_receiver_.RequestClose();
   }
 
   void DestroyAppInstance(int id) {
@@ -143,19 +150,18 @@ class Package : public service_manager::Service {
       Terminate();
   }
 
-  service_manager::ServiceBinding service_binding_;
+  service_manager::ServiceReceiver service_receiver_;
   service_manager::test::AppClient app_client_;
   int service_manager_connection_refcount_ = 0;
 
   int next_id_ = 0;
   std::map<int, std::unique_ptr<PackagedApp>> app_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(Package);
 };
 
 }  // namespace
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  Package(std::move(request)).RunUntilTermination();
+  Package(std::move(receiver)).RunUntilTermination();
 }

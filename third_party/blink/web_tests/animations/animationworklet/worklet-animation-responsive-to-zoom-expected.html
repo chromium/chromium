@@ -10,5 +10,6 @@
 
 <div id="target" class="box"></div>
 <script>
-  eventSender.setPageZoomFactor(2);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(2);
 </script>

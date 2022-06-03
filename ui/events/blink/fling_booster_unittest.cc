@@ -11,7 +11,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
 
-using base::TimeDelta;
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -20,13 +19,12 @@ using gfx::Vector2dF;
 namespace ui {
 namespace test {
 
-static constexpr TimeDelta kEventDelta = TimeDelta::FromMilliseconds(10);
+static constexpr base::TimeDelta kEventDelta = base::Milliseconds(10);
 
 // Constants from fling_booster.cc
 static constexpr double kMinBoostScrollSpeed = 150.;
 static constexpr double kMinBoostFlingSpeed = 350.;
-static constexpr base::TimeDelta kFlingBoostTimeoutDelay =
-    base::TimeDelta::FromSecondsD(0.05);
+static constexpr base::TimeDelta kFlingBoostTimeoutDelay = base::Seconds(0.05);
 
 class FlingBoosterTest : public testing::Test {
  public:
@@ -36,8 +34,8 @@ class FlingBoosterTest : public testing::Test {
       const gfx::Vector2dF& velocity,
       int modifiers = 0,
       WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
-    WebGestureEvent fling_start(WebInputEvent::kGestureFlingStart, modifiers,
-                                event_time_, source_device);
+    WebGestureEvent fling_start(WebInputEvent::Type::kGestureFlingStart,
+                                modifiers, event_time_, source_device);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
     return fling_start;
@@ -45,7 +43,7 @@ class FlingBoosterTest : public testing::Test {
 
   WebGestureEvent CreateFlingCancel(
       WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
-    WebGestureEvent fling_cancel(WebInputEvent::kGestureFlingCancel, 0,
+    WebGestureEvent fling_cancel(WebInputEvent::Type::kGestureFlingCancel, 0,
                                  event_time_, source_device);
     return fling_cancel;
   }
@@ -53,34 +51,34 @@ class FlingBoosterTest : public testing::Test {
   WebGestureEvent CreateScrollBegin(
       gfx::Vector2dF delta,
       WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
-    WebGestureEvent scroll_begin(WebInputEvent::kGestureScrollBegin, 0,
+    WebGestureEvent scroll_begin(WebInputEvent::Type::kGestureScrollBegin, 0,
                                  event_time_, source_device);
     scroll_begin.data.scroll_begin.delta_x_hint = delta.x();
     scroll_begin.data.scroll_begin.delta_y_hint = delta.y();
     scroll_begin.data.scroll_begin.delta_hint_units =
-        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+        ui::ScrollGranularity::kScrollByPrecisePixel;
     return scroll_begin;
   }
 
   WebGestureEvent CreateScrollUpdate(
       gfx::Vector2dF delta,
       WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
-    WebGestureEvent scroll_update(WebInputEvent::kGestureScrollUpdate, 0,
+    WebGestureEvent scroll_update(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                   event_time_, source_device);
     scroll_update.data.scroll_update.delta_x = delta.x();
     scroll_update.data.scroll_update.delta_y = delta.y();
     scroll_update.data.scroll_update.delta_units =
-        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+        ui::ScrollGranularity::kScrollByPrecisePixel;
     return scroll_update;
   }
 
   WebGestureEvent CreateScrollEnd(
       WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
-    return WebGestureEvent(WebInputEvent::kGestureScrollEnd, 0, event_time_,
-                           source_device);
+    return WebGestureEvent(WebInputEvent::Type::kGestureScrollEnd, 0,
+                           event_time_, source_device);
   }
 
-  Vector2dF DeltaFromVelocity(Vector2dF velocity, TimeDelta delta) {
+  Vector2dF DeltaFromVelocity(Vector2dF velocity, base::TimeDelta delta) {
     float delta_seconds = static_cast<float>(delta.InSecondsF());
     Vector2dF out = velocity;
     out.Scale(1.f / delta_seconds);
@@ -88,7 +86,7 @@ class FlingBoosterTest : public testing::Test {
   }
 
   Vector2dF SendFlingStart(WebGestureEvent event) {
-    DCHECK_EQ(WebInputEvent::kGestureFlingStart, event.GetType());
+    DCHECK_EQ(WebInputEvent::Type::kGestureFlingStart, event.GetType());
 
     // The event will first be observed, then the FlingController will request
     // a possibly boosted velocity.
@@ -121,8 +119,7 @@ class FlingBoosterTest : public testing::Test {
   }
 
  protected:
-  base::TimeTicks event_time_ =
-      base::TimeTicks() + TimeDelta::FromSeconds(100000);
+  base::TimeTicks event_time_ = base::TimeTicks() + base::Seconds(100000);
   FlingBooster fling_booster_;
 };
 
@@ -162,7 +159,7 @@ TEST_F(FlingBoosterTest, NoFlingBoostIfScrollDelayed) {
   SimulateBoostingScroll();
 
   // Delay longer than the timeout and ensure we don't boost.
-  event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+  event_time_ += kFlingBoostTimeoutDelay + base::Milliseconds(1);
   fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 10000)));
 
   fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
@@ -299,7 +296,7 @@ TEST_F(FlingBoosterTest, NoFlingBoostIfScrollBeginPastCutoffTime) {
     event_time_ += kEventDelta;
     fling_booster_.ObserveGestureEvent(CreateFlingCancel());
     fling_booster_.ObserveGestureEvent(CreateScrollEnd());
-    event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+    event_time_ += kFlingBoostTimeoutDelay + base::Milliseconds(1);
     fling_booster_.ObserveGestureEvent(CreateScrollBegin(Vector2dF(0, 1)));
 
     // GestureScrollUpdates in the same direction and at sufficient speed should

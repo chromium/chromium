@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "url/gurl.h"
 
 class ManualFillingController;
@@ -17,6 +17,10 @@ class ManualFillingController;
 namespace autofill {
 class AccessorySheetData;
 }  // namespace autofill
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // The interface for creating and controlling a view for the password accessory.
 // The view gets data from a given |ManualFillingController| and forwards
@@ -72,11 +76,16 @@ class ManualFillingViewInterface {
   // Hides the accessory bar and the accessory sheet (if open).
   virtual void Hide() = 0;
 
+  // Shows the accessory sheet for the given |tab_type|.
+  virtual void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) = 0;
+
  private:
   friend class ManualFillingControllerImpl;
   // Factory function used to create a concrete instance of this view.
   static std::unique_ptr<ManualFillingViewInterface> Create(
-      ManualFillingController* controller);
+      ManualFillingController* controller,
+      content::WebContents* web_contents);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_VIEW_INTERFACE_H_

@@ -1,0 +1,28 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ #moveOffscreenPopupDiv {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: -1000px;
+}
+</style>
+<div id="commonAncestor">
+ <div id="targetDiv">
+  Mouse and key target
+ </div>
+ <div id="partnerDiv">
+  Auto-hide partner
+ </div>
+ <div id="popupDiv" style="visibility:hidden">
+  Popup Contents Here.
+ </div>
+ <div id="moveOffscreenPopupDiv">
+  Move offscreen popup contents here.
+ </div>
+</div>

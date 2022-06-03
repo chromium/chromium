@@ -1,9 +1,12 @@
 rootWebArea pageLocation=(0, 0)
 ++genericContainer ignored
-++++iframe pageLocation=(0, 100) transform
-++++++rootWebArea pageLocation=(0, 100)
-++++++++genericContainer ignored
-++++++++++iframe pageLocation=(200, 100) transform
-++++++++++++rootWebArea pageLocation=(200, 100)
-++++++++++++++genericContainer ignored
-++++++++++++++++image pageLocation=(240, 140) pageSize=(400, 200)
+++++genericContainer ignored
+++++++iframe pageLocation=(0, 100) transform
+++++++++rootWebArea pageLocation=(0, 100)
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++iframe pageLocation=(200, 100) transform
+++++++++++++++++rootWebArea pageLocation=(200, 100)
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++image pageLocation=(240, 140) pageSize=(400, 200)

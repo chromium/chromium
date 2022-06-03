@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/run_loop.h"
 #include "net/socket/stream_socket.h"
 #include "net/test/gtest_util.h"

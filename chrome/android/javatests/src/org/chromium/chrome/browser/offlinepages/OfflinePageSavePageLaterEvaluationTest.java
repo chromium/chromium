@@ -25,13 +25,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.TimeoutScale;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge.OfflinePageEvaluationObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.offlinepages.BackgroundSavePageResult;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -67,8 +66,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
      */
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     static class TimeDelta {
         public void setStartTime(Long startTime) {
@@ -229,7 +227,9 @@ public class OfflinePageSavePageLaterEvaluationTest {
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            Profile profile = Profile.getLastUsedProfile();
+            // TODO (https://crbug.com/714249):  Add incognito mode tests to check that
+            // OfflinePageEvaluationBridge is null for incognito.
+            Profile profile = Profile.getLastUsedRegularProfile();
             mBridge = new OfflinePageEvaluationBridge(profile, useTestingScheduler);
             if (mBridge == null) {
                 Assert.fail("OfflinePageEvaluationBridge initialization failed!");

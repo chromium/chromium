@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import logging
 import os
 import tempfile
@@ -13,9 +14,10 @@ import run_cts
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
-import devil_chromium  # pylint: disable=import-error, unused-import
-from devil.android.ndk import abis  # pylint: disable=import-error
-from devil.android.sdk import version_codes  # pylint: disable=import-error
+import devil_chromium  # pylint: disable=unused-import
+from devil.android.ndk import abis
+from devil.android.sdk import version_codes
+
 
 class _RunCtsTest(unittest.TestCase):
   """Unittests for the run_cts module.
@@ -28,9 +30,12 @@ class _RunCtsTest(unittest.TestCase):
 
   @staticmethod
   def _getArgsMock(**kwargs):
-    args = {'test_filter_file': None, 'test_filter': None,
-            'isolated_script_test_filter': None,
-            'skip_expected_failures': False}
+    args = {
+        'test_filter_files': None,
+        'test_filter': None,
+        'isolated_script_test_filter': None,
+        'skip_expected_failures': False
+    }
     args.update(kwargs)
     return mock.Mock(**args)
 
@@ -61,11 +66,12 @@ class _RunCtsTest(unittest.TestCase):
     logging_mock.assert_called()
 
   def testDetermineCtsRelease_tooLow(self):
-    device = mock.Mock(build_version_sdk=version_codes.KITKAT)
+    device = mock.Mock(build_version_sdk=version_codes.LOLLIPOP_MR1)
     with self.assertRaises(Exception) as cm:
       run_cts.DetermineCtsRelease(device)
     message = str(cm.exception)
-    self.assertIn('not updatable', message)
+    self.assertIn("We don't support running CTS tests on platforms less than",
+                  message)
 
   def testDetermineCtsRelease_tooHigh(self):
     device = mock.Mock(build_version_sdk=version_codes.OREO)
@@ -138,21 +144,19 @@ class _RunCtsTest(unittest.TestCase):
 
   def testFilterFile_CombinesExcludedMatches(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
-      filter_file.write('suite.goodtest')
+      filter_file.write('suite.goodtest'.encode())
       filter_file.seek(0)
-      mock_args = self._getArgsMock(
-          test_filter_file=filter_file.name,
-          skip_expected_failures=False)
+      mock_args = self._getArgsMock(test_filter_files=[filter_file.name],
+                                    skip_expected_failures=False)
       self.assertEqual([run_cts.TEST_FILTER_OPT + '=suite.goodtest'],
                        run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
   def testFilterFile_CombinesAll(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
-      filter_file.write('suite.goodtest')
+      filter_file.write('suite.goodtest'.encode())
       filter_file.seek(0)
-      mock_args = self._getArgsMock(
-          test_filter_file=filter_file.name,
-          skip_expected_failures=True)
+      mock_args = self._getArgsMock(test_filter_files=[filter_file.name],
+                                    skip_expected_failures=True)
       skip = self._getSkipString()
       self.assertEqual([run_cts.TEST_FILTER_OPT + '=suite.goodtest-' + skip],
                        run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))

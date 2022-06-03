@@ -9,18 +9,14 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
-#include "base/time/time.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
@@ -47,7 +43,7 @@ class ShortcutsDatabase;
 class ShortcutsBackend : public RefcountedKeyedService,
                          public history::HistoryServiceObserver {
  public:
-  typedef std::multimap<base::string16, const ShortcutsDatabase::Shortcut>
+  typedef std::multimap<std::u16string, const ShortcutsDatabase::Shortcut>
       ShortcutMap;
 
   // For unit testing, set |suppress_db| to true to prevent creation
@@ -57,6 +53,9 @@ class ShortcutsBackend : public RefcountedKeyedService,
                    history::HistoryService* history_service,
                    base::FilePath database_path,
                    bool suppress_db);
+
+  ShortcutsBackend(const ShortcutsBackend&) = delete;
+  ShortcutsBackend& operator=(const ShortcutsBackend&) = delete;
 
   // The interface is guaranteed to be called on the thread AddObserver()
   // was called.
@@ -91,7 +90,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
 
   // Looks for an existing shortcut to match.destination_url that starts with
   // |text|.  Updates that shortcut if found, otherwise adds a new shortcut.
-  void AddOrUpdateShortcut(const base::string16& text,
+  void AddOrUpdateShortcut(const std::u16string& text,
                            const AutocompleteMatch& match);
 
  private:
@@ -102,6 +101,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
       TestShortcutData* db,
       size_t db_size);
   FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, EntitySuggestionTest);
+  FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, MatchCoreDescriptionTest);
 
   enum CurrentState {
     NOT_INITIALIZED,  // Backend created but not initialized.
@@ -167,16 +167,15 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // This is a helper map for quick access to a shortcut by guid.
   GuidMap guid_map_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   scoped_refptr<base::SequencedTaskRunner> main_runner_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
 
   // For some unit-test only.
   bool no_db_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShortcutsBackend);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_

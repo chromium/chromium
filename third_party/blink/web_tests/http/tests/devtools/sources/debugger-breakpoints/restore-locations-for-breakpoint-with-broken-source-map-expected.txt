@@ -1,9 +1,0 @@
-Checks that we update breakpoint location on source map loading error.
-Breakpoint sidebar pane 
-a.ts:2  console.log(42);
-Page reloaded.
-Breakpoint sidebar pane 
-foo.js:sourcemap:2
-Breakpoint sidebar pane 
-foo.js:2  console.log(42);
-

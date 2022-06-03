@@ -9,12 +9,10 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -29,6 +27,7 @@
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
@@ -37,13 +36,11 @@
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_store.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -66,7 +63,7 @@ void AddQuery(GURL* url, const std::string& key, const std::string& value) {
 // information to the loaded website's title and C++ will wait until that
 // happens.
 void WaitForTitle(const Shell* shell, const char* expected_title) {
-  base::string16 expected_title_16 = base::ASCIIToUTF16(expected_title);
+  std::u16string expected_title_16 = base::ASCIIToUTF16(expected_title);
   TitleWatcher title_watcher(shell->web_contents(), expected_title_16);
   ASSERT_EQ(expected_title_16, title_watcher.WaitAndGetTitle());
 }
@@ -86,28 +83,28 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
                                bool cookies,
                                bool storage,
                                bool cache) {
-    const int kOriginTypeMask =
+    const uint64_t kOriginTypeMask =
         BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
         BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
 
     if (cookies) {
-      int data_type_mask =
+      uint64_t data_type_mask =
           BrowsingDataRemover::DATA_TYPE_COOKIES |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
 
       BrowsingDataFilterBuilderImpl filter_builder(
-          BrowsingDataFilterBuilder::WHITELIST);
+          BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddRegisterableDomain(origin.host());
       ExpectCall(base::Time(), base::Time::Max(), data_type_mask,
                  kOriginTypeMask, &filter_builder);
     }
     if (storage || cache) {
-      int data_type_mask =
+      uint64_t data_type_mask =
           (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE : 0) |
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
 
       BrowsingDataFilterBuilderImpl filter_builder(
-          BrowsingDataFilterBuilder::WHITELIST);
+          BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddOrigin(origin);
       ExpectCall(base::Time(), base::Time::Max(), data_type_mask,
                  kOriginTypeMask, &filter_builder);
@@ -133,8 +130,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
-    BrowserContext::GetBrowsingDataRemover(browser_context())
-        ->SetEmbedderDelegate(&embedder_delegate_);
+    browser_context()->GetBrowsingDataRemover()->SetEmbedderDelegate(
+        &embedder_delegate_);
 
     // Set up HTTP and HTTPS test servers that handle all hosts.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -148,8 +145,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Set up HTTPS server.
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&ClearSiteDataHandlerBrowserTest::HandleRequest,
@@ -162,7 +159,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* storage_partition() {
-    return BrowserContext::GetDefaultStoragePartition(browser_context());
+    return browser_context()->GetDefaultStoragePartition();
   }
 
   // Adds a cookie for the |url|. Used in the cookie integration tests.
@@ -172,11 +169,12 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
         storage_partition()->GetCookieManagerForBrowserProcess();
 
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, "A=1", base::Time::Now(), base::nullopt /* server_time */));
+        url, "A=1", base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */));
 
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
-        *cookie, url.scheme(), net::CookieOptions::MakeAllInclusive(),
+        *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindOnce(&ClearSiteDataHandlerBrowserTest::AddCookieCallback,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -189,9 +187,9 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
         storage_partition()->GetCookieManagerForBrowserProcess();
     base::RunLoop run_loop;
     net::CookieList cookie_list;
-    cookie_manager->GetAllCookies(base::BindRepeating(
-        &ClearSiteDataHandlerBrowserTest::GetCookiesCallback,
-        run_loop.QuitClosure(), base::Unretained(&cookie_list)));
+    cookie_manager->GetAllCookies(
+        base::BindOnce(&ClearSiteDataHandlerBrowserTest::GetCookiesCallback,
+                       run_loop.QuitClosure(), base::Unretained(&cookie_list)));
     run_loop.Run();
     return cookie_list;
   }
@@ -203,7 +201,6 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 
   bool TestCacheEntry(const GURL& url) {
     return LoadBasicRequest(storage_partition()->GetNetworkContext(), url,
-                            0 /* process_id */, 0 /* render_frame_id */,
                             net::LOAD_ONLY_FROM_CACHE) == net::OK;
   }
 
@@ -227,10 +224,9 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   bool RunScriptAndGetBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                                     script, &data));
-    return data;
+    return EvalJs(shell()->web_contents(), script,
+                  EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
  private:
@@ -304,11 +300,10 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   // Callback handler for AddCookie().
-  static void AddCookieCallback(
-      base::OnceClosure callback,
-      net::CanonicalCookie::CookieInclusionStatus status) {
+  static void AddCookieCallback(base::OnceClosure callback,
+                                net::CookieAccessResult result) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    ASSERT_TRUE(status.IsInclude());
+    ASSERT_TRUE(result.status.IsInclude());
     std::move(callback).Run();
   }
 
@@ -830,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ClosedTab) {
 }
 
 // Tests that sending Clear-Site-Data during a service worker installation
-// doesn't fail. (see crbug.com/898465)
+// results in the service worker not installed. (see crbug.com/898465)
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        ClearSiteDataDuringServiceWorkerInstall) {
   GURL url = embedded_test_server()->GetURL("127.0.0.1", "/");
@@ -839,6 +834,14 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   delegate()->ExpectClearSiteDataCall(url::Origin::Create(url), false, true,
                                       false);
   SetClearSiteDataHeader("\"storage\"");
+  EXPECT_FALSE(RunScriptAndGetBool("installServiceWorker()"));
+  delegate()->VerifyAndClearExpectations();
+  EXPECT_FALSE(RunScriptAndGetBool("hasServiceWorker()"));
+
+  // Install the service worker again without CSD header to verify that
+  // future network requests are not broken and the service worker
+  // installs correctly.
+  SetClearSiteDataHeader("");
   EXPECT_TRUE(RunScriptAndGetBool("installServiceWorker()"));
   delegate()->VerifyAndClearExpectations();
   EXPECT_TRUE(RunScriptAndGetBool("hasServiceWorker()"));
@@ -859,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                                       false);
 
   base::RunLoop loop;
-  auto* remover = BrowserContext::GetBrowsingDataRemover(browser_context());
+  auto* remover = browser_context()->GetBrowsingDataRemover();
   remover->SetWouldCompleteCallbackForTesting(
       base::BindLambdaForTesting([&](base::OnceClosure callback) {
         std::move(callback).Run();

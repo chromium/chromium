@@ -7,8 +7,10 @@
 
 #include <map>
 #include <set>
+#include <utility>
+#include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/stack_container.h"
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -41,7 +43,8 @@ enum class PaintCacheEntryState : uint32_t {
   kEmpty,
   kCached,
   kInlined,
-  kLast = kInlined
+  kInlinedDoNotCache,
+  kLast = kInlinedDoNotCache
 };
 
 constexpr size_t PaintCacheDataTypeCount =
@@ -49,6 +52,11 @@ constexpr size_t PaintCacheDataTypeCount =
 
 class CC_PAINT_EXPORT ClientPaintCache {
  public:
+  // If ClientPaintCache is constructed with a max_budget_bytes of
+  // kNoCachingBudget, its Put() method becomes a no-op, rendering the instance
+  // a no-op instance.
+  static constexpr size_t kNoCachingBudget = 0u;
+
   explicit ClientPaintCache(size_t max_budget_bytes);
   ClientPaintCache(const ClientPaintCache&) = delete;
   ~ClientPaintCache();
@@ -79,7 +87,7 @@ class CC_PAINT_EXPORT ClientPaintCache {
 
  private:
   using CacheKey = std::pair<PaintCacheDataType, PaintCacheId>;
-  using CacheMap = base::MRUCache<CacheKey, size_t>;
+  using CacheMap = base::LRUCache<CacheKey, size_t>;
 
   template <typename Iterator>
   void EraseFromMap(Iterator it);

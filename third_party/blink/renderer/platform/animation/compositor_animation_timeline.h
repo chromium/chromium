@@ -7,10 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_timeline.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -24,17 +25,21 @@ class PLATFORM_EXPORT CompositorAnimationTimeline {
 
  public:
   CompositorAnimationTimeline();
+  explicit CompositorAnimationTimeline(scoped_refptr<cc::AnimationTimeline>);
+  CompositorAnimationTimeline(const CompositorAnimationTimeline&) = delete;
+  CompositorAnimationTimeline& operator=(const CompositorAnimationTimeline&) =
+      delete;
   ~CompositorAnimationTimeline();
 
   cc::AnimationTimeline* GetAnimationTimeline() const;
+  void UpdateCompositorTimeline(absl::optional<CompositorElementId> pending_id,
+                                const std::vector<double> scroll_offsets);
 
   void AnimationAttached(const CompositorAnimationClient&);
   void AnimationDestroyed(const CompositorAnimationClient&);
 
  private:
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorAnimationTimeline);
 };
 
 }  // namespace blink

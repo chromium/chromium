@@ -14,10 +14,10 @@
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/password_protection/metrics_util.h"
-#include "components/safe_browsing/password_protection/password_protection_service.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
@@ -55,6 +55,9 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
     DCHECK(web_contents);
   }
 
+  ResetPasswordHandlerImpl(const ResetPasswordHandlerImpl&) = delete;
+  ResetPasswordHandlerImpl& operator=(const ResetPasswordHandlerImpl&) = delete;
+
   ~ResetPasswordHandlerImpl() override {}
 
   // mojom::ResetPasswordHandler overrides:
@@ -77,8 +80,6 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
  private:
   content::WebContents* web_contents_;
   mojo::Receiver<mojom::ResetPasswordHandler> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetPasswordHandlerImpl);
 };
 
 // Gets the reused password type from post data, or returns
@@ -89,18 +90,21 @@ PasswordType GetPasswordType(content::WebContents* web_contents) {
   if (!nav_entry || !nav_entry->GetHasPostData())
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
-  int post_data_int = -1;
-  if (base::StringToInt(std::string(post_data.bytes(), post_data.length()),
-                        &post_data_int)) {
-    return static_cast<PasswordType>(post_data_int);
+  if (post_data.type() == network::DataElement::Tag::kBytes) {
+    int post_data_int = -1;
+    if (base::StringToInt(
+            post_data.As<network::DataElementBytes>().AsStringPiece(),
+            &post_data_int)) {
+      return static_cast<PasswordType>(post_data_int);
+    }
   }
 
   return PasswordType::PASSWORD_TYPE_UNKNOWN;
 }
 
 // Properly format host name based on text direction.
-base::string16 GetFormattedHostName(const std::string host_name) {
-  base::string16 host = url_formatter::IDNToUnicode(host_name);
+std::u16string GetFormattedHostName(const std::string host_name) {
+  std::u16string host = url_formatter::IDNToUnicode(host_name);
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&host);
   return host;
@@ -113,9 +117,10 @@ ResetPasswordUI::ResetPasswordUI(content::WebUI* web_ui)
       password_type_(GetPasswordType(web_ui->GetWebContents())) {
   std::unique_ptr<content::WebUIDataSource> html_source(
       content::WebUIDataSource::Create(chrome::kChromeUIResetPasswordHost));
+  html_source->DisableTrustedTypesCSP();
   html_source->AddResourcePath("reset_password.js", IDR_RESET_PASSWORD_JS);
-  html_source->AddResourcePath("reset_password.mojom-lite.js",
-                               IDR_RESET_PASSWORD_MOJOM_LITE_JS);
+  html_source->AddResourcePath("reset_password.mojom-webui.js",
+                               IDR_RESET_PASSWORD_MOJOM_WEBUI_JS);
   html_source->SetDefaultResource(IDR_RESET_PASSWORD_HTML);
   html_source->AddLocalizedStrings(PopulateStrings());
 
@@ -144,7 +149,7 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
   int heading_string_id = known_password_type
                               ? IDS_RESET_PASSWORD_WARNING_HEADING
                               : IDS_RESET_PASSWORD_HEADING;
-  base::string16 explanation_paragraph_string;
+  std::u16string explanation_paragraph_string;
   if (org_name.empty()) {
     explanation_paragraph_string = l10n_util::GetStringUTF16(
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
@@ -154,7 +159,7 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
                                   ? StringType::WARNING_NO_ORG_NAME
                                   : StringType::GENERIC_NO_ORG_NAME);
   } else {
-    base::string16 formatted_org_name = GetFormattedHostName(org_name);
+    std::u16string formatted_org_name = GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
         known_password_type
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME

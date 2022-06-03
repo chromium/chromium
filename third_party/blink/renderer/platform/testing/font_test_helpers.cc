@@ -31,24 +31,25 @@ class TestFontSelector : public FontSelector {
   }
   ~TestFontSelector() override = default;
 
-  scoped_refptr<FontData> GetFontData(
-      const FontDescription& font_description,
-      const AtomicString& family_name) override {
+  scoped_refptr<FontData> GetFontData(const FontDescription& font_description,
+                                      const FontFamily&) override {
     FontSelectionCapabilities normal_capabilities(
         {NormalWidthValue(), NormalWidthValue()},
         {NormalSlopeValue(), NormalSlopeValue()},
         {NormalWeightValue(), NormalWeightValue()});
     FontPlatformData platform_data = custom_platform_data_->GetFontPlatformData(
         font_description.EffectiveFontSize(),
-        font_description.IsSyntheticBold(),
-        font_description.IsSyntheticItalic(),
+        font_description.IsSyntheticBold() &&
+            font_description.SyntheticBoldAllowed(),
+        font_description.IsSyntheticItalic() &&
+            font_description.SyntheticItalicAllowed(),
         font_description.GetFontSelectionRequest(), normal_capabilities,
         font_description.FontOpticalSizing(), font_description.Orientation());
     return SimpleFontData::Create(platform_data, CustomFontData::Create());
   }
 
   void WillUseFontData(const FontDescription&,
-                       const AtomicString& family_name,
+                       const FontFamily& family,
                        const String& text) override {}
   void WillUseRange(const FontDescription&,
                     const AtomicString& family_name,
@@ -56,13 +57,31 @@ class TestFontSelector : public FontSelector {
 
   unsigned Version() const override { return 0; }
   void FontCacheInvalidated() override {}
-  void ReportNotDefGlyph() const override {}
   void ReportSuccessfulFontFamilyMatch(
       const AtomicString& font_family_name) override {}
   void ReportFailedFontFamilyMatch(
       const AtomicString& font_family_name) override {}
   void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override {}
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override {}
+  void ReportFontLookupByUniqueOrFamilyName(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override {}
+  void ReportFontLookupByUniqueNameOnly(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data,
+      bool is_loading_fallback = false) override {}
+  void ReportFontLookupByFallbackCharacter(
+      UChar32 hint,
+      FontFallbackPriority fallback_priority,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override {}
+  void ReportLastResortFallbackFontLookup(
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override {}
+  void ReportNotDefGlyph() const override {}
+  void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
   FontFaceCache* GetFontFaceCache() override { return nullptr; }
 
@@ -71,7 +90,7 @@ class TestFontSelector : public FontSelector {
 
   bool IsPlatformFamilyMatchAvailable(
       const FontDescription&,
-      const AtomicString& passed_family) override {
+      const FontFamily& passed_family) override {
     return false;
   }
 
@@ -86,7 +105,7 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* ligatures) {
   FontFamily family;
-  family.SetFamily(family_name);
+  family.SetFamily(family_name, FontFamily::Type::kFamilyName);
 
   FontDescription font_description;
   font_description.SetFamily(family);
@@ -95,10 +114,23 @@ Font CreateTestFont(const AtomicString& family_name,
   if (ligatures)
     font_description.SetVariantLigatures(*ligatures);
 
-  Font font(font_description);
-  font.Update(TestFontSelector::Create(font_path));
-  return font;
+  return Font(font_description, TestFontSelector::Create(font_path));
 }
+
+#if defined(OS_WIN)
+void TestFontPrewarmer::PrewarmFamily(const WebString& family_name) {
+  family_names_.push_back(family_name);
+}
+
+ScopedTestFontPrewarmer::ScopedTestFontPrewarmer()
+    : saved_(FontCache::GetFontPrewarmer()) {
+  FontCache::SetFontPrewarmer(&current_);
+}
+
+ScopedTestFontPrewarmer::~ScopedTestFontPrewarmer() {
+  FontCache::SetFontPrewarmer(saved_);
+}
+#endif
 
 }  // namespace test
 }  // namespace blink

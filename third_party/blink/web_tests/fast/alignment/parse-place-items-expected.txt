@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'normal' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'baseline' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'first baseline' value through CSS.
+FAIL Test getting the Computed Value of place-items's longhand properties when setting 'last baseline' value through CSS. assert_equals: placeItems is not what is should. expected "last baseline" but got "normal"
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'start' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'flex-start' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'end' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'self-start' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'stretch' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'start end' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'start self-end' value through CSS.
+PASS Test getting the Computed Value of place-items's longhand properties when setting 'start baseline' value through CSS.
+PASS Test setting 'auto' as incorrect value through CSS.
+PASS Test setting 'center auto' as incorrect value through CSS.
+PASS Test setting 'none' as incorrect value through CSS.
+PASS Test setting 'safe' as incorrect value through CSS.
+PASS Test setting 'start safe' as incorrect value through CSS.
+PASS Test setting 'baseline safe' as incorrect value through CSS.
+PASS Test setting 'start end left' as incorrect value through CSS.
+PASS Test setting values through JS.
+PASS Test setting incorrect values through JS.
+PASS Test the 'initial' value of the place-items shorthand and its longhand properties' Computed value
+PASS Test the 'inherit' value of the place-items shorthand and its longhand properties' Computed value
+Harness: the test ran to completion.
+

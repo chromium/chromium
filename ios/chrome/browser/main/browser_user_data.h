@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_USER_DATA_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_USER_DATA_H_
 
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #import "ios/chrome/browser/main/browser.h"
 
 // This macro declares a static variable inside the class that inherits from
 // BrwoserUserData. The address of this static variable is used as the key to
-// store/retrieve an instance of the class on/from a WebState.
+// store/retrieve an instance of the class on/from a Browser.
 #define BROWSER_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
@@ -40,7 +39,7 @@
 template <typename T>
 class BrowserUserData : public base::SupportsUserData::Data {
  public:
-  // Creates an object of type T, and attaches it to the specified WebState.
+  // Creates an object of type T, and attaches it to the specified Browser.
   // If an instance is already attached, does nothing.
   static void CreateForBrowser(Browser* browser) {
     if (!FromBrowser(browser))

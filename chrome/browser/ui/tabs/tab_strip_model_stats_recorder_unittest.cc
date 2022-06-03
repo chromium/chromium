@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -123,7 +122,7 @@ TEST_F(TabStripModelStatsRecorderTest, ObserveMultipleTabStrips) {
       static_cast<int>(TabStripModelStatsRecorder::TabState::INACTIVE), 2);
 
   // Move the first tab in strip 1 to strip 2
-  tabstrip2.InsertWebContentsAt(2, tabstrip1.DetachWebContentsAt(0),
+  tabstrip2.InsertWebContentsAt(2, tabstrip1.DetachWebContentsAtForInsertion(0),
                                 TabStripModel::ADD_ACTIVE);
 
   tester.ExpectUniqueSample(

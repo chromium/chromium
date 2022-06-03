@@ -84,7 +84,8 @@ bool TabRestorePageLoadMetricsObserver::IsTabRestore(
   // Only count restored tabs, and eliminate forward-back navigations, as
   // restored tab history is considered a restored navigation until they are
   // loaded the first time.
-  return navigation_handle->GetRestoreType() != content::RestoreType::NONE &&
+  return navigation_handle->GetRestoreType() ==
+             content::RestoreType::kRestored &&
          !(navigation_handle->GetPageTransition() &
            ui::PAGE_TRANSITION_FORWARD_BACK);
 }

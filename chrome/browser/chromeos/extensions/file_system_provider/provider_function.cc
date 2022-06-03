@@ -4,18 +4,18 @@
 
 #include <utility>
 
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/request_value.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"
-#include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
-#include "chrome/browser/chromeos/file_system_provider/request_manager.h"
-#include "chrome/browser/chromeos/file_system_provider/request_value.h"
-#include "chrome/browser/chromeos/file_system_provider/service.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::ProviderId;
-using chromeos::file_system_provider::RequestManager;
-using chromeos::file_system_provider::RequestValue;
-using chromeos::file_system_provider::Service;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::RequestManager;
+using ash::file_system_provider::RequestValue;
+using ash::file_system_provider::Service;
 
 namespace {
 
@@ -127,7 +127,7 @@ FileSystemProviderInternalFunction::FileSystemProviderInternalFunction()
 
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalFunction::RejectRequest(
-    std::unique_ptr<chromeos::file_system_provider::RequestValue> value,
+    std::unique_ptr<RequestValue> value,
     base::File::Error error) {
   const base::File::Error result =
       request_manager_->RejectRequest(request_id_, std::move(value), error);
@@ -151,10 +151,14 @@ bool FileSystemProviderInternalFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-  std::string file_system_id;
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(args().size() >= 2);
 
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetString(0, &file_system_id));
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetInteger(1, &request_id_));
+  const auto& file_system_id_value = args()[0];
+  const auto& request_id_value = args()[1];
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(file_system_id_value.is_string());
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(request_id_value.is_int());
+  std::string file_system_id = file_system_id_value.GetString();
+  request_id_ = request_id_value.GetInt();
 
   Service* service = Service::Get(browser_context());
   if (!service) {

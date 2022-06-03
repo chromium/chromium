@@ -22,6 +22,10 @@ class BrowserListRouterHelper : public BrowserListObserver,
  public:
   explicit BrowserListRouterHelper(SyncSessionsWebContentsRouter* router,
                                    Profile* profile);
+
+  BrowserListRouterHelper(const BrowserListRouterHelper&) = delete;
+  BrowserListRouterHelper& operator=(const BrowserListRouterHelper&) = delete;
+
   ~BrowserListRouterHelper() override;
 
  private:
@@ -40,8 +44,6 @@ class BrowserListRouterHelper : public BrowserListObserver,
   Profile* profile_;
 
   std::set<Browser*> attached_browsers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserListRouterHelper);
 };
 
 }  // namespace sync_sessions

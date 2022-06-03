@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/policy/policy_constants.h",
+  "+components/policy/core/browser",
+  "+components/policy/core/common",
+]

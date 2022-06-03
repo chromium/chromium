@@ -28,17 +28,23 @@
 
 // See https://webaudio.github.io/web-audio-api/#AudioBuffer
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface AudioBuffer {
-    [RaisesException] constructor(AudioBufferOptions options);
-    readonly attribute long length; // in sample-frames
+    [RaisesException, Measure] constructor(AudioBufferOptions options);
+    readonly attribute unsigned long length; // in sample-frames
     readonly attribute double duration; // in seconds
     readonly attribute float sampleRate; // in sample-frames per second
 
     // Channel access
     readonly attribute unsigned long numberOfChannels;
-    [HighEntropy, Measure, RaisesException] Float32Array getChannelData(unsigned long channelIndex);
-    [HighEntropy, Measure, RaisesException] void copyFromChannel(Float32Array destination, long channelNumber, optional unsigned long bufferOffset = 0);
-    [RaisesException] void copyToChannel(Float32Array source, long channelNumber, optional unsigned long bufferOffset = 0);
+    [HighEntropy=Direct, Measure, RaisesException] Float32Array getChannelData(
+        unsigned long channelIndex);
+    [HighEntropy, Measure, RaisesException] void copyFromChannel(
+        Float32Array destination,
+        unsigned long channelNumber,
+        optional unsigned long bufferOffset = 0);
+    [RaisesException] void copyToChannel(
+        Float32Array source,
+        unsigned long channelNumber,
+        optional unsigned long bufferOffset = 0);
 };

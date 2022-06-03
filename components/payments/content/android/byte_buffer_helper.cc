@@ -13,9 +13,10 @@ namespace android {
 
 std::vector<uint8_t> JavaByteBufferToNativeByteVector(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& buffer) {
-  jbyte* buf_in = static_cast<jbyte*>(env->GetDirectBufferAddress(buffer));
-  jlong buf_size = env->GetDirectBufferCapacity(buffer);
+    const base::android::JavaRef<jobject>& buffer) {
+  jbyte* buf_in =
+      static_cast<jbyte*>(env->GetDirectBufferAddress(buffer.obj()));
+  jlong buf_size = env->GetDirectBufferCapacity(buffer.obj());
   std::vector<uint8_t> result(buf_size);
   memcpy(&result[0], buf_in, buf_size);
   return result;

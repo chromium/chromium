@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.support.v4.widget.TextViewCompat;
+import android.graphics.PorterDuff;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -17,8 +17,15 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.TextViewCompat;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -29,6 +36,8 @@ public class TabGroupUiToolbarView extends FrameLayout {
     private ChromeImageView mRightButton;
     private ChromeImageView mLeftButton;
     private ChromeImageView mMenuButton;
+    private ChromeImageView mFadingEdgeStart;
+    private ChromeImageView mFadingEdgeEnd;
     private ViewGroup mContainerView;
     private EditText mTitleTextView;
     private LinearLayout mMainContent;
@@ -44,6 +53,8 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mLeftButton = findViewById(R.id.toolbar_left_button);
         mRightButton = findViewById(R.id.toolbar_right_button);
         mMenuButton = findViewById(R.id.toolbar_menu_button);
+        mFadingEdgeStart = findViewById(R.id.tab_strip_fading_edge_start);
+        mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
         mContainerView = (ViewGroup) findViewById(R.id.toolbar_container_view);
         mTitleTextView = (EditText) findViewById(R.id.title);
         mMainContent = findViewById(R.id.main_content);
@@ -73,12 +84,47 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mTitleTextView.setCursorVisible(isVisible);
     }
 
+    void updateTitleTextFocus(boolean shouldFocus) {
+        if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+        if (mTitleTextView.isFocused() == shouldFocus) return;
+        if (shouldFocus) {
+            mTitleTextView.requestFocus();
+        } else {
+            clearTitleTextFocus();
+        }
+    }
+
+    void updateKeyboardVisibility(boolean shouldShow) {
+        if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+        // This is equal to the animation duration of toolbar menu hiding.
+        int showKeyboardDelay = 150;
+        if (shouldShow) {
+            // TODO(crbug.com/1116644) Figure out why a call to show keyboard without delay still
+            // won't work when the window gets focus in onWindowFocusChanged call.
+            // Wait until the current window has focus to show the keyboard. This is to deal with
+            // the case where the keyboard showing is caused by toolbar menu. In this case, we need
+            // to wait for the menu window to hide and current window to gain focus so that we can
+            // show the keyboard.
+            KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    assert hasWindowFocus();
+                    delegate.showKeyboard(mTitleTextView);
+                }
+            }, showKeyboardDelay);
+        } else {
+            hideKeyboard();
+        }
+    }
+
     void clearTitleTextFocus() {
         mTitleTextView.clearFocus();
     }
 
-    void setTitleOnTouchListener(View.OnTouchListener listener) {
-        mTitleTextView.setOnTouchListener(listener);
+    void hideKeyboard() {
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        delegate.hideKeyboard(this);
     }
 
     ViewGroup getViewContainer() {
@@ -103,8 +149,25 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mTitleTextView.setText(title);
     }
 
+    void setIsIncognito(boolean isIncognito) {
+        @ColorRes
+        int primaryColorRes = isIncognito ? R.color.dialog_bg_color_dark : R.color.dialog_bg_color;
+        @ColorInt
+        int primaryColor = getResources().getColor(primaryColorRes);
+        setPrimaryColor(primaryColor);
+
+        @ColorRes
+        int tintListRes = isIncognito ? R.color.default_icon_color_light_tint_list
+                                      : R.color.default_icon_color_tint_list;
+        ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
+        setTint(tintList);
+    }
+
     void setPrimaryColor(int color) {
         mMainContent.setBackgroundColor(color);
+        if (mFadingEdgeStart == null || mFadingEdgeEnd == null) return;
+        mFadingEdgeStart.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        mFadingEdgeEnd.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
     void setTint(ColorStateList tint) {
@@ -116,10 +179,14 @@ public class TabGroupUiToolbarView extends FrameLayout {
         }
     }
 
+    void setBackgroundColorTint(int color) {
+        DrawableCompat.setTint(getBackground(), color);
+    }
+
     /**
-     * Setup the toolbar layout base on the component it belongs to.
+     * Setup the toolbar layout for TabGridDialog.
      */
-    void setupToolbarLayout() {
+    void setupDialogToolbarLayout() {
         Context context = getContext();
         mLeftButton.setImageResource(org.chromium.chrome.R.drawable.ic_arrow_back_24dp);
         int topicMargin =
@@ -128,7 +195,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
         params.setMarginStart(topicMargin);
         mTitleTextView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         TextViewCompat.setTextAppearance(
-                mTitleTextView, org.chromium.chrome.R.style.TextAppearance_BlackHeadline);
+                mTitleTextView, org.chromium.chrome.R.style.TextAppearance_Headline_Primary);
     }
 
     /**
@@ -145,5 +212,19 @@ public class TabGroupUiToolbarView extends FrameLayout {
      */
     void setLeftButtonDrawableId(int drawableId) {
         mLeftButton.setImageResource(drawableId);
+    }
+
+    /**
+     * Set the content description of the left button.
+     */
+    void setLeftButtonContentDescription(String string) {
+        mLeftButton.setContentDescription(string);
+    }
+
+    /**
+     * Set the content description of the right button.
+     */
+    void setRightButtonContentDescription(String string) {
+        mRightButton.setContentDescription(string);
     }
 }

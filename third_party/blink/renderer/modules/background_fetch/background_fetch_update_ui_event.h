@@ -57,7 +57,7 @@ class MODULES_EXPORT BackgroundFetchUpdateUIEvent final
                          const BackgroundFetchUIOptions* ui_options,
                          ExceptionState&);
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   void DidGetIcon(ScriptPromiseResolver* resolver,

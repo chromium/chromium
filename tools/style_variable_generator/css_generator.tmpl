@@ -1,0 +1,83 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+{%- for path in in_files %}
+ *  {{path}}
+{%-  endfor %}
+ */
+{% macro render_variables_for_mode(mode) -%}
+{%- for model_name, color in colors[mode].items() %}
+  {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
+  {{model_name | to_css_var_name}}: {{css_color_var(model_name, color)}};
+{% endfor %}
+
+{%- for name, value in opacities[mode].items() %}
+  {{name | to_css_var_name}}: {{value | css_opacity}};
+{%  endfor -%}
+{%- endmacro %}
+{#
+The :not(body) adds extra selector specificity so that these colors 'win'
+against paper-styles/color.html.
+TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
+Chrome OS pages.
+-#}
+html:not(body) {
+{{- render_variables_for_mode(Modes.DEFAULT) -}}
+
+
+}
+
+{%- if typography.font_families or typography.typefaces %}
+
+html {
+  /* font families */
+{%-   for name, value in typography.font_families.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+
+  /* typefaces */
+{%-   for name, typeface in typography.typefaces.items() %}
+  {{name | to_css_var_name}}-font: {{typeface.font_weight}} {{typeface.font_size}}px/{{typeface.line_height}}px {{typeface.font_family | process_simple_ref}};
+  {{name | to_css_var_name}}-font-family: {{typeface.font_family | process_simple_ref}};
+  {{name | to_css_var_name}}-font-size: {{typeface.font_size}}px;
+  {{name | to_css_var_name}}-font-weight: {{typeface.font_weight}};
+  {{name | to_css_var_name}}-line-height: {{typeface.line_height}}px;
+
+{%   endfor -%}
+}
+{%- endif %}
+
+{%- if untyped_css %}
+
+html {
+{%-   for group_name, vars in untyped_css.items() %}
+  /* {{group_name}} */
+{%-     for name, value in vars.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+{%   endfor %}
+}
+{%- endif %}
+
+{%- if colors[Modes.DARK] and dark_mode_selector is not none %}
+
+{{dark_mode_selector}} {
+{{- render_variables_for_mode(Modes.DARK) -}}
+}
+{%- elif colors[Modes.DARK] %}
+
+@media (prefers-color-scheme: dark) {
+{#-
+The :not(body) adds extra selector specificity so that these colors 'win'
+against paper-styles/color.html.
+TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
+Chrome OS pages.
+#}
+html:not(body) {
+{{- render_variables_for_mode(Modes.DARK) -}}
+}
+}
+{%- endif %}
+{{debug_placeholder -}}

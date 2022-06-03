@@ -24,7 +24,7 @@ class ChromeBrowserMainExtraPartsGpu : public ChromeBrowserMainExtraParts,
       const ChromeBrowserMainExtraPartsGpu&) = delete;
 
   // ChromeBrowserMainExtraParts:
-  void PostEarlyInitialization() override;
+  void PreCreateThreads() override;
 
   // content::GpuDataManagerObserver:
   void OnGpuInfoUpdate() override;

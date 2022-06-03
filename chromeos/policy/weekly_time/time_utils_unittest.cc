@@ -36,11 +36,18 @@ enum {
 
 constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
 constexpr base::Time::Exploded kDaylightSavingsTime{2018, 8, 3, 8, 15, 0, 0, 0};
 constexpr base::Time::Exploded kNonDaylightSavingsTime{2018, 1, 0, 28,
                                                        0,    0, 0, 0};
+
+base::Time TimeFromString(const char* text) {
+  base::Time time;
+  const bool success = base::Time::FromString(text, &time);
+  DCHECK(success);
+  return time;
+}
 
 }  // namespace
 
@@ -89,17 +96,17 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringDaylightSavings) {
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(base::UTF8ToUTF16("Friday 8:50 AM"),
+  EXPECT_EQ(u"Friday 8:50 AM",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 
   base::i18n::SetICUDefaultLocale("de_DE");
-  EXPECT_EQ(base::UTF8ToUTF16("Freitag, 08:50"),
+  EXPECT_EQ(u"Freitag, 08:50",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 
   base::i18n::SetICUDefaultLocale("en_GB");
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone("America/New_York"));
-  EXPECT_EQ(base::UTF8ToUTF16("Friday 11:50"),
+  EXPECT_EQ(u"Friday 11:50",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 }
 
@@ -114,7 +121,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringNoDaylightSavings) {
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(base::UTF8ToUTF16("Friday 7:50 AM"),
+  EXPECT_EQ(u"Friday 7:50 AM",
             WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
 }
 
@@ -160,116 +167,153 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, GetOffsetFromTimezoneToGmtNoDaylight) {
   EXPECT_EQ(result2, result);
 }
 
-class GetIntervalForCurrentTimeTest
-    : public testing::TestWithParam<
-          std::tuple<std::vector<WeeklyTimeInterval>,
-                     base::Optional<WeeklyTimeInterval>>> {
- protected:
-  void SetUp() override {
-    // Wednesday August 8th at 15:00 GMT
-    base::Time test_time;
-    ASSERT_TRUE(base::Time::FromUTCExploded(kDaylightSavingsTime, &test_time));
-    test_clock_.SetNow(test_time);
-  }
-
-  std::vector<WeeklyTimeInterval> intervals() {
-    return std::get<0>(GetParam());
-  }
-  base::Optional<WeeklyTimeInterval> expected_result() {
-    return std::get<1>(GetParam());
-  }
-
-  base::SimpleTestClock test_clock_;
-};
-
-TEST_P(GetIntervalForCurrentTimeTest, Test) {
-  base::Optional<WeeklyTimeInterval> result =
-      GetIntervalForCurrentTime(intervals(), &test_clock_);
-  EXPECT_EQ(result, expected_result());
+TEST(TimeUtilsEmptyIntervalVector, NeverContainsTime) {
+  EXPECT_FALSE(Contains(base::Time{}, {}));
+  EXPECT_FALSE(Contains(base::Time::Now(), {}));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SameTimezoneNone,
-    GetIntervalForCurrentTimeTest,
-    testing::Values(std::make_tuple(
-        std::vector<WeeklyTimeInterval>{
-            WeeklyTimeInterval(
-                WeeklyTime(kTuesday, 10 * kMillisecondsInHour, 0),
-                WeeklyTime(kWednesday, 8 * kMillisecondsInHour, 0)),
-            WeeklyTimeInterval(
-                WeeklyTime(kSunday, 5 * kMillisecondsInHour, 0),
-                WeeklyTime(kSunday, 16 * kMillisecondsInHour, 0))},
-        base::nullopt)));
+TEST(TimeUtilsEmptyIntervalVector, HasNoNextEvent) {
+  EXPECT_EQ(GetNextEventTime(base::Time{}, {}), absl::nullopt);
+  EXPECT_EQ(GetNextEventTime(base::Time::Now(), {}), absl::nullopt);
+}
 
-INSTANTIATE_TEST_SUITE_P(
-    SameTimezoneResult,
-    GetIntervalForCurrentTimeTest,
-    testing::Values(
-        std::make_tuple(
-            std::vector<WeeklyTimeInterval>{
-                WeeklyTimeInterval(
-                    WeeklyTime(kTuesday, 10 * kMillisecondsInHour, 0),
-                    WeeklyTime(kThursday, 8 * kMillisecondsInHour, 0)),
-                WeeklyTimeInterval(
-                    WeeklyTime(kSunday, 5 * kMillisecondsInHour, 0),
-                    WeeklyTime(kSunday, 16 * kMillisecondsInHour, 0))},
-            WeeklyTimeInterval(
-                WeeklyTime(kTuesday, 10 * kMillisecondsInHour, 0),
-                WeeklyTime(kThursday, 8 * kMillisecondsInHour, 0))),
-        std::make_tuple(
-            std::vector<WeeklyTimeInterval>{
-                WeeklyTimeInterval(
-                    WeeklyTime(kTuesday, 10 * kMillisecondsInHour, 0),
-                    WeeklyTime(kWednesday, 8 * kMillisecondsInHour, 0)),
-                WeeklyTimeInterval(
-                    WeeklyTime(kSunday, 5 * kMillisecondsInHour, 0),
-                    WeeklyTime(kWednesday, 16 * kMillisecondsInHour, 0))},
-            WeeklyTimeInterval(
-                WeeklyTime(kSunday, 5 * kMillisecondsInHour, 0),
-                WeeklyTime(kWednesday, 16 * kMillisecondsInHour, 0)))));
+TEST(TimeUtilsNonEmptyIntervalVector, SometimesContainsTime) {
+  const std::vector<WeeklyTimeInterval> intervals = {
+      // First
+      {WeeklyTime{kSunday, 0, 0},
+       WeeklyTime{kSunday, 2 * kMillisecondsInHour, 0}},
+      // Second (overlaps with first)
+      {WeeklyTime{kSunday, kMillisecondsInHour, 0},
+       WeeklyTime{kSunday, 3 * kMillisecondsInHour, 0}},
+      // Third, no overlap
+      {WeeklyTime{kMonday, 0, 0},
+       WeeklyTime{kMonday, 2 * kMillisecondsInHour + 17, 0}},
+  };
 
-INSTANTIATE_TEST_SUITE_P(
-    DifferentTimezoneNone,
-    GetIntervalForCurrentTimeTest,
-    testing::Values(std::make_tuple(
-        std::vector<WeeklyTimeInterval>{
-            WeeklyTimeInterval(WeeklyTime(kTuesday,
-                                          10 * kMillisecondsInHour,
-                                          5 * kMillisecondsInHour),
-                               WeeklyTime(kWednesday,
-                                          17 * kMillisecondsInHour,
-                                          5 * kMillisecondsInHour)),
-            WeeklyTimeInterval(WeeklyTime(kSunday,
-                                          5 * kMillisecondsInHour,
-                                          5 * kMillisecondsInHour),
-                               WeeklyTime(kSunday,
-                                          16 * kMillisecondsInHour,
-                                          5 * kMillisecondsInHour))},
-        base::nullopt)));
+  // First interval, before begin.
+  EXPECT_FALSE(
+      Contains(TimeFromString("Sat, 17 Apr 2021 23:59:59 GMT"), intervals));
+  // First interval, at begin.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 00:00:00 GMT"), intervals));
+  // First interval, within.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 00:42:00 GMT"), intervals));
+  // First interval, right before the end.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 01:59:59 GMT"), intervals));
+  // First interval, at the end (but still in second interval).
+  EXPECT_TRUE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 02:00:00 GMT"), intervals));
 
-INSTANTIATE_TEST_SUITE_P(
-    DifferentTimezoneResult,
-    GetIntervalForCurrentTimeTest,
-    testing::Values(std::make_tuple(
-        std::vector<WeeklyTimeInterval>{
-            WeeklyTimeInterval(WeeklyTime(kTuesday,
-                                          10 * kMillisecondsInHour,
-                                          -8 * kMillisecondsInHour),
-                               WeeklyTime(kWednesday,
-                                          8 * kMillisecondsInHour,
-                                          -8 * kMillisecondsInHour)),
-            WeeklyTimeInterval(WeeklyTime(kSunday,
-                                          5 * kMillisecondsInHour,
-                                          -8 * kMillisecondsInHour),
-                               WeeklyTime(kSunday,
-                                          16 * kMillisecondsInHour,
-                                          -8 * kMillisecondsInHour))},
-        WeeklyTimeInterval(WeeklyTime(kTuesday,
-                                      10 * kMillisecondsInHour,
-                                      -8 * kMillisecondsInHour),
-                           WeeklyTime(kWednesday,
-                                      8 * kMillisecondsInHour,
-                                      -8 * kMillisecondsInHour)))));
+  // Second interval, right before the end.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 02:59:59 GMT"), intervals));
+  // Second interval, at the end.
+  EXPECT_FALSE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 03:00:00 GMT"), intervals));
+
+  // Third interval, before begin.
+  EXPECT_FALSE(
+      Contains(TimeFromString("Sun, 18 Apr 2021 23:59:59 GMT"), intervals));
+  // Third interval, begin.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Mon, 19 Apr 2021 00:00:00 GMT"), intervals));
+  // Third interval, within.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Mon, 19 Apr 2021 00:42:00 GMT"), intervals));
+  // Third interval, right before the end.
+  EXPECT_TRUE(
+      Contains(TimeFromString("Mon, 19 Apr 2021 02:00:00.016 GMT"), intervals));
+  // Third interval, at the end.
+  EXPECT_FALSE(
+      Contains(TimeFromString("Mon, 19 Apr 2021 02:00:00.017 GMT"), intervals));
+
+  // Far outside.
+  EXPECT_FALSE(
+      Contains(TimeFromString("Tue, 20 Apr 2021 22:05:00 GMT"), intervals));
+}
+
+TEST(TimeUtilsNonEmptyIntervalVector, AlwaysHasNextEvent) {
+  const std::vector<WeeklyTimeInterval> intervals = {
+      // First
+      {WeeklyTime{kSunday, 0, 0},
+       WeeklyTime{kSunday, 2 * kMillisecondsInHour, 0}},
+      // Second (overlaps with first)
+      {WeeklyTime{kSunday, kMillisecondsInHour, 0},
+       WeeklyTime{kSunday, 3 * kMillisecondsInHour, 0}},
+      // Third, no overlap
+      {WeeklyTime{kMonday, 0, 0},
+       WeeklyTime{kMonday, 2 * kMillisecondsInHour + 17, 0}},
+  };
+
+  // Just to make sure: Time::FromString actually parses microseconds
+  ASSERT_EQ(TimeFromString("Tue, 20 Apr 2021 22:05:00.123456 GMT") -
+                TimeFromString("Tue, 20 Apr 2021 22:05:00 GMT"),
+            base::Microseconds(123456));
+
+  // First interval, before begin.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sat, 17 Apr 2021 23:59:59 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 00:00:00 GMT"));
+  // First interval, at begin.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 00:00:00 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 01:00:00 GMT"));
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 00:42:00 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 01:00:00 GMT"));
+  // First interval, right before the end.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 01:59:59 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 02:00:00 GMT"));
+  // First interval, at the end (but still in second interval).
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 02:00:00 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 03:00:00 GMT"));
+
+  // Second interval, right before the end.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 02:59:59 GMT"),
+                             intervals),
+            TimeFromString("Sun, 18 Apr 2021 03:00:00 GMT"));
+  // Second interval, at the end.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 03:00:00 GMT"),
+                             intervals),
+            TimeFromString("Mon, 19 Apr 2021 00:00:00 GMT"));
+
+  // Third interval, before begin.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Sun, 18 Apr 2021 23:59:59 GMT"),
+                             intervals),
+            TimeFromString("Mon, 19 Apr 2021 00:00:00 GMT"));
+  // Third interval, begin.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Mon, 19 Apr 2021 00:00:00 GMT"),
+                             intervals),
+            TimeFromString("Mon, 19 Apr 2021 02:00:00.017 GMT"));
+  // Third interval, within.
+  EXPECT_EQ(GetNextEventTime(TimeFromString("Mon, 19 Apr 2021 00:42:00 GMT"),
+                             intervals),
+            TimeFromString("Mon, 19 Apr 2021 02:00:00.017 GMT"));
+  // Third interval, right before the end.
+  EXPECT_EQ(GetNextEventTime(
+                TimeFromString("Mon, 19 Apr 2021 02:00:00.016 GMT"), intervals),
+            TimeFromString("Mon, 19 Apr 2021 02:00:00.017 GMT"));
+  // Third interval, at the end.
+  EXPECT_EQ(GetNextEventTime(
+                TimeFromString("Mon, 19 Apr 2021 02:00:00.017 GMT"), intervals),
+            TimeFromString("Sun, 25 Apr 2021 00:00:00. GMT"));
+
+  // Far outside, with non-zero microseconds.
+  EXPECT_EQ(
+      GetNextEventTime(TimeFromString("Tue, 20 Apr 2021 22:05:00.111111 GMT"),
+                       intervals),
+      TimeFromString("Sun, 25 Apr 2021 00:00:00 GMT"));
+
+  // Far outside, with non-zero microseconds.
+  EXPECT_EQ(
+      GetNextEventTime(TimeFromString("Tue, 20 Apr 2021 22:05:00.888888 GMT"),
+                       intervals),
+      TimeFromString("Sun, 25 Apr 2021 00:00:00 GMT"));
+}
 
 }  // namespace weekly_time_utils
 }  // namespace policy

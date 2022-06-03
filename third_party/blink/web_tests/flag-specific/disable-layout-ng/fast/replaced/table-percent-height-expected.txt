@@ -1,0 +1,66 @@
+Button
+Button
+Option
+Option
+
+This test checks that replaced elements with percentage heights within table cells have the correct height.
+Note, some of the button height tests fail on the Windows ports. See bug #34071.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FAIL getWidth('canvas-75') should be 300px. Was 225px.
+FAIL getHeight('canvas-75') should be 150px. Was 112.5px.
+PASS getWidth('canvas-100') is '300px'
+PASS getHeight('canvas-100') is '150px'
+PASS getWidth('embed-75') is '300px'
+FAIL getHeight('embed-75') should be 150px. Was 112.5px.
+PASS getWidth('embed-100') is '300px'
+PASS getHeight('embed-100') is '150px'
+FAIL getWidth('img-75') should be 100px. Was 75px.
+FAIL getHeight('img-75') should be 100px. Was 75px.
+PASS getWidth('img-100') is '100px'
+PASS getHeight('img-100') is '100px'
+FAIL getWidth('img-75-nested') should be 100px. Was 75px.
+FAIL getHeight('img-75-nested') should be 100px. Was 75px.
+PASS getWidth('img-100-nested') is '100px'
+PASS getHeight('img-100-nested') is '100px'
+PASS getWidth('object-75') is '300px'
+FAIL getHeight('object-75') should be 150px. Was 112.5px.
+PASS getWidth('object-100') is '300px'
+PASS getHeight('object-100') is '150px'
+PASS getWidth('button-75') is getWidth('button-100')
+PASS getHeight('button-75') != '0px' is true
+PASS getHeight('button-75') is getHeight('button-100')
+PASS getWidth('input-button-75') is getWidth('input-button-100')
+PASS getHeight('input-button-75') != '0px' is true
+PASS getHeight('input-button-75') is getHeight('input-button-100')
+PASS getWidth('input-checkbox-75') is getWidth('input-checkbox-100')
+PASS getHeight('input-checkbox-75') == '0px' is true
+PASS getHeight('input-checkbox-75') is getHeight('input-checkbox-100')
+PASS getWidth('input-file-75') is getWidth('input-file-100')
+PASS getHeight('input-file-75') != '0px' is true
+PASS getHeight('input-file-75') is getHeight('input-file-100')
+FAIL getWidth('input-image-75') should be 100px. Was 75px.
+FAIL getHeight('input-image-75') should be 100px. Was 75px.
+PASS getWidth('input-image-100') is '100px'
+PASS getHeight('input-image-100') is '100px'
+PASS getWidth('input-radio-75') is getWidth('input-radio-100')
+PASS getHeight('input-radio-75') == '0px' is true
+PASS getHeight('input-radio-75') is getHeight('input-radio-100')
+PASS getWidth('input-reset-75') is getWidth('input-reset-100')
+PASS getHeight('input-reset-75') != '0px' is true
+PASS getHeight('input-reset-75') is getHeight('input-reset-100')
+PASS getWidth('input-submit-75') is getWidth('input-submit-100')
+PASS getHeight('input-submit-75') != '0px' is true
+PASS getHeight('input-submit-75') is getHeight('input-submit-100')
+PASS getWidth('select-75') is getWidth('select-100')
+PASS getHeight('select-75') != '0px' is true
+PASS getHeight('select-75') is getHeight('select-100')
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

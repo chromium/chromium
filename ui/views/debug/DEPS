@@ -1,0 +1,6 @@
+include_rules = [
+  # Views debug code should avoid relying on //ui/views code to ensure debugger
+  # extensions are resillient to version structure changes within the codebase.
+  "-ui/views",
+  "+ui/views/debug",
+]

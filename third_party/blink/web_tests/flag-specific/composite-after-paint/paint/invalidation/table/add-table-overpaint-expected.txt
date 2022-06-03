@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGTableCell TD",
-          "rect": [2, 314, 152, 152],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [2, 314, 152, 152]
       ]
     }
   ]

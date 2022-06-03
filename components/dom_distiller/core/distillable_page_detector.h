@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/dom_distiller/core/proto/adaboost.pb.h"
 
 namespace dom_distiller {
@@ -31,10 +30,12 @@ class DistillablePageDetector {
   double Score(const std::vector<double>& features) const;
   double GetThreshold() const;
 
+  DistillablePageDetector(const DistillablePageDetector&) = delete;
+  DistillablePageDetector& operator=(const DistillablePageDetector) = delete;
+
  private:
   std::unique_ptr<AdaBoostProto> proto_;
   double threshold_;
-  DISALLOW_COPY_AND_ASSIGN(DistillablePageDetector);
 };
 
 }  // namespace dom_distiller

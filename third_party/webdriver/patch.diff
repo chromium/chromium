@@ -1,5 +1,5 @@
 diff --git a/javascript/atoms/dom.js b/javascript/atoms/dom.js
-index 7dd4e846e4..66b85cdc95 100644
+index 68dbdacc16..d8519f518e 100644
 --- a/javascript/atoms/dom.js
 +++ b/javascript/atoms/dom.js
 @@ -587,14 +587,8 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
@@ -28,6 +28,15 @@ index 7dd4e846e4..66b85cdc95 100644
    }
  
    return bot.dom.isShown_(elem, !!opt_ignoreOpacity, displayed);
+@@ -1175,7 +1169,7 @@ bot.dom.appendVisibleTextLinesFromTextNode_ = function(textNode, lines,
+   }
+ 
+   if (textTransform == 'capitalize') {
+-    text = text.replace(/(^|\s|\b)(\S)/g, function() {
++    text = text.replace(/(^|[^\d\p{L}\p{S}])([\p{Ll}|\p{S}])/gu, function() {
+       return arguments[1] + arguments[2].toUpperCase();
+     });
+   } else if (textTransform == 'uppercase') {
 @@ -1270,13 +1264,6 @@ bot.dom.getOpacityNonIE_ = function(elem) {
  bot.dom.getParentNodeInComposedDom = function(node) {
    var /**@type {Node}*/ parent = node.parentNode;
@@ -80,26 +89,6 @@ index 737ed50f62..1bc9e858f5 100644
    } else {
      buttonValueMap[bot.events.EventType.CLICK] = [0, 1, 2, null];
      buttonValueMap[bot.events.EventType.CONTEXTMENU] = [null, null, 2, null];
-diff --git a/javascript/chrome-driver/BUILD.bazel b/javascript/chrome-driver/BUILD.bazel
-index 9e33cc769e..c231b8e7fd 100644
---- a/javascript/chrome-driver/BUILD.bazel
-+++ b/javascript/chrome-driver/BUILD.bazel
-@@ -109,6 +109,7 @@ closure_lang_file(
-     name = "header",
-     out = "atoms.h",
-     lang = "hdecl",
-+    utf8 = True,
-     deps = ATOMS,
- )
- 
-@@ -116,6 +117,7 @@ closure_lang_file(
-     name = "source",
-     out = "atoms.cc",
-     lang = "cc",
-+    utf8 = True,
-     deps = ATOMS,
- )
- 
 diff --git a/javascript/chrome-driver/atoms.js b/javascript/chrome-driver/atoms.js
 index 5185e010fb..3febbeba5c 100644
 --- a/javascript/chrome-driver/atoms.js
@@ -113,108 +102,3 @@ index 5185e010fb..3febbeba5c 100644
   * @return {{clickable:boolean, message: (string|undefined)}} Object containing
   *     a boolean "clickable" property, as to whether it can be clicked, and an
   *     optional "message" string property, which contains any warning/error
-diff --git a/javascript/private/gen_file.py b/javascript/private/gen_file.py
-index 27c9fd3236..b37ccbfeff 100644
---- a/javascript/private/gen_file.py
-+++ b/javascript/private/gen_file.py
-@@ -33,6 +33,9 @@ def write_atom_literal(out, name, contents, lang):
-     contents = contents.replace('"', '\\"')
- 
-     if "cc" == lang or "hh" == lang:
-+      if utf8:
-+        line_format = "    \"{}\",\n"
-+      else:
-         line_format = "    L\"{}\",\n"
-     elif "java" == lang:
-         line_format = "      .append\(\"{}\")\n"
-@@ -42,7 +45,9 @@ def write_atom_literal(out, name, contents, lang):
-     name = get_atom_name(name)
- 
-     if "cc" == lang or "hh" == lang:
--        out.write("const wchar_t* const %s[] = {\n" % name)
-+        string_type = "std::string" if utf8 else "std::wstring"
-+        char_type = "char" if utf8 else "wchar_t"
-+        out.write("const %s* const %s[] = {\n" % (char_type, name))
-     elif "java" == lang:
-         out.write("  %s(new StringBuilder()\n" % name)
-     else:
-@@ -69,30 +74,31 @@ def write_atom_literal(out, name, contents, lang):
- 
- def generate_header(file_name, out, js_map, just_declare):
-     define_guard = "WEBDRIVER_%s" % os.path.basename(file_name.upper()).replace(".", "_")
-+    include_stddef = "" if utf8 else "\n#include <stddef.h>  // For wchar_t."
- 
-     out.write("""%s
-     
- /* AUTO GENERATED - DO NOT EDIT BY HAND */
- #ifndef %s
- #define %s
--
--#include <stddef.h>  // For wchar_t.
-+%s
- #include <string>    // For std::(w)string.
- 
- namespace webdriver {
- namespace atoms {
-     
--""" % (_copyright, define_guard, define_guard))
-+""" % (_copyright, define_guard, define_guard, include_stddef))
-+
-+    string_type = "std::string" if utf8 else "std::wstring"
-+    char_type = "char" if utf8 else "wchar_t"
- 
-     for (name, file) in js_map.items():
-         if just_declare:
--            out.write("extern const wchat_t* const %s[];\n" % name.upper())
-+            out.write("extern const %s* const %s[];\n" % (char_type, name.upper()))
-         else:
-             contents = open(file, "r").read()
-             write_atom_literal(out, name, contents, "hh")
- 
--    string_type = "std::wstring"
--    char_type = "wchar_t"
-     out.write("""
- static inline %s asString(const %s* const atom[]) {
-   %s source;
-@@ -168,14 +174,17 @@ public enum %s {
- }
- """ % class_name)
- 
-+utf8 = False
- 
- def main(argv=[]):
-     lang = argv[1]
-     file_name = argv[2]
-     preamble = argv[3]
-+    global utf8
-+    utf8 = (argv[4] == "true")
- 
-     js_map = {}
--    for i in range(4, len(argv), 2):
-+    for i in range(5, len(argv), 2):
-         js_map[argv[i]] = argv[i + 1]
- 
-     with open(file_name, "w") as out:
-diff --git a/javascript/private/header.bzl b/javascript/private/header.bzl
-index ced4059a3d..754879bb1f 100644
---- a/javascript/private/header.bzl
-+++ b/javascript/private/header.bzl
-@@ -22,6 +22,7 @@ def _closure_lang_file_impl(ctx):
-     args.add(ctx.attr.lang)
-     args.add(ctx.outputs.out)
-     args.add(ctx.attr.preamble)
-+    args.add(ctx.attr.utf8)
-     for key in sorted(binaries.keys()):
-         args.add(key)
-         args.add(binaries[key])
-@@ -59,5 +60,10 @@ closure_lang_file = rule(
-             executable = True,
-             cfg = "host",
-         ),
-+        "utf8": attr.bool(
-+          doc = "Generate utf8 or not. True will generate string and char."
-+          "False, will generate wchar_t and wstring. Defaults to False",
-+          default = False,
-+        ),
-     },
- )

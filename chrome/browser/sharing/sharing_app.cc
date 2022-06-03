@@ -6,7 +6,7 @@
 
 SharingApp::SharingApp(const gfx::VectorIcon* vector_icon,
                        const gfx::Image& image,
-                       base::string16 name,
+                       std::u16string name,
                        std::string identifier)
     : vector_icon(vector_icon),
       image(image),

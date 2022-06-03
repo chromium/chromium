@@ -13,9 +13,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 
-namespace android_webview {
+namespace embedder_support {
+class WebResourceResponse;
+}
 
-class AwWebResourceResponse;
+namespace android_webview {
 
 class AwWebResourceInterceptResponse {
  public:
@@ -25,6 +27,12 @@ class AwWebResourceInterceptResponse {
   // org.chromium.android_webview.AwWebResourceInterceptResponse class.
   explicit AwWebResourceInterceptResponse(
       const base::android::JavaRef<jobject>& obj);
+
+  AwWebResourceInterceptResponse(const AwWebResourceInterceptResponse&) =
+      delete;
+  AwWebResourceInterceptResponse& operator=(
+      const AwWebResourceInterceptResponse&) = delete;
+
   ~AwWebResourceInterceptResponse();
 
   // True if the call to shouldInterceptRequest raised an exception.
@@ -36,12 +44,11 @@ class AwWebResourceInterceptResponse {
   // The response returned by the Java-side handler. Caller should first check
   // if an exception was caught via RaisedException() before calling
   // this method. A null value means do not intercept the response.
-  std::unique_ptr<AwWebResourceResponse> GetResponse(JNIEnv* env) const;
+  std::unique_ptr<embedder_support::WebResourceResponse> GetResponse(
+      JNIEnv* env) const;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwWebResourceInterceptResponse);
 };
 
 }  // namespace android_webview

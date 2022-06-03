@@ -1,0 +1,30 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<div id="sandbox"></div>
+
+<div id="button" title="Click for Decorated">
+  Hello Decorated
+</div>
+
+<div id="button-2" title="Click for Decorated">
+  Hello Decorated
+</div>
+
+<!-- The component DOM must always be created without whitespace. -->
+<div id="button-box" title="Click for Decorated Box" class="goog-menu-button goog-button-base"><div class="goog-inline-block goog-button-base-outer-box"><div class="goog-inline-block goog-button-base-inner-box"><div class="goog-button-base-pos"><div class="goog-button-base-top-shadow">&nbsp;</div><div class="goog-button-base-content">Hello Decorated Box<div class="goog-menu-button-dropdown"> </div></div></div></div></div></div>
+
+<div id="button-with-dom-content" class="goog-menu-button">
+  <strong>Hello Strong</strong> <em>Box</em>
+</div>
+
+<div id="button-with-menu" class="goog-menu-button">
+  Button with Menu
+  <div class="goog-menu">
+    <div class="goog-menuitem">Item 1</div>
+    <div class="goog-menuitem">Item 2</div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Text Name='Test Form<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Read Only:<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Sample Text<newline>'
+++++Group IsControlElement=false
+++++++Text Name='*required field<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Password:'
+++++++Edit Name='Text Box' Value.Value='Text'
+++++++Edit Name='ReadOnly' Value.Value='Elephant'
+++++++Edit Name='Required' IsRequiredForForm=true Value.Value='Required Field'
+++++++Edit Name='Password' IsPassword=true

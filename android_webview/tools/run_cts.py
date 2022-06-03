@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 #
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -7,6 +7,7 @@
 """Runs the CTS test APKs stored in CIPD."""
 
 import argparse
+import contextlib
 import json
 import logging
 import os
@@ -18,13 +19,15 @@ import zipfile
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
-import devil_chromium  # pylint: disable=import-error, unused-import
-from devil.android.ndk import abis  # pylint: disable=import-error
-from devil.android.sdk import version_codes  # pylint: disable=import-error
-from devil.android.tools import script_common  # pylint: disable=import-error
-from devil.utils import cmd_helper  # pylint: disable=import-error
-from devil.utils import logging_common  # pylint: disable=import-error
-from pylib.utils import test_filter # pylint: disable=import-error
+import devil_chromium  # pylint: disable=unused-import
+from devil.android import device_utils
+from devil.android.ndk import abis
+from devil.android.sdk import version_codes
+from devil.android.tools import script_common
+from devil.utils import cmd_helper
+from devil.utils import logging_common
+from pylib.local.emulator import avd
+from pylib.utils import test_filter
 
 # cts test archives for all platforms are stored in this bucket
 # contents need to be updated if there is an important fix to any of
@@ -43,8 +46,6 @@ _CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'cts_archive')
 _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 
 SDK_PLATFORM_DICT = {
-    version_codes.LOLLIPOP: 'L',
-    version_codes.LOLLIPOP_MR1: 'L',
     version_codes.MARSHMALLOW: 'M',
     version_codes.NOUGAT: 'N',
     version_codes.NOUGAT_MR1: 'N',
@@ -267,9 +268,8 @@ def DetermineCtsRelease(device):
     # Otherwise, we must be below the supported version range.
     min_supported_sdk = min(SDK_PLATFORM_DICT.keys())
     raise Exception("We don't support running CTS tests on platforms less "
-                    "than {release} as the WebView is not updatable".format(
-                        release=SDK_PLATFORM_DICT.get(min_supported_sdk),
-                    ))
+                    "than {release}".format(
+                        release=SDK_PLATFORM_DICT.get(min_supported_sdk), ))
   logging.info(('Using test APKs from CTS release=%s because '
                 'build.version.sdk=%s'),
                cts_release, device.build_version_sdk)
@@ -307,13 +307,37 @@ def ForwardArgsToTestRunner(known_args):
   if known_args.devices:
     # test_runner.py parses --device as nargs instead of append args
     forwarded_args.extend(['--device'] + known_args.devices)
-  if known_args.blacklist_file:
-    forwarded_args.extend(['--blacklist-file', known_args.blacklist_file])
+  if known_args.denylist_file:
+    forwarded_args.extend(['--denylist-file', known_args.denylist_file])
 
   if known_args.verbose:
     forwarded_args.extend(['-' + 'v' * known_args.verbose])
   #TODO: Pass quiet to test runner when it becomes supported
   return forwarded_args
+
+
+@contextlib.contextmanager
+def GetDevice(args):
+  try:
+    emulator_instance = None
+    if args.avd_config:
+      avd_config = avd.AvdConfig(args.avd_config)
+      avd_config.Install()
+      emulator_instance = avd_config.CreateInstance()
+      # Start the emulator w/ -writable-system s.t. we can remount the system
+      # partition r/w and install our own webview provider.
+      emulator_instance.Start(writable_system=True)
+      device_utils.DeviceUtils(emulator_instance.serial).WaitUntilFullyBooted()
+
+    devices = script_common.GetDevices(args.devices, args.denylist_file)
+    device = devices[0]
+    if len(devices) > 1:
+      logging.warning('Detection of arch and cts-release will use 1st of %d '
+                      'devices: %s', len(devices), device.serial)
+    yield device
+  finally:
+    if emulator_instance:
+      emulator_instance.Stop()
 
 
 def main():
@@ -360,6 +384,13 @@ def main():
       dest='module_apk',
       help='CTS module apk name in ' + _WEBVIEW_CTS_GCS_PATH_FILE +
       ' file, without the path prefix.')
+  parser.add_argument(
+      '--avd-config',
+      type=os.path.realpath,
+      help='Path to the avd config textpb. '
+           '(See //tools/android/avd/proto for message definition'
+           ' and existing textpb files.)')
+
 
   test_filter.AddFilterOptions(parser)
   script_common.AddDeviceArguments(parser)
@@ -371,35 +402,31 @@ def main():
 
   test_runner_args.extend(ForwardArgsToTestRunner(args))
 
-  devices = script_common.GetDevices(args.devices, args.blacklist_file)
-  device = devices[0]
-  if len(devices) > 1:
-    logging.warning('Detection of arch and cts-release will use 1st of %d '
-                    'devices: %s', len(devices), device.serial)
-  arch = args.arch or DetermineArch(device)
-  cts_release = args.cts_release or DetermineCtsRelease(device)
+  with GetDevice(args) as device:
+    arch = args.arch or DetermineArch(device)
+    cts_release = args.cts_release or DetermineCtsRelease(device)
 
-  if (args.test_filter_file or args.test_filter
-      or args.isolated_script_test_filter):
-    # TODO(aluo): auto-determine the module based on the test filter and the
-    # available tests in each module
-    if not args.module_apk:
-      args.module_apk = 'CtsWebkitTestCases.apk'
+    if (args.test_filter_files or args.test_filter
+        or args.isolated_script_test_filter):
+      # TODO(aluo): auto-determine the module based on the test filter and the
+      # available tests in each module
+      if not args.module_apk:
+        args.module_apk = 'CtsWebkitTestCases.apk'
 
-  platform_modules = GetCTSModuleNames(arch, cts_release)
-  if args.module_apk and args.module_apk not in platform_modules:
-    raise Exception('--module-apk for arch==' + arch + 'and cts_release=='
-                    + cts_release + ' must be one of: '
-                    + ', '.join(platform_modules))
+    platform_modules = GetCTSModuleNames(arch, cts_release)
+    if args.module_apk and args.module_apk not in platform_modules:
+      raise Exception('--module-apk for arch==' + arch + 'and cts_release=='
+                      + cts_release + ' must be one of: '
+                      + ', '.join(platform_modules))
 
-  # Need to uninstall all previous cts webkit packages so that the
-  # MockContentProvider names won't conflict with a previously installed
-  # one under a different package name.  This is due to CtsWebkitTestCases's
-  # package name change from M to N versions of the tests while keeping the
-  # MockContentProvider's authority string the same.
-  UninstallAnyCtsWebkitPackages(device)
+    # Need to uninstall all previous cts webkit packages so that the
+    # MockContentProvider names won't conflict with a previously installed
+    # one under a different package name.  This is due to CtsWebkitTestCases's
+    # package name change from M to N versions of the tests while keeping the
+    # MockContentProvider's authority string the same.
+    UninstallAnyCtsWebkitPackages(device)
 
-  return RunAllCTSTests(args, arch, cts_release, test_runner_args)
+    return RunAllCTSTests(args, arch, cts_release, test_runner_args)
 
 
 if __name__ == '__main__':

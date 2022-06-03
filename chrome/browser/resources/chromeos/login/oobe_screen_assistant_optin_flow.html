@@ -2,7 +2,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<div class="step faded hidden" id="assistant-optin-flow"
-    role="group" hidden>
-  <assistant-optin-flow id="assistant-optin-flow-card"></assistant-optin-flow>
-</div>
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+
+<include src="../assistant_optin/assistant_optin_flow.html">
+
+<dom-module id="assistant-optin-element">
+  <template>
+    <assistant-optin-flow-element id="card"></assistant-optin-flow-element>
+  </template>
+</dom-module>

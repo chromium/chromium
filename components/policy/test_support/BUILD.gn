@@ -11,15 +11,69 @@ static_library("test_support") {
   ]
 
   sources = [
-    "local_policy_test_server.cc",
-    "local_policy_test_server.h",
+    "client_storage.cc",
+    "client_storage.h",
+    "embedded_policy_test_server.cc",
+    "embedded_policy_test_server.h",
+    "policy_storage.cc",
+    "policy_storage.h",
+    "request_handler_for_api_authorization.cc",
+    "request_handler_for_api_authorization.h",
+    "request_handler_for_chrome_desktop_report.cc",
+    "request_handler_for_chrome_desktop_report.h",
+    "request_handler_for_policy.cc",
+    "request_handler_for_policy.h",
+    "request_handler_for_register_browser.cc",
+    "request_handler_for_register_browser.h",
+    "request_handler_for_register_device_and_user.cc",
+    "request_handler_for_register_device_and_user.h",
+    "signature_provider.cc",
+    "signature_provider.h",
+    "test_server_helpers.cc",
+    "test_server_helpers.h",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "local_policy_test_server.cc",
+      "local_policy_test_server.h",
+    ]
+  }
+
+  public_deps = [ "//net:test_support" ]
+  deps = [
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//crypto",
+    "//google_apis:google_apis",
+    "//net",
+    "//net:test_support",
+    "//third_party/re2:re2",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "embedded_policy_test_server_test_base.cc",
+    "embedded_policy_test_server_test_base.h",
+    "embedded_policy_test_server_unittest.cc",
+    "request_handler_for_api_authorization_unittest.cc",
+    "request_handler_for_chrome_desktop_report_unittest.cc",
+    "request_handler_for_policy_unittest.cc",
+    "request_handler_for_register_browser_unittest.cc",
+    "request_handler_for_register_device_and_user_unittest.cc",
+    "signature_provider_unittest.cc",
   ]
 
   deps = [
-    "////components/policy/core/common:common_constants",
-    "//base",
-    "//crypto",
-    "//net",
-    "//net:test_support",
+    ":test_support",
+    "//chrome/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }

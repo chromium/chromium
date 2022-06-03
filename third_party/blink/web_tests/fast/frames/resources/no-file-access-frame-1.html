@@ -1,11 +1,6 @@
 <html>
 <head>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-    testRunner.setAllowFileAccessFromFileURLs(false);
-}
 window.onload = function() {
     parent.frames[1].location='no-file-access-frame-2.html';
 }
@@ -13,6 +8,6 @@ window.onload = function() {
 </head>
 <body>
 <p>This tests if a file URL can navigate a peer file URL frame.
-If the test failed it will hang and the frame to the right will remain blank.</p>
+  If the test failed it will hang and the frame to the right will remain blank.</p>
 </body>
 </html>

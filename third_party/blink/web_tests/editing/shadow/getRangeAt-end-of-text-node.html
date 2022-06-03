@@ -4,7 +4,7 @@
 <div id="shadowHost"></div>
 <script>
 (function () {
-    var shadowRoot = shadowHost.createShadowRoot();
+    var shadowRoot = shadowHost.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = '<div id="editable" contenteditable>Test</div>';
     var textNode = shadowRoot.querySelector("#editable").firstChild;
     var selection = shadowRoot.getSelection();

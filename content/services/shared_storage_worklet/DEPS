@@ -1,0 +1,7 @@
+include_rules = [
+  "+gin",
+  "+services/network/public",
+  "+third_party/blink/public/common/mime_util",
+  "+v8",
+  "+services/network/test",
+]

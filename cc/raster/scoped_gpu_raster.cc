@@ -10,7 +10,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 using gpu::gles2::GLES2Interface;
 
@@ -35,7 +35,7 @@ void ScopedGpuRaster::BeginGpuRaster() {
 
 #if defined(OS_ANDROID)
   // TODO(crbug.com/832810): The following reset should not be necessary.
-  GrContext* gr_context = context_provider_->GrContext();
+  GrDirectContext* gr_context = context_provider_->GrContext();
   gr_context->resetContext();
 #endif
 }

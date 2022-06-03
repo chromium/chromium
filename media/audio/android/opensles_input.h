@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/android/opensles_util.h"
@@ -35,10 +34,13 @@ class OpenSLESInputStream : public AudioInputStream {
   OpenSLESInputStream(AudioManagerAndroid* manager,
                       const AudioParameters& params);
 
+  OpenSLESInputStream(const OpenSLESInputStream&) = delete;
+  OpenSLESInputStream& operator=(const OpenSLESInputStream&) = delete;
+
   ~OpenSLESInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -107,8 +109,6 @@ class OpenSLESInputStream : public AudioInputStream {
 
   // Set to true at construction if user wants to disable all audio effects.
   const bool no_effects_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSLESInputStream);
 };
 
 }  // namespace media

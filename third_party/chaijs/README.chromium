@@ -1,9 +1,9 @@
 Name: Chai Assertion Library
 Short Name: chai
 URL: https://github.com/chaijs/chai
-Version: 3.5.0
-Revision: 4ca0218391cf947c6cfac2d1a7424a63a4b4c232
-Date: Thu Jan 28 11:54:31 2016 +0000
+Version: 4.2.0
+Revision: 26c8a794ec6da695f004bdbd6362a466dc3d098f
+Date: 2018-09-25
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no
@@ -15,6 +15,8 @@ paired with any testing framework.
 Local Modifications:
  - Copied license text out of README.md.
  - Externs file from
-https://github.com/google/closure-compiler/tree/master/contrib/externs
+   https://github.com/google/closure-compiler/tree/master/contrib/externs
  - Add mising assert.notStrictEqual
  - Add missing export of chai.expect
+ - Applied chromium.patch so that chai.js can run within a d8 shell, which is
+   used in unit_tests

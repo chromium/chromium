@@ -13,6 +13,6 @@ interface LayoutChild {
   readonly attribute StylePropertyMapReadOnly styleMap;
 
   [CallWith=ScriptState, RaisesException] Promise<IntrinsicSizes> intrinsicSizes();
-  [CallWith=ScriptState, RaisesException] Promise<LayoutFragment> layoutNextFragment(optional CustomLayoutConstraintsOptions options);
+  [CallWith=ScriptState, RaisesException] Promise<LayoutFragment> layoutNextFragment(optional CustomLayoutConstraintsOptions options = {});
 };
 

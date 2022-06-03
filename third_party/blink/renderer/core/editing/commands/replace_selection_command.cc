@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/replace_selection_command.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
@@ -81,6 +80,8 @@ class ReplacementFragment final {
 
  public:
   ReplacementFragment(Document*, DocumentFragment*, const VisibleSelection&);
+  ReplacementFragment(const ReplacementFragment&) = delete;
+  ReplacementFragment& operator=(const ReplacementFragment&) = delete;
 
   Node* FirstChild() const;
   Node* LastChild() const;
@@ -105,12 +106,10 @@ class ReplacementFragment final {
 
   void InsertNodeBefore(Node*, Node* ref_node);
 
-  Member<Document> document_;
-  Member<DocumentFragment> fragment_;
+  Document* document_;
+  DocumentFragment* fragment_;
   bool has_interchange_newline_at_start_;
   bool has_interchange_newline_at_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReplacementFragment);
 };
 
 static bool IsInterchangeHTMLBRElement(const Node* node) {
@@ -175,7 +174,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
   if (!editable_root)
     return;
 
-  document_->UpdateStyleAndLayout();
+  document_->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   Element* shadow_ancestor_element;
   if (editable_root->IsInShadowTree())
@@ -189,9 +188,10 @@ ReplacementFragment::ReplacementFragment(Document* document,
       // register an event handler.
       &&
       !(shadow_ancestor_element && shadow_ancestor_element->GetLayoutObject() &&
-        shadow_ancestor_element->GetLayoutObject()->IsTextControl()) &&
+        shadow_ancestor_element->GetLayoutObject()
+            ->IsTextControlIncludingNG()) &&
       HasRichlyEditableStyle(*editable_root)) {
-    RemoveInterchangeNodes(fragment_.Get());
+    RemoveInterchangeNodes(fragment_);
     return;
   }
 
@@ -208,15 +208,15 @@ ReplacementFragment::ReplacementFragment(Document* document,
     // We don't need TestRendering for plain-text editing + plain-text
     // insertion.
     if (is_plain_text) {
-      RemoveInterchangeNodes(fragment_.Get());
+      RemoveInterchangeNodes(fragment_);
       String original_text = fragment_->textContent();
       auto* event =
           MakeGarbageCollected<BeforeTextInsertedEvent>(original_text);
-      editable_root->DispatchEvent(*event);
+      editable_root->DefaultEventHandler(*event);
       if (original_text != event->GetText()) {
         fragment_ = CreateFragmentFromText(
             selection.ToNormalizedEphemeralRange(), event->GetText());
-        RemoveInterchangeNodes(fragment_.Get());
+        RemoveInterchangeNodes(fragment_);
       }
       return;
     }
@@ -224,7 +224,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
   HTMLElement* holder = InsertFragmentForTestRendering(editable_root);
   if (!holder) {
-    RemoveInterchangeNodes(fragment_.Get());
+    RemoveInterchangeNodes(fragment_);
     return;
   }
 
@@ -244,13 +244,13 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
   // Give the root a chance to change the text.
   auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
-  editable_root->DispatchEvent(*evt);
+  editable_root->DefaultEventHandler(*evt);
   if (text != evt->GetText() || !HasRichlyEditableStyle(*editable_root)) {
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
 
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited.  See http://crbug.com/590369 for more details.
-    document->UpdateStyleAndLayout();
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     fragment_ = CreateFragmentFromText(selection.ToNormalizedEphemeralRange(),
                                        evt->GetText());
@@ -314,13 +314,13 @@ HTMLElement* ReplacementFragment::InsertFragmentForTestRendering(
     Element* root_editable_element) {
   TRACE_EVENT0("blink", "ReplacementFragment::insertFragmentForTestRendering");
   DCHECK(document_);
-  HTMLElement* holder = CreateDefaultParagraphElement(*document_.Get());
+  HTMLElement* holder = CreateDefaultParagraphElement(*document_);
 
   holder->AppendChild(fragment_);
   root_editable_element->AppendChild(holder);
 
   // TODO(editing-dev): Hoist this call to the call sites.
-  document_->UpdateStyleAndLayout();
+  document_->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   return holder;
 }
@@ -391,26 +391,26 @@ inline void ReplaceSelectionCommand::InsertedNodes::RespondToNodeInsertion(
 inline void
 ReplaceSelectionCommand::InsertedNodes::WillRemoveNodePreservingChildren(
     Node& node) {
-  if (first_node_inserted_.Get() == node)
+  if (first_node_inserted_ == node)
     first_node_inserted_ = NodeTraversal::Next(node);
-  if (last_node_inserted_.Get() == node)
+  if (last_node_inserted_ == node)
     last_node_inserted_ = node.lastChild()
                               ? node.lastChild()
                               : NodeTraversal::NextSkippingChildren(node);
-  if (ref_node_.Get() == node)
+  if (ref_node_ == node)
     ref_node_ = NodeTraversal::Next(node);
 }
 
 inline void ReplaceSelectionCommand::InsertedNodes::WillRemoveNode(Node& node) {
-  if (first_node_inserted_.Get() == node && last_node_inserted_.Get() == node) {
+  if (first_node_inserted_ == node && last_node_inserted_ == node) {
     first_node_inserted_ = nullptr;
     last_node_inserted_ = nullptr;
-  } else if (first_node_inserted_.Get() == node) {
+  } else if (first_node_inserted_ == node) {
     first_node_inserted_ =
         NodeTraversal::NextSkippingChildren(*first_node_inserted_);
-  } else if (last_node_inserted_.Get() == node) {
+  } else if (last_node_inserted_ == node) {
     last_node_inserted_ =
-        NodeTraversal::PreviousSkippingChildren(*last_node_inserted_);
+        NodeTraversal::PreviousAbsoluteSibling(*last_node_inserted_);
   }
   if (node.contains(ref_node_))
     ref_node_ = NodeTraversal::NextSkippingChildren(node);
@@ -419,11 +419,11 @@ inline void ReplaceSelectionCommand::InsertedNodes::WillRemoveNode(Node& node) {
 inline void ReplaceSelectionCommand::InsertedNodes::DidReplaceNode(
     Node& node,
     Node& new_node) {
-  if (first_node_inserted_.Get() == node)
+  if (first_node_inserted_ == node)
     first_node_inserted_ = &new_node;
-  if (last_node_inserted_.Get() == node)
+  if (last_node_inserted_ == node)
     last_node_inserted_ = &new_node;
-  if (ref_node_.Get() == node)
+  if (ref_node_ == node)
     ref_node_ = &new_node;
 }
 
@@ -610,7 +610,7 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
       // TODO(editing-dev): There is currently no way to update style without
       // updating layout. We might want to have updateLifcycleToStyleClean()
       // similar to FrameView::updateLifecylceToLayoutClean() in Document.
-      GetDocument().UpdateStyleAndLayout();
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
       if (blockquote_element)
         new_inline_style->RemoveStyleFromRulesAndContext(
@@ -635,7 +635,7 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
                        AtomicString(new_inline_style->Style()->AsText()));
     }
 
-    GetDocument().UpdateStyleAndLayout();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     // FIXME: Tolerate differences in id, class, and style attributes.
     if (element->parentNode() && IsNonTableCellHTMLBlockElement(element) &&
@@ -765,7 +765,7 @@ void ReplaceSelectionCommand::MoveElementOutOfAncestor(
   if (!HasEditableStyle(*ancestor->parentNode()))
     return;
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   VisiblePosition position_at_end_of_node =
       CreateVisiblePosition(LastPositionInOrAfterNode(*element));
   VisiblePosition last_position_in_paragraph =
@@ -801,7 +801,7 @@ static inline bool NodeHasVisibleLayoutText(Text& text) {
 
 void ReplaceSelectionCommand::RemoveUnrenderedTextNodesAtEnds(
     InsertedNodes& inserted_nodes) {
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   auto* last_leaf_inserted = DynamicTo<Text>(inserted_nodes.LastLeafInserted());
   if (last_leaf_inserted && !NodeHasVisibleLayoutText(*last_leaf_inserted) &&
@@ -819,17 +819,20 @@ void ReplaceSelectionCommand::RemoveUnrenderedTextNodesAtEnds(
   // can't insert into those elements.
   auto* first_node_inserted =
       DynamicTo<Text>(inserted_nodes.FirstNodeInserted());
-  if (first_node_inserted && !NodeHasVisibleLayoutText(*first_node_inserted)) {
-    inserted_nodes.WillRemoveNode(*first_node_inserted);
-    // Removing a Text node won't dispatch synchronous events.
-    RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+  if (first_node_inserted) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    if (!NodeHasVisibleLayoutText(*first_node_inserted)) {
+      inserted_nodes.WillRemoveNode(*first_node_inserted);
+      // Removing a Text node won't dispatch synchronous events.
+      RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+    }
   }
 }
 
 VisiblePosition ReplaceSelectionCommand::PositionAtEndOfInsertedContent()
     const {
   // TODO(editing-dev): Hoist the call and change it into a DCHECK.
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   // TODO(yosin): We should set |end_of_inserted_content_| not in SELECT
   // element, since contents of SELECT elements, e.g. OPTION, OPTGROUP, are
   // not editable, or SELECT element is an atomic on editing.
@@ -846,7 +849,7 @@ VisiblePosition ReplaceSelectionCommand::PositionAtEndOfInsertedContent()
 VisiblePosition ReplaceSelectionCommand::PositionAtStartOfInsertedContent()
     const {
   // TODO(editing-dev): Hoist the call and change it into a DCHECK.
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (start_of_inserted_content_.IsOrphan())
     return VisiblePosition();
   return CreateVisiblePosition(start_of_inserted_content_);
@@ -981,7 +984,7 @@ void ReplaceSelectionCommand::MergeEndIfNeeded(EditingState* editing_state) {
 
     // TODO(editing-dev): Use of UpdateStyleAndLayout()
     // needs to be audited.  See http://crbug.com/590369 for more details.
-    GetDocument().UpdateStyleAndLayout();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     destination = VisiblePosition::BeforeNode(*placeholder);
     start_of_paragraph_to_move = CreateVisiblePosition(
@@ -994,7 +997,7 @@ void ReplaceSelectionCommand::MergeEndIfNeeded(EditingState* editing_state) {
   if (editing_state->IsAborted())
     return;
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // Merging forward will remove end_of_inserted_content from the document.
   if (merge_forward) {
@@ -1118,7 +1121,7 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
                                             .Build()))
       return;
     if (fragment.HasInterchangeNewlineAtStart()) {
-      GetDocument().UpdateStyleAndLayout();
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
       VisiblePosition start_after_delete =
           EndingVisibleSelection().VisibleStart();
       if (IsEndOfParagraph(start_after_delete) &&
@@ -1149,7 +1152,7 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
         InsertParagraphSeparator(editing_state);
         if (editing_state->IsAborted())
           return;
-        GetDocument().UpdateStyleAndLayout();
+        GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
       }
     }
     // We split the current paragraph in two to avoid nesting the blocks from
@@ -1174,7 +1177,7 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
       InsertParagraphSeparator(editing_state);
       if (editing_state->IsAborted())
         return;
-      GetDocument().UpdateStyleAndLayout();
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
       SetEndingSelection(SelectionForUndoStep::From(
           SelectionInDOMTree::Builder()
               .Collapse(
@@ -1205,7 +1208,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   if (trivial_replace_result)
     return;
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   SetUpStyle(selection);
   Element* const current_root = selection.RootEditableElement();
@@ -1250,7 +1253,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   // <div>foo</div> into hello^ world.
   PrepareWhitespaceAtPositionForSplit(insertion_pos);
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // If the downstream node has been removed there's no point in continuing.
   if (!MostForwardCaretPosition(insertion_pos).AnchorNode())
@@ -1305,7 +1308,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   RemoveHeadContents(fragment);
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // We don't want the destination to end up inside nodes that weren't selected.
   // To avoid that, we move the position forward without changing the visible
@@ -1378,7 +1381,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
   if ((IsHTMLListElement(inserted_nodes.RefNode()) ||
        (IsHTMLListElement(inserted_nodes.RefNode()->firstChild()))) &&
-      block_start && block_start->GetLayoutObject()->IsListItem() &&
+      block_start && block_start->GetLayoutObject()->IsListItemIncludingNG() &&
       HasEditableStyle(*block_start->parentNode())) {
     inserted_nodes.SetRefNode(InsertAsListItems(
         To<HTMLElement>(inserted_nodes.RefNode()), block_start, insertion_pos,
@@ -1421,7 +1424,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     ABORT_EDITING_COMMAND_IF(!inserted_nodes.RefNode());
   }
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // Mutation events (bug 20161) may have already removed the inserted content
   if (!inserted_nodes.FirstNodeInserted() ||
@@ -1454,7 +1457,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
       return;
   }
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (end_br &&
       (plain_text_fragment ||
        (ShouldRemoveEndBR(end_br, original_vis_pos_before_end_br) &&
@@ -1570,7 +1573,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
         return;
     }
 
-    GetDocument().UpdateStyleAndLayout();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     // Making the two VisiblePositions valid again.
     start_of_paragraph_to_move =
@@ -1586,7 +1589,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     if (editing_state->IsAborted())
       return;
 
-    GetDocument().UpdateStyleAndLayout();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     const VisibleSelection& visible_selection_of_insterted_content =
         EndingVisibleSelection();
     start_of_inserted_content_ = MostForwardCaretPosition(
@@ -1654,7 +1657,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
             return;
         }
 
-        GetDocument().UpdateStyleAndLayout();
+        GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
         // Select up to the paragraph separator that was added.
         last_position_to_select =
@@ -1753,7 +1756,8 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
     bool collapse_white_space =
         !end_node->GetLayoutObject() ||
         end_node->GetLayoutObject()->Style()->CollapseWhiteSpace();
-    if (auto* end_text_node = DynamicTo<Text>(end_node)) {
+    end_text_node = DynamicTo<Text>(end_node);
+    if (end_text_node) {
       InsertTextIntoNode(end_text_node, end_offset,
                          collapse_white_space ? NonBreakingSpaceString() : " ");
       if (end_of_inserted_content_.ComputeContainerNode() == end_node)
@@ -1772,7 +1776,7 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
     }
   }
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   VisiblePosition start_of_inserted_content =
       PositionAtStartOfInsertedContent();
@@ -1983,7 +1987,7 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
          IsHTMLListElement(list_element->firstChild()))
     list_element = To<HTMLElement>(list_element->firstChild());
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   bool is_start = IsStartOfParagraph(CreateVisiblePosition(insert_pos));
   bool is_end = IsEndOfParagraph(CreateVisiblePosition(insert_pos));
   bool is_middle = !is_start && !is_end;
@@ -2060,7 +2064,7 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   Node* node_after_insertion_pos =
       MostForwardCaretPosition(EndingSelection().End()).AnchorNode();
@@ -2073,7 +2077,7 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
   if (end.IsNull())
     return false;
 
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   if (node_after_insertion_pos && node_after_insertion_pos->parentNode() &&
       IsA<HTMLBRElement>(*node_after_insertion_pos) &&
@@ -2104,7 +2108,7 @@ EphemeralRange ReplaceSelectionCommand::InsertedRange() const {
   return EphemeralRange(start_of_inserted_range_, end_of_inserted_range_);
 }
 
-void ReplaceSelectionCommand::Trace(Visitor* visitor) {
+void ReplaceSelectionCommand::Trace(Visitor* visitor) const {
   visitor->Trace(start_of_inserted_content_);
   visitor->Trace(end_of_inserted_content_);
   visitor->Trace(insertion_style_);

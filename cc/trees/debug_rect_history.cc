@@ -70,11 +70,17 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
 }
 
 void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
+  // We store the layout shift rects on the hud layer. If we don't have the hud
+  // layer, then there is nothing to store.
+  if (!hud)
+    return;
+
   for (gfx::Rect rect : hud->LayoutShiftRects()) {
     debug_rects_.push_back(DebugRect(
         LAYOUT_SHIFT_RECT_TYPE,
         MathUtil::MapEnclosingClippedRect(hud->ScreenSpaceTransform(), rect)));
   }
+  hud->ClearLayoutShiftRects();
 }
 
 void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
@@ -161,24 +167,18 @@ void DebugRectHistory::SaveTouchEventHandlerRectsCallback(LayerImpl* layer) {
 }
 
 void DebugRectHistory::SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl) {
-  EventListenerProperties event_properties =
-      tree_impl->event_listener_properties(EventListenerClass::kMouseWheel);
-  if (event_properties == EventListenerProperties::kNone ||
-      event_properties == EventListenerProperties::kPassive) {
-    return;
+  // TODO(https://crbug.com/1136591): Need behavior confirmation.
+  // TODO(https://crbug.com/1136591): Need to check results in dev tools layer
+  // view.
+  for (auto* layer : *tree_impl) {
+    const Region& region = layer->wheel_event_handler_region();
+    for (gfx::Rect rect : region) {
+      debug_rects_.emplace_back(
+          DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
+                    MathUtil::MapEnclosingClippedRect(
+                        layer->ScreenSpaceTransform(), rect)));
+    }
   }
-
-  // Since the wheel event handlers property is on the entire layer tree just
-  // mark inner viewport if have listeners.
-  ScrollNode* inner_scroll = tree_impl->InnerViewportScrollNode();
-  if (!inner_scroll)
-    return;
-  debug_rects_.push_back(
-      DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
-                MathUtil::MapEnclosingClippedRect(
-                    tree_impl->property_trees()->transform_tree.ToScreen(
-                        inner_scroll->transform_id),
-                    gfx::Rect(inner_scroll->bounds))));
 }
 
 void DebugRectHistory::SaveScrollEventHandlerRects(LayerTreeImpl* tree_impl) {
@@ -213,16 +213,14 @@ void DebugRectHistory::SaveMainThreadScrollingReasonRects(
     LayerTreeImpl* tree_impl) {
   const auto& scroll_tree = tree_impl->property_trees()->scroll_tree;
   for (auto* layer : *tree_impl) {
-    if (layer->scrollable()) {
-      if (const auto* scroll_node =
-              scroll_tree.Node(layer->scroll_tree_index())) {
-        if (auto reasons = scroll_node->main_thread_scrolling_reasons) {
-          debug_rects_.push_back(DebugRect(
-              MAIN_THREAD_SCROLLING_REASON_RECT_TYPE,
-              MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                                gfx::Rect(layer->bounds())),
-              TouchAction::kNone, reasons));
-        }
+    if (const auto* scroll_node =
+            scroll_tree.FindNodeFromElementId(layer->element_id())) {
+      if (auto reasons = scroll_node->main_thread_scrolling_reasons) {
+        debug_rects_.push_back(DebugRect(
+            MAIN_THREAD_SCROLLING_REASON_RECT_TYPE,
+            MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
+                                              gfx::Rect(layer->bounds())),
+            TouchAction::kNone, reasons));
       }
     }
   }

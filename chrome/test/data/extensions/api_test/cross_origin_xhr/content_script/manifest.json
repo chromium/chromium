@@ -10,5 +10,5 @@
       "js": [ "content_script.js" ],
       "matches": [ "http://localhost/*" ]
   } ],
-  "permissions": ["http://a.com/", "http://*.b.com/", "ftp://127.0.0.1/*"]
+  "permissions": ["ftp://127.0.0.1/*"]
 }

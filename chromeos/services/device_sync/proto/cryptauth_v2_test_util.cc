@@ -30,7 +30,7 @@ const char kTestClientDirectivePolicyReferenceName[] =
 ClientMetadata BuildClientMetadata(
     int32_t retry_count,
     const ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   ClientMetadata client_metadata;
   client_metadata.set_retry_count(retry_count);
   client_metadata.set_invocation_reason(invocation_reason);
@@ -90,11 +90,13 @@ DeviceFeatureStatus BuildDeviceFeatureStatus(
 DeviceActivityStatus BuildDeviceActivityStatus(
     const std::string& device_id,
     int64_t last_activity_time_sec,
-    const ConnectivityStatus connectivity_status) {
+    const ConnectivityStatus connectivity_status,
+    Timestamp last_update_time) {
   DeviceActivityStatus device_activity_status;
   device_activity_status.set_device_id(device_id);
   device_activity_status.set_last_activity_time_sec(last_activity_time_sec);
   device_activity_status.set_connectivity_status(connectivity_status);
+  *device_activity_status.mutable_last_update_time() = last_update_time;
   return device_activity_status;
 }
 

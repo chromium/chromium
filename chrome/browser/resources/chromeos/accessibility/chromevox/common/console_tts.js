@@ -14,25 +14,21 @@ goog.require('AbstractTts');
 goog.require('TtsInterface');
 
 /**
- * @constructor
  * @implements {TtsInterface}
  */
-ConsoleTts = function() {
-  /**
-   * True if the console TTS is enabled by the user.
-   * @type {boolean}
-   * @private
-   */
-  this.enabled_ = false;
-};
-goog.addSingletonGetter(ConsoleTts);
+ConsoleTts = class {
+  constructor() {
+    /**
+     * True if the console TTS is enabled by the user.
+     * @type {boolean}
+     * @private
+     */
+    this.enabled_ = false;
+  }
 
-
-/** @override */
-ConsoleTts.prototype = {
-  speak: function(textString, queueMode, properties) {
+  speak(textString, queueMode, properties) {
     if (this.enabled_ && window['console']) {
-      var category = TtsCategory.NAV;
+      let category = TtsCategory.NAV;
       if (properties && properties.category) {
         category = properties.category;
       }
@@ -42,43 +38,47 @@ ConsoleTts.prototype = {
       console.log(speechLog.toString());
     }
     return this;
-  },
+  }
 
   /** @override */
-  isSpeaking: function() {
+  isSpeaking() {
     return false;
-  },
+  }
 
   /** @override */
-  stop: function() {
+  stop() {
     if (this.enabled_) {
       console.log('Stop');
     }
-  },
+  }
 
   /** @override */
-  addCapturingEventListener: function(listener) {},
+  addCapturingEventListener(listener) {}
 
   /** @override */
-  increaseOrDecreaseProperty: function() {},
+  removeCapturingEventListener(listener) {}
 
   /** @override */
-  propertyToPercentage: function() {},
+  increaseOrDecreaseProperty() {}
+
+  /** @override */
+  propertyToPercentage() {}
 
   /**
    * Sets the enabled bit.
    * @param {boolean} enabled The new enabled bit.
    */
-  setEnabled: function(enabled) {
+  setEnabled(enabled) {
     this.enabled_ = enabled;
-  },
+  }
 
   /** @override */
-  getDefaultProperty: function(property) {},
+  getDefaultProperty(property) {}
 
   /** @override */
-  toggleSpeechOnOrOff: function() {},
+  toggleSpeechOnOrOff() {}
 
   /** @override */
-  resetTextToSpeechSettings: function() {}
+  resetTextToSpeechSettings() {}
 };
+goog.addSingletonGetter(ConsoleTts);

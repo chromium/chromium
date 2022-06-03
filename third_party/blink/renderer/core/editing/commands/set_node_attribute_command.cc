@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/editing/commands/set_node_attribute_command.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -50,7 +49,7 @@ void SetNodeAttributeCommand::DoUnapply() {
   old_value_ = g_null_atom;
 }
 
-void SetNodeAttributeCommand::Trace(Visitor* visitor) {
+void SetNodeAttributeCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   SimpleEditCommand::Trace(visitor);
 }

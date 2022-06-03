@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class AccountInfoTest : public testing::Test {};
@@ -29,23 +30,21 @@ TEST_F(AccountInfoTest, IsEmpty) {
   }
 }
 
-// Tests that IsValid() returns true only when all the fields are non-empty.
+// Tests that IsValid() returns true only when all the fields are non-empty
+// (except is_child_account).
 TEST_F(AccountInfoTest, IsValid) {
   AccountInfo info;
+  EXPECT_EQ(signin::Tribool::kUnknown, info.is_child_account);
   EXPECT_FALSE(info.IsValid());
 
   info.gaia = info.email = "test_id";
   info.account_id = CoreAccountId("test_id");
-
   EXPECT_FALSE(info.IsValid());
 
   info.full_name = info.given_name = "test_name";
   info.hosted_domain = "test_domain";
   info.locale = "test_locale";
   info.picture_url = "test_picture_url";
-  EXPECT_TRUE(info.IsValid());
-
-  info.is_child_account = true;
   EXPECT_TRUE(info.IsValid());
 }
 
@@ -70,17 +69,20 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   AccountInfo info;
   info.gaia = info.email = "test_id";
   info.account_id = CoreAccountId("test_id");
-  info.is_child_account = true;
+  info.is_child_account = signin::Tribool::kTrue;
+  info.is_under_advanced_protection = true;
 
   AccountInfo other;
   other.account_id = CoreAccountId("test_id");
   other.gaia = other.email = "test_id";
-  other.is_child_account = false;
+  EXPECT_EQ(signin::Tribool::kUnknown, other.is_child_account);
+  other.is_under_advanced_protection = false;
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);
   EXPECT_EQ("test_id", info.email);
-  EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_TRUE(info.is_under_advanced_protection);
 }
 
 // Tests that UpdateWith() correctly updates its fields that were not set.
@@ -92,14 +94,17 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   AccountInfo other;
   other.account_id = CoreAccountId("test_id");
   other.full_name = other.given_name = "test_name";
-  other.is_child_account = true;
+  other.is_child_account = signin::Tribool::kTrue;
+  other.capabilities.set_can_offer_extended_chrome_sync_promos(true);
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);
   EXPECT_EQ("test_id", info.email);
   EXPECT_EQ("test_name", info.full_name);
   EXPECT_EQ("test_name", info.given_name);
-  EXPECT_TRUE(info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  EXPECT_EQ(signin::Tribool::kTrue,
+            info.capabilities.can_offer_extended_chrome_sync_promos());
 }
 
 // Tests that UpdateWith() sets default values for hosted_domain and

@@ -4,7 +4,7 @@
 
 #include "net/cert/internal/cert_errors.h"
 
-#include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "net/cert/internal/cert_error_params.h"
@@ -22,9 +22,7 @@ void AppendLinesWithIndentation(const std::string& text,
       text, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   for (const auto& line : lines) {
-    *out += indentation;
-    line.AppendToString(out);
-    *out += "\n";
+    base::StrAppend(out, {indentation, line, "\n"});
   }
 }
 

@@ -9,14 +9,16 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/version_info/version_info.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace quirks {
 

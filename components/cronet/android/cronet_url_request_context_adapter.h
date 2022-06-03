@@ -9,12 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_url_request_context.h"
@@ -41,6 +39,11 @@ class CronetURLRequestContextAdapter
  public:
   explicit CronetURLRequestContextAdapter(
       std::unique_ptr<URLRequestContextConfig> context_config);
+
+  CronetURLRequestContextAdapter(const CronetURLRequestContextAdapter&) =
+      delete;
+  CronetURLRequestContextAdapter& operator=(
+      const CronetURLRequestContextAdapter&) = delete;
 
   ~CronetURLRequestContextAdapter() override;
 
@@ -144,8 +147,6 @@ class CronetURLRequestContextAdapter
 
   // Java object that owns this CronetURLRequestContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> jcronet_url_request_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequestContextAdapter);
 };
 
 }  // namespace cronet

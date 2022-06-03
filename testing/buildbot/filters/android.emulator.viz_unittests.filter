@@ -1,0 +1,15 @@
+# https://crbug.com/1039873
+-All/GLScalerShaderPixelTest.BicubicDownscaleByHalf/*
+-All/GLScalerShaderPixelTest.BicubicUpscale/*
+-All/GLScalerShaderPixelTest.Bilinear/*
+-All/GLScalerShaderPixelTest.Export_Planar/*
+-All/GLScalerShaderPixelTest.FourTapBilinear/*
+-All/GLScalerShaderPixelTest.ThreeTapBilinear/*
+-All/GLScalerShaderPixelTest.TwoByTwoTapBilinear/*
+-All/GLScalerShaderPixelTest.TwoTapBilinear/*
+-All/GLScalerShaderPixelTest.ValidateTestHelpers/*
+-GLScalerPixelTest.CopiesByDefault
+-GLScalerPixelTest.ExportsTheRedColorChannel
+-GLScalerPixelTest.TranslatesVerticallyFlippedSourceWithSourceOffset
+-GLScalerPixelTest.TranslatesWithSourceOffset
+-GLScalerPixelTest.VerticallyFlipsOutput

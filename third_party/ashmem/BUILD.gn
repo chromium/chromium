@@ -9,4 +9,6 @@ source_set("ashmem") {
     "ashmem-dev.c",
     "ashmem.h",
   ]
+
+  configs -= [ "//build/config/android:default_orderfile_instrumentation" ]
 }

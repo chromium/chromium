@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -22,23 +21,24 @@ class MEDIA_EXPORT CdmAdapterFactory final : public CdmFactory {
       base::RepeatingCallback<std::unique_ptr<CdmAuxiliaryHelper>()>;
 
   explicit CdmAdapterFactory(HelperCreationCB helper_creation_cb);
+
+  CdmAdapterFactory(const CdmAdapterFactory&) = delete;
+  CdmAdapterFactory& operator=(const CdmAdapterFactory&) = delete;
+
   ~CdmAdapterFactory() override;
 
   // CdmFactory implementation.
   void Create(const std::string& key_system,
-              const url::Origin& security_origin,
               const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              const CdmCreatedCB& cdm_created_cb) override;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
   // Callback to create CdmAuxiliaryHelper for the created CDM.
   HelperCreationCB helper_creation_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmAdapterFactory);
 };
 
 }  // namespace media

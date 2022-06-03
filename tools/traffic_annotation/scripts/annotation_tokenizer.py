@@ -6,7 +6,7 @@
 A tokenizer for traffic annotation definitions.
 """
 
-from collections import namedtuple
+from typing import NamedTuple, Optional
 
 import re
 
@@ -19,10 +19,19 @@ import re
 TOKEN_REGEXEN = [
     # Comma for separating args.
     ('comma', re.compile(r'(,)')),
-    # String literal. "string" or R"(string)".
-    ('string_literal',
-     re.compile(r'"((?:[^"]|\\.)*?)"|R"\((.*?)\)"', re.DOTALL)),
-    # C++ identifier.
+    # String literal. "string" or R"(string)". In Java, this will incorrectly
+    # accept R-strings, which aren't part of the language's syntax. But since
+    # that wouldn't compile anyways, we can just ignore this issue.
+    ('string_literal', re.compile(r'"((?:[^"]|\\.)*?)"|R"\((.*?)\)"',
+                                  re.DOTALL)),
+    # The '+' operator, for string concatenation. Java doesn't have multi-line
+    # string literals, so this is the only way to keep long strings readable. It
+    # doesn't incur a runtime cost, since the Java compiler is smart enough to
+    # concat the string literals at compile time. See "constant expressions" in
+    # the JLS:
+    # https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.28
+    ('plus', re.compile(r'(\+)')),
+    # C++ or Java identifier.
     ('symbol', re.compile(r'([a-zA-Z_][a-zA-Z_0-9]*)')),
     # Left parenthesis.
     ('left_paren', re.compile(r'(\()')),
@@ -30,8 +39,24 @@ TOKEN_REGEXEN = [
     ('right_paren', re.compile(r'(\))')),
 ]
 
+# Number of characters to include in the context (for error reporting).
+CONTEXT_LENGTH = 20
 
-Token = namedtuple('Token', ['type', 'value', 'pos'])
+
+class Token(NamedTuple):
+  type: str
+  value: str
+  pos: int
+
+
+class SourceCodeParsingError(Exception):
+  """An error during C++ or Java parsing/tokenizing."""
+
+  def __init__(self, expected_type, body, pos, file_path, line_number):
+    context = body[pos:pos + CONTEXT_LENGTH]
+    msg = ("Expected {} in annotation definition at {}:{}.\n" +
+           "near '{}'").format(expected_type, file_path, line_number, context)
+    Exception.__init__(self, msg)
 
 
 class Tokenizer:
@@ -51,16 +76,20 @@ class Tokenizer:
     """Like assert(), but reports errors in a _somewhat_ useful way."""
     if token and token.type == expected_type:
       return
-    raise Exception(
-        "Expected %s in annotation definition at %s:%d.\nnear '%s'" %
-        (expected_type, self.file_path, self.line_number,
-         self.body[self.pos:self.pos+10]))
+    # Skip whitespace to make the error message more useful.
+    pos = self._skip_whitespace()
+    raise SourceCodeParsingError(expected_type, self.body, pos, self.file_path,
+                                 self.line_number)
+
+  def _skip_whitespace(self):
+    """Return the position of the first non-whitespace character from here."""
+    whitespace_re = re.compile(r'\s*')
+    return whitespace_re.match(self.body, self.pos).end()
 
   def _get_token(self):
     """Return the token here, or None on failure."""
-    # Skip initial whitespace
-    whitespace_re = re.compile(r'\s*')
-    pos = whitespace_re.match(self.body, self.pos).end()
+    # Skip initial whitespace.
+    pos = self._skip_whitespace()
 
     # Find the token here, if there's one.
     token = None
@@ -68,13 +97,13 @@ class Tokenizer:
     for (token_type, regex) in TOKEN_REGEXEN:
       re_match = regex.match(self.body, pos)
       if re_match:
-        token_content = filter(lambda x: x is not None, re_match.groups())[0]
+        token_content = next(g for g in re_match.groups() if g is not None)
         token = Token(token_type, token_content, re_match.end())
         break
 
     return token
 
-  def maybe_advance(self, expected_type):
+  def maybe_advance(self, expected_type: str) -> Optional[str]:
     """Advance the tokenizer by one token if it has |expected_type|.
 
     Args:
@@ -90,7 +119,7 @@ class Tokenizer:
       return token.value
     return None
 
-  def advance(self, expected_type):
+  def advance(self, expected_type: str) -> str:
     """Advance the tokenizer by one token, asserting its type.
 
     Throws an error if the token at point has the wrong type.

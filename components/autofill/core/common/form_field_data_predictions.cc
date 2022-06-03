@@ -22,20 +22,4 @@ FormFieldDataPredictions& FormFieldDataPredictions::operator=(
 
 FormFieldDataPredictions::~FormFieldDataPredictions() = default;
 
-bool FormFieldDataPredictions::operator==(
-    const FormFieldDataPredictions& predictions) const {
-  return (field.SameFieldAs(predictions.field) &&
-          signature == predictions.signature &&
-          heuristic_type == predictions.heuristic_type &&
-          server_type == predictions.server_type &&
-          overall_type == predictions.overall_type &&
-          parseable_name == predictions.parseable_name &&
-          section == predictions.section);
-}
-
-bool FormFieldDataPredictions::operator!=(
-    const FormFieldDataPredictions& predictions) const {
-  return !operator==(predictions);
-}
-
 }  // namespace autofill

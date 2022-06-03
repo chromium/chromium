@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 
+#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -65,7 +66,10 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   enum WebAutofillState GetAutofillState() const;
   bool IsAutofilled() const;
   void SetAutofillState(enum WebAutofillState);
+  void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
+  bool PreventHighlightingOfAutofilledFields() const;
   bool UserHasEditedTheField() const;
+  void SetUserHasEditedTheField(bool value);
   // This is only used for simulating the user's action in tests.
   void SetUserHasEditedTheFieldForTest();
 
@@ -84,6 +88,10 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // Sets the autofilled value for input element, textarea element and select
   // element and sends a sequence of events to the element.
   void SetAutofillValue(const WebString&);
+  // Triggers the emission of a focus event.
+  void DispatchFocusEvent();
+  // Triggers the emission of a blur event.
+  void DispatchBlurEvent();
   // Returns value of element. For select element, it returns the value of
   // the selected option if present. If no selected option, an empty string
   // is returned. If element doesn't fall into input element, textarea element
@@ -131,13 +139,17 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
 
   // Returns the identifier which is unique among all form control elements in
   // the current renderer process. In the current implementation ids are
-  // consecutive numbers so their uniqueness might be broken in case of
-  // overflow.
-  unsigned UniqueRendererFormControlId() const;
+  // consecutive numbers.
+  uint64_t UniqueRendererFormControlId() const;
 
   // Returns the ax node id of the form control element in the accessibility
   // tree. The ax node id is consistent across renderer and browser processes.
   int32_t GetAxId() const;
+
+  // Getter and setter for the PII type of the element derived from the autofill
+  // field semantic prediction.
+  FormElementPiiType GetFormElementPiiType() const;
+  void SetFormElementPiiType(FormElementPiiType form_element_pii_type);
 
 #if INSIDE_BLINK
   WebFormControlElement(HTMLFormControlElement*);
@@ -150,4 +162,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebFormControlElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_

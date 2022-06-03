@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
@@ -24,22 +23,44 @@ class EventModelImpl : public EventModel {
  public:
   EventModelImpl(std::unique_ptr<EventStore> store,
                  std::unique_ptr<EventStorageValidator> storage_validator);
+
+  EventModelImpl(const EventModelImpl&) = delete;
+  EventModelImpl& operator=(const EventModelImpl&) = delete;
+
   ~EventModelImpl() override;
 
   // EventModel implementation.
-  void Initialize(const OnModelInitializationFinished& callback,
+  void Initialize(OnModelInitializationFinished callback,
                   uint32_t current_day) override;
   bool IsReady() const override;
   const Event* GetEvent(const std::string& event_name) const override;
+  uint32_t GetEventCount(const std::string& event_name,
+                         uint32_t current_day,
+                         uint32_t window_size) const override;
   void IncrementEvent(const std::string& event_name,
                       uint32_t current_day) override;
+  void IncrementSnooze(const std::string& event_name,
+                       uint32_t current_day,
+                       base::Time current_time) override;
+  void DismissSnooze(const std::string& event_name) override;
+  base::Time GetLastSnoozeTimestamp(
+      const std::string& event_name) const override;
+  uint32_t GetSnoozeCount(const std::string& event_name,
+                          uint32_t window,
+                          uint32_t current_day) const override;
+  bool IsSnoozeDismissed(const std::string& event_name) const override;
 
  private:
   // Callback for loading the underlying store.
-  void OnStoreLoaded(const OnModelInitializationFinished& callback,
+  void OnStoreLoaded(OnModelInitializationFinished callback,
                      uint32_t current_day,
                      bool success,
                      std::unique_ptr<std::vector<Event>> events);
+
+  int GetEventCountOrSnooze(const std::string& event_name,
+                            int current_day,
+                            int window,
+                            bool is_snooze) const;
 
   // Internal version for getting the non-const version of a stored Event.
   // Creates the event if it is not already stored.
@@ -59,8 +80,6 @@ class EventModelImpl : public EventModel {
   bool ready_;
 
   base::WeakPtrFactory<EventModelImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventModelImpl);
 };
 
 }  // namespace feature_engagement

@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -57,12 +56,7 @@ public class CastWebContentsFragment extends Fragment {
         Log.d(TAG, "onCreateView");
         super.onCreateView(inflater, container, savedInstanceState);
 
-        if (!CastBrowserHelper.initializeBrowser(getContext())) {
-            Toast.makeText(getContext(), R.string.browser_process_initialization_failed,
-                         Toast.LENGTH_SHORT)
-                    .show();
-            return null;
-        }
+        CastBrowserHelper.initializeBrowser(getContext());
         if (mFragmentRootView == null) {
             mFragmentRootView = inflater.cloneInContext(getContext())
                                         .inflate(R.layout.cast_web_contents_activity, null);

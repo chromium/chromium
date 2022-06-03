@@ -1,0 +1,5 @@
+Tests that browser.Target.setAutoAttach() attaches to new service workers.
+Started and attached to service_worker target, waitingForDebugger=true
+self.globalVar = undefined
+Resumed, self.globalVar = 2020
+

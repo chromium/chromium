@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS e.style['align-content'] = "normal" should set the property value
+PASS e.style['align-content'] = "baseline" should set the property value
+PASS e.style['align-content'] = "first baseline" should set the property value
+FAIL e.style['align-content'] = "last baseline" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['align-content'] = "space-between" should set the property value
+PASS e.style['align-content'] = "space-around" should set the property value
+PASS e.style['align-content'] = "space-evenly" should set the property value
+PASS e.style['align-content'] = "stretch" should set the property value
+PASS e.style['align-content'] = "center" should set the property value
+PASS e.style['align-content'] = "start" should set the property value
+PASS e.style['align-content'] = "end" should set the property value
+PASS e.style['align-content'] = "flex-start" should set the property value
+PASS e.style['align-content'] = "flex-end" should set the property value
+PASS e.style['align-content'] = "unsafe end" should set the property value
+PASS e.style['align-content'] = "safe flex-start" should set the property value
+Harness: the test ran to completion.
+

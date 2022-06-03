@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL addTransceiver() with string argument as invalid kind should throw TypeError assert_throws: function "() => pc.addTransceiver('invalid')" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected object "TypeError" ("TypeError")
+FAIL addTransceiver() with string argument as invalid kind should throw TypeError assert_throws_js: function "() => pc.addTransceiver('invalid')" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 FAIL addTransceiver('audio') should return an audio transceiver Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL addTransceiver('video') should return a video transceiver Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL addTransceiver() with direction sendonly should have result transceiver.direction be the same Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
@@ -7,18 +7,18 @@ FAIL addTransceiver() with direction inactive should have result transceiver.dir
 PASS addTransceiver() with invalid direction should throw TypeError
 FAIL addTransceiver(track) should have result with sender.track be given track promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTransceiver(track) multiple times should create multiple transceivers promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL addTransceiver() with rid containing invalid non-alphanumeric characters should throw TypeError assert_throws: function "() =>
+FAIL addTransceiver() with rid containing invalid non-alphanumeric characters should throw TypeError assert_throws_js: function "() =>
       pc.addTransceiver('audio', {
         sendEncodings: [{
           rid: '@Invalid!'
         }]
-      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected object "TypeError" ("TypeError")
-FAIL addTransceiver() with rid longer than 16 characters should throw TypeError assert_throws: function "() =>
+      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL addTransceiver() with rid longer than 16 characters should throw TypeError assert_throws_js: function "() =>
       pc.addTransceiver('audio', {
         sendEncodings: [{
           rid: 'a'.repeat(17)
         }]
-      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected object "TypeError" ("TypeError")
+      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'." ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 FAIL addTransceiver() with valid rid value should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL addTransceiver() with valid sendEncodings should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 Harness: the test ran to completion.

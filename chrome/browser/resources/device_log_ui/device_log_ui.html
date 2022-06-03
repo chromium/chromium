@@ -5,35 +5,34 @@
   <title id="device-log-title">$i18n{titleText}</title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="device_log_ui.css">
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="strings.js"></script>
-  <script src="device_log_ui.js"></script>
+  <script type="module" src="device_log_ui.js"></script>
 </head>
 <body>
   <div id="header">
-    <p>$i18n{autoRefreshText}</p>
+    <span>$i18n{autoRefreshText}</span>
   </div>
-  <div id="log-checkbox-container">
+  <div>
     <button id="log-refresh">$i18n{logRefreshText}</button>
     <button id="log-clear">$i18n{logClearText}</button>
-    <label id="log-checkbox-show">$i18n{logLevelShowText}</label>
+    <span>$i18n{logLevelLabel}</span>
+    <select id="log-level-select">
+      <option value="Error">$i18n{logLevelErrorText}</option>
+      <option value="User">$i18n{logLevelUserText}</option>
+      <option value="Event">$i18n{logLevelEventText}</option>
+      <option value="Debug">$i18n{logLevelDebugText}</option>
+    </select>
     <label>
-      <input id="log-level-error" type="checkbox">
-      <span>$i18n{logLevelErrorText}</span>
+      <input id="log-fileinfo" type="checkbox">
+      <span>$i18n{logLevelFileinfoText}</span>
     </label>
     <label>
-      <input id="log-level-user" type="checkbox">
-      <span>$i18n{logLevelUserText}</span>
+      <input id="log-timedetail" type="checkbox">
+      <span>$i18n{logLevelTimeDetailText}</span>
     </label>
-    <label>
-      <input id="log-level-event" type="checkbox">
-      <span>$i18n{logLevelEventText}</span>
-    </label>
-    <label>
-      <input id="log-level-debug" type="checkbox">
-      <span>$i18n{logLevelDebugText}</span>
-    </label>
+  </div>
+
+  <div id="log-checkbox-container">
+    <button id="log-clear-types">$i18n{logClearTypesText}</button>
     <label>
       <input id="log-type-login" type="checkbox">
       <span>$i18n{logTypeLoginText}</span>
@@ -67,12 +66,12 @@
       <span>$i18n{logTypeFidoText}</span>
     </label>
     <label>
-      <input id="log-fileinfo" type="checkbox">
-      <span>$i18n{logLevelFileinfoText}</span>
+      <input id="log-type-serial" type="checkbox">
+      <span>$i18n{logTypeSerialText}</span>
     </label>
     <label>
-      <input id="log-timedetail" type="checkbox">
-      <span>$i18n{logLevelTimeDetailText}</span>
+      <input id="log-type-camera" type="checkbox">
+      <span>$i18n{logTypeCameraText}</span>
     </label>
   </div>
   <div id="log-container"></div>

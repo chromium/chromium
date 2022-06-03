@@ -1,0 +1,133 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+    padding: 10px;
+    width: 100%;
+  }
+
+  :host([is-sent_]:not([user-dismissed_])) #notificationContainer {
+    background-color: LightGreen;
+  }
+
+  :host(:not([is-sent_])) #notificationContainer {
+    box-shadow: var(--cr-elevation-3);
+  }
+
+  :host([user-dismissed_]) #notificationContainer {
+    background-color: red;
+  }
+
+  #notificationContainer {
+    display: flex;
+    flex: 1 0 100%;
+  }
+
+  #fields {
+    flex: 4;
+  }
+
+  cr-input {
+    padding: 5px;
+  }
+
+  .status-string {
+    font-size: 15px
+  }
+</style>
+<div id="notificationContainer">
+  <div class="column">
+    <span hidden="[[!userDismissed_]]" class="emphasize status-string">
+      This notification was dismissed.
+    </span>
+    <cr-button hidden="[[notification.sent]]" id="sendBtn"
+        disabled="[[!isNotificationDataValid_]]"
+        on-click="onSetNotification_" class="internals-button">
+      <span class="emphasize">Send this notification</span>
+    </cr-button>
+    <cr-button hidden="[[!notification.sent]]" id="editBtn"
+        disabled="[[!isNotificationDataValid_]]"
+        on-click="onUpdateNotification_" class="internals-button">
+      <span class="emphasize">[[updateNotificationText_]]</span>
+    </cr-button>
+    <cr-button hidden="[[!notification.sent]]" id="removeBtn"
+        on-click="onRemoveButtonClick_" class="internals-button">
+      <span class="emphasize">Remove this notification</span>
+    </cr-button>
+  </div>
+  <div class="column" id="fields">
+    <cr-input value="{{notification.id}}" label="notification ID"
+        type="number" invalid="[[!isValidId_]]"
+        on-change="onNotificationIdChanged_"
+        auto-validate error-message="Required and must be unique" required
+        disabled="[[notification.sent]]">
+    </cr-input>
+    <cr-input label="Visible App Name"
+        value="{{notification.appMetadata.visibleAppName}}" id="urlInput">
+    </cr-input>
+    <cr-input label="Package Name"
+        value="{{notification.appMetadata.packageName}}" id="packageName">
+    </cr-input>
+    <div class="label-top">
+      <label>Icon Image Type</label>
+      <select id="iconImageTypeSelector" class="md-select"
+          on-change="onIconImageTypeSelected_">
+        <template is="dom-repeat" items="[[imageList_]]">
+          <option selected="[[isEqual_(item, notification.appMetadata.icon)]]">
+            [[getImageTypeName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <div class="label-top">
+      <label>Importance</label>
+      <select id="importanceSelector" class="md-select"
+          on-change="onImportanceSelected_">
+        <template is="dom-repeat" items="[[importanceList_]]">
+          <option selected="[[isEqual_(item, notification.importance)]]">
+            [[getImportanceName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <cr-input value="{{notification.inlineReplyId}}" label="Inline reply ID"
+        type="number" error-message="Required and must be unique"
+        on-change="onInlineReplyIdChanged_" auto-validate required
+        disabled="[[notification.sent]]" invalid="[[!isValidInlineReplyId_]]">
+    </cr-input>
+    <cr-input value="{{notification.timestamp}}" label="Timestamp (ms)" min="0"
+        id="timestampInput" type="number" on-change="onTimeStampChanged_"
+        auto-validate error-message="Must be greater than 0" required>
+    </cr-input>
+    <cr-input label="Title (Optional)" value="{{notification.title}}">
+    </cr-input>
+    <cr-input label="Text Content (Optional)"
+        value="{{notification.textContent}}" id="textContent">
+    </cr-input>
+    <div class="label-top">
+      <label>
+        Shared Image Type (Optional)
+      </label>
+      <select id="sharedImageTypeSelector" class="md-select"
+        on-change="onSharedImageTypeSelected_">
+        <template is="dom-repeat" items="[[imageList_]]">
+          <option selected="[[isEqual_(item, notification.sharedImage)]]">
+            [[getImageTypeName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <div class="label-top">
+      <label>Contact Image Type (Optional)</label>
+      <select id="contactImageSelector" class="md-select"
+        on-change="onContactImageTypeSelected_">
+        <template is="dom-repeat" items="[[imageList_]]">
+          <option  selected="[[isEqual_(item, notification.contactImage)]]">
+            [[getImageTypeName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+  </div>
+</div>
+

@@ -20,10 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -31,10 +30,6 @@ namespace blink {
 SVGNumberList::SVGNumberList() = default;
 
 SVGNumberList::~SVGNumberList() = default;
-
-String SVGNumberList::ValueAsString() const {
-  return SVGListPropertyHelper<SVGNumberList, SVGNumber>::SerializeList();
-}
 
 template <typename CharType>
 SVGParsingError SVGNumberList::Parse(const CharType*& ptr,
@@ -58,65 +53,58 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   // Don't call |clear()| if an error is encountered. SVG policy is to use
   // valid items before error.
   // Spec: http://www.w3.org/TR/SVG/single-page.html#implnote-ErrorProcessing
-  if (value.Is8Bit()) {
-    const LChar* ptr = value.Characters8();
-    const LChar* end = ptr + value.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = value.Characters16();
-  const UChar* end = ptr + value.length();
-  return Parse(ptr, end);
+  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+    return Parse(chars, chars + length);
+  });
 }
 
-void SVGNumberList::Add(SVGPropertyBase* other, SVGElement* context_element) {
-  SVGNumberList* other_list = ToSVGNumberList(other);
-
+void SVGNumberList::Add(const SVGPropertyBase* other,
+                        const SVGElement* context_element) {
+  auto* other_list = To<SVGNumberList>(other);
   if (length() != other_list->length())
     return;
-
   for (uint32_t i = 0; i < length(); ++i)
-    at(i)->SetValue(at(i)->Value() + other_list->at(i)->Value());
+    at(i)->Add(other_list->at(i), context_element);
 }
 
 void SVGNumberList::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from_value,
-    SVGPropertyBase* to_value,
-    SVGPropertyBase* to_at_end_of_duration_value,
-    SVGElement* context_element) {
-  SVGNumberList* from_list = ToSVGNumberList(from_value);
-  SVGNumberList* to_list = ToSVGNumberList(to_value);
-  SVGNumberList* to_at_end_of_duration_list =
-      ToSVGNumberList(to_at_end_of_duration_value);
+    const SVGPropertyBase* from_value,
+    const SVGPropertyBase* to_value,
+    const SVGPropertyBase* to_at_end_of_duration_value,
+    const SVGElement* context_element) {
+  auto* from_list = To<SVGNumberList>(from_value);
+  auto* to_list = To<SVGNumberList>(to_value);
+
+  if (!AdjustFromToListValues(from_list, to_list, percentage))
+    return;
+
+  auto* to_at_end_of_duration_list =
+      To<SVGNumberList>(to_at_end_of_duration_value);
 
   uint32_t from_list_size = from_list->length();
   uint32_t to_list_size = to_list->length();
   uint32_t to_at_end_of_duration_list_size =
       to_at_end_of_duration_list->length();
 
-  const bool is_to_animation =
-      animation_element.GetAnimationMode() == kToAnimation;
-  if (!AdjustFromToListValues(from_list, to_list, percentage, is_to_animation))
-    return;
-
+  const bool needs_neutral_element =
+      !from_list_size || to_list_size != to_at_end_of_duration_list_size;
+  const SVGNumber* neutral =
+      needs_neutral_element ? CreatePaddingItem() : nullptr;
   for (uint32_t i = 0; i < to_list_size; ++i) {
-    float effective_from = from_list_size ? from_list->at(i)->Value() : 0;
-    float effective_to = to_list_size ? to_list->at(i)->Value() : 0;
-    float effective_to_at_end = i < to_at_end_of_duration_list_size
-                                    ? to_at_end_of_duration_list->at(i)->Value()
-                                    : 0;
-
-    float animated = at(i)->Value();
-    animation_element.AnimateAdditiveNumber(percentage, repeat_count,
-                                            effective_from, effective_to,
-                                            effective_to_at_end, animated);
-    at(i)->SetValue(animated);
+    const SVGNumber* from = from_list_size ? from_list->at(i) : neutral;
+    const SVGNumber* to_at_end = i < to_at_end_of_duration_list_size
+                                     ? to_at_end_of_duration_list->at(i)
+                                     : neutral;
+    at(i)->CalculateAnimatedValue(parameters, percentage, repeat_count, from,
+                                  to_list->at(i), to_at_end, context_element);
   }
 }
 
-float SVGNumberList::CalculateDistance(SVGPropertyBase* to, SVGElement*) {
+float SVGNumberList::CalculateDistance(const SVGPropertyBase* to,
+                                       const SVGElement*) const {
   // FIXME: Distance calculation is not possible for SVGNumberList right now. We
   // need the distance for every single value.
   return -1;

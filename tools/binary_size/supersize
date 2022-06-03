@@ -5,4 +5,4 @@
 
 base_dir=$(dirname "$0")
 
-exec python "$base_dir/libsupersize/main.py" "$@"
+exec python3 "$base_dir/libsupersize/main.py" "$@"

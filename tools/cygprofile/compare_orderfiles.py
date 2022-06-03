@@ -121,12 +121,13 @@ def CheckOrderfileCommit(commit_hash, clank_path):
     commit_hash: (str) Git hash of the orderfile roll commit.
     clank_path: (str) Path to the clank repository.
   """
-  output = subprocess.check_output(
-      ['git', 'show', r'--format=%an %s', commit_hash], cwd=clank_path)
+  output = subprocess.check_output(['git', 'show', r'--format=%s', commit_hash],
+                                   cwd=clank_path)
   first_line = output.split('\n')[0]
-  # Capitalization changed at some point.
-  assert first_line.upper() == 'clank-autoroller Update Orderfile.'.upper(), (
-      'Not an orderfile commit')
+  # Capitalization changed at some point. Not checking the bot name because it
+  # changed too.
+  assert first_line.upper().endswith(
+      'Update Orderfile.'.upper()), ('Not an orderfile commit')
 
 
 def GetBeforeAfterOrderfileHashes(commit_hash, clank_path):

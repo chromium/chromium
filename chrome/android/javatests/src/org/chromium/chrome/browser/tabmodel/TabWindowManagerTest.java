@@ -5,24 +5,28 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
-import android.support.test.rule.UiThreadTestRule;
+import android.util.Pair;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 
@@ -30,49 +34,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test for {@link TabWindowManager} APIs.  Makes sure the class handles multiple {@link Activity}s
- * requesting {@link TabModelSelector}s, {@link Activity}s getting destroyed, etc..
+ * Test for {@link TabWindowManagerImpl}.
+ *
+ * Makes sure the class handles multiple {@link Activity}s requesting {@link TabModelSelector}s,
+ * {@link Activity}s getting destroyed, etc.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class TabWindowManagerTest {
-    private List<Activity> mActivities = new ArrayList<>();
-    private final TabModelSelectorFactory mMockTabModelSelectorFactory =
+    private TabWindowManager mSubject;
+    private AsyncTabParamsManager mAsyncTabParamsManager;
+    private NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
+
+    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
                 public TabModelSelector buildSelector(Activity activity,
-                        TabCreatorManager tabCreatorManager, int selectorIndex) {
+                        TabCreatorManager tabCreatorManager,
+                        NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
                     return new MockTabModelSelector(0, 0, null);
                 }
-    };
+            };
 
-    private ChromeActivity buildActivity() {
-        ChromeActivity activity = new CustomTabActivity();
-        mActivities.add(activity);
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
-        return activity;
-    }
-
-    private void destroyActivity(Activity a) {
-        mActivities.remove(a);
-        ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
-    }
-
-    private MockTabModelSelector requestSelector(ChromeActivity activity, int requestedIndex) {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-        manager.setTabModelSelectorFactory(mMockTabModelSelectorFactory);
-        return (MockTabModelSelector) manager.requestSelector(activity, activity, requestedIndex);
+    @Before
+    public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
+            int maxInstances = MultiWindowUtils.getMaxInstances();
+            mSubject = TabWindowManagerFactory.createInstance(
+                    sMockTabModelSelectorFactory, mAsyncTabParamsManager, maxInstances);
+        });
     }
 
     @After
     public void tearDown() {
-        for (Activity a : mActivities) {
-            ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
-        }
-        mActivities.clear();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { ApplicationStatus.resetActivitiesForInstrumentationTests(); });
     }
 
-    @Rule
-    public UiThreadTestRule mRule = new UiThreadTestRule();
+    private ChromeActivity buildActivity() {
+        ChromeActivity activity = new CustomTabActivity();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        });
+        return activity;
+    }
+
+    private void destroyActivity(Activity a) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED); });
+    }
 
     /**
      * Test that a single {@link Activity} can request a {@link TabModelSelector}.
@@ -82,13 +93,16 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testSingleActivity() {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
 
+        Assert.assertEquals(0, assignment0.first.intValue());
+        TabModelSelector selector0 = assignment0.second;
         Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+
+        destroyActivity(activity0);
     }
 
     /**
@@ -99,18 +113,24 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testMultipleActivities() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
-        final TabWindowManager manager = TabWindowManager.getInstance();
+        Assert.assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
-        TabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
-        Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
     }
 
     /**
@@ -122,14 +142,22 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testTooManyActivities() {
-        for (int i = 0; i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
+        List<ChromeActivity> activityList = new ArrayList<>();
+        for (int i = 0; i < mSubject.getMaxSimultaneousSelectors(); i++) {
             ChromeActivity a = buildActivity();
-            Assert.assertNotNull("Could not build selector", requestSelector(a, 0));
+            activityList.add(a);
+            Assert.assertNotNull("Could not build selector",
+                    mSubject.requestSelector(a, a, mNextTabPolicySupplier, 0));
         }
 
         ChromeActivity activity = buildActivity();
-        Assert.assertNull(
-                "Built selectors past the max number supported", requestSelector(activity, 0));
+        activityList.add(activity);
+        Assert.assertNull("Built selectors past the max number supported",
+                mSubject.requestSelector(activity, activity, mNextTabPolicySupplier, 0));
+
+        for (ChromeActivity a : activityList) {
+            destroyActivity(a);
+        }
     }
 
     /**
@@ -141,20 +169,25 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testIndexFallback() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
-
-        final TabWindowManager manager = TabWindowManager.getInstance();
+        Assert.assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
         // Request 0 again, but should get 1 instead.
-        TabModelSelector selector1 = requestSelector(activity1, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
-        Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
     }
 
     /**
@@ -166,42 +199,48 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testIndexFallback2() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 3);
-
-        final TabWindowManager manager = TabWindowManager.getInstance();
+        Assert.assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 3);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 2);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 2);
         // Request 2 again, but should get 0 instead.
-        TabModelSelector selector1 = requestSelector(activity1, 2);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 2);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
-        Assert.assertEquals("Unexpected model index", 2, manager.getIndexForWindow(activity0));
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity1));
+        Assert.assertEquals(2, assignment0.first.intValue());
+        Assert.assertEquals(0, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
+        Assert.assertEquals("Unexpected model index", 2, mSubject.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity1));
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
     }
 
     /**
-     * Test that a destroyed {@link Activity} properly gets removed from {@link TabWindowManager}.
+     * Test that a destroyed {@link Activity} properly gets removed from {@link
+     * TabWindowManagerImpl}.
      */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testActivityDeathRemovesSingle() {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
 
         destroyActivity(activity0);
 
         Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
-                manager.getIndexForWindow(activity0));
+                mSubject.getIndexForWindow(activity0));
     }
 
     /**
@@ -213,24 +252,28 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testActivityDeathLetsModelReassign() {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
 
         destroyActivity(activity0);
 
         Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
-                manager.getIndexForWindow(activity0));
+                mSubject.getIndexForWindow(activity0));
 
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector1 = requestSelector(activity1, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity1));
+        Assert.assertEquals(0, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity1));
+
+        destroyActivity(activity1);
     }
 
     /**
@@ -243,31 +286,38 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testActivityDeathWithMultipleActivities() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
-
-        final TabWindowManager manager = TabWindowManager.getInstance();
+        Assert.assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
-        TabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
-        Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
 
         destroyActivity(activity1);
 
         Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
-                manager.getIndexForWindow(activity1));
+                mSubject.getIndexForWindow(activity1));
 
         ChromeActivity activity2 = buildActivity();
-        TabModelSelector selector2 = requestSelector(activity2, 1);
+        Pair<Integer, TabModelSelector> assignment2 =
+                mSubject.requestSelector(activity2, activity2, mNextTabPolicySupplier, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector2);
-        Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
-        Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity2));
+        Assert.assertEquals(1, assignment2.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment2.second);
+        Assert.assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        Assert.assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity2));
+
+        destroyActivity(activity0);
+        destroyActivity(activity2);
     }
 
     /**
@@ -278,31 +328,36 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testTabExistsInAnySelector() {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        MockTabModelSelector selector0 = requestSelector(activity0, 0);
-        MockTabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockIncognitoTab();
 
-        Assert.assertFalse(manager.tabExistsInAnySelector(tab1.getId() - 1));
-        Assert.assertTrue(manager.tabExistsInAnySelector(tab1.getId()));
-        Assert.assertTrue(manager.tabExistsInAnySelector(tab2.getId()));
-        Assert.assertFalse(manager.tabExistsInAnySelector(tab2.getId() + 1));
+        Assert.assertNull(mSubject.getTabById(tab1.getId() - 1));
+        Assert.assertNotNull(mSubject.getTabById(tab1.getId()));
+        Assert.assertNotNull(mSubject.getTabById(tab2.getId()));
+        Assert.assertNull(mSubject.getTabById(tab2.getId() + 1));
 
-        AsyncTabParamsManager.getAsyncTabParams().clear();
+        mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null, null);
-        Assert.assertFalse(manager.tabExistsInAnySelector(asyncTabId));
-        AsyncTabParamsManager.add(asyncTabId, dummyParams);
+                new TabReparentingParams(new MockTab(0, false), null);
+        Assert.assertNull(mSubject.getTabById(asyncTabId));
+        mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
-            Assert.assertTrue(manager.tabExistsInAnySelector(asyncTabId));
+            Assert.assertNotNull(mSubject.getTabById(asyncTabId));
         } finally {
-            AsyncTabParamsManager.getAsyncTabParams().clear();
+            mAsyncTabParamsManager.getAsyncTabParams().clear();
         }
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
     }
 
     /**
@@ -313,30 +368,69 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testGetTabById() {
-        final TabWindowManager manager = TabWindowManager.getInstance();
-
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        MockTabModelSelector selector0 = requestSelector(activity0, 0);
-        MockTabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockIncognitoTab();
 
-        Assert.assertNull(manager.getTabById(tab1.getId() - 1));
-        Assert.assertNotNull(manager.getTabById(tab1.getId()));
-        Assert.assertNotNull(manager.getTabById(tab2.getId()));
-        Assert.assertNull(manager.getTabById(tab2.getId() + 1));
+        Assert.assertNull(mSubject.getTabById(tab1.getId() - 1));
+        Assert.assertNotNull(mSubject.getTabById(tab1.getId()));
+        Assert.assertNotNull(mSubject.getTabById(tab2.getId()));
+        Assert.assertNull(mSubject.getTabById(tab2.getId() + 1));
 
-        AsyncTabParamsManager.getAsyncTabParams().clear();
+        mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null, null);
-        Assert.assertNull(manager.getTabById(asyncTabId));
-        AsyncTabParamsManager.add(asyncTabId, dummyParams);
+                new TabReparentingParams(new MockTab(0, false), null);
+        Assert.assertNull(mSubject.getTabById(asyncTabId));
+        mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
-            Assert.assertNotNull(manager.getTabById(asyncTabId));
+            Assert.assertNotNull(mSubject.getTabById(asyncTabId));
         } finally {
-            AsyncTabParamsManager.getAsyncTabParams().clear();
+            mAsyncTabParamsManager.getAsyncTabParams().clear();
         }
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
+    }
+
+    /**
+     * Tests that getTabModelForTab(...) functions properly.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Multiwindow"})
+    @UiThreadTest
+    public void getTabModelForTab() {
+        ChromeActivity activity0 = buildActivity();
+        ChromeActivity activity1 = buildActivity();
+        Pair<Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(activity0, activity0, mNextTabPolicySupplier, 0);
+        Pair<Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(activity1, activity1, mNextTabPolicySupplier, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
+        Tab tab1 = selector0.addMockTab();
+        Tab tab2 = selector1.addMockTab();
+        Tab tab3 = selector0.addMockIncognitoTab();
+        Tab tab4 = selector1.addMockIncognitoTab();
+
+        Assert.assertEquals(
+                selector0.getModel(/* incognito= */ false), mSubject.getTabModelForTab(tab1));
+        Assert.assertEquals(
+                selector1.getModel(/* incognito= */ false), mSubject.getTabModelForTab(tab2));
+        Assert.assertEquals(
+                selector0.getModel(/* incognito= */ true), mSubject.getTabModelForTab(tab3));
+        Assert.assertEquals(
+                selector1.getModel(/* incognito= */ true), mSubject.getTabModelForTab(tab4));
+
+        destroyActivity(activity0);
+        destroyActivity(activity1);
     }
 }

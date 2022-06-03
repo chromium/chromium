@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
-<translation id="6106989379647458772"><ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് താല്‍ക്കാലികമായി പ്രവർത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍ അത് ശാശ്വതമായി ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് മാറ്റിയിരിക്കാം.</translation>
-<translation id="6312113039770857350">വെബ്പേജ് ലഭ്യമല്ല</translation>
-<translation id="8681531050781943054">ഇനിപ്പറയുന്ന കാരണങ്ങളാൽ <ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് ലോഡ് ചെയ്യാനായില്ല:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />നിർദ്ദേശങ്ങൾ:<ph name="MARKUP_2" />നിങ്ങൾക്കൊരു ഡാറ്റ കണക്ഷൻ ഉണ്ടെന്ന് ഉറപ്പാക്കുക<ph name="MARKUP_3" />ഈ വെബ്‌പേജ് പിന്നീട് വീണ്ടും ലോഡ് ചെയ്യുക<ph name="MARKUP_4" />നിങ്ങൾ നൽകിയ വിലാസം പരിശോധിക്കുക<ph name="MARKUP_5" /></translation>
 </translationbundle>

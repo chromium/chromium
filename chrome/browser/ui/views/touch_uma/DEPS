@@ -1,6 +1,0 @@
-specific_include_rules = {
-  # TODO(mash): https://crbug.com/826476
-  "touch_uma_ash\.cc": [
-    "+ash/touch/touch_uma.h",
-  ],
-}

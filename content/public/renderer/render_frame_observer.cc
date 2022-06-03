@@ -55,4 +55,9 @@ void RenderFrameObserver::RenderFrameGone() {
   render_frame_ = nullptr;
 }
 
+bool RenderFrameObserver::SetUpSmoothnessReporting(
+    base::ReadOnlySharedMemoryRegion& shared_memory) {
+  return false;
+}
+
 }  // namespace content

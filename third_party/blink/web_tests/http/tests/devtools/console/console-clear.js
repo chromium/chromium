@@ -6,7 +6,7 @@
   TestRunner.addResult("Tests that console is cleared upon requestClearMessages call.\n");
 
   await TestRunner.showPanel("console");
-  await TestRunner.loadModule("console_test_runner");
+  await TestRunner.loadTestModule("console_test_runner");
 
   await TestRunner.evaluateInPagePromise(`
     console.log("one");
@@ -14,13 +14,13 @@
     console.log("three");
   `);
   TestRunner.addResult("=== Before clear ===");
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   Console.ConsoleView.clearConsole();
   TestRunner.deprecatedRunAfterPendingDispatches(callback);
-  function callback() {
+  async function callback() {
     TestRunner.addResult("=== After clear ===");
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

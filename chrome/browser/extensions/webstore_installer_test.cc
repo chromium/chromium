@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/webstore_installer_test.h"
+
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +30,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -54,7 +58,7 @@ WebstoreInstallerTest::~WebstoreInstallerTest() {}
 void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
   extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
 
-  embedded_test_server()->RegisterRequestMonitor(base::Bind(
+  embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &WebstoreInstallerTest::ProcessServerRequest, base::Unretained(this)));
   // We start the test server now instead of in
   // SetUpInProcessBrowserTestFixture so that we can get its port number.
@@ -73,7 +77,8 @@ void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
 
   // Allow tests to call window.gc(), so that we can check that callback
   // functions don't get collected prematurely.
-  command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebstoreInstallerTest::SetUpOnMainThread() {
@@ -137,12 +142,14 @@ void WebstoreInstallerTest::ProcessServerRequest(const HttpRequest& request) {}
 
 void WebstoreInstallerTest::AutoAcceptInstall() {
   install_auto_confirm_.reset();  // Destroy any old override first.
-  install_auto_confirm_.reset(new extensions::ScopedTestDialogAutoConfirm(
-      extensions::ScopedTestDialogAutoConfirm::ACCEPT));
+  install_auto_confirm_ =
+      std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
+          extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 }
 
 void WebstoreInstallerTest::AutoCancelInstall() {
   install_auto_confirm_.reset();  // Destroy any old override first.
-  install_auto_confirm_.reset(new extensions::ScopedTestDialogAutoConfirm(
-      extensions::ScopedTestDialogAutoConfirm::CANCEL));
+  install_auto_confirm_ =
+      std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
+          extensions::ScopedTestDialogAutoConfirm::CANCEL);
 }

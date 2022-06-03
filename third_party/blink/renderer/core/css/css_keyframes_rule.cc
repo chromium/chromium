@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -74,7 +75,8 @@ int StyleRuleKeyframes::FindKeyframeIndex(const String& key) const {
   return -1;
 }
 
-void StyleRuleKeyframes::TraceAfterDispatch(blink::Visitor* visitor) {
+void StyleRuleKeyframes::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(layer_);
   visitor->Trace(keyframes_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
@@ -152,7 +154,7 @@ String CSSKeyframesRule::cssText() const {
     result.Append('\n');
   }
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 unsigned CSSKeyframesRule::length() const {
@@ -200,7 +202,7 @@ void CSSKeyframesRule::Reattach(StyleRuleBase* rule) {
   keyframes_rule_ = To<StyleRuleKeyframes>(rule);
 }
 
-void CSSKeyframesRule::Trace(blink::Visitor* visitor) {
+void CSSKeyframesRule::Trace(Visitor* visitor) const {
   CSSRule::Trace(visitor);
   visitor->Trace(child_rule_cssom_wrappers_);
   visitor->Trace(keyframes_rule_);

@@ -5,6 +5,7 @@
 #include "content/browser/media/android/browser_gpu_video_accelerator_factories.h"
 
 #include "base/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -13,7 +14,6 @@
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
-#include "media/gpu/ipc/common/media_messages.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 
 namespace content {
@@ -33,6 +33,7 @@ void OnGpuChannelEstablished(
   attributes.samples = 0;
   attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
+  attributes.enable_raster_interface = true;
 
   gpu::GpuChannelEstablishFactory* factory =
       BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
@@ -54,8 +55,6 @@ void OnGpuChannelEstablished(
           automatic_flushes, support_locking, support_grcontext,
           gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
-
-  // TODO(xingliu): This is on main thread, move to another thread?
   context_provider->BindToCurrentThread();
 
   auto gpu_factories = std::make_unique<BrowserGpuVideoAcceleratorFactories>(
@@ -84,13 +83,31 @@ bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
   return false;
 }
 
-base::UnguessableToken BrowserGpuVideoAcceleratorFactories::GetChannelToken() {
-  if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->channel()->Send(
-        new GpuCommandBufferMsg_GetChannelToken(&channel_token_));
+void BrowserGpuVideoAcceleratorFactories::GetChannelToken(
+    gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
+  DCHECK(cb);
+  if (!channel_token_.is_empty()) {
+    // Use cached token.
+    std::move(cb).Run(channel_token_);
+    return;
   }
 
-  return channel_token_;
+  // Retrieve a channel token if needed.
+  bool request_channel_token = channel_token_callbacks_.empty();
+  channel_token_callbacks_.AddUnsafe(std::move(cb));
+  if (request_channel_token) {
+    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+        base::BindOnce(
+            &BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady,
+            base::Unretained(this)));
+  }
+}
+
+void BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady(
+    const base::UnguessableToken& token) {
+  channel_token_ = token;
+  channel_token_callbacks_.Notify(channel_token_);
+  DCHECK(channel_token_callbacks_.empty());
 }
 
 int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {
@@ -99,17 +116,30 @@ int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {
 
 media::GpuVideoAcceleratorFactories::Supported
 BrowserGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
-    media::VideoDecoderImplementation implementation,
     const media::VideoDecoderConfig& config) {
-  // TODO(sandersd): Add a cache here too?
+  // Tell the caller to just try it, there are no other decoders to fall back on
+  // anyway.
   return media::GpuVideoAcceleratorFactories::Supported::kTrue;
+}
+
+media::VideoDecoderType BrowserGpuVideoAcceleratorFactories::GetDecoderType() {
+  return media::VideoDecoderType::kMediaCodec;
+}
+
+bool BrowserGpuVideoAcceleratorFactories::IsDecoderSupportKnown() {
+  return true;
+}
+
+void BrowserGpuVideoAcceleratorFactories::NotifyDecoderSupportKnown(
+    base::OnceClosure callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(callback));
 }
 
 std::unique_ptr<media::VideoDecoder>
 BrowserGpuVideoAcceleratorFactories::CreateVideoDecoder(
     media::MediaLog* media_log,
-    media::VideoDecoderImplementation implementation,
-    const media::RequestOverlayInfoCB& request_overlay_info_cb) {
+    media::RequestOverlayInfoCB request_overlay_info_cb) {
   return nullptr;
 }
 
@@ -159,23 +189,39 @@ BrowserGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
   return {};
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
+scoped_refptr<base::SequencedTaskRunner>
 BrowserGpuVideoAcceleratorFactories::GetTaskRunner() {
   return nullptr;
 }
 
-media::VideoEncodeAccelerator::SupportedProfiles
+absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
 BrowserGpuVideoAcceleratorFactories::
     GetVideoEncodeAcceleratorSupportedProfiles() {
   return media::VideoEncodeAccelerator::SupportedProfiles();
 }
 
-scoped_refptr<viz::ContextProvider>
+bool BrowserGpuVideoAcceleratorFactories::IsEncoderSupportKnown() {
+  return true;
+}
+
+void BrowserGpuVideoAcceleratorFactories::NotifyEncoderSupportKnown(
+    base::OnceClosure callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(callback));
+}
+
+viz::RasterContextProvider*
 BrowserGpuVideoAcceleratorFactories::GetMediaContextProvider() {
-  return context_provider_;
+  return context_provider_.get();
 }
 
 void BrowserGpuVideoAcceleratorFactories::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {}
+
+const gfx::ColorSpace&
+BrowserGpuVideoAcceleratorFactories::GetRenderingColorSpace() const {
+  static constexpr gfx::ColorSpace cs = gfx::ColorSpace::CreateSRGB();
+  return cs;
+}
 
 }  // namespace content

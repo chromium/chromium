@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Test the attribute handling of the Coordinates interface");
+
+// Format: [Input], [Expected]
+// Input: latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed.
+// Expected: latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed.
+const testSet = [
+    [[1, 2, 3], [1, 2, 3, null, null, null, null]],
+    [[2, 3, 4, undefined, undefined, undefined, 5], [2, 3, 4, null, null, null, 5]],
+    [[3, 4, 5, undefined, 6, undefined, 7], [3, 4, 5, null, 6, null, 7]],
+    [[4, 5, 6, undefined, 7, 8, 9], [4, 5, 6, null, 7, 8, 9]],
+    [[5, 6, 7, 8, 9, 10, 11], [5, 6, 7, 8, 9, 10, 11]],
+];
+
+let currentTestIndex = -1;
+let globalCoordinates = null;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+
+function runNextTest()
+{
+    ++currentTestIndex;
+    mock.setGeolocationPosition(...testSet[currentTestIndex][0]);
+}
+
+function verifyResults()
+{
+    assert_equals(globalCoordinates.latitude, testSet[currentTestIndex][1][0]);
+    assert_equals(globalCoordinates.longitude, testSet[currentTestIndex][1][1]);
+    assert_equals(globalCoordinates.accuracy, testSet[currentTestIndex][1][2]);
+    assert_equals(globalCoordinates.altitude, testSet[currentTestIndex][1][3]);
+    assert_equals(globalCoordinates.altitudeAccuracy, testSet[currentTestIndex][1][4]);
+    assert_equals(globalCoordinates.heading, testSet[currentTestIndex][1][5]);
+    assert_equals(globalCoordinates.speed, testSet[currentTestIndex][1][6]);
+}
+
+var watchId = navigator.geolocation.watchPosition(function(position) {
+    globalCoordinates = position.coords;
+    verifyResults();
+
+    if (currentTestIndex + 1 === testSet.length) {
+        finishJSTest();
+        return;
+    }
+    runNextTest();
+}, function(e) {
+    testFailed('the error callback was called unexpectedly');
+    finishJSTest();
+});
+
+runNextTest();
+
+</script>
+</body>
+</html>

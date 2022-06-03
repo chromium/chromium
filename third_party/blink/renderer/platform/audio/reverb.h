@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/reverb_convolver.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -47,15 +46,16 @@ class PLATFORM_EXPORT Reverb {
   USING_FAST_MALLOC(Reverb);
 
  public:
-  enum { kMaxFrameSize = 256 };
-
-  // renderSliceSize is a rendering hint, so the FFTs can be optimized to not
-  // all occur at the same time (very bad when rendering on a real-time thread).
+  // |render_slice_size| is a rendering hint, so the FFTs can be optimized to
+  // not all occur at the same time (very bad when rendering on a real-time
+  // thread).
   Reverb(AudioBus* impulse_response_buffer,
-         size_t render_slice_size,
-         size_t max_fft_size,
+         unsigned render_slice_size,
+         unsigned max_fft_size,
          bool use_background_threads,
          bool normalize);
+  Reverb(const Reverb&) = delete;
+  Reverb& operator=(const Reverb&) = delete;
 
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
@@ -67,8 +67,8 @@ class PLATFORM_EXPORT Reverb {
 
  private:
   void Initialize(AudioBus* impulse_response_buffer,
-                  size_t render_slice_size,
-                  size_t max_fft_size,
+                  unsigned render_slice_size,
+                  unsigned max_fft_size,
                   bool use_background_threads,
                   float scale);
 
@@ -81,8 +81,6 @@ class PLATFORM_EXPORT Reverb {
 
   // For "True" stereo processing
   scoped_refptr<AudioBus> temp_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reverb);
 };
 
 }  // namespace blink

@@ -5,18 +5,19 @@
 #ifndef UI_BASE_WIN_INTERNAL_CONSTANTS_H_
 #define UI_BASE_WIN_INTERNAL_CONSTANTS_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // This window property if set on the window does not activate the window for a
 // touch based WM_MOUSEACTIVATE message.
-UI_BASE_EXPORT extern const wchar_t kIgnoreTouchMouseActivateForWindow[];
+COMPONENT_EXPORT(UI_BASE)
+extern const wchar_t kIgnoreTouchMouseActivateForWindow[];
 
 // This property is put on an HWND so the compositor output knows to treat it
 // as transparent and draw to it using WS_EX_LAYERED (if using the software
 // compositor).
-UI_BASE_EXPORT extern const wchar_t kWindowTranslucent[];
+COMPONENT_EXPORT(UI_BASE) extern const wchar_t kWindowTranslucent[];
 
 }  // namespace ui
 

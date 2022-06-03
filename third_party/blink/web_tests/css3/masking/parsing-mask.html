@@ -82,15 +82,6 @@ testInner("-webkit-mask-position", "center top 20px", "center top 20px");
 testInner("-webkit-mask-position", "center left 30px", "left 30px center");
 testInner("-webkit-mask-position", "left 20% top", "left 20% top");
 
-// test mask-source-type
-testInner("mask-source-type", "alpha", "alpha");
-testInner("mask-source-type", "luminance", "luminance");
-testInner("mask-source-type", "auto", "auto");
-testComputed("mask-source-type", "alpha", "alpha");
-testComputed("mask-source-type", "auto", "alpha");
-testComputed("mask-source-type", "luminance", "luminance");
-testComputed("mask-source-type", "", "alpha");
-
 // test mask-repeat
 testInner("-webkit-mask", "repeat-x", "repeat-x");
 testInner("-webkit-mask", "repeat-y", "repeat-y");

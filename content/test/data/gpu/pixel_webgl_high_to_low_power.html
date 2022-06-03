@@ -16,16 +16,27 @@ function ready() {
   sendResult("READY", "Ready for second tab to be launched");
 }
 
-function initialize() {
+function initialize(runningOnDualGPUMacBookPro) {
+  if (runningOnDualGPUMacBookPro)
+    setRunningOnDualGpuSystem();
   if (setup())
     drawSomeFrames(notifyHarness);
 }
 
 function notifyHarness() {
+  assertRunningOnHighPerformanceGpu();
   sendResult("READY", "Ready for second tab to be closed");
+  // When running on the passthrough command decoder and ANGLE, ANGLE
+  // can only detect the need to switch GPUs upon context switch.
+  // Schedule some rendering work 10 seconds from now so that ANGLE
+  // can detect and perform the switch.
+  const numSecondsBeforeGPUSwitch = 10;
+  setTimeout(() => drawSomeFrames(() => {}),
+             numSecondsBeforeGPUSwitch * 1000);
 }
 
 function runToCompletion() {
+  assertRunningOnLowPowerGpu();
   drawSomeFrames(waitForFinish);
 }
 
@@ -47,6 +58,5 @@ function waitForFinish()
 </head>
 <body onload="ready()">
 <canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
-</div>
 </body>
 </html>

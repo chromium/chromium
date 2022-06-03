@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
+
+    <!-- App banner colors -->
+    <color name="app_banner_install_button_bg">@color/default_green</color>
+</resources>

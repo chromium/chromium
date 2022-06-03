@@ -51,13 +51,13 @@ test(function() {
 }, 'Callback function which takes an enum value');
 
 test(function() {
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
         callbackFunctionTest.testCallback(null, 'hello', 'world');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
         callbackFunctionTest.testCallback({}, 'hello', 'world');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
         callbackFunctionTest.testCallback(1, 'hello', 'world');
     });
 }, 'Passing non-callable values should throw a TypeError');

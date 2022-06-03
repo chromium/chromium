@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Test Window.isSecureContext for HTTPS creator
+PASS Test Window.isSecureContext in an iframe loading an https: URI
+PASS Test Window.isSecureContext in an iframe loading a blob: URI
+PASS Test Window.isSecureContext in an iframe loading a srcdoc
+PASS Test Window.isSecureContext in an iframe loading a javascript: URI
+PASS Test Window.isSecureContext in an iframe loading about:blank
+PASS Test Window.isSecureContext in an iframe loading initial about:blank
+FAIL Test Window.isSecureContext in an iframe loading a data: URL assert_true: a data: URL in an iframe should create a Secure Context when its creator is a Secure Context expected true got false
+PASS Test Window.isSecureContext in a sandboxed iframe loading an https: URI
+PASS Test Window.isSecureContext in a sandboxed iframe loading a blob: URI
+PASS Test Window.isSecureContext in a sandboxed iframe loading a srcdoc
+FAIL Test Window.isSecureContext in a sandboxed iframe loading a data: URL assert_true: a data: URL in a sandboxed iframe should create a Secure Context when its creator is a Secure Context expected true got false
+PASS Test Window.isSecureContext in a popup loading an http: URI
+PASS Test Window.isSecureContext in a popup loading an https: URI
+PASS Test Window.isSecureContext in a popup loading a blob: URI
+PASS Test Window.isSecureContext in a popup loading a javascript: URI
+PASS Test Window.isSecureContext in a popup loading about:blank
+PASS Test Window.isSecureContext in a popup loading initial about:blank
+Harness: the test ran to completion.
+

@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "extensions/common/dom_action_types.h"
 #include "third_party/blink/public/web/web_dom_activity_logger.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class ListValue;
@@ -30,6 +30,10 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
  public:
   static const int kMainWorldId = 0;
   explicit DOMActivityLogger(const std::string& extension_id);
+
+  DOMActivityLogger(const DOMActivityLogger&) = delete;
+  DOMActivityLogger& operator=(const DOMActivityLogger&) = delete;
+
   ~DOMActivityLogger() override;
 
   // Check (using the WebKit API) if there is no logger attached to the world
@@ -70,14 +74,12 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   // Helper function to actually send the message across IPC.
   void SendDomActionMessage(const std::string& api_call,
                             const GURL& url,
-                            const base::string16& url_title,
+                            const std::u16string& url_title,
                             DomActionType::Type call_type,
                             std::unique_ptr<base::ListValue> args);
 
   // The id of the extension with which this logger is associated.
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMActivityLogger);
 };
 
 }  // namespace extensions

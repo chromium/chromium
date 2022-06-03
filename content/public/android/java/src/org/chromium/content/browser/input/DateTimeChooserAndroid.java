@@ -4,9 +4,9 @@
 
 package org.chromium.content.browser.input;
 
-import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -56,10 +56,13 @@ class DateTimeChooserAndroid {
             int dialogType, double dialogValue,
             double min, double max, double step,
             DateTimeSuggestion[] suggestions) {
-        Activity windowAndroidActivity = windowAndroid.getActivity().get();
-        if (windowAndroidActivity == null) return null;
+        Context windowAndroidContext = windowAndroid.getContext().get();
+        if (windowAndroidContext == null
+                || ContextUtils.activityFromContext(windowAndroidContext) == null) {
+            return null;
+        }
         DateTimeChooserAndroid chooser =
-                new DateTimeChooserAndroid(windowAndroidActivity, nativeDateTimeChooserAndroid);
+                new DateTimeChooserAndroid(windowAndroidContext, nativeDateTimeChooserAndroid);
         chooser.showDialog(dialogType, dialogValue, min, max, step, suggestions);
         return chooser;
     }

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- Card styles -->
+    <style name="CardTransparentForDark">
+        <item name="android:background">@drawable/incognito_card_bg</item>
+    </style>
+
+    <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="shapeAppearance">@style/MaterialCardShape</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+    </style>
+
+    <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
+    </style>
+
+    <style name="ListActionButton" parent="@style/TextButton">
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="TextAppearance.ListMenuItem">
+        <item name="android:textColor">@color/default_text_color_list</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- ListMenuButton -->
+    <style name="ListMenuItemStyle">
+        <item name="android:paddingStart">@dimen/default_list_row_padding</item>
+        <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
+    </style>
+
+    <style name="OverflowMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit</item>
+    </style>
+    <style name="OverflowMenuAnimBottom">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
+    </style>
+
+    <!-- Modern List Item -->
+    <style name="ListItemContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/list_item_min_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
+    </style>
+    <style name="ListItemContainerV2" parent="ListItemContainer">
+        <item name="android:layout_marginTop">@dimen/list_item_v2_margin</item>
+        <item name="android:layout_marginBottom">@dimen/list_item_v2_margin</item>
+    </style>
+    <style name="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginEnd">@dimen/list_item_start_icon_right_margin</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@null</item>
+    </style>
+    <style name="ListItemStartIconV2" parent="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width</item>
+    </style>
+    <style name="ListItemEndIcon">
+        <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <!-- Promo dialogs -->
+    <style name="PromoDialog" >
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Bubble styles -->
+    <style name="TextBubbleAnimation">
+        <item name="android:windowEnterAnimation">@anim/textbubble_in</item>
+        <item name="android:windowExitAnimation">@anim/textbubble_out</item>
+    </style>
+
+    <style name="AsyncImageView">
+        <item name="unavailableSrc">@drawable/async_image_view_unavailable</item>
+        <item name="waitingSrc">@drawable/async_image_view_waiting</item>
+    </style>
+
+    <style name="ChipAnimation">
+        <item name="android:windowEnterAnimation">@anim/chip_in</item>
+        <item name="android:windowExitAnimation">@anim/chip_out</item>
+    </style>
+
+    <!-- Snooze button -->
+    <style name="TextButton.Inverse.Snooze">
+        <item name="android:paddingStart">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
+</resources>

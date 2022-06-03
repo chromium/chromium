@@ -12,12 +12,12 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -131,7 +131,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
 
   // Set window to left snapped state.
   PerformMoveWindowAccel();
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());
@@ -139,7 +139,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
   PerformMoveWindowAccel();
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(),
             screen->GetDisplayNearestWindow(window).id());
@@ -148,7 +148,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Tests that movement follows cycling through sorted display id list.
@@ -158,8 +158,8 @@ TEST_F(DisplayMoveWindowUtilTest, FourDisplays) {
   // Layout:
   // [3][2]
   // [1][p]
-  display::DisplayIdList list = display::test::CreateDisplayIdListN(
-      4, primary_id, primary_id + 1, primary_id + 2, primary_id + 3);
+  display::DisplayIdList list =
+      display::test::CreateDisplayIdListN(primary_id, 4);
   display::DisplayLayoutBuilder builder(primary_id);
   builder.AddDisplayPlacement(list[1], primary_id,
                               display::DisplayPlacement::LEFT, 0);
@@ -216,9 +216,12 @@ TEST_F(DisplayMoveWindowUtilTest, NoMovementIfNotInCycleWindowList) {
   UpdateDisplay("400x300,400x300");
   // Create a window in app list container, which would be excluded in cycle
   // window list.
-  std::unique_ptr<aura::Window> window = CreateChildWindow(
-      Shell::GetPrimaryRootWindow(), gfx::Rect(10, 20, 200, 100),
-      kShellWindowId_AppListContainer);
+  std::unique_ptr<aura::Window> window =
+      ChildTestWindowBuilder(Shell::GetPrimaryRootWindow(),
+                             gfx::Rect(10, 20, 200, 100),
+                             kShellWindowId_AppListContainer)
+          .Build();
+
   wm::ActivateWindow(window.get());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -333,7 +336,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowWithTransientChild) {
 
   // Create a |child| window and make it a transient child of |window|.
   std::unique_ptr<aura::Window> child =
-      CreateChildWindow(window, gfx::Rect(20, 30, 40, 50));
+      ChildTestWindowBuilder(window, gfx::Rect(20, 30, 40, 50)).Build();
   ::wm::AddTransientChild(window, child.get());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -397,8 +400,10 @@ TEST_F(DisplayMoveWindowUtilTest, TransientParentNotInCycleWindowList) {
   aura::Window* setting_bubble_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_SettingBubbleContainer);
-  std::unique_ptr<aura::Window> w2 = CreateChildWindow(
-      setting_bubble_container, gfx::Rect(10, 20, 200, 100), -1);
+  std::unique_ptr<aura::Window> w2 =
+      ChildTestWindowBuilder(setting_bubble_container,
+                             gfx::Rect(10, 20, 200, 100))
+          .Build();
   wm::ActivateWindow(w2.get());
 
   // Create a |child| transient widget of |w2|. When |child| is shown, it is

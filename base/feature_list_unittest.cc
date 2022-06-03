@@ -6,15 +6,15 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +39,7 @@ struct Feature kFeatureOffByDefault {
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<base::StringPiece> features =
       FeatureList::SplitFeatureListString(feature_list);
-  std::sort(features.begin(), features.end());
+  ranges::sort(features);
   return JoinString(features, ",");
 }
 
@@ -51,12 +51,12 @@ class FeatureListTest : public testing::Test {
     // Provide an empty FeatureList to each test by default.
     scoped_feature_list_.InitWithFeatureList(std::make_unique<FeatureList>());
   }
+  FeatureListTest(const FeatureListTest&) = delete;
+  FeatureListTest& operator=(const FeatureListTest&) = delete;
   ~FeatureListTest() override = default;
 
  private:
   test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureListTest);
 };
 
 TEST_F(FeatureListTest, DefaultStates) {
@@ -98,6 +98,37 @@ TEST_F(FeatureListTest, InitializeFromCommandLine) {
     EXPECT_EQ(test_case.expected_feature_off_state,
               FeatureList::IsEnabled(kFeatureOffByDefault))
         << i;
+  }
+}
+
+TEST_F(FeatureListTest, InitializeFromCommandLineWithFeatureParams) {
+  struct {
+    const std::string enable_features;
+    const std::string expected_field_trial_created;
+    const std::map<std::string, std::string> expected_feature_params;
+  } test_cases[] = {
+      {"Feature:x/100/y/test", "StudyFeature", {{"x", "100"}, {"y", "test"}}},
+      {"Feature<Trial1:x/200/y/123", "Trial1", {{"x", "200"}, {"y", "123"}}},
+      {"Feature<Trial2.Group2:x/test/y/uma/z/ukm",
+       "Trial2",
+       {{"x", "test"}, {"y", "uma"}, {"z", "ukm"}}},
+  };
+
+  const Feature kFeature = {"Feature", FEATURE_DISABLED_BY_DEFAULT};
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.enable_features);
+
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->InitializeFromCommandLine(test_case.enable_features, "");
+    test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+    EXPECT_TRUE(FeatureList::IsEnabled(kFeature));
+    EXPECT_TRUE(
+        FieldTrialList::IsTrialActive(test_case.expected_field_trial_created));
+    std::map<std::string, std::string> actualParams;
+    EXPECT_TRUE(GetFieldTrialParamsByFeature(kFeature, &actualParams));
+    EXPECT_EQ(test_case.expected_feature_params, actualParams);
   }
 }
 
@@ -250,10 +281,41 @@ TEST_F(FeatureListTest, CommandLineDisableTakesPrecedenceOverFieldTrial) {
   EXPECT_FALSE(FieldTrialList::IsTrialActive(trial->trial_name()));
 }
 
+TEST_F(FeatureListTest, IsFeatureOverriddenFromFieldTrial) {
+  auto feature_list = std::make_unique<FeatureList>();
+
+  // No features are overridden from the field trails yet.
+  EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+
+  // Now, register a field trial to override |kFeatureOnByDefaultName| state
+  // and check that the function still returns false for that feature.
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT,
+      FieldTrialList::CreateFieldTrial("Trial1", "A"));
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE,
+      FieldTrialList::CreateFieldTrial("Trial2", "A"));
+  EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  // Check the expected feature states for good measure.
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
+}
+
 TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
   auto feature_list = std::make_unique<FeatureList>();
 
   // No features are overridden from the command line yet
+  EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -267,6 +329,9 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
   feature_list->InitializeFromCommandLine(kFeatureOffByDefaultName, "");
 
   // It should now be overridden for the enabled group.
+  EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -277,6 +342,9 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
   feature_list->AssociateReportingFieldTrial(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE,
       FieldTrialList::CreateFieldTrial("Trial1", "A"));
+  EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -287,6 +355,9 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
   feature_list->RegisterFieldTrialOverride(
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE,
       FieldTrialList::CreateFieldTrial("Trial2", "A"));
+  EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOnByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(

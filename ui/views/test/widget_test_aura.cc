@@ -5,21 +5,19 @@
 #include "ui/views/test/widget_test.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
-#if defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+    BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/gfx/x/x11.h"        // nogncheck
-#include "ui/gfx/x/x11_types.h"  // nogncheck
 #endif
 
 namespace views {
@@ -72,7 +70,8 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
 
 std::vector<aura::Window*> GetAllTopLevelWindows() {
   std::vector<aura::Window*> roots;
-#if defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+    BUILDFLAG(ENABLE_DESKTOP_AURA)
   roots = DesktopWindowTreeHostLinux::GetAllOpenWindows();
 #elif defined(OS_WIN)
   {
@@ -83,12 +82,12 @@ std::vector<aura::Window*> GetAllTopLevelWindows() {
 #endif
   aura::test::AuraTestHelper* aura_test_helper =
       aura::test::AuraTestHelper::GetInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS browser tests must use ash::Shell::GetAllRootWindows.
   DCHECK(aura_test_helper) << "Can't find all widgets without a test helper";
 #endif
   if (aura_test_helper)
-    roots.push_back(aura_test_helper->root_window());
+    roots.push_back(aura_test_helper->GetContext());
   return roots;
 }
 
@@ -125,23 +124,18 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // be pushed to the window server when they change.
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
-#elif defined(USE_X11)
-  XSizeHints hints;
-  long supplied_return;
-  XGetWMNormalHints(
-      gfx::GetXDisplay(),
-      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget(), &hints,
-      &supplied_return);
-  return gfx::Size(hints.min_width, hints.min_height);
-#else
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  return widget->GetNativeWindow()->delegate()->GetMinimumSize();
+#endif  // OS_LINUX && !OS_CHROMEOS
   NOTREACHED();
   return gfx::Size();
-#endif
 }
 
 // static
 ui::EventSink* WidgetTest::GetEventSink(Widget* widget) {
-  return widget->GetNativeWindow()->GetHost()->event_sink();
+  return widget->GetNativeWindow()->GetHost()->GetEventSink();
 }
 
 // static
@@ -152,7 +146,7 @@ ui::internal::InputMethodDelegate* WidgetTest::GetInputMethodDelegateForWidget(
 
 // static
 bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
-  return window->transparent();
+  return window->GetTransparent();
 }
 
 // static

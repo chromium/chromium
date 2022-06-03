@@ -7,13 +7,15 @@
 #define BASE_TRACE_EVENT_TRACE_EVENT_ETW_EXPORT_WIN_H_
 
 #include <stdint.h>
+#include <windows.h>
 
 #include <map>
+#include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_logging_minimal_win.h"
 
 namespace base {
 
@@ -24,6 +26,8 @@ namespace trace_event {
 
 class BASE_EXPORT TraceEventETWExport {
  public:
+  TraceEventETWExport(const TraceEventETWExport&) = delete;
+  TraceEventETWExport& operator=(const TraceEventETWExport&) = delete;
   ~TraceEventETWExport();
 
   // Retrieves the singleton.
@@ -49,7 +53,8 @@ class BASE_EXPORT TraceEventETWExport {
                        const TraceArguments* args);
 
   // Exports an ETW event that marks the end of a complete event.
-  static void AddCompleteEndEvent(const char* name);
+  static void AddCompleteEndEvent(const unsigned char* category_group_enabled,
+                                  const char* name);
 
   // Returns true if any category in the group is enabled.
   static bool IsCategoryGroupEnabled(StringPiece category_group_name);
@@ -61,25 +66,31 @@ class BASE_EXPORT TraceEventETWExport {
  private:
   // Ensure only the provider can construct us.
   friend struct StaticMemorySingletonTraits<TraceEventETWExport>;
-
   TraceEventETWExport();
 
   // Updates the list of enabled categories by consulting the ETW keyword.
   // Returns true if there was a change, false otherwise.
   bool UpdateEnabledCategories();
 
+  static uint64_t CategoryGroupToKeyword(const uint8_t* category_state);
+
   // Returns true if the category is enabled.
   bool IsCategoryEnabled(StringPiece category_name) const;
 
   static bool is_registration_complete_;
 
+  // The keywords that were enabled last time the callback was made.
+  uint64_t etw_match_any_keyword_ = 0;
+
+  // The provider is set based on channel for MSEdge, in other Chromium
+  // based browsers all channels use the same GUID/provider.
+  std::unique_ptr<TlmProvider> etw_provider_;
+
   // Maps category names to their status (enabled/disabled).
   std::map<StringPiece, bool> categories_status_;
 
-  // Local copy of the ETW keyword.
-  uint64_t etw_match_any_keyword_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventETWExport);
+  // Maps category names to their keyword.
+  std::map<StringPiece, uint64_t> categories_keyword_;
 };
 
 }  // namespace trace_event

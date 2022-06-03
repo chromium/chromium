@@ -64,17 +64,20 @@ TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
         gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
     };
     for (auto usage : usages) {
       if (!support.IsNativeGpuMemoryBufferConfigurationSupported(format, usage))
         continue;
 
       gfx::GpuMemoryBufferHandle handle =
-          TestFixture::factory_.CreateGpuMemoryBuffer(kBufferId, buffer_size,
-                                                      format, usage, kClientId,
-                                                      gpu::kNullSurfaceHandle);
+          TestFixture::factory_.CreateGpuMemoryBuffer(
+              kBufferId, buffer_size, /*framebuffer_size=*/buffer_size, format,
+              usage, kClientId, gpu::kNullSurfaceHandle);
       EXPECT_NE(handle.type, gfx::EMPTY_BUFFER);
       TestFixture::factory_.DestroyGpuMemoryBuffer(kBufferId, kClientId);
     }

@@ -40,7 +40,7 @@ class PLATFORM_EXPORT PointLightSource final : public LightSource {
 
  private:
   PointLightSource(const FloatPoint3D& position)
-      : LightSource(LS_POINT), position_(position) {}
+      : LightSource(kLsPoint), position_(position) {}
 
   FloatPoint3D position_;
 };

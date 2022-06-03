@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
-// #import {MockTimer} from '../mock_timer.m.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {MockTimer} from '../mock_timer.js';
 // clang-format on
 
 suite('cr-toast', function() {
+  /** @type {!CrToastElement} */
   let toast;
+
+  /** @type {!MockTimer} */
   let mockTimer;
 
   setup(function() {
-    PolymerTest.clearBody();
-    toast = document.createElement('cr-toast');
+    document.body.innerHTML = '';
+    toast = /** @type {!CrToastElement} */ (document.createElement('cr-toast'));
     document.body.appendChild(toast);
     mockTimer = new MockTimer();
     mockTimer.install();
@@ -44,20 +48,10 @@ suite('cr-toast', function() {
     assertFalse(toast.open);
   });
 
-  test('auto hide with (open = true)', function() {
-    const duration = 100;
-    toast.duration = duration;
-
-    toast.open = true;
-
-    mockTimer.tick(duration);
-    assertFalse(toast.open);
-  });
-
   test('show() clears auto-hide', function() {
     const duration = 70;
     toast.duration = duration;
-    toast.open = true;
+    toast.show();
     mockTimer.tick(duration - 1);
     toast.show();
 
@@ -73,20 +67,11 @@ suite('cr-toast', function() {
     assertFalse(toast.open);
   });
 
-  test('(open = true) does not clear auto-hide', function() {
-    const duration = 70;
-    toast.duration = duration;
-    toast.open = true;
-    mockTimer.tick(duration - 1);
-    toast.open = true;
-    mockTimer.tick(1);
-    assertFalse(toast.open);
-  });
 
   test('clearing duration clears timeout', function() {
     const nonZeroDuration = 30;
     toast.duration = nonZeroDuration;
-    toast.open = true;
+    toast.show();
     assertTrue(toast.open);
 
     const zeroDuration = 0;
@@ -111,7 +96,7 @@ suite('cr-toast', function() {
   test('setting duration clears auto-hide', function() {
     const oldDuration = 30;
     toast.duration = oldDuration;
-    toast.open = true;
+    toast.show();
 
     mockTimer.tick(oldDuration - 1);
     assertTrue(toast.open);
@@ -122,15 +107,6 @@ suite('cr-toast', function() {
     assertTrue(toast.open);
 
     mockTimer.tick(1);
-    assertFalse(toast.open);
-  });
-
-  test('setting duration using show(duration)', function() {
-    const duration = 100;
-    toast.show(duration);
-    assertTrue(toast.open);
-
-    mockTimer.tick(duration);
     assertFalse(toast.open);
   });
 });

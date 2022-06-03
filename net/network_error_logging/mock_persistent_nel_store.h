@@ -5,7 +5,6 @@
 #ifndef NET_NETWORK_ERROR_LOGGING_MOCK_PERSISTENT_NEL_STORE_H_
 #define NET_NETWORK_ERROR_LOGGING_MOCK_PERSISTENT_NEL_STORE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -48,9 +47,9 @@ class MockPersistentNelStore
     // Type of command.
     Type type;
 
-    // The origin of the policy that the command pertains to. (Only applies for
+    // The key of the policy that the command pertains to. (Only applies for
     // add, update, and delete)
-    url::Origin origin;
+    NetworkErrorLoggingService::NelPolicyKey key;
 
     // The supplied callback to be run when loading is complete. (Only applies
     // for load commands).
@@ -60,6 +59,10 @@ class MockPersistentNelStore
   using CommandList = std::vector<Command>;
 
   MockPersistentNelStore();
+
+  MockPersistentNelStore(const MockPersistentNelStore&) = delete;
+  MockPersistentNelStore& operator=(const MockPersistentNelStore&) = delete;
+
   ~MockPersistentNelStore() override;
 
   // PersistentNelStore implementation:
@@ -94,9 +97,6 @@ class MockPersistentNelStore
   // this were a real store.
   int StoredPoliciesCount() const { return policy_count_; }
 
-  // Generates a string with the list of commands, for ease of debugging.
-  std::string GetDebugString() const;
-
  private:
   // List of commands that we have received so far.
   CommandList command_list_;
@@ -114,8 +114,6 @@ class MockPersistentNelStore
   // Simulates the delta to be added to |policy_count_| the next time Flush() is
   // called. Reset to 0 when Flush() is called.
   int queued_policy_count_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPersistentNelStore);
 };
 
 bool operator==(const MockPersistentNelStore::Command& lhs,

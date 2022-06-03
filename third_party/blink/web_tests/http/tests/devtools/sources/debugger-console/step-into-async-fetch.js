@@ -4,8 +4,8 @@
 
 (async function test() {
   TestRunner.addResult('Checks stepInto fetch');
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();
@@ -16,6 +16,6 @@
   await SourcesTestRunner.waitUntilPausedPromise();
   SourcesTestRunner.stepIntoAsync();
   let callFrames = await SourcesTestRunner.waitUntilPausedPromise();
-  SourcesTestRunner.captureStackTrace(callFrames);
+  await SourcesTestRunner.captureStackTrace(callFrames);
   SourcesTestRunner.completeDebuggerTest();
 })();

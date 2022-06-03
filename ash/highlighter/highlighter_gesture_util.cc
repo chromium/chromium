@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "ash/components/fast_ink/fast_ink_points.h"
+#include "ash/fast_ink/fast_ink_points.h"
 #include "base/numerics/math_constants.h"
 
 namespace ash {

@@ -17,9 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// http://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#XPathResult
+// https://dom.spec.whatwg.org/#interface-xpathresult
 
-interface XPathResult {
+[
+    Exposed=Window
+] interface XPathResult {
     // XPathResultType
     const unsigned short ANY_TYPE                       = 0;
     const unsigned short NUMBER_TYPE                    = 1;

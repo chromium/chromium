@@ -4,7 +4,7 @@
 <script>
 description('Check if element.focus() does not focus on disabled sub-fields.');
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 else
     debug('This test requires DRT/WRT.');
 

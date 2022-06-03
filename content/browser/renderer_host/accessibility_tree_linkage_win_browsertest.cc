@@ -7,6 +7,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -32,6 +33,11 @@ class AccessibilityTreeLinkageWinBrowserTest
   AccessibilityTreeLinkageWinBrowserTest() {
     dummy_ax_platform_node_ = ui::AXPlatformNode::Create(&dummy_ax_node_);
   }
+
+  AccessibilityTreeLinkageWinBrowserTest(
+      const AccessibilityTreeLinkageWinBrowserTest&) = delete;
+  AccessibilityTreeLinkageWinBrowserTest& operator=(
+      const AccessibilityTreeLinkageWinBrowserTest&) = delete;
 
   ~AccessibilityTreeLinkageWinBrowserTest() override {
     dummy_ax_platform_node_->Destroy();
@@ -61,9 +67,6 @@ class AccessibilityTreeLinkageWinBrowserTest
  protected:
   ui::AXPlatformNodeDelegateBase dummy_ax_node_;
   ui::AXPlatformNode* dummy_ax_platform_node_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityTreeLinkageWinBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {

@@ -6,5 +6,6 @@ include_rules = [
   "+ipc",
   "+printing",
   "+third_party/blink/public",
+  "+ui/accessibility",
   "+ui/gfx"
 ]

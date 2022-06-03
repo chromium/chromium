@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL 3 origins allowed, match the 3rd (http://web-platform.test:8001) promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL 3 origins allowed, match the 3rd ("*") promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL 3 origins allowed, match twice (http://web-platform.test:8001) promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL 3 origins allowed, match twice ("*") promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL 3 origins allowed, match twice ("*" and http://web-platform.test:8001) promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-PASS 3 origins allowed, no match
-Harness: the test ran to completion.
-

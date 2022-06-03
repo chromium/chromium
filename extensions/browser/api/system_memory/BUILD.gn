@@ -16,10 +16,9 @@ source_set("system_memory") {
   ]
 
   deps = [
+    "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

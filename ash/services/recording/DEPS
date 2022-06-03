@@ -1,0 +1,16 @@
+# The recording service runs in its own utility process and should not depend
+# on ash code.
+noparent = True
+
+include_rules = [
+  "+ash/constants",
+  "+base",
+  "+components/viz/common",
+  "+media",
+  "+mojo/public",
+  "+services/audio/public",
+  "+services/viz/privileged/mojom/compositing",
+  "+third_party/abseil-cpp/absl",
+  "+ui/gfx",
+]
+

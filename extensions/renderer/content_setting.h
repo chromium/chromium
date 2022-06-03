@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/wrappable.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class DictionaryValue;
@@ -30,6 +30,9 @@ class BindingAccessChecker;
 // to APIs.
 class ContentSetting final : public gin::Wrappable<ContentSetting> {
  public:
+  ContentSetting(const ContentSetting&) = delete;
+  ContentSetting& operator=(const ContentSetting&) = delete;
+
   ~ContentSetting() override;
 
   // Creates a ContentSetting object for the given property.
@@ -78,8 +81,6 @@ class ContentSetting final : public gin::Wrappable<ContentSetting> {
   // (since different settings can take a different type of argument depending
   // on the preference it manages).
   ArgumentSpec argument_spec_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSetting);
 };
 
 }  // namespace extensions

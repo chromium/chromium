@@ -39,6 +39,9 @@ bool AreScanFiltersSame(
       return false;
   }
 
+  if (filter_1.manufacturer_data != filter_2.manufacturer_data)
+    return false;
+
   return true;
 }
 

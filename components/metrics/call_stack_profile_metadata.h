@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/profiler/metadata_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
@@ -28,7 +28,7 @@ class CallStackProfileMetadata {
 
   // Records the metadata for the next sample.
   void RecordMetadata(
-      base::ProfileBuilder::MetadataProvider* metadata_provider);
+      const base::MetadataRecorder::MetadataProvider& metadata_provider);
 
   // Creates MetadataItems for the currently active metadata, adding new name
   // hashes to |metadata_name_hashes| if necessary. The same
@@ -36,6 +36,19 @@ class CallStackProfileMetadata {
   // modified outside this function.
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem>
   CreateSampleMetadata(
+      google::protobuf::RepeatedField<uint64_t>* metadata_name_hashes);
+
+  // Applies the |item| to the samples between |begin| and |end| in
+  // |stack_samples|. Overwrites any existing metadata item with the same key
+  // and value that are already applied to the samples.
+  void ApplyMetadata(
+      const base::MetadataRecorder::Item& item,
+      google::protobuf::RepeatedPtrField<
+          CallStackProfile::StackSample>::iterator begin,
+      google::protobuf::RepeatedPtrField<
+          CallStackProfile::StackSample>::iterator end,
+      google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>*
+          stack_samples,
       google::protobuf::RepeatedField<uint64_t>* metadata_name_hashes);
 
  private:
@@ -47,7 +60,7 @@ class CallStackProfileMetadata {
 
   // Definitions for a map-based representation of sample metadata.
   struct MetadataKey {
-    MetadataKey(uint64_t name_hash, base::Optional<int64_t> key);
+    MetadataKey(uint64_t name_hash, absl::optional<int64_t> key);
 
     MetadataKey(const MetadataKey& other);
     MetadataKey& operator=(const MetadataKey& other);
@@ -55,12 +68,12 @@ class CallStackProfileMetadata {
     // The name_hash and optional user-specified key uniquely identifies a
     // metadata value. See base::MetadataRecorder for details.
     uint64_t name_hash;
-    base::Optional<int64_t> key;
+    absl::optional<int64_t> key;
   };
   using MetadataMap = std::map<MetadataKey, int64_t, MetadataKeyCompare>;
 
-  // Creates the metdata map from the array of items.
-  MetadataMap CreateMetadataMap(base::ProfileBuilder::MetadataItemArray items,
+  // Creates the metadata map from the array of items.
+  MetadataMap CreateMetadataMap(base::MetadataRecorder::ItemArray items,
                                 size_t item_count);
 
   // Returns all metadata items with new values in the current sample.
@@ -78,7 +91,7 @@ class CallStackProfileMetadata {
       google::protobuf::RepeatedField<uint64_t>* metadata_name_hashes);
 
   // The data provided for the next sample.
-  base::ProfileBuilder::MetadataItemArray metadata_items_;
+  base::MetadataRecorder::ItemArray metadata_items_;
   size_t metadata_item_count_ = 0;
 
   // The data provided for the previous sample.

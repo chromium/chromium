@@ -7,7 +7,6 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FACTORY_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FACTORY_MAC_H_
 
-#include "base/macros.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
@@ -17,20 +16,19 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryMac
     : public VideoCaptureDeviceFactory {
  public:
   VideoCaptureDeviceFactoryMac();
+
+  VideoCaptureDeviceFactoryMac(const VideoCaptureDeviceFactoryMac&) = delete;
+  VideoCaptureDeviceFactoryMac& operator=(const VideoCaptureDeviceFactoryMac&) =
+      delete;
+
   ~VideoCaptureDeviceFactoryMac() override;
 
-  static void SetGetDeviceDescriptorsRetryCount(int count);
-  static int GetGetDeviceDescriptorsRetryCount();
+  static void SetGetDevicesInfoRetryCount(int count);
+  static int GetGetDevicesInfoRetryCount();
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
-  void GetDeviceDescriptors(
-      VideoCaptureDeviceDescriptors* device_descriptors) override;
-  void GetSupportedFormats(
-      const VideoCaptureDeviceDescriptor& device_descriptor,
-      VideoCaptureFormats* supported_formats) override;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryMac);
+  void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 };
 
 }  // namespace media

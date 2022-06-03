@@ -11,8 +11,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/dbus/biod/constants.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -75,6 +73,9 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
 
   // Returns the global instance if initialized. May return null.
   static BiodClient* Get();
+
+  BiodClient(const BiodClient&) = delete;
+  BiodClient& operator=(const BiodClient&) = delete;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
@@ -154,11 +155,14 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
   // Initialize/Shutdown should be used instead.
   BiodClient();
   virtual ~BiodClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BiodClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::BiodClient;
+}
 
 #endif  // CHROMEOS_DBUS_BIOD_BIOD_CLIENT_H_

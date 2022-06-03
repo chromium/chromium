@@ -8,15 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "components/translate/ios/browser/language_detection_controller.h"
 #include "components/translate/ios/browser/translate_controller.h"
 #include "ios/web/public/web_state_observer.h"
-
-@class CRWJSInjectionReceiver;
 
 namespace web {
 class NavigationManager;
@@ -37,6 +34,10 @@ class IOSTranslateDriver
   IOSTranslateDriver(web::WebState* web_state,
                      web::NavigationManager* navigation_manager,
                      TranslateManager* translate_manager);
+
+  IOSTranslateDriver(const IOSTranslateDriver&) = delete;
+  IOSTranslateDriver& operator=(const IOSTranslateDriver&) = delete;
+
   ~IOSTranslateDriver() override;
 
   LanguageDetectionController* language_detection_controller() {
@@ -91,7 +92,7 @@ class IOSTranslateDriver
                               double load_time,
                               double ready_time) override;
   void OnTranslateComplete(TranslateErrors::Type error_type,
-                           const std::string& original_language,
+                           const std::string& source_language,
                            double translation_time) override;
 
   // Stops observing |web_state_| and sets it to null.
@@ -113,7 +114,7 @@ class IOSTranslateDriver
 
   // An ever-increasing sequence number of the current page, used to match up
   // translation requests with responses.
-  // This matches the similar field in TranslateHelper in the renderer on other
+  // This matches the similar field in TranslateAgent in the renderer on other
   // platforms.
   int page_seq_no_;
 
@@ -124,8 +125,6 @@ class IOSTranslateDriver
   // Parameters of the current translation.
   std::string source_language_;
   std::string target_language_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSTranslateDriver);
 };
 
 }  // namespace translate

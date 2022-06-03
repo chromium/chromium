@@ -102,6 +102,14 @@
         appendStyle("@page {size:b4;}");
         shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "mmSize(250, 353) + pxMargins(1, 2, 3, 4)");
 
+        debug("Test jis-b5");
+        appendStyle("@page {size:jis-b5;}");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "mmSize(182, 257) + pxMargins(1, 2, 3, 4)");
+
+        debug("Test jis-b4");
+        appendStyle("@page {size:jis-b4;}");
+        shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "mmSize(257, 364) + pxMargins(1, 2, 3, 4)");
+
         debug("Test letter");
         appendStyle("@page {size:letter;}");
         shouldBe("internals.pageSizeAndMarginsInPixels(0, 100, 200, 1, 2, 3, 4)", "inchSize(8.5, 11) + pxMargins(1, 2, 3, 4)");

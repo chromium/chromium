@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -23,7 +23,8 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV class='hoverable'",
       "position": [8, 0],
-      "bounds": [216, 100],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#90EE90"
     }
   ],

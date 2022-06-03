@@ -5,7 +5,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UIApplicationShortcutWidget</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
+	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
@@ -46,7 +46,7 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${CHROMIUM_BUNDLE_ID:rfc1034identifier}</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -59,7 +59,16 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>${IOS_BUNDLE_ID_PREFIX}.${CHROMIUM_BUNDLE_ID:rfc1034identifier}</string>
+			<string>Web site URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>http</string>
+				<string>https</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>${BUNDLE_IDENTIFIER}</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>${CHROMIUM_URL_SCHEME_1}</string>
@@ -72,8 +81,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>0.0.0</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -84,6 +91,10 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>${CHROMIUM_HANDOFF_ID}</string>
+		<string>${IOS_MOVE_TAB_ACTIVITY_TYPE}</string>
+		<string>NSUserActivityTypeBrowsingWeb</string>
+		<string>OpenInChromeIncognitoIntent</string>
+		<string>OpenInChromeIntent</string>
 		<string>SearchInChromeIntent</string>
 	</array>
 	<key>UIBackgroundModes</key>
@@ -190,8 +201,6 @@
 	<string>IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>IDS_IOS_MICROPHONE_USAGE_DESCRIPTION</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>IDS_IOS_PHOTO_LIBRARY_USAGE_DESCRIPTION</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -200,5 +209,28 @@
 	<string>IDS_IOS_FACE_ID_USAGE_DESCRIPTION</string>
 	<key>FirebaseScreenReportingEnabled</key>
 	<false/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UILaunchStoryboardName</key>
+					<string>LaunchScreen</string>
+					<key>UISceneStoryboardFile</key>
+					<string>BaseScene</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </dict>
 </plist>

@@ -167,18 +167,25 @@ TestEventListener.prototype = {
   verifyReceivedEvent_: function(event) {
     var entryURL = event.entry.toURL();
     var expectedEvent = this.expectedEvents_[entryURL];
+
+    console.log('verifyReceivedEvent_: ' + event.eventType);
+    const state = JSON.stringify(this.expectedEvents_[entryURL]);
+    console.log('verifyReceivedEvent_: state ' + entryURL + ' ' + state);
+
     if (!expectedEvent) {
-      this.onError('Event with unexpected dir url: ' + entryURL);
+      this.onError('Event with unexpected entryURL: ' + entryURL + '\n' +
+                   ' Event type: ' + event.eventType + '\n');
       return;
     }
 
+
+    console.log('verifyReceivedEvent_: delete expectedEvents_ ' + entryURL);
     delete this.expectedEvents_[entryURL];
 
     if (expectedEvent.eventType != event.eventType) {
-      this.onError('Unexpected event type for directory Url: ' +
-                   entryURL + '.\n' +
-                   'Expected "' + expectedEvent.eventType + '"\n' +
-                   'Got: "' + event.eventType + '"');
+      this.onError('Unexpected event type for entryURL: ' + entryURL + '\n' +
+                   ' Expected type: ' + expectedEvent.eventType + '\n' +
+                   ' Actual type: ' + event.eventType + '\n');
       return;
     }
 

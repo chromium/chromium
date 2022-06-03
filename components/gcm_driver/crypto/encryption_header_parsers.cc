@@ -86,7 +86,7 @@ bool EncryptionHeaderIterator::GetNext() {
     if (base::LowerCaseEqualsASCII(name, "keyid")) {
       if (found_keyid)
         return false;
-      value.CopyToString(&keyid_);
+      keyid_.assign(value.data(), value.size());
       found_keyid = true;
     } else if (base::LowerCaseEqualsASCII(name, "salt")) {
       if (found_salt || !ValueToDecodedString(value, &salt_))
@@ -135,7 +135,7 @@ bool CryptoKeyHeaderIterator::GetNext() {
     if (base::LowerCaseEqualsASCII(name, "keyid")) {
       if (found_keyid)
         return false;
-      value.CopyToString(&keyid_);
+      keyid_.assign(value.data(), value.size());
       found_keyid = true;
     } else if (base::LowerCaseEqualsASCII(name, "aesgcm128")) {
       if (found_aesgcm128 || !ValueToDecodedString(value, &aesgcm128_))

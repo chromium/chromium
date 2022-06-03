@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -45,9 +44,13 @@ class PrefetchedSignedExchangeManager final
       HashMap<KURL,
               std::unique_ptr<WebNavigationParams::PrefetchedSignedExchange>>
           prefetched_exchanges_map);
+  PrefetchedSignedExchangeManager(const PrefetchedSignedExchangeManager&) =
+      delete;
+  PrefetchedSignedExchangeManager& operator=(
+      const PrefetchedSignedExchangeManager&) = delete;
   ~PrefetchedSignedExchangeManager();
 
-  void Trace(blink::Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
   // Returns a loader if there is a matching resource in
   // |alternative_resources_|, otherwise returns null. This only checks the
@@ -95,8 +98,6 @@ class PrefetchedSignedExchangeManager final
   bool started_ = false;
 
   WTF::Vector<base::WeakPtr<PrefetchedSignedExchangeLoader>> loaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchedSignedExchangeManager);
 };
 
 }  // namespace blink

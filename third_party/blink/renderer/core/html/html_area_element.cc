@@ -87,7 +87,7 @@ void HTMLAreaElement::InvalidateCachedPath() {
 
 bool HTMLAreaElement::PointInArea(const PhysicalOffset& location,
                                   const LayoutObject* container_object) const {
-  return GetPath(container_object).Contains(FloatPoint(location));
+  return GetPath(container_object).Contains(gfx::PointF(location));
 }
 
 PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
@@ -100,7 +100,7 @@ PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
       PhysicalOffset(), kIgnoreTransforms);
 
   Path path = GetPath(container_object);
-  path.Translate(FloatSize(abs_pos));
+  path.Translate(gfx::Vector2dF(abs_pos));
   return PhysicalRect::EnclosingRect(path.BoundingRect());
 }
 
@@ -114,8 +114,8 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     Path path;
     // No need to zoom because it is already applied in
     // containerObject->borderBoxRect().
-    if (container_object->IsBox())
-      path.AddRect(FloatRect(ToLayoutBox(container_object)->BorderBoxRect()));
+    if (const auto* box = DynamicTo<LayoutBox>(container_object))
+      path.AddRect(FloatRect(box->BorderBoxRect()));
     path_ = nullptr;
     return path;
   }
@@ -131,11 +131,12 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
       case kPoly:
         if (coords_.size() >= 6) {
           int num_points = coords_.size() / 2;
-          path.MoveTo(FloatPoint(ClampCoordinate(coords_[0]),
-                                 ClampCoordinate(coords_[1])));
-          for (int i = 1; i < num_points; ++i)
-            path.AddLineTo(FloatPoint(ClampCoordinate(coords_[i * 2]),
-                                      ClampCoordinate(coords_[i * 2 + 1])));
+          path.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
+                                  ClampCoordinate(coords_[1])));
+          for (int i = 1; i < num_points; ++i) {
+            path.AddLineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
+                                       ClampCoordinate(coords_[i * 2 + 1])));
+          }
           path.CloseSubpath();
           path.SetWindRule(RULE_EVENODD);
         }
@@ -143,9 +144,9 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
       case kCircle:
         if (coords_.size() >= 3 && coords_[2] > 0) {
           float r = ClampCoordinate(coords_[2]);
-          path.AddEllipse(FloatRect(ClampCoordinate(coords_[0]) - r,
-                                    ClampCoordinate(coords_[1]) - r, 2 * r,
-                                    2 * r));
+          path.AddEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
+                                      ClampCoordinate(coords_[1])),
+                          r, r);
         }
         break;
       case kRect:
@@ -184,11 +185,11 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
 }
 
 bool HTMLAreaElement::IsKeyboardFocusable() const {
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLAreaElement::IsMouseFocusable() const {
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLAreaElement::IsFocusableStyle() const {
@@ -201,7 +202,7 @@ bool HTMLAreaElement::IsFocusableStyle() const {
 }
 
 void HTMLAreaElement::SetFocused(bool should_be_focused,
-                                 WebFocusType focus_type) {
+                                 mojom::blink::FocusType focus_type) {
   if (IsFocused() == should_be_focused)
     return;
 
@@ -212,10 +213,8 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
     return;
 
   LayoutObject* layout_object = image_element->GetLayoutObject();
-  if (!layout_object || !layout_object->IsImage())
-    return;
-
-  ToLayoutImage(layout_object)->AreaElementFocusChanged(this);
+  if (auto* layout_image = DynamicTo<LayoutImage>(layout_object))
+    layout_image->AreaElementFocusChanged(this);
 }
 
 void HTMLAreaElement::UpdateFocusAppearanceWithOptions(

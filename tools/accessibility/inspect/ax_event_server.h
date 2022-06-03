@@ -7,7 +7,8 @@
 
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -17,13 +18,14 @@ namespace tools {
 
 class AXEventServer final {
  public:
-  // `application_name_match_pattern` is a matching pattern, which may contain
-  // wildcard characters, to be matched against the accessibility application
-  // name. Only events that match the pattern will be shown. If the pattern is
-  // empty, it is unused.
-  explicit AXEventServer(
-      base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
+  // Dumps events into console for application identified either by process id
+  // or tree selector.
+  explicit AXEventServer(base::ProcessId pid,
+                         const ui::AXTreeSelector& selector);
+
+  AXEventServer(const AXEventServer&) = delete;
+  AXEventServer& operator=(const AXEventServer&) = delete;
+
   ~AXEventServer();
 
  private:
@@ -33,9 +35,7 @@ class AXEventServer final {
   // Only one COM initializer per thread is permitted.
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-  std::unique_ptr<content::AccessibilityEventRecorder> recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXEventServer);
+  std::unique_ptr<ui::AXEventRecorder> recorder_;
 };
 
 }  // namespace tools

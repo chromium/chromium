@@ -18,9 +18,8 @@ namespace views {
 // Sets the window mask to a style that most likely matches
 // ui/resources/window_*
 VIEWS_EXPORT void GetDefaultWindowMask(const gfx::Size& size,
-                                       float scale,
                                        SkPath* window_mask);
 
-} // namespace views
+}  // namespace views
 
 #endif  // UI_VIEWS_WINDOW_WINDOW_SHAPE_H_

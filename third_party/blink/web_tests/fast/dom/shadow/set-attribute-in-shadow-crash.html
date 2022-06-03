@@ -5,7 +5,7 @@
 description('Tests that setting an attribute in Shadow DOM does not cause a crash.');
 
 var host = document.querySelector('#host');
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = '<div></div>';
 var elem = root.firstChild;
 elem.id = 'bar';

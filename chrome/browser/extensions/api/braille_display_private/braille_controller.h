@@ -8,9 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/values.h"
 #include "chrome/common/extensions/api/braille_display_private.h"
 
 namespace extensions {
@@ -23,6 +20,9 @@ class BrailleController {
  public:
   static BrailleController* GetInstance();
 
+  BrailleController(const BrailleController&) = delete;
+  BrailleController& operator=(const BrailleController&) = delete;
+
   virtual std::unique_ptr<DisplayState> GetDisplayState() = 0;
   virtual void WriteDots(const std::vector<uint8_t>& cells,
                          unsigned int cols,
@@ -31,11 +31,8 @@ class BrailleController {
   virtual void RemoveObserver(BrailleObserver* observer) = 0;
 
  protected:
-  BrailleController();
-  virtual ~BrailleController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrailleController);
+  BrailleController() = default;
+  virtual ~BrailleController() = default;
 };
 
 // Observer for events from the BrailleController

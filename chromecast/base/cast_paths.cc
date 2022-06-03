@@ -5,20 +5,33 @@
 #include "chromecast/base/cast_paths.h"
 
 #include "base/base_paths.h"
-#include "base/base_paths_fuchsia.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "third_party/widevine/cdm/buildflags.h"
+
+#if defined(OS_FUCHSIA)
+#include "base/fuchsia/file_utils.h"
+#endif
+
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#endif
 
 namespace chromecast {
 
 bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case DIR_CAST_HOME: {
+#if defined(OS_FUCHSIA)
+      // On Fuchsia, use the component's local /data directory.
+      base::FilePath home(base::kPersistedDataDirectoryPath);
+#else
       base::FilePath home = base::GetHomeDir();
+#endif
 #if BUILDFLAG(IS_CAST_DESKTOP_BUILD)
       // When running a development instance as a regular user, use
       // a data directory under $HOME (similar to Chrome).
@@ -43,9 +56,6 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
       *result = data_dir.Append("cast_shell.conf");
-#elif defined(OS_FUCHSIA)
-      CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
-      *result = data_dir.Append(".eureka.conf");
 #else
       CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
       *result = data_dir.Append(".eureka.conf");
@@ -57,9 +67,6 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_ANDROID)
       CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
       *result = data_dir.Append("cast_shell.crl");
-#elif defined(OS_FUCHSIA)
-      CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
-      *result = data_dir.Append(".eureka.crl");
 #else
       CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
       *result = data_dir.Append(".eureka.crl");
@@ -77,6 +84,14 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif  // defined(OS_ANDROID)
       return true;
     }
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+    case DIR_BUNDLED_WIDEVINE_CDM: {
+      base::FilePath base_dir;
+      CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
+      *result = base_dir.AppendASCII(kWidevineCdmBaseDirectory);
+      return true;
+    }
+#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
   }
   return false;
 }

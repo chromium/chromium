@@ -16,8 +16,8 @@
 
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/safe_assignment.h"
 

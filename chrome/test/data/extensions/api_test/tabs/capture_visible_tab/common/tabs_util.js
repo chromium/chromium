@@ -42,7 +42,7 @@ function waitForAllTabs(callback) {
       if (ready)
         callback();
       else
-        window.setTimeout(waitForTabs, 30);
+        setTimeout(waitForTabs, 30);
     });
   }
   waitForTabs();
@@ -53,17 +53,18 @@ function waitForAllTabs(callback) {
 // representing pixels look like this: '255,255,255,0'.
 function getPixels(imgUrl, windowRect, callbackFn) {
   assertEq('string', typeof(imgUrl));
-  var img = new Image();
-  img.width = windowRect.width;
-  img.height = windowRect.height;
-  img.src = imgUrl;
-  img.onload = pass(function() {
-    var canvas = document.createElement('canvas');
-
+  fetch(imgUrl).then(function(response) {
+    if (!response.ok) {
+      throw response;
+    }
+    return response.blob();
+  }).then(function(blob) {
+    return createImageBitmap(blob, 0, 0, windowRect.width, windowRect.height);
+  }).then(pass(function(img) {
     // Comparing pixels is slow enough to hit timeouts if we run on
     // the whole image..  Compare a 10x10 region.
-    canvas.setAttribute('width', 10);
-    canvas.setAttribute('height', 10);
+    var canvas = new OffscreenCanvas(10, 10);
+
     var context = canvas.getContext('2d');
     context.drawImage(
       img,
@@ -81,7 +82,7 @@ function getPixels(imgUrl, windowRect, callbackFn) {
     }
 
     callbackFn(pixelColors);
-  });
+  }));
 }
 
 // Check that pixels in a small region of |imgUrl| are the color
@@ -115,10 +116,6 @@ function countPixelsWithColors(imgUrl, windowRect, expectedColors, callback) {
     callback(colorCounts,          // Mapping from color to # pixels.
              pixelColors.length);  // Total pixels examined.
   });
-}
-
-function pageUrl(base) {
-  return chrome.extension.getURL('common/' + base + '.html');
 }
 
 function assertIsStringWithPrefix(prefix, str) {

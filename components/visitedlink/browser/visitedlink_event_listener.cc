@@ -4,6 +4,8 @@
 
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
@@ -14,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 using base::Time;
-using base::TimeDelta;
 using content::RenderWidgetHost;
 
 namespace {
@@ -157,7 +158,7 @@ void VisitedLinkEventListener::Add(VisitedLinkWriter::Fingerprint fingerprint) {
 
   if (!coalesce_timer_->IsRunning()) {
     coalesce_timer_->Start(
-        FROM_HERE, TimeDelta::FromMilliseconds(kCommitIntervalMs),
+        FROM_HERE, base::Milliseconds(kCommitIntervalMs),
         base::BindOnce(&VisitedLinkEventListener::CommitVisitedLinks,
                        base::Unretained(this)));
   }
@@ -203,8 +204,8 @@ void VisitedLinkEventListener::Observe(
       if (!table_region_.IsValid())
         return;
 
-      updaters_[process->GetID()].reset(
-          new VisitedLinkUpdater(process->GetID()));
+      updaters_[process->GetID()] =
+          std::make_unique<VisitedLinkUpdater>(process->GetID());
       updaters_[process->GetID()]->SendVisitedLinkTable(&table_region_);
       break;
     }

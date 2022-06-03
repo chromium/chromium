@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -23,7 +23,7 @@
 // Relies on the tag being set to the command id.
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       text_services_context_menu_(this) {}
@@ -58,35 +58,32 @@ bool RenderViewContextMenuMac::IsCommandIdEnabled(int command_id) const {
   return RenderViewContextMenu::IsCommandIdEnabled(command_id);
 }
 
-base::string16 RenderViewContextMenuMac::GetSelectedText() const {
+std::u16string RenderViewContextMenuMac::GetSelectedText() const {
   return params_.selection_text;
 }
 
 bool RenderViewContextMenuMac::IsTextDirectionEnabled(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemEnabled;
+         blink::ContextMenuData::kCheckableMenuItemEnabled;
 }
 
 bool RenderViewContextMenuMac::IsTextDirectionChecked(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemChecked;
+         blink::ContextMenuData::kCheckableMenuItemChecked;
 }
 
 void RenderViewContextMenuMac::UpdateTextDirection(
     base::i18n::TextDirection direction) {
   DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
 
-  blink::WebTextDirection dir = blink::kWebTextDirectionLeftToRight;
   int command_id = IDC_WRITING_DIRECTION_LTR;
-  if (direction == base::i18n::RIGHT_TO_LEFT) {
-    dir = blink::kWebTextDirectionRightToLeft;
+  if (direction == base::i18n::RIGHT_TO_LEFT)
     command_id = IDC_WRITING_DIRECTION_RTL;
-  }
 
   content::RenderViewHost* view_host = GetRenderViewHost();
-  view_host->GetWidget()->UpdateTextDirection(dir);
+  view_host->GetWidget()->UpdateTextDirection(direction);
   view_host->GetWidget()->NotifyTextDirection();
 
   RenderViewContextMenu::RecordUsedItem(command_id);
@@ -98,7 +95,7 @@ void RenderViewContextMenuMac::AppendPlatformEditableItems() {
 
 void RenderViewContextMenuMac::InitToolkitMenu() {
   if (params_.input_field_type ==
-      blink::ContextMenuDataInputFieldType::kPassword)
+      blink::mojom::ContextMenuDataInputFieldType::kPassword)
     return;
 
   if (!params_.selection_text.empty() && params_.link_url.is_empty()) {
@@ -116,7 +113,7 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
       index += 1; // Place it below the separator.
     }
 
-    base::string16 printable_selection_text = PrintableSelectionText();
+    std::u16string printable_selection_text = PrintableSelectionText();
     EscapeAmpersands(&printable_selection_text);
     menu_model_.InsertItemAt(
         index++, IDC_CONTENT_CONTEXT_LOOK_UP,
@@ -125,7 +122,8 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
     menu_model_.InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
   }
 
-  text_services_context_menu_.AppendToContextMenu(&menu_model_);
+  if (!params_.selection_text.empty())
+    text_services_context_menu_.AppendToContextMenu(&menu_model_);
 }
 
 void RenderViewContextMenuMac::LookUpInDictionary() {

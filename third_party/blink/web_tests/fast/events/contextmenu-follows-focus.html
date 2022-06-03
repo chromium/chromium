@@ -20,7 +20,7 @@ function focusLinkAndAssertLinkIsTargetOfContextMenu() {
 <div contenteditable oncontextmenu="catchContextMenu(event);">Some editable text.</div>
 <span oncontextmenu="catchContextMenu(event);">Some text to select.</span>
 <input oncontextmenu="catchContextMenu(event);">
-<a href="www" oncontextmenu="catchContextMenu(event);">A link</a>
+<a href="www" oncontextmenu="catchContextMenu(event);">A<br>link</a>
 
 <script>
 test(function() {

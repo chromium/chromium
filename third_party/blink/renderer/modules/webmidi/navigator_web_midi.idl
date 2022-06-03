@@ -28,11 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://webaudio.github.io/web-midi-api/#requestMIDIAccess
+// https://webaudio.github.io/web-midi-api/#extensions-to-the-navigator-interface
 
 [
   ImplementedAs=NavigatorWebMIDI,
   SecureContext
 ] partial interface Navigator {
-  [CallWith=ScriptState, RaisesException, MeasureAs=RequestMIDIAccess_ObscuredByFootprinting] Promise<MIDIAccess> requestMIDIAccess(optional MIDIOptions options);
+  [CallWith=ScriptState, RaisesException, MeasureAs=RequestMIDIAccess_ObscuredByFootprinting] Promise<MIDIAccess> requestMIDIAccess(optional MIDIOptions options = {});
 };

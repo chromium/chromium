@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#target::first-letter {}
+#target { visibility: hidden; }
+</style>
+<div id="target">text</div>
+<script>
+'use strict';
+var style;
+const target = document.querySelector("#target");
+var defaultComputedStyle = getComputedStyle(target);
+
+test(function() {
+  var styleRule = document.styleSheets[0].cssRules[0];
+  assert_equals(styleRule.selectorText, '#target::first-letter', 'make sure we have the correct style rule');
+  style = styleRule.style;
+}, 'pre test setup');
+
+// Only prefixed properties or properties not specified to apply to ::first-letter in the spec
+// should be in this file; all others should be in the web-platform-test version of this file.
+var validProperties = {
+  webkitBorderHorizontalSpacing: '12px',
+  webkitBorderVerticalSpacing: '12px',
+  webkitFontSmoothing: 'none',
+  visibility: 'collapse'
+};
+
+var invalidProperties = {
+  webkitFilter: 'url(#)'
+};
+
+function testFirstLetterProperty(property, rule, expected, reason) {
+  test(function() {
+    style[property] = "";
+    style[property] = rule;
+    assert_equals(getComputedStyle(target, 'first-letter')[property], expected);
+    style[property] = "";
+  }, reason);
+}
+
+for (var property in validProperties) {
+  testFirstLetterProperty(property, validProperties[property], validProperties[property],
+                          "Valid property " + property + " should be applied to first-letter pseudo elements.");
+}
+
+for (var property in invalidProperties) {
+  testFirstLetterProperty(property, invalidProperties[property], defaultComputedStyle[property],
+                          "Invalid property " + property + " should not be applied to first-letter pseudo elements.");
+}
+</script>

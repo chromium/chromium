@@ -5,13 +5,15 @@
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
-#include "chrome/browser/media/router/media_router_metrics.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
+
+namespace media_router {
 
 namespace {
 
@@ -23,14 +25,22 @@ GURL GetAppUrl(const media_router::MediaSinkInternal& sink,
   return GURL(partial_app_url.spec() + "/" + app_name);
 }
 
-}  // namespace
+void RecordDialFetchAppInfo(DialAppInfoResultCode result_code) {
+  UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.FetchAppInfo", result_code,
+                            DialAppInfoResultCode::kCount);
+}
 
-namespace media_router {
+}  // namespace
 
 DialAppInfoResult::DialAppInfoResult(
     std::unique_ptr<ParsedDialAppInfo> app_info,
-    DialAppInfoResultCode result_code)
-    : app_info(std::move(app_info)), result_code(result_code) {}
+    DialAppInfoResultCode result_code,
+    const std::string& error_message,
+    absl::optional<int> http_error_code)
+    : app_info(std::move(app_info)),
+      result_code(result_code),
+      error_message(error_message),
+      http_error_code(http_error_code) {}
 
 DialAppInfoResult::DialAppInfoResult(DialAppInfoResult&& other) = default;
 
@@ -107,29 +117,22 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchComplete(
 }
 
 void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchError(
-    int response_code,
-    const std::string& error_message) {
+    const std::string& error_message,
+    absl::optional<int> http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DVLOG(2) << "Fail to fetch app info XML for: " << sink_id_
-           << " due to error: " << error_message
-           << " response code: " << response_code;
-
-  if (response_code == net::HTTP_NOT_FOUND ||
-      response_code >= net::HTTP_INTERNAL_SERVER_ERROR ||
-      response_code == net::HTTP_OK) {
-    MediaRouterMetrics::RecordDialFetchAppInfo(
-        DialAppInfoResultCode::kNotFound);
-    std::move(app_info_cb_)
-        .Run(sink_id_, app_name_,
-             DialAppInfoResult(nullptr, DialAppInfoResultCode::kNotFound));
-  } else {
-    MediaRouterMetrics::RecordDialFetchAppInfo(
-        DialAppInfoResultCode::kNetworkError);
-    std::move(app_info_cb_)
-        .Run(sink_id_, app_name_,
-             DialAppInfoResult(nullptr, DialAppInfoResultCode::kNetworkError));
+  auto result_code = DialAppInfoResultCode::kNetworkError;
+  if (http_response_code) {
+    if (*http_response_code >= 200 && *http_response_code < 300) {
+      result_code = DialAppInfoResultCode::kParsingError;
+    } else {
+      result_code = DialAppInfoResultCode::kHttpError;
+    }
   }
+  RecordDialFetchAppInfo(result_code);
+  std::move(app_info_cb_)
+      .Run(sink_id_, app_name_,
+           DialAppInfoResult(nullptr, result_code, error_message,
+                             http_response_code));
   service_->RemovePendingRequest(this);
 }
 
@@ -138,15 +141,12 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoParsed(
     SafeDialAppInfoParser::ParsingResult parsing_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!parsed_app_info) {
-    DVLOG(2) << "Failed to parse app info XML in utility process, error: "
-             << parsing_result;
-    MediaRouterMetrics::RecordDialFetchAppInfo(
-        DialAppInfoResultCode::kParsingError);
+    RecordDialFetchAppInfo(DialAppInfoResultCode::kParsingError);
     std::move(app_info_cb_)
         .Run(sink_id_, app_name_,
              DialAppInfoResult(nullptr, DialAppInfoResultCode::kParsingError));
   } else {
-    MediaRouterMetrics::RecordDialFetchAppInfo(DialAppInfoResultCode::kOk);
+    RecordDialFetchAppInfo(DialAppInfoResultCode::kOk);
     std::move(app_info_cb_)
         .Run(sink_id_, app_name_,
              DialAppInfoResult(std::move(parsed_app_info),

@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
 #include "cc/trees/mutator_host.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace cc {
 
@@ -21,7 +21,6 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
   struct UniqueKeyframeModelId {
     int timeline_id;
     int animation_id;
-    KeyframeEffectId effect_id;
     int model_id;
   };
 
@@ -34,7 +33,7 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
   // Constructs AnimationEvent of TIME_UPDATED type.
   AnimationEvent(int timeline_id,
                  int animation_id,
-                 base::Optional<base::TimeDelta> local_time);
+                 absl::optional<base::TimeDelta> local_time);
 
   AnimationEvent(const AnimationEvent& other);
   AnimationEvent& operator=(const AnimationEvent& other);
@@ -52,10 +51,10 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
 
   // For continuing a scroll offset animation on the main thread.
   base::TimeTicks animation_start_time;
-  std::unique_ptr<AnimationCurve> curve;
+  std::unique_ptr<gfx::AnimationCurve> curve;
 
   // Set for TIME_UPDATED events.
-  base::Optional<base::TimeDelta> local_time;
+  absl::optional<base::TimeDelta> local_time;
 };
 
 class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {
@@ -66,7 +65,17 @@ class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {
   ~AnimationEvents() override;
   bool IsEmpty() const override;
 
+  bool needs_time_updated_events() const { return needs_time_updated_events_; }
+  void set_needs_time_updated_events(bool value) {
+    needs_time_updated_events_ = value;
+  }
+
+  // TODO(gerchiko): Make events_ a private member variable with methods to add
+  // and retrieve the events.
   std::vector<AnimationEvent> events_;
+
+ private:
+  bool needs_time_updated_events_;
 };
 
 }  // namespace cc

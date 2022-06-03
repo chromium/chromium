@@ -1,7 +1,7 @@
 Name: Node JS
 Short Name: node
 URL: https://github.com/nodejs/node
-Version: 10.15.3
+Version: 12.14.1
 Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
 Date: Tue Dec 06 2016 18:07:35 GMT-0800 (PST)
 License: NodeJS
@@ -38,7 +38,7 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 3.5.3
+Version: 4.2.3
 License: Apache 2.0
 Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
 
@@ -47,6 +47,81 @@ TypeScript is a language for application-scale JavaScript. TypeScript adds
 optional types to JavaScript that support tools for large-scale JavaScript
 applications for any browser, for any host, on any OS. TypeScript compiles to
 readable, standards-based JavaScript.
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for W3C MediaStream Recording
+Short Name: @types/dom-mediacapture-record
+URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
+Version: 1.0.10
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for w3c MediaStream Recording
+(https://w3c.github.io/mediacapture-record).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for CSS Typed OM Level 1
+Short Name: @types/w3c-css-typed-object-model-level-1
+URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
+Version: 20180410.0.3
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for css-typed-object-model-level-1
+(https://www.w3.org/TR/css-typed-om-1/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for W3C Image Capture
+Short Name: @types/w3c-image-capture
+URL: https://www.npmjs.com/package/@types/w3c-image-capture
+Version: 1.0.4
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for W3C Image Capture
+(https://www.w3.org/TR/image-capture/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for webrtc
+Short Name: @types/webrtc
+URL: https://www.npmjs.com/package/@types/webrtc
+Version: 0.0.29
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for webrtc (https://webrtc.org/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for Google Analytics
+Short Name: @types/google.analytics
+URL: https://www.npmjs.com/package/@types/google.analytics
+Version: 0.0.42
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for Google Analytics (Classic and
+Universal)
+(https://developers.google.com/analytics/devguides/collection/gajs/).
 
 Local Modifications:
 (none)

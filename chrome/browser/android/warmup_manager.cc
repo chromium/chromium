@@ -9,7 +9,6 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "content/public/browser/render_process_host.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -39,14 +38,5 @@ static void JNI_WarmupManager_PreconnectUrlAndSubresources(
       loading_predictor->PrepareForPageLoad(url,
                                             predictors::HintOrigin::EXTERNAL);
     }
-  }
-}
-
-static void JNI_WarmupManager_WarmupSpareRenderer(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  if (profile) {
-    content::RenderProcessHost::WarmupSpareRenderProcessHost(profile);
   }
 }

@@ -6,11 +6,13 @@
 
 #include <limits.h>
 #include <mach/task.h>
+#include <malloc/malloc.h>
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace base {
@@ -49,10 +51,6 @@ size_t GetMaxFds() {
 
 void IncreaseFdLimitTo(unsigned int max_descriptors) {
   // Unimplemented.
-}
-
-size_t GetPageSize() {
-  return getpagesize();
 }
 
 // Bytes committed by the system.
@@ -95,6 +93,12 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
       saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.purgeable_count);
 
   return true;
+}
+
+size_t ProcessMetrics::GetMallocUsage() {
+  malloc_statistics_t stats;
+  malloc_zone_statistics(nullptr, &stats);
+  return stats.size_in_use;
 }
 
 }  // namespace base

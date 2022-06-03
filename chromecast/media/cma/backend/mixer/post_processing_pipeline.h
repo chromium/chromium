@@ -27,6 +27,7 @@ class PostProcessingPipeline {
   virtual double ProcessFrames(float* data,
                                int num_frames,
                                float current_multiplier,
+                               float target_volume,
                                bool is_silence) = 0;
   virtual float* GetOutputBuffer() = 0;
   virtual int NumOutputChannels() const = 0;

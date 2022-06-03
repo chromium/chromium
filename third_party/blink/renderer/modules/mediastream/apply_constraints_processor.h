@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,6 +35,11 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   ApplyConstraintsProcessor(
       MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  ApplyConstraintsProcessor(const ApplyConstraintsProcessor&) = delete;
+  ApplyConstraintsProcessor& operator=(const ApplyConstraintsProcessor&) =
+      delete;
+
   ~ApplyConstraintsProcessor();
 
   // Starts processing of |request|. When processing of |request| is complete,
@@ -44,7 +49,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   void ProcessRequest(blink::ApplyConstraintsRequest* request,
                       base::OnceClosure callback);
 
-  void Trace(Visitor* visitor) { visitor->Trace(current_request_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(current_request_); }
 
  private:
   // Helpers for video device-capture requests.
@@ -75,7 +80,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   void ApplyConstraintsSucceeded();
   void ApplyConstraintsFailed(const char* failed_constraint_name);
   void CannotApplyConstraints(const String& message);
-  void CleanupRequest(base::OnceClosure web_request_callback);
+  void CleanupRequest(base::OnceClosure user_media_request_callback);
   blink::mojom::blink::MediaDevicesDispatcherHost* GetMediaDevicesDispatcher();
 
   // ApplyConstraints requests are processed sequentially. |current_request_|
@@ -92,8 +97,6 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   THREAD_CHECKER(thread_checker_);
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplyConstraintsProcessor);
 };
 
 }  // namespace blink

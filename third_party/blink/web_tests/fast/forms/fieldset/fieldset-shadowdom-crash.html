@@ -11,7 +11,7 @@ function test() {
 
         (function() {
             var divElement = document.createElement("div");
-            var divShadow = divElement.createShadowRoot();
+            var divShadow = divElement.attachShadow({mode: 'open'});
             fieldsetElement = document.createElement("fieldset");
             containerSpan.appendChild(fieldsetElement);
             divShadow.appendChild(containerSpan);

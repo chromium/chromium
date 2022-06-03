@@ -3,3 +3,6 @@ per-file *aura*=sadrul@chromium.org
 
 # for *android*
 per-file *android*=tedchoc@chromium.org
+
+# for Multiple Page Architecture
+altimin@chromium.org

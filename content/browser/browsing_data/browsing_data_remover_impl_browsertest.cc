@@ -7,14 +7,19 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/test/bind_test_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -28,7 +33,9 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -92,15 +99,27 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {}
 
-  void RemoveAndWait(int remove_mask) {
+  void RemoveAndWait(uint64_t remove_mask) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(
-            shell()->web_contents()->GetBrowserContext());
+        shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(), remove_mask,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
         &completion_observer);
+    completion_observer.BlockUntilCompletion();
+  }
+
+  void RemoveWithFilterAndWait(
+      uint64_t remove_mask,
+      std::unique_ptr<BrowsingDataFilterBuilder> filter) {
+    content::BrowsingDataRemover* remover =
+        shell()->web_contents()->GetBrowserContext()->GetBrowsingDataRemover();
+    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+    remover->RemoveWithFilterAndReply(
+        base::Time(), base::Time::Max(), remove_mask,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        std::move(filter), &completion_observer);
     completion_observer.BlockUntilCompletion();
   }
 
@@ -180,7 +199,9 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_main_frame /* unused */) { login_requested = true; }));
+            [&](bool is_primary_main_frame /* unused */) {
+              login_requested = true;
+            }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);
@@ -194,10 +215,20 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
   }
 
   network::mojom::URLLoaderFactory* url_loader_factory() {
-    return BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         .get();
+  }
+
+  network::mojom::NetworkContext* network_context() {
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext();
   }
 
  private:
@@ -214,12 +245,20 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
 }
 
 // Verify that TransportSecurityState data is not cleared if REMOVE_CACHE is not
-// set.
+// set or there is a deletelist filter.
+// TODO(crbug.com/1040065): Add support for filtered deletions and update test.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
                        PreserveTransportSecurityState) {
   IssueRequestThatSetsHsts();
 
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_DOWNLOADS);
+  EXPECT_TRUE(IsHstsSet());
+
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain("foobar.com");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
   EXPECT_TRUE(IsHstsSet());
 }
 
@@ -246,6 +285,197 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
 
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES);
   EXPECT_FALSE(IsHttpAuthCacheSet());
+}
+
+namespace {
+
+// Provide BrowsingDataRemoverImplTrustTokenTest the Trust Tokens
+// feature as a mixin so that it gets set before the superclass initializes the
+// test's NetworkContext, as the NetworkContext's initialization must occur with
+// the feature enabled.
+class WithTrustTokensEnabled {
+ public:
+  WithTrustTokensEnabled() {
+    feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests Trust Tokens clearing by calling HasTrustTokensAnswerer::HasTrustTokens
+// with a HasTrustTokensAnswerer obtained from the provided NetworkContext.
+//
+// The Trust Tokens functionality places a cap of 2 distinct arguments to the
+// |issuer| argument of
+//       HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+// for each top-frame origin |origin|. (This limit is recorded in persistent
+// storage scoped to the origin |origin| and is not related to the lifetime of
+// the specific HasTrustTokensAnswerer object.)
+//
+// To add an origin, the tester creates a HasTrustTokensAnswerer parameterized
+// by |origin| and calls HasTrustTokens with two distinct "priming" issuer
+// arguments. This will make the Trust Tokens persistent storage record that
+// |origin| is associated with each of these issuers, with the effect that
+// (barring a data clear) subsequent HasTrustTokens calls with different issuer
+// arguments will fail. To check if an origin is present, the tester calls
+//    HasTrustTokensAnswerer(origin)::HasTrustTokens(issuer)
+// with an |issuer| argument distinct from the two earlier "priming" issuers.
+// This third HasTrustTokens call will error out exactly if |origin| was
+// previously added by AddOrigin.
+//
+// Usage:
+//   >= 0 AddOrigin() - origins must be HTTPS
+//   (clear data)
+//   >= 0 HasOrigin()
+class TrustTokensTester {
+ public:
+  explicit TrustTokensTester(network::mojom::NetworkContext* network_context)
+      : network_context_(network_context) {}
+
+  void AddOrigin(const url::Origin& origin) {
+    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
+    network_context_->GetHasTrustTokensAnswerer(
+        answerer.BindNewPipeAndPassReceiver(), origin);
+
+    // Calling HasTrustTokens will associate the issuer argument with the
+    // origin |origin|.
+    //
+    // Do this until the |origin| is associated with
+    // network::kTrustTokenPerToplevelMaxNumberOfAssociatedIssuers many issuers
+    // (namely 2; this value is not expected to change frequently).
+    //
+    // After the limit is reached, subsequent HasTrustToken(origin, issuer)
+    // queries will fail for any issuers not in {https://prime0.example,
+    // https://prime1.example} --- unless data for |origin| is cleared.
+    for (int i = 0; i < 2; ++i) {
+      base::RunLoop run_loop;
+      answerer->HasTrustTokens(
+          url::Origin::Create(
+              GURL(base::StringPrintf("https://prime%d.example", i))),
+          base::BindLambdaForTesting(
+              [&](network::mojom::HasTrustTokensResultPtr) {
+                run_loop.Quit();
+              }));
+      run_loop.Run();
+    }
+  }
+
+  bool HasOrigin(const url::Origin& origin) {
+    mojo::Remote<network::mojom::HasTrustTokensAnswerer> answerer;
+    network_context_->GetHasTrustTokensAnswerer(
+        answerer.BindNewPipeAndPassReceiver(), origin);
+
+    base::RunLoop run_loop;
+    bool has_origin = false;
+
+    // Since https://probe.example is not among the issuer origins previously
+    // provided to HasTrustTokens(origin, _) calls in AddOrigin:
+    // - If data has not been cleared,
+    //     HasTrustToken(origin, https://probe.example)
+    //   is expected to fail with kResourceExhausted because |origin| is at its
+    //   number-of-associated-issuers limit, so the answerer will refuse to
+    //   answer a query for an origin it has not yet seen.
+    // - If data has been cleared, the answerer should be able to fulfill the
+    //   query.
+    answerer->HasTrustTokens(
+        url::Origin::Create(GURL("https://probe.example")),
+        base::BindLambdaForTesting([&](network::mojom::HasTrustTokensResultPtr
+                                           result) {
+          // HasTrustTokens will error out with kResourceExhausted exactly
+          // when the top-frame origin |origin| was previously added by
+          // AddOrigin.
+          if (result->status ==
+              network::mojom::TrustTokenOperationStatus::kResourceExhausted) {
+            has_origin = true;
+          }
+
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+
+    return has_origin;
+  }
+
+ private:
+  network::mojom::NetworkContext* network_context_;
+};
+
+}  // namespace
+
+class BrowsingDataRemoverImplTrustTokenTest
+    : public WithTrustTokensEnabled,
+      public BrowsingDataRemoverImplBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest, Remove) {
+  TrustTokensTester tester(network_context());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+
+  tester.AddOrigin(origin);
+  ASSERT_TRUE(tester.HasOrigin(origin));
+
+  RemoveAndWait(BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS);
+
+  EXPECT_FALSE(tester.HasOrigin(origin));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest, RemoveByDomain) {
+  TrustTokensTester tester(network_context());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddOrigin(origin);
+  tester.AddOrigin(sub_origin);
+  tester.AddOrigin(another_origin);
+
+  ASSERT_TRUE(tester.HasOrigin(origin));
+  ASSERT_TRUE(tester.HasOrigin(sub_origin));
+  ASSERT_TRUE(tester.HasOrigin(another_origin));
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+                          std::move(builder));
+
+  EXPECT_FALSE(tester.HasOrigin(origin));
+  EXPECT_FALSE(tester.HasOrigin(sub_origin));
+  EXPECT_TRUE(tester.HasOrigin(another_origin));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest,
+                       PreserveByDomain) {
+  TrustTokensTester tester(network_context());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddOrigin(origin);
+  tester.AddOrigin(sub_origin);
+  tester.AddOrigin(another_origin);
+  ASSERT_TRUE(tester.HasOrigin(origin));
+  ASSERT_TRUE(tester.HasOrigin(sub_origin));
+  ASSERT_TRUE(tester.HasOrigin(another_origin));
+
+  // Delete all data *except* that specified by the filter.
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+                          std::move(builder));
+
+  EXPECT_TRUE(tester.HasOrigin(origin));
+  EXPECT_TRUE(tester.HasOrigin(sub_origin));
+  EXPECT_FALSE(tester.HasOrigin(another_origin));
 }
 
 }  // namespace content

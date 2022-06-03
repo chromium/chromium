@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chromeos/network/managed_state.h"
@@ -74,6 +73,37 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
         ManagedStateList* tether_networks) const = 0;
   };
 
+  // Cellular networks may not have an associated Shill Service (e.g. when the
+  // SIM is locked, a mobile network is not available or Shill is not able to
+  // see eSIM profiles through MM). StubCellularNetworksProvider adds stub
+  // cellular networks if necessary and removes previously created stub networks
+  // that are no longer required. If a StubCellularNetworksProvider instance is
+  // set, then |AddOrRemoveStubCellularNetworks| is called before sorting
+  // networks list.
+  class StubCellularNetworksProvider {
+   public:
+    virtual ~StubCellularNetworksProvider() = default;
+
+    // Checks |network_list| to add or remove stub cellular networks. New
+    // stub networks will be addeded to |new_stub_networks| list. Stub networks
+    // that are not required anymore are removed from |network_list|. Returns
+    // true if networks were removed from |network_list| or |new_stub_networks|
+    // is non empty.
+    virtual bool AddOrRemoveStubCellularNetworks(
+        ManagedStateList& network_list,
+        ManagedStateList& new_stub_networks,
+        const DeviceState* device) = 0;
+
+    // Provides metadata associated with a stub network with the given ICCID.
+    // If |iccid| corresponds to an installed eSIM profile or SIM card, true is
+    // returned and the "out" parameters are set. Otherwise, false is returned
+    // and the values are not set.
+    virtual bool GetStubNetworkMetadata(const std::string& iccid,
+                                        const DeviceState* cellular_device,
+                                        std::string* service_path_out,
+                                        std::string* guid_out) = 0;
+  };
+
   enum TechnologyState {
     TECHNOLOGY_UNAVAILABLE,
     TECHNOLOGY_AVAILABLE,
@@ -83,6 +113,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     TECHNOLOGY_DISABLING,
     TECHNOLOGY_PROHIBITED
   };
+
+  NetworkStateHandler(const NetworkStateHandler&) = delete;
+  NetworkStateHandler& operator=(const NetworkStateHandler&) = delete;
 
   ~NetworkStateHandler() override;
 
@@ -117,10 +150,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Asynchronously sets the technology enabled property for |type|. Only
   // NetworkTypePattern::Primitive, ::Mobile and ::Ethernet are supported.
   // Note: Modifies Manager state. Calls |error_callback| on failure.
-  void SetTechnologyEnabled(
-      const NetworkTypePattern& type,
-      bool enabled,
-      const network_handler::ErrorCallback& error_callback);
+  void SetTechnologyEnabled(const NetworkTypePattern& type,
+                            bool enabled,
+                            network_handler::ErrorCallback error_callback);
 
   // Sets the Tether technology state. Because Tether networks do not represent
   // real Shill networks, this value must be set by the Tether component rather
@@ -137,8 +169,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // values are the shill network technology identifiers. See also
   // chromeos::onc::Validator::ValidateGlobalNetworkConfiguration().
   void SetProhibitedTechnologies(
-      const std::vector<std::string>& prohibited_technologies,
-      const network_handler::ErrorCallback& error_callback);
+      const std::vector<std::string>& prohibited_technologies);
 
   // Finds and returns a device state by |device_path| or NULL if not found.
   const DeviceState* GetDeviceState(const std::string& device_path) const;
@@ -182,8 +213,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // is connecting before the state is set in Shill. If |connect_requested| is
   // true, NetworkState::IsConnectingState() will return true. This will cause
   // the network to be sorted first and it will be part of the active list.
+  // Also clears shill_connect_error_ for the NetworkState.
   void SetNetworkConnectRequested(const std::string& service_path,
                                   bool connect_requested);
+
+  // Calls NetworkState::set_shill_connect_error_ for |service_path|.
+  void SetShillConnectError(const std::string& service_path,
+                            const std::string& shill_connect_error);
 
   // Called from Chrome's network portal detector to indicate whether Chrome has
   // detected that the network is in a captive portal state. This may or may
@@ -316,8 +352,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
                            DeviceStateList* list) const;
 
   // Requests a network scan. This may trigger updates to the network
-  // list, which will trigger the appropriate observer calls. If |type| is
-  // Cellular, a mobile network scan will be requested if supported.
+  // list, which will trigger the appropriate observer calls.
+  // Note: If |type| is Cellular, a mobile network scan will be requested
+  // if supported. This is disruptive and should only be triggered by an
+  // explicit user action.
   void RequestScan(const NetworkTypePattern& type);
 
   // Requests an update for an existing NetworkState, e.g. after configuring
@@ -340,19 +378,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Sets the list of devices on which portal check is enabled.
   void SetCheckPortalList(const std::string& check_portal_list);
 
-  // Sets a provider id (e.g. extension id) for a hex encoded SSID. If
-  // |provider_id| is empty the entry will be erased.
-  void SetCaptivePortalProviderForHexSsid(const std::string& hex_ssid,
-                                          const std::string& provider_id,
-                                          const std::string& provider_name);
-
   // Sets the Manager.WakeOnLan property. Note: we do not track this state, we
   // only set it.
   void SetWakeOnLanEnabled(bool enabled);
 
-  // Sets the HostName property. Note: we do not track this property, we
-  // only set it.
+  // Sets the DHCP HostName property. Note: This does not directly set
+  // |hostname_|, it sets the Shill property and relies on Shill emitting the
+  // change which updates the cached |hostname_|. This ensures that Chrome and
+  // Shill are in sync.
   void SetHostname(const std::string& hostname);
+
+  // Returns the cached DHCP HostName property provided by Shill. Initialized
+  // to an empty string and set once the Manager properties are received.
+  const std::string& hostname() const { return hostname_; }
 
   // Enable or disable network bandwidth throttling, on all interfaces on the
   // system. If |enabled| is true, |upload_rate_kbits| and |download_rate_kbits|
@@ -378,33 +416,58 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   const NetworkState* GetEAPForEthernet(const std::string& service_path,
                                         bool connected_only);
 
-  const std::string& default_network_path() const {
-    return default_network_path_;
-  }
-
   // Sets the |error_| property of the matching NetworkState for tests.
   void SetErrorForTest(const std::string& service_path,
                        const std::string& error);
 
   void SetDeviceStateUpdatedForTest(const std::string& device_path);
 
-  // Sets |allow_only_policy_networks_to_connect_|,
-  // |allow_only_policy_networks_to_connect_if_available_| and
-  // |blacklisted_hex_ssids_| and calls |UpdateBlockedWifiNetworksInternal()|.
+  // Sets |allow_only_policy_wifi_networks_to_connect_|,
+  // |allow_only_policy_wifi_networks_to_connect_if_available_| and
+  // |blocked_hex_ssids_| and calls
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Wifi())|.
   virtual void UpdateBlockedWifiNetworks(
       bool only_managed,
       bool available_only,
-      const std::vector<std::string>& blacklisted_hex_ssids);
+      const std::vector<std::string>& blocked_hex_ssids);
+
+  // Sets |allow_only_policy_cellular_networks_to_connect_| and
+  // calls |UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular())|
+  virtual void UpdateBlockedCellularNetworks(bool only_managed);
 
   // Returns the NetworkState associated to the wifi device's
   // available_managed_network_path or |nullptr| if no managed network is
   // available.
   const NetworkState* GetAvailableManagedWifiNetwork() const;
 
+  // Returns true if a user is logged in and the networks for the logged in user
+  // have been loaded.
+  bool IsProfileNetworksLoaded();
+
   // Returns true if the AllowOnlyPolicyNetworksToConnect policy is enabled or
   // if the AllowOnlyPolicyNetworksToConnectIfAvailable policy is enabled and
   // there is a managed wifi network available.
   bool OnlyManagedWifiNetworksAllowed() const;
+
+  // Calls AddOrRemoveStubCellularNetworks on CellularStubServiceProvider if
+  // set, sorts network list and notifies network list change if required.
+  void SyncStubCellularNetworks();
+
+  // Requests traffic counters for a service denoted by |service_path|.
+  void RequestTrafficCounters(const std::string& service_path,
+                              DBusMethodCallback<base::Value>);
+
+  // Resets traffic counters for a service denoted by |service_path|.
+  void ResetTrafficCounters(const std::string& service_path);
+
+  bool default_network_is_metered() const {
+    return default_network_is_metered_;
+  }
+
+  void set_stub_cellular_networks_provider(
+      StubCellularNetworksProvider* stub_cellular_networks_provider) {
+    stub_cellular_networks_provider_ = stub_cellular_networks_provider;
+  }
 
   // Constructs and initializes an instance for testing.
   static std::unique_ptr<NetworkStateHandler> InitializeForTest();
@@ -426,7 +489,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
-  void ProfileListChanged() override;
+  void ProfileListChanged(const base::Value& profile_list) override;
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
@@ -452,11 +515,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
                                 const std::string& ip_config_path,
                                 const base::Value& properties) override;
 
-  // Called by ShillPropertyHandler when the portal check list manager property
-  // changes.
   void CheckPortalListChanged(const std::string& check_portal_list) override;
-
-  // Called by ShillPropertyHandler when a technology list changes.
+  void HostnameChanged(const std::string& hostname) override;
   void TechnologyListChanged() override;
 
   // Called by |shill_property_handler_| when the service or device list has
@@ -476,10 +536,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   typedef std::map<std::string, std::string> SpecifierGuidMap;
   friend class NetworkStateHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, NetworkStateHandlerStub);
-  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedByPolicyBlacklisted);
-  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
-                           BlockedByPolicyOnlyManagedIfAvailable);
+                           BlockedWifiByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           BlockedCellularByPolicyOnlyManaged);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           BlockedWifiByPolicyOnlyManagedIfAvailable);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, SyncStubCellularNetworks);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           GetNetworkListAfterUpdateManagedList);
 
   // Implementation for GetNetworkListByType and GetActiveNetworkListByType.
   void GetNetworkListByTypeImpl(const NetworkTypePattern& type,
@@ -496,9 +562,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // * Visible non-wifi networks
   // * Visible wifi networks
   // * Hidden (wifi) networks
-  // If |ensure_cellular| is true, call EnsureCellularNetwork (which may
-  // remove a network from the list).
-  void SortNetworkList(bool ensure_cellular);
+  void SortNetworkList();
 
   // Updates UMA stats. Called once after all requested networks are updated.
   void UpdateNetworkStats();
@@ -511,21 +575,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Ensure a valid GUID for NetworkState.
   void UpdateGuid(NetworkState* network);
 
-  // Look for a matching captive portal provider in
-  // |hex_ssid_to_captive_portal_provider_map_|.
-  void UpdateCaptivePortalProvider(NetworkState* network);
+  // Handles cellular network updates by providing some NetworkState properties
+  // from the Cellular DeviceState and alerting receivers if a network has
+  // transitioned from a stub to a Shill-backed network.
+  void HandleCellularNetworkUpdateReceived(NetworkState* network,
+                                           bool had_icccid_before_update);
 
-  // Update networkState properties from the associated DeviceState.
-  void UpdateCellularStateFromDevice(NetworkState* network);
-
-  // Cellular networks may not have an associated Shill Service (e.g. when the
-  // SIM is locked or a mobile network is not available). This returns a new
-  // default cellular network if necessary.
-  std::unique_ptr<NetworkState> MaybeCreateDefaultCellularNetwork();
-
-  // Removes the default Cellular network if it exists. Called when there is
-  // more than one Cellular network in the list.
-  void RemoveDefaultCellularNetwork();
+  // Calls AddOrRemoveStubCellularNetworks on StubCellularNetworksProvider if
+  // set and updates GUID for newly added networks as needed. Returns true if
+  // network_list was modified.
+  bool AddOrRemoveStubCellularNetworks();
 
   // Sends NetworkListChanged() to observers and logs an event.
   void NotifyNetworkListChanged();
@@ -562,7 +621,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void NotifyNetworkConnectionStateChanged(NetworkState* network);
 
   // Notifies observers when the default network or its properties change.
-  void NotifyDefaultNetworkChanged();
+  void NotifyDefaultNetworkChanged(const std::string& log_reason);
 
   // Notifies observers when the active state of any current or previously
   // active network changes, or the active networks order changes.
@@ -578,8 +637,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Called to ask observers to scan for networks.
   void NotifyScanRequested(const NetworkTypePattern& type);
 
+  // Called whenever Device.Scanning state transitions to true.
+  void NotifyScanStarted(const DeviceState* device);
+
   // Called whenever Device.Scanning state transitions to false.
   void NotifyScanCompleted(const DeviceState* device);
+
+  // Called when a stub network is replaced by a Shill-backed network.
+  void NotifyNetworkIdentifierTransitioned(const std::string& old_service_path,
+                                           const std::string& new_service_path,
+                                           const std::string& old_guid,
+                                           const std::string& new_guid);
 
   // Helper function to log property updated events.
   void LogPropertyUpdated(const ManagedState* network,
@@ -617,17 +685,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void EnsureTetherDeviceState();
 
   // Updates the network's |blocked_by_policy_| depending on
-  // |allow_only_policy_networks_to_connect_| and |blacklisted_hex_ssids_|.
+  // |allow_only_policy_networks_to_connect_| and |blocked_hex_ssids_|.
   // Returns true if the value changed.
   bool UpdateBlockedByPolicy(NetworkState* network) const;
 
   // Updates the device's |managed_network_available_| depending on the list of
   // networks associated with this device. Calls
-  // |UpdateBlockedWifiNetworksInternal()| if the availability changed.
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Wifi())| if the
+  // availability changed.
   void UpdateManagedWifiNetworkAvailable();
 
-  // Calls |UpdateBlockedByPolicy()| for each wifi network.
-  void UpdateBlockedWifiNetworksInternal();
+  // Calls |UpdateBlockedByPolicy()| for each given |network_type| network.
+  void UpdateBlockedNetworksInternal(const NetworkTypePattern& network_type);
+
+  // Sets properties associated with the default network, currently the path and
+  // Metered.
+  void SetDefaultNetworkValues(const std::string& path, bool metered);
+
+  // Determines whether the user is logged in and sets |is_user_logged_in_|.
+  void ProcessIsUserLoggedIn(const base::Value& profile_list);
 
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
@@ -654,24 +730,37 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   ManagedStateList device_list_;
 
   // Keeps track of the default network for notifying observers when it changes.
+  // Do not set this directly, use SetDefaultNetworkValues() instead.
   std::string default_network_path_;
+
+  // Tracks whether there is a connected default network and it is metered.
+  // Do not set this directly, use SetDefaultNetworkValues() instead.
+  bool default_network_is_metered_ = false;
 
   // List of interfaces on which portal check is enabled.
   std::string check_portal_list_;
+
+  // Tracks the default network portal state for triggering PortalStateChanged.
+  NetworkState::PortalState default_network_portal_state_ =
+      NetworkState::PortalState::kUnknown;
+
+  // Tracks the default network proxy config for triggering PortalStateChanged.
+  base::Value default_network_proxy_config_;
+
+  // DHCP Hostname.
+  std::string hostname_;
 
   // Map of network specifiers to guids. Contains an entry for each
   // NetworkState that is not saved in a profile.
   SpecifierGuidMap specifier_guid_map_;
 
-  // Map of hex SSIDs to captive portal provider info.
-  // Used to set NetworkState::captive_portal_provider_.
-  std::map<std::string, NetworkState::CaptivePortalProviderInfo>
-      hex_ssid_to_captive_portal_provider_map_;
-
   // The state corresponding to the Tether device type. This value is managed by
   // the Tether component.
   TechnologyState tether_technology_state_ =
       TechnologyState::TECHNOLOGY_UNAVAILABLE;
+
+  // Provides stub cellular networks. Not owned by this instance.
+  StubCellularNetworksProvider* stub_cellular_networks_provider_ = nullptr;
 
   // Not owned by this instance.
   const TetherSortDelegate* tether_sort_delegate_ = nullptr;
@@ -682,17 +771,27 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Ensure that we do not delete any networks while notifying observers.
   bool notifying_network_observers_ = false;
 
-  // Policies which control WiFi blocking (Controlled from
+  // Policies which control WiFi and Cellular blocking (Controlled from
   // |ManagedNetworkConfigurationHandler| by calling |UpdateBlockedNetworks()|).
-  bool allow_only_policy_networks_to_connect_ = false;
-  bool allow_only_policy_networks_to_connect_if_available_ = false;
-  std::vector<std::string> blacklisted_hex_ssids_;
+  bool allow_only_policy_wifi_networks_to_connect_ = false;
+  bool allow_only_policy_wifi_networks_to_connect_if_available_ = false;
+  bool allow_only_policy_cellular_networks_to_connect_ = false;
+  std::vector<std::string> blocked_hex_ssids_;
+
+  // After login the user's saved networks get updated asynchronously from
+  // shill. These variables indicate whether a user is logged in, and if the
+  // user's saved networks are done updating.
+  bool is_profile_networks_loaded_ = false;
+  bool is_user_logged_in_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkStateHandler;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_HANDLER_H_

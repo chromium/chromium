@@ -11,8 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
@@ -32,6 +30,10 @@ namespace media {
 class MEDIA_EXPORT CdmHostFiles {
  public:
   CdmHostFiles();
+
+  CdmHostFiles(const CdmHostFiles&) = delete;
+  CdmHostFiles& operator=(const CdmHostFiles&) = delete;
+
   ~CdmHostFiles();
 
   // Opens all common files and CDM specific files for the CDM at |cdm_path|.
@@ -76,8 +78,6 @@ class MEDIA_EXPORT CdmHostFiles {
 
   // Files specific to each CDM type, e.g. the CDM binary.
   ScopedFileVector cdm_specific_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostFiles);
 };
 
 }  // namespace media

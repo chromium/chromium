@@ -7,8 +7,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
-#include "chrome/browser/extensions/extension_action.h"
 #include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
+#include "extensions/browser/extension_action.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -27,10 +27,10 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
   EXTENSION_FUNCTION_VALIDATE(HasSystemIndicator(*extension()));
 
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList().size() == 1);
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList()[0].is_dict());
+  EXTENSION_FUNCTION_VALIDATE(args().size() == 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
 
-  const base::Value& set_icon_details = args_->GetList()[0];
+  const base::Value& set_icon_details = args()[0];
 
   // NOTE: For historical reasons, this code is primarily taken from
   // ExtensionActionSetIconFunction.
@@ -39,8 +39,10 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
   if (const base::Value* canvas_set = set_icon_details.FindKeyOfType(
           "imageData", base::Value::Type::DICTIONARY)) {
     gfx::ImageSkia icon;
-    EXTENSION_FUNCTION_VALIDATE(ExtensionAction::ParseIconFromCanvasDictionary(
-        static_cast<const base::DictionaryValue&>(*canvas_set), &icon));
+    EXTENSION_FUNCTION_VALIDATE(
+        ExtensionAction::ParseIconFromCanvasDictionary(
+            static_cast<const base::DictionaryValue&>(*canvas_set), &icon) ==
+        ExtensionAction::IconParseResult::kSuccess);
 
     if (icon.isNull())
       return RespondNow(Error("Icon invalid."));

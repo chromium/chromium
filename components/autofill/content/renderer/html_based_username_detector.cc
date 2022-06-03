@@ -9,10 +9,10 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -29,7 +29,8 @@ namespace autofill {
 namespace {
 
 // List of separators that can appear in HTML attribute values.
-constexpr char kDelimiters[] = "$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
+constexpr char16_t kDelimiters[] =
+    u"$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
 
 // Minimum length of a word, in order not to be considered short word. Short
 // words will not be searched in attribute values (especially after delimiters
@@ -45,10 +46,10 @@ constexpr int kMinimumWordLength = 4;
 // |kMinimumWordLength|) is computed as well.
 struct UsernameFieldData {
   WebInputElement input_element;
-  base::string16 developer_value;
-  base::flat_set<base::string16> developer_short_tokens;
-  base::string16 user_value;
-  base::flat_set<base::string16> user_short_tokens;
+  std::u16string developer_value;
+  base::flat_set<std::u16string> developer_short_tokens;
+  std::u16string user_value;
+  base::flat_set<std::u16string> user_short_tokens;
 };
 
 // Words that the algorithm looks for are split into multiple categories based
@@ -67,31 +68,19 @@ struct CategoryOfWords {
   const size_t non_latin_dictionary_size;
 };
 
-// Used only inside DCHECK.
-bool AllElementsBelongsToSameForm(
-    const std::vector<WebFormControlElement>& all_control_elements) {
-  return std::adjacent_find(all_control_elements.begin(),
-                            all_control_elements.end(),
-                            [](const WebFormControlElement& a,
-                               const WebFormControlElement& b) {
-                              return a.Form() != b.Form();
-                            }) == all_control_elements.end();
-}
-
 // 1. Removes delimiters from |raw_value| and appends the remainder to
 // |*field_data_value|. A sentinel symbol is added first if |*field_data_value|
 // is not empty.
 // 2. Tokenizes and appends short tokens (shorter than |kMinimumWordLength|)
 // from |raw_value| to |*field_data_short_tokens|, if any.
 void AppendValueAndShortTokens(
-    const base::string16& raw_value,
-    base::string16* field_data_value,
-    base::flat_set<base::string16>* field_data_short_tokens) {
-  const base::string16 lowercase_value = base::i18n::ToLower(raw_value);
-  const base::string16 delimiters = base::ASCIIToUTF16(kDelimiters);
+    const std::u16string& raw_value,
+    std::u16string* field_data_value,
+    base::flat_set<std::u16string>* field_data_short_tokens) {
+  const std::u16string lowercase_value = base::i18n::ToLower(raw_value);
   std::vector<base::StringPiece16> tokens =
-      base::SplitStringPiece(lowercase_value, delimiters, base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
+      base::SplitStringPiece(lowercase_value, kDelimiters,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // When computing the developer value, '$' safety guard is being added
   // between field name and id, so that forming of accidental words is
@@ -100,11 +89,11 @@ void AppendValueAndShortTokens(
     field_data_value->push_back('$');
 
   field_data_value->reserve(field_data_value->size() + lowercase_value.size());
-  std::vector<base::string16> short_tokens;
+  std::vector<std::u16string> short_tokens;
   for (const base::StringPiece16& token : tokens) {
     if (token.size() < kMinimumWordLength)
-      short_tokens.push_back(token.as_string());
-    token.AppendToString(field_data_value);
+      short_tokens.emplace_back(token);
+    field_data_value->append(token.data(), token.size());
   }
   // It is better to insert elements to a |base::flat_set| in one operation.
   field_data_short_tokens->insert(short_tokens.begin(), short_tokens.end());
@@ -144,7 +133,7 @@ void InferUsernameFieldData(
         ToWebInputElement(&control_element);
     if (!input_element || input_element->IsPasswordFieldForAutofill())
       continue;
-    const base::string16 element_name =
+    const std::u16string element_name =
         input_element->NameForAutofill().Utf16();
     for (size_t i = next_element_range_begin; i < form_data.fields.size();
          ++i) {
@@ -166,12 +155,12 @@ void InferUsernameFieldData(
 // Check if any word from |dictionary| is encountered in computed field
 // information (i.e. |value|, |tokens|).
 bool CheckFieldWithDictionary(
-    const base::string16& value,
-    const base::flat_set<base::string16>& short_tokens,
+    const std::u16string& value,
+    const base::flat_set<std::u16string>& short_tokens,
     const char* const* dictionary,
     const size_t& dictionary_size) {
   for (size_t i = 0; i < dictionary_size; ++i) {
-    const base::string16 word = base::UTF8ToUTF16(dictionary[i]);
+    const std::u16string word = base::UTF8ToUTF16(dictionary[i]);
     if (word.length() < kMinimumWordLength) {
       // Treat short words by looking them up in the tokens set.
       if (short_tokens.find(word) != short_tokens.end())
@@ -226,17 +215,17 @@ void RemoveFieldsWithNegativeWords(
 void FindWordsFromCategoryInForm(
     const std::vector<UsernameFieldData>& possible_usernames_data,
     const CategoryOfWords& category,
-    std::vector<uint32_t>* username_predictions) {
+    std::vector<FieldRendererId>* username_predictions) {
   // Auxiliary element that contains the first field (in order of appearance in
   // the form) in which a substring is encountered.
-  uint32_t chosen_field_renderer_id = FormData::kNotSetRendererId;
+  FieldRendererId chosen_field_renderer_id;
 
   size_t fields_found = 0;
   for (const UsernameFieldData& field_data : possible_usernames_data) {
     if (ContainsWordFromCategory(field_data, category)) {
       if (fields_found == 0) {
-        chosen_field_renderer_id =
-            field_data.input_element.UniqueRendererFormControlId();
+        chosen_field_renderer_id = FieldRendererId(
+            field_data.input_element.UniqueRendererFormControlId());
       }
       fields_found++;
     }
@@ -252,7 +241,7 @@ void FindWordsFromCategoryInForm(
 void FindUsernameFieldInternal(
     const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    std::vector<uint32_t>* username_predictions) {
+    std::vector<FieldRendererId>* username_predictions) {
   DCHECK(username_predictions);
   DCHECK(username_predictions->empty());
 
@@ -284,38 +273,28 @@ void FindUsernameFieldInternal(
   }
 }
 
-// Returns the |unique_renderer_id| of a given |WebFormElement|. If
-// |WebFormElement::IsNull()| return |kNotSetRendererId|.
-uint32_t GetFormRendererId(WebFormElement form) {
-  return form.IsNull() ? FormData::kNotSetRendererId
-                       : form.UniqueRendererFormId();
-}
-
 }  // namespace
 
-const std::vector<uint32_t>& GetPredictionsFieldBasedOnHtmlAttributes(
+const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache) {
+    UsernameDetectorCache* username_detector_cache,
+    const WebFormElement& form) {
   // The cache will store the object referenced in the return value, so it must
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
   DCHECK(!all_control_elements.empty());
 
-  // All elements in |all_control_elements| should have the same |Form()|.
-  DCHECK(AllElementsBelongsToSameForm(all_control_elements));
-  const WebFormElement form = all_control_elements.at(0).Form();
-
   // True if the cache has no entry for |form|.
   bool cache_miss = true;
   // Iterator pointing to the entry for |form| if the entry for |form| is found.
   UsernameDetectorCache::iterator form_position;
-  std::tie(form_position, cache_miss) = username_detector_cache->insert(
-      std::make_pair(GetFormRendererId(form), std::vector<uint32_t>()));
+  std::tie(form_position, cache_miss) = username_detector_cache->emplace(
+      form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
 
   if (cache_miss) {
-    std::vector<uint32_t> username_predictions;
+    std::vector<FieldRendererId> username_predictions;
     FindUsernameFieldInternal(all_control_elements, form_data,
                               &username_predictions);
     if (!username_predictions.empty())

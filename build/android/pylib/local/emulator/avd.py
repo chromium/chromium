@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 import contextlib
 import json
 import logging
@@ -23,8 +24,8 @@ from pylib.local.emulator import ini
 from pylib.local.emulator.proto import avd_pb2
 
 _ALL_PACKAGES = object()
-_DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT, 'tools',
-                                        'bin', 'avdmanager')
+_DEFAULT_AVDMANAGER_PATH = os.path.join(
+    constants.ANDROID_SDK_ROOT, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
 # Default to a 480dp mdpi screen (a relatively large phone).
 # See https://developer.android.com/training/multiscreen/screensizes
 # and https://developer.android.com/training/multiscreen/screendensities
@@ -32,6 +33,9 @@ _DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT, 'tools',
 _DEFAULT_SCREEN_DENSITY = 160
 _DEFAULT_SCREEN_HEIGHT = 960
 _DEFAULT_SCREEN_WIDTH = 480
+
+# Default to swiftshader_indirect since it works for most cases.
+_DEFAULT_GPU_MODE = 'swiftshader_indirect'
 
 
 class AvdException(Exception):
@@ -79,12 +83,13 @@ class _AvdManagerAgent(object):
 
     self._env = dict(os.environ)
 
-    # avdmanager, like many tools that have evolved from `android`
-    # (http://bit.ly/2m9JiTx), uses toolsdir to find the SDK root.
+    # The avdmanager from cmdline-tools would look two levels
+    # up from toolsdir to find the SDK root.
     # Pass avdmanager a fake directory under the directory in which
     # we install the system images s.t. avdmanager can find the
     # system images.
-    fake_tools_dir = os.path.join(self._sdk_root, 'non-existent-tools')
+    fake_tools_dir = os.path.join(self._sdk_root, 'non-existent-tools',
+                                  'non-existent-version')
     self._env.update({
         'ANDROID_AVD_HOME':
         self._avd_home,
@@ -178,11 +183,16 @@ class AvdConfig(object):
     self._initialized = False
     self._initializer_lock = threading.Lock()
 
+  @property
+  def avd_settings(self):
+    return self._config.avd_settings
+
   def Create(self,
              force=False,
              snapshot=False,
              keep=False,
-             cipd_json_output=None):
+             cipd_json_output=None,
+             dry_run=False):
     """Create an instance of the AVD CIPD package.
 
     This method:
@@ -191,7 +201,8 @@ class AvdConfig(object):
      - modifies the AVD's ini files to support running chromium tests
        in chromium infrastructure
      - optionally starts & stops the AVD for snapshotting (default no)
-     - creates and uploads an instance of the AVD CIPD package
+     - By default creates and uploads an instance of the AVD CIPD package
+       (can be turned off by dry_run flag).
      - optionally deletes the AVD (default yes)
 
     Args:
@@ -201,9 +212,11 @@ class AvdConfig(object):
       keep: bool indicating whether to keep the AVD after creating
         the CIPD package.
       cipd_json_output: string path to pass to `cipd create` via -json-output.
+      dry_run: When set to True, it will skip the CIPD package creation
+        after creating the AVD.
     """
     logging.info('Installing required packages.')
-    self.Install(packages=[
+    self._InstallCipdPackages(packages=[
         self._config.emulator_package,
         self._config.system_image_package,
     ])
@@ -228,33 +241,66 @@ class AvdConfig(object):
       # Clear out any previous configuration or state from this AVD.
       root_ini = os.path.join(android_avd_home,
                               '%s.ini' % self._config.avd_name)
+      features_ini = os.path.join(self._emulator_home, 'advancedFeatures.ini')
       avd_dir = os.path.join(android_avd_home, '%s.avd' % self._config.avd_name)
       config_ini = os.path.join(avd_dir, 'config.ini')
 
-      with open(root_ini, 'a') as root_ini_file:
-        root_ini_file.write('path.rel=avd/%s.avd\n' % self._config.avd_name)
+      with ini.update_ini_file(root_ini) as root_ini_contents:
+        root_ini_contents['path.rel'] = 'avd/%s.avd' % self._config.avd_name
 
-      height = (self._config.avd_settings.screen.height
-                or _DEFAULT_SCREEN_HEIGHT)
-      width = (self._config.avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH)
-      density = (self._config.avd_settings.screen.density
-                 or _DEFAULT_SCREEN_DENSITY)
+      with ini.update_ini_file(features_ini) as features_ini_contents:
+        # features_ini file will not be refreshed by avdmanager during
+        # creation. So explicitly clear its content to exclude any leftover
+        # from previous creation.
+        features_ini_contents.clear()
+        features_ini_contents.update(self.avd_settings.advanced_features)
 
-      config_ini_contents = {
-          'hw.lcd.density': density,
-          'hw.lcd.height': height,
-          'hw.lcd.width': width,
-      }
-      with open(config_ini, 'a') as config_ini_file:
-        ini.dump(config_ini_contents, config_ini_file)
+      with ini.update_ini_file(config_ini) as config_ini_contents:
+        height = self.avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
+        width = self.avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
+        density = self.avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
+
+        config_ini_contents.update({
+            'disk.dataPartition.size': '4G',
+            'hw.keyboard': 'yes',
+            'hw.lcd.density': density,
+            'hw.lcd.height': height,
+            'hw.lcd.width': width,
+            'hw.mainKeys': 'no',  # Show nav buttons on screen
+        })
+
+        if self.avd_settings.ram_size:
+          config_ini_contents['hw.ramSize'] = self.avd_settings.ram_size
 
       # Start & stop the AVD.
       self._Initialize()
       instance = _AvdInstance(self._emulator_path, self._emulator_home,
                               self._config)
-      instance.Start(read_only=False, snapshot_save=snapshot)
-      device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted(
-          timeout=180, retries=0)
+      # Enable debug for snapshot when it is set to True
+      debug_tags = 'init,snapshot' if snapshot else None
+      instance.Start(read_only=False,
+                     snapshot_save=snapshot,
+                     debug_tags=debug_tags,
+                     gpu_mode=_DEFAULT_GPU_MODE)
+      # Android devices with full-disk encryption are encrypted on first boot,
+      # and then get decrypted to continue the boot process (See details in
+      # https://bit.ly/3agmjcM).
+      # Wait for this step to complete since it can take a while for old OSs
+      # like M, otherwise the avd may have "Encryption Unsuccessful" error.
+      device = device_utils.DeviceUtils(instance.serial)
+      device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+
+      # Skip network disabling on pre-N for now since the svc commands fail
+      # on Marshmallow.
+      if device.build_version_sdk > 23:
+        # Always disable the network to prevent built-in system apps from
+        # updating themselves, which could take over package manager and
+        # cause shell command timeout.
+        # Use svc as this also works on the images with build type "user".
+        logging.info('Disabling the network in emulator.')
+        device.RunShellCommand(['svc', 'wifi', 'disable'], check_return=True)
+        device.RunShellCommand(['svc', 'data', 'disable'], check_return=True)
+
       instance.Stop()
 
       # The multiinstance lock file seems to interfere with the emulator's
@@ -272,14 +318,13 @@ class AvdConfig(object):
           self._emulator_home,
           'install_mode':
           'copy',
-          'data': [
-              {
-                  'dir': os.path.relpath(avd_dir, self._emulator_home)
-              },
-              {
-                  'file': os.path.relpath(root_ini, self._emulator_home)
-              },
-          ],
+          'data': [{
+              'dir': os.path.relpath(avd_dir, self._emulator_home)
+          }, {
+              'file': os.path.relpath(root_ini, self._emulator_home)
+          }, {
+              'file': os.path.relpath(features_ini, self._emulator_home)
+          }],
       }
 
       logging.info('Creating AVD CIPD package.')
@@ -296,19 +341,27 @@ class AvdConfig(object):
             'create',
             '-pkg-def',
             package_def_path,
+            '-tag',
+            'emulator_version:%s' % self._config.emulator_package.version,
+            '-tag',
+            'system_image_version:%s' %
+            self._config.system_image_package.version,
         ]
         if cipd_json_output:
           cipd_create_cmd.extend([
               '-json-output',
               cipd_json_output,
           ])
-        try:
-          for line in cmd_helper.IterCmdOutputLines(cipd_create_cmd):
-            logging.info('    %s', line)
-        except subprocess.CalledProcessError as e:
-          raise AvdException(
-              'CIPD package creation failed: %s' % str(e),
-              command=cipd_create_cmd)
+        logging.info('running %r%s', cipd_create_cmd,
+                     ' (dry_run)' if dry_run else '')
+        if not dry_run:
+          try:
+            for line in cmd_helper.IterCmdOutputLines(cipd_create_cmd):
+              logging.info('    %s', line)
+          except subprocess.CalledProcessError as e:
+            raise AvdException(
+                'CIPD package creation failed: %s' % str(e),
+                command=cipd_create_cmd)
 
     finally:
       if not keep:
@@ -316,11 +369,19 @@ class AvdConfig(object):
         avd_manager.Delete(avd_name=self._config.avd_name)
 
   def Install(self, packages=_ALL_PACKAGES):
-    """Installs the requested CIPD packages.
+    """Installs the requested CIPD packages and prepares them for use.
+
+    This includes making files writeable and revising some of the
+    emulator's internal config files.
 
     Returns: None
     Raises: AvdException on failure to install.
     """
+    self._InstallCipdPackages(packages=packages)
+    self._MakeWriteable()
+    self._EditConfigs()
+
+  def _InstallCipdPackages(self, packages):
     pkgs_by_dir = {}
     if packages is _ALL_PACKAGES:
       packages = [
@@ -333,16 +394,16 @@ class AvdConfig(object):
         pkgs_by_dir[pkg.dest_path] = []
       pkgs_by_dir[pkg.dest_path].append(pkg)
 
-    for pkg_dir, pkgs in pkgs_by_dir.iteritems():
+    for pkg_dir, pkgs in list(pkgs_by_dir.items()):
       logging.info('Installing packages in %s', pkg_dir)
       cipd_root = os.path.join(constants.DIR_SOURCE_ROOT, pkg_dir)
       if not os.path.exists(cipd_root):
         os.makedirs(cipd_root)
       ensure_path = os.path.join(cipd_root, '.ensure')
       with open(ensure_path, 'w') as ensure_file:
-        # Make CIPD ensure that all files are present, even if
-        # it thinks the package is installed.
-        ensure_file.write('$ParanoidMode CheckPresence\n\n')
+        # Make CIPD ensure that all files are present and correct,
+        # even if it thinks the package is installed.
+        ensure_file.write('$ParanoidMode CheckIntegrity\n\n')
         for pkg in pkgs:
           ensure_file.write('%s %s\n' % (pkg.package_name, pkg.version))
           logging.info('  %s %s', pkg.package_name, pkg.version)
@@ -363,6 +424,7 @@ class AvdConfig(object):
                                                        str(e)),
             command=ensure_cmd)
 
+  def _MakeWriteable(self):
     # The emulator requires that some files are writable.
     for dirname, _, filenames in os.walk(self._emulator_home):
       for f in filenames:
@@ -371,6 +433,35 @@ class AvdConfig(object):
         if mode & stat.S_IRUSR:
           mode = mode | stat.S_IWUSR
         os.chmod(path, mode)
+
+  def _EditConfigs(self):
+    android_avd_home = os.path.join(self._emulator_home, 'avd')
+    avd_dir = os.path.join(android_avd_home, '%s.avd' % self._config.avd_name)
+
+    config_path = os.path.join(avd_dir, 'config.ini')
+    if os.path.exists(config_path):
+      with open(config_path) as config_file:
+        config_contents = ini.load(config_file)
+    else:
+      config_contents = {}
+
+    config_contents['hw.sdCard'] = 'true'
+    if self.avd_settings.sdcard.size:
+      sdcard_path = os.path.join(avd_dir, 'cr-sdcard.img')
+      if not os.path.exists(sdcard_path):
+        mksdcard_path = os.path.join(
+            os.path.dirname(self._emulator_path), 'mksdcard')
+        mksdcard_cmd = [
+            mksdcard_path,
+            self.avd_settings.sdcard.size,
+            sdcard_path,
+        ]
+        cmd_helper.RunCmd(mksdcard_cmd)
+
+      config_contents['hw.sdCard.path'] = sdcard_path
+
+    with open(config_path, 'w') as config_file:
+      ini.dump(config_contents, config_file)
 
   def _Initialize(self):
     if self._initialized:
@@ -440,7 +531,13 @@ class _AvdInstance(object):
   def __str__(self):
     return '%s|%s' % (self._avd_name, (self._emulator_serial or id(self)))
 
-  def Start(self, read_only=True, snapshot_save=False, window=False):
+  def Start(self,
+            read_only=True,
+            snapshot_save=False,
+            window=False,
+            writable_system=False,
+            gpu_mode=_DEFAULT_GPU_MODE,
+            debug_tags=None):
     """Starts the emulator running an instance of the given AVD."""
 
     with tempfile_ext.TemporaryFileName() as socket_path, (contextlib.closing(
@@ -455,58 +552,44 @@ class _AvdInstance(object):
           '-no-boot-anim',
       ]
 
-      android_avd_home = os.path.join(self._emulator_home, 'avd')
-      avd_dir = os.path.join(android_avd_home, '%s.avd' % self._avd_name)
-
-      hardware_qemu_path = os.path.join(avd_dir, 'hardware-qemu.ini')
-      if os.path.exists(hardware_qemu_path):
-        with open(hardware_qemu_path) as hardware_qemu_file:
-          hardware_qemu_contents = ini.load(hardware_qemu_file)
-      else:
-        hardware_qemu_contents = {}
-
       if read_only:
         emulator_cmd.append('-read-only')
       if not snapshot_save:
         emulator_cmd.append('-no-snapshot-save')
+      if writable_system:
+        emulator_cmd.append('-writable-system')
+      # Note when "--gpu-mode" is set to "host":
+      #  * It needs a valid DISPLAY env, even if "--emulator-window" is false.
+      #    Otherwise it may throw errors like "Failed to initialize backend
+      #    EGL display". See the code in https://bit.ly/3ruiMlB as an example
+      #    to setup the DISPLAY env with xvfb.
+      #  * It will not work under remote sessions like chrome remote desktop.
+      if gpu_mode:
+        emulator_cmd.extend(['-gpu', gpu_mode])
+      if debug_tags:
+        emulator_cmd.extend(['-debug', debug_tags])
+
       emulator_env = {}
       if self._emulator_home:
         emulator_env['ANDROID_EMULATOR_HOME'] = self._emulator_home
+      if 'DISPLAY' in os.environ:
+        emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
       if window:
-        if 'DISPLAY' in os.environ:
-          emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
-        else:
+        if 'DISPLAY' not in emulator_env:
           raise AvdException('Emulator failed to start: DISPLAY not defined')
       else:
         emulator_cmd.append('-no-window')
 
-      hardware_qemu_contents['hw.sdCard'] = 'true'
-      if self._avd_config.avd_settings.sdcard.size:
-        sdcard_path = os.path.join(self._emulator_home, 'avd',
-                                   '%s.avd' % self._avd_name, 'cr-sdcard.img')
-        if not os.path.exists(sdcard_path):
-          mksdcard_path = os.path.join(
-              os.path.dirname(self._emulator_path), 'mksdcard')
-          mksdcard_cmd = [
-              mksdcard_path,
-              self._avd_config.avd_settings.sdcard.size,
-              sdcard_path,
-          ]
-          cmd_helper.RunCmd(mksdcard_cmd)
-
-        emulator_cmd.extend(['-sdcard', sdcard_path])
-        hardware_qemu_contents['hw.sdCard.path'] = sdcard_path
-
-      with open(hardware_qemu_path, 'w') as hardware_qemu_file:
-        ini.dump(hardware_qemu_contents, hardware_qemu_file)
-
       sock.listen(1)
 
-      logging.info('Starting emulator.')
+      logging.info('Starting emulator with commands: %s',
+                   ' '.join(emulator_cmd))
 
       # TODO(jbudorick): Add support for logging emulator stdout & stderr at
       # higher logging levels.
-      self._sink = open('/dev/null', 'w')
+      # Enable the emulator log when debug_tags is set.
+      if not debug_tags:
+        self._sink = open('/dev/null', 'w')
       self._emulator_proc = cmd_helper.Popen(
           emulator_cmd, stdout=self._sink, stderr=self._sink, env=emulator_env)
 
@@ -530,9 +613,13 @@ class _AvdInstance(object):
     """Stops the emulator process."""
     if self._emulator_proc:
       if self._emulator_proc.poll() is None:
-        self._emulator_proc.terminate()
+        if self._emulator_serial:
+          device_utils.DeviceUtils(self._emulator_serial).adb.Emu('kill')
+        else:
+          self._emulator_proc.terminate()
         self._emulator_proc.wait()
       self._emulator_proc = None
+
     if self._sink:
       self._sink.close()
       self._sink = None

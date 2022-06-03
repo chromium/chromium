@@ -1,0 +1,6 @@
+include_rules = [
+  "+ui/events/platform/platform_event_source.h",
+  "+third_party/libx11",
+  "+third_party/libxcb-keysyms",
+  "+third_party/x11proto",
+]

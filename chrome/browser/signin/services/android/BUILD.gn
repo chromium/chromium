@@ -1,0 +1,101 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/FREMobileIdentityConsistencyFieldTrial.java",
+    "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
+    "java/src/org/chromium/chrome/browser/signin/services/FREMobileIdentityConsistencyFieldTrial.java",
+    "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
+    "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
+    "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/signin/core/browser:signin_enums_java",
+    "//components/signin/public/android:java",
+    "//components/version_info/android:version_constants_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+  ]
+  srcjar_deps = [ "//chrome/browser/profiles:profile_metrics_enum_java" ]
+  resources_package = "org.chromium.chrome.browser.signin.services"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/logo_avatar_anonymous.xml",
+    "java/res/values/dimens.xml",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheRenderTest.java",
+    "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheWithBadgeRenderTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("junit") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/signin/public/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

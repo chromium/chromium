@@ -11,9 +11,7 @@ buildflag_header("buildflags") {
     "ENABLE_SPELLCHECK=$enable_spellcheck",
     "USE_BROWSER_SPELLCHECKER=$use_browser_spellchecker",
     "USE_RENDERER_SPELLCHECKER=$use_renderer_spellchecker",
-    "USE_WIN_HYBRID_SPELLCHECKER=$use_win_hybrid_spellchecker",
     "ENABLE_SPELLING_SERVICE=$enable_spelling_service",
     "HAS_SPELLCHECK_PANEL=$has_spellcheck_panel",
-    "USE_WINDOWS_PREFERRED_LANGUAGES_FOR_SPELLCHECK=$use_windows_preferred_languages_for_spellcheck",
   ]
 }

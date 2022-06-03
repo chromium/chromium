@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -22,12 +21,7 @@ namespace content {
 const char kScreenPrefix[] = "screen";
 const char kWindowPrefix[] = "window";
 
-// static
-const DesktopMediaID::Id DesktopMediaID::kNullId = 0;
-// static
-const DesktopMediaID::Id DesktopMediaID::kFakeId = -3;
-
-#if defined(USE_AURA) || defined(OS_MACOSX)
+#if defined(USE_AURA) || defined(OS_MAC)
 // static
 DesktopMediaID DesktopMediaID::RegisterNativeWindow(DesktopMediaID::Type type,
                                                     gfx::NativeWindow window) {
@@ -56,6 +50,10 @@ bool DesktopMediaID::operator==(const DesktopMediaID& other) const {
   return type == other.type && id == other.id && window_id == other.window_id &&
          web_contents_id == other.web_contents_id &&
          audio_share == other.audio_share;
+}
+
+bool DesktopMediaID::operator!=(const DesktopMediaID& other) const {
+  return !(*this == other);
 }
 
 // static
@@ -114,7 +112,6 @@ std::string DesktopMediaID::ToString() const {
       break;
     case TYPE_WEB_CONTENTS:
       return web_contents_id.ToString();
-      break;
   }
   DCHECK(!prefix.empty());
 

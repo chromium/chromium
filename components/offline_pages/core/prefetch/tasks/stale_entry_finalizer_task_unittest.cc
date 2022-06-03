@@ -72,7 +72,7 @@ void StaleEntryFinalizerTaskTest::SetUp() {
   PrefetchTaskTestBase::SetUp();
   stale_finalizer_task_ =
       std::make_unique<StaleEntryFinalizerTask>(dispatcher(), store());
-  simple_test_clock_.SetNow(base::Time() + base::TimeDelta::FromDays(100));
+  simple_test_clock_.SetNow(base::Time() + base::Days(100));
 }
 
 void StaleEntryFinalizerTaskTest::TearDown() {
@@ -84,8 +84,8 @@ PrefetchItem StaleEntryFinalizerTaskTest::InsertItemWithFreshnessTime(
     PrefetchItemState state,
     int freshness_delta_in_hours) {
   PrefetchItem item(item_generator()->CreateItem(state));
-  item.freshness_time = simple_test_clock_.Now() +
-                        base::TimeDelta::FromHours(freshness_delta_in_hours);
+  item.freshness_time =
+      simple_test_clock_.Now() + base::Hours(freshness_delta_in_hours);
   item.creation_time = simple_test_clock_.Now();
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item))
       << "Failed inserting item with state " << static_cast<int>(state);
@@ -96,8 +96,8 @@ PrefetchItem StaleEntryFinalizerTaskTest::InsertItemWithCreationTime(
     PrefetchItemState state,
     int creation_delta_in_hours) {
   PrefetchItem item(item_generator()->CreateItem(state));
-  item.creation_time = simple_test_clock_.Now() +
-                       base::TimeDelta::FromHours(creation_delta_in_hours);
+  item.creation_time =
+      simple_test_clock_.Now() + base::Hours(creation_delta_in_hours);
   item.freshness_time = simple_test_clock_.Now();
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item))
       << "Failed inserting item with state " << static_cast<int>(state);

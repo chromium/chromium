@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console is cleared via console.clear() method\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function log()
@@ -26,25 +26,25 @@
     async function clearFromConsoleAPI(next) {
       await TestRunner.RuntimeAgent.evaluate('log();');
       TestRunner.addResult('=== Before clear ===');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
 
       await TestRunner.RuntimeAgent.evaluate('clearConsoleFromPage();');
 
       TestRunner.addResult('=== After clear ===');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       next();
     },
 
     async function shouldNotClearWithPreserveLog(next) {
       await TestRunner.RuntimeAgent.evaluate('log();');
       TestRunner.addResult('=== Before clear ===');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       Common.moduleSetting('preserveConsoleLog').set(true);
 
       await TestRunner.RuntimeAgent.evaluate('clearConsoleFromPage();');
 
       TestRunner.addResult('=== After clear ===');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       Common.moduleSetting('preserveConsoleLog').set(false);
       next();
     }

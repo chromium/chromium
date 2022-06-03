@@ -10,11 +10,12 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 
 namespace chromeos {
 namespace {
@@ -34,7 +35,7 @@ void SystemSaltGetter::GetSystemSalt(GetSystemSaltCallback callback) {
     return;
   }
 
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&SystemSaltGetter::DidWaitForServiceToBeAvailable,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -65,17 +66,19 @@ void SystemSaltGetter::DidWaitForServiceToBeAvailable(
     std::move(callback).Run(std::string());
     return;
   }
-  CryptohomeClient::Get()->GetSystemSalt(
+  CryptohomeMiscClient::Get()->GetSystemSalt(
+      ::user_data_auth::GetSystemSaltRequest(),
       base::BindOnce(&SystemSaltGetter::DidGetSystemSalt,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SystemSaltGetter::DidGetSystemSalt(
-    GetSystemSaltCallback callback,
-    base::Optional<std::vector<uint8_t>> system_salt) {
-  if (system_salt.has_value() && !system_salt->empty() &&
-      system_salt->size() % 2 == 0U) {
-    raw_salt_ = std::move(system_salt).value();
+    GetSystemSaltCallback system_salt_callback,
+    absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
+  if (system_salt_reply.has_value() && !system_salt_reply->salt().empty() &&
+      system_salt_reply->salt().size() % 2 == 0U) {
+    raw_salt_ = RawSalt(system_salt_reply->salt().begin(),
+                        system_salt_reply->salt().end());
     system_salt_ = ConvertRawSaltToHexString(raw_salt_);
 
     std::vector<base::OnceClosure> callbacks;
@@ -87,7 +90,7 @@ void SystemSaltGetter::DidGetSystemSalt(
     LOG(WARNING) << "System salt not available";
   }
 
-  std::move(callback).Run(system_salt_);
+  std::move(system_salt_callback).Run(system_salt_);
 }
 
 // static

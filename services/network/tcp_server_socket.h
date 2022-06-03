@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
                   Delegate* delegate,
                   const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  TCPServerSocket(const TCPServerSocket&) = delete;
+  TCPServerSocket& operator=(const TCPServerSocket&) = delete;
+
   ~TCPServerSocket() override;
 
   int Listen(const net::IPEndPoint& local_addr,
@@ -88,11 +91,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   int backlog_;
   std::vector<std::unique_ptr<PendingAccept>> pending_accepts_queue_;
   std::unique_ptr<net::StreamSocket> accepted_socket_;
+  net::IPEndPoint accepted_address_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtrFactory<TCPServerSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocket);
 };
 
 }  // namespace network

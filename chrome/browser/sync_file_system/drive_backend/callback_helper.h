@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_CALLBACK_HELPER_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_CALLBACK_HELPER_H_
 
+#include <functional>
 #include <memory>
 #include <type_traits>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 // TODO(tzik): Merge this file to media/base/bind_to_current_loop.h.
@@ -22,83 +22,99 @@ namespace drive_backend {
 
 namespace internal {
 
-template <typename T>
-base::internal::PassedWrapper<std::unique_ptr<T>> RebindForward(
-    std::unique_ptr<T>& t) {
-  return base::Passed(&t);
+template <typename Signature, typename... Args>
+base::OnceClosure MakeClosure(base::RepeatingCallback<Signature>* callback,
+                              Args&&... args) {
+  return base::BindOnce(*callback, std::forward<Args>(args)...);
 }
 
-template <typename T>
-T& RebindForward(T& t) {
-  return t;
+template <typename Signature, typename... Args>
+base::OnceClosure MakeClosure(base::OnceCallback<Signature>* callback,
+                              Args&&... args) {
+  return base::BindOnce(std::move(*callback), std::forward<Args>(args)...);
 }
 
-template <typename T>
+template <typename CallbackType>
 class CallbackHolder {
  public:
   CallbackHolder(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  const base::Location& from_here,
-                 const base::Callback<T>& callback)
+                 CallbackType callback)
       : task_runner_(task_runner),
         from_here_(from_here),
-        callback_(new base::Callback<T>(callback)) {
+        callback_(std::move(callback)) {
     DCHECK(task_runner_.get());
   }
 
+  CallbackHolder(const CallbackHolder&) = delete;
+  CallbackHolder& operator=(const CallbackHolder&) = delete;
+
   ~CallbackHolder() {
-    base::Callback<T>* callback = callback_.release();
-    if (!task_runner_->DeleteSoon(from_here_, callback))
-      delete callback;
+    if (callback_) {
+      task_runner_->PostTask(from_here_,
+                             base::BindOnce(&CallbackHolder::DeleteCallback,
+                                            std::move(callback_)));
+    }
   }
 
-  base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
-  const base::Location& from_here() const { return from_here_; }
-  const base::Callback<T>& callback() const { return *callback_; }
+  template <typename... Args>
+  void Run(Args... args) {
+    task_runner_->PostTask(
+        from_here_, MakeClosure(&callback_, std::forward<Args>(args)...));
+  }
 
  private:
+  static void DeleteCallback(CallbackType callback) {}
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const base::Location from_here_;
-  std::unique_ptr<base::Callback<T>> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackHolder);
-};
-
-template <typename>
-struct RelayToTaskRunnerHelper;
-
-template <typename... Args>
-struct RelayToTaskRunnerHelper<void(Args...)> {
-  static void Run(CallbackHolder<void(Args...)>* holder, Args... args) {
-    holder->task_runner()->PostTask(
-        holder->from_here(),
-        base::BindOnce(holder->callback(), RebindForward(args)...));
-  }
+  CallbackType callback_;
 };
 
 }  // namespace internal
 
-template <typename T>
-base::Callback<T> RelayCallbackToTaskRunner(
+template <typename... Args>
+base::OnceCallback<void(Args...)> RelayCallbackToTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Location& from_here,
-    const base::Callback<T>& callback) {
+    base::OnceCallback<void(Args...)> callback) {
   DCHECK(task_runner->RunsTasksInCurrentSequence());
 
   if (callback.is_null())
-    return base::Callback<T>();
+    return {};
 
-  return base::Bind(&internal::RelayToTaskRunnerHelper<T>::Run,
-                    base::Owned(new internal::CallbackHolder<T>(
-                        task_runner, from_here, callback)));
+  using CallbackType = base::OnceCallback<void(Args...)>;
+  using HelperType = internal::CallbackHolder<CallbackType>;
+  using RunnerType = void (HelperType::*)(Args...);
+  RunnerType run = &HelperType::Run;
+  return base::BindOnce(run, std::make_unique<HelperType>(
+                                 task_runner, from_here, std::move(callback)));
 }
 
-template <typename T>
-base::Callback<T> RelayCallbackToCurrentThread(
+template <typename... Args>
+base::RepeatingCallback<void(Args...)> RelayCallbackToTaskRunner(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Location& from_here,
-    const base::Callback<T>& callback) {
-  return RelayCallbackToTaskRunner(
-      base::ThreadTaskRunnerHandle::Get(),
-      from_here, callback);
+    base::RepeatingCallback<void(Args...)> callback) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+
+  if (callback.is_null())
+    return {};
+
+  using CallbackType = base::RepeatingCallback<void(Args...)>;
+  using HelperType = internal::CallbackHolder<CallbackType>;
+  using RunnerType = void (HelperType::*)(Args...);
+  RunnerType run = &HelperType::Run;
+  return base::BindRepeating(
+      run, std::make_unique<HelperType>(task_runner, from_here,
+                                        std::move(callback)));
+}
+
+template <typename CallbackType>
+CallbackType RelayCallbackToCurrentThread(const base::Location& from_here,
+                                          CallbackType callback) {
+  return RelayCallbackToTaskRunner(base::ThreadTaskRunnerHandle::Get(),
+                                   from_here, std::move(callback));
 }
 
 }  // namespace drive_backend

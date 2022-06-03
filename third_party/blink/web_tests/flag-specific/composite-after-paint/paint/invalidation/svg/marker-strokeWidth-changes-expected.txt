@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGPath path id='path'",
-          "rect": [113, 118, 84, 84],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [113, 118, 84, 84]
       ]
     }
   ]

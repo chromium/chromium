@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 
@@ -22,14 +22,20 @@ namespace win {
 // The class interface is based on unique_ptr.
 class BASE_EXPORT ScopedBstr {
  public:
-  ScopedBstr() : bstr_(nullptr) {}
+  ScopedBstr() = default;
 
   // Constructor to create a new BSTR.
   //
   // NOTE: Do not pass a BSTR to this constructor expecting ownership to
   // be transferred - even though it compiles! ;-)
   explicit ScopedBstr(WStringPiece non_bstr);
+
+  ScopedBstr(const ScopedBstr&) = delete;
+  ScopedBstr& operator=(const ScopedBstr&) = delete;
+
   ~ScopedBstr();
+
+  BSTR Get() const { return bstr_; }
 
   // Give ScopedBstr ownership over an already allocated BSTR or null.
   // If you need to allocate a new BSTR instance, use |allocate| instead.
@@ -78,18 +84,13 @@ class BASE_EXPORT ScopedBstr {
   // Returns the number of bytes allocated for the BSTR.
   size_t ByteLength() const;
 
-  operator BSTR() const { return bstr_; }
-
   // Forbid comparison of ScopedBstr types.  You should never have the same
   // BSTR owned by two different scoped_ptrs.
   bool operator==(const ScopedBstr& bstr2) const = delete;
   bool operator!=(const ScopedBstr& bstr2) const = delete;
 
  protected:
-  BSTR bstr_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedBstr);
+  BSTR bstr_ = nullptr;
 };
 
 }  // namespace win

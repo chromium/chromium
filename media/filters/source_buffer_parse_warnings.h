@@ -22,7 +22,7 @@ enum class SourceBufferParseWarning {
 
 // For reporting telemetry of a non-fatal SourceBufferParseWarning.
 using SourceBufferParseWarningCB =
-    base::Callback<void(SourceBufferParseWarning)>;
+    base::RepeatingCallback<void(SourceBufferParseWarning)>;
 
 }  // namespace media
 

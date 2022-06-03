@@ -22,20 +22,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_IMAGE_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
 class ImageResourceContent;
+class SVGAnimatedPreserveAspectRatio;
 
 class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
                                 public SVGURIReference,
                                 public ImageResourceObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGFEImageElement);
   // Pre-finalize to promptly remove as a ImageResource client.
   USING_PRE_FINALIZER(SVGFEImageElement, Dispose);
 
@@ -48,12 +48,14 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
     return preserve_aspect_ratio_.Get();
   }
 
+  const SVGElement* TargetElement() const;
+
   void Dispose();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ImageNotifyFinished(ImageResourceContent*) override;
   String DebugName() const override { return "SVGFEImageElement"; }
 

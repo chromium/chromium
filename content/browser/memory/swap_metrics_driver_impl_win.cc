@@ -16,7 +16,7 @@ std::unique_ptr<SwapMetricsDriver> SwapMetricsDriver::Create(
     const base::TimeDelta update_interval) {
   // SwapMetricsDriver isn't available on Windows for now.
   // TODO(bashi): Figure out a way to measure swap rates on Windows.
-  return std::unique_ptr<SwapMetricsDriver>();
+  return nullptr;
 }
 
 }  // namespace content

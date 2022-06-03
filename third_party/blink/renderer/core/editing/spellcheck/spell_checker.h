@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECKER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
@@ -35,11 +34,13 @@
 
 namespace blink {
 
-class Document;
+class DocumentMarkerGroup;
 class Element;
 class IdleSpellCheckController;
+class LocalDOMWindow;
 class LocalFrame;
 class HTMLElement;
+class Node;
 class SpellCheckMarker;
 class SpellCheckRequest;
 class SpellCheckRequester;
@@ -49,9 +50,11 @@ class WebTextCheckClient;
 
 class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
  public:
-  explicit SpellChecker(LocalFrame&);
+  explicit SpellChecker(LocalDOMWindow&);
+  SpellChecker(const SpellChecker&) = delete;
+  SpellChecker& operator=(const SpellChecker&) = delete;
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
   WebSpellCheckPanelHostClient& SpellCheckPanelHostClient() const;
   WebTextCheckClient* GetTextCheckerClient() const;
@@ -64,7 +67,8 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
   void ShowSpellingGuessPanel();
   void RespondToChangedContents();
   void RespondToChangedSelection();
-  std::pair<Node*, SpellCheckMarker*> GetSpellCheckMarkerUnderSelection() const;
+  void RespondToChangedEnablement(const HTMLElement&, bool enabled);
+  DocumentMarkerGroup* GetSpellCheckMarkerGroupUnderSelection() const;
   // The first String returned in the pair is the selected text.
   // The second String is the marker's description.
   std::pair<String, String> SelectMisspellingAsync();
@@ -88,13 +92,8 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
     return *idle_spell_check_controller_;
   }
 
-  void DidAttachDocument(Document*);
-
  private:
-  LocalFrame& GetFrame() const {
-    DCHECK(frame_);
-    return *frame_;
-  }
+  LocalFrame& GetFrame() const;
 
   // Helper functions for advanceToNextMisspelling()
   Vector<TextCheckingResult> FindMisspellings(const String&);
@@ -102,12 +101,10 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
 
   void RemoveMarkers(const EphemeralRange&, DocumentMarker::MarkerTypes);
 
-  Member<LocalFrame> frame_;
+  Member<LocalDOMWindow> window_;
 
   const Member<SpellCheckRequester> spell_check_requester_;
   const Member<IdleSpellCheckController> idle_spell_check_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellChecker);
 };
 
 }  // namespace blink

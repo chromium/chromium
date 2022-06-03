@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 
@@ -133,7 +135,6 @@ UIElement::UIElement(const UIElementType type,
 }
 
 bool UIElement::SetPropertiesFromString(const std::string& text) {
-  NOTREACHED();
   return false;
 }
 
@@ -146,6 +147,18 @@ std::vector<UIElement::Source> UIElement::GetSources() {
     InitSources();
 
   return sources_;
+}
+
+bool UIElement::FindMatchByElementID(const ui::ElementIdentifier& identifier) {
+  return false;
+}
+
+bool UIElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
+  return false;
+}
+
+bool UIElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  return false;
 }
 
 }  // namespace ui_devtools

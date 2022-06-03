@@ -6,10 +6,9 @@
 
 #include <cmath>
 
-
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 
 namespace {
 
@@ -31,10 +30,10 @@ bool MassageRotationIfMultipleOfNinetyDegrees(gfx::Transform* rotation,
     return false;
 
   gfx::Transform transform;
-  SkMatrix44& m = transform.matrix();
+  skia::Matrix44& m = transform.matrix();
   float degrees_by_ninety = degrees / 90.0f;
 
-  int n = gfx::ToRoundedInt(degrees_by_ninety);
+  int n = base::ClampRound(degrees_by_ninety);
 
   n %= 4;
   if (n < 0)
@@ -325,8 +324,8 @@ void InterpolatedTransformAboutPivot::Init(
     std::unique_ptr<InterpolatedTransform> xform) {
   gfx::Transform to_pivot;
   gfx::Transform from_pivot;
-  to_pivot.Translate(SkIntToMScalar(-pivot.x()), SkIntToMScalar(-pivot.y()));
-  from_pivot.Translate(SkIntToMScalar(pivot.x()), SkIntToMScalar(pivot.y()));
+  to_pivot.Translate(SkIntToScalar(-pivot.x()), SkIntToScalar(-pivot.y()));
+  from_pivot.Translate(SkIntToScalar(pivot.x()), SkIntToScalar(pivot.y()));
 
   std::unique_ptr<InterpolatedTransform> pre_transform =
       std::make_unique<InterpolatedConstantTransform>(to_pivot);

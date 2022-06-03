@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Fetch sends Cache-Control: max-age=0 when cache mode is no-cache
+PASS Fetch doesn't touch Cache-Control when cache mode is no-cache and Cache-Control is already present
+FAIL Fetch sends Cache-Control: no-cache and Pragma: no-cache when cache mode is no-store assert_equals: request 1 header cache-control value is "undefined", not "no-cache" expected (string) "no-cache" but got (undefined) undefined
+PASS Fetch doesn't touch Cache-Control when cache mode is no-store and Cache-Control is already present
+PASS Fetch doesn't touch Pragma when cache mode is no-store and Pragma is already present
+Harness: the test ran to completion.
+

@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -29,12 +29,15 @@ class GeneratePageBundleTask : public Task {
                          const std::string& gcm_token,
                          PrefetchNetworkRequestFactory* request_factory,
                          PrefetchRequestFinishedCallback callback);
+
+  GeneratePageBundleTask(const GeneratePageBundleTask&) = delete;
+  GeneratePageBundleTask& operator=(const GeneratePageBundleTask&) = delete;
+
   ~GeneratePageBundleTask() override;
 
+ private:
   // Task implementation.
   void Run() override;
-
- private:
   void StartGeneratePageBundle(std::unique_ptr<UrlAndIds> url_and_ids);
 
   PrefetchDispatcher* prefetch_dispatcher_;
@@ -44,7 +47,6 @@ class GeneratePageBundleTask : public Task {
   PrefetchRequestFinishedCallback callback_;
 
   base::WeakPtrFactory<GeneratePageBundleTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleTask);
 };
 
 }  // namespace offline_pages

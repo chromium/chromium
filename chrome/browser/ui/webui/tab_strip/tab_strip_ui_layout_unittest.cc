@@ -19,18 +19,10 @@ TEST_P(TabStripUILayoutAspectRatioTest, ThumbnailHasSameAspectRatioAsViewport) {
   TabStripUILayout layout =
       TabStripUILayout::CalculateForWebViewportSize(viewport_size);
 
-  if (viewport_size.width() > viewport_size.height()) {
-    EXPECT_EQ(120, layout.tab_thumbnail_size.height());
-    EXPECT_FLOAT_EQ(
-        viewport_size.width() / viewport_size.height(),
-        layout.tab_thumbnail_size.width() / layout.tab_thumbnail_size.height());
-  } else {
-    EXPECT_EQ(120, layout.tab_thumbnail_size.width());
-    EXPECT_FLOAT_EQ(
-        viewport_size.width() / viewport_size.height(),
-        layout.tab_thumbnail_size.width() /
-            (layout.tab_thumbnail_size.height() + layout.tab_title_height));
-  }
+  EXPECT_EQ(120, layout.tab_thumbnail_size.height());
+  EXPECT_FLOAT_EQ(
+      std::max(1.0, 1.0 * viewport_size.width() / viewport_size.height()),
+      1.0 * layout.tab_thumbnail_aspect_ratio);
 }
 
 INSTANTIATE_TEST_SUITE_P(SmallSizes,

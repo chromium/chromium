@@ -36,7 +36,7 @@ class CORE_EXPORT IntersectionObserverEntry final : public ScriptWrappable {
 
   // blink-internal interface
   const IntersectionGeometry& GetGeometry() const { return geometry_; }
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   IntersectionGeometry geometry_;

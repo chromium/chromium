@@ -23,6 +23,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +44,8 @@
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 namespace file_util {
@@ -188,28 +191,47 @@ void UninstallExtension(const base::FilePath& extensions_dir,
   // We don't care about the return value. If this fails (and it can, due to
   // plugins that aren't unloaded yet), it will get cleaned up by
   // ExtensionGarbageCollector::GarbageCollectExtensions.
-  base::DeleteFileRecursively(extensions_dir.AppendASCII(id));
+  base::DeletePathRecursively(extensions_dir.AppendASCII(id));
 }
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
-                                       Manifest::Location location,
+                                       ManifestLocation location,
                                        int flags,
                                        std::string* error) {
-  return LoadExtension(extension_path, std::string(), location, flags, error);
+  return LoadExtension(extension_path, nullptr, std::string(), location, flags,
+                       error);
 }
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
                                        const std::string& extension_id,
-                                       Manifest::Location location,
+                                       ManifestLocation location,
                                        int flags,
                                        std::string* error) {
-  std::unique_ptr<base::DictionaryValue> manifest =
-      LoadManifest(extension_path, error);
+  return LoadExtension(extension_path, nullptr, extension_id, location, flags,
+                       error);
+}
+
+scoped_refptr<Extension> LoadExtension(
+    const base::FilePath& extension_path,
+    const base::FilePath::CharType* manifest_file,
+    const std::string& extension_id,
+    ManifestLocation location,
+    int flags,
+    std::string* error) {
+  std::unique_ptr<base::DictionaryValue> manifest;
+  if (!manifest_file) {
+    manifest = LoadManifest(extension_path, error);
+  } else {
+    manifest = LoadManifest(extension_path, manifest_file, error);
+  }
   if (!manifest.get())
     return nullptr;
+
   if (!extension_l10n_util::LocalizeExtension(
           extension_path, manifest.get(),
-          extension_l10n_util::GzippedMessagesPermission::kDisallow, error)) {
+          extension_l10n_util::GetGzippedMessagesPermissionForLocation(
+              location),
+          error)) {
     return nullptr;
   }
 
@@ -246,7 +268,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifest(
   std::unique_ptr<base::Value> root(deserializer.Deserialize(nullptr, error));
   if (!root.get()) {
     if (error->empty()) {
-      // If |error| is empty, than the file could not be read.
+      // If |error| is empty, then the file could not be read.
       // It would be cleaner to have the JSON reader give a specific error
       // in this case, but other code tests for a file error with
       // error->empty().  For now, be consistent.
@@ -422,10 +444,6 @@ base::FilePath GetInstallTempDir(const base::FilePath& extensions_dir) {
   return temp_path;
 }
 
-void DeleteFile(const base::FilePath& path, bool recursive) {
-  base::DeleteFile(path, recursive);
-}
-
 base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
   base::StringPiece url_path = url.path_piece();
   if (url_path.empty() || url_path[0] != '/')
@@ -462,19 +480,21 @@ void SetReportErrorForInvisibleIconForTesting(bool value) {
 
 bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
                               const Extension* extension,
-                              int error_message_id,
+                              const char* manifest_key,
                               SkColor background_color,
                               std::string* error) {
   for (const auto& entry : icon_set.map()) {
     const base::FilePath path =
         extension->GetResource(entry.second).GetFilePath();
     if (!ValidateFilePath(path)) {
-      *error = l10n_util::GetStringFUTF8(error_message_id,
-                                         base::UTF8ToUTF16(entry.second));
+      constexpr char kIconMissingError[] =
+          "Could not load icon '%s' specified in '%s'.";
+      *error = base::StringPrintf(kIconMissingError, entry.second.c_str(),
+                                  manifest_key);
       return false;
     }
 
-    if (extension->location() == Manifest::UNPACKED) {
+    if (extension->location() == ManifestLocation::kUnpacked) {
       const bool is_sufficiently_visible =
           image_util::IsIconAtPathSufficientlyVisible(path);
       const bool is_sufficiently_visible_rendered =
@@ -487,9 +507,10 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
           "Extensions.ManifestIconSetIconWasVisibleForUnpackedRendered",
           is_sufficiently_visible_rendered);
       if (!is_sufficiently_visible && g_report_error_for_invisible_icon) {
-        *error = l10n_util::GetStringFUTF8(
-            IDS_EXTENSION_LOAD_ICON_NOT_SUFFICIENTLY_VISIBLE,
-            base::UTF8ToUTF16(entry.second));
+        constexpr char kIconNotSufficientlyVisibleError[] =
+            "Icon '%s' specified in '%s' is not sufficiently visible.";
+        *error = base::StringPrintf(kIconNotSufficientlyVisibleError,
+                                    entry.second.c_str(), manifest_key);
         return false;
       }
     }
@@ -582,17 +603,21 @@ base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {
 base::FilePath GetComputedHashesPath(const base::FilePath& extension_path) {
   return extension_path.Append(kMetadataFolder).Append(kComputedHashesFilename);
 }
-base::FilePath GetIndexedRulesetPath(const base::FilePath& extension_path) {
-  return extension_path.Append(kMetadataFolder).Append(kIndexedRulesetFilename);
+base::FilePath GetIndexedRulesetDirectoryRelativePath() {
+  return base::FilePath(kMetadataFolder).Append(kIndexedRulesetDirectory);
+}
+base::FilePath GetIndexedRulesetRelativePath(int static_ruleset_id) {
+  const char* kRulesetPrefix = "_ruleset";
+  std::string filename =
+      kRulesetPrefix + base::NumberToString(static_ruleset_id);
+  return GetIndexedRulesetDirectoryRelativePath().AppendASCII(filename);
 }
 
 std::vector<base::FilePath> GetReservedMetadataFilePaths(
     const base::FilePath& extension_path) {
-  return {
-      GetVerifiedContentsPath(extension_path),
-      GetComputedHashesPath(extension_path),
-      GetIndexedRulesetPath(extension_path),
-  };
+  return {GetVerifiedContentsPath(extension_path),
+          GetComputedHashesPath(extension_path),
+          extension_path.Append(GetIndexedRulesetDirectoryRelativePath())};
 }
 
 }  // namespace file_util

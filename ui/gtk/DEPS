@@ -1,0 +1,20 @@
+include_rules = [
+  "+chrome/browser/themes/theme_properties.h",
+  "+components/dbus/thread_linux",
+  "+dbus",
+  "+printing",
+  "+third_party/skia",
+  "+ui/aura",
+  "+ui/base",
+  "+ui/color",
+  "+ui/display",
+  "+ui/events",
+  "+ui/gfx",
+  "+ui/native_theme",
+  "+ui/shell_dialogs",
+  "+ui/strings",
+  "+ui/views",
+
+  # TODO: This should be removed.
+  "+ui/ozone",
+]

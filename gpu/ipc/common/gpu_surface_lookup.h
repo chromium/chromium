@@ -21,6 +21,10 @@ namespace gpu {
 class GPU_EXPORT GpuSurfaceLookup {
  public:
   GpuSurfaceLookup() {}
+
+  GpuSurfaceLookup(const GpuSurfaceLookup&) = delete;
+  GpuSurfaceLookup& operator=(const GpuSurfaceLookup&) = delete;
+
   virtual ~GpuSurfaceLookup() {}
 
   static GpuSurfaceLookup* GetInstance();
@@ -35,9 +39,6 @@ class GPU_EXPORT GpuSurfaceLookup {
       int surface_id,
       bool* can_be_used_with_surface_control) = 0;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuSurfaceLookup);
 };
 
 }  // namespace gpu

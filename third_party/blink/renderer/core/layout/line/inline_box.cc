@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/line/inline_box.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
@@ -30,58 +31,47 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
 class LayoutObject;
 
-struct SameSizeAsInlineBox : DisplayItemClient {
+struct SameSizeAsInlineBox : GarbageCollected<SameSizeAsInlineBox>,
+                             DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
-  void* a[4];
+  Member<void*> members[4];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
-#if DCHECK_IS_ON()
-  bool f;
-#endif
+  void Trace(Visitor* visitor) const override;
 };
 
-static_assert(sizeof(InlineBox) == sizeof(SameSizeAsInlineBox),
-              "InlineBox should stay small");
+ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
 
-#if DCHECK_IS_ON()
-InlineBox::~InlineBox() {
-  if (!has_bad_parent_ && parent_)
-    parent_->SetHasBadChildList();
+void InlineBox::Trace(Visitor* visitor) const {
+  visitor->Trace(next_);
+  visitor->Trace(prev_);
+  visitor->Trace(parent_);
+  visitor->Trace(line_layout_item_);
+  DisplayItemClient::Trace(visitor);
 }
-#endif
 
 DISABLE_CFI_PERF
 void InlineBox::Destroy() {
   // We do not need to issue invalidations if the page is being destroyed
   // since these objects will never be repainted.
-  if (!line_layout_item_.DocumentBeingDestroyed()) {
+  if (!GetLineLayoutItem().DocumentBeingDestroyed()) {
     SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded();
 
     // TODO(crbug.com/619630): Make this fast.
-    line_layout_item_.SlowSetPaintingLayerNeedsRepaint();
+    GetLineLayoutItem().SlowSetPaintingLayerNeedsRepaint();
   }
-
-  delete this;
 }
 
 void InlineBox::Remove(MarkLineBoxes mark_line_boxes) {
   if (Parent())
     Parent()->RemoveChild(this, mark_line_boxes);
-}
-
-void* InlineBox::operator new(size_t sz) {
-  return WTF::Partitions::LayoutPartition()->Alloc(
-      sz, WTF_HEAP_PROFILER_TYPE_NAME(InlineBox));
-}
-
-void InlineBox::operator delete(void* ptr) {
-  base::PartitionFree(ptr);
 }
 
 const char* InlineBox::BoxName() const {
@@ -92,12 +82,11 @@ String InlineBox::DebugName() const {
   return BoxName();
 }
 
-IntRect InlineBox::VisualRect() const {
-  return GetLineLayoutItem().VisualRectForInlineBox();
-}
-
-IntRect InlineBox::PartialInvalidationVisualRect() const {
-  return GetLineLayoutItem().PartialInvalidationVisualRectForInlineBox();
+DOMNodeId InlineBox::OwnerNodeId() const {
+  return GetLineLayoutItem().GetNodeForOwnerNodeId()
+             ? DOMNodeIds::IdForNode(
+                   GetLineLayoutItem().GetNodeForOwnerNodeId())
+             : kInvalidDOMNodeId;
 }
 
 #if DCHECK_IS_ON()
@@ -147,7 +136,7 @@ void InlineBox::DumpBox(StringBuilder& string_inlinebox) const {
       GetLineLayoutItem().DebugPointer(), X().ToFloat(), Y().ToFloat(),
       Width().ToFloat(), Height().ToFloat(),
       BaselinePosition(kAlphabeticBaseline).ToInt(),
-      BaselinePosition(kIdeographicBaseline).ToInt());
+      BaselinePosition(kCentralBaseline).ToInt());
 }
 #endif  // DCHECK_IS_ON()
 
@@ -191,7 +180,7 @@ LayoutUnit InlineBox::LineHeight() const {
 }
 
 int InlineBox::CaretMinOffset() const {
-  return GetLineLayoutItem().CaretMinOffset();
+  return 0;
 }
 
 int InlineBox::CaretMaxOffset() const {
@@ -233,7 +222,7 @@ void InlineBox::Move(const LayoutSize& delta) {
 }
 
 void InlineBox::Paint(const PaintInfo& paint_info,
-                      const LayoutPoint&,
+                      const PhysicalOffset&,
                       LayoutUnit,
                       LayoutUnit) const {
   BlockPainter::PaintInlineBox(*this, paint_info);
@@ -273,7 +262,7 @@ RootInlineBox& InlineBox::Root() {
 InlineBox* InlineBox::NextLeafChild() const {
   InlineBox* leaf = nullptr;
   for (InlineBox* box = NextOnLine(); box && !leaf; box = box->NextOnLine())
-    leaf = box->IsLeaf() ? box : ToInlineFlowBox(box)->FirstLeafChild();
+    leaf = box->IsLeaf() ? box : To<InlineFlowBox>(box)->FirstLeafChild();
   if (!leaf && Parent())
     leaf = Parent()->NextLeafChild();
   return leaf;
@@ -282,7 +271,7 @@ InlineBox* InlineBox::NextLeafChild() const {
 InlineBox* InlineBox::PrevLeafChild() const {
   InlineBox* leaf = nullptr;
   for (InlineBox* box = PrevOnLine(); box && !leaf; box = box->PrevOnLine())
-    leaf = box->IsLeaf() ? box : ToInlineFlowBox(box)->LastLeafChild();
+    leaf = box->IsLeaf() ? box : To<InlineFlowBox>(box)->LastLeafChild();
   if (!leaf && Parent())
     leaf = Parent()->PrevLeafChild();
   return leaf;
@@ -358,7 +347,7 @@ void InlineBox::SetShouldDoFullPaintInvalidationForFirstLine() {
   GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
   if (!IsInlineFlowBox())
     return;
-  for (InlineBox* child = ToInlineFlowBox(this)->FirstChild(); child;
+  for (InlineBox* child = To<InlineFlowBox>(this)->FirstChild(); child;
        child = child->NextOnLine())
     child->SetShouldDoFullPaintInvalidationForFirstLine();
 }
@@ -367,7 +356,7 @@ void InlineBox::SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded() {
   // For RootInlineBox, we only need to invalidate if it's using the first line
   // style. Otherwise it paints nothing so we don't need to invalidate it.
   if (!IsRootInlineBox() || IsFirstLineStyle())
-    line_layout_item_.SetShouldDoFullPaintInvalidation();
+    GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
 }
 
 bool CanUseInlineBox(const LayoutObject& node) {
@@ -380,14 +369,14 @@ bool CanUseInlineBox(const LayoutObject& node) {
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::InlineBox* b) {
+void ShowTree(const blink::InlineBox* b) {
   if (b)
     b->ShowTreeForThis();
   else
     fprintf(stderr, "Cannot showTree for (nil) InlineBox.\n");
 }
 
-void showLineTree(const blink::InlineBox* b) {
+void ShowLineTree(const blink::InlineBox* b) {
   if (b)
     b->ShowLineTreeForThis();
   else

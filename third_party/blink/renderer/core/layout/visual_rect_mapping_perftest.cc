@@ -34,24 +34,15 @@ void VisualRectPerfTest::RunPerfTest(unsigned iteration_count,
              << (base::TimeTicks::Now() - start).InMilliseconds() << "ms";
 
   start = base::TimeTicks::Now();
-  size_t total_cache_bytes = 0;
   for (unsigned count = 0; count < iteration_count; count++) {
     object.MapToVisualRectInAncestorSpace(&ancestor, test_rect,
                                           kUseGeometryMapper);
-    if (count == 0) {
-      total_cache_bytes = object.FirstFragment()
-                              .LocalBorderBoxProperties()
-                              .CacheMemoryUsageInBytes();
-    }
     GeometryMapper::ClearCache();
   }
 
   LOG(ERROR)
       << "  Time to run MapToVisualRectInAncestorSpace w/GeometryMapper: "
-
       << (base::TimeTicks::Now() - start).InMilliseconds() << "ms";
-  LOG(ERROR) << "    GeometryMapper cache storage size: " << total_cache_bytes
-             << " bytes";
 }
 
 TEST_F(VisualRectPerfTest, GeometryMapper) {
@@ -144,30 +135,20 @@ TEST_F(VisualRectPerfTest, GeometryMapper) {
 
   unsigned kIterationCount = 1000000;
   LOG(ERROR) << "Test with single div:";
-  RunPerfTest(kIterationCount,
-              *ToLayoutBox(
-                  GetDocument().getElementById("singleDiv")->GetLayoutObject()),
-              *view, rect);
+  RunPerfTest(kIterationCount, *GetLayoutBoxByElementId("singleDiv"), *view,
+              rect);
 
   LOG(ERROR) << "Test with nested div:";
-  RunPerfTest(kIterationCount,
-              *ToLayoutBox(
-                  GetDocument().getElementById("nestedDiv")->GetLayoutObject()),
-              *view, rect);
+  RunPerfTest(kIterationCount, *GetLayoutBoxByElementId("nestedDiv"), *view,
+              rect);
 
   LOG(ERROR) << "Test with div nested under PaintLayers:";
-  RunPerfTest(
-      kIterationCount,
-      *ToLayoutBox(
-          GetDocument().getElementById("nestedPaintLayers")->GetLayoutObject()),
-      *view, rect);
+  RunPerfTest(kIterationCount, *GetLayoutBoxByElementId("nestedPaintLayers"),
+              *view, rect);
 
   LOG(ERROR) << "Test with div nested under transforms:";
-  RunPerfTest(
-      kIterationCount,
-      *ToLayoutBox(
-          GetDocument().getElementById("nestedTransform")->GetLayoutObject()),
-      *view, rect);
+  RunPerfTest(kIterationCount, *GetLayoutBoxByElementId("nestedTransform"),
+              *view, rect);
 }
 
 }  // namespace blink

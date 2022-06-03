@@ -5,17 +5,20 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_installer.h"
-#include "content/public/browser/notification_service.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest.h"
@@ -26,6 +29,39 @@ namespace {
 
 std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
+}
+
+std::unique_ptr<web_app::WebAppTestInstallObserver>
+SetupSyncInstallObserverForProfile(Profile* profile) {
+  auto apps_to_be_sync_installed = web_app::WebAppProvider::GetForTest(profile)
+                                       ->install_manager()
+                                       .GetEnqueuedInstallAppIdsForTesting();
+
+  if (apps_to_be_sync_installed.empty()) {
+    return nullptr;
+  }
+
+  auto install_observer =
+      std::make_unique<web_app::WebAppTestInstallObserver>(profile);
+  install_observer->BeginListening(apps_to_be_sync_installed);
+  return install_observer;
+}
+
+std::unique_ptr<web_app::WebAppTestUninstallObserver>
+SetupSyncUninstallObserverForProfile(Profile* profile) {
+  std::set<web_app::AppId> apps_in_sync_uninstall =
+      web_app::WebAppProvider::GetForTest(profile)
+          ->sync_bridge()
+          .GetAppsInSyncUninstallForTest();
+
+  if (apps_in_sync_uninstall.empty()) {
+    return nullptr;
+  }
+
+  auto uninstall_observer =
+      std::make_unique<web_app::WebAppTestUninstallObserver>(profile);
+  uninstall_observer->BeginListening(apps_in_sync_uninstall);
+  return uninstall_observer;
 }
 
 }  // namespace
@@ -48,24 +84,21 @@ bool AllProfilesHaveSameApps() {
   return true;
 }
 
-std::string InstallApp(Profile* profile, int index) {
+std::string InstallHostedApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
-      extensions::Manifest::TYPE_HOSTED_APP);
+      profile, CreateFakeAppName(index), extensions::Manifest::TYPE_HOSTED_APP);
 }
 
 std::string InstallPlatformApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
+      profile, CreateFakeAppName(index),
       extensions::Manifest::TYPE_PLATFORM_APP);
 }
 
-std::string InstallAppForAllProfiles(int index) {
+std::string InstallHostedAppForAllProfiles(int index) {
   std::string extension_id;
   for (auto* profile : test()->GetAllProfiles()) {
-    extension_id = InstallApp(profile, index);
+    extension_id = InstallHostedApp(profile, index);
   }
   return extension_id;
 }
@@ -119,8 +152,7 @@ void WaitForAppService(Profile* profile) {
       ->FlushMojoCallsForTesting();
 }
 
-syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile,
-                                           int app_index) {
+syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile, int app_index) {
   return SyncAppHelper::GetInstance()->GetPageOrdinalForApp(
       profile, CreateFakeAppName(app_index));
 }
@@ -148,12 +180,72 @@ void SetAppLaunchOrdinalForApp(
 
 void CopyNTPOrdinals(Profile* source, Profile* destination, int index) {
   SetPageOrdinalForApp(destination, index, GetPageOrdinalForApp(source, index));
-  SetAppLaunchOrdinalForApp(
-      destination, index, GetAppLaunchOrdinalForApp(source, index));
+  SetAppLaunchOrdinalForApp(destination, index,
+                            GetAppLaunchOrdinalForApp(source, index));
 }
 
 void FixNTPOrdinalCollisions(Profile* profile) {
   SyncAppHelper::GetInstance()->FixNTPOrdinalCollisions(profile);
+}
+
+void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
+  for (auto* profile : profiles) {
+    auto install_observer = SetupSyncInstallObserverForProfile(profile);
+    // This actually waits for all observed apps to be installed.
+    if (install_observer)
+      install_observer->Wait();
+
+    auto uninstall_observer = SetupSyncUninstallObserverForProfile(profile);
+    // This actually waits for all observed apps to be installed.
+    if (uninstall_observer) {
+      uninstall_observer->Wait();
+    }
+  }
+
+  for (auto* profile : profiles) {
+    // Only checks that there is no app in sync install state in the registry.
+    // Do not use |GetEnqueuedInstallAppIdsForTesting| because the task only
+    // gets removed from the queue on WebAppInstallTask::OnOsHooksCreated that
+    // happens asynchronously after the observer gets OnWebAppInstalled. And
+    // some installs might not have OS hooks installed but they will be in the
+    // registry.
+    ASSERT_TRUE(web_app::WebAppProvider::GetForTest(profile)
+                    ->registrar()
+                    .GetAppsFromSyncAndPendingInstallation()
+                    .empty());
+
+    std::set<web_app::AppId> apps_in_sync_uninstall =
+        web_app::WebAppProvider::GetForTest(profile)
+            ->sync_bridge()
+            .GetAppsInSyncUninstallForTest();
+    ASSERT_TRUE(apps_in_sync_uninstall.empty());
+  }
+}
+
+web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
+  DCHECK(info.start_url.is_valid());
+  base::RunLoop run_loop;
+  web_app::AppId app_id;
+  auto* provider = web_app::WebAppProvider::GetForTest(profile);
+  provider->install_manager().InstallWebAppFromInfo(
+      std::make_unique<WebApplicationInfo>(info),
+      /*overwrite_existing_manifest_fields=*/true,
+      web_app::ForInstallableSite::kYes,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::BindLambdaForTesting(
+          [&run_loop, &app_id](const web_app::AppId& new_app_id,
+                               web_app::InstallResultCode code) {
+            DCHECK_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
+            app_id = new_app_id;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
+  DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
+
+  return app_id;
 }
 
 }  // namespace apps_helper
@@ -178,10 +270,10 @@ AppsMatchChecker::AppsMatchChecker() : profiles_(test()->GetAllProfiles()) {
     extensions::ExtensionPrefs* prefs =
         extensions::ExtensionPrefs::Get(profile);
     prefs->AddObserver(this);
-  }
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-                 content::NotificationService::AllSources());
+    install_tracker_observation_.AddObservation(
+        extensions::InstallTracker::Get(profile));
+  }
 }
 
 AppsMatchChecker::~AppsMatchChecker() {
@@ -193,9 +285,6 @@ AppsMatchChecker::~AppsMatchChecker() {
         extensions::ExtensionPrefs::Get(profile);
     prefs->RemoveObserver(this);
   }
-
-  registrar_.Remove(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-                    content::NotificationService::AllSources());
 }
 
 bool AppsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -267,9 +356,7 @@ void AppsMatchChecker::OnExtensionStateChanged(const std::string& extension_id,
   CheckExitCondition();
 }
 
-void AppsMatchChecker::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_LAUNCHER_REORDERED, type);
+void AppsMatchChecker::OnAppsReordered(
+    const absl::optional<std::string>& extension_id) {
   CheckExitCondition();
 }

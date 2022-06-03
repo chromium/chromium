@@ -13,6 +13,8 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -21,7 +23,8 @@ class NotificationStorageTest : public ::testing::Test {
  public:
   NotificationStorageTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
-        origin_(GURL("https://example.com")),
+        url_(GURL("https://example.com")),
+        origin_(url::Origin::Create(url_)),
         success_(false),
         service_worker_registration_id_(
             blink::mojom::kInvalidServiceWorkerRegistrationId) {
@@ -61,16 +64,18 @@ class NotificationStorageTest : public ::testing::Test {
   // blink::mojom::kInvalidServiceWorkerRegistrationId. The
   // ServiceWorkerRegistration will be kept alive for the test's lifetime.
   int64_t RegisterServiceWorker() {
-    GURL script_url = origin_;
-
+    GURL script_url = url_;
+    blink::StorageKey key(origin_);
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
-      options.scope = origin_;
+      options.scope = url_;
       base::RunLoop run_loop;
       helper_->context()->RegisterServiceWorker(
-          script_url, options, blink::mojom::FetchClientSettingsObject::New(),
+          script_url, key, options,
+          blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(&NotificationStorageTest::DidRegisterServiceWorker,
-                         base::Unretained(this), run_loop.QuitClosure()));
+                         base::Unretained(this), run_loop.QuitClosure()),
+          /*requesting_frame_id=*/GlobalRenderFrameHostId());
       run_loop.Run();
     }
 
@@ -84,8 +89,8 @@ class NotificationStorageTest : public ::testing::Test {
 
     {
       base::RunLoop run_loop;
-      helper_->context()->storage()->FindRegistrationForId(
-          service_worker_registration_id_, origin_,
+      helper_->context()->registry()->FindRegistrationForId(
+          service_worker_registration_id_, key,
           base::BindOnce(
               &NotificationStorageTest::DidFindServiceWorkerRegistration,
               base::Unretained(this), &service_worker_registration,
@@ -154,7 +159,8 @@ class NotificationStorageTest : public ::testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;  // Must be first member
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  GURL origin_;
+  GURL url_;
+  url::Origin origin_;
   TestBrowserContext browser_context_;
   bool success_;
   int64_t service_worker_registration_id_;
@@ -173,7 +179,7 @@ class NotificationStorageTest : public ::testing::Test {
 TEST_F(NotificationStorageTest, WriteReadNotification) {
   NotificationDatabaseData data;
   data.notification_id = GenerateNotificationId();
-  data.origin = origin_;
+  data.origin = url_;
   data.service_worker_registration_id = RegisterServiceWorker();
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             data.service_worker_registration_id);
@@ -204,7 +210,7 @@ TEST_F(NotificationStorageTest, ReadInvalidNotification) {
 TEST_F(NotificationStorageTest, ReadAndUpdateInteraction) {
   NotificationDatabaseData data, read_data;
   data.notification_id = GenerateNotificationId();
-  data.origin = origin_;
+  data.origin = url_;
   data.service_worker_registration_id = RegisterServiceWorker();
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             data.service_worker_registration_id);

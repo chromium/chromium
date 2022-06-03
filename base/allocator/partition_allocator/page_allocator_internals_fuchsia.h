@@ -16,8 +16,9 @@
 #include <lib/zx/vmo.h>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/logging.h"
 
 namespace base {
 
@@ -35,7 +36,7 @@ const char* PageTagToName(PageTag tag) {
     case PageTag::kV8:
       return "cr_v8";
     default:
-      DCHECK(false);
+      PA_DCHECK(false);
       return "";
   }
 }
@@ -46,13 +47,15 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageRead:
       return ZX_VM_PERM_READ;
     case PageReadWrite:
+    case PageReadWriteTagged:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
+    case PageReadExecuteProtected:
     case PageReadExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_EXECUTE;
     case PageReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     default:
-      NOTREACHED();
+      PA_NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return 0;
@@ -70,8 +73,7 @@ std::atomic<int32_t> s_allocPageErrorCode{0};
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
-                               PageTag page_tag,
-                               bool commit) {
+                               PageTag page_tag) {
   zx::vmo vmo;
   zx_status_t status = zx::vmo::create(length, 0, &vmo);
   if (status != ZX_OK) {
@@ -89,7 +91,7 @@ void* SystemAllocPagesInternal(void* hint,
   if (page_tag == PageTag::kV8) {
     // V8 uses JIT. Call zx_vmo_replace_as_executable() to allow code execution
     // in the new VMO.
-    status = vmo.replace_as_executable(zx::handle(), &vmo);
+    status = vmo.replace_as_executable(zx::resource(), &vmo);
     if (status != ZX_OK) {
       ZX_DLOG(INFO, status) << "zx_vmo_replace_as_executable";
       return nullptr;
@@ -106,8 +108,8 @@ void* SystemAllocPagesInternal(void* hint,
 
   uint64_t address;
   status =
-      zx::vmar::root_self()->map(vmar_offset, vmo,
-                                 /*vmo_offset=*/0, length, options, &address);
+      zx::vmar::root_self()->map(options, vmar_offset, vmo,
+                                 /*vmo_offset=*/0, length, &address);
   if (status != ZX_OK) {
     // map() is expected to fail if |hint| is set to an already-in-use location.
     if (!hint) {
@@ -123,10 +125,9 @@ void* TrimMappingInternal(void* base,
                           size_t base_length,
                           size_t trim_length,
                           PageAccessibilityConfiguration accessibility,
-                          bool commit,
                           size_t pre_slack,
                           size_t post_slack) {
-  DCHECK_EQ(base_length, trim_length + pre_slack + post_slack);
+  PA_DCHECK(base_length == trim_length + pre_slack + post_slack);
 
   uint64_t base_address = reinterpret_cast<uint64_t>(base);
 
@@ -151,8 +152,8 @@ bool TrySetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   zx_status_t status = zx::vmar::root_self()->protect(
-      reinterpret_cast<uint64_t>(address), length,
-      PageAccessibilityToZxVmOptions(accessibility));
+      PageAccessibilityToZxVmOptions(accessibility),
+      reinterpret_cast<uint64_t>(address), length);
   return status == ZX_OK;
 }
 
@@ -161,8 +162,8 @@ void SetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   zx_status_t status = zx::vmar::root_self()->protect(
-      reinterpret_cast<uint64_t>(address), length,
-      PageAccessibilityToZxVmOptions(accessibility));
+      PageAccessibilityToZxVmOptions(accessibility),
+      reinterpret_cast<uint64_t>(address), length);
   ZX_CHECK(status == ZX_OK, status);
 }
 
@@ -181,19 +182,53 @@ void DiscardSystemPagesInternal(void* address, size_t length) {
   ZX_CHECK(status == ZX_OK, status);
 }
 
-void DecommitSystemPagesInternal(void* address, size_t length) {
+void DecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, PageInaccessible);
+  }
+
   // TODO(https://crbug.com/1022062): Review whether this implementation is
   // still appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
   // discardable API.
   DiscardSystemPagesInternal(address, length);
-
-  SetSystemPagesAccessInternal(address, length, PageInaccessible);
 }
 
-bool RecommitSystemPagesInternal(void* address,
-                                 size_t length,
-                                 PageAccessibilityConfiguration accessibility) {
-  SetSystemPagesAccessInternal(address, length, accessibility);
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  SetSystemPagesAccess(address, length, PageInaccessible);
+
+  // TODO(https://crbug.com/1022062): this implementation will likely no longer
+  // be appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
+  // discardable API.
+  DiscardSystemPagesInternal(address, length);
+}
+
+void RecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // On Fuchsia systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, accessibility);
+  }
+}
+
+bool TryRecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // On Fuchsia systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    return TrySetSystemPagesAccess(address, length, accessibility);
+  }
   return true;
 }
 

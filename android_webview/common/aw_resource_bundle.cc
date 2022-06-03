@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
@@ -20,6 +21,7 @@
 namespace android_webview {
 
 void InitIcuAndResourceBundleBrowserSide() {
+  TRACE_EVENT0("startup", "InitIcuAndResourceBundleBrowserSide");
   ui::SetLocalePaksStoredInApk(true);
   std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
       base::android::GetDefaultLocaleString(), NULL,
@@ -45,9 +47,9 @@ void InitResourceBundleRendererSide() {
   ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
                                                           pak_region);
 
-  std::pair<int, ui::ScaleFactor> extra_paks[] = {
-      {kAndroidWebViewMainPakDescriptor, ui::SCALE_FACTOR_NONE},
-      {kAndroidWebView100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
+  std::pair<int, ui::ResourceScaleFactor> extra_paks[] = {
+      {kAndroidWebViewMainPakDescriptor, ui::kScaleFactorNone},
+      {kAndroidWebView100PercentPakDescriptor, ui::k100Percent}};
 
   for (const auto& pak_info : extra_paks) {
     pak_fd = global_descriptors->Get(pak_info.first);

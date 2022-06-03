@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PROXY_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PROXY_CLIENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -18,8 +19,10 @@
 namespace blink {
 
 class DocumentPaintDefinition;
+class NativePaintDefinition;
 class PaintWorklet;
 class WorkletGlobalScope;
+class WorkerBackingThread;
 
 // Mediates between the (multiple) PaintWorkletGlobalScopes on the worklet
 // thread and the (single) PaintWorkletPaintDispatcher on the non-worklet
@@ -33,8 +36,6 @@ class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
       public Supplement<WorkerClients>,
       public PaintWorkletPainter {
-  USING_GARBAGE_COLLECTED_MIXIN(PaintWorkletProxyClient);
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletProxyClient);
 
  public:
   // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
@@ -44,13 +45,17 @@ class MODULES_EXPORT PaintWorkletProxyClient
 
   // Create the PaintWorkletProxyClient for a given PaintWorklet, represented by
   // its unique |worklet_id|.
-  static PaintWorkletProxyClient* Create(Document*, int worklet_id);
+  static PaintWorkletProxyClient* Create(LocalDOMWindow*, int worklet_id);
 
   PaintWorkletProxyClient(
       int worklet_id,
       PaintWorklet*,
       base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paintee,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue);
+
+  PaintWorkletProxyClient(const PaintWorkletProxyClient&) = delete;
+  PaintWorkletProxyClient& operator=(const PaintWorkletProxyClient&) = delete;
+
   ~PaintWorkletProxyClient() override = default;
 
   // PaintWorkletPainter implementation.
@@ -74,7 +79,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
   // after the first have no effect.
   void Dispose();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Hooks for testing.
   const Vector<CrossThreadPersistent<PaintWorkletGlobalScope>>&
@@ -96,16 +101,17 @@ class MODULES_EXPORT PaintWorkletProxyClient
 
   double DevicePixelRatio() const { return device_pixel_ratio_; }
 
+  void RegisterForNativePaintWorklet(
+      WorkerBackingThread* thread,
+      NativePaintDefinition* definition,
+      PaintWorkletInput::PaintWorkletInputType type);
+  void UnregisterForNativePaintWorklet();
+
  private:
   friend class PaintWorkletGlobalScopeTest;
   friend class PaintWorkletProxyClientTest;
   FRIEND_TEST_ALL_PREFIXES(PaintWorkletProxyClientTest,
                            PaintWorkletProxyClientConstruction);
-
-  void ApplyAnimatedPropertyOverrides(
-      PaintWorkletStylePropertyMap* style_map,
-      const CompositorPaintWorkletJob::AnimatedPropertyValues&
-          animated_property_values);
 
   // Store the device pixel ratio here so it can be used off main thread
   double device_pixel_ratio_;
@@ -151,6 +157,10 @@ class MODULES_EXPORT PaintWorkletProxyClient
   // handle to the PaintWorklet called via a stored task runner.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
   CrossThreadWeakPersistent<PaintWorklet> paint_worklet_;
+
+  HashMap<PaintWorkletInput::PaintWorkletInputType,
+          CrossThreadPersistent<NativePaintDefinition>>
+      native_definitions_;
 };
 
 void MODULES_EXPORT ProvidePaintWorkletProxyClientTo(WorkerClients*,

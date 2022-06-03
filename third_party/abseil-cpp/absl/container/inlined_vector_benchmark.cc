@@ -25,42 +25,45 @@
 namespace {
 
 void BM_InlinedVectorFill(benchmark::State& state) {
+  const int len = state.range(0);
   absl::InlinedVector<int, 8> v;
-  int val = 10;
+  v.reserve(len);
   for (auto _ : state) {
+    v.resize(0);  // Use resize(0) as InlinedVector releases storage on clear().
+    for (int i = 0; i < len; ++i) {
+      v.push_back(i);
+    }
     benchmark::DoNotOptimize(v);
-    v.push_back(val);
   }
 }
-BENCHMARK(BM_InlinedVectorFill)->Range(0, 1024);
+BENCHMARK(BM_InlinedVectorFill)->Range(1, 256);
 
 void BM_InlinedVectorFillRange(benchmark::State& state) {
   const int len = state.range(0);
-  std::unique_ptr<int[]> ia(new int[len]);
-  for (int i = 0; i < len; i++) {
-    ia[i] = i;
-  }
-  auto* from = ia.get();
-  auto* to = from + len;
+  const std::vector<int> src(len, len);
+  absl::InlinedVector<int, 8> v;
+  v.reserve(len);
   for (auto _ : state) {
-    benchmark::DoNotOptimize(from);
-    benchmark::DoNotOptimize(to);
-    absl::InlinedVector<int, 8> v(from, to);
+    benchmark::DoNotOptimize(src);
+    v.assign(src.begin(), src.end());
     benchmark::DoNotOptimize(v);
   }
 }
-BENCHMARK(BM_InlinedVectorFillRange)->Range(0, 1024);
+BENCHMARK(BM_InlinedVectorFillRange)->Range(1, 256);
 
 void BM_StdVectorFill(benchmark::State& state) {
+  const int len = state.range(0);
   std::vector<int> v;
-  int val = 10;
+  v.reserve(len);
   for (auto _ : state) {
+    v.clear();
+    for (int i = 0; i < len; ++i) {
+      v.push_back(i);
+    }
     benchmark::DoNotOptimize(v);
-    benchmark::DoNotOptimize(val);
-    v.push_back(val);
   }
 }
-BENCHMARK(BM_StdVectorFill)->Range(0, 1024);
+BENCHMARK(BM_StdVectorFill)->Range(1, 256);
 
 // The purpose of the next two benchmarks is to verify that
 // absl::InlinedVector is efficient when moving is more efficent than
@@ -80,7 +83,7 @@ int GetNonShortStringOptimizationSize() {
   }
   ABSL_RAW_LOG(
       FATAL,
-      "Failed to find a std::string larger than the short std::string optimization");
+      "Failed to find a string larger than the short string optimization");
   return -1;
 }
 
@@ -530,6 +533,28 @@ void BM_ConstructFromMove(benchmark::State& state) {
 }
 ABSL_INTERNAL_BENCHMARK_ONE_SIZE(BM_ConstructFromMove, TrivialType);
 ABSL_INTERNAL_BENCHMARK_ONE_SIZE(BM_ConstructFromMove, NontrivialType);
+
+// Measure cost of copy-constructor+destructor.
+void BM_CopyTrivial(benchmark::State& state) {
+  const int n = state.range(0);
+  InlVec<int64_t> src(n);
+  for (auto s : state) {
+    InlVec<int64_t> copy(src);
+    benchmark::DoNotOptimize(copy);
+  }
+}
+BENCHMARK(BM_CopyTrivial)->Arg(0)->Arg(1)->Arg(kLargeSize);
+
+// Measure cost of copy-constructor+destructor.
+void BM_CopyNonTrivial(benchmark::State& state) {
+  const int n = state.range(0);
+  InlVec<InlVec<int64_t>> src(n);
+  for (auto s : state) {
+    InlVec<InlVec<int64_t>> copy(src);
+    benchmark::DoNotOptimize(copy);
+  }
+}
+BENCHMARK(BM_CopyNonTrivial)->Arg(0)->Arg(1)->Arg(kLargeSize);
 
 template <typename T, size_t FromSize, size_t ToSize>
 void BM_AssignSizeRef(benchmark::State& state) {

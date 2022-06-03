@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/app_modal",
+  "+components/javascript_dialogs",
   "+content/public/browser",
   "+extensions/browser",
   "+extensions/common",

@@ -5,8 +5,9 @@
 #include "net/tools/huffman_trie/huffman/huffman_builder.h"
 
 #include <algorithm>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace net {
 

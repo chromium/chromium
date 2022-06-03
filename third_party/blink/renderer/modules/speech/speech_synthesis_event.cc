@@ -48,7 +48,7 @@ SpeechSynthesisEvent::SpeechSynthesisEvent(const AtomicString& type,
       elapsed_time_(elapsed_time),
       name_(name) {}
 
-void SpeechSynthesisEvent::Trace(blink::Visitor* visitor) {
+void SpeechSynthesisEvent::Trace(Visitor* visitor) const {
   visitor->Trace(utterance_);
   Event::Trace(visitor);
 }

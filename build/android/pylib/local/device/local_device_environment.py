@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 import datetime
 import functools
 import logging
@@ -12,7 +13,7 @@ import threading
 
 import devil_chromium
 from devil import base_error
-from devil.android import device_blacklist
+from devil.android import device_denylist
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.android import logcat_monitor
@@ -20,6 +21,7 @@ from devil.android.sdk import adb_wrapper
 from devil.utils import file_utils
 from devil.utils import parallelizer
 from pylib import constants
+from pylib.constants import host_paths
 from pylib.base import environment
 from pylib.utils import instrumentation_tracing
 from py_trace_event import trace_event
@@ -100,9 +102,9 @@ class LocalDeviceEnvironment(environment.Environment):
 
   def __init__(self, args, output_manager, _error_func):
     super(LocalDeviceEnvironment, self).__init__(output_manager)
-    self._blacklist = (device_blacklist.Blacklist(args.blacklist_file)
-                       if args.blacklist_file
-                       else None)
+    self._current_try = 0
+    self._denylist = (device_denylist.Denylist(args.denylist_file)
+                      if args.denylist_file else None)
     self._device_serials = args.test_devices
     self._devices_lock = threading.Lock()
     self._devices = None
@@ -127,10 +129,12 @@ class LocalDeviceEnvironment(environment.Environment):
         output_directory=constants.GetOutDirectory(),
         adb_path=args.adb_path)
 
-    # Some things such as Forwarder require ADB to be in the environment path.
+    # Some things such as Forwarder require ADB to be in the environment path,
+    # while others like Devil's bundletool.py require Java on the path.
     adb_dir = os.path.dirname(adb_wrapper.AdbWrapper.GetAdbPath())
     if adb_dir and adb_dir not in os.environ['PATH'].split(os.pathsep):
-      os.environ['PATH'] = adb_dir + os.pathsep + os.environ['PATH']
+      os.environ['PATH'] = os.pathsep.join(
+          [adb_dir, host_paths.JAVA_PATH, os.environ['PATH']])
 
   #override
   def SetUp(self):
@@ -153,7 +157,7 @@ class LocalDeviceEnvironment(environment.Environment):
       device_arg = self._device_serials
 
     self._devices = device_utils.DeviceUtils.HealthyDevices(
-        self._blacklist,
+        self._denylist,
         retries=5,
         enable_usb_resets=True,
         enable_device_files_cache=self._enable_device_cache,
@@ -164,7 +168,7 @@ class LocalDeviceEnvironment(environment.Environment):
     if self._logcat_output_file:
       self._logcat_output_dir = tempfile.mkdtemp()
 
-    @handle_shard_failures_with(on_failure=self.BlacklistDevice)
+    @handle_shard_failures_with(on_failure=self.DenylistDevice)
     def prepare_device(d):
       d.WaitUntilFullyBooted()
 
@@ -190,8 +194,18 @@ class LocalDeviceEnvironment(environment.Environment):
     self.parallel_devices.pMap(prepare_device)
 
   @property
-  def blacklist(self):
-    return self._blacklist
+  def current_try(self):
+    return self._current_try
+
+  def IncrementCurrentTry(self):
+    self._current_try += 1
+
+  def ResetCurrentTry(self):
+    self._current_try = 0
+
+  @property
+  def denylist(self):
+    return self._denylist
 
   @property
   def concurrent_adb(self):
@@ -247,7 +261,7 @@ class LocalDeviceEnvironment(environment.Environment):
     if not self._devices:
       return
 
-    @handle_shard_failures_with(on_failure=self.BlacklistDevice)
+    @handle_shard_failures_with(on_failure=self.DenylistDevice)
     def tear_down_device(d):
       # Write the cache even when not using it so that it will be ready the
       # first time that it is enabled. Writing it every time is also necessary
@@ -289,16 +303,16 @@ class LocalDeviceEnvironment(environment.Environment):
            if os.path.exists(m.output_file)])
       shutil.rmtree(self._logcat_output_dir)
 
-  def BlacklistDevice(self, device, reason='local_device_failure'):
+  def DenylistDevice(self, device, reason='local_device_failure'):
     device_serial = device.adb.GetDeviceSerial()
-    if self._blacklist:
-      self._blacklist.Extend([device_serial], reason=reason)
+    if self._denylist:
+      self._denylist.Extend([device_serial], reason=reason)
     with self._devices_lock:
       self._devices = [d for d in self._devices if str(d) != device_serial]
-    logging.error('Device %s blacklisted: %s', device_serial, reason)
+    logging.error('Device %s denylisted: %s', device_serial, reason)
     if not self._devices:
       raise device_errors.NoDevicesError(
-          'All devices were blacklisted due to errors')
+          'All devices were denylisted due to errors')
 
   @staticmethod
   def DisableTracing():

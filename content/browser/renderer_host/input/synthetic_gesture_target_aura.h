@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_AURA_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_AURA_H_
 
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/common/input/synthetic_gesture_params.h"
@@ -23,6 +21,10 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
  public:
   explicit SyntheticGestureTargetAura(RenderWidgetHostImpl* host);
 
+  SyntheticGestureTargetAura(const SyntheticGestureTargetAura&) = delete;
+  SyntheticGestureTargetAura& operator=(const SyntheticGestureTargetAura&) =
+      delete;
+
   // SyntheticGestureTargetBase:
   void DispatchWebTouchEventToPlatform(
       const blink::WebTouchEvent& web_touch,
@@ -38,8 +40,8 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
       const ui::LatencyInfo& latency_info) override;
 
   // SyntheticGestureTarget:
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override;
 
   float GetTouchSlopInDips() const override;
 
@@ -58,9 +60,10 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
   // before dispatching it into platform.
   float device_scale_factor_;
 
-  aura::EventInjector event_injector_;
+  float wheel_precision_x_ = 0.f;
+  float wheel_precision_y_ = 0.f;
 
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetAura);
+  aura::EventInjector event_injector_;
 };
 
 }  // namespace content

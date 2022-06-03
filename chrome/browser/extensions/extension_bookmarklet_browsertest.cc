@@ -5,8 +5,6 @@
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -14,7 +12,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -34,11 +35,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   // Navigate to the extension's page.
   const GURL extension_file_url(extension->GetResourceURL("file.html"));
-  ui_test_utils::NavigateToURL(browser(), extension_file_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_file_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const base::string16 expected_title = base::ASCIIToUTF16("foo");
+  const std::u16string expected_title = u"foo";
   ASSERT_EQ(expected_title, web_contents->GetTitle());
 
   // Attempt to set the page title via Javascript. Don't try to block since

@@ -67,14 +67,12 @@ AudioOutputStreamBroker::AudioOutputStreamBroker(
     const std::string& output_device_id,
     const media::AudioParameters& params,
     const base::UnguessableToken& group_id,
-    const base::Optional<base::UnguessableToken>& processing_id,
     DeleterCallback deleter,
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client)
     : AudioStreamBroker(render_process_id, render_frame_id),
       output_device_id_(output_device_id),
       params_(params),
       group_id_(group_id),
-      processing_id_(processing_id),
       deleter_(std::move(deleter)),
       client_(std::move(client)),
       observer_(render_process_id, render_frame_id, stream_id),
@@ -111,19 +109,10 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioOutputStreamBroker", this,
                                   "disconnect reason",
                                   static_cast<uint32_t>(reason));
-
-  UMA_HISTOGRAM_ENUMERATION("Media.Audio.Render.StreamBrokerDisconnectReason2",
-                            reason);
-
-  if (AwaitingCreated()) {
-    UMA_HISTOGRAM_TIMES(
-        "Media.Audio.Render.StreamBrokerDocumentDestroyedAwaitingCreatedTime",
-        base::TimeTicks::Now() - stream_creation_start_time_);
-  }
 }
 
 void AudioOutputStreamBroker::CreateStream(
-    audio::mojom::StreamFactory* factory) {
+    media::mojom::AudioStreamFactory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!observer_receiver_.is_bound());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",
@@ -150,7 +139,7 @@ void AudioOutputStreamBroker::CreateStream(
       MediaInternals::GetInstance()->CreateMojoAudioLog(
           media::AudioLogFactory::AudioComponent::AUDIO_OUTPUT_CONTROLLER,
           log_component_id, render_process_id(), render_frame_id()),
-      output_device_id_, params_, group_id_, processing_id_,
+      output_device_id_, params_, group_id_,
       base::BindOnce(&AudioOutputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));
 }
@@ -161,8 +150,6 @@ void AudioOutputStreamBroker::StreamCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
                                   !!data_pipe);
-  UMA_HISTOGRAM_TIMES("Media.Audio.Render.StreamBrokerStreamCreationTime",
-                      base::TimeTicks::Now() - stream_creation_start_time_);
   stream_creation_start_time_ = base::TimeTicks();
 
   if (!data_pipe) {

@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
-#include "base/macros.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -36,12 +35,14 @@ class OverscrollRefreshHandler;
 // provided refresh handler.
 class UI_ANDROID_EXPORT OverscrollRefresh {
  public:
-  // Minmum number of overscrolling pull events required to activate the effect.
-  // Useful for avoiding accidental triggering when a scroll janks (is delayed),
-  // capping the impulse per event.
-  enum { kMinPullsToActivate = 3 };
+  // The default distance in dp from a side of the device to start a navigation
+  // from.
+  enum { kDefaultNavigationEdgeWidth = 24 };
 
-  OverscrollRefresh(OverscrollRefreshHandler* handler, float dpi_scale);
+  OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
+
+  OverscrollRefresh(const OverscrollRefresh&) = delete;
+  OverscrollRefresh& operator=(const OverscrollRefresh&) = delete;
 
   virtual ~OverscrollRefresh();
 
@@ -105,11 +106,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float viewport_width_;
   float scroll_begin_x_;
   float scroll_begin_y_;
-  const float edge_width_;
+  const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
   OverscrollRefreshHandler* const handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollRefresh);
 };
 
 }  // namespace ui

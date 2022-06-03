@@ -28,6 +28,9 @@ class WeakXmppClient : public jingle_xmpp::XmppClient {
  public:
   explicit WeakXmppClient(jingle_xmpp::TaskParent* parent);
 
+  WeakXmppClient(const WeakXmppClient&) = delete;
+  WeakXmppClient& operator=(const WeakXmppClient&) = delete;
+
   ~WeakXmppClient() override;
 
   // Returns a weak pointer that is invalidated when the XmppClient
@@ -49,8 +52,6 @@ class WeakXmppClient : public jingle_xmpp::XmppClient {
   // SupportsWeakPtr since we want to invalidate in other places
   // besides the destructor.
   base::WeakPtrFactory<WeakXmppClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WeakXmppClient);
 };
 
 }  // namespace notifier

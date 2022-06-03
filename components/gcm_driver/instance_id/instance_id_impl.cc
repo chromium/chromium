@@ -11,9 +11,8 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -60,57 +59,56 @@ InstanceIDImpl::InstanceIDImpl(const std::string& app_id,
                                gcm::GCMDriver* gcm_driver)
     : InstanceID(app_id, gcm_driver) {
   Handler()->GetInstanceIDData(
-      app_id, base::Bind(&InstanceIDImpl::GetInstanceIDDataCompleted,
-                         weak_ptr_factory_.GetWeakPtr()));
+      app_id, base::BindOnce(&InstanceIDImpl::GetInstanceIDDataCompleted,
+                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 InstanceIDImpl::~InstanceIDImpl() {
 }
 
-void InstanceIDImpl::GetID(const GetIDCallback& callback) {
-  RunWhenReady(base::Bind(&InstanceIDImpl::DoGetID,
-                          weak_ptr_factory_.GetWeakPtr(), callback));
+void InstanceIDImpl::GetID(GetIDCallback callback) {
+  RunWhenReady(base::BindOnce(&InstanceIDImpl::DoGetID,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(callback)));
 }
 
-void InstanceIDImpl::DoGetID(const GetIDCallback& callback) {
+void InstanceIDImpl::DoGetID(GetIDCallback callback) {
   EnsureIDGenerated();
-  callback.Run(id_);
+  std::move(callback).Run(id_);
 }
 
-void InstanceIDImpl::GetCreationTime(const GetCreationTimeCallback& callback) {
+void InstanceIDImpl::GetCreationTime(GetCreationTimeCallback callback) {
   RunWhenReady(base::BindOnce(&InstanceIDImpl::DoGetCreationTime,
-                              weak_ptr_factory_.GetWeakPtr(), callback));
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(callback)));
 }
 
-void InstanceIDImpl::DoGetCreationTime(
-    const GetCreationTimeCallback& callback) {
-  callback.Run(creation_time_);
+void InstanceIDImpl::DoGetCreationTime(GetCreationTimeCallback callback) {
+  std::move(callback).Run(creation_time_);
 }
 
 void InstanceIDImpl::GetToken(const std::string& authorized_entity,
                               const std::string& scope,
-                              const std::map<std::string, std::string>& options,
+                              base::TimeDelta time_to_live,
                               std::set<Flags> flags,
                               GetTokenCallback callback) {
   DCHECK(!authorized_entity.empty());
   DCHECK(!scope.empty());
 
-  UMA_HISTOGRAM_COUNTS_100("InstanceID.GetToken.OptionsCount", options.size());
-
   RunWhenReady(base::BindOnce(&InstanceIDImpl::DoGetToken,
                               weak_ptr_factory_.GetWeakPtr(), authorized_entity,
-                              scope, options, std::move(callback)));
+                              scope, time_to_live, std::move(callback)));
 }
 
 void InstanceIDImpl::DoGetToken(
     const std::string& authorized_entity,
     const std::string& scope,
-    const std::map<std::string, std::string>& options,
+    base::TimeDelta time_to_live,
     GetTokenCallback callback) {
   EnsureIDGenerated();
 
   Handler()->GetToken(
-      app_id(), authorized_entity, scope, options,
+      app_id(), authorized_entity, scope, time_to_live,
       base::BindOnce(&InstanceIDImpl::OnGetTokenCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -229,7 +227,6 @@ void InstanceIDImpl::GetInstanceIDDataCompleted(
 void InstanceIDImpl::EnsureIDGenerated() {
   if (!id_.empty())
     return;
-  UMA_HISTOGRAM_BOOLEAN("InstanceID.GeneratedNewID", true);
 
   // Now produce the ID in the following steps:
 

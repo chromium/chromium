@@ -5,12 +5,12 @@
 #include "components/history/core/browser/android/android_cache_database.h"
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "components/history/core/browser/android/android_time.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace history {
 
@@ -108,7 +108,7 @@ bool AndroidCacheDatabase::SetFaviconID(URLID url_id,
 }
 
 SearchTermID AndroidCacheDatabase::AddSearchTerm(
-    const base::string16& term,
+    const std::u16string& term,
     const base::Time& last_visit_time) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "INSERT INTO android_cache_db.search_terms (search, "
@@ -139,7 +139,7 @@ bool AndroidCacheDatabase::UpdateSearchTerm(SearchTermID id,
   return statement.Run();
 }
 
-SearchTermID AndroidCacheDatabase::GetSearchTerm(const base::string16& term,
+SearchTermID AndroidCacheDatabase::GetSearchTerm(const std::u16string& term,
                                                  SearchTermRow* row) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "SELECT _id, search, date "
@@ -177,16 +177,14 @@ bool AndroidCacheDatabase::CreateDatabase(const base::FilePath& db_name) {
   sql::Database::Delete(db_name_);
 
   // Using a new connection, otherwise we can not create the database.
-  sql::Database connection;
-
+  //
   // The db doesn't store too much data, so we don't need that big a page
   // size or cache.
-  connection.set_page_size(2048);
-  connection.set_cache_size(32);
-
-  // Run the database in exclusive mode. Nobody else should be accessing the
+  //
+  // The database is open in exclusive mode. Nobody else should be accessing the
   // database while we're running, and this will give somewhat improved perf.
-  connection.set_exclusive_locking();
+  sql::Database connection(
+      {.exclusive_locking = true, .page_size = 2048, .cache_size = 32});
 
   if (!connection.Open(db_name_)) {
     LOG(ERROR) << connection.GetErrorMessage();

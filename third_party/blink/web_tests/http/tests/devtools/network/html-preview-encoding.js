@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
     'Verifies that html resources are previewed with the encoding set in their content-type header');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   async function runEncodingTest(url, nextTestCallback) {
@@ -17,7 +17,7 @@
 
     const previewView = new Network.RequestPreviewView(request);
     previewView.wasShown();
-    const htmlPreviewView = await previewView._contentViewPromise;
+    const htmlPreviewView = await previewView.contentViewPromise;
     htmlPreviewView.wasShown();
     const iframe = htmlPreviewView.contentElement.firstChild;
     TestRunner.addResult('iframe.src: ' + iframe.src);

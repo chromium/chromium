@@ -9,10 +9,12 @@ from .composition_parts import Component
 class AstGroup(object):
     """A set of Web IDL ASTs grouped by component."""
 
-    def __init__(self, component):
+    def __init__(self, component, for_testing=False):
         assert isinstance(component, Component)
+        assert isinstance(for_testing, bool)
         self._nodes = []
         self._component = component
+        self._for_testing = for_testing
 
     def __iter__(self):
         return self._nodes.__iter__()
@@ -35,3 +37,7 @@ class AstGroup(object):
     @property
     def component(self):
         return self._component
+
+    @property
+    def for_testing(self):
+        return self._for_testing

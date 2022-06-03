@@ -16,8 +16,8 @@ CASE 1, original layer tree
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
-      "bounds": [280, 280],
-      "backgroundColor": "#00FF00"
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -51,14 +51,10 @@ CASE 2, hovering over the outer div
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
-      "bounds": [280, 280],
-      "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV class='box middle'",
-          "rect": [0, 0, 141, 141],
-          "reason": "background"
-        }
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 141, 141]
       ]
     }
   ],
@@ -93,19 +89,10 @@ CASE 3, hovering over the inner div
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
-      "bounds": [280, 280],
-      "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV class='box middle'",
-          "rect": [0, 0, 141, 141],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='smallbox'",
-          "rect": [31, 31, 71, 71],
-          "reason": "background"
-        }
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 141, 141]
       ]
     }
   ],

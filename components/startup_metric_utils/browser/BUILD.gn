@@ -2,20 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# We have 2 separate targets because //components/html_viewer requires :lib,
-# but has symbols that conflict with mojo symbols that :message_filter_lib
-# indirectly depends on.
-
-group("browser") {
-  testonly = true
-
-  deps = [
-    ":host",
-    ":lib",
-  ]
-}
-
-static_library("lib") {
+static_library("browser") {
   sources = [
     "startup_metric_utils.cc",
     "startup_metric_utils.h",
@@ -23,23 +10,6 @@ static_library("lib") {
 
   deps = [
     "//base",
-    "//components/metrics:call_stack_profile_builder",
-    "//components/metrics:metrics",
-    "//components/prefs",
     "//components/version_info",
-  ]
-}
-
-static_library("host") {
-  sources = [
-    "startup_metric_host_impl.cc",
-    "startup_metric_host_impl.h",
-  ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//components/startup_metric_utils/common:interfaces",
-    "//content/public/browser",
   ]
 }

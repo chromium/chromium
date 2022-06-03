@@ -13,6 +13,10 @@
 
 @protocol FormSuggestionViewDelegate <NSObject>
 
+// User accepted a suggestion from FormSuggestionView.
+- (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
+       didAcceptSuggestion:(FormSuggestion*)suggestion;
+
 // The view received a long pull in the content direction. The delegate should
 // probably unlock the trailing view and reset to a clean state.
 - (void)formSuggestionViewShouldResetFromPull:
@@ -33,9 +37,8 @@
 // A view added at the end of the current suggestions.
 @property(nonatomic, strong) UIView* trailingView;
 
-// Updates with |client| and |suggestions|.
-- (void)updateClient:(id<FormSuggestionClient>)client
-         suggestions:(NSArray<FormSuggestion*>*)suggestions;
+// Updates with |suggestions|.
+- (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.

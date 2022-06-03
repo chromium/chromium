@@ -7,11 +7,18 @@
  * by type: Ethernet, WiFi, Cellular, and VPN.
  */
 
-(function() {
+import './network_summary_item.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-summary',
 
   behaviors: [
@@ -38,7 +45,7 @@ Polymer({
      */
     deviceStates: {
       type: Object,
-      value: function() {
+      value() {
         const result = {};
         result[chromeos.networkConfig.mojom.NetworkType.kWiFi] = {
           deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
@@ -56,7 +63,7 @@ Polymer({
      */
     activeNetworkStates_: {
       type: Array,
-      value: function() {
+      value() {
         return [OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi)];
       },
     },
@@ -67,7 +74,7 @@ Polymer({
      */
     networkStateLists_: {
       type: Object,
-      value: function() {
+      value() {
         const result = {};
         result[mojom.NetworkType.kWiFi] = [];
         return result;
@@ -85,13 +92,13 @@ Polymer({
   activeNetworkIds_: null,
 
   /** @override */
-  created: function() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+  created() {
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.getNetworkLists_();
   },
 
@@ -101,28 +108,39 @@ Polymer({
    * will trigger onNetworkStateListChanged which triggers getNetworkLists_.
    * @param {!Array<OncMojo.NetworkStateProperties>} networks
    */
-  onActiveNetworksChanged: function(networks) {
+  onActiveNetworksChanged(networks) {
     if (!this.activeNetworkIds_) {
       // Initial list of networks not received yet.
       return;
     }
     networks.forEach(network => {
       const index = this.activeNetworkStates_.findIndex(
-          state => state.guid == network.guid);
-      if (index != -1) {
+          state => state.guid === network.guid);
+      if (index !== -1) {
         this.set(['activeNetworkStates_', index], network);
       }
     });
   },
 
   /** CrosNetworkConfigObserver impl */
-  onNetworkStateListChanged: function() {
+  onNetworkStateListChanged() {
     this.getNetworkLists_();
   },
 
   /** CrosNetworkConfigObserver impl */
-  onDeviceStateListChanged: function() {
+  onDeviceStateListChanged() {
     this.getNetworkLists_();
+  },
+
+  /*
+   * Returns the network-summary-item element corresponding to the
+   * |networkType|.
+   * @param {!chromeos.networkConfig.mojom.NetworkType} networkType
+   * @return {?NetworkSummaryItemElement}
+   */
+  getNetworkRow(networkType) {
+    const networkTypeString = OncMojo.getNetworkTypeString(networkType);
+    return this.$$(`#${networkTypeString}`);
   },
 
   /**
@@ -131,7 +149,7 @@ Polymer({
    * results are returned from Chrome.
    * @private
    */
-  getNetworkLists_: function() {
+  getNetworkLists_() {
     // First get the device states.
     this.networkConfig_.getDeviceStateList().then(response => {
       // Second get the network states.
@@ -146,7 +164,7 @@ Polymer({
    * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStateList
    * @private
    */
-  getNetworkStates_: function(deviceStateList) {
+  getNetworkStates_(deviceStateList) {
     const filter = {
       filter: chromeos.networkConfig.mojom.FilterType.kVisible,
       limit: chromeos.networkConfig.mojom.NO_LIMIT,
@@ -164,7 +182,7 @@ Polymer({
    * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStateList
    * @private
    */
-  updateNetworkStates_: function(networkStates, deviceStateList) {
+  updateNetworkStates_(networkStates, deviceStateList) {
     const newDeviceStates = {};
     for (const device of deviceStateList) {
       newDeviceStates[device.type] = device;
@@ -195,7 +213,7 @@ Polymer({
       if (!activeNetworkStatesByType.has(type)) {
         activeNetworkStatesByType.set(type, networkState);
         if (!firstConnectedNetwork &&
-            networkState.type != mojom.NetworkType.kVPN &&
+            networkState.type !== mojom.NetworkType.kVPN &&
             OncMojo.connectionStateIsConnected(networkState.connectionState)) {
           firstConnectedNetwork = networkState;
         }
@@ -205,13 +223,6 @@ Polymer({
 
     this.defaultNetwork = firstConnectedNetwork;
 
-    // Create a VPN entry in deviceStates if there are any VPN networks.
-    if (newNetworkStateLists[mojom.NetworkType.kVPN].length > 0) {
-      newDeviceStates[mojom.NetworkType.kVPN] = {
-        type: mojom.NetworkType.kVPN,
-        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-      };
-    }
 
     // Push the active networks onto newActiveNetworkStates in order based on
     // device priority, creating an empty state for devices with no networks.
@@ -223,10 +234,18 @@ Polymer({
         continue;  // The technology for this device type is unavailable.
       }
 
+      // A VPN device state will always exist in |deviceStateList| even if there
+      // is no active VPN. This check is to add the VPN network summary item
+      // only if there is at least one active VPN.
+      if (device.type === mojom.NetworkType.kVPN &&
+          !activeNetworkStatesByType.has(device.type)) {
+        continue;
+      }
+
       // If both 'Tether' and 'Cellular' technologies exist, merge the network
       // lists and do not add an active network for 'Tether' so that there is
       // only one 'Mobile data' section / subpage.
-      if (type == mojom.NetworkType.kTether &&
+      if (type === mojom.NetworkType.kTether &&
           newDeviceStates[mojom.NetworkType.kCellular]) {
         newNetworkStateLists[mojom.NetworkType.kCellular] =
             newNetworkStateLists[mojom.NetworkType.kCellular].concat(
@@ -238,8 +257,8 @@ Polymer({
       // types are enabled but no Cellular network exists (edge case).
       const networkState =
           this.getActiveStateForType_(activeNetworkStatesByType, type);
-      if (networkState.source == mojom.OncSource.kNone &&
-          device.deviceState == mojom.DeviceStateType.kProhibited) {
+      if (networkState.source === mojom.OncSource.kNone &&
+          device.deviceState === mojom.DeviceStateType.kProhibited) {
         // Prohibited technologies are enforced by the device policy.
         networkState.source =
             chromeos.networkConfig.mojom.OncSource.kDevicePolicy;
@@ -252,6 +271,7 @@ Polymer({
     this.networkStateLists_ = newNetworkStateLists;
     // Set activeNetworkStates last to rebuild the dom-repeat.
     this.activeNetworkStates_ = newActiveNetworkStates;
+    this.fire('active-networks-updated');
   },
 
   /**
@@ -264,9 +284,9 @@ Polymer({
    * @return {!OncMojo.NetworkStateProperties|undefined}
    * @private
    */
-  getActiveStateForType_: function(activeStatesByType, type) {
+  getActiveStateForType_(activeStatesByType, type) {
     let activeState = activeStatesByType.get(type);
-    if (!activeState && type == mojom.NetworkType.kCellular) {
+    if (!activeState && type === mojom.NetworkType.kCellular) {
       activeState = activeStatesByType.get(mojom.NetworkType.kTether);
     }
     return activeState || OncMojo.getDefaultNetworkState(type);
@@ -278,7 +298,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getTypeString_: function(network) {
+  getTypeString_(network) {
     return OncMojo.getNetworkTypeString(network.type);
   },
 
@@ -287,8 +307,7 @@ Polymer({
    * @return {!OncMojo.DeviceStateProperties|undefined}
    * @private
    */
-  getTetherDeviceState_: function(deviceStates) {
+  getTetherDeviceState_(deviceStates) {
     return this.deviceStates[mojom.NetworkType.kTether];
   },
 });
-})();

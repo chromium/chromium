@@ -1,0 +1,48 @@
+{
+  "WebKit Linux Trusty ASAN": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "use_goma": true
+    }
+  },
+  "WebKit Linux Trusty Leak": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "WebKit Linux Trusty MSAN": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 2,
+      "use_goma": true
+    }
+  },
+  "WebKit Mac Builder": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "WebKit Win Builder": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

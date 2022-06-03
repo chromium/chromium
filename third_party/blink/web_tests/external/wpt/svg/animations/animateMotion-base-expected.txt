@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test for checking position of the svg element when there is a <base> attribute assert_approx_equals: expected 50 +/- 1 but got 0
+Harness: the test ran to completion.
+

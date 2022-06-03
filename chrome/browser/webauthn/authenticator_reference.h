@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -17,25 +15,19 @@
 // from the user via the UI.
 struct AuthenticatorReference {
   AuthenticatorReference(base::StringPiece device_id,
-                         base::StringPiece16 authenticator_display_name,
-                         device::FidoTransportProtocol transport,
-                         bool is_in_pairing_mode,
-                         bool is_paired,
-                         bool requires_ble_pairing_pin);
+                         device::FidoTransportProtocol transport);
+
+  AuthenticatorReference(const AuthenticatorReference&) = delete;
+  AuthenticatorReference& operator=(const AuthenticatorReference&) = delete;
+
   AuthenticatorReference(AuthenticatorReference&& data);
   AuthenticatorReference& operator=(AuthenticatorReference&& other);
+
   ~AuthenticatorReference();
 
   std::string authenticator_id;
-  base::string16 authenticator_display_name;
   device::FidoTransportProtocol transport;
-  bool is_in_pairing_mode = false;
-  bool is_paired = false;
-  bool requires_ble_pairing_pin = true;
   bool dispatched = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorReference);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REFERENCE_H_

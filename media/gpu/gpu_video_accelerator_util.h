@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_GPU_VIDEO_ACCELERATOR_UTIL_H_
 #define MEDIA_GPU_GPU_VIDEO_ACCELERATOR_UTIL_H_
 
-#include <vector>
-
 #include "gpu/config/gpu_info.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"

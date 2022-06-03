@@ -7,17 +7,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_performance_measure_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
-#include "third_party/blink/renderer/core/timing/performance_observer_init.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
@@ -27,10 +25,15 @@ class TestPerformance : public Performance {
   explicit TestPerformance(ScriptState* script_state)
       : Performance(base::TimeTicks(),
                     ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kPerformanceTimeline)) {}
+                        ->CrossOriginIsolatedCapability(),
+                    ExecutionContext::From(script_state)
+                        ->GetTaskRunner(TaskType::kPerformanceTimeline)),
+        execution_context_(ExecutionContext::From(script_state)) {}
   ~TestPerformance() override = default;
 
-  ExecutionContext* GetExecutionContext() const override { return nullptr; }
+  ExecutionContext* GetExecutionContext() const override {
+    return execution_context_.Get();
+  }
 
   int NumActiveObservers() { return active_observers_.size(); }
 
@@ -40,11 +43,19 @@ class TestPerformance : public Performance {
     return HasObserverFor(entry_type);
   }
 
-  void Trace(blink::Visitor* visitor) override { Performance::Trace(visitor); }
+  void Trace(Visitor* visitor) const override {
+    Performance::Trace(visitor);
+    visitor->Trace(execution_context_);
+  }
+
+ private:
+  Member<ExecutionContext> execution_context_;
 };
 
 class PerformanceTest : public PageTestBase {
  protected:
+  ~PerformanceTest() override { execution_context_->NotifyContextDestroyed(); }
+
   void Initialize(ScriptState* script_state) {
     v8::Local<v8::Function> callback =
         v8::Function::New(script_state->GetContext(), nullptr).ToLocalChecked();
@@ -121,10 +132,9 @@ TEST_F(PerformanceTest, AddLongTaskTiming) {
   Initialize(scope.GetScriptState());
 
   // Add a long task entry, but no observer registered.
-  base_->AddLongTaskTiming(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1234),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(5678), "window",
-      "same-origin", "www.foo.com/bar", "", "");
+  base_->AddLongTaskTiming(base::TimeTicks() + base::Seconds(1234),
+                           base::TimeTicks() + base::Seconds(5678), "window",
+                           "same-origin", "www.foo.com/bar", "", "");
   EXPECT_FALSE(base_->HasPerformanceObserverFor(PerformanceEntry::kLongTask));
   EXPECT_EQ(0, NumPerformanceEntriesInObserver());  // has no effect
 
@@ -138,10 +148,9 @@ TEST_F(PerformanceTest, AddLongTaskTiming) {
 
   EXPECT_TRUE(base_->HasPerformanceObserverFor(PerformanceEntry::kLongTask));
   // Add a long task entry
-  base_->AddLongTaskTiming(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1234),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(5678), "window",
-      "same-origin", "www.foo.com/bar", "", "");
+  base_->AddLongTaskTiming(base::TimeTicks() + base::Seconds(1234),
+                           base::TimeTicks() + base::Seconds(5678), "window",
+                           "same-origin", "www.foo.com/bar", "", "");
   EXPECT_EQ(1, NumPerformanceEntriesInObserver());  // added an entry
 }
 
@@ -161,6 +170,7 @@ TEST_F(PerformanceTest, AllowsTimingRedirect) {
   EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, empty_final_response,
                                     *security_origin.get(),
                                     GetExecutionContext()));
+  // Final response is same origin as requestor.
   ResourceResponse final_response(url);
   EXPECT_TRUE(AllowsTimingRedirect(redirect_chain, final_response,
                                    *security_origin.get(),
@@ -180,9 +190,16 @@ TEST_F(PerformanceTest, AllowsTimingRedirect) {
   EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
                                     *security_origin.get(),
                                     GetExecutionContext()));
-  // When cross-origin redirect opts in, and the final response has as well.
+  // When cross-origin redirect opts in and the final response has as well, but
+  // the tainted origin flag is set.
   final_response.SetHttpHeaderField(http_names::kTimingAllowOrigin,
                                     origin_domain);
+  EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
+                                    *security_origin.get(),
+                                    GetExecutionContext()));
+  // Change the opt ins to be '*' and then the check should pass.
+  redirect_chain.back().SetHttpHeaderField(http_names::kTimingAllowOrigin, "*");
+  final_response.SetHttpHeaderField(http_names::kTimingAllowOrigin, "*");
   EXPECT_TRUE(AllowsTimingRedirect(redirect_chain, final_response,
                                    *security_origin.get(),
                                    GetExecutionContext()));

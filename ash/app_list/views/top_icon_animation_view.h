@@ -5,8 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 #define ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -21,16 +21,13 @@ class AppsGridView;
 class TopIconAnimationView;
 
 // Observer for top icon animation completion.
-class TopIconAnimationObserver {
+class TopIconAnimationObserver : public base::CheckedObserver {
  public:
-  TopIconAnimationObserver() {}
-  virtual ~TopIconAnimationObserver() {}
-
   // Called when top icon animation completes.
   virtual void OnTopIconAnimationsComplete(TopIconAnimationView* view) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TopIconAnimationObserver);
+ protected:
+  ~TopIconAnimationObserver() override = default;
 };
 
 // Transitional view used for top item icons animation when opening or closing
@@ -47,10 +44,14 @@ class TopIconAnimationView : public views::View,
   // The view will be self-cleaned by the end of animation.
   TopIconAnimationView(AppsGridView* grid,
                        const gfx::ImageSkia& icon,
-                       const base::string16& title,
+                       const std::u16string& title,
                        const gfx::Rect& scaled_rect,
                        bool open_folder,
                        bool item_in_folder_icon);
+
+  TopIconAnimationView(const TopIconAnimationView&) = delete;
+  TopIconAnimationView& operator=(const TopIconAnimationView&) = delete;
+
   ~TopIconAnimationView() override;
 
   void AddObserver(TopIconAnimationObserver* observer);
@@ -60,7 +61,7 @@ class TopIconAnimationView : public views::View,
   // inside folder icon to the full scale icon at the target location.
   // When closing a folder, transform the full scale item icon from its
   // location to the small icon inside the folder icon.
-  void TransformView();
+  void TransformView(base::TimeDelta duration);
 
   // views::View:
   const char* GetClassName() const override;
@@ -85,9 +86,7 @@ class TopIconAnimationView : public views::View,
 
   bool item_in_folder_icon_;
 
-  base::ObserverList<TopIconAnimationObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopIconAnimationView);
+  base::ObserverList<TopIconAnimationObserver> observers_;
 };
 
 }  // namespace ash

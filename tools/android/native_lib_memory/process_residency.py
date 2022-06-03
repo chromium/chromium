@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -92,7 +92,7 @@ def PlotResidency(data, output_filename):
   end = data['end']
   _, ax = plt.subplots(figsize=(20, 10))
   timestamps = sorted(residency.keys())
-  x_max = len(residency.values()[0]) * 4096
+  x_max = len(list(residency.values())[0]) * 4096
   for t in timestamps:
     offset_ms = (t - timestamps[0]) / 1e6
     incore = [i * 4096 for (i, x) in enumerate(residency[t]) if x]

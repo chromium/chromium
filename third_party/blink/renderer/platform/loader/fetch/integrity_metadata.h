@@ -49,7 +49,7 @@ enum class ResourceIntegrityDisposition : uint8_t {
   kPassed
 };
 
-enum class IntegrityAlgorithm : uint8_t { kSha256, kSha384, kSha512, kEd25519 };
+enum class IntegrityAlgorithm : uint8_t { kSha256, kSha384, kSha512 };
 
 }  // namespace blink
 
@@ -69,4 +69,4 @@ struct HashTraits<blink::IntegrityAlgorithm>
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_

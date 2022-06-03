@@ -68,6 +68,7 @@ class CHROMECAST_EXPORT ExternalAudioPipelineShlib {
     std::string genre;
     int track_num = -1;
     MediaInputSource source = MediaInputSource::HDMI;
+    std::string source_description;
     MediaPlaybackState state = MediaPlaybackState::UNKNOWN_STATE;
   };
 

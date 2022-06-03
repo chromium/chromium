@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 
 namespace content {
 namespace background_fetch {
@@ -16,16 +17,38 @@ namespace background_fetch {
 GetDeveloperIdsTask::GetDeveloperIdsTask(
     DatabaseTaskHost* host,
     int64_t service_worker_registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback)
     : DatabaseTask(host),
       service_worker_registration_id_(service_worker_registration_id),
-      origin_(origin),
+      storage_key_(storage_key),
       callback_(std::move(callback)) {}
 
 GetDeveloperIdsTask::~GetDeveloperIdsTask() = default;
 
 void GetDeveloperIdsTask::Start() {
+  service_worker_context()->FindReadyRegistrationForIdOnly(
+      service_worker_registration_id_,
+      base::BindOnce(&GetDeveloperIdsTask::DidGetServiceWorkerRegistration,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void GetDeveloperIdsTask::DidGetServiceWorkerRegistration(
+    blink::ServiceWorkerStatusCode status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  if (ToDatabaseStatus(status) != DatabaseStatus::kOk || !registration) {
+    SetStorageErrorAndFinish(
+        BackgroundFetchStorageError::kServiceWorkerStorageError);
+    return;
+  }
+
+  // TODO(crbug.com/1199077): Move this check into the SW context.
+  if (registration->key() != storage_key_) {
+    SetStorageErrorAndFinish(
+        BackgroundFetchStorageError::kServiceWorkerStorageError);
+    return;
+  }
+
   service_worker_context()->GetRegistrationUserKeysAndDataByKeyPrefix(
       service_worker_registration_id_, {kActiveRegistrationUniqueIdKeyPrefix},
       base::BindOnce(&GetDeveloperIdsTask::DidGetUniqueIds,
@@ -33,8 +56,8 @@ void GetDeveloperIdsTask::Start() {
 }
 
 void GetDeveloperIdsTask::DidGetUniqueIds(
-    const base::flat_map<std::string, std::string>& data_map,
-    blink::ServiceWorkerStatusCode status) {
+    blink::ServiceWorkerStatusCode status,
+    const base::flat_map<std::string, std::string>& data_map) {
   switch (ToDatabaseStatus(status)) {
     case DatabaseStatus::kNotFound:
       FinishWithError(blink::mojom::BackgroundFetchError::NONE);

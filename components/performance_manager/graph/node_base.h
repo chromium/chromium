@@ -9,16 +9,15 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/properties.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "components/performance_manager/public/graph/node_state.h"
 
 namespace performance_manager {
 
@@ -39,19 +38,31 @@ class NodeBase {
 
   // TODO(siggi): Don't store the node type, expose it on a virtual function
   //    instead.
-  NodeBase(NodeTypeEnum type, GraphImpl* graph);
+  explicit NodeBase(NodeTypeEnum type);
+
+  NodeBase(const NodeBase&) = delete;
+  NodeBase& operator=(const NodeBase&) = delete;
+
   virtual ~NodeBase();
 
   // May be called on any sequence.
   NodeTypeEnum type() const { return type_; }
 
-  // May be called on any sequence.
-  GraphImpl* graph() const { return graph_; }
+  // The state of this node.
+  NodeState GetNodeState() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!graph_)
+      return NodeState::kNotInGraph;
+    return graph_->GetNodeState(this);
+  }
 
-  // Returns an opaque ID for |node|, unique across all nodes in the same graph,
-  // zero for nullptr. This should never be used to look up nodes, only to
-  // provide a stable ID for serialization.
-  static int64_t GetSerializationId(NodeBase* node);
+  // Returns the graph that contains this node. Only valid after JoinGraph() and
+  // before LeaveGraph().
+  GraphImpl* graph() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(graph_);
+    return graph_;
+  }
 
   // Helper functions for casting from a node type to its underlying NodeBase.
   // This CHECKs that the cast is valid. These functions work happily with
@@ -63,33 +74,75 @@ class NodeBase {
   // TypedNodeBase.
   virtual const Node* ToNode() const = 0;
 
+  // Satisfies part of the contract expected by ObservedProperty.
+  // GetObservers is implemented by TypedNodeImpl.
+  bool CanSetProperty() const;
+  bool CanSetAndNotifyProperty() const;
+
  protected:
   friend class GraphImpl;
 
   // Helper function for TypedNodeBase to access the list of typed observers
   // stored in the graph.
   template <typename Observer>
-  static const std::vector<Observer*>& GetObservers(const GraphImpl* graph) {
+  const std::vector<Observer*>& GetObservers(const GraphImpl* graph) const {
+    DCHECK(CanSetAndNotifyProperty());
     return graph->GetObservers<Observer>();
   }
 
-  // Called just before joining |graph_|, a good opportunity to initialize
-  // node state.
-  virtual void JoinGraph();
-  // Called just before leaving |graph_|, a good opportunity to uninitialize
-  // node state.
-  virtual void LeaveGraph();
+  // Node lifecycle:
 
-  GraphImpl* const graph_;
+  // Step 0: A node is constructed. Node state is kNotInGraph.
+
+  // Step 1:
+  // Joins the |graph|. Node must be in the kNotInGraph state, and will
+  // transition to kInitializing immediately after this call.
+  void JoinGraph(GraphImpl* graph);
+
+  // Step 2:
+  // Called as this node is joining |graph_|, a good opportunity to initialize
+  // node state. The node will be in the kInitializing state during this
+  // call. Nodes may modify their properties but *not* cause notifications to be
+  // emitted.
+  virtual void OnJoiningGraph();
+
+  // Step 3:
+  // Node added notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kJoingGraph state.
+
+  // Step 4:
+  // The node lives in the graph normally at this point, in the kActiveInGraph
+  // state.
+
+  // Step 5:
+  // Called just before leaving |graph_|, a good opportunity to uninitialize
+  // node state. The node will be in the kActiveInGraph state during this call.
+  // The node may make property changes, and these changes may cause
+  // notifications to be dispatched.
+  virtual void OnBeforeLeavingGraph();
+
+  // Step 6:
+  // Node removed notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kLeavingGraph state.
+
+  // Step 7:
+  // Called as this node is leaving |graph_|. Any private node-attached data
+  // should be destroyed at this point. The node is in the kLeavingGraph state.
+  virtual void RemoveNodeAttachedData() = 0;
+
+  // Step 8:
+  // Leaves the graph that this node is a part of. The node is in the
+  // kLeavingGraph state during this call, and will be in the kNotInGraph state
+  // immediately afterwards.
+  void LeaveGraph();
+
   const NodeTypeEnum type_;
 
-  // Assigned on first use, immutable from that point forward.
-  int64_t serialization_id_ = 0u;
+  // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where
+  // it is reset to null.
+  GraphImpl* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NodeBase);
 };
 
 // Helper for implementing the Node parent of a PublicNodeClass.
@@ -99,6 +152,10 @@ class PublicNodeImpl : public PublicNodeClass {
   // Node implementation:
   Graph* GetGraph() const override {
     return static_cast<const NodeImplClass*>(this)->graph();
+  }
+  NodeState GetNodeState() const override {
+    return static_cast<const NodeBase*>(static_cast<const NodeImplClass*>(this))
+        ->GetNodeState();
   }
   uintptr_t GetImplType() const override { return NodeBase::kNodeBaseType; }
   const void* GetImpl() const override {
@@ -115,8 +172,10 @@ class TypedNodeBase : public NodeBase {
   using ObservedProperty =
       ObservedPropertyImpl<NodeImplClass, NodeClass, NodeObserverClass>;
 
-  explicit TypedNodeBase(GraphImpl* graph)
-      : NodeBase(NodeImplClass::Type(), graph) {}
+  TypedNodeBase() : NodeBase(NodeImplClass::Type()) {}
+
+  TypedNodeBase(const TypedNodeBase&) = delete;
+  TypedNodeBase& operator=(const TypedNodeBase&) = delete;
 
   // Helper functions for casting from NodeBase to a concrete node type. This
   // CHECKs that the cast is valid.
@@ -140,7 +199,7 @@ class TypedNodeBase : public NodeBase {
   }
 
   // Convenience accessor to the per-node-class list of observers that is stored
-  // in the graph.
+  // in the graph. Satisfies the contract expected by ObservedProperty.
   const std::vector<NodeObserverClass*>& GetObservers() const {
     // Mediate through NodeBase, as it's the class that is friended by the
     // GraphImpl in order to provide access.
@@ -150,9 +209,6 @@ class TypedNodeBase : public NodeBase {
   const Node* ToNode() const override {
     return static_cast<const NodeImplClass*>(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TypedNodeBase);
 };
 
 }  // namespace performance_manager

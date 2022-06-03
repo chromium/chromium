@@ -23,19 +23,18 @@
 #define BASE_WIN_WIN_UTIL_H_
 
 #include <stdint.h>
-#include "base/win/windows_types.h"
 
 #include <string>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/win/windows_types.h"
 
 struct IPropertyStore;
 struct _tagpropertykey;
-typedef _tagpropertykey PROPERTYKEY;
+using PROPERTYKEY = _tagpropertykey;
 
 namespace base {
 
@@ -199,7 +198,7 @@ BASE_EXPORT bool IsProcessPerMonitorDpiAware();
 BASE_EXPORT void EnableHighDPISupport();
 
 // Returns a string representation of |rguid|.
-BASE_EXPORT string16 String16FromGUID(REFGUID rguid);
+BASE_EXPORT std::wstring WStringFromGUID(REFGUID rguid);
 
 // Attempts to pin user32.dll to ensure it remains loaded. If it isn't loaded
 // yet, the module will first be loaded and then the pin will be attempted. If
@@ -231,24 +230,33 @@ BASE_EXPORT bool IsCurrentSessionRemote();
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {
  public:
-  ScopedDomainStateForTesting(bool state);
+  explicit ScopedDomainStateForTesting(bool state);
+
+  ScopedDomainStateForTesting(const ScopedDomainStateForTesting&) = delete;
+  ScopedDomainStateForTesting& operator=(const ScopedDomainStateForTesting&) =
+      delete;
+
   ~ScopedDomainStateForTesting();
 
  private:
   bool initial_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDomainStateForTesting);
 };
 
 // Allows changing the management registration state for the life time of the
 // object.  The original state is restored upon destruction.
 class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
  public:
-  ScopedDeviceRegisteredWithManagementForTesting(bool state);
+  explicit ScopedDeviceRegisteredWithManagementForTesting(bool state);
+
+  ScopedDeviceRegisteredWithManagementForTesting(
+      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
+  ScopedDeviceRegisteredWithManagementForTesting& operator=(
+      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
+
   ~ScopedDeviceRegisteredWithManagementForTesting();
 
  private:
   bool initial_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeviceRegisteredWithManagementForTesting);
 };
 
 }  // namespace win

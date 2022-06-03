@@ -1,126 +1,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [10, 303, 292, 50],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Curabitur pretium, quam quis semper'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'fringilla orci nibh sed neque. Quisque eu'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'malesuada, est libero feugiat libero, vel'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'molestie nisl, nec ullamcorper lacus ante'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'nulla non nisi molestie accumsan. Etiam'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sem at posuere vehicula, augue nibh'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'suscipit sed, sapien. Phasellus vehicula,'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'tellus urna, laoreet ac, laoreet non,'",
-          "rect": [10, 138, 289, 159],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV",
-          "rect": [10, 323, 242, 50],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGTableCell TD id='col1'",
-          "rect": [10, 353, 242, 20],
-          "reason": "incremental"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV",
-          "rect": [10, 298, 242, 20],
-          "reason": "incremental"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Curabitur pretium, quam quis semper'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'fringilla orci nibh sed neque. Quisque eu'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'malesuada, est libero feugiat libero, vel'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'molestie nisl, nec ullamcorper lacus ante'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'nulla non nisi molestie accumsan. Etiam'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sem at posuere vehicula, augue nibh'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'suscipit sed, sapien. Phasellus vehicula,'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'tellus urna, laoreet ac, laoreet non,'",
-          "rect": [10, 138, 239, 179],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'vulputate pede.'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutNGTableCell TD id='col1'",
-          "rect": [252, 138, 50, 215],
-          "reason": "incremental"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV",
-          "rect": [252, 138, 50, 160],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [10, 303, 292, 50],
+        [10, 138, 289, 159],
+        [10, 323, 242, 50],
+        [10, 298, 242, 20],
+        [10, 138, 239, 179],
+        [252, 138, 50, 215]
       ]
     }
   ]

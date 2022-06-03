@@ -17,15 +17,15 @@
 @implementation BlockPopupsAppInterface
 
 + (void)setPopupPolicy:(ContentSetting)policy forPattern:(NSString*)pattern {
-  ios::ChromeBrowserState* browserState =
+  ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
 
   ContentSettingsPattern exceptionPattern =
       ContentSettingsPattern::FromString(base::SysNSStringToUTF8(pattern));
   ios::HostContentSettingsMapFactory::GetForBrowserState(browserState)
-      ->SetContentSettingCustomScope(
-          exceptionPattern, ContentSettingsPattern::Wildcard(),
-          ContentSettingsType::POPUPS, std::string(), policy);
+      ->SetContentSettingCustomScope(exceptionPattern,
+                                     ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsType::POPUPS, policy);
 }
 
 @end

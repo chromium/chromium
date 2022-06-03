@@ -4,7 +4,6 @@
 
 #include "ui/views/window/window_button_order_provider.h"
 
-#include "base/macros.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/linux_ui/window_button_order_observer.h"
 
@@ -16,15 +15,17 @@ class WindowButtonOrderObserverDelegate : public WindowButtonOrderProvider,
                                           public WindowButtonOrderObserver {
  public:
   WindowButtonOrderObserverDelegate();
+
+  WindowButtonOrderObserverDelegate(const WindowButtonOrderObserverDelegate&) =
+      delete;
+  WindowButtonOrderObserverDelegate& operator=(
+      const WindowButtonOrderObserverDelegate&) = delete;
   ~WindowButtonOrderObserverDelegate() override;
 
   // WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange(
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowButtonOrderObserverDelegate);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

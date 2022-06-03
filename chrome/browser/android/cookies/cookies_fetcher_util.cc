@@ -7,13 +7,14 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
-#include "chrome/android/public/profiles/jni_headers/CookiesFetcher_jni.h"
+#include "chrome/browser/profiles/android/jni_headers/CookiesFetcher_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "net/url_request/url_request_context.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 using base::android::JavaParamRef;
@@ -23,8 +24,11 @@ namespace {
 
 // Returns the cookie service at the client end of the mojo pipe.
 network::mojom::CookieManager* GetCookieServiceClient() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             ProfileManager::GetPrimaryUserProfile()->GetOffTheRecordProfile())
+  // Since restoring Incognito CCT session from cookies is not supported, it is
+  // safe to use the primary OTR profile here.
+  return ProfileManager::GetPrimaryUserProfile()
+      ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -38,9 +42,9 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 
   int index = 0;
   for (auto i = cookies.cbegin(); i != cookies.cend(); ++i) {
-    std::string domain = i->Domain();
-    if (domain.length() > 1 && domain[0] == '.')
-      domain = domain.substr(1);
+    std::string pk;
+    if (!net::CookiePartitionKey::Serialize(i->PartitionKey(), pk))
+      continue;
     ScopedJavaLocalRef<jobject> java_cookie = Java_CookiesFetcher_createCookie(
         env, base::android::ConvertUTF8ToJavaString(env, i->Name()),
         base::android::ConvertUTF8ToJavaString(env, i->Value()),
@@ -50,7 +54,9 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), static_cast<int>(i->SourceScheme()));
+        i->Priority(), i->IsSameParty(),
+        base::android::ConvertUTF8ToJavaString(env, pk),
+        static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
 
@@ -63,7 +69,7 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 // no-op for the standard session. Typically associated with the #onPause of
 // Android's activty lifecycle.
 void JNI_CookiesFetcher_PersistCookies(JNIEnv* env) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasOffTheRecordProfile()) {
+  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile()) {
     // There is no work to be done. We might consider calling
     // the Java callback if needed.
     return;
@@ -89,26 +95,41 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jboolean httponly,
     jint same_site,
     jint priority,
-    jint source_scheme) {
-  if (!ProfileManager::GetPrimaryUserProfile()->HasOffTheRecordProfile()) {
+    jboolean same_party,
+    const JavaParamRef<jstring>& partition_key,
+    jint source_scheme,
+    jint source_port) {
+  if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
     return;  // Don't create it. There is nothing to do.
+
+  std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
+  std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
+
+  absl::optional<net::CookiePartitionKey> pk;
+  if (!net::CookiePartitionKey::Deserialize(
+          base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
+    return;
   }
 
-  std::unique_ptr<net::CanonicalCookie> cookie(
-      std::make_unique<net::CanonicalCookie>(
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::FromStorage(
           base::android::ConvertJavaStringToUTF8(env, name),
-          base::android::ConvertJavaStringToUTF8(env, value),
-          base::android::ConvertJavaStringToUTF8(env, domain),
-          base::android::ConvertJavaStringToUTF8(env, path),
+          base::android::ConvertJavaStringToUTF8(env, value), domain_str,
+          path_str,
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(creation)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(creation)),
+              base::Microseconds(expiration)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(expiration)),
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(last_access)),
+              base::Microseconds(last_access)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority),
-          static_cast<net::CookieSourceScheme>(source_scheme)));
+          static_cast<net::CookiePriority>(priority), same_party, pk,
+          static_cast<net::CookieSourceScheme>(source_scheme), source_port);
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here. This is safe because this function is
+  // only used for incognito cookies which don't survive Chrome updates and
+  // therefore should never be the "older" less strict variety.
+  if (!cookie || !cookie->IsCanonical())
+    return;
 
   // Assume HTTPS - since the cookies are being restored from another store,
   // they have already gone through the strict secure check.
@@ -117,8 +138,12 @@ static void JNI_CookiesFetcher_RestoreCookies(
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(
-      net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  options.set_do_not_update_access_time();
   GetCookieServiceClient()->SetCanonicalCookie(
-      *cookie, "https", options,
-      network::mojom::CookieManager::SetCanonicalCookieCallback());
+      *cookie,
+      net::cookie_util::CookieDomainAndPathToURL(
+          domain_str, path_str,
+          static_cast<net::CookieSourceScheme>(source_scheme)),
+      options, network::mojom::CookieManager::SetCanonicalCookieCallback());
 }

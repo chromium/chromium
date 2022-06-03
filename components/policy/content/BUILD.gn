@@ -3,41 +3,56 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 
 assert(!is_ios, "Policy Throttle should not be referenced on iOS")
 
-jumbo_source_set("content") {
+source_set("safe_sites_navigation_throttle") {
   sources = [
-    "policy_blacklist_navigation_throttle.cc",
-    "policy_blacklist_navigation_throttle.h",
-    "policy_blacklist_service.cc",
-    "policy_blacklist_service.h",
+    "safe_search_service.cc",
+    "safe_search_service.h",
+    "safe_sites_navigation_throttle.cc",
+    "safe_sites_navigation_throttle.h",
   ]
 
   deps = [
     "//base",
     "//components/keyed_service/content:content",
     "//components/policy/core/browser",
-    "//components/prefs",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
-    "//components/user_prefs:user_prefs",
     "//content/public/browser",
     "//net",
   ]
 }
 
+source_set("content") {
+  sources = [
+    "policy_blocklist_navigation_throttle.cc",
+    "policy_blocklist_navigation_throttle.h",
+    "policy_blocklist_service.cc",
+    "policy_blocklist_service.h",
+  ]
+
+  deps = [
+    ":safe_sites_navigation_throttle",
+    "//components/keyed_service/content:content",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "policy_blacklist_navigation_throttle_unittest.cc",
-  ]
+  sources = [ "policy_blocklist_navigation_throttle_unittest.cc" ]
   deps = [
     ":content",
+    ":safe_sites_navigation_throttle",
     "//base",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
+    "//components/policy/core/common:test_support",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
     "//components/safe_search_api:test_support",

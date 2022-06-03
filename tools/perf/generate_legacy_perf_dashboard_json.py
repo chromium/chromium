@@ -92,7 +92,7 @@ class LegacyResultsProcessor(object):
 
     def IsImportant(self):
       """A graph is considered important if any of its traces is important."""
-      for trace in self.traces.itervalues():
+      for trace in self.traces.values():
         if trace.important:
           return True
       return False
@@ -189,11 +189,11 @@ class LegacyResultsProcessor(object):
     """Writes graph json for each graph seen.
     """
     charts = {}
-    for graph_name, graph in self._graphs.iteritems():
+    for graph_name, graph in self._graphs.items():
       traces = graph.BuildTracesDict()
 
       # Traces should contain exactly two elements: [mean, stddev].
-      for _, trace in traces.iteritems():
+      for _, trace in traces.items():
         assert len(trace) == 2
 
       graph_dict = collections.OrderedDict([

@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/video_feedback_stub.h"
 #include "remoting/protocol/video_stream.h"
@@ -23,6 +23,10 @@ namespace protocol {
 class FakeVideoStream : public protocol::VideoStream {
  public:
   FakeVideoStream();
+
+  FakeVideoStream(const FakeVideoStream&) = delete;
+  FakeVideoStream& operator=(const FakeVideoStream&) = delete;
+
   ~FakeVideoStream() override;
 
   // protocol::VideoStream interface.
@@ -42,13 +46,15 @@ class FakeVideoStream : public protocol::VideoStream {
   Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<FakeVideoStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoStream);
 };
 
 class FakeConnectionToClient : public ConnectionToClient {
  public:
   FakeConnectionToClient(std::unique_ptr<Session> session);
+
+  FakeConnectionToClient(const FakeConnectionToClient&) = delete;
+  FakeConnectionToClient& operator=(const FakeConnectionToClient&) = delete;
+
   ~FakeConnectionToClient() override;
 
   void SetEventHandler(EventHandler* event_handler) override;
@@ -66,6 +72,9 @@ class FakeConnectionToClient : public ConnectionToClient {
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;
   void set_input_stub(InputStub* input_stub) override;
+
+  PeerConnectionControls* peer_connection_controls() override;
+  WebrtcEventLogData* rtc_event_log() override;
 
   base::WeakPtr<FakeVideoStream> last_video_stream() {
     return last_video_stream_;
@@ -89,6 +98,10 @@ class FakeConnectionToClient : public ConnectionToClient {
   ErrorCode disconnect_error() { return disconnect_error_; }
 
  private:
+  // TODO(crbug.com/1043325): Remove the requirement that ConnectionToClient
+  // retains a pointer to the capturer if the relative pointer experiment is
+  // a success.
+  std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer_;
   std::unique_ptr<Session> session_;
   EventHandler* event_handler_ = nullptr;
 
@@ -106,8 +119,6 @@ class FakeConnectionToClient : public ConnectionToClient {
 
   bool is_connected_ = true;
   ErrorCode disconnect_error_ = OK;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionToClient);
 };
 
 }  // namespace protocol

@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_BRIGHTNESS_CONTROL_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class Accelerator;
@@ -32,7 +32,7 @@ class BrightnessControlDelegate {
   // Asynchronously invokes |callback| with the current brightness, in the range
   // [0.0, 100.0]. In case of error, it is called with nullopt.
   virtual void GetBrightnessPercent(
-      base::OnceCallback<void(base::Optional<double>)> callback) = 0;
+      base::OnceCallback<void(absl::optional<double>)> callback) = 0;
 };
 
 }  // namespace ash

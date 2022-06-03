@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/ivansandrk/multi-apps/blob/main/explainer.md
+
+enum SubAppsError {
+    "success",
+    "failure",
+};
+
+[
+  SecureContext
+] interface SubApps {
+  [CallWith=ScriptState] Promise<SubAppsError> add(DOMString install_url);
+};

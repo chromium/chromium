@@ -1,5 +1,5 @@
 UNKNOWN_TYPE |  | My billing address and delivery address are the same. | on | _1-default
-UNKNOWN_TYPE | billTitle | Title: | Ms. | _1-default
+NAME_HONORIFIC_PREFIX | billTitle | Title: | Ms. | _1-default
 NAME_FIRST | billFirstName | Shorty | Shorty | _1-default
 NAME_LAST | billLastName | Last Name: | Nge | _1-default
 ADDRESS_HOME_LINE1 | billAddressLine1 | Street Address: | 340 Main | _1-default

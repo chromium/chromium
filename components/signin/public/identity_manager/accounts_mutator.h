@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 namespace signin_metrics {
@@ -19,11 +18,17 @@ struct CoreAccountId;
 
 namespace signin {
 
+enum class Tribool;
+
 // AccountsMutator is the interface to support seeding of account info and
 // mutation of refresh tokens for the user's Gaia accounts.
 class AccountsMutator {
  public:
   AccountsMutator() = default;
+
+  AccountsMutator(const AccountsMutator&) = delete;
+  AccountsMutator& operator=(const AccountsMutator&) = delete;
+
   virtual ~AccountsMutator() = default;
 
   // Updates the information of the account associated with |gaia_id|, first
@@ -36,10 +41,10 @@ class AccountsMutator {
       signin_metrics::SourceForRefreshTokenOperation source) = 0;
 
   // Updates the information about account identified by |account_id|.
-  virtual void UpdateAccountInfo(
-      const CoreAccountId& account_id,
-      base::Optional<bool> is_child_account,
-      base::Optional<bool> is_under_advanced_protection) = 0;
+  // If kUnknown is passed, the attribute is not updated.
+  virtual void UpdateAccountInfo(const CoreAccountId& account_id,
+                                 Tribool is_child_account,
+                                 Tribool is_under_advanced_protection) = 0;
 
   // Removes the account given by |account_id|. Also revokes the token
   // server-side if needed.
@@ -68,8 +73,14 @@ class AccountsMutator {
                            const CoreAccountId& account_id) = 0;
 #endif
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountsMutator);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Seeds account into AccountTrackerService. Used by UserSessionManager to
+  // manually seed the primary account before credentials are loaded.
+  // TODO(https://crbug.com/1195359): Remove after adding an account cache to
+  // AccountManagerFacade.
+  virtual CoreAccountId SeedAccountInfo(const std::string& gaia,
+                                        const std::string& email) = 0;
+#endif
 };
 
 }  // namespace signin

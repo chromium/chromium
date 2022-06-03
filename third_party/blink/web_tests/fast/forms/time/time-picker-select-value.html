@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="time" id="time" value="14:15">
+<script>
+
+let t = async_test('Test select value in time popup');
+
+function selectValue() {
+  let timeElement = document.getElementById("time");
+  timeElement.addEventListener("change", t.step_func_done(() => {
+    assert_equals(timeElement.value, "18:16");
+  }));
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 1);
+  eventSender.keyDown('Enter');
+}
+
+t.step(() => {
+  openPicker(document.getElementById('time'), t.step_func(selectValue));
+});
+</script>
+</body>
+</html>

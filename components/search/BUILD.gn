@@ -4,28 +4,54 @@
 
 static_library("search") {
   sources = [
+    "ntp_features.cc",
+    "ntp_features.h",
     "search.cc",
     "search.h",
+    "search_provider_observer.cc",
+    "search_provider_observer.h",
   ]
 
   deps = [
     "//base",
     "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
     "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//components/variations/net",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "search_android_unittest.cc",
-    "search_unittest.cc",
-  ]
+
+  sources = [ "search_unittest.cc" ]
+  if (is_android) {
+    sources += [ "search_android_unittest.cc" ]
+  }
+
   deps = [
     ":search",
     "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/history/core/test",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines:search_engines",
+    "//components/search_engines:test_support",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/variations",
+    "//components/variations:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -84,9 +84,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("indexed_ruleset_fuzzer") {
-  sources = [
-    "indexed_ruleset_fuzzer.cc",
-  ]
+  sources = [ "indexed_ruleset_fuzzer.cc" ]
   deps = [
     ":common",
     "//base",

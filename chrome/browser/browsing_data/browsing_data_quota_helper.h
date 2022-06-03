@@ -11,9 +11,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 
 class BrowsingDataQuotaHelper;
 class Profile;
@@ -61,7 +60,10 @@ class BrowsingDataQuotaHelper
   using QuotaInfoArray = std::list<QuotaInfo>;
   using FetchResultCallback = base::OnceCallback<void(const QuotaInfoArray&)>;
 
-  static BrowsingDataQuotaHelper* Create(Profile* profile);
+  static scoped_refptr<BrowsingDataQuotaHelper> Create(Profile* profile);
+
+  BrowsingDataQuotaHelper(const BrowsingDataQuotaHelper&) = delete;
+  BrowsingDataQuotaHelper& operator=(const BrowsingDataQuotaHelper&) = delete;
 
   virtual void StartFetching(FetchResultCallback callback) = 0;
 
@@ -74,8 +76,6 @@ class BrowsingDataQuotaHelper
  private:
   friend class base::DeleteHelper<BrowsingDataQuotaHelper>;
   friend struct BrowsingDataQuotaHelperDeleter;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_H_

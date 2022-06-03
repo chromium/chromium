@@ -7,11 +7,11 @@
 
 #include <windows.h>
 
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/chrome_cleaner/engines/target/sandbox_request_helper.h"
@@ -46,17 +46,17 @@ class EngineRequestsProxy
   virtual bool GetProcessImagePath(base::ProcessId pid,
                                    base::FilePath* image_path);
   virtual bool GetLoadedModules(base::ProcessId pid,
-                                std::vector<base::string16>* modules);
+                                std::vector<std::wstring>* modules);
   virtual bool GetProcessCommandLine(base::ProcessId pid,
-                                     base::string16* command_line);
+                                     std::wstring* command_line);
   virtual bool GetUserInfoFromSID(const SID* const sid,
                                   mojom::UserInformation* user_info);
   virtual uint32_t OpenReadOnlyRegistry(HANDLE root_key,
-                                        const base::string16& sub_key,
+                                        const std::wstring& sub_key,
                                         uint32_t dw_access,
                                         HANDLE* registry_handle);
   virtual uint32_t NtOpenReadOnlyRegistry(HANDLE root_key,
-                                          const String16EmbeddedNulls& sub_key,
+                                          const WStringEmbeddedNulls& sub_key,
                                           uint32_t dw_access,
                                           HANDLE* registry_handle);
 
@@ -97,13 +97,13 @@ class EngineRequestsProxy
       mojom::EngineRequests::SandboxGetUserInfoFromSIDCallback result_callback);
   MojoCallStatus SandboxOpenReadOnlyRegistry(
       HANDLE root_key,
-      const base::string16& sub_key,
+      const std::wstring& sub_key,
       uint32_t dw_access,
       mojom::EngineRequests::SandboxOpenReadOnlyRegistryCallback
           result_callback);
   MojoCallStatus SandboxNtOpenReadOnlyRegistry(
       HANDLE root_key,
-      const String16EmbeddedNulls& sub_key,
+      const WStringEmbeddedNulls& sub_key,
       uint32_t dw_access,
       mojom::EngineRequests::SandboxNtOpenReadOnlyRegistryCallback
           result_callback);

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
@@ -30,10 +29,10 @@ class HunspellEngine : public SpellingEngine {
 
   bool InitializeIfNeeded() override;
   bool IsEnabled() override;
-  bool CheckSpelling(const base::string16& word_to_check, int tag) override;
+  bool CheckSpelling(const std::u16string& word_to_check, int tag) override;
   void FillSuggestionList(
-      const base::string16& wrong_word,
-      std::vector<base::string16>* optional_suggestions) override;
+      const std::u16string& wrong_word,
+      std::vector<std::u16string>* optional_suggestions) override;
 
  private:
   // Initializes the Hunspell dictionary, or does nothing if |hunspell_| is

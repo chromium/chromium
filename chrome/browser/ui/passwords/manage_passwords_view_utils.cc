@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -21,9 +21,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -53,20 +53,10 @@ namespace {
 using password_manager::ManagePasswordsReferrer;
 
 // Checks whether two URLs are from the same domain or host.
-bool SameDomainOrHost(const GURL& gurl1, const GURL& gurl2) {
+bool SameDomainOrHost(const GURL& gurl, const url::Origin& origin) {
   return net::registry_controlled_domains::SameDomainOrHost(
-      gurl1, gurl2,
+      gurl, origin,
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-bool IsSignedInAndSyncingPasswordsNormally(Profile* profile) {
-  return password_manager_util::IsSyncingWithNormalEncryption(
-      ProfileSyncServiceFactory::GetForProfile(profile));
-}
-
-bool IsGooglePasswordManagerEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kGooglePasswordManager);
 }
 
 }  // namespace
@@ -80,14 +70,13 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
     skia_image = gfx::ImageSkiaOperations::ExtractSubset(skia_image, target);
   }
   return gfx::ImageSkiaOperations::CreateResizedImage(
-      skia_image,
-      skia::ImageOperations::RESIZE_BEST,
+      skia_image, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kAvatarImageSize, kAvatarImageSize));
 }
 
-std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
-    const autofill::PasswordForm& form) {
-  base::string16 federation;
+std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
+    const password_manager::PasswordForm& form) {
+  std::u16string federation;
   if (!form.federation_origin.opaque())
     federation = GetDisplayFederation(form);
 
@@ -98,18 +87,16 @@ std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
   if (federation.empty())
     return std::make_pair(form.display_name, form.username_value);
 
-  return std::make_pair(
-      form.display_name,
-      form.username_value + base::ASCIIToUTF16("\n") + federation);
+  return std::make_pair(form.display_name,
+                        form.username_value + u"\n" + federation);
 }
 
-void GetSavePasswordDialogTitleTextAndLinkRange(const GURL& user_visible_url,
-                                                const GURL& form_origin_url,
-                                                PasswordTitleType dialog_type,
-                                                base::string16* title) {
-  DCHECK(!password_manager::IsValidAndroidFacetURI(form_origin_url.spec()));
+std::u16string GetSavePasswordDialogTitleText(
+    const GURL& user_visible_url,
+    const url::Origin& form_origin_url,
+    PasswordTitleType dialog_type) {
   std::vector<size_t> offsets;
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   int title_id = 0;
   switch (dialog_type) {
     case PasswordTitleType::SAVE_PASSWORD:
@@ -132,57 +119,57 @@ void GetSavePasswordDialogTitleTextAndLinkRange(const GURL& user_visible_url,
     title_id = dialog_type == PasswordTitleType::UPDATE_PASSWORD
                    ? IDS_UPDATE_PASSWORD_DIFFERENT_DOMAINS_TITLE
                    : IDS_SAVE_PASSWORD_DIFFERENT_DOMAINS_TITLE;
-    replacements.push_back(url_formatter::FormatUrlForSecurityDisplay(
+    replacements.push_back(url_formatter::FormatOriginForSecurityDisplay(
         form_origin_url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
-  *title = l10n_util::GetStringFUTF16(title_id, replacements, &offsets);
+  return l10n_util::GetStringFUTF16(title_id, replacements, &offsets);
 }
 
-void GetManagePasswordsDialogTitleText(const GURL& user_visible_url,
-                                       const GURL& password_origin_url,
-                                       bool has_credentials,
-                                       base::string16* title) {
-  DCHECK(!password_manager::IsValidAndroidFacetURI(password_origin_url.spec()));
+std::u16string GetManagePasswordsDialogTitleText(
+    const GURL& user_visible_url,
+    const url::Origin& password_origin_url,
+    bool has_credentials) {
+  DCHECK(!password_origin_url.opaque());
   // Check whether the registry controlled domains for user-visible URL
   // (i.e. the one seen in the omnibox) and the managed password origin URL
   // differ or not.
   if (!SameDomainOrHost(user_visible_url, password_origin_url)) {
-    base::string16 formatted_url =
-        url_formatter::FormatUrlForSecurityDisplay(password_origin_url);
-    *title = l10n_util::GetStringFUTF16(
+    std::u16string formatted_url =
+        url_formatter::FormatOriginForSecurityDisplay(password_origin_url);
+    return l10n_util::GetStringFUTF16(
         has_credentials
             ? IDS_MANAGE_PASSWORDS_DIFFERENT_DOMAIN_TITLE
             : IDS_MANAGE_PASSWORDS_DIFFERENT_DOMAIN_NO_PASSWORDS_TITLE,
         formatted_url);
-  } else {
-    *title = l10n_util::GetStringUTF16(
-        has_credentials ? IDS_MANAGE_PASSWORDS_TITLE
-                        : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
   }
+  return l10n_util::GetStringUTF16(
+      has_credentials ? IDS_MANAGE_PASSWORDS_TITLE
+                      : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
 }
 
-base::string16 GetDisplayUsername(const autofill::PasswordForm& form) {
+std::u16string GetDisplayUsername(const password_manager::PasswordForm& form) {
   return form.username_value.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : form.username_value;
 }
 
-base::string16 GetDisplayUsername(
+std::u16string GetDisplayUsername(
     const password_manager::UiCredential& credential) {
   return credential.username().empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : credential.username();
 }
 
-base::string16 GetDisplayFederation(const autofill::PasswordForm& form) {
+std::u16string GetDisplayFederation(
+    const password_manager::PasswordForm& form) {
   return url_formatter::FormatOriginForSecurityDisplay(
       form.federation_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   return (sync_service &&
           sync_service->GetUserSettings()->IsFirstSetupComplete() &&
           sync_service->IsSyncFeatureActive() &&
@@ -211,8 +198,12 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "password_generation_confirmation";
       case ManagePasswordsReferrer::kProfileChooser:
         return "profile_chooser";
+      case ManagePasswordsReferrer::kSafeStateBubble:
+        return "safe_state";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
+      case ManagePasswordsReferrer::kPasswordBreachDialog:
+      case ManagePasswordsReferrer::kSafetyCheck:
         NOTREACHED();
     }
 
@@ -221,14 +212,6 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
   }();
 
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
-}
-
-bool ShouldManagePasswordsinGooglePasswordManager(Profile* profile) {
-  // To make sure that the experiment groups contain the same proportions of
-  // signed in and syncing users, we need to check the sync state before
-  // checking the feature flag.
-  return IsSignedInAndSyncingPasswordsNormally(profile) &&
-         IsGooglePasswordManagerEnabled();
 }
 
 // Navigation is handled differently on Android.
@@ -245,15 +228,6 @@ void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
                             referrer);
-  if (IsSignedInAndSyncingPasswordsNormally(browser->profile())) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer);
-    if (IsGooglePasswordManagerEnabled()) {
-      NavigateToGooglePasswordManager(browser->profile(), referrer);
-      return;
-    }
-  }
-
   chrome::ShowPasswordManager(browser);
 }
 

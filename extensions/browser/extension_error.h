@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "extensions/common/stack_frame.h"
 #include "url/gurl.h"
 
@@ -27,6 +26,9 @@ class ExtensionError {
     INTERNAL_ERROR,
     NUM_ERROR_TYPES,  // Put new values above this.
   };
+
+  ExtensionError(const ExtensionError&) = delete;
+  ExtensionError& operator=(const ExtensionError&) = delete;
 
   virtual ~ExtensionError();
 
@@ -42,8 +44,8 @@ class ExtensionError {
   void set_id(int id) { id_ = id; }
   bool from_incognito() const { return from_incognito_; }
   logging::LogSeverity level() const { return level_; }
-  const base::string16& source() const { return source_; }
-  const base::string16& message() const { return message_; }
+  const std::u16string& source() const { return source_; }
+  const std::u16string& message() const { return message_; }
   size_t occurrences() const { return occurrences_; }
   void set_occurrences(size_t occurrences) { occurrences_ = occurrences; }
 
@@ -52,8 +54,8 @@ class ExtensionError {
                  const std::string& extension_id,
                  bool from_incognito,
                  logging::LogSeverity level,
-                 const base::string16& source,
-                 const base::string16& message);
+                 const std::u16string& source,
+                 const std::u16string& message);
 
   virtual bool IsEqualImpl(const ExtensionError* rhs) const = 0;
 
@@ -70,53 +72,56 @@ class ExtensionError {
   // The source for the error; this can be a script, web page, or manifest file.
   // This is stored as a string (rather than a url) since it can be a Chrome
   // script file (e.g., event_bindings.js).
-  base::string16 source_;
+  std::u16string source_;
   // The error message itself.
-  base::string16 message_;
+  std::u16string message_;
   // The number of times this error has occurred.
   size_t occurrences_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionError);
 };
 
 class ManifestError : public ExtensionError {
  public:
   ManifestError(const std::string& extension_id,
-                const base::string16& message,
-                const base::string16& manifest_key,
-                const base::string16& manifest_specific);
+                const std::u16string& message,
+                const std::u16string& manifest_key,
+                const std::u16string& manifest_specific);
+
+  ManifestError(const ManifestError&) = delete;
+  ManifestError& operator=(const ManifestError&) = delete;
+
   ~ManifestError() override;
 
   std::string GetDebugString() const override;
 
-  const base::string16& manifest_key() const { return manifest_key_; }
-  const base::string16& manifest_specific() const { return manifest_specific_; }
+  const std::u16string& manifest_key() const { return manifest_key_; }
+  const std::u16string& manifest_specific() const { return manifest_specific_; }
 
  private:
   bool IsEqualImpl(const ExtensionError* rhs) const override;
 
   // If present, this indicates the feature in the manifest which caused the
   // error.
-  base::string16 manifest_key_;
+  std::u16string manifest_key_;
   // If present, this is a more-specific location of the error - for instance,
   // a specific permission which is incorrect, rather than simply "permissions".
-  base::string16 manifest_specific_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestError);
+  std::u16string manifest_specific_;
 };
 
 class RuntimeError : public ExtensionError {
  public:
   RuntimeError(const std::string& extension_id,  // optional, sometimes unknown.
                bool from_incognito,
-               const base::string16& source,
-               const base::string16& message,
+               const std::u16string& source,
+               const std::u16string& message,
                const StackTrace& stack_trace,
                const GURL& context_url,
                logging::LogSeverity level,
-               int render_view_id,
+               int render_frame_id,
                int render_process_id);
+
+  RuntimeError(const RuntimeError&) = delete;
+  RuntimeError& operator=(const RuntimeError&) = delete;
+
   ~RuntimeError() override;
 
   std::string GetDebugString() const override;
@@ -141,23 +146,23 @@ class RuntimeError : public ExtensionError {
   // inspect the frame later, if possible.
   int render_frame_id_;
   int render_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeError);
 };
 
 class InternalError : public ExtensionError {
  public:
   InternalError(const std::string& extension_id,
-                const base::string16& message,
+                const std::u16string& message,
                 logging::LogSeverity level);
+
+  InternalError(const InternalError&) = delete;
+  InternalError& operator=(const InternalError&) = delete;
+
   ~InternalError() override;
 
   std::string GetDebugString() const override;
 
  private:
   bool IsEqualImpl(const ExtensionError* rhs) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalError);
 };
 
 }  // namespace extensions

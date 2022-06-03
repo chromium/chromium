@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+
+const testData = [
+    // Complete messages.
+    [0x80, 0x00, 0x00],
+    [0x90, 0x00, 0x00],
+    [0xa0, 0x00, 0x00],
+    [0xb0, 0x00, 0x00],
+    [0xc0, 0x00],
+    [0xd0, 0x00],
+    [0xe0, 0x00, 0x00],
+
+    // Real-Time messages.
+    [0xf8],
+    [0xfa],
+    [0xfb],
+    [0xfc],
+    [0xfe],
+    [0xff],
+
+    // Sysex messages.
+    [0xf0, 0x00, 0x01, 0x02, 0x03, 0xf7],
+    [0xf0, 0xf8, 0xf7],
+];
+
+let receiveCount;
+
+function verifyData(e) {
+    assert_array_equals(e.data, testData[receiveCount]);
+    receiveCount++;
+    if (receiveCount == testData.length) {
+      // Clear the event handler in case the input object isn't GC'ed, to
+      // prevent it from being called on the second run of test().
+      e.target.onmidimessage = undefined;
+      e.target.removeEventListener('midimessage', verifyData);
+      e.target.resolve();
+    }
+}
+
+function test(useAddEventListener) {
+    receiveCount = 0;
+    return new Promise(function(resolve, reject) {
+        navigator.requestMIDIAccess({sysex: true}).then(function (a) {
+            var input = a.inputs.values().next().value;
+            input.resolve = resolve;
+            input.reject = reject;
+            if (useAddEventListener) {
+                input.addEventListener('midimessage', verifyData);
+            } else {
+                input.onmidimessage = verifyData;
+            }
+            var output = a.outputs.values().next().value;
+            for (var i = 0; i < testData.length; ++i)
+                output.send(testData[i]);
+        }, function () {
+            testFailed("requestMIDIAccess() return an error.");
+            reject();
+        });
+    });
+}
+
+promise_test(async _ => {
+  await setMidiPermission({sysex: true}, 'granted');
+  await test(false);
+  await test(true);
+}, 'midimessage event handling works as expected');
+
+</script>
+</body>
+</html>

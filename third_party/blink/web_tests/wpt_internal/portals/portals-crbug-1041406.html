@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Regression test for https://crbug.com/1041406</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+   setup({single_test: true});
+
+   // Callback ordering in test:
+   // 1) iframe loads and runs cb1()
+   // 2) during appendChild, iframe gets disconnected, during which body load is
+   //    marked as complete and cb2() runs
+
+  function cb1() {
+    var div_b = document.getElementById('b');
+    var div_a = document.getElementById('a');
+    div_b.appendChild(div_a);
+  }
+
+  function cb2() {
+    var portal = document.querySelector('portal');
+    var iframe = document.querySelector('iframe');
+    iframe.after(portal);
+    done();
+  }
+</script>
+<body onload="cb2()">
+  <div id="a">
+    <iframe src="resources/simple-portal.html" onload="cb1()"></iframe>
+  </div>
+  <div id="b"></div>
+  <portal src="resources/simple-portal.html"></portal>
+</body>

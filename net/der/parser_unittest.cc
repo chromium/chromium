@@ -95,7 +95,7 @@ TEST(ParserTest, ReadOptionalTag2Present) {
   const uint8_t der[] = {0x02, 0x01, 0x01, 0x04, 0x01, 0x02};
   Parser parser((Input(der)));
 
-  base::Optional<Input> optional_value;
+  absl::optional<Input> optional_value;
   ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &optional_value));
   ASSERT_TRUE(optional_value.has_value());
   const uint8_t expected_int_value[] = {0x01};
@@ -137,7 +137,7 @@ TEST(ParserTest, ReadOptionalTag2NotPresent) {
   const uint8_t der[] = {0x04, 0x01, 0x02};
   Parser parser((Input(der)));
 
-  base::Optional<Input> optional_value;
+  absl::optional<Input> optional_value;
   ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &optional_value));
   ASSERT_FALSE(optional_value.has_value());
 

@@ -13,19 +13,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/vpn_provider.h"
-
-namespace base {
-
-class DictionaryValue;
-class ListValue;
-
-}  // namespace base
 
 namespace content {
 
@@ -55,16 +49,11 @@ class VpnService : public KeyedService,
                    public NetworkStateHandlerObserver,
                    public extensions::ExtensionRegistryObserver {
  public:
-  using SuccessOnceCallback = base::OnceClosure;
-  using StringCallback = base::Callback<void(const std::string& result)>;
-  using FailureOnceCallback =
+  using SuccessCallback = base::OnceClosure;
+  using StringCallback = base::OnceCallback<void(const std::string& result)>;
+  using FailureCallback =
       base::OnceCallback<void(const std::string& error_name,
                               const std::string& error_message)>;
-
-  // TODO(crbug.com/1007786): Delete these and rename the OnceCallback versions
-  // to replace these once they are no longer used.
-  using SuccessCallback = base::Callback<SuccessOnceCallback::RunType>;
-  using FailureCallback = base::Callback<FailureOnceCallback::RunType>;
 
   VpnService(content::BrowserContext* browser_context,
              const std::string& userid_hash,
@@ -74,6 +63,10 @@ class VpnService : public KeyedService,
              NetworkConfigurationHandler* network_configuration_handler,
              NetworkProfileHandler* network_profile_handler,
              NetworkStateHandler* network_state_handler);
+
+  VpnService(const VpnService&) = delete;
+  VpnService& operator=(const VpnService&) = delete;
+
   ~VpnService() override;
 
   void SendShowAddDialogToExtension(const std::string& extension_id);
@@ -106,32 +99,32 @@ class VpnService : public KeyedService,
   void CreateConfiguration(const std::string& extension_id,
                            const std::string& extension_name,
                            const std::string& configuration_name,
-                           const SuccessCallback& success,
-                           const FailureCallback& failure);
+                           SuccessCallback success,
+                           FailureCallback failure);
 
   // Destroys the VPN configuration with |configuration_id| after verifying that
   // it belongs to the extension with id |extension_id|.
   // Calls |success| or |failure| based on the outcome.
   void DestroyConfiguration(const std::string& extension_id,
                             const std::string& configuration_id,
-                            const SuccessCallback& success,
-                            const FailureCallback& failure);
+                            SuccessCallback success,
+                            FailureCallback failure);
 
   // Set |parameters| for the active VPN configuration after verifying that it
   // belongs to the extension with id |extension_id|.
   // Calls |success| or |failure| based on the outcome.
   void SetParameters(const std::string& extension_id,
                      const base::DictionaryValue& parameters,
-                     const StringCallback& success,
-                     const FailureCallback& failure);
+                     StringCallback success,
+                     FailureCallback failure);
 
   // Sends an IP packet contained in |data| to the active VPN configuration
   // after verifying that it belongs to the extension with id |extension_id|.
   // Calls |success| or |failure| based on the outcome.
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
-                  SuccessOnceCallback success,
-                  FailureOnceCallback failure);
+                  SuccessCallback success,
+                  FailureCallback failure);
 
   // Notifies connection state |state| to the active VPN configuration after
   // verifying that it belongs to the extension with id |extension_id|.
@@ -139,8 +132,8 @@ class VpnService : public KeyedService,
   void NotifyConnectionStateChanged(
       const std::string& extension_id,
       extensions::api::vpn_provider::VpnConnectionState state,
-      const SuccessCallback& success,
-      const FailureCallback& failure);
+      SuccessCallback success,
+      FailureCallback failure);
 
   // Verifies if a configuration with name |configuration_name| exists for the
   // extension with id |extension_id|.
@@ -173,35 +166,29 @@ class VpnService : public KeyedService,
       std::map<std::string, std::unique_ptr<VpnConfiguration>>;
 
   // Callback used to indicate that configuration was successfully created.
-  void OnCreateConfigurationSuccess(const SuccessCallback& callback,
+  void OnCreateConfigurationSuccess(SuccessCallback callback,
                                     VpnConfiguration* configuration,
                                     const std::string& service_path,
                                     const std::string& guid);
 
   // Callback used to indicate that configuration creation failed.
   void OnCreateConfigurationFailure(
-      const FailureCallback& callback,
+      FailureCallback callback,
       VpnConfiguration* configuration,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
 
   // Callback used to indicate that removing a configuration succeeded.
-  void OnRemoveConfigurationSuccess(const SuccessCallback& callback);
+  void OnRemoveConfigurationSuccess(SuccessCallback callback);
 
   // Callback used to indicate that removing a configuration failed.
   void OnRemoveConfigurationFailure(
-      const FailureCallback& callback,
+      FailureCallback callback,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
 
-  // Callback used to indicate that GetProperties was successful.
-  void OnGetPropertiesSuccess(const std::string& service_path,
-                              const base::DictionaryValue& dictionary);
-
-  // Callback used to indicate that GetProperties failed.
-  void OnGetPropertiesFailure(
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnGetShillProperties(const std::string& service_path,
+                            absl::optional<base::Value> dictionary);
 
   // Creates and adds the configuration to the internal store.
   VpnConfiguration* CreateConfigurationInternal(
@@ -222,7 +209,7 @@ class VpnService : public KeyedService,
   void SendSignalToExtension(const std::string& extension_id,
                              extensions::events::HistogramValue histogram_value,
                              const std::string& event_name,
-                             std::unique_ptr<base::ListValue> event_args);
+                             std::vector<base::Value> event_args);
 
   // Destroy configurations belonging to the extension.
   void DestroyConfigurationsForExtension(
@@ -234,8 +221,8 @@ class VpnService : public KeyedService,
   void Bind(const std::string& extension_id,
             const std::string& configuration_id,
             const std::string& configuration_name,
-            SuccessOnceCallback success,
-            FailureOnceCallback failure,
+            SuccessCallback success,
+            FailureCallback failure,
             std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
                 pepper_vpn_provider_proxy);
 
@@ -257,8 +244,6 @@ class VpnService : public KeyedService,
   StringToConfigurationMap service_path_to_configuration_map_;
 
   base::WeakPtrFactory<VpnService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VpnService);
 };
 
 }  // namespace chromeos

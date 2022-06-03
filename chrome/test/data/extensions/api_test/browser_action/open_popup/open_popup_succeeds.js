@@ -12,7 +12,7 @@ chrome.browserAction.openPopup(function(popupWindow) {
       return;
     chrome.browserAction.openPopup(function(popupWindow2) {
       chrome.test.assertTrue(!!popupWindow2);
-      chrome.test.succeed();
+      chrome.test.notifyPass();
     });
   });
 });

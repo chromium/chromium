@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_WIDGET_ROOT_VIEW_H_
 #define UI_VIEWS_WIDGET_ROOT_VIEW_H_
 
+#include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/events/event_processor.h"
 #include "ui/views/focus/focus_manager.h"
@@ -20,7 +20,7 @@ namespace views {
 namespace test {
 class ViewTargeterTest;
 class WidgetTest;
-}
+}  // namespace test
 
 class RootViewTargeter;
 class Widget;
@@ -34,19 +34,19 @@ class PreEventDispatchHandler;
 ////////////////////////////////////////////////////////////////////////////////
 // RootView class
 //
-//  The RootView is the root of a View hierarchy. A RootView is attached to a
-//  Widget. The Widget is responsible for receiving events from the host
-//  environment, converting them to views-compatible events and then forwarding
-//  them to the RootView for propagation into the View hierarchy.
+// The RootView is the root of a View hierarchy. A RootView is attached to a
+// Widget. The Widget is responsible for receiving events from the host
+// environment, converting them to views-compatible events and then forwarding
+// them to the RootView for propagation into the View hierarchy.
 //
-//  A RootView can have only one child, called its "Contents View" which is
-//  sized to fill the bounds of the RootView (and hence the client area of the
-//  Widget). Call SetContentsView() after the associated Widget has been
-//  initialized to attach the contents view to the RootView.
-//  TODO(beng): Enforce no other callers to AddChildView/tree functions by
-//              overriding those methods as private here.
-//  TODO(beng): Clean up API further, make Widget a friend.
-//  TODO(sky): We don't really want to export this class.
+// A RootView can have only one child, called its "Contents View" which is
+// sized to fill the bounds of the RootView (and hence the client area of the
+// Widget). Call SetContentsView() after the associated Widget has been
+// initialized to attach the contents view to the RootView.
+// TODO(beng): Enforce no other callers to AddChildView/tree functions by
+//             overriding those methods as private here.
+// TODO(beng): Clean up API further, make Widget a friend.
+// TODO(sky): We don't really want to export this class.
 //
 class VIEWS_EXPORT RootView : public View,
                               public ViewTargeterDelegate,
@@ -57,6 +57,8 @@ class VIEWS_EXPORT RootView : public View,
 
   // Creation and lifetime -----------------------------------------------------
   explicit RootView(Widget* widget);
+  RootView(const RootView&) = delete;
+  RootView& operator=(const RootView&) = delete;
   ~RootView() override;
 
   // Tree operations -----------------------------------------------------------
@@ -96,20 +98,20 @@ class VIEWS_EXPORT RootView : public View,
   // Accessibility -------------------------------------------------------------
 
   // Make an announcement through the screen reader, if present.
-  void AnnounceText(const base::string16& text);
+  void AnnounceText(const std::u16string& text);
 
-  // Overridden from FocusTraversable:
+  // FocusTraversable:
   FocusSearch* GetFocusSearch() override;
   FocusTraversable* GetFocusTraversableParent() override;
   View* GetFocusTraversableParentView() override;
 
-  // Overridden from ui::EventProcessor:
+  // ui::EventProcessor:
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   ui::EventTargeter* GetDefaultEventTargeter() override;
   void OnEventProcessingStarted(ui::Event* event) override;
   void OnEventProcessingFinished(ui::Event* event) override;
 
-  // Overridden from View:
+  // View:
   const Widget* GetWidget() const override;
   Widget* GetWidget() override;
   bool IsDrawn() const override;
@@ -120,12 +122,17 @@ class VIEWS_EXPORT RootView : public View,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
+  void SetMouseAndGestureHandler(View* new_handler) override;
   void SetMouseHandler(View* new_mouse_handler) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateParentLayer() override;
 
+  const views::View* gesture_handler_for_testing() const {
+    return gesture_handler_;
+  }
+
  protected:
-  // Overridden from View:
+  // View:
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -165,7 +172,11 @@ class VIEWS_EXPORT RootView : public View,
       View* view,
       View* sibling) WARN_UNUSED_RESULT;
 
-  // Overridden from ui::EventDispatcherDelegate:
+  // Send synthesized gesture end events to `gesture_handler` before replacement
+  // if `gesture_handler` is in progress of gesture handling.
+  void MaybeNotifyGestureHandlerBeforeReplacement();
+
+  // ui::EventDispatcherDelegate:
   bool CanDispatchToTarget(ui::EventTarget* target) override;
   ui::EventDispatchDetails PreDispatchEvent(ui::EventTarget* target,
                                             ui::Event* event) override;
@@ -184,26 +195,26 @@ class VIEWS_EXPORT RootView : public View,
   //                   ViewTargeter / RootViewTargeter.
 
   // The view currently handing down - drag - up
-  View* mouse_pressed_handler_;
+  View* mouse_pressed_handler_ = nullptr;
 
   // The view currently handling enter / exit
-  View* mouse_move_handler_;
+  View* mouse_move_handler_ = nullptr;
 
   // The last view to handle a mouse click, so that we can determine if
   // a double-click lands on the same view as its single-click part.
-  View* last_click_handler_;
+  View* last_click_handler_ = nullptr;
 
   // true if mouse_pressed_handler_ has been explicitly set
-  bool explicit_mouse_handler_;
+  bool explicit_mouse_handler_ = false;
 
   // Last position/flag of a mouse press/drag. Used if capture stops and we need
   // to synthesize a release.
-  int last_mouse_event_flags_;
-  int last_mouse_event_x_;
-  int last_mouse_event_y_;
+  int last_mouse_event_flags_ = 0;
+  int last_mouse_event_x_ = -1;
+  int last_mouse_event_y_ = -1;
 
   // The View currently handling gesture events.
-  View* gesture_handler_;
+  View* gesture_handler_ = nullptr;
 
   // Used to indicate if the |gesture_handler_| member was set prior to the
   // processing of the current event (i.e., if |gesture_handler_| was set
@@ -211,7 +222,7 @@ class VIEWS_EXPORT RootView : public View,
   // TODO(tdanderson): It may be possible to eliminate the need for this
   //                   member if |event_dispatch_target_| can be used in
   //                   its place.
-  bool gesture_handler_set_before_processing_;
+  bool gesture_handler_set_before_processing_ = false;
 
   std::unique_ptr<internal::PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<internal::PostEventDispatchHandler> post_dispatch_handler_;
@@ -219,20 +230,20 @@ class VIEWS_EXPORT RootView : public View,
   // Focus ---------------------------------------------------------------------
 
   // The focus search algorithm.
-  FocusSearch focus_search_;
+  FocusSearch focus_search_{this, false, false};
 
   // Whether this root view belongs to the current active window.
   // bool activated_;
 
   // The parent FocusTraversable, used for focus traversal.
-  FocusTraversable* focus_traversable_parent_;
+  FocusTraversable* focus_traversable_parent_ = nullptr;
 
   // The View that contains this RootView. This is used when we have RootView
   // wrapped inside native components, and is used for the focus traversal.
-  View* focus_traversable_parent_view_;
+  View* focus_traversable_parent_view_ = nullptr;
 
-  View* event_dispatch_target_;
-  View* old_dispatch_target_;
+  View* event_dispatch_target_ = nullptr;
+  View* old_dispatch_target_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
@@ -244,8 +255,6 @@ class VIEWS_EXPORT RootView : public View,
   // Hidden view used to make announcements to the screen reader via an alert or
   // live region update.
   AnnounceTextView* announce_view_ = nullptr;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RootView);
 };
 
 }  // namespace internal

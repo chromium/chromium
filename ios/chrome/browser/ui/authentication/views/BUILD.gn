@@ -1,0 +1,31 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("views") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "identity_button_control.h",
+    "identity_button_control.mm",
+    "identity_view.h",
+    "identity_view.mm",
+  ]
+  deps = [
+    ":views_constants",
+    "//base",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("views_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "views_constants.h",
+    "views_constants.mm",
+  ]
+}

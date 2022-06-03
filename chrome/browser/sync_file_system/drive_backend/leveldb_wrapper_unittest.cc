@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -82,7 +83,7 @@ class LevelDBWrapperTest : public testing::Test {
         options, database_dir_.GetPath().AsUTF8Unsafe(), &db);
     ASSERT_TRUE(status.ok());
 
-    db_.reset(new LevelDBWrapper(std::move(db)));
+    db_ = std::make_unique<LevelDBWrapper>(std::move(db));
   }
 
   base::ScopedTempDir database_dir_;

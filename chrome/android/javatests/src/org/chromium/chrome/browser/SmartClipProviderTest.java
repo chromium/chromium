@@ -13,9 +13,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.test.filters.MediumTest;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -27,11 +28,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -52,8 +55,7 @@ public class SmartClipProviderTest implements Handler.Callback {
     // interface.
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String MOUNTAIN = "Mountain";
 
@@ -193,7 +195,7 @@ public class SmartClipProviderTest implements Handler.Callback {
     @Test
     @MediumTest
     @Feature({"SmartClip"})
-    @RetryOnFailure
+    @FlakyTest(message = "https://crbug.com/1197578")
     public void testSmartClipDataCallback() throws TimeoutException {
         final float dpi = Coordinates.createFor(mWebContents).getDeviceScaleFactor();
         final Rect bounds = DOMUtils.getNodeBounds(mWebContents, "simple_text");
@@ -225,7 +227,6 @@ public class SmartClipProviderTest implements Handler.Callback {
     @Test
     @MediumTest
     @Feature({"SmartClip"})
-    @RetryOnFailure
     public void testSmartClipNoHandlerDoesntCrash() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Object scp = findSmartClipProvider(

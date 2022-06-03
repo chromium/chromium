@@ -4,7 +4,6 @@
 
 #include "chrome/installer/setup/user_experiment.h"
 
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/common/chrome_version.h"
@@ -20,6 +19,10 @@
 namespace installer {
 
 class UserExperimentTest : public ::testing::TestWithParam<bool> {
+ public:
+  UserExperimentTest(const UserExperimentTest&) = delete;
+  UserExperimentTest& operator=(const UserExperimentTest&) = delete;
+
  protected:
   UserExperimentTest()
       : system_level_(GetParam()),
@@ -36,17 +39,16 @@ class UserExperimentTest : public ::testing::TestWithParam<bool> {
               ERROR_SUCCESS);
   }
 
-  void SetProductVersion(const base::char16* version) {
+  void SetProductVersion(const wchar_t* version) {
     SetClientsValue(google_update::kRegVersionField, version);
   }
 
-  void SetOldProductVersion(const base::char16* version) {
+  void SetOldProductVersion(const wchar_t* version) {
     SetClientsValue(google_update::kRegOldVersionField, version);
   }
 
  private:
-  void SetClientsValue(const base::char16* value_name,
-                       const base::char16* value_data) {
+  void SetClientsValue(const wchar_t* value_name, const wchar_t* value_data) {
     base::win::RegKey key(
         root_,
         install_static::GetClientsKeyPath(install_static::GetAppGuid()).c_str(),
@@ -59,7 +61,6 @@ class UserExperimentTest : public ::testing::TestWithParam<bool> {
   const HKEY root_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   install_static::ScopedInstallDetails install_details_;
-  DISALLOW_COPY_AND_ASSIGN(UserExperimentTest);
 };
 
 TEST_P(UserExperimentTest, WriteInitialStateNoData) {
@@ -173,7 +174,7 @@ TEST_P(UserExperimentTest, IsUpdateRenamePendingNo) {
 // An update is pending if an old version needs to be restarted to be the
 // current.
 TEST_P(UserExperimentTest, IsUpdateRenamePendingYes) {
-  static constexpr base::char16 kSillyOldVersion[] = L"47.0.1.0";
+  static constexpr wchar_t kSillyOldVersion[] = L"47.0.1.0";
   ASSERT_STRNE(kSillyOldVersion, TEXT(CHROME_VERSION_STRING));
 
   ASSERT_NO_FATAL_FAILURE(SetProductVersion(TEXT(CHROME_VERSION_STRING)));

@@ -1,0 +1,11 @@
+Verifies that we can successfully retrieve the security isolation status of a dedicated worker.
+Worker started successfully: true
+Connected to worker target
+COEP status
+{
+    reportOnlyValue : None
+    value : RequireCorp
+}
+COOP status
+undefined
+

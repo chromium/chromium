@@ -6,10 +6,11 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key_result.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -32,7 +33,7 @@ void RecordChallengeKeyResult(
                                 result_code);
 }
 
-// Checks if |url| matches one of the |patterns|.
+// Checks if `url` matches one of the `patterns`.
 bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
                                               const base::ListValue* patterns) {
   if (!patterns) {
@@ -43,12 +44,12 @@ bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
     return false;
   }
 
-  if (patterns->GetSize() >= kPatternsSizeWarningLevel) {
-    LOG(WARNING) << "Allowed urls list size is " << patterns->GetSize()
+  if (patterns->GetList().size() >= kPatternsSizeWarningLevel) {
+    LOG(WARNING) << "Allowed urls list size is " << patterns->GetList().size()
                  << ". Check may be slow.";
   }
 
-  for (const base::Value& cur_pattern : *patterns) {
+  for (const base::Value& cur_pattern : patterns->GetList()) {
     if (ContentSettingsPattern::FromString(cur_pattern.GetString())
             .Matches(url)) {
       return true;
@@ -83,7 +84,7 @@ void SamlChallengeKeyHandler::Run(Profile* profile,
     return;
   }
 
-  BuildResponseForWhitelistedUrl(url);
+  BuildResponseForAllowlistedUrl(url);
 }
 
 void SamlChallengeKeyHandler::SetTpmResponseTimeoutForTesting(
@@ -91,12 +92,11 @@ void SamlChallengeKeyHandler::SetTpmResponseTimeoutForTesting(
   tpm_response_timeout_for_testing_ = timeout;
 }
 
-void SamlChallengeKeyHandler::BuildResponseForWhitelistedUrl(const GURL& url) {
+void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
   CrosSettings* settings = CrosSettings::Get();
-  CrosSettingsProvider::TrustedStatus status =
-      settings->PrepareTrustedValues(base::BindRepeating(
-          &SamlChallengeKeyHandler::BuildResponseForWhitelistedUrl,
-          weak_factory_.GetWeakPtr(), url));
+  CrosSettingsProvider::TrustedStatus status = settings->PrepareTrustedValues(
+      base::BindOnce(&SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl,
+                     weak_factory_.GetWeakPtr(), url));
 
   const base::ListValue* patterns = nullptr;
   switch (status) {
@@ -132,7 +132,8 @@ void SamlChallengeKeyHandler::BuildChallengeResponse() {
       GetTpmResponseTimeout(), attestation::KEY_DEVICE, profile_,
       base::BindOnce(&SamlChallengeKeyHandler::ReturnResult,
                      weak_factory_.GetWeakPtr()),
-      decoded_challenge_, /*register_key=*/false, /*key_name_for_spkac=*/"");
+      decoded_challenge_, /*register_key=*/false, /*key_name_for_spkac=*/"",
+      /*signals=*/absl::nullopt);
 }
 
 base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {
@@ -152,7 +153,7 @@ void SamlChallengeKeyHandler::ReturnResult(
   }
 
   std::string encoded_result_data;
-  base::Base64Encode(result.data, &encoded_result_data);
+  base::Base64Encode(result.challenge_response, &encoded_result_data);
 
   js_result.SetKey(kSuccessField, base::Value(result.IsSuccess()));
   js_result.SetKey(kResponseField, base::Value(encoded_result_data));

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace extensions {
@@ -20,8 +19,10 @@ class PermissionsInfo;
 // selectively add features in different configurations.
 class ExtensionsAPIProvider {
  public:
-  ExtensionsAPIProvider() {}
-  virtual ~ExtensionsAPIProvider() {}
+  ExtensionsAPIProvider() = default;
+  ExtensionsAPIProvider(const ExtensionsAPIProvider&) = delete;
+  ExtensionsAPIProvider& operator=(const ExtensionsAPIProvider&) = delete;
+  virtual ~ExtensionsAPIProvider() = default;
 
   // Adds feature definitions to the given |provider| of the specified type.
   virtual void AddAPIFeatures(FeatureProvider* provider) = 0;
@@ -45,9 +46,6 @@ class ExtensionsAPIProvider {
 
   // Registers manifest handlers for any associated API features.
   virtual void RegisterManifestHandlers() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsAPIProvider);
 };
 
 }  // namespace extensions

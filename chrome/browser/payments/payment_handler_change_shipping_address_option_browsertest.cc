@@ -5,20 +5,9 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
-#include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/payments/payment_request_test_controller.h"
-#include "content/public/common/content_switches.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/re2/src/re2/re2.h"
-#include "url/gurl.h"
-
-#if defined(OS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace payments {
 namespace {
@@ -46,21 +35,6 @@ constexpr const char* kSuccessfulMerchantResponseExpectedOutput =
     "option\",\"selected\":true}],\"total\":{\"currency\":\"GBP\",\"value\":"
     "\"0.02\"}}";
 
-// Looks for the "supportedMethods" URL and removes its port number.
-std::string ClearPortNumber(const std::string& may_contain_method_url) {
-  std::string before;
-  std::string method;
-  std::string after;
-  GURL::Replacements port;
-  port.ClearPort();
-  return re2::RE2::FullMatch(
-             may_contain_method_url,
-             "(.*\"supportedMethods\":\")(https://.*)(\",\"total\".*)", &before,
-             &method, &after)
-             ? before + GURL(method).ReplaceComponents(port).spec() + after
-             : may_contain_method_url;
-}
-
 enum class ChangeType { kAddressChange, kOptionChange };
 
 struct TestCase {
@@ -79,63 +53,42 @@ struct TestCase {
 };
 
 class PaymentHandlerChangeShippingAddressOptionTest
-    : public PlatformBrowserTest,
+    : public PaymentRequestPlatformBrowserTestBase,
       public testing::WithParamInterface<TestCase> {
  protected:
-  PaymentHandlerChangeShippingAddressOptionTest() {}
-  ~PaymentHandlerChangeShippingAddressOptionTest() override {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-
-  content::WebContents* GetActiveWebContents() {
-    return chrome_test_utils::GetActiveWebContents(this);
-  }
+  PaymentHandlerChangeShippingAddressOptionTest() = default;
+  ~PaymentHandlerChangeShippingAddressOptionTest() override = default;
 
   void SetUpOnMainThread() override {
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->ServeFilesFromSourceDirectory(
-        "components/test/data/payments");
-    ASSERT_TRUE(https_server_->Start());
-    ASSERT_TRUE(content::NavigateToURL(
-        GetActiveWebContents(),
-        https_server_->GetURL("/change_shipping_address_option.html")));
-    test_controller_.SetUpOnMainThread();
-    PlatformBrowserTest::SetUpOnMainThread();
+    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
+    NavigateTo("/change_shipping_address_option.html");
   }
 
   std::string getTestType() {
     return GetParam().change_type == ChangeType::kOptionChange ? "option"
                                                                : "address";
   }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  PaymentRequestTestController test_controller_;
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerChangeShippingAddressOptionTest, Test) {
-  std::string actual_output;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetActiveWebContents(),
-      "install('change_shipping_" + getTestType() + "_app.js');",
-      &actual_output));
-  ASSERT_EQ(actual_output, "instruments.set(): Payment handler installed.");
+  EXPECT_EQ("instruments.set(): Payment handler installed.",
+            content::EvalJs(
+                GetActiveWebContents(),
+                "install('change_shipping_" + getTestType() + "_app.js');",
+                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                     GetParam().init_test_code));
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(), GetParam().init_test_code));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetActiveWebContents(),
-      "outputChangeShippingAddressOptionReturnValue(request);",
-      &actual_output));
+  std::string actual_output =
+      content::EvalJs(GetActiveWebContents(),
+                      "outputChangeShippingAddressOptionReturnValue(request);",
+                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString();
 
   // The test expectations are hard-coded, but the embedded test server changes
   // its port number in every test, e.g., https://a.com:34548.
-  ASSERT_EQ(ClearPortNumber(actual_output), GetParam().expected_output)
+  EXPECT_EQ(ClearPortNumber(actual_output), GetParam().expected_output)
       << "When executing " << GetParam().init_test_code;
 }
 

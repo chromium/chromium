@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/tray_constants.h"
 
-#include "base/logging.h"
 
 namespace ash {
 
@@ -13,9 +12,10 @@ const int kTrayTextFontSizeIncrease = 2;
 // Size of tray items on the primary axis.
 const int kTrayItemSize = 32;
 
-const int kTrayMenuWidth = 360;
+const float kTrayItemCornerRadius = kTrayItemSize / 2.f;
 
 const int kTrayPopupAutoCloseDelayInSeconds = 2;
+const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
 const int kTrayPopupPaddingHorizontal = 18;
 const int kTrayPopupButtonEndMargin = 10;
 const int kTrayPopupLabelHorizontalPadding = 4;

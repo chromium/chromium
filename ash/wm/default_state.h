@@ -7,7 +7,6 @@
 
 #include "ash/wm/base_state.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -21,7 +20,11 @@ enum class WindowStateType;
 // DefaultState implements Ash behavior without state machine.
 class DefaultState : public BaseState {
  public:
-  explicit DefaultState(WindowStateType initial_state_type);
+  explicit DefaultState(chromeos::WindowStateType initial_state_type);
+
+  DefaultState(const DefaultState&) = delete;
+  DefaultState& operator=(const DefaultState&) = delete;
+
   ~DefaultState() override;
 
   // WindowState::State overrides:
@@ -49,7 +52,7 @@ class DefaultState : public BaseState {
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode.
   void EnterToNextState(WindowState* window_state,
-                        WindowStateType next_state_type);
+                        chromeos::WindowStateType next_state_type);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
@@ -59,7 +62,16 @@ class DefaultState : public BaseState {
 
   // Animates to new window bounds based on the current and previous state type.
   void UpdateBoundsFromState(WindowState* window_state,
-                             WindowStateType old_state_type);
+                             chromeos::WindowStateType old_state_type);
+
+  // Updates the window bounds for display bounds, or display work area bounds
+  // changes.
+  // |ensure_full_window_visibility| - Whether the window bounds should be
+  //     adjusted so they fully fit within the display work area. If false, the
+  //     method will ensure minimum window visibility.
+  void UpdateBoundsForDisplayOrWorkAreaBoundsChange(
+      WindowState* window_state,
+      bool ensure_full_window_visibility);
 
   // The saved window state for the case that the state gets de-/activated.
   gfx::Rect stored_bounds_;
@@ -70,8 +82,6 @@ class DefaultState : public BaseState {
 
   // The window state only gets remembered for DCHECK reasons.
   WindowState* stored_window_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultState);
 };
 
 }  // namespace ash

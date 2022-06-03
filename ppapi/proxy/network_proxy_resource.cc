@@ -35,12 +35,10 @@ int32_t NetworkProxyResource::GetProxyForURL(
   if (!string_url)
     return PP_ERROR_BADARGUMENT;
   Call<PpapiPluginMsg_NetworkProxy_GetProxyForURLReply>(
-      BROWSER,
-      PpapiHostMsg_NetworkProxy_GetProxyForURL(string_url->value()),
-      base::Bind(&NetworkProxyResource::OnPluginMsgGetProxyForURLReply,
-                 base::Unretained(this),
-                 base::Unretained(proxy_string),
-                 callback));
+      BROWSER, PpapiHostMsg_NetworkProxy_GetProxyForURL(string_url->value()),
+      base::BindOnce(&NetworkProxyResource::OnPluginMsgGetProxyForURLReply,
+                     base::Unretained(this), base::Unretained(proxy_string),
+                     callback));
   return PP_OK_COMPLETIONPENDING;
 }
 

@@ -120,12 +120,17 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (!is_css_ && !is_xsl_)
     return false;
 
-  href = attrs.at("href");
-  charset = attrs.at("charset");
-  String alternate = attrs.at("alternate");
+  auto it_href = attrs.find("href");
+  href = it_href != attrs.end() ? it_href->value : "";
+  auto it_charset = attrs.find("charset");
+  charset = it_charset != attrs.end() ? it_charset->value : "";
+  auto it_alternate = attrs.find("alternate");
+  String alternate = it_alternate != attrs.end() ? it_alternate->value : "";
   alternate_ = alternate == "yes";
-  title_ = attrs.at("title");
-  media_ = attrs.at("media");
+  auto it_title = attrs.find("title");
+  title_ = it_title != attrs.end() ? it_title->value : "";
+  auto it_media = attrs.find("media");
+  media_ = it_media != attrs.end() ? it_media->value : "";
 
   return !alternate_ || !title_.IsEmpty();
 }
@@ -150,7 +155,7 @@ void ProcessingInstruction::Process(const String& href, const String& charset) {
   if (is_xsl_ && !RuntimeEnabledFeatures::XSLTEnabled())
     return;
 
-  ResourceLoaderOptions options;
+  ResourceLoaderOptions options(GetExecutionContext()->GetCurrentWorld());
   options.initiator_info.name =
       fetch_initiator_type_names::kProcessinginstruction;
   FetchParameters params(ResourceRequest(GetDocument().CompleteURL(href)),
@@ -198,15 +203,19 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
   if (is_xsl_) {
     sheet_ = MakeGarbageCollected<XSLStyleSheet>(
         this, resource->Url(), resource->GetResponse().ResponseUrl(), false);
-    ToXSLStyleSheet(sheet_.Get())
-        ->ParseString(ToXSLStyleSheetResource(resource)->Sheet());
+    To<XSLStyleSheet>(sheet_.Get())
+        ->ParseString(To<XSLStyleSheetResource>(resource)->Sheet());
   } else {
     DCHECK(is_css_);
-    CSSStyleSheetResource* style_resource = ToCSSStyleSheetResource(resource);
+    auto* style_resource = To<CSSStyleSheetResource>(resource);
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         GetDocument(), style_resource->GetResponse().ResponseUrl(),
         style_resource->GetResponse().IsCorsSameOrigin(),
-        style_resource->GetReferrerPolicy(), style_resource->Encoding());
+        Referrer(style_resource->GetResponse().ResponseUrl(),
+                 style_resource->GetReferrerPolicy()),
+        style_resource->Encoding());
+    if (style_resource->GetResourceRequest().IsAdResource())
+      parser_context->SetIsAdRelated();
 
     auto* new_sheet = MakeGarbageCollected<StyleSheetContents>(
         parser_context, style_resource->Url());
@@ -218,7 +227,8 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
       GetDocument().GetStyleEngine().SetPreferredStylesheetSetNameIfNotSet(
           title_);
     }
-    css_sheet->SetMediaQueries(MediaQuerySet::Create(media_));
+    css_sheet->SetMediaQueries(
+        MediaQuerySet::Create(media_, GetExecutionContext()));
     sheet_ = css_sheet;
     // We don't need the cross-origin security check here because we are
     // getting the sheet text in "strict" mode. This enforces a valid CSS MIME
@@ -233,7 +243,7 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
   if (is_css_)
     To<CSSStyleSheet>(sheet_.Get())->Contents()->CheckLoaded();
   else if (is_xsl_)
-    ToXSLStyleSheet(sheet_.Get())->CheckLoaded();
+    To<XSLStyleSheet>(sheet_.Get())->CheckLoaded();
 }
 
 Node::InsertionNotificationRequest ProcessingInstruction::InsertedInto(
@@ -283,11 +293,13 @@ void ProcessingInstruction::ClearSheet() {
 }
 
 void ProcessingInstruction::RemovePendingSheet() {
+  if (is_xsl_)
+    return;
   GetDocument().GetStyleEngine().RemovePendingSheet(*this,
                                                     style_engine_context_);
 }
 
-void ProcessingInstruction::Trace(Visitor* visitor) {
+void ProcessingInstruction::Trace(Visitor* visitor) const {
   visitor->Trace(sheet_);
   visitor->Trace(listener_for_xslt_);
   CharacterData::Trace(visitor);

@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "content/browser/indexed_db/indexed_db_blob_info.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -23,28 +23,29 @@ struct CONTENT_EXPORT IndexedDBValue {
 
   IndexedDBValue();
   IndexedDBValue(const std::string& input_bits,
-                 const std::vector<IndexedDBBlobInfo>& input_blob_info);
+                 const std::vector<IndexedDBExternalObject>& external_objects);
   IndexedDBValue(const IndexedDBValue& other);
   ~IndexedDBValue();
   IndexedDBValue& operator=(const IndexedDBValue& other);
 
   void swap(IndexedDBValue& value) {
     bits.swap(value.bits);
-    blob_info.swap(value.blob_info);
+    external_objects.swap(value.external_objects);
   }
 
   bool empty() const { return bits.empty(); }
   void clear() {
     bits.clear();
-    blob_info.clear();
+    external_objects.clear();
   }
 
   size_t SizeEstimate() const {
-    return bits.size() + blob_info.size() * sizeof(IndexedDBBlobInfo);
+    return bits.size() +
+           external_objects.size() * sizeof(IndexedDBExternalObject);
   }
 
   std::string bits;
-  std::vector<IndexedDBBlobInfo> blob_info;
+  std::vector<IndexedDBExternalObject> external_objects;
 };
 
 }  // namespace content

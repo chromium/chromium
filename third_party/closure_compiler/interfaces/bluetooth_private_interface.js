@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,74 +7,95 @@
 
 /** @fileoverview Interface for bluetoothPrivate that can be overriden. */
 
-assertNotReached('Interface file for Closure Compiler should not be executed.');
-
 /** @interface */
 function BluetoothPrivate() {}
 
 BluetoothPrivate.prototype = {
   /**
    * Changes the state of the Bluetooth adapter.
-   * @param {!chrome.bluetoothPrivate.NewAdapterState} adapterState
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-setAdapterState
+   * @param {!chrome.bluetoothPrivate.NewAdapterState} adapterState The new
+   *     state of the adapter.
+   * @param {function(): void=} callback Called when all the state changes have
+   *     been completed.
    */
-  setAdapterState: assertNotReached,
+  setAdapterState: function(adapterState, callback) {},
 
   /**
    * @param {!chrome.bluetoothPrivate.SetPairingResponseOptions} options
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-setPairingResponse
+   * @param {function(): void=} callback
    */
-  setPairingResponse: assertNotReached,
+  setPairingResponse: function(options, callback) {},
 
   /**
    * Tears down all connections to the given device.
    * @param {string} deviceAddress
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-disconnectAll
+   * @param {function(): void=} callback
    */
-  disconnectAll: assertNotReached,
+  disconnectAll: function(deviceAddress, callback) {},
 
   /**
    * Forgets the given device.
    * @param {string} deviceAddress
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-forgetDevice
+   * @param {function(): void=} callback
    */
-  forgetDevice: assertNotReached,
+  forgetDevice: function(deviceAddress, callback) {},
 
   /**
    * Set or clear discovery filter.
    * @param {!chrome.bluetoothPrivate.DiscoveryFilter} discoveryFilter
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-setDiscoveryFilter
+   * @param {function(): void=} callback
    */
-  setDiscoveryFilter: assertNotReached,
+  setDiscoveryFilter: function(discoveryFilter, callback) {},
 
   /**
    * Connects to the given device. This will only throw an error if the device
    * address is invalid or the device is already connected. Otherwise this will
    * succeed and invoke |callback| with ConnectResultType.
    * @param {string} deviceAddress
-   * @param {function(!chrome.bluetoothPrivate.ConnectResultType):void=}
+   * @param {function(!chrome.bluetoothPrivate.ConnectResultType): void=}
    *     callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-connect
    */
-  connect: assertNotReached,
+  connect: function(deviceAddress, callback) {},
 
   /**
    * Pairs the given device.
    * @param {string} deviceAddress
-   * @param {function():void=} callback
-   * @see https://developer.chrome.com/extensions/bluetoothPrivate#method-pair
+   * @param {function(): void=} callback
    */
-  pair: assertNotReached,
+  pair: function(deviceAddress, callback) {},
+
+  /**
+   * Record that a pairing attempt finished. Ignores cancellations.
+   * @param {!chrome.bluetoothPrivate.TransportType} transport
+   * @param {number} pairingDurationMs
+   * @param {!chrome.bluetoothPrivate.ConnectResultType=} result
+   */
+  recordPairing: function(transport, pairingDurationMs, result) {},
+
+  /**
+   * Record that a user-initiated reconnection attempt to an already paired
+   * device finished. Ignores cancellations.
+   * @param {!chrome.bluetoothPrivate.ConnectResultType=} result
+   */
+  recordReconnection: function(result) {},
+
+  /**
+   * Record that a user selected a device to connect to.
+   * @param {number} selectionDurationMs
+   * @param {boolean} wasPaired
+   * @param {!chrome.bluetoothPrivate.TransportType} transport
+   */
+  recordDeviceSelection: function(selectionDurationMs, wasPaired, transport) {},
 };
 
 /**
  * Fired when a pairing event occurs.
  * @type {!ChromeEvent}
- * @see https://developer.chrome.com/extensions/bluetoothPrivate#event-onPairing
  */
 BluetoothPrivate.prototype.onPairing;
+
+/**
+ * Fired when a Bluetooth device changed its address.
+ * @type {!ChromeEvent}
+ */
+BluetoothPrivate.prototype.onDeviceAddressChanged;

@@ -5,9 +5,8 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 #include <string>
-#include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +22,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_SUPERVISED_USER,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
     AccessPoint::ACCESS_POINT_EXTENSIONS,
-    AccessPoint::ACCESS_POINT_APPS_PAGE_LINK,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
@@ -50,7 +48,6 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_MENU,
     AccessPoint::ACCESS_POINT_SETTINGS,
     AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-    AccessPoint::ACCESS_POINT_APPS_PAGE_LINK,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
@@ -97,8 +94,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "ExtensionInstallBubble";
       case AccessPoint::ACCESS_POINT_EXTENSIONS:
         return "Extensions";
-      case AccessPoint::ACCESS_POINT_APPS_PAGE_LINK:
-        return "AppsPageLink";
       case AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
         return "BookmarkBubble";
       case AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
@@ -143,6 +138,14 @@ class SigninMetricsTest : public ::testing::Test {
         return "ForcedSignin";
       case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
         return "AccountRenamed";
+      case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+        return "WebSignIn";
+      case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+        return "SafetyCheck";
+      case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+        return "Kaleidoscope";
+      case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+        return "EnterpriseSignoutResignSheet";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

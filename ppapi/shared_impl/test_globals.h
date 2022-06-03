@@ -59,6 +59,10 @@ class TestGlobals : public PpapiGlobals {
  public:
   TestGlobals();
   explicit TestGlobals(PpapiGlobals::PerThreadForTest);
+
+  TestGlobals(const TestGlobals&) = delete;
+  TestGlobals& operator=(const TestGlobals&) = delete;
+
   ~TestGlobals() override;
 
   // PpapiGlobals implementation.
@@ -69,8 +73,6 @@ class TestGlobals : public PpapiGlobals {
   thunk::ResourceCreationAPI* GetResourceCreationAPI(
       PP_Instance instance) override;
   PP_Module GetModuleForInstance(PP_Instance instance) override;
-  std::string GetCmdLine() override;
-  void PreCacheFontForFlash(const void* logfontw) override;
   void LogWithSource(PP_Instance instance,
                      PP_LogLevel level,
                      const std::string& source,
@@ -89,8 +91,6 @@ class TestGlobals : public PpapiGlobals {
   ResourceTracker resource_tracker_;
   TestVarTracker var_tracker_;
   scoped_refptr<CallbackTracker> callback_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGlobals);
 };
 
 }  // namespace ppapi

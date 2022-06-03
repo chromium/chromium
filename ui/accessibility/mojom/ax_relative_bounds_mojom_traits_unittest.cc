@@ -20,7 +20,7 @@ TEST(AXRelativeBoundsMojomTraitsTest, RoundTrip) {
 
   ui::AXRelativeBounds output;
   EXPECT_TRUE(
-      SerializeAndDeserialize<ax::mojom::AXRelativeBounds>(&input, &output));
+      SerializeAndDeserialize<ax::mojom::AXRelativeBounds>(input, output));
   EXPECT_EQ(111, output.offset_container_id);
   EXPECT_EQ(1, output.bounds.x());
   EXPECT_EQ(2, output.bounds.y());

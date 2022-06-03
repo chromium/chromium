@@ -8,14 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -36,13 +36,13 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/ipc/service/image_transport_surface.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -61,7 +61,7 @@ namespace gpu {
 
 GLES2CommandBufferStub::GLES2CommandBufferStub(
     GpuChannel* channel,
-    const GPUCreateCommandBufferConfig& init_params,
+    const mojom::CreateCommandBufferParams& init_params,
     CommandBufferId command_buffer_id,
     SequenceId sequence_id,
     int32_t stream_id,
@@ -74,17 +74,18 @@ GLES2CommandBufferStub::GLES2CommandBufferStub(
                         route_id),
       gles2_decoder_(nullptr) {}
 
-GLES2CommandBufferStub::~GLES2CommandBufferStub() {}
+GLES2CommandBufferStub::~GLES2CommandBufferStub() = default;
 
 gpu::ContextResult GLES2CommandBufferStub::Initialize(
     CommandBufferStub* share_command_buffer_stub,
-    const GPUCreateCommandBufferConfig& init_params,
+    const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::Initialize");
   UpdateActiveUrl();
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
+  memory_tracker_ = CreateMemoryTracker();
 
   if (share_command_buffer_stub) {
     context_group_ =
@@ -107,7 +108,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->gpu_memory_buffer_factory();
     context_group_ = new gles2::ContextGroup(
         manager->gpu_preferences(), gles2::PassthroughCommandDecoderSupported(),
-        manager->mailbox_manager(), CreateMemoryTracker(init_params),
+        manager->mailbox_manager(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
         init_params.attribs.bind_generates_resource, channel_->image_manager(),
@@ -118,7 +119,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->shared_image_manager());
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
   // http://crbug.com/180463
@@ -128,10 +129,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   use_virtualized_gl_context_ |=
       context_group_->feature_info()->workarounds().use_virtualized_gl_contexts;
-
-  // MailboxManagerSync synchronization correctness currently depends on having
-  // only a single context. See crbug.com/510243 for details.
-  use_virtualized_gl_context_ |= manager->mailbox_manager()->UsesSync();
 
   bool offscreen = (surface_handle_ == kNullSurfaceHandle);
   gl::GLSurface* default_surface = manager->default_offscreen_surface();
@@ -261,7 +258,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   scoped_refptr<gl::GLContext> context;
   if (use_virtualized_gl_context_ && share_group_) {
-    context = share_group_->GetSharedContext(surface_.get());
+    context = share_group_->shared_context();
     if (context && (!context->MakeCurrent(surface_.get()) ||
                     context->CheckStickyGraphicsResetStatus() != GL_NO_ERROR)) {
       context = nullptr;
@@ -281,7 +278,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       // Ensure that context creation did not lose track of the intended share
       // group.
       DCHECK(context->share_group() == share_group_.get());
-      share_group_->SetSharedContext(surface_.get(), context.get());
+      share_group_->SetSharedContext(context.get());
 
       // This needs to be called against the real shared context, not the
       // virtual context created below.
@@ -402,10 +399,12 @@ void GLES2CommandBufferStub::DidCreateAcceleratedSurfaceChildWindow(
 #endif
 
 void GLES2CommandBufferStub::DidSwapBuffersComplete(
-    SwapBuffersCompleteParams params) {
+    SwapBuffersCompleteParams params,
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
   params.swap_response.swap_id = pending_swap_completed_params_.front().swap_id;
   pending_swap_completed_params_.pop_front();
-  Send(new GpuCommandBufferMsg_SwapBuffersCompleted(route_id_, params));
+  client().OnSwapBuffersCompleted(params);
 }
 
 const gles2::FeatureInfo* GLES2CommandBufferStub::GetFeatureInfo() const {
@@ -420,8 +419,7 @@ void GLES2CommandBufferStub::BufferPresented(
     const gfx::PresentationFeedback& feedback) {
   SwapBufferParams params = pending_presented_params_.front();
   pending_presented_params_.pop_front();
-  Send(new GpuCommandBufferMsg_BufferPresented(route_id_, params.swap_id,
-                                               feedback));
+  client().OnBufferPresented(params.swap_id, feedback);
 }
 
 viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
@@ -432,30 +430,13 @@ base::TimeDelta GLES2CommandBufferStub::GetGpuBlockedTimeSinceLastSwap() {
   return channel_->scheduler()->TakeTotalBlockingTime();
 }
 
-MemoryTracker* GLES2CommandBufferStub::GetMemoryTracker() const {
+MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
   return context_group_->memory_tracker();
 }
 
 void GLES2CommandBufferStub::OnGpuSwitched(
     gl::GpuPreference active_gpu_heuristic) {
-  Send(new GpuCommandBufferMsg_GpuSwitched(route_id_, active_gpu_heuristic));
-}
-
-bool GLES2CommandBufferStub::HandleMessage(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(GLES2CommandBufferStub, message)
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_TakeFrontBuffer, OnTakeFrontBuffer);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_ReturnFrontBuffer,
-                        OnReturnFrontBuffer);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateImage, OnCreateImage);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyImage, OnDestroyImage);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateGpuFenceFromHandle,
-                        OnCreateGpuFenceFromHandle)
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_GetGpuFenceHandle,
-                        OnGetGpuFenceHandle)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  client().OnGpuSwitched(active_gpu_heuristic);
 }
 
 void GLES2CommandBufferStub::OnTakeFrontBuffer(const Mailbox& mailbox) {
@@ -467,13 +448,16 @@ void GLES2CommandBufferStub::OnTakeFrontBuffer(const Mailbox& mailbox) {
 void GLES2CommandBufferStub::OnReturnFrontBuffer(const Mailbox& mailbox,
                                                  bool is_lost) {
   // No need to pull texture updates.
-  DCHECK(!context_group_->mailbox_manager()->UsesSync());
   gles2_decoder_->ReturnFrontBuffer(mailbox, is_lost);
 }
 
-void GLES2CommandBufferStub::OnCreateGpuFenceFromHandle(
+void GLES2CommandBufferStub::CreateGpuFenceFromHandle(
     uint32_t gpu_fence_id,
-    const gfx::GpuFenceHandle& handle) {
+    gfx::GpuFenceHandle handle) {
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
+
   if (!context_group_->feature_info()->feature_flags().chromium_gpu_fence) {
     DLOG(ERROR) << "CHROMIUM_gpu_fence unavailable";
     command_buffer_->SetParseError(error::kLostContext);
@@ -481,7 +465,7 @@ void GLES2CommandBufferStub::OnCreateGpuFenceFromHandle(
   }
 
   if (gles2_decoder_->GetGpuFenceManager()->CreateGpuFenceFromHandle(
-          gpu_fence_id, handle))
+          gpu_fence_id, std::move(handle)))
     return;
 
   // The insertion failed. This shouldn't happen, force context loss to avoid
@@ -490,7 +474,13 @@ void GLES2CommandBufferStub::OnCreateGpuFenceFromHandle(
   CheckContextLost();
 }
 
-void GLES2CommandBufferStub::OnGetGpuFenceHandle(uint32_t gpu_fence_id) {
+void GLES2CommandBufferStub::GetGpuFenceHandle(
+    uint32_t gpu_fence_id,
+    GetGpuFenceHandleCallback callback) {
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
+
   if (!context_group_->feature_info()->feature_flags().chromium_gpu_fence) {
     DLOG(ERROR) << "CHROMIUM_gpu_fence unavailable";
     command_buffer_->SetParseError(error::kLostContext);
@@ -502,7 +492,7 @@ void GLES2CommandBufferStub::OnGetGpuFenceHandle(uint32_t gpu_fence_id) {
   if (manager->IsValidGpuFence(gpu_fence_id)) {
     std::unique_ptr<gfx::GpuFence> gpu_fence =
         manager->GetGpuFence(gpu_fence_id);
-    handle = gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle());
+    handle = gpu_fence->GetGpuFenceHandle().Clone();
   } else {
     // Retrieval failed. This shouldn't happen, force context loss to avoid
     // inconsistent state.
@@ -510,17 +500,20 @@ void GLES2CommandBufferStub::OnGetGpuFenceHandle(uint32_t gpu_fence_id) {
     command_buffer_->SetParseError(error::kLostContext);
     CheckContextLost();
   }
-  Send(new GpuCommandBufferMsg_GetGpuFenceHandleComplete(route_id_,
-                                                         gpu_fence_id, handle));
+
+  std::move(callback).Run(std::move(handle));
 }
 
-void GLES2CommandBufferStub::OnCreateImage(
-    GpuCommandBufferMsg_CreateImage_Params params) {
+void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnCreateImage");
-  const int32_t id = params.id;
-  const gfx::Size& size = params.size;
-  const gfx::BufferFormat& format = params.format;
-  const uint64_t image_release_count = params.image_release_count;
+  const int32_t id = params->id;
+  const gfx::Size& size = params->size;
+  const gfx::BufferFormat& format = params->format;
+  const gfx::BufferPlane& plane = params->plane;
+  const uint64_t image_release_count = params->image_release_count;
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
 
   gles2::ImageManager* image_manager = channel_->image_manager();
   DCHECK(image_manager);
@@ -540,8 +533,15 @@ void GLES2CommandBufferStub::OnCreateImage(
     return;
   }
 
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
+               << gfx::BufferFormatToString(format);
+    return;
+  }
+
   scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params.gpu_memory_buffer), size, format, surface_handle_);
+      std::move(params->gpu_memory_buffer), size, format, plane,
+      surface_handle_);
   if (!image.get())
     return;
 
@@ -550,8 +550,11 @@ void GLES2CommandBufferStub::OnCreateImage(
     sync_point_client_state_->ReleaseFenceSync(image_release_count);
 }
 
-void GLES2CommandBufferStub::OnDestroyImage(int32_t id) {
+void GLES2CommandBufferStub::DestroyImage(int32_t id) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::OnDestroyImage");
+  ScopedContextOperation operation(*this);
+  if (!operation.is_context_current())
+    return;
 
   gles2::ImageManager* image_manager = channel_->image_manager();
   DCHECK(image_manager);

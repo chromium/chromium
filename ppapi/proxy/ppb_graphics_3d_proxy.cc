@@ -4,6 +4,8 @@
 
 #include "ppapi/proxy/ppb_graphics_3d_proxy.h"
 
+#include <memory>
+
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -64,9 +66,9 @@ bool Graphics3D::Init(gpu::gles2::GLES2Implementation* share_gles2,
   InstanceData* data = dispatcher->GetInstanceData(host_resource().instance());
   DCHECK(data);
 
-  command_buffer_.reset(new PpapiCommandBufferProxy(
+  command_buffer_ = std::make_unique<PpapiCommandBufferProxy>(
       host_resource(), &data->flush_info, dispatcher, capabilities,
-      std::move(shared_state), command_buffer_id));
+      std::move(shared_state), command_buffer_id);
 
   return CreateGLES2Impl(share_gles2);
 }

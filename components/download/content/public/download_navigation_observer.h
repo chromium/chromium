@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 #define COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,11 +17,13 @@ class DownloadNavigationObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<DownloadNavigationObserver> {
  public:
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   NavigationMonitor* navigation_monitor);
-
   DownloadNavigationObserver(content::WebContents* web_contents,
                              NavigationMonitor* navigation_monitor);
+
+  DownloadNavigationObserver(const DownloadNavigationObserver&) = delete;
+  DownloadNavigationObserver& operator=(const DownloadNavigationObserver&) =
+      delete;
+
   ~DownloadNavigationObserver() override;
 
  private:
@@ -39,8 +40,6 @@ class DownloadNavigationObserver
   NavigationMonitor* navigation_monitor_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadNavigationObserver);
 };
 
 }  // namespace download

@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 10: Uncaught TypeError: root.createShadowRoot is not a function
-

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

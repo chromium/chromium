@@ -18,11 +18,11 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -117,29 +117,29 @@ base::DictionaryValue* ReadPnaclManifest(const base::FilePath& unpack_path) {
 
 // Check that the component's manifest is for PNaCl, and check the
 // PNaCl manifest indicates this is the correct arch-specific package.
-bool CheckPnaclComponentManifest(const base::DictionaryValue& manifest,
+bool CheckPnaclComponentManifest(const base::Value& manifest,
                                  const base::DictionaryValue& pnacl_manifest) {
   // Make sure we have the right |manifest| file.
-  std::string name;
-  if (!manifest.GetStringASCII("name", &name)) {
+  const std::string* name = manifest.FindStringKey("name");
+  if (!name || !base::IsStringASCII(*name)) {
     LOG(WARNING) << "'name' field is missing from manifest!";
     return false;
   }
   // For the webstore, we've given different names to each of the
   // architecture specific packages (and test/QA vs not test/QA)
   // so only part of it is the same.
-  if (name.find(kPnaclManifestName) == std::string::npos) {
-    LOG(WARNING) << "'name' field in manifest is invalid (" << name
+  if (name->find(kPnaclManifestName) == std::string::npos) {
+    LOG(WARNING) << "'name' field in manifest is invalid (" << *name
                  << ") -- missing (" << kPnaclManifestName << ")";
     return false;
   }
 
-  std::string proposed_version;
-  if (!manifest.GetStringASCII("version", &proposed_version)) {
+  const std::string* proposed_version = manifest.FindStringKey("version");
+  if (!proposed_version || !base::IsStringASCII(*proposed_version)) {
     LOG(WARNING) << "'version' field is missing from manifest!";
     return false;
   }
-  base::Version version(proposed_version);
+  base::Version version(*proposed_version);
   if (!version.IsValid()) {
     LOG(WARNING) << "'version' field in manifest is invalid "
                  << version.GetString();
@@ -164,6 +164,11 @@ bool CheckPnaclComponentManifest(const base::DictionaryValue& manifest,
 class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   PnaclComponentInstallerPolicy();
+
+  PnaclComponentInstallerPolicy(const PnaclComponentInstallerPolicy&) = delete;
+  PnaclComponentInstallerPolicy& operator=(
+      const PnaclComponentInstallerPolicy&) = delete;
+
   ~PnaclComponentInstallerPolicy() override;
 
  private:
@@ -171,25 +176,22 @@ class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclComponentInstallerPolicy);
 };
 
-PnaclComponentInstallerPolicy::PnaclComponentInstallerPolicy() {}
-PnaclComponentInstallerPolicy::~PnaclComponentInstallerPolicy() {}
+PnaclComponentInstallerPolicy::PnaclComponentInstallerPolicy() = default;
+PnaclComponentInstallerPolicy::~PnaclComponentInstallerPolicy() = default;
 
 bool PnaclComponentInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates()
     const {
@@ -202,7 +204,7 @@ bool PnaclComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 PnaclComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -210,7 +212,7 @@ PnaclComponentInstallerPolicy::OnCustomInstall(
 void PnaclComponentInstallerPolicy::OnCustomUninstall() {}
 
 bool PnaclComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   std::unique_ptr<base::DictionaryValue> pnacl_manifest(
       ReadPnaclManifest(install_dir));
@@ -224,11 +226,10 @@ bool PnaclComponentInstallerPolicy::VerifyInstallation(
 void PnaclComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   CheckVersionCompatiblity(version);
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&OverrideDirPnaclComponent, install_dir));
 }
 
@@ -247,10 +248,6 @@ std::string PnaclComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 PnaclComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
-}
-
-std::vector<std::string> PnaclComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
 }
 
 }  // namespace

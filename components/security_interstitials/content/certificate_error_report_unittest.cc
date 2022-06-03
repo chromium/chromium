@@ -17,6 +17,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_time/network_time_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"
@@ -30,11 +31,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
-#include "base/test/scoped_feature_list.h"
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -90,10 +90,26 @@ std::string GetPEMEncodedChain() {
     ADD_FAILURE();
     return cert_data;
   }
-  for (const auto& cert : pem_certs) {
-    cert_data += cert;
+  for (const auto& pem_cert : pem_certs) {
+    cert_data += pem_cert;
   }
   return cert_data;
+}
+
+void VerifyDeserializedReportSystemInfo(
+    const chrome_browser_ssl::CertLoggerRequest& parsed) {
+  ASSERT_TRUE(parsed.has_chrome_version());
+  EXPECT_FALSE(parsed.chrome_version().empty());
+  ASSERT_TRUE(parsed.has_os_type());
+  EXPECT_FALSE(parsed.os_type().empty());
+  ASSERT_TRUE(parsed.has_os_version());
+  EXPECT_FALSE(parsed.os_version().empty());
+  ASSERT_TRUE(parsed.has_hardware_model_name());
+  // HardwareModelName() may return empty string on some platforms.
+  ASSERT_TRUE(parsed.has_os_architecture());
+  EXPECT_FALSE(parsed.os_architecture().empty());
+  ASSERT_TRUE(parsed.has_process_architecture());
+  EXPECT_FALSE(parsed.process_architecture().empty());
 }
 
 void VerifyErrorReportSerialization(
@@ -114,6 +130,8 @@ void VerifyErrorReportSerialization(
             deserialized_report.is_issued_by_known_root());
   EXPECT_THAT(deserialized_report.cert_error(),
               UnorderedElementsAreArray(cert_errors));
+
+  VerifyDeserializedReportSystemInfo(deserialized_report);
 }
 
 // Test that a serialized CertificateErrorReport can be deserialized as
@@ -216,7 +234,7 @@ TEST(ErrorReportTest, NetworkTimeQueryingFeatureInfo) {
 
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
-  field_trial_test->SetNetworkQueriesWithVariationsService(
+  field_trial_test->SetFeatureParams(
       true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
 
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
@@ -287,7 +305,7 @@ TEST(ErrorReportTest, TestChromeChannelIncluded) {
   }
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the SetIsEnterpriseManaged() function populates
 // is_enterprise_managed correctly on Windows, and that value is correctly
 // extracted from the parsed report.
@@ -344,23 +362,23 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   net::CertVerifyResult trial_result;
   trial_result.verified_cert = chain2;
 
-  network::mojom::CertVerifierDebugInfoPtr debug_info =
-      network::mojom::CertVerifierDebugInfo::New();
-#if defined(OS_MACOSX)
+  cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info =
+      cert_verifier::mojom::CertVerifierDebugInfo::New();
+#if defined(OS_APPLE)
   debug_info->mac_platform_debug_info =
-      network::mojom::MacPlatformVerifierDebugInfo::New();
+      cert_verifier::mojom::MacPlatformVerifierDebugInfo::New();
   debug_info->mac_platform_debug_info->trust_result = 1;
   debug_info->mac_platform_debug_info->result_code = 20;
-  network::mojom::MacCertEvidenceInfoPtr info =
-      network::mojom::MacCertEvidenceInfo::New();
+  cert_verifier::mojom::MacCertEvidenceInfoPtr info =
+      cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 30;
   info->status_codes = {40, 41};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
-  info = network::mojom::MacCertEvidenceInfo::New();
+  info = cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 50;
   info->status_codes = {};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
-  info = network::mojom::MacCertEvidenceInfo::New();
+  info = cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 70;
   info->status_codes = {80, 81, 82};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
@@ -368,14 +386,24 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_combined_trust_debug_info =
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION |
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
+  debug_info->mac_trust_impl =
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kLruCache;
+#endif
+#if defined(OS_WIN)
+  debug_info->win_platform_debug_info =
+      cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
+  debug_info->win_platform_debug_info->authroot_this_update =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8675309));
+  debug_info->win_platform_debug_info->authroot_sequence_number = {
+      'J', 'E', 'N', 'N', 'Y'};
 #endif
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
   debug_info->trial_der_verification_time = "it's just a string";
 
   CertificateErrorReport report("example.com", *unverified_cert, false, false,
-                                false, false, primary_result, trial_result,
-                                std::move(debug_info));
+                                false, false, "ocsp", "sct", primary_result,
+                                trial_result, std::move(debug_info));
   std::string serialized_report;
   ASSERT_TRUE(report.Serialize(&serialized_report));
   chrome_browser_ssl::CertLoggerRequest parsed;
@@ -384,8 +412,14 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   ASSERT_TRUE(parsed.features_info().has_trial_verification_info());
   const chrome_browser_ssl::TrialVerificationInfo& trial_info =
       parsed.features_info().trial_verification_info();
+  ASSERT_TRUE(trial_info.has_stapled_ocsp());
+  EXPECT_EQ("ocsp", trial_info.stapled_ocsp());
+  ASSERT_TRUE(trial_info.has_sct_list());
+  EXPECT_EQ("sct", trial_info.sct_list());
 
-#if defined(OS_MACOSX)
+  VerifyDeserializedReportSystemInfo(parsed);
+
+#if defined(OS_APPLE)
   ASSERT_TRUE(trial_info.has_mac_platform_debug_info());
   EXPECT_EQ(1U, trial_info.mac_platform_debug_info().trust_result());
   EXPECT_EQ(20, trial_info.mac_platform_debug_info().result_code());
@@ -423,9 +457,26 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::
                 MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT,
             trial_info.mac_combined_trust_debug_info()[1]);
+  EXPECT_TRUE(trial_info.has_mac_trust_impl());
+  EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE,
+            trial_info.mac_trust_impl());
 #else
+  EXPECT_FALSE(trial_info.has_mac_platform_debug_info());
   EXPECT_EQ(0, trial_info.mac_combined_trust_debug_info_size());
+  EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
+
+#if defined(OS_WIN)
+  ASSERT_TRUE(trial_info.has_win_platform_debug_info());
+  EXPECT_EQ(
+      8675309,
+      trial_info.win_platform_debug_info().authroot_this_update_time_usec());
+  EXPECT_EQ("JENNY",
+            trial_info.win_platform_debug_info().authroot_sequence_number());
+#else
+  EXPECT_FALSE(trial_info.has_win_platform_debug_info());
+#endif
+
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());
   EXPECT_EQ(time.ToDeltaSinceWindowsEpoch().InMicroseconds(),
             trial_info.trial_verification_time_usec());

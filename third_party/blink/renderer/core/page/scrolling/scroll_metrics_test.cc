@@ -42,8 +42,7 @@ class ScrollMetricsTest : public SimTest {
   void SetUpHtml(const char*);
   void Scroll(Element*, const WebGestureDevice);
   void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhases(
-        DocumentLifecycle::LifecycleUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 };
 
@@ -58,13 +57,13 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
   ScrollBeginEventBuilder(FloatPoint position,
                           FloatPoint delta,
                           WebGestureDevice device)
-      : WebGestureEvent(WebInputEvent::kGestureScrollBegin,
+      : WebGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         device) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
-    data.scroll_begin.delta_y_hint = delta.Y();
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
+    data.scroll_begin.delta_y_hint = delta.y();
     frame_scale_ = 1;
   }
 };
@@ -72,7 +71,7 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
 class ScrollUpdateEventBuilder : public WebGestureEvent {
  public:
   ScrollUpdateEventBuilder() : WebGestureEvent() {
-    type_ = WebInputEvent::kGestureScrollUpdate;
+    type_ = WebInputEvent::Type::kGestureScrollUpdate;
     data.scroll_update.delta_x = 0.0f;
     data.scroll_update.delta_y = 1.0f;
     data.scroll_update.velocity_x = 0;
@@ -84,19 +83,17 @@ class ScrollUpdateEventBuilder : public WebGestureEvent {
 class ScrollEndEventBuilder : public WebGestureEvent {
  public:
   ScrollEndEventBuilder() : WebGestureEvent() {
-    type_ = WebInputEvent::kGestureScrollEnd;
+    type_ = WebInputEvent::Type::kGestureScrollEnd;
     frame_scale_ = 1;
   }
 };
 
 int NonCompositedMainThreadScrollingReasonRecordTest::GetBucketIndex(
     uint32_t reason) {
-  int index = 1;
-  while (!(reason & 1)) {
-    reason >>= 1;
+  int index = 0;
+  while (reason >>= 1)
     ++index;
-  }
-  DCHECK_EQ(reason, 1u);
+  DCHECK_NE(index, 0);
   return index;
 }
 
@@ -118,7 +115,7 @@ void ScrollMetricsTest::Scroll(Element* element,
 }
 
 void ScrollMetricsTest::SetUpHtml(const char* html_content) {
-  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(html_content);
@@ -130,10 +127,9 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
-     .translucent { opacity: 0.5; }
      .spacer { height: 1000px; }
     </style>
-    <div id='box' class='translucent box'>
+    <div id='box' class='box'>
      <div class='spacer'></div>
     </div>
   )HTML");
@@ -145,19 +141,16 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
 
   // Test touch scroll.
   Scroll(box, WebGestureDevice::kTouchscreen);
-  EXPECT_TOUCH_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_TOUCH_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
+  EXPECT_TOUCH_BUCKET(kNotOpaqueForTextAndLCDText, 1);
 
   Scroll(box, WebGestureDevice::kTouchscreen);
-  EXPECT_TOUCH_BUCKET(kHasOpacityAndLCDText, 2);
-  EXPECT_TOUCH_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 2);
-  EXPECT_TOUCH_TOTAL(4);
+  EXPECT_TOUCH_BUCKET(kNotOpaqueForTextAndLCDText, 2);
+  EXPECT_TOUCH_TOTAL(2);
 
   // Test wheel scroll.
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 }
 
 TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
@@ -165,11 +158,10 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
-     .translucent { opacity: 0.5; }
      .composited { will-change: transform; }
      .spacer { height: 1000px; }
     </style>
-    <div id='box' class='translucent box'>
+    <div id='box' class='box'>
      <div class='spacer'></div>
     </div>
   )HTML");
@@ -182,30 +174,27 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   HistogramTester histogram_tester;
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 
-  box->setAttribute("class", "composited translucent box");
+  box->setAttribute("class", "composited transform box");
   UpdateAllLifecyclePhases();
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_FALSE(ToLayoutBox(box->GetLayoutObject())
+  EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
                    ->GetScrollableArea()
                    ->GetNonCompositedMainThreadScrollingReasons());
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 }
 
 TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
        NotScrollableAreaTest) {
   SetUpHtml(R"HTML(
     <style>.box { overflow:scroll; width: 100px; height: 100px; }
-     .translucent { opacity: 0.5; }
      .hidden { overflow: hidden; }
      .spacer { height: 1000px; }
     </style>
-    <div id='box' class='translucent box'>
+    <div id='box' class='box'>
      <div class='spacer'></div>
     </div>
   )HTML");
@@ -216,16 +205,14 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   HistogramTester histogram_tester;
 
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 
-  box->setAttribute("class", "hidden translucent box");
+  box->setAttribute("class", "hidden transform box");
   UpdateAllLifecyclePhases();
   Scroll(box, WebGestureDevice::kTouchpad);
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 }
 
 TEST_F(NonCompositedMainThreadScrollingReasonRecordTest, NestedScrollersTest) {
@@ -233,14 +220,14 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest, NestedScrollersTest) {
     <style>
      .container { overflow:scroll; width: 200px; height: 200px; }
      .box { overflow:scroll; width: 100px; height: 100px; }
-     .translucent { opacity: 0.5; }
-     .transform { transform: scale(0.8); }
+     /* to prevent the mock overlay scrollbar from affecting compositing. */
+     .box::-webkit-scrollbar { display: none; }
      .spacer { height: 1000px; }
      .composited { will-change: transform; }
     </style>
     <div id='container' class='container with-border-radius'>
-      <div class='translucent box'>
-        <div id='inner' class='composited transform box'>
+      <div class='box'>
+        <div id='inner' class='composited box'>
           <div class='spacer'></div>
         </div>
         <div class='spacer'></div>
@@ -260,11 +247,8 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest, NestedScrollersTest) {
   // Scrolling the inner box will gather reasons from the scrolling chain. The
   // inner box itself has no reason because it's composited. Other scrollable
   // areas from the chain have corresponding reasons.
-  EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kIsNotStackingContextAndLCDText, 1);
-  EXPECT_WHEEL_BUCKET(kHasTransformAndLCDText, 0);
-  EXPECT_WHEEL_TOTAL(3);
+  EXPECT_WHEEL_BUCKET(kNotOpaqueForTextAndLCDText, 1);
+  EXPECT_WHEEL_TOTAL(1);
 }
 
 }  // namespace

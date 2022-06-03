@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.base.annotations.CheckDiscard;
 
 import java.util.Locale;
 
@@ -82,15 +82,14 @@ public class Log {
         return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, tr, params);
     }
 
-    @RemovableInRelease
     private static boolean isDebug() {
-        // @RemovableInRelease causes this to return false in release builds.
+        // Proguard sets value to false in release builds.
         return true;
     }
 
     /**
-     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but alway
-     * In release: Always returns false (via @RemovableInRelease).
+     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but always
+     * In release: Always returns false (via proguard rule).
      */
     public static boolean isLoggable(String tag, int level) {
         // Early return helps optimizer eliminate calls to isLoggable().
@@ -103,10 +102,6 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#VERBOSE} log message.
      *
-     * For optimization purposes, only the fixed parameters versions are visible. If you need more
-     * than 7 parameters, consider building your log message using a function annotated with
-     * {@link RemovableInRelease}.
-     *
      * @param tag Used to identify the source of a log message. Might be modified in the output
      *            (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
@@ -114,8 +109,10 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @RemovableInRelease
+    @CheckDiscard("crbug.com/1231625")
     public static void v(String tag, String messageTemplate, Object... args) {
+        if (!isDebug()) return;
+
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
         if (tr != null) {
@@ -128,10 +125,6 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#DEBUG} log message.
      *
-     * For optimization purposes, only the fixed parameters versions are visible. If you need more
-     * than 7 parameters, consider building your log message using a function annotated with
-     * {@link RemovableInRelease}.
-     *
      * @param tag Used to identify the source of a log message. Might be modified in the output
      *            (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
@@ -139,8 +132,10 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @RemovableInRelease
+    @CheckDiscard("crbug.com/1231625")
     public static void d(String tag, String messageTemplate, Object... args) {
+        if (!isDebug()) return;
+
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
         if (tr != null) {
@@ -249,7 +244,7 @@ public class Log {
     }
 
     /** Returns a string form of the origin of the log call, to be used as secondary tag.*/
-    @RemovableInRelease
+    @CheckDiscard("crbug.com/1231625")
     private static String getCallOrigin() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
 

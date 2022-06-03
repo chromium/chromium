@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/video_decode_accelerator.h"
@@ -38,6 +37,10 @@ class PepperVideoDecoderHost;
 class VideoDecoderShim : public media::VideoDecodeAccelerator {
  public:
   VideoDecoderShim(PepperVideoDecoderHost* host, uint32_t texture_pool_size);
+
+  VideoDecoderShim(const VideoDecoderShim&) = delete;
+  VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
+
   ~VideoDecoderShim() override;
 
   // media::VideoDecodeAccelerator implementation.
@@ -61,7 +64,6 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   struct PendingDecode;
   struct PendingFrame;
   class DecoderImpl;
-  class YUVConverter;
 
   void OnInitializeFailed();
   void OnDecodeComplete(int32_t result, uint32_t decode_id);
@@ -84,9 +86,9 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   // The current decoded frame size.
   gfx::Size texture_size_;
-  // Map that takes the plugin's GL texture id to the renderer's GL texture id.
-  using TextureIdMap = std::unordered_map<uint32_t, uint32_t>;
-  TextureIdMap texture_id_map_;
+  // Map that takes the plugin's GL texture id to the renderer's mailbox.
+  using IdToMailboxMap = std::unordered_map<uint32_t, gpu::Mailbox>;
+  IdToMailboxMap texture_mailbox_map_;
   // Available textures (these are plugin ids.)
   using TextureIdSet = std::unordered_set<uint32_t>;
   TextureIdSet available_textures_;
@@ -106,11 +108,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   uint32_t num_pending_decodes_;
 
-  std::unique_ptr<YUVConverter> yuv_converter_;
-
   base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderShim);
 };
 
 }  // namespace content

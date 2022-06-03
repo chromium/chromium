@@ -11,9 +11,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::trace_event::MemoryDumpDeterminism;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -73,7 +73,7 @@ struct QueuedRequest {
 
     base::ProcessId process_id = base::kNullProcessId;
     mojom::ProcessType process_type = mojom::ProcessType::OTHER;
-    base::Optional<std::string> service_name;
+    absl::optional<std::string> service_name;
     std::unique_ptr<base::trace_event::ProcessMemoryDump> chrome_dump;
     OSMemDumpMap os_dumps;
   };
@@ -133,7 +133,7 @@ struct QueuedVmRegionRequest {
 
     base::ProcessId process_id = base::kNullProcessId;
     OSMemDumpMap os_dumps;
-    base::Optional<std::string> service_name;
+    absl::optional<std::string> service_name;
   };
 
   std::set<base::ProcessId> pending_responses;

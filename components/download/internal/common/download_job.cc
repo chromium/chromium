@@ -5,7 +5,7 @@
 #include "components/download/public/common/download_job.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_task_runner.h"
 
@@ -65,7 +65,7 @@ void DownloadJob::Start(DownloadFile* download_file_,
                               weak_ptr_factory_.GetWeakPtr(), callback),
           base::BindRepeating(&DownloadJob::CancelRequestWithOffset,
                               weak_ptr_factory_.GetWeakPtr()),
-          received_slices, IsParallelizable()));
+          received_slices));
 }
 
 void DownloadJob::OnDownloadFileInitialized(

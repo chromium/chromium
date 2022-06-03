@@ -8,7 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 union CALayerContent {
   uint32 ca_context_id;
-  handle io_surface_mach_port;
+  handle<platform> io_surface_mach_port;
 };
 
 // gfx::CALayerParams

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL registration of SVG types assert_throws: register of an SVG element requires the extends parameter function "function() {
-        document.registerElement('x-foo', {prototype: proto});
-    }" threw object "TypeError: document.registerElement is not a function" that is not a DOMException NOT_SUPPORTED_ERR: property "code" is equal to undefined, expected 9
-Harness: the test ran to completion.
-

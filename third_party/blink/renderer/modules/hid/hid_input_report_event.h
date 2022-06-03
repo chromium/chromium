@@ -29,7 +29,7 @@ class HIDInputReportEvent final : public Event {
 
   // Event:
   const AtomicString& InterfaceName() const override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<HIDDevice> device_;

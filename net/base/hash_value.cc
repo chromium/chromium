@@ -5,10 +5,13 @@
 #include "net/base/hash_value.h"
 
 #include <stdlib.h>
+
 #include <algorithm>
+#include <ostream>
 
 #include "base/base64.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
@@ -42,7 +45,7 @@ HashValue::HashValue(const SHA256HashValue& hash)
 
 bool HashValue::FromString(const base::StringPiece value) {
   base::StringPiece base64_str;
-  if (value.starts_with("sha256/")) {
+  if (base::StartsWith(value, "sha256/")) {
     tag_ = HASH_VALUE_SHA256;
     base64_str = value.substr(7);
   } else {

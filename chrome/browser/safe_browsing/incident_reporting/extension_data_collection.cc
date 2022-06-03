@@ -4,15 +4,15 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/extension_data_collection.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/stl_util.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,8 +43,8 @@ void PopulateExtensionInfo(
     extension_info->set_state(Info::STATE_ENABLED);
   else if (extension_registry.disabled_extensions().Contains(extension_id))
     extension_info->set_state(Info::STATE_DISABLED);
-  else if (extension_registry.blacklisted_extensions().Contains(extension_id))
-    extension_info->set_state(Info::STATE_BLACKLISTED);
+  else if (extension_registry.blocklisted_extensions().Contains(extension_id))
+    extension_info->set_state(Info::STATE_BLOCKLISTED);
   else if (extension_registry.blocked_extensions().Contains(extension_id))
     extension_info->set_state(Info::STATE_BLOCKED);
   else if (extension_registry.terminated_extensions().Contains(extension_id))
@@ -90,7 +90,8 @@ void PopulateExtensionInfo(
   if (serializer.Serialize(*extension.manifest()->value()))
     extension_info->mutable_manifest()->swap(manifest_json);
 
-  extension_info->set_manifest_location_type(extension.manifest()->location());
+  extension_info->set_manifest_location_type(
+      static_cast<int>(extension.manifest()->location()));
 }
 
 }  // namespace

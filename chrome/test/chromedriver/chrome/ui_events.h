@@ -5,10 +5,9 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_UI_EVENTS_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_UI_EVENTS_H_
 
-#include <list>
 #include <string>
+#include <vector>
 
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 // Specifies the type of the mouse event.
@@ -16,6 +15,7 @@ enum MouseEventType {
   kPressedMouseEventType = 0,
   kReleasedMouseEventType,
   kMovedMouseEventType,
+  kWheelMouseEventType,
   kPauseMouseEventType
 };
 
@@ -54,6 +54,13 @@ struct MouseEvent {
   int buttons;
   // |click_count| should not be negative.
   int click_count;
+  int delta_x;
+  int delta_y;
+  double force;
+  double tangentialPressure;
+  int tiltX;
+  int tiltY;
+  int twist;
   PointerType pointer_type;
 };
 
@@ -81,6 +88,10 @@ struct TouchEvent {
   double radiusY;
   double rotationAngle;
   double force;
+  double tangentialPressure;
+  int tiltX;
+  int tiltY;
+  int twist;
   int id;
   bool dispatch;
 };
@@ -126,6 +137,10 @@ struct KeyEvent {
 class KeyEventBuilder {
  public:
   KeyEventBuilder();
+
+  KeyEventBuilder(const KeyEventBuilder&) = delete;
+  KeyEventBuilder& operator=(const KeyEventBuilder&) = delete;
+
   virtual ~KeyEventBuilder();
 
   KeyEventBuilder* SetType(KeyEventType type);
@@ -139,14 +154,12 @@ class KeyEventBuilder {
   KeyEventBuilder* SetCode(const std::string& key);
   KeyEventBuilder* SetIsFromAction();
   KeyEvent Build();
-  void Generate(std::list<KeyEvent>* key_events);
+  void Generate(std::vector<KeyEvent>* key_events);
 
  private:
   void UpdateKeyString();
 
   KeyEvent key_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventBuilder);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_UI_EVENTS_H_

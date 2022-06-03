@@ -4,77 +4,85 @@
 
 #include "media/base/user_input_monitor.h"
 
-#include <stddef.h>
-#include <sys/select.h>
-#include <unistd.h>
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/files/file_descriptor_watcher_posix.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/single_thread_task_runner.h"
-#include "base/synchronization/lock.h"
-#include "media/base/keyboard_event_counter.h"
-#include "third_party/skia/include/core/SkPoint.h"
-#include "ui/events/keycodes/keyboard_code_conversion_x.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_types.h"
+#include "base/task/single_thread_task_runner.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_user_input_monitor.h"
 
 namespace media {
 namespace {
 
-// This is the actual implementation of event monitoring. It's separated from
-// UserInputMonitorLinux since it needs to be deleted on the IO thread.
-class UserInputMonitorLinuxCore
-    : public base::SupportsWeakPtr<UserInputMonitorLinuxCore>,
-      public base::MessageLoopCurrent::DestructionObserver {
+using WriteKeyPressCallback =
+    base::RepeatingCallback<void(const base::WritableSharedMemoryMapping& shmem,
+                                 uint32_t count)>;
+
+// Provides a unified interface for using user input monitors of unrelated
+// classes.
+// TODO(crbug.com/1096425): remove this when non-Ozone path is deprecated.
+class UserInputMonitorAdapter
+    : public base::SupportsWeakPtr<UserInputMonitorAdapter> {
  public:
-  explicit UserInputMonitorLinuxCore(
-      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
-  ~UserInputMonitorLinuxCore() override;
+  UserInputMonitorAdapter() = default;
+  UserInputMonitorAdapter(const UserInputMonitorAdapter&) = delete;
+  UserInputMonitorAdapter& operator=(const UserInputMonitorAdapter&) = delete;
+  virtual ~UserInputMonitorAdapter() = default;
 
-  // DestructionObserver overrides.
-  void WillDestroyCurrentMessageLoop() override;
+  virtual uint32_t GetKeyPressCount() const = 0;
+  virtual void StartMonitor(WriteKeyPressCallback callback) = 0;
+  virtual void StartMonitorWithMapping(
+      WriteKeyPressCallback callback,
+      base::WritableSharedMemoryMapping mapping) = 0;
+  virtual void StopMonitor() = 0;
+};
 
-  uint32_t GetKeyPressCount() const;
-  void StartMonitor();
-  void StartMonitorWithMapping(base::WritableSharedMemoryMapping mapping);
-  void StopMonitor();
+// Wraps a specific user input monitor into UserInputMonitorAdapter interface.
+template <typename Impl>
+class UserInputMonitorLinuxCore : public UserInputMonitorAdapter {
+ public:
+  explicit UserInputMonitorLinuxCore(std::unique_ptr<Impl> user_input_monitor)
+      : user_input_monitor_(std::move(user_input_monitor)) {}
+  UserInputMonitorLinuxCore(const UserInputMonitorLinuxCore&) = delete;
+  UserInputMonitorLinuxCore operator=(const UserInputMonitorLinuxCore&) =
+      delete;
+  ~UserInputMonitorLinuxCore() override = default;
+
+  uint32_t GetKeyPressCount() const override {
+    if (!user_input_monitor_)
+      return 0;
+    return user_input_monitor_->GetKeyPressCount();
+  }
+  void StartMonitor(WriteKeyPressCallback callback) override {
+    if (!user_input_monitor_)
+      return;
+    user_input_monitor_->StartMonitor(callback);
+  }
+  void StartMonitorWithMapping(
+      WriteKeyPressCallback callback,
+      base::WritableSharedMemoryMapping mapping) override {
+    if (!user_input_monitor_)
+      return;
+    user_input_monitor_->StartMonitorWithMapping(callback, std::move(mapping));
+  }
+  void StopMonitor() override {
+    if (!user_input_monitor_)
+      return;
+    user_input_monitor_->StopMonitor();
+  }
 
  private:
-  void OnXEvent();
-
-  // Processes key events.
-  void ProcessXEvent(xEvent* event);
-  static void ProcessReply(XPointer self, XRecordInterceptData* data);
-
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  // Used for sharing key press count value.
-  std::unique_ptr<base::WritableSharedMemoryMapping> key_press_count_mapping_;
-
-  //
-  // The following members should only be accessed on the IO thread.
-  //
-  std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
-  Display* x_control_display_;
-  Display* x_record_display_;
-  XRecordRange* x_record_range_;
-  XRecordContext x_record_context_;
-  KeyboardEventCounter counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorLinuxCore);
+  std::unique_ptr<Impl> user_input_monitor_;
 };
 
 class UserInputMonitorLinux : public UserInputMonitorBase {
  public:
   explicit UserInputMonitorLinux(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  UserInputMonitorLinux(const UserInputMonitorLinux&) = delete;
+  UserInputMonitorLinux& operator=(const UserInputMonitorLinux&) = delete;
+
   ~UserInputMonitorLinux() override;
 
   // Public UserInputMonitor overrides.
@@ -88,190 +96,14 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  UserInputMonitorLinuxCore* core_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorLinux);
+  UserInputMonitorAdapter* core_;
 };
 
-UserInputMonitorLinuxCore::UserInputMonitorLinuxCore(
-    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : io_task_runner_(io_task_runner),
-      x_control_display_(NULL),
-      x_record_display_(NULL),
-      x_record_range_(NULL),
-      x_record_context_(0) {}
-
-UserInputMonitorLinuxCore::~UserInputMonitorLinuxCore() {
-  DCHECK(!x_control_display_);
-  DCHECK(!x_record_display_);
-  DCHECK(!x_record_range_);
-  DCHECK(!x_record_context_);
-}
-
-void UserInputMonitorLinuxCore::WillDestroyCurrentMessageLoop() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  StopMonitor();
-}
-
-uint32_t UserInputMonitorLinuxCore::GetKeyPressCount() const {
-  return counter_.GetKeyPressCount();
-}
-
-void UserInputMonitorLinuxCore::StartMonitor() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  // TODO(jamiewalch): We should pass the display in. At that point, since
-  // XRecord needs a private connection to the X Server for its data channel
-  // and both channels are used from a separate thread, we'll need to duplicate
-  // them with something like the following:
-  //   XOpenDisplay(DisplayString(display));
-  if (!x_control_display_)
-    x_control_display_ = gfx::OpenNewXDisplay();
-
-  if (!x_record_display_)
-    x_record_display_ = gfx::OpenNewXDisplay();
-
-  if (!x_control_display_ || !x_record_display_) {
-    LOG(ERROR) << "Couldn't open X display";
-    StopMonitor();
-    return;
-  }
-
-  int xr_opcode, xr_event, xr_error;
-  if (!XQueryExtension(
-           x_control_display_, "RECORD", &xr_opcode, &xr_event, &xr_error)) {
-    LOG(ERROR) << "X Record extension not available.";
-    StopMonitor();
-    return;
-  }
-
-  if (!x_record_range_)
-    x_record_range_ = XRecordAllocRange();
-
-  if (!x_record_range_) {
-    LOG(ERROR) << "XRecordAllocRange failed.";
-    StopMonitor();
-    return;
-  }
-
-  x_record_range_->device_events.first = KeyPress;
-  x_record_range_->device_events.last = KeyRelease;
-
-  if (x_record_context_) {
-    XRecordDisableContext(x_control_display_, x_record_context_);
-    XFlush(x_control_display_);
-    XRecordFreeContext(x_record_display_, x_record_context_);
-    x_record_context_ = 0;
-  }
-  int number_of_ranges = 1;
-
-  XRecordClientSpec client_spec = XRecordAllClients;
-  x_record_context_ =
-      XRecordCreateContext(x_record_display_, 0, &client_spec, 1,
-                           &x_record_range_, number_of_ranges);
-  if (!x_record_context_) {
-    LOG(ERROR) << "XRecordCreateContext failed.";
-    StopMonitor();
-    return;
-  }
-
-  if (!XRecordEnableContextAsync(x_record_display_,
-                                 x_record_context_,
-                                 &UserInputMonitorLinuxCore::ProcessReply,
-                                 reinterpret_cast<XPointer>(this))) {
-    LOG(ERROR) << "XRecordEnableContextAsync failed.";
-    StopMonitor();
-    return;
-  }
-
-  // Register OnXEvent() to be called every time there is something to read
-  // from |x_record_display_|.
-  watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      ConnectionNumber(x_record_display_),
-      base::Bind(&UserInputMonitorLinuxCore::OnXEvent, base::Unretained(this)));
-
-  // Start observing message loop destruction if we start monitoring the first
-  // event.
-  base::MessageLoopCurrent::Get()->AddDestructionObserver(this);
-
-  // Fetch pending events if any.
-  OnXEvent();
-}
-
-void UserInputMonitorLinuxCore::StartMonitorWithMapping(
-    base::WritableSharedMemoryMapping mapping) {
-  StartMonitor();
-  key_press_count_mapping_ =
-      std::make_unique<base::WritableSharedMemoryMapping>(std::move(mapping));
-}
-
-void UserInputMonitorLinuxCore::StopMonitor() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  if (x_record_range_) {
-    XFree(x_record_range_);
-    x_record_range_ = NULL;
-  }
-
-  // Context must be disabled via the control channel because we can't send
-  // any X protocol traffic over the data channel while it's recording.
-  if (x_record_context_) {
-    XRecordDisableContext(x_control_display_, x_record_context_);
-    XFlush(x_control_display_);
-    XRecordFreeContext(x_record_display_, x_record_context_);
-    x_record_context_ = 0;
-
-    watch_controller_.reset();
-  }
-  if (x_record_display_) {
-    XCloseDisplay(x_record_display_);
-    x_record_display_ = NULL;
-  }
-  if (x_control_display_) {
-    XCloseDisplay(x_control_display_);
-    x_control_display_ = NULL;
-  }
-
-  key_press_count_mapping_.reset();
-
-  // Stop observing message loop destruction if no event is being monitored.
-  base::MessageLoopCurrent::Get()->RemoveDestructionObserver(this);
-}
-
-void UserInputMonitorLinuxCore::OnXEvent() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  XEvent event;
-  // Fetch pending events if any.
-  while (XPending(x_record_display_)) {
-    XNextEvent(x_record_display_, &event);
-  }
-}
-
-void UserInputMonitorLinuxCore::ProcessXEvent(xEvent* event) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(event->u.u.type == KeyRelease || event->u.u.type == KeyPress);
-
-  ui::EventType type =
-      (event->u.u.type == KeyPress) ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
-
-  KeySym key_sym =
-      XkbKeycodeToKeysym(x_control_display_, event->u.u.detail, 0, 0);
-  ui::KeyboardCode key_code = ui::KeyboardCodeFromXKeysym(key_sym);
-  counter_.OnKeyboardEvent(type, key_code);
-
-  // Update count value in shared memory.
-  if (key_press_count_mapping_)
-    WriteKeyPressMonitorCount(*key_press_count_mapping_, GetKeyPressCount());
-}
-
-// static
-void UserInputMonitorLinuxCore::ProcessReply(XPointer self,
-                                             XRecordInterceptData* data) {
-  if (data->category == XRecordFromServer) {
-    xEvent* event = reinterpret_cast<xEvent*>(data->data);
-    reinterpret_cast<UserInputMonitorLinuxCore*>(self)->ProcessXEvent(event);
-  }
-  XRecordFreeData(data);
+UserInputMonitorAdapter* CreateUserInputMonitor(
+    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner) {
+  return new UserInputMonitorLinuxCore<ui::PlatformUserInputMonitor>(
+      ui::OzonePlatform::GetInstance()->GetPlatformUserInputMonitor(
+          io_task_runner));
 }
 
 //
@@ -281,34 +113,44 @@ void UserInputMonitorLinuxCore::ProcessReply(XPointer self,
 UserInputMonitorLinux::UserInputMonitorLinux(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
     : io_task_runner_(io_task_runner),
-      core_(new UserInputMonitorLinuxCore(io_task_runner)) {}
+      core_(CreateUserInputMonitor(io_task_runner_)) {}
 
 UserInputMonitorLinux::~UserInputMonitorLinux() {
-  if (!io_task_runner_->DeleteSoon(FROM_HERE, core_))
+  if (core_ && !io_task_runner_->DeleteSoon(FROM_HERE, core_))
     delete core_;
 }
 
 uint32_t UserInputMonitorLinux::GetKeyPressCount() const {
+  if (!core_)
+    return 0;
   return core_->GetKeyPressCount();
 }
 
 void UserInputMonitorLinux::StartKeyboardMonitoring() {
+  if (!core_)
+    return;
   io_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UserInputMonitorLinuxCore::StartMonitor,
-                                core_->AsWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&UserInputMonitorAdapter::StartMonitor, core_->AsWeakPtr(),
+                     base::BindRepeating(&WriteKeyPressMonitorCount)));
 }
 
 void UserInputMonitorLinux::StartKeyboardMonitoring(
     base::WritableSharedMemoryMapping mapping) {
+  if (!core_)
+    return;
   io_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&UserInputMonitorLinuxCore::StartMonitorWithMapping,
-                     core_->AsWeakPtr(), std::move(mapping)));
+      base::BindOnce(
+          &UserInputMonitorAdapter::StartMonitorWithMapping, core_->AsWeakPtr(),
+          base::BindRepeating(&WriteKeyPressMonitorCount), std::move(mapping)));
 }
 
 void UserInputMonitorLinux::StopKeyboardMonitoring() {
+  if (!core_)
+    return;
   io_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UserInputMonitorLinuxCore::StopMonitor,
+      FROM_HERE, base::BindOnce(&UserInputMonitorAdapter::StopMonitor,
                                 core_->AsWeakPtr()));
 }
 

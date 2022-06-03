@@ -23,7 +23,6 @@
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/chrome/test/testing_application_context.h"
 #include "ios/web/public/test/web_task_environment.h"
-#include "net/log/test_net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -66,7 +65,6 @@ class BandwidthManagementTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  net::RecordingTestNetLog net_log_;
   IOSChromeScopedTestingLocalState local_state_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -82,8 +80,7 @@ TEST_F(BandwidthManagementTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
   NSString* expected_subtitle = [DataplanUsageTableViewController
       currentLabelForPreference:chrome_browser_state_->GetPrefs()
-                       basePref:prefs::kNetworkPredictionEnabled
-                       wifiPref:prefs::kNetworkPredictionWifiOnly];
+                    settingPref:prefs::kNetworkPredictionSetting];
   CheckTextCellTextAndDetailText(expected_title, expected_subtitle, 0, 0);
   EXPECT_NE(nil, [controller().tableViewModel footerForSection:0]);
 }

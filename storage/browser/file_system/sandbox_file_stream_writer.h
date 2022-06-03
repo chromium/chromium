@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
                           const FileSystemURL& url,
                           int64_t initial_offset,
                           const UpdateObserverList& observers);
+
+  SandboxFileStreamWriter(const SandboxFileStreamWriter&) = delete;
+  SandboxFileStreamWriter& operator=(const SandboxFileStreamWriter&) = delete;
+
   ~SandboxFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -47,23 +51,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
 
  private:
   // Performs quota calculation and calls file_writer_->Write().
+  // Will either return synchronously, or run asynchronously and call
+  // |write_callback_|.
   int WriteInternal(net::IOBuffer* buf, int buf_len);
 
   // Callbacks that are chained for the first write.  This eventually calls
   // WriteInternal.
-  void DidCreateSnapshotFile(
-      net::CompletionOnceCallback callback,
-      base::File::Error file_error,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      scoped_refptr<storage::ShareableFileReference> file_ref);
+  void DidCreateSnapshotFile(net::CompletionOnceCallback callback,
+                             base::File::Error file_error,
+                             const base::File::Info& file_info,
+                             const base::FilePath& platform_path,
+                             scoped_refptr<ShareableFileReference> file_ref);
   void DidGetUsageAndQuota(net::CompletionOnceCallback callback,
                            blink::mojom::QuotaStatusCode status,
                            int64_t usage,
                            int64_t quota);
   void DidInitializeForWrite(net::IOBuffer* buf, int buf_len, int init_status);
 
+  // Will call |write_callback_| if set, or return synchronously.
   void DidWrite(int write_response);
+
+  void DidFlush(net::CompletionOnceCallback callback, int result);
 
   // Stops the in-flight operation, calls |cancel_callback_| and returns true
   // if there's a pending cancel request.
@@ -87,8 +95,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
   int64_t default_quota_;
 
   base::WeakPtrFactory<SandboxFileStreamWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileStreamWriter);
 };
 
 }  // namespace storage

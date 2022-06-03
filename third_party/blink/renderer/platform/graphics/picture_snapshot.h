@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -61,6 +60,8 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
       const Vector<scoped_refptr<TilePictureStream>>&);
 
   PictureSnapshot(sk_sp<const SkPicture>);
+  PictureSnapshot(const PictureSnapshot&) = delete;
+  PictureSnapshot& operator=(const PictureSnapshot&) = delete;
 
   Vector<uint8_t> Replay(unsigned from_step = 0,
                          unsigned to_step = 0,
@@ -75,8 +76,6 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
   std::unique_ptr<SkBitmap> CreateBitmap() const;
 
   sk_sp<const SkPicture> picture_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureSnapshot);
 };
 
 }  // namespace blink

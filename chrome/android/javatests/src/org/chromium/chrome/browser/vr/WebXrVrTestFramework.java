@@ -22,16 +22,16 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class WebXrVrTestFramework extends WebXrTestFramework {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({CONSENT_DIALOG_ACTION_DO_NOTHING, CONSENT_DIALOG_ACTION_ALLOW,
-            CONSENT_DIALOG_ACTION_DENY})
-    public @interface ConsentDialogAction {}
+    @IntDef({PERMISSION_PROMPT_ACTION_DO_NOTHING, PERMISSION_PROMPT_ACTION_ALLOW,
+            PERMISSION_PROMPT_ACTION_DENY})
+    public @interface PermissionPromptAction {}
 
-    public static final int CONSENT_DIALOG_ACTION_DO_NOTHING = 0;
-    public static final int CONSENT_DIALOG_ACTION_ALLOW = 1;
-    public static final int CONSENT_DIALOG_ACTION_DENY = 2;
+    public static final int PERMISSION_PROMPT_ACTION_DO_NOTHING = 0;
+    public static final int PERMISSION_PROMPT_ACTION_ALLOW = 1;
+    public static final int PERMISSION_PROMPT_ACTION_DENY = 2;
 
-    @ConsentDialogAction
-    protected int mConsentDialogAction = CONSENT_DIALOG_ACTION_ALLOW;
+    @PermissionPromptAction
+    protected int mPermissionPromptAction = PERMISSION_PROMPT_ACTION_ALLOW;
 
     public WebXrVrTestFramework(ChromeActivityTestRule rule) {
         super(rule);
@@ -41,12 +41,12 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
     }
 
     /**
-     * Set the default action to be taken when the consent dialog is displayed.
+     * Set the default action to be taken when the permission prompt is displayed.
      *
-     * @param action The action to take on a consent dialog.
+     * @param action The action to take on a permission prompt.
      */
-    public void setConsentDialogAction(@ConsentDialogAction int action) {
-        mConsentDialogAction = action;
+    public void setPermissionPromptAction(@PermissionPromptAction int action) {
+        mPermissionPromptAction = action;
     }
 
     /**
@@ -66,12 +66,12 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
         }
         super.enterSessionWithUserGesture(webContents);
 
-        if (!shouldExpectConsentDialog()) return;
-        PermissionUtils.waitForConsentPrompt(getRule().getActivity());
-        if (mConsentDialogAction == CONSENT_DIALOG_ACTION_ALLOW) {
-            PermissionUtils.acceptConsentPrompt(getRule().getActivity());
-        } else if (mConsentDialogAction == CONSENT_DIALOG_ACTION_DENY) {
-            PermissionUtils.declineConsentPrompt(getRule().getActivity());
+        if (!shouldExpectPermissionPrompt()) return;
+        PermissionUtils.waitForPermissionPrompt();
+        if (mPermissionPromptAction == PERMISSION_PROMPT_ACTION_ALLOW) {
+            PermissionUtils.acceptPermissionPrompt();
+        } else if (mPermissionPromptAction == PERMISSION_PROMPT_ACTION_DENY) {
+            PermissionUtils.denyPermissionPrompt();
         }
     }
 
@@ -123,14 +123,15 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
     }
 
     /**
-     * Checks whether an immersive VR session would trigger the consent dialog.
+     * Checks whether an immersive VR session would trigger the permission prompt.
      *
      * @param webContents The WebContents to check in.
-     * @return True if an immersive VR session request would trigger the consent dialog, otherwise
+     * @return True if an immersive VR session request would trigger the permission prompt,
+     *         otherwise
      *     false.
      */
     @Override
-    public boolean shouldExpectConsentDialog(WebContents webContents) {
-        return shouldExpectConsentDialog("sessionTypeToRequest", webContents);
+    public boolean shouldExpectPermissionPrompt(WebContents webContents) {
+        return shouldExpectPermissionPrompt("sessionTypeToRequest", webContents);
     }
 }

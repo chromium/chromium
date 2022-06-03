@@ -41,21 +41,6 @@ function waitForVisualViewportOffset(x, y) {
   });
 }
 
-function waitForFakeMouseMoveSent() {
-  return new Promise(function(resolve, reject) {
-    function onFrame(frames) {
-      if (!internals.fakeMouseMovePending) {
-        resolve();
-      } else if (frames > 500) {
-        reject("fake mouse move timeout");
-      } else {
-        window.requestAnimationFrame(onFrame.bind(this, frames + 1));
-      }
-    }
-    onFrame(0);
-  });
-}
-
 promise_test(async () => {
   // Move mouse to hover the target
   await mouseMoveTo(TEST_X, TEST_Y);
@@ -67,7 +52,7 @@ promise_test(async () => {
   assert_approx_equals(window.visualViewport.scale, TEST_SCALE, EPSILON);
   assert_approx_equals(window.visualViewport.offsetLeft, 75, EPSILON);
   assert_approx_equals(window.visualViewport.offsetTop, 75, EPSILON);
-  await waitForFakeMouseMoveSent();
+  await waitForCompositorCommit();
   assert_equals(target.innerHTML, 'OVER', 'cursor over target after pinch zoom');
 
   // scroll visual viewport
@@ -77,7 +62,7 @@ promise_test(async () => {
   await waitForVisualViewportOffset(75, 175);
   assert_equals(window.scrollX, 0);
   assert_equals(window.scrollY, 0);
-  await waitForFakeMouseMoveSent();
+  await waitForCompositorCommit();
   assert_equals(target.innerHTML, 'OUT', 'cursor over target after scroll');
 }, 'Touchpad pinch and scroll sends boundary events');
 

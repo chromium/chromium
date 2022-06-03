@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
@@ -15,7 +16,7 @@ grit("locale_settings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/locale_settings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "locale_settings_{{source_name_part}}.pak" ])
 }
 
@@ -24,7 +25,7 @@ grit("platform_locale_settings") {
     source = "locale_settings_win.grd"
   } else if (is_mac) {
     source = "locale_settings_mac.grd"
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash || is_chromeos_lacros) {
     if (is_chrome_branded) {
       source = "locale_settings_google_chromeos.grd"
     } else {
@@ -38,7 +39,7 @@ grit("platform_locale_settings") {
   defines = chrome_grit_defines
   outputs = [ "grit/platform_locale_settings.h" ] +
             process_file_template(
-                locales_with_fake_bidi,
+                locales_with_pseudolocales,
                 [ "platform_locale_settings_{{source_name_part}}.pak" ])
   output_dir = "$root_gen_dir/chrome"
 }

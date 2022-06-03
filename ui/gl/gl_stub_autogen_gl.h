@@ -8,8 +8,8 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifndef UI_GL_GL_STUB_AUTOGEN_H_
-#define UI_GL_GL_STUB_AUTOGEN_H_
+#ifndef UI_GL_GL_STUB_AUTOGEN_GL_H_
+#define UI_GL_GL_STUB_AUTOGEN_GL_H_
 
 void glActiveShaderProgramFn(GLuint pipeline, GLuint program) override {}
 void glActiveTextureFn(GLenum texture) override {}
@@ -63,12 +63,22 @@ void glBlendColorFn(GLclampf red,
                     GLclampf blue,
                     GLclampf alpha) override {}
 void glBlendEquationFn(GLenum mode) override {}
+void glBlendEquationiOESFn(GLuint buf, GLenum mode) override {}
 void glBlendEquationSeparateFn(GLenum modeRGB, GLenum modeAlpha) override {}
+void glBlendEquationSeparateiOESFn(GLuint buf,
+                                   GLenum modeRGB,
+                                   GLenum modeAlpha) override {}
 void glBlendFuncFn(GLenum sfactor, GLenum dfactor) override {}
+void glBlendFunciOESFn(GLuint buf, GLenum sfactor, GLenum dfactor) override {}
 void glBlendFuncSeparateFn(GLenum srcRGB,
                            GLenum dstRGB,
                            GLenum srcAlpha,
                            GLenum dstAlpha) override {}
+void glBlendFuncSeparateiOESFn(GLuint buf,
+                               GLenum srcRGB,
+                               GLenum dstRGB,
+                               GLenum srcAlpha,
+                               GLenum dstAlpha) override {}
 void glBlitFramebufferFn(GLint srcX0,
                          GLint srcY0,
                          GLint srcX1,
@@ -135,6 +145,11 @@ void glColorMaskFn(GLboolean red,
                    GLboolean green,
                    GLboolean blue,
                    GLboolean alpha) override {}
+void glColorMaskiOESFn(GLuint buf,
+                       GLboolean red,
+                       GLboolean green,
+                       GLboolean blue,
+                       GLboolean alpha) override {}
 void glCompileShaderFn(GLuint shader) override {}
 void glCompressedTexImage2DFn(GLenum target,
                               GLint level,
@@ -311,6 +326,8 @@ void glDeleteFencesAPPLEFn(GLsizei n, const GLuint* fences) override {}
 void glDeleteFencesNVFn(GLsizei n, const GLuint* fences) override {}
 void glDeleteFramebuffersEXTFn(GLsizei n, const GLuint* framebuffers) override {
 }
+void glDeleteMemoryObjectsEXTFn(GLsizei n,
+                                const GLuint* memoryObjects) override {}
 void glDeletePathsNVFn(GLuint path, GLsizei range) override {}
 void glDeleteProgramFn(GLuint program) override {}
 void glDeleteProgramPipelinesFn(GLsizei n, const GLuint* pipelines) override {}
@@ -332,6 +349,7 @@ void glDepthRangefFn(GLclampf zNear, GLclampf zFar) override {}
 void glDetachShaderFn(GLuint program, GLuint shader) override {}
 void glDisableFn(GLenum cap) override {}
 void glDisableExtensionANGLEFn(const char* name) override {}
+void glDisableiOESFn(GLenum target, GLuint index) override {}
 void glDisableVertexAttribArrayFn(GLuint index) override {}
 void glDiscardFramebufferEXTFn(GLenum target,
                                GLsizei numAttachments,
@@ -384,6 +402,7 @@ void glEGLImageTargetRenderbufferStorageOESFn(GLenum target,
 void glEGLImageTargetTexture2DOESFn(GLenum target,
                                     GLeglImageOES image) override {}
 void glEnableFn(GLenum cap) override {}
+void glEnableiOESFn(GLenum target, GLuint index) override {}
 void glEnableVertexAttribArrayFn(GLuint index) override {}
 void glEndQueryFn(GLenum target) override {}
 void glEndTilingQCOMFn(GLbitfield preserveMask) override {}
@@ -888,9 +907,23 @@ void glImportMemoryFdEXTFn(GLuint memory,
                            GLuint64 size,
                            GLenum handleType,
                            GLint fd) override {}
+void glImportMemoryWin32HandleEXTFn(GLuint memory,
+                                    GLuint64 size,
+                                    GLenum handleType,
+                                    void* handle) override {}
+void glImportMemoryZirconHandleANGLEFn(GLuint memory,
+                                       GLuint64 size,
+                                       GLenum handleType,
+                                       GLuint handle) override {}
 void glImportSemaphoreFdEXTFn(GLuint semaphore,
                               GLenum handleType,
                               GLint fd) override {}
+void glImportSemaphoreWin32HandleEXTFn(GLuint semaphore,
+                                       GLenum handleType,
+                                       void* handle) override {}
+void glImportSemaphoreZirconHandleANGLEFn(GLuint semaphore,
+                                          GLenum handleType,
+                                          GLuint handle) override {}
 void glInsertEventMarkerEXTFn(GLsizei length, const char* marker) override {}
 void glInvalidateFramebufferFn(GLenum target,
                                GLsizei numAttachments,
@@ -905,6 +938,7 @@ void glInvalidateSubFramebufferFn(GLenum target,
 void glInvalidateTextureANGLEFn(GLenum target) override {}
 GLboolean glIsBufferFn(GLuint buffer) override;
 GLboolean glIsEnabledFn(GLenum cap) override;
+GLboolean glIsEnablediOESFn(GLenum target, GLuint index) override;
 GLboolean glIsFenceAPPLEFn(GLuint fence) override;
 GLboolean glIsFenceNVFn(GLuint fence) override;
 GLboolean glIsFramebufferEXTFn(GLuint framebuffer) override;
@@ -932,6 +966,9 @@ void glMatrixLoadIdentityEXTFn(GLenum matrixMode) override {}
 void glMaxShaderCompilerThreadsKHRFn(GLuint count) override {}
 void glMemoryBarrierByRegionFn(GLbitfield barriers) override {}
 void glMemoryBarrierEXTFn(GLbitfield barriers) override {}
+void glMemoryObjectParameterivEXTFn(GLuint memoryObject,
+                                    GLenum pname,
+                                    const GLint* param) override {}
 void glMinSampleShadingFn(GLfloat value) override {}
 void glMultiDrawArraysANGLEFn(GLenum mode,
                               const GLint* firsts,
@@ -975,6 +1012,7 @@ void glObjectLabelFn(GLenum identifier,
                      const char* label) override {}
 void glObjectPtrLabelFn(void* ptr, GLsizei length, const char* label) override {
 }
+void glPatchParameteriFn(GLenum pname, GLint value) override {}
 void glPathCommandsNVFn(GLuint path,
                         GLsizei numCommands,
                         const GLubyte* commands,
@@ -1425,6 +1463,15 @@ void glTexStorageMem2DEXTFn(GLenum target,
                             GLsizei height,
                             GLuint memory,
                             GLuint64 offset) override {}
+void glTexStorageMemFlags2DANGLEFn(GLenum target,
+                                   GLsizei levels,
+                                   GLenum internalFormat,
+                                   GLsizei width,
+                                   GLsizei height,
+                                   GLuint memory,
+                                   GLuint64 offset,
+                                   GLbitfield createFlags,
+                                   GLbitfield usageFlags) override {}
 void glTexSubImage2DFn(GLenum target,
                        GLint level,
                        GLint xoffset,
@@ -1617,4 +1664,4 @@ void glWindowRectanglesEXTFn(GLenum mode,
                              GLsizei n,
                              const GLint* box) override {}
 
-#endif  //  UI_GL_GL_STUB_AUTOGEN_H_
+#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_

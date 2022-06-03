@@ -12,13 +12,13 @@ if (window.testRunner) {
 testRunner.evaluateScriptInIsolatedWorld(1,
     'var query = window.matchMedia("(-webkit-min-device-pixel-ratio: 3)");'+
     'query.expando = "nyan";'+
-    'query.addListener(function (query) {'+
-    '    document.querySelector("#result").innerHTML = query.expando === "nyan" ? "PASS" : "FAIL";'+
+    'query.addListener(function (event) {'+
+    '    document.querySelector("#result").innerHTML = event.target.expando === "nyan" ? "PASS" : "FAIL";'+
     '});');
 
+let query = window.matchMedia("print");
+query.addListener(() => requestAnimationFrame(() => testRunner.notifyDone()));
 internals.settings.setMediaTypeOverride("print");
-setTimeout(function () { testRunner.notifyDone(); }, 0);
 </script>
 </body>
 </html>
-

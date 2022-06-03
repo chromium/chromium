@@ -6,8 +6,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
-#define REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
+#ifndef REMOTING_BASE_DISPATCH_WIN_H_
+#define REMOTING_BASE_DISPATCH_WIN_H_
 
 #include <oaidl.h>
 
@@ -44,6 +44,9 @@ class ScopedVariantArg : public VARIANTARG {
   ScopedVariantArg() {
     vt = VT_EMPTY;
   }
+
+  ScopedVariantArg(const ScopedVariantArg&) = delete;
+  ScopedVariantArg& operator=(const ScopedVariantArg&) = delete;
 
   ~ScopedVariantArg() {
     VariantClear(this);
@@ -90,8 +93,6 @@ class ScopedVariantArg : public VARIANTARG {
     *other = *this;
     *static_cast<VARIANTARG*>(this) = temp;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVariantArg);
 };
 
 // Make sure the layouts of |VARIANTARG| and |ScopedVariantArg| are identical.
@@ -642,4 +643,4 @@ HRESULT Invoke(IDispatch* object,
 
 } // namespace remoting
 
-#endif // REMOTING_BASE_IDISPATCH_DRIVER_WIN_H_
+#endif  // REMOTING_BASE_DISPATCH_WIN_H_

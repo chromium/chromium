@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -23,18 +22,12 @@ class TestOmniboxClient : public OmniboxClient {
  public:
   TestOmniboxClient();
   ~TestOmniboxClient() override;
-
-  const AutocompleteMatch& alternate_nav_match() const {
-    return alternate_nav_match_;
-  }
+  TestOmniboxClient(const TestOmniboxClient&) = delete;
+  TestOmniboxClient& operator=(const TestOmniboxClient&) = delete;
 
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const base::string16& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternate_nav_match) override;
   bool IsPasteAndGoEnabled() const override;
   const SessionID& GetSessionID() const override;
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
@@ -42,6 +35,8 @@ class TestOmniboxClient : public OmniboxClient {
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
+  bool ShouldDefaultTypedNavigationsToHttps() const override;
+  int GetHttpsPortForTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetFaviconForPageUrl(
@@ -51,15 +46,12 @@ class TestOmniboxClient : public OmniboxClient {
   GURL GetPageUrlForLastFaviconRequest() const;
 
  private:
-  AutocompleteMatch alternate_nav_match_;
   SessionID session_id_;
   bookmarks::BookmarkModel* bookmark_model_;
   TemplateURLService* template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   GURL page_url_for_last_favicon_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxClient);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_CLIENT_H_

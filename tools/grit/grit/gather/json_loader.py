@@ -21,6 +21,7 @@ class JsonLoader(interface.GathererBase):
     exec('data = ' + self._json_text, globs)
     self._data = globs['data']
 
-  def GetData(self):
+  def GetData(self, lang, encoding):
     '''Returns the parsed JSON data.'''
+    assert encoding == 'utf-8'
     return self._data

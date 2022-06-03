@@ -11,14 +11,13 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/timer.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_timer_instance.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -38,7 +38,7 @@ namespace {
 // Converts a system file descriptor to a mojo handle that can be sent to the
 // host.
 mojo::ScopedHandle WrapPlatformFd(base::ScopedFD scoped_fd) {
-  mojo::ScopedHandle handle = mojo::WrapPlatformFile(scoped_fd.release());
+  mojo::ScopedHandle handle = mojo::WrapPlatformFile(std::move(scoped_fd));
   if (!handle.is_valid()) {
     LOG(ERROR) << "Failed to wrap platform handle";
     return mojo::ScopedHandle();
@@ -61,16 +61,19 @@ class ArcTimerStore {
  public:
   ArcTimerStore() = default;
 
+  ArcTimerStore(const ArcTimerStore&) = delete;
+  ArcTimerStore& operator=(const ArcTimerStore&) = delete;
+
   bool AddTimer(clockid_t clock_id, base::ScopedFD read_fd) {
     return arc_timers_.emplace(clock_id, std::move(read_fd)).second;
   }
 
   void ClearTimers() { return arc_timers_.clear(); }
 
-  base::Optional<int> GetTimerReadFd(clockid_t clock_id) {
+  absl::optional<int> GetTimerReadFd(clockid_t clock_id) {
     if (!HasTimer(clock_id))
-      return base::nullopt;
-    return base::Optional<int>(arc_timers_[clock_id].get());
+      return absl::nullopt;
+    return absl::optional<int>(arc_timers_[clock_id].get());
   }
 
   bool HasTimer(clockid_t clock_id) const {
@@ -82,8 +85,6 @@ class ArcTimerStore {
   // Map of a clock id to read fd that is signalled when the timer corresponding
   // the clock expires.
   std::map<clockid_t, base::ScopedFD> arc_timers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTimerStore);
 };
 
 class ArcTimerTest : public testing::Test {
@@ -98,6 +99,9 @@ class ArcTimerTest : public testing::Test {
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->timer());
   }
+
+  ArcTimerTest(const ArcTimerTest&) = delete;
+  ArcTimerTest& operator=(const ArcTimerTest&) = delete;
 
   ~ArcTimerTest() override {
     // Destroys the FakeTimerInstance. This results in
@@ -133,8 +137,6 @@ class ArcTimerTest : public testing::Test {
   ArcTimerStore arc_timer_store_;
 
   ArcTimerBridge* timer_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTimerTest);
 };
 
 bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t> clocks,
@@ -222,7 +224,7 @@ bool ArcTimerTest::WaitForExpiration(clockid_t clock_id) {
 
   // Wait for the host to indicate expiration by watching the read end of the
   // socket pair.
-  base::Optional<int> timer_read_fd_opt =
+  absl::optional<int> timer_read_fd_opt =
       arc_timer_store_.GetTimerReadFd(clock_id);
   // This should never happen if the timer was present in the store.
   if (!timer_read_fd_opt.has_value()) {
@@ -260,7 +262,7 @@ TEST_F(ArcTimerTest, StartTimerTest) {
   // Create timers before starting it.
   EXPECT_TRUE(CreateTimers(clocks));
   // Start timer and check if timer expired.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta delay = base::Milliseconds(20);
   EXPECT_TRUE(StartTimer(CLOCK_BOOTTIME_ALARM, base::TimeTicks::Now() + delay));
   EXPECT_TRUE(WaitForExpiration(CLOCK_BOOTTIME_ALARM));
 }
@@ -276,7 +278,7 @@ TEST_F(ArcTimerTest, InvalidStartTimerArgsTest) {
   std::vector<clockid_t> clocks = {CLOCK_REALTIME_ALARM};
   EXPECT_TRUE(CreateTimers(clocks));
   // Start timer should fail due to un-registered clock id.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
+  base::TimeDelta delay = base::Milliseconds(20);
   EXPECT_FALSE(
       StartTimer(CLOCK_BOOTTIME_ALARM, base::TimeTicks::Now() + delay));
 }

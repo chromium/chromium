@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/nss_key_util.h"
 
 namespace ownership {
@@ -26,10 +27,10 @@ bool OwnerKeyUtilImpl::ImportPublicKey(std::vector<uint8_t>* output) {
   // Get the file size (must fit in a 32 bit int for NSS).
   int64_t file_size;
   if (!base::GetFileSize(public_key_file_, &file_size)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "Could not get size of " << public_key_file_.value();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return false;
   }
   if (file_size > static_cast<int64_t>(std::numeric_limits<int>::max())) {

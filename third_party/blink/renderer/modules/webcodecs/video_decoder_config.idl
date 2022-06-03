@@ -1,0 +1,35 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// NOTE: Keep this strucutre in sync with CopyConfig() defined in
+// video_decoder.cc.
+
+dictionary VideoDecoderConfig {
+  // Codec string, eg. "avc1.42001e" or "vp09.00.10.08".
+  // TODO(sandersd): Should we accept "avc1" when |description| is provided?
+  required DOMString codec;
+
+  // avcC, vpcC, or etc.
+  // TODO(sandersd): Define what happens if the parsed description differs from
+  // the metadata below.
+  AllowSharedBufferSource description;
+
+  // Hint about the encoded size of the content.
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
+
+  // Display aspect ratio of the content.
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
+
+  // Hint about the color space of the content.
+  VideoColorSpaceInit colorSpace;
+
+  HardwarePreference hardwareAcceleration = "no-preference";
+
+  // Hint that decoders should be configured for latency versus throughput.
+  boolean optimizeForLatency;
+};

@@ -95,4 +95,8 @@ void TaskGraphRunnerTestBase::FakeTaskImpl::OnTaskCompleted() {
   test_->OnTaskCompleted(namespace_index_, id_);
 }
 
+// These suites are instantiated in binaries that use //cc:test_support.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(TaskGraphRunnerTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SingleThreadTaskGraphRunnerTest);
+
 }  // namespace cc

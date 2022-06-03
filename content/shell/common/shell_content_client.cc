@@ -12,7 +12,6 @@
 #include "content/app/resources/grit/content_resources.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
-#include "content/shell/common/web_test/blink_test_messages.h"
 #include "content/shell/grit/shell_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,23 +23,23 @@ ShellContentClient::ShellContentClient() {}
 
 ShellContentClient::~ShellContentClient() {}
 
-base::string16 ShellContentClient::GetLocalizedString(int message_id) {
+std::u16string ShellContentClient::GetLocalizedString(int message_id) {
   if (switches::IsRunWebTestsSwitchPresent()) {
     switch (message_id) {
       case IDS_FORM_OTHER_DATE_LABEL:
-        return base::ASCIIToUTF16("<<OtherDateLabel>>");
+        return u"<<OtherDate>>";
       case IDS_FORM_OTHER_MONTH_LABEL:
-        return base::ASCIIToUTF16("<<OtherMonthLabel>>");
+        return u"<<OtherMonth>>";
       case IDS_FORM_OTHER_WEEK_LABEL:
-        return base::ASCIIToUTF16("<<OtherWeekLabel>>");
+        return u"<<OtherWeek>>";
       case IDS_FORM_CALENDAR_CLEAR:
-        return base::ASCIIToUTF16("<<CalendarClear>>");
+        return u"<<Clear>>";
       case IDS_FORM_CALENDAR_TODAY:
-        return base::ASCIIToUTF16("<<CalendarToday>>");
+        return u"<<Today>>";
       case IDS_FORM_THIS_MONTH_LABEL:
-        return base::ASCIIToUTF16("<<ThisMonthLabel>>");
+        return u"<<ThisMonth>>";
       case IDS_FORM_THIS_WEEK_LABEL:
-        return base::ASCIIToUTF16("<<ThisWeekLabel>>");
+        return u"<<ThisWeek>>";
     }
   }
   return l10n_util::GetStringUTF16(message_id);
@@ -48,7 +47,7 @@ base::string16 ShellContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece ShellContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -64,36 +63,14 @@ gfx::Image& ShellContentClient::GetNativeImageNamed(int resource_id) {
       resource_id);
 }
 
-base::DictionaryValue ShellContentClient::GetNetLogConstants() {
-  base::DictionaryValue client_constants;
-  client_constants.SetString("name", "content_shell");
-  client_constants.SetString(
-      "command_line",
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
-  base::DictionaryValue constants;
-  constants.SetKey("clientInfo", std::move(client_constants));
-  return constants;
-}
-
 blink::OriginTrialPolicy* ShellContentClient::GetOriginTrialPolicy() {
   return &origin_trial_policy_;
 }
 
-bool ShellContentClient::CanSendWhileSwappedOut(const IPC::Message* message) {
-  if (!in_web_test_)
-    return ContentClient::CanSendWhileSwappedOut(message);
-  switch (message->type()) {
-    // Used in web tests; handled in BlinkTestController.
-    case BlinkTestHostMsg_PrintMessage::ID:
-      return true;
-
-    default:
-      return false;
-  }
-}
-
-void ShellContentClient::SetInWebTest(bool in_web_test) {
-  in_web_test_ = in_web_test;
+void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
+#if defined(OS_ANDROID)
+  schemes->local_schemes.push_back(url::kContentScheme);
+#endif
 }
 
 }  // namespace content

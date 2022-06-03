@@ -112,6 +112,16 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_openat:
     case __NR_pwrite64:
     case __NR_rt_sigtimedwait:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_rt_sigtimedwait_time64:
+#endif
+    // sched_getaffinity() and sched_setaffinity() are required for an
+    // experiment to schedule all Chromium threads onto LITTLE cores
+    // (crbug.com/1111789). Should be removed or reconsidered once
+    // the experiment is complete.
+    case __NR_sched_getaffinity:
+    case __NR_sched_setaffinity:
     case __NR_sched_getparam:
     case __NR_sched_getscheduler:
     case __NR_sched_setscheduler:
@@ -128,7 +138,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_getrlimit:
 #endif
     case __NR_sysinfo:  // https://crbug.com/655277
-    case __NR_uname:
 
     // Permit socket operations so that renderers can connect to logd and
     // debuggerd. The arguments to socket() are further restricted below.
@@ -143,11 +152,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
 
       override_and_allow = true;
       break;
-  }
-
-  // https://crbug.com/772441 and https://crbug.com/760020.
-  if (SyscallSets::IsEventFd(sysno)) {
-    return Allow();
   }
 
   // Ptrace is allowed so the crash reporter can fork in a renderer
@@ -171,7 +175,12 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
   }
 
   // https://crbug.com/655299
-  if (sysno == __NR_clock_getres) {
+  if (sysno == __NR_clock_getres
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+      || sysno == __NR_clock_getres_time64
+#endif
+  ) {
     return RestrictClockID();
   }
 

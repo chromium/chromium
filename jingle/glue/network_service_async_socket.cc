@@ -17,6 +17,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
+#include "net/base/network_isolation_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace jingle_glue {
 
@@ -164,8 +167,13 @@ bool NetworkServiceAsyncSocket::Connect(const net::HostPortPair& address) {
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = false;
   options->fake_tls_handshake = use_fake_tls_handshake_;
+  GURL url("https://" + address.ToString());
+  auto origin = url::Origin::Create(url);
   socket_factory_->CreateProxyResolvingSocket(
-      GURL("https://" + address.ToString()), std::move(options),
+      url,
+      net::NetworkIsolationKey(origin /* top_frame_origin */,
+                               origin /* frame_origin */),
+      std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
       socket_.BindNewPipeAndPassReceiver(), std::move(socket_observer),
       base::BindOnce(&NetworkServiceAsyncSocket::ProcessConnectDone,
@@ -181,8 +189,8 @@ void NetworkServiceAsyncSocket::ProcessConnectDone(
     mojo::PendingReceiver<network::mojom::SocketObserver>
         socket_observer_receiver,
     int status,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_NE(status, net::ERR_IO_PENDING);

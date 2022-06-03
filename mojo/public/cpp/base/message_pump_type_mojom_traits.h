@@ -8,12 +8,12 @@
 #include "base/component_export.h"
 #include "base/message_loop/message_pump_type.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "mojo/public/mojom/base/message_pump_type.mojom.h"
+#include "mojo/public/mojom/base/message_pump_type.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType> {
   static mojo_base::mojom::MessagePumpType ToMojom(base::MessagePumpType input);
   static bool FromMojom(mojo_base::mojom::MessagePumpType input,

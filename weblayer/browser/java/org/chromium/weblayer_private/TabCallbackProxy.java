@@ -10,6 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.weblayer_private.interfaces.ITabClient;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * Owns the C++ TabCallbackProxy class, which is responsible for forwarding all
@@ -39,6 +40,11 @@ public final class TabCallbackProxy {
     @CalledByNative
     private void onRenderProcessGone() throws RemoteException {
         mClient.onRenderProcessGone();
+    }
+
+    @CalledByNative
+    private void onTitleUpdated(String title) throws RemoteException {
+        mClient.onTitleUpdated(ObjectWrapper.wrap(title));
     }
 
     @NativeMethods

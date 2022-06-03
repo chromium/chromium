@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.instantapps;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * A bridge class for retrieving Instant Apps-related settings.
@@ -15,7 +16,7 @@ public class InstantAppsSettings {
     /**
      * Check whether the instant app at the given url should be opened by default.
      */
-    public static boolean isInstantAppDefault(WebContents webContents, String url) {
+    public static boolean isInstantAppDefault(WebContents webContents, GURL url) {
         return InstantAppsSettingsJni.get().getInstantAppDefault(webContents, url);
     }
 
@@ -35,7 +36,7 @@ public class InstantAppsSettings {
 
     @NativeMethods
     interface Natives {
-        boolean getInstantAppDefault(WebContents webContents, String url);
+        boolean getInstantAppDefault(WebContents webContents, GURL url);
         void setInstantAppDefault(WebContents webContents, String url);
         boolean shouldShowBanner(WebContents webContents, String url);
     }

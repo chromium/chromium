@@ -12,14 +12,18 @@
 #define UI_BASE_ACCELERATORS_ACCELERATOR_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if defined(OS_CHROMEOS)
+#include "ui/events/keycodes/dom/dom_code.h"
+#endif
 
 namespace ui {
 
@@ -30,7 +34,7 @@ class KeyEvent;
 // for a particular KeyEvent matches an accelerator with or without the repeat
 // flag. A side effect of this is that == (and <) does not consider the
 // repeat flag in its comparison.
-class UI_BASE_EXPORT Accelerator {
+class COMPONENT_EXPORT(UI_BASE) Accelerator {
  public:
   enum class KeyState {
     PRESSED,
@@ -42,14 +46,33 @@ class UI_BASE_EXPORT Accelerator {
   // for example:
   //     Accelerator(ui::VKEY_Z, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)
   // would correspond to the shortcut "ctrl + shift + z".
-  //
-  // NOTE: this constructor strips out non key related flags.
   Accelerator(KeyboardCode key_code,
               int modifiers,
               KeyState key_state = KeyState::PRESSED,
               base::TimeTicks time_stamp = base::TimeTicks());
+
+#if defined(OS_CHROMEOS)
+  // Additional constructor that takes a |DomCode| in order to implement
+  // layout independent fixed position shortcuts. This is only used for
+  // shortcuts in Chrome OS. One such example is Alt ']'. In the US layout ']'
+  // is VKEY_OEM_6, in the DE layout it is VKEY_OEM_PLUS. However the key in
+  // that position is always DomCode::BRACKET_RIGHT regardless of what the key
+  // generates when pressed. When the DE layout is used and the accelerator
+  // is created with { VKEY_OEM_PLUS, DomCode::BRACKET_RIGHT } the custom
+  // accelerator map will map BRACKET_RIGHT to VKEY_OEM_6 as if in the US
+  // layout in order to lookup the accelerator.
+  //
+  // See accelerator_map.h for more information.
+  Accelerator(KeyboardCode key_code,
+              DomCode code,
+              int modifiers,
+              KeyState key_state = KeyState::PRESSED,
+              base::TimeTicks time_stamp = base::TimeTicks());
+#endif
+
   explicit Accelerator(const KeyEvent& key_event);
   Accelerator(const Accelerator& accelerator);
+  Accelerator& operator=(const Accelerator& accelerator);
   ~Accelerator();
 
   // Masks out all the non-modifiers KeyEvent |flags| and returns only the
@@ -58,17 +81,20 @@ class UI_BASE_EXPORT Accelerator {
 
   KeyEvent ToKeyEvent() const;
 
-  Accelerator& operator=(const Accelerator& accelerator);
-
   // Define the < operator so that the KeyboardShortcut can be used as a key in
   // a std::map.
-  bool operator <(const Accelerator& rhs) const;
+  bool operator<(const Accelerator& rhs) const;
 
-  bool operator ==(const Accelerator& rhs) const;
+  bool operator==(const Accelerator& rhs) const;
 
-  bool operator !=(const Accelerator& rhs) const;
+  bool operator!=(const Accelerator& rhs) const;
 
   KeyboardCode key_code() const { return key_code_; }
+
+#if defined(OS_CHROMEOS)
+  DomCode code() const { return code_; }
+  void reset_code() { code_ = DomCode::NONE; }
+#endif
 
   // Sets the key state that triggers the accelerator. Default is PRESSED.
   void set_key_state(KeyState state) { key_state_ = state; }
@@ -83,16 +109,18 @@ class UI_BASE_EXPORT Accelerator {
   bool IsShiftDown() const;
   bool IsCtrlDown() const;
   bool IsAltDown() const;
+  bool IsAltGrDown() const;
   bool IsCmdDown() const;
+  bool IsFunctionDown() const;
   bool IsRepeat() const;
 
   // Returns a string with the localized shortcut if any.
-  base::string16 GetShortcutText() const;
+  std::u16string GetShortcutText() const;
 
-#if defined(OS_MACOSX)
-  base::string16 KeyCodeToMacSymbol() const;
+#if defined(OS_MAC)
+  std::u16string KeyCodeToMacSymbol() const;
 #endif
-  base::string16 KeyCodeToName() const;
+  std::u16string KeyCodeToName() const;
 
   void set_interrupted_by_mouse_event(bool interrupted_by_mouse_event) {
     interrupted_by_mouse_event_ = interrupted_by_mouse_event;
@@ -103,11 +131,17 @@ class UI_BASE_EXPORT Accelerator {
   }
 
  private:
-  base::string16 ApplyLongFormModifiers(base::string16 shortcut) const;
-  base::string16 ApplyShortFormModifiers(base::string16 shortcut) const;
+  friend class AcceleratorTestMac;
+  std::u16string ApplyLongFormModifiers(const std::u16string& shortcut) const;
+  std::u16string ApplyShortFormModifiers(const std::u16string& shortcut) const;
 
   // The keycode (VK_...).
   KeyboardCode key_code_;
+
+#if defined(OS_CHROMEOS)
+  // The DomCode representing a key's physical position.
+  DomCode code_ = DomCode::NONE;
+#endif
 
   KeyState key_state_;
 
@@ -130,7 +164,7 @@ class UI_BASE_EXPORT Accelerator {
 
 // An interface that classes that want to register for keyboard accelerators
 // should implement.
-class UI_BASE_EXPORT AcceleratorTarget {
+class COMPONENT_EXPORT(UI_BASE) AcceleratorTarget {
  public:
   // Should return true if the accelerator was processed.
   virtual bool AcceleratorPressed(const Accelerator& accelerator) = 0;
@@ -141,7 +175,7 @@ class UI_BASE_EXPORT AcceleratorTarget {
   virtual bool CanHandleAccelerators() const = 0;
 
  protected:
-  virtual ~AcceleratorTarget() {}
+  virtual ~AcceleratorTarget() = default;
 };
 
 // Since accelerator code is one of the few things that can't be cross platform
@@ -155,7 +189,7 @@ class AcceleratorProvider {
                                           Accelerator* accelerator) const = 0;
 
  protected:
-  virtual ~AcceleratorProvider() {}
+  virtual ~AcceleratorProvider() = default;
 };
 
 }  // namespace ui

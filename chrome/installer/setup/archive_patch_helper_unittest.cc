@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/installer/setup/archive_patch_helper.h"
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/installer/setup/archive_patch_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -20,9 +21,7 @@ class ArchivePatchHelperTest : public testing::Test {
     ASSERT_TRUE(base::PathExists(data_dir_));
   }
 
-  static void TearDownTestCase() {
-    data_dir_.clear();
-  }
+  static void TearDownTestCase() { data_dir_.clear(); }
 
   void SetUp() override {
     // Create a temp directory for testing.

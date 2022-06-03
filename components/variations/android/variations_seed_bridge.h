@@ -8,32 +8,37 @@
 #include <jni.h>
 #include <string>
 
+#include "base/component_export.h"
 #include "components/variations/seed_response.h"
 
 namespace variations {
 namespace android {
 
 // Return the first run seed data pulled from the Java side of application.
+COMPONENT_EXPORT(VARIATIONS)
 std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed();
 
 // Clears first run seed preferences stored on the Java side of Chrome for
 // Android.
-void ClearJavaFirstRunPrefs();
+COMPONENT_EXPORT(VARIATIONS) void ClearJavaFirstRunPrefs();
 
 // Marks variations seed as stored to avoid repeated fetches of the seed at
 // the Java side.
-void MarkVariationsSeedAsStored();
+COMPONENT_EXPORT(VARIATIONS) void MarkVariationsSeedAsStored();
 
 // Sets test data on the Java side. The data is pulled during the unit tests to
 // C++ side and is being checked for consistency.
 // This method is used for unit testing purposes only.
+COMPONENT_EXPORT(VARIATIONS)
 void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
                                     const std::string& seed_signature,
                                     const std::string& seed_country,
                                     long response_date,
                                     bool is_gzip_compressed);
 
+COMPONENT_EXPORT(VARIATIONS) bool HasMarkedPrefsForTesting();
+
 }  // namespace android
 }  // namespace variations
 
-#endif  // COMPONENTS_VARIATIONS_ANDROID_FIRSTRUN_VARIATIONS_SEED_BRIDGE_H_
+#endif  // COMPONENTS_VARIATIONS_ANDROID_VARIATIONS_SEED_BRIDGE_H_

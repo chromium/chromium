@@ -6,10 +6,10 @@
 
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,16 +17,17 @@
 #endif
 
 @implementation BrowserViewControllerDependencyFactory {
-  ios::ChromeBrowserState* _browserState;
+  Browser* _browser;
+  ChromeBrowserState* _browserState;
   WebStateList* _webStateList;
 }
 
-- (id)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-              webStateList:(WebStateList*)webStateList {
+- (id)initWithBrowser:(Browser*)browser {
   self = [super init];
   if (self) {
-    _browserState = browserState;
-    _webStateList = webStateList;
+    _browser = browser;
+    _browserState = browser->GetBrowserState();
+    _webStateList = browser->GetWebStateList();
   }
   return self;
 }
@@ -45,6 +46,7 @@
                                     (UIViewController*)viewController {
   AlertCoordinator* alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:viewController
+                                                   browser:_browser
                                                      title:title
                                                    message:message];
   [alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)

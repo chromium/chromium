@@ -6,23 +6,26 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.CleanupReference;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test suite for {@link CleanupReference}. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@Batch(Batch.UNIT_TESTS)
 public class CleanupReferenceTest {
     private static AtomicInteger sObjectCount = new AtomicInteger();
 
@@ -70,7 +73,8 @@ public class CleanupReferenceTest {
         // Ensure compiler / instrumentation does not strip out the assignment.
         Assert.assertNull(instance);
         collectGarbage();
-        CriteriaHelper.pollInstrumentationThread(Criteria.equals(0, () -> sObjectCount.get()));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(0)));
     }
 
     @Test
@@ -94,6 +98,7 @@ public class CleanupReferenceTest {
         // to be GC'ed only when building using GN.
         Assert.assertNotEquals(sObjectCount.get(), -1);
         collectGarbage();
-        CriteriaHelper.pollInstrumentationThread(Criteria.equals(0, () -> sObjectCount.get()));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(0)));
     }
 }

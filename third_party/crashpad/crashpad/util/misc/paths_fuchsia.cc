@@ -18,7 +18,6 @@
 #include <zircon/process.h>
 #include <zircon/syscalls.h>
 
-#include "base/logging.h"
 
 namespace crashpad {
 

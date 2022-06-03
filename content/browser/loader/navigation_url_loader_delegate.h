@@ -7,15 +7,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
-#include "content/common/navigation_params.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/early_hints.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "url/origin.h"
 
 namespace net {
+class NetworkIsolationKey;
 struct RedirectInfo;
 }
 
@@ -25,16 +29,45 @@ struct URLLoaderCompletionStatus;
 
 namespace content {
 
+class NavigationEarlyHintsManager;
+struct NavigationEarlyHintsManagerParams;
 struct GlobalRequestID;
 struct SubresourceLoaderParams;
 
 // The delegate interface to NavigationURLLoader.
 class CONTENT_EXPORT NavigationURLLoaderDelegate {
  public:
+  // Conveys information related to Early Hints responses.
+  struct CONTENT_EXPORT EarlyHints {
+    EarlyHints();
+    ~EarlyHints();
+
+    EarlyHints(EarlyHints&& other);
+    EarlyHints& operator=(EarlyHints&& other);
+
+    EarlyHints(const EarlyHints& other) = delete;
+    EarlyHints& operator=(const EarlyHints& other) = delete;
+
+    // True when at least one preload or preconnect Link header was received
+    // during a main frame navigation.
+    bool was_resource_hints_received = false;
+    // Non-null when at least one preload is actually requested.
+    std::unique_ptr<NavigationEarlyHintsManager> manager;
+  };
+
+  NavigationURLLoaderDelegate(const NavigationURLLoaderDelegate&) = delete;
+  NavigationURLLoaderDelegate& operator=(const NavigationURLLoaderDelegate&) =
+      delete;
+
   // Called when the request is redirected. Call FollowRedirect to continue
   // processing the request.
+  //
+  // |network_isolation_key| is the NetworkIsolationKey associated with the
+  // request that was redirected, not the one that will be used if the redirect
+  // is followed.
   virtual void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
+      const net::NetworkIsolationKey& network_isolation_key,
       network::mojom::URLResponseHeadPtr response) = 0;
 
   // Called when the request receives its response. No further calls will be
@@ -50,14 +83,19 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   // disallowed.
   //
   // |download_policy| specifies if downloading is disallowed.
+  //
+  // Invoking this method will delete the URLLoader, so it needs to take all
+  // arguments by value.
   virtual void OnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      const GlobalRequestID& request_id,
+      GlobalRequestID request_id,
       bool is_download,
-      NavigationDownloadPolicy download_policy,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params) = 0;
+      blink::NavigationDownloadPolicy download_policy,
+      net::NetworkIsolationKey network_isolation_key,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      EarlyHints early_hints) = 0;
 
   // Called if the request fails before receving a response. Specific
   // fields which are used: |status.error_code| holds the error code
@@ -68,18 +106,15 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Called after the network request has begun on the IO thread at time
-  // |timestamp|. This is just a thread hop but is used to compare timing
-  // against the pre-PlzNavigate codepath which didn't start the network request
-  // until after the renderer was initialized.
-  virtual void OnRequestStarted(base::TimeTicks timestamp) = 0;
+  // Creates parameters to construct NavigationEarlyHintsManager. Returns
+  // absl::nullopt when this delegate cannot create parameters.
+  virtual absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
+      const network::mojom::EarlyHints& early_hints) = 0;
 
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderDelegate);
 };
 
 }  // namespace content

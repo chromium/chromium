@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {util} from './util.js';
+
 /**
  * Joins paths so that the two paths are connected by only 1 '/'.
  * @param {string} a Path.
  * @param {string} b Path.
  * @return {string} Joined path.
  */
-function joinPath(a, b) {
+export function joinPath(a, b) {
   return a.replace(/\/+$/, '') + '/' + b.replace(/^\/+/, '');
 }
 
@@ -17,7 +19,7 @@ function joinPath(a, b) {
  *
  * @extends {FileSystem}
  */
-class MockFileSystem {
+export class MockFileSystem {
   /**
    * @param {string} volumeId Volume ID.
    * @param {string=} opt_rootURL URL string of root which is used in
@@ -105,7 +107,7 @@ class MockFileSystem {
 }
 
 /** @interface */
-class MockEntryInterface {
+export class MockEntryInterface {
   /**
    * Clones the entry with the new fullpath.
    *
@@ -122,7 +124,7 @@ class MockEntryInterface {
  * @extends {Entry}
  * @implements {MockEntryInterface}
  */
-class MockEntry {
+export class MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path of the entry.
@@ -203,9 +205,18 @@ class MockEntry {
     Promise.resolve()
         .then(() => {
           delete this.filesystem.entries[this.fullPath];
-          return this.clone(
-              joinPath(parent.fullPath, opt_newName || this.name),
-              parent.filesystem);
+          const newPath = joinPath(parent.fullPath, opt_newName || this.name);
+          const newFs = parent.filesystem;
+          // For directories, also move all descendant entries.
+          if (this.isDirectory) {
+            for (const e of Object.values(this.filesystem.entries)) {
+              if (e.fullPath.startsWith(this.fullPath)) {
+                delete this.filesystem.entries[e.fullPath];
+                e.clone(e.fullPath.replace(this.fullPath, newPath), newFs);
+              }
+            }
+          }
+          return this.clone(newPath, newFs);
         })
         .then(opt_successCallback);
   }
@@ -251,8 +262,9 @@ class MockEntry {
   removeRecursively(onSuccess, onError) {
     this.removed_ = true;
     Promise.resolve().then(() => {
-      for (let path in this.filesystem.entries) {
+      for (const path in this.filesystem.entries) {
         if (path.startsWith(this.fullPath)) {
+          this.filesystem.entries[path].removed_ = true;
           delete this.filesystem.entries[path];
         }
       }
@@ -280,7 +292,7 @@ class MockEntry {
  *
  * @implements {MockEntryInterface}
  */
-class MockFileEntry extends MockEntry {
+export class MockFileEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -317,6 +329,16 @@ class MockFileEntry extends MockEntry {
     onSuccess(new File([this.content], this.toURL()));
   }
 
+  /**
+   * Returns a FileWriter.
+   *
+   * @param {function(!FileWriter)} successCallback
+   * @param {function(!FileError)=} opt_errorCallback
+   */
+  createWriter(successCallback, opt_errorCallback) {
+    successCallback(new MockFileWriter(this));
+  }
+
   /** @override */
   clone(path, opt_filesystem) {
     return MockFileEntry.create(
@@ -342,11 +364,35 @@ class MockFileEntry extends MockEntry {
 }
 
 /**
+ * Mock class for FileWriter.
+ * @extends {FileWriter}
+ */
+export class MockFileWriter {
+  /**
+   * @param {!MockFileEntry} entry
+   */
+  constructor(entry) {
+    this.entry_ = entry;
+    this.onwriteend = (e) => {};
+  }
+
+  /**
+   * @param {!Blob} data
+   */
+  write(data) {
+    this.entry_.content = data;
+    this.onwriteend(new ProgressEvent(
+        'writeend',
+        {lengthComputable: true, loaded: data.size, total: data.size}));
+  }
+}
+
+/**
  * Mock class for DirectoryEntry.
  *
  * @implements {MockEntryInterface}
  */
-class MockDirectoryEntry extends MockEntry {
+export class MockDirectoryEntry extends MockEntry {
   /**
    * @param {FileSystem} filesystem File system where the entry is located.
    * @param {string} fullPath Full path for the entry.
@@ -390,44 +436,28 @@ class MockDirectoryEntry extends MockEntry {
   /**
    * Returns a file under the directory.
    *
+   * @param {!Function} expectedClass class expected for entry. Either
+   *     MockFileEntry or MockDirectoryEntry.
    * @param {string} path Path.
    * @param {!FileSystemFlags=} option Options
-   * @param {function(!FileEntry)=} onSuccess Success callback.
+   * @param {function(!Entry)=} onSuccess Success callback.
    * @param {function(!FileError)=} onError Failure callback;
+   * @private
    */
-  getFile(path, option, onSuccess, onError) {
+  getEntry_(expectedClass, path, option, onSuccess, onError) {
     // As onSuccess and onError are optional, if they are not supplied we
     // default them to be no-ops to save on checking their validity later.
     onSuccess = onSuccess || (entry => {});  // no-op
     onError = onError || (error => {});      // no-op
-    const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
-    if (!this.filesystem.entries[fullPath]) {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
-    } else if (!(this.filesystem.entries[fullPath] instanceof MockFileEntry)) {
-      onError(
-          /** @type {!FileError} */ ({name: util.FileError.TYPE_MISMATCH_ERR}));
-    } else {
-      onSuccess(this.filesystem.entries[fullPath]);
+    if (this.removed_) {
+      return onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
     }
-  }
-
-  /**
-   * Returns a directory under the directory.
-   *
-   * @param {string} path Path.
-   * @param {!FileSystemFlags=} option Options
-   * @param {function(!DirectoryEntry)=} onSuccess Success callback.
-   * @param {function(!FileError)=} onError Failure callback;
-   */
-  getDirectory(path, option, onSuccess, onError) {
-    // As onSuccess and onError are optional, if they are not supplied we
-    // default them to be no-ops to save on checking their validity later.
-    onSuccess = onSuccess || (entry => {});  // no-op
-    onError = onError || (error => {});      // no-op
+    option = option || {};
     const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
     const result = this.filesystem.entries[fullPath];
     if (result) {
-      if (!(result instanceof MockDirectoryEntry)) {
+      if (!(result instanceof expectedClass)) {
         onError(
             /** @type {!FileError} */ (
                 {name: util.FileError.TYPE_MISMATCH_ERR}));
@@ -442,11 +472,38 @@ class MockDirectoryEntry extends MockEntry {
         onError(
             /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
       } else {
-        const newEntry = MockDirectoryEntry.create(this.filesystem, fullPath);
-        this.filesystem.entries[fullPath] = newEntry;
+        const newEntry = expectedClass.create(this.filesystem, fullPath);
         onSuccess(newEntry);
       }
     }
+  }
+
+  /**
+   * Returns a file under the directory.
+   *
+   * @param {string} path Path.
+   * @param {!FileSystemFlags=} option Options
+   * @param {function(!FileEntry)=} onSuccess Success callback.
+   * @param {function(!FileError)=} onError Failure callback;
+   */
+  getFile(path, option, onSuccess, onError) {
+    return this.getEntry_(
+        MockFileEntry, path, option,
+        /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
+  }
+
+  /**
+   * Returns a directory under the directory.
+   *
+   * @param {string} path Path.
+   * @param {!FileSystemFlags=} option Options
+   * @param {function(!DirectoryEntry)=} onSuccess Success callback.
+   * @param {function(!FileError)=} onError Failure callback;
+   */
+  getDirectory(path, option, onSuccess, onError) {
+    return this.getEntry_(
+        MockDirectoryEntry, path, option,
+        /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
   }
 
   /**
@@ -463,7 +520,7 @@ class MockDirectoryEntry extends MockEntry {
  * Mock class for DirectoryReader.
  * @extends {DirectoryReader}
  */
-class MockDirectoryReader {
+export class MockDirectoryReader {
   /**
    * @param {!Array<!Entry>} entries
    */

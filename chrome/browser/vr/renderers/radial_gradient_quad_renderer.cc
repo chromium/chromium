@@ -6,10 +6,10 @@
 
 #include "chrome/browser/vr/elements/corner_radii.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

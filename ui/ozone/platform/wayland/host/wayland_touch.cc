@@ -4,71 +4,29 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
-#include <sys/mman.h>
-#include <wayland-client.h>
-
-#include "base/files/scoped_file.h"
-#include "ui/base/buildflags.h"
-#include "ui/events/event.h"
+#include "base/time/time.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 namespace ui {
 
-WaylandTouch::TouchPoint::TouchPoint() = default;
-
-WaylandTouch::TouchPoint::TouchPoint(gfx::Point location,
-                                     wl_surface* current_surface)
-    : surface(current_surface), last_known_location(location) {}
-
-WaylandTouch::TouchPoint::~TouchPoint() = default;
-
-//-----------------------------------------------------------------------------
-
 WaylandTouch::WaylandTouch(wl_touch* touch,
-                           const EventDispatchCallback& callback)
-    : obj_(touch), callback_(callback) {
-  static const wl_touch_listener listener = {
-      &WaylandTouch::Down,  &WaylandTouch::Up,     &WaylandTouch::Motion,
-      &WaylandTouch::Frame, &WaylandTouch::Cancel,
+                           WaylandConnection* connection,
+                           Delegate* delegate)
+    : obj_(touch), connection_(connection), delegate_(delegate) {
+  static constexpr wl_touch_listener listener = {
+      &Down, &Up, &Motion, &Frame, &Cancel,
   };
 
   wl_touch_add_listener(obj_.get(), &listener, this);
 }
 
 WaylandTouch::~WaylandTouch() {
-  DCHECK(current_points_.empty());
-}
-
-void WaylandTouch::SetConnection(WaylandConnection* connection) {
-  connection_ = connection;
-
-  // Observs remove changes to know when touch points can be removed.
-  connection_->wayland_window_manager()->AddObserver(this);
-}
-
-void WaylandTouch::RemoveTouchPoints(const WaylandWindow* window) {
-  base::EraseIf(current_points_,
-                [window](const TouchPoints::value_type& point) {
-                  return point.second.surface == window->surface();
-                });
-}
-
-void WaylandTouch::MaybeUnsetFocus(const WaylandTouch::TouchPoints& points,
-                                   int32_t id,
-                                   wl_surface* surface) {
-  for (const auto& point : points) {
-    // Return early on the first other point having this surface.
-    if (surface == point.second.surface && id != point.first)
-      return;
-  }
-  DCHECK(surface);
-  WaylandWindow::FromSurface(surface)->set_touch_focus(false);
-}
-
-void WaylandTouch::OnWindowRemoved(WaylandWindow* window) {
-  RemoveTouchPoints(window);
+  delegate_->OnTouchCancelEvent();
 }
 
 void WaylandTouch::Down(void* data,
@@ -81,26 +39,17 @@ void WaylandTouch::Down(void* data,
                         wl_fixed_t y) {
   if (!surface)
     return;
+
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-  touch->connection_->set_serial(serial);
-  WaylandWindow::FromSurface(surface)->set_touch_focus(true);
 
-  // Make sure this touch point wasn't present before.
-  if (touch->current_points_.find(id) != touch->current_points_.end()) {
-    LOG(WARNING) << "Touch down fired with wrong id";
-    return;
-  }
+  touch->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
+                                                    serial);
 
-  EventType type = ET_TOUCH_PRESSED;
-  gfx::Point location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
-  PointerDetails pointer_details(EventPointerType::POINTER_TYPE_TOUCH, id);
-  TouchEvent event(type, location, time_stamp, pointer_details);
-  touch->callback_.Run(&event);
-
-  touch->current_points_[id] = TouchPoint(location, surface);
+  WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+  touch->delegate_->OnTouchPressEvent(window, location, timestamp, id);
 }
 
 void WaylandTouch::Up(void* data,
@@ -110,25 +59,15 @@ void WaylandTouch::Up(void* data,
                       int32_t id) {
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-  const auto iterator = touch->current_points_.find(id);
 
-  // Make sure this touch point was present before.
-  if (iterator == touch->current_points_.end()) {
-    LOG(WARNING) << "Touch up fired with no matching touch down";
-    return;
-  }
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+  touch->delegate_->OnTouchReleaseEvent(timestamp, id);
 
-  EventType type = ET_TOUCH_RELEASED;
-  base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
-  PointerDetails pointer_details(EventPointerType::POINTER_TYPE_TOUCH, id);
-  TouchEvent event(type, touch->current_points_[id].last_known_location,
-                   time_stamp, pointer_details);
-  touch->callback_.Run(&event);
-
-  touch->MaybeUnsetFocus(touch->current_points_, id,
-                         touch->current_points_[id].surface);
-  touch->current_points_.erase(iterator);
+  // Reset kTouchPress serial only after dispatching touch-up event, so popups
+  // may detect if they were triggered by a tap gesture, and avoid grab in such
+  // case, which, per the spec, is illegal and may lead to instant popup
+  // dismissal by the compositor.
+  touch->connection_->serial_tracker().ResetSerial(wl::SerialType::kTouchPress);
 }
 
 void WaylandTouch::Motion(void* data,
@@ -140,39 +79,17 @@ void WaylandTouch::Motion(void* data,
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
-  // Make sure this touch point wasn't present before.
-  if (touch->current_points_.find(id) == touch->current_points_.end()) {
-    LOG(WARNING) << "Touch event fired with wrong id";
-    return;
-  }
-
-  EventType type = ET_TOUCH_MOVED;
-  gfx::Point location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks time_stamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
-  PointerDetails pointer_details(EventPointerType::POINTER_TYPE_TOUCH, id);
-  TouchEvent event(type, location, time_stamp, pointer_details);
-  touch->callback_.Run(&event);
-  touch->current_points_[id].last_known_location = location;
+  gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+  touch->delegate_->OnTouchMotionEvent(location, timestamp, id);
 }
-
-void WaylandTouch::Frame(void* data, wl_touch* obj) {}
 
 void WaylandTouch::Cancel(void* data, wl_touch* obj) {
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-  for (auto& point : touch->current_points_) {
-    int32_t id = point.first;
-
-    EventType type = ET_TOUCH_CANCELLED;
-    base::TimeTicks time_stamp = base::TimeTicks::Now();
-    PointerDetails pointer_details(EventPointerType::POINTER_TYPE_TOUCH, id);
-    TouchEvent event(type, gfx::Point(), time_stamp, pointer_details);
-    touch->callback_.Run(&event);
-
-    WaylandWindow::FromSurface(point.second.surface)->set_touch_focus(false);
-  }
-  touch->current_points_.clear();
+  touch->delegate_->OnTouchCancelEvent();
 }
+
+void WaylandTouch::Frame(void* data, wl_touch* obj) {}
 
 }  // namespace ui

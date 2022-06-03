@@ -5,20 +5,20 @@
 #ifndef CC_PAINT_DISPLAY_ITEM_LIST_H_
 #define CC_PAINT_DISPLAY_ITEM_LIST_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/trace_event/trace_event.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -62,10 +62,14 @@ class CC_PAINT_EXPORT DisplayItemList
 
   void Raster(SkCanvas* canvas, ImageProvider* image_provider = nullptr) const;
 
-  // Captures the DrawTextBlobOp within |rect| and returns the associated
-  // NodeId in |content|.
+  // Captures |DrawTextBlobOp|s intersecting |rect| and returns the associated
+  // |NodeId|s in |content|.
   void CaptureContent(const gfx::Rect& rect,
-                      std::vector<NodeId>* content) const;
+                      std::vector<NodeInfo>* content) const;
+
+  // Returns the approximate total area covered by |DrawTextBlobOp|s
+  // intersecting |rect|, used for statistics purpose.
+  double AreaOfDrawText(const gfx::Rect& rect) const;
 
   void StartPaint() {
 #if DCHECK_IS_ON()
@@ -90,8 +94,6 @@ class CC_PAINT_EXPORT DisplayItemList
     DCHECK(op->IsValid());
     return offset;
   }
-
-  UsageHint GetUsageHint() const { return usage_hint_; }
 
   // Called by blink::PaintChunksToCcLayer when an effect ends, to update the
   // bounds of a SaveLayer[Alpha]Op which was emitted when the effect started.
@@ -124,55 +126,38 @@ class CC_PAINT_EXPORT DisplayItemList
 
     DCHECK_LT(visual_rects_.size(), paint_op_buffer_.size());
     size_t count = paint_op_buffer_.size() - visual_rects_.size();
+    paired_begin_stack_.push_back({visual_rects_.size(), count});
     visual_rects_.resize(paint_op_buffer_.size());
-    begin_paired_indices_.push_back(
-        std::make_pair(visual_rects_.size() - 1, count));
   }
 
-  void EndPaintOfPairedEnd() {
-#if DCHECK_IS_ON()
-    DCHECK(IsPainting());
-    DCHECK_LT(current_range_start_, paint_op_buffer_.size());
-    current_range_start_ = kNotPainting;
-#endif
-    if (usage_hint_ == kToBeReleasedAsPaintOpBuffer)
-      return;
-
-    DCHECK(begin_paired_indices_.size());
-    size_t last_begin_index = begin_paired_indices_.back().first;
-    size_t last_begin_count = begin_paired_indices_.back().second;
-    DCHECK_GT(last_begin_count, 0u);
-    DCHECK_GE(last_begin_index, last_begin_count - 1);
-
-    // Copy the visual rect at |last_begin_index| to all indices that constitute
-    // the begin item. Note that because we possibly reallocate the
-    // |visual_rects_| buffer below, we need an actual copy instead of a const
-    // reference which can become dangling.
-    auto visual_rect = visual_rects_[last_begin_index];
-    for (size_t i = last_begin_index - last_begin_count + 1;
-         i < last_begin_index; ++i) {
-      visual_rects_[i] = visual_rect;
-    }
-    begin_paired_indices_.pop_back();
-
-    // Copy the visual rect of the matching begin item to the end item(s).
-    visual_rects_.resize(paint_op_buffer_.size(), visual_rect);
-
-    // The block that ended needs to be included in the bounds of the enclosing
-    // block.
-    GrowCurrentBeginItemVisualRect(visual_rect);
-  }
+  void EndPaintOfPairedEnd();
 
   // Called after all items are appended, to process the items.
   void Finalize();
 
+  struct DirectlyCompositedImageResult {
+    gfx::Size intrinsic_image_size;
+    bool nearest_neighbor;
+  };
+
+  // If this list represents an image that should be directly composited (i.e.
+  // rasterized at the intrinsic size of the image), return the intrinsic size
+  // of the image and whether or not to use nearest neighbor filtering when
+  // scaling the layer.
+  absl::optional<DirectlyCompositedImageResult>
+  GetDirectlyCompositedImageResult(gfx::Size containing_layer_bounds) const;
+
   int NumSlowPaths() const { return paint_op_buffer_.numSlowPaths(); }
   bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
-  bool HasText() const { return paint_op_buffer_.HasText(); }
 
   // This gives the total number of PaintOps.
   size_t TotalOpCount() const { return paint_op_buffer_.total_op_count(); }
-  size_t BytesUsed() const;
+  size_t BytesUsed() const {
+    // TODO(jbroman): Does anything else owned by this class substantially
+    // contribute to memory usage?
+    // TODO(vmpstr): Probably DiscardableImageMap is worth counting here.
+    return sizeof(*this) + paint_op_buffer_.bytes_used();
+  }
 
   const DiscardableImageMap& discardable_image_map() const {
     return image_map_;
@@ -200,6 +185,20 @@ class CC_PAINT_EXPORT DisplayItemList
 
   std::string ToString() const;
 
+  bool has_draw_ops() const { return paint_op_buffer_.has_draw_ops(); }
+  bool has_draw_text_ops() const {
+    return paint_op_buffer_.has_draw_text_ops();
+  }
+
+  // Ops with nested paint ops are considered as a single op.
+  size_t num_paint_ops() const { return paint_op_buffer_.size(); }
+
+  bool NeedsAdditionalInvalidationForLCDText(
+      const DisplayItemList& old_list) const {
+    return paint_op_buffer_.NeedsAdditionalInvalidationForLCDText(
+        old_list.paint_op_buffer_);
+  }
+
  private:
   friend class DisplayItemListTest;
   friend gpu::raster::RasterImplementation;
@@ -217,8 +216,8 @@ class CC_PAINT_EXPORT DisplayItemList
   // given visual rect with the begin display item's visual rect.
   void GrowCurrentBeginItemVisualRect(const gfx::Rect& visual_rect) {
     DCHECK_EQ(usage_hint_, kTopLevelDisplayItemList);
-    if (!begin_paired_indices_.empty())
-      visual_rects_[begin_paired_indices_.back().first].Union(visual_rect);
+    if (!paired_begin_stack_.empty())
+      visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
 
   // RTree stores indices into the paint op buffer.
@@ -233,11 +232,15 @@ class CC_PAINT_EXPORT DisplayItemList
   std::vector<gfx::Rect> visual_rects_;
   // Byte offsets associated with each of the ops.
   std::vector<size_t> offsets_;
-  // A stack of pairs of indices and counts. The indices are into the
-  // |visual_rects_| for each paired begin range that hasn't been closed. The
-  // counts refer to the number of visual rects in that begin sequence that end
-  // with the index.
-  std::vector<std::pair<size_t, size_t>> begin_paired_indices_;
+  // A stack of paired begin sequences that haven't been closed.
+  struct PairedBeginInfo {
+    // Index (into virual_rects_ and offsets_) of the first operation in the
+    // paired begin sequence.
+    size_t first_index;
+    // Number of operations in the paired begin sequence.
+    size_t count;
+  };
+  std::vector<PairedBeginInfo> paired_begin_stack_;
 
 #if DCHECK_IS_ON()
   // While recording a range of ops, this is the position in the PaintOpBuffer

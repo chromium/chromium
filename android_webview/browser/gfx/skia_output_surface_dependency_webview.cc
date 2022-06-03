@@ -5,10 +5,13 @@
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
-#include "android_webview/browser/gfx/parent_output_surface.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/task_forwarding_sequence.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
+#include "base/callback_helpers.h"
+#include "base/logging.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "ui/gl/gl_surface.h"
 
 namespace android_webview {
 
@@ -16,13 +19,19 @@ SkiaOutputSurfaceDependencyWebView::SkiaOutputSurfaceDependencyWebView(
     TaskQueueWebView* task_queue,
     GpuServiceWebView* gpu_service,
     gpu::SharedContextState* shared_context_state,
-    gl::GLSurface* gl_surface)
+    gl::GLSurface* gl_surface,
+    AwVulkanContextProvider* vulkan_context_provider)
     : gl_surface_(gl_surface),
+      vulkan_context_provider_(vulkan_context_provider),
       task_queue_(task_queue),
       gpu_service_(gpu_service),
       workarounds_(
           gpu_service_->gpu_feature_info().enabled_gpu_driver_bug_workarounds),
-      shared_context_state_(shared_context_state) {}
+      shared_context_state_(shared_context_state) {
+  DCHECK(!(shared_context_state_ && vulkan_context_provider_) ||
+         shared_context_state_->vk_context_provider() ==
+             vulkan_context_provider);
+}
 
 SkiaOutputSurfaceDependencyWebView::~SkiaOutputSurfaceDependencyWebView() =
     default;
@@ -31,14 +40,6 @@ std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyWebView::CreateSequence() {
   return std::make_unique<TaskForwardingSequence>(
       this->task_queue_, this->gpu_service_->sync_point_manager());
-}
-
-bool SkiaOutputSurfaceDependencyWebView::IsUsingVulkan() {
-  return shared_context_state_ && shared_context_state_->GrContextIsVulkan();
-}
-
-bool SkiaOutputSurfaceDependencyWebView::IsUsingDawn() {
-  return false;
 }
 
 gpu::SharedImageManager*
@@ -77,7 +78,7 @@ SkiaOutputSurfaceDependencyWebView::GetDawnContextProvider() {
 }
 
 const gpu::GpuPreferences&
-SkiaOutputSurfaceDependencyWebView::GetGpuPreferences() {
+SkiaOutputSurfaceDependencyWebView::GetGpuPreferences() const {
   return gpu_service_->gpu_preferences();
 }
 
@@ -113,7 +114,8 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyWebView::GetSurfaceHandle() {
 
 scoped_refptr<gl::GLSurface>
 SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
+    gl::GLSurfaceFormat format) {
   return gl_surface_;
 }
 
@@ -134,7 +136,6 @@ void SkiaOutputSurfaceDependencyWebView::UnregisterDisplayContext(
 }
 
 void SkiaOutputSurfaceDependencyWebView::DidLoseContext(
-    bool offscreen,
     gpu::error::ContextLostReason reason,
     const GURL& active_url) {
   // No GpuChannelManagerDelegate here, so leave it no-op for now.
@@ -145,6 +146,15 @@ base::TimeDelta
 SkiaOutputSurfaceDependencyWebView::GetGpuBlockedTimeSinceLastSwap() {
   // WebView doesn't track how long GPU thread was blocked
   return base::TimeDelta();
+}
+
+void SkiaOutputSurfaceDependencyWebView::ScheduleDelayedGPUTaskFromGPUThread(
+    base::OnceClosure task) {
+  task_queue_->ScheduleIdleTask(std::move(task));
+}
+
+bool SkiaOutputSurfaceDependencyWebView::NeedsSupportForExternalStencil() {
+  return true;
 }
 
 }  // namespace android_webview

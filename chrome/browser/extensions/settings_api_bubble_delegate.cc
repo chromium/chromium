@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
@@ -25,10 +26,6 @@ namespace extensions {
 
 namespace {
 
-// Whether the user has been notified about extension taking over some aspect of
-// the user's settings (homepage, startup pages, or search engine).
-const char kSettingsBubbleAcknowledged[] = "ack_settings_bubble";
-
 using ProfileSetMap = std::map<std::string, std::set<Profile*>>;
 base::LazyInstance<ProfileSetMap>::Leaky g_settings_api_shown =
     LAZY_INSTANCE_INITIALIZER;
@@ -41,8 +38,11 @@ SettingsApiBubbleDelegate::SettingsApiBubbleDelegate(
     : ExtensionMessageBubbleController::Delegate(profile),
       type_(type),
       profile_(profile) {
-  set_acknowledged_flag_pref_name(kSettingsBubbleAcknowledged);
+  set_acknowledged_flag_pref_name(kAcknowledgedPreference);
 }
+
+const char SettingsApiBubbleDelegate::kAcknowledgedPreference[] =
+    "ack_settings_bubble";
 
 SettingsApiBubbleDelegate::~SettingsApiBubbleDelegate() {}
 
@@ -51,7 +51,7 @@ bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
   // If the browser is showing the 'Chrome crashed' infobar, it won't be showing
   // the startup pages, so there's no point in showing the bubble now.
   if (type_ == BUBBLE_TYPE_STARTUP_PAGES &&
-      profile()->GetLastSessionExitType() == Profile::EXIT_CRASHED)
+      ExitTypeService::GetLastSessionExitType(profile()) == ExitType::kCrashed)
     return false;
 
   if (HasBubbleInfoBeenAcknowledged(extension->id()))
@@ -90,7 +90,7 @@ void SettingsApiBubbleDelegate::PerformAction(const ExtensionIdList& list) {
   }
 }
 
-base::string16 SettingsApiBubbleDelegate::GetTitle() const {
+std::u16string SettingsApiBubbleDelegate::GetTitle() const {
   switch (type_) {
     case BUBBLE_TYPE_HOME_PAGE:
       return l10n_util::GetStringUTF16(
@@ -103,10 +103,10 @@ base::string16 SettingsApiBubbleDelegate::GetTitle() const {
           IDS_EXTENSIONS_SETTINGS_API_TITLE_SEARCH_ENGINE_BUBBLE);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 SettingsApiBubbleDelegate::GetMessageBody(
+std::u16string SettingsApiBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
   const Extension* extension =
@@ -115,7 +115,7 @@ base::string16 SettingsApiBubbleDelegate::GetMessageBody(
       extension ? SettingsOverrides::Get(extension) : NULL;
   if (!extension || !settings) {
     NOTREACHED();
-    return base::string16();
+    return std::u16string();
   }
 
   bool home_change = settings->homepage != NULL;
@@ -125,7 +125,7 @@ base::string16 SettingsApiBubbleDelegate::GetMessageBody(
   int first_line_id = 0;
   int second_line_id = 0;
 
-  base::string16 body;
+  std::u16string body;
   switch (type_) {
     case BUBBLE_TYPE_HOME_PAGE:
       first_line_id = anchored_to_browser_action ?
@@ -179,22 +179,22 @@ base::string16 SettingsApiBubbleDelegate::GetMessageBody(
   return body;
 }
 
-base::string16 SettingsApiBubbleDelegate::GetOverflowText(
-    const base::string16& overflow_count) const {
+std::u16string SettingsApiBubbleDelegate::GetOverflowText(
+    const std::u16string& overflow_count) const {
   // Does not have more than one extension in the list at a time.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 GURL SettingsApiBubbleDelegate::GetLearnMoreUrl() const {
   return GURL(chrome::kExtensionControlledSettingLearnMoreURL);
 }
 
-base::string16 SettingsApiBubbleDelegate::GetActionButtonLabel() const {
+std::u16string SettingsApiBubbleDelegate::GetActionButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS);
 }
 
-base::string16 SettingsApiBubbleDelegate::GetDismissButtonLabel() const {
+std::u16string SettingsApiBubbleDelegate::GetDismissButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 
@@ -202,10 +202,6 @@ bool SettingsApiBubbleDelegate::ShouldCloseOnDeactivate() const {
   // Startup bubbles tend to get lost in the focus storm that happens on
   // startup. Other types should dismiss on focus loss.
   return type_ != BUBBLE_TYPE_STARTUP_PAGES;
-}
-
-bool SettingsApiBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
-  return false;
 }
 
 bool SettingsApiBubbleDelegate::ShouldShow(
@@ -236,39 +232,8 @@ bool SettingsApiBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool SettingsApiBubbleDelegate::ShouldHighlightExtensions() const {
-  return type_ == BUBBLE_TYPE_STARTUP_PAGES;
-}
-
 bool SettingsApiBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
-}
-
-void SettingsApiBubbleDelegate::LogExtensionCount(size_t count) {
-}
-
-void SettingsApiBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  switch (type_) {
-    case BUBBLE_TYPE_HOME_PAGE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionHomePage",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-    case BUBBLE_TYPE_STARTUP_PAGES:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionStartupPage",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-    case BUBBLE_TYPE_SEARCH_ENGINE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "ExtensionOverrideBubble.SettingsApiUserSelectionSearchEngine",
-          action,
-          ExtensionMessageBubbleController::ACTION_BOUNDARY);
-      break;
-  }
 }
 
 const char* SettingsApiBubbleDelegate::GetKey() const {

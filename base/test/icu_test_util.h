@@ -5,9 +5,9 @@
 #ifndef BASE_TEST_ICU_TEST_UTIL_H_
 #define BASE_TEST_ICU_TEST_UTIL_H_
 
+#include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 U_NAMESPACE_BEGIN

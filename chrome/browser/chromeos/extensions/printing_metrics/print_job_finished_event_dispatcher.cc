@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
@@ -24,15 +25,13 @@ PrintJobFinishedEventDispatcher::GetFactoryInstance() {
 PrintJobFinishedEventDispatcher::PrintJobFinishedEventDispatcher(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      event_router_(EventRouter::Get(browser_context)),
-      print_job_history_service_observer_(this) {
+      event_router_(EventRouter::Get(browser_context)) {
   auto* history_service =
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
-          browser_context);
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(browser_context);
 
   // The print job history service is not available on the lock screen.
   if (history_service) {
-    print_job_history_service_observer_.Add(history_service);
+    print_job_history_service_observation_.Observe(history_service);
   }
 }
 

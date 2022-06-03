@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/permissions/permission_context_base.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_context_base.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 // This permission context is responsible for getting, deciding on and updating
 // the Periodic Background Sync permission for a particular website. This
@@ -28,17 +29,26 @@ class Profile;
 // For other platforms, if there's no PWA installed for the origin, deny.
 // If there is a PWA installed, grant/deny permission based on whether the
 // one-shot Background Sync content setting is set to allow/block.
-class PeriodicBackgroundSyncPermissionContext : public PermissionContextBase {
+class PeriodicBackgroundSyncPermissionContext
+    : public permissions::PermissionContextBase {
  public:
-  explicit PeriodicBackgroundSyncPermissionContext(Profile* profile);
+  explicit PeriodicBackgroundSyncPermissionContext(
+      content::BrowserContext* browser_context);
+
+  PeriodicBackgroundSyncPermissionContext(
+      const PeriodicBackgroundSyncPermissionContext&) = delete;
+  PeriodicBackgroundSyncPermissionContext& operator=(
+      const PeriodicBackgroundSyncPermissionContext&) = delete;
+
   ~PeriodicBackgroundSyncPermissionContext() override;
 
  protected:
   // Virtual for testing.
-  virtual bool IsPwaInstalled(const GURL& url) const;
+  virtual bool IsPwaInstalled(const GURL& origin) const;
 #if defined(OS_ANDROID)
-  virtual bool IsTwaInstalled(const GURL& url) const;
+  virtual bool IsTwaInstalled(const GURL& origin) const;
 #endif
+  virtual GURL GetDefaultSearchEngineUrl() const;
 
  private:
   // PermissionContextBase implementation.
@@ -47,20 +57,20 @@ class PeriodicBackgroundSyncPermissionContext : public PermissionContextBase {
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-  void DecidePermission(content::WebContents* web_contents,
-                        const PermissionRequestID& id,
-                        const GURL& requesting_origin,
-                        const GURL& embedding_origin,
-                        bool user_gesture,
-                        BrowserPermissionCallback callback) override;
-  void NotifyPermissionSet(const PermissionRequestID& id,
+  void DecidePermission(
+      content::WebContents* web_contents,
+      const permissions::PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      bool user_gesture,
+      permissions::BrowserPermissionCallback callback) override;
+  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
                            const GURL& requesting_origin,
                            const GURL& embedding_origin,
-                           BrowserPermissionCallback callback,
+                           permissions::BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncPermissionContext);
+                           ContentSetting content_setting,
+                           bool is_one_time) override;
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_

@@ -1,0 +1,390 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /AcroForm 2 0 R
+  /Extensions <<
+    /ADBE <<
+      /BaseVersion /1.7
+      /ExtensionLevel 8
+    >>
+  >>
+  /NeedsRendering true
+  /Pages 8 0 R
+  /Type /Catalog
+>>
+endobj
+2 0 obj <<
+  /XFA [
+    (preamble)
+    3 0 R
+    (config)
+    4 0 R
+    (template)
+    5 0 R
+    (localeSet)
+    6 0 R
+    (postamble)
+    7 0 R
+  ]
+>>
+endobj
+3 0 obj <<
+  /Length 124
+>>
+stream
+<xdp:xdp xmlns:xdp="http://ns.adobe.com/xdp/" timeStamp="2018-02-23T21:37:11Z" uuid="21482798-7bf0-40a4-bc5d-3cefdccf32b5">
+endstream
+endobj
+4 0 obj <<
+  /Length 642
+>>
+stream
+<config xmlns="http://www.xfa.org/schema/xci/3.0/">
+<agent name="designer">
+  <destination>pdf</destination>
+  <pdf>
+    <fontInfo/>
+  </pdf>
+</agent>
+<present>
+  <pdf>
+    <version>1.7</version>
+    <adobeExtensionLevel>8</adobeExtensionLevel>
+    <renderPolicy>client</renderPolicy>
+    <scriptModel>XFA</scriptModel>
+    <interactive>1</interactive>
+  </pdf>
+  <xdp>
+    <packets>*</packets>
+  </xdp>
+  <destination>pdf</destination>
+  <script>
+    <runScripts>server</runScripts>
+  </script>
+</present>
+<acrobat>
+  <acrobat7>
+    <dynamicRender>required</dynamicRender>
+  </acrobat7>
+  <validate>preSubmit</validate>
+</acrobat>
+</config>
+endstream
+endobj
+5 0 obj <<
+  /Length 3942
+>>
+stream
+<template>
+  <subform name="s6" x="0" y="0" h="512pt" w="512pt">
+    <border/>
+    <field name="field_31" x="10pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <button highlight="push"/>
+      </ui>
+      <caption>
+        <value>
+          <text>Button 31</text>
+        </value>
+      </caption>
+      <items>
+        <text name="down">Down Text</text>
+        <text name="rollover">Rollover Text</text>
+      </items>
+    </field>
+    <field name="field_32" x="110pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <barcode/>
+      </ui>
+      <caption>
+        <value>
+          <text>Button 32</text>
+        </value>
+      </caption>
+      <value>
+        <text>test</text>
+      </value>
+    </field>
+    <field name="field_33" x="210pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <checkButton shape="round">
+        </checkButton>
+      </ui>
+      <items>
+        <integer>2</integer>
+      </items>
+      <value>
+        <text>Select 2</text>
+      </value>
+      <caption placement="left">
+        <value>
+          <text>Option 2</text>
+        </value>
+      </caption>
+    </field>
+    <field name="field_34" x="310pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <textEdit/>
+      </ui>
+      <value>
+        <text>clams</text>
+      </value>
+    </field>
+    <field name="field_35" x="410pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <choiceList open="onEntry">
+          <border>
+            <edge/>
+          </border>
+        </choiceList>
+      </ui>
+      <items save="1">
+        <text>apples</text>
+        <text>bananas</text>
+        <text>pears</text>
+      </items>
+      <value>
+        <text>apples</text>
+      </value>
+    </field>
+    <subform name="s7" x="6pt" y="200pt" h="200pt" w="500pt">
+      <border/>
+      <field name="field_36" x="10pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <dateTimeEdit>
+            <comb numberOfCells="8"/>
+            <border hand="right">
+              <edge/>
+            </border>
+          </dateTimeEdit>
+        </ui>
+      </field>
+      <field name="field_37" x="110pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <button highlight="push"/>
+        </ui>
+        <caption>
+          <value>
+            <text>Button</text>
+          </value>
+        </caption>
+        <items>
+          <text name="down">Down Text again</text>
+          <text name="rollover">Rollover Text again</text>
+        </items>
+      </field>
+      <field name="field_38" x="210pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <barcode/>
+        </ui>
+        <value>
+          <text>test again</text>
+        </value>
+      </field>
+      <field name="field_39" x="310pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <checkButton shape="round">
+            <border>
+              <edge/>
+            </border>
+          </checkButton>
+        </ui>
+        <items>
+          <integer>2</integer>
+        </items>
+        <value>
+          <text>Select 2</text>
+        </value>
+        <caption placement="left">
+          <value>
+            <text>Option 2</text>
+          </value>
+        </caption>
+      </field>
+      <field name="field_40" x="410pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <textEdit/>
+        </ui>
+        <value>
+          <text>clams again</text>
+        </value>
+      </field>
+      <field name="field_41" x="10pt" y="110pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <choiceList open="onEntry">
+            <border><edge/></border>
+          </choiceList>
+        </ui>
+        <items save="1">
+          <text>apples</text>
+          <text>bananas</text>
+          <text>pears</text>
+        </items>
+        <value>
+          <text>apples</text>
+        </value>
+      </field>
+    </subform>
+  </subform>
+</template>
+endstream
+endobj
+6 0 obj <<
+  /Length 3455
+>>
+stream
+<localeSet xmlns="http://www.xfa.org/schema/xfa-locale-set/2.7/">
+  <locale name="en_US" desc="English (United States)">
+    <calendarSymbols name="gregorian">
+      <monthNames>
+        <month>January</month>
+        <month>February</month>
+        <month>March</month>
+        <month>April</month>
+        <month>May</month>
+        <month>June</month>
+        <month>July</month>
+        <month>August</month>
+        <month>September</month>
+        <month>October</month>
+        <month>November</month>
+        <month>December</month>
+      </monthNames>
+      <monthNames abbr="1">
+        <month>Jan</month>
+        <month>Feb</month>
+        <month>Mar</month>
+        <month>Apr</month>
+        <month>May</month>
+        <month>Jun</month>
+        <month>Jul</month>
+        <month>Aug</month>
+        <month>Sep</month>
+        <month>Oct</month>
+        <month>Nov</month>
+        <month>Dec</month>
+      </monthNames>
+      <dayNames>
+        <day>Sunday</day>
+        <day>Monday</day>
+        <day>Tuesday</day>
+        <day>Wednesday</day>
+        <day>Thursday</day>
+        <day>Friday</day>
+        <day>Saturday</day>
+      </dayNames>
+      <dayNames abbr="1">
+        <day>Sun</day>
+        <day>Mon</day>
+        <day>Tue</day>
+        <day>Wed</day>
+        <day>Thu</day>
+        <day>Fri</day>
+        <day>Sat</day>
+      </dayNames>
+      <meridiemNames>
+        <meridiem>AM</meridiem>
+        <meridiem>PM</meridiem>
+      </meridiemNames>
+      <eraNames>
+        <era>BC</era>
+        <era>AD</era>
+      </eraNames>
+    </calendarSymbols>
+    <datePatterns>
+      <datePattern name="full">EEEE, MMMM D, YYYY</datePattern>
+      <datePattern name="long">MMMM D, YYYY</datePattern>
+      <datePattern name="med">MMM D, YYYY</datePattern>
+      <datePattern name="short">M/D/YY</datePattern>
+    </datePatterns>
+    <timePatterns>
+      <timePattern name="full">h:MM:SS A Z</timePattern>
+      <timePattern name="long">h:MM:SS A Z</timePattern>
+      <timePattern name="med">h:MM:SS A</timePattern>
+      <timePattern name="short">h:MM A</timePattern>
+    </timePatterns>
+    <dateTimeSymbols>GyMdkHmsSEDFwWahKzZ</dateTimeSymbols>
+    <numberPatterns>
+      <numberPattern name="numeric">z,zz9.zzz</numberPattern>
+      <numberPattern name="currency">$z,zz9.99|($z,zz9.99)</numberPattern>
+      <numberPattern name="percent">z,zz9%</numberPattern>
+    </numberPatterns>
+    <numberSymbols>
+      <numberSymbol name="decimal">.</numberSymbol>
+      <numberSymbol name="grouping">,</numberSymbol>
+      <numberSymbol name="percent">%</numberSymbol>
+      <numberSymbol name="minus">-</numberSymbol>
+      <numberSymbol name="zero">0</numberSymbol>
+    </numberSymbols>
+    <currencySymbols>
+      <currencySymbol name="symbol">$</currencySymbol>
+      <currencySymbol name="isoname">USD</currencySymbol>
+      <currencySymbol name="decimal">.</currencySymbol>
+    </currencySymbols>
+    <typefaces>
+      <typeface name="Myriad Pro"/>
+      <typeface name="Minion Pro"/>
+      <typeface name="Courier Std"/>
+      <typeface name="Adobe Pi Std"/>
+      <typeface name="Adobe Hebrew"/>
+      <typeface name="Adobe Arabic"/>
+      <typeface name="Adobe Thai"/>
+      <typeface name="Kozuka Gothic Pro-VI M"/>
+      <typeface name="Kozuka Mincho Pro-VI R"/>
+      <typeface name="Adobe Ming Std L"/>
+      <typeface name="Adobe Song Std L"/>
+      <typeface name="Adobe Myungjo Std M"/>
+    </typefaces>
+  </locale>
+</localeSet>
+endstream
+endobj
+7 0 obj <<
+  /Length 11
+>>
+stream
+</xdp:xdp>
+endstream
+endobj
+8 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [9 0 R]
+>>
+endobj
+9 0 obj <<
+  /Type /Page
+  /Parent 8 0 R
+  /MediaBox [0 0 612 792]
+>>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000199 00000 n 
+0000000358 00000 n 
+0000000534 00000 n 
+0000001228 00000 n 
+0000005223 00000 n 
+0000008731 00000 n 
+0000008793 00000 n 
+0000008856 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 10
+>>
+startxref
+8933
+%%EOF

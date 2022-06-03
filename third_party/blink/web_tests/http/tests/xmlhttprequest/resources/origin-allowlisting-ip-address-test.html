@@ -1,0 +1,44 @@
+<p>Tests origin allowlisting to an IP address.</p>
+<p>Intended to be run in an iframe. Notifies success/failure via postMessage().</p>
+<p>The specific case to test is determined based on location.hash.
+
+<pre id="console"></pre>
+<script>
+function log(message)
+{
+    window.parent.postMessage(message, "http://127.0.0.1:8000");
+}
+
+if (window.testRunner) {
+  if (location.hash == "#all")
+      testRunner.addOriginAccessAllowListEntry("http://localhost:8000", "http", "", true);
+  else if (location.hash == "#subdomains")
+      testRunner.addOriginAccessAllowListEntry("http://localhost:8000", "http", "*.0.0.1", true);
+  else
+      testRunner.addOriginAccessAllowListEntry("http://localhost:8000", "http", "127.0.0.1", false);
+}
+
+var url = "http://127.0.0.1:8000/xmlhttprequest/resources/get.txt";
+log("Testing: " + url + " (sync)");
+var req = new XMLHttpRequest();
+req.open("GET", url, false);
+try {
+    req.send(null);
+    log("PASS: " + req.responseText);
+} catch (e) {
+    log("FAIL: " + e);
+}
+
+log("Testing: " + url + " (async)");
+req = new XMLHttpRequest();
+req.open("GET", url, true);
+req.onload = function() {
+    log("PASS: " + req.responseText);
+    log("DONE");
+};
+req.onerror = function() {
+    log("FAIL: " + req.status);
+    log("DONE");
+};
+req.send(null);
+</script>

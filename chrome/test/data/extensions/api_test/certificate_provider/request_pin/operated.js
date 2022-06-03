@@ -78,6 +78,9 @@ function processTestCommand(command) {
     case 'IncrementRequestId':
       ++signRequestId;
       break;
+    case 'Reload':
+      chrome.runtime.reload();
+      break;
     default:
       chrome.test.fail();
   }

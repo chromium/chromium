@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests static content provider search.\n`);
-  await TestRunner.loadModule('application_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addIframe('resources/search.html');
@@ -20,7 +20,7 @@
   }
 
   async function step3() {
-    staticContentProvider = Common.StaticContentProvider.fromString('', Common.resourceTypes.Script, resource.content);
+    staticContentProvider = TextUtils.StaticContentProvider.fromString('', Common.resourceTypes.Script, resource.content);
     TestRunner.addResult(resource.url);
 
     var text = 'searchTestUniqueString';

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace payments {
 
@@ -14,7 +14,7 @@ bool ValidationDelegate::ShouldFormat() {
   return false;
 }
 
-base::string16 ValidationDelegate::Format(const base::string16& text) {
+std::u16string ValidationDelegate::Format(const std::u16string& text) {
   NOTREACHED();
   return text;
 }

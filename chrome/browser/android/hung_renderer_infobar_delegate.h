@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
 class RenderProcessHost;
 }
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // A hung renderer infobar is shown when the when the renderer is deemed
 // unresponsive. The infobar provides the user with a choice of either
@@ -23,10 +24,14 @@ class InfoBarService;
 class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a hung renderer InfoBar, adding it to the provided
-  // |infobar_service|. The |render_process_host| will be used to kill the
+  // |infobar_manager|. The |render_process_host| will be used to kill the
   // renderer process if the user so chooses.
-  static void Create(InfoBarService* infobar_service,
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      content::RenderProcessHost* render_process_host);
+
+  HungRendererInfoBarDelegate(const HungRendererInfoBarDelegate&) = delete;
+  HungRendererInfoBarDelegate& operator=(const HungRendererInfoBarDelegate&) =
+      delete;
 
   // Called if the renderer regains responsiveness before the infobar is
   // dismissed.
@@ -52,8 +57,8 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
   HungRendererInfoBarDelegate* AsHungRendererInfoBarDelegate() override;
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -63,8 +68,6 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   content::RenderProcessHost* render_process_host_;
 
   bool terminal_event_logged_for_uma_;
-
-  DISALLOW_COPY_AND_ASSIGN(HungRendererInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -41,17 +40,7 @@ class WebContentsView {
 
   // Computes the rectangle for the native widget that contains the contents of
   // the tab in the screen coordinate system.
-  virtual void GetContainerBounds(gfx::Rect* out) const = 0;
-
-  // TODO(brettw) this is a hack. It's used in two places at the time of this
-  // writing: (1) when render view hosts switch, we need to size the replaced
-  // one to be correct, since it wouldn't have known about sizes that happened
-  // while it was hidden; (2) in constrained windows.
-  //
-  // (1) will be fixed once interstitials are cleaned up. (2) seems like it
-  // should be cleaned up or done some other way, since this works for normal
-  // WebContents without the special code.
-  virtual void SizeContents(const gfx::Size& size) = 0;
+  virtual gfx::Rect GetContainerBounds() const = 0;
 
   // Sets focus to the native widget for this tab.
   virtual void Focus() = 0;
@@ -95,11 +84,7 @@ class WebContentsView {
   // is not strictly necessary and isn't expected to be displayed anywhere, but
   // can aid certain debugging tools such as Spy++ on Windows where you are
   // trying to find a specific window.
-  virtual void SetPageTitle(const base::string16& title) = 0;
-
-  // Invoked when the WebContents is notified that the RenderView has been
-  // fully created.
-  virtual void RenderViewCreated(RenderViewHost* host) = 0;
+  virtual void SetPageTitle(const std::u16string& title) = 0;
 
   // Invoked when the WebContents is notified that the RenderView is ready.
   virtual void RenderViewReady() = 0;
@@ -112,7 +97,10 @@ class WebContentsView {
   // Invoked to enable/disable overscroll gesture navigation.
   virtual void SetOverscrollControllerEnabled(bool enabled) = 0;
 
-#if defined(OS_MACOSX)
+  // Called when the capturer-count of the WebContents changes.
+  virtual void OnCapturerCountChanged() = 0;
+
+#if defined(OS_MAC)
   // If we close the tab while a UI control is in an event-tracking loop, the
   // the control may message freed objects and crash. WebContents::Close will
   // call this. If it returns true, then WebContents::Close will early-out, and

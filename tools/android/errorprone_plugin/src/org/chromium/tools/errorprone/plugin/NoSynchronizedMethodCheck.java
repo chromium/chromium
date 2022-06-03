@@ -37,6 +37,11 @@ public class NoSynchronizedMethodCheck extends BugChecker implements BugChecker.
         if (ASTHelpers.hasDirectAnnotationWithSimpleName(method, "VisibleForTesting")) {
             return Description.NO_MATCH;
         }
+        // A Synchronized @Override methods is unavoidable if the method being overridden is
+        // an Android API method (Example: Exception#fillInStackTrace()).
+        if (ASTHelpers.hasDirectAnnotationWithSimpleName(method, "Override")) {
+            return Description.NO_MATCH;
+        }
         // Skip non-public classes
         Symbol.ClassSymbol enclosingClass = ASTHelpers.enclosingClass(method);
         if (!enclosingClass.getModifiers().contains(Modifier.PUBLIC)) {

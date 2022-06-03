@@ -8,10 +8,10 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
@@ -48,11 +48,9 @@ const char TranslateScript::kCssLoaderCallbackQueryValue[] =
 const char TranslateScript::kJavascriptLoaderCallbackQueryName[] = "jlc";
 const char TranslateScript::kJavascriptLoaderCallbackQueryValue[] =
     "cr.googleTranslate.onLoadJavascript";
-const char kTranslateServerStudy[] = "TranslateServerStudy";
-const char kServerParams[] = "server_params";
 
 TranslateScript::TranslateScript()
-    : expiration_delay_(base::TimeDelta::FromDays(kExpirationDelayDays)) {}
+    : expiration_delay_(base::Days(kExpirationDelayDays)) {}
 
 TranslateScript::~TranslateScript() {}
 
@@ -60,7 +58,7 @@ void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
   script_fetch_start_time_ = base::Time::Now().ToJsTime();
 
   DCHECK(data_.empty()) << "Do not fetch the script if it is already fetched";
-  callback_list_.push_back(std::move(callback));
+  callback_list_.AddUnsafe(std::move(callback));
 
   if (fetcher_) {
     // If there is already a request in progress, do nothing. |callback| will be
@@ -120,7 +118,7 @@ GURL TranslateScript::GetTranslateScriptURL() {
 
 void TranslateScript::OnScriptFetchComplete(bool success,
                                             const std::string& data) {
-  std::unique_ptr<const TranslateURLFetcher> delete_ptr(fetcher_.release());
+  std::unique_ptr<const TranslateURLFetcher> delete_ptr(std::move(fetcher_));
 
   if (success) {
     DCHECK(data_.empty());
@@ -132,9 +130,6 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     // server.
     std::string server_params;
     std::map<std::string, std::string> params;
-    if (variations::GetVariationParams(kTranslateServerStudy, &params)) {
-      server_params = params[kServerParams];
-    }
     base::StringAppendF(
         &data_, "var gtTimeInfo = {'fetchStart': %0.f, 'fetchEnd': %0.f};\n",
         script_fetch_start_time_, base::Time::Now().ToJsTime());
@@ -155,7 +150,7 @@ void TranslateScript::OnScriptFetchComplete(bool success,
         "try {"
         "  __gCrWeb.translate.installCallbacks();"
         "} catch (error) {};";
-    base::StringPiece(install_callbacks).AppendToString(&data_);
+    data_.append(install_callbacks);
 #endif  // defined(OS_IOS)
 
     // Wrap |data| in try/catch block to handle unexpected script errors.
@@ -177,9 +172,7 @@ void TranslateScript::OnScriptFetchComplete(bool success,
         expiration_delay_);
   }
 
-  for (auto& callback : callback_list_)
-    std::move(callback).Run(success, data);
-  callback_list_.clear();
+  callback_list_.Notify(success);
 }
 
 }  // namespace translate

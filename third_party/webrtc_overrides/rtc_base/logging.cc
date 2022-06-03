@@ -16,6 +16,7 @@
 
 #include "base/atomicops.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 #include "third_party/webrtc/rtc_base/string_utils.h"

@@ -6,9 +6,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_error_tracker.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_glx_x11.h"
 #include "ui/gl/init/gl_factory.h"
@@ -26,34 +26,28 @@ namespace gl {
 #endif
 
 TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
-  auto* xdisplay = gfx::GetXDisplay();
-  ASSERT_TRUE(xdisplay);
+  auto* connection = x11::Connection::Get();
+  ASSERT_TRUE(connection && connection->Ready());
 
-  gfx::X11ErrorTracker error_tracker;
+  auto xwindow = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = xwindow,
+      .parent = connection->default_root(),
+      .width = 10,
+      .height = 10,
+      .c_class = x11::WindowClass::InputOutput,
+      .background_pixmap = x11::Pixmap::None,
+      .override_redirect = x11::Bool32(true),
+  });
 
-  XSetWindowAttributes swa;
-  memset(&swa, 0, sizeof(swa));
-  swa.background_pixmap = 0;
-  swa.override_redirect = x11::True;
-  auto xwindow = XCreateWindow(xdisplay, DefaultRootWindow(xdisplay), 0, 0, 10,
-                               10,              // x, y, width, height
-                               0,               // border width
-                               CopyFromParent,  // depth
-                               InputOutput,
-                               CopyFromParent,  // visual
-                               CWBackPixmap | CWOverrideRedirect, &swa);
-  XSelectInput(xdisplay, xwindow, StructureNotifyMask);
+  connection->MapWindow({xwindow});
+  // Since this window is override-redirect, syncing is sufficient
+  // to ensure the map is complete.
+  connection->Sync();
 
-  XEvent xevent;
-  XMapWindow(xdisplay, xwindow);
-  // Wait until the window is mapped.
-  while (XNextEvent(xdisplay, &xevent) && xevent.type != MapNotify &&
-         xevent.xmap.window != xwindow) {
-  }
-
-  GLImageTestSupport::InitializeGL(base::nullopt);
-  auto surface =
-      gl::InitializeGLSurface(base::MakeRefCounted<GLSurfaceGLXX11>(xwindow));
+  GLImageTestSupport::InitializeGL(absl::nullopt);
+  auto surface = gl::InitializeGLSurface(base::MakeRefCounted<GLSurfaceGLXX11>(
+      static_cast<gfx::AcceleratedWidget>(xwindow)));
   scoped_refptr<GLContext> context =
       gl::init::CreateGLContext(nullptr, surface.get(), GLContextAttribs());
 
@@ -62,13 +56,12 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   ASSERT_TRUE(context->MakeCurrent(surface.get()));
   EXPECT_TRUE(context->GetHandle());
 
-  // Destroy the window, and wait until the window is unmapped. There should be
-  // no x11 errors.
   context->ReleaseCurrent(surface.get());
-  XDestroyWindow(xdisplay, xwindow);
-  while (XNextEvent(xdisplay, &xevent) && xevent.type != UnmapNotify) {
-  }
-  ASSERT_FALSE(error_tracker.FoundNewError());
+  connection->DestroyWindow({xwindow});
+  // Since this window is override-redirect, syncing is sufficient
+  // to ensure the window is destroyed and unmapped.
+  connection->Sync();
+  ASSERT_TRUE(connection->Ready());
 
   if (context->MakeCurrent(surface.get())) {
     // With some drivers, MakeCurrent() does not fail for an already-destroyed
@@ -86,7 +79,8 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   // not destroyed.
   ASSERT_TRUE(context->GetHandle());
   surface = nullptr;
-  XSync(xdisplay, x11::True);
+  connection->Sync();
+  connection->events().clear();
 }
 
 }  // namespace gl

@@ -54,4 +54,4 @@ struct tioc_nacl_output {
 };
 
 
-#endif  /* LIBRARIES_NACL_IO_NACL_IO_H_ */
+#endif  // LIBRARIES_NACL_IO_IOCTL_H_

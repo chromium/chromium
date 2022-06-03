@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEO_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEO_NOTIFIER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.h"
-#include "third_party/blink/renderer/modules/geolocation/position_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_position_options.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -26,8 +26,8 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
               V8PositionCallback*,
               V8PositionErrorCallback*,
               const PositionOptions*);
-  ~GeoNotifier() = default;
-  void Trace(blink::Visitor*);
+  ~GeoNotifier() override = default;
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "GeoNotifier"; }
 
   const PositionOptions* Options() const { return options_; }
@@ -61,7 +61,7 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
                    void (GeoNotifier::*member_func)(TimerBase*))
         : timer_(web_task_runner, notifier, member_func), notifier_(notifier) {}
 
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
     // TimerBase-compatible API
     void StartOneShot(base::TimeDelta interval, const base::Location& caller);
@@ -69,7 +69,7 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
     bool IsActive() const { return timer_.IsActive(); }
 
    private:
-    TaskRunnerTimer<GeoNotifier> timer_;
+    HeapTaskRunnerTimer<GeoNotifier> timer_;
     Member<GeoNotifier> notifier_;
   };
 

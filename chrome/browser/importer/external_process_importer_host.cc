@@ -4,6 +4,8 @@
 
 #include "chrome/browser/importer/external_process_importer_host.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -23,13 +25,13 @@ using content::BrowserThread;
 
 ExternalProcessImporterHost::ExternalProcessImporterHost()
     : headless_(false),
-      parent_window_(NULL),
-      observer_(NULL),
-      profile_(NULL),
+      parent_window_(nullptr),
+      observer_(nullptr),
+      profile_(nullptr),
       waiting_for_bookmarkbar_model_(false),
       installed_bookmark_observer_(false),
       is_source_readable_(true),
-      client_(NULL),
+      client_(nullptr),
       items_(0),
       cancelled_(false) {}
 
@@ -98,7 +100,7 @@ ExternalProcessImporterHost::~ExternalProcessImporterHost() {
 }
 
 void ExternalProcessImporterHost::LaunchImportIfReady() {
-  if (waiting_for_bookmarkbar_model_ || template_service_subscription_.get() ||
+  if (waiting_for_bookmarkbar_model_ || template_service_subscription_ ||
       !is_source_readable_ || cancelled_)
     return;
 
@@ -134,7 +136,7 @@ void ExternalProcessImporterHost::BookmarkModelChanged() {
 }
 
 void ExternalProcessImporterHost::OnTemplateURLServiceLoaded() {
-  template_service_subscription_.reset();
+  template_service_subscription_ = {};
   LaunchImportIfReady();
 }
 
@@ -142,8 +144,8 @@ void ExternalProcessImporterHost::ShowWarningDialog() {
   DCHECK(!headless_);
   importer::ShowImportLockDialog(
       parent_window_,
-      base::Bind(&ExternalProcessImporterHost::OnImportLockDialogEnd,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ExternalProcessImporterHost::OnImportLockDialogEnd,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExternalProcessImporterHost::OnImportLockDialogEnd(bool is_continue) {
@@ -169,7 +171,8 @@ bool ExternalProcessImporterHost::CheckForFirefoxLock(
     return true;
 
   DCHECK(!firefox_lock_.get());
-  firefox_lock_.reset(new FirefoxProfileLock(source_profile.source_path));
+  firefox_lock_ =
+      std::make_unique<FirefoxProfileLock>(source_profile.source_path);
   if (firefox_lock_->HasAcquired())
     return true;
 
@@ -203,9 +206,10 @@ void ExternalProcessImporterHost::CheckForLoadedModels(uint16_t items) {
     if (!writer_->TemplateURLServiceIsLoaded()) {
       TemplateURLService* model =
           TemplateURLServiceFactory::GetForProfile(profile_);
-      template_service_subscription_ = model->RegisterOnLoadedCallback(
-          base::Bind(&ExternalProcessImporterHost::OnTemplateURLServiceLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+      template_service_subscription_ =
+          model->RegisterOnLoadedCallback(base::BindOnce(
+              &ExternalProcessImporterHost::OnTemplateURLServiceLoaded,
+              weak_ptr_factory_.GetWeakPtr()));
       model->Load();
     }
   }

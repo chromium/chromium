@@ -10,19 +10,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -46,7 +47,6 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
@@ -61,9 +61,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_intercepting_job_factory.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -85,10 +83,10 @@ void NotifyContextGettersOfShutdownOnIO(
 }  // namespace
 
 void ChromeBrowserStateIOData::InitializeOnUIThread(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   PrefService* pref_service = browser_state->GetPrefs();
-  std::unique_ptr<ProfileParams> params(new ProfileParams);
+  auto params = std::make_unique<ProfileParams>();
   params->path = browser_state->GetOriginalChromeBrowserState()->GetStatePath();
 
   params->io_thread = GetApplicationContext()->GetIOSChromeIOThread();
@@ -102,7 +100,7 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
       browser_state->GetProxyConfigTracker());
   params->system_cookie_store = web::CreateSystemCookieStore(browser_state);
   params->browser_state = browser_state;
-  profile_params_.reset(params.release());
+  profile_params_ = std::move(params);
 
   IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
                                                       pref_service);
@@ -149,7 +147,7 @@ ChromeBrowserStateIOData::ProfileParams::ProfileParams()
 ChromeBrowserStateIOData::ProfileParams::~ProfileParams() {}
 
 ChromeBrowserStateIOData::ChromeBrowserStateIOData(
-    ios::ChromeBrowserStateType browser_state_type)
+    ChromeBrowserStateType browser_state_type)
     : initialized_(false), browser_state_type_(browser_state_type) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
@@ -210,7 +208,7 @@ ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
 
 // static
 void ChromeBrowserStateIOData::InstallProtocolHandlers(
-    net::URLRequestJobFactoryImpl* job_factory,
+    net::URLRequestJobFactory* job_factory,
     ProtocolHandlerMap* protocol_handlers) {
   for (ProtocolHandlerMap::iterator it = protocol_handlers->begin();
        it != protocol_handlers->end(); ++it) {
@@ -249,7 +247,7 @@ HostContentSettingsMap* ChromeBrowserStateIOData::GetHostContentSettingsMap()
 
 bool ChromeBrowserStateIOData::IsOffTheRecord() const {
   return browser_state_type() ==
-         ios::ChromeBrowserStateType::INCOGNITO_BROWSER_STATE;
+         ChromeBrowserStateType::INCOGNITO_BROWSER_STATE;
 }
 
 void ChromeBrowserStateIOData::InitializeMetricsEnabledStateOnUIThread() {
@@ -307,13 +305,15 @@ void ChromeBrowserStateIOData::Init(
       true /* quick_check_enabled */);
   transport_security_state_.reset(new net::TransportSecurityState());
   if (!IsOffTheRecord()) {
+    base::FilePath transport_security_state_file_path =
+        profile_params_->path.Append(FILE_PATH_LITERAL("TransportSecurity"));
     transport_security_persister_ =
         std::make_unique<net::TransportSecurityPersister>(
-            transport_security_state_.get(), profile_params_->path,
-            base::CreateSequencedTaskRunner(
-                {base::ThreadPool(), base::MayBlock(),
-                 base::TaskPriority::BEST_EFFORT,
-                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+            transport_security_state_.get(),
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+            transport_security_state_file_path);
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -358,8 +358,6 @@ void ChromeBrowserStateIOData::Init(
       io_thread_globals->cert_verifier.get());
   main_request_context_->set_ct_policy_enforcer(
       io_thread_globals->ct_policy_enforcer.get());
-  main_request_context_->set_cert_transparency_verifier(
-      io_thread_globals->cert_transparency_verifier.get());
   main_request_context_->set_quic_context(
       io_thread_globals->quic_context.get());
 
@@ -405,7 +403,7 @@ ChromeBrowserStateIOData::CreateHttpNetworkSession(
 
   IOSChromeIOThread* const io_thread = profile_params.io_thread;
 
-  net::HttpNetworkSession::Context session_context;
+  net::HttpNetworkSessionContext session_context;
   net::URLRequestContextBuilder::SetHttpNetworkSessionComponents(
       context, &session_context);
 

@@ -5,9 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SEAT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SEAT_H_
 
-#include <wayland-server-protocol-core.h>
+#include <wayland-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -27,6 +26,10 @@ class TestTouch;
 class TestSeat : public GlobalObject {
  public:
   TestSeat();
+
+  TestSeat(const TestSeat&) = delete;
+  TestSeat& operator=(const TestSeat&) = delete;
+
   ~TestSeat() override;
 
   void set_pointer(MockPointer* pointer) { pointer_ = pointer; }
@@ -42,8 +45,6 @@ class TestSeat : public GlobalObject {
   MockPointer* pointer_;
   TestKeyboard* keyboard_;
   TestTouch* touch_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSeat);
 };
 
 }  // namespace wl

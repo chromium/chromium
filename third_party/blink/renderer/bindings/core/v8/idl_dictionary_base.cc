@@ -12,6 +12,6 @@ v8::Local<v8::Value> IDLDictionaryBase::ToV8Impl(v8::Local<v8::Object>,
   return v8::Local<v8::Value>();
 }
 
-void IDLDictionaryBase::Trace(blink::Visitor* visitor) {}
+void IDLDictionaryBase::Trace(Visitor* visitor) const {}
 
 }  // namespace blink

@@ -35,7 +35,9 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
+#include "third_party/blink/renderer/core/events/drag_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -43,9 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_details_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -60,11 +60,6 @@ class DataListIndicatorElement final : public HTMLDivElement {
  private:
   inline HTMLInputElement* HostInput() const {
     return To<HTMLInputElement>(OwnerShadowHost());
-  }
-
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout) override {
-    return new LayoutDetailsMarker(this);
   }
 
   EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {
@@ -94,9 +89,22 @@ class DataListIndicatorElement final : public HTMLDivElement {
   }
 
  public:
-  DataListIndicatorElement(Document& document) : HTMLDivElement(document) {
+  explicit DataListIndicatorElement(Document& document)
+      : HTMLDivElement(document) {}
+
+  // This function should be called after appending |this| to a UA ShadowRoot.
+  void InitializeInShadowTree() {
+    DCHECK(ContainingShadowRoot());
+    DCHECK(ContainingShadowRoot()->IsUserAgent());
     SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
-    setAttribute(html_names::kIdAttr, shadow_element_names::PickerIndicator());
+    setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
+    setAttribute(html_names::kStyleAttr,
+                 "display:list-item; "
+                 "list-style:disclosure-open inside; "
+                 "counter-increment: list-item 0;"
+                 "block-size:1em;");
+    // Do not expose list-item role.
+    setAttribute(html_names::kAriaHiddenAttr, "true");
   }
 };
 
@@ -105,7 +113,7 @@ TextFieldInputType::TextFieldInputType(HTMLInputElement& element)
 
 TextFieldInputType::~TextFieldInputType() = default;
 
-void TextFieldInputType::Trace(Visitor* visitor) {
+void TextFieldInputType::Trace(Visitor* visitor) const {
   InputTypeView::Trace(visitor);
   InputType::Trace(visitor);
 }
@@ -120,7 +128,7 @@ InputType::ValueMode TextFieldInputType::GetValueMode() const {
 
 SpinButtonElement* TextFieldInputType::GetSpinButtonElement() const {
   auto* element = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::SpinButton());
+      shadow_element_names::kIdSpinButton);
   CHECK(!element || IsA<SpinButtonElement>(element));
   return To<SpinButtonElement>(element);
 }
@@ -134,7 +142,10 @@ bool TextFieldInputType::IsTextField() const {
 }
 
 bool TextFieldInputType::ValueMissing(const String& value) const {
-  return GetElement().IsRequired() && value.IsEmpty();
+  // For text-mode input elements, the value is missing only if it is mutable.
+  // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute
+  return GetElement().IsRequired() && value.IsEmpty() &&
+         !GetElement().IsDisabledOrReadOnly();
 }
 
 bool TextFieldInputType::CanSetSuggestedValue() {
@@ -177,11 +188,14 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
         GetElement().DispatchFormControlChangeEvent();
       break;
 
-    case TextFieldEventBehavior::kDispatchInputAndChangeEvent: {
+    case TextFieldEventBehavior::kDispatchInputEvent:
+      GetElement().DispatchInputEvent();
+      break;
+
+    case TextFieldEventBehavior::kDispatchInputAndChangeEvent:
       GetElement().DispatchInputEvent();
       GetElement().DispatchFormControlChangeEvent();
       break;
-    }
 
     case TextFieldEventBehavior::kDispatchNoEvent:
       break;
@@ -226,12 +240,10 @@ void TextFieldInputType::ForwardEvent(Event& event) {
   // input element.
   if (GetElement().GetLayoutObject() &&
       !GetElement().GetForceReattachLayoutTree() &&
-      (event.IsMouseEvent() || event.IsDragEvent() ||
+      (IsA<MouseEvent>(event) || IsA<DragEvent>(event) ||
        event.HasInterface(event_interface_names::kWheelEvent) ||
        event.type() == event_type_names::kBlur ||
        event.type() == event_type_names::kFocus)) {
-    LayoutTextControlSingleLine* layout_text_control =
-        ToLayoutTextControlSingleLine(GetElement().GetLayoutObject());
     if (event.type() == event_type_names::kBlur) {
       if (LayoutBox* inner_editor_layout_object =
               GetElement().InnerEditorElement()->GetLayoutBox()) {
@@ -239,15 +251,11 @@ void TextFieldInputType::ForwardEvent(Event& event) {
         if (PaintLayer* inner_layer = inner_editor_layout_object->Layer()) {
           if (PaintLayerScrollableArea* inner_scrollable_area =
                   inner_layer->GetScrollableArea()) {
-            inner_scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
-                                                   kProgrammaticScroll);
+            inner_scrollable_area->SetScrollOffset(
+                ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
           }
         }
       }
-
-      layout_text_control->CapsLockStateMayHaveChanged();
-    } else if (event.type() == event_type_names::kFocus) {
-      layout_text_control->CapsLockStateMayHaveChanged();
     }
 
     GetElement().ForwardEvent(event);
@@ -268,13 +276,25 @@ bool TextFieldInputType::ShouldSubmitImplicitly(const Event& event) {
          InputTypeView::ShouldSubmitImplicitly(event);
 }
 
-LayoutObject* TextFieldInputType::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) const {
-  return new LayoutTextControlSingleLine(&GetElement());
+void TextFieldInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
+  // The flag is necessary in order that a text field <input> with non-'visible'
+  // overflow property doesn't change its baseline.
+  style.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 }
 
-bool TextFieldInputType::ShouldHaveSpinButton() const {
-  return LayoutTheme::GetTheme().ShouldHaveSpinButton(&GetElement());
+bool TextFieldInputType::TypeShouldForceLegacyLayout() const {
+  if (RuntimeEnabledFeatures::LayoutNGTextControlEnabled())
+    return false;
+  UseCounter::Count(GetElement().GetDocument(),
+                    WebFeature::kLegacyLayoutByTextControl);
+  return true;
+}
+
+LayoutObject* TextFieldInputType::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) const {
+  return LayoutObjectFactory::CreateTextControlSingleLine(GetElement(), style,
+                                                          legacy);
 }
 
 void TextFieldInputType::CreateShadowSubtree() {
@@ -282,8 +302,7 @@ void TextFieldInputType::CreateShadowSubtree() {
   ShadowRoot* shadow_root = GetElement().UserAgentShadowRoot();
   DCHECK(!shadow_root->HasChildren());
 
-  Document& document = GetElement().GetDocument();
-  bool should_have_spin_button = ShouldHaveSpinButton();
+  bool should_have_spin_button = GetElement().IsSteppable();
   bool should_have_data_list_indicator = GetElement().HasValidDataListOptions();
   bool creates_container = should_have_spin_button ||
                            should_have_data_list_indicator || NeedsContainer();
@@ -294,9 +313,11 @@ void TextFieldInputType::CreateShadowSubtree() {
     return;
   }
 
-  auto* container = MakeGarbageCollected<TextControlInnerContainer>(document);
+  Document& document = GetElement().GetDocument();
+  auto* container = MakeGarbageCollected<HTMLDivElement>(document);
+  container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
   container->SetShadowPseudoId(
-      AtomicString("-webkit-textfield-decoration-container"));
+      shadow_element_names::kPseudoTextFieldDecorationContainer);
   shadow_root->AppendChild(container);
 
   auto* editing_view_port =
@@ -305,8 +326,9 @@ void TextFieldInputType::CreateShadowSubtree() {
   container->AppendChild(editing_view_port);
 
   if (should_have_data_list_indicator) {
-    container->AppendChild(
-        MakeGarbageCollected<DataListIndicatorElement>(document));
+    auto* data_list = MakeGarbageCollected<DataListIndicatorElement>(document);
+    container->AppendChild(data_list);
+    data_list->InitializeInShadowTree();
   }
   // FIXME: Because of a special handling for a spin button in
   // LayoutTextControlSingleLine, we need to put it to the last position. It's
@@ -323,7 +345,7 @@ void TextFieldInputType::CreateShadowSubtree() {
 
 Element* TextFieldInputType::ContainerElement() const {
   return GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::TextFieldContainer());
+      shadow_element_names::kIdTextFieldContainer);
 }
 
 void TextFieldInputType::DestroyShadowSubtree() {
@@ -336,7 +358,7 @@ void TextFieldInputType::ListAttributeTargetChanged() {
   if (ChromeClient* chrome_client = GetChromeClient())
     chrome_client->TextFieldDataListChanged(GetElement());
   Element* picker = GetElement().UserAgentShadowRoot()->getElementById(
-      shadow_element_names::PickerIndicator());
+      shadow_element_names::kIdPickerIndicator);
   bool did_have_picker_indicator = picker;
   bool will_have_picker_indicator = GetElement().HasValidDataListOptions();
   if (did_have_picker_indicator == will_have_picker_indicator)
@@ -345,25 +367,28 @@ void TextFieldInputType::ListAttributeTargetChanged() {
   if (will_have_picker_indicator) {
     Document& document = GetElement().GetDocument();
     if (Element* container = ContainerElement()) {
-      container->InsertBefore(
-          MakeGarbageCollected<DataListIndicatorElement>(document),
-          GetSpinButtonElement());
+      auto* data_list =
+          MakeGarbageCollected<DataListIndicatorElement>(document);
+      container->InsertBefore(data_list, GetSpinButtonElement());
+      data_list->InitializeInShadowTree();
     } else {
       // FIXME: The following code is similar to createShadowSubtree(),
       // but they are different. We should simplify the code by making
       // containerElement mandatory.
-      auto* rp_container =
-          MakeGarbageCollected<TextControlInnerContainer>(document);
+      auto* rp_container = MakeGarbageCollected<HTMLDivElement>(document);
+      rp_container->SetIdAttribute(shadow_element_names::kIdTextFieldContainer);
       rp_container->SetShadowPseudoId(
-          AtomicString("-webkit-textfield-decoration-container"));
+          shadow_element_names::kPseudoTextFieldDecorationContainer);
       Element* inner_editor = GetElement().InnerEditorElement();
       inner_editor->parentNode()->ReplaceChild(rp_container, inner_editor);
       auto* editing_view_port =
           MakeGarbageCollected<EditingViewPortElement>(document);
       editing_view_port->AppendChild(inner_editor);
       rp_container->AppendChild(editing_view_port);
-      rp_container->AppendChild(
-          MakeGarbageCollected<DataListIndicatorElement>(document));
+      auto* data_list =
+          MakeGarbageCollected<DataListIndicatorElement>(document);
+      rp_container->AppendChild(data_list);
+      data_list->InitializeInShadowTree();
       if (GetElement().GetDocument().FocusedElement() == GetElement())
         GetElement().UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
     }
@@ -429,7 +454,8 @@ void TextFieldInputType::HandleBeforeTextInsertedEvent(
   if (GetElement().IsFocused()) {
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited.  See http://crbug.com/590369 for more details.
-    GetElement().GetDocument().UpdateStyleAndLayout();
+    GetElement().GetDocument().UpdateStyleAndLayout(
+        DocumentUpdateReason::kEditing);
 
     selection_length = GetElement()
                            .GetDocument()
@@ -468,7 +494,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
   return true;
 }
 
-void TextFieldInputType::UpdatePlaceholderText() {
+void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
   if (!SupportsPlaceholder())
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
@@ -482,18 +508,25 @@ void TextFieldInputType::UpdatePlaceholderText() {
     auto* new_element =
         MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());
     placeholder = new_element;
-    placeholder->SetShadowPseudoId(AtomicString("-webkit-input-placeholder"));
+    placeholder->SetShadowPseudoId(
+        shadow_element_names::kPseudoInputPlaceholder);
     placeholder->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                         GetElement().IsPlaceholderVisible()
                                             ? CSSValueID::kBlock
                                             : CSSValueID::kNone,
                                         true);
     placeholder->setAttribute(html_names::kIdAttr,
-                              shadow_element_names::Placeholder());
+                              shadow_element_names::kIdPlaceholder);
     Element* container = ContainerElement();
     Node* previous = container ? container : GetElement().InnerEditorElement();
     previous->parentNode()->InsertBefore(placeholder, previous);
     SECURITY_DCHECK(placeholder->parentNode() == previous->parentNode());
+  }
+  if (is_suggested_value) {
+    placeholder->SetInlineStyleProperty(CSSPropertyID::kUserSelect,
+                                        CSSValueID::kNone, true);
+  } else {
+    placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
   placeholder->setTextContent(placeholder_text);
 }

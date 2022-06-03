@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS cx and cy presentation attributes supported on circle element
+PASS cx and cy presentation attributes supported on ellipse element
+PASS x, y, width, and height presentation attributes supported on foreignObject element
+PASS x, y, width, and height presentation attributes supported on image element
+PASS x, y, width, and height presentation attributes supported on rect element
+FAIL x, y, width, and height presentation attributes supported on svg element assert_true: Presentation attribute width="1" should be supported on svg element expected true got false
+FAIL x, y, width, and height presentation attributes supported on symbol element assert_true: Presentation attribute x="1" should be supported on symbol element expected true got false
+FAIL x, y, width, and height presentation attributes supported on use element assert_true: Presentation attribute width="1" should be supported on use element expected true got false
+PASS r presentation attribute supported on circle element
+PASS rx and ry presentation attributes supported on ellipse element
+PASS rx and ry presentation attributes supported on rect element
+PASS d presentation attribute supported on path element
+PASS cx and cy presentation attributes not supported on other elements
+PASS x, y, width, and height presentation attributes not supported on other elements
+PASS r presentation attribute not supported on other elements
+PASS rx and ry presentation attributes not supported on other elements
+PASS d presentation attribute not supported on other elements
+PASS fill presentation attribute not supported on animate
+PASS fill presentation attribute not supported on animateMotion
+PASS fill presentation attribute not supported on animateTransform
+FAIL fill presentation attribute not supported on discard assert_false: Presentation attribute fill="blue" should not be supported on discard element expected false got true
+PASS fill presentation attribute not supported on set
+PASS transform presentation attribute supported on g
+PASS patternTransform presentation attribute supported on pattern
+PASS patternTransform presentation attribute supported on linearGradient
+PASS patternTransform presentation attribute supported on radialGradient
+PASS transform presentation attribute not supported on pattern or gradient elements
+PASS patternTransform presentation attribute not supported on g or gradient elements
+PASS gradientTransform presentation attribute not supported on g or pattern elements
+Harness: the test ran to completion.
+

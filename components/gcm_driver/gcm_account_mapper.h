@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -29,12 +28,16 @@ extern const char kGCMAccountMapperAppId[];
 class GCMAccountMapper : public GCMAppHandler {
  public:
   // List of account mappings.
-  typedef std::vector<AccountMapping> AccountMappings;
-  typedef base::Callback<void(const std::string& app_id,
-                              const IncomingMessage& message)>
-      DispatchMessageCallback;
+  using AccountMappings = std::vector<AccountMapping>;
+  using DispatchMessageCallback =
+      base::RepeatingCallback<void(const std::string& app_id,
+                                   const IncomingMessage& message)>;
 
   explicit GCMAccountMapper(GCMDriver* gcm_driver);
+
+  GCMAccountMapper(const GCMAccountMapper&) = delete;
+  GCMAccountMapper& operator=(const GCMAccountMapper&) = delete;
+
   ~GCMAccountMapper() override;
 
   void Initialize(const AccountMappings& account_mappings,
@@ -125,8 +128,6 @@ class GCMAccountMapper : public GCMAppHandler {
   bool initialized_;
 
   base::WeakPtrFactory<GCMAccountMapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMAccountMapper);
 };
 
 }  // namespace gcm

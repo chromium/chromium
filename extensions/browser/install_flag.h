@@ -16,8 +16,8 @@ enum InstallFlag {
   // capabilities).
   kInstallFlagHasRequirementErrors = 1 << 0,
 
-  // Extension is blacklisted for being malware.
-  kInstallFlagIsBlacklistedForMalware = 1 << 1,
+  // Extension is blocklisted for being malware.
+  kInstallFlagIsBlocklistedForMalware = 1 << 1,
 
   // This is an ephemeral app.
   kInstallFlagIsEphemeral_Deprecated = 1 << 2,
@@ -27,6 +27,11 @@ enum InstallFlag {
 
   // Do not sync the installed extension.
   kInstallFlagDoNotSync = 1 << 4,
+
+  // The user clicked through the install friction dialog when the extension is
+  // not included in the Enhanced Safe Browsing CRX allowlist and the user has
+  // enabled Enhanced Protection.
+  kInstallFlagBypassedSafeBrowsingFriction = 1 << 5,
 };
 
 }  // namespace extensions

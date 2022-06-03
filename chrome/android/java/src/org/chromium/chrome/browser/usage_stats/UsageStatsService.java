@@ -5,19 +5,21 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class UsageStatsService {
 
     private static UsageStatsService sInstance;
 
+    private Profile mProfile;
     private EventTracker mEventTracker;
     private NotificationSuspender mNotificationSuspender;
     private SuspensionTracker mSuspensionTracker;
@@ -47,7 +50,7 @@ public class UsageStatsService {
 
     /** Returns if the UsageStatsService is enabled on this device */
     public static boolean isEnabled() {
-        return BuildInfo.isAtLeastQ() && ChromeFeatureList.isEnabled(ChromeFeatureList.USAGE_STATS);
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     /** Get the global instance of UsageStatsService */
@@ -60,12 +63,27 @@ public class UsageStatsService {
         return sInstance;
     }
 
+    /**
+     * Creates a UsageStatsService for the given Activity if the feature is enabled.
+     * @param activity The activity in which page view events are occurring.
+     * @param activityTabProvider The provider of the active tab for the activity.
+     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
+     */
+    public static void createPageViewObserverIfEnabled(Activity activity,
+            ActivityTabProvider activityTabProvider,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
+        if (!isEnabled()) return;
+
+        getInstance().createPageViewObserver(
+                activity, activityTabProvider, tabContentManagerSupplier);
+    }
+
     @VisibleForTesting
     UsageStatsService() {
-        Profile profile = Profile.getLastUsedProfile().getOriginalProfile();
-        mBridge = new UsageStatsBridge(profile, this);
+        mProfile = Profile.getLastUsedRegularProfile();
+        mBridge = new UsageStatsBridge(mProfile, this);
         mEventTracker = new EventTracker(mBridge);
-        mNotificationSuspender = new NotificationSuspender(profile);
+        mNotificationSuspender = new NotificationSuspender(mProfile);
         mSuspensionTracker = new SuspensionTracker(mBridge, mNotificationSuspender);
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
@@ -83,41 +101,30 @@ public class UsageStatsService {
 
     /**
      * Create a {@link PageViewObserver} for the given tab model selector and activity.
-     * @param tabModelSelector The tab model selector that should be used to get the current tab
-     *         model.
-     * @param activity The activity in which page view events are occuring.
+     * @param activity The activity in which page view events are occurring.
+     * @param activityTabProvider The provider of the active tab for the activity.
+     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
      */
-    public PageViewObserver createPageViewObserver(
-            TabModelSelector tabModelSelector, Activity activity) {
+    private PageViewObserver createPageViewObserver(Activity activity,
+            ActivityTabProvider activityTabProvider,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
         ThreadUtils.assertOnUiThread();
-        PageViewObserver observer = new PageViewObserver(
-                activity, tabModelSelector, mEventTracker, mTokenTracker, mSuspensionTracker);
+        PageViewObserver observer = new PageViewObserver(activity, activityTabProvider,
+                mEventTracker, mTokenTracker, mSuspensionTracker, tabContentManagerSupplier);
         mPageViewObservers.add(new WeakReference<>(observer));
         return observer;
     }
 
     /** @return Whether the user has authorized DW to access usage stats data. */
-    public boolean getOptInState() {
+    boolean getOptInState() {
         ThreadUtils.assertOnUiThread();
-        PrefServiceBridge prefServiceBridge = PrefServiceBridge.getInstance();
-        boolean enabledByPref = prefServiceBridge.getBoolean(Pref.USAGE_STATS_ENABLED);
-        boolean enabledByFeature = ChromeFeatureList.isEnabled(ChromeFeatureList.USAGE_STATS);
-        // If the user has previously opted in, but the feature has been turned off, we need to
-        // treat it as if they opted out; otherwise they'll have no UI affordance for clearing
-        // whatever data Digital Wellbeing has stored.
-        if (enabledByPref && !enabledByFeature) {
-            onAllHistoryDeleted();
-            setOptInState(false);
-        }
-
-        return enabledByPref && enabledByFeature;
+        return UserPrefs.get(mProfile).getBoolean(Pref.USAGE_STATS_ENABLED);
     }
 
     /** Sets the user's opt in state. */
-    public void setOptInState(boolean state) {
+    void setOptInState(boolean state) {
         ThreadUtils.assertOnUiThread();
-        PrefServiceBridge prefServiceBridge = PrefServiceBridge.getInstance();
-        prefServiceBridge.setBoolean(Pref.USAGE_STATS_ENABLED, state);
+        UserPrefs.get(mProfile).setBoolean(Pref.USAGE_STATS_ENABLED, state);
 
         if (mOptInState == state) return;
         mOptInState = state;
@@ -250,12 +257,9 @@ public class UsageStatsService {
     }
 
     private void notifyObserversOfSuspensions(List<String> fqdns, boolean suspended) {
-        for (WeakReference<PageViewObserver> observerRef : mPageViewObservers) {
-            PageViewObserver observer = observerRef.get();
-            if (observer != null) {
-                for (String fqdn : fqdns) {
-                    observer.notifySiteSuspensionChanged(fqdn, suspended);
-                }
+        for (PageViewObserver observer : CollectionUtil.strengthen(mPageViewObservers)) {
+            for (String fqdn : fqdns) {
+                observer.notifySiteSuspensionChanged(fqdn, suspended);
             }
         }
     }

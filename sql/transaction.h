@@ -5,54 +5,99 @@
 #ifndef SQL_TRANSACTION_H_
 #define SQL_TRANSACTION_H_
 
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 
 namespace sql {
 
 class Database;
 
+// Automatically rolls back uncommitted transactions when going out of scope.
+//
+// This class is not thread-safe. Each instance must be used from a single
+// sequence.
 class COMPONENT_EXPORT(SQL) Transaction {
  public:
-  // Creates the scoped transaction object. You MUST call Begin() to begin the
-  // transaction. If you have begun a transaction and not committed it, the
-  // constructor will roll back the transaction. If you want to commit, you
-  // need to manually call Commit before this goes out of scope.
+  // Creates an inactive instance.
   //
-  // Nested transactions are supported. See sql::Database::BeginTransaction
-  // for details.
-  explicit Transaction(Database* connection);
+  // `database` must be non-null and must outlive the newly created instance.
+  //
+  // The instance must be activated by calling Begin().
+  //
+  // sql::Database implements "virtual" nested transactions, as documented in
+  // sql::Database::BeginTransaction(). This is a mis-feature, and should not be
+  // used in new code. The sql::Database implementation does not match the
+  // approach recommended at https://www.sqlite.org/lang_transaction.html.
+  explicit Transaction(Database* database);
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
   ~Transaction();
 
-  // Returns true when there is a transaction that has been successfully begun.
-  bool is_open() const { return is_open_; }
-
-  // Begins the transaction. This uses the default sqlite "deferred" transaction
-  // type, which means that the DB lock is lazily acquired the next time the
-  // database is accessed, not in the begin transaction command.
+  // Activates an inactive transaction. Must be called after construction.
   //
-  // Returns false on failure. Note that if this fails, you shouldn't do
-  // anything you expect to be actually transactional, because it won't be!
+  // Returns false in case of failure. If this method fails, the database
+  // connection will still execute SQL statements, but they will not be enclosed
+  // in a transaction scope. In most cases, Begin() callers should handle
+  // failures by abandoning the high-level operation that was meant to be
+  // carried out in the transaction.
+  //
+  // In most cases (no nested transactions), this method issues a BEGIN
+  // statemnent, which invokes SQLite's deferred transaction startup documented
+  // in https://www.sqlite.org/lang_transaction.html. This means the database
+  // lock is not acquired by the time Begin() completes. Instead, the first
+  // statement after Begin() will attempt to acquire a read or write lock.
+  //
+  // This method is not idempotent. Calling Begin() twice on a Transaction will
+  // cause a DCHECK crash.
   bool Begin();
 
-  // Rolls back the transaction. This will happen automatically if you do
-  // nothing when the transaction goes out of scope.
+  // Explicitly rolls back the transaction. All changes will be forgotten.
+  //
+  // Most features can avoid calling this method, because Transactions that do
+  // not get Commit()ed are automatically rolled back when they go out of scope.
+  //
+  // This method is not idempotent. Calling Rollback() twice on a Transaction
+  // will cause a DCHECK crash.
+  //
+  // Must be called after a successful call to Begin(). Must not be called after
+  // Commit().
   void Rollback();
 
-  // Commits the transaction, returning true on success. This will return
-  // false if sqlite could not commit it, or if another transaction in the
-  // same outermost transaction has been rolled back (which necessitates a
-  // rollback of all transactions in that outermost one).
+  // Commits the transaction. All changes will be persisted in the database.
+  //
+  // Returns false in case of failure. The most failure case is a SQLite failure
+  // in committing the transaction. If sql::Database's support for nested
+  // transactions is in use, this method will also fail if any nested
+  // transaction has been rolled back.
+  //
+  // This method is not idempotent. Calling Commit() twice on a Transaction will
+  // cause a DCHECK crash.
+  //
+  // Must be called after a successful call to Begin(). Must not be called after
+  // Rollback().
   bool Commit();
 
+  // True if Begin() succeeded, and neither Commit() nor Rollback() were called.
+  bool IsActiveForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_active_;
+  }
+
  private:
-  Database* database_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // True when the transaction is open, false when it's already been committed
-  // or rolled back.
-  bool is_open_;
+  Database& database_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
+#if DCHECK_IS_ON()
+  bool begin_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool commit_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool rollback_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+#endif  // DCHECK_IS_ON()
+
+  // True between a successful Begin() and a Commit() / Rollback() call.
+  bool is_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
 }  // namespace sql

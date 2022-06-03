@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 
@@ -27,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleMacInteractiveUITest,
   EXPECT_FALSE(NSApp.hidden);
   [NSApp hide:nil];
   EXPECT_TRUE(NSApp.hidden);
-  status_bubble->SetStatus(base::UTF8ToUTF16("Testing"));
+  status_bubble->SetStatus(u"Testing");
   EXPECT_TRUE(NSApp.hidden);
   [NSApp unhide:nil];
   EXPECT_FALSE(NSApp.hidden);

@@ -53,7 +53,7 @@ def open_urls():
   # give chrome some time to load everything
   time.sleep(2)
 
-  print json.dumps(_get_urls(driver))
+  print(json.dumps(_get_urls(driver)))
   test_util.shutdown_chrome()
 
 
@@ -68,7 +68,7 @@ def start_chrome():
   # currently there's no statisfactory solution.
   time.sleep(10)
 
-  print json.dumps(_get_urls(driver))
+  print(json.dumps(_get_urls(driver)))
   test_util.shutdown_chrome()
 
 

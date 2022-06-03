@@ -12,11 +12,10 @@ class MediaPositionTest : public testing::Test {};
 
 TEST_F(MediaPositionTest, TestPositionUpdated) {
   MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(100);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(100);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   EXPECT_EQ(updated_position.InSeconds(), 400);
@@ -24,16 +23,15 @@ TEST_F(MediaPositionTest, TestPositionUpdated) {
 
 TEST_F(MediaPositionTest, TestPositionUpdatedTwice) {
   MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(200) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(200), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(100);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(100);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   EXPECT_EQ(updated_position.InSeconds(), 300);
 
-  now += base::TimeDelta::FromSeconds(100);
+  now += base::Seconds(100);
   updated_position = media_position.GetPositionAtTime(now);
 
   EXPECT_EQ(updated_position.InSeconds(), 400);
@@ -41,11 +39,10 @@ TEST_F(MediaPositionTest, TestPositionUpdatedTwice) {
 
 TEST_F(MediaPositionTest, TestPositionUpdatedPastDuration) {
   MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(400);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(400);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   // Verify that the position has been updated to the end of the total duration.
@@ -53,9 +50,9 @@ TEST_F(MediaPositionTest, TestPositionUpdatedPastDuration) {
 }
 
 TEST_F(MediaPositionTest, TestPositionAtStart) {
-  MediaPosition media_position(1 /* playback_rate */,
-                               base::TimeDelta::FromSeconds(600) /* duration */,
-                               base::TimeDelta::FromSeconds(0) /* position */);
+  MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(0), /*end_of_media=*/false);
 
   base::TimeDelta updated_position = media_position.GetPosition();
 
@@ -64,11 +61,10 @@ TEST_F(MediaPositionTest, TestPositionAtStart) {
 
 TEST_F(MediaPositionTest, TestNegativePosition) {
   MediaPosition media_position(
-      -1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/-1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(400);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(400);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   // Verify that the position does not go below 0.
@@ -77,8 +73,8 @@ TEST_F(MediaPositionTest, TestNegativePosition) {
 
 TEST_F(MediaPositionTest, TestPositionUpdatedNoChange) {
   MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   // Get the updated position without moving forward in time.
   base::TimeDelta updated_position = media_position.GetPosition();
@@ -89,11 +85,10 @@ TEST_F(MediaPositionTest, TestPositionUpdatedNoChange) {
 
 TEST_F(MediaPositionTest, TestPositionUpdatedFasterPlayback) {
   MediaPosition media_position(
-      2 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/2, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(100);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(100);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   EXPECT_EQ(updated_position.InSeconds(), 500);
@@ -101,33 +96,36 @@ TEST_F(MediaPositionTest, TestPositionUpdatedFasterPlayback) {
 
 TEST_F(MediaPositionTest, TestPositionUpdatedSlowerPlayback) {
   MediaPosition media_position(
-      .5 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
-  base::TimeTicks now =
-      base::TimeTicks::Now() + base::TimeDelta::FromSeconds(200);
+  base::TimeTicks now = base::TimeTicks::Now() + base::Seconds(200);
   base::TimeDelta updated_position = media_position.GetPositionAtTime(now);
 
   EXPECT_EQ(updated_position.InSeconds(), 400);
 }
 
 TEST_F(MediaPositionTest, TestNotEquals_AllDifferent) {
-  EXPECT_NE(MediaPosition(.5 /* playback_rate */,
-                          base::TimeDelta::FromSeconds(600) /* duration */,
-                          base::TimeDelta::FromSeconds(300) /* position */),
-            MediaPosition(1.0 /* playback_rate */,
-                          base::TimeDelta::FromSeconds(800) /* duration */,
-                          base::TimeDelta::FromSeconds(100) /* position */));
+  EXPECT_NE(MediaPosition(
+                /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+                /*position=*/base::Seconds(300),
+                /*end_of_media=*/false),
+            MediaPosition(
+                /*playback_rate=*/1, /*duration=*/base::Seconds(800),
+                /*position=*/base::Seconds(100),
+                /*end_of_media=*/true));
 }
 
 TEST_F(MediaPositionTest, TestNotEquals_DifferentDuration) {
-  MediaPosition position_1(.5 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_1(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
-  MediaPosition position_2(.5 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(1000) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_2(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(1000),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
   position_1.last_updated_time_ = position_2.last_updated_time_;
 
@@ -135,13 +133,31 @@ TEST_F(MediaPositionTest, TestNotEquals_DifferentDuration) {
 }
 
 TEST_F(MediaPositionTest, TestNotEquals_DifferentPlaybackRate) {
-  MediaPosition position_1(.5 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_1(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
-  MediaPosition position_2(1.0 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_2(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
+
+  position_1.last_updated_time_ = position_2.last_updated_time_;
+
+  EXPECT_NE(position_1, position_2);
+}
+
+TEST_F(MediaPositionTest, TestNotEquals_DifferentEndOfMedia) {
+  MediaPosition position_1(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
+
+  MediaPosition position_2(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/true);
 
   position_1.last_updated_time_ = position_2.last_updated_time_;
 
@@ -149,13 +165,15 @@ TEST_F(MediaPositionTest, TestNotEquals_DifferentPlaybackRate) {
 }
 
 TEST_F(MediaPositionTest, TestEquals_AllSame) {
-  MediaPosition position_1(.5 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_1(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
-  MediaPosition position_2(.5 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position_2(
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300),
+      /*end_of_media=*/false);
 
   position_1.last_updated_time_ = position_2.last_updated_time_;
 
@@ -163,16 +181,18 @@ TEST_F(MediaPositionTest, TestEquals_AllSame) {
 }
 
 TEST_F(MediaPositionTest, TestEquals_SameButDifferentTime) {
-  MediaPosition position_1(1.0 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(0) /* position */);
+  MediaPosition position_1(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(0),
+      /*end_of_media=*/false);
 
-  MediaPosition position_2(1.0 /* playback_rate */,
-                           base::TimeDelta::FromSeconds(600) /* duration */,
-                           base::TimeDelta::FromSeconds(10) /* position */);
+  MediaPosition position_2(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(10),
+      /*end_of_media=*/false);
 
   position_2.last_updated_time_ = position_1.last_updated_time_;
-  position_1.last_updated_time_ -= base::TimeDelta::FromSeconds(10);
+  position_1.last_updated_time_ -= base::Seconds(10);
 
   EXPECT_EQ(position_1, position_2);
 }

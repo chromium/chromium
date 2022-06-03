@@ -37,9 +37,14 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   ScriptCustomElementDefinition(const ScriptCustomElementDefinitionData& data,
                                 const CustomElementDescriptor&,
                                 CustomElementDefinition::Id);
+
+  ScriptCustomElementDefinition(const ScriptCustomElementDefinition&) = delete;
+  ScriptCustomElementDefinition& operator=(
+      const ScriptCustomElementDefinition&) = delete;
+
   ~ScriptCustomElementDefinition() override = default;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   v8::Local<v8::Object> Constructor() const;
 
@@ -68,7 +73,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   void RunFormResetCallback(Element& element) override;
   void RunFormDisabledCallback(Element& element, bool is_disabled) override;
   void RunFormStateRestoreCallback(Element& element,
-                                   const FileOrUSVStringOrFormData& value,
+                                   const V8ControlValue* value,
                                    const String& mode) override;
 
  private:
@@ -94,8 +99,6 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   Member<V8VoidFunction> form_reset_callback_;
   Member<V8CustomElementFormDisabledCallback> form_disabled_callback_;
   Member<V8CustomElementFormStateRestoreCallback> form_state_restore_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinition);
 };
 
 }  // namespace blink

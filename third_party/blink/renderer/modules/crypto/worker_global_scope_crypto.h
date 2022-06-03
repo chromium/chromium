@@ -43,8 +43,6 @@ class WorkerGlobalScope;
 class WorkerGlobalScopeCrypto final
     : public GarbageCollected<WorkerGlobalScopeCrypto>,
       public Supplement<WorkerGlobalScope> {
-  USING_GARBAGE_COLLECTED_MIXIN(WorkerGlobalScopeCrypto);
-
  public:
   static const char kSupplementName[];
 
@@ -54,7 +52,7 @@ class WorkerGlobalScopeCrypto final
 
   WorkerGlobalScopeCrypto();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   mutable Member<Crypto> crypto_;

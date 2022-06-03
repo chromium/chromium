@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
-import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -51,20 +53,24 @@ public class LogoDelegateImpl implements LogoView.Delegate {
 
     /**
      * Construct a new {@link LogoDelegateImpl}.
-     * @param navigationDelegate The delegate for loading the URL when the logo is clicked.
-     * @param logoView The view that shows the search provider logo.
+     * @param navigationDelegate The delegate for loading the URL when the logo is clicked. May be
+     *         null when click events are not supported.
+     * @param logoView The view that shows the search provider logo. Maybe null when the client is
+     *         controlling the View presentation itself.
      * @param profile The profile to show the logo for.
      */
-    public LogoDelegateImpl(
-            SuggestionsNavigationDelegate navigationDelegate, LogoView logoView, Profile profile) {
+    public LogoDelegateImpl(@Nullable SuggestionsNavigationDelegate navigationDelegate,
+            @Nullable LogoView logoView, Profile profile) {
         mNavigationDelegate = navigationDelegate;
         mLogoView = logoView;
         mLogoBridge = new LogoBridge(profile);
-        mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY);
+        mImageFetcher = ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
     }
 
     public void destroy() {
         mIsDestroyed = true;
+        mLogoBridge.destroy();
         mImageFetcher.destroy();
         mImageFetcher = null;
     }
@@ -76,7 +82,8 @@ public class LogoDelegateImpl implements LogoView.Delegate {
         if (!isAnimatedLogoShowing && mAnimatedLogoUrl != null) {
             RecordHistogram.recordSparseHistogram(LOGO_CLICK_UMA_NAME, CTA_IMAGE_CLICKED);
             mLogoView.showLoadingView();
-            mImageFetcher.fetchGif(mAnimatedLogoUrl, ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME,
+            mImageFetcher.fetchGif(ImageFetcher.Params.create(mAnimatedLogoUrl,
+                                           ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME),
                     (BaseGifImage animatedLogoImage) -> {
                         if (mIsDestroyed || animatedLogoImage == null) return;
                         mLogoView.playAnimatedLogo(animatedLogoImage);
@@ -125,10 +132,17 @@ public class LogoDelegateImpl implements LogoView.Delegate {
                     mShouldRecordLoadTime = false;
                 }
 
-                mOnLogoClickUrl = logo != null ? logo.onClickUrl : null;
-                mAnimatedLogoUrl = logo != null ? logo.animatedLogoUrl : null;
+                mOnLogoClickUrl =
+                        (logo != null && mNavigationDelegate != null) ? logo.onClickUrl : null;
+                mAnimatedLogoUrl =
+                        (logo != null && mLogoView != null) ? logo.animatedLogoUrl : null;
 
                 logoObserver.onLogoAvailable(logo, fromCache);
+            }
+
+            @Override
+            public void onCachedLogoRevalidated() {
+                logoObserver.onCachedLogoRevalidated();
             }
         };
 

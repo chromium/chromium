@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 
 namespace web {
@@ -20,6 +19,8 @@ class WebState;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;
+class Browser;
+class FullscreenController;
 
 // Notification sent when the user starts a side swipe (on tablet).
 extern NSString* const kSideSwipeWillStartNotification;
@@ -34,14 +35,10 @@ extern NSString* const kSideSwipeDidStopNotification;
 - (UIView*)sideSwipeContentView;
 // Makes |tab| the currently visible tab, displaying its view.
 - (void)sideSwipeRedisplayWebState:(web::WebState*)webState;
-// Check the invariant of "toolbar in front of infobar container which
-// is in front of content area." This DCHECK happens if addSubview and/or
-// insertSubview messed up the view ordering earlier.
-- (BOOL)verifyToolbarViewPlacementInView:(UIView*)views;
 // Controls the visibility of views such as the findbar, infobar and voice
 // search bar.
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible;
-// Returns the height of the header view for the tab model's current tab.
+// Returns the height of the header view for the current tab.
 - (CGFloat)headerHeightForSideSwipe;
 // Returns |YES| if side swipe should be blocked from initiating, such as when
 // voice search is up, or if the tools menu is enabled.
@@ -76,9 +73,10 @@ extern NSString* const kSideSwipeDidStopNotification;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate> snapshotDelegate;
 @property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
+@property(nonatomic, assign) FullscreenController* fullscreenController;
+
 // Initializer.
-- (id)initWithTabModel:(TabModel*)model
-          browserState:(ios::ChromeBrowserState*)browserState;
+- (instancetype)initWithBrowser:(Browser*)browser;
 
 // Set up swipe gesture recognizers.
 - (void)addHorizontalGesturesToView:(UIView*)view;

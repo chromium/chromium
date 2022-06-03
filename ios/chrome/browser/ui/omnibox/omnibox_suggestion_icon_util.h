@@ -31,13 +31,7 @@ enum OmniboxSuggestionIconType {
 // Returns the asset name (to be used in -[UIImage imageNamed:]).
 NSString* GetOmniboxSuggestionIconTypeAssetName(OmniboxSuggestionIconType icon);
 
-// Returns the new asset name (to be used in -[UIImage imageNamed:]).
-NSString* GetOmniboxNewSuggestionIconTypeAssetName(
-    OmniboxSuggestionIconType icon);
-
-// Returns the asset with "always template" rendering mode. |useNewPopupLayout|
-// is temporary.
-UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon,
-                                  bool useNewPopupLayout);
+// Returns the asset with "always template" rendering mode.
+UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon);
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_SUGGESTION_ICON_UTIL_H_

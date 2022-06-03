@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cgi
 from mod_pywebsocket import msgutil
+from six.moves.urllib import parse
 
 
 def web_socket_do_extra_handshake(request):
   r = request.ws_resource.split('?', 1)
   if len(r) == 1:
     return
-  param = cgi.parse_qs(r[1])
+  param = parse.parse_qs(r[1])
   if 'protocol' in param:
     request.ws_protocol = param['protocol'][0]
 

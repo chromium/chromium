@@ -23,7 +23,6 @@
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ipc/ipc_message.h"
 #include "net/base/auth.h"
 #include "net/base/upload_data_stream.h"
 #include "net/http/http_request_headers.h"
@@ -41,7 +40,7 @@ namespace {
 void EraseHeadersIf(
     base::Value* headers,
     base::RepeatingCallback<bool(const std::string&)> predicate) {
-  base::EraseIf(headers->GetList(), [&predicate](const base::Value& v) {
+  headers->EraseListValueIf([&predicate](const base::Value& v) {
     return predicate.Run(v.FindKey(keys::kHeaderNameKey)->GetString());
   });
 }
@@ -51,11 +50,10 @@ void EraseHeadersIf(
 WebRequestEventDetails::WebRequestEventDetails(const WebRequestInfo& request,
                                                int extra_info_spec)
     : extra_info_spec_(extra_info_spec),
-      render_process_id_(content::ChildProcessHost::kInvalidUniqueID),
-      render_frame_id_(MSG_ROUTING_NONE) {
+      render_process_id_(content::ChildProcessHost::kInvalidUniqueID) {
   dict_.SetString(keys::kMethodKey, request.method);
   dict_.SetString(keys::kRequestIdKey, base::NumberToString(request.id));
-  dict_.SetDouble(keys::kTimeStampKey, base::Time::Now().ToDoubleT() * 1000);
+  dict_.SetDoubleKey(keys::kTimeStampKey, base::Time::Now().ToDoubleT() * 1000);
   dict_.SetString(keys::kTypeKey,
                   WebRequestResourceTypeToString(request.web_request_type));
   dict_.SetString(keys::kUrlKey, request.url.spec());
@@ -64,7 +62,6 @@ WebRequestEventDetails::WebRequestEventDetails(const WebRequestInfo& request,
   dict_.SetInteger(keys::kParentFrameIdKey, request.frame_data.parent_frame_id);
   initiator_ = request.initiator;
   render_process_id_ = request.render_process_id;
-  render_frame_id_ = request.frame_id;
 }
 
 WebRequestEventDetails::~WebRequestEventDetails() = default;
@@ -93,10 +90,10 @@ void WebRequestEventDetails::SetAuthInfo(
     dict_.SetString(keys::kSchemeKey, auth_info.scheme);
   if (!auth_info.realm.empty())
     dict_.SetString(keys::kRealmKey, auth_info.realm);
-  auto challenger = std::make_unique<base::DictionaryValue>();
-  challenger->SetString(keys::kHostKey, auth_info.challenger.host());
-  challenger->SetInteger(keys::kPortKey, auth_info.challenger.port());
-  dict_.Set(keys::kChallengerKey, std::move(challenger));
+  base::Value challenger(base::Value::Type::DICTIONARY);
+  challenger.SetStringKey(keys::kHostKey, auth_info.challenger.host());
+  challenger.SetIntKey(keys::kPortKey, auth_info.challenger.port());
+  dict_.SetKey(keys::kChallengerKey, std::move(challenger));
 }
 
 void WebRequestEventDetails::SetResponseHeaders(
@@ -165,10 +162,9 @@ std::unique_ptr<base::DictionaryValue> WebRequestEventDetails::GetFilteredDict(
     result->SetKey(keys::kResponseHeadersKey, std::move(response_headers));
   }
 
-  // Only listeners with a permission for the initiator should recieve it.
+  // Only listeners with a permission for the initiator should receive it.
   if (initiator_) {
-    int tab_id = -1;
-    dict_.GetInteger(keys::kTabIdKey, &tab_id);
+    int tab_id = dict_.FindIntKey(keys::kTabIdKey).value_or(-1);
     if (initiator_->opaque() ||
         WebRequestPermissions::CanExtensionAccessInitiator(
             permission_helper, extension_id, initiator_, tab_id,
@@ -191,7 +187,6 @@ WebRequestEventDetails::CreatePublicSessionCopy() {
   std::unique_ptr<WebRequestEventDetails> copy(new WebRequestEventDetails);
   copy->initiator_ = initiator_;
   copy->render_process_id_ = render_process_id_;
-  copy->render_frame_id_ = render_frame_id_;
 
   static const char* const kSafeAttributes[] = {
     "method", "requestId", "timeStamp", "type", "tabId", "frameId",
@@ -208,12 +203,12 @@ WebRequestEventDetails::CreatePublicSessionCopy() {
   std::string url;
   dict_.GetString(keys::kUrlKey, &url);
   GURL gurl(url);
-  copy->dict_.SetString(keys::kUrlKey, gurl.GetOrigin().spec());
+  copy->dict_.SetString(keys::kUrlKey, gurl.DeprecatedGetOriginAsURL().spec());
 
   return copy;
 }
 
 WebRequestEventDetails::WebRequestEventDetails()
-    : extra_info_spec_(0), render_process_id_(0), render_frame_id_(0) {}
+    : extra_info_spec_(0), render_process_id_(0) {}
 
 }  // namespace extensions

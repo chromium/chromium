@@ -7,10 +7,35 @@
  * 'crostini-arc-adb' is the ARC adb sideloading subpage for Crostini.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import './crostini_arc_adb_confirmation_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '../../settings_shared_css.js';
+
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-arc-adb',
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @private {boolean} */
@@ -33,7 +58,7 @@ Polymer({
     /** @private {boolean} */
     isOwnerProfile_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('isOwnerProfile');
       },
     },
@@ -41,9 +66,15 @@ Polymer({
     /** @private {boolean} */
     isEnterpriseManaged_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('isEnterpriseManaged');
       },
+    },
+
+    /** @private {boolean} */
+    canChangeAdbSideloading_: {
+      type: Boolean,
+      value: false,
     },
 
     /** @private {boolean} */
@@ -51,54 +82,95 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () =>
+          new Set([chromeos.settings.mojom.Setting.kCrostiniAdbDebugging]),
+    },
   },
 
-  attached: function() {
+  attached() {
     this.addWebUIListener(
         'crostini-arc-adb-sideload-status-changed',
         (enabled, need_powerwash) => {
           this.arcAdbEnabled_ = enabled;
           this.arcAdbNeedPowerwash_ = need_powerwash;
         });
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestArcAdbSideloadStatus();
+
+    this.addWebUIListener(
+        'crostini-can-change-arc-adb-sideload-changed',
+        (can_change_arc_adb_sideloading) => {
+          this.canChangeAdbSideloading_ = can_change_arc_adb_sideloading;
+        });
+
+    CrostiniBrowserProxyImpl.getInstance().requestArcAdbSideloadStatus();
+
+    CrostiniBrowserProxyImpl.getInstance().getCanChangeArcAdbSideloading();
   },
 
   /**
-   * Returns whether the toggle is changeable to the user. Only the device owner
-   * is able to change it. Note that the actual guard should be in browser,
-   * otherwise a user may bypass this check by inspecting Settings with
-   * developer tool.
-   * @private
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
-  shouldDisable_: function(
-      isOwnerProfile, isEnterpriseManaged, arcAdbNeedPowerwash) {
-    return !isOwnerProfile || isEnterpriseManaged || arcAdbNeedPowerwash;
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.CROSTINI_ANDROID_ADB) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
-  /** @private */
-  getPolicyIndicatorType_: function(isOwnerProfile, isEnterpriseManaged) {
-    if (isEnterpriseManaged) {
-      return CrPolicyIndicatorType.DEVICE_POLICY;
-    } else if (!isOwnerProfile) {
+  /**
+   * Returns whether the toggle is changeable by the user. See
+   * CrostiniFeatures::CanChangeAdbSideloading(). Note that the actual
+   * guard should be in the browser, otherwise a user may bypass this check by
+   * inspecting Settings with developer tools.
+   * @return {boolean} Whether the control should be disabled.
+   * @private
+   */
+  shouldDisable_() {
+    return !this.canChangeAdbSideloading_ || this.arcAdbNeedPowerwash_;
+  },
+
+  /**
+   * @return {CrPolicyIndicatorType} Which policy indicator to show (if any).
+   * @private
+   */
+  getPolicyIndicatorType_() {
+    if (this.isEnterpriseManaged_) {
+      if (this.canChangeAdbSideloading_) {
+        return CrPolicyIndicatorType.NONE;
+      } else {
+        return CrPolicyIndicatorType.DEVICE_POLICY;
+      }
+    } else if (!this.isOwnerProfile_) {
       return CrPolicyIndicatorType.OWNER;
     } else {
       return CrPolicyIndicatorType.NONE;
     }
   },
 
-  /** @private */
-  getToggleAction_: function(arcAdbEnabled) {
-    return arcAdbEnabled ? 'disable' : 'enable';
+  /**
+   * @return {string} Which action to perform when the toggle is changed.
+   * @private
+   */
+  getToggleAction_() {
+    return this.arcAdbEnabled_ ? 'disable' : 'enable';
   },
 
   /** @private */
-  onArcAdbToggleChanged_: function(event) {
+  onArcAdbToggleChanged_() {
     this.showConfirmationDialog_ = true;
   },
 
   /** @private */
-  onConfirmationDialogClose_: function() {
+  onConfirmationDialogClose_() {
     this.showConfirmationDialog_ = false;
     this.$.arcAdbEnabledButton.checked = this.arcAdbEnabled_;
   },

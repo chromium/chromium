@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Location"
+}
+team_email: "device-dev@chromium.org"
+

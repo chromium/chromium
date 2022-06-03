@@ -9,17 +9,21 @@
 
 namespace media_router {
 
+class LoggerImpl;
+
 class NoopDualMediaSinkService : public DualMediaSinkService {
  public:
   NoopDualMediaSinkService();
+
+  NoopDualMediaSinkService(const NoopDualMediaSinkService&) = delete;
+  NoopDualMediaSinkService& operator=(const NoopDualMediaSinkService&) = delete;
+
   ~NoopDualMediaSinkService() override;
 
   // DualMediaSinkService
   void OnUserGesture() override {}
   void StartMdnsDiscovery() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoopDualMediaSinkService);
+  void BindLogger(LoggerImpl* logger_impl) override {}
 };
 
 }  // namespace media_router

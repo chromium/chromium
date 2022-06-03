@@ -6,12 +6,11 @@
 
 namespace blink {
 
-void TraceImplExternWithUntracedMember::Trace(Visitor* visitor) {
+void TraceImplExternWithUntracedMember::Trace(Visitor* visitor) const {
   // Should get a warning as well.
 }
 
-void TraceImplExternWithUntracedBase::Trace(Visitor* visitor) {
+void TraceImplExternWithUntracedBase::Trace(Visitor* visitor) const {
   // Ditto.
 }
-
 }

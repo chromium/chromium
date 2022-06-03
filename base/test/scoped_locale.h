@@ -16,12 +16,14 @@ namespace base {
 class ScopedLocale {
  public:
   explicit ScopedLocale(const std::string& locale);
+
+  ScopedLocale(const ScopedLocale&) = delete;
+  ScopedLocale& operator=(const ScopedLocale&) = delete;
+
   ~ScopedLocale();
 
  private:
   std::string prev_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLocale);
 };
 
 }  // namespace base

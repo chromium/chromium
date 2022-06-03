@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -26,12 +25,14 @@ class MojoDataPipeReadWrite {
  public:
   MojoDataPipeReadWrite(
       uint32_t data_pipe_capacity_bytes = kDefaultDataPipeCapacityBytes) {
-    mojo::DataPipe data_pipe(data_pipe_capacity_bytes);
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(mojo::CreateDataPipe(data_pipe_capacity_bytes, producer_handle,
+                                  consumer_handle),
+             MOJO_RESULT_OK);
 
-    writer_ = std::make_unique<MojoDataPipeWriter>(
-        std::move(data_pipe.producer_handle));
-    reader_ = std::make_unique<MojoDataPipeReader>(
-        std::move(data_pipe.consumer_handle));
+    writer_ = std::make_unique<MojoDataPipeWriter>(std::move(producer_handle));
+    reader_ = std::make_unique<MojoDataPipeReader>(std::move(consumer_handle));
   }
 
   void WriteAndRead(const uint8_t* buffer,

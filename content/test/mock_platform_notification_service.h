@@ -11,11 +11,9 @@
 #include <unordered_set>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -32,14 +30,20 @@ class BrowserContext;
 class MockPlatformNotificationService : public PlatformNotificationService {
  public:
   MockPlatformNotificationService(BrowserContext* context);
+
+  MockPlatformNotificationService(const MockPlatformNotificationService&) =
+      delete;
+  MockPlatformNotificationService& operator=(
+      const MockPlatformNotificationService&) = delete;
+
   ~MockPlatformNotificationService() override;
 
   // Simulates a click on the notification titled |title|. |action_index|
   // indicates which action was clicked. |reply| indicates the user reply.
   // Must be called on the UI thread.
   void SimulateClick(const std::string& title,
-                     const base::Optional<int>& action_index,
-                     const base::Optional<base::string16>& reply);
+                     const absl::optional<int>& action_index,
+                     const absl::optional<std::u16string>& reply);
 
   // Simulates the closing a notification titled |title|. Must be called on
   // the UI thread.
@@ -49,6 +53,7 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   void DisplayNotification(
       const std::string& notification_id,
       const GURL& origin,
+      const GURL& document_url,
       const blink::PlatformNotificationData& notification_data,
       const blink::NotificationResources& notification_resources) override;
   void DisplayPersistentNotification(
@@ -81,8 +86,6 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   std::unordered_map<std::string, std::string> notification_id_map_;
 
   int64_t next_persistent_notification_id_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformNotificationService);
 };
 
 }  // content

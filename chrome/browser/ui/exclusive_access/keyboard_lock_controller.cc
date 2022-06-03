@@ -13,14 +13,12 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::WebContents;
 
@@ -33,10 +31,10 @@ const char kForcedBubbleReshowsHistogramName[] =
     "ExclusiveAccess.BubbleReshowsPerSession.KeyboardLockForced";
 
 // Amount of time the user must hold ESC to exit full screen.
-constexpr TimeDelta kHoldEscapeTime = TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kHoldEscapeTime = base::Milliseconds(1500);
 
 // Amount of time to look for ESC key presses to reshow the exit instructions.
-constexpr TimeDelta kDefaultEscRepeatWindow = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDefaultEscRepeatWindow = base::Seconds(1);
 
 // Number of times ESC must be pressed within |kDefaultEscRepeatWindow| to
 // trigger the exit instructions to be shown again.
@@ -119,22 +117,23 @@ bool KeyboardLockController::HandleKeyEvent(
 
   // Note: This logic handles exiting fullscreen but the UI feedback element is
   // created and managed by the FullscreenControlHost class.
-  if (event.GetType() == content::NativeWebKeyboardEvent::kKeyUp &&
+  if (event.GetType() == content::NativeWebKeyboardEvent::Type::kKeyUp &&
       hold_timer_.IsRunning()) {
     // Seeing a key up event on Esc with the hold timer running cancels the
     // timer and doesn't exit. This means the user pressed Esc, but not long
     // enough to trigger an exit
     hold_timer_.Stop();
     ReShowExitBubbleIfNeeded();
-  } else if (event.GetType() == content::NativeWebKeyboardEvent::kRawKeyDown &&
+  } else if (event.GetType() ==
+                 content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
              !hold_timer_.IsRunning()) {
     // Seeing a key down event on Esc when the hold timer is stopped starts
     // the timer. When the timer fires, the callback will trigger an exit from
     // fullscreen/mouselock/keyboardlock.
     hold_timer_.Start(
         FROM_HERE, kHoldEscapeTime,
-        base::BindRepeating(&KeyboardLockController::HandleUserHeldEscape,
-                            base::Unretained(this)));
+        base::BindOnce(&KeyboardLockController::HandleUserHeldEscape,
+                       base::Unretained(this)));
   }
 
   return true;

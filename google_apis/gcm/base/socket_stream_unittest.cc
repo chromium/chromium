@@ -12,14 +12,15 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_isolation_key.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -28,6 +29,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace gcm {
 namespace {
@@ -231,14 +233,18 @@ void GCMSocketStreamTest::OpenConnection() {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = true;
+  const url::Origin kOrigin = url::Origin::Create(kDestination);
   mojo_socket_factory_remote_->CreateProxyResolvingSocket(
-      kDestination, std::move(options),
+      kDestination,
+      net::NetworkIsolationKey(kOrigin /* top_frame_origin */,
+                               kOrigin /* frame_origin */),
+      std::move(options),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       mojo_socket_remote_.BindNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& local_addr,
-              const base::Optional<net::IPEndPoint>& peer_addr,
+          [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
+              const absl::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;
@@ -416,11 +422,12 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // |kWriteDataSize|. This is so that the first write is a partial write
   // of |prefix_data|, and the second write is a complete write of kWriteData.
   // The 1 byte shortage is to simulate the partial write.
-  mojo::DataPipe pipe(kWriteDataSize + prefix_data.size() - 1 /* size */);
-  mojo::ScopedDataPipeConsumerHandle consumer_handle =
-      std::move(pipe.consumer_handle);
-  mojo::ScopedDataPipeProducerHandle producer_handle =
-      std::move(pipe.producer_handle);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(
+      mojo::CreateDataPipe(kWriteDataSize + prefix_data.size() - 1 /* size */,
+                           producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
 
   // Prepopulate |producer_handle| of |prefix_data|, now the pipe's capacity is
   // less than |kWriteDataSize|.
@@ -464,10 +471,7 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // to make sure data is as what we expected, and there is no trailing garbage
   // data.
   while (true) {
-    char buffer[5];
-    uint32_t read_size = sizeof(buffer);
-    MojoResult r =
-        consumer_handle->ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+    r = consumer_handle->ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
     if (r == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (r != MOJO_RESULT_OK)

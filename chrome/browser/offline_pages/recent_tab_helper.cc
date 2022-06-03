@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -92,7 +92,7 @@ struct RecentTabHelper::SnapshotProgressInfo {
 
   // The app that created the tab - either a package name of the CCT origin
   // or empty, meaning chrome.
-  std::string origin = "";
+  std::string origin;
 };
 
 RecentTabHelper::RecentTabHelper(content::WebContents* web_contents)
@@ -263,19 +263,20 @@ void RecentTabHelper::DidFinishNavigation(
   // - Running on low end devices.
   // - Viewing POST content for privacy considerations.
   // - Disabled by flag.
-  last_n_listen_to_tab_hidden_ = can_save && !delegate_->IsLowEndDevice() &&
-                                 !navigation_handle->IsPost() &&
-                                 IsOffliningRecentPagesEnabled();
+  last_n_listen_to_tab_hidden_ =
+      can_save && !delegate_->IsLowEndDevice() && !navigation_handle->IsPost();
   DVLOG_IF(1, can_save && !last_n_listen_to_tab_hidden_)
       << " - Page can not be saved by last_n";
 }
 
-void RecentTabHelper::DocumentAvailableInMainFrame() {
+void RecentTabHelper::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   EnsureInitialized();
   snapshot_controller_->DocumentAvailableInMainFrame();
 }
 
-void RecentTabHelper::DocumentOnLoadCompletedInMainFrame() {
+void RecentTabHelper::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   EnsureInitialized();
   snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
 }
@@ -301,9 +302,6 @@ void RecentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 void RecentTabHelper::WebContentsWasHidden() {
-  if (!IsOffliningRecentPagesEnabled())
-    return;
-
   // Do not save a snapshots if any of these are true:
   // - Last_n is not listening to tab hidden events.
   // - A last_n snapshot is currently being saved.
@@ -341,9 +339,9 @@ void RecentTabHelper::WebContentsWasHidden() {
   // Remove previously captured pages for this tab.
   page_model_->GetOfflineIdsForClientId(
       GetRecentPagesClientId(),
-      base::Bind(&RecentTabHelper::ContinueSnapshotWithIdsToPurge,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 last_n_ongoing_snapshot_info_.get()));
+      base::BindOnce(&RecentTabHelper::ContinueSnapshotWithIdsToPurge,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     last_n_ongoing_snapshot_info_.get()));
 
   IsSavingSamePageEnum saving_same_page_value = IsSavingSamePageEnum::kNewPage;
   if (last_n_latest_saved_snapshot_info_) {
@@ -479,8 +477,8 @@ void RecentTabHelper::ContinueSnapshotAfterPurge(
   page_model_->SavePage(
       save_page_params, delegate_->CreatePageArchiver(web_contents()),
       web_contents(),
-      base::Bind(&RecentTabHelper::SavePageCallback,
-                 weak_ptr_factory_.GetWeakPtr(), snapshot_info));
+      base::BindOnce(&RecentTabHelper::SavePageCallback,
+                     weak_ptr_factory_.GetWeakPtr(), snapshot_info));
 }
 
 void RecentTabHelper::SavePageCallback(SnapshotProgressInfo* snapshot_info,
@@ -488,6 +486,7 @@ void RecentTabHelper::SavePageCallback(SnapshotProgressInfo* snapshot_info,
                                        int64_t offline_id) {
   DCHECK((snapshot_info->IsForLastN() &&
           snapshot_info->request_id == OfflinePageModel::kInvalidOfflineId) ||
+         result != SavePageResult::SUCCESS ||
          snapshot_info->request_id == offline_id)
       << "SnapshotProgressInfo(client_id=" << snapshot_info->client_id
       << ", request_id=" << snapshot_info->request_id
@@ -570,6 +569,6 @@ void RecentTabHelper::CancelInFlightSnapshots() {
   last_n_ongoing_snapshot_info_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper);
 
 }  // namespace offline_pages

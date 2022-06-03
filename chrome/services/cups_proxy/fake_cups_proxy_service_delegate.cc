@@ -6,14 +6,23 @@
 
 namespace cups_proxy {
 
+bool FakeCupsProxyServiceDelegate::IsPrinterAccessAllowed() const {
+  return true;
+}
+
 std::vector<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinters(
     chromeos::PrinterClass printer_class) {
   return {};
 }
 
-base::Optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
+absl::optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
     const std::string& id) {
-  return base::nullopt;
+  return absl::nullopt;
+}
+
+std::vector<std::string>
+FakeCupsProxyServiceDelegate::GetRecentlyUsedPrinters() {
+  return {};
 }
 
 bool FakeCupsProxyServiceDelegate::IsPrinterInstalled(

@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sandbox Status</title>
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
@@ -12,6 +13,7 @@
       #sandbox-status td {
         border: 1px solid gray;
         padding: 3px;
+        vertical-align: top;
       }
       #evaluation {
         font-weight: bold;
@@ -28,17 +30,18 @@
       .info {
         background-color: rgb(169, 217, 239);
       }
-    </style>
-    <script src="chrome://resources/js/cr.js"></script>
-<if expr="is_linux">
-    <script src="chrome://resources/js/load_time_data.js"></script>
-    <script src="chrome://sandbox/strings.js"></script>
-</if>
 <if expr="is_win">
-    <script src="chrome://resources/js/promise_resolver.js"></script>
+      .expander {
+        display: inline;
+        padding-right: 1em;
+      }
+      .mitigations {
+        display: inline;
+        font-family: monospace;
+      }
 </if>
-    <script src="chrome://resources/js/util.js"></script>
-    <script src="sandbox_internals.js"></script>
+    </style>
+    <script type="module" src="sandbox_internals.js"></script>
   </head>
   <body>
     <h1>Sandbox Status</h1>

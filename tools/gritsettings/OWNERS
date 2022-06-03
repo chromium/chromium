@@ -1,3 +1,6 @@
 file://tools/grit/OWNERS
 
 huangs@chromium.org
+
+# For WebUI related .grd files.
+per-file resource_ids.spec=file://ui/webui/PLATFORM_OWNERS

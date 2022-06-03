@@ -1,0 +1,37 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="nearby_shared_icons.html">
+
+<script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"></script>
+<script src="/mojo/nearby_share_target_types.mojom-lite.js"></script>
+<script src="/mojo/nearby_share_share_type.mojom-lite.js"></script>
+<script src="/mojo/nearby_share.mojom-lite.js"></script>
+
+<dom-module id="nearby-device-icon">
+  <template>
+    <style>
+      :host {
+        background-color: var(--nearby-device-icon-background-color,
+                              var(--google-blue-50));
+        border-radius: 50%;
+        display: flex;
+      }
+
+      #icon {
+        --iron-icon-fill-color: var(--nearby-device-icon-color,
+                                    var(--google-blue-600));
+        height: var(--nearby-device-icon-size, 24px);
+        margin: auto;
+        width: var(--nearby-device-icon-size, 24px);
+      }
+    </style>
+
+    <iron-icon id="icon" icon="[[getShareTargetIcon_(shareTarget)]]">
+    </iron-icon>
+  </template>
+  <script src="nearby_device_icon.js"></script>
+</dom-module>

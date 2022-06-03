@@ -4,9 +4,11 @@
 
 #include "components/handoff/handoff_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/objc_release_properties.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
 #if defined(OS_IOS)
@@ -14,9 +16,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"  // nogncheck
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
-#include "base/mac/sdk_forward_declarations.h"
 #endif
 
 @interface HandoffManager ()
@@ -51,7 +52,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
     _origin = handoff::ORIGIN_MAC;
 #elif defined(OS_IOS)
     _origin = handoff::ORIGIN_IOS;
@@ -70,6 +71,13 @@
 - (void)updateActiveURL:(const GURL&)url {
   _activeURL = url;
   [self updateUserActivity];
+}
+
+- (void)updateActiveTitle:(const std::u16string&)title {
+  // Assume the activity has already been created since the page navigation
+  // will complete before the page title loads. No need to re-create it, just
+  // set the title. If the activity has not been created, ignore the update.
+  self.userActivity.title = base::SysUTF16ToNSString(title);
 }
 
 - (BOOL)shouldUseActiveURL {
@@ -109,6 +117,10 @@
 
 - (NSURL*)userActivityWebpageURL {
   return self.userActivity.webpageURL;
+}
+
+- (NSString*)userActivityTitle {
+  return self.userActivity.title;
 }
 
 @end

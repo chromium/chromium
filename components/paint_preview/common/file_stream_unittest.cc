@@ -24,6 +24,8 @@ TEST(PaintPreviewFileStreamTest, TestWriteRead) {
   wstream.flush();
   wstream.Close();
   EXPECT_EQ(wstream.bytesWritten(), test_data.size());
+  EXPECT_EQ(wstream.ActualBytesWritten(), test_data.size());
+  EXPECT_FALSE(wstream.DidWriteFail());
   base::File read_file(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
                                       base::File::FLAG_EXCLUSIVE_READ);
@@ -43,10 +45,65 @@ TEST(PaintPreviewFileStreamTest, TestWriteFail) {
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
   std::vector<uint8_t> test_data = {0, 1, 2, 3, 4, 5, 8, 9};
 
-  base::File write_file(file_path,
-                        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ);
-  FileWStream wstream(std::move(write_file));
+  base::File bad_write_file(
+      file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ);
+  FileWStream wstream(std::move(bad_write_file));
   EXPECT_FALSE(wstream.write(test_data.data(), test_data.size()));
+  EXPECT_EQ(wstream.bytesWritten(), test_data.size());
+  EXPECT_EQ(wstream.ActualBytesWritten(), 0U);
+  EXPECT_TRUE(wstream.DidWriteFail());
+}
+
+// Test writing beyond max.
+TEST(PaintPreviewFileStreamTest, TestWriteFailCapped) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
+  std::vector<uint8_t> test_data = {0, 1, 2, 3, 4, 5, 8, 9};
+
+  base::File write_file(
+      file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  FileWStream wstream(std::move(write_file), test_data.size());
+  EXPECT_TRUE(wstream.write(test_data.data(), test_data.size()));
+  EXPECT_FALSE(wstream.DidWriteFail());
+  EXPECT_EQ(wstream.bytesWritten(), test_data.size());
+  EXPECT_EQ(wstream.ActualBytesWritten(), test_data.size());
+  EXPECT_FALSE(wstream.write(test_data.data(), test_data.size()));
+  EXPECT_EQ(wstream.bytesWritten(), test_data.size() * 2);
+  EXPECT_EQ(wstream.ActualBytesWritten(), test_data.size());
+  EXPECT_TRUE(wstream.DidWriteFail());
+}
+
+// Test writing beyond max on first write.
+TEST(PaintPreviewFileStreamTest, TestWriteFailCappedFirstWrite) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
+  std::vector<uint8_t> test_data = {0, 1, 2, 3, 4, 5, 8, 9};
+
+  base::File write_file(
+      file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  FileWStream wstream(std::move(write_file), 4);
+  EXPECT_FALSE(wstream.write(test_data.data(), test_data.size()));
+  EXPECT_TRUE(wstream.DidWriteFail());
+}
+
+// Test writing beyond max (with overflow).
+TEST(PaintPreviewFileStreamTest, TestWriteFailOverflow) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
+  std::vector<uint8_t> test_data = {0, 1, 2, 3, 4, 5, 8, 9};
+
+  base::File write_file(
+      file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  FileWStream wstream(std::move(write_file),
+                      std::numeric_limits<size_t>::max());
+  EXPECT_TRUE(wstream.write(test_data.data(), test_data.size()));
+  EXPECT_FALSE(wstream.DidWriteFail());
+  EXPECT_FALSE(
+      wstream.write(test_data.data(), std::numeric_limits<size_t>::max()));
+  EXPECT_TRUE(wstream.DidWriteFail());
 }
 
 // Test reading to skip.

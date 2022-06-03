@@ -41,11 +41,11 @@ class DesktopMemoryPage(page_module.Page):
 
   def RunPageInteractions(self, action_runner):
     self._DumpMemory(action_runner, 'pre')
-    for _ in xrange(_ITERATIONS):
+    for _ in range(_ITERATIONS):
       action_runner.ReloadPage()
 
     tabs = action_runner.tab.browser.tabs
-    for _ in xrange(_ITERATIONS):
+    for _ in range(_ITERATIONS):
       new_tab = tabs.New()
       new_tab.action_runner.Navigate(self._url)
       try:

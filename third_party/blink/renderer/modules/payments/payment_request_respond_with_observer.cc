@@ -4,21 +4,22 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_request_respond_with_observer.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_address_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_address.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/payments/address_init_type_converter.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
-#include "third_party/blink/renderer/modules/payments/payment_address_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_address_init_type_converter.h"
-#include "third_party/blink/renderer/modules/payments/payment_handler_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_handler_utils.h"
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -49,12 +50,9 @@ void PaymentRequestRespondWithObserver::OnResponseRejected(
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
     const ScriptValue& value,
-    ExceptionState::ContextType context_type,
-    const char* interface_name,
-    const char* property_name) {
+    const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), context_type,
-                                 interface_name, property_name);
+  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
   PaymentHandlerResponse* response =
       NativeValueTraits<PaymentHandlerResponse>::NativeValue(
           script_state->GetIsolate(), value.V8Value(), exception_state);
@@ -69,11 +67,12 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
       !response->hasDetails() || response->details().IsNull() ||
       !response->details().IsObject()) {
     GetExecutionContext()->AddConsoleMessage(
-        ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
-                               mojom::ConsoleMessageLevel::kError,
-                               "'PaymentHandlerResponse.methodName' and "
-                               "'PaymentHandlerResponse.details' must not "
-                               "be empty in payment response."));
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kError,
+            "'PaymentHandlerResponse.methodName' and "
+            "'PaymentHandlerResponse.details' must not "
+            "be empty in payment response."));
   }
 
   if (!response->hasMethodName() || response->methodName().IsEmpty()) {
@@ -97,11 +96,12 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   if (!v8::JSON::Stringify(script_state->GetContext(),
                            response->details().V8Value().As<v8::Object>())
            .ToLocal(&details_value)) {
-    GetExecutionContext()->AddConsoleMessage(ConsoleMessage::Create(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kError,
-        "Failed to stringify PaymentHandlerResponse.details in payment "
-        "response."));
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kError,
+            "Failed to stringify PaymentHandlerResponse.details in payment "
+            "response."));
     BlankResponseWithError(
         PaymentEventResponseType::PAYMENT_DETAILS_STRINGIFY_ERROR);
     return;
@@ -169,7 +169,7 @@ PaymentRequestRespondWithObserver::PaymentRequestRespondWithObserver(
     WaitUntilObserver* observer)
     : RespondWithObserver(context, event_id, observer) {}
 
-void PaymentRequestRespondWithObserver::Trace(blink::Visitor* visitor) {
+void PaymentRequestRespondWithObserver::Trace(Visitor* visitor) const {
   RespondWithObserver::Trace(visitor);
 }
 

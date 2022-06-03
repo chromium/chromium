@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging dumps array values defined on Array.prototype[].\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -52,8 +52,8 @@
       }
     }
 
-    function finish() {
-      ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+    async function finish() {
+      await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
       TestRunner.completeTest();
     }
 

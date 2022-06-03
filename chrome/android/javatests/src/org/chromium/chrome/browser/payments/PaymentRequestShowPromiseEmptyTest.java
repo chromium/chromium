@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -15,9 +15,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -41,16 +43,15 @@ public class PaymentRequestShowPromiseEmptyTest implements MainActivityStartCall
     @Override
     public void onMainActivityStarted() throws TimeoutException {
         new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "650-253-0000", "", "en-US"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "650-253-0000", "", "en-US"));
     }
 
     @Test
     @MediumTest
     @Feature({"Payments"})
     public void testResolveWithEmptyDictionary() throws TimeoutException {
-        mRule.installPaymentApp("basic-card", PaymentRequestTestRule.HAVE_INSTRUMENTS,
-                PaymentRequestTestRule.IMMEDIATE_RESPONSE);
+        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.triggerUIAndWait(mRule.getReadyToPay());
 
         Assert.assertEquals("USD $3.00", mRule.getOrderSummaryTotal());

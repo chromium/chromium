@@ -10,11 +10,6 @@ body { (user agent stylesheet)
     display: block;
 /-- overloaded --/     margin: 8px;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 After disable
 [expanded] 
 element.style { ()
@@ -25,11 +20,6 @@ body { (user agent stylesheet)
     display: block;
     margin: 8px;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 After enable
 [expanded] 
 element.style { ()
@@ -39,10 +29,5 @@ element.style { ()
 body { (user agent stylesheet)
     display: block;
 /-- overloaded --/     margin: 8px;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

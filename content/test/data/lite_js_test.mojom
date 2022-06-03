@@ -5,7 +5,16 @@
 module lite_js_test.mojom;
 
 struct TestStruct {
+  enum StructEnum {
+    kZero = 0,
+    kOne  = 1,
+  };
+
+  const int32 kStructConst = 2;
+
   int32 x;
+  int32 y = kStructConst;
+  StructEnum z = StructEnum.kOne;
   const bool isValid = false;
 };
 
@@ -34,10 +43,18 @@ interface TestMessageTarget {
 
   Echo(NestedEnum nested) => (NestedEnum nested);
 
+  Deconstruct(TestStruct test_struct)
+       => (int32 x, int32 y,
+           // Using TestStruct.StructEnum causes a compile failure. Use
+           // int32 instead.
+           // TODO(crbug.com/1011660): Change |z| to TestStruct.StructEnum.
+           int32 z);
+
   Flatten(array<TestStruct> values) => (array<int32> values);
   FlattenUnions(array<TestUnion> unions) => (array<int32> x, array<int32> s);
 
-  RequestSubinterface(Subinterface& request, SubinterfaceClient client);
+  RequestSubinterface(pending_receiver<Subinterface> receiver,
+                      pending_remote<SubinterfaceClient> client);
 };
 
 interface Subinterface {

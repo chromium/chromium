@@ -4,9 +4,11 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
+import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//components/nacl/features.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//third_party/icu/config.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//ui/base/ui_features.gni")
@@ -33,6 +35,10 @@ source_set("lib") {
     "configuration.h",
     "decompress.cc",
     "decompress.h",
+    "delete_with_retry.cc",
+    "delete_with_retry.h",
+    "mini_file.cc",
+    "mini_file.h",
     "mini_installer.cc",
     "mini_installer.h",
     "mini_installer.rc",
@@ -41,15 +47,14 @@ source_set("lib") {
     "mini_installer_resource.h",
     "mini_string.cc",
     "mini_string.h",
+    "path_string.h",
     "pe_resource.cc",
     "pe_resource.h",
     "regkey.cc",
     "regkey.h",
   ]
 
-  deps = [
-    "//build:branding_buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
 
   if (skip_archive_compression) {
     defines = [ "SKIP_ARCHIVE_COMPRESSION" ]
@@ -71,13 +76,13 @@ source_set("unit_tests") {
   sources = [
     "configuration_test.cc",
     "decompress_test.cc",
+    "delete_with_retry_test.cc",
+    "mini_file_test.cc",
     "mini_installer_unittest.cc",
     "mini_string_test.cc",
   ]
 
-  public_deps = [
-    ":lib",
-  ]
+  public_deps = [ ":lib" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -103,207 +108,180 @@ group("chrome_runtime_deps") {
 
 group("setup_runtime_deps") {
   write_runtime_deps = setup_runtime_deps
-  data_deps = [
+  data_deps = [ "//chrome/installer/setup" ]
+}
+
+packed_files_rc_file = "$target_gen_dir/mini_installer/packed_files.rc"
+
+action("mini_installer_archive") {
+  script = "//chrome/tools/build/win/create_installer_archive.py"
+
+  release_file = "chrome.release"
+
+  inputs = [
+    "$root_out_dir/chrome.dll",
+    "$root_out_dir/chrome.exe",
+    "$root_out_dir/locales/en-US.pak",
+    "$root_out_dir/setup.exe",
+    "//chrome/tools/build/win/makecab.py",
+    release_file,
+  ]
+
+  outputs = [
+    # See also chrome.packed.7z conditionally added below.
+    "$root_out_dir/chrome.7z",
+    "$root_out_dir/setup.ex_",
+    packed_files_rc_file,
+  ]
+  args = [
+    "--build_dir",
+    rebase_path(root_out_dir, root_build_dir),
+    "--staging_dir",
+    rebase_path("$target_gen_dir/mini_installer", root_build_dir),
+    "--input_file",
+    rebase_path(release_file, root_build_dir),
+    "--resource_file_path",
+    rebase_path(packed_files_rc_file, root_build_dir),
+    "--target_arch=$current_cpu",
+    "--distribution=_${branding_path_component}",
+    "--output_dir",
+    rebase_path(root_out_dir, root_build_dir),
+    "--chrome_runtime_deps",
+    rebase_path(chrome_runtime_deps, root_build_dir),
+    "--setup_runtime_deps",
+    rebase_path(setup_runtime_deps, root_build_dir),
+
+    # Optional arguments to generate diff installer.
+    #'--last_chrome_installer=C:/Temp/base',
+    #'--setup_exe_format=DIFF',
+    #'--diff_algorithm=COURGETTE',
+
+    # Optional argument for verbose archiving output.
+    #"--verbose",
+  ]
+
+  deps = [
+    ":chrome_runtime_deps",
+    ":setup_runtime_deps",
+    "//chrome",
+    "//chrome:chrome_dll",
+    "//chrome/browser/extensions/default_extensions",
+    "//chrome/common/win:eventlog_provider",
     "//chrome/installer/setup",
+    "//mojo/core:shared_library",
+    "//third_party/icu:icudata",
+  ]
+
+  if (enable_hidpi) {
+    args += [ "--enable_hidpi=1" ]
+  }
+  if (is_component_build) {
+    args += [ "--component_build=1" ]
+  }
+
+  if (is_component_ffmpeg) {
+    args += [ "--component_ffmpeg_build=1" ]
+  }
+
+  if (skip_archive_compression) {
+    args += [ "--skip_archive_compression" ]
+  } else {
+    outputs += [ "$root_out_dir/chrome.packed.7z" ]
+  }
+
+  if (enable_nacl) {
+    inputs += [ "$root_out_dir/nacl_irt_x86_64.nexe" ]
+    deps += [ "//ppapi/native_client:irt" ]
+    if (current_cpu == "x86") {
+      inputs += [
+        "$root_out_dir/nacl64.exe",
+        "$root_out_dir/nacl_irt_x86_32.nexe",
+      ]
+      deps += [ "//components/nacl/broker:nacl64" ]
+    }
+  }
+
+  if (icu_use_data_file) {
+    inputs += [ "$root_out_dir/icudtl.dat" ]
+  } else {
+    inputs += [ "$root_out_dir/icudt.dll" ]
+  }
+
+  if (v8_use_external_startup_data) {
+    deps += [ "//v8" ]
+    if (use_v8_context_snapshot) {
+      inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
+      deps += [ "//tools/v8_context_snapshot" ]
+    } else {
+      inputs += [ "$root_out_dir/snapshot_blob.bin" ]
+      args += [ "--include_snapshotblob=1" ]
+    }
+  }
+
+  depfile = "$target_gen_dir/archive.d"
+  args += [
+    "--depfile",
+    rebase_path(depfile, root_build_dir),
   ]
 }
 
-# Generates a mini installer.
-#
-#   out_dir (required)
-#     The output directory out_dir where the mini_installer image should be
-#     written.
-#
-#   chrome_dll_file (required)
-#     The path to the version of chrome.dll that should be included in the
-#     installer archive.
-#
-#   chrome_dll_target (required)
-#     The target that generated chrome_dll_file.
-#
-#   deps (required)
-#     Normal meaning.
-template("generate_mini_installer") {
-  chrome_dll_file = invoker.chrome_dll_file
-  chrome_dll_target = invoker.chrome_dll_target
-  output_dir = invoker.out_dir
+executable("mini_installer") {
+  sources = [
+    "mini_installer_exe_main.cc",
+    packed_files_rc_file,
+  ]
 
-  packed_files_rc_file = "$target_gen_dir/$target_name/packed_files.rc"
-  archive_name = target_name + "_archive"
-  staging_dir = "$target_gen_dir/$target_name"
+  # This target is special so we manually override most linker flags and
+  # specify our own to keep the size down.
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
 
-  action(archive_name) {
-    script = "//chrome/tools/build/win/create_installer_archive.py"
+    # Initialization may insert unexpected memset calls.
+    "//build/config/compiler:default_init_stack_vars",
+    "//build/config:executable_config",
+    "//build/config/win:console",
+  ]
+  configs += [
+    ":mini_installer_compiler_flags",
+    "//build/config/sanitizers:link_executable",
+    "//build/config/win:sdk_link",
+    "//build/config/win:windowed",
+  ]
 
-    release_file = "chrome.release"
+  ldflags = [
+    "/FIXED:NO",
+    "/ignore:4199",
+    "/NXCOMPAT",
+  ]
 
-    inputs = [
-      "$chrome_dll_file",
-      "$root_out_dir/chrome.exe",
-      "$root_out_dir/locales/en-US.pak",
-      "$root_out_dir/setup.exe",
-      "//chrome/tools/build/win/makecab.py",
-      release_file,
-    ]
+  libs = [ "setupapi.lib" ]
 
-    outputs = [
-      # See also chrome.packed.7z conditionally added below.
-      "$output_dir/chrome.7z",
-      "$output_dir/setup.ex_",
-      packed_files_rc_file,
-    ]
-    args = [
-      "--build_dir",
-      rebase_path(root_out_dir, root_build_dir),
-      "--staging_dir",
-      rebase_path(staging_dir, root_build_dir),
-      "--input_file",
-      rebase_path(release_file, root_build_dir),
-      "--resource_file_path",
-      rebase_path(packed_files_rc_file, root_build_dir),
-      "--target_arch=$current_cpu",
-      "--distribution=_${branding_path_component}",
-      "--output_dir",
-      rebase_path(output_dir, root_build_dir),
-      "--chrome_runtime_deps",
-      rebase_path(chrome_runtime_deps, root_build_dir),
-      "--setup_runtime_deps",
-      rebase_path(setup_runtime_deps, root_build_dir),
+  deps = [
+    ":lib",
+    ":mini_installer_archive",
+    ":version",
+    "//base:clang_profiling_buildflags",
+    "//build/win:default_exe_manifest",
+  ]
 
-      # Optional arguments to generate diff installer.
-      #'--last_chrome_installer=C:/Temp/base',
-      #'--setup_exe_format=DIFF',
-      #'--diff_algorithm=COURGETTE',
-
-      # Optional argument for verbose archiving output.
-      #"--verbose",
-    ]
-
-    deps = [
-      ":chrome_runtime_deps",
-      ":setup_runtime_deps",
-      "//chrome",
-      "//chrome/browser/extensions/default_extensions",
-      "//chrome/common/win:eventlog_provider",
-      "//chrome/installer/setup",
-      "//third_party/icu:icudata",
-      chrome_dll_target,
-    ]
-
-    if (enable_hidpi) {
-      args += [ "--enable_hidpi=1" ]
-    }
-    if (is_component_build) {
-      args += [ "--component_build=1" ]
-    }
-
-    if (skip_archive_compression) {
-      args += [ "--skip_archive_compression" ]
-    } else {
-      outputs += [ "$output_dir/chrome.packed.7z" ]
-    }
-
-    if (enable_nacl) {
-      inputs += [ "$root_out_dir/nacl_irt_x86_64.nexe" ]
-      deps += [ "//ppapi/native_client:irt" ]
-      if (current_cpu == "x86") {
-        inputs += [
-          "$root_out_dir/nacl64.exe",
-          "$root_out_dir/nacl_irt_x86_32.nexe",
-        ]
-        deps += [ "//components/nacl/broker:nacl64" ]
-      }
-    }
-
-    if (icu_use_data_file) {
-      inputs += [ "$root_out_dir/icudtl.dat" ]
-    } else {
-      inputs += [ "$root_out_dir/icudt.dll" ]
-    }
-
-    if (v8_use_external_startup_data) {
-      deps += [ "//v8" ]
-      if (use_v8_context_snapshot) {
-        inputs += [ "$root_out_dir/v8_context_snapshot.bin" ]
-        deps += [ "//tools/v8_context_snapshot" ]
-      } else {
-        inputs += [ "$root_out_dir/snapshot_blob.bin" ]
-        args += [ "--include_snapshotblob=1" ]
-      }
-    }
-
-    depfile = "$target_gen_dir/archive.d"
-    args += [
-      "--depfile",
-      rebase_path(depfile, root_build_dir),
-    ]
+  # In general, mini_installer tries to avoid depending on the C++ standard
+  # library for size reasons. This is achieved by:
+  #   1. setting a custom entry point which avoids pulling in the standard
+  #      library via a link dependency.
+  #   2. setting no_default_deps=true to avoid including the implicit
+  #      dependency on //buildtools/third_party/libc++ in builds that set
+  #      use_custom_libcxx=true.
+  #
+  # The net result is similar to linking with /NODEFAULTLIB, but more precise
+  # as it just excludes the CRT.
+  #
+  # But in asan and clang profiling builds we need to link against a runtime
+  # library, which in turn depends on the standard library and relies on it
+  # to run initializers.
+  if (!is_asan && !use_clang_profiling) {
+    no_default_deps = true
+    ldflags += [ "/ENTRY:MainEntryPoint" ]
   }
-
-  executable(target_name) {
-    output_name = "mini_installer"
-    sources = [
-      "mini_installer_exe_main.cc",
-      packed_files_rc_file,
-    ]
-
-    # This target is special so we manually override most linker flags and
-    # specify our own to keep the size down. Also make sure that we don't use
-    # WPO as it's not supported by the mini installer.
-    configs -= [
-      # Initialization may insert unexpected memset calls.
-      "//build/config/compiler:default_init_stack_vars",
-      "//build/config/compiler:default_optimization",
-      "//build/config:executable_config",
-      "//build/config/win:console",
-    ]
-    configs += [
-      ":mini_installer_compiler_flags",
-      "//build/config/compiler:optimize_no_wpo",
-      "//build/config/sanitizers:link_executable",
-      "//build/config/win:sdk_link",
-      "//build/config/win:windowed",
-    ]
-
-    ldflags = [
-      "/FIXED:NO",
-      "/ignore:4199",
-      "/NXCOMPAT",
-    ]
-
-    libs = [ "setupapi.lib" ]
-
-    deps = [
-      ":$archive_name",
-      ":lib",
-      ":version",
-      "//build/win:default_exe_manifest",
-    ]
-
-    # In general, mini_installer tries to avoid depending on the C++ standard
-    # library for size reasons. This is achieved by:
-    #   1. setting a custom entry point which avoids pulling in the standard
-    #      library via a link dependency.
-    #   2. setting no_default_deps=true to avoid including the implicit
-    #      dependency on //buildtools/third_party/libc++ in builds that set
-    #      use_custom_libcxx=true.
-    #
-    # The net result is similar to linking with /NODEFAULTLIB, but more precise
-    # as it just excludes the CRT.
-    #
-    # But in asan builds we need to link against the asan runtime library, which
-    # in turn depends on the standard library and relies on it to run
-    # initializers.
-    if (!is_asan) {
-      no_default_deps = true
-      ldflags += [ "/ENTRY:MainEntryPoint" ]
-    }
-  }
-}
-
-generate_mini_installer("mini_installer") {
-  out_dir = root_out_dir
-  chrome_dll_file = "$root_out_dir/chrome.dll"
-  chrome_dll_target = "//chrome:main_dll"
 }
 
 # previous_version_mini_installer.exe can't be generated in an x86 Debug
@@ -330,9 +308,7 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
       "$root_out_dir/" + alternate_version_generator_rel_path,
       "$root_out_dir/mini_installer.exe",
     ]
-    outputs = [
-      "$root_out_dir/$target_name.exe",
-    ]
+    outputs = [ "$root_out_dir/$target_name.exe" ]
     args = [
       "--alternate_version_generator",
       alternate_version_generator_rel_path,

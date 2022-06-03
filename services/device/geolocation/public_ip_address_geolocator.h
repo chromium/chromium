@@ -33,6 +33,11 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   PublicIpAddressGeolocator(const net::PartialNetworkTrafficAnnotationTag tag,
                             PublicIpAddressLocationNotifier* notifier,
                             BadMessageCallback callback);
+
+  PublicIpAddressGeolocator(const PublicIpAddressGeolocator&) = delete;
+  PublicIpAddressGeolocator& operator=(const PublicIpAddressGeolocator&) =
+      delete;
+
   ~PublicIpAddressGeolocator() override;
 
  private:
@@ -58,8 +63,6 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
 
   // Bad message callback.
   BadMessageCallback bad_message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocator);
 };
 
 }  // namespace device

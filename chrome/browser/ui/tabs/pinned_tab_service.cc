@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
-#include "chrome/browser/chrome_notification_types.h"
+#include "base/bind.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
-#include "content/public/browser/notification_service.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 PinnedTabService::PinnedTabService(Profile* profile) : profile_(profile) {
-  registrar_.Add(this, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-                 content::NotificationService::AllSources());
+  closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
+      base::BindRepeating(&PinnedTabService::OnClosingAllBrowsersChanged,
+                          base::Unretained(this)));
 
   for (Browser* browser : *BrowserList::GetInstance())
     OnBrowserAdded(browser);
@@ -25,9 +27,7 @@ PinnedTabService::~PinnedTabService() {
   BrowserList::RemoveObserver(this);
 }
 
-void PinnedTabService::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
+void PinnedTabService::OnClosingAllBrowsersChanged(bool closing) {
   // Saving of tabs happens when the user exits the application or closes the
   // last browser window. After saving, |need_to_write_pinned_tabs_| is set to
   // false to make sure subsequent window closures don't overwrite the pinned
@@ -43,8 +43,7 @@ void PinnedTabService::Observe(int type,
   //   * pinned tabs are saved, without the window with the pinned tabs,
   //     over-writing the correct state.
   // Saving is re-enabled if a new tab or window is opened.
-  DCHECK_EQ(type, chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST);
-  if (TabStripModelObserver::IsObservingAny(this))
+  if (closing && TabStripModelObserver::IsObservingAny(this))
     WritePinnedTabsIfNecessary();
 }
 

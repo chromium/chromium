@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -16,6 +17,8 @@ namespace crypto {
 // |length| must be positive.
 CRYPTO_EXPORT void RandBytes(void *bytes, size_t length);
 
+// Fills |bytes| with cryptographically-secure random bits.
+CRYPTO_EXPORT void RandBytes(base::span<uint8_t> bytes);
 }
 
 #endif  // CRYPTO_RANDOM_H_

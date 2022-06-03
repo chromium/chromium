@@ -5,36 +5,37 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_ELEMENT_INTERNALS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_ELEMENT_INTERNALS_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string_or_form_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class DOMTokenList;
+class CustomStateSet;
 class HTMLElement;
-class LabelsNodeList;
 class ValidityStateFlags;
 
 class CORE_EXPORT ElementInternals : public ScriptWrappable,
                                      public ListedElement {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(ElementInternals);
 
  public:
   ElementInternals(HTMLElement& target);
-  void Trace(Visitor* visitor) override;
+  ElementInternals(const ElementInternals&) = delete;
+  ElementInternals& operator=(const ElementInternals&) = delete;
+  void Trace(Visitor* visitor) const override;
 
   HTMLElement& Target() const { return *target_; }
   void DidUpgrade();
 
-  using ControlValue = FileOrUSVStringOrFormData;
-  // IDL attributes/operations
-  void setFormValue(const ControlValue& value, ExceptionState& exception_state);
-  void setFormValue(const ControlValue& value,
-                    const ControlValue& state,
+  void setFormValue(const V8ControlValue* value,
+                    ExceptionState& exception_state);
+  void setFormValue(const V8ControlValue* value,
+                    const V8ControlValue* state,
                     ExceptionState& exception_state);
   HTMLFormElement* form(ExceptionState& exception_state) const;
   void setValidity(ValidityStateFlags* flags, ExceptionState& exception_state);
@@ -51,9 +52,11 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool checkValidity(ExceptionState& exception_state);
   bool reportValidity(ExceptionState& exception_state);
   LabelsNodeList* labels(ExceptionState& exception_state);
-  DOMTokenList* states();
+  CustomStateSet* states();
 
   bool HasState(const AtomicString& state) const;
+
+  ShadowRoot* shadowRoot() const;
 
   // We need these functions because we are reflecting ARIA attributes.
   // See dom/aria_attributes.idl.
@@ -62,12 +65,10 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   void SetElementAttribute(const QualifiedName& name, Element* element);
   Element* GetElementAttribute(const QualifiedName& name);
-  HeapVector<Member<Element>> GetElementArrayAttribute(
-      const QualifiedName& name,
-      bool is_null);
-  void SetElementArrayAttribute(const QualifiedName&,
-                                HeapVector<Member<Element>>,
-                                bool is_null);
+  HeapVector<Member<Element>>* GetElementArrayAttribute(
+      const QualifiedName& name) const;
+  void SetElementArrayAttribute(const QualifiedName& name,
+                                const HeapVector<Member<Element>>* elements);
   bool HasAttribute(const QualifiedName& attribute) const;
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 
@@ -101,22 +102,20 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   Member<HTMLElement> target_;
 
-  ControlValue value_;
-  ControlValue state_;
+  Member<const V8ControlValue> value_;
+  Member<const V8ControlValue> state_;
   bool is_disabled_ = false;
   Member<ValidityStateFlags> validity_flags_;
   Member<Element> validation_anchor_;
 
-  Member<DOMTokenList> custom_states_;
+  Member<CustomStateSet> custom_states_;
 
   HashMap<QualifiedName, AtomicString> accessibility_semantics_map_;
 
   // See
   // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element
-  HeapHashMap<QualifiedName, Member<HeapVector<Member<Element>>>>
+  HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>
       explicitly_set_attr_elements_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementInternals);
 };
 
 template <>

@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 
-#include "base/logging.h"
+#include <utility>
+
+#include "base/check.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_ble_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_transport_selector_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/ble_device_selection_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -30,9 +33,37 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
       ImageColorScheme color_scheme) const override {
     return gfx::kNoneIcon;
   }
-  base::string16 GetStepTitle() const override { return base::string16(); }
-  base::string16 GetStepDescription() const override {
-    return base::string16();
+  std::u16string GetStepTitle() const override { return std::u16string(); }
+  std::u16string GetStepDescription() const override {
+    return std::u16string();
+  }
+};
+
+// Represents a sheet in the Web Authentication request dialog that allows the
+// user to pick the mechanism (i.e. USB / Windows API / phone / etc) to use.
+class AuthenticatorMechanismSelectorSheetView
+    : public AuthenticatorRequestSheetView {
+ public:
+  explicit AuthenticatorMechanismSelectorSheetView(
+      std::unique_ptr<AuthenticatorMechanismSelectorSheetModel> model)
+      : AuthenticatorRequestSheetView(std::move(model)) {}
+
+  AuthenticatorMechanismSelectorSheetView(
+      const AuthenticatorMechanismSelectorSheetView&) = delete;
+  AuthenticatorMechanismSelectorSheetView& operator=(
+      const AuthenticatorMechanismSelectorSheetView&) = delete;
+
+ private:
+  // AuthenticatorRequestSheetView:
+  std::pair<std::unique_ptr<views::View>,
+            AuthenticatorRequestSheetView::AutoFocus>
+  BuildStepSpecificContent() override {
+    auto* model = static_cast<AuthenticatorMechanismSelectorSheetModel*>(
+        AuthenticatorRequestSheetView::model());
+    return std::make_pair(std::make_unique<HoverListView>(
+                              std::make_unique<TransportHoverListModel>(
+                                  model->dialog_model()->mechanisms())),
+                          AutoFocus::kYes);
   }
 };
 
@@ -44,9 +75,9 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
 
   std::unique_ptr<AuthenticatorRequestSheetView> sheet_view;
   switch (dialog_model->current_step()) {
-    case Step::kTransportSelection:
-      sheet_view = std::make_unique<AuthenticatorTransportSelectorSheetView>(
-          std::make_unique<AuthenticatorTransportSelectorSheetModel>(
+    case Step::kMechanismSelection:
+      sheet_view = std::make_unique<AuthenticatorMechanismSelectorSheetView>(
+          std::make_unique<AuthenticatorMechanismSelectorSheetModel>(
               dialog_model));
       break;
     case Step::kUsbInsertAndActivate:
@@ -96,53 +127,44 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorBlePowerOnManualSheetModel>(
               dialog_model));
       break;
-    case Step::kBlePairingBegin:
+    case Step::kOffTheRecordInterstitial:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorBlePairingBeginSheetModel>(
-              dialog_model));
-      break;
-    case Step::kBleEnterPairingMode:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorBleEnterPairingModeSheetModel>(
-              dialog_model));
-      break;
-    case Step::kBleDeviceSelection:
-      sheet_view = std::make_unique<BleDeviceSelectionSheetView>(
-          std::make_unique<AuthenticatorBleDeviceSelectionSheetModel>(
-              dialog_model));
-      break;
-    case Step::kBlePinEntry:
-      sheet_view = std::make_unique<AuthenticatorBlePinEntrySheetView>(
-          std::make_unique<AuthenticatorBlePinEntrySheetModel>(dialog_model));
-      break;
-    case Step::kBleVerifying:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorBleVerifyingSheetModel>(dialog_model));
-      break;
-    case Step::kBleActivate:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorBleActivateSheetModel>(dialog_model));
-      break;
-    case Step::kTouchIdIncognitoSpeedBump:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorTouchIdIncognitoBumpSheetModel>(
+          std::make_unique<AuthenticatorOffTheRecordInterstitialSheetModel>(
               dialog_model));
       break;
     case Step::kCableActivate:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+      sheet_view = std::make_unique<AuthenticatorPaaskSheetView>(
           std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));
+      break;
+    case Step::kAndroidAccessory:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorAndroidAccessorySheetModel>(
+              dialog_model));
+      break;
+    case Step::kCableV2QRCode:
+      sheet_view = std::make_unique<AuthenticatorQRSheetView>(
+          std::make_unique<AuthenticatorQRSheetModel>(dialog_model));
+      break;
+    case Step::kClientPinChange:
+      sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
+          std::make_unique<AuthenticatorClientPinEntrySheetModel>(
+              dialog_model,
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinChange,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinEntry:
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
           std::make_unique<AuthenticatorClientPinEntrySheetModel>(
               dialog_model,
-              AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry));
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinSetup:
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
           std::make_unique<AuthenticatorClientPinEntrySheetModel>(
               dialog_model,
-              AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup));
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinTapAgain:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
@@ -164,6 +186,14 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           AuthenticatorGenericErrorSheetModel::
               ForClientPinErrorAuthenticatorRemoved(dialog_model));
       break;
+    case Step::kInlineBioEnrollment:
+      sheet_view = std::make_unique<AuthenticatorBioEnrollmentSheetView>(
+          std::make_unique<AuthenticatorBioEnrollmentSheetModel>(dialog_model));
+      break;
+    case Step::kRetryInternalUserVerification:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorRetryUvSheetModel>(dialog_model));
+      break;
     case Step::kResidentCredentialConfirmation:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<
@@ -179,11 +209,13 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AttestationPermissionRequestSheetModel>(
               dialog_model));
       break;
-    case Step::kQRCode:
-      sheet_view = std::make_unique<AuthenticatorQRSheetView>(
-          std::make_unique<AuthenticatorQRSheetModel>(dialog_model));
+    case Step::kEnterpriseAttestationPermissionRequest:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<EnterpriseAttestationPermissionRequestSheetModel>(
+              dialog_model));
       break;
     case Step::kNotStarted:
+    case Step::kLocationBarBubble:
     case Step::kClosed:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));

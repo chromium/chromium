@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,19 +19,83 @@
 namespace {
 
 const char kReadCookieHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.CookieRead";
+    "PageLoad.Clients.ThirdParty.Origins.CookieRead2";
 const char kWriteCookieHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.CookieWrite";
+    "PageLoad.Clients.ThirdParty.Origins.CookieWrite2";
 const char kAccessLocalStorageHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess";
+    "PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2";
 const char kAccessSessionStorageHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess";
+    "PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess2";
 const char kSubframeFCPHistogram[] =
-    "PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint";
+    "PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3";
+
+void InvokeStorageAccessOnFrame(content::RenderFrameHost* frame,
+                                blink::mojom::WebFeature storage_feature) {
+  switch (storage_feature) {
+    case blink::mojom::WebFeature::kThirdPartyLocalStorage:
+      EXPECT_TRUE(content::ExecJs(frame, "window.localStorage"));
+      break;
+    case blink::mojom::WebFeature::kThirdPartySessionStorage:
+      EXPECT_TRUE(content::ExecJs(frame, "window.sessionStorage"));
+      break;
+    case blink::mojom::WebFeature::kThirdPartyFileSystem:
+      EXPECT_EQ(true, content::EvalJs(
+                          frame,
+                          "new Promise((resolve) => { "
+                          " window.webkitRequestFileSystem(window.TEMPORARY,"
+                          " 5*1024, () => resolve(true),"
+                          " () => resolve(false));"
+                          "});"));
+      break;
+    case blink::mojom::WebFeature::kV8StorageManager_GetDirectory_Method:
+      EXPECT_EQ(
+          true,
+          content::EvalJs(
+              frame, "navigator.storage.getDirectory().then(() => true);"));
+      break;
+    case blink::mojom::WebFeature::kThirdPartyIndexedDb:
+      EXPECT_EQ(true,
+                content::EvalJs(
+                    frame,
+                    "new Promise((resolve) => {"
+                    " var request = window.indexedDB.open(\"testdb\", 3); "
+                    " request.onsuccess = () => resolve(true);"
+                    " request.onerror = () => resolve(false);"
+                    "});"));
+      break;
+    case blink::mojom::WebFeature::kThirdPartyCacheStorage:
+      EXPECT_EQ(true, content::EvalJs(
+                          frame,
+                          "new Promise((resolve) => {"
+                          " caches.open(\"testcache\").then("
+                          " () => resolve(true)).catch(() => resolve(false))"
+                          "});"));
+      break;
+    default:
+      // Only invoke storage access for web features associated with a third
+      // party storage access type.
+      NOTREACHED();
+  }
+}
+
+blink::mojom::WebFeature MetricForTestCase(blink::mojom::WebFeature test_case) {
+  if (test_case ==
+      blink::mojom::WebFeature::kV8StorageManager_GetDirectory_Method) {
+    return blink::mojom::WebFeature::kThirdPartyFileSystem;
+  }
+  return test_case;
+}
+
 class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
  protected:
   ThirdPartyMetricsObserverBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  ThirdPartyMetricsObserverBrowserTest(
+      const ThirdPartyMetricsObserverBrowserTest&) = delete;
+  ThirdPartyMetricsObserverBrowserTest& operator=(
+      const ThirdPartyMetricsObserverBrowserTest&) = delete;
+
   ~ThirdPartyMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -46,12 +111,13 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateToUntrackedUrl() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server()->GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateToPageWithFrameAndWaitForFrame(
@@ -63,6 +129,9 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     NavigateToPageWithFrame(host);
     waiter->Wait();
   }
+
+  // TODO(ericrobinson) The following functions all have an assumed frame.
+  // Prefer passing in a frame to make the tests clearer and extendable.
 
   void NavigateFrameAndWaitForFCP(
       const std::string& host,
@@ -90,6 +159,14 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(NavigateIframeToURL(web_contents(), "test", url));
   }
 
+  void TriggerFrameActivation() {
+    // Activate one frame by executing a dummy script.
+    content::RenderFrameHost* ad_frame =
+        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+    const std::string no_op_script = "// No-op script";
+    EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
+  }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -99,8 +176,6 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   // This is needed because third party cookies must be marked SameSite=None and
   // Secure, so they must be accessed over HTTPS.
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -159,6 +234,30 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest, NoStorageEvent) {
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kAccessLocalStorageHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kAccessSessionStorageHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyLocalStorage, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartySessionStorage, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyFileSystem, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyIndexedDb, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCacheStorage, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -170,6 +269,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -184,6 +292,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -203,6 +320,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -221,6 +347,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 2, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -240,6 +375,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -260,6 +404,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -277,6 +430,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // No read is counted since no cookie has previously been set.
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
@@ -294,6 +456,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
 }
 
 class ThirdPartyDomStorageAccessMetricsObserverBrowserTest
@@ -373,5 +544,132 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
     ::testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
+                       FirstPartyStorageAccess_UseCounterNotRecorded) {
+  std::vector<blink::mojom::WebFeature> test_cases = {
+      blink::mojom::WebFeature::kThirdPartyLocalStorage,
+      blink::mojom::WebFeature::kThirdPartySessionStorage,
+      blink::mojom::WebFeature::kThirdPartyFileSystem,
+      blink::mojom::WebFeature::kThirdPartyIndexedDb,
+      blink::mojom::WebFeature::kThirdPartyCacheStorage,
+      blink::mojom::WebFeature::kV8StorageManager_GetDirectory_Method};
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("a.com", "/empty.html");
+    InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0),
+                               test_case);
+    NavigateToUntrackedUrl();
+
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                       MetricForTestCase(test_case), 0);
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyAccess, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
+                       ThirdPartyStorageAccess_UseCounterRecorded) {
+  std::vector<blink::mojom::WebFeature> test_cases = {
+      blink::mojom::WebFeature::kThirdPartyLocalStorage,
+      blink::mojom::WebFeature::kThirdPartySessionStorage,
+      blink::mojom::WebFeature::kThirdPartyFileSystem,
+      blink::mojom::WebFeature::kThirdPartyIndexedDb,
+      blink::mojom::WebFeature::kThirdPartyCacheStorage,
+      blink::mojom::WebFeature::kV8StorageManager_GetDirectory_Method};
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/empty.html");
+    InvokeStorageAccessOnFrame(ChildFrameAt(web_contents()->GetMainFrame(), 0),
+                               test_case);
+    NavigateToUntrackedUrl();
+
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                       MetricForTestCase(test_case), 1);
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyAccess, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
+                       ThirdPartyFrameWithActivationReported) {
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");
+  NavigateFrameTo("b.com", "/");
+  TriggerFrameActivation();
+  NavigateToUntrackedUrl();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyActivation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyAccessAndActivation, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
+                       FirstPartyFrameWithActivationNotReported) {
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");
+  NavigateFrameTo("a.com", "/");
+  TriggerFrameActivation();
+  NavigateToUntrackedUrl();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyActivation, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyAccessAndActivation, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyMetricsObserverBrowserTest,
+    ThirdPartyFrameWithAccessAndActivationOnDifferentThirdParties) {
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");
+  NavigateFrameTo("b.com", "/");
+  TriggerFrameActivation();
+  NavigateFrameTo("c.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  NavigateToUntrackedUrl();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyActivation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyAccessAndActivation, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyMetricsObserverBrowserTest,
+    ThirdPartyFrameWithAccessAndActivationOnSameThirdParties) {
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");
+  NavigateFrameTo("b.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  TriggerFrameActivation();
+  NavigateToUntrackedUrl();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyActivation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kThirdPartyAccessAndActivation, 1);
+}
 
 }  // namespace

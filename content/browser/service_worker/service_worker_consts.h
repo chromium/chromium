@@ -47,12 +47,11 @@ struct CONTENT_EXPORT ServiceWorkerConsts {
 
   // Constants for invalid identifiers.
   static const int kInvalidEmbeddedWorkerThreadId;
-  static const int64_t kInvalidServiceWorkerResourceId;
 
   // The HTTP cache is bypassed for Service Worker scripts if the last network
   // fetch occurred over 24 hours ago.
   static constexpr base::TimeDelta kServiceWorkerScriptMaxCacheAge =
-      base::TimeDelta::FromHours(24);
+      base::Hours(24);
 };
 
 }  // namespace content

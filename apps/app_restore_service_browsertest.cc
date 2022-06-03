@@ -8,12 +8,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 
@@ -31,10 +30,7 @@ namespace apps {
 
 // Tests that a running app is recorded in the preferences as such.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
-  content::WindowedNotificationObserver extension_suspended(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
-
+  extensions::ExtensionHostTestHelper host_helper(profile());
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("platform_apps/restart_test"));
   ASSERT_TRUE(extension);
@@ -44,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
   ASSERT_TRUE(extension_prefs->IsExtensionRunning(extension->id()));
 
   // Wait for the extension to get suspended.
-  extension_suspended.Wait();
+  host_helper.WaitForHostDestroyed();
 
   // App isn't running because it got suspended.
   ASSERT_FALSE(extension_prefs->IsExtensionRunning(extension->id()));
@@ -113,10 +109,6 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ActiveAppsAreRecorded) {
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
-  content::WindowedNotificationObserver extension_suspended(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
@@ -124,11 +116,12 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_directory.GetPath(), &temp_file));
 
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
-      &temp_file);
+  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
+      temp_file);
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "temp", temp_directory.GetPath());
 
+  extensions::ExtensionHostTestHelper host_helper(profile());
   const Extension* extension = LoadAndLaunchPlatformApp(
       "file_access_saved_to_prefs_test", "fileWritten");
   ASSERT_TRUE(extension);
@@ -140,24 +133,20 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
   // One for the read-only file entry and one for the writable file entry.
   ASSERT_EQ(2u, file_entries.size());
 
-  extension_suspended.Wait();
+  host_helper.WaitForHostDestroyed();
   file_entries = saved_files_service->GetAllFileEntries(extension->id());
   // File entries should be cleared when the extension is suspended.
   ASSERT_TRUE(file_entries.empty());
 }
 
 // Flaky: crbug.com/269613
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_FileAccessIsRestored DISABLED_FileAccessIsRestored
 #else
 #define MAYBE_FileAccessIsRestored FileAccessIsRestored
 #endif
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
-  content::WindowedNotificationObserver extension_suspended(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
@@ -165,14 +154,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_directory.GetPath(), &temp_file));
 
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
-      &temp_file);
+  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
+      temp_file);
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "temp", temp_directory.GetPath());
 
+  extensions::ExtensionHostTestHelper host_helper(profile());
   ExtensionTestMessageListener access_ok_listener(
       "restartedFileAccessOK", false);
-
   const Extension* extension =
       LoadAndLaunchPlatformApp("file_access_restored_test", "fileWritten");
   ASSERT_TRUE(extension);
@@ -182,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
   SavedFilesService* saved_files_service = SavedFilesService::Get(profile());
   std::vector<SavedFileEntry> file_entries =
       saved_files_service->GetAllFileEntries(extension->id());
-  extension_suspended.Wait();
+  host_helper.WaitForHostDestroyed();
 
   // Simulate a restart by populating the preferences as if the browser didn't
   // get time to clean itself up.

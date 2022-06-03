@@ -5,8 +5,10 @@
 #include "chrome/browser/download/offline_item_utils.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/auto_resumption_handler.h"
+#include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -18,9 +20,11 @@
 #endif
 
 using DownloadItem = download::DownloadItem;
+using DownloadSchedule = download::DownloadSchedule;
 using ContentId = offline_items_collection::ContentId;
 using OfflineItem = offline_items_collection::OfflineItem;
 using OfflineItemFilter = offline_items_collection::OfflineItemFilter;
+using OfflineItemSchedule = offline_items_collection::OfflineItemSchedule;
 using OfflineItemState = offline_items_collection::OfflineItemState;
 using OfflineItemProgressUnit =
     offline_items_collection::OfflineItemProgressUnit;
@@ -41,12 +45,12 @@ const char kDownloadNamespacePrefix[] = "LEGACY_DOWNLOAD";
 // The remaining time for a download item if it cannot be calculated.
 constexpr int64_t kUnknownRemainingTime = -1;
 
-base::Optional<OfflineItemFilter> FilterForSpecialMimeTypes(
+absl::optional<OfflineItemFilter> FilterForSpecialMimeTypes(
     const std::string& mime_type) {
   if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg"))
     return OfflineItemFilter::FILTER_AUDIO;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
@@ -112,9 +116,13 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.mime_type = DownloadUtils::RemapGenericMimeType(
       item.mime_type, download_item->GetOriginalUrl(),
       download_item->GetTargetFilePath().value());
+  if (off_the_record) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    item.otr_profile_id = profile->GetOTRProfileID().Serialize();
+  }
 #endif
 
-  item.page_url = download_item->GetTabUrl();
+  item.url = download_item->GetURL();
   item.original_url = download_item->GetOriginalUrl();
   item.is_off_the_record = off_the_record;
 
@@ -130,6 +138,8 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.fail_state =
       ConvertDownloadInterruptReasonToFailState(download_item->GetLastReason());
   item.can_rename = download_item->GetState() == DownloadItem::COMPLETE;
+  item.schedule = ToOfflineItemSchedule(download_item->GetDownloadSchedule());
+
   switch (download_item->GetState()) {
     case DownloadItem::IN_PROGRESS:
       item.state = download_item->IsPaused() ? OfflineItemState::PAUSED
@@ -159,7 +169,6 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
       } else {
         item.state = OfflineItemState::INTERRUPTED;
       }
-
     } break;
     default:
       NOTREACHED();
@@ -221,7 +230,7 @@ OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
 }
 
 // static
-base::string16 OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
+std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
   int string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
 
   switch (fail_state) {
@@ -339,4 +348,24 @@ RenameResult OfflineItemUtils::ConvertDownloadRenameResultToRenameResult(
     case DownloadRenameResult::FAILURE_UNKNOWN:
       return RenameResult::FAILURE_UNKNOWN;
   }
+}
+
+// static
+absl::optional<DownloadSchedule> OfflineItemUtils::ToDownloadSchedule(
+    absl::optional<OfflineItemSchedule> offline_item_schedule) {
+  if (!offline_item_schedule)
+    return absl::nullopt;
+
+  return absl::make_optional<DownloadSchedule>(
+      offline_item_schedule->only_on_wifi, offline_item_schedule->start_time);
+}
+
+// static
+absl::optional<OfflineItemSchedule> OfflineItemUtils::ToOfflineItemSchedule(
+    absl::optional<DownloadSchedule> download_schedule) {
+  if (!download_schedule)
+    return absl::nullopt;
+
+  return absl::make_optional<OfflineItemSchedule>(
+      download_schedule->only_on_wifi(), download_schedule->start_time());
 }

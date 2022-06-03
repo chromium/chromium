@@ -23,14 +23,8 @@ class MultiprofilesIntroDialog : public views::DialogDelegateView {
 
   static void Show(OnAcceptCallback on_accept);
 
-  // views::DialogDelegate overrides.
-  bool Cancel() override;
-  bool Accept() override;
-
-  // views::WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
+  MultiprofilesIntroDialog(const MultiprofilesIntroDialog&) = delete;
+  MultiprofilesIntroDialog& operator=(const MultiprofilesIntroDialog&) = delete;
 
   // views::View overrides.
   gfx::Size CalculatePreferredSize() const override;
@@ -43,8 +37,6 @@ class MultiprofilesIntroDialog : public views::DialogDelegateView {
 
   views::Checkbox* never_show_again_checkbox_;
   OnAcceptCallback on_accept_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiprofilesIntroDialog);
 };
 
 }  // namespace ash

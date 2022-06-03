@@ -9,13 +9,18 @@ namespace switches {
 
 extern const char kWebViewLogJsConsoleMessages[];
 extern const char kWebViewSandboxedRenderer[];
-extern const char kWebViewDisableSafeBrowsingSupport[];
-extern const char kWebViewEnableSharedImage[];
-extern const char kWebViewEnableVulkan[];
-
-// Please note that if you are adding a flag that is intended for a renderer,
-// you also need to add it into
-// AwContentBrowserClient::AppendExtraCommandLineSwitches.
+extern const char kWebViewDisableSafebrowsingSupport[];
+extern const char kWebViewSafebrowsingBlockAllResources[];
+extern const char kHighlightAllWebViews[];
+extern const char kWebViewVerboseLogging[];
+extern const char kFinchSeedExpirationAge[];
+extern const char kFinchSeedIgnorePendingDownload[];
+extern const char kFinchSeedNoChargingRequirement[];
+extern const char kFinchSeedMinDownloadPeriod[];
+extern const char kFinchSeedMinUpdatePeriod[];
+extern const char kWebViewEnableModernCookieSameSite[];
+extern const char kWebViewDisableAppsPackageNamesAllowlistComponent[];
+extern const char kWebViewSelectiveImageInversionDarkening[];
 
 }  // namespace switches
 

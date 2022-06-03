@@ -92,21 +92,21 @@ Polymer({
   /** @private {?multidevice_setup.BrowserProxy} */
   browserProxy_: null,
 
-  clearPasswordTextInput: function() {
+  clearPasswordTextInput() {
     this.$.passwordInput.value = '';
   },
 
-  focusPasswordTextInput: function() {
+  focusPasswordTextInput() {
     this.$.passwordInput.focus();
   },
 
   /** @override */
-  created: function() {
+  created() {
     this.browserProxy_ = multidevice_setup.BrowserProxyImpl.getInstance();
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.browserProxy_.getProfileInfo().then((profileInfo) => {
       this.profilePhotoUrl_ = profileInfo.profilePhotoUrl;
       this.email_ = profileInfo.email;
@@ -114,7 +114,7 @@ Polymer({
   },
 
   /** Overridden from UiPageContainerBehavior. */
-  getCanNavigateToNextPage: function() {
+  getCanNavigateToNextPage() {
     return new Promise((resolve) => {
       if (this.waitingForPasswordCheck_) {
         resolve(false /* canNavigate */);
@@ -138,7 +138,7 @@ Polymer({
   },
 
   /** @private */
-  onInputValueChange_: function() {
+  onInputValueChange_() {
     this.passwordInvalid_ = false;
   },
 
@@ -146,9 +146,9 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onInputKeypress_: function(e) {
+  onInputKeypress_(e) {
     // We are only listening for the user trying to enter their password.
-    if (e.key != 'Enter') {
+    if (e.key !== 'Enter') {
       return;
     }
 
@@ -159,7 +159,7 @@ Polymer({
    * @return {boolean} Whether the forward button should be disabled.
    * @private
    */
-  shouldForwardButtonBeDisabled_: function() {
+  shouldForwardButtonBeDisabled_() {
     return this.passwordInvalid_ || !this.inputValue_ ||
         this.waitingForPasswordCheck_;
   },

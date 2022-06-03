@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_DEVTOOLS_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_DEVTOOLS_TASK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_task.h"
 
 namespace task_manager {
@@ -14,10 +13,9 @@ namespace task_manager {
 class DevToolsTask : public TabContentsTask {
  public:
   explicit DevToolsTask(content::WebContents* web_contents);
+  DevToolsTask(const DevToolsTask&) = delete;
+  DevToolsTask& operator=(const DevToolsTask&) = delete;
   ~DevToolsTask() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTask);
 };
 
 }  // namespace task_manager

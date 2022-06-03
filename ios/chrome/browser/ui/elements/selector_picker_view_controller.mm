@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/elements/selector_picker_view_controller.h"
 
-#import "ios/chrome/browser/ui/elements/selector_view_controller_delegate.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#include "base/notreached.h"
+#import "ios/chrome/browser/ui/elements/selector_view_controller_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -78,7 +79,6 @@ CGFloat kUIPickerFontSize = 26;
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor whiteColor];
 
-  self.pickerView.showsSelectionIndicator = YES;
   self.pickerView.backgroundColor = [UIColor whiteColor];
   self.pickerView.delegate = self;
   self.pickerView.dataSource = self;

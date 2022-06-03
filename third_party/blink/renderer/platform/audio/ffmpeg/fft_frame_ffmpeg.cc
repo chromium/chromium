@@ -84,16 +84,16 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 
   // Copy/setup frame data.
   unsigned nbytes = sizeof(float) * (fft_size_ / 2);
-  memcpy(RealData(), frame.RealData(), nbytes);
-  memcpy(ImagData(), frame.ImagData(), nbytes);
+  memcpy(RealData().Data(), frame.RealData().Data(), nbytes);
+  memcpy(ImagData().Data(), frame.ImagData().Data(), nbytes);
 }
 
-int FFTFrame::MinFFTSize() {
-  return 1 << kMinFFTPow2Size;
+unsigned FFTFrame::MinFFTSize() {
+  return 1u << kMinFFTPow2Size;
 }
 
-int FFTFrame::MaxFFTSize() {
-  return 1 << kMaxFFTPow2Size;
+unsigned FFTFrame::MaxFFTSize() {
+  return 1u << kMaxFFTPow2Size;
 }
 
 void FFTFrame::Initialize(float sample_rate) {}

@@ -1,0 +1,72 @@
+{%- macro not_null(kind, name) %}
+{%- if kind|is_typemapped_kind and kind|is_struct_kind and kind|nullable_is_same_kind %}
+{%-   set data_view = kind|get_qualified_name_for_kind ~ "DataView" %}
+{%-   set data_type = kind|cpp_wrapper_type(ignore_nullable=True) %}
+{%-   if data_type|truncate(16, true, '', 0) == '::scoped_refptr<' %}
+{{name}}
+{%-   else %}
+!::mojo::internal::CallIsNullIfExists<::mojo::StructTraits<{{data_view}}, {{data_type}}>>({{name}})
+{%-   endif %}
+{%- elif kind|is_platform_handle_kind -%}{{name}}.is_valid()
+{%- else -%}{{name}}
+{%- endif %}
+{%- endmacro -%}
+
+{%- macro value(kind, name) %}
+{%-   if kind|is_nullable_kind and (not kind|nullable_is_same_kind) -%}*{{name}}
+{%-   else -%}{{name}}
+{%-   endif %}
+{%- endmacro -%}
+
+{%- macro add_instance(kind, name, nested) %}
+{%-   if kind|is_array_kind %}
+  for (auto& {{name}}_iter : {{ value(kind, name) }}) {
+{{ add_instance(kind.kind, name ~ '_iter', True)|indent(2, True) }}
+  }
+{%-   elif kind|is_map_kind %}
+  for (auto& {{name}}_iter : {{ value(kind, name) }}) {
+    auto& {{name}}_key = {{name}}_iter.first;
+    auto& {{name}}_value = {{name}}_iter.second;
+{{ add_instance(kind.key_kind, name ~ "_key", True)|indent(2, True) }}
+{{ add_instance(kind.value_kind, name ~ "_value", True)|indent(2, True) }}
+  }
+{%-   elif kind|is_pending_remote_kind %}
+{%-     set mojom_type = kind.kind|get_qualified_name_for_kind(flatten_nested_kind=True) %}
+  if ({{name}}) {
+    ::mojo::Remote<{{mojom_type}}> tmp_{{name}}(std::move({{name}}));
+    mojolpm::GetContext()->AddInstance(std::move(tmp_{{name}}));
+  }
+{%-   elif kind|is_pending_associated_remote_kind %}
+{%-     set mojom_type = kind.kind|get_qualified_name_for_kind(flatten_nested_kind=True) %}
+  if ({{name}}) {
+    ::mojo::AssociatedRemote<{{mojom_type}}> tmp_{{name}}(std::move({{name}}));
+    mojolpm::GetContext()->AddInstance(std::move(tmp_{{name}}));
+  }
+{%-   elif kind|is_any_handle_kind %}
+  mojolpm::GetContext()->AddInstance(std::move({{name}}));
+{%-   else %}
+{%-     if kind|is_nullable_kind %}
+{%-       set proto_type = kind|cpp_wrapper_proto_type(add_same_module_namespaces=true) %}
+  {{proto_type}} tmp_{{name}};
+  if ({{ not_null(kind, name) }}) {
+{%-       if kind|is_move_only_kind %}
+    if (ToProto(std::move({{ value(kind, name) }}), tmp_{{name}})) {
+{%-       else %}
+    if (ToProto({{ value(kind, name) }}, tmp_{{name}})) {
+{%-       endif %}
+      mojolpm::GetContext()->AddInstance(tmp_{{name}});
+    }
+  }
+{%-     else %}
+{%-       set proto_type = kind|cpp_wrapper_proto_type(add_same_module_namespaces=true) %}
+  {{proto_type}} tmp_{{name}};
+{%-       if kind|is_move_only_kind %}
+  if (ToProto(std::move({{name}}), tmp_{{name}})) {
+{%-       else %}
+  if (ToProto({{name}}, tmp_{{name}})) {
+{%-       endif %}
+    mojolpm::GetContext()->AddInstance(tmp_{{name}});
+  }
+{%-     endif %}
+{%-   endif %}
+{%- endmacro %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/helper.js"></script>
+<iframe></iframe>
+<iframe allow="web-share"></iframe>
+<script>
+var srcs = [
+  "resources/feature-policy-web-share.html",
+  "http://localhost:8000/feature-policy/resources/feature-policy-web-share.html"
+];
+
+function loadFrame(iframe, src) {
+  const allowWebShare = iframe.hasAttribute('allow');
+  promise_test(function() {
+    iframe.src = src;
+    return new Promise(function(resolve, reject) {
+      window.addEventListener('message', function(e) {
+        resolve(e.data);
+      }, { once: true });
+    }).then(function(data) {
+      // web-share is enabled if:
+      //     a. same origin; or
+      //     b. enabled by allowWebShare.
+      if (src === srcs[0] || allowWebShare) {
+        assert_true(data.enabled);
+      } else {
+        assert_false(data.enabled);
+      }
+    });
+  }, 'web-share enabled for self on URL: ' + src + ' with allowWebShare = ' +
+    allowWebShare);
+}
+
+window.onload = function() {
+  loadIframes(srcs);
+}
+</script>

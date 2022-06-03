@@ -1,0 +1,367 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module apps.mojom;
+
+import "components/services/app_service/public/mojom/types.mojom";
+
+// An intermediary between M app consumers (e.g. app launcher UI, intent
+// pickers) and N app providers (also known as app platforms, e.g. Android
+// apps, Linux apps and Web apps). It abstracts over platform-specific
+// implementations and allow consumers to issue generic queries (e.g. for an
+// app's name and icon) that are satisfied by the appropriate provider.
+//
+// See components/services/app_service/README.md.
+interface AppService {
+  // Called by a publisher of apps to register itself and its apps with the App
+  // Service.
+  RegisterPublisher(pending_remote<Publisher> publisher, AppType app_type);
+
+  // Called by a consumer that wishes to know about available apps to register
+  // itself with the App Service.
+  RegisterSubscriber(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
+
+  // App Icon Factory methods.
+  LoadIcon(
+      AppType app_type,
+      string app_id,
+      IconKey icon_key,
+      IconType icon_type,
+      int32 size_hint_in_dip,
+      bool allow_placeholder_icon) => (IconValue icon_value);
+
+  // Launches an app identified by |app_id|. |event_flags| contains launch
+  // options (e.g. window disposition). |launch_source| contains the source
+  // of the launch. When provided, |window_info| contains the expected window
+  // bounds, etc. that are requested for the placement of the launched app
+  // window.
+  Launch(
+      AppType app_type,
+      string app_id,
+      int32 event_flags,
+      LaunchSource launch_source,
+      WindowInfo? window_info);
+
+  // Launches an app with |app_id| and |file_path|.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
+  LaunchAppWithFiles(
+      AppType app_type,
+      string app_id,
+      int32 event_flags,
+      LaunchSource launch_source,
+      FilePaths file_paths);
+
+  // Launches an app with |app_id| and Chrome OS generic |intent| irrespective
+  // of app platform. Returns whether the app was successfully launched.
+  LaunchAppWithIntent(
+      AppType app_type,
+      string app_id,
+      int32 event_flags,
+      Intent intent,
+      LaunchSource launch_source,
+      WindowInfo? window_info) => (bool success);
+
+  SetPermission(
+      AppType app_type,
+      string app_id,
+      Permission permission);
+
+  // Directly uninstalls |app_id| without prompting the user.
+  // |clear_site_data| is available for bookmark apps only. If true, any site
+  // data associated with the app will be removed..
+  // |report_abuse| is available for Chrome Apps only. If true, the app will be
+  // reported for abuse to the Web Store.
+  Uninstall(
+      AppType app_type,
+      string app_id,
+      UninstallSource uninstall_source,
+      bool clear_site_data,
+      bool report_abuse);
+
+  // Pauses an app to stop the current running app, and apply the icon effect.
+  PauseApp(
+      AppType app_type,
+      string app_id);
+
+  // Unpauses an app, and recover the icon effect for the app.
+  UnpauseApp(
+      AppType app_type,
+      string app_id);
+
+  // Stops the current running app for the given |app_id|.
+  StopApp(
+      AppType app_type,
+      string app_id);
+
+  // Returns the menu items for an app with |app_id|.
+  GetMenuModel(
+      AppType app_type,
+      string app_id,
+      MenuType menu_type,
+      int64 display_id) => (MenuItems menu_items);
+
+  // Executes the menu item command for an app with |app_id|.
+  ExecuteContextMenuCommand(
+      AppType app_type,
+      string app_id,
+      int32 command_id,
+      string shortcut_id,
+      int64 display_id);
+
+  // Opens native settings for the app with |app_id|.
+  OpenNativeSettings(
+      AppType app_type,
+      string app_id);
+
+  // Sets app identified by |app_id| as preferred app for |intent_filter|.
+  // |intent| is needed to set the preferred app in ARC.
+  // If the request is |from_publisher|, we would not sync the preferred
+  // app back to the publisher.
+  AddPreferredApp(
+      AppType app_type,
+      string app_id,
+      IntentFilter intent_filter,
+      Intent? intent,
+      bool from_publisher);
+
+  // Removes all preferred app setting for an |app_id|.
+  RemovePreferredApp(AppType app_type, string app_id);
+
+  // Resets app identified by |app_id| as preferred app for |intent_filter|.
+  RemovePreferredAppForFilter(
+      AppType app_type,
+      string app_id,
+      IntentFilter intent_filter);
+
+  // Set |app_id| as preferred app for all its supported link filters. Supported
+  // link filters, which have the http/https scheme and at least one host, are
+  // always enabled/disabled as a group. |all_link_filters| should contain all
+  // of the apps' Supported Link intent filters.
+  // Any apps with overlapping preferred app preferences will have all their
+  // supported link filters unset, as if RemoveSupportedLinksPreference was
+  // called for that app.
+  SetSupportedLinksPreference(
+    AppType app_type,
+    string app_id,
+    array<IntentFilter> all_link_filters);
+
+  // Removes all supported link filters from the preferred app list for an
+  // |app_id|.
+  RemoveSupportedLinksPreference(
+    AppType app_type,
+    string app_id);
+
+  // Enables resize lock mode for the app identified by |app_id| with the given
+  // |app_type|.
+  SetResizeLocked(
+      AppType app_type,
+      string app_id,
+      OptionalBool locked);
+
+  // Set the window display mode for the app identified by |app_id|.
+  SetWindowMode(
+      AppType app_type,
+      string app_id,
+      WindowMode window_mode);
+};
+
+interface Publisher {
+  // App Registry methods.
+  Connect(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
+
+  // Requests an icon for an app identified by |app_id|. The icon is identified
+  // by |icon_key| and parameterised by |icon_type| and |size_hint_in_dp|. If
+  // |allow_placeholder_icon| is true, a default placeholder icon can be
+  // returned if no other icon is available.
+  //
+  // Publishers implementing this method should:
+  //  - provide an icon as closely sized to |size_hint_in_dp| as possible
+  //  - load from the specific resource ID if |icon_key.resource_id| is set
+  //  - may optionally use |icon_key|'s timeline property as a "version number"
+  //    for an icon. Alternatively, this may be ignored if there will only ever
+  //    be one version of an icon at any time.
+  //  - optionally return a placeholder default icon if |allow_placeholder_icon|
+  //    is true and when no icon is available for the app (or an icon for the
+  //    app cannot be efficiently provided). Otherwise, a null icon should be
+  //    returned.
+  LoadIcon(
+      string app_id,
+      IconKey icon_key,
+      IconType icon_type,
+      int32 size_hint_in_dip,
+      bool allow_placeholder_icon) => (IconValue icon_value);
+
+  // Launches an app identified by |app_id|. |event_flags| contains launch
+  // options (e.g. window disposition). |launch_source| contains the source
+  // of the launch. When provided, |window_info| contains the expected window
+  // bounds, etc. that are requested for the placement of the launched app
+  // window.
+  Launch(
+      string app_id,
+      int32 event_flags,
+      LaunchSource launch_source,
+      WindowInfo? window_info);
+
+  // Launches an app identified by |app_id| and |file_path|, parameterised by
+  // |event_flags|.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
+  LaunchAppWithFiles(
+      string app_id,
+      int32 event_flags,
+      LaunchSource launch_source,
+      FilePaths file_paths);
+
+  // Launches an app identified by |app_id|, with |intent| as a parameter.
+  // |event_flags| contains launch options (e.g. window disposition).
+  // |launch_source| contains the source of the launch.
+  // Returns whether the app was successfully launched.
+  LaunchAppWithIntent(
+    string app_id,
+    int32 event_flags,
+    Intent intent,
+    LaunchSource launch_source,
+    WindowInfo? window_info) => (bool success);
+
+  // Sets |permission| for an app identified with |app_id|. Implemented if the
+  // publisher supports per-app permissions that are exposed in App Management.
+  SetPermission(
+      string app_id,
+      Permission permission);
+
+  // Directly uninstalls an app identified by |app_id| without prompting the
+  // user. |uninstall_source| indicates where the uninstallation came from.
+  // |clear_site_data| is available for web apps only. If true, any site
+  // data associated with the app will be removed.
+  // |report_abuse| is available for Chrome Apps only. If true, the app will be
+  // reported for abuse to the Chrome Web Store.
+  Uninstall(
+      string app_id,
+      UninstallSource uninstall_source,
+      bool clear_site_data,
+      bool report_abuse);
+
+  // Requests that the app identified by |app_id| is marked as paused. Paused
+  // apps cannot be launched. Implemented if the publisher supports the pausing
+  // of apps, and otherwise should do nothing.
+  //
+  // Publishers are expected to update the app icon when it is paused to apply
+  // the kPaused icon effect. Nothing should happen if an already paused app
+  // is paused again.
+  PauseApp(
+      string app_id);
+
+  // Requests that the app identified by |app_id| is unpaused. Implemented if
+  // the publisher supports the pausing of apps, and otherwise should do
+  // nothing.
+  //
+  // Publishers are expected to update the app icon to remove the kPaused
+  // icon effect. Nothing should happen if an unpaused app is unpaused again.
+  UnpauseApp(
+      string app_id);
+
+  // Stops all running instances of |app_id|.
+  StopApp(
+      string app_id);
+
+  // Returns the menu items for an app identified by |app_id|. |menu_type|
+  // indicates the kind of menu that is being requested. |display_id|
+  // indicates the display which the menu will be opened on.
+  GetMenuModel(
+      string app_id,
+      MenuType menu_type,
+      int64 display_id) => (MenuItems menu_items);
+
+  // Executes a menu item command for an app identified by |app_id|. Used in
+  // conjunction with GetMenuModel. Specifically:
+  // - |command_id| corresponds to the command_id in the MenuItem struct
+  //   generated by GetMenuModel
+  // - |shortcut_id| is a publisher-specific string that may be used to pass
+  //   additional data required for execution
+  // - |display_id| indicates the display the menu item is targeting
+  ExecuteContextMenuCommand(
+      string app_id,
+      int32 command_id,
+      string shortcut_id,
+      int64 display_id);
+
+  // Opens the platform-specific settings page for the app identified by
+  // |app_id|, e.g. the Android Settings app for an ARC app, or the Chrome
+  // browser settings for a web app. Implemented if those settings exist and
+  // need to be accessible to users. Note this is not the same as the Chrome
+  // OS-wide App Management page, which should be used by default. This method
+  // should only be used in cases where settings must be accessed that are not
+  // available in App Management.
+  OpenNativeSettings(
+      string app_id);
+
+  // Indicates that the app identified by |app_id| has been set as a preferred
+  // app for |intent_filter|, and the |replaced_app_preferences| is the apps
+  // that are no longer preferred apps for their corresponding |intent_filters|.
+  // This method is used by the App Service to sync the change to publishers.
+  // |intent| is needed to set the preferred app in ARC.
+  OnPreferredAppSet(
+      string app_id,
+      IntentFilter intent_filter,
+      Intent intent,
+      ReplacedAppPreferences replaced_app_preferences);
+
+  // Indicates that the app identified by |app_id| has had its supported links
+  // preference changed, so that all supported link filters are either preferred
+  // (|open_in_app| is true) or not preferred (|open_in_app| is false). This
+  // method is used by the App Service to sync changes to publishers, and is
+  // called instead of OnPreferredAppSet for supported links changes.
+  OnSupportedLinksPreferenceChanged(
+    string app_id,
+    bool open_in_app);
+
+  // Enables resize lock mode for the app identified by |app_id|. When |locked|
+  // is kTrue, this means the app cannot be resized and is locked to a certain
+  // set of dimensions. Implemented if the publisher supports resize locking of
+  // apps, and otherwise should do nothing.
+  SetResizeLocked(
+      string app_id,
+      OptionalBool locked);
+
+  // Set the window display mode for the app identified by |app_id|. Implemented
+  // if the publisher supports changing the window mode of apps, and otherwise
+  // should do nothing.
+  SetWindowMode(
+      string app_id,
+      WindowMode window_mode);
+};
+
+// Subscriber works as a proxy, to receive a stream of apps from publishers,
+// and save to AppRegistryCache.
+interface Subscriber {
+  // Receives a stream of apps from publishers, and save to AppRegistryCache.
+  // If |should_notify_initialized| is true, notifies observers that |app_type|
+  // has finished initiating apps.
+  OnApps(array<App> deltas, AppType app_type, bool should_notify_initialized);
+
+  // Receives a stream of accesses from publishers, and save to
+  // AppCapabilityAccess.
+  OnCapabilityAccesses(array<CapabilityAccess> deltas);
+
+  // Binds this to the given receiver (message pipe endpoint), being to Mojo
+  // interfaces what POSIX's dup is to file descriptors.
+  //
+  // See https://groups.google.com/a/chromium.org/d/msg/chromium-mojo/nFhBzGsb5Pg/V7t_8kNRAgAJ
+  Clone(pending_receiver<Subscriber> receiver);
+
+  // Indicates that a changes have been made by App Service to the preferred
+  // apps list. All of the changes should be applied to the subscriber's copy of
+  // the list using PreferredAppsList::ApplyBulkUpdate.
+  OnPreferredAppsChanged(PreferredAppChanges changes);
+
+  // Initialize the |preferred_apps| in the subscribers from the app service.
+  InitializePreferredApps(array<PreferredApp> preferred_apps);
+};
+
+struct ConnectOptions {
+  // TODO: some way to represent l10n info such as the UI language.
+};

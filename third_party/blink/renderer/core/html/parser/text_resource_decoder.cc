@@ -85,7 +85,7 @@ static int Find(const char* subject, int subject_length, const char* target) {
       }
     }
     if (match)
-      return i;
+      return static_cast<int>(i);
   }
   return -1;
 }
@@ -133,6 +133,20 @@ TextResourceDecoder::TextResourceDecoder(
 }
 
 TextResourceDecoder::~TextResourceDecoder() = default;
+
+void TextResourceDecoder::AddToBuffer(const char* data,
+                                      wtf_size_t data_length) {
+  // Explicitly reserve capacity in the Vector to avoid triggering the growth
+  // heuristic (== no excess capacity).
+  buffer_.ReserveCapacity(buffer_.size() + data_length);
+  buffer_.Append(data, data_length);
+}
+
+void TextResourceDecoder::AddToBufferIfEmpty(const char* data,
+                                             wtf_size_t data_length) {
+  if (buffer_.IsEmpty())
+    buffer_.Append(data, data_length);
+}
 
 void TextResourceDecoder::SetEncoding(const WTF::TextEncoding& encoding,
                                       EncodingSource source) {
@@ -216,23 +230,16 @@ wtf_size_t TextResourceDecoder::CheckForBOM(const char* data, wtf_size_t len) {
     return 0;
   }
 
-  wtf_size_t length_of_bom = 0;
-  const wtf_size_t max_bom_length = 3;
+  if (len < 2)
+    return 0;
 
-  wtf_size_t buffer_length = buffer_.size();
-
-  wtf_size_t buf1_len = buffer_length;
-  wtf_size_t buf2_len = len;
-  const unsigned char* buf1 =
-      reinterpret_cast<const unsigned char*>(buffer_.data());
-  const unsigned char* buf2 = reinterpret_cast<const unsigned char*>(data);
-  unsigned char c1 =
-      buf1_len ? (--buf1_len, *buf1++) : buf2_len ? (--buf2_len, *buf2++) : 0;
-  unsigned char c2 =
-      buf1_len ? (--buf1_len, *buf1++) : buf2_len ? (--buf2_len, *buf2++) : 0;
-  unsigned char c3 = buf1_len ? *buf1 : buf2_len ? *buf2 : 0;
+  const uint8_t* buf = reinterpret_cast<const uint8_t*>(data);
+  const uint8_t c1 = buf[0];
+  const uint8_t c2 = buf[1];
+  const uint8_t c3 = len >= 3 ? buf[2] : 0;
 
   // Check for the BOM.
+  wtf_size_t length_of_bom = 0;
   if (c1 == 0xEF && c2 == 0xBB && c3 == 0xBF) {
     SetEncoding(UTF8Encoding(), kAutoDetectedEncoding);
     length_of_bom = 3;
@@ -247,31 +254,24 @@ wtf_size_t TextResourceDecoder::CheckForBOM(const char* data, wtf_size_t len) {
     }
   }
 
-  if (length_of_bom || buffer_length + len >= max_bom_length)
+  constexpr wtf_size_t kMaxBOMLength = 3;
+  if (length_of_bom || len >= kMaxBOMLength)
     checked_for_bom_ = true;
 
   return length_of_bom;
 }
 
-bool TextResourceDecoder::CheckForCSSCharset(const char* data,
-                                             wtf_size_t len,
-                                             bool& moved_data_to_buffer) {
+bool TextResourceDecoder::CheckForCSSCharset(const char* data, wtf_size_t len) {
   if (source_ != kDefaultEncoding && source_ != kEncodingFromParentFrame) {
     checked_for_css_charset_ = true;
     return true;
   }
 
-  wtf_size_t old_size = buffer_.size();
-  buffer_.Grow(old_size + len);
-  memcpy(buffer_.data() + old_size, data, len);
-
-  moved_data_to_buffer = true;
-
-  if (buffer_.size() <= 13)  // strlen('@charset "x";') == 13
+  if (len <= 13)  // strlen('@charset "x";') == 13
     return false;
 
-  const char* data_start = buffer_.data();
-  const char* data_end = data_start + buffer_.size();
+  const char* data_start = data;
+  const char* data_end = data + len;
 
   if (BytesEqual(data_start, '@', 'c', 'h', 'a', 'r', 's', 'e', 't', ' ',
                  '"')) {
@@ -298,29 +298,18 @@ bool TextResourceDecoder::CheckForCSSCharset(const char* data,
   return true;
 }
 
-bool TextResourceDecoder::CheckForXMLCharset(const char* data,
-                                             wtf_size_t len,
-                                             bool& moved_data_to_buffer) {
+bool TextResourceDecoder::CheckForXMLCharset(const char* data, wtf_size_t len) {
   if (source_ != kDefaultEncoding && source_ != kEncodingFromParentFrame) {
     checked_for_xml_charset_ = true;
     return true;
   }
 
-  // This is not completely efficient, since the function might go
-  // through the HTML head several times.
-
-  wtf_size_t old_size = buffer_.size();
-  buffer_.Grow(old_size + len);
-  memcpy(buffer_.data() + old_size, data, len);
-
-  moved_data_to_buffer = true;
-
-  const char* ptr = buffer_.data();
-  const char* p_end = ptr + buffer_.size();
-
   // Is there enough data available to check for XML declaration?
-  if (buffer_.size() < kMinimumLengthOfXMLDeclaration)
+  if (len < kMinimumLengthOfXMLDeclaration)
     return false;
+
+  const char* ptr = data;
+  const char* p_end = data + len;
 
   // Handle XML declaration, which can have encoding in it. This encoding is
   // honored even for HTML documents. It is an error for an XML declaration not
@@ -404,6 +393,16 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(const char* data,
 
 String TextResourceDecoder::Decode(const char* data, size_t data_len) {
   wtf_size_t len = SafeCast<wtf_size_t>(data_len);
+  // If we have previously buffered data, then add the new data to the buffer
+  // and use the buffered content. Any case that depends on buffering (== return
+  // the empty string) should call AddToBufferIfEmpty() if it needs more data to
+  // make sure that the first data segment is buffered.
+  if (!buffer_.IsEmpty()) {
+    AddToBuffer(data, len);
+    data = buffer_.data();
+    len = buffer_.size();
+  }
+
   wtf_size_t length_of_bom = 0;
   if (!checked_for_bom_) {
     length_of_bom = CheckForBOM(data, len);
@@ -411,43 +410,31 @@ String TextResourceDecoder::Decode(const char* data, size_t data_len) {
     // BOM check can fail when the available data is not enough.
     if (!checked_for_bom_) {
       DCHECK_EQ(0u, length_of_bom);
-      buffer_.Append(data, len);
+      AddToBufferIfEmpty(data, len);
       return g_empty_string;
     }
   }
-  DCHECK_LE(length_of_bom, buffer_.size() + len);
-
-  bool moved_data_to_buffer = false;
+  DCHECK_LE(length_of_bom, len);
 
   if (options_.GetContentType() == TextResourceDecoderOptions::kCSSContent &&
       !checked_for_css_charset_) {
-    if (!CheckForCSSCharset(data, len, moved_data_to_buffer))
+    if (!CheckForCSSCharset(data, len)) {
+      AddToBufferIfEmpty(data, len);
       return g_empty_string;
+    }
   }
 
-  // We check XML declaration in HTML content only if there is enough data
-  // available
-  if (((options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent &&
-        len >= kMinimumLengthOfXMLDeclaration) ||
+  if ((options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent ||
        options_.GetContentType() == TextResourceDecoderOptions::kXMLContent) &&
       !checked_for_xml_charset_) {
-    if (!CheckForXMLCharset(data, len, moved_data_to_buffer))
+    if (!CheckForXMLCharset(data, len)) {
+      AddToBufferIfEmpty(data, len);
       return g_empty_string;
+    }
   }
 
   const char* data_for_decode = data + length_of_bom;
   wtf_size_t length_for_decode = len - length_of_bom;
-
-  if (!buffer_.IsEmpty()) {
-    if (!moved_data_to_buffer) {
-      wtf_size_t old_size = buffer_.size();
-      buffer_.Grow(old_size + len);
-      memcpy(buffer_.data() + old_size, data, len);
-    }
-
-    data_for_decode = buffer_.data() + length_of_bom;
-    length_for_decode = buffer_.size() - length_of_bom;
-  }
 
   if (options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent &&
       !checked_for_meta_charset_)

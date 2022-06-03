@@ -1,0 +1,159 @@
+<!--
+@BLINK-ALLOW:listStyle*
+-->
+<html>
+  <style>
+    @counter-style base {
+      system: cyclic;
+      symbols: 'One' 'Two' 'Three';
+      suffix: '. ';
+    }
+
+    @counter-style explicit-bullets {
+      system: extends base;
+      speak-as: bullets;
+    }
+    @counter-style explicit-numbers {
+      system: extends base;
+      speak-as: numbers;
+    }
+    @counter-style explicit-words {
+      system: extends base;
+      speak-as: words;
+    }
+
+    @counter-style auto-alphabetic {
+      system: alphabetic;
+      symbols: 'One' 'Two' 'Three';
+      suffix: '. ';
+      speak-as: auto;
+    }
+    @counter-style auto-cyclic {
+      system: cyclic;
+      symbols: 'One' 'Two' 'Three';
+      suffix: '. ';
+      speak-as: auto;
+    }
+    @counter-style auto-extends {
+      system: extends base;
+      speak-as: auto;
+    }
+    @counter-style auto-fixed {
+      system: fixed;
+      symbols: 'One' 'Two' 'Three';
+      suffix: '. ';
+      speak-as: auto;
+    }
+    @counter-style auto-symbolic {
+      system: symbolic;
+      symbols: 'One' 'Two' 'Three';
+      suffix: '. ';
+      speak-as: auto;
+    }
+    @counter-style auto-numeric {
+      system: numeric;
+      symbols: 'Zero' 'One' 'Two' 'Three';
+      suffix: '. ';
+      speak-as: auto;
+    }
+    @counter-style auto-additive {
+      system: additive;
+      additive-symbols: 3 'Three', 2 'Two', 1 'One';
+      suffix: '. ';
+      speak-as: auto;
+    }
+
+    @counter-style reference-bullets {
+      system: fixed;
+      symbols: 'Yi' 'Er' 'San';
+      suffix: '> ';
+      speak-as: explicit-bullets;
+    }
+    @counter-style reference-numbers {
+      system: fixed;
+      symbols: 'Yi' 'Er' 'San';
+      suffix: '> ';
+      speak-as: explicit-numbers;
+    }
+    @counter-style reference-words {
+      system: fixed;
+      symbols: 'Yi' 'Er' 'San';
+      suffix: '> ';
+      speak-as: explicit-words;
+    }
+
+  </style>
+  <body>
+    <ul style="list-style-type: disc">
+      <li>disc</li>
+    </ul>
+    <ul style="list-style-type: circle">
+      <li>circle</li>
+    </ul>
+    <ul style="list-style-type: square">
+      <li>square</li>
+    </ul>
+    <ul style="list-style-type: disclosure-open">
+      <li>disclosure-open</li>
+    </ul>
+    <ul style="list-style-type: disclosure-closed">
+      <li>disclosure-closed</li>
+    </ul>
+
+    <ul style="list-style-type: explicit-bullets">
+      <li>explicit-bullets</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: explicit-numbers">
+      <li>explicit-numbers</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: explicit-words">
+      <li>explicit-words</li>
+      <li></li><li></li>
+    </ul>
+
+    <ul style="list-style-type: auto-alphabetic">
+      <li>auto-alphabetic</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-cyclic">
+      <li>auto-cyclic</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-extends">
+      <li>auto-extends</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-fixed">
+      <li>auto-fixed</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-symbolic">
+      <li>auto-symbolic</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-numeric">
+      <li>auto-numeric</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: auto-additive">
+      <li>auto-additive</li>
+      <li></li><li></li>
+    </ul>
+
+    <ul style="list-style-type: reference-bullets">
+      <li>reference-bullets</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: reference-numbers">
+      <li>reference-numbers</li>
+      <li></li><li></li>
+    </ul>
+    <ul style="list-style-type: reference-words">
+      <li>reference-words</li>
+      <li></li><li></li>
+    </ul>
+
+  </body>
+</html>

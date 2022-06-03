@@ -1,6 +1,7 @@
 Name: Bouncy Castle
 URL: https://www.bouncycastle.org/java.html
 Version: 1.46
+CPEPrefix: cpe:/a:bouncycastle:fips_java_api:1.46
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no

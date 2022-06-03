@@ -35,7 +35,7 @@ function centerY(element) {
     return element.offsetTop + element.offsetHeight / 2;
 }
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 var box11 = createBox();
 var box12 = createBox();
 var box13 = createBox();
@@ -44,7 +44,7 @@ shadowRoot.appendChild(box12);
 shadowRoot.appendChild(box13);
 
 var nestedHost = document.createElement('div');
-var nestedShadowRoot = nestedHost.createShadowRoot();
+var nestedShadowRoot = nestedHost.attachShadow({mode: 'open'});
 var box21 = createBox();
 var box22 = createBox();
 var box23 = createBox();
@@ -73,9 +73,9 @@ assertElementsFromPoint(
         'document.elementsFromPoint(x22, y22)',
         [host, document.body, document.documentElement]);
 
-var root3 = blockHost.createShadowRoot();
+var root3 = blockHost.attachShadow({mode: 'open'});
 root3.appendChild(document.createTextNode('text1'));
-var root4 = inlineBlockHost.createShadowRoot();
+var root4 = inlineBlockHost.attachShadow({mode: 'open'});
 root4.appendChild(document.createTextNode('text2'));
 
 assertElementsFromPoint(

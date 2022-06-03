@@ -131,6 +131,13 @@ class Traversal {
   }
   template <typename MatchFunc>
   static ElementType* FirstWithin(const ContainerNode&, MatchFunc);
+
+  static ElementType* InclusiveFirstWithin(Node& current) {
+    if (IsElementOfType<const ElementType>(current))
+      return To<ElementType>(&current);
+    return FirstWithin(current);
+  }
+
   static ElementType* LastWithin(const ContainerNode& current) {
     return LastWithinTemplate(current);
   }
@@ -550,4 +557,4 @@ inline ElementType* Traversal<ElementType>::NextSibling(const Node& current,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_TRAVERSAL_H_

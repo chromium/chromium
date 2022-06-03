@@ -1,1 +1,1 @@
-EVENT_OBJECT_NAMECHANGE on <h1#a> role=H1 name="After" level=1
+EVENT_OBJECT_NAMECHANGE on <h1#a> role=ROLE_SYSTEM_GROUPING name="After" level=1

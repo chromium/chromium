@@ -5,9 +5,10 @@
 // TODO(crbug.com/829689): Add link to spec once complete.
 // Explainer: https://github.com/WICG/file-handling/blob/master/explainer.md
 
-[RuntimeEnabled=FileHandling] interface LaunchParams {
-  readonly attribute FrozenArray<FileSystemHandle> files;
-
-  [CallWith=ScriptState]
-  readonly attribute Request request;
+[
+    Exposed=Window,
+    RuntimeEnabled=WebAppLaunchQueue
+] interface LaunchParams {
+  [RuntimeEnabled=WebAppLaunchHandler] readonly attribute USVString targetURL;
+  [RuntimeEnabled=FileHandling] readonly attribute FrozenArray<FileSystemHandle> files;
 };

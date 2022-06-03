@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_VIZ_COMMON_SURFACES_SURFACE_RANGE_H_
 #define COMPONENTS_VIZ_COMMON_SURFACES_SURFACE_RANGE_H_
 
-#include "base/optional.h"
+#include <string>
+
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -23,11 +25,12 @@ class VIZ_COMMON_EXPORT SurfaceRange {
  public:
   SurfaceRange();
 
-  SurfaceRange(const base::Optional<SurfaceId>& start, const SurfaceId& end);
+  SurfaceRange(const absl::optional<SurfaceId>& start, const SurfaceId& end);
 
   explicit SurfaceRange(const SurfaceId& surface_id);
 
   SurfaceRange(const SurfaceRange& other);
+  SurfaceRange& operator=(const SurfaceRange& other);
 
   bool operator==(const SurfaceRange& other) const;
 
@@ -53,7 +56,7 @@ class VIZ_COMMON_EXPORT SurfaceRange {
 
   bool IsValid() const;
 
-  const base::Optional<SurfaceId>& start() const { return start_; }
+  const absl::optional<SurfaceId>& start() const { return start_; }
 
   const SurfaceId& end() const { return end_; }
 
@@ -62,7 +65,7 @@ class VIZ_COMMON_EXPORT SurfaceRange {
  private:
   friend struct mojo::StructTraits<mojom::SurfaceRangeDataView, SurfaceRange>;
 
-  base::Optional<SurfaceId> start_;
+  absl::optional<SurfaceId> start_;
   SurfaceId end_;
 };
 

@@ -80,7 +80,7 @@ LineChartTest.DataSeries = function() {
       assertDeepEquals(dataSeries.getValues(0, 1000, 3), [null, 10, 20]);
       assertEquals(dataSeries.getMaxValue(0, 1000, 3), 20);
 
-      /* (10 + 20) / 2 == 15 */
+      /* (10 + 20) / 2 === 15 */
       assertDeepEquals(dataSeries.getValues(0, 3000, 1), [15]);
       assertEquals(dataSeries.getMaxValue(0, 3000, 1), 15);
 

@@ -7,11 +7,14 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
     BrowserFrame* browser_frame,
@@ -20,11 +23,12 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
   use_custom_frame_pref_.Init(
       prefs::kUseCustomChromeFrame,
       browser_view->browser()->profile()->GetPrefs(),
-      base::Bind(&DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged,
+          base::Unretained(this)));
 }
 
-DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() {}
+DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
 
 views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
   views::Widget::InitParams params;
@@ -48,23 +52,37 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
                             ? std::string(kX11WindowRoleBrowser)
                             : std::string(kX11WindowRolePopup);
   params.remove_standard_frame = UseCustomFrame();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   return params;
 }
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
+  // If the platform does not support server side decorations, ignore the user
+  // preference and return true.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_server_side_window_decorations) {
+    return true;
+  }
+
   // Normal browser windows get a custom frame (per the user's preference).
-  if (use_custom_frame_pref_.GetValue() &&
-      browser_view()->IsBrowserTypeNormal()) {
+  if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {
     return true;
   }
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
   // feature is enabled).
-  if (browser_view()->IsBrowserTypeWebApp())
-    return true;
+  return browser_view()->GetIsWebAppType();
+}
 
-  return false;
+void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
+    TabDragKind tab_drag_kind) {
+  host_->TabDraggingKindChanged(tab_drag_kind);
+}
+
+bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
+  return host_->SupportsClientFrameShadow() && UseCustomFrame();
 }
 
 void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
@@ -73,4 +91,11 @@ void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
                                       ? views::Widget::FrameType::kForceCustom
                                       : views::Widget::FrameType::kForceNative);
   browser_frame()->FrameTypeChanged();
+  host_->UpdateFrameHints();
+}
+
+NativeBrowserFrame* NativeBrowserFrameFactory::Create(
+    BrowserFrame* browser_frame,
+    BrowserView* browser_view) {
+  return new DesktopBrowserFrameAuraLinux(browser_frame, browser_view);
 }

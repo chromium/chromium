@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "net/cert/cert_type.h"
 #include "net/cert/scoped_nss_types.h"
 
@@ -89,7 +90,14 @@ std::string ProcessSecAlgorithmSignature(CERTCertificate* cert_handle);
 std::string ProcessSecAlgorithmSubjectPublicKey(CERTCertificate* cert_handle);
 std::string ProcessSecAlgorithmSignatureWrap(CERTCertificate* cert_handle);
 
+// Formats the public key from the X.509 SubjectPublicKeyInfo extracted from
+// |cert_handle| as a string for displaying.
 std::string ProcessSubjectPublicKeyInfo(CERTCertificate* cert_handle);
+
+// Parses |public_key_spki_der| as a DER-encoded X.509 SubjectPublicKeyInfo,
+// then formats the public key as a string for displaying.
+std::string ProcessRawSubjectPublicKeyInfo(
+    base::span<const uint8_t> public_key_spki_der);
 
 std::string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle);
 

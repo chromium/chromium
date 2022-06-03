@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -30,6 +29,11 @@ class Extension;
 // Tests whether all the specified CSS selectors match on the page.
 class DeclarativeContentCssPredicate : public ContentPredicate {
  public:
+  DeclarativeContentCssPredicate(const DeclarativeContentCssPredicate&) =
+      delete;
+  DeclarativeContentCssPredicate& operator=(
+      const DeclarativeContentCssPredicate&) = delete;
+
   ~DeclarativeContentCssPredicate() override;
 
   const std::vector<std::string>& css_selectors() const {
@@ -51,8 +55,6 @@ class DeclarativeContentCssPredicate : public ContentPredicate {
   // Weak.
   ContentPredicateEvaluator* const evaluator_;
   std::vector<std::string> css_selectors_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentCssPredicate);
 };
 
 // Supports watching of CSS selectors to across tab contents in a browser
@@ -62,6 +64,12 @@ class DeclarativeContentCssConditionTracker
       public content::NotificationObserver {
  public:
   explicit DeclarativeContentCssConditionTracker(Delegate* delegate);
+
+  DeclarativeContentCssConditionTracker(
+      const DeclarativeContentCssConditionTracker&) = delete;
+  DeclarativeContentCssConditionTracker& operator=(
+      const DeclarativeContentCssConditionTracker&) = delete;
+
   ~DeclarativeContentCssConditionTracker() override;
 
   // ContentPredicateEvaluator:
@@ -79,6 +87,9 @@ class DeclarativeContentCssConditionTracker
   void OnWebContentsNavigation(
       content::WebContents* contents,
       content::NavigationHandle* navigation_handle) override;
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override;
   bool EvaluatePredicate(const ContentPredicate* predicate,
                          content::WebContents* tab) const override;
 
@@ -87,17 +98,22 @@ class DeclarativeContentCssConditionTracker
   class PerWebContentsTracker : public content::WebContentsObserver {
    public:
     using RequestEvaluationCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::RepeatingCallback<void(content::WebContents*)>;
     using WebContentsDestroyedCallback =
-        base::Callback<void(content::WebContents*)>;
+        base::OnceCallback<void(content::WebContents*)>;
 
-    PerWebContentsTracker(
-        content::WebContents* contents,
-        const RequestEvaluationCallback& request_evaluation,
-        const WebContentsDestroyedCallback& web_contents_destroyed);
+    PerWebContentsTracker(content::WebContents* contents,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed);
+
+    PerWebContentsTracker(const PerWebContentsTracker&) = delete;
+    PerWebContentsTracker& operator=(const PerWebContentsTracker&) = delete;
+
     ~PerWebContentsTracker() override;
 
     void OnWebContentsNavigation(content::NavigationHandle* navigation_handle);
+
+    void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
 
     const std::unordered_set<std::string>& matching_css_selectors() const {
       return matching_css_selectors_;
@@ -105,18 +121,13 @@ class DeclarativeContentCssConditionTracker
 
    private:
     // content::WebContentsObserver overrides.
-    bool OnMessageReceived(const IPC::Message& message) override;
     void WebContentsDestroyed() override;
 
-    void OnWatchedPageChange(const std::vector<std::string>& css_selectors);
-
     const RequestEvaluationCallback request_evaluation_;
-    const WebContentsDestroyedCallback web_contents_destroyed_;
+    WebContentsDestroyedCallback web_contents_destroyed_;
 
     // We use a hash_set for maximally efficient lookup.
     std::unordered_set<std::string> matching_css_selectors_;
-
-    DISALLOW_COPY_AND_ASSIGN(PerWebContentsTracker);
   };
 
   // content::NotificationObserver implementation.
@@ -132,7 +143,7 @@ class DeclarativeContentCssConditionTracker
   std::vector<std::string> GetWatchedCssSelectors() const;
 
   // If the renderer process is associated with our browser context, tells it
-  // what page attributes to watch for using an ExtensionMsg_WatchPages.
+  // what page attributes to watch for using the WatchPages Mojo method.
   void InstructRenderProcessIfManagingBrowserContext(
       content::RenderProcessHost* process,
       std::vector<std::string> watched_css_selectors);
@@ -157,8 +168,6 @@ class DeclarativeContentCssConditionTracker
 
   // Manages our notification registrations.
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentCssConditionTracker);
 };
 
 }  // namespace extensions

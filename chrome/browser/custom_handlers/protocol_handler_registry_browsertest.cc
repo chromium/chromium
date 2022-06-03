@@ -5,48 +5,85 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/context_menu_data/media_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+
+#if defined(OS_MAC)
+#include "chrome/test/base/launchservices_utils_mac.h"
+#endif
 
 using content::WebContents;
+
+namespace {
+
+class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
+ public:
+  explicit ProtocolHandlerChangeWaiter(ProtocolHandlerRegistry* registry) {
+    registry_observation_.Observe(registry);
+  }
+  ProtocolHandlerChangeWaiter(const ProtocolHandlerChangeWaiter&) = delete;
+  ProtocolHandlerChangeWaiter& operator=(const ProtocolHandlerChangeWaiter&) =
+      delete;
+  ~ProtocolHandlerChangeWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+  // ProtocolHandlerRegistry::Observer:
+  void OnProtocolHandlerRegistryChanged() override { run_loop_.Quit(); }
+
+ private:
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
   RegisterProtocolHandlerBrowserTest() { }
 
+  void SetUpOnMainThread() override {
+#if defined(OS_MAC)
+    ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  }
+
   TestRenderViewContextMenu* CreateContextMenu(GURL url) {
     content::ContextMenuParams params;
-    params.media_type = blink::ContextMenuDataMediaType::kNone;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
     params.link_url = url;
     params.unfiltered_link_url = url;
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     params.page_url =
         web_contents->GetController().GetLastCommittedEntry()->GetURL();
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
-#endif  // OS_MACOSX
+#endif  // OS_MAC
     TestRenderViewContextMenu* menu = new TestRenderViewContextMenu(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+        *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
         params);
     menu->Init();
     return menu;
@@ -81,11 +118,11 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
     ContextMenuEntryAppearsForHandledUrls) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      CreateContextMenu(GURL("http://www.google.com/")));
+      CreateContextMenu(GURL("https://www.google.com/")));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 
   AddProtocolHandler(std::string("web+search"),
-                     GURL("http://www.google.com/%s"));
+                     GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
@@ -98,11 +135,11 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
     UnregisterProtocolHandler) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      CreateContextMenu(GURL("http://www.google.com/")));
+      CreateContextMenu(GURL("https://www.google.com/")));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 
   AddProtocolHandler(std::string("web+search"),
-                     GURL("http://www.google.com/%s"));
+                     GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
@@ -111,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
   RemoveProtocolHandler(std::string("web+search"),
-                        GURL("http://www.google.com/%s"));
+                        GURL("https://www.google.com/%s"));
   ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
@@ -122,28 +159,68 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
   GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
   AddProtocolHandler("news", handler_url);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("news:test"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("news:test")));
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 
   // Also check redirects.
   GURL redirect_url =
       embedded_test_server()->GetURL("/server-redirect?news:test");
-  ui_test_utils::NavigateToURL(browser(), redirect_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+}
+
+class RegisterProtocolHandlerSubresourceWebBundlesBrowserTest
+    : public RegisterProtocolHandlerBrowserTest {
+ public:
+  RegisterProtocolHandlerSubresourceWebBundlesBrowserTest() = default;
+  ~RegisterProtocolHandlerSubresourceWebBundlesBrowserTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
+    RegisterProtocolHandlerBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerSubresourceWebBundlesBrowserTest,
+                       UrnProtocolHandler) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL handler_url = embedded_test_server()->GetURL("/%s");
+  AddProtocolHandler("urn", handler_url);
+
+  std::u16string expected_title = u"OK";
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/web_bundle/urn-handler-test.html")));
+
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 using RegisterProtocolHandlerExtensionBrowserTest =
     extensions::ExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
-  PermissionRequestManager* manager = PermissionRequestManager::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
-  prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
+#if defined(OS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
@@ -153,16 +230,69 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
       "chrome-extension://" + extension->id() + "/test.html";
 
   // Register the handler.
-  ui_test_utils::NavigateToURL(browser(), GURL(handler_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
-
-  // Wait until the prompt is "displayed" and "accepted".
-  base::RunLoop().RunUntilIdle();
+  {
+    ProtocolHandlerRegistry* registry =
+        ProtocolHandlerRegistryFactory::GetForBrowserContext(
+            browser()->profile());
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
+    ASSERT_TRUE(content::ExecuteScript(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+    waiter.Wait();
+  }
 
   // Test the handler.
-  ui_test_utils::NavigateToURL(browser(), GURL("geo:test"));
-  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("geo:test")));
+  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"), browser()
+                                                   ->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetLastCommittedURL());
+}
+
+class RegisterProtocolHandlerAndServiceWorkerInterceptor
+    : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Navigate to the test page.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/protocol_handler/service_workers/"
+                       "test_protocol_handler_and_service_workers.html")));
+
+    // Bypass permission dialogs for registering new protocol handlers.
+    permissions::PermissionRequestManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents())
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
+  }
+};
+
+// TODO(crbug.com/1204127): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerAndServiceWorkerInterceptor,
+                       DISABLED_RegisterFetchListenerForHTMLHandler) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Register a service worker intercepting requests to the HTML handler.
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "registerFetchListenerForHTMLHandler();"));
+
+  {
+    // Register a HTML handler with a user gesture.
+    ProtocolHandlerRegistry* registry =
+        ProtocolHandlerRegistryFactory::GetForBrowserContext(
+            browser()->profile());
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(content::ExecJs(web_contents, "registerHTMLHandler();"));
+    waiter.Wait();
+  }
+
+  // Verify that a page with the registered scheme is managed by the service
+  // worker, not the HTML handler.
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "pageWithCustomSchemeHandledByServiceWorker();"));
 }

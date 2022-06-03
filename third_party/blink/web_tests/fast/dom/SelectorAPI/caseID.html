@@ -1,6 +1,8 @@
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<title>fast/dom/SelectorAPI/caseID.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 </head>
 <body>
     <div style="display: none">
@@ -10,15 +12,17 @@
     <span id="UPPER2">UPPER 2</span><br>
     </div>
     <script>
-        shouldBe("document.querySelector('#lower1').textContent", "'lower 1'");
-        shouldBe("document.querySelector('#LOWER2').textContent", "'lower 2'");
-        shouldBe("document.querySelector('#UPPER1').textContent", "'UPPER 1'");
-        shouldBe("document.querySelector('#upper2').textContent", "'UPPER 2'");
+      setup({ single_test: true });
+      assert_equals(document.querySelector('#lower1').textContent, 'lower 1');
+      assert_equals(document.querySelector('#LOWER2').textContent, 'lower 2');
+      assert_equals(document.querySelector('#UPPER1').textContent, 'UPPER 1');
+      assert_equals(document.querySelector('#upper2').textContent, 'UPPER 2');
 
-        shouldBeTrue("document.getElementById('lower1').webkitMatchesSelector('#lower1')");
-        shouldBeTrue("document.getElementById('lower2').webkitMatchesSelector('#LOWER2')");
-        shouldBeTrue("document.getElementById('UPPER1').webkitMatchesSelector('#UPPER1')");
-        shouldBeTrue("document.getElementById('UPPER2').webkitMatchesSelector('#upper2')");
-    </script>
+      assert_true(document.getElementById('lower1').webkitMatchesSelector('#lower1'));
+      assert_true(document.getElementById('lower2').webkitMatchesSelector('#LOWER2'));
+      assert_true(document.getElementById('UPPER1').webkitMatchesSelector('#UPPER1'));
+      assert_true(document.getElementById('UPPER2').webkitMatchesSelector('#upper2'));
+      done();
+</script>
 </body>
 </html>

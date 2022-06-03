@@ -11,7 +11,7 @@ class PartObject {
 ./raw_ptr_to_gc_managed_class.h:23:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
 class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./raw_ptr_to_gc_managed_class.h:28:5: note: [blink-gc] Raw pointer field 'm_objs' to a GC managed class declared here:
+./raw_ptr_to_gc_managed_class.h:29:5: note: [blink-gc] Raw pointer field 'm_objs' to a GC managed class declared here:
     HeapVector<HeapObject*> m_objs;
     ^
 2 warnings generated.

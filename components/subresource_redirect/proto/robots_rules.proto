@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package subresource_redirect.proto;
+
+message RobotsRules {
+  // A single page-pattern rule, either allowed or disallowed.
+  message Rule {
+    oneof rule_field {
+      // The allowed path-patterns.
+      string allowed_pattern = 1;
+      // The disallowed path-patterns.
+      string disallowed_pattern = 2;
+    }
+  }
+
+  // Rules for image resources, ordered by length (longest first).
+  repeated Rule image_ordered_rules = 1;
+  // Rules for video resources, ordered by length (longest first).
+  repeated Rule video_ordered_rules = 2;
+}

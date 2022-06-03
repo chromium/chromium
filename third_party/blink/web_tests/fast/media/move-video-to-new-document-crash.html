@@ -1,0 +1,15 @@
+<body>
+<div>
+PASS if no crash.
+</div>
+<video>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+document.execCommand("selectAll");
+document.execCommand("Copy");
+document.designMode = 'on';
+document.execCommand("paste");
+</script>
+</body>

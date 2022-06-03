@@ -1,0 +1,1 @@
+ http://localhost:631/printers/usb://EPSON/Stylus%20CX5400

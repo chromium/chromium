@@ -7,16 +7,22 @@
 
 #include <string>
 
-#include "content/public/common/resource_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-
-class GURL;
 
 namespace base {
 class FilePath;
+}
+
+namespace net {
+class HttpResponseHeaders;
+}
+
+namespace network {
+struct ResourceRequest;
 }
 
 namespace extensions {
@@ -31,15 +37,16 @@ namespace chrome_url_request_util {
 // Sets allowed=true to allow a chrome-extension:// resource request coming from
 // renderer A to access a resource in an extension running in renderer B.
 // Returns false when it couldn't determine if the resource is allowed or not
-bool AllowCrossRendererResourceLoad(const GURL& url,
-                                    content::ResourceType resource_type,
-                                    ui::PageTransition page_transition,
-                                    int child_id,
-                                    bool is_incognito,
-                                    const Extension* extension,
-                                    const ExtensionSet& extensions,
-                                    const ProcessMap& process_map,
-                                    bool* allowed);
+bool AllowCrossRendererResourceLoad(
+    const network::ResourceRequest& request,
+    network::mojom::RequestDestination destination,
+    ui::PageTransition page_transition,
+    int child_id,
+    bool is_incognito,
+    const Extension* extension,
+    const ExtensionSet& extensions,
+    const ProcessMap& process_map,
+    bool* allowed);
 
 // Return the |request|'s resource path relative to the Chromium resources path
 // (chrome::DIR_RESOURCES) *if* the request refers to a resource within the
@@ -60,9 +67,8 @@ void LoadResourceFromResourceBundle(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
     int resource_id,
-    const std::string& content_security_policy,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    bool send_cors_header);
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
 }  // namespace chrome_url_request_util
 }  // namespace extensions

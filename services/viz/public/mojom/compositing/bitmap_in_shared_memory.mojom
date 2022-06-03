@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "skia/public/mojom/image_info.mojom";
+
+// This struct serializes a SkBitmap, using shared memory to pass pixel
+// data. The deserialization avoids a memory copy by directly adopting
+// the shared memory. The serialization still incurs a memory copy into
+// shared memory however.
+struct BitmapInSharedMemory {
+  skia.mojom.ImageInfo image_info;
+  uint64 row_bytes;
+  // Null indicates SkBitmap does not have pixels allocated.
+  mojo_base.mojom.WritableSharedMemoryRegion? pixels;
+};

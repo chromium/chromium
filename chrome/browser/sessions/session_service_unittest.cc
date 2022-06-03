@@ -7,27 +7,32 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_service_base_test_helper.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -39,13 +44,16 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/page_state.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 using content::NavigationEntry;
@@ -61,12 +69,8 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    std::string b = base::NumberToString(base::Time::Now().ToInternalValue());
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(b);
-    SessionService* session_service = new SessionService(profile);
-    path_ = profile->GetPath();
-
-    helper_.SetService(session_service);
+    session_service_ = std::make_unique<SessionService>(browser()->profile());
+    helper_.SetService(session_service_.get());
 
     service()->SetWindowType(window_id, Browser::TYPE_NORMAL);
     service()->SetWindowBounds(window_id,
@@ -76,40 +80,55 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    helper_.SetService(NULL);
+    DestroySessionService();
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void UpdateNavigation(
-      const SessionID& window_id,
-      const SessionID& tab_id,
-      const SerializedNavigationEntry& navigation,
-      bool select) {
-    service()->UpdateTabNavigation(window_id, tab_id, navigation);
+  absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
+      SessionServiceEventLogType type) {
+    auto events = GetSessionServiceEvents(browser()->profile());
+    for (auto i = events.rbegin(); i != events.rend(); ++i) {
+      if (i->type == type)
+        return *i;
+    }
+    return absl::nullopt;
+  }
+
+  void DestroySessionService() {
+    // Destroy the SessionService first as it may post tasks.
+    session_service_.reset();
+    // This flushes tasks.
+    helper_.SetService(nullptr);
+  }
+
+  void UpdateNavigation(const SessionID& window_session_id,
+                        const SessionID& tab_id,
+                        const SerializedNavigationEntry& navigation,
+                        bool select) {
+    service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
     if (select) {
-      service()->SetSelectedNavigationIndex(
-          window_id, tab_id, navigation.index());
+      service()->SetSelectedNavigationIndex(window_session_id, tab_id,
+                                            navigation.index());
     }
   }
 
-  SessionID CreateTabWithTestNavigationData(SessionID window_id,
+  SessionID CreateTabWithTestNavigationData(SessionID window_session_id,
                                             int visual_index) {
     const SessionID tab_id = SessionID::NewUnique();
     const SerializedNavigationEntry nav =
         SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-    helper_.PrepareTabInWindow(window_id, tab_id, visual_index, true);
-    UpdateNavigation(window_id, tab_id, nav, true);
+    helper_.PrepareTabInWindow(window_session_id, tab_id, visual_index, true);
+    UpdateNavigation(window_session_id, tab_id, nav, true);
     return tab_id;
   }
 
   void ReadWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID* active_window_id) {
-    // Forces closing the file.
-    helper_.SetService(NULL);
+    DestroySessionService();
 
-    SessionService* session_service = new SessionService(path_);
-    helper_.SetService(session_service);
+    session_service_ = std::make_unique<SessionService>(browser()->profile());
+    helper_.SetService(session_service_.get());
 
     SessionID* non_null_active_window_id = active_window_id;
     SessionID dummy_active_window_id = SessionID::InvalidValue();
@@ -134,7 +153,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
       helper_.service()->SetPinnedState(window_id, tab_id, pinned_state);
 
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-    ReadWindows(&windows, NULL);
+    ReadWindows(&windows, nullptr);
 
     EXPECT_EQ(1U, windows.size());
     if (HasFatalFailure())
@@ -178,10 +197,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
 
   const SessionID window_id = SessionID::NewUnique();
 
-  // Path used in testing.
-  base::ScopedTempDir temp_dir_;
-  base::FilePath path_;
-
+  std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;
 };
 
@@ -198,7 +214,7 @@ TEST_F(SessionServiceTest, Basic) {
   UpdateNavigation(window_id, tab_id, nav1, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_TRUE(window_bounds == windows[0]->bounds);
@@ -227,7 +243,7 @@ TEST_F(SessionServiceTest, PersistPostData) {
   UpdateNavigation(window_id, tab_id, nav1, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 }
@@ -247,13 +263,15 @@ TEST_F(SessionServiceTest, ClosingTabStaysClosed) {
 
   helper_.PrepareTabInWindow(window_id, tab2_id, 1, false);
   UpdateNavigation(window_id, tab2_id, nav2, true);
-  service()->TabClosed(window_id, tab2_id, false);
+  service()->TabClosed(window_id, tab2_id);
+
+  EXPECT_TRUE(helper_.GetHasOpenTrackableBrowsers());
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
-  ASSERT_EQ(0, windows[0]->selected_tab_index);
+  EXPECT_EQ(0, windows[0]->selected_tab_index);
   ASSERT_EQ(window_id, windows[0]->window_id);
   ASSERT_EQ(1U, windows[0]->tabs.size());
 
@@ -261,6 +279,28 @@ TEST_F(SessionServiceTest, ClosingTabStaysClosed) {
   helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
 
   helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
+}
+
+TEST_F(SessionServiceTest, CloseSingleTabClosesWindowAndTab) {
+  SessionID tab_id = SessionID::NewUnique();
+  ASSERT_NE(window_id, tab_id);
+
+  SerializedNavigationEntry nav1 =
+      ContentTestHelper::CreateNavigation("http://google.com", "abc");
+
+  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
+  UpdateNavigation(window_id, tab_id, nav1, true);
+
+  helper_.SetIsOnlyOneTabLeft(true);
+
+  service()->TabClosed(window_id, tab_id);
+
+  EXPECT_FALSE(helper_.GetHasOpenTrackableBrowsers());
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr);
+
+  EXPECT_TRUE(windows.empty());
 }
 
 TEST_F(SessionServiceTest, Pruning) {
@@ -290,7 +330,7 @@ TEST_F(SessionServiceTest, Pruning) {
   EXPECT_EQ(2, available_range.second);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -318,7 +358,7 @@ TEST_F(SessionServiceTest, TwoWindows) {
       window2_id, tab1_id, tab2_id, &nav1, &nav2);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(2U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -370,7 +410,7 @@ TEST_F(SessionServiceTest, WindowWithNoTabsGetsPruned) {
   helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -382,7 +422,7 @@ TEST_F(SessionServiceTest, WindowWithNoTabsGetsPruned) {
   helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
 }
 
-TEST_F(SessionServiceTest, ClosingWindowDoesntCloseTabs) {
+TEST_F(SessionServiceTest, ClosingLastWindowDoesntCloseTabs) {
   SessionID tab_id = SessionID::NewUnique();
   SessionID tab2_id = SessionID::NewUnique();
   ASSERT_NE(tab_id, tab2_id);
@@ -398,13 +438,16 @@ TEST_F(SessionServiceTest, ClosingWindowDoesntCloseTabs) {
   helper_.PrepareTabInWindow(window_id, tab2_id, 1, false);
   UpdateNavigation(window_id, tab2_id, nav2, true);
 
+  helper_.SetHasOpenTrackableBrowsers(false);
+
   service()->WindowClosing(window_id);
+  service()->WindowClosed(window_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
-  ASSERT_EQ(0, windows[0]->selected_tab_index);
+  EXPECT_EQ(0, windows[0]->selected_tab_index);
   ASSERT_EQ(window_id, windows[0]->window_id);
   ASSERT_EQ(2U, windows[0]->tabs.size());
 
@@ -417,7 +460,34 @@ TEST_F(SessionServiceTest, ClosingWindowDoesntCloseTabs) {
   helper_.AssertNavigationEquals(nav2, tab->navigations[0]);
 }
 
+TEST_F(SessionServiceTest, ClosingSecondWindowClosesTabs) {
+  SessionID window2_id = SessionID::NewUnique();
+  SessionID tab1_id = SessionID::NewUnique();
+  SessionID tab2_id = SessionID::NewUnique();
+  ASSERT_NE(tab1_id, tab2_id);
+
+  SerializedNavigationEntry nav1 =
+      ContentTestHelper::CreateNavigation("http://google.com", "abc");
+  SerializedNavigationEntry nav2 =
+      ContentTestHelper::CreateNavigation("http://google2.com", "abcd");
+
+  CreateAndWriteSessionWithTwoWindows(window2_id, tab1_id, tab2_id, &nav1,
+                                      &nav2);
+
+  service()->WindowClosing(window2_id);
+  service()->WindowClosed(window2_id);
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr);
+
+  ASSERT_EQ(1U, windows.size());
+  EXPECT_EQ(0, windows[0]->selected_tab_index);
+  EXPECT_EQ(window_id, windows[0]->window_id);
+  EXPECT_EQ(1U, windows[0]->tabs.size());
+}
+
 TEST_F(SessionServiceTest, LockingWindowRemembersAll) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   SessionID window2_id = SessionID::NewUnique();
   SessionID tab1_id = SessionID::NewUnique();
   SessionID tab2_id = SessionID::NewUnique();
@@ -430,10 +500,11 @@ TEST_F(SessionServiceTest, LockingWindowRemembersAll) {
   ASSERT_TRUE(service()->profile());
   ProfileManager* manager = g_browser_process->profile_manager();
   ASSERT_TRUE(manager);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(manager->GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(service()->profile()->GetPath(), &entry));
-  entry->SetIsSigninRequired(true);
+  ProfileAttributesEntry* entry =
+      manager->GetProfileAttributesStorage().GetProfileAttributesWithPath(
+          service()->profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
 
   service()->WindowClosing(window_id);
   service()->WindowClosed(window_id);
@@ -441,7 +512,7 @@ TEST_F(SessionServiceTest, LockingWindowRemembersAll) {
   service()->WindowClosed(window2_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(2U, windows.size());
   ASSERT_EQ(1U, windows[0]->tabs.size());
@@ -471,11 +542,11 @@ TEST_F(SessionServiceTest, WindowCloseCommittedAfterNavigate) {
   UpdateNavigation(window2_id, tab2_id, nav2, true);
 
   service()->WindowClosing(window2_id);
-  service()->TabClosed(window2_id, tab2_id, false);
+  service()->TabClosed(window2_id, tab2_id);
   service()->WindowClosed(window2_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -498,75 +569,6 @@ TEST_F(SessionServiceTest, RemoveUnusedRestoreWindowsTest) {
   ASSERT_EQ(1U, windows_list.size());
   EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, windows_list[0]->type);
 }
-
-#if defined (OS_CHROMEOS)
-// Makes sure we track apps. Only applicable on chromeos.
-TEST_F(SessionServiceTest, RestoreApp) {
-  SessionID window2_id = SessionID::NewUnique();
-  SessionID tab_id = SessionID::NewUnique();
-  SessionID tab2_id = SessionID::NewUnique();
-  ASSERT_NE(window2_id, window_id);
-
-  service()->SetWindowType(window2_id, Browser::TYPE_APP);
-  service()->SetWindowBounds(window2_id,
-                             window_bounds,
-                             ui::SHOW_STATE_NORMAL);
-  service()->SetWindowAppName(window2_id, "TestApp");
-
-  SerializedNavigationEntry nav1 =
-      ContentTestHelper::CreateNavigation("http://google.com", "abc");
-  SerializedNavigationEntry nav2 =
-      ContentTestHelper::CreateNavigation("http://google2.com", "abcd");
-
-  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
-  UpdateNavigation(window_id, tab_id, nav1, true);
-
-  helper_.PrepareTabInWindow(window2_id, tab2_id, 0, false);
-  UpdateNavigation(window2_id, tab2_id, nav2, true);
-
-  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
-
-  ASSERT_EQ(2U, windows.size());
-  int tabbed_index =
-      windows[0]->type == sessions::SessionWindow::TYPE_NORMAL ? 0 : 1;
-  int app_index = tabbed_index == 0 ? 1 : 0;
-  ASSERT_EQ(0, windows[tabbed_index]->selected_tab_index);
-  ASSERT_EQ(window_id, windows[tabbed_index]->window_id);
-  ASSERT_EQ(1U, windows[tabbed_index]->tabs.size());
-
-  sessions::SessionTab* tab = windows[tabbed_index]->tabs[0].get();
-  helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
-  helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
-
-  ASSERT_EQ(0, windows[app_index]->selected_tab_index);
-  ASSERT_EQ(window2_id, windows[app_index]->window_id);
-  ASSERT_EQ(1U, windows[app_index]->tabs.size());
-  ASSERT_TRUE(windows[app_index]->type == sessions::SessionWindow::TYPE_APP);
-  ASSERT_EQ("TestApp", windows[app_index]->app_name);
-
-  tab = windows[app_index]->tabs[0].get();
-  helper_.AssertTabEquals(window2_id, tab2_id, 0, 0, 1, *tab);
-  helper_.AssertNavigationEquals(nav2, tab->navigations[0]);
-}
-
-// Don't track Crostini apps. Only applicable on Chrome OS.
-TEST_F(SessionServiceTest, IgnoreCrostiniApps) {
-  SessionID window2_id = SessionID::NewUnique();
-  ASSERT_NE(window2_id, window_id);
-
-  service()->SetWindowType(window2_id, Browser::TYPE_APP);
-  service()->SetWindowBounds(window2_id, window_bounds, ui::SHOW_STATE_NORMAL);
-  service()->SetWindowAppName(window2_id, "_crostini_fakeappid");
-
-  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
-
-  for (auto& window : windows)
-    ASSERT_NE(window2_id, window->window_id);
-}
-
-#endif  // defined (OS_CHROMEOS)
 
 // Tests pruning from the front.
 TEST_F(SessionServiceTest, PruneFromFront) {
@@ -597,7 +599,7 @@ TEST_F(SessionServiceTest, PruneFromFront) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -769,7 +771,7 @@ TEST_F(SessionServiceTest, PruneToEmpty) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(0U, windows.size());
 }
@@ -803,7 +805,7 @@ TEST_F(SessionServiceTest, PersistApplicationExtensionID) {
   helper_.SetTabExtensionAppID(window_id, tab_id, app_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
   EXPECT_TRUE(app_id == windows[0]->tabs[0]->extension_app_id);
@@ -816,6 +818,13 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
   std::string user_agent_override = "Mozilla/5.0 (X11; Linux x86_64) "
       "AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.45 "
       "Safari/535.19";
+  blink::UserAgentMetadata client_hints_override;
+  client_hints_override.brand_version_list.emplace_back("Chrome", "18");
+  client_hints_override.full_version = "18.0.1025.45";
+  client_hints_override.platform = "Linux";
+  client_hints_override.architecture = "x86_64";
+  // Doesn't have to match, just needs to be different than the default
+  client_hints_override.bitness = "8";
 
   SerializedNavigationEntry nav1 =
       ContentTestHelper::CreateNavigation("http://google.com", "abc");
@@ -823,34 +832,23 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
 
   helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
   UpdateNavigation(window_id, tab_id, nav1, true);
-  helper_.SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
+  sessions::SerializedUserAgentOverride serialized_override;
+  serialized_override.ua_string_override = user_agent_override;
+  serialized_override.opaque_ua_metadata_override =
+      blink::UserAgentMetadata::Marshal(client_hints_override);
+  helper_.SetTabUserAgentOverride(window_id, tab_id, serialized_override);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 
   sessions::SessionTab* tab = windows[0]->tabs[0].get();
   helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
   helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
-  EXPECT_TRUE(user_agent_override == tab->user_agent_override);
-}
-
-// Makes sure a tab closed by a user gesture is not restored.
-TEST_F(SessionServiceTest, CloseTabUserGesture) {
-  SessionID tab_id = SessionID::NewUnique();
-  ASSERT_NE(window_id, tab_id);
-
-  SerializedNavigationEntry nav1 =
-      ContentTestHelper::CreateNavigation("http://google.com", "abc");
-
-  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
-  UpdateNavigation(window_id, tab_id, nav1, true);
-  service()->TabClosed(window_id, tab_id, true);
-
-  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
-
-  ASSERT_TRUE(windows.empty());
+  EXPECT_TRUE(user_agent_override ==
+              tab->user_agent_override.ua_string_override);
+  EXPECT_TRUE(blink::UserAgentMetadata::Marshal(client_hints_override) ==
+              tab->user_agent_override.opaque_ua_metadata_override);
 }
 
 // Verifies SetWindowBounds maps SHOW_STATE_DEFAULT to SHOW_STATE_NORMAL.
@@ -866,7 +864,7 @@ TEST_F(SessionServiceTest, DontPersistDefault) {
                              ui::SHOW_STATE_DEFAULT);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
   ASSERT_EQ(1U, windows.size());
   EXPECT_EQ(ui::SHOW_STATE_NORMAL, windows[0]->show_state);
 }
@@ -881,7 +879,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   std::unique_ptr<content::NavigationEntry> entry1 =
       content::NavigationEntry::Create();
   entry1->SetURL(GURL("http://google.com"));
-  entry1->SetTitle(base::UTF8ToUTF16("title1"));
+  entry1->SetTitle(u"title1");
   entry1->SetHasPostData(true);
   entry1->SetPostData(network::ResourceRequestBody::CreateFromBytes(
       post_data.data(), post_data.size()));
@@ -894,7 +892,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   std::unique_ptr<content::NavigationEntry> entry2 =
       content::NavigationEntry::Create();
   entry2->SetURL(GURL("http://google.com/nopost"));
-  entry2->SetTitle(base::UTF8ToUTF16("title2"));
+  entry2->SetTitle(u"title2");
   entry2->SetHasPostData(false);
   SerializedNavigationEntry nav2 =
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
@@ -905,7 +903,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   UpdateNavigation(window_id, tab_id, nav2, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 2);
 
@@ -926,8 +924,8 @@ TEST_F(SessionServiceTest, RemovePostDataWithPasswords) {
   ASSERT_NE(window_id, tab_id);
 
   // Create a page state representing a HTTP body with posted passwords.
-  content::PageState page_state =
-      content::PageState::CreateForTesting(GURL(), true, "data", NULL);
+  blink::PageState page_state =
+      blink::PageState::CreateForTesting(GURL(), true, "data", nullptr);
 
   // Create a TabNavigation containing page_state and representing a POST
   // request with passwords.
@@ -940,7 +938,7 @@ TEST_F(SessionServiceTest, RemovePostDataWithPasswords) {
   UpdateNavigation(window_id, tab_id, nav1, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 
@@ -966,7 +964,7 @@ TEST_F(SessionServiceTest, ReplacePendingNavigation) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   // The ones with index 0, and 2 should have been replaced by 1 and 3.
   ASSERT_EQ(1U, windows.size());
@@ -1013,7 +1011,7 @@ TEST_F(SessionServiceTest, ReplacePendingNavigationAndPrune) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   // We should still have that last navigation at the end,
   // even though it replaced one that was set before the prune.
@@ -1068,8 +1066,8 @@ TEST_F(SessionServiceTest, RestoreActivation2) {
   EXPECT_EQ(window2_id, active_window_id);
 }
 
-// Makes sure we don't track blacklisted URLs.
-TEST_F(SessionServiceTest, IgnoreBlacklistedUrls) {
+// Makes sure sessions doesn't track certain urls.
+TEST_F(SessionServiceTest, IgnoreBlockedUrls) {
   SessionID tab_id = SessionID::NewUnique();
 
   SerializedNavigationEntry nav1 =
@@ -1085,7 +1083,7 @@ TEST_F(SessionServiceTest, IgnoreBlacklistedUrls) {
   UpdateNavigation(window_id, tab_id, nav3, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, NULL);
+  ReadWindows(&windows, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -1109,15 +1107,15 @@ TEST_F(SessionServiceTest, TabGroupDefaultsToNone) {
 
   // Verify that the recorded tab has no group.
   sessions::SessionTab* tab = windows[0]->tabs[0].get();
-  EXPECT_EQ(base::nullopt, tab->group);
+  EXPECT_EQ(absl::nullopt, tab->group);
 }
 
 TEST_F(SessionServiceTest, TabGroupsSaved) {
   const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
   const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
   constexpr int kNumTabs = 5;
-  const std::array<base::Optional<tab_groups::TabGroupId>, kNumTabs> groups = {
-      base::nullopt, group1, group1, base::nullopt, group2};
+  const std::array<absl::optional<tab_groups::TabGroupId>, kNumTabs> groups = {
+      absl::nullopt, group1, group1, absl::nullopt, group2};
 
   // Create |kNumTabs| tabs with group IDs in |groups|.
   for (int tab_ndx = 0; tab_ndx < kNumTabs; ++tab_ndx) {
@@ -1145,8 +1143,10 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
       tab_groups::TabGroupId::GenerateNew(),
       tab_groups::TabGroupId::GenerateNew()};
   const std::array<tab_groups::TabGroupVisualData, kNumGroups> visual_data = {
-      tab_groups::TabGroupVisualData(base::ASCIIToUTF16("Foo"), SK_ColorBLUE),
-      tab_groups::TabGroupVisualData(base::ASCIIToUTF16("Bar"), SK_ColorGREEN)};
+      tab_groups::TabGroupVisualData(u"Foo",
+                                     tab_groups::TabGroupColorId::kBlue),
+      tab_groups::TabGroupVisualData(u"Bar",
+                                     tab_groups::TabGroupColorId::kGreen)};
 
   // Create |kNumGroups| tab groups, each with one tab.
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
@@ -1178,12 +1178,101 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
   }
 }
 
+TEST_F(SessionServiceTest, Workspace) {
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_workspace(window_workspace);
+  AddTab(browser(), GURL("http://foo/1"));
+  // Force a reset, to verify that SessionService::BuildCommandsForBrowser
+  // handles workspaces correctly.
+  service()->ResetFromCurrentBrowsers();
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_workspace_command = false;
+  std::unique_ptr<sessions::SessionCommand> workspace_command =
+      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+                                                window_workspace);
+  for (const auto& command : pending_commands) {
+    if (command->id() == workspace_command->id() &&
+        command->contents_as_string_piece() ==
+            workspace_command->contents_as_string_piece()) {
+      found_workspace_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_workspace_command);
+}
+
+// Tests that the workspace is saved in the browser session during
+// `SessionService::WindowOpened(),` called in `Browser()` constructor to
+// save the current workspace to newly created browser.
+TEST_F(SessionServiceTest, WorkspaceSavedOnOpened) {
+  const std::string workspace = "xyz";
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_workspace(workspace);
+  service()->WindowOpened(browser());
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_workspace_command = false;
+  std::unique_ptr<sessions::SessionCommand> workspace_command =
+      sessions::CreateSetWindowWorkspaceCommand(browser()->session_id(),
+                                                workspace);
+  for (const auto& command : pending_commands) {
+    if (command->id() == workspace_command->id() &&
+        command->contents_as_string_piece() ==
+            workspace_command->contents_as_string_piece()) {
+      found_workspace_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_workspace_command);
+}
+
+// Tests that the visible on all workspaces state is saved during
+// SessionService::BuildCommandsForBrowser.
+TEST_F(SessionServiceTest, VisibleOnAllWorkspaces) {
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_visible_on_all_workspaces(true);
+  // Force a reset, to verify that SessionService::BuildCommandsForBrowser
+  // handles workspaces correctly.
+  AddTab(browser(), GURL("http://foo/1"));
+  service()->ResetFromCurrentBrowsers();
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_visible_on_all_workspaces_command = false;
+  std::unique_ptr<sessions::SessionCommand> visible_on_all_workspaces_command =
+      sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
+          browser()->session_id(),
+          /*visible_on_all_workspaces=*/true);
+  for (const auto& command : pending_commands) {
+    if (command->id() == visible_on_all_workspaces_command->id() &&
+        command->contents_as_string_piece() ==
+            visible_on_all_workspaces_command->contents_as_string_piece()) {
+      found_visible_on_all_workspaces_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_visible_on_all_workspaces_command);
+}
+
 // Functions used by GetSessionsAndDestroy.
 namespace {
 
 void OnGotPreviousSession(
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
-    SessionID ignored_active_window) {
+    SessionID ignored_active_window,
+    bool error_reading) {
   FAIL() << "SessionService was destroyed, this shouldn't be reached.";
 }
 
@@ -1213,14 +1302,85 @@ void SimulateWaitForTesting(const base::AtomicFlag* flag) {
 // SessionService was destroyed before SessionService could process the results.
 TEST_F(SessionServiceTest, GetSessionsAndDestroy) {
   base::AtomicFlag flag;
-  base::CancelableTaskTracker cancelable_task_tracker;
   base::RunLoop run_loop;
   helper_.RunTaskOnBackendThread(
-      FROM_HERE, base::Bind(&SimulateWaitForTesting, base::Unretained(&flag)));
-  service()->GetLastSession(base::Bind(&OnGotPreviousSession),
-                            &cancelable_task_tracker);
+      FROM_HERE,
+      base::BindOnce(&SimulateWaitForTesting, base::Unretained(&flag)));
+  service()->GetLastSession(base::BindOnce(&OnGotPreviousSession));
   helper_.RunTaskOnBackendThread(FROM_HERE, run_loop.QuitClosure());
-  delete helper_.ReleaseService();
+  // Don't use DestroySessionService() as that runs the MessageLoop, which
+  // this test needs to control.
+  session_service_.reset();
   flag.Set();
   run_loop.Run();
+}
+
+TEST_F(SessionServiceTest, LogExit) {
+  EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
+  helper_.SetHasOpenTrackableBrowsers(false);
+  service()->WindowClosing(window_id);
+  auto exit_event =
+      FindMostRecentEventOfType(SessionServiceEventLogType::kExit);
+  ASSERT_TRUE(exit_event);
+  EXPECT_EQ(1, exit_event->data.exit.window_count);
+  EXPECT_EQ(browser()->tab_strip_model()->count(),
+            exit_event->data.exit.tab_count);
+
+  // Create another window, which should remove the exit.
+  SessionID window2_id = SessionID::NewUnique();
+  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
+}
+
+TEST_F(SessionServiceTest, OnErrorWritingSessionCommands) {
+  helper_.SaveNow();
+  EXPECT_FALSE(helper_.HasPendingReset());
+  EXPECT_FALSE(helper_.HasPendingSave());
+  EXPECT_FALSE(
+      FindMostRecentEventOfType(SessionServiceEventLogType::kWriteError));
+  service()->OnErrorWritingSessionCommands();
+  EXPECT_TRUE(helper_.HasPendingReset());
+  EXPECT_TRUE(helper_.HasPendingSave());
+  auto write_error_event =
+      FindMostRecentEventOfType(SessionServiceEventLogType::kWriteError);
+  ASSERT_TRUE(write_error_event);
+  EXPECT_EQ(1, write_error_event->data.write_error.error_count);
+  EXPECT_EQ(0, write_error_event->data.write_error.unrecoverable_error_count);
+}
+
+TEST_F(SessionServiceTest, OnErrorWritingSessionCommandsUnrecoverable) {
+  helper_.SaveNow();
+  service()->WindowClosing(window_id);
+  EXPECT_FALSE(
+      FindMostRecentEventOfType(SessionServiceEventLogType::kWriteError));
+  service()->OnErrorWritingSessionCommands();
+  EXPECT_TRUE(helper_.HasPendingReset());
+  EXPECT_TRUE(helper_.HasPendingSave());
+  auto write_error_event =
+      FindMostRecentEventOfType(SessionServiceEventLogType::kWriteError);
+  ASSERT_TRUE(write_error_event);
+  EXPECT_EQ(1, write_error_event->data.write_error.error_count);
+  EXPECT_EQ(0, write_error_event->data.write_error.unrecoverable_error_count);
+}
+
+TEST_F(SessionServiceTest, DisableSaving) {
+  // Disable saving has to be done early on.
+  helper_.SetSavingEnabled(false);
+  helper_.SaveNow();
+  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
+  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
+
+  // Schedule another command, it should not trigger any saving.
+  const SessionID window2_id = SessionID::NewUnique();
+  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  EXPECT_FALSE(helper_.command_storage_manager()->HasPendingSave());
+  EXPECT_TRUE(helper_.command_storage_manager()->pending_commands().empty());
+  helper_.SaveNow();
+  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
+  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
+
+  // Turn on saving, and a rebuild should be scheduled.
+  helper_.SetSavingEnabled(true);
+  EXPECT_TRUE(helper_.command_storage_manager()->HasPendingSave());
+  EXPECT_TRUE(helper_.command_storage_manager()->pending_reset());
 }

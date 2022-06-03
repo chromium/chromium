@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync_manager.h"
-#include "content/browser/service_worker/service_worker_storage.h"
+#include "content/browser/service_worker/service_worker_registry.h"
 
 namespace url {
 class Origin;
@@ -42,6 +42,11 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
   TestBackgroundSyncManager(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
+
+  TestBackgroundSyncManager(const TestBackgroundSyncManager&) = delete;
+  TestBackgroundSyncManager& operator=(const TestBackgroundSyncManager&) =
+      delete;
+
   ~TestBackgroundSyncManager() override;
 
   // Force a call to the internal Init() method.
@@ -117,12 +122,12 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
       const url::Origin& origin,
       const std::string& key,
       const std::string& data,
-      ServiceWorkerStorage::StatusCallback callback) override;
+      ServiceWorkerRegistry::StatusCallback callback) override;
 
   // Override to allow delays to be injected by tests.
   void GetDataFromBackend(
       const std::string& key,
-      ServiceWorkerStorage::GetUserDataForAllRegistrationsCallback callback)
+      ServiceWorkerRegistry::GetUserDataForAllRegistrationsCallback callback)
       override;
 
   // Override to avoid actual dispatching of the event, just call the provided
@@ -146,13 +151,13 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
       const url::Origin& origin,
       const std::string& key,
       const std::string& data,
-      ServiceWorkerStorage::StatusCallback callback);
+      ServiceWorkerRegistry::StatusCallback callback);
 
   // Callback to resume the GetDataFromBackend operation, after explicit delays
   // injected by tests.
   void GetDataFromBackendContinue(
       const std::string& key,
-      ServiceWorkerStorage::GetUserDataForAllRegistrationsCallback callback);
+      ServiceWorkerRegistry::GetUserDataForAllRegistrationsCallback callback);
 
   bool corrupt_backend_ = false;
   bool delay_backend_ = false;
@@ -164,8 +169,6 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
   DispatchSyncCallback dispatch_periodic_sync_callback_;
   base::TimeDelta soonest_one_shot_sync_wakeup_delta_;
   base::TimeDelta soonest_periodic_sync_wakeup_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundSyncManager);
 };
 
 }  // namespace content

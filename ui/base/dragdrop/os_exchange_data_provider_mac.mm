@@ -6,8 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,8 +17,9 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #import "ui/base/dragdrop/cocoa_dnd_util.h"
-#include "ui/base/dragdrop/file_info.h"
 #include "url/gurl.h"
 
 @interface CrPasteboardItemWrapper : NSObject <NSPasteboardWriting>
@@ -79,11 +81,10 @@ namespace {
 class OwningProvider : public OSExchangeDataProviderMac {
  public:
   OwningProvider()
-      : OSExchangeDataProviderMac(),
-        owned_pasteboard_(new ui::UniquePasteboard) {}
+      : OSExchangeDataProviderMac(), owned_pasteboard_(new UniquePasteboard) {}
   OwningProvider(const OwningProvider& provider) = default;
 
-  std::unique_ptr<OSExchangeData::Provider> Clone() const override {
+  std::unique_ptr<OSExchangeDataProvider> Clone() const override {
     return std::make_unique<OwningProvider>(*this);
   }
 
@@ -92,7 +93,7 @@ class OwningProvider : public OSExchangeDataProviderMac {
   }
 
  private:
-  scoped_refptr<ui::UniquePasteboard> owned_pasteboard_;
+  scoped_refptr<UniquePasteboard> owned_pasteboard_;
 };
 
 class WrappingProvider : public OSExchangeDataProviderMac {
@@ -101,7 +102,7 @@ class WrappingProvider : public OSExchangeDataProviderMac {
       : OSExchangeDataProviderMac(), wrapped_pasteboard_([pasteboard retain]) {}
   WrappingProvider(const WrappingProvider& provider) = default;
 
-  std::unique_ptr<OSExchangeData::Provider> Clone() const override {
+  std::unique_ptr<OSExchangeDataProvider> Clone() const override {
     return std::make_unique<WrappingProvider>(*this);
   }
 
@@ -143,17 +144,17 @@ bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
   return false;
 }
 
-void OSExchangeDataProviderMac::SetString(const base::string16& string) {
+void OSExchangeDataProviderMac::SetString(const std::u16string& string) {
   [GetPasteboard() setString:base::SysUTF16ToNSString(string)
                      forType:NSPasteboardTypeString];
 }
 
 void OSExchangeDataProviderMac::SetURL(const GURL& url,
-                                       const base::string16& title) {
+                                       const std::u16string& title) {
   base::scoped_nsobject<NSPasteboardItem> item =
       ClipboardUtil::PasteboardItemFromUrl(base::SysUTF8ToNSString(url.spec()),
                                            base::SysUTF16ToNSString(title));
-  ui::ClipboardUtil::AddDataToPasteboard(GetPasteboard(), item);
+  ClipboardUtil::AddDataToPasteboard(GetPasteboard(), item);
 }
 
 void OSExchangeDataProviderMac::SetFilename(const base::FilePath& path) {
@@ -182,7 +183,7 @@ void OSExchangeDataProviderMac::SetPickledData(
   [GetPasteboard() setData:ns_data forType:format.ToNSString()];
 }
 
-bool OSExchangeDataProviderMac::GetString(base::string16* data) const {
+bool OSExchangeDataProviderMac::GetString(std::u16string* data) const {
   DCHECK(data);
   NSString* item = [GetPasteboard() stringForType:NSPasteboardTypeString];
   if (item) {
@@ -192,24 +193,22 @@ bool OSExchangeDataProviderMac::GetString(base::string16* data) const {
 
   // There was no NSString, check for an NSURL.
   GURL url;
-  base::string16 title;
-  bool result =
-      GetURLAndTitle(OSExchangeData::DO_NOT_CONVERT_FILENAMES, &url, &title);
+  std::u16string title;
+  bool result = GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+                               &url, &title);
   if (result)
     *data = base::UTF8ToUTF16(url.spec());
 
   return result;
 }
 
-bool OSExchangeDataProviderMac::GetURLAndTitle(
-    OSExchangeData::FilenameToURLPolicy policy,
-    GURL* url,
-    base::string16* title) const {
+bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
+                                               GURL* url,
+                                               std::u16string* title) const {
   DCHECK(url);
   DCHECK(title);
 
-  if (ui::PopulateURLAndTitleFromPasteboard(url, title, GetPasteboard(),
-                                            false)) {
+  if (PopulateURLAndTitleFromPasteboard(url, title, GetPasteboard(), false)) {
     return true;
   }
 
@@ -221,7 +220,7 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(
   // the trailing slashes off of paths and always returns the last path element
   // as the title whereas no path conversion nor title is wanted.
   base::FilePath path;
-  if (policy != OSExchangeData::DO_NOT_CONVERT_FILENAMES &&
+  if (policy != FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES &&
       GetFilename(&path)) {
     NSURL* fileUrl =
         [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
@@ -269,14 +268,13 @@ bool OSExchangeDataProviderMac::GetPickledData(
 }
 
 bool OSExchangeDataProviderMac::HasString() const {
-  base::string16 string;
+  std::u16string string;
   return GetString(&string);
 }
 
-bool OSExchangeDataProviderMac::HasURL(
-    OSExchangeData::FilenameToURLPolicy policy) const {
+bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   return GetURLAndTitle(policy, &url, &title);
 }
 
@@ -287,6 +285,24 @@ bool OSExchangeDataProviderMac::HasFile() const {
 bool OSExchangeDataProviderMac::HasCustomFormat(
     const ClipboardFormatType& format) const {
   return [[GetPasteboard() types] containsObject:format.ToNSString()];
+}
+
+void OSExchangeDataProviderMac::SetFileContents(
+    const base::FilePath& filename,
+    const std::string& file_contents) {
+  NOTIMPLEMENTED();
+}
+
+bool OSExchangeDataProviderMac::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool OSExchangeDataProviderMac::HasFileContents() const {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void OSExchangeDataProviderMac::SetDragImage(
@@ -333,11 +349,18 @@ NSDraggingItem* OSExchangeDataProviderMac::GetDraggingItem() const {
 // static
 NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
-    kWebCustomDataPboardType, ui::ClipboardUtil::UTIForWebURLsAndTitles(),
-    NSURLPboardType, NSFilenamesPboardType, ui::kChromeDragDummyPboardType,
+    kWebCustomDataPboardType, ClipboardUtil::UTIForWebURLsAndTitles(),
+    NSURLPboardType, NSFilenamesPboardType, kChromeDragDummyPboardType,
     NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
-    NSFilenamesPboardType, ui::kWebCustomDataPboardType, NSPasteboardTypeString
+    NSFilenamesPboardType, kWebCustomDataPboardType, NSPasteboardTypeString
   ];
+}
+
+void OSExchangeDataProviderMac::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {}
+
+DataTransferEndpoint* OSExchangeDataProviderMac::GetSource() const {
+  return nullptr;
 }
 
 }  // namespace ui

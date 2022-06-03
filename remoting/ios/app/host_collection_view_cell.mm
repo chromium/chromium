@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <UIKit/UIKit.h>
 
-#import "remoting/ios/app/host_collection_view_cell.h"
-
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#import "remoting/ios/app/remoting_theme.h"
-#import "remoting/ios/app/view_utils.h"
-#import "remoting/ios/domain/host_info.h"
+#import <MaterialComponents/MaterialTypography.h>
 
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/string_resources.h"
+#import "remoting/ios/app/host_collection_view_cell.h"
+#import "remoting/ios/app/remoting_theme.h"
+#import "remoting/ios/app/view_utils.h"
+#import "remoting/ios/domain/host_info.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 static const CGFloat kLinePadding = 2.f;
 static const CGFloat kHostCardIconInset = 10.f;
 static const CGFloat kHostCardPadding = 4.f;
 static const CGFloat kHostCardIconSize = 45.f;
+static const CGFloat kTitleOpacity = 0.87f;
+static const CGFloat kCaptionOpacity = 0.54f;
 
 static NSString* const kSuccessExitOfflineReason = @"SUCCESS_EXIT";
 
@@ -92,15 +93,22 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.font = [MDCTypography boldFontFromFont:MDCTypography.subheadFont];
-  _titleLabel.alpha = MDCTypography.subheadFontOpacity;
+  UIFont* subheadFont = MDCTypography.subheadFont;
+  UIFontDescriptor* subheadFontDescriptor = [subheadFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  subheadFontDescriptor = subheadFontDescriptor ?: subheadFont.fontDescriptor;
+  UIFont* boldSubheadFont = [UIFont fontWithDescriptor:subheadFontDescriptor
+                                                  size:subheadFont.pointSize];
+
+  _titleLabel.font = boldSubheadFont;
+  _titleLabel.alpha = kTitleOpacity;
   _titleLabel.textColor = RemotingTheme.hostCellTitleColor;
   [_labelView addSubview:_titleLabel];
 
   _statusLabel = [[UILabel alloc] init];
   _statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _statusLabel.font = MDCTypography.captionFont;
-  _statusLabel.alpha = MDCTypography.captionFontOpacity;
+  _statusLabel.alpha = kCaptionOpacity;
   _statusLabel.textColor = RemotingTheme.hostCellStatusTextColor;
   [_labelView addSubview:_statusLabel];
 

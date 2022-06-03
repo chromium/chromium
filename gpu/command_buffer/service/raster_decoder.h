@@ -43,7 +43,11 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
       const GpuPreferences& gpu_preferences,
       MemoryTracker* memory_tracker,
       SharedImageManager* shared_image_manager,
-      scoped_refptr<SharedContextState> shared_context_state);
+      scoped_refptr<SharedContextState> shared_context_state,
+      bool is_priviliged);
+
+  RasterDecoder(const RasterDecoder&) = delete;
+  RasterDecoder& operator=(const RasterDecoder&) = delete;
 
   ~RasterDecoder() override;
 
@@ -102,8 +106,6 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   bool debug_ = false;
   bool log_commands_ = false;
   gles2::Outputter* outputter_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterDecoder);
 };
 
 }  // namespace raster

@@ -14,12 +14,13 @@
 
 #include "util/net/http_multipart_builder.h"
 
+#include <string.h>
 #include <sys/types.h>
 
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "util/net/http_body.h"

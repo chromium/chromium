@@ -6,17 +6,16 @@
 
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/test_utils.h"
 
 void SetCustomTheme(Profile* profile, int theme_index) {
+  test::ThemeServiceChangedWaiter waiter(
+      ThemeServiceFactory::GetForProfile(profile));
   themes_helper::UseCustomTheme(profile, theme_index);
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(
-          ThemeServiceFactory::GetForProfile(profile)));
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 }
 
 ServerCountMatchStatusChecker::ServerCountMatchStatusChecker(
@@ -33,7 +32,7 @@ bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 PassphraseRequiredChecker::PassphraseRequiredChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
 
 bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -42,11 +41,11 @@ bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 PassphraseAcceptedChecker::PassphraseAcceptedChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
 
 bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Passhrase Accepted";
   return !service()->GetUserSettings()->IsPassphraseRequired() &&
-         service()->GetUserSettings()->IsUsingSecondaryPassphrase();
+         service()->GetUserSettings()->IsUsingExplicitPassphrase();
 }

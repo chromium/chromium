@@ -10,7 +10,7 @@
         var shadowContainer = document.createElement('div');
         root.appendChild(shadowContainer);
 
-        var shadowRoot = shadowContainer.createShadowRoot();
+        var shadowRoot = shadowContainer.attachShadow({mode: 'open'});
         shadowRoot.appendChild(document.querySelector('#shadow-style'));
         var mid = document.createElement('div');
         shadowRoot.appendChild(mid);

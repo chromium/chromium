@@ -1,0 +1,35 @@
+Name: URL Pattern Library
+Short Name: liburlpattern
+URL: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/liburlpattern
+Version: 0
+License: MIT
+Security Critical: yes
+
+Description:
+This library is the underlying pattern matching engine for the URLPattern web
+API proposal being discussed in https://github.com/wicg/urlpattern.  It uses
+a pattern syntax derived from the path-to-regexp library developed at
+https://github.com/pillarjs/path-to-regexp.  It is developed by the chromium
+project, but licensed as a derivative work of path-to-regexp using an MIT
+license.  No code from path-to-regexp is directly used here.  Note, since this
+is the authoritative source of this library the "local modifications" includes
+all files here.
+
+Local Modifications:
+third_party/liburlpattern/DIR_METADATA
+third_party/liburlpattern/BUILD.gn
+third_party/liburlpattern/OWNERS
+third_party/liburlpattern/options.h
+third_party/liburlpattern/parse.cc
+third_party/liburlpattern/parse.h
+third_party/liburlpattern/parse_fuzzer.cc
+third_party/liburlpattern/parse_unittest.cc
+third_party/liburlpattern/pattern.cc
+third_party/liburlpattern/pattern.h
+third_party/liburlpattern/pattern_unittest.cc
+third_party/liburlpattern/tokenize.cc
+third_party/liburlpattern/tokenize.h
+third_party/liburlpattern/tokenize_unittest.cc
+third_party/liburlpattern/utils.cc
+third_party/liburlpattern/utils.h
+third_party/liburlpattern/utils_unittest.cc

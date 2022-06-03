@@ -8,7 +8,9 @@ const params = (new URL(location.href)).searchParams;
 const hostname = 'cors.example.com';
 const origin = location.protocol + '//' + hostname + ':' + location.port;
 const path = params.get('path');
-const url = origin + '/extensions/api_test/webrequest/cors/' + path;
+const abspath = params.has('abspath') ? params.get('abspath') : undefined;
+const url =
+      origin + (abspath || ('/extensions/api_test/webrequest/cors/' + path));
 const withPreflight = params.has('with-preflight');
 const headers = withPreflight? {'x-foo': 'x-bar'} : undefined;
 

@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Images>Codecs"
+}
+team_email: "webp-discuss@webmproject.org"

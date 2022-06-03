@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <style name="UrlText">
+        <item name="android:textColor">@color/url_color</item>
+    </style>
+    <style name="UrlTextError">
+        <item name="android:textColor">@color/url_error_color</item>
+    </style>
+</resources>

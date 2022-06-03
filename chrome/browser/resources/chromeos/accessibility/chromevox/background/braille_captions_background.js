@@ -36,7 +36,7 @@ BrailleCaptionsBackground.BRAILLE_UNICODE_BLOCK_START = 0x2800;
  *     feature changes.
  */
 BrailleCaptionsBackground.init = function(stateCallback) {
-  var self = BrailleCaptionsBackground;
+  const self = BrailleCaptionsBackground;
   /**
    * @type {function()}
    * @private
@@ -50,7 +50,7 @@ BrailleCaptionsBackground.init = function(stateCallback) {
  * @return {boolean}
  */
 BrailleCaptionsBackground.isEnabled = function() {
-  var self = BrailleCaptionsBackground;
+  const self = BrailleCaptionsBackground;
   return localStorage[self.PREF_KEY] === String(true);
 };
 
@@ -67,18 +67,18 @@ BrailleCaptionsBackground.isEnabled = function() {
  */
 BrailleCaptionsBackground.setContent = function(
     text, cells, brailleToText, offsetsForSlices, rows, columns) {
-  var self = BrailleCaptionsBackground;
+  const self = BrailleCaptionsBackground;
   // Convert the cells to Unicode braille pattern characters.
-  var byteBuf = new Uint8Array(cells);
-  var brailleChars = '';
+  const byteBuf = new Uint8Array(cells);
+  let brailleChars = '';
 
-  for (var i = 0; i < byteBuf.length; ++i) {
+  for (let i = 0; i < byteBuf.length; ++i) {
     brailleChars +=
         String.fromCharCode(self.BRAILLE_UNICODE_BLOCK_START | byteBuf[i]);
   }
-  var groups = BrailleCaptionsBackground.groupBrailleAndText(
+  const groups = BrailleCaptionsBackground.groupBrailleAndText(
       brailleChars, text, brailleToText, offsetsForSlices);
-  var data = {groups: groups, rows: rows, cols: columns};
+  const data = {groups, rows, cols: columns};
   (new PanelCommand(PanelCommandType.UPDATE_BRAILLE, data)).send();
 };
 
@@ -88,18 +88,18 @@ BrailleCaptionsBackground.setContent = function(
  * @param {number} columns Number of columns to display.
  */
 BrailleCaptionsBackground.setImageContent = function(cells, rows, columns) {
-  var self = BrailleCaptionsBackground;
+  const self = BrailleCaptionsBackground;
   // Convert the cells to Unicode braille pattern characters.
-  var byteBuf = new Uint8Array(cells);
-  var brailleChars = '';
+  const byteBuf = new Uint8Array(cells);
+  let brailleChars = '';
 
-  for (var i = 0; i < byteBuf.length; ++i) {
+  for (let i = 0; i < byteBuf.length; ++i) {
     brailleChars +=
         String.fromCharCode(self.BRAILLE_UNICODE_BLOCK_START | byteBuf[i]);
   }
 
-  var groups = [['Image', brailleChars]];
-  var data = {groups: groups, rows: rows, cols: columns};
+  const groups = [['Image', brailleChars]];
+  const data = {groups, rows, cols: columns};
   (new PanelCommand(PanelCommandType.UPDATE_BRAILLE, data)).send();
 };
 
@@ -115,18 +115,18 @@ BrailleCaptionsBackground.setImageContent = function(cells, rows, columns) {
  */
 BrailleCaptionsBackground.groupBrailleAndText = function(
     brailleChars, text, brailleToText, offsets) {
-  var brailleBuf = '';
-  var groups = [];
-  var textIndex = 0;
-  var brailleOffset = offsets.brailleOffset;
-  var textOffset = offsets.textOffset;
-  var calculateTextIndex = function(index) {
+  let brailleBuf = '';
+  const groups = [];
+  let textIndex = 0;
+  const brailleOffset = offsets.brailleOffset;
+  const textOffset = offsets.textOffset;
+  const calculateTextIndex = function(index) {
     return brailleToText[index + brailleOffset] - textOffset;
   };
 
-  for (var i = 0; i < brailleChars.length; ++i) {
-    var textSliceIndex = calculateTextIndex(i);
-    if (i != 0 && textSliceIndex != textIndex) {
+  for (let i = 0; i < brailleChars.length; ++i) {
+    const textSliceIndex = calculateTextIndex(i);
+    if (i !== 0 && textSliceIndex !== textIndex) {
       groups.push(
           [text.substr(textIndex, textSliceIndex - textIndex), brailleBuf]);
       brailleBuf = '';
@@ -136,7 +136,7 @@ BrailleCaptionsBackground.groupBrailleAndText = function(
   }
 
   // Puts the rest of the text into the last group.
-  if (brailleBuf.length > 0 && text.charAt(textIndex) != ' ') {
+  if (brailleBuf.length > 0 && text.charAt(textIndex) !== ' ') {
     groups.push([text.substr(textIndex), brailleBuf]);
   }
   return groups;
@@ -147,15 +147,15 @@ BrailleCaptionsBackground.groupBrailleAndText = function(
  * @param {boolean} newValue The new value of the active flag.
  */
 BrailleCaptionsBackground.setActive = function(newValue) {
-  var self = BrailleCaptionsBackground;
-  var oldValue = self.isEnabled();
+  const self = BrailleCaptionsBackground;
+  const oldValue = self.isEnabled();
   window['prefs'].setPref(self.PREF_KEY, String(newValue));
-  if (oldValue != newValue) {
+  if (oldValue !== newValue) {
     if (self.stateCallback_) {
       self.stateCallback_();
     }
-    var msg = newValue ? Msgs.getMsg('braille_captions_enabled') :
-                         Msgs.getMsg('braille_captions_disabled');
+    const msg = newValue ? Msgs.getMsg('braille_captions_enabled') :
+                           Msgs.getMsg('braille_captions_disabled');
     ChromeVox.tts.speak(msg, QueueMode.QUEUE);
     ChromeVox.braille.write(NavBraille.fromText(msg));
   }
@@ -168,12 +168,12 @@ BrailleCaptionsBackground.setActive = function(newValue) {
  * the display state into.
  */
 BrailleCaptionsBackground.getVirtualDisplayState = function(callback) {
-  var self = BrailleCaptionsBackground;
+  const self = BrailleCaptionsBackground;
   if (self.isEnabled()) {
     chrome.storage.local.get({'virtualBrailleRows': 1}, function(items) {
-      var rows = items['virtualBrailleRows'];
+      const rows = items['virtualBrailleRows'];
       chrome.storage.local.get({'virtualBrailleColumns': 40}, function(items) {
-        var columns = items['virtualBrailleColumns'];
+        const columns = items['virtualBrailleColumns'];
         callback(
             {available: true, textRowCount: rows, textColumnCount: columns});
       });

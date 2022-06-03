@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("sync_file_system_drive_proto") {
-  sources = [
-    "metadata_database.proto",
-  ]
+  sources = [ "metadata_database.proto" ]
 }

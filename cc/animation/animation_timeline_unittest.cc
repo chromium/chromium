@@ -4,9 +4,9 @@
 
 #include "cc/animation/animation_timeline.h"
 
+#include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
-#include "cc/animation/single_keyframe_effect_animation.h"
 #include "cc/test/animation_test_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,8 +34,7 @@ TEST(AnimationTimelineTest, SyncAnimationsAttachDetach) {
   host_impl->AddAnimationTimeline(timeline_impl.get());
   EXPECT_TRUE(timeline_impl->animation_host());
 
-  scoped_refptr<SingleKeyframeEffectAnimation> animation(
-      SingleKeyframeEffectAnimation::Create(animation_id));
+  scoped_refptr<Animation> animation(Animation::Create(animation_id));
   timeline->AttachAnimation(animation.get());
   EXPECT_TRUE(animation->animation_timeline());
 
@@ -79,11 +78,9 @@ TEST(AnimationTimelineTest, ClearAnimations) {
   host->AddAnimationTimeline(timeline.get());
   host_impl->AddAnimationTimeline(timeline_impl.get());
 
-  scoped_refptr<SingleKeyframeEffectAnimation> animation1(
-      SingleKeyframeEffectAnimation::Create(animation_id1));
+  scoped_refptr<Animation> animation1(Animation::Create(animation_id1));
   timeline->AttachAnimation(animation1.get());
-  scoped_refptr<SingleKeyframeEffectAnimation> animation2(
-      SingleKeyframeEffectAnimation::Create(animation_id2));
+  scoped_refptr<Animation> animation2(Animation::Create(animation_id2));
   timeline->AttachAnimation(animation2.get());
 
   timeline->PushPropertiesTo(timeline_impl.get());

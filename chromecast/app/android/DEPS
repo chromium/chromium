@@ -2,5 +2,4 @@ include_rules = [
   "+chromecast/android",
   "+chromecast/browser/android",
   "+jni",
-  "+services/service_manager/embedder",
 ]

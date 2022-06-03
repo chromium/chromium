@@ -65,7 +65,15 @@ class CSSTextIndentNonInterpolableValue : public NonInterpolableValue {
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(CSSTextIndentNonInterpolableValue);
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(CSSTextIndentNonInterpolableValue);
+template <>
+struct DowncastTraits<CSSTextIndentNonInterpolableValue> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() == CSSTextIndentNonInterpolableValue::static_type_;
+  }
+};
 
 namespace {
 
@@ -76,7 +84,7 @@ class UnderlyingIndentModeChecker
 
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
-    return mode_ == ToCSSTextIndentNonInterpolableValue(
+    return mode_ == To<CSSTextIndentNonInterpolableValue>(
                         *underlying.non_interpolable_value)
                         .Mode();
   }
@@ -120,7 +128,7 @@ InterpolationValue CSSTextIndentInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   IndentMode mode =
-      ToCSSTextIndentNonInterpolableValue(*underlying.non_interpolable_value)
+      To<CSSTextIndentNonInterpolableValue>(*underlying.non_interpolable_value)
           .Mode();
   conversion_checkers.push_back(
       std::make_unique<UnderlyingIndentModeChecker>(mode));
@@ -185,10 +193,10 @@ CSSTextIndentInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
 PairwiseInterpolationValue CSSTextIndentInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  const CSSTextIndentNonInterpolableValue& start_non_interpolable_value =
-      ToCSSTextIndentNonInterpolableValue(*start.non_interpolable_value);
-  const CSSTextIndentNonInterpolableValue& end_non_interpolable_value =
-      ToCSSTextIndentNonInterpolableValue(*end.non_interpolable_value);
+  const auto& start_non_interpolable_value =
+      To<CSSTextIndentNonInterpolableValue>(*start.non_interpolable_value);
+  const auto& end_non_interpolable_value =
+      To<CSSTextIndentNonInterpolableValue>(*end.non_interpolable_value);
 
   if (start_non_interpolable_value.Mode() != end_non_interpolable_value.Mode())
     return nullptr;
@@ -207,11 +215,11 @@ void CSSTextIndentInterpolationType::Composite(
     const InterpolationValue& value,
     double interpolation_fraction) const {
   const IndentMode& underlying_mode =
-      ToCSSTextIndentNonInterpolableValue(
+      To<CSSTextIndentNonInterpolableValue>(
           *underlying_value_owner.Value().non_interpolable_value)
           .Mode();
-  const CSSTextIndentNonInterpolableValue& non_interpolable_value =
-      ToCSSTextIndentNonInterpolableValue(*value.non_interpolable_value);
+  const auto& non_interpolable_value =
+      To<CSSTextIndentNonInterpolableValue>(*value.non_interpolable_value);
   const IndentMode& mode = non_interpolable_value.Mode();
 
   if (underlying_mode != mode) {
@@ -227,13 +235,12 @@ void CSSTextIndentInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const CSSTextIndentNonInterpolableValue&
-      css_text_indent_non_interpolable_value =
-          ToCSSTextIndentNonInterpolableValue(*non_interpolable_value);
+  const auto& css_text_indent_non_interpolable_value =
+      To<CSSTextIndentNonInterpolableValue>(*non_interpolable_value);
   ComputedStyle& style = *state.Style();
-  style.SetTextIndent(
-      To<InterpolableLength>(interpolable_value)
-          .CreateLength(state.CssToLengthConversionData(), kValueRangeAll));
+  style.SetTextIndent(To<InterpolableLength>(interpolable_value)
+                          .CreateLength(state.CssToLengthConversionData(),
+                                        Length::ValueRange::kAll));
 
   const IndentMode& mode = css_text_indent_non_interpolable_value.Mode();
   style.SetTextIndentLine(mode.line);

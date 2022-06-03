@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 
@@ -26,11 +25,14 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthDeviceRegistry> BuildInstance(
+    static std::unique_ptr<CryptAuthDeviceRegistry> Create(
         PrefService* pref_service);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthDeviceRegistry> CreateInstance(
+        PrefService* pref_service) = 0;
 
    private:
     static Factory* test_factory_;
@@ -38,6 +40,10 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
 
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  CryptAuthDeviceRegistryImpl(const CryptAuthDeviceRegistryImpl&) = delete;
+  CryptAuthDeviceRegistryImpl& operator=(const CryptAuthDeviceRegistryImpl&) =
+      delete;
 
   ~CryptAuthDeviceRegistryImpl() override;
 
@@ -55,8 +61,6 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceRegistryImpl);
 };
 
 }  // namespace device_sync

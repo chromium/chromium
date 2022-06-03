@@ -1,0 +1,8 @@
+<html>
+<link rel="icon" href="data:;base64,=">
+<head></head>
+Empty file which uses link-rel to disable favicon fetches. The corresponding
+.mock-http-headers sets client hints.  The Origin Trial token in the headers
+file is missing, even though the Sec-CH-UA-Reduced client hint is present in
+the Accept-CH header. 
+</html>

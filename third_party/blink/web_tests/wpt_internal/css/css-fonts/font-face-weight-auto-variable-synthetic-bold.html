@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: Support for font-weight:auto in @font-face</title>
+<link rel="match" href="font-face-weight-auto-variable-synthetic-bold-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-prop-desc" />
+<meta name="assert" content="synthetic bold is applied to variable fonts">
+<style>
+    @font-face {
+        font-family: "Roboto";
+        src: url('support/fonts/roboto_var_light_range.ttf') format('truetype');
+        font-display: swap;
+        font-style: normal;
+        font-weight: auto;
+    }
+    .weight400 {
+        font-family: "Roboto";
+        font-size: 3em;
+        font-weight: 400;
+    }
+    .weight900 {
+        font-family: "Roboto";
+        font-size: 3em;
+        font-weight: 900;
+    }
+</style>
+
+<p class="weight400">text</p>
+<p class="weight900">text</p>

@@ -16,9 +16,7 @@ if (!is_chromecast) {
   liblouis_library("liblouis_test_data") {
     testonly = true
     dest_dir = chromevox_test_data_dir
-    deps = [
-      ":liblouis_test_files",
-    ]
+    deps = [ ":liblouis_test_files" ]
   }
 
   copy("liblouis_test_files") {
@@ -28,8 +26,6 @@ if (!is_chromecast) {
       "//chrome/test/data/chromeos/liblouis_wasm/manifest.json",
       "//chrome/test/data/chromeos/liblouis_wasm/test.js",
     ]
-    outputs = [
-      "${chromevox_test_data_dir}/{{source_file_part}}",
-    ]
+    outputs = [ "${chromevox_test_data_dir}/{{source_file_part}}" ]
   }
 }

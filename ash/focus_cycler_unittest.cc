@@ -41,7 +41,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
     accessible_panes_ = panes;
   }
 
-  // views::WidgetDelegate.
+  // views::WidgetDelegate:
   void GetAccessiblePanes(std::vector<views::View*>* panes) override {
     std::copy(accessible_panes_.begin(), accessible_panes_.end(),
               std::back_inserter(*panes));
@@ -60,17 +60,20 @@ class FocusCyclerTest : public AshTestBase {
  public:
   FocusCyclerTest() = default;
 
+  FocusCyclerTest(const FocusCyclerTest&) = delete;
+  FocusCyclerTest& operator=(const FocusCyclerTest&) = delete;
+
   void SetUp() override {
     AshTestBase::SetUp();
 
-    focus_cycler_.reset(new FocusCycler());
+    focus_cycler_ = std::make_unique<FocusCycler>();
   }
 
   void TearDown() override {
     GetStatusAreaWidgetDelegate(GetPrimaryStatusAreaWidget())
         ->SetFocusCyclerForTesting(nullptr);
 
-    shelf_widget()->hotseat_widget()->SetFocusCycler(nullptr);
+    GetPrimaryShelf()->shelf_widget()->SetFocusCycler(nullptr);
 
     focus_cycler_.reset();
 
@@ -93,17 +96,13 @@ class FocusCyclerTest : public AshTestBase {
 
   FocusCycler* focus_cycler() { return focus_cycler_.get(); }
 
-  ShelfWidget* shelf_widget() { return GetPrimaryShelf()->shelf_widget(); }
-
   void InstallFocusCycleOnShelf() {
     // Add the shelf.
-    shelf_widget()->hotseat_widget()->SetFocusCycler(focus_cycler());
+    GetPrimaryShelf()->hotseat_widget()->SetFocusCycler(focus_cycler());
   }
 
  private:
   std::unique_ptr<FocusCycler> focus_cycler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusCyclerTest);
 };
 
 TEST_F(FocusCyclerTest, CycleFocusBrowserOnly) {
@@ -133,7 +132,7 @@ TEST_F(FocusCyclerTest, CycleFocusForward) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the browser.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
@@ -152,7 +151,7 @@ TEST_F(FocusCyclerTest, CycleFocusBackward) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the status area.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
@@ -175,7 +174,7 @@ TEST_F(FocusCyclerTest, CycleFocusForwardBackward) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the status area.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
@@ -191,7 +190,7 @@ TEST_F(FocusCyclerTest, CycleFocusForwardBackward) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the browser.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
@@ -204,7 +203,7 @@ TEST_F(FocusCyclerTest, CycleFocusNoBrowser) {
   InstallFocusCycleOnShelf();
 
   // Add the shelf and focus it.
-  focus_cycler()->FocusWidget(shelf_widget()->hotseat_widget());
+  focus_cycler()->FocusWidget(GetPrimaryShelf()->hotseat_widget());
 
   // Cycle focus to the status area.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
@@ -212,7 +211,7 @@ TEST_F(FocusCyclerTest, CycleFocusNoBrowser) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the status area.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
@@ -220,7 +219,7 @@ TEST_F(FocusCyclerTest, CycleFocusNoBrowser) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the status area.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
@@ -231,7 +230,7 @@ TEST_F(FocusCyclerTest, CycleFocusNoBrowser) {
 TEST_F(FocusCyclerTest, Shelf_CycleFocusForward) {
   SetUpTrayFocusCycle();
   InstallFocusCycleOnShelf();
-  shelf_widget()->hotseat_widget()->Hide();
+  GetPrimaryShelf()->hotseat_widget()->Hide();
 
   // Create two test windows.
   std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
@@ -256,7 +255,7 @@ TEST_F(FocusCyclerTest, Shelf_CycleFocusForward) {
 TEST_F(FocusCyclerTest, Shelf_CycleFocusBackwardInvisible) {
   SetUpTrayFocusCycle();
   InstallFocusCycleOnShelf();
-  shelf_widget()->hotseat_widget()->Hide();
+  GetPrimaryShelf()->hotseat_widget()->Hide();
 
   // Create a single test window.
   std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
@@ -279,13 +278,14 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate;
   std::unique_ptr<views::Widget> browser_widget(new views::Widget);
-  test_widget_delegate.reset(new PanedWidgetDelegate(browser_widget.get()));
+  test_widget_delegate =
+      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::TYPE_WINDOW);
   widget_params.delegate = test_widget_delegate.get();
   widget_params.ownership =
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget_params.context = CurrentContext();
+  widget_params.context = GetContext();
   browser_widget->Init(std::move(widget_params));
   browser_widget->Show();
 
@@ -330,7 +330,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   // Cycle focus to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the first pane in the browser.
   focus_cycler()->RotateFocus(FocusCycler::FORWARD);
@@ -358,7 +358,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   // Back to the shelf.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Back to the status area.
   focus_cycler()->RotateFocus(FocusCycler::BACKWARD);
@@ -366,16 +366,15 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   // Pressing "Escape" while on the status area should
   // deactivate it, and activate the browser window.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(wm::IsActiveWindow(browser_window));
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 
   // Similarly, pressing "Escape" while on the shelf should do the same thing.
   // Focus the navigation widget directly because the shelf has no apps here.
   GetPrimaryShelf()->shelf_focus_cycler()->FocusNavigation(false /* last */);
-  EXPECT_TRUE(shelf_widget()->navigation_widget()->IsActive());
-  event_generator->PressKey(ui::VKEY_ESCAPE, 0);
+  EXPECT_TRUE(GetPrimaryShelf()->navigation_widget()->IsActive());
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(wm::IsActiveWindow(browser_window));
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 }
@@ -385,10 +384,10 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
   // Two displays are added, so two shelf widgets and two status area widgets
   // are added to focus cycler.
-  UpdateDisplay("800x800, 500x500");
+  UpdateDisplay("800x700, 600x500");
   // Remove one display. Its shelf widget and status area widget should also be
   // removed from focus cycler.
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   // Create a single test window.
   std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
@@ -397,15 +396,15 @@ TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
 
   // Cycle focus to the navigation widget.
   Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->navigation_widget()->IsActive());
+  EXPECT_TRUE(GetPrimaryShelf()->navigation_widget()->IsActive());
+
+  // Cycle focus to the hotseat widget.
+  Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);
+  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->IsActive());
 
   // Cycle focus to the status area.
   Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);
   EXPECT_TRUE(GetPrimaryStatusAreaWidget()->IsActive());
-
-  // Cycle focus to the hotseat widget.
-  Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);
-  EXPECT_TRUE(shelf_widget()->hotseat_widget()->IsActive());
 
   // Cycle focus should go back to the browser.
   Shell::Get()->focus_cycler()->RotateFocus(FocusCycler::FORWARD);

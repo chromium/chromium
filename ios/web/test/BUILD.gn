@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/js_compile.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "mojo_test.mojom",
-  ]
+  testonly = true
+  sources = [ "mojo_test.mojom" ]
 }
 
 repack("packed_resources") {
@@ -17,6 +17,7 @@ repack("packed_resources") {
   sources = [
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ios/web/test/test_resources.pak",
+    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [
@@ -31,22 +32,11 @@ repack("packed_resources") {
 grit("resources") {
   source = "test_resources.grd"
 
-  # The .grd contains references to generated files.
-  source_is_generated = true
-
-  inputs = [
-    "${root_gen_dir}/ios/web/test/mojo_test.mojom.js",
-  ]
-  deps = [
-    ":mojo_bindings_js",
-  ]
+  inputs = [ "${root_gen_dir}/ios/web/test/mojo_test.mojom.js" ]
+  deps = [ ":mojo_bindings_js" ]
   outputs = [
     "grit/test_resources.h",
     "test_resources.pak",
-  ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 }
 
@@ -54,12 +44,21 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
+  # This public_dep is a workaround because there is a circular dependency
+  # (this target should public_dep on //ios/web/public/test).
+  public_deps = [ "//testing/gtest" ]
+
   deps = [
+    ":all_frames_web_test_bundle",
+    ":java_script_feature_test_inject_once_js",
+    ":java_script_feature_test_reinject_js",
     ":test_constants",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/common",
     "//ios/testing:verify_custom_webkit",
     "//ios/web",
+    "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/navigation:core",
     "//ios/web/public/test:util",
@@ -67,7 +66,6 @@ source_set("test_support") {
     "//ios/web/public/test/http_server",
     "//ios/web/test/fakes",
     "//net",
-    "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
   ]
@@ -92,4 +90,28 @@ source_set("test_constants") {
     "test_url_constants.cc",
     "test_url_constants.h",
   ]
+}
+
+js_compile_bundle("all_frames_web_test_bundle") {
+  testonly = true
+  closure_entry_point = "__crWeb.allFramesWebTestBundle"
+
+  sources = [
+    "resources/all_frames_web_test_bundle.js",
+    "resources/cookie_test.js",
+  ]
+}
+
+js_compile_bundle("java_script_feature_test_inject_once_js") {
+  testonly = true
+  closure_entry_point = "__crWeb.javaScriptFeatureTestInjectOnce"
+
+  sources = [ "resources/java_script_feature_test_inject_once.js" ]
+}
+
+js_compile_bundle("java_script_feature_test_reinject_js") {
+  testonly = true
+  closure_entry_point = "__crWeb.javaScriptFeatureTestReinject"
+
+  sources = [ "resources/java_script_feature_test_reinject.js" ]
 }

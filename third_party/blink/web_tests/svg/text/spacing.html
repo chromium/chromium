@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/ahem.js"></script>
+<style>
+.htmlbase {
+  font-size: 52px;
+  font-family: Ahem;
+}
+
+.base {
+  font-size: 26px;
+  font-family: Ahem;
+}
+
+.lsp {
+  letter-spacing: 0.5em;
+  color: lime;
+  fill: lime;
+}
+
+.wsp {
+  word-spacing: 1em;
+  color: lime;
+  fill: lime;
+}
+</style>
+
+<p class="htmlbase">AAA<span class="lsp">BBBB</span>CCC<br>
+AAA <span class="wsp">BB CC</span> DDD</p>
+
+<svg width="800" height="200" viewBox="0 0 400 100">
+<text class="base" y="30">AAA<tspan class="lsp">BBBB</tspan>CCC</text>
+<text class="base" y="56">AAA <tspan class="wsp">BB CC</tspan> DDD</text>
+</svg>
+<br>
+<svg width="200" height="50" viewBox="0 0 400 100" style="zoom:4.0">
+<text class="base" y="30">AAA<tspan class="lsp">BBBB</tspan>CCC</text>
+<text class="base" y="56">AAA <tspan class="wsp">BB CC</tspan> DDD</text>
+</svg>

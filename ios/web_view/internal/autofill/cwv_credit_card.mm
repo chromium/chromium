@@ -16,8 +16,6 @@
 
 @interface CWVCreditCard ()
 
-// Sets |value| for |type| in |_internalCard|.
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type;
 // Gets |value| for |type| from |_internalCard|.
 - (NSString*)valueForType:(autofill::ServerFieldType)type;
 
@@ -41,16 +39,8 @@
   return [self valueForType:autofill::CREDIT_CARD_NAME_FULL];
 }
 
-- (void)setCardHolderFullName:(NSString*)cardHolderFullName {
-  [self setValue:cardHolderFullName forType:autofill::CREDIT_CARD_NAME_FULL];
-}
-
 - (NSString*)cardNumber {
   return [self valueForType:autofill::CREDIT_CARD_NUMBER];
-}
-
-- (void)setCardNumber:(NSString*)cardNumber {
-  [self setValue:cardNumber forType:autofill::CREDIT_CARD_NUMBER];
 }
 
 - (NSString*)networkName {
@@ -69,24 +59,12 @@
   return [self valueForType:autofill::CREDIT_CARD_EXP_MONTH];
 }
 
-- (void)setExpirationMonth:(NSString*)expirationMonth {
-  [self setValue:expirationMonth forType:autofill::CREDIT_CARD_EXP_MONTH];
-}
-
 - (NSString*)expirationYear {
   return [self valueForType:autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR];
 }
 
-- (void)setExpirationYear:(NSString*)expirationYear {
-  [self setValue:expirationYear forType:autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR];
-}
-
 - (NSString*)bankName {
   return base::SysUTF8ToNSString(_internalCard.bank_name());
-}
-
-- (BOOL)isFromGooglePay {
-  return _internalCard.record_type() != autofill::CreditCard::LOCAL_CARD;
 }
 
 #pragma mark - NSObject
@@ -104,12 +82,6 @@
 }
 
 #pragma mark - Private Methods
-
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type {
-  const std::string& locale =
-      ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  _internalCard.SetInfo(type, base::SysNSStringToUTF16(value), locale);
-}
 
 - (NSString*)valueForType:(autofill::ServerFieldType)type {
   const std::string& locale =

@@ -13,12 +13,15 @@
 
 #include <stddef.h>
 
+#include <cstring>
 #include <iomanip>
 #include <limits>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -188,6 +191,7 @@ static const ElementIdInfo kVideoIds[] = {
     {UINT, kWebMIdDisplayHeight},   {UINT, kWebMIdDisplayUnit},
     {UINT, kWebMIdAspectRatioType}, {SKIP_BINARY, kWebMIdColorSpace},
     {SKIP_FLOAT, kWebMIdFrameRate}, {LIST, kWebMIdColour},
+    {LIST, kWebMIdProjection},
 };
 
 static const ElementIdInfo kColourIds[] = {
@@ -204,10 +208,10 @@ static const ElementIdInfo kColourIds[] = {
     {UINT, kWebMIdPrimaries},
     {UINT, kWebMIdMaxCLL},
     {UINT, kWebMIdMaxFALL},
-    {LIST, kWebMIdMasteringMetadata},
+    {LIST, kWebMIdColorVolumeMetadata},
 };
 
-static const ElementIdInfo kMasteringMetadataIds[] = {
+static const ElementIdInfo kColorVolumeMetadataIds[] = {
     {FLOAT, kWebMIdPrimaryRChromaticityX},
     {FLOAT, kWebMIdPrimaryRChromaticityY},
     {FLOAT, kWebMIdPrimaryGChromaticityX},
@@ -218,6 +222,12 @@ static const ElementIdInfo kMasteringMetadataIds[] = {
     {FLOAT, kWebMIdWhitePointChromaticityY},
     {FLOAT, kWebMIdLuminanceMax},
     {FLOAT, kWebMIdLuminanceMin},
+};
+
+static const ElementIdInfo kProjectionIds[]{
+    {UINT, kWebMIdProjectionType},      {SKIP_BINARY, kWebMIdProjectionPrivate},
+    {FLOAT, kWebMIdProjectionPoseYaw},  {FLOAT, kWebMIdProjectionPosePitch},
+    {FLOAT, kWebMIdProjectionPoseRoll},
 };
 
 static const ElementIdInfo kAudioIds[] = {
@@ -422,7 +432,8 @@ static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdTargets, 3, kTargetsIds),
     LIST_ELEMENT_INFO(kWebMIdSimpleTag, 3, kSimpleTagIds),
     LIST_ELEMENT_INFO(kWebMIdColour, 4, kColourIds),
-    LIST_ELEMENT_INFO(kWebMIdMasteringMetadata, 5, kMasteringMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdColorVolumeMetadata, 5, kColorVolumeMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
 };
 
 // Parses an element header id or size field. These fields are variable length

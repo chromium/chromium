@@ -2,16 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './xf_button.js';
+import './xf_circular_progress.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {str, util} from '../../common/js/util.js';
+
+import {DisplayPanel} from './xf_display_panel.js';
+
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
+
 /**
  * A panel to display the status or progress of a file operation.
  * @extends HTMLElement
  */
-class PanelItem extends HTMLElement {
+export class PanelItem extends HTMLElement {
   constructor() {
     super();
-    const host = document.createElement('template');
-    host.innerHTML = this.constructor.template_;
-    this.attachShadow({mode: 'open'}).appendChild(host.content.cloneNode(true));
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /** @private {Element} */
     this.indicator_ = this.shadowRoot.querySelector('#indicator');
@@ -26,6 +38,8 @@ class PanelItem extends HTMLElement {
     this.panelTypeDone = 2;
     this.panelTypeError = 3;
     this.panelTypeInfo = 4;
+    this.panelTypeFormatProgress = 5;
+    this.panelTypeSyncProgress = 6;
 
     /** @private {number} */
     this.panelType_ = this.panelTypeDefault;
@@ -46,124 +60,9 @@ class PanelItem extends HTMLElement {
      * User specific data, used as a reference to persist any custom
      * data that the panel user may want to use in the signal callback.
      * e.g. holding the file name(s) used in a copy operation.
-     * @type {string|Object}
+     * @type {?Object}
      */
     this.userData = null;
-  }
-
-  /**
-   * Static getter for the custom element template.
-   * @private
-   * @return {string}
-   */
-  static get template_() {
-    return `<style>
-              .xf-panel-item {
-                  align-items: center;
-                  background-color: rgba(0,0,0,0);
-                  border-radius: 4px;
-                  display: flex;
-                  flex-direction: row;
-                  max-width: 400px;
-              }
-
-              .xf-button {
-                  height: 36px;
-                  width: 36px;
-              }
-
-              .xf-panel-text {
-                  font: 13px Roboto;
-                  line-height: 20px;
-                  max-width: 216px;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  white-space: nowrap;
-              }
-
-              .xf-panel-label-text {
-                  outline: none;
-              }
-
-              :host([panel-type='3']) .xf-panel-label-text {
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  white-space: normal;
-                  width: 216px;
-              }
-
-              :host([panel-type='3']) .xf-linebreaker {
-                  display: none;
-              }
-
-              .xf-panel-label-text {
-                  color: rgb(32, 33, 36);
-              }
-
-              .xf-panel-secondary-text {
-                  color: rgb(95, 99, 104);
-              }
-
-              .xf-padder-4 {
-                  width: 4px;
-              }
-
-              .xf-padder-16 {
-                  width: 16px;
-              }
-
-              .xf-padder-24 {
-                  flex-grow: 16;
-                  width: 24px;
-              }
-
-              xf-circular-progress {
-                  padding: 16px;
-              }
-
-              iron-icon {
-                  height: 36px;
-                  padding: 16px;
-                  width: 36px;
-              }
-
-              // TODO(crbug.com/947388) Use '--goog' prefixed CSS varables.
-              .xf-success {
-                  color: rgb(52, 168, 83);
-              }
-
-              .xf-failure {
-                  color: rgb(234, 67, 53);
-              }
-
-              :host([panel-type='0']) .xf-panel-item {
-                height: var(--progress-height);
-                padding-top: var(--progress-padding-top);
-                padding-bottom: var(--progress-padding-bottom);
-              }
-
-              :not(:host([panel-type='0'])) .xf-panel-item {
-                height: 68px;
-              }
-            </style>
-            <div class='xf-panel-item'>
-                <xf-circular-progress id='indicator'>
-                </xf-circular-progress>
-                <div class='xf-panel-text' role='alert'>
-                    <span class='xf-panel-label-text' tabindex='0'>
-                    </span>
-                    <br class='xf-linebreaker'/>
-                </div>
-                <div class='xf-padder-24'></div>
-                <xf-button id='secondary-action' tabindex='-1'>
-                </xf-button>
-                <div id='button-gap' class='xf-padder-4'></div>
-                <xf-button id='primary-action' tabindex='-1'>
-                </xf-button>
-                <div class='xf-padder-16'></div>
-            </div>`;
   }
 
   /**
@@ -186,6 +85,8 @@ class PanelItem extends HTMLElement {
    * @private
    */
   setPanelType(type) {
+    this.setAttribute('detailed-panel', 'detailed-panel');
+
     if (this.panelType_ === type) {
       return;
     }
@@ -223,7 +124,7 @@ class PanelItem extends HTMLElement {
         secondaryButton.id = 'secondary-action';
         secondaryButton.onclick = assert(this.onclick);
         secondaryButton.dataset.category = 'cancel';
-        secondaryButton.setAttribute('aria-label', '$i18n{CANCEL_LABEL}');
+        secondaryButton.setAttribute('aria-label', str('CANCEL_LABEL'));
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         break;
       case this.panelTypeSummary:
@@ -231,8 +132,7 @@ class PanelItem extends HTMLElement {
         primaryButton = document.createElement('xf-button');
         primaryButton.id = 'primary-action';
         primaryButton.dataset.category = 'expand';
-        primaryButton.setAttribute(
-            'aria-label', '$i18n{FEEDBACK_EXPAND_LABEL}');
+        primaryButton.setAttribute('aria-label', str('FEEDBACK_EXPAND_LABEL'));
         // Remove the 'alert' role to stop screen readers repeatedly
         // reading each progress update.
         textHost.setAttribute('role', '');
@@ -250,7 +150,7 @@ class PanelItem extends HTMLElement {
       case this.panelTypeError:
         this.setAttribute('indicator', 'status');
         this.setAttribute('status', 'failure');
-        this.primaryText = '$i18n{FILE_ERROR_GENERIC}';
+        this.primaryText = str('FILE_ERROR_GENERIC');
         this.secondaryText = '';
         secondaryButton = document.createElement('xf-button');
         secondaryButton.id = 'secondary-action';
@@ -259,6 +159,13 @@ class PanelItem extends HTMLElement {
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         break;
       case this.panelTypeInfo:
+        break;
+      case this.panelTypeFormatProgress:
+        this.setAttribute('indicator', 'status');
+        this.setAttribute('status', 'hard-drive');
+        break;
+      case this.panelTypeSyncProgress:
+        this.setAttribute('indicator', 'progress');
         break;
     }
 
@@ -581,6 +488,13 @@ class PanelItem extends HTMLElement {
   }
 
   /**
+   * Getter for the panel text div.
+   */
+  get textDiv() {
+    return this.shadowRoot.querySelector('.xf-panel-text');
+  }
+
+  /**
    * Setter to replace the default aria-label on any close button.
    * @param {string} text Text to set for the 'aria-label'.
    */
@@ -593,3 +507,5 @@ class PanelItem extends HTMLElement {
 }
 
 window.customElements.define('xf-panel-item', PanelItem);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_panel_item.js

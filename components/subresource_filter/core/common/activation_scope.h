@@ -13,7 +13,7 @@ namespace subresource_filter {
 enum class ActivationScope {
   NO_SITES,
   // Allows to activate Safe Browsing Subresource Filter only on web sites from
-  // the Safe Browsing blacklist.
+  // the Safe Browsing blocklist.
   ACTIVATION_LIST,
   // Testing only. Allows to send activation signal to the RenderFrame for each
   // load.

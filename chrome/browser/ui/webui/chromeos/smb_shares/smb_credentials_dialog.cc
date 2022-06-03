@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
 
+#include <utility>
+
+#include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -18,7 +20,7 @@ namespace chromeos {
 namespace smb_dialog {
 namespace {
 
-constexpr int kSmbCredentialsDialogHeight = 250;
+constexpr int kSmbCredentialsDialogHeight = 230;
 
 void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   static const struct {
@@ -36,35 +38,57 @@ void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
   }
 }
 
-std::string GetDialogId(int32_t mount_id) {
-  return chrome::kChromeUISmbCredentialsURL + base::NumberToString(mount_id);
+std::string GetDialogId(const std::string& mount_id) {
+  return chrome::kChromeUISmbCredentialsURL + mount_id;
+}
+
+SmbCredentialsDialog* GetDialog(const std::string& id) {
+  return static_cast<SmbCredentialsDialog*>(
+      SystemWebDialogDelegate::FindInstance(id));
 }
 
 }  // namespace
 
 // static
-void SmbCredentialsDialog::Show(int32_t mount_id,
-                                const std::string& share_path) {
+void SmbCredentialsDialog::Show(const std::string& mount_id,
+                                const std::string& share_path,
+                                RequestCallback callback) {
   // If an SmbCredentialsDialog is already opened for |mount_id|, focus that
   // dialog rather than opening a second one.
-  auto* instance = SystemWebDialogDelegate::FindInstance(GetDialogId(mount_id));
-  if (instance) {
-    instance->Focus();
+  SmbCredentialsDialog* dialog = GetDialog(GetDialogId(mount_id));
+  if (dialog) {
+    // Replace the dialog's callback so that is responds to the most recent
+    // request.
+    dialog->callback_ = std::move(callback);
+    dialog->Focus();
     return;
   }
 
-  SmbCredentialsDialog* dialog = new SmbCredentialsDialog(mount_id, share_path);
+  dialog = new SmbCredentialsDialog(mount_id, share_path, std::move(callback));
   dialog->ShowSystemDialog();
 }
 
-SmbCredentialsDialog::SmbCredentialsDialog(int32_t mount_id,
-                                           const std::string& share_path)
+SmbCredentialsDialog::SmbCredentialsDialog(const std::string& mount_id,
+                                           const std::string& share_path,
+                                           RequestCallback callback)
     : SystemWebDialogDelegate(GURL(GetDialogId(mount_id)),
-                              base::string16() /* title */),
+                              std::u16string() /* title */),
       mount_id_(mount_id),
-      share_path_(share_path) {}
+      share_path_(share_path),
+      callback_(std::move(callback)) {}
 
-SmbCredentialsDialog::~SmbCredentialsDialog() = default;
+SmbCredentialsDialog::~SmbCredentialsDialog() {
+  if (callback_) {
+    std::move(callback_).Run(true /* canceled */, std::string() /* username */,
+                             std::string() /* password */);
+  }
+}
+
+void SmbCredentialsDialog::Respond(const std::string& username,
+                                   const std::string& password) {
+  DCHECK(callback_);
+  std::move(callback_).Run(false /* canceled */, username, password);
+}
 
 void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(SystemWebDialogDelegate::kDialogWidth,
@@ -85,6 +109,8 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISmbCredentialsHost);
 
+  source->DisableTrustedTypesCSP();
+
   AddSmbCredentialsDialogStrings(source);
 
   source->UseStringsJs();
@@ -92,13 +118,28 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
   source->AddResourcePath("smb_credentials_dialog.js",
                           IDR_SMB_CREDENTIALS_DIALOG_JS);
 
-  web_ui->AddMessageHandler(
-      std::make_unique<SmbHandler>(Profile::FromWebUI(web_ui)));
+  web_ui->AddMessageHandler(std::make_unique<SmbHandler>(
+      Profile::FromWebUI(web_ui),
+      base::BindOnce(&SmbCredentialsDialogUI::OnUpdateCredentials,
+                     base::Unretained(this))));
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 SmbCredentialsDialogUI::~SmbCredentialsDialogUI() = default;
+
+void SmbCredentialsDialogUI::OnUpdateCredentials(const std::string& username,
+                                                 const std::string& password) {
+  SmbCredentialsDialog* dialog =
+      GetDialog(web_ui()->GetWebContents()->GetLastCommittedURL().spec());
+  if (dialog) {
+    dialog->Respond(username, password);
+  }
+}
+
+bool SmbCredentialsDialog::ShouldShowCloseButton() const {
+  return false;
+}
 
 }  // namespace smb_dialog
 }  // namespace chromeos

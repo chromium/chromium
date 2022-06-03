@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL super() after new AudioWorkletProcessor() promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'AudioWorkletNode': AudioWorkletNode cannot be created: The node name 'super-after-new' is not defined in AudioWorkletGlobalScope."
+FAIL new AudioWorkletProcessor() after super() promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'AudioWorkletNode': AudioWorkletNode cannot be created: The node name 'new-after-super' is not defined in AudioWorkletGlobalScope."
+FAIL new AudioWorkletProcessor() after new AudioWorkletProcessor() promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'AudioWorkletNode': AudioWorkletNode cannot be created: The node name 'new-after-new' is not defined in AudioWorkletGlobalScope."
+FAIL Singleton AudioWorkletProcessor promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to construct 'AudioWorkletNode': AudioWorkletNode cannot be created: The node name 'singleton' is not defined in AudioWorkletGlobalScope."
+Harness: the test ran to completion.
+

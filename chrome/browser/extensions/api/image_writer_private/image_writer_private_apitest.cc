@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/api_unittest.h"
 namespace extensions {
@@ -69,7 +71,6 @@ class ImageWriterPrivateApiTest : public ExtensionApiTest {
     ExtensionApiTest::TearDownInProcessBrowserTestFixture();
     test_utils_.TearDown();
     RemovableStorageProvider::ClearDeviceListForTesting();
-    FileSystemChooseEntryFunction::StopSkippingPickerForTest();
   }
 
 
@@ -87,10 +88,10 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
       "test_temp", test_utils_.GetTempDir());
 
   base::FilePath selected_image(test_utils_.GetImagePath());
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
-      &selected_image);
+  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
+      selected_image);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto set_up_utility_client_callbacks = [](FakeImageWriterClient* client) {
     std::vector<int> progress_list{0, 50, 100};
     client->SimulateProgressOnWrite(progress_list, true);
@@ -103,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
       base::BindOnce(set_up_utility_client_callbacks));
 #endif
 
-  ASSERT_TRUE(RunPlatformAppTest("image_writer_private/write_from_file"))
+  ASSERT_TRUE(RunExtensionTest("image_writer_private/write_from_file",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 }  // namespace extensions

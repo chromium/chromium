@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
@@ -76,7 +76,7 @@ KeywordWebDataService::KeywordWebDataService(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)),
       timer_(FROM_HERE,
-             base::TimeDelta::FromSeconds(5),
+             base::Seconds(5),
              base::BindRepeating(&KeywordWebDataService::CommitQueuedOperations,
                                  base::Unretained(this))) {}
 
@@ -122,17 +122,17 @@ WebDataServiceBase::Handle KeywordWebDataService::GetKeywords(
   CommitQueuedOperations();
 
   return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE, base::Bind(&GetKeywordsImpl), consumer);
+      FROM_HERE, base::BindOnce(&GetKeywordsImpl), consumer);
 }
 
 void KeywordWebDataService::SetDefaultSearchProviderID(TemplateURLID id) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::Bind(&SetDefaultSearchProviderIDImpl, id));
+                        base::BindOnce(&SetDefaultSearchProviderIDImpl, id));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordVersion(int version) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::Bind(&SetBuiltinKeywordVersionImpl, version));
+                        base::BindOnce(&SetBuiltinKeywordVersionImpl, version));
 }
 
 void KeywordWebDataService::ShutdownOnUISequence() {
@@ -167,8 +167,9 @@ void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
 
 void KeywordWebDataService::CommitQueuedOperations() {
   if (!queued_keyword_operations_.empty()) {
-    wdbs_->ScheduleDBTask(FROM_HERE, base::Bind(&PerformKeywordOperationsImpl,
-                                                queued_keyword_operations_));
+    wdbs_->ScheduleDBTask(FROM_HERE,
+                          base::BindOnce(&PerformKeywordOperationsImpl,
+                                         queued_keyword_operations_));
     queued_keyword_operations_.clear();
   }
   timer_.Stop();

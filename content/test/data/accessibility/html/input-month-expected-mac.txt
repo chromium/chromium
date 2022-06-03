@@ -3,9 +3,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXDateField AXRoleDescription='date field'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0' AXDescription='Month'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='---------'
+++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0' AXDescription='Year'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='----'
-++++++AXPopUpButton AXRoleDescription='pop up button' AXDescription='Show date picker'
+++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=0
+++++++AXPopUpButton AXDescription='Show month picker' AXRoleDescription='pop up button'

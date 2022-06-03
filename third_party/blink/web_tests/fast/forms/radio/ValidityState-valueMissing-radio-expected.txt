@@ -38,14 +38,6 @@ The third button has been checked:
 PASS inputs[0].validity.valueMissing is false
 PASS inputs[1].validity.valueMissing is false
 PASS inputs[2].validity.valueMissing is false
-
-
-Not in a radio button group
-PASS requiredButton.validity.valueMissing is false
-PASS requiredButton.validity.valueMissing is true
-PASS button.validity.valueMissing is true
-PASS button.validity.valueMissing is false
-PASS requiredButton.validity.valueMissing is false
 PASS successfullyParsed is true
 
 TEST COMPLETE

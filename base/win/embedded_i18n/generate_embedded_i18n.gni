@@ -49,9 +49,8 @@ import("//build/config/locales.gni")
 #   deps (optional)
 #   visibility (optional)
 
-# Some locales exist in |all_chrome_locales| but don't generally have an xtb file on disk
-# and some translations don't exist in |all_chrome_locales| but do generally have an xtb
-# file on disk.
+# Locales in |all_chrome_locales| are for pak file format.  We need to convert them
+# to the xtb version.
 default_embedded_i18_locales = all_chrome_locales - [
                                  "en-US",
                                  "he",

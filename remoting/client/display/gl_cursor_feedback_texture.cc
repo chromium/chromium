@@ -4,6 +4,7 @@
 
 #include "remoting/client/display/gl_cursor_feedback_texture.h"
 
+#include "base/notreached.h"
 #include "remoting/client/display/gl_render_layer.h"
 
 namespace remoting {

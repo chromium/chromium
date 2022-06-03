@@ -8,6 +8,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
+
 import os.path
 
 
@@ -18,7 +20,7 @@ def CommonChecks(input_api, output_api):
   generated_files = input_api.AffectedFiles(
       file_filter=lambda x: os.path.basename(x.LocalPath()) in [
           'vulkan_types.mojom', 'vulkan_types_mojom_traits.h',
-          'vulkan_types_mojom_traits.cc', 'vulkan_types.typemap'
+          'vulkan_types_mojom_traits.cc', 'generated_vulkan_type_mappings.gni'
       ])
 
 
@@ -26,8 +28,8 @@ def CommonChecks(input_api, output_api):
 
   if generated_files and not generating_files:
     long_text = 'Changed files:\n'
-    for file in generated_files:
-      long_text += file.LocalPath() + '\n'
+    for generated_file in generated_files:
+      long_text += generated_file.LocalPath() + '\n'
       long_text += '\n'
       messages.append(output_api.PresubmitError(
           'Vulkan types generated files changed but the generator '

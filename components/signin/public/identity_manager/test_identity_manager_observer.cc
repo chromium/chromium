@@ -20,34 +20,14 @@ TestIdentityManagerObserver::~TestIdentityManagerObserver() {
   identity_manager_->RemoveObserver(this);
 }
 
-void TestIdentityManagerObserver::SetOnPrimaryAccountSetCallback(
-    base::OnceClosure callback) {
-  on_primary_account_set_callback_ = std::move(callback);
+void TestIdentityManagerObserver::SetOnPrimaryAccountChangedCallback(
+    PrimaryAccountChangedCallback callback) {
+  on_primary_account_changed_callback_ = std::move(callback);
 }
 
-const CoreAccountInfo&
-TestIdentityManagerObserver::PrimaryAccountFromSetCallback() {
-  return primary_account_from_set_callback_;
-}
-
-void TestIdentityManagerObserver::SetOnPrimaryAccountClearedCallback(
-    base::OnceClosure callback) {
-  on_primary_account_cleared_callback_ = std::move(callback);
-}
-
-const CoreAccountInfo&
-TestIdentityManagerObserver::PrimaryAccountFromClearedCallback() {
-  return primary_account_from_cleared_callback_;
-}
-
-void TestIdentityManagerObserver::SetOnUnconsentedPrimaryAccountChangedCallback(
-    base::OnceClosure callback) {
-  on_unconsented_primary_account_callback_ = std::move(callback);
-}
-
-const CoreAccountInfo&
-TestIdentityManagerObserver::UnconsentedPrimaryAccountFromCallback() {
-  return unconsented_primary_account_from_callback_;
+const PrimaryAccountChangeEvent&
+TestIdentityManagerObserver::GetPrimaryAccountChangedEvent() {
+  return on_primary_account_changed_event_;
 }
 
 void TestIdentityManagerObserver::SetOnRefreshTokenUpdatedCallback(
@@ -133,25 +113,11 @@ TestIdentityManagerObserver::BatchChangeRecords() const {
 }
 
 // IdentityManager::Observer:
-void TestIdentityManagerObserver::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  primary_account_from_set_callback_ = primary_account_info;
-  if (on_primary_account_set_callback_)
-    std::move(on_primary_account_set_callback_).Run();
-}
-
-void TestIdentityManagerObserver::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  primary_account_from_cleared_callback_ = previous_primary_account_info;
-  if (on_primary_account_cleared_callback_)
-    std::move(on_primary_account_cleared_callback_).Run();
-}
-
-void TestIdentityManagerObserver::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  unconsented_primary_account_from_callback_ = unconsented_primary_account_info;
-  if (on_unconsented_primary_account_callback_)
-    std::move(on_unconsented_primary_account_callback_).Run();
+void TestIdentityManagerObserver::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event) {
+  on_primary_account_changed_event_ = event;
+  if (on_primary_account_changed_callback_)
+    std::move(on_primary_account_changed_callback_).Run(event);
 }
 
 void TestIdentityManagerObserver::OnRefreshTokenUpdatedForAccount(

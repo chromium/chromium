@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+
+<meta name="color-scheme" content="dark">
+
+<!-- Tests various permutations of composition underlines in LTR and RTL text using
+    CSS color scheme dark.
+  These are normally used by foreign language IME (Input Method Extension). -->
+<div dir="rtl" style="float: right; color-scheme: dark;">
+    <p>RTL</p>
+    <div id="markRtlAll" dir="rtl" style="color-scheme: dark;">abcdef</div>
+    <div id="markRtlAllThick" style="color-scheme: dark;">abcdef</div>
+    <div id="markRtlAllDotted" style="color-scheme: dark;">abcdef</div>
+    <div id="markRtlAllDashed" style="color-scheme: dark;">abcdef</div>
+    <div id="markRtlAllSquiggled" style="color-scheme: dark;">abcdef</div>
+    <div id="markRtlNone" style="color-scheme: dark;">abcdef</div>
+</div>
+
+<div style="float: left; color-scheme: dark;">
+    <p>LTR</p>
+    <div id="markAll" style="color-scheme: dark;">abcdef</div>
+    <div id="markAllThick" style="color-scheme: dark;">abcdef</div>
+    <div id="markAllDotted" style="color-scheme: dark;">abcdef</div>
+    <div id="markAllDashed" style="color-scheme: dark;">abcdef</div>
+    <div id="markAllSquiggled" style="color-scheme: dark;">abcdef</div>
+    <div id="markAllNone" style="color-scheme: dark;">abcdef</div>
+</div>
+
+<script>
+function highlightRange(elem, start, end, underlineColor, thick, underlineStyle, backgroundColor) {
+    var range = document.createRange();
+    var textNode = elem.firstChild;
+    range.setStart(textNode, start);
+    range.setEnd(textNode, end);
+    if (typeof internals !== 'undefined')
+        internals.addCompositionMarker(range, underlineColor, thick, underlineStyle, 'transparent', backgroundColor);
+};
+
+function highlightRangeSimple(elem, start, end) {
+    highlightRange(elem, start, end, 'orange', 'thin', 'solid', 'lightBlue');
+};
+
+function highlightAcrossNodes(startNode, start, endNode, end) {
+    var range = document.createRange();
+    range.setStart(startNode, start);
+    range.setEnd(endNode, end);
+    if (typeof internals !== 'undefined')
+        internals.addCompositionMarker(range, 'orange', 'thin', 'solid', 'transparent', 'lightBlue');
+};
+
+onload = runAfterLayoutAndPaint(function() {
+    highlightRangeSimple(markAll, 0, 6);
+    highlightRange(markAllThick, 0, 6, 'orange', 'thick', 'solid', 'lightBlue');
+    highlightRange(markAllDotted, 0, 6, 'orange', 'thick', 'dot', 'lightBlue');
+    highlightRange(markAllDashed, 0, 6, 'orange', 'thick', 'dash', 'lightBlue');
+    highlightRange(markAllSquiggled, 0, 6, 'orange', 'thick', 'squiggle', 'lightBlue');
+    highlightRange(markAllNone, 0, 6, 'orange', 'thick', 'none', 'lightBlue');
+
+    highlightRangeSimple(markRtlAll, 0, 6);
+    highlightRange(markRtlAllThick, 0, 6, 'orange', 'thick', 'solid', 'lightBlue');
+    highlightRange(markRtlAllDotted, 0, 6, 'orange', 'thick', 'dot', 'lightBlue');
+    highlightRange(markRtlAllDashed, 0, 6, 'orange', 'thick', 'dash', 'lightBlue');
+    highlightRange(markRtlAllSquiggled, 0, 6, 'orange', 'thick', 'squiggle', 'lightBlue');
+    highlightRange(markRtlNone, 0, 6, 'orange', 'thick', 'none', 'lightBlue');
+}, true);
+</script>

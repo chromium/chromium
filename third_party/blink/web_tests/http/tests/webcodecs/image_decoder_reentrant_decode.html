@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>basic image decoding</title>
+<canvas width="128" height="128"></canvas>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(t) {
+  let TEST_FILE = "/misc/resources/animated-gif-with-offsets.gif";
+  fetch(TEST_FILE).then(t.step_func(response => {
+    let decoder = new ImageDecoder({data: response.body, type: "image/gif"})
+
+    let count = 0;
+    Object.defineProperty(Object.prototype, "then", { get() {
+      if (count++ == 0) {
+        for (var i = 0; i < 4; i++)
+          decoder.decode({frameIndex: 2}).then(() => {});
+        decoder.decode({frameIndex: 3}).then(t.step_func_done());
+      }
+    }});
+
+    decoder.decode({frameIndex: 0}).then(() => {});
+    decoder.decode({frameIndex: 1}).then(() => {});
+  })).catch(t.unreached_func());
+});
+</script>

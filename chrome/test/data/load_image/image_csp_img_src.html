@@ -1,0 +1,14 @@
+<html>
+<head>
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self'">
+</head>
+<img alt="long_placeholder_text"/>
+<script src="common.js"></script>
+<script>
+window.onload = () => {
+  setTimeout(() => {
+    document.images[0].src = "image.png"
+  }, 1000);
+}
+</script>
+</html>

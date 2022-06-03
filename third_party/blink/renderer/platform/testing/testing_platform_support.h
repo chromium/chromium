@@ -36,13 +36,12 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "v8/include/v8-platform.h"
 
 namespace base {
 class TestDiscardableMemoryAllocator;
@@ -56,25 +55,24 @@ namespace blink {
 class TestingPlatformSupport : public Platform {
  public:
   TestingPlatformSupport();
+  TestingPlatformSupport(const TestingPlatformSupport&) = delete;
+  TestingPlatformSupport& operator=(const TestingPlatformSupport&) = delete;
 
   ~TestingPlatformSupport() override;
 
   // Platform:
   WebString DefaultLocale() override;
-  WebURLLoaderMockFactory* GetURLLoaderMockFactory() override;
-  std::unique_ptr<blink::WebURLLoaderFactory> CreateDefaultURLLoaderFactory()
-      override;
-  std::unique_ptr<CodeCacheLoader> CreateCodeCacheLoader() override {
-    return std::make_unique<CodeCacheLoaderMock>();
-  }
   WebData GetDataResource(int resource_id,
-                          ui::ScaleFactor scale_factor) override;
+                          ui::ResourceScaleFactor scale_factor) override;
   WebData UncompressDataResource(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
+  bool IsUseZoomForDSFEnabled() override;
+  cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);
+  void SetUseZoomForDSF(bool enabled);
 
   // Overrides the handling of GetInterface on the platform's associated
   // interface provider.
@@ -98,8 +96,7 @@ class TestingPlatformSupport : public Platform {
 
  private:
   bool is_threaded_animation_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPlatformSupport);
+  bool is_zoom_for_dsf_enabled_ = true;
 };
 
 // ScopedTestingPlatformSupport<MyTestingPlatformSupport> can be used to
@@ -127,8 +124,6 @@ class TestingPlatformSupport : public Platform {
 // }
 template <class T, typename... Args>
 class ScopedTestingPlatformSupport final {
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestingPlatformSupport);
-
  public:
   explicit ScopedTestingPlatformSupport(Args&&... args) {
     testing_platform_support_ =
@@ -137,6 +132,9 @@ class ScopedTestingPlatformSupport final {
     DCHECK(original_platform_);
     Platform::SetCurrentPlatformForTesting(testing_platform_support_.get());
   }
+  ScopedTestingPlatformSupport(const ScopedTestingPlatformSupport&) = delete;
+  ScopedTestingPlatformSupport& operator=(const ScopedTestingPlatformSupport&) =
+      delete;
   ~ScopedTestingPlatformSupport() {
     DCHECK_EQ(testing_platform_support_.get(), Platform::Current());
     testing_platform_support_.reset();
@@ -157,19 +155,19 @@ class ScopedTestingPlatformSupport final {
 };
 
 class ScopedUnittestsEnvironmentSetup final {
-  DISALLOW_COPY_AND_ASSIGN(ScopedUnittestsEnvironmentSetup);
-
  public:
   ScopedUnittestsEnvironmentSetup(int argc, char** argv);
+  ScopedUnittestsEnvironmentSetup(const ScopedUnittestsEnvironmentSetup&) =
+      delete;
+  ScopedUnittestsEnvironmentSetup& operator=(
+      const ScopedUnittestsEnvironmentSetup&) = delete;
   ~ScopedUnittestsEnvironmentSetup();
 
  private:
-  class DummyRendererResourceCoordinator;
   std::unique_ptr<base::TestDiscardableMemoryAllocator>
       discardable_memory_allocator_;
   std::unique_ptr<Platform> dummy_platform_;
-  std::unique_ptr<DummyRendererResourceCoordinator>
-      dummy_renderer_resource_coordinator_;
+  std::unique_ptr<v8::Platform> v8_platform_for_heap_testing_;
   std::unique_ptr<TestingPlatformSupport> testing_platform_support_;
 };
 

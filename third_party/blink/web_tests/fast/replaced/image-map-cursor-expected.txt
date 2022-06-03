@@ -1,4 +1,4 @@
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 PASS successfullyParsed is true
 
 TEST COMPLETE

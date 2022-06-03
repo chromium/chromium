@@ -7,7 +7,6 @@
 #include <cstring>
 
 #include "base/hash/hash.h"
-#include "base/macros.h"
 
 namespace base {
 namespace trace_event {

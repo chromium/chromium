@@ -1,19 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-<link rel="import" href="../controls/settings_textarea.html">
-
-<dom-module id="settings-address-edit-dialog">
-  <template>
     <style include="cr-shared-style settings-shared md-select">
       :host {
         white-space: nowrap;
@@ -30,6 +14,7 @@
 
       #select-row {
         display: block;
+        outline: none;
         /* Fix issue with focus animation making labels wiggle. */
         transform: translate3d(0, 0, 0);
       }
@@ -65,32 +50,15 @@
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div slot="title">[[title_]]</div>
       <div slot="body">
-        <template is="dom-repeat" items="[[addressWrapper_]]">
-          <div class="address-row">
-            <template is="dom-repeat" items="[[item]]">
-              <template is="dom-if" if="[[item.isTextArea]]">
-                <settings-textarea label="[[item.component.fieldName]]"
-                    value="{{item.value}}" on-value-changed="updateCanSave_"
-                    class$="address-column [[long_(item)]]" autofocus
-                    spellcheck="false" maxlength="1000">
-                </settings-textarea>
-              </template>
-              <template is="dom-if" if="[[!item.isTextArea]]">
-                <cr-input type="text" label="[[item.component.fieldName]]"
-                    autofocus value="{{item.value}}" spellcheck="false"
-                    on-value-changed="updateCanSave_" maxlength="1000"
-                    class$="address-column [[long_(item)]]">
-                </cr-input>
-              </template>
-            </template>
-          </div>
-        </template>
-        <div id="select-row" class="address-row">
+        <div id="select-row" class="address-row" tabindex="0"
+            on-focus="onCountryRowFocus_"
+            on-pointerdown="onCountryRowPointerDown_">
           <label id="select-label" class="cr-form-field-label">
             $i18n{addressCountry}
           </label>
           <select class="md-select" aria-labelledby="select-label"
-              value="[[countryCode_]]" on-change="onCountryChange_">
+              value="[[countryCode_]]" on-change="onCountryChange_"
+              tabindex="-1" autofocus>
             <option value=""></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"
@@ -100,6 +68,26 @@
             </template>
           </select>
         </div>
+        <template is="dom-repeat" items="[[addressWrapper_]]">
+          <div class="address-row">
+            <template is="dom-repeat" items="[[item]]">
+              <template is="dom-if" if="[[item.isTextArea]]">
+                <settings-textarea label="[[item.component.fieldName]]"
+                    value="{{item.value}}" on-value-changed="updateCanSave_"
+                    class$="address-column [[long_(item)]]"
+                    spellcheck="false" maxlength="1000">
+                </settings-textarea>
+              </template>
+              <template is="dom-if" if="[[!item.isTextArea]]">
+                <cr-input type="text" label="[[item.component.fieldName]]"
+                    value="{{item.value}}" spellcheck="false"
+                    on-value-changed="updateCanSave_" maxlength="1000"
+                    class$="address-column [[long_(item)]]">
+                </cr-input>
+              </template>
+            </template>
+          </div>
+        </template>
         <div class="address-row">
           <cr-input id="phoneInput" type="text" label="$i18n{addressPhone}"
               class="address-column last-row" on-value-changed="updateCanSave_"
@@ -123,6 +111,3 @@
         </cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="address_edit_dialog.js"></script>
-</dom-module>

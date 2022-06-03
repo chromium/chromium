@@ -34,22 +34,20 @@ component("core") {
     "simple_keyed_service_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//services/tracing/public/cpp:cpp",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "dependency_graph_unittest.cc",
-  ]
+  sources = [ "dependency_graph_unittest.cc" ]
   deps = [
     ":core",
     "//base",

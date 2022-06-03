@@ -10,8 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -49,10 +50,13 @@ class UI_DEVTOOLS_EXPORT UIElement {
 
   using UIElements = std::vector<UIElement*>;
 
+  UIElement(const UIElement&) = delete;
+  UIElement& operator=(const UIElement&) = delete;
+  virtual ~UIElement();
+
   // resets node ids to 0 so that they are reusable
   static void ResetNodeId();
 
-  virtual ~UIElement();
   int node_id() const { return node_id_; }
   std::string GetTypeName() const;
   UIElement* parent() const { return parent_; }
@@ -136,6 +140,15 @@ class UI_DEVTOOLS_EXPORT UIElement {
   // Get the sources for the element.
   std::vector<Source> GetSources();
 
+  // Whether the Element Identifier matches the backing UI element.
+  // This is used to locate a UIElement by Element Identifier set
+  // on the browser side and different than node_id().
+  virtual bool FindMatchByElementID(const ui::ElementIdentifier& identifier);
+
+  virtual bool DispatchMouseEvent(protocol::DOM::MouseEvent* event);
+
+  virtual bool DispatchKeyEvent(protocol::DOM::KeyEvent* event);
+
  protected:
   UIElement(const UIElementType type,
             UIElementDelegate* delegate,
@@ -153,8 +166,6 @@ class UI_DEVTOOLS_EXPORT UIElement {
   int base_stylesheet_id_;
   bool header_sent_ = false;
   std::vector<Source> sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIElement);
 };
 
 }  // namespace ui_devtools

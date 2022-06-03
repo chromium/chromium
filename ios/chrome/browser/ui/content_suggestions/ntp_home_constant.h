@@ -35,6 +35,12 @@ typedef NS_ENUM(NSUInteger, IOSNTPImpression) {
 // Returns the accessibility identifier used by the fake omnibox.
 NSString* FakeOmniboxAccessibilityID();
 
+// Returns the accessibility identifier used by the Discover header title.
+NSString* DiscoverHeaderTitleAccessibilityID();
+
+// Returns the accessibility identifier used by the NTP logo.
+NSString* NTPLogoAccessibilityID();
+
 // Distance between the Most Visited tiles and the suggestions on iPad.
 extern const CGFloat kMostVisitedBottomMarginIPad;
 // Distance between the Most Visited tiles and the suggestions on iPhone.

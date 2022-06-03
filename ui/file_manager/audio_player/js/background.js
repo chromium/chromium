@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.js';
+import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.js';
+import {FileType} from '../../file_manager/common/js/file_type.js';
+import {util} from '../../file_manager/common/js/util.js';
+
 /**
  * Icon of the audio player.
  * Use maximum size and let ash downsample the icon.
@@ -9,21 +14,21 @@
  * @type {!string}
  * @const
  */
-var AUDIO_PLAYER_ICON = 'icons/audio-player-192.png';
+const AUDIO_PLAYER_ICON = 'icons/audio-player-192.png';
 
 /**
- * HTML source of the audio player.
+ * HTML source of the audio player as JS module.
  * @type {!string}
  * @const
  */
-var AUDIO_PLAYER_APP_URL = 'audio_player.html';
+const AUDIO_PLAYER_APP_URL = 'audio_player.html';
 
 /**
  * Configuration of the audio player.
  * @type {!Object}
  * @const
  */
-var audioPlayerCreateOptions = {
+const audioPlayerCreateOptions = {
   id: 'audio-player',
   minHeight: 4 + 48 + 96,  // 4px: border-top, 48px: track, 96px: controller
   minWidth: 320,
@@ -32,21 +37,27 @@ var audioPlayerCreateOptions = {
   frame: {color: '#fafafa'}
 };
 
-class AudioPlayerBackground extends BackgroundBase {
+class AudioPlayerBackground extends BackgroundBaseImpl {
   constructor() {
     super();
+  }
+
+  async ready() {
+    return await this.initializationPromise_;
   }
 
   /**
    * Called when an audio player app is restarted.
    */
   onRestarted_() {
-    audioPlayer.reopen(function() {
-      // If the audioPlayer is reopened, change its window's icon. Otherwise
-      // there is no reopened window so just skip the call of setIcon.
-      if (audioPlayer.rawAppWindow) {
-        audioPlayer.setIcon(AUDIO_PLAYER_ICON);
-      }
+    getAudioPlayer.then(audioPlayer => {
+      audioPlayer.reopen(function() {
+        // If the audioPlayer is reopened, change its window's icon. Otherwise
+        // there is no reopened window so just skip the call of setIcon.
+        if (audioPlayer.rawAppWindow) {
+          audioPlayer.setIcon(AUDIO_PLAYER_ICON);
+        }
+      });
     });
   }
 }
@@ -55,14 +66,18 @@ class AudioPlayerBackground extends BackgroundBase {
  * Backgound object. This is necessary for AppWindowWrapper.
  * @type {!AudioPlayerBackground}
  */
-var background = new AudioPlayerBackground();
+window.background = new AudioPlayerBackground();
+
 
 /**
  * Audio player app window wrapper.
- * @type {!SingletonAppWindowWrapper}
+ * @type {!Promise<!SingletonAppWindowWrapper>}
  */
-var audioPlayer = new SingletonAppWindowWrapper(
-    AUDIO_PLAYER_APP_URL, audioPlayerCreateOptions);
+const getAudioPlayer = new Promise(async (resolve) => {
+  await window.background.ready();
+  const url = AUDIO_PLAYER_APP_URL;
+  resolve(new SingletonAppWindowWrapper(url, audioPlayerCreateOptions));
+});
 
 /**
  * Opens the audio player window.
@@ -70,68 +85,63 @@ var audioPlayer = new SingletonAppWindowWrapper(
  *     playing.
  * @return {!Promise} Promise to be fulfilled on success, or rejected on error.
  */
-function open(urls) {
-  var position = 0;
-  var startUrl = (position < urls.length) ? urls[position] : '';
+export async function open(urls) {
+  let position = 0;
+  const startUrl = (position < urls.length) ? urls[position] : '';
 
-  return new Promise(function(fulfill, reject) {
-           if (urls.length === 0) {
-             reject('No file to open.');
-             return;
-           }
+  if (urls.length === 0) {
+    throw new Error('No file to open.');
+  }
 
-           // Gets the current list of the children of the parent.
-           window.webkitResolveLocalFileSystemURL(urls[0], function(fileEntry) {
-             fileEntry.getParent(function(parentEntry) {
-               var dirReader = parentEntry.createReader();
-               var entries = [];
+  try {
+    const entries = await new Promise(function(fulfill, reject) {
+      // Gets the current list of the children of the parent.
+      window.webkitResolveLocalFileSystemURL(urls[0], function(fileEntry) {
+        fileEntry.getParent(function(parentEntry) {
+          const dirReader = parentEntry.createReader();
+          let entries = [];
 
-               // Call the reader.readEntries() until no more results are
-               // returned.
-               var readEntries = function() {
-                 dirReader.readEntries(function(results) {
-                   if (!results.length) {
-                     fulfill(entries.sort(util.compareName));
-                   } else {
-                     entries =
-                         entries.concat(Array.prototype.slice.call(results, 0));
-                     readEntries();
-                   }
-                 }, reject);
-               };
+          // Call the reader.readEntries() until no more results are
+          // returned.
+          const readEntries = function() {
+            dirReader.readEntries(function(results) {
+              if (!results.length) {
+                fulfill(entries.sort(util.compareName));
+              } else {
+                entries =
+                    entries.concat(Array.prototype.slice.call(results, 0));
+                readEntries();
+              }
+            }, reject);
+          };
 
-               // Start reading.
-               readEntries();
-             }, reject);
-           }, reject);
-         })
-      .then(function(entries) {
-        // Omits non-audio files.
-        var audioEntries = entries.filter(FileType.isAudio);
+          // Start reading.
+          readEntries();
+        }, reject);
+      }, reject);
+    });
 
-        // Adjusts the position to start playing.
-        var maybePosition = util.entriesToURLs(audioEntries).indexOf(startUrl);
-        if (maybePosition !== -1) {
-          position = maybePosition;
-        }
+    // Omits non-audio files.
+    const audioEntries = entries.filter(FileType.isAudio);
 
-        // Opens the audio player.
-        return new Promise(function(fulfill, reject) {
-          var urls = util.entriesToURLs(audioEntries);
-          audioPlayer.launch(
-              {items: urls, position: position}, false,
-              fulfill.bind(null, null));
-        });
-      })
-      .then(function() {
-        audioPlayer.setIcon(AUDIO_PLAYER_ICON);
-        audioPlayer.rawAppWindow.focus();
-        return AUDIO_PLAYER_APP_URL;
-      })
-      .catch(function(error) {
-        console.error('Launch failed: ' + (error.stack || error));
-        return Promise.reject(error);
-      });
+    // Adjusts the position to start playing.
+    const maybePosition = util.entriesToURLs(audioEntries).indexOf(startUrl);
+    if (maybePosition !== -1) {
+      position = maybePosition;
+    }
+
+    // Opens the audio player.
+    const urlsToOpen = util.entriesToURLs(audioEntries);
+    const audioPlayer = await getAudioPlayer;
+    await audioPlayer.launch({items: urlsToOpen, position: position}, false);
+
+    audioPlayer.setIcon(AUDIO_PLAYER_ICON);
+    audioPlayer.rawAppWindow.focus();
+    return AUDIO_PLAYER_APP_URL;
+  } catch (error) {
+    console.error('Launch failed: ' + (error.stack || error));
+    throw error;
+  }
 }
 
-background.setLaunchHandler(open);
+window.background.setLaunchHandler(open);

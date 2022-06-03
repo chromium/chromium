@@ -1,195 +1,164 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 
-#include <stddef.h>
-#include <utility>
-#include <vector>
+#include <string>
 
-#include "base/bind.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
+#include "chrome/browser/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/browser_thread.h"
-#include "net/base/net_errors.h"
-#include "net/cert/x509_certificate.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+using PublicKeyInfo = chromeos::platform_keys::PublicKeyInfo;
 
 namespace extensions {
 
-namespace api_pk = api::platform_keys;
-namespace api_pki = api::platform_keys_internal;
-
 namespace {
 
-const char kErrorAlgorithmNotSupported[] = "Algorithm not supported.";
-const char kErrorAlgorithmNotPermittedByCertificate[] =
-    "The requested Algorithm is not permitted by the certificate.";
+namespace api_pk = api::platform_keys;
+namespace api_pki = api::platform_keys_internal;
+using crosapi::mojom::KeystoreService;
+using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
+using crosapi::keystore_service_util::kWebCryptoEcdsa;
+using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kUnsupportedByAsh[] = "Not implemented.";
+const char kUnsupportedProfile[] = "Not available.";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
     "Interactive calls must happen in the context of a browser tab or a "
     "window.";
 
-const char kWebCryptoRSASSA_PKCS1_v1_5[] = "RSASSA-PKCS1-v1_5";
-
-struct PublicKeyInfo {
-  // The X.509 Subject Public Key Info of the key in DER encoding.
-  std::string public_key_spki_der;
-
-  // The type of the key.
-  net::X509Certificate::PublicKeyType key_type =
-      net::X509Certificate::kPublicKeyTypeUnknown;
-
-  // The size of the key in bits.
-  size_t key_size_bits = 0;
-};
-
-// Builds a partial WebCrypto Algorithm object from the parameters available in
-// |key_info|, which must the info of an RSA key. This doesn't include sign/hash
-// parameters and thus isn't complete.
-// platform_keys::GetPublicKey() enforced the public exponent 65537.
-void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                          base::DictionaryValue* algorithm) {
-  CHECK_EQ(net::X509Certificate::kPublicKeyTypeRSA, key_info.key_type);
-  algorithm->SetKey("name", base::Value(kWebCryptoRSASSA_PKCS1_v1_5));
-  algorithm->SetKey("modulusLength",
-                    base::Value(static_cast<int>(key_info.key_size_bits)));
-
-  // Equals 65537.
-  const unsigned char defaultPublicExponent[] = {0x01, 0x00, 0x01};
-  algorithm->SetWithoutPathExpansion(
-      "publicExponent",
-      base::Value::CreateWithCopiedBuffer(
-          reinterpret_cast<const char*>(defaultPublicExponent),
-          base::size(defaultPublicExponent)));
-}
+const char kTokenIdUser[] = "user";
+const char kTokenIdSystem[] = "system";
 
 const struct NameValuePair {
   const char* const name;
   const int value;
 } kCertStatusErrors[] = {
-#define CERT_STATUS_FLAG(name, value) \
-  { #name, value }                    \
-  ,
+#define CERT_STATUS_FLAG(name, value) {#name, value},
 #include "net/cert/cert_status_flags_list.h"
 #undef CERT_STATUS_FLAG
 };
+
+crosapi::mojom::KeystoreService* GetKeystoreService(
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
+      << "Attempted to use an incorrect profile. Please file a bug at "
+         "https://bugs.chromium.org/ if this happens.";
+  return chromeos::LacrosService::Get()->GetRemote<KeystoreService>().get();
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
+      browser_context);
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or empty string on success. |min_version| is the minimum version of
+// the ash implementation of KeystoreService necessary to support this
+// extension. |context| is the browser context in which the extension is hosted.
+std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>())
+    return kUnsupportedByAsh;
+
+  int version = service->GetInterfaceVersion(KeystoreService::Uuid_);
+  if (version < min_version)
+    return kUnsupportedByAsh;
+
+  // These APIs are used in security-sensitive contexts. We need to ensure that
+  // the user for ash is the same as the user for lacros. We do this by
+  // restricting the API to the default profile, which is guaranteed to be the
+  // same user.
+  if (!Profile::FromBrowserContext(context)->IsMainProfile())
+    return kUnsupportedProfile;
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return "";
+}
+
+absl::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
+    const std::string& input) {
+  if (input == kWebCryptoRsassaPkcs1v15)
+    return SigningAlgorithmName::kRsassaPkcs115;
+  if (input == kWebCryptoEcdsa)
+    return SigningAlgorithmName::kEcdsa;
+  return absl::nullopt;
+}
 
 }  // namespace
 
 namespace platform_keys {
 
+const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
 const char kErrorInvalidToken[] = "The token is not valid.";
 const char kErrorInvalidX509Cert[] =
     "Certificate is not a valid X.509 certificate.";
-const char kTokenIdUser[] = "user";
-const char kTokenIdSystem[] = "system";
 
-// Returns whether |token_id| references a known Token.
-bool ValidateToken(const std::string& token_id,
-                   std::string* platform_keys_token_id) {
-  platform_keys_token_id->clear();
-  if (token_id == kTokenIdUser) {
-    *platform_keys_token_id = chromeos::platform_keys::kTokenIdUser;
-    return true;
-  }
-  if (token_id == kTokenIdSystem) {
-    *platform_keys_token_id = chromeos::platform_keys::kTokenIdSystem;
-    return true;
-  }
-  return false;
-}
+absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
+    const std::string& token_id) {
+  if (token_id == kTokenIdUser)
+    return chromeos::platform_keys::TokenId::kUser;
 
-std::string PlatformKeysTokenIdToApiId(
-    const std::string& platform_keys_token_id) {
-  if (platform_keys_token_id == chromeos::platform_keys::kTokenIdUser)
-    return kTokenIdUser;
-  if (platform_keys_token_id == chromeos::platform_keys::kTokenIdSystem)
-    return kTokenIdSystem;
+  if (token_id == kTokenIdSystem)
+    return chromeos::platform_keys::TokenId::kSystem;
 
-  return std::string();
+  return absl::nullopt;
 }
 
 }  // namespace platform_keys
 
-PlatformKeysInternalGetPublicKeyFunction::
-    ~PlatformKeysInternalGetPublicKeyFunction() {
-}
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalGetPublicKeyFunction::Run() {
-  std::unique_ptr<api_pki::GetPublicKey::Params> params(
-      api_pki::GetPublicKey::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const std::vector<uint8_t>& cert_der = params->certificate;
-  if (cert_der.empty())
-    return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
-  // Allow UTF-8 inside PrintableStrings in client certificates. See
-  // crbug.com/770323 and crbug.com/788655.
-  net::X509Certificate::UnsafeCreateOptions options;
-  options.printable_string_is_utf8 = true;
-  scoped_refptr<net::X509Certificate> cert_x509 =
-      net::X509Certificate::CreateFromBytesUnsafeOptions(
-          reinterpret_cast<const char*>(cert_der.data()), cert_der.size(),
-          options);
-  if (!cert_x509)
-    return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
-
-  PublicKeyInfo key_info;
-  key_info.public_key_spki_der =
-      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert_x509);
-  if (!chromeos::platform_keys::GetPublicKey(cert_x509, &key_info.key_type,
-                                             &key_info.key_size_bits) ||
-      key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
-    return RespondNow(Error(kErrorAlgorithmNotSupported));
-  }
-
-  // Currently, the only supported combination is:
-  //   A certificate declaring rsaEncryption in the SubjectPublicKeyInfo used
-  //   with the RSASSA-PKCS1-v1.5 algorithm.
-  if (params->algorithm_name != kWebCryptoRSASSA_PKCS1_v1_5) {
-    return RespondNow(Error(kErrorAlgorithmNotPermittedByCertificate));
-  }
-
-  api_pki::GetPublicKey::Results::Algorithm algorithm;
-  BuildWebCryptoRSAAlgorithmDictionary(key_info,
-                                       &algorithm.additional_properties);
-
-  return RespondNow(ArgumentList(api_pki::GetPublicKey::Results::Create(
-      std::vector<uint8_t>(key_info.public_key_spki_der.begin(),
-                           key_info.public_key_spki_der.end()),
-      algorithm)));
-}
-
+//------------------------------------------------------------------------------
 PlatformKeysInternalSelectClientCertificatesFunction::
-    ~PlatformKeysInternalSelectClientCertificatesFunction() {
-}
+    ~PlatformKeysInternalSelectClientCertificatesFunction() {}
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalSelectClientCertificatesFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
+    return RespondNow(Error(kUnsupportedProfile));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   std::unique_ptr<api_pki::SelectClientCertificates::Params> params(
-      api_pki::SelectClientCertificates::Params::Create(*args_));
+      api_pki::SelectClientCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  chromeos::PlatformKeysService* service =
-      chromeos::PlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  DCHECK(service);
-
   chromeos::platform_keys::ClientCertificateRequest request;
-  for (const std::vector<uint8_t>& cert_authority :
-       params->details.request.certificate_authorities) {
-    request.certificate_authorities.push_back(
-        std::string(cert_authority.begin(), cert_authority.end()));
-  }
+  request.certificate_authorities =
+      std::move(params->details.request.certificate_authorities);
+
   for (const api_pk::ClientCertificateType& cert_type :
        params->details.request.certificate_types) {
     switch (cert_type) {
@@ -208,7 +177,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 
   std::unique_ptr<net::CertificateList> client_certs;
   if (params->details.client_certs) {
-    client_certs.reset(new net::CertificateList);
+    client_certs = std::make_unique<net::CertificateList>();
     for (const std::vector<uint8_t>& client_cert_der :
          *params->details.client_certs) {
       if (client_cert_der.empty())
@@ -218,9 +187,8 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       net::X509Certificate::UnsafeCreateOptions options;
       options.printable_string_is_utf8 = true;
       scoped_refptr<net::X509Certificate> client_cert_x509 =
-          net::X509Certificate::CreateFromBytesUnsafeOptions(
-              reinterpret_cast<const char*>(client_cert_der.data()),
-              client_cert_der.size(), options);
+          net::X509Certificate::CreateFromBytesUnsafeOptions(client_cert_der,
+                                                             options);
       if (!client_cert_x509)
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
       client_certs->push_back(client_cert_x509);
@@ -240,25 +208,33 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
     }
   }
 
+  chromeos::ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
+          browser_context());
+  DCHECK(service);
+
   service->SelectClientCertificates(
       request, std::move(client_certs), params->details.interactive,
       extension_id(),
-      base::Bind(&PlatformKeysInternalSelectClientCertificatesFunction::
-                     OnSelectedCertificates,
-                 this),
+      base::BindOnce(&PlatformKeysInternalSelectClientCertificatesFunction::
+                         OnSelectedCertificates,
+                     this),
       web_contents);
   return RespondLater();
 }
 
 void PlatformKeysInternalSelectClientCertificatesFunction::
-    OnSelectedCertificates(std::unique_ptr<net::CertificateList> matches,
-                           const std::string& error_message) {
+    OnSelectedCertificates(
+        std::unique_ptr<net::CertificateList> matches,
+        absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!error_message.empty()) {
-    Respond(Error(error_message));
+  if (error) {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
     return;
   }
+
   DCHECK(matches);
   std::vector<api_pk::Match> result_matches;
   for (const scoped_refptr<net::X509Certificate>& match : *matches) {
@@ -270,10 +246,6 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
       LOG(ERROR) << "Could not retrieve public key info.";
       continue;
     }
-    if (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
-      LOG(ERROR) << "Skipping unsupported certificate with non-RSA key.";
-      continue;
-    }
 
     api_pk::Match result_match;
     base::StringPiece der_encoded_cert =
@@ -281,40 +253,167 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    BuildWebCryptoRSAAlgorithmDictionary(
-        key_info, &result_match.key_algorithm.additional_properties);
+    absl::optional<base::DictionaryValue> algorithm =
+        BuildWebCrypAlgorithmDictionary(key_info);
+    if (!algorithm) {
+      LOG(ERROR) << "Skipping unsupported certificate with key type "
+                 << key_info.key_type;
+      continue;
+    }
+    result_match.key_algorithm.additional_properties =
+        std::move(algorithm.value());
+
     result_matches.push_back(std::move(result_match));
   }
   Respond(ArgumentList(
       api_pki::SelectClientCertificates::Results::Create(result_matches)));
 }
 
-PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {
-}
+//------------------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
-  std::unique_ptr<api_pki::Sign::Params> params(
-      api_pki::Sign::Params::Create(*args_));
+PlatformKeysInternalGetPublicKeyFunction::
+    ~PlatformKeysInternalGetPublicKeyFunction() {}
+
+ExtensionFunction::ResponseAction
+PlatformKeysInternalGetPublicKeyFunction::Run() {
+  std::unique_ptr<api_pki::GetPublicKey::Params> params(
+      api_pki::GetPublicKey::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-  std::string platform_keys_token_id;
-  if (!params->token_id.empty() &&
-      !platform_keys::ValidateToken(params->token_id,
-                                    &platform_keys_token_id)) {
-    return RespondNow(Error(platform_keys::kErrorInvalidToken));
+
+  std::string error = ValidateCrosapi(
+      KeystoreService::kDEPRECATED_GetPublicKeyMinVersion, browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(error));
   }
 
-  chromeos::PlatformKeysService* service =
-      chromeos::PlatformKeysServiceFactory::GetForBrowserContext(
+  absl::optional<SigningAlgorithmName> algorithm_name =
+      SigningAlgorithmNameFromString(params->algorithm_name);
+  if (!algorithm_name) {
+    return RespondNow(Error(chromeos::platform_keys::KeystoreErrorToString(
+        crosapi::mojom::KeystoreError::kAlgorithmNotSupported)));
+  }
+
+  auto cb = base::BindOnce(
+      &PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey, this);
+  GetKeystoreService(browser_context())
+      ->DEPRECATED_GetPublicKey(params->certificate, algorithm_name.value(),
+                                std::move(cb));
+  return RespondLater();
+}
+
+void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
+    crosapi::mojom::DEPRECATED_GetPublicKeyResultPtr result) {
+  if (result->is_error_message()) {
+    Respond(Error(result->get_error_message()));
+    return;
+  }
+
+  api_pki::GetPublicKey::Results::Algorithm algorithm;
+  absl::optional<base::DictionaryValue> dict =
+      crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
+          result->get_success_result()->algorithm_properties);
+  if (!dict) {
+    Respond(Error(kErrorInvalidSigningAlgorithm));
+    return;
+  }
+  algorithm.additional_properties = std::move(dict.value());
+  Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
+      result->get_success_result()->public_key, std::move(algorithm))));
+}
+//------------------------------------------------------------------------------
+
+PlatformKeysInternalGetPublicKeyBySpkiFunction::
+    ~PlatformKeysInternalGetPublicKeyBySpkiFunction() = default;
+
+ExtensionFunction::ResponseAction
+PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
+    return RespondNow(Error(kUnsupportedProfile));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  std::unique_ptr<api_pki::GetPublicKeyBySpki::Params> params(
+      api_pki::GetPublicKeyBySpki::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const auto& public_key_spki_der = params->public_key_spki_der;
+  if (public_key_spki_der.empty())
+    return RespondNow(Error(platform_keys::kErrorInvalidSpki));
+
+  PublicKeyInfo key_info;
+  key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
+                                      std::end(public_key_spki_der));
+
+  if (!chromeos::platform_keys::GetPublicKeyBySpki(key_info.public_key_spki_der,
+                                                   &key_info.key_type,
+                                                   &key_info.key_size_bits)) {
+    return RespondNow(Error(StatusToString(
+        chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
+  }
+
+  chromeos::platform_keys::Status check_result =
+      chromeos::platform_keys::CheckKeyTypeAndAlgorithm(key_info.key_type,
+                                                        params->algorithm_name);
+  if (check_result != chromeos::platform_keys::Status::kSuccess)
+    return RespondNow(Error(StatusToString(check_result)));
+
+  api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
+  absl::optional<base::DictionaryValue> algorithm_dictionary =
+      chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
+  DCHECK(algorithm_dictionary);
+  algorithm.additional_properties = std::move(algorithm_dictionary.value());
+
+  return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
+      public_key_spki_der, algorithm)));
+}
+
+//------------------------------------------------------------------------------
+
+PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
+
+ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
+    return RespondNow(Error(kUnsupportedProfile));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  std::unique_ptr<api_pki::Sign::Params> params(
+      api_pki::Sign::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id;
+  // If |params->token_id| is not specified (empty string), the key will be
+  // searched for in all available tokens.
+  if (!params->token_id.empty()) {
+    platform_keys_token_id =
+        platform_keys::ApiIdToPlatformKeysTokenId(params->token_id);
+    if (!platform_keys_token_id) {
+      return RespondNow(Error(platform_keys::kErrorInvalidToken));
+    }
+  }
+
+  chromeos::ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 
   if (params->hash_algorithm_name == "none") {
+    // Signing without digesting is only supported for RSASSA-PKCS1-v1_5.
+    if (params->algorithm_name != kWebCryptoRsassaPkcs1v15) {
+      return RespondNow(Error(StatusToString(
+          chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
+    }
+
     service->SignRSAPKCS1Raw(
         platform_keys_token_id,
         std::string(params->data.begin(), params->data.end()),
         std::string(params->public_key.begin(), params->public_key.end()),
         extension_id(),
-        base::Bind(&PlatformKeysInternalSignFunction::OnSigned, this));
+        base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   } else {
     chromeos::platform_keys::HashAlgorithm hash_algorithm;
     if (params->hash_algorithm_name == "SHA-1") {
@@ -326,14 +425,26 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     } else if (params->hash_algorithm_name == "SHA-512") {
       hash_algorithm = chromeos::platform_keys::HASH_ALGORITHM_SHA512;
     } else {
-      return RespondNow(Error(kErrorAlgorithmNotSupported));
+      return RespondNow(Error(StatusToString(
+          chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
     }
-    service->SignRSAPKCS1Digest(
+
+    chromeos::platform_keys::KeyType key_type;
+    if (params->algorithm_name == kWebCryptoRsassaPkcs1v15) {
+      key_type = chromeos::platform_keys::KeyType::kRsassaPkcs1V15;
+    } else if (params->algorithm_name == kWebCryptoEcdsa) {
+      key_type = chromeos::platform_keys::KeyType::kEcdsa;
+    } else {
+      return RespondNow(Error(StatusToString(
+          chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
+    }
+
+    service->SignDigest(
         platform_keys_token_id,
         std::string(params->data.begin(), params->data.end()),
         std::string(params->public_key.begin(), params->public_key.end()),
-        hash_algorithm, extension_id(),
-        base::Bind(&PlatformKeysInternalSignFunction::OnSigned, this));
+        key_type, hash_algorithm, extension_id(),
+        base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   }
 
   return RespondLater();
@@ -341,34 +452,37 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 
 void PlatformKeysInternalSignFunction::OnSigned(
     const std::string& signature,
-    const std::string& error_message) {
+    absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (error_message.empty())
+  if (!error) {
     Respond(ArgumentList(api_pki::Sign::Results::Create(
         std::vector<uint8_t>(signature.begin(), signature.end()))));
-  else
-    Respond(Error(error_message));
+  } else {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
+  }
 }
 
+//------------------------------------------------------------------------------
+
 PlatformKeysVerifyTLSServerCertificateFunction::
-    ~PlatformKeysVerifyTLSServerCertificateFunction() {
-}
+    ~PlatformKeysVerifyTLSServerCertificateFunction() {}
 
 ExtensionFunction::ResponseAction
 PlatformKeysVerifyTLSServerCertificateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<api_pk::VerifyTLSServerCertificate::Params> params(
-      api_pk::VerifyTLSServerCertificate::Params::Create(*args_));
+      api_pk::VerifyTLSServerCertificate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   VerifyTrustAPI::GetFactoryInstance()
       ->Get(browser_context())
       ->Verify(std::move(params), extension_id(),
-               base::Bind(&PlatformKeysVerifyTLSServerCertificateFunction::
-                              FinishedVerification,
-                          this));
+               base::BindOnce(&PlatformKeysVerifyTLSServerCertificateFunction::
+                                  FinishedVerification,
+                              this));
 
   return RespondLater();
 }

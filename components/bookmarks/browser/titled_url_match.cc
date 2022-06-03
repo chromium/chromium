@@ -4,24 +4,25 @@
 
 #include "components/bookmarks/browser/titled_url_match.h"
 
-#include "base/logging.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "base/check_op.h"
 
 namespace bookmarks {
 
-TitledUrlMatch::TitledUrlMatch() : node(nullptr) {}
+TitledUrlMatch::TitledUrlMatch() : node(nullptr), has_ancestor_match(false) {}
 
 TitledUrlMatch::TitledUrlMatch(const TitledUrlMatch& other) = default;
 
-TitledUrlMatch::~TitledUrlMatch() {}
+TitledUrlMatch::~TitledUrlMatch() = default;
 
 // static
 std::vector<size_t> TitledUrlMatch::OffsetsFromMatchPositions(
     const MatchPositions& match_positions) {
   std::vector<size_t> offsets;
-  for (auto i = match_positions.begin(); i != match_positions.end(); ++i) {
-    offsets.push_back(i->first);
-    offsets.push_back(i->second);
+  for (const auto& match_position : match_positions) {
+    offsets.push_back(match_position.first);
+    offsets.push_back(match_position.second);
   }
   return offsets;
 }
@@ -38,7 +39,7 @@ TitledUrlMatch::MatchPositions TitledUrlMatch::ReplaceOffsetsInMatchPositions(
     const size_t begin = *offset_iter;
     ++offset_iter;
     const size_t end = *offset_iter;
-    if ((begin != base::string16::npos) && (end != base::string16::npos)) {
+    if ((begin != std::u16string::npos) && (end != std::u16string::npos)) {
       const MatchPosition new_match_position(begin, end);
       new_match_positions.push_back(new_match_position);
     }

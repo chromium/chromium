@@ -1,0 +1,27 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "js_communication_host.cc",
+    "js_communication_host.h",
+    "js_to_browser_messaging.cc",
+    "js_to_browser_messaging.h",
+    "web_message.cc",
+    "web_message.h",
+    "web_message_host.h",
+    "web_message_host_factory.h",
+    "web_message_reply_proxy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/js_injection/common",
+    "//components/js_injection/common:common_mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}

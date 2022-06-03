@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
 import("//build/toolchain/win/midl.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
 
 midl("elevation_service_idl") {
-  sources = [
-    "elevation_service_idl.idl",
-  ]
+  sources = [ "elevation_service_idl.idl" ]
 
   writes_tlb = true
 }
@@ -39,7 +38,10 @@ executable("elevation_service") {
     "elevation_service.rc",
   ]
 
-  configs -= [ "//build/config/win:console" ]
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
   configs += [ "//build/config/win:windowed" ]
   configs += [ ":no-missing-braces" ]
   configs -= [ "//build/config/win:winver" ]
@@ -50,6 +52,7 @@ executable("elevation_service") {
     ":version_resources",
     "//base",
     "//build/win:default_exe_manifest",
+    "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crx_file",
     "//third_party/zlib/google:zip",
@@ -59,36 +62,30 @@ executable("elevation_service") {
 source_set("lib") {
   visibility = [ ":*" ]
 
-  public = [
-    "elevated_recovery_impl.h",
-    "elevator.h",
-    "service_main.h",
-  ]
-
   sources = [
     "elevated_recovery_impl.cc",
+    "elevated_recovery_impl.h",
     "elevator.cc",
+    "elevator.h",
     "service_main.cc",
+    "service_main.h",
   ]
 
   configs += [ ":no-missing-braces" ]
   configs -= [ "//build/config/win:winver" ]
   configs += [ ":winver" ]
 
-  public_deps = [
+  deps = [
     ":elevation_service_idl",
     "//base",
-  ]
-
-  deps = [
     "//chrome/install_static:install_static_util",
+    "//components/crx_file:crx_file",
+    "//third_party/zlib/google:zip",
   ]
 }
 
 process_version_rc_template("version_resources") {
-  sources = [
-    "elevation_service_exe.ver",
-  ]
+  sources = [ "elevation_service_exe.ver" ]
   output = "$target_gen_dir/elevation_service_exe.rc"
 }
 
@@ -98,15 +95,17 @@ copy("elevation_service_unittests_files") {
     "//components/test/data/crx_file/valid_publisher.crx3",
     "//components/test/data/update_client/ChromeRecovery.crx3",
   ]
-  outputs = [
-    "$root_out_dir/elevated_recovery_unittest/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/elevated_recovery_unittest/{{source_file_part}}" ]
 }
 
 test("elevation_service_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "elevated_recovery_unittest.cc",
     "run_all_unittests.cc",
+    "scoped_mock_context.cc",
+    "scoped_mock_context.h",
     "service_main_unittest.cc",
   ]
 
@@ -117,6 +116,7 @@ test("elevation_service_unittests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/elevation_service:elevation_service_idl",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//components/crx_file",

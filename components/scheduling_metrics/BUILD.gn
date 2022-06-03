@@ -14,9 +14,7 @@ component("scheduling_metrics") {
 
   defines = [ "IS_SCHEDULING_METRICS_IMPL" ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

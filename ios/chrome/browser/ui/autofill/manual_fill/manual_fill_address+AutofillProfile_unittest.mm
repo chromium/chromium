@@ -24,7 +24,7 @@ namespace {
 void SetProfileFieldTypeValue(AutofillProfile* profile,
                               const autofill::ServerFieldType fieldType,
                               NSString* value) {
-  const base::string16 v = base::SysNSStringToUTF16(value);
+  const std::u16string v = base::SysNSStringToUTF16(value);
   const std::string& app_locale =
       GetApplicationContext()->GetApplicationLocale();
   profile->SetInfo(fieldType, v, app_locale);

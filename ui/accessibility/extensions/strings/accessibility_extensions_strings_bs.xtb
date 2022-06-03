@@ -7,18 +7,18 @@
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1588438908519853928">Normalno</translation>
 <translation id="1591070050619849194">Onemogući sve animirane slike.</translation>
-<translation id="1703735871906654364">Pregledanje znakom za umetanje</translation>
+<translation id="1703735871906654364">Navigacija kursorom</translation>
 <translation id="1791496371305830581">Dozvoli sve animirane slike.</translation>
 <translation id="1996252509865389616">Omogućiti?</translation>
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="2179565792157161713">Otvori dugi opis na novoj kartici</translation>
 <translation id="2223143012868735942">Na web stranice je primijenjen prilagodljivi filter boja za bolju percepciju boja.</translation>
-<translation id="2394933097471027016">Isprobajte sada – Pregledanje znakom za umetanje uvijek je omogućeno na ovoj stranici!</translation>
+<translation id="2394933097471027016">Isprobajte sada – Navigacija kursorom je uvijek omogućena na ovoj stranici!</translation>
 <translation id="2471847333270902538">Šema boja za <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">Držite pritisnuto &lt;span class='key'&gt;Opcija&lt;/span&gt; da se pomjerate riječ po riječ.</translation>
 <translation id="2795227192542594043">Ova ekstenzija vam daje pokretni kursor u web stranici, što omogućuje da odaberete tekst putem tastature.</translation>
 <translation id="2808027189040546825">1. korak: Odaberite red s najslabije vidljivim zvijezdama:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Kada dođete do nekog linka ili kontrole, taj element se automatski fokusira.   Pritisnite tipku &lt;span class='key'&gt;Enter&lt;/span&gt; da biste kliknuli na link ili dugme. &lt;/p&gt; &lt;p&gt;   Kada fokusirana kontrola (poput tekstualnog okvira ili okvira s listom) obuhvata   tipke sa strelicama, pritisnite tipku &lt;span class='key'&gt;Esc&lt;/span&gt;, a zatim   strelicu ulijevo ili udesno da nastavite pregledanje znakom za umetanje. &lt;/p&gt; &lt;p&gt;   Možete pritisnuti i tipku &lt;span class='key'&gt;Tab&lt;/span&gt; da se pomjerite na   sljedeću kontrolu koja se može fokusirati. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Kada dođete do nekog linka ili kontrole, taj element se automatski fokusira.   Pritisnite tipku &lt;span class='key'&gt;Enter&lt;/span&gt; da biste kliknuli na link ili dugme. &lt;/p&gt; &lt;p&gt;   Kada fokusirana kontrola (poput okvira za tekst ili okvira s listom) obuhvata   tipke sa strelicama, pritisnite tipku &lt;span class='key'&gt;Esc&lt;/span&gt;, a zatim   strelicu ulijevo ili udesno da nastavite navigaciju kursorom. &lt;/p&gt; &lt;p&gt;   Možete pritisnuti i tipku &lt;span class='key'&gt;Tab&lt;/span&gt; da se pomjerite na   sljedeću kontrolu koja se može fokusirati. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Podešavanje</translation>
 <translation id="3410969471888629217">Zaboravi prilagodbe web lokacije</translation>
 <translation id="3435896845095436175">Omogući</translation>
@@ -31,8 +31,8 @@
 <translation id="4769065380738716500">Slike su zamijenjene "alt" tekstom.</translation>
 <translation id="4896660567607030658">Bez povratnih informacija, samo prikaži kursor.</translation>
 <translation id="4937901943818762779">Dozvoli animirane slike ali samo jedanput.</translation>
-<translation id="4949131196216960195">Pritisnite &lt;span class='key'&gt;Pretraživanje&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tipku za povećavanje osvjetljenja ili F7) da uključite pregledanje znakom za umetanje. Ponovo pritisnite da isključite.</translation>
-<translation id="4954450790315188152">Kada je omogućeno pregledanje znakom za umetanje:</translation>
+<translation id="4949131196216960195">Pritisnite &lt;span class='key'&gt;Pretraživanje&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tipku za povećavanje osvjetljenja ili F7) da uključite navigaciju kursorom. Ponovo pritisnite da isključite.</translation>
+<translation id="4954450790315188152">Kada je omogućena navigacija kursorom:</translation>
 <translation id="5041932793799765940">Podešavanje boje</translation>
 <translation id="5094574508723441140">Povećan kontrast</translation>
 <translation id="5173942593318174089">Istaknite položaj kursora animacijom.</translation>
@@ -61,9 +61,9 @@
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="786423340267544509">Dodaj okvir elementima s atributima aria-describedat ili longdesc.</translation>
 <translation id="7942349550061667556">Crvena</translation>
-<translation id="8260673944985561857">Opcije pregledanja znakom za umetanje</translation>
+<translation id="8260673944985561857">Opcije navigacije kursorom</translation>
 <translation id="8321034316479930120">Pravila za animaciju</translation>
 <translation id="8480209185614411573">Visoki kontrast</translation>
-<translation id="8609925175482059018">Pritisnite &lt;span class='key'&gt;F7&lt;/span&gt; da uključite pregledanje znakom za umetanje. Pritisnite ponovo da ga isključite.</translation>
+<translation id="8609925175482059018">Pritisnite &lt;span class='key'&gt;F7&lt;/span&gt; da uključite navigaciju kursorom. Pritisnite ponovo da ga isključite.</translation>
 <translation id="894241283505723656">Dugi opisi u kontekstualnom meniju</translation>
 </translationbundle>

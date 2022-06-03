@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/common/child_process_host.h"
@@ -18,7 +18,7 @@
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 #if defined(OS_ANDROID)
-#include "services/proxy_resolver/proxy_resolver_factory_impl.h"
+#include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck crbug.com/1125897
 #else
 #include "content/public/browser/service_process_host.h"
 #include "services/strings/grit/services_strings.h"
@@ -42,13 +42,6 @@ proxy_resolver::mojom::ProxyResolverFactory* GetProxyResolverFactory() {
     content::ServiceProcessHost::Launch(
         remote->BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
-#if defined(OS_MACOSX)
-            // The proxy_resolver service runs V8, so it needs to run in the
-            // helper application that has the com.apple.security.cs.allow-jit
-            // code signing entitlement, which is CHILD_RENDERER. The service
-            // still runs under the utility process sandbox.
-            .WithChildFlags(content::ChildProcessHost::CHILD_RENDERER)
-#endif
             .WithDisplayName(IDS_PROXY_RESOLVER_DISPLAY_NAME)
             .Pass());
 

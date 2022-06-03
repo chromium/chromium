@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_TYPE_POLICY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_TYPE_POLICY_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_type_policy_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -24,23 +25,41 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
  public:
   TrustedTypePolicy(const String& policy_name, TrustedTypePolicyOptions*);
 
-  TrustedHTML* CreateHTML(v8::Isolate*, const String&, ExceptionState&);
-  TrustedScript* CreateScript(v8::Isolate*, const String&, ExceptionState&);
+  TrustedHTML* CreateHTML(v8::Isolate*,
+                          const String&,
+                          const HeapVector<ScriptValue>&,
+                          ExceptionState&);
+  TrustedScript* CreateScript(v8::Isolate*,
+                              const String&,
+                              const HeapVector<ScriptValue>&,
+                              ExceptionState&);
   TrustedScriptURL* CreateScriptURL(v8::Isolate*,
                                     const String&,
+                                    const HeapVector<ScriptValue>&,
                                     ExceptionState&);
 
   // IDL generates calls with ScriptState*, which contains the Isolate*.
   // These methods all call the Isolate* variant.
-  TrustedHTML* createHTML(ScriptState*, const String&, ExceptionState&);
-  TrustedScript* createScript(ScriptState*, const String&, ExceptionState&);
+  TrustedHTML* createHTML(ScriptState*,
+                          const String&,
+                          const HeapVector<ScriptValue>&,
+                          ExceptionState&);
+  TrustedScript* createScript(ScriptState*,
+                              const String&,
+                              const HeapVector<ScriptValue>&,
+                              ExceptionState&);
   TrustedScriptURL* createScriptURL(ScriptState*,
                                     const String&,
+                                    const HeapVector<ScriptValue>&,
                                     ExceptionState&);
+
+  bool HasCreateHTML();
+  bool HasCreateScript();
+  bool HasCreateScriptURL();
 
   String name() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String name_;

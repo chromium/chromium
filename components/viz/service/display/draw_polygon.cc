@@ -5,6 +5,7 @@
 #include "components/viz/service/display/draw_polygon.h"
 
 #include <stddef.h>
+#include <utility>
 #include <vector>
 
 #include "build/build_config.h"

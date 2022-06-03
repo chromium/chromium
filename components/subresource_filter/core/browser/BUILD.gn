@@ -37,9 +37,7 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "subresource_filter_features_unittest.cc",
-  ]
+  sources = [ "subresource_filter_features_unittest.cc" ]
   deps = [
     ":browser",
     ":test_support",

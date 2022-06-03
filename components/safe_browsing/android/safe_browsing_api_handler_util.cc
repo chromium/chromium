@@ -14,8 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/safe_browsing/db/metadata.pb.h"
-#include "components/safe_browsing/db/util.h"
+#include "components/safe_browsing/core/browser/db/metadata.pb.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace safe_browsing {
 namespace {
@@ -42,81 +42,6 @@ enum UmaThreatSubType {
 
   UMA_THREAT_SUB_TYPE_MAX_VALUE
 };
-
-void ReportUmaThreatSubType(SBThreatType threat_type,
-                            UmaThreatSubType sub_type) {
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SB2.RemoteCall.ThreatSubType.PotentiallyHarmfulApp", sub_type,
-        UMA_THREAT_SUB_TYPE_MAX_VALUE);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("SB2.RemoteCall.ThreatSubType.SocialEngineering",
-                              sub_type, UMA_THREAT_SUB_TYPE_MAX_VALUE);
-  }
-}
-
-// Parse the appropriate "*_pattern_type" key from the metadata.
-// Returns NONE if no pattern type was found.
-ThreatPatternType ParseThreatSubType(const base::DictionaryValue* match,
-                                     SBThreatType threat_type) {
-  if (threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-      threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER ||
-      threat_type == SB_THREAT_TYPE_BILLING) {
-    return ThreatPatternType::NONE;
-  }
-
-  std::string pattern_key;
-  switch (threat_type) {
-    case SB_THREAT_TYPE_URL_MALWARE:
-      pattern_key = "pha_pattern_type";
-      break;
-    case SB_THREAT_TYPE_URL_PHISHING:
-      pattern_key = "se_pattern_type";
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  std::string pattern_type;
-  if (!match->GetString(pattern_key, &pattern_type)) {
-    ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_NOT_SET);
-    return ThreatPatternType::NONE;
-  }
-
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    if (pattern_type == "LANDING") {
-      ReportUmaThreatSubType(
-          threat_type, UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_LANDING);
-      return ThreatPatternType::MALWARE_LANDING;
-    } else if (pattern_type == "DISTRIBUTION") {
-      ReportUmaThreatSubType(
-          threat_type,
-          UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_DISTRIBUTION);
-      return ThreatPatternType::MALWARE_DISTRIBUTION;
-    } else {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_UNKNOWN);
-      return ThreatPatternType::NONE;
-    }
-  } else {
-    DCHECK(threat_type == SB_THREAT_TYPE_URL_PHISHING);
-    if (pattern_type == "SOCIAL_ENGINEERING_ADS") {
-      ReportUmaThreatSubType(threat_type,
-                             UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_ADS);
-      return ThreatPatternType::SOCIAL_ENGINEERING_ADS;
-    } else if (pattern_type == "SOCIAL_ENGINEERING_LANDING") {
-      ReportUmaThreatSubType(threat_type,
-                             UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_LANDING);
-      return ThreatPatternType::SOCIAL_ENGINEERING_LANDING;
-    } else if (pattern_type == "PHISHING") {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_PHISHING);
-      return ThreatPatternType::PHISHING;
-    } else {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_UNKNOWN);
-      return ThreatPatternType::NONE;
-    }
-  }
-}
 
 // Parse the optional "UserPopulation" key from the metadata.
 // Returns empty string if none was found.
@@ -197,7 +122,7 @@ SBThreatType JavaToSBThreatType(int java_threat_num) {
 // Valid examples:
 // {"matches":[{"threat_type":"5"}]}
 //   or
-// {"matches":[{"threat_type":"4", "pha_pattern_type":"LANDING"},
+// {"matches":[{"threat_type":"4"},
 //             {"threat_type":"5"}]}
 //   or
 // {"matches":[{"threat_type":"4", "UserPopulation":"YXNvZWZpbmFqO..."}]
@@ -224,14 +149,16 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
   // Go through each matched threat type and pick the most severe.
   JavaThreatTypes worst_threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
   const base::DictionaryValue* worst_match = nullptr;
-  for (size_t i = 0; i < matches->GetSize(); i++) {
+  for (const base::Value& match_value : matches->GetList()) {
     // Get the threat number
-    const base::DictionaryValue* match;
+    const base::DictionaryValue* match = nullptr;
+    if (match_value.is_dict())
+      match = &base::Value::AsDictionaryValue(match_value);
+
     std::string threat_num_str;
 
     int threat_type_num;
-    if (!matches->GetDictionary(i, &match) ||
-        !match->GetString(kJsonKeyThreatType, &threat_num_str) ||
+    if (!match || !match->GetString(kJsonKeyThreatType, &threat_num_str) ||
         !base::StringToInt(threat_num_str, &threat_type_num)) {
       continue;  // Skip malformed list entries
     }
@@ -251,8 +178,6 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     return UMA_STATUS_JSON_UNKNOWN_THREAT;
 
   // Fill in the metadata
-  metadata->threat_pattern_type =
-      ParseThreatSubType(worst_match, *worst_sb_threat_type);
   metadata->population_id = ParseUserPopulation(worst_match);
   if (*worst_sb_threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
     metadata->subresource_filter_match =

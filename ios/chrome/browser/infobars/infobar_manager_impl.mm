@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_utils.h"
@@ -61,11 +61,6 @@ int InfoBarManagerImpl::GetActiveEntryID() {
   web::NavigationItem* visible_item =
       web_state_->GetNavigationManager()->GetVisibleItem();
   return visible_item ? visible_item->GetUniqueID() : 0;
-}
-
-std::unique_ptr<infobars::InfoBar> InfoBarManagerImpl::CreateConfirmInfoBar(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  return ::CreateConfirmInfoBar(std::move(delegate));
 }
 
 void InfoBarManagerImpl::DidFinishNavigation(

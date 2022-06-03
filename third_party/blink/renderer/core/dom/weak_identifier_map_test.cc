@@ -13,7 +13,7 @@ class WeakIdentifierMapTest : public ::testing::Test {
  public:
   class TestClass final : public GarbageCollected<TestClass> {
    public:
-    virtual void Trace(Visitor*) {}
+    virtual void Trace(Visitor*) const {}
   };
 
   using TestMap = WeakIdentifierMap<TestClass>;
@@ -23,7 +23,7 @@ class WeakIdentifierMapTest : public ::testing::Test {
 
   void CollectGarbage() {
     ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
+        ThreadState::StackState::kNoHeapPointers);
   }
 };
 

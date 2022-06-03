@@ -15,39 +15,55 @@ goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('NavBraille');
 
-/**
- * @interface
- */
-BrailleInterface = function() {};
+/** @interface */
+BrailleInterface = class {
+  constructor() {}
 
-/**
- * Sends the given params to the Braille display for output.
- * @param {!NavBraille} params Parameters to send to the
- * platform braille service.
- */
-BrailleInterface.prototype.write = function(params) {};
+  /**
+   * Sends the given params to the Braille display for output.
+   * @param {!NavBraille} params Parameters to send to the
+   * platform braille service.
+   */
+  write(params) {}
 
-/**
- * Takes an image in the form of a data url and outputs it to a Braille
- * display.
- * @param {!string} imageDataUrl The image to output, in the form of a
- * dataUrl.
- */
-BrailleInterface.prototype.writeRawImage = function(imageDataUrl) {};
+  /**
+   * Takes an image in the form of a data url and outputs it to a Braille
+   * display.
+   * @param {!string} imageDataUrl The image to output, in the form of a
+   * dataUrl.
+   */
+  writeRawImage(imageDataUrl) {}
 
-/**
- * Freeze whatever is on the braille display until the next call to thaw().
- */
-BrailleInterface.prototype.freeze = function() {};
+  /**
+   * Freeze whatever is on the braille display until the next call to thaw().
+   */
+  freeze() {}
 
+  /**
+   * Un-freeze the braille display so that it can be written to again.
+   */
+  thaw() {}
 
-/**
- * Un-freeze the braille display so that it can be written to again.
- */
-BrailleInterface.prototype.thaw = function() {};
+  /**
+   * @return {!BrailleDisplayState} The current display state.
+   */
+  getDisplayState() {}
 
+  /**
+   * Requests the braille display pan left.
+   */
+  panLeft() {}
 
-/**
- * @return {!BrailleDisplayState} The current display state.
- */
-BrailleInterface.prototype.getDisplayState = function() {};
+  /**
+   * Requests the braille display pan right.
+   */
+  panRight() {}
+
+  /**
+   * Moves the cursor to the given braille position.
+   * @param {number|undefined} braillePosition The 0-based position relative to
+   *     the start of the currently displayed text. The position is given in
+   *     braille cells, not text cells.
+   */
+  route(braillePosition) {}
+};

@@ -4,6 +4,7 @@
 
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 
+#include <map>
 #include <queue>
 #include <string>
 #include <utility>
@@ -15,49 +16,8 @@
 #include "printing/backend/cups_jobs.h"
 
 namespace cups_proxy {
-namespace {
 
-// This comparator defines a priority_queue of printers in descending order by
-// display name.
-class DisplayNameComparator {
- public:
-  bool operator()(const chromeos::Printer& a, const chromeos::Printer& b) {
-    return a.display_name() < b.display_name();
-  }
-};
-
-// Return the top |k| printers from |printers| sorted alphabetically by display
-// name.
-std::vector<chromeos::Printer> GetFirstKPrinters(
-    const std::vector<chromeos::Printer>& printers,
-    size_t k) {
-  auto pq =
-      std::priority_queue<chromeos::Printer, std::vector<chromeos::Printer>,
-                          DisplayNameComparator>();
-
-  // Filter through |printers|, only keeping the first |k| printers in the pq.
-  for (const chromeos::Printer& printer : printers) {
-    pq.push(printer);
-    if (pq.size() > k) {
-      pq.pop();
-    }
-  }
-
-  // We want the returned list in ascending order, so we assign to ret in
-  // reverse order.
-  std::vector<chromeos::Printer> ret;
-  ret.resize(pq.size());
-  for (int i = pq.size() - 1; i >= 0; --i) {
-    ret[i] = pq.top();
-    pq.pop();
-  }
-
-  return ret;
-}
-
-}  // namespace
-
-base::Optional<IppResponse> BuildGetDestsResponse(
+absl::optional<IppResponse> BuildGetDestsResponse(
     const IppRequest& request,
     const std::vector<chromeos::Printer>& printers) {
   IppResponse ret;
@@ -111,26 +71,31 @@ base::Optional<IppResponse> BuildGetDestsResponse(
       ret.status_line.http_version, ret.status_line.status_code,
       ret.status_line.reason_phrase, ret.headers, ret.ipp.get(), ret.ipp_data);
   if (!response_buffer) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret.buffer = std::move(*response_buffer);
   return ret;
 }
 
-base::Optional<std::string> GetPrinterId(ipp_t* ipp) {
+absl::optional<std::string> GetPrinterId(ipp_t* ipp) {
   // We expect the printer id to be embedded in the printer-uri.
   ipp_attribute_t* printer_uri_attr =
       ippFindAttribute(ipp, "printer-uri", IPP_TAG_URI);
   if (!printer_uri_attr) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Only care about the resource, throw everything else away
   char resource[HTTP_MAX_URI], unwanted_buffer[HTTP_MAX_URI];
   int unwanted_port;
 
-  std::string printer_uri = ippGetString(printer_uri_attr, 0, NULL);
+  std::string printer_uri;
+  const char* printer_uri_ptr = ippGetString(printer_uri_attr, 0, nullptr);
+  if (printer_uri_ptr) {
+    printer_uri = printer_uri_ptr;
+  }
+
   httpSeparateURI(HTTP_URI_CODING_RESOURCE, printer_uri.data(), unwanted_buffer,
                   HTTP_MAX_URI, unwanted_buffer, HTTP_MAX_URI, unwanted_buffer,
                   HTTP_MAX_URI, &unwanted_port, resource, HTTP_MAX_URI);
@@ -139,39 +104,46 @@ base::Optional<std::string> GetPrinterId(ipp_t* ipp) {
   base::StringPiece uuid(resource);
   auto uuid_start = uuid.find_last_of('/');
   if (uuid_start == base::StringPiece::npos || uuid_start + 1 >= uuid.size()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return uuid.substr(uuid_start + 1).as_string();
+  return std::string(uuid.substr(uuid_start + 1));
 }
 
-base::Optional<std::string> ParseEndpointForPrinterId(
+absl::optional<std::string> ParseEndpointForPrinterId(
     base::StringPiece endpoint) {
   size_t last_path = endpoint.find_last_of('/');
   if (last_path == base::StringPiece::npos ||
       last_path + 1 >= endpoint.size()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return endpoint.substr(last_path + 1).as_string();
+  return std::string(endpoint.substr(last_path + 1));
 }
 
 std::vector<chromeos::Printer> FilterPrintersForPluginVm(
     const std::vector<chromeos::Printer>& saved,
-    const std::vector<chromeos::Printer>& enterprise) {
-  if (saved.size() >= kPluginVmPrinterLimit) {
-    return std::vector<chromeos::Printer>(
-        saved.begin(), saved.begin() + kPluginVmPrinterLimit);
+    const std::vector<chromeos::Printer>& enterprise,
+    const std::vector<std::string>& recent) {
+  std::vector<std::string> ids(recent);
+  std::map<std::string, const chromeos::Printer*> printers;
+  for (const auto* category : {&saved, &enterprise}) {
+    for (const auto& printer : *category) {
+      ids.push_back(printer.id());
+      printers[printer.id()] = &printer;
+    }
   }
-
-  // Filter down enterprise printers to backfill.
-  size_t num_enterprise_printers = kPluginVmPrinterLimit - saved.size();
-  auto filtered_enterprise =
-      GetFirstKPrinters(enterprise, num_enterprise_printers);
-
-  // Concatenate saved printers and filtered_enterprise to return.
-  std::vector<chromeos::Printer> ret = saved;
-  ret.insert(ret.end(), filtered_enterprise.begin(), filtered_enterprise.end());
+  std::vector<chromeos::Printer> ret;
+  for (const std::string& id : ids) {
+    auto it = printers.find(id);
+    if (it != printers.end()) {
+      ret.push_back(*it->second);
+      printers.erase(it);
+      if (ret.size() == kPluginVmPrinterLimit) {
+        break;
+      }
+    }
+  }
   return ret;
 }
 

@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 #define ASSERT(x) DCHECK(x)
 #define ASSERT_NOT_REACHED NOTREACHED

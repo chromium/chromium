@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -25,14 +26,14 @@ bool IsExtraHeadersMatcherInternal(
 
   // We only support removing a subset of extra headers currently. If that
   // changes, the implementation here should change as well.
-  static_assert(flat::ActionIndex_count == 7,
+  static_assert(flat::ActionType_count == 6,
                 "Modify this method to ensure IsExtraHeadersMatcherInternal is "
                 "updated as new actions are added.");
 
   return std::any_of(regex_list->begin(), regex_list->end(),
                      [](const flat::RegexRule* regex_rule) {
                        return regex_rule->action_type() ==
-                              flat::ActionType_remove_headers;
+                              flat::ActionType_modify_headers;
                      });
 }
 
@@ -43,16 +44,34 @@ re2::StringPiece ToRE2StringPiece(const ::flatbuffers::String& str) {
 // Helper to check if the |rule| metadata matches the given request |params|.
 bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
                                   const RequestParams& params) {
-  // Compares |element_type| and |is_third_party|.
-  if (!url_pattern_index::DoesRuleFlagsMatch(rule, params.element_type,
-                                             flat_rule::ActivationType_NONE,
-                                             params.is_third_party)) {
+  // Evaluates `element_type`, `method`, `is_third_party` and
+  // `embedder_conditions_matcher`.
+  if (!url_pattern_index::DoesRuleFlagsMatch(
+          rule, params.element_type, flat_rule::ActivationType_NONE,
+          params.method, params.is_third_party,
+          params.embedder_conditions_matcher)) {
     return false;
   }
 
   // Compares included and excluded domains.
   return url_pattern_index::DoesOriginMatchDomainList(
       params.first_party_origin, rule, false /* disable_generic_rules */);
+}
+
+bool IsBeforeRequestAction(flat::ActionType action_type) {
+  switch (action_type) {
+    case flat::ActionType_block:
+    case flat::ActionType_allow:
+    case flat::ActionType_redirect:
+    case flat::ActionType_upgrade_scheme:
+    case flat::ActionType_allow_all_requests:
+      return true;
+    case flat::ActionType_modify_headers:
+      return false;
+    case flat::ActionType_count:
+      NOTREACHED();
+  }
+  return false;
 }
 
 }  // namespace
@@ -66,12 +85,11 @@ RegexRuleInfo::RegexRuleInfo(const flat::RegexRule* regex_rule,
 RegexRuleInfo::RegexRuleInfo(const RegexRuleInfo& info) = default;
 RegexRuleInfo& RegexRuleInfo::operator=(const RegexRuleInfo& info) = default;
 
-RegexRulesMatcher::RegexRulesMatcher(
-    const ExtensionId& extension_id,
-    api::declarative_net_request::SourceType source_type,
-    const RegexRulesList* regex_list,
-    const ExtensionMetadataList* metadata_list)
-    : RulesetMatcherBase(extension_id, source_type),
+RegexRulesMatcher::RegexRulesMatcher(const ExtensionId& extension_id,
+                                     RulesetID ruleset_id,
+                                     const RegexRulesList* regex_list,
+                                     const ExtensionMetadataList* metadata_list)
+    : RulesetMatcherBase(extension_id, ruleset_id),
       regex_list_(regex_list),
       metadata_list_(metadata_list),
       is_extra_headers_matcher_(IsExtraHeadersMatcherInternal(regex_list)) {
@@ -80,127 +98,91 @@ RegexRulesMatcher::RegexRulesMatcher(
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 
-base::Optional<RequestAction> RegexRulesMatcher::GetBlockOrCollapseAction(
-    const RequestParams& params) const {
-  const RegexRuleInfo* info =
-      GetHighestPriorityMatchingRule(params, flat::ActionType_block);
-  if (!info)
-    return base::nullopt;
-
-  return CreateBlockOrCollapseRequestAction(params,
-                                            *info->regex_rule->url_rule());
-}
-
-base::Optional<RequestAction> RegexRulesMatcher::GetAllowAction(
-    const RequestParams& params) const {
-  const RegexRuleInfo* info =
-      GetHighestPriorityMatchingRule(params, flat::ActionType_allow);
-  if (!info)
-    return base::nullopt;
-
-  return CreateAllowAction(params, *info->regex_rule->url_rule());
-}
-
-base::Optional<RequestAction> RegexRulesMatcher::GetRedirectAction(
-    const RequestParams& params) const {
-  const RegexRuleInfo* info =
-      GetHighestPriorityMatchingRule(params, flat::ActionType_redirect);
-  if (!info)
-    return base::nullopt;
-
-  // If this is a regex substitution rule, handle the substitution. Else create
-  // the redirect action from the information in |metadata_list_| below.
-  if (info->regex_rule->regex_substitution()) {
-    std::string redirect_str;
-
-    // We could have extracted the captured strings during the matching stage
-    // and directly used RE2::Rewrite here (which doesn't need to match the
-    // regex again). However we prefer to capture the strings only when
-    // necessary. Not capturing the strings should allow re2 to perform
-    // additional optimizations during the matching stage.
-    bool success =
-        RE2::Extract(params.url->spec(), *info->regex,
-                     ToRE2StringPiece(*info->regex_rule->regex_substitution()),
-                     &redirect_str);
-    if (!success) {
-      // This should generally not happen since we had already checked for a
-      // match and during indexing, had verified that the substitution pattern
-      // is not ill-formed. However, the re2 library implementation might have
-      // changed since indexing, causing this.
-      LOG(ERROR) << base::StringPrintf(
-          "Rewrite failed. Regex:%s Substitution:%s URL:%s\n",
-          info->regex->pattern().c_str(),
-          info->regex_rule->regex_substitution()->c_str(),
-          params.url->spec().c_str());
-      return base::nullopt;
-    }
-
-    GURL redirect_url(redirect_str);
-
-    // Redirects to JavaScript urls are not allowed.
-    if (redirect_url.SchemeIs(url::kJavaScriptScheme))
-      return base::nullopt;
-
-    return CreateRedirectAction(params, *info->regex_rule->url_rule(),
-                                std::move(redirect_url));
-  }
-
-  return CreateRedirectActionFromMetadata(params, *info->regex_rule->url_rule(),
-                                          *metadata_list_);
-}
-
-base::Optional<RequestAction> RegexRulesMatcher::GetUpgradeAction(
-    const RequestParams& params) const {
-  DCHECK(IsUpgradeableRequest(params));
-
-  const RegexRuleInfo* info =
-      GetHighestPriorityMatchingRule(params, flat::ActionType_upgrade_scheme);
-  if (!info)
-    return base::nullopt;
-
-  return CreateUpgradeAction(params, *info->regex_rule->url_rule());
-}
-
-uint8_t RegexRulesMatcher::GetRemoveHeadersMask(
+std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
-    uint8_t excluded_remove_headers_mask,
-    std::vector<RequestAction>* remove_headers_actions) const {
-  DCHECK(remove_headers_actions);
-
+    absl::optional<uint64_t> min_priority) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
 
-  // Subtracts |mask2| from |mask1|.
-  auto subtract_mask = [](uint8_t mask1, uint8_t mask2) {
-    return mask1 & (~mask2);
-  };
-
-  uint8_t mask = 0;
+  std::vector<const flat_rule::UrlRule*> rules;
   for (const RegexRuleInfo& info : potential_matches) {
-    if (info.regex_rule->action_type() != flat::ActionType_remove_headers)
-      continue;
+    // Check for the rule's priority iff |min_priority| is specified.
+    bool has_sufficient_priority =
+        !min_priority ||
+        info.regex_rule->url_rule()->priority() > *min_priority;
 
-    // The current rule won't be responsible for any headers already removed (in
-    // |mask|) or any headers to be ignored (in |excluded_remove_headers_mask|).
-    uint8_t effective_mask_for_rule =
-        subtract_mask(info.regex_rule->remove_headers_mask(),
-                      excluded_remove_headers_mask | mask);
-    if (!effective_mask_for_rule)
-      continue;
-
-    if (!re2::RE2::PartialMatch(params.url->spec(), *info.regex))
-      continue;
-
-    mask |= effective_mask_for_rule;
-    remove_headers_actions->push_back(GetRemoveHeadersActionForMask(
-        *info.regex_rule->url_rule(), effective_mask_for_rule));
+    if (has_sufficient_priority &&
+        info.regex_rule->action_type() == flat::ActionType_modify_headers &&
+        re2::RE2::PartialMatch(params.url->spec(), *info.regex)) {
+      rules.push_back(info.regex_rule->url_rule());
+    }
   }
 
-  DCHECK(!(mask & excluded_remove_headers_mask));
-  return mask;
+  return GetModifyHeadersActionsFromMetadata(params, rules, *metadata_list_);
+}
+
+absl::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
+    const RequestParams& params) const {
+  const std::vector<RegexRuleInfo>& potential_matches =
+      GetPotentialMatches(params);
+  auto info = std::find_if(potential_matches.begin(), potential_matches.end(),
+                           [&params](const RegexRuleInfo& info) {
+                             return info.regex_rule->action_type() ==
+                                        flat::ActionType_allow_all_requests &&
+                                    re2::RE2::PartialMatch(params.url->spec(),
+                                                           *info.regex);
+                           });
+  if (info == potential_matches.end())
+    return absl::nullopt;
+
+  return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
+}
+
+absl::optional<RequestAction>
+RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
+    const RequestParams& params) const {
+  const std::vector<RegexRuleInfo>& potential_matches =
+      GetPotentialMatches(params);
+  auto info = std::find_if(
+      potential_matches.begin(), potential_matches.end(),
+      [&params](const RegexRuleInfo& info) {
+        return IsBeforeRequestAction(info.regex_rule->action_type()) &&
+               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
+      });
+  if (info == potential_matches.end())
+    return absl::nullopt;
+
+  const flat_rule::UrlRule& rule = *info->regex_rule->url_rule();
+  switch (info->regex_rule->action_type()) {
+    case flat::ActionType_block:
+      return CreateBlockOrCollapseRequestAction(params, rule);
+    case flat::ActionType_allow:
+      return CreateAllowAction(params, rule);
+    case flat::ActionType_redirect:
+      // If this is a regex substitution rule, handle the substitution. Else
+      // create the redirect action from the information in |metadata_list_|
+      // below.
+      return info->regex_rule->regex_substitution()
+                 ? CreateRegexSubstitutionRedirectAction(params, *info)
+                 : CreateRedirectActionFromMetadata(params, rule,
+                                                    *metadata_list_);
+    case flat::ActionType_upgrade_scheme:
+      return CreateUpgradeAction(params, rule);
+    case flat::ActionType_allow_all_requests:
+      return CreateAllowAllRequestsAction(params, rule);
+    case flat::ActionType_modify_headers:
+    case flat::ActionType_count:
+      NOTREACHED();
+      break;
+  }
+
+  return absl::nullopt;
 }
 
 void RegexRulesMatcher::InitializeMatcher() {
+  if (IsEmpty())
+    return;
+
   for (const auto* regex_rule : *regex_list_) {
     const flat_rule::UrlRule* rule = regex_rule->url_rule();
 
@@ -222,6 +204,7 @@ void RegexRulesMatcher::InitializeMatcher() {
     // regular expression while indexing the ruleset. That said, there are cases
     // possible where this may happen, for example, the library's implementation
     // may change etc.
+    // TODO(crbug.com/1050780): Notify the extension about the same.
     if (error_code != re2::RE2::NoError)
       continue;
 
@@ -244,36 +227,20 @@ void RegexRulesMatcher::InitializeMatcher() {
                        });
                      }));
 
-  // Convert |strings_to_match| to |filtered_re2_strings_to_match_| which stores
-  // a vector of url_matcher::StringPattern(s). This is necessary to use
+  // Convert |strings_to_match| to StringPatterns. This is necessary to use
   // url_matcher::SubstringSetMatcher.
-  for (size_t i = 0; i < strings_to_match.size(); ++i) {
-    filtered_re2_strings_to_match_.emplace_back(std::move(strings_to_match[i]),
-                                                i);
-  }
+  std::vector<url_matcher::StringPattern> patterns;
+  patterns.reserve(strings_to_match.size());
 
-  std::vector<const url_matcher::StringPattern*> patterns;
-  for (const auto& pattern : filtered_re2_strings_to_match_)
-    patterns.push_back(&pattern);
+  for (size_t i = 0; i < strings_to_match.size(); ++i)
+    patterns.emplace_back(std::move(strings_to_match[i]), i);
 
-  substring_matcher_.RegisterPatterns(patterns);
+  substring_matcher_ =
+      std::make_unique<url_matcher::SubstringSetMatcher>(patterns);
 }
 
-const RegexRuleInfo* RegexRulesMatcher::GetHighestPriorityMatchingRule(
-    const RequestParams& params,
-    flat::ActionType type) const {
-  const std::vector<RegexRuleInfo>& potential_matches =
-      GetPotentialMatches(params);
-  auto it = std::find_if(potential_matches.begin(), potential_matches.end(),
-                         [&params, type](const RegexRuleInfo& info) {
-                           return info.regex_rule->action_type() == type &&
-                                  re2::RE2::PartialMatch(params.url->spec(),
-                                                         *info.regex);
-                         });
-  if (it == potential_matches.end())
-    return nullptr;
-
-  return &(*it);
+bool RegexRulesMatcher::IsEmpty() const {
+  return regex_list_->Length() == 0;
 }
 
 const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
@@ -282,16 +249,24 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   if (iter != params.potential_regex_matches.end())
     return iter->second;
 
+  // Early out if this is an empty matcher.
+  if (IsEmpty()) {
+    auto result = params.potential_regex_matches.insert(
+        std::make_pair(this, std::vector<RegexRuleInfo>()));
+    return result.first->second;
+  }
+
   // Compute the potential matches. FilteredRE2 requires the text to be lower
   // cased first.
   if (!params.lower_cased_url_spec)
     params.lower_cased_url_spec = base::ToLowerASCII(params.url->spec());
 
   // To pre-filter the set of regexes to match against |params|, we first need
-  // to compute the set of candidate strings in |filtered_re2_strings_to_match_|
+  // to compute the set of candidate strings tracked by |substring_matcher_|
   // within |params.lower_cased_url_spec|.
   std::set<int> candidate_ids_set;
-  substring_matcher_.Match(*params.lower_cased_url_spec, &candidate_ids_set);
+  DCHECK(substring_matcher_);
+  substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
   std::vector<int> candidate_ids_list(candidate_ids_set.begin(),
                                       candidate_ids_set.end());
 
@@ -325,6 +300,43 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   auto result = params.potential_regex_matches.insert(
       std::make_pair(this, std::move(potential_matches)));
   return result.first->second;
+}
+
+absl::optional<RequestAction>
+RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
+    const RequestParams& params,
+    const RegexRuleInfo& info) const {
+  // We could have extracted the captured strings during the matching stage
+  // and directly used RE2::Rewrite here (which doesn't need to match the
+  // regex again). However we prefer to capture the strings only when
+  // necessary. Not capturing the strings should allow re2 to perform
+  // additional optimizations during the matching stage.
+  std::string redirect_str = params.url->spec();
+  bool success =
+      RE2::Replace(&redirect_str, *info.regex,
+                   ToRE2StringPiece(*info.regex_rule->regex_substitution()));
+  if (!success) {
+    // This should generally not happen since we had already checked for a
+    // match and during indexing, had verified that the substitution pattern
+    // is not ill-formed. However, the re2 library implementation might have
+    // changed since indexing, causing this.
+    LOG(ERROR) << base::StringPrintf(
+        "Rewrite failed. Regex:%s Substitution:%s URL:%s\n",
+        info.regex->pattern().c_str(),
+        info.regex_rule->regex_substitution()->c_str(),
+        params.url->spec().c_str());
+    return absl::nullopt;
+  }
+
+  GURL redirect_url(redirect_str);
+
+  // Redirects to JavaScript urls are not allowed.
+  // TODO(crbug.com/1033780): this results in counterintuitive behavior.
+  if (redirect_url.SchemeIs(url::kJavaScriptScheme))
+    return absl::nullopt;
+
+  return CreateRedirectAction(params, *info.regex_rule->url_rule(),
+                              std::move(redirect_url));
 }
 
 }  // namespace declarative_net_request

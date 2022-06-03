@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -7,18 +7,20 @@
 """Create an Android application bundle from one or more bundle modules."""
 
 import argparse
-import itertools
 import json
 import os
 import shutil
 import sys
-import tempfile
 import zipfile
 
-# NOTE: Keep this consistent with the _create_app_bundle_py_imports definition
-#       in build/config/android/rules.py
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+from pylib.utils import dexdump
+
 from util import build_utils
+from util import manifest_utils
 from util import resource_utils
+from xml.etree import ElementTree
 
 import bundletool
 
@@ -86,6 +88,9 @@ def _ParseArgs(args):
       '--compress-shared-libraries',
       action='store_true',
       help='Whether to store native libraries compressed.')
+  parser.add_argument('--compress-dex',
+                      action='store_true',
+                      help='Compress .dex files')
   parser.add_argument('--split-dimensions',
                       help="GN-list of split dimensions to support.")
   parser.add_argument(
@@ -93,15 +98,19 @@ def _ParseArgs(args):
       help='Optional path to the base module\'s R.txt file, only used with '
       'language split dimension.')
   parser.add_argument(
-      '--base-whitelist-rtxt-path',
+      '--base-allowlist-rtxt-path',
       help='Optional path to an R.txt file, string resources '
       'listed there _and_ in --base-module-rtxt-path will '
       'be kept in the base bundle module, even if language'
       ' splitting is enabled.')
+  parser.add_argument('--warnings-as-errors',
+                      action='store_true',
+                      help='Treat all warnings as errors.')
 
-  parser.add_argument('--keystore-path', help='Keystore path')
-  parser.add_argument('--keystore-password', help='Keystore password')
-  parser.add_argument('--key-name', help='Keystore key name')
+  parser.add_argument(
+      '--validate-services',
+      action='store_true',
+      help='Check if services are in base module if isolatedSplits is enabled.')
 
   options = parser.parse_args(args)
   options.module_zips = build_utils.ParseGnList(options.module_zips)
@@ -110,13 +119,6 @@ def _ParseArgs(args):
 
   if len(options.module_zips) == 0:
     raise Exception('The module zip list cannot be empty.')
-
-  # Signing is optional, but all --keyXX parameters should be set.
-  if options.keystore_path or options.keystore_password or options.key_name:
-    if not options.keystore_path or not options.keystore_password or \
-        not options.key_name:
-      raise Exception('When signing the bundle, use --keystore-path, '
-                      '--keystore-password and --key-name.')
 
   # Merge all uncompressed assets into a set.
   uncompressed_list = []
@@ -140,17 +142,17 @@ def _ParseArgs(args):
         parser.error('Invalid split dimension "%s" (expected one of: %s)' % (
             dim, ', '.join(x.lower() for x in _ALL_SPLIT_DIMENSIONS)))
 
-  # As a special case, --base-whitelist-rtxt-path can be empty to indicate
-  # that the module doesn't need such a whitelist. That's because it is easier
+  # As a special case, --base-allowlist-rtxt-path can be empty to indicate
+  # that the module doesn't need such a allowlist. That's because it is easier
   # to check this condition here than through GN rules :-(
-  if options.base_whitelist_rtxt_path == '':
+  if options.base_allowlist_rtxt_path == '':
     options.base_module_rtxt_path = None
 
-  # Check --base-module-rtxt-path and --base-whitelist-rtxt-path usage.
+  # Check --base-module-rtxt-path and --base-allowlist-rtxt-path usage.
   if options.base_module_rtxt_path:
-    if not options.base_whitelist_rtxt_path:
+    if not options.base_allowlist_rtxt_path:
       parser.error(
-          '--base-module-rtxt-path requires --base-whitelist-rtxt-path')
+          '--base-module-rtxt-path requires --base-allowlist-rtxt-path')
     if 'language' not in options.split_dimensions:
       parser.error('--base-module-rtxt-path is only valid with '
                    'language-based splits.')
@@ -163,13 +165,15 @@ def _MakeSplitDimension(value, enabled):
   return {'value': value, 'negate': not enabled}
 
 
-def _GenerateBundleConfigJson(uncompressed_assets, compress_shared_libraries,
-                              split_dimensions, base_master_resource_ids):
+def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
+                              compress_shared_libraries, split_dimensions,
+                              base_master_resource_ids):
   """Generate a dictionary that can be written to a JSON BuildConfig.
 
   Args:
     uncompressed_assets: A list or set of file paths under assets/ that always
       be stored uncompressed.
+    compressed_dex: Boolean, whether to compress .dex.
     compress_shared_libraries: Boolean, whether to compress native libs.
     split_dimensions: list of split dimensions.
     base_master_resource_ids: Optional list of 32-bit resource IDs to keep
@@ -196,6 +200,10 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_shared_libraries,
   uncompressed_globs.extend('assets/' + x for x in uncompressed_assets)
   # NOTE: Use '**' instead of '*' to work through directories!
   uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
+  if not compress_dex:
+    # Explicit glob required only when using bundletool. Play Store looks for
+    # "uncompressDexFiles" set below.
+    uncompressed_globs.extend('classes*.dex')
 
   data = {
       'optimizations': {
@@ -238,9 +246,13 @@ def _RewriteLanguageAssetPath(src_path):
   locale = src_path[len(_LOCALES_SUBDIR):-4]
   android_locale = resource_utils.ToAndroidLocaleName(locale)
 
-  # The locale format is <lang>-<region> or <lang>. Extract the language.
+  # The locale format is <lang>-<region> or <lang> or BCP-47 (e.g b+sr+Latn).
+  # Extract the language.
   pos = android_locale.find('-')
-  if pos >= 0:
+  if android_locale.startswith('b+'):
+    # If locale is in BCP-47 the language is the second tag (e.g. b+sr+Latn)
+    android_language = android_locale.split('+')[1]
+  elif pos >= 0:
     android_language = android_locale[:pos]
   else:
     android_language = android_locale
@@ -304,18 +316,18 @@ def _SplitModuleForAssetTargeting(src_module_zip, tmp_dir, split_dimensions):
     return tmp_zip
 
 
-def _GenerateBaseResourcesWhitelist(base_module_rtxt_path,
-                                    base_whitelist_rtxt_path):
-  """Generate a whitelist of base master resource ids.
+def _GenerateBaseResourcesAllowList(base_module_rtxt_path,
+                                    base_allowlist_rtxt_path):
+  """Generate a allowlist of base master resource ids.
 
   Args:
     base_module_rtxt_path: Path to base module R.txt file.
-    base_whitelist_rtxt_path: Path to base whitelist R.txt file.
+    base_allowlist_rtxt_path: Path to base allowlist R.txt file.
   Returns:
     list of resource ids.
   """
-  ids_map = resource_utils.GenerateStringResourcesWhitelist(
-      base_module_rtxt_path, base_whitelist_rtxt_path)
+  ids_map = resource_utils.GenerateStringResourcesAllowList(
+      base_module_rtxt_path, base_allowlist_rtxt_path)
   return ids_map.keys()
 
 
@@ -371,11 +383,93 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
       if not os.path.exists(module_pathmap_path):
         continue
       module_pathmap = _LoadPathmap(module_pathmap_path)
-      for short_path, long_path in module_pathmap.iteritems():
+      for short_path, long_path in module_pathmap.items():
         rebased_long_path = '{}/{}'.format(module_name, long_path)
         rebased_short_path = '{}/{}'.format(module_name, short_path)
         line = '{} -> {}\n'.format(rebased_long_path, rebased_short_path)
         bundle_pathmap_file.write(line)
+
+
+def _GetManifestForModule(bundle_path, module_name):
+  return ElementTree.fromstring(
+      bundletool.RunBundleTool([
+          'dump', 'manifest', '--bundle', bundle_path, '--module', module_name
+      ]))
+
+
+def _GetComponentNames(manifest, tag_name):
+  android_name = '{%s}name' % manifest_utils.ANDROID_NAMESPACE
+  return [s.attrib.get(android_name) for s in manifest.iter(tag_name)]
+
+
+def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
+  """Checks bundles with isolated splits define all services in the base module.
+
+  Due to b/169196314, service classes are not found if they are not present in
+  the base module. Providers are also checked because they are loaded early in
+  startup, and keeping them in the base module gives more time for the chrome
+  split to load.
+  """
+  base_manifest = _GetManifestForModule(bundle_path, 'base')
+  isolated_splits = base_manifest.get('{%s}isolatedSplits' %
+                                      manifest_utils.ANDROID_NAMESPACE)
+  if isolated_splits != 'true':
+    return
+
+  # Collect service names from all split manifests.
+  base_zip = None
+  service_names = _GetComponentNames(base_manifest, 'service')
+  provider_names = _GetComponentNames(base_manifest, 'provider')
+  for module_zip in module_zips:
+    name = os.path.basename(module_zip)[:-len('.zip')]
+    if name == 'base':
+      base_zip = module_zip
+    else:
+      service_names.extend(
+          _GetComponentNames(_GetManifestForModule(bundle_path, name),
+                             'service'))
+      module_providers = _GetComponentNames(
+          _GetManifestForModule(bundle_path, name), 'provider')
+      if module_providers:
+        raise Exception("Providers should all be declared in the base manifest."
+                        " '%s' module declared: %s" % (name, module_providers))
+
+  # Extract classes from the base module's dex.
+  classes = set()
+  base_package_name = manifest_utils.GetPackage(base_manifest)
+  for package in dexdump.Dump(base_zip):
+    for name, package_dict in package.items():
+      if not name:
+        name = base_package_name
+      classes.update('%s.%s' % (name, c)
+                     for c in package_dict['classes'].keys())
+
+  ignored_service_names = {
+      # Defined in the chime DFM manifest, but unused.
+      # org.chromium.chrome.browser.chime.ScheduledTaskService is used instead.
+      ("com.google.android.libraries.notifications.entrypoints.scheduled."
+       "ScheduledTaskService"),
+
+      # Defined in the chime DFM manifest, only used pre-O (where isolated
+      # splits are not supported).
+      ("com.google.android.libraries.notifications.executor.impl.basic."
+       "ChimeExecutorApiService"),
+  }
+
+  # Ensure all services are present in base module.
+  for service_name in service_names:
+    if service_name not in classes:
+      if service_name in ignored_service_names:
+        continue
+      raise Exception("Service %s should be present in the base module's dex."
+                      " See b/169196314 for more details." % service_name)
+
+  # Ensure all providers are present in base module.
+  for provider_name in provider_names:
+    if provider_name not in classes:
+      raise Exception(
+          "Provider %s should be present in the base module's dex." %
+          provider_name)
 
 
 def main(args):
@@ -394,18 +488,16 @@ def main(args):
 
     base_master_resource_ids = None
     if options.base_module_rtxt_path:
-      base_master_resource_ids = _GenerateBaseResourcesWhitelist(
-          options.base_module_rtxt_path, options.base_whitelist_rtxt_path)
+      base_master_resource_ids = _GenerateBaseResourcesAllowList(
+          options.base_module_rtxt_path, options.base_allowlist_rtxt_path)
 
-    bundle_config = _GenerateBundleConfigJson(
-        options.uncompressed_assets, options.compress_shared_libraries,
-        split_dimensions, base_master_resource_ids)
+    bundle_config = _GenerateBundleConfigJson(options.uncompressed_assets,
+                                              options.compress_dex,
+                                              options.compress_shared_libraries,
+                                              split_dimensions,
+                                              base_master_resource_ids)
 
     tmp_bundle = os.path.join(tmp_dir, 'tmp_bundle')
-
-    tmp_unsigned_bundle = tmp_bundle
-    if options.keystore_path:
-      tmp_unsigned_bundle = tmp_bundle + '.unsigned'
 
     # Important: bundletool requires that the bundle config file is
     # named with a .pb.json extension.
@@ -414,32 +506,28 @@ def main(args):
     with open(tmp_bundle_config, 'w') as f:
       f.write(bundle_config)
 
-    cmd_args = [
-        build_utils.JAVA_PATH, '-jar', bundletool.BUNDLETOOL_JAR_PATH,
-        'build-bundle', '--modules=' + ','.join(module_zips),
-        '--output=' + tmp_unsigned_bundle, '--config=' + tmp_bundle_config
+    cmd_args = build_utils.JavaCmd(options.warnings_as_errors) + [
+        '-jar',
+        bundletool.BUNDLETOOL_JAR_PATH,
+        'build-bundle',
+        '--modules=' + ','.join(module_zips),
+        '--output=' + tmp_bundle,
+        '--config=' + tmp_bundle_config,
     ]
 
     build_utils.CheckOutput(
         cmd_args,
         print_stdout=True,
         print_stderr=True,
-        stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings)
+        stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings,
+        fail_on_output=options.warnings_as_errors)
 
-    if options.keystore_path:
-      # NOTE: As stated by the public documentation, apksigner cannot be used
-      # to sign the bundle (because it rejects anything that isn't an APK).
-      # The signature and digest algorithm selection come from the internal
-      # App Bundle documentation. There is no corresponding public doc :-(
-      signing_cmd_args = [
-          'jarsigner', '-sigalg', 'SHA256withRSA', '-digestalg', 'SHA-256',
-          '-keystore', 'file:' + options.keystore_path,
-          '-storepass' , options.keystore_password,
-          '-signedjar', tmp_bundle,
-          tmp_unsigned_bundle,
-          options.key_name,
-      ]
-      build_utils.CheckOutput(signing_cmd_args, print_stderr=True)
+    if options.validate_services:
+      # TODO(crbug.com/1126301): This step takes 0.4s locally for bundles with
+      # isolated splits disabled and 2s for bundles with isolated splits
+      # enabled.  Consider making this run in parallel or move into a separate
+      # step before enabling isolated splits by default.
+      _MaybeCheckServicesAndProvidersPresentInBase(tmp_bundle, module_zips)
 
     shutil.move(tmp_bundle, options.out_bundle)
 

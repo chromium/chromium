@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
@@ -53,7 +52,7 @@ struct NET_EXPORT_PRIVATE PacFileDataWithSource {
   bool from_auto_detect = false;
 };
 
-// PacFileDecider is a helper class used by ProxyResolutionService to
+// PacFileDecider is a helper class used by ConfiguredProxyResolutionService to
 // determine which PAC script to use given our proxy configuration.
 //
 // This involves trying to use PAC scripts in this order:
@@ -79,6 +78,9 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   PacFileDecider(PacFileFetcher* pac_file_fetcher,
                  DhcpPacFileFetcher* dhcp_pac_file_fetcher,
                  NetLog* net_log);
+
+  PacFileDecider(const PacFileDecider&) = delete;
+  PacFileDecider& operator=(const PacFileDecider&) = delete;
 
   // Aborts any in-progress request.
   ~PacFileDecider();
@@ -187,7 +189,7 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   size_t current_pac_source_index_;
 
   // Filled when the PAC script fetch completes.
-  base::string16 pac_script_;
+  std::u16string pac_script_;
 
   // Flag indicating whether the caller requested a mandatory PAC script
   // (i.e. fallback to direct connections are prohibited).
@@ -218,8 +220,6 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_request_;
 
   base::OneShotTimer quick_check_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileDecider);
 };
 
 }  // namespace net

@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/value_store/testing_value_store.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -24,7 +25,6 @@
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
@@ -77,7 +77,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
                       TestRulesRegistry* registry) {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id.reset(new std::string(rule_id));
+    add_rules[0].id = std::make_unique<std::string>(rule_id);
     return registry->AddRules(extension_id, std::move(add_rules));
   }
 
@@ -260,7 +260,8 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   }
   EXPECT_TRUE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   content::RunAllTasksUntilIdle();
-  TestingValueStore* store = env_.GetExtensionSystem()->value_store();
+  value_store::TestingValueStore* store =
+      env_.GetExtensionSystem()->value_store();
   ASSERT_TRUE(store);
   EXPECT_EQ(1, store->write_count());
   int write_count = store->write_count();
@@ -305,7 +306,8 @@ TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();
-  TestingValueStore* store = env_.GetExtensionSystem()->value_store();
+  value_store::TestingValueStore* store =
+      env_.GetExtensionSystem()->value_store();
   ASSERT_TRUE(store);
   EXPECT_EQ(0, store->write_count());
 }
@@ -360,14 +362,15 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
   std::string error;
   scoped_refptr<Extension> extension(LoadManifestUnchecked(
       "permissions", "web_request_all_host_permissions.json",
-      Manifest::UNPACKED, Extension::NO_FLAGS, extension1_->id(), &error));
+      mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
+      extension1_->id(), &error));
   ASSERT_TRUE(error.empty());
   extension_service->AddExtension(extension.get());
   EXPECT_TRUE(extensions::ExtensionRegistry::Get(env_.profile())
                   ->enabled_extensions()
                   .Contains(extension->id()));
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kDeclarativeWebRequest));
+      mojom::APIPermissionID::kDeclarativeWebRequest));
   env_.GetExtensionSystem()->SetReady();
 
   // 2. First run, adding a rule for the extension.

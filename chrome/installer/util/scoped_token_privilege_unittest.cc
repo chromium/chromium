@@ -7,6 +7,7 @@
 #include <shlobj.h>
 #include <memory>
 
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace installer {
@@ -31,7 +32,7 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   // First get the size of the buffer needed for |privileges| below.
   DWORD size;
   EXPECT_FALSE(
-      ::GetTokenInformation(token.Get(), TokenPrivileges, NULL, 0, &size));
+      ::GetTokenInformation(token.Get(), TokenPrivileges, nullptr, 0, &size));
 
   std::unique_ptr<BYTE[]> privileges_bytes(new BYTE[size]);
   TOKEN_PRIVILEGES* privileges =
@@ -50,8 +51,9 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   std::unique_ptr<wchar_t[]> name_buffer(new wchar_t[buffer_size]);
   for (int i = privileges->PrivilegeCount - 1; i >= 0; --i) {
     LUID_AND_ATTRIBUTES& luid_and_att = privileges->Privileges[i];
-    DWORD size = buffer_size;
-    ::LookupPrivilegeName(NULL, &luid_and_att.Luid, name_buffer.get(), &size);
+    size = buffer_size;
+    ::LookupPrivilegeName(nullptr, &luid_and_att.Luid, name_buffer.get(),
+                          &size);
     if (size == desired_size &&
         wcscmp(name_buffer.get(), privilege_name) == 0) {
       return luid_and_att.Attributes == SE_PRIVILEGE_ENABLED;

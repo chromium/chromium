@@ -35,7 +35,6 @@ Boolean properties should be exposed as true.
 @BLINK-ALLOW:pressed*
 @BLINK-ALLOW:required*
 @BLINK-ALLOW:restriction*
-@BLINK-ALLOW:select*
 @BLINK-ALLOW:sort*
 @BLINK-ALLOW:vertical*
 @AURALINUX-ALLOW:atomic*
@@ -65,22 +64,22 @@ Boolean properties should be exposed as true.
 -->
 <html>
 <body>
-<!-- Technically, illegal atomic values should be exposed in the object attr, 
+<!-- Technically, illegal atomic values should be exposed in the object attr,
      does not seem like a priority -->
 <div aria-atomic="X-ILLEGAL" role="log" aria-label="Atomic illegal"></div>
 <div aria-autocomplete="X-ILLEGAL" role="textbox" aria-label="Autocomplete illegal"></div>
 <div aria-busy="X-ILLEGAL" role="log" aria-label="Busy illegal"></div>
 <div aria-checked="X-ILLEGAL" role="treeitem" aria-label="Checked illegal"></div>
-<!-- aria-current rules from https://www.w3.org/TR/wai-aria-1.1/#aria-current: 
-     "Any value not included in the list of allowed values should be treated by 
+<!-- aria-current rules from https://www.w3.org/TR/wai-aria-1.1/#aria-current:
+     "Any value not included in the list of allowed values should be treated by
      assistive technologies as if the value true had been provided." -->
-<div aria-current="X-ILLEGAL" aria-label="Current illegal"></div>
-<div aria-disabled="X-ILLEGAL" aria-label="Disabled illegal"></div>
-<div aria-dropeffect="X-ILLEGAL" aria-label="Dropeffect illegal"></div>
+<div aria-current="X-ILLEGAL" role="group" aria-label="Current illegal"></div>
+<div aria-disabled="X-ILLEGAL" role="group" aria-label="Disabled illegal"></div>
+<div aria-dropeffect="X-ILLEGAL" role="group" aria-label="Dropeffect illegal"></div>
 <div aria-expanded="X-ILLEGAL" role="treeitem" aria-label="Expanded illegal"></div>
-<div aria-grabbed="X-ILLEGAL" aria-label="Grabbed illegal"></div>
+<div aria-grabbed="X-ILLEGAL" role="group" aria-label="Grabbed illegal"></div>
 <div aria-haspopup="X-ILLEGAL" role="button" aria-label="Haspopup illegal"></div>
-<div aria-invalid="X-ILLEGAL" aria-label="Invalid illegal"></div>
+<div aria-invalid="X-ILLEGAL" role="group" aria-label="Invalid illegal"></div>
 <div aria-live="X-ILLEGAL" role="log" aria-label="Live illegal"></div>
 <div aria-modal="X-ILLEGAL" role="dialog" aria-label="Modal illegal"></div>
 <div aria-multiline="X-ILLEGAL" role="textbox" aria-label="Multiline illegal"></div>
@@ -99,7 +98,7 @@ Boolean properties should be exposed as true.
 <div role="grid">
   <div aria-sort="X-ILLEGAL" role="columnheader" aria-label="Sort illegal"></div>
 </div>
-<!-- Test aria-hidden at end because a broken test can have extra object, 
+<!-- Test aria-hidden at end because a broken test can have extra object,
      and ruin the rest of the test. -->
 <div aria-hidden="X-ILLEGAL" aria-label="Hidden illegal"></div>
 </body>

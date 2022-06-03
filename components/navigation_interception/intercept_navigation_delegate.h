@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 
@@ -30,11 +29,22 @@ class NavigationParams;
 // 1) the Java-side interface implementation must be associated (via the
 //    Associate method) with a WebContents for which URLRequests are to be
 //    intercepted,
-// 2) the NavigationThrottle obtained via CreateThrottleFor must be associated
-//    with the NavigationHandle in the ContentBrowserClient implementation.
+// 2) the NavigationThrottle obtained via MaybeCreateThrottleFor must be
+//    associated with the NavigationHandle in the ContentBrowserClient
+//    implementation.
 class InterceptNavigationDelegate : public base::SupportsUserData::Data {
  public:
-  InterceptNavigationDelegate(JNIEnv* env, jobject jdelegate);
+  // Pass true for |escape_external_handler_value| to have
+  // net::EscapeExternalHandlerValue() invoked on URLs passed to
+  // ShouldIgnoreNavigation() before the navigation is processed.
+  InterceptNavigationDelegate(JNIEnv* env,
+                              jobject jdelegate,
+                              bool escape_external_handler_value = false);
+
+  InterceptNavigationDelegate(const InterceptNavigationDelegate&) = delete;
+  InterceptNavigationDelegate& operator=(const InterceptNavigationDelegate&) =
+      delete;
+
   ~InterceptNavigationDelegate() override;
 
   // Associates the InterceptNavigationDelegate with a WebContents using the
@@ -49,7 +59,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   // Creates a InterceptNavigationThrottle that will direct all callbacks to
   // the InterceptNavigationDelegate.
-  static std::unique_ptr<content::NavigationThrottle> CreateThrottleFor(
+  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle,
       navigation_interception::SynchronyMode mode);
 
@@ -63,8 +73,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
  private:
   JavaObjectWeakGlobalRef weak_jdelegate_;
   base::TimeTicks last_user_gesture_carryover_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptNavigationDelegate);
+  bool escape_external_handler_value_ = false;
 };
 
 }  // namespace navigation_interception

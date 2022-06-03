@@ -9,9 +9,13 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/macros.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 
 namespace memory_instrumentation {
@@ -30,6 +34,10 @@ class GlobalDumpGraph {
   class Process {
    public:
     Process(base::ProcessId pid, GlobalDumpGraph* global_graph);
+
+    Process(const Process&) = delete;
+    Process& operator=(const Process&) = delete;
+
     ~Process();
 
     // Creates a node in the dump graph which is associated with the
@@ -51,8 +59,6 @@ class GlobalDumpGraph {
     base::ProcessId pid_;
     GlobalDumpGraph* global_graph_;
     GlobalDumpGraph::Node* root_;
-
-    DISALLOW_COPY_AND_ASSIGN(Process);
   };
 
   // A single node in the graph of allocator dumps associated with a
@@ -89,6 +95,10 @@ class GlobalDumpGraph {
     };
 
     explicit Node(GlobalDumpGraph::Process* dump_graph, Node* parent);
+
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
+
     ~Node();
 
     // Gets the direct child of a node for the given |subpath|.
@@ -186,8 +196,6 @@ class GlobalDumpGraph {
 
     GlobalDumpGraph::Edge* owns_edge_;
     std::vector<GlobalDumpGraph::Edge*> owned_by_edges_;
-
-    DISALLOW_COPY_AND_ASSIGN(Node);
   };
 
   // An edge in the dump graph which indicates ownership between the
@@ -245,6 +253,10 @@ class GlobalDumpGraph {
       std::map<base::trace_event::MemoryAllocatorDumpGuid, Node*>;
 
   GlobalDumpGraph();
+
+  GlobalDumpGraph(const GlobalDumpGraph&) = delete;
+  GlobalDumpGraph& operator=(const GlobalDumpGraph&) = delete;
+
   ~GlobalDumpGraph();
 
   // Creates a container for all the dump graphs for the process given
@@ -285,9 +297,7 @@ class GlobalDumpGraph {
   GuidNodeMap nodes_by_guid_;
   std::unique_ptr<GlobalDumpGraph::Process> shared_memory_graph_;
   ProcessDumpGraphMap process_dump_graphs_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalDumpGraph);
 };
 
 }  // namespace memory_instrumentation
-#endif
+#endif  // SERVICES_RESOURCE_COORDINATOR_MEMORY_INSTRUMENTATION_GRAPH_H_

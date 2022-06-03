@@ -9,16 +9,18 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/common/egl_util.h"
@@ -54,8 +56,7 @@ void WriteDataToFile(const base::FilePath& location, const SkBitmap& bitmap) {
   DCHECK(!location.empty());
   std::vector<unsigned char> png_data;
   gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, true, &png_data);
-  if (base::WriteFile(location, reinterpret_cast<const char*>(png_data.data()),
-                      png_data.size()) < 0) {
+  if (!base::WriteFile(location, png_data)) {
     static bool logged_once = false;
     LOG_IF(ERROR, !logged_once)
         << "Failed to write frame to file. "
@@ -71,11 +72,14 @@ class FileSurface : public SurfaceOzoneCanvas {
   ~FileSurface() override {}
 
   // SurfaceOzoneCanvas overrides:
-  void ResizeCanvas(const gfx::Size& viewport_size) override {
-    surface_ = SkSurface::MakeRaster(SkImageInfo::MakeN32Premul(
-        viewport_size.width(), viewport_size.height()));
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    surface_ = SkSurface::MakeRaster(
+        SkImageInfo::MakeN32Premul(viewport_size.width(),
+                                   viewport_size.height()),
+        &props);
   }
-  sk_sp<SkSurface> GetSurface() override { return surface_; }
+  SkCanvas* GetCanvas() override { return surface_->getCanvas(); }
   void PresentCanvas(const gfx::Rect& damage) override {
     if (base_path_.empty())
       return;
@@ -85,10 +89,10 @@ class FileSurface : public SurfaceOzoneCanvas {
     // TODO(dnicoara) Use SkImage instead to potentially avoid a copy.
     // See crbug.com/361605 for details.
     if (surface_->getCanvas()->readPixels(bitmap, 0, 0)) {
-      base::PostTask(FROM_HERE,
-                     {base::ThreadPool(), base::MayBlock(),
-                      base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                     base::BindOnce(&WriteDataToFile, base_path_, bitmap));
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&WriteDataToFile, base_path_, bitmap));
     }
   }
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override {
@@ -104,6 +108,9 @@ class FileGLSurface : public GLSurfaceEglReadback {
  public:
   explicit FileGLSurface(const base::FilePath& location)
       : location_(location) {}
+
+  FileGLSurface(const FileGLSurface&) = delete;
+  FileGLSurface& operator=(const FileGLSurface&) = delete;
 
  private:
   ~FileGLSurface() override = default;
@@ -122,21 +129,22 @@ class FileGLSurface : public GLSurfaceEglReadback {
     if (!bitmap.writePixels(pixmap))
       return false;
 
-    base::PostTask(FROM_HERE,
-                   {base::ThreadPool(), base::MayBlock(),
-                    base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                   base::BindOnce(&WriteDataToFile, location_, bitmap));
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&WriteDataToFile, location_, bitmap));
     return true;
   }
 
   base::FilePath location_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileGLSurface);
 };
 
 class TestPixmap : public gfx::NativePixmap {
  public:
   explicit TestPixmap(gfx::BufferFormat format) : format_(format) {}
+
+  TestPixmap(const TestPixmap&) = delete;
+  TestPixmap& operator=(const TestPixmap&) = delete;
 
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
@@ -150,13 +158,11 @@ class TestPixmap : public gfx::NativePixmap {
   }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override {
+  bool ScheduleOverlayPlane(
+      gfx::AcceleratedWidget widget,
+      const gfx::OverlayPlaneData& overlay_plane_data,
+      std::vector<gfx::GpuFence> acquire_fences,
+      std::vector<gfx::GpuFence> release_fences) override {
     return true;
   }
   gfx::NativePixmapHandle ExportHandle() override {
@@ -167,13 +173,15 @@ class TestPixmap : public gfx::NativePixmap {
   ~TestPixmap() override {}
 
   gfx::BufferFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPixmap);
 };
 
 class GLOzoneEGLHeadless : public GLOzoneEGL {
  public:
   GLOzoneEGLHeadless(const base::FilePath& base_path) : base_path_(base_path) {}
+
+  GLOzoneEGLHeadless(const GLOzoneEGLHeadless&) = delete;
+  GLOzoneEGLHeadless& operator=(const GLOzoneEGLHeadless&) = delete;
+
   ~GLOzoneEGLHeadless() override = default;
 
   // GLOzone:
@@ -191,16 +199,17 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
 
  protected:
   // GLOzoneEGL:
-  intptr_t GetNativeDisplay() override { return EGL_DEFAULT_DISPLAY; }
+  gl::EGLDisplayPlatform GetNativeDisplay() override {
+    return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  }
 
-  bool LoadGLES2Bindings(gl::GLImplementation implementation) override {
+  bool LoadGLES2Bindings(
+      const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
 
  private:
   base::FilePath base_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLHeadless);
 };
 
 }  // namespace
@@ -214,16 +223,19 @@ HeadlessSurfaceFactory::HeadlessSurfaceFactory(base::FilePath base_path)
 
 HeadlessSurfaceFactory::~HeadlessSurfaceFactory() = default;
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{gl::kGLImplementationSwiftShaderGL};
+  return std::vector<gl::GLImplementationParts>{
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(
-    gl::GLImplementation implementation) {
-  switch (implementation) {
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
+    case gl::kGLImplementationEGLANGLE:
       return swiftshader_implementation_.get();
 
     default:
@@ -232,9 +244,7 @@ GLOzone* HeadlessSurfaceFactory::GetGLOzone(
 }
 
 std::unique_ptr<SurfaceOzoneCanvas>
-HeadlessSurfaceFactory::CreateCanvasForWidget(
-    gfx::AcceleratedWidget widget,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+HeadlessSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
   return std::make_unique<FileSurface>(GetPathForWidget(base_path_, widget));
 }
 
@@ -243,7 +253,8 @@ scoped_refptr<gfx::NativePixmap> HeadlessSurfaceFactory::CreateNativePixmap(
     VkDevice vk_device,
     gfx::Size size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    absl::optional<gfx::Size> framebuffer_size) {
   return new TestPixmap(format);
 }
 

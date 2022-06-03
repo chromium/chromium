@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_mutator.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -11,7 +12,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
-#include "components/signin/internal/identity_manager/android/jni_headers/IdentityMutator_jni.h"
+#include "components/signin/public/android/jni_headers/IdentityMutator_jni.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #endif
 
@@ -23,23 +24,26 @@ JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
 
 bool JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& primary_account_id) {
+    const base::android::JavaParamRef<jobject>& primary_account_id,
+    jint j_consent_level) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-  return primary_account_mutator->SetPrimaryAccount(
-      ConvertFromJavaCoreAccountId(env, primary_account_id));
+
+  PrimaryAccountMutator::PrimaryAccountError error =
+      primary_account_mutator->SetPrimaryAccount(
+          ConvertFromJavaCoreAccountId(env, primary_account_id),
+          static_cast<ConsentLevel>(j_consent_level));
+  return error == PrimaryAccountMutator::PrimaryAccountError::kNoError;
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,
-                                             jint action,
                                              jint source_metric,
                                              jint delete_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
   return primary_account_mutator->ClearPrimaryAccount(
-      PrimaryAccountMutator::ClearAccountsAction::kDefault,
       static_cast<signin_metrics::ProfileSignout>(source_metric),
       static_cast<signin_metrics::SignoutDelete>(delete_metric));
 }
@@ -50,7 +54,7 @@ void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(
   DeviceAccountsSynchronizer* device_accounts_synchronizer =
       identity_mutator_->GetDeviceAccountsSynchronizer();
   DCHECK(device_accounts_synchronizer);
-  base::Optional<CoreAccountId> primary_account_id;
+  absl::optional<CoreAccountId> primary_account_id;
   if (j_primary_account_id) {
     primary_account_id =
         ConvertFromJavaCoreAccountId(env, j_primary_account_id);

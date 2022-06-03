@@ -7,14 +7,14 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
@@ -28,6 +28,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class AppSorting;
@@ -38,11 +42,10 @@ class ExtensionSet;
 class InfoMap;
 class ManagementPolicy;
 class QuotaService;
-class RuntimeData;
 class ServiceWorkerManager;
-class SharedUserScriptMaster;
 class StateStore;
-class ValueStoreFactory;
+class UserScriptManager;
+enum class UnloadedExtensionReason;
 
 // ExtensionSystem manages the lifetime of many of the services used by the
 // extensions and apps system, and it handles startup and shutdown as needed.
@@ -52,7 +55,7 @@ class ExtensionSystem : public KeyedService {
  public:
   // A callback to be executed when InstallUpdate finishes.
   using InstallUpdateCallback =
-      base::OnceCallback<void(const base::Optional<CrxInstallError>& result)>;
+      base::OnceCallback<void(const absl::optional<CrxInstallError>& result)>;
 
   ExtensionSystem();
   ~ExtensionSystem() override;
@@ -72,10 +75,6 @@ class ExtensionSystem : public KeyedService {
   // defined in Chrome.
   virtual ExtensionService* extension_service() = 0;
 
-  // Per-extension data that can change during the life of the process but
-  // does not persist across restarts. Lives on UI thread. Created at startup.
-  virtual RuntimeData* runtime_data() = 0;
-
   // The class controlling whether users are permitted to perform certain
   // actions on extensions (install, uninstall, disable, etc.).
   // The ManagementPolicy is created at startup.
@@ -84,8 +83,8 @@ class ExtensionSystem : public KeyedService {
   // The ServiceWorkerManager is created at startup.
   virtual ServiceWorkerManager* service_worker_manager() = 0;
 
-  // The SharedUserScriptMaster is created at startup.
-  virtual SharedUserScriptMaster* shared_user_script_master() = 0;
+  // The UserScriptManager is created at startup.
+  virtual UserScriptManager* user_script_manager() = 0;
 
   // The StateStore is created at startup.
   virtual StateStore* state_store() = 0;
@@ -93,8 +92,11 @@ class ExtensionSystem : public KeyedService {
   // The rules store is created at startup.
   virtual StateStore* rules_store() = 0;
 
+  // The dynamic user scripts store is created at startup.
+  virtual StateStore* dynamic_user_scripts_store() = 0;
+
   // Returns the |ValueStore| factory created at startup.
-  virtual scoped_refptr<ValueStoreFactory> store_factory() = 0;
+  virtual scoped_refptr<value_store::ValueStoreFactory> store_factory() = 0;
 
   // Returns the IO-thread-accessible extension data.
   virtual InfoMap* info_map() = 0;
@@ -114,7 +116,7 @@ class ExtensionSystem : public KeyedService {
   // asynchronously. |callback| is run on the calling thread once completed.
   virtual void RegisterExtensionWithRequestContexts(
       const Extension* extension,
-      const base::Closure& callback) {}
+      base::OnceClosure callback) {}
 
   // Called by the ExtensionService that lives in this system. Lets the
   // info map clean up its RequestContexts once all the listeners to the
@@ -125,6 +127,9 @@ class ExtensionSystem : public KeyedService {
 
   // Signaled when the extension system has completed its startup tasks.
   virtual const base::OneShotEvent& ready() const = 0;
+
+  // Whether the extension system is ready.
+  virtual bool is_ready() const = 0;
 
   // Returns the content verifier, if any.
   virtual ContentVerifier* content_verifier() = 0;
@@ -145,6 +150,11 @@ class ExtensionSystem : public KeyedService {
                              const base::FilePath& unpacked_dir,
                              bool install_immediately,
                              InstallUpdateCallback install_update_callback) = 0;
+
+  // Perform various actions depending on the Omaga attributes on the extension.
+  virtual void PerformActionBasedOnOmahaAttributes(
+      const std::string& extension_id,
+      const base::Value& attributes) = 0;
 
   // Attempts finishing installation of an update for an extension with the
   // specified id, when installation of that extension was previously delayed.

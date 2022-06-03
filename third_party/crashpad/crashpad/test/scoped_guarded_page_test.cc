@@ -14,7 +14,7 @@
 
 #include "test/scoped_guarded_page.h"
 
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
 

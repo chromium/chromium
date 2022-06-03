@@ -12,6 +12,8 @@ namespace blink {
 class WebGLCompressedTextureASTC final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
+  bool supports_hdr;
+
  public:
   typedef struct {
     int compress_type;
@@ -19,7 +21,6 @@ class WebGLCompressedTextureASTC final : public WebGLExtension {
     int block_height;
   } BlockSizeCompressASTC;
 
-  static WebGLCompressedTextureASTC* Create(WebGLRenderingContextBase*);
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
@@ -27,6 +28,8 @@ class WebGLCompressedTextureASTC final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
   static const BlockSizeCompressASTC kBlockSizeCompressASTC[];
+
+  Vector<String> getSupportedProfiles();
 };
 
 }  // namespace blink

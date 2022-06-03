@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 
@@ -29,6 +28,11 @@ struct UpdateResponseData;
 class RecentTabsBuilderTestHelper {
  public:
   RecentTabsBuilderTestHelper();
+
+  RecentTabsBuilderTestHelper(const RecentTabsBuilderTestHelper&) = delete;
+  RecentTabsBuilderTestHelper& operator=(const RecentTabsBuilderTestHelper&) =
+      delete;
+
   ~RecentTabsBuilderTestHelper();
 
   void AddSession();
@@ -44,20 +48,20 @@ class RecentTabsBuilderTestHelper {
   void AddTabWithInfo(int session_index,
                       int window_index,
                       base::Time timestamp,
-                      const base::string16& title);
+                      const std::u16string& title);
   int GetTabCount(int session_index, int window_index);
   SessionID GetTabID(int session_index, int window_index, int tab_index);
   base::Time GetTabTimestamp(int session_index,
                              int window_index,
                              int tab_index);
-  base::string16 GetTabTitle(int session_index,
-                       int window_index,
-                       int tab_index);
+  std::u16string GetTabTitle(int session_index,
+                             int window_index,
+                             int tab_index);
 
   void ExportToSessionSync(syncer::ModelTypeProcessor* processor);
   void VerifyExport(sync_sessions::OpenTabsUIDelegate* delegate);
 
-  std::vector<base::string16> GetTabTitlesSortedByRecency();
+  std::vector<std::u16string> GetTabTitlesSortedByRecency();
 
  private:
   sync_pb::SessionSpecifics BuildHeaderSpecifics(int session_index);
@@ -67,7 +71,7 @@ class RecentTabsBuilderTestHelper {
   sync_pb::SessionSpecifics BuildTabSpecifics(int session_index,
                                               int window_index,
                                               int tab_index);
-  std::unique_ptr<syncer::UpdateResponseData> BuildUpdateResponseData(
+  syncer::UpdateResponseData BuildUpdateResponseData(
       const sync_pb::SessionSpecifics& specifics,
       base::Time timestamp);
 
@@ -80,8 +84,6 @@ class RecentTabsBuilderTestHelper {
 
   int max_tab_node_id_ = 0;
   int next_response_version_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabsBuilderTestHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_

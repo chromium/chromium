@@ -9,10 +9,16 @@
  * Event 'reload' will be fired when the user click the retry button.
  */
 
+const UIState = {
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  ERROR: 'error',
+};
+
 Polymer({
   is: 'assistant-loading',
 
-  behaviors: [OobeDialogHostBehavior],
+  behaviors: [OobeI18nBehavior, MultiStepBehavior],
 
   properties: {
     /**
@@ -45,12 +51,21 @@ Polymer({
    */
   loadingTimeout_: null,
 
+  /** @private {?assistant.BrowserProxy} */
+  browserProxy_: null,
+
+  defaultUIStep() {
+    return UIState.LOADED;
+  },
+
+  UI_STEPS: UIState,
+
   /**
    * On-tap event handler for retry button.
    *
    * @private
    */
-  onRetryTap_: function() {
+  onRetryTap_() {
     this.fire('reload');
   },
 
@@ -59,47 +74,29 @@ Polymer({
    *
    * @private
    */
-  onSkipTap_: function() {
+  onSkipTap_() {
     if (this.buttonsDisabled) {
       return;
     }
     this.buttonsDisabled = true;
-    chrome.send('login.AssistantOptInFlowScreen.flowFinished');
+    this.browserProxy_.flowFinished();
   },
 
-  /**
-   * Add class to the list of classes of root elements.
-   * @param {string} className class to add
-   *
-   * @private
-   */
-  addClass_: function(className) {
-    this.$['loading-dialog'].classList.add(className);
-  },
-
-  /**
-   * Remove class to the list of classes of root elements.
-   * @param {string} className class to remove
-   *
-   * @private
-   */
-  removeClass_: function(className) {
-    this.$['loading-dialog'].classList.remove(className);
+  /** @override */
+  created() {
+    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
   },
 
   /**
    * Reloads the page.
    */
-  reloadPage: function() {
+  reloadPage() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loaded');
-    this.removeClass_('error');
-    this.addClass_('loading');
+    this.setUIStep(UIState.LOADED);
     this.buttonsDisabled = true;
-
     this.animationTimeout_ = window.setTimeout(function() {
-      this.addClass_('loading-animation');
+      this.setUIStep(UIState.LOADING);
     }.bind(this), 500);
     this.loadingTimeout_ = window.setTimeout(function() {
       this.onLoadingTimeout();
@@ -109,14 +106,11 @@ Polymer({
   /**
    * Handles event when page content cannot be loaded.
    */
-  onErrorOccurred: function(details) {
+  onErrorOccurred(details) {
     this.loadingError_ = true;
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loading-animation');
-    this.removeClass_('loading');
-    this.removeClass_('loaded');
-    this.addClass_('error');
+    this.setUIStep(UIState.ERROR);
 
     this.buttonsDisabled = false;
     this.$['retry-button'].focus();
@@ -125,27 +119,26 @@ Polymer({
   /**
    * Handles event when all the page content has been loaded.
    */
-  onPageLoaded: function() {
+  onPageLoaded() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loading-animation');
-    this.removeClass_('loading');
-    this.removeClass_('error');
-    this.addClass_('loaded');
+    this.setUIStep(UIState.LOADED);
   },
 
   /**
    * Called when the loading timeout is triggered.
    */
-  onLoadingTimeout: function() {
-    chrome.send('login.AssistantOptInFlowScreen.LoadingScreen.timeout');
+  onLoadingTimeout() {
+    this.browserProxy_.timeout();
     this.onErrorOccurred();
   },
 
   /**
    * Signal from host to show the screen.
    */
-  onShow: function() {
+  onShow() {
     this.reloadPage();
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$['loading-dialog'].focus());
   },
 });

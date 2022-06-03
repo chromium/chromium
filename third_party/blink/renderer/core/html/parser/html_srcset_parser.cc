@@ -32,16 +32,22 @@
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 
 #include <algorithm>
+
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -194,12 +200,13 @@ static void TokenizeDescriptors(const CharType* attribute_start,
 
 static void SrcsetError(Document* document, String message) {
   if (document && document->GetFrame()) {
-    StringBuilder error_message;
-    error_message.Append("Failed parsing 'srcset' attribute value since ");
-    error_message.Append(message);
-    document->GetFrame()->Console().AddMessage(ConsoleMessage::Create(
-        mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kError,
-        error_message.ToString()));
+    StringBuilder warning_message;
+    warning_message.Append("Failed parsing 'srcset' attribute value since ");
+    warning_message.Append(message);
+    document->GetFrame()->Console().AddMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kOther,
+            mojom::ConsoleMessageLevel::kWarning, warning_message.ToString()));
   }
 }
 
@@ -270,12 +277,10 @@ static bool ParseDescriptors(const String& attribute,
                              DescriptorParsingResult& result,
                              Document* document) {
   // FIXME: See if StringView can't be extended to replace DescriptorToken here.
-  if (attribute.Is8Bit()) {
-    return ParseDescriptors(attribute.Characters8(), descriptors, result,
-                            document);
-  }
-  return ParseDescriptors(attribute.Characters16(), descriptors, result,
-                          document);
+  return WTF::VisitCharacters(
+      attribute, [&](const auto* chars, unsigned length) {
+        return ParseDescriptors(chars, descriptors, result, document);
+      });
 }
 
 // http://picture.responsiveimages.org/#parse-srcset-attr
@@ -328,14 +333,15 @@ static void ParseImageCandidatesFromSrcsetAttribute(
         if (document) {
           UseCounter::Count(document, WebFeature::kSrcsetDroppedCandidate);
           if (document->GetFrame()) {
-            document->GetFrame()->Console().AddMessage(ConsoleMessage::Create(
-                mojom::ConsoleMessageSource::kOther,
-                mojom::ConsoleMessageLevel::kError,
-                String("Dropped srcset candidate ") +
-                    JSONValue::QuoteString(
-                        String(image_url_start,
-                               static_cast<wtf_size_t>(image_url_end -
-                                                       image_url_start)))));
+            document->GetFrame()->Console().AddMessage(
+                MakeGarbageCollected<ConsoleMessage>(
+                    mojom::ConsoleMessageSource::kOther,
+                    mojom::ConsoleMessageLevel::kWarning,
+                    String("Dropped srcset candidate ") +
+                        JSONValue::QuoteString(
+                            String(image_url_start,
+                                   static_cast<wtf_size_t>(image_url_end -
+                                                           image_url_start)))));
           }
         }
         continue;
@@ -407,7 +413,7 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
     KURL url = document->CompleteURL(
         StripLeadingAndTrailingHTMLSpaces(image_candidates[i]->Url()));
     if (GetMemoryCache()->ResourceForURL(
-            url, document->Fetcher()->GetCacheIdentifier()) ||
+            url, document->Fetcher()->GetCacheIdentifier(url)) ||
         url.ProtocolIsData())
       return i;
   }
@@ -420,9 +426,19 @@ static ImageCandidate PickBestImageCandidate(
     Vector<ImageCandidate>& image_candidates,
     Document* document = nullptr) {
   const float kDefaultDensityValue = 1.0;
+  // The srcset image source selection mechanism is user-agent specific:
+  // https://html.spec.whatwg.org/multipage/images.html#selecting-an-image-source
+  //
+  // Setting max density value based on https://github.com/whatwg/html/pull/5901
+  const float kMaxDensity = 2.2;
   bool ignore_src = false;
   if (image_candidates.IsEmpty())
     return ImageCandidate();
+
+  if (RuntimeEnabledFeatures::SrcsetMaxDensityEnabled() &&
+      device_scale_factor > kMaxDensity) {
+    device_scale_factor = kMaxDensity;
+  }
 
   // http://picture.responsiveimages.org/#normalize-source-densities
   for (ImageCandidate& image : image_candidates) {
@@ -444,8 +460,12 @@ static ImageCandidate PickBestImageCandidate(
       de_duped_image_candidates.push_back(&image);
     prev_density = image.Density();
   }
+
   unsigned winner =
-      SelectionLogic(de_duped_image_candidates, device_scale_factor);
+      blink::WebNetworkStateNotifier::SaveDataEnabled() &&
+              base::FeatureList::IsEnabled(blink::features::kSaveDataImgSrcset)
+          ? 0
+          : SelectionLogic(de_duped_image_candidates, device_scale_factor);
   DCHECK_LT(winner, de_duped_image_candidates.size());
   winner = AvoidDownloadIfHigherDensityResourceIsInCache(
       de_duped_image_candidates, winner, document);

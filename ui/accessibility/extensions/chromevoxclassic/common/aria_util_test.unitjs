@@ -30,9 +30,9 @@ TEST_F('ChromeVoxAriaUtilUnitTest', 'GetStateGridWithActiveCell', function() {
       </div>
     </div>
   */});
-  assertThat(
+  assertDeepEquals(
       cvox.AriaUtil.getStateMsgs($('grid'), true),
-      eqJSON([['role_gridcell_pos', 1, 1]]));
+      [['role_gridcell_pos', 1, 1]]);
 });
 
 TEST_F('ChromeVoxAriaUtilUnitTest', 'GetActiveDescendant', function() {
@@ -95,19 +95,19 @@ TEST_F('ChromeVoxAriaUtilUnitTest', 'ListIndexAndState', function() {
   */});
 
   var optionElt = $('l2');
-  assertThat(
+  assertDeepEquals(
       cvox.AriaUtil.getStateMsgs(optionElt),
-      eqJSON([['list_position', 2, 3]]));
+      [['list_position', 2, 3]]);
 
   var ariaOptionElt = $('a2');
-  assertThat(
+  assertDeepEquals(
       cvox.AriaUtil.getStateMsgs(ariaOptionElt),
-      eqJSON([['list_position', 15, 20]]));
+      [['list_position', 15, 20]]);
 
   ariaOptionElt = $('b3');
-  assertThat(
+  assertDeepEquals(
       cvox.AriaUtil.getStateMsgs(ariaOptionElt),
-      eqJSON([['list_position', 1, 3]]));
+      [['list_position', 1, 3]]);
 });
 
 TEST_F('ChromeVoxAriaUtilUnitTest', 'GetLiveRegions', function() {

@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
@@ -120,10 +120,10 @@ void SetDefaultsFromValue(const base::DictionaryValue* dict,
     action->SetBadgeTextColor(kDefaultTabId, RawStringToSkColor(str_value));
   }
 
-  int appearance_storage = 0;
-  if (dict->GetInteger(kAppearanceStorageKey, &appearance_storage) &&
-      !action->HasIsVisible(kDefaultTabId)) {
-    switch (appearance_storage) {
+  absl::optional<int> appearance_storage =
+      dict->FindIntKey(kAppearanceStorageKey);
+  if (appearance_storage && !action->HasIsVisible(kDefaultTabId)) {
+    switch (*appearance_storage) {
       case INVISIBLE:
       case OBSOLETE_WANTS_ATTENTION:
         action->SetIsVisible(kDefaultTabId, false);
@@ -142,10 +142,9 @@ void SetDefaultsFromValue(const base::DictionaryValue* dict,
     for (base::DictionaryValue::Iterator iter(*icon_value); !iter.IsAtEnd();
          iter.Advance()) {
       int icon_size = 0;
-      std::string icon_string;
       if (base::StringToInt(iter.key(), &icon_size) &&
-          iter.value().GetAsString(&icon_string) &&
-          StringToSkBitmap(icon_string, &bitmap)) {
+          iter.value().is_string() &&
+          StringToSkBitmap(iter.value().GetString(), &bitmap)) {
         CHECK(!bitmap.isNull());
         float scale =
             static_cast<float>(icon_size) / ExtensionAction::ActionIconSize();
@@ -197,8 +196,10 @@ std::unique_ptr<base::DictionaryValue> DefaultsToValue(
 ExtensionActionStorageManager::ExtensionActionStorageManager(
     content::BrowserContext* context)
     : browser_context_(context) {
-  extension_action_observer_.Add(ExtensionActionAPI::Get(browser_context_));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_action_observation_.Observe(
+      ExtensionActionAPI::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   StateStore* store = GetStateStore();
   if (store)
@@ -219,11 +220,9 @@ void ExtensionActionStorageManager::OnExtensionLoaded(
   StateStore* store = GetStateStore();
   if (store) {
     store->GetExtensionValue(
-        extension->id(),
-        kBrowserActionStorageKey,
-        base::Bind(&ExtensionActionStorageManager::ReadFromStorage,
-                   weak_factory_.GetWeakPtr(),
-                   extension->id()));
+        extension->id(), kBrowserActionStorageKey,
+        base::BindOnce(&ExtensionActionStorageManager::ReadFromStorage,
+                       weak_factory_.GetWeakPtr(), extension->id()));
   }
 }
 
@@ -235,7 +234,6 @@ void ExtensionActionStorageManager::OnExtensionActionUpdated(
   // is null. We only persist the default settings to disk, since per-tab
   // settings can't be persisted across browser sessions.
   bool for_default_tab = !web_contents;
-  // TODO(devlin): We should probably persist for TYPE_ACTION as well.
   if (browser_context_ == browser_context &&
       extension_action->action_type() == ActionInfo::TYPE_BROWSER &&
       for_default_tab) {
@@ -244,7 +242,7 @@ void ExtensionActionStorageManager::OnExtensionActionUpdated(
 }
 
 void ExtensionActionStorageManager::OnExtensionActionAPIShuttingDown() {
-  extension_action_observer_.RemoveAll();
+  extension_action_observation_.Reset();
 }
 
 void ExtensionActionStorageManager::WriteToStorage(

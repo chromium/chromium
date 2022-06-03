@@ -10,7 +10,6 @@
 #include "base/guid.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
@@ -104,7 +103,7 @@ TEST_F(DownloadArchivesTaskTest, NoArchivesToDownload) {
 }
 
 TEST_F(DownloadArchivesTaskTest, SingleArchiveToDownload) {
-  constexpr auto kFreshnessDelta = base::TimeDelta::FromMilliseconds(123);
+  constexpr auto kFreshnessDelta = base::Milliseconds(123);
 
   int64_t dummy_item_id = InsertDummyItem();
   int64_t download_item_id = InsertItemToDownload(kLargeArchiveSize);
@@ -205,7 +204,7 @@ TEST_F(DownloadArchivesTaskTest, MultipleLargeArchivesToDownload) {
   int64_t dummy_item_id = InsertDummyItem();
   // download_item_1 is expected to be fresher, therefore we create it second.
   int64_t download_item_id_2 = InsertItemToDownload(kLargeArchiveSize);
-  FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  FastForwardBy(base::Milliseconds(1));
   int64_t download_item_id_1 = InsertItemToDownload(kLargeArchiveSize);
 
   std::set<PrefetchItem> items_before_run;
@@ -259,7 +258,7 @@ TEST_F(DownloadArchivesTaskTest, TooManyArchivesToDownload) {
     item_ids.insert(item_ids.begin(), InsertItemToDownload(kSmallArchiveSize));
     // Add some time in between them so that the download order is deterministic
     // and the checks further down work.
-    FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    FastForwardBy(base::Milliseconds(1));
   }
 
   std::set<PrefetchItem> items_before_run;
@@ -328,7 +327,7 @@ TEST_F(DownloadArchivesTaskTest,
     item_ids.insert(item_ids.begin(), InsertItemToDownload(kLargeArchiveSize));
     // Add some time in between them so that the download order is deterministic
     // and the checks further down work.
-    FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    FastForwardBy(base::Milliseconds(1));
   }
 
   std::set<PrefetchItem> items_before_run;

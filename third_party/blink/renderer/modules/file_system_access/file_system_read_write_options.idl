@@ -1,0 +1,10 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(fivedots): Replace link with explainer, once it lands.
+// https://docs.google.com/document/d/1g7ZCqZ5NdiU7oqyCpsc2iZ7rRAY1ZXO-9VoG4LfP7fM
+
+dictionary FileSystemReadWriteOptions {
+  unsigned long long at;
+};

@@ -2,11 +2,13 @@ include_rules = [
   "+components/bookmarks/browser",
   "+components/bookmarks/test",
   "+components/favicon/core",
+  "+components/favicon_base",
   "+components/history/core/browser",
   "+components/keyed_service",
   "+components/prefs",
   "+components/sync",
   "+components/undo",
+  "+third_party/skia/include",
   "+ui/base",
   "+ui/gfx",
 ]

@@ -13,24 +13,25 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
-#include "chrome/browser/chromeos/file_system_provider/request_manager.h"
-#include "chrome/browser/chromeos/file_system_provider/request_value.h"
-#include "chrome/browser/chromeos/file_system_provider/service.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/request_value.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
-using chromeos::file_system_provider::MountOptions;
-using chromeos::file_system_provider::OpenedFiles;
-using chromeos::file_system_provider::ProvidedFileSystemInfo;
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::ProvidedFileSystemObserver;
-using chromeos::file_system_provider::ProviderId;
-using chromeos::file_system_provider::RequestValue;
-using chromeos::file_system_provider::Service;
-using chromeos::file_system_provider::Watchers;
+using ash::file_system_provider::MountOptions;
+using ash::file_system_provider::OpenedFiles;
+using ash::file_system_provider::ProvidedFileSystemInfo;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::ProvidedFileSystemObserver;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::RequestValue;
+using ash::file_system_provider::Service;
+using ash::file_system_provider::Watchers;
 
 namespace extensions {
 namespace {
@@ -91,7 +92,8 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
     watcher_item.entry_path = watcher.second.entry_path.value();
     watcher_item.recursive = watcher.second.recursive;
     if (!watcher.second.last_tag.empty())
-      watcher_item.last_tag.reset(new std::string(watcher.second.last_tag));
+      watcher_item.last_tag =
+          std::make_unique<std::string>(watcher.second.last_tag);
     output->watchers.push_back(std::move(watcher_item));
   }
 
@@ -100,11 +102,11 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
     opened_file_item.open_request_id = opened_file.first;
     opened_file_item.file_path = opened_file.second.file_path.value();
     switch (opened_file.second.mode) {
-      case chromeos::file_system_provider::OPEN_FILE_MODE_READ:
+      case ash::file_system_provider::OPEN_FILE_MODE_READ:
         opened_file_item.mode =
             extensions::api::file_system_provider::OPEN_FILE_MODE_READ;
         break;
-      case chromeos::file_system_provider::OPEN_FILE_MODE_WRITE:
+      case ash::file_system_provider::OPEN_FILE_MODE_WRITE:
         opened_file_item.mode =
             extensions::api::file_system_provider::OPEN_FILE_MODE_WRITE;
         break;
@@ -117,7 +119,7 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
 
 ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   using api::file_system_provider::Mount::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // It's an error if the file system Id is empty.
@@ -165,7 +167,7 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
   using api::file_system_provider::Unmount::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Service* const service =
@@ -196,9 +198,9 @@ ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
   for (const auto& file_system_info : file_systems) {
     FileSystemInfo item;
 
-    chromeos::file_system_provider::ProvidedFileSystemInterface* const
-        file_system = service->GetProvidedFileSystem(
-            file_system_info.provider_id(), file_system_info.file_system_id());
+    ProvidedFileSystemInterface* const file_system =
+        service->GetProvidedFileSystem(file_system_info.provider_id(),
+                                       file_system_info.file_system_id());
 
     DCHECK(file_system);
 
@@ -216,7 +218,7 @@ ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
   using api::file_system_provider::Get::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   using api::file_system_provider::FileSystemInfo;
@@ -224,8 +226,8 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
       Service::Get(Profile::FromBrowserContext(browser_context()));
   DCHECK(service);
 
-  chromeos::file_system_provider::ProvidedFileSystemInterface* const
-      file_system = service->GetProvidedFileSystem(
+  ProvidedFileSystemInterface* const file_system =
+      service->GetProvidedFileSystem(
           ProviderId::CreateFromExtensionId(extension_id()),
           params->file_system_id);
 
@@ -244,12 +246,12 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
       api::file_system_provider::Get::Results::Create(file_system_info)));
 }
 
-bool FileSystemProviderNotifyFunction::RunAsync() {
+ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   using api::file_system_provider::Notify::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Service* const service = Service::Get(GetProfile());
+  Service* const service = Service::Get(browser_context());
   DCHECK(service);
 
   ProvidedFileSystemInterface* const file_system =
@@ -257,8 +259,8 @@ bool FileSystemProviderNotifyFunction::RunAsync() {
           ProviderId::CreateFromExtensionId(extension_id()),
           params->options.file_system_id);
   if (!file_system) {
-    SetError(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND));
-    return false;
+    return RespondNow(
+        Error(FileErrorToString(base::File::FILE_ERROR_NOT_FOUND)));
   }
 
   file_system->Notify(
@@ -268,26 +270,26 @@ bool FileSystemProviderNotifyFunction::RunAsync() {
           ? ParseChanges(*params->options.changes.get())
           : base::WrapUnique(new ProvidedFileSystemObserver::Changes),
       params->options.tag.get() ? *params->options.tag.get() : "",
-      base::Bind(&FileSystemProviderNotifyFunction::OnNotifyCompleted, this));
+      base::BindOnce(&FileSystemProviderNotifyFunction::OnNotifyCompleted,
+                     this));
 
-  return true;
+  return RespondLater();
 }
 
 void FileSystemProviderNotifyFunction::OnNotifyCompleted(
     base::File::Error result) {
   if (result != base::File::FILE_OK) {
-    SetError(FileErrorToString(result));
-    SendResponse(false);
+    Respond(Error(FileErrorToString(result)));
     return;
   }
 
-  SendResponse(true);
+  Respond(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::UnmountRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -298,7 +300,7 @@ FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetMetadataRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -309,7 +311,7 @@ FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetActionsRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetActionsRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -321,7 +323,7 @@ ExtensionFunction::ResponseAction
 FileSystemProviderInternalReadDirectoryRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::ReadDirectoryRequestedSuccess::
       Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const bool has_more = params->has_more;
@@ -334,7 +336,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   TRACE_EVENT0("file_system_provider", "ReadFileRequestedSuccess");
   using api::file_system_provider_internal::ReadFileRequestedSuccess::Params;
 
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const bool has_more = params->has_more;
@@ -345,7 +347,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return FulfillRequest(
@@ -357,7 +359,7 @@ FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedError::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->error == api::file_system_provider::PROVIDER_ERROR_OK) {

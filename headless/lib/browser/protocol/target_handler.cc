@@ -23,7 +23,7 @@ void TargetHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 Response TargetHandler::Disable() {
-  return Response::OK();
+  return Response::Success();
 }
 
 Response TargetHandler::CreateTarget(const std::string& url,
@@ -34,9 +34,11 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<bool> new_window,
                                      Maybe<bool> background,
                                      std::string* out_target_id) {
-#if defined(OS_MACOSX)
-  if (enable_begin_frame_control.fromMaybe(false))
-    return Response::Error("BeginFrameControl is not supported on MacOS yet");
+#if defined(OS_MAC)
+  if (enable_begin_frame_control.fromMaybe(false)) {
+    return Response::ServerError(
+        "BeginFrameControl is not supported on MacOS yet");
+  }
 #endif
 
   HeadlessBrowserContext* context;
@@ -47,16 +49,21 @@ Response TargetHandler::CreateTarget(const std::string& url,
   } else {
     context = browser_->GetDefaultBrowserContext();
     if (!context) {
-      return Response::Error(
+      return Response::ServerError(
           "You specified no |browserContextId|, but "
           "there is no default browser context set on "
           "HeadlessBrowser");
     }
   }
 
+  GURL gurl(url);
+  if (gurl.is_empty()) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
   HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
       context->CreateWebContentsBuilder()
-          .SetInitialURL(GURL(url))
+          .SetInitialURL(gurl)
           .SetWindowSize(gfx::Size(
               width.fromMaybe(browser_->options()->window_size.width()),
               height.fromMaybe(browser_->options()->window_size.height())))
@@ -65,7 +72,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
           .Build());
 
   *out_target_id = web_contents_impl->GetDevToolsAgentHostId();
-  return Response::OK();
+  return Response::Success();
 }
 
 Response TargetHandler::CloseTarget(const std::string& target_id,
@@ -77,7 +84,7 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
     web_contents->Close();
     *out_success = true;
   }
-  return Response::OK();
+  return Response::Success();
 }
 }  // namespace protocol
 }  // namespace headless

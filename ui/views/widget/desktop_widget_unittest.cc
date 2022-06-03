@@ -51,32 +51,29 @@ TEST_F(DesktopScreenPositionClientTest, PositionControlWithNonRootParent) {
   // Create 3 windows.  A root window, an arbitrary window parented to the root
   // but NOT positioned at (0,0) relative to the root, and then a third window
   // parented to the second, also not positioned at (0,0).
-  Widget::InitParams params1 =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params1.bounds = gfx::Rect(
       origin + work_area.OffsetFromOrigin(),
       gfx::Size(700, work_area.height() - origin.y() - work_area.y()));
   params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget1.Init(std::move(params1));
 
-  Widget::InitParams params2 =
-    CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params2.bounds = gfx::Rect(origin, gfx::Size(600, work_area.height() - 100));
   params2.parent = widget1.GetNativeView();
   params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.child = true;
   params2.native_widget = test::CreatePlatformNativeWidgetImpl(
-      params2, &widget2, test::kStubCapture, nullptr);
+      &widget2, test::kStubCapture, nullptr);
   widget2.Init(std::move(params2));
 
-  Widget::InitParams params3 =
-      CreateParams(Widget::InitParams::TYPE_CONTROL);
+  Widget::InitParams params3 = CreateParams(Widget::InitParams::TYPE_CONTROL);
   params3.parent = widget2.GetNativeView();
   params3.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params3.child = true;
   params3.bounds = gfx::Rect(origin, gfx::Size(500, work_area.height() - 200));
   params3.native_widget = test::CreatePlatformNativeWidgetImpl(
-      params3, &widget3, test::kStubCapture, nullptr);
+      &widget3, test::kStubCapture, nullptr);
   widget3.Init(std::move(params3));
 
   // The origin of the 3rd window should be the sum of all parent origins.
@@ -150,7 +147,7 @@ TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToParent) {
   params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.child = true;
   params2.native_widget = test::CreatePlatformNativeWidgetImpl(
-      params2, &widget2, test::kStubCapture, nullptr);
+      &widget2, test::kStubCapture, nullptr);
   widget2.Init(std::move(params2));
 
   // The bounds of the child window should be fully in the parent.

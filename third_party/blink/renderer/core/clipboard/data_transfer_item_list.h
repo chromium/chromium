@@ -60,7 +60,7 @@ class CORE_EXPORT DataTransferItemList final : public ScriptWrappable {
                         ExceptionState&);
   DataTransferItem* add(File*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<DataTransfer> data_transfer_;

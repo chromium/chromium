@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -13,43 +15,50 @@
 #include "components/ntp_snippets/features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_notification_names.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
-#import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_service.h"
-#import "ios/chrome/common/favicon/favicon_attributes.h"
+#import "ios/chrome/browser/voice/voice_search_availability.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -63,14 +72,24 @@
 #endif
 
 namespace {
-// URL for the page displaying help for the NTP.
-const char kNTPHelpURL[] =
-    "https://support.google.com/chrome/?p=ios_new_tab&ios=1";
+// URL for 'Manage Activity' item in the Discover feed menu.
+const char kFeedManageActivityURL[] =
+    "https://myactivity.google.com/myactivity?product=50";
+// URL for 'Manage Interests' item in the Discover feed menu.
+const char kFeedManageInterestsURL[] =
+    "https://google.com/preferences/interests";
+// URL for 'Learn More' item in the Discover feed menu;
+const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
+                                 "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 }  // namespace
 
-@interface NTPHomeMediator () <CRWWebStateObserver,
+@interface NTPHomeMediator () <ChromeAccountManagerServiceObserver,
+                               CRWWebStateObserver,
                                IdentityManagerObserverBridgeDelegate,
-                               SearchEngineObserving> {
+                               SearchEngineObserving,
+                               VoiceSearchAvailabilityObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   // Listen for default search engine changes.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
@@ -78,9 +97,10 @@ const char kNTPHelpURL[] =
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Used to load URLs.
-  UrlLoadingService* _urlLoadingService;
+  UrlLoadingBrowserAgent* _URLLoader;
 }
 
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
@@ -88,8 +108,8 @@ const char kNTPHelpURL[] =
 @property(nonatomic, assign) AuthenticationService* authService;
 // Logo vendor to display the doodle on the NTP.
 @property(nonatomic, strong) id<LogoVendor> logoVendor;
-// The web state associated with this NTP.
-@property(nonatomic, assign) web::WebState* webState;
+// The voice search availability.
+@property(nonatomic, assign) VoiceSearchAvailability* voiceSearchAvailability;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
 
@@ -97,24 +117,32 @@ const char kNTPHelpURL[] =
 
 @implementation NTPHomeMediator
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-               urlLoadingService:(UrlLoadingService*)urlLoadingService
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-                      logoVendor:(id<LogoVendor>)logoVendor {
+- (instancetype)
+           initWithWebState:(web::WebState*)webState
+         templateURLService:(TemplateURLService*)templateURLService
+                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                authService:(AuthenticationService*)authService
+            identityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 logoVendor:(id<LogoVendor>)logoVendor
+    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability {
   self = [super init];
   if (self) {
     _webState = webState;
     _templateURLService = templateURLService;
-    _urlLoadingService = urlLoadingService;
+    _URLLoader = URLLoader;
     _authService = authService;
+    _accountManagerService = accountManagerService;
+    _accountManagerServiceObserver =
+        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
+            self, _accountManagerService);
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(identityManager, self));
     // Listen for default search engine changes.
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
     _logoVendor = logoVendor;
+    _voiceSearchAvailability = voiceSearchAvailability;
   }
   return self;
 }
@@ -129,49 +157,55 @@ const char kNTPHelpURL[] =
 
 - (void)setUp {
   DCHECK(!_webStateObserver);
-  DCHECK(self.suggestionsService);
 
   _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
   if (self.webState) {
     self.webState->AddObserver(_webStateObserver.get());
   }
 
+  self.voiceSearchAvailability->AddObserver(self);
+
   [self.consumer setLogoVendor:self.logoVendor];
+  [self.consumer setVoiceSearchIsEnabled:self.voiceSearchAvailability
+                                             ->IsVoiceSearchAvailable()];
 
   self.templateURLService->Load();
   [self searchEngineChanged];
-
-  // Set up notifications;
-  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-  [defaultCenter addObserver:self.consumer
-                    selector:@selector(locationBarBecomesFirstResponder)
-                        name:kLocationBarBecomesFirstResponderNotification
-                      object:nil];
-  [defaultCenter addObserver:self.consumer
-                    selector:@selector(locationBarResignsFirstResponder)
-                        name:kLocationBarResignsFirstResponderNotification
-                      object:nil];
 }
 
 - (void)shutdown {
-  [[NSNotificationCenter defaultCenter] removeObserver:self.consumer];
   _searchEngineObserver.reset();
-  DCHECK(_webStateObserver);
-  if (_webState) {
-    [self saveContentOffsetForWebState:_webState];
+  if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
   }
+  if (_voiceSearchAvailability) {
+    _voiceSearchAvailability->RemoveObserver(self);
+    _voiceSearchAvailability = nullptr;
+  }
+  _identityObserverBridge.reset();
+  _accountManagerServiceObserver.reset();
+  self.accountManagerService = nil;
+}
+
+- (void)locationBarDidBecomeFirstResponder {
+  [self.consumer locationBarBecomesFirstResponder];
+}
+
+- (void)locationBarDidResignFirstResponder {
+  [self.consumer locationBarResignsFirstResponder];
 }
 
 #pragma mark - Properties.
 
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
+    [self saveContentOffsetForWebState:_webState];
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
   if (_webState && _webStateObserver) {
+    [self setContentOffsetForWebState:webState];
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -183,6 +217,11 @@ const char kNTPHelpURL[] =
   [self setContentOffsetForWebState:webState];
 }
 
+- (void)webStateWasHidden:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self locationBarDidResignFirstResponder];
+}
+
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(self.webState, webState);
   self.webState = nullptr;
@@ -192,39 +231,6 @@ const char kNTPHelpURL[] =
 
 - (void)openReadingList {
   [self.dispatcher showReadingList];
-}
-
-- (void)openPageForItemAtIndexPath:(NSIndexPath*)indexPath {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests()) {
-    return;
-  }
-  CollectionViewItem* item = [self.suggestionsViewController.collectionViewModel
-      itemAtIndexPath:indexPath];
-  ContentSuggestionsItem* suggestionItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsItem>(item);
-
-  [self.metricsRecorder
-         onSuggestionOpened:suggestionItem
-                atIndexPath:indexPath
-         sectionsShownAbove:[self.suggestionsViewController
-                                numberOfSectionsAbove:indexPath.section]
-      suggestionsShownAbove:[self.suggestionsViewController
-                                numberOfSuggestionsAbove:indexPath.section]
-                 withAction:WindowOpenDisposition::CURRENT_TAB];
-  self.suggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_USED);
-
-  // Use a referrer with a specific URL to mark this entry as coming from
-  // ContentSuggestions.
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(suggestionItem.URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  params.web_params.referrer =
-      web::Referrer(GURL(ntp_snippets::GetContentSuggestionsReferrerURL()),
-                    web::ReferrerPolicyDefault);
-  _urlLoadingService->Load(params);
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_SUGGESTION];
 }
 
 - (void)openMostVisitedItem:(CollectionViewItem*)item
@@ -240,20 +246,21 @@ const char kNTPHelpURL[] =
             item);
     switch (mostVisitedItem.collectionShortcutType) {
       case NTPCollectionShortcutTypeBookmark:
-        [self.dispatcher showBookmarksManager];
         base::RecordAction(base::UserMetricsAction("MobileNTPShowBookmarks"));
+        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+        [self.dispatcher showBookmarksManager];
         break;
       case NTPCollectionShortcutTypeReadingList:
-        [self.dispatcher showReadingList];
         base::RecordAction(base::UserMetricsAction("MobileNTPShowReadingList"));
+        [self.dispatcher showReadingList];
         break;
       case NTPCollectionShortcutTypeRecentTabs:
-        [self.dispatcher showRecentTabs];
         base::RecordAction(base::UserMetricsAction("MobileNTPShowRecentTabs"));
+        [self.dispatcher showRecentTabs];
         break;
       case NTPCollectionShortcutTypeHistory:
-        [self.dispatcher showHistory];
         base::RecordAction(base::UserMetricsAction("MobileNTPShowHistory"));
+        [self.dispatcher showHistory];
         break;
       case NTPCollectionShortcutTypeCount:
         NOTREACHED();
@@ -269,41 +276,13 @@ const char kNTPHelpURL[] =
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(mostVisitedItem.URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  _urlLoadingService->Load(params);
-}
-
-- (void)displayContextMenuForSuggestion:(CollectionViewItem*)item
-                                atPoint:(CGPoint)touchLocation
-                            atIndexPath:(NSIndexPath*)indexPath
-                        readLaterAction:(BOOL)readLaterAction {
-  // Unfocus the omnibox as the omnibox can disappear when choosing some
-  // options. See crbug.com/928237.
-  [self.dispatcher cancelOmniboxEdit];
-
-  ContentSuggestionsItem* suggestionsItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsItem>(item);
-
-  [self.metricsRecorder
-      onMenuOpenedForSuggestion:suggestionsItem
-                    atIndexPath:indexPath
-          suggestionsShownAbove:[self.suggestionsViewController
-                                    numberOfSuggestionsAbove:indexPath
-                                                                 .section]];
-
-  self.alertCoordinator = [ContentSuggestionsAlertFactory
-      alertCoordinatorForSuggestionItem:suggestionsItem
-                       onViewController:self.suggestionsViewController
-                                atPoint:touchLocation
-                            atIndexPath:indexPath
-                        readLaterAction:readLaterAction
-                         commandHandler:self];
-
-  [self.alertCoordinator start];
+  _URLLoader->Load(params);
 }
 
 - (void)displayContextMenuForMostVisitedItem:(CollectionViewItem*)item
                                      atPoint:(CGPoint)touchLocation
                                  atIndexPath:(NSIndexPath*)indexPath {
+  DCHECK(_browser);
   // No context menu for action buttons.
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
     return;
@@ -318,6 +297,7 @@ const char kNTPHelpURL[] =
   self.alertCoordinator = [ContentSuggestionsAlertFactory
       alertCoordinatorForMostVisitedItem:mostVisitedItem
                         onViewController:self.suggestionsViewController
+                             withBrowser:self.browser
                                  atPoint:touchLocation
                              atIndexPath:indexPath
                           commandHandler:self];
@@ -341,13 +321,24 @@ const char kNTPHelpURL[] =
   if (notificationPromo->IsURLPromo()) {
     UrlLoadParams params = UrlLoadParams::InNewTab(notificationPromo->url());
     params.append_to = kCurrentTab;
-    _urlLoadingService->Load(params);
+    _URLLoader->Load(params);
     return;
   }
 
   if (notificationPromo->IsChromeCommandPromo()) {
     // "What's New" promo that runs a command can be added here by calling
     // self.dispatcher.
+    if (notificationPromo->command() == kSetDefaultBrowserCommand) {
+      base::RecordAction(
+          base::UserMetricsAction("IOS.DefaultBrowserNTPPromoTapped"));
+      [[UIApplication sharedApplication]
+                    openURL:
+                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                    options:{}
+          completionHandler:nil];
+      return;
+    }
+
     DCHECK_EQ(kTestWhatsNewCommand, notificationPromo->command())
         << "Promo command is not valid.";
     return;
@@ -355,79 +346,59 @@ const char kNTPHelpURL[] =
   NOTREACHED() << "Promo type is neither URL or command.";
 }
 
-- (void)handleLearnMoreTapped {
+// Opens web page for a menu item in the NTP.
+- (void)openMenuItemWebPage:(GURL)URL {
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(self.webState);
   if (NTPHelper && NTPHelper->IgnoreLoadRequests())
     return;
-  _urlLoadingService->Load(UrlLoadParams::InCurrentTab(GURL(kNTPHelpURL)));
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_LEARN_MORE];
+  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
+  // TODO(crbug.com/1085419): Add metrics.
+}
+
+- (void)handleFeedManageActivityTapped {
+  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
+  [self.discoverFeedMetrics recordHeaderMenuManageActivityTapped];
+}
+
+- (void)handleFeedManageInterestsTapped {
+  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
+  [self.discoverFeedMetrics recordHeaderMenuManageInterestsTapped];
+}
+
+- (void)handleFeedLearnMoreTapped {
+  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
+  [self.discoverFeedMetrics recordHeaderMenuLearnMoreTapped];
+}
+
+- (void)openMostRecentTab:(CollectionViewItem*)item {
+  DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
+  base::RecordAction(
+      base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
+  [self.suggestionsMediator hideRecentTabTile];
+  WebStateList* web_state_list = self.browser->GetWebStateList();
+  web::WebState* web_state =
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+          ->most_recent_tab();
+  int index = web_state_list->GetIndexOfWebState(web_state);
+  web_state_list->ActivateWebStateAt(index);
+}
+
+- (void)hideMostRecentTab {
+  [self.suggestionsMediator hideRecentTabTile];
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
 
-- (void)openNewTabWithSuggestionsItem:(ContentSuggestionsItem*)item
-                            incognito:(BOOL)incognito {
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_SUGGESTION];
-  self.suggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_USED);
-
-  NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
-      indexPathForItem:item];
-  if (indexPath) {
-    WindowOpenDisposition disposition =
-        incognito ? WindowOpenDisposition::OFF_THE_RECORD
-                  : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    [self.metricsRecorder
-           onSuggestionOpened:item
-                  atIndexPath:indexPath
-           sectionsShownAbove:[self.suggestionsViewController
-                                  numberOfSectionsAbove:indexPath.section]
-        suggestionsShownAbove:[self.suggestionsViewController
-                                  numberOfSuggestionsAbove:indexPath.section]
-                   withAction:disposition];
-  }
-
-  CGPoint cellCenter = [self cellCenterForItem:item];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:cellCenter];
-}
-
-- (void)addItemToReadingList:(ContentSuggestionsItem*)item {
-  NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
-      indexPathForItem:item];
-  if (indexPath) {
-    [self.metricsRecorder
-           onSuggestionOpened:item
-                  atIndexPath:indexPath
-           sectionsShownAbove:[self.suggestionsViewController
-                                  numberOfSectionsAbove:indexPath.section]
-        suggestionsShownAbove:[self.suggestionsViewController
-                                  numberOfSuggestionsAbove:indexPath.section]
-                   withAction:WindowOpenDisposition::SAVE_TO_DISK];
-  }
-
-  self.suggestionsMediator.readingListNeedsReload = YES;
-  ReadingListAddCommand* command =
-      [[ReadingListAddCommand alloc] initWithURL:item.URL title:item.title];
-  [self.dispatcher addToReadingList:command];
-}
-
-- (void)dismissSuggestion:(ContentSuggestionsItem*)item
-              atIndexPath:(NSIndexPath*)indexPath {
-  NSIndexPath* itemIndexPath = indexPath;
-  if (!itemIndexPath) {
-    // If the caller uses a nil |indexPath|, find it from the model.
-    itemIndexPath = [self.suggestionsViewController.collectionViewModel
-        indexPathForItem:item];
-  }
-
-  [self.suggestionsMediator dismissSuggestion:item.suggestionIdentifier];
-  [self.suggestionsViewController dismissEntryAtIndexPath:itemIndexPath];
-}
-
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
                             incognito:(BOOL)incognito
                               atIndex:(NSInteger)index {
+  if (incognito &&
+      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    // This should only happen when the policy changes while the option is
+    // presented.
+    return;
+  }
   [self logMostVisitedOpening:item atIndex:index];
   CGPoint cellCenter = [self cellCenterForItem:item];
   [self openNewTabWithURL:item.URL incognito:incognito originPoint:cellCenter];
@@ -447,6 +418,12 @@ const char kNTPHelpURL[] =
   [self showMostVisitedUndoForURL:item.URL];
 }
 
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityChanged:(ChromeIdentity*)identity {
+  [self updateAccountImage];
+}
+
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
 
 - (BOOL)isContextMenuVisible {
@@ -454,7 +431,7 @@ const char kNTPHelpURL[] =
 }
 
 - (BOOL)isScrolledToTop {
-  return self.suggestionsViewController.scrolledToTop;
+  return self.primaryViewController.scrolledToTop;
 }
 
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
@@ -487,13 +464,23 @@ const char kNTPHelpURL[] =
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  [self updateAccountImage];
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateAccountImage];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
-  [self updateAccountImage];
+#pragma mark - VoiceSearchAvailabilityObserver
+
+- (void)voiceSearchAvailability:(VoiceSearchAvailability*)availability
+            updatedAvailability:(BOOL)available {
+  [self.consumer setVoiceSearchIsEnabled:available];
 }
 
 #pragma mark - Private
@@ -523,7 +510,7 @@ const char kNTPHelpURL[] =
   params.in_incognito = incognito;
   params.append_to = kCurrentTab;
   params.origin_point = originPoint;
-  _urlLoadingService->Load(params);
+  _URLLoader->Load(params);
 }
 
 // Logs a histogram due to a Most Visited item being opened.
@@ -533,9 +520,8 @@ const char kNTPHelpURL[] =
       recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
   base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
 
-  // TODO(crbug.com/763946): Plumb generation time.
   RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
-                     item.attributes, base::Time(), GURL());
+                     item.attributes, GURL());
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item
@@ -566,16 +552,33 @@ const char kNTPHelpURL[] =
 // Save the NTP scroll offset into the last committed navigation item for the
 // before we navigate away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
-  if (webState->GetLastCommittedURL().GetOrigin() != kChromeUINewTabURL)
-    return;
-
   web::NavigationManager* manager = webState->GetNavigationManager();
-  web::NavigationItem* item = manager->GetLastCommittedItem();
+  web::NavigationItem* item =
+      webState->GetLastCommittedURL() == kChromeUINewTabURL
+          ? manager->GetLastCommittedItem()
+          : manager->GetVisibleItem();
   web::PageDisplayState displayState;
-  UIEdgeInsets contentInset =
-      self.suggestionsViewController.collectionView.contentInset;
-  CGPoint contentOffset =
-      self.suggestionsViewController.collectionView.contentOffset;
+
+  // TODO(crbug.com/1114792): Create a protocol to stop having references to
+  // both of these ViewControllers directly.
+  UICollectionView* collectionView =
+      self.ntpViewController.discoverFeedWrapperViewController
+          .contentCollectionView;
+  UIEdgeInsets contentInset = collectionView.contentInset;
+  CGPoint contentOffset = collectionView.contentOffset;
+  if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
+    // Return to Recent tab tile is only shown one time, so subtract it's
+    // vertical space to preserve relative scroll position from top.
+    CGFloat tileSectionHeight =
+        [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
+    if (contentOffset.y >
+        tileSectionHeight +
+            [self.headerCollectionInteractionHandler pinnedOffsetY]) {
+      contentOffset.y -= tileSectionHeight;
+    }
+  }
+
   contentOffset.y -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;
   displayState.scroll_state() =
@@ -585,55 +588,42 @@ const char kNTPHelpURL[] =
 
 // Set the NTP scroll offset for the current navigation item.
 - (void)setContentOffsetForWebState:(web::WebState*)webState {
-  if (webState->GetVisibleURL().GetOrigin() != kChromeUINewTabURL) {
+  if (webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+      kChromeUINewTabURL) {
     return;
   }
   web::NavigationManager* navigationManager = webState->GetNavigationManager();
   web::NavigationItem* item = navigationManager->GetVisibleItem();
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
-  if (offset > 0)
-    [self.suggestionsViewController setContentOffset:offset];
+  CGFloat minimumOffset =
+      -self.ntpViewController.contentSuggestionsContentHeight;
+  // TODO(crbug.com/1114792): Create a protocol to stop having references to
+  // both of these ViewControllers directly.
+  if (offset > minimumOffset) {
+    [self.ntpViewController setSavedContentOffset:offset];
+    if (IsSingleNtpEnabled()) {
+      return;
+    }
+  } else if (IsSingleNtpEnabled()) {
+    // Remove this if NTPs are ever scoped back to the WebState.
+    [self.ntpViewController setContentOffsetToTop];
+  }
 }
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is
 // not signed in.
 - (void)updateAccountImage {
-  UIImage* image;
+  UIImage* image = nil;
   // Fetches user's identity from Authentication Service.
-  ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
+  ChromeIdentity* identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
-    // Fetches user's avatar from Authentication Service. Use cached version if
-    // one is available. If not, use the default avatar and initiate a fetch
-    // in the background. When background fetch completes, all observers will
-    // be notified to refresh the user's avatar.
-    ios::ChromeIdentityService* identityService =
-        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-    image = identityService->GetCachedAvatarForIdentity(identity);
-    if (!image) {
-      image = [self defaultAvatar];
-      identityService->GetAvatarForIdentity(identity, nil);
-    }
-  } else {
-    // User is not signed in, show default avatar.
-    image = [self defaultAvatar];
-  }
-  // TODO(crbug.com/965962): Use ResizedAvatarCache when it accepts the
-  // specification of different image sizes.
-  CGFloat dimension = ntp_home::kIdentityAvatarDimension;
-  if (image.size.width != dimension || image.size.height != dimension) {
-    image = ResizeImage(image, CGSizeMake(dimension, dimension),
-                        ProjectionMode::kAspectFit);
+    // Only show an avatar if the user is signed in.
+    image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+        identity, IdentityAvatarSize::SmallSize);
   }
   [self.imageUpdater updateAccountImage:image];
-}
-
-// Returns the default avatar image for users who are not signed in or signed
-// in but avatar image is not available yet.
-- (UIImage*)defaultAvatar {
-  return ios::GetChromeBrowserProvider()
-      ->GetSigninResourcesProvider()
-      ->GetDefaultAvatar();
 }
 
 @end

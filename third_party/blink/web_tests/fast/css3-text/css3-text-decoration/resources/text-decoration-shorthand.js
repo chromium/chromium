@@ -45,9 +45,7 @@ var shorthandReadExpectations = [
 var writeInvalidExpectations = {
     'text-decoration': [ 'underlineTYPO',
                           'underlineTYPO red',
-                          'more than three values',
-                          'underline 2px',
-                          '100%'],
+                          'more than four values listed'],
     'text-decoration-line': [ 'solid', 'typo', 'two values' ],
     'text-decoration-style': [ 'blue', 'typo', 'two values' ],
     'text-decoration-color': [ 'solid', 'typo', 'two values' ]

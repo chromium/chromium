@@ -7,20 +7,20 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/web_authn.h"
 #include "content/common/content_export.h"
 
 namespace content {
 class VirtualAuthenticator;
-class VirtualFidoDiscoveryFactory;
 namespace protocol {
 
 class WebAuthnHandler : public DevToolsDomainHandler, public WebAuthn::Backend {
  public:
   CONTENT_EXPORT WebAuthnHandler();
   CONTENT_EXPORT ~WebAuthnHandler() override;
+  WebAuthnHandler(const WebAuthnHandler&) = delete;
+  WebAuthnHandler operator=(const WebAuthnHandler&) = delete;
 
   // DevToolsDomainHandler:
   void SetRenderer(int process_host_id,
@@ -34,22 +34,22 @@ class WebAuthnHandler : public DevToolsDomainHandler, public WebAuthn::Backend {
       std::unique_ptr<WebAuthn::VirtualAuthenticatorOptions> options,
       String* out_authenticator_id) override;
   Response RemoveVirtualAuthenticator(const String& authenticator_id) override;
-  Response AddCredential(
+  void AddCredential(const String& authenticator_id,
+                     std::unique_ptr<protocol::WebAuthn::Credential> credential,
+                     std::unique_ptr<AddCredentialCallback> callback) override;
+  void GetCredential(const String& authenticator_id,
+                     const Binary& credential_id,
+                     std::unique_ptr<GetCredentialCallback> callback) override;
+  void GetCredentials(
       const String& authenticator_id,
-      std::unique_ptr<protocol::WebAuthn::Credential> credential) override;
-  Response GetCredential(
-      const String& authenticator_id,
-      const Binary& credential_id,
-      std::unique_ptr<WebAuthn::Credential>* out_credential) override;
-  Response GetCredentials(
-      const String& authenticator_id,
-      std::unique_ptr<protocol::Array<protocol::WebAuthn::Credential>>*
-          out_credentials) override;
+      std::unique_ptr<GetCredentialsCallback> callback) override;
   Response RemoveCredential(const String& in_authenticator_id,
                             const Binary& credential_id) override;
   Response ClearCredentials(const String& in_authenticator_id) override;
   Response SetUserVerified(const String& authenticator_id,
                            bool is_user_verified) override;
+  Response SetAutomaticPresenceSimulation(const String& authenticator_id,
+                                          bool enabled) override;
 
  private:
   // Finds the authenticator with the given |id|. Returns Response::OK() if
@@ -57,8 +57,6 @@ class WebAuthnHandler : public DevToolsDomainHandler, public WebAuthn::Backend {
   Response FindAuthenticator(const String& id,
                              VirtualAuthenticator** out_authenticator);
   RenderFrameHostImpl* frame_host_ = nullptr;
-  VirtualFidoDiscoveryFactory* virtual_discovery_factory_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(WebAuthnHandler);
 };
 
 }  // namespace protocol

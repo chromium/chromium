@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+a {
+  transition: all 1s ease;
+}
+a:visited {
+  color: orange;
+}
+a, div.changer a {
+  color: red;
+}
+</style>
+<div id="container">
+  <a href="">visited link</a>
+  <a href="http://madeup.site.com">unvisited link</a>
+</div>
+<script>
+promise_test((t) => {
+  let transitionrunPromises = [];
+  const checkColors = (keyframes, errorMessage) => {
+    const fromColor = keyframes[0].color;
+    const toColor = keyframes[1].color;
+    assert_equals(fromColor, 'rgb(255, 0, 0)', errorMessage);
+    assert_equals(toColor, 'rgb(255, 0, 0)', errorMessage);
+  };
+  document.querySelectorAll('a').forEach(anchor => {
+    const promise = new Promise((resolve, reject) => {
+      let resolved = false;
+      let timeoutCountdownInFrames = 2;
+      const tick = () => {
+        requestAnimationFrame(() => {
+          if (resolved)
+            return;
+          if (--timeoutCountdownInFrames == 0)
+            reject('Timeout waiting for transition run');
+          tick();
+        });
+      }
+      anchor.addEventListener('transitionrun', () => {
+        resolved = true;
+        resolve();
+      });
+      tick();
+    });
+    transitionrunPromises.push(promise);
+  });
+  const container = document.getElementById('container');
+  assert_equals(0, document.getAnimations().length);
+  // The getAnimations call forced a style sync, thus changing the style now
+  // forces transitions.
+  container.className = 'changer';
+  // Transition fires regardless of whether the change was to the visited or
+  // unvisited style to avoid leaking visited state by watching for CSS
+  // transitions or transition events.
+  const animations = document.getAnimations();
+  assert_equals(
+      document.getAnimations().length, 2,
+      'transition should occur regardless of when the visited or unvisited ' +
+      'style changed');
+  const visitedTransition = animations[0];
+  const unvisitedTransition = animations[1];
+  // Keyframes report unvisited style even if visited.
+  const visitedKeyframes = visitedTransition.effect.getKeyframes();
+  const unvisitedKeyframes = unvisitedTransition.effect.getKeyframes();
+  checkColors(
+      visitedKeyframes,
+      'keyframes for visited transition should report unvisited colors');
+  checkColors(
+      unvisitedKeyframes,
+      'keyframes for unvisited transition should report unvisited colors');
+  // Expect two transitionrun events even though one does not have a visible
+  // effect.
+  return Promise.all(transitionrunPromises);
+}, 'Do not leak link visited state via web animations API');
+
+</script>

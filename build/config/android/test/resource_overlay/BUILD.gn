@@ -1,0 +1,60 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Tests for 'resource_overlay' parameter in android_resources() template.
+
+template("test_resources") {
+  jinja_template_resources(target_name) {
+    forward_variables_from(invoker, "*")
+    testonly = true
+    variables = [
+      "resource_name=$resource_name",
+      "resource_value=$resource_value",
+    ]
+    res_dir = "java/res_template"
+    resources = [ "java/res_template/values/values.xml" ]
+  }
+}
+
+test_resources("dependency_tagged_dependency_resources") {
+  resource_overlay = true
+  resource_name = "resource_overlay_dependency_tagged_secret"
+  resource_value = 41
+}
+
+test_resources("dependency_tagged_root_resources") {
+  resource_name = "resource_overlay_dependency_tagged_secret"
+  resource_value = 42
+  deps = [ ":dependency_tagged_dependency_resources" ]
+}
+
+test_resources("root_tagged_dependency_resources") {
+  resource_name = "resource_overlay_root_tagged_secret"
+  resource_value = 41
+}
+
+test_resources("root_tagged_root_resources") {
+  resource_overlay = true
+  resource_name = "resource_overlay_root_tagged_secret"
+  resource_value = 42
+  deps = [ ":root_tagged_dependency_resources" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/build/resource_overlay/ResourceOverlayTest.java",
+  ]
+  resources_package = "org.chromium.build.resource_overlay"
+  deps = [
+    ":dependency_tagged_root_resources",
+    ":root_tagged_root_resources",
+    "//base:base_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
-<translation id="6106989379647458772"><ph name="PAGE" />-ზე არსებული ვებგვერდი შეიძლება იყოს დროებით გათიშული ან სამუდამოდ ახალ ვებ მისამართზე გადასული.</translation>
-<translation id="6312113039770857350">ვებგვერდი მიუწვდომელია</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />-ზე არსებული ვებგვერდის ჩატვირთვა ვერ ხერხდება, რადგან:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />მითითებები:<ph name="MARKUP_2" />დარწმუნდით, რომ მონაცემთა კავშირი გაქვთ<ph name="MARKUP_3" />ხელახლა ჩატვირთეთ გვერდი მოგვიანებით<ph name="MARKUP_4" />შეამოწმეთ თქვენ მიერ შეყვანილი მისამართი<ph name="MARKUP_5" /></translation>
 </translationbundle>

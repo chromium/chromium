@@ -6,9 +6,9 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "chrome/browser/metrics/thread_watcher.h"
 #include "content/public/browser/browser_thread.h"
 

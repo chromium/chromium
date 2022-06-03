@@ -13,6 +13,10 @@ class WebState;
 
 namespace security_state {
 
+// Returns the MaliciousContentStatus for |web_state|.
+MaliciousContentStatus GetMaliciousContentStatus(
+    const web::WebState* web_state);
+
 // Returns |web_state|'s security_state::VisibleSecurityState.
 std::unique_ptr<security_state::VisibleSecurityState>
 GetVisibleSecurityStateForWebState(const web::WebState* web_state);

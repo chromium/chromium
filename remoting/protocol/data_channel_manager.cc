@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace remoting {

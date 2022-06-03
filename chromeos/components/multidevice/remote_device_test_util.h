@@ -18,6 +18,7 @@ namespace multidevice {
 // Attributes of the default test remote device.
 extern const char kTestRemoteDeviceName[];
 extern const char kTestRemoteDevicePublicKey[];
+extern const char kTestRemoteDeviceBluetoothPublicAddress[];
 
 class RemoteDeviceRefBuilder {
  public:
@@ -37,6 +38,8 @@ class RemoteDeviceRefBuilder {
       int64_t last_update_time_millis);
   RemoteDeviceRefBuilder& SetBeaconSeeds(
       const std::vector<BeaconSeed>& beacon_seeds);
+  RemoteDeviceRefBuilder& SetBluetoothPublicAddress(
+      const std::string& bluetooth_public_address);
   RemoteDeviceRef Build();
 
  private:
@@ -59,5 +62,13 @@ bool IsSameDevice(const RemoteDevice& remote_device,
 }  // namespace multidevice
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::RemoteDeviceRefBuilder;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_TEST_UTIL_H_

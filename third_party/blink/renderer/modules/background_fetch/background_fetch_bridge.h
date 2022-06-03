@@ -5,13 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_BRIDGE_H_
 
-#include <memory>
-
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -27,8 +25,6 @@ class BackgroundFetchRegistration;
 class BackgroundFetchBridge final
     : public GarbageCollected<BackgroundFetchBridge>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(BackgroundFetchBridge);
-
  public:
   static const char kSupplementName[];
 
@@ -38,12 +34,17 @@ class BackgroundFetchBridge final
   using RegistrationCallback =
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,
                               BackgroundFetchRegistration*)>;
-  using GetIconDisplaySizeCallback = base::OnceCallback<void(const WebSize&)>;
+  using GetIconDisplaySizeCallback = base::OnceCallback<void(const gfx::Size&)>;
 
   static BackgroundFetchBridge* From(ServiceWorkerRegistration* registration);
 
   explicit BackgroundFetchBridge(ServiceWorkerRegistration& registration);
+
+  BackgroundFetchBridge(const BackgroundFetchBridge&) = delete;
+  BackgroundFetchBridge& operator=(const BackgroundFetchBridge&) = delete;
+
   virtual ~BackgroundFetchBridge();
+  void Trace(Visitor* visitor) const override;
 
   // Creates a new Background Fetch registration identified by |developer_id|
   // for the sequence of |requests|. The |callback| will be invoked when the
@@ -80,9 +81,8 @@ class BackgroundFetchBridge final
       mojom::blink::BackgroundFetchError error,
       mojom::blink::BackgroundFetchRegistrationPtr registration_ptr);
 
-  mojo::Remote<mojom::blink::BackgroundFetchService> background_fetch_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchBridge);
+  HeapMojoRemote<mojom::blink::BackgroundFetchService>
+      background_fetch_service_;
 };
 
 }  // namespace blink

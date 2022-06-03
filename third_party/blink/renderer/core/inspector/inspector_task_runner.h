@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,6 +34,9 @@ class CORE_EXPORT InspectorTaskRunner final
     return base::AdoptRef(new InspectorTaskRunner(isolate_task_runner));
   }
 
+  InspectorTaskRunner(const InspectorTaskRunner&) = delete;
+  InspectorTaskRunner& operator=(const InspectorTaskRunner&) = delete;
+
   // Must be called on the isolate's thread.
   void InitIsolate(v8::Isolate*) LOCKS_EXCLUDED(mutex_);
   // Can be disposed from any thread.
@@ -43,14 +45,24 @@ class CORE_EXPORT InspectorTaskRunner final
   // Can be called from any thread other than isolate's thread.
   // This method appends a task, and both posts to the isolate's task runner
   // and requests interrupt. Whatever comes first - executes the task.
+  // Returns if the task has been appended or discarded if this runner has
+  // already been disposed. Note that successfully appending a task does not
+  // guarantee that it'll run, e.g. if Dispose() is called before it runs.
   using Task = CrossThreadOnceClosure;
-  void AppendTask(Task) LOCKS_EXCLUDED(mutex_);
+  bool AppendTask(Task) LOCKS_EXCLUDED(mutex_);
 
   // Can be called from any thread other than isolate's thread.
   // This method appends a task and posts to the isolate's task runner to
   // request that the next task be executed, but does not interrupt V8
   // execution.
-  void AppendTaskDontInterrupt(Task) LOCKS_EXCLUDED(mutex_);
+  // Returns if the task has been appended or discarded if this runner has
+  // already been disposed. Note that successfully appending a task does not
+  // guarantee that it'll run, e.g. if Dispose() is called before it runs.
+  bool AppendTaskDontInterrupt(Task) LOCKS_EXCLUDED(mutex_);
+
+  scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner() {
+    return isolate_task_runner_;
+  }
 
  private:
   friend ThreadSafeRefCounted<InspectorTaskRunner>;
@@ -66,12 +78,10 @@ class CORE_EXPORT InspectorTaskRunner final
   Mutex mutex_;
   scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner_;
   v8::Isolate* isolate_ GUARDED_BY(mutex_) = nullptr;
-  Deque<Task> queue_;
   Deque<Task> interrupting_task_queue_;
   bool disposed_ GUARDED_BY(mutex_) = false;
-  DISALLOW_COPY_AND_ASSIGN(InspectorTaskRunner);
 };
 
 }  // namespace blink
 
-#endif  // !defined(InspectorTaskRunner_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_

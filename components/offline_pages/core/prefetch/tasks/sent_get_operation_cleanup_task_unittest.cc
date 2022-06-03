@@ -36,7 +36,7 @@ class TestingPrefetchNetworkRequestFactory
       const std::string& gcm_registration_id,
       PrefetchRequestFinishedCallback callback) override {}
   std::unique_ptr<std::set<std::string>> GetAllUrlsRequested() const override {
-    return std::unique_ptr<std::set<std::string>>();
+    return nullptr;
   }
   void MakeGetOperationRequest(
       const std::string& operation_name,

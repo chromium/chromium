@@ -7,9 +7,9 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/stl_util.h"
-#include "chrome/browser/media/router/media_router.h"
-#include "chrome/browser/media/router/media_sinks_observer.h"
+#include "base/containers/contains.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/origin.h"
 

@@ -1,0 +1,129 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+static_library("android") {
+  sources = [
+    "certificate_chain_helper.cc",
+    "certificate_viewer_android.cc",
+    "connection_info_view_android.cc",
+    "connection_info_view_android.h",
+    "page_info_client.cc",
+    "page_info_client.h",
+    "page_info_controller_android.cc",
+    "page_info_controller_android.h",
+    "page_info_features.cc",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/page_info",
+    "//components/page_info/android:jni_headers",
+    "//components/security_state/core:core",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser:browser",
+    "//net:net",
+    "//third_party/boringssl",
+    "//ui/base:base",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/page_info_bg.xml",
+    "java/res/layout/connection_info.xml",
+    "java/res/layout/page_info.xml",
+    "java/res/layout/page_info_container.xml",
+    "java/res/layout/page_info_row.xml",
+    "java/res/layout/page_info_summary.xml",
+    "java/res/layout/page_zoom_view.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+    "java/res/xml/page_info_cookie_preference.xml",
+  ]
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/permissions/android:java_resources",
+    "//components/strings:components_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
+    "java/src/org/chromium/components/page_info/CertificateViewer.java",
+    "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
+    "java/src/org/chromium/components/page_info/ElidedUrlTextView.java",
+    "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
+    "java/src/org/chromium/components/page_info/PageInfoContainer.java",
+    "java/src/org/chromium/components/page_info/PageInfoController.java",
+    "java/src/org/chromium/components/page_info/PageInfoControllerDelegate.java",
+    "java/src/org/chromium/components/page_info/PageInfoCookiesController.java",
+    "java/src/org/chromium/components/page_info/PageInfoCookiesPreference.java",
+    "java/src/org/chromium/components/page_info/PageInfoDialog.java",
+    "java/src/org/chromium/components/page_info/PageInfoDiscoverabilityMetrics.java",
+    "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
+    "java/src/org/chromium/components/page_info/PageInfoHighlight.java",
+    "java/src/org/chromium/components/page_info/PageInfoMainController.java",
+    "java/src/org/chromium/components/page_info/PageInfoPageZoomController.java",
+    "java/src/org/chromium/components/page_info/PageInfoPageZoomView.java",
+    "java/src/org/chromium/components/page_info/PageInfoPermissionsController.java",
+    "java/src/org/chromium/components/page_info/PageInfoRowView.java",
+    "java/src/org/chromium/components/page_info/PageInfoSubpageController.java",
+    "java/src/org/chromium/components/page_info/PageInfoView.java",
+    "java/src/org/chromium/components/page_info/PermissionParamsListBuilder.java",
+    "java/src/org/chromium/components/page_info/SystemSettingsActivityRequiredListener.java",
+    "java/src/org/chromium/components/page_info/VrHandler.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    ":page_info_action_enum_java",
+    "//base:base_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/android:java",
+    "//components/dom_distiller/core/android:dom_distiller_core_java",
+    "//components/embedder_support/android:util_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/location/android:location_java",
+    "//components/omnibox/browser:browser_java",
+    "//components/permissions/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
+    "//components/strings:components_strings_grd",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_java",
+    "//services/device/public/java:device_feature_list_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  resources_package = "org.chromium.components.page_info"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
+    "java/src/org/chromium/components/page_info/CertificateViewer.java",
+    "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
+    "java/src/org/chromium/components/page_info/PageInfoController.java",
+    "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
+  ]
+}
+
+android_library("page_info_action_enum_java") {
+  srcjar_deps = [ "//components/page_info:page_info_action_javagen" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}

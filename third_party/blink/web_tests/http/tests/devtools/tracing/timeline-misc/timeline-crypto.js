@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for module compile & evaluate.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       async function performActions() {
@@ -25,8 +25,12 @@
     TimelineModel.TimelineModel.RecordType.CryptoDoDecryptReply
   ]);
   const tracingModel = PerformanceTestRunner.tracingModel();
+  const eventsToPrint = [];
   tracingModel.sortedProcesses().forEach(p => p.sortedThreads().forEach(t =>
-      t.events().filter(event => events.has(event.name)).forEach(PerformanceTestRunner.printTraceEventPropertiesWithDetails)));
+      eventsToPrint.push(...t.events().filter(event => events.has(event.name)))));
 
+  for (const event of eventsToPrint) {
+    await PerformanceTestRunner.printTraceEventPropertiesWithDetails(event);
+  }
   TestRunner.completeTest();
 })();

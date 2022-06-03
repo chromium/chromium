@@ -11,24 +11,38 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
+#include "chrome/browser/predictors/predictors_enums.h"
 #include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/predictors/predictors_switches.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -37,28 +51,36 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request_filter.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_test_job.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/cors.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
+using testing::Optional;
+using testing::SizeIs;
 
 namespace predictors {
 
@@ -92,6 +114,9 @@ class PredictorInitializer : public TestObserver {
   explicit PredictorInitializer(ResourcePrefetchPredictor* predictor)
       : TestObserver(predictor), predictor_(predictor) {}
 
+  PredictorInitializer(const PredictorInitializer&) = delete;
+  PredictorInitializer& operator=(const PredictorInitializer&) = delete;
+
   void EnsurePredictorInitialized() {
     if (predictor_->initialization_state_ ==
         ResourcePrefetchPredictor::INITIALIZED) {
@@ -111,171 +136,19 @@ class PredictorInitializer : public TestObserver {
  private:
   ResourcePrefetchPredictor* predictor_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(PredictorInitializer);
-};
-
-// Keeps track of incoming connections being accepted or read from and exposes
-// that info to the tests.
-// A port being reused is currently considered an error.
-// If a test needs to verify multiple connections are opened in sequence, that
-// will need to be changed.
-class ConnectionTracker {
- public:
-  ConnectionTracker() {}
-
-  void AcceptedSocketWithPort(uint16_t port) {
-    EXPECT_FALSE(base::Contains(sockets_, port));
-    sockets_[port] = SocketStatus::kAccepted;
-    CheckAccepted();
-    first_accept_loop_.Quit();
-  }
-
-  void ReadFromSocketWithPort(uint16_t port) {
-    EXPECT_TRUE(base::Contains(sockets_, port));
-    sockets_[port] = SocketStatus::kReadFrom;
-    first_read_loop_.Quit();
-  }
-
-  // Returns the number of sockets that were accepted by the server.
-  size_t GetAcceptedSocketCount() const { return sockets_.size(); }
-
-  // Returns the number of sockets that were read from by the server.
-  size_t GetReadSocketCount() const {
-    size_t read_sockets = 0;
-    for (const auto& socket : sockets_) {
-      if (socket.second == SocketStatus::kReadFrom)
-        ++read_sockets;
-    }
-    return read_sockets;
-  }
-
-  void WaitUntilFirstConnectionAccepted() { first_accept_loop_.Run(); }
-  void WaitUntilFirstConnectionRead() { first_read_loop_.Run(); }
-
-  // The UI thread will wait for exactly |num_connections| items in |sockets_|.
-  // This method expects the server will not accept more than |num_connections|
-  // connections. |num_connections| must be greater than 0.
-  void WaitForAcceptedConnections(size_t num_connections) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!num_accepted_connections_loop_);
-    DCHECK_GT(num_connections, 0u);
-    base::RunLoop run_loop;
-    EXPECT_GE(num_connections, sockets_.size());
-    num_accepted_connections_loop_ = &run_loop;
-    num_accepted_connections_needed_ = num_connections;
-    CheckAccepted();
-    // Note that the previous call to CheckAccepted can quit this run loop
-    // before this call, which will make this call a no-op.
-    run_loop.Run();
-    EXPECT_EQ(num_connections, sockets_.size());
-  }
-
-  // Helper function to stop the waiting for sockets to be accepted for
-  // WaitForAcceptedConnections. |num_accepted_connections_loop_| spins
-  // until |num_accepted_connections_needed_| sockets are accepted by the test
-  // server. The values will be null/0 if the loop is not running.
-  void CheckAccepted() {
-    // |num_accepted_connections_loop_| null implies
-    // |num_accepted_connections_needed_| == 0.
-    DCHECK(num_accepted_connections_loop_ ||
-           num_accepted_connections_needed_ == 0);
-    if (!num_accepted_connections_loop_ ||
-        num_accepted_connections_needed_ != sockets_.size()) {
-      return;
-    }
-
-    num_accepted_connections_loop_->Quit();
-    num_accepted_connections_needed_ = 0;
-    num_accepted_connections_loop_ = nullptr;
-  }
-
-  void ResetCounts() { sockets_.clear(); }
-
- private:
-  enum class SocketStatus { kAccepted, kReadFrom };
-
-  base::RunLoop first_accept_loop_;
-  base::RunLoop first_read_loop_;
-
-  // Port -> SocketStatus.
-  using SocketContainer = std::map<uint16_t, SocketStatus>;
-  SocketContainer sockets_;
-
-  // If |num_accepted_connections_needed_| is non zero, then the object is
-  // waiting for |num_accepted_connections_needed_| sockets to be accepted
-  // before quitting the |num_accepted_connections_loop_|.
-  size_t num_accepted_connections_needed_ = 0;
-  base::RunLoop* num_accepted_connections_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTracker);
-};
-
-// Gets notified by the EmbeddedTestServer on incoming connections being
-// accepted or read from and transfers this information to ConnectionTracker.
-class ConnectionListener
-    : public net::test_server::EmbeddedTestServerConnectionListener {
- public:
-  // This class should be constructed on the browser UI thread.
-  explicit ConnectionListener(ConnectionTracker* tracker)
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()), tracker_(tracker) {}
-
-  ~ConnectionListener() override {}
-
-  // Get called from the EmbeddedTestServer thread to be notified that
-  // a connection was accepted.
-  void AcceptedSocket(const net::StreamSocket& connection) override {
-    uint16_t port = GetPort(connection);
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ConnectionTracker::AcceptedSocketWithPort,
-                                  base::Unretained(tracker_), port));
-  }
-
-  // Get called from the EmbeddedTestServer thread to be notified that
-  // a connection was read from.
-  void ReadFromSocket(const net::StreamSocket& connection, int rv) override {
-    // Don't log a read if no data was transferred. This case often happens if
-    // the sockets of the test server are being flushed and disconnected.
-    if (rv <= 0)
-      return;
-    uint16_t port = GetPort(connection);
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ConnectionTracker::ReadFromSocketWithPort,
-                                  base::Unretained(tracker_), port));
-  }
-
- private:
-  static uint16_t GetPort(const net::StreamSocket& connection) {
-    // Get the remote port of the peer, since the local port will always be the
-    // port the test server is listening on. This isn't strictly correct - it's
-    // possible for multiple peers to connect with the same remote port but
-    // different remote IPs - but the tests here assume that connections to the
-    // test server (running on localhost) will always come from localhost, and
-    // thus the peer port is all that's needed to distinguish two connections.
-    // This also would be problematic if the OS reused ports, but that's not
-    // something to worry about for these tests.
-    net::IPEndPoint address;
-    EXPECT_EQ(net::OK, connection.GetPeerAddress(&address));
-    return address.port();
-  }
-
-  // Task runner associated with the browser UI thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  // This pointer should be only accessed on the browser UI thread.
-  ConnectionTracker* tracker_;
 };
 
 class TestPreconnectManagerObserver : public PreconnectManager::Observer {
  public:
   explicit TestPreconnectManagerObserver(
-      PreconnectManager* preconnect_manager_) {
-    preconnect_manager_->SetObserverForTesting(this);
+      PreconnectManager* preconnect_manager) {
+    preconnect_manager->SetObserverForTesting(this);
   }
 
   void OnPreconnectUrl(const GURL& url,
                        int num_sockets,
                        bool allow_credentials) override {
-    preconnect_url_attempts_.insert(url.GetOrigin());
+    preconnect_url_attempts_.insert(url.DeprecatedGetOriginAsURL());
   }
 
   void OnPreresolveFinished(
@@ -323,7 +196,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   }
 
   bool HasOriginAttemptedToPreconnect(const GURL& origin) {
-    DCHECK_EQ(origin, origin.GetOrigin());
+    DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
     return base::Contains(preconnect_url_attempts_, origin);
   }
 
@@ -439,14 +312,70 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   std::set<GURL> preconnect_url_attempts_;
 };
 
+struct PrefetchResult {
+  PrefetchResult(const GURL& prefetch_url,
+                 const network::URLLoaderCompletionStatus& status)
+      : prefetch_url(prefetch_url), status(status) {}
+
+  GURL prefetch_url;
+  network::URLLoaderCompletionStatus status;
+};
+
+class TestPrefetchManagerObserver : public PrefetchManager::Observer {
+ public:
+  explicit TestPrefetchManagerObserver(PrefetchManager& manager) {
+    manager.set_observer_for_testing(this);
+  }
+
+  void OnPrefetchFinished(
+      const GURL& url,
+      const GURL& prefetch_url,
+      const network::URLLoaderCompletionStatus& status) override {
+    prefetches_.emplace_back(prefetch_url, status);
+  }
+
+  void OnAllPrefetchesFinished(const GURL& url) override {
+    done_urls_.insert(url);
+    if (waiting_url_ == url) {
+      waiting_url_ = GURL();
+      std::move(done_callback_).Run();
+    }
+  }
+
+  void WaitForPrefetchesForNavigation(const GURL& url) {
+    DCHECK(waiting_url_.is_empty());
+    DCHECK(!url.is_empty());
+    if (done_urls_.find(url) != done_urls_.end())
+      return;
+    waiting_url_ = url;
+    base::RunLoop loop;
+    done_callback_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  const std::vector<PrefetchResult>& results() const { return prefetches_; }
+
+ private:
+  std::vector<PrefetchResult> prefetches_;
+  std::set<GURL> done_urls_;
+  GURL waiting_url_;
+  base::OnceClosure done_callback_;
+};
+
 class LoadingPredictorBrowserTest : public InProcessBrowserTest {
  public:
   LoadingPredictorBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kLoadingOnlyLearnHighPriorityResources,
-         features::kLoadingPreconnectToRedirectTarget},
+         features::kLoadingPreconnectToRedirectTarget,
+         features::kNavigationPredictorPreconnectHoldback},
         {});
   }
+
+  LoadingPredictorBrowserTest(const LoadingPredictorBrowserTest&) = delete;
+  LoadingPredictorBrowserTest& operator=(const LoadingPredictorBrowserTest&) =
+      delete;
+
   ~LoadingPredictorBrowserTest() override {}
 
   void SetUp() override {
@@ -467,20 +396,14 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    connection_tracker_ = std::make_unique<ConnectionTracker>();
-    connection_listener_ =
-        std::make_unique<ConnectionListener>(connection_tracker_.get());
+    connection_tracker_ = std::make_unique<net::test_server::ConnectionTracker>(
+        embedded_test_server());
     preconnecting_server_connection_tracker_ =
-        std::make_unique<ConnectionTracker>();
-    preconnecting_server_connection_listener_ =
-        std::make_unique<ConnectionListener>(
-            preconnecting_server_connection_tracker_.get());
+        std::make_unique<net::test_server::ConnectionTracker>(
+            &preconnecting_test_server_);
 
-    embedded_test_server()->SetConnectionListener(connection_listener_.get());
     embedded_test_server()->StartAcceptingConnections();
 
-    preconnecting_test_server_.SetConnectionListener(
-        preconnecting_server_connection_listener());
     EXPECT_TRUE(preconnecting_test_server_.Started());
     preconnecting_test_server_.StartAcceptingConnections();
 
@@ -490,6 +413,11 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     preconnect_manager_observer_ =
         std::make_unique<TestPreconnectManagerObserver>(
             loading_predictor_->preconnect_manager());
+    if (loading_predictor_->prefetch_manager()) {
+      prefetch_manager_observer_ =
+          std::make_unique<TestPrefetchManagerObserver>(
+              *loading_predictor_->prefetch_manager());
+    }
     PredictorInitializer initializer(
         loading_predictor_->resource_prefetch_predictor());
     initializer.EnsurePredictorInitialized();
@@ -513,9 +441,8 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   }
 
   void ResetNetworkState() {
-    auto* network_context = content::BrowserContext::GetDefaultStoragePartition(
-                                browser()->profile())
-                                ->GetNetworkContext();
+    auto* network_context =
+        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
     base::RunLoop clear_host_cache_loop;
     base::RunLoop close_all_connections_loop;
     network_context->ClearHostCache(nullptr,
@@ -549,20 +476,23 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     return preconnect_manager_observer_.get();
   }
 
-  ConnectionTracker* connection_tracker() { return connection_tracker_.get(); }
-
-  ConnectionTracker* preconnecting_server_connection_tracker() const {
-    return preconnecting_server_connection_tracker_.get();
+  TestPrefetchManagerObserver* prefetch_manager_observer() {
+    return prefetch_manager_observer_.get();
   }
 
-  ConnectionListener* preconnecting_server_connection_listener() const {
-    return preconnecting_server_connection_listener_.get();
+  net::test_server::ConnectionTracker* connection_tracker() {
+    return connection_tracker_.get();
+  }
+
+  net::test_server::ConnectionTracker*
+  preconnecting_server_connection_tracker() {
+    return preconnecting_server_connection_tracker_.get();
   }
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/favicon.ico")
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -575,7 +505,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   HandleCacheRedirectRequest(const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/cached-redirect?",
                           base::CompareCase::INSENSITIVE_ASCII)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     GURL request_url = request.GetURL();
@@ -601,14 +531,12 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
 
  private:
   LoadingPredictor* loading_predictor_ = nullptr;
-  std::unique_ptr<ConnectionListener> connection_listener_;
-  std::unique_ptr<ConnectionTracker> connection_tracker_;
-  std::unique_ptr<ConnectionListener> preconnecting_server_connection_listener_;
-  std::unique_ptr<ConnectionTracker> preconnecting_server_connection_tracker_;
+  std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
+  std::unique_ptr<net::test_server::ConnectionTracker>
+      preconnecting_server_connection_tracker_;
   std::unique_ptr<TestPreconnectManagerObserver> preconnect_manager_observer_;
+  std::unique_ptr<TestPrefetchManagerObserver> prefetch_manager_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingPredictorBrowserTest);
 };
 
 // Tests that a navigation triggers the LoadingPredictor.
@@ -691,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                        PrepareForPageLoadNonHttpScheme) {
   std::string content = "<body>Hello world!</body>";
   GURL url = GetDataURLWithContent(content);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
   // Ensure that no backgound task would make a host lookup or attempt to
@@ -702,7 +630,69 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
       "", network_isolation_key));
   EXPECT_FALSE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
-      url.GetOrigin()));
+      url.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(
+      preconnect_manager_observer()->HasOriginAttemptedToPreconnect(GURL()));
+}
+
+namespace {
+class TestPrerenderStopObserver
+    : public prerender::NoStatePrefetchHandle::Observer {
+ public:
+  explicit TestPrerenderStopObserver(base::OnceClosure on_stop_closure)
+      : on_stop_closure_(std::move(on_stop_closure)) {}
+  ~TestPrerenderStopObserver() override = default;
+
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* contents) override {
+    if (on_stop_closure_) {
+      std::move(on_stop_closure_).Run();
+    }
+  }
+
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
+
+ private:
+  base::OnceClosure on_stop_closure_;
+};
+}  // namespace
+
+// Tests that the LoadingPredictor doesn't preconnect during a prerender.
+IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
+                       PrepareForPageLoadDuringPrerender) {
+  GURL url("http://test.com");
+  base::RunLoop prerender_run_loop;
+  TestPrerenderStopObserver prerender_observer(
+      prerender_run_loop.QuitClosure());
+
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+          browser()->profile());
+
+  std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
+      no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
+          url,
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetController()
+              .GetDefaultSessionStorageNamespace(),
+          gfx::Size(640, 480));
+  ASSERT_TRUE(handle);
+  handle->SetObserver(&prerender_observer);
+  prerender_run_loop.Run();
+
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // Ensure that the prerender does not make a host lookup or attempt to
+  // preconnect.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      url.host(), network_isolation_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      "", network_isolation_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+      url.DeprecatedGetOriginAsURL()));
   EXPECT_FALSE(
       preconnect_manager_observer()->HasOriginAttemptedToPreconnect(GURL()));
 }
@@ -717,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
 
@@ -750,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, LearnFromNavigation) {
         net::NetworkIsolationKey(origin, origin));
   }
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto prediction = GetPreconnectPrediction(url);
   ASSERT_TRUE(prediction);
   EXPECT_EQ(prediction->is_redirected, false);
@@ -793,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestLearnAllResources,
       url::Origin::Create(embedded_test_server()->GetURL("bar.com", "/")), 1,
       net::NetworkIsolationKey(origin, origin));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto prediction = GetPreconnectPrediction(url);
   ASSERT_TRUE(prediction);
   EXPECT_EQ(prediction->is_redirected, false);
@@ -820,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
         net::NetworkIsolationKey(origin, origin));
   }
 
-  ui_test_utils::NavigateToURL(browser(), original_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   // The predictor can correctly predict hosts by |redirect_url|
   auto prediction = GetPreconnectPrediction(redirect_url);
   ASSERT_TRUE(prediction);
@@ -846,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
 
   // The predictor will start predict for origins of subresources (based on
   // redirect) after the second navigation.
-  ui_test_utils::NavigateToURL(browser(), original_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   prediction = GetPreconnectPrediction(original_url);
   expected_requests.emplace_back(redirect_origin, 1,
                                  net::NetworkIsolationKey(origin, origin));
@@ -868,17 +858,17 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
   for (auto* const host : kHtmlSubresourcesHosts) {
-    GURL url(base::StringPrintf("http://%s", host));
-    preconnect_manager_observer()->WaitUntilHostLookedUp(url.host(),
+    GURL host_url(base::StringPrintf("http://%s", host));
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host_url.host(),
                                                          network_isolation_key);
     EXPECT_TRUE(preconnect_manager_observer()->HostFound(
-        url.host(), network_isolation_key));
+        host_url.host(), network_isolation_key));
   }
   // 2 connections to the main frame host + 1 connection per host for others.
   const size_t expected_connections = base::size(kHtmlSubresourcesHosts) + 1;
@@ -894,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, DnsPrefetch) {
   GURL url = embedded_test_server()->GetURL("/predictor/dns_prefetch.html");
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       GURL(kChromiumUrl).host(), network_isolation_key);
   EXPECT_TRUE(preconnect_manager_observer()->HostFound(
@@ -908,17 +898,16 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   GURL preconnect_url = embedded_test_server()->base_url();
   std::string preconnect_content =
       "<link rel=\"preconnect\" href=\"" + preconnect_url.spec() + "\">";
-  ui_test_utils::NavigateToURL(browser(),
-                               GetDataURLWithContent(preconnect_content));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetDataURLWithContent(preconnect_content)));
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 }
 
 enum class NetworkIsolationKeyMode {
-  kNone,
-  kTopFrameOrigin,
-  kTopFrameAndFrameOrigins,
+  kDisabled,
+  kEnabled,
 };
 
 class LoadingPredictorNetworkIsolationKeyBrowserTest
@@ -927,34 +916,19 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
  public:
   LoadingPredictorNetworkIsolationKeyBrowserTest() {
     switch (GetParam()) {
-      case NetworkIsolationKeyMode::kNone:
+      case NetworkIsolationKeyMode::kDisabled:
         scoped_feature_list2_.InitWithFeatures(
             // enabled_features
             {features::kLoadingPreconnectToRedirectTarget},
             // disabled_features
             {net::features::kPartitionConnectionsByNetworkIsolationKey,
-             net::features::kSplitCacheByNetworkIsolationKey,
-             net::features::kAppendFrameOriginToNetworkIsolationKey});
+             net::features::kSplitCacheByNetworkIsolationKey});
         break;
-      case NetworkIsolationKeyMode::kTopFrameOrigin:
-        scoped_feature_list2_.InitWithFeatures(
-            // enabled_features
-            {net::features::kPartitionConnectionsByNetworkIsolationKey,
-             // While these tests are focusing on partitioning the socket pools,
-             // some depend on cache behavior, and it would be
-             // unfortunate if splitting the cache by the key as well broke
-             // them.
-             net::features::kSplitCacheByNetworkIsolationKey,
-             features::kLoadingPreconnectToRedirectTarget},
-            // disabled_features
-            {net::features::kAppendFrameOriginToNetworkIsolationKey});
-        break;
-      case NetworkIsolationKeyMode::kTopFrameAndFrameOrigins:
+      case NetworkIsolationKeyMode::kEnabled:
         scoped_feature_list2_.InitWithFeatures(
             // enabled_features
             {net::features::kPartitionConnectionsByNetworkIsolationKey,
              net::features::kSplitCacheByNetworkIsolationKey,
-             net::features::kAppendFrameOriginToNetworkIsolationKey,
              features::kLoadingPreconnectToRedirectTarget},
             // disabled_features
             {});
@@ -988,8 +962,10 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
     content::SimpleURLLoaderTestHelper simple_loader_helper;
     url::Origin origin = url::Origin::Create(url);
     request->trusted_params = network::ResourceRequest::TrustedParams();
-    request->trusted_params->network_isolation_key =
-        net::NetworkIsolationKey(origin, origin);
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(origin);
+    request->site_for_cookies =
+        request->trusted_params->isolation_info.site_for_cookies();
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -1019,8 +995,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "use-credentials",
     };
 
-    ui_test_utils::NavigateToURL(
-        browser(), preconnecting_test_server()->GetURL("/title1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), preconnecting_test_server()->GetURL("/title1.html")));
 
     // Preconnect a socket.
     content::WebContents* tab =
@@ -1034,8 +1010,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "document.head.appendChild(link);",
         kCrossOriginValue[use_cors_for_preconnect],
         preconnect_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(tab, start_preconnect));
-    connection_tracker()->WaitUntilFirstConnectionAccepted();
+    content::ExecuteScriptAsync(tab, start_preconnect);
+    connection_tracker()->WaitForAcceptedConnections(1u);
     EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1048,8 +1024,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "document.body.appendChild(image);",
         kCrossOriginValue[use_cors_for_resource_request],
         image_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(tab, load_image));
-    connection_tracker()->WaitUntilFirstConnectionRead();
+    content::ExecuteScriptAsync(tab, load_image);
+    connection_tracker()->WaitUntilConnectionRead();
 
     // The preconnected socket should have been used by the image request if
     // the CORS behavior of the preconnect and the request were the same.
@@ -1066,12 +1042,10 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list2_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LoadingPredictorNetworkIsolationKeyBrowserTest,
-    ::testing::Values(NetworkIsolationKeyMode::kNone,
-                      NetworkIsolationKeyMode::kTopFrameOrigin,
-                      NetworkIsolationKeyMode::kTopFrameAndFrameOrigins));
+INSTANTIATE_TEST_SUITE_P(All,
+                         LoadingPredictorNetworkIsolationKeyBrowserTest,
+                         ::testing::Values(NetworkIsolationKeyMode::kDisabled,
+                                           NetworkIsolationKeyMode::kEnabled));
 
 // Make sure that the right NetworkIsolationKey is used by the LoadingPredictor,
 // both when the predictor is populated and when it isn't.
@@ -1129,7 +1103,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "/server-redirect?" + cacheable_url.spec());
 
   // Learn the redirects from initial navigation.
-  ui_test_utils::NavigateToURL(browser(), redirecting_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirecting_url));
   EXPECT_EQ(0u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1183,7 +1157,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
     if (i == 0) {
       // NavigateToURL waits long enough to ensure information from the
       // navigation is learned, while WaitForNavigationFinished() does not.
-      ui_test_utils::NavigateToURL(browser(), redirecting_url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirecting_url));
     } else {
       auto observer = NavigateToURLAsync(redirecting_url);
       observer->WaitForNavigationFinished();
@@ -1206,8 +1180,10 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
     content::SimpleURLLoaderTestHelper simple_loader_helper;
     url::Origin origin = url::Origin::Create(request->url);
     request->trusted_params = network::ResourceRequest::TrustedParams();
-    request->trusted_params->network_isolation_key =
-        net::NetworkIsolationKey(origin, origin);
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(origin);
+    request->site_for_cookies =
+        request->trusted_params->isolation_info.site_for_cookies();
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -1233,14 +1209,14 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost1, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost1, "/title1.html")));
 
   chrome::NewTab(browser());
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html")));
 
   std::string start_preconnect = base::StringPrintf(
       "var link = document.createElement('link');"
@@ -1249,8 +1225,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "link.href = '%s';"
       "document.head.appendChild(link);",
       preconnect_url.spec().c_str());
-  ASSERT_TRUE(content::ExecJs(tab1->GetMainFrame(), start_preconnect));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  content::ExecuteScriptAsync(tab1->GetMainFrame(), start_preconnect);
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1263,7 +1239,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       preconnect_url.spec().c_str());
   // Fetch a resource from the test server from tab 2, without CORS.
   EXPECT_EQ(0, EvalJs(tab2->GetMainFrame(), fetch_resource));
-  if (GetParam() == NetworkIsolationKeyMode::kNone) {
+  if (GetParam() == NetworkIsolationKeyMode::kDisabled) {
     // When not using NetworkIsolationKeys, the preconnected socket from a tab
     // at one site is usable by a request from another site.
     EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
@@ -1291,23 +1267,26 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
   // Tab 1 has two iframes, one at kHost1, one at kHost2.
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), preconnecting_test_server()->GetURL(
                      kHost1, GetPathWithPortReplacement(
                                  "/predictors/two_iframes.html",
-                                 preconnecting_test_server()->port())));
-  std::vector<content::RenderFrameHost*> frames = tab1->GetAllFrames();
-  ASSERT_EQ(3u, frames.size());
-  ASSERT_EQ(kHost1, frames[0]->GetLastCommittedOrigin().host());
-  ASSERT_EQ(kHost1, frames[1]->GetLastCommittedOrigin().host());
-  ASSERT_EQ(kHost2, frames[2]->GetLastCommittedOrigin().host());
+                                 preconnecting_test_server()->port()))));
+  content::RenderFrameHost* main_frame = tab1->GetMainFrame();
+  ASSERT_EQ(kHost1, main_frame->GetLastCommittedOrigin().host());
+  content::RenderFrameHost* iframe_1 = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(iframe_1);
+  ASSERT_EQ(kHost1, iframe_1->GetLastCommittedOrigin().host());
+  content::RenderFrameHost* iframe_2 = ChildFrameAt(main_frame, 1);
+  ASSERT_TRUE(iframe_2);
+  ASSERT_EQ(kHost2, iframe_2->GetLastCommittedOrigin().host());
 
   // Create another tab without an iframe, at kHost2.
   chrome::NewTab(browser());
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html")));
 
   // Preconnect a socket in the cross-origin iframe.
   std::string start_preconnect = base::StringPrintf(
@@ -1317,8 +1296,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "link.href = '%s';"
       "document.head.appendChild(link);",
       preconnect_url.spec().c_str());
-  ASSERT_TRUE(content::ExecJs(frames[2], start_preconnect));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  content::ExecuteScriptAsync(iframe_2, start_preconnect);
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1332,7 +1311,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
   // Fetch a resource from the test server from tab 2 iframe, without CORS.
   EXPECT_EQ(0, EvalJs(tab2->GetMainFrame(), fetch_resource));
-  if (GetParam() == NetworkIsolationKeyMode::kNone) {
+  if (GetParam() == NetworkIsolationKeyMode::kDisabled) {
     // When not using NetworkIsolationKeys, the preconnected socket from the
     // iframe from the first tab can be used.
     EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
@@ -1345,12 +1324,9 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
   // Fetch a resource from the test server from the same-origin iframe, without
   // CORS.
-  EXPECT_EQ(0, EvalJs(frames[1], fetch_resource));
-  if (GetParam() != NetworkIsolationKeyMode::kTopFrameAndFrameOrigins) {
+  EXPECT_EQ(0, EvalJs(iframe_1, fetch_resource));
+  if (GetParam() == NetworkIsolationKeyMode::kDisabled) {
     // When not using NetworkIsolationKeys, a new socket is created and used.
-    //
-    // When using the origin of the main frame, the preconnected socket from the
-    // cross-origin iframe can be used, since only the top frame origin matters.
     EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(2u, connection_tracker()->GetReadSocketCount());
   } else {
@@ -1360,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
   }
 
   // Now try fetching a resource the cross-site iframe.
-  EXPECT_EQ(0, EvalJs(frames[2], fetch_resource));
+  EXPECT_EQ(0, EvalJs(iframe_2, fetch_resource));
   // If the preconnected socket was not used before, it should now be used. If
   // it was used before, a new socket will be used.
   EXPECT_EQ(3u, connection_tracker()->GetAcceptedSocketCount());
@@ -1435,7 +1411,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
 
@@ -1463,17 +1439,17 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
   for (auto* const host : kHtmlSubresourcesHosts) {
-    GURL url = embedded_test_server()->GetURL(host, "/");
+    GURL host_url = embedded_test_server()->GetURL(host, "/");
     preconnect_manager_observer()->WaitUntilProxyLookedUp(
-        url, network_isolation_key);
-    EXPECT_TRUE(
-        preconnect_manager_observer()->ProxyFound(url, network_isolation_key));
+        host_url, network_isolation_key);
+    EXPECT_TRUE(preconnect_manager_observer()->ProxyFound(
+        host_url, network_isolation_key));
   }
   // 2 connections to the main frame host + 1 connection per host for others.
   const size_t expected_connections = base::size(kHtmlSubresourcesHosts) + 1;
@@ -1482,6 +1458,799 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
             connection_tracker()->GetAcceptedSocketCount());
   // No reads since all resources should be cached.
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
+}
+
+class LoadingPredictorBrowserTestWithOptimizationGuide
+    : public ::testing::WithParamInterface<
+          std::tuple<bool, bool, bool, std::string>>,
+      public LoadingPredictorBrowserTest {
+ public:
+  LoadingPredictorBrowserTestWithOptimizationGuide() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kLoadingPredictorUseOptimizationGuide,
+          {{"use_predictions",
+            ShouldUseOptimizationGuidePredictions() ? "true" : "false"},
+           {"always_retrieve_predictions", "true"}}},
+         {optimization_guide::features::kOptimizationHints, {}}},
+        {});
+
+    if (IsLocalPredictionEnabled()) {
+      local_predictions_feature_list_.InitAndEnableFeature(
+          features::kLoadingPredictorUseLocalPredictions);
+    } else {
+      local_predictions_feature_list_.InitAndDisableFeature(
+          features::kLoadingPredictorUseLocalPredictions);
+    }
+
+    if (IsPrefetchEnabled()) {
+      prefetch_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kLoadingPredictorPrefetch,
+          {{"subresource_type", GetSubresourceTypeParam()}});
+    } else {
+      prefetch_feature_list_.InitAndDisableFeature(
+          features::kLoadingPredictorPrefetch);
+    }
+  }
+
+  bool IsLocalPredictionEnabled() const { return std::get<0>(GetParam()); }
+
+  bool ShouldUseOptimizationGuidePredictions() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsPrefetchEnabled() const { return std::get<2>(GetParam()); }
+
+  std::string GetSubresourceTypeParam() const {
+    return std::string(std::get<3>(GetParam()));
+  }
+
+  bool ShouldRetrieveOptimizationGuidePredictions() {
+    return !IsLocalPredictionEnabled() ||
+           features::ShouldAlwaysRetrieveOptimizationGuidePredictions();
+  }
+
+  // A predicted subresource.
+  struct Subresource {
+    explicit Subresource(std::string url)
+        : url(url),
+          type(optimization_guide::proto::RESOURCE_TYPE_UNKNOWN),
+          preconnect_only(false) {}
+    Subresource(std::string url, optimization_guide::proto::ResourceType type)
+        : url(url), type(type), preconnect_only(false) {}
+    Subresource(std::string url,
+                optimization_guide::proto::ResourceType type,
+                bool preconnect_only)
+        : url(url), type(type), preconnect_only(preconnect_only) {}
+
+    std::string url;
+    optimization_guide::proto::ResourceType type;
+    bool preconnect_only;
+  };
+
+  void SetUpOptimizationHint(
+      const GURL& url,
+      const std::vector<Subresource>& predicted_subresources) {
+    auto* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide::proto::LoadingPredictorMetadata
+        loading_predictor_metadata;
+    for (const auto& subresource : predicted_subresources) {
+      auto* added = loading_predictor_metadata.add_subresources();
+      added->set_url(subresource.url);
+      added->set_resource_type(subresource.type);
+      added->set_preconnect_only(subresource.preconnect_only);
+    }
+
+    optimization_guide::OptimizationMetadata optimization_metadata;
+    optimization_metadata.set_loading_predictor_metadata(
+        loading_predictor_metadata);
+    optimization_guide_keyed_service->AddHintForTesting(
+        url, optimization_guide::proto::LOADING_PREDICTOR,
+        optimization_metadata);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList local_predictions_feature_list_;
+  base::test::ScopedFeatureList prefetch_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LoadingPredictorBrowserTestWithOptimizationGuide,
+    testing::Combine(
+        /*IsLocalPredictionEnabled()=*/testing::Bool(),
+        /*ShouldUseOptimizationGuidePredictions()=*/testing::Bool(),
+        /*IsPrefetchEnabled()=*/testing::Values(false),
+        /*GetSubresourceType()=*/testing::Values("")));
+
+IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
+                       NavigationHasLocalPredictionNoOptimizationHint) {
+  // Navigate the first time to fill the predictor's database and the HTTP
+  // cache.
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ResetNetworkState();
+
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+  for (auto* const host : kHtmlSubresourcesHosts) {
+    if (!IsLocalPredictionEnabled() && host != url.host()) {
+      // We don't expect local predictions to be preconnected to.
+      continue;
+    }
+
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host,
+                                                         network_isolation_key);
+    EXPECT_TRUE(
+        preconnect_manager_observer()->HostFound(host, network_isolation_key));
+  }
+  size_t expected_connections;
+  if (IsLocalPredictionEnabled()) {
+    // 2 connections to the main frame host  + 1 connection per host for others.
+    expected_connections = base::size(kHtmlSubresourcesHosts) + 1;
+  } else {
+    // There should always be 2 connections to the main frame host.
+    expected_connections = 2;
+  }
+  connection_tracker()->WaitForAcceptedConnections(expected_connections);
+  EXPECT_EQ(expected_connections,
+            connection_tracker()->GetAcceptedSocketCount());
+  // No reads since all resources should be cached.
+  EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
+}
+
+IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
+                       NavigationWithBothLocalPredictionAndOptimizationHint) {
+  // Navigate the first time to fill the predictor's database and the HTTP
+  // cache.
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ResetNetworkState();
+
+  SetUpOptimizationHint(url, {Subresource("http://subresource.com/1"),
+                              Subresource("http://subresource.com/2"),
+                              Subresource("http://otherresource.com/2"),
+                              Subresource("skipsoverinvalidurl/////")});
+
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+
+  // The initial URL should be preconnected to.
+  preconnect_manager_observer()->WaitUntilHostLookedUp(url.host(),
+                                                       network_isolation_key);
+  EXPECT_TRUE(preconnect_manager_observer()->HostFound(url.host(),
+                                                       network_isolation_key));
+  EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+      origin.GetURL()));
+
+  // Both subresource hosts should be preconnected to.
+  std::vector<std::string> expected_subresource_hosts;
+  if (IsLocalPredictionEnabled()) {
+    // Should use subresources that were learned.
+    expected_subresource_hosts = {"baz.com", "foo.com"};
+  } else if (ShouldUseOptimizationGuidePredictions()) {
+    // Should use subresources from optimization hint.
+    expected_subresource_hosts = {"subresource.com", "otherresource.com"};
+  }
+  for (const auto& host : expected_subresource_hosts) {
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host,
+                                                         network_isolation_key);
+    EXPECT_TRUE(
+        preconnect_manager_observer()->HostFound(host, network_isolation_key));
+
+    GURL expected_origin;
+    if (IsLocalPredictionEnabled()) {
+      // The locally learned origins are expected to have a port.
+      expected_origin = embedded_test_server()->GetURL(host, "/");
+    } else {
+      // The optimization hints learned origins do not have a port.
+      expected_origin = GURL(base::StringPrintf("http://%s", host.c_str()));
+    }
+    EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+        expected_origin));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
+                       NavigationWithNoLocalPredictionsButHasOptimizationHint) {
+  base::HistogramTester histogram_tester;
+
+  GURL url = embedded_test_server()->GetURL("m.hints.com", "/simple.html");
+  SetUpOptimizationHint(url, {Subresource("http://subresource.com/1"),
+                              Subresource("http://subresource.com/2"),
+                              Subresource("http://otherresource.com/2"),
+                              Subresource("skipsoverinvalidurl/////")});
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+
+  // The initial URL should be preconnected to.
+  preconnect_manager_observer()->WaitUntilHostLookedUp(url.host(),
+                                                       network_isolation_key);
+  EXPECT_TRUE(preconnect_manager_observer()->HostFound(url.host(),
+                                                       network_isolation_key));
+  EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+      origin.GetURL()));
+
+  for (auto* const host : {"subresource.com", "otherresource.com"}) {
+    if (ShouldUseOptimizationGuidePredictions()) {
+      // Both subresource hosts should be preconnected to.
+      preconnect_manager_observer()->WaitUntilHostLookedUp(
+          host, network_isolation_key);
+    }
+    EXPECT_EQ(
+        preconnect_manager_observer()->HostFound(host, network_isolation_key),
+        ShouldUseOptimizationGuidePredictions());
+
+    EXPECT_EQ(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+                  GURL(base::StringPrintf("http://%s/", host))),
+              ShouldUseOptimizationGuidePredictions());
+  }
+
+  EXPECT_TRUE(observer->WaitForResponse());
+  observer->ResumeNavigation();
+  content::AwaitDocumentOnLoadCompleted(observer->web_contents());
+  observer->WaitForNavigationFinished();
+
+  // Navigate to another URL - make sure optimization guide prediction is
+  // cleared.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("nohints.com", "/")));
+
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.PreconnectLearningRecall.OptimizationGuide", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.PreconnectLearningPrecision.OptimizationGuide", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.PreconnectLearningCount.OptimizationGuide", 2, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    LoadingPredictorBrowserTestWithOptimizationGuide,
+    OptimizationGuidePredictionsNotAppliedForAlreadyCommittedNavigation) {
+  GURL url = embedded_test_server()->GetURL("hints.com", "/simple.html");
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // Navigate to URL with hints but only seed hints after navigation has
+  // committed.
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForResponse());
+  observer->ResumeNavigation();
+  SetUpOptimizationHint(url, {Subresource("http://subresource.com/1"),
+                              Subresource("http://subresource.com/2"),
+                              Subresource("http://otherresource.com/2"),
+                              Subresource("skipsoverinvalidurl/////")});
+
+  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      "subresource.com", network_isolation_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      "otheresource.com", network_isolation_key));
+}
+
+IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
+                       OptimizationGuidePredictionsNotAppliedForRedirect) {
+  GURL destination_url =
+      embedded_test_server()->GetURL("otherhost.com", "/cachetime");
+  GURL redirecting_url = embedded_test_server()->GetURL(
+      "sometimesredirects.com", "/cached-redirect?" + destination_url.spec());
+  SetUpOptimizationHint(destination_url,
+                        {Subresource("http://subresource.com/1"),
+                         Subresource("http://subresource.com/2"),
+                         Subresource("http://otherresource.com/2"),
+                         Subresource("skipsoverinvalidurl/////")});
+
+  // Navigate the first time to something on redirecting origin to fill the
+  // predictor's database and the HTTP cache.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "sometimesredirects.com",
+          GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                     embedded_test_server()->port()))));
+  ResetNetworkState();
+
+  url::Origin origin = url::Origin::Create(destination_url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // Navigate to URL with hints but is redirected, hints should not be
+  // applied.
+  auto observer = NavigateToURLAsync(redirecting_url);
+  EXPECT_TRUE(observer->WaitForResponse());
+  SetUpOptimizationHint(redirecting_url,
+                        {Subresource("http://subresourceredirect.com/1"),
+                         Subresource("http://subresourceredirect.com/2"),
+                         Subresource("http://otherresourceredirect.com/2"),
+                         Subresource("skipsoverinvalidurl/////")});
+  observer->ResumeNavigation();
+
+  std::vector<std::string> expected_opt_guide_subresource_hosts = {
+      "subresource.com", "otherresource.com"};
+  if (ShouldRetrieveOptimizationGuidePredictions() &&
+      ShouldUseOptimizationGuidePredictions()) {
+    // Should use subresources from optimization hint.
+    for (const auto& host : expected_opt_guide_subresource_hosts) {
+      preconnect_manager_observer()->WaitUntilHostLookedUp(
+          host, network_isolation_key);
+      EXPECT_TRUE(preconnect_manager_observer()->HostFound(
+          host, network_isolation_key));
+
+      // The origins from optimization hints do not have a port.
+      GURL expected_origin =
+          GURL(base::StringPrintf("http://%s", host.c_str()));
+      EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+          expected_origin));
+    }
+  } else {
+    for (const auto& host : expected_opt_guide_subresource_hosts) {
+      EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
+          host, network_isolation_key));
+    }
+  }
+}
+
+class LoadingPredictorBrowserTestWithNoLocalPredictions
+    : public LoadingPredictorBrowserTest {
+ public:
+  LoadingPredictorBrowserTestWithNoLocalPredictions() {
+    feature_list_.InitAndDisableFeature(
+        features::kLoadingPredictorUseLocalPredictions);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithNoLocalPredictions,
+                       ShouldNotActOnLocalPrediction) {
+  // Navigate the first time to fill the predictor's database and the HTTP
+  // cache.
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ResetNetworkState();
+
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+  // The initial URL should be preconnected to.
+  preconnect_manager_observer()->WaitUntilHostLookedUp(url.host(),
+                                                       network_isolation_key);
+  EXPECT_TRUE(preconnect_manager_observer()->HostFound(url.host(),
+                                                       network_isolation_key));
+  EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+      origin.GetURL()));
+  // 2 connections to the main frame host.
+  const size_t expected_connections = 2;
+  connection_tracker()->WaitForAcceptedConnections(expected_connections);
+  EXPECT_EQ(expected_connections,
+            connection_tracker()->GetAcceptedSocketCount());
+  // No reads since all resources should be cached.
+  EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
+}
+
+// A fixture for testing prefetching with optimization guide hints.
+class LoadingPredictorPrefetchBrowserTest
+    : public LoadingPredictorBrowserTestWithOptimizationGuide {
+ public:
+  void SetUp() override {
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &LoadingPredictorPrefetchBrowserTest::MonitorRequest,
+        base::Unretained(this)));
+
+    LoadingPredictorBrowserTestWithOptimizationGuide::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoadingPredictorBrowserTestWithOptimizationGuide::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(
+        switches::kLoadingPredictorAllowLocalRequestForTesting);
+  }
+
+ protected:
+  // Sets the requests to expect in WaitForRequests().
+  void SetExpectedRequests(base::flat_set<GURL> requests) {
+    expected_requests_ = std::move(requests);
+  }
+
+  // Returns once all expected requests have been received.
+  void WaitForRequests() {
+    if (expected_requests_.empty())
+      return;
+    base::RunLoop loop;
+    quit_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    // Monitor only prefetches.
+    if (request.headers.find("Purpose") == request.headers.end() ||
+        (request.headers.at("Purpose") != "prefetch")) {
+      return;
+    }
+
+    // |request.GetURL()| gives us the URL after it's already resolved to
+    // 127.0.0.1, so reconstruct the requested host via the Host header
+    // (which includes host+port).
+    GURL url = request.GetURL();
+    auto host_iter = request.headers.find("Host");
+    if (host_iter != request.headers.end())
+      url = GURL("http://" + host_iter->second + request.relative_url);
+
+    // Remove the expected request.
+    auto it = expected_requests_.find(url);
+    ASSERT_TRUE(it != expected_requests_.end())
+        << "Got unexpected request: " << url;
+    expected_requests_.erase(it);
+
+    // Finish if done.
+    if (expected_requests_.empty() && quit_)
+      std::move(quit_).Run();
+  }
+
+  base::flat_set<GURL> expected_requests_;
+  base::OnceClosure quit_;
+};
+
+// Tests that the LoadingPredictor performs prefetching
+// for a navigation which it has a prediction for and there isn't a local
+// prediction available.
+IN_PROC_BROWSER_TEST_P(LoadingPredictorPrefetchBrowserTest,
+                       DISABLED_PrepareForPageLoadWithPredictionForPrefetchNoLocalHint) {
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+
+  // Set up optimization hints.
+  std::vector<Subresource> hints = {
+      {"skipsoverinvalidurl/////",
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/css").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/image").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN},
+      {embedded_test_server()->GetURL("otherresource.com", "/js").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_SCRIPT},
+      {embedded_test_server()->GetURL("preconnect.com", "/other").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN, true},
+  };
+  SetUpOptimizationHint(url, hints);
+
+  // Expect these prefetches.
+  std::vector<GURL> requests;
+  if (GetSubresourceTypeParam() == "all") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css"),
+                embedded_test_server()->GetURL("subresource.com", "/image"),
+                embedded_test_server()->GetURL("otherresource.com", "/js")};
+  } else if (GetSubresourceTypeParam() == "css") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css")};
+  } else if (GetSubresourceTypeParam() == "js_css") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css"),
+                embedded_test_server()->GetURL("otherresource.com", "/js")};
+  }
+  SetExpectedRequests(std::move(requests));
+
+  // Start a navigation and observe these prefetches.
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+  WaitForRequests();
+
+  // preconnect.com should be preconnected to.
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  preconnect_manager_observer()->WaitUntilHostLookedUp("preconnect.com",
+                                                       network_isolation_key);
+  EXPECT_TRUE(preconnect_manager_observer()->HostFound("preconnect.com",
+                                                       network_isolation_key));
+  EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+      embedded_test_server()->GetURL("preconnect.com", "/")));
+}
+
+// Tests that the LoadingPredictor performs prefetching
+// for a navigation which it has a prediction for and there is a local
+// prediction available.
+IN_PROC_BROWSER_TEST_P(
+    LoadingPredictorPrefetchBrowserTest,
+    PrepareForPageLoadWithPredictionForPrefetchHasLocalHint) {
+  // Navigate the first time to fill the predictor's database and the HTTP
+  // cache.
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ResetNetworkState();
+
+  // Set up optimization hints.
+  std::vector<Subresource> hints = {
+      {"skipsoverinvalidurl/////",
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/css").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/image").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN},
+      {embedded_test_server()->GetURL("otherresource.com", "/js").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_SCRIPT},
+      {embedded_test_server()->GetURL("preconnect.com", "/other").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN, true},
+  };
+  SetUpOptimizationHint(url, hints);
+
+  // Expect these prefetches.
+  std::vector<GURL> requests;
+  if (GetSubresourceTypeParam() == "all") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css"),
+                embedded_test_server()->GetURL("subresource.com", "/image"),
+                embedded_test_server()->GetURL("otherresource.com", "/js")};
+  } else if (GetSubresourceTypeParam() == "css") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css")};
+  } else if (GetSubresourceTypeParam() == "js_css") {
+    requests = {embedded_test_server()->GetURL("subresource.com", "/css"),
+                embedded_test_server()->GetURL("otherresource.com", "/js")};
+  }
+  SetExpectedRequests(std::move(requests));
+
+  // Start a navigation and observe these prefetches.
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+  WaitForRequests();
+
+  std::vector<std::string> expected_subresource_hosts;
+  if (IsLocalPredictionEnabled()) {
+    // Should use subresources that were learned.
+    expected_subresource_hosts = {"baz.com", "foo.com"};
+  } else {
+    // Should use subresources from optimization hint.
+    expected_subresource_hosts = {"preconnect.com"};
+  }
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  for (const auto& host : expected_subresource_hosts) {
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host,
+                                                         network_isolation_key);
+    EXPECT_TRUE(
+        preconnect_manager_observer()->HostFound(host, network_isolation_key));
+    EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+        embedded_test_server()->GetURL(host, "/")));
+  }
+}
+
+// A fixture for testing prefetching with the local resource check not bypassed.
+// The normal fixture bypasses the check so that the embedded test server can be
+// used.
+class LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest
+    : public LoadingPredictorPrefetchBrowserTest {
+ public:
+  LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest() = default;
+
+  // Override to prevent adding kLoadingPredictorAllowLocalRequestForTesting
+  // here.
+  void SetUpCommandLine(base::CommandLine* command_line) override {}
+};
+
+// Test that prefetches to local resources are blocked.
+// Disabled for being flaky. crbug.com/1116599
+IN_PROC_BROWSER_TEST_P(
+    LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest,
+    DISABLED_PrepareForPageLoadWithPredictionForPrefetch) {
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+
+  GURL hint_url = embedded_test_server()->GetURL("subresource.com", "/css");
+
+  // Set up one optimization hint.
+  std::vector<Subresource> hints = {
+      {hint_url.spec(), optimization_guide::proto::RESOURCE_TYPE_CSS},
+  };
+  SetUpOptimizationHint(url, hints);
+
+  // Start a navigation which triggers prefetch.
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+
+  // The prefetch should have failed.
+  prefetch_manager_observer()->WaitForPrefetchesForNavigation(url);
+  auto results = prefetch_manager_observer()->results();
+  ASSERT_THAT(results, SizeIs(1));
+
+  const auto& status = results[0].status;
+  EXPECT_EQ(status.error_code, net::ERR_FAILED);
+  EXPECT_THAT(status.cors_error_status,
+              Optional(network::CorsErrorStatus(
+                  network::mojom::CorsError::kInsecurePrivateNetwork,
+                  network::mojom::IPAddressSpace::kUnknown,
+                  network::mojom::IPAddressSpace::kLocal)));
+}
+
+// This fixture is for disabling prefetching via test suite instantiation to
+// test the counterfactual arm (|always_retrieve_predictions| is
+// true but using the predictions is disabled).
+class LoadingPredictorPrefetchCounterfactualBrowserTest
+    : public LoadingPredictorPrefetchBrowserTest {};
+
+IN_PROC_BROWSER_TEST_P(
+    LoadingPredictorPrefetchCounterfactualBrowserTest,
+    PrepareForPageLoadWithPredictionForPrefetchHasLocalHint) {
+  // Assert that this tests the counterfactual arm.
+  ASSERT_TRUE(features::ShouldAlwaysRetrieveOptimizationGuidePredictions());
+  ASSERT_FALSE(features::ShouldUseOptimizationGuidePredictions());
+
+  // Navigate the first time to fill the predictor's database and the HTTP
+  // cache.
+  GURL url = embedded_test_server()->GetURL(
+      "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
+                                             embedded_test_server()->port()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ResetNetworkState();
+
+  // Set up optimization hints.
+  std::vector<Subresource> hints = {
+      {"skipsoverinvalidurl/////",
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/css").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_CSS},
+      {embedded_test_server()->GetURL("subresource.com", "/image").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN},
+      {embedded_test_server()->GetURL("otherresource.com", "/js").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_SCRIPT},
+      {embedded_test_server()->GetURL("preconnect.com", "/other").spec(),
+       optimization_guide::proto::RESOURCE_TYPE_UNKNOWN, true},
+  };
+  SetUpOptimizationHint(url, hints);
+
+  // Expect no prefetches. The test will fail if any prefetch requests are
+  // issued.
+  SetExpectedRequests({});
+
+  // Start a navigation.
+  auto observer = NavigateToURLAsync(url);
+  EXPECT_TRUE(observer->WaitForRequestStart());
+
+  std::vector<std::string> expected_subresource_hosts;
+  if (IsLocalPredictionEnabled()) {
+    // Should use subresources that were learned.
+    expected_subresource_hosts = {"baz.com", "foo.com"};
+  } else {
+    // Should not use subresources from optimization hint since
+    // use_predictions is disabled.
+  }
+  url::Origin origin = url::Origin::Create(url);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  for (const auto& host : expected_subresource_hosts) {
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host,
+                                                         network_isolation_key);
+    EXPECT_TRUE(
+        preconnect_manager_observer()->HostFound(host, network_isolation_key));
+    EXPECT_TRUE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
+        embedded_test_server()->GetURL(host, "/")));
+  }
+
+  // Run the run loop to give the test a chance to fail by issuing a prefetch.
+  // We don't have an explicit signal for the prefetch manager *not* starting.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(prefetch_manager_observer()->results().empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LoadingPredictorPrefetchBrowserTest,
+    testing::Combine(
+        /*IsLocalPredictionEnabled()=*/testing::Values(true, false),
+        /*ShouldUseOptimizationGuidePredictions()=*/
+        testing::Values(true),
+        /*IsPrefetchEnabled()=*/testing::Values(true),
+        /*GetSubresourceType()=*/testing::Values("all", "css", "js_css")));
+
+// For the "BlockedLocalRequest" test, the params largely don't matter. We just
+// need to enable prefetching and test one configuration, since the test passes
+// if the prefetch is blocked.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LoadingPredictorPrefetchBrowserTestWithBlockedLocalRequest,
+    testing::Combine(
+        /*IsLocalPredictionEnabled()=*/testing::Values(false),
+        /*ShouldUseOptimizationGuidePredictions()=*/
+        testing::Values(true),
+        /*IsPrefetchEnabled()=*/testing::Values(true),
+        /*GetSubresourceType()=*/testing::Values("all")));
+
+// For the "prefetch counterfactual" test, we want to retrieve the optimization
+// guide hints but not use them, so set ShouldUseOptimizationGuidePredictions()
+// to false. It doesn't matter if IsPrefetchEnabled() is true or not, since
+// prefetching only uses optimization guide predictions.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LoadingPredictorPrefetchCounterfactualBrowserTest,
+    testing::Combine(
+        /*IsLocalPredictionEnabled()=*/testing::Values(true, false),
+        /*ShouldUseOptimizationGuidePredictions()=*/
+        testing::Values(false),
+        /*IsPrefetchEnabled()=*/testing::Values(true),
+        /*GetSubresourceType()=*/testing::Values("all")));
+
+// Tests that features work when there are multiple FrameTrees in a WebContents.
+class MultiPageBrowserTest : public InProcessBrowserTest {
+ public:
+  MultiPageBrowserTest()
+      : prerender_test_helper_(
+            base::BindRepeating(&MultiPageBrowserTest::GetWebContents,
+                                base::Unretained(this))) {}
+
+ protected:
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    test_server_handle_ = embedded_test_server()->StartAndReturnHandle();
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+  content::test::PrerenderTestHelper prerender_test_helper_;
+
+ private:
+  content::WebContents* GetWebContents() { return web_contents_; }
+
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+  content::WebContents* web_contents_;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
+  GURL first_main = embedded_test_server()->GetURL("/title1.html");
+  GURL prerender = embedded_test_server()->GetURL("/title2.html");
+  GURL second_main = embedded_test_server()->GetURL("/title3.html");
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+
+  // Start navigationin primary FrameTree.
+  auto first_main_observer = std::make_unique<content::TestNavigationManager>(
+      web_contents(), first_main);
+  web_contents()->GetController().LoadURL(first_main, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  ASSERT_TRUE(first_main_observer->WaitForRequestStart());
+  EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  first_main_observer->WaitForNavigationFinished();
+  EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  content::WaitForLoadStop(web_contents());
+  EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
+
+  // Start a pre-render and a navigation in the main frame so we have 2
+  // concurrent navigations.
+  auto prerender_observer = std::make_unique<content::TestNavigationManager>(
+      web_contents(), prerender);
+  auto second_main_observer = std::make_unique<content::TestNavigationManager>(
+      web_contents(), second_main);
+  prerender_test_helper_.AddPrerenderAsync(prerender);
+  web_contents()->GetController().LoadURL(second_main, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+  ASSERT_TRUE(prerender_observer->WaitForRequestStart());
+  ASSERT_TRUE(second_main_observer->WaitForRequestStart());
+  EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  prerender_observer->WaitForNavigationFinished();
+  EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  second_main_observer->WaitForNavigationFinished();
+  EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
+
+  content::WaitForLoadStop(web_contents());
+  EXPECT_EQ(2u, loading_predictor->GetTotalHintsActivatedForTesting());
 }
 
 }  // namespace predictors

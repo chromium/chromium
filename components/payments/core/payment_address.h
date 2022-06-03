@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_ADDRESS_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_ADDRESS_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/strings/string16.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 
 // C++ bindings for the PaymentRequest API PaymentAddress. Conforms to the
@@ -16,14 +12,13 @@
 // https://w3c.github.io/payment-request/#dom-paymentaddress
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
 
 // Populates |value| with the properties of this PaymentAddress.
-std::unique_ptr<base::DictionaryValue> PaymentAddressToDictionaryValue(
-    const mojom::PaymentAddress& address);
+base::Value PaymentAddressToValue(const mojom::PaymentAddress& address);
 
 }  // namespace payments
 

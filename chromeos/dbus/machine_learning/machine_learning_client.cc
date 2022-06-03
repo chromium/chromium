@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/machine_learning/fake_machine_learning_client.h"
 #include "dbus/bus.h"
@@ -19,11 +18,21 @@ namespace chromeos {
 
 namespace {
 
+// TODO(crbug.com/1163656): the tast test platform.MLServiceBootstrap flakiness
+// shows ml-service bootstrap fails occasionally for timeout. Try to fix this
+// with a long period (2 minutes).
+constexpr base::TimeDelta kLongTimeout = base::Minutes(2);
+
 MachineLearningClient* g_instance = nullptr;
 
 class MachineLearningClientImpl : public MachineLearningClient {
  public:
   MachineLearningClientImpl() = default;
+
+  MachineLearningClientImpl(const MachineLearningClientImpl&) = delete;
+  MachineLearningClientImpl& operator=(const MachineLearningClientImpl&) =
+      delete;
+
   ~MachineLearningClientImpl() override = default;
 
   // MachineLearningClient:
@@ -35,7 +44,7 @@ class MachineLearningClientImpl : public MachineLearningClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendFileDescriptor(fd.get());
     ml_service_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kLongTimeout.InMilliseconds(),
         base::BindOnce(
             &MachineLearningClientImpl::OnBootstrapMojoConnectionResponse,
             weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
@@ -60,8 +69,6 @@ class MachineLearningClientImpl : public MachineLearningClient {
 
   // Must be last class member.
   base::WeakPtrFactory<MachineLearningClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLearningClientImpl);
 };
 
 }  // namespace

@@ -67,43 +67,76 @@ TEST(HistogramFunctionsTest, Boolean) {
 TEST(HistogramFunctionsTest, Percentage) {
   std::string histogram("Testing.UMA.HistogramPercentage");
   HistogramTester tester;
+  UmaHistogramPercentage(histogram, 1);
+  tester.ExpectBucketCount(histogram, 1, 1);
+  tester.ExpectTotalCount(histogram, 1);
+
   UmaHistogramPercentage(histogram, 50);
-  tester.ExpectUniqueSample(histogram, 50, 1);
-  // Test overflows.
-  UmaHistogramPercentage(histogram, 110);
-  tester.ExpectBucketCount(histogram, 101, 1);
+  tester.ExpectBucketCount(histogram, 50, 1);
   tester.ExpectTotalCount(histogram, 2);
+
+  UmaHistogramPercentage(histogram, 100);
+  tester.ExpectBucketCount(histogram, 100, 1);
+  tester.ExpectTotalCount(histogram, 3);
+  // Test overflows.
+  UmaHistogramPercentage(histogram, 101);
+  tester.ExpectBucketCount(histogram, 101, 1);
+  tester.ExpectTotalCount(histogram, 4);
+
+  UmaHistogramPercentage(histogram, 500);
+  tester.ExpectBucketCount(histogram, 101, 2);
+  tester.ExpectTotalCount(histogram, 5);
 }
 
 TEST(HistogramFunctionsTest, Counts) {
   std::string histogram("Testing.UMA.HistogramCount.Custom");
   HistogramTester tester;
-  UmaHistogramCustomCounts(histogram, 10, 1, 100, 10);
-  tester.ExpectUniqueSample(histogram, 10, 1);
+
+  // Add a sample that should go into the underflow bucket.
+  UmaHistogramCustomCounts(histogram, 0, 1, 100, 10);
+
+  // Add a sample that should go into the first bucket.
+  UmaHistogramCustomCounts(histogram, 1, 1, 100, 10);
+
+  // Add multiple samples that should go into the same bucket.
   UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
   UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
-  UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
-  tester.ExpectBucketCount(histogram, 20, 3);
-  tester.ExpectTotalCount(histogram, 4);
-  UmaHistogramCustomCounts(histogram, 110, 1, 100, 10);
-  tester.ExpectBucketCount(histogram, 101, 1);
-  tester.ExpectTotalCount(histogram, 5);
+  UmaHistogramCustomCounts(histogram, 21, 1, 100, 10);
+
+  // Add a sample that should go into the last bucket.
+  UmaHistogramCustomCounts(histogram, 99, 1, 100, 10);
+
+  // Add some samples that should go into the overflow bucket.
+  UmaHistogramCustomCounts(histogram, 100, 1, 100, 10);
+  UmaHistogramCustomCounts(histogram, 101, 1, 100, 10);
+
+  // Verify the number of samples.
+  tester.ExpectTotalCount(histogram, 8);
+
+  // Verify the following:
+  // (a) The underflow bucket [0, 1) contains one sample.
+  // (b) The first and last buckets each contain one sample.
+  // (c) The bucket for values in [16, 29) contains three samples.
+  // (d) The overflow bucket contains two samples.
+  EXPECT_THAT(tester.GetAllSamples(histogram),
+              testing::ElementsAre(Bucket(0, 1), Bucket(1, 1), Bucket(16, 3),
+                                   Bucket(54, 1), Bucket(100, 2)));
 }
 
 TEST(HistogramFunctionsTest, Times) {
   std::string histogram("Testing.UMA.HistogramTimes");
   HistogramTester tester;
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(1));
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(1), 1);
+  UmaHistogramTimes(histogram, Seconds(1));
+  tester.ExpectTimeBucketCount(histogram, Seconds(1), 1);
   tester.ExpectTotalCount(histogram, 1);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(9));
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(9), 1);
+  UmaHistogramTimes(histogram, Seconds(9));
+  tester.ExpectTimeBucketCount(histogram, Seconds(9), 1);
   tester.ExpectTotalCount(histogram, 2);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(10));  // Overflows
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(10), 1);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(20));  // Overflows.
+  UmaHistogramTimes(histogram, Seconds(10));  // Overflows
+  tester.ExpectTimeBucketCount(histogram, Seconds(10), 1);
+  UmaHistogramTimes(histogram, Seconds(20));  // Overflows.
   // Check the value by picking any overflow time.
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(11), 2);
+  tester.ExpectTimeBucketCount(histogram, Seconds(11), 2);
   tester.ExpectTotalCount(histogram, 4);
 }
 

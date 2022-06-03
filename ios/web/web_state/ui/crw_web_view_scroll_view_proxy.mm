@@ -5,17 +5,22 @@
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
 
 #import <objc/runtime.h>
-
 #include <memory>
 
 #include "base/auto_reset.h"
 #import "base/ios/crb_protocol_observers.h"
 #include "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
+#include "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// *Address of* this variable is used as a marker to specify that it matches any
+// context.
+static int gAnyContext = 0;
 
 // A wrapper of a key-value observer. When an instance of
 // CRWKeyValueObserverForwarder receives a KVO callback, it forwards the
@@ -27,16 +32,16 @@
 // callback still look like a callback from the proxy object.
 @interface CRWKeyValueObserverForwarder : NSObject
 
-// The number of times when -addObserver:forKeyPath:options:context: has been
-// called with this wrapper. The caller of this class is responsible to update
-// this.
-@property(nonatomic) int observationCount;
-
 @property(nonatomic, weak) id wrappedObserver;
 @property(nonatomic, weak) id object;
+@property(nonatomic) NSKeyValueObservingOptions options;
+@property(nonatomic) void* context;
 
 - (instancetype)initWithWrappedObserver:(id)wrappedObserver
-                                 object:(id)object NS_DESIGNATED_INITIALIZER;
+                                 object:(id)object
+                                options:(NSKeyValueObservingOptions)options
+                                context:(void*)context
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -44,11 +49,16 @@
 
 @implementation CRWKeyValueObserverForwarder
 
-- (instancetype)initWithWrappedObserver:(id)wrappedObserver object:(id)object {
+- (instancetype)initWithWrappedObserver:(id)wrappedObserver
+                                 object:(id)object
+                                options:(NSKeyValueObservingOptions)options
+                                context:(void*)context {
   self = [super init];
   if (self) {
     _wrappedObserver = wrappedObserver;
     _object = object;
+    _options = options;
+    _context = context;
   }
   return self;
 }
@@ -78,18 +88,47 @@
 @property(nonatomic, strong)
     CRBProtocolObservers<CRWWebViewScrollViewProxyObserver>* observers;
 
-@property(nonatomic, weak) UIScrollView* underlyingScrollView;
+@property(nonatomic, strong) UIScrollView* underlyingScrollView;
 
 // This exists for compatibility with UIScrollView (see -asUIScrollView).
 @property(nonatomic, weak) id<UIScrollViewDelegate> delegate;
 
+// Wrappers of key-value observers against this instance, keyed by:
+//   - the key path (the outer dictionary)
+//   - NSValue representation of an unretained pointer to the observer (the
+//     inner dictionary).
+//
+// This dictionary must hold an *unretained* pointer to the observer, neither a
+// strong or weak pointer.
+//   - An object should not retain its key-value observer. So it must not be a
+//     strong pointer.
+//   - The dictionary may be accessed during -dealloc of an observer. This is
+//     quite possible because it is common that an observer calls
+//     -removeObserver:forKeyPath: during its -dealloc, and this dictionary is
+//     accessed in -removeObserver:forKeyPath:. And a weak pointer to an object
+//     is not available during its -dealloc.
+//
+// And holding NSValue wrapping the pointer is the only way to use an unretained
+// pointer as a key of a dictionary. NSMapTable supports using a weak pointer
+// for its keys, but not an unretained pointer.
+//
+// Use of an unretained pointer here is safe because it is never dereferenced,
+// and the observer must call -removeObserver:forKeyPath: before it is
+// deallocated.
+@property(nonatomic, strong) NSMutableDictionary<
+    NSString*,
+    NSMutableDictionary<NSValue*,
+                        NSMutableArray<CRWKeyValueObserverForwarder*>*>*>*
+    keyValueObserverForwarders;
+
 // Returns the key paths that need to be observed for UIScrollView.
 + (NSArray*)scrollViewObserverKeyPaths;
 
-// Adds and removes |self| as an observer for |scrollView| with key paths
-// returned by |+scrollViewObserverKeyPaths|.
-- (void)startObservingScrollView:(UIScrollView*)scrollView;
-- (void)stopObservingScrollView:(UIScrollView*)scrollView;
+// Adds and removes key-value observers for |scrollView| needed by |proxy|.
++ (void)startObservingScrollView:(UIScrollView*)scrollView
+                           proxy:(CRWWebViewScrollViewProxy*)proxy;
++ (void)stopObservingScrollView:(UIScrollView*)scrollView
+                          proxy:(CRWWebViewScrollViewProxy*)proxy;
 
 @end
 
@@ -101,13 +140,7 @@
 //   - Calls to UIScrollView methods not implemented in this class are forwarded
 //     to the underlying UIScrollView by -methodSignatureForSelector: and
 //     -forwardInvocation:.
-@implementation CRWWebViewScrollViewProxy {
-  // Wrappers of key-value observers against this instance, keyed by the key
-  // path (the outer dictionary) and the observer (the inner map table).
-  NSMutableDictionary<NSString*,
-                      NSMapTable<id, CRWKeyValueObserverForwarder*>*>*
-      _keyValueObserverForwarders;
-}
+@implementation CRWWebViewScrollViewProxy
 
 - (instancetype)init {
   self = [super init];
@@ -119,20 +152,39 @@
     _delegateProxy = [[CRWWebViewScrollViewDelegateProxy alloc]
         initWithScrollViewProxy:self];
     _keyValueObserverForwarders = [[NSMutableDictionary alloc] init];
+
+    // Assign a placeholder UIScrollView until the actual underlying scroll view
+    // is set. This must be a real UIScrollView, not nil, so that:
+    //   - The proxy preserves the values of properties assigned before the
+    //     actual scroll view is set. These properties will then be inherited to
+    //     the actual scroll view in -setScrollView:.
+    //   - The proxy returns the actual default value of the property before the
+    //     actual scroll view is set, even when the default value is non-zero
+    //     e.g., scrollsToTop.
+    //   - The proxy uses the actual implementation of methods defined in
+    //     third-party categories of UIScrollView.
+    //
+    // Note that this proxy must support all methods/properties of UIScrollView,
+    // including those defined in third-party categories, because it provides
+    // -asUIScrollView method.
+    _underlyingScrollView = [[UIScrollView alloc] init];
+
+    // There are a few properties where the default WKWebView.scrollView has
+    // different values from a base UIScrollView. As _underlyingScrollView
+    // starts out as a base UIScrollView, the property preservation code will
+    // copy over these incorrect values and overwrite the default
+    // WKWebView.scrollView values for those properties. Instead, set those
+    // values to their WebKit defaults.
+    _underlyingScrollView.alwaysBounceVertical = YES;
+    _underlyingScrollView.directionalLockEnabled = YES;
+
+    [self.class startObservingScrollView:_underlyingScrollView proxy:self];
   }
   return self;
 }
 
 - (void)dealloc {
-  [self stopObservingScrollView:self.underlyingScrollView];
-}
-
-- (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [self.underlyingScrollView addGestureRecognizer:gestureRecognizer];
-}
-
-- (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [self.underlyingScrollView removeGestureRecognizer:gestureRecognizer];
+  [self.class stopObservingScrollView:self.underlyingScrollView proxy:self];
 }
 
 - (void)addObserver:(id<CRWWebViewScrollViewProxyObserver>)observer {
@@ -146,16 +198,36 @@
 - (void)setScrollView:(UIScrollView*)scrollView {
   if (self.underlyingScrollView == scrollView)
     return;
+
+  // Use a placeholder UIScrollView instead when nil is given. See the comment
+  // in -init why this is necessary.
+  if (!scrollView) {
+    scrollView = [[UIScrollView alloc] init];
+  }
+
+  // Clean up the delegate/observers of the old scroll view.
   [self.underlyingScrollView setDelegate:nil];
-  [self stopObservingScrollView:self.underlyingScrollView];
+  [self.class stopObservingScrollView:self.underlyingScrollView proxy:self];
+
+  // Set up the delegate/observers of the new scroll view.
   DCHECK(!scrollView.delegate);
   scrollView.delegate = self.delegateProxy;
-  [self startObservingScrollView:scrollView];
+  [self.class startObservingScrollView:scrollView proxy:self];
+
+  if (base::FeatureList::IsEnabled(
+          web::features::kPreserveScrollViewProperties)) {
+    [self preservePropertiesFromOldScrollView:self.underlyingScrollView
+                              toNewScrollView:scrollView];
+  }
+
   self.underlyingScrollView = scrollView;
+
+  // TODO(crbug.com/1023250): Restore these in
+  // -preservePropertiesFromOldScrollView:toNewScrollView: once the feature flag
+  // kPreserveScrollViewProperties is removed.
   if (_storedClipsToBounds) {
     scrollView.clipsToBounds = *_storedClipsToBounds;
   }
-
   // Assigns |contentInsetAdjustmentBehavior| which was set before setting the
   // scroll view.
   if (_storedContentInsetAdjustmentBehavior) {
@@ -166,31 +238,59 @@
   [_observers webViewScrollViewProxyDidSetScrollView:self];
 }
 
-- (CGRect)frame {
-  return self.underlyingScrollView ? [self.underlyingScrollView frame]
-                                   : CGRectZero;
-}
+// Preserves properties of the underlying scroll view when it changes from
+// |oldScrollView| to |newScrollView|.
+//
+// This is necessary to avoid losing properties set against the proxy when the
+// underlying scroll view is reset.
+- (void)preservePropertiesFromOldScrollView:(UIScrollView*)oldScrollView
+                            toNewScrollView:(UIScrollView*)newScrollView {
+  // This method should preserve all properties of UIScrollView and its
+  // ancestor classes (not limited to properties explicitly declared in
+  // CRWWebViewScrollViewProxy) which:
+  //   - is a readwrite property
+  //   - AND is supposed to be modified directly, considering it's a scroll
+  //     view of a web view. e.g., |frame| and |subviews| do not meet this
+  //     condition because they are managed by the web view.  |backgroundColor|
+  //     is also managed by WKWebView to match the page's background color, and
+  //     should not be set directly (see crbug.com/1078790).
+  //
+  // Properties not explicitly declared in CRWWebViewScrollViewProxy can still
+  // be accessed via -asUIScrollView, so they should be preserved as well.
 
-- (BOOL)isScrollEnabled {
-  return [self.underlyingScrollView isScrollEnabled];
-}
+  // UIScrollView properties.
+  newScrollView.scrollEnabled = oldScrollView.scrollEnabled;
+  newScrollView.directionalLockEnabled = oldScrollView.directionalLockEnabled;
+  newScrollView.pagingEnabled = oldScrollView.pagingEnabled;
+  newScrollView.scrollsToTop = oldScrollView.scrollsToTop;
+  newScrollView.bounces = oldScrollView.bounces;
+  newScrollView.alwaysBounceVertical = oldScrollView.alwaysBounceVertical;
+  newScrollView.alwaysBounceHorizontal = oldScrollView.alwaysBounceHorizontal;
+  newScrollView.showsHorizontalScrollIndicator =
+      oldScrollView.showsHorizontalScrollIndicator;
+  newScrollView.showsVerticalScrollIndicator =
+      oldScrollView.showsVerticalScrollIndicator;
+  newScrollView.canCancelContentTouches = oldScrollView.canCancelContentTouches;
+  newScrollView.delaysContentTouches = oldScrollView.delaysContentTouches;
+  newScrollView.keyboardDismissMode = oldScrollView.keyboardDismissMode;
+  newScrollView.indexDisplayMode = oldScrollView.indexDisplayMode;
+  newScrollView.indicatorStyle = oldScrollView.indicatorStyle;
 
-- (void)setScrollEnabled:(BOOL)scrollEnabled {
-  [self.underlyingScrollView setScrollEnabled:scrollEnabled];
-}
-
-- (BOOL)bounces {
-  return [self.underlyingScrollView bounces];
-}
-
-- (void)setBounces:(BOOL)bounces {
-  [self.underlyingScrollView setBounces:bounces];
+  // UIView properties.
+  newScrollView.hidden = oldScrollView.hidden;
+  newScrollView.alpha = oldScrollView.alpha;
+  newScrollView.opaque = oldScrollView.opaque;
+  newScrollView.tintColor = oldScrollView.tintColor;
+  newScrollView.tintAdjustmentMode = oldScrollView.tintAdjustmentMode;
+  newScrollView.clearsContextBeforeDrawing =
+      oldScrollView.clearsContextBeforeDrawing;
+  newScrollView.maskView = oldScrollView.maskView;
+  newScrollView.userInteractionEnabled = oldScrollView.userInteractionEnabled;
+  newScrollView.multipleTouchEnabled = oldScrollView.multipleTouchEnabled;
+  newScrollView.exclusiveTouch = oldScrollView.exclusiveTouch;
 }
 
 - (BOOL)clipsToBounds {
-  if (!self.underlyingScrollView && _storedClipsToBounds) {
-    return *_storedClipsToBounds;
-  }
   return self.underlyingScrollView.clipsToBounds;
 }
 
@@ -199,88 +299,9 @@
   self.underlyingScrollView.clipsToBounds = clipsToBounds;
 }
 
-- (BOOL)isDecelerating {
-  return [self.underlyingScrollView isDecelerating];
-}
-
-- (BOOL)isDragging {
-  return [self.underlyingScrollView isDragging];
-}
-
-- (BOOL)isTracking {
-  return [self.underlyingScrollView isTracking];
-}
-
-- (BOOL)isZooming {
-  return [self.underlyingScrollView isZooming];
-}
-
-- (CGFloat)zoomScale {
-  return [self.underlyingScrollView zoomScale];
-}
-
-- (void)setContentOffset:(CGPoint)contentOffset {
-  [self.underlyingScrollView setContentOffset:contentOffset];
-}
-
-- (CGPoint)contentOffset {
-  return self.underlyingScrollView ? [self.underlyingScrollView contentOffset]
-                                   : CGPointZero;
-}
-
-- (void)setContentInset:(UIEdgeInsets)contentInset {
-  [self.underlyingScrollView setContentInset:contentInset];
-}
-
-- (UIEdgeInsets)contentInset {
-  return self.underlyingScrollView ? [self.underlyingScrollView contentInset]
-                                   : UIEdgeInsetsZero;
-}
-
-- (void)setScrollIndicatorInsets:(UIEdgeInsets)scrollIndicatorInsets {
-  [self.underlyingScrollView setScrollIndicatorInsets:scrollIndicatorInsets];
-}
-
-- (UIEdgeInsets)scrollIndicatorInsets {
-  return self.underlyingScrollView
-             ? [self.underlyingScrollView scrollIndicatorInsets]
-             : UIEdgeInsetsZero;
-}
-
-- (void)setContentSize:(CGSize)contentSize {
-  [self.underlyingScrollView setContentSize:contentSize];
-}
-
-- (CGSize)contentSize {
-  return self.underlyingScrollView ? [self.underlyingScrollView contentSize]
-                                   : CGSizeZero;
-}
-
-- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated {
-  [self.underlyingScrollView setContentOffset:contentOffset animated:animated];
-}
-
-- (BOOL)scrollsToTop {
-  return [self.underlyingScrollView scrollsToTop];
-}
-
-- (void)setScrollsToTop:(BOOL)scrollsToTop {
-  [self.underlyingScrollView setScrollsToTop:scrollsToTop];
-}
-
 - (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior
     API_AVAILABLE(ios(11.0)) {
-  if (self.underlyingScrollView) {
-    return [self.underlyingScrollView contentInsetAdjustmentBehavior];
-  } else if (_storedContentInsetAdjustmentBehavior) {
-    return *_storedContentInsetAdjustmentBehavior;
-  } else {
-    return UIScrollViewContentInsetAdjustmentAutomatic;
-  }
-}
-
-- (UIEdgeInsets)adjustedContentInset API_AVAILABLE(ios(11.0)) {
-  return [self.underlyingScrollView adjustedContentInset];
+  return [self.underlyingScrollView contentInsetAdjustmentBehavior];
 }
 
 - (void)setContentInsetAdjustmentBehavior:
@@ -293,16 +314,8 @@
           contentInsetAdjustmentBehavior);
 }
 
-- (UIPanGestureRecognizer*)panGestureRecognizer {
-  return [self.underlyingScrollView panGestureRecognizer];
-}
-
-- (NSArray*)gestureRecognizers {
-  return [self.underlyingScrollView gestureRecognizers];
-}
-
 - (NSArray<__kindof UIView*>*)subviews {
-  return self.underlyingScrollView ? [self.underlyingScrollView subviews] : @[];
+  return [self.underlyingScrollView subviews];
 }
 
 #pragma mark -
@@ -311,14 +324,51 @@
   return @[ @"frame", @"contentSize", @"contentInset" ];
 }
 
-- (void)startObservingScrollView:(UIScrollView*)scrollView {
-  for (NSString* keyPath in [[self class] scrollViewObserverKeyPaths])
-    [scrollView addObserver:self forKeyPath:keyPath options:0 context:nil];
++ (void)startObservingScrollView:(UIScrollView*)scrollView
+                           proxy:(CRWWebViewScrollViewProxy*)proxy {
+  // Add observations by |proxy|.
+  for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
+    [scrollView addObserver:proxy forKeyPath:keyPath options:0 context:nil];
+  }
+
+  // Restore observers which were added to the past underlying scroll views.
+  for (NSString* keyPath in proxy.keyValueObserverForwarders) {
+    NSMutableDictionary<NSValue*,
+                        NSMutableArray<CRWKeyValueObserverForwarder*>*>* map =
+        proxy.keyValueObserverForwarders[keyPath];
+    for (NSValue* observerValue in map) {
+      for (CRWKeyValueObserverForwarder* observerForwarder in
+               map[observerValue]) {
+        [scrollView addObserver:observerForwarder
+                     forKeyPath:keyPath
+                        options:observerForwarder.options
+                        context:observerForwarder.context];
+      }
+    }
+  }
 }
 
-- (void)stopObservingScrollView:(UIScrollView*)scrollView {
-  for (NSString* keyPath in [[self class] scrollViewObserverKeyPaths])
-    [scrollView removeObserver:self forKeyPath:keyPath];
++ (void)stopObservingScrollView:(UIScrollView*)scrollView
+                          proxy:(CRWWebViewScrollViewProxy*)proxy {
+  // Remove observations by |self|.
+  for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
+    [scrollView removeObserver:proxy forKeyPath:keyPath];
+  }
+
+  // Remove observations added externally.
+  for (NSString* keyPath in proxy.keyValueObserverForwarders) {
+    NSMutableDictionary<NSValue*,
+                        NSMutableArray<CRWKeyValueObserverForwarder*>*>* map =
+        proxy.keyValueObserverForwarders[keyPath];
+    for (NSValue* observerValue in map) {
+      for (CRWKeyValueObserverForwarder* observerForwarder in
+               map[observerValue]) {
+        [scrollView removeObserver:observerForwarder
+                        forKeyPath:keyPath
+                           context:observerForwarder.context];
+      }
+    }
+  }
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
@@ -344,16 +394,14 @@
 
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)sel {
   // Called when this proxy is accessed through -asUIScrollView and the method
-  // is not implemented in this class. Do not call [self.underlyingScrollView
-  // methodSignatureForSelector:] here instead because self.underlyingScrollView
-  // may be nil.
-  return [UIScrollView instanceMethodSignatureForSelector:sel];
+  // is not implemented in this class.
+  return [self.underlyingScrollView methodSignatureForSelector:sel];
 }
 
 - (void)forwardInvocation:(NSInvocation*)invocation {
   // Called when this proxy is accessed through -asUIScrollView and the method
-  // is not implemented in this class. self.underlyingScrollView may be nil, but
-  // it is safe. nil can respond to any invocation (and does nothing).
+  // is not implemented in this class. Forwards the invocation to the undelrying
+  // scroll view.
   [invocation invokeWithTarget:self.underlyingScrollView];
 }
 
@@ -381,23 +429,29 @@
   // scroll view, except that |object| parameter of the notification points to
   // CRWWebViewScrollViewProxy, not the undelying scroll view. This is achieved
   // by CRWKeyValueObserverForwarder.
-  NSMapTable<id, CRWKeyValueObserverForwarder*>* map =
-      [_keyValueObserverForwarders objectForKey:keyPath];
+  NSMutableDictionary<NSValue*, NSMutableArray<CRWKeyValueObserverForwarder*>*>*
+      map = _keyValueObserverForwarders[keyPath];
   if (!map) {
-    map =
-        [NSMapTable mapTableWithKeyOptions:NSMapTableObjectPointerPersonality |
-                                           NSMapTableWeakMemory
-                              valueOptions:NSMapTableStrongMemory];
-    [_keyValueObserverForwarders setObject:map forKey:keyPath];
+    map = [[NSMutableDictionary alloc] init];
+    _keyValueObserverForwarders[keyPath] = map;
   }
-  CRWKeyValueObserverForwarder* observerForwarder = [map objectForKey:observer];
-  if (!observerForwarder) {
-    observerForwarder =
-        [[CRWKeyValueObserverForwarder alloc] initWithWrappedObserver:observer
-                                                               object:self];
-    [map setObject:observerForwarder forKey:observer];
+
+  // See the comment of the definition of _keyValueObserverForwarders for why
+  // NSValue with an unretained pointer is used here.
+  NSValue* observerValue = [NSValue valueWithNonretainedObject:observer];
+  NSMutableArray<CRWKeyValueObserverForwarder*>* observerForwarders =
+      map[observerValue];
+  if (!observerForwarders) {
+    observerForwarders = [[NSMutableArray alloc] init];
+    map[observerValue] = observerForwarders;
   }
-  ++observerForwarder.observationCount;
+
+  CRWKeyValueObserverForwarder* observerForwarder =
+      [[CRWKeyValueObserverForwarder alloc] initWithWrappedObserver:observer
+                                                             object:self
+                                                            options:options
+                                                            context:context];
+  [observerForwarders addObject:observerForwarder];
 
   [self.underlyingScrollView addObserver:observerForwarder
                               forKeyPath:keyPath
@@ -406,29 +460,54 @@
 }
 
 - (void)removeObserver:(NSObject*)observer forKeyPath:(NSString*)keyPath {
-  NSMapTable<id, CRWKeyValueObserverForwarder*>* map =
-      [_keyValueObserverForwarders objectForKey:keyPath];
-  CRWKeyValueObserverForwarder* observerForwarder = [map objectForKey:observer];
-  if (!observerForwarder) {
-    [NSException raise:NSRangeException
-                format:@"Cannot remove an observer %@ for the key path \"%@\" "
-                       @"from %@ because it is not registered as an observer.",
-                       observer, keyPath, self];
-  }
+  [self removeObserver:observer forKeyPath:keyPath context:&gAnyContext];
+}
 
-  [self.underlyingScrollView removeObserver:observerForwarder
-                                 forKeyPath:keyPath];
+- (void)removeObserver:(NSObject*)observer
+            forKeyPath:(NSString*)keyPath
+               context:(void*)context {
+  NSMutableDictionary<NSValue*, NSMutableArray<CRWKeyValueObserverForwarder*>*>*
+      map = _keyValueObserverForwarders[keyPath];
+
+  // See the comment of the definition of _keyValueObserverForwarders for why
+  // NSValue with an unretained pointer is used here.
+  NSValue* observerValue = [NSValue valueWithNonretainedObject:observer];
+  NSMutableArray<CRWKeyValueObserverForwarder*>* observerForwarders =
+      map[observerValue];
 
   // It is technically allowed to call -addObserver:forKeypath:options:context:
-  // multiple times with the same |observer| and same |keyPath|. And you need to
-  // call -removeObserver:forKeyPath: the same number of times to remove it.
-  --observerForwarder.observationCount;
-  if (observerForwarder.observationCount == 0) {
-    [map removeObjectForKey:observer];
-    if (map.count == 0) {
-      [_keyValueObserverForwarders removeObjectForKey:keyPath];
+  // multiple times with the same |observer| and same |keyPath|. And
+  // -removeObserver:forKeyPath:context: (and -removeObserver:forKeyPath:)
+  // removes the *last* observation matching the condition. This matches the
+  // (undocumented) behavior of the built-in KVO.
+  NSInteger i = static_cast<NSInteger>(observerForwarders.count) - 1;
+  for (; i >= 0; --i) {
+    if (context == &gAnyContext || observerForwarders[i].context == context) {
+      break;
     }
   }
+
+  // DCHECK on an attempt to remove an observer which is not registered. This
+  // behavior is inconsistent with the behavior of this method in NSObject
+  // (which throws an exception in this case). But Chromium code is not allowed
+  // to throw exceptions.
+  DCHECK_GE(i, 0) << base::SysNSStringToUTF8(
+      context == &gAnyContext
+          ? [NSString
+                stringWithFormat:
+                    @"Cannot remove an observer %@ for the key path \"%@\" "
+                    @"from %@ because it is not registered as an observer.",
+                    observer, keyPath, self]
+          : [NSString
+                stringWithFormat:
+                    @"Cannot remove an observer %@ for the key path \"%@\" "
+                    @"with context %p from %@ because it is not registered as "
+                    @"an observer.",
+                    observer, keyPath, context, self]);
+
+  [self.underlyingScrollView removeObserver:observerForwarders[i]
+                                 forKeyPath:keyPath];
+  [observerForwarders removeObjectAtIndex:i];
 }
 
 @end

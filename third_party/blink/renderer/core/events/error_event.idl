@@ -33,7 +33,7 @@
 [
     Exposed=(Window,Worker)
 ] interface ErrorEvent : Event {
-    [CallWith=ScriptState] constructor(DOMString type, optional ErrorEventInit eventInitDict);
+    [CallWith=ScriptState] constructor(DOMString type, optional ErrorEventInit eventInitDict = {});
     readonly attribute DOMString message;
     readonly attribute DOMString filename;
     readonly attribute unsigned long lineno;

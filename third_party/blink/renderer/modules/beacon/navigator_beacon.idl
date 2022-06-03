@@ -7,5 +7,7 @@
 [
     ImplementedAs=NavigatorBeacon
 ] partial interface Navigator {
-    [CallWith=ScriptState, MeasureAs=SendBeacon, RaisesException] boolean sendBeacon(USVString url, optional (ArrayBufferView or Blob or DOMString or FormData)? data = null);
+    // TODO(ricea): |data| should be BodyInit? when the IDL compiler supports
+    // it.
+    [CallWith=ScriptState, MeasureAs=SendBeacon, RaisesException] boolean sendBeacon(USVString url, optional (ReadableStream or XMLHttpRequestBodyInit)? data = null);
 };

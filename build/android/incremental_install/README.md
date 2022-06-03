@@ -11,7 +11,7 @@ Add the gn arg:
 
     incremental_install = true
 
-This causes all apks to be built as incremental except for blacklisted ones.
+This causes all apks to be built as incremental except for denylisted ones.
 
 ## Running
 

@@ -6,7 +6,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
@@ -15,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/plugin_service.h"
+#include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -48,21 +48,8 @@ class PluginResponseInterceptorURLLoaderThrottleBrowserTest
   }
 
   int CountPDFProcesses() {
-    int result = -1;
-    base::RunLoop run_loop;
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&PluginResponseInterceptorURLLoaderThrottleBrowserTest::
-                           CountPDFProcessesOnIOThread,
-                       base::Unretained(this), base::Unretained(&result)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-    return result;
-  }
-
-  void CountPDFProcessesOnIOThread(int* result) {
     auto* service = content::PluginService::GetInstance();
-    *result = service->CountPpapiPluginProcessesForProfile(
+    return service->CountPpapiPluginProcessesForProfile(
         base::FilePath(ChromeContentClient::kPDFPluginPath),
         browser()->profile()->GetPath());
   }
@@ -98,14 +85,14 @@ IN_PROC_BROWSER_TEST_F(PluginResponseInterceptorURLLoaderThrottleBrowserTest,
   WebContents* web_contents = GetActiveWebContents();
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser_context);
+      browser_context->GetDownloadManager();
   DownloadObserver download_observer;
   download_manager->AddObserver(&download_observer);
 
   // Navigate to a PDF that's marked as an attachment and test that it
   // is downloaded.
   GURL url(embedded_test_server()->GetURL("/download.pdf"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(url, download_observer.GetLastUrl());
 
   // Didn't launch a PPAPI process.

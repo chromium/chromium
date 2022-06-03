@@ -7,7 +7,6 @@ module blink.mojom;
 import "third_party/blink/public/mojom/speech/speech_recognition_grammar.mojom";
 import "third_party/blink/public/mojom/speech/speech_recognition_result.mojom";
 import "third_party/blink/public/mojom/speech/speech_recognition_error.mojom";
-import "url/mojom/origin.mojom";
 
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
@@ -25,9 +24,6 @@ struct StartSpeechRecognitionRequestParams {
 
   // Speech grammars to use.
   array<SpeechRecognitionGrammar> grammars;
-
-  // URL of the page (or iframe if applicable).
-  url.mojom.Origin origin;
 
   // Maximum number of hypotheses allowed for each results.
   uint32 max_hypotheses;

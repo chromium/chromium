@@ -1,0 +1,61 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+
+mojom("mojom") {
+  sources = [ "print.mojom" ]
+}
+
+if (enable_oop_printing) {
+  mojom("printing_context") {
+    if (is_linux || is_chromeos) {
+      enabled_features = [ "is_linux_or_chromeos" ]
+    }
+
+    sources = [ "printing_context.mojom" ]
+
+    public_deps = [
+      ":mojom",
+      "//mojo/public/mojom/base",
+      "//ui/gfx/geometry/mojom",
+    ]
+
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "printing.mojom.PageMargins"
+            cpp = "::printing::PageMargins"
+          },
+          {
+            mojom = "printing.mojom.PageSetup"
+            cpp = "::printing::PageSetup"
+          },
+          {
+            mojom = "printing.mojom.PageRange"
+            cpp = "::printing::PageRange"
+          },
+          {
+            mojom = "printing.mojom.RequestedMedia"
+            cpp = "::printing::PrintSettings::RequestedMedia"
+          },
+          {
+            mojom = "printing.mojom.PrintSettings"
+            cpp = "::printing::PrintSettings"
+          },
+        ]
+        traits_sources = [ "printing_context_mojom_traits.cc" ]
+        traits_headers = [ "printing_context_mojom_traits.h" ]
+        traits_deps = [
+          "//mojo/public/mojom/base",
+          "//printing",
+          "//ui/gfx/geometry",
+          "//ui/gfx/geometry/mojom",
+        ]
+      },
+    ]
+  }
+}

@@ -1,9 +1,0 @@
-<html manifest="origins-with-appcache-iframe.manifest">
-<script>
-// iframe-1 is expected to succeed.
-applicationCache.oncached = function() { parent.postMessage("created_cache", "*"); };
-applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe, expected this to succeed", "*"); };
-applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe, all caches should have been deleted before this test", "*"); };
-
-</script>
-</html>

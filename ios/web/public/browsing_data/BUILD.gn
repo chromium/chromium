@@ -7,8 +7,11 @@ import("//ios/build/config.gni")
 source_set("browsing_data") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
+  deps = [ "//base" ]
+
   sources = [
     "browsing_data_removing_util.h",
+    "cookie_blocking_mode.h",
     "system_cookie_store_util.h",
   ]
 }

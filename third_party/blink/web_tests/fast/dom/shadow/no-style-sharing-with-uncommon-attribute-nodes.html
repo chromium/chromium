@@ -6,7 +6,7 @@ if (window.testRunner)
     testRunner.waitUntilDone();
 
 function runTest() {
-    var shadow = host.createShadowRoot();
+    var shadow = host.attachShadow({mode: 'open'});
     shadow.innerHTML = "<style> [ishidden=true] { display: none; } </style><p ishidden='false'>NotHidden</p><p ishidden='true' id='target'>Hidden</p>";
     var target = shadow.getElementById("target");
     window.setTimeout(function() {

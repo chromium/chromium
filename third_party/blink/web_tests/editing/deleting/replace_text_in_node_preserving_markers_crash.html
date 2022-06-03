@@ -3,24 +3,20 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../assert_selection.js"></script>
 <script>
-test(() => assert_selection(
-    [
-        // Place each character at own line
-        '<div contenteditable style="width: 3px;">',
-            'abcd efg| hijkl',
-        '</div>',
-    ].join(''),
-    selection => {
-        // Delete " efg"
-        selection.document.execCommand('delete');
-        selection.document.execCommand('delete');
-        selection.document.execCommand('delete');
-        selection.document.execCommand('delete');
-    },
-    [
-        '<div contenteditable style="width: 3px;">',
-            'abcd|hijkl',
-        '</div>',
-    ].join('')),
-    'Crash test for replaceTextInNodePreservingMarkers');
+// Crash test for replaceTextInNodePreservingMarkers.
+// Atempt to delete " efg" by hitting [Backspace] key four times
+const samples = [
+  'abcd efg| hijkl',
+  'abcd ef| hijkl',
+  'abcd e| hijkl',
+  'abcd\u00A0| hijkl',
+  'abcd| hijkl',
+];
+
+for (let index = 1; index < samples.length; ++index) {
+    selection_test(
+        `<div contenteditable style="width: 3px;">${samples[index - 1]}</div>`,
+        'Delete',
+        `<div contenteditable style="width: 3px;">${samples[index]}</div>`);
+}
 </script>

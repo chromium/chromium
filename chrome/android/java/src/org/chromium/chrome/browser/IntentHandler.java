@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
+import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.provider.MediaStore;
@@ -26,33 +27,47 @@ import android.util.Pair;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
+import org.chromium.chrome.browser.attribution_reporting.AttributionParameters;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
-import org.chromium.chrome.browser.externalnav.IntentWithGesturesHandler;
+import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
+import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
+import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.util.IntentUtils;
-import org.chromium.chrome.browser.util.UrlConstants;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.chrome.browser.translate.TranslateIntentHandler;
+import org.chromium.chrome.browser.webapps.WebappActivity;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.net.HttpUtil;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,36 +79,14 @@ import java.util.Map;
 /**
  * Handles all browser-related Intents.
  */
+@JNINamespace("chrome::android")
 public class IntentHandler {
     private static final String TAG = "IntentHandler";
 
     /**
-     * Document mode: If true, Chrome is launched into the same Task.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_APPEND_TASK = "com.android.chrome.append_task";
-
-    /**
-     * Document mode: If true, keep tasks in Recents when a user hits back at the root URL.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_PRESERVE_TASK = "com.android.chrome.preserve_task";
-
-    /**
-     * Document mode: If true, opens the document in background.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_OPEN_IN_BG = "com.android.chrome.open_with_affiliation";
-
-    /**
-     * Document mode: Records what caused a document to be created.
-     */
-    public static final String EXTRA_STARTED_BY = "com.android.chrome.started_by";
-
-    /**
      * Tab ID to use when creating a new Tab.
      */
-    public static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
+    private static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
 
     /**
      * The tab id of the parent tab, if any.
@@ -135,6 +128,12 @@ public class IntentHandler {
             "com.android.chrome.invoked_from_shortcut";
 
     /**
+     * An extra to indicate that the intent was triggered from an app widget.
+     */
+    public static final String EXTRA_INVOKED_FROM_APP_WIDGET =
+            "com.android.chrome.invoked_from_app_widget";
+
+    /**
      * An extra to indicate that the intent was triggered by the launch new incognito tab feature.
      * See {@link org.chromium.chrome.browser.incognito.IncognitoTabLauncher}.
      */
@@ -142,14 +141,10 @@ public class IntentHandler {
             "org.chromium.chrome.browser.incognito.invoked_from_launch_new_incognito_tab";
 
     /**
-     * Intent extra used to identify the sending application.
+     * Intent extra used to deliver the original activity referrer.
      */
-    private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
-
-    /**
-     * The scheme for referrer coming from an application.
-     */
-    public static final String ANDROID_APP_REFERRER_SCHEME = "android-app";
+    public static final String EXTRA_ACTIVITY_REFERRER =
+            "org.chromium.chrome.browser.activity_referrer";
 
     /**
      * A referrer id used for Chrome to Chrome referrer passing.
@@ -169,15 +164,11 @@ public class IntentHandler {
     private static final String EXTRA_TIMESTAMP_MS = "org.chromium.chrome.browser.timestamp";
 
     /**
-     * For multi-window, passes the id of the window.
+     * For multi-window, passes the id of the window. On Android S, this is synonymous with
+     * the id of 'activity instance' among multiple instances that can be chosen on instance
+     * switcher UI, ranging from 0 ~ max_instances - 1. -1 for an invalid id.
      */
     public static final String EXTRA_WINDOW_ID = "org.chromium.chrome.browser.window_id";
-
-    /**
-     * Records package names of other applications in the system that could have handled
-     * this intent.
-     */
-    public static final String EXTRA_EXTERNAL_NAV_PACKAGES = "org.chromium.chrome.browser.eenp";
 
     /**
      * Extra to indicate the launch type of the tab to be created.
@@ -196,17 +187,49 @@ public class IntentHandler {
     public static final String EXTRA_INCOGNITO_MODE = "org.chromium.chrome.browser.incognito_mode";
 
     /**
-     * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
+     * Byte array for the POST data when load a url, only Intents sent by Chrome can use this.
      */
-    private static ComponentName sFakeComponentName;
+    public static final String EXTRA_POST_DATA = "com.android.chrome.post_data";
 
-    private static final Object LOCK = new Object();
+    /**
+     * The type of the POST data, need to be added to the HTTP request header, only Intents sent by
+     * Chrome can use this.
+     */
+    public static final String EXTRA_POST_DATA_TYPE = "com.android.chrome.post_data_type";
+
+    /**
+     * A boolean to indicate whether this Intent originated from the Open In Browser Custom Tab
+     * feature.
+     */
+    public static final String EXTRA_FROM_OPEN_IN_BROWSER =
+            "com.android.chrome.from_open_in_browser";
+
+    /**
+     * A boolean to indicate that the Intent prefer a fresh new Chrome instance, not with tabs
+     * from one of the existing disk files.
+     */
+    public static final String EXTRA_PREFER_NEW = "com.android.chrome.prefer_new";
+
+    /**
+     * Interested entities within Chrome relying on launching Incognito CCT should set this in their
+     *{@link CustomTabIntent} in order to identify themselves for metric purposes.
+     **/
+    public static final String EXTRA_INCOGNITO_CCT_CALLER_ID =
+            "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
+
+    /**
+     * A boolean to indicate whether the ChromeTabbedActivity task was started by this Intent. Only
+     * used for external View intents.
+     */
+    public static final String EXTRA_STARTED_TABBED_CHROME_TASK =
+            "org.chromium.chrome.browser.started_chrome_task";
 
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
 
-    public static final String PACKAGE_GSA = "com.google.android.googlequicksearchbox";
+    public static final String PACKAGE_GSA = GSAState.PACKAGE_NAME;
+
     private static final String PACKAGE_GMAIL = "com.google.android.gm";
     private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
     private static final String PACKAGE_HANGOUTS = "com.google.android.talk";
@@ -219,6 +242,10 @@ public class IntentHandler {
     private static final String FACEBOOK_INTERNAL_BROWSER_REFERRER = "http://m.facebook.com";
     private static final String TWITTER_LINK_PREFIX = "http://t.co/";
     private static final String NEWS_LINK_PREFIX = "http://news.google.com/news/url?";
+    private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
+    private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
+    private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
+    public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
 
     /**
      * Represents popular external applications that can load a page in Chrome via intent.
@@ -229,7 +256,8 @@ public class IntentHandler {
     @IntDef({ExternalAppId.OTHER, ExternalAppId.GMAIL, ExternalAppId.FACEBOOK, ExternalAppId.PLUS,
             ExternalAppId.TWITTER, ExternalAppId.CHROME, ExternalAppId.HANGOUTS,
             ExternalAppId.MESSENGER, ExternalAppId.NEWS, ExternalAppId.LINE, ExternalAppId.WHATSAPP,
-            ExternalAppId.GSA, ExternalAppId.WEBAPK, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER})
+            ExternalAppId.GSA, ExternalAppId.WEBAPK, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER,
+            ExternalAppId.YOUTUBE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExternalAppId {
         int OTHER = 0;
@@ -247,18 +275,35 @@ public class IntentHandler {
         int WEBAPK = 12;
         int YAHOO_MAIL = 13;
         int VIBER = 14;
+        int YOUTUBE = 15;
         // Update ClientAppId in enums.xml when adding new items.
-        int NUM_ENTRIES = 15;
+        int NUM_ENTRIES = 16;
     }
 
-    private static ComponentName getFakeComponentName(String packageName) {
-        synchronized (LOCK) {
-            if (sFakeComponentName == null) {
-                sFakeComponentName = new ComponentName(packageName, "FakeClass");
-            }
-        }
+    /**
+     * Represents apps that launch Incognito CCT.
+     * DO NOT reorder items in this interface, because it's mirrored to UMA (as
+     * {@link IncognitoCCTCallerId}). Values should be enumerated from 0.
+     * When removing items, comment them out and keep existing numeric values stable.
+     */
+    @IntDef({IncognitoCCTCallerId.OTHER_APPS, IncognitoCCTCallerId.GOOGLE_APPS,
+            IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE,
+            IncognitoCCTCallerId.READ_LATER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IncognitoCCTCallerId {
+        int OTHER_APPS = 0;
+        int GOOGLE_APPS = 1;
+        // This should not be used, it's a fallback for Chrome features that didn't identify
+        // themselves. Please see {@link
+        // IncognitoCustomTabIntentDataProvider#addIncognitoExtrasForChromeFeatures}
+        int OTHER_CHROME_FEATURES = 2;
 
-        return sFakeComponentName;
+        // Chrome Features
+        int READER_MODE = 3;
+        int READ_LATER = 4;
+
+        // Update {@link IncognitoCCTCallerId} in enums.xml when adding new items.
+        int NUM_ENTRIES = 5;
     }
 
     /** Intent extra to open an incognito tab. */
@@ -273,7 +318,7 @@ public class IntentHandler {
     private static boolean sTestIntentsEnabled;
 
     private final IntentHandlerDelegate mDelegate;
-    private final String mPackageName;
+    private final Activity mActivity;
 
     /**
      * Receiver for screen unlock broadcast.
@@ -303,9 +348,18 @@ public class IntentHandler {
         // be reused.
         int REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB = 6;
 
-        String BRING_TAB_TO_FRONT_STRING = "BRING_TAB_TO_FRONT";
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
         String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
+    }
+
+    @IntDef({BringToFrontSource.ACTIVATE_TAB, BringToFrontSource.NOTIFICATION,
+            BringToFrontSource.SEARCH_ACTIVITY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BringToFrontSource {
+        int INVALID = -1;
+        int ACTIVATE_TAB = 0;
+        int NOTIFICATION = 1;
+        int SEARCH_ACTIVITY = 2;
     }
 
     /**
@@ -315,11 +369,25 @@ public class IntentHandler {
         /**
          * Processes a URL VIEW Intent.
          */
-        void processUrlViewIntent(String url, String referer, String headers,
-                @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-                boolean hasUserGesture, Intent intent);
+        void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
+                String externalAppId, int tabIdToBringToFront, Intent intent);
+
+        /**
+         * The time at which the Activity most recently received an Intent (eg onNewIntent).
+         */
+        long getIntentHandlingTimeMs();
 
         void processWebSearchIntent(String query);
+
+        /**
+         * Processes a TRANSLATE_TAB intent.
+         * @param targetLanguageCode The language code that the page should be translated into.
+         *         Optional.
+         * @param expectedUrl The URL of the page that should be translated. If this doesn't match
+         *         the current tab, no translate will be performed.
+         */
+        void processTranslateTabIntent(
+                @Nullable String targetLanguageCode, @Nullable String expectedUrl);
     }
 
     /** Sets whether or not test intents are enabled. */
@@ -328,9 +396,9 @@ public class IntentHandler {
         sTestIntentsEnabled = enabled;
     }
 
-    public IntentHandler(IntentHandlerDelegate delegate, String packageName) {
+    public IntentHandler(Activity activity, IntentHandlerDelegate delegate) {
         mDelegate = delegate;
-        mPackageName = packageName;
+        mActivity = activity;
     }
 
     /**
@@ -339,6 +407,8 @@ public class IntentHandler {
      * @return ExternalAppId representing the app.
      */
     public static @ExternalAppId int determineExternalIntentSource(Intent intent) {
+        if (wasIntentSenderChrome(intent)) return ExternalAppId.CHROME;
+
         String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
         @ExternalAppId
         int externalId = ExternalAppId.OTHER;
@@ -352,6 +422,10 @@ public class IntentHandler {
                 externalId = ExternalAppId.FACEBOOK;
             } else if (url != null && url.startsWith(NEWS_LINK_PREFIX)) {
                 externalId = ExternalAppId.NEWS;
+            } else if (url != null
+                    && (url.startsWith(YOUTUBE_LINK_PREFIX_HTTPS)
+                            || url.startsWith(YOUTUBE_LINK_PREFIX_HTTP))) {
+                externalId = ExternalAppId.YOUTUBE;
             } else {
                 Bundle headers = IntentUtils.safeGetBundleExtra(intent, Browser.EXTRA_HEADERS);
                 if (headers != null
@@ -402,6 +476,9 @@ public class IntentHandler {
     private void recordExternalIntentSourceUMA(Intent intent) {
         @ExternalAppId
         int externalId = determineExternalIntentSource(intent);
+
+        // Don't record external app page loads for intents we sent.
+        if (externalId == ExternalAppId.CHROME) return;
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileIntent.PageLoadDueToExternalApp", externalId, ExternalAppId.NUM_ENTRIES);
     }
@@ -412,16 +489,16 @@ public class IntentHandler {
      * This doesn't include generic URL handlers, such as browsers.
      */
     private void recordAppHandlersForIntent(Intent intent) {
-        List<String> packages = IntentUtils.safeGetStringArrayListExtra(intent,
-                IntentHandler.EXTRA_EXTERNAL_NAV_PACKAGES);
+        List<String> packages = IntentUtils.safeGetStringArrayListExtra(
+                intent, ExternalNavigationHandler.EXTRA_EXTERNAL_NAV_PACKAGES);
         if (packages != null && packages.size() > 0) {
             RecordUserAction.record("MobileExternalNavigationReceived");
         }
     }
 
-    private static void updateDeferredIntent(Intent intent) {
+    private void updateDeferredIntent(Intent intent) {
         if (sDelayedScreenIntentHandler == null && intent != null) {
-            sDelayedScreenIntentHandler = new DelayedScreenLockIntentHandler();
+            sDelayedScreenIntentHandler = new DelayedScreenLockIntentHandler(mActivity);
         }
 
         if (sDelayedScreenIntentHandler != null) {
@@ -440,41 +517,33 @@ public class IntentHandler {
 
         assert intentHasValidUrl(intent);
         String url = getUrlFromIntent(intent);
-        boolean hasUserGesture =
-                IntentWithGesturesHandler.getInstance().getUserGestureAndClear(intent);
         @TabOpenType
         int tabOpenType = getTabOpenType(intent);
-        int tabIdToBringToFront = IntentUtils.safeGetIntExtra(
-                intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
+        int tabIdToBringToFront = getBringTabToFrontId(intent);
         if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
-            return handleWebSearchIntent(intent);
+            return handleWebSearchIntent(intent)
+                    || TranslateIntentHandler.handleTranslateTabIntent(intent, mDelegate);
         }
 
-        String referrerUrl = getReferrerUrlIncludingExtraHeaders(intent);
-        String extraHeaders = getExtraHeadersFromIntent(intent, true);
+        LoadUrlParams loadUrlParams = createLoadUrlParamsForIntent(url, intent);
 
         if (isIntentForMhtmlFileOrContent(intent) && tabOpenType == TabOpenType.OPEN_NEW_TAB
-                && referrerUrl == null && extraHeaders == null) {
+                && loadUrlParams.getReferrer() == null
+                && loadUrlParams.getVerbatimHeaders() == null) {
             handleMhtmlFileOrContentIntent(url, intent);
             return true;
         }
-
-        processUrlViewIntent(url, referrerUrl, extraHeaders, tabOpenType,
+        processUrlViewIntent(loadUrlParams, tabOpenType,
                 IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                tabIdToBringToFront, hasUserGesture, intent);
+                tabIdToBringToFront, intent);
         return true;
     }
 
-    private void processUrlViewIntent(String url, String referrerUrl, String extraHeaders,
-            @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-            boolean hasUserGesture, Intent intent) {
-        extraHeaders = maybeAddAdditionalExtraHeaders(intent, url, extraHeaders);
-
-        // TODO(joth): Presumably this should check the action too.
-        mDelegate.processUrlViewIntent(url, referrerUrl, extraHeaders, tabOpenType,
-                IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                tabIdToBringToFront, hasUserGesture, intent);
+    private void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
+            String externalAppId, int tabIdToBringToFront, Intent intent) {
+        mDelegate.processUrlViewIntent(
+                loadUrlParams, tabOpenType, externalAppId, tabIdToBringToFront, intent);
         recordExternalIntentSourceUMA(intent);
         recordAppHandlersForIntent(intent);
     }
@@ -487,7 +556,9 @@ public class IntentHandler {
     private static Uri getReferrer(Intent intent) {
         Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
         if (referrer != null) {
-            return referrer;
+            String pendingReferrer = IntentHandler.getPendingReferrerUrl(
+                    IntentUtils.safeGetIntExtra(intent, EXTRA_REFERRER_ID, 0));
+            return TextUtils.isEmpty(pendingReferrer) ? referrer : Uri.parse(pendingReferrer);
         }
         String referrerName = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_REFERRER_NAME);
         if (referrerName != null) {
@@ -504,16 +575,23 @@ public class IntentHandler {
      */
     private static String getReferrerUrl(Intent intent) {
         Uri referrerExtra = getReferrer(intent);
+        CustomTabsSessionToken customTabsSession =
+                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        if (referrerExtra == null && customTabsSession != null) {
+            Referrer referrer = CustomTabsConnection.getInstance().getDefaultReferrerForSession(
+                    customTabsSession);
+            if (referrer != null) {
+                referrerExtra = Uri.parse(referrer.getUrl());
+            }
+        }
+
         if (referrerExtra == null) return null;
-        String referrerUrl = IntentHandler.getPendingReferrerUrl(
-                IntentUtils.safeGetIntExtra(intent, EXTRA_REFERRER_ID, 0));
-        if (!TextUtils.isEmpty(referrerUrl)) {
-            return referrerUrl;
-        } else if (isValidReferrerHeader(referrerExtra)) {
+        if (isValidReferrerHeader(referrerExtra)) {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                || ChromeApplication.getComponent().resolveSessionDataHolder()
-                        .canActiveHandlerUseReferrer(intent, referrerExtra)) {
+                || ChromeApplicationImpl.getComponent()
+                           .resolveSessionDataHolder()
+                           .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
             return referrerExtra.toString();
         }
         return null;
@@ -554,14 +632,14 @@ public class IntentHandler {
         if (referrer != null) {
             params.setReferrer(new Referrer(referrer, getReferrerPolicyFromIntent(intent)));
         }
-        String headers = getExtraHeadersFromIntent(intent, true);
+        String headers = getExtraHeadersFromIntent(intent);
         if (headers != null) params.setVerbatimHeaders(headers);
     }
 
     public static int getReferrerPolicyFromIntent(Intent intent) {
         int policy =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_REFERRER_POLICY, ReferrerPolicy.DEFAULT);
-        if (policy < 0 || policy >= ReferrerPolicy.LAST) {
+        if (policy < ReferrerPolicy.MIN_VALUE || policy >= ReferrerPolicy.MAX_VALUE) {
             policy = ReferrerPolicy.DEFAULT;
         }
         return policy;
@@ -574,7 +652,7 @@ public class IntentHandler {
     private static boolean isValidReferrerHeader(Uri referrer) {
         if (referrer == null) return false;
         Uri normalized = referrer.normalizeScheme();
-        return TextUtils.equals(normalized.getScheme(), ANDROID_APP_REFERRER_SCHEME)
+        return TextUtils.equals(normalized.getScheme(), IntentUtils.ANDROID_APP_REFERRER_SCHEME)
                 && !TextUtils.isEmpty(normalized.getHost());
     }
 
@@ -586,7 +664,7 @@ public class IntentHandler {
     public static Referrer constructValidReferrerForAuthority(String authority) {
         if (TextUtils.isEmpty(authority)) return null;
         return new Referrer(new Uri.Builder()
-                                    .scheme(ANDROID_APP_REFERRER_SCHEME)
+                                    .scheme(IntentUtils.ANDROID_APP_REFERRER_SCHEME)
                                     .authority(authority)
                                     .build()
                                     .toString(),
@@ -597,6 +675,8 @@ public class IntentHandler {
      * Extracts the URL from voice search result intent.
      * @return URL if it was found, null otherwise.
      */
+    // TODO(https://crbug.com/783819): Investigate whether this function can return a GURL instead,
+    // or split into formatted/unformatted getUrl.
     static String getUrlFromVoiceSearchResult(Intent intent) {
         if (!RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS.equals(intent.getAction())) {
             return null;
@@ -617,22 +697,21 @@ public class IntentHandler {
         // The logic in this method should be moved to ChromeTabbedActivity eventually. We should
         // support async handling of voice search when native finishes initializing.
         if (results == null || results.size() == 0
-                || !BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                            .isFullBrowserStarted()) {
+                || !BrowserStartupController.getInstance().isFullBrowserStarted()) {
             return null;
         }
         String query = results.get(0);
-        String url = AutocompleteCoordinatorFactory.qualifyPartialURLQuery(query);
-        if (url == null) {
-            List<String> urls = IntentUtils.safeGetStringArrayListExtra(
-                    intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
-            if (urls != null && urls.size() > 0) {
-                url = urls.get(0);
-            } else {
-                url = TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query);
-            }
+        AutocompleteMatch match =
+                AutocompleteCoordinator.classify(Profile.getLastUsedRegularProfile(), query);
+        if (!match.isSearchSuggestion()) return match.getUrl().getSpec();
+
+        List<String> urls = IntentUtils.safeGetStringArrayListExtra(
+                intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
+        if (urls != null && urls.size() > 0) {
+            return urls.get(0);
+        } else {
+            return TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query).getSpec();
         }
-        return url;
     }
 
     public boolean handleWebSearchIntent(Intent intent) {
@@ -653,16 +732,11 @@ public class IntentHandler {
 
     private void handleMhtmlFileOrContentIntent(final String url, final Intent intent) {
         OfflinePageUtils.getLoadUrlParamsForOpeningMhtmlFileOrContent(url, (loadUrlParams) -> {
-            processUrlViewIntent(loadUrlParams.getUrl(), null, loadUrlParams.getVerbatimHeaders(),
-                    TabOpenType.OPEN_NEW_TAB, null, 0, false, intent);
-        });
-    }
-
-    private static PendingIntent getAuthenticationToken() {
-        Intent fakeIntent = new Intent();
-        Context appContext = ContextUtils.getApplicationContext();
-        fakeIntent.setComponent(getFakeComponentName(appContext.getPackageName()));
-        return PendingIntent.getActivity(appContext, 0, fakeIntent, 0);
+            loadUrlParams.setVerbatimHeaders(maybeAddAdditionalContentHeaders(
+                    intent, url, loadUrlParams.getVerbatimHeaders()));
+            processUrlViewIntent(
+                    loadUrlParams, TabOpenType.OPEN_NEW_TAB, null, Tab.INVALID_TAB_ID, intent);
+        }, Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -710,25 +784,8 @@ public class IntentHandler {
         // FLAG_ACTIVITY_NEW_TASK on pre-N versions of Android.  On N+ we can get away with
         // specifying a task ID or not specifying an options bundle.
         assert (copiedIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
-        addTrustedIntentExtras(copiedIntent);
+        IntentUtils.addTrustedIntentExtras(copiedIntent);
         appContext.startActivity(copiedIntent);
-    }
-
-    /**
-     * Sets TRUSTED_APPLICATION_CODE_EXTRA on the provided intent to identify it as coming from
-     * a trusted source.
-     */
-    public static void addTrustedIntentExtras(Intent intent) {
-        if (ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true)) {
-            // It is crucial that we never leak the authentication token to other packages, because
-            // then the other package could be used to impersonate us/do things as us. Therefore,
-            // scope the real Intent to our package.
-            intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-            // The PendingIntent functions as an authentication token --- it could only have come
-            // from us. Stash it in the real Intent as an extra. shouldIgnoreIntent will retrieve it
-            // and check it with isIntentChromeInternal.
-            intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
-        }
     }
 
     /**
@@ -752,42 +809,43 @@ public class IntentHandler {
     }
 
     /**
-     * Calls {@link #getExtraHeadersFromIntent(Intent, boolean)} with shouldLogHeaders as false.
-     */
-    public static String getExtraHeadersFromIntent(Intent intent) {
-        return getExtraHeadersFromIntent(intent, false);
-    }
-
-    /**
      * Returns a String (or null) containing the extra headers sent by the intent, if any.
      *
      * This methods skips the referrer header.
      *
      * @param intent The intent containing the bundle extra with the HTTP headers.
-     * @param shouldLogHeaders Whether we should perform logging on the types of headers that the
-     *                         Intent contains. This should only be done for Intents as they come
-     *                         in to Chrome.
      */
-    public static String getExtraHeadersFromIntent(Intent intent, boolean shouldLogHeaders) {
+    public static String getExtraHeadersFromIntent(Intent intent) {
         Bundle bundleExtraHeaders = IntentUtils.safeGetBundleExtra(intent, Browser.EXTRA_HEADERS);
         if (bundleExtraHeaders == null) return null;
         StringBuilder extraHeaders = new StringBuilder();
 
-        // We do some logging to determine what kinds of headers developers are inserting.
-        IntentHeadersRecorder recorder = shouldLogHeaders ? new IntentHeadersRecorder() : null;
-        boolean firstParty = shouldLogHeaders
-                ? IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                : false;
+        boolean fromChrome = IntentHandler.wasIntentSenderChrome(intent);
+        boolean shouldAllowNonSafelistedHeaders =
+                CustomTabsConnection.getInstance().isFirstPartyOriginForIntent(intent);
 
         for (String key : bundleExtraHeaders.keySet()) {
             String value = bundleExtraHeaders.getString(key);
 
+            if (!HttpUtil.isAllowedHeader(key, value)) {
+                Log.w(TAG, "Ignoring forbidden header " + key + " in EXTRA_HEADERS.");
+            }
+
             // Strip the custom header that can only be added by ourselves.
             if ("x-chrome-intent-type".equals(key.toLowerCase(Locale.US))) continue;
 
-            if (!HttpUtil.isAllowedHeader(key, value)) continue;
+            if (!fromChrome) {
+                if (key.toLowerCase(Locale.US).startsWith("x-chrome-")) {
+                    Log.w(TAG, "Ignoring x-chrome header " + key + " in EXTRA_HEADERS.");
+                    continue;
+                }
 
-            if (shouldLogHeaders) recorder.recordHeader(key, value, firstParty);
+                if (!shouldAllowNonSafelistedHeaders
+                        && !IntentHandlerJni.get().isCorsSafelistedHeader(key, value)) {
+                    Log.w(TAG, "Ignoring non-CORS-safelisted header " + key + " in EXTRA_HEADERS.");
+                    continue;
+                }
+            }
 
             if (extraHeaders.length() != 0) extraHeaders.append("\n");
             extraHeaders.append(key);
@@ -795,7 +853,6 @@ public class IntentHandler {
             extraHeaders.append(value);
         }
 
-        if (shouldLogHeaders) recorder.report(firstParty);
         return extraHeaders.length() == 0 ? null : extraHeaders.toString();
     }
 
@@ -830,9 +887,10 @@ public class IntentHandler {
      * Returns true if the app should ignore a given intent.
      *
      * @param intent Intent to check.
+     * @param startedActivity True if the Activity was not running prior to receiving the Intent.
      * @return true if the intent should be ignored.
      */
-    public static boolean shouldIgnoreIntent(Intent intent) {
+    public boolean shouldIgnoreIntent(Intent intent, boolean startedActivity) {
         // Although not documented to, many/most methods that retrieve values from an Intent may
         // throw. Because we can't control what packages might send to us, we should catch any
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
@@ -871,29 +929,23 @@ public class IntentHandler {
                 return false;
             }
 
+            // Ignore Translate intents if they were the intent that started the activity.
+            if (startedActivity && intent != null
+                    && TranslateIntentHandler.ACTION_TRANSLATE_TAB.equals(intent.getAction())) {
+                return true;
+            }
+
             // Ignore all intents that specify a Chrome internal scheme if they did not come from
             // a trustworthy source.
             String scheme = getSanitizedUrlScheme(url);
-            if (!isInternal && scheme != null
-                    && (intent.hasCategory(Intent.CATEGORY_BROWSABLE)
-                               || intent.hasCategory(Intent.CATEGORY_DEFAULT)
-                               || intent.getCategories() == null)) {
-                String lowerCaseScheme = scheme.toLowerCase(Locale.US);
-                if (UrlConstants.CHROME_SCHEME.equals(lowerCaseScheme)
-                        || UrlConstants.CHROME_NATIVE_SCHEME.equals(lowerCaseScheme)
-                        || ContentUrlConstants.ABOUT_SCHEME.equals(lowerCaseScheme)) {
-                    // Allow certain "safe" internal URLs to be launched by external
-                    // applications.
-                    String lowerCaseUrl = url.toLowerCase(Locale.US);
-                    if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
-                            || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
-                            || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)) {
-                        return false;
-                    }
-
+            recordFirstPartyToInternalScheme(scheme, url, intent, isInternal, isFromChrome);
+            if (!isInternal) {
+                if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
                     Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
                     return true;
                 }
+
+                return false;
             }
 
             // We must check for screen state at this point.
@@ -907,6 +959,30 @@ public class IntentHandler {
         } catch (Throwable t) {
             return true;
         }
+    }
+
+    private static boolean intentHasUnsafeInternalScheme(String scheme, String url, Intent intent) {
+        if (scheme != null
+                && (intent.hasCategory(Intent.CATEGORY_BROWSABLE)
+                        || intent.hasCategory(Intent.CATEGORY_DEFAULT)
+                        || intent.getCategories() == null)) {
+            String lowerCaseScheme = scheme.toLowerCase(Locale.US);
+            if (UrlConstants.CHROME_SCHEME.equals(lowerCaseScheme)
+                    || UrlConstants.CHROME_NATIVE_SCHEME.equals(lowerCaseScheme)
+                    || ContentUrlConstants.ABOUT_SCHEME.equals(lowerCaseScheme)) {
+                // Allow certain "safe" internal URLs to be launched by external
+                // applications.
+                String lowerCaseUrl = url.toLowerCase(Locale.US);
+                if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
+                        || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
+                        || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+        return false;
     }
 
     @VisibleForTesting
@@ -928,34 +1004,11 @@ public class IntentHandler {
     }
 
     /**
-     * Fetch the authentication token (a PendingIntent) created by startActivityForTrustedIntent,
-     * if any. If anything goes wrong trying to retrieve the token (examples include
-     * BadParcelableException or ClassNotFoundException), fail closed.
-     */
-    private static PendingIntent fetchAuthenticationTokenFromIntent(Intent intent) {
-        return (PendingIntent) IntentUtils.safeGetParcelableExtra(
-                intent, TRUSTED_APPLICATION_CODE_EXTRA);
-    }
-
-    private static boolean isChromeToken(PendingIntent token) {
-        // Fetch what should be a matching token.
-        PendingIntent pending = getAuthenticationToken();
-        return pending.equals(token);
-    }
-
-    /**
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from Chrome.
      */
-    public static boolean wasIntentSenderChrome(Intent intent) {
-        if (intent == null) return false;
-
-        PendingIntent token = fetchAuthenticationTokenFromIntent(intent);
-        if (token == null) return false;
-
-        // Do not ignore a valid URL Intent if the sender is Chrome. (If the PendingIntents are
-        // equal, we know that the sender was us.)
-        return isChromeToken(token);
+    public static boolean wasIntentSenderChrome(@Nullable Intent intent) {
+        return IntentUtils.isTrustedIntentFromSelf(intent);
     }
 
     /**
@@ -977,14 +1030,12 @@ public class IntentHandler {
     public static boolean notSecureIsIntentChromeOrFirstParty(Intent intent) {
         if (intent == null) return false;
 
-        PendingIntent token = fetchAuthenticationTokenFromIntent(intent);
-        if (token == null) return false;
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) return true;
 
-        // Do not ignore a valid URL Intent if the sender is Chrome. (If the PendingIntents are
-        // equal, we know that the sender was us.)
-        if (isChromeToken(token)) {
-            return true;
-        }
+        // First-party Google apps re-use the secure application code extra for historical reasons.
+        PendingIntent token = IntentUtils.safeGetParcelableExtra(
+                intent, IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+        if (token == null) return false;
         if (ExternalAuthUtils.getInstance().isGoogleSigned(token.getCreatorPackage())) {
             return true;
         }
@@ -996,8 +1047,12 @@ public class IntentHandler {
         // Only process Intents if the screen is on and the device is unlocked;
         // i.e. the user will see what is going on.
         Context appContext = ContextUtils.getApplicationContext();
-        if (!ApiCompatibilityUtils.isInteractive()) return false;
+        PowerManager powerManager =
+                (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
+
+        if (!powerManager.isInteractive()) return false;
         if (!isDeviceProvisioned(appContext)) return true;
+
         return !((KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE))
                 .inKeyguardRestrictedInputMode();
     }
@@ -1009,21 +1064,57 @@ public class IntentHandler {
                 != 0;
     }
 
+    /**
+     * @return Whether the {@link Intent} will open a new tab with the omnibox focused.
+     */
+    public static boolean shouldIntentShowNewTabOmniboxFocused(Intent intent) {
+        final String intentUrl = IntentHandler.getUrlFromIntent(intent);
+        // If Chrome is launched by tapping the New tab item from the launch icon and
+        // OMNIBOX_FOCUSED_ON_NEW_TAB is enabled, a new Tab with omnibox focused will be shown on
+        // Startup.
+        final boolean isCanonicalizedNTPUrl = UrlUtilities.isCanonicalizedNTPUrl(intentUrl);
+
+        final boolean isFromShortcutOrWidget = IntentHandler.isTabOpenAsNewTabFromLauncher(intent)
+                || IntentHandler.isTabOpenAsNewTabFromAppWidget(intent);
+
+        return isCanonicalizedNTPUrl && isFromShortcutOrWidget
+                && StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
+                && IntentHandler.wasIntentSenderChrome(intent);
+    }
+
+    /**
+     * @param intent The {@link Intent} to extract the info from.
+     * @return Whether the Intent specifies to create a new Tab from the launcher shortcut.
+     */
+    public static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
+    }
+
+    /**
+     * @param intent The {@link Intent} to extract the info from.
+     * @return Whether the Intent specifies to create a new Tab from an app widget.
+     */
+    public static boolean isTabOpenAsNewTabFromAppWidget(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
+    }
+
     /*
      * The default behavior here is to open in a new tab.  If this is changed, ensure
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
      */
     private @TabOpenType int getTabOpenType(Intent intent) {
         if (IntentUtils.safeGetBooleanExtra(
-                    intent, ShortcutHelper.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false)) {
+                    intent, WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false)) {
             return TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB;
         }
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return TabOpenType.OPEN_NEW_INCOGNITO_TAB;
         }
-        if (IntentUtils.safeGetIntExtra(
-                    intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID)
-                != Tab.INVALID_TAB_ID) {
+        if (getBringTabToFrontId(intent) != Tab.INVALID_TAB_ID) {
             return TabOpenType.BRING_TAB_TO_FRONT;
         }
 
@@ -1042,8 +1133,9 @@ public class IntentHandler {
 
         // Intents from chrome open in the same tab by default, all others only clobber
         // tabs created by the same app.
-        return mPackageName.equals(appId) ? TabOpenType.CLOBBER_CURRENT_TAB
-                                          : TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB;
+        return mActivity.getPackageName().equals(appId)
+                ? TabOpenType.CLOBBER_CURRENT_TAB
+                : TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB;
     }
 
     private static boolean isInvalidScheme(String scheme) {
@@ -1075,7 +1167,8 @@ public class IntentHandler {
         // except dash, plus and period. Those are the only valid scheme chars:
         // https://tools.ietf.org/html/rfc3986#section-3.1
         boolean nonAlphaNum = false;
-        for (char ch : scheme.toCharArray()) {
+        for (int i = 0; i < scheme.length(); i++) {
+            char ch = scheme.charAt(i);
             if (!Character.isLetterOrDigit(ch) && ch != '-' && ch != '+' && ch != '.') {
                 nonAlphaNum = true;
                 break;
@@ -1117,6 +1210,7 @@ public class IntentHandler {
         if (intent == null) return null;
         String url = getUrlFromVoiceSearchResult(intent);
         if (url == null) url = getUrlForCustomTab(intent);
+        if (url == null) url = getUrlForWebapp(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;
         url = url.trim();
@@ -1130,8 +1224,16 @@ public class IntentHandler {
                 ? data.getQuery() : null;
     }
 
+    private static String getUrlForWebapp(Intent intent) {
+        if (intent == null || intent.getData() == null) return null;
+        Uri data = intent.getData();
+        return TextUtils.equals(data.getScheme(), WebappActivity.WEBAPP_SCHEME)
+                ? IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_URL)
+                : null;
+    }
+
     @VisibleForTesting
-    static String maybeAddAdditionalExtraHeaders(Intent intent, String url, String extraHeaders) {
+    static String maybeAddAdditionalContentHeaders(Intent intent, String url, String extraHeaders) {
         // For some apps, ContentResolver.getType(contentUri) returns "application/octet-stream",
         // instead of the registered MIME type when opening a document from Downloads. To work
         // around this, we pass the intent type in extra headers such that content request job can
@@ -1227,10 +1329,10 @@ public class IntentHandler {
      * @param intent The intent to which we add a referrer.
      * @param url The referrer URL.
      */
-    public static void setPendingReferrer(Intent intent, String url) {
-        intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(url));
+    public static void setPendingReferrer(Intent intent, GURL url) {
+        intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(url.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REFERRER_ID, ++sReferrerId);
-        sPendingReferrer = new Pair<Integer, String>(sReferrerId, url);
+        sPendingReferrer = new Pair<Integer, String>(sReferrerId, url.getSpec());
     }
 
     /**
@@ -1330,8 +1432,185 @@ public class IntentHandler {
         newIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         newIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         newIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
-        IntentHandler.addTrustedIntentExtras(newIntent);
+        IntentUtils.addTrustedIntentExtras(newIntent);
 
         return newIntent;
+    }
+
+    /**
+     * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
+     * foreground.
+     * @param tabId The id of the Tab to bring to the foreground.
+     * @param bringToFrontSource The source of the bring to front Intent, used for gathering
+     *         metrics.
+     * @return Created Intent or null if this operation isn't possible.
+     */
+    @Nullable
+    public static Intent createTrustedBringTabToFrontIntent(
+            int tabId, @BringToFrontSource int bringToFrontSource) {
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(context, ChromeLauncherActivity.class);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
+        intent.putExtra(BRING_TAB_TO_FRONT_SOURCE_EXTRA, bringToFrontSource);
+        IntentUtils.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
+    public static int getBringTabToFrontId(Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents.
+     */
+    public static void setTabId(Intent intent, int tabId) {
+        intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);
+    }
+
+    /**
+     * @return the Tab Id extra from an intent, or INVALID_TAB_ID if Tab Id isn't present, or the
+     * intent isn't trusted.
+     */
+    public static int getTabId(@Nullable Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, EXTRA_TAB_ID, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Handles an inconsistency in the Android platform, where if an Activity finishes itself, then
+     * is resumed from recents, it's re-launched with the original intent that launched the activity
+     * initially.
+     *
+     * @return the provided intent, if the intent is not from Android Recents. Otherwise, rewrites
+     *         the intent to be a consistent MAIN intent from recents.
+     */
+    public static Intent rewriteFromHistoryIntent(Intent intent) {
+        // When a self-finished Activity is created from recents, Android launches it with its
+        // original base intent (with FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY added). This can lead
+        // to duplicating actions when launched from recents, like re-launching tabs, or firing
+        // additional app redirects, etc.
+        // Instead of teaching all of Chrome about this, just make intents consistent when Chrome is
+        // created from recents.
+        if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
+            Intent newIntent = new Intent(Intent.ACTION_MAIN);
+            // Make sure to carry over the FROM_HISTORY flag to avoid confusing metrics.
+            newIntent.setFlags(intent.getFlags());
+            newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            newIntent.setComponent(intent.getComponent());
+            newIntent.setPackage(intent.getPackage());
+            return newIntent;
+        }
+        return intent;
+    }
+
+    /**
+     * Bring the browser to foreground and switch to the tab.
+     * @param tab Tab to switch to.
+     */
+    public static void bringTabToFront(Tab tab) {
+        Intent newIntent =
+                createTrustedBringTabToFrontIntent(tab.getId(), BringToFrontSource.SEARCH_ACTIVITY);
+        if (newIntent != null) {
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
+        }
+    }
+
+    /**
+     * Records whether the intent comes from a non-Chrome first party and contains a Chrome internal
+     * scheme. This is so we can determine whether we can cut the feature.
+     */
+    private static void recordFirstPartyToInternalScheme(
+            String scheme, String url, Intent intent, boolean isInternal, boolean isChrome) {
+        if (!isInternal || isChrome) return;
+
+        RecordHistogram.recordBooleanHistogram("MobileIntent.FirstPartyToInternalScheme",
+                intentHasUnsafeInternalScheme(scheme, url, intent));
+    }
+
+    /**
+     * Create a LoadUrlParams for handling a VIEW intent.
+     */
+    public LoadUrlParams createLoadUrlParamsForIntent(String url, Intent intent) {
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        RequestMetadata metadata =
+                IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
+
+        loadUrlParams.setIntentReceivedTimestamp(mDelegate.getIntentHandlingTimeMs());
+        loadUrlParams.setHasUserGesture(metadata == null ? false : metadata.hasUserGesture());
+        // Add FROM_API to ensure intent handling isn't used again. Without FROM_API Chrome could
+        // get stuck in a loop continually being asked to open a link, and then calling out to the
+        // system.
+        int transitionType = PageTransition.LINK | PageTransition.FROM_API;
+        loadUrlParams.setTransitionType(getTransitionTypeFromIntent(intent, transitionType));
+        String referrer = getReferrerUrlIncludingExtraHeaders(intent);
+        if (referrer != null) {
+            loadUrlParams.setReferrer(
+                    new Referrer(referrer, IntentHandler.getReferrerPolicyFromIntent(intent)));
+        }
+
+        String headers = getExtraHeadersFromIntent(intent);
+        headers = maybeAddAdditionalContentHeaders(intent, url, headers);
+
+        // Handle post data case.
+        if (IntentHandler.wasIntentSenderChrome(intent)) {
+            String postDataType =
+                    IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_POST_DATA_TYPE);
+            byte[] postData =
+                    IntentUtils.safeGetByteArrayExtra(intent, IntentHandler.EXTRA_POST_DATA);
+            if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
+                StringBuilder appendToHeader = new StringBuilder();
+                appendToHeader.append("Content-Type: ");
+                appendToHeader.append(postDataType);
+                if (TextUtils.isEmpty(headers)) {
+                    headers = appendToHeader.toString();
+                } else {
+                    headers = headers + "\r\n" + appendToHeader.toString();
+                }
+
+                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
+            }
+        }
+        loadUrlParams.setVerbatimHeaders(headers);
+        loadUrlParams.setIsRendererInitiated(
+                metadata == null ? false : metadata.isRendererInitiated());
+        loadUrlParams.setInitiatorOrigin(metadata == null ? null : metadata.getInitiatorOrigin());
+
+        setAttributionParamsFromIntent(loadUrlParams, intent);
+        return loadUrlParams;
+    }
+
+    /**
+     * Fills out the AttributionParameters for a LoadUrlParams from the provided Intent.
+     */
+    public static void setAttributionParamsFromIntent(LoadUrlParams loadUrlParams, Intent intent) {
+        AttributionParameters attributionParams =
+                AttributionIntentHandlerFactory.getInstance()
+                        .getAndClearPendingAttributionParameters(intent);
+        if (attributionParams != null) {
+            loadUrlParams.setAttributionParameters(attributionParams.getSourcePackageName(),
+                    attributionParams.getSourceEventId(), attributionParams.getDestination(),
+                    attributionParams.getReportTo(), attributionParams.getExpiry());
+        }
+    }
+
+    /**
+     * Whether bundle has any extra that indicates an incognito tab will be launched.
+     * @param extras A bundle that carries extras
+     * @return True if there is any incognito related extra, otherwise return false.
+     */
+    public static boolean hasAnyIncognitoExtra(@Nullable Bundle extras) {
+        if (extras == null) return false;
+        return IntentUtils.safeGetBoolean(extras, EXTRA_INCOGNITO_MODE, false)
+                || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeGetBoolean(
+                        extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isCorsSafelistedHeader(String name, String value);
     }
 }

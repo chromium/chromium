@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
@@ -22,30 +21,31 @@ class RendererFactory;
 class VideoRendererSink;
 
 // Test MojoMediaClient for MediaService.
-class TestMojoMediaClient : public MojoMediaClient {
+class TestMojoMediaClient final : public MojoMediaClient {
  public:
   TestMojoMediaClient();
+
+  TestMojoMediaClient(const TestMojoMediaClient&) = delete;
+  TestMojoMediaClient& operator=(const TestMojoMediaClient&) = delete;
+
   ~TestMojoMediaClient() final;
 
   // MojoMediaClient implementation.
   void Initialize() final;
   std::unique_ptr<Renderer> CreateRenderer(
-      service_manager::mojom::InterfaceProvider* host_interfaces,
+      mojom::FrameInterfaceFactory* frame_interfaces,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MediaLog* media_log,
       const std::string& audio_device_id) final;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   std::unique_ptr<Renderer> CreateCastRenderer(
-      service_manager::mojom::InterfaceProvider* host_interfaces,
+      mojom::FrameInterfaceFactory* frame_interfaces,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MediaLog* media_log,
       const base::UnguessableToken& overlay_plane_id) final;
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
   std::unique_ptr<CdmFactory> CreateCdmFactory(
-      service_manager::mojom::InterfaceProvider* /* host_interfaces */) final;
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  std::unique_ptr<CdmProxy> CreateCdmProxy(const base::Token& cdm_guid) final;
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
+      mojom::FrameInterfaceFactory* /* frame_interfaces */) final;
 
  private:
   std::unique_ptr<AudioManager> audio_manager_;
@@ -53,8 +53,6 @@ class TestMojoMediaClient : public MojoMediaClient {
   std::unique_ptr<RendererFactory> renderer_factory_;
   std::vector<scoped_refptr<AudioRendererSink>> audio_sinks_;
   std::vector<std::unique_ptr<VideoRendererSink>> video_sinks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMojoMediaClient);
 };
 
 }  // namespace media

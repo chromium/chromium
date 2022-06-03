@@ -1,0 +1,10 @@
+Content-Type: text/plain
+This is a testharness.js-based test.
+FAIL Tests that the target_div gets scrollend event when dragging scroll on target. promise_test: Unhandled rejection with value: "target_div did not receive scrollend event after dragging scroll on target."
+FAIL Tests that the target_div gets scrollend event when click scrollbar on target. promise_test: Unhandled rejection with value: "target_div did not receive scrollend event after clicking scrollbar on target."
+FAIL Tests that the target_div gets scrollend event when drag the thumb of target. promise_test: Unhandled rejection with value: "target_div did not receive scrollend event after dragging the thumb of target."
+FAIL Tests that the target_div gets scrollend event when send DOWN key to target. assert_true: expected true got false
+Harness: the test ran to completion.
+
+#EOF
+#EOF

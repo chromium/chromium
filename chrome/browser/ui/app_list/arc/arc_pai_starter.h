@@ -8,12 +8,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/app.mojom-forward.h"
 
 class PrefService;
 class Profile;
@@ -25,6 +24,10 @@ namespace arc {
 class ArcPaiStarter : public ArcAppListPrefs::Observer {
  public:
   explicit ArcPaiStarter(Profile* profile);
+
+  ArcPaiStarter(const ArcPaiStarter&) = delete;
+  ArcPaiStarter& operator=(const ArcPaiStarter&) = delete;
+
   ~ArcPaiStarter() override;
 
   // Creates PAI starter in case it has not been executed for the requested
@@ -91,8 +94,6 @@ class ArcPaiStarter : public ArcAppListPrefs::Observer {
   base::Time request_start_time_;
   // Keep last.
   base::WeakPtrFactory<ArcPaiStarter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPaiStarter);
 };
 
 }  // namespace arc

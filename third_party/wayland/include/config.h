@@ -13,6 +13,9 @@
 /* libxml-2.0 is available */
 /* #undef HAVE_LIBXML */
 
+/* Define to 1 if you have the `memfd_create' function. */
+#define HAVE_MEMFD_CREATE 1
+
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
@@ -36,6 +39,9 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
+
+/* Define to 1 if you have the `strndup' function. */
+#define HAVE_STRNDUP 1
 
 /* Define to 1 if you have the <sys/prctl.h> header file. */
 #define HAVE_SYS_PRCTL_H 1
@@ -62,7 +68,7 @@
 #define PACKAGE_NAME "wayland"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "wayland 1.17.0"
+#define PACKAGE_STRING "wayland 1.18.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "wayland"
@@ -71,10 +77,10 @@
 #define PACKAGE_URL "https://wayland.freedesktop.org/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.17.0"
+#define PACKAGE_VERSION "1.18.0"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.17.0"
+#define VERSION "1.18.0"

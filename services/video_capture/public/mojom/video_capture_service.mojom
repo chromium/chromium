@@ -4,21 +4,29 @@
 
 module video_capture.mojom;
 
-[EnableIf=is_chromeos]
-import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/video_capture/public/mojom/device_factory.mojom";
 import "services/video_capture/public/mojom/testing_controls.mojom";
 import "services/video_capture/public/mojom/video_source_provider.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+[EnableIf=is_chromeos_ash]
 import "media/capture/video/chromeos/mojom/camera_app.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 interface AcceleratorFactory {
   // Creates a new JpegDecodeAccelerator and binds it to |jda|.
   CreateJpegDecodeAccelerator(
       pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
 };
+
+[EnableIf=is_fuchsia]
+const sandbox.mojom.Sandbox kVideoCaptureSandbox
+  = sandbox.mojom.Sandbox.kVideoCapture;
+[EnableIfNot=is_fuchsia]
+const sandbox.mojom.Sandbox kVideoCaptureSandbox
+  = sandbox.mojom.Sandbox.kNoSandbox;
 
 // Entry point to the Video Capture Service API.
 // The factory provides access to the capture devices connected to the system.
@@ -29,12 +37,13 @@ interface AcceleratorFactory {
 // to be called once before any call to ConnectToDeviceFactory() is made.
 // Calling InjectGpuDependencies() is optional. If it is not called, MJPEG
 // decoding will be performed without gpu acceleration.
+[ServiceSandbox=kVideoCaptureSandbox]
 interface VideoCaptureService  {
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   InjectGpuDependencies(pending_remote<AcceleratorFactory> accelerator_factory);
 
   // Binds a bridge for Chrome OS camera app and device.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   ConnectToCameraAppDeviceBridge(
       pending_receiver<cros.mojom.CameraAppDeviceBridge> receiver);
 

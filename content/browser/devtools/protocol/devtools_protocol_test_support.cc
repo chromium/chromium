@@ -3,22 +3,27 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+
+#include <memory>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
 
 namespace {
 
 const char kIdParam[] = "id";
+const char kSessionIdParam[] = "sessionId";
 const char kMethodParam[] = "method";
 const char kParamsParam[] = "params";
 
@@ -39,27 +44,32 @@ void DevToolsProtocolTest::SetUpOnMainThread() {
 bool DevToolsProtocolTest::DidAddMessageToConsole(
     WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id) {
   console_messages_.push_back(base::UTF16ToUTF8(message));
   return true;
 }
 
-base::DictionaryValue* DevToolsProtocolTest::SendCommand(
+base::DictionaryValue* DevToolsProtocolTest::SendSessionCommand(
     const std::string& method,
     std::unique_ptr<base::Value> params,
+    const std::string& session_id,
     bool wait) {
   in_dispatch_ = true;
   base::DictionaryValue command;
   command.SetInteger(kIdParam, ++last_sent_id_);
   command.SetString(kMethodParam, method);
   if (params)
-    command.Set(kParamsParam, std::move(params));
+    command.SetKey(kParamsParam,
+                   base::Value::FromUniquePtrValue(std::move(params)));
+  if (!session_id.empty())
+    command.SetString(kSessionIdParam, session_id);
 
   std::string json_command;
   base::JSONWriter::Write(command, &json_command);
-  agent_host_->DispatchProtocolMessage(this, json_command);
+  agent_host_->DispatchProtocolMessage(
+      this, base::as_bytes(base::make_span(json_command)));
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.
   if (in_dispatch_ && wait) {
@@ -88,12 +98,13 @@ bool DevToolsProtocolTest::HasListItem(const std::string& path_to_list,
   if (!result_->GetList(path_to_list, &list))
     return false;
 
-  for (size_t i = 0; i != list->GetSize(); i++) {
-    base::DictionaryValue* item;
-    if (!list->GetDictionary(i, &item))
+  for (const base::Value& item_value : list->GetList()) {
+    if (!item_value.is_dict())
       return false;
+    const base::DictionaryValue& item =
+        base::Value::AsDictionaryValue(item_value);
     std::string id;
-    if (!item->GetString(name, &id))
+    if (!item.GetString(name, &id))
       return false;
     if (id == value)
       return true;
@@ -119,6 +130,15 @@ void DevToolsProtocolTest::TearDownOnMainThread() {
   Detach();
 }
 
+bool DevToolsProtocolTest::HasExistingNotification(
+    const std::string& search) const {
+  for (const std::string& notification : notifications_) {
+    if (notification == search)
+      return true;
+  }
+  return false;
+}
+
 std::unique_ptr<base::DictionaryValue>
 DevToolsProtocolTest::WaitForNotification(const std::string& notification,
                                           bool allow_existing) {
@@ -137,17 +157,6 @@ DevToolsProtocolTest::WaitForNotification(const std::string& notification,
   waiting_for_notification_ = notification;
   RunLoopUpdatingQuitClosure();
   return std::move(waiting_for_notification_params_);
-}
-
-blink::SecurityStyle DevToolsProtocolTest::GetSecurityStyle(
-    content::WebContents* web_contents,
-    content::SecurityStyleExplanations* security_style_explanations) {
-  security_style_explanations->secure_explanations.push_back(
-      SecurityStyleExplanation(
-          "an explanation title", "an explanation summary",
-          "an explanation description", cert_,
-          blink::WebMixedContentContextType::kNotMixedContent));
-  return blink::SecurityStyle::kNeutral;
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -173,7 +182,6 @@ DevToolsProtocolTest::WaitForMatchingNotification(
 
 void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     std::vector<ExpectedNavigation> expected_navigations) {
-  std::unique_ptr<base::DictionaryValue> params;
   while (!expected_navigations.empty()) {
     std::unique_ptr<base::DictionaryValue> params =
         WaitForNotification("Network.requestIntercepted");
@@ -181,8 +189,9 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     std::string interception_id;
     ASSERT_TRUE(params->GetString("interceptionId", &interception_id));
     bool is_redirect = params->HasKey("redirectUrl");
-    bool is_navigation;
-    ASSERT_TRUE(params->GetBoolean("isNavigationRequest", &is_navigation));
+    absl::optional<bool> is_navigation =
+        params->FindBoolPath("isNavigationRequest");
+    ASSERT_TRUE(is_navigation);
     std::string resource_type;
     ASSERT_TRUE(params->GetString("resourceType", &resource_type));
     std::string url;
@@ -192,8 +201,8 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     // The url will typically have a random port which we want to remove.
     url = RemovePort(GURL(url));
 
-    if (!is_navigation) {
-      params.reset(new base::DictionaryValue());
+    if (*is_navigation) {
+      params = std::make_unique<base::DictionaryValue>();
       params->SetString("interceptionId", interception_id);
       SendCommand("Network.continueInterceptedRequest", std::move(params),
                   false);
@@ -206,7 +215,7 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
       if (url != it->url || is_redirect != it->is_redirect)
         continue;
 
-      params.reset(new base::DictionaryValue());
+      params = std::make_unique<base::DictionaryValue>();
       params->SetString("interceptionId", interception_id);
       if (it->abort)
         params->SetString("errorReason", "Aborted");
@@ -230,18 +239,21 @@ void DevToolsProtocolTest::RunLoopUpdatingQuitClosure() {
 
 void DevToolsProtocolTest::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
-    const std::string& message) {
-  std::unique_ptr<base::DictionaryValue> root(
-      static_cast<base::DictionaryValue*>(
-          base::JSONReader::ReadDeprecated(message).release()));
-  int id;
-  if (root->GetInteger("id", &id)) {
-    result_ids_.push_back(id);
+    base::span<const uint8_t> message) {
+  base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
+                                message.size());
+  auto root = base::DictionaryValue::From(
+      base::JSONReader::ReadDeprecated(message_str));
+  absl::optional<int> id = root->FindIntKey("id");
+  if (id) {
+    result_ids_.push_back(*id);
     base::DictionaryValue* result;
-    ASSERT_TRUE(root->GetDictionary("result", &result));
-    result_.reset(result->DeepCopy());
+    bool have_result = root->GetDictionary("result", &result);
+    result_.reset(have_result ? result->DeepCopy() : nullptr);
+    base::Value* error = root->FindDictKey("error");
+    error_ = error ? error->Clone() : base::Value();
     in_dispatch_ = false;
-    if (id && id == waiting_for_command_result_id_) {
+    if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
       std::move(run_loop_quit_closure_).Run();
     }
@@ -269,18 +281,13 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
   }
 }
 
-std::vector<std::string> DevToolsProtocolTest::GetAllFrameUrls() {
-  std::vector<std::string> urls;
-  for (RenderFrameHost* render_frame_host :
-       shell()->web_contents()->GetAllFrames()) {
-    urls.push_back(RemovePort(render_frame_host->GetLastCommittedURL()));
-  }
-  return urls;
-}
-
 void DevToolsProtocolTest::AgentHostClosed(DevToolsAgentHost* agent_host) {
   if (!agent_host_can_close_)
     NOTREACHED();
+}
+
+bool DevToolsProtocolTest::AllowUnsafeOperations() {
+  return allow_unsafe_operations_;
 }
 
 }  // namespace content

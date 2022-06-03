@@ -5,22 +5,21 @@
 #include "extensions/renderer/gin_port.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/web/web_scoped_user_gesture.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -33,6 +32,10 @@ const char kDefaultPortName[] = "port name";
 class TestPortDelegate : public GinPort::Delegate {
  public:
   TestPortDelegate() {}
+
+  TestPortDelegate(const TestPortDelegate&) = delete;
+  TestPortDelegate& operator=(const TestPortDelegate&) = delete;
+
   ~TestPortDelegate() override {}
 
   void PostMessageToPort(v8::Local<v8::Context> context,
@@ -52,19 +55,21 @@ class TestPortDelegate : public GinPort::Delegate {
     last_message_.reset();
   }
 
-  const base::Optional<PortId>& last_port_id() const { return last_port_id_; }
+  const absl::optional<PortId>& last_port_id() const { return last_port_id_; }
   const Message* last_message() const { return last_message_.get(); }
 
  private:
-  base::Optional<PortId> last_port_id_;
+  absl::optional<PortId> last_port_id_;
   std::unique_ptr<Message> last_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPortDelegate);
 };
 
 class GinPortTest : public APIBindingTest {
  public:
   GinPortTest() {}
+
+  GinPortTest(const GinPortTest&) = delete;
+  GinPortTest& operator=(const GinPortTest&) = delete;
+
   ~GinPortTest() override {}
 
   void SetUp() override {
@@ -102,8 +107,6 @@ class GinPortTest : public APIBindingTest {
  private:
   std::unique_ptr<APIEventHandler> event_handler_;
   std::unique_ptr<testing::StrictMock<TestPortDelegate>> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinPortTest);
 };
 
 }  // namespace
@@ -113,7 +116,8 @@ TEST_F(GinPortTest, TestGetName) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -127,7 +131,8 @@ TEST_F(GinPortTest, TestDispatchMessage) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -148,7 +153,8 @@ TEST_F(GinPortTest, TestDispatchMessage) {
   v8::Local<v8::Value> args[] = {port_obj};
   RunFunctionOnGlobal(test_function, context, base::size(args), args);
 
-  port->DispatchOnMessage(context, Message(R"({"foo":42})", false));
+  port->DispatchOnMessage(
+      context, Message(R"({"foo":42})", SerializationFormat::kJson, false));
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "messageValid"));
@@ -161,15 +167,16 @@ TEST_F(GinPortTest, TestPostMessage) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
 
   auto test_post_message = [this, port_obj, context](
                                base::StringPiece function,
-                               base::Optional<PortId> expected_port_id,
-                               base::Optional<Message> expected_message) {
+                               absl::optional<PortId> expected_port_id,
+                               absl::optional<Message> expected_message) {
     SCOPED_TRACE(function);
     ASSERT_EQ(!!expected_port_id, !!expected_message)
         << "Cannot expect a port id with no message";
@@ -198,7 +205,9 @@ TEST_F(GinPortTest, TestPostMessage) {
     // Simple message; should succeed.
     const char kFunction[] =
         "(function(port) { port.postMessage({data: [42]}); })";
-    test_post_message(kFunction, port_id, Message(R"({"data":[42]})", false));
+    test_post_message(
+        kFunction, port_id,
+        Message(R"({"data":[42]})", SerializationFormat::kJson, false));
 
     // TODO(mustaq): We need a test with Message.user_gesture == true.
   }
@@ -206,7 +215,8 @@ TEST_F(GinPortTest, TestPostMessage) {
   {
     // Simple non-object message; should succeed.
     const char kFunction[] = "(function(port) { port.postMessage('hello'); })";
-    test_post_message(kFunction, port_id, Message(R"("hello")", false));
+    test_post_message(kFunction, port_id,
+                      Message(R"("hello")", SerializationFormat::kJson, false));
   }
 
   {
@@ -214,14 +224,17 @@ TEST_F(GinPortTest, TestPostMessage) {
     // stringify result "undefined"); should succeed.
     const char kFunction[] =
         "(function(port) { port.postMessage('undefined'); })";
-    test_post_message(kFunction, port_id, Message(R"("undefined")", false));
+    test_post_message(
+        kFunction, port_id,
+        Message(R"("undefined")", SerializationFormat::kJson, false));
   }
 
   {
     // We change undefined to null; see comment in gin_port.cc.
     const char kFunction[] =
         "(function(port) { port.postMessage(undefined); })";
-    test_post_message(kFunction, port_id, Message("null", false));
+    test_post_message(kFunction, port_id,
+                      Message("null", SerializationFormat::kJson, false));
   }
 
   {
@@ -232,7 +245,7 @@ TEST_F(GinPortTest, TestPostMessage) {
              message.bar = message;
              port.postMessage(message);
            }))";
-    test_post_message(kFunction, base::nullopt, base::nullopt);
+    test_post_message(kFunction, absl::nullopt, absl::nullopt);
   }
 
   {
@@ -259,7 +272,8 @@ TEST_F(GinPortTest, TestNativeDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -287,7 +301,8 @@ TEST_F(GinPortTest, TestJSDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -308,7 +323,8 @@ TEST_F(GinPortTest, JSDisconnectFromOnDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -334,7 +350,8 @@ TEST_F(GinPortTest, JSPostMessageFromOnDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -366,7 +383,8 @@ TEST_F(GinPortTest, TestSenderProperty) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
 
   {
     gin::Handle<GinPort> port = CreatePort(context, port_id);
@@ -391,7 +409,8 @@ TEST_F(GinPortTest, TryUsingPortAfterInvalidation) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();
@@ -433,7 +452,8 @@ TEST_F(GinPortTest, AlteringPortName) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  PortId port_id(base::UnguessableToken::Create(), 0, true);
+  PortId port_id(base::UnguessableToken::Create(), 0, true,
+                 SerializationFormat::kJson);
   gin::Handle<GinPort> port = CreatePort(context, port_id);
 
   v8::Local<v8::Object> port_obj = port.ToV8().As<v8::Object>();

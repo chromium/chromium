@@ -14,7 +14,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.build.BuildConfig;
 
 import java.lang.ref.WeakReference;
 
@@ -23,8 +23,8 @@ import java.lang.ref.WeakReference;
  * the result of the lookup. Adding or removing a view with the same ID as a cached version will
  * cause the cache to be invalidated for that view and cause a re-lookup the next time it is
  * queried. The goal of this view type is to be used in cases where child views are frequently
- * accessed or reused, for example as part of a {@link android.support.v7.widget.RecyclerView}. The
- * logic in the {@link #fastFindViewById(int)} method would be in {@link #findViewById(int)} if
+ * accessed or reused, for example as part of a {@link androidx.recyclerview.widget.RecyclerView}.
+ * The logic in the {@link #fastFindViewById(int)} method would be in {@link #findViewById(int)} if
  * it weren't final on the {@link View} class.
  *
  * {@link android.view.ViewGroup.OnHierarchyChangeListener}s cannot be used on ViewGroups that are
@@ -95,7 +95,7 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
         View view = null;
         if (ref != null) view = ref.get();
         if (view == null) view = findViewById(id);
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             assert view == findViewById(id) : "View caching logic is broken!";
             assert ref == null
                     || ref.get() != null : "Cache held reference to garbage collected view!";

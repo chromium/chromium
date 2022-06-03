@@ -6,6 +6,9 @@
 
 This is required to confirm correctness of properties that aren't readily
 available in Windows UI.
+
+If you run into "ImportError: No module named pywintypes":
+Run this script with vpython instead.
 """
 
 import optparse

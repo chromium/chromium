@@ -21,6 +21,10 @@ class FakeConnectionHandler : public ConnectionHandler {
   FakeConnectionHandler(
       const ConnectionHandler::ProtoReceivedCallback& read_callback,
       const ConnectionHandler::ProtoSentCallback& write_callback);
+
+  FakeConnectionHandler(const FakeConnectionHandler&) = delete;
+  FakeConnectionHandler& operator=(const FakeConnectionHandler&) = delete;
+
   ~FakeConnectionHandler() override;
 
   // ConnectionHandler implementation.
@@ -78,8 +82,6 @@ class FakeConnectionHandler : public ConnectionHandler {
 
   // Whether an error was encountered after a successful login.
   bool had_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionHandler);
 };
 
 }  // namespace gcm

@@ -4,12 +4,11 @@
 
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
-base::Optional<ScopedAllowFullscreen::Reason> ScopedAllowFullscreen::reason_;
+absl::optional<ScopedAllowFullscreen::Reason> ScopedAllowFullscreen::reason_;
 
 ScopedAllowFullscreen::ScopedAllowFullscreen(Reason reason) {
   DCHECK(IsMainThread());
@@ -23,7 +22,7 @@ ScopedAllowFullscreen::~ScopedAllowFullscreen() {
 }
 
 // static
-base::Optional<ScopedAllowFullscreen::Reason>
+absl::optional<ScopedAllowFullscreen::Reason>
 ScopedAllowFullscreen::FullscreenAllowedReason() {
   DCHECK(IsMainThread());
   return reason_;

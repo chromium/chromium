@@ -5,8 +5,7 @@
 #ifndef CHROME_INSTALLER_UTIL_HTML_DIALOG_H_
 #define CHROME_INSTALLER_UTIL_HTML_DIALOG_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
 
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
@@ -19,13 +18,13 @@ namespace installer {
 class HTMLDialog {
  public:
   enum DialogResult {
-    HTML_DLG_ERROR    = 0,  // Dialog could not be shown.
-    HTML_DLG_ACCEPT   = 1,  // The user accepted (accept, ok, yes buttons).
-    HTML_DLG_DECLINE  = 2,  // The user declined (cancel, no, abort buttons).
-    HTML_DLG_RETRY    = 3,  // The user wants to retry the action.
-    HTML_DLG_IGNORE   = 4,  // The user wants to ignore the error and continue.
-    HTML_DLG_TIMEOUT  = 5,  // The dialog has timed out and defaults apply.
-    HTML_DLG_EXTRA    = 6   // There is extra data as a string. See below.
+    HTML_DLG_ERROR = 0,    // Dialog could not be shown.
+    HTML_DLG_ACCEPT = 1,   // The user accepted (accept, ok, yes buttons).
+    HTML_DLG_DECLINE = 2,  // The user declined (cancel, no, abort buttons).
+    HTML_DLG_RETRY = 3,    // The user wants to retry the action.
+    HTML_DLG_IGNORE = 4,   // The user wants to ignore the error and continue.
+    HTML_DLG_TIMEOUT = 5,  // The dialog has timed out and defaults apply.
+    HTML_DLG_EXTRA = 6     // There is extra data as a string. See below.
   };
 
   // Callbacks that allow to tweak the appearance of the dialog.
@@ -38,8 +37,8 @@ class HTMLDialog {
     // to customize the native |window| appearance.
     virtual void OnBeforeDisplay(void* window) = 0;
 
-    protected:
-     virtual ~CustomizationCallback() {}
+   protected:
+    virtual ~CustomizationCallback() {}
   };
 
   virtual ~HTMLDialog() {}
@@ -53,14 +52,14 @@ class HTMLDialog {
 
   // If the result of ShowModal() was EXTRA, the information is available
   // as a string using this method.
-  virtual base::string16 GetExtraResult() = 0;
+  virtual std::wstring GetExtraResult() = 0;
 };
 
 // Factory method for the native HTML Dialog. When done with the object use
 // regular 'delete' operator to destroy the object. It might choose a
 // different underlying implementation according to the url protocol.
-HTMLDialog* CreateNativeHTMLDialog(const base::string16& url,
-                                   const base::string16& param);
+HTMLDialog* CreateNativeHTMLDialog(const std::wstring& url,
+                                   const std::wstring& param);
 
 // This class leverages HTMLDialog to create a dialog that is suitable
 // for a end-user-agreement modal dialog. The html shows a fairly standard
@@ -71,13 +70,17 @@ class EulaHTMLDialog {
   // |file| points to an html file on disk or to a resource via res:// spec.
   // |param| is a string that will be passed to the dialog as a parameter via
   //         the window.dialogArguments property.
-  EulaHTMLDialog(const base::string16& file, const base::string16& param);
+  EulaHTMLDialog(const std::wstring& file, const std::wstring& param);
+
+  EulaHTMLDialog(const EulaHTMLDialog&) = delete;
+  EulaHTMLDialog& operator=(const EulaHTMLDialog&) = delete;
+
   ~EulaHTMLDialog();
 
   enum Outcome {
-    REJECTED,           // Declined EULA, mapped from HTML_DLG_ACCEPT (1).
-    ACCEPTED,           // Accepted EULA no opt-in, from HTML_DLG_DECLINE (2).
-    ACCEPTED_OPT_IN,    // Accepted EULA and opt-in, from HTML_DLG_EXTRA (6).
+    REJECTED,         // Declined EULA, mapped from HTML_DLG_ACCEPT (1).
+    ACCEPTED,         // Accepted EULA no opt-in, from HTML_DLG_DECLINE (2).
+    ACCEPTED_OPT_IN,  // Accepted EULA and opt-in, from HTML_DLG_EXTRA (6).
   };
 
   // Shows the dialog and blocks for user input. The return value is one of
@@ -92,7 +95,6 @@ class EulaHTMLDialog {
   };
 
   HTMLDialog* dialog_;
-  DISALLOW_COPY_AND_ASSIGN(EulaHTMLDialog);
 };
 
 }  // namespace installer

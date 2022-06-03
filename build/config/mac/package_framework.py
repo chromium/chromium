@@ -23,7 +23,7 @@ def Main():
   # Foo.framework/Versions/Current symlink to it.
   if args.version:
     try:
-      os.makedirs(os.path.join(args.framework, VERSIONS, args.version), 0755)
+      os.makedirs(os.path.join(args.framework, VERSIONS, args.version), 0o755)
     except OSError as e:
       if e.errno != errno.EEXIST:
         raise e

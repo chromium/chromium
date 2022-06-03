@@ -4,6 +4,7 @@
 
 #include "base/trace_event/traced_value.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <atomic>
@@ -14,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_event_memory_overhead.h"
@@ -269,7 +271,7 @@ class PickleWriter final : public TracedValue::Writer {
           TraceEvent::TraceValue json_value;
           CHECK(it.ReadBool(&json_value.as_bool));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
-          TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_BOOL, json_value, out);
+          json_value.AppendAsJSON(TRACE_VALUE_TYPE_BOOL, out);
           break;
         }
 
@@ -279,7 +281,7 @@ class PickleWriter final : public TracedValue::Writer {
           maybe_append_key_name(state_stack[current_state_index], &it, out);
           TraceEvent::TraceValue json_value;
           json_value.as_int = value;
-          TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_INT, json_value, out);
+          json_value.AppendAsJSON(TRACE_VALUE_TYPE_INT, out);
           break;
         }
 
@@ -287,8 +289,7 @@ class PickleWriter final : public TracedValue::Writer {
           TraceEvent::TraceValue json_value;
           CHECK(it.ReadDouble(&json_value.as_double));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
-          TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_DOUBLE, json_value,
-                                        out);
+          json_value.AppendAsJSON(TRACE_VALUE_TYPE_DOUBLE, out);
           break;
         }
 
@@ -298,8 +299,7 @@ class PickleWriter final : public TracedValue::Writer {
           maybe_append_key_name(state_stack[current_state_index], &it, out);
           TraceEvent::TraceValue json_value;
           json_value.as_string = value.c_str();
-          TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_STRING, json_value,
-                                        out);
+          json_value.AppendAsJSON(TRACE_VALUE_TYPE_STRING, out);
           break;
         }
 
@@ -399,12 +399,23 @@ class PickleWriter final : public TracedValue::Writer {
         } break;
 
         case kTypeDouble: {
-          double value;
-          CHECK(it.ReadDouble(&value));
-          if (cur_dict) {
-            cur_dict->SetDoubleKey(ReadKeyName(it), value);
+          TraceEvent::TraceValue trace_value;
+          CHECK(it.ReadDouble(&trace_value.as_double));
+          Value base_value;
+          if (!std::isfinite(trace_value.as_double)) {
+            // base::Value doesn't support nan and infinity values. Use strings
+            // for them instead. This follows the same convention in
+            // AppendAsTraceFormat(), supported by TraceValue::Append*().
+            std::string value_string;
+            trace_value.AppendAsString(TRACE_VALUE_TYPE_DOUBLE, &value_string);
+            base_value = Value(value_string);
           } else {
-            cur_list->Append(value);
+            base_value = Value(trace_value.as_double);
+          }
+          if (cur_dict) {
+            cur_dict->SetKey(ReadKeyName(it), std::move(base_value));
+          } else {
+            cur_list->Append(std::move(base_value));
           }
         } break;
 
@@ -520,6 +531,28 @@ void TracedValue::SetValueWithCopiedName(base::StringPiece name,
   writer_->SetValueWithCopiedName(name, value->writer_.get());
 }
 
+namespace {
+
+// TODO(altimin): Add native support for pointers for nested values in
+// DebugAnnotation proto.
+std::string PointerToString(void* value) {
+  return base::StringPrintf(
+      "0x%" PRIx64, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(value)));
+}
+
+}  // namespace
+
+void TracedValue::SetPointer(const char* name, void* value) {
+  DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
+  writer_->SetString(name, PointerToString(value));
+}
+
+void TracedValue::SetPointerWithCopiedName(base::StringPiece name,
+                                           void* value) {
+  DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
+  writer_->SetStringWithCopiedName(name, PointerToString(value));
+}
+
 void TracedValue::BeginDictionary(const char* name) {
   DCHECK_CURRENT_CONTAINER_IS(kStackTypeDict);
   DEBUG_PUSH_CONTAINER(kStackTypeDict);
@@ -562,6 +595,11 @@ void TracedValue::AppendBoolean(bool value) {
 void TracedValue::AppendString(base::StringPiece value) {
   DCHECK_CURRENT_CONTAINER_IS(kStackTypeArray);
   writer_->AppendString(value);
+}
+
+void TracedValue::AppendPointer(void* value) {
+  DCHECK_CURRENT_CONTAINER_IS(kStackTypeArray);
+  writer_->AppendString(PointerToString(value));
 }
 
 void TracedValue::BeginArray() {
@@ -609,6 +647,225 @@ void TracedValue::EstimateTraceMemoryOverhead(
   writer_->EstimateTraceMemoryOverhead(overhead);
 }
 
+TracedValue::Array::Array(const std::initializer_list<ArrayItem> items) {
+  items_ = std::move(items);
+}
+
+TracedValue::Array::Array(TracedValue::Array&& other) {
+  items_ = std::move(other.items_);
+}
+
+void TracedValue::Array::WriteToValue(TracedValue* value) const {
+  for (const auto& item : items_) {
+    item.WriteToValue(value);
+  }
+}
+
+TracedValue::Dictionary::Dictionary(
+    const std::initializer_list<DictionaryItem> items) {
+  items_ = items;
+}
+
+TracedValue::Dictionary::Dictionary(TracedValue::Dictionary&& other) {
+  items_ = std::move(other.items_);
+}
+
+void TracedValue::Dictionary::WriteToValue(TracedValue* value) const {
+  for (const auto& item : items_) {
+    item.WriteToValue(value);
+  }
+}
+
+TracedValue::ValueHolder::ValueHolder(int value) {
+  kept_value_.int_value = value;
+  kept_value_type_ = KeptValueType::kIntType;
+}
+
+TracedValue::ValueHolder::ValueHolder(double value) {
+  kept_value_.double_value = value;
+  kept_value_type_ = KeptValueType::kDoubleType;
+}
+
+TracedValue::ValueHolder::ValueHolder(bool value) {
+  kept_value_.bool_value = value;
+  kept_value_type_ = KeptValueType::kBoolType;
+}
+
+TracedValue::ValueHolder::ValueHolder(base::StringPiece value) {
+  kept_value_.string_piece_value = value;
+  kept_value_type_ = KeptValueType::kStringPieceType;
+}
+
+TracedValue::ValueHolder::ValueHolder(std::string value) {
+  new (&kept_value_.std_string_value) std::string(std::move(value));
+  kept_value_type_ = KeptValueType::kStdStringType;
+}
+
+TracedValue::ValueHolder::ValueHolder(void* value) {
+  kept_value_.void_ptr_value = value;
+  kept_value_type_ = KeptValueType::kVoidPtrType;
+}
+
+TracedValue::ValueHolder::ValueHolder(const char* value) {
+  kept_value_.string_piece_value = value;
+  kept_value_type_ = KeptValueType::kStringPieceType;
+}
+
+TracedValue::ValueHolder::ValueHolder(TracedValue::Dictionary& value) {
+  new (&kept_value_.dictionary_value) TracedValue::Dictionary(std::move(value));
+  kept_value_type_ = KeptValueType::kDictionaryType;
+}
+
+TracedValue::ValueHolder::ValueHolder(TracedValue::Array& value) {
+  new (&kept_value_.array_value) TracedValue::Array(std::move(value));
+  kept_value_type_ = KeptValueType::kArrayType;
+}
+
+TracedValue::ValueHolder::ValueHolder(TracedValue::ValueHolder&& other) {
+  // Remember to call a destructor if necessary.
+  if (kept_value_type_ == KeptValueType::kStdStringType) {
+    delete (&kept_value_.std_string_value);
+  }
+  switch (other.kept_value_type_) {
+    case KeptValueType::kIntType: {
+      kept_value_.int_value = other.kept_value_.int_value;
+      break;
+    }
+    case KeptValueType::kDoubleType: {
+      kept_value_.double_value = other.kept_value_.double_value;
+      break;
+    }
+    case KeptValueType::kBoolType: {
+      kept_value_.bool_value = other.kept_value_.bool_value;
+      break;
+    }
+    case KeptValueType::kStringPieceType: {
+      kept_value_.string_piece_value = other.kept_value_.string_piece_value;
+      break;
+    }
+    case KeptValueType::kStdStringType: {
+      new (&kept_value_.std_string_value)
+          std::string(std::move(other.kept_value_.std_string_value));
+      break;
+    }
+    case KeptValueType::kVoidPtrType: {
+      kept_value_.void_ptr_value = other.kept_value_.void_ptr_value;
+      break;
+    }
+    case KeptValueType::kArrayType: {
+      new (&kept_value_.array_value)
+          TracedValue::Array(std::move(other.kept_value_.array_value));
+      break;
+    }
+    case KeptValueType::kDictionaryType: {
+      new (&kept_value_.dictionary_value) TracedValue::Dictionary(
+          std::move(other.kept_value_.dictionary_value));
+      break;
+    }
+  }
+  kept_value_type_ = other.kept_value_type_;
+}
+
+void TracedValue::ValueHolder::WriteToValue(TracedValue* value) const {
+  switch (kept_value_type_) {
+    case KeptValueType::kIntType: {
+      value->AppendInteger(kept_value_.int_value);
+      break;
+    }
+    case KeptValueType::kDoubleType: {
+      value->AppendDouble(kept_value_.double_value);
+      break;
+    }
+    case KeptValueType::kBoolType: {
+      value->AppendBoolean(kept_value_.bool_value);
+      break;
+    }
+    case KeptValueType::kStringPieceType: {
+      value->AppendString(kept_value_.string_piece_value);
+      break;
+    }
+    case KeptValueType::kStdStringType: {
+      value->AppendString(kept_value_.std_string_value);
+      break;
+    }
+    case KeptValueType::kVoidPtrType: {
+      value->AppendPointer(kept_value_.void_ptr_value);
+      break;
+    }
+    case KeptValueType::kArrayType: {
+      value->BeginArray();
+      kept_value_.array_value.WriteToValue(value);
+      value->EndArray();
+      break;
+    }
+    case KeptValueType::kDictionaryType: {
+      value->BeginDictionary();
+      kept_value_.dictionary_value.WriteToValue(value);
+      value->EndDictionary();
+      break;
+    }
+  }
+}
+
+void TracedValue::ValueHolder::WriteToValue(const char* name,
+                                            TracedValue* value) const {
+  switch (kept_value_type_) {
+    case KeptValueType::kIntType: {
+      value->SetInteger(name, kept_value_.int_value);
+      break;
+    }
+    case KeptValueType::kDoubleType: {
+      value->SetDouble(name, kept_value_.double_value);
+      break;
+    }
+    case KeptValueType::kBoolType: {
+      value->SetBoolean(name, kept_value_.bool_value);
+      break;
+    }
+    case KeptValueType::kStringPieceType: {
+      value->SetString(name, kept_value_.string_piece_value);
+      break;
+    }
+    case KeptValueType::kStdStringType: {
+      value->SetString(name, kept_value_.std_string_value);
+      break;
+    }
+    case KeptValueType::kVoidPtrType: {
+      value->SetPointer(name, kept_value_.void_ptr_value);
+      break;
+    }
+    case KeptValueType::kArrayType: {
+      value->BeginArray(name);
+      kept_value_.array_value.WriteToValue(value);
+      value->EndArray();
+      break;
+    }
+    case KeptValueType::kDictionaryType: {
+      value->BeginDictionary(name);
+      kept_value_.dictionary_value.WriteToValue(value);
+      value->EndDictionary();
+      break;
+    }
+  }
+}
+
+void TracedValue::ArrayItem::WriteToValue(TracedValue* value) const {
+  ValueHolder::WriteToValue(value);
+}
+
+void TracedValue::DictionaryItem::WriteToValue(TracedValue* value) const {
+  ValueHolder::WriteToValue(name_, value);
+}
+
+std::unique_ptr<TracedValue> TracedValue::Build(
+    const std::initializer_list<DictionaryItem> items) {
+  std::unique_ptr<TracedValue> value(new TracedValue());
+  for (const auto& item : items) {
+    item.WriteToValue(value.get());
+  }
+  return value;
+}
+
 std::string TracedValueJSON::ToJSON() const {
   std::string result;
   AppendAsTraceFormat(&result);
@@ -623,6 +880,52 @@ std::string TracedValueJSON::ToFormattedJSON() const {
           base::JSONWriter::OPTIONS_PRETTY_PRINT,
       &str);
   return str;
+}
+
+TracedValue::ArrayScope::ArrayScope(TracedValue* value) : value_(value) {}
+
+TracedValue::ArrayScope::~ArrayScope() {
+  value_->EndArray();
+}
+
+TracedValue::ArrayScope TracedValue::AppendArrayScoped() {
+  BeginArray();
+  return TracedValue::ArrayScope(this);
+}
+
+TracedValue::ArrayScope TracedValue::BeginArrayScoped(const char* name) {
+  BeginArray(name);
+  return TracedValue::ArrayScope(this);
+}
+
+TracedValue::ArrayScope TracedValue::BeginArrayScopedWithCopiedName(
+    base::StringPiece name) {
+  BeginArrayWithCopiedName(name);
+  return TracedValue::ArrayScope(this);
+}
+
+TracedValue::DictionaryScope::DictionaryScope(TracedValue* value)
+    : value_(value) {}
+
+TracedValue::DictionaryScope::~DictionaryScope() {
+  value_->EndDictionary();
+}
+
+TracedValue::DictionaryScope TracedValue::AppendDictionaryScoped() {
+  BeginDictionary();
+  return TracedValue::DictionaryScope(this);
+}
+
+TracedValue::DictionaryScope TracedValue::BeginDictionaryScoped(
+    const char* name) {
+  BeginDictionary(name);
+  return TracedValue::DictionaryScope(this);
+}
+
+TracedValue::DictionaryScope TracedValue::BeginDictionaryScopedWithCopiedName(
+    base::StringPiece name) {
+  BeginDictionaryWithCopiedName(name);
+  return TracedValue::DictionaryScope(this);
 }
 
 }  // namespace trace_event

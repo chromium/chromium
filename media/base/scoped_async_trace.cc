@@ -22,11 +22,11 @@ std::unique_ptr<ScopedAsyncTrace> ScopedAsyncTrace::CreateIfEnabled(
 }
 
 ScopedAsyncTrace::ScopedAsyncTrace(const char* name) : name_(name) {
-  TRACE_EVENT_ASYNC_BEGIN0(kCategory, name_, this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, name_, TRACE_ID_LOCAL(this));
 }
 
 ScopedAsyncTrace::~ScopedAsyncTrace() {
-  TRACE_EVENT_ASYNC_END0(kCategory, name_, this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kCategory, name_, TRACE_ID_LOCAL(this));
 }
 
 }  // namespace media

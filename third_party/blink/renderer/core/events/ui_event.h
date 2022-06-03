@@ -24,10 +24,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_UI_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_UI_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_ui_event_init.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/ui_event_init.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -86,7 +87,7 @@ class CORE_EXPORT UIEvent : public Event {
 
   virtual unsigned which() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<AbstractView> view_;
@@ -94,7 +95,10 @@ class CORE_EXPORT UIEvent : public Event {
   Member<InputDeviceCapabilities> source_capabilities_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(UIEvent);
+template <>
+struct DowncastTraits<UIEvent> {
+  static bool AllowFrom(const Event& event) { return event.IsUIEvent(); }
+};
 
 }  // namespace blink
 

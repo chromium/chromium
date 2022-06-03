@@ -9,11 +9,11 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace device {
@@ -41,7 +41,7 @@ struct UsbDeviceDescriptor {
   // be used to populate this struct's fields. This function may be called more
   // than once (i.e. for multiple buffers containing a configuration descriptor
   // each).
-  bool Parse(const std::vector<uint8_t>& buffer);
+  bool Parse(base::span<const uint8_t> buffer);
 
   uint8_t i_manufacturer = 0;
   uint8_t i_product = 0;
@@ -55,12 +55,12 @@ void ReadUsbDescriptors(
     base::OnceCallback<void(std::unique_ptr<UsbDeviceDescriptor>)> callback);
 
 bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
-                              base::string16* output);
+                              std::u16string* output);
 
 void ReadUsbStringDescriptors(
     scoped_refptr<UsbDeviceHandle> device_handle,
-    std::unique_ptr<std::map<uint8_t, base::string16>> index_map,
-    base::OnceCallback<void(std::unique_ptr<std::map<uint8_t, base::string16>>)>
+    std::unique_ptr<std::map<uint8_t, std::u16string>> index_map,
+    base::OnceCallback<void(std::unique_ptr<std::map<uint8_t, std::u16string>>)>
         callback);
 
 mojom::UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(const uint8_t* data);

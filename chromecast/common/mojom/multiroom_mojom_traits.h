@@ -5,8 +5,9 @@
 #ifndef CHROMECAST_COMMON_MOJOM_MULTIROOM_MOJOM_TRAITS_H_
 #define CHROMECAST_COMMON_MOJOM_MULTIROOM_MOJOM_TRAITS_H_
 
-#include "base/logging.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "chromecast/common/mojom/multiroom.mojom-shared.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 

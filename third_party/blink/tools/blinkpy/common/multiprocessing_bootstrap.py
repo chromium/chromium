@@ -26,7 +26,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """In order for the multiprocessing module to spawn children correctly on
 Windows, we need to be running a Python module that can be imported
 (which means a file in sys.path that ends in .py). In addition, we need to
@@ -38,8 +37,6 @@ This module enforces that.
 import os
 import subprocess
 import sys
-
-from blinkpy.common import version_check  # pylint: disable=unused-import
 
 
 def run(*parts):

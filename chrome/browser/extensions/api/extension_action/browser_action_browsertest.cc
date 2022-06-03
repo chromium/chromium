@@ -4,10 +4,11 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
@@ -38,7 +39,7 @@ void WaitForStateStore(Profile* profile, const std::string& extension_id) {
       new content::MessageLoopRunner;
   ExtensionSystem::Get(profile)->state_store()->GetExtensionValue(
       extension_id, kBrowserActionStorageKey,
-      base::Bind(&QuitMessageLoop, base::RetainedRef(runner)));
+      base::BindOnce(&QuitMessageLoop, base::RetainedRef(runner)));
   runner->Run();
 }
 

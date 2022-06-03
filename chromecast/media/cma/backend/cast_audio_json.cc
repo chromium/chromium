@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 
@@ -70,8 +71,8 @@ base::FilePath CastAudioJson::GetFilePathForTuning() {
 CastAudioJsonProviderImpl::CastAudioJsonProviderImpl() {
   if (base::ThreadPoolInstance::Get()) {
     cast_audio_watcher_ = base::SequenceBound<FileWatcher>(
-        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                         base::TaskPriority::LOWEST}));
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::LOWEST}));
   }
 }
 
@@ -86,8 +87,8 @@ std::unique_ptr<base::Value> CastAudioJsonProviderImpl::GetCastAudioConfig() {
 void CastAudioJsonProviderImpl::SetTuningChangedCallback(
     TuningChangedCallback callback) {
   if (cast_audio_watcher_) {
-    cast_audio_watcher_.Post(FROM_HERE, &FileWatcher::SetTuningChangedCallback,
-                             std::move(callback));
+    cast_audio_watcher_.AsyncCall(&FileWatcher::SetTuningChangedCallback)
+        .WithArgs(std::move(callback));
   }
 }
 
@@ -97,7 +98,8 @@ CastAudioJsonProviderImpl::FileWatcher::~FileWatcher() = default;
 void CastAudioJsonProviderImpl::FileWatcher::SetTuningChangedCallback(
     TuningChangedCallback callback) {
   watcher_.Watch(
-      CastAudioJson::GetFilePathForTuning(), false /* recursive */,
+      CastAudioJson::GetFilePathForTuning(),
+      base::FilePathWatcher::Type::kNonRecursive,
       base::BindRepeating(&ReadFileRunCallback, std::move(callback)));
 }
 

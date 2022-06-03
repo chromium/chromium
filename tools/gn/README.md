@@ -3,7 +3,7 @@ GN now lives at https://gn.googlesource.com/.
 To roll the latest version of GN into Chromium:
 
 1. Create a new Git branch.
-2. Run `python //tools/gn/roll_gn.py`; this will modify //DEPS and
+2. Run `python tools/gn/roll_gn.py`; this will modify //DEPS and
    //buildtools/DEPS to point to the most recent revision of GN and
    create a commit with a list of the changes included in the roll.
 3. Run `git-cl upload` to upload the commit as a change for review.

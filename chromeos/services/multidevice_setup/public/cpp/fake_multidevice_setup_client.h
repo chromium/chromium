@@ -11,11 +11,10 @@
 #include <tuple>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -25,6 +24,11 @@ namespace multidevice_setup {
 class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
  public:
   FakeMultiDeviceSetupClient();
+
+  FakeMultiDeviceSetupClient(const FakeMultiDeviceSetupClient&) = delete;
+  FakeMultiDeviceSetupClient& operator=(const FakeMultiDeviceSetupClient&) =
+      delete;
+
   ~FakeMultiDeviceSetupClient() override;
 
   void SetHostStatusWithDevice(
@@ -36,18 +40,20 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   void InvokePendingGetEligibleHostDevicesCallback(
       const multidevice::RemoteDeviceRefList& eligible_devices);
   void InvokePendingSetHostDeviceCallback(
-      const std::string& expected_device_id,
+      const std::string& expected_instance_id_or_legacy_device_id,
       const std::string& expected_auth_token,
       bool success);
   void InvokePendingSetFeatureEnabledStateCallback(
       mojom::Feature expected_feature,
       bool expected_enabled,
-      const base::Optional<std::string>& expected_auth_token,
+      const absl::optional<std::string>& expected_auth_token,
       bool success);
   void InvokePendingRetrySetHostNowCallback(bool success);
   void InvokePendingTriggerEventForDebuggingCallback(
       mojom::EventTypeForDebugging expected_type,
       bool success);
+
+  size_t NumPendingSetFeatureEnabledStateCalls() const;
 
   size_t num_remove_host_device_called() {
     return num_remove_host_device_called_;
@@ -61,14 +67,14 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   // MultiDeviceSetupClient:
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void SetHostDevice(
-      const std::string& host_device_id,
+      const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
       mojom::MultiDeviceSetup::SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
   void SetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const base::Optional<std::string>& auth_token,
+      const absl::optional<std::string>& auth_token,
       mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
       override;
   void RetrySetHostNow(
@@ -89,7 +95,7 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   std::queue<
       std::tuple<mojom::Feature,
                  bool,
-                 base::Optional<std::string>,
+                 absl::optional<std::string>,
                  mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback>>
       set_feature_enabled_state_args_queue_;
   std::queue<mojom::MultiDeviceSetup::RetrySetHostNowCallback>
@@ -101,12 +107,18 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiDeviceSetupClient);
 };
 
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::FakeMultiDeviceSetupClient;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_MULTIDEVICE_SETUP_CLIENT_H_

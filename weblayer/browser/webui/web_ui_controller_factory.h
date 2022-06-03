@@ -13,6 +13,9 @@ namespace weblayer {
 
 class WebUIControllerFactory : public content::WebUIControllerFactory {
  public:
+  WebUIControllerFactory(const WebUIControllerFactory&) = delete;
+  WebUIControllerFactory& operator=(const WebUIControllerFactory&) = delete;
+
   static WebUIControllerFactory* GetInstance();
 
   // content::WebUIControllerFactory overrides
@@ -20,8 +23,6 @@ class WebUIControllerFactory : public content::WebUIControllerFactory {
                                       const GURL& url) override;
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override;
@@ -31,8 +32,6 @@ class WebUIControllerFactory : public content::WebUIControllerFactory {
 
   WebUIControllerFactory();
   ~WebUIControllerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIControllerFactory);
 };
 
 }  // namespace weblayer

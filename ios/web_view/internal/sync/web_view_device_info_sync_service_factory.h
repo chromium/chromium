@@ -32,6 +32,11 @@ class WebViewDeviceInfoSyncServiceFactory
 
   static WebViewDeviceInfoSyncServiceFactory* GetInstance();
 
+  WebViewDeviceInfoSyncServiceFactory(
+      const WebViewDeviceInfoSyncServiceFactory&) = delete;
+  WebViewDeviceInfoSyncServiceFactory& operator=(
+      const WebViewDeviceInfoSyncServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       WebViewDeviceInfoSyncServiceFactory>;
@@ -42,8 +47,6 @@ class WebViewDeviceInfoSyncServiceFactory
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewDeviceInfoSyncServiceFactory);
 };
 
 }  // namespace ios_web_view

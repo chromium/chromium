@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   using HandlePassingInfo = base::HandlesToInheritVector;
 #elif defined(OS_FUCHSIA)
   using HandlePassingInfo = base::HandlesToTransferVector;
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   using HandlePassingInfo = base::MachPortsForRendezvous;
 #elif defined(OS_POSIX)
   using HandlePassingInfo = base::FileHandleMappingVector;
@@ -51,6 +51,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
 
   PlatformChannel();
   PlatformChannel(PlatformChannel&& other);
+
+  PlatformChannel(const PlatformChannel&) = delete;
+  PlatformChannel& operator=(const PlatformChannel&) = delete;
+
   ~PlatformChannel();
 
   PlatformChannel& operator=(PlatformChannel&& other);
@@ -107,11 +111,13 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   static PlatformChannelEndpoint RecoverPassedEndpointFromCommandLine(
       const base::CommandLine& command_line) WARN_UNUSED_RESULT;
 
+  // Indicates whether |RecoverPassedEndpointFromCommandLine()| would succeed.
+  static bool CommandLineHasPassedEndpoint(
+      const base::CommandLine& command_line);
+
  private:
   PlatformChannelEndpoint local_endpoint_;
   PlatformChannelEndpoint remote_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformChannel);
 };
 
 }  // namespace mojo

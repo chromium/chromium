@@ -11,6 +11,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/perf/perf_test.h"
 #include "ui/gl/gl_switches.h"
@@ -66,7 +67,6 @@ class WebRtcVideoHighBitrateBrowserTest : public WebRtcTestBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kUseFakeCodecForPeerConnection);
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
     command_line->AppendSwitch(switches::kUseGpuInTests);
   }

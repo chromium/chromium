@@ -7,7 +7,7 @@
 namespace content {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::string cbor;
+  std::vector<uint8_t> cbor;
   crdtp::json::ConvertJSONToCBOR(crdtp::span<uint8_t>(data, size), &cbor);
   return 0;
 }

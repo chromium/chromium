@@ -4,6 +4,7 @@
 
 #include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 
+#include "base/logging.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
@@ -376,58 +377,6 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       &GLES2Interface::BlitFramebufferCHROMIUM, impl, context_support);
   functions->fGenerateMipmap =
       gles_bind(&GLES2Interface::GenerateMipmap, impl, context_support);
-  functions->fMatrixLoadf =
-      gles_bind(&GLES2Interface::MatrixLoadfCHROMIUM, impl, context_support);
-  functions->fMatrixLoadIdentity = gles_bind(
-      &GLES2Interface::MatrixLoadIdentityCHROMIUM, impl, context_support);
-  functions->fPathCommands =
-      gles_bind(&GLES2Interface::PathCommandsCHROMIUM, impl, context_support);
-  functions->fPathParameteri =
-      gles_bind(&GLES2Interface::PathParameteriCHROMIUM, impl, context_support);
-  functions->fPathParameterf =
-      gles_bind(&GLES2Interface::PathParameterfCHROMIUM, impl, context_support);
-  functions->fGenPaths =
-      gles_bind(&GLES2Interface::GenPathsCHROMIUM, impl, context_support);
-  functions->fIsPath =
-      gles_bind(&GLES2Interface::IsPathCHROMIUM, impl, context_support);
-  functions->fDeletePaths =
-      gles_bind(&GLES2Interface::DeletePathsCHROMIUM, impl, context_support);
-  functions->fPathStencilFunc = gles_bind(
-      &GLES2Interface::PathStencilFuncCHROMIUM, impl, context_support);
-  functions->fStencilFillPath = gles_bind(
-      &GLES2Interface::StencilFillPathCHROMIUM, impl, context_support);
-  functions->fStencilStrokePath = gles_bind(
-      &GLES2Interface::StencilStrokePathCHROMIUM, impl, context_support);
-  functions->fCoverFillPath =
-      gles_bind(&GLES2Interface::CoverFillPathCHROMIUM, impl, context_support);
-  functions->fCoverStrokePath = gles_bind(
-      &GLES2Interface::CoverStrokePathCHROMIUM, impl, context_support);
-  functions->fStencilThenCoverFillPath = gles_bind(
-      &GLES2Interface::StencilThenCoverFillPathCHROMIUM, impl, context_support);
-  functions->fStencilThenCoverStrokePath =
-      gles_bind(&GLES2Interface::StencilThenCoverStrokePathCHROMIUM, impl,
-                context_support);
-  functions->fStencilFillPathInstanced = gles_bind(
-      &GLES2Interface::StencilFillPathInstancedCHROMIUM, impl, context_support);
-  functions->fStencilStrokePathInstanced =
-      gles_bind(&GLES2Interface::StencilStrokePathInstancedCHROMIUM, impl,
-                context_support);
-  functions->fCoverFillPathInstanced = gles_bind(
-      &GLES2Interface::CoverFillPathInstancedCHROMIUM, impl, context_support);
-  functions->fCoverStrokePathInstanced = gles_bind(
-      &GLES2Interface::CoverStrokePathInstancedCHROMIUM, impl, context_support);
-  functions->fStencilThenCoverFillPathInstanced =
-      gles_bind(&GLES2Interface::StencilThenCoverFillPathInstancedCHROMIUM,
-                impl, context_support);
-  functions->fStencilThenCoverStrokePathInstanced =
-      gles_bind(&GLES2Interface::StencilThenCoverStrokePathInstancedCHROMIUM,
-                impl, context_support);
-  functions->fProgramPathFragmentInputGen =
-      gles_bind(&GLES2Interface::ProgramPathFragmentInputGenCHROMIUM, impl,
-                context_support);
-  functions->fBindFragmentInputLocation =
-      gles_bind(&GLES2Interface::BindFragmentInputLocationCHROMIUM, impl,
-                context_support);
   functions->fCoverageModulation = gles_bind(
       &GLES2Interface::CoverageModulationCHROMIUM, impl, context_support);
   functions->fWindowRectangles =

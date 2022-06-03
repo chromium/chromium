@@ -2,37 +2,224 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//ui/ozone/ozone.gni")
+import("//tools/generate_library_loader/generate_library_loader.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
-jumbo_component("x") {
+declare_args() {
+  regenerate_x11_protos = false
+}
+
+config("x11_private_config") {
+  visibility = [ ":*" ]
+  defines = [ "IS_X11_IMPL" ]
+}
+
+config("build_xprotos_config") {
+  cflags = [
+    # Generated proto files pull all fields from a struct into scope
+    # even if they aren't used.  Rather than adding logic in the
+    # generator to determine which fields are used and keeping only
+    # those, simply ignore unused variable warnings.
+    "-Wno-unused-variable",
+  ]
+}
+
+generate_library_loader("xlib_loader") {
+  name = "XlibLoader"
+  output_h = "xlib_loader.h"
+  output_cc = "xlib_loader.cc"
+  header = "\"ui/gfx/x/xlib.h\""
+
+  functions = [
+    "XInitThreads",
+    "XOpenDisplay",
+    "XCloseDisplay",
+    "XFlush",
+    "XSynchronize",
+    "XSetErrorHandler",
+    "XFree",
+    "XPending",
+  ]
+}
+
+generate_library_loader("xlib_xcb_loader") {
+  name = "XlibXcbLoader"
+  output_h = "xlib_xcb_loader.h"
+  output_cc = "xlib_xcb_loader.cc"
+  header = "\"ui/gfx/x/xlib_xcb.h\""
+
+  functions = [ "XGetXCBConnection" ]
+}
+
+protos = [
+  "bigreq",
+  "composite",
+  "damage",
+  "dpms",
+  "dri2",
+  "dri3",
+  "ge",
+  "glx",
+  "present",
+  "randr",
+  "record",
+  "render",
+  "res",
+  "screensaver",
+  "shape",
+  "shm",
+  "sync",
+  "xc_misc",
+  "xevie",
+  "xf86dri",
+  "xf86vidmode",
+  "xfixes",
+  "xinerama",
+  "xinput",
+  "xkb",
+  "xprint",
+  "xproto",
+  "xselinux",
+  "xtest",
+  "xv",
+  "xvmc",
+]
+proto_generated_files = [
+  "read_event.cc",
+  "read_error.cc",
+  "extension_manager.h",
+  "extension_manager.cc",
+]
+foreach(proto, protos) {
+  proto_generated_files += [
+    "${proto}.h",
+    "${proto}.cc",
+  ]
+}
+
+if (regenerate_x11_protos) {
+  xcbproto_path = "//third_party/xcbproto/src"
+
+  action("gen_xprotos") {
+    visibility = [ ":build_xprotos" ]
+    script = "gen_xproto.py"
+
+    sources = []
+    foreach(proto, protos) {
+      sources += [ "$xcbproto_path/src/${proto}.xml" ]
+    }
+
+    outputs = []
+    foreach(proto_generated_file, proto_generated_files) {
+      outputs += [ "$target_gen_dir/$proto_generated_file" ]
+    }
+
+    args = rebase_path([
+                         xcbproto_path,
+                         target_gen_dir,
+                       ],
+                       root_build_dir) + protos
+  }
+} else {
+  copy("gen_xprotos") {
+    sources = []
+    foreach(proto_generated_file, proto_generated_files) {
+      sources += [ "generated_protos/$proto_generated_file" ]
+    }
+
+    outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  }
+}
+
+source_set("build_xprotos") {
+  visibility = [ ":xproto" ]
+  deps = [
+    ":gen_xprotos",
+    "//base",
+  ]
+  sources = get_target_outputs(":gen_xprotos")
+  configs += [
+    ":build_xprotos_config",
+    ":x11_private_config",
+  ]
+}
+
+source_set("xproto") {
+  visibility = [ ":x" ]
+  sources = [
+    "connection.cc",
+    "connection.h",
+    "error.cc",
+    "error.h",
+    "event.cc",
+    "event.h",
+    "future.h",
+    "keyboard_state.cc",
+    "keyboard_state.h",
+    "ref_counted_fd.cc",
+    "ref_counted_fd.h",
+    "scoped_ignore_errors.cc",
+    "scoped_ignore_errors.h",
+    "xlib_support.cc",
+    "xlib_support.h",
+    "xproto_internal.cc",
+    "xproto_internal.h",
+    "xproto_types.cc",
+    "xproto_types.h",
+    "xproto_util.cc",
+    "xproto_util.h",
+  ]
+  deps = [
+    ":xlib_loader",
+    ":xlib_xcb_loader",
+    "//base",
+    "//base:i18n",
+    "//ui/events/platform",
+    "//ui/gfx:gfx_switches",
+  ]
+  public_deps = [
+    ":build_xprotos",
+    "//ui/gfx/x/keysyms",
+  ]
+  configs += [ ":x11_private_config" ]
+  libs = [ "xcb" ]
+}
+
+component("x") {
   output_name = "gfx_x11"
 
   sources = [
-    "../gfx_export.h",
+    "property_cache.cc",
+    "property_cache.h",
     "x11_atom_cache.cc",
     "x11_atom_cache.h",
-    "x11_connection.cc",
-    "x11_connection.h",
-    "x11_error_tracker.cc",
-    "x11_error_tracker.h",
     "x11_path.cc",
     "x11_path.h",
-    "x11_switches.cc",
-    "x11_switches.h",
-    "x11_types.cc",
-    "x11_types.h",
+    "x11_window_event_manager.cc",
+    "x11_window_event_manager.h",
   ]
 
-  defines = [ "GFX_IMPLEMENTATION" ]
-
-  configs += [ "//build/config/linux:x11" ]
+  configs += [ ":x11_private_config" ]
 
   deps = [
     "//base",
     "//skia",
+  ]
+  public_deps = [ ":xproto" ]
+}
+
+source_set("unit_test") {
+  testonly = true
+  sources = [
+    "connection_unittest.cc",
+    "property_cache_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+    "//ui/gfx/x",
   ]
 }

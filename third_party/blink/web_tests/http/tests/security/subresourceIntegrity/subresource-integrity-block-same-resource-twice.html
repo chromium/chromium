@@ -7,6 +7,8 @@
     </head>
     <body>
         <script>
+            setup({single_test: true});
+
             // Regression test for https://crbug.com/584155
             function insertScript(errorCallback) {
                 var script = document.createElement('script');

@@ -25,8 +25,10 @@
 
 #include "third_party/blink/renderer/modules/filesystem/dom_window_file_system.h"
 
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -52,47 +54,57 @@ void DOMWindowFileSystem::webkitRequestFileSystem(
   if (!window.IsCurrentlyDisplayedInFrame())
     return;
 
-  Document* document = window.document();
-  if (!document)
-    return;
-
   auto error_callback_wrapper =
       AsyncCallbackHelper::ErrorCallback(error_callback);
 
   if (SchemeRegistry::SchemeShouldBypassContentSecurityPolicy(
-          document->GetSecurityOrigin()->Protocol()))
-    UseCounter::Count(document, WebFeature::kRequestFileSystemNonWebbyOrigin);
+          window.GetSecurityOrigin()->Protocol()))
+    UseCounter::Count(window, WebFeature::kRequestFileSystemNonWebbyOrigin);
 
-  if (!document->GetSecurityOrigin()->CanAccessFileSystem()) {
-    DOMFileSystem::ReportError(document, std::move(error_callback_wrapper),
+  if (!window.GetSecurityOrigin()->CanAccessFileSystem()) {
+    DOMFileSystem::ReportError(&window, std::move(error_callback_wrapper),
                                base::File::FILE_ERROR_SECURITY);
     return;
-  } else if (document->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(document, WebFeature::kFileAccessedFileSystem);
+  } else if (window.GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(window, WebFeature::kFileAccessedFileSystem);
   }
 
   mojom::blink::FileSystemType file_system_type =
       static_cast<mojom::blink::FileSystemType>(type);
   if (!DOMFileSystemBase::IsValidType(file_system_type)) {
-    DOMFileSystem::ReportError(document, std::move(error_callback_wrapper),
+    DOMFileSystem::ReportError(&window, std::move(error_callback_wrapper),
                                base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
+  auto* ukm_recorder = window.document()->UkmRecorder();
+  const ukm::SourceId source_id = window.document()->UkmSourceID();
+
   if (file_system_type == mojom::blink::FileSystemType::kTemporary) {
-    UseCounter::Count(document, WebFeature::kRequestedFileSystemTemporary);
+    UseCounter::Count(window, WebFeature::kRequestedFileSystemTemporary);
+    ukm::builders::FileSystemAPI_WebRequest(source_id)
+        .SetTemporary(true)
+        .Record(ukm_recorder->Get());
   } else if (file_system_type == mojom::blink::FileSystemType::kPersistent) {
-    UseCounter::Count(document, WebFeature::kRequestedFileSystemPersistent);
+    UseCounter::Count(window, WebFeature::kRequestedFileSystemPersistent);
+
+    // Record persistent usage in third-party contexts.
+    window.CountUseOnlyInCrossSiteIframe(
+        WebFeature::kRequestedFileSystemPersistentThirdPartyContext);
+
+    ukm::builders::FileSystemAPI_WebRequest(source_id)
+        .SetPersistent(true)
+        .Record(ukm_recorder->Get());
   }
 
   auto success_callback_wrapper =
       AsyncCallbackHelper::SuccessCallback<DOMFileSystem>(success_callback);
 
-  LocalFileSystem::From(*document)->RequestFileSystem(
-      document, file_system_type, size,
+  LocalFileSystem::From(window)->RequestFileSystem(
+      file_system_type, size,
       std::make_unique<FileSystemCallbacks>(std::move(success_callback_wrapper),
                                             std::move(error_callback_wrapper),
-                                            document, file_system_type),
+                                            &window, file_system_type),
       LocalFileSystem::kAsynchronous);
 }
 
@@ -104,26 +116,22 @@ void DOMWindowFileSystem::webkitResolveLocalFileSystemURL(
   if (!window.IsCurrentlyDisplayedInFrame())
     return;
 
-  Document* document = window.document();
-  if (!document)
-    return;
-
   auto error_callback_wrapper =
       AsyncCallbackHelper::ErrorCallback(error_callback);
 
-  const SecurityOrigin* security_origin = document->GetSecurityOrigin();
-  KURL completed_url = document->CompleteURL(url);
+  const SecurityOrigin* security_origin = window.GetSecurityOrigin();
+  KURL completed_url = window.CompleteURL(url);
   if (!security_origin->CanAccessFileSystem() ||
       !security_origin->CanRequest(completed_url)) {
-    DOMFileSystem::ReportError(document, std::move(error_callback_wrapper),
+    DOMFileSystem::ReportError(&window, std::move(error_callback_wrapper),
                                base::File::FILE_ERROR_SECURITY);
     return;
-  } else if (document->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(document, WebFeature::kFileAccessedFileSystem);
+  } else if (window.GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(window, WebFeature::kFileAccessedFileSystem);
   }
 
   if (!completed_url.IsValid()) {
-    DOMFileSystem::ReportError(document, std::move(error_callback_wrapper),
+    DOMFileSystem::ReportError(&window, std::move(error_callback_wrapper),
                                base::File::FILE_ERROR_INVALID_URL);
     return;
   }
@@ -131,11 +139,11 @@ void DOMWindowFileSystem::webkitResolveLocalFileSystemURL(
   auto success_callback_wrapper =
       AsyncCallbackHelper::SuccessCallback<Entry>(success_callback);
 
-  LocalFileSystem::From(*document)->ResolveURL(
-      document, completed_url,
+  LocalFileSystem::From(window)->ResolveURL(
+      completed_url,
       std::make_unique<ResolveURICallbacks>(std::move(success_callback_wrapper),
                                             std::move(error_callback_wrapper),
-                                            document),
+                                            &window),
       LocalFileSystem::kAsynchronous);
 }
 

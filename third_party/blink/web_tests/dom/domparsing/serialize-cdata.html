@@ -3,6 +3,7 @@ XMLSerializer.serializeToString incorrect value for CDATA nodes.</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
 var d = window.document.implementation.createDocument("", "", null);
 var n = d.createCDATASection("-- <cdata> --");
 var s = (new XMLSerializer()).serializeToString(n);

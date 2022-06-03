@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/app/client_connection_view_controller.h"
 
-#import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MDCActivityIndicator.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
-#import "ios/third_party/material_components_ios/src/components/NavigationBar/src/MaterialNavigationBar.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
+#import <MaterialComponents/MDCActivityIndicator.h>
+#import <MaterialComponents/MDCNavigationBar.h>
+#import <MaterialComponents/MaterialButtons.h>
+#import <MaterialComponents/MaterialCollections.h>
+#import <MaterialComponents/MaterialSnackbar.h>
+
+#include "base/logging.h"
+#include "base/strings/sys_string_conversions.h"
+#include "remoting/base/string_resources.h"
 #import "remoting/ios/app/help_and_feedback.h"
 #import "remoting/ios/app/host_view_controller.h"
 #import "remoting/ios/app/pin_entry_view.h"
@@ -23,11 +24,12 @@
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
 #import "remoting/ios/session/remoting_client.h"
-
-#include "base/strings/sys_string_conversions.h"
-#include "remoting/base/string_resources.h"
 #include "remoting/protocol/client_authentication_config.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 static const CGFloat kIconRadius = 30.f;
 static const CGFloat kActivityIndicatorStrokeWidth = 3.f;
@@ -624,7 +626,7 @@ using EntryPoint = remoting::ChromotingEvent::SessionEntryPoint;
       // If the session is closed by the host, just go back to the host list and
       // show a toast.
       state = ClientViewClosed;
-      [MDCSnackbarManager
+      [MDCSnackbarManager.defaultManager
           showMessage:[MDCSnackbarMessage
                           messageWithText:l10n_util::GetNSString(
                                               IDS_MESSAGE_SESSION_FINISHED)]];

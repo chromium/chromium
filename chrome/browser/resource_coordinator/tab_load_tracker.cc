@@ -6,11 +6,12 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prerender/prerender_contents.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -112,7 +113,7 @@ void TabLoadTracker::TransitionStateForTesting(
     LoadingState loading_state) {
   auto it = tabs_.find(web_contents);
   DCHECK(it != tabs_.end());
-  TransitionState(it, loading_state, false);
+  TransitionState(it, loading_state);
 }
 
 TabLoadTracker::TabLoadTracker() = default;
@@ -127,8 +128,6 @@ void TabLoadTracker::StartTracking(content::WebContents* web_contents) {
   // documented in TransitionState.
   WebContentsData data;
   data.loading_state = loading_state;
-  if (web_contents->IsLoadingToDifferentDocument())
-    data.did_start_loading_seen = true;
   data.is_ui_tab = IsUiTab(web_contents);
   tabs_.insert(std::make_pair(web_contents, data));
   ++state_counts_[static_cast<size_t>(data.loading_state)];
@@ -159,50 +158,29 @@ void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
     observer.OnStopTracking(web_contents, loading_state);
 }
 
-void TabLoadTracker::DidStartLoading(content::WebContents* web_contents) {
+void TabLoadTracker::PrimaryPageChanged(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Only observe top-level navigation to a different document.
   if (!web_contents->IsLoadingToDifferentDocument())
     return;
+
   auto it = tabs_.find(web_contents);
   DCHECK(it != tabs_.end());
-
-  if (it->second.loading_state == LOADING) {
-    // A load starts but the page has not become idle since the previous load.
-    DCHECK(it->second.did_start_loading_seen);
-    return;
-  }
-  it->second.did_start_loading_seen = true;
-
-  // A load in a non-visible WebContents can be deferred by a NavigationThrottle
-  // until DidReceiveResponse(). Therefore, wait until DidReceiveResponse() to
-  // transition a hidden WebContents to LOADING. However, transition to LOADING
-  // immediately for a visible WebContents, to ensure that policies that depend
-  // on LoadingState are applied as soon as possible.
-  if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    TransitionState(it, LOADING, true);
-  }
+  TransitionState(it, LOADING);
 }
 
-void TabLoadTracker::DidReceiveResponse(content::WebContents* web_contents) {
+void TabLoadTracker::DidStopLoading(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
   DCHECK(it != tabs_.end());
-  if (it->second.loading_state == LOADING) {
-    DCHECK(it->second.did_start_loading_seen);
-    return;
-  }
 
-  if (!it->second.did_start_loading_seen) {
-    // Response is received after the page has become idle.
-    return;
-  }
-
-  TransitionState(it, LOADING, true);
-}
-
-void TabLoadTracker::DidFailLoad(content::WebContents* web_contents) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MaybeTransitionToLoaded(web_contents);
+  // Corner case: An unloaded tab that starts loading but never receives a
+  // response transitions to the LOADED state when loading stops, without
+  // traversing the LOADING state. This can happen when the server doesn't
+  // respond or when there is no network connection.
+  if (it->second.loading_state == LoadingState::UNLOADED)
+    TransitionState(it, LOADED);
 }
 
 void TabLoadTracker::RenderProcessGone(content::WebContents* web_contents,
@@ -227,19 +205,19 @@ void TabLoadTracker::RenderProcessGone(content::WebContents* web_contents,
   // can happen if the renderer crashes between the UNLOADED and LOADING states.
   if (it->second.loading_state == UNLOADED)
     return;
-  TransitionState(it, UNLOADED, true);
+  TransitionState(it, UNLOADED);
 }
 
-void TabLoadTracker::OnPageAlmostIdle(content::WebContents* web_contents) {
+void TabLoadTracker::OnPageStoppedLoading(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TabManager::ResourceCoordinatorSignalObserver filters late notifications
-  // so here we can assume the event pertains to a live web_contents and
-  // its most recent navigation. However, the graph tracks contents that aren't
-  // tracked by this object.
-  if (!base::Contains(tabs_, web_contents))
-    return;
 
-  MaybeTransitionToLoaded(web_contents);
+  auto it = tabs_.find(web_contents);
+  if (it == tabs_.end()) {
+    // The graph tracks objects that are not tracked by this object.
+    return;
+  }
+
+  TransitionState(it, LOADED);
 }
 
 TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
@@ -248,8 +226,7 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
   // loading. Start from the assumption that it is UNLOADED.
   LoadingState loading_state = UNLOADED;
   if (web_contents->IsLoadingToDifferentDocument() &&
-      (web_contents->GetVisibility() == content::Visibility::VISIBLE ||
-       !web_contents->IsWaitingForResponse())) {
+      !web_contents->IsWaitingForResponse()) {
     loading_state = LOADING;
   } else {
     // Determine if the WebContents is already loaded. A loaded WebContents has
@@ -266,43 +243,14 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
   return loading_state;
 }
 
-void TabLoadTracker::MaybeTransitionToLoaded(
-    content::WebContents* web_contents) {
-  auto it = tabs_.find(web_contents);
-  DCHECK(it != tabs_.end());
-  if (it->second.loading_state != LOADING)
-    return;
-  TransitionState(it, LOADED, true);
-}
-
 void TabLoadTracker::TransitionState(TabMap::iterator it,
-                                     LoadingState loading_state,
-                                     bool validate_transition) {
-#if DCHECK_IS_ON()
-  if (validate_transition) {
-    // Validate the transition.
-    switch (loading_state) {
-      case LOADING: {
-        DCHECK_NE(LOADING, it->second.loading_state);
-        DCHECK(it->second.did_start_loading_seen);
-        break;
-      }
-
-      case LOADED: {
-        DCHECK_EQ(LOADING, it->second.loading_state);
-        DCHECK(it->second.did_start_loading_seen);
-        break;
-      }
-
-      case UNLOADED: {
-        DCHECK_NE(UNLOADED, it->second.loading_state);
-        break;
-      }
-    }
-  }
-#endif
-
+                                     LoadingState loading_state) {
   LoadingState previous_state = it->second.loading_state;
+
+  if (previous_state == loading_state) {
+    return;
+  }
+
   --state_counts_[static_cast<size_t>(previous_state)];
   it->second.loading_state = loading_state;
   ++state_counts_[static_cast<size_t>(loading_state)];
@@ -311,11 +259,6 @@ void TabLoadTracker::TransitionState(TabMap::iterator it,
     DCHECK_NE(0u, ui_tab_state_counts_[static_cast<size_t>(previous_state)]);
     --ui_tab_state_counts_[static_cast<size_t>(previous_state)];
   }
-
-  // If the destination state is LOADED, then also clear the
-  // |did_start_loading_seen| state.
-  if (loading_state == LOADED)
-    it->second.did_start_loading_seen = false;
 
   // Store |it->first| instead of passing it directly in the loop below in case
   // an observer starts/stops tracking a WebContents and invalidates |it|.
@@ -330,7 +273,8 @@ bool TabLoadTracker::IsUiTab(content::WebContents* web_contents) {
   // tabstrip UI or use a platform-independent tabstrip observer interface to
   // learn about |web_contents| associated with the tabstrip, rather than
   // checking for specific cases where |web_contents| is not a ui tab.
-  if (prerender::PrerenderContents::FromWebContents(web_contents) != nullptr)
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents) != nullptr)
     return false;
   if (web_contents->GetOuterWebContents())
     return false;

@@ -20,7 +20,7 @@ namespace net {
 class SSLServerContextImpl : public SSLServerContext {
  public:
   SSLServerContextImpl(X509Certificate* certificate,
-                       const crypto::RSAPrivateKey& key,
+                       EVP_PKEY* pkey,
                        const SSLServerConfig& ssl_server_config);
   SSLServerContextImpl(X509Certificate* certificate,
                        scoped_refptr<SSLPrivateKey> key,
@@ -45,7 +45,7 @@ class SSLServerContextImpl : public SSLServerContext {
 
   // Private key used by the server.
   // Only one representation should be set at any time.
-  std::unique_ptr<crypto::RSAPrivateKey> key_;
+  bssl::UniquePtr<EVP_PKEY> pkey_;
   const scoped_refptr<SSLPrivateKey> private_key_;
 };
 

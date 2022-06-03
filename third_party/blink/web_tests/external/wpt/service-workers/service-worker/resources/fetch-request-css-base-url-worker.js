@@ -19,11 +19,11 @@ self.addEventListener('fetch', event => {
   if (url.pathname.indexOf(cssPath) != -1) {
     // Respond with a different URL, deleting "request-url-path/".
     if (url.search == '?fetch') {
-      event.respondWith(fetch('fetch-request-css-base-url-style.css'));
+      event.respondWith(fetch('fetch-request-css-base-url-style.css?fetch'));
     }
     // Respond with new Response().
     else if (url.search == '?newResponse') {
-      const styleString = 'body { background-image: url("./dummy.png");}';
+      const styleString = 'body { background-image: url("./sample.png");}';
       const headers = {'content-type': 'text/css'};
       event.respondWith(new Response(styleString, headers));
     }
@@ -31,7 +31,7 @@ self.addEventListener('fetch', event => {
 
   // The image request indicates what the base URL of the CSS was. Message the
   // result back to the test page.
-  else if (url.pathname.indexOf('dummy.png') != -1) {
+  else if (url.pathname.indexOf('sample.png') != -1) {
     // For some reason |source| is undefined here when running the test manually
     // in Firefox. The test author experimented with both using Client
     // (event.source) and MessagePort to try to get the test to pass, but

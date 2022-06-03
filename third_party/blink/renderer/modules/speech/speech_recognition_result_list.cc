@@ -43,7 +43,7 @@ SpeechRecognitionResultList::SpeechRecognitionResultList(
     const HeapVector<Member<SpeechRecognitionResult>>& results)
     : results_(results) {}
 
-void SpeechRecognitionResultList::Trace(blink::Visitor* visitor) {
+void SpeechRecognitionResultList::Trace(Visitor* visitor) const {
   visitor->Trace(results_);
   ScriptWrappable::Trace(visitor);
 }

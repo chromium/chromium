@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
@@ -58,8 +58,6 @@ std::set<const WebRequestRule*> WebRequestRulesRegistry::GetMatches(
   WebRequestDataWithMatchIds request_data(&request_data_without_ids);
   request_data.url_match_ids =
       url_matcher_.MatchURL(request_data.data->request->url);
-  request_data.first_party_url_match_ids =
-      url_matcher_.MatchURL(request_data.data->request->site_for_cookies);
 
   // 1st phase -- add all rules with some conditions without UrlFilter
   // attributes.
@@ -70,9 +68,6 @@ std::set<const WebRequestRule*> WebRequestRulesRegistry::GetMatches(
 
   // 2nd phase -- add all rules with some conditions triggered by URL matches.
   AddTriggeredRules(request_data.url_match_ids, request_data, &result);
-  AddTriggeredRules(request_data.first_party_url_match_ids,
-                    request_data, &result);
-
   return result;
 }
 
@@ -169,7 +164,7 @@ std::string WebRequestRulesRegistry::AddRulesImpl(
     std::unique_ptr<WebRequestRule> webrequest_rule = WebRequestRule::Create(
         url_matcher_.condition_factory(), browser_context(), extension,
         extension_installation_time, *rule,
-        base::Bind(&Checker, base::Unretained(extension)), &error);
+        base::BindOnce(&Checker, base::Unretained(extension)), &error);
     if (!error.empty()) {
       // We don't return here, because we want to clear temporary
       // condition sets in the url_matcher_.

@@ -5,6 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CONTEXT_OBSERVER_H_
 #define CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CONTEXT_OBSERVER_H_
 
+#include <string>
+
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/service_worker_client_info.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -14,6 +18,21 @@ struct ServiceWorkerRunningInfo;
 
 class ServiceWorkerContextObserver {
  public:
+  struct ErrorInfo {
+    ErrorInfo(const std::u16string& message,
+              int line,
+              int column,
+              const GURL& url)
+        : error_message(message),
+          line_number(line),
+          column_number(column),
+          source_url(url) {}
+    ErrorInfo(const ErrorInfo& info) = default;
+    const std::u16string error_message;
+    const int line_number;
+    const int column_number;
+    const GURL source_url;
+  };
   // Called when a service worker has been registered with scope |scope|.
   //
   // This is called when the ServiceWorkerContainer.register() promise is
@@ -48,19 +67,41 @@ class ServiceWorkerContextObserver {
   // process of the service worker is allocated/released, instead of using the
   // running status of the embedded worker.
   virtual void OnVersionStartedRunning(
-      ServiceWorkerContext* context,
       int64_t version_id,
       const ServiceWorkerRunningInfo& running_info) {}
-  virtual void OnVersionStoppedRunning(ServiceWorkerContext* context,
-                                       int64_t version_id) {}
+  virtual void OnVersionStoppedRunning(int64_t version_id) {}
+
+  // Called when a controllee is added/removed for the service worker with id
+  // |version_id|.
+  virtual void OnControlleeAdded(int64_t version_id,
+                                 const std::string& client_uuid,
+                                 const ServiceWorkerClientInfo& client_info) {}
+  virtual void OnControlleeRemoved(int64_t version_id,
+                                   const std::string& client_uuid) {}
 
   // Called when there are no more controllees for the service worker with id
   // |version_id|.
   virtual void OnNoControllees(int64_t version_id, const GURL& scope) {}
 
+  // Called when the navigation for a window client commits to a render frame
+  // host. At this point, if there was a previous controllee attached to that
+  // render frame host, it has already been removed and OnControlleeRemoved()
+  // has been called.
+  virtual void OnControlleeNavigationCommitted(
+      int64_t version_id,
+      const std::string& client_uuid,
+      GlobalRenderFrameHostId render_frame_host_id) {}
+
+  // Called when an error is reported for the service worker with id
+  // |version_id|.
+  virtual void OnErrorReported(int64_t version_id,
+                               const GURL& scope,
+                               const ErrorInfo& info) {}
+
   // Called when a console message is reported for the service worker with id
   // |version_id|.
   virtual void OnReportConsoleMessage(int64_t version_id,
+                                      const GURL& scope,
                                       const ConsoleMessage& message) {}
 
   // Called when |context| is destroyed. Observers must no longer use |context|.

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<link rel="match" href="at-container-001-ref.html">
+<title>Tests basic evaluation of @container queries</title>
+<style>
+  .container {
+    contain: size layout style;
+    width: 30px;
+    height: 50px;
+    border: 1px solid black;
+    display: inline-block;
+  }
+  .box {
+    background-color: black;
+    width: 20px;
+    height: 20px;
+  }
+
+  @container (min-width: 30px) { .width .box { background-color: coral; } }
+  @container (min-width: 40px) { .width .box { background-color: skyblue; } }
+  @container (min-width: 50px) { .width .box { background-color: hotpink; } }
+  @container (min-width: 60px) { .width .box { background-color: seagreen; } }
+
+  @container (min-height: 50px) { .height .box { background-color: coral; } }
+  @container (min-height: 60px) { .height .box { background-color: skyblue; } }
+  @container (min-height: 70px) { .height .box { background-color: hotpink; } }
+  @container (min-height: 80px) { .height .box { background-color: seagreen; } }
+
+  /* Should not apply to anything: */
+  @container (min-width: 9999px) { .width .box { background-color: red; } }
+  @container (min-height: 9999px) { .height .box { background-color: red; } }
+
+</style>
+<div class=width>
+  <div class=container style="width:29px"><div class=box></div></div>
+  <div class=container style="width:30px"><div class=box></div></div>
+  <div class=container style="width:35px"><div class=box></div></div>
+  <div class=container style="width:40px"><div class=box></div></div>
+  <div class=container style="width:50px"><div class=box></div></div>
+  <div class=container style="width:60px"><div class=box></div></div>
+  <div class=container style="width:70px"><div class=box></div></div>
+</div>
+<div class=height>
+  <div class=container style="height:49px"><div class=box></div></div>
+  <div class=container style="height:50px"><div class=box></div></div>
+  <div class=container style="height:55px"><div class=box></div></div>
+  <div class=container style="height:60px"><div class=box></div></div>
+  <div class=container style="height:70px"><div class=box></div></div>
+  <div class=container style="height:80px"><div class=box></div></div>
+  <div class=container style="height:90px"><div class=box></div></div>
+</div>

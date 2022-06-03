@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/location.h"
@@ -15,11 +16,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -51,24 +54,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 // removal and mark it with a release at least one year after the introduction
 // of the alias.
 - (void)cr_registerCompatibilityAliases {
-  // TODO(crbug.com/661633): those aliases where introduced between M57 and
-  // M58, so remove them after M67 has shipped to stable.
-  [self setClass:[CRWSessionCertificatePolicyCacheStorage class]
-      forClassName:@"SessionCertificatePolicyManager"];
-  [self setClass:[CRWSessionStorage class] forClassName:@"SessionController"];
-  [self setClass:[CRWSessionStorage class]
-      forClassName:@"CRWSessionController"];
-  [self setClass:[CRWNavigationItemStorage class] forClassName:@"SessionEntry"];
-  [self setClass:[CRWNavigationItemStorage class]
-      forClassName:@"CRWSessionEntry"];
-  [self setClass:[SessionWindowIOS class] forClassName:@"SessionWindow"];
-
-  // TODO(crbug.com/661633): this alias was introduced between M58 and M59, so
-  // remove it after M68 has shipped to stable.
-  [self setClass:[CRWSessionStorage class]
-      forClassName:@"CRWNavigationManagerStorage"];
-  [self setClass:[CRWSessionCertificatePolicyCacheStorage class]
-      forClassName:@"CRWSessionCertificatePolicyManager"];
 }
 
 @end
@@ -86,9 +71,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (instancetype)init {
   scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   return [self initWithTaskRunner:taskRunner];
 }
@@ -115,9 +99,11 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 }
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
-          directory:(NSString*)directory
+          sessionID:(NSString*)sessionID
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   BOOL hadPendingSession = [_pendingSessions objectForKey:sessionPath] != nil;
   [_pendingSessions setObject:factory forKey:sessionPath];
   if (immediately) {
@@ -132,8 +118,10 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   }
 }
 
-- (SessionIOS*)loadSessionFromDirectory:(NSString*)directory {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                              directory:(const base::FilePath&)directory {
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   base::TimeTicks start_time = base::TimeTicks::Now();
   SessionIOS* session = [self loadSessionFromPath:sessionPath];
   UmaHistogramTimes("Session.WebStates.ReadFromFileTime",
@@ -183,32 +171,69 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   return base::mac::ObjCCastStrict<SessionIOS>(rootObject);
 }
 
-- (void)deleteLastSessionFileInDirectory:(NSString*)directory
+- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+  NSString* sessionsDirectory = base::SysUTF8ToNSString(
+      SessionsDirectoryForDirectory(directory).AsUTF8Unsafe());
+  NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
+      contentsOfDirectoryAtPath:sessionsDirectory
+                          error:nil];
+
+  // If there were no session ids, then scenes are not supported fall back to
+  // the original location.
+  if ([allSessionIDs count] == 0) {
+    allSessionIDs = @[ @"" ];
+  }
+
+  [self deleteSessions:allSessionIDs
+             directory:directory
+            completion:std::move(callback)];
+}
+
+- (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
+             directory:(const base::FilePath&)directory
+            completion:(base::OnceClosure)callback {
+  NSMutableArray<NSString*>* paths =
+      [NSMutableArray arrayWithCapacity:sessionIDs.count];
+  for (NSString* sessionID : sessionIDs) {
+    [paths addObject:[SessionServiceIOS sessionPathForSessionID:sessionID
+                                                      directory:directory]];
+  }
+  [self deletePaths:paths completion:std::move(callback)];
+}
+
++ (NSString*)sessionPathForSessionID:(NSString*)sessionID
+                           directory:(const base::FilePath&)directory {
+  DCHECK(sessionID.length != 0);
+  return base::SysUTF8ToNSString(
+      SessionPathForDirectory(directory, sessionID, kSessionFileName)
+          .AsUTF8Unsafe());
+}
+
+#pragma mark - Private methods
+
+// Delete files/folders of the given |paths|.
+- (void)deletePaths:(NSArray<NSString*>*)paths
+         completion:(base::OnceClosure)callback {
   _taskRunner->PostTaskAndReply(
       FROM_HERE, base::BindOnce(^{
         base::ScopedBlockingCall scoped_blocking_call(
             FROM_HERE, base::BlockingType::MAY_BLOCK);
         NSFileManager* fileManager = [NSFileManager defaultManager];
-        if (![fileManager fileExistsAtPath:sessionPath])
-          return;
+        for (NSString* path : paths) {
+          if (![fileManager fileExistsAtPath:path])
+            continue;
 
-        NSError* error = nil;
-        if (![fileManager removeItemAtPath:sessionPath error:&error] || error) {
-          CHECK(false) << "Unable to delete session file: "
-                       << base::SysNSStringToUTF8(sessionPath) << ": "
-                       << base::SysNSStringToUTF8([error description]);
+          NSError* error = nil;
+          if (![fileManager removeItemAtPath:path error:&error] || error) {
+            CHECK(false) << "Unable to delete path: "
+                         << base::SysNSStringToUTF8(path) << ": "
+                         << base::SysNSStringToUTF8([error description]);
+          }
         }
       }),
       std::move(callback));
 }
-
-+ (NSString*)sessionPathForDirectory:(NSString*)directory {
-  return [directory stringByAppendingPathComponent:@"session.plist"];
-}
-
-#pragma mark - Private methods
 
 // Do the work of saving on a background thread.
 - (void)performSaveToPathInBackground:(NSString*)sessionPath {
@@ -226,9 +251,13 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
   @try {
     NSError* error = nil;
+    size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
+    base::TimeTicks start_time = base::TimeTicks::Now();
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
+    UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
+                      base::TimeTicks::Now() - start_time);
     if (!sessionData || error) {
       DLOG(WARNING) << "Error serializing session for path: "
                     << base::SysNSStringToUTF8(sessionPath) << ": "
@@ -236,8 +265,12 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
       return;
     }
 
-    UMA_HISTOGRAM_COUNTS_100000("Session.WebStates.SerializedSize",
-                                sessionData.length / 1024);
+    base::UmaHistogramCounts100000(
+        "Session.WebStates.AllSerializedCertPolicyCachesSize",
+        web::GetCertPolicyBytesEncoded() - previous_cert_policy_bytes / 1024);
+
+    base::UmaHistogramCounts100000("Session.WebStates.SerializedSize",
+                                   sessionData.length / 1024);
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData

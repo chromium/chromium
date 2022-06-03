@@ -1,0 +1,254 @@
+From e1c9aea9410c3ecc240d5c73049e957b9901fedd Mon Sep 17 00:00:00 2001
+From: amraboelkher <amraboelkher@chromium.org>
+Date: Thu, 18 Mar 2021 23:44:08 +0100
+Subject: [PATCH] 0001-private-membership-chromium-required-changes.patch
+
+---
+ src/internal/crypto_utils.h                   |  1 +
+ src/internal/encrypted_bucket_id.cc           |  6 +++-
+ src/internal/encrypted_bucket_id_test.cc      |  2 +-
+ src/internal/hashed_bucket_id_test.cc         |  4 +--
+ src/internal/oprf_utils.cc                    | 15 ++++++---
+ src/internal/rlwe_id_utils.cc                 |  6 +++-
+ .../regression_test_data.proto                |  2 ++
+ src/internal/utils.cc                         |  3 +-
+ src/membership_response_map_test.cc           |  4 +--
+ src/private_membership.proto                  |  2 ++
+ src/private_membership_rlwe.proto             |  2 ++
+ src/private_membership_rlwe_client.cc         | 32 +++++++++++--------
+ 12 files changed, 52 insertions(+), 27 deletions(-)
+
+diff --git a/src/internal/crypto_utils.h b/src/internal/crypto_utils.h
+index fe7fda6..c755bd7 100644
+--- a/src/internal/crypto_utils.h
++++ b/src/internal/crypto_utils.h
+@@ -15,6 +15,7 @@
+ #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
+ #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
+ 
++#include "absl/strings/str_cat.h"
+ #include "third_party/private-join-and-compute/src/crypto/context.h"
+ #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+ #include "third_party/private_membership/src/private_membership.pb.h"
+diff --git a/src/internal/encrypted_bucket_id.cc b/src/internal/encrypted_bucket_id.cc
+index f5f0ed9..3b46e50 100644
+--- a/src/internal/encrypted_bucket_id.cc
++++ b/src/internal/encrypted_bucket_id.cc
+@@ -38,7 +38,11 @@ namespace rlwe {
+         "ECCipher and Context must both be non-null.");
+   }
+   std::string full_id = HashRlwePlaintextId(id);
+-  RLWE_ASSIGN_OR_RETURN(std::string encrypted_id, ec_cipher->Encrypt(full_id));
++  auto status_or_encrypted_id = ec_cipher->Encrypt(full_id);
++  if(!status_or_encrypted_id.ok()){
++      return absl::InvalidArgumentError(status_or_encrypted_id.status().message());
++  }
++  std::string encrypted_id = std::move(status_or_encrypted_id).ValueOrDie();
+   return EncryptedBucketId::Create(encrypted_id, params, ctx);
+ }
+ 
+diff --git a/src/internal/encrypted_bucket_id_test.cc b/src/internal/encrypted_bucket_id_test.cc
+index 651ef6e..1fbd3a0 100644
+--- a/src/internal/encrypted_bucket_id_test.cc
++++ b/src/internal/encrypted_bucket_id_test.cc
+@@ -113,7 +113,7 @@ TEST(EncryptedBucketIdTest, ToUint32Success) {
+   ASSERT_OK_AND_ASSIGN(auto encrypted_bucket_id,
+                        EncryptedBucketId::Create("\xFF\xFF\xFF\xFF", 32));
+   ASSERT_OK_AND_ASSIGN(auto x, encrypted_bucket_id.ToUint32());
+-  EXPECT_EQ(x, (int64{1} << 32) - 1);
++  EXPECT_EQ(x, (int64_t{1} << 32) - 1);
+ }
+ 
+ TEST(EncryptedBucketIdTest, EqualsFalse) {
+diff --git a/src/internal/hashed_bucket_id_test.cc b/src/internal/hashed_bucket_id_test.cc
+index cb7ef82..05aa824 100644
+--- a/src/internal/hashed_bucket_id_test.cc
++++ b/src/internal/hashed_bucket_id_test.cc
+@@ -36,7 +36,7 @@ private_membership::rlwe::PrivateMembershipRlweQuery::HashedBucketId
+ ApiHashedBucketId(absl::string_view hashed_bucket_id, int bit_length) {
+   private_membership::rlwe::PrivateMembershipRlweQuery::HashedBucketId
+       api_hashed_bucket_id;
+-  api_hashed_bucket_id.set_hashed_bucket_id(hashed_bucket_id);
++  api_hashed_bucket_id.set_hashed_bucket_id(std::string(hashed_bucket_id));
+   api_hashed_bucket_id.set_bit_length(bit_length);
+   return api_hashed_bucket_id;
+ }
+@@ -128,7 +128,7 @@ TEST(HashedBucketId, ToApiProto) {
+       api_proto = ApiHashedBucketId("abcd", 32);
+   ASSERT_OK_AND_ASSIGN(HashedBucketId id,
+                        HashedBucketId::CreateFromApiProto(api_proto));
+-  EXPECT_THAT(id.ToApiProto(), EqualsProto(api_proto));
++  EXPECT_EQ(id.ToApiProto().SerializeAsString(), api_proto.SerializeAsString());
+ }
+ 
+ TEST(HashedBucketIdTest, EqualsFalse) {
+diff --git a/src/internal/oprf_utils.cc b/src/internal/oprf_utils.cc
+index e6dd9fd..b6b6a5d 100644
+--- a/src/internal/oprf_utils.cc
++++ b/src/internal/oprf_utils.cc
+@@ -23,11 +23,16 @@ namespace private_membership {
+     private_join_and_compute::ECCommutativeCipher* ec_cipher) {
+   DoublyEncryptedId doubly_encrypted_id;
+ 
+-  doubly_encrypted_id.set_queried_encrypted_id(encrypted_id);
+-
+-  RLWE_ASSIGN_OR_RETURN(auto reencrypted_id,
+-                        ec_cipher->ReEncrypt(std::string(encrypted_id)));
+-  doubly_encrypted_id.set_doubly_encrypted_id(reencrypted_id);
++  doubly_encrypted_id.set_queried_encrypted_id(std::string(encrypted_id));
++
++  auto status_or_reencrypted_id =
++      ec_cipher->ReEncrypt(std::string(encrypted_id));
++  if (!status_or_reencrypted_id.ok()) {
++    return absl::InvalidArgumentError(
++        status_or_reencrypted_id.status().message());
++  }
++  auto reencrypted_id = std::move(status_or_reencrypted_id).ValueOrDie();
++  doubly_encrypted_id.set_doubly_encrypted_id(std::string(reencrypted_id));
+ 
+   return doubly_encrypted_id;
+ }
+diff --git a/src/internal/rlwe_id_utils.cc b/src/internal/rlwe_id_utils.cc
+index 327c68e..67cc4f9 100644
+--- a/src/internal/rlwe_id_utils.cc
++++ b/src/internal/rlwe_id_utils.cc
+@@ -32,7 +32,11 @@ namespace rlwe {
+         "ECCipher and Context should both be non-null.");
+   }
+   std::string full_id = rlwe::HashRlwePlaintextId(id);
+-  RLWE_ASSIGN_OR_RETURN(std::string encrypted_id, ec_cipher->Encrypt(full_id));
++  auto status_or_encrypted_id = ec_cipher->Encrypt(full_id);
++  if(!status_or_encrypted_id.ok()){
++      return absl::InvalidArgumentError(status_or_encrypted_id.status().message());
++  }
++  std::string encrypted_id = std::move(status_or_encrypted_id).ValueOrDie();
+   return ComputeBucketStoredEncryptedId(encrypted_id, params, ctx);
+ }
+ 
+diff --git a/src/internal/testing/regression_test_data/regression_test_data.proto b/src/internal/testing/regression_test_data/regression_test_data.proto
+index 30b0247..023e6e7 100644
+--- a/src/internal/testing/regression_test_data/regression_test_data.proto
++++ b/src/internal/testing/regression_test_data/regression_test_data.proto
+@@ -1,5 +1,7 @@
+ syntax = "proto3";
+ 
++option optimize_for = LITE_RUNTIME;
++
+ package private_membership.rlwe;
+ 
+ import "private_membership_rlwe.proto";
+diff --git a/src/internal/utils.cc b/src/internal/utils.cc
+index c0ad4e1..f56996f 100644
+--- a/src/internal/utils.cc
++++ b/src/internal/utils.cc
+@@ -28,7 +28,8 @@ namespace rlwe {
+   }
+   int ceiled_byte_length = (bit_length - 1) / 8 + 1;
+   std::string res(in.begin(), in.begin() + ceiled_byte_length);
+-  if (int remainder_bit_count = bit_length % 8; remainder_bit_count > 0) {
++  int remainder_bit_count = bit_length % 8;
++  if (remainder_bit_count > 0) {
+     int mask = (1 << remainder_bit_count) - 1;
+     res[res.size() - 1] &= (mask << (8 - remainder_bit_count));
+   }
+diff --git a/src/membership_response_map_test.cc b/src/membership_response_map_test.cc
+index b58eaeb..210915f 100644
+--- a/src/membership_response_map_test.cc
++++ b/src/membership_response_map_test.cc
+@@ -28,8 +28,8 @@ using ::rlwe::testing::EqualsProto;
+ RlwePlaintextId CreateRlwePlaintextId(absl::string_view non_sensitive_id,
+                                       absl::string_view sensitive_id) {
+   RlwePlaintextId id;
+-  id.set_non_sensitive_id(non_sensitive_id);
+-  id.set_sensitive_id(sensitive_id);
++  id.set_non_sensitive_id(std::string(non_sensitive_id));
++  id.set_sensitive_id(std::string(sensitive_id));
+   return id;
+ }
+ 
+diff --git a/src/private_membership.proto b/src/private_membership.proto
+index c6c3bf1..088b4c2 100644
+--- a/src/private_membership.proto
++++ b/src/private_membership.proto
+@@ -14,6 +14,8 @@
+ 
+ syntax = "proto3";
+ 
++option optimize_for = LITE_RUNTIME;
++
+ package private_membership;
+ 
+ // An enum describing different types of available hash functions.
+diff --git a/src/private_membership_rlwe.proto b/src/private_membership_rlwe.proto
+index b5415bd..69070b1 100644
+--- a/src/private_membership_rlwe.proto
++++ b/src/private_membership_rlwe.proto
+@@ -14,6 +14,8 @@
+ 
+ syntax = "proto3";
+ 
++option optimize_for = LITE_RUNTIME;
++
+ package private_membership.rlwe;
+ 
+ import "private_membership.proto";
+diff --git a/src/private_membership_rlwe_client.cc b/src/private_membership_rlwe_client.cc
+index 1d31fc2..0b21fbf 100644
+--- a/src/private_membership_rlwe_client.cc
++++ b/src/private_membership_rlwe_client.cc
+@@ -80,18 +80,22 @@ PrivateMembershipRlweClient::CreateInternal(
+ 
+   // Create the cipher with new key or from existing key depending on whether
+   // the key was provided.
+-  RLWE_ASSIGN_OR_RETURN(
+-      auto ec_cipher,
+-      ec_cipher_key.has_value()
+-          ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+-                kCurveId, ec_cipher_key.value(),
+-                private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
+-          : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
+-                kCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256));
+-  return absl::WrapUnique<PrivateMembershipRlweClient>(
+-      new PrivateMembershipRlweClient(use_case, unique_plaintext_ids,
+-                                      std::move(ec_cipher),
+-                                      std::move(prng_seed_generator)));
++  auto status_or_ec_cipher = ec_cipher_key.has_value()
++           ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
++                 kCurveId, ec_cipher_key.value(),
++                 private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
++           : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
++                kCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
++
++  if (!status_or_ec_cipher.ok()) {
++    return absl::InvalidArgumentError(status_or_ec_cipher.status().message());
++  }
++  auto ec_cipher = std::move(status_or_ec_cipher).ValueOrDie();
++
++   return absl::WrapUnique<PrivateMembershipRlweClient>(
++      new PrivateMembershipRlweClient(use_case, plaintext_ids,
++                                       std::move(ec_cipher),
++                                       std::move(prng_seed_generator)));
+ }
+ 
+ PrivateMembershipRlweClient::PrivateMembershipRlweClient(
+@@ -113,7 +117,7 @@ PrivateMembershipRlweClient::CreateOprfRequest() {
+     std::string whole_id = HashRlwePlaintextId(plaintext_id);
+     auto status_or_client_encrypted_id = ec_cipher_->Encrypt(whole_id);
+     if (!status_or_client_encrypted_id.ok()) {
+-      return status_or_client_encrypted_id.status();
++    return absl::InternalError(status_or_client_encrypted_id.status().message());
+     }
+     std::string client_encrypted_id =
+         status_or_client_encrypted_id.ValueOrDie();
+@@ -201,7 +205,7 @@ PrivateMembershipRlweClient::CreateQueryRequest(
+     auto status_or_server_encrypted_id =
+         ec_cipher_->Decrypt(doubly_encrypted_id.doubly_encrypted_id());
+     if (!status_or_server_encrypted_id.ok()) {
+-      return status_or_server_encrypted_id.status();
++        return absl::InternalError(status_or_server_encrypted_id.status().message());
+     }
+     auto server_encrypted_id = status_or_server_encrypted_id.ValueOrDie();
+ 
+-- 
+2.31.0.rc2.261.g7f71774620-goog
+

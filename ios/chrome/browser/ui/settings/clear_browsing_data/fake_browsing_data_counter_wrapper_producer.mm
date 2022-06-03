@@ -12,7 +12,7 @@
 
 - (std::unique_ptr<BrowsingDataCounterWrapper>)
     createCounterWrapperWithPrefName:(base::StringPiece)prefName
-                        browserState:(ios::ChromeBrowserState*)browserState
+                        browserState:(ChromeBrowserState*)browserState
                          prefService:(PrefService*)prefService
                     updateUiCallback:
                         (BrowsingDataCounterWrapper::UpdateUICallback)

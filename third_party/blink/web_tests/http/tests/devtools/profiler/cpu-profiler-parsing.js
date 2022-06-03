@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests profile ending with GC node is parsed correctly.`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profile = {
     startTime: 1000,

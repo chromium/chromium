@@ -4,9 +4,11 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//components/feed/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -27,7 +29,7 @@ declare_args() {
   # builtin_cert_verifier_feature_supported platforms.
   # See crbug.com/410574.  This can be removed when the builtin verifier is
   # unconditionally enabled on all platforms.
-  builtin_cert_verifier_policy_supported = is_chromeos || is_desktop_linux
+  builtin_cert_verifier_policy_supported = is_mac
 
   # Enables support for background apps.
   enable_background_contents = !is_android && !is_chromecast
@@ -35,23 +37,20 @@ declare_args() {
 
   # Enable the printing system dialog for platforms that support printing
   # and have a system dialog.
-  enable_basic_print_dialog = enable_basic_printing && !is_chromeos
+  enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
-  enable_captive_portal_detection = !is_android && !is_chromecast
+  # Enables usage of notifications via Chrome's MessageCenter.
+  enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
-  # Enables the Click to Call feature on desktop platforms.
-  enable_click_to_call = is_mac || is_win || is_desktop_linux || is_chromeos
+  # Disable Click to Call on Fuchsia.
+  enable_click_to_call = !is_fuchsia
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
 
-  # Enables usage of the system-provided notification center.
-  enable_native_notifications = is_android || is_mac || is_win ||
-                                (is_desktop_linux && use_dbus) || is_chromeos
-
-  enable_one_click_signin =
-      is_win || is_mac || (is_linux && !is_chromeos && !is_chromecast)
+  enable_one_click_signin = is_win || is_mac || is_fuchsia ||
+                            ((is_linux || is_chromeos_lacros) && !is_chromecast)
 
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
@@ -59,19 +58,24 @@ declare_args() {
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_chromecast
 
-  enable_supervised_users = is_chromeos || is_android
+  # Enables usage of the side search feature, which is disabled by default.
+  # This feature is only approved for release on ChromeOS at this time.
+  enable_side_search = is_chromeos
+
+  enable_supervised_users = is_chromeos_ash || is_android
+
+  # Enables usage of the system-provided notification center.
+  enable_system_notifications =
+      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
 
   # Indicates if Wayland display server support is enabled.
-  enable_wayland_server = is_chromeos
-
-  # Indicates if the build is using PGO.
-  pgo_build = chrome_pgo_phase > 0
+  enable_wayland_server = is_chromeos_ash
 
   # optimize_webui was moved to ui/base/ui_features.gni
 }
 
 # Use brlapi from brltty for braille display support.
-use_brlapi = is_chromeos
+use_brlapi = is_chromeos_ash
 
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.
@@ -85,9 +89,11 @@ chrome_grit_defines = [
   "enable_print_preview=$enable_print_preview",
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",
+  "enable_side_search=$enable_side_search",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_tab_strip=$enable_webui_tab_strip",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
+  "enable_feed_v2=$enable_feed_v2",
 ]

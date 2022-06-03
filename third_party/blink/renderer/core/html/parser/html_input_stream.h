@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_INPUT_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_INPUT_STREAM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +53,8 @@ class HTMLInputStream {
 
  public:
   HTMLInputStream() : last_(&first_) {}
+  HTMLInputStream(const HTMLInputStream&) = delete;
+  HTMLInputStream& operator=(const HTMLInputStream&) = delete;
 
   void AppendToEnd(const SegmentedString& string) { last_->Append(string); }
 
@@ -104,8 +105,6 @@ class HTMLInputStream {
  private:
   SegmentedString first_;
   SegmentedString* last_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLInputStream);
 };
 
 class InsertionPointRecord {
@@ -113,15 +112,18 @@ class InsertionPointRecord {
 
  public:
   explicit InsertionPointRecord(HTMLInputStream& input_stream)
-      : input_stream_(&input_stream) {
-    line_ = input_stream_->Current().CurrentLine();
-    column_ = input_stream_->Current().CurrentColumn();
+      : input_stream_(&input_stream),
+        line_(input_stream_->Current().CurrentLine()),
+        column_(input_stream_->Current().CurrentColumn()) {
     input_stream_->SplitInto(next_);
     // We 'fork' current position and use it for the generated script part. This
     // is a bit weird, because generated part does not have positions within an
     // HTML document.
     input_stream_->Current().SetCurrentPosition(line_, column_, 0);
   }
+
+  InsertionPointRecord(const InsertionPointRecord&) = delete;
+  InsertionPointRecord& operator=(const InsertionPointRecord&) = delete;
 
   ~InsertionPointRecord() {
     // Some inserted text may have remained in input stream. E.g. if script has
@@ -140,8 +142,6 @@ class InsertionPointRecord {
   SegmentedString next_;
   OrdinalNumber line_;
   OrdinalNumber column_;
-
-  DISALLOW_COPY_AND_ASSIGN(InsertionPointRecord);
 };
 
 }  // namespace blink

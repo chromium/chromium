@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_style.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
 // Item to represent and configure an LegacyAutofillEditItem. It features a
 // label and a text field.
@@ -20,9 +20,6 @@
 // for dynamic types.
 // Set to YES to use dynamic font types.
 @property(nonatomic, assign) BOOL useScaledFont;
-
-// The style to use for the cell.
-@property(nonatomic, assign) CollectionViewCellStyle cellStyle;
 
 // The name of the text field.
 @property(nonatomic, copy) NSString* textFieldName;

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_TITLED_URL_MATCH_UTILS_H_
 #define COMPONENTS_OMNIBOX_BROWSER_TITLED_URL_MATCH_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 
@@ -28,7 +29,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     AutocompleteProvider* provider,
     const AutocompleteSchemeClassifier& scheme_classifier,
     const AutocompleteInput& input,
-    const base::string16& fixed_up_input_text);
+    const std::u16string& fixed_up_input_text);
 
 }  // namespace bookmarks
 

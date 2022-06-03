@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_dom_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 
 #include <memory>
 #include <unordered_map>
@@ -12,10 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
-#include "chrome/renderer/safe_browsing/features.h"
-#include "chrome/renderer/safe_browsing/mock_feature_extractor_clock.h"
-#include "chrome/renderer/safe_browsing/test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/test_utils.h"
@@ -30,12 +29,21 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "ui/native_theme/native_theme_features.h"
 
+using blink::WebRuntimeFeatures;
 using ::testing::DoAll;
 using ::testing::Invoke;
 using ::testing::Return;
-using blink::WebRuntimeFeatures;
+using ::testing::StrictMock;
 
 namespace safe_browsing {
+
+class MockTickClock : public base::TickClock {
+ public:
+  MockTickClock() = default;
+  ~MockTickClock() override = default;
+
+  MOCK_CONST_METHOD0(NowTicks, base::TimeTicks());
+};
 
 // TestPhishingDOMFeatureExtractor has nearly identical behavior as
 // PhishingDOMFeatureExtractor, except the IsExternalDomain() and
@@ -43,9 +51,6 @@ namespace safe_browsing {
 // ChromeRenderViewTest object does not know where the html content is hosted.
 class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
  public:
-  explicit TestPhishingDOMFeatureExtractor(FeatureExtractorClock* clock)
-      : PhishingDOMFeatureExtractor(clock) {}
-
   void SetDocumentDomain(std::string domain) { base_domain_ = domain; }
 
   void SetURLToFrameDomainCheckingMap(
@@ -106,9 +111,6 @@ class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
         const std::string frame_domain = it->second;
         full_url = GURL("http://" + it->second).Resolve(partial_url.Utf8());
         url_to_frame_domain_map_[full_url.spec()] = it->second;
-      } else {
-        NOTREACHED() << "Testing input setup is incorrect. "
-                        "Please check url_to_frame_domain_map_ setup.";
       }
     }
     return blink::WebURL(full_url);
@@ -191,7 +193,7 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::SetUp();
     WebRuntimeFeatures::EnableOverlayScrollbars(
         ui::IsOverlayScrollbarEnabled());
-    extractor_.reset(new TestPhishingDOMFeatureExtractor(&clock_));
+    extractor_ = std::make_unique<TestPhishingDOMFeatureExtractor>();
   }
 
   void TearDown() override {
@@ -218,7 +220,6 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
         "document.body.removeChild(document.getElementById('frame1'));"));
   }
 
-  MockFeatureExtractorClock clock_;
   bool success_;
   std::unique_ptr<TestPhishingDOMFeatureExtractor> extractor_;
   scoped_refptr<content::MessageLoopRunner> message_loop_;
@@ -226,9 +227,6 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
 };
 
 TEST_F(PhishingDOMFeatureExtractorTest, FormFeatures) {
-  // This test doesn't exercise the extraction timing.
-  EXPECT_CALL(clock_, Now()).WillRepeatedly(Return(base::TimeTicks::Now()));
-
   FeatureMap expected_features;
   expected_features.AddBooleanFeature(features::kPageHasForms);
   expected_features.AddRealFeature(features::kPageActionOtherDomainFreq, 0.25);
@@ -296,9 +294,6 @@ TEST_F(PhishingDOMFeatureExtractorTest, FormFeatures) {
 }
 
 TEST_F(PhishingDOMFeatureExtractorTest, LinkFeatures) {
-  // This test doesn't exercise the extraction timing.
-  EXPECT_CALL(clock_, Now()).WillRepeatedly(Return(base::TimeTicks::Now()));
-
   FeatureMap expected_features;
   expected_features.AddRealFeature(features::kPageExternalLinksFreq, 0.5);
   expected_features.AddRealFeature(features::kPageSecureLinksFreq, 0.0);
@@ -334,9 +329,6 @@ TEST_F(PhishingDOMFeatureExtractorTest, LinkFeatures) {
 }
 
 TEST_F(PhishingDOMFeatureExtractorTest, ScriptAndImageFeatures) {
-  // This test doesn't exercise the extraction timing.
-  EXPECT_CALL(clock_, Now()).WillRepeatedly(Return(base::TimeTicks::Now()));
-
   FeatureMap expected_features;
   expected_features.AddBooleanFeature(features::kPageNumScriptTagsGTOne);
 
@@ -370,10 +362,6 @@ TEST_F(PhishingDOMFeatureExtractorTest, ScriptAndImageFeatures) {
 // iframe2 /  \ iframe1
 //              \ iframe3
 TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
-  // This test doesn't exercise the extraction timing.
-  // Test that features are aggregated across all frames.
-  EXPECT_CALL(clock_, Now()).WillRepeatedly(Return(base::TimeTicks::Now()));
-
   const char urlprefix[] = "data:text/html;charset=utf-8,";
   std::unordered_map<std::string, std::string> url_iframe_map;
   std::string iframe1_nested_html(
@@ -443,8 +431,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
 }
 
 TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
-  // For this test, we'll cause the feature extraction to run multiple
-  // iterations by incrementing the clock.
+  StrictMock<MockTickClock> tick_clock;
 
   // This page has a total of 50 elements.  For the external forms feature to
   // be computed correctly, the extractor has to examine the whole document.
@@ -462,33 +449,34 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
   // Note that this assumes kClockCheckGranularity = 10 and
   // kMaxTimePerChunkMs = 10.
   base::TimeTicks now = base::TimeTicks::Now();
-  EXPECT_CALL(clock_, Now())
+  EXPECT_CALL(tick_clock, NowTicks())
       // Time check at the start of extraction.
       .WillOnce(Return(now))
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(6)))
+      .WillOnce(Return(now + base::Milliseconds(6)))
       // Time check after the next 10 elements.  This is over the chunk
       // time limit, so a continuation task will be posted.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(12)))
+      .WillOnce(Return(now + base::Milliseconds(12)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(22)))
+      .WillOnce(Return(now + base::Milliseconds(22)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(24)))
+      .WillOnce(Return(now + base::Milliseconds(24)))
       // Time check after the next 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(30)))
+      .WillOnce(Return(now + base::Milliseconds(30)))
       // Time check after the next 10 elements.  This will trigger another
       // continuation task.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(36)))
+      .WillOnce(Return(now + base::Milliseconds(36)))
       // Time check at the start of the third chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(46)))
+      .WillOnce(Return(now + base::Milliseconds(46)))
       // Time check after resuming iteration for the third chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(48)))
+      .WillOnce(Return(now + base::Milliseconds(48)))
       // Time check after the last 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(54)))
+      .WillOnce(Return(now + base::Milliseconds(54)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(56)));
+      .WillOnce(Return(now + base::Milliseconds(56)));
+  extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
   expected_features.AddBooleanFeature(features::kPageHasForms);
@@ -502,27 +490,27 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
   ExtractFeatures("host.com", html, &features);
   ExpectFeatureMapsAreEqual(features, expected_features);
   // Make sure none of the mock expectations carry over to the next test.
-  ::testing::Mock::VerifyAndClearExpectations(&clock_);
+  ::testing::Mock::VerifyAndClearExpectations(&tick_clock);
 
   // Now repeat the test with the same page, but advance the clock faster so
   // that the extraction time exceeds the maximum total time for the feature
   // extractor.  Extraction should fail.  Note that this assumes
   // kMaxTotalTimeMs = 500.
-  EXPECT_CALL(clock_, Now())
+  EXPECT_CALL(tick_clock, NowTicks())
       // Time check at the start of extraction.
       .WillOnce(Return(now))
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(300)))
+      .WillOnce(Return(now + base::Milliseconds(300)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(350)))
+      .WillOnce(Return(now + base::Milliseconds(350)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(360)))
+      .WillOnce(Return(now + base::Milliseconds(360)))
       // Time check after the next 10 elements.  This is over the limit.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(600)))
+      .WillOnce(Return(now + base::Milliseconds(600)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(620)));
 
   features.Clear();
   ResetTest();
@@ -542,7 +530,8 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
   GURL iframe1_url(urlprefix + iframe1_html);
 
   base::TimeTicks now = base::TimeTicks::Now();
-  EXPECT_CALL(clock_, Now())
+  StrictMock<MockTickClock> tick_clock;
+  EXPECT_CALL(tick_clock, NowTicks())
       // Time check at the start of extraction.
       .WillOnce(Return(now))
       // Time check at the start of the first chunk of work.
@@ -552,13 +541,14 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
       // the feature extractor returns control to the message loop.
       .WillOnce(DoAll(
           Invoke(this, &PhishingDOMFeatureExtractorTest::ScheduleRemoveIframe),
-          Return(now + base::TimeDelta::FromMilliseconds(21))))
+          Return(now + base::Milliseconds(21))))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(25)))
+      .WillOnce(Return(now + base::Milliseconds(25)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(27)))
+      .WillOnce(Return(now + base::Milliseconds(27)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(33)));
+      .WillOnce(Return(now + base::Milliseconds(33)));
+  extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
   expected_features.AddBooleanFeature(features::kPageHasForms);

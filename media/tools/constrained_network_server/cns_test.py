@@ -1,7 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+# [VPYTHON:BEGIN]
+# wheel: <
+#   name: "infra/python/wheels/pytz-py2_py3"
+#   version: "version:2018.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/tempora-py2_py3"
+#   version: "version:1.11"
+# >
+# wheel: <
+#   name: "infra/python/wheels/more-itertools-py2_py3"
+#   version: "version:4.1.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/backports_functools_lru_cache-py2_py3"
+#   version: "version:1.5"
+# >
+# wheel: <
+#   name: "infra/python/wheels/six-py2_py3"
+#   version: "version:1.12.0"
+# >
+# wheel: <
+#   name: "infra/python/wheels/portend-py2_py3"
+#   version: "version:2.2"
+# >
+# wheel: <
+#   name: "infra/python/wheels/cheroot-py2_py3"
+#   version: "version:6.2.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/cherrypy-py2_py3"
+#   version: "version:14.2.0"
+# >
+# [VPYTHON:END]
 
 """Tests for Constrained Network Server."""
 import os

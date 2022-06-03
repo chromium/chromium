@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.flush_async_unittest.mojom;
+
+interface Writer {
+  Put(string key, string value);
+};
+
+interface KeyValueStoreClient {
+  OnSnapshotTaken();
+};
+
+interface KeyValueStore {
+  SetClient(pending_remote<KeyValueStoreClient> client);
+  BindWriter(pending_receiver<Writer> receiver);
+  GetSnapshot() => (map<string, string> entries);
+};
+
+interface Pinger { Ping() => (); };

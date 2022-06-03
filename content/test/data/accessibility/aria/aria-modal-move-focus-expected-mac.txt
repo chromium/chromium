@@ -1,0 +1,6 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='Nonmodal'
+++AXButton AXTitle='Outer Button'
+++AXGroup AXDescription='modal dialog'
+++++AXButton AXTitle='Inner Button'

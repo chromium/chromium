@@ -8,7 +8,8 @@
 namespace test {
 
 GlobalErrorWaiter::GlobalErrorWaiter(Profile* profile) {
-  scoped_observer_.Add(GlobalErrorServiceFactory::GetForProfile(profile));
+  scoped_observation_.Observe(
+      GlobalErrorServiceFactory::GetForProfile(profile));
 }
 
 GlobalErrorWaiter::~GlobalErrorWaiter() = default;

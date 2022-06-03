@@ -4,7 +4,9 @@
 
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 #include "chrome/test/chromedriver/chrome/navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/non_blocking_navigation_tracker.h"
 

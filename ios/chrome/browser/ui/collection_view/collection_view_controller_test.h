@@ -7,10 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/test/block_cleanup_test.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
 @class CollectionViewController;
 
@@ -59,17 +60,6 @@ class CollectionViewControllerTest : public BlockCleanupTest {
   // Verifies that the section title at |section| matches the l10n string for
   // |expected_title_id|.
   void CheckSectionHeaderWithId(int expected_title_id, int section);
-
-  // Verifies that the section footer at |section| matches the |expected_text|.
-  // TODO(crbug.com/650424): Until the bug in MDC is fixed, footers are simple
-  // items in a dedicated section.
-  void CheckSectionFooter(NSString* expected_text, int section);
-
-  // Verifies that the section footer at |section| matches the l10n string for
-  // |expected_text_id|.
-  // TODO(crbug.com/650424): Until the bug in MDC is fixed, footers are simple
-  // items in a dedicated section.
-  void CheckSectionFooterWithId(int expected_text_id, int section);
 
   // Verifies that the text cell at |item| in |section| has a text property
   // which matches |expected_title|.

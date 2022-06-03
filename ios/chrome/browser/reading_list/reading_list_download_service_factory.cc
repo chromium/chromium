@@ -21,7 +21,7 @@
 // static
 ReadingListDownloadService*
 ReadingListDownloadServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<ReadingListDownloadService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -47,8 +47,8 @@ ReadingListDownloadServiceFactory::~ReadingListDownloadServiceFactory() {}
 std::unique_ptr<KeyedService>
 ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
 
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory =

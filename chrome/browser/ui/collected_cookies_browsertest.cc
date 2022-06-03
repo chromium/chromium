@@ -15,11 +15,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 class CollectedCookiesTest : public DialogBrowserTest {
  public:
   CollectedCookiesTest() {}
+
+  CollectedCookiesTest(const CollectedCookiesTest&) = delete;
+  CollectedCookiesTest& operator=(const CollectedCookiesTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -34,16 +38,13 @@ class CollectedCookiesTest : public DialogBrowserTest {
         ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
     // Load a page with cookies.
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/cookie1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/cookie1.html")));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     TabDialogs::FromWebContents(web_contents)->ShowCollectedCookies();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesTest);
 };
 
 // Test that calls ShowUi("default").
@@ -66,6 +67,6 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, NavigateAway) {
   ShowUi(std::string());
 
   // Navigate to another page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/cookie2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/cookie2.html")));
 }

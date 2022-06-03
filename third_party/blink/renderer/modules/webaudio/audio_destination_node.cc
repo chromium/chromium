@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 
 namespace blink {

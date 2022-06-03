@@ -7,36 +7,20 @@
 
 namespace blink {
 
-// Named Mac system colors. Each of these corresponds to a selector on
-// NSColor.
+// Named Mac system colors.
 enum class MacSystemColorID {
-  kAlternateSelectedControl,
-  kControlBackground,
-  kControlDarkShadow,
-  kControlHighlight,
-  kControlLightHighlight,
-  kControlShadow,
-  kControlText,
-  kDisabledControlText,
-  kHeader,
-  kHighlight,
+  kControlAccentBlueColor,
+  kControlAccentColor,
   kKeyboardFocusIndicator,
-  kMenuBackground,
-  kScrollBar,
   kSecondarySelectedControl,
-  kSelectedMenuItemText,
-  kSelectedText,
   kSelectedTextBackground,
-  kShadow,
-  kText,
-  kWindowBackground,
-  kWindowFrame,
-  kWindowFrameText,
   kCount,
 };
 
 constexpr size_t kMacSystemColorIDCount =
     static_cast<size_t>(MacSystemColorID::kCount);
+
+constexpr size_t kMacSystemColorSchemeCount = 2;
 
 }  // namespace blink
 

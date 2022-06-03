@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_APP_CHROME_OVERLAY_WINDOW_H_
 #define IOS_CHROME_APP_CHROME_OVERLAY_WINDOW_H_
 
-#import "ios/third_party/material_components_ios/src/components/OverlayWindow/src/MaterialOverlayWindow.h"
+#import <MaterialComponents/MaterialOverlayWindow.h>
 
 // Tracks size classes changes then reports to SizeClassRecorder and Breakpad.
 @interface ChromeOverlayWindow : MDCOverlayWindow

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_util.h"
@@ -39,7 +39,11 @@ ExtensionThrottleManager::~ExtensionThrottleManager() {
 std::unique_ptr<blink::URLLoaderThrottle>
 ExtensionThrottleManager::MaybeCreateURLLoaderThrottle(
     const blink::WebURLRequest& request) {
-  if (!request.SiteForCookies().ProtocolIs(extensions::kExtensionScheme))
+  // TODO(https://crbug.com/1039700): This relies on the extension scheme
+  // getting special handling via ShouldTreatURLSchemeAsFirstPartyWhenTopLevel,
+  // which has problems. Once that's removed this should probably look at top
+  // level directly instead.
+  if (request.SiteForCookies().scheme() != extensions::kExtensionScheme)
     return nullptr;
   return std::make_unique<ExtensionURLLoaderThrottle>(this);
 }

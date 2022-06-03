@@ -267,4 +267,7 @@ std::vector<TaskEvent::Type> GetEventsForTask(
 
 }  // namespace internal
 
+// This suite is instantiated in binaries that use //base:test_support.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SequencedTaskRunnerTest);
+
 }  // namespace base

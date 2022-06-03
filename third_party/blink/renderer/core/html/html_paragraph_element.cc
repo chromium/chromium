@@ -36,14 +36,14 @@ void HTMLParagraphElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kAlignAttr) {
-    if (DeprecatedEqualIgnoringCase(value, "middle") ||
-        DeprecatedEqualIgnoringCase(value, "center")) {
+    if (EqualIgnoringASCIICase(value, "middle") ||
+        EqualIgnoringASCIICase(value, "center")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitCenter);
-    } else if (DeprecatedEqualIgnoringCase(value, "left")) {
+    } else if (EqualIgnoringASCIICase(value, "left")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitLeft);
-    } else if (DeprecatedEqualIgnoringCase(value, "right")) {
+    } else if (EqualIgnoringASCIICase(value, "right")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitRight);
     } else {

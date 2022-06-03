@@ -5,14 +5,14 @@
 (async function() {
   TestRunner.addResult(
       `Tests that invalid rule inside @-rule doesn't break source code matching (http://crbug.com/317499).\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/styles-source-lines-recovery-helper.html');
 
   ElementsTestRunner.selectNodeAndWaitForStyles('main', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

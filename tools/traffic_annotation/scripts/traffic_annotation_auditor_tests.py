@@ -20,6 +20,10 @@ from annotation_tools import NetworkTrafficAnnotationTools
 # //tools/traffic_annotation/OWNERS.
 TEST_IS_ENABLED = True
 
+# If this test starts failing due to a critical bug in auditor.py, please set
+# USE_PYTHON_AUDITOR to "False" and file a bug (see comment above).
+USE_PYTHON_AUDITOR = True
+
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 
 class TrafficAnnotationTestsChecker():
@@ -58,24 +62,21 @@ class TrafficAnnotationTestsChecker():
       [
           "--test-only",
           "--error-resilient",
-          "--extractor-backend=python_script",
       ],
       # Failing on any runtime error.
       [
           "--test-only",
-          "--extractor-backend=python_script",
       ],
       # No heuristic filtering.
       [
           "--test-only",
           "--no-filtering",
-          "--extractor-backend=python_script",
       ],
     ]
 
     self.last_result = None
     for config in configs:
-      result = self._RunTest(config)
+      result = self._RunTest(config, USE_PYTHON_AUDITOR)
       if not result:
         print("No output for config: %s" % config)
         return False
@@ -106,18 +107,24 @@ class TrafficAnnotationTestsChecker():
     return True
 
 
-  def _RunTest(self, args):
+  def _RunTest(self, args, use_python_auditor):
     """Runs the auditor test with given |args|, and returns the extracted
     annotations.
 
     Args:
       args: list of str Arguments to be passed to auditor.
+      use_python_auditor: If True, test auditor.py instead of
+        traffic_annotation_auditor.exe.
 
     Returns:
       str Content of annotations.tsv file if successful, otherwise None.
     """
 
-    print("Running auditor using config: %s" % args)
+    if use_python_auditor:
+      auditor_name = "auditor.py"
+    else:
+      auditor_name = "traffic_annotation_auditor"
+    print("Running %s using config: %s" % (auditor_name, args))
 
     try:
       os.remove(self.annotations_filename)
@@ -125,7 +132,8 @@ class TrafficAnnotationTestsChecker():
       pass
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
-        args + ["--annotations-file=%s" % self.annotations_filename])
+        args + ["--annotations-file=%s" % self.annotations_filename],
+        use_python_auditor)
 
     annotations = None
     if os.path.exists(self.annotations_filename):

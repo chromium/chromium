@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -53,13 +52,15 @@ class CORE_EXPORT SelectorFilter {
     ParentStackFrame() : element(nullptr) {}
     explicit ParentStackFrame(Element& element) : element(&element) {}
 
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
     Member<Element> element;
     Vector<unsigned, 4> identifier_hashes;
   };
 
   SelectorFilter() = default;
+  SelectorFilter(const SelectorFilter&) = delete;
+  SelectorFilter& operator=(const SelectorFilter&) = delete;
 
   void PushParent(Element& parent);
   void PopParent(Element& parent);
@@ -75,7 +76,7 @@ class CORE_EXPORT SelectorFilter {
                                       unsigned* identifier_hashes,
                                       unsigned maximum_identifier_count);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   void PushParentStackFrame(Element& parent);
@@ -87,7 +88,6 @@ class CORE_EXPORT SelectorFilter {
   // rate of ~0.2%.
   using IdentifierFilter = BloomFilter<12>;
   std::unique_ptr<IdentifierFilter> ancestor_identifier_filter_;
-  DISALLOW_COPY_AND_ASSIGN(SelectorFilter);
 };
 
 template <unsigned maximumIdentifierCount>
@@ -106,4 +106,4 @@ inline bool SelectorFilter::FastRejectSelector(
 
 WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::SelectorFilter::ParentStackFrame)
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_

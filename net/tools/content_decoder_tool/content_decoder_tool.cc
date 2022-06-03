@@ -31,6 +31,10 @@ class StdinSourceStream : public SourceStream {
  public:
   explicit StdinSourceStream(std::istream* input_stream)
       : SourceStream(SourceStream::TYPE_NONE), input_stream_(input_stream) {}
+
+  StdinSourceStream(const StdinSourceStream&) = delete;
+  StdinSourceStream& operator=(const StdinSourceStream&) = delete;
+
   ~StdinSourceStream() override = default;
 
   // SourceStream implementation.
@@ -53,8 +57,6 @@ class StdinSourceStream : public SourceStream {
 
  private:
   std::istream* input_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(StdinSourceStream);
 };
 
 }  // namespace
@@ -69,7 +71,7 @@ bool ContentDecoderToolProcessInput(std::vector<std::string> content_encodings,
            content_encodings.rbegin();
        riter != content_encodings.rend(); ++riter) {
     std::string content_encoding = *riter;
-    std::unique_ptr<SourceStream> downstream = nullptr;
+    std::unique_ptr<SourceStream> downstream;
     if (base::LowerCaseEqualsASCII(content_encoding, kBrotli)) {
       downstream = CreateBrotliSourceStream(std::move(upstream));
     } else if (base::LowerCaseEqualsASCII(content_encoding, kDeflate)) {

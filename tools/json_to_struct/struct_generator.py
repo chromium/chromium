@@ -24,7 +24,7 @@ def GenerateField(field_info):
     return 'const char* const %s' % field
   elif type == 'string16':
     return 'const wchar_t* const %s' % field
-  elif type == 'enum':
+  elif type == 'enum' or type == 'class':
     return 'const %s %s' % (field_info['ctype'], field)
   elif type == 'array':
     return _GenerateArrayField(field_info)

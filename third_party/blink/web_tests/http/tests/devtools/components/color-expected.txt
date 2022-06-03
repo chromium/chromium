@@ -1,10 +1,10 @@
 Tests Common.Color
 
 Dumping 'red' in different formats:
- - rgb(255, 0, 0)
- - rgba(255, 0, 0, 1)
- - hsl(0, 100%, 50%)
- - hsla(0, 100%, 50%, 1)
+ - rgb(255 0 0)
+ - rgb(255 0 0)
+ - hsl(0deg 100% 50%)
+ - hsl(0deg 100% 50%)
  - hsv(0, 100%, 100%)
  - hsva(0, 100%, 100%, 1)
  - #ff0000ff
@@ -13,13 +13,13 @@ Dumping 'red' in different formats:
  - #f00
  - red
  - default: red
- - inverse color: rgba(0, 255, 255, 1)
- - setAlpha(0.42): rgba(255, 0, 0, 0.42)
+ - inverse color: rgb(0 255 255)
+ - setAlpha(0.42): rgb(255 0 0 / 42%)
 Dumping 'green' in different formats:
- - rgb(0, 128, 0)
- - rgba(0, 128, 0, 1)
- - hsl(120, 100%, 25%)
- - hsla(120, 100%, 25%, 1)
+ - rgb(0 128 0)
+ - rgb(0 128 0)
+ - hsl(120deg 100% 25%)
+ - hsl(120deg 100% 25%)
  - hsv(120, 100%, 50%)
  - hsva(120, 100%, 50%, 1)
  - #008000ff
@@ -28,13 +28,13 @@ Dumping 'green' in different formats:
  - null
  - green
  - default: green
- - inverse color: rgba(255, 127, 255, 1)
- - setAlpha(0.42): rgba(0, 128, 0, 0.42)
+ - inverse color: rgb(255 127 255)
+ - setAlpha(0.42): rgb(0 128 0 / 42%)
 Dumping 'blue' in different formats:
- - rgb(0, 0, 255)
- - rgba(0, 0, 255, 1)
- - hsl(240, 100%, 50%)
- - hsla(240, 100%, 50%, 1)
+ - rgb(0 0 255)
+ - rgb(0 0 255)
+ - hsl(240deg 100% 50%)
+ - hsl(240deg 100% 50%)
  - hsv(240, 100%, 100%)
  - hsva(240, 100%, 100%, 1)
  - #0000ffff
@@ -43,13 +43,13 @@ Dumping 'blue' in different formats:
  - #00f
  - blue
  - default: blue
- - inverse color: rgba(255, 255, 0, 1)
- - setAlpha(0.42): rgba(0, 0, 255, 0.42)
+ - inverse color: rgb(255 255 0)
+ - setAlpha(0.42): rgb(0 0 255 / 42%)
 Dumping 'cyan' in different formats:
- - rgb(0, 255, 255)
- - rgba(0, 255, 255, 1)
- - hsl(180, 100%, 50%)
- - hsla(180, 100%, 50%, 1)
+ - rgb(0 255 255)
+ - rgb(0 255 255)
+ - hsl(180deg 100% 50%)
+ - hsl(180deg 100% 50%)
  - hsv(180, 100%, 100%)
  - hsva(180, 100%, 100%, 1)
  - #00ffffff
@@ -58,13 +58,13 @@ Dumping 'cyan' in different formats:
  - #0ff
  - cyan
  - default: cyan
- - inverse color: rgba(255, 0, 0, 1)
- - setAlpha(0.42): rgba(0, 255, 255, 0.42)
+ - inverse color: rgb(255 0 0)
+ - setAlpha(0.42): rgb(0 255 255 / 42%)
 Dumping 'magenta' in different formats:
- - rgb(255, 0, 255)
- - rgba(255, 0, 255, 1)
- - hsl(300, 100%, 50%)
- - hsla(300, 100%, 50%, 1)
+ - rgb(255 0 255)
+ - rgb(255 0 255)
+ - hsl(300deg 100% 50%)
+ - hsl(300deg 100% 50%)
  - hsv(300, 100%, 100%)
  - hsva(300, 100%, 100%, 1)
  - #ff00ffff
@@ -73,13 +73,13 @@ Dumping 'magenta' in different formats:
  - #f0f
  - magenta
  - default: magenta
- - inverse color: rgba(0, 255, 0, 1)
- - setAlpha(0.42): rgba(255, 0, 255, 0.42)
+ - inverse color: rgb(0 255 0)
+ - setAlpha(0.42): rgb(255 0 255 / 42%)
 Dumping 'yellow' in different formats:
- - rgb(255, 255, 0)
- - rgba(255, 255, 0, 1)
- - hsl(60, 100%, 50%)
- - hsla(60, 100%, 50%, 1)
+ - rgb(255 255 0)
+ - rgb(255 255 0)
+ - hsl(60deg 100% 50%)
+ - hsl(60deg 100% 50%)
  - hsv(60, 100%, 100%)
  - hsva(60, 100%, 100%, 1)
  - #ffff00ff
@@ -88,13 +88,13 @@ Dumping 'yellow' in different formats:
  - #ff0
  - yellow
  - default: yellow
- - inverse color: rgba(0, 0, 255, 1)
- - setAlpha(0.42): rgba(255, 255, 0, 0.42)
+ - inverse color: rgb(0 0 255)
+ - setAlpha(0.42): rgb(255 255 0 / 42%)
 Dumping 'white' in different formats:
- - rgb(255, 255, 255)
- - rgba(255, 255, 255, 1)
- - hsl(0, 0%, 100%)
- - hsla(0, 0%, 100%, 1)
+ - rgb(255 255 255)
+ - rgb(255 255 255)
+ - hsl(0deg 0% 100%)
+ - hsl(0deg 0% 100%)
  - hsv(0, 0%, 100%)
  - hsva(0, 0%, 100%, 1)
  - #ffffffff
@@ -103,13 +103,13 @@ Dumping 'white' in different formats:
  - #fff
  - white
  - default: white
- - inverse color: rgba(0, 0, 0, 1)
- - setAlpha(0.42): rgba(255, 255, 255, 0.42)
+ - inverse color: rgb(0 0 0)
+ - setAlpha(0.42): rgb(255 255 255 / 42%)
 Dumping 'black' in different formats:
- - rgb(0, 0, 0)
- - rgba(0, 0, 0, 1)
- - hsl(0, 0%, 0%)
- - hsla(0, 0%, 0%, 1)
+ - rgb(0 0 0)
+ - rgb(0 0 0)
+ - hsl(0deg 0% 0%)
+ - hsl(0deg 0% 0%)
  - hsv(0, 0%, 0%)
  - hsva(0, 0%, 0%, 1)
  - #000000ff
@@ -118,13 +118,13 @@ Dumping 'black' in different formats:
  - #000
  - black
  - default: black
- - inverse color: rgba(255, 255, 255, 1)
- - setAlpha(0.42): rgba(0, 0, 0, 0.42)
+ - inverse color: rgb(255 255 255)
+ - setAlpha(0.42): rgb(0 0 0 / 42%)
 Dumping 'rgb(94, 126, 91)' in different formats:
  - rgb(94, 126, 91)
- - rgba(94, 126, 91, 1)
- - hsl(115, 16%, 43%)
- - hsla(115, 16%, 43%, 1)
+ - rgb(94 126 91)
+ - hsl(115deg 16% 43%)
+ - hsl(115deg 16% 43%)
  - hsv(115, 28%, 49%)
  - hsva(115, 28%, 49%, 1)
  - #5e7e5bff
@@ -132,14 +132,14 @@ Dumping 'rgb(94, 126, 91)' in different formats:
  - null
  - null
  - null
- - default: rgb(94, 126, 91)
- - inverse color: rgba(161, 129, 164, 1)
- - setAlpha(0.42): rgba(94, 126, 91, 0.42)
+ - default: rgb(94 126 91)
+ - inverse color: rgb(161 129 164)
+ - setAlpha(0.42): rgb(94 126 91 / 42%)
 Dumping 'rgba(94 126 91)' in different formats:
  - rgba(94 126 91)
- - rgba(94, 126, 91, 1)
- - hsl(115, 16%, 43%)
- - hsla(115, 16%, 43%, 1)
+ - rgb(94 126 91)
+ - hsl(115deg 16% 43%)
+ - hsl(115deg 16% 43%)
  - hsv(115, 28%, 49%)
  - hsva(115, 28%, 49%, 1)
  - #5e7e5bff
@@ -147,29 +147,14 @@ Dumping 'rgba(94 126 91)' in different formats:
  - null
  - null
  - null
- - default: rgb(94, 126, 91)
- - inverse color: rgba(161, 129, 164, 1)
- - setAlpha(0.42): rgba(94, 126, 91, 0.42)
+ - default: rgb(94 126 91)
+ - inverse color: rgb(161 129 164)
+ - setAlpha(0.42): rgb(94 126 91 / 42%)
 Dumping 'rgba(94, 126, 91, 0.5)' in different formats:
- - null
- - rgba(94, 126, 91, 0.5)
- - null
- - hsla(115, 16%, 43%, 0.5)
- - hsv(115, 28%, 49%)
- - hsva(115, 28%, 49%, 0.5)
- - #5e7e5b80
- - null
- - null
- - null
- - null
- - default: rgba(94, 126, 91, 0.5)
- - inverse color: rgba(161, 129, 164, 0.5)
- - setAlpha(0.42): rgba(94, 126, 91, 0.42)
-Dumping 'rgb(94 126 91 / 50%)' in different formats:
- - null
  - rgb(94 126 91 / 50%)
- - null
- - hsla(115, 16%, 43%, 0.5)
+ - rgba(94, 126, 91, 0.5)
+ - hsl(115deg 16% 43% / 50%)
+ - hsl(115deg 16% 43% / 50%)
  - hsv(115, 28%, 49%)
  - hsva(115, 28%, 49%, 0.5)
  - #5e7e5b80
@@ -177,14 +162,29 @@ Dumping 'rgb(94 126 91 / 50%)' in different formats:
  - null
  - null
  - null
- - default: rgba(94, 126, 91, 0.5)
- - inverse color: rgba(161, 129, 164, 0.5)
- - setAlpha(0.42): rgba(94, 126, 91, 0.42)
+ - default: rgb(94 126 91 / 50%)
+ - inverse color: rgb(161 129 164 / 50%)
+ - setAlpha(0.42): rgb(94 126 91 / 42%)
+Dumping 'rgb(94 126 91 / 50%)' in different formats:
+ - rgb(94 126 91 / 50%)
+ - rgb(94 126 91 / 50%)
+ - hsl(115deg 16% 43% / 50%)
+ - hsl(115deg 16% 43% / 50%)
+ - hsv(115, 28%, 49%)
+ - hsva(115, 28%, 49%, 0.5)
+ - #5e7e5b80
+ - null
+ - null
+ - null
+ - null
+ - default: rgb(94 126 91 / 50%)
+ - inverse color: rgb(161 129 164 / 50%)
+ - setAlpha(0.42): rgb(94 126 91 / 42%)
 Dumping 'hsl(212, 55%, 32%)' in different formats:
- - rgb(37, 79, 126)
- - rgba(37, 79, 126, 1)
+ - rgb(37 79 126)
+ - rgb(37 79 126)
  - hsl(212, 55%, 32%)
- - hsla(212, 55%, 32%, 1)
+ - hsl(212deg 55% 32%)
  - hsv(212, 71%, 50%)
  - hsva(212, 71%, 50%, 1)
  - #254f7eff
@@ -192,14 +192,14 @@ Dumping 'hsl(212, 55%, 32%)' in different formats:
  - null
  - null
  - null
- - default: hsl(212, 55%, 32%)
- - inverse color: rgba(218, 176, 129, 1)
- - setAlpha(0.42): rgba(37, 79, 126, 0.42)
+ - default: hsl(212deg 55% 32%)
+ - inverse color: rgb(218 176 129)
+ - setAlpha(0.42): rgb(37 79 126 / 42%)
 Dumping 'hsla(212 55% 32%)' in different formats:
- - rgb(37, 79, 126)
- - rgba(37, 79, 126, 1)
+ - rgb(37 79 126)
+ - rgb(37 79 126)
  - hsla(212 55% 32%)
- - hsla(212, 55%, 32%, 1)
+ - hsl(212deg 55% 32%)
  - hsv(212, 71%, 50%)
  - hsva(212, 71%, 50%, 1)
  - #254f7eff
@@ -207,13 +207,13 @@ Dumping 'hsla(212 55% 32%)' in different formats:
  - null
  - null
  - null
- - default: hsl(212, 55%, 32%)
- - inverse color: rgba(218, 176, 129, 1)
- - setAlpha(0.42): rgba(37, 79, 126, 0.42)
+ - default: hsl(212deg 55% 32%)
+ - inverse color: rgb(218 176 129)
+ - setAlpha(0.42): rgb(37 79 126 / 42%)
 Dumping 'hsla(212, 55%, 32%, 0.5)' in different formats:
- - null
- - rgba(37, 79, 126, 0.5)
- - null
+ - rgb(37 79 126 / 50%)
+ - rgb(37 79 126 / 50%)
+ - hsl(212deg 55% 32% / 50%)
  - hsla(212, 55%, 32%, 0.5)
  - hsv(212, 71%, 50%)
  - hsva(212, 71%, 50%, 0.5)
@@ -222,13 +222,13 @@ Dumping 'hsla(212, 55%, 32%, 0.5)' in different formats:
  - null
  - null
  - null
- - default: hsla(212, 55%, 32%, 0.5)
- - inverse color: rgba(218, 176, 129, 0.5)
- - setAlpha(0.42): rgba(37, 79, 126, 0.42)
+ - default: hsl(212deg 55% 32% / 50%)
+ - inverse color: rgb(218 176 129 / 50%)
+ - setAlpha(0.42): rgb(37 79 126 / 42%)
 Dumping 'hsla(212  55%  32% /  50%)' in different formats:
- - null
- - rgba(37, 79, 126, 0.5)
- - null
+ - rgb(37 79 126 / 50%)
+ - rgb(37 79 126 / 50%)
+ - hsl(212deg 55% 32% / 50%)
  - hsla(212  55%  32% /  50%)
  - hsv(212, 71%, 50%)
  - hsva(212, 71%, 50%, 0.5)
@@ -237,13 +237,13 @@ Dumping 'hsla(212  55%  32% /  50%)' in different formats:
  - null
  - null
  - null
- - default: hsla(212, 55%, 32%, 0.5)
- - inverse color: rgba(218, 176, 129, 0.5)
- - setAlpha(0.42): rgba(37, 79, 126, 0.42)
+ - default: hsl(212deg 55% 32% / 50%)
+ - inverse color: rgb(218 176 129 / 50%)
+ - setAlpha(0.42): rgb(37 79 126 / 42%)
 Dumping 'hsla(212deg 55% 32% / 50%)' in different formats:
- - null
- - rgba(37, 79, 126, 0.5)
- - null
+ - rgb(37 79 126 / 50%)
+ - rgb(37 79 126 / 50%)
+ - hsl(212deg 55% 32% / 50%)
  - hsla(212deg 55% 32% / 50%)
  - hsv(212, 71%, 50%)
  - hsva(212, 71%, 50%, 0.5)
@@ -252,14 +252,14 @@ Dumping 'hsla(212deg 55% 32% / 50%)' in different formats:
  - null
  - null
  - null
- - default: hsla(212, 55%, 32%, 0.5)
- - inverse color: rgba(218, 176, 129, 0.5)
- - setAlpha(0.42): rgba(37, 79, 126, 0.42)
+ - default: hsl(212deg 55% 32% / 50%)
+ - inverse color: rgb(218 176 129 / 50%)
+ - setAlpha(0.42): rgb(37 79 126 / 42%)
 Dumping '#12345678' in different formats:
- - null
- - rgba(18, 52, 86, 0.47058823529411764)
- - null
- - hsla(210, 65%, 20%, 0.47058823529411764)
+ - rgb(18 52 86 / 47%)
+ - rgb(18 52 86 / 47%)
+ - hsl(210deg 65% 20% / 47%)
+ - hsl(210deg 65% 20% / 47%)
  - hsv(210, 79%, 34%)
  - hsva(210, 79%, 34%, 0.47058823529411764)
  - #12345678
@@ -268,13 +268,13 @@ Dumping '#12345678' in different formats:
  - null
  - null
  - default: #12345678
- - inverse color: rgba(237, 203, 169, 0.47058823529411764)
- - setAlpha(0.42): rgba(18, 52, 86, 0.42)
+ - inverse color: rgb(237 203 169 / 47%)
+ - setAlpha(0.42): rgb(18 52 86 / 42%)
 Dumping '#00FFFF' in different formats:
- - rgb(0, 255, 255)
- - rgba(0, 255, 255, 1)
- - hsl(180, 100%, 50%)
- - hsla(180, 100%, 50%, 1)
+ - rgb(0 255 255)
+ - rgb(0 255 255)
+ - hsl(180deg 100% 50%)
+ - hsl(180deg 100% 50%)
  - hsv(180, 100%, 100%)
  - hsva(180, 100%, 100%, 1)
  - #00ffffff
@@ -283,13 +283,13 @@ Dumping '#00FFFF' in different formats:
  - #0ff
  - cyan
  - default: #00ffff
- - inverse color: rgba(255, 0, 0, 1)
- - setAlpha(0.42): rgba(0, 255, 255, 0.42)
+ - inverse color: rgb(255 0 0)
+ - setAlpha(0.42): rgb(0 255 255 / 42%)
 Dumping '#1234' in different formats:
- - null
- - rgba(17, 34, 51, 0.26666666666666666)
- - null
- - hsla(210, 50%, 13%, 0.26666666666666666)
+ - rgb(17 34 51 / 27%)
+ - rgb(17 34 51 / 27%)
+ - hsl(210deg 50% 13% / 27%)
+ - hsl(210deg 50% 13% / 27%)
  - hsv(210, 67%, 20%)
  - hsva(210, 67%, 20%, 0.26666666666666666)
  - #11223344
@@ -298,13 +298,13 @@ Dumping '#1234' in different formats:
  - null
  - null
  - default: #1234
- - inverse color: rgba(238, 221, 204, 0.26666666666666666)
- - setAlpha(0.42): rgba(17, 34, 51, 0.42)
+ - inverse color: rgb(238 221 204 / 27%)
+ - setAlpha(0.42): rgb(17 34 51 / 42%)
 Dumping '#0FF' in different formats:
- - rgb(0, 255, 255)
- - rgba(0, 255, 255, 1)
- - hsl(180, 100%, 50%)
- - hsla(180, 100%, 50%, 1)
+ - rgb(0 255 255)
+ - rgb(0 255 255)
+ - hsl(180deg 100% 50%)
+ - hsl(180deg 100% 50%)
  - hsv(180, 100%, 100%)
  - hsva(180, 100%, 100%, 1)
  - #00ffffff
@@ -313,6 +313,6 @@ Dumping '#0FF' in different formats:
  - #0FF
  - cyan
  - default: #0ff
- - inverse color: rgba(255, 0, 0, 1)
- - setAlpha(0.42): rgba(0, 255, 255, 0.42)
+ - inverse color: rgb(255 0 0)
+ - setAlpha(0.42): rgb(0 255 255 / 42%)
 

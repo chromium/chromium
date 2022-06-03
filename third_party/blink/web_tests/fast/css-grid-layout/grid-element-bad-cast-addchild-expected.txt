@@ -1,5 +1,0 @@
-This test checks that inserting a non-LayoutBox grid item doesn't make us crash.
-
-This test has PASSED if it didn't crash and you see PASSED below.
-
-PASSED

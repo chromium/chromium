@@ -1,0 +1,79 @@
+<html>
+  <head><title>document loading</title></head>
+  <body>
+    <script>
+      // Returns the video file name corresponding to |codecs|.
+      // |codecs| may be null, in which case null will be returned.
+      // Otherwise, |codecs| is a comma-delimited string without spaces.
+      function getVideoFileNameForCodecs(codecs) {
+        if (!codecs) {
+          document.title = 'The "codecs" parameter is required.';
+          return null;
+        }
+
+        if (codecs == "vp8") {
+          return 'bear-vp8a.webm';
+        } else if (codecs == "vp9,opus") {
+          return 'bear-vp9-opus.webm';
+        } else if (codecs == "vp9") {
+          return 'bear-vp9.webm';
+        } else {
+          document.title = 'Unrecognized value in "codecs" parameter';
+          return null;
+        }
+      }
+      var bear = document.createElement('video');
+      var isMetadataLoaded = false;
+      var isPlaying = false;
+
+      var params = new URLSearchParams(window.location.search);
+      var videoFile = getVideoFileNameForCodecs(params.get("codecs"));
+    
+      // Per https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video,
+      // "the video will autoplay if the attribute is there in the <video> tag
+      // at all." Therefore, only set the attribute if the parameter is true.
+      if (params.get("autoplay") == "1") {
+        bear.autoplay = true;
+      }
+
+      // The title will only be changed from 'playing' to 'ended' if requested.
+      // This avoids potentially flaky tests if the video ends during the test.
+      var reportEnded = params.get("reportended") == "1";
+
+      bear.onerror = function() { document.title = 'media element error'; }
+      bear.onloadeddata = function() {
+        document.title = 'loaded';
+
+        if (bear.autoplay) {
+          // No events are generated if autoplay's been denied, so use a
+          // 0.2s timeout to detect and report the denial.
+          window.setTimeout(function() {
+            if (!isPlaying)
+              document.title = 'blocked';
+          }, 200);
+        }
+      }
+      bear.onloadedmetadata = function() { isMetadataLoaded = true; }
+      bear.onpause = function () { isPlaying = false; }
+      bear.onplay = function() {
+        isPlaying = true;
+        document.title = 'playing';
+      }
+      bear.onstalled = function() { document.title = 'stalled'; }
+      bear.onended = function() {
+        if (reportEnded) {
+          document.title = 'ended';
+        }
+      }
+
+      if (videoFile) {
+        // Programatically set the title, to provide an externally-visible
+        // indication that the page's scripts have executed.
+        document.title = 'initial title';
+
+        bear.src = videoFile;
+      }
+      // Else, the title should already be set to the error.
+    </script>
+  </body>
+</html>

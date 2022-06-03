@@ -23,14 +23,16 @@
 // used.
 #include <climits>
 
+#include "absl/base/config.h"
+
 // Maybe one day we can rewrite this file not to require the elf
 // symbol extensions in glibc, but for right now we need them.
 #ifdef ABSL_HAVE_ELF_MEM_IMAGE
 #error ABSL_HAVE_ELF_MEM_IMAGE cannot be directly set
 #endif
 
-#if defined(__ELF__) && defined(__GLIBC__) && !defined(__native_client__) && \
-    !defined(__asmjs__) && !defined(__wasm__)
+#if defined(__ELF__) && !defined(__native_client__) && !defined(__asmjs__) && \
+    !defined(__wasm__)
 #define ABSL_HAVE_ELF_MEM_IMAGE 1
 #endif
 
@@ -38,7 +40,12 @@
 
 #include <link.h>  // for ElfW
 
+#if defined(__FreeBSD__) && !defined(ElfW)
+#define ElfW(x) __ElfN(x)
+#endif
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
 // An in-memory ELF image (may not exist on disk).
@@ -123,6 +130,7 @@ class ElfMemImage {
 };
 
 }  // namespace debugging_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_HAVE_ELF_MEM_IMAGE

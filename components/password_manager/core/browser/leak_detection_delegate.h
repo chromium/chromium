@@ -13,15 +13,14 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+class PrefService;
 
 namespace password_manager {
 
 class LeakDetectionCheck;
 class LeakDetectionDelegateHelper;
 class PasswordManagerClient;
+struct PasswordForm;
 
 // The helper class that encapsulates the requests and their processing.
 class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
@@ -43,21 +42,27 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   LeakDetectionCheck* leak_check() const { return leak_check_.get(); }
 #endif  // defined(UNIT_TEST)
 
-  void StartLeakCheck(const autofill::PasswordForm& form);
+  void StartLeakCheck(const PasswordForm& form);
 
  private:
   // LeakDetectionDelegateInterface:
   void OnLeakDetectionDone(bool is_leaked,
                            GURL url,
-                           base::string16 username,
-                           base::string16 password) override;
+                           std::u16string username,
+                           std::u16string password) override;
 
-  // Initiates the showing of the leak detection notification. If the account is
-  // synced, it is called by |helper_| after the |leak_type| was asynchronously
-  // determined.
-  void OnShowLeakDetectionNotification(CredentialLeakType leak_type,
-                                       GURL url,
-                                       base::string16 username);
+  // Initiates the showing of the leak detection notification. It is called by
+  // |helper_| after |is_saved|, |is_reused|, and |has_change_script| were
+  // asynchronously determined.
+  // |all_urls_with_leaked_credentials| contains all the URLs on which the
+  // leaked username/password pair is used.
+  void OnShowLeakDetectionNotification(
+      IsSaved is_saved,
+      IsReused is_reused,
+      HasChangeScript has_change_script,
+      GURL url,
+      std::u16string username,
+      std::vector<GURL> all_urls_with_leaked_credentials);
 
   void OnError(LeakDetectionError error) override;
 
@@ -76,6 +81,11 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // credentials.
   std::unique_ptr<LeakDetectionDelegateHelper> helper_;
 };
+
+// Determines whether the leak check can be started depending on |prefs|. Will
+// use |client| for logging if non-null.
+bool CanStartLeakCheck(const PrefService& prefs,
+                       const PasswordManagerClient* client = nullptr);
 
 }  // namespace password_manager
 

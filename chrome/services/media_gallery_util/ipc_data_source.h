@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
@@ -39,19 +38,19 @@ class IPCDataSource : public media::DataSource {
   void Read(int64_t position,
             int size,
             uint8_t* destination,
-            const ReadCB& callback) override;
-  bool GetSize(int64_t* size_out) override;
+            ReadCB callback) override;
+  bool GetSize(int64_t* size_out) override WARN_UNUSED_RESULT;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
 
  private:
   // Media data read helpers: must be run on the utility thread.
   void ReadMediaData(uint8_t* destination,
-                     const ReadCB& callback,
+                     ReadCB callback,
                      int64_t position,
                      int size);
   void ReadDone(uint8_t* destination,
-                const ReadCB& callback,
+                ReadCB callback,
                 const std::vector<uint8_t>& data);
 
   mojo::Remote<chrome::mojom::MediaDataSource> media_data_source_;

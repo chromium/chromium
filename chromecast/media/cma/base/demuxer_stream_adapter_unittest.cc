@@ -11,15 +11,15 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/demuxer_stream_for_test.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "media/base/audio_decoder_config.h"
@@ -34,6 +34,10 @@ namespace media {
 class DemuxerStreamAdapterTest : public testing::Test {
  public:
   DemuxerStreamAdapterTest();
+
+  DemuxerStreamAdapterTest(const DemuxerStreamAdapterTest&) = delete;
+  DemuxerStreamAdapterTest& operator=(const DemuxerStreamAdapterTest&) = delete;
+
   ~DemuxerStreamAdapterTest() override;
 
   void Initialize(::media::DemuxerStream* demuxer_stream);
@@ -65,8 +69,6 @@ class DemuxerStreamAdapterTest : public testing::Test {
   std::unique_ptr<DemuxerStreamForTest> demuxer_stream_;
 
   std::unique_ptr<CodedFrameProvider> coded_frame_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapterTest);
 };
 
 DemuxerStreamAdapterTest::DemuxerStreamAdapterTest()
@@ -94,15 +96,15 @@ void DemuxerStreamAdapterTest::Start() {
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
 
-  coded_frame_provider_->Read(base::Bind(&DemuxerStreamAdapterTest::OnNewFrame,
-                                         base::Unretained(this)));
+  coded_frame_provider_->Read(base::BindOnce(
+      &DemuxerStreamAdapterTest::OnNewFrame, base::Unretained(this)));
 }
 
 void DemuxerStreamAdapterTest::OnTestTimeout() {
   ADD_FAILURE() << "Test timed out";
-  if (base::MessageLoopCurrent::Get())
+  if (base::CurrentThread::Get())
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
@@ -117,31 +119,31 @@ void DemuxerStreamAdapterTest::OnNewFrame(
   }
 
   ASSERT_TRUE(buffer.get() != NULL);
-  ASSERT_EQ(base::TimeDelta::FromMicroseconds(buffer->timestamp()),
-            base::TimeDelta::FromMilliseconds(40 * frame_received_count_));
+  ASSERT_EQ(base::Microseconds(buffer->timestamp()),
+            base::Milliseconds(40 * frame_received_count_));
   frame_received_count_++;
 
   if (frame_received_count_ >= total_frames_) {
-    coded_frame_provider_->Flush(base::Bind(
+    coded_frame_provider_->Flush(base::BindOnce(
         &DemuxerStreamAdapterTest::OnFlushCompleted, base::Unretained(this)));
     return;
   }
 
-  coded_frame_provider_->Read(base::Bind(&DemuxerStreamAdapterTest::OnNewFrame,
-                                         base::Unretained(this)));
+  coded_frame_provider_->Read(base::BindOnce(
+      &DemuxerStreamAdapterTest::OnNewFrame, base::Unretained(this)));
 
   ASSERT_LE(frame_received_count_, early_flush_idx_);
   if (frame_received_count_ == early_flush_idx_) {
-    base::Closure flush_cb = base::Bind(
+    base::OnceClosure flush_cb = base::BindOnce(
         &DemuxerStreamAdapterTest::OnFlushCompleted, base::Unretained(this));
     if (use_post_task_for_flush_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(&CodedFrameProvider::Flush,
                          base::Unretained(coded_frame_provider_.get()),
-                         flush_cb));
+                         std::move(flush_cb)));
     } else {
-      coded_frame_provider_->Flush(flush_cb);
+      coded_frame_provider_->Flush(std::move(flush_cb));
     }
     return;
   }
@@ -149,7 +151,6 @@ void DemuxerStreamAdapterTest::OnNewFrame(
 
 void DemuxerStreamAdapterTest::OnFlushCompleted() {
   ASSERT_EQ(frame_received_count_, total_expected_frames_);
-  ASSERT_FALSE(demuxer_stream_->IsReadPending());
   base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 

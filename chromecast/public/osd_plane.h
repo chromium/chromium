@@ -42,4 +42,4 @@ class OsdPlane {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_PUBLIC_OSD_PLANE_H
+#endif  // CHROMECAST_PUBLIC_OSD_PLANE_H_

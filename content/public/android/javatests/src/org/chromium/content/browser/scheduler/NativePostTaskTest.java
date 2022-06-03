@@ -7,14 +7,14 @@ package org.chromium.content.browser.scheduler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.PowerMonitor;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -23,7 +23,7 @@ import org.chromium.base.test.task.SchedulerTestHelpers;
 import org.chromium.base.test.task.ThreadPoolTestHelpers;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content.app.ContentMain;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class NativePostTaskTest {
-    @Rule
-    public NativeLibraryTestRule mNativeLibraryTestRule = new NativeLibraryTestRule();
-
     @After
     public void tearDown() {
         ThreadPoolTestHelpers.disableThreadPoolExecutionForTesting();
@@ -101,30 +98,22 @@ public class NativePostTaskTest {
         startNativeScheduler();
         TaskRunner taskQueue = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
         // This should not time out.
-        try {
-            SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
-        } finally {
-            taskQueue.destroy();
-        }
+        SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
     }
 
     private void testRunningTasksInSequence(TaskRunner taskQueue) {
-        try {
-            List<Integer> orderListImmediate = new ArrayList<>();
-            List<Integer> orderListDelayed = new ArrayList<>();
+        List<Integer> orderListImmediate = new ArrayList<>();
+        List<Integer> orderListDelayed = new ArrayList<>();
 
-            SchedulerTestHelpers.postThreeTasksInOrder(taskQueue, orderListImmediate);
-            SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
+        SchedulerTestHelpers.postThreeTasksInOrder(taskQueue, orderListImmediate);
+        SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
 
-            assertThat(orderListImmediate, contains(1, 2, 3));
+        assertThat(orderListImmediate, contains(1, 2, 3));
 
-            SchedulerTestHelpers.postThreeDelayedTasksInOrder(taskQueue, orderListDelayed);
-            SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
+        SchedulerTestHelpers.postThreeDelayedTasksInOrder(taskQueue, orderListDelayed);
+        SchedulerTestHelpers.postDelayedTaskAndBlockUntilRun(taskQueue, 1);
 
-            assertThat(orderListDelayed, contains(1, 2, 3));
-        } finally {
-            taskQueue.destroy();
-        }
+        assertThat(orderListDelayed, contains(1, 2, 3));
     }
 
     @Test
@@ -176,16 +165,12 @@ public class NativePostTaskTest {
             }
         });
 
-        try {
-            // The task should run at some point after the migration, so the test shouldn't
-            // time out.
-            synchronized (lock) {
-                while (!taskExecuted.get()) {
-                    lock.wait();
-                }
+        // The task should run at some point after the migration, so the test shouldn't
+        // time out.
+        synchronized (lock) {
+            while (!taskExecuted.get()) {
+                lock.wait();
             }
-        } finally {
-            taskQueue.destroy();
         }
     }
 
@@ -195,11 +180,7 @@ public class NativePostTaskTest {
         List<Integer> orderListImmediate = new ArrayList<>();
         List<Integer> orderListDelayed = new ArrayList<>();
         TaskRunner taskQueue = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
-        try {
-            performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
-        } finally {
-            taskQueue.destroy();
-        }
+        performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
 
         assertThat(orderListImmediate, contains(1, 2, 3, 4));
         assertThat(orderListDelayed, contains(1, 2, 3));
@@ -211,11 +192,7 @@ public class NativePostTaskTest {
         List<Integer> orderListImmediate = new ArrayList<>();
         List<Integer> orderListDelayed = new ArrayList<>();
         TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        try {
-            performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
-        } finally {
-            taskQueue.destroy();
-        }
+        performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
 
         assertThat(orderListImmediate, contains(1, 2, 3, 4));
         assertThat(orderListDelayed, contains(1, 2, 3));
@@ -255,8 +232,9 @@ public class NativePostTaskTest {
     }
 
     private void startNativeScheduler() {
-        mNativeLibraryTestRule.loadNativeLibraryNoBrowserProcess();
-        ContentMain.start(/* startServiceManagerOnly */ false);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        PowerMonitor.createForTests();
+        ContentMain.start(/* startMinimalBrowser */ false);
         ThreadPoolTestHelpers.enableThreadPoolExecutionForTesting();
     }
 }

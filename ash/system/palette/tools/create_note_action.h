@@ -7,15 +7,20 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/common_palette_tool.h"
-#include "base/macros.h"
+#include "ui/events/event_handler.h"
 
 namespace ash {
 
 // A button in the ash palette that launches the selected note-taking app when
 // clicked. This action dynamically hides itself if it is not available.
-class ASH_EXPORT CreateNoteAction : public CommonPaletteTool {
+class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
+                                    public ui::EventHandler {
  public:
   explicit CreateNoteAction(Delegate* delegate);
+
+  CreateNoteAction(const CreateNoteAction&) = delete;
+  CreateNoteAction& operator=(const CreateNoteAction&) = delete;
+
   ~CreateNoteAction() override;
 
  private:
@@ -28,7 +33,10 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool {
   // CommonPaletteTool overrides.
   const gfx::VectorIcon& GetPaletteIcon() const override;
 
-  DISALLOW_COPY_AND_ASSIGN(CreateNoteAction);
+  // ui::EventHandler overrides.
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
+  bool ShouldShowOnDisplay();
 };
 
 }  // namespace ash

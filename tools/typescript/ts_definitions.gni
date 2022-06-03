@@ -1,0 +1,79 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+template("ts_definitions") {
+  node(target_name) {
+    script = "//tools/typescript/ts_definitions.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "extra_deps",
+                             "js_files",
+                           ])
+
+    inputs = [ "//tools/typescript/tsconfig_definitions_base.json" ]
+    outputs = [ "$target_gen_dir/tsconfig_definitions.json" ]
+
+    root_dir = "."
+    if (defined(invoker.root_dir)) {
+      root_dir = invoker.root_dir
+    }
+
+    out_dir = target_gen_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
+
+    foreach(_js_file, js_files) {
+      inputs += [ "$root_dir/$_js_file" ]
+      _dirname = rebase_path(get_path_info(_js_file, "gen_dir"), target_gen_dir)
+      _filename = get_path_info(_js_file, "name")
+      outputs += [ "$out_dir/$_dirname/$_filename.d.ts" ]
+    }
+
+    args = [
+             "--root_dir",
+             rebase_path(root_dir, root_build_dir),
+             "--gen_dir",
+             rebase_path(target_gen_dir, root_build_dir),
+             "--out_dir",
+             rebase_path(out_dir, root_build_dir),
+             "--js_files",
+           ] + js_files
+
+    if (defined(extra_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += extra_deps
+    }
+
+    path_mappings = [
+      "chrome://resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "//resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "//resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer-element.d.ts",
+              target_gen_dir),
+      "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer-element.d.ts",
+              target_gen_dir),
+    ]
+    args += [ "--path_mappings" ] + path_mappings
+    if (defined(invoker.path_mappings)) {
+      args += invoker.path_mappings
+    }
+  }
+}

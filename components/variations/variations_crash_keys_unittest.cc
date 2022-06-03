@@ -35,6 +35,9 @@ class VariationsCrashKeysTest : public ::testing::Test {
     crash_reporter::InitializeCrashKeysForTesting();
   }
 
+  VariationsCrashKeysTest(const VariationsCrashKeysTest&) = delete;
+  VariationsCrashKeysTest& operator=(const VariationsCrashKeysTest&) = delete;
+
   ~VariationsCrashKeysTest() override {
     SyntheticTrialsActiveGroupIdProvider::GetInstance()->ResetForTesting();
     ClearCrashKeysInstanceForTesting();
@@ -42,9 +45,7 @@ class VariationsCrashKeysTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysTest);
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace
@@ -63,12 +64,19 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   EXPECT_EQ("1", GetNumExperimentsCrashKey());
   EXPECT_EQ("8e7abfb0-c16397b7,", GetVariationsCrashKey());
 
+  ExperimentListInfo info = GetExperimentListInfo();
+  EXPECT_EQ(1, info.num_experiments);
+  EXPECT_EQ("8e7abfb0-c16397b7,", info.experiment_list);
+
   // Now, active Trial2.
   EXPECT_EQ("Group2", base::FieldTrialList::FindFullName("Trial2"));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ("2", GetNumExperimentsCrashKey());
   EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,", GetVariationsCrashKey());
+  info = GetExperimentListInfo();
+  EXPECT_EQ(2, info.num_experiments);
+  EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,", info.experiment_list);
 
   // Add two synthetic trials and confirm that they show up in the list.
   SyntheticTrialGroup synth_trial(HashName("Trial3"), HashName("Group3"));
@@ -77,6 +85,10 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   EXPECT_EQ("3", GetNumExperimentsCrashKey());
   EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,9f339c9d-746c2ad4,",
             GetVariationsCrashKey());
+  info = GetExperimentListInfo();
+  EXPECT_EQ(3, info.num_experiments);
+  EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,9f339c9d-746c2ad4,",
+            info.experiment_list);
 
   // Add another regular trial.
   base::FieldTrialList::CreateFieldTrial("Trial4", "Group4")->group();
@@ -86,6 +98,12 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       "8e7abfb0-c16397b7,277f2a3d-d77354d0,21710f4c-99b90b01,"
       "9f339c9d-746c2ad4,",
       GetVariationsCrashKey());
+  info = GetExperimentListInfo();
+  EXPECT_EQ(4, info.num_experiments);
+  EXPECT_EQ(
+      "8e7abfb0-c16397b7,277f2a3d-d77354d0,21710f4c-99b90b01,"
+      "9f339c9d-746c2ad4,",
+      info.experiment_list);
 
   // Replace synthetic trial group and add one more.
   SyntheticTrialGroup synth_trial2(HashName("Trial3"), HashName("Group3_A"));
@@ -98,6 +116,12 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       "8e7abfb0-c16397b7,277f2a3d-d77354d0,21710f4c-99b90b01,"
       "9f339c9d-3250dddc,21710f4c-99b90b01,",
       GetVariationsCrashKey());
+  info = GetExperimentListInfo();
+  EXPECT_EQ(5, info.num_experiments);
+  EXPECT_EQ(
+      "8e7abfb0-c16397b7,277f2a3d-d77354d0,21710f4c-99b90b01,"
+      "9f339c9d-3250dddc,21710f4c-99b90b01,",
+      info.experiment_list);
 }
 
 }  // namespace variations

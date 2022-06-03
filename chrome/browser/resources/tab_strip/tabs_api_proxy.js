@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, Tab, TabGroupVisualData} from './tab_strip.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -14,115 +15,251 @@ export const CloseTabAction = {
   SWIPED_TO_CLOSE: 1,
 };
 
-/**
- * Must be kept in sync with TabNetworkState from
- * //chrome/browser/ui/tabs/tab_network_state.h.
- * @enum {number}
- */
-export const TabNetworkState = {
-  NONE: 0,
-  WAITING: 1,
-  LOADING: 2,
-  ERROR: 3,
-};
-
-/**
- * Must be kept in sync with TabAlertState from
- * //chrome/browser ui/tabs/tab_utils.h
- * @enum {number}
- */
-export const TabAlertState = {
-  MEDIA_RECORDING: 0,
-  TAB_CAPTURING: 1,
-  AUDIO_PLAYING: 2,
-  AUDIO_MUTING: 3,
-  BLUETOOTH_CONNECTED: 4,
-  USB_CONNECTED: 5,
-  SERIAL_CONNECTED: 6,
-  PIP_PLAYING: 7,
-  DESKTOP_CAPTURING: 8,
-  VR_PRESENTING_IN_HEADSET: 9,
-};
-
-/**
- * @typedef {{
- *    active: boolean,
- *    alertStates: !Array<!TabAlertState>,
- *    blocked: boolean,
- *    crashed: boolean,
- *    favIconUrl: (string|undefined),
- *    id: number,
- *    index: number,
- *    isDefaultFavicon: boolean,
- *    networkState: !TabNetworkState,
- *    pinned: boolean,
- *    shouldHideThrobber: boolean,
- *    showIcon: boolean,
- *    title: string,
- *    url: string,
- * }}
- */
-export let TabData;
-
 /** @typedef {!Tab} */
-let ExtensionsApiTab;
+export let ExtensionsApiTab;
 
+/** @interface */
 export class TabsApiProxy {
   /**
    * @param {number} tabId
    * @return {!Promise<!ExtensionsApiTab>}
    */
+  activateTab(tabId) {}
+
+  /**
+   * @return {!Promise<{data: !Object<!TabGroupVisualData>}>} Object of group
+   *     IDs as strings mapped to their visual data.
+   */
+  getGroupVisualData() {}
+
+  /**
+   * @return {!Promise<{tabs: !Array<!Tab>}>}
+   */
+  getTabs() {}
+
+  /**
+   * @param {number} tabId
+   * @param {!CloseTabAction} closeTabAction
+   */
+  closeTab(tabId, closeTabAction) {}
+
+  /**
+   * @param {number} tabId
+   * @param {string} groupId
+   */
+  groupTab(tabId, groupId) {}
+
+  /**
+   * @param {string} groupId
+   * @param {number} newIndex
+   */
+  moveGroup(groupId, newIndex) {}
+
+  /**
+   * @param {number} tabId
+   * @param {number} newIndex
+   */
+  moveTab(tabId, newIndex) {}
+
+  /**
+   * @param {number} tabId
+   * @param {boolean} thumbnailTracked
+   */
+  setThumbnailTracked(tabId, thumbnailTracked) {}
+
+  /** @param {number} tabId */
+  ungroupTab(tabId) {}
+
+
+  /** @return {boolean} */
+  isVisible() {}
+
+  /**
+   * @return {!Promise<{colors: !Object<string, string>}>} Object with CSS
+   *     variables as keys and rgba strings as values
+   */
+  getColors() {}
+
+  /**
+   * @return {!Promise<{layout: !Object<string, string>}>} Object with CSS
+   *     variables as keys and pixel lengths as values
+   */
+  getLayout() {}
+
+  observeThemeChanges() {}
+
+  /**
+   * @param {string} groupId
+   * @param {number} locationX
+   * @param {number} locationY
+   * @param {number} width
+   * @param {number} height
+   */
+  showEditDialogForGroup(groupId, locationX, locationY, width, height) {}
+
+  /**
+   * @param {number} tabId
+   * @param {number} locationX
+   * @param {number} locationY
+   */
+  showTabContextMenu(tabId, locationX, locationY) {}
+
+  /**
+   * @param {number} locationX
+   * @param {number} locationY
+   */
+  showBackgroundContextMenu(locationX, locationY) {}
+
+  closeContainer() {}
+
+  /** @param {number} durationMs Activation duration time in ms. */
+  reportTabActivationDuration(durationMs) {}
+
+  /**
+   * @param {number} tabCount Number of tabs.
+   * @param {number} durationMs Activation duration time in ms.
+   */
+  reportTabDataReceivedDuration(tabCount, durationMs) {}
+
+  /**
+   * @param {number} tabCount Number of tabs.
+   * @param {number} durationMs Creation duration time in ms.
+   */
+  reportTabCreationDuration(tabCount, durationMs) {}
+
+  /** @return {!PageCallbackRouter} */
+  getCallbackRouter() {}
+}
+
+/** @implements {TabsApiProxy} */
+export class TabsApiProxyImpl {
+  constructor() {
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
+
+    /** @type {!PageHandlerRemote} */
+    this.handler = new PageHandlerRemote();
+
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  /** @override */
   activateTab(tabId) {
     return new Promise(resolve => {
       chrome.tabs.update(tabId, {active: true}, resolve);
     });
   }
 
-  createNewTab() {
-    chrome.send('createNewTab');
+  /** @override */
+  getGroupVisualData() {
+    return this.handler.getGroupVisualData();
   }
 
-  /**
-   * @return {!Promise<!Array<!TabData>>}
-   */
+  /** @override */
   getTabs() {
-    return sendWithPromise('getTabs');
+    return this.handler.getTabs();
   }
 
-  /**
-   * @param {number} tabId
-   * @param {!CloseTabAction} closeTabAction
-   * @return {!Promise}
-   */
+  /** @override */
   closeTab(tabId, closeTabAction) {
-    return new Promise(resolve => {
-      chrome.tabs.remove(tabId, resolve);
-      chrome.metricsPrivate.recordEnumerationValue(
-          'WebUITabStrip.CloseTabAction', closeTabAction,
-          Object.keys(CloseTabAction).length);
-    });
+    this.handler.closeTab(
+        tabId, closeTabAction === CloseTabAction.SWIPED_TO_CLOSE);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'WebUITabStrip.CloseTabAction', closeTabAction,
+        Object.keys(CloseTabAction).length);
   }
 
-  /**
-   * @param {number} tabId
-   * @param {number} newIndex
-   * @return {!Promise<!ExtensionsApiTab>}
-   */
+  /** @override */
+  groupTab(tabId, groupId) {
+    this.handler.groupTab(tabId, groupId);
+  }
+
+  /** @override */
+  moveGroup(groupId, newIndex) {
+    this.handler.moveGroup(groupId, newIndex);
+  }
+
+  /** @override */
   moveTab(tabId, newIndex) {
-    return new Promise(resolve => {
-      chrome.tabs.move(tabId, {index: newIndex}, tab => {
-        resolve(tab);
-      });
-    });
+    this.handler.moveTab(tabId, newIndex);
   }
 
-  /**
-   * @param {number} tabId
-   * @param {boolean} thumbnailTracked
-   */
+  /** @override */
   setThumbnailTracked(tabId, thumbnailTracked) {
-    chrome.send('setThumbnailTracked', [tabId, thumbnailTracked]);
+    this.handler.setThumbnailTracked(tabId, thumbnailTracked);
+  }
+
+  /** @override */
+  ungroupTab(tabId) {
+    this.handler.ungroupTab(tabId);
+  }
+
+  /** @override */
+  isVisible() {
+    // TODO(crbug.com/1234500): Move this call out of tabs_api_proxy
+    // since it's not related to tabs API.
+    return document.visibilityState === 'visible';
+  }
+
+  /** @override */
+  getColors() {
+    return this.handler.getThemeColors();
+  }
+
+  /** @override */
+  getLayout() {
+    return this.handler.getLayout();
+  }
+
+  /** @override */
+  observeThemeChanges() {
+    // TODO(crbug.com/1234500): Migrate to mojo as well.
+    chrome.send('observeThemeChanges');
+  }
+
+  /** @override */
+  showEditDialogForGroup(groupId, locationX, locationY, width, height) {
+    this.handler.showEditDialogForGroup(
+        groupId, locationX, locationY, width, height);
+  }
+
+  /** @override */
+  showTabContextMenu(tabId, locationX, locationY) {
+    this.handler.showTabContextMenu(tabId, locationX, locationY);
+  }
+
+  /** @override */
+  showBackgroundContextMenu(locationX, locationY) {
+    this.handler.showBackgroundContextMenu(locationX, locationY);
+  }
+
+  /** @override */
+  closeContainer() {
+    this.handler.closeContainer();
+  }
+
+  /** @override */
+  reportTabActivationDuration(durationMs) {
+    this.handler.reportTabActivationDuration(durationMs);
+  }
+
+  /** @override */
+  reportTabDataReceivedDuration(tabCount, durationMs) {
+    this.handler.reportTabDataReceivedDuration(tabCount, durationMs);
+  }
+
+  /** @override */
+  reportTabCreationDuration(tabCount, durationMs) {
+    this.handler.reportTabCreationDuration(tabCount, durationMs);
+  }
+
+  /** @override */
+  getCallbackRouter() {
+    return this.callbackRouter;
   }
 }
 
-addSingletonGetter(TabsApiProxy);
+addSingletonGetter(TabsApiProxyImpl);

@@ -1,6 +1,6 @@
 (async function() {
   TestRunner.addResult(`Tests exception message from eval on nested worker context in console contains stack trace.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function startWorker()
@@ -9,14 +9,14 @@
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
   TestRunner.evaluateInPage('startWorker()');
 
   var contexts_still_loading = 2;
   function contextCreated() {
     contexts_still_loading--;
     if (contexts_still_loading > 0) {
-      TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+      TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
       return;
     }
 
@@ -37,8 +37,8 @@
     ConsoleTestRunner.expandConsoleMessages(step3);
   }
 
-  function step3() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step3() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

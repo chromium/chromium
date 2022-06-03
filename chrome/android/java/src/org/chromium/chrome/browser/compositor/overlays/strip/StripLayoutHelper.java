@@ -28,16 +28,16 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
-import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -197,7 +197,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Create tab menu
         mTabMenu = new ListPopupWindow(mContext);
-        mTabMenu.setAdapter(new ArrayAdapter<String>(mContext, R.layout.list_menu_item,
+        mTabMenu.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1,
                 new String[] {
                         mContext.getString(!mIncognito ? R.string.menu_close_all_tabs
                                                        : R.string.menu_close_all_incognito_tabs)}));
@@ -382,6 +382,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param shouldCascadeTabs Whether the {@link CascadingStripStacker} should be used.
      */
     void setShouldCascadeTabs(boolean shouldCascadeTabs) {
+        if (mModel == null) return;
+
         if (shouldCascadeTabs != mShouldCascadeTabs) {
             mShouldCascadeTabs = shouldCascadeTabs;
             setTabStacker(shouldCascadeTabs ? mCascadingStripStacker : mScrollingStripStacker);
@@ -429,6 +431,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mModel == model) return;
         mModel = model;
         mTabCreator = tabCreator;
+        setShouldCascadeTabs(mShouldCascadeTabs);
         computeAndUpdateTabOrders(false);
     }
 

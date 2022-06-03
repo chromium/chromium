@@ -6,9 +6,9 @@
 
 namespace blink {
 
-TrustedScript::TrustedScript(const String& script) : script_(script) {}
+TrustedScript::TrustedScript(String script) : script_(std::move(script)) {}
 
-String TrustedScript::toString() const {
+const String& TrustedScript::toString() const {
   return script_;
 }
 

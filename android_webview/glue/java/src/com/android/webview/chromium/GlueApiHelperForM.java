@@ -11,8 +11,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.base.annotations.VerifiesOnM;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Utility class to use new APIs that were added in M (API level 23). These need to exist in a
@@ -44,7 +44,7 @@ public final class GlueApiHelperForM {
      * Note that creation of WebResourceResponse with 'immutable' parameter is non-public.
      */
     public static void onReceivedHttpError(WebViewClient webViewClient, WebView webView,
-            AwContentsClient.AwWebResourceRequest request, AwWebResourceResponse response) {
+            AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
         webViewClient.onReceivedHttpError(webView, new WebResourceRequestAdapter(request),
                 new WebResourceResponse(true, response.getMimeType(), response.getCharset(),
                         response.getStatusCode(), response.getReasonPhrase(),

@@ -22,7 +22,8 @@ HistoryUnitTestBase::~HistoryUnitTestBase() {
 void HistoryUnitTestBase::ExecuteSQLScript(const base::FilePath& sql_path,
                                            const base::FilePath& db_path) {
   std::string sql;
-  ASSERT_TRUE(base::ReadFileToString(sql_path, &sql));
+  ASSERT_TRUE(base::ReadFileToString(sql_path, &sql))
+      << "Path: " << sql_path << "\nContent read before failure: " << sql;
 
   // Replace the 'last_visit_time', 'visit_time', 'time_slot' values in this
   // SQL with the current time.

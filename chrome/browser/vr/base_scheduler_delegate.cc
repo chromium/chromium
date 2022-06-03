@@ -40,14 +40,14 @@ void BaseSchedulerDelegate::ScheduleWebXrFrameTimeout() {
   DCHECK(ui_);
   webxr_spinner_timeout_closure_.Reset(base::BindOnce(
       &SchedulerUiInterface::OnWebXrTimeoutImminent, base::Unretained(ui_)));
-  task_runner_->PostDelayedTask(
-      FROM_HERE, webxr_spinner_timeout_closure_.callback(),
-      base::TimeDelta::FromSeconds(webxr_spinner_timeout_seconds_));
+  task_runner_->PostDelayedTask(FROM_HERE,
+                                webxr_spinner_timeout_closure_.callback(),
+                                base::Seconds(webxr_spinner_timeout_seconds_));
   webxr_frame_timeout_closure_.Reset(base::BindOnce(
       &SchedulerUiInterface::OnWebXrTimedOut, base::Unretained(ui_)));
   task_runner_->PostDelayedTask(
       FROM_HERE, webxr_frame_timeout_closure_.callback(),
-      base::TimeDelta::FromSeconds(webxr_initial_frame_timeout_seconds_));
+      base::Seconds(webxr_initial_frame_timeout_seconds_));
 }
 
 void BaseSchedulerDelegate::CancelWebXrFrameTimeout() {

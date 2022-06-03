@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,12 +31,12 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -57,8 +58,7 @@ public class PasswordManagerDialogTest {
     private Callback<Integer> mOnClick;
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -66,17 +66,22 @@ public class PasswordManagerDialogTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
-        mCoordinator = new PasswordManagerDialogCoordinator(activity.getModalDialogManager(),
-                activity.findViewById(android.R.id.content), activity.getFullscreenManager(),
-                activity.getControlContainerHeightResource());
-        PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE, DETAILS,
-                R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON, mOnClick);
-        contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
-        mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
-        mMediator = mCoordinator.getMediatorForTesting();
-        mModel = mMediator.getModelForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showDialog(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
+            ModalDialogManager dialogManager = activity.getModalDialogManager();
+            mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
+                    activity.findViewById(android.R.id.content),
+                    activity.getBrowserControlsManager());
+            PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE,
+                    DETAILS, R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON,
+                    mOnClick);
+            contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
+            mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
+            mMediator = mCoordinator.getMediatorForTesting();
+            mModel = mMediator.getModelForTesting();
+            mCoordinator.showDialog();
+        });
+        onViewWaiting(withId(R.id.positive_button));
     }
 
     @Test

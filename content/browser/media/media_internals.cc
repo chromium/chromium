@@ -6,50 +6,54 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/service_manager_connection.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/media_log_event.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/base/media_log_record.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/service_manager/sandbox/features.h"
-#include "services/service_manager/sandbox/sandbox_type.h"
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/sandbox_type.h"
 
 #if !defined(OS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
+namespace content {
+
 namespace {
 
-base::string16 SerializeUpdate(const std::string& function,
+std::u16string SerializeUpdate(const std::string& function,
                                const base::Value* value) {
   return content::WebUI::GetJavascriptCall(
       function, std::vector<const base::Value*>(1, value));
@@ -111,7 +115,38 @@ const char kAudioLogUpdateFunction[] = "media.updateAudioComponent";
 
 }  // namespace
 
-namespace content {
+// This class works as a receiver of logs of events occurring in the
+// media pipeline. Media logs send by the renderer process to the
+// browser process is handled by the below implementation in the
+// browser side.
+class MediaInternals::MediaInternalLogRecordsImpl
+    : public content::mojom::MediaInternalLogRecords {
+ public:
+  MediaInternalLogRecordsImpl(content::MediaInternals* media_internals,
+                              int render_process_id);
+
+  MediaInternalLogRecordsImpl(const MediaInternalLogRecordsImpl&) = delete;
+  MediaInternalLogRecordsImpl& operator=(const MediaInternalLogRecordsImpl&) =
+      delete;
+
+  ~MediaInternalLogRecordsImpl() override = default;
+  void Log(const std::vector<::media::MediaLogRecord>& arr) override;
+
+ private:
+  content::MediaInternals* const media_internals_;
+  const int render_process_id_;
+};
+
+MediaInternals::MediaInternalLogRecordsImpl::MediaInternalLogRecordsImpl(
+    content::MediaInternals* media_internals,
+    int render_process_id)
+    : media_internals_(media_internals),
+      render_process_id_(render_process_id) {}
+
+void MediaInternals::MediaInternalLogRecordsImpl::Log(
+    const std::vector<::media::MediaLogRecord>& events) {
+  media_internals_->OnMediaEvents(render_process_id_, events);
+}
 
 class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
                                      public media::AudioLog {
@@ -122,6 +157,10 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
                int component_id,
                int render_process_id,
                int render_frame_id);
+
+  AudioLogImpl(const AudioLogImpl&) = delete;
+  AudioLogImpl& operator=(const AudioLogImpl&) = delete;
+
   ~AudioLogImpl() override;
 
   void OnCreated(const media::AudioParameters& params,
@@ -157,8 +196,6 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
   const int component_id_;
   const int render_process_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLogImpl);
 };
 
 MediaInternals::AudioLogImpl::AudioLogImpl(
@@ -263,8 +300,8 @@ void MediaInternals::AudioLogImpl::SendWebContentsTitleHelper(
     int render_frame_id) {
   // Page title information can only be retrieved from the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&SendWebContentsTitleHelper, cache_key, std::move(dict),
                        render_process_id, render_frame_id));
     return;
@@ -329,14 +366,13 @@ void MediaInternals::Observe(int type,
 
 // Converts the |event| to a |update|. Returns whether the conversion succeeded.
 static bool ConvertEventToUpdate(int render_process_id,
-                                 const media::MediaLogEvent& event,
-                                 base::string16* update) {
+                                 const media::MediaLogRecord& event,
+                                 std::u16string* update) {
   DCHECK(update);
 
   base::DictionaryValue dict;
   dict.SetInteger("renderer", render_process_id);
   dict.SetInteger("player", event.id);
-  dict.SetString("type", media::MediaLog::EventTypeToString(event.type));
 
   // TODO(dalecurtis): This is technically not correct.  TimeTicks "can't" be
   // converted to to a human readable time format.  See base/time/time.h.
@@ -344,19 +380,38 @@ static bool ConvertEventToUpdate(int render_process_id,
   const double ticks_millis = ticks / base::Time::kMicrosecondsPerMillisecond;
   dict.SetDouble("ticksMillis", ticks_millis);
 
+  base::Value cloned_params = event.params.Clone();
+  switch (event.type) {
+    case media::MediaLogRecord::Type::kMessage:
+      dict.SetString("type", "MEDIA_LOG_ENTRY");
+      break;
+    case media::MediaLogRecord::Type::kMediaPropertyChange:
+      dict.SetString("type", "PROPERTY_CHANGE");
+      break;
+    case media::MediaLogRecord::Type::kMediaEventTriggered: {
+      // Delete the "event" param so that it won't spam the log.
+      absl::optional<base::Value> exists = cloned_params.ExtractPath("event");
+      DCHECK(exists.has_value());
+      dict.SetKey("type", std::move(exists.value()));
+      break;
+    }
+    case media::MediaLogRecord::Type::kMediaStatus:
+      dict.SetString("type", "PIPELINE_ERROR");
+      break;
+  }
+
   // Convert PipelineStatus to human readable string
-  if (event.type == media::MediaLogEvent::PIPELINE_ERROR) {
-    int status;
-    if (!event.params.GetInteger("pipeline_error", &status) ||
-        status < static_cast<int>(media::PIPELINE_OK) ||
-        status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
+  if (event.type == media::MediaLogRecord::Type::kMediaStatus) {
+    absl::optional<int> status = event.params.FindIntKey("pipeline_error");
+    if (!status || *status < static_cast<int>(media::PIPELINE_OK) ||
+        *status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
       return false;
     }
-    media::PipelineStatus error = static_cast<media::PipelineStatus>(status);
+    media::PipelineStatus error = static_cast<media::PipelineStatus>(*status);
     dict.SetString("params.pipeline_error",
                    media::PipelineStatusToString(error));
   } else {
-    dict.SetKey("params", event.params.Clone());
+    dict.SetKey("params", std::move(cloned_params));
   }
 
   *update = SerializeUpdate("media.onMediaEvent", &dict);
@@ -365,12 +420,12 @@ static bool ConvertEventToUpdate(int render_process_id,
 
 void MediaInternals::OnMediaEvents(
     int render_process_id,
-    const std::vector<media::MediaLogEvent>& events) {
+    const std::vector<media::MediaLogRecord>& events) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Notify observers that |event| has occurred.
   for (const auto& event : events) {
     if (CanUpdate()) {
-      base::string16 update;
+      std::u16string update;
       if (ConvertEventToUpdate(render_process_id, event, &update))
         SendUpdate(update);
     }
@@ -410,7 +465,7 @@ void MediaInternals::SendHistoricalMediaEvents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& saved_events : saved_events_by_process_) {
     for (const auto& event : saved_events.second) {
-      base::string16 update;
+      std::u16string update;
       if (ConvertEventToUpdate(saved_events.first, event, &update))
         SendUpdate(update);
     }
@@ -453,18 +508,16 @@ void MediaInternals::SendGeneralAudioInformation() {
                          base::Value(feature_value_string));
 
   set_feature_data(features::kAudioServiceLaunchOnStartup);
-  set_explicit_feature_data(service_manager::features::kAudioServiceSandbox,
-                            service_manager::IsAudioSandboxEnabled());
-  set_explicit_feature_data(features::kWebRtcApmInAudioService,
-                            media::IsWebRtcApmInAudioServiceEnabled());
-
-  base::string16 audio_info_update =
+  set_explicit_feature_data(
+      features::kAudioServiceSandbox,
+      GetContentClient()->browser()->ShouldSandboxAudioService());
+  std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);
   SendUpdate(audio_info_update);
 }
 
 void MediaInternals::SendAudioStreamData() {
-  base::string16 audio_stream_update;
+  std::u16string audio_stream_update;
   {
     base::AutoLock auto_lock(lock_);
     audio_stream_update = SerializeUpdate("media.onReceiveAudioStreamData",
@@ -487,15 +540,20 @@ void MediaInternals::SendAudioFocusState() {
   audio_focus_helper_.SendAudioFocusState();
 }
 
+void MediaInternals::GetRegisteredCdms() {
+  cdm_helper_.GetRegisteredCdms();
+}
+
 void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
     const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
                                  media::VideoCaptureFormats>>&
         descriptors_and_formats) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  video_capture_capabilities_cached_data_.Clear();
+  video_capture_capabilities_cached_data_.ClearList();
 
   for (const auto& device_format_pair : descriptors_and_formats) {
-    auto format_list = std::make_unique<base::ListValue>();
+    base::ListValue control_support;
+    base::ListValue format_list;
     // TODO(nisse): Representing format information as a string, to be
     // parsed by the javascript handler, is brittle. Consider passing
     // a list of mappings instead.
@@ -504,18 +562,22 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
         std::get<0>(device_format_pair);
     const media::VideoCaptureFormats& supported_formats =
         std::get<1>(device_format_pair);
+    if (descriptor.control_support().pan)
+      control_support.Append("pan");
+    if (descriptor.control_support().tilt)
+      control_support.Append("tilt");
+    if (descriptor.control_support().zoom)
+      control_support.Append("zoom");
     for (const auto& format : supported_formats)
-      format_list->AppendString(media::VideoCaptureFormat::ToString(format));
+      format_list.Append(media::VideoCaptureFormat::ToString(format));
 
     std::unique_ptr<base::DictionaryValue> device_dict(
         new base::DictionaryValue());
     device_dict->SetString("id", descriptor.device_id);
     device_dict->SetString("name", descriptor.GetNameAndModel());
-    device_dict->Set("formats", std::move(format_list));
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX) || \
-    defined(OS_ANDROID)
+    device_dict->SetKey("controlSupport", std::move(control_support));
+    device_dict->SetKey("formats", std::move(format_list));
     device_dict->SetString("captureApi", descriptor.GetCaptureApiTypeString());
-#endif
     video_capture_capabilities_cached_data_.Append(std::move(device_dict));
   }
 
@@ -552,6 +614,16 @@ void MediaInternals::CreateMojoAudioLog(
       std::move(receiver));
 }
 
+// static
+void MediaInternals::CreateMediaLogRecords(
+    int render_process_id,
+    mojo::PendingReceiver<content::mojom::MediaInternalLogRecords> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MediaInternalLogRecordsImpl>(
+          MediaInternals::GetInstance(), render_process_id),
+      std::move(receiver));
+}
+
 std::unique_ptr<MediaInternals::AudioLogImpl>
 MediaInternals::CreateAudioLogImpl(
     media::AudioLogFactory::AudioComponent component,
@@ -564,11 +636,11 @@ MediaInternals::CreateAudioLogImpl(
                                         render_frame_id);
 }
 
-void MediaInternals::SendUpdate(const base::string16& update) {
+void MediaInternals::SendUpdate(const std::u16string& update) {
   // SendUpdate() may be called from any thread, but must run on the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&MediaInternals::SendUpdate,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&MediaInternals::SendUpdate,
                                   base::Unretained(this), update));
     return;
   }
@@ -578,25 +650,15 @@ void MediaInternals::SendUpdate(const base::string16& update) {
 }
 
 void MediaInternals::SaveEvent(int process_id,
-                               const media::MediaLogEvent& event) {
+                               const media::MediaLogRecord& event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-// Save the event and limit the total number per renderer. At the time of
-// writing, 512 events of the kind: { "property": value } together consume
-// ~88kb of memory on linux.
-#if defined(OS_ANDROID)
-  const size_t kEventLimit = 128;
-#else
-  const size_t kEventLimit = 512;
-#endif
-
   auto& saved_events = saved_events_by_process_[process_id];
   saved_events.push_back(event);
-  if (saved_events.size() > kEventLimit) {
+  if (saved_events.size() > media::MediaLog::kLogLimit) {
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
     const int id_to_remove = saved_events.front().id;
-    base::EraseIf(saved_events, [&](const media::MediaLogEvent& event) {
+    base::EraseIf(saved_events, [&](const media::MediaLogRecord& event) {
       return event.id == id_to_remove;
     });
   }
@@ -613,11 +675,11 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
       return;
     } else if (!has_entry) {
       DCHECK_EQ(type, CREATE);
-      audio_streams_cached_data_.Set(
-          cache_key, std::make_unique<base::Value>(value->Clone()));
+      audio_streams_cached_data_.SetKey(cache_key, value->Clone());
     } else if (type == UPDATE_AND_DELETE) {
-      std::unique_ptr<base::Value> out_value;
-      CHECK(audio_streams_cached_data_.Remove(cache_key, &out_value));
+      absl::optional<base::Value> out_value =
+          audio_streams_cached_data_.ExtractKey(cache_key);
+      CHECK(out_value.has_value());
     } else {
       base::DictionaryValue* existing_dict = nullptr;
       CHECK(

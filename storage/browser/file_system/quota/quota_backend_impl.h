@@ -20,10 +20,6 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace content {
-class QuotaBackendImplTest;
-}
-
 namespace storage {
 
 class FileSystemUsageCache;
@@ -36,10 +32,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
  public:
   using ReserveQuotaCallback = QuotaReservationManager::ReserveQuotaCallback;
 
-  QuotaBackendImpl(base::SequencedTaskRunner* file_task_runner,
+  QuotaBackendImpl(scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                    ObfuscatedFileUtil* obfuscated_file_util,
                    FileSystemUsageCache* file_system_usage_cache,
-                   storage::QuotaManagerProxy* quota_manager_proxy);
+                   scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
+
+  QuotaBackendImpl(const QuotaBackendImpl&) = delete;
+  QuotaBackendImpl& operator=(const QuotaBackendImpl&) = delete;
+
   ~QuotaBackendImpl() override;
 
   // QuotaReservationManager::QuotaBackend overrides.
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                            FileSystemType type) override;
 
  private:
-  friend class content::QuotaBackendImplTest;
+  friend class QuotaBackendImplTest;
 
   struct QuotaReservationInfo {
     QuotaReservationInfo(const url::Origin& origin,
@@ -83,17 +83,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                                       FileSystemType type,
                                       base::FilePath* usage_file_path);
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   // Owned by SandboxFileSystemBackendDelegate.
-  ObfuscatedFileUtil* obfuscated_file_util_;
-  FileSystemUsageCache* file_system_usage_cache_;
+  ObfuscatedFileUtil* const obfuscated_file_util_;
+  FileSystemUsageCache* const file_system_usage_cache_;
 
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
   base::WeakPtrFactory<QuotaBackendImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaBackendImpl);
 };
 
 }  // namespace storage

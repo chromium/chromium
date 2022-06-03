@@ -1,0 +1,5 @@
+# Many expectation updates are trivial in nature, and so global ownership
+# is used here.
+# If you are unsure whether or not changes make sense, please request a
+# knowledgeable reviewer (e.g. from //chrome/android/OWNERS).
+*

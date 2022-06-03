@@ -37,13 +37,12 @@ class TestFrameConsumer : public protocol::FrameConsumer {
   ~TestFrameConsumer() override = default;
 
   std::unique_ptr<DesktopFrame> WaitForNextFrame(
-      base::Closure* out_done_callback) {
+      base::OnceClosure* out_done_callback) {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
-    frame_run_loop_.reset(new base::RunLoop());
+    frame_run_loop_ = std::make_unique<base::RunLoop>();
     frame_run_loop_->Run();
     frame_run_loop_.reset();
-    *out_done_callback = last_frame_done_callback_;
-    last_frame_done_callback_.Reset();
+    *out_done_callback = std::move(last_frame_done_callback_);
     return std::move(last_frame_);
   }
 
@@ -55,10 +54,10 @@ class TestFrameConsumer : public protocol::FrameConsumer {
   }
 
   void DrawFrame(std::unique_ptr<DesktopFrame> frame,
-                 const base::Closure& done) override {
+                 base::OnceClosure done) override {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
     last_frame_ = std::move(frame);
-    last_frame_done_callback_ = done;
+    last_frame_done_callback_ = std::move(done);
     frame_run_loop_->Quit();
   }
 
@@ -73,7 +72,7 @@ class TestFrameConsumer : public protocol::FrameConsumer {
   std::unique_ptr<base::RunLoop> frame_run_loop_;
 
   std::unique_ptr<DesktopFrame> last_frame_;
-  base::Closure last_frame_done_callback_;
+  base::OnceClosure last_frame_done_callback_;
 };
 
 std::unique_ptr<DesktopFrame> CreateTestFrame(int index) {
@@ -136,7 +135,7 @@ class SoftwareVideoRendererTest : public ::testing::Test {
  public:
   SoftwareVideoRendererTest() : context_(nullptr) {
     context_.Start();
-    renderer_.reset(new SoftwareVideoRenderer(&frame_consumer_));
+    renderer_ = std::make_unique<SoftwareVideoRenderer>(&frame_consumer_);
     renderer_->Initialize(context_, nullptr);
     renderer_->OnSessionConfig(
         *protocol::SessionConfig::ForTestWithVerbatimVideo());
@@ -167,16 +166,16 @@ TEST_F(SoftwareVideoRendererTest, DecodeFrame) {
 
     renderer_->ProcessVideoPacket(
         encoder_.Encode(*test_frames[frame_index]),
-        base::Bind(&SetTrue, &(callback_called[frame_index])));
+        base::BindOnce(&SetTrue, &(callback_called[frame_index])));
   }
 
   for (int frame_index = 0; frame_index < kFrameCount; frame_index++) {
-    base::Closure done_callback;
+    base::OnceClosure done_callback;
     std::unique_ptr<DesktopFrame> decoded_frame =
         frame_consumer_.WaitForNextFrame(&done_callback);
 
     EXPECT_FALSE(callback_called[frame_index]);
-    done_callback.Run();
+    std::move(done_callback).Run();
     EXPECT_TRUE(callback_called[frame_index]);
 
     EXPECT_TRUE(CompareFrames(*test_frames[frame_index], *decoded_frame));

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_LINK_HEADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_LINK_HEADER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -29,7 +29,7 @@ class LinkHeader {
   const String& HeaderIntegrity() const { return header_integrity_; }
   const String& Variants() const { return variants_; }
   const String& VariantKey() const { return variant_key_; }
-  const base::Optional<String>& Anchor() const { return anchor_; }
+  const absl::optional<String>& Anchor() const { return anchor_; }
   bool Valid() const { return is_valid_; }
   bool IsViewportDependent() const {
     return !Media().IsEmpty() || !ImageSrcset().IsEmpty() ||
@@ -77,7 +77,7 @@ class LinkHeader {
   String header_integrity_;
   String variants_;
   String variant_key_;
-  base::Optional<String> anchor_;
+  absl::optional<String> anchor_;
   bool is_valid_;
 };
 
@@ -100,4 +100,4 @@ class PLATFORM_EXPORT LinkHeaderSet {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_LINK_HEADER_H_

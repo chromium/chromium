@@ -27,7 +27,7 @@ try {
   return res;
 } catch (e) {
   window.console.error('Error during distillation: ' + e);
-  if (e.stack != undefined) {
+  if (e.stack !== undefined) {
     window.console.error(e.stack);
   }
 }

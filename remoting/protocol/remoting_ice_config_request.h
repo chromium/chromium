@@ -10,15 +10,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "remoting/base/grpc_support/grpc_channel.h"
-#include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/url_request.h"
+#include "remoting/base/protobuf_http_client.h"
 #include "remoting/protocol/ice_config_request.h"
 
-namespace grpc {
-class Status;
-}  // namespace grpc
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace remoting {
 
@@ -28,13 +25,22 @@ class GetIceConfigResponse;
 }  // namespace v1
 }  // namespace apis
 
+class ProtobufHttpStatus;
+class OAuthTokenGetter;
+
 namespace protocol {
 
 // IceConfigRequest that fetches IceConfig from the remoting NetworkTraversal
 // service.
 class RemotingIceConfigRequest final : public IceConfigRequest {
  public:
-  RemotingIceConfigRequest();
+  RemotingIceConfigRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      OAuthTokenGetter* oauth_token_getter);
+
+  RemotingIceConfigRequest(const RemotingIceConfigRequest&) = delete;
+  RemotingIceConfigRequest& operator=(const RemotingIceConfigRequest&) = delete;
+
   ~RemotingIceConfigRequest() override;
 
   // IceConfigRequest implementation.
@@ -42,17 +48,13 @@ class RemotingIceConfigRequest final : public IceConfigRequest {
 
  private:
   friend class RemotingIceConfigRequestTest;
-  class NetworkTraversalClient;
 
-  void SetGrpcChannelForTest(GrpcChannelSharedPtr channel);
+  void OnResponse(const ProtobufHttpStatus& status,
+                  std::unique_ptr<apis::v1::GetIceConfigResponse> response);
 
-  void OnResponse(const grpc::Status& status,
-                  const apis::v1::GetIceConfigResponse& response);
-
+  bool make_authenticated_requests_ = false;
   OnIceConfigCallback on_ice_config_callback_;
-  std::unique_ptr<NetworkTraversalClient> network_traversal_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingIceConfigRequest);
+  ProtobufHttpClient http_client_;
 };
 
 }  // namespace protocol

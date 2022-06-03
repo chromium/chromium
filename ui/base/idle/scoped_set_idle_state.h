@@ -5,7 +5,7 @@
 #ifndef UI_BASE_IDLE_SCOPED_SET_IDLE_STATE_H_
 #define UI_BASE_IDLE_SCOPED_SET_IDLE_STATE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 
 namespace ui {
@@ -13,12 +13,14 @@ namespace ui {
 class ScopedSetIdleState {
  public:
   explicit ScopedSetIdleState(IdleState state);
+
+  ScopedSetIdleState(const ScopedSetIdleState&) = delete;
+  ScopedSetIdleState& operator=(const ScopedSetIdleState&) = delete;
+
   ~ScopedSetIdleState();
 
  private:
-  base::Optional<IdleState> previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetIdleState);
+  absl::optional<IdleState> previous_state_;
 };
 
 }  // namespace ui

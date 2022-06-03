@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class ErrorScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between ErrorScreen and its actual
 // representation. Owned by ErrorScreen.
@@ -27,13 +28,13 @@ class ErrorScreenView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
-  virtual void Bind(ErrorScreen* screen) = 0;
+  // Binds `screen` to the view.
+  virtual void Bind(ash::ErrorScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
 
-  // Switches to |screen|.
+  // Switches to `screen`.
   virtual void ShowOobeScreen(OobeScreenId screen) = 0;
 
   // Sets current error state of the screen.
@@ -56,6 +57,12 @@ class ErrorScreenView {
 
   // Sets current UI state of the screen.
   virtual void SetUIState(NetworkError::UIState ui_state) = 0;
+
+  // Returns to user pods screen.
+  virtual void OnCancelButtonClicked() = 0;
+
+  // Reloads gaia.
+  virtual void OnReloadGaiaClicked() = 0;
 };
 
 // A class that handles the WebUI hooks in error screen.
@@ -64,13 +71,17 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   using TView = ErrorScreenView;
 
   explicit ErrorScreenHandler(JSCallsContainer* js_calls_container);
+
+  ErrorScreenHandler(const ErrorScreenHandler&) = delete;
+  ErrorScreenHandler& operator=(const ErrorScreenHandler&) = delete;
+
   ~ErrorScreenHandler() override;
 
  private:
   // ErrorScreenView:
   void Show() override;
   void Hide() override;
-  void Bind(ErrorScreen* screen) override;
+  void Bind(ash::ErrorScreen* screen) override;
   void Unbind() override;
   void ShowOobeScreen(OobeScreenId screen) override;
   void SetErrorStateCode(NetworkError::ErrorState error_state) override;
@@ -80,9 +91,8 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void SetShowConnectingIndicator(bool value) override;
   void SetIsPersistentError(bool is_persistent) override;
   void SetUIState(NetworkError::UIState ui_state) override;
-
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
+  void OnCancelButtonClicked() override;
+  void OnReloadGaiaClicked() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -93,7 +103,7 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void HandleHideCaptivePortal();
 
   // Non-owning ptr.
-  ErrorScreen* screen_ = nullptr;
+  ash::ErrorScreen* screen_ = nullptr;
 
   // Should the screen be shown right after initialization?
   bool show_on_init_ = false;
@@ -102,10 +112,14 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   bool showing_ = false;
 
   base::WeakPtrFactory<ErrorScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ErrorScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_

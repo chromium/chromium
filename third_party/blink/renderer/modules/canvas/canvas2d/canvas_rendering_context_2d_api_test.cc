@@ -5,8 +5,15 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
 #include <memory>
+
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -19,8 +26,8 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/hit_region_options.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "ui/accessibility/ax_mode.h"
 
 using testing::Mock;
 
@@ -30,6 +37,7 @@ class CanvasRenderingContext2DAPITest : public PageTestBase {
  protected:
   CanvasRenderingContext2DAPITest();
   void SetUp() override;
+  void TearDown() override;
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   CanvasRenderingContext2D* Context2D() const;
@@ -46,7 +54,7 @@ CanvasRenderingContext2D* CanvasRenderingContext2DAPITest::Context2D() const {
   // If the following check fails, perhaps you forgot to call createContext
   // in your test?
   EXPECT_NE(nullptr, CanvasElement().RenderingContext());
-  EXPECT_TRUE(CanvasElement().RenderingContext()->Is2d());
+  EXPECT_TRUE(CanvasElement().RenderingContext()->IsRenderingContext2D());
   return static_cast<CanvasRenderingContext2D*>(
       CanvasElement().RenderingContext());
 }
@@ -61,10 +69,15 @@ void CanvasRenderingContext2DAPITest::CreateContext(OpacityMode opacity_mode) {
 
 void CanvasRenderingContext2DAPITest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
   canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+}
+
+void CanvasRenderingContext2DAPITest::TearDown() {
+  PageTestBase::TearDown();
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
@@ -134,25 +147,27 @@ TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
 
 String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
                              const String& value) {
-  StringOrCanvasGradientOrCanvasPattern arg1, arg2, arg3;
-  arg1.SetString("#666");
-  ctx->setStrokeStyle(arg1);
-  arg2.SetString(value);
-  ctx->setStrokeStyle(arg2);
-  ctx->strokeStyle(arg3);
-  EXPECT_TRUE(arg3.IsString());
-  return arg3.GetAsString();
+  ctx->setStrokeStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
+  ctx->setStrokeStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
+  auto* style = ctx->strokeStyle();
+  EXPECT_TRUE(style->IsString());
+  return style->GetAsString();
 }
 
 String TrySettingFillStyle(CanvasRenderingContext2D* ctx, const String& value) {
-  StringOrCanvasGradientOrCanvasPattern arg1, arg2, arg3;
-  arg1.SetString("#666");
-  ctx->setFillStyle(arg1);
-  arg2.SetString(value);
-  ctx->setFillStyle(arg2);
-  ctx->fillStyle(arg3);
-  EXPECT_TRUE(arg3.IsString());
-  return arg3.GetAsString();
+  ctx->setFillStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("#666"));
+  ctx->setFillStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
+  auto* style = ctx->fillStyle();
+  EXPECT_TRUE(style->IsString());
+  return style->GetAsString();
 }
 
 String TrySettingShadowColor(CanvasRenderingContext2D* ctx,
@@ -188,17 +203,15 @@ TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
   CreateContext(kNonOpaque);
 
   {
-    StringOrCanvasGradientOrCanvasPattern value;
-    Context2D()->strokeStyle(value);
-    EXPECT_TRUE(value.IsString());
-    EXPECT_EQ(String("#000000"), value.GetAsString());
+    auto* style = Context2D()->strokeStyle();
+    EXPECT_TRUE(style->IsString());
+    EXPECT_EQ(String("#000000"), style->GetAsString());
   }
 
   {
-    StringOrCanvasGradientOrCanvasPattern value;
-    Context2D()->fillStyle(value);
-    EXPECT_TRUE(value.IsString());
-    EXPECT_EQ(String("#000000"), value.GetAsString());
+    auto* style = Context2D()->fillStyle();
+    EXPECT_TRUE(style->IsString());
+    EXPECT_EQ(String("#000000"), style->GetAsString());
   }
 
   EXPECT_EQ(String("rgba(0, 0, 0, 0)"), Context2D()->shadowColor());
@@ -227,16 +240,19 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   NonThrowableExceptionState exception_state;
 
   // create a 100x50 imagedata and fill it with white pixels
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* image_data =
-      Context2D()->createImageData(100, 50, exception_state);
+      Context2D()->createImageData(100, 50, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
 
-  for (size_t i = 0; i < image_data->data()->lengthAsSizeT(); ++i)
-    image_data->data()->Data()[i] = 255;
+  for (size_t i = 0; i < image_data->data()->GetAsUint8ClampedArray()->length();
+       ++i) {
+    image_data->data()->GetAsUint8ClampedArray()->Data()[i] = 255;
+  }
 
-  EXPECT_EQ(255, image_data->data()->Data()[32]);
+  EXPECT_EQ(255, image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
 
   // createImageData(imageData) should create a new ImageData of the same size
   // as 'imageData' but filled with transparent black
@@ -246,31 +262,37 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, same_size_image_data->width());
   EXPECT_EQ(50, same_size_image_data->height());
-  EXPECT_EQ(0, same_size_image_data->data()->Data()[32]);
+  EXPECT_EQ(0,
+            same_size_image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
 
   // createImageData(width, height) takes the absolute magnitude of the size
   // arguments
 
-  ImageData* imgdata1 = Context2D()->createImageData(10, 20, exception_state);
+  ImageData* imgdata1 =
+      Context2D()->createImageData(10, 20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata2 = Context2D()->createImageData(-10, 20, exception_state);
+  ImageData* imgdata2 =
+      Context2D()->createImageData(-10, 20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata3 = Context2D()->createImageData(10, -20, exception_state);
+  ImageData* imgdata3 =
+      Context2D()->createImageData(10, -20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  ImageData* imgdata4 = Context2D()->createImageData(-10, -20, exception_state);
+  ImageData* imgdata4 =
+      Context2D()->createImageData(-10, -20, settings, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(800u, imgdata1->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata2->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata3->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata4->data()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata1->data()->GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata2->data()->GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata3->data()->GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata4->data()->GetAsUint8ClampedArray()->length());
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* too_big_image_data =
-      Context2D()->createImageData(1000000, 1000000, exception_state);
+      Context2D()->createImageData(1000000, 1000000, settings, exception_state);
   EXPECT_EQ(nullptr, too_big_image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
@@ -279,8 +301,9 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
 TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
-  ImageData* image_data =
-      Context2D()->getImageData(0, 0, 1000000, 1000000, exception_state);
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  ImageData* image_data = Context2D()->getImageData(0, 0, 1000000, 1000000,
+                                                    settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
@@ -290,22 +313,23 @@ TEST_F(CanvasRenderingContext2DAPITest,
        GetImageDataIntegerOverflowNegativeParams) {
   CreateContext(kNonOpaque);
   DummyExceptionStateForTesting exception_state;
+  ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* image_data = Context2D()->getImageData(
-      1, -2147483647, 1, -2147483647, exception_state);
+      1, -2147483647, 1, -2147483647, settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
 
   exception_state.ClearException();
   image_data = Context2D()->getImageData(-2147483647, 1, -2147483647, 1,
-                                         exception_state);
+                                         settings, exception_state);
   EXPECT_EQ(nullptr, image_data);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
 }
 
 void ResetCanvasForAccessibilityRectTest(Document& document) {
-  document.documentElement()->SetInnerHTMLFromString(R"HTML(
+  document.documentElement()->setInnerHTML(R"HTML(
     <canvas id='canvas' style='position:absolute; top:0px; left:0px;
     padding:10px; margin:5px;'>
     <button id='button'></button></canvas>
@@ -318,62 +342,338 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
   canvas->GetCanvasRenderingContext(canvas_type, attributes);
 
   EXPECT_NE(nullptr, canvas->RenderingContext());
-  EXPECT_TRUE(canvas->RenderingContext()->Is2d());
+  EXPECT_TRUE(canvas->RenderingContext()->IsRenderingContext2D());
 }
 
-TEST_F(CanvasRenderingContext2DAPITest, AccessibilityRectTestForAddHitRegion) {
-  ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument());
 
-  Element* button_element = GetDocument().getElementById("button");
-  auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  CanvasRenderingContext2D* context =
-      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext());
+// A IdentifiabilityStudySettingsProvider implementation that opts-into study
+// participation.
+class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
+ public:
+  explicit ActiveSettingsProvider(bool enabled) : enabled_(enabled) {}
+  bool IsActive() const override { return enabled_; }
+  bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
+  bool IsSurfaceAllowed(IdentifiableSurface surface) const override {
+    return true;
+  }
+  bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
+    return true;
+  }
 
-  NonThrowableExceptionState exception_state;
-  HitRegionOptions* options = HitRegionOptions::Create();
-  options->setControl(button_element);
+ private:
+  const bool enabled_ = true;
+};
 
-  context->beginPath();
-  context->rect(10, 10, 40, 40);
-  context->addHitRegion(options, exception_state);
+// An RAII class that opts into study participation using
+// ActiveSettingsProvider.
+class StudyParticipationRaii {
+ public:
+  explicit StudyParticipationRaii(bool enabled = true) {
+    IdentifiabilityStudySettings::SetGlobalProvider(
+        std::make_unique<ActiveSettingsProvider>(enabled));
+  }
+  ~StudyParticipationRaii() {
+    IdentifiabilityStudySettings::ResetStateForTesting();
+  }
+};
 
-  AXObjectCacheImpl* ax_object_cache =
-      ToAXObjectCacheImpl(GetDocument().ExistingAXObjectCache());
-  AXObject* ax_object = ax_object_cache->GetOrCreate(button_element);
+TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyMaxOperations) {
+  StudyParticipationRaii study_participation_raii;
+  constexpr int kMaxOperations = 5;
+  IdentifiabilityStudyHelper::ScopedMaxOperationsSetter max_operations_setter(
+      kMaxOperations);
+  CreateContext(kNonOpaque);
 
-  LayoutRect ax_bounds = ax_object->GetBoundsInFrameCoordinates();
-  EXPECT_EQ(25, ax_bounds.X().ToInt());
-  EXPECT_EQ(25, ax_bounds.Y().ToInt());
-  EXPECT_EQ(40, ax_bounds.Width().ToInt());
-  EXPECT_EQ(40, ax_bounds.Height().ToInt());
+  int64_t last_digest = INT64_C(0);
+  for (int i = 0; i < kMaxOperations; i++) {
+    Context2D()->setFont("Arial");
+    EXPECT_NE(last_digest,
+              Context2D()->IdentifiableTextToken().ToUkmMetricValue())
+        << i;
+    last_digest = Context2D()->IdentifiableTextToken().ToUkmMetricValue();
+  }
+
+  Context2D()->setFont("Arial");
+  EXPECT_EQ(last_digest,
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
+
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_Font \
+  DISABLED_IdentifiabilityStudyDigest_Font
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Font IdentifiabilityStudyDigest_Font
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  Context2D()->setFont("Arial");
+  EXPECT_EQ(INT64_C(-7111871220951205888),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDisabled) {
+  StudyParticipationRaii study_participation_raii(/*enabled=*/false);
+  constexpr int64_t kTokenBuilderInitialDigest = INT64_C(6544625333304541877);
+
+  CreateContext(kNonOpaque);
+
+  Context2D()->setFont("Arial");
+  EXPECT_EQ(kTokenBuilderInitialDigest,
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  DISABLED_IdentifiabilityStudyDigest_StrokeText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeText \
+  IdentifiabilityStudyDigest_StrokeText
+#endif  // defined(OS_ANDROID)
 
 TEST_F(CanvasRenderingContext2DAPITest,
-       AccessibilityRectTestForDrawFocusIfNeeded) {
-  ResetCanvasForAccessibilityRectTest(GetDocument());
-  AXContext ax_context(GetDocument());
+       MAYBE_IdentifiabilityStudyDigest_StrokeText) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
 
-  Element* button_element = GetDocument().getElementById("button");
-  auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  CanvasRenderingContext2D* context =
-      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext());
+  Context2D()->strokeText("Sensitive message", 1.0, 1.0);
+  EXPECT_EQ(INT64_C(2232415440872807707),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
-  GetDocument().UpdateStyleAndLayoutTreeForNode(canvas);
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
 
-  context->beginPath();
-  context->rect(10, 10, 40, 40);
-  context->drawFocusIfNeeded(button_element);
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  DISABLED_IdentifiabilityStudyDigest_FillText
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillText \
+  IdentifiabilityStudyDigest_FillText
+#endif  // defined(OS_ANDROID)
 
-  AXObjectCacheImpl* ax_object_cache =
-      ToAXObjectCacheImpl(GetDocument().ExistingAXObjectCache());
-  AXObject* ax_object = ax_object_cache->GetOrCreate(button_element);
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillText) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
 
-  LayoutRect ax_bounds = ax_object->GetBoundsInFrameCoordinates();
-  EXPECT_EQ(25, ax_bounds.X().ToInt());
-  EXPECT_EQ(25, ax_bounds.Y().ToInt());
-  EXPECT_EQ(40, ax_bounds.Width().ToInt());
-  EXPECT_EQ(40, ax_bounds.Height().ToInt());
+  Context2D()->fillText("Sensitive message", 1.0, 1.0);
+  EXPECT_EQ(INT64_C(6317349156921019980),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  DISABLED_IdentifiabilityStudyDigest_TextAlign
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextAlign \
+  IdentifiabilityStudyDigest_TextAlign
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_TextAlign) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  Context2D()->setTextAlign("center");
+  EXPECT_EQ(INT64_C(-1799394612814265049),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  DISABLED_IdentifiabilityStudyDigest_TextBaseline
+#else
+#define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
+  IdentifiabilityStudyDigest_TextBaseline
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_TextBaseline) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  Context2D()->setTextBaseline("top");
+  EXPECT_EQ(INT64_C(-7620161594820691651),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  DISABLED_IdentifiabilityStudyDigest_StrokeStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
+  IdentifiabilityStudyDigest_StrokeStyle
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_StrokeStyle) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  auto* style = MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
+  Context2D()->setStrokeStyle(style);
+  EXPECT_EQ(INT64_C(-1964835352532316734),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  DISABLED_IdentifiabilityStudyDigest_FillStyle
+#else
+#define MAYBE_IdentifiabilityStudyDigest_FillStyle \
+  IdentifiabilityStudyDigest_FillStyle
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_FillStyle) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  auto* style = MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("blue");
+  Context2D()->setFillStyle(style);
+  EXPECT_EQ(INT64_C(-4860826471555317536),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_Combo \
+  DISABLED_IdentifiabilityStudyDigest_Combo
+#else
+#define MAYBE_IdentifiabilityStudyDigest_Combo IdentifiabilityStudyDigest_Combo
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_Combo) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+
+  Context2D()->fillText("Sensitive message", 1.0, 1.0);
+  EXPECT_EQ(INT64_C(6317349156921019980),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+  Context2D()->setFont("Helvetica");
+  Context2D()->setTextBaseline("bottom");
+  Context2D()->setTextAlign("right");
+  auto* style = MakeGarbageCollected<
+      V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red");
+  Context2D()->setFillStyle(style);
+  Context2D()->fillText("Bye", 4.0, 3.0);
+  EXPECT_EQ(INT64_C(5574475585707445774),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  DISABLED_IdentifiabilityStudyDigest_putImageData
+#else
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  IdentifiabilityStudyDigest_putImageData
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_putImageData) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  ImageData* image_data =
+      Context2D()->createImageData(/*sw=*/1, /*sh=*/1, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  Context2D()->putImageData(image_data, /*dx=*/1, /*dy=*/1, exception_state);
+  EXPECT_EQ(INT64_C(2821795876044191773),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  DISABLED_IdentifiabilityStudyDigest_drawImage
+#else
+#define MAYBE_IdentifiabilityStudyDigest_drawImage \
+  IdentifiabilityStudyDigest_drawImage
+#endif  // defined(OS_ANDROID)
+
+TEST_F(CanvasRenderingContext2DAPITest,
+       MAYBE_IdentifiabilityStudyDigest_drawImage) {
+  StudyParticipationRaii study_participation_raii;
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+
+  // We can use our own canvas as the image source!
+  auto* image_source =
+      MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+  Context2D()->drawImage(/*script_state=*/nullptr, image_source, /*x=*/1,
+                         /*y=*/1, exception_state);
+  EXPECT_EQ(INT64_C(-4851825694092845811),
+            Context2D()->IdentifiableTextToken().ToUkmMetricValue());
+
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
+  EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
+  EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
 }  // namespace blink

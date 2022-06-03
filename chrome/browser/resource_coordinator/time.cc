@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/time.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/tick_clock.h"
 
 namespace resource_coordinator {

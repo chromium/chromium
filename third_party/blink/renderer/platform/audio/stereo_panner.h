@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_STEREO_PANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_STEREO_PANNER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -21,6 +20,8 @@ class PLATFORM_EXPORT StereoPanner {
 
  public:
   explicit StereoPanner(float sample_rate);
+  StereoPanner(const StereoPanner&) = delete;
+  StereoPanner& operator=(const StereoPanner&) = delete;
   ~StereoPanner() = default;
 
   void PanWithSampleAccurateValues(const AudioBus* input_bus,
@@ -31,9 +32,6 @@ class PLATFORM_EXPORT StereoPanner {
                         AudioBus* output_bus,
                         float pan_value,
                         uint32_t frames_to_process);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StereoPanner);
 };
 
 }  // namespace blink

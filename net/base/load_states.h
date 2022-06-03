@@ -5,7 +5,8 @@
 #ifndef NET_BASE_LOAD_STATES_H__
 #define NET_BASE_LOAD_STATES_H__
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace net {
 
@@ -24,9 +25,9 @@ enum LoadState {
 // This class provides an easy way to hold a load state with an extra parameter.
 struct LoadStateWithParam {
   LoadState state;
-  base::string16 param;
+  std::u16string param;
   LoadStateWithParam() : state(LOAD_STATE_IDLE) {}
-  LoadStateWithParam(LoadState state, const base::string16& param)
+  LoadStateWithParam(LoadState state, const std::u16string& param)
       : state(state), param(param) {}
 };
 

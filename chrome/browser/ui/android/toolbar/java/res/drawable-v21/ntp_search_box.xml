@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/modern_grey_400" >
+
+    <item
+        android:id="@+id/fake_search_box_bg_shape"
+        android:drawable="@drawable/modern_toolbar_text_box_background"/>
+
+</ripple>

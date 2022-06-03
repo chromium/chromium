@@ -18,10 +18,14 @@ class PasswordFormManagerForUI;
 }
 
 // Base class for password manager infobar delegates, e.g.
-// IOSChromeSavePasswordInfoBarDelegate and
-// IOSChromeUpdatePasswordInfoBarDelegate.
+// IOSChromeSavePasswordInfoBarDelegate.
 class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  IOSChromePasswordManagerInfoBarDelegate(
+      const IOSChromePasswordManagerInfoBarDelegate&) = delete;
+  IOSChromePasswordManagerInfoBarDelegate& operator=(
+      const IOSChromePasswordManagerInfoBarDelegate&) = delete;
+
   ~IOSChromePasswordManagerInfoBarDelegate() override;
 
   // Getter for the message displayed in addition to the title. If no message
@@ -38,7 +42,7 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
   NSString* GetURLHostText() const;
 
   // Sets the dispatcher for this delegate.
-  void set_dispatcher(id<ApplicationCommands> dispatcher);
+  void set_handler(id<ApplicationCommands> handler);
 
  protected:
   IOSChromePasswordManagerInfoBarDelegate(
@@ -74,9 +78,7 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Whether to show the additional footer.
   const bool is_sync_user_;
 
-  // Dispatcher for calling Application commands.
-  __weak id<ApplicationCommands> dispatcher_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerInfoBarDelegate);
+  // Handler for calling Application commands.
+  __weak id<ApplicationCommands> handler_ = nil;
 };
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_INFOBAR_DELEGATE_H_

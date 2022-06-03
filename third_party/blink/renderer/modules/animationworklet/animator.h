@@ -30,10 +30,11 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
            v8::Local<v8::Value> instance,
            const String& name,
            WorkletAnimationOptions options,
-           const Vector<base::Optional<base::TimeDelta>>& local_times,
-           const Vector<Timing>& timings);
-  ~Animator();
-  void Trace(blink::Visitor*);
+           const Vector<absl::optional<base::TimeDelta>>& local_times,
+           const Vector<Timing>& timings,
+           const Vector<Timing::NormalizedTiming>& normalized_timings);
+  ~Animator() final;
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "Animator"; }
 
   // Returns true if it successfully invoked animate callback in JS. It receives
@@ -57,6 +58,7 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
   }
 
   Vector<Timing> GetTimings() const;
+  Vector<Timing::NormalizedTiming> GetNormalizedTimings() const;
   bool IsStateful() const;
 
   const String& name() const { return name_; }

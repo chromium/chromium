@@ -6,19 +6,21 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SUGGESTION_TEXT_SUGGESTION_CONTROLLER_H_
 
 #include <utility>
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/document_shutdown_observer.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
 class Document;
 class DocumentMarker;
+class LocalDOMWindow;
 class LocalFrame;
 struct TextSuggestionInfo;
 
@@ -26,14 +28,11 @@ struct TextSuggestionInfo;
 // suggestions (e.g. from spellcheck), and performing actions relating to those
 // suggestions. Android is currently the only platform that has such a menu.
 class CORE_EXPORT TextSuggestionController final
-    : public GarbageCollected<TextSuggestionController>,
-      public DocumentShutdownObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(TextSuggestionController);
-
+    : public GarbageCollected<TextSuggestionController> {
  public:
-  explicit TextSuggestionController(LocalFrame&);
-
-  void DidAttachDocument(Document*);
+  explicit TextSuggestionController(LocalDOMWindow&);
+  TextSuggestionController(const TextSuggestionController&) = delete;
+  TextSuggestionController& operator=(const TextSuggestionController&) = delete;
 
   bool IsMenuOpen() const;
 
@@ -46,7 +45,7 @@ class CORE_EXPORT TextSuggestionController final
   void OnSuggestionMenuClosed();
   void SuggestionMenuTimeoutCallback(size_t max_number_of_suggestions);
 
-  void Trace(Visitor*) override;
+  virtual void Trace(Visitor*) const;
 
  private:
   friend class TextSuggestionControllerTest;
@@ -74,10 +73,8 @@ class CORE_EXPORT TextSuggestionController final
   void ReplaceRangeWithText(const EphemeralRange&, const String& replacement);
 
   bool is_suggestion_menu_open_;
-  const Member<LocalFrame> frame_;
-  mojo::Remote<mojom::blink::TextSuggestionHost> text_suggestion_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSuggestionController);
+  const Member<LocalDOMWindow> window_;
+  HeapMojoRemote<mojom::blink::TextSuggestionHost> text_suggestion_host_;
 };
 
 }  // namespace blink

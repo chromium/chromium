@@ -5,9 +5,10 @@
 #include "chrome/browser/ui/app_list/app_list_util.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 bool IsAppLauncherEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;

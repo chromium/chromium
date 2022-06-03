@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="find_result_bar_background_color">@color/white_alpha_75</color>
+    <color name="find_result_bar_background_border_color">@color/modern_grey_300</color>
+    <color name="find_result_bar_result_color">@color/find_result_bar_result</color>
+    <color name="find_result_bar_result_border_color">@color/find_result_bar_result_border</color>
+    <color name="find_result_bar_active_color">@color/find_result_bar_active</color>
+    <color name="find_result_bar_active_border_color">@color/find_result_bar_active_border</color>
+</resources>

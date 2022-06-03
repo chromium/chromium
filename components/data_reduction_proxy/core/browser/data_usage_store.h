@@ -9,13 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
-
-namespace base {
-class Time;
-}
 
 namespace data_reduction_proxy {
 class DataStore;
@@ -32,6 +28,9 @@ constexpr int kDataUsageHistoryNumDays = 60;
 class DataUsageStore {
  public:
   explicit DataUsageStore(DataStore* db);
+
+  DataUsageStore(const DataUsageStore&) = delete;
+  DataUsageStore& operator=(const DataUsageStore&) = delete;
 
   ~DataUsageStore();
 
@@ -111,8 +110,6 @@ class DataUsageStore {
   base::Time current_bucket_last_updated_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUsageStore);
 };
 
 }  // namespace data_reduction_proxy

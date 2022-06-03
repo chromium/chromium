@@ -2,14 +2,45 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/interaction/focus/the-autofocus-attribute/resources/utils.js"></script>
+<script src="/resources/user-gesture-utils.js"></script>
 <body>
 <script>
+
+// Returns a promise that will perform `w.focus()` but via a user action in
+// order to allow moving the system focus to the window. It then waits for the
+// system focus to be applied which requires a round trip through the browser
+// process.
+function focusWithUserGestureAndAwaitSystemFocus(w) {
+  var focus_w = document.createElement('a');
+  focus_w.onclick = () => { w.focus(); };
+  focus_w.innerText = 'focus_w';
+  document.body.appendChild(focus_w);
+  if (eventSender) {
+    eventSender.mouseMoveTo(focus_w.getBoundingClientRect().x,
+                            focus_w.getBoundingClientRect().y);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+  }
+  document.body.removeChild(focus_w);
+  return new Promise((resolve, reject) => {
+    // Ensures any events that involve the browser have a chance to be processed
+    // and replied to, then calls the given function.
+    var frame = document.createElement('iframe');
+    // An OOPIF navigation requires the browser to participate.
+    frame.src = "http://localhost:8080/resources/blank.html";
+    frame.addEventListener('load', () => {
+      document.body.removeChild(frame);
+      resolve();
+    });
+    document.body.appendChild(frame);
+  });
+}
 
 async function setupBlankWindow(t) {
   let w = window.open('/common/blank.html');
   await waitForLoad(w);
   t.add_cleanup(() => { w.close(); });
-  w.focus();
+  await focusWithUserGestureAndAwaitSystemFocus(w);
   return w;
 }
 

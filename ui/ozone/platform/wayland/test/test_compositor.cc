@@ -6,16 +6,15 @@
 
 #include <wayland-server-core.h>
 
-#include "base/logging.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
 
 namespace wl {
 
-namespace {
+constexpr uint32_t TestCompositor::kVersion;
 
-constexpr uint32_t kCompositorVersion = 4;
+namespace {
 
 void CreateSurface(wl_client* client,
                    wl_resource* compositor_resource,
@@ -43,11 +42,9 @@ const struct wl_compositor_interface kTestCompositorImpl = {
 };
 
 TestCompositor::TestCompositor()
-    : GlobalObject(&wl_compositor_interface,
-                   &kTestCompositorImpl,
-                   kCompositorVersion) {}
+    : GlobalObject(&wl_compositor_interface, &kTestCompositorImpl, kVersion) {}
 
-TestCompositor::~TestCompositor() {}
+TestCompositor::~TestCompositor() = default;
 
 void TestCompositor::AddSurface(MockSurface* surface) {
   surfaces_.push_back(surface);

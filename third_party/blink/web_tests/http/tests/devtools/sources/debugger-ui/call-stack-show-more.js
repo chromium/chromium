@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests "Show more" button in CallStackSidebarPane.`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function callWithAsyncStack(f, depth) {
@@ -24,19 +24,19 @@
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, '_updatedForTest');
+      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
   dumpCallStackSidebarPane();
 
   TestRunner.addResult('\n---------------\nClicks show more..');
-  const pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+  const pane = Sources.CallStackSidebarPane.instance();
   pane.contentElement.querySelector('.show-more-message > .link').click();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, '_updatedForTest');
+      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
   dumpCallStackSidebarPane();
   SourcesTestRunner.completeDebuggerTest();
 
   function dumpCallStackSidebarPane() {
-    const pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    const pane = Sources.CallStackSidebarPane.instance();
     for (const element of pane.contentElement.querySelectorAll(
              '.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));

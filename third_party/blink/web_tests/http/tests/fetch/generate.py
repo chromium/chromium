@@ -30,12 +30,12 @@ script_tests_path = os.path.join(top_path, 'script-tests')
 def generate(output_path, template_path, context, testname, options):
     output_basename = testname + options + '.html'
 
-    with open(template_path, 'r') as template_file:
+    with open(template_path, 'rb') as template_file:
         template_data = template_file.read()
         output_data = re.sub(r'TESTNAME', testname, template_data)
         output_data = re.sub(r'OPTIONS', options, output_data)
 
-    with open(os.path.join(output_path, output_basename), 'w') as output_file:
+    with open(os.path.join(output_path, output_basename), 'wb') as output_file:
         output_file.write(output_data)
 
 
@@ -48,18 +48,17 @@ def generate_directory(relative_path, contexts, original_options):
         options = original_options
 
         # Read OPTIONS list.
-        with open(os.path.join(directory_path, script), 'r') as script_file:
+        with open(os.path.join(directory_path, script), 'rb') as script_file:
             script = script_file.read()
-            m = re.search(r'// *OPTIONS: *([a-z\-,]*)', script)
-            if m:
-                options = re.split(',', m.group(1))
+            options_match = re.search(r'// *OPTIONS: *([a-z\-,]*)', script)
+            if options_match:
+                options = re.split(',', options_match.group(1))
 
         for context in contexts:
             template_path = os.path.join(
                 directory_path, 'TEMPLATE-' + context + '.html')
             for option in options:
-                generate(os.path.join(top_path, context, relative_path),
-                         template_path, context, testname, option)
+                generate(os.path.join(top_path, context, relative_path), template_path, context, testname, option)
 
 
 def main():

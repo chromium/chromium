@@ -16,69 +16,22 @@
 #include <iomanip>
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
-#include "base/memory/singleton.h"
-#include "base/process/launch.h"
+#include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 
 namespace {
 
-// Not needed for OS_CHROMEOS.
-#if defined(OS_LINUX)
-enum LinuxDistroState {
-  STATE_DID_NOT_CHECK  = 0,
-  STATE_CHECK_STARTED  = 1,
-  STATE_CHECK_FINISHED = 2,
-};
-
-// Helper class for GetLinuxDistro().
-class LinuxDistroHelper {
- public:
-  // Retrieves the Singleton.
-  static LinuxDistroHelper* GetInstance() {
-    return Singleton<LinuxDistroHelper>::get();
-  }
-
-  // The simple state machine goes from:
-  // STATE_DID_NOT_CHECK -> STATE_CHECK_STARTED -> STATE_CHECK_FINISHED.
-  LinuxDistroHelper() : state_(STATE_DID_NOT_CHECK) {}
-  ~LinuxDistroHelper() = default;
-
-  // Retrieve the current state, if we're in STATE_DID_NOT_CHECK,
-  // we automatically move to STATE_CHECK_STARTED so nobody else will
-  // do the check.
-  LinuxDistroState State() {
-    AutoLock scoped_lock(lock_);
-    if (STATE_DID_NOT_CHECK == state_) {
-      state_ = STATE_CHECK_STARTED;
-      return STATE_DID_NOT_CHECK;
-    }
-    return state_;
-  }
-
-  // Indicate the check finished, move to STATE_CHECK_FINISHED.
-  void CheckFinished() {
-    AutoLock scoped_lock(lock_);
-    DCHECK_EQ(STATE_CHECK_STARTED, state_);
-    state_ = STATE_CHECK_FINISHED;
-  }
-
- private:
-  Lock lock_;
-  LinuxDistroState state_;
-};
-
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetKeyValueFromOSReleaseFile(const std::string& input,
                                          const char* key) {
   StringPairs key_value_pairs;
@@ -121,30 +74,32 @@ bool ReadDistroFromOSReleaseFile(const char* file) {
 }
 
 // https://www.freedesktop.org/software/systemd/man/os-release.html
-void GetDistroNameFromOSRelease() {
-  static const char* const kFilesToCheck[] = {"/etc/os-release",
-                                              "/usr/lib/os-release"};
-  for (const char* file : kFilesToCheck) {
-    if (ReadDistroFromOSReleaseFile(file))
-      return;
+class DistroNameGetter {
+ public:
+  DistroNameGetter() {
+    static const char* const kFilesToCheck[] = {"/etc/os-release",
+                                                "/usr/lib/os-release"};
+    for (const char* file : kFilesToCheck) {
+      if (ReadDistroFromOSReleaseFile(file))
+        return;
+    }
   }
-}
-#endif  // if !defined(OS_CHROMEOS)
-#endif  // if defined(OS_LINUX)
-
-}  // namespace
+};
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Account for the terminating null character.
-static const int kDistroSize = 128 + 1;
+constexpr int kDistroSize = 128 + 1;
+
+}  // namespace
 
 // We use this static string to hold the Linux distro info. If we
 // crash, the crash handler code will send this in the crash dump.
 char g_linux_distro[kDistroSize] =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     "CrOS";
 #elif defined(OS_ANDROID)
     "Android";
-#else  // if defined(OS_LINUX)
+#else
     "Unknown";
 #endif
 
@@ -156,33 +111,20 @@ char g_linux_distro[kDistroSize] =
 BASE_EXPORT std::string GetKeyValueFromOSReleaseFileForTesting(
     const std::string& input,
     const char* key) {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   return GetKeyValueFromOSReleaseFile(input, key);
 #else
   return "";
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 std::string GetLinuxDistro() {
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  return g_linux_distro;
-#elif defined(OS_LINUX)
-  LinuxDistroHelper* distro_state_singleton = LinuxDistroHelper::GetInstance();
-  LinuxDistroState state = distro_state_singleton->State();
-  if (STATE_CHECK_FINISHED == state)
-    return g_linux_distro;
-  if (STATE_CHECK_STARTED == state)
-    return "Unknown"; // Don't wait for other thread to finish.
-  DCHECK_EQ(state, STATE_DID_NOT_CHECK);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // We do this check only once per process. If it fails, there's
   // little reason to believe it will work if we attempt to run it again.
-  GetDistroNameFromOSRelease();
-  distro_state_singleton->CheckFinished();
-  return g_linux_distro;
-#else
-  NOTIMPLEMENTED();
-  return "Unknown";
+  static DistroNameGetter distro_name_getter;
 #endif
+  return g_linux_distro;
 }
 
 void SetLinuxDistro(const std::string& distro) {
@@ -215,29 +157,27 @@ bool GetThreadsForProcess(pid_t pid, std::vector<pid_t>* tids) {
 
 pid_t FindThreadIDWithSyscall(pid_t pid, const std::string& expected_data,
                               bool* syscall_supported) {
-  if (syscall_supported != nullptr)
+  if (syscall_supported)
     *syscall_supported = false;
 
   std::vector<pid_t> tids;
   if (!GetThreadsForProcess(pid, &tids))
     return -1;
 
-  std::unique_ptr<char[]> syscall_data(new char[expected_data.length()]);
+  std::vector<char> syscall_data(expected_data.size());
   for (pid_t tid : tids) {
     char buf[256];
     snprintf(buf, sizeof(buf), "/proc/%d/task/%d/syscall", pid, tid);
-    int fd = open(buf, O_RDONLY);
-    if (fd < 0)
-      continue;
-    if (syscall_supported != nullptr)
-      *syscall_supported = true;
-    bool read_ret = ReadFromFD(fd, syscall_data.get(), expected_data.length());
-    close(fd);
-    if (!read_ret)
+    ScopedFD fd(open(buf, O_RDONLY));
+    if (!fd.is_valid())
       continue;
 
-    if (0 == strncmp(expected_data.c_str(), syscall_data.get(),
-                     expected_data.length())) {
+    *syscall_supported = true;
+    if (!ReadFromFD(fd.get(), syscall_data.data(), syscall_data.size()))
+      continue;
+
+    if (0 == strncmp(expected_data.c_str(), syscall_data.data(),
+                     expected_data.size())) {
       return tid;
     }
   }
@@ -245,8 +185,7 @@ pid_t FindThreadIDWithSyscall(pid_t pid, const std::string& expected_data,
 }
 
 pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
-  if (ns_pid_supported)
-    *ns_pid_supported = false;
+  *ns_pid_supported = false;
 
   std::vector<pid_t> tids;
   if (!GetThreadsForProcess(pid, &tids))
@@ -261,10 +200,10 @@ pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
     StringTokenizer tokenizer(status, "\n");
     while (tokenizer.GetNext()) {
       StringPiece value_str(tokenizer.token_piece());
-      if (!value_str.starts_with("NSpid"))
+      if (!StartsWith(value_str, "NSpid"))
         continue;
-      if (ns_pid_supported)
-        *ns_pid_supported = true;
+
+      *ns_pid_supported = true;
       std::vector<StringPiece> split_value_str = SplitStringPiece(
           value_str, "\t", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
       DCHECK_GE(split_value_str.size(), 2u);

@@ -1,0 +1,68 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/feedback/ProcessIdFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "process_id_feedback_source.cc",
+    "process_id_feedback_source.h",
+    "system_info_feedback_source.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//content/public/browser",
+    "//gpu/config",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
+    "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackCollector.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FragmentHelpAndFeedbackLauncher.java",
+    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncher.java",
+    "java/src/org/chromium/chrome/browser/feedback/HistogramFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/InterestFeedFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/LowEndDeviceFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/PermissionFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/ProcessIdFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/ScreenshotSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/StaticScreenshotSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/UrlFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/VariationsFeedbackSource.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/variations/android:variations_java",
+    "//content/public/android:content_java",
+    "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.feedback"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/values/strings.xml" ]
+}

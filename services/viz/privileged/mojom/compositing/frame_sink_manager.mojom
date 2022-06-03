@@ -12,6 +12,8 @@ import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
@@ -34,13 +36,17 @@ struct RootCompositorFrameSinkParams {
   [EnableIf=is_android]
   float refresh_rate;
 
+  [EnableIf=is_win]
+  bool set_present_duration_allowed = false;
+
   pending_associated_receiver<CompositorFrameSink> compositor_frame_sink;
   pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client;
 
   pending_associated_receiver<DisplayPrivate> display_private;
   pending_remote<DisplayClient> display_client;
 
-  associated ExternalBeginFrameController&? external_begin_frame_controller;
+  pending_associated_receiver<ExternalBeginFrameController>?
+      external_begin_frame_controller;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the
@@ -70,14 +76,6 @@ interface FrameSinkManager {
   // message pipe to the client will be closed.
   InvalidateFrameSinkId(FrameSinkId frame_sink_id);
 
-  // Tells FrameSinkManger to report when a synchronization event completes via
-  // tracing and UMA and the duration of that event. A synchronization event
-  // occurs when a CompositorFrame submitted to the CompositorFrameSink
-  // specified by |frame_sink_id| activates after having been blocked by
-  // unresolved dependencies.
-  EnableSynchronizationReporting(FrameSinkId frame_sink_id,
-                                 string reporting_label);
-
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
   SetFrameSinkDebugLabel(FrameSinkId frame_sink_id, string debug_label);
@@ -93,11 +91,26 @@ interface FrameSinkManager {
   // ExternalBeginFrameController.
   CreateRootCompositorFrameSink(RootCompositorFrameSinkParams params);
 
+  // Used by unprivileged clients to create a new FrameSinkBundle in the
+  // service. Each bundle can be used to communicate aggregate notifications and
+  // requests to and from any frame sinks belonging to the same client.
+  CreateFrameSinkBundle(FrameSinkBundleId bundle_id,
+                        pending_receiver<FrameSinkBundle> receiver,
+                        pending_remote<FrameSinkBundleClient> client);
+
   // CreateCompositorFrameSink is used by unprivileged clients. This
   // CompositorFrameSink is not a root, and has to be parented by another
   // CompositorFrameSink in order to appear on screen.
+  //
+  // If `bundle_id` is provided, the new frame sink is added to the identified
+  // bundle. This means its client will receive OnBeginFrame() and various
+  // other notifications exclusively through the corresponding FrameSinkBundle,
+  // in batch with notifications for other bundled frame sinks; it also means
+  // the client can submit frames for this sink in batch with other bundled
+  // sinks using the FrameSinkBundle interface.
   CreateCompositorFrameSink(
       FrameSinkId frame_sink_id,
+      FrameSinkBundleId? bundle_id,
       pending_receiver<CompositorFrameSink> compositor_frame_sink,
       pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client);
 
@@ -105,7 +118,7 @@ interface FrameSinkManager {
   // This function should only be used synchronously for destroying root
   // CompositorFrameSinks to ensure the GL context/surface is destroyed before
   // the platform window.
-  [Sync]
+  [Sync, NoInterrupt]
   DestroyCompositorFrameSink(FrameSinkId frame_sink_id) => ();
 
   // Set up a BeginFrame relationship between two FrameSinkIds. In this case,
@@ -128,6 +141,12 @@ interface FrameSinkManager {
   // Marks the given SurfaceIds for destruction.
   EvictSurfaces(array<SurfaceId> surface_ids);
 
+  // Throttles the frame sinks specified by |frame_sink_ids| and all their
+  // descendant sinks to send BeginFrames at an interval of |interval|. This
+  // operation clears out any previous throttling operation on any frame sinks.
+  Throttle(array<FrameSinkId> frame_sink_ids,
+           mojo_base.mojom.TimeDelta interval);
+
   // Takes a snapshot of |surface_id| or a newer surface with the same
   // FrameSinkId. The request will be queued up until such surface exists and is
   // reachable from the root surface.
@@ -147,6 +166,10 @@ interface FrameSinkManager {
 
   [Sync]
   EvictBackBuffer(uint32 cache_id) => ();
+
+  // This allows dynamic manipulation of the viz debug options stored in
+  // |debug_settings| (show_overdraw_feedback, etc.).
+  UpdateDebugRendererSettings(DebugRendererSettings debug_settings);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display
@@ -162,7 +185,8 @@ interface FrameSinkManagerClient {
   OnAggregatedHitTestRegionListUpdated(
       FrameSinkId frame_sink_id, array<AggregatedHitTestRegion> hit_test_data);
 
-  // Sends |frame_sink_id| and |frame_token| to the client when a surface
-  // of the provided |frame_sink_id| activates.
-  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token);
+  // Sends |frame_sink_id|, |frame_token|, and |activation_time| to the client
+  // when a surface of the provided |frame_sink_id| activates.
+  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
+                      mojo_base.mojom.TimeTicks activation_time);
 };

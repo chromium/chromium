@@ -9,6 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -59,7 +60,8 @@ class FakeSSLBlockingPage
                 CreateMetricsHelperForTest(request_url),
                 /*prefs=*/nullptr,
                 "en_US",
-                GURL("about:blank"))),
+                GURL("about:blank"),
+                /* settings_page_helper */ nullptr)),
         ssl_error_ui_(request_url,
                       cert_error,
                       ssl_info,
@@ -72,9 +74,7 @@ class FakeSSLBlockingPage
 
   // SecurityInterstitialPage:
   void OnInterstitialClosing() override {}
-  bool ShouldCreateNewNavigation() const override { return false; }
-  void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) override {
+  void PopulateInterstitialStrings(base::Value* load_time_data) override {
     ssl_error_ui_.PopulateStringsForHTML(load_time_data);
   }
 
@@ -110,6 +110,11 @@ bool IsInHostedApp(content::WebContents* web_contents) {
   return false;
 }
 
+bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
+    content::NavigationHandle* handle) {
+  return false;
+}
+
 class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
  public:
   TestSSLErrorNavigationThrottle(
@@ -120,10 +125,17 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
       : SSLErrorNavigationThrottle(
             handle,
             std::make_unique<FakeSSLCertReporter>(),
-            base::Bind(&MockHandleSSLError, async_handle_ssl_error),
-            base::Bind(&IsInHostedApp)),
+            base::BindOnce(&MockHandleSSLError, async_handle_ssl_error),
+            base::BindOnce(&IsInHostedApp),
+            base::BindOnce(
+                &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)),
         on_cancel_deferred_navigation_(
             std::move(on_cancel_deferred_navigation)) {}
+
+  TestSSLErrorNavigationThrottle(const TestSSLErrorNavigationThrottle&) =
+      delete;
+  TestSSLErrorNavigationThrottle& operator=(
+      const TestSSLErrorNavigationThrottle&) = delete;
 
   // NavigationThrottle:
   void CancelDeferredNavigation(
@@ -134,8 +146,6 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
  private:
   base::OnceCallback<void(content::NavigationThrottle::ThrottleCheckResult)>
       on_cancel_deferred_navigation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSSLErrorNavigationThrottle);
 };
 
 class SSLErrorNavigationThrottleTest
@@ -143,6 +153,12 @@ class SSLErrorNavigationThrottleTest
       public testing::WithParamInterface<bool> {
  public:
   SSLErrorNavigationThrottleTest() {}
+
+  SSLErrorNavigationThrottleTest(const SSLErrorNavigationThrottleTest&) =
+      delete;
+  SSLErrorNavigationThrottleTest& operator=(
+      const SSLErrorNavigationThrottleTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     handle_ = std::make_unique<content::MockNavigationHandle>(web_contents());
@@ -165,9 +181,6 @@ class SSLErrorNavigationThrottleTest
   std::unique_ptr<TestSSLErrorNavigationThrottle> throttle_;
   content::NavigationThrottle::ThrottleCheckResult deferred_result_ =
       content::NavigationThrottle::DEFER;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorNavigationThrottleTest);
 };
 
 // Tests that the throttle ignores a request with a non SSL related network

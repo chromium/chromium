@@ -1,0 +1,84 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# WARNING: if you wish to disable a tast test that runs in a ChromeOS SDK
+# build, this is the wrong file to edit. You need to mark those tests as
+# "informational" in their source .go files.
+
+# To disable a specific test in chrome_all_tast_tests, add it the following
+# list and cite a bug.
+tast_disabled_tests_from_chrome_all = [
+  # crbug.com/1184931
+  "health.ProbeBatteryMetrics",
+
+  # b/196705842
+  "apps.LaunchGalleryLanguage",
+
+  # crbug.com/1242415
+  "hwsec.AttestationEnrollOnly",
+  "hwsec.ChapsAttributePolicy",
+  "hwsec.ChapsPKCS1V15",
+  "policy.AccessibilityPolicies.sticky_keys",
+  "policy.AllowDinosaurEasterEgg",
+  "policy.DisableScreenshotsExtension",
+
+  # crbug.com/1238654
+  "lockscreen.KeyboardShortcut",
+  "apps.SystemWebAppsReinstall.all_apps_stable",
+  "apps.SystemWebAppsReinstall.default_enabled_apps_stable",
+  "camera.EncodeAccelJPEG",
+
+  # crbug.com/1247485
+  "inputs.PhysicalKeyboardInputFields.us_en",
+  "inputs.VirtualKeyboardAccent",
+
+  # crbug.com/1247177
+  "inputs.PhysicalKeyboardEnglishTyping",
+  "inputs.PhysicalKeyboardEmoji",
+
+  # https://crbug.com/1252352
+  "quicksettings.SignInScreen.battery",
+  "quicksettings.SignInScreen.noaudio_nobattery",
+  "quicksettings.SignInScreen.audio",
+
+  # crbug.com/1263234
+  "quicksettings.ManagedDeviceInfo",
+
+  # b/201197372
+  "crostini.AppEmacs",
+
+  # crbug.com/1259127
+  "ui.TabletOperations",
+
+  # crbug.com/1257474
+  "shelf.OpenCloseSwitchApps",
+
+  # crbug.com/1239838
+  "graphics.FPS",
+
+  # crbug.com/1186991
+  "launcher.SearchBuiltInApps",
+
+  # crbug.com/1263561
+  "camera.CCAUILauncher",
+
+  # crbug.com/1263233
+  "security.SharedFilesystemState",
+
+  # https://crbug.com/1267943: Flaky.
+  "ui.DesktopControl",
+  "ui.WindowControl",
+
+  # https://crbug.com/1269113: Flaky.
+  "graphics.KmsvncConnect",
+  "graphics.Smoke.chrome",
+]
+
+# To disable a specific test in lacros_all_tast_tests, add it the following
+# list and cite a bug.
+tast_disabled_tests_from_lacros_all = [
+  # crbug.com/1250036
+  "a11y.Smoke.lacros",
+  "a11y.Smoke.lacros_rootfs",
+]

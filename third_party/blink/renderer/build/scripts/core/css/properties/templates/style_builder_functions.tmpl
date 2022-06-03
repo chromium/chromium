@@ -33,12 +33,8 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
 {% endmacro %}
 
 {% macro set_value(property) %}
-  {% if property.svg %}
-state.Style()->AccessSVGStyle().{{property.setter}}
-  {%- elif property.font %}
+  {%- if property.font %}
 state.GetFontBuilder().{{property.setter}}
-  {%- elif property.ua %}
-state.EnsureUAStyle()->{{property.setter}}
   {%- else %}
 state.Style()->{{property.setter}}
   {%- endif %}
@@ -65,9 +61,7 @@ To<Longhand>(resolved_property).{{apply_call}};
 {% macro style_builder_functions(property) %}
   {% if not property.style_builder_template %}
     {% call(property) apply_initial(property) %}
-      {% if property.svg %}
-  {{set_value(property)}}(SVGComputedStyle::{{property.initial}}());
-      {% elif property.font %}
+      {% if property.font %}
   {{set_value(property)}}(FontBuilder::{{property.initial}}());
       {% else %}
   {{set_value(property)}}(ComputedStyleInitialValues::{{property.initial}}());
@@ -77,9 +71,7 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% endif %}
     {% endcall %}
     {% call(property) apply_inherit(property) %}
-      {% if property.svg %}
-  {{set_value(property)}}(state.ParentStyle()->SvgStyle().{{property.getter}}());
-      {% elif property.font %}
+      {% if property.font %}
   {{set_value(property)}}(state.ParentFontDescription().{{property.getter}}());
       {% else %}
   {{set_value(property)}}(state.ParentStyle()->{{property.getter}}());
@@ -138,15 +130,14 @@ To<Longhand>(resolved_property).{{apply_call}};
   {% elif property.style_builder_template in ['border_image', 'mask_box'] %}
     {% set is_mask_box = property.style_builder_template == 'mask_box' %}
     {% set modifier_type = property.style_builder_template_args['modifier_type'] %}
-    {% set target = 'state.EnsureUAStyle()' if property.ua else 'state.Style()'%}
     {% set getter = 'MaskBoxImage' if is_mask_box else 'BorderImage' %}
     {% set setter = 'Set' + getter %}
     {% call(property) apply_initial(property) %}
-  const NinePieceImage& current_image = {{target}}->{{getter}}();
+  const NinePieceImage& current_image = state.Style()->{{getter}}();
   {# Check for equality in case we can bail out before creating a new NinePieceImage. #}
       {% if modifier_type == 'Outset' %}
   if (style_building_utils::BorderImageLengthMatchesAllSides(current_image.Outset(),
-                                       BorderImageLength(Length::Fixed(0))))
+                                       BorderImageLength(0)))
     return;
       {% elif modifier_type == 'Repeat' %}
   if (current_image.HorizontalRule() == kStretchImageRule &&
@@ -175,7 +166,7 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% endif %}
   NinePieceImage image(current_image);
       {% if modifier_type == 'Outset' %}
-  image.SetOutset(Length::Fixed(0));
+  image.SetOutset(0);
       {% elif modifier_type == 'Repeat' %}
   image.SetHorizontalRule(kStretchImageRule);
   image.SetVerticalRule(kStretchImageRule);
@@ -188,10 +179,10 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% elif modifier_type == 'Width' %}
   image.SetBorderSlices({{ 'Length::Auto()' if is_mask_box else '1.0' }});
       {% endif %}
-  {{target}}->{{setter}}(image);
+  state.Style()->{{setter}}(image);
     {% endcall %}
     {% call(property) apply_inherit(property) %}
-  NinePieceImage image({{target}}->{{getter}}());
+  NinePieceImage image(state.Style()->{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.CopyOutsetFrom(state.ParentStyle()->{{getter}}());
       {% elif modifier_type == 'Repeat' %}
@@ -201,10 +192,10 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% elif modifier_type == 'Width' %}
   image.CopyBorderSlicesFrom(state.ParentStyle()->{{getter}}());
       {% endif %}
-  {{target}}->{{setter}}(image);
+  state.Style()->{{setter}}(image);
     {% endcall %}
     {% call(property) apply_value(property) %}
-  NinePieceImage image({{target}}->{{getter}}());
+  NinePieceImage image(state.Style()->{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.SetOutset(CSSToStyleMap::MapNinePieceImageQuad(state, value));
       {% elif modifier_type == 'Repeat' %}
@@ -214,13 +205,15 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% elif modifier_type == 'Width' %}
   image.SetBorderSlices(CSSToStyleMap::MapNinePieceImageQuad(state, value));
       {% endif %}
-  {{target}}->{{setter}}(image);
+  state.Style()->{{setter}}(image);
     {% endcall %}
   {% elif property.style_builder_template in ['animation', 'transition'] %}
     {% set attribute = property.style_builder_template_args['attribute'] %}
     {% set animation = 'Animation' if property.style_builder_template == 'animation' else 'Transition' %}
     {% set vector = attribute + "List()" %}
     {% call(property) apply_initial(property) %}
+  if (!state.Style()->{{animation}}s())
+    return;
   CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
   data.{{vector}}.clear();
   data.{{vector}}.push_back(CSS{{animation}}Data::Initial{{attribute}}());
@@ -244,16 +237,15 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set layer_type = 'Background' if property.style_builder_template == 'background_layer' else 'Mask' %}
     {% set fill_type = property.style_builder_template_args['fill_type'] %}
     {% set fill_type_getter = property.style_builder_template_args['fill_type_getter'] or fill_type %}
-    {% set target = 'state.EnsureUAStyle()' if property.ua else 'state.Style()' %}
     {% call(property) apply_initial(property) %}
-  FillLayer* curr_child = &{{target}}->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   curr_child->Set{{fill_type}}(FillLayer::InitialFill{{fill_type}}(EFillLayerType::k{{layer_type}}));
   for (curr_child = curr_child->Next(); curr_child; curr_child = curr_child->Next())
     curr_child->Clear{{fill_type}}();
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  FillLayer* curr_child = &{{target}}->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
   const FillLayer* curr_parent = &state.ParentStyle()->{{layer_type}}Layers();
   while (curr_parent && curr_parent->Is{{fill_type}}Set()) {
@@ -281,7 +273,7 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  FillLayer* curr_child = &{{target}}->Access{{layer_type}}Layers();
+  FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
   const auto* value_list = DynamicTo<CSSValueList>(value);
   if (value_list && !value.IsImageSetValue()) {
@@ -308,13 +300,11 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set is_visited = property.style_builder_template == 'visited_color' %}
     {% set main_getter = is_visited and property.unvisited_property.getter or property.getter %}
     {% call(property) apply_initial(property) %}
-  auto color = {{initial_color}}();
-  {{set_value(property)}}(color);
+  {{set_value(property)}}({{initial_color}}());
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  auto color = state.ParentStyle()->{{main_getter}}();
-  {{set_value(property)}}(color);
+  {{set_value(property)}}(state.ParentStyle()->{{main_getter}}());
     {% endcall %}
 
     {% call(property) apply_value(property) %}
@@ -363,8 +353,10 @@ To<Longhand>(resolved_property).{{apply_call}};
     map.insert(identifier, CounterDirectives()).stored_value->value;
         {% if action == 'Reset' %}
     directives.SetResetValue(counter_value);
-        {% else %}
+        {% elif action == 'Increment' %}
     directives.AddIncrementValue(counter_value);
+        {% else %}
+    directives.SetSetValue(counter_value);
         {% endif %}
   }
   DCHECK(!map.IsEmpty());
@@ -394,14 +386,14 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% endcall %}
 
     {% call(property) apply_value(property) %}
-  Vector<GridTrackSize> track_sizes;
-  Vector<GridTrackSize> auto_repeat_track_sizes;
+  GridTrackList track_sizes;
+  Vector<GridTrackSize, 1> auto_repeat_track_sizes;
   NamedGridLinesMap named_grid_lines;
   OrderedNamedGridLines ordered_named_grid_lines;
   NamedGridLinesMap auto_repeat_named_grid_lines;
   OrderedNamedGridLines auto_repeat_ordered_named_grid_lines;
   AutoRepeatType autoRepeatType = ComputedStyleInitialValues::InitialGridAutoRepeatType();
-  size_t auto_repeat_insertion_point =
+  wtf_size_t auto_repeat_insertion_point =
       ComputedStyleInitialValues::InitialGridAutoRepeatInsertionPoint();
   StyleBuilderConverter::ConvertGridTrackList(
       value, track_sizes, named_grid_lines, ordered_named_grid_lines,

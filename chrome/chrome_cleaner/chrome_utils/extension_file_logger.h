@@ -7,16 +7,16 @@
 
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 
 namespace chrome_cleaner {
 
-typedef std::map<base::FilePath, std::set<base::string16>>
+typedef std::map<base::FilePath, std::set<std::wstring>>
     ExtensionsInProfilesMap;
 
 // Utility class to extract the file information of all the files of a given
@@ -37,7 +37,7 @@ class ExtensionFileLogger {
   // If two profiles have the same extension installed, both extension's files
   // are going to be logged. This is intended since we are not sure if there
   // are modified files in one of the extensions.
-  bool GetExtensionFiles(const base::string16& extension_id,
+  bool GetExtensionFiles(const std::wstring& extension_id,
                          std::vector<internal::FileInformation>* files);
 
  private:

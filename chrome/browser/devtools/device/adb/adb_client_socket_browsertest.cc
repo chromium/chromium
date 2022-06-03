@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
 using content::BrowserThread;
@@ -66,7 +68,7 @@ class AdbClientSocketTest : public InProcessBrowserTest,
 
     const DevToolsAndroidBridge::RemoteBrowsers& browsers =
         connected->browsers();
-    ASSERT_EQ(4U, browsers.size());
+    ASSERT_EQ(5U, browsers.size());
 
     scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> chrome =
         FindBrowserByDisplayName(browsers, "Chrome");
@@ -88,9 +90,14 @@ class AdbClientSocketTest : public InProcessBrowserTest,
         FindBrowserByDisplayName(browsers, "Noprocess");
     ASSERT_TRUE(noprocess.get());
 
+    scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> node =
+        FindBrowserByDisplayName(browsers, "Node");
+    ASSERT_TRUE(node.get());
+
     ASSERT_EQ("32.0.1679.0", chrome->version());
     ASSERT_EQ("31.0.1599.0", chrome_beta->version());
     ASSERT_EQ("4.0", webview->version());
+    ASSERT_EQ("v10.15.3", node->version());
 
     ASSERT_EQ("Test User", chrome->user());
     ASSERT_EQ("Test User : 2", chrome_beta->user());
@@ -102,10 +109,12 @@ class AdbClientSocketTest : public InProcessBrowserTest,
         chrome_beta->pages();
     DevToolsAndroidBridge::RemotePages webview_pages =
         webview->pages();
+    DevToolsAndroidBridge::RemotePages node_pages = node->pages();
 
     ASSERT_EQ(1U, chrome_pages.size());
     ASSERT_EQ(1U, chrome_beta_pages.size());
     ASSERT_EQ(2U, webview_pages.size());
+    ASSERT_EQ(1U, node_pages.size());
 
     scoped_refptr<content::DevToolsAgentHost> chrome_target(
         chrome_pages[0]->CreateTarget());
@@ -115,6 +124,8 @@ class AdbClientSocketTest : public InProcessBrowserTest,
         webview_pages[0]->CreateTarget());
     scoped_refptr<content::DevToolsAgentHost> webview_target_1(
         webview_pages[1]->CreateTarget());
+    scoped_refptr<content::DevToolsAgentHost> node_target(
+        node_pages[0]->CreateTarget());
 
     // Check that we have non-empty description for webview pages.
     ASSERT_EQ(0U, chrome_target->GetDescription().size());
@@ -126,6 +137,7 @@ class AdbClientSocketTest : public InProcessBrowserTest,
                    chrome_target->GetURL());
     ASSERT_EQ("The Chromium Projects",
               chrome_target->GetTitle());
+    ASSERT_EQ("node", node_target->GetType());
   }
 
  private:
@@ -133,24 +145,25 @@ class AdbClientSocketTest : public InProcessBrowserTest,
   DevToolsAndroidBridge::RemoteDevices devices_;
 };
 
-// Flaky due to failure to bind a hardcoded port. crbug.com/566057
-IN_PROC_BROWSER_TEST_F(AdbClientSocketTest, DISABLED_TestFlushWithoutSize) {
+// Combine all tests into one. Splitting up into multiple tests can be flaky
+// due to failure to bind a hardcoded port. crbug.com/566057
+// The tests seems to be stable on Windows bots only:
+#if defined(OS_WIN)
+#define MAYBE_TestCombined TestCombined
+#else
+#define MAYBE_TestCombined DISABLED_TestCombined
+#endif
+IN_PROC_BROWSER_TEST_F(AdbClientSocketTest, MAYBE_TestCombined) {
   StartMockAdbServer(FlushWithoutSize);
   StartTest();
   CheckDevices();
   StopMockAdbServer();
-}
 
-// Flaky due to failure to bind a hardcoded port. crbug.com/566057
-IN_PROC_BROWSER_TEST_F(AdbClientSocketTest, DISABLED_TestFlushWithSize) {
   StartMockAdbServer(FlushWithSize);
   StartTest();
   CheckDevices();
   StopMockAdbServer();
-}
 
-// Flaky due to failure to bind a hardcoded port. crbug.com/566057
-IN_PROC_BROWSER_TEST_F(AdbClientSocketTest, DISABLED_TestFlushWithData) {
   StartMockAdbServer(FlushWithData);
   StartTest();
   CheckDevices();

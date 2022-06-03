@@ -33,7 +33,6 @@ class ConditionalWorkItemList : public WorkItemList {
   std::unique_ptr<Condition> condition_;
 };
 
-
 // Pre-defined conditions:
 //------------------------------------------------------------------------------
 class ConditionRunIfFileExists : public WorkItem::Condition {

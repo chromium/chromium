@@ -1,0 +1,15 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE language:fr-FR
+++ROLE_SYSTEM_LIST READONLY
+++ROLE_SYSTEM_LIST READONLY language:fr-FR
+++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:fr-FR
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 ' language:fr-FR
+++++++ROLE_SYSTEM_STATICTEXT name='Placeholder listitem' language:fr-FR
+++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:en
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 ' language:fr-FR
+++++++ROLE_SYSTEM_STATICTEXT name='This is text created using Google Translate, it is unlikely to be idiomatic in the given target language. This text is only used to test language detection' language:en
+++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:fr
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 ' language:fr-FR
+++++++ROLE_SYSTEM_STATICTEXT name='Ce texte a %C3%A9t%C3%A9 cr%C3%A9%C3%A9 avec Google Translate, il est peu probable qu'il soit idiomatique dans la langue cible indiqu%C3%A9e Ce texte est uniquement utilis%C3%A9 pour tester la d%C3%A9tection de la langue.' language:fr
+++++ROLE_SYSTEM_LISTITEM READONLY language:fr-FR language:de
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 ' language:fr-FR
+++++++ROLE_SYSTEM_STATICTEXT name='Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet.' language:de

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -48,6 +47,13 @@ class ProtocolParser {
       std::string version;
       std::string browser_min_version;
       std::vector<Package> packages;
+
+      // A path within the CRX archive to an executable to run as part of the
+      // update. The executable is typically an application installer.
+      std::string run;
+
+      // Command-line arguments for the binary specified by |run|.
+      std::string arguments;
     };
 
     Result();
@@ -58,6 +64,11 @@ class ProtocolParser {
 
     // The updatecheck response status.
     std::string status;
+
+    // App-specific additions in the updatecheck response, including the
+    // mandatory '_' prefix (which prevents collision with formal protocol
+    // elements).
+    std::map<std::string, std::string> custom_attributes;
 
     // The list of fallback urls, for full and diff updates respectively.
     // These urls are base urls; they don't include the filename.
@@ -76,7 +87,8 @@ class ProtocolParser {
     static const char kCohortName[];
 
     // Contains the run action returned by the server as part of an update
-    // check response.
+    // check response. This indicates the need to trigger the execution of
+    // something bound to a component which is already installed.
     std::string action_run;
   };
 
@@ -95,6 +107,9 @@ class ProtocolParser {
   };
 
   static std::unique_ptr<ProtocolParser> Create();
+
+  ProtocolParser(const ProtocolParser&) = delete;
+  ProtocolParser& operator=(const ProtocolParser&) = delete;
 
   virtual ~ProtocolParser();
 
@@ -119,8 +134,6 @@ class ProtocolParser {
 
   Results results_;
   std::string errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolParser);
 };
 
 }  // namespace update_client

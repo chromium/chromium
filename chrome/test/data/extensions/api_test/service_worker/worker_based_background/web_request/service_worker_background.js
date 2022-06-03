@@ -73,18 +73,4 @@ chrome.test.runTests([
         }, {urls: [tabUrl]});
     chrome.tabs.create({url: tabUrl});
   },
-  function testOnBeforeRequestBlocked() {
-    chrome.webRequest.onErrorOccurred.addListener(
-        function localListener(details) {
-          chrome.webRequest.onErrorOccurred.removeListener(localListener);
-          chrome.test.assertEq('net::ERR_BLOCKED_BY_CLIENT', details.error);
-          chrome.test.succeed();
-        }, {urls: [tabUrl]});
-    chrome.webRequest.onBeforeRequest.addListener(
-        function localListener(details) {
-          chrome.webRequest.onBeforeRequest.removeListener(localListener);
-          return {cancel: true};
-        }, {urls: [tabUrl]}, ['blocking']);
-    chrome.tabs.create({url: tabUrl});
-  },
 ]);

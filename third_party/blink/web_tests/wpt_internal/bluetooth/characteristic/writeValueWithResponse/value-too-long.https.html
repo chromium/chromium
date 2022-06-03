@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'Trying to write more than 512 bytes should return an error.'
+
+bluetooth_test(async () => {
+  const {characteristic} = await getMeasurementIntervalCharacteristic();
+  await assert_promise_rejects_with_message(
+      characteristic.writeValueWithResponse(new Uint8Array(513 /* length */)),
+      new DOMException(
+          'Failed to execute \'writeValueWithResponse\' on ' +
+          '\'BluetoothRemoteGATTCharacteristic\': ' +
+          'Value can\'t exceed 512 bytes.',
+          'InvalidModificationError'
+      ), 'Value passed was too long.');
+}, test_desc);
+</script>

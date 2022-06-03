@@ -12,6 +12,7 @@ source_set("broadcaster") {
   ]
   deps = [
     "//base",
+    "//base/ios",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
   ]
 

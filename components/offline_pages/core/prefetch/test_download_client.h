@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_CLIENT_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/test/empty_client.h"
 
 namespace offline_pages {
@@ -15,6 +14,10 @@ class PrefetchDownloader;
 class TestDownloadClient : public download::test::EmptyClient {
  public:
   explicit TestDownloadClient(PrefetchDownloader* downloader);
+
+  TestDownloadClient(const TestDownloadClient&) = delete;
+  TestDownloadClient& operator=(const TestDownloadClient&) = delete;
+
   ~TestDownloadClient() override = default;
 
   void OnDownloadFailed(const std::string& guid,
@@ -26,8 +29,6 @@ class TestDownloadClient : public download::test::EmptyClient {
 
  private:
   PrefetchDownloader* downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadClient);
 };
 
 }  // namespace offline_pages

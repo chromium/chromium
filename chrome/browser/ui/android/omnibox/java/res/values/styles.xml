@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation">
+        <!-- Attributes for material design component. See https://crbug.com/1186712 -->
+        <item name="colorSurface">@color/material_color_surface</item>
+    </style>
+    <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode" />
+
+    <!-- Omnibox -->
+    <style name="TextAppearance.OmniboxVerboseStatus" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
+    </style>
+
+    <!-- Omnibox suggestions -->
+    <style name="TextAppearance.OmniboxAnswerDescriptionNegativeSmall">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/answers_description_text_negative</item>
+    </style>
+
+    <style name="TextAppearance.OmniboxAnswerDescriptionPositiveSmall">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/answers_description_text_positive</item>
+    </style>
+
+    <style name="OmniboxIcon" parent="LocationBarButton">
+        <item name="android:layout_width">@dimen/location_bar_status_icon_width</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+</resources>

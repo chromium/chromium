@@ -6,56 +6,70 @@
 
 #include <string>
 
+#include "components/content_settings/core/common/features.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
+#import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/url_loading/url_loading_service.h"
-#import "ios/chrome/common/colors/dynamic_color_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface IncognitoViewController ()
+@interface IncognitoViewController () <NewTabPageURLLoaderDelegate>
+
 // The scrollview containing the actual views.
-@property(nonatomic, strong) IncognitoView* incognitoView;
+@property(nonatomic, strong) UIScrollView* incognitoView;
+
 @end
 
 @implementation IncognitoViewController {
   // The UrlLoadingService associated with this view.
-  UrlLoadingService* _urlLoadingService;  // weak
+  UrlLoadingBrowserAgent* _URLLoader;  // weak
 }
 
-- (id)initWithUrlLoadingService:(UrlLoadingService*)urlLoadingService {
+- (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader {
   self = [super init];
   if (self) {
-    _urlLoadingService = urlLoadingService;
+    _URLLoader = URLLoader;
   }
   return self;
 }
 
 - (void)viewDidLoad {
-  if (@available(iOS 13, *)) {
-    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+
+  if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
+    RevampedIncognitoView* view =
+        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds];
+    view.URLLoaderDelegate = self;
+    self.incognitoView = view;
+
+  } else {
+    self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
+                                                    URLLoader:_URLLoader];
   }
 
-  self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
-                                          urlLoadingService:_urlLoadingService];
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
                                           UIViewAutoresizingFlexibleWidth];
-
-  UIColor* backgroundColor =
-      color::DarkModeDynamicColor([UIColor colorNamed:kBackgroundColor], true,
-                                  [UIColor colorNamed:kBackgroundDarkColor]);
-  self.incognitoView.backgroundColor = backgroundColor;
-
+  self.incognitoView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   [self.view addSubview:self.incognitoView];
 }
 
 - (void)dealloc {
   [_incognitoView setDelegate:nil];
+}
+
+#pragma mark - NewTabPageURLLoaderDelegate
+
+- (void)loadURLInTab:(const GURL&)URL {
+  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
 }
 
 @end

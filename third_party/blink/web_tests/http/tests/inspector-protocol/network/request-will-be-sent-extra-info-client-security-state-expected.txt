@@ -1,0 +1,8 @@
+Tests that client security state is reported on requestWillBeSentExtraInfo.
+Network Enabled
+{
+    initiatorIPAddressSpace : Local
+    initiatorIsSecureContext : true
+    privateNetworkRequestPolicy : WarnFromInsecureToMorePrivate
+}
+

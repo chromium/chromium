@@ -5,9 +5,8 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "mach_message.proto",
-  ]
+  proto_in_dir = "//"
+  sources = [ "mach_message.proto" ]
 }
 
 source_set("converter") {
@@ -15,10 +14,6 @@ source_set("converter") {
     "mach_message_converter.cc",
     "mach_message_converter.h",
   ]
-  public_deps = [
-    ":proto",
-  ]
-  deps = [
-    "//base",
-  ]
+  public_deps = [ ":proto" ]
+  deps = [ "//base" ]
 }

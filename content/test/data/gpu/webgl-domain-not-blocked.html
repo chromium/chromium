@@ -1,0 +1,64 @@
+<html>
+<head>
+  <script type="text/javascript">
+  var kSize = 16;
+  var contextLost = false;
+
+  function onLoad() {
+    var canvas = createNewCanvas();
+    var gl = canvas.getContext('webgl');
+    if (!gl || !clearAndValidate(gl, 1, 0, 0))
+      window.domAutomationController.send("FAILED");
+
+    canvas.addEventListener('webglcontextlost', (event) => {
+      event.preventDefault();
+      contextLost = true;
+    });
+
+    canvas.addEventListener('webglcontextrestored', () => {
+      // Using the original WebGL context after restoring should succeed.
+      if (clearAndValidate(gl, 0, 1, 0))
+        window.domAutomationController.send("SUCCESS");
+      else
+        window.domAutomationController.send("FAILED");
+    });
+
+    window.domAutomationController.send("LOADED");
+  }
+
+  function createNewCanvas() {
+    var canvas = document.createElement('canvas');
+    canvas.width = kSize;
+    canvas.height = kSize;
+    document.body.appendChild(canvas);
+
+    return canvas;
+  }
+
+  function clearAndValidate(gl, r, g, b) {
+    gl.clearColor(r, g, b, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    var pixels = new Uint8Array(kSize * kSize * 4);
+    gl.readPixels(0, 0, kSize, kSize, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    return pixels[0] == r * 255 && pixels[1] == g * 255 &&
+           pixels[2] == b * 255 && pixels[3] == 255;
+  }
+
+  function testNewWebGLContext() {
+    // Reset the success/failure code that onLoad() may have set.
+    window.domAutomationController.reset();
+
+    var canvas = createNewCanvas();
+    var gl = canvas.getContext('webgl');
+    if (gl != null && clearAndValidate(gl, 0, 0, 1))
+      window.domAutomationController.send("SUCCESS");
+    else
+      window.domAutomationController.send("FAILED");
+  }
+
+  </script>
+</head>
+<body onload="onLoad()">
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.5">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <style>
+    #tab {
+      transform: rotate(20deg);
+    }
+    #checkbox {
+      transform: scaleY(1.5);
+    }
+    #group {
+      transform: skewY(30deg);
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <div role="group" id="group" tabindex="0">group</div>
+  <div role="button" id="button" tabindex="0">button</div>
+  <div role="tab" id="tab" tabindex="0">tab button</div>
+  <div role="radio" id="radio" tabindex="0">radio</div>
+  <div role="checkbox" id="checkbox" tabindex="0">checkbox</div>
+  <div role="menuitem" id="menuitem" tabindex="0">menu item</div>
+  <div role="menuitemcheckbox" id="menuitemcheckbox" tabindex="0">menu item checkbox</div>
+  <div role="menuitemradio" id="menuitemradio" tabindex="0">menu item radio</div>
+  <input id="radiobutton" type="radio" name="radiobutton" value="Radio Button">
+  <label for="Radio Button">Radio Button</label>
+  <button id="htmlbutton" >Click Me</button>
+  <input id="inputbutton" type="button" value="Click Me">
+</div>
+
+
+
+<script>
+
+const container = document.getElementById("container");
+const events = ["pointerdown", "pointerup", "mousedown", "mouseup", "click"];
+const htmlElementIds = ["group", "button", "tab", "radio", "checkbox", "menuitem",
+    "menuitemcheckbox", "menuitemradio", "radiobutton", "htmlbutton", "inputbutton"];
+const chromeMousePointerId = 1;
+const mousePointerType = "mouse";
+let eventLog = [];
+let currentTest = null;
+let preventDefaultOnPointerDown = false;
+
+// Computes the center of the line segment defined by knownPoint and (unknownX, knownY)
+// given the length of the segment.
+function center_of_line_segment_knownY(knownPoint, knownY, length){
+  let unknownX = knownPoint.x + Math.sqrt(Math.pow(length, 2) - Math.pow(knownY-knownPoint.y, 2));
+  return {x:(knownPoint.x + unknownX)/2,
+          y:(knownPoint.y + knownY)/2};
+}
+
+test(()=>{
+  assert_object_equals(center_of_line_segment_knownY({x:0, y:0}, 10, 10), {x:0, y:5}, "Vertical line starting at 0,0");
+  assert_object_equals(center_of_line_segment_knownY({x:0, y:5}, 15, 10), {x:0, y:10}, "Vertical line starting at 0,5");
+  assert_object_equals(center_of_line_segment_knownY({x:0, y:0}, 8, 10), {x:3, y:4}, "Diagonal line starting at 0,0");
+  assert_object_equals(center_of_line_segment_knownY({x:0, y:1}, 9, 10), {x:3, y:5}, "Diagonal line starting at 0,1");
+}, "Center of line when starting point and end point's y coordinate is known");
+
+// Computes the center of the line segment defined by knownPoint and (knownX, unknownY)
+// given the length of the segment.
+function center_of_line_segment_knownX(knownPoint, knownX, length){
+  let transposed_center = center_of_line_segment_knownY({x:knownPoint.y, y:knownPoint.x}, knownX, length);
+  return {x:transposed_center.y, y:transposed_center.x};
+}
+
+test(()=>{
+  assert_object_equals(center_of_line_segment_knownX({x:0, y:0}, 10, 10), {x:5, y:0}, "Horizontal line starting at 0,0");
+  assert_object_equals(center_of_line_segment_knownX({x:5, y:0}, 15, 10), {x:10, y:0}, "Horizontal line starting at 0,5");
+  assert_object_equals(center_of_line_segment_knownX({x:0, y:0}, 8, 10), {x:4, y:3}, "Diagonal line starting at 0,0");
+  assert_object_equals(center_of_line_segment_knownX({x:1, y:0}, 9, 10), {x:5, y:3}, "Diagonal line starting at 0,1");
+}, "Center of line when starting point and end point's x coordinate is known");
+
+function compute_rect_center(domRect){
+  if((domRect.x === domRect.left || domRect.x === domRect.right) && (domRect.y === domRect.top || domRect.y === domRect.bottom))
+    return {x: (domRect.left + domRect.right) / 2,
+            y: (domRect.top + domRect.bottom) / 2};
+  let diagonal_length = Math.sqrt(Math.pow(domRect.height, 2) + Math.pow(domRect.width, 2));
+  let origin_point = {x:domRect.x, y:domRect.y};
+  if(domRect.x !== domRect.left && domRect.x !== domRect.right){
+    // We must have domRect.y be either top or bottom.
+    if(domRect.y === domRect.top)
+      return center_of_line_segment_knownY(origin_point, domRect.bottom, diagonal_length);
+    return center_of_line_segment_knownY(origin_point, domRect.top, diagonal_length);
+  }
+  if(domRect.x === domRect.left)
+    return center_of_line_segment_knownX(origin_point, domRect.right, diagonal_length);
+  return center_of_line_segment_knownX(origin_point, domRect.left, diagonal_length);
+}
+
+test(()=>{
+  assert_object_equals(compute_rect_center({x:2,y:2,top:2,left:2,bottom:12, right:12, width:10, height:10}), {x:7, y:7}, "Not rotated rectangle");
+  assert_object_equals(compute_rect_center({x:1,y:2,top:2,left:-1,bottom:-2, right:3, width:Math.sqrt(8), height:Math.sqrt(8)}), {x:1, y:0}, "Rotated rectangle, origin at (1,2)");
+  assert_object_equals(compute_rect_center({x:-1,y:0,top:2,left:-1,bottom:-2, right:3, width:Math.sqrt(8), height:Math.sqrt(8)}), {x:1, y:0}, "Rotated rectangle, origin at (-1,0)");
+  assert_object_equals(compute_rect_center({x:3,y:0,top:2,left:-1,bottom:-2, right:3, width:Math.sqrt(8), height:Math.sqrt(8)}), {x:1, y:0}, "Rotated rectangle, origin at (3,0)");
+}, "Center of rectangle given a DomRect");
+
+events.forEach((ev)=>container.addEventListener(ev, (e)=>{
+  let message = e.target.id + "_" + ev;
+  eventLog.push(message);
+
+  if(e.type === "pointerdown" || e.type === "pointerup" || e.type === "click"){
+    currentTest.step(()=>{
+      assert_equals(e.pointerId, chromeMousePointerId, `Event's ${ev} pointer Id matches the pointer id of the mouse`);
+      assert_equals(e.pointerType, mousePointerType, `Event's ${ev} pointer type is "mouse"`);
+      assert_true(e.isPrimary, `Event's ${ev} pointer is the primary pointer`);
+    });
+  }
+  currentTest.step(()=>{
+    let elementRect = document.getElementById(e.target.id).getBoundingClientRect();
+    let center = compute_rect_center(elementRect);
+    assert_approx_equals(e.x, center.x, 1, `Event's ${ev} x position is the same with x position of the center of element with ${e.target.id} id`);
+    assert_approx_equals(e.y, center.y, 1, `Event's ${ev} y position is the same with y position of the center of element with ${e.target.id} id`);
+    assert_approx_equals(e.screenX, window.screenX + center.x, 1, `Event's ${ev} screenX position is the same correct for element with ${e.target.id} id`);
+    assert_approx_equals(e.screenY, window.screenY + center.y, 1, `Event's ${ev} screenX position is the same correct for element with ${e.target.id} id`);
+    assert_equals(e.movementX, 0, `Event's ${ev} movementX must be 0.`);
+    assert_equals(e.movementY, 0, `Event's ${ev} movementY must be 0.`);
+    assert_equals(e.button, 0, `Event's ${ev} primary button pressed.`);
+    if(ev === "pointerdown" || ev === "mousedown" || ev === "click")
+      assert_equals(e.buttons, 1, `Event's ${ev} primary button pressed.`);
+    else
+      assert_equals(e.buttons, 0, `For event ${ev} there are no buttons pressed.`);
+    if(ev === "click")
+      assert_equals(e.detail, 1, "Click event has a click count of 1");
+    else
+      assert_equals(e.detail, 0, `For event ${ev} click count should not be populated.`);
+  });
+
+  if(preventDefaultOnPointerDown && ev === "pointerdown")
+    e.preventDefault();
+}));
+
+function test_without_pointerdown_prevented(test, zoom_factor){
+  assert_true(!!window.testRunner, "window.testRunner unavailable");
+  testRunner.setPageZoomFactor(zoom_factor);
+  currentTest = test;
+  eventLog = [];
+  let eventList = ["pointerdown", "mousedown",
+                  "pointerup", "mouseup", "click"];
+
+  assert_true(focusElements(true), "window.accessibilityController unavailable");
+  // All events coordinates are tested in the generic event handlers.
+  assert_array_equals(eventLog, generateExpectedLog(eventList, htmlElementIds));
+}
+
+promise_test((test) => new Promise((resolve, reject)=>{
+  test_without_pointerdown_prevented(test, 1) ;
+  resolve();
+}), 'Tests that pointer events, mouse events and click are fired for accessibility press');
+
+promise_test((test) => new Promise((resolve, reject)=>{
+  assert_true(!!window.testRunner, "window.testRunner unavailable");
+  testRunner.setPageZoomFactor(5);
+  currentTest = test;
+  eventLog = [];
+  let eventList = ["pointerdown", "mousedown",
+                  "pointerup", "mouseup", "click"];
+  assert_true(!!window.accessibilityController, "window.accessibilityController unavailable");
+  let element = document.getElementById("tab");
+  tab.focus();
+  accessibilityController.focusedElement.press();
+  // All events coordinates are tested in the generic event handlers.
+  assert_array_equals(eventLog, generateExpectedLog(eventList, ["tab"]));
+  resolve();
+}), "Tests that pointer events, mouse events and click's coordinates are populated correctly for accessibility press when zoomed in");
+
+
+function test_with_pointerdown_prevented(test, zoom_factor, makeButtonDirty){
+  assert_true(!!window.testRunner, "window.testRunner unavailable");
+  testRunner.setPageZoomFactor(zoom_factor);
+  currentTest = test;
+  eventLog = [];
+  let eventList = ["pointerdown", "pointerup", "click"];
+  preventDefaultOnPointerDown = true;
+
+  assert_true(focusElements(makeButtonDirty), "window.accessibilityController unavailable");
+  // All events coordinates are tested in the generic event handlers.
+  assert_array_equals(eventLog, generateExpectedLog(eventList, htmlElementIds));
+}
+
+function generateExpectedLog(eventList, items){
+  let expectedLog = [];
+  items.forEach((item)=>
+    eventList.forEach((ev)=>
+      expectedLog.push(item + "_" + ev)));
+  return expectedLog;
+}
+
+// Returns true if accessibilityController exists.
+function focusElements(makeButtonDirty){
+  if (window.accessibilityController) {
+    for (var k = 0; k < htmlElementIds.length; k++) {
+       let element = document.getElementById(htmlElementIds[k]);
+       // For button, change position so we test that the coordinates are calculated correctly.
+       if(element.id === "button" && makeButtonDirty)
+         element.style.left = '100px';
+       element.focus();
+       accessibilityController.focusedElement.press();
+    }
+  }
+  return !!window.accessibilityController;
+}
+</script>
+</body>

@@ -1,0 +1,26 @@
+Tests Input.dispatchKeyEvent commands option.
+
+Sending "b"
+with commands ["selectAll"]
+hello world
+~~~~~~~~~~~^
+
+Sending "Backspace"
+
+^
+
+Sending "c"
+c
+ ^
+
+Canceling the next keydown
+
+Sending "d"
+with commands ["selectAll"]
+c
+ ^
+
+Sending "e"
+ce
+  ^
+

@@ -13,24 +13,90 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
-
-namespace base {
-class FilePath;
-}
+#include "base/files/file_path.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 using IsCancelledCallback = base::RepeatingCallback<bool(void)>;
 using ShouldComputeHashesCallback =
     base::RepeatingCallback<bool(const base::FilePath& relative_path)>;
+using CanonicalRelativePath = content_verifier_utils::CanonicalRelativePath;
 
 // A class for storage and serialization of a set of SHA256 block hashes
 // computed over the files inside an extension.
 class ComputedHashes {
  public:
-  using HashInfo = std::pair<int, std::vector<std::string>>;
-  using Data = std::map<base::FilePath, HashInfo>;
+  // Status of reading computed hashes from file: either success or error type.
+  enum class Status {
+    // Status is undefined.
+    UNKNOWN,
+
+    // Failed to read file.
+    READ_FAILED,
+
+    // File read successfully, but failed to parse the contents.
+    PARSE_FAILED,
+
+    // No error.
+    SUCCESS,
+  };
+
+  // Hashes data for relative paths.
+  // System specific path canonicalization is taken care of inside this class.
+  class Data {
+   public:
+    struct HashInfo {
+      int block_size;
+      std::vector<std::string> hashes;
+      // The relative unix style path.
+      // Note that we use canonicalized paths as keys to HashInfo's container
+      // |items_|.
+      //
+      // TODO(http://crbug.com/796395#c28): Consider removing this once
+      // ContentVerifier::ShouldVerifyAnyPaths works with canonicalized relative
+      // paths.
+      base::FilePath relative_unix_path;
+      HashInfo(int block_size,
+               std::vector<std::string> hashes,
+               base::FilePath relative_unix_path);
+      ~HashInfo();
+
+      HashInfo(const HashInfo&) = delete;
+      HashInfo& operator=(const HashInfo&) = delete;
+      HashInfo(HashInfo&&);
+      HashInfo& operator=(HashInfo&&);
+    };
+    using Items = std::map<CanonicalRelativePath, HashInfo>;
+
+    Data();
+    ~Data();
+
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
+    Data(Data&&);
+    Data& operator=(Data&&);
+
+    // For |relative_path|, adds hash information with |block_size| and
+    // |hashes|.
+    // Note that |relative_path| will be canonicalized.
+    void Add(const base::FilePath& relative_path,
+             int block_size,
+             std::vector<std::string> hashes);
+
+    // Removes the item that corresponds to |relative_path|.
+    void Remove(const base::FilePath& relative_path);
+
+    // Returns HashInfo* for |relative_path| or nullptr if not found.
+    const HashInfo* GetItem(const base::FilePath& relative_path) const;
+
+    const Items& items() const;
+
+   private:
+    // All items, stored by canonicalized FilePath::StringType key.
+    Items items_;
+  };
 
   explicit ComputedHashes(Data&& data);
   ComputedHashes(const ComputedHashes&) = delete;
@@ -39,10 +105,12 @@ class ComputedHashes {
   ComputedHashes& operator=(ComputedHashes&&);
   ~ComputedHashes();
 
-  // Reads computed hashes from the computed_hashes.json file, returns nullopt
-  // upon any failure.
-  static base::Optional<ComputedHashes> CreateFromFile(
-      const base::FilePath& path);
+  // Reads computed hashes from the computed_hashes.json file, stores read
+  // success/failure status to |status|. Returns nullopt upon any failure (i.e.
+  // |status| != Status::SUCCESS).
+  static absl::optional<ComputedHashes> CreateFromFile(
+      const base::FilePath& path,
+      Status* status);
 
   // Computes hashes for files in |extension_root|. Returns nullopt upon any
   // failure. Callback |should_compute_hashes_for| is used to determine whether
@@ -51,7 +119,7 @@ class ComputedHashes {
   // of passing |block_size| as an argument make callback
   // |should_compute_hashes_for| return optional<int>: nullopt if hashes are not
   // needed for this file, block size for this file otherwise.
-  static base::Optional<ComputedHashes::Data> Compute(
+  static absl::optional<ComputedHashes::Data> Compute(
       const base::FilePath& extension_root,
       int block_size,
       const IsCancelledCallback& is_cancelled,
@@ -77,9 +145,8 @@ class ComputedHashes {
   // Builds hashes for one resource and checks them against
   // verified_contents.json if needed. Returns nullopt if nothing should be
   // added to computed_hashes.json for this resource.
-  static base::Optional<std::vector<std::string>> ComputeAndCheckResourceHash(
+  static absl::optional<std::vector<std::string>> ComputeAndCheckResourceHash(
       const base::FilePath& full_path,
-      const base::FilePath& relative_unix_path,
       int block_size);
 
   Data data_;

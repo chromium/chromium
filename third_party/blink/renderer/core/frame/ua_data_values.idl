@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/ua-client-hints
+
+dictionary UADataValues {
+  sequence<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString platform;
+  DOMString platformVersion;
+  DOMString architecture;
+  DOMString model;
+  DOMString uaFullVersion;
+  DOMString bitness;
+  sequence<NavigatorUABrandVersion> fullVersionList;
+};

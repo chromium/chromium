@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL assertSelection(inputText, tester, expectedText, options) resources/testharness.js:2092:25)
+	 expected <div contenteditable style="width: 3px;">abcd ef| hijkl</div>,
+	 but got  <div contenteditable style="width: 3px;">abcd ef|hijkl</div>,
+	 sameupto <div contenteditable style="width: 3px;">abcd ef|
+FAIL assertSelection(inputText, tester, expectedText, options) 1 resources/testharness.js:2092:25)
+	 expected <div contenteditable style="width: 3px;">abcd e| hijkl</div>,
+	 but got  <div contenteditable style="width: 3px;">abcd e|hijkl</div>,
+	 sameupto <div contenteditable style="width: 3px;">abcd e|
+FAIL assertSelection(inputText, tester, expectedText, options) 2 resources/testharness.js:2092:25)
+	 expected <div contenteditable style="width: 3px;">abcd | hijkl</div>,
+	 but got  <div contenteditable style="width: 3px;">abcd |hijkl</div>,
+	 sameupto <div contenteditable style="width: 3px;">abcd
+FAIL assertSelection(inputText, tester, expectedText, options) 3 resources/testharness.js:2092:25)
+	 expected <div contenteditable style="width: 3px;">abcd| hijkl</div>,
+	 but got  <div contenteditable style="width: 3px;">abcd|hijkl</div>,
+	 sameupto <div contenteditable style="width: 3px;">abcd|
+Harness: the test ran to completion.
+

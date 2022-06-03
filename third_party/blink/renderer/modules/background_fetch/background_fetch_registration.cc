@@ -7,18 +7,23 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_record.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
-#include "third_party/blink/renderer/modules/cache_storage/cache_query_options.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/manifest/image_resource.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -26,22 +31,6 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
-
-BackgroundFetchRegistration::BackgroundFetchRegistration(
-    const String& developer_id,
-    uint64_t upload_total,
-    uint64_t uploaded,
-    uint64_t download_total,
-    uint64_t downloaded,
-    mojom::BackgroundFetchResult result,
-    mojom::BackgroundFetchFailureReason failure_reason)
-    : developer_id_(developer_id),
-      upload_total_(upload_total),
-      uploaded_(uploaded),
-      download_total_(download_total),
-      downloaded_(downloaded),
-      result_(result),
-      failure_reason_(failure_reason) {}
 
 BackgroundFetchRegistration::BackgroundFetchRegistration(
     ServiceWorkerRegistration* service_worker_registration,
@@ -52,25 +41,12 @@ BackgroundFetchRegistration::BackgroundFetchRegistration(
       download_total_(registration->registration_data->download_total),
       downloaded_(registration->registration_data->downloaded),
       result_(registration->registration_data->result),
-      failure_reason_(registration->registration_data->failure_reason) {
+      failure_reason_(registration->registration_data->failure_reason),
+      observer_receiver_(this,
+                         service_worker_registration->GetExecutionContext()) {
   DCHECK(service_worker_registration);
-  Initialize(service_worker_registration,
-             std::move(registration->registration_interface));
-}
-
-BackgroundFetchRegistration::~BackgroundFetchRegistration() = default;
-
-void BackgroundFetchRegistration::Initialize(
-    ServiceWorkerRegistration* registration,
-    mojo::PendingRemote<mojom::blink::BackgroundFetchRegistrationService>
-        registration_service) {
-  DCHECK(!registration_);
-  DCHECK(registration);
-  DCHECK(!registration_service_);
-  DCHECK(registration_service);
-
-  registration_ = registration;
-  registration_service_.Bind(std::move(registration_service));
+  registration_ = service_worker_registration;
+  registration_service_.Bind(std::move(registration->registration_interface));
 
   ExecutionContext* context = GetExecutionContext();
   if (!context || context->IsContextDestroyed())
@@ -80,6 +56,8 @@ void BackgroundFetchRegistration::Initialize(
   registration_service_->AddRegistrationObserver(
       observer_receiver_.BindNewPipeAndPassRemote(task_runner));
 }
+
+BackgroundFetchRegistration::~BackgroundFetchRegistration() = default;
 
 void BackgroundFetchRegistration::OnProgress(
     uint64_t upload_total,
@@ -95,11 +73,6 @@ void BackgroundFetchRegistration::OnProgress(
   result_ = result;
   failure_reason_ = failure_reason;
 
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || context->IsContextDestroyed())
-    return;
-
-  DCHECK(context->IsContextThread());
   DispatchEvent(*Event::Create(event_type_names::kProgress));
 }
 
@@ -170,43 +143,43 @@ ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
 
 ScriptPromise BackgroundFetchRegistration::match(
     ScriptState* script_state,
-    const RequestOrUSVString& request,
+    const V8RequestInfo* request,
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
-  return MatchImpl(
-      script_state, base::make_optional<RequestOrUSVString>(request),
-      mojom::blink::CacheQueryOptions::From(options), exception_state,
-      /* match_all = */ false);
+  return MatchImpl(script_state, request,
+                   mojom::blink::CacheQueryOptions::From(options),
+                   exception_state,
+                   /* match_all = */ false);
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return MatchImpl(script_state, /* request = */ base::nullopt,
+  return MatchImpl(script_state, /* request = */ nullptr,
                    /* cache_query_options = */ nullptr, exception_state,
                    /* match_all = */ true);
 }
 
 ScriptPromise BackgroundFetchRegistration::matchAll(
     ScriptState* script_state,
-    const RequestOrUSVString& request,
+    const V8RequestInfo* request,
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
-  return MatchImpl(
-      script_state, base::make_optional<RequestOrUSVString>(request),
-      mojom::blink::CacheQueryOptions::From(options), exception_state,
-      /* match_all = */ true);
+  return MatchImpl(script_state, request,
+                   mojom::blink::CacheQueryOptions::From(options),
+                   exception_state,
+                   /* match_all = */ true);
 }
 
 ScriptPromise BackgroundFetchRegistration::MatchImpl(
     ScriptState* script_state,
-    base::Optional<RequestOrUSVString> request,
+    const V8RequestInfo* request,
     mojom::blink::CacheQueryOptionsPtr cache_query_options,
     ExceptionState& exception_state,
     bool match_all) {
   DCHECK(script_state);
   UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.MatchCalledFromDocumentScope",
-                        ExecutionContext::From(script_state)->IsDocument());
+                        LocalDOMWindow::From(script_state));
   UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.MatchCalledWhenFetchIsIncomplete",
                         result_ == mojom::BackgroundFetchResult::UNSET);
 
@@ -223,15 +196,19 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 
   // Convert |request| to mojom::blink::FetchAPIRequestPtr.
   mojom::blink::FetchAPIRequestPtr request_to_match;
-  if (request.has_value()) {
-    if (request->IsRequest()) {
-      request_to_match = request->GetAsRequest()->CreateFetchAPIRequest();
-    } else {
-      Request* new_request = Request::Create(
-          script_state, request->GetAsUSVString(), exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      request_to_match = new_request->CreateFetchAPIRequest();
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_to_match = request->GetAsRequest()->CreateFetchAPIRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString: {
+        Request* new_request = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        request_to_match = new_request->CreateFetchAPIRequest();
+        break;
+      }
     }
   }
 
@@ -260,7 +237,7 @@ void BackgroundFetchRegistration::DidGetMatchingRequests(
 
   for (auto& fetch : settled_fetches) {
     Request* request =
-        Request::Create(script_state, *(fetch->request),
+        Request::Create(script_state, std::move(fetch->request),
                         Request::ForServiceWorkerFetchEvent::kFalse);
     auto* record =
         MakeGarbageCollected<BackgroundFetchRecord>(request, script_state);
@@ -362,6 +339,15 @@ const String BackgroundFetchRegistration::result() const {
 }
 
 const String BackgroundFetchRegistration::failureReason() const {
+  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
+      .Add(
+          blink::IdentifiableSurface::FromTypeAndToken(
+              blink::IdentifiableSurface::Type::kWebFeature,
+              WebFeature::
+                  kV8BackgroundFetchRegistration_FailureReason_AttributeGetter),
+          failure_reason_ ==
+              mojom::BackgroundFetchFailureReason::QUOTA_EXCEEDED)
+      .Record(GetExecutionContext()->UkmRecorder());
   switch (failure_reason_) {
     case mojom::BackgroundFetchFailureReason::NONE:
       return "";
@@ -379,10 +365,6 @@ const String BackgroundFetchRegistration::failureReason() const {
       return "download-total-exceeded";
   }
   NOTREACHED();
-}
-
-void BackgroundFetchRegistration::Dispose() {
-  observer_receiver_.reset();
 }
 
 bool BackgroundFetchRegistration::HasPendingActivity() const {
@@ -403,9 +385,10 @@ void BackgroundFetchRegistration::UpdateUI(
   registration_service_->UpdateUI(in_title, in_icon, std::move(callback));
 }
 
-void BackgroundFetchRegistration::Trace(Visitor* visitor) {
+void BackgroundFetchRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(observers_);
+  visitor->Trace(observer_receiver_);
   EventTargetWithInlineData::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
 }

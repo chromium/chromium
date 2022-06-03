@@ -21,8 +21,6 @@ template <typename T>
 class GlobalCacheStorageImpl final
     : public GarbageCollected<GlobalCacheStorageImpl<T>>,
       public Supplement<T> {
-  USING_GARBAGE_COLLECTED_MIXIN(GlobalCacheStorageImpl);
-
  public:
   static const char kSupplementName[];
 
@@ -37,13 +35,14 @@ class GlobalCacheStorageImpl final
     return *supplement;
   }
 
-  GlobalCacheStorageImpl() = default;
-  ~GlobalCacheStorageImpl() {}
+  GlobalCacheStorageImpl() : Supplement<T>(nullptr) {}
+  ~GlobalCacheStorageImpl() = default;
 
   CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
     ExecutionContext* context = fetching_scope.GetExecutionContext();
     if (!context->GetSecurityOrigin()->CanAccessCacheStorage()) {
-      if (context->GetSecurityContext().IsSandboxed(WebSandboxFlags::kOrigin)) {
+      if (context->IsSandboxed(
+              network::mojom::blink::WebSandboxFlags::kOrigin)) {
         exception_state.ThrowSecurityError(
             "Cache storage is disabled because the context is sandboxed and "
             "lacks the 'allow-same-origin' flag.");
@@ -75,7 +74,7 @@ class GlobalCacheStorageImpl final
     return caches_;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(caches_);
     Supplement<T>::Trace(visitor);
   }

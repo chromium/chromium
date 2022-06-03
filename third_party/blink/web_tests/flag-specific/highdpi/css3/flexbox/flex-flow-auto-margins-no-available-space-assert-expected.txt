@@ -1,0 +1,11 @@
+* { display: flex; padding-bottom: 20pt; min-height: 0.7%; margin-top: 6000%; flex-shrink: 0; flex-basis: 7000%; }
+FAIL:
+Expected 30210272 for height, but got 19024040. 
+
+<abbr data-expected-height="30210272">
+    <input>
+</abbr>
+
+crbug.com/380201: Don't shrink below border/padding when stretching children within a flexbox with no available space.
+
+window.checkLayout('abbr');

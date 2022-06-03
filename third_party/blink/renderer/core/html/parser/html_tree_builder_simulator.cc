@@ -171,13 +171,25 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
           language_attribute_value = item->Value();
         }
 
-        if (ScriptLoader::IsValidScriptTypeAndLanguage(
+        if (ScriptLoader::GetScriptTypeAtPrepare(
                 type_attribute_value, language_attribute_value,
-                ScriptLoader::kAllowLegacyTypeInTypeAttribute)) {
+                ScriptLoader::kAllowLegacyTypeInTypeAttribute) !=
+            ScriptLoader::ScriptTypeAtPrepare::kInvalid) {
           simulated_token = kValidScriptStart;
         }
       } else if (ThreadSafeMatch(tag_name, html_names::kLinkTag)) {
         simulated_token = kLink;
+
+      } else if (ThreadSafeMatch(tag_name, html_names::kTemplateTag)) {
+        TemplateType template_type = TemplateType::kRegular;
+        if (auto* item = token.GetAttributeItem(html_names::kShadowrootAttr)) {
+          String shadow_mode = item->Value();
+          if (EqualIgnoringASCIICase(shadow_mode, "open") ||
+              EqualIgnoringASCIICase(shadow_mode, "closed")) {
+            template_type = TemplateType::kShadow;
+          }
+        }
+        template_stack_.push_back(template_type);
       } else if (!in_select_insertion_mode_) {
         // If we're in the "in select" insertion mode, all of these tags are
         // ignored, so we shouldn't change the tokenizer state:
@@ -191,7 +203,7 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
                    ThreadSafeMatch(tag_name, html_names::kNoembedTag) ||
                    ThreadSafeMatch(tag_name, html_names::kNoframesTag) ||
                    (ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
-                    options_.script_enabled)) {
+                    options_.scripting_flag)) {
           tokenizer->SetState(HTMLTokenizer::kRAWTEXTState);
         }
       }
@@ -238,6 +250,15 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
       in_select_insertion_mode_ = false;
     if (ThreadSafeMatch(tag_name, html_names::kStyleTag))
       simulated_token = kStyleEnd;
+
+    if (ThreadSafeMatch(tag_name, html_names::kTemplateTag)) {
+      if (!template_stack_.IsEmpty()) {
+        TemplateType type = std::move(template_stack_.back());
+        template_stack_.pop_back();
+        if (type == TemplateType::kShadow)
+          simulated_token = kDeclarativeShadowDOMEnd;
+      }
+    }
   }
   if (token.GetType() == HTMLToken::kStartTag &&
       simulated_token == kOtherToken) {
@@ -270,9 +291,9 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForStartTag(
     }
   } else if (tokens_ns == SVG) {
     // FIXME: It's very fragile that we special case foreignObject here to be
-    // case-insensitive.
-    if (DeprecatedEqualIgnoringCase(tag_name,
-                                    svg_names::kForeignObjectTag.LocalName()))
+    // ASCII case-insensitive.
+    if (EqualIgnoringASCIICase(tag_name,
+                               svg_names::kForeignObjectTag.LocalName()))
       return true;
     return ThreadSafeMatch(tag_name, svg_names::kDescTag) ||
            ThreadSafeMatch(tag_name, svg_names::kTitleTag);
@@ -299,9 +320,9 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForEndTag(
     return ThreadSafeMatch(tag_name, mathml_names::kAnnotationXmlTag);
   if (tokens_ns == SVG) {
     // FIXME: It's very fragile that we special case foreignObject here to be
-    // case-insensitive.
-    if (DeprecatedEqualIgnoringCase(tag_name,
-                                    svg_names::kForeignObjectTag.LocalName()))
+    // ASCII case-insensitive.
+    if (EqualIgnoringASCIICase(tag_name,
+                               svg_names::kForeignObjectTag.LocalName()))
       return true;
     return ThreadSafeMatch(tag_name, svg_names::kDescTag) ||
            ThreadSafeMatch(tag_name, svg_names::kTitleTag);

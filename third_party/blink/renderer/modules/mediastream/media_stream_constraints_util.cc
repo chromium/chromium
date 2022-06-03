@@ -18,7 +18,7 @@ namespace blink {
 namespace {
 
 template <typename P, typename T>
-bool ScanConstraintsForExactValue(const WebMediaConstraints& constraints,
+bool ScanConstraintsForExactValue(const MediaConstraints& constraints,
                                   P picker,
                                   T* value) {
   if (constraints.IsNull())
@@ -40,7 +40,7 @@ bool ScanConstraintsForExactValue(const WebMediaConstraints& constraints,
 }
 
 template <typename P, typename T>
-bool ScanConstraintsForMaxValue(const WebMediaConstraints& constraints,
+bool ScanConstraintsForMaxValue(const MediaConstraints& constraints,
                                 P picker,
                                 T* value) {
   if (constraints.IsNull())
@@ -69,7 +69,7 @@ bool ScanConstraintsForMaxValue(const WebMediaConstraints& constraints,
 }
 
 template <typename P, typename T>
-bool ScanConstraintsForMinValue(const WebMediaConstraints& constraints,
+bool ScanConstraintsForMinValue(const MediaConstraints& constraints,
                                 P picker,
                                 T* value) {
   if (constraints.IsNull())
@@ -111,17 +111,23 @@ VideoCaptureSettings::VideoCaptureSettings(const char* failed_constraint_name)
 VideoCaptureSettings::VideoCaptureSettings(
     std::string device_id,
     media::VideoCaptureParams capture_params,
-    base::Optional<bool> noise_reduction,
+    absl::optional<bool> noise_reduction,
     const VideoTrackAdapterSettings& track_adapter_settings,
-    base::Optional<double> min_frame_rate,
-    base::Optional<double> max_frame_rate)
+    absl::optional<double> min_frame_rate,
+    absl::optional<double> max_frame_rate,
+    absl::optional<double> pan,
+    absl::optional<double> tilt,
+    absl::optional<double> zoom)
     : failed_constraint_name_(nullptr),
       device_id_(std::move(device_id)),
       capture_params_(capture_params),
       noise_reduction_(noise_reduction),
       track_adapter_settings_(track_adapter_settings),
       min_frame_rate_(min_frame_rate),
-      max_frame_rate_(max_frame_rate) {
+      max_frame_rate_(max_frame_rate),
+      pan_(pan),
+      tilt_(tilt),
+      zoom_(zoom) {
   DCHECK(!min_frame_rate ||
          *min_frame_rate_ <= capture_params.requested_format.frame_rate);
   DCHECK(!track_adapter_settings.target_size() ||
@@ -151,18 +157,20 @@ AudioCaptureSettings::AudioCaptureSettings(const char* failed_constraint_name)
 
 AudioCaptureSettings::AudioCaptureSettings(
     std::string device_id,
-    const base::Optional<int>& requested_buffer_size,
+    const absl::optional<int>& requested_buffer_size,
     bool disable_local_echo,
     bool enable_automatic_output_device_selection,
     ProcessingType processing_type,
-    const AudioProcessingProperties& audio_processing_properties)
+    const AudioProcessingProperties& audio_processing_properties,
+    int num_channels)
     : failed_constraint_name_(nullptr),
       device_id_(std::move(device_id)),
       requested_buffer_size_(requested_buffer_size),
       disable_local_echo_(disable_local_echo),
       render_to_associated_sink_(enable_automatic_output_device_selection),
       processing_type_(processing_type),
-      audio_processing_properties_(audio_processing_properties) {}
+      audio_processing_properties_(audio_processing_properties),
+      num_channels_(num_channels) {}
 
 AudioCaptureSettings::AudioCaptureSettings(const AudioCaptureSettings& other) =
     default;
@@ -174,47 +182,47 @@ AudioCaptureSettings& AudioCaptureSettings::operator=(
     AudioCaptureSettings&& other) = default;
 
 bool GetConstraintValueAsBoolean(
-    const WebMediaConstraints& constraints,
-    const BooleanConstraint WebMediaTrackConstraintSet::*picker,
+    const MediaConstraints& constraints,
+    const BooleanConstraint MediaTrackConstraintSetPlatform::*picker,
     bool* value) {
   return ScanConstraintsForExactValue(constraints, picker, value);
 }
 
 bool GetConstraintValueAsInteger(
-    const WebMediaConstraints& constraints,
-    const LongConstraint WebMediaTrackConstraintSet::*picker,
+    const MediaConstraints& constraints,
+    const LongConstraint MediaTrackConstraintSetPlatform::*picker,
     int* value) {
   return ScanConstraintsForExactValue(constraints, picker, value);
 }
 
 bool GetConstraintMinAsInteger(
-    const WebMediaConstraints& constraints,
-    const LongConstraint WebMediaTrackConstraintSet::*picker,
+    const MediaConstraints& constraints,
+    const LongConstraint MediaTrackConstraintSetPlatform::*picker,
     int* value) {
   return ScanConstraintsForMinValue(constraints, picker, value);
 }
 
 bool GetConstraintMaxAsInteger(
-    const WebMediaConstraints& constraints,
-    const LongConstraint WebMediaTrackConstraintSet::*picker,
+    const MediaConstraints& constraints,
+    const LongConstraint MediaTrackConstraintSetPlatform::*picker,
     int* value) {
   return ScanConstraintsForMaxValue(constraints, picker, value);
 }
 
 bool GetConstraintValueAsDouble(
-    const WebMediaConstraints& constraints,
-    const DoubleConstraint WebMediaTrackConstraintSet::*picker,
+    const MediaConstraints& constraints,
+    const DoubleConstraint MediaTrackConstraintSetPlatform::*picker,
     double* value) {
   return ScanConstraintsForExactValue(constraints, picker, value);
 }
 
 VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
-    const WebMediaTrackConstraintSet& basic_constraint_set,
+    const MediaTrackConstraintSetPlatform& basic_constraint_set,
     const media_constraints::ResolutionSet& resolution_set,
     const media_constraints::NumericRangeSet<double>& frame_rate_set,
     const media::VideoCaptureFormat& source_format,
     bool enable_rescale) {
-  base::Optional<gfx::Size> target_resolution;
+  absl::optional<gfx::Size> target_resolution;
   if (enable_rescale) {
     media_constraints::ResolutionSet::Point resolution =
         resolution_set.SelectClosestPointToIdeal(
@@ -243,10 +251,6 @@ VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
     if (frame_rate_set.Max() && track_max_frame_rate > *frame_rate_set.Max())
       track_max_frame_rate = *frame_rate_set.Max();
   }
-  // Disable frame-rate adjustment if the requested rate is greater than the
-  // source rate.
-  if (track_max_frame_rate >= source_format.frame_rate)
-    track_max_frame_rate = 0.0;
 
   return VideoTrackAdapterSettings(target_resolution, track_min_aspect_ratio,
                                    track_max_aspect_ratio,
@@ -267,25 +271,27 @@ double StringConstraintFitnessDistance(const WebString& value,
     return 0.0;
 
   for (auto& ideal_value : constraint.Ideal()) {
-    if (value == ideal_value)
+    // TODO(crbug.com/787254): Remove the explicit conversion to WebString when
+    // this method operates solely over WTF::String.
+    if (value == WebString(ideal_value))
       return 0.0;
   }
 
   return 1.0;
 }
 
-WebMediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
-    const WebString& device_id,
+MediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
+    const String& device_id,
     const media::VideoCaptureFormats& formats,
-    media::VideoFacingMode facing_mode,
+    mojom::blink::FacingMode facing_mode,
     bool is_device_capture,
-    const base::Optional<std::string>& group_id) {
-  WebMediaStreamSource::Capabilities capabilities;
+    const absl::optional<std::string>& group_id) {
+  MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = std::move(device_id);
   if (is_device_capture) {
-    capabilities.facing_mode = ToWebFacingMode(facing_mode);
+    capabilities.facing_mode = ToPlatformFacingMode(facing_mode);
     if (group_id)
-      capabilities.group_id = WebString::FromUTF8(*group_id);
+      capabilities.group_id = String::FromUTF8(*group_id);
   }
   if (!formats.empty()) {
     int max_width = 1;
@@ -298,8 +304,8 @@ WebMediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
       max_height = std::max(max_height, format.frame_size.height());
       max_frame_rate = std::max(max_frame_rate, format.frame_rate);
     }
-    capabilities.width = {1, max_width};
-    capabilities.height = {1, max_height};
+    capabilities.width = {1, static_cast<uint32_t>(max_width)};
+    capabilities.height = {1, static_cast<uint32_t>(max_height)};
     capabilities.aspect_ratio = {1.0 / max_height,
                                  static_cast<double>(max_width)};
     capabilities.frame_rate = {min_frame_rate, max_frame_rate};

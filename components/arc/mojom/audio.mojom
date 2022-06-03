@@ -19,7 +19,7 @@ interface AudioHost {
   ShowVolumeControls@0();
 
   // Request that the volume be changed to |volume|.
-  // This is a privileged API and should only be used on whitelisted cases.
+  // This is a privileged API and should only be used on allowlisted cases.
   // |percent| is of the range [0, 100].
   [MinVersion=3] OnSystemVolumeUpdateRequest@1(int32 percent);
 };
@@ -27,10 +27,10 @@ interface AudioHost {
 // Next method ID: 4
 interface AudioInstance {
   // DEPRECATED: Please use Init@3 instead.
-  [MinVersion=1] InitDeprecated@1(AudioHost host);
+  [MinVersion=1] InitDeprecated@1(pending_remote<AudioHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=4] Init@3(AudioHost host) => ();
+  [MinVersion=4] Init@3(pending_remote<AudioHost> host_remote) => ();
 
   // Notify plug states of headphone, microphone, etc.  Each switch state is
   // represented by the corresponding bit, if the bit is set then the switch

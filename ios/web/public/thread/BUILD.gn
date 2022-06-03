@@ -4,9 +4,7 @@
 
 source_set("thread") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   sources = [
     "web_task_traits.h",
     "web_thread.h",

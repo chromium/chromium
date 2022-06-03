@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://os-feedback/=../../ash/webui/os_feedback_ui/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":confirmation_page_test",
+    ":os_feedback_unified_test",
+  ]
+}
+
+js_library("confirmation_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/os_feedback_ui/resources:confirmation_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("os_feedback_unified_test") {
+}

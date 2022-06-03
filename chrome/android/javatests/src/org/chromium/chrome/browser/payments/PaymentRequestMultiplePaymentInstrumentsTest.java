@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -15,12 +15,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -43,43 +43,38 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_no_shipping_test.html", this);
 
-    private static final AutofillProfile AUTOFILL_PROFILE =
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Lisa Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", "" /* languageCode */);
+    private static final AutofillProfile AUTOFILL_PROFILE = new AutofillProfile("" /* guid */,
+            "https://www.example.com" /* origin */, "" /* honorific prefix */, "Lisa Simpson",
+            "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
+            "555 123-4567", "lisa@simpson.com", "" /* languageCode */);
 
     private static final CreditCard[] CREDIT_CARDS = {
             // CARD_0 missing billing address.
             new CreditCard("", "https://example.com", true /* isLocal */, true /* isCached */,
                     "Jon Doe", "4111111111111111", "1111", "12", "2050", "visa",
-                    R.drawable.visa_card, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "" /* serverId */),
+                    R.drawable.visa_card, "" /* billingAddressId */, "" /* serverId */),
 
             // For the rest of the cards billing address id will be added in
             // onMainActivityStarted().
             // CARD_1 complete card.
             new CreditCard("", "https://example.com", true /* isLocal */, true /* isCached */,
                     "John Smith", "4111111111113333", "3333", "10", "2050", "visa",
-                    R.drawable.amex_card, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "" /* serverId */),
+                    R.drawable.amex_card, "" /* billingAddressId */, "" /* serverId */),
 
             // CARD_2 complete card, different from CARD_1.
             new CreditCard("", "https://example.com", true /* isLocal */, true /* isCached */,
                     "Jane Doe", "4111111111112222", "2222", "07", "2077", "visa",
-                    R.drawable.visa_card, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "" /* serverId */),
+                    R.drawable.visa_card, "" /* billingAddressId */, "" /* serverId */),
 
             // CARD_3 expired card.
             new CreditCard("", "https://example.com", true /* isLocal */, true /* isCached */,
                     "Lisa Simpson", "4111111111111111", "1111", "12", "2010", "visa",
-                    R.drawable.visa_card, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "" /* serverId */),
+                    R.drawable.visa_card, "" /* billingAddressId */, "" /* serverId */),
 
             // CARD_4 missing name.
             new CreditCard("", "https://example.com", true /* isLocal */, true /* isCached */,
                     "" /* name */, "4012888888881881", "1881", "06", "2049", "visa",
-                    R.drawable.visa_card, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "" /* serverId */),
+                    R.drawable.visa_card, "" /* billingAddressId */, "" /* serverId */),
     };
 
     private CreditCard[] mCreditCardsToAdd;
@@ -92,7 +87,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
 
         // The user has a complete autofill profile.
         String billingAddressId = helper.setProfile(AUTOFILL_PROFILE);
-        // Add the autofill payment instruments.
+        // Add the autofill card.
         ArrayList<String> guids = new ArrayList<>();
         for (int i = 0; i < mCreditCardsToAdd.length; i++) {
             // CREDIT_CARDS[0] has no billing address.
@@ -103,9 +98,10 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
             guids.add(creditCardId);
         }
 
-        // Set up the autofill payment instruments use stats.
+        // Set up the autofill card use stats.
         for (int i = 0; i < guids.size(); i++) {
-            helper.setCreditCardUseStatsForTesting(guids.get(i), mCountsToSet[i], mDatesToSet[i]);
+            PaymentPreferencesUtil.setPaymentAppUseCountForTest(guids.get(i), mCountsToSet[i]);
+            PaymentPreferencesUtil.setPaymentAppLastUseDate(guids.get(i), mDatesToSet[i]);
         }
     }
 
@@ -116,6 +112,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCreditCardSuggestionOrdering() throws TimeoutException {
         mCreditCardsToAdd = new CreditCard[] {CREDIT_CARDS[0], CREDIT_CARDS[3], CREDIT_CARDS[2],
@@ -126,7 +123,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(5, mPaymentRequestTestRule.getNumberOfPaymentInstruments());
+        Assert.assertEquals(5, mPaymentRequestTestRule.getNumberOfPaymentApps());
         int i = 0;
         // The two complete cards are sorted by frecency.
         Assert.assertTrue(mPaymentRequestTestRule.getPaymentMethodSuggestionLabel(i++).contains(
@@ -155,6 +152,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingNameFieldRecorded() throws TimeoutException {
         // Add a card with invalid billing address and another one with missing name.
@@ -165,7 +163,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentInstruments());
+        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
 
         // Verify that the missing fields of the most complete payment method has been recorded.
         Assert.assertEquals(1,
@@ -180,6 +178,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingBillingAddressFieldRecorded() throws TimeoutException {
         // Add a card with invalid billing address.
@@ -190,7 +189,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfPaymentInstruments());
+        Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfPaymentApps());
 
         // Verify that the missing fields of the most complete payment method has been recorded.
         Assert.assertEquals(1,
@@ -204,8 +203,8 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testAllMissingFieldsRecorded() throws TimeoutException {
         // Don't add any cards
         mCreditCardsToAdd = new CreditCard[] {};
@@ -213,7 +212,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
         mDatesToSet = new int[] {};
 
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(0, mPaymentRequestTestRule.getNumberOfPaymentInstruments());
+        Assert.assertEquals(0, mPaymentRequestTestRule.getNumberOfPaymentApps());
 
         // Verify that the missing fields of the most complete payment method has been recorded.
         Assert.assertEquals(1,

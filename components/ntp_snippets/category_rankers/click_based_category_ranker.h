@@ -29,6 +29,8 @@ class ClickBasedCategoryRanker : public CategoryRanker {
  public:
   explicit ClickBasedCategoryRanker(PrefService* pref_service,
                                     base::Clock* clock);
+  ClickBasedCategoryRanker(const ClickBasedCategoryRanker&) = delete;
+  ClickBasedCategoryRanker& operator=(const ClickBasedCategoryRanker&) = delete;
   ~ClickBasedCategoryRanker() override;
 
   // CategoryRanker implementation.
@@ -91,8 +93,6 @@ class ClickBasedCategoryRanker : public CategoryRanker {
   std::vector<RankedCategory> ordered_categories_;
   PrefService* pref_service_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickBasedCategoryRanker);
 };
 
 }  // namespace ntp_snippets

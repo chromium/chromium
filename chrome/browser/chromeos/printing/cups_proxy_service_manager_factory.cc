@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/printing/cups_proxy_service_manager_factory.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/cups_proxy_service_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -35,9 +35,7 @@ CupsProxyServiceManagerFactory::~CupsProxyServiceManagerFactory() = default;
 KeyedService* CupsProxyServiceManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // We do not need an instance of CupsProxyServiceManager on the lockscreen.
-  if (ProfileHelper::IsLockScreenAppProfile(
-          Profile::FromBrowserContext(context)) ||
-      ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
+  if (!ProfileHelper::IsRegularProfile(Profile::FromBrowserContext(context))) {
     return nullptr;
   }
   return new CupsProxyServiceManager();

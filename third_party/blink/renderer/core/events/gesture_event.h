@@ -26,10 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_GESTURE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_GESTURE_EVENT_H_
 
-#include "third_party/blink/public/platform/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -46,13 +47,16 @@ class CORE_EXPORT GestureEvent final : public UIEventWithKeyState {
 
   const WebGestureEvent& NativeEvent() const { return native_event_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   WebGestureEvent native_event_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(GestureEvent);
+template <>
+struct DowncastTraits<GestureEvent> {
+  static bool AllowFrom(const Event& event) { return event.IsGestureEvent(); }
+};
 
 }  // namespace blink
 

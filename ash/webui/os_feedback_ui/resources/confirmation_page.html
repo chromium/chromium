@@ -1,0 +1,46 @@
+<style include="os-feedback-shared">
+  cr-link-row {
+    border: 1px solid;
+    border-radius: 4px;
+    height: 64px;
+    margin: 12px 0 0 0;
+  }
+
+  #help-resources {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+<!--TODO(xiangdongkong): use localized strings -->
+<!--TODO(xiangdongkong): handle offline case -->
+<div id="container">
+  <div id="header">
+    <h1 id="title">Thanks for your feedback</h1>
+  </div>
+  <div id="message">
+    Your feedback helps improve Chrome OS and will be reviewed by our team.
+    Because of the large number of reports, we won’t be able to send a reply.
+  </div>
+  <div id="helpResources">
+    <p id="helpResourcesLabel">Here are some other helpful resources:</p>
+    <cr-link-row id="explore"
+        start-icon="help-resources:explore"
+        label="Explore app" external
+        sub-label="Find help articles and answers to common Chromebook questions">
+    </cr-link-row>
+    <cr-link-row id="diagnostics"
+        start-icon="help-resources:diagnostics"
+        label="Diagnostics app" external
+        sub-label="Run tests and troubleshooting for hardware issues">
+    </cr-link-row>
+    <cr-link-row id="chromebookCommunity"
+        start-icon="help-resources2:chromebook-community"
+        label="Chromebook community"
+        sub-label="Ask the experts in the Chromebook help forum" external>
+    </cr-link-row>
+  </div>
+  <div id="navButtons">
+    <cr-button id="startNewReport" class="action-button">Send new report</cr-button>
+    <cr-button id="done" class="cancel-button">Done</cr-button>
+  </div>
+</div>

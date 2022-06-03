@@ -70,8 +70,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "ppapi/cpp/dev/scriptable_object_deprecated.h"
 #include "ppapi/cpp/input_event.h"
@@ -129,12 +129,11 @@ class ScriptableBase : public pp::deprecated::ScriptableObject {
   }
 
  protected:
-  using MethodMap =
-      std::map<std::string,
-               base::Callback<pp::Var(const std::vector<pp::Var>&, pp::Var*)>>;
+  using MethodMap = std::map<
+      std::string,
+      base::RepeatingCallback<pp::Var(const std::vector<pp::Var>&, pp::Var*)>>;
   using PropertyMap =
-      std::map<std::string, base::Callback<void(bool, pp::Var*)>>;
-
+      std::map<std::string, base::RepeatingCallback<void(bool, pp::Var*)>>;
 
   MethodMap::iterator FindMethod(const pp::Var& name) {
     if (!name.is_string())
@@ -159,8 +158,8 @@ class TestObjectSO : public ScriptableBase {
       : ScriptableBase(instance) {
     ++count_;
     properties_.insert(std::make_pair(
-        "testObject",
-        base::Bind(&TestObjectSO::TestObjectAccessor, base::Unretained(this))));
+        "testObject", base::BindRepeating(&TestObjectSO::TestObjectAccessor,
+                                          base::Unretained(this))));
   }
   ~TestObjectSO() override {
     --count_;
@@ -190,43 +189,47 @@ class InstanceSO : public ScriptableBase {
       : ScriptableBase(instance) {
     methods_.insert(std::make_pair(
         "normalize",
-        base::Bind(&InstanceSO::Normalize, base::Unretained(this))));
+        base::BindRepeating(&InstanceSO::Normalize, base::Unretained(this))));
     methods_.insert(std::make_pair(
         "remember",
-        base::Bind(&InstanceSO::Remember, base::Unretained(this))));
+        base::BindRepeating(&InstanceSO::Remember, base::Unretained(this))));
     methods_.insert(std::make_pair(
-        "testCloneObject",
-        base::Bind(&InstanceSO::TestCloneObject, base::Unretained(this))));
+        "testCloneObject", base::BindRepeating(&InstanceSO::TestCloneObject,
+                                               base::Unretained(this))));
+    methods_.insert(
+        std::make_pair("testCreateTestObject",
+                       base::BindRepeating(&InstanceSO::TestCreateTestObject,
+                                           base::Unretained(this))));
     methods_.insert(std::make_pair(
-        "testCreateTestObject",
-        base::Bind(&InstanceSO::TestCreateTestObject, base::Unretained(this))));
+        "testExecuteScript", base::BindRepeating(&InstanceSO::TestExecuteScript,
+                                                 base::Unretained(this))));
     methods_.insert(std::make_pair(
-        "testExecuteScript",
-        base::Bind(&InstanceSO::TestExecuteScript, base::Unretained(this))));
-    methods_.insert(std::make_pair(
-        "testGetProperty",
-        base::Bind(&InstanceSO::TestGetProperty, base::Unretained(this))));
-    methods_.insert(std::make_pair(
-        "testPassTestObject",
-        base::Bind(&InstanceSO::TestPassTestObject, base::Unretained(this))));
+        "testGetProperty", base::BindRepeating(&InstanceSO::TestGetProperty,
+                                               base::Unretained(this))));
+    methods_.insert(
+        std::make_pair("testPassTestObject",
+                       base::BindRepeating(&InstanceSO::TestPassTestObject,
+                                           base::Unretained(this))));
     // Note: the semantics of testScriptObjectInvoke are identical to the
     // semantics of testPassTestObject: call args[0] with args[1] as a
     // parameter.
     methods_.insert(
         std::make_pair("testScriptObjectInvoke",
-                       base::Bind(&InstanceSO::TestPassTestObject,
-                                  base::Unretained(this))));
+                       base::BindRepeating(&InstanceSO::TestPassTestObject,
+                                           base::Unretained(this))));
     properties_.insert(std::make_pair(
-        "testObject", base::Bind(&InstanceSO::TestObjectAccessor,
-                                 base::Unretained(this))));
+        "testObject", base::BindRepeating(&InstanceSO::TestObjectAccessor,
+                                          base::Unretained(this))));
+    properties_.insert(
+        std::make_pair("testObjectCount",
+                       base::BindRepeating(&InstanceSO::TestObjectCountAccessor,
+                                           base::Unretained(this))));
     properties_.insert(std::make_pair(
-        "testObjectCount", base::Bind(&InstanceSO::TestObjectCountAccessor,
-                                      base::Unretained(this))));
-    properties_.insert(std::make_pair(
-        "testGetUndefined", base::Bind(&InstanceSO::TestGetUndefinedAccessor,
-                                       base::Unretained(this))));
+        "testGetUndefined",
+        base::BindRepeating(&InstanceSO::TestGetUndefinedAccessor,
+                            base::Unretained(this))));
   }
-  ~InstanceSO() override {}
+  ~InstanceSO() override = default;
 
  private:
   // Requires no argument.

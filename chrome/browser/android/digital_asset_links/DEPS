@@ -1,9 +1,0 @@
-# It is likely that this code will eventually be shared across platforms, so
-# excluding dependencies that would make this being a component impossible.
-include_rules = [
-  "-chrome",
-  "-content",
-  "+content/public",
-  "+chrome/browser/android/digital_asset_links",
-  "+net",
-]

@@ -33,7 +33,7 @@ cbor::Value CBORByteString(const char* str) {
   return cbor::Value(str, cbor::Value::Type::BYTE_STRING);
 }
 
-base::Optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
+absl::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
     SignedExchangeVersion version,
     base::StringPiece fallback_url,
     base::StringPiece signature,
@@ -95,7 +95,7 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
       base::make_span(contents_bytes + signature_header_field_offset +
                           prologue_b.signature_header_field_length(),
                       prologue_b.cbor_header_length());
-  const base::Optional<SignedExchangeEnvelope> envelope =
+  const absl::optional<SignedExchangeEnvelope> envelope =
       SignedExchangeEnvelope::Parse(
           SignedExchangeVersion::kB3, prologue_b.fallback_url(),
           signature_header_field, cbor_bytes, nullptr /* devtools_proxy */);
@@ -103,7 +103,7 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
   EXPECT_EQ(envelope->request_url().url,
             GURL("https://test.example.org/test/"));
   EXPECT_EQ(envelope->response_code(), static_cast<net::HttpStatusCode>(200u));
-  EXPECT_EQ(envelope->response_headers().size(), 3u);
+  EXPECT_EQ(envelope->response_headers().size(), 4u);
   EXPECT_EQ(envelope->response_headers().find("content-encoding")->second,
             "mi-sha256-03");
 }
@@ -115,7 +115,13 @@ TEST_P(SignedExchangeEnvelopeTest, ValidHeader) {
   ASSERT_TRUE(header.has_value());
   EXPECT_EQ(header->request_url().url, GURL("https://test.example.org/test/"));
   EXPECT_EQ(header->response_code(), static_cast<net::HttpStatusCode>(200u));
-  EXPECT_EQ(header->response_headers().size(), 2u);
+  EXPECT_EQ(header->response_headers().size(), 3u);
+
+  EXPECT_EQ(header->response_headers().find("content-type")->second,
+            "text/html");
+  EXPECT_EQ(header->response_headers().find("digest")->second, "foo");
+  EXPECT_EQ(header->response_headers().find("x-content-type-options")->second,
+            "nosniff");  // Injected by SignedExchangeEnvelope.
 }
 
 TEST_P(SignedExchangeEnvelopeTest, InformationalResponseCode) {
@@ -123,6 +129,7 @@ TEST_P(SignedExchangeEnvelopeTest, InformationalResponseCode) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "100"},
+          {"content-type", "text/html"},
       });
   ASSERT_FALSE(header.has_value());
 }
@@ -131,6 +138,7 @@ TEST_P(SignedExchangeEnvelopeTest, RelativeURL) {
   auto header = GenerateHeaderAndParse(GetParam(), "test/", kSignatureString,
                                        {
                                            {kStatusKey, "200"},
+                                           {"content-type", "text/html"},
                                        });
   ASSERT_FALSE(header.has_value());
 }
@@ -140,6 +148,7 @@ TEST_P(SignedExchangeEnvelopeTest, HttpURLShouldFail) {
       GetParam(), "http://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
       });
   ASSERT_FALSE(header.has_value());
 }
@@ -154,7 +163,8 @@ TEST_P(SignedExchangeEnvelopeTest, RedirectStatusShouldFail) {
 TEST_P(SignedExchangeEnvelopeTest, Status300ShouldFail) {
   auto header = GenerateHeaderAndParse(
       GetParam(), "https://test.example.org/test/", kSignatureString,
-      {{kStatusKey, "300"}});  // 300 is not a redirect status.
+      {{kStatusKey, "300"},  // 300 is not a redirect status.
+       {"content-type", "text/html"}});
   ASSERT_FALSE(header.has_value());
 }
 
@@ -163,6 +173,7 @@ TEST_P(SignedExchangeEnvelopeTest, StatefulResponseHeader) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"set-cookie", "foo=bar"},
       });
   ASSERT_FALSE(header.has_value());
@@ -171,7 +182,9 @@ TEST_P(SignedExchangeEnvelopeTest, StatefulResponseHeader) {
 TEST_P(SignedExchangeEnvelopeTest, UppercaseResponseMap) {
   auto header = GenerateHeaderAndParse(
       GetParam(), "https://test.example.org/test/", kSignatureString,
-      {{kStatusKey, "200"}, {"Content-Length", "123"}});
+      {{kStatusKey, "200"},
+       {"content-type", "text/html"},
+       {"Content-Length", "123"}});
   ASSERT_FALSE(header.has_value());
 }
 
@@ -180,6 +193,24 @@ TEST_P(SignedExchangeEnvelopeTest, InvalidValidityURLHeader) {
       GetParam(), "https://test2.example.org/test/", kSignatureString,
       {{kStatusKey, "200"}, {"content-type", "text/html"}});
   ASSERT_FALSE(header.has_value());
+}
+
+TEST_P(SignedExchangeEnvelopeTest, NoContentType) {
+  auto header =
+      GenerateHeaderAndParse(GetParam(), "https://test.example.org/test/",
+                             kSignatureString, {{kStatusKey, "200"}});
+  ASSERT_FALSE(header.has_value());
+}
+
+TEST_P(SignedExchangeEnvelopeTest, XContentTypeOptionsShouldBeOverwritten) {
+  auto header = GenerateHeaderAndParse(
+      GetParam(), "https://test.example.org/test/", kSignatureString,
+      {{kStatusKey, "200"},
+       {"content-type", "text/html"},
+       {"x-content-type-options", "foo"}});
+  ASSERT_TRUE(header.has_value());
+  EXPECT_EQ(header->response_headers().find("x-content-type-options")->second,
+            "nosniff");
 }
 
 TEST_P(SignedExchangeEnvelopeTest, InnerResponseIsSXG) {
@@ -195,6 +226,7 @@ TEST_P(SignedExchangeEnvelopeTest, CacheControlNoStore) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"cache-control", "no-store"},
       });
   ASSERT_FALSE(header.has_value());
@@ -205,6 +237,7 @@ TEST_P(SignedExchangeEnvelopeTest, CacheControlSecondValueIsNoStore) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"cache-control", "max-age=300, no-store"},
       });
   ASSERT_FALSE(header.has_value());
@@ -215,6 +248,7 @@ TEST_P(SignedExchangeEnvelopeTest, CacheControlPrivateWithValue) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"cache-control", "private=foo"},
       });
   ASSERT_FALSE(header.has_value());
@@ -225,6 +259,7 @@ TEST_P(SignedExchangeEnvelopeTest, CacheControlNoStoreInQuotedString) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"cache-control", "foo=\"300, no-store\""},
           {"digest", "foo"},
       });
@@ -236,6 +271,7 @@ TEST_P(SignedExchangeEnvelopeTest, CacheControlParseError) {
       GetParam(), "https://test.example.org/test/", kSignatureString,
       {
           {kStatusKey, "200"},
+          {"content-type", "text/html"},
           {"cache-control", "max-age=\"abc"},
       });
   ASSERT_FALSE(header.has_value());

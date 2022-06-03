@@ -1,0 +1,50 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_input_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// This interface is used by the renderer to ask the browser to create input
+// streams. The renderer supplies the desired audio parameters, and a client
+// to send the stream to when it's ready. The lifetime of the stream is limited
+// by the lifetime of the client.
+interface RendererAudioInputStreamFactory {
+  CreateStream(
+      pending_remote<RendererAudioInputStreamFactoryClient> client,
+      mojo_base.mojom.UnguessableToken session_id,
+      media.mojom.AudioParameters params,
+      bool automatic_gain_control,
+      uint32 shared_memory_count);
+
+  // Associates an output device with an input stream, so that the input knows
+  // which output device to cancel echo from. |input_stream_id| is the id
+  // returned when the stream was created. |output_device_id| is a device
+  // id HMAC. In case either of the parameters are invalid, the operation will
+  // silently fail.
+  AssociateInputAndOutputForAec(
+      mojo_base.mojom.UnguessableToken input_stream_id,
+      string output_device_id);
+};
+
+interface RendererAudioInputStreamFactoryClient {
+  // Called when a stream has been created. Will only be called once for every
+  // CreateStream call. |stream_id| is a handle used to refer to the stream,
+  // specifically to be able to associate it with an output device for echo
+  // cancellation. Loopback streams don't have ids.
+  // TODO(crbug.com/787806): There are plans to allow this function to be called
+  // serveral times in the future. If the stream is terminated e.g. due to the
+  // process hosting it crashing, this function should be called again with a
+  // fresh stream.
+  StreamCreated(
+      pending_remote<media.mojom.AudioInputStream> stream,
+      pending_receiver<media.mojom.AudioInputStreamClient> client_request,
+      media.mojom.ReadOnlyAudioDataPipe data_pipe,
+      bool initially_muted,
+      mojo_base.mojom.UnguessableToken? stream_id);
+};

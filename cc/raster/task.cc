@@ -4,7 +4,11 @@
 
 #include "cc/raster/task.h"
 
-#include "base/logging.h"
+#include <ostream>
+#include <utility>
+
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace cc {
 

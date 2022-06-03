@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from os import path as os_path
 import re
-import resource_checker
+from . import resource_checker
 from sys import path as sys_path
-import test_util
+from . import test_util
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))
@@ -30,7 +30,7 @@ class ResourceCheckerTest(unittest.TestCase):
   def ShouldFailDeprecatedMojoBindingCheck(self, line):
     error = self.checker.DeprecatedMojoBindingsCheck(1, line)
     self.assertNotEqual('', error, 'Should be flagged as error: ' + line)
-    self.assertEquals('mojo_bindings.js', test_util.GetHighlight(line, error))
+    self.assertEqual('mojo_bindings.js', test_util.GetHighlight(line, error))
 
   def testDeprecatedMojoBindingsCheckPasses(self):
     lines = [
@@ -55,7 +55,7 @@ class ResourceCheckerTest(unittest.TestCase):
   def ShouldFailDisallowIncludeCheck(self, line):
     error = self.checker.DisallowIncludeCheck('msg', 1, line)
     self.assertNotEqual('', error, 'Should be flagged as error: ' + line)
-    self.assertEquals('<include', test_util.GetHighlight(line, error))
+    self.assertEqual('<include', test_util.GetHighlight(line, error))
 
   def testDisallowIncludesFails(self):
     lines = [

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 
@@ -19,14 +18,15 @@ namespace viz {
 class HitTestRegionObserver {
  public:
   HitTestRegionObserver() = default;
+
+  HitTestRegionObserver(const HitTestRegionObserver&) = delete;
+  HitTestRegionObserver& operator=(const HitTestRegionObserver&) = delete;
+
   virtual ~HitTestRegionObserver() = default;
 
   virtual void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HitTestRegionObserver);
 };
 
 }  // namespace viz

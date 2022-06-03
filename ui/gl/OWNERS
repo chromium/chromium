@@ -1,14 +1,13 @@
 backer@chromium.org
-ericrk@chromium.org
 kbr@chromium.org
 sunnyps@chromium.org
 zmo@chromium.org
-per-file *gl_image*=reveman@chromium.org
 per-file *gl_image*=dcastagna@chromium.org
-per-file *_ozone*=alexst@chromium.org
-per-file *_ozone*=dnicoara@chromium.org
 per-file *_ozone*=spang@chromium.org
-per-file *surface_control*=khushalsagar@chromium.org
+per-file *surface_control*=vasilyt@chromium.org
 
-# COMPONENT: Internals>GPU>Internals
-# TEAM: graphics-dev@chromium.org
+# For Windows Direct Composition and Swap Chain
+magchen@chromium.org
+
+# D3D, dcomp, Windows platform integration, etc.
+rafael.cintron@microsoft.com

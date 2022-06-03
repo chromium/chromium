@@ -22,9 +22,10 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/service_manager/service_manager_connection_impl.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -36,9 +37,13 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/service_manager/sandbox/switches.h"
-#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
+#include "sandbox/policy/switches.h"
+#include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 #include "ui/base/ui_base_switches.h"
 
@@ -46,7 +51,7 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #endif  // OS_ANDROID
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include <Carbon/Carbon.h>
 #include <signal.h>
 #include <unistd.h>
@@ -54,7 +59,14 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "third_party/blink/public/web/web_view.h"
-#endif  // OS_MACOSX
+#endif  // OS_MAC
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
+#include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
+#endif  // defined(X86_64)
+#include "chromeos/system/core_scheduling.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -69,8 +81,7 @@ namespace {
 
 // This function provides some ways to test crash and assertion handling
 // behavior of the renderer.
-static void HandleRendererErrorTestParameters(
-    const base::CommandLine& command_line) {
+void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kWaitForDebugger))
     base::debug::WaitForDebugger(60, true);
 
@@ -79,7 +90,7 @@ static void HandleRendererErrorTestParameters(
 }
 
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // As long as scrollbars on Mac are painted with Cocoa, the message pump
   // needs to be backed by a Foundation-level loop to process NSTimers. See
   // http://crbug.com/306348#c24 for details.
@@ -95,32 +106,57 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 }  // namespace
 
 // mainline routine for running as the Renderer process
-int RendererMain(const MainFunctionParams& parameters) {
+int RendererMain(MainFunctionParams parameters) {
   // Don't use the TRACE_EVENT0 macro because the tracing infrastructure doesn't
   // expect synchronous events around the main loop of a thread.
-  TRACE_EVENT_ASYNC_BEGIN0("startup", "RendererMain", 0);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("startup", "RendererMain",
+                                    TRACE_ID_WITH_SCOPE("RendererMain", 0),
+                                    "zygote_child", false);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Renderer");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventRendererProcessSortIndex);
 
-  const base::CommandLine& command_line = parameters.command_line;
+  const base::CommandLine& command_line = *parameters.command_line;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
-#if defined(OS_CHROMEOS)
-  // As Zygote process starts up earlier than browser process gets its own
-  // locale (at login time for Chrome OS), we have to set the ICU default
-  // locale for renderer process here.
-  // ICU locale will be used for fallback font selection etc.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // As the Zygote process starts up earlier than the browser process, it gets
+  // its own locale (at login time for Chrome OS). So we have to set the ICU
+  // default locale for the renderer process here.
+  // ICU locale will be used for fallback font selection, etc.
   if (command_line.HasSwitch(switches::kLang)) {
     const std::string locale =
         command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
   }
-#endif
+
+  // When we start the renderer on ChromeOS if the system has core scheduling
+  // available we want to turn it on.
+  chromeos::system::EnableCoreSchedulingIfAvailable();
+
+#if defined(ARCH_CPU_X86_64)
+  using UserspaceSwapInit =
+      chromeos::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
+  absl::optional<UserspaceSwapInit> swap_init;
+  if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
+    swap_init.emplace();
+
+    PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
+        << "Unable to complete presandbox userspace swap initialization";
+  }
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // defined(IS_CHROMEOS_ASH)
+
+  if (command_line.HasSwitch(switches::kTimeZoneForTesting)) {
+    std::string time_zone =
+        command_line.GetSwitchValueASCII(switches::kTimeZoneForTesting);
+    icu::TimeZone::adoptDefault(
+        icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
+  }
 
   InitializeSkia();
 
@@ -138,24 +174,10 @@ int RendererMain(const MainFunctionParams& parameters) {
   // better means of determining which is the main thread, remove.
   RenderThread::IsMainThread();
 
-#if defined(OS_ANDROID)
-  // If we have any pending LibraryLoader histograms, record them.
-  base::android::RecordLibraryLoaderRendererHistograms();
-#endif
-
-  base::Optional<base::Time> initial_virtual_time;
-  if (command_line.HasSwitch(switches::kInitialVirtualTime)) {
-    double initial_time;
-    if (base::StringToDouble(
-            command_line.GetSwitchValueASCII(switches::kInitialVirtualTime),
-            &initial_time)) {
-      initial_virtual_time = base::Time::FromDoubleT(initial_time);
-    }
-  }
-
+  blink::Platform::InitializeBlink();
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
-          CreateMainThreadMessagePump(), initial_virtual_time);
+          CreateMainThreadMessagePump());
 
   platform.PlatformInitialize();
 
@@ -172,9 +194,9 @@ int RendererMain(const MainFunctionParams& parameters) {
   {
     bool should_run_loop = true;
     bool need_sandbox =
-        !command_line.HasSwitch(service_manager::switches::kNoSandbox);
+        !command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
 
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
+#if !defined(OS_WIN) && !defined(OS_MAC)
     // Sandbox is enabled before RenderProcess initialization on all platforms,
     // except Windows and Mac.
     // TODO(markus): Check if it is OK to remove ifdefs for Windows and Mac.
@@ -191,9 +213,34 @@ int RendererMain(const MainFunctionParams& parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-    // Setup tracing sampler profiler as early as possible.
-    auto tracing_sampler_profiler =
-        tracing::TracingSamplerProfiler::CreateOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_64)
+    // Once the sandbox has been entered and initialization of render threads
+    // complete we will transfer FDs to the browser, or close them on failure.
+    // This should always be called because it will also transfer the errno that
+    // prevented the creation of the userfaultfd if applicable.
+    if (swap_init) {
+      swap_init->TransferFDsOrCleanup(base::BindOnce(
+          &RenderThread::BindHostReceiver,
+          // Unretained is safe because TransferFDsOrCleanup is synchronous.
+          base::Unretained(RenderThread::Get())));
+
+      // No need to leave this around any further.
+      swap_init.reset();
+    }
+#endif
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+    // Startup tracing is usually enabled earlier, but if we forked from a
+    // zygote, we can only enable it after mojo IPC support is brought up
+    // initialized by RenderThreadImpl, because the mojo broker has to create
+    // the tracing SMB on our behalf due to the zygote sandbox.
+    if (parameters.zygote_child) {
+      tracing::EnableStartupTracingIfNeeded();
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("startup", "RendererMain",
+                                        TRACE_ID_WITH_SCOPE("RendererMain", 0),
+                                        "zygote_child", true);
+    }
+#endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
 
     if (need_sandbox)
       should_run_loop = platform.EnableSandbox();
@@ -202,16 +249,25 @@ int RendererMain(const MainFunctionParams& parameters) {
     mojo::BeginRandomMojoDelays();
 #endif
 
+    internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+        switches::kRendererProcess);
+
     base::HighResolutionTimerManager hi_res_timer_manager;
 
     if (should_run_loop) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       if (pool)
         pool->Recycle();
 #endif
-      TRACE_EVENT_ASYNC_BEGIN0("toplevel", "RendererMain.START_MSG_LOOP", 0);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+          "toplevel", "RendererMain.START_MSG_LOOP",
+          TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
+      RenderThreadImpl::current()->set_run_loop_start_time(
+          base::TimeTicks::Now());
       run_loop.Run();
-      TRACE_EVENT_ASYNC_END0("toplevel", "RendererMain.START_MSG_LOOP", 0);
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "toplevel", "RendererMain.START_MSG_LOOP",
+          TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
     }
 
 #if defined(LEAK_SANITIZER)
@@ -221,7 +277,8 @@ int RendererMain(const MainFunctionParams& parameters) {
 #endif
   }
   platform.PlatformUninitialize();
-  TRACE_EVENT_ASYNC_END0("startup", "RendererMain", 0);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("startup", "RendererMain",
+                                  TRACE_ID_WITH_SCOPE("RendererMain", 0));
   return 0;
 }
 

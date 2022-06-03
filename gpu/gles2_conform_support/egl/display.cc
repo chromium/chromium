@@ -4,7 +4,9 @@
 
 #include "gpu/gles2_conform_support/egl/display.h"
 
-#include "base/stl_util.h"
+#include <memory>
+
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gpu/gles2_conform_support/egl/config.h"
 #include "gpu/gles2_conform_support/egl/context.h"
@@ -12,6 +14,7 @@
 #include "gpu/gles2_conform_support/egl/thread_state.h"
 #include "ui/gl/init/gl_factory.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 Display::Display()
@@ -63,7 +66,7 @@ const char* Display::QueryString(ThreadState* ts, EGLint name) {
     case EGL_EXTENSIONS:
       return ts->ReturnSuccess("");
     case EGL_VENDOR:
-      return ts->ReturnSuccess("Google Inc.");
+      return ts->ReturnSuccess("Google LLC");
     case EGL_VERSION:
       return ts->ReturnSuccess("1.4");
     default:
@@ -216,7 +219,7 @@ EGLSurface Display::CreateWindowSurface(ThreadState* ts,
     return result;
   }
   scoped_refptr<gl::GLSurface> gl_surface;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget;
 #else
   gfx::AcceleratedWidget widget = static_cast<gfx::AcceleratedWidget>(win);
@@ -363,8 +366,8 @@ void Display::InitializeConfigsIfNeeded() {
     // This way we can record the client intention at context creation time.
     // The GL implementation (gl::GLContext and gl::GLSurface) needs this
     // distinction when creating a context.
-    configs_[0].reset(new Config(EGL_WINDOW_BIT));
-    configs_[1].reset(new Config(EGL_PBUFFER_BIT));
+    configs_[0] = std::make_unique<Config>(EGL_WINDOW_BIT);
+    configs_[1] = std::make_unique<Config>(EGL_PBUFFER_BIT);
   }
 }
 
@@ -394,3 +397,4 @@ Context* Display::GetContext(EGLContext context) {
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

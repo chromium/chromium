@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 13: The specified value "2012-12-24" does not conform to the required format.  The format is "yyyy-Www" where yyyy is year in four or more digits, and ww is 01-53.
 Check that page popup doesn't exist at first.
 PASS $("mock-page-popup") is null
 Check that page popup exists.

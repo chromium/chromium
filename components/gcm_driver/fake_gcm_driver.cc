@@ -6,29 +6,18 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace gcm {
 
-FakeGCMDriver::FakeGCMDriver()
-    : GCMDriver(
-          base::FilePath(),
-          nullptr,
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {}
+FakeGCMDriver::FakeGCMDriver() : GCMDriver(base::FilePath(), nullptr) {}
 
 FakeGCMDriver::FakeGCMDriver(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
-    : GCMDriver(
-          base::FilePath(),
-          blocking_task_runner,
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {}
+    : GCMDriver(base::FilePath(), blocking_task_runner) {}
 
-FakeGCMDriver::~FakeGCMDriver() {
-}
+FakeGCMDriver::~FakeGCMDriver() = default;
 
 void FakeGCMDriver::ValidateRegistration(
     const std::string& app_id,
@@ -51,12 +40,6 @@ void FakeGCMDriver::AddConnectionObserver(GCMConnectionObserver* observer) {
 void FakeGCMDriver::RemoveConnectionObserver(GCMConnectionObserver* observer) {
 }
 
-void FakeGCMDriver::Enable() {
-}
-
-void FakeGCMDriver::Disable() {
-}
-
 GCMClient* FakeGCMDriver::GetGCMClientForTesting() const {
   return nullptr;
 }
@@ -69,13 +52,12 @@ bool FakeGCMDriver::IsConnected() const {
   return true;
 }
 
-void FakeGCMDriver::GetGCMStatistics(const GetGCMStatisticsCallback& callback,
-                                     ClearActivityLogs clear_logs) {
-}
+void FakeGCMDriver::GetGCMStatistics(GetGCMStatisticsCallback callback,
+                                     ClearActivityLogs clear_logs) {}
 
-void FakeGCMDriver::SetGCMRecording(const GetGCMStatisticsCallback& callback,
-                                    bool recording) {
-}
+void FakeGCMDriver::SetGCMRecording(
+    const GCMStatisticsRecordingCallback& callback,
+    bool recording) {}
 
 GCMClient::Result FakeGCMDriver::EnsureStarted(
     GCMClient::StartMode start_mode) {
@@ -112,9 +94,6 @@ base::Time FakeGCMDriver::GetLastTokenFetchTime() {
 }
 
 void FakeGCMDriver::SetLastTokenFetchTime(const base::Time& time) {
-}
-
-void FakeGCMDriver::WakeFromSuspendForHeartbeat(bool wake) {
 }
 
 InstanceIDHandler* FakeGCMDriver::GetInstanceIDHandlerInternal() {

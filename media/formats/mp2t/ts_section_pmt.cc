@@ -6,16 +6,15 @@
 
 #include <map>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
 namespace media {
 namespace mp2t {
 
-TsSectionPmt::TsSectionPmt(const RegisterPesCb& register_pes_cb)
-    : register_pes_cb_(register_pes_cb) {
-}
+TsSectionPmt::TsSectionPmt(RegisterPesCB register_pes_cb)
+    : register_pes_cb_(std::move(register_pes_cb)) {}
 
 TsSectionPmt::~TsSectionPmt() {
 }
@@ -83,7 +82,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   std::map<int, PidMapValue> pid_map;
   while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
     int stream_type;
-    int reserved;
     int pid_es;
     int es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
@@ -118,4 +116,3 @@ void TsSectionPmt::ResetPsiSection() {
 
 }  // namespace mp2t
 }  // namespace media
-

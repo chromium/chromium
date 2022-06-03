@@ -17,9 +17,7 @@ source_set("bluetooth_system") {
     "bluetooth_system_factory.h",
   ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 
   deps = [
     "//base",
@@ -31,9 +29,7 @@ source_set("bluetooth_system") {
 source_set("bluetooth_system_tests") {
   testonly = true
 
-  sources = [
-    "bluetooth_system_unittest.cc",
-  ]
+  sources = [ "bluetooth_system_unittest.cc" ]
 
   deps = [
     ":bluetooth_system",

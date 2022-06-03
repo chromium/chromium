@@ -32,9 +32,8 @@ KeyedService* DocumentSuggestionsServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return new DocumentSuggestionsService(
-      identity_manager,
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess());
+      identity_manager, profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 DocumentSuggestionsServiceFactory::DocumentSuggestionsServiceFactory()

@@ -8,21 +8,24 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
-#include "chrome/browser/chromeos/assistant/assistant_util.h"
+#include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/features.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -31,6 +34,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -45,14 +49,6 @@ namespace {
 AssistantOptInDialog* g_dialog = nullptr;
 
 constexpr int kCaptionBarHeight = 32;
-constexpr int kDialogMargin = 48;
-constexpr gfx::Size kDialogMaxSize = gfx::Size(768, 768);
-constexpr gfx::Size kDialogMinSize = gfx::Size(544, 464);
-constexpr gfx::Insets kDialogInsets =
-    gfx::Insets(kDialogMargin + kCaptionBarHeight,
-                kDialogMargin,
-                kDialogMargin,
-                kDialogMargin);
 
 constexpr char kFlowTypeParamKey[] = "flow-type";
 constexpr char kCaptionBarHeightParamKey[] = "caption-bar-height";
@@ -64,11 +60,6 @@ GURL CreateAssistantOptInURL(ash::FlowType type) {
   gurl = net::AppendQueryParameter(gurl, kCaptionBarHeightParamKey,
                                    base::NumberToString(kCaptionBarHeight));
   return gurl;
-}
-
-void DisablePolymer2(content::URLDataSource* shared_source) {
-  if (shared_source)
-    shared_source->DisablePolymer2ForHost(chrome::kChromeUIAssistantOptInHost);
 }
 
 }  // namespace
@@ -89,6 +80,9 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
 
   base::DictionaryValue localized_strings;
   assistant_handler_ptr_->GetLocalizedStrings(&localized_strings);
+
+  OobeUI::AddOobeComponents(source, localized_strings);
+
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
   source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
@@ -98,7 +92,9 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->AddResourcePath("voice_match_already_setup_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION);
-  source->OverrideContentSecurityPolicyWorkerSrc("worker-src blob: 'self';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+  source->DisableTrustedTypesCSP();
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   // Do not zoom for Assistant opt-in web contents.
@@ -106,17 +102,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
       content::HostZoomMap::GetForWebContents(web_ui->GetWebContents());
   DCHECK(zoom_map);
   zoom_map->SetZoomLevelForHost(web_ui->GetWebContents()->GetURL().host(), 0);
-
-  // If allowed, request that the shared resources send this page Polymer 1
-  // resources instead of Polymer 2.
-  // TODO (https://crbug.com/739611): Remove this exception by migrating to
-  // Polymer 2.
-  if (base::FeatureList::IsEnabled(features::kWebUIPolymer2Exceptions)) {
-    content::URLDataSource::GetSourceForURL(
-        Profile::FromWebUI(web_ui),
-        GURL("chrome://resources/polymer/v1_0/polymer/polymer.html"),
-        base::BindOnce(DisablePolymer2));
-  }
 }
 
 AssistantOptInUI::~AssistantOptInUI() = default;
@@ -139,13 +124,11 @@ void AssistantOptInDialog::Show(
     ash::AssistantSetup::StartAssistantOptInFlowCallback callback) {
 #if !BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   std::move(callback).Run(false);
-  return;
-#endif
-
+#else
   // Check Assistant allowed state.
   if (::assistant::IsAssistantAllowedForProfile(
           ProfileManager::GetActiveUserProfile()) !=
-      ash::mojom::AssistantAllowedState::ALLOWED) {
+      chromeos::assistant::AssistantAllowedState::ALLOWED) {
     std::move(callback).Run(false);
     return;
   }
@@ -165,6 +148,7 @@ void AssistantOptInDialog::Show(
   g_dialog = new AssistantOptInDialog(type, std::move(callback));
 
   g_dialog->ShowSystemDialog();
+#endif
 }
 
 // static
@@ -181,7 +165,7 @@ bool AssistantOptInDialog::BounceIfActive() {
 AssistantOptInDialog::AssistantOptInDialog(
     ash::FlowType type,
     ash::AssistantSetup::StartAssistantOptInFlowCallback callback)
-    : SystemWebDialogDelegate(CreateAssistantOptInURL(type), base::string16()),
+    : SystemWebDialogDelegate(CreateAssistantOptInURL(type), std::u16string()),
       callback_(std::move(callback)) {}
 
 AssistantOptInDialog::~AssistantOptInDialog() {
@@ -196,10 +180,11 @@ void AssistantOptInDialog::AdjustWidgetInitParams(
 
 void AssistantOptInDialog::GetDialogSize(gfx::Size* size) const {
   auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  bounds.Inset(kDialogInsets);
-  auto dialog_size = bounds.size();
-  dialog_size.SetToMin(kDialogMaxSize);
-  dialog_size.SetToMax(kDialogMinSize);
+  gfx::Size dialog_size;
+  const bool is_horizontal = bounds.width() > bounds.height();
+  dialog_size = CalculateOobeDialogSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().size(),
+      ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
   size->SetSize(dialog_size.width(), dialog_size.height());
 }
 

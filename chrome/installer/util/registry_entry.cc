@@ -4,14 +4,15 @@
 
 #include "chrome/installer/util/registry_entry.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/work_item.h"
 #include "chrome/installer/util/work_item_list.h"
 
-RegistryEntry::RegistryEntry(const base::string16& key_path,
-                             const base::string16& value)
+RegistryEntry::RegistryEntry(const std::wstring& key_path,
+                             const std::wstring& value)
     : key_path_(key_path),
       name_(),
       is_string_(true),
@@ -19,9 +20,9 @@ RegistryEntry::RegistryEntry(const base::string16& key_path,
       int_value_(0),
       removal_flag_(RemovalFlag::NONE) {}
 
-RegistryEntry::RegistryEntry(const base::string16& key_path,
-                             const base::string16& name,
-                             const base::string16& value)
+RegistryEntry::RegistryEntry(const std::wstring& key_path,
+                             const std::wstring& name,
+                             const std::wstring& value)
     : key_path_(key_path),
       name_(name),
       is_string_(true),
@@ -29,8 +30,8 @@ RegistryEntry::RegistryEntry(const base::string16& key_path,
       int_value_(0),
       removal_flag_(RemovalFlag::NONE) {}
 
-RegistryEntry::RegistryEntry(const base::string16& key_path,
-                             const base::string16& name,
+RegistryEntry::RegistryEntry(const std::wstring& key_path,
+                             const std::wstring& name,
                              DWORD value)
     : key_path_(key_path),
       name_(name),
@@ -86,7 +87,7 @@ RegistryEntry::RegistryStatus RegistryEntry::StatusInRegistryUnderRoot(
   bool found = false;
   bool correct_value = false;
   if (is_string_) {
-    base::string16 read_value;
+    std::wstring read_value;
     found = key.ReadValue(name_.c_str(), &read_value) == ERROR_SUCCESS;
     if (found) {
       correct_value =

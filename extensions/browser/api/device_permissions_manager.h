@@ -16,8 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -54,9 +52,9 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
   DevicePermissionEntry(Type type,
                         uint16_t vendor_id,
                         uint16_t product_id,
-                        const base::string16& serial_number,
-                        const base::string16& manufacturer_string,
-                        const base::string16& product_string,
+                        const std::u16string& serial_number,
+                        const std::u16string& manufacturer_string,
+                        const std::u16string& product_string,
                         const base::Time& last_used);
 
   // A persistent device is one that can be recognized when it is reconnected
@@ -64,20 +62,20 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
   // it to ExtensionPrefs. Currently this means it has a serial number string.
   bool IsPersistent() const;
 
-  // Convert the device to a serializable value, returns a null pointer if the
-  // entry is not persistent.
-  std::unique_ptr<base::Value> ToValue() const;
+  // Convert the device to a serializable value, returns an is_none() value
+  // if the entry is not persistent.
+  base::Value ToValue() const;
 
-  base::string16 GetPermissionMessageString() const;
+  std::u16string GetPermissionMessageString() const;
 
   Type type() const { return type_; }
   uint16_t vendor_id() const { return vendor_id_; }
   uint16_t product_id() const { return product_id_; }
-  const base::string16& serial_number() const { return serial_number_; }
+  const std::u16string& serial_number() const { return serial_number_; }
   const base::Time& last_used() const { return last_used_; }
 
-  base::string16 GetManufacturer() const;
-  base::string16 GetProduct() const;
+  std::u16string GetManufacturer() const;
+  std::u16string GetProduct() const;
 
  private:
   friend class base::RefCounted<DevicePermissionEntry>;
@@ -96,11 +94,11 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
   // The product ID of this device.
   uint16_t product_id_;
   // The serial number (possibly alphanumeric) of this device.
-  base::string16 serial_number_;
+  std::u16string serial_number_;
   // The manufacturer string read from the device (optional).
-  base::string16 manufacturer_string_;
+  std::u16string manufacturer_string_;
   // The product string read from the device (optional).
-  base::string16 product_string_;
+  std::u16string product_string_;
   // The last time this device was used by the extension.
   base::Time last_used_;
 };
@@ -108,6 +106,9 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
 // Stores device permissions associated with a particular extension.
 class DevicePermissions {
  public:
+  DevicePermissions(const DevicePermissions&) = delete;
+  DevicePermissions& operator=(const DevicePermissions&) = delete;
+
   virtual ~DevicePermissions();
 
   // Attempts to find a permission entry matching the given device.
@@ -134,21 +135,22 @@ class DevicePermissions {
       ephemeral_usb_devices_;
   std::map<std::string, scoped_refptr<DevicePermissionEntry>>
       ephemeral_hid_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissions);
 };
 
 // Manages saved device permissions for all extensions.
 class DevicePermissionsManager : public KeyedService {
  public:
+  DevicePermissionsManager(const DevicePermissionsManager&) = delete;
+  DevicePermissionsManager& operator=(const DevicePermissionsManager&) = delete;
+
   static DevicePermissionsManager* Get(content::BrowserContext* context);
 
-  static base::string16 GetPermissionMessage(
+  static std::u16string GetPermissionMessage(
       uint16_t vendor_id,
       uint16_t product_id,
-      const base::string16& manufacturer_string,
-      const base::string16& product_string,
-      const base::string16& serial_number,
+      const std::u16string& manufacturer_string,
+      const std::u16string& product_string,
+      const std::u16string& serial_number,
       bool always_include_manufacturer);
 
   // The DevicePermissions object for a given extension.
@@ -156,7 +158,7 @@ class DevicePermissionsManager : public KeyedService {
 
   // Equivalent to calling GetForExtension and extracting the permission string
   // for each entry.
-  std::vector<base::string16> GetPermissionMessageStrings(
+  std::vector<std::u16string> GetPermissionMessageStrings(
       const std::string& extension_id) const;
 
   void AllowUsbDevice(const std::string& extension_id,
@@ -192,13 +194,16 @@ class DevicePermissionsManager : public KeyedService {
   base::ThreadChecker thread_checker_;
   content::BrowserContext* context_;
   std::map<std::string, DevicePermissions*> extension_id_to_device_permissions_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsManager);
 };
 
 class DevicePermissionsManagerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  DevicePermissionsManagerFactory(const DevicePermissionsManagerFactory&) =
+      delete;
+  DevicePermissionsManagerFactory& operator=(
+      const DevicePermissionsManagerFactory&) = delete;
+
   static DevicePermissionsManager* GetForBrowserContext(
       content::BrowserContext* context);
   static DevicePermissionsManagerFactory* GetInstance();
@@ -214,8 +219,6 @@ class DevicePermissionsManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsManagerFactory);
 };
 
 }  // namespace extensions

@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A fake wrapper around Android's InputMethodManager that doesn't really talk to the
@@ -115,4 +116,10 @@ public class VrInputMethodManagerWrapper implements InputMethodManagerWrapper {
 
     @Override
     public void notifyUserAction() {}
+
+    @Override
+    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {}
+
+    @Override
+    public void onInputConnectionCreated() {}
 }

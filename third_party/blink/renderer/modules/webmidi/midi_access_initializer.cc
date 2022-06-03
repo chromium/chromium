@@ -8,17 +8,16 @@
 #include <utility>
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
-#include "third_party/blink/renderer/modules/webmidi/midi_options.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
@@ -31,22 +30,16 @@ using mojom::blink::PermissionStatus;
 
 MIDIAccessInitializer::MIDIAccessInitializer(ScriptState* script_state,
                                              const MIDIOptions* options)
-    : ScriptPromiseResolver(script_state), options_(options) {}
+    : ScriptPromiseResolver(script_state),
+      options_(options),
+      permission_service_(ExecutionContext::From(script_state)) {}
 
-void MIDIAccessInitializer::Dispose() {
-  dispatcher_.reset();
-  permission_service_.reset();
-}
-
-void MIDIAccessInitializer::ContextDestroyed(ExecutionContext* context) {
-  dispatcher_.reset();
-  permission_service_.reset();
-
-  ScriptPromiseResolver::ContextDestroyed(context);
+void MIDIAccessInitializer::ContextDestroyed() {
+  ScriptPromiseResolver::ContextDestroyed();
 }
 
 ScriptPromise MIDIAccessInitializer::Start() {
-  ScriptPromise promise = this->Promise();
+  ScriptPromise promise = Promise();
 
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -56,10 +49,10 @@ ScriptPromise MIDIAccessInitializer::Start() {
       GetExecutionContext(),
       permission_service_.BindNewPipeAndPassReceiver(std::move(task_runner)));
 
-  Document& doc = To<Document>(*GetExecutionContext());
+  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   permission_service_->RequestPermission(
       CreateMidiPermissionDescriptor(options_->hasSysex() && options_->sysex()),
-      LocalFrame::HasTransientUserActivation(doc.GetFrame()),
+      LocalFrame::HasTransientUserActivation(window->GetFrame()),
       WTF::Bind(&MIDIAccessInitializer::OnPermissionsUpdated,
                 WrapPersistent(this)));
 
@@ -109,7 +102,7 @@ void MIDIAccessInitializer::DidStartSession(Result result) {
       break;
     case Result::OK:
       return Resolve(MakeGarbageCollected<MIDIAccess>(
-          std::move(dispatcher_), options_->hasSysex() && options_->sysex(),
+          dispatcher_, options_->hasSysex() && options_->sysex(),
           port_descriptors_, GetExecutionContext()));
     case Result::NOT_SUPPORTED:
       return Reject(MakeGarbageCollected<DOMException>(
@@ -125,8 +118,10 @@ void MIDIAccessInitializer::DidStartSession(Result result) {
                                          "Unknown internal error occurred."));
 }
 
-void MIDIAccessInitializer::Trace(Visitor* visitor) {
+void MIDIAccessInitializer::Trace(Visitor* visitor) const {
+  visitor->Trace(dispatcher_);
   visitor->Trace(options_);
+  visitor->Trace(permission_service_);
   ScriptPromiseResolver::Trace(visitor);
 }
 
@@ -137,10 +132,7 @@ ExecutionContext* MIDIAccessInitializer::GetExecutionContext() const {
 void MIDIAccessInitializer::StartSession() {
   DCHECK(!dispatcher_);
 
-  // See https://bit.ly/2S0zRAS for task types.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  dispatcher_ = std::make_unique<MIDIDispatcher>(task_runner);
+  dispatcher_ = MakeGarbageCollected<MIDIDispatcher>(GetExecutionContext());
   dispatcher_->SetClient(this);
 }
 

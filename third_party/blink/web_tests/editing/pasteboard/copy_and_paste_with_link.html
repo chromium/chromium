@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where a copied link wouldn't paste as a link. Both
+// editable regions below should contain a link.
+selection_test(
+    [
+        '<div contenteditable>^<a href="http://foo/">ab</a>|</div>',
+        '<div contenteditable id="paste"><br></div>',
+    ],
+    selection => {
+        selection.document.execCommand('copy');
+        const paste = selection.document.getElementById('paste');
+        selection.collapse(paste, 0);
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div contenteditable><a href="http://foo/">ab</a></div>',
+        '<div contenteditable id="paste"><a href="http://foo/">ab|</a></div>',
+    ],
+    'Copy & Paste link');
+</script>

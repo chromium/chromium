@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file has been generated with testing/libfuzzer/dictionary_generator.py
+# This block has been generated with testing/libfuzzer/dictionary_generator.py
 # using url_parse_fuzzer binary and RFC 3986.
 "DNS"
 "text"
@@ -401,3 +401,32 @@
 "H.,"
 "\"MIME"
 
+# This comes from https://crbug.com/1075515.
+"FilEsysteM:htTp:E=/."
+
+# This comes from https://crbug.com/1128999.
+"file:///.//"
+"file:////"
+
+# string declared from url/url_constants.cc
+"://"
+"about"
+"about:blank"
+"about:srcdoc"
+"blank"
+"blob"
+"cid"
+"content"
+"data"
+"file"
+"filesystem"
+"ftp"
+"http"
+"https"
+"javascript"
+"mailto"
+"quic-transport"
+"srcdoc"
+"tel"
+"ws"
+"wss"

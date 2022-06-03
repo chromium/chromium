@@ -94,9 +94,8 @@ enrollment, if they wish.
 The final step of the opt-in flow is informing the user the Assistant is ready,
 and offering to enable some advanced features, if any are available.
 
-Much of this flow is managed by assistant::mojom::AssistantSettingsManager
-service. To effectively test the screen flow, this service should be faked by
-the test.
+Much of this flow is managed by chromeos::assistant::AssistantSettings service.
+To effectively test the screen flow, this service should be faked by the test.
 
 # Multi-device Setup screen
 

@@ -15,7 +15,7 @@ struct Version {
   Version(const Version& orig);
   ~Version();
 
-  int sdk_int;
+  int sdk_int = -1;
 };
 
 // Information about the device.

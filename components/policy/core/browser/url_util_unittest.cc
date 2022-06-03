@@ -75,23 +75,22 @@ void PrintTo(const FilterTestParams& params, std::ostream* os) {
   *os << params.filter();
 }
 
-bool MatchFilters(const std::vector<const std::string>& patterns,
+bool MatchFilters(const std::vector<std::string>& patterns,
                   const std::string& url) {
   // Add the pattern to the matcher.
   url_matcher::URLMatcher matcher;
-  auto list = std::make_unique<base::ListValue>();
+  base::Value list(base::Value::Type::LIST);
   for (const auto& pattern : patterns)
-    list->AppendString(pattern);
-  AddAllowFilters(&matcher, list.get());
+    list.Append(pattern);
+  AddAllowFilters(&matcher, &base::Value::AsListValue(list));
   return !matcher.MatchURL(GURL(url)).empty();
 }
 
 class FilterToComponentsTest : public testing::TestWithParam<FilterTestParams> {
  public:
-  FilterToComponentsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilterToComponentsTest);
+  FilterToComponentsTest() = default;
+  FilterToComponentsTest(const FilterToComponentsTest&) = delete;
+  FilterToComponentsTest& operator=(const FilterToComponentsTest&) = delete;
 };
 
 class OnlyWildcardTest
@@ -101,10 +100,9 @@ class OnlyWildcardTest
                                                std::string /* path */,
                                                std::string /* query*/>> {
  public:
-  OnlyWildcardTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OnlyWildcardTest);
+  OnlyWildcardTest() = default;
+  OnlyWildcardTest(const OnlyWildcardTest&) = delete;
+  OnlyWildcardTest& operator=(const OnlyWildcardTest&) = delete;
 };
 
 }  // namespace
@@ -416,8 +414,8 @@ TEST(URLUtilTest, SingleFilter) {
 
 TEST(URLUtilTest, MultipleFilters) {
   // Test exceptions to path prefixes, and most specific matches.
-  std::vector<const std::string> patterns = {"s.xxx.com/a/b",
-                                             "https://s.xxx.com/a/b/c/d"};
+  std::vector<std::string> patterns = {"s.xxx.com/a/b",
+                                       "https://s.xxx.com/a/b/c/d"};
   EXPECT_FALSE(MatchFilters(patterns, "http://s.xxx.com/a"));
   EXPECT_FALSE(MatchFilters(patterns, "http://s.xxx.com/a/x"));
   EXPECT_FALSE(MatchFilters(patterns, "https://s.xxx.com/a/x"));
@@ -435,9 +433,9 @@ TEST(URLUtilTest, MultipleFilters) {
   EXPECT_FALSE(MatchFilters(patterns, "http://xxx.com/a/b"));
 
   // Match queries.
-  std::vector<const std::string> queries = {"*?q=1234", "*?q=5678", "*?a=1&b=2",
-                                            "youtube.com?foo=baz",
-                                            "youtube.com?foo=bar*"};
+  std::vector<std::string> queries = {"*?q=1234", "*?q=5678", "*?a=1&b=2",
+                                      "youtube.com?foo=baz",
+                                      "youtube.com?foo=bar*"};
   EXPECT_TRUE(MatchFilters(queries, "http://google.com?q=1234"));
   EXPECT_TRUE(MatchFilters(queries, "http://google.com?q=5678"));
   EXPECT_TRUE(MatchFilters(queries, "http://google.com?a=1&b=2"));
@@ -458,7 +456,7 @@ TEST(URLUtilTest, MultipleFilters) {
 
 TEST(URLUtilTest, BasicCoverage) {
   // Tests to cover the documentation from
-  // http://www.chromium.org/administrators/url-blacklist-filter-format
+  // http://www.chromium.org/administrators/url-blocklist-filter-format
 
   // [scheme://][.]host[:port][/path][@query]
   // Scheme can be http, https, ftp, chrome, etc. This field is optional, and

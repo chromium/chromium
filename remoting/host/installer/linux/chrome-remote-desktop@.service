@@ -1,0 +1,37 @@
+[Unit]
+Description=Chrome Remote Desktop instance for %I
+After=network.target
+
+[Service]
+Type=simple
+User=%I
+Environment=XDG_SESSION_CLASS=user XDG_SESSION_TYPE=x11
+PAMName=chrome-remote-desktop
+# Ideally, PAM_TTY would be set to the X display for x11 sessions, but we don't
+# yet know what display we'll be using. Leaving it unset has been known to break
+# some PAM modules (the pam_systemd documentation explicitly calls out pam_time
+# and pam_access, though they appear to have since been fixed) so the below sets
+# it to a dummy value. There is some precedence for this, as SSH and cron set
+# PAM_TTY to "ssh" and "cron" (respectively) for similar reasons. This also has
+# the side effect of making CRD sessions easy to spot in the output of
+# loginctl.
+#
+# Unfortunately, systemd doesn't provide a way to set PAM_TTY explicitly, but it
+# will set it to the value of TTYPath, if present. TTYPath must be an absolute
+# path, but /dev/ will get stripped off by pam_systemd when it copies the value
+# from PAM_TTY to the logind session information. Setting this to a nonexistent
+# path seems not to cause issues and long as none of the Standard*= options are
+# set to "tty".
+TTYPath=/dev/chrome-remote-desktop
+ExecStart=/opt/google/chrome-remote-desktop/chrome-remote-desktop --start --new-session
+ExecReload=/opt/google/chrome-remote-desktop/chrome-remote-desktop --reload
+ExecStop=/opt/google/chrome-remote-desktop/chrome-remote-desktop --stop
+# Log output to the journal
+StandardOutput=journal
+# Use same fd as stdout
+StandardError=inherit
+# Must be kept in sync with RELAUNCH_EXIT_CODE in linux_me2me_host.py
+RestartForceExitStatus=41
+
+[Install]
+WantedBy=multi-user.target

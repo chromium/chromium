@@ -5,11 +5,12 @@
 #include "ash/system/power/power_button_controller.h"
 
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -29,6 +30,7 @@
 #include "base/json/json_reader.h"
 #include "base/time/default_tick_clock.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -40,14 +42,14 @@ namespace {
 // for convertible/slate/detachable devices. This differs depending on whether
 // the screen is on or off when the power button is initially pressed.
 constexpr base::TimeDelta kShowMenuWhenScreenOnTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 constexpr base::TimeDelta kShowMenuWhenScreenOffTimeout =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(2000);
 
 // Time that power button should be pressed after power menu is shown before
 // starting the cancellable pre-shutdown animation.
 constexpr base::TimeDelta kStartShutdownAnimationTimeout =
-    base::TimeDelta::FromMilliseconds(650);
+    base::Milliseconds(650);
 
 enum PowerButtonUpState {
   UP_NONE = 0,
@@ -77,10 +79,9 @@ std::unique_ptr<views::Widget> CreateMenuWidget() {
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   menu_widget->SetBounds(widget_bounds);
 
-  // Enable arrow key in FocusManager. Arrow right/left and down/up triggers
-  // the same focus movement as tab/shift+tab.
-  menu_widget->GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(
-      true);
+  // Enable arrow key - arrow right/left and down/up triggers the same focus
+  // movement as tab/shift+tab.
+  menu_widget->widget_delegate()->SetEnableArrowKeyTraversal(true);
   return menu_widget;
 }
 
@@ -103,8 +104,7 @@ PowerButtonController::PowerButtonController(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
       lock_state_controller_(Shell::Get()->lock_state_controller()),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      backlights_forced_off_observer_(this) {
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   ProcessCommandLine();
   display_controller_ = std::make_unique<PowerButtonDisplayController>(
       backlights_forced_off_setter_, tick_clock_);
@@ -113,25 +113,37 @@ PowerButtonController::PowerButtonController(
   power_manager_client->AddObserver(this);
   power_manager_client->GetSwitchStates(base::BindOnce(
       &PowerButtonController::OnGetSwitchStates, weak_factory_.GetWeakPtr()));
-  AccelerometerReader::GetInstance()->AddObserver(this);
-  Shell::Get()->display_configurator()->AddObserver(this);
-  backlights_forced_off_observer_.Add(backlights_forced_off_setter);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->lock_state_controller()->AddObserver(this);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshEnableTabletMode)) {
+    AccelerometerReader::GetInstance()->AddObserver(this);
+  }
+
+  auto* shell = Shell::Get();
+  shell->display_configurator()->AddObserver(this);
+  backlights_forced_off_observation_.Observe(backlights_forced_off_setter);
+  shell->tablet_mode_controller()->AddObserver(this);
+  shell->lock_state_controller()->AddObserver(this);
+  shell->session_controller()->AddObserver(this);
 }
 
 PowerButtonController::~PowerButtonController() {
-  Shell::Get()->lock_state_controller()->RemoveObserver(this);
-  if (Shell::Get()->tablet_mode_controller())
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  Shell::Get()->display_configurator()->RemoveObserver(this);
+  auto* shell = Shell::Get();
+  shell->session_controller()->RemoveObserver(this);
+  shell->lock_state_controller()->RemoveObserver(this);
+  if (shell->tablet_mode_controller())
+    shell->tablet_mode_controller()->RemoveObserver(this);
+  shell->display_configurator()->RemoveObserver(this);
   AccelerometerReader::GetInstance()->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 void PowerButtonController::OnPreShutdownTimeout() {
   lock_state_controller_->StartShutdownAnimation(ShutdownReason::POWER_BUTTON);
-  DCHECK(menu_widget_);
+  // |menu_widget_| might be reset on login status change while shutting down.
+  if (!menu_widget_)
+    return;
+
   static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())
       ->power_button_menu_view()
       ->FocusPowerOffButton();
@@ -254,9 +266,8 @@ void PowerButtonController::OnPowerButtonEvent(
     if (screen_off_when_power_button_down_ || !force_off_on_button_up_)
       return;
 
-    if (menu_timer_was_running || menu_was_partially_opened ||
-        (menu_shown_when_power_button_down_ &&
-         pre_shutdown_timer_was_running)) {
+    if (menu_timer_was_running || (menu_shown_when_power_button_down_ &&
+                                   pre_shutdown_timer_was_running)) {
       display_controller_->SetBacklightsForcedOff(true);
       LockScreenIfRequired();
     }
@@ -297,8 +308,11 @@ bool PowerButtonController::IsMenuOpened() const {
 }
 
 void PowerButtonController::DismissMenu() {
-  if (IsMenuOpened())
+  if (IsMenuOpened()) {
+    static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())
+        ->ResetOpacity();
     menu_widget_->Hide();
+  }
 
   show_menu_animation_done_ = false;
   active_window_paint_as_active_lock_.reset();
@@ -332,7 +346,7 @@ void PowerButtonController::ScreenBrightnessChanged(
 
 void PowerButtonController::PowerButtonEventReceived(
     bool down,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   if (lock_state_controller_->ShutdownRequested())
     return;
 
@@ -356,44 +370,46 @@ void PowerButtonController::SuspendImminent(
   DismissMenu();
 }
 
-void PowerButtonController::SuspendDone(const base::TimeDelta& sleep_duration) {
+void PowerButtonController::SuspendDone(base::TimeDelta sleep_duration) {
   last_resume_time_ = tick_clock_->NowTicks();
 }
 
+void PowerButtonController::OnLoginStatusChanged(LoginStatus status) {
+  // Destroy |menu_widget_| on login status change to reset the content of the
+  // menu since the menu items change if login stauts changed.
+  menu_widget_.reset();
+}
+
 void PowerButtonController::OnGetSwitchStates(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value())
     return;
 
   if (result->tablet_mode !=
       chromeos::PowerManagerClient::TabletMode::UNSUPPORTED) {
-    has_tablet_mode_switch_ = true;
+    AccelerometerReader::GetInstance()->RemoveObserver(this);
     InitTabletPowerButtonMembers();
   }
 }
 
 void PowerButtonController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
-  // When ChromeOS EC lid angle driver is present, there's always tablet mode
-  // switch in device, so PowerButtonController doesn't need to listens to
-  // accelerometer events.
-  if (update->HasLidAngleDriver(ACCELEROMETER_SOURCE_SCREEN) ||
-      update->HasLidAngleDriver(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)) {
-    AccelerometerReader::GetInstance()->RemoveObserver(this);
-    return;
-  }
+    const AccelerometerUpdate& update) {
+  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshEnableTabletMode));
 
-  if (!has_tablet_mode_switch_ && observe_accelerometer_events_)
-    InitTabletPowerButtonMembers();
+  // This device has at least an accelerometer, therefore it is a tablet or
+  // convertible.
+  AccelerometerReader::GetInstance()->RemoveObserver(this);
+  InitTabletPowerButtonMembers();
 }
 
 void PowerButtonController::OnBacklightsForcedOffChanged(bool forced_off) {
   DismissMenu();
 }
 
-void PowerButtonController::OnScreenStateChanged(
-    BacklightsForcedOffSetter::ScreenState screen_state) {
-  if (screen_state != BacklightsForcedOffSetter::ScreenState::ON)
+void PowerButtonController::OnScreenBacklightStateChanged(
+    ScreenBacklightState screen_backlight_state) {
+  if (screen_backlight_state != ScreenBacklightState::ON)
     DismissMenu();
 }
 
@@ -437,12 +453,17 @@ void PowerButtonController::StartPowerMenuAnimation() {
       active_toplevel_widget ? active_toplevel_widget->LockPaintAsActive()
                              : nullptr;
 
-  if (!menu_widget_)
+  if (!menu_widget_) {
     menu_widget_ = CreateMenuWidget();
-  menu_widget_->SetContentsView(new PowerButtonMenuScreenView(
-      power_button_position_, power_button_offset_percentage_,
-      base::BindRepeating(&PowerButtonController::SetShowMenuAnimationDone,
-                          base::Unretained(this))));
+    menu_widget_->SetContentsView(std::make_unique<PowerButtonMenuScreenView>(
+        power_button_position_, power_button_offset_percentage_,
+        base::BindRepeating(&PowerButtonController::SetShowMenuAnimationDone,
+                            base::Unretained(this))));
+  }
+  auto* contents_view =
+      static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView());
+  contents_view->OnWidgetShown(power_button_position_,
+                               power_button_offset_percentage_);
   menu_widget_->Show();
 
   // Hide cursor, but let it reappear if the mouse moves.
@@ -450,8 +471,7 @@ void PowerButtonController::StartPowerMenuAnimation() {
   if (shell->cursor_manager())
     shell->cursor_manager()->HideCursor();
 
-  static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())
-      ->ScheduleShowHideAnimation(true);
+  contents_view->ScheduleShowHideAnimation(true);
 }
 
 void PowerButtonController::ProcessCommandLine() {
@@ -459,7 +479,6 @@ void PowerButtonController::ProcessCommandLine() {
   button_type_ = cl->HasSwitch(switches::kAuraLegacyPowerButton)
                      ? ButtonType::LEGACY
                      : ButtonType::NORMAL;
-  observe_accelerometer_events_ = cl->HasSwitch(switches::kAshEnableTabletMode);
   force_tablet_power_button_ = cl->HasSwitch(switches::kForceTabletPowerButton);
 
   ParsePowerButtonPositionSwitch();
@@ -504,15 +523,18 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
     return;
   }
 
-  std::string edge, position;
-  if (!position_info->GetString(kEdgeField, &edge) ||
-      !position_info->GetDouble(kPositionField,
-                                &power_button_offset_percentage_)) {
+  std::string edge;
+  absl::optional<double> position =
+      position_info->FindDoubleKey(kPositionField);
+
+  if (!position_info->GetString(kEdgeField, &edge) || !position) {
     LOG(ERROR) << "Both " << kEdgeField << " field and " << kPositionField
                << " are always needed if " << switches::kAshPowerButtonPosition
                << " is set";
     return;
   }
+
+  power_button_offset_percentage_ = *position;
 
   if (edge == kLeftEdge) {
     power_button_position_ = PowerButtonPosition::LEFT;

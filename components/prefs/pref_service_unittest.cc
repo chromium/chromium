@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
@@ -158,9 +158,8 @@ TEST(PrefServiceTest, GetValueChangedType) {
   const base::Value* value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  int actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kTestValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kTestValue, value->GetInt());
 }
 
 TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
@@ -178,9 +177,8 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   const base::Value* value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  int actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kDefaultValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kDefaultValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns no value.
   value = pref->GetRecommendedValue();
@@ -193,9 +191,8 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kUserValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kUserValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns no value.
   value = pref->GetRecommendedValue();
@@ -209,17 +206,15 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kUserValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kUserValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns the recommended value.
   value = pref->GetRecommendedValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 
   // Remove the user-set value.
   prefs.RemoveUserPref(kPrefName);
@@ -228,17 +223,15 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns the recommended value.
   value = pref->GetRecommendedValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 }
 
 TEST(PrefServiceTest, SetTimeValue_RegularTime) {
@@ -258,8 +251,8 @@ TEST(PrefServiceTest, SetTimeValue_NullTime) {
   TestingPrefServiceSimple prefs;
 
   // Register a non-null time as the default.
-  const base::Time default_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(12345));
+  const base::Time default_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(12345));
   prefs.registry()->RegisterTimePref(kPrefName, default_time);
   EXPECT_FALSE(prefs.GetTime(kPrefName).is_null());
 
@@ -286,8 +279,7 @@ TEST(PrefServiceTest, SetTimeDeltaValue_ZeroTimeDelta) {
   TestingPrefServiceSimple prefs;
 
   // Register a non-zero time delta as the default.
-  const base::TimeDelta default_delta =
-      base::TimeDelta::FromMicroseconds(12345);
+  const base::TimeDelta default_delta = base::Microseconds(12345);
   prefs.registry()->RegisterTimeDeltaPref(kPrefName, default_delta);
   EXPECT_FALSE(prefs.GetTimeDelta(kPrefName).is_zero());
 
@@ -480,7 +472,7 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   base::ListValue new_value;
-  new_value.AppendString(kValue);
+  new_value.Append(kValue);
   observer_.Expect(kName, &new_value);
   prefs_.Set(kName, new_value);
   Mock::VerifyAndClearExpectations(&observer_);

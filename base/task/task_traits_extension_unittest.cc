@@ -10,7 +10,7 @@
 namespace base {
 
 TEST(TaskTraitsExtensionTest, NoExtension) {
-  constexpr TaskTraits traits = {ThreadPool()};
+  constexpr TaskTraits traits = {};
 
   EXPECT_EQ(traits.extension_id(),
             TaskTraitsExtensionStorage::kInvalidExtensionId);

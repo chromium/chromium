@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -15,52 +14,31 @@ namespace blink {
 
 namespace scroll_timeline_util {
 
-std::unique_ptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
+scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
     AnimationTimeline* timeline) {
   if (!timeline || IsA<DocumentTimeline>(timeline))
     return nullptr;
 
   auto* scroll_timeline = To<ScrollTimeline>(timeline);
-  Node* scroll_source = scroll_timeline->ResolvedScrollSource();
-  base::Optional<CompositorElementId> element_id =
+  Node* scroll_source = scroll_timeline->ResolvedSource();
+  absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 
-  DoubleOrScrollTimelineAutoKeyword time_range;
-  scroll_timeline->timeRange(time_range);
-  // TODO(smcgruer): Handle 'auto' time range value.
-  DCHECK(time_range.IsDouble());
-
-  LayoutBox* box = scroll_source ? scroll_source->GetLayoutBox() : nullptr;
+  LayoutBox* box =
+      scroll_timeline->IsActive() ? scroll_source->GetLayoutBox() : nullptr;
 
   CompositorScrollTimeline::ScrollDirection orientation = ConvertOrientation(
       scroll_timeline->GetOrientation(), box ? box->Style() : nullptr);
 
-  base::Optional<double> start_scroll_offset;
-  base::Optional<double> end_scroll_offset;
-  if (box) {
-    double current_offset;
-    double max_offset;
-    scroll_timeline->GetCurrentAndMaxOffset(box, current_offset, max_offset);
-
-    double resolved_start_scroll_offset = 0;
-    double resolved_end_scroll_offset = max_offset;
-    scroll_timeline->ResolveScrollStartAndEnd(box, max_offset,
-                                              resolved_start_scroll_offset,
-                                              resolved_end_scroll_offset);
-    start_scroll_offset = resolved_start_scroll_offset;
-    end_scroll_offset = resolved_end_scroll_offset;
-  }
-
-  return std::make_unique<CompositorScrollTimeline>(
-      element_id, orientation, start_scroll_offset, end_scroll_offset,
-      time_range.GetAsDouble(), scroll_timeline->GetFillMode());
+  return CompositorScrollTimeline::Create(
+      element_id, orientation, scroll_timeline->GetResolvedScrollOffsets());
 }
 
-base::Optional<CompositorElementId> GetCompositorScrollElementId(
+absl::optional<CompositorElementId> GetCompositorScrollElementId(
     const Node* node) {
   if (!node || !node->GetLayoutObject() ||
       !node->GetLayoutObject()->FirstFragment().PaintProperties()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
@@ -115,6 +93,12 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // does not matter.
   return is_ltr_direction ? CompositorScrollTimeline::ScrollDown
                           : CompositorScrollTimeline::ScrollUp;
+}
+
+double ComputeProgress(double current_offset,
+                       const WTF::Vector<double>& resolved_offsets) {
+  return cc::ComputeProgress<WTF::Vector<double>>(current_offset,
+                                                  resolved_offsets);
 }
 
 }  // namespace scroll_timeline_util

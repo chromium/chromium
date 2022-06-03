@@ -1,0 +1,29 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (0,0) size 1200x876
+      LayoutNGBlockFlow (anonymous) at (0,0) size 1200x318
+        LayoutText {#text} at (312,291) size 6x26
+          text run at (312,291) width 6: " "
+        LayoutImage {IMG} at (318,157.50) size 114x154.50
+        LayoutText {#text} at (0,0) size 0x0
+      LayoutNGBlockFlow {UL} at (0,342) size 1200x27
+        LayoutNGListItem {LI} at (60,0) size 1140x27
+          LayoutNGOutsideListMarker {::marker} at (-22,0) size 9x27
+            LayoutText (anonymous) at (0,0) size 9x26
+              text run at (0,0) width 9: "\x{2022} "
+          LayoutText {#text} at (0,0) size 445x26
+            text run at (0,0) width 445: "Abe should be outside the frame and inside it."
+layer at (0,0) size 312x312
+  LayoutIFrame {IFRAME} at (0,0) size 312x312 [border: (6px solid #000000)]
+    layer at (0,0) size 300x300
+      LayoutView at (0,0) size 300x300
+    layer at (0,0) size 300x300
+      LayoutNGBlockFlow {HTML} at (0,0) size 300x300
+        LayoutNGBlockFlow {BODY} at (12,12) size 276x276 [bgcolor=#FFFFE0]
+          LayoutImage {IMG} at (0,0) size 114x154.50
+          LayoutText {#text} at (0,0) size 0x0

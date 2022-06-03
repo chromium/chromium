@@ -2,88 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":appearance_browser_proxy",
-    ":appearance_fonts_page",
-    ":appearance_page",
-    ":fonts_browser_proxy",
-    ":home_url_input",
+html_to_js("web_components") {
+  js_files = [
+    "appearance_fonts_page.ts",
+    "appearance_page.ts",
+    "home_url_input.ts",
   ]
-
-  if (is_chromeos) {
-    deps += [ ":wallpaper_browser_proxy" ]
-  }
-}
-
-js_library("appearance_fonts_page") {
-  deps = [
-    ":fonts_browser_proxy",
-    "../controls:settings_dropdown_menu",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("appearance_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/management.js",
-    "$externs_path/settings_private.js",
-  ]
-}
-
-js_library("appearance_page") {
-  deps = [
-    ":appearance_browser_proxy",
-    ":wallpaper_browser_proxy",
-    "..:page_visibility",
-    "..:route",
-    "../controls:settings_dropdown_menu",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [
-    "$externs_path/settings_private.js",
-    "$externs_path/chrome_send.js",
-  ]
-}
-
-js_library("fonts_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("home_url_input") {
-  deps = [
-    ":appearance_browser_proxy",
-    "../controls:pref_control_behavior",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("wallpaper_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }

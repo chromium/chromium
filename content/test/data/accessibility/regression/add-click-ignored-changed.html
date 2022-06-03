@@ -1,0 +1,24 @@
+<!--
+@WAIT-FOR:done
+-->
+<style>
+.follow-button { display: block; }
+</style>
+
+<span class="clickme">
+  <a></a>
+  <div></div>
+</span>
+<script>
+function onclick() {
+  // NO-OP.
+}
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelector('.clickme').addEventListener('click', onclick);
+    setTimeout(() => {
+      document.title = 'done';
+    }, 20);
+  }, 100);
+});
+</script>

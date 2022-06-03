@@ -1,3 +1,2 @@
-CONSOLE WARNING: line 22: The behavior that Selection.addRange() merges existing Range and the specified Range was removed. See https://www.chromestatus.com/features/6680566019653632 for more details.
 Pass if there is no crash.
 Click anywhere to test manually.

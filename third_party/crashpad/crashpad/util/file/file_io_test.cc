@@ -20,9 +20,8 @@
 #include <type_traits>
 
 #include "base/atomicops.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -42,6 +41,10 @@ using testing::Return;
 class MockReadExactly : public internal::ReadExactlyInternal {
  public:
   MockReadExactly() : ReadExactlyInternal() {}
+
+  MockReadExactly(const MockReadExactly&) = delete;
+  MockReadExactly& operator=(const MockReadExactly&) = delete;
+
   ~MockReadExactly() {}
 
   // Since it’s more convenient for the test to use uintptr_t than void*,
@@ -51,15 +54,12 @@ class MockReadExactly : public internal::ReadExactlyInternal {
     return ReadExactly(reinterpret_cast<void*>(data), size, can_log);
   }
 
-  MOCK_METHOD3(ReadInt, FileOperationResult(uintptr_t, size_t, bool));
+  MOCK_METHOD(FileOperationResult, ReadInt, (uintptr_t, size_t, bool));
 
   // ReadExactlyInternal:
   FileOperationResult Read(void* data, size_t size, bool can_log) {
     return ReadInt(reinterpret_cast<uintptr_t>(data), size, can_log);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockReadExactly);
 };
 
 TEST(FileIO, ReadExactly_Zero) {
@@ -239,6 +239,10 @@ TEST(FileIO, ReadExactly_TripleMax) {
 class MockWriteAll : public internal::WriteAllInternal {
  public:
   MockWriteAll() : WriteAllInternal() {}
+
+  MockWriteAll(const MockWriteAll&) = delete;
+  MockWriteAll& operator=(const MockWriteAll&) = delete;
+
   ~MockWriteAll() {}
 
   // Since it’s more convenient for the test to use uintptr_t than const void*,
@@ -248,15 +252,12 @@ class MockWriteAll : public internal::WriteAllInternal {
     return WriteAll(reinterpret_cast<const void*>(data), size);
   }
 
-  MOCK_METHOD2(WriteInt, FileOperationResult(uintptr_t, size_t));
+  MOCK_METHOD(FileOperationResult, WriteInt, (uintptr_t, size_t));
 
   // WriteAllInternal:
   FileOperationResult Write(const void* data, size_t size) {
     return WriteInt(reinterpret_cast<uintptr_t>(data), size);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWriteAll);
 };
 
 TEST(FileIO, WriteAll_Zero) {
@@ -473,6 +474,23 @@ TEST(FileIO, LoggingOpenFileForReadAndWrite) {
   TestOpenFileForWrite(LoggingOpenFileForReadAndWrite);
 }
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+TEST(FileIO, LoggingOpenMemoryFileForReadAndWrite) {
+  ScopedFileHandle handle(
+      LoggingOpenMemoryFileForReadAndWrite(base::FilePath("memfile")));
+  ASSERT_TRUE(handle.is_valid());
+
+  static constexpr char kTestData[] = "somedata";
+  ASSERT_TRUE(LoggingWriteFile(handle.get(), kTestData, sizeof(kTestData)));
+
+  ASSERT_EQ(LoggingSeekFile(handle.get(), 0, SEEK_SET), 0);
+
+  char buffer[sizeof(kTestData)];
+  ASSERT_TRUE(LoggingReadFileExactly(handle.get(), buffer, sizeof(buffer)));
+  EXPECT_EQ(memcmp(buffer, kTestData, sizeof(buffer)), 0);
+}
+#endif  // OS_LINUX || OS_CHROMEOS
+
 enum class ReadOrWrite : bool {
   kRead,
   kWrite,
@@ -544,11 +562,17 @@ TEST(FileIO, MultipleSharedLocks) {
 
   auto handle1 = ScopedFileHandle(LoggingOpenFileForRead(shared_file));
   ASSERT_NE(handle1, kInvalidFileHandle);
-  EXPECT_TRUE(LoggingLockFile(handle1.get(), FileLocking::kShared));
+  EXPECT_EQ(
+      LoggingLockFile(
+          handle1.get(), FileLocking::kShared, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   auto handle2 = ScopedFileHandle(LoggingOpenFileForRead(shared_file));
   ASSERT_NE(handle1, kInvalidFileHandle);
-  EXPECT_TRUE(LoggingLockFile(handle2.get(), FileLocking::kShared));
+  EXPECT_EQ(
+      LoggingLockFile(
+          handle2.get(), FileLocking::kShared, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   EXPECT_TRUE(LoggingUnlockFile(handle1.get()));
   EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
@@ -558,6 +582,9 @@ class LockingTestThread : public Thread {
  public:
   LockingTestThread()
       : file_(), lock_type_(), iterations_(), actual_iterations_() {}
+
+  LockingTestThread(const LockingTestThread&) = delete;
+  LockingTestThread& operator=(const LockingTestThread&) = delete;
 
   void Init(FileHandle file,
             FileLocking lock_type,
@@ -573,7 +600,9 @@ class LockingTestThread : public Thread {
  private:
   void ThreadMain() override {
     for (int i = 0; i < iterations_; ++i) {
-      EXPECT_TRUE(LoggingLockFile(file_.get(), lock_type_));
+      EXPECT_EQ(LoggingLockFile(
+                    file_.get(), lock_type_, FileLockingBlocking::kBlocking),
+                FileLockingResult::kSuccess);
       base::subtle::NoBarrier_AtomicIncrement(actual_iterations_, 1);
       EXPECT_TRUE(LoggingUnlockFile(file_.get()));
     }
@@ -583,8 +612,6 @@ class LockingTestThread : public Thread {
   FileLocking lock_type_;
   int iterations_;
   base::subtle::Atomic32* actual_iterations_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockingTestThread);
 };
 
 void LockingTest(FileLocking main_lock, FileLocking other_locks) {
@@ -607,7 +634,9 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
                                     FileWriteMode::kReuseOrCreate,
                                     FilePermissions::kOwnerOnly));
   ASSERT_NE(initial, kInvalidFileHandle);
-  ASSERT_TRUE(LoggingLockFile(initial.get(), main_lock));
+  EXPECT_EQ(
+      LoggingLockFile(initial.get(), main_lock, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   base::subtle::Atomic32 actual_iterations = 0;
 
@@ -652,6 +681,43 @@ TEST(FileIO, ExclusiveVsShareds) {
 
 TEST(FileIO, SharedVsExclusives) {
   LockingTest(FileLocking::kShared, FileLocking::kExclusive);
+}
+
+TEST(FileIO, ExclusiveVsExclusivesNonBlocking) {
+  ScopedTempDir temp_dir;
+  base::FilePath exclusive_file =
+      temp_dir.path().Append(FILE_PATH_LITERAL("file_to_lock"));
+
+  {
+    // Create an empty file to lock.
+    ScopedFileHandle create(
+        LoggingOpenFileForWrite(exclusive_file,
+                                FileWriteMode::kCreateOrFail,
+                                FilePermissions::kOwnerOnly));
+  }
+
+  auto handle1 = ScopedFileHandle(LoggingOpenFileForRead(exclusive_file));
+  ASSERT_NE(handle1, kInvalidFileHandle);
+  EXPECT_EQ(LoggingLockFile(handle1.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kBlocking),
+            FileLockingResult::kSuccess);
+
+  // Non-blocking lock should fail.
+  auto handle2 = ScopedFileHandle(LoggingOpenFileForRead(exclusive_file));
+  ASSERT_NE(handle2, kInvalidFileHandle);
+  EXPECT_EQ(LoggingLockFile(handle2.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kNonBlocking),
+            FileLockingResult::kWouldBlock);
+
+  // After unlocking, non-blocking lock should succeed.
+  EXPECT_TRUE(LoggingUnlockFile(handle1.get()));
+  EXPECT_EQ(LoggingLockFile(handle2.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kNonBlocking),
+            FileLockingResult::kSuccess);
+  EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
 }
 
 #endif  // !OS_FUCHSIA

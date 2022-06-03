@@ -16,9 +16,13 @@ class CORE_EXPORT MathMLRowElement : public MathMLElement {
  public:
   explicit MathMLRowElement(const QualifiedName&, Document&);
 
+  void ChildrenChanged(const ChildrenChange&) override;
+
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout legacy) final;
+                                   LegacyLayout legacy) override;
+
+  bool IsGroupingElement() const override { return true; }
 };
 }  // namespace blink
 

@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/check.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gcm {
 
@@ -37,6 +36,10 @@ enum class GCMDecryptionResult;
 class MessagePayloadParser {
  public:
   explicit MessagePayloadParser(base::StringPiece message);
+
+  MessagePayloadParser(const MessagePayloadParser&) = delete;
+  MessagePayloadParser& operator=(const MessagePayloadParser&) = delete;
+
   ~MessagePayloadParser();
 
   // Returns whether the parser represents a valid message.
@@ -81,14 +84,12 @@ class MessagePayloadParser {
 
  private:
   bool is_valid_ = false;
-  base::Optional<GCMDecryptionResult> failure_reason_;
+  absl::optional<GCMDecryptionResult> failure_reason_;
 
   std::string salt_;
   uint32_t record_size_ = 0;
   std::string public_key_;
   std::string ciphertext_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePayloadParser);
 };
 
 }  // namespace gcm

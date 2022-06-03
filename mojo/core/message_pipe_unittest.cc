@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -35,6 +34,9 @@ class MessagePipeTest : public test::MojoTestBase {
   MessagePipeTest() {
     CHECK_EQ(MOJO_RESULT_OK, MojoCreateMessagePipe(nullptr, &pipe0_, &pipe1_));
   }
+
+  MessagePipeTest(const MessagePipeTest&) = delete;
+  MessagePipeTest& operator=(const MessagePipeTest&) = delete;
 
   ~MessagePipeTest() override {
     if (pipe0_ != MOJO_HANDLE_INVALID)
@@ -79,9 +81,6 @@ class MessagePipeTest : public test::MojoTestBase {
   }
 
   MojoHandle pipe0_, pipe1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeTest);
 };
 
 using FuseMessagePipeTest = test::MojoTestBase;

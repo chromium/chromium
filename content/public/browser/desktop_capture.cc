@@ -6,7 +6,12 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/content_features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "content/browser/media/capture/desktop_capturer_lacros.h"
+#endif
 
 namespace content {
 namespace desktop_capture {
@@ -25,7 +30,7 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   } else {
     options.set_allow_use_magnification_api(true);
   }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   if (base::FeatureList::IsEnabled(features::kIOSurfaceCapturer)) {
     options.set_allow_iosurface(true);
   }
@@ -39,13 +44,34 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
 }
 
 std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return std::make_unique<DesktopCapturerLacros>(
+      DesktopCapturerLacros::CaptureType::kScreen,
+      webrtc::DesktopCaptureOptions());
+#else
   return webrtc::DesktopCapturer::CreateScreenCapturer(
       CreateDesktopCaptureOptions());
+#endif
 }
 
 std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return std::make_unique<DesktopCapturerLacros>(
+      DesktopCapturerLacros::CaptureType::kWindow,
+      webrtc::DesktopCaptureOptions());
+#else
   return webrtc::DesktopCapturer::CreateWindowCapturer(
       CreateDesktopCaptureOptions());
+#endif
+}
+
+bool CanUsePipeWire() {
+#if defined(WEBRTC_USE_PIPEWIRE)
+  return webrtc::DesktopCapturer::IsRunningUnderWayland() &&
+         base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
+#else
+  return false;
+#endif
 }
 
 }  // namespace desktop_capture

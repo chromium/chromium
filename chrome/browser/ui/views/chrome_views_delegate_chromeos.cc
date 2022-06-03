@@ -7,8 +7,9 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -25,7 +26,7 @@ void ProcessAcceleratorNow(const ui::Accelerator& accelerator) {
 views::ViewsDelegate::ProcessMenuAcceleratorResult
 ChromeViewsDelegate::ProcessAcceleratorWhileMenuShowing(
     const ui::Accelerator& accelerator) {
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
 
   if (ash::AcceleratorController::Get()->OnMenuAccelerator(accelerator)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -37,8 +38,13 @@ ChromeViewsDelegate::ProcessAcceleratorWhileMenuShowing(
   return views::ViewsDelegate::ProcessMenuAcceleratorResult::LEAVE_MENU_OPEN;
 }
 
-views::NonClientFrameView* ChromeViewsDelegate::CreateDefaultNonClientFrameView(
-    views::Widget* widget) {
+bool ChromeViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
+  // Menu closes unless an ongoing screen capture session is underway.
+  return !ChromeCaptureModeDelegate::Get()->is_session_active();
+}
+
+std::unique_ptr<views::NonClientFrameView>
+ChromeViewsDelegate::CreateDefaultNonClientFrameView(views::Widget* widget) {
   return ash::Shell::Get()->CreateDefaultNonClientFrameView(widget);
 }
 
@@ -50,12 +56,6 @@ void ChromeViewsDelegate::AdjustSavedWindowPlacementChromeOS(
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(*bounds);
   bounds->AdjustToFit(display.work_area());
-}
-
-views::Widget::InitParams::WindowOpacity
-ChromeViewsDelegate::GetOpacityForInitParams(
-    const views::Widget::InitParams& params) {
-  return views::Widget::InitParams::WindowOpacity::kTranslucent;
 }
 
 views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(

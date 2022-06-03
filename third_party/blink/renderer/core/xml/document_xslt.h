@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -17,21 +16,10 @@ class ProcessingInstruction;
 
 class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
                            public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(DocumentXSLT);
-
  public:
   static const char kSupplementName[];
 
-  Document* TransformSourceDocument() {
-    return transform_source_document_.Get();
-  }
-
-  void SetTransformSourceDocument(Document* document) {
-    DCHECK(document);
-    transform_source_document_ = document;
-  }
-
-  static DocumentXSLT& From(Document&);
+  static void SetHasTransformSource(Document&);
 
   // The following static methods don't use any instance of DocumentXSLT.
   // They are just using DocumentXSLT namespace.
@@ -45,13 +33,11 @@ class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
   static bool HasTransformSourceDocument(Document&);
 
   explicit DocumentXSLT(Document&);
-  void Trace(blink::Visitor*) override;
-
- private:
-  Member<Document> transform_source_document_;
-  DISALLOW_COPY_AND_ASSIGN(DocumentXSLT);
+  DocumentXSLT(const DocumentXSLT&) = delete;
+  DocumentXSLT& operator=(const DocumentXSLT&) = delete;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_DOCUMENT_XSLT_H_

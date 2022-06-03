@@ -49,7 +49,7 @@ class FakeDisconnectTetheringOperationFactory
     : public DisconnectTetheringOperation::Factory {
  public:
   FakeDisconnectTetheringOperationFactory() = default;
-  virtual ~FakeDisconnectTetheringOperationFactory() = default;
+  ~FakeDisconnectTetheringOperationFactory() override = default;
 
   std::vector<FakeDisconnectTetheringOperation*>& created_operations() {
     return created_operations_;
@@ -57,7 +57,7 @@ class FakeDisconnectTetheringOperationFactory
 
  protected:
   // DisconnectTetheringOperation::Factory:
-  std::unique_ptr<DisconnectTetheringOperation> BuildInstance(
+  std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client) override {
@@ -98,6 +98,12 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
  public:
   DisconnectTetheringRequestSenderTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2u)) {}
+
+  DisconnectTetheringRequestSenderTest(
+      const DisconnectTetheringRequestSenderTest&) = delete;
+  DisconnectTetheringRequestSenderTest& operator=(
+      const DisconnectTetheringRequestSenderTest&) = delete;
+
   ~DisconnectTetheringRequestSenderTest() override = default;
 
   void SetUp() override {
@@ -110,11 +116,11 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
 
     fake_operation_factory_ =
         std::make_unique<FakeDisconnectTetheringOperationFactory>();
-    DisconnectTetheringOperation::Factory::SetInstanceForTesting(
+    DisconnectTetheringOperation::Factory::SetFactoryForTesting(
         fake_operation_factory_.get());
 
     disconnect_tethering_request_sender_ =
-        DisconnectTetheringRequestSenderImpl::Factory::NewInstance(
+        DisconnectTetheringRequestSenderImpl::Factory::Create(
             fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
             fake_tether_host_fetcher_.get());
 
@@ -196,9 +202,6 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
       disconnect_tethering_request_sender_;
   std::unique_ptr<FakeDisconnectTetheringRequestSenderObserver>
       fake_disconnect_tethering_request_sender_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSenderTest);
 };
 
 TEST_F(DisconnectTetheringRequestSenderTest, DISABLED_SendRequest_Success) {

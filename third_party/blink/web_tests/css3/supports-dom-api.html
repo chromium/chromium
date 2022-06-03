@@ -51,7 +51,7 @@
 
     // Whitespace/Syntax.
     shouldBeFalse('CSS.supports("not( display: deadbeef)")');
-    shouldBeFalse('CSS.supports("(display: none)and (   -webkit-transition: all 1s )")');
+    shouldBeTrue('CSS.supports("(display: none)and (   -webkit-transition: all 1s )")');
     shouldBeFalse('CSS.supports("(display: none)or(-webkit-transition: all 1s)")');
     shouldBeFalse('CSS.supports("(display: none) or(-webkit-transition: all 1s    )")');
     shouldBeTrue('CSS.supports("(((((((display: none)))))))")');

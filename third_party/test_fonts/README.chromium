@@ -27,9 +27,7 @@ How to update or add fonts:
 6.  Add all the font_bundle.tar.gz.sha1 file to the chromium src repository, by
     executing the following command:
 	$ git add ./third_party/test_fonts/test_fonts.tar.gz.sha1
-7.  Update filename constant for fontconfig cache in //base/test/BUILD.gn and
-    //base/test/generate_fontconfig_caches.cc when test fonts change.
-8.  (optional) Update FONT_FILES in
+7.  (optional) Update FONT_FILES in
     third_party/blink/tools/blinkpy/web_tests/port/base.py .
 
 If you need access to the chromium-fonts bucket, contact Chrome infra.% For
@@ -38,30 +36,33 @@ https://chromium.googlesource.com/infra/infra/+/master/doc/users/contacting_troo
 
 Font Origins:
 
-Ahem.ttf                   https://web-platform-tests.org/writing-tests/ahem.html
-Arimo-Bold.ttf             https://github.com/google/fonts/tree/master/apache/arimo
-Arimo-BoldItalic.ttf       https://github.com/google/fonts/tree/master/apache/arimo
-Arimo-Italic.ttf           https://github.com/google/fonts/tree/master/apache/arimo
-Arimo-Regular.ttf          https://github.com/google/fonts/tree/master/apache/arimo
-Cousine-Bold.ttf           https://github.com/google/fonts/tree/master/apache/cousine
-Cousine-BoldItalic.ttf     https://github.com/google/fonts/tree/master/apache/cousine
-Cousine-Italic.ttf         https://github.com/google/fonts/tree/master/apache/cousine
-Cousine-Regular.ttf        https://github.com/google/fonts/tree/master/apache/cousine
-DejaVuSans.ttf             https://dejavu-fonts.github.io/Download.html
-GardinerModBug.ttf         See README_GardinerMod.txt
-GardinerModCat.ttf         See README_GardinerMod.txt
-Garuda.ttf                 https://linux.thai.net/projects/fonts-tlwg
-Gelasio-Bold.ttf           https://fontlibrary.org/en/font/gelasio
-Gelasio-BoldItalic.ttf     https://fontlibrary.org/en/font/gelasio
-Gelasio-Italic.ttf         https://fontlibrary.org/en/font/gelasio
-Gelasio-Regular.ttf        https://fontlibrary.org/en/font/gelasio
-Lohit-Devanagari.ttf       https://pagure.io/lohit
-Lohit-Gurmukhi.ttf         https://pagure.io/lohit
-Lohit-Tamil.ttf            https://pagure.io/lohit
-MuktiNarrow.ttf            http://www.nongnu.org/freebangfont/downloads.html#mukti
-NotoSansCJKjp-Regular.otf  https://www.google.com/get/noto/#sans-jpan
-NotoSansKhmer-Regular.ttf  https://www.google.com/get/noto/#sans-khmr
-Tinos-Bold.ttf             https://github.com/google/fonts/tree/master/apache/tinos
-Tinos-BoldItalic.ttf       https://github.com/google/fonts/tree/master/apache/tinos
-Tinos-Italic.ttf           https://github.com/google/fonts/tree/master/apache/tinos
-Tinos-Regular.ttf          https://github.com/google/fonts/tree/master/apache/tinos
+Ahem.ttf                     https://web-platform-tests.org/writing-tests/ahem.html
+Arimo-Bold.ttf               https://github.com/google/fonts/tree/master/apache/arimo
+Arimo-BoldItalic.ttf         https://github.com/google/fonts/tree/master/apache/arimo
+Arimo-Italic.ttf             https://github.com/google/fonts/tree/master/apache/arimo
+Arimo-Regular.ttf            https://github.com/google/fonts/tree/master/apache/arimo
+Cousine-Bold.ttf             https://github.com/google/fonts/tree/master/apache/cousine
+Cousine-BoldItalic.ttf       https://github.com/google/fonts/tree/master/apache/cousine
+Cousine-Italic.ttf           https://github.com/google/fonts/tree/master/apache/cousine
+Cousine-Regular.ttf          https://github.com/google/fonts/tree/master/apache/cousine
+DejaVuSans.ttf               https://dejavu-fonts.github.io/Download.html
+GardinerModBug.ttf           See README_GardinerMod.txt
+GardinerModCat.ttf           See README_GardinerMod.txt
+Garuda.ttf                   https://linux.thai.net/projects/fonts-tlwg
+Gelasio-Bold.ttf             https://fontlibrary.org/en/font/gelasio
+Gelasio-BoldItalic.ttf       https://fontlibrary.org/en/font/gelasio
+Gelasio-Italic.ttf           https://fontlibrary.org/en/font/gelasio
+Gelasio-Regular.ttf          https://fontlibrary.org/en/font/gelasio
+Lohit-Devanagari.ttf         https://pagure.io/lohit
+Lohit-Gurmukhi.ttf           https://pagure.io/lohit
+Lohit-Tamil.ttf              https://pagure.io/lohit
+MuktiNarrow.ttf              http://www.nongnu.org/freebangfont/downloads.html#mukti
+NotoColorEmoji.ttf           https://github.com/googlefonts/noto-emoji
+NotoSansCJKjp-Regular.otf    https://www.google.com/get/noto/#sans-jpan
+NotoSansKhmer-Regular.ttf    https://www.google.com/get/noto/#sans-khmr
+NotoSansSymbols2-Regular.ttf https://github.com/googlefonts/noto-fonts/tree/master/hinted/NotoSansSymbols2
+NotoSansTibetan-Regular.ttf  https://github.com/googlefonts/noto-fonts/tree/master/hinted/NotoSansTibetan
+Tinos-Bold.ttf               https://github.com/google/fonts/tree/master/apache/tinos
+Tinos-BoldItalic.ttf         https://github.com/google/fonts/tree/master/apache/tinos
+Tinos-Italic.ttf             https://github.com/google/fonts/tree/master/apache/tinos
+Tinos-Regular.ttf            https://github.com/google/fonts/tree/master/apache/tinos

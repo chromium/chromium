@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "nodoc",
+    "description": "The nodoc API. This exists to demonstrate nodoc on the namespace itself.",
+    "nodoc": true,
+    "types": [
+      {
+        "id": "ValidType",
+        "type": "object",
+        "properties": {
+          "any": {
+            "type": "any",
+            "description": "This is a valid type but since the namespace isn't documented..."
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,41 +1,26 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='absolute red'",
-          "rect": [0, 0, 100, 100],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [0, 0, 100, 100],
-          "reason": "chunk appeared"
-        }
-      ],
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='moveMe' class='fixed clipped'",
       "bounds": [100, 100],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='moveMe' class='fixed clipped'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 100, 100]
       ],
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

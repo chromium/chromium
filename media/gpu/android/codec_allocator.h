@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_bridge_impl.h"
@@ -31,8 +31,15 @@ namespace media {
 // path is hung up.
 class MEDIA_GPU_EXPORT CodecAllocator {
  public:
+  // Minimum coded size that we'll allow to get a hardware instance, since not
+  // all hw implementation support it.  See crbug.com/1166833 .
+  static constexpr gfx::Size kMinHardwareResolution{96, 96};
+
   static CodecAllocator* GetInstance(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  CodecAllocator(const CodecAllocator&) = delete;
+  CodecAllocator& operator=(const CodecAllocator&) = delete;
 
   using CodecFactoryCB =
       base::RepeatingCallback<std::unique_ptr<MediaCodecBridge>(
@@ -104,8 +111,6 @@ class MEDIA_GPU_EXPORT CodecAllocator {
 
   // True if only software codec creation is currently allowed due to hangs.
   bool force_sw_codecs_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecAllocator);
 };
 
 }  // namespace media

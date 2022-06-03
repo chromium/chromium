@@ -14,11 +14,11 @@ import com.google.errorprone.matchers.Matchers;
 import com.sun.source.tree.AnnotationTree;
 
 /**
- * Assert android.support.annotation.Nullable is used instead of javax.annotation.Nullable.
+ * Assert androidx.annotation.Nullable is used instead of javax.annotation.Nullable.
  */
 @AutoService(BugChecker.class)
 @BugPattern(name = "AndroidNullableCheck",
-        summary = "Use android.support.annotation.Nullable instead of javax.annotation.Nullable.",
+        summary = "Use androidx.annotation.Nullable instead of javax.annotation.Nullable.",
         severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
         link = "http://crbug.com/771683")
 public class AndroidNullableCheck extends BugChecker implements BugChecker.AnnotationTreeMatcher {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
-#include "chrome/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using AddSupervisionHandlerUtilsTest = testing::Test;
@@ -13,12 +13,13 @@ TEST_F(AddSupervisionHandlerUtilsTest, TestShouldIncludeAppUpdate) {
   // Return ARC apps.
   apps::mojom::App arc_state;
   arc_state.app_type = apps::mojom::AppType::kArc;
-  apps::AppUpdate arc_update(&arc_state, nullptr /* delta */);
+  apps::AppUpdate arc_update(&arc_state, nullptr /* delta */, EmptyAccountId());
   EXPECT_TRUE(ShouldIncludeAppUpdate(arc_update));
 
   // Don't return non-ARC apps.
   apps::mojom::App non_arc_state;
   non_arc_state.app_type = apps::mojom::AppType::kBuiltIn;
-  apps::AppUpdate non_arc_update(&non_arc_state, nullptr /* delta */);
+  apps::AppUpdate non_arc_update(&non_arc_state, nullptr /* delta */,
+                                 EmptyAccountId());
   EXPECT_FALSE(ShouldIncludeAppUpdate(non_arc_update));
 }

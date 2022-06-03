@@ -4,26 +4,27 @@
 
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,10 +33,12 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 namespace {
@@ -87,6 +90,11 @@ class ExtensionActionIconFactoryTest
  public:
   ExtensionActionIconFactoryTest() : quit_in_icon_updated_(false) {}
 
+  ExtensionActionIconFactoryTest(const ExtensionActionIconFactoryTest&) =
+      delete;
+  ExtensionActionIconFactoryTest& operator=(
+      const ExtensionActionIconFactoryTest&) = delete;
+
   ~ExtensionActionIconFactoryTest() override {}
 
   void WaitForIconUpdate() {
@@ -96,7 +104,7 @@ class ExtensionActionIconFactoryTest
   }
 
   scoped_refptr<Extension> CreateExtension(const char* name,
-                                           Manifest::Location location) {
+                                           ManifestLocation location) {
     // Create and load an extension.
     base::FilePath test_file;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_file)) {
@@ -129,7 +137,7 @@ class ExtensionActionIconFactoryTest
 
   // testing::Test overrides:
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     extension_service_ = static_cast<extensions::TestExtensionSystem*>(
         extensions::ExtensionSystem::Get(profile_.get()))->
@@ -165,12 +173,10 @@ class ExtensionActionIconFactoryTest
   std::unique_ptr<TestingProfile> profile_;
   ExtensionService* extension_service_;
 
-#if defined OS_CHROMEOS
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionIconFactoryTest);
 };
 
 // If there is no default icon, and the icon has not been set using |SetIcon|,
@@ -179,7 +185,7 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
   // Load an extension that has browser action without default icon set in the
   // manifest and does not call |SetIcon| by default.
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -201,8 +207,8 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
 TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
   // Load an extension that has browser action with a default icon set in the
   // manifest, but that icon is not sufficiently visible.
-  scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/invisible_icon", Manifest::INTERNAL));
+  scoped_refptr<Extension> extension(CreateExtension(
+      "browser_action/invisible_icon", ManifestLocation::kInternal));
 
   // Check that the default icon is not sufficiently visible.
   ASSERT_TRUE(extension);
@@ -246,7 +252,7 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
   // manifest and does not call |SetIcon| by default (but has an browser action
   // icon resource).
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -284,7 +290,7 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   // manifest and does not call |SetIcon| by default (but has an browser action
   // icon resource).
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -292,7 +298,7 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
   scoped_refptr<const Extension> extension_with_icon =
-      CreateExtension("browser_action_with_icon", Manifest::UNPACKED);
+      CreateExtension("browser_action_with_icon", ManifestLocation::kUnpacked);
   ASSERT_TRUE(extension_with_icon);
 
   int icon_size = ExtensionAction::ActionIconSize();

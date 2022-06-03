@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests event listener breakpoints on XHRs.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -65,10 +65,10 @@
 
   var totalBreaks = 6;
   var callStacksOutput = [];
-  function didPause(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+  async function didPause(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
     --totalBreaks;
     auxData = auxData || {};
-    var result = SourcesTestRunner.captureStackTraceIntoString(callFrames) + '\n';
+    var result = await SourcesTestRunner.captureStackTraceIntoString(callFrames) + '\n';
     result += 'Event target: ' + auxData['targetName'] + '\n';
 
     callStacksOutput.push(result);

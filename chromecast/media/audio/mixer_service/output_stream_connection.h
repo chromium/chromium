@@ -29,6 +29,14 @@ class OutputStreamConnection : public MixerConnection,
  public:
   class Delegate {
    public:
+    // Keep in sync with mixer_service.proto:MixerUnderrun.Type
+    enum class MixerUnderrunType {
+      // An underrun was detected on mixer input.
+      kStream = 0,
+      // An underrun was detected on mixer output.
+      kMixer = 1,
+    };
+
     // Called to fill more audio data. The implementation should write up to
     // |frames| frames of audio data into |buffer|, and then call
     // SendNextBuffer() with the actual number of frames that were filled (or
@@ -37,7 +45,8 @@ class OutputStreamConnection : public MixerConnection,
     // data is expected to play out.
     virtual void FillNextBuffer(void* buffer,
                                 int frames,
-                                int64_t playout_timestamp) = 0;
+                                int64_t delay_timestamp,
+                                int64_t delay) = 0;
 
     // Called when audio is ready to begin playing out, ie the start threshold
     // has been reached. |mixer_delay| is the delay before the first buffered
@@ -52,11 +61,18 @@ class OutputStreamConnection : public MixerConnection,
     // longer be played out.
     virtual void OnMixerError() {}
 
+    // Called when an underrun happens on mixer input/output.
+    virtual void OnMixerUnderrun(MixerUnderrunType type) {}
+
    protected:
     virtual ~Delegate() = default;
   };
 
   OutputStreamConnection(Delegate* delegate, const OutputStreamParams& params);
+
+  OutputStreamConnection(const OutputStreamConnection&) = delete;
+  OutputStreamConnection& operator=(const OutputStreamConnection&) = delete;
+
   ~OutputStreamConnection() override;
 
   // Connects to the mixer. After this is called, delegate methods may start
@@ -90,11 +106,18 @@ class OutputStreamConnection : public MixerConnection,
   // 2.0 / sample_rate seconds.
   void SetPlaybackRate(float playback_rate);
 
+  // Changes the audio output clock rate. If the provided |rate| is outside of
+  // the supported range, the rate will be clamped to the supported range.
+  void SetAudioClockRate(double rate);
+
   // Pauses playback.
   void Pause();
 
   // Resumes playback.
   void Resume();
+
+  // Adjusts timestamps.
+  void SendTimestampAdjustment(int64_t timestamp_adjustment);
 
  private:
   // MixerConnection implementation:
@@ -120,11 +143,12 @@ class OutputStreamConnection : public MixerConnection,
   int64_t start_pts_ = INT64_MIN;
 
   float playback_rate_ = 1.0f;
+  double audio_clock_rate_ = 1.0;
 
   bool paused_ = false;
   bool sent_eos_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(OutputStreamConnection);
+  bool dropping_audio_ = false;
 };
 
 }  // namespace mixer_service

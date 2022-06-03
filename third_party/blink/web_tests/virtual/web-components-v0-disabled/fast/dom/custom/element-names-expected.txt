@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL invalid and reserved names assert_throws: register invalid custom element name: foo function "function (){
-            document.registerElement(invalidName, createRegisterParameters());
-        }" threw object "TypeError: document.registerElement is not a function" that is not a DOMException SYNTAX_ERR: property "code" is equal to undefined, expected 12
-FAIL name conflicts document.registerElement is not a function
-FAIL strange but valid names document.registerElement is not a function
-Harness: the test ran to completion.
-

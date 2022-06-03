@@ -9,8 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace crypto {
 class ECPrivateKey;
 }  // namespace crypto
@@ -31,21 +29,17 @@ class VapidKeyManager {
  public:
   explicit VapidKeyManager(SharingSyncPreference* sharing_sync_preference,
                            syncer::SyncService* sync_service);
+
+  VapidKeyManager(const VapidKeyManager&) = delete;
+  VapidKeyManager& operator=(const VapidKeyManager&) = delete;
+
   virtual ~VapidKeyManager();
 
   // Returns the cached key. If absent, first attempts to refresh the cached
   // key. May return nullptr if cached key is absent after refresh.
   virtual crypto::ECPrivateKey* GetOrCreateKey();
 
-  // Attempts to refresh cached key from various source and returns if cached
-  // key has changed.
-  //
-  // If kSharingDeriveVapidKey is enabled:
-  // 1. Attempts to derive a key from sync secret. If successful, cache it and
-  // store in sync preference.
-  // 2. Otherwise, attempts to cache the key stored in sync prefernece.
-  //
-  // If kSharingDeriveVapidKey is disabled:
+  // Attempts to refresh cached key and returns if cached key has changed:
   // 1. Attempts to cache the key stored in sync prefernece.
   // 2. If failed and cahced key is absent, attempts to generate a new key. If
   // successful, cache it and store in sync preference.
@@ -66,8 +60,6 @@ class VapidKeyManager {
   syncer::SyncService* sync_service_;
   std::unique_ptr<crypto::ECPrivateKey> vapid_key_;
   std::vector<uint8_t> vapid_key_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(VapidKeyManager);
 };
 
 #endif  // CHROME_BROWSER_SHARING_VAPID_KEY_MANAGER_H_

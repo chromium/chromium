@@ -7,7 +7,6 @@
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/error_state.h"
-#include "gpu/command_buffer/service/gl_stream_texture_image.h"
 #include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_context.h"
@@ -71,9 +70,8 @@ void PassthroughAbstractTextureImpl::BindImage(gl::GLImage* image,
   texture_passthrough_->SetLevelImage(target, level, image);
 }
 
-void PassthroughAbstractTextureImpl::BindStreamTextureImage(
-    GLStreamTextureImage* image,
-    GLuint service_id) {
+void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
+                                                            GLuint service_id) {
   DCHECK(image);
   DCHECK(!decoder_managed_image_);
 
@@ -102,6 +100,10 @@ void PassthroughAbstractTextureImpl::SetCleared() {
 
 void PassthroughAbstractTextureImpl::SetCleanupCallback(CleanupCallback cb) {
   cleanup_cb_ = std::move(cb);
+}
+
+void PassthroughAbstractTextureImpl::NotifyOnContextLost() {
+  NOTIMPLEMENTED();
 }
 
 scoped_refptr<TexturePassthrough>

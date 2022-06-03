@@ -26,9 +26,11 @@
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 
 #include <algorithm>
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image_set.h"
@@ -37,15 +39,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-CSSImageSetValue::CSSImageSetValue(CSSParserMode parser_mode)
-    : CSSValueList(kImageSetClass, kCommaSeparator),
-      cached_scale_factor_(1),
-      parser_mode_(parser_mode) {}
+CSSImageSetValue::CSSImageSetValue()
+    : CSSValueList(kImageSetClass, kCommaSeparator), cached_scale_factor_(1) {}
 
 CSSImageSetValue::~CSSImageSetValue() = default;
 
@@ -53,21 +53,14 @@ void CSSImageSetValue::FillImageSet() {
   wtf_size_t length = this->length();
   wtf_size_t i = 0;
   while (i < length) {
-    const auto& image_value = To<CSSImageValue>(Item(i));
-    String image_url = image_value.Url();
+    wtf_size_t image_index = i;
 
     ++i;
     SECURITY_DCHECK(i < length);
-    const CSSValue& scale_factor_value = Item(i);
-    float scale_factor =
-        To<CSSPrimitiveValue>(scale_factor_value).GetFloatValue();
+    const auto& scale_factor_value = To<CSSPrimitiveValue>(Item(i));
 
-    ImageWithScale image;
-    image.image_url = image_url;
-    image.referrer.referrer = image_value.GetReferrer().referrer;
-    image.referrer.referrer_policy = image_value.GetReferrer().referrer_policy;
-    image.scale_factor = scale_factor;
-    images_in_set_.push_back(image);
+    images_in_set_.push_back(
+        ImageWithScale{image_index, scale_factor_value.GetFloatValue()});
     ++i;
   }
 
@@ -101,38 +94,28 @@ StyleImage* CSSImageSetValue::CachedImage(float device_scale_factor) const {
 StyleImage* CSSImageSetValue::CacheImage(
     const Document& document,
     float device_scale_factor,
-    FetchParameters::ImageRequestOptimization image_request_optimization,
+    FetchParameters::ImageRequestBehavior,
     CrossOriginAttributeValue cross_origin) {
   if (!images_in_set_.size())
     FillImageSet();
 
   if (IsCachePending(device_scale_factor)) {
     // FIXME: In the future, we want to take much more than deviceScaleFactor
-    // into acount here. All forms of scale should be included:
+    // into account here. All forms of scale should be included:
     // Page::PageScaleFactor(), LocalFrame::PageZoomFactor(), and any CSS
     // transforms. https://bugs.webkit.org/show_bug.cgi?id=81698
     ImageWithScale image = BestImageForScaleFactor(device_scale_factor);
-    ResourceRequest resource_request(document.CompleteURL(image.image_url));
-    resource_request.SetReferrerPolicy(
-        ReferrerPolicyResolveDefault(image.referrer.referrer_policy));
-    resource_request.SetReferrerString(image.referrer.referrer);
-    ResourceLoaderOptions options;
-    options.initiator_info.name = parser_mode_ == kUASheetMode
-                                      ? fetch_initiator_type_names::kUacss
-                                      : fetch_initiator_type_names::kCSS;
-    FetchParameters params(resource_request, options);
+    const auto& image_value = To<CSSImageValue>(Item(image.index));
 
-    if (cross_origin != kCrossOriginAttributeNotSet) {
-      params.SetCrossOriginAccessControl(document.GetSecurityOrigin(),
-                                         cross_origin);
-    }
-
+    // TODO(fs): Forward the image request behavior when other code is prepared
+    // to handle it.
+    FetchParameters params = image_value.PrepareFetch(
+        document, FetchParameters::kNone, cross_origin);
     cached_image_ = MakeGarbageCollected<StyleFetchedImageSet>(
         ImageResourceContent::Fetch(params, document.Fetcher()),
         image.scale_factor, this, params.Url());
     cached_scale_factor_ = device_scale_factor;
   }
-
   return cached_image_.Get();
 }
 
@@ -163,24 +146,24 @@ String CSSImageSetValue::CustomCSSText() const {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSImageSetValue::HasFailedOrCanceledSubresources() const {
   if (!cached_image_)
     return false;
-  if (ImageResourceContent* cached_resource = cached_image_->CachedImage())
-    return cached_resource->LoadFailedOrCanceled();
+  if (ImageResourceContent* cached_content = cached_image_->CachedImage())
+    return cached_content->LoadFailedOrCanceled();
   return true;
 }
 
-void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
   CSSValueList::TraceAfterDispatch(visitor);
 }
 
 CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
-  auto* value = MakeGarbageCollected<CSSImageSetValue>(parser_mode_);
+  auto* value = MakeGarbageCollected<CSSImageSetValue>();
   for (auto& item : *this) {
     auto* image_value = DynamicTo<CSSImageValue>(item.Get());
     image_value ? value->Append(*image_value->ValueWithURLMadeAbsolute())

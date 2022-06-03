@@ -18,7 +18,7 @@ source_set("icons") {
     "//third_party/material_design_icons:ic_search",
     "//ui/base",
   ]
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "UIKit.framework",
   ]
@@ -26,9 +26,7 @@ source_set("icons") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "chrome_icon_unittest.mm",
-  ]
+  sources = [ "chrome_icon_unittest.mm" ]
   deps = [
     ":icons",
     "//ios/chrome/app/strings",

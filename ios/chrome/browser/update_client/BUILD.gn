@@ -18,9 +18,7 @@ source_set("update_client") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ios_chrome_update_query_params_delegate_unittest.cc",
-  ]
+  sources = [ "ios_chrome_update_query_params_delegate_unittest.cc" ]
   deps = [
     ":update_client",
     "//base",

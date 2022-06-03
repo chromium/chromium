@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -19,24 +20,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
 namespace {
+
 // Data for request 1.
 const int64_t kRequestId1 = 17;
-const GURL kUrl1("https://google.com");
 const ClientId kClientId1("bookmark", "1234");
 // Data for request 2.
 const int64_t kRequestId2 = 42;
-const GURL kUrl2("http://nytimes.com");
 const ClientId kClientId2("bookmark", "5678");
 const bool kUserRequested = true;
-
-// Default request
-const SavePageRequest kEmptyRequest(0UL,
-                                    GURL(""),
-                                    ClientId("", ""),
-                                    base::Time(),
-                                    true);
 
 class ReconcileTaskTest : public RequestQueueTaskTestBase {
  public:
@@ -109,24 +101,24 @@ void ReconcileTaskTest::QueueRequests(const SavePageRequest& request1,
 }
 
 void ReconcileTaskTest::MakeTask() {
-  task_.reset(new ReconcileTask(
+  task_ = std::make_unique<ReconcileTask>(
       &store_, base::BindOnce(&ReconcileTaskTest::ReconcileCallback,
-                              base::Unretained(this))));
+                              base::Unretained(this)));
 }
 
 TEST_F(ReconcileTaskTest, Reconcile) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_request_state(SavePageRequest::RequestState::PAUSED);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_request_state(SavePageRequest::RequestState::OFFLINING);
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, should be just the other request.
@@ -152,16 +144,16 @@ TEST_F(ReconcileTaskTest, Reconcile) {
 TEST_F(ReconcileTaskTest, NothingToReconcile) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_request_state(SavePageRequest::RequestState::PAUSED);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_request_state(SavePageRequest::RequestState::AVAILABLE);
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, should be just the other request.

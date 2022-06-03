@@ -15,9 +15,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 @class NSDictionary;
@@ -37,6 +38,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       LowEnergyDeviceListUpdatedCallback
           update_low_energy_device_list_callback);
+
+  BluetoothLowEnergyDeviceWatcherMac(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
+  BluetoothLowEnergyDeviceWatcherMac& operator=(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
 
   BluetoothLowEnergyDeviceWatcherMac(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
@@ -76,9 +82,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
 
   // Thread runner to watch, read, and parse bluetooth property list file.
   scoped_refptr<base::SequencedTaskRunner> file_thread_task_runner_ =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
   LowEnergyDeviceListUpdatedCallback low_energy_device_list_updated_callback_;
@@ -86,8 +91,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
       std::make_unique<base::FilePathWatcher>();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDeviceWatcherMac);
 };
 
 }  // namespace device

@@ -5,9 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_OBJECT_HOST_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_OBJECT_HOST_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -46,6 +43,10 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   ServiceWorkerObjectHost(base::WeakPtr<ServiceWorkerContextCore> context,
                           ServiceWorkerContainerHost* container_host,
                           scoped_refptr<ServiceWorkerVersion> version);
+
+  ServiceWorkerObjectHost(const ServiceWorkerObjectHost&) = delete;
+  ServiceWorkerObjectHost& operator=(const ServiceWorkerObjectHost&) = delete;
+
   ~ServiceWorkerObjectHost() override;
 
   // ServiceWorkerVersion::Observer overrides.
@@ -120,8 +121,6 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   mojo::AssociatedRemoteSet<blink::mojom::ServiceWorkerObject> remote_objects_;
 
   base::WeakPtrFactory<ServiceWorkerObjectHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerObjectHost);
 };
 
 }  // namespace content

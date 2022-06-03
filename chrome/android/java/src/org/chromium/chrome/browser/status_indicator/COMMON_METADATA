@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Mobile>StatusIndicator"
+}
+team_email: "clank-app-team@google.com"

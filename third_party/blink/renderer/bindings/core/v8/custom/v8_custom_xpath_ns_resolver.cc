@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -61,7 +62,7 @@ AtomicString V8CustomXPathNSResolver::lookupNamespaceURI(const String& prefix) {
   if (lookup_namespace_uri_func.IsEmpty() && !resolver_->IsFunction()) {
     LocalFrame* frame = ToLocalFrameIfNotDetached(script_state_->GetContext());
     if (frame)
-      frame->Console().AddMessage(ConsoleMessage::Create(
+      frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kError,
           "XPathNSResolver does not have a lookupNamespaceURI method."));
@@ -93,7 +94,7 @@ AtomicString V8CustomXPathNSResolver::lookupNamespaceURI(const String& prefix) {
   return return_string;
 }
 
-void V8CustomXPathNSResolver::Trace(blink::Visitor* visitor) {
+void V8CustomXPathNSResolver::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   XPathNSResolver::Trace(visitor);
 }

@@ -1,0 +1,95 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 0 0 100%;
+  }
+
+  .phone-status-property {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
+  #phoneStatusPropertiesColumn {
+    flex: 2;
+    flex-wrap: wrap;
+  }
+
+  select {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+</style>
+
+<div class="column">
+  <cr-button on-click="setFakePhoneModel_" class="internals-button">
+    <span class="emphasize">Change Phone Status</span>
+  </cr-button>
+  <div class="label">
+    <span class="emphasize">Note:</span> Click the button above to propagate all
+    phone status values selected on the right hand side to the fake phonehub
+    manager.
+  </div>
+</div>
+<div id="phoneStatusPropertiesColumn" class="column">
+  <div class="phone-status-property">
+    <div class="label">
+      Mobile Status
+    </div>
+    <select id="mobileStatusList" class="md-select"
+        on-change="onMobileStatusSelected_">
+      <template is="dom-repeat" items="[[mobileStatusList_]]">
+        <option>[[getMobileStatusName_(item)]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="phone-status-property">
+    <div class="label">
+      Signal Strength
+    </div>
+    <select id="signalStrengthList" class="md-select"
+        on-change="onSignalStrengthSelected_">
+      <template is="dom-repeat" items="[[signalStrengthList_]]">
+        <option>[[getSignalStrengthName_(item)]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="phone-status-property">
+    <div class="label">
+      Charging State
+    </div>
+    <select id="chargingStateList" class="md-select"
+        on-change="onChargingStateSelected_">
+      <template is="dom-repeat" items="[[chargingStateList_]]">
+        <option>[[getChargingStateName_(item)]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="phone-status-property">
+    <div class="label">
+      Battery Saver
+    </div>
+    <select id="batterySaverStateList" class="md-select"
+        on-change="onBatterySaverStateSelected_">
+      <template is="dom-repeat" items="[[batterySaverStateList_]]">
+        <option>[[getBatterySaverStateName_(item)]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="phone-status-property">
+    <div class="label">
+      Mobile Provider
+    </div>
+    <cr-input value="{{mobileProvider_}}">
+    </cr-input>
+  </div>
+  <div class="phone-status-property">
+    <div class="label">
+      Battery Percentage
+    </div>
+    <cr-input id="batteryPercentageInput" type="number"
+        min="0" max="100" value="{{batteryPercentage_}}"
+        on-change="onBatteryPercentageInputChanged_"
+        auto-validate error-message="Must be [0, 100]">
+    </cr-input>
+  </div>
+</div>

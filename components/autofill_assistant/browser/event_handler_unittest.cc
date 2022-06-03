@@ -14,16 +14,14 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Pair;
 using ::testing::SizeIs;
 
 // Test observer which stores all events received.
 class TestObserver : public EventHandler::Observer {
  public:
-  void OnEvent(const EventHandler::EventKey& key,
-               const ValueProto& value) override {
-    received_events_.emplace_back(std::make_pair(key, value));
+  void OnEvent(const EventHandler::EventKey& key) override {
+    received_events_.emplace_back(key);
     if (callback_) {
       std::move(callback_).Run();
     }
@@ -35,13 +33,12 @@ class TestObserver : public EventHandler::Observer {
   }
 
   // Returns the vector of all received events.
-  const std::vector<std::pair<EventHandler::EventKey, ValueProto>>&
-  GetEvents() {
+  const std::vector<EventHandler::EventKey>& GetEvents() {
     return received_events_;
   }
 
  private:
-  std::vector<std::pair<EventHandler::EventKey, ValueProto>> received_events_;
+  std::vector<EventHandler::EventKey> received_events_;
   base::OnceCallback<void()> callback_;
 };
 
@@ -50,7 +47,7 @@ TEST(EventHandlerTest, SmokeTest) {
   TestObserver receiver;
 
   handler.AddObserver(&receiver);
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"}, ValueProto());
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"});
 }
 
 TEST(EventHandlerTest, UnregisterSelfDuringNotification) {
@@ -63,7 +60,7 @@ TEST(EventHandlerTest, UnregisterSelfDuringNotification) {
 
   receiver1.RegisterOneTimeCallback(base::BindOnce(
       &EventHandler::RemoveObserver, base::Unretained(&handler), &receiver1));
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"}, ValueProto());
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"});
 
   EXPECT_THAT(receiver1.GetEvents(), SizeIs(1));
   EXPECT_THAT(receiver2.GetEvents(), SizeIs(1));
@@ -79,7 +76,7 @@ TEST(EventHandlerTest, UnregisterNextDuringNotification) {
 
   receiver1.RegisterOneTimeCallback(base::BindOnce(
       &EventHandler::RemoveObserver, base::Unretained(&handler), &receiver2));
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"}, ValueProto());
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"});
 
   EXPECT_THAT(receiver1.GetEvents(), SizeIs(1));
   EXPECT_THAT(receiver2.GetEvents(), SizeIs(0));
@@ -95,11 +92,30 @@ TEST(EventHandlerTest, UnregisterPreviousDuringNotification) {
 
   receiver2.RegisterOneTimeCallback(base::BindOnce(
       &EventHandler::RemoveObserver, base::Unretained(&handler), &receiver1));
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"}, ValueProto());
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"}, ValueProto());
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"});
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Test"});
 
   EXPECT_THAT(receiver1.GetEvents(), SizeIs(1));
   EXPECT_THAT(receiver2.GetEvents(), SizeIs(2));
+}
+
+TEST(EventHandlerTest, RegisterNewDuringNotification) {
+  EventHandler handler;
+  TestObserver receiver1;
+  TestObserver receiver2;
+
+  handler.AddObserver(&receiver1);
+
+  receiver1.RegisterOneTimeCallback(base::BindOnce(
+      &EventHandler::AddObserver, base::Unretained(&handler), &receiver2));
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Event 1"});
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Event 2"});
+
+  EXPECT_THAT(receiver1.GetEvents(), SizeIs(2));
+  // Receiver2 was registered while the first event was being processed. As
+  // such, it should not be notified of the first event, only the second one.
+  EXPECT_THAT(receiver2.GetEvents(),
+              ElementsAre(Pair(EventProto::kOnValueChanged, "Event 2")));
 }
 
 TEST(EventHandlerTest, FireEventDuringNotification) {
@@ -107,19 +123,14 @@ TEST(EventHandlerTest, FireEventDuringNotification) {
   TestObserver receiver;
   handler.AddObserver(&receiver);
 
-  ValueProto test;
-  test.mutable_strings()->add_values("Some value");
-  receiver.RegisterOneTimeCallback(base::BindOnce(
-      &EventHandler::DispatchEvent, base::Unretained(&handler),
-      std::make_pair(EventProto::kOnValueChanged, "Event 2"), test));
-  handler.DispatchEvent({EventProto::kOnValueChanged, "Event 1"}, ValueProto());
+  receiver.RegisterOneTimeCallback(
+      base::BindOnce(&EventHandler::DispatchEvent, base::Unretained(&handler),
+                     std::make_pair(EventProto::kOnValueChanged, "Event 2")));
+  handler.DispatchEvent({EventProto::kOnValueChanged, "Event 1"});
 
-  EXPECT_THAT(
-      receiver.GetEvents(),
-      ElementsAre(
-          Pair(std::make_pair(EventProto::kOnValueChanged, "Event 1"),
-               ValueProto()),
-          Pair(std::make_pair(EventProto::kOnValueChanged, "Event 2"), test)));
+  EXPECT_THAT(receiver.GetEvents(),
+              ElementsAre(Pair(EventProto::kOnValueChanged, "Event 1"),
+                          Pair(EventProto::kOnValueChanged, "Event 2")));
 }
 
 }  // namespace

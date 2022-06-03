@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -25,16 +27,27 @@ namespace blink {
 // some of the common bits into a base class?
 
 XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
-    XRWebGLDrawingBuffer* drawing_buffer,
+    base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer,
     const IntSize& size,
     const gpu::Mailbox& mailbox,
     GLuint texture_id)
-    : drawing_buffer(drawing_buffer),
+    : owning_thread_ref(base::PlatformThread::CurrentRef()),
+      drawing_buffer(std::move(drawing_buffer)),
       size(size),
       texture_id(texture_id),
       mailbox(mailbox) {}
 
 XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
+  if (base::PlatformThread::CurrentRef() != owning_thread_ref ||
+      !drawing_buffer) {
+    // If the context has been destroyed no cleanup is necessary since all
+    // resources below are automatically destroyed. Note that if a ColorBuffer
+    // is being destroyed on a different thread, it implies that the owning
+    // thread was destroyed which means the associated context was also
+    // destroyed.
+    return;
+  }
+
   gpu::gles2::GLES2Interface* gl = drawing_buffer->ContextGL();
   if (receive_sync_token.HasData())
     gl->WaitSyncTokenCHROMIUM(receive_sync_token.GetConstData());
@@ -105,68 +118,6 @@ scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
   return xr_drawing_buffer;
 }
 
-void XRWebGLDrawingBuffer::MirrorClient::OnMirrorImageAvailable(
-    scoped_refptr<StaticBitmapImage> image,
-    std::unique_ptr<viz::SingleReleaseCallback> callback) {
-  // Replace the next image if we have one already.
-  if (next_image_ && next_release_callback_) {
-    next_release_callback_->Run(gpu::SyncToken(), false);
-  }
-
-  // Set our new image.
-  next_image_ = image;
-  next_release_callback_ = std::move(callback);
-}
-
-void XRWebGLDrawingBuffer::MirrorClient::BeginDestruction() {
-  // Call all callbacks we have to clean up associated resources.  For
-  // next_release_callback_, we report the previous image as "not lost", meaning
-  // we can reuse the texture/image.  For previous_release_callback_
-  // and current_release_callback_, we report the image as lost, because we
-  // don't know if the consumer is still using them, so they should not be
-  // reused.
-  if (previous_release_callback_) {
-    previous_release_callback_->Run(gpu::SyncToken(), true);
-    previous_release_callback_ = nullptr;
-  }
-
-  if (current_release_callback_) {
-    current_release_callback_->Run(gpu::SyncToken(), true);
-    current_release_callback_ = nullptr;
-  }
-
-  if (next_release_callback_) {
-    next_release_callback_->Run(gpu::SyncToken(), false);
-    next_release_callback_ = nullptr;
-  }
-
-  next_image_ = nullptr;
-}
-
-scoped_refptr<StaticBitmapImage>
-XRWebGLDrawingBuffer::MirrorClient::GetLastImage() {
-  if (!next_image_)
-    return nullptr;
-
-  scoped_refptr<StaticBitmapImage> ret = next_image_;
-  next_image_ = nullptr;
-  DCHECK(!previous_release_callback_);
-  previous_release_callback_ = std::move(current_release_callback_);
-  DCHECK(!current_release_callback_);
-  current_release_callback_ = std::move(next_release_callback_);
-  return ret;
-}
-
-void XRWebGLDrawingBuffer::MirrorClient::CallLastReleaseCallback() {
-  if (previous_release_callback_)
-    previous_release_callback_->Run(gpu::SyncToken(), false);
-  previous_release_callback_ = nullptr;
-}
-
-XRWebGLDrawingBuffer::MirrorClient::~MirrorClient() {
-  BeginDestruction();
-}
-
 XRWebGLDrawingBuffer::XRWebGLDrawingBuffer(DrawingBuffer* drawing_buffer,
                                            GLuint framebuffer,
                                            bool discard_framebuffer_supported,
@@ -178,11 +129,10 @@ XRWebGLDrawingBuffer::XRWebGLDrawingBuffer(DrawingBuffer* drawing_buffer,
       discard_framebuffer_supported_(discard_framebuffer_supported),
       depth_(want_depth_buffer),
       stencil_(want_stencil_buffer),
-      alpha_(want_alpha_channel) {}
+      alpha_(want_alpha_channel),
+      weak_factory_(this) {}
 
 void XRWebGLDrawingBuffer::BeginDestruction() {
-  mirror_client_ = nullptr;
-
   if (back_color_buffer_) {
     gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
     gl->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
@@ -242,26 +192,14 @@ gpu::gles2::GLES2Interface* XRWebGLDrawingBuffer::ContextGL() {
   return drawing_buffer_->ContextGL();
 }
 
-void XRWebGLDrawingBuffer::SetMirrorClient(scoped_refptr<MirrorClient> client) {
-  mirror_client_ = client;
-  if (mirror_client_) {
-    // Immediately send a black 1x1 image to the mirror client to ensure that
-    // it has content to show.
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(1, 1);
-    mirror_client_->OnMirrorImageAvailable(
-        UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot()),
-        nullptr);
-  }
-}
-
 bool XRWebGLDrawingBuffer::ContextLost() {
   return drawing_buffer_->destroyed();
 }
 
 IntSize XRWebGLDrawingBuffer::AdjustSize(const IntSize& new_size) {
   // Ensure we always have at least a 1x1 buffer
-  float width = std::max(1, new_size.Width());
-  float height = std::max(1, new_size.Height());
+  float width = std::max(1, new_size.width());
+  float height = std::max(1, new_size.height());
 
   float adjusted_scale =
       std::min(static_cast<float>(max_texture_size_) / width,
@@ -279,9 +217,21 @@ IntSize XRWebGLDrawingBuffer::AdjustSize(const IntSize& new_size) {
 
 void XRWebGLDrawingBuffer::UseSharedBuffer(
     const gpu::MailboxHolder& buffer_mailbox_holder) {
-  DVLOG(3) << __FUNCTION__;
-
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
+
+  // Ensure that the mailbox holder is ready to use, the following actions need
+  // to be sequenced after setup steps that were done through a different
+  // process's GPU command buffer context.
+  //
+  // TODO(https://crbug.com/1111526): Investigate handling context loss and
+  // recovery for cases where these assumptions may not be accurate.
+  DCHECK(buffer_mailbox_holder.sync_token.HasData());
+  DCHECK(!buffer_mailbox_holder.mailbox.IsZero());
+  DVLOG(3) << __func__
+           << ": mailbox=" << buffer_mailbox_holder.mailbox.ToDebugString()
+           << ", SyncToken="
+           << buffer_mailbox_holder.sync_token.ToDebugString();
+  gl->WaitSyncTokenCHROMIUM(buffer_mailbox_holder.sync_token.GetConstData());
 
   // Create a texture backed by the shared buffer image.
   DCHECK(!shared_buffer_texture_id_);
@@ -430,14 +380,14 @@ void XRWebGLDrawingBuffer::Resize(const IntSize& new_size) {
     if (anti_aliasing_mode_ == kMSAAImplicitResolve) {
       gl->RenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, sample_count_,
                                             GL_DEPTH24_STENCIL8_OES,
-                                            size_.Width(), size_.Height());
+                                            size_.width(), size_.height());
     } else if (anti_aliasing_mode_ == kMSAAExplicitResolve) {
       gl->RenderbufferStorageMultisampleCHROMIUM(GL_RENDERBUFFER, sample_count_,
                                                  GL_DEPTH24_STENCIL8_OES,
-                                                 size_.Width(), size_.Height());
+                                                 size_.width(), size_.height());
     } else {
       gl->RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
-                              size_.Width(), size_.Height());
+                              size_.width(), size_.height());
     }
 
     gl->FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
@@ -458,7 +408,7 @@ void XRWebGLDrawingBuffer::Resize(const IntSize& new_size) {
     gl->BindRenderbuffer(GL_RENDERBUFFER, multisample_renderbuffer_);
     gl->RenderbufferStorageMultisampleCHROMIUM(GL_RENDERBUFFER, sample_count_,
                                                multisample_format,
-                                               size_.Width(), size_.Height());
+                                               size_.width(), size_.height());
 
     gl->FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                 GL_RENDERBUFFER, multisample_renderbuffer_);
@@ -507,9 +457,10 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-  gpu::Mailbox mailbox =
-      sii->CreateSharedImage(alpha_ ? viz::RGBA_8888 : viz::RGBX_8888,
-                             gfx::Size(size_), gfx::ColorSpace(), usage);
+  gpu::Mailbox mailbox = sii->CreateSharedImage(
+      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, ToGfxSize(size_),
+      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      gpu::kNullSurfaceHandle);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -523,7 +474,8 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   DrawingBuffer::Client* client = drawing_buffer_->client();
   client->DrawingBufferClientRestoreTexture2DBinding();
 
-  return base::AdoptRef(new ColorBuffer(this, size_, mailbox, texture_id));
+  return base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(), size_,
+                                           mailbox, texture_id);
 }
 
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
@@ -560,8 +512,8 @@ void XRWebGLDrawingBuffer::BindAndResolveDestinationFramebuffer() {
     gl->BindFramebuffer(GL_DRAW_FRAMEBUFFER_ANGLE, resolved_framebuffer_);
     gl->Disable(GL_SCISSOR_TEST);
 
-    int width = size_.Width();
-    int height = size_.Height();
+    int width = size_.width();
+    int height = size_.height();
     // Use NEAREST, because there is no scale performed during the blit.
     gl->BlitFramebufferCHROMIUM(0, 0, width, height, 0, 0, width, height,
                                 GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -626,8 +578,7 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
 }
 
 scoped_refptr<StaticBitmapImage>
-XRWebGLDrawingBuffer::TransferToStaticBitmapImage(
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   scoped_refptr<ColorBuffer> buffer;
   bool success = false;
@@ -654,53 +605,48 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage(
     // incomplete (likely due to a failed buffer allocation), or when the
     // context gets lost.
     sk_sp<SkSurface> surface =
-        SkSurface::MakeRasterN32Premul(size_.Width(), size_.Height());
+        SkSurface::MakeRasterN32Premul(size_.width(), size_.height());
     return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
   }
 
   // This holds a ref on the XRWebGLDrawingBuffer that will keep it alive
   // until the mailbox is released (and while the callback is running).
-  auto func =
-      WTF::Bind(mirror_client_ ? &XRWebGLDrawingBuffer::MailboxReleasedToMirror
-                               : &XRWebGLDrawingBuffer::MailboxReleased,
-                scoped_refptr<XRWebGLDrawingBuffer>(this), buffer);
+  viz::ReleaseCallback release_callback =
+      base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
+  const SkImageInfo sk_image_info =
+      SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      viz::SingleReleaseCallback::Create(std::move(func));
+  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+      buffer->mailbox, buffer->produce_sync_token,
+      /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
+      /* is_origin_top_left = */ false,
+      drawing_buffer_->ContextProviderWeakPtr(),
+      base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
+      std::move(release_callback));
+}
 
-  // Make our own textureId that is a reference on the same shared image being
-  // used as the front buffer.  We do not need a
-  // Begin/EndSharedImageAccessDirectCHROMIUM as the texture id is just for
-  // lifetime, not actual access.  We do not need to wait on the sync token
-  // since the GL context has already waited on it.  Similarly, the release
-  // callback will run on the same context so we don't need to send a sync token
-  // for this consume action back to it.
-  GLuint texture_id =
-      gl->CreateAndTexStorage2DSharedImageCHROMIUM(buffer->mailbox.name);
+// static
+void XRWebGLDrawingBuffer::NotifyMailboxReleased(
+    scoped_refptr<ColorBuffer> color_buffer,
+    const gpu::SyncToken& sync_token,
+    bool lost_resource) {
+  DCHECK(color_buffer->owning_thread_ref == base::PlatformThread::CurrentRef());
 
-  if (out_release_callback) {
-    *out_release_callback = std::move(release_callback);
-  } else {
-    release_callback->Run(gpu::SyncToken(), true /* lost_resource */);
+  // Update the SyncToken to ensure that we will wait for it even if we
+  // immediately destroy this buffer.
+  color_buffer->receive_sync_token = sync_token;
+  if (color_buffer->drawing_buffer) {
+    color_buffer->drawing_buffer->MailboxReleased(color_buffer, lost_resource);
   }
-
-  return AcceleratedStaticBitmapImage::CreateFromWebGLContextImage(
-      buffer->mailbox, buffer->produce_sync_token, texture_id,
-      drawing_buffer_->ContextProviderWeakPtr(), size_, false);
 }
 
 void XRWebGLDrawingBuffer::MailboxReleased(
     scoped_refptr<ColorBuffer> color_buffer,
-    const gpu::SyncToken& sync_token,
     bool lost_resource) {
   // If the mailbox has been returned by the compositor then it is no
   // longer being presented, and so is no longer the front buffer.
   if (color_buffer == front_color_buffer_)
     front_color_buffer_ = nullptr;
-
-  // Update the SyncToken to ensure that we will wait for it even if we
-  // immediately destroy this buffer.
-  color_buffer->receive_sync_token = sync_token;
 
   if (drawing_buffer_->destroyed() || color_buffer->size != size_ ||
       lost_resource) {
@@ -712,37 +658,6 @@ void XRWebGLDrawingBuffer::MailboxReleased(
     recycled_color_buffer_queue_.TakeLast();
 
   recycled_color_buffer_queue_.push_front(color_buffer);
-}
-
-void XRWebGLDrawingBuffer::MailboxReleasedToMirror(
-    scoped_refptr<ColorBuffer> color_buffer,
-    const gpu::SyncToken& sync_token,
-    bool lost_resource) {
-  if (!mirror_client_ || lost_resource) {
-    MailboxReleased(std::move(color_buffer), sync_token, lost_resource);
-    return;
-  }
-
-  gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-  color_buffer->receive_sync_token = sync_token;
-
-  auto func =
-      WTF::Bind(&XRWebGLDrawingBuffer::MailboxReleased,
-                scoped_refptr<XRWebGLDrawingBuffer>(this), color_buffer);
-
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      viz::SingleReleaseCallback::Create(std::move(func));
-
-  GLuint texture_id =
-      gl->CreateAndTexStorage2DSharedImageCHROMIUM(color_buffer->mailbox.name);
-
-  scoped_refptr<StaticBitmapImage> image =
-      AcceleratedStaticBitmapImage::CreateFromWebGLContextImage(
-          color_buffer->mailbox, color_buffer->produce_sync_token, texture_id,
-          drawing_buffer_->ContextProviderWeakPtr(), color_buffer->size, false);
-
-  mirror_client_->OnMirrorImageAvailable(std::move(image),
-                                         std::move(release_callback));
 }
 
 }  // namespace blink

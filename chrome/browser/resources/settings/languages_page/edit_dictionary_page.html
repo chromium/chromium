@@ -1,20 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys/iron-a11y-keys.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="../global_scroll_target_behavior.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-
-<dom-module id="settings-edit-dictionary-page">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared">
       :host {
         display: flex;
         flex-direction: column;
@@ -33,7 +17,7 @@
         flex: 1;
       }
     </style>
-    <div class="settings-box first">
+    <div class="cr-row first">
       <iron-a11y-keys id="keys" keys="enter esc"
           on-keys-pressed="onKeysPress_"></iron-a11y-keys>
       <cr-input id="newWord" value="{{newWordValue_}}"
@@ -47,13 +31,13 @@
         </cr-button>
       </cr-input>
     </div>
-    <div class="settings-box continuation block">
+    <div class="cr-row continuation">
       <h2>$i18n{customDictionaryWords}</h2>
     </div>
     <div class="list-frame">
       <template is="dom-if" if="[[hasWords_]]">
         <iron-list id="list" items="[[words_]]" preserve-focus
-            scroll-target="[[subpageScrollTarget]]">
+            scroll-target="[[subpageScrollTarget]]" risk-selection>
           <template>
             <div class="list-item">
               <div id$="word[[index]]" class="word text-elide">[[item]]</div>
@@ -70,6 +54,3 @@
         $i18n{noCustomDictionaryWordsFound}
       </div>
     </div>
-  </template>
-  <script src="edit_dictionary_page.js"></script>
-</dom-module>

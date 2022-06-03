@@ -22,6 +22,7 @@
 #include <string.h>
 #include <cassert>
 #include <cstddef>
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 
 // From binutils/include/elf/common.h (this doesn't appear to be documented
@@ -38,15 +39,16 @@
 #define VERSYM_VERSION 0x7fff
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
 namespace {
 
-#if __WORDSIZE == 32
+#if __SIZEOF_POINTER__ == 4
 const int kElfClass = ELFCLASS32;
 int ElfBind(const ElfW(Sym) *symbol) { return ELF32_ST_BIND(symbol->st_info); }
 int ElfType(const ElfW(Sym) *symbol) { return ELF32_ST_TYPE(symbol->st_info); }
-#elif __WORDSIZE == 64
+#elif __SIZEOF_POINTER__ == 8
 const int kElfClass = ELFCLASS64;
 int ElfBind(const ElfW(Sym) *symbol) { return ELF64_ST_BIND(symbol->st_info); }
 int ElfType(const ElfW(Sym) *symbol) { return ELF64_ST_TYPE(symbol->st_info); }
@@ -174,17 +176,17 @@ void ElfMemImage::Init(const void *base) {
   }
   switch (base_as_char[EI_DATA]) {
     case ELFDATA2LSB: {
-      if (__LITTLE_ENDIAN != __BYTE_ORDER) {
-        assert(false);
-        return;
-      }
+#ifndef ABSL_IS_LITTLE_ENDIAN
+      assert(false);
+      return;
+#endif
       break;
     }
     case ELFDATA2MSB: {
-      if (__BIG_ENDIAN != __BYTE_ORDER) {
-        assert(false);
-        return;
-      }
+#ifndef ABSL_IS_BIG_ENDIAN
+      assert(false);
+      return;
+#endif
       break;
     }
     default: {
@@ -220,7 +222,7 @@ void ElfMemImage::Init(const void *base) {
       reinterpret_cast<ElfW(Dyn) *>(dynamic_program_header->p_vaddr +
                                     relocation);
   for (; dynamic_entry->d_tag != DT_NULL; ++dynamic_entry) {
-    const ElfW(Xword) value = dynamic_entry->d_un.d_val + relocation;
+    const auto value = dynamic_entry->d_un.d_val + relocation;
     switch (dynamic_entry->d_tag) {
       case DT_HASH:
         hash_ = reinterpret_cast<ElfW(Word) *>(value);
@@ -375,6 +377,7 @@ void ElfMemImage::SymbolIterator::Update(int increment) {
 }
 
 }  // namespace debugging_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_HAVE_ELF_MEM_IMAGE

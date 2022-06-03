@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/resource/resource_handle.h"
 
 namespace ui {
@@ -17,6 +16,10 @@ namespace ui {
 class ResourceDataDLL : public ResourceHandle {
  public:
   explicit ResourceDataDLL(HINSTANCE module);
+
+  ResourceDataDLL(const ResourceDataDLL&) = delete;
+  ResourceDataDLL& operator=(const ResourceDataDLL&) = delete;
+
   ~ResourceDataDLL() override;
 
   // ResourceHandle implementation:
@@ -26,12 +29,10 @@ class ResourceDataDLL : public ResourceHandle {
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
-  ScaleFactor GetScaleFactor() const override;
+  ResourceScaleFactor GetResourceScaleFactor() const override;
 
  private:
   const HINSTANCE module_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceDataDLL);
 };
 
 }  // namespace ui

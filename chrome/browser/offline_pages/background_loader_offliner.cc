@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,28 +13,21 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
 #include "chrome/browser/offline_pages/offliner_user_data.h"
-#include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
-#include "components/offline_pages/content/renovations/render_frame_script_injector.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
-#include "components/offline_pages/core/renovations/page_renovation_loader.h"
-#include "components/offline_pages/core/renovations/page_renovator.h"
-#include "components/previews/content/previews_user_data.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/mhtml_extra_parts.h"
@@ -42,17 +36,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/previews_state.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/blink/public/common/loader/previews_state.h"
 
 namespace offline_pages {
 
 namespace {
-const char kContentType[] = "text/plain";
-const char kContentTransferEncodingBinary[] =
-    "Content-Transfer-Encoding: binary";
-const char kXHeaderForSignals[] = "X-Chrome-Loading-Metrics-Data: 1";
 
 std::string AddHistogramSuffix(const ClientId& client_id,
                                const char* histogram_name) {
@@ -70,18 +60,6 @@ void RecordErrorCauseUMA(const ClientId& client_id, int error_code) {
       AddHistogramSuffix(client_id,
                          "OfflinePages.Background.LoadingErrorStatusCode"),
       error_code);
-}
-
-void RecordOffliningPreviewsUMA(const ClientId& client_id,
-                                content::PreviewsState previews_state) {
-  bool is_previews_enabled =
-      (previews_state != content::PreviewsTypes::PREVIEWS_OFF &&
-       previews_state != content::PreviewsTypes::PREVIEWS_NO_TRANSFORM);
-
-  base::UmaHistogramBoolean(
-      AddHistogramSuffix(client_id,
-                         "OfflinePages.Background.OffliningPreviewStatus"),
-      is_previews_enabled);
 }
 
 void HandleLoadTerminationCancel(
@@ -167,30 +145,15 @@ bool BackgroundLoaderOffliner::LoadAndSave(
   MarkLoadStartTime();
 
   // Track copy of pending request.
-  pending_request_.reset(new SavePageRequest(request));
+  pending_request_ = std::make_unique<SavePageRequest>(request);
   completion_callback_ = std::move(completion_callback);
   progress_callback_ = progress_callback;
-
-  if (IsOfflinePagesRenovationsEnabled()) {
-    // Lazily create PageRenovationLoader
-    if (!page_renovation_loader_)
-      page_renovation_loader_ = std::make_unique<PageRenovationLoader>();
-
-    // Set up PageRenovator for this offlining instance.
-    auto script_injector = std::make_unique<RenderFrameScriptInjector>(
-        loader_->web_contents()->GetMainFrame(),
-        ISOLATED_WORLD_ID_CHROME_INTERNAL);
-    page_renovator_ = std::make_unique<PageRenovator>(
-        page_renovation_loader_.get(), std::move(script_injector),
-        request.url());
-  }
 
   // Load page attempt.
   loader_.get()->LoadPage(request.url());
 
   snapshot_controller_ = std::make_unique<BackgroundSnapshotController>(
-      base::ThreadTaskRunnerHandle::Get(), this,
-      static_cast<bool>(page_renovator_));
+      base::ThreadTaskRunnerHandle::Get(), this, false);
 
   return true;
 }
@@ -277,14 +240,16 @@ void BackgroundLoaderOffliner::MarkLoadStartTime() {
   load_start_time_ = base::TimeTicks::Now();
 }
 
-void BackgroundLoaderOffliner::DocumentAvailableInMainFrame() {
+void BackgroundLoaderOffliner::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   is_low_bar_met_ = true;
 
   // Add this signal to signal_data_.
   AddLoadingSignal("DocumentAvailableInMainFrame");
 }
 
-void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame() {
+void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   if (!pending_request_.get()) {
     DVLOG(1) << "DidStopLoading called even though no pending request.";
     return;
@@ -296,7 +261,7 @@ void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame() {
   snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
 }
 
-void BackgroundLoaderOffliner::RenderProcessGone(
+void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   if (pending_request_) {
     SavePageRequest request(*pending_request_.get());
@@ -350,18 +315,6 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
       page_load_state_ = RETRIABLE_HTTP_ERROR;
     }
   }
-
-  PreviewsUITabHelper* previews_tab_helper =
-      PreviewsUITabHelper::FromWebContents(navigation_handle->GetWebContents());
-  content::PreviewsState previews_state = content::PREVIEWS_OFF;
-  if (previews_tab_helper) {
-    previews::PreviewsUserData* previews_user_data =
-        previews_tab_helper->GetPreviewsUserData(navigation_handle);
-    if (previews_user_data)
-      previews_state = previews_user_data->CommittedPreviewsState();
-  }
-
-  RecordOffliningPreviewsUMA(pending_request_->client_id(), previews_state);
 }
 
 void BackgroundLoaderOffliner::SetBackgroundSnapshotControllerForTest(
@@ -437,41 +390,6 @@ void BackgroundLoaderOffliner::StartSnapshot() {
 
   save_state_ = SAVING;
 
-  // Capture loading signals to UMA.
-  RequestStats& image_stats = stats_[ResourceDataType::IMAGE];
-  RequestStats& css_stats = stats_[ResourceDataType::TEXT_CSS];
-  RequestStats& xhr_stats = stats_[ResourceDataType::XHR];
-
-  // Add loading signal into the MHTML that will be generated if the command
-  // line flag is set for it.
-  if (IsOfflinePagesLoadSignalCollectingEnabled()) {
-    // Write resource percentage signal data into extra data before emitting it
-    // to the MHTML.
-    signal_data_.SetDouble("StartedImages", image_stats.requested);
-    signal_data_.SetDouble("CompletedImages", image_stats.completed);
-    signal_data_.SetDouble("StartedCSS", css_stats.requested);
-    signal_data_.SetDouble("CompletedCSS", css_stats.completed);
-    signal_data_.SetDouble("StartedXHR", xhr_stats.requested);
-    signal_data_.SetDouble("CompletedXHR", xhr_stats.completed);
-
-    // Stash loading signals for writing when we write out the MHTML.
-    std::string headers = base::StringPrintf(
-        "%s\r\n%s\r\n\r\n", kContentTransferEncodingBinary, kXHeaderForSignals);
-    std::string body;
-    base::JSONWriter::Write(signal_data_, &body);
-    std::string content_type = kContentType;
-    std::string content_location = base::StringPrintf(
-        "cid:signal-data-%" PRId64 "@mhtml.blink", request.request_id());
-
-    content::MHTMLExtraParts* extra_parts =
-        content::MHTMLExtraParts::FromWebContents(web_contents);
-    DCHECK(extra_parts);
-    if (extra_parts != nullptr) {
-      extra_parts->AddExtraMHTMLPart(content_type, content_location, headers,
-                                     body);
-    }
-  }
-
   std::unique_ptr<OfflinePageArchiver> archiver(new OfflinePageMHTMLArchiver());
 
   OfflinePageModel::SavePageParams params;
@@ -491,16 +409,8 @@ void BackgroundLoaderOffliner::StartSnapshot() {
 
   offline_page_model_->SavePage(
       params, std::move(archiver), web_contents,
-      base::Bind(&BackgroundLoaderOffliner::OnPageSaved,
-                 weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BackgroundLoaderOffliner::RunRenovations() {
-  if (page_renovator_) {
-    page_renovator_->RunRenovations(
-        base::Bind(&BackgroundLoaderOffliner::RenovationsCompleted,
-                   weak_ptr_factory_.GetWeakPtr()));
-  }
+      base::BindOnce(&BackgroundLoaderOffliner::OnPageSaved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BackgroundLoaderOffliner::OnPageSaved(SavePageResult save_result,
@@ -518,8 +428,8 @@ void BackgroundLoaderOffliner::OnPageSaved(SavePageResult save_result,
     criteria.offline_ids = std::vector<int64_t>{offline_id};
     offline_page_model_->DeletePagesWithCriteria(
         criteria,
-        base::Bind(&BackgroundLoaderOffliner::DeleteOfflinePageCallback,
-                   weak_ptr_factory_.GetWeakPtr(), request));
+        base::BindOnce(&BackgroundLoaderOffliner::DeleteOfflinePageCallback,
+                       weak_ptr_factory_.GetWeakPtr(), request));
     save_state_ = NONE;
     return;
   }
@@ -571,8 +481,8 @@ void BackgroundLoaderOffliner::ResetState() {
 }
 
 void BackgroundLoaderOffliner::ResetLoader() {
-  loader_.reset(
-      new background_loader::BackgroundLoaderContents(browser_context_));
+  loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
+      browser_context_);
   loader_->SetDelegate(this);
 }
 
@@ -589,8 +499,7 @@ void BackgroundLoaderOffliner::AddLoadingSignal(const char* signal_name) {
   // Given the choice between int and double, we choose to implicitly convert to
   // a double since it maintains more precision (we can get a longer time in
   // milliseconds than we can with a 2 bit int, 53 bits vs 32).
-  double delay = delay_so_far.InMilliseconds();
-  signal_data_.SetDouble(signal_name, delay);
+  signal_data_.SetDoubleKey(signal_name, delay_so_far.InMillisecondsF());
 }
 
 void BackgroundLoaderOffliner::RenovationsCompleted() {

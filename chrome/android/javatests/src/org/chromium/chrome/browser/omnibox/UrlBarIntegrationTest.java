@@ -4,38 +4,49 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.filters.SmallTest;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
+import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
 
@@ -56,8 +67,7 @@ public class UrlBarIntegrationTest {
             "data:text/plain,H" + new String(new char[9000]).replace('\0', 'u') + "ge!";
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private UrlBar getUrlBar() {
         return (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
@@ -70,7 +80,6 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testFocusingOnStartup() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -88,7 +97,6 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testAutocompleteUpdatedOnDefocus() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
 
@@ -112,21 +120,47 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
-    public void testCopyHuge() {
+    public void testCopyHuge() throws Throwable {
         mActivityTestRule.startMainActivityWithURL(HUGE_URL);
         OmniboxTestUtils.toggleUrlBarFocus(getUrlBar(), true);
-        Assert.assertEquals(HUGE_URL, copyUrlToClipboard(android.R.id.copy));
+        // Allow all thread policies temporarily in main thread to avoid
+        // DiskWrite and UnBufferedIo violations during copying under
+        // emulator environment.
+        try (CloseableOnMainThread ignored =
+                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            Assert.assertEquals(HUGE_URL, copyUrlToClipboard(android.R.id.copy));
+        }
     }
 
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
-    public void testCutHuge() {
+    public void testCutHuge() throws Throwable {
         mActivityTestRule.startMainActivityWithURL(HUGE_URL);
         OmniboxTestUtils.toggleUrlBarFocus(getUrlBar(), true);
-        Assert.assertEquals(HUGE_URL, copyUrlToClipboard(android.R.id.cut));
+        // Allow all thread policies temporarily in main thread to avoid
+        // DiskWrite and UnBufferedIo violations during copying under
+        // emulator environment.
+        try (CloseableOnMainThread ignored =
+                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            Assert.assertEquals(HUGE_URL, copyUrlToClipboard(android.R.id.cut));
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testDarkThemeColor() throws Throwable {
+        mActivityTestRule.startMainActivityWithURL(UrlUtils.encodeHtmlDataUri(
+                "<html><meta name=\"theme-color\" content=\"#000000\" /></html>"));
+
+        CriteriaHelper.pollUiThread(() -> {
+            final int expectedTextColor =
+                    ApiCompatibilityUtils.getColor(mActivityTestRule.getActivity().getResources(),
+                            R.color.branded_url_text_on_dark_bg);
+            Criteria.checkThat(getUrlBar().getCurrentTextColor(), Matchers.is(expectedTextColor));
+        });
     }
 
     /**
@@ -157,9 +191,6 @@ public class UrlBarIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    // TODO(crbug.com/1048469): Investigate and enable this test for the search engine logo feature.
-    @DisableFeatures("OmniboxSearchEngineLogo")
-    @RetryOnFailure
     public void testLongPress() {
         // This is a more realistic test than HUGE_URL because ita's full of separator characters
         // which have historically been known to trigger odd behavior with long-pressing.
@@ -191,14 +222,13 @@ public class UrlBarIntegrationTest {
         ActionModeCreatedCallback callback = new ActionModeCreatedCallback();
         getUrlBar().setCustomSelectionActionModeCallback(callback);
 
+        onViewWaiting(allOf(is(getUrlBar()), isDisplayed()));
         TouchCommon.longPressView(getUrlBar());
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return callback.actionModeCreated && getUrlBar().getSelectionStart() == 0
-                        && getUrlBar().getSelectionEnd() == longPressUrl.length();
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(callback.actionModeCreated, Matchers.is(true));
+            Criteria.checkThat(getUrlBar().getSelectionStart(), Matchers.is(0));
+            Criteria.checkThat(getUrlBar().getSelectionEnd(), Matchers.is(longPressUrl.length()));
         });
     }
 }

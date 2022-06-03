@@ -8,15 +8,17 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -46,12 +48,21 @@ void RemoveCommandObserver(Browser*, int command, CommandObserver* observer);
 
 int GetContentRestrictions(const Browser* browser);
 
-// Opens a new window with the default blank tab.
-void NewEmptyWindow(Profile* profile);
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab.
+void NewEmptyWindow(Profile* profile,
+                    bool should_trigger_session_restore = true);
 
-// Opens a new window with the default blank tab. This bypasses metrics and
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
-Browser* OpenEmptyWindow(Profile* profile);
+// Returns nullptr if browser creation is not possible.
+Browser* OpenEmptyWindow(Profile* profile,
+                         bool should_trigger_session_restore = true);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
 void OpenWindowWithRestoredTabs(Profile* profile);
@@ -72,12 +83,13 @@ void Reload(Browser* browser, WindowOpenDisposition disposition);
 void ReloadBypassingCache(Browser* browser, WindowOpenDisposition disposition);
 bool CanReload(const Browser* browser);
 void Home(Browser* browser, WindowOpenDisposition disposition);
-void OpenCurrentURL(Browser* browser);
+base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser);
 void Stop(Browser* browser);
 void NewWindow(Browser* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(Browser* browser);
 void NewTab(Browser* browser);
+void NewTabToRight(Browser* browser);
 void CloseTab(Browser* browser);
 bool CanZoomIn(content::WebContents* contents);
 bool CanZoomOut(content::WebContents* contents);
@@ -105,32 +117,58 @@ void SelectLastTab(
 void DuplicateTab(Browser* browser);
 bool CanDuplicateTab(const Browser* browser);
 bool CanDuplicateKeyboardFocusedTab(const Browser* browser);
+bool CanMoveActiveTabToNewWindow(Browser* browser);
+void MoveActiveTabToNewWindow(Browser* browser);
+bool CanMoveTabsToNewWindow(Browser* browser,
+                            const std::vector<int>& tab_indices);
+// Moves the specified |tab_indices| to a newly-created window. If |group| is
+// specified, adds all the moved tabs to a new group. This group will have the
+// appearance as |group| but a different ID, since IDs can't be shared across
+// windows.
+void MoveTabsToNewWindow(
+    Browser* browser,
+    const std::vector<int>& tab_indices,
+    absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
 bool CanCloseTabsToRight(const Browser* browser);
 bool CanCloseOtherTabs(const Browser* browser);
 content::WebContents* DuplicateTabAt(Browser* browser, int index);
 bool CanDuplicateTabAt(const Browser* browser, int index);
+void MoveTabsToExistingWindow(Browser* source,
+                              Browser* target,
+                              const std::vector<int>& tab_indices);
 void MuteSite(Browser* browser);
 void PinTab(Browser* browser);
+void GroupTab(Browser* browser);
 void MuteSiteForKeyboardFocusedTab(Browser* browser);
 bool HasKeyboardFocusedTab(const Browser* browser);
 void PinKeyboardFocusedTab(Browser* browser);
+void GroupKeyboardFocusedTab(Browser* browser);
 void DuplicateKeyboardFocusedTab(Browser* browser);
 void ConvertPopupToTabbedBrowser(Browser* browser);
 void CloseTabsToRight(Browser* browser);
 void CloseOtherTabs(Browser* browser);
 void Exit();
-void BookmarkCurrentTabIgnoringExtensionOverrides(Browser* browser);
-void BookmarkCurrentTabAllowingExtensionOverrides(Browser* browser);
+void BookmarkCurrentTab(Browser* browser);
 bool CanBookmarkCurrentTab(const Browser* browser);
 void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);
+bool CanMoveActiveTabToReadLater(Browser* browser);
+bool MoveCurrentTabToReadLater(Browser* browser);
+bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents);
+bool MarkCurrentTabAsReadInReadLater(Browser* browser);
+bool IsCurrentTabUnreadInReadLater(Browser* browser);
+void MaybeShowBookmarkBarForReadLater(Browser* browser);
+void ShowOffersAndRewardsForPage(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void MigrateLocalCards(Browser* browser);
-void MaybeShowSaveLocalCardSignInPromo(Browser* browser);
-void CloseSaveLocalCardSignInPromo(Browser* browser);
+void SaveAutofillAddress(Browser* browser);
+void ShowVirtualCardManualFallbackBubble(Browser* browser);
 void Translate(Browser* browser);
 void ManagePasswordsForPage(Browser* browser);
 void SendTabToSelfFromPageAction(Browser* browser);
+void GenerateQRCodeFromPageAction(Browser* browser);
+void SharingHubFromPageAction(Browser* browser);
+void ScreenshotCaptureFromPageAction(Browser* browser);
 void SavePage(Browser* browser);
 bool CanSavePage(const Browser* browser);
 void Print(Browser* browser);
@@ -140,14 +178,17 @@ void BasicPrint(Browser* browser);
 bool CanBasicPrint(Browser* browser);
 #endif  // ENABLE_PRINTING
 bool CanRouteMedia(Browser* browser);
-void RouteMedia(Browser* browser);
-void EmailPageLocation(Browser* browser);
-bool CanEmailPageLocation(const Browser* browser);
+// NOTE: For metrics collection purposes, this method is assumed to be invoked
+// from the app menu. That will need to be changed if this is to be invoked from
+// elsewhere.
+void RouteMediaInvokedFromAppMenu(Browser* browser);
 void CutCopyPaste(Browser* browser, int command_id);
 void Find(Browser* browser);
 void FindNext(Browser* browser);
 void FindPrevious(Browser* browser);
 void FindInPage(Browser* browser, bool find_next, bool forward_direction);
+void ShowTabSearch(Browser* browser);
+void CloseTabSearch(Browser* browser);
 bool CanCloseFind(Browser* browser);
 void CloseFind(Browser* browser);
 void Zoom(Browser* browser, content::PageZoom zoom);
@@ -159,11 +200,19 @@ void FocusBookmarksToolbar(Browser* browser);
 void FocusInactivePopupForAccessibility(Browser* browser);
 void FocusNextPane(Browser* browser);
 void FocusPreviousPane(Browser* browser);
-void ToggleDevToolsWindow(Browser* browser, DevToolsToggleAction action);
+void FocusWebContentsPane(Browser* browser);
+void ToggleDevToolsWindow(Browser* browser,
+                          DevToolsToggleAction action,
+                          DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
+// Opens task manager UI. Note that |browser| can be nullptr as input.
 void OpenTaskManager(Browser* browser);
-void OpenFeedbackDialog(Browser* browser, FeedbackSource source);
+void OpenFeedbackDialog(
+    Browser* browser,
+    FeedbackSource source,
+    const std::string& description_template = std::string());
 void ToggleBookmarkBar(Browser* browser);
+void ToggleShowFullURLs(Browser* browser);
 void ShowAppMenu(Browser* browser);
 void ShowAvatarMenu(Browser* browser);
 void OpenUpdateChromeDialog(Browser* browser);
@@ -183,16 +232,20 @@ void CopyURL(Browser* browser);
 // the tabbed Browser.
 Browser* OpenInChrome(Browser* hosted_app_browser);
 bool CanViewSource(const Browser* browser);
+bool CanToggleCaretBrowsing(Browser* browser);
+void ToggleCaretBrowsing(Browser* browser);
+void PromptToNameWindow(Browser* browser);
+void ToggleCommander(Browser* browser);
+void ExecuteUIDebugCommand(int id, const Browser* browser);
 
-// Initiates user flow for creating a bookmark app for the current page.
-// Will install a PWA hosted app if the site meets installability requirements
-// (see |AppBannerManager::PerformInstallableCheck|) unless |force_shortcut_app|
-// is true.
-void CreateBookmarkAppFromCurrentWebContents(Browser* browser,
-                                             bool force_shortcut_app);
-bool CanCreateBookmarkApp(const Browser* browser);
+absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
-base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
+void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
+void ShowIncognitoHistoryDisclaimerDialog(Browser* browser);
+bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
+                                                   const GURL& url);
+void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
+                                                      const GURL& url);
 
 }  // namespace chrome
 

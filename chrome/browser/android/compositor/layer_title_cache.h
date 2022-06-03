@@ -11,10 +11,9 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 class Layer;
@@ -42,7 +41,12 @@ class LayerTitleCache {
                   jint favicon_start_padding,
                   jint favicon_end_padding,
                   jint spinner_resource_id,
-                  jint spinner_incognito_resource_id);
+                  jint spinner_incognito_resource_id,
+                  ui::ResourceManager* resource_manager);
+
+  LayerTitleCache(const LayerTitleCache&) = delete;
+  LayerTitleCache& operator=(const LayerTitleCache&) = delete;
+
   void Destroy(JNIEnv* env);
 
   // Called from Java, updates a native cc::Layer based on the new texture
@@ -69,8 +73,6 @@ class LayerTitleCache {
   // Returns NULL if no layer can be found.
   DecorationTitle* GetTitleLayer(int tab_id);
 
-  void SetResourceManager(ui::ResourceManager* resource_manager);
-
  private:
   virtual ~LayerTitleCache();
 
@@ -85,8 +87,6 @@ class LayerTitleCache {
   int spinner_incognito_resource_id_;
 
   ui::ResourceManager* resource_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTitleCache);
 };
 
 }  // namespace android

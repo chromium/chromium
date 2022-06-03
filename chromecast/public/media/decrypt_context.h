@@ -6,7 +6,6 @@
 #define CHROMECAST_PUBLIC_MEDIA_DECRYPT_CONTEXT_H_
 
 #include <stdint.h>
-#include <vector>
 
 #include "cast_key_system.h"
 

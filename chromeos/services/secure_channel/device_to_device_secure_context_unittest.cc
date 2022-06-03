@@ -10,9 +10,9 @@
 #include "base/callback.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace chromeos {
 
@@ -34,8 +34,8 @@ void SaveResult(std::string* result_out, const std::string& result) {
 // inverted.
 class InvertedSessionKeys : public SessionKeys {
  public:
-  explicit InvertedSessionKeys(const std::string& master_symmetric_key)
-      : SessionKeys(master_symmetric_key) {}
+  explicit InvertedSessionKeys(const std::string& session_symmetric_key)
+      : SessionKeys(session_symmetric_key) {}
 
   InvertedSessionKeys() : SessionKeys() {}
 
@@ -71,7 +71,8 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, GetProperties) {
 TEST_F(SecureChannelDeviceToDeviceSecureContextTest, CheckEncodedHeader) {
   std::string message = "encrypt this message";
   std::string encoded_message;
-  secure_context_.Encode(message, base::Bind(&SaveResult, &encoded_message));
+  secure_context_.Encode(message,
+                         base::BindOnce(&SaveResult, &encoded_message));
 
   securemessage::SecureMessage secure_message;
   ASSERT_TRUE(secure_message.ParseFromString(encoded_message));
@@ -90,7 +91,7 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, DecodeInvalidMessage) {
   std::string encoded_message = "invalidly encoded message";
   std::string decoded_message = "not empty";
   secure_context_.Decode(encoded_message,
-                         base::Bind(&SaveResult, &decoded_message));
+                         base::BindOnce(&SaveResult, &decoded_message));
   EXPECT_TRUE(decoded_message.empty());
 }
 
@@ -111,12 +112,13 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, EncodeAndDecode) {
   // Pass some messages between the two secure contexts.
   for (int i = 0; i < 3; ++i) {
     std::string encoded_message;
-    secure_context_.Encode(message, base::Bind(&SaveResult, &encoded_message));
+    secure_context_.Encode(message,
+                           base::BindOnce(&SaveResult, &encoded_message));
     EXPECT_NE(message, encoded_message);
 
     std::string decoded_message;
     secure_context2.Decode(encoded_message,
-                           base::Bind(&SaveResult, &decoded_message));
+                           base::BindOnce(&SaveResult, &decoded_message));
     EXPECT_EQ(message, decoded_message);
   }
 }
@@ -133,13 +135,14 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
   std::string message = "encrypt this message";
   std::string encoded1;
   for (int i = 0; i < 3; ++i) {
-    secure_context_.Encode(message, base::Bind(&SaveResult, &encoded1));
+    secure_context_.Encode(message, base::BindOnce(&SaveResult, &encoded1));
   }
 
   // Second secure channel should not decode the message with an invalid
   // sequence number.
   std::string decoded_message = "not empty";
-  secure_context_.Decode(encoded1, base::Bind(&SaveResult, &decoded_message));
+  secure_context_.Decode(encoded1,
+                         base::BindOnce(&SaveResult, &decoded_message));
   EXPECT_TRUE(decoded_message.empty());
 }
 

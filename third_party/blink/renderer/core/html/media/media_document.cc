@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/media/media_document.h"
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -121,7 +119,7 @@ void MediaDocumentParser::Finish() {
 
 MediaDocument::MediaDocument(const DocumentInit& initializer)
     : HTMLDocument(initializer, kMediaDocumentClass) {
-  SetCompatibilityMode(kQuirksMode);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 
   // Set the autoplay policy to kNoUserGestureRequired.
@@ -140,15 +138,15 @@ void MediaDocument::DefaultEventHandler(Event& event) {
   if (!target_node)
     return;
 
-  if (event.type() == event_type_names::kKeydown && event.IsKeyboardEvent()) {
+  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+  if (event.type() == event_type_names::kKeydown && keyboard_event) {
     HTMLVideoElement* video =
         Traversal<HTMLVideoElement>::FirstWithin(*target_node);
     if (!video)
       return;
 
-    auto& keyboard_event = ToKeyboardEvent(event);
-    if (keyboard_event.key() == " " ||
-        keyboard_event.keyCode() == VKEY_MEDIA_PLAY_PAUSE) {
+    if (keyboard_event->key() == " " ||
+        keyboard_event->keyCode() == VKEY_MEDIA_PLAY_PAUSE) {
       // space or media key (play/pause)
       video->TogglePlayState();
       event.SetDefaultHandled();

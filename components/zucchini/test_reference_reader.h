@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "components/zucchini/image_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -20,7 +20,7 @@ class TestReferenceReader : public ReferenceReader {
   explicit TestReferenceReader(const std::vector<Reference>& refs);
   ~TestReferenceReader() override;
 
-  base::Optional<Reference> GetNext() override;
+  absl::optional<Reference> GetNext() override;
 
  private:
   std::vector<Reference> references_;

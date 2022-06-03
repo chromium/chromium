@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -29,12 +28,15 @@ class AudioEncoder;
 // RTCP packets.
 // Additionally it posts a bunch of delayed tasks to the main thread for various
 // timeouts.
-class AudioSender : public FrameSender {
+class AudioSender final : public FrameSender {
  public:
   AudioSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& audio_config,
-              const StatusChangeCallback& status_change_cb,
+              StatusChangeOnceCallback status_change_cb,
               CastTransport* const transport_sender);
+
+  AudioSender(const AudioSender&) = delete;
+  AudioSender& operator=(const AudioSender&) = delete;
 
   ~AudioSender() final;
 
@@ -64,8 +66,6 @@ class AudioSender : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSender);
 };
 
 }  // namespace cast

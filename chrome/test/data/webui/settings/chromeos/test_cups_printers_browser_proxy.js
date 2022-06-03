@@ -2,18 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {CupsPrintersBrowserProxy,PrinterSetupResult,PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+// clang-format on
+
 cr.define('printerBrowserProxy', function() {
   /** @implements {settings.CupsPrintersBrowserProxy} */
-  class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
+  /* #export */ class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
     constructor() {
       super([
         'addCupsPrinter',
         'addDiscoveredPrinter',
-        'getCupsPrintersList',
+        'getCupsSavedPrintersList',
+        'getCupsEnterprisePrintersList',
         'getCupsPrinterManufacturersList',
         'getCupsPrinterModelsList',
         'getPrinterInfo',
         'getPrinterPpdManufacturerAndModel',
+        'queryPrintServer',
         'startDiscoveringPrinters',
         'stopDiscoveringPrinters',
         'cancelPrinterSetUp',
@@ -23,11 +30,18 @@ cr.define('printerBrowserProxy', function() {
         'getEulaUrl',
       ]);
 
-      this.printerList = /** @type{} CupsPrintersList*/ ({printerList: []});
-      this.manufacturers = [];
-      this.models = [];
+      this.printerList = /** @type{?CupsPrintersList} */ ({printerList: []});
+      this.printServerPrinters =
+          /** @type{?CupsPrintersList}  */ ({printerList: []});
+      this.manufacturers =
+          /** @type{?ManufacturersInfo} */ (
+              {success: false, manufacturers: []});
+      this.models =
+          /** @type{?ModelsInfo} */ ({success: false, models: []});
       this.printerInfo = {};
-      this.printerPpdMakeModel = {};
+      this.printerPpdMakeModel =
+          /** @type{PrinterPpdMakeModel */ (
+              {ppdManufacturer: '', ppdModel: ''});
 
       /**
        * |eulaUrl_| in conjunction with |setEulaUrl| mimics setting the EULA url
@@ -42,6 +56,12 @@ cr.define('printerBrowserProxy', function() {
        * @private {PrinterSetupResult}
        */
       this.getPrinterInfoResult_ = null;
+
+      /**
+       * Contains the result code from querying a print server.
+       * @private {PrintServerResult}
+       */
+      this.queryPrintServerResult_ = null;
 
       /**
        * If set, 'addDiscoveredPrinter' will fail and the promise will be
@@ -67,8 +87,14 @@ cr.define('printerBrowserProxy', function() {
     }
 
     /** @override */
-    getCupsPrintersList() {
-      this.methodCalled('getCupsPrintersList');
+    getCupsSavedPrintersList() {
+      this.methodCalled('getCupsSavedPrintersList');
+      return Promise.resolve(this.printerList);
+    }
+
+    /** @override */
+    getCupsEnterprisePrintersList() {
+      this.methodCalled('getCupsEnterprisePrintersList');
       return Promise.resolve(this.printerList);
     }
 
@@ -137,6 +163,16 @@ cr.define('printerBrowserProxy', function() {
       return Promise.resolve(this.eulaUrl_);
     }
 
+    /** @override */
+    queryPrintServer(serverUrl) {
+      this.methodCalled('queryPrintServer', serverUrl);
+      if (this.queryPrintServerResult_ !== PrintServerResult.NO_ERRORS) {
+        return Promise.reject(this.queryPrintServerResult_);
+      }
+      return Promise.resolve(this.printServerPrinters);
+    }
+
+
     /** @param {string} eulaUrl */
     setEulaUrl(eulaUrl) {
       this.eulaUrl_ = eulaUrl;
@@ -147,11 +183,17 @@ cr.define('printerBrowserProxy', function() {
       this.getPrinterInfoResult_ = result;
     }
 
+    /** @param {PrintServerResult} result */
+    setQueryPrintServerResult(result) {
+      this.queryPrintServerResult_ = result;
+    }
+
     /** @param {!CupsPrinterInfo} printer */
     setAddDiscoveredPrinterFailure(printer) {
       this.addDiscoveredFailedPrinter_ = printer;
     }
   }
+  // #cr_define_end
   return {
     TestCupsPrintersBrowserProxy: TestCupsPrintersBrowserProxy,
   };

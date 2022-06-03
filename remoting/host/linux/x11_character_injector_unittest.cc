@@ -14,8 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-  constexpr base::TimeDelta kKeycodeReuseDuration =
-      base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kKeycodeReuseDuration = base::Milliseconds(100);
 }
 
 namespace remoting {
@@ -50,14 +49,14 @@ class FakeX11Keyboard : public X11Keyboard {
 
   // Sets a callback to be called when the keypress expectation queue becomes
   // empty.
-  void SetKeyPressFinishedCallback(const base::Closure& callback) {
+  void SetKeyPressFinishedCallback(const base::RepeatingClosure& callback) {
     keypress_finished_callback_ = callback;
   }
 
  private:
   std::unordered_map<uint32_t, MappingInfo> keycode_mapping_;
   base::circular_deque<uint32_t> expected_code_point_sequence_;
-  base::Closure keypress_finished_callback_;
+  base::RepeatingClosure keypress_finished_callback_;
 };
 
 FakeX11Keyboard::FakeX11Keyboard(

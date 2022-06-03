@@ -27,8 +27,8 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/webdata/common/web_database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillChangeList;
 using autofill::AutofillEntry;
@@ -55,8 +55,10 @@ ACTION_P(SignalEvent, event) {
 class MockWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
-  MOCK_METHOD1(AutofillEntriesChanged,
-               void(const AutofillChangeList& changes));
+  MOCK_METHOD(void,
+              AutofillEntriesChanged,
+              (const AutofillChangeList& changes),
+              (override));
 };
 
 scoped_refptr<AutofillWebDataService> GetWebDataService(int index) {
@@ -77,7 +79,7 @@ void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged(_))
+  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
@@ -101,8 +103,8 @@ void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
 void GetAllAutofillEntriesOnDBSequence(AutofillWebDataService* wds,
                                        std::vector<AutofillEntry>* entries) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(
-      wds->GetDatabase())->GetAllAutofillEntries(entries);
+  AutofillTable::FromWebDatabase(wds->GetDatabase())
+      ->GetAllAutofillEntries(entries);
 }
 
 std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
@@ -115,10 +117,18 @@ std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
 }
 
 bool ProfilesMatchImpl(
+    const absl::optional<unsigned int>& expected_count,
     int profile_a,
     const std::vector<AutofillProfile*>& autofill_profiles_a,
     int profile_b,
     const std::vector<AutofillProfile*>& autofill_profiles_b) {
+  if (expected_count.has_value() &&
+      autofill_profiles_a.size() != *expected_count) {
+    DVLOG(1) << "Profile " << profile_a
+             << " does not have expected count of entities " << *expected_count;
+    return false;
+  }
+
   std::map<std::string, AutofillProfile> autofill_profiles_a_map;
   for (AutofillProfile* p : autofill_profiles_a) {
     autofill_profiles_a_map[p->guid()] = *p;
@@ -168,45 +178,40 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
   AutofillProfile profile;
   switch (type) {
     case PROFILE_MARION:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "C837507A-6C3B-4872-AC14-5113F157D668",
-          "Marion", "Mitchell", "Morrison",
-          "johnwayne@me.xyz", "Fox",
-          "123 Zoo St.", "unit 5", "Hollywood", "CA",
-          "91601", "US", "12345678910");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "C837507A-6C3B-4872-AC14-5113F157D668", "Marion",
+          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox", "123 Zoo St.",
+          "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
       break;
     case PROFILE_HOMER:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "137DE1C3-6A30-4571-AC86-109B1ECFBE7F",
-          "Homer", "J.", "Simpson",
-          "homer@abc.com", "SNPP",
-          "742 Evergreen Terrace", "PO Box 1", "Springfield", "MA",
-          "94101", "US", "14155551212");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "137DE1C3-6A30-4571-AC86-109B1ECFBE7F", "Homer", "J.",
+          "Simpson", "homer@abc.com", "SNPP", "742 Evergreen Terrace",
+          "PO Box 1", "Springfield", "MA", "94101", "US", "14155551212");
       break;
     case PROFILE_FRASIER:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "9A5E6872-6198-4688-BF75-0016E781BB0A",
-          "Frasier", "Winslow", "Crane",
-          "", "randomness", "", "Apt. 4", "Seattle", "WA",
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "9A5E6872-6198-4688-BF75-0016E781BB0A", "Frasier",
+          "Winslow", "Crane", "", "randomness", "", "Apt. 4", "Seattle", "WA",
           "99121", "US", "0000000000");
       break;
     case PROFILE_NULL:
-      autofill::test::SetProfileInfoWithGuid(&profile,
-          "FE461507-7E13-4198-8E66-74C7DB6D8322",
-          "", "", "", "", "", "", "", "", "", "", "", "");
+      autofill::test::SetProfileInfoWithGuid(
+          &profile, "FE461507-7E13-4198-8E66-74C7DB6D8322", "", "", "", "", "",
+          "", "", "", "", "", "", "");
       break;
   }
+  profile.FinalizeAfterImport();
   return profile;
 }
 
 AutofillProfile CreateUniqueAutofillProfile() {
   AutofillProfile profile;
-  autofill::test::SetProfileInfoWithGuid(&profile,
-      base::GenerateGUID().c_str(),
-      "First", "Middle", "Last",
-      "email@domain.tld", "Company",
-      "123 Main St", "Apt 456", "Nowhere", "OK",
+  autofill::test::SetProfileInfoWithGuid(
+      &profile, base::GenerateGUID().c_str(), "First", "Middle", "Last",
+      "email@domain.tld", "Company", "123 Main St", "Apt 456", "Nowhere", "OK",
       "73038", "US", "12345678910");
+  profile.FinalizeAfterImport();
   return profile;
 }
 
@@ -227,7 +232,7 @@ void AddKeys(int profile, const std::set<AutofillKey>& keys) {
   WaitableEvent done_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged(_))
+  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
@@ -283,6 +288,9 @@ void SetProfiles(int profile, std::vector<AutofillProfile>* autofill_profiles) {
   EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
       .Times(testing::AnyNumber());
 
+  // TODO(crbug.com/997629): Remove after investigation is over.
+  DLOG(WARNING) << "SetProfiles " << autofill_profiles->size();
+
   pdm->SetProfiles(autofill_profiles);
 
   run_loop.Run();
@@ -295,8 +303,8 @@ void SetCreditCards(int profile, std::vector<CreditCard>* credit_cards) {
 
 void AddProfile(int profile, const AutofillProfile& autofill_profile) {
   std::vector<AutofillProfile> autofill_profiles;
-  for (AutofillProfile* profile : GetAllAutoFillProfiles(profile)) {
-    autofill_profiles.push_back(*profile);
+  for (AutofillProfile* p : GetAllAutoFillProfiles(profile)) {
+    autofill_profiles.push_back(*p);
   }
   autofill_profiles.push_back(autofill_profile);
   autofill_helper::SetProfiles(profile, &autofill_profiles);
@@ -304,9 +312,9 @@ void AddProfile(int profile, const AutofillProfile& autofill_profile) {
 
 void RemoveProfile(int profile, const std::string& guid) {
   std::vector<AutofillProfile> autofill_profiles;
-  for (AutofillProfile* profile : GetAllAutoFillProfiles(profile)) {
-    if (profile->guid() != guid) {
-      autofill_profiles.push_back(*profile);
+  for (AutofillProfile* p : GetAllAutoFillProfiles(profile)) {
+    if (p->guid() != guid) {
+      autofill_profiles.push_back(*p);
     }
   }
   autofill_helper::SetProfiles(profile, &autofill_profiles);
@@ -315,12 +323,14 @@ void RemoveProfile(int profile, const std::string& guid) {
 void UpdateProfile(int profile,
                    const std::string& guid,
                    const AutofillType& type,
-                   const base::string16& value) {
+                   const std::u16string& value,
+                   autofill::structured_address::VerificationStatus status) {
   std::vector<AutofillProfile> profiles;
-  for (AutofillProfile* profile : GetAllAutoFillProfiles(profile)) {
-    profiles.push_back(*profile);
-    if (profile->guid() == guid) {
-      profiles.back().SetRawInfo(type.GetStorableType(), value);
+  for (AutofillProfile* p : GetAllAutoFillProfiles(profile)) {
+    profiles.push_back(*p);
+    if (p->guid() == guid) {
+      profiles.back().SetRawInfoWithVerificationStatus(type.GetStorableType(),
+                                                       value, status);
     }
   }
   autofill_helper::SetProfiles(profile, &profiles);
@@ -372,8 +382,8 @@ bool ProfilesMatch(int profile_a, int profile_b) {
       GetAllAutoFillProfiles(profile_a);
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
-  return ProfilesMatchImpl(
-      profile_a, autofill_profiles_a, profile_b, autofill_profiles_b);
+  return ProfilesMatchImpl(absl::nullopt, profile_a, autofill_profiles_a,
+                           profile_b, autofill_profiles_b);
 }
 
 }  // namespace autofill_helper
@@ -389,8 +399,13 @@ bool AutofillKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
   return autofill_helper::KeysMatch(profile_a_, profile_b_);
 }
 
-AutofillProfileChecker::AutofillProfileChecker(int profile_a, int profile_b)
-    : profile_a_(profile_a), profile_b_(profile_b) {
+AutofillProfileChecker::AutofillProfileChecker(
+    int profile_a,
+    int profile_b,
+    absl::optional<unsigned int> expected_count)
+    : profile_a_(profile_a),
+      profile_b_(profile_b),
+      expected_count_(expected_count) {
   autofill_helper::GetPersonalDataManager(profile_a_)->AddObserver(this);
   autofill_helper::GetPersonalDataManager(profile_b_)->AddObserver(this);
 }
@@ -442,8 +457,8 @@ bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
       autofill_helper::GetPersonalDataManager(profile_a_)->GetProfiles();
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
-  return ProfilesMatchImpl(profile_a_, autofill_profiles_a, profile_b_,
-                           autofill_profiles_b);
+  return ProfilesMatchImpl(expected_count_, profile_a_, autofill_profiles_a,
+                           profile_b_, autofill_profiles_b);
 }
 
 void AutofillProfileChecker::OnPersonalDataChanged() {

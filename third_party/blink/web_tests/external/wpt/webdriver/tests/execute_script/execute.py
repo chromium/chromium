@@ -1,9 +1,10 @@
 import pytest
 
+from webdriver.error import NoSuchAlertException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
+from tests.support.sync import Poll
 
 
 def execute_script(session, script, args=None):
@@ -23,9 +24,32 @@ def test_null_parameter_value(session, http):
         assert_error(Response.from_http(response), "invalid argument")
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = execute_script(session, "return 1;")
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = execute_script(session, "return 1;")
+    assert_error(response, "no such window")
+
+
+def test_opening_new_window_keeps_current_window_handle(session, inline):
+    original_handle = session.window_handle
+    original_handles = session.handles
+
+    url = inline("""<a href="javascript:window.open();">open window</a>""")
+    session.url = url
+    session.find.css("a", all=False).click()
+    wait = Poll(
+        session,
+        timeout=5,
+        message="No new window has been opened")
+    new_handles = wait.until(lambda s: set(s.handles) - set(original_handles))
+
+    assert len(new_handles) == 1
+    assert session.window_handle == original_handle
+    assert session.url == url
 
 
 def test_ending_comment(session):
@@ -33,7 +57,7 @@ def test_ending_comment(session):
     assert_success(response, 1)
 
 
-def test_override_listeners(session):
+def test_override_listeners(session, inline):
     session.url = inline("""
 <script>
 called = [];
@@ -41,8 +65,8 @@ window.addEventListener = () => {called.push("Internal addEventListener")}
 window.removeEventListener = () => {called.push("Internal removeEventListener")}
 </script>
 })""")
-    response = execute_script(session, "return !window.onunload");
-    assert_success(response, True);
+    response = execute_script(session, "return !window.onunload")
+    assert_success(response, True)
     response = execute_script(session, "return called")
     assert_success(response, [])
 
@@ -64,9 +88,16 @@ def test_abort_by_user_prompt_twice(session, dialog_type):
 
     session.alert.accept()
 
-    # The first alert has been accepted by the user prompt handler, the second one remains.
-    # FIXME: this is how browsers currently work, but the spec should clarify if this is the
-    #        expected behavior, see https://github.com/w3c/webdriver/issues/1153.
-    assert session.alert.text == "Bye"
+    # The first alert has been accepted by the user prompt handler, the second
+    # alert will still be opened because the current step isn't aborted.
+    wait = Poll(
+        session,
+        timeout=5,
+        message="Second alert has not been opened",
+        ignored_exceptions=NoSuchAlertException
+    )
+    text = wait.until(lambda s: s.alert.text)
+
+    assert text == "Bye"
 
     session.alert.accept()

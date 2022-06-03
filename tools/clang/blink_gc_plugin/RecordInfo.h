@@ -40,7 +40,7 @@ class BasePoint : public GraphPoint {
             RecordInfo* info,
             const TracingStatus& status)
       : spec_(spec), info_(info), status_(status) {}
-  const TracingStatus NeedsTracing() { return status_; }
+  const TracingStatus NeedsTracing() override { return status_; }
   const clang::CXXBaseSpecifier& spec() { return spec_; }
   RecordInfo* info() { return info_; }
 
@@ -54,7 +54,7 @@ class FieldPoint : public GraphPoint {
  public:
   FieldPoint(clang::FieldDecl* field, Edge* edge)
       : field_(field), edge_(edge) {}
-  const TracingStatus NeedsTracing() {
+  const TracingStatus NeedsTracing() override {
     return edge_->NeedsTracing(Edge::kRecursive);
   }
   clang::FieldDecl* field() { return field_; }
@@ -133,6 +133,8 @@ class RecordInfo {
   Edge* CreateEdgeFromOriginalType(const clang::Type* type);
 
   bool HasOptionalFinalizer();
+
+  bool HasTypeAlias(std::string marker_name) const;
 
   RecordCache* cache_;
   clang::CXXRecordDecl* record_;

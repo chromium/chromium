@@ -30,6 +30,10 @@ class GPU_EXPORT BufferBacking {
 class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  public:
   explicit MemoryBufferBacking(uint32_t size);
+
+  MemoryBufferBacking(const MemoryBufferBacking&) = delete;
+  MemoryBufferBacking& operator=(const MemoryBufferBacking&) = delete;
+
   ~MemoryBufferBacking() override;
   void* GetMemory() const override;
   uint32_t GetSize() const override;
@@ -37,7 +41,6 @@ class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  private:
   std::unique_ptr<char[]> memory_;
   uint32_t size_;
-  DISALLOW_COPY_AND_ASSIGN(MemoryBufferBacking);
 };
 
 
@@ -46,6 +49,11 @@ class GPU_EXPORT SharedMemoryBufferBacking : public BufferBacking {
   SharedMemoryBufferBacking(
       base::UnsafeSharedMemoryRegion shared_memory_region,
       base::WritableSharedMemoryMapping shared_memory_mapping);
+
+  SharedMemoryBufferBacking(const SharedMemoryBufferBacking&) = delete;
+  SharedMemoryBufferBacking& operator=(const SharedMemoryBufferBacking&) =
+      delete;
+
   ~SharedMemoryBufferBacking() override;
   const base::UnsafeSharedMemoryRegion& shared_memory_region() const override;
   base::UnguessableToken GetGUID() const override;
@@ -55,13 +63,15 @@ class GPU_EXPORT SharedMemoryBufferBacking : public BufferBacking {
  private:
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBufferBacking);
 };
 
 // Buffer owns a piece of shared-memory of a certain size.
 class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
  public:
   explicit Buffer(std::unique_ptr<BufferBacking> backing);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
 
   BufferBacking* backing() const { return backing_.get(); }
   void* memory() const { return memory_; }
@@ -83,24 +93,22 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
   std::unique_ptr<BufferBacking> backing_;
   void* memory_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
-static inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(
+inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping) {
   return std::make_unique<SharedMemoryBufferBacking>(
       std::move(shared_memory_region), std::move(shared_memory_mapping));
 }
-static inline scoped_refptr<Buffer> MakeBufferFromSharedMemory(
+inline scoped_refptr<Buffer> MakeBufferFromSharedMemory(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping) {
   return base::MakeRefCounted<Buffer>(MakeBackingFromSharedMemory(
       std::move(shared_memory_region), std::move(shared_memory_mapping)));
 }
 
-static inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size) {
+inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size) {
   return base::MakeRefCounted<Buffer>(
       std::make_unique<MemoryBufferBacking>(size));
 }

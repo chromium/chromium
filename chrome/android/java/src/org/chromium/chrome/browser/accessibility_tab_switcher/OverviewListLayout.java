@@ -16,34 +16,58 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility_tab_switcher.AccessibilityTabModelAdapter.AccessibilityTabModelAdapterListener;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
-import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * A {@link Layout} that shows the tabs as two {@link ListView}s, one for each {@link TabModel} to
  * represent.
  */
-public class OverviewListLayout extends Layout implements AccessibilityTabModelAdapterListener {
+public class OverviewListLayout extends Layout
+        implements AccessibilityTabModelAdapterListener, TabObscuringHandler.Observer {
     private AccessibilityTabModelWrapper mTabModelWrapper;
     private final float mDensity;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private final SceneLayer mSceneLayer;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
-    public OverviewListLayout(
-            Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost) {
+    public OverviewListLayout(Context context, LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mDensity = context.getResources().getDisplayMetrics().density;
         mSceneLayer = new SceneLayer();
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
+            @Override
+            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                adjustForFullscreen();
+            }
+        };
+    }
+
+    @Override
+    public void destroy() {
+        if (mBrowserControlsStateProvider != null) {
+            mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
+        }
+
+        super.destroy();
     }
 
     @Override
@@ -82,7 +106,7 @@ public class OverviewListLayout extends Layout implements AccessibilityTabModelA
         if (params == null) return;
 
         params.bottomMargin = (int) (getBottomBrowserControlsHeight() * mDensity);
-        params.topMargin = (int) (getTopBrowserControlsHeight() * mDensity);
+        params.topMargin = mBrowserControlsStateProvider.getContentOffset();
 
         mTabModelWrapper.setLayoutParams(params);
     }
@@ -139,10 +163,14 @@ public class OverviewListLayout extends Layout implements AccessibilityTabModelA
         mTabModelWrapper.setStateBasedOnModel();
 
         doneShowing();
+        mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
+        adjustForFullscreen();
     }
 
     @Override
     public void startHiding(int nextId, boolean hintAtTabSelection) {
+        mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
+
         super.startHiding(nextId, hintAtTabSelection);
 
         doneHiding();
@@ -220,20 +248,21 @@ public class OverviewListLayout extends Layout implements AccessibilityTabModelA
         return mSceneLayer;
     }
 
-    /**
-     * Set whether or not the accessibility tab switcher is visible (from an accessibility
-     * perspective), or whether it is obscured by another view.
-     * @param isVisible Whether or not accessibility tab switcher is visible.
-     */
-    public void updateAccessibilityVisibility(boolean isVisible) {
+    @Override
+    public void updateObscured(boolean isObscured) {
         if (mTabModelWrapper == null) return;
 
-        int importantForAccessibility = isVisible
+        int importantForAccessibility = !isObscured
                 ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
                 : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
         if (mTabModelWrapper.getImportantForAccessibility() != importantForAccessibility) {
             mTabModelWrapper.setImportantForAccessibility(importantForAccessibility);
             mTabModelWrapper.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
         }
+    }
+
+    @Override
+    public int getLayoutType() {
+        return LayoutType.TAB_SWITCHER;
     }
 }

@@ -4,7 +4,7 @@
 
 #include "chrome/test/base/chrome_test_suite.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <stdio.h>
 #include <unistd.h>
 #endif
@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -26,12 +27,18 @@
 #include "media/base/media.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_paths.h"
 #include "base/process/process_metrics.h"
-#include "chromeos/constants/chromeos_paths.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/check.h"
+#include "base/files/file_util.h"
+#include "chrome/common/chrome_paths_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if defined(OS_MAC)
 #include "base/mac/bundle_locations.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -40,7 +47,7 @@
 namespace {
 
 bool IsCrosPythonProcess() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   char buf[80];
   int num_read = readlink(base::kProcSelfExe, buf, sizeof(buf) - 1);
   if (num_read == -1)
@@ -50,7 +57,7 @@ bool IsCrosPythonProcess() {
   return !strncmp(strrchr(buf, '/'), kPythonPrefix, sizeof(kPythonPrefix) - 1);
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -59,11 +66,10 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
     : content::ContentTestSuiteBase(argc, argv) {
 }
 
-ChromeTestSuite::~ChromeTestSuite() {
-}
+ChromeTestSuite::~ChromeTestSuite() = default;
 
 void ChromeTestSuite::Initialize() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
   chrome_browser_application_mac::RegisterBrowserCrApp();
 #endif
@@ -93,17 +99,28 @@ void ChromeTestSuite::Initialize() {
   // DICE feature gets the right test coverage.
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Look in the framework bundle for resources.
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
   path = path.Append(chrome::kFrameworkName);
   base::mac::SetOverrideFrameworkBundlePath(path);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The lacros binary receives certain paths from ash very early in startup.
+  // Simulate that behavior here. See chrome_paths_lacros.cc for details. The
+  // specific path doesn't matter as long as it exists.
+  CHECK(scoped_temp_dir_.CreateUniqueTempDir());
+  base::FilePath temp_path = scoped_temp_dir_.GetPath();
+  chrome::SetLacrosDefaultPaths(/*documents_dir=*/temp_path,
+                                /*downloads_dir=*/temp_path,
+                                /*drivefs=*/base::FilePath());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromeTestSuite::Shutdown() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::SetOverrideFrameworkBundle(NULL);
 #endif
 

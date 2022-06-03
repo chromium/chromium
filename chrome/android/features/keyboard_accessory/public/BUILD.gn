@@ -7,15 +7,19 @@ import("//build/config/android/rules.gni")
 android_library("public_java") {
   deps = [
     "//base:base_java",
-    "//chrome/android:chrome_public_java",
     "//components/autofill/android:autofill_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentSupplier.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/KeyboardAccessoryData.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/PropertyProvider.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
   ]
   srcjar_deps = [ ":java_enums_srcjar" ]
@@ -24,7 +28,7 @@ android_library("public_java") {
 java_cpp_enum("java_enums_srcjar") {
   sources = [
     "//chrome/browser/autofill/manual_filling_view_interface.h",
-    "//chrome/browser/password_manager/password_accessory_metrics_util.h",
+    "//chrome/browser/password_manager/android/password_accessory_metrics_util.h",
   ]
   visibility = [ ":*" ]
 }

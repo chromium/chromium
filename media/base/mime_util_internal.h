@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
@@ -25,6 +25,10 @@ namespace internal {
 class MEDIA_EXPORT MimeUtil {
  public:
   MimeUtil();
+
+  MimeUtil(const MimeUtil&) = delete;
+  MimeUtil& operator=(const MimeUtil&) = delete;
+
   ~MimeUtil();
 
   enum Codec {
@@ -35,6 +39,7 @@ class MEDIA_EXPORT MimeUtil {
     EAC3,
     MPEG2_AAC,
     MPEG4_AAC,
+    MPEG4_XHE_AAC,
     VORBIS,
     OPUS,
     FLAC,
@@ -53,6 +58,9 @@ class MEDIA_EXPORT MimeUtil {
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
     bool has_platform_decoders = false;
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    bool has_platform_dv_decoder = false;
+#endif
     bool has_platform_vp8_decoder = false;
     bool has_platform_vp9_decoder = false;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -74,13 +82,14 @@ class MEDIA_EXPORT MimeUtil {
   void SplitCodecs(const std::string& codecs,
                    std::vector<std::string>* codecs_out) const;
   void StripCodecs(std::vector<std::string>* codecs) const;
-  bool ParseVideoCodecString(const std::string& mime_type,
-                             const std::string& codec_id,
-                             bool* out_is_ambiguous,
-                             VideoCodec* out_codec,
-                             VideoCodecProfile* out_profile,
-                             uint8_t* out_level,
-                             VideoColorSpace* out_color_space) const;
+  bool ParseVideoCodecString(
+      const std::string& mime_type,  // fixme, make optional
+      const std::string& codec_id,
+      bool* out_is_ambiguous,
+      VideoCodec* out_codec,
+      VideoCodecProfile* out_profile,
+      uint8_t* out_level,
+      VideoColorSpace* out_color_space) const;
   bool ParseAudioCodecString(const std::string& mime_type,
                              const std::string& codec_id,
                              bool* out_is_ambiguous,
@@ -191,8 +200,6 @@ class MEDIA_EXPORT MimeUtil {
 
   // A map of mime_types and hash map of the supported codecs for the mime_type.
   MediaFormatMappings media_format_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeUtil);
 };
 
 }  // namespace internal

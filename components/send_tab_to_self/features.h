@@ -11,28 +11,28 @@ class PrefService;
 
 namespace send_tab_to_self {
 
-// If this feature is enabled, the tabs will be broadcasted instead of
-// targeted to a specific device. This only affects the receiving side.
-extern const base::Feature kSendTabToSelfBroadcast;
-
 // If this feature is enabled, we will use signed-in, ephemeral data rather than
 // persistent sync data. Users who are signed in can use the feature regardless
 // of whether they have the sync feature enabled.
 extern const base::Feature kSendTabToSelfWhenSignedIn;
 
-// Feature flag to enable device renaming.
-extern const base::Feature kSharingRenameDevices;
+// If this feature is enabled, a link to manage the user's devices will be shown
+// below the device list when sharing.
+extern const base::Feature kSendTabToSelfManageDevicesLink;
+
+// If this feature is enabled, use a fake backend implementation that supplies a
+// hardcoded list of share targets, for UI work & debugging.
+extern const base::Feature kSendTabToSelfUseFakeBackend;
+
+// If this feature is enabled, show received tabs in a new UI next to the
+// profile icon rather than in a system notification.
+extern const base::Feature kSendTabToSelfV2;
 
 // Returns whether the receiving components of the feature is enabled on this
-// device. This is different from IsReceivingEnabled in SendTabToSelfUtil
-// because it doesn't rely on the SendTabToSelfSyncService to be actively up and
-// ready.
+// device. This doesn't rely on the SendTabToSelfSyncService to be actively up
+// and ready.
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs);
 
-// Returns whether we should use ephemeral sign-in data, rather than full,
-// persistent sync data. Then the feature may be used by signed-in users,
-// regardless of whether they have full sync enabled.
-bool EnabledOnSignIn();
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_

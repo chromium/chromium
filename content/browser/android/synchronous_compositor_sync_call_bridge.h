@@ -6,12 +6,13 @@
 #define CONTENT_BROWSER_ANDROID_SYNCHRONOUS_COMPOSITOR_SYNC_CALL_BRIDGE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "content/common/input/sync_compositor_messages.h"
 #include "content/public/browser/android/synchronous_compositor.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/input/synchronous_compositor.mojom.h"
 
 namespace content {
 
@@ -71,6 +72,11 @@ class SynchronousCompositorSyncCallBridge
  public:
   explicit SynchronousCompositorSyncCallBridge(SynchronousCompositorHost* host);
 
+  SynchronousCompositorSyncCallBridge(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+  SynchronousCompositorSyncCallBridge& operator=(
+      const SynchronousCompositorSyncCallBridge&) = delete;
+
   // Indicatation that the remote is now ready to process requests. Called
   // on either UI or IO thread.
   void RemoteReady();
@@ -79,18 +85,21 @@ class SynchronousCompositorSyncCallBridge
   void RemoteClosedOnIOThread();
 
   // Receive a frame. Return false if the corresponding frame wasn't found.
-  bool ReceiveFrameOnIOThread(int frame_sink_id,
-                              uint32_t metadata_version,
-                              base::Optional<viz::CompositorFrame>);
+  bool ReceiveFrameOnIOThread(
+      int frame_sink_id,
+      uint32_t metadata_version,
+      absl::optional<viz::LocalSurfaceId> local_surface_id,
+      absl::optional<viz::CompositorFrame>,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list);
 
   // Receive a BeginFrameResponse. Returns true if handling the response was
   // successful or not.
   bool BeginFrameResponseOnIOThread(
-      const SyncCompositorCommonRendererParams& render_params);
+      blink::mojom::SyncCompositorCommonRendererParamsPtr render_params);
 
   // Schedule a callback for when vsync finishes and wait for the
   // BeginFrameResponse callback.
-  bool WaitAfterVSyncOnUIThread(ui::WindowAndroid* window_android);
+  bool WaitAfterVSyncOnUIThread();
 
   // Store a FrameFuture for a later ReceiveFrame callback. Return if the
   // future was stored for further handling.
@@ -103,6 +112,12 @@ class SynchronousCompositorSyncCallBridge
   // Return whether the remote side is ready.
   bool IsRemoteReadyOnUIThread();
 
+  // Set a weak reference to host control receiver then we can close the host
+  // control when the host was destroyed.
+  void SetHostControlReceiverOnIOThread(
+      mojo::SelfOwnedReceiverRef<blink::mojom::SynchronousCompositorControlHost>
+          host_control_receiver);
+
  private:
   friend class base::RefCountedThreadSafe<SynchronousCompositorSyncCallBridge>;
   ~SynchronousCompositorSyncCallBridge();
@@ -112,12 +127,17 @@ class SynchronousCompositorSyncCallBridge
   void BeginFrameCompleteOnUIThread();
 
   // Process metadata.
-  void ProcessFrameMetadataOnUIThread(uint32_t metadata_version,
-                                      viz::CompositorFrameMetadata metadata);
+  void ProcessFrameMetadataOnUIThread(
+      uint32_t metadata_version,
+      viz::CompositorFrameMetadata metadata,
+      const viz::LocalSurfaceId& local_surface_id);
 
   // Signal all waiters for closure. Callee must host a lock to |lock_|.
   void SignalRemoteClosedToAllWaitersOnIOThread()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Close the host control on io thread.
+  void CloseHostControlOnIOThread();
 
   using FrameFutureQueue =
       base::circular_deque<scoped_refptr<SynchronousCompositor::FrameFuture>>;
@@ -126,16 +146,18 @@ class SynchronousCompositorSyncCallBridge
 
   // UI thread only.
   SynchronousCompositorHost* host_;
+  // This handles the host control receiver in browser side.
+  mojo::SelfOwnedReceiverRef<blink::mojom::SynchronousCompositorControlHost>
+      host_control_receiver_;
 
   // Shared variables between the IO thread and UI thread.
   base::Lock lock_;
   FrameFutureQueue frame_futures_ GUARDED_BY(lock_);
   bool begin_frame_response_valid_ GUARDED_BY(lock_) = false;
-  SyncCompositorCommonRendererParams last_render_params_ GUARDED_BY(lock_);
+  blink::mojom::SyncCompositorCommonRendererParams last_render_params_
+      GUARDED_BY(lock_);
   base::ConditionVariable begin_frame_condition_ GUARDED_BY(lock_);
   RemoteState remote_state_ GUARDED_BY(lock_) = RemoteState::INIT;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorSyncCallBridge);
 };
 
 }  // namespace content

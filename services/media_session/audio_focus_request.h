@@ -34,6 +34,9 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
       const base::UnguessableToken& group_id,
       const base::UnguessableToken& identity);
 
+  AudioFocusRequest(const AudioFocusRequest&) = delete;
+  AudioFocusRequest& operator=(const AudioFocusRequest&) = delete;
+
   ~AudioFocusRequest() override;
 
   // mojom::AudioFocusRequestClient.
@@ -102,7 +105,7 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
   mojo::Receiver<mojom::AudioFocusRequestClient> receiver_;
 
   // The action to apply when the transient hold is released.
-  base::Optional<mojom::MediaSessionAction> delayed_action_;
+  absl::optional<mojom::MediaSessionAction> delayed_action_;
 
   // The ID of the audio focus request.
   base::UnguessableToken const id_;
@@ -119,8 +122,6 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
 
   // Weak pointer to the owning |AudioFocusManager| instance.
   const base::WeakPtr<AudioFocusManager> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusRequest);
 };
 
 }  // namespace media_session

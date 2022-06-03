@@ -15,14 +15,15 @@ ProcessSingletonModalDialogLock::ProcessSingletonModalDialogLock(
 ProcessSingletonModalDialogLock::~ProcessSingletonModalDialogLock() {}
 
 void ProcessSingletonModalDialogLock::SetModalDialogNotificationHandler(
-    base::Closure notification_handler) {
+    base::RepeatingClosure notification_handler) {
   notification_handler_ = std::move(notification_handler);
 }
 
 ProcessSingleton::NotificationCallback
 ProcessSingletonModalDialogLock::AsNotificationCallback() {
-  return base::Bind(&ProcessSingletonModalDialogLock::NotificationCallbackImpl,
-                    base::Unretained(this));
+  return base::BindRepeating(
+      &ProcessSingletonModalDialogLock::NotificationCallbackImpl,
+      base::Unretained(this));
 }
 
 bool ProcessSingletonModalDialogLock::NotificationCallbackImpl(

@@ -49,10 +49,10 @@ class CORE_EXPORT CSSPageRule final : public CSSRule {
   String selectorText() const;
   void setSelectorText(const ExecutionContext*, const String&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kPageRule; }
+  CSSRule::Type GetType() const override { return kPageRule; }
 
   Member<StyleRulePage> page_rule_;
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
@@ -61,7 +61,7 @@ class CORE_EXPORT CSSPageRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSPageRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kPageRule;
+    return rule.GetType() == CSSRule::kPageRule;
   }
 };
 

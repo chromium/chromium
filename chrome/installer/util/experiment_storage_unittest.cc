@@ -18,6 +18,10 @@ namespace installer {
 // Individual tests provide a parameter, which is true if Chrome is installed
 // in system level.
 class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
+ public:
+  ExperimentStorageTest(const ExperimentStorageTest&) = delete;
+  ExperimentStorageTest& operator=(const ExperimentStorageTest&) = delete;
+
  protected:
   ExperimentStorageTest()
       : system_level_install_(GetParam()),
@@ -45,8 +49,6 @@ class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
   registry_util::RegistryOverrideManager override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentStorageTest);
 };
 
 TEST_P(ExperimentStorageTest, TestEncodeDecodeMetrics) {
@@ -59,7 +61,7 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeMetrics) {
   metrics.last_used_bucket = 2;
   metrics.action_delay_bucket = 11;
   metrics.session_length_bucket = 36;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"5BIMD2IA", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -74,19 +76,18 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
   experiment.SetInactiveDays(ExperimentMetrics::kMaxLastUsed);
   experiment.SetToastCount(ExperimentMetrics::kMaxToastCount);
   experiment.SetUserSessionUptime(
-      base::TimeDelta::FromMinutes(ExperimentMetrics::kMaxSessionLength));
-  experiment.SetActionDelay(
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kMaxActionDelay));
+      base::Minutes(ExperimentMetrics::kMaxSessionLength));
+  experiment.SetActionDelay(base::Seconds(ExperimentMetrics::kMaxActionDelay));
   experiment.SetDisplayTime(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kExperimentStartSeconds) +
-      base::TimeDelta::FromDays(ExperimentMetrics::kMaxFirstToastOffsetDays));
+      base::Seconds(ExperimentMetrics::kExperimentStartSeconds) +
+      base::Days(ExperimentMetrics::kMaxFirstToastOffsetDays));
   experiment.SetState(ExperimentMetrics::kUserLogOff);  // Max state.
   ExperimentMetrics metrics = experiment.metrics();
   // toast_hour uses LocalMidnight whose value depend on local time. So, reset
   // it to its maximum value.
   metrics.toast_hour = 24;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"///j//9B", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -112,7 +113,7 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
 TEST_P(ExperimentStorageTest, TestEncodeDecodeForMin) {
   ExperimentMetrics metrics;
   metrics.state = ExperimentMetrics::kRelaunchFailed;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"AAAAAAAA", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -142,7 +143,7 @@ TEST_P(ExperimentStorageTest, TestLoadStoreExperiment) {
   EXPECT_EQ(5, stored_experiment.group());
   // Verify that expeirment state is stored in correct location in registry.
   base::win::RegKey key;
-  base::string16 client_state_path(
+  std::wstring client_state_path(
       system_level_install_ ? install_static::GetClientStateMediumKeyPath()
                             : install_static::GetClientStateKeyPath());
   client_state_path.append(L"\\Retention");

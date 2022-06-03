@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/service_manager/sandbox/switches.h"
+#include "sandbox/policy/switches.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/common/resource_usage_reporter.mojom.h"
@@ -63,7 +63,7 @@ void CreateResourceUsageReporter(
 void ExposeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
 #if !defined(OS_ANDROID)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          service_manager::switches::kNoneSandboxAndElevatedPrivileges)) {
+          sandbox::policy::switches::kNoneSandboxAndElevatedPrivileges)) {
     binders->Add(base::BindRepeating(&CreateResourceUsageReporter),
                  base::ThreadTaskRunnerHandle::Get());
   }

@@ -14,7 +14,8 @@ class ARQuickLookTabHelper;
 // Called to preview the downloaded USDZ format file |fileURL| points to.
 // |fileURL| cannot be nil.
 - (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL;
+    didFinishDowloadingFileWithURL:(NSURL*)fileURL
+              allowsContentScaling:(BOOL)allowsScaling;
 
 @end
 

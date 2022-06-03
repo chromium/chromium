@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
-#define MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#ifndef MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#define MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 struct AVDictionary;
@@ -35,6 +34,11 @@ class MEDIA_EXPORT AudioVideoMetadataExtractor {
   typedef std::vector<StreamInfo> StreamInfoVector;
 
   AudioVideoMetadataExtractor();
+
+  AudioVideoMetadataExtractor(const AudioVideoMetadataExtractor&) = delete;
+  AudioVideoMetadataExtractor& operator=(const AudioVideoMetadataExtractor&) =
+      delete;
+
   ~AudioVideoMetadataExtractor();
 
   // Returns whether or not the fields were successfully extracted. Should only
@@ -104,10 +108,8 @@ class MEDIA_EXPORT AudioVideoMetadataExtractor {
   StreamInfoVector stream_infos_;
 
   std::vector<std::string> attached_images_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoMetadataExtractor);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_AUDIO_VIDEO_METADATA_EXTRACTOR_H_
+#endif  // MEDIA_FILTERS_AUDIO_VIDEO_METADATA_EXTRACTOR_H_

@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_FILTER_KEYFRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_FILTER_KEYFRAME_H_
 
-#include "base/macros.h"
-#include "cc/animation/keyframed_animation_curve.h"
+#include "cc/animation/filter_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -20,18 +19,18 @@ class PLATFORM_EXPORT CompositorFilterKeyframe : public CompositorKeyframe {
   CompositorFilterKeyframe(double time,
                            CompositorFilterOperations value,
                            const TimingFunction&);
+  CompositorFilterKeyframe(const CompositorFilterKeyframe&) = delete;
+  CompositorFilterKeyframe& operator=(const CompositorFilterKeyframe&) = delete;
   ~CompositorFilterKeyframe() override;
 
   std::unique_ptr<cc::FilterKeyframe> CloneToCC() const;
 
   // CompositorKeyframe implementation.
-  double Time() const override;
-  const cc::TimingFunction* CcTimingFunction() const override;
+  base::TimeDelta Time() const override;
+  const gfx::TimingFunction* CcTimingFunction() const override;
 
  private:
   std::unique_ptr<cc::FilterKeyframe> filter_keyframe_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFilterKeyframe);
 };
 
 }  // namespace blink

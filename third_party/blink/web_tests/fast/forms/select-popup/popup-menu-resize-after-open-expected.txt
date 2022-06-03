@@ -1,5 +1,5 @@
 PASS popupWindow.innerWidth is 100
-FAIL Popup wasn't resized.
+PASS popupWindow.innerWidth is 150
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -140,7 +140,7 @@ TEST(TraceArguments, TraceValueAppend) {
   CheckStringFor(v, TRACE_VALUE_TYPE_COPY_STRING, "Some \"nice\" String");
 
   int* p = nullptr;
-  v.Init(p);
+  v.Init(static_cast<void*>(p));
   CheckJSONFor(v, TRACE_VALUE_TYPE_POINTER, "\"0x0\"");
   CheckStringFor(v, TRACE_VALUE_TYPE_POINTER, "0x0");
 
@@ -223,7 +223,7 @@ TEST(TraceArguments, ConstructorSinglePointer) {
     // TraceArguments destructor. This should only be possible for
     // TRACE_VALUE_TYPE_CONVERTABLE instances.
     {
-      TraceArguments args("foo_pointer", foo.get());
+      TraceArguments args("foo_pointer", static_cast<void*>(foo.get()));
       EXPECT_EQ(1U, args.size());
       EXPECT_EQ(TRACE_VALUE_TYPE_POINTER, args.types()[0]);
       EXPECT_STREQ("foo_pointer", args.names()[0]);

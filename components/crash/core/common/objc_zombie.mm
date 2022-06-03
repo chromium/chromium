@@ -14,6 +14,8 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"

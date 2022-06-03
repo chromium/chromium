@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 ContentSettingImageModelStates::~ContentSettingImageModelStates() = default;
 
@@ -79,4 +79,4 @@ void ContentSettingImageModelStates::VerifyType(ImageType type) const {
   CHECK_LT(type, ImageType::NUM_IMAGE_TYPES);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSettingImageModelStates)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSettingImageModelStates);

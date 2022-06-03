@@ -9,11 +9,9 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -30,11 +28,12 @@ class AudioRendererMixerInput;
 class MEDIA_EXPORT AudioRendererMixer
     : public AudioRendererSink::RenderCallback {
  public:
-  using UmaLogCallback = base::RepeatingCallback<void(int)>;
-
   AudioRendererMixer(const AudioParameters& output_params,
-                     scoped_refptr<AudioRendererSink> sink,
-                     UmaLogCallback log_callback);
+                     scoped_refptr<AudioRendererSink> sink);
+
+  AudioRendererMixer(const AudioRendererMixer&) = delete;
+  AudioRendererMixer& operator=(const AudioRendererMixer&) = delete;
+
   ~AudioRendererMixer() override;
 
   // Add or remove a mixer input from mixing; called by AudioRendererMixerInput.
@@ -57,8 +56,6 @@ class MEDIA_EXPORT AudioRendererMixer
   }
 
  private:
-  class UMAMaxValueTracker;
-
   // AudioRendererSink::RenderCallback implementation.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
@@ -66,7 +63,7 @@ class MEDIA_EXPORT AudioRendererMixer
              AudioBus* audio_bus) override;
   void OnRenderError() override;
 
-  bool is_master_sample_rate(int sample_rate) const {
+  bool can_passthrough(int sample_rate) const {
     return sample_rate == output_params_.sample_rate();
   }
 
@@ -88,24 +85,18 @@ class MEDIA_EXPORT AudioRendererMixer
 
   // Each of these converters mixes inputs with a given sample rate and
   // resamples them to the output sample rate. Inputs not requiring resampling
-  // go directly to |master_converter_|.
+  // go directly to |aggregate_converter_|.
   AudioConvertersMap converters_ GUARDED_BY(lock_);
 
-  // Master converter which mixes all the outputs from |converters_| as well as
-  // mixer inputs that are in the output sample rate.
-  AudioConverter master_converter_ GUARDED_BY(lock_);
+  // Aggregate converter which mixes all the outputs from |converters_| as well
+  // as mixer inputs that are in the output sample rate.
+  AudioConverter aggregate_converter_ GUARDED_BY(lock_);
 
   // Handles physical stream pause when no inputs are playing.  For latency
   // reasons we don't want to immediately pause the physical stream.
   base::TimeDelta pause_delay_ GUARDED_BY(lock_);
   base::TimeTicks last_play_time_ GUARDED_BY(lock_);
   bool playing_ GUARDED_BY(lock_);
-
-  // Tracks the maximum number of simultaneous mixer inputs and logs it into
-  // UMA histogram upon the destruction.
-  std::unique_ptr<UMAMaxValueTracker> input_count_tracker_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixer);
 };
 
 }  // namespace media

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
@@ -33,6 +32,12 @@ std::unique_ptr<DataWithTimestamp> GenerateAdvertisementData() {
 
 class SecureChannelErrorTolerantBleAdvertisementImplTest
     : public testing::Test {
+ public:
+  SecureChannelErrorTolerantBleAdvertisementImplTest(
+      const SecureChannelErrorTolerantBleAdvertisementImplTest&) = delete;
+  SecureChannelErrorTolerantBleAdvertisementImplTest& operator=(
+      const SecureChannelErrorTolerantBleAdvertisementImplTest&) = delete;
+
  protected:
   SecureChannelErrorTolerantBleAdvertisementImplTest()
       : fake_advertisement_data_(GenerateAdvertisementData()) {}
@@ -43,11 +48,10 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
 
     fake_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
 
-    advertisement_ =
-        ErrorTolerantBleAdvertisementImpl::Factory::Get()->BuildInstance(
-            DeviceIdPair(kDeviceId, kLocalDeviceId),
-            std::make_unique<DataWithTimestamp>(*fake_advertisement_data_),
-            fake_synchronizer_.get());
+    advertisement_ = ErrorTolerantBleAdvertisementImpl::Factory::Create(
+        DeviceIdPair(kDeviceId, kLocalDeviceId),
+        std::make_unique<DataWithTimestamp>(*fake_advertisement_data_),
+        fake_synchronizer_.get());
 
     VerifyServiceDataMatches(0u /* command_index */);
   }
@@ -98,7 +102,7 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
   }
 
   void CallStop() {
-    advertisement_->Stop(base::Bind(
+    advertisement_->Stop(base::BindOnce(
         &SecureChannelErrorTolerantBleAdvertisementImplTest::OnStopped,
         base::Unretained(this)));
   }
@@ -125,9 +129,6 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
   bool stopped_callback_called_;
 
   std::unique_ptr<ErrorTolerantBleAdvertisement> advertisement_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelErrorTolerantBleAdvertisementImplTest);
 };
 
 TEST_F(SecureChannelErrorTolerantBleAdvertisementImplTest,

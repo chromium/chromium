@@ -17,12 +17,10 @@ class MockBlobRegistryDelegate : public BlobRegistryImpl::Delegate {
   bool CanReadFile(const base::FilePath& file) override;
   bool CanReadFileSystemFile(const FileSystemURL& url) override;
   bool CanCommitURL(const GURL& url) override;
-  bool IsProcessValid() override;
 
   bool can_read_file_result = true;
   bool can_read_file_system_file_result = true;
   bool can_commit_url_result = true;
-  bool is_process_valid_result = true;
 };
 
 }  // namespace storage

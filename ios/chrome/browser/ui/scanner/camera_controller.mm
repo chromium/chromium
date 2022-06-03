@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/scanner/camera_controller.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -45,7 +47,7 @@
 // Stops receiving all notifications.
 - (void)stopReceivingNotifications;
 // Returns the camera attached to |_captureSession|.
-- (AVCaptureDevice*)getCamera;
+- (AVCaptureDevice*)camera;
 // Returns the AVCaptureVideoOrientation to compensate for the current
 // UIInterfaceOrientation. Defaults to AVCaptureVideoOrientationPortrait.
 - (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation;
@@ -80,14 +82,14 @@
 
 #pragma mark - Public methods
 
-- (AVAuthorizationStatus)getAuthorizationStatus {
+- (AVAuthorizationStatus)authorizationStatus {
   return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
 }
 
 - (void)requestAuthorizationAndLoadCaptureSession:
     (AVCaptureVideoPreviewLayer*)previewLayer {
   DCHECK(previewLayer);
-  DCHECK([self getAuthorizationStatus] == AVAuthorizationStatusNotDetermined);
+  DCHECK([self authorizationStatus] == AVAuthorizationStatusNotDetermined);
   __weak CameraController* weakSelf = self;
   [AVCaptureDevice
       requestAccessForMediaType:AVMediaTypeVideo
@@ -109,7 +111,7 @@
     }
     strongSelf.viewportRect = viewportRect;
     if (strongSelf.metadataOutput) {
-      [strongSelf.metadataOutput setRectOfInterest:_viewportRect];
+      [strongSelf.metadataOutput setRectOfInterest:strongSelf->_viewportRect];
     }
   });
 }
@@ -159,7 +161,7 @@
     if (!strongSelf || ![strongSelf isCameraAvailable]) {
       return;
     }
-    AVCaptureDevice* camera = [strongSelf getCamera];
+    AVCaptureDevice* camera = [strongSelf camera];
     if (![camera isTorchModeSupported:mode]) {
       return;
     }
@@ -182,7 +184,7 @@
 - (void)loadCaptureSession:(AVCaptureVideoPreviewLayer*)previewLayer {
   DCHECK(previewLayer);
   DCHECK([self cameraState] == scanner::CAMERA_NOT_LOADED);
-  DCHECK([self getAuthorizationStatus] == AVAuthorizationStatusAuthorized);
+  DCHECK([self authorizationStatus] == AVAuthorizationStatusAuthorized);
   __weak CameraController* weakSelf = self;
   dispatch_async(_sessionQueue, ^{
     [weakSelf continueLoadCaptureSession:previewLayer];
@@ -283,7 +285,7 @@
            object:_captureSession];
 
   // Start receiving notifications about changes to the camera.
-  AVCaptureDevice* camera = [self getCamera];
+  AVCaptureDevice* camera = [self camera];
   DCHECK(camera);
 
   [[NSNotificationCenter defaultCenter]
@@ -313,14 +315,14 @@
 - (void)stopReceivingNotifications {
   // We only start receiving notifications if the camera is available.
   if ([self isObservingCamera]) {
-    AVCaptureDevice* camera = [self getCamera];
+    AVCaptureDevice* camera = [self camera];
     [camera removeObserver:self forKeyPath:@"hasTorch"];
     [camera removeObserver:self forKeyPath:@"torchAvailable"];
     [camera removeObserver:self forKeyPath:@"torchActive"];
   }
 }
 
-- (AVCaptureDevice*)getCamera {
+- (AVCaptureDevice*)camera {
   AVCaptureDeviceInput* captureSessionInput =
       [[_captureSession inputs] firstObject];
   DCHECK(captureSessionInput != nil);
@@ -328,8 +330,7 @@
 }
 
 - (AVCaptureVideoOrientation)videoOrientationForCurrentInterfaceOrientation {
-  UIInterfaceOrientation orientation =
-      [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation orientation = GetInterfaceOrientation();
   switch (orientation) {
     case UIInterfaceOrientationUnknown:
       return AVCaptureVideoOrientationPortrait;
@@ -399,7 +400,7 @@
   if ([keyPath isEqualToString:@"hasTorch"] ||
       [keyPath isEqualToString:@"torchAvailable"] ||
       [keyPath isEqualToString:@"torchActive"]) {
-    AVCaptureDevice* camera = [self getCamera];
+    AVCaptureDevice* camera = [self camera];
     [self setTorchAvailable:([camera hasTorch] && [camera isTorchAvailable])];
     [self setTorchActive:[camera isTorchActive]];
   }

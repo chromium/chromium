@@ -1327,6 +1327,21 @@ TEST_F(GLES2FormatTest, GetBooleanv) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, GetBooleani_v) {
+  cmds::GetBooleani_v& cmd = *GetBufferAs<cmds::GetBooleani_v>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLuint>(12),
+              static_cast<uint32_t>(13), static_cast<uint32_t>(14));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::GetBooleani_v::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLenum>(11), cmd.pname);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.index);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.data_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.data_shm_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, GetBufferParameteri64v) {
   cmds::GetBufferParameteri64v& cmd =
       *GetBufferAs<cmds::GetBufferParameteri64v>();
@@ -4443,17 +4458,20 @@ TEST_F(GLES2FormatTest, FlushMappedBufferRange) {
 
 TEST_F(GLES2FormatTest, ResizeCHROMIUM) {
   cmds::ResizeCHROMIUM& cmd = *GetBufferAs<cmds::ResizeCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLuint>(12), static_cast<GLfloat>(13),
-                           static_cast<GLenum>(14), static_cast<GLboolean>(15));
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+                           static_cast<GLfloat>(13), static_cast<GLboolean>(14),
+                           static_cast<GLuint>(15), static_cast<GLuint>(16),
+                           static_cast<GLsizei>(17));
   EXPECT_EQ(static_cast<uint32_t>(cmds::ResizeCHROMIUM::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.width);
-  EXPECT_EQ(static_cast<GLuint>(12), cmd.height);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.width);
+  EXPECT_EQ(static_cast<GLint>(12), cmd.height);
   EXPECT_EQ(static_cast<GLfloat>(13), cmd.scale_factor);
-  EXPECT_EQ(static_cast<GLenum>(14), cmd.color_space);
-  EXPECT_EQ(static_cast<GLboolean>(15), cmd.alpha);
+  EXPECT_EQ(static_cast<GLboolean>(14), cmd.alpha);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.shm_id);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.shm_offset);
+  EXPECT_EQ(static_cast<GLsizei>(17), cmd.color_space_size);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
@@ -5103,426 +5121,6 @@ TEST_F(GLES2FormatTest, SetActiveURLCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, MatrixLoadfCHROMIUMImmediate) {
-  const int kSomeBaseValueToTestWith = 51;
-  static GLfloat data[] = {
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 0),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 1),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 2),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 3),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 4),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 5),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 6),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 7),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 8),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 9),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 10),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 11),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 12),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 13),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 14),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 15),
-  };
-  cmds::MatrixLoadfCHROMIUMImmediate& cmd =
-      *GetBufferAs<cmds::MatrixLoadfCHROMIUMImmediate>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLenum>(11), data);
-  EXPECT_EQ(static_cast<uint32_t>(cmds::MatrixLoadfCHROMIUMImmediate::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
-            cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.matrixMode);
-  CheckBytesWrittenMatchesExpectedSize(
-      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
-}
-
-TEST_F(GLES2FormatTest, MatrixLoadIdentityCHROMIUM) {
-  cmds::MatrixLoadIdentityCHROMIUM& cmd =
-      *GetBufferAs<cmds::MatrixLoadIdentityCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLenum>(11));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::MatrixLoadIdentityCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.matrixMode);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, GenPathsCHROMIUM) {
-  cmds::GenPathsCHROMIUM& cmd = *GetBufferAs<cmds::GenPathsCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLsizei>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::GenPathsCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.first_client_id);
-  EXPECT_EQ(static_cast<GLsizei>(12), cmd.range);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, DeletePathsCHROMIUM) {
-  cmds::DeletePathsCHROMIUM& cmd = *GetBufferAs<cmds::DeletePathsCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLsizei>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::DeletePathsCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.first_client_id);
-  EXPECT_EQ(static_cast<GLsizei>(12), cmd.range);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, IsPathCHROMIUM) {
-  cmds::IsPathCHROMIUM& cmd = *GetBufferAs<cmds::IsPathCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<uint32_t>(12),
-              static_cast<uint32_t>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::IsPathCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<uint32_t>(12), cmd.result_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.result_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, PathCommandsCHROMIUM) {
-  cmds::PathCommandsCHROMIUM& cmd = *GetBufferAs<cmds::PathCommandsCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLsizei>(12),
-              static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-              static_cast<GLsizei>(15), static_cast<GLenum>(16),
-              static_cast<uint32_t>(17), static_cast<uint32_t>(18));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::PathCommandsCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLsizei>(12), cmd.numCommands);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.commands_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.commands_shm_offset);
-  EXPECT_EQ(static_cast<GLsizei>(15), cmd.numCoords);
-  EXPECT_EQ(static_cast<GLenum>(16), cmd.coordType);
-  EXPECT_EQ(static_cast<uint32_t>(17), cmd.coords_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(18), cmd.coords_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, PathParameterfCHROMIUM) {
-  cmds::PathParameterfCHROMIUM& cmd =
-      *GetBufferAs<cmds::PathParameterfCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLenum>(12), static_cast<GLfloat>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::PathParameterfCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pname);
-  EXPECT_EQ(static_cast<GLfloat>(13), cmd.value);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, PathParameteriCHROMIUM) {
-  cmds::PathParameteriCHROMIUM& cmd =
-      *GetBufferAs<cmds::PathParameteriCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLenum>(12), static_cast<GLint>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::PathParameteriCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pname);
-  EXPECT_EQ(static_cast<GLint>(13), cmd.value);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, PathStencilFuncCHROMIUM) {
-  cmds::PathStencilFuncCHROMIUM& cmd =
-      *GetBufferAs<cmds::PathStencilFuncCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLenum>(11),
-                           static_cast<GLint>(12), static_cast<GLuint>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::PathStencilFuncCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLenum>(11), cmd.func);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.ref);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.mask);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilFillPathCHROMIUM) {
-  cmds::StencilFillPathCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilFillPathCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLenum>(12), static_cast<GLuint>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::StencilFillPathCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.fillMode);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.mask);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilStrokePathCHROMIUM) {
-  cmds::StencilStrokePathCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilStrokePathCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLint>(12), static_cast<GLuint>(13));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::StencilStrokePathCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.reference);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.mask);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, CoverFillPathCHROMIUM) {
-  cmds::CoverFillPathCHROMIUM& cmd =
-      *GetBufferAs<cmds::CoverFillPathCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLenum>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::CoverFillPathCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.coverMode);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, CoverStrokePathCHROMIUM) {
-  cmds::CoverStrokePathCHROMIUM& cmd =
-      *GetBufferAs<cmds::CoverStrokePathCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLenum>(12));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::CoverStrokePathCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.coverMode);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilThenCoverFillPathCHROMIUM) {
-  cmds::StencilThenCoverFillPathCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilThenCoverFillPathCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLenum>(12),
-              static_cast<GLuint>(13), static_cast<GLenum>(14));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::StencilThenCoverFillPathCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.fillMode);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(14), cmd.coverMode);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilThenCoverStrokePathCHROMIUM) {
-  cmds::StencilThenCoverStrokePathCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilThenCoverStrokePathCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLint>(12),
-              static_cast<GLuint>(13), static_cast<GLenum>(14));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::StencilThenCoverStrokePathCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.path);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.reference);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(14), cmd.coverMode);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilFillPathInstancedCHROMIUM) {
-  cmds::StencilFillPathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilFillPathInstancedCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-              static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-              static_cast<GLuint>(15), static_cast<GLenum>(16),
-              static_cast<GLuint>(17), static_cast<GLenum>(18),
-              static_cast<uint32_t>(19), static_cast<uint32_t>(20));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::StencilFillPathInstancedCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLenum>(16), cmd.fillMode);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(18), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(19), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(20), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilStrokePathInstancedCHROMIUM) {
-  cmds::StencilStrokePathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilStrokePathInstancedCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-              static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-              static_cast<GLuint>(15), static_cast<GLint>(16),
-              static_cast<GLuint>(17), static_cast<GLenum>(18),
-              static_cast<uint32_t>(19), static_cast<uint32_t>(20));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::StencilStrokePathInstancedCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLint>(16), cmd.reference);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(18), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(19), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(20), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, CoverFillPathInstancedCHROMIUM) {
-  cmds::CoverFillPathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::CoverFillPathInstancedCHROMIUM>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-      static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-      static_cast<GLuint>(15), static_cast<GLenum>(16), static_cast<GLenum>(17),
-      static_cast<uint32_t>(18), static_cast<uint32_t>(19));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::CoverFillPathInstancedCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLenum>(16), cmd.coverMode);
-  EXPECT_EQ(static_cast<GLenum>(17), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(18), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(19), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, CoverStrokePathInstancedCHROMIUM) {
-  cmds::CoverStrokePathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::CoverStrokePathInstancedCHROMIUM>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-      static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-      static_cast<GLuint>(15), static_cast<GLenum>(16), static_cast<GLenum>(17),
-      static_cast<uint32_t>(18), static_cast<uint32_t>(19));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::CoverStrokePathInstancedCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLenum>(16), cmd.coverMode);
-  EXPECT_EQ(static_cast<GLenum>(17), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(18), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(19), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilThenCoverFillPathInstancedCHROMIUM) {
-  cmds::StencilThenCoverFillPathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilThenCoverFillPathInstancedCHROMIUM>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-      static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-      static_cast<GLuint>(15), static_cast<GLenum>(16), static_cast<GLuint>(17),
-      static_cast<GLenum>(18), static_cast<GLenum>(19),
-      static_cast<uint32_t>(20), static_cast<uint32_t>(21));
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::StencilThenCoverFillPathInstancedCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLenum>(16), cmd.fillMode);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(18), cmd.coverMode);
-  EXPECT_EQ(static_cast<GLenum>(19), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(20), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(21), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, StencilThenCoverStrokePathInstancedCHROMIUM) {
-  cmds::StencilThenCoverStrokePathInstancedCHROMIUM& cmd =
-      *GetBufferAs<cmds::StencilThenCoverStrokePathInstancedCHROMIUM>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLsizei>(11), static_cast<GLenum>(12),
-      static_cast<uint32_t>(13), static_cast<uint32_t>(14),
-      static_cast<GLuint>(15), static_cast<GLint>(16), static_cast<GLuint>(17),
-      static_cast<GLenum>(18), static_cast<GLenum>(19),
-      static_cast<uint32_t>(20), static_cast<uint32_t>(21));
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::StencilThenCoverStrokePathInstancedCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLsizei>(11), cmd.numPaths);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.pathNameType);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.paths_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.paths_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.pathBase);
-  EXPECT_EQ(static_cast<GLint>(16), cmd.reference);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.mask);
-  EXPECT_EQ(static_cast<GLenum>(18), cmd.coverMode);
-  EXPECT_EQ(static_cast<GLenum>(19), cmd.transformType);
-  EXPECT_EQ(static_cast<uint32_t>(20), cmd.transformValues_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(21), cmd.transformValues_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, BindFragmentInputLocationCHROMIUMBucket) {
-  cmds::BindFragmentInputLocationCHROMIUMBucket& cmd =
-      *GetBufferAs<cmds::BindFragmentInputLocationCHROMIUMBucket>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLint>(12), static_cast<uint32_t>(13));
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::BindFragmentInputLocationCHROMIUMBucket::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.program);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.location);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.name_bucket_id);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, ProgramPathFragmentInputGenCHROMIUM) {
-  cmds::ProgramPathFragmentInputGenCHROMIUM& cmd =
-      *GetBufferAs<cmds::ProgramPathFragmentInputGenCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLint>(12),
-              static_cast<GLenum>(13), static_cast<GLint>(14),
-              static_cast<uint32_t>(15), static_cast<uint32_t>(16));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::ProgramPathFragmentInputGenCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.program);
-  EXPECT_EQ(static_cast<GLint>(12), cmd.location);
-  EXPECT_EQ(static_cast<GLenum>(13), cmd.genMode);
-  EXPECT_EQ(static_cast<GLint>(14), cmd.components);
-  EXPECT_EQ(static_cast<uint32_t>(15), cmd.coeffs_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(16), cmd.coeffs_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, ContextVisibilityHintCHROMIUM) {
   cmds::ContextVisibilityHintCHROMIUM& cmd =
       *GetBufferAs<cmds::ContextVisibilityHintCHROMIUM>();
@@ -5597,62 +5195,6 @@ TEST_F(GLES2FormatTest, GetFragDataIndexEXT) {
   EXPECT_EQ(static_cast<uint32_t>(12), cmd.name_bucket_id);
   EXPECT_EQ(static_cast<uint32_t>(13), cmd.index_shm_id);
   EXPECT_EQ(static_cast<uint32_t>(14), cmd.index_shm_offset);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate) {
-  const int kSomeBaseValueToTestWith = 51;
-  static GLfloat data[] = {
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 0),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 1),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 2),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 3),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 4),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 5),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 6),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 7),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 8),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 9),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 10),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 11),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 12),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 13),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 14),
-      static_cast<GLfloat>(kSomeBaseValueToTestWith + 15),
-  };
-  cmds::UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate& cmd =
-      *GetBufferAs<
-          cmds::UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLboolean>(12), data);
-  EXPECT_EQ(
-      static_cast<uint32_t>(
-          cmds::UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
-            cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLint>(11), cmd.location);
-  EXPECT_EQ(static_cast<GLboolean>(12), cmd.transpose);
-  CheckBytesWrittenMatchesExpectedSize(
-      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
-}
-
-TEST_F(GLES2FormatTest, OverlayPromotionHintCHROMIUM) {
-  cmds::OverlayPromotionHintCHROMIUM& cmd =
-      *GetBufferAs<cmds::OverlayPromotionHintCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLboolean>(12),
-              static_cast<GLint>(13), static_cast<GLint>(14),
-              static_cast<GLint>(15), static_cast<GLint>(16));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::OverlayPromotionHintCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.texture);
-  EXPECT_EQ(static_cast<GLboolean>(12), cmd.promotion_hint);
-  EXPECT_EQ(static_cast<GLint>(13), cmd.display_x);
-  EXPECT_EQ(static_cast<GLint>(14), cmd.display_y);
-  EXPECT_EQ(static_cast<GLint>(15), cmd.display_width);
-  EXPECT_EQ(static_cast<GLint>(16), cmd.display_height);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
@@ -5950,6 +5492,140 @@ TEST_F(GLES2FormatTest, EndSharedImageAccessDirectCHROMIUM) {
       cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLuint>(11), cmd.texture);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, BeginBatchReadAccessSharedImageCHROMIUM) {
+  cmds::BeginBatchReadAccessSharedImageCHROMIUM& cmd =
+      *GetBufferAs<cmds::BeginBatchReadAccessSharedImageCHROMIUM>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::BeginBatchReadAccessSharedImageCHROMIUM::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, EndBatchReadAccessSharedImageCHROMIUM) {
+  cmds::EndBatchReadAccessSharedImageCHROMIUM& cmd =
+      *GetBufferAs<cmds::EndBatchReadAccessSharedImageCHROMIUM>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::EndBatchReadAccessSharedImageCHROMIUM::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, EnableiOES) {
+  cmds::EnableiOES& cmd = *GetBufferAs<cmds::EnableiOES>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLuint>(12));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::EnableiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.index);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, DisableiOES) {
+  cmds::DisableiOES& cmd = *GetBufferAs<cmds::DisableiOES>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLuint>(12));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::DisableiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.index);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, BlendEquationiOES) {
+  cmds::BlendEquationiOES& cmd = *GetBufferAs<cmds::BlendEquationiOES>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLenum>(12));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::BlendEquationiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buf);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.mode);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, BlendEquationSeparateiOES) {
+  cmds::BlendEquationSeparateiOES& cmd =
+      *GetBufferAs<cmds::BlendEquationSeparateiOES>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLenum>(12), static_cast<GLenum>(13));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::BlendEquationSeparateiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buf);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.modeRGB);
+  EXPECT_EQ(static_cast<GLenum>(13), cmd.modeAlpha);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, BlendFunciOES) {
+  cmds::BlendFunciOES& cmd = *GetBufferAs<cmds::BlendFunciOES>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLenum>(12), static_cast<GLenum>(13));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::BlendFunciOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buf);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.src);
+  EXPECT_EQ(static_cast<GLenum>(13), cmd.dst);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, BlendFuncSeparateiOES) {
+  cmds::BlendFuncSeparateiOES& cmd =
+      *GetBufferAs<cmds::BlendFuncSeparateiOES>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLenum>(12), static_cast<GLenum>(13),
+                           static_cast<GLenum>(14), static_cast<GLenum>(15));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::BlendFuncSeparateiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buf);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.srcRGB);
+  EXPECT_EQ(static_cast<GLenum>(13), cmd.dstRGB);
+  EXPECT_EQ(static_cast<GLenum>(14), cmd.srcAlpha);
+  EXPECT_EQ(static_cast<GLenum>(15), cmd.dstAlpha);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, ColorMaskiOES) {
+  cmds::ColorMaskiOES& cmd = *GetBufferAs<cmds::ColorMaskiOES>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLboolean>(12),
+              static_cast<GLboolean>(13), static_cast<GLboolean>(14),
+              static_cast<GLboolean>(15));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::ColorMaskiOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.buf);
+  EXPECT_EQ(static_cast<GLboolean>(12), cmd.r);
+  EXPECT_EQ(static_cast<GLboolean>(13), cmd.g);
+  EXPECT_EQ(static_cast<GLboolean>(14), cmd.b);
+  EXPECT_EQ(static_cast<GLboolean>(15), cmd.a);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, IsEnablediOES) {
+  cmds::IsEnablediOES& cmd = *GetBufferAs<cmds::IsEnablediOES>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLuint>(12),
+              static_cast<uint32_t>(13), static_cast<uint32_t>(14));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::IsEnablediOES::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.index);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.result_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.result_shm_offset);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

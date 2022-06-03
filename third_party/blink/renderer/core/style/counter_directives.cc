@@ -26,9 +26,9 @@
 namespace blink {
 
 bool operator==(const CounterDirectives& a, const CounterDirectives& b) {
-  return a.IsIncrement() == b.IsIncrement() &&
-         a.IncrementValue() == b.IncrementValue() &&
-         a.IsReset() == b.IsReset() && a.ResetValue() == b.ResetValue();
+  return a.reset_value_ == b.reset_value_ &&
+         a.increment_value_ == b.increment_value_ &&
+         a.set_value_ == b.set_value_;
 }
 
 }  // namespace blink

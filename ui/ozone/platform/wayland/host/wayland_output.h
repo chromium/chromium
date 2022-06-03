@@ -14,29 +14,50 @@
 
 namespace ui {
 
+class XDGOutput;
+class WaylandConnection;
+
 // WaylandOutput objects keep track of the current output of display
 // that are available to the application.
-class WaylandOutput {
+class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
  public:
+  static constexpr char kInterfaceName[] = "wl_output";
+
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          const std::string& interface,
+                          uint32_t version);
+
   class Delegate {
    public:
-    virtual ~Delegate() {}
-
     virtual void OnOutputHandleMetrics(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor) = 0;
+                                       float scale_factor,
+                                       int32_t transform) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
   };
 
-  WaylandOutput(const uint32_t output_id, wl_output* output);
+  WaylandOutput(uint32_t output_id,
+                wl_output* output,
+                WaylandConnection* connection);
+
+  WaylandOutput(const WaylandOutput&) = delete;
+  WaylandOutput& operator=(const WaylandOutput&) = delete;
+
   ~WaylandOutput();
 
   void Initialize(Delegate* delegate);
-
-  void TriggerDelegateNotification() const;
+  void InitializeXdgOutput(struct zxdg_output_manager_v1* manager);
+  float GetUIScaleFactor() const;
 
   uint32_t output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
-  int32_t scale_factor() const { return scale_factor_; }
+  float scale_factor() const { return scale_factor_; }
+  int32_t transform() const { return transform_; }
+  gfx::Rect bounds() const { return rect_in_physical_pixels_; }
 
   // Tells if the output has already received physical screen dimensions in the
   // global compositor space.
@@ -44,6 +65,8 @@ class WaylandOutput {
 
  private:
   static constexpr int32_t kDefaultScaleFactor = 1;
+
+  void TriggerDelegateNotifications();
 
   // Callback functions used for setting geometric properties of the output
   // and available modes.
@@ -71,14 +94,15 @@ class WaylandOutput {
 
   const uint32_t output_id_ = 0;
   wl::Object<wl_output> output_;
-  int32_t scale_factor_ = kDefaultScaleFactor;
+  std::unique_ptr<XDGOutput> xdg_output_;
+  float scale_factor_ = kDefaultScaleFactor;
+  int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;
 
   Delegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandOutput);
+  WaylandConnection* connection_ = nullptr;
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_H_

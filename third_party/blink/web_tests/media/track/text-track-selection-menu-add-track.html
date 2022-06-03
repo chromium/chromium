@@ -11,11 +11,13 @@
 async_test(function(t) {
     var trackCueText = "Bonjour";
     var video = document.querySelector("video");
+    var track = document.querySelector("track");
     enableTestMode(video);
 
-    video.oncanplaythrough = t.step_func(function() {
-        var track = video.addTextTrack("captions", "French", "fr");
-        track.addCue(new VTTCue(0, 1, trackCueText));
+    track.oncuechange = t.step_func(function() {
+        track.oncuechange = null;
+        var new_track = video.addTextTrack("captions", "French", "fr");
+        new_track.addCue(new VTTCue(0, 1, trackCueText));
         assert_true(isClosedCaptionsButtonEnabled(video));
         assert_equals(video.textTracks.length, 2);
         assert_equals(video.textTracks[0].mode, "showing");
@@ -33,5 +35,8 @@ async_test(function(t) {
     });
 
     video.src = "../content/test.ogv";
+
+    // Seek to a point in the middle of the first cue
+    video.currentTime = 0.5;
 })
 </script>

@@ -11,12 +11,15 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
-#include "chrome/browser/extensions/extension_checkup.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -28,7 +31,6 @@
 #include "chrome/grit/extensions_resources.h"
 #include "chrome/grit/extensions_resources_map.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -39,11 +41,14 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/grit/extensions_browser_resources.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.h"
 #endif
 
@@ -54,29 +59,19 @@ namespace {
 constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
-
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/extensions/";
-#endif
+constexpr char kUseNewSiteAccessPage[] = "useNewSiteAccessPage";
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
 
-content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
-                                                   bool in_dev_mode) {
+content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
+                                                 bool in_dev_mode) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIExtensionsHost);
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(source, "extensions.js",
-                                     IDR_EXTENSIONS_EXTENSIONS_ROLLUP_JS,
-                                     IDR_EXTENSIONS_EXTENSIONS_HTML);
-#else
   webui::SetupWebUIDataSource(
       source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
-      kGeneratedPath, IDR_EXTENSIONS_EXTENSIONS_HTML);
-#endif
+      IDR_EXTENSIONS_EXTENSIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     // Add common strings.
@@ -106,8 +101,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"toolbarTitle", IDS_EXTENSIONS_TOOLBAR_TITLE},
     {"mainMenu", IDS_EXTENSIONS_MENU_BUTTON_LABEL},
     {"search", IDS_EXTENSIONS_SEARCH},
-    // TODO(dpapad): Use a single merged string resource for "Clear search".
-    {"clearSearch", IDS_DOWNLOAD_CLEAR_SEARCH},
+    {"clearSearch", IDS_CLEAR_SEARCH},
     {"sidebarExtensions", IDS_EXTENSIONS_SIDEBAR_EXTENSIONS},
     {"appsTitle", IDS_EXTENSIONS_APPS_TITLE},
     {"noExtensionsOrApps", IDS_EXTENSIONS_NO_INSTALLED_ITEMS},
@@ -133,9 +127,15 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"hostPermissionsDescription", IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
     {"hostPermissionsEdit", IDS_EXTENSIONS_HOST_PERMISSIONS_EDIT},
     {"hostPermissionsHeading", IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING},
+    {"newHostPermissionsHeading",
+     IDS_EXTENSIONS_NEW_ITEM_HOST_PERMISSIONS_HEADING},
     {"hostAccessOnClick", IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK},
+    {"newHostAccessOnClick", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_CLICK},
     {"hostAccessOnSpecificSites", IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES},
+    {"hostAccessCustomizeForEachSite",
+     IDS_EXTENSIONS_HOST_CUSTOMIZE_FOR_EACH_SITE},
     {"hostAccessOnAllSites", IDS_EXTENSIONS_HOST_ACCESS_ON_ALL_SITES},
+    {"newHostAccessOnAllSites", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_ALL_SITES},
     {"hostAllowedHosts", IDS_EXTENSIONS_ITEM_ALLOWED_HOSTS},
     {"itemId", IDS_EXTENSIONS_ITEM_ID},
     {"itemInspectViews", IDS_EXTENSIONS_ITEM_INSPECT_VIEWS},
@@ -166,6 +166,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
      IDS_EXTENSIONS_ACTIVITY_LOG_STREAM_TAB_HEADING},
     {"startActivityStream", IDS_EXTENSIONS_START_ACTIVITY_STREAM},
     {"stopActivityStream", IDS_EXTENSIONS_STOP_ACTIVITY_STREAM},
+    {"parentDisabledPermissions", IDS_EXTENSIONS_PERMISSIONS_OFF},
     {"emptyStreamStarted", IDS_EXTENSIONS_EMPTY_STREAM_STARTED},
     {"emptyStreamStopped", IDS_EXTENSIONS_EMPTY_STREAM_STOPPED},
     {"activityArgumentsHeading", IDS_EXTENSIONS_ACTIVITY_ARGUMENTS_HEADING},
@@ -190,6 +191,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"itemPermissionsEmpty", IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY},
     {"itemRemoveExtension", IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION},
     {"itemSiteAccess", IDS_EXTENSIONS_ITEM_SITE_ACCESS},
+    {"itemSiteAccessSublabel", IDS_EXTENSIONS_ITEM_SITE_ACCESS_SUBLABEL},
     {"itemSiteAccessAddHost", IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST},
     {"itemSiteAccessEmpty", IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY},
     {"itemSource", IDS_EXTENSIONS_ITEM_SOURCE},
@@ -207,6 +209,8 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"itemAllowOnFollowingSites", IDS_EXTENSIONS_ALLOW_ON_FOLLOWING_SITES},
     {"itemCollectErrors", IDS_EXTENSIONS_ENABLE_ERROR_COLLECTION},
     {"itemCorruptInstall", IDS_EXTENSIONS_CORRUPTED_EXTENSION},
+    {"itemAllowlistWarning",
+     IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING},
     {"itemRepair", IDS_EXTENSIONS_REPAIR_CORRUPTED},
     {"itemReload", IDS_EXTENSIONS_RELOAD_TERMINATED},
     {"loadErrorCouldNotLoadManifest",
@@ -217,6 +221,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"loadErrorRetry", IDS_EXTENSIONS_LOAD_ERROR_RETRY},
     {"loadingActivities", IDS_EXTENSIONS_LOADING_ACTIVITIES},
     {"missingOrUninstalledExtension", IDS_MISSING_OR_UNINSTALLED_EXTENSION},
+    {"newItemSiteAccessTitle", IDS_EXTENSIONS_ITEM_SITE_ACCESS_NEW},
     {"noActivities", IDS_EXTENSIONS_NO_ACTIVITIES},
     {"noErrorsToShow", IDS_EXTENSIONS_ERROR_NO_ERRORS_CODE_MESSAGE},
     {"runtimeHostsDialogInputError",
@@ -234,6 +239,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"packDialogKeyFile", IDS_EXTENSIONS_PACK_DIALOG_KEY_FILE_LABEL},
     {"packDialogContent", IDS_EXTENSION_PACK_DIALOG_HEADING},
     {"packDialogConfirm", IDS_EXTENSIONS_PACK_DIALOG_CONFIRM_BUTTON},
+    {"editShortcut", IDS_EXTENSIONS_EDIT_SHORTCUT},
     {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
     {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
     {"shortcutScopeLabel", IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL},
@@ -243,8 +249,10 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"shortcutIncludeStartModifier", IDS_EXTENSIONS_INCLUDE_START_MODIFIER},
     {"shortcutTooManyModifiers", IDS_EXTENSIONS_TOO_MANY_MODIFIERS},
     {"shortcutNeedCharacter", IDS_EXTENSIONS_NEED_CHARACTER},
+    {"subpageArrowRoleDescription", IDS_EXTENSIONS_SUBPAGE_BUTTON},
     {"toolbarDevMode", IDS_EXTENSIONS_DEVELOPER_MODE},
     {"toolbarLoadUnpacked", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED},
+    {"toolbarLoadUnpackedDone", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED_DONE},
     {"toolbarPack", IDS_EXTENSIONS_TOOLBAR_PACK},
     {"toolbarUpdateNow", IDS_EXTENSIONS_TOOLBAR_UPDATE_NOW},
     {"toolbarUpdateNowTooltip", IDS_EXTENSIONS_TOOLBAR_UPDATE_NOW_TOOLTIP},
@@ -257,8 +265,9 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"viewIncognito", IDS_EXTENSIONS_VIEW_INCOGNITO},
     {"viewInactive", IDS_EXTENSIONS_VIEW_INACTIVE},
     {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
+    {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
     {"kioskAddApp", IDS_EXTENSIONS_KIOSK_ADD_APP},
     {"kioskAddAppHint", IDS_EXTENSIONS_KIOSK_ADD_APP_HINT},
@@ -272,7 +281,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
      IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
 #endif
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("errorLinesNotShownSingular",
                     l10n_util::GetPluralStringFUTF16(
@@ -291,7 +300,10 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
                              GURL(chrome::kRemoveNonCWSExtensionURL),
                              g_browser_process->GetApplicationLocale())
                              .spec()));
-#if defined(OS_CHROMEOS)
+  source->AddString(
+      "enhancedSafeBrowsingWarningHelpUrl",
+      base::ASCIIToUTF16(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(
       "kioskDisableBailoutWarningBody",
       l10n_util::GetStringFUTF16(
@@ -312,39 +324,16 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          ::switches::kEnableExtensionActivityLogging));
 
-  bool checkup_enabled =
-      base::FeatureList::IsEnabled(extensions_features::kExtensionsCheckup);
-  source->AddBoolean("showCheckup", checkup_enabled);
-  if (checkup_enabled) {
-    int title_id = 0;
-    int body1_id = 0;
-    int body2_id = 0;
-    switch (GetCheckupMessageFocus()) {
-      case CheckupMessage::PERFORMANCE:
-        title_id = IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_TITLE;
-        body1_id = IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_BODY1;
-        body2_id = IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_BODY2;
-        break;
-      case CheckupMessage::PRIVACY:
-        title_id = IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_TITLE;
-        body1_id = IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_BODY1;
-        body2_id = IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_BODY2;
-        break;
-      case CheckupMessage::NEUTRAL:
-        title_id = IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_TITLE;
-        body1_id = IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_BODY1;
-        body2_id = IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_BODY2;
-        break;
-    }
-    source->AddLocalizedString("checkupTitle", title_id);
-    source->AddLocalizedString("checkupBody1", body1_id);
-    source->AddLocalizedString("checkupBody2", body2_id);
-  } else {
-    source->AddString("checkupTitle", "");
-    source->AddString("checkupBody1", "");
-    source->AddString("checkupBody2", "");
-  }
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
+
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
+
+  source->AddBoolean(
+      kUseNewSiteAccessPage,
+      base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
 
   return source;
 }
@@ -354,48 +343,37 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
 ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
     : WebUIController(web_ui),
       webui_load_timer_(web_ui->GetWebContents(),
-                        "Extensions.WebUi.DocumentLoadedInMainFrameTime.MD",
-                        "Extensions.WebUi.LoadCompletedInMainFrame.MD") {
+                        "Extensions.WebUi.DocumentLoadedInMainFrameTime",
+                        "Extensions.WebUi.LoadCompletedInMainFrame") {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 
-  in_dev_mode_.Init(
-      prefs::kExtensionsUIDeveloperMode, profile->GetPrefs(),
-      base::Bind(&ExtensionsUI::OnDevModeChanged, base::Unretained(this)));
+  in_dev_mode_.Init(prefs::kExtensionsUIDeveloperMode, profile->GetPrefs(),
+                    base::BindRepeating(&ExtensionsUI::OnDevModeChanged,
+                                        base::Unretained(this)));
 
-  source = CreateMdExtensionsSource(profile, *in_dev_mode_);
+  source = CreateExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto kiosk_app_handler = std::make_unique<chromeos::KioskAppsHandler>(
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-          profile));
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile));
   web_ui->AddMessageHandler(std::move(kiosk_app_handler));
 #endif
 
   // Need to allow <object> elements so that the <extensionoptions> browser
   // plugin can be loaded within chrome://extensions.
-  source->OverrideContentSecurityPolicyObjectSrc("object-src 'self';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
 
   content::WebUIDataSource::Add(profile, source);
-
-  // Stores a boolean in ExtensionPrefs so we can make sure that the user is
-  // redirected to the extensions page upon startup once. We're using
-  // GetVisibleURL() because the load hasn't committed and this check isn't used
-  // for a security decision, however a stronger check will be implemented if we
-  // decide to invest more in this experiment.
-  if (web_ui->GetWebContents()->GetVisibleURL().query_piece().starts_with(
-          "checkup")) {
-    ExtensionPrefs::Get(profile)->SetUserHasSeenExtensionsCheckupOnStartup(
-        true);
-  }
 }
 
-ExtensionsUI::~ExtensionsUI() {}
+ExtensionsUI::~ExtensionsUI() = default;
 
 // static
 base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.LoadDataResourceBytesForScale(IDR_EXTENSIONS_FAVICON, scale_factor);
 }

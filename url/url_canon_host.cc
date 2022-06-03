@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include <unordered_set>
+
+#include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -80,7 +83,7 @@ constexpr int kMaxHostBufferLength = kMaxHostLength*5;
 
 const int kTempHostBufferLen = 1024;
 typedef RawCanonOutputT<char, kTempHostBufferLen> StackBuffer;
-typedef RawCanonOutputT<base::char16, kTempHostBufferLen> StackBufferW;
+typedef RawCanonOutputT<char16_t, kTempHostBufferLen> StackBufferW;
 
 // Scans a host name and fills in the output flags according to what we find.
 // |has_non_ascii| will be true if there are any non-7-bit characters, and
@@ -129,6 +132,8 @@ bool DoSimpleHost(const INCHAR* host,
                   bool* has_non_ascii) {
   *has_non_ascii = false;
 
+  std::unordered_set<char> escaped_chars_to_measure;
+
   bool success = true;
   for (int i = 0; i < host_len; ++i) {
     unsigned int source = host[i];
@@ -156,6 +161,7 @@ bool DoSimpleHost(const INCHAR* host,
       } else if (replacement == kEsc) {
         // This character is valid but should be escaped.
         AppendEscapedChar(source, output);
+        escaped_chars_to_measure.insert(source);
       } else {
         // Common case, the given character is valid in a hostname, the lookup
         // table tells us the canonical representation of that character (lower
@@ -170,11 +176,21 @@ bool DoSimpleHost(const INCHAR* host,
       *has_non_ascii = true;
     }
   }
+  if (success) {
+    bool did_escape = !escaped_chars_to_measure.empty();
+    UMA_HISTOGRAM_BOOLEAN("URL.Host.DidEscape", did_escape);
+    if (did_escape) {
+      for (char c : escaped_chars_to_measure) {
+        UMA_HISTOGRAM_ENUMERATION("URL.Host.EscapeChar",
+                                  EscapedHostCharToEnum(c));
+      }
+    }
+  }
   return success;
 }
 
 // Canonicalizes a host that requires IDN conversion. Returns true on success
-bool DoIDNHost(const base::char16* src, int src_len, CanonOutput* output) {
+bool DoIDNHost(const char16_t* src, int src_len, CanonOutput* output) {
   int original_output_len = output->length();  // So we can rewind below.
 
   // We need to escape URL before doing IDN conversion, since punicode strings
@@ -239,6 +255,7 @@ bool DoComplexHost(const char* host, int host_len,
   // input or the unescaped version written to |*output| if necessary.
   const char* utf8_source;
   int utf8_source_len;
+  bool are_all_escaped_valid = true;
   if (has_escaped) {
     // Unescape before converting to UTF-16 for IDN. We write this into the
     // output because it most likely does not require IDNization, and we can
@@ -247,14 +264,16 @@ bool DoComplexHost(const char* host, int host_len,
     // unescaped input requires IDN.
     if (!DoSimpleHost(host, host_len, output, &has_non_ascii)) {
       // Error with some escape sequence. We'll call the current output
-      // complete. DoSimpleHost will have written some "reasonable" output.
-      return false;
+      // complete. DoSimpleHost will have written some "reasonable" output
+      // for the invalid escapes, but the output could be non-ASCII and
+      // needs to go through re-encoding below.
+      are_all_escaped_valid = false;
     }
 
     // Unescaping may have left us with ASCII input, in which case the
     // unescaped version we wrote to output is complete.
     if (!has_non_ascii) {
-      return true;
+      return are_all_escaped_valid;
     }
 
     // Save the pointer into the data was just converted (it may be appended to
@@ -286,14 +305,18 @@ bool DoComplexHost(const char* host, int host_len,
 
   // This will call DoSimpleHost which will do normal ASCII canonicalization
   // and also check for IP addresses in the outpt.
-  return DoIDNHost(utf16.data(), utf16.length(), output);
+  return DoIDNHost(utf16.data(), utf16.length(), output) &&
+         are_all_escaped_valid;
 }
 
 // UTF-16 convert host to its ASCII version. The set up is already ready for
 // the backend, so we just pass through. The has_escaped flag should be set if
 // the input string requires unescaping.
-bool DoComplexHost(const base::char16* host, int host_len,
-                   bool has_non_ascii, bool has_escaped, CanonOutput* output) {
+bool DoComplexHost(const char16_t* host,
+                   int host_len,
+                   bool has_non_ascii,
+                   bool has_escaped,
+                   CanonOutput* output) {
   if (has_escaped) {
     // Yikes, we have escaped characters with wide input. The escaped
     // characters should be interpreted as UTF-8. To solve this problem,
@@ -391,12 +414,12 @@ bool CanonicalizeHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeHost(const base::char16* spec,
+bool CanonicalizeHost(const char16_t* spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
   CanonHostInfo host_info;
-  DoHost<base::char16, base::char16>(spec, host, output, &host_info);
+  DoHost<char16_t, char16_t>(spec, host, output, &host_info);
   *out_host = host_info.out_host;
   return (host_info.family != CanonHostInfo::BROKEN);
 }
@@ -408,11 +431,11 @@ void CanonicalizeHostVerbose(const char* spec,
   DoHost<char, unsigned char>(spec, host, output, host_info);
 }
 
-void CanonicalizeHostVerbose(const base::char16* spec,
+void CanonicalizeHostVerbose(const char16_t* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
-  DoHost<base::char16, base::char16>(spec, host, output, host_info);
+  DoHost<char16_t, char16_t>(spec, host, output, host_info);
 }
 
 bool CanonicalizeHostSubstring(const char* spec,
@@ -421,10 +444,10 @@ bool CanonicalizeHostSubstring(const char* spec,
   return DoHostSubstring<char, unsigned char>(spec, host, output);
 }
 
-bool CanonicalizeHostSubstring(const base::char16* spec,
+bool CanonicalizeHostSubstring(const char16_t* spec,
                                const Component& host,
                                CanonOutput* output) {
-  return DoHostSubstring<base::char16, base::char16>(spec, host, output);
+  return DoHostSubstring<char16_t, char16_t>(spec, host, output);
 }
 
 }  // namespace url

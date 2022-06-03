@@ -4,7 +4,7 @@
 
 #include "components/cdm/renderer/external_clear_key_key_system_properties.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "media/base/eme_constants.h"
 
 namespace cdm {
@@ -53,7 +53,8 @@ media::SupportedCodecs ExternalClearKeyProperties::GetSupportedCodecs() const {
 
 media::EmeConfigRule ExternalClearKeyProperties::GetRobustnessConfigRule(
     media::EmeMediaType media_type,
-    const std::string& requested_robustness) const {
+    const std::string& requested_robustness,
+    const bool* /*hw_secure_requirement*/) const {
   return requested_robustness.empty() ? media::EmeConfigRule::SUPPORTED
                                       : media::EmeConfigRule::NOT_SUPPORTED;
 }
@@ -61,11 +62,6 @@ media::EmeConfigRule ExternalClearKeyProperties::GetRobustnessConfigRule(
 // Persistent license sessions are faked.
 media::EmeSessionTypeSupport
 ExternalClearKeyProperties::GetPersistentLicenseSessionSupport() const {
-  return media::EmeSessionTypeSupport::SUPPORTED;
-}
-
-media::EmeSessionTypeSupport
-ExternalClearKeyProperties::GetPersistentUsageRecordSessionSupport() const {
   return media::EmeSessionTypeSupport::SUPPORTED;
 }
 

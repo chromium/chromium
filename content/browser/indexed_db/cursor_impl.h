@@ -9,10 +9,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -26,9 +25,13 @@ class IndexedDBDispatcherHost;
 class CursorImpl : public blink::mojom::IDBCursor {
  public:
   CursorImpl(std::unique_ptr<IndexedDBCursor> cursor,
-             const url::Origin& origin,
+             const blink::StorageKey& storage_key,
              IndexedDBDispatcherHost* dispatcher_host,
              scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  CursorImpl(const CursorImpl&) = delete;
+  CursorImpl& operator=(const CursorImpl&) = delete;
+
   ~CursorImpl() override;
 
   // blink::mojom::IDBCursor implementation
@@ -49,13 +52,11 @@ class CursorImpl : public blink::mojom::IDBCursor {
   // This raw pointer is safe because all CursorImpl instances are owned by an
   // IndexedDBDispatcherHost.
   IndexedDBDispatcherHost* dispatcher_host_;
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   std::unique_ptr<IndexedDBCursor> cursor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CursorImpl);
 };
 
 }  // namespace content

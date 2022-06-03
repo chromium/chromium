@@ -3,6 +3,15 @@ if (self.importScripts) {
   importScripts('/fetch/resources/thorough-util.js');
 }
 
+var {
+  REDIRECT_URL,
+  OTHER_REDIRECT_URL,
+  BASE_URL_WITH_PASSWORD,
+  BASE_URL_WITH_USERNAME,
+  OTHER_BASE_URL_WITH_PASSWORD,
+  OTHER_BASE_URL_WITH_USERNAME
+} = get_thorough_test_options();
+
 var TEST_TARGETS = [
   // Redirects to URLs with username/password; these requests are blocked.
   //

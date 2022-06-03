@@ -11,9 +11,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -48,11 +49,14 @@ class FakeWakeLockManager {
       : browser_context_(context), is_active_(false) {
     PowerAPI::Get(browser_context_)
         ->SetWakeLockFunctionsForTesting(
-            base::Bind(&FakeWakeLockManager::ActivateWakeLock,
-                       base::Unretained(this)),
-            base::Bind(&FakeWakeLockManager::CancelWakeLock,
-                       base::Unretained(this)));
+            base::BindRepeating(&FakeWakeLockManager::ActivateWakeLock,
+                                base::Unretained(this)),
+            base::BindRepeating(&FakeWakeLockManager::CancelWakeLock,
+                                base::Unretained(this)));
   }
+
+  FakeWakeLockManager(const FakeWakeLockManager&) = delete;
+  FakeWakeLockManager& operator=(const FakeWakeLockManager&) = delete;
 
   ~FakeWakeLockManager() {
     PowerAPI::Get(browser_context_)
@@ -140,8 +144,6 @@ class FakeWakeLockManager {
 
   // Requests in chronological order.
   base::circular_deque<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWakeLockManager);
 };
 
 }  // namespace
@@ -150,7 +152,7 @@ class PowerAPITest : public ApiUnitTest {
  public:
   void SetUp() override {
     ApiUnitTest::SetUp();
-    manager_.reset(new FakeWakeLockManager(browser_context()));
+    manager_ = std::make_unique<FakeWakeLockManager>(browser_context());
   }
 
   void TearDown() override {

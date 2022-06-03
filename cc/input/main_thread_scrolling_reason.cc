@@ -4,7 +4,7 @@
 
 #include "cc/input/main_thread_scrolling_reason.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 
@@ -32,28 +32,14 @@ void MainThreadScrollingReason::AddToTracedValue(
 
   if (reasons & kHasBackgroundAttachmentFixedObjects)
     traced_value.AppendString("Has background-attachment:fixed");
-  if (reasons & kHasNonLayerViewportConstrainedObjects)
-    traced_value.AppendString("Has non-layer viewport-constrained objects");
   if (reasons & kThreadedScrollingDisabled)
     traced_value.AppendString("Threaded scrolling is disabled");
   if (reasons & kScrollbarScrolling)
     traced_value.AppendString("Scrollbar scrolling");
-  if (reasons & kFrameOverlay)
-    traced_value.AppendString("Frame overlay");
-  if (reasons & kHandlingScrollFromMainThread)
-    traced_value.AppendString("Handling scroll from main thread");
-  if (reasons & kHasOpacityAndLCDText)
-    traced_value.AppendString("Has opacity and LCD text");
-  if (reasons & kHasTransformAndLCDText)
-    traced_value.AppendString("Has transform and LCD text");
-  if (reasons & kBackgroundNotOpaqueInRectAndLCDText)
-    traced_value.AppendString("Background is not opaque in rect and LCD text");
-  if (reasons & kHasClipRelatedProperty)
-    traced_value.AppendString("Has clip related property");
-  if (reasons & kHasBoxShadowFromNonRootLayer)
-    traced_value.AppendString("Has box shadow from non-root layer");
-  if (reasons & kIsNotStackingContextAndLCDText)
-    traced_value.AppendString("Is not stacking context and LCD text");
+  if (reasons & kNotOpaqueForTextAndLCDText)
+    traced_value.AppendString("Not opaque for text and LCD text");
+  if (reasons & kCantPaintScrollingBackgroundAndLCDText)
+    traced_value.AppendString("Can't paint scrolling background and LCD text");
 
   // Transient scrolling reasons.
   if (reasons & kNonFastScrollableRegion)
@@ -64,12 +50,8 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("No scrolling layer");
   if (reasons & kNotScrollable)
     traced_value.AppendString("Not scrollable");
-  if (reasons & kContinuingMainThreadScroll)
-    traced_value.AppendString("Continuing main thread scroll");
   if (reasons & kNonInvertibleTransform)
     traced_value.AppendString("Non-invertible transform");
-  if (reasons & kPageBasedScrolling)
-    traced_value.AppendString("Page-based scrolling");
   if (reasons & kWheelEventHandlerRegion)
     traced_value.AppendString("Wheel event handler region");
   if (reasons & kTouchEventHandlerRegion)

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -17,15 +17,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-#if defined(CHROME_EARL_GREY_1)
-#import <QuickLook/QuickLook.h>
-
-// EG1 test relies on view controller presentation as the signal that Quick Look
-// Dialog is shown.
-#import "ios/chrome/app/main_controller.h"  // nogncheck
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"  // nogncheck
-#import "ios/chrome/test/app/chrome_test_util.h"  // nogncheck
-#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +28,9 @@ using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
+// Use separate timeout for EG2 tests to accomodate for IPC delays.
+const NSTimeInterval kWaitForARPresentationTimeout = 30.0;
+
 // USDZ landing page and download request handler.
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
@@ -45,11 +39,20 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   if (request.GetURL().path() == "/") {
     result->set_content(
+        "<html><head><script>"
+        "document.addEventListener('visibilitychange', "
+        "function() {"
+        "document.getElementById('visibility-change').innerHTML = "
+        "document.visibilityState;"
+        "});"
+        "</script></head><body>"
         "<a id='forbidden' href='/forbidden'>Forbidden</a> "
         "<a id='unauthorized' href='/unauthorized'>Unauthorized</a> "
         "<a id='changing-mime-type' href='/changing-mime-type'>Changing Mime "
         "Type</a> "
-        "<a id='good' href='/good'>Good</a>");
+        "<a id='good' href='/good'>Good</a>"
+        "<p id='visibility-change'>None</p>"
+        "</body></html>");
     return result;
   }
 
@@ -94,28 +97,17 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // QLPreviewController UI is rendered out of host process so EarlGrey matcher
   // can not find QLPreviewController UI.
-#if defined(CHROME_EARL_GREY_1)
-  // EG1 test relies on view controller presentation as the signal that
-  // QLPreviewController UI is shown.
-  id<BrowserInterface> interface =
-      chrome_test_util::GetMainController().interfaceProvider.mainInterface;
-  UIViewController* viewController = interface.viewController;
-  bool shown = WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    UIViewController* presentedController =
-        viewController.presentedViewController;
-    return [presentedController class] == [QLPreviewController class];
-  });
-  GREYAssert(shown, @"QLPreviewController was not shown.");
-#elif defined(CHROME_EARL_GREY_2)
   // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
-  GREYAssert([goodTitle waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-             @"AR preview dialog UI was not presented");
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
+#if TARGET_IPHONE_SIMULATOR
+  goodTitle = app.staticTexts[@"Unsupported file format"];
+
 #endif
+  GREYAssert(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was not presented");
 }
 
 - (void)testDownloadUnauthorized {
@@ -125,29 +117,17 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // QLPreviewController UI is rendered out of host process so EarlGrey matcher
   // can not find QLPreviewController UI.
-#if defined(CHROME_EARL_GREY_1)
-  // EG1 test relies on view controller presentation as the signal that
-  // QLPreviewController UI is shown.
-  id<BrowserInterface> interface =
-      chrome_test_util::GetMainController().interfaceProvider.mainInterface;
-  UIViewController* viewController = interface.viewController;
-  bool shown = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    UIViewController* presentedController =
-        viewController.presentedViewController;
-    return [presentedController class] == [QLPreviewController class];
-  });
-  GREYAssertFalse(shown, @"QLPreviewController should not have shown.");
-#elif defined(CHROME_EARL_GREY_2)
   // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
-  GREYAssertFalse(
-      [goodTitle waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-      @"AR preview dialog UI was presented");
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
+#if TARGET_IPHONE_SIMULATOR
+  goodTitle = app.staticTexts[@"Unsupported file format"];
+
 #endif
+  GREYAssertFalse(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was presented");
 }
 
 - (void)testDownloadForbidden {
@@ -157,29 +137,16 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // QLPreviewController UI is rendered out of host process so EarlGrey matcher
   // can not find QLPreviewController UI.
-#if defined(CHROME_EARL_GREY_1)
-  // EG1 test relies on view controller presentation as the signal that
-  // QLPreviewController UI is shown.
-  id<BrowserInterface> interface =
-      chrome_test_util::GetMainController().interfaceProvider.mainInterface;
-  UIViewController* viewController = interface.viewController;
-  bool shown = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    UIViewController* presentedController =
-        viewController.presentedViewController;
-    return [presentedController class] == [QLPreviewController class];
-  });
-  GREYAssertFalse(shown, @"QLPreviewController should not have shown.");
-#elif defined(CHROME_EARL_GREY_2)
   // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
-  GREYAssertFalse(
-      [goodTitle waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-      @"AR preview dialog UI was presented");
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
+#if TARGET_IPHONE_SIMULATOR
+  goodTitle = app.staticTexts[@"Unsupported file format"];
 #endif
+  GREYAssertFalse(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was presented");
 }
 
 - (void)testDownloadChangingMimeType {
@@ -189,29 +156,49 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // QLPreviewController UI is rendered out of host process so EarlGrey matcher
   // can not find QLPreviewController UI.
-#if defined(CHROME_EARL_GREY_1)
-  // EG1 test relies on view controller presentation as the signal that
-  // QLPreviewController UI is shown.
-  id<BrowserInterface> interface =
-      chrome_test_util::GetMainController().interfaceProvider.mainInterface;
-  UIViewController* viewController = interface.viewController;
-  bool shown = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    UIViewController* presentedController =
-        viewController.presentedViewController;
-    return [presentedController class] == [QLPreviewController class];
-  });
-  GREYAssertFalse(shown, @"QLPreviewController should not have shown.");
-#elif defined(CHROME_EARL_GREY_2)
   // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
-  GREYAssertFalse(
-      [goodTitle waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-      @"AR preview dialog UI was presented");
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
+#if TARGET_IPHONE_SIMULATOR
+  goodTitle = app.staticTexts[@"Unsupported file format"];
 #endif
+  GREYAssertFalse(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was presented");
+}
+
+// Tests that the visibilitychange event is fired when quicklook is
+// shown/hidden.
+- (void)testVisibilitychangeEventFired {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Good"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"good"];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"hidden"];
+
+  // QLPreviewController UI is rendered out of host process so EarlGrey matcher
+  // can not find QLPreviewController UI.
+  // EG2 test uses XCUIApplication API to check for Quick Look dialog UI
+  // presentation.
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  goodTitle = app.staticTexts[@"Unsupported file format"];
+#endif
+  GREYAssert(
+      [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"AR preview dialog UI was not presented");
+
+  // Close the QuickLook dialog.
+  XCUIElement* doneButton = app.buttons[@"Done"];
+  GREYAssert(
+      [doneButton waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
+      @"Done button not visible");
+  [doneButton tap];
+
+  // Check that the visibilitychange event is triggered.
+  [ChromeEarlGrey waitForWebStateContainingText:"visible"];
 }
 
 @end

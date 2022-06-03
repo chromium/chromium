@@ -18,10 +18,22 @@ namespace learning {
 class MediaLearningTasksTest : public testing::Test {};
 
 TEST_F(MediaLearningTasksTest, WillPlayTask) {
-  LearningTask task =
-      MediaLearningTasks::Get(MediaLearningTasks::Id::kWillPlay);
+  LearningTask task = MediaLearningTasks::Get(tasknames::kWillPlay);
   // Make sure the name is correct, mostly to reduce cut-and-paste errors.
   EXPECT_EQ(task.name, "MediaLearningWillPlay");
+}
+
+TEST_F(MediaLearningTasksTest, ConsecutiveBadWindowsTask) {
+  LearningTask task =
+      MediaLearningTasks::Get(tasknames::kConsecutiveBadWindows);
+  // Make sure the name is correct, mostly to reduce cut-and-paste errors.
+  EXPECT_EQ(task.name, "MediaLearningConsecutiveBadWindows");
+}
+
+TEST_F(MediaLearningTasksTest, ConsecutiveNNRsTask) {
+  LearningTask task = MediaLearningTasks::Get(tasknames::kConsecutiveNNRs);
+  // Make sure the name is correct, mostly to reduce cut-and-paste errors.
+  EXPECT_EQ(task.name, "MediaLearningConsecutiveNNRs");
 }
 
 TEST_F(MediaLearningTasksTest, EnumeratesAllTasks) {
@@ -30,7 +42,7 @@ TEST_F(MediaLearningTasksTest, EnumeratesAllTasks) {
       [](int* count, const LearningTask& task) { (*count)++; },
       base::Unretained(&count));
   MediaLearningTasks::Register(std::move(cb));
-  EXPECT_EQ(count, 1);
+  EXPECT_EQ(count, 3);
 }
 
 }  // namespace learning

@@ -1,0 +1,75 @@
+Basic test for LayoutShift support in PerformanceTimeline
+[
+    [0] : {
+        frameId : <string>
+        layoutShiftDetails : {
+            hadRecentInput : false
+            lastInputTime : 0
+            sources : [
+                [0] : {
+                    currentRect : {
+                        height : 150
+                        width : 30
+                        x : 12
+                        y : 189
+                    }
+                    nodeId : <div#padding2>
+                    previousRect : {
+                        height : 150
+                        width : 30
+                        x : 12
+                        y : 39
+                    }
+                }
+                [1] : {
+                    currentRect : {
+                        height : 180
+                        width : 600
+                        x : 57
+                        y : 162
+                    }
+                    nodeId : <div#text>
+                    previousRect : {
+                        height : 180
+                        width : 600
+                        x : 57
+                        y : 12
+                    }
+                }
+            ]
+            value : 0.023958333333333335
+        }
+        name : 
+        time : <number>
+        type : layout-shift
+    }
+    [1] : {
+        frameId : <string>
+        layoutShiftDetails : {
+            hadRecentInput : true
+            lastInputTime : <number>
+            sources : [
+                [0] : {
+                    currentRect : {
+                        height : 180
+                        width : 600
+                        x : 177
+                        y : 162
+                    }
+                    nodeId : <div#text>
+                    previousRect : {
+                        height : 180
+                        width : 600
+                        x : 57
+                        y : 162
+                    }
+                }
+            ]
+            value : 0.012
+        }
+        name : 
+        time : <number>
+        type : layout-shift
+    }
+]
+

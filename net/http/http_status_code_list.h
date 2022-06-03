@@ -3,21 +3,23 @@
 // found in the LICENSE file.
 
 // This file intentionally does not have header guards, it's included
-// inside a macro to generate enum. The following line silences a
-// presubmit warning that would otherwise be triggered by this:
+// inside a macro to generate enum values. The following line silences a
+// presubmit and Tricium warning that would otherwise be triggered by this:
 // no-include-guard-because-multiply-included
+// NOLINT(build/header_guard)
 
 // This file contains the list of HTTP status codes. Taken from IANA HTTP Status
 // Code Registry.
 // http://www.iana.org/assignments/http-status-codes/http-status-codes.xml
 
 #ifndef HTTP_STATUS
-#error "HTTP_STATUS should be defined before including this file"
+#error "Do #include net/http/http_status_code.h instead of this file directly."
 #endif
 
 // Informational 1xx
 HTTP_STATUS(CONTINUE, 100, "Continue")
 HTTP_STATUS(SWITCHING_PROTOCOLS, 101, "Switching Protocols")
+HTTP_STATUS(EARLY_HINTS, 103, "Early Hints")
 
 // Successful 2xx
 HTTP_STATUS(OK, 200, "OK")
@@ -62,6 +64,7 @@ HTTP_STATUS(EXPECTATION_FAILED, 417, "Expectation Failed")
 // 418 returned by Cloud Print.
 HTTP_STATUS(INVALID_XPRIVET_TOKEN, 418, "Invalid XPrivet Token")
 HTTP_STATUS(TOO_EARLY, 425, "Too Early")
+HTTP_STATUS(TOO_MANY_REQUESTS, 429, "Too Many Requests")
 
 // Server error 5xx
 HTTP_STATUS(INTERNAL_SERVER_ERROR, 500, "Internal Server Error")

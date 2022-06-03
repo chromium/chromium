@@ -5,7 +5,9 @@
 #ifndef CC_LAYERS_TEXTURE_LAYER_H_
 #define CC_LAYERS_TEXTURE_LAYER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -15,18 +17,14 @@
 #include "cc/layers/layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 
 namespace gpu {
 struct SyncToken;
 }
 
-namespace viz {
-class SingleReleaseCallback;
-}
-
 namespace cc {
-class SingleReleaseCallback;
 class TextureLayer;
 class TextureLayerClient;
 
@@ -62,7 +60,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
     // Gets a viz::ReleaseCallback that can be called from another thread. Note:
     // the caller must ensure the callback is called.
-    std::unique_ptr<viz::SingleReleaseCallback> GetCallbackForImplThread(
+    viz::ReleaseCallback GetCallbackForImplThread(
         scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
 
    protected:
@@ -71,7 +69,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     // Protected visiblity so only TextureLayer and unit tests can create these.
     static std::unique_ptr<MainThreadReference> Create(
         const viz::TransferableResource& resource,
-        std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+        viz::ReleaseCallback release_callback);
     virtual ~TransferableResourceHolder();
 
    private:
@@ -79,7 +77,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     friend class MainThreadReference;
     explicit TransferableResourceHolder(
         const viz::TransferableResource& resource,
-        std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+        viz::ReleaseCallback release_callback);
 
     void InternalAddRef();
     void InternalRelease();
@@ -98,7 +96,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     int posted_internal_derefs_ = 0;
 #endif
     viz::TransferableResource resource_;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback_;
+    viz::ReleaseCallback release_callback_;
 
     // This lock guards the sync_token_ and is_lost_ fields because they can be
     // accessed on both the impl and main thread. We do this to ensure that the
@@ -137,13 +135,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
-  // Sets an opacity value per vertex. It will be multiplied by the layer
-  // opacity value.
-  void SetVertexOpacity(float bottom_left,
-                        float top_left,
-                        float top_right,
-                        float bottom_right);
-
   // Sets whether the alpha channel is premultiplied or unpremultiplied.
   // Defaults to true.
   void SetPremultipliedAlpha(bool premultiplied_alpha);
@@ -157,16 +148,14 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   void SetForceTextureToOpaque(bool opaque);
 
   // Code path for plugins which supply their own mailbox.
-  void SetTransferableResource(
-      const viz::TransferableResource& resource,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback);
-
-  void SetNeedsDisplayRect(const gfx::Rect& dirty_rect) override;
+  void SetTransferableResource(const viz::TransferableResource& resource,
+                               viz::ReleaseCallback release_callback);
 
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   // Request a mapping from SharedBitmapId to SharedMemory be registered via the
   // LayerTreeFrameSink with the display compositor. Once this mapping is
@@ -192,7 +181,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
  private:
   void SetTransferableResourceInternal(
       const viz::TransferableResource& resource,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+      viz::ReleaseCallback release_callback,
       bool requires_commit);
 
   // Friends to give access to UnregisterSharedBitmapId().
@@ -208,7 +197,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   gfx::PointF uv_top_left_ = gfx::PointF();
   gfx::PointF uv_bottom_right_ = gfx::PointF(1.f, 1.f);
   // [bottom left, top left, top right, bottom right]
-  float vertex_opacity_[4] = {1.f, 1.f, 1.f, 1.f};
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;
   bool force_texture_to_opaque_ = false;

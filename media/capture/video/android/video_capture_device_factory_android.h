@@ -10,7 +10,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace media {
@@ -24,15 +24,18 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       int id,
       jlong nativeVideoCaptureDeviceAndroid);
 
-  VideoCaptureDeviceFactoryAndroid() : test_mode_(false) {}
-  ~VideoCaptureDeviceFactoryAndroid() override {}
+  VideoCaptureDeviceFactoryAndroid();
+
+  VideoCaptureDeviceFactoryAndroid(const VideoCaptureDeviceFactoryAndroid&) =
+      delete;
+  VideoCaptureDeviceFactoryAndroid& operator=(
+      const VideoCaptureDeviceFactoryAndroid&) = delete;
+
+  ~VideoCaptureDeviceFactoryAndroid() override;
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
-  void GetDeviceDescriptors(
-      VideoCaptureDeviceDescriptors* device_descriptors) override;
-  void GetSupportedFormats(const VideoCaptureDeviceDescriptor& device,
-                           VideoCaptureFormats* supported_formats) override;
+  void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
   static bool IsLegacyOrDeprecatedDevice(const std::string& device_id);
 
@@ -40,11 +43,21 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   void ConfigureForTesting() { test_mode_ = true; }
 
  private:
-  // Switch to indicate that all created Java capturers will be in test mode.
-  bool test_mode_;
+  VideoCaptureFormats GetSupportedFormats(int device_index,
+                                          const std::string& display_name);
 
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryAndroid);
+  // Switch to indicate that all created Java capturers will be in test mode.
+  bool test_mode_ = false;
+
+  // VideoCaptureFormats and zooms are cached, so GetSupportedFormats() and
+  // Java_VideoCaptureFactory_isZoomSupported() respectively don't need to be
+  // called for every device every time GetDevicesInfo() is called. It also
+  // allows to workaround bugs on some devices that don't handle the case when
+  // an actively used camera is opened again (see https://crbug.com/1138608).
+  base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
+  base::flat_map<std::string, bool> zooms_cache_;
 };
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_FACTORY_ANDROID_H_

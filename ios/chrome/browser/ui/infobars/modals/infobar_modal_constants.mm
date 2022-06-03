@@ -10,3 +10,5 @@
 
 NSString* const kInfobarModalViewIdentifier = @"kInfobarModalViewIdentifier";
 NSString* const kInfobarModalCancelButton = @"kInfobarModalCancelButton";
+
+const char kInfobarModalCancelButtonTapped[] = "InfobarModalCancelButtonTap";

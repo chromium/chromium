@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL ShadowRoot.mode should return open or closed, and only open if v0. host3.createShadowRoot is not a function
-Harness: the test ran to completion.
-

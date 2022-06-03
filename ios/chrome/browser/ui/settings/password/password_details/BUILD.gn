@@ -1,0 +1,128 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_details") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "add_password_coordinator.h",
+    "add_password_coordinator.mm",
+    "add_password_coordinator_delegate.h",
+    "add_password_mediator.h",
+    "add_password_mediator.mm",
+    "add_password_mediator_delegate.h",
+    "password_details_coordinator.h",
+    "password_details_coordinator.mm",
+    "password_details_coordinator_delegate.h",
+    "password_details_mediator.h",
+    "password_details_mediator.mm",
+  ]
+  deps = [
+    ":password_details_ui",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util",
+    "//ios/web",
+    "//ui/base",
+  ]
+}
+
+source_set("password_details_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "add_password_details_consumer.h",
+    "add_password_handler.h",
+    "password_details.h",
+    "password_details.mm",
+    "password_details_consumer.h",
+    "password_details_handler.h",
+    "password_details_menu_item.h",
+    "password_details_menu_item.mm",
+    "password_details_table_view_constants.h",
+    "password_details_table_view_constants.mm",
+    "password_details_table_view_controller.h",
+    "password_details_table_view_controller.mm",
+    "password_details_table_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser:affiliation",
+    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/infobars/resources:infobar_hide_password_icon",
+    "//ios/chrome/browser/ui/infobars/resources:infobar_reveal_password_icon",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/autofill",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "password_details_table_view_controller_unittest.mm" ]
+  deps = [
+    ":password_details",
+    ":password_details_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

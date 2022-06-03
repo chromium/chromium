@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/media_resource.h"
@@ -29,6 +28,10 @@ class VideoRendererSink;
 class MEDIA_EXPORT RendererFactory {
  public:
   RendererFactory();
+
+  RendererFactory(const RendererFactory&) = delete;
+  RendererFactory& operator=(const RendererFactory&) = delete;
+
   virtual ~RendererFactory();
 
   // Creates and returns a Renderer. All methods of the created Renderer except
@@ -41,16 +44,13 @@ class MEDIA_EXPORT RendererFactory {
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       AudioRendererSink* audio_renderer_sink,
       VideoRendererSink* video_renderer_sink,
-      const RequestOverlayInfoCB& request_overlay_info_cb,
+      RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) = 0;
 
   // Returns the MediaResource::Type that should be used with the renderers
   // created by this factory.
   // NOTE: Returns Type::STREAM by default.
   virtual MediaResource::Type GetRequiredMediaResourceType();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererFactory);
 };
 
 }  // namespace media

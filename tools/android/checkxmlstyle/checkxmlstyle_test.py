@@ -26,7 +26,8 @@ class IncludedFilesTest(unittest.TestCase):
         MockFile('content/java/res_test/test.xml', lines),
         MockFile('components/test/java/res_test/test.xml', lines)
     ]
-    self.assertEqual(4, len(list(checkxmlstyle.IncludedFiles(mock_input_api))))
+    self.assertEqual(4,
+                     len(list(checkxmlstyle.IncludedFiles(mock_input_api))))
 
   def testFileExcluded(self):
     lines = []
@@ -34,12 +35,12 @@ class IncludedFilesTest(unittest.TestCase):
     mock_input_api.files = [
         MockFile('chrome/res_test/test.xml', lines),
         MockFile('ui/test/test.xml', lines),
-        MockFile('ui/java/res/test.java', lines),
         MockFile('content/java/res.xml', lines),
         MockFile('components/java/test.xml', lines),
         MockFile('test/java/res/test.xml', lines)
     ]
-    self.assertEqual(0, len(list(checkxmlstyle.IncludedFiles(mock_input_api))))
+    self.assertEqual(0,
+                     len(list(checkxmlstyle.IncludedFiles(mock_input_api))))
 
 
 class ColorFormatTest(unittest.TestCase):
@@ -137,15 +138,36 @@ class ColorReferencesTest(unittest.TestCase):
   def testReferenceInSemanticColors(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockFile(helpers.COLOR_PALETTE_PATH,
-        ['<resources><color name="a">#f0f0f0</color></resources>']),
-      MockFile('ui/android/java/res/values/semantic_colors.xml',
-        ['<color name="b">@color/hello<color>',
-         '<color name="c">@color/a<color>'])
+        MockFile(helpers.COLOR_PALETTE_PATH,
+                 ['<resources><color name="a">#f0f0f0</color></resources>']),
+        MockFile('ui/android/java/res/values/semantic_colors_non_adaptive.xml',
+                 [
+                     '<color name="b">@color/hello<color>',
+                     '<color name="c">@color/a<color>'
+                 ]),
+        MockFile('ui/android/java/res/values/semantic_colors_adaptive.xml',
+                 ['<color name="c">@color/a<color>'])
     ]
     errors = checkxmlstyle._CheckSemanticColorsReferences(
       mock_input_api, MockOutputApi())
     self.assertEqual(1, len(errors))
+
+  def testReferenceInColorPalette(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile(helpers.COLOR_PALETTE_PATH,
+                 ['<resources><color name="foo">#f0f0f0</color></resources>']),
+        MockFile('ui/android/java/res/values/semantic_colors_adaptive.xml',
+                 ['<color name="b">@color/foo<color>']),
+        MockFile('ui/android/java/res/values/colors.xml', [
+            '<color name="c">@color/b</color>',
+            '<color name="d">@color/b</color>',
+            '<color name="e">@color/foo</color>'
+        ])
+    ]
+    warnings = checkxmlstyle._CheckColorPaletteReferences(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
 
 
 class DuplicateColorsTest(unittest.TestCase):
@@ -352,6 +374,134 @@ class NewTextAppearanceTest(unittest.TestCase):
     errors = checkxmlstyle._CheckNewTextAppearance(
         mock_input_api, MockOutputApi())
     self.assertEqual(0, len(errors))
+
+
+class UnfavoredLayoutAttributesTest(unittest.TestCase):
+
+  def testLineSpacingAttributesUsage(self):
+    xmlChanges = [
+        '<TextView android:id="@+id/test"',
+        '    android:lineSpacingExtra="42dp"',
+        '    android:lineSpacingMultiplier="42dp"',
+        '/>',
+        '<TextViewWithLeading android:id="@+id/test2"',
+        '    app:leading="42dp"',
+        '/>'
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('ui/android/java/res/layout/new_textview.xml', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckLineSpacingAttribute(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(2, len(result[0].items))
+    self.assertEqual('  ui/android/java/res/layout/new_textview.xml:2',
+                      result[0].items[0].splitlines()[0])
+    self.assertEqual('  ui/android/java/res/layout/new_textview.xml:3',
+                      result[0].items[1].splitlines()[0])
+
+class UnfavoredWidgetsTest(unittest.TestCase):
+
+  def testButtonCompatUsage(self):
+    xmlChanges = [
+        '<Button',
+        '   android:text="@string/hello"',
+        '   android:text="@color/modern_blue_600"',
+        '/>',
+        '',
+        '<android.support.v7.widget.AppCompatButton',
+        '   android:text="@string/welcome"',
+        '   android:color="@color/modern_purple_300"',
+        '/>',
+        '<org.chromium.ui.widget.ButtonCompat',
+        '   android:id="@+id/action_button"',
+        '/>'
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('ui/android/java/res/layout/dropdown_item.xml', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckButtonCompatWidgetUsage(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(2, len(result[0].items))
+    self.assertEqual('  ui/android/java/res/layout/dropdown_item.xml:1',
+                     result[0].items[0].splitlines()[0])
+    self.assertEqual('  ui/android/java/res/layout/dropdown_item.xml:6',
+                     result[0].items[1].splitlines()[0])
+
+
+class StringResourcesTest(unittest.TestCase):
+  def testInfavoredQuotations(self):
+    xmlChanges = (u'''<grit><release><messages>
+      <message name="IDS_TEST_0">
+          <ph><ex>Hi</ex></ph>, it\u0027s a good idea
+      </message>
+      <message name="IDS_TEST_1">
+          <ph><ex>Yes</ex></ph>, it\u2019s a good idea
+      </message>
+      <message name="IDS_TEST_2">
+        Go to \u0022Settings\u0022 and
+        \u0022Menus\u0022
+      </message>
+      <message name="IDS_TEST_3">
+        Go to \u201CSettings\u201D
+        \u0022Menus\u0023
+      </message>
+      <message name="IDS_TEST_4">
+        Go to \u201CSettings\u201D
+        \u201CMenus\u201D
+      </message>
+        <part file="site_settings.grdp" />
+          </messages></release></grit>'''.encode('utf-8')).splitlines()
+
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('ui/android/string/chrome_android_string.grd', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckStringResourceQuotesPunctuations(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(4, len(result[0].items))
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:3',
+                     result[0].items[0].splitlines()[0])
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:9',
+                     result[0].items[1].splitlines()[0])
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:10',
+                     result[0].items[2].splitlines()[0])
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:14',
+                     result[0].items[3].splitlines()[0])
+
+
+  def testInfavoredEllipsis(self):
+    xmlChanges = (u'''<grit><release><messages>
+      <message name="IDS_TEST_0">
+          <ph><ex>Hi</ex></ph>, file is downloading\u002E\u002E\u002E
+      </message>
+      <message name="IDS_TEST_1">
+          <ph><ex>Yes</ex></ph>, file is downloading\u2026
+      </message>
+      <message name="IDS_TEST_2">
+          <ph><ex>Oh</ex></ph>, file is downloaded\u002E
+      </message>
+        <part file="site_settings.grdp" />
+          </messages></release></grit>'''.encode('utf-8')).splitlines()
+
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('ui/android/string/chrome_android_string.grd', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckStringResourceEllipsisPunctuations(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(1, len(result[0].items))
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:3',
+                     result[0].items[0].splitlines()[0])
 
 
 if __name__ == '__main__':

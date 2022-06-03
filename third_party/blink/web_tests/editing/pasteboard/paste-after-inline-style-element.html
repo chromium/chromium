@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-<html>
-<body>
-<div id="test" contenteditable><blockquote type="cite"><b>line 1 <br></b>&nbsp;</blockquote></div>
-<script src="../../resources/dump-as-markup.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-Markup.description('This test ensures WebKit does not crash when pasting content immediately after an inline style element.\n'
-+ 'This test exhibits a bug. The inserted content should be on a separate line but it is not.');
-
-window.getSelection().collapse(document.getElementById('test').firstChild, 1);
-document.execCommand('InsertHTML', false, '<blockquote type="cite">line 2</blockquote>');
-
-Markup.dump('test');
-
+// This test ensures WebKit does not crash when pasting content immediately
+// after an inline style element.
+// This test exhibits a bug. The inserted content should be on a separate line
+// but it is not.
+selection_test(
+    [
+      '<div contenteditable>',
+        '<blockquote type="cite"><b>line 1<br></b>\u00A0</blockquote>|',
+      '</div>',
+    ],
+    selection => selection.document.execCommand('InsertHTML', false,
+        '<blockquote type="cite">line 2</blockquote>'),
+    [
+      '<div contenteditable>',
+        '<blockquote type="cite"><b>line 1<br></b>\u00A0line 2|</blockquote>',
+      '</div>',
+    ]);
 </script>
-</body>
-</html>

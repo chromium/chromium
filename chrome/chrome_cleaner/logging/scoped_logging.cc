@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging_win.h"
+#include "base/strings/string_util.h"
 #include "base/win/current_module.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/constants/version.h"
@@ -94,7 +95,8 @@ base::FilePath ScopedLogging::GetLogFilePath(
   // Test executables don't have version resources.
   base::FilePath original_filename;
   if (version.get()) {
-    original_filename = base::FilePath(version->original_filename());
+    original_filename =
+        base::FilePath(base::AsWStringPiece(version->original_filename()));
   } else {
     original_filename =
         PreFetchedPaths::GetInstance()->GetExecutablePath().BaseName();

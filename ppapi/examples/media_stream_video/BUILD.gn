@@ -6,9 +6,7 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("media_stream_video") {
   output_name = "ppapi_example_media_stream_video"
-  sources = [
-    "media_stream_video.cc",
-  ]
+  sources = [ "media_stream_video.cc" ]
   deps = [
     "//ppapi/cpp",
     "//ppapi/lib/gl/gles2",

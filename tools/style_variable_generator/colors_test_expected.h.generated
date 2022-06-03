@@ -1,0 +1,70 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+//   colors_test.json5
+//   colors_test_palette.json5
+
+#ifndef TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
+#define TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
+
+#include "base/strings/strcat.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace colors_test_expected {
+
+enum class ColorName {
+  kGoogleGrey900,
+  kTextColorPrimary,
+  kToggleColor,
+};
+
+enum class OpacityName {
+  kDisabledOpacity,
+  kReferenceOpacity,
+};
+
+constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
+  switch (opacity_name) {
+    case OpacityName::kDisabledOpacity:
+      return 0x60;
+    case OpacityName::kReferenceOpacity:
+      if (is_dark_mode) {
+        return 0xFF;
+      } else {
+        return GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode);
+      }
+  }
+}
+
+constexpr SkColor ResolveColor(ColorName color_name,
+                               bool is_dark_mode,
+                               bool use_debug_colors) {
+  switch (color_name) {
+    case ColorName::kGoogleGrey900:
+      return SkColorSetRGB(0x20, 0x21, 0x24);
+    case ColorName::kTextColorPrimary:
+      if (use_debug_colors)
+        return ResolveColor(ColorName::kToggleColor, is_dark_mode, use_debug_colors);
+      if (is_dark_mode)
+        return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+      return ResolveColor(ColorName::kGoogleGrey900, is_dark_mode, use_debug_colors);
+    case ColorName::kToggleColor:
+      if (use_debug_colors)
+        return SkColorSetRGB(0xFF, 0xFF, 0xFF);
+      if (is_dark_mode)
+        return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode, use_debug_colors), GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode));
+      return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode, use_debug_colors), 0x19);
+  }
+}
+
+constexpr char kDebugOverrideCssString[] = "html:not(body) {\n"
+    "  --cros-text-color-primary-rgb: var(--cros-toggle-color-rgb);\n"
+    "  --cros-text-color-primary: var(--cros-toggle-color);\n"
+    "  --cros-toggle-color-rgb: 255, 255, 255;\n"
+    "  --cros-toggle-color: rgb(var(--cros-toggle-color-rgb));\n"
+    "}\n";
+
+}  // namespace colors_test_expected
+#endif  // TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_

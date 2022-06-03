@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<div>
-Move the mouse over the input element and scroll using the mouse
-wheel. If this does not crash, the test passed.
-</div>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 
 <style>
 input::-webkit-textfield-decoration-container {
@@ -10,16 +9,13 @@ input::-webkit-textfield-decoration-container {
 }
 </style>
 <input type="search">
-<script>
-if (window.testRunner)
-    testRunner.dumpAsText();
 
-if (window.eventSender) {
-    var input = document.querySelector('input');
-    var x = input.offsetLeft + input.offsetWidth / 2;
-    var y = input.offsetTop + input.offsetHeight / 2;
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseScrollBy(0, 10);
-    document.write('PASS');
-}
+<script>
+
+promise_test(async () => {
+    var input = document.createElement('input');
+    var center = elementCenter(input);
+    await wheelTick(0, -10, center);
+
+}, "No crash when move the mouse over the input element and do a mouse wheel scroll.");
 </script>

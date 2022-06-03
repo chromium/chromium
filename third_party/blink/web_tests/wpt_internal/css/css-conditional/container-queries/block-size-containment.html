@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<style>
+  #ancestry { display: flex; }
+  #keg { contain: block-size layout style; display: flex; width: fit-content; }
+  @container (max-height: 200px) {
+    #target { width: 400px; }
+  }
+  @container (min-height: 400px) {
+    #target { width: 20px; }
+  }
+</style>
+<div id="ancestry">
+  <div id="keg">
+    <div id="target">
+      <div style="width:50px;"></div>
+    </div>
+  </div>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+      ancestry.style.height = "100px";
+      assert_equals(keg.offsetWidth, 400);
+
+      ancestry.style.height = "300px";
+      assert_equals(keg.offsetWidth, 50);
+
+      ancestry.style.height = "500px";
+      assert_equals(keg.offsetWidth, 20);
+  }, "block-size containment only");
+</script>

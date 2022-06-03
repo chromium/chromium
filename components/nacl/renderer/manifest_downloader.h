@@ -28,7 +28,7 @@ namespace nacl {
 // caller through a callback.
 class ManifestDownloader : public blink::WebAssociatedURLLoaderClient {
  public:
-  typedef base::Callback<void(PP_NaClError, const std::string&)> Callback;
+  typedef base::OnceCallback<void(PP_NaClError, const std::string&)> Callback;
 
   // This is a pretty arbitrary limit on the byte size of the NaCl manifest
   // file.

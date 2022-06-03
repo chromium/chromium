@@ -20,7 +20,8 @@ class SizeListPropertyFunctions {
   STATIC_ONLY(SizeListPropertyFunctions);
 
  public:
-  static SizeList GetInitialSizeList(const CSSProperty&);
+  static SizeList GetInitialSizeList(const CSSProperty&,
+                                     const ComputedStyle& initial_style);
   static SizeList GetSizeList(const CSSProperty&, const ComputedStyle&);
   static void SetSizeList(const CSSProperty&, ComputedStyle&, const SizeList&);
 };

@@ -34,9 +34,18 @@ class AbstractLocalServerCommand(Command):
 
     def __init__(self):
         options = [
-            make_option('--httpd-port', action='store', type='int', default=8127, help='Port to use for the HTTP server'),
-            make_option('--no-show-results', action='store_false', default=True, dest='show_results',
-                        help="Don't launch a browser with the rebaseline server"),
+            make_option(
+                '--httpd-port',
+                action='store',
+                type='int',
+                default=8127,
+                help='Port to use for the HTTP server'),
+            make_option(
+                '--no-show-results',
+                action='store_false',
+                default=True,
+                dest='show_results',
+                help="Don't launch a browser with the rebaseline server"),
         ]
         super(AbstractLocalServerCommand, self).__init__(options=options)
 
@@ -46,13 +55,15 @@ class AbstractLocalServerCommand(Command):
     def execute(self, options, args, tool):
         config = self._prepare_config(options, args, tool)
 
-        server_url = 'http://localhost:%d%s' % (options.httpd_port, self.launch_path)
+        server_url = 'http://localhost:%d%s' % (options.httpd_port,
+                                                self.launch_path)
         print 'Starting server at %s' % server_url
         print "Use the 'Exit' link in the UI, %squitquitquit or Ctrl-C to stop" % server_url
 
         if options.show_results:
             # FIXME: This seems racy.
-            threading.Timer(0.1, lambda: tool.user.open_url(server_url)).start()
+            threading.Timer(0.1,
+                            lambda: tool.user.open_url(server_url)).start()
 
         httpd = self.server(httpd_port=options.httpd_port, config=config)  # pylint: disable=not-callable
         httpd.serve_forever()

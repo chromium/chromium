@@ -10,7 +10,8 @@
 
 namespace blink {
 
-CSSFontFamilyValue* CSSFontFamilyValue::Create(const String& family_name) {
+CSSFontFamilyValue* CSSFontFamilyValue::Create(
+    const AtomicString& family_name) {
   if (family_name.IsNull())
     return MakeGarbageCollected<CSSFontFamilyValue>(family_name);
   CSSValuePool::FontFamilyValueCache::AddResult entry =
@@ -22,14 +23,14 @@ CSSFontFamilyValue* CSSFontFamilyValue::Create(const String& family_name) {
   return entry.stored_value->value;
 }
 
-CSSFontFamilyValue::CSSFontFamilyValue(const String& str)
+CSSFontFamilyValue::CSSFontFamilyValue(const AtomicString& str)
     : CSSValue(kFontFamilyClass), string_(str) {}
 
 String CSSFontFamilyValue::CustomCSSText() const {
   return SerializeFontFamily(string_);
 }
 
-void CSSFontFamilyValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSFontFamilyValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
 }
 

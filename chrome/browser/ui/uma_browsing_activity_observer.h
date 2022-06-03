@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_UMA_BROWSING_ACTIVITY_OBSERVER_H_
 #define CHROME_BROWSER_UI_UMA_BROWSING_ACTIVITY_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_stats_recorder.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -17,6 +16,10 @@ namespace chrome {
 // creates histograms of some global object counts.
 class UMABrowsingActivityObserver : public content::NotificationObserver {
  public:
+  UMABrowsingActivityObserver(const UMABrowsingActivityObserver&) = delete;
+  UMABrowsingActivityObserver& operator=(const UMABrowsingActivityObserver&) =
+      delete;
+
   static void Init();
 
  private:
@@ -41,10 +44,12 @@ class UMABrowsingActivityObserver : public content::NotificationObserver {
   // tabs here.
   void LogBrowserTabCount() const;
 
+  // Maps |total_tab_count| to the corresponding histogram bucket with the
+  // proper name suffix.
+  std::string AppendTabBucketCountToHistogramName(int total_tab_count) const;
+
   content::NotificationRegistrar registrar_;
   TabStripModelStatsRecorder tab_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UMABrowsingActivityObserver);
 };
 
 }  // namespace chrome

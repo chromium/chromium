@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
 
@@ -29,11 +29,11 @@ void GetServiceWorkerErrorTypeForRegistration(
       NOTREACHED() << "Calling this when status == OK is not allowed";
       return;
 
-    case blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed:
     case blink::ServiceWorkerStatusCode::kErrorInstallWorkerFailed:
     case blink::ServiceWorkerStatusCode::kErrorProcessNotFound:
     case blink::ServiceWorkerStatusCode::kErrorRedundant:
     case blink::ServiceWorkerStatusCode::kErrorDisallowed:
+    case blink::ServiceWorkerStatusCode::kErrorDiskCache:
       *out_error = blink::mojom::ServiceWorkerErrorType::kInstall;
       return;
 
@@ -41,16 +41,23 @@ void GetServiceWorkerErrorTypeForRegistration(
       *out_error = blink::mojom::ServiceWorkerErrorType::kNotFound;
       return;
 
+      // kErrorStartWorkerFailed, kErrorNetwork, and kErrorSecurity are the
+      // failures during starting a worker. kErrorStartWorkerFailed and
+      // kErrorNetwork should result in TypeError per spec.
+    case blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed:
+      *out_error = blink::mojom::ServiceWorkerErrorType::kType;
+      return;
+
     case blink::ServiceWorkerStatusCode::kErrorNetwork:
       *out_error = blink::mojom::ServiceWorkerErrorType::kNetwork;
       return;
 
-    case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
-      *out_error = blink::mojom::ServiceWorkerErrorType::kScriptEvaluateFailed;
-      return;
-
     case blink::ServiceWorkerStatusCode::kErrorSecurity:
       *out_error = blink::mojom::ServiceWorkerErrorType::kSecurity;
+      return;
+
+    case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
+      *out_error = blink::mojom::ServiceWorkerErrorType::kScriptEvaluateFailed;
       return;
 
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
@@ -67,8 +74,8 @@ void GetServiceWorkerErrorTypeForRegistration(
     case blink::ServiceWorkerStatusCode::kErrorExists:
     case blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected:
     case blink::ServiceWorkerStatusCode::kErrorState:
-    case blink::ServiceWorkerStatusCode::kErrorDiskCache:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
       // Unexpected, or should have bailed out before calling this, or we don't
       // have a corresponding blink error code yet.
       break;  // Fall through to NOTREACHED().

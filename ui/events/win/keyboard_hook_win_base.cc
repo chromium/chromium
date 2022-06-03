@@ -4,10 +4,12 @@
 
 #include "ui/events/win/keyboard_hook_win_base.h"
 
+#include "base/logging.h"
+
 namespace ui {
 
 KeyboardHookWinBase::KeyboardHookWinBase(
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     KeyEventCallback callback,
     bool enable_hook_registration)
     : KeyboardHookBase(std::move(dom_codes), std::move(callback)),

@@ -11,10 +11,8 @@
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 // Donates a testing implementation of [NSWindow toggleFullScreen:].
@@ -42,6 +40,9 @@ class ScopedFakeNSWindowFullscreen::Impl {
         set_style_mask_swizzler_([NSWindow class],
                                  [ToggleFullscreenDonorForWindow class],
                                  @selector(setStyleMask:)) {}
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
 
   ~Impl() {
     // If there's a pending transition, it means there's a task in the queue to
@@ -106,7 +107,7 @@ class ScopedFakeNSWindowFullscreen::Impl {
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowWillStartLiveResizeNotification
                       object:window];
-    DCHECK(base::MessageLoopCurrentForUI::IsSet());
+    DCHECK(base::CurrentUIThread::IsSet());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&Impl::FinishEnterFullscreen, base::Unretained(this),
@@ -146,7 +147,7 @@ class ScopedFakeNSWindowFullscreen::Impl {
         postNotificationName:NSWindowWillExitFullScreenNotification
                       object:window_];
 
-    DCHECK(base::MessageLoopCurrentForUI::IsSet());
+    DCHECK(base::CurrentUIThread::IsSet());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&Impl::FinishExitFullscreen, base::Unretained(this)));
@@ -187,8 +188,6 @@ class ScopedFakeNSWindowFullscreen::Impl {
   // NSFullScreenWindowMask in the swizzled styleMask so that client code can
   // read it.
   bool style_as_fullscreen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {

@@ -23,14 +23,18 @@ class CastSysInfo;
 class MinidumpUploader : public SynchronizedMinidumpManager {
  public:
   using PrefServiceGeneratorCallback =
-      base::Callback<std::unique_ptr<PrefService>()>;
+      base::RepeatingCallback<std::unique_ptr<PrefService>()>;
 
   // If |server_url| is empty, a default server url will be chosen.
   MinidumpUploader(CastSysInfo* sys_info, const std::string& server_url);
   MinidumpUploader(CastSysInfo* sys_info,
                    const std::string& server_url,
                    CastCrashdumpUploader* const uploader,
-                   const PrefServiceGeneratorCallback callback);
+                   PrefServiceGeneratorCallback callback);
+
+  MinidumpUploader(const MinidumpUploader&) = delete;
+  MinidumpUploader& operator=(const MinidumpUploader&) = delete;
+
   ~MinidumpUploader() override;
 
   // Attempts to upload all minidumps in the minidumps directory. Acquires a
@@ -56,11 +60,6 @@ class MinidumpUploader : public SynchronizedMinidumpManager {
 
   const std::string upload_location_;
 
-  // Whether or not we were ratelimited for the last upload.
-  // Used to detect when we first become ratelimited. Must be initialized to
-  // true to prevent reboot loops when ratelimited.
-  bool last_upload_ratelimited_;
-
   // Whether or not a reboot should be scheduled.
   bool reboot_scheduled_;
 
@@ -69,9 +68,7 @@ class MinidumpUploader : public SynchronizedMinidumpManager {
 
   // Used for injecting mocks/inducing different behavior in unittests.
   CastCrashdumpUploader* const uploader_;
-  const PrefServiceGeneratorCallback pref_service_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUploader);
+  PrefServiceGeneratorCallback pref_service_generator_;
 };
 
 }  // namespace chromecast

@@ -4,46 +4,61 @@
 
 (async function() {
   TestRunner.addResult(`Editing inline styles should play nice with inline scripts.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   await TestRunner.navigatePromise('./resources/inline-style.html');
-  var uiSourceCode = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.projectTypes.Network);
+  const uiSourceCode = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.projectTypes.Network);
 
   await uiSourceCode.requestContent(); // prefetch content to fix flakiness
-  var styleSheets = TestRunner.cssModel.styleSheetIdsForURL(uiSourceCode.url());
-  var scripts = TestRunner.debuggerModel.scriptsForSourceURL(uiSourceCode.url());
-  var locationPool = new Bindings.LiveLocationPool();
-  var i = 0;
-  for (var script of scripts) {
-    var rawLocation = TestRunner.debuggerModel.createRawLocation(script, script.lineOffset, script.columnOffset);
-    Bindings.debuggerWorkspaceBinding.createLiveLocation(
+  const headers = TestRunner.cssModel.headersForSourceURL(uiSourceCode.url());
+  // Sort headers in the order they appear in the file to avoid flakiness.
+  headers.sort((a, b) => a.startLine - b.startLine);
+  const styleSheets = headers.map(header => header.id);
+  const scripts = TestRunner.debuggerModel.scriptsForSourceURL(uiSourceCode.url());
+  const locationPool = new Bindings.LiveLocationPool();
+  let i = 0;
+  const locationUpdates = new Map();
+  for (const script of scripts) {
+    const rawLocation = TestRunner.debuggerModel.createRawLocation(script, script.lineOffset, script.columnOffset);
+    await Bindings.debuggerWorkspaceBinding.createLiveLocation(
       rawLocation, updateDelegate.bind(null, 'script' + i), locationPool);
     i++;
   }
 
   i = 0;
-  for (var styleSheetId of styleSheets) {
-    var header = TestRunner.cssModel.styleSheetHeaderForId(styleSheetId);
-    var rawLocation = new SDK.CSSLocation(header, header.startLine, header.startColumn);
-    Bindings.cssWorkspaceBinding.createLiveLocation(
+  for (const styleSheetId of styleSheets) {
+    const header = TestRunner.cssModel.styleSheetHeaderForId(styleSheetId);
+    const rawLocation = new SDK.CSSLocation(header, header.startLine, header.startColumn);
+    await Bindings.cssWorkspaceBinding.createLiveLocation(
       rawLocation, updateDelegate.bind(null, 'style' + i), locationPool);
     i++;
   }
 
+  await TestRunner.waitForPendingLiveLocationUpdates();
+  printLocationUpdates();
+
   i = 0;
-  for (var styleSheetId of styleSheets) {
+  for (const styleSheetId of styleSheets) {
     TestRunner.addResult('Adding rule' + i)
     await TestRunner.cssModel.addRule(styleSheetId, `.new-rule {
   --new: true;
 }`, TextUtils.TextRange.createFromLocation(0, 0));
-    await Promise.resolve();
+    await TestRunner.waitForPendingLiveLocationUpdates();
+    printLocationUpdates();
     i++;
   }
 
+  async function updateDelegate(name, location) {
+    const uiLocation = await location.uiLocation();
+    locationUpdates.set(name, `LiveLocation '${name}' was updated ${uiLocation.lineNumber}:${uiLocation.columnNumber}`);
+  }
 
-  function updateDelegate(name, location) {
-    var uiLocation = location.uiLocation();
-    TestRunner.addResult(`LiveLocation '${name}' was updated ${uiLocation.lineNumber}:${uiLocation.columnNumber}`);
+  function printLocationUpdates() {
+    const keys = [...locationUpdates.keys()].sort();
+    for (const key of keys) {
+      TestRunner.addResult(locationUpdates.get(key));
+    }
+    locationUpdates.clear();
   }
 
   TestRunner.completeTest();

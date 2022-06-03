@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/6040">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:4000px">spacer</div>
+
+<body>
+<script>
+  async function runTest(originType, elementType, frameRelation) {
+    await promise_test(async t => {
+      assert_true(!!window.testRunner, 'testRunner.findString() is needed to test find-in-page.');
+
+      assert_equals(window.scrollY, 0, 'Test must start scrolled to the top.');
+      t.add_cleanup(() => window.scrollTo(0, 0));
+
+      const iframe = document.createElement('iframe');
+      t.add_cleanup(() => iframe.remove());
+
+      let path = null;
+      if (frameRelation === 'within') {
+        if (elementType === 'details') {
+          path = '/html/resources/details.html';
+        } else if (elementType === 'hidden=until-found') {
+          path = '/html/resources/hiddenuntilfound.html';
+        } else {
+          assert_unreached('unrecognized elementType: ' + elementType);
+        }
+      } else if (frameRelation === 'around') {
+        path = '/html/resources/target.html';
+      } else {
+        assert_unreached('unrecognized frameRelation: ' + frameRelation);
+      }
+
+      assert_true(location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+        'Must be on localhost or 127.0.0.1 for cross origin testing. Got: ' + location.hostname);
+      const thisOrigin = location.hostname;
+      const crossOrigin = thisOrigin === 'localhost' ? '127.0.0.1' : 'localhost';
+      let host = null;
+      if (originType === 'same-origin') {
+        host = thisOrigin;
+      } else if (originType === 'cross-origin') {
+        host = crossOrigin;
+      } else {
+        assert_unreached('unrecognized originType: ' + originType);
+      }
+
+      iframe.src = `http://${host}:${location.port}${path}`;
+      const loadPromise = new Promise(resolve => iframe.onload = resolve);
+      if (frameRelation === 'within') {
+        document.body.appendChild(iframe);
+      } else if (frameRelation === 'around') {
+        let element = null;
+        if (elementType === 'details') {
+          element = document.createElement('details');
+        } else if (elementType === 'hidden=until-found') {
+          element = document.createElement('div');
+          element.setAttribute('hidden', 'until-found');
+        } else {
+          assert_unreached('unrecognized elementType: ' + elementType);
+        }
+        assert_equals(document.getElementById('expand'), null,
+          '#expand should have been removed before the test.');
+        t.add_cleanup(() => element.remove());
+        element.id = 'expand';
+        document.body.appendChild(element);
+        element.appendChild(iframe);
+      } else {
+        assert_unreached('unrecognized frameRelation: ' + frameRelation);
+      }
+      await loadPromise;
+
+      // Search in all frames like the browser process would initiate.
+      iframe.contentWindow.postMessage('find', '*');
+      testRunner.findString('target', ['Async']);
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+
+      if (frameRelation === 'within') {
+        const isExpandedPromise = new Promise(resolve => {
+          window.addEventListener('message', event => {
+            if (event.data === 'expanded: true') {
+              resolve(true);
+            } else if (event.data === 'expanded: false') {
+              resolve(false);
+            }
+          });
+        });
+        iframe.contentWindow.postMessage('isexpanded', '*');
+        assert_true(await isExpandedPromise, `Content should be auto-expanded.`);
+
+      } else if (frameRelation === 'around') {
+        const expand = document.getElementById('expand');
+        if (elementType === 'details') {
+          assert_true(expand.hasAttribute('open'), 'Details element should be opened.');
+        } else if (elementType = 'hidden=until-found') {
+          assert_false(expand.hasAttribute('hidden'), 'hidden=until-found element should be revealed.');
+        } else {
+          assert_unreached('unrecognized elementType: ' + elementType);
+        }
+
+      } else {
+        assert_unreached('unrecognized frameRelation: ' + frameRelation);
+      }
+
+      assert_true(window.scrollY > 0, 'Page should be scrolled down due to find-in-page.');
+
+    }, `Auto-expand a ${elementType} ${frameRelation} a ${originType} iframe.`);
+  }
+
+  (async () => {
+    for (originType of ['cross-origin', 'same-origin']) {
+      for (elementType of ['details', 'hidden=until-found']) {
+        for (frameRelation of ['within', 'around']) {
+          await runTest(originType, elementType, frameRelation);
+        }
+      }
+    }
+  })();
+</script>

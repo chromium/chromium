@@ -26,11 +26,24 @@
   transition-duration: 0ms;
 }
 
-.app-contents > span {
+.app-title-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.app-title-container .title {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.app.deprecated .app-title-container::after {
+  content: url(images/error_yellow900.svg);
+  height: 18px;
+  padding-inline-start: 8px;
+  width: 18px;
 }
 
 .app-img-container {

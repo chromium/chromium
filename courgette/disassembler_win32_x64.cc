@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"

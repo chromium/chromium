@@ -47,6 +47,14 @@ class CORE_EXPORT PlainTextRange {
   explicit PlainTextRange(wtf_size_t location);
   PlainTextRange(wtf_size_t start, wtf_size_t end);
 
+  bool operator==(const PlainTextRange& other) const {
+    return start_ == other.start_ && end_ == other.end_;
+  }
+
+  bool operator!=(const PlainTextRange& other) const {
+    return !operator==(other);
+  }
+
   wtf_size_t End() const {
     DCHECK(IsNotNull());
     return end_;
@@ -80,6 +88,8 @@ class CORE_EXPORT PlainTextRange {
   const wtf_size_t start_;
   const wtf_size_t end_;
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const PlainTextRange&);
 
 }  // namespace blink
 

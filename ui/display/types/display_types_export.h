@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_DISPLAY_DISPLAY_TYPES_EXPORT_H_
-#define UI_DISPLAY_DISPLAY_TYPES_EXPORT_H_
+#ifndef UI_DISPLAY_TYPES_DISPLAY_TYPES_EXPORT_H_
+#define UI_DISPLAY_TYPES_DISPLAY_TYPES_EXPORT_H_
 
 // Defines DISPLAY_TYPES_EXPORT so that functionality implemented by the
 // DISPLAY_TYPES module can be exported to consumers.
@@ -34,4 +34,4 @@
 
 #endif
 
-#endif  // UI_DISPLAY_DISPLAY_TYPES_EXPORT_H_
+#endif  // UI_DISPLAY_TYPES_DISPLAY_TYPES_EXPORT_H_

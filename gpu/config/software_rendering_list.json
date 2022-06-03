@@ -13,19 +13,17 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "gpu_rasterization"
       ]
     },
     {
       "id": 3,
       "description": "GL driver is software rendered. GPU acceleration is disabled",
-      "cr_bugs": [59302, 315217],
+      "cr_bugs": [59302, 315217, 1155974],
       "os": {
         "type": "linux"
       },
-      "gl_renderer": "(?i).*software.*",
+      "gl_renderer": "(?i).*(software|llvmpipe|softpipe).*",
       "features": [
         "all"
       ]
@@ -38,15 +36,13 @@
       "device_id": ["0x27AE", "0x27A2"],
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
       ]
     },
     {
       "id": 5,
       "description": "ATI/AMD cards with older drivers in Linux are crash-prone",
-      "cr_bugs": [71381, 76428, 73910, 101225, 136240, 357314],
+      "cr_bugs": [71381, 76428, 73910, 101225, 136240, 357314, 719213],
       "os": {
         "type": "linux"
       },
@@ -69,6 +65,9 @@
         },
         {
           "driver_vendor": ".*ANGLE.*"
+        },
+        {
+          "driver_vendor": ".*Brahma.*"
         }
       ],
       "features": [
@@ -97,8 +96,6 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "gpu_rasterization"
       ]
     },
@@ -333,19 +330,8 @@
       ]
     },
     {
-      "id": 48,
-      "description": "Accelerated video decode is unavailable on Linux",
-      "cr_bugs": [137247],
-      "os": {
-        "type": "linux"
-      },
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
       "id": 50,
-      "description": "Disable VMware software renderer on older Mesa",
+      "description": "Disable VMware virtualized renderer on older Mesa",
       "cr_bugs": [145531, 332596, 571899, 629434],
       "os": {
         "type": "linux"
@@ -366,16 +352,6 @@
       ]
     },
     {
-      "id": 53,
-      "description": "The Intel GMA500 is too slow for Stage3D",
-      "cr_bugs": [152096],
-      "vendor_id": "0x8086",
-      "device_id": ["0x8108", "0x8109"],
-      "features": [
-        "flash_stage3d"
-      ]
-    },
-    {
       "id": 56,
       "description": "NVIDIA linux drivers are unstable when using multiple Open GL contexts and with low memory",
       "cr_bugs": [145600],
@@ -389,9 +365,7 @@
         "value": "331.38"
       },
       "features": [
-        "accelerated_video_decode",
-        "flash3d",
-        "flash_stage3d"
+        "accelerated_video_decode"
       ]
     },
     {
@@ -444,57 +418,6 @@
       },
       "features": [
         "all"
-      ]
-    },
-    {
-      "id": 69,
-      "description": "NVIDIA driver 196.21 is buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "driver_version": {
-        "comment": "INF_version: 8.17.11.9621; date: 01/11/2010",
-        "op": "=",
-        "value": "8.17.11.9621"
-      },
-      "features": [
-        "flash_stage3d_baseline"
-      ]
-    },
-    {
-      "id": 70,
-      "description": "NVIDIA driver 182.67 is buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "driver_version": {
-        "comment": "INF_version: 7.15.11.8267; date: 05/12/2009",
-        "op": "=",
-        "value": "7.15.11.8267"
-      },
-      "features": [
-        "flash_stage3d_baseline"
-      ]
-    },
-    {
-      "id": 71,
-      "description": "All Intel drivers before 8.15.10.2021 are buggy with Stage3D baseline mode",
-      "cr_bugs": [172771],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "comment": "INF_version: 8.15.10.2021; date: 12/14/2009",
-        "op": "<",
-        "value": "8.15.10.2021"
-      },
-      "features": [
-        "flash_stage3d_baseline"
       ]
     },
     {
@@ -610,48 +533,14 @@
       ]
     },
     {
-      "id": 88,
-      "description": "Accelerated video decode on AMD driver 13.152.1.8000 is incompatible with the GPU sandbox",
-      "cr_bugs": [298968],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "comment": "INF_version: 13.152.1.8000; date: 10/08/2013",
-        "op": "=",
-        "value": "8.17.10.1230"
-      },
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
-      "id": 89,
-      "description": "Accelerated video decode interferes with GPU sandbox on certain AMD drivers",
-      "cr_bugs": [298968],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "comment": "INF_version: 8.810.4.5000, 8.970.100.1100; date: 4/7/2011, 04/29/2013",
-        "op": "between",
-        "value": "8.17.10.1060",
-        "value2": "8.17.10.1129"
-      },
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
       "id": 90,
       "description": "Accelerated video decode interferes with GPU sandbox on certain NVIDIA drivers",
-      "cr_bugs": [298968],
+      "cr_bugs": [298968, 1020137],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
         "comment": "INF_version: 8.17.12.5729, 8.17.12.8026; date: 05/22/2010, 08/03/2011",
         "op": "between",
@@ -742,7 +631,7 @@
     },
     {
       "id": 96,
-      "description": "Blacklist GPU raster/canvas on all except known good GPUs and newer Android releases",
+      "description": "Blocklist GPU raster/canvas on all except known good GPUs and newer Android releases",
       "cr_bugs": [362779,424970],
       "os": {
         "type": "android"
@@ -804,7 +693,7 @@
     },
     {
       "id": 100,
-      "description": "GPU rasterization and canvas is blacklisted on Nexus 10",
+      "description": "GPU rasterization and canvas is blocklisted on Nexus 10",
       "cr_bugs": [407144],
       "os": {
         "type": "android"
@@ -848,11 +737,11 @@
     {
       "id": 105,
       "description": "GPU raster broken on PowerVR SGX even on Lollipop",
-      "cr_bugs": [461456],
+      "cr_bugs": [461456, 1243361],
       "os": {
         "type": "android"
       },
-      "gl_renderer": "PowerVR SGX.*",
+      "gl_renderer": "PowerVR SGX \\d+",
       "features": [
         "accelerated_2d_canvas",
         "gpu_rasterization"
@@ -886,8 +775,8 @@
           "value": "3.19.1"
         }
       },
-      "gpu_series": [
-        "intel_haswell"
+      "intel_gpu_series": [
+        "haswell"
       ],
       "features": [
         "all"
@@ -904,26 +793,6 @@
       "features": [
         "gpu_rasterization",
         "accelerated_2d_canvas"
-      ]
-    },
-    {
-      "id": 109,
-      "description": "MediaCodec on Adreno 330 / 4.2.2 doesn't always send FORMAT_CHANGED",
-      "cr_bugs": [585963],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "=",
-          "value": "4.2.2"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 330",
-      "driver_version": {
-        "op": "=",
-        "value": "45.0"
-      },
-      "features": [
-        "accelerated_video_decode"
       ]
     },
     {
@@ -1046,40 +915,6 @@
       ]
     },
     {
-      "id": 117,
-      "description": "MediaCodec on Vivante hangs in MediaCodec often",
-      "cr_bugs": [626814],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<=",
-          "value": "4.4.4"
-        }
-      },
-      "gl_renderer": ".*Vivante.*",
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
-      "id": 118,
-      "description": "webgl/canvas crashy on imporperly parsed vivante driver",
-      "cr_bugs": [628059],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<=",
-          "value": "4.4.4"
-        }
-      },
-      "gl_vendor": "Vivante.*",
-      "gl_renderer": ".*PXA.*",
-      "features": [
-        "accelerated_webgl",
-        "accelerated_2d_canvas"
-      ]
-    },
-    {
       "id": 119,
       "description": "There are display issues with GPU Raster on OSX 10.9",
       "cr_bugs": [611310],
@@ -1097,7 +932,7 @@
     {
       "id": 122,
       "description": "GPU rasterization should only be enabled on NVIDIA and Intel and AMD RX-R2 GPUs with DX11+ or any GPU using ANGLE's GL backend.",
-      "cr_bugs": [643850],
+      "cr_bugs": [1047002],
       "os": {
         "type": "win"
       },
@@ -1242,22 +1077,6 @@
       ]
     },
     {
-      "id": 133,
-      "description": "MediaCodec on VideoCore IV HW crashes on JB",
-      "cr_bugs": [654905],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "4.4"
-        }
-      },
-      "gl_renderer": ".*VideoCore IV.*",
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
       "id": 134,
       "description": "Mesa driver 10.1.3 renders incorrectly and crashes on multiple vendors",
       "cr_bugs": [629434],
@@ -1286,8 +1105,8 @@
     },
     {
       "id": 136,
-      "description": "GPU rasterization is blacklisted on NVidia Fermi architecture for now.",
-      "cr_bugs": [643850],
+      "description": "GPU rasterization is blocklisted on NVidia Fermi architecture for now.",
+      "cr_bugs": [1047002],
       "os": {
         "type": "win"
       },
@@ -1317,7 +1136,7 @@
     },
     {
       "id": 137,
-      "description": "GPU rasterization on CrOS is blacklisted on anything but Intel, Mali T8/G, Imagination, Freedreno, or AMD GPU/drivers for now.",
+      "description": "GPU rasterization on CrOS is blocklisted on anything but Intel, Mali T8/G, Imagination, Freedreno, or AMD GPU/drivers for now.",
       "cr_bugs": [684094, 996858, 1020500],
       "os": {
         "type": "chromeos"
@@ -1339,7 +1158,7 @@
     {
       "id": 139,
       "description": "GPU Rasterization is disabled on pre-GCN AMD cards",
-      "cr_bugs": [643850],
+      "cr_bugs": [1047002],
       "os": {
         "type": "win"
       },
@@ -1359,10 +1178,17 @@
     },
     {
       "id": 140,
-      "comment": "Corresponds to GPU driver bugs #19, #214",
-      "description": "MSAA and depth texture buggy on Adreno 3xx, also disable WebGL2",
-      "cr_bugs": [449116, 698197],
+      "comment": "Corresponds to GPU driver bugs #19, #214, #359",
+      "description": "MSAA and depth texture buggy on Adreno 3xx prior to Android 9, also disable WebGL2",
+      "cr_bugs": [449116, 698197, 1042214],
       "gl_renderer": "Adreno \\(TM\\) 3.*",
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<",
+          "value": "9.0"
+        }
+      },
       "features": [
         "accelerated_webgl2"
       ]
@@ -1435,7 +1261,6 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
-        "comment": "INF_version: 8.16.0.0",
         "op": "<",
         "value": "8.16.0.0"
       },
@@ -1464,30 +1289,17 @@
       ]
     },
     {
-      "id": 147,
-      "description": "GPU raster broken on Mali-T760 on KitKat",
-      "cr_bugs": [737048],
+      "id": 148,
+      "description": "VideoCore V has corrupt rendering with GPU Rasterization on Android versions below N.",
+      "cr_bugs": [710273],
       "os": {
         "type": "android",
         "version": {
-          "op": "<=",
-          "value": "4.4.4"
+          "op": "<",
+          "value": "7.0"
         }
       },
-      "gl_renderer": "Mali-T760.*",
-      "features": [
-        "accelerated_2d_canvas",
-        "gpu_rasterization"
-      ]
-    },
-    {
-      "id": 148,
-      "description": "VideoCore V has corrupt rendering with GPU Rasterization",
-      "cr_bugs": [710273],
-      "os": {
-        "type": "android"
-      },
-      "gl_renderer": ".*VideoCore V.*",
+      "gl_renderer": ".*VideoCore V HW.*",
       "features": [
         "gpu_rasterization"
       ]
@@ -1557,7 +1369,7 @@
     },
     {
       "id": 152,
-      "description": "Test entry where all features except WebGL blacklisted",
+      "description": "Test entry where all features except WebGL blocklisted",
       "test_group": 1,
       "features": [
         "all",
@@ -1569,71 +1381,10 @@
     },
     {
       "id": 153,
-      "description": "Test entry where WebGL is blacklisted",
+      "description": "Test entry where WebGL is blocklisted",
       "test_group": 2,
       "features": [
         "accelerated_webgl"
-      ]
-    },
-    {
-      "id": 154,
-      "description": "Protected video decoding with swap chain is for Windows and Intel only",
-      "features": [
-        "protected_video_decode"
-      ],
-      "exceptions": [
-        {
-          "os": {
-            "type": "win",
-            "version": {
-              "op": ">=",
-              "value": "10.0"
-            }
-          },
-          "vendor_id": "0x8086"
-        }
-      ]
-    },
-    {
-      "id": 155,
-      "description": "Older Intel GPUs cannot support protected video decoding in swap chains",
-      "features": [
-        "protected_video_decode"
-      ],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": ">=",
-          "value": "10.0"
-         }
-      },
-      "vendor_id": "0x8086",
-      "gpu_series": [
-        "intel_sandybridge",
-        "intel_baytrail",
-        "intel_ivybridge",
-        "intel_haswell",
-        "intel_cherrytrail",
-        "intel_broadwell",
-        "intel_apollolake",
-        "intel_skylake",
-        "intel_geminilake"
-      ]
-    },
-    {
-      "id": 156,
-      "cr_bugs": [870964],
-      "description": "Frequent crashes on Adreno (TM) on L and below",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "6.0"
-        }
-      },
-      "gl_renderer": "Adreno.*",
-      "features": [
-        "oop_rasterization"
       ]
     },
     {
@@ -1726,8 +1477,6 @@
       },
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
       ]
     },
@@ -1745,9 +1494,102 @@
       },
       "features": [
         "accelerated_webgl",
-        "flash3d",
-        "flash_stage3d",
         "accelerated_2d_canvas"
+      ]
+    },
+    {
+      "id": 165,
+      "description": "Accelerated video decode is broken with some older Intel drivers.",
+      "cr_bugs": [1070439],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "=",
+        "value": "10.18.10.3958"
+      },
+      "features": [
+        "accelerated_video_decode"
+      ]
+    },
+    {
+      "id": 166,
+      "description": "8.17.10.* AMD drivers are buggy",
+      "driver_update_url": "https://www.amd.com/en/support/apu/amd-series-processors/amd-a8-series-apu-for-laptops/a8-5550m-radeon-hd-8550g",
+      "cr_bugs": [298968, 1069262],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "=",
+        "value": "8.17.10"
+      },
+      "exceptions": [
+        {
+          "driver_version": {
+            "op": ">=",
+            "value": "8.17.10.1433"
+          }
+        }
+      ],
+      "features": [
+        "all"
+      ]
+    },
+    {
+      "id": 167,
+      "description": "8.17.10.* AMD drivers trigger hangs in video stack",
+      "cr_bugs": [1160623],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "=",
+        "value": "8.17.10"
+      },
+      "features": [
+        "accelerated_video_decode"
+      ]
+    },
+    {
+      "id": 168,
+      "description": "PowerVR Driver crashes with ANGLE",
+      "cr_bugs": [1203652,1221321],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "5.1.1"
+        }
+      },
+      "gl_renderer": "ANGLE \\(Imagination Technologies, PowerVR .*",
+      "features": [
+        "all"
+      ]
+    },
+    {
+      "id": 169,
+      "description": "Many crashes with the old Intel Haswell driver on Windows 8.1.",
+      "driver_update_url": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "cr_bugs": [620885],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "=",
+          "value": "8.1"
+        }
+      },
+      "vendor_id": "0x0806",
+      "device_id": ["0x0a16"],
+      "driver_version": {
+        "op": "=",
+        "value": "10.18.10.3496"
+      },
+      "features": [
+        "all"
       ]
     }
   ]

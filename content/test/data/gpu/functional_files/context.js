@@ -28,7 +28,7 @@ startWebGLContext = function(opt_attrs) {
 
   // Only continue if WebGL is available and working.
   if (gl_context) {
-    gl_context.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl_context.clearColor(0.0, 1.0, 0.0, 1.0);
     gl_context.enable(gl_context.DEPTH_TEST);
     gl_context.depthFunc(gl_context.LEQUAL);
     gl_context.clearDepth(1);

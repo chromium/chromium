@@ -32,7 +32,7 @@ PASS whenDefined() called with invalid name bad-← should throw "SyntaxError"DO
 PASS whenDefined() called with invalid name bad-⯿ should throw "SyntaxError"DOMException
 PASS whenDefined() called with invalid name bad-⿰ should throw "SyntaxError"DOMException
 PASS whenDefined() called with invalid name bad-　 should throw "SyntaxError"DOMException
-PASS whenDefined() called with invalid name bad-��� should throw "SyntaxError"DOMException
+PASS whenDefined() called with invalid name bad-U+d800 should throw "SyntaxError"DOMException
 PASS whenDefined() called with invalid name bad- should throw "SyntaxError"DOMException
 PASS whenDefined() called with invalid name bad-﷐ should throw "SyntaxError"DOMException
 PASS whenDefined() called with invalid name bad-﷯ should throw "SyntaxError"DOMException

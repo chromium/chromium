@@ -16,7 +16,7 @@ Status
 
 Version
 
-   Version 2, 2017-05-05
+   Version 2, 2015-05-05
 
    Based on GLX_OML_sync_control Revision 6.0
 
@@ -70,7 +70,6 @@ New Procedures and Functions
                                  int64_t* msc,
                                  int64_t* sbc)
 
-
 New Tokens
 
    None
@@ -115,8 +114,9 @@ Additions to the EGL 1.3 Specification
 
 Errors
 
-   eglGetSyncValuesCHROMIUM will return FALSE if there is no current
-   EGLContext.
+   The function eglGetSyncValuesCHROMIUM will return FALSE if there is no
+   current EGLContext.
+
 
 New State
 

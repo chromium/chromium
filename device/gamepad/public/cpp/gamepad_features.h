@@ -6,15 +6,17 @@
 #define DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPAD_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "device/gamepad/public/cpp/gamepad_features_export.h"
 
 namespace features {
 
-extern const base::Feature kEnableGamepadButtonAxisEvents;
-extern const base::Feature kGamepadPollingInterval;
-extern const char kGamepadPollingIntervalParamKey[];
+GAMEPAD_FEATURES_EXPORT extern const base::Feature
+    kEnableGamepadButtonAxisEvents;
+GAMEPAD_FEATURES_EXPORT extern const base::Feature
+    kEnableWindowsGamingInputDataFetcher;
+GAMEPAD_FEATURES_EXPORT extern const base::Feature kRestrictGamepadAccess;
 
-bool AreGamepadButtonAxisEventsEnabled();
-size_t GetGamepadPollingInterval();
+GAMEPAD_FEATURES_EXPORT bool AreGamepadButtonAxisEventsEnabled();
 
 }  // namespace features
 

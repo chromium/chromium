@@ -6,22 +6,26 @@
 
 #include <algorithm>
 #include <array>
+#include <map>
 #include <utility>
+#include <vector>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/test_browser_context.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -43,7 +47,53 @@ constexpr std::array<const char*, 11> kBootEvents{
     "boot_progress_ams_ready",
     "boot_progress_enable_screen"};
 
+constexpr const char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
+
+constexpr char kAppTypeArcAppLauncher[] = "ArcAppLauncher";
+constexpr char kAppTypeArcOther[] = "ArcOther";
+constexpr char kAppTypeFirstParty[] = "FirstParty";
+constexpr char kAppTypeGmsCore[] = "GmsCore";
+constexpr char kAppTypePlayStore[] = "PlayStore";
+constexpr char kAppTypeSystemServer[] = "SystemServer";
+constexpr char kAppTypeSystem[] = "SystemApp";
+constexpr char kAppTypeOther[] = "Other";
+constexpr char kAppOverall[] = "Overall";
+
+constexpr std::array<const char*, 9> kAppTypes{
+    kAppTypeArcAppLauncher, kAppTypeArcOther,  kAppTypeFirstParty,
+    kAppTypeGmsCore,        kAppTypePlayStore, kAppTypeSystemServer,
+    kAppTypeSystem,         kAppTypeOther,     kAppOverall,
+};
+
+std::string CreateAnrKey(const std::string& app_type, mojom::AnrType type) {
+  std::stringstream output;
+  output << app_type << "/" << type;
+  return output.str();
+}
+
+mojom::AnrPtr GetAnr(mojom::AnrSource source, mojom::AnrType type) {
+  return mojom::Anr::New(type, source);
+}
+
+void VerifyAnr(const base::HistogramTester& tester,
+               const std::map<std::string, int>& expectation) {
+  std::map<std::string, int> current;
+  for (const char* app_type : kAppTypes) {
+    const std::vector<base::Bucket> buckets =
+        tester.GetAllSamples("Arc.Anr." + std::string(app_type));
+    for (const auto& bucket : buckets) {
+      current[CreateAnrKey(app_type, static_cast<mojom::AnrType>(bucket.min))] =
+          bucket.count;
+    }
+  }
+  EXPECT_EQ(expectation, current);
+}
+
 class ArcMetricsServiceTest : public testing::Test {
+ public:
+  ArcMetricsServiceTest(const ArcMetricsServiceTest&) = delete;
+  ArcMetricsServiceTest& operator=(const ArcMetricsServiceTest&) = delete;
+
  protected:
   ArcMetricsServiceTest() {
     prefs::RegisterLocalStatePrefs(local_state_.registry());
@@ -77,8 +127,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   void SetArcStartTimeInMs(uint64_t arc_start_time_in_ms) {
     const base::TimeTicks arc_start_time =
-        base::TimeDelta::FromMilliseconds(arc_start_time_in_ms) +
-        base::TimeTicks();
+        base::Milliseconds(arc_start_time_in_ms) + base::TimeTicks();
     chromeos::FakeSessionManagerClient::Get()->set_arc_start_time(
         arc_start_time);
   }
@@ -117,8 +166,6 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMetricsServiceTest);
 };
 
 // Tests that ReportBootProgress() actually records UMA stats.
@@ -287,6 +334,113 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
   tester.ExpectBucketCount(
       "Arc.UserInteraction",
       static_cast<int>(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION), 1);
+}
+
+TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
+  constexpr uint64_t kArcStartTimeMs = 10;
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+  events.emplace_back(
+      mojom::BootProgressEvent::New(kBootProgressArcUpgraded, kArcStartTimeMs));
+
+  absl::optional<base::TimeTicks> arc_start_time =
+      service()->GetArcStartTimeFromEvents(events);
+  EXPECT_TRUE(arc_start_time.has_value());
+  EXPECT_EQ(*arc_start_time, base::Milliseconds(10) + base::TimeTicks());
+
+  // Check that the upgrade event was removed from events.
+  EXPECT_TRUE(std::none_of(
+      events.begin(), events.end(), [](const mojom::BootProgressEventPtr& ev) {
+        return ev->event.compare(kBootProgressArcUpgraded) == 0;
+      }));
+}
+
+TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
+  constexpr uint64_t kArcStartTimeMs = 10;
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+
+  absl::optional<base::TimeTicks> arc_start_time =
+      service()->GetArcStartTimeFromEvents(events);
+  EXPECT_FALSE(arc_start_time.has_value());
+}
+
+TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
+  class Observer : public ArcMetricsService::UserInteractionObserver {
+   public:
+    void OnUserInteraction(UserInteractionType type) override {
+      this->type = type;
+    }
+    absl::optional<UserInteractionType> type;
+  } observer;
+
+  service()->AddUserInteractionObserver(&observer);
+
+  // This calls RecordArcUserInteraction() with APP_CONTENT_WINDOW_INTERACTION.
+  service()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
+      fake_arc_window(), nullptr);
+  ASSERT_TRUE(observer.type);
+  EXPECT_EQ(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION,
+            *observer.type);
+
+  service()->RemoveUserInteractionObserver(&observer);
+}
+
+TEST_F(ArcMetricsServiceTest, ArcAnr) {
+  base::HistogramTester tester;
+  std::map<std::string, int> expectation;
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::OTHER, mojom::AnrType::UNKNOWN));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::UNKNOWN)] = 1;
+  expectation[CreateAnrKey(kAppTypeOther, mojom::AnrType::UNKNOWN)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::SYSTEM_SERVER, mojom::AnrType::INPUT));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::INPUT)] = 1;
+  expectation[CreateAnrKey(kAppTypeSystemServer, mojom::AnrType::INPUT)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::SYSTEM_SERVER, mojom::AnrType::SERVICE));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::SERVICE)] = 1;
+  expectation[CreateAnrKey(kAppTypeSystemServer, mojom::AnrType::SERVICE)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::GMS_CORE, mojom::AnrType::BROADCAST));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::BROADCAST)] = 1;
+  expectation[CreateAnrKey(kAppTypeGmsCore, mojom::AnrType::BROADCAST)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::PLAY_STORE, mojom::AnrType::CONTENT_PROVIDER));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::CONTENT_PROVIDER)] = 1;
+  expectation[CreateAnrKey(kAppTypePlayStore,
+                           mojom::AnrType::CONTENT_PROVIDER)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::FIRST_PARTY, mojom::AnrType::APP_REQUESTED));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::APP_REQUESTED)] = 1;
+  expectation[CreateAnrKey(kAppTypeFirstParty, mojom::AnrType::APP_REQUESTED)] =
+      1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::ARC_OTHER, mojom::AnrType::INPUT));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::INPUT)] = 2;
+  expectation[CreateAnrKey(kAppTypeArcOther, mojom::AnrType::INPUT)] = 1;
+  VerifyAnr(tester, expectation);
+
+  service()->ReportAnr(
+      GetAnr(mojom::AnrSource::ARC_APP_LAUNCHER, mojom::AnrType::SERVICE));
+  expectation[CreateAnrKey(kAppOverall, mojom::AnrType::SERVICE)] = 2;
+  expectation[CreateAnrKey(kAppTypeArcAppLauncher, mojom::AnrType::SERVICE)] =
+      1;
+  VerifyAnr(tester, expectation);
 }
 
 }  // namespace

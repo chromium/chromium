@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_STRATEGY_UNDERLAY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_STRATEGY_UNDERLAY_H_
 
-#include "base/macros.h"
+#include <vector>
+
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -32,16 +33,43 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
   OverlayStrategyUnderlay(
       OverlayProcessorUsingStrategy* capability_checker,
       OpaqueMode opaque_mode = OpaqueMode::RequireOpaqueCandidates);
+
+  OverlayStrategyUnderlay(const OverlayStrategyUnderlay&) = delete;
+  OverlayStrategyUnderlay& operator=(const OverlayStrategyUnderlay&) = delete;
+
   ~OverlayStrategyUnderlay() override;
 
-  bool Attempt(const SkMatrix44& output_color_matrix,
+  bool Attempt(const skia::Matrix44& output_color_matrix,
                const OverlayProcessorInterface::FilterOperationsMap&
                    render_pass_backdrop_filters,
                DisplayResourceProvider* resource_provider,
-               RenderPassList* render_pass,
+               AggregatedRenderPassList* render_pass,
+               SurfaceDamageRectList* surface_damage_rect_list,
                const PrimaryPlane* primary_plane,
                OverlayCandidateList* candidate_list,
                std::vector<gfx::Rect>* content_bounds) override;
+
+  void ProposePrioritized(const skia::Matrix44& output_color_matrix,
+                          const OverlayProcessorInterface::FilterOperationsMap&
+                              render_pass_backdrop_filters,
+                          DisplayResourceProvider* resource_provider,
+                          AggregatedRenderPassList* render_pass_list,
+                          SurfaceDamageRectList* surface_damage_rect_list,
+                          const PrimaryPlane* primary_plane,
+                          OverlayProposedCandidateList* candidates,
+                          std::vector<gfx::Rect>* content_bounds) override;
+
+  bool AttemptPrioritized(
+      const skia::Matrix44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_pass_list,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const PrimaryPlane* primary_plane,
+      OverlayCandidateList* candidates,
+      std::vector<gfx::Rect>* content_bounds,
+      OverlayProposedCandidate* proposed_candidate) override;
 
   void AdjustOutputSurfaceOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane*
@@ -52,8 +80,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
  private:
   OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
   OpaqueMode opaque_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayStrategyUnderlay);
 };
 
 }  // namespace viz

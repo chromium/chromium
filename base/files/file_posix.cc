@@ -7,14 +7,18 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/os_compat_android.h"
@@ -37,7 +41,13 @@ bool IsOpenAppend(PlatformFile file) {
 }
 
 int CallFtruncate(PlatformFile file, int64_t length) {
+#if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_FUCHSIA)
+  static_assert(sizeof(off_t) >= sizeof(int64_t),
+                "off_t is not a 64-bit integer");
   return HANDLE_EINTR(ftruncate(file, length));
+#else
+  return HANDLE_EINTR(ftruncate64(file, length));
+#endif
 }
 
 int CallFutimes(PlatformFile file, const struct timeval times[2]) {
@@ -58,7 +68,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 #if !defined(OS_FUCHSIA)
-short FcntlFlockType(base::Optional<File::LockMode> mode) {
+short FcntlFlockType(absl::optional<File::LockMode> mode) {
   if (!mode.has_value())
     return F_UNLCK;
   switch (mode.value()) {
@@ -71,7 +81,7 @@ short FcntlFlockType(base::Optional<File::LockMode> mode) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           base::Optional<File::LockMode> mode) {
+                           absl::optional<File::LockMode> mode) {
   struct flock lock;
   lock.l_type = FcntlFlockType(std::move(mode));
   lock.l_whence = SEEK_SET;
@@ -103,7 +113,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           base::Optional<File::LockMode> mode) {
+                           absl::optional<File::LockMode> mode) {
   NOTIMPLEMENTED();  // NaCl doesn't implement flock struct.
   return File::FILE_ERROR_INVALID_OPERATION;
 }
@@ -123,7 +133,7 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
   // creation time. However, other than on Mac & iOS where the actual file
   // creation time is included as st_birthtime, the rest of POSIX platforms have
   // no portable way to get the creation time.
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   time_t last_modified_sec = stat_info.st_mtim.tv_sec;
   int64_t last_modified_nsec = stat_info.st_mtim.tv_nsec;
   time_t last_accessed_sec = stat_info.st_atim.tv_sec;
@@ -137,7 +147,7 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
   int64_t last_accessed_nsec = stat_info.st_atime_nsec;
   time_t creation_time_sec = stat_info.st_ctime;
   int64_t creation_time_nsec = stat_info.st_ctime_nsec;
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   time_t last_modified_sec = stat_info.st_mtimespec.tv_sec;
   int64_t last_modified_nsec = stat_info.st_mtimespec.tv_nsec;
   time_t last_accessed_sec = stat_info.st_atimespec.tv_sec;
@@ -162,18 +172,15 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
 
   last_modified =
       Time::FromTimeT(last_modified_sec) +
-      TimeDelta::FromMicroseconds(last_modified_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(last_modified_nsec / Time::kNanosecondsPerMicrosecond);
 
   last_accessed =
       Time::FromTimeT(last_accessed_sec) +
-      TimeDelta::FromMicroseconds(last_accessed_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(last_accessed_nsec / Time::kNanosecondsPerMicrosecond);
 
   creation_time =
       Time::FromTimeT(creation_time_sec) +
-      TimeDelta::FromMicroseconds(creation_time_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(creation_time_nsec / Time::kNanosecondsPerMicrosecond);
 }
 
 bool File::IsValid() const {
@@ -395,7 +402,7 @@ File::Error File::Lock(File::LockMode mode) {
 
 File::Error File::Unlock() {
   SCOPED_FILE_TRACE("Unlock");
-  return CallFcntlFlock(file_.get(), base::Optional<File::LockMode>());
+  return CallFcntlFlock(file_.get(), absl::optional<File::LockMode>());
 }
 #endif
 
@@ -486,10 +493,11 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     open_flags |= O_RDWR;
   } else if (flags & FLAG_WRITE) {
     open_flags |= O_WRONLY;
-  } else if (!(flags & FLAG_READ) &&
-             !(flags & FLAG_WRITE_ATTRIBUTES) &&
-             !(flags & FLAG_APPEND) &&
-             !(flags & FLAG_OPEN_ALWAYS)) {
+  } else if (!(flags & FLAG_READ) && !(flags & FLAG_WRITE_ATTRIBUTES) &&
+             !(flags & FLAG_APPEND) && !(flags & FLAG_OPEN_ALWAYS)) {
+    // Note: For FLAG_WRITE_ATTRIBUTES and no other read/write flags, we'll
+    // open the file in O_RDONLY mode (== 0, see static_assert below), so that
+    // we get a fd that can be used for SetTimes().
     NOTREACHED();
   }
 
@@ -504,7 +512,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   static_assert(O_RDONLY == 0, "O_RDONLY must equal zero");
 
   int mode = S_IRUSR | S_IWUSR;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   mode |= S_IRGRP | S_IROTH;
 #endif
 
@@ -513,9 +521,6 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   if (flags & FLAG_OPEN_ALWAYS) {
     if (descriptor < 0) {
       open_flags |= O_CREAT;
-      if (flags & FLAG_EXCLUSIVE_READ || flags & FLAG_EXCLUSIVE_WRITE)
-        open_flags |= O_EXCL;   // together with O_CREAT implies O_NOFOLLOW
-
       descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
       if (descriptor >= 0)
         created_ = true;
@@ -547,9 +552,10 @@ bool File::Flush() {
 #if defined(OS_NACL)
   NOTIMPLEMENTED();  // NaCl doesn't implement fsync.
   return true;
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA) || \
+    defined(OS_LINUX)
   return !HANDLE_EINTR(fdatasync(file_.get()));
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
@@ -581,7 +587,7 @@ File::Error File::GetLastFileError() {
   return base::File::OSErrorToFileError(errno);
 }
 
-#if defined(OS_BSD) || defined(OS_MACOSX) || defined(OS_NACL) || \
+#if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_NACL) || \
     defined(OS_FUCHSIA) || (defined(OS_ANDROID) && __ANDROID_API__ < 21)
 int File::Stat(const char* path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);

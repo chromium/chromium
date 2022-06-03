@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/container/inlined_vector.h"
+
+#include "absl/base/config.h"
+
+#if defined(ABSL_HAVE_EXCEPTIONS)
+
 #include <array>
 #include <initializer_list>
 #include <iterator>
@@ -20,7 +26,6 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/internal/exception_safety_testing.h"
-#include "absl/container/inlined_vector.h"
 
 namespace {
 
@@ -57,8 +62,8 @@ using ThrowAllocMovableThrowerVec =
                                                                \
        : std::initializer_list<T>{T(0, testing::nothrow_ctor), \
                                   T(1, testing::nothrow_ctor)})
-static_assert((kLargeSize == 8 || kSmallSize == 2),
-              "Must update ABSL_INTERNAL_MAKE_INIT_LIST(...).");
+static_assert(kLargeSize == 8, "Must update ABSL_INTERNAL_MAKE_INIT_LIST(...)");
+static_assert(kSmallSize == 2, "Must update ABSL_INTERNAL_MAKE_INIT_LIST(...)");
 
 template <typename TheVecT, size_t... TheSizes>
 class TestParams {
@@ -359,9 +364,11 @@ TYPED_TEST(OneSizeTest, EmplaceBack) {
   using VecT = typename TypeParam::VecT;
   constexpr static auto size = TypeParam::GetSizeAt(0);
 
+  // For testing calls to `emplace_back(...)` that reallocate.
   VecT full_vec{size};
   full_vec.resize(full_vec.capacity());
 
+  // For testing calls to `emplace_back(...)` that don't reallocate.
   VecT nonfull_vec{size};
   nonfull_vec.reserve(size + 1);
 
@@ -369,12 +376,11 @@ TYPED_TEST(OneSizeTest, EmplaceBack) {
       InlinedVectorInvariants<VecT>);
 
   EXPECT_TRUE(tester.WithInitialValue(nonfull_vec).Test([](VecT* vec) {
-    vec->emplace_back();  //
+    vec->emplace_back();
   }));
 
-  EXPECT_TRUE(tester.WithInitialValue(full_vec).Test([](VecT* vec) {
-    vec->emplace_back();  //
-  }));
+  EXPECT_TRUE(tester.WithInitialValue(full_vec).Test(
+      [](VecT* vec) { vec->emplace_back(); }));
 }
 
 TYPED_TEST(OneSizeTest, PopBack) {
@@ -413,6 +419,19 @@ TYPED_TEST(OneSizeTest, Erase) {
 
   EXPECT_TRUE(tester.Test([](VecT* vec) {
     auto it = vec->begin();
+    vec->erase(it, it);
+  }));
+  EXPECT_TRUE(tester.Test([](VecT* vec) {
+    auto it = vec->begin() + (vec->size() / 2);
+    vec->erase(it, it);
+  }));
+  EXPECT_TRUE(tester.Test([](VecT* vec) {
+    auto it = vec->begin() + (vec->size() - 1);
+    vec->erase(it, it);
+  }));
+
+  EXPECT_TRUE(tester.Test([](VecT* vec) {
+    auto it = vec->begin();
     vec->erase(it, it + 1);
   }));
   EXPECT_TRUE(tester.Test([](VecT* vec) {
@@ -447,9 +466,7 @@ TYPED_TEST(TwoSizeTest, Reserve) {
                     .WithInitialValue(VecT{from_size})
                     .WithContracts(InlinedVectorInvariants<VecT>);
 
-  EXPECT_TRUE(tester.Test([](VecT* vec) {
-    vec->reserve(to_capacity);  //
-  }));
+  EXPECT_TRUE(tester.Test([](VecT* vec) { vec->reserve(to_capacity); }));
 }
 
 TYPED_TEST(OneSizeTest, ShrinkToFit) {
@@ -487,3 +504,5 @@ TYPED_TEST(TwoSizeTest, Swap) {
 }
 
 }  // namespace
+
+#endif  // defined(ABSL_HAVE_EXCEPTIONS)

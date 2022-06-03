@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["../resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script src="/webxr/resources/webxr_test_asserts.js"></script>
+
+<script>
+// Because light estimation is not yet in the core webxr spec, this is an internal-chrome only test.
+
+function assert_defined(v, description) {
+  assert_not_equals(v, undefined, description);
+}
+
+// Verifies the structure of |XRLightEstimate|
+// Defined in 'third_party/blink/renderer/modules/xr/xr_light_estimate.idl'
+function verifyXRLightEstimate(lightEstimate) {
+  assert_true(lightEstimate instanceof XRLightEstimate);
+
+  assert_defined(lightEstimate.sphericalHarmonicsCoefficients, "sphericalHarmonicsCoefficients was not defined on XRLightEstimate");
+  assert_array_equals(Array.from(lightEstimate.sphericalHarmonicsCoefficients), new Array(9).fill().map((x, i) => [i, i, i]).flat());
+
+  assert_defined(lightEstimate.primaryLightDirection, "primaryLightDirection was not defined on XRLightEstimate");
+  assert_equals(lightEstimate.primaryLightDirection.x, 0);
+  assert_equals(lightEstimate.primaryLightDirection.y, 1);
+  assert_equals(lightEstimate.primaryLightDirection.z, 0);
+  assert_equals(lightEstimate.primaryLightDirection.w, 0);
+
+  assert_defined(lightEstimate.primaryLightIntensity, "primaryLightIntensity was not defined on XRLightEstimate");
+  assert_equals(lightEstimate.primaryLightIntensity.x, 1);
+  assert_equals(lightEstimate.primaryLightIntensity.y, 1);
+  assert_equals(lightEstimate.primaryLightIntensity.z, 1);
+  assert_equals(lightEstimate.primaryLightIntensity.w, 1);
+}
+
+// Verifies the behavior of querying reflection cube maps
+// Defined in 'third_party/blink/renderer/modules/xr/xr_webgl_binding.idl'
+function verifyReflectionCubeMap(session, lightProbe) {
+  // Currently reflection cube maps only work on WebGL 2.
+  const gl2Canvas = document.createElement('canvas');
+  const gl = gl2Canvas.getContext('webgl2');
+  if (!gl) {
+    return;
+  }
+
+  return gl.makeXRCompatible().then(() => {
+    const glBinding = new XRWebGLBinding(session, gl);
+
+    assert_true(glBinding instanceof XRWebGLBinding);
+
+    assert_defined(glBinding.getReflectionCubeMap, "getReflectionCubeMap was not defined on XRWebGLBinding");
+
+    // Bind a different cube map prior to fetching the reflection cube map so we
+    // can ensure the binding is preserved.
+    const tmpCubeMap = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, tmpCubeMap);
+
+    // Make sure we get back a valid cube map
+    const cubeMap = glBinding.getReflectionCubeMap(lightProbe);
+    assert_true(cubeMap instanceof WebGLTexture);
+
+    const boundCubeMap = gl.getParameter(gl.TEXTURE_BINDING_CUBE_MAP);
+    assert_equals(boundCubeMap, tmpCubeMap);
+
+    // Ensure that we can't bind the returned cube map to the TEXTURE_2D bind
+    // target but can bind it to the TEXTURE_CUBE_MAP bind point. This effectively
+    // tests that the texture was created as a cube map.
+    gl.bindTexture(gl.TEXTURE_2D, cubeMap);
+    assert_equals(gl.getError(), gl.INVALID_OPERATION);
+
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
+    assert_equals(gl.getError(), gl.NO_ERROR);
+  });
+}
+
+// Verifies the structure of |XRFrame| (as it relates to light estimation)
+// for a session that's expected to suppot light estimation.
+// Defined in 'third_party/blink/renderer/modules/xr/xr_frame.idl'
+function verifyXRLightEstimateExists(t, resolve, count, session, frame, lightProbe, localSpace) {
+  t.step(() => {
+    assert_not_equals(count, 0, "Did not get light estimate with a reasonable number of frames");
+    assert_defined(frame.getLightEstimate, "getLightEstimate was not defined on XRFrame");
+
+    const lightEstimate = frame.getLightEstimate(lightProbe);
+    const lightProbePose = frame.getPose(lightProbe.probeSpace, localSpace);
+
+    if (lightEstimate === null) {
+      // Check if we get a lighting estimate next frame
+      session.requestAnimationFrame((time, frame) => {
+        verifyXRLightEstimateExists(t, resolve, count - 1, session, frame, lightProbe, localSpace);
+      });
+    } else {
+      verifyXRLightEstimate(lightEstimate);
+
+      // Reflection cube maps may be enabled separately from the other lighting values.
+      if ('XRWebGLBinding' in window) {
+        verifyReflectionCubeMap(session, lightProbe).then(() => {
+          // If the light probe is providing valid results it should also have a
+          // valid space.
+          assert_not_equals(lightProbePose, null);
+          resolve();
+        });
+      } else {
+        // If the light probe is providing valid results it should also have a
+        // valid space.
+        assert_not_equals(lightProbePose, null);
+        resolve();
+      }
+    }
+  });
+}
+
+// Verifies the structure of |XRLightProbe|
+// Defined in 'third_party/blink/renderer/modules/xr/xr_light_probe.idl'
+function verifyXRLightProbe(lightProbe) {
+  assert_true(lightProbe instanceof XRLightProbe);
+
+  assert_true(lightProbe.probeSpace instanceof XRSpace);
+  assert_not_equals(lightProbe.probeSpace, null);
+}
+
+const lightingInformationExistsName = "Ensures lighting estimation feature works when enabled";
+function lightingInformationExists(session, fakeDeviceController, t, sessionObjects) {
+  t.step(() => {
+    assert_defined(session.requestLightProbe, "requestLightProbe was not defined on XRSession");
+  });
+
+  return new Promise(async (resolve, reject) => {
+    const lightProbe = await session.requestLightProbe();
+    verifyXRLightProbe(lightProbe);
+
+    const localSpace = await session.requestReferenceSpace("local");
+
+    session.requestAnimationFrame((time, frame) => {
+      verifyXRLightEstimateExists(t, resolve, 10, session, frame, lightProbe, localSpace);
+    });
+  });
+}
+
+const lightingInformationDoesNotExistName = "Ensure lighting estimation feature does not work when not explicitly enabled";
+function lightingInformationDoesNotExist(session, fakeDeviceController, t, sessionObjects) {
+  t.step(() => {
+    assert_defined(session.requestLightProbe, "requestLightProbe was not defined on XRSession");
+  });
+
+  return promise_rejects_dom(t, "NotSupportedError", DOMException, session.requestLightProbe());
+}
+
+xr_session_promise_test(
+  lightingInformationExistsName,
+  lightingInformationExists,
+  IMMERSIVE_AR_DEVICE,
+  'immersive-ar',
+  { 'requiredFeatures': ['light-estimation'] }
+);
+xr_session_promise_test(
+  lightingInformationDoesNotExistName,
+  lightingInformationDoesNotExist,
+  IMMERSIVE_AR_DEVICE,
+  'immersive-ar',
+  {}
+);
+
+</script>

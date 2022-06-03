@@ -44,7 +44,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
      * @param toolType ToolType property of the point.
      */
     @Override
-    public void setPointer(int index, int x, int y, int id, int toolType) {
+    public void setPointer(int index, float x, float y, int id, int toolType) {
         assert (0 <= index && index < MAX_NUM_POINTERS);
 
         PointerCoords coords = new PointerCoords();
@@ -67,7 +67,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
      * @param x Y coordinate of the point.
      * @param id Id property of the point.
      */
-    public void setPointer(int index, int x, int y, int id) {
+    public void setPointer(int index, float x, float y, int id) {
         setPointer(index, x, y, id, MotionEvent.TOOL_TYPE_UNKNOWN);
     }
 
@@ -79,7 +79,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
      * @param dx Delta along the X coordinate.
      * @param dy Delta along the Y coordinate.
      */
-    public void setScrollDeltas(int x, int y, int dx, int dy) {
+    public void setScrollDeltas(float x, float y, float dx, float dy) {
         setPointer(0, x, y, 0);
         mPointerCoords[0].setAxisValue(MotionEvent.AXIS_HSCROLL, dx);
         mPointerCoords[0].setAxisValue(MotionEvent.AXIS_VSCROLL, dy);

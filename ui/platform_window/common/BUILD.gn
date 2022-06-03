@@ -4,16 +4,14 @@
 
 import("//build/config/ui.gni")
 
-assert(is_linux)
+assert(is_linux || is_chromeos)
 
 component("common") {
   output_name = "platform_window_common"
 
   defines = [ "IS_PLATFORM_WINDOW_COMMON_IMPL" ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
   sources = [
     "platform_window_defaults.cc",

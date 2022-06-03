@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Create a shared worker in a data url frame assert_equals: expected "PASS" but got "SharedWorker construction unexpectedly synchronously failed"
+FAIL Create a data url shared worker in a data url frame assert_equals: expected "PASS" but got "SharedWorker construction unexpectedly synchronously failed"
+Harness: the test ran to completion.
+

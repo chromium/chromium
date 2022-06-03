@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL textBaseline middle is the middle of the em square (not the bounding box) assert_approx_equals: Red channel of the pixel at (5, 5) expected 0 +/- 2 but got 255
-Harness: the test ran to completion.
-

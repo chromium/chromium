@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Test that ::backdrop responds to container size changes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  :root {
+    color: black;
+  }
+
+  #container {
+    contain: size layout style;
+    width: 200px;
+    height: 40px;
+  }
+
+  ::backdrop {
+    background-color: black;
+  }
+
+  @container (min-width: 300px) {
+    ::backdrop {
+      background-color: green;
+    }
+  }
+</style>
+<main id=container>
+  <dialog>test</dialog>
+</main>
+<script>
+  let dialog = document.querySelector('dialog');
+
+  test(function() {
+    try {
+      dialog.showModal();
+
+      assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
+
+      container.style.width = '300px';
+      assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 128, 0)');
+
+      container.style = '';
+      assert_equals(getComputedStyle(dialog, '::backdrop').backgroundColor, 'rgb(0, 0, 0)');
+    } finally {
+      dialog.close();
+    }
+  }, 'Pseudo-element ::backdrop responds to container size changes');
+</script>

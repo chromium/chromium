@@ -26,6 +26,10 @@ class BluetoothExtensionFunction : public ExtensionFunction {
  public:
   BluetoothExtensionFunction();
 
+  BluetoothExtensionFunction(const BluetoothExtensionFunction&) = delete;
+  BluetoothExtensionFunction& operator=(const BluetoothExtensionFunction&) =
+      delete;
+
  protected:
   ~BluetoothExtensionFunction() override;
 
@@ -43,8 +47,6 @@ class BluetoothExtensionFunction : public ExtensionFunction {
   // Implemented by individual bluetooth extension functions, called
   // automatically on the UI thread once |adapter| has been initialized.
   virtual void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothExtensionFunction);
 };
 
 }  // namespace api

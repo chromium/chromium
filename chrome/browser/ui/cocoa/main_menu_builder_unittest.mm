@@ -95,7 +95,7 @@ TEST(MainMenuBuilderTest, StringId) {
 }
 
 TEST(MainMenuBuilderTest, StringIdWithArg) {
-  base::string16 product_name(base::ASCIIToUTF16("MyAppIsTotallyAwesome"));
+  std::u16string product_name(u"MyAppIsTotallyAwesome");
   base::scoped_nsobject<NSMenuItem> item =
       MenuItemBuilder(IDS_ABOUT_MAC).string_format_1(product_name).Build();
 
@@ -110,6 +110,12 @@ TEST(MainMenuBuilderTest, Disabled) {
 
   item = MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(false).Build();
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
+}
+
+TEST(MainMenuBuilderTest, Hidden) {
+  base::scoped_nsobject<NSMenuItem> item =
+      MenuItemBuilder(IDS_NEW_TAB_MAC).set_hidden(true).Build();
+  EXPECT_EQ(true, [item isHidden]);
 }
 
 }  // namespace

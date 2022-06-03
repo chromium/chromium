@@ -51,6 +51,10 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb);
 
+  MailboxVideoFrameConverter(const MailboxVideoFrameConverter&) = delete;
+  MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
+      delete;
+
   // Enqueues |frame| to be converted to a gpu::Mailbox backed VideoFrame.
   // |frame| must wrap a DMA-buf backed VideoFrame that is retrieved via
   // |unwrap_frame_cb_|. The generated gpu::Mailbox-based VideoFrame is kept
@@ -92,22 +96,30 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   // WrapMailboxAndVideoFrameAndOutput().
   void ConvertFrameOnGPUThread(VideoFrame* origin_frame,
                                scoped_refptr<VideoFrame> frame,
-                               gpu::Mailbox mailbox);
+                               ScopedSharedImage* stored_shared_image);
 
-  // Generates a ScopedSharedImage from a DMA-buf backed |video_frame|, and
-  // returns it or nullptr if that could not be done. |video_frame| must be kept
-  // alive for the duration of this method. This method runs on
-  // |gpu_task_runner_|.
-  std::unique_ptr<ScopedSharedImage> GenerateSharedImageOnGPUThread(
-      VideoFrame* video_frame);
+  // Populates a ScopedSharedImage from a DMA-buf backed |video_frame|.
+  // |video_frame| must be kept alive for the duration of this method. This
+  // method runs on |gpu_task_runner_|. Returns true if the SharedImage could be
+  // created successfully; false otherwise (and OnError() is called).
+  bool GenerateSharedImageOnGPUThread(VideoFrame* video_frame,
+                                      const gfx::Rect& destination_visible_rect,
+                                      ScopedSharedImage* shared_image);
 
   // Registers the mapping between a DMA-buf VideoFrame and the SharedImage.
-  // |origin_frame| must be kept alive for the duration of this method.
+  // |origin_frame| must be kept alive for the duration of this method. After
+  // this method returns, |scoped_shared_image| will be owned by |origin_frame|.
+  // This guarantees that the SharedImage lives as long as the associated
+  // DMA-buf even if MailboxVideoFrameConverter dies.
   void RegisterSharedImage(
       VideoFrame* origin_frame,
       std::unique_ptr<ScopedSharedImage> scoped_shared_image);
   // Unregisters the |origin_frame_id| and associated SharedImage.
-  void UnregisterSharedImage(UniqueID origin_frame_id);
+  // |scoped_shared_image| is passed to guarantee that the SharedImage is alive
+  // until after we delete the pointer from |shared_images_|.
+  void UnregisterSharedImage(
+      UniqueID origin_frame_id,
+      std::unique_ptr<ScopedSharedImage> scoped_shared_image);
 
   // Updates the SharedImage associated to |mailbox|. Returns true if the update
   // could be carried out, false otherwise.
@@ -140,9 +152,11 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   base::WeakPtr<gpu::GpuChannel> gpu_channel_;
 
   // Mapping from the unique id of the frame to its corresponding SharedImage.
-  // Accessed only on |parent_task_runner_|.
-  base::small_map<std::map<UniqueID, std::unique_ptr<ScopedSharedImage>>>
-      shared_images_;
+  // Accessed only on |parent_task_runner_|. The ScopedSharedImages are owned by
+  // the unwrapped DMA-buf VideoFrames so that they can be used even after
+  // MailboxVideoFrameConverter dies (e.g., there may still be compositing
+  // commands that need the shared images).
+  base::small_map<std::map<UniqueID, ScopedSharedImage*>> shared_images_;
 
   // The queue of input frames and the unique_id of their origin frame.
   // Accessed only on |parent_task_runner_|.
@@ -159,8 +173,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   base::WeakPtrFactory<MailboxVideoFrameConverter> parent_weak_this_factory_{
       this};
   base::WeakPtrFactory<MailboxVideoFrameConverter> gpu_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxVideoFrameConverter);
 };
 
 }  // namespace media

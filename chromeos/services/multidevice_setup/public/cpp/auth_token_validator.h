@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace multidevice_setup {
@@ -17,16 +15,25 @@ namespace multidevice_setup {
 class AuthTokenValidator {
  public:
   AuthTokenValidator() = default;
+
+  AuthTokenValidator(const AuthTokenValidator&) = delete;
+  AuthTokenValidator& operator=(const AuthTokenValidator&) = delete;
+
   virtual ~AuthTokenValidator() = default;
 
   virtual bool IsAuthTokenValid(const std::string& auth_token) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthTokenValidator);
 };
 
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::AuthTokenValidator;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_AUTH_TOKEN_VALIDATOR_H_

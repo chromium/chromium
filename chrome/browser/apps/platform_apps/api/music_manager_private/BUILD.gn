@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
@@ -12,10 +13,6 @@ source_set("music_manager_private") {
   sources = [
     "device_id.cc",
     "device_id.h",
-    "device_id_chromeos.cc",
-    "device_id_linux.cc",
-    "device_id_mac.cc",
-    "device_id_win.cc",
     "music_manager_private_api.cc",
     "music_manager_private_api.h",
   ]
@@ -34,9 +31,19 @@ source_set("music_manager_private") {
     libs += [ "iphlpapi.lib" ]
   }
 
-  if (is_chromeos) {
-    sources -= [ "device_id_linux.cc" ]
+  if (is_chromeos_ash) {
+    sources += [ "device_id_chromeos.cc" ]
+  } else if (is_linux || is_chromeos_lacros) {
+    sources += [ "device_id_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "device_id_mac.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "device_id_fuchsia.cc" ]
+  } else if (is_win) {
+    sources += [ "device_id_win.cc" ]
+  }
 
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/cryptohome" ]
   }
 

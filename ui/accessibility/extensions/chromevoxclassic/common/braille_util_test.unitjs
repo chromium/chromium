@@ -60,7 +60,7 @@ ChromeVoxBrailleUtilUnitTest.prototype = {
       startIndex: actual.startIndex,
       endIndex: actual.endIndex
     });
-    assertThat(actual, eqJSON(new cvox.NavBraille(expected)));
+    assertDeepEquals(actual, new cvox.NavBraille(expected));
   }
 };
 

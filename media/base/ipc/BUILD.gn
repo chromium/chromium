@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_source_set("ipc") {
+source_set("ipc") {
   sources = [
     "media_param_traits.cc",
     "media_param_traits.h",

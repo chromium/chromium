@@ -3,326 +3,74 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
+import("//third_party/blink/renderer/bindings/generated_in_core.gni")
 import("//third_party/blink/renderer/core/core.gni")
-import("//third_party/blink/renderer/core/core_idl_files.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
-bindings_core_generated_union_type_files = [
-  "$bindings_core_v8_output_dir/add_event_listener_options_or_boolean.cc",
-  "$bindings_core_v8_output_dir/add_event_listener_options_or_boolean.h",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view.cc",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view.h",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view_or_blob_or_document_or_string_or_form_data_or_url_search_params.cc",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view_or_blob_or_document_or_string_or_form_data_or_url_search_params.h",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view_or_blob_or_usv_string.cc",
-  "$bindings_core_v8_output_dir/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h",
-  "$bindings_core_v8_output_dir/boolean_or_byte_string_byte_string_record.cc",
-  "$bindings_core_v8_output_dir/boolean_or_byte_string_byte_string_record.h",
-  "$bindings_core_v8_output_dir/byte_string_sequence_sequence_or_byte_string_byte_string_record.cc",
-  "$bindings_core_v8_output_dir/byte_string_sequence_sequence_or_byte_string_byte_string_record.h",
-  "$bindings_core_v8_output_dir/composite_operation_or_auto_or_composite_operation_or_auto_sequence.cc",
-  "$bindings_core_v8_output_dir/composite_operation_or_auto_or_composite_operation_or_auto_sequence.h",
-  "$bindings_core_v8_output_dir/css_style_value_or_string.cc",
-  "$bindings_core_v8_output_dir/css_style_value_or_string.h",
-  "$bindings_core_v8_output_dir/double_or_auto_keyword.cc",
-  "$bindings_core_v8_output_dir/double_or_auto_keyword.h",
-  "$bindings_core_v8_output_dir/double_or_css_numeric_value.cc",
-  "$bindings_core_v8_output_dir/double_or_double_sequence.cc",
-  "$bindings_core_v8_output_dir/double_or_double_sequence.h",
-  "$bindings_core_v8_output_dir/double_or_double_or_null_sequence.cc",
-  "$bindings_core_v8_output_dir/double_or_double_or_null_sequence.h",
-  "$bindings_core_v8_output_dir/double_or_internal_enum.cc",
-  "$bindings_core_v8_output_dir/double_or_internal_enum.h",
-  "$bindings_core_v8_output_dir/double_or_scroll_timeline_auto_keyword.cc",
-  "$bindings_core_v8_output_dir/double_or_scroll_timeline_auto_keyword.h",
-  "$bindings_core_v8_output_dir/double_or_string.cc",
-  "$bindings_core_v8_output_dir/double_or_string.h",
-  "$bindings_core_v8_output_dir/double_or_string_or_string_sequence.cc",
-  "$bindings_core_v8_output_dir/double_or_string_or_string_sequence.h",
-  "$bindings_core_v8_output_dir/event_listener_options_or_boolean.cc",
-  "$bindings_core_v8_output_dir/event_listener_options_or_boolean.h",
-  "$bindings_core_v8_output_dir/file_or_usv_string.cc",
-  "$bindings_core_v8_output_dir/file_or_usv_string.h",
-  "$bindings_core_v8_output_dir/file_or_usv_string_or_form_data.cc",
-  "$bindings_core_v8_output_dir/file_or_usv_string_or_form_data.h",
-  "$bindings_core_v8_output_dir/float_or_string_element_record.cc",
-  "$bindings_core_v8_output_dir/float_or_string_element_record.h",
-  "$bindings_core_v8_output_dir/html_element_or_long.cc",
-  "$bindings_core_v8_output_dir/html_element_or_long.h",
-  "$bindings_core_v8_output_dir/image_bitmap_source.cc",
-  "$bindings_core_v8_output_dir/image_bitmap_source.h",
-  "$bindings_core_v8_output_dir/internal_enum_or_internal_enum_sequence.cc",
-  "$bindings_core_v8_output_dir/internal_enum_or_internal_enum_sequence.h",
-  "$bindings_core_v8_output_dir/html_option_element_or_html_opt_group_element.cc",
-  "$bindings_core_v8_output_dir/html_option_element_or_html_opt_group_element.h",
-  "$bindings_core_v8_output_dir/html_script_element_or_svg_script_element.cc",
-  "$bindings_core_v8_output_dir/html_script_element_or_svg_script_element.h",
-  "$bindings_core_v8_output_dir/node_list_or_element.cc",
-  "$bindings_core_v8_output_dir/node_list_or_element.h",
-  "$bindings_core_v8_output_dir/html_collection_or_element.cc",
-  "$bindings_core_v8_output_dir/html_collection_or_element.h",
-  "$bindings_core_v8_output_dir/media_list_or_string.cc",
-  "$bindings_core_v8_output_dir/media_list_or_string.h",
-  "$bindings_core_v8_output_dir/node_or_string_or_trusted_script.cc",
-  "$bindings_core_v8_output_dir/node_or_string_or_trusted_script.h",
-  "$bindings_core_v8_output_dir/radio_node_list_or_element.cc",
-  "$bindings_core_v8_output_dir/radio_node_list_or_element.h",
-  "$bindings_core_v8_output_dir/request_or_usv_string.cc",
-  "$bindings_core_v8_output_dir/request_or_usv_string.h",
-  "$bindings_core_v8_output_dir/scroll_into_view_options_or_boolean.cc",
-  "$bindings_core_v8_output_dir/scroll_into_view_options_or_boolean.h",
-  "$bindings_core_v8_output_dir/string_or_array_buffer.cc",
-  "$bindings_core_v8_output_dir/string_or_array_buffer.h",
-  "$bindings_core_v8_output_dir/string_or_array_buffer_or_array_buffer_view.cc",
-  "$bindings_core_v8_output_dir/string_or_array_buffer_or_array_buffer_view.h",
-  "$bindings_core_v8_output_dir/string_or_css_variable_reference_value.cc",
-  "$bindings_core_v8_output_dir/string_or_css_variable_reference_value.h",
-  "$bindings_core_v8_output_dir/string_or_double.cc",
-  "$bindings_core_v8_output_dir/string_or_double.h",
-  "$bindings_core_v8_output_dir/string_or_element_creation_options.cc",
-  "$bindings_core_v8_output_dir/string_or_element_creation_options.h",
-  "$bindings_core_v8_output_dir/string_or_performance_measure_options.cc",
-  "$bindings_core_v8_output_dir/string_or_performance_measure_options.h",
-  "$bindings_core_v8_output_dir/string_or_string_sequence.cc",
-  "$bindings_core_v8_output_dir/string_or_string_sequence.h",
-  "$bindings_core_v8_output_dir/string_or_trusted_html.cc",
-  "$bindings_core_v8_output_dir/string_or_trusted_html.h",
-  "$bindings_core_v8_output_dir/string_or_trusted_html_or_trusted_script_or_trusted_script_url.cc",
-  "$bindings_core_v8_output_dir/string_or_trusted_html_or_trusted_script_or_trusted_script_url.h",
-  "$bindings_core_v8_output_dir/string_or_trusted_script.cc",
-  "$bindings_core_v8_output_dir/string_or_trusted_script.h",
-  "$bindings_core_v8_output_dir/string_or_trusted_script_url.cc",
-  "$bindings_core_v8_output_dir/string_or_trusted_script_url.h",
-  "$bindings_core_v8_output_dir/string_or_unrestricted_double_sequence.cc",
-  "$bindings_core_v8_output_dir/string_or_unrestricted_double_sequence.h",
-  "$bindings_core_v8_output_dir/string_treat_null_as_empty_string_or_trusted_script.cc",
-  "$bindings_core_v8_output_dir/string_treat_null_as_empty_string_or_trusted_script.h",
-  "$bindings_core_v8_output_dir/usv_string_sequence_sequence_or_usv_string_usv_string_record_or_usv_string.cc",
-  "$bindings_core_v8_output_dir/usv_string_sequence_sequence_or_usv_string_usv_string_record_or_usv_string.h",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_keyframe_animation_options.cc",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_keyframe_animation_options.h",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_keyframe_effect_options.cc",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_keyframe_effect_options.h",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_string.cc",
-  "$bindings_core_v8_output_dir/unrestricted_double_or_string.h",
-  "$bindings_core_v8_output_dir/uint8_clamped_array_or_uint16_array_or_float32_array.cc",
-  "$bindings_core_v8_output_dir/uint8_clamped_array_or_uint16_array_or_float32_array.h",
-  "$bindings_core_v8_output_dir/video_track_or_audio_track_or_text_track.cc",
-  "$bindings_core_v8_output_dir/video_track_or_audio_track_or_text_track.h",
-]
+blink_core_sources("v8") {
+  visibility = []
+  visibility = [ "//third_party/blink/renderer/core" ]
 
-generated_core_testing_callback_function_files = [
-  "$bindings_core_v8_output_dir/v8_test_callback.cc",
-  "$bindings_core_v8_output_dir/v8_test_callback.h",
-  "$bindings_core_v8_output_dir/v8_test_enum_callback.cc",
-  "$bindings_core_v8_output_dir/v8_test_enum_callback.h",
-  "$bindings_core_v8_output_dir/v8_test_interface_callback.cc",
-  "$bindings_core_v8_output_dir/v8_test_interface_callback.h",
-  "$bindings_core_v8_output_dir/v8_test_receiver_object_callback.cc",
-  "$bindings_core_v8_output_dir/v8_test_receiver_object_callback.h",
-  "$bindings_core_v8_output_dir/v8_test_sequence_callback.cc",
-  "$bindings_core_v8_output_dir/v8_test_sequence_callback.h",
-]
-
-generated_core_callback_function_files = [
-  "$bindings_core_v8_output_dir/v8_blob_callback.cc",
-  "$bindings_core_v8_output_dir/v8_blob_callback.h",
-  "$bindings_core_v8_output_dir/v8_create_html_callback.cc",
-  "$bindings_core_v8_output_dir/v8_create_html_callback.h",
-  "$bindings_core_v8_output_dir/v8_create_script_callback.cc",
-  "$bindings_core_v8_output_dir/v8_create_script_callback.h",
-  "$bindings_core_v8_output_dir/v8_create_url_callback.cc",
-  "$bindings_core_v8_output_dir/v8_create_url_callback.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_adopted_callback.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_adopted_callback.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_attribute_changed_callback.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_attribute_changed_callback.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_constructor.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_constructor.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_associated_callback.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_associated_callback.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_disabled_callback.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_disabled_callback.h",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_state_restore_callback.cc",
-  "$bindings_core_v8_output_dir/v8_custom_element_form_state_restore_callback.h",
-  "$bindings_core_v8_output_dir/v8_event_handler_non_null.cc",
-  "$bindings_core_v8_output_dir/v8_event_handler_non_null.h",
-  "$bindings_core_v8_output_dir/v8_for_each_iterator_callback.cc",
-  "$bindings_core_v8_output_dir/v8_for_each_iterator_callback.h",
-  "$bindings_core_v8_output_dir/v8_frame_request_callback.cc",
-  "$bindings_core_v8_output_dir/v8_frame_request_callback.h",
-  "$bindings_core_v8_output_dir/v8_function.cc",
-  "$bindings_core_v8_output_dir/v8_function.h",
-  "$bindings_core_v8_output_dir/v8_function_string_callback.cc",
-  "$bindings_core_v8_output_dir/v8_function_string_callback.h",
-  "$bindings_core_v8_output_dir/v8_idle_request_callback.cc",
-  "$bindings_core_v8_output_dir/v8_idle_request_callback.h",
-  "$bindings_core_v8_output_dir/v8_intersection_observer_callback.cc",
-  "$bindings_core_v8_output_dir/v8_intersection_observer_callback.h",
-  "$bindings_core_v8_output_dir/v8_intrinsic_sizes_callback.cc",
-  "$bindings_core_v8_output_dir/v8_intrinsic_sizes_callback.h",
-  "$bindings_core_v8_output_dir/v8_layout_callback.cc",
-  "$bindings_core_v8_output_dir/v8_layout_callback.h",
-  "$bindings_core_v8_output_dir/v8_mojo_watch_callback.cc",
-  "$bindings_core_v8_output_dir/v8_mojo_watch_callback.h",
-  "$bindings_core_v8_output_dir/v8_mutation_callback.cc",
-  "$bindings_core_v8_output_dir/v8_mutation_callback.h",
-  "$bindings_core_v8_output_dir/v8_no_argument_constructor.cc",
-  "$bindings_core_v8_output_dir/v8_no_argument_constructor.h",
-  "$bindings_core_v8_output_dir/v8_performance_observer_callback.cc",
-  "$bindings_core_v8_output_dir/v8_performance_observer_callback.h",
-  "$bindings_core_v8_output_dir/v8_reporting_observer_callback.cc",
-  "$bindings_core_v8_output_dir/v8_reporting_observer_callback.h",
-  "$bindings_core_v8_output_dir/v8_resize_observer_callback.cc",
-  "$bindings_core_v8_output_dir/v8_resize_observer_callback.h",
-  "$bindings_core_v8_output_dir/v8_scroll_state_callback.cc",
-  "$bindings_core_v8_output_dir/v8_scroll_state_callback.h",
-  "$bindings_core_v8_output_dir/v8_void_function.cc",
-  "$bindings_core_v8_output_dir/v8_void_function.h",
-]
-
-generate_origin_trial_features("bindings_core_origin_trial_features") {
-  sources =
-      core_idl_files + core_idl_with_modules_dependency_files +
-      core_global_constructors_generated_idl_files + core_dependency_idl_files
-  component = "core"
-  output_dir = bindings_core_output_dir + "/v8"
-  deps = [
-    "//third_party/blink/renderer/bindings/core:core_global_constructors_idls",
-    "//third_party/blink/renderer/bindings/core:interfaces_info_core",
-  ]
-}
-
-if (is_win && is_official_build) {
-  # On Windows Official release builds, we try to preserve symbol space.
-  # is_official_build adds /GL option and /LTCG is automatically enabled in
-  # link.exe. But link.exe cannot make binary smaller than its size limit from
-  # many obj files for bindings_core_impl.lib.
-  bindings_core_generated_interface_files =
-      [ "$bindings_core_v8_output_dir/v8_generated_core_bindings.cc" ]
-} else {
-  _core_definition_idl_files = core_definition_idl_files
-  if (use_v8_bind_gen_for_dictionary) {
-    _core_definition_idl_files -= core_dictionary_idl_files
-  }
-  bindings_core_generated_interface_files =
-      process_file_template(
-          _core_definition_idl_files,
-          [
-            "$bindings_core_v8_output_dir/v8_{{source_name_part}}.cc",
-            "$bindings_core_v8_output_dir/v8_{{source_name_part}}.h",
-          ])
-}
-
-group("bindings_core_v8_generated") {
-  public_deps = [
-    ":bindings_core_impl_generated",
-  ]
-  if (is_win && is_official_build) {
-    public_deps += [ ":generate_bindings_core_v8_all_interfaces" ]
-  } else {
-    public_deps += [ ":generate_bindings_core_v8_interfaces" ]
-  }
-}
-
-# IDL file lists; see: http://www.chromium.org/developers/web-idl-interfaces
-# Interface IDL files: generate individual bindings (includes testing)
-idl_compiler("generate_bindings_core_v8_interfaces") {
-  sources = core_definition_idl_files + core_testing_definition_idl_files +
-            generated_webcore_testing_idl_files
-  if (use_v8_bind_gen_for_dictionary) {
-    sources -= core_dictionary_idl_files
-  }
-  output_dir = bindings_core_v8_output_dir
-  output_name_suffix = ""
-  target_component = "core"
-}
-
-aggregate_generated_bindings("generate_bindings_core_v8_all_interfaces") {
-  sources = core_definition_idl_files
-  if (use_v8_bind_gen_for_dictionary) {
-    sources -= core_dictionary_idl_files
-  }
-  outputs = [
-    "$bindings_core_v8_output_dir/v8_generated_core_bindings.cc",
-  ]
-  component = "core"
-  public_deps = [
-    ":generate_bindings_core_v8_interfaces",
-  ]
-}
-
-idl_impl("bindings_core_impl_generated") {
-  if (use_v8_bind_gen_for_dictionary) {
-    dict_idls = []
-  } else {
-    dict_idls = core_dictionary_idl_files + core_testing_dictionary_idl_files
-  }
-  non_dict_outputs = bindings_core_generated_union_type_files +
-                     generated_core_testing_callback_function_files +
-                     generated_core_callback_function_files
-  non_dict_output_dir = bindings_core_v8_output_dir
-  target_component = "core"
-}
-
-# Even though the idl_impl() call above generates .cpp and .h files for both
-# |core_dictionary_idl_files| and |core_testing_dictionary_idl_files|, we need
-# to do some manual processing because the generated files are used in
-# different targets.
-generated_core_testing_dictionary_files =
-    process_file_template(
-        core_testing_dictionary_idl_files,
-        [
-          "$blink_core_output_dir/testing/{{source_name_part}}.cc",
-          "$blink_core_output_dir/testing/{{source_name_part}}.h",
-        ])
-
-# Compile the non-test sources generated above.
-blink_core_sources("bindings_core_impl") {
-  _non_testing_sources = get_target_outputs(":bindings_core_impl_generated") -
-                         generated_core_testing_callback_function_files
-  if (!use_v8_bind_gen_for_dictionary) {
-    _non_testing_sources -= generated_core_testing_dictionary_files
-  }
-  sources = _non_testing_sources + bindings_core_generated_interface_files +
-            get_target_outputs(":bindings_core_origin_trial_features")
+  sources = generated_callback_function_sources_in_core +
+            generated_callback_interface_sources_in_core +
+            generated_dictionary_sources_in_core +
+            generated_enumeration_sources_in_core +
+            generated_interface_sources_in_core +
+            generated_namespace_sources_in_core +
+            generated_observable_array_sources_in_core +
+            generated_typedef_sources_in_core + generated_union_sources_in_core
 
   deps = [
-    ":bindings_core_origin_trial_features",
-    ":bindings_core_v8_generated",
-  ]
-}
-
-# Compile the test sources generated above. This test target doesn't count
-# as part of the "core" component so shouldn't use the blink_core_sources for
-# linking on Windows.
-jumbo_source_set("testing") {
-  sources = generated_core_testing_dictionary_files +
-            generated_core_testing_callback_function_files
-
-  configs -= core_config_remove
-  configs += core_config_add + [ "//third_party/blink/renderer:inside_blink" ] -
-             [ "//third_party/blink/renderer/core:config" ]
-
-  deps = [
-    ":bindings_core_v8_generated",
-    "//skia",
-    "//third_party/blink/renderer/core:all_generators",
+    ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
 }
 
-fuzzer_test("v8_serialized_script_value_fuzzer") {
-  sources = [
-    "serialization/serialized_script_value_fuzzer.cc",
+source_set("testing") {
+  testonly = true
+
+  visibility = []
+  visibility = [ "//third_party/blink/renderer/core/*" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
   ]
+
+  sources = generated_callback_function_sources_for_testing_in_core +
+            generated_dictionary_sources_for_testing_in_core +
+            generated_enumeration_sources_for_testing_in_core +
+            generated_interface_sources_for_testing_in_core +
+            generated_union_sources_for_testing_in_core
+
+  deps = [
+    ":generated",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
+}
+
+group("generated") {
+  visibility = []
+  visibility = [
+    "//third_party/blink/renderer/bindings/core/v8/*",
+    "//third_party/blink/renderer/core/*",
+  ]
+
+  public_deps =
+      [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
+}
+
+fuzzer_test("v8_serialized_script_value_fuzzer") {
+  sources = [ "serialization/serialized_script_value_fuzzer.cc" ]
   seed_corpus = "serialization/fuzz_corpus"
   deps = [
+    "//third_party/blink/public/common",
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
   ]
 }

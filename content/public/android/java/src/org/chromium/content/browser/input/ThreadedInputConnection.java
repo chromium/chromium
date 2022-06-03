@@ -206,8 +206,12 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             final ExtractedText extractedText = convertToExtractedText(textInputState);
             mImeAdapter.updateExtractedText(mCurrentExtractedTextRequestToken, extractedText);
         }
-        mImeAdapter.updateSelection(
-                selection.start(), selection.end(), composition.start(), composition.end());
+        // This leads to containerView#onCheckIsTextEditor(). Run it on UI thread.
+        // See https://crbug.com/1060361.
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mImeAdapter.updateSelection(
+                    selection.start(), selection.end(), composition.start(), composition.end());
+        });
     }
 
     private TextInputState requestAndWaitForTextInputState() {

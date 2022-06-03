@@ -19,5 +19,7 @@ extern NSString* const kLanguageDetailsTableViewAccessibilityIdentifier;
 extern NSString* const kLanguageSettingsTableViewAccessibilityIdentifier;
 // Accessibility identifier of the Translate switch.
 extern NSString* const kTranslateSwitchAccessibilityIdentifier;
+// Accessibility identifier of the Managed Translate UI.
+extern NSString* const kTranslateManagedAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_LANGUAGE_SETTINGS_UI_CONSTANTS_H_

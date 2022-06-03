@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,8 +30,8 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
 
 @implementation SyncCreatePassphraseTableViewController
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
-  self = [super initWithBrowserState:browserState];
+- (instancetype)initWithBrowser:(Browser*)browser {
+  self = [super initWithBrowser:browser];
   if (self) {
     self.title =
         l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE);

@@ -1,0 +1,342 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm <<
+    /Fields [5 0 R 6 0 R 7 0 R 10 0 R]
+  >>
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 300 300]
+  /Resources <<
+    /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Annots [5 0 R 6 0 R 8 0 R 9 0 R 10 0 R]
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /Name /F1
+  /BaseFont /Courier
+>>
+endobj
+5 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Btn
+  /F 4
+  /Ff 1
+  /P 3 0 R
+  /Rect [135 250 155 270]
+  /T (readOnlyCheckbox)
+  /TU (readOnlyCheckbox)
+  /AP <<
+    /N <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+    /D <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+    /R <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+  >>
+  /AS /Yes
+  /BS <<
+    /S /S
+    /W 1
+  >>
+  /H /N
+  /MK <<
+    /BC [1 0 1]
+    /BG [1 .752941 .796078]
+    /CA (4)
+  >>
+  /V /Yes
+>>
+endobj
+6 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Btn
+  /F 4
+  /Ff 2
+  /P 3 0 R
+  /Rect [135 210 155 230]
+  /T (checkbox)
+  /TU (checkbox)
+  /AP <<
+    /N <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+    /D <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+    /R <<
+      /Yes 11 0 R
+      /Off 12 0 R
+    >>
+  >>
+  /AS /Off
+  /BS <<
+    /S /S
+    /W 2
+  >>
+  /H /N
+  /MK <<
+    /BC [.1 .1 .1]
+    /BG [.8 .843 1]
+    /CA (5)
+  >>
+  /V /Off
+>>
+endobj
+7 0 obj <<
+  /FT /Btn
+  /Ff 49154
+  /T (RadioButton)
+  /TU (RadioButton1)
+  /Kids [8 0 R 9 0 R]
+  /V /value2
+>>
+endobj
+8 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Btn
+  /F 4
+  /P 3 0 R
+  /Parent 7 0 R
+  /Rect [135 100 155 120]
+  /AP <<
+    /N <<
+      /value1 13 0 R
+      /Off 14 0 R
+    >>
+    /D <<
+      /value1 13 0 R
+      /Off 14 0 R
+    >>
+    /R <<
+      /value1 13 0 R
+      /Off 14 0 R
+    >>
+  >>
+  /AS /Off
+  /BS <<
+    /S /S
+    /W 2
+  >>
+  /H /N
+  /MK <<
+    /BC [0 .501961 0]
+    /BG [0 0 1]
+    /CA (5)
+  >>
+>>
+endobj
+9 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Btn
+  /F 4
+  /P 3 0 R
+  /Parent 7 0 R
+  /Rect [185 100 205 120]
+  /AP <<
+    /N <<
+      /value2 13 0 R
+      /Off 14 0 R
+    >>
+    /D <<
+      /value2 13 0 R
+      /Off 14 0 R
+    >>
+    /R <<
+      /value2 13 0 R
+      /Off 14 0 R
+    >>
+  >>
+  /AS /value2
+  /BS <<
+    /S /S
+    /W 2
+  >>
+  /H /N
+  /MK <<
+    /BC [0 .501961 0]
+    /BG [0 0 1]
+    /CA (5)
+  >>
+>>
+endobj
+10 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /F 4
+  /FT /Btn
+  /Rect [85 50 125 100]
+  /T (PushButton)
+  /Ff 65536
+  /H
+  /P
+  /MK <<
+    /BC [1 0 1]
+    /BG [1 .752941 .796078]
+    /CA (Submit)
+  >>
+>>
+endobj
+11 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  /Length 584
+>>
+stream
+q
+1 0 1 RG 1 w 0.5 0.5 19 19 re s
+Q
+q
+0 0 1 rg 0 0 1 RG
+11.90655 14.48997 m
+14.54638 17.62618 16.37396 18.07744 17.59234 18.07744 c
+6.807382 2.418942 6.672006 2.148189 6.446379 2.012813 c
+6.153064 1.877437 5.476184 1.877437 5.160306 1.877437 c
+4.438301 1.877437 4.280362 1.877437 4.122423 1.990251 c
+3.896797 2.148189 3.783983 2.464067 3.626045 2.779944 c
+3.129666 3.817827 2.249721 6.074095 2.249721 7.202228 c
+2.249721 7.585794 2.475348 7.766295 2.768663 7.969359 c
+3.242479 8.307799 3.919359 8.691365 4.505989 8.691365 c
+4.957242 8.691365 5.002368 8.307799 5.137744 7.946797 c
+f
+Q
+endstream
+endobj
+12 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  /Length 36
+>>
+stream
+q
+1 0 1 RG 1 w 0.5 0.5 19 19 re s
+Q
+endstream
+endobj
+13 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  /Length 408
+>>
+stream
+q
+0 .501961 0 RG 2 w
+1 0 0 1 10 10 cm
+9 0 m
+9 4.97079 4.97079 9 0 9 c
+-4.97079 9 -9 4.97079 -9 0 c
+-9 -4.97079 -4.97079 -9 0 -9 c
+4.97079 -9 9 -4.97079 9 0 c
+s
+Q
+q
+1 .752941 .796078 rg 1 .752941 .796078 RG
+17.2 15.95145 m
+11.20694 10 l
+17.2 4.027746 l
+15.97225 2.8 l
+10 8.793064 l
+4.027746 2.8 l
+2.8 4.027746 l
+8.813873 10 l
+2.8 15.97225 l
+4.027746 17.2 l
+10 11.20694 l
+15.97225 17.2 l
+17.2 15.95145 l
+h
+f
+Q
+endstream
+endobj
+14 0 obj <<
+  /Type /XObject
+  /Subtype /Form
+  /FormType 1
+  /BBox [0 0 20 20]
+  /Resources <<
+    /ProcSet [/PDF]
+  >>
+  /Length 162
+>>
+stream
+q
+0 .501961 0 RG 2 w
+1 0 0 1 10 10 cm
+9 0 m
+9 4.97079 4.97079 9 0 9 c
+-4.97079 9 -9 4.97079 -9 0 c
+-9 -4.97079 -4.97079 -9 0 -9 c
+4.97079 -9 9 -4.97079 9 0 c
+s
+Q
+endstream
+endobj
+xref
+0 15
+0000000000 65535 f 
+0000000015 00000 n 
+0000000127 00000 n 
+0000000190 00000 n 
+0000000417 00000 n 
+0000000503 00000 n 
+0000000975 00000 n 
+0000001426 00000 n 
+0000001545 00000 n 
+0000001969 00000 n 
+0000002396 00000 n 
+0000002609 00000 n 
+0000003355 00000 n 
+0000003552 00000 n 
+0000004122 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 15
+>>
+startxref
+4446
+%%EOF

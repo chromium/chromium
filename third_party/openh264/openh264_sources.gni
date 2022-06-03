@@ -4,6 +4,7 @@ openh264_common_include_dirs = [
   "//third_party/openh264/src/codec/common/arm",
   "//third_party/openh264/src/codec/common/inc",
   "//third_party/openh264/src/codec/common/src",
+  "//third_party/openh264/src/codec/common/x86",
 ]
 
 openh264_common_sources = [

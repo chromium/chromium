@@ -8,7 +8,7 @@
 #include <queue>
 
 #include "base/containers/flat_map.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/browser_test_interfaces.mojom-forward.h"
 #include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

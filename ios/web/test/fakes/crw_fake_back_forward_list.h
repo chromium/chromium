@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_NAVIGATION_CRW_TEST_BACK_FORWARD_LIST_H_
-#define IOS_WEB_NAVIGATION_CRW_TEST_BACK_FORWARD_LIST_H_
+#ifndef IOS_WEB_TEST_FAKES_CRW_FAKE_BACK_FORWARD_LIST_H_
+#define IOS_WEB_TEST_FAKES_CRW_FAKE_BACK_FORWARD_LIST_H_
 
 #import <Foundation/Foundation.h>
 
@@ -50,4 +50,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#endif  // IOS_WEB_NAVIGATION_CRW_TEST_BACK_FORWARD_LIST_H_
+#endif  // IOS_WEB_TEST_FAKES_CRW_FAKE_BACK_FORWARD_LIST_H_

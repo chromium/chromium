@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -72,6 +70,10 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
   static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 
+  TabUnderNavigationThrottle(const TabUnderNavigationThrottle&) = delete;
+  TabUnderNavigationThrottle& operator=(const TabUnderNavigationThrottle&) =
+      delete;
+
   ~TabUnderNavigationThrottle() override;
 
  private:
@@ -111,8 +113,6 @@ class TabUnderNavigationThrottle : public content::NavigationThrottle {
 
   // True if the throttle has seen a tab under.
   bool seen_tab_under_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabUnderNavigationThrottle);
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_TAB_UNDER_NAVIGATION_THROTTLE_H_

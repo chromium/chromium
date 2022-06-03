@@ -46,7 +46,6 @@ class EventMap {
          events::WEB_VIEW_INTERNAL_ON_CONSOLE_MESSAGE},
         {webview::kEventContentLoad, events::WEB_VIEW_INTERNAL_ON_CONTENT_LOAD},
         {webview::kEventDialog, events::WEB_VIEW_INTERNAL_ON_DIALOG},
-        {webview::kEventDropLink, events::WEB_VIEW_INTERNAL_ON_DROP_LINK},
         {webview::kEventExit, events::WEB_VIEW_INTERNAL_ON_EXIT},
         {webview::kEventExitFullscreen,
          events::WEB_VIEW_INTERNAL_ON_EXIT_FULLSCREEN},
@@ -86,6 +85,9 @@ class EventMap {
     }
   }
 
+  EventMap(const EventMap&) = delete;
+  EventMap& operator=(const EventMap&) = delete;
+
   events::HistogramValue Get(const std::string& event_name) {
     auto value = values_.find(event_name);
     return value != values_.end() ? value->second : events::UNKNOWN;
@@ -93,8 +95,6 @@ class EventMap {
 
  private:
   std::map<std::string, events::HistogramValue> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMap);
 };
 
 base::LazyInstance<EventMap>::DestructorAtExit g_event_map =

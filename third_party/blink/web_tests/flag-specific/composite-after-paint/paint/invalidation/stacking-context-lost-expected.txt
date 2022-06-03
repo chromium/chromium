@@ -8,17 +8,24 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='outer'",
-      "position": [278, 278],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='outer'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 100, 100]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [278, 278, 0, 1]
       ]
     }
   ]

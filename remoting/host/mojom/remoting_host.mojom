@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Provides a set of methods to allow the Daemon process to initialize and
+// control the network (a.k.a. host) process.
+// The remote for this interface is owned in the high-privilege daemon process
+// and the receiver is bound in the low-privilege network process.
+interface RemotingHostControl {
+  // Instructs the network process to crash itself. This is called when a higher
+  // privilege process detects abnormal behavior in the host process. After
+  // crashing, the daemon process will automatically restart the network
+  // process.
+  [EnableIf=is_win]
+  CrashHostProcess(string function_name, string file_name, int32 line_number);
+
+  // Provides host configuration details to the network process such as the
+  // owner email and robot account to use for authentication to service APIs.
+  // This method may be called multiple times as changes are detected in the
+  // host configuration file.
+  [EnableIf=is_win]
+  ApplyHostConfig(mojo_base.mojom.DictionaryValue config);
+
+  // Provides the network process with a set of platform handles which are used
+  // for pairing functionality. The network process does not have access to the
+  // privileged platform resource so the Daemon process must open it and provide
+  // a handle to it. This method must only be called once per network process
+  // instance.
+  [EnableIf=is_win]
+  InitializePairingRegistry(handle<platform> privileged_handle,
+                            handle<platform> unprivileged_handle);
+};

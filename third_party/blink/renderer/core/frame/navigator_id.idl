@@ -30,15 +30,13 @@
 
 // https://html.spec.whatwg.org/C/#client-identification
 
-[
-    Exposed=(Window,Worker)
-] interface mixin NavigatorID {
+interface mixin NavigatorID {
     readonly attribute DOMString appCodeName; // constant "Mozilla"
     readonly attribute DOMString appName; // constant "Netscape"
-    [HighEntropy, MeasureAs=NavigatorAppVersion] readonly attribute DOMString appVersion;
-    [HighEntropy, MeasureAs=NavigatorPlatform] readonly attribute DOMString platform;
+    [HighEntropy=Direct, MeasureAs=NavigatorAppVersion] readonly attribute DOMString appVersion;
+    [HighEntropy=Direct, MeasureAs=NavigatorPlatform] readonly attribute DOMString platform;
     readonly attribute DOMString product; // constant "Gecko"
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22555
     // boolean taintEnabled(); // constant false
-    [Affects=Nothing, HighEntropy, MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
+    [HighEntropy=Direct, MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
 };

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/search_widget_extension/search_widget_view.h"
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/search_widget_extension/copied_content_view.h"
 #import "ios/chrome/search_widget_extension/search_action_view.h"
 #import "ios/chrome/search_widget_extension/search_widget_constants.h"
@@ -210,9 +210,8 @@ const CGFloat kMaxContentSize = 421;
   return [self actionContentHeight] + [self copiedURLSectionHeight];
 }
 
-- (void)setCopiedContentType:(CopiedContentType)type
-                  copiedText:(NSString*)copiedText {
-  [self.copiedURLSection setCopiedContentType:type copiedText:copiedText];
+- (void)setCopiedContentType:(CopiedContentType)type {
+  [self.copiedURLSection setCopiedContentType:type];
 }
 
 @end

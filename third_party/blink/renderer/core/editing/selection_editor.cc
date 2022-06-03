@@ -69,8 +69,8 @@ void SelectionEditor::Dispose() {
 }
 
 Document& SelectionEditor::GetDocument() const {
-  DCHECK(LifecycleContext());
-  return *LifecycleContext();
+  DCHECK(SynchronousMutationObserver::GetDocument());
+  return *SynchronousMutationObserver::GetDocument();
 }
 
 VisibleSelection SelectionEditor::ComputeVisibleSelectionInDOMTree() const {
@@ -164,16 +164,17 @@ void SelectionEditor::DidFinishDOMMutation() {
 
 void SelectionEditor::DidAttachDocument(Document* document) {
   DCHECK(document);
-  DCHECK(!LifecycleContext()) << LifecycleContext();
+  DCHECK(!SynchronousMutationObserver::GetDocument())
+      << SynchronousMutationObserver::GetDocument();
 #if DCHECK_IS_ON()
   style_version_for_dom_tree_ = static_cast<uint64_t>(-1);
   style_version_for_flat_tree_ = static_cast<uint64_t>(-1);
 #endif
   ClearVisibleSelection();
-  SetContext(document);
+  SetDocument(document);
 }
 
-void SelectionEditor::ContextDestroyed(Document*) {
+void SelectionEditor::ContextDestroyed() {
   Dispose();
 #if DCHECK_IS_ON()
   style_version_for_dom_tree_ = static_cast<uint64_t>(-1);
@@ -317,7 +318,6 @@ static Position UpdatePostionAfterAdoptingTextNodesMerged(
   Node* const anchor_node = position.AnchorNode();
   const Node& node_to_be_removed = node_to_be_removed_with_index.GetNode();
   switch (position.AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
     case PositionAnchorType::kAfterChildren:
       return position;
     case PositionAnchorType::kBeforeAnchor:
@@ -452,18 +452,8 @@ void SelectionEditor::UpdateCachedVisibleSelectionInFlatTreeIfNeeded() const {
   style_version_for_flat_tree_ = GetDocument().StyleVersion();
 #endif
   cached_visible_selection_in_flat_tree_is_dirty_ = false;
-  SelectionInFlatTree::Builder builder;
-  const PositionInFlatTree& base = ToPositionInFlatTree(selection_.Base());
-  const PositionInFlatTree& extent = ToPositionInFlatTree(selection_.Extent());
-  if (base.IsNotNull() && extent.IsNotNull())
-    builder.SetBaseAndExtent(base, extent);
-  else if (base.IsNotNull())
-    builder.Collapse(base);
-  else if (extent.IsNotNull())
-    builder.Collapse(extent);
-  builder.SetAffinity(selection_.Affinity());
   cached_visible_selection_in_flat_tree_ =
-      CreateVisibleSelection(builder.Build());
+      CreateVisibleSelection(ConvertToSelectionInFlatTree(selection_));
   if (!cached_visible_selection_in_flat_tree_.IsNone())
     return;
 #if DCHECK_IS_ON()
@@ -537,7 +527,7 @@ void SelectionEditor::ClearDocumentCachedRange() {
   cached_range_ = nullptr;
 }
 
-void SelectionEditor::Trace(Visitor* visitor) {
+void SelectionEditor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(selection_);
   visitor->Trace(cached_visible_selection_in_dom_tree_);

@@ -1,0 +1,54 @@
+<!doctype html>
+<title>PaymentRequest: Tests for app-store billing when total is mandatory</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../serviceworker/resources/test-helpers.js"></script>
+<script>
+test(() => {
+  assert_false(internals.runtimeFlags.digitalGoodsEnabled);
+}, "This test suite assumes that the runtime-enabled-flag DigitalGoods is disabled.");
+
+const onlySupportAppStoreBillingMethod = [{supportedMethods: "https://play.google.com/billing"}];
+const supportBothAppStoreBillingMethodAndNormalMethod = [{supportedMethods: "https://play.google.com/billing"},
+      {supportedMethods: "https://maxpay.com/payment-request"}];
+
+[null, {}, "omitted", undefined].forEach(total => {
+  test(() => {
+    let details = {id: "foo"};
+    if (total !== "omitted") Object.assign(details, { total });
+    try {
+      new PaymentRequest(onlySupportAppStoreBillingMethod, details);
+    } catch (err) {
+      let expectedMessage;
+      if (total === null) {
+        expectedMessage = "Failed to construct 'PaymentRequest': Missing required member(s): amount, label.";
+      } else if (["omitted", undefined].includes(total)) {
+        expectedMessage = "Failed to construct 'PaymentRequest': required member total is undefined.";
+      } else {
+        expectedMessage = "Failed to construct 'PaymentRequest': required member amount is undefined.";
+      }
+      assert_equals(err.message, expectedMessage, `Error messages mismatch.`);
+      return;
+    }
+    assert_unreached(`Expect an exception.`);
+  }, `The total field is mandatory (not allowed to be ${JSON.stringify(total)}) when DigitalGoods is disabled.`)
+});
+
+[null, {}, "omitted", undefined].forEach(details => {
+  test(() => {
+    let details = {id: "foo"};
+    try {
+      if (details === "omitted") {
+        new PaymentRequest(onlySupportAppStoreBillingMethod);
+      } else {
+        new PaymentRequest(onlySupportAppStoreBillingMethod, details);
+      }
+    } catch (err) {
+      let expectedMessage = "Failed to construct 'PaymentRequest': required member total is undefined.";
+      assert_equals(err.message, expectedMessage, `Error messages mismatch.`);
+      return;
+    }
+    assert_unreached(`Expect an exception.`);
+  }, `The details field is mandatory (not allowed to be ${JSON.stringify(details)}) when DigitalGoods is disabled.`)
+});
+</script>

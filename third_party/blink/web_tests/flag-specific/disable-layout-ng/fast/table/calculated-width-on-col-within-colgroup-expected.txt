@@ -1,0 +1,17 @@
+	
+FAIL:
+Expected 200 for width, but got 0. 
+Expected 200 for width, but got 0. 
+
+<table>
+    <colgroup width="200">
+        <col data-expected-width="200">
+        <col data-expected-width="200">
+    </colgroup>
+    <tbody><tr>
+        <td data-expected-width="200"></td>
+        <td data-expected-width="200"></td>
+    </tr>
+</tbody></table>
+
+crbug.com/446936: Use a used value of Auto on col elements that have a calc value. This is permitted by the spec and avoids ASSERTs.

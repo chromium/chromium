@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {getCddTemplate} from './print_preview_test_utils.js';
 
 window.link_container_test = {};
+const link_container_test = window.link_container_test;
 link_container_test.suiteName = 'LinkContainerTest';
 /** @enum {string} */
 link_container_test.TestNames = {
@@ -19,13 +23,14 @@ link_container_test.TestNames = {
 };
 
 suite(link_container_test.suiteName, function() {
-  /** @type {?PrintPreviewLinkContainerElement} */
-  let linkContainer = null;
+  /** @type {!PrintPreviewLinkContainerElement} */
+  let linkContainer;
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-    linkContainer = document.createElement('print-preview-link-container');
+    document.body.innerHTML = '';
+    linkContainer = /** @type {!PrintPreviewLinkContainerElement} */ (
+        document.createElement('print-preview-link-container'));
     document.body.appendChild(linkContainer);
 
     /** Set inputs to some defaults. */
@@ -41,7 +46,9 @@ suite(link_container_test.suiteName, function() {
 
   /** Tests that the system dialog link is hidden in App Kiosk mode. */
   test(assert(link_container_test.TestNames.HideInAppKioskMode), function() {
-    const systemDialogLink = linkContainer.$.systemDialogLink;
+    const systemDialogLink =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
     assertFalse(systemDialogLink.hidden);
     linkContainer.set('appKioskMode', true);
     assertTrue(systemDialogLink.hidden);
@@ -53,10 +60,14 @@ suite(link_container_test.suiteName, function() {
    */
   test(assert(link_container_test.TestNames.SystemDialogLinkClick), function() {
     const promise = eventToPromise('print-with-system-dialog', linkContainer);
-    const throbber = linkContainer.$.systemDialogThrobber;
+    const throbber = /** @type {!HTMLDivElement} */ (
+        linkContainer.shadowRoot.querySelector('#systemDialogThrobber'));
     assertTrue(throbber.hidden);
 
-    linkContainer.$.systemDialogLink.click();
+    const link =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
+    link.click();
     return promise.then(function() {
       assertEquals(isWindows, throbber.hidden);
     });
@@ -68,10 +79,14 @@ suite(link_container_test.suiteName, function() {
    * and enabled on other platforms.
    */
   test(assert(link_container_test.TestNames.InvalidState), function() {
-    const systemDialogLink = linkContainer.$.systemDialogLink;
-    const openInPreviewLink =
-        isMac ? linkContainer.$.openPdfInPreviewLink : null;
+    const systemDialogLink =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
 
+    /**
+     * @param {!HTMLDivElement} link
+     * @param {boolean} disabled
+     */
     const validateLinkState = (link, disabled) => {
       assertFalse(link.hidden);
       assertEquals(!disabled, link.hasAttribute('actionable'));
@@ -79,7 +94,10 @@ suite(link_container_test.suiteName, function() {
     };
 
     validateLinkState(systemDialogLink, false);
+    let openInPreviewLink;
     if (isMac) {
+      openInPreviewLink = /** @type {!HTMLDivElement} */ (
+          linkContainer.shadowRoot.querySelector('#openPdfInPreviewLink'));
       validateLinkState(openInPreviewLink, false);
     }
 
@@ -88,7 +106,7 @@ suite(link_container_test.suiteName, function() {
     linkContainer.disabled = true;
     validateLinkState(systemDialogLink, isWindows);
     if (isMac) {
-      validateLinkState(openInPreviewLink, true);
+      validateLinkState(assert(openInPreviewLink), true);
     }
   });
 
@@ -98,11 +116,13 @@ suite(link_container_test.suiteName, function() {
    */
   test(
       assert(link_container_test.TestNames.OpenInPreviewLinkClick), function() {
-        const throbber = linkContainer.$.openPdfInPreviewThrobber;
+        const throbber = /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector(
+                '#openPdfInPreviewThrobber'));
         assertTrue(throbber.hidden);
         const promise = eventToPromise('open-pdf-in-preview', linkContainer);
 
-        linkContainer.$.openPdfInPreviewLink.click();
+        linkContainer.shadowRoot.querySelector('#openPdfInPreviewLink').click();
         return promise.then(function() {
           assertFalse(throbber.hidden);
         });

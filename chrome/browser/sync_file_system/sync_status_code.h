@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_SYNC_STATUS_CODE_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_SYNC_STATUS_CODE_H_
 
-#include <string>
-
 #include "base/files/file.h"
 
 namespace leveldb {

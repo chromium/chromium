@@ -123,8 +123,8 @@ class CheckerImageTrackerTest : public testing::Test,
                          .set_is_multipart(is_multipart)
                          .set_decoding_mode(PaintImage::DecodingMode::kAsync)
                          .TakePaintImage(),
-                     SkIRect::MakeWH(dimension, dimension),
-                     kNone_SkFilterQuality, SkMatrix::I(),
+                     false, SkIRect::MakeWH(dimension, dimension),
+                     PaintFlags::FilterQuality::kNone, SkM44(),
                      PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
   }
 
@@ -437,8 +437,8 @@ TEST_F(CheckerImageTrackerTest, CheckersOnlyStaticCompletedImages) {
           .set_id(partial_image.paint_image().stable_id())
           .set_paint_image_generator(CreatePaintImageGenerator(image_size))
           .TakePaintImage(),
-      SkIRect::MakeWH(image_size.width(), image_size.height()),
-      kNone_SkFilterQuality, SkMatrix::I(), PaintImage::kDefaultFrameIndex,
+      false, SkIRect::MakeWH(image_size.width(), image_size.height()),
+      PaintFlags::FilterQuality::kNone, SkM44(), PaintImage::kDefaultFrameIndex,
       gfx::ColorSpace());
   EXPECT_FALSE(
       ShouldCheckerImage(completed_paint_image, WhichTree::PENDING_TREE));
@@ -469,9 +469,9 @@ TEST_F(CheckerImageTrackerTest, ChoosesMaxScaleAndQuality) {
   DrawImage scaled_image1(image, 0.5f, PaintImage::kDefaultFrameIndex,
                           gfx::ColorSpace());
   DrawImage scaled_image2 =
-      DrawImage(image.paint_image(), image.src_rect(), kHigh_SkFilterQuality,
-                SkMatrix::MakeScale(1.8f), PaintImage::kDefaultFrameIndex,
-                gfx::ColorSpace());
+      DrawImage(image.paint_image(), false, image.src_rect(),
+                PaintFlags::FilterQuality::kHigh, SkM44::Scale(1.8f, 1.8f),
+                PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
 
   std::vector<DrawImage> draw_images = {scaled_image1, scaled_image2};
   CheckerImageTracker::ImageDecodeQueue image_decode_queue =
@@ -481,7 +481,7 @@ TEST_F(CheckerImageTrackerTest, ChoosesMaxScaleAndQuality) {
   EXPECT_EQ(image_controller_.decoded_images()[0].scale(),
             SkSize::Make(1.8f, 1.8f));
   EXPECT_EQ(image_controller_.decoded_images()[0].filter_quality(),
-            kHigh_SkFilterQuality);
+            PaintFlags::FilterQuality::kHigh);
 }
 
 TEST_F(CheckerImageTrackerTest, DontCheckerMultiPartImages) {
@@ -544,8 +544,8 @@ TEST_F(CheckerImageTrackerTest, UseSrcRectForSize) {
   // Create an image with checkerable dimensions and subrect it. It should not
   // be checkered.
   DrawImage image = CreateImage(ImageType::CHECKERABLE);
-  image = DrawImage(image.paint_image(), SkIRect::MakeWH(200, 200),
-                    image.filter_quality(), SkMatrix::I(),
+  image = DrawImage(image.paint_image(), false, SkIRect::MakeWH(200, 200),
+                    image.filter_quality(), SkM44(),
                     PaintImage::kDefaultFrameIndex, image.target_color_space());
   EXPECT_FALSE(ShouldCheckerImage(image, WhichTree::PENDING_TREE));
 }

@@ -5,15 +5,13 @@
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "mojom_traits_unittest.cc",
-  ]
+  sources = [ "mojom_traits_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",
     "//components/viz/common:common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//ipc",
     "//media/capture/mojom:video_capture",
     "//mojo/public/cpp/test_support:test_utils",
@@ -30,16 +28,14 @@ source_set("tests") {
 source_set("perftests") {
   testonly = true
 
-  sources = [
-    "mojom_traits_perftest.cc",
-  ]
+  sources = [ "mojom_traits_perftest.cc" ]
 
   deps = [
     "//base",
     "//base/test:test_support",
     "//components/viz/common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//mojo/public/cpp/bindings",
     "//services/viz/public/mojom",
     "//skia",

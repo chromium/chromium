@@ -8,6 +8,7 @@ These classes abstract away the various setups needed to run the WebDriver java
 tests in various environments.
 """
 
+from __future__ import absolute_import
 import logging
 import os
 import sys
@@ -31,7 +32,8 @@ ANDROID_TEST_HTTP_PORT = 2311
 ANDROID_TEST_HTTPS_PORT = 2411
 
 _EXPECTATIONS = {}
-execfile(os.path.join(_THIS_DIR, 'test_expectations'), _EXPECTATIONS)
+exec(compile(open(os.path.join(_THIS_DIR, 'test_expectations'), "rb").read(), \
+  os.path.join(_THIS_DIR, 'test_expectations'), 'exec'), _EXPECTATIONS)
 
 
 class BaseTestEnvironment(object):

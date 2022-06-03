@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/render_widget_signals.h"
 
-#include "base/macros.h"
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
@@ -21,14 +22,13 @@ namespace render_widget_signals_unittest {
 class MockObserver : public RenderWidgetSignals::Observer {
  public:
   MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
   MOCK_METHOD1(SetAllRenderWidgetsHidden, void(bool hidden));
   MOCK_METHOD1(SetHasVisibleRenderWidgetWithTouchHandler,
                void(bool has_visible_render_widget_with_touch_handler));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class RenderWidgetSignalsTest : public testing::Test {
@@ -37,8 +37,9 @@ class RenderWidgetSignalsTest : public testing::Test {
   ~RenderWidgetSignalsTest() override = default;
 
   void SetUp() override {
-    mock_observer_.reset(new MockObserver());
-    render_widget_signals_.reset(new RenderWidgetSignals(mock_observer_.get()));
+    mock_observer_ = std::make_unique<MockObserver>();
+    render_widget_signals_ =
+        std::make_unique<RenderWidgetSignals>(mock_observer_.get());
   }
 
   void IgnoreWidgetCreationCallbacks() {

@@ -110,6 +110,25 @@ CONFIG_EVENT_NAMES_UNSORTED = """
 </ukm-configuration>
 """.strip()
 
+OBSOLETE_EVENTS_PARSED = {
+    'event': {
+        "obsolete": "Some message",
+        "metric": {
+            "summary": "Some summary",
+        },
+        "metric": {
+            "summary": "Some summary",
+        },
+    },
+    'event': {
+        "obsolete": "Some message",
+        "metric": {
+            "summary": "Some summary",
+        },
+    },
+}
+
+
 class UkmXmlTest(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):
@@ -141,6 +160,13 @@ class UkmXmlTest(unittest.TestCase):
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
     result = ukm_model.PrettifyXML(CONFIG_EVENT_NAMES_UNSORTED)
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
+
+  def testIsNotObsolete(self):
+    for event in OBSOLETE_EVENTS_PARSED.values():
+      self.assertFalse(ukm_model.IsNotObsolete(event))
+      for metric in event.values():
+        self.assertTrue(ukm_model.IsNotObsolete(metric))
+
 
 if __name__ == '__main__':
   unittest.main()

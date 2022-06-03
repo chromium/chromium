@@ -7,10 +7,10 @@ visibility = [ "//chrome/chrome_cleaner/*" ]
 
 source_set("strings") {
   sources = [
-    "string16_embedded_nulls.cc",
-    "string16_embedded_nulls.h",
     "string_util.cc",
     "string_util.h",
+    "wstring_embedded_nulls.cc",
+    "wstring_embedded_nulls.h",
   ]
   deps = [
     "//base",
@@ -36,8 +36,8 @@ source_set("unittest_sources") {
   testonly = true
 
   sources = [
-    "string16_embedded_nulls_unittest.cc",
     "string_util_unittest.cc",
+    "wstring_embedded_nulls_unittest.cc",
   ]
 
   deps = [

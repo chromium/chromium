@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPABILITIES_BUCKET_UTILITY
-#define MEDIA_CAPABILITIES_BUCKET_UTILITY
+#ifndef MEDIA_CAPABILITIES_BUCKET_UTILITY_H_
+#define MEDIA_CAPABILITIES_BUCKET_UTILITY_H_
 
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,4 +25,4 @@ MEDIA_EXPORT int GetFpsBucket(double raw_fps);
 
 }  // namespace media
 
-#endif  // MEDIA_CAPABILITIES_BUCKET_UTILITY
+#endif  // MEDIA_CAPABILITIES_BUCKET_UTILITY_H_

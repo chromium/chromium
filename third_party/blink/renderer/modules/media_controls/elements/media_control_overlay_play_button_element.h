@@ -24,11 +24,11 @@ class MODULES_EXPORT MediaControlOverlayPlayButtonElement final
 
   void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }
 
-  WebSize GetSizeOrDefault() const final;
+  gfx::Size GetSizeOrDefault() const final;
 
   void SetIsDisplayed(bool);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   const char* GetNameForHistograms() const override;

@@ -1,9 +1,9 @@
-document
-++group IsControlElement=false
-++++description Name='My favorite browser is '
-++++group IsControlElement=false
-++++++description Name='ABC'
-++++description Name=' '
-++++group IsControlElement=false
-++++++description Name='Chrome'
-++++description Name='!'
+Document
+++Group IsControlElement=false
+++++Text Name='My favorite browser is '
+++++Group IsControlElement=false
+++++++Text Name='ABC'
+++++Text Name=' '
+++++Group IsControlElement=false
+++++++Text Name='Chrome'
+++++Text Name='!'

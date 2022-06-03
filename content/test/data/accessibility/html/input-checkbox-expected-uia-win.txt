@@ -1,7 +1,7 @@
-document
-++group IsControlElement=false
-++++checkbox Name='Checkbox0' Toggle.ToggleState='Off'
-++++checkbox Name='Checkbox1' Toggle.ToggleState='On'
-++++checkbox Name='Checkbox2' Toggle.ToggleState='On'
-++++checkbox Name='Checkbox3' Toggle.ToggleState='On'
-++++checkbox Name='Checkbox4' Toggle.ToggleState='Indeterminate'
+Document
+++Group IsControlElement=false
+++++CheckBox Name='Checkbox0' Toggle.ToggleState='Off'
+++++CheckBox Name='Checkbox1' Toggle.ToggleState='On'
+++++CheckBox Name='Checkbox2' Toggle.ToggleState='On'
+++++CheckBox Name='Checkbox3' Toggle.ToggleState='On'
+++++CheckBox Name='Checkbox4' Toggle.ToggleState='Indeterminate'

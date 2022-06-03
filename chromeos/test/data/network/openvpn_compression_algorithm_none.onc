@@ -1,0 +1,33 @@
+{
+    "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+    "Name": "my vpn",
+    "Type": "VPN",
+    "VPN": {
+        "AutoConnect": true,
+        "Host": "vpn.my.domain.com",
+        "Type": "OpenVPN",
+        "OpenVPN": {
+            "AuthRetry": "interact",
+            "ClientCertType": "None",
+            "CompLZO": "true",
+            "CompressionAlgorithm": "None",
+            "KeyDirection": "1",
+            "OTP": "some OTP",
+            "Password": "some password",
+            "Port": 443,
+            "Proto": "udp",
+            "PushPeerInfo": true,
+            "RemoteCertEKU": "TLS Web Server Authentication",
+            "RemoteCertKU": [
+                "e0"
+            ],
+            "RemoteCertTLS": "server",
+            "RenegSec": 0,
+            "SaveCredentials": false,
+            "ServerPollTimeout": 10,
+            "StaticChallenge": "Please enter token OTP",
+            "Username": "abc ${LOGIN_EMAIL} def",
+            "UserAuthenticationType": "OTP"
+        }
+    }
+}

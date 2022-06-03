@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+This test passes if it doesn't crash.
+
+<script>
+  if (window.testRunner)
+    testRunner.dumpAsText();
+</script>
+
+<script>
+class CustomDetails extends HTMLElement {
+  constructor() {
+    super();
+    const shadowRoot = this.attachShadow({mode: 'open', slotAssignment: 'manual'});
+
+    this.summarySlot = document.createElement('slot');
+    this.summarySlot.id = 'details-summary';
+    shadowRoot.appendChild(this.summarySlot);
+
+    const defaultSummary = document.createElement('summary');
+    defaultSummary.textContent = 'Details';
+    this.summarySlot.appendChild(defaultSummary);
+
+    this.contentSlot = document.createElement('slot');
+    this.contentSlot.id = 'details-content';
+    this.contentSlot.style = `content-visibility:hidden; display:block;`;
+    shadowRoot.appendChild(this.contentSlot);
+
+    const style = document.createElement('style');
+    style.textContent = `
+:host summary {
+  display: list-item;
+  counter-increment: list-item 0;
+  list-style: disclosure-closed inside;
+}
+:host([open]) summary {
+  list-style-type: disclosure-open;
+}
+`;
+    shadowRoot.appendChild(style);
+  }
+
+  connectedCallback() {
+    this.updateOpen();
+    this.updateAssignment();
+    this.addEventListener('DOMNodeInserted', this.updateAssignment);
+    this.addEventListener('DOMNodeRemoved', this.updateAssignment);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('DOMNodeInserted', this.updateAssignment);
+    this.removeEventListener('DOMNodeRemoved', this.updateAssignment);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.updateOpen();
+  }
+
+  static get observedAttributes() {
+    return ['open'];
+  }
+
+  updateOpen() {
+    if (this.hasAttribute('open')) {
+      this.contentSlot.style = ``;
+    } else {
+      this.contentSlot.style = `content-visibility: hidden; display:block`;
+    }
+  }
+
+  updateAssignment() {
+    let summary = null;
+    const content = [];
+
+    for (let child = this.firstChild; child; child = child.nextSibling) {
+      if (!summary && child.tagName === 'SUMMARY') {
+        summary = child;
+      } else {
+        content.push(child);
+      }
+    }
+
+    if (summary)
+      this.summarySlot.assign(summary);
+    if (content.length)
+      this.contentSlot.assign(...content);
+  }
+};
+customElements.define('x-details', CustomDetails);
+</script>
+
+<script>
+function clickOn(element, x, y) {
+  const rect = element.getBoundingClientRect();
+  return new Promise((resolve, reject) => {
+    chrome.gpuBenchmarking.pointerActionSequence([
+        {source: 'mouse',
+         actions: [
+             {name: 'pointerMove', x: rect.x + x, y: rect.y + y},
+             {name: 'pointerDown', x: rect.x + x, y: rect.y + y, button: 0},
+             {name: 'pointerUp', button: 0}]
+        }], resolve);
+  });
+}
+
+const $ = document.querySelector.bind(document);
+
+async function runTests() {
+  $('#dt1').removeChild($('#dt1 > summary'));
+
+  $('#dt1c').removeChild($('#dt1c > summary'));
+  await clickOn($('#dt1c'), 2, 2);
+
+  $('#dt2').removeChild($('#dt2 > summary'));
+
+  $('#dt2c').removeChild($('#dt2c > summary'));
+  await clickOn($('#dt2c'), 2, 2);
+
+  $('#dt3').removeChild($('#dt3 > summary:last-of-type'));
+
+  $('#dt3c').removeChild($('#dt3c > summary:last-of-type'));
+  await clickOn($('#dt3c'), 2, 2);
+
+  $('#dt4').removeChild($('#dt4 > summary'));
+
+  $('#dt4c').removeChild($('#dt4c > summary'));
+  await clickOn($('#dt4c'), 2, 2);
+
+  $('#dt5').removeChild($('#dt5 > summary'));
+
+  $('#dt5c').removeChild($('#dt5c > summary'));
+  await clickOn($('#dt5c'), 2, 2);
+
+  $('#dt6').removeChild($('#dt6 > summary:last-of-type'));
+
+  $('#dt6c').removeChild($('#dt6c > summary:last-of-type'));
+  await clickOn($('#dt6c'), 2, 2);
+
+  testRunner.notifyDone();
+}
+
+testRunner.waitUntilDone();
+
+</script>
+<body onload="runTests()">
+<x-details id="dt1"><summary>summary</summary></x-details>
+<x-details id="dt1c"><summary>summary</summary></x-details>
+<x-details id="dt2"><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt2c"><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt3"><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt3c"><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt4" open><summary>summary</summary></x-details>
+<x-details id="dt4c" open><summary>summary</summary></x-details>
+<x-details id="dt5" open><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt5c" open><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt6" open><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt6c" open><summary>summary 1</summary><summary>summary 2</summary></x-details>
+</body>

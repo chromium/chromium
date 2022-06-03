@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+let char;
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => gattServer.getPrimaryService('heart_rate'))
+    .then(service => service.getCharacteristic('heart_rate_measurement'))
+    .then(characteristic => {
+      char = characteristic;
+      return Promise.all([
+        characteristic.startNotifications(),
+        characteristic.startNotifications()
+      ]);
+    })
+    .then(() => {
+      return new Promise(resolve => {
+        let event_listener = () => {
+          char.removeEventListener('characteristicvaluechanged', event_listener);
+          resolve();
+        };
+        char.addEventListener('characteristicvaluechanged', event_listener);
+      })
+    });
+}, 'Starting notification concurrently still can receive notification.');
+</script>

@@ -1,0 +1,24 @@
+Name: Simple Homomorphic Encryption Library with Lattices
+URL: https://github.com/google/shell-encryption
+Version: f94f58852e9b3edaf2766e348a69a70f596bb9dd
+License: Apache Version 2.0
+License File: src/LICENSE
+Security Critical: yes
+
+Description: This project is a library for fully-homomorphic symmetric-key
+encryption. It uses Ring Learning with Errors (RLWE)-based encryption to make it
+possible to both add and multiply encrypted data. It uses modulus-switching to
+enable arbitrary-depth homomorphic encryption (provided sufficiently large
+parameters are set). RLWE is also believed to be secure in the face of quantum
+computers.
+
+Local Modifications:
+
+Applying local modifications live in //third_party/shell-encryption/patches/
+can be done by running the following commands:
+
+$ export SHELL_PATH=<path-to-chromium>/src/third_party/shell-encryption
+$ for patch in $SHELL_PATH/patches/*; do patch -s -p1 < $patch; done
+
+In case of conflict, update those patches accordingly and save them back in
+//third_party/shell-encryption/patches/.

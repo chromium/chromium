@@ -9,16 +9,25 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/util_constants.h"
 
 namespace installer {
+
+base::CommandLine GetPostInstallLaunchCommand(
+    const base::FilePath& application_path) {
+  base::CommandLine cmd(application_path.Append(kChromeExe));
+  cmd.AppendSwitch(::switches::kFromInstaller);
+  return cmd;
+}
 
 bool LaunchChromeBrowser(const base::FilePath& application_path) {
   if (application_path.empty())
     return false;
 
-  const base::CommandLine cmd(application_path.Append(kChromeExe));
-  return base::LaunchProcess(cmd, base::LaunchOptions()).IsValid();
+  return base::LaunchProcess(GetPostInstallLaunchCommand(application_path),
+                             base::LaunchOptions())
+      .IsValid();
 }
 
 bool LaunchChromeAndWait(const base::FilePath& application_path,

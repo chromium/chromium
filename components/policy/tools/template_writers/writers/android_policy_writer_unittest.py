@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -45,11 +45,11 @@ class AndroidPolicyWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     # Test an example policy without items.
     policy = {
         'name':
-            '_policy_name',
+        '_policy_name',
         'caption':
-            '_policy_caption',
+        '_policy_caption',
         'desc':
-            '_policy_desc_first.\nadditional line',
+        '_policy_desc_first.\nadditional line',
         'items': [{
             'caption': '_caption1',
             'value': '_value1',
@@ -57,20 +57,26 @@ class AndroidPolicyWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '_caption2',
             'value': '_value2',
         },
-        {
-            'caption': '_caption3',
-            'value': '_value3',
-            'supported_on': [{
-                'platforms': ['win', 'win7']
-            }]
-        },
-        {
-            'caption': '_caption4',
-            'value': '_value4',
-            'supported_on': [{
-                'platforms': ['android', 'win7']
-            }]
-        }]
+                  {
+                      'caption': '_caption3',
+                      'value': '_value3',
+                      'supported_on': [{
+                          'platform': 'win'
+                      }, {
+                          'platform': 'win7'
+                      }]
+                  },
+                  {
+                      'caption':
+                      '_caption4',
+                      'value':
+                      '_value4',
+                      'supported_on': [{
+                          'platform': 'android'
+                      }, {
+                          'platform': 'win7'
+                      }]
+                  }]
     }
     writer = android_policy_writer.GetWriter({})
     writer.Init()

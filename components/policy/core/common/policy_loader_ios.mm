@@ -9,16 +9,25 @@
 #import <UIKit/UIKit.h>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
+#import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/schema.h"
+#include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // This policy loader loads a managed app configuration from the NSUserDefaults.
 // For example code from Apple see:
@@ -27,30 +36,16 @@
 // "Extending Your Apps for Enterprise and Education Use":
 // https://developer.apple.com/videos/wwdc/2013/?id=301
 
-namespace {
-
-// Key in the NSUserDefaults that contains the managed app configuration.
-NSString* const kConfigurationKey = @"com.apple.configuration.managed";
-
-// Key in the managed app configuration that contains the Chrome policy.
-NSString* const kChromePolicyKey = @"ChromePolicy";
-
-// Key in the managed app configuration that contains the encoded Chrome policy.
-// This is a serialized Property List, encoded in base 64.
-NSString* const kEncodedChromePolicyKey = @"EncodedChromePolicy";
-
-}  // namespace
-
 // Helper that observes notifications for NSUserDefaults and triggers an update
 // at the loader on the right thread.
 @interface PolicyNotificationObserver : NSObject {
-  base::Closure _callback;
+  base::RepeatingClosure _callback;
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 }
 
 // Designated initializer. |callback| will be posted to |taskRunner| whenever
 // the NSUserDefaults change.
-- (id)initWithCallback:(const base::Closure&)callback
+- (id)initWithCallback:(const base::RepeatingClosure&)callback
             taskRunner:(scoped_refptr<base::SequencedTaskRunner>)taskRunner;
 
 // Invoked when the NSUserDefaults change.
@@ -62,7 +57,7 @@ NSString* const kEncodedChromePolicyKey = @"EncodedChromePolicy";
 
 @implementation PolicyNotificationObserver
 
-- (id)initWithCallback:(const base::Closure&)callback
+- (id)initWithCallback:(const base::RepeatingClosure&)callback
             taskRunner:(scoped_refptr<base::SequencedTaskRunner>)taskRunner {
   if ((self = [super init])) {
     _callback = callback;
@@ -84,7 +79,6 @@ NSString* const kEncodedChromePolicyKey = @"EncodedChromePolicy";
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
 }
 
 @end
@@ -92,9 +86,13 @@ NSString* const kEncodedChromePolicyKey = @"EncodedChromePolicy";
 namespace policy {
 
 PolicyLoaderIOS::PolicyLoaderIOS(
+    SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : AsyncPolicyLoader(task_runner),
-      weak_factory_(this) {}
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+      weak_factory_(this) {
+  PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
+  policy_schema_ = registry->schema_map()->GetSchema(ns);
+}
 
 PolicyLoaderIOS::~PolicyLoaderIOS() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
@@ -102,51 +100,18 @@ PolicyLoaderIOS::~PolicyLoaderIOS() {
 
 void PolicyLoaderIOS::InitOnBackgroundThread() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  base::Closure callback = base::Bind(&PolicyLoaderIOS::UserDefaultsChanged,
-                                      weak_factory_.GetWeakPtr());
-  notification_observer_.reset(
+  base::RepeatingClosure callback = base::BindRepeating(
+      &PolicyLoaderIOS::UserDefaultsChanged, weak_factory_.GetWeakPtr());
+  notification_observer_ =
       [[PolicyNotificationObserver alloc] initWithCallback:callback
-                                                taskRunner:task_runner()]);
+                                                taskRunner:task_runner()];
 }
 
 std::unique_ptr<PolicyBundle> PolicyLoaderIOS::Load() {
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
   NSDictionary* configuration = [[NSUserDefaults standardUserDefaults]
-      dictionaryForKey:kConfigurationKey];
-  id chromePolicy = configuration[kChromePolicyKey];
-  id encodedChromePolicy = configuration[kEncodedChromePolicyKey];
-
-  if (chromePolicy && [chromePolicy isKindOfClass:[NSDictionary class]]) {
-    LoadNSDictionaryToPolicyBundle(chromePolicy, bundle.get());
-
-    if (encodedChromePolicy)
-      NSLog(@"Ignoring EncodedChromePolicy because ChromePolicy is present.");
-  } else if (encodedChromePolicy &&
-             [encodedChromePolicy isKindOfClass:[NSString class]]) {
-    base::scoped_nsobject<NSData> data(
-        [[NSData alloc] initWithBase64EncodedString:encodedChromePolicy
-                                            options:0]);
-    if (!data) {
-      NSLog(@"Invalid Base64 encoding of EncodedChromePolicy");
-    } else {
-      NSError* error = nil;
-      NSDictionary* properties = [NSPropertyListSerialization
-          propertyListWithData:data.get()
-                       options:NSPropertyListImmutable
-                        format:NULL
-                         error:&error];
-      if (error) {
-        NSLog(@"Invalid property list in EncodedChromePolicy: %@", error);
-      } else if (!properties) {
-        NSLog(@"Failed to deserialize a valid Property List");
-      } else if (![properties isKindOfClass:[NSDictionary class]]) {
-        NSLog(@"Invalid property list in EncodedChromePolicy: expected an "
-               "NSDictionary but found %@", [properties class]);
-      } else {
-        LoadNSDictionaryToPolicyBundle(properties, bundle.get());
-      }
-    }
-  }
+      dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
+  LoadNSDictionaryToPolicyBundle(configuration, bundle.get());
 
   const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
   size_t count = bundle->Get(chrome_ns).size();
@@ -168,19 +133,43 @@ void PolicyLoaderIOS::UserDefaultsChanged() {
   Reload(false);
 }
 
-// static
 void PolicyLoaderIOS::LoadNSDictionaryToPolicyBundle(NSDictionary* dictionary,
                                                      PolicyBundle* bundle) {
   // NSDictionary is toll-free bridged to CFDictionaryRef, which is a
   // CFPropertyListRef.
   std::unique_ptr<base::Value> value =
-      PropertyToValue(static_cast<CFPropertyListRef>(dictionary));
+      PropertyToValue((__bridge CFPropertyListRef)(dictionary));
   base::DictionaryValue* dict = NULL;
   if (value && value->GetAsDictionary(&dict)) {
     PolicyMap& map = bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
-    map.LoadFrom(dict, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                 POLICY_SOURCE_PLATFORM);
+    for (const auto it : dict->DictItems()) {
+      map.Set(it.first, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+              POLICY_SOURCE_PLATFORM,
+              ConvertPolicyDataIfNecessary(it.first, it.second), nullptr);
+    }
   }
+}
+
+base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
+    const std::string& key,
+    const base::Value& value) {
+  const Schema schema = policy_schema_->GetKnownProperty(key);
+
+  if (!schema.valid()) {
+    return value.Clone();
+  }
+
+  // Handle the case of a JSON-encoded string for a dict policy.
+  if (schema.type() == base::Value::Type::DICTIONARY && value.is_string()) {
+    absl::optional<base::Value> decoded_value = base::JSONReader::Read(
+        value.GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    if (decoded_value.has_value()) {
+      return std::move(decoded_value.value());
+    }
+  }
+
+  // Otherwise return an unchanged value.
+  return value.Clone();
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
 This tests that hovering over a scrollbar resets the mouse cursor to the default pointer.
 
-Hovered pointer: type=Hand hotSpot=0,0
-Scrollbar pointer: type=Pointer hotSpot=0,0
+Hovered pointer: type=Hand
+Scrollbar pointer: type=Pointer

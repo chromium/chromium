@@ -1,0 +1,37 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module safe_browsing.mojom;
+
+import "url/mojom/url.mojom";
+
+// This interface is used for checking redirects, so that the server side can
+// keep track of the redirect chain. Disconnecting the checker interface cancels
+// on-going URL checks.
+interface SafeBrowsingUrlChecker {
+  // If |slow_check_notifier| is a valid interface receiver, it indicates that
+  // the URL may be unsafe and a more time-consuming process is required to get
+  // the final result. In that case, the rest of the callback arguments should
+  // be ignored. The result will be reported using the UrlCheckNotifier
+  // interface. Receiving a valid |slow_check_notifier| could be considered as
+  // a signal that the resource should be handled with more caution until the
+  // final result is obtained. For example, the network service may want to
+  // pause reading the response body for MIME sniffing.
+  //
+  // |proceed| indicates whether it is okay to proceed with loading the URL.
+  // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
+  // has been shown to the user.
+  CheckUrl(url.mojom.Url url, string method)
+      => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
+          bool proceed,
+          bool showed_interstitial);
+};
+
+// Ths interface is used for reporting the result of checking a URL.
+interface UrlCheckNotifier {
+  // |proceed| indicates whether it is okay to proceed with loading the URL.
+  // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
+  // has been shown to the user.
+  OnCompleteCheck(bool proceed, bool showed_interstitial);
+};

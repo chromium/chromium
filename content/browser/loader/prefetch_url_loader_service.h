@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/common/content_export.h"
@@ -19,10 +18,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
-
-namespace storage {
-class BlobStorageContext;
-}
 
 namespace blink {
 class URLLoaderThrottle;
@@ -35,6 +30,9 @@ class PrefetchedSignedExchangeCache;
 class RenderFrameHostImpl;
 class URLLoaderFactoryGetter;
 
+// A URLLoaderFactory that can be passed to a renderer to use for performing
+// prefetches. The renderer uses it for prefetch requests including <link
+// rel="prefetch">.
 class CONTENT_EXPORT PrefetchURLLoaderService final
     : public base::RefCountedThreadSafe<
           PrefetchURLLoaderService,
@@ -43,6 +41,9 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       public network::mojom::URLLoaderFactory {
  public:
   explicit PrefetchURLLoaderService(BrowserContext* browser_context);
+
+  PrefetchURLLoaderService(const PrefetchURLLoaderService&) = delete;
+  PrefetchURLLoaderService& operator=(const PrefetchURLLoaderService&) = delete;
 
   void GetFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -77,7 +78,6 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request_in,
@@ -99,12 +99,16 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       const network::ResourceRequest& request);
 
   // blink::mojom::RendererPreferenceWatcher.
-  void NotifyUpdate(blink::mojom::RendererPreferencesPtr new_prefs) override;
+  void NotifyUpdate(const blink::RendererPreferences& new_prefs) override;
 
   // For URLLoaderThrottlesGetter.
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(const network::ResourceRequest& request,
                            int frame_tree_node_id);
+
+  const std::unique_ptr<BindContext>& current_bind_context() const {
+    return loader_factory_receivers_.current_context();
+  }
 
   scoped_refptr<URLLoaderFactoryGetter> loader_factory_getter_;
   BrowserContext* browser_context_ = nullptr;
@@ -122,13 +126,6 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       signed_exchange_prefetch_metric_recorder_;
 
   std::string accept_langs_;
-
-  // Used to create a BlobDataHandle from a DataPipe of signed exchange's inner
-  // response body to store to |prefetched_signed_exchange_cache_| when
-  // SignedExchangeSubresourcePrefetch is enabled.
-  base::WeakPtr<storage::BlobStorageContext> blob_storage_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoaderService);
 };
 
 }  // namespace content

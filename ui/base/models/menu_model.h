@@ -5,27 +5,28 @@
 #ifndef UI_BASE_MODELS_MENU_MODEL_H_
 #define UI_BASE_MODELS_MENU_MODEL_H_
 
+#include <string>
+
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/ui_base_export.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
 class FontList;
-class Image;
-struct VectorIcon;
 }
 
 namespace ui {
 
 class Accelerator;
 class ButtonMenuItemModel;
+class ImageModel;
 
 // An interface implemented by an object that provides the content of a menu.
-class UI_BASE_EXPORT MenuModel : public base::SupportsWeakPtr<MenuModel> {
+class COMPONENT_EXPORT(UI_BASE) MenuModel
+    : public base::SupportsWeakPtr<MenuModel> {
  public:
   // The type of item.
   enum ItemType {
@@ -65,21 +66,32 @@ class UI_BASE_EXPORT MenuModel : public base::SupportsWeakPtr<MenuModel> {
   virtual int GetCommandIdAt(int index) const = 0;
 
   // Returns the label of the item at the specified index.
-  virtual base::string16 GetLabelAt(int index) const = 0;
+  virtual std::u16string GetLabelAt(int index) const = 0;
+
+  // Returns the secondary label of the item at the specified index. Secondary
+  // label is shown below the label.
+  virtual std::u16string GetSecondaryLabelAt(int index) const;
 
   // Returns the minor text of the item at the specified index. The minor text
   // is rendered to the right of the label and using the font GetLabelFontAt().
-  virtual base::string16 GetMinorTextAt(int index) const;
+  virtual std::u16string GetMinorTextAt(int index) const;
 
   // Returns the minor icon of the item at the specified index. The minor icon
   // is rendered to the left of the minor text.
-  virtual const gfx::VectorIcon* GetMinorIconAt(int index) const;
+  virtual ImageModel GetMinorIconAt(int index) const;
 
   // Returns true if the menu item (label/sublabel/icon) at the specified
   // index can change over the course of the menu's lifetime. If this function
   // returns true, the label, sublabel and icon of the menu item will be
   // updated each time the menu is shown.
   virtual bool IsItemDynamicAt(int index) const = 0;
+
+  // Returns whether the menu item at the specified index has a user-set title,
+  // in which case it should always be treated as plain text.
+  virtual bool MayHaveMnemonicsAt(int index) const;
+
+  // Returns the accessible name for the menu item at the specified index.
+  virtual std::u16string GetAccessibleNameAt(int index) const;
 
   // Returns the font list used for the label at the specified index.
   // If NULL, then the default font list should be used.
@@ -97,13 +109,9 @@ class UI_BASE_EXPORT MenuModel : public base::SupportsWeakPtr<MenuModel> {
   // index belongs to.
   virtual int GetGroupIdAt(int index) const = 0;
 
-  // Gets the icon for the item at the specified index, returning true if there
-  // is an icon, false otherwise.
-  virtual bool GetIconAt(int index, gfx::Image* icon) const = 0;
-
-  // Gets the vector icon for the item at the specified index. At most one of
-  // GetIconAt() and GetVectorIconAt() should be used for a single menu index.
-  virtual const gfx::VectorIcon* GetVectorIconAt(int index) const;
+  // Gets the icon for the item at the specified index. ImageModel is empty if
+  // there is no icon.
+  virtual ImageModel GetIconAt(int index) const = 0;
 
   // Returns the model for a menu item with a line of buttons at |index|.
   virtual ButtonMenuItemModel* GetButtonMenuItemAt(int index) const = 0;
@@ -113,6 +121,19 @@ class UI_BASE_EXPORT MenuModel : public base::SupportsWeakPtr<MenuModel> {
 
   // Returns true if the menu item is visible.
   virtual bool IsVisibleAt(int index) const;
+
+  // Returns true if the item is rendered specially to draw attention
+  // for in-product help.
+  virtual bool IsAlertedAt(int index) const;
+
+  // Returns true if the menu item grants access to a new feature that we want
+  // to show off to users (items marked as new will receive a "New" badge when
+  // the appropriate flag is enabled).
+  virtual bool IsNewFeatureAt(int index) const;
+
+  // Returns an application-window-unique identifier that can be used to track
+  // the menu item irrespective of menu-specific command IDs.
+  virtual ElementIdentifier GetElementIdentifierAt(int index) const;
 
   // Returns the model for the submenu at the specified index.
   virtual MenuModel* GetSubmenuModelAt(int index) const = 0;

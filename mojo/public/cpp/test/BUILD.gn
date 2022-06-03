@@ -6,7 +6,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("test_mojom") {
   testonly = true
-  sources = [
-    "module.test-mojom",
-  ]
+  sources = [ "module.test-mojom" ]
 }

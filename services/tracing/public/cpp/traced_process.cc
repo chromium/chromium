@@ -30,4 +30,14 @@ void TracedProcess::OnTracedProcessRequest(
 #endif
 }
 
+// static
+void TracedProcess::EnableSystemTracingService(
+    mojo::PendingRemote<mojom::SystemTracingService> remote) {
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_NACL) && \
+    !defined(OS_IOS)
+  tracing::TracedProcessImpl::GetInstance()->EnableSystemTracingService(
+      std::move(remote));
+#endif
+}
+
 }  // namespace tracing

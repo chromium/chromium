@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SPELLCHECK_EMPTY_LOCAL_INTERFACE_PROVIDER_H_
-#define COMPONENTS_SPELLCHECK_EMPTY_LOCAL_INTERFACE_PROVIDER_H_
+#ifndef COMPONENTS_SPELLCHECK_RENDERER_EMPTY_LOCAL_INTERFACE_PROVIDER_H_
+#define COMPONENTS_SPELLCHECK_RENDERER_EMPTY_LOCAL_INTERFACE_PROVIDER_H_
 
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 
@@ -21,4 +21,4 @@ class EmptyLocalInterfaceProvider
 
 }  // namespace spellcheck
 
-#endif  // COMPONENTS_SPELLCHECK_EMPTY_LOCAL_INTERFACE_PROVIDER_H_
+#endif  // COMPONENTS_SPELLCHECK_RENDERER_EMPTY_LOCAL_INTERFACE_PROVIDER_H_

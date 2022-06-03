@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
-<translation id="6106989379647458772">គេហទំព័រនៅ <ph name="PAGE" /> អាចមិនដំណើរការបណ្តោះអាសន្ន ឬវាអាចត្រូវបានផ្លាស់ទីទៅអាសយដ្ឋានគេហទំព័រថ្មី។</translation>
-<translation id="6312113039770857350">គេហទំព័រមិនអាចប្រើបានទេ</translation>
-<translation id="8681531050781943054">គេហទំព័រនៅ <ph name="PAGE" /> មិនអាចដំណើរការបានទេពីព្រោះ៖</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />ការផ្តល់យោបល់៖<ph name="MARKUP_2" />សូមប្រាកដថាអ្នកមានការតភ្ជាប់ទិន្នន័យ<ph name="MARKUP_3" />ដំណើរការគេហទំព័រនេះឡើងវិញនៅពេលក្រោយ<ph name="MARKUP_4" />ពិនិត្យមើលអាសយដ្ឋានដែលអ្នកបានបញ្ជូល<ph name="MARKUP_5" /></translation>
 </translationbundle>

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -18,13 +19,16 @@ class URLLoaderFactory;
 
 namespace password_manager {
 
+struct LookupSingleLeakPayload;
 struct SingleLookupResponse;
+enum class LeakDetectionError;
 
 // Interface for the class making the network requests for leak detection.
 class LeakDetectionRequestInterface {
  public:
   using LookupSingleLeakCallback =
-      base::OnceCallback<void(std::unique_ptr<SingleLookupResponse>)>;
+      base::OnceCallback<void(std::unique_ptr<SingleLookupResponse>,
+                              absl::optional<LeakDetectionError>)>;
 
   LeakDetectionRequestInterface() = default;
   virtual ~LeakDetectionRequestInterface() = default;
@@ -38,15 +42,16 @@ class LeakDetectionRequestInterface {
       delete;
 
   // Initiates a leak lookup network request for the credential corresponding to
-  // |username_hash_prefix| and |encrypted_payload|. |access_token| is required
-  // to authenticate the request. Invokes |callback| on completion, unless this
-  // instance is deleted beforehand. If the request failed, |callback| is
-  // invoked with |nullptr|, otherwise a SingleLookupResponse is returned.
+  // |username_hash_prefix| and |encrypted_payload|.
+  // |access_token| is required to authenticate the request for signed-in users.
+  // |access_token| should be |absl::nullopt| for signed-out users.
+  // Invokes |callback| on completion, unless this instance is deleted
+  // beforehand. If the request failed, |callback| is invoked with |nullptr|,
+  // otherwise a SingleLookupResponse is returned.
   virtual void LookupSingleLeak(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const std::string& access_token,
-      std::string username_hash_prefix,
-      std::string encrypted_payload,
+      const absl::optional<std::string>& access_token,
+      LookupSingleLeakPayload payload,
       LookupSingleLeakCallback callback) = 0;
 };
 

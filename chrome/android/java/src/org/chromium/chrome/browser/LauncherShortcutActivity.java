@@ -8,19 +8,18 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +32,10 @@ public class LauncherShortcutActivity extends Activity {
     public static final String ACTION_OPEN_NEW_TAB = "chromium.shortcut.action.OPEN_NEW_TAB";
     public static final String ACTION_OPEN_NEW_INCOGNITO_TAB =
             "chromium.shortcut.action.OPEN_NEW_INCOGNITO_TAB";
-    private static final String DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID =
-            "dynamic-new-incognito-tab-shortcut";
-    private static final String INCOGNITO_SHORTCUT_ADDED_PREF = "incognito-shortcut-added";
+    @VisibleForTesting
+    static final String DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID = "dynamic-new-incognito-tab-shortcut";
+
+    private static String sLabelForTesting;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,15 +51,7 @@ public class LauncherShortcutActivity extends Activity {
         }
 
         Intent newIntent = getChromeLauncherActivityIntent(this, intentAction);
-
-        // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-        try {
-            startActivity(newIntent);
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
-        }
-
+        startActivity(newIntent);
         finish();
     }
 
@@ -71,25 +63,31 @@ public class LauncherShortcutActivity extends Activity {
     public static void updateIncognitoShortcut(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
-        SharedPreferences preferences = ContextUtils.getAppSharedPreferences();
-        if (IncognitoUtils.isIncognitoModeEnabled()) {
+        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled();
+        boolean incognitoShortcutAdded =
+                preferences.readBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+
+        // Add the shortcut regardless of whether it was previously added in case the locale has
+        // changed since the last addition.
+        // TODO(https://crbug.com/1068847): Investigate better locale change handling.
+        if (incognitoEnabled) {
             boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 
             // Save a shared preference indicating the incognito shortcut has been added.
             if (success) {
-                preferences.edit().putBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, true).apply();
+                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
             }
-        } else if (preferences.getBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, false)
-                && !IncognitoUtils.isIncognitoModeEnabled()) {
+        } else if (!incognitoEnabled && incognitoShortcutAdded) {
             LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
-            preferences.edit().putBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, false).apply();
+            preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
         }
     }
 
     /**
      * Adds a "New incognito tab" dynamic launcher shortcut.
      * @param context The context used to retrieve the system {@link ShortcutManager}.
-     * @return True if addint the shortcut has succeeded. False if the call fails due to rate
+     * @return True if adding the shortcut has succeeded. False if the call fails due to rate
      *         limiting. See {@link ShortcutManager#addDynamicShortcuts}.
      */
     @TargetApi(Build.VERSION_CODES.N_MR1)
@@ -102,8 +100,10 @@ public class LauncherShortcutActivity extends Activity {
                 new ShortcutInfo.Builder(context, DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID)
                         .setShortLabel(context.getResources().getString(
                                 R.string.accessibility_tabstrip_incognito_identifier))
-                        .setLongLabel(
-                                context.getResources().getString(R.string.menu_new_incognito_tab))
+                        .setLongLabel(sLabelForTesting != null
+                                        ? sLabelForTesting
+                                        : context.getResources().getString(
+                                                R.string.menu_new_incognito_tab))
                         .setIcon(Icon.createWithResource(context, R.drawable.shortcut_incognito))
                         .setIntent(intent)
                         .build();
@@ -132,13 +132,17 @@ public class LauncherShortcutActivity extends Activity {
      *                                     LauncherShortcutActivity.
      * @return An intent for ChromeLauncherActivity that will open a new regular or incognito tab.
      */
-    @VisibleForTesting
-    public static Intent getChromeLauncherActivityIntent(
+    private static Intent getChromeLauncherActivityIntent(
             Context context, String launcherShortcutIntentAction) {
         Intent newIntent = IntentHandler.createTrustedOpenNewTabIntent(context,
                 launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB));
         newIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, true);
 
         return newIntent;
+    }
+
+    @VisibleForTesting
+    public static void setDynamicShortcutStringForTesting(String label) {
+        sLabelForTesting = label;
     }
 }

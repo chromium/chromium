@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -17,8 +17,6 @@ class Value;
 }
 
 namespace autofill {
-
-struct PasswordForm;
 
 // When logging decisions made by password management code about whether to
 // offer user-entered credentials for saving or not, do use this class. It
@@ -69,21 +67,18 @@ class SavePasswordProgressLogger {
     STRING_FORM_FOUND_ON_PAGE,
     STRING_FORM_IS_VISIBLE,
     STRING_FORM_IS_PASSWORD,
-    STRING_FORM_IS_NOT_PASSWORD,
-    STRING_WILL_SUBMIT_FORM_METHOD,
     STRING_HTML_FORM_FOR_SUBMIT,
-    STRING_CREATED_PASSWORD_FORM,
     STRING_DID_START_PROVISIONAL_LOAD_METHOD,
     STRING_FRAME_NOT_MAIN_FRAME,
     STRING_PROVISIONALLY_SAVE_FORM_METHOD,
     STRING_EMPTY_PASSWORD,
     STRING_MATCHING_NOT_COMPLETE,
-    STRING_FORM_BLACKLISTED,
     STRING_INVALID_FORM,
     STRING_SYNC_CREDENTIAL,
     STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
     STRING_ON_PASSWORD_FORMS_RENDERED_METHOD,
-    STRING_ON_SAME_DOCUMENT_NAVIGATION,
+    STRING_ON_DYNAMIC_FORM_SUBMISSION,
+    STRING_ON_SUBFRAME_FORM_SUBMISSION,
     STRING_ON_ASK_USER_OR_SAVE_PASSWORD,
     STRING_CAN_PROVISIONAL_MANAGER_SAVE_METHOD,
     STRING_NO_PROVISIONAL_SAVE_MANAGER,
@@ -125,7 +120,7 @@ class SavePasswordProgressLogger {
     STRING_GENERATION_DISABLED_SAVING_DISABLED,
     STRING_GENERATION_DISABLED_NO_SYNC,
     STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE,
-    STRING_GENERATION_RENDERER_SHOW_MANUAL_GENERATION_POPUP,
+    STRING_GENERATION_RENDERER_SHOW_GENERATION_POPUP,
     STRING_GENERATION_RENDERER_GENERATED_PASSWORD_ACCEPTED,
     STRING_SUCCESSFUL_SUBMISSION_INDICATOR_EVENT,
     STRING_MAIN_FRAME_ORIGIN,
@@ -140,7 +135,6 @@ class SavePasswordProgressLogger {
     STRING_HTTPAUTH_ON_PROMPT_USER,
     STRING_HTTPAUTH_ON_SET_OBSERVER,
     STRING_HTTPAUTH_ON_DETACH_OBSERVER,
-    STRING_SHOW_ONBOARDING,
     STRING_LEAK_DETECTION_DISABLED_FEATURE,
     STRING_LEAK_DETECTION_DISABLED_SAFE_BROWSING,
     STRING_LEAK_DETECTION_FINISHED,
@@ -148,6 +142,8 @@ class SavePasswordProgressLogger {
     STRING_LEAK_DETECTION_INVALID_SERVER_RESPONSE_ERROR,
     STRING_LEAK_DETECTION_SIGNED_OUT_ERROR,
     STRING_LEAK_DETECTION_TOKEN_REQUEST_ERROR,
+    STRING_LEAK_DETECTION_NETWORK_ERROR,
+    STRING_LEAK_DETECTION_QUOTA_LIMIT,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIAL_SYMBOL,
     STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIFIC_SPECIAL_SYMBOL,
@@ -157,16 +153,24 @@ class SavePasswordProgressLogger {
     STRING_NAVIGATION_NTP,
     STRING_SERVER_PREDICTIONS,
     STRING_USERNAME_FIRST_FLOW_VOTE,
+    STRING_POSSIBLE_USERNAME_USED,
+    STRING_POSSIBLE_USERNAME_NOT_USED,
+    STRING_LOCALLY_SAVED_PREDICTION,
     STRING_INVALID,  // Represents a string returned in a case of an error.
     STRING_MAX = STRING_INVALID
   };
 
   SavePasswordProgressLogger();
+
+  SavePasswordProgressLogger(const SavePasswordProgressLogger&) = delete;
+  SavePasswordProgressLogger& operator=(const SavePasswordProgressLogger&) =
+      delete;
+
   virtual ~SavePasswordProgressLogger();
 
   // Call these methods to log information. They sanitize the input and call
   // SendLog to pass it for display.
-  void LogPasswordForm(StringID label, const PasswordForm& form);
+  void LogFormData(StringID label, const FormData& form_data);
   void LogHTMLForm(StringID label,
                    const std::string& name_or_id,
                    const GURL& action);
@@ -192,16 +196,13 @@ class SavePasswordProgressLogger {
   // will be still possible to match the scrubbed string to the original ID or
   // name in the HTML doc. That's good enough for the logging purposes, and
   // provides some security benefits.
-  static std::string ScrubElementID(const base::string16& element_id);
+  static std::string ScrubElementID(const std::u16string& element_id);
 
   // The UTF-8 version of the function above.
   static std::string ScrubElementID(std::string element_id);
 
   // Translates the StringID values into the corresponding strings.
   static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordProgressLogger);
 };
 
 }  // namespace autofill

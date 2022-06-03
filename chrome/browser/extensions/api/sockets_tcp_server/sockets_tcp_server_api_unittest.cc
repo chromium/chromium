@@ -54,7 +54,6 @@ TEST_F(SocketsTcpServerUnitTest, Create) {
   // Create SocketCreateFunction and put it on BrowserThread
   SocketsTcpServerCreateFunction* function =
       new SocketsTcpServerCreateFunction();
-  function->set_work_task_runner(base::SequencedTaskRunnerHandle::Get());
 
   // Run tests
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(

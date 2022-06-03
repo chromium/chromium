@@ -19,7 +19,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Checks WebKit style for JSON files."""
 
 import json
@@ -29,7 +28,7 @@ import re
 class JSONChecker(object):
     """Processes JSON lines for checking style."""
 
-    categories = set(('json/syntax',))
+    categories = set(('json/syntax', ))
 
     def __init__(self, _, handle_style_error):
         self._handle_style_error = handle_style_error
@@ -40,8 +39,10 @@ class JSONChecker(object):
             json.loads('\n'.join(lines) + '\n')
         except ValueError as error:
             self._handle_style_error(
-                self.line_number_from_json_exception(error),
-                'json/syntax', 5, str(error))
+                self.line_number_from_json_exception(error), 'json/syntax', 5,
+                str(error))
+        except json.JSONDecodeError as error:
+            self._handle_style_error(error.lineno, 'json/syntax', 5, error.msg)
 
     @staticmethod
     def line_number_from_json_exception(error):

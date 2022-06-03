@@ -17,10 +17,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/media/cma/backend/cma_backend.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/audio_timestamp_helper.h"
 
 namespace base {
 class WaitableEvent;
@@ -36,6 +35,7 @@ class TaskRunnerImpl;
 
 namespace media {
 
+class CmaAudioOutput;
 class CmaBackendFactory;
 
 class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
@@ -44,6 +44,10 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
                        base::TimeDelta buffer_duration,
                        const std::string& device_id,
                        CmaBackendFactory* cma_backend_factory);
+
+  CmaAudioOutputStream(const CmaAudioOutputStream&) = delete;
+  CmaAudioOutputStream& operator=(const CmaAudioOutputStream&) = delete;
+
   ~CmaAudioOutputStream() override;
 
   void SetRunning(bool running);
@@ -80,14 +84,12 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
   const ::media::AudioParameters audio_params_;
   const std::string device_id_;
   CmaBackendFactory* const cma_backend_factory_;
+  std::unique_ptr<CmaAudioOutput> output_;
 
   base::Lock running_lock_;
   bool running_ = true;
   CmaBackendState cma_backend_state_ = CmaBackendState::kUninitialized;
-  ::media::AudioTimestampHelper timestamp_helper_;
   const base::TimeDelta buffer_duration_;
-  std::unique_ptr<TaskRunnerImpl> cma_backend_task_runner_;
-  std::unique_ptr<CmaBackend> cma_backend_;
   std::unique_ptr<::media::AudioBus> audio_bus_;
   base::OneShotTimer push_timer_;
   bool push_in_progress_ = false;
@@ -96,12 +98,9 @@ class CmaAudioOutputStream : public CmaBackend::Decoder::Delegate {
   base::TimeTicks last_push_complete_time_;
   base::TimeDelta last_rendering_delay_;
   base::TimeDelta render_buffer_size_estimate_;
-  CmaBackend::AudioDecoder* audio_decoder_ = nullptr;
   ::media::AudioOutputStream::AudioSourceCallback* source_callback_ = nullptr;
 
   THREAD_CHECKER(media_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CmaAudioOutputStream);
 };
 
 }  // namespace media

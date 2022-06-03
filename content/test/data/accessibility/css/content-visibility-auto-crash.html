@@ -1,0 +1,28 @@
+<!--
+@WAIT-FOR:Done
+-->
+<html>
+<head>
+<style>
+.auto {
+  content-visibility: auto;
+}
+.child {
+  height: 5000px;
+}
+</style>
+</head>
+<body>
+<div class="child"></div>
+<div class="auto"><div class="child"><div id="target" hidden="">target</div>xxx
+<script>
+function runTest() {
+  window.location.href += "#target";
+  document.title = 'Done';
+}
+window.onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+</div>
+</div>
+</body>
+</html>

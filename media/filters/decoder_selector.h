@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/pipeline_status.h"
@@ -19,7 +19,7 @@
 #include "media/filters/decoder_stream_traits.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -27,6 +27,21 @@ namespace media {
 class CdmContext;
 class DecryptingDemuxerStream;
 class MediaLog;
+
+// Enum returned by `DecoderSelector::DecoderPriorityCB` to indicate
+// priority of the current decoder.
+enum class DecoderPriority {
+  // `kNormal` indicates that the current decoder should continue through with
+  // selection in it's current order.
+  kNormal,
+
+  // `kDeprioritized` indicates that the current decoder should only be selected
+  // if other decoders have failed.
+  kDeprioritized,
+
+  // `kSkipped` indicates that the current decoder should not be used at all.
+  kSkipped,
+};
 
 // DecoderSelector handles construction and initialization of Decoders for a
 // DemuxerStream, and maintains the state required for decoder fallback.
@@ -45,6 +60,12 @@ class MEDIA_EXPORT DecoderSelector {
   using CreateDecodersCB =
       base::RepeatingCallback<std::vector<std::unique_ptr<Decoder>>()>;
 
+  // Prediate to evaluate whether a decoder should be prioritized,
+  // deprioritized, or skipped.
+  using DecoderPriorityCB =
+      base::RepeatingCallback<DecoderPriority(const DecoderConfig&,
+                                              const Decoder&)>;
+
   // Emits the result of a single call to SelectDecoder(). Parameters are
   //   1: The initialized Decoder. nullptr if selection failed.
   //   2: The initialized DecryptingDemuxerStream, if one was created. This
@@ -57,9 +78,14 @@ class MEDIA_EXPORT DecoderSelector {
       base::OnceCallback<void(std::unique_ptr<Decoder>,
                               std::unique_ptr<DecryptingDemuxerStream>)>;
 
-  DecoderSelector(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+  DecoderSelector() = delete;
+
+  DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
                   MediaLog* media_log);
+
+  DecoderSelector(const DecoderSelector&) = delete;
+  DecoderSelector& operator=(const DecoderSelector&) = delete;
 
   // Aborts any pending decoder selection.
   ~DecoderSelector();
@@ -91,16 +117,32 @@ class MEDIA_EXPORT DecoderSelector {
   // Currently only for metric collection.
   void NotifyConfigChanged();
 
+  // Adds an additional decoder candidate to be considered when selecting a
+  // decoder. This decoder is inserted ahead of the decoders returned by
+  // |CreateDecodersCB| to give it priority over the default set, though it
+  // may be by deprioritized if |DecoderPriorityCB| considers another decoder a
+  // better candidate. This decoder should be uninitialized.
+  void PrependDecoder(std::unique_ptr<Decoder> decoder);
+
+  // Overrides the default function for evaluation platform decoder priority.
+  // Useful for writing tests in a platform-agnostic manner.
+  void OverrideDecoderPriorityCBForTesting(DecoderPriorityCB priority_cb);
+
  private:
+  void CreateDecoders();
   void InitializeDecoder();
-  void OnDecoderInitializeDone(bool success);
+  void OnDecoderInitializeDone(Status status);
   void ReturnNullDecoder();
   void InitializeDecryptingDemuxerStream();
   void OnDecryptingDemuxerStreamInitializeDone(PipelineStatus status);
   void RunSelectDecoderCB();
+  void FilterAndSortAvailableDecoders();
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   CreateDecodersCB create_decoders_cb_;
+  DecoderPriorityCB decoder_priority_cb_;
   MediaLog* media_log_;
 
   StreamTraits* traits_ = nullptr;
@@ -122,11 +164,11 @@ class MEDIA_EXPORT DecoderSelector {
   // Metrics.
   bool is_platform_decoder_ = false;
   bool is_codec_changing_ = false;
+  bool is_selecting_for_config_change_ = false;
+  base::TimeTicks decoder_selection_start_;
   base::TimeTicks codec_change_start_;
 
   base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DecoderSelector);
 };
 
 typedef DecoderSelector<DemuxerStream::VIDEO> VideoDecoderSelector;

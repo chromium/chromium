@@ -6,6 +6,7 @@
 
 #include <mach/mach_host.h>
 
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/system/sys_info.h"
 
@@ -13,6 +14,16 @@ namespace extensions {
 
 bool CpuInfoProvider::QueryCpuTimePerProcessor(
     std::vector<api::system_cpu::ProcessorInfo>* infos) {
+  if (base::mac::GetCPUType() == base::mac::CPUType::kTranslatedIntel) {
+    // In writing Rosetta, Apple needed to stop simulating an x86 environment
+    // somewhere, and they did so before they got to `host_processor_info()`.
+    // `host_processor_info()` is a Mach call to a host server in the kernel,
+    // and that server does not maintain data corresponding to the simulated
+    // processors. See https://crbug.com/1138707#c42 for details. See also
+    // FB8832191.
+    return false;
+  }
+
   DCHECK(infos);
 
   natural_t num_of_processors;

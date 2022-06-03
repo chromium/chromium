@@ -9,10 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -22,6 +21,7 @@
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // MediaCodecLoop is based on Android's MediaCodec API.
 // The MediaCodec API is required to play encrypted (as in EME) content on
@@ -107,10 +107,6 @@ namespace media {
 
 class MEDIA_EXPORT MediaCodecLoop {
  public:
-  // TODO(liberato): this exists in video_decoder.h and audio_decoder.h too.
-  using InitCB = base::Callback<void(bool success)>;
-  using DecodeCB = base::Callback<void(DecodeStatus status)>;
-
   // Data that the client wants to put into an input buffer.
   struct InputData {
     InputData();
@@ -128,7 +124,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
     bool is_eos = false;
     EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
-    base::Optional<EncryptionPattern> encryption_pattern;
+    absl::optional<EncryptionPattern> encryption_pattern;
   };
 
   // Handy enum for "no buffer".
@@ -213,6 +209,10 @@ class MEDIA_EXPORT MediaCodecLoop {
                  std::unique_ptr<MediaCodecBridge> media_codec,
                  scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner,
                  bool disable_timer = false);
+
+  MediaCodecLoop(const MediaCodecLoop&) = delete;
+  MediaCodecLoop& operator=(const MediaCodecLoop&) = delete;
+
   ~MediaCodecLoop();
 
   // Optionally set the tick clock used for testing.  It is our caller's
@@ -336,8 +336,6 @@ class MEDIA_EXPORT MediaCodecLoop {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaCodecLoop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecLoop);
 };
 
 }  // namespace media

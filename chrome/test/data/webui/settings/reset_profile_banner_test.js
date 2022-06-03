@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
+
+// clang-format on
+
 suite('BannerTests', function() {
   let resetBanner = null;
   let browserProxy = null;
 
   setup(function() {
-    browserProxy = new reset_page.TestResetBrowserProxy();
-    settings.ResetBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestResetBrowserProxy();
+    ResetBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     resetBanner = document.createElement('settings-reset-profile-banner');
     document.body.appendChild(resetBanner);
@@ -22,9 +28,10 @@ suite('BannerTests', function() {
   // Tests that the reset profile banner navigates to the Reset profile dialog
   // URL when the "reset all settings" button is clicked.
   test('ResetBannerReset', function() {
-    assertNotEquals(settings.routes.RESET_DIALOG, settings.getCurrentRoute());
+    assertNotEquals(
+        routes.RESET_DIALOG, Router.getInstance().getCurrentRoute());
     resetBanner.$.reset.click();
-    assertEquals(settings.routes.RESET_DIALOG, settings.getCurrentRoute());
+    assertEquals(routes.RESET_DIALOG, Router.getInstance().getCurrentRoute());
     assertFalse(resetBanner.$.dialog.open);
   });
 

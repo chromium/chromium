@@ -39,12 +39,12 @@ runAfterLayoutAndPaint(function() {
         t.step(function() {
             if (!window.internals)
                 return;
-            var layers_dump = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+            var layers_dump = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_DETAILED_INVALIDATIONS);
             var layers = JSON.parse(layers_dump).layers;
             var scrollingContentsLayer = layers[0];
-            var paintInvalidations = scrollingContentsLayer.paintInvalidations;
+            var invalidations = scrollingContentsLayer.invalidations;
             var shadowRect = [1.4, 1.4, 100, 100];
-            assert_true(paintInvalidations.some(paintInvalidation => rectContainsRect(paintInvalidation.rect, shadowRect)),
+            assert_true(invalidations.some(paintInvalidation => rectContainsRect(paintInvalidation.rect, shadowRect)),
                         'Subpixel shadow ' + JSON.stringify(shadowRect) + ' should be repainted. ' + layers_dump);
             internals.stopTrackingRepaints(document);
         });

@@ -86,7 +86,6 @@ AutomationPredicate.formField = function(node) {
     case 'details':
     case 'disclosureTriangle':
     case 'form':
-    case 'menuButton':
     case 'menuListPopup':
     case 'popUpButton':
     case 'radioButton':
@@ -221,7 +220,8 @@ AutomationPredicate.container = function(node) {
 AutomationPredicate.structuralContainer = function(node) {
   return node.role == RoleType.ROOT_WEB_AREA ||
       node.role == RoleType.EMBEDDED_OBJECT || node.role == RoleType.IFRAME ||
-      node.role == RoleType.IFRAME_PRESENTATIONAL;
+      node.role == RoleType.IFRAME_PRESENTATIONAL ||
+      node.role == RoleType.PLUGIN_OBJECT;
 };
 
 /**

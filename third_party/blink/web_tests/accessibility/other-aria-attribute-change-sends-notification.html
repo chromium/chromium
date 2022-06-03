@@ -46,25 +46,29 @@ async_test((t) => {
 
     accessibleElementById('aria-busy').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on aria-busy');
-        gotSuccessfulNotification('aria-busy');
+        if (notification === 'AriaAttributeChanged')
+          gotSuccessfulNotification('aria-busy');
     }));
     document.getElementById('aria-busy').setAttribute('aria-busy', 'true');
 
     accessibleElementById('aria-disabled').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on aria-disabled');
-        gotSuccessfulNotification('aria-disabled');
+        if (notification === 'AriaAttributeChanged')
+          gotSuccessfulNotification('aria-disabled');
     }));
     document.getElementById('aria-disabled').setAttribute('aria-disabled', 'true');
 
     accessibleElementById('aria-readonly').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on aria-readonly');
-        gotSuccessfulNotification('aria-readonly');
+        if (notification === 'AriaAttributeChanged')
+          gotSuccessfulNotification('aria-readonly');
     }));
     document.getElementById('aria-readonly').setAttribute('aria-readonly', 'true');
 
     accessibleElementById('aria-required').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on aria-required');
-        gotSuccessfulNotification('aria-required');
+        if (notification === 'AriaAttributeChanged')
+          gotSuccessfulNotification('aria-required');
     }));
     document.getElementById('aria-required').setAttribute('aria-required', 'true');
 }, "This test ensures that a change to any ARIA attribute, not just a state, sends a notification.");

@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// The interface to provide a temporary file the renderer can read/write from/to.
+interface DiskAllocator {
+
+  // Provides a writable |file| to the renderer from the browser process.
+  //
+  // The renderer-side implementation is DiskDataAllocator, and this must be
+  // called at most once per renderer, from RenderProcessHostImpl when a new
+  // renderer starts.
+  //
+  // The file must be deleted when closing (using DELETE_ON_CLOSE), and
+  // exclusively owned by the renderer. It may be invalid.
+  ProvideTemporaryFile(mojo_base.mojom.File file);
+};

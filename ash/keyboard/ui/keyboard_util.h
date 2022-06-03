@@ -5,10 +5,7 @@
 #ifndef ASH_KEYBOARD_UI_KEYBOARD_UTIL_H_
 #define ASH_KEYBOARD_UI_KEYBOARD_UTIL_H_
 
-#include <string>
-
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/strings/string16.h"
 
 // Global utility functions for the virtual keyboard.
 // TODO(stevenjb/shuchen/shend): Many of these are accessed from both Chrome

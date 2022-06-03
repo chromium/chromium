@@ -4,5 +4,5 @@ function FindProxyForURL(url, host) {
   g_iteration++;
   myIpAddress();
   var ip = dnsResolve(host);
-  return "PROXY " + ip + ':' + g_iteration;
+  return "PROXY " + ip + '.test:' + g_iteration;
 }

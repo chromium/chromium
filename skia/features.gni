@@ -4,6 +4,16 @@
 
 declare_args() {
   # Enable experimental SkiaRenderer Dawn backend.
-  skia_use_dawn = false
+  skia_use_dawn = is_win && !is_official_build
   skia_use_gl = true
+
+  # Enable gtests using SkiaRenderer Dawn.
+  # TODO(rivr): Remove this and enable the tests by default once a software
+  # path for D3D12 is available.
+  enable_skia_dawn_gtests = false
 }
+
+# Skottie is not used on Android. To keep apk size small the skottie library is
+# excluded from the binary. At the time this comment was written, it adds ~200KB
+# to the APK.
+skia_support_skottie = !is_android

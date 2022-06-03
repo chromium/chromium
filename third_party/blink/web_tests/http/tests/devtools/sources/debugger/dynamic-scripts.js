@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function appendDynamicScriptElement(src, content)
@@ -55,19 +55,11 @@
     });
     urls.sort();
 
-    var whiteList = [
+    const allowedUrls = new Set([
       'debugger-test.js', 'dynamic-script.js', 'dynamic-scripts.js', 'evalSourceURL.js', 'inspector-test.js',
       'scriptElementContentSourceURL.js'
-    ];
-    function filter(url) {
-      for (var i = 0; i < whiteList.length; ++i) {
-        if (url === whiteList[i])
-          return true;
-      }
-
-      return false;
-    }
-    urls = urls.filter(filter);
+    ]);
+    urls = urls.filter(url => allowedUrls.has(url));
 
     TestRunner.addResult('UISourceCodes:');
     var lastURL;

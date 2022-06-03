@@ -13,6 +13,7 @@
 #include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -47,6 +48,9 @@ class ByteBuffer {
       grow(capacity);
   }
 
+  ByteBuffer(const ByteBuffer&) = delete;
+  ByteBuffer& operator=(const ByteBuffer&) = delete;
+
   ~ByteBuffer() {}
 
   BYTE* data() { return data_.get(); }
@@ -70,8 +74,6 @@ class ByteBuffer {
   std::unique_ptr<BYTE[]> data_;
   size_t size_;
   size_t capacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(ByteBuffer);
 };
 
 // Wrapper for NtQuerySystemProcessInformation with buffer reallocation logic.
@@ -139,15 +141,14 @@ struct ThreadData {
 // snapshot. This structure is accessed only on the worker thread.
 struct ProcessData {
   ProcessData() = default;
+  ProcessData(const ProcessData&) = delete;
+  ProcessData& operator=(const ProcessData&) = delete;
   ProcessData(ProcessData&&) = default;
 
   int64_t hard_fault_count;
   base::Time start_time;
   base::TimeDelta cpu_time;
   std::vector<ThreadData> threads;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessData);
 };
 
 typedef std::map<base::ProcessId, ProcessData> ProcessDataMap;
@@ -216,7 +217,7 @@ base::Time ConvertTicksToTime(uint64_t ticks) {
 
 // A wrapper function converting ticks (in units of 100 ns) to TimeDelta.
 base::TimeDelta ConvertTicksToTimeDelta(uint64_t ticks) {
-  return base::TimeDelta::FromMicroseconds(ticks / 10);
+  return base::Microseconds(ticks / 10);
 }
 
 }  // namespace
@@ -290,8 +291,8 @@ void SharedSampler::Refresh(base::ProcessId process_id, int64_t refresh_flags) {
   if (refresh_flags_ == 0) {
     base::PostTaskAndReplyWithResult(
         blocking_pool_runner_.get(), FROM_HERE,
-        base::Bind(&SharedSampler::RefreshOnWorkerThread, this),
-        base::Bind(&SharedSampler::OnRefreshDone, this));
+        base::BindOnce(&SharedSampler::RefreshOnWorkerThread, this),
+        base::BindOnce(&SharedSampler::OnRefreshDone, this));
   } else {
     // http://crbug.com/678471
     // A group of consecutive Refresh calls should all specify the same refresh
@@ -352,7 +353,7 @@ std::vector<base::FilePath> SharedSampler::GetSupportedImageNames() {
 
 bool SharedSampler::IsSupportedImageName(
     base::FilePath::StringPieceType image_name) const {
-  for (const base::FilePath supported_name : supported_image_names_) {
+  for (const base::FilePath& supported_name : supported_image_names_) {
     if (base::FilePath::CompareEqualIgnoreCase(image_name,
                                                supported_name.value()))
       return true;
@@ -370,7 +371,7 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
   ByteBuffer data_buffer(previous_buffer_size_);
 
   if (!QuerySystemProcessInformation(&data_buffer))
-    return std::unique_ptr<ProcessDataSnapshot>();
+    return nullptr;
 
   previous_buffer_size_ = data_buffer.capacity();
 

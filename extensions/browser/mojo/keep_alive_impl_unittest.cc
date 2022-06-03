@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,6 +21,10 @@ namespace extensions {
 class KeepAliveTest : public ExtensionsTest {
  public:
   KeepAliveTest() : mojo_activity_(Activity::MOJO, "") {}
+
+  KeepAliveTest(const KeepAliveTest&) = delete;
+  KeepAliveTest& operator=(const KeepAliveTest&) = delete;
+
   ~KeepAliveTest() override {}
 
   void SetUp() override {
@@ -75,8 +80,6 @@ class KeepAliveTest : public ExtensionsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveTest);
 };
 
 TEST_F(KeepAliveTest, Basic) {
@@ -159,13 +162,31 @@ TEST_F(KeepAliveTest, UnloadExtension) {
   run_loop.Run();
 }
 
-TEST_F(KeepAliveTest, Shutdown) {
+TEST_F(KeepAliveTest, ShutdownExtensionRegistry) {
   mojo::Remote<KeepAlive> keep_alive;
   CreateKeepAlive(keep_alive.BindNewPipeAndPassReceiver());
   EXPECT_EQ(1, GetKeepAliveCount());
   EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
 
   ExtensionRegistry::Get(browser_context())->Shutdown();
+  // After a shutdown event, the KeepAliveImpl should not access its
+  // ProcessManager and so the keep-alive count should remain unchanged.
+  EXPECT_EQ(1, GetKeepAliveCount());
+  EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
+
+  // Wait for |keep_alive| to disconnect.
+  base::RunLoop run_loop;
+  keep_alive.set_disconnect_handler(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(KeepAliveTest, ShutdownProcessManager) {
+  mojo::Remote<KeepAlive> keep_alive;
+  CreateKeepAlive(keep_alive.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(1, GetKeepAliveCount());
+  EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
+
+  ProcessManager::Get(browser_context())->Shutdown();
   // After a shutdown event, the KeepAliveImpl should not access its
   // ProcessManager and so the keep-alive count should remain unchanged.
   EXPECT_EQ(1, GetKeepAliveCount());

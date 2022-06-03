@@ -1,0 +1,126 @@
+<style include="mwb-element-shared-style">
+  :host(:focus) {
+    outline: none;
+  }
+
+  :host(:is(.hovered, .selected)) .button-container {
+    height: auto;
+    overflow: visible;
+    width: auto;
+  }
+
+  .button-container {
+    height: 0;
+    margin-inline-start: 2px;
+    overflow: hidden;
+    width: 0;
+  }
+
+  .button-container cr-icon-button {
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+  }
+
+  .favicon {
+    background-repeat: no-repeat;
+    background-size: var(--mwb-icon-size);
+    flex-shrink: 0;
+    height: var(--mwb-icon-size);
+    margin-inline-end: var(--mwb-list-item-horizontal-margin);
+    width: var(--mwb-icon-size);
+  }
+
+  .text-container {
+    flex-grow: 1;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #groupTitle,
+  #primaryText,
+  #secondaryText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #primaryText {
+    color: var(--cr-primary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    margin-bottom: 3px;
+  }
+
+  #secondaryContainer {
+    align-items: center;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  #secondaryTimestamp {
+    flex-shrink: 0;
+  }
+
+  #textAriaLabel {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
+
+  .separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-button-margin-start: 0;
+  }
+
+  .search-highlight-hit {
+    --search-highlight-hit-background-color: none;
+    --search-highlight-hit-color: none;
+    font-weight: bold;
+  }
+
+  #groupSvg {
+    flex-shrink: 0;
+    height: 8px;
+    margin-inline-end: 6px;
+    width: 8px;
+  }
+
+  #groupDot {
+    fill: var(--group-dot-color);
+  }
+</style>
+
+<div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
+<div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
+<div class="text-container" aria-hidden="true">
+  <div id="primaryText" title="[[data.tab.title]]"></div>
+  <div id="secondaryContainer">
+    <!-- We do not leverage a dom-if element as the element highlighting logic
+        may trigger before the stamping has taken place -->
+    <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
+        display$="[[groupSvgDisplay_(data)]]">
+      <circle id= "groupDot" cx="0" cy="0" r="4">
+    </svg>
+    <div id="groupTitle"
+        hidden="[[!hasTabGroupWithTitle_(data)]]">[[data.tabGroup.title]]</div>
+    <div class="separator" hidden="[[!hasTabGroupWithTitle_(data)]]">•</div>
+    <div id="secondaryText"></div>
+    <div class="separator" hidden="[[!data.hostname]]">•</div>
+    <div id="secondaryTimestamp">
+      [[data.tab.lastActiveElapsedText]]
+    </div>
+  </div>
+</div>
+<template is="dom-if" if="[[isCloseable_(data.type)]]">
+  <div class="button-container">
+    <cr-icon-button id="closeButton"
+        aria-label="[[ariaLabelForButton_(data.tab.title)]]"
+        iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
+        no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
+    </cr-icon-button>
+  </div>
+</template>

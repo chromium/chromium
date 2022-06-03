@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_H_
-#define DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_H_
+#ifndef DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_H_
+#define DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_H_
 
 #include "base/macros.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
@@ -18,6 +18,10 @@ namespace device {
 class DEVICE_VR_EXPORT GvrDelegateProvider {
  public:
   GvrDelegateProvider() = default;
+
+  GvrDelegateProvider(const GvrDelegateProvider&) = delete;
+  GvrDelegateProvider& operator=(const GvrDelegateProvider&) = delete;
+
   virtual bool ShouldDisableGvrDevice() = 0;
   virtual void StartWebXRPresentation(
       mojom::VRDisplayInfoPtr display_info,
@@ -27,11 +31,8 @@ class DEVICE_VR_EXPORT GvrDelegateProvider {
 
  protected:
   virtual ~GvrDelegateProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GvrDelegateProvider);
 };
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ANDROID_GVR_DELEGATE_PROVIDER_H_
+#endif  // DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_H_

@@ -32,7 +32,8 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     return std::move(timer);
   }
 
-  std::unique_ptr<PageTimingSender> CreatePageTimingSender() override {
+  std::unique_ptr<PageTimingSender> CreatePageTimingSender(
+      bool limited_sending_mode) override {
     return base::WrapUnique<PageTimingSender>(
         new FakePageTimingSender(&validator_));
   }
@@ -51,9 +52,10 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     fake_timing_ = timing.Clone();
   }
 
-  mojom::PageLoadTimingPtr GetTiming() const override {
+  Timing GetTiming() const override {
     EXPECT_NE(nullptr, fake_timing_.get());
-    return std::move(fake_timing_);
+    return Timing(std::move(fake_timing_),
+                  PageTimingMetadataRecorder::MonotonicTiming());
   }
 
   void VerifyExpectedTimings() const {
@@ -78,7 +80,6 @@ TEST_F(MetricsRenderFrameObserverTest, NoMetrics) {
 
 TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta first_layout = base::TimeDelta::FromMillisecondsD(10);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -86,12 +87,12 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
-  observer.DidCommitProvisionalLoad(false, ui::PAGE_TRANSITION_LINK);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing.document_timing->first_layout = first_layout;
+  timing.parse_timing->parse_start = base::Milliseconds(10);
   observer.ExpectPageLoadTiming(timing);
 
   observer.DidChangePerformanceTiming();
@@ -109,22 +110,21 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
-  observer.DidCommitProvisionalLoad(false, ui::PAGE_TRANSITION_LINK);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
 
   // Send cpu timing updates and verify the expected result.
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(110));
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(50));
-  observer.ExpectCpuTiming(base::TimeDelta::FromMilliseconds(160));
+  observer.DidChangeCpuTiming(base::Milliseconds(110));
+  observer.DidChangeCpuTiming(base::Milliseconds(50));
+  observer.ExpectCpuTiming(base::Milliseconds(160));
   observer.GetMockTimer()->Fire();
 }
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta first_layout = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -132,12 +132,11 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
-  observer.DidCommitProvisionalLoad(false, ui::PAGE_TRANSITION_LINK);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing.document_timing->first_layout = first_layout;
   timing.document_timing->dom_content_loaded_event_start = dom_event;
   observer.ExpectPageLoadTiming(timing);
 
@@ -170,9 +169,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta first_layout = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -180,12 +178,11 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
-  observer.DidCommitProvisionalLoad(false, ui::PAGE_TRANSITION_LINK);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing.document_timing->first_layout = first_layout;
   timing.document_timing->dom_content_loaded_event_start = dom_event;
   timing.document_timing->load_event_start = load_event;
   observer.ExpectPageLoadTiming(timing);
@@ -198,9 +195,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.VerifyExpectedTimings();
 
   base::Time nav_start_2 = base::Time::FromDoubleT(100);
-  base::TimeDelta first_layout_2 = base::TimeDelta::FromMillisecondsD(20);
-  base::TimeDelta dom_event_2 = base::TimeDelta::FromMillisecondsD(20);
-  base::TimeDelta load_event_2 = base::TimeDelta::FromMillisecondsD(20);
+  base::TimeDelta dom_event_2 = base::Milliseconds(20);
+  base::TimeDelta load_event_2 = base::Milliseconds(20);
   mojom::PageLoadTiming timing_2;
   page_load_metrics::InitPageLoadTimingForTest(&timing_2);
   timing_2.navigation_start = nav_start_2;
@@ -208,12 +204,11 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.SetMockTimer(nullptr);
 
   observer.ExpectPageLoadTiming(timing_2);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
-  observer.DidCommitProvisionalLoad(false, ui::PAGE_TRANSITION_LINK);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing_2.document_timing->first_layout = first_layout_2;
   timing_2.document_timing->dom_content_loaded_event_start = dom_event_2;
   timing_2.document_timing->load_event_start = load_event_2;
   observer.ExpectPageLoadTiming(timing_2);

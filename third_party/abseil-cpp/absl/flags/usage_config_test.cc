@@ -15,10 +15,13 @@
 
 #include "absl/flags/usage_config.h"
 
+#include <string>
+
 #include "gtest/gtest.h"
 #include "absl/flags/internal/path_util.h"
 #include "absl/flags/internal/program_name.h"
 #include "absl/strings/match.h"
+#include "absl/strings/string_view.h"
 
 namespace {
 
@@ -81,7 +84,11 @@ TEST_F(FlagsUsageConfigTest, TestGetSetFlagsUsageConfig) {
 // --------------------------------------------------------------------
 
 TEST_F(FlagsUsageConfigTest, TestContainsHelpshortFlags) {
+#if defined(_WIN32)
+  flags::SetProgramInvocationName("usage_config_test.exe");
+#else
   flags::SetProgramInvocationName("usage_config_test");
+#endif
 
   auto config = flags::GetUsageConfig();
   EXPECT_TRUE(config.contains_helpshort_flags("adir/cd/usage_config_test.cc"));

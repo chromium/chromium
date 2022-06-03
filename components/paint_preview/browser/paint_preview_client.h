@@ -14,19 +14,25 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
+#include "components/paint_preview/common/capture_result.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-shared.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace paint_preview {
 
-// Client responsible for making requests to the mojom::PaintPreviewService. A
+// Client responsible for making requests to the mojom::PaintPreviewRecorder. A
 // client coordinates between multiple frames and handles capture and
 // aggreagation of data from both the main frame and subframes.
+//
+// Should be created and accessed from the UI thread as WebContentsUserData
+// requires this behavior.
 class PaintPreviewClient
     : public content::WebContentsUserData<PaintPreviewClient>,
       public content::WebContentsObserver {
@@ -34,28 +40,27 @@ class PaintPreviewClient
   using PaintPreviewCallback =
       base::OnceCallback<void(base::UnguessableToken,
                               mojom::PaintPreviewStatus,
-                              std::unique_ptr<PaintPreviewProto>)>;
+                              std::unique_ptr<CaptureResult>)>;
 
   // Augmented version of mojom::PaintPreviewServiceParams.
   struct PaintPreviewParams {
-    PaintPreviewParams();
+    explicit PaintPreviewParams(RecordingPersistence persistence);
     ~PaintPreviewParams();
 
-    // The document GUID for this capture.
-    base::UnguessableToken document_guid;
+    // Indicates where the PaintPreviewRecorder should store its intermediate
+    // artifacts.
+    RecordingPersistence persistence;
 
     // The root directory in which to store paint_previews. This should be
     // a subdirectory inside the active user profile's directory.
     base::FilePath root_dir;
 
-    // The rect to which to clip the capture to.
-    gfx::Rect clip_rect;
-
-    // Whether the capture is for the main frame or an OOP subframe.
-    bool is_main_frame;
+    RecordingParams inner;
   };
 
   ~PaintPreviewClient() override;
+
+  // IMPORTANT: The Capture* methods must be called on the UI thread!
 
   // Captures a paint preview corresponding to the content of
   // |render_frame_host|. This will work for capturing entire documents if
@@ -82,117 +87,146 @@ class PaintPreviewClient
 
   // Internal Storage Classes -------------------------------------------------
 
-  // Representation of data for capturing a paint preview.
-  struct PaintPreviewData {
+  // Ephemeral state for a document being captured. This will be accumulated to
+  // as the capture progresses and results in a |CaptureResult|.
+  struct InProgressDocumentCaptureState {
    public:
-    PaintPreviewData();
-    ~PaintPreviewData();
+    InProgressDocumentCaptureState();
+    ~InProgressDocumentCaptureState();
 
-    // Root directory to store artifacts to.
+    RecordingPersistence persistence;
+
+    // If |RecordingPersistence::kFileSystem|, the root directory to store
+    // artifacts to. Ignored if |RecordingPersistence::kMemoryBuffer|.
     base::FilePath root_dir;
 
-    // URL of the root frame.
-    GURL root_url;
+    // This corresponds to RenderFrameHost::EmbeddingToken.
+    base::UnguessableToken root_frame_token;
+
+    // From the first recording params. Whether to capture links and the
+    // size limit per capture respectively.
+    bool capture_links = true;
+    size_t max_per_capture_size = 0;
+    uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
+
+    // UKM Source ID of the WebContent.
+    ukm::SourceId source_id;
+
+    // Main frame capture time.
+    base::TimeDelta main_frame_blink_recording_time;
 
     // Callback that is invoked on completion of data.
     PaintPreviewCallback callback;
 
     // All the render frames that are still required.
-    base::flat_set<uint64_t> awaiting_subframes;
+    base::flat_set<base::UnguessableToken> awaiting_subframes;
 
     // All the render frames that have finished.
-    base::flat_set<uint64_t> finished_subframes;
+    base::flat_set<base::UnguessableToken> finished_subframes;
 
-    // Data proto that is returned via callback.
-    std::unique_ptr<PaintPreviewProto> proto;
+    // All the render frames that are allowed to be captured.
+    base::flat_set<base::UnguessableToken> accepted_tokens;
 
+    // If |RecordingPersistence::kMemoryBuffer|, this will contain the
+    // successful recordings. Empty if |RecordingPersistence::FileSystem|
+    base::flat_map<base::UnguessableToken, mojo_base::BigBuffer>
+        serialized_skps;
+
+    PaintPreviewProto proto;
+
+    // Indicates that at least one subframe finished unsuccessfully.
     bool had_error = false;
 
-    PaintPreviewData& operator=(PaintPreviewData&& other) noexcept;
-    PaintPreviewData(PaintPreviewData&& other) noexcept;
+    // Indicates that at least one subframe finished successfully.
+    bool had_success = false;
+
+    // Indicates if we should clean up files associated with awaiting frames on
+    // destruction
+    bool should_clean_up_files = false;
+
+    // This flag will skip GPU accelerated content where applicable when
+    // capturing. This reduces hangs, capture time and may also reduce OOM
+    // crashes, but results in a lower fideltiy capture (i.e. the contents
+    // captured may not accurately reflect the content visible to the user at
+    // time of capture). See PaintPreviewBaseService::CaptureParams for a
+    // description of the effects of this flag.
+    bool skip_accelerated_content = false;
+
+    // Generates a file path based off |root_dir| and |frame_guid|. Will be in
+    // the form "{hexadecimal}.skp".
+    base::FilePath FilePathForFrame(const base::UnguessableToken& frame_guid);
+
+    // Record a successful recording into this capture state.
+    void RecordSuccessfulFrame(const base::UnguessableToken& frame_guid,
+                               bool is_main_frame,
+                               mojom::PaintPreviewCaptureResponsePtr response);
+
+    // Convert this capture state into a form that can be returned to the
+    // original paint preview capture request.
+    std::unique_ptr<CaptureResult> IntoCaptureResult() &&;
+
+    InProgressDocumentCaptureState& operator=(
+        InProgressDocumentCaptureState&& other) noexcept;
+    InProgressDocumentCaptureState(
+        InProgressDocumentCaptureState&& other) noexcept;
 
    private:
-    PaintPreviewData(const PaintPreviewData&) = delete;
-    PaintPreviewData& operator=(const PaintPreviewData&) = delete;
+    InProgressDocumentCaptureState(const InProgressDocumentCaptureState&) =
+        delete;
+    InProgressDocumentCaptureState& operator=(
+        const InProgressDocumentCaptureState&) = delete;
   };
-
-  struct CreateResult {
-   public:
-    CreateResult(base::File file, base::File::Error error);
-    ~CreateResult();
-    CreateResult(CreateResult&& other);
-    CreateResult& operator=(CreateResult&& other);
-
-    base::File file;
-    base::File::Error error;
-
-   private:
-    CreateResult(const CreateResult&) = delete;
-    CreateResult& operator=(const CreateResult&) = delete;
-  };
-
-  // Helpers -------------------------------------------------------------------
-
-  static CreateResult CreateFileHandle(const base::FilePath& path);
-
-  mojom::PaintPreviewCaptureParamsPtr CreateMojoParams(
-      const PaintPreviewParams& params,
-      base::File file);
 
   // Sets up for a capture of a frame on |render_frame_host| according to
   // |params|.
-  void CapturePaintPreviewInternal(const PaintPreviewParams& params,
+  void CapturePaintPreviewInternal(const RecordingParams& params,
                                    content::RenderFrameHost* render_frame_host);
 
   // Initiates capture via the PaintPreviewRecorder associated with
   // |render_frame_host| using |params| to configure the request. |frame_guid|
   // is the GUID associated with the frame. |path| is file path associated with
   // the File stored in |result| (base::File isn't aware of its file path).
-  void RequestCaptureOnUIThread(const PaintPreviewParams& params,
-                                uint64_t frame_guid,
-                                content::RenderFrameHost* render_frame_host,
-                                const base::FilePath& path,
-                                CreateResult result);
+  void RequestCaptureOnUIThread(
+      const base::UnguessableToken& frame_guid,
+      const RecordingParams& params,
+      const content::GlobalRenderFrameHostId& render_frame_id,
+      mojom::PaintPreviewStatus status,
+      mojom::PaintPreviewCaptureParamsPtr capture_params);
 
   // Handles recording the frame and updating client state when capture is
   // complete.
   void OnPaintPreviewCapturedCallback(
-      base::UnguessableToken guid,
-      uint64_t frame_guid,
-      bool is_main_frame,
-      const base::FilePath& filename,
-      content::RenderFrameHost* render_frame_host,
+      const base::UnguessableToken& frame_guid,
+      const RecordingParams& params,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojom::PaintPreviewStatus status,
       mojom::PaintPreviewCaptureResponsePtr response);
 
   // Marks a frame as having been processed, this should occur regardless of
   // whether the processed frame is valid as there is no retry.
-  void MarkFrameAsProcessed(base::UnguessableToken guid, uint64_t frame_guid);
-
-  // Records the data from a processed frame if it was captured successfully.
-  mojom::PaintPreviewStatus RecordFrame(
-      base::UnguessableToken guid,
-      uint64_t frame_guid,
-      bool is_main_frame,
-      const base::FilePath& filename,
-      content::RenderFrameHost* render_frame_host,
-      mojom::PaintPreviewCaptureResponsePtr response);
+  void MarkFrameAsProcessed(base::UnguessableToken guid,
+                            const base::UnguessableToken& frame_guid);
 
   // Handles finishing the capture once all frames are received.
-  void OnFinished(base::UnguessableToken guid, PaintPreviewData* document_data);
+  void OnFinished(base::UnguessableToken guid,
+                  InProgressDocumentCaptureState* document_data);
 
   // Storage ------------------------------------------------------------------
 
   // Maps a RenderFrameHost and document to a remote interface.
-  base::flat_map<uint64_t, mojo::AssociatedRemote<mojom::PaintPreviewRecorder>>
+  base::flat_map<base::UnguessableToken,
+                 mojo::AssociatedRemote<mojom::PaintPreviewRecorder>>
       interface_ptrs_;
 
   // Maps render frame's GUID and document cookies that requested the frame.
-  base::flat_map<uint64_t, base::flat_set<base::UnguessableToken>>
+  base::flat_map<base::UnguessableToken, base::flat_set<base::UnguessableToken>>
       pending_previews_on_subframe_;
 
-  // Maps a document GUID to its data.
-  base::flat_map<base::UnguessableToken, PaintPreviewData> all_document_data_;
+  // Maps a document GUID to its capture state while it is in-progress. Entries
+  // in this map should be cleaned up when a capture completes (either
+  // successfully or not).
+  base::flat_map<base::UnguessableToken, InProgressDocumentCaptureState>
+      all_document_data_;
 
   base::WeakPtrFactory<PaintPreviewClient> weak_ptr_factory_{this};
 

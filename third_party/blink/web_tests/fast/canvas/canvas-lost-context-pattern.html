@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+Passes if it does not crash.
+<script>
+async_test(t => {
+    if (window.internals) {
+        var canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 300;
+        var ctx = canvas.getContext('2d');
+        document.body.appendChild(ctx.canvas);
+
+        var offscreen = new OffscreenCanvas(300,300);
+        var ctx = offscreen.getContext('2d');
+        var img = offscreen.transferToImageBitmap();
+        internals.forceLoseCanvasContext(canvas, "2d");
+        ctx.createPattern(img, "repeat-y");
+    }
+    t.done();
+});
+</script>

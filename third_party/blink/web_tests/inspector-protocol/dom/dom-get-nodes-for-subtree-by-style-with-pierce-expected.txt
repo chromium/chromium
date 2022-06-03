@@ -1,0 +1,35 @@
+Tests finding DOM nodes by computed styles traversing in-process iframes and shadow roots.
+Expected nodeIds length: 2
+Actual nodeIds length: 2
+Nodes:
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : shadow-grid
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+{
+    node : {
+        attributes : [
+            [0] : class
+            [1] : iframe-grid
+        ]
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        nodeId : <number>
+        nodeName : DIV
+        nodeType : 1
+        nodeValue : 
+    }
+}
+

@@ -10,12 +10,11 @@
 #include "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-namespace ios {
-class ChromeBrowserState;
-}
 namespace web {
 class WebState;
 }
+
+class ChromeBrowserState;
 class WebStateList;
 
 namespace TabInsertion {
@@ -37,7 +36,8 @@ class TabInsertionBrowserAgent
       web::WebState* parent,
       bool opened_by_dom,
       int index,
-      bool in_background);
+      bool in_background,
+      bool inherit_opener);
 
   web::WebState* InsertWebStateOpenedByDOM(web::WebState* parent);
 
@@ -46,7 +46,7 @@ class TabInsertionBrowserAgent
   friend class BrowserUserData<TabInsertionBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
 
-  ios::ChromeBrowserState* browser_state_;
+  ChromeBrowserState* browser_state_;
   WebStateList* web_state_list_;
 };
 

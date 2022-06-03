@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -14,6 +14,7 @@ import mock  # pylint: disable=import-error
 from run_simpleperf import SimplePerfRunner
 from run_simpleperf import StackAddressInterpreter
 
+_EXAMPLE_WEBVIEW_PACKAGE_NAME = "com.google.android.webview"
 
 _EXAMPLE_STACK_SCRIPT_INPUT = [
     ("11-15 00:00:00.000 11111 11111 E chromium: #00 0x0000001111111111 "
@@ -69,9 +70,11 @@ _EXAMPLE_INTERPRETER_OUTPUT_WITH_FILE_NAME_LINE = [
 
 _MOCK_ORIGINAL_REPORT = [
     '"442": {"l": 28, "f": "libwebviewchromium.so[+3db7d84]"},',
-    '"443": {"l": 28, "f": "libwebviewchromium.so[+3db7a5c]"},']
+    '"443": {"l": 28, "f": "libwebviewchromium.so[+3db7a5c]"},',
+    '"444": {"l": 28, "f": "libwebviewchromium.so[+aaaaaaa]"},'
+]
 
-_MOCK_ADDRESSES = ['3db7d84', '3db7a5c']
+_MOCK_ADDRESSES = ['3db7d84', '3db7a5c', 'aaaaaaa']
 
 _MOCK_ADDRESS_FUNCTION_NAME_PAIRS = [
     ('3db7d84', 'MyClass::FirstMethod(const char*)'),
@@ -81,7 +84,9 @@ _MOCK_FINAL_REPORT = [
     ('"442": {"l": 28, "f": "libwebviewchromium.so[MyClass::'
      'FirstMethod(const char*)]"},'),
     ('"443": {"l": 28, "f": "libwebviewchromium.so[MyClass::'
-     'SecondMethod(int)]"},')]
+     'SecondMethod(int)]"},'),
+    ('"444": {"l": 28, "f": "libwebviewchromium.so[+aaaaaaa]"},')
+]
 
 
 class _RunSimpleperfTest(unittest.TestCase):
@@ -144,8 +149,11 @@ class _RunSimpleperfTest(unittest.TestCase):
         return_value=_MOCK_ADDRESS_FUNCTION_NAME_PAIRS)
 
     SimplePerfRunner.RunSimplePerf = mock.Mock()
+    SimplePerfRunner.RunPackageCompile = mock.Mock()
     SimplePerfRunner.GetOriginalReportHtml = mock.Mock(
         return_value=_MOCK_ORIGINAL_REPORT)
+    self.simple_perf_runner.GetCurrentWebViewProvider = mock.Mock(
+        return_value=_EXAMPLE_WEBVIEW_PACKAGE_NAME)
 
     self.simple_perf_runner.GetWebViewLibraryNameAndPath = mock.Mock(
         return_value=(_WEBVIEW_LIB_NAME, _WEBVIEW_LIB_PATH))

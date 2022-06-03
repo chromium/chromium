@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// The interface to provide status and statm files to the renderer's memory
+// usage monitor. The interface is required only for Linux.
+interface MemoryUsageMonitorLinux {
+  // The sandbox prevents the renderer from open()-ing any file, meaning
+  // the file descriptors have to be provided by the browser process.
+  SetProcFiles(mojo_base.mojom.ReadOnlyFile statm_file,
+               mojo_base.mojom.ReadOnlyFile status_file);
+};

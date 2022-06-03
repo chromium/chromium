@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -264,8 +264,6 @@ bool MessageBundle::ReplaceVariables(const SubstitutionMap& variables,
     // And position pointer to after the replacement.
     beg_index += value.size() - var_begin_delimiter_size;
   }
-
-  return true;
 }
 
 // static

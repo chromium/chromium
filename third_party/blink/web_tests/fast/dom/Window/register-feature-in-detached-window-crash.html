@@ -1,0 +1,11 @@
+<body>
+PASS if no crash.
+<iframe id="i" src="about:blank"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+var i_win = i.contentWindow;
+i.remove();
+i_win.addEventListener('unload', () => {});
+</script>
+</body>

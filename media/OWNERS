@@ -8,8 +8,11 @@
 # and to load balance. Only use OWNERS in this file for these subdirectories
 # when doing refactorings and general cleanups.
 
+set noparent
+cassew@google.com
 chcunningham@chromium.org
 dalecurtis@chromium.org
+eugene@chromium.org
 jrummell@chromium.org
 liberato@chromium.org
 sandersd@chromium.org
@@ -19,10 +22,7 @@ wolenetz@chromium.org
 xhwang@chromium.org
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 
 # For GpuMemoryBuffer-related changes:
 per-file *gpu_memory_buffer*=dcastagna@chromium.org
-per-file *gpu_memory_buffer*=reveman@chromium.org
-
-# COMPONENT: Internals>Media

@@ -1,0 +1,6 @@
+# This file exercises the REP syntax for replacements.
+
+REP 3
+REP f ph
+REP ph f
+REP ^alot$ a_lot

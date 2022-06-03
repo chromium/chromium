@@ -14,19 +14,16 @@ namespace blink {
 
 class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
                                public CanvasDrawListener {
-  USING_GARBAGE_COLLECTED_MIXIN(AutoCanvasDrawListener);
-
  public:
   explicit AutoCanvasDrawListener(std::unique_ptr<CanvasCaptureHandler>);
   ~AutoCanvasDrawListener() override = default;
 
-  void SendNewFrame(
-      sk_sp<SkImage>,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>) override;
+  NewFrameCallback GetNewFrameCallback() override;
+  bool CanDiscardAlpha() const final;
   bool NeedsNewFrame() const final;
   void RequestFrame() final;
 
-  void Trace(blink::Visitor*) override {}
+  void Trace(Visitor*) const override {}
 
  protected:
   std::unique_ptr<CanvasCaptureHandler> handler_;
@@ -35,4 +32,4 @@ class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_AUTO_CANVAS_DRAW_LISTENER_H_

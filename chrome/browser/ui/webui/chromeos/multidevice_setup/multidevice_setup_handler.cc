@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "base/callback_helpers.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -23,11 +24,11 @@ MultideviceSetupHandler::MultideviceSetupHandler() = default;
 MultideviceSetupHandler::~MultideviceSetupHandler() = default;
 
 void MultideviceSetupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProfileInfo",
       base::BindRepeating(&MultideviceSetupHandler::HandleGetProfileInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openMultiDeviceSettings",
       base::BindRepeating(
           &MultideviceSetupHandler::HandleOpenMultiDeviceSettings,
@@ -38,9 +39,8 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
     const base::ListValue* args) {
   AllowJavascript();
 
-  std::string callback_id;
-  bool result = args->GetString(0, &callback_id);
-  DCHECK(result);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
@@ -59,9 +59,10 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue* args) {
-  DCHECK(args->empty());
+  DCHECK(args->GetList().empty());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      Profile::FromWebUI(web_ui()), chrome::kConnectedDevicesSubPage);
+      Profile::FromWebUI(web_ui()),
+      chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
 }
 
 }  // namespace multidevice_setup

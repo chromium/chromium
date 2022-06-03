@@ -33,19 +33,36 @@ Polymer({
      */
     customItems: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       },
     },
 
     /** Whether to show technology badges on mobile network icons. */
-    showTechnologyBadge: {type: Boolean, value: true},
+    showTechnologyBadge: {
+      type: Boolean,
+      value: true,
+    },
+
+    /**
+     * Whether this element should trigger periodic Wi-Fi scans to update the
+     * list of networks. If true, a background scan is performed every 10
+     * seconds.
+     */
+    enableWifiScans: {
+      type: Boolean,
+      value: true,
+      observer: 'onEnableWifiScansChanged_',
+    },
 
     /**
      * Whether to show a progress indicator at the top of the network list while
      * a scan (e.g., for nearby Wi-Fi networks) is in progress.
      */
-    showScanProgress: {type: Boolean, value: false},
+    showScanProgress: {
+      type: Boolean,
+      value: false,
+    },
 
     /** Whether cellular activation is unavailable in the current context. */
     activationUnavailable: Boolean,
@@ -56,7 +73,7 @@ Polymer({
      */
     networkStateList_: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       },
     },
@@ -65,13 +82,13 @@ Polymer({
      * Whether a network scan is currently in progress.
      * @private
      */
-    isScanOngoing_: {type: Boolean, value: false},
+    isScanOngoing_: {
+      type: Boolean,
+      value: false,
+    },
 
-    /**
-     * Cached Cellular Device state or undefined if there is no Cellular device.
-     * @private {!OncMojo.DeviceStateProperties|undefined} deviceState
-     */
-    cellularDeviceState_: Object,
+    /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy_: Object,
   },
 
   /** @type {!OncMojo.NetworkStateProperties|undefined} */
@@ -85,63 +102,55 @@ Polymer({
   networkConfig_: null,
 
   /** @override */
-  created: function() {
+  created() {
     this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.refreshNetworks();
-
-    const INTERVAL_MS = 10 * 1000;
-    const kAll = chromeos.networkConfig.mojom.NetworkType.kAll;
-    this.networkConfig_.requestNetworkScan(kAll);
-    this.scanIntervalId_ = window.setInterval(function() {
-      this.networkConfig_.requestNetworkScan(kAll);
-    }.bind(this), INTERVAL_MS);
+    this.onEnableWifiScansChanged_();
   },
 
   /** @override */
-  detached: function() {
-    if (this.scanIntervalId_ !== null) {
-      window.clearInterval(this.scanIntervalId_);
-    }
+  detached() {
+    this.clearScheduledScans_();
   },
 
   /**
    * Returns network list object for testing.
    */
-  getNetworkListForTest: function() {
+  getNetworkListForTest() {
     return this.$.networkList.$$('#networkList');
   },
 
   /**
    * Returns network list item object for testing.
    */
-  getNetworkListItemByNameForTest: function(name) {
+  getNetworkListItemByNameForTest(name) {
     const networkList = this.$.networkList.$$('#networkList');
     assert(networkList);
     for (const network of networkList.children) {
       if (network.is === 'network-list-item' &&
           network.$$('#divText').children[0].innerText === name) {
-        return network;
+        return network.shadowRoot.getElementById('divOuter');
       }
     }
     return null;
   },
 
-  focus: function() {
+  focus() {
     this.$.networkList.focus();
   },
 
   /** CrosNetworkConfigObserver impl */
-  onNetworkStateListChanged: function() {
+  onNetworkStateListChanged() {
     this.refreshNetworks();
   },
 
   /** CrosNetworkConfigObserver impl */
-  onDeviceStateListChanged: function() {
+  onDeviceStateListChanged() {
     this.refreshNetworks();
   },
 
@@ -149,9 +158,12 @@ Polymer({
    * Requests the device and network states. May be called externally to force a
    * refresh and list update (e.g. when the element is shown).
    */
-  refreshNetworks: function() {
+  refreshNetworks() {
     this.networkConfig_.getDeviceStateList().then(response => {
       this.onGetDeviceStates_(response.result);
+    });
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
     });
   },
 
@@ -159,7 +171,7 @@ Polymer({
    * Returns default network if it is present.
    * @return {!OncMojo.NetworkStateProperties|undefined}
    */
-  getDefaultNetwork: function() {
+  getDefaultNetwork() {
     let defaultNetwork;
     for (let i = 0; i < this.networkStateList_.length; ++i) {
       const state = this.networkStateList_[i];
@@ -167,12 +179,12 @@ Polymer({
         defaultNetwork = state;
         break;
       }
-      if (state.connectionState == mojom.ConnectionStateType.kConnecting &&
+      if (state.connectionState === mojom.ConnectionStateType.kConnecting &&
           !defaultNetwork) {
         defaultNetwork = state;
         // Do not break here in case a non WiFi network is connecting but a
         // WiFi network is connected.
-      } else if (state.type == mojom.NetworkType.kWiFi) {
+      } else if (state.type === mojom.NetworkType.kWiFi) {
         break;  // Non connecting or connected WiFI networks are always last.
       }
     }
@@ -184,17 +196,53 @@ Polymer({
    * @param {string} guid of network.
    * @return {!OncMojo.NetworkStateProperties|undefined}
    */
-  getNetwork: function(guid) {
+  getNetwork(guid) {
     return this.networkStateList_.find(function(network) {
-      return network.guid == guid;
+      return network.guid === guid;
     });
+  },
+
+  /**
+   * Handler for changes to |enableWifiScans| which either schedules upcoming
+   * scans or clears already-scheduled scans.
+   * @private
+   */
+  onEnableWifiScansChanged_() {
+    // Clear any scans which are already scheduled.
+    this.clearScheduledScans_();
+
+    // If Scans are disabled, return early.
+    if (!this.enableWifiScans) {
+      return;
+    }
+
+    const INTERVAL_MS = 10 * 1000;
+    // Request only WiFi network scans. Tether and Cellular scans are not useful
+    // here. Cellular scans are disruptive and should only be triggered by
+    // explicit user action.
+    const kWiFi = chromeos.networkConfig.mojom.NetworkType.kWiFi;
+    this.networkConfig_.requestNetworkScan(kWiFi);
+    this.scanIntervalId_ = window.setInterval(function() {
+      this.networkConfig_.requestNetworkScan(kWiFi);
+    }.bind(this), INTERVAL_MS);
+  },
+
+  /**
+   * Clears any scheduled Wi-FI scans; no-op if there were no scans scheduled.
+   * @private
+   */
+  clearScheduledScans_() {
+    if (this.scanIntervalId_ !== null) {
+      window.clearInterval(this.scanIntervalId_);
+      this.scanIntervalId_ = null;
+    }
   },
 
   /**
    * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
    * @private
    */
-  onGetDeviceStates_: function(deviceStates) {
+  onGetDeviceStates_(deviceStates) {
     this.isScanOngoing_ =
         deviceStates.some((deviceState) => !!deviceState.scanning);
 
@@ -213,13 +261,7 @@ Polymer({
    * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates
    * @private
    */
-  onGetNetworkStateList_: function(deviceStates, networkStates) {
-    this.cellularDeviceState_ = deviceStates.find(function(device) {
-      return device.type == mojom.NetworkType.kCellular;
-    });
-    if (this.cellularDeviceState_) {
-      this.ensureCellularNetwork_(networkStates);
-    }
+  onGetNetworkStateList_(deviceStates, networkStates) {
     this.networkStateList_ = networkStates;
     this.fire('network-list-changed', networkStates);
 
@@ -227,8 +269,8 @@ Polymer({
 
     if ((!defaultNetwork && !this.defaultNetworkState_) ||
         (defaultNetwork && this.defaultNetworkState_ &&
-         defaultNetwork.guid == this.defaultNetworkState_.guid &&
-         defaultNetwork.connectionState ==
+         defaultNetwork.guid === this.defaultNetworkState_.guid &&
+         defaultNetwork.connectionState ===
              this.defaultNetworkState_.connectionState)) {
       return;  // No change to network or ConnectionState
     }
@@ -241,45 +283,11 @@ Polymer({
   },
 
   /**
-   * Modifies |networkStates| to include a cellular network if one is required
-   * but does not exist.
-   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates
-   * @private
-   */
-  ensureCellularNetwork_: function(networkStates) {
-    if (networkStates.find(function(network) {
-          return network.type == mojom.NetworkType.kCellular;
-        })) {
-      return;
-    }
-    const deviceState = this.cellularDeviceState_.deviceState;
-    if (deviceState == mojom.DeviceStateType.kDisabled ||
-        deviceState == mojom.DeviceStateType.kProhibited) {
-      return;  // No Cellular network
-    }
-
-    const cellular =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular);
-    cellular.typeState.cellular.scanning = this.cellularDeviceState_.scanning;
-
-    // Note: the default connectionState is kNotConnected.
-    // TODO(khorimoto): Maybe set an 'initializing' CellularState property if
-    // the device state is initializing, see TODO in network_list_item.js.
-
-    // Insert the Cellular network after the Ethernet network if it exists.
-    const idx = (networkStates.length > 0 &&
-                 networkStates[0].type == mojom.NetworkType.kEthernet) ?
-        1 :
-        0;
-    networkStates.splice(idx, 0, cellular);
-  },
-
-  /**
    * Event triggered when a network-list-item is selected.
    * @param {!{target: HTMLElement, detail: !OncMojo.NetworkStateProperties}} e
    * @private
    */
-  onNetworkListItemSelected_: function(e) {
+  onNetworkListItemSelected_(e) {
     const state = e.detail;
     e.target.blur();
 

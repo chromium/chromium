@@ -1,0 +1,11 @@
+<iframe id="i" src="https:/127.0.0.1:8443/misc/resources/hang-connection-before-head.php"></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+i.contentWindow.didreuse = true;
+i.contentDocument.open();
+i.contentDocument.close();
+i.contentWindow.location = 'resources/check-window-reuse.html';
+</script>

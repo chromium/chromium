@@ -10,21 +10,21 @@
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-// Coordinator that manages displaying of UI for OverlayRequests.  An instance
-// of this coordinator should be created for each Browser at every
-// OverlayModality.
+// Coordinator that manages the container view in which overlay UI is displayed.
+// The coordinator's view controller should be used to display overlay UI
+// implemented using child UIViewControllers.
 @interface OverlayContainerCoordinator : ChromeCoordinator
 
 // Initializer for an overlay container that presents overlay for |browser| at
 // |modality|.
+// TODO(crbug.com/1056837): This is not marked as NS_DESIGNATED_INITIALIZER to
+// facilitate the creation of OverlayContainerCoordinators for
+// OverlayModality::kTesting.  Annotate as NS_DESIGNATED_INITIALIZER once
+// OverlayModality is converted from an enum type.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  modality:(OverlayModality)modality
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
+                                  modality:(OverlayModality)modality;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 

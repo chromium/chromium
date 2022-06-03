@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/buildflag.h"
 #include "media/media_buildflags.h"
@@ -138,14 +138,14 @@ void FakeRemoter::StartDataStreams(
     mojo::PendingReceiver<mojom::RemotingDataStreamSender> video_sender) {
   if (audio_pipe.is_valid()) {
     VLOG(2) << "Has audio";
-    audio_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(audio_sender), std::move(audio_pipe)));
+    audio_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
+        std::move(audio_sender), std::move(audio_pipe));
   }
 
   if (video_pipe.is_valid()) {
     VLOG(2) << "Has video";
-    video_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(video_sender), std::move(video_pipe)));
+    video_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
+        std::move(video_sender), std::move(video_pipe));
   }
 }
 

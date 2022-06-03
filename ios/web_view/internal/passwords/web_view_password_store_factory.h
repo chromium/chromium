@@ -13,7 +13,7 @@
 enum class ServiceAccessType;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }
 
 namespace ios_web_view {
@@ -25,16 +25,15 @@ class WebViewBrowserState;
 class WebViewPasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      WebViewBrowserState* browser_state,
-      ServiceAccessType access_type);
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetForBrowserState(WebViewBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static WebViewPasswordStoreFactory* GetInstance();
 
-  // Called by the PasswordDataTypeController whenever there is a possibility
-  // that syncing passwords has just started or ended for |browser_state|.
-  static void OnPasswordsSyncedStatePotentiallyChanged(
-      WebViewBrowserState* browser_state);
+  WebViewPasswordStoreFactory(const WebViewPasswordStoreFactory&) = delete;
+  WebViewPasswordStoreFactory& operator=(const WebViewPasswordStoreFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<WebViewPasswordStoreFactory>;
@@ -48,8 +47,6 @@ class WebViewPasswordStoreFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordStoreFactory);
 };
 
 }  // namespace ios_web_view

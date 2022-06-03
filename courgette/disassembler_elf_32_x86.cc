@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"
 

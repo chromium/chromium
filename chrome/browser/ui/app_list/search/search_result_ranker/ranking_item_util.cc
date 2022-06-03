@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
@@ -24,19 +23,32 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kOmnibox:
       return RankingItemType::kOmniboxGeneric;
     case ash::AppListSearchResultType::kLauncher:
+    case ash::AppListSearchResultType::kFileSearch:
+    case ash::AppListSearchResultType::kDriveSearch:
       return RankingItemType::kFile;
     case ash::AppListSearchResultType::kUnknown:
     case ash::AppListSearchResultType::kPlayStoreApp:
     case ash::AppListSearchResultType::kInstantApp:
     case ash::AppListSearchResultType::kAnswerCard:
     case ash::AppListSearchResultType::kPlayStoreReinstallApp:
+    case ash::AppListSearchResultType::kAssistantChip:
+    case ash::AppListSearchResultType::kOsSettings:
+    case ash::AppListSearchResultType::kInternalPrivacyInfo:
+    case ash::AppListSearchResultType::kAssistantText:
+    case ash::AppListSearchResultType::kHelpApp:
+      // NOTE: We don't rank results of type kAssistantChip, kAssistantText
+      // as those results, if present, are shown in a dedicated slot.
       return RankingItemType::kIgnored;
     case ash::AppListSearchResultType::kArcAppShortcut:
       return RankingItemType::kArcAppShortcut;
     case ash::AppListSearchResultType::kZeroStateFile:
       return RankingItemType::kZeroStateFile;
-    case ash::AppListSearchResultType::kDriveQuickAccess:
+    case ash::AppListSearchResultType::kZeroStateDrive:
       return RankingItemType::kDriveQuickAccess;
+    case ash::AppListSearchResultType::kFileChip:
+      return RankingItemType::kZeroStateFileChip;
+    case ash::AppListSearchResultType::kDriveChip:
+      return RankingItemType::kDriveQuickAccessChip;
   }
 }
 

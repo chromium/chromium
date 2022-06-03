@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_ios, "Paint Previews are not supported on iOS.")
+
+source_set("public") {
+  sources = [
+    "paint_preview_compositor_client.h",
+    "paint_preview_compositor_service.h",
+  ]
+
+  public_deps =
+      [ "//components/services/paint_preview_compositor/public/mojom" ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/display/external_use_client.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace viz {
 
@@ -10,7 +12,7 @@ ExternalUseClient::ImageContext::ImageContext(
     const gpu::MailboxHolder& mailbox_holder,
     const gfx::Size& size,
     ResourceFormat resource_format,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space)
     : mailbox_holder_(mailbox_holder),
       size_(size),

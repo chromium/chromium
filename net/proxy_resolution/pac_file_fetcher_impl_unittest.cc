@@ -11,15 +11,15 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_delegate_impl.h"
@@ -35,6 +35,7 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -45,11 +46,12 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -69,49 +71,46 @@ const base::FilePath::CharType kDocRoot[] =
 
 struct FetchResult {
   int code;
-  base::string16 text;
+  std::u16string text;
 };
 
-// A non-mock URL request which can access http:// and file:// urls, in the case
-// the tests were built with file support.
+// A non-mock URL request which can access http:// urls.
 class RequestContext : public URLRequestContext {
  public:
   RequestContext() : storage_(this) {
     ProxyConfig no_proxy;
-    storage_.set_host_resolver(std::make_unique<MockHostResolver>());
+    storage_.set_host_resolver(std::make_unique<MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0, /*default_result=*/
+        MockHostResolverBase::RuleResolver::GetLocalhostResult()));
     storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
     storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
-    storage_.set_cert_transparency_verifier(
-        std::make_unique<MultiLogCTVerifier>());
     storage_.set_ct_policy_enforcer(
         std::make_unique<DefaultCTPolicyEnforcer>());
-    storage_.set_proxy_resolution_service(ProxyResolutionService::CreateFixed(
-        ProxyConfigWithAnnotation(no_proxy, TRAFFIC_ANNOTATION_FOR_TESTS)));
+    storage_.set_proxy_resolution_service(
+        ConfiguredProxyResolutionService::CreateFixed(
+            ProxyConfigWithAnnotation(no_proxy, TRAFFIC_ANNOTATION_FOR_TESTS)));
     storage_.set_ssl_config_service(
         std::make_unique<SSLConfigServiceDefaults>());
     storage_.set_http_server_properties(
         std::make_unique<HttpServerProperties>());
     storage_.set_quic_context(std::make_unique<QuicContext>());
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.host_resolver = host_resolver();
     session_context.cert_verifier = cert_verifier();
     session_context.transport_security_state = transport_security_state();
-    session_context.cert_transparency_verifier = cert_transparency_verifier();
     session_context.ct_policy_enforcer = ct_policy_enforcer();
     session_context.proxy_resolution_service = proxy_resolution_service();
     session_context.ssl_config_service = ssl_config_service();
     session_context.http_server_properties = http_server_properties();
     session_context.quic_context = quic_context();
     storage_.set_http_network_session(std::make_unique<HttpNetworkSession>(
-        HttpNetworkSession::Params(), session_context));
+        HttpNetworkSessionParams(), session_context));
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
         storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),
         false));
-    std::unique_ptr<URLRequestJobFactoryImpl> job_factory =
-        std::make_unique<URLRequestJobFactoryImpl>();
-    storage_.set_job_factory(std::move(job_factory));
+    storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   }
 
   ~RequestContext() override { AssertNoURLRequests(); }
@@ -138,6 +137,10 @@ GURL GetTestFileUrl(const std::string& relpath) {
 class BasicNetworkDelegate : public NetworkDelegateImpl {
  public:
   BasicNetworkDelegate() = default;
+
+  BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
+  BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;
+
   ~BasicNetworkDelegate() override = default;
 
  private:
@@ -147,49 +150,6 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
     return OK;
   }
-
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override {
-    return OK;
-  }
-
-  int OnHeadersReceived(
-      URLRequest* request,
-      CompletionOnceCallback callback,
-      const HttpResponseHeaders* original_response_headers,
-      scoped_refptr<HttpResponseHeaders>* override_response_headers,
-      const net::IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
-    return OK;
-  }
-
-  void OnBeforeRedirect(URLRequest* request,
-                        const GURL& new_location) override {}
-
-  void OnResponseStarted(URLRequest* request, int net_error) override {}
-
-  void OnCompleted(URLRequest* request, bool started, int net_error) override {}
-
-  void OnURLRequestDestroyed(URLRequest* request) override {}
-
-  void OnPACScriptError(int line_number, const base::string16& error) override {
-  }
-
-  bool OnCanGetCookies(const URLRequest& request,
-                       const CookieList& cookie_list,
-                       bool allowed_from_caller) override {
-    return allowed_from_caller;
-  }
-
-  bool OnCanSetCookie(const URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override {
-    return allowed_from_caller;
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(BasicNetworkDelegate);
 };
 
 class PacFileFetcherImplTest : public PlatformTest, public WithTaskEnvironment {
@@ -210,7 +170,7 @@ TEST_F(PacFileFetcherImplTest, FileUrlNotAllowed) {
 
   // Fetch a file that exists, however the PacFileFetcherImpl does not allow use
   // of file://.
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(GetTestFileUrl("pac.txt"), &text, callback.callback(),
@@ -226,7 +186,7 @@ TEST_F(PacFileFetcherImplTest, RedirectToFileUrl) {
 
   GURL url(test_server_.GetURL("/redirect-to-file"));
 
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -243,33 +203,33 @@ TEST_F(PacFileFetcherImplTest, HttpMimeType) {
 
   {  // Fetch a PAC with mime type "text/plain"
     GURL url(test_server_.GetURL("/pac.txt"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-pac.txt-\n"), text);
+    EXPECT_EQ(u"-pac.txt-\n", text);
   }
   {  // Fetch a PAC with mime type "text/html"
     GURL url(test_server_.GetURL("/pac.html"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-pac.html-\n"), text);
+    EXPECT_EQ(u"-pac.html-\n", text);
   }
   {  // Fetch a PAC with mime type "application/x-ns-proxy-autoconfig"
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-pac.nsproxy-\n"), text);
+    EXPECT_EQ(u"-pac.nsproxy-\n", text);
   }
 }
 
@@ -280,7 +240,7 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
 
   {  // Fetch a PAC which gives a 500 -- FAIL
     GURL url(test_server_.GetURL("/500.pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -291,7 +251,7 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
   }
   {  // Fetch a PAC which gives a 404 -- FAIL
     GURL url(test_server_.GetURL("/404.pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -310,13 +270,64 @@ TEST_F(PacFileFetcherImplTest, ContentDisposition) {
   // Fetch PAC scripts via HTTP with a Content-Disposition header -- should
   // have no effect.
   GURL url(test_server_.GetURL("/downloadable.pac"));
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_THAT(result, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ(ASCIIToUTF16("-downloadable.pac-\n"), text);
+  EXPECT_EQ(u"-downloadable.pac-\n", text);
+}
+
+// Verifies that fetches are made using the fetcher's IsolationInfo, by checking
+// the DNS cache.
+TEST_F(PacFileFetcherImplTest, IsolationInfo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled_features
+      {features::kPartitionConnectionsByNetworkIsolationKey,
+       features::kSplitHostCacheByNetworkIsolationKey},
+      // disabled_features
+      {});
+  const char kHost[] = "foo.test";
+
+  ASSERT_TRUE(test_server_.Start());
+
+  auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
+
+  GURL url(test_server_.GetURL(kHost, "/downloadable.pac"));
+  std::u16string text;
+  TestCompletionCallback callback;
+  int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(callback.GetResult(result), IsOk());
+  EXPECT_EQ(u"-downloadable.pac-\n", text);
+
+  // Check that the URL in kDestination is in the HostCache, with
+  // the fetcher's IsolationInfo / NetworkIsolationKey, and no others.
+  net::HostResolver::ResolveHostParameters params;
+  params.source = net::HostResolverSource::LOCAL_ONLY;
+  std::unique_ptr<net::HostResolver::ResolveHostRequest> host_request =
+      context_.host_resolver()->CreateRequest(
+          url::SchemeHostPort(url),
+          pac_fetcher->isolation_info().network_isolation_key(),
+          net::NetLogWithSource(), params);
+  net::TestCompletionCallback callback2;
+  result = host_request->Start(callback2.callback());
+  EXPECT_EQ(net::OK, callback2.GetResult(result));
+
+  // Make sure there are no other entries in the HostCache (which would
+  // potentially be associated with other NetworkIsolationKeys).
+  EXPECT_EQ(1u, context_.host_resolver()->GetHostCache()->size());
+
+  // Make sure the cache is actually returning different results based on
+  // NetworkIsolationKey.
+  host_request = context_.host_resolver()->CreateRequest(
+      url::SchemeHostPort(url), NetworkIsolationKey(), net::NetLogWithSource(),
+      params);
+  net::TestCompletionCallback callback3;
+  result = host_request->Start(callback3.callback());
+  EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));
 }
 
 // Verifies that PAC scripts are not being cached.
@@ -328,13 +339,13 @@ TEST_F(PacFileFetcherImplTest, NoCache) {
   // Fetch a PAC script whose HTTP headers make it cacheable for 1 hour.
   GURL url(test_server_.GetURL("/cacheable_1hr.pac"));
   {
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-cacheable_1hr.pac-\n"), text);
+    EXPECT_EQ(u"-cacheable_1hr.pac-\n", text);
   }
 
   // Kill the HTTP server.
@@ -344,7 +355,7 @@ TEST_F(PacFileFetcherImplTest, NoCache) {
   // call should fail, thus indicating that the file was not fetched from the
   // local cache.
   {
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -360,32 +371,35 @@ TEST_F(PacFileFetcherImplTest, TooLarge) {
 
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
-  // Set the maximum response size to 50 bytes.
-  int prev_size = pac_fetcher->SetSizeConstraint(50);
+  {
+    // Set the maximum response size to 50 bytes.
+    int prev_size = pac_fetcher->SetSizeConstraint(50);
 
-  // Try fetching URL that is 101 bytes large. We should abort the request
-  // after 50 bytes have been read, and fail with a too large error.
-  GURL url = test_server_.GetURL("/large-pac.nsproxy");
-  base::string16 text;
-  TestCompletionCallback callback;
-  int result = pac_fetcher->Fetch(url, &text, callback.callback(),
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
-  EXPECT_TRUE(text.empty());
+    // Try fetching URL that is 101 bytes large. We should abort the request
+    // after 50 bytes have been read, and fail with a too large error.
+    GURL url = test_server_.GetURL("/large-pac.nsproxy");
+    std::u16string text;
+    TestCompletionCallback callback;
+    int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                    TRAFFIC_ANNOTATION_FOR_TESTS);
+    EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
+    EXPECT_TRUE(text.empty());
 
-  // Restore the original size bound.
-  pac_fetcher->SetSizeConstraint(prev_size);
+    // Restore the original size bound.
+    pac_fetcher->SetSizeConstraint(prev_size);
+  }
 
-  {  // Make sure we can still fetch regular URLs.
+  {
+    // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-pac.nsproxy-\n"), text);
+    EXPECT_EQ(u"-pac.nsproxy-\n", text);
   }
 }
 
@@ -396,7 +410,7 @@ TEST_F(PacFileFetcherImplTest, Empty) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
   GURL url(test_server_.GetURL("/empty"));
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -412,13 +426,13 @@ TEST_F(PacFileFetcherImplTest, Hang) {
 
   // Set the timeout period to 0.5 seconds.
   base::TimeDelta prev_timeout =
-      pac_fetcher->SetTimeoutConstraint(base::TimeDelta::FromMilliseconds(500));
+      pac_fetcher->SetTimeoutConstraint(base::Milliseconds(500));
 
   // Try fetching a URL which takes 1.2 seconds. We should abort the request
   // after 500 ms, and fail with a timeout error.
   {
     GURL url(test_server_.GetURL("/slow/proxy.pac?1.2"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -432,13 +446,13 @@ TEST_F(PacFileFetcherImplTest, Hang) {
 
   {  // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("-pac.nsproxy-\n"), text);
+    EXPECT_EQ(u"-pac.nsproxy-\n", text);
   }
 }
 
@@ -453,38 +467,38 @@ TEST_F(PacFileFetcherImplTest, Encodings) {
   // Test a response that is gzip-encoded -- should get inflated.
   {
     GURL url(test_server_.GetURL("/gzipped_pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("This data was gzipped.\n"), text);
+    EXPECT_EQ(u"This data was gzipped.\n", text);
   }
 
   // Test a response that was served as UTF-16 (BE). It should
   // be converted to UTF8.
   {
     GURL url(test_server_.GetURL("/utf16be_pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("This was encoded as UTF-16BE.\n"), text);
+    EXPECT_EQ(u"This was encoded as UTF-16BE.\n", text);
   }
 
   // Test a response that lacks a charset, however starts with a UTF8 BOM.
   {
     GURL url(test_server_.GetURL("/utf8_bom"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
     EXPECT_THAT(callback.WaitForResult(), IsOk());
-    EXPECT_EQ(ASCIIToUTF16("/* UTF8 */\n"), text);
+    EXPECT_EQ(u"/* UTF8 */\n", text);
   }
 }
 
@@ -495,22 +509,22 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
       "data:application/x-ns-proxy-autoconfig;base64,ZnVuY3Rpb24gRmluZFByb3h5R"
       "m9yVVJMKHVybCwgaG9zdCkgewogIGlmIChob3N0ID09ICdmb29iYXIuY29tJykKICAgIHJl"
       "dHVybiAnUFJPWFkgYmxhY2tob2xlOjgwJzsKICByZXR1cm4gJ0RJUkVDVCc7Cn0=";
-  const char kPacScript[] =
-      "function FindProxyForURL(url, host) {\n"
-      "  if (host == 'foobar.com')\n"
-      "    return 'PROXY blackhole:80';\n"
-      "  return 'DIRECT';\n"
-      "}";
+  const char16_t kPacScript[] =
+      u"function FindProxyForURL(url, host) {\n"
+      u"  if (host == 'foobar.com')\n"
+      u"    return 'PROXY blackhole:80';\n"
+      u"  return 'DIRECT';\n"
+      u"}";
 
   // Test fetching a "data:"-url containing a base64 encoded PAC script.
   {
     GURL url(kEncodedUrl);
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsOk());
-    EXPECT_EQ(ASCIIToUTF16(kPacScript), text);
+    EXPECT_EQ(kPacScript, text);
   }
 
   const char kEncodedUrlBroken[] =
@@ -519,7 +533,7 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
   // Test a broken "data:"-url containing a base64 encoded PAC script.
   {
     GURL url(kEncodedUrlBroken);
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -544,7 +558,7 @@ TEST_F(PacFileFetcherImplTest, IgnoresLimits) {
   std::vector<std::unique_ptr<PacFileFetcherImpl>> pac_fetchers;
 
   TestCompletionCallback callback;
-  base::string16 text;
+  std::u16string text;
   for (int i = 0; i < num_requests; i++) {
     auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
     GURL url(test_server_.GetURL("/hung"));
@@ -569,7 +583,7 @@ TEST_F(PacFileFetcherImplTest, OnShutdown) {
   ASSERT_TRUE(test_server_.Start());
 
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(test_server_.GetURL("/hung"), &text,
@@ -598,7 +612,7 @@ TEST_F(PacFileFetcherImplTest, OnShutdownWithNoLiveRequest) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
   pac_fetcher->OnShutdown();
 
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(test_server_.GetURL("/hung"), &text,

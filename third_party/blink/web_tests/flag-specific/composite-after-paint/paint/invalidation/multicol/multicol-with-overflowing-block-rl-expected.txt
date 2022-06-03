@@ -4,23 +4,11 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='elm'",
-          "rect": [8, 8, 792, 500],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutBlockFlow DIV id='elm'",
-          "rect": [0, 8, 508, 500],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutBlockFlow DIV id='elm'",
-          "rect": [8, 8, 500, 500],
-          "reason": "background"
-        }
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [8, 341, 500, 167],
+        [8, 8, 500, 167],
+        [8, 175, 500, 166]
       ]
     }
   ]

@@ -1,2 +1,0 @@
-Demo Chrome extension that utilizes chrome.displaySource API's.
-The extension creates a WiFi Display Session from the captured tab media stream.

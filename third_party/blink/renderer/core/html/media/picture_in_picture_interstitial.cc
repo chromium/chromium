@@ -21,9 +21,9 @@
 namespace {
 
 constexpr base::TimeDelta kPictureInPictureStyleChangeTransitionDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 constexpr base::TimeDelta kPictureInPictureHiddenAnimationSeconds =
-    base::TimeDelta::FromMilliseconds(300);
+    base::Milliseconds(300);
 
 }  // namespace
 
@@ -47,7 +47,7 @@ class PictureInPictureInterstitial::VideoElementResizeObserverDelegate final
     interstitial_->NotifyElementSizeChanged(*entries[0]->contentRect());
   }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(interstitial_);
     ResizeObserver::Delegate::Trace(visitor);
   }
@@ -60,7 +60,7 @@ PictureInPictureInterstitial::PictureInPictureInterstitial(
     HTMLVideoElement& videoElement)
     : HTMLDivElement(videoElement.GetDocument()),
       resize_observer_(ResizeObserver::Create(
-          videoElement.GetDocument(),
+          videoElement.GetDocument().domWindow(),
           MakeGarbageCollected<VideoElementResizeObserverDelegate>(this))),
       interstitial_timer_(
           videoElement.GetDocument().GetTaskRunner(TaskType::kInternalMedia),
@@ -127,7 +127,7 @@ Node::InsertionNotificationRequest PictureInPictureInterstitial::InsertedInto(
     ContainerNode& root) {
   if (GetVideoElement().isConnected() && !resize_observer_) {
     resize_observer_ = ResizeObserver::Create(
-        GetVideoElement().GetDocument(),
+        GetVideoElement().GetDocument().domWindow(),
         MakeGarbageCollected<VideoElementResizeObserverDelegate>(this));
     resize_observer_->observe(&GetVideoElement());
   }
@@ -173,8 +173,9 @@ void PictureInPictureInterstitial::OnPosterImageChanged() {
       GetVideoElement().FastGetAttribute(html_names::kPosterAttr));
 }
 
-void PictureInPictureInterstitial::Trace(Visitor* visitor) {
+void PictureInPictureInterstitial::Trace(Visitor* visitor) const {
   visitor->Trace(resize_observer_);
+  visitor->Trace(interstitial_timer_);
   visitor->Trace(video_element_);
   visitor->Trace(background_image_);
   visitor->Trace(message_element_);

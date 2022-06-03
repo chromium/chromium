@@ -1,4 +1,4 @@
-mlamouri@chromium.org
+file://third_party/blink/renderer/modules/app_banner/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

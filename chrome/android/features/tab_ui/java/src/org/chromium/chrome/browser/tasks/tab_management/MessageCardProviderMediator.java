@@ -4,16 +4,21 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
 
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,32 +41,84 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     private final Context mContext;
-    private Map<Integer, Message> mMessageItems = new HashMap<>();
-    private Map<Integer, Message> mShownMessageItems = new HashMap<>();
+    private final Supplier<Boolean> mIsIncognitoSupplier;
+    private Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
+    private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
     private MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
-    public MessageCardProviderMediator(
-            Context context, MessageCardView.DismissActionProvider uiDismissActionProvider) {
+    public MessageCardProviderMediator(Context context, Supplier<Boolean> isIncognitoSupplier,
+            MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mContext = context;
+        mIsIncognitoSupplier = isIncognitoSupplier;
         mUiDismissActionProvider = uiDismissActionProvider;
     }
+
     /**
      * @return A list of {@link Message} that can be shown.
      */
     public List<Message> getMessageItems() {
-        mShownMessageItems.putAll(mMessageItems);
-        mMessageItems.clear();
+        for (Iterator<Integer> it = mMessageItems.keySet().iterator(); it.hasNext();) {
+            int key = it.next();
+            if (mShownMessageItems.containsKey(key)) continue;
+
+            List<Message> messages = mMessageItems.get(key);
+
+            assert messages.size() > 0;
+            mShownMessageItems.put(key, messages.remove(0));
+
+            if (messages.size() == 0) it.remove();
+        }
+
+        for (Message message : mShownMessageItems.values()) {
+            message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        }
+
         return new ArrayList<>(mShownMessageItems.values());
+    }
+
+    Message getNextMessageItemForType(@MessageService.MessageType int messageType) {
+        if (!mShownMessageItems.containsKey(messageType)) {
+            if (!mMessageItems.containsKey(messageType)) return null;
+
+            List<Message> messages = mMessageItems.get(messageType);
+
+            assert messages.size() > 0;
+            mShownMessageItems.put(messageType, messages.remove(0));
+
+            if (messages.size() == 0) mMessageItems.remove(messageType);
+        }
+
+        Message message = mShownMessageItems.get(messageType);
+        message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        return message;
+    }
+
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        if (!mShownMessageItems.containsKey(messageType)) return false;
+        return mShownMessageItems.get(messageType)
+                       .model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER)
+                == identifier;
     }
 
     private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
         switch (messageType) {
             case TAB_SUGGESTION:
                 assert data instanceof TabSuggestionMessageService.TabSuggestionMessageData;
-                return TabSuggestionMessageCardViewModel.create(mContext, this::messageInvalidate,
+                return TabSuggestionMessageCardViewModel.create(mContext,
+                        this::invalidateShownMessage,
                         (TabSuggestionMessageService.TabSuggestionMessageData) data);
+            case IPH:
+                assert data instanceof IphMessageService.IphMessageData;
+                return IphMessageCardViewModel.create(mContext, this::invalidateShownMessage,
+                        (IphMessageService.IphMessageData) data);
+            case PRICE_MESSAGE:
+                assert data instanceof PriceMessageService.PriceMessageData;
+                return PriceMessageCardViewModel.create(mContext, this::invalidateShownMessage,
+                        (PriceMessageService.PriceMessageData) data);
             default:
-                return new PropertyModel();
+                return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                        .with(MessageCardViewProperties.IS_INCOGNITO, false)
+                        .build();
         }
     }
 
@@ -71,23 +128,32 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
             @MessageService.MessageType int type, MessageService.MessageData data) {
         assert !mShownMessageItems.containsKey(type);
 
-        PropertyModel model = buildModel(type, data);
-        mMessageItems.put(type, new Message(type, model));
+        Message message = new Message(type, buildModel(type, data));
+        if (mMessageItems.containsKey(type)) {
+            mMessageItems.get(type).add(message);
+        } else {
+            mMessageItems.put(type, new ArrayList<>(Arrays.asList(message)));
+        }
     }
 
     @Override
     public void messageInvalidate(@MessageService.MessageType int type) {
         if (mMessageItems.containsKey(type)) {
             mMessageItems.remove(type);
-        } else if (mShownMessageItems.containsKey(type)) {
-            // run ui dismiss handler;
-            mUiDismissActionProvider.dismiss(type);
-            mShownMessageItems.remove(type);
+        }
+        if (mShownMessageItems.containsKey(type)) {
+            invalidateShownMessage(type);
         }
     }
 
     @VisibleForTesting
-    Map<Integer, Message> getReadyMessageItemsForTesting() {
+    void invalidateShownMessage(@MessageService.MessageType int type) {
+        mShownMessageItems.remove(type);
+        mUiDismissActionProvider.dismiss(type);
+    }
+
+    @VisibleForTesting
+    Map<Integer, List<Message>> getReadyMessageItemsForTesting() {
         return mMessageItems;
     }
 

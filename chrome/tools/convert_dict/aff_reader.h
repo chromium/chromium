@@ -59,10 +59,10 @@ class AffReader {
   std::vector<std::string> GetAffixGroups() const;
 
  private:
-  // Command-specific handlers. These are given the string folling the
+  // Command-specific handlers. These are given the string following the
   // command. The input rule may be modified arbitrarily by the function.
   int AddAffixGroup(std::string* rule);  // Returns the new affix group ID.
-  void AddAffix(std::string* rule);  // SFX/PFX
+  void AddAffix(std::string* rule);      // SFX/PFX
   void AddReplacement(std::string* rule);
   // void HandleFlag(std::string* rule);
 

@@ -17,11 +17,11 @@ goog.provide('EarconEngine');
 EarconEngine = function() {
   // Public control parameters. All of these are meant to be adjustable.
 
-  /** @type {number} The master volume, as an amplification factor. */
-  this.masterVolume = 1.0;
+  /** @type {number} The main volume, as an amplification factor. */
+  this.mainVolume = 1.0;
 
   /** @type {number} The base relative pitch adjustment, in half-steps. */
-  this.masterPitch = -4;
+  this.mainPitch = -4;
 
   /** @type {number} The click volume, as an amplification factor. */
   this.clickVolume = 0.4;
@@ -35,11 +35,11 @@ EarconEngine = function() {
   /** @type {number} The base delay for repeated sounds, in seconds. */
   this.baseDelay = 0.045;
 
-  /** @type {number} The master stereo panning, from -1 to 1. */
-  this.masterPan = 0;
+  /** @type {number} The main stereo panning, from -1 to 1. */
+  this.mainPan = 0;
 
-  /** @type {number} The master reverb level as an amplification factor. */
-  this.masterReverb = 0.4;
+  /** @type {number} The main reverb level as an amplification factor. */
+  this.mainReverb = 0.4;
 
   /**
    * @type {string} The choice of the reverb impulse response to use.
@@ -176,7 +176,7 @@ EarconEngine.prototype.loadSound = function(name, url) {
 
 /**
  * Return an AudioNode containing the final processing that all
- * sounds go through: master volume / gain, panning, and reverb.
+ * sounds go through: main volume / gain, panning, and reverb.
  * The chain is hooked up to the destination automatically, so you
  * just need to connect your source to the return value from this
  * method.
@@ -186,12 +186,12 @@ EarconEngine.prototype.loadSound = function(name, url) {
  *          reverb: (number | undefined)}} properties
  *     An object where you can override the default
  *     gain, pan, and reverb, otherwise these are taken from
- *     masterVolume, masterPan, and masterReverb.
+ *     mainVolume, mainPan, and mainReverb.
  * @return {AudioNode} The filters to be applied to all sounds, connected
  *     to the destination node.
  */
 EarconEngine.prototype.createCommonFilters = function(properties) {
-  var gain = this.masterVolume;
+  var gain = this.mainVolume;
   if (properties.gain) {
     gain *= properties.gain;
   }
@@ -200,7 +200,7 @@ EarconEngine.prototype.createCommonFilters = function(properties) {
   var first = gainNode;
   var last = gainNode;
 
-  var pan = this.masterPan;
+  var pan = this.mainPan;
   if (properties.pan !== undefined) {
     pan = properties.pan;
   }
@@ -212,7 +212,7 @@ EarconEngine.prototype.createCommonFilters = function(properties) {
     last = panNode;
   }
 
-  var reverb = this.masterReverb;
+  var reverb = this.mainReverb;
   if (properties.reverb !== undefined) {
     reverb = properties.reverb;
   }
@@ -270,7 +270,7 @@ EarconEngine.prototype.play = function(sound, opt_properties) {
     opt_properties = /** @type {undefined} */ ({});
   }
 
-  var pitch = this.masterPitch;
+  var pitch = this.mainPitch;
   if (opt_properties.pitch) {
     pitch += opt_properties.pitch;
   }
@@ -417,7 +417,7 @@ EarconEngine.prototype.onSelectionReverse = function() {
  * and the decay time |decay|, in seconds.
  *
  * As with other functions, |pan| and |reverb| can be used to override
- * masterPan and masterReverb.
+ * mainPan and mainReverb.
  *
  * @param {{gain: number,
  *          freq: number,

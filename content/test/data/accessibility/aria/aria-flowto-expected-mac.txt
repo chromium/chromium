@@ -1,5 +1,5 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXRoleDescription='region' AXLinkedUIElements=["AXGroup footer next"]
+++AXGroup AXLinkedUIElements=[:4] AXRoleDescription='region'
 ++++AXStaticText AXRoleDescription='text' AXValue='Lorem ipsum'
 ++AXGroup AXRoleDescription='footer'
 ++++AXStaticText AXRoleDescription='text' AXValue='dolor sit amet'

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">አይይ! RSA የግል ኩልፍ በዘፈቀደ ለመፍጠር አልተቻለም።</translation>
 <translation id="1445572445564823378">ይህ ቅጥያ <ph name="PRODUCT_NAME" /> እያንቀራፈፈው ነው። የ<ph name="PRODUCT_NAME" /> አፈጻጸም ወደነበረበት ለመመለስ ቅጥያውን ማሰናከል አለብዎት።</translation>
 <translation id="1468038450257740950">WebGL አይደገፍም።</translation>
-<translation id="149347756975725155">የቅጥያ አዶ «<ph name="ICON" />»ን መጫን አልተቻለም።</translation>
 <translation id="1803557475693955505">የጀርባ ገጽ «<ph name="BACKGROUND_PAGE" />»ን መጫን አልተቻለም።</translation>
 <translation id="2159915644201199628">የዚህ ምስል ስውሩን መግለጥ አልተቻለም፦ «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">አካባቢያዊነት ተጠቅሟል ነገር ግን በማኒፌስት ወስጥ default_locale አልተገለጸም።</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ግላዊ ቁልፍን ማንበብ አልተሳካም።</translation>
 <translation id="6391538222494443604">የግብአት ማውጫ መኖር ይኖርበታል።</translation>
 <translation id="641087317769093025">ቅጥያውን መበተን አልተቻለም</translation>
-<translation id="6413453408918378296">አዶው በበቂ ሁኔታ የሚታይ «<ph name="ICON" />» አይደለም።</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» የአንድ ወይም ተጨማሪ መሣሪያዎችዎ መዳረሻ እየጠየቁ ነው።</translation>
 <translation id="657064425229075395">የጀርባ ስክሪፕት «<ph name="BACKGROUND_SCRIPT" />» መጫን አልተቻለም።</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_NAME" /> (የመለያ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>

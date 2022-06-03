@@ -15,7 +15,7 @@
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
@@ -107,7 +107,7 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
         base::android::kStartOfOrderedText / kPageSize -
         start_of_text_page_index;
     size_t end_of_ordered_section_page_offset =
-        base::bits::Align(base::android::kEndOfOrderedText, kPageSize) /
+        base::bits::AlignUp(base::android::kEndOfOrderedText, kPageSize) /
             kPageSize -
         start_of_text_page_index;
 
@@ -144,6 +144,14 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
       native_library_resident_not_ordered_kb;
   metrics->native_library_not_resident_ordered_kb =
       native_library_not_resident_ordered_kb;
+
+  // 0 is not a valid value, as at the very least the current page (the one
+  // containing code for the collection function) should be resident.
+  if (!native_library_resident_kb) {
+    metrics->native_library_resident_kb =
+        GlobalMemoryDump::AggregatedMetrics::kInvalid;
+  }
+
   return metrics;
 }
 

@@ -7,15 +7,19 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/win/atl.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "chrome/updater/win/ui/ui_constants.h"
 
 // These headers must be included after base/win/atl.h.
 #include "./atlapp.h"
+#include "./atltypes.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include "./atlctrls.h"
 #include "./atlframe.h"
-#include "./atltypes.h"
+#pragma clang diagnostic pop
 
 namespace updater {
 namespace ui {
@@ -27,6 +31,8 @@ class CaptionButton : public CWindowImpl<CaptionButton, WTL::CButton>,
                        CS_HREDRAW | CS_VREDRAW,
                        COLOR_WINDOW)
   CaptionButton();
+  CaptionButton(const CaptionButton&) = delete;
+  CaptionButton& operator=(const CaptionButton&) = delete;
   ~CaptionButton() override;
 
   void DrawItem(LPDRAWITEMSTRUCT draw_item_struct);
@@ -84,38 +90,36 @@ class CaptionButton : public CWindowImpl<CaptionButton, WTL::CButton>,
   CString tool_tip_text_;
   bool is_tracking_mouse_events_ = false;
   bool is_mouse_hovering_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptionButton);
 };
 
 class CloseButton : public CaptionButton {
  public:
   CloseButton();
+  CloseButton(const CloseButton&) = delete;
+  CloseButton& operator=(const CloseButton&) = delete;
 
  private:
   HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseButton);
 };
 
 class MinimizeButton : public CaptionButton {
  public:
   MinimizeButton();
+  MinimizeButton(const MinimizeButton&) = delete;
+  MinimizeButton& operator=(const MinimizeButton&) = delete;
 
  private:
   HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimizeButton);
 };
 
 class MaximizeButton : public CaptionButton {
  public:
   MaximizeButton();
+  MaximizeButton(const MaximizeButton&) = delete;
+  MaximizeButton& operator=(const MaximizeButton&) = delete;
 
  private:
   HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MaximizeButton);
 };
 
 class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
@@ -144,6 +148,8 @@ class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
   END_MSG_MAP()
 
   OwnerDrawTitleBarWindow();
+  OwnerDrawTitleBarWindow(const OwnerDrawTitleBarWindow&) = delete;
+  OwnerDrawTitleBarWindow& operator=(const OwnerDrawTitleBarWindow&) = delete;
   ~OwnerDrawTitleBarWindow() override;
 
   void RecalcLayout();
@@ -202,13 +208,13 @@ class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
 
   CloseButton close_button_;
   MinimizeButton minimize_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerDrawTitleBarWindow);
 };
 
 class OwnerDrawTitleBar {
  public:
   OwnerDrawTitleBar();
+  OwnerDrawTitleBar(const OwnerDrawTitleBar&) = delete;
+  OwnerDrawTitleBar& operator=(const OwnerDrawTitleBar&) = delete;
   ~OwnerDrawTitleBar();
 
   void CreateOwnerDrawTitleBar(HWND parent_hwnd,
@@ -224,8 +230,6 @@ class OwnerDrawTitleBar {
   CRect ComputeTitleBarClientRect(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
 
   OwnerDrawTitleBarWindow title_bar_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerDrawTitleBar);
 };
 
 // Customizes the text color and the background color for dialog elements.
@@ -238,6 +242,8 @@ class OwnerDrawTitleBar {
 class CustomDlgColors {
  public:
   CustomDlgColors();
+  CustomDlgColors(const CustomDlgColors&) = delete;
+  CustomDlgColors& operator=(const CustomDlgColors&) = delete;
   ~CustomDlgColors();
 
   void SetCustomDlgColors(COLORREF text_color, COLORREF bk_color);
@@ -256,13 +262,13 @@ class CustomDlgColors {
   COLORREF text_color_ = RGB(0xFF, 0xFF, 0xFF);
   COLORREF bk_color_ = RGB(0, 0, 0);
   WTL::CBrush bk_brush_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomDlgColors);
 };
 
 class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
  public:
   CustomProgressBarCtrl();
+  CustomProgressBarCtrl(const CustomProgressBarCtrl&) = delete;
+  CustomProgressBarCtrl& operator=(const CustomProgressBarCtrl&) = delete;
   ~CustomProgressBarCtrl() override;
 
   BEGIN_MSG_MAP(CustomProgressBarCtrl)
@@ -323,8 +329,6 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
   COLORREF bar_color_dark_ = kProgressBarDarkColor;
   COLORREF empty_fill_color_ = kProgressEmptyFillColor;
   WTL::CBrush empty_frame_brush_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomProgressBarCtrl);
 };
 
 }  // namespace ui

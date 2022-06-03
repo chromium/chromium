@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1600, 1200],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -29,7 +29,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1600, 1200],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -43,10 +43,9 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
-      "bounds": [200, 200],
-      "contentsOpaque": true,
-      "backgroundColor": "#000000",
-      "transform": 2
+      "position": [200, 200],
+      "bounds": [400, 400],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -57,15 +56,6 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [500, 500, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [200, 200, 0, 1]
       ]
     }
   ]

@@ -15,13 +15,15 @@
 namespace domain_reliability {
 
 struct DomainReliabilityDispatcher::Task {
-  Task(const base::Closure& closure,
+  Task(base::OnceClosure closure,
        std::unique_ptr<MockableTime::Timer> timer,
        base::TimeDelta min_delay,
        base::TimeDelta max_delay);
+  Task(Task&& other);
+  Task& operator=(Task&& other);
   ~Task();
 
-  base::Closure closure;
+  base::OnceClosure closure;
   std::unique_ptr<MockableTime::Timer> timer;
   base::TimeDelta min_delay;
   base::TimeDelta max_delay;
@@ -29,33 +31,37 @@ struct DomainReliabilityDispatcher::Task {
 };
 
 DomainReliabilityDispatcher::Task::Task(
-    const base::Closure& closure,
+    base::OnceClosure closure,
     std::unique_ptr<MockableTime::Timer> timer,
     base::TimeDelta min_delay,
     base::TimeDelta max_delay)
-    : closure(closure),
+    : closure(std::move(closure)),
       timer(std::move(timer)),
       min_delay(min_delay),
       max_delay(max_delay),
       eligible(false) {}
 
-DomainReliabilityDispatcher::Task::~Task() {}
+DomainReliabilityDispatcher::Task::Task(Task&& other) = default;
+
+DomainReliabilityDispatcher::Task& DomainReliabilityDispatcher::Task::operator=(
+    Task&& other) = default;
+
+DomainReliabilityDispatcher::Task::~Task() = default;
 
 DomainReliabilityDispatcher::DomainReliabilityDispatcher(MockableTime* time)
     : time_(time) {}
 
-DomainReliabilityDispatcher::~DomainReliabilityDispatcher() {}
+DomainReliabilityDispatcher::~DomainReliabilityDispatcher() = default;
 
-void DomainReliabilityDispatcher::ScheduleTask(
-    const base::Closure& closure,
-    base::TimeDelta min_delay,
-    base::TimeDelta max_delay) {
-  DCHECK(!closure.is_null());
+void DomainReliabilityDispatcher::ScheduleTask(base::OnceClosure closure,
+                                               base::TimeDelta min_delay,
+                                               base::TimeDelta max_delay) {
+  DCHECK(closure);
   // Would be DCHECK_LE, but you can't << a TimeDelta.
   DCHECK(min_delay <= max_delay);
 
   std::unique_ptr<Task> owned_task = std::make_unique<Task>(
-      closure, time_->CreateTimer(), min_delay, max_delay);
+      std::move(closure), time_->CreateTimer(), min_delay, max_delay);
   Task* task = owned_task.get();
   tasks_.insert(std::move(owned_task));
   if (max_delay.InMicroseconds() < 0)
@@ -96,11 +102,10 @@ void DomainReliabilityDispatcher::MakeTaskWaiting(Task* task) {
   DCHECK(task);
   DCHECK(!task->eligible);
   DCHECK(!task->timer->IsRunning());
-  task->timer->Start(FROM_HERE,
-                     task->min_delay,
-                     base::Bind(&DomainReliabilityDispatcher::MakeTaskEligible,
-                                base::Unretained(this),
-                                task));
+  task->timer->Start(
+      FROM_HERE, task->min_delay,
+      base::BindOnce(&DomainReliabilityDispatcher::MakeTaskEligible,
+                     base::Unretained(this), task));
 }
 
 void
@@ -109,17 +114,16 @@ DomainReliabilityDispatcher::MakeTaskEligible(Task* task) {
   DCHECK(!task->eligible);
   task->eligible = true;
   eligible_tasks_.insert(task);
-  task->timer->Start(FROM_HERE,
-                     task->max_delay - task->min_delay,
-                     base::Bind(&DomainReliabilityDispatcher::RunAndDeleteTask,
-                                base::Unretained(this),
-                                task));
+  task->timer->Start(
+      FROM_HERE, task->max_delay - task->min_delay,
+      base::BindOnce(&DomainReliabilityDispatcher::RunAndDeleteTask,
+                     base::Unretained(this), task));
 }
 
 void DomainReliabilityDispatcher::RunAndDeleteTask(Task* task) {
   DCHECK(task);
-  DCHECK(!task->closure.is_null());
-  task->closure.Run();
+  DCHECK(task->closure);
+  std::move(task->closure).Run();
   if (task->eligible)
     eligible_tasks_.erase(task);
 

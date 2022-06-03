@@ -5,21 +5,27 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_test_api.h"
 
 namespace views {
 
@@ -27,7 +33,6 @@ using MenuItemViewUnitTest = ViewsTestBase;
 
 TEST_F(MenuItemViewUnitTest, AddAndRemoveChildren) {
   views::TestMenuItemView root_menu;
-  root_menu.set_owned_by_client();
 
   auto* item = root_menu.AppendMenuItem(0);
 
@@ -59,11 +64,9 @@ class SquareView : public views::View {
 
 TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   views::TestMenuItemView root_menu;
-  root_menu.set_owned_by_client();
 
   // Append a normal MenuItemView.
-  views::MenuItemView* label_view =
-      root_menu.AppendMenuItem(1, base::ASCIIToUTF16("item 1"));
+  views::MenuItemView* label_view = root_menu.AppendMenuItem(1, u"item 1");
 
   // Append a second MenuItemView that has a child SquareView.
   views::MenuItemView* flexible_view = root_menu.AppendMenuItem(2);
@@ -97,10 +100,8 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
 // "(empty)" menu item to display.
 TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   views::TestMenuItemView root_menu;
-  views::MenuItemView* item1 =
-      root_menu.AppendMenuItem(1, base::ASCIIToUTF16("item 1"));
-  views::MenuItemView* item2 =
-      root_menu.AppendMenuItem(2, base::ASCIIToUTF16("item 2"));
+  views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"item 1");
+  views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"item 2");
 
   // Set menu items to hidden.
   item1->SetVisible(false);
@@ -128,12 +129,9 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
 // item to display.
 TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
   views::TestMenuItemView root_menu;
-  MenuItemView* submenu_item =
-      root_menu.AppendSubMenu(1, base::ASCIIToUTF16("My Submenu"));
-  MenuItemView* child1 =
-      submenu_item->AppendMenuItem(1, base::ASCIIToUTF16("submenu item 1"));
-  MenuItemView* child2 =
-      submenu_item->AppendMenuItem(2, base::ASCIIToUTF16("submenu item 2"));
+  MenuItemView* submenu_item = root_menu.AppendSubMenu(1, u"My Submenu");
+  MenuItemView* child1 = submenu_item->AppendMenuItem(1, u"submenu item 1");
+  MenuItemView* child2 = submenu_item->AppendMenuItem(2, u"submenu item 2");
 
   // Set submenu children to hidden.
   child1->SetVisible(false);
@@ -164,10 +162,8 @@ TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
 
 TEST_F(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
   views::TestMenuItemView root_menu;
-  views::MenuItemView* item1 =
-      root_menu.AppendMenuItem(1, base::ASCIIToUTF16("&Item 1"));
-  views::MenuItemView* item2 =
-      root_menu.AppendMenuItem(2, base::ASCIIToUTF16("I&tem 2"));
+  views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"&Item 1");
+  views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"I&tem 2");
 
   root_menu.set_has_mnemonics(true);
 
@@ -180,9 +176,94 @@ TEST_F(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
   }
 }
 
+TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
+  views::TestMenuItemView root_menu;
+
+  // Append a MenuItemView.
+  views::MenuItemView* menu_item_view = root_menu.AppendMenuItem(1, u"item");
+
+  // Verify initial selected state.
+  bool is_selected = menu_item_view->IsSelected();
+  EXPECT_FALSE(is_selected);
+
+  // Subscribe to be notified of changes to selected state.
+  auto subscription =
+      menu_item_view->AddSelectedChangedCallback(base::BindLambdaForTesting(
+          [&]() { is_selected = menu_item_view->IsSelected(); }));
+
+  // Verify we are notified when the MenuItemView becomes selected.
+  menu_item_view->SetSelected(true);
+  EXPECT_TRUE(is_selected);
+
+  // Verify we are notified when the MenuItemView becomes deselected.
+  menu_item_view->SetSelected(false);
+  EXPECT_FALSE(is_selected);
+}
+
+class TouchableMenuItemViewTest : public ViewsTestBase {
+ public:
+  TouchableMenuItemViewTest() = default;
+  ~TouchableMenuItemViewTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
+    widget_->Show();
+
+    menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
+    menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
+    menu_runner_ = std::make_unique<MenuRunner>(
+        menu_item_view_, MenuRunner::USE_TOUCHABLE_LAYOUT);
+    menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
+                            MenuAnchorPosition::kTopLeft,
+                            ui::MENU_SOURCE_KEYBOARD);
+  }
+
+  void TearDown() override {
+    widget_->CloseNow();
+    ViewsTestBase::TearDown();
+  }
+
+  gfx::Size AppendItemAndGetSize(int i, const std::u16string& title) {
+    return menu_item_view_->AppendMenuItem(i, title)->GetPreferredSize();
+  }
+
+ private:
+  std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
+  std::unique_ptr<MenuRunner> menu_runner_;
+  std::unique_ptr<Widget> widget_;
+
+  // Owned by MenuRunner.
+  TestMenuItemView* menu_item_view_ = nullptr;
+};
+
+// Test that touchable menu items are sized to fit the menu item titles within
+// the allowed minimum and maximum width.
+TEST_F(TouchableMenuItemViewTest, MinAndMaxWidth) {
+  const int min_menu_width = MenuConfig::instance().touchable_menu_min_width;
+  const int max_menu_width = MenuConfig::instance().touchable_menu_max_width;
+
+  // Test a title shorter than the minimum width.
+  gfx::Size item1_size = AppendItemAndGetSize(1, u"Item1 Short title");
+  EXPECT_EQ(item1_size.width(), min_menu_width);
+
+  // Test a title which is between the min and max allowed widths.
+  gfx::Size item2_size =
+      AppendItemAndGetSize(2, u"Item2 bigger than min less than max");
+  EXPECT_GT(item2_size.width(), min_menu_width);
+  EXPECT_LT(item2_size.width(), max_menu_width);
+
+  // Test a title which is longer than the max touchable menu width.
+  gfx::Size item3_size =
+      AppendItemAndGetSize(3,
+                           u"Item3 Title that is longer than the maximum "
+                           u"allowed context menu width");
+  EXPECT_EQ(item3_size.width(), max_menu_width);
+}
+
 class MenuItemViewLayoutTest : public ViewsTestBase {
  public:
-  MenuItemViewLayoutTest() : test_item_(root_menu_.AppendMenuItem(1)) {}
+  MenuItemViewLayoutTest() = default;
   ~MenuItemViewLayoutTest() override = default;
 
  protected:
@@ -190,10 +271,9 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
   void PerformLayout() {
     // SubmenuView does not lay out its children unless it is contained in a
-    // view. Make a simple container for it. We have to call
-    // set_owned_by_client() since |submenu| is owned by |root_menu|.
-    SubmenuView* submenu = root_menu_.GetSubmenu();
-    submenu->set_owned_by_client();
+    // view, so make a simple container for it.
+    SubmenuView* submenu = root_menu_->GetSubmenu();
+    ASSERT_TRUE(submenu->owned_by_client());
 
     submenu_parent_ = std::make_unique<View>();
     submenu_parent_->AddChildView(submenu);
@@ -201,9 +281,15 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
     submenu_parent_->SetSize(submenu->GetPreferredSize());
   }
 
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    root_menu_ = std::make_unique<TestMenuItemView>();
+    test_item_ = root_menu_->AppendMenuItem(1);
+  }
+
  private:
-  TestMenuItemView root_menu_;
-  MenuItemView* const test_item_;
+  std::unique_ptr<TestMenuItemView> root_menu_;
+  MenuItemView* test_item_ = nullptr;
   std::unique_ptr<View> submenu_parent_;
 };
 
@@ -282,6 +368,11 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutPassesTrueWidth) {
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
  public:
   MenuItemViewPaintUnitTest() = default;
+
+  MenuItemViewPaintUnitTest(const MenuItemViewPaintUnitTest&) = delete;
+  MenuItemViewPaintUnitTest& operator=(const MenuItemViewPaintUnitTest&) =
+      delete;
+
   ~MenuItemViewPaintUnitTest() override = default;
 
   MenuItemView* menu_item_view() { return menu_item_view_; }
@@ -291,7 +382,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   // ViewsTestBase implementation.
   void SetUp() override {
     ViewsTestBase::SetUp();
-    menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
+    menu_delegate_ = CreateMenuDelegate();
     menu_item_view_ = new MenuItemView(menu_delegate_.get());
 
     widget_ = std::make_unique<Widget>();
@@ -308,6 +399,11 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
+ protected:
+  virtual std::unique_ptr<test::TestMenuDelegate> CreateMenuDelegate() {
+    return std::make_unique<test::TestMenuDelegate>();
+  }
+
  private:
   // Owned by MenuRunner.
   MenuItemView* menu_item_view_;
@@ -315,23 +411,36 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewPaintUnitTest);
 };
 
-// Provides assertion coverage for painting minor text and icons.
+// Provides assertion coverage for painting, secondary label, minor text and
+// icons.
 TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
-  auto AddItem = [this](auto label, auto minor_label, auto minor_icon) {
-    menu_item_view()->AddMenuItemAt(0, 1000, base::ASCIIToUTF16(label),
-                                    minor_label, minor_icon, gfx::ImageSkia(),
-                                    nullptr, views::MenuItemView::Type::kNormal,
+  auto AddItem = [this](auto label, auto secondary_label, auto minor_label,
+                        auto minor_icon) {
+    menu_item_view()->AddMenuItemAt(0, 1000, label, secondary_label,
+                                    minor_label, minor_icon, ui::ImageModel(),
+                                    views::MenuItemView::Type::kNormal,
                                     ui::NORMAL_SEPARATOR);
   };
-  AddItem("No minor content", base::string16(), nullptr);
-  AddItem("Minor text only", base::ASCIIToUTF16("minor text"), nullptr);
-  AddItem("Minor icon only", base::string16(), &views::kMenuCheckIcon);
-  AddItem("Minor text and icon", base::ASCIIToUTF16("minor text"),
-          &views::kMenuCheckIcon);
+  AddItem(u"No secondary label, no minor content", std::u16string(),
+          std::u16string(), ui::ImageModel());
+  AddItem(u"No secondary label, minor text only", std::u16string(),
+          u"minor text", ui::ImageModel());
+  AddItem(u"No secondary label, minor icon only", std::u16string(),
+          std::u16string(),
+          ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
+  AddItem(u"No secondary label, minor text and icon", std::u16string(),
+          u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
+  AddItem(u"Secondary label, no minor content", u"secondary label",
+          std::u16string(), ui::ImageModel());
+  AddItem(u"Secondary label, minor text only", u"secondary label",
+          u"minor text", ui::ImageModel());
+  AddItem(u"Secondary label, minor icon only", u"secondary label",
+          std::u16string(),
+          ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
+  AddItem(u"Secondary label, minor text and icon", u"secondary label",
+          u"minor text", ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
@@ -343,6 +452,61 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
                                    false);
   menu_item_view()->GetSubmenu()->Paint(
       PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
+}
+
+// Verifies a call to MenuItemView::OnPaint() doesn't trigger a call to
+// MenuItemView::submenu_arrow_image_view_::SchedulePaint(). This is a
+// regression test for https://crbug.com/1245854.
+TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
+  MenuItemView* submenu_item =
+      menu_item_view()->AppendSubMenu(1, u"My Submenu");
+  submenu_item->AppendMenuItem(1, u"submenu item 1");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  ImageView* submenu_arrow_image_view =
+      TestMenuItemView::submenu_arrow_image_view(submenu_item);
+  ASSERT_TRUE(submenu_arrow_image_view);
+  ViewTestApi(submenu_arrow_image_view).ClearNeedsPaint();
+
+  // Paint again. As no state has changed since the last paint, this should not
+  // call SchedulePaint() on the `submenu_arrow_image_view`
+  gfx::Canvas canvas(submenu_item->size(), 1.f, false /* opaque */);
+  submenu_item->OnPaint(&canvas);
+  EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
+}
+
+// Sets up a custom MenuDelegate that expects functions aren't called. See
+// DontAskForFontsWhenAddingSubmenu.
+class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
+ public:
+ protected:
+  std::unique_ptr<test::TestMenuDelegate> CreateMenuDelegate() override {
+    return std::make_unique<DisallowMenuDelegate>();
+  }
+
+ private:
+  class DisallowMenuDelegate : public test::TestMenuDelegate {
+   public:
+    const gfx::FontList* GetLabelFontList(int command_id) const override {
+      EXPECT_NE(1, command_id);
+      return nullptr;
+    }
+
+    absl::optional<SkColor> GetLabelColor(int command_id) const override {
+      EXPECT_NE(1, command_id);
+      return absl::nullopt;
+    }
+  };
+};
+
+// Verifies AppendSubMenu() doesn't trigger calls to the delegate with the
+// command being supplied. The delegate can be called after AppendSubMenu(),
+// but not before.
+TEST_F(MenuItemViewAccessTest, DontAskForFontsWhenAddingSubmenu) {
+  menu_item_view()->AppendSubMenu(1, u"My Submenu");
 }
 
 }  // namespace views

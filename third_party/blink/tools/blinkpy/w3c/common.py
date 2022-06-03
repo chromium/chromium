@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Utility functions used both when importing and exporting."""
 
 import json
@@ -9,13 +8,14 @@ import logging
 
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 
-
 WPT_GH_ORG = 'web-platform-tests'
 WPT_GH_REPO_NAME = 'wpt'
 WPT_GH_URL = 'https://github.com/%s/%s/' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
 WPT_MIRROR_URL = 'https://chromium.googlesource.com/external/github.com/web-platform-tests/wpt.git'
-WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
-WPT_REVISION_FOOTER = 'WPT-Export-Revision:'
+WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % \
+    (WPT_GH_ORG, WPT_GH_REPO_NAME)
+WPT_REVISION_FOOTER = 'WPT-Export-Revision: '
+CHANGE_ID_FOOTER = 'Change-Id: '
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 
@@ -47,7 +47,8 @@ def read_credentials(host, credentials_json):
     if not credentials_json:
         return env_credentials
     if not host.filesystem.exists(credentials_json):
-        _log.warning('Credentials JSON file not found at %s.', credentials_json)
+        _log.warning('Credentials JSON file not found at %s.',
+                     credentials_json)
         return {}
     credentials = {}
     contents = json.loads(host.filesystem.read_text_file(credentials_json))
@@ -66,6 +67,37 @@ def is_testharness_baseline(filename):
     return filename.endswith('-expected.txt')
 
 
+def is_disallowed_ini(filename):
+    """Checks whether the file is a disallowed (.ini) file.
+
+    This is primarily intended to skip WPT metadata .ini files, which are used
+    in WPT to set expected statuses for tests. Chromium maintains its own list
+    of such files and we don't want those to be shared with upstream.
+
+    There are a few .ini files that we do allow, which are mostly configuration
+    files for wptrunner.
+
+    Args:
+        filename: the basename of the file to check
+    """
+    if not filename.endswith('.ini'):
+        return False
+    allowed_inis = [
+        # Configuration for mypy support
+        'mypy.ini',
+        # Configuration of wpt lint
+        'py27-flake8.ini',
+        'py3-flake8.ini',
+        # Configuration of wpt framework unit tests
+        'pytest.ini',
+        'tox.ini',
+        # Contains default locations of tests and manifest for wptrunner.
+        # Required for wptrunner to work.
+        'wptrunner.default.ini',
+    ]
+    return filename not in allowed_inis
+
+
 def is_basename_skipped(basename):
     """Checks whether to skip (not sync) a file based on its basename.
 
@@ -73,14 +105,14 @@ def is_basename_skipped(basename):
     skipped basenames are never imported or exported.
     """
     assert '/' not in basename
-    blacklist = [
-        'MANIFEST.json',    # MANIFEST.json is automatically regenerated.
-        'OWNERS',           # https://crbug.com/584660 https://crbug.com/702283
-        'reftest.list',     # https://crbug.com/582838
+    skipped_basenames = [
+        'MANIFEST.json',  # MANIFEST.json is automatically regenerated.
+        'OWNERS',  # https://crbug.com/584660 https://crbug.com/702283
+        'reftest.list',  # https://crbug.com/582838
+        'DIR_METADATA',  # https://crbug.com/1103374
     ]
-    return (basename in blacklist
-            or is_testharness_baseline(basename)
-            or basename.startswith('.'))
+    return (basename in skipped_basenames or is_testharness_baseline(basename)
+            or basename.startswith('.') or is_disallowed_ini(basename))
 
 
 def is_file_exportable(path):

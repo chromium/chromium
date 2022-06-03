@@ -10,7 +10,7 @@ if (window.testRunner)
 
 function runTest() {
     var host = document.getElementById('sandbox');
-    var sr =  host.createShadowRoot();
+    var sr =  host.attachShadow({mode: 'open'});
     sr.innerHTML = '<div><style>div { color: red; }</style><div>Hello</div></div><div><style>.foo { color: red; }</style><div class="foo">Hello</div></div>';
     sr.innerHTML = '';
     var div = document.createElement('div');

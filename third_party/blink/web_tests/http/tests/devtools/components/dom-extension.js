@@ -23,14 +23,16 @@
         return child;
       }
 
-      var component1 = createElementWithClass('div', 'component1');
+      var component1 = document.createElement('div');
+      component1.classList.add('component1');
       var shadow1 = component1.attachShadow({mode: 'open'});
       createChild(component1, 'div', 'component1-content', 'text 1');
       createChild(component1, 'div', 'component2-content', 'text 2');
       createChild(component1, 'span', undefined, 'text 3');
       createChild(component1, 'span', 'component1-content', 'text 4');
 
-      var shadow1Content = createElementWithClass('div', 'shadow-component1');
+      var shadow1Content = document.createElement('div');
+      shadow1Content.classList.add('shadow-component1');
       shadow1.appendChild(shadow1Content);
       createSlot(shadow1Content, 'component1-content');
       createSlot(shadow1Content);
@@ -41,7 +43,8 @@
       createChild(
           component2, 'div', 'component2-content', 'component2 light dom text');
 
-      var shadow2Content = createElementWithClass('div', 'shadow-component1');
+      var shadow2Content = document.createElement('div');
+      shadow2Content.classList.add('shadow-component1');
       shadow2.appendChild(shadow2Content);
       var midDiv = createChild(shadow2Content, 'div', 'mid-div');
       createChild(midDiv, 'div', undefined, 'component2-text');

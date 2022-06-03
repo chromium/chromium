@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module data_decoder.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "url/mojom/url.mojom";
+
+struct SerializedResourceInfo {
+  url.mojom.Url url;
+  string mime_type;
+  uint64 size;
+};
+
+// An interface to get resource snapshot of a frame to generate a web bundle.
+// This interface is implemented by renderer processes. Its end point is set-up
+// by the browser process and then passed to the utility process.
+interface ResourceSnapshotForWebBundle {
+  // Returns the resource count.
+  GetResourceCount() => (uint64 count);
+  // Returns the resource info at the index.
+  GetResourceInfo(uint64 index) => (SerializedResourceInfo? info);
+  // Returns the body of the resource at the index.
+  GetResourceBody(uint64 index) => (mojo_base.mojom.BigBuffer? data);
+};

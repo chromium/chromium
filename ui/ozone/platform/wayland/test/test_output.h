@@ -5,7 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_OUTPUT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_OUTPUT_H_
 
-#include "base/macros.h"
+#include <cstdint>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -15,17 +17,28 @@ namespace wl {
 class TestOutput : public GlobalObject {
  public:
   TestOutput();
-  ~TestOutput() override;
-  void SetRect(const gfx::Rect rect) { rect_ = rect; }
-  const gfx::Rect GetRect() { return rect_; }
-  void OnBind() override;
 
+  TestOutput(const TestOutput&) = delete;
+  TestOutput& operator=(const TestOutput&) = delete;
+
+  ~TestOutput() override;
+
+  const gfx::Rect GetRect() { return rect_; }
+  void SetRect(const gfx::Rect& rect);
+  int32_t GetScale() const { return scale_; }
   void SetScale(int32_t factor);
+
+  void Flush();
+
+ protected:
+  void OnBind() override;
 
  private:
   gfx::Rect rect_;
+  int32_t scale_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestOutput);
+  absl::optional<gfx::Rect> pending_rect_ = absl::nullopt;
+  absl::optional<int32_t> pending_scale_ = absl::nullopt;
 };
 
 }  // namespace wl

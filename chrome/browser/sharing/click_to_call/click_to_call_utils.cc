@@ -4,21 +4,20 @@
 
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include <algorithm>
+#include <cctype>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -30,7 +29,16 @@ namespace {
 // reducing the max length.
 constexpr int kSelectionTextMaxLength = 30;
 
+// Upper bound on digits in selected text to reduce false positives. This
+// matches the maximum number of digits in phone numbers according to E.164 and
+// showed a good tradeoff between false negatives vs. false positives.
+constexpr int kSelectionTextMaxDigits = 15;
+
 bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
+#if defined(OS_ANDROID)
+  // We don't support sending phone numbers from Android.
+  return false;
+#else   // defined(OS_ANDROID)
   // Check Chrome enterprise policy for Click to Call.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile && !profile->GetPrefs()->GetBoolean(prefs::kClickToCallEnabled))
@@ -38,7 +46,33 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
 
   SharingService* sharing_service =
       SharingServiceFactory::GetForBrowserContext(browser_context);
-  return sharing_service && base::FeatureList::IsEnabled(kClickToCallUI);
+  return sharing_service != nullptr;
+#endif  // defined(OS_ANDROID)
+}
+
+// Returns the first possible phone number in |selection_text| given the
+// |regex_variant| to be used or absl::nullopt if the regex did not match.
+absl::optional<std::string> ExtractPhoneNumber(
+    const std::string& selection_text) {
+  std::string parsed_number;
+
+  const re2::RE2& regex = GetPhoneNumberRegex();
+  if (!re2::RE2::PartialMatch(selection_text, regex, &parsed_number))
+    return absl::nullopt;
+
+  return base::UTF16ToUTF8(
+      base::TrimWhitespace(base::UTF8ToUTF16(parsed_number), base::TRIM_ALL));
+}
+
+// Unescapes and returns the URL contents.
+std::string GetUnescapedURLContent(const GURL& url) {
+  std::string content_string(url.GetContent());
+  url::RawCanonOutputT<char16_t> unescaped_content;
+  url::DecodeURLEscapeSequences(content_string.data(), content_string.size(),
+                                url::DecodeURLMode::kUTF8OrIsomorphic,
+                                &unescaped_content);
+  return base::UTF16ToUTF8(
+      std::u16string(unescaped_content.data(), unescaped_content.length()));
 }
 
 }  // namespace
@@ -46,50 +80,35 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
 bool ShouldOfferClickToCallForURL(content::BrowserContext* browser_context,
                                   const GURL& url) {
   return !url.is_empty() && url.SchemeIs(url::kTelScheme) &&
-         !url.GetContent().empty() && IsClickToCallEnabled(browser_context);
+         IsUrlSafeForClickToCall(url) && IsClickToCallEnabled(browser_context);
 }
 
-base::Optional<std::string> ExtractPhoneNumberForClickToCall(
+absl::optional<std::string> ExtractPhoneNumberForClickToCall(
     content::BrowserContext* browser_context,
     const std::string& selection_text) {
   DCHECK(!selection_text.empty());
 
   if (selection_text.size() > kSelectionTextMaxLength)
-    return base::nullopt;
+    return absl::nullopt;
+
+  int digits = std::count_if(selection_text.begin(), selection_text.end(),
+                             [](char c) { return std::isdigit(c); });
+  if (digits > kSelectionTextMaxDigits)
+    return absl::nullopt;
 
   if (!IsClickToCallEnabled(browser_context))
-    return base::nullopt;
+    return absl::nullopt;
 
-  LogPhoneNumberDetectionMetrics(selection_text, /*sent_to_device=*/false);
-
-  if (base::FeatureList::IsEnabled(kClickToCallDetectionV2)) {
-    return ExtractPhoneNumber(selection_text,
-                              PhoneNumberRegexVariant::kLowConfidenceModified);
-  }
-
-  return ExtractPhoneNumber(selection_text, PhoneNumberRegexVariant::kSimple);
+  return ExtractPhoneNumber(selection_text);
 }
 
-base::Optional<std::string> ExtractPhoneNumber(
-    const std::string& selection_text,
-    PhoneNumberRegexVariant regex_variant) {
-  ScopedUmaHistogramMicrosecondsTimer scoped_uma_timer(regex_variant);
-  std::string parsed_number;
-
-  const re2::RE2& regex = GetPhoneNumberRegex(regex_variant);
-  if (!re2::RE2::PartialMatch(selection_text, regex, &parsed_number))
-    return base::nullopt;
-
-  return base::UTF16ToUTF8(
-      base::TrimWhitespace(base::UTF8ToUTF16(parsed_number), base::TRIM_ALL));
-}
-
-std::string GetUnescapedURLContent(const GURL& url) {
-  std::string content_string(url.GetContent());
-  url::RawCanonOutputT<base::char16> unescaped_content;
-  url::DecodeURLEscapeSequences(content_string.data(), content_string.size(),
-                                url::DecodeURLMode::kUTF8OrIsomorphic,
-                                &unescaped_content);
-  return base::UTF16ToUTF8(
-      base::string16(unescaped_content.data(), unescaped_content.length()));
+bool IsUrlSafeForClickToCall(const GURL& url) {
+  // Get the unescaped content as this is what we'll end up sending to the
+  // Android dialer.
+  std::string unescaped = GetUnescapedURLContent(url);
+  // We don't allow any number that contains any of these characters as they
+  // might be used to create USSD codes.
+  return !unescaped.empty() &&
+         std::none_of(unescaped.begin(), unescaped.end(),
+                      [](char c) { return c == '#' || c == '*' || c == '%'; });
 }

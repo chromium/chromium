@@ -1,6 +1,0 @@
-This tests that full screen mode will not exit when a non-ancestor iframe is loaded in the page. Click enter full screen to start test.
-EVENT(webkitfullscreenchange)
-EVENT(load)
-EXPECTED (document.webkitIsFullScreen == 'true') OK
-END OF TEST
-

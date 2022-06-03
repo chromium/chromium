@@ -1,9 +1,0 @@
-Tests that when a Geolocation request is made from a remote frame, and the JavaScript call chain starts from that remote frame, callbacks are made as usual.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS Success callback invoked
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

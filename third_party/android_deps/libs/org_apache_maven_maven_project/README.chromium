@@ -1,0 +1,13 @@
+Name: Maven Project Builder
+Short Name: maven-project
+URL: https://maven.apache.org/
+Version: 2.2.1
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+This library is used to not only read Maven project object model files, but to assemble inheritence and to retrieve remote models as required.
+
+Local Modifications:
+No modifications.

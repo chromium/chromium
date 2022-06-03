@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Same-origin prerendering can access blob</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+
+promise_test(async t => {
+  const bc = new BroadcastChannel('prerender-channel');
+
+  const gotMessage = new Promise(resolve => {
+    bc.addEventListener('message', e => {
+      resolve(e.data);
+    }, {
+      once: true
+    });
+  });
+
+  const expected = "Hello, Prerender API!";
+
+  // Start prerendering a page that attempts to access the blob.
+  startPrerendering('resources/fetch-blob-access.html');
+  const result = await gotMessage;
+  assert_equals(
+    result, expected,
+    'prerendering page should be able to read from the blob.');
+}, 'prerendering page should be able to access the blob');
+
+</script>
+</body>

@@ -14,7 +14,7 @@ namespace {
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks ToTestTimeTicks(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 }  // namespace

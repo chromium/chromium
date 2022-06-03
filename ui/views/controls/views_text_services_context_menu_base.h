@@ -5,39 +5,43 @@
 #ifndef UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 #define UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 
-#include "base/macros.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
+#include "ui/views/views_export.h"
 
 namespace views {
 
-// This base class is used to add and handle text service items in the text
+// This base class is used to add and handle text service items in the textfield
 // context menu. Specific platforms may subclass and add additional items.
-class ViewsTextServicesContextMenuBase : public ViewsTextServicesContextMenu {
+class VIEWS_EXPORT ViewsTextServicesContextMenuBase
+    : public ViewsTextServicesContextMenu {
  public:
   ViewsTextServicesContextMenuBase(ui::SimpleMenuModel* menu,
                                    Textfield* client);
+  ViewsTextServicesContextMenuBase(const ViewsTextServicesContextMenuBase&) =
+      delete;
+  ViewsTextServicesContextMenuBase& operator=(
+      const ViewsTextServicesContextMenuBase&) = delete;
   ~ViewsTextServicesContextMenuBase() override;
 
-  // Returns true if the given |command_id| is handled by the menu.
-  bool SupportsCommand(int command_id) const override;
-
-  // ui::AcceleratorProvider:
+  // ViewsTextServicesContextMenu:
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
-
-  // Methods associated with SimpleMenuModel::Delegate.
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-  void ExecuteCommand(int command_id) override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+  bool SupportsCommand(int command_id) const override;
 
  protected:
-  Textfield* client() const { return client_; }
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+  Textfield* client() { return client_; }
+  const Textfield* client() const { return client_; }
+#endif
 
  private:
   // The view associated with the menu. Weak. Owns |this|.
-  Textfield* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsTextServicesContextMenuBase);
+  Textfield* const client_;
 };
 
 }  // namespace views

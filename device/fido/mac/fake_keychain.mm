@@ -6,6 +6,7 @@
 
 #include "device/fido/mac/fake_keychain.h"
 
+#include "base/notreached.h"
 #include "device/fido/mac/keychain.h"
 
 namespace device {

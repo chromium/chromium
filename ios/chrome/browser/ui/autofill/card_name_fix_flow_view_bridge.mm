@@ -13,10 +13,9 @@
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,7 +65,7 @@ CardNameFixFlowController* CardNameFixFlowViewBridge::GetController() {
 }
 
 void CardNameFixFlowViewBridge::OnConfirmedName(
-    const base::string16& confirmed_name) {
+    const std::u16string& confirmed_name) {
   controller_->OnNameAccepted(confirmed_name);
   PerformClose();
 }

@@ -8,14 +8,13 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/vsync_provider.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 
 namespace ui {
@@ -35,14 +34,17 @@ size_t CalculateStride(int width) {
 
 class WaylandCanvasSurface::SharedMemoryBuffer {
  public:
-  SharedMemoryBuffer(uint32_t buffer_id,
-                     gfx::AcceleratedWidget widget,
+  SharedMemoryBuffer(gfx::AcceleratedWidget widget,
                      WaylandBufferManagerGpu* buffer_manager)
-      : buffer_id_(buffer_id),
+      : buffer_id_(buffer_manager->AllocateBufferID()),
         widget_(widget),
         buffer_manager_(buffer_manager) {
     DCHECK(buffer_manager_);
   }
+
+  SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
+  SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
+
   ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(widget_, buffer_id_); }
 
   // Returns SkSurface, which the client can use to write to this buffer.
@@ -51,14 +53,14 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   // Returns the id of the buffer.
   uint32_t buffer_id() const { return buffer_id_; }
 
-  // Tells if the buffer is pending to be processed. Set on
-  // SetPendingDamageRegion calls.
-  bool pending() const { return pending_; }
+  // Tells if the buffer is currently being used.
+  bool used() const { return used_; }
 
   // Initializes the shared memory and asks Wayland to import a shared memory
   // based wl_buffer, which can be attached to a surface and have its contents
   // shown on a screen.
   bool Initialize(const gfx::Size& size) {
+    size_ = size;
     base::CheckedNumeric<size_t> checked_length(size.width());
     checked_length *= size.height();
     checked_length *= 4;
@@ -81,9 +83,10 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     buffer_manager_->CreateShmBasedBuffer(
         std::move(fd_pair.fd), checked_length.ValueOrDie(), size, buffer_id_);
 
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_surface_ = SkSurface::MakeRasterDirect(
         SkImageInfo::MakeN32Premul(size.width(), size.height()),
-        shm_mapping_.memory(), CalculateStride(size.width()));
+        shm_mapping_.memory(), CalculateStride(size.width()), &props);
     if (!sk_surface_)
       return false;
 
@@ -91,13 +94,19 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return true;
   }
 
-  void CommitBuffer(const gfx::Rect& damage) {
-    buffer_manager_->CommitBuffer(widget_, buffer_id_, damage);
+  void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
+    buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
+                                  buffer_scale, damage);
   }
 
-  void OnSubmissionCompleted() {
-    DCHECK(pending_);
-    pending_ = false;
+  void OnUse() {
+    DCHECK(!used_);
+    used_ = true;
+  }
+
+  void OnRelease() {
+    DCHECK(used_);
+    used_ = false;
   }
 
   void UpdateDirtyRegion(const gfx::Rect& damage, SkRegion::Op op) {
@@ -120,22 +129,23 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     dirty_region_.setEmpty();
   }
 
-  void SetPendingDamageRegion(const gfx::Rect& damage) {
-    DCHECK(!pending_);
+  void set_pending_damage_region(const gfx::Rect& damage) {
     pending_damage_region_ = damage;
-    pending_ = true;
   }
 
-  gfx::Rect pending_damage_region() {
-    return std::move(pending_damage_region_);
+  const gfx::Rect& pending_damage_region() const {
+    return pending_damage_region_;
   }
 
  private:
+  // The size of the buffer.
+  gfx::Size size_;
+
   // The id of the buffer this surface is backed.
   const uint32_t buffer_id_;
 
-  // Says if the buffer is pending to be submitted.
-  bool pending_ = false;
+  // Whether this buffer is currently being used.
+  bool used_ = false;
 
   // The widget this buffer is created for.
   const gfx::AcceleratedWidget widget_;
@@ -154,8 +164,41 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Pending damage region if the buffer is pending to be submitted.
   gfx::Rect pending_damage_region_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBuffer);
+class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
+ public:
+  explicit VSyncProvider(base::WeakPtr<WaylandCanvasSurface> surface)
+      : surface_(surface) {}
+
+  ~VSyncProvider() override = default;
+
+  void GetVSyncParameters(UpdateVSyncCallback callback) override {
+    base::TimeTicks timebase;
+    base::TimeDelta interval;
+    if (GetVSyncParametersIfAvailable(&timebase, &interval))
+      std::move(callback).Run(timebase, interval);
+  }
+
+  bool GetVSyncParametersIfAvailable(base::TimeTicks* timebase,
+                                     base::TimeDelta* interval) override {
+    if (!surface_ || surface_->last_timestamp_.is_null())
+      return false;
+    *timebase = surface_->last_timestamp_;
+    *interval = surface_->last_interval_;
+    return true;
+  }
+
+  bool SupportGetVSyncParametersIfAvailable() const override { return true; }
+
+  bool IsHWClock() const override {
+    if (!surface_)
+      return false;
+    return surface_->is_hw_clock_;
+  }
+
+ private:
+  base::WeakPtr<WaylandCanvasSurface> surface_;
 };
 
 WaylandCanvasSurface::WaylandCanvasSurface(
@@ -169,12 +212,12 @@ WaylandCanvasSurface::~WaylandCanvasSurface() {
   buffer_manager_->UnregisterSurface(widget_);
 }
 
-sk_sp<SkSurface> WaylandCanvasSurface::GetSurface() {
+SkCanvas* WaylandCanvasSurface::GetCanvas() {
   DCHECK(!pending_buffer_)
       << "The previous pending buffer has not been presented yet";
 
   for (const auto& buffer : buffers_) {
-    if (!buffer->pending()) {
+    if (!buffer->used()) {
       pending_buffer_ = buffer.get();
       break;
     }
@@ -194,32 +237,33 @@ sk_sp<SkSurface> WaylandCanvasSurface::GetSurface() {
     buffers_.push_back(std::move(buffer));
   }
 
-  DCHECK(pending_buffer_ && !pending_buffer_->pending());
-  return pending_buffer_->sk_surface();
+  DCHECK(pending_buffer_);
+  pending_buffer_->OnUse();
+  return pending_buffer_->sk_surface()->getCanvas();
 }
 
-void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
+void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
+                                        float scale) {
   if (size_ == viewport_size)
     return;
   // TODO(https://crbug.com/930667): We could implement more efficient resizes
   // by allocating buffers rounded up to larger sizes, and then reusing them if
   // the new size still fits (but still reallocate if the new size is much
   // smaller than the old size).
-  if (!buffers_.empty()) {
-    buffers_.clear();
-    current_buffer_ = nullptr;
-    previous_buffer_ = nullptr;
-    pending_buffer_ = nullptr;
-    unsubmitted_buffers_.clear();
-  }
+  buffers_.clear();
+  current_buffer_ = nullptr;
+  previous_buffer_ = nullptr;
+  pending_buffer_ = nullptr;
+  unsubmitted_buffers_.clear();
   size_ = viewport_size;
+  viewport_scale_ = scale;
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
   if (!pending_buffer_)
     return;
 
-  pending_buffer_->SetPendingDamageRegion(damage);
+  pending_buffer_->set_pending_damage_region(damage);
   unsubmitted_buffers_.push_back(pending_buffer_);
   pending_buffer_ = nullptr;
 
@@ -228,56 +272,68 @@ void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
 
 std::unique_ptr<gfx::VSyncProvider>
 WaylandCanvasSurface::CreateVSyncProvider() {
-  // TODO(https://crbug.com/930662): This can be implemented with information
-  // from presentation feedback.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return std::make_unique<WaylandCanvasSurface::VSyncProvider>(
+      weak_factory_.GetWeakPtr());
 }
 
 void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
-  DCHECK(!unsubmitted_buffers_.empty());
+  DCHECK(!unsubmitted_buffers_.empty() && unsubmitted_buffers_.front()->used());
 
-  if (!current_buffer_ && unsubmitted_buffers_.front()->pending()) {
-    current_buffer_ = std::move(unsubmitted_buffers_.front());
-    unsubmitted_buffers_.erase(unsubmitted_buffers_.begin());
+  // Don't submit a new buffer if there's one already submitted being
+  // processed.
+  if (current_buffer_)
+    return;
 
-    gfx::Rect damage = current_buffer_->pending_damage_region();
+  current_buffer_ = std::move(unsubmitted_buffers_.front());
+  unsubmitted_buffers_.erase(unsubmitted_buffers_.begin());
 
-    // The buffer has been updated. Thus, the |damage| can be subtracted
-    // from its dirty region.
-    current_buffer_->UpdateDirtyRegion(damage, SkRegion::kDifference_Op);
+  gfx::Rect damage = current_buffer_->pending_damage_region();
 
-    // Make sure the buffer is up-to-date by copying the outdated region from
-    // the previous buffer.
-    if (previous_buffer_ && previous_buffer_ != current_buffer_)
-      current_buffer_->CopyDirtyRegionFrom(previous_buffer_);
+  // The buffer has been updated. Thus, the |damage| can be subtracted
+  // from its dirty region.
+  current_buffer_->UpdateDirtyRegion(damage, SkRegion::kDifference_Op);
 
-    // As long as the |current_buffer_| has been updated, add dirty region to
-    // other buffers to make sure their regions will be updated with up-to-date
-    // content.
-    for (auto& buffer : buffers_) {
-      if (buffer.get() != current_buffer_)
-        buffer->UpdateDirtyRegion(damage, SkRegion::kUnion_Op);
-    }
+  // Make sure the buffer is up-to-date by copying the outdated region from
+  // the previous buffer.
+  if (previous_buffer_ && previous_buffer_ != current_buffer_)
+    current_buffer_->CopyDirtyRegionFrom(previous_buffer_);
 
-    current_buffer_->CommitBuffer(damage);
+  // As long as the |current_buffer_| has been updated, add dirty region to
+  // other buffers to make sure their regions will be updated with up-to-date
+  // content.
+  for (auto& buffer : buffers_) {
+    if (buffer.get() != current_buffer_)
+      buffer->UpdateDirtyRegion(damage, SkRegion::kUnion_Op);
   }
+
+  current_buffer_->CommitBuffer(damage, viewport_scale_);
 }
 
 void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
-                                        const gfx::SwapResult& swap_result) {
-  // Upper layer does not care about the submission result, and the buffer may
-  // be destroyed by this time (when the surface is resized, for example).
-  if (!current_buffer_)
+                                        const gfx::SwapResult& swap_result,
+                                        gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
+  // We may get an OnSubmission callback for a buffer that was submitted
+  // before a ResizeCanvas call, which clears all our buffers. Check to
+  // see if we still know about this buffer. If we know about this buffer
+  // it must be |current_buffer_| because we only submit new buffers when
+  // |current_buffer_| is nullptr, and it is only set to nullptr in
+  // |OnSubmission| and |ResizeCanvas|. In |ResizeCanvas|, |buffers_| is cleared
+  // so we will not know about |buffer_id|.
+  if (std::none_of(buffers_.begin(), buffers_.end(),
+                   [buffer_id](const auto& buffer) {
+                     return buffer->buffer_id() == buffer_id;
+                   }))
     return;
 
+  DCHECK(current_buffer_);
   DCHECK_EQ(current_buffer_->buffer_id(), buffer_id);
 
-  auto* buffer = current_buffer_;
-  previous_buffer_ = buffer;
-  current_buffer_ = nullptr;
+  if (previous_buffer_)
+    previous_buffer_->OnRelease();
 
-  buffer->OnSubmissionCompleted();
+  previous_buffer_ = current_buffer_;
+  current_buffer_ = nullptr;
 
   if (!unsubmitted_buffers_.empty())
     ProcessUnsubmittedBuffers();
@@ -286,16 +342,17 @@ void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
 void WaylandCanvasSurface::OnPresentation(
     uint32_t buffer_id,
     const gfx::PresentationFeedback& feedback) {
-  // TODO(https://crbug.com/930662): this can be used for the vsync provider.
-  NOTIMPLEMENTED_LOG_ONCE();
+  last_timestamp_ = feedback.timestamp;
+  last_interval_ = feedback.interval;
+  is_hw_clock_ = feedback.flags & gfx::PresentationFeedback::Flags::kHWClock;
 }
 
 std::unique_ptr<WaylandCanvasSurface::SharedMemoryBuffer>
 WaylandCanvasSurface::CreateSharedMemoryBuffer() {
   DCHECK(!size_.IsEmpty());
 
-  auto canvas_buffer = std::make_unique<SharedMemoryBuffer>(
-      ++buffer_id_, widget_, buffer_manager_);
+  auto canvas_buffer =
+      std::make_unique<SharedMemoryBuffer>(widget_, buffer_manager_);
   return canvas_buffer->Initialize(size_) ? std::move(canvas_buffer) : nullptr;
 }
 

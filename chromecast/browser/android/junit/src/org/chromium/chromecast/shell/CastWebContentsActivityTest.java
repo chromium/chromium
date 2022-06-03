@@ -46,6 +46,9 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsActivityTest {
+    /**
+     * ShadowActivity that allows us to intercept calls to setTurnScreenOn.
+     */
     @Implements(Activity.class)
     public static class ExtendedShadowActivity extends ShadowActivity {
         private boolean mTurnScreenOn;
@@ -104,15 +107,6 @@ public class CastWebContentsActivityTest {
         mActivity.finishForTesting();
         Intent intent = mShadowActivity.getNextStartedActivity();
         assertNull(intent);
-    }
-
-    @Test
-    public void testReleasesStreamMuteIfNecessaryOnPause() {
-        CastAudioManager mockAudioManager = mock(CastAudioManager.class);
-        mActivity.setAudioManagerForTesting(mockAudioManager);
-        mActivityLifecycle.create().start().resume();
-        mActivityLifecycle.pause();
-        verify(mockAudioManager).releaseStreamMuteIfNecessary(AudioManager.STREAM_MUSIC);
     }
 
     @Test
@@ -226,33 +220,10 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    public void testSetsKeepScreenOnFlag() {
-        mActivityLifecycle.create();
-        Assert.assertTrue(Shadows.shadowOf(mActivity.getWindow())
-                                  .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
-    }
-
-    @Test
     public void testStopDoesNotCauseFinish() {
         mActivityLifecycle.create().start().resume();
         mActivityLifecycle.pause().stop();
         Assert.assertFalse(mShadowActivity.isFinishing());
-    }
-
-    @Test
-    public void testUserLeaveAndStopCausesFinish() {
-        mActivityLifecycle.create().start().resume();
-        mActivityLifecycle.pause().userLeaving().stop();
-        Assert.assertTrue(mShadowActivity.isFinishing());
-    }
-
-    @Test
-    public void testUserLeaveAndStopDestroysSurfaceHelper() {
-        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
-        mActivity.setSurfaceHelperForTesting(surfaceHelper);
-        mActivityLifecycle.create().start().resume();
-        mActivityLifecycle.pause().userLeaving().stop();
-        verify(surfaceHelper).onDestroy();
     }
 
     @Test

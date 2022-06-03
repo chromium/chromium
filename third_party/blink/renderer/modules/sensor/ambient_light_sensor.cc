@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/ambient_light_sensor.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
@@ -55,18 +55,30 @@ AmbientLightSensor::AmbientLightSensor(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::AMBIENT_LIGHT,
-             {mojom::FeaturePolicyFeature::kAmbientLightSensor}) {}
+             {mojom::blink::PermissionsPolicyFeature::kAmbientLightSensor}) {}
 
-double AmbientLightSensor::illuminance(bool& is_null) const {
-  INIT_IS_NULL_AND_RETURN(is_null, 0.0);
-  DCHECK(latest_reading_.has_value());
-  return RoundIlluminance(*latest_reading_);
+bool AmbientLightSensor::hasReading() const {
+  return latest_reading_.has_value() && Sensor::hasReading();
+}
+
+absl::optional<double> AmbientLightSensor::illuminance() const {
+  if (hasReading()) {
+    DCHECK(latest_reading_.has_value());
+    return RoundIlluminance(latest_reading_.value());
+  }
+  return absl::nullopt;
 }
 
 // When the reading we get does not differ significantly from our current
 // value, we discard this reading and do not emit any events. This is a privacy
 // measure to avoid giving readings that are too specific.
 void AmbientLightSensor::OnSensorReadingChanged() {
+  // The platform sensor may start sending readings before the sensor is fully
+  // activated on the Blink side. In this case, bail out early, otherwise we
+  // will set |latest_reading_| and not send a "reading" event.
+  if (!activated())
+    return;
+
   const double new_reading = GetReading().als.value;
   if (latest_reading_.has_value() &&
       !IsSignificantlyDifferent(*latest_reading_, new_reading)) {

@@ -50,9 +50,10 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
   if (!counter_)
     return;
 
-  counter_->Init(profile->GetPrefs(), clear_browsing_data_tab_,
-                 base::Bind(&BrowsingDataCounterBridge::onCounterFinished,
-                            base::Unretained(this)));
+  counter_->Init(
+      profile->GetPrefs(), clear_browsing_data_tab_,
+      base::BindRepeating(&BrowsingDataCounterBridge::onCounterFinished,
+                          base::Unretained(this)));
   counter_->Restart();
 }
 

@@ -7,12 +7,12 @@ include_rules = [
   # Exception is struct_traits.h which is used for defining friends only.
   "+mojo/public/cpp/bindings/struct_traits.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
+  "+third_party/skia",
 ]
 
 specific_include_rules = {
   "skia_helper.(cc|h)": [
     "+cc/base",
-    "+third_party/skia",
   ],
   # DEPS for GLHelper and friends which are in the root common/ directory.
   "(yuv_readback|gl_helper|gl_scaler).*\.(cc|h)": [
@@ -21,7 +21,6 @@ specific_include_rules = {
     "+gpu/command_buffer/common",
     "+gpu/command_buffer/service",
     "+gpu/ipc/common",
-    "+third_party/skia",
   ],
   ".*(_unittest|_pixeltest|test_util)\.cc": [
     "+cc/test",
@@ -29,7 +28,6 @@ specific_include_rules = {
     "+gpu/ipc/gl_in_process_context.h",
     "+gpu/ipc/test_gpu_thread_holder.h",
     "+media/base",
-    "+third_party/skia/include/core",
     "+ui/gl",
   ],
   ".*_benchmark\.cc": [
@@ -38,6 +36,8 @@ specific_include_rules = {
   ],
   "features.cc" : [
     "+gpu/config/gpu_finch_features.h",
+    "+gpu/config/gpu_switches.h",
+    "+media/media_buildflags.h",
   ],
   "bitmap_allocation.cc" : [
     # Only used to pass Mojo handles, not to communicate with the viz service.

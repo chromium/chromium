@@ -20,18 +20,17 @@ source_set("factory") {
       "touch_to_fill_view_factory.h",
     ]
 
-    deps = [
-      "//chrome/browser/touch_to_fill/android",
-    ]
+    deps = [ "//chrome/browser/touch_to_fill/android" ]
   }
 
-  public_deps = [
-    ":public",
-  ]
+  public_deps = [ ":public" ]
 }
 
 source_set("public") {
-  sources = [
-    "touch_to_fill_view.h",
+  deps = [
+    "//base",
+    "//url",
   ]
+
+  sources = [ "touch_to_fill_view.h" ]
 }

@@ -11,30 +11,31 @@
 
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 
@@ -83,8 +84,8 @@ class CustomThreadWatcher : public ThreadWatcher {
 
   CustomThreadWatcher(const BrowserThread::ID thread_id,
                       const std::string thread_name,
-                      const TimeDelta& sleep_time,
-                      const TimeDelta& unresponsive_time)
+                      const base::TimeDelta& sleep_time,
+                      const base::TimeDelta& unresponsive_time)
       : ThreadWatcher(WatchingParams(thread_id,
                                      thread_name,
                                      sleep_time,
@@ -169,7 +170,8 @@ class CustomThreadWatcher : public ThreadWatcher {
     OnStateChanged();
   }
 
-  void WaitForWaitStateChange(TimeDelta wait_time, WaitState expected_state) {
+  void WaitForWaitStateChange(base::TimeDelta wait_time,
+                              WaitState expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
@@ -183,10 +185,10 @@ class CustomThreadWatcher : public ThreadWatcher {
             quit_closure.Run();
         },
         base::Unretained(this), quit_closure, expected_state);
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) {
-          FAIL() << "WaitForWaitStateChange timed out";
-          quit_closure.Run();
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) {
+          ADD_FAILURE() << "WaitForWaitStateChange timed out";
+          std::move(quit_closure).Run();
         },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -196,7 +198,7 @@ class CustomThreadWatcher : public ThreadWatcher {
   }
 
   // May be called on any thread other than the WatchDogThread.
-  void BusyWaitForWaitStateChange(TimeDelta wait_time,
+  void BusyWaitForWaitStateChange(base::TimeDelta wait_time,
                                   WaitState expected_state) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     TimeTicks end_time = TimeTicks::Now() + wait_time;
@@ -207,7 +209,7 @@ class CustomThreadWatcher : public ThreadWatcher {
     }
   }
 
-  void VeryLongMethod(TimeDelta wait_time) {
+  void VeryLongMethod(base::TimeDelta wait_time) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     // ThreadWatcher tasks should not be allowed to execute while we're waiting,
     // so hog the thread until the state changes.
@@ -217,7 +219,8 @@ class CustomThreadWatcher : public ThreadWatcher {
                                        base::Unretained(this), ALL_DONE));
   }
 
-  State WaitForStateChange(const TimeDelta& wait_time, State expected_state) {
+  State WaitForStateChange(const base::TimeDelta& wait_time,
+                           State expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     UpdateWaitState(STARTED_WAITING);
 
@@ -236,8 +239,8 @@ class CustomThreadWatcher : public ThreadWatcher {
         },
         base::Unretained(this), quit_closure, expected_state,
         base::Unretained(&exit_state));
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) { quit_closure.Run(); },
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_closure.callback(),
@@ -249,7 +252,7 @@ class CustomThreadWatcher : public ThreadWatcher {
     return exit_state;
   }
 
-  CheckResponseState WaitForCheckResponse(const TimeDelta& wait_time,
+  CheckResponseState WaitForCheckResponse(const base::TimeDelta& wait_time,
                                           CheckResponseState expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     UpdateWaitState(STARTED_WAITING);
@@ -269,8 +272,8 @@ class CustomThreadWatcher : public ThreadWatcher {
         },
         base::Unretained(this), quit_closure, expected_state,
         base::Unretained(&exit_state));
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) { quit_closure.Run(); },
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_closure.callback(),
@@ -291,9 +294,8 @@ class CustomThreadWatcher : public ThreadWatcher {
 
 class ThreadWatcherTest : public ::testing::Test {
  public:
-  static constexpr TimeDelta kSleepTime = TimeDelta::FromMilliseconds(50);
-  static constexpr TimeDelta kUnresponsiveTime =
-      TimeDelta::FromMilliseconds(500);
+  static constexpr base::TimeDelta kSleepTime = base::Milliseconds(50);
+  static constexpr base::TimeDelta kUnresponsiveTime = base::Milliseconds(500);
   static constexpr char kIOThreadName[] = "IO";
   static constexpr char kUIThreadName[] = "UI";
   static constexpr char kCrashOnHangThreadNames[] = "UI,IO";
@@ -303,21 +305,26 @@ class ThreadWatcherTest : public ::testing::Test {
   CustomThreadWatcher* ui_watcher_;
   ThreadWatcherList* thread_watcher_list_;
 
-  ThreadWatcherTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
+  template <typename... TaskEnvironmentTraits>
+  ThreadWatcherTest(base::test::TaskEnvironment::TimeSource time_source =
+                        base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
+                          time_source),
         setup_complete_(&lock_),
         initialized_(false) {
+    crash_reporter::InitializeCrashKeysForTesting();
+
     // Make sure UI and IO threads are started and ready.
     task_environment_.RunIOThreadUntilIdle();
 
-    watchdog_thread_.reset(new WatchDogThread());
+    watchdog_thread_ = std::make_unique<WatchDogThread>();
     watchdog_thread_->StartAndWaitForTesting();
 
     WatchDogThread::PostTask(
         FROM_HERE, base::BindRepeating(&ThreadWatcherTest::SetUpObjects,
                                        base::Unretained(this)));
 
-    WaitForSetUp(TimeDelta::FromMinutes(1));
+    WaitForSetUp(base::Minutes(1));
   }
 
   void SetUpObjects() {
@@ -351,7 +358,7 @@ class ThreadWatcherTest : public ::testing::Test {
     setup_complete_.Signal();
   }
 
-  void WaitForSetUp(TimeDelta wait_time) {
+  void WaitForSetUp(base::TimeDelta wait_time) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     TimeTicks end_time = TimeTicks::Now() + wait_time;
     {
@@ -361,23 +368,85 @@ class ThreadWatcherTest : public ::testing::Test {
     }
   }
 
+  ThreadWatcherTest(const ThreadWatcherTest&) = delete;
+  ThreadWatcherTest& operator=(const ThreadWatcherTest&) = delete;
+
   ~ThreadWatcherTest() override {
     ThreadWatcherList::DeleteAll();
     io_watcher_ = nullptr;
     ui_watcher_ = nullptr;
     watchdog_thread_.reset();
     thread_watcher_list_ = nullptr;
+
+    crash_reporter::ResetCrashKeysForTesting();
   }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   base::Lock lock_;
   base::ConditionVariable setup_complete_;
   bool initialized_;
   std::unique_ptr<WatchDogThread> watchdog_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherTest);
 };
+
+class ThreadWatcherTestWithMockTime : public ThreadWatcherTest {
+ public:
+  ThreadWatcherTestWithMockTime()
+      : ThreadWatcherTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+// Verify that the "seconds-since-last-memory-pressure" crash key is written
+// correctly.
+//
+// Note: It is not possible to split this test in 3 smaller tests, because
+// reusing the same crash key in multiple unit tests is broken with breakpad.
+// https://crbug.com/1041106.
+TEST_F(ThreadWatcherTestWithMockTime, MemoryPressureCrashKey) {
+  // The "seconds-since-last-memory-pressure" crash key should hold "No memory
+  // pressure" when there has never been any memory pressure signal.
+  watchdog_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ui_watcher_->SetTimeSinceLastCriticalMemoryPressureCrashKey();
+        EXPECT_EQ("No memory pressure",
+                  crash_reporter::GetCrashKeyValue(
+                      "seconds-since-last-memory-pressure"));
+      }));
+
+  watchdog_thread_->FlushForTesting();
+
+  // The "seconds-since-last-memory-pressure" crash key should hold "No memory
+  // pressure" when there has been a MODERATE memory pressure signal, but no
+  // CRITICAL memory pressure signal.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  watchdog_thread_->FlushForTesting();
+
+  watchdog_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ui_watcher_->SetTimeSinceLastCriticalMemoryPressureCrashKey();
+        EXPECT_EQ("No memory pressure",
+                  crash_reporter::GetCrashKeyValue(
+                      "seconds-since-last-memory-pressure"));
+      }));
+
+  watchdog_thread_->FlushForTesting();
+
+  // The "seconds-since-last-memory-pressure" crash key should hold "4" when set
+  // 4 seconds after a CRITICAL memory pressure signal.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  watchdog_thread_->FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  watchdog_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ui_watcher_->SetTimeSinceLastCriticalMemoryPressureCrashKey();
+        EXPECT_EQ("4", crash_reporter::GetCrashKeyValue(
+                           "seconds-since-last-memory-pressure"));
+      }));
+
+  watchdog_thread_->FlushForTesting();
+}
 
 // Test fixture that runs a test body on the WatchDogThread. Subclasses override
 // TestBodyOnWatchDogThread() and should call RunTestOnWatchDogThread() in their
@@ -406,8 +475,8 @@ class ThreadWatcherTestOnWatchDogThread : public ThreadWatcherTest {
 };
 
 // Declare storage for ThreadWatcherTest's static constants.
-constexpr TimeDelta ThreadWatcherTest::kSleepTime;
-constexpr TimeDelta ThreadWatcherTest::kUnresponsiveTime;
+constexpr base::TimeDelta ThreadWatcherTest::kSleepTime;
+constexpr base::TimeDelta ThreadWatcherTest::kUnresponsiveTime;
 constexpr char ThreadWatcherTest::kIOThreadName[];
 constexpr char ThreadWatcherTest::kUIThreadName[];
 constexpr char ThreadWatcherTest::kCrashOnHangThreadNames[];
@@ -433,7 +502,7 @@ TEST_F(ThreadWatcherTest, ThreadNamesOnlyArgs) {
   while (tokens.GetNext()) {
     std::vector<base::StringPiece> values = base::SplitStringPiece(
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::string thread_name = values[0].as_string();
+    std::string thread_name(values[0]);
 
     auto it = crash_on_hang_threads.find(thread_name);
     bool crash_on_hang = (it != crash_on_hang_threads.end());
@@ -462,7 +531,7 @@ TEST_F(ThreadWatcherTest, CrashOnHangThreadsAllArgs) {
   while (tokens.GetNext()) {
     std::vector<base::StringPiece> values = base::SplitStringPiece(
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::string thread_name = values[0].as_string();
+    std::string thread_name(values[0]);
 
     auto it = crash_on_hang_threads.find(thread_name);
 
@@ -516,7 +585,7 @@ class ThreadWatcherTestThreadResponding
 
     // Activate would have started ping/pong messaging. Expect at least one
     // ping/pong messaging sequence to happen.
-    io_watcher_->WaitForStateChange(kSleepTime + TimeDelta::FromMinutes(1),
+    io_watcher_->WaitForStateChange(kSleepTime + base::Minutes(1),
                                     RECEIVED_PONG);
     EXPECT_GT(io_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(io_watcher_->pong_received_, static_cast<uint64_t>(0));
@@ -526,8 +595,8 @@ class ThreadWatcherTestThreadResponding
               static_cast<uint64_t>(0));
 
     // Verify watched thread is responding with ping/pong messaging.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(io_watcher_->success_response_, 0);
     EXPECT_EQ(io_watcher_->failed_response_, 0);
 
@@ -552,8 +621,8 @@ class ThreadWatcherTestThreadNotResponding
     // a very long time by posting a task on watched thread that keeps it busy.
     // It is safe to use base::Unretained because test is waiting for the method
     // to finish.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
                        base::Unretained(io_watcher_), kUnresponsiveTime * 10));
 
@@ -561,8 +630,8 @@ class ThreadWatcherTestThreadNotResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify watched thread is not responding for ping messages.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), FAILED);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      FAILED);
     EXPECT_EQ(io_watcher_->success_response_, 0);
     EXPECT_GT(io_watcher_->failed_response_, 0);
 
@@ -590,8 +659,8 @@ class ThreadWatcherTestMultipleThreadsResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify UI thread is responding with ping/pong messaging.
-    ui_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    ui_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(ui_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(ui_watcher_->pong_received_, static_cast<uint64_t>(0));
     EXPECT_GE(ui_watcher_->ping_sequence_number(), static_cast<uint64_t>(0));
@@ -599,8 +668,8 @@ class ThreadWatcherTestMultipleThreadsResponding
     EXPECT_EQ(ui_watcher_->failed_response_, 0);
 
     // Verify IO thread is responding with ping/pong messaging.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(io_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(io_watcher_->pong_received_, static_cast<uint64_t>(0));
     EXPECT_GE(io_watcher_->ping_sequence_number(), static_cast<uint64_t>(0));
@@ -626,8 +695,8 @@ class ThreadWatcherTestMultipleThreadsNotResponding
     // a very long time by posting a task on watched thread that keeps it busy.
     // It is safe to use base::Unretained because test is waiting for the method
     // to finish.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&CustomThreadWatcher::VeryLongMethod,
                        base::Unretained(io_watcher_), kUnresponsiveTime * 10));
 
@@ -638,14 +707,14 @@ class ThreadWatcherTestMultipleThreadsNotResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify UI thread is responding with ping/pong messaging.
-    ui_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    ui_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(ui_watcher_->success_response_, 0);
     EXPECT_EQ(ui_watcher_->failed_response_, 0);
 
     // Verify IO thread is not responding for ping messages.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), FAILED);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      FAILED);
     EXPECT_EQ(io_watcher_->success_response_, 0);
     EXPECT_GT(io_watcher_->failed_response_, 0);
 
@@ -729,10 +798,9 @@ TEST_F(ThreadWatcherListTest, Restart) {
   ThreadWatcherList::StopWatchingAll();
   {
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                          run_loop.QuitWhenIdleClosure(),
-                          base::TimeDelta::FromSeconds(
-                              ThreadWatcherList::g_initialize_delay_seconds));
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitWhenIdleClosure(),
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds));
     run_loop.Run();
   }
 
@@ -743,10 +811,9 @@ TEST_F(ThreadWatcherListTest, Restart) {
   ThreadWatcherList::StartWatchingAll(*base::CommandLine::ForCurrentProcess());
   {
     base::RunLoop run_loop;
-    base::PostDelayedTask(
-        FROM_HERE, {BrowserThread::UI}, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromSeconds(
-            ThreadWatcherList::g_initialize_delay_seconds + 1));
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitWhenIdleClosure(),
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds + 1));
     run_loop.Run();
   }
 
@@ -757,10 +824,9 @@ TEST_F(ThreadWatcherListTest, Restart) {
   ThreadWatcherList::StopWatchingAll();
   {
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                          run_loop.QuitWhenIdleClosure(),
-                          base::TimeDelta::FromSeconds(
-                              ThreadWatcherList::g_initialize_delay_seconds));
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitWhenIdleClosure(),
+        base::Seconds(ThreadWatcherList::g_initialize_delay_seconds));
     run_loop.Run();
   }
 

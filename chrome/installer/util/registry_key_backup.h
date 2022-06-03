@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 // A container for a registry key, its values, and its subkeys.  We don't use
 // more obvious methods for various reasons:
 // - RegCopyTree isn't supported pre-Vista, so we'd have to do something
@@ -22,6 +20,10 @@
 class RegistryKeyBackup {
  public:
   RegistryKeyBackup();
+
+  RegistryKeyBackup(const RegistryKeyBackup&) = delete;
+  RegistryKeyBackup& operator=(const RegistryKeyBackup&) = delete;
+
   ~RegistryKeyBackup();
 
   // Recursively reads |key_path| into this instance.  Backing up a non-existent
@@ -34,17 +36,13 @@ class RegistryKeyBackup {
   // initialized from a non-existent key.
   bool WriteTo(HKEY root, const wchar_t* key_path, REGSAM wow64_acccess) const;
 
-  void swap(RegistryKeyBackup& other) {
-    key_data_.swap(other.key_data_);
-  }
+  void swap(RegistryKeyBackup& other) { key_data_.swap(other.key_data_); }
 
  private:
   class KeyData;
 
   // The values and subkeys of the backed-up key.
   std::unique_ptr<KeyData> key_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyBackup);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_KEY_BACKUP_H_

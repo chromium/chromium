@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -41,8 +41,8 @@ void MTPDeviceMapService::RegisterMTPFileSystem(
     // to be created before use of it expects it to be there.
     CreateMTPDeviceAsyncDelegate(
         device_location, read_only,
-        base::Bind(&MTPDeviceMapService::AddAsyncDelegate,
-                   base::Unretained(this), device_location, read_only));
+        base::BindOnce(&MTPDeviceMapService::AddAsyncDelegate,
+                       base::Unretained(this), device_location, read_only));
     mtp_device_usage_map_[key] = 0;
   }
 

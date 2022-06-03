@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
+
+import java.util.Map;
 
 /**
  * Tests for {@link CommandLine}.
@@ -86,6 +88,11 @@ public class CommandLineTest {
         Assert.assertTrue(cl.hasSwitch("superfast"));
         Assert.assertEquals("turbo", cl.getSwitchValue("speed"));
 
+        // Get all switches
+        Map<String, String> switches = cl.getSwitches();
+        Assert.assertTrue(switches.containsKey(CL_ADDED_SWITCH));
+        Assert.assertTrue(switches.containsKey(CL_ADDED_SWITCH_2));
+
         // Remove a plain switch.
         cl.removeSwitch(CL_ADDED_SWITCH);
         Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH));
@@ -94,6 +101,11 @@ public class CommandLineTest {
         cl.removeSwitch(CL_ADDED_SWITCH_2);
         Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH_2));
         Assert.assertNull(cl.getSwitchValue(CL_ADDED_SWITCH_2));
+
+        // Get all switches again to verify it updated.
+        switches = cl.getSwitches();
+        Assert.assertFalse(switches.containsKey(CL_ADDED_SWITCH));
+        Assert.assertFalse(switches.containsKey(CL_ADDED_SWITCH_2));
     }
 
     void checkTokenizer(String[] expected, String toParse) {

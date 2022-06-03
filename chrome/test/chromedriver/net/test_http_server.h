@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -33,12 +32,17 @@ class TestHttpServer : public net::HttpServer::Delegate {
 
   enum WebSocketMessageAction {
     kEchoMessage,
-    kCloseOnMessage
+    kCloseOnMessage,
+    kEchoRawMessage
   };
 
   // Creates an http server. By default it accepts WebSockets and echoes
   // WebSocket messages back.
   TestHttpServer();
+
+  TestHttpServer(const TestHttpServer&) = delete;
+  TestHttpServer& operator=(const TestHttpServer&) = delete;
+
   ~TestHttpServer() override;
 
   // Starts the server. Returns whether it was started successfully.
@@ -58,7 +62,7 @@ class TestHttpServer : public net::HttpServer::Delegate {
   void SetMessageAction(WebSocketMessageAction action);
 
   // Sets a callback to be called once when receiving next WebSocket message.
-  void SetMessageCallback(const base::Closure& callback);
+  void SetMessageCallback(base::OnceClosure callback);
 
   // Returns the web socket URL that points to the server.
   GURL web_socket_url() const;
@@ -92,11 +96,9 @@ class TestHttpServer : public net::HttpServer::Delegate {
 
   // Protects the action flags and |message_callback_|.
   base::Lock action_lock_;
-  WebSocketRequestAction request_action_;
-  WebSocketMessageAction message_action_;
-  base::Closure message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHttpServer);
+  WebSocketRequestAction request_action_ = kAccept;
+  WebSocketMessageAction message_action_ = kEchoMessage;
+  base::OnceClosure message_callback_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_TEST_HTTP_SERVER_H_

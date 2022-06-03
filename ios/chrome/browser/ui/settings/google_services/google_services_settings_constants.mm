@@ -13,3 +13,18 @@ NSString* const kGoogleServicesSettingsViewIdentifier =
 
 NSString* const kManageSyncCellAccessibilityIdentifier =
     @"ManageSyncCellAccessibilityIdentifier";
+
+NSString* const kAccountListItemAccessibilityIdentifier =
+    @"AccountListItemAccessibilityIdentifier";
+
+NSString* const kPasswordLeakCheckItemAccessibilityIdentifier =
+    @"PasswordLeakCheckItemAccessibilityIdentifier";
+
+NSString* const kSafeBrowsingItemAccessibilityIdentifier =
+    @"SafeBrowsingItemAccessibilityIdentifier";
+
+NSString* const kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier =
+    @"SyncEncryptionPassphraseTextFieldAccessibilityIdentifier";
+
+NSString* const kAllowSigninItemAccessibilityIdentifier =
+    @"AllowSigninItemAccessibilityIdentifier";

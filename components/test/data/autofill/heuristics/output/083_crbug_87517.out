@@ -26,19 +26,19 @@ UNKNOWN_TYPE | Tribute_Notification | Please send a notification of my gift to t
 UNKNOWN_TYPE | Tribute_IncludeAmount | Include the amount | 1 | f1_1-default
 UNKNOWN_TYPE | Tribute_IncludeAmount | Do not include the amount | 0 | f1_1-default
 NAME_FULL | Tribute_NotifyName | Name: |  | f1_1-default
-EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Email_1-default
-ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Email_1-default
-ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Email_1-default
-ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Email_1-default
-ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Email_1-default
+EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Email_2-default
+ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Email_2-default
+ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Email_2-default
+ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Email_2-default
+ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Email_2-default
 CREDIT_CARD_TYPE | cctype | Credit Card Type * | Visa | credit-card-cc
 CREDIT_CARD_NUMBER | ccard | Credit Card Number * |  | credit-card-cc
 CREDIT_CARD_VERIFICATION_CODE | csc | CSC Number * What Is This? |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | ExpMon | Month | 1 | credit-card-cc
 CREDIT_CARD_EXP_4_DIGIT_YEAR | ExpYear | Year | 11 | credit-card-cc
 UNKNOWN_TYPE | SameAddress | Same As Contact Address | checkbox | f1_1-default
-ADDRESS_HOME_LINE1 | CC_Addr | Address 1 * |  | CC_Addr_1-default
-ADDRESS_HOME_LINE2 | CC_Addr2 | Address 2 |  | CC_Addr_1-default
-ADDRESS_HOME_CITY | CC_City | City / State / Zip * |  | CC_Addr_1-default
-ADDRESS_HOME_STATE | CC_State | Credit Card Information |  | CC_Addr_1-default
-ADDRESS_HOME_ZIP | CC_Zip | Credit Card Information |  | CC_Addr_1-default
+ADDRESS_HOME_LINE1 | CC_Addr | Address 1 * |  | CC_Addr_4-default
+ADDRESS_HOME_LINE2 | CC_Addr2 | Address 2 |  | CC_Addr_4-default
+ADDRESS_HOME_CITY | CC_City | City / State / Zip * |  | CC_Addr_4-default
+ADDRESS_HOME_STATE | CC_State | Credit Card Information |  | CC_Addr_4-default
+ADDRESS_HOME_ZIP | CC_Zip | Credit Card Information |  | CC_Addr_4-default

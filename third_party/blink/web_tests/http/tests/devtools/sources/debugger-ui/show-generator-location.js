@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that "Show Generator Location" jumps to the correct location.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function forward(iter, step)
@@ -66,7 +66,7 @@
   ];
 
   function createTestSuiteFunction(expression) {
-    var functionName = 'test' + expression.toTitleCase();
+    var functionName = 'test' + expression;
     return eval(
         'function ' + functionName + '(next)\n' +
         '{\n' +

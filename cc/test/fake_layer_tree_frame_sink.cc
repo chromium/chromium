@@ -5,7 +5,8 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -80,8 +81,8 @@ void FakeLayerTreeFrameSink::SubmitCompositorFrame(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack) {
-}
+void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                                                FrameSkippedReason reason) {}
 
 void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
@@ -107,8 +108,14 @@ void FakeLayerTreeFrameSink::ReturnResourcesHeldByParent() {
     for (const auto& resource : resources_held_by_parent_)
       resources.push_back(resource.ToReturnedResource());
     resources_held_by_parent_.clear();
-    client_->ReclaimResources(resources);
+    client_->ReclaimResources(std::move(resources));
   }
+}
+
+void FakeLayerTreeFrameSink::NotifyDidPresentCompositorFrame(
+    uint32_t frame_token,
+    const viz::FrameTimingDetails& details) {
+  client_->DidPresentCompositorFrame(frame_token, details);
 }
 
 }  // namespace cc

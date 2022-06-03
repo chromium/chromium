@@ -13,7 +13,8 @@ struct UrlLoadParams;
 
 // Mocks a class adopting the TabOpening protocol. It saves the arguments of
 // -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
-//  completion:.
+//  completion:. Can also save the arguments of
+// -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
 @interface MockTabOpener : NSObject<TabOpening>
 // Arguments for
 // -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
@@ -21,6 +22,9 @@ struct UrlLoadParams;
 @property(nonatomic, readonly) UrlLoadParams urlLoadParams;
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
 @property(nonatomic, strong, readonly) void (^completionBlock)(void);
+// Argument for
+// -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
+@property(nonatomic, readonly) const std::vector<GURL>& URLs;
 
 // Clear the URL.
 - (void)resetURL;

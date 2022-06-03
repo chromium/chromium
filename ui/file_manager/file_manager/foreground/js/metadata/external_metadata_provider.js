@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
+
 /**
  * Metadata provider for FileEntry#getMetadata.
  * TODO(hirono): Rename thumbnailUrl with externalThumbnailUrl.
  * @final
  */
-class ExternalMetadataProvider extends MetadataProvider {
+export class ExternalMetadataProvider extends MetadataProvider {
   constructor() {
     super(ExternalMetadataProvider.PROPERTY_NAMES);
   }

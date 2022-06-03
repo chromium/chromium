@@ -6,13 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/nullable_string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
-#include "chrome/browser/permissions/permission_uma_util.h"
-#include "chrome/browser/permissions/permission_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 
 #if !defined(OS_ANDROID)
@@ -48,8 +47,8 @@ void NonPersistentNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   // Non persistent notifications don't allow buttons or replies.
   // https://notifications.spec.whatwg.org/#create-a-notification
@@ -96,9 +95,10 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
 void NonPersistentNotificationHandler::DisableNotifications(
     Profile* profile,
     const GURL& origin) {
-  PermissionUtil::ScopedRevocationReporter scoped_revocation_reporter(
-      profile, origin, origin, ContentSettingsType::NOTIFICATIONS,
-      PermissionSourceUI::INLINE_SETTINGS);
+  permissions::PermissionUmaUtil::ScopedRevocationReporter
+      scoped_revocation_reporter(
+          profile, origin, origin, ContentSettingsType::NOTIFICATIONS,
+          permissions::PermissionSourceUI::INLINE_SETTINGS);
   NotificationPermissionContext::UpdatePermission(profile, origin,
                                                   CONTENT_SETTING_BLOCK);
 }

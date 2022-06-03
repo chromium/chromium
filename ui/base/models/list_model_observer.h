@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
-class UI_BASE_EXPORT ListModelObserver {
+class COMPONENT_EXPORT(UI_BASE) ListModelObserver {
  public:
   // Invoked after items has been added to the model.
   virtual void ListItemsAdded(size_t start, size_t count) = 0;

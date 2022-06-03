@@ -5,6 +5,8 @@
 #ifndef NET_CERT_TEST_KEYCHAIN_SEARCH_LIST_MAC_H_
 #define NET_CERT_TEST_KEYCHAIN_SEARCH_LIST_MAC_H_
 
+#include <memory>
+
 #include <CoreServices/CoreServices.h>
 #include <Security/Security.h>
 

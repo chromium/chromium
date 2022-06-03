@@ -32,9 +32,11 @@ std::unique_ptr<UiInterface> UiModuleFactory::Create(
   // TODO(https://crbug.com/1019853): When all VR native code moves into the
   // feature module, this factory will completely disappear. In the meantime,
   // make it tolerant of two different variants of the VR lib (one for Chrome,
-  // one for Monochrome).
+  // one for Monochrome). chrome_64_vr_partition is omitted since it is not
+  // shipped in 64-bit configuration.
   const std::vector<const std::string> library_name_possibilities = {
       "monochrome_vr_partition",
+      "monochrome_64_vr_partition",
       "chrome_vr_partition",
   };
 
@@ -43,23 +45,23 @@ std::unique_ptr<UiInterface> UiModuleFactory::Create(
   for (const auto& library_name : library_name_possibilities) {
     ui_library_handle =
         base::android::BundleUtils::DlOpenModuleLibraryPartition(
-            library_name, partition_name);
+            library_name, partition_name, "vr");
     if (ui_library_handle != nullptr) {
       break;
     }
   }
-  DCHECK(ui_library_handle != nullptr)
+  CHECK(ui_library_handle != nullptr)
       << "Could not open VR UI library:" << dlerror();
 
   CreateUiFunction* create_ui =
       reinterpret_cast<CreateUiFunction*>(dlsym(ui_library_handle, "CreateUi"));
-  DCHECK(create_ui != nullptr);
+  CHECK(create_ui != nullptr);
 
   std::unique_ptr<UiInterface> ui = base::WrapUnique(
       create_ui(browser, content_input_forwarder, std::move(keyboard_delegate),
                 std::move(text_input_delegate), std::move(audio_delegate),
                 ui_initial_state));
-  DCHECK(ui != nullptr);
+  CHECK(ui != nullptr);
 
   return ui;
 }

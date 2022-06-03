@@ -65,30 +65,38 @@ Memory Module: global_name
 Network Service: Ethernet 2, Ethernet, en1
 PCI Card: NVIDIA GeForce GT 120, sppci_displaycontroller, MXM-Slot
 Serial ATA Device: OPTIARC DVD RW AD-5670S
-""".format(process_name=process_name, pid=pid)
+""".format(
+        process_name=process_name, pid=pid)
 
 
 class CrashLogsTest(unittest.TestCase):
-
     def test_find_log_darwin(self):
         if not SystemHost().platform.is_mac():
             return
 
-        older_mock_crash_report = make_mock_crash_report_darwin('DumpRenderTree', 28528)
-        mock_crash_report = make_mock_crash_report_darwin('DumpRenderTree', 28530)
-        newer_mock_crash_report = make_mock_crash_report_darwin('DumpRenderTree', 28529)
-        other_process_mock_crash_report = make_mock_crash_report_darwin('FooProcess', 28527)
+        older_mock_crash_report = make_mock_crash_report_darwin(
+            'DumpRenderTree', 28528)
+        mock_crash_report = make_mock_crash_report_darwin(
+            'DumpRenderTree', 28530)
+        newer_mock_crash_report = make_mock_crash_report_darwin(
+            'DumpRenderTree', 28529)
+        other_process_mock_crash_report = make_mock_crash_report_darwin(
+            'FooProcess', 28527)
         misformatted_mock_crash_report = 'Junk that should not appear in a crash report' + \
             make_mock_crash_report_darwin('DumpRenderTree', 28526)[200:]
         files = {
-            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150718_quadzen.crash': older_mock_crash_report,
-            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150719_quadzen.crash': mock_crash_report,
-            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150720_quadzen.crash': newer_mock_crash_report,
-            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150721_quadzen.crash': None,
+            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150718_quadzen.crash':
+            older_mock_crash_report,
+            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150719_quadzen.crash':
+            mock_crash_report,
+            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150720_quadzen.crash':
+            newer_mock_crash_report,
+            '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150721_quadzen.crash':
+            None,
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150722_quadzen.crash':
-                other_process_mock_crash_report,
+            other_process_mock_crash_report,
             '/Users/mock/Library/Logs/DiagnosticReports/DumpRenderTree_2011-06-13-150723_quadzen.crash':
-                misformatted_mock_crash_report,
+            misformatted_mock_crash_report,
         }
         filesystem = MockFileSystem(files)
         crash_logs = CrashLogs(MockSystemHost(filesystem=filesystem))
@@ -110,11 +118,13 @@ class CrashLogsTest(unittest.TestCase):
             raise OSError('OSError: No such file or directory')
 
         filesystem.read_text_file = bad_read
-        log = crash_logs.find_newest_log('DumpRenderTree', 28531, include_errors=True)
+        log = crash_logs.find_newest_log(
+            'DumpRenderTree', 28531, include_errors=True)
         self.assertIn('IOError: No such file or directory', log)
 
         filesystem = MockFileSystem(files)
         crash_logs = CrashLogs(MockSystemHost(filesystem=filesystem))
         filesystem.mtime = bad_mtime
-        log = crash_logs.find_newest_log('DumpRenderTree', newer_than=1.0, include_errors=True)
+        log = crash_logs.find_newest_log(
+            'DumpRenderTree', newer_than=1.0, include_errors=True)
         self.assertIn('OSError: No such file or directory', log)

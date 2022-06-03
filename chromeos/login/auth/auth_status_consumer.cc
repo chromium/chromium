@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chromeos/login/auth/auth_status_consumer.h"
+#include "base/notreached.h"
 
 namespace chromeos {
 
-void AuthStatusConsumer::OnPasswordChangeDetected() {
+void AuthStatusConsumer::OnPasswordChangeDetected(
+    const UserContext& user_context) {
   NOTREACHED();
 }
 

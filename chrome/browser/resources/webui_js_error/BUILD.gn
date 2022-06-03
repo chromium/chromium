@@ -1,0 +1,76 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+  optimize_webui("build") {
+    host = "webuijserror"
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    deps = [
+      ":preprocess",
+      "../../../../ui/webui/resources/js:preprocess",
+    ]
+    js_module_in_files = [ "webui_js_error.js" ]
+    js_out_files = [ "webui_js_error.rollup.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
+  }
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "webui_js_error.js" ]
+}
+
+generate_grd("build_grd") {
+  input_files = [ "webui_js_error.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    resource_path_rewrites = [ "webui_js_error.rollup.js|webui_js_error.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [ ":preprocess" ]
+    manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  }
+  grd_prefix = "webui_js_error"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/webui_js_error_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/webui_js_error_resources.h",
+    "grit/webui_js_error_resources_map.cc",
+    "grit/webui_js_error_resources_map.h",
+    "webui_js_error_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":webui_js_error" ]
+}
+
+js_library("webui_js_error") {
+  deps = [ "//ui/webui/resources/js:util.m" ]
+}

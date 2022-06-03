@@ -1,0 +1,35 @@
+Test to make sure CORS errors are correctly reported.
+{
+    canceled : false
+    corsErrorStatus : {
+        corsError : AllowOriginMismatch
+        failedParameter : http://127.0.0.1
+    }
+    errorText : net::ERR_FAILED
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+}
+{
+    canceled : false
+    corsErrorStatus : {
+        corsError : MissingAllowOriginHeader
+        failedParameter : 
+    }
+    errorText : net::ERR_FAILED
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+}
+{
+    canceled : false
+    corsErrorStatus : {
+        corsError : PreflightInvalidAllowOriginValue
+        failedParameter : 1
+    }
+    errorText : net::ERR_FAILED
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+}
+

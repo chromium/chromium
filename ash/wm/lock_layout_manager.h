@@ -11,8 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -38,6 +37,10 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
                                      public KeyboardControllerObserver {
  public:
   LockLayoutManager(aura::Window* window, Shelf* shelf);
+
+  LockLayoutManager(const LockLayoutManager&) = delete;
+  LockLayoutManager& operator=(const LockLayoutManager&) = delete;
+
   ~LockLayoutManager() override;
 
   // Overridden from WmDefaultLayoutManager:
@@ -75,9 +78,7 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   aura::Window* window_;
   aura::Window* root_window_;
 
-  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockLayoutManager);
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 };
 
 }  // namespace ash

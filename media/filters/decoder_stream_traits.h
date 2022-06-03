@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
-#include "media/base/cdm_context.h"
 #include "media/base/channel_layout.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log_properties.h"
@@ -59,6 +58,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
   void SetIsPlatformDecoder(bool is_platform_decoder);
   void SetIsDecryptingDemuxerStream(bool is_dds);
+  void SetEncryptionType(EncryptionType decryption_type);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,
@@ -66,6 +66,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
+  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
   DecoderConfigType GetDecoderConfig(DemuxerStream* stream);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
@@ -85,6 +86,10 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   ChannelLayout initial_hw_layout_;
   PipelineStatistics stats_;
   AudioDecoderConfig config_;
+
+  base::WeakPtr<DecoderStreamTraits<DemuxerStream::AUDIO>> weak_this_;
+  base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::AUDIO>> weak_factory_{
+      this};
 };
 
 template <>
@@ -112,6 +117,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
   void SetIsPlatformDecoder(bool is_platform_decoder);
   void SetIsDecryptingDemuxerStream(bool is_dds);
+  void SetEncryptionType(EncryptionType decryption_type);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,
@@ -119,10 +125,15 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
+  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
   void OnStreamReset(DemuxerStream* stream);
   void OnOutputReady(OutputType* output);
+
+  // Set whether or not software decoder implementations will be preferred.
+  void SetPreferNonPlatformDecoders(bool);
+  bool GetPreferNonPlatformDecoders() const;
 
  private:
   base::TimeDelta last_keyframe_timestamp_;
@@ -137,6 +148,14 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
 
   PipelineStatistics stats_;
+
+  VideoTransformation transform_ = kNoTransformation;
+
+  bool prefer_non_platform_decoders_ = false;
+
+  base::WeakPtr<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_this_;
+  base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_factory_{
+      this};
 };
 
 }  // namespace media

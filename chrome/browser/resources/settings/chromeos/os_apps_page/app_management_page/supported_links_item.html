@@ -1,0 +1,50 @@
+<style include="app-management-shared-css settings-shared">
+  #explanation-text {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #info-icon {
+    padding-inline-end: var(--help-icon-padding);
+  }
+</style>
+<div class="permission-section-header">
+  <localized-link id="heading" class="header-text"
+      on-link-clicked="launchDialog_"
+      localized-string="$i18n{appManagementIntentSettingsTitle}">
+  </localized-link>
+</div>
+<template is="dom-if" if="[[disabled_]]">
+  <div id="explanation-text">
+    <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
+    <localized-link localized-string="[[getDisabledExplanation_(app)]]">
+    </localized-link>
+  </div>
+</template>
+<div class="list-frame">
+  <cr-radio-group id="radio-group"
+      selected="[[getCurrentPref_(app)]]"
+      on-selected-changed="onSupportedLinkPrefChanged_"
+      disabled="[[disabled_]]">
+    <cr-radio-button id="preferred" name="preferred">
+      [[getPreferredLabel_(app)]]
+    </cr-radio-button>
+    <cr-radio-button id="browser" name="browser">
+      $i18n{appManagementIntentSharingOpenBrowserLabel}
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>
+  <app-management-supported-links-dialog id="dialog" app="[[app]]"
+      on-close="onDialogClose_">
+  </app-management-supported-links-dialog>
+</template>
+<template is="dom-if" if="[[showOverlappingAppsDialog_]]" restamp>
+  <app-management-supported-links-overlapping-apps-dialog
+      id="overlap-dialog"
+      app="[[app]]"
+      on-close="onOverlappingDialogClosed_"
+      overlapping-app-ids="[[overlappingAppIds_]]">
+  </app-management-supported-links-overlapping-apps-dialog>
+</template>

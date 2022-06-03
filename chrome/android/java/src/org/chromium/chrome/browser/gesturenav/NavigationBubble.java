@@ -7,7 +7,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff.Mode;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,7 +51,7 @@ public class NavigationBubble extends LinearLayout {
     private static final int FADE_DURATION_MS = 400;
 
     private final ValueAnimator mColorAnimator;
-    private final int mBlue;
+    private final int mColorPrimary;
     private final int mBlack;
     private final String mCloseApp;
     private final String mCloseTab;
@@ -94,14 +94,8 @@ public class NavigationBubble extends LinearLayout {
     public NavigationBubble(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // Workaround to a bug that makes this view sometimes stay invisible after animation.
-        // https://stackoverflow.com/questions/24258832
-        // https://stackoverflow.com/questions/25099043
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
         mBlack = ApiCompatibilityUtils.getColor(getResources(), R.color.navigation_bubble_arrow);
-        mBlue = ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color_blue);
+        mColorPrimary = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
 
         mColorUpdateListener = new ColorUpdateListener();
         mColorAnimator = ValueAnimator.ofFloat(0, 1).setDuration(COLOR_TRANSITION_DURATION_MS);
@@ -192,7 +186,7 @@ public class NavigationBubble extends LinearLayout {
     public void setImageTint(boolean navigate) {
         assert mIcon != null;
         mColorUpdateListener.setTransitionColors(
-                navigate ? mBlack : mBlue, navigate ? mBlue : mBlack);
+                navigate ? mBlack : mColorPrimary, navigate ? mColorPrimary : mBlack);
         mColorAnimator.start();
     }
 

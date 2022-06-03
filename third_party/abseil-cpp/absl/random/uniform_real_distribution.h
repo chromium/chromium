@@ -39,11 +39,13 @@
 #include <limits>
 #include <type_traits>
 
-#include "absl/random/internal/distribution_impl.h"
+#include "absl/meta/type_traits.h"
 #include "absl/random/internal/fast_uniform_bits.h"
+#include "absl/random/internal/generate_real.h"
 #include "absl/random/internal/iostream_state_saver.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::uniform_real_distribution<T>
 //
@@ -56,7 +58,7 @@ namespace absl {
 //
 //   // Use the distribution to produce a value between 0.0 (inclusive)
 //   // and 1.0 (exclusive).
-//   int value = absl::uniform_real_distribution<double>(0, 1)(gen);
+//   double value = absl::uniform_real_distribution<double>(0, 1)(gen);
 //
 template <typename RealType = double>
 class uniform_real_distribution {
@@ -76,6 +78,7 @@ class uniform_real_distribution {
       // is not possible, so value generation cannot use the full range of the
       // real type.
       assert(range_ <= (std::numeric_limits<result_type>::max)());
+      assert(std::isfinite(range_));
     }
 
     result_type a() const { return lo_; }
@@ -151,10 +154,15 @@ template <typename URBG>
 typename uniform_real_distribution<RealType>::result_type
 uniform_real_distribution<RealType>::operator()(
     URBG& gen, const param_type& p) {  // NOLINT(runtime/references)
-  using random_internal::PositiveValueT;
+  using random_internal::GeneratePositiveTag;
+  using random_internal::GenerateRealFromBits;
+  using real_type =
+      absl::conditional_t<std::is_same<RealType, float>::value, float, double>;
+
   while (true) {
-    const result_type sample = random_internal::RandU64ToReal<
-        result_type>::template Value<PositiveValueT, true>(fast_u64_(gen));
+    const result_type sample =
+        GenerateRealFromBits<real_type, GeneratePositiveTag, true>(
+            fast_u64_(gen));
     const result_type res = p.a() + (sample * p.range_);
     if (res < p.b() || p.range_ <= 0 || !std::isfinite(p.range_)) {
       return res;
@@ -188,6 +196,7 @@ std::basic_istream<CharT, Traits>& operator>>(
   }
   return is;
 }
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_UNIFORM_REAL_DISTRIBUTION_H_

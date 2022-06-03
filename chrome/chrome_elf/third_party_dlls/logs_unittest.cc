@@ -9,8 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
@@ -107,7 +106,7 @@ DWORD WINAPI NotificationHandler(LPVOID parameter) {
 
   do {
     if (!args->notification_event->TimedWait(
-            base::TimeDelta::FromMilliseconds(kWaitTimeoutMs)))
+            base::Milliseconds(kWaitTimeoutMs)))
       break;
 
     bytes_written = DrainLog(&buffer[0], buffer_size, nullptr);
@@ -163,9 +162,9 @@ TEST(ThirdParty, LogNotifications) {
   // Set up the required arguments for the test thread.
   NotificationHandlerArguments handler_data;
   handler_data.logs_expected = base::size(kTestLogs);
-  handler_data.notification_event.reset(
-      new base::WaitableEvent(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED));
+  handler_data.notification_event = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   // Register the event.
   ASSERT_TRUE(

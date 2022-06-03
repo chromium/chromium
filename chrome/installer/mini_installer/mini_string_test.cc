@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <windows.h>
+
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -19,7 +20,7 @@ class MiniInstallerStringTest : public testing::Test {
   void SetUp() override {}
   void TearDown() override {}
 };
-}
+}  // namespace
 
 // Tests the strcat/strcpy/length support of the StackString class.
 TEST_F(MiniInstallerStringTest, StackStringOverflow) {
@@ -68,9 +69,9 @@ TEST_F(MiniInstallerStringTest, StackStringFind) {
   StackString<MAX_PATH> str;
   EXPECT_TRUE(str.assign(kTestStringSource));
   EXPECT_EQ(str.get(), str.findi(kTestStringSource));
-  EXPECT_EQ(static_cast<const wchar_t*>(NULL), str.findi(kTestStringNotFound));
+  EXPECT_EQ(nullptr, str.findi(kTestStringNotFound));
   const wchar_t* found = str.findi(kTestStringFind);
-  EXPECT_NE(static_cast<const wchar_t*>(NULL), found);
+  EXPECT_NE(nullptr, found);
   std::wstring check(found, _countof(kTestStringFind) - 1);
   EXPECT_EQ(0, lstrcmpi(check.c_str(), kTestStringFind));
 }

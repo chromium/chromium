@@ -30,191 +30,146 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_INIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_INIT_H_
 
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
-#include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/platform/web_insecure_request_policy.h"
+#include "base/dcheck_is_on.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/sandbox_flags.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class Document;
-class DocumentLoader;
+class ExecutionContext;
+class LocalDOMWindow;
 class LocalFrame;
-class HTMLImportsController;
-class Settings;
+class PluginData;
 
 class CORE_EXPORT DocumentInit final {
   STACK_ALLOCATED();
 
  public:
-  // Use either of the following methods to create a DocumentInit instance, and
-  // then add a chain of calls to the .WithFooBar() methods to add optional
+  // Create a DocumentInit instance, then add a chain of calls to add optional
   // parameters to it.
   //
   // Example:
   //
   //   DocumentInit init = DocumentInit::Create()
-  //       .WithDocumentLoader(loader)
-  //       .WithContextDocument(context_document)
+  //       .WithExecutionContext(context)
   //       .WithURL(url);
+  //
+  // Before creating a Document from this DocumentInit, the caller must invoke
+  // exactly one of:
+  // * ForTest() - for unit-test-only cases
+  // * WithWindow() - for navigations originating from DocumentLoader and
+  //       attaching to a LocalDOMWindow.
+  // * WithExecutionContext() - for all other cases
+  //
+  // Invoking init.CreateDocument() will construct a Document of the appropriate
+  // subclass for the init's Type.
+  // However, when the document type is known, it is acceptable to invoke the
+  // constructor for Document (or the appropriate subclass) directly:
   //   Document* document = MakeGarbageCollected<Document>(init);
   static DocumentInit Create();
-  static DocumentInit CreateWithImportsController(HTMLImportsController*);
 
   DocumentInit(const DocumentInit&);
   ~DocumentInit();
 
-  HTMLImportsController* ImportsController() const {
-    return imports_controller_;
-  }
+  enum class Type {
+    kHTML,
+    kXHTML,
+    kImage,
+    kPlugin,
+    kMedia,
+    kSVG,
+    kXML,
+    kViewSource,
+    kText,
+    kUnspecified
+  };
 
-  bool HasSecurityContext() const { return MasterDocumentLoader(); }
+  DocumentInit& ForTest();
+
+  // Actually constructs the Document based on the provided state.
+  Document* CreateDocument() const;
+
   bool IsSrcdocDocument() const;
   bool ShouldSetURL() const;
-  WebSandboxFlags GetSandboxFlags() const;
-  WebInsecureRequestPolicy GetInsecureRequestPolicy() const;
-  const SecurityContext::InsecureNavigationsSet* InsecureNavigationsToUpgrade()
-      const;
-  bool GrantLoadLocalResources() const { return grant_load_local_resources_; }
 
-  Settings* GetSettings() const;
+  DocumentInit& WithWindow(LocalDOMWindow*, Document* owner_document);
+  LocalDOMWindow* GetWindow() const { return window_; }
 
-  DocumentInit& WithDocumentLoader(DocumentLoader*);
-  LocalFrame* GetFrame() const;
+  DocumentInit& ForInitialEmptyDocument(bool empty);
+  bool IsInitialEmptyDocument() const { return is_initial_empty_document_; }
 
-  // Used by the DOMImplementation and DOMParser to pass their parent Document
-  // so that the created Document will return the Document when the
-  // ContextDocument() method is called.
-  DocumentInit& WithContextDocument(Document*);
-  Document* ContextDocument() const;
+  DocumentInit& ForPrerendering(bool is_prerendering);
+  bool IsPrerendering() const { return is_prerendering_; }
+
+  // Compute the type of document to be loaded inside a |frame|, given its |url|
+  // and its |mime_type|.
+  //
+  // In case of plugin handled by MimeHandlerview (which do not create a
+  // PluginDocument), the type is Type::KHTML and |is_for_external_handler| is
+  // set to true.
+  static Type ComputeDocumentType(LocalFrame* frame,
+                                  const KURL& url,
+                                  const String& mime_type,
+                                  bool* is_for_external_handler = nullptr);
+  DocumentInit& WithTypeFrom(const String& mime_type);
+  Type GetType() const { return type_; }
+  const String& GetMimeType() const { return mime_type_; }
+  bool IsForExternalHandler() const { return is_for_external_handler_; }
+
+  // Used when creating Documents not attached to a window.
+  DocumentInit& WithExecutionContext(ExecutionContext*);
+  ExecutionContext* GetExecutionContext() const { return execution_context_; }
 
   DocumentInit& WithURL(const KURL&);
   const KURL& Url() const { return url_; }
 
-  scoped_refptr<SecurityOrigin> GetDocumentOrigin() const;
-
-  // Specifies the Document to inherit security configurations from.
-  DocumentInit& WithOwnerDocument(Document*);
-  Document* OwnerDocument() const { return owner_document_.Get(); }
-
-  // Specifies the SecurityOrigin in which the URL was requested. This is
-  // relevant for determining properties of the resulting document's origin
-  // when loading data: and about: schemes.
-  DocumentInit& WithInitiatorOrigin(
-      scoped_refptr<const SecurityOrigin> initiator_origin);
-
-  DocumentInit& WithOriginToCommit(
-      scoped_refptr<SecurityOrigin> origin_to_commit);
-  const scoped_refptr<SecurityOrigin>& OriginToCommit() const {
-    return origin_to_commit_;
-  }
-
-  DocumentInit& WithIPAddressSpace(
-      network::mojom::IPAddressSpace ip_address_space);
-  network::mojom::IPAddressSpace GetIPAddressSpace() const;
+  const KURL& GetCookieUrl() const;
 
   DocumentInit& WithSrcdocDocument(bool is_srcdoc_document);
-  DocumentInit& WithBlockedByCSP(bool blocked_by_csp);
-  DocumentInit& WithGrantLoadLocalResources(bool grant_load_local_resources);
 
-  DocumentInit& WithRegistrationContext(V0CustomElementRegistrationContext*);
-  V0CustomElementRegistrationContext* RegistrationContext(Document*) const;
-  DocumentInit& WithNewRegistrationContext();
+  DocumentInit& WithWebBundleClaimedUrl(const KURL& web_bundle_claimed_url);
+  const KURL& GetWebBundleClaimedUrl() const { return web_bundle_claimed_url_; }
 
-  DocumentInit& WithFeaturePolicyHeader(const String& header);
-  const String& FeaturePolicyHeader() const { return feature_policy_header_; }
-
-  DocumentInit& WithOriginTrialsHeader(const String& header);
-  const String& OriginTrialsHeader() const { return origin_trials_header_; }
-
-  DocumentInit& WithSandboxFlags(WebSandboxFlags flags);
-
-  DocumentInit& WithContentSecurityPolicy(ContentSecurityPolicy* policy);
-  DocumentInit& WithContentSecurityPolicyFromContextDoc();
-  ContentSecurityPolicy* GetContentSecurityPolicy() const;
-
-  DocumentInit& WithFramePolicy(
-      const base::Optional<FramePolicy>& frame_policy);
-  const base::Optional<FramePolicy>& GetFramePolicy() const {
-    return frame_policy_;
-  }
+  DocumentInit& WithUkmSourceId(ukm::SourceId ukm_source_id);
+  ukm::SourceId UkmSourceId() const { return ukm_source_id_; }
 
  private:
-  DocumentInit(HTMLImportsController*);
+  DocumentInit() = default;
 
-  // For a Document associated directly with a frame, this will be the
-  // DocumentLoader driving the commit. For an import, XSLT-generated
-  // document, etc., it will be the DocumentLoader that drove the commit
-  // of its owning Document.
-  DocumentLoader* MasterDocumentLoader() const;
+  static PluginData* GetPluginData(LocalFrame* frame, const KURL& url);
 
-  Member<DocumentLoader> document_loader_;
-  Member<Document> parent_document_;
-
-  Member<HTMLImportsController> imports_controller_;
-
-  Member<Document> context_document_;
+  Type type_ = Type::kUnspecified;
+  bool is_prerendering_ = false;
+  bool is_initial_empty_document_ = false;
+  String mime_type_;
+  LocalDOMWindow* window_ = nullptr;
+  ExecutionContext* execution_context_ = nullptr;
   KURL url_;
-  Member<Document> owner_document_;
-
-  // Initiator origin is used for calculating the document origin when the
-  // navigation is started in a different process. In such cases, the document
-  // which initiates the navigation sends its origin to the browser process and
-  // it is provided by the browser process here. It is used for cases such as
-  // data: URLs, which inherit their origin from the initiator of the
-  // navigation.
-  // Note: about:blank should also behave this way, however currently it
-  // inherits its origin from the parent frame or opener, regardless of whether
-  // it is the initiator or not.
-  scoped_refptr<const SecurityOrigin> initiator_origin_;
-
-  // The |origin_to_commit_| is to be used directly without calculating the
-  // document origin at initialization time. It is specified by the browser
-  // process for session history navigations. This allows us to preserve
-  // the origin across session history and ensure the exact same origin
-  // is present on such navigations to URLs that inherit their origins (e.g.
-  // about:blank and data: URLs).
-  scoped_refptr<SecurityOrigin> origin_to_commit_;
+  Document* owner_document_ = nullptr;
 
   // Whether we should treat the new document as "srcdoc" document. This
   // affects security checks, since srcdoc's content comes directly from
   // the parent document, not from loading a URL.
   bool is_srcdoc_document_ = false;
 
-  // Whether the actual document was blocked by csp and we are creating a dummy
-  // empty document instead.
-  bool blocked_by_csp_ = false;
+  // The claimed URL inside Web Bundle file from which the document is loaded.
+  // This URL is used for window.location and document.URL and relative path
+  // computation in the document.
+  KURL web_bundle_claimed_url_;
 
-  // Whether the document should be able to access local file:// resources.
-  bool grant_load_local_resources_ = false;
+  // Source id to set on the Document to be created.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
-  Member<V0CustomElementRegistrationContext> registration_context_;
-  bool create_new_registration_context_;
+  bool is_for_external_handler_ = false;
 
-  // The feature policy set via response header.
-  String feature_policy_header_;
-
-  // The origin trial set via response header.
-  String origin_trials_header_;
-
-  // Additional sandbox flags
-  WebSandboxFlags sandbox_flags_ = WebSandboxFlags::kNone;
-
-  // Loader's CSP
-  Member<ContentSecurityPolicy> content_security_policy_;
-  bool content_security_policy_from_context_doc_;
-
-  network::mojom::IPAddressSpace ip_address_space_ =
-      network::mojom::IPAddressSpace::kUnknown;
-
-  // The frame policy snapshot from the beginning of navigation.
-  base::Optional<FramePolicy> frame_policy_ = base::nullopt;
+#if DCHECK_IS_ON()
+  bool for_test_ = false;
+#endif
 };
 
 }  // namespace blink

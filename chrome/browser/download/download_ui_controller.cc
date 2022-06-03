@@ -4,14 +4,17 @@
 
 #include "chrome/browser/download/download_ui_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/download/public/common/download_item.h"
 #include "components/security_state/core/security_state.h"
@@ -30,9 +33,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/download/notification/download_notification_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -117,18 +120,18 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
     : download_notifier_(manager, this), delegate_(std::move(delegate)) {
 #if defined(OS_ANDROID)
   if (!delegate_)
-    delegate_.reset(new AndroidUIControllerDelegate());
-#elif defined(OS_CHROMEOS)
+    delegate_ = std::make_unique<AndroidUIControllerDelegate>();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (!delegate_) {
     // The Profile is guaranteed to be valid since DownloadUIController is owned
     // by DownloadService, which in turn is a profile keyed service.
-    delegate_.reset(new DownloadNotificationManager(
-        Profile::FromBrowserContext(manager->GetBrowserContext())));
+    delegate_ = std::make_unique<DownloadNotificationManager>(
+        Profile::FromBrowserContext(manager->GetBrowserContext()));
   }
-#else  // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!delegate_) {
-    delegate_.reset(new DownloadShelfUIControllerDelegate(
-        Profile::FromBrowserContext(manager->GetBrowserContext())));
+    delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(
+        Profile::FromBrowserContext(manager->GetBrowserContext()));
   }
 #endif  // defined(OS_ANDROID)
 }
@@ -157,11 +160,13 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
           "Security.SafetyTips.DownloadStarted",
           security_state_tab_helper->GetVisibleSecurityState()
               ->safety_tip_info.status);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Security.LegacyTLS.DownloadStarted",
-          security_state::GetLegacyTLSWarningStatus(
-              *security_state_tab_helper->GetVisibleSecurityState()));
     }
+  }
+
+  if (web_contents) {
+    // TODO(crbug.com/1179196): Add test for this metric.
+    RecordDownloadStartPerProfileType(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   }
 
   // SavePackage downloads are created in a state where they can be shown in the
@@ -178,16 +183,25 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
   if (item_model.WasUINotified() || !item_model.ShouldNotifyUI())
     return;
 
+  // Downloads blocked by local policies should be notified, otherwise users
+  // won't get any feedback that the download has failed.
+  bool should_notify =
+      item->GetLastReason() ==
+          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
+      item->GetMixedContentStatus() !=
+          download::DownloadItem::MixedContentStatus::SILENT_BLOCK;
+
   // Wait until the target path is determined or the download is canceled.
   if (item->GetTargetFilePath().empty() &&
-      item->GetState() != download::DownloadItem::CANCELLED)
+      item->GetState() != download::DownloadItem::CANCELLED && !should_notify) {
     return;
+  }
 
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   if (web_contents) {
 #if defined(OS_ANDROID)
-    DownloadController::CloseTabIfEmpty(web_contents);
+    DownloadController::CloseTabIfEmpty(web_contents, item);
 #else
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     // If the download occurs in a new tab, and it's not a save page

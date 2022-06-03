@@ -61,6 +61,9 @@ extern const char kExtendedSafeBrowsingEnabledSwitch[];
 // Specifies the suffix to the registry path where metrics data will be saved.
 extern const char kRegistrySuffixSwitch[];
 
+// Indicates that resetting shortcuts is enabled.
+extern const char kResetShortcutsSwitch[];
+
 // Identifier used to group all reports generated during the same run of the
 // software reporter (which may include multiple invocations of the reporter
 /// binary, each generating a report). An ASCII, base-64 encoded random string.

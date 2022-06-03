@@ -10,13 +10,37 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include "base/callback.h"
+#include "base/containers/circular_deque.h"
+#include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/vsync_observer.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace gl {
+class VSyncThreadWin;
 
-class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
+class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
+                                                   public VSyncObserver {
  public:
-  DirectCompositionChildSurfaceWin();
+  using VSyncCallback =
+      base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
+  DirectCompositionChildSurfaceWin(VSyncCallback vsync_callback,
+                                   bool use_angle_texture_offset,
+                                   size_t max_pending_frames,
+                                   bool force_full_damage,
+                                   bool force_full_damage_always);
+
+  DirectCompositionChildSurfaceWin(const DirectCompositionChildSurfaceWin&) =
+      delete;
+  DirectCompositionChildSurfaceWin& operator=(
+      const DirectCompositionChildSurfaceWin&) = delete;
 
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
@@ -25,7 +49,7 @@ class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   bool IsOffscreen() override;
   void* GetHandle() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  bool FlipsVertically() const override;
+  gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;
   bool OnMakeCurrent(GLContext* context) override;
   bool SupportsDCLayers() const override;
@@ -34,9 +58,17 @@ class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   void SetVSyncEnabled(bool enabled) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
-              ColorSpace color_space,
+              const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool SetEnableDCLayers(bool enable) override;
+  gfx::VSyncProvider* GetVSyncProvider() override;
+  bool SupportsGpuVSync() const override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+
+  // VSyncObserver implementation.
+  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
+
+  static bool IsDirectCompositionSwapChainFailed();
 
   const Microsoft::WRL::ComPtr<IDCompositionSurface>& dcomp_surface() const {
     return dcomp_surface_;
@@ -48,10 +80,37 @@ class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
 
   uint64_t dcomp_surface_serial() const { return dcomp_surface_serial_; }
 
+  void SetDCompSurfaceForTesting(
+      Microsoft::WRL::ComPtr<IDCompositionSurface> surface);
+
  protected:
   ~DirectCompositionChildSurfaceWin() override;
 
  private:
+  struct PendingFrame {
+    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
+                 PresentationCallback callback);
+    PendingFrame(PendingFrame&& other);
+    ~PendingFrame();
+    PendingFrame& operator=(PendingFrame&& other);
+
+    // Event query issued after frame is presented.
+    Microsoft::WRL::ComPtr<ID3D11Query> query;
+
+    // Presentation callback enqueued in SwapBuffers().
+    PresentationCallback callback;
+  };
+
+  void EnqueuePendingFrame(PresentationCallback callback);
+  void CheckPendingFrames();
+
+  void StartOrStopVSyncThread();
+
+  bool VSyncCallbackEnabled() const;
+
+  void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
+                               base::TimeDelta interval);
+
   // Release the texture that's currently being drawn to. If will_discard is
   // true then the surface should be discarded without swapping any contents
   // to it. Returns false if this fails.
@@ -61,7 +120,7 @@ class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   bool enable_dc_layers_ = false;
   bool has_alpha_ = true;
   bool vsync_enabled_ = true;
-  ColorSpace color_space_ = ColorSpace::UNSPECIFIED;
+  gfx::ColorSpace color_space_;
 
   // This is a placeholder surface used when not rendering to the
   // DirectComposition surface.
@@ -85,7 +144,26 @@ class DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> draw_texture_;
 
-  DISALLOW_COPY_AND_ASSIGN(DirectCompositionChildSurfaceWin);
+  const VSyncCallback vsync_callback_;
+  const bool use_angle_texture_offset_;
+  const size_t max_pending_frames_;
+  const bool force_full_damage_;
+  const bool force_full_damage_always_;
+
+  VSyncThreadWin* const vsync_thread_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  bool vsync_thread_started_ = false;
+  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
+  mutable base::Lock vsync_callback_enabled_lock_;
+
+  // Queue of pending presentation callbacks.
+  base::circular_deque<PendingFrame> pending_frames_;
+
+  base::TimeTicks last_vsync_time_;
+  base::TimeDelta last_vsync_interval_;
+
+  base::WeakPtrFactory<DirectCompositionChildSurfaceWin> weak_factory_{this};
 };
 
 }  // namespace gl

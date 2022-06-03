@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "components/printing/browser/print_manager.h"
-#include "components/printing/common/print_messages.h"
+#include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/print_settings.h"
 
@@ -18,54 +18,50 @@ namespace android_webview {
 class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:
-  // Creates an AwPrintManager for the provided WebContents. If the
-  // AwPrintManager already exists, it is destroyed and a new one is created.
-  // The returned pointer is owned by |contents|.
-  static AwPrintManager* CreateForWebContents(
-      content::WebContents* contents,
-      std::unique_ptr<printing::PrintSettings> settings,
-      int file_descriptor,
-      PdfWritingDoneCallback callback);
+  AwPrintManager(const AwPrintManager&) = delete;
+  AwPrintManager& operator=(const AwPrintManager&) = delete;
 
   ~AwPrintManager() override;
+
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
 
   bool PrintNow();
 
+  // Updates the parameters for printing.
+  void UpdateParam(std::unique_ptr<printing::PrintSettings> settings,
+                   int file_descriptor,
+                   PdfWritingDoneCallback callback);
+
  private:
   friend class content::WebContentsUserData<AwPrintManager>;
 
-  AwPrintManager(content::WebContents* contents,
-                 std::unique_ptr<printing::PrintSettings> settings,
-                 int file_descriptor,
-                 PdfWritingDoneCallback callback);
+  explicit AwPrintManager(content::WebContents* contents);
 
-  // printing::PrintManager:
-  void OnDidPrintDocument(
-      content::RenderFrameHost* render_frame_host,
-      const PrintHostMsg_DidPrintDocument_Params& params,
-      std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
-  void OnGetDefaultPrintSettings(content::RenderFrameHost* render_frame_host,
-                                 IPC::Message* reply_msg) override;
-  void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                       const PrintHostMsg_ScriptedPrint_Params& params,
-                       IPC::Message* reply_msg) override;
+  // mojom::PrintManagerHost:
+  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
+                        DidPrintDocumentCallback callback) override;
+  void GetDefaultPrintSettings(
+      GetDefaultPrintSettingsCallback callback) override;
+  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override;
 
   static void OnDidPrintDocumentWritingDone(
       const PdfWritingDoneCallback& callback,
-      std::unique_ptr<DelayedFrameDispatchHelper> helper,
-      int page_count);
+      DidPrintDocumentCallback did_print_document_cb,
+      uint32_t page_count);
 
-  const std::unique_ptr<printing::PrintSettings> settings_;
+  std::unique_ptr<printing::PrintSettings> settings_;
 
   // The file descriptor into which the PDF of the document will be written.
-  int fd_;
+  int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AwPrintManager);
 };
 
 }  // namespace android_webview

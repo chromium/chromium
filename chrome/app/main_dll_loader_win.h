@@ -11,17 +11,17 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 namespace base {
 class CommandLine;
 class FilePath;
-}
+enum class PrefetchResultCode;
+}  // namespace base
 
 // Implements the common aspects of loading the main dll for both chrome and
-// chromium scenarios, which are in charge of implementing two abstract
-// methods: OnBeforeLaunch() and OnBeforeExit().
+// chromium scenarios, which are in charge of implementing one abstract
+// method: OnBeforeLaunch()
 class MainDllLoader {
  public:
   MainDllLoader();
@@ -48,17 +48,23 @@ class MainDllLoader {
                               const std::string& process_type,
                               const base::FilePath& dll_path) = 0;
 
-  // Called after the chrome.dll entry point returns and before terminating this
-  // process. |dll_path| refers to the path of the Chrome dll that was loaded.
-  virtual void OnBeforeExit(const base::FilePath& dll_path) = 0;
-
  private:
-  // Loads the appropriate DLL for the process type |process_type_|. Populates
-  // |module| with the path of the loaded DLL. Returns a reference to the
-  // module, or null on failure.
-  HMODULE Load(base::FilePath* module);
+  struct LoadResult {
+    HMODULE handle;
+    base::PrefetchResultCode prefetch_result_code;
+  };
 
- private:
+  // Prefetches and loads the appropriate DLL for the process type
+  // |process_type_|. Populates |module| with the path of the loaded DLL, and
+  // returns a struct containing a handle to the loaded DLL (or nullptr on
+  // failure), and a prefetch result code.
+  static LoadResult Load(base::FilePath* module);
+
+  // Prefetches and loads |module| after setting the CWD to |module|'s
+  // directory. Returns a struct containing a handle to the loaded module on
+  // success (or nullptr on error) and a prefetch result code.
+  static LoadResult LoadModuleWithDirectory(const base::FilePath& module);
+
   HMODULE dll_;
   std::string process_type_;
 };

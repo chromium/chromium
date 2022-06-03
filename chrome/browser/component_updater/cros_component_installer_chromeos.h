@@ -11,11 +11,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -23,54 +23,106 @@ class ComponentUpdateService;
 class MetadataTable;
 class CrOSComponentInstaller;
 
+// Describes all metadata needed to dynamically install ChromeOS components.
 struct ComponentConfig {
+  // This is a client-only identifier for the component.
   const char* name;
+  // ComponentInstallerPolicy to use.
+  enum class PolicyType {
+    kEnvVersion,  // Checks env_version, see below.
+    kLacros,      // Uses special lacros compatibility rules.
+  };
+  PolicyType policy_type;
+  // This is used for ABI compatibility checks. It is compared against the
+  // 'min_env_version' key in the component's manifest.json file. It uses
+  // standard major.minor compat rules, where ABI is compatible if and only if
+  // major is matching. The client will send this string to the omaha server,
+  // which will filter for a compatible update. Likewise, the client will
+  // avoid registering a component if there is an ABI mismatch between the
+  // already downloaded component and the expected major version. Must be
+  // non-empty for PolicyType::kEnvVersion.
   const char* env_version;
+  // This is the app-id of the component, converted from [a-p] hex to [0-f] hex.
   const char* sha2hash;
 };
 
+// Base class for all Chrome OS components.
 class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   CrOSComponentInstallerPolicy(
       const ComponentConfig& config,
       CrOSComponentInstaller* cros_component_installer);
-  ~CrOSComponentInstallerPolicy() override;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(CrOSComponentInstallerTest, IsCompatibleOrNot);
-  FRIEND_TEST_ALL_PREFIXES(CrOSComponentInstallerTest, CompatibilityOK);
-  FRIEND_TEST_ALL_PREFIXES(CrOSComponentInstallerTest,
-                           CompatibilityMissingManifest);
+  CrOSComponentInstallerPolicy(const CrOSComponentInstallerPolicy&) = delete;
+  CrOSComponentInstallerPolicy& operator=(const CrOSComponentInstallerPolicy&) =
+      delete;
+
+  ~CrOSComponentInstallerPolicy() override;
 
   // ComponentInstallerPolicy:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
-  void ComponentReady(const base::Version& version,
-                      const base::FilePath& path,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
-  // This is virtual so unit tests can override it.
-  virtual bool IsCompatible(const std::string& env_version_str,
-                            const std::string& min_env_version_str);
-
+ protected:
   CrOSComponentInstaller* const cros_component_installer_;
 
+ private:
   const std::string name_;
-  const std::string env_version_;
   std::vector<uint8_t> sha2_hash_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstallerPolicy);
+// An installer policy that does ABI compatibility checks based on
+// ComponentConfig::env_version, see above.
+class EnvVersionInstallerPolicy : public CrOSComponentInstallerPolicy {
+ public:
+  EnvVersionInstallerPolicy(const ComponentConfig& config,
+                            CrOSComponentInstaller* cros_component_installer);
+  EnvVersionInstallerPolicy(const EnvVersionInstallerPolicy&) = delete;
+  EnvVersionInstallerPolicy& operator=(const EnvVersionInstallerPolicy&) =
+      delete;
+  ~EnvVersionInstallerPolicy() override;
+
+  // ComponentInstallerPolicy:
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& path,
+                      base::Value manifest) override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(CrOSComponentInstallerTest, IsCompatibleOrNot);
+
+  static bool IsCompatible(const std::string& env_version_str,
+                           const std::string& min_env_version_str);
+
+  const std::string env_version_;
+};
+
+// An installer policy for Lacros components, which have unusual version
+// compatibility rules. See ComponentReady() implementation.
+class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
+ public:
+  LacrosInstallerPolicy(const ComponentConfig& config,
+                        CrOSComponentInstaller* cros_component_installer);
+  LacrosInstallerPolicy(const LacrosInstallerPolicy&) = delete;
+  LacrosInstallerPolicy& operator=(const LacrosInstallerPolicy&) = delete;
+  ~LacrosInstallerPolicy() override;
+
+  // ComponentInstallerPolicy:
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& path,
+                      base::Value manifest) override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+  static void SetAshVersionForTest(const char* version);
 };
 
 // This class contains functions used to register and install a component.
@@ -78,7 +130,9 @@ class CrOSComponentInstaller : public CrOSComponentManager {
  public:
   CrOSComponentInstaller(std::unique_ptr<MetadataTable> metadata_table,
                          ComponentUpdateService* component_updater);
-  ~CrOSComponentInstaller() override;
+
+  CrOSComponentInstaller(const CrOSComponentInstaller&) = delete;
+  CrOSComponentInstaller& operator=(const CrOSComponentInstaller&) = delete;
 
   // CrOSComponentManager:
   void SetDelegate(Delegate* delegate) override;
@@ -93,12 +147,14 @@ class CrOSComponentInstaller : public CrOSComponentManager {
 
   void UnregisterCompatiblePath(const std::string& name) override;
   base::FilePath GetCompatiblePath(const std::string& name) const override;
-  bool IsRegistered(const std::string& name) const override;
+  bool IsRegisteredMayBlock(const std::string& name) override;
 
   // Called when a component is installed/updated.
   // Broadcasts a D-Bus signal for a successful component installation.
   void EmitInstalledSignal(const std::string& component);
 
+ protected:
+  ~CrOSComponentInstaller() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CrOSComponentInstallerTest, RegisterComponent);
@@ -142,7 +198,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   void FinishLoad(LoadCallback load_callback,
                   const base::TimeTicks start_time,
                   const std::string& name,
-                  base::Optional<base::FilePath> result);
+                  absl::optional<base::FilePath> result);
 
   // Registers component |configs| to be updated.
   void RegisterN(const std::vector<ComponentConfig>& configs);
@@ -161,8 +217,6 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   std::unique_ptr<MetadataTable> metadata_table_;
 
   ComponentUpdateService* const component_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstaller);
 };
 
 }  // namespace component_updater

@@ -45,17 +45,13 @@ void TableCellPaintInvalidator::InvalidatePaint() {
     const auto& section = *row.Section();
     const auto& table = *section.Table();
     if (!DisplayItemClientIsFullyInvalidated(row) &&
-        (row.StyleRef().HasBackground() ||
-         (table.HasCollapsedBorders() &&
-          LIKELY(!table.ShouldPaintAllCollapsedBorders())))) {
+        (row.StyleRef().HasBackground() || table.HasCollapsedBorders())) {
       InvalidateContainerForCellGeometryChange(row, *context_.ParentContext());
-    }
-
-    if (UNLIKELY(table.ShouldPaintAllCollapsedBorders()) &&
-        !DisplayItemClientIsFullyInvalidated(table)) {
-      DCHECK(table.HasCollapsedBorders());
-      InvalidateContainerForCellGeometryChange(
-          table, *context_.ParentContext()->ParentContext()->ParentContext());
+      // Mark the table as needing repaint, in order to paint collapsed borders.
+      context_.ParentContext()
+          ->ParentContext()
+          ->ParentContext()
+          ->painting_layer->SetNeedsRepaint();
     }
 
     if (!DisplayItemClientIsFullyInvalidated(section)) {

@@ -4,7 +4,11 @@
 
 package org.chromium.weblayer.test;
 
+import static org.hamcrest.Matchers.lessThan;
+
 import android.net.Uri;
+
+import org.junit.Assert;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -33,6 +37,7 @@ public class NavigationWaiter {
         @Override
         public void onNavigationCompleted(Navigation navigation) {
             if (navigation.getUri().toString().equals(mUrl) && !mExpectFailure) {
+                Assert.assertThat(navigation.getHttpStatusCode(), lessThan(300));
                 mNavigationObserved = true;
                 checkComplete();
             }

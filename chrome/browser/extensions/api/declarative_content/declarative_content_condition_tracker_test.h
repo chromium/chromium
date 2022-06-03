@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_view_host.h"
@@ -30,6 +29,12 @@ namespace extensions {
 class DeclarativeContentConditionTrackerTest : public testing::Test {
  public:
   DeclarativeContentConditionTrackerTest();
+
+  DeclarativeContentConditionTrackerTest(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+  DeclarativeContentConditionTrackerTest& operator=(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+
   ~DeclarativeContentConditionTrackerTest() override;
 
  protected:
@@ -40,9 +45,17 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
   content::MockRenderProcessHost* GetMockRenderProcessHost(
       content::WebContents* contents);
 
-  TestingProfile* profile() { return profile_.get(); }
+  // Can only be used before calling profile().
+  TestingProfile::Builder* profile_builder() { return &profile_builder_; }
+
+  // Returns a TestingProfile constructed lazily (upon first call).
+  TestingProfile* profile();
 
   const void* GeneratePredicateGroupID();
+
+  // Returns a list of factories to use when creating the TestingProfile.
+  // Can be overridden by sub-classes if needed.
+  virtual TestingProfile::TestingFactories GetTestingFactories() const;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -50,11 +63,10 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
   // Enables MockRenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
-  const std::unique_ptr<TestingProfile> profile_;
+  TestingProfile::Builder profile_builder_;
+  std::unique_ptr<TestingProfile> profile_;
 
   uintptr_t next_predicate_group_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentConditionTrackerTest);
 };
 
 }  // namespace extensions

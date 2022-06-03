@@ -18,9 +18,8 @@ namespace blink {
 // presentation controllers.
 class MODULES_EXPORT PresentationConnectionList final
     : public EventTargetWithInlineData,
-      public ContextClient {
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(PresentationConnectionList);
 
  public:
   explicit PresentationConnectionList(ExecutionContext*);
@@ -29,21 +28,21 @@ class MODULES_EXPORT PresentationConnectionList final
   // EventTarget implementation.
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override {
-    return ContextClient::GetExecutionContext();
+    return ExecutionContextClient::GetExecutionContext();
   }
 
   // PresentationConnectionList.idl implementation.
-  const HeapVector<Member<ReceiverPresentationConnection>>& connections() const;
+  const HeapVector<Member<PresentationConnection>>& connections() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connectionavailable, kConnectionavailable)
 
-  void AddConnection(ReceiverPresentationConnection*);
+  void AddConnection(PresentationConnection*);
   // Remove connection from connection list. Returns true if connection is
   // successfully removed; Returns false if connection does not exist.
-  bool RemoveConnection(ReceiverPresentationConnection*);
+  bool RemoveConnection(PresentationConnection*);
   void DispatchConnectionAvailableEvent(PresentationConnection*);
   bool IsEmpty();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   // EventTarget implementation.
@@ -53,7 +52,7 @@ class MODULES_EXPORT PresentationConnectionList final
  private:
   friend class PresentationReceiverTest;
 
-  HeapVector<Member<ReceiverPresentationConnection>> connections_;
+  HeapVector<Member<PresentationConnection>> connections_;
 };
 
 }  // namespace blink

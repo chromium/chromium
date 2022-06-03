@@ -6,13 +6,19 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 
 // The entry point for the intent picker.
 class IntentPickerView : public PageActionIconView {
  public:
-  IntentPickerView(Browser* browser, PageActionIconView::Delegate* delegate);
+  METADATA_HEADER(IntentPickerView);
+  IntentPickerView(Browser* browser,
+                   IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                   PageActionIconView::Delegate* page_action_icon_delegate);
+  IntentPickerView(const IntentPickerView&) = delete;
+  IntentPickerView& operator=(const IntentPickerView&) = delete;
   ~IntentPickerView() override;
 
   // PageActionIconView:
@@ -21,17 +27,14 @@ class IntentPickerView : public PageActionIconView {
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
-  views::BubbleDialogDelegateView* GetBubble() const override;
+  views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  bool IsIncognitoMode() const;
-  bool ShouldShowIcon() const;
+  bool GetShowIcon() const;
 
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_

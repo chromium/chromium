@@ -12,7 +12,6 @@
 #include "ppapi/c/ppb_fullscreen.h"
 #include "ppapi/c/ppb_url_loader.h"
 #include "ppapi/c/ppp_instance.h"
-#include "ppapi/c/private/ppb_flash_fullscreen.h"
 #include "ppapi/proxy/locking_resource_releaser.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/ppapi_proxy_test.h"
@@ -99,13 +98,12 @@ PPP_Instance_1_0 ppp_instance_1_0 = {
   &HandleDocumentLoad
 };
 
-// PPP_Instance_Proxy::DidChangeView relies on PPB_(Flash)Fullscreen being
+// PPP_Instance_Proxy::DidChangeView relies on PPB_Fullscreen being
 // available with a valid implementation of IsFullScreen, so we mock it.
 PP_Bool IsFullscreen(PP_Instance instance) {
   return PP_FALSE;
 }
 PPB_Fullscreen ppb_fullscreen = { &IsFullscreen };
-PPB_FlashFullscreen ppb_flash_fullscreen = { &IsFullscreen };
 
 }  // namespace
 
@@ -118,8 +116,6 @@ class PPP_Instance_ProxyTest : public TwoWayTest {
 
 TEST_F(PPP_Instance_ProxyTest, PPPInstance1_0) {
   plugin().RegisterTestInterface(PPP_INSTANCE_INTERFACE_1_0, &ppp_instance_1_0);
-  host().RegisterTestInterface(PPB_FLASHFULLSCREEN_INTERFACE,
-                               &ppb_flash_fullscreen);
   host().RegisterTestInterface(PPB_FULLSCREEN_INTERFACE,
                                &ppb_fullscreen);
 

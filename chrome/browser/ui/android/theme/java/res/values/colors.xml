@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Toolbar colors -->
+    <color name="toolbar_text_box_background_incognito">@color/baseline_neutral_1000</color>
+    <color name="toolbar_hairline_overlay_opaque">@color/baseline_neutral_1000</color>
+
+</resources>

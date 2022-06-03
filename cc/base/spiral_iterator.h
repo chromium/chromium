@@ -5,7 +5,6 @@
 #ifndef CC_BASE_SPIRAL_ITERATOR_H_
 #define CC_BASE_SPIRAL_ITERATOR_H_
 
-#include "base/logging.h"
 #include "cc/base/base_export.h"
 #include "cc/base/index_rect.h"
 

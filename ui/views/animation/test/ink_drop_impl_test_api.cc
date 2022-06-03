@@ -4,6 +4,8 @@
 
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 
+#include <utility>
+
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
@@ -116,6 +118,10 @@ bool InkDropImplTestApi::IsHighlightFadingInOrVisible() const {
 
 bool InkDropImplTestApi::ShouldHighlight() const {
   return ink_drop_->ShouldHighlight();
+}
+
+ui::Layer* InkDropImplTestApi::GetRootLayer() const {
+  return ink_drop_->root_layer_.get();
 }
 
 std::vector<ui::LayerAnimator*> InkDropImplTestApi::GetLayerAnimators() {

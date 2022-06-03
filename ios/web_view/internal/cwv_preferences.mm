@@ -4,16 +4,12 @@
 
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "ios/web_view/cwv_web_view_buildflags.h"
-
-#if BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif  // BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,21 +30,18 @@
 #pragma mark - Public Methods
 
 - (void)setTranslationEnabled:(BOOL)enabled {
-  _prefService->SetBoolean(prefs::kOfferTranslateEnabled, enabled);
+  _prefService->SetBoolean(translate::prefs::kOfferTranslateEnabled, enabled);
 }
 
 - (BOOL)isTranslationEnabled {
-  return _prefService->GetBoolean(prefs::kOfferTranslateEnabled);
+  return _prefService->GetBoolean(translate::prefs::kOfferTranslateEnabled);
 }
 
 - (void)resetTranslationSettings {
-  translate::TranslatePrefs translatePrefs(
-      _prefService, language::prefs::kAcceptLanguages,
-      /*preferred_languages_pref=*/nullptr);
+  translate::TranslatePrefs translatePrefs(_prefService);
   translatePrefs.ResetToDefaults();
 }
 
-#if BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
 #pragma mark - Autofill
 
 - (void)setProfileAutofillEnabled:(BOOL)enabled {
@@ -77,6 +70,14 @@
       password_manager::prefs::kCredentialsEnableService);
 }
 
-#endif  // BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
+- (void)setPasswordLeakCheckEnabled:(BOOL)enabled {
+  _prefService->SetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled, enabled);
+}
+
+- (BOOL)isPasswordLeakCheckEnabled {
+  return _prefService->GetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled);
+}
 
 @end

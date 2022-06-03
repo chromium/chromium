@@ -12,8 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,7 +30,7 @@ class InterfaceLogServiceTest : public testing::Test {
  public:
   void SetUp() override {
     log_service_ = InterfaceLogService::Create(
-        kLogFileName, base::UTF8ToUTF16(kDummyBuildVersion));
+        kLogFileName, base::UTF8ToWide(kDummyBuildVersion));
     expected_file_size_ = 0LL;
   }
 
@@ -83,7 +81,7 @@ class InterfaceLogServiceTest : public testing::Test {
 
   int64_t expected_file_size_;
   std::unique_ptr<InterfaceLogService> log_service_;
-  const base::string16 kLogFileName = L"interface_log_service_test";
+  const std::wstring kLogFileName = L"interface_log_service_test";
   const std::string kFileName = __FILE__;
 };
 
@@ -210,7 +208,6 @@ TEST_F(InterfaceLogServiceTest, LogAndRecoverTest) {
         break;
       default:
         FAIL() << "Invalid state " << state;
-        break;
     }
   }
   EXPECT_EQ(state, kReadingCalls);
@@ -287,7 +284,7 @@ TEST_F(InterfaceLogServiceTest, LogAndRecoverTest) {
 
 TEST_F(InterfaceLogServiceTest, EmptyLogFileTest) {
   EXPECT_FALSE(
-      InterfaceLogService::Create(L"", base::UTF8ToUTF16(kDummyBuildVersion)));
+      InterfaceLogService::Create(L"", base::UTF8ToWide(kDummyBuildVersion)));
 }
 
 }  // namespace chrome_cleaner

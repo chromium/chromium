@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
 
@@ -61,6 +60,12 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
     // Returns the number of accounts currently saved.
     virtual std::size_t GetNumberOfAccounts() const = 0;
 
+    // Sets the simulated number of network failures for |AcquireKerberosTgt()|.
+    // The default value is zero. This value should be set when testing the
+    // exponential backoff retry for adding managed accounts.
+    virtual void SetSimulatedNumberOfNetworkFailures(
+        int number_of_failures) = 0;
+
    protected:
     virtual ~TestInterface() {}
   };
@@ -76,6 +81,9 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
 
   // Returns the global instance which may be null if not initialized.
   static KerberosClient* Get();
+
+  KerberosClient(const KerberosClient&) = delete;
+  KerberosClient& operator=(const KerberosClient&) = delete;
 
   // Kerberos daemon D-Bus method calls. See org.chromium.Kerberos.xml and
   // kerberos_service.proto in Chromium OS code for the documentation of the
@@ -120,11 +128,13 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
   // Initialize/Shutdown should be used instead.
   KerberosClient();
   virtual ~KerberosClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KerberosClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::KerberosClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_KERBEROS_KERBEROS_CLIENT_H_

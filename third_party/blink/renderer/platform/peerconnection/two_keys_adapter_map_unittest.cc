@@ -4,27 +4,26 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/two_keys_adapter_map.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class TwoKeysAdapterMapTest : public ::testing::Test {
  public:
   struct MoveOnlyValue {
-    explicit MoveOnlyValue(std::string str) : str(std::move(str)) {}
+    explicit MoveOnlyValue(String str) : str(std::move(str)) {}
     MoveOnlyValue(MoveOnlyValue&& other) : str(std::move(other.str)) {}
     MoveOnlyValue& operator=(MoveOnlyValue&& other) {
       str = std::move(other.str);
       return *this;
     }
 
-    std::string str;
-
-    DISALLOW_COPY_AND_ASSIGN(MoveOnlyValue);
+    String str;
   };
 
-  TwoKeysAdapterMap<std::string, std::string, MoveOnlyValue> map_;
+  TwoKeysAdapterMap<String, String, MoveOnlyValue> map_;
 };
 
 TEST_F(TwoKeysAdapterMapTest, ShouldInitiallyBeEmpty) {

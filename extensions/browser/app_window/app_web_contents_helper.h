@@ -34,6 +34,9 @@ class AppWebContentsHelper {
                        content::WebContents* web_contents,
                        AppDelegate* app_delegate);
 
+  AppWebContentsHelper(const AppWebContentsHelper&) = delete;
+  AppWebContentsHelper& operator=(const AppWebContentsHelper&) = delete;
+
   // Returns true if the given |event| should not be handled by the renderer.
   static bool ShouldSuppressGestureEvent(const blink::WebGestureEvent& event);
 
@@ -68,8 +71,6 @@ class AppWebContentsHelper {
   content::WebContents* web_contents_;
 
   AppDelegate* app_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWebContentsHelper);
 };
 
 }  // namespace extensions

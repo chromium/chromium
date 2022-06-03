@@ -45,10 +45,10 @@ class CSSImportRule final : public CSSRule {
   MediaList* media() const;
   CSSStyleSheet* styleSheet() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kImportRule; }
+  CSSRule::Type GetType() const override { return kImportRule; }
 
   Member<StyleRuleImport> import_rule_;
   mutable Member<MediaList> media_cssom_wrapper_;
@@ -58,7 +58,7 @@ class CSSImportRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSImportRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kImportRule;
+    return rule.GetType() == CSSRule::kImportRule;
   }
 };
 

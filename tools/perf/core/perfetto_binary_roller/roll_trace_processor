@@ -1,0 +1,49 @@
+#!/usr/bin/env vpython
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import argparse
+import os
+import sys
+
+# Add tools/perf to sys.path.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+path_util.AddTracingToPath()
+
+from core.perfetto_binary_roller import binary_deps_manager
+from core.tbmv3 import trace_processor
+
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--platform', help='linux/linux_arm/linux_arm64/mac/win', required=True)
+  parser.add_argument(
+      '--path', metavar='PATH', help='Switch to using a trace processor version'
+      ' stored by this cloud path.')
+  parser.add_argument(
+      '--print-latest', action='store_true',
+      help='Print a cloud path to the latest available version.')
+  parser.add_argument(
+      '--print-current', action='store_true',
+      help='Print a cloud path to the currently used version.')
+
+  args = parser.parse_args()
+
+  if (bool(args.path) + args.print_latest + args.print_current != 1):
+    raise RuntimeError('Please supply exactly one of --path, '
+                       '--print-latest or --print-current.')
+
+  if args.print_latest:
+    print binary_deps_manager.GetLatestPath(
+        trace_processor.TP_BINARY_NAME, args.platform)
+  elif args.print_current:
+    print binary_deps_manager.GetCurrentPath(
+        trace_processor.TP_BINARY_NAME, args.platform)
+  else:
+    binary_deps_manager.SwitchBinaryToNewPath(
+        trace_processor.TP_BINARY_NAME, args.platform, args.path)

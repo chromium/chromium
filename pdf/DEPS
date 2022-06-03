@@ -1,11 +1,25 @@
 include_rules = [
-  "+chrome/common/content_restriction.h",
+  "+cc/paint",
+  "+content/public/renderer/v8_value_converter.h",
+  "+gin",
+  "+mojo/core/embedder",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+ppapi",
-  "+printing/units.h",
-  "+ui/base/window_open_disposition.h",
-  "+ui/events/keycodes/keyboard_codes.h",
-  "+ui/gfx/geometry",
-  "+ui/gfx/range/range.h",
-  "+v8/include/v8.h"
+  "+printing",
+  "+services/network/public/mojom/referrer_policy.mojom-shared.h",
+  "+third_party/blink/public",
+  "+third_party/skia/include/core",
+  "+ui/base",
+  "+ui/display",
+  "+ui/events",
+  "+ui/gfx",
+  "+v8/include",
 ]
+
+specific_include_rules = {
+  ".*_unittest.*\.cc": [
+    "+cc/test",
+    "+ui/latency/latency_info.h",
+  ],
+}

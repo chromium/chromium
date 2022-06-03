@@ -8,22 +8,23 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
 namespace task_manager {
 
-// This FallbackTaskProvider is created to manage 2 subproviders. Tasks from the
-// primary subprovider are always shown in the Task Manager.  Tasks from the
-// secondary subprovider are only shown when no primary task exists for that
-// process. It is currently behind the command line flag
-// --task-manager-show-extra-renderers.
+// This FallbackTaskProvider is created to manage a hierarchy of subproviders.
+// Tasks from the primary subproviders are always shown in the Task Manager.
+// Tasks from the secondary subprovider are only shown when no task from any of
+// the primary providers exists for that process.
 class FallbackTaskProvider : public TaskProvider {
  public:
-  FallbackTaskProvider(std::unique_ptr<TaskProvider> primary_subprovider,
-                       std::unique_ptr<TaskProvider> secondary_subprovider);
+  FallbackTaskProvider(
+      std::vector<std::unique_ptr<TaskProvider>> primary_subproviders,
+      std::unique_ptr<TaskProvider> secondary_subprovider);
+  FallbackTaskProvider(const FallbackTaskProvider&) = delete;
+  FallbackTaskProvider& operator=(const FallbackTaskProvider&) = delete;
   ~FallbackTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -57,13 +58,9 @@ class FallbackTaskProvider : public TaskProvider {
   void OnTaskAddedBySource(Task* task, SubproviderSource* source);
   void OnTaskRemovedBySource(Task* task, SubproviderSource* source);
 
-  SubproviderSource* primary_source() { return sources_[0].get(); }
-  SubproviderSource* secondary_source() { return sources_[1].get(); }
-
-  // Stores the pointers we use to get access to the sources. By convention 0 is
-  // the primary source and 1 is the secondary source. This means that the tasks
-  // from the primary source will shadow the tasks from the secondary source.
-  std::unique_ptr<SubproviderSource> sources_[2];
+  // Stores the wrapped subproviders.
+  std::vector<std::unique_ptr<SubproviderSource>> primary_sources_;
+  std::unique_ptr<SubproviderSource> secondary_source_;
 
   // This is the set of tasks that this provider is currently passing up to
   // whatever is observing it.
@@ -74,7 +71,10 @@ class FallbackTaskProvider : public TaskProvider {
   std::map<Task*, base::WeakPtrFactory<FallbackTaskProvider>>
       pending_shown_tasks_;
 
-  DISALLOW_COPY_AND_ASSIGN(FallbackTaskProvider);
+  // This flag specifies whether the use of a fallback task is an error. For
+  // releases it is, but the checking needs to be turned off during testing of
+  // this class itself.
+  bool allow_fallback_for_testing_ = false;
 };
 
 class FallbackTaskProvider::SubproviderSource : public TaskProviderObserver {

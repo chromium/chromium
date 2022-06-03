@@ -5,42 +5,35 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
+#include "base/scoped_observation.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
-#include "chrome/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#endif
-
 class Profile;
 
-class AppManagementPageHandler : public app_management::mojom::PageHandler,
-#if defined(OS_CHROMEOS)
-                                 public ArcAppListPrefs::Observer,
-#endif  // OS_CHROMEOS
-                                 public apps::AppRegistryCache::Observer {
+class AppManagementPageHandler
+    : public app_management::mojom::PageHandler,
+      public apps::AppRegistryCache::Observer,
+      public apps::PreferredAppsListHandle::Observer {
  public:
   AppManagementPageHandler(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
       Profile* profile);
+
+  AppManagementPageHandler(const AppManagementPageHandler&) = delete;
+  AppManagementPageHandler& operator=(const AppManagementPageHandler&) = delete;
+
   ~AppManagementPageHandler() override;
 
-#if defined(OS_CHROMEOS)
-  static bool IsCurrentArcVersionSupported(Profile* profile);
-#endif  // OS_CHROMEOS
-
   void OnPinnedChanged(const std::string& app_id, bool pinned);
-#if defined(OS_CHROMEOS)
-  void OnArcVersionChanged(int androidVersion);
-#endif  // OS_CHROMEOS
 
   // app_management::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
@@ -51,8 +44,14 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
                  apps::mojom::OptionalBool pinned) override;
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
+  void SetResizeLocked(const std::string& app_id, bool locked) override;
   void Uninstall(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void SetPreferredApp(const std::string& app_id,
+                       bool is_preferred_app) override;
+  void GetOverlappingPreferredApps(
+      const std::string& app_id,
+      GetOverlappingPreferredAppsCallback callback) override;
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);
@@ -62,13 +61,11 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-#if defined(OS_CHROMEOS)
-  // ArcAppListPrefs::Observer:
-  void OnPackageInstalled(
-      const arc::mojom::ArcPackageInfo& package_info) override;
-  void OnPackageModified(
-      const arc::mojom::ArcPackageInfo& package_info) override;
-#endif  // OS_CHROMEOS
+  // apps::PreferredAppsListHandle::Observer overrides:
+  void OnPreferredAppChanged(const std::string& app_id,
+                             bool is_preferred_app) override;
+  void OnPreferredAppsListWillBeDestroyed(
+      apps::PreferredAppsListHandle* handle) override;
 
   mojo::Receiver<app_management::mojom::PageHandler> receiver_;
 
@@ -76,13 +73,19 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   Profile* profile_;
 
-#if defined(OS_CHROMEOS)
-  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      arc_app_list_prefs_observer_{this};
-  AppManagementShelfDelegate shelf_delegate_{this};
-#endif  // OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AppManagementShelfDelegate shelf_delegate_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandler);
+  apps::PreferredAppsListHandle& preferred_apps_list_handle_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  base::ScopedObservation<apps::PreferredAppsListHandle,
+                          apps::PreferredAppsListHandle::Observer>
+      preferred_apps_list_handle_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_

@@ -10,7 +10,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/stl_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
@@ -19,8 +20,8 @@
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/extension_prefs.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/audio/audio_devices_pref_handler_impl.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #endif
 
 using base::FilePath;
@@ -31,8 +32,8 @@ namespace {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
-#if defined(OS_CHROMEOS)
-  chromeos::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
 #endif
 }
 

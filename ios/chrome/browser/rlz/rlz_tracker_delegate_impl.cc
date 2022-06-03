@@ -5,8 +5,9 @@
 #include "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/search_engines/template_url.h"
@@ -15,6 +16,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -24,7 +26,7 @@ RLZTrackerDelegateImpl::~RLZTrackerDelegateImpl() {}
 
 // static
 bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   bool is_google_default_search = false;
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
@@ -40,14 +42,14 @@ bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
 
 // static
 bool RLZTrackerDelegateImpl::IsGoogleHomepage(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   // iOS does not have a notion of home page.
   return false;
 }
 
 // static
 bool RLZTrackerDelegateImpl::IsGoogleInStartpages(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   // iOS does not have a notion of start pages.
   return false;
 }
@@ -66,7 +68,8 @@ RLZTrackerDelegateImpl::GetURLLoaderFactory() {
 }
 
 bool RLZTrackerDelegateImpl::GetBrand(std::string* brand) {
-  return ios::google_brand::GetBrand(brand);
+  brand->assign(ios::provider::GetBrandCode());
+  return true;
 }
 
 bool RLZTrackerDelegateImpl::IsBrandOrganic(const std::string& brand) {
@@ -82,13 +85,13 @@ bool RLZTrackerDelegateImpl::ShouldEnableZeroDelayForTesting() {
   return false;
 }
 
-bool RLZTrackerDelegateImpl::GetLanguage(base::string16* language) {
+bool RLZTrackerDelegateImpl::GetLanguage(std::u16string* language) {
   // TODO(thakis): Implement.
   NOTIMPLEMENTED();
   return false;
 }
 
-bool RLZTrackerDelegateImpl::GetReferral(base::string16* referral) {
+bool RLZTrackerDelegateImpl::GetReferral(std::u16string* referral) {
   // The referral program is defunct and not used. No need to implement this
   // function on non-Win platforms.
   return true;
@@ -101,17 +104,17 @@ bool RLZTrackerDelegateImpl::ClearReferral() {
 }
 
 void RLZTrackerDelegateImpl::SetOmniboxSearchCallback(
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   DCHECK(!callback.is_null());
-  on_omnibox_search_callback_ = callback;
+  on_omnibox_search_callback_ = std::move(callback);
   on_omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindRepeating(&RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox,
+                              base::Unretained(this)));
 }
 
 void RLZTrackerDelegateImpl::SetHomepageSearchCallback(
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   NOTREACHED();
 }
 
@@ -128,11 +131,8 @@ void RLZTrackerDelegateImpl::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!log->is_popup_open)
     return;
 
-  on_omnibox_url_opened_subscription_.reset();
+  on_omnibox_url_opened_subscription_ = {};
 
-  using std::swap;
-  base::Closure callback_to_run;
-  swap(callback_to_run, on_omnibox_search_callback_);
-  if (!callback_to_run.is_null())
-    callback_to_run.Run();
+  if (!on_omnibox_search_callback_.is_null())
+    std::move(on_omnibox_search_callback_).Run();
 }

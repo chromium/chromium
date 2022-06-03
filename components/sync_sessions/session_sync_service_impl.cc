@@ -7,10 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync_sessions/favicon_cache.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync_sessions/session_sync_bridge.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
@@ -32,7 +31,7 @@ SessionSyncServiceImpl::SessionSyncServiceImpl(
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)));
 }
 
-SessionSyncServiceImpl::~SessionSyncServiceImpl() {}
+SessionSyncServiceImpl::~SessionSyncServiceImpl() = default;
 
 syncer::GlobalIdMapper* SessionSyncServiceImpl::GetGlobalIdMapper() const {
   return bridge_->GetGlobalIdMapper();
@@ -45,19 +44,15 @@ OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
   return bridge_->GetOpenTabsUIDelegate();
 }
 
-std::unique_ptr<base::CallbackList<void()>::Subscription>
+base::CallbackListSubscription
 SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
     const base::RepeatingClosure& cb) {
-  return foreign_sessions_changed_callback_list_.Add(cb);
+  return foreign_sessions_changed_closure_list_.Add(cb);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 SessionSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
-}
-
-FaviconCache* SessionSyncServiceImpl::GetFaviconCache() {
-  return bridge_->GetFaviconCache();
 }
 
 void SessionSyncServiceImpl::ProxyTabsStateChanged(
@@ -69,17 +64,13 @@ void SessionSyncServiceImpl::ProxyTabsStateChanged(
   }
 }
 
-void SessionSyncServiceImpl::SetSyncSessionsGUID(const std::string& guid) {
-  sessions_client_->GetSessionSyncPrefs()->SetSyncSessionsGUID(guid);
-}
-
 OpenTabsUIDelegate*
 SessionSyncServiceImpl::GetUnderlyingOpenTabsUIDelegateForTest() {
   return bridge_->GetOpenTabsUIDelegate();
 }
 
 void SessionSyncServiceImpl::NotifyForeignSessionUpdated() {
-  foreign_sessions_changed_callback_list_.Notify();
+  foreign_sessions_changed_closure_list_.Notify();
 }
 
 }  // namespace sync_sessions

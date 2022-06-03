@@ -5,47 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [1, 1, 402, 202],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "HorizontalScrollbar",
-          "rect": [1, 136, 285, 15],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [212, 12, 180, 180],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [12, 12, 180, 180],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [11, 11, 180, 125],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [211, 11, 75, 125],
-          "reason": "paint property change"
-        },
-        {
-          "object": "VerticalScrollbar",
-          "rect": [286, 1, 15, 135],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "Scroll corner of LayoutView #document",
-          "rect": [286, 136, 15, 15],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [1, 1, 402, 202]
       ]
     }
   ]

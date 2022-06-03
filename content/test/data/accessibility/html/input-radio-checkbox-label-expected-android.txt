@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='label ignored for radio button'
+++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='label ignored for checkbox'
+++++android.view.View focusable name='label exposed for radio button '
+++++++android.widget.TextView name='label exposed for radio button '
+++++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='label exposed for radio button' item_index=1 row_index=1
+++++android.view.View focusable name='label exposed for checkbox '
+++++++android.widget.TextView name='label exposed for checkbox '
+++++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='label exposed for checkbox'

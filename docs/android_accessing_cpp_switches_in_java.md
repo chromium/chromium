@@ -5,15 +5,16 @@
 ## Introduction
 
 Accessing C++ switches in Java is implemented via a Python script which analyzes
-the C++ switches file and spits out the corresponding Java class. The generated
-class name will be based upon the switch file name, and the path must be
-specified in a comment within the switch file itself.
+the C++ switches file and generates the corresponding Java class, based on a
+template file. The template file must be specified in the GN target.
 
 ## Usage
 
-1. Create a template file (ex. `FooSwitches.java.tmpl`)
+1. Create a template file (ex. `FooSwitches.java.tmpl`). Change "Copyright
+   2020" to be whatever the year is at the time of writing (as you would for any
+   other file).
    ```java
-    // Copyright $YEAR The Chromium Authors. All rights reserved.
+    // Copyright 2020 The Chromium Authors. All rights reserved.
     // Use of this source code is governed by a BSD-style license that can be
     // found in the LICENSE file.
 
@@ -33,30 +34,34 @@ specified in a comment within the switch file itself.
     }}
    ```
 
-2. Add a new build target
+2. Add a new build target and add it to the `srcjar_deps` of an
+   `android_library` target:
 
     ```gn
-    import("//build/config/android/rules.gni")
+    if (is_android) {
+      import("//build/config/android/rules.gni")
+    }
 
-    java_cpp_strings("java_switches") {
-      sources = [
-        "//base/android/foo_switches.cc",
-      ]
-      template = "//base/android/java_templates/FooSwitches.java.tmpl"
+    if (is_android) {
+      java_cpp_strings("java_switches_srcjar") {
+        # External code should depend on ":foo_java" instead.
+        visibility = [ ":*" ]
+        sources = [
+          "//base/android/foo_switches.cc",
+        ]
+        template = "//base/android/java_templates/FooSwitches.java.tmpl"
+      }
+
+      # If there's already an android_library target, you can add
+      # java_switches_srcjar to that target's srcjar_deps. Otherwise, the best
+      # practice is to create a new android_library just for this target.
+      android_library("foo_java") {
+        srcjar_deps = [ ":java_switches_srcjar" ]
+      }
     }
     ```
 
-3. Add the new target to the desired `android_library` targets `srcjar_deps`:
-
-    ```gn
-    android_library("base_java") {
-      srcjar_deps = [
-        ":java_switches",
-      ]
-    }
-    ```
-
-4. The generated file `out/Default/gen/.../org/chromium/foo/FooSwitches.java`
+3. The generated file `out/Default/gen/.../org/chromium/foo/FooSwitches.java`
    would contain:
 
     ```java
@@ -89,6 +94,10 @@ specified in a comment within the switch file itself.
         private FooSwitches() {}
     }
     ```
+
+## See also
+* [Accessing C++ Enums In Java](android_accessing_cpp_enums_in_java.md)
+* [Accessing C++ Features In Java](android_accessing_cpp_features_in_java.md)
 
 ## Code
 * [Generator

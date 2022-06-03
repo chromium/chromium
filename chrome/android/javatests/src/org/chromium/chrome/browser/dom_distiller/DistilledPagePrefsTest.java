@@ -5,36 +5,37 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
-import android.support.test.rule.UiThreadTestRule;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
-import org.chromium.components.dom_distiller.core.FontFamily;
-import org.chromium.components.dom_distiller.core.Theme;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
+import org.chromium.dom_distiller.mojom.FontFamily;
+import org.chromium.dom_distiller.mojom.Theme;
 
 /**
  * Test class for {@link DistilledPagePrefs}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class DistilledPagePrefsTest {
-    @Rule
-    public final RuleChain mChain =
-            RuleChain.outerRule(new ChromeBrowserTestRule()).around(new UiThreadTestRule());
+    @ClassRule
+    public static final ChromeBrowserTestRule sChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private DistilledPagePrefs mDistilledPagePrefs;
 
@@ -45,10 +46,17 @@ public class DistilledPagePrefsTest {
         getDistilledPagePrefs();
     }
 
+    @After
+    public void tearDown() {
+        // Set back to default theme
+        setTheme(Theme.LIGHT);
+    }
+
     private void getDistilledPagePrefs() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
             DomDistillerService domDistillerService =
-                    DomDistillerServiceFactory.getForProfile(Profile.getLastUsedProfile());
+                    DomDistillerServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
             mDistilledPagePrefs = domDistillerService.getDistilledPagePrefs();
         });
     }
@@ -76,9 +84,8 @@ public class DistilledPagePrefsTest {
         TestingObserver testObserver = new TestingObserver();
         mDistilledPagePrefs.addObserver(testObserver);
 
-        setTheme(Theme.DARK);
-        // Assumes that callback does not occur immediately.
         Assert.assertEquals(Theme.LIGHT, testObserver.getTheme());
+        setTheme(Theme.DARK);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserver's theme has been updated,
         Assert.assertEquals(Theme.DARK, testObserver.getTheme());
@@ -127,11 +134,10 @@ public class DistilledPagePrefsTest {
         TestingObserver testObserver = new TestingObserver();
         mDistilledPagePrefs.addObserver(testObserver);
 
-        setFontFamily(FontFamily.SERIF);
-        // Assumes that callback does not occur immediately.
         Assert.assertEquals(FontFamily.SANS_SERIF, testObserver.getFontFamily());
+        setFontFamily(FontFamily.SERIF);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        // Check that testObserver's font family has been updated,
+        // Check that testObserver's font family has been updated.
         Assert.assertEquals(FontFamily.SERIF, testObserver.getFontFamily());
         mDistilledPagePrefs.removeObserver(testObserver);
     }
@@ -178,11 +184,10 @@ public class DistilledPagePrefsTest {
         TestingObserver testObserver = new TestingObserver();
         mDistilledPagePrefs.addObserver(testObserver);
 
+        Assert.assertNotEquals(1.1, testObserver.getFontScaling(), EPSILON);
         setFontScaling(1.1f);
-        // Assumes that callback does not occur immediately.
-        Assert.assertEquals(0, testObserver.getFontScaling(), EPSILON);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        // Check that testObserver's font scaling has been updated,
+        // Check that testObserver's font scaling has been updated.
         Assert.assertEquals(1.1, testObserver.getFontScaling(), EPSILON);
         mDistilledPagePrefs.removeObserver(testObserver);
     }
@@ -228,27 +233,27 @@ public class DistilledPagePrefsTest {
     }
 
     private static class TestingObserver implements DistilledPagePrefs.Observer {
-        private @FontFamily int mFontFamily;
-        private @Theme int mTheme;
+        private int mFontFamily;
+        private int mTheme;
         private float mFontScaling;
 
         public TestingObserver() {}
 
-        public @FontFamily int getFontFamily() {
+        public int getFontFamily() {
             return mFontFamily;
         }
 
         @Override
-        public void onChangeFontFamily(@FontFamily int font) {
+        public void onChangeFontFamily(int font) {
             mFontFamily = font;
         }
 
-        public @Theme int getTheme() {
+        public int getTheme() {
             return mTheme;
         }
 
         @Override
-        public void onChangeTheme(@Theme int theme) {
+        public void onChangeTheme(int theme) {
             mTheme = theme;
         }
 
@@ -262,11 +267,11 @@ public class DistilledPagePrefsTest {
         }
     }
 
-    private void setFontFamily(final @FontFamily int font) {
+    private void setFontFamily(final int font) {
         TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontFamily(font));
     }
 
-    private void setTheme(final @Theme int theme) {
+    private void setTheme(final int theme) {
         TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setTheme(theme));
     }
 

@@ -13,15 +13,19 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/bind.h"
 #include "base/callback_internal.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX) && !HAS_FEATURE(objc_arc)
+#if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
 #include "base/mac/scoped_block.h"
 #endif
 
@@ -42,6 +46,8 @@
 //  FunctorTraits<> -- Type traits used to determine the correct RunType and
 //                     invocation manner for a Functor.  This is where function
 //                     signature adapters are applied.
+//  StorageTraits<> -- Type traits that determine how a bound argument is
+//                     stored in BindState.
 //  InvokeHelper<> -- Take a Functor + arguments and actully invokes it.
 //                    Handle the differing syntaxes needed for WeakPtr<>
 //                    support.  This is separate from Invoker to avoid creating
@@ -85,6 +91,26 @@ class UnretainedWrapper {
   T* ptr_;
 };
 
+// Storage type for std::reference_wrapper so `BindState` can internally store
+// unprotected references using raw_ptr.
+//
+// std::reference_wrapper<T> and T& do not work, since the reference lifetime is
+// not safely protected by MiraclePtr.
+//
+// UnretainedWrapper<T> and raw_ptr<T> do not work, since BindUnwrapTraits
+// would try to pass by T* rather than T&.
+template <typename T>
+class UnretainedRefWrapper {
+ public:
+  explicit UnretainedRefWrapper(T& o) : ptr_(std::addressof(o)) {}
+  T& get() const { return *ptr_; }
+
+ private:
+  // This is intentionally a pointer to ensure the Big Rewrite will change this
+  // to raw_ptr.
+  T* const ptr_;
+};
+
 template <typename T>
 class RetainedRefWrapper {
  public:
@@ -116,6 +142,17 @@ class OwnedWrapper {
   std::unique_ptr<T, Deleter> ptr_;
 };
 
+template <typename T>
+class OwnedRefWrapper {
+ public:
+  explicit OwnedRefWrapper(const T& t) : t_(t) {}
+  explicit OwnedRefWrapper(T&& t) : t_(std::move(t)) {}
+  T& get() const { return t_; }
+
+ private:
+  mutable T t_;
+};
+
 // PassedWrapper is a copyable adapter for a scoper that ignores const.
 //
 // It is needed to get around the fact that Bind() takes a const reference to
@@ -133,7 +170,7 @@ class OwnedWrapper {
 //
 // Two notes:
 //  1) PassedWrapper supports any type that has a move constructor, however
-//     the type will need to be specifically whitelisted in order for it to be
+//     the type will need to be specifically allowed in order for it to be
 //     bound to a Callback. We guard this explicitly at the call of Passed()
 //     to make for clear errors. Things not given to Passed() will be forwarded
 //     and stored by value which will not work for general move-only types.
@@ -321,21 +358,11 @@ template <typename Callable>
 struct IsCallableObject<Callable, void_t<decltype(&Callable::operator())>>
     : std::true_type {};
 
-// HasRefCountedTypeAsRawPtr selects true_type when any of the |Args| is a raw
-// pointer to a RefCounted type.
-// Implementation note: This non-specialized case handles zero-arity case only.
-// Non-zero-arity cases should be handled by the specialization below.
-template <typename... Args>
-struct HasRefCountedTypeAsRawPtr : std::false_type {};
-
-// Implementation note: Select true_type if the first parameter is a raw pointer
-// to a RefCounted type. Otherwise, skip the first parameter and check rest of
-// parameters recursively.
-template <typename T, typename... Args>
-struct HasRefCountedTypeAsRawPtr<T, Args...>
-    : std::conditional_t<NeedsScopedRefptrButGetsRawPtr<T>::value,
-                         std::true_type,
-                         HasRefCountedTypeAsRawPtr<Args...>> {};
+// HasRefCountedTypeAsRawPtr inherits from true_type when any of the |Args| is a
+// raw pointer to a RefCounted type.
+template <typename... Ts>
+struct HasRefCountedTypeAsRawPtr
+    : disjunction<NeedsScopedRefptrButGetsRawPtr<Ts>...> {};
 
 // ForceVoidReturn<>
 //
@@ -379,6 +406,7 @@ struct FunctorTraits<Functor,
   using RunType = ExtractCallableRunType<Functor>;
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = false;
+  static constexpr bool is_callback = false;
 
   template <typename RunFunctor, typename... RunArgs>
   static ExtractReturnType<RunType> Invoke(RunFunctor&& functor,
@@ -393,6 +421,7 @@ struct FunctorTraits<R (*)(Args...)> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename Function, typename... RunArgs>
   static R Invoke(Function&& function, RunArgs&&... args) {
@@ -408,6 +437,7 @@ struct FunctorTraits<R(__stdcall*)(Args...)> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename... RunArgs>
   static R Invoke(R(__stdcall* function)(Args...), RunArgs&&... args) {
@@ -421,6 +451,7 @@ struct FunctorTraits<R(__fastcall*)(Args...)> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename... RunArgs>
   static R Invoke(R(__fastcall* function)(Args...), RunArgs&&... args) {
@@ -430,7 +461,7 @@ struct FunctorTraits<R(__fastcall*)(Args...)> {
 
 #endif  // defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 
 // Support for Objective-C blocks. There are two implementation depending
 // on whether Automated Reference Counting (ARC) is enabled. When ARC is
@@ -450,6 +481,7 @@ struct FunctorTraits<R (^)(Args...)> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename BlockType, typename... RunArgs>
   static R Invoke(BlockType&& block, RunArgs&&... args) {
@@ -471,6 +503,7 @@ struct FunctorTraits<base::mac::ScopedBlock<R (^)(Args...)>> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename BlockType, typename... RunArgs>
   static R Invoke(BlockType&& block, RunArgs&&... args) {
@@ -483,7 +516,7 @@ struct FunctorTraits<base::mac::ScopedBlock<R (^)(Args...)>> {
 };
 
 #endif  // HAS_FEATURE(objc_arc)
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 // For methods.
 template <typename R, typename Receiver, typename... Args>
@@ -491,6 +524,7 @@ struct FunctorTraits<R (Receiver::*)(Args...)> {
   using RunType = R(Receiver*, Args...);
   static constexpr bool is_method = true;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename Method, typename ReceiverPtr, typename... RunArgs>
   static R Invoke(Method method,
@@ -506,6 +540,7 @@ struct FunctorTraits<R (Receiver::*)(Args...) const> {
   using RunType = R(const Receiver*, Args...);
   static constexpr bool is_method = true;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
 
   template <typename Method, typename ReceiverPtr, typename... RunArgs>
   static R Invoke(Method method,
@@ -514,6 +549,42 @@ struct FunctorTraits<R (Receiver::*)(Args...) const> {
     return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
   }
 };
+
+#if defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
+
+// For __stdcall methods.
+template <typename R, typename Receiver, typename... Args>
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...)> {
+  using RunType = R(Receiver*, Args...);
+  static constexpr bool is_method = true;
+  static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
+
+  template <typename Method, typename ReceiverPtr, typename... RunArgs>
+  static R Invoke(Method method,
+                  ReceiverPtr&& receiver_ptr,
+                  RunArgs&&... args) {
+    return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
+  }
+};
+
+// For __stdcall const methods.
+template <typename R, typename Receiver, typename... Args>
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const> {
+  using RunType = R(const Receiver*, Args...);
+  static constexpr bool is_method = true;
+  static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = false;
+
+  template <typename Method, typename ReceiverPtr, typename... RunArgs>
+  static R Invoke(Method method,
+                  ReceiverPtr&& receiver_ptr,
+                  RunArgs&&... args) {
+    return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
+  }
+};
+
+#endif  // defined(OS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 #ifdef __cpp_noexcept_function_type
 // noexcept makes a distinct function type in C++17.
@@ -553,6 +624,7 @@ struct FunctorTraits<OnceCallback<R(Args...)>> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = true;
 
   template <typename CallbackType, typename... RunArgs>
   static R Invoke(CallbackType&& callback, RunArgs&&... args) {
@@ -568,6 +640,7 @@ struct FunctorTraits<RepeatingCallback<R(Args...)>> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
+  static constexpr bool is_callback = true;
 
   template <typename CallbackType, typename... RunArgs>
   static R Invoke(CallbackType&& callback, RunArgs&&... args) {
@@ -579,6 +652,42 @@ struct FunctorTraits<RepeatingCallback<R(Args...)>> {
 
 template <typename Functor>
 using MakeFunctorTraits = FunctorTraits<std::decay_t<Functor>>;
+
+// StorageTraits<>
+//
+// See description at top of file.
+template <typename T, typename SFINAE = void>
+struct StorageTraits {
+  using Type = T;
+};
+
+// For T*, conditionally store as UnretainedWrapper<T> for safety. When the Big
+// Rewrite lands, UnretainedWrapper's internal T* field will be rewritten to
+// raw_ptr<T>, transitively providing safety.
+//
+// There is a bit of additional complexity here because raw_ptr<T> does not
+// support pointers to functions or pointers to Objective-C objects - this is
+// why the raw_ptr_traits::IsSupportedType needs to be consulted.
+//
+// TODO(dcheng): It should not be possible to instantiate raw_ptr<T> for
+// unsupported types, as that would allow this trait to be significantly
+// simplified.
+template <typename T>
+struct StorageTraits<
+    T*,
+    std::enable_if_t<raw_ptr_traits::IsSupportedType<T>::value>> {
+  using Type = UnretainedWrapper<T>;
+};
+
+// Unwrap std::reference_wrapper and store it in a custom wrapper so that
+// references are also protected with raw_ptr<T>.
+template <typename T>
+struct StorageTraits<std::reference_wrapper<T>> {
+  using Type = UnretainedRefWrapper<T>;
+};
+
+template <typename T>
+using MakeStorageType = typename StorageTraits<std::decay_t<T>>::Type;
 
 // InvokeHelper<>
 //
@@ -604,7 +713,7 @@ struct InvokeHelper<false, ReturnType> {
 template <typename ReturnType>
 struct InvokeHelper<true, ReturnType> {
   // WeakCalls are only supported for functions with a void return type.
-  // Otherwise, the function result would be undefined if the the WeakPtr<>
+  // Otherwise, the function result would be undefined if the WeakPtr<>
   // is invalidated.
   static_assert(std::is_void<ReturnType>::value,
                 "weak_ptrs can only bind to methods without return values");
@@ -732,6 +841,7 @@ bool QueryCancellationTraitsImpl(BindStateBase::CancellationQueryMode mode,
           functor, std::get<indices>(bound_args)...);
   }
   NOTREACHED();
+  return false;
 }
 
 // Relays |base| to corresponding CallbackCancellationTraits<>::Run(). Returns
@@ -802,11 +912,9 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
 // This stores all the state passed into Bind().
 template <typename Functor, typename... BoundArgs>
 struct BindState final : BindStateBase {
-  using IsCancellable = std::integral_constant<
-      bool,
+  using IsCancellable = bool_constant<
       CallbackCancellationTraits<Functor,
                                  std::tuple<BoundArgs...>>::is_cancellable>;
-
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
   static BindState* Create(BindStateBase::InvokeFuncStorage invoke_func,
                            ForwardFunctor&& functor,
@@ -827,6 +935,9 @@ struct BindState final : BindStateBase {
   std::tuple<BoundArgs...> bound_args_;
 
  private:
+  static constexpr bool is_nested_callback =
+      MakeFunctorTraits<Functor>::is_callback;
+
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
   explicit BindState(std::true_type,
                      BindStateBase::InvokeFuncStorage invoke_func,
@@ -837,7 +948,15 @@ struct BindState final : BindStateBase {
                       &QueryCancellationTraits<BindState>),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
-    DCHECK(!IsNull(functor_));
+    // We check the validity of nested callbacks (e.g., Bind(callback, ...)) in
+    // release builds to avoid null pointers from ending up in posted tasks,
+    // causing hard-to-diagnose crashes. Ideally we'd do this for all functors
+    // here, but that would have a large binary size impact.
+    if (is_nested_callback) {
+      CHECK(!IsNull(functor_));
+    } else {
+      DCHECK(!IsNull(functor_));
+    }
   }
 
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
@@ -848,7 +967,12 @@ struct BindState final : BindStateBase {
       : BindStateBase(invoke_func, &Destroy),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
-    DCHECK(!IsNull(functor_));
+    // See above for CHECK/DCHECK rationale.
+    if (is_nested_callback) {
+      CHECK(!IsNull(functor_));
+    } else {
+      DCHECK(!IsNull(functor_));
+    }
   }
 
   ~BindState() = default;
@@ -866,7 +990,7 @@ template <typename Functor, typename... BoundArgs>
 struct MakeBindStateTypeImpl<false, Functor, BoundArgs...> {
   static_assert(!HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>::value,
                 "A parameter is a refcounted type and needs scoped_refptr.");
-  using Type = BindState<std::decay_t<Functor>, std::decay_t<BoundArgs>...>;
+  using Type = BindState<std::decay_t<Functor>, MakeStorageType<BoundArgs>...>;
 };
 
 template <typename Functor>
@@ -896,7 +1020,7 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
       std::conditional_t<std::is_pointer<DecayedReceiver>::value,
                          scoped_refptr<std::remove_pointer_t<DecayedReceiver>>,
                          DecayedReceiver>,
-      std::decay_t<BoundArgs>...>;
+      MakeStorageType<BoundArgs>...>;
 };
 
 template <typename Functor, typename... BoundArgs>
@@ -904,6 +1028,301 @@ using MakeBindStateType =
     typename MakeBindStateTypeImpl<MakeFunctorTraits<Functor>::is_method,
                                    Functor,
                                    BoundArgs...>::Type;
+
+// Returns a RunType of bound functor.
+// E.g. MakeUnboundRunType<R(A, B, C), A, B> is evaluated to R(C).
+template <typename Functor, typename... BoundArgs>
+using MakeUnboundRunType =
+    typename BindTypeHelper<Functor, BoundArgs...>::UnboundRunType;
+
+// The implementation of TransformToUnwrappedType below.
+template <bool is_once, typename T>
+struct TransformToUnwrappedTypeImpl;
+
+template <typename T>
+struct TransformToUnwrappedTypeImpl<true, T> {
+  using StoredType = std::decay_t<T>;
+  using ForwardType = StoredType&&;
+  using Unwrapped = decltype(Unwrap(std::declval<ForwardType>()));
+};
+
+template <typename T>
+struct TransformToUnwrappedTypeImpl<false, T> {
+  using StoredType = std::decay_t<T>;
+  using ForwardType = const StoredType&;
+  using Unwrapped = decltype(Unwrap(std::declval<ForwardType>()));
+};
+
+// Transform |T| into `Unwrapped` type, which is passed to the target function.
+// Example:
+//   In is_once == true case,
+//     `int&&` -> `int&&`,
+//     `const int&` -> `int&&`,
+//     `OwnedWrapper<int>&` -> `int*&&`.
+//   In is_once == false case,
+//     `int&&` -> `const int&`,
+//     `const int&` -> `const int&`,
+//     `OwnedWrapper<int>&` -> `int* const &`.
+template <bool is_once, typename T>
+using TransformToUnwrappedType =
+    typename TransformToUnwrappedTypeImpl<is_once, T>::Unwrapped;
+
+// Transforms |Args| into `Unwrapped` types, and packs them into a TypeList.
+// If |is_method| is true, tries to dereference the first argument to support
+// smart pointers.
+template <bool is_once, bool is_method, typename... Args>
+struct MakeUnwrappedTypeListImpl {
+  using Type = TypeList<TransformToUnwrappedType<is_once, Args>...>;
+};
+
+// Performs special handling for this pointers.
+// Example:
+//   int* -> int*,
+//   std::unique_ptr<int> -> int*.
+template <bool is_once, typename Receiver, typename... Args>
+struct MakeUnwrappedTypeListImpl<is_once, true, Receiver, Args...> {
+  using UnwrappedReceiver = TransformToUnwrappedType<is_once, Receiver>;
+  using Type = TypeList<decltype(&*std::declval<UnwrappedReceiver>()),
+                        TransformToUnwrappedType<is_once, Args>...>;
+};
+
+template <bool is_once, bool is_method, typename... Args>
+using MakeUnwrappedTypeList =
+    typename MakeUnwrappedTypeListImpl<is_once, is_method, Args...>::Type;
+
+// IsOnceCallback<T> is a std::true_type if |T| is a OnceCallback.
+template <typename T>
+struct IsOnceCallback : std::false_type {};
+
+template <typename Signature>
+struct IsOnceCallback<OnceCallback<Signature>> : std::true_type {};
+
+// Helpers to make error messages slightly more readable.
+template <int i>
+struct BindArgument {
+  template <typename ForwardingType>
+  struct ForwardedAs {
+    template <typename FunctorParamType>
+    struct ToParamWithType {
+      static constexpr bool kCanBeForwardedToBoundFunctor =
+          std::is_constructible<FunctorParamType, ForwardingType>::value;
+
+      // If the bound type can't be forwarded then test if `FunctorParamType` is
+      // a non-const lvalue reference and a reference to the unwrapped type
+      // *could* have been successfully forwarded.
+      static constexpr bool kNonConstRefParamMustBeWrapped =
+          kCanBeForwardedToBoundFunctor ||
+          !(std::is_lvalue_reference<FunctorParamType>::value &&
+            !std::is_const<std::remove_reference_t<FunctorParamType>>::value &&
+            std::is_convertible<std::decay_t<ForwardingType>&,
+                                FunctorParamType>::value);
+
+      // Note that this intentionally drops the const qualifier from
+      // `ForwardingType`, to test if it *could* have been successfully
+      // forwarded if `Passed()` had been used.
+      static constexpr bool kMoveOnlyTypeMustUseBasePassed =
+          kCanBeForwardedToBoundFunctor ||
+          !std::is_constructible<FunctorParamType,
+                                 std::decay_t<ForwardingType>&&>::value;
+    };
+  };
+
+  template <typename BoundAsType>
+  struct BoundAs {
+    template <typename StorageType>
+    struct StoredAs {
+      static constexpr bool kBindArgumentCanBeCaptured =
+          std::is_constructible<StorageType, BoundAsType>::value;
+      // Note that this intentionally drops the const qualifier from
+      // `BoundAsType`, to test if it *could* have been successfully bound if
+      // `std::move()` had been used.
+      static constexpr bool kMoveOnlyTypeMustUseStdMove =
+          kBindArgumentCanBeCaptured ||
+          !std::is_constructible<StorageType,
+                                 std::decay_t<BoundAsType>&&>::value;
+    };
+  };
+};
+
+// Helper to assert that parameter |i| of type |Arg| can be bound, which means:
+// - |Arg| can be retained internally as |Storage|.
+// - |Arg| can be forwarded as |Unwrapped| to |Param|.
+template <int i,
+          typename Arg,
+          typename Storage,
+          typename Unwrapped,
+          typename Param>
+struct AssertConstructible {
+ private:
+  // With `BindRepeating`, there are two decision points for how to handle a
+  // move-only type:
+  //
+  // 1. Whether the move-only argument should be moved into the internal
+  //    `BindState`. Either `std::move()` or `Passed` is sufficient to trigger
+  //    move-only semantics.
+  // 2. Whether or not the bound, move-only argument should be moved to the
+  //    bound functor when invoked. When the argument is bound with `Passed`,
+  //    invoking the callback will destructively move the bound, move-only
+  //    argument to the bound functor. In contrast, if the argument is bound
+  //    with `std::move()`, `RepeatingCallback` will attempt to call the bound
+  //    functor with a constant reference to the bound, move-only argument. This
+  //    will fail if the bound functor accepts that argument by value, since the
+  //    argument cannot be copied. It is this latter case that this
+  //    static_assert aims to catch.
+  //
+  // In contrast, `BindOnce()` only has one decision point. Once a move-only
+  // type is captured by value into the internal `BindState`, the bound,
+  // move-only argument will always be moved to the functor when invoked.
+  // Failure to use std::move will simply fail the `kMoveOnlyTypeMustUseStdMove`
+  // assert below instead.
+  //
+  // Note: `Passed()` is a legacy of supporting move-only types when repeating
+  // callbacks were the only callback type. A `RepeatingCallback` with a
+  // `Passed()` argument is really a `OnceCallback` and should eventually be
+  // migrated.
+  static_assert(
+      BindArgument<i>::template ForwardedAs<Unwrapped>::
+          template ToParamWithType<Param>::kMoveOnlyTypeMustUseBasePassed,
+      "base::BindRepeating() argument is a move-only type. Use base::Passed() "
+      "instead of std::move() to transfer ownership from the callback to the "
+      "bound functor.");
+  static_assert(
+      BindArgument<i>::template ForwardedAs<Unwrapped>::
+          template ToParamWithType<Param>::kNonConstRefParamMustBeWrapped,
+      "Bound argument for non-const reference parameter must be wrapped in "
+      "std::ref() or base::OwnedRef().");
+  static_assert(
+      BindArgument<i>::template ForwardedAs<Unwrapped>::
+          template ToParamWithType<Param>::kCanBeForwardedToBoundFunctor,
+      "Type mismatch between bound argument and bound functor's parameter.");
+
+  static_assert(BindArgument<i>::template BoundAs<Arg>::template StoredAs<
+                    Storage>::kMoveOnlyTypeMustUseStdMove,
+                "Attempting to bind a move-only type. Use std::move() to "
+                "transfer ownership to the created callback.");
+  // In practice, this static_assert should be quite rare as the storage type
+  // is deduced from the arguments passed to `BindOnce()`/`BindRepeating()`.
+  static_assert(
+      BindArgument<i>::template BoundAs<Arg>::template StoredAs<
+          Storage>::kBindArgumentCanBeCaptured,
+      "Cannot capture argument: is the argument copyable or movable?");
+};
+
+// Takes three same-length TypeLists, and applies AssertConstructible for each
+// triples.
+template <typename Index,
+          typename Args,
+          typename UnwrappedTypeList,
+          typename ParamsList>
+struct AssertBindArgsValidity;
+
+template <size_t... Ns,
+          typename... Args,
+          typename... Unwrapped,
+          typename... Params>
+struct AssertBindArgsValidity<std::index_sequence<Ns...>,
+                              TypeList<Args...>,
+                              TypeList<Unwrapped...>,
+                              TypeList<Params...>>
+    : AssertConstructible<Ns, Args, std::decay_t<Args>, Unwrapped, Params>... {
+  static constexpr bool ok = true;
+};
+
+template <typename T>
+struct AssertBindArgIsNotBasePassed : public std::true_type {};
+
+template <typename T>
+struct AssertBindArgIsNotBasePassed<PassedWrapper<T>> : public std::false_type {
+};
+
+// Used below in BindImpl to determine whether to use Invoker::Run or
+// Invoker::RunOnce.
+// Note: Simply using `kIsOnce ? &Invoker::RunOnce : &Invoker::Run` does not
+// work, since the compiler needs to check whether both expressions are
+// well-formed. Using `Invoker::Run` with a OnceCallback triggers a
+// static_assert, which is why the ternary expression does not compile.
+// TODO(crbug.com/752720): Remove this indirection once we have `if constexpr`.
+template <typename Invoker>
+constexpr auto GetInvokeFunc(std::true_type) {
+  return Invoker::RunOnce;
+}
+
+template <typename Invoker>
+constexpr auto GetInvokeFunc(std::false_type) {
+  return Invoker::Run;
+}
+
+template <template <typename> class CallbackT,
+          typename Functor,
+          typename... Args>
+decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
+  // This block checks if each |args| matches to the corresponding params of the
+  // target function. This check does not affect the behavior of Bind, but its
+  // error message should be more readable.
+  static constexpr bool kIsOnce = IsOnceCallback<CallbackT<void()>>::value;
+  using Helper = BindTypeHelper<Functor, Args...>;
+  using FunctorTraits = typename Helper::FunctorTraits;
+  using BoundArgsList = typename Helper::BoundArgsList;
+  using UnwrappedArgsList =
+      MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
+  using BoundParamsList = typename Helper::BoundParamsList;
+  static_assert(
+      AssertBindArgsValidity<std::make_index_sequence<Helper::num_bounds>,
+                             BoundArgsList, UnwrappedArgsList,
+                             BoundParamsList>::ok,
+      "The bound args need to be convertible to the target params.");
+
+  using BindState = MakeBindStateType<Functor, Args...>;
+  using UnboundRunType = MakeUnboundRunType<Functor, Args...>;
+  using Invoker = Invoker<BindState, UnboundRunType>;
+  using CallbackType = CallbackT<UnboundRunType>;
+
+  // Store the invoke func into PolymorphicInvoke before casting it to
+  // InvokeFuncStorage, so that we can ensure its type matches to
+  // PolymorphicInvoke, to which CallbackType will cast back.
+  using PolymorphicInvoke = typename CallbackType::PolymorphicInvoke;
+  PolymorphicInvoke invoke_func =
+      GetInvokeFunc<Invoker>(bool_constant<kIsOnce>());
+
+  using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
+  return CallbackType(BindState::Create(
+      reinterpret_cast<InvokeFuncStorage>(invoke_func),
+      std::forward<Functor>(functor), std::forward<Args>(args)...));
+}
+
+// Special cases for binding to a base::{Once, Repeating}Callback without extra
+// bound arguments. We CHECK() the validity of callback to guard against null
+// pointers accidentally ending up in posted tasks, causing hard-to-debug
+// crashes.
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        OnceCallback<Signature>>::value>* =
+              nullptr>
+OnceCallback<Signature> BindImpl(OnceCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
+
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        OnceCallback<Signature>>::value>* =
+              nullptr>
+OnceCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
+
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        RepeatingCallback<Signature>>::value>* =
+              nullptr>
+RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
 
 }  // namespace internal
 
@@ -927,6 +1346,16 @@ struct IsWeakReceiver<std::reference_wrapper<T>> : IsWeakReceiver<T> {};
 template <typename T>
 struct IsWeakReceiver<WeakPtr<T>> : std::true_type {};
 
+// An injection point to control how objects are checked for maybe validity,
+// which is an optimistic thread-safe check for full validity.
+template <typename>
+struct MaybeValidTraits {
+  template <typename T>
+  static bool MaybeValid(const T& o) {
+    return o.MaybeValid();
+  }
+};
+
 // An injection point to control how bound objects passed to the target
 // function. BindUnwrapTraits<>::Unwrap() is called for each bound objects right
 // before the target function is invoked.
@@ -944,8 +1373,10 @@ struct BindUnwrapTraits<internal::UnretainedWrapper<T>> {
 };
 
 template <typename T>
-struct BindUnwrapTraits<std::reference_wrapper<T>> {
-  static T& Unwrap(std::reference_wrapper<T> o) { return o.get(); }
+struct BindUnwrapTraits<internal::UnretainedRefWrapper<T>> {
+  static T& Unwrap(const internal::UnretainedRefWrapper<T>& o) {
+    return o.get();
+  }
 };
 
 template <typename T>
@@ -958,6 +1389,11 @@ struct BindUnwrapTraits<internal::OwnedWrapper<T, Deleter>> {
   static T* Unwrap(const internal::OwnedWrapper<T, Deleter>& o) {
     return o.get();
   }
+};
+
+template <typename T>
+struct BindUnwrapTraits<internal::OwnedRefWrapper<T>> {
+  static T& Unwrap(const internal::OwnedRefWrapper<T>& o) { return o.get(); }
 };
 
 template <typename T>
@@ -1002,7 +1438,7 @@ struct CallbackCancellationTraits<
   static bool MaybeValid(const Functor&,
                          const Receiver& receiver,
                          const Args&...) {
-    return receiver.MaybeValid();
+    return MaybeValidTraits<Receiver>::MaybeValid(receiver);
   }
 };
 
@@ -1019,7 +1455,7 @@ struct CallbackCancellationTraits<OnceCallback<Signature>,
 
   template <typename Functor>
   static bool MaybeValid(const Functor& functor, const BoundArgs&...) {
-    return functor.MaybeValid();
+    return MaybeValidTraits<Functor>::MaybeValid(functor);
   }
 };
 
@@ -1035,15 +1471,9 @@ struct CallbackCancellationTraits<RepeatingCallback<Signature>,
 
   template <typename Functor>
   static bool MaybeValid(const Functor& functor, const BoundArgs&...) {
-    return functor.MaybeValid();
+    return MaybeValidTraits<Functor>::MaybeValid(functor);
   }
 };
-
-// Returns a RunType of bound functor.
-// E.g. MakeUnboundRunType<R(A, B, C), A, B> is evaluated to R(C).
-template <typename Functor, typename... BoundArgs>
-using MakeUnboundRunType =
-    typename internal::BindTypeHelper<Functor, BoundArgs...>::UnboundRunType;
 
 }  // namespace base
 

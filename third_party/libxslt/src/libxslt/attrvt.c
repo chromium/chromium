@@ -48,7 +48,12 @@ struct _xsltAttrVT {
     /*
      * the content is an alternate of string and xmlXPathCompExprPtr
      */
-    void *segments[MAX_AVT_SEG];
+#if __STDC_VERSION__ >= 199901L
+    /* Using a C99 flexible array member avoids false positives under UBSan */
+    void *segments[];
+#else
+    void *segments[1];
+#endif
 };
 
 /**
@@ -62,15 +67,16 @@ struct _xsltAttrVT {
 static xsltAttrVTPtr
 xsltNewAttrVT(xsltStylesheetPtr style) {
     xsltAttrVTPtr cur;
+    size_t size = sizeof(xsltAttrVT) + MAX_AVT_SEG * sizeof(void*);
 
-    cur = (xsltAttrVTPtr) xmlMalloc(sizeof(xsltAttrVT));
+    cur = (xsltAttrVTPtr) xmlMalloc(size);
     if (cur == NULL) {
 	xsltTransformError(NULL, style, NULL,
 		"xsltNewAttrVTPtr : malloc failed\n");
 	if (style != NULL) style->errors++;
 	return(NULL);
     }
-    memset(cur, 0, sizeof(xsltAttrVT));
+    memset(cur, 0, size);
 
     cur->nb_seg = 0;
     cur->max_seg = MAX_AVT_SEG;
@@ -146,11 +152,14 @@ xsltFreeAVTList(void *avt) {
 static xsltAttrVTPtr
 xsltSetAttrVTsegment(xsltAttrVTPtr avt, void *val) {
     if (avt->nb_seg >= avt->max_seg) {
-	avt = (xsltAttrVTPtr) xmlRealloc(avt, sizeof(xsltAttrVT) +
-			avt->max_seg * sizeof(void *));
-	if (avt == NULL) {
+        size_t size = sizeof(xsltAttrVT) +
+                      (avt->max_seg + MAX_AVT_SEG) * sizeof(void *);
+	xsltAttrVTPtr tmp = (xsltAttrVTPtr) xmlRealloc(avt, size);
+	if (tmp == NULL) {
+            xsltFreeAttrVT(avt);
 	    return NULL;
 	}
+        avt = tmp;
 	memset(&avt->segments[avt->nb_seg], 0, MAX_AVT_SEG*sizeof(void *));
 	avt->max_seg += MAX_AVT_SEG;
     }
@@ -164,7 +173,7 @@ xsltSetAttrVTsegment(xsltAttrVTPtr avt, void *val) {
  * @attr: the attribute coming from the stylesheet.
  *
  * Precompile an attribute in a stylesheet, basically it checks if it is
- * an attrubute value template, and if yes establish some structures needed
+ * an attribute value template, and if yes, establish some structures needed
  * to process it at transformation time.
  */
 void

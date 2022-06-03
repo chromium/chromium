@@ -20,6 +20,11 @@ class NET_EXPORT StaticHttpUserAgentSettings : public HttpUserAgentSettings {
  public:
   StaticHttpUserAgentSettings(const std::string& accept_language,
                               const std::string& user_agent);
+
+  StaticHttpUserAgentSettings(const StaticHttpUserAgentSettings&) = delete;
+  StaticHttpUserAgentSettings& operator=(const StaticHttpUserAgentSettings&) =
+      delete;
+
   ~StaticHttpUserAgentSettings() override;
 
   void set_accept_language(const std::string& new_accept_language) {
@@ -33,8 +38,6 @@ class NET_EXPORT StaticHttpUserAgentSettings : public HttpUserAgentSettings {
  private:
   std::string accept_language_;
   const std::string user_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticHttpUserAgentSettings);
 };
 
 }  // namespace net

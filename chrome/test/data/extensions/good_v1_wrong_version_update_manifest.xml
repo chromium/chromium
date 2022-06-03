@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  This update manifest points to the good_v1.crx file. It is meant to be used
+  with a URLRequestMockHTTPJob, and the hostname must be kept in sync.
+-->
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <app appid='ldnnhddmnhbkjipkidpdiheffobcpfmf'>
+    <updatecheck codebase='http://update.extension/extensions/good_v1.crx'
+                 version='2.0.0.0' />
+   </app>
+</gupdate>

@@ -10,16 +10,12 @@ static_library("logging") {
     "logging.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "logging_unittest.cc",
-  ]
+  sources = [ "logging_unittest.cc" ]
 
   deps = [
     ":logging",

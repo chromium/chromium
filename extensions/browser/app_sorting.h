@@ -19,7 +19,16 @@ namespace extensions {
 class AppSorting {
  public:
   AppSorting() {}
+
+  AppSorting(const AppSorting&) = delete;
+  AppSorting& operator=(const AppSorting&) = delete;
+
   virtual ~AppSorting() {}
+
+  // Signals that ordinals for the WebAppProvider system should (or can) be
+  // loaded now. Calls to the WebAppProvider system should not be done before
+  // this is called. Called from WebAppUiManagerImpl::Start().
+  virtual void InitializePageOrdinalMapFromWebApps() = 0;
 
   // Resolves any conflicts the might be created as a result of syncing that
   // results in two icons having the same page and app launch ordinal. After
@@ -108,9 +117,6 @@ class AppSorting {
   // extension visible.
   virtual void SetExtensionVisible(const std::string& extension_id,
                                    bool visible) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSorting);
 };
 
 }  // namespace extensions

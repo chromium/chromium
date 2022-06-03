@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_TRANSFORMED_HIT_TEST_LOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_TRANSFORMED_HIT_TEST_LOCATION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 
 namespace blink {
@@ -17,7 +18,7 @@ class AffineTransform;
 //
 // Encapsulates logic to avoid creating/copying the HitTestLocation for example
 // if the AffineTransform is the identity.
-class TransformedHitTestLocation {
+class CORE_EXPORT TransformedHitTestLocation {
   DISALLOW_NEW();
 
  public:
@@ -39,7 +40,7 @@ class TransformedHitTestLocation {
   explicit operator bool() const { return location_; }
 
  private:
-  base::Optional<HitTestLocation> storage_;
+  absl::optional<HitTestLocation> storage_;
   const HitTestLocation* location_;
 };
 

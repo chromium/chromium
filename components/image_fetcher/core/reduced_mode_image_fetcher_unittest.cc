@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,8 +43,6 @@ namespace image_fetcher {
 
 namespace {
 
-const GURL kImageUrl = GURL("http://gstatic.img.com/foo.jpg");
-
 constexpr char kUmaClientName[] = "TestUma";
 constexpr char kImageData[] = "data";
 
@@ -56,6 +53,10 @@ const char kImageFetcherEventHistogramName[] = "ImageFetcher.Events";
 class ReducedModeImageFetcherTest : public testing::Test {
  public:
   ReducedModeImageFetcherTest() {}
+
+  ReducedModeImageFetcherTest(const ReducedModeImageFetcherTest&) = delete;
+  ReducedModeImageFetcherTest& operator=(const ReducedModeImageFetcherTest&) =
+      delete;
 
   ~ReducedModeImageFetcherTest() override {
     reduced_mode_image_fetcher_.reset();
@@ -86,7 +87,8 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
     // Use an initial request to start the cache up.
     image_cache_->SaveImage(kImageUrl.spec(), kImageData,
-                            /* needs_transcoding */ false);
+                            /* needs_transcoding */ false,
+                            /* expiration_interval */ absl::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     image_cache_->DeleteImage(kImageUrl.spec());
@@ -138,6 +140,9 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
   MOCK_METHOD2(OnImageLoaded, void(bool, std::string));
 
+ protected:
+  GURL kImageUrl{"http://gstatic.img.com/foo.jpg"};
+
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;
   std::unique_ptr<ImageFetcher> cached_image_fetcher_;
@@ -154,21 +159,21 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReducedModeImageFetcherTest);
 };
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
   // Save the image that needs transcoding in the database.
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ true);
+                           /* needs_transcoding */ true,
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 
 TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
   // Save the image that doesn't need transcoding in the database.
   image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ false);
+                           /* needs_transcoding */ false,
+                           /* expiration_interval */ absl::nullopt);
   VerifyCacheHit();
 }
 

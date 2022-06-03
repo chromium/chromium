@@ -8,31 +8,20 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FormSuggestion ()
-// Local initializer for a FormSuggestion.
-- (instancetype)initWithValue:(NSString*)value
-           displayDescription:(NSString*)displayDescription
-                         icon:(NSString*)icon
-                   identifier:(NSInteger)identifier;
-@end
-
 @implementation FormSuggestion
 
-@synthesize value = _value;
-@synthesize displayDescription = _displayDescription;
-@synthesize icon = _icon;
-@synthesize identifier = _identifier;
-
 - (instancetype)initWithValue:(NSString*)value
            displayDescription:(NSString*)displayDescription
                          icon:(NSString*)icon
-                   identifier:(NSInteger)identifier {
+                   identifier:(NSInteger)identifier
+               requiresReauth:(BOOL)requiresReauth {
   self = [super init];
   if (self) {
     _value = [value copy];
     _displayDescription = [displayDescription copy];
     _icon = [icon copy];
     _identifier = identifier;
+    _requiresReauth = requiresReauth;
   }
   return self;
 }
@@ -40,11 +29,13 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(NSString*)icon
-                            identifier:(NSInteger)identifier {
+                            identifier:(NSInteger)identifier
+                        requiresReauth:(BOOL)requiresReauth {
   return [[FormSuggestion alloc] initWithValue:value
                             displayDescription:displayDescription
                                           icon:icon
-                                    identifier:identifier];
+                                    identifier:identifier
+                                requiresReauth:requiresReauth];
 }
 
 @end

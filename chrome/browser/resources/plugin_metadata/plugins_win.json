@@ -1,5 +1,5 @@
 {
-  "x-version": 57,
+  "x-version": 61,
   "adobe-flash-player": {
     "mime_types": [
       "application/futuresplash",
@@ -7,9 +7,9 @@
     ],
     "versions": [
       {
-        "version": "32.0.0.255",
+        "version": "32.0.0.445",
         "status": "requires_authorization",
-        "reference": "https://helpx.adobe.com/security/products/flash-player/apsb19-46.html"
+        "reference": "https://helpx.adobe.com/security/products/flash-player/apsb20-58.html"
       }
     ],
     "lang": "en-US",
@@ -17,7 +17,8 @@
     "help_url": "https://support.google.com/chrome/?p=plugin_flash",
     "url": "https://support.google.com/chrome/answer/6258784",
     "displayurl": true,
-    "group_name_matcher": "*Shockwave Flash*"
+    "group_name_matcher": "*Shockwave Flash*",
+    "plugin_is_deprecated": true
   },
   "google-chrome-pdf": {
     "mime_types": [

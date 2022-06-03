@@ -1,4 +1,4 @@
-rohitrao@chromium.org
+file://chrome/updater/OWNERS
 
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS
+# For iOS / obj-C specific issues:
+rohitrao@chromium.org

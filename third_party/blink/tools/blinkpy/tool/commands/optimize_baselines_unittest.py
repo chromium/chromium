@@ -20,26 +20,41 @@ class TestOptimizeBaselines(BaseTestCase):
 
     def test_optimize_all_suffixes_by_default(self):
         test_port = self.tool.port_factory.get('test')
-        self._write_test_file(test_port, 'another/test.html', 'Dummy test contents')
-        self._write_test_file(test_port, 'platform/test-mac-mac10.10/another/test-expected.txt', 'result A')
-        self._write_test_file(test_port, 'platform/test-mac-mac10.10/another/test-expected.png', 'result A png')
-        self._write_test_file(test_port, 'another/test-expected.txt', 'result A')
-        self._write_test_file(test_port, 'another/test-expected.png', 'result A png')
+        self._write_test_file(test_port, 'another/test.html',
+                              'Dummy test contents')
+        self._write_test_file(
+            test_port, 'platform/test-mac-mac10.10/another/test-expected.txt',
+            'result A')
+        self._write_test_file(
+            test_port, 'platform/test-mac-mac10.10/another/test-expected.png',
+            'result A png')
+        self._write_test_file(test_port, 'another/test-expected.txt',
+                              'result A')
+        self._write_test_file(test_port, 'another/test-expected.png',
+                              'result A png')
 
         self.command.execute(
-            optparse.Values({'suffixes': 'txt,wav,png', 'no_modify_git': True, 'platform': 'test-mac-mac10.10'}),
-            ['another/test.html'],
-            self.tool)
+            optparse.Values({
+                'suffixes': 'txt,wav,png',
+                'no_modify_git': True,
+                'platform': 'test-mac-mac10.10'
+            }), ['another/test.html'], self.tool)
 
         self.assertFalse(
-            self.tool.filesystem.exists(self.tool.filesystem.join(
-                test_port.web_tests_dir(), 'platform/mac/another/test-expected.txt')))
+            self.tool.filesystem.exists(
+                self.tool.filesystem.join(
+                    test_port.web_tests_dir(),
+                    'platform/mac/another/test-expected.txt')))
         self.assertFalse(
-            self.tool.filesystem.exists(self.tool.filesystem.join(
-                test_port.web_tests_dir(), 'platform/mac/another/test-expected.png')))
+            self.tool.filesystem.exists(
+                self.tool.filesystem.join(
+                    test_port.web_tests_dir(),
+                    'platform/mac/another/test-expected.png')))
         self.assertTrue(
-            self.tool.filesystem.exists(self.tool.filesystem.join(
-                test_port.web_tests_dir(), 'another/test-expected.txt')))
+            self.tool.filesystem.exists(
+                self.tool.filesystem.join(test_port.web_tests_dir(),
+                                          'another/test-expected.txt')))
         self.assertTrue(
-            self.tool.filesystem.exists(self.tool.filesystem.join(
-                test_port.web_tests_dir(), 'another/test-expected.png')))
+            self.tool.filesystem.exists(
+                self.tool.filesystem.join(test_port.web_tests_dir(),
+                                          'another/test-expected.png')))

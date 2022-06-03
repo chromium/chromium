@@ -44,7 +44,9 @@ const SecurityInterstitialCommandId = {
   CMD_OPEN_REPORTING_PRIVACY: 10,
   CMD_OPEN_WHITEPAPER: 11,
   // Report a phishing error.
-  CMD_REPORT_PHISHING_ERROR: 12
+  CMD_REPORT_PHISHING_ERROR: 12,
+  // Open enhanced protection settings.
+  CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: 13,
 };
 
 const HIDDEN_CLASS = 'hidden';
@@ -95,19 +97,21 @@ function sendCommand(cmd) {
       case SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR:
         certificateErrorPageController.reportPhishingError();
         break;
+      case SecurityInterstitialCommandId.CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+        certificateErrorPageController.openEnhancedProtectionSettings();
+        break;
     }
     return;
   }
-// <if expr="not is_ios">
+  // <if expr="not is_ios">
   window.domAutomationController.send(cmd);
-// </if>
-// <if expr="is_ios">
-  // TODO(crbug.com/565877): Revisit message passing for WKWebView.
-  const iframe = document.createElement('IFRAME');
-  iframe.setAttribute('src', 'js-command:' + cmd);
-  document.documentElement.appendChild(iframe);
-  iframe.parentNode.removeChild(iframe);
-// </if>
+  // </if>
+  // <if expr="is_ios">
+  // Send commands for iOS committed interstitials.
+  /** @suppress {undefinedVars|missingProperties} */ (function() {
+    __gCrWeb.message.invokeOnHost({'command': 'blockingPage.' + cmd});
+  })();
+  // </if>
 }
 
 /**
@@ -117,11 +121,31 @@ function sendCommand(cmd) {
 function preventDefaultOnPoundLinkClicks() {
   document.addEventListener('click', function(e) {
     const anchor = findAncestor(/** @type {Node} */ (e.target), function(el) {
-      return el.tagName == 'A';
+      return el.tagName === 'A';
     });
     // Use getAttribute() to prevent URL normalization.
-    if (anchor && anchor.getAttribute('href') == '#') {
+    if (anchor && anchor.getAttribute('href') === '#') {
       e.preventDefault();
     }
   });
 }
+
+// <if expr="is_ios">
+/**
+ * Ensures interstitial pages on iOS aren't loaded from cache, which breaks
+ * the commands due to ErrorRetryStateMachine::DidFailProvisionalNavigation
+ * not getting triggered.
+ */
+function setupIosRefresh() {
+  const load = () => {
+    window.location.replace(loadTimeData.getString('url_to_reload'));
+  };
+  window.addEventListener('pageshow', function(e) {
+    window.onpageshow = load;
+  }, {once: true});
+}
+// </if>
+
+// <if expr="is_ios">
+document.addEventListener('DOMContentLoaded', setupIosRefresh);
+// </if>

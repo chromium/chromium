@@ -4,6 +4,9 @@
 
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
+#include "base/strings/string_piece.h"
+#include "base/trace_event/trace_event.h"
+
 namespace mojo {
 
 GenericPendingReceiver::GenericPendingReceiver() = default;
@@ -11,7 +14,7 @@ GenericPendingReceiver::GenericPendingReceiver() = default;
 GenericPendingReceiver::GenericPendingReceiver(
     base::StringPiece interface_name,
     mojo::ScopedMessagePipeHandle receiving_pipe)
-    : interface_name_(interface_name.as_string()),
+    : interface_name_(std::string(interface_name)),
       pipe_(std::move(receiving_pipe)) {}
 
 GenericPendingReceiver::GenericPendingReceiver(GenericPendingReceiver&&) =
@@ -39,6 +42,11 @@ mojo::ScopedMessagePipeHandle GenericPendingReceiver::PassPipeIfNameIs(
   if (interface_name_ == interface_name)
     return PassPipe();
   return mojo::ScopedMessagePipeHandle();
+}
+
+void GenericPendingReceiver::WriteIntoTrace(perfetto::TracedValue ctx) const {
+  auto dict = std::move(ctx).WriteDictionary();
+  dict.Add("interface_name", interface_name_);
 }
 
 }  // namespace mojo

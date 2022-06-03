@@ -5,8 +5,9 @@
 #ifndef ASH_PUBLIC_CPP_NOTIFIER_METADATA_H_
 #define ASH_PUBLIC_CPP_NOTIFIER_METADATA_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -18,7 +19,7 @@ struct ASH_PUBLIC_EXPORT NotifierMetadata {
   NotifierMetadata(const NotifierMetadata& other);
   NotifierMetadata(NotifierMetadata&& other);
   NotifierMetadata(const message_center::NotifierId& notifier_id,
-                   const base::string16& name,
+                   const std::u16string& name,
                    bool enabled,
                    bool enforced,
                    const gfx::ImageSkia& icon);
@@ -32,7 +33,7 @@ struct ASH_PUBLIC_EXPORT NotifierMetadata {
   message_center::NotifierId notifier_id;
 
   // The user-visible name of the notifier (e.g. an extension's name).
-  base::string16 name;
+  std::u16string name;
 
   // True if notifications from the notifier are presently enabled.
   bool enabled = false;

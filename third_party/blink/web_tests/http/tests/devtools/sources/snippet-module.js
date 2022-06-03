@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       'Verifies that modules can be loaded via import() in snippets\n');
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   const sourceCode = `
@@ -26,10 +26,10 @@
   uiSourceCode.setContent(sourceCode);
   await Common.Revealer.reveal(uiSourceCode);
   await uiSourceCode.rename('my_snippet_name');
-  Sources.SourcesPanel.instance()._runSnippet();
+  Sources.SourcesPanel.instance().runSnippet();
 
   await ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   Console.ConsoleView.clearConsole();
   TestRunner.completeTest();
 })();

@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace android {
@@ -21,6 +20,10 @@ class SequencedTaskRunner;
 
 class AfterStartupTaskUtils {
  public:
+  AfterStartupTaskUtils() = delete;
+  AfterStartupTaskUtils(const AfterStartupTaskUtils&) = delete;
+  AfterStartupTaskUtils& operator=(const AfterStartupTaskUtils&) = delete;
+
   // Observes startup and when complete runs tasks that have accrued.
   static void StartMonitoringStartup();
 
@@ -43,11 +46,6 @@ class AfterStartupTaskUtils {
 
   static void UnsafeResetForTesting();
 
-  // Normally on startup, some tasks are scheduled with a random delay. This is
-  // not desirable during testing where it adds non-determinism and slows down
-  // test execution.
-  static void DisableScheduleTaskDelayForTesting();
-
  private:
   // TODO(wkorman): Look into why Android calls
   // SetBrowserStartupIsComplete() directly. Ideally it would use
@@ -55,8 +53,6 @@ class AfterStartupTaskUtils {
   friend class android::AfterStartupTaskUtilsJNI;
 
   static void SetBrowserStartupIsComplete();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AfterStartupTaskUtils);
 };
 
 #endif  // CHROME_BROWSER_AFTER_STARTUP_TASK_UTILS_H_

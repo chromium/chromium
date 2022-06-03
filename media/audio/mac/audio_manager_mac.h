@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
@@ -32,6 +31,10 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
  public:
   AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
+
+  AudioManagerMac(const AudioManagerMac&) = delete;
+  AudioManagerMac& operator=(const AudioManagerMac&) = delete;
+
   ~AudioManagerMac() override;
 
   // Implementation of AudioManager.
@@ -169,21 +172,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   // Returns true if any active input stream is using the specified |device_id|.
   bool AudioDeviceIsUsedForInput(AudioDeviceID device_id);
 
-  // This method is called when an output stream has been released and it takes
-  // the given |device_id| and scans all active output streams that are
-  // using this id. The goal is to find a new (larger) I/O buffer size which
-  // can be applied to all active output streams since doing so will save
-  // system resources.
-  // Note that, it is only called if no input stream is also using the device.
-  // Example: two active output streams where #1 wants 1024 as buffer size but
-  // is using 256 since stream #2 wants it. Now, if stream #2 is closed down,
-  // the native I/O buffer size will be increased to 1024 instead of 256.
-  // Returns true if it was possible to increase the I/O buffer size and
-  // false otherwise.
-  // TODO(henrika): possibly extend the scheme to also take input streams into
-  // account.
-  void IncreaseIOBufferSizeIfPossible(AudioDeviceID device_id);
-
   std::string GetDefaultDeviceID(bool is_input);
 
   std::unique_ptr<AudioDeviceListenerMac> output_device_listener_;
@@ -208,17 +196,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   std::list<AUAudioInputStream*> low_latency_input_streams_;
   std::list<AUHALStream*> output_streams_;
 
-  // Maps device IDs and their corresponding actual (I/O) buffer sizes for
-  // all output streams using the specific device.
-  std::map<AudioDeviceID, size_t> output_io_buffer_size_map_;
-
   // Set to true in the destructor. Ensures that methods that touches native
   // Core Audio APIs are not executed during shutdown.
   bool in_shutdown_;
 
   base::WeakPtrFactory<AudioManagerMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerMac);
 };
 
 }  // namespace media

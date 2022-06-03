@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <bitset>
-#include "base/single_thread_task_runner.h"
+
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -41,13 +44,6 @@ class ThreadedWorkletObjectProxyForTest final
     EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
     reported_features_.set(static_cast<size_t>(feature));
     ThreadedWorkletObjectProxy::CountFeature(feature);
-  }
-
-  void CountDeprecation(WebFeature feature) final {
-    // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
-    reported_features_.set(static_cast<size_t>(feature));
-    ThreadedWorkletObjectProxy::CountDeprecation(feature);
   }
 
  private:
@@ -93,23 +89,34 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
 
+  void TestAgentCluster(base::UnguessableToken owner_agent_cluster_id) {
+    ASSERT_TRUE(owner_agent_cluster_id);
+    EXPECT_EQ(GlobalScope()->GetAgentClusterID(), owner_agent_cluster_id);
+    PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
+                        CrossThreadBindOnce(&test::ExitRunLoop));
+  }
+
   void TestContentSecurityPolicy() {
     EXPECT_TRUE(IsCurrentThread());
     ContentSecurityPolicy* csp = GlobalScope()->GetContentSecurityPolicy();
+    KURL main_document_url = KURL("https://example.com/script.js");
 
-    // The "script-src 'self'" directive allows this.
-    EXPECT_TRUE(csp->AllowScriptFromSource(GlobalScope()->Url(), String(),
-                                           IntegrityMetadataSet(),
-                                           kParserInserted));
+    // The "script-src 'self'" directive allows |main_document_url| since it is
+    // same-origin with the main document.
+    EXPECT_TRUE(csp->AllowScriptFromSource(
+        main_document_url, String(), IntegrityMetadataSet(), kParserInserted,
+        main_document_url, RedirectStatus::kNoRedirect));
 
     // The "script-src https://allowed.example.com" should allow this.
-    EXPECT_TRUE(csp->AllowScriptFromSource(KURL("https://allowed.example.com"),
-                                           String(), IntegrityMetadataSet(),
-                                           kParserInserted));
+    EXPECT_TRUE(csp->AllowScriptFromSource(
+        KURL("https://allowed.example.com"), String(), IntegrityMetadataSet(),
+        kParserInserted, KURL("https://allowed.example.com"),
+        RedirectStatus::kNoRedirect));
 
     EXPECT_FALSE(csp->AllowScriptFromSource(
         KURL("https://disallowed.example.com"), String(),
-        IntegrityMetadataSet(), kParserInserted));
+        IntegrityMetadataSet(), kParserInserted,
+        KURL("https://disallowed.example.com"), RedirectStatus::kNoRedirect));
 
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
@@ -121,11 +128,12 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
     EXPECT_TRUE(IsCurrentThread());
 
     // At this point check that the CSP that was set is indeed invalid.
-    ContentSecurityPolicy* csp = GlobalScope()->GetContentSecurityPolicy();
-    EXPECT_EQ(1ul, csp->Headers().size());
-    EXPECT_EQ("invalid-csp", csp->Headers().at(0).first);
-    EXPECT_EQ(kContentSecurityPolicyHeaderTypeEnforce,
-              csp->Headers().at(0).second);
+    const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& csp =
+        GlobalScope()->GetContentSecurityPolicy()->GetParsedPolicies();
+    EXPECT_EQ(1ul, csp.size());
+    EXPECT_EQ("invalid-csp", csp[0]->header->header_value);
+    EXPECT_EQ(network::mojom::ContentSecurityPolicyType::kEnforce,
+              csp[0]->header->type);
 
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
@@ -134,7 +142,7 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   // Emulates API use on threaded WorkletGlobalScope.
   void CountFeature(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
-    GlobalScope()->CountFeature(feature);
+    GlobalScope()->CountUse(feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -142,13 +150,7 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   // Emulates deprecated API use on threaded WorkletGlobalScope.
   void CountDeprecation(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
-    GlobalScope()->CountDeprecation(feature);
-
-    // countDeprecation() should add a warning message.
-    EXPECT_EQ(1u, GetConsoleMessageStorage()->size());
-    String console_message = GetConsoleMessageStorage()->at(0)->Message();
-    EXPECT_TRUE(console_message.Contains("deprecated"));
-
+    Deprecation::CountDeprecation(GlobalScope(), feature);
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
   }
@@ -165,7 +167,7 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
  private:
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) final {
-    auto* global_scope = MakeGarbageCollected<WorkletGlobalScope>(
+    auto* global_scope = MakeGarbageCollected<FakeWorkletGlobalScope>(
         std::move(creation_params), GetWorkerReportingProxy(), this);
     EXPECT_FALSE(global_scope->IsMainThreadWorkletGlobalScope());
     EXPECT_TRUE(global_scope->IsThreadedWorkletGlobalScope());
@@ -192,25 +194,41 @@ class ThreadedWorkletMessagingProxyForTest
   ~ThreadedWorkletMessagingProxyForTest() override = default;
 
   void Start() {
-    Document* document = To<Document>(GetExecutionContext());
-    std::unique_ptr<Vector<char>> cached_meta_data = nullptr;
+    std::unique_ptr<Vector<char>> cached_meta_data;
     WorkerClients* worker_clients = nullptr;
-    std::unique_ptr<WorkerSettings> worker_settings = nullptr;
+    std::unique_ptr<WorkerSettings> worker_settings;
     InitializeWorkerThread(
         std::make_unique<GlobalScopeCreationParams>(
-            document->Url(), mojom::ScriptType::kModule,
-            OffMainThreadWorkerScriptFetchOption::kEnabled, "threaded_worklet",
-            document->UserAgent(), nullptr /* web_worker_fetch_context */,
-            document->GetContentSecurityPolicy()->Headers(),
-            document->GetReferrerPolicy(), document->GetSecurityOrigin(),
-            document->IsSecureContext(), document->GetHttpsState(),
-            worker_clients, nullptr /* content_settings_client */,
-            document->GetSecurityContext().AddressSpace(),
-            OriginTrialContext::GetTokens(document).get(),
+            GetExecutionContext()->Url(), mojom::blink::ScriptType::kModule,
+            "threaded_worklet", GetExecutionContext()->UserAgent(),
+            To<LocalDOMWindow>(GetExecutionContext())
+                ->GetFrame()
+                ->Loader()
+                .UserAgentMetadata(),
+            nullptr /* web_worker_fetch_context */,
+            mojo::Clone(GetExecutionContext()
+                            ->GetContentSecurityPolicy()
+                            ->GetParsedPolicies()),
+            Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+            GetExecutionContext()->GetReferrerPolicy(),
+            GetExecutionContext()->GetSecurityOrigin(),
+            GetExecutionContext()->IsSecureContext(),
+            GetExecutionContext()->GetHttpsState(), worker_clients,
+            nullptr /* content_settings_client */,
+            GetExecutionContext()->AddressSpace(),
+            OriginTrialContext::GetTokens(GetExecutionContext()).get(),
             base::UnguessableToken::Create(), std::move(worker_settings),
-            kV8CacheOptionsDefault,
-            MakeGarbageCollected<WorkletModuleResponsesMap>()),
-        base::nullopt);
+            mojom::blink::V8CacheOptions::kDefault,
+            MakeGarbageCollected<WorkletModuleResponsesMap>(),
+            mojo::NullRemote() /* browser_interface_broker */,
+            To<LocalDOMWindow>(GetExecutionContext())
+                ->GetFrame()
+                ->Loader()
+                .CreateWorkerCodeCacheHost(),
+            BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+            GetExecutionContext()->GetAgentClusterID(), ukm::kInvalidSourceId,
+            GetExecutionContext()->GetExecutionContextToken()),
+        absl::nullopt, absl::nullopt);
   }
 
  private:
@@ -227,14 +245,15 @@ class ThreadedWorkletTest : public testing::Test {
     page_ = std::make_unique<DummyPageHolder>();
     KURL url("https://example.com/");
     page_->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
 
     messaging_proxy_ =
         MakeGarbageCollected<ThreadedWorkletMessagingProxyForTest>(
-            &page_->GetDocument());
+            page_->GetFrame().DomWindow());
     ThreadedWorkletThreadForTest::EnsureSharedBackingThread();
   }
 
@@ -255,6 +274,9 @@ class ThreadedWorkletTest : public testing::Test {
         messaging_proxy_->GetWorkerThread());
   }
 
+  ExecutionContext* GetExecutionContext() {
+    return page_->GetFrame().DomWindow();
+  }
   Document& GetDocument() { return page_->GetDocument(); }
 
  private:
@@ -272,14 +294,28 @@ TEST_F(ThreadedWorkletTest, SecurityOrigin) {
   test::EnterRunLoop();
 }
 
+TEST_F(ThreadedWorkletTest, AgentCluster) {
+  MessagingProxy()->Start();
+
+  // The worklet should be in the owner window's agent cluster.
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&ThreadedWorkletThreadForTest::TestAgentCluster,
+                          CrossThreadUnretained(GetWorkerThread()),
+                          GetExecutionContext()->GetAgentClusterID()));
+  test::EnterRunLoop();
+}
+
 TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
   // Set up the CSP for Document before starting ThreadedWorklet because
   // ThreadedWorklet inherits the owner Document's CSP.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("script-src 'self' https://allowed.example.com",
-                        kContentSecurityPolicyHeaderTypeEnforce,
-                        kContentSecurityPolicyHeaderSourceHTTP);
-  GetDocument().InitContentSecurityPolicy(csp);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'self' https://allowed.example.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
+  GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
 
@@ -293,9 +329,11 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
 
 TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader("invalid-csp", kContentSecurityPolicyHeaderTypeEnforce,
-                        kContentSecurityPolicyHeaderSourceHTTP);
-  GetDocument().InitContentSecurityPolicy(csp);
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "invalid-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      *(GetExecutionContext()->GetSecurityOrigin())));
+  GetExecutionContext()->SetContentSecurityPolicy(csp);
 
   MessagingProxy()->Start();
 

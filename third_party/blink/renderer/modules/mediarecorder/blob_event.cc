@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "third_party/blink/renderer/modules/mediarecorder/blob_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_blob_event_init.h"
 
 namespace blink {
 
@@ -20,7 +20,7 @@ const AtomicString& BlobEvent::InterfaceName() const {
   return event_interface_names::kBlobEvent;
 }
 
-void BlobEvent::Trace(blink::Visitor* visitor) {
+void BlobEvent::Trace(Visitor* visitor) const {
   visitor->Trace(blob_);
   Event::Trace(visitor);
 }

@@ -16,15 +16,25 @@ static int ComputeEdgeWidth(const BorderImageLength& border_slice,
                             int image_side,
                             int box_extent) {
   if (border_slice.IsNumber())
-    return LayoutUnit(border_slice.Number() * border_side).Round();
+    return LayoutUnit(border_slice.Number() * border_side).Floor();
   if (border_slice.length().IsAuto())
     return image_side;
-  return ValueForLength(border_slice.length(), LayoutUnit(box_extent)).Round();
+  return ValueForLength(border_slice.length(), LayoutUnit(box_extent)).Floor();
 }
 
-static int ComputeEdgeSlice(const Length& slice, int maximum) {
-  return std::min<int>(maximum,
-                       ValueForLength(slice, LayoutUnit(maximum)).Round());
+static float ComputeEdgeSlice(const Length& slice,
+                              float slice_scale,
+                              float maximum) {
+  float resolved;
+  // If the slice is a <number> (stored as a fixed Length), scale it by the
+  // slice scale to get to the same space as the image.
+  if (slice.IsFixed()) {
+    resolved = slice.Value() * slice_scale;
+  } else {
+    DCHECK(slice.IsPercent());
+    resolved = FloatValueForLength(slice, maximum);
+  }
+  return std::min(maximum, resolved);
 }
 
 // Scale the width of the |start| and |end| edges using |scale_factor|.
@@ -47,43 +57,60 @@ static void ScaleEdgeWidths(NinePieceImageGrid::Edge& start,
 }
 
 NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
-                                       IntSize image_size,
+                                       FloatSize image_size,
+                                       const FloatSize& slice_scale,
+                                       float zoom,
                                        IntRect border_image_area,
                                        const IntRectOutsets& border_widths,
-                                       bool include_left_edge,
-                                       bool include_right_edge)
+                                       PhysicalBoxSides sides_to_include)
     : border_image_area_(border_image_area),
       image_size_(image_size),
       horizontal_tile_rule_(nine_piece_image.HorizontalRule()),
       vertical_tile_rule_(nine_piece_image.VerticalRule()),
       fill_(nine_piece_image.Fill()) {
-  top_.slice = ComputeEdgeSlice(nine_piece_image.ImageSlices().Top(),
-                                image_size.Height());
-  right_.slice = ComputeEdgeSlice(nine_piece_image.ImageSlices().Right(),
-                                  image_size.Width());
-  bottom_.slice = ComputeEdgeSlice(nine_piece_image.ImageSlices().Bottom(),
-                                   image_size.Height());
-  left_.slice = ComputeEdgeSlice(nine_piece_image.ImageSlices().Left(),
-                                 image_size.Width());
+  const LengthBox& image_slices = nine_piece_image.ImageSlices();
+  top_.slice = ComputeEdgeSlice(image_slices.Top(), slice_scale.height(),
+                                image_size.height());
+  right_.slice = ComputeEdgeSlice(image_slices.Right(), slice_scale.width(),
+                                  image_size.width());
+  bottom_.slice = ComputeEdgeSlice(image_slices.Bottom(), slice_scale.height(),
+                                   image_size.height());
+  left_.slice = ComputeEdgeSlice(image_slices.Left(), slice_scale.width(),
+                                 image_size.width());
 
   // TODO(fs): Compute edge widths to LayoutUnit, and then only round to
   // integer at the end - after (potential) compensation for overlapping edges.
-  top_.width = ComputeEdgeWidth(nine_piece_image.BorderSlices().Top(),
-                                border_widths.Top(), top_.slice,
-                                border_image_area.Height());
-  right_.width = include_right_edge
-                     ? ComputeEdgeWidth(nine_piece_image.BorderSlices().Right(),
-                                        border_widths.Right(), right_.slice,
-                                        border_image_area.Width())
-                     : 0;
-  bottom_.width = ComputeEdgeWidth(nine_piece_image.BorderSlices().Bottom(),
-                                   border_widths.Bottom(), bottom_.slice,
-                                   border_image_area.Height());
-  left_.width = include_left_edge
-                    ? ComputeEdgeWidth(nine_piece_image.BorderSlices().Left(),
-                                       border_widths.Left(), left_.slice,
-                                       border_image_area.Width())
-                    : 0;
+
+  // |Edge::slice| is in image-local units (physical pixels for raster images),
+  // but when using it to resolve 'auto' for border-image-widths we want it to
+  // be in zoomed CSS pixels, so divide by |slice_scale| and multiply by zoom.
+  const FloatSize auto_slice_adjustment(zoom / slice_scale.width(),
+                                        zoom / slice_scale.height());
+  const BorderImageLengthBox& border_slices = nine_piece_image.BorderSlices();
+  top_.width =
+      sides_to_include.top
+          ? ComputeEdgeWidth(border_slices.Top(), border_widths.Top(),
+                             top_.slice * auto_slice_adjustment.height(),
+                             border_image_area.height())
+          : 0;
+  right_.width =
+      sides_to_include.right
+          ? ComputeEdgeWidth(border_slices.Right(), border_widths.Right(),
+                             right_.slice * auto_slice_adjustment.width(),
+                             border_image_area.width())
+          : 0;
+  bottom_.width =
+      sides_to_include.bottom
+          ? ComputeEdgeWidth(border_slices.Bottom(), border_widths.Bottom(),
+                             bottom_.slice * auto_slice_adjustment.height(),
+                             border_image_area.height())
+          : 0;
+  left_.width =
+      sides_to_include.left
+          ? ComputeEdgeWidth(border_slices.Left(), border_widths.Left(),
+                             left_.slice * auto_slice_adjustment.width(),
+                             border_image_area.width())
+          : 0;
 
   // The spec says: Given Lwidth as the width of the border image area, Lheight
   // as its height, and Wside as the border image width offset for the side, let
@@ -92,40 +119,49 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
   int border_side_width = base::ClampAdd(left_.width, right_.width).Max(1);
   int border_side_height = base::ClampAdd(top_.width, bottom_.width).Max(1);
   float border_side_scale_factor =
-      std::min((float)border_image_area.Width() / border_side_width,
-               (float)border_image_area.Height() / border_side_height);
+      std::min((float)border_image_area.width() / border_side_width,
+               (float)border_image_area.height() / border_side_height);
   if (border_side_scale_factor < 1) {
-    ScaleEdgeWidths(top_, bottom_, border_image_area.Height(),
+    ScaleEdgeWidths(top_, bottom_, border_image_area.height(),
                     border_side_scale_factor);
-    ScaleEdgeWidths(left_, right_, border_image_area.Width(),
+    ScaleEdgeWidths(left_, right_, border_image_area.width(),
                     border_side_scale_factor);
   }
 }
 
 // Given a rectangle, construct a subrectangle using offset, width and height.
 // Negative offsets are relative to the extent of the given rectangle.
+static FloatRect Subrect(FloatRect rect,
+                         float offset_x,
+                         float offset_y,
+                         float width,
+                         float height) {
+  float base_x = rect.x();
+  if (offset_x < 0)
+    base_x = rect.right();
+
+  float base_y = rect.y();
+  if (offset_y < 0)
+    base_y = rect.bottom();
+
+  return FloatRect(base_x + offset_x, base_y + offset_y, width, height);
+}
+
 static FloatRect Subrect(IntRect rect,
                          float offset_x,
                          float offset_y,
                          float width,
                          float height) {
-  float base_x = rect.X();
-  if (offset_x < 0)
-    base_x = rect.MaxX();
-
-  float base_y = rect.Y();
-  if (offset_y < 0)
-    base_y = rect.MaxY();
-
-  return FloatRect(base_x + offset_x, base_y + offset_y, width, height);
+  return Subrect(FloatRect(rect), offset_x, offset_y, width, height);
 }
 
-static FloatRect Subrect(IntSize size,
+static FloatRect Subrect(FloatSize size,
                          float offset_x,
                          float offset_y,
                          float width,
                          float height) {
-  return Subrect(IntRect(IntPoint(), size), offset_x, offset_y, width, height);
+  return Subrect(FloatRect(FloatPoint(), size), offset_x, offset_y, width,
+                 height);
 }
 
 static inline void SetCornerPiece(
@@ -182,7 +218,8 @@ static inline void SetHorizontalEdge(
     const FloatRect& source,
     const FloatRect& destination,
     ENinePieceImageRule tile_rule) {
-  draw_info.is_drawable = edge.IsDrawable() && source.Width() > 0;
+  draw_info.is_drawable =
+      edge.IsDrawable() && source.width() > 0 && destination.width() > 0;
   if (draw_info.is_drawable) {
     draw_info.source = source;
     draw_info.destination = destination;
@@ -197,7 +234,8 @@ static inline void SetVerticalEdge(
     const FloatRect& source,
     const FloatRect& destination,
     ENinePieceImageRule tile_rule) {
-  draw_info.is_drawable = edge.IsDrawable() && source.Height() > 0;
+  draw_info.is_drawable =
+      edge.IsDrawable() && source.height() > 0 && destination.height() > 0;
   if (draw_info.is_drawable) {
     draw_info.source = source;
     draw_info.destination = destination;
@@ -208,43 +246,44 @@ static inline void SetVerticalEdge(
 
 void NinePieceImageGrid::SetDrawInfoEdge(NinePieceDrawInfo& draw_info,
                                          NinePiece piece) const {
-  IntSize edge_source_size = image_size_ - IntSize(left_.slice + right_.slice,
-                                                   top_.slice + bottom_.slice);
+  FloatSize edge_source_size =
+      image_size_ -
+      FloatSize(left_.slice + right_.slice, top_.slice + bottom_.slice);
   IntSize edge_destination_size =
-      border_image_area_.Size() -
+      border_image_area_.size() -
       IntSize(left_.width + right_.width, top_.width + bottom_.width);
 
   switch (piece) {
     case kLeftPiece:
       SetVerticalEdge(draw_info, left_,
                       Subrect(image_size_, 0, top_.slice, left_.slice,
-                              edge_source_size.Height()),
+                              edge_source_size.height()),
                       Subrect(border_image_area_, 0, top_.width, left_.width,
-                              edge_destination_size.Height()),
+                              edge_destination_size.height()),
                       vertical_tile_rule_);
       break;
     case kRightPiece:
       SetVerticalEdge(draw_info, right_,
                       Subrect(image_size_, -right_.slice, top_.slice,
-                              right_.slice, edge_source_size.Height()),
+                              right_.slice, edge_source_size.height()),
                       Subrect(border_image_area_, -right_.width, top_.width,
-                              right_.width, edge_destination_size.Height()),
+                              right_.width, edge_destination_size.height()),
                       vertical_tile_rule_);
       break;
     case kTopPiece:
       SetHorizontalEdge(draw_info, top_,
                         Subrect(image_size_, left_.slice, 0,
-                                edge_source_size.Width(), top_.slice),
+                                edge_source_size.width(), top_.slice),
                         Subrect(border_image_area_, left_.width, 0,
-                                edge_destination_size.Width(), top_.width),
+                                edge_destination_size.width(), top_.width),
                         horizontal_tile_rule_);
       break;
     case kBottomPiece:
       SetHorizontalEdge(draw_info, bottom_,
                         Subrect(image_size_, left_.slice, -bottom_.slice,
-                                edge_source_size.Width(), bottom_.slice),
+                                edge_source_size.width(), bottom_.slice),
                         Subrect(border_image_area_, left_.width, -bottom_.width,
-                                edge_destination_size.Width(), bottom_.width),
+                                edge_destination_size.width(), bottom_.width),
                         horizontal_tile_rule_);
       break;
     default:
@@ -254,10 +293,10 @@ void NinePieceImageGrid::SetDrawInfoEdge(NinePieceDrawInfo& draw_info,
 }
 
 void NinePieceImageGrid::SetDrawInfoMiddle(NinePieceDrawInfo& draw_info) const {
-  IntSize source_size = image_size_ - IntSize(left_.slice + right_.slice,
-                                              top_.slice + bottom_.slice);
+  FloatSize source_size = image_size_ - FloatSize(left_.slice + right_.slice,
+                                                  top_.slice + bottom_.slice);
   IntSize destination_size =
-      border_image_area_.Size() -
+      border_image_area_.size() -
       IntSize(left_.width + right_.width, top_.width + bottom_.width);
 
   draw_info.is_drawable =
@@ -266,22 +305,22 @@ void NinePieceImageGrid::SetDrawInfoMiddle(NinePieceDrawInfo& draw_info) const {
     return;
 
   draw_info.source = Subrect(image_size_, left_.slice, top_.slice,
-                             source_size.Width(), source_size.Height());
+                             source_size.width(), source_size.height());
   draw_info.destination =
       Subrect(border_image_area_, left_.width, top_.width,
-              destination_size.Width(), destination_size.Height());
+              destination_size.width(), destination_size.height());
 
   FloatSize middle_scale_factor(1, 1);
 
   if (top_.IsDrawable())
-    middle_scale_factor.SetWidth(top_.Scale());
+    middle_scale_factor.set_width(top_.Scale());
   else if (bottom_.IsDrawable())
-    middle_scale_factor.SetWidth(bottom_.Scale());
+    middle_scale_factor.set_width(bottom_.Scale());
 
   if (left_.IsDrawable())
-    middle_scale_factor.SetHeight(left_.Scale());
+    middle_scale_factor.set_height(left_.Scale());
   else if (right_.IsDrawable())
-    middle_scale_factor.SetHeight(right_.Scale());
+    middle_scale_factor.set_height(right_.Scale());
 
   if (!source_size.IsEmpty()) {
     // For "stretch" rules, just override the scale factor and replace. We only
@@ -289,13 +328,14 @@ void NinePieceImageGrid::SetDrawInfoMiddle(NinePieceDrawInfo& draw_info) const {
     // factor unless they have a rule other than "stretch". The middle however
     // can have "stretch" specified in one axis but not the other, so we have to
     // correct the scale here.
-    if (horizontal_tile_rule_ == kStretchImageRule)
-      middle_scale_factor.SetWidth((float)destination_size.Width() /
-                                   source_size.Width());
-
-    if (vertical_tile_rule_ == kStretchImageRule)
-      middle_scale_factor.SetHeight((float)destination_size.Height() /
-                                    source_size.Height());
+    if (horizontal_tile_rule_ == kStretchImageRule) {
+      middle_scale_factor.set_width(destination_size.width() /
+                                    source_size.width());
+    }
+    if (vertical_tile_rule_ == kStretchImageRule) {
+      middle_scale_factor.set_height(destination_size.height() /
+                                     source_size.height());
+    }
   }
 
   draw_info.tile_scale = middle_scale_factor;
@@ -303,10 +343,7 @@ void NinePieceImageGrid::SetDrawInfoMiddle(NinePieceDrawInfo& draw_info) const {
 }
 
 NinePieceImageGrid::NinePieceDrawInfo NinePieceImageGrid::GetNinePieceDrawInfo(
-    NinePiece piece,
-    float image_scale_factor) const {
-  DCHECK_NE(image_scale_factor, 0);
-
+    NinePiece piece) const {
   NinePieceDrawInfo draw_info;
   draw_info.is_corner_piece =
       piece == kTopLeftPiece || piece == kTopRightPiece ||
@@ -318,15 +355,6 @@ NinePieceImageGrid::NinePieceDrawInfo NinePieceImageGrid::GetNinePieceDrawInfo(
     SetDrawInfoEdge(draw_info, piece);
   else
     SetDrawInfoMiddle(draw_info);
-
-  if (image_scale_factor != 1) {
-    // The nine piece grid is computed in unscaled image coordinates but must be
-    // drawn using scaled image coordinates.
-    draw_info.source.Scale(image_scale_factor);
-
-    // Compensate for source scaling by scaling down the individual tiles.
-    draw_info.tile_scale.Scale(1 / image_scale_factor);
-  }
 
   return draw_info;
 }

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test preservation of orientation and scale when that switching devices in device mode.\n`);
-  await TestRunner.loadModule('device_mode_test_runner');
+  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var phoneB = DeviceModeTestRunner.buildFakePhone();
@@ -17,59 +17,59 @@
   });
 
   var view = new Emulation.DeviceModeView();
-  var toolbar = view._toolbar;
-  var model = view._model;
+  var toolbar = view.toolbar;
+  var model = view.model;
   var viewportSize = new UI.Size(800, 600);
   model.setAvailableSize(viewportSize, viewportSize);
 
   TestRunner.addResult('\nTest that devices automatically zoom to fit.');
   TestRunner.addResult('Switch to phone A');
-  toolbar._emulateDevice(phoneA);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneA);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Setting scale to 0.5');
-  toolbar._onScaleMenuChanged(0.5);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.onScaleMenuChanged(0.5);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone B');
-  toolbar._emulateDevice(phoneB);
-  TestRunner.addResult('PhoneB Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneB);
+  TestRunner.addResult('PhoneB Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone large');
-  toolbar._emulateDevice(phoneLarge);
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneLarge);
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Rotating...');
-  toolbar._modeButton.element.click();
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.modeButton.element.click();
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Rotating back...');
-  toolbar._modeButton.element.click();
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.modeButton.element.click();
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone A');
-  toolbar._emulateDevice(phoneA);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneA);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
 
   TestRunner.addResult('\nTurning off auto-zoom.');
-  toolbar._autoAdjustScaleSetting.set(false);
+  toolbar.autoAdjustScaleSetting.set(false);
 
   TestRunner.addResult('\nTest that devices do not automatically zoom to fit.');
   TestRunner.addResult('Switch to phone A');
-  toolbar._emulateDevice(phoneA);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneA);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Setting scale to 0.75');
-  toolbar._onScaleMenuChanged(0.75);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.onScaleMenuChanged(0.75);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone B');
-  toolbar._emulateDevice(phoneB);
-  TestRunner.addResult('PhoneB Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneB);
+  TestRunner.addResult('PhoneB Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone large');
-  toolbar._emulateDevice(phoneLarge);
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneLarge);
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Rotating...');
-  toolbar._modeButton.element.click();
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.modeButton.element.click();
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Rotating back...');
-  toolbar._modeButton.element.click();
-  TestRunner.addResult('PhoneLarge Scale: ' + model._scaleSetting.get());
+  toolbar.modeButton.element.click();
+  TestRunner.addResult('PhoneLarge Scale: ' + model.scaleSettingInternal.get());
   TestRunner.addResult('Switch to phone A');
-  toolbar._emulateDevice(phoneA);
-  TestRunner.addResult('PhoneA Scale: ' + model._scaleSetting.get());
+  toolbar.emulateDevice(phoneA);
+  TestRunner.addResult('PhoneA Scale: ' + model.scaleSettingInternal.get());
 
   TestRunner.completeTest();
 })();

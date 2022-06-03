@@ -4,7 +4,7 @@
 
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace gcm {
 

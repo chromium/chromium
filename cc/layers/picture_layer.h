@@ -5,6 +5,7 @@
 #ifndef CC_LAYERS_PICTURE_LAYER_H_
 #define CC_LAYERS_PICTURE_LAYER_H_
 
+#include <memory>
 #include <vector>
 
 #include "cc/base/devtools_instrumentation.h"
@@ -32,11 +33,6 @@ class CC_EXPORT PictureLayer : public Layer {
     return picture_layer_inputs_.nearest_neighbor;
   }
 
-  void SetTransformedRasterizationAllowed(bool allowed);
-  bool transformed_rasterization_allowed() const {
-    return picture_layer_inputs_.transformed_rasterization_allowed;
-  }
-
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask);
   bool is_backdrop_filter_mask() const {
     return picture_layer_inputs_.is_backdrop_filter_mask;
@@ -45,21 +41,22 @@ class CC_EXPORT PictureLayer : public Layer {
   // Layer interface.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
-  sk_sp<SkPicture> GetPicture() const override;
+  sk_sp<const SkPicture> GetPicture() const override;
   bool Update() override;
   void RunMicroBenchmark(MicroBenchmark* benchmark) override;
   void CaptureContent(const gfx::Rect& rect,
-                      std::vector<NodeId>* content) override;
+                      std::vector<NodeInfo>* content) const override;
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
-  RecordingSource* GetRecordingSourceForTesting() {
+  RecordingSource* GetRecordingSourceForTesting() const {
     return recording_source_.get();
   }
 
-  const DisplayItemList* GetDisplayItemList();
+  const DisplayItemList* GetDisplayItemList() const;
 
  protected:
   // Encapsulates all data, callbacks or interfaces received from the embedder.
@@ -69,11 +66,9 @@ class CC_EXPORT PictureLayer : public Layer {
 
     ContentLayerClient* client = nullptr;
     bool nearest_neighbor = false;
-    bool transformed_rasterization_allowed = false;
     bool is_backdrop_filter_mask = false;
-    gfx::Rect recorded_viewport;
     scoped_refptr<DisplayItemList> display_list;
-    size_t painter_reported_memory_usage = 0;
+    absl::optional<gfx::Size> directly_composited_image_size = absl::nullopt;
   };
 
   explicit PictureLayer(ContentLayerClient* client);
@@ -89,9 +84,8 @@ class CC_EXPORT PictureLayer : public Layer {
  private:
   friend class TestSerializationPictureLayer;
 
-  void DropRecordingSourceContentIfInvalid();
-
-  bool ShouldUseTransformedRasterization() const;
+  // Called on impl thread
+  void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
   std::unique_ptr<RecordingSource> recording_source_;
   devtools_instrumentation::

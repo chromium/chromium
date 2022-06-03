@@ -24,6 +24,12 @@ class FakeDeviceInformationPairingWinrt
  public:
   explicit FakeDeviceInformationPairingWinrt(bool is_paired);
   explicit FakeDeviceInformationPairingWinrt(std::string pin);
+
+  FakeDeviceInformationPairingWinrt(const FakeDeviceInformationPairingWinrt&) =
+      delete;
+  FakeDeviceInformationPairingWinrt& operator=(
+      const FakeDeviceInformationPairingWinrt&) = delete;
+
   ~FakeDeviceInformationPairingWinrt() override;
 
   // IDeviceInformationPairing:
@@ -67,8 +73,6 @@ class FakeDeviceInformationPairingWinrt
   Microsoft::WRL::ComPtr<
       ABI::Windows::Devices::Enumeration::IDeviceInformationCustomPairing>
       custom_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInformationPairingWinrt);
 };
 
 }  // namespace device

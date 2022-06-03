@@ -30,7 +30,6 @@ class PrimaryAccountPolicyManagerImplTest : public testing::Test {
         primary_account_manager_(&test_signin_client_,
                                  &token_service_,
                                  &account_tracker_,
-                                 signin::AccountConsistencyMethod::kDisabled,
                                  nullptr /*policy_manager*/),
         policy_manager_(&test_signin_client_) {
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());

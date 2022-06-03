@@ -14,7 +14,7 @@
 namespace ash {
 namespace user {
 
-base::string16 GetLocalizedSignOutStringForStatus(LoginStatus status,
+std::u16string GetLocalizedSignOutStringForStatus(LoginStatus status,
                                                   bool multiline) {
   int message_id;
   switch (status) {
@@ -31,16 +31,14 @@ base::string16 GetLocalizedSignOutStringForStatus(LoginStatus status,
               : IDS_ASH_STATUS_TRAY_SIGN_OUT;
       break;
   }
-  base::string16 message =
+  std::u16string message =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(message_id);
   // Desirable line breaking points are marked using \n. As the resource
   // framework does not evaluate escape sequences, the \n need to be explicitly
   // handled. Depending on the value of |multiline|, actual line breaks or
   // spaces are substituted.
-  base::string16 newline =
-      multiline ? base::ASCIIToUTF16("\n") : base::ASCIIToUTF16(" ");
-  base::ReplaceSubstringsAfterOffset(&message, 0, base::ASCIIToUTF16("\\n"),
-                                     newline);
+  std::u16string newline = multiline ? u"\n" : u" ";
+  base::ReplaceSubstringsAfterOffset(&message, 0, u"\\n", newline);
   return message;
 }
 

@@ -6,16 +6,15 @@
 
 namespace blink {
 
-void A::Trace(Visitor* visitor) {
-    visitor->Trace(m_d);
+void A::Trace(Visitor* visitor) const {
+  visitor->Trace(m_d);
 }
 
-void B::Trace(Visitor* visitor) {
-    A::Trace(visitor);
+void B::Trace(Visitor* visitor) const {
+  A::Trace(visitor);
 }
 
-void C::Trace(Visitor* visitor) {
-    B::Trace(visitor);
+void C::Trace(Visitor* visitor) const {
+  B::Trace(visitor);
 }
-
 }

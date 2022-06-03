@@ -265,6 +265,7 @@ Tests that DOMSnapshot.captureSnapshot fills document details: title, size, etc.
                     value : [
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                     ]

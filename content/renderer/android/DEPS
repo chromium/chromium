@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/viz/common/gpu",
-  "+components/viz/service/display",
-  "+components/viz/service/display_embedder",
-  "+components/viz/service/frame_sinks",
-  "+third_party/libphonenumber",  # For phone number detection.
-]

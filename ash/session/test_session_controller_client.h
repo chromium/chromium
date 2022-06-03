@@ -12,9 +12,7 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "components/user_manager/user_type.h"
 
@@ -38,10 +36,15 @@ class TestPrefServiceProvider;
 // SessionControllerClient created, e.g. InProcessBrowserTest based tests. On
 // the other hand, tests code in chrome can use this class as long as it does
 // not run BrowserMain, e.g. testing::Test based test.
-class TestSessionControllerClient : public ash::SessionControllerClient {
+class TestSessionControllerClient : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
                               TestPrefServiceProvider* prefs_provider);
+
+  TestSessionControllerClient(const TestSessionControllerClient&) = delete;
+  TestSessionControllerClient& operator=(const TestSessionControllerClient&) =
+      delete;
+
   ~TestSessionControllerClient() override;
 
   static void DisableAutomaticallyProvideSigninPref();
@@ -56,6 +59,9 @@ class TestSessionControllerClient : public ash::SessionControllerClient {
     use_lower_case_user_id_ = value;
   }
 
+  int attempt_restart_chrome_count() const {
+    return attempt_restart_chrome_count_;
+  }
   int request_sign_out_count() const { return request_sign_out_count_; }
 
   // Helpers to set SessionController state.
@@ -72,19 +78,30 @@ class TestSessionControllerClient : public ash::SessionControllerClient {
   // sessions prior this call will be removed without sending out notifications.
   void CreatePredefinedUserSessions(int count);
 
-  // Adds a user session from a given display email. The display email will be
-  // canonicalized and used to construct an AccountId. |enable_settings| sets
-  // whether web UI settings are allowed. If |provide_pref_service| is true,
-  // eagerly inject a PrefService for this user. |is_new_profile| indicates
-  // whether the user has a newly created profile on the device.
+  // Adds a user session from a given display email. If |provide_pref_service|
+  // is true, eagerly inject a PrefService for this user. |is_new_profile|
+  // indicates whether the user has a newly created profile on the device.
+  //
+  // For convenience |display_email| is used to create an |AccountId|. For
+  // testing behavior where |AccountId|s are compared, prefer the method of the
+  // same name that takes an |AccountId| created with a valid storage key
+  // instead. See the documentation for|AccountId::GetUserEmail| for
+  // discussion.
   void AddUserSession(
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
-      bool enable_settings = true,
       bool provide_pref_service = true,
       bool is_new_profile = false,
-      const base::Optional<base::Token>& service_instance_group =
-          base::nullopt);
+      const std::string& given_name = std::string());
+
+  // Adds a user session from a given AccountId.
+  void AddUserSession(
+      const AccountId& account_id,
+      const std::string& display_email,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      bool provide_pref_service = true,
+      bool is_new_profile = false,
+      const std::string& given_name = std::string());
 
   // Creates a test PrefService and associates it with the user.
   void ProvidePrefServiceForUser(const AccountId& account_id);
@@ -111,12 +128,20 @@ class TestSessionControllerClient : public ash::SessionControllerClient {
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
   void RequestSignOut() override;
+  void AttemptRestartChrome() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void CycleActiveUser(CycleUserDirection direction) override;
   void ShowMultiProfileLogin() override;
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+
+  // By default `LockScreen()` only changes the session state but no UI views
+  // will be created.  If your tests requires the lock screen to be created,
+  // please set this to true.
+  void set_show_lock_screen_views(bool should_show) {
+    should_show_lock_screen_ = should_show;
+  }
 
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
@@ -129,12 +154,13 @@ class TestSessionControllerClient : public ash::SessionControllerClient {
 
   bool use_lower_case_user_id_ = true;
   int request_sign_out_count_ = 0;
+  int attempt_restart_chrome_count_ = 0;
+
+  bool should_show_lock_screen_ = false;
 
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 
   base::WeakPtrFactory<TestSessionControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionControllerClient);
 };
 
 }  // namespace ash

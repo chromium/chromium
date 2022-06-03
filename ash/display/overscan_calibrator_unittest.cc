@@ -7,7 +7,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -33,7 +33,7 @@ TEST_F(OverscanCalibratorTest, Rotation) {
   auto* display_manager = Shell::Get()->display_manager();
 
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  std::string id_str = base::StringPrintf("%ld", display_id);
+  std::string id_str = base::StringPrintf("%" PRId64, display_id);
 
   auto* calibrator = StartCalibration(id_str);
   calibrator->UpdateInsets(gfx::Insets(100, 5, 10, 15));

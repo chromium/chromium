@@ -14,9 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database.h"
 #include "content/browser/notifications/notification_id_generator.h"
@@ -25,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 
 class GURL;
@@ -32,6 +31,10 @@ class GURL;
 namespace base {
 class SequencedTaskRunner;
 }
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace url {
 class Origin;
@@ -59,6 +62,11 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       BrowserContext* browser_context,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context);
 
+  PlatformNotificationContextImpl(const PlatformNotificationContextImpl&) =
+      delete;
+  PlatformNotificationContextImpl& operator=(
+      const PlatformNotificationContextImpl&) = delete;
+
   // To be called to initialize the instance.
   void Initialize();
 
@@ -66,8 +74,10 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void Shutdown();
 
   // Creates a BlinkNotificationServiceImpl that is owned by this context.
+  // |document_url| is empty when originating from a worker.
   void CreateService(
       const url::Origin& origin,
+      const GURL& document_url,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
 
   // Removes |service| from the list of owned services, for example because the
@@ -97,12 +107,21 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               const GURL& origin,
                               bool close_notification,
                               DeleteResultCallback callback) override;
+  void DeleteAllNotificationDataWithTag(
+      const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
+      const GURL& origin,
+      DeleteAllResultCallback callback) override;
   void DeleteAllNotificationDataForBlockedOrigins(
       DeleteAllResultCallback callback) override;
   void ReadAllNotificationDataForServiceWorkerRegistration(
       const GURL& origin,
       int64_t service_worker_registration_id,
       ReadAllResultCallback callback) override;
+  void CountVisibleNotificationsForServiceWorkerRegistration(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      CountResultCallback callback) override;
   void TriggerNotifications() override;
   void WriteNotificationResources(
       std::vector<NotificationResourceData> resource_data,
@@ -113,7 +132,8 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
 
   // ServiceWorkerContextCoreObserver implementation.
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
  private:
@@ -131,19 +151,28 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       base::OnceCallback<void(bool /* success */,
                               std::set<GURL> /* origins */)>;
 
+  using InitializeGetDisplayedCallback = base::OnceCallback<void(
+      std::set<std::string> /* displayed_notifications */,
+      bool /* supports_synchronization */,
+      bool /* initialized */)>;
+
   // Initializes the database if necessary. |callback| will be invoked on the
-  // |task_runner_| thread. If everything is available, |callback| will be
+  // |task_runner_| thread. If |lazy| is true this will not try to create a new
+  // database if there isn't one already. Otherwise this will try to open or
+  // create a new database. If everything is available, |callback| will be
   // called with true, otherwise it will be called with false.
-  void LazyInitialize(InitializeResultCallback callback);
+  void InitializeDatabase(InitializeResultCallback callback, bool lazy = false);
 
   // Marks this notification as shown and displays it.
   void DoTriggerNotification(const NotificationDatabaseData& database_data);
 
   // Opens the database. Must be called on the |task_runner_| thread. |callback|
-  // will be invoked on the |task_runner_| thread. When the database has been
+  // will be invoked on the |task_runner_| thread. If |create_if_missing| is
+  // true this will try to create a new database if there isn't one already.
+  // Otherwise we will just try to open it. When the database has been
   // successfully opened, |callback| will be called with true, otherwise it will
   // be called with false.
-  void OpenDatabase(InitializeResultCallback callback);
+  void OpenDatabase(InitializeResultCallback callback, bool create_if_missing);
 
   // Actually reads the notification data from the database. Must only be
   // called on the |task_runner_| thread. |callback| will be invoked on the
@@ -169,19 +198,24 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               bool initialized);
 
   // Checks if the given notification is still valid, otherwise deletes it from
-  // the database.
+  // the database. Fills |close_notification_ids| with notification ids that
+  // should be closed by the platform.
   void DoHandleSyncNotification(
       bool supports_synchronization,
       const std::set<std::string>& displayed_notifications,
+      std::set<std::string>* close_notification_ids,
       const NotificationDatabaseData& data);
 
-  // Updates the database (and the result callback) based on
-  // |displayed_notifications| if |supports_synchronization|.
-  void SynchronizeDisplayedNotificationsForServiceWorkerRegistration(
-      base::Time start_time,
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      ReadAllResultCallback callback,
+  // Tries to get a list of displayed notification ids if the platform supports
+  // synchronizing them. Calls |callback| with the result after initializing the
+  // database on the |task_runner_| thread.
+  void TryGetDisplayedNotifications(InitializeGetDisplayedCallback callback);
+
+  // Called after getting a list of |displayed_notifications| on the UI thread.
+  // Calls |callback| after initializing the database on the |task_runner_|
+  // thread.
+  void OnGetDisplayedNotifications(
+      InitializeGetDisplayedCallback callback,
       std::set<std::string> displayed_notifications,
       bool supports_synchronization);
 
@@ -193,6 +227,19 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       const GURL& origin,
       int64_t service_worker_registration_id,
       ReadAllResultCallback callback,
+      std::set<std::string> displayed_notifications,
+      bool supports_synchronization,
+      bool initialized);
+
+  // Actually counts visible notifications for |service_worker_registration_id|
+  // by comparing the entries in the database with |displayed_notifications|.
+  // Must only be called on the |task_runner_| thread. |callback| will be
+  // invoked on the UI thread when the operation has completed.
+  void DoCountVisibleNotificationsForServiceWorkerRegistration(
+      base::Time start_time,
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      CountResultCallback callback,
       std::set<std::string> displayed_notifications,
       bool supports_synchronization,
       bool initialized);
@@ -234,12 +281,16 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                                         bool success,
                                         std::set<GURL> origins);
 
-  // Actually deletes the notification information from the database. Must only
-  // be called on the |task_runner_| thread. |callback| will be invoked on the
-  // UI thread when the operation has completed.
-  void DoDeleteAllNotificationDataForOrigins(std::set<GURL> origins,
-                                             DeleteAllResultCallback callback,
-                                             bool initialized);
+  // Actually deletes the notification information for all |origins| from the
+  // database. Optionally filtered by |tag|. Must only be called on the
+  // |task_runner_| thread. |callback| will be invoked on the UI thread when the
+  // operation has completed.
+  void DoDeleteAllNotificationDataForOrigins(
+      std::set<GURL> origins,
+      const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
+      DeleteAllResultCallback callback,
+      bool initialized);
 
   // Actually writes the notification resources to the database. Must only be
   // called on the |task_runner_| thread. |callback| will be invoked on the UI
@@ -289,7 +340,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   NotificationIdGenerator notification_id_generator_;
 
   // Keeps track of the next trigger timestamp.
-  base::Optional<base::Time> next_trigger_;
+  absl::optional<base::Time> next_trigger_;
 
   // Calls through to PlatformNotificationService methods.
   std::unique_ptr<PlatformNotificationServiceProxy> service_proxy_;
@@ -302,8 +353,6 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
 
   // Flag if the |browser_context_| has been shutdown already.
   bool has_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformNotificationContextImpl);
 };
 
 }  // namespace content

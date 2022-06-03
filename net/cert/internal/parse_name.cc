@@ -4,6 +4,8 @@
 
 #include "net/cert/internal/parse_name.h"
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -23,12 +25,12 @@ bool ConvertBmpStringValue(const der::Input& in, std::string* out) {
   if (in.Length() % 2 != 0)
     return false;
 
-  base::string16 in_16bit;
+  std::u16string in_16bit;
   if (in.Length()) {
     memcpy(base::WriteInto(&in_16bit, in.Length() / 2 + 1), in.UnsafeData(),
            in.Length());
   }
-  for (base::char16& c : in_16bit) {
+  for (char16_t& c : in_16bit) {
     // BMPString is UCS-2 in big-endian order.
     c = base::NetToHost16(c);
 

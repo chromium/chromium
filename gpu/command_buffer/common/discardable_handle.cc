@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/common/discardable_handle.h"
 
 #include "base/atomicops.h"
+#include "base/logging.h"
 #include "gpu/command_buffer/common/buffer.h"
 
 namespace gpu {

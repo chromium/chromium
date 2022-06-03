@@ -97,12 +97,12 @@ class WebResourceServiceTest : public testing::Test {
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    local_state_.reset(new TestingPrefServiceSimple());
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     local_state_->registry()->RegisterStringPref(kCacheUpdatePath, "0");
-    test_web_resource_service_.reset(new TestWebResourceService(
+    test_web_resource_service_ = std::make_unique<TestWebResourceService>(
         local_state_.get(), GURL(kTestUrl), "", kCacheUpdatePath.c_str(), 100,
         5000, test_shared_loader_factory_, nullptr,
-        network::TestNetworkConnectionTracker::GetInstance()));
+        network::TestNetworkConnectionTracker::GetInstance());
     error_message_ = "";
     TestResourceRequestAllowedNotifier* notifier =
         new TestResourceRequestAllowedNotifier(

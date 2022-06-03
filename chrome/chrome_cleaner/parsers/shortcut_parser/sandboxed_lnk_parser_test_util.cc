@@ -37,12 +37,17 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
 
 bool CheckParsedShortcut(const ParsedLnkFile& parsed_shortcut,
                          base::FilePath expected_target_path,
-                         base::string16 expected_arguments,
-                         base::FilePath expected_icon_location) {
-  base::FilePath parsed_file_path(parsed_shortcut.target_path);
-  return PathEqual(parsed_file_path, expected_target_path) &&
+                         base::FilePath expected_working_dir,
+                         std::wstring expected_arguments,
+                         base::FilePath expected_icon_location,
+                         const int32_t expected_icon_index) {
+  base::FilePath parsed_target_path(parsed_shortcut.target_path);
+  base::FilePath parsed_working_dir_path(parsed_shortcut.working_dir);
+  return PathEqual(parsed_target_path, expected_target_path) &&
+         PathEqual(parsed_working_dir_path, expected_working_dir) &&
          (parsed_shortcut.command_line_arguments == expected_arguments) &&
-         PathEqual(parsed_file_path, expected_icon_location);
+         PathEqual(expected_target_path, expected_icon_location) &&
+         (parsed_shortcut.icon_index == expected_icon_index);
 }
 
 void OnLnkParseDone(
@@ -50,20 +55,27 @@ void OnLnkParseDone(
     mojom::LnkParsingResult* out_result_code,
     base::OnceClosure callback,
     mojom::LnkParsingResult result_code,
-    const base::Optional<base::string16>& optional_file_path,
-    const base::Optional<base::string16>& optional_command_line_arguments,
-    const base::Optional<base::string16>& optional_icon_location) {
+    const absl::optional<std::wstring>& optional_target_path,
+    const absl::optional<std::wstring>& optional_working_dir,
+    const absl::optional<std::wstring>& optional_command_line_arguments,
+    const absl::optional<std::wstring>& optional_icon_location,
+    int32_t icon_index) {
   *out_result_code = result_code;
-  if (optional_file_path.has_value())
-    out_parsed_shortcut->target_path = optional_file_path.value();
+  if (optional_target_path.has_value())
+    out_parsed_shortcut->target_path = optional_target_path.value();
+
+  if (optional_working_dir.has_value())
+    out_parsed_shortcut->working_dir = optional_working_dir.value();
 
   if (optional_command_line_arguments.has_value()) {
     out_parsed_shortcut->command_line_arguments =
         optional_command_line_arguments.value();
   }
 
-  if (optional_icon_location.has_value())
+  if (optional_icon_location.has_value()) {
     out_parsed_shortcut->icon_location = optional_icon_location.value();
+    out_parsed_shortcut->icon_index = icon_index;
+  }
 
   std::move(callback).Run();
 }

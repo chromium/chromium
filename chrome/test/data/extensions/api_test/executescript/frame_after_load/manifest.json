@@ -4,7 +4,8 @@
   "name": "executeScript after frame has loaded test",
   "description": "Test extension API: executeScript after frame has loaded",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://a.com/"]
 }

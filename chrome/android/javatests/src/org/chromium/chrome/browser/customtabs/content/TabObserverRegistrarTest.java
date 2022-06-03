@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.junit.Assert.assertEquals;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,14 +16,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -39,7 +41,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabObserverRegistrarTest {
-    private static class LoadUrlTabObserver extends EmptyTabObserver {
+    private static class LoadUrlTabObserver extends CustomTabTabObserver {
         private List<String> mUrlLoadRequests = new ArrayList<>();
 
         List<String> getLoadUrlRequests() {
@@ -62,6 +64,7 @@ public class TabObserverRegistrarTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1269017")
     public void testObserveActiveTab() throws Throwable {
         EmbeddedTestServer testServer = mCustomTabActivityTestRule.getTestServer();
         final String windowOpenUrl =
@@ -78,7 +81,8 @@ public class TabObserverRegistrarTest {
         TabObserverRegistrar tabObserverRegistrar =
                 customTabActivity.getComponent().resolveTabObserverRegistrar();
         LoadUrlTabObserver loadUrlTabObserver = new LoadUrlTabObserver();
-        tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver));
 
         final TabModelSelector tabSelector = customTabActivity.getTabModelSelector();
         final Tab initialActiveTab = tabSelector.getCurrentTab();
@@ -86,7 +90,7 @@ public class TabObserverRegistrarTest {
         // Open and wait for popup.
         final CallbackHelper openTabHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabSelector.getModel(false).addObserver(new EmptyTabModelObserver() {
+            tabSelector.getModel(false).addObserver(new TabModelObserver() {
                 @Override
                 public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                     if (tab != initialActiveTab) {

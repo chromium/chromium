@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "services/tracing/public/cpp/perfetto/android_system_producer.h"
+#include "services/tracing/public/cpp/perfetto/posix_system_producer.h"
 
 namespace base {
 class ScopedTempDir;
@@ -27,7 +27,9 @@ class MockSystemService {
  public:
   MockSystemService(const std::string& consumer_socket,
                     const std::string& producer_socket);
-  MockSystemService(const base::ScopedTempDir& tmp_dir);
+  explicit MockSystemService(const base::ScopedTempDir& tmp_dir);
+  MockSystemService(const base::ScopedTempDir& tmp_dir,
+                    std::unique_ptr<perfetto::base::TaskRunner>);
   ~MockSystemService();
 
   perfetto::TracingService* GetService();
@@ -45,16 +47,17 @@ class MockSystemService {
   std::unique_ptr<perfetto::base::TaskRunner> task_runner_;
 };
 
-class MockAndroidSystemProducer : public AndroidSystemProducer {
+class MockPosixSystemProducer : public PosixSystemProducer {
  public:
-  MockAndroidSystemProducer(
+  MockPosixSystemProducer(
       const std::string& socket,
       bool check_sdk_level = false,
       uint32_t num_data_sources = 0,
       base::OnceClosure data_source_enabled_callback = base::OnceClosure(),
-      base::OnceClosure data_source_disabled_callback = base::OnceClosure());
+      base::OnceClosure data_source_disabled_callback = base::OnceClosure(),
+      bool sandbox_forbids_socket_connection = false);
 
-  ~MockAndroidSystemProducer() override;
+  ~MockPosixSystemProducer() override;
 
   void StartDataSource(
       perfetto::DataSourceInstanceID id,
@@ -62,14 +65,15 @@ class MockAndroidSystemProducer : public AndroidSystemProducer {
 
   void StopDataSource(perfetto::DataSourceInstanceID id) override;
 
-  void CommitData(const perfetto::CommitDataRequest& commit,
-                  CommitDataCallback callback = {}) override;
-
   void SetDataSourceEnabledCallback(
       base::OnceClosure data_source_enabled_callback);
 
   void SetDataSourceDisabledCallback(
       base::OnceClosure data_source_disabled_callback);
+
+ protected:
+  // Override for testing.
+  bool SandboxForbidsSocketConnection() override;
 
  private:
   uint32_t num_data_sources_expected_;
@@ -77,6 +81,7 @@ class MockAndroidSystemProducer : public AndroidSystemProducer {
   base::OnceClosure data_source_enabled_callback_;
   base::OnceClosure data_source_disabled_callback_;
   std::unique_ptr<SystemProducer> old_producer_;
+  bool sandbox_forbids_socket_connection_;
 };
 
 }  // namespace tracing

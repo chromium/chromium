@@ -18,14 +18,13 @@ var worker = new SharedWorker('resources/shared-worker-common.js', 'name');
 var worker2 = new SharedWorker('resources/shared-worker-common.js', 'name');
 
 try {
-    new SharedWorker('resources/some-other-url.js', 'name');
+    new SharedWorker('resources/empty.js', 'name');
     log("PASS: Creating SharedWorker with different URLs but the same name");
 } catch (ex) {
     var exString = ex.toString();
     exString = exString.replace(/file:\/\/.*\//, "")
     log("FAIL: Exception thrown when creating SharedWorker with different URLs but same name: " + exString);
 }
-
 
 // Set something in global context in one worker, read value back on other worker, to make sure they are truly shared.
 worker.port.postMessage("eval self.foo");

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="subtitle"
+        android:title="@string/safe_browsing_enhanced_protection_subtitle"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_one"
+        android:summary="@string/safe_browsing_enhanced_protection_bullet_one"
+        android:icon="@drawable/ic_security_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_two"
+        android:summary="@string/safe_browsing_enhanced_protection_bullet_two"
+        android:icon="@drawable/ic_logo_googleg_24dp"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_three"
+        android:summary="@string/safe_browsing_enhanced_protection_bullet_three"
+        android:icon="@drawable/ic_globe_24dp"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_four"
+        android:summary="@string/safe_browsing_enhanced_protection_bullet_four"
+        android:icon="@drawable/ic_vpn_key_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_five"
+        android:summary="@string/safe_browsing_enhanced_protection_bullet_five"
+        android:icon="@drawable/ic_data_viz_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

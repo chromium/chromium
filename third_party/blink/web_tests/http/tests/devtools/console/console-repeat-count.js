@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that repeat count is properly updated.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
 
@@ -51,6 +51,6 @@
   await TestRunner.evaluateInPagePromise('throwObjects()');
 
   await ConsoleTestRunner.waitForConsoleMessagesPromise(11);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 })();

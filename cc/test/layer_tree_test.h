@@ -5,18 +5,32 @@
 #ifndef CC_TEST_LAYER_TREE_TEST_H_
 #define CC_TEST_LAYER_TREE_TEST_H_
 
+#include <memory>
+#include <string>
+
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "cc/animation/animation_delegate.h"
+#include "cc/base/features.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/test_hooks.h"
 #include "cc/test/test_task_graph_runner.h"
+#include "cc/test/test_types.h"
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
+namespace test {
+class ScopedFeatureList;
+}
+}  // namespace base
 
 namespace viz {
 class BeginFrameSource;
@@ -25,13 +39,12 @@ class TestContextProvider;
 
 namespace cc {
 
+class Animation;
 class AnimationHost;
-class LayerImpl;
 class LayerTreeHost;
 class LayerTreeHostForTesting;
 class LayerTreeTestLayerTreeFrameSinkClient;
 class Proxy;
-class SingleKeyframeEffectAnimation;
 class TestLayerTreeFrameSink;
 class TestTaskGraphRunner;
 
@@ -52,22 +65,17 @@ class LayerTreeHostClientForTesting;
 // thread, but be aware that ending the test is an asynchronous process.
 class LayerTreeTest : public testing::Test, public TestHooks {
  public:
-  enum RendererType {
-    RENDERER_GL,
-    RENDERER_SKIA_GL,
-    RENDERER_SKIA_VK,
-    RENDERER_SOFTWARE,
-  };
-
-  static std::string TestTypeToString(RendererType renderer_type) {
-    switch (renderer_type) {
-      case RENDERER_GL:
+  std::string TestTypeToString() {
+    switch (renderer_type_) {
+      case viz::RendererType::kGL:
         return "GL";
-      case RENDERER_SKIA_GL:
+      case viz::RendererType::kSkiaGL:
         return "Skia GL";
-      case RENDERER_SKIA_VK:
+      case viz::RendererType::kSkiaVk:
         return "Skia Vulkan";
-      case RENDERER_SOFTWARE:
+      case viz::RendererType::kSkiaDawn:
+        return "Skia Dawn";
+      case viz::RendererType::kSoftware:
         return "Software";
     }
   }
@@ -78,15 +86,15 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void EndTestAfterDelayMs(int delay_milliseconds);
 
   void PostAddNoDamageAnimationToMainThread(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation);
+      Animation* animation_to_receive_animation);
   void PostAddOpacityAnimationToMainThread(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation);
+      Animation* animation_to_receive_animation);
   void PostAddOpacityAnimationToMainThreadInstantly(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation);
+      Animation* animation_to_receive_animation);
   void PostAddOpacityAnimationToMainThreadDelayed(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation);
-  void PostSetLocalSurfaceIdAllocationToMainThread(
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+      Animation* animation_to_receive_animation);
+  void PostSetLocalSurfaceIdToMainThread(
+      const viz::LocalSurfaceId& local_surface_id);
   void PostRequestNewLocalSurfaceIdToMainThread();
   void PostGetDeferMainFrameUpdateToMainThread(
       std::unique_ptr<ScopedDeferMainFrameUpdate>*
@@ -94,6 +102,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void PostReturnDeferMainFrameUpdateToMainThread(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void PostDeferringCommitsStatusToMainThread(bool is_deferring_commits);
   void PostSetNeedsCommitToMainThread();
   void PostSetNeedsUpdateLayersToMainThread();
   void PostSetNeedsRedrawToMainThread();
@@ -111,11 +120,11 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void SetUseLayerLists() { settings_.use_layer_lists = true; }
 
  protected:
-  LayerTreeTest();
+  explicit LayerTreeTest(
+      viz::RendererType renderer_type = viz::RendererType::kGL);
 
   void SkipAllocateInitialLocalSurfaceId();
-  const viz::LocalSurfaceIdAllocation& GetCurrentLocalSurfaceIdAllocation()
-      const;
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
   void GenerateNewLocalSurfaceId();
 
   virtual void InitializeSettings(LayerTreeSettings* settings) {}
@@ -146,7 +155,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   base::SingleThreadTaskRunner* ImplThreadTaskRunner() {
     return impl_task_runner_.get();
   }
-  base::SingleThreadTaskRunner* MainThreadTaskRunner() {
+  base::SingleThreadTaskRunner* MainThreadTaskRunner() const {
     return main_task_runner_.get();
   }
   Proxy* proxy();
@@ -159,7 +168,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return ended_;
   }
 
-  LayerTreeHost* layer_tree_host();
+  LayerTreeHost* layer_tree_host() const;
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() {
     return gpu_memory_buffer_manager_.get();
   }
@@ -168,6 +177,12 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   // By default, output surface recreation is synchronous.
   void RequestNewLayerTreeFrameSink() override;
+  // Override this to modify the TestContextProviders before they are bound
+  // and used. Override CreateLayerTreeFrameSink() instead if the test does not
+  // want to use TestContextProviders.
+  virtual void SetUpUnboundContextProviders(
+      viz::TestContextProvider* context_provider,
+      viz::TestContextProvider* worker_context_provider);
   // Override this and call the base class to change what viz::ContextProviders
   // will be used (such as for pixel tests). Or override it and create your own
   // TestLayerTreeFrameSink to control how it is created.
@@ -176,8 +191,11 @@ class LayerTreeTest : public testing::Test, public TestHooks {
       double refresh_rate,
       scoped_refptr<viz::ContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider);
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayControllerOnThread() override;
   std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread() override;
+  CreateDisplaySkiaOutputSurfaceOnThread(
+      viz::DisplayCompositorMemoryAndTaskController*) override;
   // Override this and call the base class to change what viz::ContextProvider
   // will be used, such as to prevent sharing the context with the
   // LayerTreeFrameSink. Or override it and create your own OutputSurface to
@@ -185,8 +203,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   // pixel tests or a software-compositing OutputSurface.
   std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
       scoped_refptr<viz::ContextProvider> compositor_context_provider) override;
-
-  gfx::Vector2dF ScrollDelta(LayerImpl* layer_impl);
 
   base::SingleThreadTaskRunner* image_worker_task_runner() const {
     return image_worker_->task_runner().get();
@@ -196,24 +212,38 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     begin_frame_source_ = begin_frame_source;
   }
 
-  bool use_skia_renderer() {
-    return renderer_type_ == RENDERER_SKIA_GL ||
-           renderer_type_ == RENDERER_SKIA_VK;
+  bool use_skia_renderer() const {
+    return renderer_type_ == viz::RendererType::kSkiaGL ||
+           renderer_type_ == viz::RendererType::kSkiaVk ||
+           renderer_type_ == viz::RendererType::kSkiaDawn;
   }
-  bool use_software_renderer() { return renderer_type_ == RENDERER_SOFTWARE; }
-  bool use_vulkan() { return renderer_type_ == RENDERER_SKIA_VK; }
+  bool use_software_renderer() const {
+    return renderer_type_ == viz::RendererType::kSoftware;
+  }
+  bool use_skia_vulkan() const {
+    return renderer_type_ == viz::RendererType::kSkiaVk;
+  }
+  bool use_d3d12() const {
+#if defined(OS_WIN)
+    return renderer_type_ == viz::RendererType::kSkiaDawn;
+#else
+    return false;
+#endif
+  }
+  bool use_swangle() const;
 
-  RendererType renderer_type_ = RENDERER_GL;
+  const viz::RendererType renderer_type_;
+
+  const viz::DebugRendererSettings debug_settings_;
 
  private:
   virtual void DispatchAddNoDamageAnimation(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation,
+      Animation* animation_to_receive_animation,
       double animation_duration);
   virtual void DispatchAddOpacityAnimation(
-      SingleKeyframeEffectAnimation* animation_to_receive_animation,
+      Animation* animation_to_receive_animation,
       double animation_duration);
-  void DispatchSetLocalSurfaceIdAllocation(
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
+  void DispatchSetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
   void DispatchRequestNewLocalSurfaceId();
   void DispatchGetDeferMainFrameUpdate(
       std::unique_ptr<ScopedDeferMainFrameUpdate>*
@@ -221,6 +251,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void DispatchReturnDeferMainFrameUpdate(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void DispatchDeferringCommitsStatus(bool is_deferring_commits);
   void DispatchSetNeedsCommit();
   void DispatchSetNeedsUpdateLayers();
   void DispatchSetNeedsRedraw();
@@ -230,6 +261,11 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void DispatchDidAddAnimation();
   void DispatchCompositeImmediately();
   void DispatchNextCommitWaitsForActivation();
+
+  // |scoped_feature_list_| must be the first member to ensure that it is
+  // destroyed after any member that might be using it.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  viz::TestGpuServiceHolder::ScopedResetter gpu_service_resetter_;
 
   LayerTreeSettings settings_;
   float initial_device_scale_factor_ = 1.f;
@@ -277,10 +313,15 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 // a specific test name. eg.
 // // TODO(crbug.com/abcd): Disabled for some reasons stated here.
 // // SINGLE_AND_MULTI_THREAD_TEST_F(SomeRandomTest)
-#define SINGLE_THREAD_TEST_F(TEST_FIXTURE_NAME)                   \
-  TEST_F(TEST_FIXTURE_NAME, RunSingleThread_DelegatingRenderer) { \
-    RunTest(CompositorMode::SINGLE_THREADED);                     \
-  }                                                               \
+#define SINGLE_THREAD_TEST_F(TEST_FIXTURE_NAME)                                \
+  TEST_F(TEST_FIXTURE_NAME, RunSingleThread_DelegatingRenderer) {              \
+    RunTest(CompositorMode::SINGLE_THREADED);                                  \
+  }                                                                            \
+  TEST_F(TEST_FIXTURE_NAME, RunSingleThread_DelegatingRendererUnifiedScroll) { \
+    base::test::ScopedFeatureList scoped_feature_list;                         \
+    scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);    \
+    RunTest(CompositorMode::SINGLE_THREADED);                                  \
+  }                                                                            \
   class SingleThreadDelegatingImplNeedsSemicolon##TEST_FIXTURE_NAME {}
 
 // Do not change this macro to disable a test, it will disable half of
@@ -288,10 +329,15 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 // a specific test name. eg.
 // // TODO(crbug.com/abcd): Disabled for some reasons stated here.
 // // SINGLE_AND_MULTI_THREAD_TEST_F(SomeRandomTest)
-#define MULTI_THREAD_TEST_F(TEST_FIXTURE_NAME)                   \
-  TEST_F(TEST_FIXTURE_NAME, RunMultiThread_DelegatingRenderer) { \
-    RunTest(CompositorMode::THREADED);                           \
-  }                                                              \
+#define MULTI_THREAD_TEST_F(TEST_FIXTURE_NAME)                                \
+  TEST_F(TEST_FIXTURE_NAME, RunMultiThread_DelegatingRenderer) {              \
+    RunTest(CompositorMode::THREADED);                                        \
+  }                                                                           \
+  TEST_F(TEST_FIXTURE_NAME, RunMultiThread_DelegatingRendererUnifiedScroll) { \
+    base::test::ScopedFeatureList scoped_feature_list;                        \
+    scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);   \
+    RunTest(CompositorMode::THREADED);                                        \
+  }                                                                           \
   class MultiThreadDelegatingImplNeedsSemicolon##TEST_FIXTURE_NAME {}
 
 // Do not change this macro to disable a test, it will disable half of

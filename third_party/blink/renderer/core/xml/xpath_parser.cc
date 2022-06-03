@@ -32,9 +32,11 @@
 #include "third_party/blink/renderer/core/xml/xpath_grammar_generated.h"
 #include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_path.h"
+#include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 namespace xpath {
@@ -142,8 +144,9 @@ bool Parser::IsBinaryOperatorContext() const {
   }
 }
 
+// See https://www.w3.org/TR/1999/REC-xpath-19991116/#NT-ExprWhitespace .
 void Parser::SkipWS() {
-  while (next_pos_ < data_.length() && IsSpaceOrNewline(data_[next_pos_]))
+  while (next_pos_ < data_.length() && IsXMLSpace(data_[next_pos_]))
     ++next_pos_;
 }
 

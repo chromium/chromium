@@ -6,6 +6,7 @@
 
 #include <limits.h>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,15 +15,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -37,34 +38,34 @@
 const char kSignInPromoQueryKeyShowAccountManagement[] =
     "showAccountManagement";
 
-InlineLoginHandler::InlineLoginHandler() {}
+InlineLoginHandler::InlineLoginHandler() = default;
 
-InlineLoginHandler::~InlineLoginHandler() {}
+InlineLoginHandler::~InlineLoginHandler() = default;
 
 void InlineLoginHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize",
       base::BindRepeating(&InlineLoginHandler::HandleInitializeMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "authExtensionReady",
       base::BindRepeating(&InlineLoginHandler::HandleAuthExtensionReadyMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "completeLogin",
       base::BindRepeating(&InlineLoginHandler::HandleCompleteLoginMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "switchToFullTab",
       base::BindRepeating(&InlineLoginHandler::HandleSwitchToFullTabMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "navigationButtonClicked",
-      base::BindRepeating(&InlineLoginHandler::HandleNavigationButtonClicked,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "dialogClose", base::BindRepeating(&InlineLoginHandler::HandleDialogClose,
                                          base::Unretained(this)));
+}
+
+void InlineLoginHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
@@ -85,12 +86,10 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
         value == "0") {
       partition->ClearData(
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
-          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-          GURL(),
-          base::Time(),
-          base::Time::Max(),
-          base::Bind(&InlineLoginHandler::ContinueHandleInitializeMessage,
-                     weak_ptr_factory_.GetWeakPtr()));
+          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
+          base::Time(), base::Time::Max(),
+          base::BindOnce(&InlineLoginHandler::ContinueHandleInitializeMessage,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else {
       ContinueHandleInitializeMessage();
     }
@@ -112,9 +111,8 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   signin_metrics::Reason reason =
       signin::GetSigninReasonForEmbeddedPromoURL(current_url);
 
-  if (reason != signin_metrics::Reason::REASON_REAUTHENTICATION &&
-      reason != signin_metrics::Reason::REASON_UNLOCK &&
-      reason != signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT) {
+  if (reason != signin_metrics::Reason::kReauthentication &&
+      reason != signin_metrics::Reason::kAddSecondaryAccount) {
     signin_metrics::LogSigninAccessPointStarted(
         access_point,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
@@ -127,8 +125,8 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string default_email;
-  if (reason == signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT ||
-      reason == signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
+      reason == signin_metrics::Reason::kForcedSigninPrimaryAccount) {
     default_email =
         profile->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
   } else {
@@ -149,7 +147,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   params.SetBoolean("readOnlyEmail", !read_only_email.empty());
 
   SetExtraInitParams(params);
-  CallJavascriptFunction("inline.login.loadAuthExtension", params);
+  FireWebUIListener("load-auth-extension", params);
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(
@@ -164,6 +162,7 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain::Todo(),
       base::BindOnce(&InlineLoginHandler::HandleCompleteLoginMessageWithCookies,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::ListValue(args->GetList())));
@@ -171,31 +170,36 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
 
 void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
     const base::ListValue& args,
-    const net::CookieStatusList& cookies,
-    const net::CookieStatusList& excluded_cookies) {
-  const base::DictionaryValue* dict = nullptr;
-  args.GetDictionary(0, &dict);
+    const net::CookieAccessResultList& cookies,
+    const net::CookieAccessResultList& excluded_cookies) {
+  const base::Value& dict = args.GetList()[0];
 
-  const std::string& email = dict->FindKey("email")->GetString();
-  const std::string& password = dict->FindKey("password")->GetString();
-  const std::string& gaia_id = dict->FindKey("gaiaId")->GetString();
+  const std::string& email = dict.FindKey("email")->GetString();
+  const std::string& password = dict.FindKey("password")->GetString();
+  const std::string& gaia_id = dict.FindKey("gaiaId")->GetString();
 
   std::string auth_code;
-  for (const auto& cookie_with_status : cookies) {
-    if (cookie_with_status.cookie.Name() == "oauth_code")
-      auth_code = cookie_with_status.cookie.Value();
+  for (const auto& cookie_with_access_result : cookies) {
+    if (cookie_with_access_result.cookie.Name() == "oauth_code")
+      auth_code = cookie_with_access_result.cookie.Value();
   }
 
-  bool skip_for_now = false;
-  dict->GetBoolean("skipForNow", &skip_for_now);
-  bool trusted = false;
-  bool trusted_found = dict->GetBoolean("trusted", &trusted);
+  bool skip_for_now = dict.FindBoolKey("skipForNow").value_or(false);
+  absl::optional<bool> trusted = dict.FindBoolKey("trusted");
+  bool trusted_value = trusted.value_or(false);
+  bool trusted_found = trusted.has_value();
 
-  bool choose_what_to_sync = false;
-  dict->GetBoolean("chooseWhatToSync", &choose_what_to_sync);
+  bool choose_what_to_sync =
+      dict.FindBoolKey("chooseWhatToSync").value_or(false);
 
-  CompleteLogin(email, password, gaia_id, auth_code, skip_for_now, trusted,
-                trusted_found, choose_what_to_sync);
+  base::Value edu_login_params;
+  if (args.GetList().size() > 1) {
+    edu_login_params = args.GetList()[1].Clone();
+  }
+
+  CompleteLogin(email, password, gaia_id, auth_code, skip_for_now,
+                trusted_value, trusted_found, choose_what_to_sync,
+                std::move(edu_login_params));
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
@@ -207,8 +211,9 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
     return;
   }
 
-  std::string url_str;
-  CHECK(args->GetString(0, &url_str));
+  // Note: URL string is expected to be in the first argument,
+  // but it is not used.
+  CHECK(args->GetList()[0].is_string());
 
   Profile* profile = Profile::FromWebUI(web_ui());
   GURL main_frame_url(web_ui()->GetWebContents()->GetURL());
@@ -229,24 +234,14 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
   CloseDialogFromJavascript();
 }
 
-void InlineLoginHandler::HandleNavigationButtonClicked(
-    const base::ListValue* args) {
-#if !defined(OS_CHROMEOS)
-  NOTREACHED() << "The inline login handler is no longer used in a browser "
-                  "or tab modal dialog.";
-#else
-  FireWebUIListener("navigateBackInWebview");
-#endif
-}
-
 void InlineLoginHandler::HandleDialogClose(const base::ListValue* args) {
-#if !defined(OS_CHROMEOS)
-  // Does nothing if user manager is not showing.
-  UserManagerProfileDialog::HideDialog();
-#endif  // !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Does nothing if profile picker is not showing.
+  ProfilePickerForceSigninDialog::HideDialog();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void InlineLoginHandler::CloseDialogFromJavascript() {
   if (IsJavascriptAllowed())
-    CallJavascriptFunction("inline.login.closeDialog");
+    FireWebUIListener("close-dialog");
 }

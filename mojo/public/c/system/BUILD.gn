@@ -5,19 +5,13 @@
 component("system") {
   output_name = "mojo_public_system"
 
-  sources = [
-    "thunks.cc",
-  ]
+  sources = [ "thunks.cc" ]
 
   defines = [ "MOJO_SYSTEM_IMPLEMENTATION" ]
 
-  public_deps = [
-    ":headers",
-  ]
+  public_deps = [ ":headers" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("headers") {

@@ -99,6 +99,10 @@ MenuItem::ContextList GetContexts(const std::vector<
         // Not available for <webview>.
         contexts.Add(extensions::MenuItem::PAGE_ACTION);
         break;
+      case extensions::api::context_menus::CONTEXT_TYPE_ACTION:
+        // Not available for <webview>.
+        contexts.Add(extensions::MenuItem::ACTION);
+        break;
       case extensions::api::context_menus::CONTEXT_TYPE_NONE:
         NOTREACHED();
     }
@@ -121,11 +125,6 @@ MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
       return extensions::MenuItem::SEPARATOR;
   }
   return extensions::MenuItem::NORMAL;
-}
-
-bool HasLazyContext(const Extension* extension) {
-  return BackgroundInfo::HasLazyBackgroundPage(extension) ||
-         BackgroundInfo::IsServiceWorkerBased(extension);
 }
 
 }  // namespace context_menus_api_helpers

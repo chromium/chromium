@@ -5,6 +5,8 @@
 #ifndef NET_CERT_INTERNAL_CERT_ISSUER_SOURCE_SYNC_UNITTEST_H_
 #define NET_CERT_INTERNAL_CERT_ISSUER_SOURCE_SYNC_UNITTEST_H_
 
+#include <algorithm>
+
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/cert_issuer_source.h"
 #include "net/cert/internal/test_helpers.h"

@@ -5,33 +5,28 @@
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 
 #include "content/browser/renderer_host/input/input_router.h"
-#include "content/common/input/input_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
-using blink::WebMouseEvent;
 using blink::WebMouseWheelEvent;
-using blink::WebTouchEvent;
-using blink::WebTouchPoint;
 
 namespace content {
 
 MockInputRouterClient::MockInputRouterClient()
     : input_router_(nullptr),
       in_flight_event_count_(0),
-      filter_state_(INPUT_EVENT_ACK_STATE_NOT_CONSUMED),
+      filter_state_(blink::mojom::InputEventResultState::kNotConsumed),
       filter_input_event_called_(false),
-      white_listed_touch_action_(cc::TouchAction::kAuto) {}
+      compositor_allowed_touch_action_(cc::TouchAction::kAuto) {}
 
 MockInputRouterClient::~MockInputRouterClient() {}
 
-InputEventAckState MockInputRouterClient::FilterInputEvent(
+blink::mojom::InputEventResultState MockInputRouterClient::FilterInputEvent(
     const WebInputEvent& input_event,
     const ui::LatencyInfo& latency_info) {
   filter_input_event_called_ = true;
-  last_filter_event_.reset(new InputEvent(input_event, latency_info));
+  last_filter_event_ = input_event.Clone();
   return filter_state_;
 }
 
@@ -40,7 +35,7 @@ void MockInputRouterClient::IncrementInFlightEventCount() {
 }
 
 void MockInputRouterClient::DecrementInFlightEventCount(
-    InputEventAckSource ack_source) {
+    blink::mojom::InputEventResultSource ack_source) {
   --in_flight_event_count_;
 }
 
@@ -49,9 +44,9 @@ void MockInputRouterClient::DidOverscroll(
   overscroll_ = params;
 }
 
-void MockInputRouterClient::OnSetWhiteListedTouchAction(
-    cc::TouchAction white_listed_touch_action) {
-  white_listed_touch_action_ = white_listed_touch_action;
+void MockInputRouterClient::OnSetCompositorAllowedTouchAction(
+    cc::TouchAction compositor_allowed_touch_action) {
+  compositor_allowed_touch_action_ = compositor_allowed_touch_action;
 }
 
 void MockInputRouterClient::DidStartScrollingViewport() {}
@@ -66,9 +61,10 @@ void MockInputRouterClient::ForwardGestureEventWithLatencyInfo(
   if (gesture_event.SourceDevice() != blink::WebGestureDevice::kTouchpad)
     return;
 
-  if (gesture_event.GetType() == WebInputEvent::kGestureScrollBegin) {
+  if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     is_wheel_scroll_in_progress_ = true;
-  } else if (gesture_event.GetType() == WebInputEvent::kGestureScrollEnd) {
+  } else if (gesture_event.GetType() ==
+             WebInputEvent::Type::kGestureScrollEnd) {
     is_wheel_scroll_in_progress_ = false;
   }
 }
@@ -106,10 +102,11 @@ ui::DidOverscrollParams MockInputRouterClient::GetAndResetOverscroll() {
   return overscroll;
 }
 
-cc::TouchAction MockInputRouterClient::GetAndResetWhiteListedTouchAction() {
-  cc::TouchAction white_listed_touch_action = white_listed_touch_action_;
-  white_listed_touch_action_ = cc::TouchAction::kAuto;
-  return white_listed_touch_action;
+cc::TouchAction
+MockInputRouterClient::GetAndResetCompositorAllowedTouchAction() {
+  cc::TouchAction allowed = compositor_allowed_touch_action_;
+  compositor_allowed_touch_action_ = cc::TouchAction::kAuto;
+  return allowed;
 }
 
 bool MockInputRouterClient::NeedsBeginFrameForFlingProgress() {

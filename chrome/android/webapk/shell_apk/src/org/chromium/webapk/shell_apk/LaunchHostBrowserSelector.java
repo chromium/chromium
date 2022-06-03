@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.Map;
 

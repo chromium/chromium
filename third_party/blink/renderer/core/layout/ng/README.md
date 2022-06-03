@@ -89,6 +89,12 @@ Here's how it works:
   that relayout happens when style or children change. Eventually we need to
   rethink this part as we transition away from legacy layout.
 
+### Block fragmentation ###
+
+Design doc [here](https://docs.google.com/document/d/1EJOdFesZKspvrU7uWtGl-8ab2jIrzRF6NKJhwYOs6hU/).
+
+Tutorial [here](block-fragmentation-tutorial.md).
+
 ### Code coverage ###
 
 The latest code coverage (from Feb 14 2017) can be found [here](https://glebl.users.x20web.corp.google.com/www/layout_ng_code_coverage/index.html).
@@ -113,7 +119,7 @@ Here is the instruction how to generate a new result.
 `chromium\src>for %file in (*.log) do DynamoRIO\tools\bin64\drcov2lcov.exe -input %file -output %file.info -src_filter layout/ng -src_skip_filter _test`
 * Merge all lcov files into one file
 `chromium\src>node lcov-result-merger\bin\lcov-result-merger.js *.info output.info`
-* Generate the coverage html from the master lcov file
+* Generate the coverage html from the lcov file
 `chromium\src>C:\Perl64\bin\perl.exe dynamorio.git\third_party\lcov\genhtml output.info -o output`
 
 ### Debugging, logging and testing ###

@@ -18,7 +18,7 @@ using device::BluetoothAdapterFactory;
 
 FakeBluetooth::FakeBluetooth()
     : global_factory_values_(
-          BluetoothAdapterFactory::Get().InitGlobalValuesForTesting()) {}
+          BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting()) {}
 FakeBluetooth::~FakeBluetooth() = default;
 
 // static

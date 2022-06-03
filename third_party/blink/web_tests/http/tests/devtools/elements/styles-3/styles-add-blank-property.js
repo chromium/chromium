@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new blank property works.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>
@@ -16,9 +16,9 @@
   var treeElement;
   var section;
 
-  function addAndIncrementFirstProperty() {
+  async function addAndIncrementFirstProperty() {
     TestRunner.addResult('Before append:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     section = ElementsTestRunner.inlineStyleSection();
 
     // Create and increment.
@@ -48,7 +48,7 @@
 
   async function addAndChangeLastCompoundProperty() {
     TestRunner.addResult('After insertion at index 0:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     treeElement = ElementsTestRunner.inlineStyleSection().addNewBlankProperty(2);
     treeElement.startEditing();
@@ -68,7 +68,7 @@
 
   async function addAndCommitMiddleProperty() {
     TestRunner.addResult('After appending and changing a \'compound\' property:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     treeElement = ElementsTestRunner.inlineStyleSection().addNewBlankProperty(2);
     treeElement.startEditing();
@@ -81,9 +81,9 @@
     reloadStyles(dumpAndComplete);
   }
 
-  function dumpAndComplete() {
+  async function dumpAndComplete() {
     TestRunner.addResult('After insertion at index 2:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     TestRunner.completeTest();
   }

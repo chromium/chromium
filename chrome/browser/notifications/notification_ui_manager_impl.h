@@ -11,11 +11,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +39,9 @@ class NotificationUIManagerImpl : public NotificationUIManager,
                                   public ProfileObserver {
  public:
   NotificationUIManagerImpl();
+  NotificationUIManagerImpl(const NotificationUIManagerImpl&) = delete;
+  NotificationUIManagerImpl& operator=(const NotificationUIManagerImpl&) =
+      delete;
   ~NotificationUIManagerImpl() override;
 
   // NotificationUIManager
@@ -51,10 +51,11 @@ class NotificationUIManagerImpl : public NotificationUIManager,
               Profile* profile) override;
   const message_center::Notification* FindById(
       const std::string& delegate_id,
-      ProfileID profile_id) const override;
+      ProfileNotification::ProfileID profile_id) const override;
   bool CancelById(const std::string& delegate_id,
-                  ProfileID profile_id) override;
-  std::set<std::string> GetAllIdsByProfile(ProfileID profile_id) override;
+                  ProfileNotification::ProfileID profile_id) override;
+  std::set<std::string> GetAllIdsByProfile(
+      ProfileNotification::ProfileID profile_id) override;
   bool CancelAllBySourceOrigin(const GURL& source_origin) override;
   void CancelAll() override;
   void StartShutdown() override;
@@ -101,7 +102,8 @@ class NotificationUIManagerImpl : public NotificationUIManager,
 
   NotificationSystemObserver system_observer_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_otr_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_otr_profiles_{this};
 
   // Delegate of this class.
   std::unique_ptr<PopupsOnlyUiController> popups_only_ui_controller_;
@@ -111,8 +113,6 @@ class NotificationUIManagerImpl : public NotificationUIManager,
 
   // Tracks the current visibility status of the popup bubbles.
   bool popups_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationUIManagerImpl);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_UI_MANAGER_IMPL_H_

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/background_contents_tag.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
@@ -17,7 +19,8 @@
 
 namespace task_manager {
 
-BackgroundContentsTask* BackgroundContentsTag::CreateTask() const {
+std::unique_ptr<RendererTask> BackgroundContentsTag::CreateTask(
+    WebContentsTaskProvider*) const {
   // Try to lookup the application name from the parent extension (if any).
   Profile* profile = Profile::FromBrowserContext(
       web_contents()->GetBrowserContext());
@@ -29,11 +32,12 @@ BackgroundContentsTask* BackgroundContentsTag::CreateTask() const {
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   const extensions::Extension* extension =
       extensions_set.GetByID(application_id);
-  base::string16 application_name;
+  std::u16string application_name;
   if (extension)
     application_name = base::UTF8ToUTF16(extension->name());
 
-  return new BackgroundContentsTask(application_name, background_contents_);
+  return std::make_unique<BackgroundContentsTask>(application_name,
+                                                  background_contents_);
 }
 
 BackgroundContentsTag::BackgroundContentsTag(

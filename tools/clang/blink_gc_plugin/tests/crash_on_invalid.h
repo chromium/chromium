@@ -18,7 +18,7 @@ class Gamepad final : public GarbageCollected<Gamepad>,
                       public ScriptWrappable {
  public:
   virtual const WrapperTypeInfo* wrapperTypeInfo() const {}
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 };
 }
 

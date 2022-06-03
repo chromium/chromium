@@ -13,8 +13,9 @@ namespace blink {
 // For the task type usage guideline, see https://bit.ly/2vMAsQ4
 //
 // When a new task type is created:
-// * use kCount value as a new value,
-// * update tools/metrics/histograms/enums.xml,
+// * Update kMaxValue to point to a new value
+// * in tools/metrics/histograms/enums.xml update the
+//   "RendererSchedulerTaskType" enum
 // * update TaskTypes.md
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
@@ -48,6 +49,9 @@ enum class TaskType : unsigned char {
   // This is a part of Networking task source used to annotate tasks which are
   // posted from the loading stack (i.e. WebURLLoader).
   kNetworkingWithURLLoaderAnnotation = 50,
+  // This is a part of Networking task that should not be frozen when a page is
+  // frozen.
+  kNetworkingUnfreezable = 75,
   // This task source is used for control messages between kNetworking tasks.
   kNetworkingControl = 4,
   // This task source is used to queue calls to history.back() and similar APIs.
@@ -73,9 +77,17 @@ enum class TaskType : unsigned char {
   kMicrotask = 9,
 
   // https://html.spec.whatwg.org/multipage/webappapis.html#timers
-  // This task source is used to queue tasks queued by setInterval() and similar
-  // APIs.
-  kJavascriptTimer = 10,
+  // For tasks queued by setTimeout() or setInterval().
+  //
+  // Task nesting level is < 5 and timeout is zero.
+  kJavascriptTimerImmediate = 72,
+  // Task nesting level is < 5 and timeout is > 0.
+  kJavascriptTimerDelayedLowNesting = 73,
+  // Task nesting level is >= 5.
+  kJavascriptTimerDelayedHighNesting = 10,
+  // Note: The timeout is increased to be at least 4ms when the task nesting
+  // level is >= 5. Therefore, the timeout is necessarily > 0 for
+  // kJavascriptTimerDelayedHighNesting.
 
   // https://html.spec.whatwg.org/multipage/comms.html#sse-processing-model
   // This task source is used for any tasks that are queued by EventSource
@@ -152,6 +164,16 @@ enum class TaskType : unsigned char {
   // https://wicg.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
+  // Task type used for the Prioritized Task Scheduling API
+  // (https://wicg.github.io/scheduling-apis/#the-posted-task-task-source).
+  // This task type should not be passed directly to
+  // FrameScheduler::GetTaskRunner(); it is used indirectly by
+  // WebSchedulingTaskQueues.
+  kWebSchedulingPostedTask = 67,
+
+  // https://w3c.github.io/screen-wake-lock/#dfn-screen-wake-lock-task-source
+  kWakeLock = 76,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -178,11 +200,13 @@ enum class TaskType : unsigned char {
   kInternalMedia = 29,
 
   // Tasks to execute things for real-time media processing like recording. If a
-  // task touches MediaStreamTracks, associated sources and sinks, this task
-  // type should be used.
+  // task touches MediaStreamTracks, associated sources/sinks, and Web Audio,
+  // this task type should be used.
   // Tasks with this type are mainly posted by:
   // * //content/renderer/media
   // * //media
+  // * blink/renderer/modules/webaudio
+  // * blink/public/platform/audio
   kInternalMediaRealTime = 30,
 
   // Tasks related to user interaction like clicking or inputting texts.
@@ -221,16 +245,24 @@ enum class TaskType : unsigned char {
   // Task used to split a script loading task for cooperative scheduling
   kInternalContinueScriptLoading = 65,
 
-  // Experimental tasks types used for main thread scheduling postTask API
-  // (https://github.com/WICG/main-thread-scheduling).
-  // These task types should not be passed directly to
-  // FrameScheduler::GetTaskRunner(); they are used indirectly by
-  // WebSchedulingTaskQueues.
-  kExperimentalWebScheduling = 67,
-
   // Tasks used to control frame lifecycle - they should run even when the frame
   // is frozen.
   kInternalFrameLifecycleControl = 68,
+
+  // Tasks used for find-in-page.
+  kInternalFindInPage = 70,
+
+  // Tasks that come in on the HighPriorityLocalFrame interface.
+  kInternalHighPriorityLocalFrame = 71,
+
+  // Tasks that are should use input priority task queue/runner.
+  kInternalInputBlocking = 77,
+
+  // Tasks related to the WebGPU API
+  kWebGPU = 78,
+
+  // Cross-process PostMessage IPCs that are deferred in the current task.
+  kInternalPostMessageForwarding = 79,
 
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
@@ -245,17 +277,21 @@ enum class TaskType : unsigned char {
   kMainThreadTaskQueueDefault = 39,
   kMainThreadTaskQueueInput = 40,
   kMainThreadTaskQueueIdle = 41,
-  kMainThreadTaskQueueIPC = 42,
+  // Removed:
+  // kMainThreadTaskQueueIPC = 42,
   kMainThreadTaskQueueControl = 43,
-  kMainThreadTaskQueueCleanup = 52,
+  // Removed:
+  // kMainThreadTaskQueueCleanup = 52,
   kMainThreadTaskQueueMemoryPurge = 62,
+  kMainThreadTaskQueueNonWaking = 69,
+  kMainThreadTaskQueueIPCTracking = 74,
   kCompositorThreadTaskQueueDefault = 45,
   kCompositorThreadTaskQueueInput = 49,
   kWorkerThreadTaskQueueDefault = 46,
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 69,
+  kMaxValue = kInternalPostMessageForwarding,
 };
 
 }  // namespace blink

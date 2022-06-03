@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
     : public LoginState::Observer,
       public NetworkPolicyObserver {
  public:
+  ProhibitedTechnologiesHandler(const ProhibitedTechnologiesHandler&) = delete;
+  ProhibitedTechnologiesHandler& operator=(
+      const ProhibitedTechnologiesHandler&) = delete;
+
   ~ProhibitedTechnologiesHandler() override;
 
   // LoginState::Observer
@@ -31,10 +34,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   void PoliciesApplied(const std::string& userhash) override;
   // Function for updating the list of technologies that are prohibited during
   // user sessions
-  void SetProhibitedTechnologies(const base::ListValue* prohibited_list);
+  void SetProhibitedTechnologies(const base::Value& prohibited_list);
   // Functions for updating the list of technologies that are prohibited
   // everywhere, including login screen
-  void AddGloballyProhibitedTechnology(const std::string& prohibited_list);
+  void AddGloballyProhibitedTechnology(const std::string& technology);
   void RemoveGloballyProhibitedTechnology(const std::string& technology);
   // Returns the currently active list of prohibited
   // technologies(session-dependent and globally-prohibited ones)
@@ -63,8 +66,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   NetworkStateHandler* network_state_handler_ = nullptr;
   bool user_logged_in_ = false;
   bool user_policy_applied_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ProhibitedTechnologiesHandler);
 };
 
 }  // namespace chromeos

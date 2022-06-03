@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class FileListSelectionModel extends cr.ui.ListSelectionModel {
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+export class FileListSelectionModel extends ListSelectionModel {
   /** @param {number=} opt_length The number items in the selection. */
   constructor(opt_length) {
     super(opt_length);
@@ -33,10 +36,16 @@ class FileListSelectionModel extends cr.ui.ListSelectionModel {
     super.selectAll();
     // Force change event when selecting all but with only 1 item, to update the
     // UI with select mode.
-    if (this.isCheckSelectMode_ && this.selectedIndexes.length == 1) {
+    if (this.isCheckSelectMode_ && this.selectedIndexes.length === 1) {
       const e = new Event('change');
       e.changes = [];
       this.dispatchEvent(e);
+
+      // If force lead index when there is no lead, because doesn't make sense
+      // to not have lead when there is selection.
+      if (this.leadIndex < 0) {
+        this.leadIndex = this.selectedIndexes[0];
+      }
     }
   }
 
@@ -86,7 +95,7 @@ class FileListSelectionModel extends cr.ui.ListSelectionModel {
   }
 }
 
-class FileListSingleSelectionModel extends cr.ui.ListSingleSelectionModel {
+export class FileListSingleSelectionModel extends ListSingleSelectionModel {
   /**
    * Updates the check-select mode.
    * @param {boolean} enabled True if check-select mode should be enabled.

@@ -43,8 +43,8 @@ gsutil -m cp -r gs://clusterfuzz-corpus/libfuzzer/<fuzz_target> local_corpus_dir
 
 [Buildbot]: https://ci.chromium.org/p/chromium/g/chromium.fuzz/builders
 [Code Coverage]: https://chromium-coverage.appspot.com/reports/latest_fuzzers_only/linux/index.html
-[chromium_libfuzzer.py]: https://code.google.com/p/chromium/codesearch#chromium/build/scripts/slave/recipes/chromium_libfuzzer.py
+[chromium_libfuzzer.py]: https://source.chromium.org/chromium/chromium/src/+/HEAD:testing/libfuzzer/libFuzzer_integration.md
 [ClusterFuzz Fuzzer Stats]: https://clusterfuzz.com/fuzzer-stats/by-fuzzer/fuzzer/libFuzzer/job/libfuzzer_chrome_asan
 [ClusterFuzz libFuzzer Logs]: https://console.cloud.google.com/storage/browser/clusterfuzz-libfuzzer-logs
 [Corpus GCS Bucket]: https://console.cloud.google.com/storage/clusterfuzz-corpus/libfuzzer
-[fuzzer_test.gni]: https://code.google.com/p/chromium/codesearch#chromium/src/testing/libfuzzer/fuzzer_test.gni
+[fuzzer_test.gni]: https://source.chromium.org/chromium/chromium/src/+/HEAD:testing/libfuzzer/fuzzer_test.gni

@@ -14,10 +14,8 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -76,7 +74,7 @@ struct MediaGalleryPrefInfo {
   MediaGalleryPrefId pref_id;
 
   // The user-visible name of this gallery.
-  base::string16 display_name;
+  std::u16string display_name;
 
   // A string which uniquely and persistently identifies the device that the
   // gallery lives on.
@@ -90,15 +88,15 @@ struct MediaGalleryPrefInfo {
 
   // The volume label of the volume/device on which the gallery
   // resides. Empty if there is no such label or it is unknown.
-  base::string16 volume_label;
+  std::u16string volume_label;
 
   // Vendor name for the volume/device on which the gallery is located.
   // Will be empty if unknown.
-  base::string16 vendor_name;
+  std::u16string vendor_name;
 
   // Model name for the volume/device on which the gallery is located.
   // Will be empty if unknown.
-  base::string16 model_name;
+  std::u16string model_name;
 
   // The capacity in bytes of the volume/device on which the gallery is
   // located. Will be zero if unknown.
@@ -133,9 +131,9 @@ struct MediaGalleryPrefInfo {
   int prefs_version;
 
   // Called by views to provide details for the gallery permission entries.
-  base::string16 GetGalleryDisplayName() const;
-  base::string16 GetGalleryTooltip() const;
-  base::string16 GetGalleryAdditionalDetails() const;
+  std::u16string GetGalleryDisplayName() const;
+  std::u16string GetGalleryTooltip() const;
+  std::u16string GetGalleryAdditionalDetails() const;
 
   // Returns true if the gallery is currently a removable device gallery which
   // is now attached, or a fixed storage gallery.
@@ -178,6 +176,11 @@ class MediaGalleriesPreferences
   };
 
   explicit MediaGalleriesPreferences(Profile* profile);
+
+  MediaGalleriesPreferences(const MediaGalleriesPreferences&) = delete;
+  MediaGalleriesPreferences& operator=(const MediaGalleriesPreferences&) =
+      delete;
+
   ~MediaGalleriesPreferences() override;
 
   // Ensures that the preferences is initialized. The provided callback, if
@@ -188,7 +191,7 @@ class MediaGalleriesPreferences
   // This call also ensures that the StorageMonitor is initialized.
   // Note for unit tests: This requires an active TaskEnvironment and
   // EnsureMediaDirectoriesExists instance to complete reliably.
-  void EnsureInitialized(base::Closure callback);
+  void EnsureInitialized(base::OnceClosure callback);
 
   // Return true if the storage monitor has already been initialized.
   bool IsInitialized() const;
@@ -225,9 +228,9 @@ class MediaGalleriesPreferences
   MediaGalleryPrefId AddGallery(const std::string& device_id,
                                 const base::FilePath& relative_path,
                                 MediaGalleryPrefInfo::Type type,
-                                const base::string16& volume_label,
-                                const base::string16& vendor_name,
-                                const base::string16& model_name,
+                                const std::u16string& volume_label,
+                                const std::u16string& vendor_name,
+                                const std::u16string& model_name,
                                 uint64_t total_size_in_bytes,
                                 base::Time last_attach_time,
                                 int audio_count,
@@ -296,12 +299,12 @@ class MediaGalleriesPreferences
   // TODO(orenb): Simplify this and reduce the number of parameters.
   MediaGalleryPrefId AddOrUpdateGalleryInternal(
       const std::string& device_id,
-      const base::string16& display_name,
+      const std::u16string& display_name,
       const base::FilePath& relative_path,
       MediaGalleryPrefInfo::Type type,
-      const base::string16& volume_label,
-      const base::string16& vendor_name,
-      const base::string16& model_name,
+      const std::u16string& volume_label,
+      const std::u16string& vendor_name,
+      const std::u16string& model_name,
       uint64_t total_size_in_bytes,
       base::Time last_attach_time,
       bool volume_metadata_valid,
@@ -348,13 +351,13 @@ class MediaGalleriesPreferences
   void SetExtensionPrefsForTesting(extensions::ExtensionPrefs* extension_prefs);
 
   bool initialized_;
-  std::vector<base::Closure> on_initialize_callbacks_;
+  std::vector<base::OnceClosure> on_initialize_callbacks_;
 
   // The profile that owns |this|.
   Profile* profile_;
 
   // The ExtensionPrefs used in a testing environment, where KeyedServices
-  // aren't used. This will be NULL unless it is set with
+  // aren't used. This will be nullptr unless it is set with
   // SetExtensionPrefsForTesting().
   extensions::ExtensionPrefs* extension_prefs_for_testing_;
 
@@ -369,8 +372,6 @@ class MediaGalleriesPreferences
       gallery_change_observers_;
 
   base::WeakPtrFactory<MediaGalleriesPreferences> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPreferences);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PREFERENCES_H_

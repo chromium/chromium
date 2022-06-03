@@ -4,18 +4,26 @@
 
 #include "ui/gl/init/gl_initializer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
+
+#if defined(USE_OZONE)
+#include "ui/gl/init/gl_display_egl_util_ozone.h"
 #include "ui/gl/init/ozone_util.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace gl {
 namespace init {
 
 bool InitializeGLOneOffPlatform() {
-  if (HasGLOzone())
+  if (HasGLOzone()) {
+    gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
     return GetGLOzone()->InitializeGLOneOffPlatform();
+  }
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
@@ -27,7 +35,7 @@ bool InitializeGLOneOffPlatform() {
   return false;
 }
 
-bool InitializeStaticGLBindings(GLImplementation implementation) {
+bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   // Prevent reinitialization with a different implementation. Once the gpu
   // unit tests have initialized with kGLImplementationMock, we don't want to
   // later switch to another GL implementation.
@@ -38,16 +46,15 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
         ->InitializeStaticGLBindings(implementation);
   }
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementationParts(implementation);
       InitializeStaticGLBindingsGL();
       return true;
     default:
       NOTREACHED();
   }
-
   return false;
 }
 

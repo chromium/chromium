@@ -143,6 +143,14 @@ void IceConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
   event_dispatcher_->set_input_stub(input_stub);
 }
 
+PeerConnectionControls* IceConnectionToClient::peer_connection_controls() {
+  return nullptr;
+}
+
+WebrtcEventLogData* IceConnectionToClient::rtc_event_log() {
+  return nullptr;
+}
+
 void IceConnectionToClient::OnSessionStateChange(Session::State state) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

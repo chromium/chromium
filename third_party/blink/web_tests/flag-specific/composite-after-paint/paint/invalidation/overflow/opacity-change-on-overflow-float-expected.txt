@@ -5,32 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 8, 784, 59],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 8, 784, 59],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (floating) DIV class='green'",
-          "rect": [8, 84, 100, 100],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (floating) DIV class='red'",
-          "rect": [8, 84, 100, 100],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 84, 100, 100],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [8, 8, 784, 59],
+        [8, 84, 100, 100]
       ]
     }
   ]

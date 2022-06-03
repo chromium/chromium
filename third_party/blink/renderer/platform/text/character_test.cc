@@ -411,4 +411,60 @@ TEST(CharacterTest, TransformedIsUprightInMixedVertical) {
   }
 }
 
+TEST(CharacterTest, IsVerticalMathCharacter) {
+  // https://w3c.github.io/mathml-core/#stretchy-operator-axis
+  const UChar stretchy_operator_with_inline_axis[]{
+      0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,
+      0x02DC, 0x02F7, 0x0302, 0x0332, 0x203E, 0x20D0, 0x20D1, 0x20D6, 0x20D7,
+      0x20E1, 0x2190, 0x2192, 0x2194, 0x2198, 0x2199, 0x219C, 0x219D, 0x219E,
+      0x21A0, 0x21A2, 0x21A3, 0x21A4, 0x21A6, 0x21A9, 0x21AA, 0x21AB, 0x21AC,
+      0x21AD, 0x21B4, 0x21B9, 0x21BC, 0x21BD, 0x21C0, 0x21C1, 0x21C4, 0x21C6,
+      0x21C7, 0x21C9, 0x21CB, 0x21CC, 0x21D0, 0x21D2, 0x21D4, 0x21DA, 0x21DB,
+      0x21DC, 0x21DD, 0x21E0, 0x21E2, 0x21E4, 0x21E5, 0x21E6, 0x21E8, 0x21F0,
+      0x21F6, 0x21FD, 0x21FE, 0x21FF, 0x23B4, 0x23B5, 0x23DC, 0x23DD, 0x23DE,
+      0x23DF, 0x23E0, 0x23E1, 0x2500, 0x27F5, 0x27F6, 0x27F7, 0x27F8, 0x27F9,
+      0x27FA, 0x27FB, 0x27FC, 0x27FD, 0x27FE, 0x27FF, 0x290C, 0x290D, 0x290E,
+      0x290F, 0x2910, 0x294E, 0x2950, 0x2952, 0x2953, 0x2956, 0x2957, 0x295A,
+      0x295B, 0x295E, 0x295F, 0x2B45, 0x2B46, 0xFE35, 0xFE36, 0xFE37, 0xFE38};
+
+  for (UChar32 test_char = 0; test_char < kMaxCodepoint; test_char++) {
+    if (test_char == kArabicMathematicalOperatorMeemWithHahWithTatweel) {
+      EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
+    } else if (test_char == kArabicMathematicalOperatorHahWithDal) {
+      EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
+    } else {
+      bool in_vertical = !std::binary_search(
+          stretchy_operator_with_inline_axis,
+          stretchy_operator_with_inline_axis +
+              base::size(stretchy_operator_with_inline_axis),
+          test_char);
+      EXPECT_TRUE(Character::IsVerticalMathCharacter(test_char) == in_vertical);
+    }
+  }
+}
+
+TEST(CharacterTest, ExtendedPictographic) {
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x00A8));
+  EXPECT_TRUE(Character::IsExtendedPictographic(0x00A9));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x00AA));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x3298));
+  EXPECT_TRUE(Character::IsExtendedPictographic(0x3299));
+  EXPECT_FALSE(Character::IsExtendedPictographic(0x329A));
+}
+
+TEST(CharacterTest, EmojiComponents) {
+  UChar32 false_set[] = {0x22,    0x2B,    0x29,    0x40,    0x200C,  0x200E,
+                         0x20E2,  0x20E4,  0xFE0E,  0xFE1A,  0x1F1E5, 0x1f200,
+                         0x1f3fa, 0x1f400, 0x1f9Af, 0x1f9b4, 0xe001F, 0xe0080};
+  UChar32 true_set[] = {0x23,    0x2a,    0x30,    0x39,    0x200d,
+                        0x20e3,  0xfe0f,  0x1f1e6, 0x1f1ff, 0x1f3fb,
+                        0x1f3ff, 0x1f9b0, 0x1f9b3, 0xe0020, 0xe007f};
+
+  for (auto false_test : false_set)
+    EXPECT_FALSE(Character::IsEmojiComponent(false_test));
+
+  for (auto true_test : true_set)
+    EXPECT_TRUE(Character::IsEmojiComponent(true_test));
+}
+
 }  // namespace blink

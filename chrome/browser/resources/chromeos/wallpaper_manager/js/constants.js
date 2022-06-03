@@ -117,5 +117,11 @@
    * The name of the custom event that's fired when the wallpaper is changed by
    * third-party apps.
    */
-  WallpaperChangedBy3rdParty: 'wallpaperChangedBy3rdParty'
+  WallpaperChangedBy3rdParty: 'wallpaperChangedBy3rdParty',
+
+  /**
+   * The name of the custom event that's fired when the wallpaper preview should
+   * be closed.
+   */
+  ClosePreviewWallpaper: 'closePreviewWallpaper'
 };

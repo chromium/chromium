@@ -53,17 +53,17 @@ class ShillIPConfigClientTest : public ShillClientUnittestBase {
 
 TEST_F(ShillIPConfigClientTest, PropertyChanged) {
   // Create a signal.
-  const base::Value kConnected(true);
+  const base::Value kMtu(100);
   dbus::Signal signal(shill::kFlimflamIPConfigInterface,
                       shill::kMonitorPropertyChanged);
   dbus::MessageWriter writer(&signal);
-  writer.AppendString(shill::kConnectedProperty);
-  dbus::AppendBasicTypeValueDataAsVariant(&writer, kConnected);
+  writer.AppendString(shill::kMtuProperty);
+  dbus::AppendBasicTypeValueDataAsVariant(&writer, kMtu);
 
   // Set expectations.
   MockPropertyChangeObserver observer;
-  EXPECT_CALL(observer, OnPropertyChanged(shill::kConnectedProperty,
-                                          ValueEq(ByRef(kConnected))))
+  EXPECT_CALL(observer, OnPropertyChanged(shill::kMtuProperty,
+                                          ValueEq(ByRef(kMtu))))
       .Times(1);
 
   // Add the observer
@@ -106,7 +106,7 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kAddressProperty, base::Value(kAddress));
   value.SetKey(shill::kMtuProperty, base::Value(kMtu));
 
@@ -115,7 +115,7 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetProperties(dbus::ObjectPath(kExampleIPConfigPath),
-                         base::BindOnce(&ExpectDictionaryValueResult, &value));
+                         base::BindOnce(&ExpectValueResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }

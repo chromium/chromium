@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_IMAGE_PIXEL_LOCKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_IMAGE_PIXEL_LOCKER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -21,6 +21,8 @@ class ImagePixelLocker final {
 
  public:
   ImagePixelLocker(sk_sp<const SkImage>, SkAlphaType, SkColorType);
+  ImagePixelLocker(const ImagePixelLocker&) = delete;
+  ImagePixelLocker& operator=(const ImagePixelLocker&) = delete;
 
   const void* Pixels() const { return pixels_; }
 
@@ -28,10 +30,8 @@ class ImagePixelLocker final {
   const sk_sp<const SkImage> image_;
   const void* pixels_;
   Vector<char> pixel_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImagePixelLocker);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_IMAGE_PIXEL_LOCKER_H_

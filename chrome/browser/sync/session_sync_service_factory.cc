@@ -9,6 +9,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
@@ -16,11 +17,16 @@
 #include "chrome/browser/ui/sync/browser_synced_window_delegates_getter.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
+#include "components/dom_distiller/core/url_constants.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/sync_sessions_client.h"
+#include "content/public/common/url_utils.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/sync/glue/synced_window_delegates_getter_android.h"
@@ -30,12 +36,13 @@ namespace {
 
 bool ShouldSyncURLImpl(const GURL& url) {
   if (url == chrome::kChromeUIHistoryURL) {
-    // Whitelist the chrome history page, home for "Tabs from other devices", so
+    // Allow the chrome history page, home for "Tabs from other devices", so
     // it can trigger starting up the sync engine.
     return true;
   }
-  return url.is_valid() && !url.SchemeIs(content::kChromeUIScheme) &&
-         !url.SchemeIs(chrome::kChromeNativeScheme) && !url.SchemeIsFile();
+  return url.is_valid() && !content::HasWebUIScheme(url) &&
+         !url.SchemeIs(chrome::kChromeNativeScheme) && !url.SchemeIsFile() &&
+         !url.SchemeIs(dom_distiller::kDomDistillerScheme);
 }
 
 // Chrome implementation of SyncSessionsClient.
@@ -54,19 +61,12 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
 #endif  // defined(OS_ANDROID)
   }
 
+  SyncSessionsClientImpl(const SyncSessionsClientImpl&) = delete;
+  SyncSessionsClientImpl& operator=(const SyncSessionsClientImpl&) = delete;
+
   ~SyncSessionsClientImpl() override {}
 
   // SyncSessionsClient implementation.
-  favicon::FaviconService* GetFaviconService() override {
-    return FaviconServiceFactory::GetForProfile(
-        profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  }
-
-  history::HistoryService* GetHistoryService() override {
-    return HistoryServiceFactory::GetForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  }
-
   sync_sessions::SessionSyncPrefs* GetSessionSyncPrefs() override {
     return &session_sync_prefs_;
   }
@@ -76,8 +76,24 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
         ->GetStoreFactory();
   }
 
+  void ClearAllOnDemandFavicons() override {
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS);
+    if (!history_service) {
+      return;
+    }
+    history_service->ClearAllOnDemandFavicons();
+  }
+
   bool ShouldSyncURL(const GURL& url) const override {
     return ShouldSyncURLImpl(url);
+  }
+
+  bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override {
+    return DeviceInfoSyncServiceFactory::GetForProfile(profile_)
+        ->GetDeviceInfoTracker()
+        ->IsRecentLocalCacheGuid(cache_guid);
   }
 
   sync_sessions::SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter()
@@ -104,8 +120,6 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   std::unique_ptr<sync_sessions::SyncedWindowDelegatesGetter>
       window_delegates_getter_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsClientImpl);
 };
 
 }  // namespace

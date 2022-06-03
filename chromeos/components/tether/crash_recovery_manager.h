@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_CRASH_RECOVERY_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace chromeos {
 
@@ -16,6 +15,10 @@ namespace tether {
 class CrashRecoveryManager {
  public:
   CrashRecoveryManager() {}
+
+  CrashRecoveryManager(const CrashRecoveryManager&) = delete;
+  CrashRecoveryManager& operator=(const CrashRecoveryManager&) = delete;
+
   virtual ~CrashRecoveryManager() {}
 
   // Restores state which was lost by a browser crash. If a crash did not occur
@@ -26,10 +29,7 @@ class CrashRecoveryManager {
   // This function should only be called during the initialization of
   // TetherComponent.
   virtual void RestorePreCrashStateIfNecessary(
-      const base::Closure& on_restoration_finished) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManager);
+      base::OnceClosure on_restoration_finished) = 0;
 };
 
 }  // namespace tether

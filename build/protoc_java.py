@@ -5,7 +5,7 @@
 
 """Generate java source files from protobuf files.
 
-This is a helper file for the genproto_java action in protoc_java.gypi.
+This is the action script for the proto_java_library template.
 
 It performs the following steps:
 1. Deletes all old sources (ensures deleted classes are not part of new jars).
@@ -17,59 +17,68 @@ It performs the following steps:
 
 from __future__ import print_function
 
+import argparse
 import os
-import optparse
 import shutil
 import subprocess
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "android", "gyp"))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'android', 'gyp'))
 from util import build_utils
 
+
+def _HasJavaPackage(proto_lines):
+  return any(line.strip().startswith('option java_package')
+             for line in proto_lines)
+
+
+def _EnforceJavaPackage(proto_srcs):
+  for proto_path in proto_srcs:
+    with open(proto_path) as in_proto:
+      if not _HasJavaPackage(in_proto.readlines()):
+        raise Exception('Proto files for java must contain a "java_package" '
+                        'line: {}'.format(proto_path))
+
+
 def main(argv):
-  parser = optparse.OptionParser()
+  parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
-  parser.add_option("--protoc", help="Path to protoc binary.")
-  parser.add_option("--proto-path", help="Path to proto directory.")
-  parser.add_option("--java-out-dir",
-      help="Path to output directory for java files.")
-  parser.add_option("--srcjar", help="Path to output srcjar.")
-  parser.add_option("--stamp", help="File to touch on success.")
-  parser.add_option("--nano",
-      help="Use to generate nano protos.", action='store_true')
-  parser.add_option("--protoc-javalite-plugin-dir",
-      help="Path to protoc java lite plugin directory.")
-  options, args = parser.parse_args(argv)
+  parser.add_argument('--protoc', required=True, help='Path to protoc binary.')
+  parser.add_argument('--proto-path',
+                      required=True,
+                      help='Path to proto directory.')
+  parser.add_argument('--java-out-dir',
+                      help='Path to output directory for java files.')
+  parser.add_argument('--srcjar', help='Path to output srcjar.')
+  parser.add_argument('--stamp', help='File to touch on success.')
+  parser.add_argument(
+      '--import-dir',
+      action='append',
+      default=[],
+      help='Extra import directory for protos, can be repeated.')
+  parser.add_argument('protos', nargs='+', help='proto source files')
+  options = parser.parse_args(argv)
 
-  build_utils.CheckOptions(options, parser, ['protoc', 'proto_path'])
   if not options.java_out_dir and not options.srcjar:
-    print('One of --java-out-dir or --srcjar must be specified.')
-    return 1
+    raise Exception('One of --java-out-dir or --srcjar must be specified.')
 
-  if not options.nano and not options.protoc_javalite_plugin_dir:
-    print('One of --nano or --protoc-javalite-plugin-dir must be specified.')
-    return 1
+  _EnforceJavaPackage(options.protos)
 
   with build_utils.TempDir() as temp_dir:
-    if options.nano:
-      # Specify arguments to the generator.
-      generator_args = ['optional_field_style=reftypes',
-                        'store_unknown_fields=true']
-      out_arg = '--javanano_out=' + ','.join(generator_args) + ':' + temp_dir
-    else:
-      out_arg = '--javalite_out=' + temp_dir
+    out_arg = '--java_out=lite:' + temp_dir
 
-    custom_env = os.environ.copy()
-    if options.protoc_javalite_plugin_dir:
-      # if we are generating lite protos, then the lite plugin needs to be in the path when protoc
-      # is called. See https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
-      custom_env['PATH'] = '{}:{}'.format(
-          os.path.abspath(options.protoc_javalite_plugin_dir), custom_env['PATH'])
+    proto_path_args = ['--proto_path', options.proto_path]
+    for path in options.import_dir:
+      proto_path_args += ["--proto_path", path]
 
     # Generate Java files using protoc.
     build_utils.CheckOutput(
-        [options.protoc, '--proto_path', options.proto_path, out_arg]
-        + args, env=custom_env)
+        [options.protoc] + proto_path_args + [out_arg] + options.protos,
+        # protoc generates superfluous warnings about LITE_RUNTIME deprecation
+        # even though we are using the new non-deprecated method.
+        stderr_filter=lambda output: build_utils.FilterLines(
+            output, '|'.join([r'optimize_for = LITE_RUNTIME', r'java/lite\.md'])
+        ))
 
     if options.java_out_dir:
       build_utils.DeleteDirectory(options.java_out_dir)
@@ -79,9 +88,8 @@ def main(argv):
 
   if options.depfile:
     assert options.srcjar
-    deps = args + [options.protoc]
-    build_utils.WriteDepfile(options.depfile, options.srcjar, deps,
-                             add_pydeps=False)
+    deps = options.protos + [options.protoc]
+    build_utils.WriteDepfile(options.depfile, options.srcjar, deps)
 
   if options.stamp:
     build_utils.Touch(options.stamp)

@@ -14,8 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
@@ -26,6 +25,7 @@ class BluetoothAdapterWin;
 class BluetoothRemoteGattServiceWin;
 class BluetoothServiceRecordWin;
 class BluetoothSocketThread;
+class BluetoothUUID;
 
 class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
     : public BluetoothDevice,
@@ -36,52 +36,55 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
       const BluetoothTaskManagerWin::DeviceState& device_state,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<BluetoothSocketThread> socket_thread);
+
+  BluetoothDeviceWin(const BluetoothDeviceWin&) = delete;
+  BluetoothDeviceWin& operator=(const BluetoothDeviceWin&) = delete;
+
   ~BluetoothDeviceWin() override;
 
   // BluetoothDevice override
   uint32_t GetBluetoothClass() const override;
   std::string GetAddress() const override;
+  AddressType GetAddressType() const override;
   VendorIDSource GetVendorIDSource() const override;
   uint16_t GetVendorID() const override;
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;
-  base::Optional<int8_t> GetInquiryRSSI() const override;
-  base::Optional<int8_t> GetInquiryTxPower() const override;
+  absl::optional<int8_t> GetInquiryRSSI() const override;
+  absl::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
-  void GetConnectionInfo(const ConnectionInfoCallback& callback) override;
+  void GetConnectionInfo(ConnectionInfoCallback callback) override;
   void SetConnectionLatency(ConnectionLatency connection_latency,
-                            const base::Closure& callback,
-                            const ErrorCallback& error_callback) override;
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) override;
   void Connect(PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) override;
+               ConnectCallback callback) override;
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
   void RejectPairing() override;
   void CancelPairing() override;
-  void Disconnect(const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
-  void Forget(const base::Closure& callback,
-              const ErrorCallback& error_callback) override;
-  void ConnectToService(
-      const BluetoothUUID& uuid,
-      const ConnectToServiceCallback& callback,
-      const ConnectToServiceErrorCallback& error_callback) override;
+  void Disconnect(base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
+  void Forget(base::OnceClosure callback,
+              ErrorCallback error_callback) override;
+  void ConnectToService(const BluetoothUUID& uuid,
+                        ConnectToServiceCallback callback,
+                        ConnectToServiceErrorCallback error_callback) override;
   void ConnectToServiceInsecurely(
       const BluetoothUUID& uuid,
-      const ConnectToServiceCallback& callback,
-      const ConnectToServiceErrorCallback& error_callback) override;
+      ConnectToServiceCallback callback,
+      ConnectToServiceErrorCallback error_callback) override;
 
   // Used by BluetoothProfileWin to retrieve the service record for the given
   // |uuid|.
@@ -102,7 +105,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
 
  protected:
   // BluetoothDevice override
-  void CreateGattConnectionImpl() override;
+  void CreateGattConnectionImpl(
+      absl::optional<BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
  private:
@@ -141,7 +145,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   uint32_t bluetooth_class_;
 
   // The name of the device, as supplied by the remote device.
-  base::Optional<std::string> name_;
+  absl::optional<std::string> name_;
 
   // The Bluetooth address of the device.
   std::string address_;
@@ -150,7 +154,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   // the device.
   bool paired_;
   bool connected_;
-  bool gatt_connected_;
+  bool is_low_energy_;
 
   // Used to send change notifications when a device disappears during
   // discovery.
@@ -166,8 +170,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   // BluetoothRemoteGattServiceWin instance.
   std::set<std::pair<BluetoothUUID, uint16_t>>
       discovery_completed_included_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceWin);
 };
 
 }  // namespace device

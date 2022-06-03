@@ -6,6 +6,9 @@ module device.mojom;
 
 // Note: this needs to stay in sync with
 // src/platform2/system_api/dbus/biod/constants.proto in the ChromeOS repro.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused (See FingerprintScanResult metrics
+// enum).
 enum ScanResult {
   SUCCESS = 0,
   PARTIAL = 1,

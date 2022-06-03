@@ -32,12 +32,11 @@ class SVGViewElement final : public SVGElement,
                              public SVGFitToViewBox,
                              public SVGZoomAndPan {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGViewElement);
 
  public:
   explicit SVGViewElement(Document&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;

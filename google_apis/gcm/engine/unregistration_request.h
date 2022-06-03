@@ -60,7 +60,7 @@ class GCM_EXPORT UnregistrationRequest {
   };
 
   // Callback completing the unregistration request.
-  typedef base::Callback<void(Status success)> UnregistrationCallback;
+  using UnregistrationCallback = base::OnceCallback<void(Status success)>;
 
   // Defines the common info about an unregistration/token-deletion request.
   // All parameters are mandatory.
@@ -113,12 +113,16 @@ class GCM_EXPORT UnregistrationRequest {
       const RequestInfo& request_info,
       std::unique_ptr<CustomRequestHandler> custom_request_handler,
       const net::BackoffEntry::Policy& backoff_policy,
-      const UnregistrationCallback& callback,
+      UnregistrationCallback callback,
       int max_retry_count,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       const std::string& source_to_record);
+
+  UnregistrationRequest(const UnregistrationRequest&) = delete;
+  UnregistrationRequest& operator=(const UnregistrationRequest&) = delete;
+
   ~UnregistrationRequest();
 
   // Starts an unregistration request.
@@ -154,8 +158,6 @@ class GCM_EXPORT UnregistrationRequest {
   std::string source_to_record_;
 
   base::WeakPtrFactory<UnregistrationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnregistrationRequest);
 };
 
 }  // namespace gcm

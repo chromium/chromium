@@ -85,10 +85,8 @@ void MojoAudioInputStream::OnStreamCreated(
     return;
   }
 
-  mojo::ScopedHandle socket_handle =
-      mojo::WrapPlatformFile(foreign_socket->Release());
-
-  DCHECK(socket_handle.is_valid());
+  DCHECK(foreign_socket->IsValid());
+  mojo::PlatformHandle socket_handle(foreign_socket->Take());
 
   std::move(stream_created_callback_)
       .Run({base::in_place, std::move(shared_memory_region),
@@ -103,7 +101,7 @@ void MojoAudioInputStream::OnMuted(int stream_id, bool is_muted) {
 
 void MojoAudioInputStream::OnStreamError(int stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_->OnError();
+  client_->OnError(mojom::InputStreamErrorCode::kUnknown);
   OnError();
 }
 

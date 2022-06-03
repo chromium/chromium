@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -43,8 +42,10 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
          const FloatRect& filter_region,
          float scale,
          UnitScaling);
+  Filter(const Filter&) = delete;
+  Filter& operator=(const Filter&) = delete;
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   float Scale() const { return scale_; }
   FloatRect MapLocalRectToAbsoluteRect(const FloatRect&) const;
@@ -53,11 +54,7 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
   float ApplyHorizontalScale(float value) const;
   float ApplyVerticalScale(float value) const;
 
-  FloatPoint3D Resolve3dPoint(const FloatPoint3D&) const;
-
-  FloatRect AbsoluteFilterRegion() const {
-    return MapLocalRectToAbsoluteRect(filter_region_);
-  }
+  FloatPoint3D Resolve3dPoint(FloatPoint3D) const;
 
   const FloatRect& FilterRegion() const { return filter_region_; }
   const FloatRect& ReferenceBox() const { return reference_box_; }
@@ -75,8 +72,6 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
 
   Member<SourceGraphic> source_graphic_;
   Member<FilterEffect> last_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(Filter);
 };
 
 }  // namespace blink

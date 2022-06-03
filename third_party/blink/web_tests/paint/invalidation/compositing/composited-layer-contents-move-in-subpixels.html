@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+#container div {
+  height: 50.2px;
+  border: 1px solid black;
+  margin-top: 2px;
+}
+#container {
+  will-change: transform;
+  border: 1px solid green;
+  height: 500px;
+}
+#container #first {
+  margin-top: 100.3px;
+  background: yellow;
+}
+</style>
+<div id="container">
+  <div id="first"></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  first.style.marginTop = '100.1px';
+}
+onload = runRepaintAndPixelTest;
+</script>

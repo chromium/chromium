@@ -11,16 +11,17 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class DictionaryValue;
@@ -48,14 +49,27 @@ class ExternalCacheImpl : public ExternalCache,
   // checks are performed for extensions that have an |external_update_url|
   // only. If |wait_for_cache_initialization| is |true|, the cache contents will
   // not be read until a flag file appears in the cache directory, signaling
-  // that the cache is ready.
+  // that the cache is ready. By default ExternalCacheImpl updates the cache at
+  // startup and when policy changes (UpdateExtensionsList is called). However,
+  // if both |allow_scheduled_updates| and the KioskCRXManifestUpdateURLIgnored
+  // are|true|, the ExternalCache will run additional update checks from time
+  // to time (about very 5 hours, as per kDefaultUpdateFrequencySeconds).
+  // Currently it's only enabled for Chrome App Kiosk, see description of the
+  // KioskCRXManifestUpdateURLIgnored policy for details.
+  // TODO(https://crbug.com/1262158) Postpone starting new update check when the
+  // previous one is not finished yet.
   ExternalCacheImpl(
       const base::FilePath& cache_dir,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
       ExternalCacheDelegate* delegate,
       bool always_check_updates,
-      bool wait_for_cache_initialization);
+      bool wait_for_cache_initialization,
+      bool allow_scheduled_updates);
+
+  ExternalCacheImpl(const ExternalCacheImpl&) = delete;
+  ExternalCacheImpl& operator=(const ExternalCacheImpl&) = delete;
+
   ~ExternalCacheImpl() override;
 
   // Implementation of ExternalCache:
@@ -64,12 +78,13 @@ class ExternalCacheImpl : public ExternalCache,
   void UpdateExtensionsList(
       std::unique_ptr<base::DictionaryValue> prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
-  void RemoveExtensions(const std::vector<std::string>& ids) override;
-  bool GetExtension(const std::string& id,
+  void RemoveExtensions(
+      const std::vector<extensions::ExtensionId>& ids) override;
+  bool GetExtension(const extensions::ExtensionId& id,
                     base::FilePath* file_path,
                     std::string* version) override;
-  bool ExtensionFetchPending(const std::string& id) override;
-  void PutExternalExtension(const std::string& id,
+  bool ExtensionFetchPending(const extensions::ExtensionId& id) override;
+  void PutExternalExtension(const extensions::ExtensionId& id,
                             const base::FilePath& crx_file_path,
                             const std::string& version,
                             PutExternalExtensionCallback callback) override;
@@ -80,19 +95,19 @@ class ExternalCacheImpl : public ExternalCache,
                const content::NotificationDetails& details) override;
 
   // Implementation of ExtensionDownloaderDelegate:
-  void OnExtensionDownloadFailed(const std::string& id,
+  void OnExtensionDownloadFailed(const extensions::ExtensionId& id,
                                  Error error,
                                  const PingResult& ping_result,
-                                 const std::set<int>& request_ids) override;
+                                 const std::set<int>& request_ids,
+                                 const FailureData& data) override;
   void OnExtensionDownloadFinished(const extensions::CRXFileInfo& file,
                                    bool file_ownership_passed,
                                    const GURL& download_url,
-                                   const std::string& version,
                                    const PingResult& ping_result,
                                    const std::set<int>& request_ids,
-                                   const InstallCallback& callback) override;
-  bool IsExtensionPending(const std::string& id) override;
-  bool GetExtensionExistingVersion(const std::string& id,
+                                   InstallCallback callback) override;
+  bool IsExtensionPending(const extensions::ExtensionId& id) override;
+  bool GetExtensionExistingVersion(const extensions::ExtensionId& id,
                                    std::string* version) override;
 
   void set_flush_on_put(bool flush_on_put) { flush_on_put_ = flush_on_put; }
@@ -105,17 +120,27 @@ class ExternalCacheImpl : public ExternalCache,
   // Checks the cache contents and initiate download if needed.
   void CheckCache();
 
+  // Schedule a new cache check in some near future (around 5 hours, according
+  // to kDefaultUpdateFrequencySeconds) if a corresponding policy and flag
+  // enable this.
+  void MaybeScheduleNextCacheCheck();
+
   // Invoked on the UI thread when a new entry has been installed in the cache.
-  void OnPutExtension(const std::string& id,
+  void OnPutExtension(const extensions::ExtensionId& id,
                       const base::FilePath& file_path,
                       bool file_ownership_passed);
 
   // Invoked on the UI thread when the external extension has been installed
   // in the local cache by calling PutExternalExtension.
-  void OnPutExternalExtension(const std::string& id,
+  void OnPutExternalExtension(const extensions::ExtensionId& id,
                               PutExternalExtensionCallback callback,
                               const base::FilePath& file_path,
                               bool file_ownership_passed);
+
+  // Removes the cached file for |id| from |cached_extensions_| and
+  // |local_cache_| and notifies the |delegate_|. This method should be followed
+  // by a call to UpdateExtensionLoader().
+  void RemoveCachedExtension(const extensions::ExtensionId& id);
 
   extensions::LocalExtensionCache local_cache_;
 
@@ -134,6 +159,9 @@ class ExternalCacheImpl : public ExternalCache,
   // Set to true if cache should wait for initialization flag file.
   bool wait_for_cache_initialization_;
 
+  // Set to true if scheduled updated are possible, currently in kiosk mode.
+  bool allow_scheduled_updates_;
+
   // Whether to flush the crx file after putting into |local_cache_|.
   bool flush_on_put_ = false;
 
@@ -150,12 +178,22 @@ class ExternalCacheImpl : public ExternalCache,
   // Observes failures to install CRX files.
   content::NotificationRegistrar notification_registrar_;
 
+  // Used to observe CrosSettings.
+  base::CallbackListSubscription kiosk_crx_updates_from_policy_subscription_;
+
+  // Weak factody for scheduled updates.
+  base::WeakPtrFactory<ExternalCacheImpl> scheduler_weak_ptr_factory_{this};
+
   // Weak factory for callbacks.
   base::WeakPtrFactory<ExternalCacheImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCacheImpl);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ExternalCacheImpl;
+}
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_IMPL_H_

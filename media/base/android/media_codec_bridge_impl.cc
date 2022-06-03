@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,7 +23,7 @@
 #include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
 #include "media/base/android/media_jni_headers/MediaCodecBridge_jni.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/bit_reader.h"
+#include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 
@@ -50,26 +51,35 @@ enum {
   kBufferFlagSyncFrame = 1,    // BUFFER_FLAG_SYNC_FRAME
   kBufferFlagEndOfStream = 4,  // BUFFER_FLAG_END_OF_STREAM
   kConfigureFlagEncode = 1,    // CONFIGURE_FLAG_ENCODE
+  kBitrateModeCBR = 2,         // BITRATE_MODE_CBR
+  kBitrateModeVBR = 1,         // BITRATE_MODE_VBR
 };
 
 using CodecSpecificData = std::vector<uint8_t>;
 
 // Parses |extra_data| to get info to be added to a Java MediaFormat.
-bool GetCodecSpecificDataForAudio(AudioCodec codec,
-                                  const uint8_t* extra_data,
-                                  size_t extra_data_size,
-                                  int64_t codec_delay_ns,
-                                  int64_t seek_preroll_ns,
+bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
                                   CodecSpecificData* output_csd0,
                                   CodecSpecificData* output_csd1,
                                   CodecSpecificData* output_csd2,
                                   bool* output_frame_has_adts_header) {
+  // It's important that the multiplication is first in this calculation to
+  // reduce the precision loss due to integer truncation.
+  const int64_t codec_delay_ns = base::Time::kNanosecondsPerSecond *
+                                 config.codec_delay() /
+                                 config.samples_per_second();
+  const int64_t seek_preroll_ns = config.seek_preroll().InMicroseconds() *
+                                  base::Time::kNanosecondsPerMicrosecond;
+
+  const uint8_t* extra_data = config.extra_data().data();
+  const size_t extra_data_size = config.extra_data().size();
+
   *output_frame_has_adts_header = false;
-  if (extra_data_size == 0 && codec != kCodecOpus)
+  if (extra_data_size == 0 && config.codec() != AudioCodec::kOpus)
     return true;
 
-  switch (codec) {
-    case kCodecVorbis: {
+  switch (config.codec()) {
+    case AudioCodec::kVorbis: {
       if (extra_data[0] != 2) {
         LOG(ERROR) << "Invalid number of vorbis headers before the codec "
                    << "header: " << extra_data[0];
@@ -110,43 +120,26 @@ bool GetCodecSpecificDataForAudio(AudioCodec codec,
                           extra_data + extra_data_size);
       break;
     }
-    case kCodecAAC: {
-      media::BitReader reader(extra_data, extra_data_size);
-
-      // The following code is copied from aac.cc
-      // TODO(qinmin): refactor the code in aac.cc to make it more reusable.
-      uint8_t profile = 0;
-      uint8_t frequency_index = 0;
-      uint8_t channel_config = 0;
-      RETURN_ON_ERROR(reader.ReadBits(5, &profile));
-      RETURN_ON_ERROR(reader.ReadBits(4, &frequency_index));
-
-      if (0xf == frequency_index)
-        RETURN_ON_ERROR(reader.SkipBits(24));
-      RETURN_ON_ERROR(reader.ReadBits(4, &channel_config));
-
-      if (profile == 5 || profile == 29) {
-        // Read extension config.
-        uint8_t ext_frequency_index = 0;
-        RETURN_ON_ERROR(reader.ReadBits(4, &ext_frequency_index));
-        if (ext_frequency_index == 0xf)
-          RETURN_ON_ERROR(reader.SkipBits(24));
-        RETURN_ON_ERROR(reader.ReadBits(5, &profile));
-      }
-
-      if (profile < 1 || profile > 4 || frequency_index == 0xf ||
-          channel_config > 7) {
-        LOG(ERROR) << "Invalid AAC header";
-        return false;
-      }
-
-      output_csd0->push_back(profile << 3 | frequency_index >> 1);
-      output_csd0->push_back((frequency_index & 0x01) << 7 | channel_config
-                                                                 << 3);
-      *output_frame_has_adts_header = true;
+    case AudioCodec::kFLAC: {
+      // According to MediaCodec spec, CSB buffer #0 for FLAC should be:
+      // "fLaC", the FLAC stream marker in ASCII, followed by the STREAMINFO
+      // block (the mandatory metadata block), optionally followed by any number
+      // of other metadata blocks.
+      output_csd0->emplace_back('f');
+      output_csd0->emplace_back('L');
+      output_csd0->emplace_back('a');
+      output_csd0->emplace_back('C');
+      output_csd0->insert(output_csd0->end(), extra_data,
+                          extra_data + extra_data_size);
       break;
     }
-    case kCodecOpus: {
+    case AudioCodec::kAAC: {
+      output_csd0->assign(extra_data, extra_data + extra_data_size);
+      *output_frame_has_adts_header =
+          config.profile() != AudioCodecProfile::kXHE_AAC;
+      break;
+    }
+    case AudioCodec::kOpus: {
       if (!extra_data || extra_data_size == 0 || codec_delay_ns < 0 ||
           seek_preroll_ns < 0) {
         LOG(ERROR) << "Invalid Opus Header";
@@ -170,8 +163,8 @@ bool GetCodecSpecificDataForAudio(AudioCodec codec,
       break;
     }
     default:
-      LOG(ERROR) << "Invalid header encountered for codec: "
-                 << GetCodecName(codec);
+      LOG(ERROR) << "Unsupported audio codec encountered: "
+                 << GetCodecName(config.codec());
       return false;
   }
   return true;
@@ -204,19 +197,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   const int channel_count =
       ChannelLayoutToChannelCount(config.channel_layout());
 
-  // It's important that the multiplication is first in this calculation to
-  // reduce the precision loss due to integer truncation.
-  const int64_t codec_delay_ns = base::Time::kNanosecondsPerSecond *
-                                 config.codec_delay() /
-                                 config.samples_per_second();
-  const int64_t seek_preroll_ns = config.seek_preroll().InMicroseconds() *
-                                  base::Time::kNanosecondsPerMicrosecond;
-
   CodecSpecificData csd0, csd1, csd2;
   bool output_frame_has_adts_header;
-  if (!GetCodecSpecificDataForAudio(config.codec(), config.extra_data().data(),
-                                    config.extra_data().size(), codec_delay_ns,
-                                    seek_preroll_ns, &csd0, &csd1, &csd2,
+  if (!GetCodecSpecificDataForAudio(config, &csd0, &csd1, &csd2,
                                     &output_frame_has_adts_header)) {
     return nullptr;
   }
@@ -294,8 +277,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
   ScopedJavaGlobalRef<jobject> j_bridge(
       Java_MediaCodecBridgeBuilder_createVideoEncoder(
-          env, j_mime, size.width(), size.height(), bit_rate, frame_rate,
-          i_frame_interval, color_format));
+          env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
+          frame_rate, i_frame_interval, color_format));
 
   if (j_bridge.is_null())
     return nullptr;
@@ -322,7 +305,9 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     base::RepeatingClosure on_buffers_available_cb)
     : codec_type_(codec_type),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
-      j_bridge_(std::move(j_bridge)) {
+      j_bridge_(std::move(j_bridge)),
+      use_real_color_space_(base::FeatureList::IsEnabled(
+          media::kUseRealColorSpaceForAndroidVideo)) {
   DCHECK(!j_bridge_.is_null());
 
   if (!on_buffers_available_cb_)
@@ -391,6 +376,91 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
   return status;
 }
 
+MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
+    gfx::ColorSpace* color_space) {
+  if (!use_real_color_space_) {
+    *color_space = gfx::ColorSpace::CreateSRGB();
+    return MEDIA_CODEC_OK;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
+  MediaCodecStatus status = static_cast<MediaCodecStatus>(
+      Java_GetOutputFormatResult_status(env, result));
+  if (status != MEDIA_CODEC_OK)
+    return status;
+
+  // TODO(liberato): Consider consolidating these to save JNI hops.  However,
+  // since this is called only rarely, it's clearer this way.
+  int standard = Java_GetOutputFormatResult_colorStandard(env, result);
+  int range = Java_GetOutputFormatResult_colorRange(env, result);
+  int transfer = Java_GetOutputFormatResult_colorTransfer(env, result);
+  gfx::ColorSpace::PrimaryID primary_id;
+  gfx::ColorSpace::TransferID transfer_id;
+  gfx::ColorSpace::MatrixID matrix_id = gfx::ColorSpace::MatrixID::RGB;
+  gfx::ColorSpace::RangeID range_id;
+
+  switch (standard) {
+    case 1:  // MediaFormat.COLOR_STANDARD_BT709:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    case 2:  // MediaFormat.COLOR_STANDARD_BT601_PAL:
+      primary_id = gfx::ColorSpace::PrimaryID::BT470BG;
+      break;
+    case 4:  // MediaFormat.COLOR_STANDARD_BT601_NTSC:
+      primary_id = gfx::ColorSpace::PrimaryID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_STANDARD_BT2020
+      primary_id = gfx::ColorSpace::PrimaryID::BT2020;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported primary in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (transfer) {
+    case 1:  // MediaFormat.COLOR_TRANSFER_LINEAR
+      // TODO(liberato): LINEAR or LINEAR_HDR?
+      // Based on https://android.googlesource.com/platform/frameworks/native/
+      //            +/master/libs/nativewindow/include/android/data_space.h#57
+      // we pick LINEAR_HDR.
+      transfer_id = gfx::ColorSpace::TransferID::LINEAR_HDR;
+      break;
+    case 3:  // MediaFormat.COLOR_TRANSFER_SDR_VIDEO
+      transfer_id = gfx::ColorSpace::TransferID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_TRANSFER_ST2084
+      transfer_id = gfx::ColorSpace::TransferID::SMPTEST2084;
+      break;
+    case 7:  // MediaFormat.COLOR_TRANSFER_HLG
+      transfer_id = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported transfer in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (range) {
+    case 1:  // MediaFormat.COLOR_RANGE_FULL
+      range_id = gfx::ColorSpace::RangeID::FULL;
+      break;
+    case 2:  // MediaFormat.COLOR_RANGE_LIMITED
+      range_id = gfx::ColorSpace::RangeID::LIMITED;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported range in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  *color_space = gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
+
+  return MEDIA_CODEC_OK;
+}
+
 MediaCodecStatus MediaCodecBridgeImpl::QueueInputBuffer(
     int index,
     const uint8_t* data,
@@ -417,7 +487,7 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
     EncryptionScheme encryption_scheme,
-    base::Optional<EncryptionPattern> encryption_pattern,
+    absl::optional<EncryptionPattern> encryption_pattern,
     base::TimeDelta presentation_time) {
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   if (data_size >
@@ -512,7 +582,7 @@ MediaCodecStatus MediaCodecBridgeImpl::DequeueOutputBuffer(
   *size = base::checked_cast<size_t>(
       Java_DequeueOutputResult_numBytes(env, result));
   if (presentation_time) {
-    *presentation_time = base::TimeDelta::FromMicroseconds(
+    *presentation_time = base::Microseconds(
         Java_DequeueOutputResult_presentationTimeMicroseconds(env, result));
   }
   int flags = Java_DequeueOutputResult_flags(env, result);
@@ -615,6 +685,11 @@ void MediaCodecBridgeImpl::RequestKeyFrameSoon() {
 
 CodecType MediaCodecBridgeImpl::GetCodecType() const {
   return codec_type_;
+}
+
+size_t MediaCodecBridgeImpl::GetMaxInputSize() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_MediaCodecBridge_getMaxInputSize(env, j_bridge_);
 }
 
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,

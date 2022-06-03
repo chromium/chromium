@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/atomicops.h"
 #include "base/bind.h"
@@ -35,6 +36,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_values.h"
 #include "net/socket/socket_net_log_params.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_posix.h"
@@ -70,7 +72,7 @@ bool SetTCPKeepAlive(int fd, bool enable, int delay) {
   if (!enable)
     return true;
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // Setting the keepalive interval varies by platform.
 
   // Set seconds until first TCP keep alive.
@@ -83,7 +85,7 @@ bool SetTCPKeepAlive(int fd, bool enable, int delay) {
     PLOG(ERROR) << "Failed to set TCP_KEEPINTVL on fd: " << fd;
     return false;
   }
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
   if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &delay, sizeof(delay))) {
     PLOG(ERROR) << "Failed to set TCP_KEEPALIVE on fd: " << fd;
     return false;
@@ -122,8 +124,7 @@ base::TimeDelta GetTransportRtt(SocketDescriptor fd) {
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMicroseconds(
-      std::max(info.tcpi_rtt, kMinValidRttMicros));
+  return base::Microseconds(std::max(info.tcpi_rtt, kMinValidRttMicros));
 }
 
 #endif  // defined(TCP_INFO)
@@ -149,7 +150,7 @@ TCPSocketPosix::~TCPSocketPosix() {
 
 int TCPSocketPosix::Open(AddressFamily family) {
   DCHECK(!socket_);
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->Open(ConvertAddressFamily(family));
   if (rv != OK)
     socket_.reset();
@@ -169,7 +170,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
     return ERR_ADDRESS_INVALID;
   }
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptConnectedSocket(socket, storage);
   if (rv != OK)
     socket_.reset();
@@ -181,7 +182,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
 int TCPSocketPosix::AdoptUnconnectedSocket(SocketDescriptor socket) {
   DCHECK(!socket_);
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptUnconnectedSocket(socket);
   if (rv != OK)
     socket_.reset();
@@ -406,13 +407,15 @@ int TCPSocketPosix::SetSendBufferSize(int32_t size) {
 }
 
 bool TCPSocketPosix::SetKeepAlive(bool enable, int delay) {
-  DCHECK(socket_);
+  if (!socket_)
+    return false;
 
   return SetTCPKeepAlive(socket_->socket_fd(), enable, delay);
 }
 
 bool TCPSocketPosix::SetNoDelay(bool no_delay) {
-  DCHECK(socket_);
+  if (!socket_)
+    return false;
 
   return SetTCPNoDelay(socket_->socket_fd(), no_delay) == OK;
 }
@@ -504,8 +507,8 @@ int TCPSocketPosix::BuildTcpSocketPosix(
     return ERR_ADDRESS_INVALID;
   }
 
-  tcp_socket->reset(
-      new TCPSocketPosix(nullptr, net_log_.net_log(), net_log_.source()));
+  *tcp_socket = std::make_unique<TCPSocketPosix>(nullptr, net_log_.net_log(),
+                                                 net_log_.source());
   (*tcp_socket)->socket_ = std::move(accept_socket_);
   return OK;
 }
@@ -547,17 +550,15 @@ void TCPSocketPosix::LogConnectEnd(int net_error) const {
     return;
   }
 
-  SockaddrStorage storage;
-  int rv = socket_->GetLocalAddress(&storage);
-  if (rv != OK) {
-    PLOG(ERROR) << "GetLocalAddress() [rv: " << rv << "] error: ";
-    NOTREACHED();
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_CONNECT, rv);
-    return;
-  }
-
   net_log_.EndEvent(NetLogEventType::TCP_CONNECT, [&] {
-    return CreateNetLogSourceAddressParams(storage.addr, storage.addr_len);
+    net::IPEndPoint local_address;
+    int net_error = GetLocalAddress(&local_address);
+    net::IPEndPoint remote_address;
+    if (net_error == net::OK)
+      net_error = GetPeerAddress(&remote_address);
+    if (net_error != net::OK)
+      return NetLogParamsWithInt("get_address_net_error", net_error);
+    return CreateNetLogAddressPairParams(local_address, remote_address);
   });
 }
 
@@ -590,7 +591,7 @@ int TCPSocketPosix::HandleReadCompleted(IOBuffer* buf, int rv) {
 
   net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_RECEIVED, rv,
                                 buf->data());
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(rv);
+  activity_monitor::IncrementBytesReceived(rv);
 
   return rv;
 }
@@ -620,7 +621,6 @@ int TCPSocketPosix::HandleWriteCompleted(IOBuffer* buf, int rv) {
 
   net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT, rv,
                                 buf->data());
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(rv);
   return rv;
 }
 
@@ -652,8 +652,9 @@ bool TCPSocketPosix::GetEstimatedRoundTripTime(base::TimeDelta* out_rtt) const {
     return false;
   *out_rtt = rtt;
   return true;
-#endif  // defined(TCP_INFO)
+#else
   return false;
+#endif  // defined(TCP_INFO)
 }
 
 }  // namespace net

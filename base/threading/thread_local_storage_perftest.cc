@@ -8,10 +8,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/time/time.h"
@@ -79,6 +79,9 @@ class TLSThread : public SimpleThread {
     Start();
   }
 
+  TLSThread(const TLSThread&) = delete;
+  TLSThread& operator=(const TLSThread&) = delete;
+
   void Run() override {
     start_event_->Wait();
     std::move(action_).Run();
@@ -89,11 +92,14 @@ class TLSThread : public SimpleThread {
   WaitableEvent* const start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSThread);
 };
 
 class ThreadLocalStoragePerfTest : public testing::Test {
+ public:
+  ThreadLocalStoragePerfTest(const ThreadLocalStoragePerfTest&) = delete;
+  ThreadLocalStoragePerfTest& operator=(const ThreadLocalStoragePerfTest&) =
+      delete;
+
  protected:
   ThreadLocalStoragePerfTest() = default;
   ~ThreadLocalStoragePerfTest() override = default;
@@ -163,9 +169,6 @@ class ThreadLocalStoragePerfTest : public testing::Test {
     reporter.AddResult(metric_base + kMetricSuffixOperationTime,
                        nanos_per_operation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStoragePerfTest);
 };
 
 }  // namespace

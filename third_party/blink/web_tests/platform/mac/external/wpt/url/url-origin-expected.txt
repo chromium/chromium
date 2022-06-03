@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 304 tests; 297 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 309 tests; 302 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -15,8 +15,8 @@ PASS Origin parsing: < foo.com  > against <http://example.org/foo/bar>
 PASS Origin parsing: <a:	 foo.com> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:21/ b ? d # e > against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:/c> against <http://example.org/foo/bar>
-FAIL Origin parsing: <http://f:0/c> against <http://example.org/foo/bar> assert_equals: origin expected "http://f:0" but got "http://f"
-FAIL Origin parsing: <http://f:00000000000000/c> against <http://example.org/foo/bar> assert_equals: origin expected "http://f:0" but got "http://f"
+PASS Origin parsing: <http://f:0/c> against <http://example.org/foo/bar>
+PASS Origin parsing: <http://f:00000000000000/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:00000000000000000000080/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <http://f:
 /c> against <http://example.org/foo/bar>
@@ -256,13 +256,15 @@ PASS Origin parsing: <data:/../> against <about:blank>
 PASS Origin parsing: <javascript:/../> against <about:blank>
 PASS Origin parsing: <mailto:/../> against <about:blank>
 PASS Origin parsing: <sc://ñ.test/> against <about:blank>
-PASS Origin parsing: <sc://!"$&'()*+,-.;<=>^_`{|}~/> against <about:blank>
 FAIL Origin parsing: <x> against <sc://ñ> Failed to construct 'URL': Invalid URL
 PASS Origin parsing: <sc:\../> against <about:blank>
 PASS Origin parsing: <sc::a@example.net> against <about:blank>
 PASS Origin parsing: <wow:%NBD> against <about:blank>
 PASS Origin parsing: <wow:%1G> against <about:blank>
 PASS Origin parsing: <wow:￿> against <about:blank>
+FAIL Origin parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
+FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{|}~/> against <about:blank> Failed to construct 'URL': Invalid URL
+PASS Origin parsing: <sc://!"$&'()*+,-.;=_`{|}~/> against <about:blank>
 PASS Origin parsing: <ftp://%e2%98%83> against <about:blank>
 PASS Origin parsing: <https://%e2%98%83> against <about:blank>
 PASS Origin parsing: <http://127.0.0.1:10100/relative_import.html> against <about:blank>
@@ -313,5 +315,8 @@ PASS Origin parsing: <ldap://localhost:389/ou=People,o=JNDITutorial> against <ab
 PASS Origin parsing: <git+https://github.com/foo/bar> against <about:blank>
 PASS Origin parsing: <urn:ietf:rfc:2648> against <about:blank>
 PASS Origin parsing: <tag:joe@example.org,2001:foo/bar> against <about:blank>
+PASS Origin parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
+PASS Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
+PASS Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>
 Harness: the test ran to completion.
 

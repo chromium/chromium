@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 
 namespace device {
 
@@ -14,23 +13,20 @@ FakeSerialEnumerator::FakeSerialEnumerator() = default;
 
 FakeSerialEnumerator::~FakeSerialEnumerator() = default;
 
-bool FakeSerialEnumerator::AddDevicePath(const base::FilePath& path) {
-  if (base::Contains(device_paths_, path))
-    return false;
-
-  device_paths_.push_back(path);
-  return true;
+void FakeSerialEnumerator::AddDevicePath(const base::FilePath& path) {
+  auto port = mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->path = path;
+  paths_[path] = port->token;
+  AddPort(std::move(port));
 }
 
-std::vector<mojom::SerialPortInfoPtr> FakeSerialEnumerator::GetDevices() {
-  std::vector<device::mojom::SerialPortInfoPtr> devices;
-  for (const auto& path : device_paths_) {
-    auto device = device::mojom::SerialPortInfo::New();
-    device->token = GetTokenFromPath(path);
-    device->path = path;
-    devices.push_back(std::move(device));
-  }
-  return devices;
+void FakeSerialEnumerator::RemoveDevicePath(const base::FilePath& path) {
+  auto it = paths_.find(path);
+  DCHECK(it != paths_.end());
+  base::UnguessableToken token = it->second;
+  paths_.erase(it);
+  RemovePort(token);
 }
 
 }  // namespace device

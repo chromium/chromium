@@ -39,6 +39,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
   };
 
   FakeBluetoothGattDescriptorClient();
+
+  FakeBluetoothGattDescriptorClient(const FakeBluetoothGattDescriptorClient&) =
+      delete;
+  FakeBluetoothGattDescriptorClient& operator=(
+      const FakeBluetoothGattDescriptorClient&) = delete;
+
   ~FakeBluetoothGattDescriptorClient() override;
 
   // DBusClient override.
@@ -99,8 +105,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeBluetoothGattDescriptorClient> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattDescriptorClient);
 };
 
 }  // namespace bluez

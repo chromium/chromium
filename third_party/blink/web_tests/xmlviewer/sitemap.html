@@ -1,0 +1,34 @@
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+async_test((t) => {
+  let xmlWindow;
+
+  t.add_cleanup(() => { xmlWindow.close(); });
+
+  function checkConvertedDOM() {
+    var sourcePretty = xmlWindow.document.getElementsByClassName('pretty-print')[0];
+
+    if (!sourcePretty || !sourcePretty.innerText) {
+      requestAnimationFrame(t.step_func(checkConvertedDOM));
+      return;
+    }
+
+    assert_true(sourcePretty.textContent.includes('http://example.com/test.html'));
+    assert_true(sourcePretty.textContent.includes('<lastmod>2020-02-05</lastmod>'));
+
+    t.done();
+  }
+
+  window.addEventListener("load", (e) => {
+    xmlWindow = window.open('resources/sitemap.xml', 'XMLViewerTestWindow');
+    xmlWindow.onload = t.step_func(checkConvertedDOM);
+  });
+}, 'XMLTreeConverted');
+</script>
+</head>
+<body>
+</body>
+</html>

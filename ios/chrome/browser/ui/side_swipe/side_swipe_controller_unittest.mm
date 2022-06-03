@@ -4,17 +4,24 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 
+#import <WebKit/WebKit.h>
+
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -39,27 +46,37 @@ class TestWebStateListDelegate : public WebStateListDelegate {
 
 class SideSwipeControllerTest : public PlatformTest {
  public:
-  void SetUp() override {
-    // Create a mock for the TabModel that owns the object under test.
-    tab_model_ = [OCMockObject niceMockForClass:[TabModel class]];
-    std::unique_ptr<web::TestWebState> original_web_state(
-        std::make_unique<web::TestWebState>());
+  SideSwipeControllerTest()
+      : web_view_([[WKWebView alloc]
+            initWithFrame:scoped_window_.Get().bounds
+            configuration:[[WKWebViewConfiguration alloc] init]]),
+        content_view_([[CRWWebViewContentView alloc]
+            initWithWebView:web_view_
+                 scrollView:web_view_.scrollView]) {
+    auto original_web_state(std::make_unique<web::FakeWebState>());
+    original_web_state->SetView(content_view_);
+    CRWWebViewScrollViewProxy* scroll_view_proxy =
+        [[CRWWebViewScrollViewProxy alloc] init];
+    UIScrollView* scroll_view = [[UIScrollView alloc] init];
+    [scroll_view_proxy setScrollView:scroll_view];
+    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+    original_web_state->SetWebViewProxy(web_view_proxy_mock);
 
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
     web_state_list_->InsertWebState(0, std::move(original_web_state),
                                     WebStateList::INSERT_NO_FLAGS,
                                     WebStateOpener());
 
-    WebStateList* web_state_list = web_state_list_.get();
-    [[[tab_model_ stub] andReturnValue:OCMOCK_VALUE(web_state_list)]
-        webStateList];
 
     TestChromeBrowserState::Builder builder;
     browser_state_ = builder.Build();
     // Create the object to test.
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get(),
+                                             web_state_list_.get());
+
     side_swipe_controller_ =
-        [[SideSwipeController alloc] initWithTabModel:tab_model_
-                                         browserState:browser_state_.get()];
+        [[SideSwipeController alloc] initWithBrowser:browser_.get()];
 
     view_ = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
 
@@ -70,10 +87,12 @@ class SideSwipeControllerTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TestWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
-
+  std::unique_ptr<Browser> browser_;
   UIView* view_;
-  id tab_model_;
   SideSwipeController* side_swipe_controller_;
+  ScopedKeyWindow scoped_window_;
+  WKWebView* web_view_ = nil;
+  CRWWebViewContentView* content_view_ = nil;
 };
 
 TEST_F(SideSwipeControllerTest, TestConstructor) {
@@ -92,40 +111,40 @@ TEST_F(SideSwipeControllerTest, TestSwipeRecognizers) {
 
 // Tests that pages that need to use Chromium native swipe
 TEST_F(SideSwipeControllerTest, TestEdgeNavigationEnabled) {
-  auto testWebState = std::make_unique<web::TestWebState>();
-  auto testNavigationManager = std::make_unique<web::TestNavigationManager>();
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-  testNavigationManager->SetVisibleItem(item.get());
-  testWebState->SetNavigationManager(std::move(testNavigationManager));
+  fake_navigation_manager->SetVisibleItem(item.get());
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
 
   // The NTP and chrome://crash should use native swipe.
   item->SetURL(GURL(kChromeUINewTabURL));
   [side_swipe_controller_
-      updateNavigationEdgeSwipeForWebState:testWebState.get()];
+      updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
   EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://crash"));
   [side_swipe_controller_
-      updateNavigationEdgeSwipeForWebState:testWebState.get()];
+      updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
   EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("http://wwww.test.com"));
   [side_swipe_controller_
-      updateNavigationEdgeSwipeForWebState:testWebState.get()];
+      updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
   EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://foo"));
   [side_swipe_controller_
-      updateNavigationEdgeSwipeForWebState:testWebState.get()];
+      updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
   EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://version"));
   [side_swipe_controller_
-      updateNavigationEdgeSwipeForWebState:testWebState.get()];
+      updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
   EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
@@ -149,19 +168,27 @@ TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
   ASSERT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   ASSERT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 
-  auto testWebState = std::make_unique<web::TestWebState>();
-  web::TestWebState* testWebStatePtr = testWebState.get();
-  auto testNavigationManager = std::make_unique<web::TestNavigationManager>();
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetView(content_view_);
+  CRWWebViewScrollViewProxy* scroll_view_proxy =
+      [[CRWWebViewScrollViewProxy alloc] init];
+  UIScrollView* scroll_view = [[UIScrollView alloc] init];
+  [scroll_view_proxy setScrollView:scroll_view];
+  id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+  [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+  fake_web_state->SetWebViewProxy(web_view_proxy_mock);
+  web::FakeWebState* fake_web_state_ptr = fake_web_state.get();
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-  testNavigationManager->SetVisibleItem(item.get());
-  testNavigationManager->SetLastCommittedItem(item.get());
-  testWebState->SetNavigationManager(std::move(testNavigationManager));
+  fake_navigation_manager->SetVisibleItem(item.get());
+  fake_navigation_manager->SetLastCommittedItem(item.get());
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
 
   // The NTP and chrome://crash should use native swipe.
   item->SetURL(GURL(kChromeUINewTabURL));
   // Insert the WebState and make sure it's active. This should trigger
   // didChangeActiveWebState and update edge navigation state.
-  web_state_list_->InsertWebState(1, std::move(testWebState),
+  web_state_list_->InsertWebState(1, std::move(fake_web_state),
                                   WebStateList::INSERT_ACTIVATE,
                                   WebStateOpener());
   EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
@@ -172,7 +199,7 @@ TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
   web::FakeNavigationContext context;
   context.SetHasCommitted(true);
   // Navigation finish should also update the edge navigation state.
-  testWebStatePtr->OnNavigationFinished(&context);
+  fake_web_state_ptr->OnNavigationFinished(&context);
   EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 }

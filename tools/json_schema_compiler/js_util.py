@@ -35,7 +35,8 @@ class JsUtil(object):
     """Given an OrderedDict of properties, returns a Code containing the
        description of an object.
     """
-    if not properties: return
+    if not properties:
+      return
 
     c.Sblock('{', new_line=new_line)
     first = True
@@ -77,17 +78,35 @@ class JsUtil(object):
         c.Comment(' %s' % description, comment_prefix='',
                   wrap_indent=4, new_line=False)
 
-    for param in function.params:
-      append_field(c, 'param',
-                   self._TypeToJsType(namespace_name, param.type_),
-                   param.name, param.optional, param.description)
+    for i, param in enumerate(function.params):
+      # Mark the parameter as optional, *only if* all following parameters are
+      # also optional, to avoid JSC_OPTIONAL_ARG_AT_END errors thrown by Closure
+      # Compiler.
+      optional = (
+          all(p.optional for p in function.params[i:]) and
+          (function.returns_async is None or function.returns_async.optional))
+      js_type = self._TypeToJsType(namespace_name, param.type_)
 
-    if function.callback:
-      append_field(c, 'param',
-                   self._FunctionToJsFunction(namespace_name,
-                                              function.callback),
-                   function.callback.name, function.callback.optional,
-                   function.callback.description)
+      # If the parameter was originally optional, but was followed by
+      # non-optional parameters, allow it to be `null` or `undefined` instead.
+      if not optional and param.optional:
+        js_type_string = js_type.Render()
+
+        # Remove the leading "!" from |js_type_string| if it exists, since "?!"
+        # is not a valid type modifier.
+        if js_type_string.startswith('!'):
+          js_type_string = js_type_string[1:]
+        js_type = Code().Append('?%s|undefined' % js_type_string)
+
+      append_field(c, 'param', js_type, param.name, optional, param.description)
+
+    if function.returns_async:
+      append_field(
+          c, 'param',
+          self._ReturnsAsyncToJsFunction(namespace_name,
+                                         function.returns_async),
+          function.returns_async.name, function.returns_async.optional,
+          function.returns_async.description)
 
     if function.returns:
       append_field(c, 'return',
@@ -117,17 +136,10 @@ class JsUtil(object):
     """Converts a model.Function to a JS type (i.e., function([params])...)"""
     c = Code()
     c.Append('function(')
-    for i, param in enumerate(function.params):
-      t = self._TypeToJsType(namespace_name, param.type_)
-      if param.optional:
-        c.Append('(', new_line=False)
-        c.Concat(t, new_line=False)
-        c.Append('|undefined)', new_line=False)
-      else:
-        c.Concat(t, new_line = False)
-      if i is not len(function.params) - 1:
-        c.Append(', ', new_line=False, strip_right=False)
-    c.Append('):', new_line=False)
+    c.Concat(
+        self._FunctionParamsToJsParams(namespace_name, function.params),
+        new_line=False)
+    c.Append('): ', new_line=False, strip_right=False)
 
     if function.returns:
       c.Concat(self._TypeToJsType(namespace_name, function.returns),
@@ -135,6 +147,35 @@ class JsUtil(object):
     else:
       c.Append('void', new_line=False)
 
+    return c
+
+  def _ReturnsAsyncToJsFunction(self, namespace_name, returns_async):
+    """Converts a model.ReturnsAsync to a JS function equivalent"""
+    # TODO(https://crbug.com/1142991) update this to generate promise-based
+    # types and show that as a return from the API function itself, rather than
+    # appended to the params as a callback.
+    c = Code()
+    c.Append('function(')
+    c.Concat(
+        self._FunctionParamsToJsParams(namespace_name, returns_async.params),
+        new_line=False)
+    c.Append('): ', new_line=False, strip_right=False)
+
+    c.Append('void', new_line=False)
+    return c
+
+  def _FunctionParamsToJsParams(self, namespace_name, params):
+    c = Code()
+    for i, param in enumerate(params):
+      t = self._TypeToJsType(namespace_name, param.type_)
+      if param.optional:
+        c.Append('(', new_line=False)
+        c.Concat(t, new_line=False)
+        c.Append('|undefined)', new_line=False)
+      else:
+        c.Concat(t, new_line=False)
+      if i is not len(params) - 1:
+        c.Append(', ', new_line=False, strip_right=False)
     return c
 
   def _TypeToJsType(self, namespace_name, js_type):
@@ -146,6 +187,15 @@ class JsUtil(object):
         c = Code()
         self.AppendObjectDefinition(c, namespace_name, js_type.properties)
         return c
+
+      # Support instanceof for types in the same namespace and built-in
+      # types. This doesn't support types in another namespace e.g. if
+      # js_type.instanceof is 'tabs.Tab'.
+      if js_type.instance_of:
+        if js_type.instance_of in js_type.namespace.types:
+          return Code().Append('chrome.%s.%s' %
+                               (namespace_name, js_type.instance_of))
+        return Code().Append(js_type.instance_of)
       return Code().Append('Object')
     if js_type.property_type is PropertyType.ARRAY:
       return (Code().Append('!Array<').

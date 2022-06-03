@@ -11,4 +11,5 @@
 ../../../third_party/javalang/src/javalang/tokenizer.py
 ../../../third_party/javalang/src/javalang/tree.py
 ../../../third_party/javalang/src/javalang/util.py
+../../../third_party/six/src/six.py
 create_stripped_java_factory.py

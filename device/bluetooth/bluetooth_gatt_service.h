@@ -53,13 +53,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattService {
   // services.
   virtual bool IsPrimary() const = 0;
 
+  BluetoothGattService(const BluetoothGattService&) = delete;
+  BluetoothGattService& operator=(const BluetoothGattService&) = delete;
+
   virtual ~BluetoothGattService();
 
  protected:
   BluetoothGattService();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattService);
 };
 
 }  // namespace device

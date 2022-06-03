@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://heycam.github.io/webidl/#common
+// https://webidl.spec.whatwg.org/#common
 
 typedef (ArrayBuffer or ArrayBufferView) BufferSource;
 typedef unsigned long long DOMTimeStamp;
 
 
-// https://heycam.github.io/webidl/#Function
+// https://webidl.spec.whatwg.org/#Function
 
 callback Function = any (any... arguments);
 
 
 // Blink-specific forEach iterator's callback
-// https://heycam.github.io/webidl/#es-forEach
+// https://webidl.spec.whatwg.org/#es-forEach
 
 callback ForEachIteratorCallback = void (any value, any key, any obj);
 
@@ -22,8 +22,3 @@ callback ForEachIteratorCallback = void (any value, any key, any obj);
 // Blink-specific constructor type used in many places.
 
 callback NoArgumentConstructor = any ();
-
-
-// typedefs used in multiple files.
-
-typedef object JSON;

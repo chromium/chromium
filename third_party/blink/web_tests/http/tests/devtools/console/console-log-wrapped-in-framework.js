@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests console.log() anchor location when the skip-stack-frames feature is enabled.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('resources/framework.js');
   await TestRunner.evaluateInPagePromise(`
@@ -20,8 +20,8 @@
 
   TestRunner.evaluateInPage('runLogs()');
   TestRunner.deprecatedRunAfterPendingDispatches(callback);
-  function callback() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function callback() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

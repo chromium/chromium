@@ -5,7 +5,8 @@
 #include "media/renderers/decrypting_renderer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "media/base/cdm_context.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
 #include "media/base/media_resource.h"
@@ -106,8 +107,16 @@ void DecryptingRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void DecryptingRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   renderer_->SetLatencyHint(latency_hint);
+}
+
+void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
+  renderer_->SetPreservesPitch(preserves_pitch);
+}
+
+void DecryptingRenderer::SetAutoplayInitiated(bool autoplay_initiated) {
+  renderer_->SetAutoplayInitiated(autoplay_initiated);
 }
 
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {

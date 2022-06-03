@@ -1,0 +1,213 @@
+<style include="cr-shared-style os-settings-icons settings-shared iron-flex">
+  :host > div {
+    /* network-list is padded to the right to allow space for a ripple */
+    padding-inline-end: calc(var(--cr-section-padding) -
+        var(--cr-icon-ripple-padding));
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .cellular-network-list-separator {
+    border-top: var(--cr-separator-line);
+    padding: 0;
+  }
+
+  .cellular-network-list-header {
+    align-items: center;
+    display: flex;
+    height: 72px;
+  }
+
+  .esim-list-title {
+    align-self: center;
+  }
+
+  .cellular-network-content {
+    margin-inline-start: 32px;
+  }
+
+  .cellular-not-setup {
+    color: var(--cr-secondary-text-color);
+    font-size: small;
+    margin-bottom: 16px;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #eidPopupButton {
+    --cr-icon-button-size: 18px;
+    cursor: pointer;
+    margin-inline-start: 4px;
+  }
+
+  :host-context([dir='rtl']) #addESimButton {
+    transform: scaleX(1);
+  }
+
+  #alignEnd {
+    align-items: center;
+    display: flex;
+    margin-inline-end: 12px;
+    margin-inline-start: auto;
+  }
+
+  #inhibitedSubtext {
+    color: var(--cr-secondary-text-color);
+  }
+
+  paper-spinner-lite {
+    height: 20px;
+    width: 20px;
+  }
+
+  .separator {
+    margin-inline-end: 0;
+    margin-inline-start: 24px;
+  }
+</style>
+<template is="dom-if" if="[[shouldShowEsimSection_(euicc_,
+    cellularDeviceState, cellularDeviceState.*)]]" restamp>
+  <div class="cellular-network-list-separator"></div>
+    <div class="cellular-network-list-header flex settings-box-text">
+      <div class="flex-column">
+        <div class="flex header-row">
+          $i18n{cellularNetworkEsimLabel}
+        </div>
+        <div id="inhibitedSubtext" class="header-row secondary-box-text"
+            hidden="[[!isDeviceInhibited_]]" aria-live="assertive">
+          [[getInhibitedSubtextMessage_(isDeviceInhibited_)]]
+        </div>
+      </div>
+      <div id="alignEnd">
+        <template is="dom-if" if="[[canShowSpinner]]" restamp>
+          <paper-spinner-lite id="inhibitedSpinner"
+              active="[[isDeviceInhibited_]]">
+          </paper-spinner-lite>
+        </template>
+        <template is="dom-if" if="[[showAddESimButton_(cellularDeviceState,
+            globalPolicy)]]" restamp>
+          <cr-icon-button class="icon-add-cellular add-button"
+              aria-label="$i18n{internetAddCellular}" id="addESimButton"
+              disabled="[[isDeviceInhibited_]]"
+              on-click="onAddEsimButtonTap_">
+          </cr-icon-button>
+          <div class="separator"></div>
+        </template>
+        <cr-icon-button id="moreESim" class="icon-more-vert"
+            title="$i18n{moreActions}"
+            on-click="onESimDotsClick_">
+        </cr-icon-button>
+        <cr-lazy-render id="menu">
+          <template>
+            <cr-action-menu>
+              <button class="dropdown-item"
+                  on-click="onShowEidDialogTap_"
+                  role="menuitem">
+                $i18n{eidPopupMenuItemTitle}
+              </button>
+            </cr-action-menu>
+          </template>
+        </cr-lazy-render>
+        <template is="dom-if" if="[[shouldShowEidDialog_]]" restamp>
+          <cellular-eid-dialog class="eid-dialog"
+              on-close="onCloseEidDialog_"
+              euicc="[[euicc_]]">
+          </cellular-eid-dialog>
+        </template>
+      </div>
+    </div>
+  </div>
+  <template is="dom-if" if="[[shouldShowNetworkSublist_(eSimNetworks_,
+      eSimPendingProfileItems_)]]" restamp>
+    <div class="cellular-network-content">
+      <network-list id="esimNetworkList" show-buttons
+          show-technology-badge="[[showTechnologyBadge]]"
+          networks="[[eSimNetworks_]]"
+          custom-items="[[eSimPendingProfileItems_]]"
+          device-state="[[cellularDeviceState]]"
+          global-policy="[[globalPolicy]]">
+      </network-list>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!shouldShowNetworkSublist_(eSimNetworks_,
+      eSimPendingProfileItems_)]]" restamp>
+    <div id="eSimNoNetworkFound"
+        class="cellular-network-content cellular-not-setup">
+      <localized-link
+          link-disabled = "[[isDeviceInhibited_]]"
+          on-link-clicked="onEsimLearnMoreClicked_"
+          localized-string="$i18n{eSimNetworkNotSetup}">
+      </localized-link>
+    </div>
+  </template>
+</template>
+<template is="dom-if"
+    if="[[shouldShowPSimSection_(cellularDeviceState,
+      cellularDeviceState.*)]]" restamp>
+  <div class="cellular-network-list-separator"></div>
+  <div class="cellular-network-list-header settings-box-text">
+    $i18n{cellularNetworkPsimLabel}
+  </div>
+  <template
+      is="dom-if"
+      if="[[shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
+    <div class="cellular-network-content">
+      <network-list
+          id="psimNetworkList" show-buttons
+          show-technology-badge="[[showTechnologyBadge]]"
+          networks="[[pSimNetworks_]]"
+          device-state="[[cellularDeviceState]]"
+          global-policy="[[globalPolicy]]">
+      </network-list>
+    </div>
+  </template>
+  <template
+      is="dom-if"
+      if="[[!shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
+    <div id="pSimNoNetworkFound"
+        class="cellular-network-content cellular-not-setup">
+      $i18n{pSimNotInsertedLabel}
+    </div>
+  </template>
+</template>
+<template is="dom-if"
+    if="[[shouldShowTetherSection_(multiDevicePageContentData_)]]" restamp>
+  <div class="cellular-network-list-separator"></div>
+  <div class="cellular-network-list-header settings-box-text">
+    $i18n{cellularNetworkTetherLabel}
+  </div>
+  <template is="dom-if"
+      if="[[shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
+    <div class="cellular-network-content">
+      <network-list
+          id="tetherNetworkList" show-buttons
+          show-technology-badge="[[showTechnologyBadge]]"
+          networks="[[tetherNetworks_]]"
+          device-state="[[tetherDeviceState]]">
+      </network-list>
+    </div>
+  </template>
+  <template is="dom-if"
+      if="[[!shouldShowNetworkSublist_(tetherNetworks_)]]" restamp>
+    <div id="tetherNetworksNotSetup"
+        class="cellular-network-content cellular-not-setup">
+      <localized-link
+          localized-string="[[i18nAdvanced('tetherNetworkNotSetup')]]">
+      </localized-link>
+    </div>
+  </template>
+</template>
+
+<template is="dom-if" if="[[shouldShowInstallErrorDialog_]]" restamp>
+  <esim-install-error-dialog id="installErrorDialog"
+      on-close="onCloseInstallErrorDialog_"
+      error-code="[[eSimProfileInstallError_]]"
+      profile="[[installingESimProfile_]]">
+  </esim-install-error-dialog>
+</template>

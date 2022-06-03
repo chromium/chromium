@@ -1,0 +1,7 @@
+monorail {
+  component: "UI>Browser>Mobile"
+}
+
+team_email: "clank-app-team@google.com"
+
+os: ANDROID

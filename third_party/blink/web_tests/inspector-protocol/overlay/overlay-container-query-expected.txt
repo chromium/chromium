@@ -1,0 +1,89 @@
+Verifies that Overlay.setShowContainerQueryOverlays works.
+Overlay not rendered:
+
+Overlay rendered:
+{
+  "name": "drawContainerQueryHighlight",
+  "data": {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "#000000",
+        "pattern": "solid"
+      }
+    }
+  }
+}
+Overlay rendered:
+[
+  {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "#000000",
+        "pattern": "solid"
+      }
+    }
+  }
+]
+Overlay rendered:
+{
+  "name": "drawContainerQueryHighlight",
+  "data": {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "queryingDescendants": [],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "#000000",
+        "pattern": "solid"
+      },
+      "descendantBorder": {
+        "color": "#010000",
+        "pattern": "solid"
+      }
+    }
+  }
+}
+

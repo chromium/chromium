@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -16,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.shape_detection.mojom.FaceDetection;
 import org.chromium.shape_detection.mojom.FaceDetectionResult;
@@ -28,10 +31,12 @@ import java.util.concurrent.TimeUnit;
  * Test suite for FaceDetectionImpl.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
+@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
 public class FaceDetectionImplTest {
-    private static final org.chromium.skia.mojom.Bitmap MONA_LISA_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 MONA_LISA_BITMAP =
             TestUtils.mojoBitmapFromFile("mona_lisa.jpg");
-    private static final org.chromium.skia.mojom.Bitmap FACE_POSE_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 FACE_POSE_BITMAP =
             TestUtils.mojoBitmapFromFile("face_pose.png");
     // Different versions of Android have different implementations of FaceDetector.findFaces(), so
     // we have to use a large error threshold.
@@ -42,7 +47,7 @@ public class FaceDetectionImplTest {
 
     public FaceDetectionImplTest() {}
 
-    private static FaceDetectionResult[] detect(org.chromium.skia.mojom.Bitmap mojoBitmap,
+    private static FaceDetectionResult[] detect(org.chromium.skia.mojom.BitmapN32 mojoBitmap,
             boolean fastMode, DetectionProviderType api) {
         FaceDetectorOptions options = new FaceDetectorOptions();
         options.fastMode = fastMode;
@@ -58,7 +63,7 @@ public class FaceDetectionImplTest {
         }
 
         final ArrayBlockingQueue<FaceDetectionResult[]> queue = new ArrayBlockingQueue<>(1);
-        detector.detect(mojoBitmap, new FaceDetection.DetectResponse() {
+        detector.detect(mojoBitmap, new FaceDetection.Detect_Response() {
             @Override
             public void call(FaceDetectionResult[] results) {
                 queue.add(results);
@@ -79,9 +84,9 @@ public class FaceDetectionImplTest {
         Assert.assertEquals(1, results.length);
         Assert.assertEquals(
                 api == DetectionProviderType.GMS_CORE ? 4 : 0, results[0].landmarks.length);
-        Assert.assertEquals(40.0, results[0].boundingBox.width, BOUNDING_BOX_SIZE_ERROR);
-        Assert.assertEquals(40.0, results[0].boundingBox.height, BOUNDING_BOX_SIZE_ERROR);
-        Assert.assertEquals(24.0, results[0].boundingBox.x, BOUNDING_BOX_POSITION_ERROR);
+        Assert.assertEquals(36.0, results[0].boundingBox.width, BOUNDING_BOX_SIZE_ERROR);
+        Assert.assertEquals(38.0, results[0].boundingBox.height, BOUNDING_BOX_SIZE_ERROR);
+        Assert.assertEquals(26.0, results[0].boundingBox.x, BOUNDING_BOX_POSITION_ERROR);
         Assert.assertEquals(20.0, results[0].boundingBox.y, BOUNDING_BOX_POSITION_ERROR);
     }
 
@@ -110,14 +115,14 @@ public class FaceDetectionImplTest {
                 MONA_LISA_BITMAP.imageInfo.height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(paddedBitmap);
         canvas.drawBitmap(BitmapUtils.convertToBitmap(MONA_LISA_BITMAP), 0, 0, null);
-        org.chromium.skia.mojom.Bitmap mojoBitmap = TestUtils.mojoBitmapFromBitmap(paddedBitmap);
+        org.chromium.skia.mojom.BitmapN32 mojoBitmap = TestUtils.mojoBitmapFromBitmap(paddedBitmap);
         Assert.assertEquals(1, mojoBitmap.imageInfo.width % 2);
 
         FaceDetectionResult[] results = detect(mojoBitmap, true, DetectionProviderType.ANDROID);
         Assert.assertEquals(1, results.length);
-        Assert.assertEquals(40.0, results[0].boundingBox.width, BOUNDING_BOX_SIZE_ERROR);
-        Assert.assertEquals(40.0, results[0].boundingBox.height, BOUNDING_BOX_SIZE_ERROR);
-        Assert.assertEquals(24.0, results[0].boundingBox.x, BOUNDING_BOX_POSITION_ERROR);
+        Assert.assertEquals(36.0, results[0].boundingBox.width, BOUNDING_BOX_SIZE_ERROR);
+        Assert.assertEquals(38.0, results[0].boundingBox.height, BOUNDING_BOX_SIZE_ERROR);
+        Assert.assertEquals(26.0, results[0].boundingBox.x, BOUNDING_BOX_POSITION_ERROR);
         Assert.assertEquals(20.0, results[0].boundingBox.y, BOUNDING_BOX_POSITION_ERROR);
     }
 

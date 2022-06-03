@@ -2,19 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
+
+# Fuchsia doesn't support GL rendering so there is no need to run tests for
+# that code path.
+enable_gl_backend_tests = !is_fuchsia
+
+# Controls if GLRenderer related tests should be built and run. Platforms where
+# GLRenderer is no longer used (other than Linux) can stop running tests for it.
+enable_gl_renderer_tests = enable_gl_backend_tests && !is_android && !is_win
+
+# TODO(samans): Support more configurations.
+# CFI issue: https://crbug.com/967819
+# LSAN issue: https://crbug.com/971357
+# Fuchsia ARM64 https://crbug.com/1058247
+enable_vulkan_backend_tests =
+    enable_vulkan && ((is_linux && !is_chromecast && !is_cfi && !is_lsan) ||
+                      (is_fuchsia && target_cpu == "x64"))
+
+enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
 
 viz_remove_configs = []
 viz_add_configs = [ "//build/config:precompiled_headers" ]
 
-if (!is_debug && (is_win || is_android)) {
+if (!is_debug) {
   viz_remove_configs += [ "//build/config/compiler:default_optimization" ]
   viz_add_configs += [ "//build/config/compiler:optimize_max" ]
 }
 
 template("viz_source_set") {
-  jumbo_source_set(target_name) {
+  source_set(target_name) {
     forward_variables_from(invoker, "*", [ "configs" ])
     if (defined(invoker.configs)) {
       configs += invoker.configs
@@ -25,7 +44,7 @@ template("viz_source_set") {
 }
 
 template("viz_component") {
-  jumbo_component(target_name) {
+  component(target_name) {
     forward_variables_from(invoker, "*", [ "configs" ])
     if (defined(invoker.configs)) {
       configs += invoker.configs
@@ -36,7 +55,7 @@ template("viz_component") {
 }
 
 template("viz_static_library") {
-  jumbo_static_library(target_name) {
+  static_library(target_name) {
     forward_variables_from(invoker, "*", [ "configs" ])
     if (defined(invoker.configs)) {
       configs += invoker.configs

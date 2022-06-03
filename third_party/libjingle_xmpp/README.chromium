@@ -20,5 +20,9 @@ are added here.
 Nothing but Chromium uses this copy. If code in this directory is found to be
 unused in Chromium, it's OK to delete it.
 
+The targets are restricted to current consumers. People considering whether
+to add new consumers should consider if they want to take over maintenance
+of the library.
+
 Local Modifications:
 This code does not exist in an upstream repo anymore.

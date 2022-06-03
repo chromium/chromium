@@ -15,7 +15,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -155,6 +155,11 @@ std::string GetDeviceIdentifier(const char* salt) {
 
   return GetSaltedString(base::SysNSStringToUTF8(client_id),
                          salt ? salt : kDefaultSalt);
+}
+
+std::string GetVendorId() {
+  return base::SysNSStringToUTF8(
+      [[[UIDevice currentDevice] identifierForVendor] UUIDString]);
 }
 
 std::string GetSaltedString(const std::string& in_string,

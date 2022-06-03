@@ -9,11 +9,11 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/client_controlled_state.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/stl_util.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -24,6 +24,19 @@ int FindIndex(const std::vector<aura::Window*>& windows,
   auto iter = std::find(windows.begin(), windows.end(), target);
   return iter != windows.end() ? iter - windows.begin() : -1;
 }
+
+class TestClientControlledStateDelegate
+    : public ClientControlledState::Delegate {
+ public:
+  ~TestClientControlledStateDelegate() override = default;
+
+  void HandleWindowStateRequest(WindowState* state,
+                                chromeos::WindowStateType type) override {}
+  void HandleBoundsRequest(WindowState* state,
+                           chromeos::WindowStateType type,
+                           const gfx::Rect& requested_bounds,
+                           int64_t display_id) override {}
+};
 
 }  // namespace
 
@@ -163,6 +176,54 @@ TEST_F(ScreenPinningControllerTest, TrustedPinnedWithAccelerator) {
   // The UNPIN accelerator key is disabled for trusted pinned and the window
   // must be still pinned.
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+}
+
+TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
+  display_manager()->SetUnifiedDesktopEnabled(true);
+
+  UpdateDisplay("400x300, 500x400");
+
+  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  wm::ActivateWindow(w1);
+  auto* window_state = WindowState::Get(w1);
+
+  window_util::PinWindow(w1, /*trusted=*/true);
+
+  EXPECT_TRUE(window_state->IsPinned());
+  EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  UpdateDisplay("300x200");
+
+  EXPECT_TRUE(window_state->IsPinned());
+  EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+}
+
+TEST_F(ScreenPinningControllerTest, CleanUpObserversAndDimmer) {
+  // Create a window with ClientControlledState.
+  auto w = CreateAppWindow(gfx::Rect(), AppType::CHROME_APP, 0);
+  ash::WindowState* ws = ash::WindowState::Get(w.get());
+  auto delegate = std::make_unique<TestClientControlledStateDelegate>();
+  auto state = std::make_unique<ClientControlledState>(std::move(delegate));
+  ws->SetStateObject(std::move(state));
+
+  wm::ActivateWindow(w.get());
+
+  // Observer should be added to |w|, and |w->parent()|.
+  window_util::PinWindow(w.get(), /* truested */ false);
+  EXPECT_TRUE(WindowState::Get(w.get())->IsPinned());
+
+  const aura::Window* container = w->parent();
+  // Destroying |w| clears |pinned_window_|. The observers should be removed
+  // even if ClientControlledState doesn't call SetPinnedWindow when
+  // WindowState::Restore() is called.
+  w.reset();
+
+  // It should clear all child windows in |container| when the pinned window is
+  // destroyed.
+  EXPECT_EQ(container->children().size(), 0u);
+
+  // Add a sibling window. It should not crash.
+  CreateTestWindowInShellWithId(2);
 }
 
 }  // namespace ash

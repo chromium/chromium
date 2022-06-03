@@ -2,81 +2,149 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+import importlib
 import logging
+import multiprocessing
 import os
 import sys
 
-from aemu_target import AemuTarget
-from device_target import DeviceTarget
-from qemu_target import QemuTarget
+from common import GetHostArchFromPlatform
+
+BUILTIN_TARGET_NAMES = ['aemu', 'qemu', 'device', 'fvdl']
+
+
+def _AddTargetSpecificationArgs(arg_parser):
+  """Returns a parser that handles the target type used for the test run."""
+
+  device_args = arg_parser.add_argument_group(
+      'target',
+      'Arguments specifying the Fuchsia target type. To see a list of '
+      'arguments available for a specific target type, specify the desired '
+      'target to use and add the --help flag.')
+  device_args.add_argument('--target-cpu',
+                           default=GetHostArchFromPlatform(),
+                           help='GN target_cpu setting for the build. Defaults '
+                           'to the same architecture as host cpu.')
+  device_args.add_argument('--device',
+                           default=None,
+                           choices=BUILTIN_TARGET_NAMES + ['custom'],
+                           help='Choose to run on fvdl|aemu|qemu|device. '
+                           'By default, Fuchsia will run on AEMU on x64 '
+                           'hosts and QEMU on arm64 hosts. Alternatively, '
+                           'setting to custom will require specifying the '
+                           'subclass of Target class used via the '
+                           '--custom-device-target flag.')
+  device_args.add_argument('-d',
+                           action='store_const',
+                           dest='device',
+                           const='device',
+                           help='Run on device instead of emulator.')
+  device_args.add_argument('--custom-device-target',
+                           default=None,
+                           help='Specify path to file that contains the '
+                           'subclass of Target that will be used. Only '
+                           'needed if device specific operations such as '
+                           'paving is required.')
+
+
+def _GetPathToBuiltinTarget(target_name):
+  return '%s_target' % target_name
+
+
+def _LoadTargetClass(target_path):
+  try:
+    loaded_target = importlib.import_module(target_path)
+  except ImportError:
+    logging.error(
+        'Cannot import from %s. Make sure that --custom-device-target '
+        'is pointing to a file containing a target '
+        'module.' % target_path)
+    raise
+  return loaded_target.GetTargetType()
+
+
+def _GetDefaultEmulatedCpuCoreCount():
+  # Revise the processor count on arm64, the trybots on arm64 are in
+  # dockers and cannot use all processors.
+  # For x64, fvdl always assumes hyperthreading is supported by intel
+  # processors, but the cpu_count returns the number regarding if the core
+  # is a physical one or a hyperthreading one, so the number should be
+  # divided by 2 to avoid creating more threads than the processor
+  # supports.
+  if GetHostArchFromPlatform() == 'x64':
+    return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+  return 4
+
 
 def AddCommonArgs(arg_parser):
   """Adds command line arguments to |arg_parser| for options which are shared
-  across test and executable target types."""
+  across test and executable target types.
+
+  Args:
+    arg_parser: an ArgumentParser object."""
 
   common_args = arg_parser.add_argument_group('common', 'Common arguments')
-  common_args.add_argument('--package', action='append', required=True,
-                           help='Paths of the packages to install, including '
-                                'all dependencies.')
-  common_args.add_argument('--package-name', required=True,
-                           help='Name of the package to execute, defined in ' +
-                                'package metadata.')
-  common_args.add_argument('--output-directory',
-                           type=os.path.realpath, required=True,
-                           help=('Path to the directory in which build files '
-                                 'are located (must include build type).'))
-  common_args.add_argument('--target-cpu', required=True,
-                           help='GN target_cpu setting for the build.')
-  common_args.add_argument('--target-staging-path',
-                           help='target path under which to stage packages '
-                           'during deployment.', default='/data')
-  common_args.add_argument('--device', default=None,
-                           choices=['aemu','qemu','device'],
-                           help='Choose to run on aemu|qemu|device. ' +
-                                'By default, Fuchsia will run in QEMU.')
-  common_args.add_argument('-d', action='store_const', dest='device',
-                           const='device',
-                           help='Run on device instead of emulator.')
-  common_args.add_argument('--host', help='The IP of the target device. ' +
-                           'Optional.')
-  common_args.add_argument('--node-name',
-                           help='The node-name of the device to boot or deploy '
-                                'to. Optional, will use the first discovered '
-                                'device if omitted.')
-  common_args.add_argument('--port', '-p', type=int, default=22,
-                           help='The port of the SSH service running on the ' +
-                                'device. Optional.')
-  common_args.add_argument('--ssh-config', '-F',
-                           help='The path to the SSH configuration used for '
-                                'connecting to the target device.')
-  common_args.add_argument('--fuchsia-out-dir',
-                           help='Path to a Fuchsia build output directory. '
-                                'Equivalent to setting --ssh_config and '
-                                '---os-check=ignore')
-  common_args.add_argument('--system-log-file',
-                           help='File to write system logs to. Specify - to '
-                                'log to stdout.')
-  common_args.add_argument('--exclude-system-logs',
-                           action='store_false',
-                           dest='include_system_logs',
-                           help='Do not show system log data.')
-  common_args.add_argument('--verbose', '-v', default=False,
+  common_args.add_argument('--logs-dir', help='Directory to write logs to.')
+  common_args.add_argument('--verbose',
+                           '-v',
+                           default=False,
                            action='store_true',
                            help='Enable debug-level logging.')
-  common_args.add_argument('--qemu-cpu-cores', type=int, default=4,
-                           help='Sets the number of CPU cores to provide if '
-                           'launching in a VM.'),
-  common_args.add_argument('--memory', type=int, default=2048,
-                           help='Sets the RAM size (MB) if launching in a VM'),
-  common_args.add_argument('--no-kvm', action='store_true', default=False,
-                           help='Disable KVM virtualization'),
   common_args.add_argument(
-      '--os_check', choices=['check', 'update', 'ignore'],
-      default='update',
-      help='Sets the OS version enforcement policy. If \'check\', then the '
-           'deployment process will halt if the target\'s version doesn\'t '
-           'match. If \'update\', then the target device will automatically '
-           'be repaved. If \'ignore\', then the OS version won\'t be checked.')
+      '--out-dir',
+      type=os.path.realpath,
+      help=('Path to the directory in which build files are located. '
+            'Defaults to current directory.'))
+  common_args.add_argument('--fuchsia-out-dir',
+                           default=None,
+                           help='Path to a Fuchsia build output directory. '
+                           'Setting the GN arg '
+                           '"default_fuchsia_build_dir_for_installation" '
+                           'will cause it to be passed here.')
+
+  package_args = arg_parser.add_argument_group('package', 'Fuchsia Packages')
+  package_args.add_argument(
+      '--package',
+      action='append',
+      help='Paths of the packages to install, including '
+      'all dependencies.')
+  package_args.add_argument(
+      '--package-name',
+      help='Name of the package to execute, defined in ' + 'package metadata.')
+
+  emu_args = arg_parser.add_argument_group('emu', 'General emulator arguments')
+  emu_args.add_argument('--cpu-cores',
+                        type=int,
+                        default=_GetDefaultEmulatedCpuCoreCount(),
+                        help='Sets the number of CPU cores to provide.')
+  emu_args.add_argument('--ram-size-mb',
+                        type=int,
+                        default=8192,
+                        help='Sets the emulated RAM size (MB).'),
+  emu_args.add_argument('--allow-no-kvm',
+                        action='store_false',
+                        dest='require_kvm',
+                        default=True,
+                        help='Do not require KVM acceleration for '
+                        'emulators.')
+
+
+# Register the arguments for all known target types and the optional custom
+# target type (specified on the commandline).
+def AddTargetSpecificArgs(arg_parser):
+  # Parse the minimal set of arguments to determine if custom targets need to
+  # be loaded so that their arguments can be registered.
+  target_spec_parser = argparse.ArgumentParser(add_help=False)
+  _AddTargetSpecificationArgs(target_spec_parser)
+  target_spec_args, _ = target_spec_parser.parse_known_args()
+  _AddTargetSpecificationArgs(arg_parser)
+
+  for target in BUILTIN_TARGET_NAMES:
+    _LoadTargetClass(_GetPathToBuiltinTarget(target)).RegisterArgs(arg_parser)
+  if target_spec_args.custom_device_target:
+    _LoadTargetClass(
+        target_spec_args.custom_device_target).RegisterArgs(arg_parser)
 
 
 def ConfigureLogging(args):
@@ -96,37 +164,17 @@ def ConfigureLogging(args):
       logging.DEBUG if args.verbose else logging.WARN)
 
 
-def GetDeploymentTargetForArgs(args, require_kvm=False):
-  """Constructs a deployment target object using parameters taken from
-  command line arguments."""
-  if args.system_log_file == '-':
-    system_log_file = sys.stdout
-  elif args.system_log_file:
-    system_log_file = open(args.system_log_file, 'w')
-  else:
-    system_log_file = None
+def GetDeploymentTargetForArgs(args):
+  """Constructs a deployment target object using command line arguments.
+     If needed, an additional_args dict can be used to supplement the
+     command line arguments."""
 
-  # Allow fuchsia to run on qemu if device not explicitly chosen.
-  if not args.device:
-    args.device = 'qemu'
+  if args.device == 'custom':
+    return _LoadTargetClass(args.custom_device_target).CreateFromArgs(args)
 
-  target_args = { 'output_dir':args.output_directory,
-                  'target_cpu':args.target_cpu,
-                  'system_log_file':system_log_file }
-  if args.device == 'device':
-    target_args.update({ 'host':args.host,
-                         'node_name':args.node_name,
-                         'port':args.port,
-                         'ssh_config':args.ssh_config,
-                         'fuchsia_out_dir':args.fuchsia_out_dir,
-                         'os_check':args.os_check })
-    return DeviceTarget(**target_args)
+  if args.device:
+    device = args.device
   else:
-    target_args.update({ 'cpu_cores':args.qemu_cpu_cores,
-                         'require_kvm':not args.no_kvm,
-                         'emu_type':args.device,
-                         'ram_size_mb':args.memory })
-    if args.device == 'qemu':
-      return QemuTarget(**target_args)
-    else:
-      return AemuTarget(**target_args)
+    device = 'fvdl' if args.target_cpu == 'x64' else 'qemu'
+
+  return _LoadTargetClass(_GetPathToBuiltinTarget(device)).CreateFromArgs(args)

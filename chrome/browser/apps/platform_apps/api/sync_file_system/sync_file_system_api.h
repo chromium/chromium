@@ -9,10 +9,10 @@
 
 #include <map>
 
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
 #include "chrome/browser/sync_file_system/sync_file_status.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
+#include "extensions/browser/extension_function.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -23,8 +23,7 @@ class FileSystemContext;
 namespace chrome_apps {
 namespace api {
 
-class SyncFileSystemDeleteFileSystemFunction
-    : public ChromeAsyncExtensionFunction {
+class SyncFileSystemDeleteFileSystemFunction : public ExtensionFunction {
  public:
   // TODO(kinuko,calvinlo): Uncomment this or delete this class when
   // we decide if we want to revive this function.
@@ -33,21 +32,20 @@ class SyncFileSystemDeleteFileSystemFunction
 
  protected:
   ~SyncFileSystemDeleteFileSystemFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   void DidDeleteFileSystem(base::File::Error error);
 };
 
-class SyncFileSystemGetFileStatusFunction
-    : public ChromeAsyncExtensionFunction {
+class SyncFileSystemGetFileStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getFileStatus",
                              SYNCFILESYSTEM_GETFILESYNCSTATUS)
 
  protected:
   ~SyncFileSystemGetFileStatusFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   void DidGetFileStatus(
@@ -55,8 +53,7 @@ class SyncFileSystemGetFileStatusFunction
       const ::sync_file_system::SyncFileStatus sync_file_status);
 };
 
-class SyncFileSystemGetFileStatusesFunction
-    : public ChromeAsyncExtensionFunction {
+class SyncFileSystemGetFileStatusesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getFileStatuses",
                              SYNCFILESYSTEM_GETFILESYNCSTATUSES)
@@ -64,7 +61,7 @@ class SyncFileSystemGetFileStatusesFunction
 
  protected:
   ~SyncFileSystemGetFileStatusesFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   typedef std::pair<::sync_file_system::SyncStatusCode,
@@ -84,15 +81,14 @@ class SyncFileSystemGetFileStatusesFunction
   URLToStatusMap file_sync_statuses_;
 };
 
-class SyncFileSystemGetUsageAndQuotaFunction
-    : public ChromeAsyncExtensionFunction {
+class SyncFileSystemGetUsageAndQuotaFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getUsageAndQuota",
                              SYNCFILESYSTEM_GETUSAGEANDQUOTA)
 
  protected:
   ~SyncFileSystemGetUsageAndQuotaFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   void DidGetUsageAndQuota(blink::mojom::QuotaStatusCode status,
@@ -100,15 +96,14 @@ class SyncFileSystemGetUsageAndQuotaFunction
                            int64_t quota);
 };
 
-class SyncFileSystemRequestFileSystemFunction
-    : public ChromeAsyncExtensionFunction {
+class SyncFileSystemRequestFileSystemFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.requestFileSystem",
                              SYNCFILESYSTEM_REQUESTFILESYSTEM)
 
  protected:
   ~SyncFileSystemRequestFileSystemFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   typedef SyncFileSystemRequestFileSystemFunction self;

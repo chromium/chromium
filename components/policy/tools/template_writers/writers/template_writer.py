@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -43,7 +43,31 @@ class TemplateWriter(object):
       policy: The dictionary of the policy.
 
     Returns:
-      True if the writer chooses to include the deprecated 'policy' in its
+      True if the writer chooses to include the unreleased 'policy' in its
+      output.
+    '''
+    return False
+
+  def IsCloudOnlyPolicySupported(self, policy):
+    '''Checks if the given cloud only policy is supported by the writer.
+
+    Args:
+      policy: The dictionary of the policy.
+
+    Returns:
+      True if the writer chooses to include the cloud only 'policy' in its
+      output.
+    '''
+    return False
+
+  def IsInternalOnlyPolicySupported(self, policy):
+    '''Checks if the given internal policy is supported by the writer.
+
+    Args:
+      policy: The dictionary of the policy.
+
+    Returns:
+      True if the writer chooses to include the internal only 'policy' in its
       output.
     '''
     return False
@@ -68,23 +92,48 @@ class TemplateWriter(object):
         not self.IsFuturePolicySupported(policy)):
       return False
 
+    if (self.IsCloudOnlyPolicy(policy)
+        and not self.IsCloudOnlyPolicySupported(policy)):
+      return False
+
+    if (self.IsInternalOnlyPolicy(policy)
+        and not self.IsInternalOnlyPolicySupported(policy)):
+      return False
+
     for supported_on in policy['supported_on']:
       if not self.IsVersionSupported(policy, supported_on):
         continue
-      if '*' in self.platforms:
+      if '*' in self.platforms or supported_on['platform'] in self.platforms:
         return True
-      if any(
-          platform in self.platforms for platform in supported_on['platforms']):
+
+    if self.IsFuturePolicySupported(policy):
+      if '*' in self.platforms and policy['future_on']:
         return True
+      for future in policy['future_on']:
+        if future['platform'] in self.platforms:
+          return True
     return False
+
+  def GetPolicyFeature(self, policy, feature_name, value=None):
+    '''Returns policy feature with |feature_name| if exsits. Otherwise, returns
+    |value|.'''
+    return policy.get('features', {}).get(feature_name, value)
 
   def CanBeRecommended(self, policy):
     '''Checks if the given policy can be recommended.'''
-    return policy.get('features', {}).get('can_be_recommended', False)
+    return self.GetPolicyFeature(policy, 'can_be_recommended', False)
 
   def CanBeMandatory(self, policy):
     '''Checks if the given policy can be mandatory.'''
-    return policy.get('features', {}).get('can_be_mandatory', True)
+    return self.GetPolicyFeature(policy, 'can_be_mandatory', True)
+
+  def IsCloudOnlyPolicy(self, policy):
+    '''Checks if the given policy is cloud only'''
+    return self.GetPolicyFeature(policy, 'cloud_only', False)
+
+  def IsInternalOnlyPolicy(self, policy):
+    '''Checks if the given policy is internal only'''
+    return self.GetPolicyFeature(policy, 'internal_only', False)
 
   def IsPolicyOrItemSupportedOnPlatform(self,
                                         item,
@@ -109,9 +158,18 @@ class TemplateWriter(object):
       return False
 
     for supported_on in item['supported_on']:
-      if (platform in supported_on['platforms'] and
-          (not product or product in supported_on['product']) and
-          self.IsVersionSupported(item, supported_on)):
+      if (platform == supported_on['platform']
+          and (not product or product in supported_on['product'])
+          and self.IsVersionSupported(item, supported_on)):
+        return True
+    if self.IsFuturePolicySupported(item):
+      if (product and {
+          'platform': platform,
+          'product': product
+      } in item.get('future_on', [])):
+        return True
+      if (not product and filter(lambda f: f['platform'] == platform,
+                                 item.get('future_on', []))):
         return True
     return False
 
@@ -204,27 +262,7 @@ class TemplateWriter(object):
     template['policy_definitions'] = \
         self.PreprocessPolicies(template['policy_definitions'])
     self.BeginTemplate()
-    for policy in template['policy_definitions']:
-      if policy['type'] == 'group':
-        child_policies = self._GetPoliciesForWriter(policy)
-        child_recommended_policies = filter(self.CanBeRecommended,
-                                            child_policies)
-        if child_policies:
-          # Only write nonempty groups.
-          self.BeginPolicyGroup(policy)
-          for child_policy in child_policies:
-            # Nesting of groups is currently not supported.
-            self.WritePolicy(child_policy)
-          self.EndPolicyGroup()
-        if child_recommended_policies:
-          self.BeginRecommendedPolicyGroup(policy)
-          for child_policy in child_recommended_policies:
-            self.WriteRecommendedPolicy(child_policy)
-          self.EndRecommendedPolicyGroup()
-      elif self.IsPolicySupported(policy):
-        self.WritePolicy(policy)
-        if self.CanBeRecommended(policy):
-          self.WriteRecommendedPolicy(policy)
+    self.WritePolicies(template['policy_definitions'])
     self.EndTemplate()
 
     return self.GetTemplateText()
@@ -244,6 +282,35 @@ class TemplateWriter(object):
       The sorted policy list.
     '''
     return self.SortPoliciesGroupsFirst(policy_list)
+
+  def WritePolicies(self, policy_list):
+    '''Appends the template text corresponding to all the policies into the
+    internal buffer.
+
+    Args:
+      policy_list: A list containing the policies to write.
+    '''
+    for policy in policy_list:
+      if policy['type'] == 'group':
+        child_policies = list(self._GetPoliciesForWriter(policy))
+        child_recommended_policies = list(
+            filter(self.CanBeRecommended, child_policies))
+        if child_policies:
+          # Only write nonempty groups.
+          self.BeginPolicyGroup(policy)
+          for child_policy in child_policies:
+            # Nesting of groups is currently not supported.
+            self.WritePolicy(child_policy)
+          self.EndPolicyGroup()
+        if child_recommended_policies:
+          self.BeginRecommendedPolicyGroup(policy)
+          for child_policy in child_recommended_policies:
+            self.WriteRecommendedPolicy(child_policy)
+          self.EndRecommendedPolicyGroup()
+      elif self.IsPolicySupported(policy):
+        self.WritePolicy(policy)
+        if self.CanBeRecommended(policy):
+          self.WriteRecommendedPolicy(policy)
 
   def WritePolicy(self, policy):
     '''Appends the template text corresponding to a policy into the

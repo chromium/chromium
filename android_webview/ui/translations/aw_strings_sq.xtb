@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
-<translation id="6106989379647458772">Faqja e uebit në <ph name="PAGE" /> mund të mos jetë përkohësisht në punë ose mund të jetë zhvendosur përgjithmonë në një adresë uebi të re.</translation>
-<translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
-<translation id="8681531050781943054">Faqja e uebit në <ph name="PAGE" /> nuk mund të ngarkohej sepse:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Sugjerime:<ph name="MARKUP_2" />Sigurohu që të kesh një lidhje të të dhënave<ph name="MARKUP_3" />Ringarko këtë faqe uebi më vonë<ph name="MARKUP_4" />Kontrollo adresën që fute<ph name="MARKUP_5" /></translation>
 </translationbundle>

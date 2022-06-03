@@ -1,8 +1,0 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-mojom = "//content/common/frame_messages.mojom"
-public_headers = [ "//content/common/frame_messages_forward.h" ]
-traits_headers = [ "//content/common/frame_messages.h" ]
-type_mappings = [ "content.mojom.DidCommitProvisionalLoadParams=::std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params>[move_only,nullable_is_same_type]" ]

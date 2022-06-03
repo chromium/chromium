@@ -12,9 +12,9 @@
 namespace blink {
 namespace {
 
-base::string16 DecodeWithV8(const std::vector<uint8_t>& encoded) {
+std::u16string DecodeWithV8(const std::vector<uint8_t>& encoded) {
   base::test::TaskEnvironment task_environment;
-  base::string16 result;
+  std::u16string result;
 
   v8::Isolate::CreateParams params;
   params.array_buffer_allocator =
@@ -45,7 +45,7 @@ base::string16 DecodeWithV8(const std::vector<uint8_t>& encoded) {
   return result;
 }
 
-std::vector<uint8_t> EncodeWithV8(const base::string16& message) {
+std::vector<uint8_t> EncodeWithV8(const std::u16string& message) {
   base::test::TaskEnvironment task_environment;
   std::vector<uint8_t> result;
 
@@ -80,58 +80,58 @@ std::vector<uint8_t> EncodeWithV8(const base::string16& message) {
 }
 
 TEST(StringMessageCodecTest, SelfTest_ASCII) {
-  base::string16 message = base::ASCIIToUTF16("hello");
-  base::string16 decoded;
+  std::u16string message = u"hello";
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
 TEST(StringMessageCodecTest, SelfTest_NonASCII) {
-  base::string16 message = base::WideToUTF16(L"hello \u263A");
-  base::string16 decoded;
+  std::u16string message = u"hello \u263A";
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
 TEST(StringMessageCodecTest, SelfTest_NonASCIILongEnoughToForcePadding) {
-  base::string16 message(200, 0x263A);
-  base::string16 decoded;
+  std::u16string message(200, 0x263A);
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
 TEST(StringMessageCodecTest, SelfToV8Test_ASCII) {
-  base::string16 message = base::ASCIIToUTF16("hello");
+  std::u16string message = u"hello";
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
 TEST(StringMessageCodecTest, SelfToV8Test_NonASCII) {
-  base::string16 message = base::WideToUTF16(L"hello \u263A");
+  std::u16string message = u"hello \u263A";
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
 TEST(StringMessageCodecTest, SelfToV8Test_NonASCIILongEnoughToForcePadding) {
-  base::string16 message(200, 0x263A);
+  std::u16string message(200, 0x263A);
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_ASCII) {
-  base::string16 message = base::ASCIIToUTF16("hello");
-  base::string16 decoded;
+  std::u16string message = u"hello";
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_NonASCII) {
-  base::string16 message = base::WideToUTF16(L"hello \u263A");
-  base::string16 decoded;
+  std::u16string message = u"hello \u263A";
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_NonASCIILongEnoughToForcePadding) {
-  base::string16 message(200, 0x263A);
-  base::string16 decoded;
+  std::u16string message(200, 0x263A);
+  std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);
 }

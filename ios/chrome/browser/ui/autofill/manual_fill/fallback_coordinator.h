@@ -43,11 +43,6 @@
                               (ManualFillInjectionHandler*)injectionHandler
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable, use -initWithBaseViewController:browser:injectionHandler:.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 

@@ -7,4 +7,6 @@
 ] partial interface Internals {
     long peerConnectionCount();
     readonly attribute long peerConnectionCountLimit;
+
+    [CallWith=ScriptState] Promise<any> waitForPeerConnectionDispatchEventsTaskCreated(RTCPeerConnection connection);
 };

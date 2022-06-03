@@ -26,6 +26,10 @@ namespace ui {
 class FakeContextFactory : public ui::ContextFactory {
  public:
   FakeContextFactory();
+
+  FakeContextFactory(const FakeContextFactory&) = delete;
+  FakeContextFactory& operator=(const FakeContextFactory&) = delete;
+
   ~FakeContextFactory() override;
 
   const viz::CompositorFrame& GetLastCompositorFrame() const;
@@ -40,8 +44,6 @@ class FakeContextFactory : public ui::ContextFactory {
   void RemoveCompositor(ui::Compositor* compositor) override;
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  void AddObserver(ui::ContextFactoryObserver* observer) override {}
-  void RemoveObserver(ui::ContextFactoryObserver* observer) override {}
 
  protected:
   const viz::RendererSettings& renderer_settings() const {
@@ -53,8 +55,6 @@ class FakeContextFactory : public ui::ContextFactory {
   cc::TestTaskGraphRunner task_graph_runner_;
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeContextFactory);
 };
 
 }  // namespace ui

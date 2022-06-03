@@ -33,7 +33,7 @@ extern const char kChromeAppGroupXCallbackCommand[];
 
 // The key of a preference containing a dictionary of field trial values needed
 // in extensions.
-extern const char kChromeExtensionFieldTrialPreference[];
+extern NSString* const kChromeExtensionFieldTrialPreference;
 
 // The key of a preference containing a dictionary containing app group command
 // parameters.
@@ -118,6 +118,7 @@ extern NSString* const kOpenCommandSourceTodayExtension;
 extern NSString* const kOpenCommandSourceContentExtension;
 extern NSString* const kOpenCommandSourceSearchExtension;
 extern NSString* const kOpenCommandSourceShareExtension;
+extern NSString* const kOpenCommandSourceCredentialsExtension;
 
 // The value of the key for the sharedDefaults used by the Content Widget.
 extern NSString* const kSuggestedItems;
@@ -148,6 +149,9 @@ NSURL* ExternalCommandsItemsFolder();
 // Gets the shared folder URL in which favicons used by the content widget are
 // stored.
 NSURL* ContentWidgetFaviconsFolder();
+
+// Gets the shared folder URL in which Crashpad reports are stored.
+NSURL* CrashpadFolder();
 
 // Returns an autoreleased pointer to the shared user defaults if an
 // application group is defined. If not (i.e. on simulator, or if entitlements

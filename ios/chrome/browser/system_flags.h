@@ -22,11 +22,12 @@ enum GaiaEnvironment {
 };
 
 enum WhatsNewPromoStatus {
-  WHATS_NEW_DEFAULT = 0,         // Not forced to enable a promo.
-  WHATS_NEW_TEST_COMMAND_TIP,    // Test Tip that runs a command.
-  WHATS_NEW_MOVE_TO_DOCK_TIP,    // Force enable Move To Dock Tip promo.
-  WHATS_NEW_REVIEW_UPDATED_TOS,  // Force enable Review Updated ToS promo.
-  WHATS_NEW_PROMO_STATUS_COUNT,  // Count of Whats New Promo Statuses.
+  WHATS_NEW_DEFAULT = 0,          // Not forced to enable a promo.
+  WHATS_NEW_TEST_COMMAND_TIP,     // Test Tip that runs a command.
+  WHATS_NEW_MOVE_TO_DOCK_TIP,     // Force enable Move To Dock Tip promo.
+  WHATS_NEW_REVIEW_UPDATED_TOS,   // Force enable Review Updated ToS promo.
+  WHATS_NEW_DEFAULT_BROWSER_TIP,  // Force enable Set Default Browser promo.
+  WHATS_NEW_PROMO_STATUS_COUNT,   // Count of Whats New Promo Statuses.
 };
 
 // Whether the First Run UI will be always be displayed.
@@ -42,6 +43,14 @@ std::string GetOriginServerHost();
 // Returns the promo force enabled, as determined by the experimental flags.
 // If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.
 WhatsNewPromoStatus GetWhatsNewPromoStatus();
+
+// Returns the URL for the alternative Discover Feed server.
+std::string getAlternateDiscoverFeedServerURL();
+
+// Returns true if the prefs for the notice card views count and clicks count
+// should be reset to zero on feed start.
+// TODO(crbug.com/1189232): Remove after launch.
+bool ShouldResetNoticeCardOnFeedStart();
 
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();

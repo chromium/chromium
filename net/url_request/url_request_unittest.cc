@@ -2,29 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <utility>
-
-// This must be before Windows headers
-#include "base/bind_helpers.h"
-#include "build/build_config.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#include <objbase.h>
-#include <shlobj.h>
-#include <wrl/client.h>
-#endif
-
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <memory>
+#include <utility>
+
+// This must be before Windows headers
+#include "base/callback_helpers.h"
+#include "base/memory/ptr_util.h"
+#include "build/build_config.h"
+#include "net/dns/public/secure_dns_policy.h"
+#include "net/log/net_log.h"
+#include "url/url_constants.h"
+
+#if defined(OS_WIN)
+#include <objbase.h>
+#include <shlobj.h>
+#include <windows.h>
+#include <wrl/client.h>
+#endif
 
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,18 +36,16 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -56,14 +58,19 @@
 #include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
+#include "net/base/transport_info.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
@@ -82,11 +89,13 @@
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -94,16 +103,20 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
+#include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_source.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/net_buildflags.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/quic_server_info.h"
+#include "net/socket/read_buffering_stream_socket.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -112,7 +125,6 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
@@ -122,32 +134,31 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_util.h"
+#include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_http_job.h"
-#include "net/url_request/url_request_intercepting_job_factory.h"
 #include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "net/url_request/websocket_handshake_userdata_key.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID)
-#include "net/ftp/ftp_auth_cache.h"
-#include "net/ftp/ftp_network_layer.h"
-#include "net/url_request/ftp_protocol_handler.h"
-#endif
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -156,13 +167,19 @@
 #include "net/network_error_logging/network_error_logging_test_util.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if defined(USE_NSS_CERTS)
-#include "net/cert_net/nss_ocsp.h"
-#endif
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "net/websockets/websocket_test_util.h"
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 using net::test::IsError;
 using net::test::IsOk;
+using net::test_server::RegisterDefaultHandlers;
+using testing::_;
 using testing::AnyOf;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Optional;
+using testing::UnorderedElementsAre;
 
 using base::ASCIIToUTF16;
 using base::Time;
@@ -176,18 +193,12 @@ namespace test_default {
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 
-const base::string16 kChrome(ASCIIToUTF16("chrome"));
-const base::string16 kSecret(ASCIIToUTF16("secret"));
-const base::string16 kUser(ASCIIToUTF16("user"));
+const std::u16string kChrome(u"chrome");
+const std::u16string kSecret(u"secret");
+const std::u16string kUser(u"user");
 
 const base::FilePath::CharType kTestFilePath[] =
     FILE_PATH_LITERAL("net/data/url_request_unittest");
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
-    !defined(OS_FUCHSIA)
-// Test file used in most FTP tests.
-const char kFtpTestFile[] = "BullRunSpeech.txt";
-#endif
 
 // Tests load timing information in the case a fresh connection was used, with
 // no proxy.
@@ -215,9 +226,8 @@ void TestLoadTimingNotReused(const LoadTimingInfo& load_timing_info,
 }
 
 // Same as above, but with proxy times.
-void TestLoadTimingNotReusedWithProxy(
-    const LoadTimingInfo& load_timing_info,
-    int connect_timing_flags) {
+void TestLoadTimingNotReusedWithProxy(const LoadTimingInfo& load_timing_info,
+                                      int connect_timing_flags) {
   EXPECT_FALSE(load_timing_info.socket_reused);
   EXPECT_NE(NetLogSource::kInvalidId, load_timing_info.socket_log_id);
 
@@ -241,8 +251,7 @@ void TestLoadTimingNotReusedWithProxy(
 }
 
 // Same as above, but with a reused socket and proxy times.
-void TestLoadTimingReusedWithProxy(
-    const LoadTimingInfo& load_timing_info) {
+void TestLoadTimingReusedWithProxy(const LoadTimingInfo& load_timing_info) {
   EXPECT_TRUE(load_timing_info.socket_reused);
   EXPECT_NE(NetLogSource::kInvalidId, load_timing_info.socket_log_id);
 
@@ -255,8 +264,7 @@ void TestLoadTimingReusedWithProxy(
             load_timing_info.proxy_resolve_start);
   EXPECT_LE(load_timing_info.proxy_resolve_start,
             load_timing_info.proxy_resolve_end);
-  EXPECT_LE(load_timing_info.proxy_resolve_end,
-            load_timing_info.send_start);
+  EXPECT_LE(load_timing_info.proxy_resolve_end, load_timing_info.send_start);
   EXPECT_LE(load_timing_info.send_start, load_timing_info.send_end);
   EXPECT_LE(load_timing_info.send_end, load_timing_info.receive_headers_start);
   EXPECT_LE(load_timing_info.receive_headers_start,
@@ -275,8 +283,7 @@ CookieList GetAllCookies(URLRequestContext* request_context) {
   return cookie_list;
 }
 
-void TestLoadTimingCacheHitNoNetwork(
-    const LoadTimingInfo& load_timing_info) {
+void TestLoadTimingCacheHitNoNetwork(const LoadTimingInfo& load_timing_info) {
   EXPECT_FALSE(load_timing_info.socket_reused);
   EXPECT_EQ(NetLogSource::kInvalidId, load_timing_info.socket_log_id);
 
@@ -294,49 +301,13 @@ void TestLoadTimingCacheHitNoNetwork(
   EXPECT_TRUE(load_timing_info.proxy_resolve_end.is_null());
 }
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
-    !defined(OS_FUCHSIA)
-// Tests load timing in the case that there is no HTTP response.  This can be
-// used to test in the case of errors or non-HTTP requests.
-void TestLoadTimingNoHttpResponse(
-    const LoadTimingInfo& load_timing_info) {
-  EXPECT_FALSE(load_timing_info.socket_reused);
-  EXPECT_EQ(NetLogSource::kInvalidId, load_timing_info.socket_log_id);
-
-  // Only the request times should be non-null.
-  EXPECT_FALSE(load_timing_info.request_start_time.is_null());
-  EXPECT_FALSE(load_timing_info.request_start.is_null());
-
-  ExpectConnectTimingHasNoTimes(load_timing_info.connect_timing);
-
-  EXPECT_TRUE(load_timing_info.proxy_resolve_start.is_null());
-  EXPECT_TRUE(load_timing_info.proxy_resolve_end.is_null());
-  EXPECT_TRUE(load_timing_info.send_start.is_null());
-  EXPECT_TRUE(load_timing_info.send_end.is_null());
-  EXPECT_TRUE(load_timing_info.receive_headers_start.is_null());
-  EXPECT_TRUE(load_timing_info.receive_headers_end.is_null());
-}
-#endif
-
-// Less verbose way of running a simple testserver for the tests below.
-class HttpTestServer : public EmbeddedTestServer {
- public:
-  explicit HttpTestServer(const base::FilePath& document_root) {
-    AddDefaultHandlers(document_root);
-  }
-
-  HttpTestServer() { AddDefaultHandlers(base::FilePath()); }
-};
-
 // Job that allows monitoring of its priority.
 class PriorityMonitoringURLRequestJob : public URLRequestTestJob {
  public:
   // The latest priority of the job is always written to |request_priority_|.
   PriorityMonitoringURLRequestJob(URLRequest* request,
-                                  NetworkDelegate* network_delegate,
                                   RequestPriority* request_priority)
-      : URLRequestTestJob(request, network_delegate),
-        request_priority_(request_priority) {
+      : URLRequestTestJob(request), request_priority_(request_priority) {
     *request_priority_ = DEFAULT_PRIORITY;
   }
 
@@ -405,6 +376,9 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
   // Creates a delegate which does not block at all.
   explicit BlockingNetworkDelegate(BlockMode block_mode);
 
+  BlockingNetworkDelegate(const BlockingNetworkDelegate&) = delete;
+  BlockingNetworkDelegate& operator=(const BlockingNetworkDelegate&) = delete;
+
   // Runs the message loop until the delegate blocks.
   void RunUntilBlocked();
 
@@ -420,13 +394,9 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
     ASSERT_NE(OK, retval);
     retval_ = retval;
   }
-  void set_redirect_url(const GURL& url) {
-    redirect_url_ = url;
-  }
+  void set_redirect_url(const GURL& url) { redirect_url_ = url; }
 
-  void set_block_on(int block_on) {
-    block_on_ = block_on;
-  }
+  void set_block_on(int block_on) { block_on_ = block_on; }
 
   // Allows the user to check in which state did we block.
   Stage stage_blocked_for_callback() const {
@@ -444,9 +414,10 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
                          CompletionOnceCallback callback,
                          GURL* new_url) override;
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
 
   int OnHeadersReceived(
       URLRequest* request,
@@ -454,7 +425,7 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
 
   // Resets the callbacks and |stage_blocked_for_callback_|.
   void Reset();
@@ -471,7 +442,7 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
   int retval_;
 
   GURL redirect_url_;  // Used if non-empty during OnBeforeURLRequest.
-  int block_on_;  // Bit mask: in which stages to block.
+  int block_on_;       // Bit mask: in which stages to block.
 
   // Internal variables, not set by not the user:
   // Last blocked stage waiting for user callback (unused if |block_mode_| !=
@@ -485,8 +456,6 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
   base::OnceClosure on_blocked_;
 
   base::WeakPtrFactory<BlockingNetworkDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingNetworkDelegate);
 };
 
 BlockingNetworkDelegate::BlockingNetworkDelegate(BlockMode block_mode)
@@ -545,13 +514,19 @@ int BlockingNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
 
 int BlockingNetworkDelegate::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   // TestNetworkDelegate always completes synchronously.
   CHECK_NE(ERR_IO_PENDING, TestNetworkDelegate::OnBeforeStartTransaction(
-                               request, base::NullCallback(), headers));
+                               request, headers, base::NullCallback()));
 
-  return MaybeBlockStage(ON_BEFORE_SEND_HEADERS, std::move(callback));
+  return MaybeBlockStage(
+      ON_BEFORE_SEND_HEADERS,
+      base::BindOnce(
+          [](OnBeforeStartTransactionCallback callback, int result) {
+            std::move(callback).Run(result, absl::nullopt);
+          },
+          std::move(callback)));
 }
 
 int BlockingNetworkDelegate::OnHeadersReceived(
@@ -560,7 +535,7 @@ int BlockingNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   // TestNetworkDelegate always completes synchronously.
   CHECK_NE(ERR_IO_PENDING,
            TestNetworkDelegate::OnHeadersReceived(
@@ -621,8 +596,8 @@ class TestURLRequestContextWithProxy : public TestURLRequestContext {
                                  bool delay_initialization = false)
       : TestURLRequestContext(true) {
     context_storage_.set_proxy_resolution_service(
-        ProxyResolutionService::CreateFixed(proxy,
-                                            TRAFFIC_ANNOTATION_FOR_TESTS));
+        ConfiguredProxyResolutionService::CreateFixed(
+            proxy, TRAFFIC_ANNOTATION_FOR_TESTS));
     set_network_delegate(delegate);
     if (!delay_initialization)
       Init();
@@ -638,24 +613,30 @@ class MockCertificateReportSender
   MockCertificateReportSender() = default;
   ~MockCertificateReportSender() override = default;
 
-  void Send(const GURL& report_uri,
-            base::StringPiece content_type,
-            base::StringPiece report,
-            const base::Callback<void()>& success_callback,
-            const base::Callback<void(const GURL&, int, int)>& error_callback)
-      override {
+  void Send(
+      const GURL& report_uri,
+      base::StringPiece content_type,
+      base::StringPiece report,
+      const NetworkIsolationKey& network_isolation_key,
+      base::OnceCallback<void()> success_callback,
+      base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
     latest_report_uri_ = report_uri;
-    report.CopyToString(&latest_report_);
-    content_type.CopyToString(&latest_content_type_);
+    latest_report_.assign(report.data(), report.size());
+    latest_content_type_.assign(content_type.data(), content_type.size());
+    latest_network_isolation_key_ = network_isolation_key;
   }
   const GURL& latest_report_uri() { return latest_report_uri_; }
   const std::string& latest_report() { return latest_report_; }
   const std::string& latest_content_type() { return latest_content_type_; }
+  const NetworkIsolationKey& latest_network_isolation_key() {
+    return latest_network_isolation_key_;
+  }
 
  private:
   GURL latest_report_uri_;
   std::string latest_report_;
   std::string latest_content_type_;
+  NetworkIsolationKey latest_network_isolation_key_;
 };
 
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
@@ -690,11 +671,10 @@ class OCSPErrorTestDelegate : public TestDelegate {
 class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
  public:
   URLRequestTest()
-      : default_context_(std::make_unique<TestURLRequestContext>(true)) {
+      : job_factory_(std::make_unique<URLRequestJobFactory>()),
+        default_context_(std::make_unique<TestURLRequestContext>(true)) {
     default_context_->set_network_delegate(&default_network_delegate_);
-    default_context_->set_net_log(&net_log_);
-    job_factory_impl_ = new URLRequestJobFactoryImpl();
-    job_factory_.reset(job_factory_impl_);
+    default_context_->set_net_log(NetLog::Get());
   }
 
   ~URLRequestTest() override {
@@ -721,15 +701,6 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
 
   TestURLRequestContext& default_context() const { return *default_context_; }
 
-  // Adds the TestJobInterceptor to the default context.
-  TestJobInterceptor* AddTestInterceptor() {
-    TestJobInterceptor* protocol_handler_ = new TestJobInterceptor();
-    job_factory_impl_->SetProtocolHandler("http", nullptr);
-    job_factory_impl_->SetProtocolHandler("http",
-                                          base::WrapUnique(protocol_handler_));
-    return protocol_handler_;
-  }
-
   // Creates a temp test file and writes |data| to the file. The file will be
   // deleted after the test completes.
   void CreateTestFile(const char* data,
@@ -747,9 +718,8 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
   }
 
  protected:
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   TestNetworkDelegate default_network_delegate_;  // Must outlive URLRequest.
-  URLRequestJobFactoryImpl* job_factory_impl_;
   std::unique_ptr<URLRequestJobFactory> job_factory_;
   std::unique_ptr<TestURLRequestContext> default_context_;
   base::ScopedTempDir temp_dir_;
@@ -790,6 +760,46 @@ TEST_F(URLRequestTest, InvalidUrlTest) {
   }
 }
 
+// Test that URLRequest rejects WS URLs by default.
+TEST_F(URLRequestTest, WsUrlTest) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://foo.test/"));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> r(
+      default_context().CreateRequest(GURL("ws://foo.test/"), DEFAULT_PRIORITY,
+                                      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  // This is not strictly necessary for this test, but used to trigger a DCHECK.
+  // See https://crbug.com/1245115.
+  r->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+
+  r->Start();
+  d.RunUntilComplete();
+  EXPECT_TRUE(d.request_failed());
+  EXPECT_THAT(d.request_status(), IsError(ERR_UNKNOWN_URL_SCHEME));
+}
+
+// Test that URLRequest rejects WSS URLs by default.
+TEST_F(URLRequestTest, WssUrlTest) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> r(
+      default_context().CreateRequest(GURL("wss://foo.test/"), DEFAULT_PRIORITY,
+                                      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  // This is not strictly necessary for this test, but used to trigger a DCHECK.
+  // See https://crbug.com/1245115.
+  r->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+
+  r->Start();
+  d.RunUntilComplete();
+  EXPECT_TRUE(d.request_failed());
+  EXPECT_THAT(d.request_status(), IsError(ERR_UNKNOWN_URL_SCHEME));
+}
+
 TEST_F(URLRequestTest, InvalidReferrerTest) {
   TestURLRequestContext context;
   TestNetworkDelegate network_delegate;
@@ -816,7 +826,7 @@ TEST_F(URLRequestTest, RecordsSameOriginReferrerHistogram) {
       context.CreateRequest(GURL("http://google.com/"), DEFAULT_PRIORITY, &d,
                             TRAFFIC_ANNOTATION_FOR_TESTS));
   req->SetReferrer("http://google.com");
-  req->set_referrer_policy(URLRequest::NEVER_CLEAR_REFERRER);
+  req->set_referrer_policy(ReferrerPolicy::NEVER_CLEAR);
 
   base::HistogramTester histograms;
 
@@ -824,7 +834,7 @@ TEST_F(URLRequestTest, RecordsSameOriginReferrerHistogram) {
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerPolicyForRequest.SameOrigin",
-      static_cast<int>(URLRequest::NEVER_CLEAR_REFERRER), 1);
+      static_cast<int>(ReferrerPolicy::NEVER_CLEAR), 1);
 }
 
 TEST_F(URLRequestTest, RecordsCrossOriginReferrerHistogram) {
@@ -840,7 +850,7 @@ TEST_F(URLRequestTest, RecordsCrossOriginReferrerHistogram) {
   // Set a different policy just to make sure we aren't always logging the same
   // policy.
   req->set_referrer_policy(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
 
   base::HistogramTester histograms;
 
@@ -849,7 +859,7 @@ TEST_F(URLRequestTest, RecordsCrossOriginReferrerHistogram) {
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerPolicyForRequest.CrossOrigin",
       static_cast<int>(
-          URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+          ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       1);
 }
 
@@ -866,7 +876,7 @@ TEST_F(URLRequestTest, RecordsReferrerHistogramAgainOnRedirect) {
   req->SetReferrer("http://google.com");
 
   req->set_referrer_policy(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE);
 
   base::HistogramTester histograms;
 
@@ -875,15 +885,15 @@ TEST_F(URLRequestTest, RecordsReferrerHistogramAgainOnRedirect) {
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerPolicyForRequest.SameOrigin",
       static_cast<int>(
-          URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+          ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerPolicyForRequest.CrossOrigin",
       static_cast<int>(
-          URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+          ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       1);
 }
 
@@ -911,8 +921,8 @@ TEST_F(URLRequestTest, RecordsReferrrerWithInformativePath) {
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin",
       /* Check the count of the "true" bucket in the boolean histogram. */ true,
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", true, 1);
@@ -942,8 +952,8 @@ TEST_F(URLRequestTest, RecordsReferrerWithInformativeQuery) {
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin",
       /* Check the count of the "true" bucket in the boolean histogram. */ true,
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", true, 1);
@@ -971,35 +981,31 @@ TEST_F(URLRequestTest, RecordsReferrerWithoutInformativePathOrQuery) {
   d.RunUntilRedirect();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", false, 1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin", false, 1);
 }
 
-// An Interceptor for use with interceptor tests.
-class MockURLRequestInterceptor : public URLRequestInterceptor {
+// A URLRequestInterceptor that allows setting the LoadTimingInfo value of the
+// URLRequestJobs it creates.
+class URLRequestInterceptorWithLoadTimingInfo : public URLRequestInterceptor {
  public:
   // Static getters for canned response header and data strings.
-  static std::string ok_data() {
-    return URLRequestTestJob::test_data_1();
-  }
+  static std::string ok_data() { return URLRequestTestJob::test_data_1(); }
 
-  static std::string ok_headers() {
-    return URLRequestTestJob::test_headers();
-  }
+  static std::string ok_headers() { return URLRequestTestJob::test_headers(); }
 
-  MockURLRequestInterceptor() {}
-
-  ~MockURLRequestInterceptor() override = default;
+  URLRequestInterceptorWithLoadTimingInfo() = default;
+  ~URLRequestInterceptorWithLoadTimingInfo() override = default;
 
   // URLRequestInterceptor implementation:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    URLRequestTestJob* job = new URLRequestTestJob(
-        request, network_delegate, ok_headers(), ok_data(), true);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    std::unique_ptr<URLRequestTestJob> job =
+        std::make_unique<URLRequestTestJob>(request, ok_headers(), ok_data(),
+                                            true);
     job->set_load_timing_info(main_request_load_timing_info_);
     return job;
   }
@@ -1013,58 +1019,28 @@ class MockURLRequestInterceptor : public URLRequestInterceptor {
   mutable LoadTimingInfo main_request_load_timing_info_;
 };
 
-// Inherit PlatformTest since we require the autorelease pool on Mac OS X.
-class URLRequestInterceptorTest : public URLRequestTest {
+// These tests inject a MockURLRequestInterceptor
+class URLRequestLoadTimingTest : public URLRequestTest {
  public:
-  URLRequestInterceptorTest() : URLRequestTest(), interceptor_(nullptr) {}
-
-  ~URLRequestInterceptorTest() override {
-    // URLRequestJobs may post clean-up tasks on destruction.
-    base::RunLoop().RunUntilIdle();
+  URLRequestLoadTimingTest() {
+    std::unique_ptr<URLRequestInterceptorWithLoadTimingInfo> interceptor =
+        std::make_unique<URLRequestInterceptorWithLoadTimingInfo>();
+    interceptor_ = interceptor.get();
+    URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "http", "test_intercept", std::move(interceptor));
   }
 
-  void SetUpFactory() override {
-    interceptor_ = new MockURLRequestInterceptor();
-    job_factory_.reset(new URLRequestInterceptingJobFactory(
-        std::move(job_factory_), base::WrapUnique(interceptor_)));
+  ~URLRequestLoadTimingTest() override {
+    URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
-  MockURLRequestInterceptor* interceptor() const {
+  URLRequestInterceptorWithLoadTimingInfo* interceptor() const {
     return interceptor_;
   }
 
  private:
-  MockURLRequestInterceptor* interceptor_;
+  URLRequestInterceptorWithLoadTimingInfo* interceptor_;
 };
-
-TEST_F(URLRequestInterceptorTest, Intercept) {
-  // Intercept the main request and respond with a simple response.
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-      GURL("http://test_intercept/foo"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  base::SupportsUserData::Data* user_data0 = new base::SupportsUserData::Data();
-  base::SupportsUserData::Data* user_data1 = new base::SupportsUserData::Data();
-  base::SupportsUserData::Data* user_data2 = new base::SupportsUserData::Data();
-  req->SetUserData(&user_data0, base::WrapUnique(user_data0));
-  req->SetUserData(&user_data1, base::WrapUnique(user_data1));
-  req->SetUserData(&user_data2, base::WrapUnique(user_data2));
-  req->set_method("GET");
-  req->Start();
-  d.RunUntilComplete();
-
-  // Make sure we can retrieve our specific user data.
-  EXPECT_EQ(user_data0, req->GetUserData(&user_data0));
-  EXPECT_EQ(user_data1, req->GetUserData(&user_data1));
-  EXPECT_EQ(user_data2, req->GetUserData(&user_data2));
-
-  // Check that we got one good response.
-  EXPECT_EQ(OK, d.request_status());
-  EXPECT_EQ(200, req->response_headers()->response_code());
-  EXPECT_EQ(MockURLRequestInterceptor::ok_data(), d.data_received());
-  EXPECT_EQ(1, d.response_started_count());
-  EXPECT_EQ(0, d.received_redirect_count());
-}
 
 // "Normal" LoadTimingInfo as returned by a job.  Everything is in order, not
 // reused.  |connect_time_flags| is used to indicate if there should be dns
@@ -1076,26 +1052,26 @@ LoadTimingInfo NormalLoadTimingInfo(base::TimeTicks now,
   load_timing.socket_log_id = 1;
 
   if (used_proxy) {
-    load_timing.proxy_resolve_start = now + base::TimeDelta::FromDays(1);
-    load_timing.proxy_resolve_end = now + base::TimeDelta::FromDays(2);
+    load_timing.proxy_resolve_start = now + base::Days(1);
+    load_timing.proxy_resolve_end = now + base::Days(2);
   }
 
   LoadTimingInfo::ConnectTiming& connect_timing = load_timing.connect_timing;
   if (connect_time_flags & CONNECT_TIMING_HAS_DNS_TIMES) {
-    connect_timing.dns_start = now + base::TimeDelta::FromDays(3);
-    connect_timing.dns_end = now + base::TimeDelta::FromDays(4);
+    connect_timing.dns_start = now + base::Days(3);
+    connect_timing.dns_end = now + base::Days(4);
   }
-  connect_timing.connect_start = now + base::TimeDelta::FromDays(5);
+  connect_timing.connect_start = now + base::Days(5);
   if (connect_time_flags & CONNECT_TIMING_HAS_SSL_TIMES) {
-    connect_timing.ssl_start = now + base::TimeDelta::FromDays(6);
-    connect_timing.ssl_end = now + base::TimeDelta::FromDays(7);
+    connect_timing.ssl_start = now + base::Days(6);
+    connect_timing.ssl_end = now + base::Days(7);
   }
-  connect_timing.connect_end = now + base::TimeDelta::FromDays(8);
+  connect_timing.connect_end = now + base::Days(8);
 
-  load_timing.send_start = now + base::TimeDelta::FromDays(9);
-  load_timing.send_end = now + base::TimeDelta::FromDays(10);
-  load_timing.receive_headers_start = now + base::TimeDelta::FromDays(11);
-  load_timing.receive_headers_end = now + base::TimeDelta::FromDays(12);
+  load_timing.send_start = now + base::Days(9);
+  load_timing.send_end = now + base::Days(10);
+  load_timing.receive_headers_start = now + base::Days(11);
+  load_timing.receive_headers_end = now + base::Days(12);
   return load_timing;
 }
 
@@ -1107,21 +1083,21 @@ LoadTimingInfo NormalLoadTimingInfoReused(base::TimeTicks now,
   load_timing.socket_reused = true;
 
   if (used_proxy) {
-    load_timing.proxy_resolve_start = now + base::TimeDelta::FromDays(1);
-    load_timing.proxy_resolve_end = now + base::TimeDelta::FromDays(2);
+    load_timing.proxy_resolve_start = now + base::Days(1);
+    load_timing.proxy_resolve_end = now + base::Days(2);
   }
 
-  load_timing.send_start = now + base::TimeDelta::FromDays(9);
-  load_timing.send_end = now + base::TimeDelta::FromDays(10);
-  load_timing.receive_headers_start = now + base::TimeDelta::FromDays(11);
-  load_timing.receive_headers_end = now + base::TimeDelta::FromDays(12);
+  load_timing.send_start = now + base::Days(9);
+  load_timing.send_end = now + base::Days(10);
+  load_timing.receive_headers_start = now + base::Days(11);
+  load_timing.receive_headers_end = now + base::Days(12);
   return load_timing;
 }
 
 LoadTimingInfo RunURLRequestInterceptorLoadTimingTest(
     const LoadTimingInfo& job_load_timing,
     const URLRequestContext& context,
-    MockURLRequestInterceptor* interceptor) {
+    URLRequestInterceptorWithLoadTimingInfo* interceptor) {
   interceptor->set_main_request_load_timing_info(job_load_timing);
   TestDelegate d;
   std::unique_ptr<URLRequest> req(
@@ -1149,14 +1125,13 @@ LoadTimingInfo RunURLRequestInterceptorLoadTimingTest(
 }
 
 // Basic test that the intercept + load timing tests work.
-TEST_F(URLRequestInterceptorTest, InterceptLoadTiming) {
+TEST_F(URLRequestLoadTimingTest, InterceptLoadTiming) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_DNS_TIMES, false);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Nothing should have been changed by the URLRequest.
   EXPECT_EQ(job_load_timing.proxy_resolve_start,
@@ -1181,14 +1156,13 @@ TEST_F(URLRequestInterceptorTest, InterceptLoadTiming) {
 }
 
 // Another basic test, with proxy and SSL times, but no DNS times.
-TEST_F(URLRequestInterceptorTest, InterceptLoadTimingProxy) {
+TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingProxy) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_SSL_TIMES, true);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Nothing should have been changed by the URLRequest.
   EXPECT_EQ(job_load_timing.proxy_resolve_start,
@@ -1219,22 +1193,19 @@ TEST_F(URLRequestInterceptorTest, InterceptLoadTimingProxy) {
 // reused in this test (May be a preconnect).
 //
 // To mix things up from the test above, assumes DNS times but no SSL times.
-TEST_F(URLRequestInterceptorTest, InterceptLoadTimingEarlyProxyResolution) {
+TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyProxyResolution) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_DNS_TIMES, true);
-  job_load_timing.proxy_resolve_start = now - base::TimeDelta::FromDays(6);
-  job_load_timing.proxy_resolve_end = now - base::TimeDelta::FromDays(5);
-  job_load_timing.connect_timing.dns_start = now - base::TimeDelta::FromDays(4);
-  job_load_timing.connect_timing.dns_end = now - base::TimeDelta::FromDays(3);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(2);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(1);
+  job_load_timing.proxy_resolve_start = now - base::Days(6);
+  job_load_timing.proxy_resolve_end = now - base::Days(5);
+  job_load_timing.connect_timing.dns_start = now - base::Days(4);
+  job_load_timing.connect_timing.dns_end = now - base::Days(3);
+  job_load_timing.connect_timing.connect_start = now - base::Days(2);
+  job_load_timing.connect_timing.connect_end = now - base::Days(1);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Proxy times, connect times, and DNS times should all be replaced with
   // request_start.
@@ -1257,16 +1228,15 @@ TEST_F(URLRequestInterceptorTest, InterceptLoadTimingEarlyProxyResolution) {
 }
 
 // Same as above, but in the reused case.
-TEST_F(URLRequestInterceptorTest,
+TEST_F(URLRequestLoadTimingTest,
        InterceptLoadTimingEarlyProxyResolutionReused) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing = NormalLoadTimingInfoReused(now, true);
-  job_load_timing.proxy_resolve_start = now - base::TimeDelta::FromDays(4);
-  job_load_timing.proxy_resolve_end = now - base::TimeDelta::FromDays(3);
+  job_load_timing.proxy_resolve_start = now - base::Days(4);
+  job_load_timing.proxy_resolve_end = now - base::Days(3);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Proxy times and connect times should all be replaced with request_start.
   EXPECT_EQ(load_timing_result.request_start,
@@ -1283,20 +1253,17 @@ TEST_F(URLRequestInterceptorTest,
 // not considered reused in this test (May be a preconnect).
 //
 // To mix things up, the request has SSL times, but no DNS times.
-TEST_F(URLRequestInterceptorTest, InterceptLoadTimingEarlyConnect) {
+TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyConnect) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_SSL_TIMES, false);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(1);
-  job_load_timing.connect_timing.ssl_start = now - base::TimeDelta::FromDays(2);
-  job_load_timing.connect_timing.ssl_end = now - base::TimeDelta::FromDays(3);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(4);
+  job_load_timing.connect_timing.connect_start = now - base::Days(1);
+  job_load_timing.connect_timing.ssl_start = now - base::Days(2);
+  job_load_timing.connect_timing.ssl_end = now - base::Days(3);
+  job_load_timing.connect_timing.connect_end = now - base::Days(4);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Connect times, and SSL times should be replaced with request_start.
   EXPECT_EQ(load_timing_result.request_start,
@@ -1318,18 +1285,15 @@ TEST_F(URLRequestInterceptorTest, InterceptLoadTimingEarlyConnect) {
 // test (May be a preconnect).
 //
 // In this test, there are no SSL or DNS times.
-TEST_F(URLRequestInterceptorTest, InterceptLoadTimingEarlyConnectWithProxy) {
+TEST_F(URLRequestLoadTimingTest, InterceptLoadTimingEarlyConnectWithProxy) {
   base::TimeTicks now = base::TimeTicks::Now();
   LoadTimingInfo job_load_timing =
       NormalLoadTimingInfo(now, CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY, true);
-  job_load_timing.connect_timing.connect_start =
-      now - base::TimeDelta::FromDays(1);
-  job_load_timing.connect_timing.connect_end =
-      now - base::TimeDelta::FromDays(2);
+  job_load_timing.connect_timing.connect_start = now - base::Days(1);
+  job_load_timing.connect_timing.connect_end = now - base::Days(2);
 
-  LoadTimingInfo load_timing_result =
-      RunURLRequestInterceptorLoadTimingTest(
-          job_load_timing, default_context(), interceptor());
+  LoadTimingInfo load_timing_result = RunURLRequestInterceptorLoadTimingTest(
+      job_load_timing, default_context(), interceptor());
 
   // Connect times should be replaced with proxy_resolve_end.
   EXPECT_EQ(load_timing_result.proxy_resolve_end,
@@ -1363,7 +1327,7 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
 
   // Check we see a failed request.
   // The proxy server should be set before failure.
-  EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
             req->proxy_server());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED, d.request_status());
   EXPECT_THAT(req->response_info().resolve_error_info.error,
@@ -1375,8 +1339,248 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
   EXPECT_EQ(1, network_delegate.completed_requests());
 }
 
+// Test that when host resolution fails with `ERR_DNS_NAME_HTTPS_ONLY` for
+// "http://" requests, scheme is upgraded to "https://".
+TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpScheme);
+  const GURL http_url = https_url.ReplaceComponents(replacements);
+
+  // Return `ERR_DNS_NAME_HTTPS_ONLY` for "http://" requests and an address for
+  // "https://" requests. This simulates the HostResolver behavior for a domain
+  // with an HTTPS DNS record.
+  MockHostResolver host_resolver;
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  // Note that there is no http server running, so the request should fail or
+  // hang if its scheme is not upgraded to https.
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has been upgraded to https.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpsScheme));
+}
+
+// Test that DNS-based scheme upgrade supports deferred redirect.
+TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgradeDeferred) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpScheme);
+  const GURL http_url = https_url.ReplaceComponents(replacements);
+
+  // Return `ERR_DNS_NAME_HTTPS_ONLY` for "http://" requests and an address for
+  // "https://" requests. This simulates the HostResolver behavior for a domain
+  // with an HTTPS DNS record.
+  MockHostResolver host_resolver;
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  // Note that there is no http server running, so the request should fail or
+  // hang if its scheme is not upgraded to https.
+  req->Start();
+  d.RunUntilRedirect();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
+  d.RunUntilComplete();
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has been upgraded to https.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpsScheme));
+}
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+// Test that requests with "ws" scheme are upgraded to "wss" when DNS
+// indicates that the name is HTTPS-only.
+TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWsScheme);
+  const GURL ws_url = https_url.ReplaceComponents(replacements);
+
+  MockHostResolver host_resolver;
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  unencrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  encrypted_resolve_key.hostname_pattern = kHost;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key),
+                                 https_server.GetIPLiteralString());
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      ws_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*is_for_websockets=*/true));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  HttpRequestHeaders headers = WebSocketCommonTestHeaders();
+  req->SetExtraRequestHeaders(headers);
+
+  auto websocket_stream_create_helper =
+      std::make_unique<TestWebSocketHandshakeStreamCreateHelper>();
+  req->SetUserData(kWebSocketHandshakeUserDataKey,
+                   std::move(websocket_stream_create_helper));
+
+  // Note that there is no ws server running, so the request should fail or hang
+  // if its scheme is not upgraded to wss.
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  // Expect failure because test server is not set up to provide websocket
+  // responses.
+  EXPECT_EQ(network_delegate.error_count(), 1);
+  EXPECT_EQ(network_delegate.last_error(), ERR_INVALID_RESPONSE);
+
+  // Observe that the scheme has been upgraded to wss.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kWssScheme));
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
+TEST_F(URLRequestTest, DnsHttpsRecordAbsentNoSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer http_server(EmbeddedTestServer::TYPE_HTTP);
+  RegisterDefaultHandlers(&http_server);
+  ASSERT_TRUE(http_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL http_url = http_server.GetURL(kHost, "/defaultresponse");
+
+  MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule(kHost, http_server.GetIPLiteralString());
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 0);
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has not been upgraded.
+  EXPECT_EQ(http_url, req->url());
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpScheme));
+}
+
 TEST_F(URLRequestTest, SkipSecureDnsDisabledByDefault) {
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("example.com", "127.0.0.1");
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -1390,11 +1594,12 @@ TEST_F(URLRequestTest, SkipSecureDnsDisabledByDefault) {
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_FALSE(host_resolver.last_secure_dns_mode_override().has_value());
+  EXPECT_EQ(SecureDnsPolicy::kAllow, host_resolver.last_secure_dns_policy());
 }
 
 TEST_F(URLRequestTest, SkipSecureDnsEnabled) {
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("example.com", "127.0.0.1");
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -1405,12 +1610,11 @@ TEST_F(URLRequestTest, SkipSecureDnsEnabled) {
   std::unique_ptr<URLRequest> req(
       context.CreateRequest(GURL("http://example.com"), DEFAULT_PRIORITY, &d,
                             TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->SetDisableSecureDns(true);
+  req->SetSecureDnsPolicy(SecureDnsPolicy::kDisable);
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
-            host_resolver.last_secure_dns_mode_override().value());
+  EXPECT_EQ(SecureDnsPolicy::kDisable, host_resolver.last_secure_dns_policy());
 }
 
 // Make sure that NetworkDelegate::NotifyCompleted is called if
@@ -1460,9 +1664,10 @@ TEST_F(URLRequestTest, SetJobPriorityBeforeJobStart) {
   EXPECT_EQ(DEFAULT_PRIORITY, req->priority());
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
   EXPECT_EQ(DEFAULT_PRIORITY, job_priority);
 
   req->SetPriority(LOW);
@@ -1480,9 +1685,10 @@ TEST_F(URLRequestTest, SetJobPriority) {
       TRAFFIC_ANNOTATION_FOR_TESTS));
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->SetPriority(LOW);
   req->Start();
@@ -1503,9 +1709,10 @@ TEST_F(URLRequestTest, PriorityIgnoreLimits) {
   EXPECT_EQ(MAXIMUM_PRIORITY, req->priority());
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->SetLoadFlags(LOAD_IGNORE_LIMITS);
   EXPECT_EQ(MAXIMUM_PRIORITY, req->priority());
@@ -1516,6 +1723,98 @@ TEST_F(URLRequestTest, PriorityIgnoreLimits) {
   req->Start();
   EXPECT_EQ(MAXIMUM_PRIORITY, req->priority());
   EXPECT_EQ(MAXIMUM_PRIORITY, job_priority);
+}
+
+// This test verifies that URLRequest::Delegate's OnConnected() callback is
+// never called if the request fails before connecting to a remote endpoint.
+TEST_F(URLRequestTest, NotifyDelegateConnectedSkippedOnEarlyFailure) {
+  TestDelegate delegate;
+
+  // The request will never connect to anything because the URL is invalid.
+  auto request =
+      default_context().CreateRequest(GURL("invalid url"), DEFAULT_PRIORITY,
+                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.transports(), IsEmpty());
+}
+
+// This test verifies that URLRequest::Delegate's OnConnected() callback
+// is called once for simple redirect-less requests.
+TEST_F(URLRequestTest, NotifyDelegateConnectedOnce) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestDelegate delegate;
+
+  auto request = default_context().CreateRequest(test_server.GetURL("/echo"),
+                                                 DEFAULT_PRIORITY, &delegate,
+                                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  TransportInfo expected_transport;
+  expected_transport.endpoint =
+      IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
+}
+
+// This test verifies that URLRequest::Delegate's OnConnected() callback is
+// called after each redirect.
+TEST_F(URLRequestTest, NotifyDelegateConnectedOnEachRedirect) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestDelegate delegate;
+
+  // Fetch a page that redirects us once.
+  GURL url = test_server.GetURL("/server-redirect?" +
+                                test_server.GetURL("/echo").spec());
+  auto request = default_context().CreateRequest(
+      url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  delegate.RunUntilRedirect();
+
+  TransportInfo expected_transport;
+  expected_transport.endpoint =
+      IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
+
+  request->FollowDeferredRedirect(/*removed_headers=*/{},
+                                  /*modified_headers=*/{});
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.transports(),
+              ElementsAre(expected_transport, expected_transport));
+}
+
+// This test verifies that when the URLRequest Delegate returns an error from
+// OnBeforeSendHeaders(), the entire request fails with that error.
+TEST_F(URLRequestTest, NotifyDelegateConnectedReturnError) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestDelegate delegate;
+  delegate.set_on_connected_result(ERR_NOT_IMPLEMENTED);
+
+  auto request = default_context().CreateRequest(test_server.GetURL("/echo"),
+                                                 DEFAULT_PRIORITY, &delegate,
+                                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  delegate.RunUntilComplete();
+
+  TransportInfo expected_transport;
+  expected_transport.endpoint =
+      IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
+
+  EXPECT_TRUE(delegate.request_failed());
+  EXPECT_THAT(delegate.request_status(), IsError(ERR_NOT_IMPLEMENTED));
 }
 
 TEST_F(URLRequestTest, DelayedCookieCallback) {
@@ -1536,7 +1835,7 @@ TEST_F(URLRequestTest, DelayedCookieCallback) {
         &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(1, network_delegate.set_cookie_count());
   }
@@ -1552,91 +1851,12 @@ TEST_F(URLRequestTest, DelayedCookieCallback) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1")
-                != std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1") !=
+                std::string::npos);
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
-
-class FilteringTestNetworkDelegate : public TestNetworkDelegate {
- public:
-  FilteringTestNetworkDelegate()
-      : set_cookie_called_count_(0),
-        blocked_set_cookie_count_(0),
-        block_get_cookies_(false),
-        get_cookie_called_count_(0),
-        blocked_get_cookie_count_(0) {}
-  ~FilteringTestNetworkDelegate() override = default;
-
-  bool OnCanSetCookie(const URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      bool allowed_from_caller) override {
-    // Filter out cookies with the same name as |cookie_name_filter_| and
-    // combine with |allowed_from_caller|.
-    bool allowed =
-        allowed_from_caller && !(cookie.Name() == cookie_name_filter_);
-
-    ++set_cookie_called_count_;
-
-    if (!allowed)
-      ++blocked_set_cookie_count_;
-
-    return TestNetworkDelegate::OnCanSetCookie(request, cookie, options,
-                                               allowed);
-  }
-
-  void SetCookieFilter(std::string filter) {
-    cookie_name_filter_ = std::move(filter);
-  }
-
-  int set_cookie_called_count() { return set_cookie_called_count_; }
-
-  int blocked_set_cookie_count() { return blocked_set_cookie_count_; }
-
-  void ResetSetCookieCalledCount() { set_cookie_called_count_ = 0; }
-
-  void ResetBlockedSetCookieCount() { blocked_set_cookie_count_ = 0; }
-
-  bool OnCanGetCookies(const URLRequest& request,
-                       const net::CookieList& cookie_list,
-                       bool allowed_from_caller) override {
-    // Filter out cookies if |block_get_cookies_| is set and
-    // combine with |allowed_from_caller|.
-    bool allowed = allowed_from_caller && !block_get_cookies_;
-
-    ++get_cookie_called_count_;
-
-    if (!allowed)
-      ++blocked_get_cookie_count_;
-
-    return TestNetworkDelegate::OnCanGetCookies(request, cookie_list, allowed);
-  }
-
-  void set_block_get_cookies() { block_get_cookies_ = true; }
-
-  void unset_block_get_cookies() { block_get_cookies_ = false; }
-
-  int get_cookie_called_count() const { return get_cookie_called_count_; }
-
-  int blocked_get_cookie_count() const { return blocked_get_cookie_count_; }
-
-  void ResetGetCookieCalledCount() { get_cookie_called_count_ = 0; }
-
-  void ResetBlockedGetCookieCount() { blocked_get_cookie_count_ = 0; }
-
- private:
-  std::string cookie_name_filter_;
-  int set_cookie_called_count_;
-  int blocked_set_cookie_count_;
-
-  bool block_get_cookies_;
-  int get_cookie_called_count_;
-  int blocked_get_cookie_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteringTestNetworkDelegate);
-};
 
 TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
   HttpTestServer test_server;
@@ -1666,16 +1886,18 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
   replace_scheme.SetSchemeStr("https");
   GURL url = test_server.base_url().ReplaceComponents(replace_scheme);
 
-  auto cookie1 = CanonicalCookie::Create(url, "AlreadySetCookie=1;Secure",
-                                         base::Time::Now(),
-                                         base::nullopt /* server_time */);
-  delayed_cm->SetCanonicalCookieAsync(std::move(cookie1), url.scheme(),
+  auto cookie1 = CanonicalCookie::Create(
+      url, "AlreadySetCookie=1;Secure", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  delayed_cm->SetCanonicalCookieAsync(std::move(cookie1), url,
                                       net::CookieOptions::MakeAllInclusive(),
                                       CookieStore::SetCookiesCallback());
-  auto cookie2 = CanonicalCookie::Create(url, "AlreadySetCookie=1;Secure",
-                                         base::Time::Now(),
-                                         base::nullopt /* server_time */);
-  cm->SetCanonicalCookieAsync(std::move(cookie2), url.scheme(),
+  auto cookie2 = CanonicalCookie::Create(
+      url, "AlreadySetCookie=1;Secure", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  cm->SetCanonicalCookieAsync(std::move(cookie2), url,
                               net::CookieOptions::MakeAllInclusive(),
                               CookieStore::SetCookiesCallback());
 
@@ -1760,7 +1982,7 @@ TEST_F(URLRequestTest, DoNotSendCookies) {
         &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -1775,13 +1997,13 @@ TEST_F(URLRequestTest, DoNotSendCookies) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1")
-                != std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1") !=
+                std::string::npos);
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that the cookie isn't sent when LOAD_DO_NOT_SEND_COOKIES is set.
+  // Verify that the cookie isn't sent when credentials are not allowed.
   {
     TestNetworkDelegate network_delegate;
     default_context().set_network_delegate(&network_delegate);
@@ -1789,15 +2011,16 @@ TEST_F(URLRequestTest, DoNotSendCookies) {
     std::unique_ptr<URLRequest> req(default_context().CreateFirstPartyRequest(
         test_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->SetLoadFlags(LOAD_DO_NOT_SEND_COOKIES);
+    req->set_allow_credentials(false);
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1")
-                == std::string::npos);
+    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1") ==
+                std::string::npos);
 
-    // LOAD_DO_NOT_SEND_COOKIES does not trigger OnGetCookies.
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    // When credentials are blocked, OnAnnotateAndMoveUserBlockedCookies() is
+    // not invoked.
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
@@ -1817,7 +2040,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(1, network_delegate.set_cookie_count());
   }
@@ -1836,7 +2059,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies) {
     d.RunUntilComplete();
 
     // LOAD_DO_NOT_SAVE_COOKIES does not trigger OnSetCookie.
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(0, network_delegate.set_cookie_count());
   }
@@ -1852,12 +2075,12 @@ TEST_F(URLRequestTest, DoNotSaveCookies) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1")
-                == std::string::npos);
-    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2")
-                != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1") ==
+                std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2") !=
+                std::string::npos);
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(0, network_delegate.set_cookie_count());
   }
@@ -1878,7 +2101,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -1893,12 +2116,12 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1")
-                != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1") !=
+                std::string::npos);
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     for (const auto& entry : entries) {
       EXPECT_NE(entry.type,
                 NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -1917,12 +2140,12 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1")
-                == std::string::npos);
+    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1") ==
+                std::string::npos);
 
-    EXPECT_EQ(1, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(1, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     ExpectLogContainsSomewhereAfter(
         entries, 0, NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE,
         NetLogEventPhase::NONE);
@@ -1935,7 +2158,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 #else
 #define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
 #endif
-TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
+TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -1950,9 +2173,9 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     for (const auto& entry : entries) {
       EXPECT_NE(entry.type,
                 NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -1972,9 +2195,9 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
 
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(2, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     ExpectLogContainsSomewhereAfter(
         entries, 0, NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE,
         NetLogEventPhase::NONE);
@@ -1991,12 +2214,12 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1")
-                == std::string::npos);
-    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2")
-                != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1") ==
+                std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2") !=
+                std::string::npos);
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
@@ -2016,7 +2239,7 @@ TEST_F(URLRequestTest, DoNotSaveEmptyCookies) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(0, network_delegate.set_cookie_count());
   }
@@ -2037,7 +2260,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2052,10 +2275,10 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1")
-                != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotSend=1") !=
+                std::string::npos);
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2071,10 +2294,10 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1")
-                == std::string::npos);
+    EXPECT_TRUE(d.data_received().find("Cookie: CookieToNotSend=1") ==
+                std::string::npos);
 
-    EXPECT_EQ(1, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(1, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
@@ -2094,7 +2317,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2111,7 +2334,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
 
     d.RunUntilComplete();
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(2, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2126,17 +2349,36 @@ TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1")
-                == std::string::npos);
-    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2")
-                != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotSave=1") ==
+                std::string::npos);
+    EXPECT_TRUE(d.data_received().find("CookieToNotUpdate=2") !=
+                std::string::npos);
 
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
 
-TEST_F(URLRequestTest, SameSiteCookies) {
+// Tests for SameSite cookies. The test param indicates whether the same-site
+// calculation considers redirect chains.
+class URLRequestSameSiteCookiesTest
+    : public URLRequestTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  URLRequestSameSiteCookiesTest() {
+    if (DoesCookieSameSiteConsiderRedirectChain()) {
+      feature_list_.InitAndEnableFeature(
+          features::kCookieSameSiteConsidersRedirectChain);
+    }
+  }
+
+  bool DoesCookieSameSiteConsiderRedirectChain() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2146,6 +2388,15 @@ TEST_F(URLRequestTest, SameSiteCookies) {
   const std::string kHost = "example.test";
   const std::string kSubHost = "subdomain.example.test";
   const std::string kCrossHost = "cross-origin.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(test_server.GetURL(kHost, "/"));
+  const url::Origin kSubOrigin =
+      url::Origin::Create(test_server.GetURL(kSubHost, "/"));
+  const url::Origin kCrossOrigin =
+      url::Origin::Create(test_server.GetURL(kCrossHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+  const SiteForCookies kCrossSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossOrigin);
 
   // Set up two 'SameSite' cookies on 'example.test'
   {
@@ -2155,32 +2406,37 @@ TEST_F(URLRequestTest, SameSiteCookies) {
                            "/set-cookie?StrictSameSiteCookie=1;SameSite=Strict&"
                            "LaxSameSiteCookie=1;SameSite=Lax"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(url::Origin::Create(test_server.GetURL(kHost, "/")));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
     EXPECT_EQ(2, network_delegate.set_cookie_count());
   }
 
-  // Verify that both cookies are sent for same-site requests.
-  {
+  // Verify that both cookies are sent for same-site requests, whether they are
+  // subresource requests, subframe navigations, or main frame navigations.
+  for (IsolationInfo::RequestType request_type :
+       {IsolationInfo::RequestType::kMainFrame,
+        IsolationInfo::RequestType::kSubFrame,
+        IsolationInfo::RequestType::kOther}) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(url::Origin::Create(test_server.GetURL(kHost, "/")));
+    req->set_isolation_info(IsolationInfo::Create(request_type, kOrigin,
+                                                  kOrigin, kSiteForCookies,
+                                                  {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_NE(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2191,15 +2447,14 @@ TEST_F(URLRequestTest, SameSiteCookies) {
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
+    req->set_site_for_cookies(kSiteForCookies);
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_NE(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2211,14 +2466,14 @@ TEST_F(URLRequestTest, SameSiteCookies) {
         TRAFFIC_ANNOTATION_FOR_TESTS));
     req->set_site_for_cookies(
         SiteForCookies::FromUrl(test_server.GetURL(kSubHost, "/")));
-    req->set_initiator(url::Origin::Create(test_server.GetURL(kSubHost, "/")));
+    req->set_initiator(kSubOrigin);
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_NE(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2228,31 +2483,30 @@ TEST_F(URLRequestTest, SameSiteCookies) {
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kCrossHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_site_for_cookies(kCrossSiteForCookies);
+    req->set_initiator(kCrossOrigin);
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
   // Verify that the lax cookie is sent for cross-site initiators when the
-  // method is "safe".
+  // method is "safe" and the request is a main frame navigation.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
     req->set_method("GET");
     req->Start();
     d.RunUntilComplete();
@@ -2260,21 +2514,48 @@ TEST_F(URLRequestTest, SameSiteCookies) {
     EXPECT_EQ(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that neither cookie is sent for cross-site initiators when the
-  // method is unsafe (e.g. POST).
+  // Verify that the lax cookie is sent for cross-site initiators when the
+  // method is "safe" and the request is being forced to be considered as a
+  // main frame navigation.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
+    req->set_method("GET");
+    req->set_force_main_frame_for_same_site_cookies(true);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
+  }
+
+  // Verify that neither cookie is sent for cross-site initiators when the
+  // method is unsafe (e.g. POST), even if the request is a main frame
+  // navigation.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
     req->set_method("POST");
     req->Start();
     d.RunUntilComplete();
@@ -2282,12 +2563,335 @@ TEST_F(URLRequestTest, SameSiteCookies) {
     EXPECT_EQ(std::string::npos,
               d.data_received().find("StrictSameSiteCookie=1"));
     EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
+  }
+
+  // Verify that neither cookie is sent for cross-site initiators when the
+  // method is safe and the site-for-cookies is same-site, but the request is
+  // not a main frame navigation.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kSubFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
+    req->set_method("GET");
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
+
+    // Check that the appropriate cookie inclusion status is set.
+    ASSERT_EQ(2u, req->maybe_sent_cookies().size());
+    CookieInclusionStatus expected_strict_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT},
+            {} /* warning_reasons */);
+    CookieInclusionStatus expected_lax_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
+            {} /* warning_reasons */);
+    EXPECT_EQ(expected_strict_status,
+              req->maybe_sent_cookies()[0].access_result.status);
+    EXPECT_EQ(expected_lax_status,
+              req->maybe_sent_cookies()[1].access_result.status);
   }
 }
 
-TEST_F(URLRequestTest, SettingSameSiteCookies) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
+  EmbeddedTestServer http_server;
+  RegisterDefaultHandlers(&http_server);
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(http_server.Start());
+  ASSERT_TRUE(https_server.Start());
+
+  TestNetworkDelegate network_delegate;
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.Init();
+
+  const std::string kHost = "foo.a.test";
+  const std::string kSameSiteHost = "bar.a.test";
+  const std::string kCrossSiteHost = "b.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(https_server.GetURL(kHost, "/"));
+  const url::Origin kHttpOrigin =
+      url::Origin::Create(http_server.GetURL(kHost, "/"));
+  const url::Origin kSameSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kSameSiteHost, "/"));
+  const url::Origin kCrossSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kCrossSiteHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+  const SiteForCookies kHttpSiteForCookies =
+      SiteForCookies::FromOrigin(kHttpOrigin);
+  const SiteForCookies kCrossSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossSiteOrigin);
+
+  // Set up two 'SameSite' cookies on foo.a.test
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+        https_server.GetURL(
+            kHost,
+            "/set-cookie?StrictSameSiteCookie=1;SameSite=Strict&"
+            "LaxSameSiteCookie=1;SameSite=Lax"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+    ASSERT_EQ(2u, GetAllCookies(&context).size());
+  }
+
+  // Verify that both cookies are sent for same-site, unredirected requests.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(1u, req->url_chain().size());
+    EXPECT_NE(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+
+  // Verify that both cookies are sent for a same-origin redirected top level
+  // navigation.
+  {
+    TestDelegate d;
+    GURL url = https_server.GetURL(
+        kHost, "/server-redirect?" +
+                   https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_NE(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+
+  // Verify that both cookies are sent for a same-site redirected top level
+  // navigation.
+  {
+    TestDelegate d;
+    GURL url = https_server.GetURL(
+        kSameSiteHost,
+        "/server-redirect?" +
+            https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kSameSiteOrigin,
+        kSameSiteOrigin, kSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_NE(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+
+  // If redirect chains are considered:
+  // Verify that the Strict cookie may or may not be sent for a cross-scheme
+  // (same-registrable-domain) redirected top level navigation, depending on the
+  // status of Schemeful Same-Site. The Lax cookie is sent regardless, because
+  // this is a top-level navigation.
+  //
+  // If redirect chains are not considered:
+  // Verify that both cookies are sent, because this is a top-level navigation.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL url = http_server.GetURL(
+        kHost, "/server-redirect?" +
+                   https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kHttpOrigin, kHttpOrigin,
+        kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_NE(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL url = http_server.GetURL(
+        kHost, "/server-redirect?" +
+                   https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kHttpOrigin, kHttpOrigin,
+        kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+
+  // Verify that (depending on whether redirect chains are considered), the
+  // Strict cookie is (not) sent for a cross-site redirected top level
+  // navigation...
+  {
+    TestDelegate d;
+    GURL url = https_server.GetURL(
+        kCrossSiteHost,
+        "/server-redirect?" +
+            https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kCrossSiteOrigin,
+        kCrossSiteOrigin, kCrossSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kCrossSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+  // ... even if the initial URL is same-site.
+  {
+    TestDelegate d;
+    GURL middle_url = https_server.GetURL(
+        kCrossSiteHost,
+        "/server-redirect?" +
+            https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    GURL url =
+        https_server.GetURL(kHost, "/server-redirect?" + middle_url.spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(3u, req->url_chain().size());
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+
+  // Verify that (depending on whether redirect chains are considered), neither
+  // (or both) SameSite cookie is sent for a cross-site redirected subresource
+  // request...
+  {
+    TestDelegate d;
+    GURL url = https_server.GetURL(
+        kCrossSiteHost,
+        "/server-redirect?" +
+            https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("LaxSameSiteCookie=1"));
+  }
+  // ... even if the initial URL is same-site.
+  {
+    TestDelegate d;
+    GURL middle_url = https_server.GetURL(
+        kCrossSiteHost,
+        "/server-redirect?" +
+            https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    GURL url =
+        https_server.GetURL(kHost, "/server-redirect?" + middle_url.spec());
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(3u, req->url_chain().size());
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_EQ(
+        DoesCookieSameSiteConsiderRedirectChain(),
+        std::string::npos == d.data_received().find("LaxSameSiteCookie=1"));
+  }
+}
+
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2297,6 +2901,15 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
   const std::string kHost = "example.test";
   const std::string kSubHost = "subdomain.example.test";
   const std::string kCrossHost = "cross-origin.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(test_server.GetURL(kHost, "/"));
+  const url::Origin kSubOrigin =
+      url::Origin::Create(test_server.GetURL(kSubHost, "/"));
+  const url::Origin kCrossOrigin =
+      url::Origin::Create(test_server.GetURL(kCrossHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+  const SiteForCookies kCrossSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossOrigin);
 
   int expected_cookies = 0;
 
@@ -2307,9 +2920,8 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
                            "/set-cookie?Strict1=1;SameSite=Strict&"
                            "Lax1=1;SameSite=Lax"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(url::Origin::Create(test_server.GetURL(kHost, "/")));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
 
     // 'SameSite' cookies are settable from strict same-site contexts
     // (same-origin site_for_cookies, same-origin initiator), so this request
@@ -2330,14 +2942,15 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
                            "/set-cookie?Strict2=1;SameSite=Strict&"
                            "Lax2=1;SameSite=Lax"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
 
     // 'SameSite' cookies are settable from lax same-site contexts (same-origin
-    // site_for_cookies, cross-site initiator), so this request should result in
-    // two cookies being set.
+    // site_for_cookies, cross-site initiator, main frame navigation), so this
+    // request should result in two cookies being set.
     expected_cookies += 2;
 
     req->Start();
@@ -2354,14 +2967,16 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
                            "/set-cookie?Strict3=1;SameSite=Strict&"
                            "Lax3=1;SameSite=Lax"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kSubOrigin, kSubOrigin,
+        kSiteForCookies, {} /* party_context */));
     req->set_site_for_cookies(
         SiteForCookies::FromUrl(test_server.GetURL(kSubHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_initiator(kCrossOrigin);
 
     // 'SameSite' cookies are settable from lax same-site contexts (same-site
-    // site_for_cookies, cross-site initiator), so this request should result in
-    // two cookies being set.
+    // site_for_cookies, cross-site initiator, main frame navigation), so this
+    // request should result in two cookies being set.
     expected_cookies += 2;
 
     req->Start();
@@ -2393,6 +3008,7 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
     EXPECT_EQ(expected_cookies, network_delegate.set_cookie_count());
   }
 
+  int expected_network_delegate_set_cookie_count;
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
@@ -2400,40 +3016,87 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
                            "/set-cookie?Strict5=1;SameSite=Strict&"
                            "Lax5=1;SameSite=Lax"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_site_for_cookies(
-        SiteForCookies::FromUrl(test_server.GetURL(kCrossHost, "/")));
-    req->set_initiator(
-        url::Origin::Create(test_server.GetURL(kCrossHost, "/")));
+    req->set_site_for_cookies(kCrossSiteForCookies);
+    req->set_initiator(kCrossOrigin);
 
     // 'SameSite' cookies are not settable from cross-site contexts, so this
     // should not result in any new cookies being set.
     expected_cookies += 0;
+    // This counts the number of successful calls to CanSetCookie() when
+    // attempting to set a cookie. The two cookies above were created and
+    // attempted to be set, and were not rejected by the NetworkDelegate, so the
+    // count here is 2 more than the number of cookies actually set.
+    expected_network_delegate_set_cookie_count = expected_cookies + 2;
 
     req->Start();
     d.RunUntilComplete();
     // This counts the number of cookies actually set.
     EXPECT_EQ(expected_cookies,
               static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_network_delegate_set_cookie_count,
+              network_delegate.set_cookie_count());
+  }
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        test_server.GetURL(kHost,
+                           "/set-cookie?Strict6=1;SameSite=Strict&"
+                           "Lax6=1;SameSite=Lax"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kSubFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
+
+    // Same-site site-for-cookies, cross-site initiator, non main frame
+    // navigation -> context is considered cross-site so no SameSite cookies are
+    // set.
+    expected_cookies += 0;
     // This counts the number of successful calls to CanSetCookie() when
     // attempting to set a cookie. The two cookies above were created and
     // attempted to be set, and were not rejected by the NetworkDelegate, so the
     // count here is 2 more than the number of cookies actually set.
-    EXPECT_EQ(expected_cookies + 2, network_delegate.set_cookie_count());
+    expected_network_delegate_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_network_delegate_set_cookie_count,
+              network_delegate.set_cookie_count());
+
+    // Check that the appropriate cookie inclusion status is set.
+    ASSERT_EQ(2u, req->maybe_stored_cookies().size());
+    CookieInclusionStatus expected_strict_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT},
+            {} /* warning_reasons */);
+    CookieInclusionStatus expected_lax_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
+            {} /* warning_reasons */);
+    EXPECT_EQ(expected_strict_status,
+              req->maybe_stored_cookies()[0].access_result.status);
+    EXPECT_EQ(expected_lax_status,
+              req->maybe_stored_cookies()[1].access_result.status);
   }
 }
 
 // Tests special chrome:// scheme that is supposed to always attach SameSite
 // cookies if the requested site is secure.
-TEST_F(URLRequestTest, SameSiteCookiesSpecialScheme) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesSpecialScheme) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SchemeType::SCHEME_WITH_HOST);
 
   EmbeddedTestServer https_test_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.AddDefaultHandlers(base::FilePath());
+  RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(https_test_server.Start());
   EmbeddedTestServer http_test_server(EmbeddedTestServer::TYPE_HTTP);
-  http_test_server.AddDefaultHandlers(base::FilePath());
-  // Ensure they are on different ports.
-  ASSERT_TRUE(http_test_server.Start(https_test_server.port() + 1));
+  RegisterDefaultHandlers(&http_test_server);
+  ASSERT_TRUE(http_test_server.Start());
+  ASSERT_NE(https_test_server.port(), http_test_server.port());
   // Both hostnames should be 127.0.0.1 (so that we can use the same set of
   // cookies on both, for convenience).
   ASSERT_EQ(https_test_server.host_port_pair().host(),
@@ -2513,18 +3176,299 @@ TEST_F(URLRequestTest, SameSiteCookiesSpecialScheme) {
               d.data_received().find("StrictSameSiteCookie"));
     EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie"));
   }
-
-  url::ResetForTests();
 }
+
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
+  EmbeddedTestServer http_server;
+  RegisterDefaultHandlers(&http_server);
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(http_server.Start());
+  ASSERT_TRUE(https_server.Start());
+
+  TestNetworkDelegate network_delegate;
+  default_context().set_network_delegate(&network_delegate);
+
+  const std::string kHost = "foo.a.test";
+  const std::string kSameSiteHost = "bar.a.test";
+  const std::string kCrossSiteHost = "b.test";
+  const url::Origin kOrigin =
+      url::Origin::Create(https_server.GetURL(kHost, "/"));
+  const url::Origin kHttpOrigin =
+      url::Origin::Create(http_server.GetURL(kHost, "/"));
+  const url::Origin kSameSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kSameSiteHost, "/"));
+  const url::Origin kCrossSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kCrossSiteHost, "/"));
+  const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
+  const SiteForCookies kHttpSiteForCookies =
+      SiteForCookies::FromOrigin(kHttpOrigin);
+  const SiteForCookies kCrossSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossSiteOrigin);
+
+  int expected_cookies = 0;
+  int expected_set_cookie_count = 0;
+
+  // Verify that SameSite cookies can be set for a same-origin redirected
+  // top-level navigation request.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict1=1;SameSite=Strict&Lax1=1;SameSite=Lax");
+    GURL url =
+        https_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that SameSite cookies can be set for a same-site redirected
+  // top-level navigation request.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict2=1;SameSite=Strict&Lax2=1;SameSite=Lax");
+    GURL url = https_server.GetURL(kSameSiteHost,
+                                   "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kSameSiteOrigin,
+        kSameSiteOrigin, kSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kSameSiteOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that SameSite cookies can be set for a cross-site redirected
+  // top-level navigation request.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict3=1;SameSite=Strict&Lax3=1;SameSite=Lax");
+    GURL url = https_server.GetURL(kCrossSiteHost,
+                                   "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, kCrossSiteOrigin,
+        kCrossSiteOrigin, kCrossSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kCrossSiteForCookies);
+    req->set_initiator(kCrossSiteOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that SameSite cookies can be set for a same-origin redirected
+  // subresource request.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict4=1;SameSite=Strict&Lax4=1;SameSite=Lax");
+    GURL url =
+        https_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that SameSite cookies can be set for a same-site redirected
+  // subresource request.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict5=1;SameSite=Strict&Lax5=1;SameSite=Lax");
+    GURL url = https_server.GetURL(kSameSiteHost,
+                                   "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kSameSiteOrigin, kSameSiteOrigin,
+        kSiteForCookies, {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kSameSiteOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that (depending on whether redirect chains are considered) SameSite
+  // cookies can/cannot be set for a cross-site redirected subresource request,
+  // even if the site-for-cookies and initiator are same-site, ...
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict6=1;SameSite=Strict&Lax6=1;SameSite=Lax");
+    GURL url = https_server.GetURL(kCrossSiteHost,
+                                   "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+  // ... even if the initial URL is same-site.
+  {
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict7=1;SameSite=Strict&Lax7=1;SameSite=Lax");
+    GURL middle_url = https_server.GetURL(
+        kCrossSiteHost, "/server-redirect?" + set_cookie_url.spec());
+    GURL url =
+        https_server.GetURL(kHost, "/server-redirect?" + middle_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+
+  // Verify that SameSite cookies may or may not be set for a cross-scheme
+  // (same-registrable-domain) redirected subresource request, depending on the
+  // status of Schemeful Same-Site and whether redirect chains are considered.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict8=1;SameSite=Strict&Lax8=1;SameSite=Lax");
+    GURL url =
+        http_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kHttpOrigin, kHttpOrigin,
+        kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict9=1;SameSite=Strict&Lax9=1;SameSite=Lax");
+    GURL url =
+        http_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kHttpOrigin, kHttpOrigin,
+        kHttpSiteForCookies, {} /* party_context */));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += DoesCookieSameSiteConsiderRedirectChain() ? 0 : 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         URLRequestSameSiteCookiesTest,
+                         ::testing::Bool());
 
 // Tests that __Secure- cookies can't be set on non-secure origins.
 TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
   EmbeddedTestServer http_server;
-  http_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
 
@@ -2533,38 +3477,41 @@ TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
   context.set_network_delegate(&network_delegate);
   context.Init();
 
-  // Try to set a Secure __Secure- cookie.
+  // Try to set a Secure __Secure- cookie on http://a.test (non-secure origin).
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        http_server.GetURL("/set-cookie?__Secure-nonsecure-origin=1;Secure"),
+        http_server.GetURL("a.test",
+                           "/set-cookie?__Secure-nonsecure-origin=1;Secure&"
+                           "cookienotsecure=1"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that the cookie is not set.
+  // Verify that the __Secure- cookie was not set by checking cookies for
+  // https://a.test (secure origin).
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        https_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        https_server.GetURL("a.test", "/echoheader?Cookie"), DEFAULT_PRIORITY,
+        &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("__Secure-nonsecure-origin=1"),
               std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_NE(d.data_received().find("cookienotsecure=1"), std::string::npos);
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
 
 TEST_F(URLRequestTest, SecureCookiePrefixNonsecure) {
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(https_server.Start());
 
   TestNetworkDelegate network_delegate;
@@ -2581,7 +3528,7 @@ TEST_F(URLRequestTest, SecureCookiePrefixNonsecure) {
     req->Start();
     d.RunUntilComplete();
     EXPECT_EQ(0, network_delegate.set_cookie_count());
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2595,15 +3542,14 @@ TEST_F(URLRequestTest, SecureCookiePrefixNonsecure) {
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("__Secure-foo=1"), std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
 
 TEST_F(URLRequestTest, SecureCookiePrefixSecure) {
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(https_server.Start());
 
   TestNetworkDelegate network_delegate;
@@ -2619,7 +3565,7 @@ TEST_F(URLRequestTest, SecureCookiePrefixSecure) {
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
@@ -2633,7 +3579,7 @@ TEST_F(URLRequestTest, SecureCookiePrefixSecure) {
     d.RunUntilComplete();
 
     EXPECT_NE(d.data_received().find("__Secure-bar=1"), std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
@@ -2642,11 +3588,10 @@ TEST_F(URLRequestTest, SecureCookiePrefixSecure) {
 // cookies are enabled.
 TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
   EmbeddedTestServer http_server;
-  http_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
 
@@ -2655,29 +3600,32 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
   context.set_network_delegate(&network_delegate);
   context.Init();
 
-  // Try to set a Secure cookie, with experimental features enabled.
+  // Try to set a Secure cookie and a non-Secure cookie from a nonsecure origin.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        http_server.GetURL("/set-cookie?nonsecure-origin=1;Secure"),
+        http_server.GetURL("a.test",
+                           "/set-cookie?nonsecure-origin=1;Secure&"
+                           "cookienotsecure=1"),
         DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
-  // Verify that the cookie is not set.
+  // Verify that the Secure cookie was not set.
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-        https_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        https_server.GetURL("a.test", "/echoheader?Cookie"), DEFAULT_PRIORITY,
+        &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("nonsecure-origin=1"), std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
+    EXPECT_NE(d.data_received().find("cookienotsecure=1"), std::string::npos);
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 }
@@ -2688,6 +3636,10 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
  public:
   explicit FixedDateNetworkDelegate(const std::string& fixed_date)
       : fixed_date_(fixed_date) {}
+
+  FixedDateNetworkDelegate(const FixedDateNetworkDelegate&) = delete;
+  FixedDateNetworkDelegate& operator=(const FixedDateNetworkDelegate&) = delete;
+
   ~FixedDateNetworkDelegate() override = default;
 
   // NetworkDelegate implementation
@@ -2697,12 +3649,10 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
 
  private:
   std::string fixed_date_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedDateNetworkDelegate);
 };
 
 int FixedDateNetworkDelegate::OnHeadersReceived(
@@ -2711,12 +3661,11 @@ int FixedDateNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   HttpResponseHeaders* new_response_headers =
       new HttpResponseHeaders(original_response_headers->raw_headers());
 
-  new_response_headers->RemoveHeader("Date");
-  new_response_headers->AddHeader("Date: " + fixed_date_);
+  new_response_headers->SetHeader("Date", fixed_date_);
 
   *override_response_headers = new_response_headers;
   return TestNetworkDelegate::OnHeadersReceived(
@@ -2783,7 +3732,6 @@ TEST_F(URLRequestTest, AcceptClockSkewCookieWithWrongDateTimezone) {
   }
 }
 
-
 // Check that it is impossible to change the referrer in the extra headers of
 // an URLRequest.
 TEST_F(URLRequestTest, DoNotOverrideReferrer) {
@@ -2833,15 +3781,20 @@ class URLRequestTestHTTP : public URLRequestTest {
  public:
   const url::Origin origin1_;
   const url::Origin origin2_;
-  const NetworkIsolationKey network_isolation_key1_;
-  const NetworkIsolationKey network_isolation_key2_;
+  const IsolationInfo isolation_info1_;
+  const IsolationInfo isolation_info2_;
 
   URLRequestTestHTTP()
       : origin1_(url::Origin::Create(GURL("https://foo.test/"))),
         origin2_(url::Origin::Create(GURL("https://bar.test/"))),
-        network_isolation_key1_(NetworkIsolationKey(origin1_, origin1_)),
-        network_isolation_key2_(NetworkIsolationKey(origin2_, origin2_)),
-        test_server_(base::FilePath(kTestFilePath)) {}
+        isolation_info1_(IsolationInfo::CreateForInternalRequest(origin1_)),
+        isolation_info2_(IsolationInfo::CreateForInternalRequest(origin2_)),
+        test_server_(base::FilePath(kTestFilePath)) {
+    // Needed for NetworkIsolationKey to make it down to the socket layer, for
+    // the PKP violation report test.
+    feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
+  }
 
  protected:
   // ProtocolHandler for the scheme that's unsafe to redirect to.
@@ -2849,13 +3802,18 @@ class URLRequestTestHTTP : public URLRequestTest {
       : public URLRequestJobFactory::ProtocolHandler {
    public:
     UnsafeRedirectProtocolHandler() = default;
+
+    UnsafeRedirectProtocolHandler(const UnsafeRedirectProtocolHandler&) =
+        delete;
+    UnsafeRedirectProtocolHandler& operator=(
+        const UnsafeRedirectProtocolHandler&) = delete;
+
     ~UnsafeRedirectProtocolHandler() override = default;
 
     // URLRequestJobFactory::ProtocolHandler implementation:
 
-    URLRequestJob* MaybeCreateJob(
-        URLRequest* request,
-        NetworkDelegate* network_delegate) const override {
+    std::unique_ptr<URLRequestJob> CreateJob(
+        URLRequest* request) const override {
       NOTREACHED();
       return nullptr;
     }
@@ -2863,15 +3821,12 @@ class URLRequestTestHTTP : public URLRequestTest {
     bool IsSafeRedirectTarget(const GURL& location) const override {
       return false;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UnsafeRedirectProtocolHandler);
   };
 
   // URLRequestTest interface:
   void SetUpFactory() override {
-    // Add FTP support to the default URLRequestContext.
-    job_factory_impl_->SetProtocolHandler(
+    // Add support for an unsafe scheme to the default URLRequestContext.
+    job_factory_->SetProtocolHandler(
         "unsafe", std::make_unique<UnsafeRedirectProtocolHandler>());
   }
 
@@ -2937,8 +3892,9 @@ class URLRequestTestHTTP : public URLRequestTest {
     std::unique_ptr<URLRequest> req(default_context().CreateFirstPartyRequest(
         redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->set_method(request_method);
-    req->SetExtraRequestHeaderByName(HttpRequestHeaders::kOrigin,
-                                     redirect_url.GetOrigin().spec(), false);
+    req->SetExtraRequestHeaderByName(
+        HttpRequestHeaders::kOrigin,
+        redirect_url.DeprecatedGetOriginAsURL().spec(), false);
     req->Start();
 
     d.RunUntilComplete();
@@ -2964,10 +3920,10 @@ class URLRequestTestHTTP : public URLRequestTest {
   void HTTPUploadDataOperationTest(const std::string& method) {
     const int kMsgSize = 20000;  // multiple of 10
     const int kIterations = 50;
-    char* uploadBytes = new char[kMsgSize+1];
+    char* uploadBytes = new char[kMsgSize + 1];
     char* ptr = uploadBytes;
     char marker = 'a';
-    for (int idx = 0; idx < kMsgSize/10; idx++) {
+    for (int idx = 0; idx < kMsgSize / 10; idx++) {
       memcpy(ptr, "----------", 10);
       ptr += 10;
       if (idx % 100 == 0) {
@@ -2993,8 +3949,8 @@ class URLRequestTestHTTP : public URLRequestTest {
 
       d.RunUntilComplete();
 
-      ASSERT_EQ(1, d.response_started_count()) << "request failed. Error: "
-                                               << d.request_status();
+      ASSERT_EQ(1, d.response_started_count())
+          << "request failed. Error: " << d.request_status();
 
       EXPECT_FALSE(d.received_data_before_response());
       EXPECT_EQ(uploadBytes, d.data_received());
@@ -3002,29 +3958,11 @@ class URLRequestTestHTTP : public URLRequestTest {
     delete[] uploadBytes;
   }
 
-  bool DoManyCookiesRequest(int num_cookies) {
-    TestDelegate d;
-    std::unique_ptr<URLRequest> r(default_context().CreateFirstPartyRequest(
-        test_server_.GetURL("/set-many-cookies?" +
-                            base::NumberToString(num_cookies)),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    if (d.request_status() != OK) {
-      EXPECT_EQ(ERR_RESPONSE_HEADERS_TOO_BIG, d.request_status());
-      return false;
-    }
-
-    return true;
-  }
-
   HttpTestServer* http_test_server() { return &test_server_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   HttpTestServer test_server_;
 };
 
@@ -3119,10 +4057,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateTunnelConnectionFailed) {
 // Tests that we can block and asynchronously return OK in various stages.
 TEST_F(URLRequestTestHTTP, NetworkDelegateBlockAsynchronously) {
   static const BlockingNetworkDelegate::Stage blocking_stages[] = {
-    BlockingNetworkDelegate::ON_BEFORE_URL_REQUEST,
-    BlockingNetworkDelegate::ON_BEFORE_SEND_HEADERS,
-    BlockingNetworkDelegate::ON_HEADERS_RECEIVED
-  };
+      BlockingNetworkDelegate::ON_BEFORE_URL_REQUEST,
+      BlockingNetworkDelegate::ON_BEFORE_SEND_HEADERS,
+      BlockingNetworkDelegate::ON_HEADERS_RECEIVED};
   static const size_t blocking_stages_length = base::size(blocking_stages);
 
   ASSERT_TRUE(http_test_server()->Start());
@@ -3308,19 +4245,13 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequest) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
                           http_test_server()->host_port_pair()),
               r->proxy_server());
-    // before_send_headers_with_proxy_count only increments for headers sent
-    // through an untunneled proxy.
-    EXPECT_EQ(1, network_delegate.before_send_headers_with_proxy_count());
-    EXPECT_TRUE(network_delegate.last_observed_proxy().Equals(
-        http_test_server()->host_port_pair()));
-
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -3363,19 +4294,14 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestSynchronously) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
                           http_test_server()->host_port_pair()),
               r->proxy_server());
-    // before_send_headers_with_proxy_count only increments for headers sent
-    // through an untunneled proxy.
-    EXPECT_EQ(1, network_delegate.before_send_headers_with_proxy_count());
-    EXPECT_TRUE(network_delegate.last_observed_proxy().Equals(
-        http_test_server()->host_port_pair()));
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -3427,8 +4353,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestPost) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
@@ -3470,12 +4396,6 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestOnHeadersReceived) {
     EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
                           http_test_server()->host_port_pair()),
               r->proxy_server());
-    // before_send_headers_with_proxy_count only increments for headers sent
-    // through an untunneled proxy.
-    EXPECT_EQ(2, network_delegate.before_send_headers_with_proxy_count());
-    EXPECT_TRUE(network_delegate.last_observed_proxy().Equals(
-        http_test_server()->host_port_pair()));
-
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(redirect_url, r->url());
     EXPECT_EQ(original_url, r->original_url());
@@ -3746,48 +4666,6 @@ TEST_F(URLRequestTestHTTP, GetTest_NoCache) {
   }
 }
 
-// This test has the server send a large number of cookies to the client.
-// To ensure that no number of cookies causes a crash, a galloping binary
-// search is used to estimate that maximum number of cookies that are accepted
-// by the browser. Beyond the maximum number, the request will fail with
-// ERR_RESPONSE_HEADERS_TOO_BIG.
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-// http://crbug.com/177916
-#define MAYBE_GetTest_ManyCookies DISABLED_GetTest_ManyCookies
-#else
-#define MAYBE_GetTest_ManyCookies GetTest_ManyCookies
-#endif  // defined(OS_WIN)
-TEST_F(URLRequestTestHTTP, MAYBE_GetTest_ManyCookies) {
-  ASSERT_TRUE(http_test_server()->Start());
-
-  int lower_bound = 0;
-  int upper_bound = 1;
-
-  // Double the number of cookies until the response header limits are
-  // exceeded.
-  while (DoManyCookiesRequest(upper_bound)) {
-    lower_bound = upper_bound;
-    upper_bound *= 2;
-    ASSERT_LT(upper_bound, 1000000);
-  }
-
-  int tolerance = static_cast<int>(upper_bound * 0.005);
-  if (tolerance < 2)
-    tolerance = 2;
-
-  // Perform a binary search to find the highest possible number of cookies,
-  // within the desired tolerance.
-  while (upper_bound - lower_bound >= tolerance) {
-    int num_cookies = (lower_bound + upper_bound) / 2;
-
-    if (DoManyCookiesRequest(num_cookies))
-      lower_bound = num_cookies;
-    else
-      upper_bound = num_cookies;
-  }
-  // Success: the test did not crash.
-}
-
 TEST_F(URLRequestTestHTTP, GetTest) {
   ASSERT_TRUE(http_test_server()->Start());
 
@@ -3840,76 +4718,132 @@ TEST_F(URLRequestTestHTTP, GetTestLoadTiming) {
   }
 }
 
-// TODO(svaldez): Update tests to use EmbeddedTestServer.
-#if !defined(OS_IOS)
+namespace {
+
+// Sends the correct Content-Length matching the compressed length.
+const char kZippedContentLengthCompressed[] = "C";
+// Sends an incorrect Content-Length matching the uncompressed length.
+const char kZippedContentLengthUncompressed[] = "U";
+// Sends an incorrect Content-Length shorter than the compressed length.
+const char kZippedContentLengthShort[] = "S";
+// Sends an incorrect Content-Length between the compressed and uncompressed
+// lengths.
+const char kZippedContentLengthMedium[] = "M";
+// Sends an incorrect Content-Length larger than both compressed and
+// uncompressed lengths.
+const char kZippedContentLengthLong[] = "L";
+
+// Sends |compressed_content| which, when decoded with deflate, should have
+// length |uncompressed_length|. The Content-Length header will be sent based on
+// which of the constants above is sent in the query string.
+std::unique_ptr<test_server::HttpResponse> HandleZippedRequest(
+    const std::string& compressed_content,
+    size_t uncompressed_length,
+    const test_server::HttpRequest& request) {
+  GURL url = request.GetURL();
+  if (url.path_piece() != "/compressedfiles/BullRunSpeech.txt")
+    return nullptr;
+
+  size_t length;
+  if (url.query_piece() == kZippedContentLengthCompressed) {
+    length = compressed_content.size();
+  } else if (url.query_piece() == kZippedContentLengthUncompressed) {
+    length = uncompressed_length;
+  } else if (url.query_piece() == kZippedContentLengthShort) {
+    length = compressed_content.size() / 2;
+  } else if (url.query_piece() == kZippedContentLengthMedium) {
+    length = (compressed_content.size() + uncompressed_length) / 2;
+  } else if (url.query_piece() == kZippedContentLengthLong) {
+    length = compressed_content.size() + uncompressed_length;
+  } else {
+    return nullptr;
+  }
+
+  std::string headers = "HTTP/1.1 200 OK\r\n";
+  headers += "Content-Encoding: deflate\r\n";
+  base::StringAppendF(&headers, "Content-Length: %zu\r\n", length);
+  return std::make_unique<test_server::RawHttpResponse>(headers,
+                                                        compressed_content);
+}
+
+}  // namespace
+
 TEST_F(URLRequestTestHTTP, GetZippedTest) {
-  SpawnedTestServer test_server(SpawnedTestServer::TYPE_HTTP,
-                                base::FilePath(kTestFilePath));
-
-  ASSERT_TRUE(test_server.Start());
-
-  // Parameter that specifies the Content-Length field in the response:
-  // C - Compressed length.
-  // U - Uncompressed length.
-  // L - Large length (larger than both C & U).
-  // M - Medium length (between C & U).
-  // S - Small length (smaller than both C & U).
-  const char test_parameters[] = "CULMS";
-  const int num_tests = base::size(test_parameters) - 1;  // Skip NULL.
-  // C & U should be OK.
-  // L & M are larger than the data sent, and show an error.
-  // S has too little data, but we seem to accept it.
-  const bool test_expect_success[num_tests] =
-      { true, true, false, false, true };
-
   base::FilePath file_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
   file_path = file_path.Append(kTestFilePath);
-  file_path = file_path.Append(FILE_PATH_LITERAL("BullRunSpeech.txt"));
-  std::string expected_content;
-  ASSERT_TRUE(base::ReadFileToString(file_path, &expected_content));
+  std::string expected_content, compressed_content;
+  ASSERT_TRUE(base::ReadFileToString(
+      file_path.Append(FILE_PATH_LITERAL("BullRunSpeech.txt")),
+      &expected_content));
+  // This file is the output of the Python zlib.compress function on
+  // |expected_content|.
+  ASSERT_TRUE(base::ReadFileToString(
+      file_path.Append(FILE_PATH_LITERAL("BullRunSpeech.txt.deflate")),
+      &compressed_content));
 
-  for (int i = 0; i < num_tests; i++) {
+  http_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &HandleZippedRequest, compressed_content, expected_content.size()));
+  ASSERT_TRUE(http_test_server()->Start());
+
+  static const struct {
+    const char* parameter;
+    bool expect_success;
+  } kTests[] = {
+      // Sending the compressed Content-Length is correct.
+      {kZippedContentLengthCompressed, true},
+      // Sending the uncompressed Content-Length is incorrect, but we accept it
+      // to workaround some broken servers.
+      {kZippedContentLengthUncompressed, true},
+      // Sending too long of Content-Length is rejected.
+      {kZippedContentLengthLong, false},
+      {kZippedContentLengthMedium, false},
+      // Sending too short of Content-Length successfully fetches a response
+      // body, but it will be truncated.
+      {kZippedContentLengthShort, true},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.parameter);
     TestDelegate d;
-    {
-      std::string test_file = base::StringPrintf(
-          "compressedfiles/BullRunSpeech.txt?%c", test_parameters[i]);
+    std::string test_file = base::StringPrintf(
+        "/compressedfiles/BullRunSpeech.txt?%s", test.parameter);
 
-      TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
-      TestURLRequestContext context(true);
-      context.set_network_delegate(&network_delegate);
-      context.Init();
+    TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+    TestURLRequestContext context(true);
+    context.set_network_delegate(&network_delegate);
+    context.Init();
 
-      std::unique_ptr<URLRequest> r(
-          context.CreateRequest(test_server.GetURL(test_file), DEFAULT_PRIORITY,
-                                &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-      r->Start();
-      EXPECT_TRUE(r->is_pending());
+    std::unique_ptr<URLRequest> r(context.CreateRequest(
+        http_test_server()->GetURL(test_file), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
 
-      d.RunUntilComplete();
+    d.RunUntilComplete();
 
-      EXPECT_EQ(1, d.response_started_count());
-      EXPECT_FALSE(d.received_data_before_response());
-      VLOG(1) << " Received " << d.bytes_received() << " bytes"
-              << " error = " << d.request_status();
-      if (test_expect_success[i]) {
-        EXPECT_EQ(OK, d.request_status()) << " Parameter = \"" << test_file
-                                          << "\"";
-        if (test_parameters[i] == 'S') {
-          // When content length is smaller than both compressed length and
-          // uncompressed length, HttpStreamParser might not read the full
-          // response body.
-          continue;
-        }
-        EXPECT_EQ(expected_content, d.data_received());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    VLOG(1) << " Received " << d.bytes_received() << " bytes"
+            << " error = " << d.request_status();
+    if (test.expect_success) {
+      EXPECT_EQ(OK, d.request_status())
+          << " Parameter = \"" << test_file << "\"";
+      if (strcmp(test.parameter, kZippedContentLengthShort) == 0) {
+        // When content length is smaller than both compressed length and
+        // uncompressed length, HttpStreamParser might not read the full
+        // response body.
+        EXPECT_EQ(expected_content.substr(0, d.data_received().size()),
+                  d.data_received());
       } else {
-        EXPECT_EQ(ERR_CONTENT_LENGTH_MISMATCH, d.request_status())
-            << " Parameter = \"" << test_file << "\"";
+        EXPECT_EQ(expected_content, d.data_received());
       }
+    } else {
+      EXPECT_EQ(ERR_CONTENT_LENGTH_MISMATCH, d.request_status())
+          << " Parameter = \"" << test_file << "\"";
     }
   }
 }
-#endif  // !defined(OS_IOS)
 
 TEST_F(URLRequestTestHTTP, RedirectLoadTiming) {
   ASSERT_TRUE(http_test_server()->Start());
@@ -4007,7 +4941,9 @@ TEST_F(URLRequestTestHTTP, RedirectEscaping) {
 
 // First and second pieces of information logged by delegates to URLRequests.
 const char kFirstDelegateInfo[] = "Wonderful delegate";
+const char16_t kFirstDelegateInfo16[] = u"Wonderful delegate";
 const char kSecondDelegateInfo[] = "Exciting delegate";
+const char16_t kSecondDelegateInfo16[] = u"Exciting delegate";
 
 // Logs delegate information to a URLRequest.  The first string is logged
 // synchronously on Start(), using DELEGATE_INFO_DEBUG_ONLY.  The second is
@@ -4017,6 +4953,9 @@ const char kSecondDelegateInfo[] = "Exciting delegate";
 class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
  public:
   using Callback = base::OnceCallback<void()>;
+
+  AsyncDelegateLogger(const AsyncDelegateLogger&) = delete;
+  AsyncDelegateLogger& operator=(const AsyncDelegateLogger&) = delete;
 
   // Each time delegate information is added to the URLRequest, the resulting
   // load state is checked.  The expected load state after each request is
@@ -4090,7 +5029,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     url_request_->LogBlockedBy(kFirstDelegateInfo);
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_first_load_state_, load_state.state);
-    EXPECT_NE(ASCIIToUTF16(kFirstDelegateInfo), load_state.param);
+    EXPECT_NE(kFirstDelegateInfo16, load_state.param);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&AsyncDelegateLogger::LogSecondDelegate, this));
@@ -4101,9 +5040,9 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_second_load_state_, load_state.state);
     if (expected_second_load_state_ == LOAD_STATE_WAITING_FOR_DELEGATE) {
-      EXPECT_EQ(ASCIIToUTF16(kSecondDelegateInfo), load_state.param);
+      EXPECT_EQ(kSecondDelegateInfo16, load_state.param);
     } else {
-      EXPECT_NE(ASCIIToUTF16(kSecondDelegateInfo), load_state.param);
+      EXPECT_NE(kSecondDelegateInfo16, load_state.param);
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AsyncDelegateLogger::LogComplete, this));
@@ -4114,7 +5053,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_third_load_state_, load_state.state);
     if (expected_second_load_state_ == LOAD_STATE_WAITING_FOR_DELEGATE)
-      EXPECT_EQ(base::string16(), load_state.param);
+      EXPECT_EQ(std::u16string(), load_state.param);
     std::move(callback_).Run();
   }
 
@@ -4123,8 +5062,6 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
   const int expected_second_load_state_;
   const int expected_third_load_state_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDelegateLogger);
 };
 
 // NetworkDelegate that logs delegate information before a request is started,
@@ -4133,6 +5070,11 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
 class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
  public:
   AsyncLoggingNetworkDelegate() = default;
+
+  AsyncLoggingNetworkDelegate(const AsyncLoggingNetworkDelegate&) = delete;
+  AsyncLoggingNetworkDelegate& operator=(const AsyncLoggingNetworkDelegate&) =
+      delete;
+
   ~AsyncLoggingNetworkDelegate() override = default;
 
   // NetworkDelegate implementation.
@@ -4145,13 +5087,19 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
     return RunCallbackAsynchronously(request, std::move(callback));
   }
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override {
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override {
     // TestNetworkDelegate always completes synchronously.
     CHECK_NE(ERR_IO_PENDING, TestNetworkDelegate::OnBeforeStartTransaction(
-                                 request, base::NullCallback(), headers));
-    return RunCallbackAsynchronously(request, std::move(callback));
+                                 request, headers, base::NullCallback()));
+    return RunCallbackAsynchronously(
+        request, base::BindOnce(
+                     [](OnBeforeStartTransactionCallback callback, int result) {
+                       std::move(callback).Run(result, absl::nullopt);
+                     },
+                     std::move(callback)));
   }
 
   int OnHeadersReceived(
@@ -4160,7 +5108,7 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override {
     // TestNetworkDelegate always completes synchronously.
     CHECK_NE(ERR_IO_PENDING,
              TestNetworkDelegate::OnHeadersReceived(
@@ -4179,8 +5127,6 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
                              base::BindOnce(std::move(callback), OK));
     return ERR_IO_PENDING;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncLoggingNetworkDelegate);
 };
 
 // URLRequest::Delegate that logs delegate information when the headers
@@ -4207,6 +5153,12 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
     else if (cancel_stage == CANCEL_ON_READ_COMPLETED)
       set_cancel_in_received_data(true);
   }
+
+  AsyncLoggingUrlRequestDelegate(const AsyncLoggingUrlRequestDelegate&) =
+      delete;
+  AsyncLoggingUrlRequestDelegate& operator=(
+      const AsyncLoggingUrlRequestDelegate&) = delete;
+
   ~AsyncLoggingUrlRequestDelegate() override = default;
 
   // URLRequest::Delegate implementation:
@@ -4248,8 +5200,8 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
     if (cancel_stage_ == CANCEL_ON_RECEIVED_REDIRECT)
       return;
     if (!defer_redirect) {
-      request->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                      base::nullopt /* modified_headers */);
+      request->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                      absl::nullopt /* modified_headers */);
     }
   }
 
@@ -4264,8 +5216,6 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
   }
 
   const CancelStage cancel_stage_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncLoggingUrlRequestDelegate);
 };
 
 // Tests handling of delegate info before a request starts.
@@ -4275,7 +5225,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
   TestDelegate request_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -4284,7 +5234,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
         &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     AsyncDelegateLogger::Run(
         r.get(), LOAD_STATE_WAITING_FOR_DELEGATE,
@@ -4297,7 +5247,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   size_t log_position = ExpectLogContainsSomewhereAfter(
       entries, 0, NetLogEventType::DELEGATE_INFO, NetLogEventPhase::BEGIN);
 
@@ -4316,7 +5266,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
   AsyncLoggingNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -4325,7 +5275,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
         &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     r->Start();
     request_delegate.RunUntilComplete();
@@ -4338,7 +5288,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
   EXPECT_EQ(1, network_delegate.destroyed_requests());
 
   size_t log_position = 0;
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   static const NetLogEventType kExpectedEvents[] = {
       NetLogEventType::NETWORK_DELEGATE_BEFORE_URL_REQUEST,
       NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION,
@@ -4349,8 +5299,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
     log_position = ExpectLogContainsSomewhereAfter(
         entries, log_position + 1, event, NetLogEventPhase::BEGIN);
 
-    log_position = AsyncDelegateLogger::CheckDelegateInfo(entries,
-                                                          log_position + 1);
+    log_position =
+        AsyncDelegateLogger::CheckDelegateInfo(entries, log_position + 1);
 
     ASSERT_LT(log_position, entries.size());
     EXPECT_EQ(event, entries[log_position].type);
@@ -4370,7 +5320,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
   AsyncLoggingNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -4379,7 +5329,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
         DEFAULT_PRIORITY, &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     r->Start();
     request_delegate.RunUntilComplete();
@@ -4392,7 +5342,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
   EXPECT_EQ(1, network_delegate.destroyed_requests());
 
   size_t log_position = 0;
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   static const NetLogEventType kExpectedEvents[] = {
       NetLogEventType::NETWORK_DELEGATE_BEFORE_URL_REQUEST,
       NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION,
@@ -4423,8 +5373,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
     log_position = ExpectLogContainsSomewhereAfter(
         entries, log_position + 1, event, NetLogEventPhase::BEGIN);
 
-    log_position = AsyncDelegateLogger::CheckDelegateInfo(entries,
-                                                          log_position + 1);
+    log_position =
+        AsyncDelegateLogger::CheckDelegateInfo(entries, log_position + 1);
 
     ASSERT_LT(log_position, entries.size());
     EXPECT_EQ(event, entries[log_position].type);
@@ -4435,20 +5385,15 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
                                              NetLogEventType::DELEGATE_INFO));
 }
 
-// TODO(svaldez): Update tests to use EmbeddedTestServer.
-#if !defined(OS_IOS)
 // Tests handling of delegate info from a URLRequest::Delegate.
 TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
-  SpawnedTestServer test_server(SpawnedTestServer::TYPE_HTTP,
-                                base::FilePath(kTestFilePath));
-
-  ASSERT_TRUE(test_server.Start());
+  ASSERT_TRUE(http_test_server()->Start());
 
   AsyncLoggingUrlRequestDelegate request_delegate(
       AsyncLoggingUrlRequestDelegate::NO_CANCEL);
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -4458,8 +5403,8 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
     // the possibility of multiple reads being combined in the unlikely event
     // that it occurs.
     std::unique_ptr<URLRequest> r(context.CreateRequest(
-        test_server.GetURL("/chunked?waitBetweenChunks=20"), DEFAULT_PRIORITY,
-        &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        http_test_server()->GetURL("/chunked?waitBetweenChunks=20"),
+        DEFAULT_PRIORITY, &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     r->Start();
     request_delegate.RunUntilComplete();
@@ -4468,7 +5413,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   size_t log_position = 0;
 
@@ -4495,7 +5440,6 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
       entries, log_position + 1,
       NetLogEventType::URL_REQUEST_DELEGATE_RESPONSE_STARTED));
 }
-#endif  // !defined(OS_IOS)
 
 // Tests handling of delegate info from a URLRequest::Delegate in the case of
 // an HTTP redirect.
@@ -4506,7 +5450,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfoOnRedirect) {
       AsyncLoggingUrlRequestDelegate::NO_CANCEL);
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -4521,7 +5465,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfoOnRedirect) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   // Delegate info should only have been logged in OnReceivedRedirect and
   // OnResponseStarted.
@@ -4553,17 +5497,17 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateOnRedirectCancelled) {
   ASSERT_TRUE(http_test_server()->Start());
 
   const AsyncLoggingUrlRequestDelegate::CancelStage kCancelStages[] = {
-    AsyncLoggingUrlRequestDelegate::CANCEL_ON_RECEIVED_REDIRECT,
-    AsyncLoggingUrlRequestDelegate::CANCEL_ON_RESPONSE_STARTED,
-    AsyncLoggingUrlRequestDelegate::CANCEL_ON_READ_COMPLETED,
+      AsyncLoggingUrlRequestDelegate::CANCEL_ON_RECEIVED_REDIRECT,
+      AsyncLoggingUrlRequestDelegate::CANCEL_ON_RESPONSE_STARTED,
+      AsyncLoggingUrlRequestDelegate::CANCEL_ON_READ_COMPLETED,
   };
 
   for (auto cancel_stage : kCancelStages) {
     AsyncLoggingUrlRequestDelegate request_delegate(cancel_stage);
-    RecordingTestNetLog net_log;
+    RecordingNetLogObserver net_log_observer;
     TestURLRequestContext context(true);
     context.set_network_delegate(nullptr);
-    context.set_net_log(&net_log);
+    context.set_net_log(NetLog::Get());
     context.Init();
 
     {
@@ -4580,7 +5524,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateOnRedirectCancelled) {
       base::RunLoop().RunUntilIdle();
     }
 
-    auto entries = net_log.GetEntries();
+    auto entries = net_log_observer.GetEntries();
 
     // Delegate info is always logged in both OnReceivedRedirect and
     // OnResponseStarted.  In the CANCEL_ON_RECEIVED_REDIRECT, the
@@ -4859,8 +5803,8 @@ TEST_F(URLRequestTestHTTP, PostEmptyTest) {
 
     d.RunUntilComplete();
 
-    ASSERT_EQ(1, d.response_started_count()) << "request failed. Error: "
-                                             << d.request_status();
+    ASSERT_EQ(1, d.response_started_count())
+        << "request failed. Error: " << d.request_status();
 
     EXPECT_FALSE(d.received_data_before_response());
     EXPECT_TRUE(d.data_received().empty());
@@ -4906,8 +5850,8 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
 
     ASSERT_EQ(size, base::ReadFile(path, buf.get(), size));
 
-    ASSERT_EQ(1, d.response_started_count()) << "request failed. Error: "
-                                             << d.request_status();
+    ASSERT_EQ(1, d.response_started_count())
+        << "request failed. Error: " << d.request_status();
 
     EXPECT_FALSE(d.received_data_before_response());
 
@@ -4968,8 +5912,8 @@ void VerifyReceivedDataMatchesChunks(URLRequest* r, TestDelegate* d) {
   const std::string expected_data =
       "abcdthis is a longer chunk than before.\r\n\r\n02323";
 
-  ASSERT_EQ(1, d->response_started_count()) << "request failed. Error: "
-                                            << d->request_status();
+  ASSERT_EQ(1, d->response_started_count())
+      << "request failed. Error: " << d->request_status();
 
   EXPECT_FALSE(d->received_data_before_response());
 
@@ -5109,8 +6053,8 @@ TEST_F(URLRequestTestHTTP, ProcessSTS) {
       default_context().transport_security_state();
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(security_state->GetDynamicSTSState(test_server_hostname,
-                                                 &sts_state, nullptr));
+  EXPECT_TRUE(
+      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
   EXPECT_FALSE(
       security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
@@ -5143,8 +6087,8 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
   TransportSecurityState* security_state =
       default_context().transport_security_state();
   TransportSecurityState::STSState sts_state;
-  EXPECT_FALSE(security_state->GetDynamicSTSState(test_server_hostname,
-                                                  &sts_state, nullptr));
+  EXPECT_FALSE(
+      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
 }
 
 namespace {
@@ -5195,11 +6139,14 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   context.set_cert_verifier(&cert_verifier);
   context.Init();
 
+  IsolationInfo isolation_info = IsolationInfo::CreateTransient();
+
   // Now send a request to trigger the violation.
   TestDelegate d;
   std::unique_ptr<URLRequest> violating_request(context.CreateRequest(
       https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  violating_request->set_isolation_info(isolation_info);
   violating_request->Start();
   d.RunUntilComplete();
 
@@ -5217,6 +6164,8 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   std::string report_hostname;
   EXPECT_TRUE(report_dict->GetString("hostname", &report_hostname));
   EXPECT_EQ(test_server_hostname, report_hostname);
+  EXPECT_EQ(isolation_info.network_isolation_key(),
+            mock_report_sender.latest_network_isolation_key());
 }
 
 // Tests that reports do not get sent on requests to static pkp hosts that
@@ -5262,6 +6211,7 @@ TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
   std::unique_ptr<URLRequest> request(context.CreateRequest(
       https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->set_isolation_info(IsolationInfo::CreateTransient());
   request->Start();
   d.RunUntilComplete();
 
@@ -5270,6 +6220,8 @@ TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
   EXPECT_EQ(OK, d.request_status());
   EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
+  EXPECT_EQ(NetworkIsolationKey(),
+            mock_report_sender.latest_network_isolation_key());
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(security_state.GetStaticDomainState(test_server_hostname,
@@ -5320,6 +6272,7 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   std::unique_ptr<URLRequest> request(context.CreateRequest(
       https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->set_isolation_info(IsolationInfo::CreateTransient());
   request->Start();
   d.RunUntilComplete();
 
@@ -5328,6 +6281,8 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   EXPECT_EQ(OK, d.request_status());
   EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
+  EXPECT_EQ(NetworkIsolationKey(),
+            mock_report_sender.latest_network_isolation_key());
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(security_state.GetStaticDomainState(test_server_hostname,
@@ -5357,8 +6312,8 @@ TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
   TransportSecurityState* security_state =
       default_context().transport_security_state();
   TransportSecurityState::STSState sts_state;
-  EXPECT_TRUE(security_state->GetDynamicSTSState(test_server_hostname,
-                                                 &sts_state, nullptr));
+  EXPECT_TRUE(
+      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
             sts_state.upgrade_mode);
   EXPECT_FALSE(sts_state.include_subdomains);
@@ -5372,13 +6327,15 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   MockExpectCTReporter() : num_failures_(0) {}
   ~MockExpectCTReporter() override = default;
 
-  void OnExpectCTFailed(const HostPortPair& host_port_pair,
-                        const GURL& report_uri,
-                        base::Time expiration,
-                        const X509Certificate* validated_certificate_chain,
-                        const X509Certificate* served_certificate_chain,
-                        const SignedCertificateTimestampAndStatusList&
-                            signed_certificate_timestamps) override {
+  void OnExpectCTFailed(
+      const HostPortPair& host_port_pair,
+      const GURL& report_uri,
+      base::Time expiration,
+      const X509Certificate* validated_certificate_chain,
+      const X509Certificate* served_certificate_chain,
+      const SignedCertificateTimestampAndStatusList&
+          signed_certificate_timestamps,
+      const NetworkIsolationKey& network_isolation_key) override {
     num_failures_++;
   }
 
@@ -5436,24 +6393,22 @@ TEST_F(URLRequestTestHTTP, PreloadExpectCTHeader) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to trigger an Expect
-  // CT violation.
-  DoNothingCTVerifier ct_verifier;
+  // Set up a MockCTPolicyEnforcer to trigger an Expect CT violation.
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
   TestNetworkDelegate network_delegate;
-  // Use a MockHostResolver (which by default maps all hosts to
-  // 127.0.0.1) so that the request can be sent to a site on the Expect
-  // CT preload list.
+  // Use a MockHostResolver, so that the request can be sent to a site on the
+  // Expect CT preload list.
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule(kExpectCTStaticHostname,
+                                 https_test_server.GetIPLiteralString());
   TestURLRequestContext context(true);
   context.set_host_resolver(&host_resolver);
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -5497,9 +6452,7 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to simulate CT
-  // compliance.
-  DoNothingCTVerifier ct_verifier;
+  // Set up a MockCTPolicyEnforcer to simulate CT compliance.
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS);
@@ -5513,7 +6466,6 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -5526,8 +6478,8 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   d.RunUntilComplete();
 
   TransportSecurityState::ExpectCTState state;
-  ASSERT_TRUE(
-      transport_security_state.GetDynamicExpectCTState(url.host(), &state));
+  ASSERT_TRUE(transport_security_state.GetDynamicExpectCTState(
+      url.host(), NetworkIsolationKey(), &state));
   EXPECT_TRUE(state.enforce);
   EXPECT_EQ(GURL("https://example.test"), state.report_uri);
 }
@@ -5559,8 +6511,7 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   verify_result.is_issued_by_known_root = true;
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
 
-  // Set up a DoNothingCTVerifier and MockCTPolicyEnforcer to simulate CT
-  // compliance.
+  // Set up a MockCTPolicyEnforcer to simulate CT compliance.
   DoNothingCTVerifier ct_verifier;
   MockCTPolicyEnforcer ct_policy_enforcer;
   ct_policy_enforcer.set_default_result(
@@ -5575,7 +6526,6 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   context.set_transport_security_state(&transport_security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&cert_verifier);
-  context.set_cert_transparency_verifier(&ct_verifier);
   context.set_ct_policy_enforcer(&ct_policy_enforcer);
   context.Init();
 
@@ -5588,8 +6538,8 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   d.RunUntilComplete();
 
   TransportSecurityState::ExpectCTState state;
-  ASSERT_TRUE(
-      transport_security_state.GetDynamicExpectCTState(url.host(), &state));
+  ASSERT_TRUE(transport_security_state.GetDynamicExpectCTState(
+      url.host(), NetworkIsolationKey(), &state));
   EXPECT_TRUE(state.enforce);
   EXPECT_EQ(GURL("https://example.test"), state.report_uri);
 }
@@ -5600,7 +6550,7 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
 
 TEST_F(URLRequestTestHTTP, NetworkErrorLogging_DontReportIfNetworkNotAccessed) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.AddDefaultHandlers(base::FilePath(kTestFilePath));
+  RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(https_test_server.Start());
   GURL request_url = https_test_server.GetURL("/cachetime");
 
@@ -5613,7 +6563,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_DontReportIfNetworkNotAccessed) {
   TestDelegate d;
   std::unique_ptr<URLRequest> request(context.CreateRequest(
       request_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->set_network_isolation_key(network_isolation_key1_);
+  request->set_isolation_info(isolation_info1_);
   request->Start();
   d.RunUntilComplete();
 
@@ -5626,7 +6576,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_DontReportIfNetworkNotAccessed) {
 
   request = context.CreateRequest(request_url, DEFAULT_PRIORITY, &d,
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->set_network_isolation_key(network_isolation_key1_);
+  request->set_isolation_info(isolation_info1_);
   request->Start();
   d.RunUntilComplete();
 
@@ -5664,7 +6614,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_BasicSuccess) {
 
 TEST_F(URLRequestTestHTTP, NetworkErrorLogging_BasicError) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.AddDefaultHandlers(base::FilePath(kTestFilePath));
+  RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(https_test_server.Start());
   GURL request_url = https_test_server.GetURL("/close-socket");
 
@@ -5748,7 +6698,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_RedirectWithoutLocationHeader) {
 
 TEST_F(URLRequestTestHTTP, NetworkErrorLogging_Auth) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.AddDefaultHandlers(base::FilePath(kTestFilePath));
+  RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(https_test_server.Start());
   GURL request_url = https_test_server.GetURL("/auth-basic");
 
@@ -5779,7 +6729,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_Auth) {
 
 TEST_F(URLRequestTestHTTP, NetworkErrorLogging_304Response) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.AddDefaultHandlers(base::FilePath(kTestFilePath));
+  RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(https_test_server.Start());
   GURL request_url = https_test_server.GetURL("/auth-basic");
 
@@ -5794,7 +6744,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_304Response) {
     d.set_credentials(AuthCredentials(kUser, kSecret));
     std::unique_ptr<URLRequest> r(context.CreateRequest(
         request_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
     d.RunUntilComplete();
   }
@@ -5819,7 +6769,7 @@ TEST_F(URLRequestTestHTTP, NetworkErrorLogging_304Response) {
     std::unique_ptr<URLRequest> r(context.CreateRequest(
         request_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetLoadFlags(LOAD_VALIDATE_CACHE);
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
     d.RunUntilComplete();
 
@@ -6015,7 +6965,7 @@ TEST_F(URLRequestTestHTTP, CacheRedirect) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_network_isolation_key(network_isolation_key1_);
+    req->set_isolation_info(isolation_info1_);
     req->Start();
     d.RunUntilComplete();
     EXPECT_EQ(OK, d.request_status());
@@ -6027,7 +6977,7 @@ TEST_F(URLRequestTestHTTP, CacheRedirect) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req(default_context().CreateRequest(
         redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_network_isolation_key(network_isolation_key1_);
+    req->set_isolation_info(isolation_info1_);
     req->Start();
     d.RunUntilRedirect();
 
@@ -6035,8 +6985,8 @@ TEST_F(URLRequestTestHTTP, CacheRedirect) {
     EXPECT_EQ(0, d.response_started_count());
     EXPECT_TRUE(req->was_cached());
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                base::nullopt /* modified_headers */);
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
     EXPECT_EQ(1, d.received_redirect_count());
     EXPECT_EQ(1, d.response_started_count());
@@ -6151,10 +7101,11 @@ TEST_F(URLRequestTestHTTP, RedirectJobWithReferenceFragment) {
   std::unique_ptr<URLRequest> r(default_context().CreateRequest(
       original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      r.get(), &default_network_delegate_, redirect_url,
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          r.get(), redirect_url, RedirectUtil::ResponseCode::REDIRECT_302_FOUND,
+          "Very Good Reason");
+  TestScopedURLInterceptor interceptor(r->url(), std::move(job));
 
   r->Start();
   d.RunUntilComplete();
@@ -6239,7 +7190,12 @@ TEST_F(URLRequestTestHTTP, CapRefererHeaderLength) {
     req->Start();
     d.RunUntilComplete();
 
-    EXPECT_EQ("http://example.com/", d.data_received());
+    // The request's referrer will be stripped since (1) there will be a
+    // mismatch between the request's referrer and the output of
+    // URLRequestJob::ComputeReferrerForPolicy and (2) the delegate, when
+    // offered the opportunity to cancel the request for this reason, will
+    // decline.
+    EXPECT_EQ("None", d.data_received());
   }
   {
     std::string original_header = "http://example.com/";
@@ -6304,8 +7260,8 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect) {
 
     EXPECT_EQ(1, d.received_redirect_count());
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                base::nullopt /* modified_headers */);
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
@@ -6358,7 +7314,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect_ModifiedHeaders) {
     modified_headers.SetHeader("Header2", "");
     modified_headers.SetHeader("Header3", "Value3");
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
                                 modified_headers);
     d.RunUntilComplete();
 
@@ -6407,7 +7363,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect_RemovedHeaders) {
     // Keep Header1 and remove Header2.
     std::vector<std::string> removed_headers({"Header2"});
     req->FollowDeferredRedirect(removed_headers,
-                                base::nullopt /* modified_headers */);
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
@@ -6456,7 +7412,7 @@ TEST_F(URLRequestTestHTTP, VaryHeader) {
     HttpRequestHeaders headers;
     headers.SetHeader("foo", "1");
     req->SetExtraRequestHeaders(headers);
-    req->set_network_isolation_key(network_isolation_key1_);
+    req->set_isolation_info(isolation_info1_);
     req->Start();
     d.RunUntilComplete();
 
@@ -6474,7 +7430,7 @@ TEST_F(URLRequestTestHTTP, VaryHeader) {
     HttpRequestHeaders headers;
     headers.SetHeader("foo", "1");
     req->SetExtraRequestHeaders(headers);
-    req->set_network_isolation_key(network_isolation_key1_);
+    req->set_isolation_info(isolation_info1_);
     req->Start();
     d.RunUntilComplete();
 
@@ -6494,7 +7450,7 @@ TEST_F(URLRequestTestHTTP, VaryHeader) {
     HttpRequestHeaders headers;
     headers.SetHeader("foo", "2");
     req->SetExtraRequestHeaders(headers);
-    req->set_network_isolation_key(network_isolation_key1_);
+    req->set_isolation_info(isolation_info1_);
     req->Start();
     d.RunUntilComplete();
 
@@ -6517,7 +7473,7 @@ TEST_F(URLRequestTestHTTP, BasicAuth) {
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         http_test_server()->GetURL("/auth-basic"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
 
     d.RunUntilComplete();
@@ -6536,7 +7492,7 @@ TEST_F(URLRequestTestHTTP, BasicAuth) {
         http_test_server()->GetURL("/auth-basic"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetLoadFlags(LOAD_VALIDATE_CACHE);
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
 
     d.RunUntilComplete();
@@ -6577,8 +7533,8 @@ TEST_F(URLRequestTestHTTP, BasicAuthWithCookies) {
     EXPECT_TRUE(d.data_received().find("user/secret") != std::string::npos);
 
     // Make sure we sent the cookie in the restarted transaction.
-    EXPECT_TRUE(d.data_received().find("Cookie: got_challenged=true")
-        != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("Cookie: got_challenged=true") !=
+                std::string::npos);
   }
 
   // Same test as above, except this time the restart is initiated earlier
@@ -6605,8 +7561,8 @@ TEST_F(URLRequestTestHTTP, BasicAuthWithCookies) {
     EXPECT_TRUE(d.data_received().find("user2/secret") != std::string::npos);
 
     // Make sure we sent the cookie in the restarted transaction.
-    EXPECT_TRUE(d.data_received().find("Cookie: got_challenged=true")
-        != std::string::npos);
+    EXPECT_TRUE(d.data_received().find("Cookie: got_challenged=true") !=
+                std::string::npos);
   }
 }
 
@@ -6654,14 +7610,105 @@ TEST_F(URLRequestTestHTTP, BasicAuthWithCookiesCancelAuth) {
   EXPECT_EQ(1, network_delegate.set_cookie_count());
 }
 
+// Tests the IsolationInfo is updated approiately on redirect.
+TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
+
+  ASSERT_TRUE(http_test_server()->Start());
+
+  GURL redirect_url =
+      http_test_server()->GetURL("redirected.test", "/cachetime");
+  GURL original_url = http_test_server()->GetURL(
+      "original.test", "/server-redirect?" + redirect_url.spec());
+
+  url::Origin original_origin = url::Origin::Create(original_url);
+  url::Origin redirect_origin = url::Origin::Create(redirect_url);
+
+  // Since transient IsolationInfos use opaque origins, need to create a single
+  // consistent transient origin one for be used as the original and updated
+  // info in the same test case.
+  IsolationInfo transient_isolation_info = IsolationInfo::CreateTransient();
+
+  const struct {
+    IsolationInfo info_before_redirect;
+    IsolationInfo expected_info_after_redirect;
+  } kTestCases[] = {
+      {IsolationInfo(), IsolationInfo()},
+      {IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
+                             original_origin, original_origin,
+                             SiteForCookies()),
+       IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
+                             redirect_origin, redirect_origin,
+                             SiteForCookies::FromOrigin(redirect_origin))},
+      {IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame,
+                             original_origin, original_origin,
+                             SiteForCookies::FromOrigin(original_origin)),
+       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame,
+                             original_origin, redirect_origin,
+                             SiteForCookies::FromOrigin(original_origin))},
+      {IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                             original_origin, original_origin,
+                             SiteForCookies()),
+       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                             original_origin, original_origin,
+                             SiteForCookies())},
+      {transient_isolation_info, transient_isolation_info},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    // Populate the cache, using the expected final IsolationInfo.
+    {
+      TestDelegate d;
+
+      std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+          redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      r->set_isolation_info(test_case.expected_info_after_redirect);
+      r->Start();
+      d.RunUntilComplete();
+      EXPECT_THAT(d.request_status(), IsOk());
+    }
+
+    // Send a request using the initial IsolationInfo that should be redirected
+    // to the cached url, and should use the cached entry if the NIK was
+    // updated, except in the case the IsolationInfo's NIK was empty.
+    {
+      TestDelegate d;
+
+      std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+          original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+      r->set_isolation_info(test_case.info_before_redirect);
+      r->Start();
+      d.RunUntilComplete();
+      EXPECT_THAT(d.request_status(), IsOk());
+      EXPECT_EQ(redirect_url, r->url());
+
+      EXPECT_EQ(!test_case.expected_info_after_redirect.network_isolation_key()
+                     .IsTransient(),
+                r->was_cached());
+      EXPECT_EQ(test_case.expected_info_after_redirect.request_type(),
+                r->isolation_info().request_type());
+      EXPECT_EQ(test_case.expected_info_after_redirect.top_frame_origin(),
+                r->isolation_info().top_frame_origin());
+      EXPECT_EQ(test_case.expected_info_after_redirect.frame_origin(),
+                r->isolation_info().frame_origin());
+      EXPECT_EQ(test_case.expected_info_after_redirect.network_isolation_key(),
+                r->isolation_info().network_isolation_key());
+      EXPECT_TRUE(test_case.expected_info_after_redirect.site_for_cookies()
+                      .IsEquivalent(r->isolation_info().site_for_cookies()));
+    }
+  }
+}
+
 // Tests that |key_auth_cache_by_network_isolation_key| is respected.
 TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
   ASSERT_TRUE(http_test_server()->Start());
 
   for (bool key_auth_cache_by_network_isolation_key : {false, true}) {
     TestURLRequestContext url_request_context(true /* delay_initialization */);
-    std::unique_ptr<HttpNetworkSession::Params> http_network_session_params =
-        std::make_unique<HttpNetworkSession::Params>();
+    auto http_network_session_params =
+        std::make_unique<HttpNetworkSessionParams>();
     http_network_session_params
         ->key_auth_cache_server_entries_by_network_isolation_key =
         key_auth_cache_by_network_isolation_key;
@@ -6680,7 +7727,7 @@ TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
       std::unique_ptr<URLRequest> r(url_request_context.CreateRequest(
           url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
       r->SetLoadFlags(LOAD_BYPASS_CACHE);
-      r->set_network_isolation_key(network_isolation_key1_);
+      r->set_isolation_info(isolation_info1_);
       r->Start();
 
       d.RunUntilComplete();
@@ -6700,7 +7747,7 @@ TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
           http_test_server()->GetURL("/auth-basic"), DEFAULT_PRIORITY, &d,
           TRAFFIC_ANNOTATION_FOR_TESTS));
       r->SetLoadFlags(LOAD_BYPASS_CACHE);
-      r->set_network_isolation_key(network_isolation_key2_);
+      r->set_isolation_info(isolation_info2_);
       r->Start();
 
       d.RunUntilComplete();
@@ -6725,11 +7772,11 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
 
   FilteringTestNetworkDelegate network_delegate;
   network_delegate.SetCookieFilter("not_stored_cookie");
-  network_delegate.set_block_get_cookies();
-  RecordingTestNetLog net_log;
+  network_delegate.set_block_annotate_cookies();
+  RecordingNetLogObserver net_log_observer;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log);
+  context.set_net_log(net::NetLog::Get());
   context.Init();
   // Make sure cookies blocked from being stored are caught, and those that are
   // accepted are reported as well.
@@ -6749,16 +7796,17 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_EQ("not_stored_cookie",
               req->maybe_stored_cookies()[0].cookie->Name());
     EXPECT_TRUE(req->maybe_stored_cookies()[0]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
     EXPECT_EQ("stored_cookie", req->maybe_stored_cookies()[1].cookie->Name());
-    EXPECT_TRUE(req->maybe_stored_cookies()[1].status.IsInclude());
+    EXPECT_TRUE(
+        req->maybe_stored_cookies()[1].access_result.status.IsInclude());
     EXPECT_EQ("stored_cookie", req->maybe_stored_cookies()[1].cookie->Name());
-    EXPECT_TRUE(req->maybe_stored_cookies()[2].status.IsInclude());
+    EXPECT_TRUE(
+        req->maybe_stored_cookies()[2].access_result.status.IsInclude());
     EXPECT_EQ("path_cookie", req->maybe_stored_cookies()[2].cookie->Name());
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(3u, entries.size());
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"not_stored_cookie\",\"operation\":\"store\","
@@ -6774,7 +7822,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
             "\",\"name\":\"path_cookie\",\"operation\":\"store\","
             "\"path\":\"/set-cookie\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[2].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
   {
     TestDelegate d;
@@ -6790,19 +7838,18 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
 
     ASSERT_EQ(2u, req->maybe_sent_cookies().size());
     EXPECT_EQ("path_cookie", req->maybe_sent_cookies()[0].cookie.Name());
-    EXPECT_TRUE(req->maybe_sent_cookies()[0]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_NOT_ON_PATH,
-                         net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        req->maybe_sent_cookies()[0]
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_NOT_ON_PATH,
+                 net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
     EXPECT_EQ("stored_cookie", req->maybe_sent_cookies()[1].cookie.Name());
-    EXPECT_TRUE(req->maybe_sent_cookies()[1]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    EXPECT_TRUE(
+        req->maybe_sent_cookies()[1]
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"path_cookie\",\"operation\":\"send\",\"path\":"
@@ -6814,13 +7861,13 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
             "\",\"name\":\"stored_cookie\",\"operation\":\"send\",\"path\":\"/"
             "\",\"status\":\"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[1].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
   {
     TestDelegate d;
     // Ensure that the log does not contain cookie names when not set to collect
     // sensitive data.
-    net_log.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
+    net_log_observer.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
 
     GURL test_url = test_server.GetURL("/echoheader?Cookie");
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
@@ -6828,8 +7875,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     req->Start();
     d.RunUntilComplete();
 
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
 
     // Ensure that the potentially-sensitive |name|, |domain|, and |path| fields
@@ -6843,11 +7890,12 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
         "DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[1].params));
 
-    net_log.Clear();
-    net_log.SetObserverCaptureMode(NetLogCaptureMode::kIncludeSensitive);
+    net_log_observer.Clear();
+    net_log_observer.SetObserverCaptureMode(
+        NetLogCaptureMode::kIncludeSensitive);
   }
 
-  network_delegate.unset_block_get_cookies();
+  network_delegate.unset_block_annotate_cookies();
   {
     // Now with sending cookies re-enabled, it should actually be sent.
     TestDelegate d;
@@ -6863,13 +7911,12 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     ASSERT_EQ(2u, req->maybe_sent_cookies().size());
     EXPECT_EQ("path_cookie", req->maybe_sent_cookies()[0].cookie.Name());
     EXPECT_TRUE(req->maybe_sent_cookies()[0]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_NOT_ON_PATH}));
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::EXCLUDE_NOT_ON_PATH}));
     EXPECT_EQ("stored_cookie", req->maybe_sent_cookies()[1].cookie.Name());
-    EXPECT_TRUE(req->maybe_sent_cookies()[1].status.IsInclude());
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    EXPECT_TRUE(req->maybe_sent_cookies()[1].access_result.status.IsInclude());
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
     EXPECT_EQ(
         "{\"domain\":\"" + set_cookie_test_url.host() +
@@ -6880,7 +7927,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
                   "\",\"name\":\"stored_cookie\",\"operation\":\"send\","
                   "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
               SerializeNetLogValueToJson(entries[1].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
 }
 
@@ -6888,8 +7935,6 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
 // set if the cookie would have been rejected for other reasons.
 // Regression test for https://crbug.com/1027318.
 TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSameSiteByDefaultCookies);
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -6908,10 +7953,10 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
     // included had it not been for the new SameSite features should have a
     // warning attached.
     TestDelegate d;
-    GURL test_url = test_server.GetURL(
-        "/set-cookie?blockeduserpreference=true&"
-        "unspecifiedsamesite=1&"
-        "invalidsecure=1;Secure");
+    GURL test_url = test_server.GetURL("this.example",
+                                       "/set-cookie?blockeduserpreference=true&"
+                                       "unspecifiedsamesite=1&"
+                                       "invalidsecure=1;Secure");
     GURL cross_site_url = test_server.GetURL("other.example", "/");
     std::unique_ptr<URLRequest> req(context.CreateRequest(
         test_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -6928,54 +7973,53 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
     // It doesn't pick up the EXCLUDE_UNSPECIFIED_TREATED_AS_LAX because it
     // doesn't even make it to the cookie store (it is filtered out beforehand).
     EXPECT_TRUE(req->maybe_stored_cookies()[0]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::DO_NOT_WARN,
-              req->maybe_stored_cookies()[0].status.warning());
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
+    EXPECT_FALSE(
+        req->maybe_stored_cookies()[0].access_result.status.ShouldWarn());
 
     // Cookie that would be included had it not been for the new SameSite rules
     // is warned about.
     EXPECT_EQ("unspecifiedsamesite",
               req->maybe_stored_cookies()[1].cookie->Name());
     EXPECT_TRUE(req->maybe_stored_cookies()[1]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {CanonicalCookie::CookieInclusionStatus::
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::
-                  WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-              req->maybe_stored_cookies()[1].status.warning());
+    EXPECT_TRUE(req->maybe_stored_cookies()[1]
+                    .access_result.status.HasExactlyWarningReasonsForTesting(
+                        {CookieInclusionStatus::
+                             WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
 
     // Cookie that is blocked because of invalid Secure attribute is not warned
     // about.
     EXPECT_EQ("invalidsecure", req->maybe_stored_cookies()[2].cookie->Name());
-    EXPECT_TRUE(
-        req->maybe_stored_cookies()[2]
-            .status.HasExactlyExclusionReasonsForTesting(
-                {CanonicalCookie::CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
-                 CanonicalCookie::CookieInclusionStatus::
-                     EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::DO_NOT_WARN,
-              req->maybe_stored_cookies()[2].status.warning());
+    EXPECT_TRUE(req->maybe_stored_cookies()[2]
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
+                         CookieInclusionStatus::
+                             EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
+    EXPECT_FALSE(
+        req->maybe_stored_cookies()[2].access_result.status.ShouldWarn());
   }
 
   // Get cookies (blocked by user preference)
-  network_delegate.set_block_get_cookies();
+  network_delegate.set_block_annotate_cookies();
   {
     GURL url = test_server.GetURL("/");
-    auto cookie1 = CanonicalCookie::Create(url, "cookienosamesite=1",
-                                           base::Time::Now(), base::nullopt);
+    auto cookie1 = CanonicalCookie::Create(
+        url, "cookienosamesite=1", base::Time::Now(), absl::nullopt,
+        absl::nullopt /* cookie_partition_key */);
     base::RunLoop run_loop;
-    CanonicalCookie::CookieInclusionStatus status;
+    CookieAccessResult access_result;
     cm.SetCanonicalCookieAsync(
-        std::move(cookie1), url.scheme(), CookieOptions::MakeAllInclusive(),
-        base::BindLambdaForTesting(
-            [&](CanonicalCookie::CookieInclusionStatus result) {
-              status = result;
-              run_loop.Quit();
-            }));
+        std::move(cookie1), url, CookieOptions::MakeAllInclusive(),
+        base::BindLambdaForTesting([&](CookieAccessResult result) {
+          access_result = result;
+          run_loop.Quit();
+        }));
     run_loop.Run();
-    EXPECT_TRUE(status.IsInclude());
+    EXPECT_TRUE(access_result.status.IsInclude());
 
     TestDelegate d;
     GURL test_url = test_server.GetURL("/echoheader?Cookie");
@@ -6992,35 +8036,34 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
     ASSERT_EQ(1u, req->maybe_sent_cookies().size());
     EXPECT_EQ("cookienosamesite", req->maybe_sent_cookies()[0].cookie.Name());
     EXPECT_TRUE(req->maybe_sent_cookies()[0]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES,
-                         CanonicalCookie::CookieInclusionStatus::
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                         CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     // Cookie should not be warned about because it was blocked because of user
     // preferences.
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::DO_NOT_WARN,
-              req->maybe_sent_cookies()[0].status.warning());
+    EXPECT_FALSE(
+        req->maybe_sent_cookies()[0].access_result.status.ShouldWarn());
   }
-  network_delegate.unset_block_get_cookies();
+  network_delegate.unset_block_annotate_cookies();
 
   // Get cookies
   {
     GURL url = test_server.GetURL("/");
-    auto cookie2 = CanonicalCookie::Create(url, "cookiewithpath=1;path=/foo",
-                                           base::Time::Now(), base::nullopt);
+    auto cookie2 = CanonicalCookie::Create(
+        url, "cookiewithpath=1;path=/foo", base::Time::Now(), absl::nullopt,
+        absl::nullopt /* cookie_partition_key */);
     base::RunLoop run_loop;
     // Note: cookie1 from the previous testcase is still in the cookie store.
-    CanonicalCookie::CookieInclusionStatus status;
+    CookieAccessResult access_result;
     cm.SetCanonicalCookieAsync(
-        std::move(cookie2), url.scheme(), CookieOptions::MakeAllInclusive(),
-        base::BindLambdaForTesting(
-            [&](CanonicalCookie::CookieInclusionStatus result) {
-              status = result;
-              run_loop.Quit();
-            }));
+        std::move(cookie2), url, CookieOptions::MakeAllInclusive(),
+        base::BindLambdaForTesting([&](CookieAccessResult result) {
+          access_result = result;
+          run_loop.Quit();
+        }));
     run_loop.Run();
-    EXPECT_TRUE(status.IsInclude());
+    EXPECT_TRUE(access_result.status.IsInclude());
 
     TestDelegate d;
     GURL test_url = test_server.GetURL("/echoheader?Cookie");
@@ -7040,24 +8083,24 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
     // Note: this cookie is first because the cookies are sorted by path length
     // with longest first. See CookieSorter() in cookie_monster.cc.
     EXPECT_EQ("cookiewithpath", req->maybe_sent_cookies()[0].cookie.Name());
-    EXPECT_TRUE(
-        req->maybe_sent_cookies()[0]
-            .status.HasExactlyExclusionReasonsForTesting(
-                {CanonicalCookie::CookieInclusionStatus::EXCLUDE_NOT_ON_PATH,
-                 CanonicalCookie::CookieInclusionStatus::
-                     EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::DO_NOT_WARN,
-              req->maybe_sent_cookies()[0].status.warning());
+    EXPECT_TRUE(req->maybe_sent_cookies()[0]
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_NOT_ON_PATH,
+                         CookieInclusionStatus::
+                             EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
+    EXPECT_FALSE(
+        req->maybe_sent_cookies()[0].access_result.status.ShouldWarn());
     // Cookie that was only blocked because of unspecified SameSite should be
     // warned about.
     EXPECT_EQ("cookienosamesite", req->maybe_sent_cookies()[1].cookie.Name());
     EXPECT_TRUE(req->maybe_sent_cookies()[1]
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {CanonicalCookie::CookieInclusionStatus::
+                    .access_result.status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_EQ(CanonicalCookie::CookieInclusionStatus::
-                  WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-              req->maybe_sent_cookies()[1].status.warning());
+    EXPECT_TRUE(req->maybe_sent_cookies()[1]
+                    .access_result.status.HasExactlyWarningReasonsForTesting(
+                        {CookieInclusionStatus::
+                             WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}));
   }
 }
 
@@ -7082,9 +8125,8 @@ TEST_F(URLRequestTestHTTP, AuthChallengeCancelCookieCollect) {
   delegate.RunUntilAuthRequired();
   ASSERT_EQ(1u, request->maybe_stored_cookies().size());
   EXPECT_TRUE(request->maybe_stored_cookies()[0]
-                  .status.HasExactlyExclusionReasonsForTesting(
-                      {net::CanonicalCookie::CookieInclusionStatus::
-                           EXCLUDE_USER_PREFERENCES}));
+                  .access_result.status.HasExactlyExclusionReasonsForTesting(
+                      {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
   EXPECT_EQ("got_challenged=true",
             request->maybe_stored_cookies()[0].cookie_string);
 
@@ -7122,11 +8164,11 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
 
     // The number of cookies blocked from the most recent round trip.
     ASSERT_EQ(1u, request->maybe_stored_cookies().size());
-    EXPECT_TRUE(request->maybe_stored_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_stored_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
 
     // Now check the second round trip
     request->SetAuth(AuthCredentials(kUser, kSecret));
@@ -7147,7 +8189,7 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
   // Check maybe_sent_cookies on first round trip (and cleared for the second).
   {
     FilteringTestNetworkDelegate filtering_network_delegate;
-    filtering_network_delegate.set_block_get_cookies();
+    filtering_network_delegate.set_block_annotate_cookies();
     TestURLRequestContext context(true);
     context.set_network_delegate(&filtering_network_delegate);
 
@@ -7155,9 +8197,10 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
         std::make_unique<CookieMonster>(nullptr, nullptr);
     auto another_cookie = CanonicalCookie::Create(
         url_requiring_auth_wo_cookies, "another_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     cm->SetCanonicalCookieAsync(std::move(another_cookie),
-                                url_requiring_auth_wo_cookies.scheme(),
+                                url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
     context.set_cookie_store(cm.get());
@@ -7176,20 +8219,21 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     EXPECT_EQ("another_cookie",
               request->maybe_sent_cookies().front().cookie.Name());
     EXPECT_EQ("true", request->maybe_sent_cookies().front().cookie.Value());
-    EXPECT_TRUE(request->maybe_sent_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_sent_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
 
     // Check maybe_sent_cookies on second roundtrip.
     request->set_maybe_sent_cookies({});
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
     auto one_more_cookie = CanonicalCookie::Create(
         url_requiring_auth_wo_cookies, "one_more_cookie=true",
-        base::Time::Now(), base::nullopt /* server_time */);
+        base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
-                                url_requiring_auth_wo_cookies.scheme(),
+                                url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
 
@@ -7205,17 +8249,17 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
               delegate.data_received().find("Cookie: one_more_cookie=true"));
     // got_challenged was set after the first request and blocked on the second,
     // so it should only have been blocked this time
-    EXPECT_EQ(2, filtering_network_delegate.blocked_get_cookie_count());
+    EXPECT_EQ(2, filtering_network_delegate.blocked_annotate_cookies_count());
 
     // // The number of cookies blocked from the most recent round trip.
     ASSERT_EQ(1u, request->maybe_sent_cookies().size());
     EXPECT_EQ("one_more_cookie",
               request->maybe_sent_cookies().front().cookie.Name());
-    EXPECT_TRUE(request->maybe_sent_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_sent_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
   }
 }
 
@@ -7230,7 +8274,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthLoadTiming) {
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         http_test_server()->GetURL("/auth-basic"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
     d.RunUntilAuthRequired();
 
@@ -7265,7 +8309,7 @@ TEST_F(URLRequestTestHTTP, BasicAuthLoadTiming) {
         http_test_server()->GetURL("/auth-basic"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetLoadFlags(LOAD_VALIDATE_CACHE);
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
 
     d.RunUntilComplete();
@@ -7348,12 +8392,14 @@ TEST_F(URLRequestTestHTTP, Redirect301Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
   HTTPRedirectOriginHeaderTest(url, "POST", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -7368,12 +8414,14 @@ TEST_F(URLRequestTestHTTP, Redirect302Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
   HTTPRedirectOriginHeaderTest(url, "POST", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -7394,9 +8442,11 @@ TEST_F(URLRequestTestHTTP, Redirect303Tests) {
   HTTPRedirectOriginHeaderTest(url, "DELETE", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "DELETE", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "HEAD", "HEAD", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "HEAD", "HEAD",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "HEAD", "HEAD", "null");
   HTTPRedirectOriginHeaderTest(url, "OPTIONS", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "OPTIONS", "GET",
@@ -7419,11 +8469,14 @@ TEST_F(URLRequestTestHTTP, Redirect307Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "POST", "POST", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "POST", "POST",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null");
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -7438,11 +8491,14 @@ TEST_F(URLRequestTestHTTP, Redirect308Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "POST", "POST", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "POST", "POST",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null");
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -7526,15 +8582,15 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     EXPECT_EQ("server-redirect",
               request->maybe_stored_cookies().front().cookie->Name());
     EXPECT_EQ("true", request->maybe_stored_cookies().front().cookie->Value());
-    EXPECT_TRUE(request->maybe_stored_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_stored_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
 
     // Check maybe_stored_cookies on second round trip (and clearing from the
     // first).
-    request->FollowDeferredRedirect(base::nullopt, base::nullopt);
+    request->FollowDeferredRedirect(absl::nullopt, absl::nullopt);
     delegate.RunUntilComplete();
     EXPECT_THAT(delegate.request_status(), IsOk());
 
@@ -7549,26 +8605,26 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     EXPECT_EQ("server-redirect",
               request->maybe_stored_cookies().front().cookie->Name());
     EXPECT_EQ("other", request->maybe_stored_cookies().front().cookie->Value());
-    EXPECT_TRUE(request->maybe_stored_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_stored_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
   }
 
   // Check maybe_sent_cookies on first round trip.
   {
     FilteringTestNetworkDelegate filtering_network_delegate;
-    filtering_network_delegate.set_block_get_cookies();
+    filtering_network_delegate.set_block_annotate_cookies();
     TestURLRequestContext context(true);
     context.set_network_delegate(&filtering_network_delegate);
     std::unique_ptr<CookieMonster> cm =
         std::make_unique<CookieMonster>(nullptr, nullptr);
     auto another_cookie = CanonicalCookie::Create(
         original_url, "another_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
-    cm->SetCanonicalCookieAsync(std::move(another_cookie),
-                                original_url.scheme(),
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
+    cm->SetCanonicalCookieAsync(std::move(another_cookie), original_url,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
     context.set_cookie_store(cm.get());
@@ -7585,42 +8641,43 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     ASSERT_EQ(1u, request->maybe_sent_cookies().size());
     EXPECT_EQ("another_cookie",
               request->maybe_sent_cookies().front().cookie.Name());
-    EXPECT_TRUE(request->maybe_sent_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_sent_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
 
     // Check maybe_sent_cookies on second round trip
     request->set_maybe_sent_cookies({});
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
     auto one_more_cookie = CanonicalCookie::Create(
         original_url_wo_cookie, "one_more_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
-                                original_url_wo_cookie.scheme(),
+                                original_url_wo_cookie,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
 
-    request->FollowDeferredRedirect(base::nullopt, base::nullopt);
+    request->FollowDeferredRedirect(absl::nullopt, absl::nullopt);
     delegate.RunUntilComplete();
     EXPECT_THAT(delegate.request_status(), IsOk());
 
     // There are DCHECKs in URLRequestHttpJob that would fail if
     // maybe_sent_cookies and maybe_stored_cookies we not cleared properly.
 
-    EXPECT_EQ(2, filtering_network_delegate.blocked_get_cookie_count());
+    EXPECT_EQ(2, filtering_network_delegate.blocked_annotate_cookies_count());
 
     // The number of cookies blocked from the most recent round trip.
     ASSERT_EQ(1u, request->maybe_sent_cookies().size());
     EXPECT_EQ("one_more_cookie",
               request->maybe_sent_cookies().front().cookie.Name());
     EXPECT_EQ("true", request->maybe_sent_cookies().front().cookie.Value());
-    EXPECT_TRUE(request->maybe_sent_cookies()
-                    .front()
-                    .status.HasExactlyExclusionReasonsForTesting(
-                        {net::CanonicalCookie::CookieInclusionStatus::
-                             EXCLUDE_USER_PREFERENCES}));
+    EXPECT_TRUE(
+        request->maybe_sent_cookies()
+            .front()
+            .access_result.status.HasExactlyExclusionReasonsForTesting(
+                {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
   }
 }
 
@@ -7657,7 +8714,7 @@ TEST_F(URLRequestTestHTTP, RedirectUpdateFirstPartyURL) {
         url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->set_site_for_cookies(SiteForCookies::FromUrl(original_first_party_url));
     r->set_first_party_url_policy(
-        URLRequest::UPDATE_FIRST_PARTY_URL_ON_REDIRECT);
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
 
     r->Start();
     d.RunUntilComplete();
@@ -7684,11 +8741,11 @@ TEST_F(URLRequestTestHTTP, InterceptPost302RedirectGet) {
                     base::NumberToString(base::size(kData) - 1));
   req->SetExtraRequestHeaders(headers);
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      http_test_server()->GetURL("/echo"),
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), http_test_server()->GetURL("/echo"),
+          RedirectUtil::ResponseCode::REDIRECT_302_FOUND, "Very Good Reason");
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
   d.RunUntilComplete();
@@ -7711,12 +8768,12 @@ TEST_F(URLRequestTestHTTP, InterceptPost307RedirectPost) {
                     base::NumberToString(base::size(kData) - 1));
   req->SetExtraRequestHeaders(headers);
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      http_test_server()->GetURL("/echo"),
-      URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
-      "Very Good Reason"));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), http_test_server()->GetURL("/echo"),
+          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+          "Very Good Reason");
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
   d.RunUntilComplete();
@@ -7797,6 +8854,31 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncoding) {
   req->Start();
   d.RunUntilComplete();
   EXPECT_TRUE(ContainsString(d.data_received(), "gzip"));
+}
+
+// Check that it's possible to override the default A-E header.
+TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverriden) {
+  ASSERT_TRUE(http_test_server()->Start());
+
+  struct {
+    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    const char* expected_accept_encoding;
+  } tests[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE}, "deflate"},
+               {{}, "None"},
+               {{net::SourceStream::SourceType::TYPE_GZIP}, "gzip"},
+               {{net::SourceStream::SourceType::TYPE_GZIP,
+                 net::SourceStream::SourceType::TYPE_DEFLATE},
+                "gzip, deflate"}};
+  for (auto test : tests) {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        http_test_server()->GetURL("/echoheader?Accept-Encoding"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_accepted_stream_types(test.accepted_types);
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_STRCASEEQ(d.data_received().c_str(), test.expected_accept_encoding);
+  }
 }
 
 // Check that if request overrides the A-E header, the default is not appended.
@@ -7906,30 +8988,37 @@ TEST_F(URLRequestTestHTTP, EmptyHttpUserAgentSettings) {
 // Make sure that URLRequest passes on its priority updates to
 // newly-created jobs after the first one.
 TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
-  ASSERT_TRUE(http_test_server()->Start());
+  GURL initial_url("http://foo.test/");
+  GURL redirect_url("http://bar.test/");
 
   TestDelegate d;
   std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-      http_test_server()->GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      initial_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   EXPECT_EQ(DEFAULT_PRIORITY, req->priority());
 
-  std::unique_ptr<URLRequestRedirectJob> redirect_job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      http_test_server()->GetURL("/echo"),
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
-  AddTestInterceptor()->set_main_intercept_job(std::move(redirect_job));
+  std::unique_ptr<URLRequestRedirectJob> redirect_job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), redirect_url,
+          RedirectUtil::ResponseCode::REDIRECT_302_FOUND, "Very Good Reason");
+  auto interceptor = std::make_unique<TestScopedURLInterceptor>(
+      initial_url, std::move(redirect_job));
 
   req->SetPriority(LOW);
   req->Start();
   EXPECT_TRUE(req->is_pending());
+  d.RunUntilRedirect();
+  interceptor.reset();
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
+  interceptor =
+      std::make_unique<TestScopedURLInterceptor>(redirect_url, std::move(job));
 
   // Should trigger |job| to be started.
+  req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
   d.RunUntilComplete();
   EXPECT_EQ(LOW, job_priority);
 }
@@ -7970,6 +9059,10 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
   explicit FailingHttpTransactionFactory(HttpNetworkSession* network_session)
       : network_session_(network_session) {}
 
+  FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
+  FailingHttpTransactionFactory& operator=(
+      const FailingHttpTransactionFactory&) = delete;
+
   ~FailingHttpTransactionFactory() override = default;
 
   // HttpTransactionFactory methods:
@@ -7984,8 +9077,6 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 
  private:
   HttpNetworkSession* network_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingHttpTransactionFactory);
 };
 
 }  // namespace
@@ -8011,7 +9102,7 @@ TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
                             TRAFFIC_ANNOTATION_FOR_TESTS));
   // Don't send cookies (Collecting cookies is asynchronous, and need request to
   // try to create an HttpNetworkTransaction synchronously on start).
-  req->SetLoadFlags(LOAD_DO_NOT_SEND_COOKIES);
+  req->set_allow_credentials(false);
   req->Start();
   req->Cancel();
   d.RunUntilComplete();
@@ -8049,7 +9140,7 @@ TEST_F(URLRequestTestHTTP, NetworkAccessedClearOnCachedResponse) {
   std::unique_ptr<URLRequest> req(default_context().CreateRequest(
       http_test_server()->GetURL("/cachetime"), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_network_isolation_key(network_isolation_key1_);
+  req->set_isolation_info(isolation_info1_);
   req->Start();
   d.RunUntilComplete();
 
@@ -8060,7 +9151,7 @@ TEST_F(URLRequestTestHTTP, NetworkAccessedClearOnCachedResponse) {
   req = default_context().CreateRequest(
       http_test_server()->GetURL("/cachetime"), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS);
-  req->set_network_isolation_key(network_isolation_key1_);
+  req->set_isolation_info(isolation_info1_);
   req->Start();
   d.RunUntilComplete();
 
@@ -8142,65 +9233,28 @@ TEST_F(URLRequestTestHTTP, TesBeforeStartTransactionFails) {
   EXPECT_EQ(ERR_FAILED, d.request_status());
 }
 
-class URLRequestInterceptorTestHTTP : public URLRequestTestHTTP {
- public:
-  // TODO(bengr): Merge this with the URLRequestInterceptorHTTPTest fixture,
-  // ideally remove the dependency on URLRequestTestJob, and maybe move these
-  // tests into the factory tests.
-  URLRequestInterceptorTestHTTP()
-      : URLRequestTestHTTP(), interceptor_(nullptr) {}
-
-  void SetUpFactory() override {
-    interceptor_ = new MockURLRequestInterceptor();
-    job_factory_.reset(new URLRequestInterceptingJobFactory(
-        std::move(job_factory_), base::WrapUnique(interceptor_)));
-  }
-
-  MockURLRequestInterceptor* interceptor() const {
-    return interceptor_;
-  }
-
- private:
-  MockURLRequestInterceptor* interceptor_;
-};
-
 class URLRequestTestReferrerPolicy : public URLRequestTest {
  public:
   URLRequestTestReferrerPolicy() = default;
 
   void InstantiateSameOriginServers(net::EmbeddedTestServer::Type type) {
-    origin_server_.reset(new EmbeddedTestServer(type));
-    if (type == net::EmbeddedTestServer::TYPE_HTTPS) {
-      origin_server_->AddDefaultHandlers(
-          base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
-    } else {
-      origin_server_->AddDefaultHandlers(base::FilePath(kTestFilePath));
-    }
+    origin_server_ = std::make_unique<EmbeddedTestServer>(type);
+    RegisterDefaultHandlers(origin_server_.get());
     ASSERT_TRUE(origin_server_->Start());
   }
 
   void InstantiateCrossOriginServers(net::EmbeddedTestServer::Type origin_type,
                                      net::EmbeddedTestServer::Type dest_type) {
-    origin_server_.reset(new EmbeddedTestServer(origin_type));
-    if (origin_type == net::EmbeddedTestServer::TYPE_HTTPS) {
-      origin_server_->AddDefaultHandlers(
-          base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
-    } else {
-      origin_server_->AddDefaultHandlers(base::FilePath(kTestFilePath));
-    }
+    origin_server_ = std::make_unique<EmbeddedTestServer>(origin_type);
+    RegisterDefaultHandlers(origin_server_.get());
     ASSERT_TRUE(origin_server_->Start());
 
-    destination_server_.reset(new EmbeddedTestServer(dest_type));
-    if (dest_type == net::EmbeddedTestServer::TYPE_HTTPS) {
-      destination_server_->AddDefaultHandlers(
-          base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
-    } else {
-      destination_server_->AddDefaultHandlers(base::FilePath(kTestFilePath));
-    }
+    destination_server_ = std::make_unique<EmbeddedTestServer>(dest_type);
+    RegisterDefaultHandlers(destination_server_.get());
     ASSERT_TRUE(destination_server_->Start());
   }
 
-  void VerifyReferrerAfterRedirect(URLRequest::ReferrerPolicy policy,
+  void VerifyReferrerAfterRedirect(ReferrerPolicy policy,
                                    const GURL& referrer,
                                    const GURL& expected) {
     // Create and execute the request: we'll only have a |destination_server_|
@@ -8245,39 +9299,39 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToSameOriginHTTP) {
 
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, referrer);
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, referrer);
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer, referrer);
-
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
-
-  // The original referrer set on the request is expected to obey the referrer
-  // policy and already be stripped to the origin; thus this test case just
-  // checks that this policy doesn't cause the referrer to change when following
-  // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
       referrer);
 
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer);
+
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer);
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
+
+  // The original referrer set on the request is expected to obey the referrer
+  // policy and already be stripped to the origin; thus this test case just
+  // checks that this policy doesn't cause the referrer to change when following
+  // a redirect.
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, referrer);
+
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 TEST_F(URLRequestTestReferrerPolicy, HTTPToCrossOriginHTTP) {
@@ -8286,39 +9340,39 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToCrossOriginHTTP) {
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
 
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, referrer);
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
+      referrer);
 
   VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, referrer.GetOrigin());
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
-      referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer, GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, GURL());
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 TEST_F(URLRequestTestReferrerPolicy, HTTPSToSameOriginHTTPS) {
@@ -8326,39 +9380,39 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToSameOriginHTTPS) {
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
 
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, referrer);
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, referrer);
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer, referrer);
-
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
-
-  // The original referrer set on the request is expected to obey the referrer
-  // policy and already be stripped to the origin; thus this test case just
-  // checks that this policy doesn't cause the referrer to change when following
-  // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
       referrer);
 
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer);
+
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      referrer);
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
+
+  // The original referrer set on the request is expected to obey the referrer
+  // policy and already be stripped to the origin; thus this test case just
+  // checks that this policy doesn't cause the referrer to change when following
+  // a redirect.
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, referrer);
+
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 TEST_F(URLRequestTestReferrerPolicy, HTTPSToCrossOriginHTTPS) {
@@ -8367,39 +9421,39 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToCrossOriginHTTPS) {
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
 
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, referrer);
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
+      referrer);
 
   VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, origin_server()->GetURL("/"));
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
       origin_server()->GetURL("/"));
 
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      origin_server()->GetURL("/"));
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer, GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, GURL());
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 TEST_F(URLRequestTestReferrerPolicy, HTTPToHTTPS) {
@@ -8408,39 +9462,39 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToHTTPS) {
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
 
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, referrer);
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
+      referrer);
 
   VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, origin_server()->GetURL("/"));
-
-  VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
       origin_server()->GetURL("/"));
 
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
+  VerifyReferrerAfterRedirect(
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      origin_server()->GetURL("/"));
+
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer, GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, GURL());
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 TEST_F(URLRequestTestReferrerPolicy, HTTPSToHTTP) {
@@ -8449,38 +9503,38 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToHTTP) {
   GURL referrer = origin_server()->GetURL("/path/to/file.html");
 
   VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer, GURL());
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE, referrer,
+      GURL());
 
   VerifyReferrerAfterRedirect(
-      URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      referrer, GURL());
+      ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      GURL());
 
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
+      ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
       origin_server()->GetURL("/"));
 
-  VerifyReferrerAfterRedirect(URLRequest::NEVER_CLEAR_REFERRER, referrer,
-                              referrer);
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(URLRequest::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
-  VerifyReferrerAfterRedirect(
-      URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN, referrer, GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
+                              referrer, GURL());
 
   // The original referrer set on the request is expected to obey the referrer
   // policy and already be stripped to the origin, though it should be
   // subsequently cleared during the downgrading redirect.
   VerifyReferrerAfterRedirect(
-      URLRequest::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), GURL());
+      ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
+      referrer.DeprecatedGetOriginAsURL(), GURL());
 
-  VerifyReferrerAfterRedirect(URLRequest::NO_REFERRER, GURL(), GURL());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
 
 class HTTPSRequestTest : public TestWithTaskEnvironment {
@@ -8500,8 +9554,7 @@ class HTTPSRequestTest : public TestWithTaskEnvironment {
 
 TEST_F(HTTPSRequestTest, HTTPSGetTest) {
   EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   TestDelegate d;
@@ -8528,12 +9581,11 @@ TEST_F(HTTPSRequestTest, HTTPSGetTest) {
 TEST_F(HTTPSRequestTest, HTTPSMismatchedTest) {
   EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   bool err_allowed = true;
-  for (int i = 0; i < 2 ; i++, err_allowed = !err_allowed) {
+  for (int i = 0; i < 2; i++, err_allowed = !err_allowed) {
     TestDelegate d;
     {
       d.set_allow_certificate_errors(err_allowed);
@@ -8562,14 +9614,13 @@ TEST_F(HTTPSRequestTest, HTTPSMismatchedTest) {
 TEST_F(HTTPSRequestTest, HTTPSExpiredTest) {
   EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   // Iterate from false to true, just so that we do the opposite of the
   // previous test in order to increase test coverage.
   bool err_allowed = false;
-  for (int i = 0; i < 2 ; i++, err_allowed = !err_allowed) {
+  for (int i = 0; i < 2; i++, err_allowed = !err_allowed) {
     TestDelegate d;
     {
       d.set_allow_certificate_errors(err_allowed);
@@ -8624,8 +9675,7 @@ class SSLNetErrorTestDelegate : public TestDelegate {
 TEST_F(HTTPSRequestTest, SSLNetErrorReportedToDelegate) {
   EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   SSLNetErrorTestDelegate d;
@@ -8657,10 +9707,11 @@ TEST_F(HTTPSRequestTest, HTTPSPreloadedHSTSTest) {
   // We require that the URL be hsts-hpkp-preloaded.test. This is a test domain
   // that has a preloaded HSTS+HPKP entry in the TransportSecurityState. This
   // means that we have to use a MockHostResolver in order to direct
-  // hsts-hpkp-preloaded.test to the testserver. By default, MockHostResolver
-  // maps all hosts to 127.0.0.1.
+  // hsts-hpkp-preloaded.test to the testserver.
 
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("hsts-hpkp-preloaded.test",
+                                 test_server.GetIPLiteralString());
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -8701,10 +9752,11 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   // We require that the URL be hsts-hpkp-preloaded.test. This is a test domain
   // that has a preloaded HSTS+HPKP entry in the TransportSecurityState. This
   // means that we have to use a MockHostResolver in order to direct
-  // hsts-hpkp-preloaded.test to the testserver. By default, MockHostResolver
-  // maps all hosts to 127.0.0.1.
+  // hsts-hpkp-preloaded.test to the testserver.
 
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("hsts-hpkp-preloaded.test",
+                                 test_server.GetIPLiteralString());
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
@@ -8721,7 +9773,7 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   TransportSecurityState::STSState dynamic_sts_state;
   TransportSecurityState::PKPState dynamic_pkp_state;
   EXPECT_FALSE(transport_security_state.GetDynamicSTSState(
-      "hsts-hpkp-preloaded.test", &dynamic_sts_state, nullptr));
+      "hsts-hpkp-preloaded.test", &dynamic_sts_state));
   EXPECT_FALSE(transport_security_state.GetDynamicPKPState(
       "hsts-hpkp-preloaded.test", &dynamic_pkp_state));
 
@@ -8750,7 +9802,7 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   TransportSecurityState::STSState new_dynamic_sts_state;
   TransportSecurityState::PKPState new_dynamic_pkp_state;
   EXPECT_FALSE(transport_security_state.GetDynamicSTSState(
-      "hsts-hpkp-preloaded.test", &new_dynamic_sts_state, nullptr));
+      "hsts-hpkp-preloaded.test", &new_dynamic_sts_state));
   EXPECT_FALSE(transport_security_state.GetDynamicPKPState(
       "hsts-hpkp-preloaded.test", &new_dynamic_pkp_state));
 
@@ -8769,20 +9821,19 @@ TEST_F(HTTPSRequestTest, HSTSPreservesPosts) {
   static const char kData[] = "hello world";
 
   EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
-
 
   // Per spec, TransportSecurityState expects a domain name, rather than an IP
   // address, so a MockHostResolver is needed to redirect www.somewhere.com to
-  // the EmbeddedTestServer.  By default, MockHostResolver maps all hosts
-  // to 127.0.0.1.
+  // the EmbeddedTestServer.
   MockHostResolver host_resolver;
+  host_resolver.rules()->AddRule("www.somewhere.com",
+                                 test_server.GetIPLiteralString());
 
   // Force https for www.somewhere.com.
   TransportSecurityState transport_security_state;
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   transport_security_state.AddHSTS("www.somewhere.com", expiry,
                                    include_subdomains);
@@ -8835,7 +9886,7 @@ TEST_F(HTTPSRequestTest, HSTSCrossOriginAddHeaders) {
   MockHostResolver host_resolver;
 
   TransportSecurityState transport_security_state;
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time expiry = base::Time::Now() + base::Days(1);
   bool include_subdomains = false;
   transport_security_state.AddHSTS("example.net", expiry, include_subdomains);
 
@@ -8904,6 +9955,7 @@ class SSLClientAuthTestDelegate : public TestDelegate {
   int on_certificate_requested_count() {
     return on_certificate_requested_count_;
   }
+
  private:
   int on_certificate_requested_count_;
   base::OnceClosure on_certificate_requested_;
@@ -8955,8 +10007,7 @@ TEST_F(HTTPSRequestTest, ClientAuthNoCertificate) {
   ssl_config.client_cert_type =
       SSLServerConfig::ClientCertType::OPTIONAL_CLIENT_CERT;
   test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   SSLClientAuthTestDelegate d;
@@ -9002,8 +10053,7 @@ TEST_F(HTTPSRequestTest, ClientAuth) {
   ssl_config.client_cert_type =
       SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
   test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   {
@@ -9039,7 +10089,7 @@ TEST_F(HTTPSRequestTest, ClientAuth) {
   // Close all connections and clear the session cache to force a new handshake.
   default_context_.http_transaction_factory()
       ->GetSession()
-      ->CloseAllConnections();
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
   default_context_.http_transaction_factory()
       ->GetSession()
       ->ClearSSLSessionCache();
@@ -9084,8 +10134,7 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigning) {
   ssl_config.client_cert_type =
       SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
   test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   {
@@ -9121,7 +10170,7 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigning) {
   // Close all connections and clear the session cache to force a new handshake.
   default_context_.http_transaction_factory()
       ->GetSession()
-      ->CloseAllConnections();
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
   default_context_.http_transaction_factory()
       ->GetSession()
       ->ClearSSLSessionCache();
@@ -9165,8 +10214,7 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigningRetry) {
   ssl_config.client_cert_type =
       SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
   test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
   // Connect with a client certificate to put it in the client auth cache.
@@ -9201,7 +10249,7 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigningRetry) {
   // Close all connections and clear the session cache to force a new handshake.
   default_context_.http_transaction_factory()
       ->GetSession()
-      ->CloseAllConnections();
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
   default_context_.http_transaction_factory()
       ->GetSession()
       ->ClearSSLSessionCache();
@@ -9235,15 +10283,12 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigningRetry) {
 }
 
 TEST_F(HTTPSRequestTest, ResumeTest) {
-  // Test that we attempt a session resume when making two connections to the
+  // Test that we attempt resume sessions when making two connections to the
   // same host.
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS,
-      ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -9252,8 +10297,7 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -9261,64 +10305,34 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r->ssl_info().handshake_type);
   }
 
-  reinterpret_cast<HttpCache*>(default_context_.http_transaction_factory())->
-    CloseAllConnections();
+  reinterpret_cast<HttpCache*>(default_context_.http_transaction_factory())
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
 
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
     d.RunUntilComplete();
 
-    // The response will look like;
-    //   lookup uvw (TLS 1.3's compatibility session ID)
-    //   insert abc
-    //   lookup abc
-    //   insert xyz
-    //
-    // With a newline at the end which makes the split think that there are
-    // four lines.
-
     EXPECT_EQ(1, d.response_started_count());
-    std::vector<std::string> lines = base::SplitString(
-        d.data_received(), "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    ASSERT_EQ(5u, lines.size()) << d.data_received();
-
-    std::string session_id;
-
-    for (size_t i = 0; i < 3; i++) {
-      std::vector<std::string> parts = base::SplitString(
-          lines[i], "\t", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-      ASSERT_EQ(2u, parts.size());
-      if (i % 2 == 1) {
-        EXPECT_EQ("insert", parts[0]);
-        session_id = parts[1];
-      } else {
-        EXPECT_EQ("lookup", parts[0]);
-        if (i != 0)
-          EXPECT_EQ(session_id, parts[1]);
-      }
-    }
+    EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r->ssl_info().handshake_type);
   }
 }
 
+// Test that sessions aren't resumed across HttpNetworkSessions.
 TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
-  // Test that sessions aren't resumed when the value of ssl_session_cache_shard
-  // differs.
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS,
-      ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  // Start a server.
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -9327,8 +10341,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("/"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -9338,16 +10351,15 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
     EXPECT_EQ(1, d.response_started_count());
   }
 
-  // Now create a new HttpCache with a different ssl_session_cache_shard value.
-  HttpNetworkSession::Context session_context;
+  // Now create a new HttpNetworkSession.
+  HttpNetworkSessionContext session_context;
   session_context.host_resolver = default_context_.host_resolver();
   session_context.cert_verifier = default_context_.cert_verifier();
   session_context.transport_security_state =
       default_context_.transport_security_state();
-  session_context.cert_transparency_verifier =
-      default_context_.cert_transparency_verifier();
   session_context.ct_policy_enforcer = default_context_.ct_policy_enforcer();
-  session_context.proxy_resolution_service = default_context_.proxy_resolution_service();
+  session_context.proxy_resolution_service =
+      default_context_.proxy_resolution_service();
   session_context.ssl_config_service = default_context_.ssl_config_service();
   session_context.http_auth_handler_factory =
       default_context_.http_auth_handler_factory();
@@ -9355,7 +10367,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
       default_context_.http_server_properties();
   session_context.quic_context = default_context_.quic_context();
 
-  HttpNetworkSession network_session(HttpNetworkSession::Params(),
+  HttpNetworkSession network_session(HttpNetworkSessionParams(),
                                      session_context);
   std::unique_ptr<HttpCache> cache(
       new HttpCache(&network_session, HttpCache::DefaultBackend::InMemory(0),
@@ -9366,8 +10378,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -9383,9 +10394,8 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
 // it is disabled, and vice versa.
 TEST_F(HTTPSRequestTest, NoSessionResumptionBetweenPrivacyModes) {
   // Start a server.
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, SpawnedTestServer::SSLOptions(),
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
   const auto url = test_server.GetURL("/");
 
@@ -9449,8 +10459,7 @@ class HTTPSFallbackTest : public TestWithTaskEnvironment {
     delegate_.set_allow_certificate_errors(true);
 
     SpawnedTestServer test_server(
-        SpawnedTestServer::TYPE_HTTPS,
-        ssl_options,
+        SpawnedTestServer::TYPE_HTTPS, ssl_options,
         base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
     ASSERT_TRUE(test_server.Start());
 
@@ -9533,13 +10542,10 @@ class HTTPSSessionTest : public TestWithTaskEnvironment {
 // Tests that session resumption is not attempted if an invalid certificate
 // is presented.
 TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS,
-      ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -9550,8 +10556,7 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("/"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -9561,8 +10566,8 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
     EXPECT_EQ(1, d.response_started_count());
   }
 
-  reinterpret_cast<HttpCache*>(default_context_.http_transaction_factory())->
-    CloseAllConnections();
+  reinterpret_cast<HttpCache*>(default_context_.http_transaction_factory())
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
 
   // Now change the certificate to be acceptable (so that the response is
   // loaded), and ensure that no session id is presented to the peer.
@@ -9570,8 +10575,7 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -9583,35 +10587,26 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   }
 }
 
-// This the fingerprint of the "Testing CA" certificate used by the testserver.
-// See net/data/ssl/certificates/ocsp-test-root.pem.
-static const SHA256HashValue kOCSPTestCertFingerprint = {{
-    0x0c, 0xa9, 0x05, 0x11, 0xb0, 0xa2, 0xc0, 0x1d, 0x40, 0x6a, 0x99,
-    0x04, 0x21, 0x36, 0x45, 0x3f, 0x59, 0x12, 0x5c, 0x80, 0x64, 0x2d,
-    0x46, 0x6a, 0x3b, 0x78, 0x9e, 0x84, 0xea, 0x54, 0x0f, 0x8b,
-}};
-
-// This is the SHA256, SPKI hash of the "Testing CA" certificate used by the
-// testserver.
-static const SHA256HashValue kOCSPTestCertSPKI = {{
-    0x05, 0xa8, 0xf6, 0xfd, 0x8e, 0x10, 0xfe, 0x92, 0x2f, 0x22, 0x75,
-    0x46, 0x40, 0xf4, 0xc4, 0x57, 0x06, 0x0d, 0x95, 0xfd, 0x60, 0x31,
-    0x3b, 0xf3, 0xfc, 0x12, 0x47, 0xe7, 0x66, 0x1a, 0x82, 0xa3,
-}};
-
-// This is the policy OID contained in the certificates that testserver
-// generates.
-static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
-
-class HTTPSOCSPTest : public HTTPSRequestTest {
+// Interceptor to check that secure DNS has been disabled. Secure DNS should be
+// disabled for any network fetch triggered during certificate verification as
+// it could cause a deadlock.
+class SecureDnsInterceptor : public net::URLRequestInterceptor {
  public:
-  HTTPSOCSPTest()
-      : context_(true),
-        ev_test_policy_(
-            new ScopedTestEVPolicy(EVRootCAMetadata::GetInstance(),
-                                   kOCSPTestCertFingerprint,
-                                   kOCSPTestCertPolicy)) {
+  SecureDnsInterceptor() = default;
+  ~SecureDnsInterceptor() override = default;
+
+ private:
+  // URLRequestInterceptor implementation:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    EXPECT_EQ(SecureDnsPolicy::kDisable, request->secure_dns_policy());
+    return nullptr;
   }
+};
+
+class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
+ public:
+  HTTPSCertNetFetchingTest() : context_(true) {}
 
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
@@ -9620,30 +10615,28 @@ class HTTPSOCSPTest : public HTTPSRequestTest {
     context_.SetCTPolicyEnforcer(std::make_unique<DefaultCTPolicyEnforcer>());
     context_.Init();
 
+    net::URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "http", "127.0.0.1", std::make_unique<SecureDnsInterceptor>());
+
     cert_net_fetcher_->SetURLRequestContext(&context_);
     context_.cert_verifier()->SetConfig(GetCertVerifierConfig());
+  }
 
-    scoped_refptr<X509Certificate> root_cert =
-        ImportCertFromFile(GetTestCertsDirectory(), "ocsp-test-root.pem");
-    ASSERT_TRUE(root_cert);
-    test_root_.reset(new ScopedTestRoot(root_cert.get()));
-
-#if defined(USE_NSS_CERTS)
-    SetURLRequestContextForNSSHttpIO(&context_);
-#endif
+  void TearDown() override {
+    cert_net_fetcher_->Shutdown();
+    net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
   void DoConnectionWithDelegate(
-      const SpawnedTestServer::SSLOptions& ssl_options,
+      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
       TestDelegate* delegate,
       SSLInfo* out_ssl_info) {
     // Always overwrite |out_ssl_info|.
     out_ssl_info->Reset();
 
-    SpawnedTestServer test_server(
-        SpawnedTestServer::TYPE_HTTPS,
-        ssl_options,
-        base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+    EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+    test_server.SetSSLConfig(cert_config);
+    RegisterDefaultHandlers(&test_server);
     ASSERT_TRUE(test_server.Start());
 
     delegate->set_allow_certificate_errors(true);
@@ -9658,24 +10651,18 @@ class HTTPSOCSPTest : public HTTPSRequestTest {
     *out_ssl_info = r->ssl_info();
   }
 
-  void DoConnection(const SpawnedTestServer::SSLOptions& ssl_options,
-                    CertStatus* out_cert_status) {
+  void DoConnection(
+      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      CertStatus* out_cert_status) {
     // Always overwrite |out_cert_status|.
     *out_cert_status = 0;
 
     TestDelegate d;
     SSLInfo ssl_info;
     ASSERT_NO_FATAL_FAILURE(
-        DoConnectionWithDelegate(ssl_options, &d, &ssl_info));
+        DoConnectionWithDelegate(cert_config, &d, &ssl_info));
 
     *out_cert_status = ssl_info.cert_status;
-  }
-
-  ~HTTPSOCSPTest() override {
-    cert_net_fetcher_->Shutdown();
-#if defined(USE_NSS_CERTS)
-    SetURLRequestContextForNSSHttpIO(nullptr);
-#endif
   }
 
  protected:
@@ -9684,26 +10671,65 @@ class HTTPSOCSPTest : public HTTPSRequestTest {
   // subclasses for different behaviour.
   virtual CertVerifier::Config GetCertVerifierConfig() {
     CertVerifier::Config config;
+    return config;
+  }
+
+  scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
+  std::unique_ptr<CertVerifier> cert_verifier_;
+  TestURLRequestContext context_;
+};
+
+// SHA256 hash of the testserver root_ca_cert DER.
+// openssl x509 -in root_ca_cert.pem -outform der | \
+//   openssl dgst -sha256 -binary | xxd -i
+static const SHA256HashValue kTestRootCertHash = {
+    {0xb2, 0xab, 0xa3, 0xa5, 0xd4, 0x11, 0x56, 0xcb, 0xb9, 0x23, 0x35,
+     0x07, 0x6d, 0x0b, 0x51, 0xbe, 0xd3, 0xee, 0x2e, 0xab, 0xe7, 0xab,
+     0x6b, 0xad, 0xcc, 0x2a, 0xfa, 0x35, 0xfb, 0x8e, 0x31, 0x5e}};
+
+// SHA256 hash of the DER SPKI of the testserver root_ca_cert.
+// openssl x509 -in root_ca_cert.pem -pubkey -noout | \
+//   openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | xxd -i
+static const SHA256HashValue kTestRootCertSPKIHash = {
+    {0x57, 0x2a, 0x4f, 0xdd, 0x55, 0x8b, 0xec, 0xe6, 0xaa, 0x4c, 0x9e,
+     0xe6, 0x20, 0x17, 0xa1, 0x59, 0x89, 0x6f, 0xf2, 0x48, 0x4f, 0xb8,
+     0x51, 0xe9, 0x5a, 0x27, 0x9a, 0xad, 0x92, 0x36, 0x62, 0x32}};
+
+// The test EV policy OID used for generated certs.
+static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
+
+class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
+ public:
+  void SetUp() override {
+    HTTPSCertNetFetchingTest::SetUp();
+
+    ev_test_policy_ = std::make_unique<ScopedTestEVPolicy>(
+        EVRootCAMetadata::GetInstance(), kTestRootCertHash,
+        kOCSPTestCertPolicy);
+  }
+
+  void TearDown() override { HTTPSCertNetFetchingTest::TearDown(); }
+
+  CertVerifier::Config GetCertVerifierConfig() override {
+    CertVerifier::Config config;
     config.enable_rev_checking = true;
     return config;
   }
 
-  std::unique_ptr<ScopedTestRoot> test_root_;
-  std::unique_ptr<TestSSLConfigService> ssl_config_service_;
-  scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
-  std::unique_ptr<CertVerifier> cert_verifier_;
-  TestURLRequestContext context_;
+ private:
   std::unique_ptr<ScopedTestEVPolicy> ev_test_policy_;
 };
 
 static bool UsingBuiltinCertVerifier() {
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   return true;
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#else
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature))
     return true;
 #endif
   return false;
+#endif
 }
 
 // SystemSupportsHardFailRevocationChecking returns true iff the current
@@ -9716,7 +10742,7 @@ static bool UsingBuiltinCertVerifier() {
 static bool SystemSupportsHardFailRevocationChecking() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_WIN) || defined(USE_NSS_CERTS)
+#if defined(OS_WIN)
   return true;
 #else
   return false;
@@ -9751,7 +10777,7 @@ static bool SystemSupportsOCSPStapling() {
     return true;
 #if defined(OS_ANDROID)
   return false;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   // The SecTrustSetOCSPResponse function exists since macOS 10.9+, but does
   // not actually do anything until 10.12.
   if (base::mac::IsAtLeastOS10_12())
@@ -9778,12 +10804,14 @@ TEST_F(HTTPSOCSPTest, Valid) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -9799,12 +10827,14 @@ TEST_F(HTTPSOCSPTest, Revoked) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_REVOKED;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
   EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
@@ -9817,13 +10847,13 @@ TEST_F(HTTPSOCSPTest, Invalid) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   // Without a positive OCSP response, we shouldn't show the EV status, but also
   // should not show any revocation checking errors.
@@ -9838,13 +10868,18 @@ TEST_F(HTTPSOCSPTest, IntermediateValid) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO_WITH_INTERMEDIATE);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.ocsp_intermediate_status = SpawnedTestServer::SSLOptions::OCSP_OK;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -9860,17 +10895,20 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseOldButStillValid) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO_WITH_INTERMEDIATE);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.ocsp_intermediate_status = SpawnedTestServer::SSLOptions::OCSP_OK;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   // Use an OCSP response for the intermediate that would be too old for a leaf
   // cert, but is still valid for an intermediate.
-  ssl_options.ocsp_intermediate_date =
-      SpawnedTestServer::SSLOptions::OCSP_DATE_LONG;
+  cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -9886,15 +10924,18 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseTooOld) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO_WITH_INTERMEDIATE);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.ocsp_intermediate_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.ocsp_intermediate_date =
-      SpawnedTestServer::SSLOptions::OCSP_DATE_LONGER;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   if (UsingBuiltinCertVerifier()) {
     // The builtin verifier enforces the baseline requirements for max age of an
@@ -9916,14 +10957,18 @@ TEST_F(HTTPSOCSPTest, IntermediateRevoked) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO_WITH_INTERMEDIATE);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.ocsp_intermediate_status =
-      SpawnedTestServer::SSLOptions::OCSP_REVOKED;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
 #if defined(OS_WIN)
   // TODO(mattm): Seems to be flaky on Windows. Either returns
@@ -9945,14 +10990,19 @@ TEST_F(HTTPSOCSPTest, ValidStapled) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.staple_ocsp_response = true;
-  ssl_options.ocsp_server_unavailable = true;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+
+  // AIA OCSP url is included, but does not return a successful ocsp response.
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
+
+  cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -9969,275 +11019,279 @@ TEST_F(HTTPSOCSPTest, RevokedStapled) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_REVOKED;
-  ssl_options.staple_ocsp_response = true;
-  ssl_options.ocsp_server_unavailable = true;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+
+  // AIA OCSP url is included, but does not return a successful ocsp response.
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
+
+  cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
   EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
   EXPECT_TRUE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
+TEST_F(HTTPSOCSPTest, OldStapledAndInvalidAIA) {
+  if (!SystemSupportsOCSPStapling()) {
+    LOG(WARNING)
+        << "Skipping test because system doesn't support OCSP stapling";
+    return;
+  }
+
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+
+  // Stapled response indicates good, but is too old.
+  cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
+
+  // AIA OCSP url is included, but does not return a successful ocsp response.
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
+
+  CertStatus cert_status;
+  DoConnection(cert_config, &cert_status);
+
+  EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
+  EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
+  EXPECT_TRUE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+TEST_F(HTTPSOCSPTest, OldStapledButValidAIA) {
+  if (!SystemSupportsOCSPStapling()) {
+    LOG(WARNING)
+        << "Skipping test because system doesn't support OCSP stapling";
+    return;
+  }
+
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+
+  // Stapled response indicates good, but response is too old.
+  cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
+
+  // AIA OCSP url is included, and returns a successful ocsp response.
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+
+  CertStatus cert_status;
+  DoConnection(cert_config, &cert_status);
+
+  EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
+  EXPECT_EQ(SystemUsesChromiumEVMetadata(),
+            static_cast<bool>(cert_status & CERT_STATUS_IS_EV));
+  EXPECT_TRUE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
 static const struct OCSPVerifyTestData {
-  std::vector<SpawnedTestServer::SSLOptions::OCSPSingleResponse> ocsp_responses;
-  SpawnedTestServer::SSLOptions::OCSPProduced ocsp_produced;
-  OCSPVerifyResult::ResponseStatus response_status;
-  bool has_revocation_status;
-  OCSPRevocationStatus cert_status;
+  EmbeddedTestServer::OCSPConfig ocsp_config;
+  OCSPVerifyResult::ResponseStatus expected_response_status;
+  // |expected_cert_status| is only used if |expected_response_status| is
+  // PROVIDED.
+  OCSPRevocationStatus expected_cert_status;
 } kOCSPVerifyData[] = {
     // 0
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::GOOD},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
 
     // 1
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_OLD}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 2
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 3
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 4
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater),
+     OCSPVerifyResult::ERROR_RESPONSE, OCSPRevocationStatus::UNKNOWN},
 
     // 5
-    {{{SpawnedTestServer::SSLOptions::OCSP_TRY_LATER,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::ERROR_RESPONSE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse),
+     OCSPVerifyResult::PARSE_RESPONSE_ERROR, OCSPRevocationStatus::UNKNOWN},
 
     // 6
-    {{{SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PARSE_RESPONSE_ERROR,
-     false,
+    {EmbeddedTestServer::OCSPConfig(
+         EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponseData),
+     OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR,
      OCSPRevocationStatus::UNKNOWN},
 
     // 7
-    {{{SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE_DATA,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 8
-    {{{SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
 
     // 9
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 10
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_OLD}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 11
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kBeforeCert),
+     OCSPVerifyResult::BAD_PRODUCED_AT, OCSPRevocationStatus::UNKNOWN},
 
     // 12
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_BEFORE_CERT,
-     OCSPVerifyResult::BAD_PRODUCED_AT,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kAfterCert),
+     OCSPVerifyResult::BAD_PRODUCED_AT, OCSPRevocationStatus::UNKNOWN},
 
     // 13
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_AFTER_CERT,
-     OCSPVerifyResult::BAD_PRODUCED_AT,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
 
     // 14
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_AFTER_CERT,
-     OCSPVerifyResult::BAD_PRODUCED_AT,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
 
     // 15
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::GOOD},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
 
     // 16
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_OLD},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::GOOD},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 17
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::GOOD},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
+          {OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::REVOKED},
 
     // 18
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::GOOD},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
 
     // 19
-    {{{SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_OLD},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::UNKNOWN,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
+          {OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong},
+          {OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
 
     // 20
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID},
-      {SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::REVOKED},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Serial::kMismatch}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::NO_MATCHING_RESPONSE, OCSPRevocationStatus::UNKNOWN},
 
     // 21
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::GOOD,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Serial::kMismatch}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::NO_MATCHING_RESPONSE, OCSPRevocationStatus::UNKNOWN},
 
     // 22
-    {{{SpawnedTestServer::SSLOptions::OCSP_UNKNOWN,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID},
-      {SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG},
-      {SpawnedTestServer::SSLOptions::OCSP_OK,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::REVOKED},
 
     // 23
-    {{{SpawnedTestServer::SSLOptions::OCSP_MISMATCHED_SERIAL,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::NO_MATCHING_RESPONSE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 
     // 24
-    {{{SpawnedTestServer::SSLOptions::OCSP_MISMATCHED_SERIAL,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_EARLY}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::NO_MATCHING_RESPONSE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
-
-// These tests fail when using NSS for certificate verification, as NSS fails
-// and doesn't return the partial path. As a result the OCSP checks being done
-// at the CertVerifyProc layer cannot access the issuer certificate.
-#if !defined(USE_NSS_CERTS)
-    // 25
-    {{{SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_VALID}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::PROVIDED,
-     true,
-     OCSPRevocationStatus::REVOKED},
-
-    // 26
-    {{{SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_OLD}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
-
-    // 27
-    {{{SpawnedTestServer::SSLOptions::OCSP_REVOKED,
-       SpawnedTestServer::SSLOptions::OCSP_DATE_LONG}},
-     SpawnedTestServer::SSLOptions::OCSP_PRODUCED_VALID,
-     OCSPVerifyResult::INVALID_DATE,
-     false,
-     OCSPRevocationStatus::UNKNOWN},
-#endif
+    {EmbeddedTestServer::OCSPConfig(
+         {{OCSPRevocationStatus::REVOKED,
+           EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
+         EmbeddedTestServer::OCSPConfig::Produced::kValid),
+     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
 };
 
 class HTTPSOCSPVerifyTest
@@ -10245,18 +11299,16 @@ class HTTPSOCSPVerifyTest
       public testing::WithParamInterface<OCSPVerifyTestData> {};
 
 TEST_P(HTTPSOCSPVerifyTest, VerifyResult) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
   OCSPVerifyTestData test = GetParam();
 
-  ssl_options.ocsp_responses = test.ocsp_responses;
-  ssl_options.ocsp_produced = test.ocsp_produced;
-  ssl_options.staple_ocsp_response = true;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.stapled_ocsp_config = test.ocsp_config;
 
   SSLInfo ssl_info;
   OCSPErrorTestDelegate delegate;
   ASSERT_NO_FATAL_FAILURE(
-      DoConnectionWithDelegate(ssl_options, &delegate, &ssl_info));
+      DoConnectionWithDelegate(cert_config, &delegate, &ssl_info));
 
   // The SSLInfo must be extracted from |delegate| on error, due to how
   // URLRequest caches certificate errors.
@@ -10265,35 +11317,28 @@ TEST_P(HTTPSOCSPVerifyTest, VerifyResult) {
     ssl_info = delegate.ssl_info();
   }
 
-  EXPECT_EQ(test.response_status, ssl_info.ocsp_result.response_status);
+  EXPECT_EQ(test.expected_response_status,
+            ssl_info.ocsp_result.response_status);
 
-  if (test.has_revocation_status)
-    EXPECT_EQ(test.cert_status, ssl_info.ocsp_result.revocation_status);
+  if (test.expected_response_status == OCSPVerifyResult::PROVIDED) {
+    EXPECT_EQ(test.expected_cert_status,
+              ssl_info.ocsp_result.revocation_status);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(OCSPVerify,
                          HTTPSOCSPVerifyTest,
                          testing::ValuesIn(kOCSPVerifyData));
 
-class HTTPSAIATest : public HTTPSOCSPTest {
- public:
-  CertVerifier::Config GetCertVerifierConfig() override {
-    CertVerifier::Config config;
-    return config;
-  }
-};
+class HTTPSAIATest : public HTTPSCertNetFetchingTest {};
 
 TEST_F(HTTPSAIATest, AIAFetching) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO_AIA_INTERMEDIATE);
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.intermediate = EmbeddedTestServer::IntermediateType::kByAIA;
+  test_server.SetSSLConfig(cert_config);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
-
-  // Unmark the certificate's OID as EV, which will disable revocation
-  // checking.
-  ev_test_policy_.reset();
 
   TestDelegate d;
   d.set_allow_certificate_errors(true);
@@ -10338,25 +11383,16 @@ TEST_F(HTTPSHardFailTest, FailsOnOCSPInvalid) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
-  if (UsingBuiltinCertVerifier()) {
-    EXPECT_EQ(CERT_STATUS_UNABLE_TO_CHECK_REVOCATION,
-              cert_status & CERT_STATUS_ALL_ERRORS);
-  } else {
-#if defined(USE_NSS_CERTS)
-    EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
-#else
-    EXPECT_EQ(CERT_STATUS_UNABLE_TO_CHECK_REVOCATION,
-              cert_status & CERT_STATUS_ALL_ERRORS);
-#endif
-  }
+  EXPECT_EQ(CERT_STATUS_UNABLE_TO_CHECK_REVOCATION,
+            cert_status & CERT_STATUS_ALL_ERRORS);
 
   // Without a positive OCSP response, we shouldn't show the EV status.
   EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
@@ -10377,13 +11413,13 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndInvalidOCSP) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
@@ -10397,12 +11433,14 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndRevokedOCSP) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_REVOKED;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   // The CertVerifyProc implementations handle revocation on the EV
   // verification differently. Some will return a revoked error, others will
@@ -10413,7 +11451,7 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndRevokedOCSP) {
     // TODO(https://crbug.com/410574): Handle this in builtin verifier too?
     EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   } else {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     if (!base::mac::IsAtLeastOS10_12()) {
       // On older macOS versions, revocation failures might also end up with
       // CERT_STATUS_NO_REVOCATION_MECHANISM status added. (See comment for
@@ -10443,12 +11481,14 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndGoodOCSP) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -10464,16 +11504,17 @@ TEST_F(HTTPSEVCRLSetTest, ExpiredCRLSet) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
+
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set = CRLSet::ExpiredCRLSetForTesting();
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   EXPECT_FALSE(cert_status & CERT_STATUS_IS_EV);
@@ -10487,17 +11528,18 @@ TEST_F(HTTPSEVCRLSetTest, FreshCRLSetCovered) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
+
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set =
-      CRLSet::ForTesting(false, &kOCSPTestCertSPKI, "", "", {});
+      CRLSet::ForTesting(false, &kTestRootCertSPKIHash, "", "", {});
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   // With a fresh CRLSet that covers the issuing certificate, we shouldn't do a
   // revocation check for EV.
@@ -10514,16 +11556,17 @@ TEST_F(HTTPSEVCRLSetTest, FreshCRLSetNotCovered) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kOCSPTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
+
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set = CRLSet::EmptyCRLSetForTesting();
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status = 0;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   // Even with a fresh CRLSet, we should still do online revocation checks when
   // the certificate chain isn't covered by the CRLSet, which it isn't in this
@@ -10536,33 +11579,19 @@ TEST_F(HTTPSEVCRLSetTest, FreshCRLSetNotCovered) {
             static_cast<bool>(cert_status & CERT_STATUS_REV_CHECKING_ENABLED));
 }
 
-class HTTPSCRLSetTest : public HTTPSOCSPTest {
- protected:
-  CertVerifier::Config GetCertVerifierConfig() override {
-    CertVerifier::Config config;
-    return config;
-  }
-
-  void SetUp() override {
-    HTTPSOCSPTest::SetUp();
-
-    // Unmark the certificate's OID as EV, which should disable revocation
-    // checking (as per the user preference).
-    ev_test_policy_.reset();
-  }
-};
+class HTTPSCRLSetTest : public HTTPSCertNetFetchingTest {};
 
 TEST_F(HTTPSCRLSetTest, ExpiredCRLSet) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status =
-      SpawnedTestServer::SSLOptions::OCSP_INVALID_RESPONSE;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse);
+
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set = CRLSet::ExpiredCRLSetForTesting();
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   // If we're not trying EV verification then, even if the CRLSet has expired,
   // we don't fall back to online revocation checks.
@@ -10579,16 +11608,17 @@ TEST_F(HTTPSCRLSetTest, ExpiredCRLSetAndRevoked) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_REVOKED;
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set = CRLSet::ExpiredCRLSetForTesting();
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
   CertStatus cert_status;
-  DoConnection(ssl_options, &cert_status);
+  DoConnection(cert_config, &cert_status);
 
   EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
 
@@ -10602,18 +11632,31 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevoked) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  ssl_options.cert_serial = 10;
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  test_server.SetSSLConfig(cert_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
 
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
   cert_verifier_config.crl_set =
-      CRLSet::ForTesting(false, &kOCSPTestCertSPKI, "\x0a", "", {});
+      CRLSet::ForTesting(false, &kTestRootCertSPKIHash,
+                         test_server.GetCertificate()->serial_number(), "", {});
   context_.cert_verifier()->SetConfig(cert_verifier_config);
 
-  CertStatus cert_status = 0;
-  DoConnection(ssl_options, &cert_status);
+  TestDelegate d;
+  d.set_allow_certificate_errors(true);
+  std::unique_ptr<URLRequest> r(context_.CreateRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  r->Start();
+  EXPECT_TRUE(r->is_pending());
+  d.RunUntilComplete();
+  EXPECT_EQ(1, d.response_started_count());
+  CertStatus cert_status = r->ssl_info().cert_status;
 
   // If the certificate is recorded as revoked in the CRLSet, that should be
   // reflected without online revocation checking.
@@ -10628,20 +11671,34 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
     return;
   }
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_AUTO);
-  ssl_options.ocsp_status = SpawnedTestServer::SSLOptions::OCSP_OK;
-  static const char kCommonName[] = "Test CN";
-  ssl_options.cert_common_name = kCommonName;
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+  test_server.SetSSLConfig(cert_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::string common_name = test_server.GetCertificate()->subject().common_name;
 
   {
     CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
     cert_verifier_config.crl_set =
-        CRLSet::ForTesting(false, nullptr, "", kCommonName, {});
+        CRLSet::ForTesting(false, nullptr, "", common_name, {});
+    ASSERT_TRUE(cert_verifier_config.crl_set);
     context_.cert_verifier()->SetConfig(cert_verifier_config);
 
-    CertStatus cert_status = 0;
-    DoConnection(ssl_options, &cert_status);
+    TestDelegate d;
+    d.set_allow_certificate_errors(true);
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_EQ(1, d.response_started_count());
+    CertStatus cert_status = r->ssl_info().cert_status;
 
     // If the certificate is recorded as revoked in the CRLSet, that should be
     // reflected without online revocation checking.
@@ -10650,26 +11707,31 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
     EXPECT_FALSE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
   }
 
-  const uint8_t kTestServerSPKISHA256[32] = {
-      0xb3, 0x91, 0xac, 0x73, 0x32, 0x54, 0x7f, 0x7b, 0x8a, 0x62, 0x77,
-      0x73, 0x1d, 0x45, 0x7b, 0x23, 0x46, 0x69, 0xef, 0x6f, 0x05, 0x3d,
-      0x07, 0x22, 0x15, 0x18, 0xd6, 0x10, 0x8b, 0xa1, 0x49, 0x33,
-  };
-  const std::string spki_hash(
-      reinterpret_cast<const char*>(kTestServerSPKISHA256),
-      sizeof(kTestServerSPKISHA256));
-
+  HashValue spki_hash_value;
+  ASSERT_TRUE(x509_util::CalculateSha256SpkiHash(
+      test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
+  std::string spki_hash(spki_hash_value.data(),
+                        spki_hash_value.data() + spki_hash_value.size());
   {
     CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
     cert_verifier_config.crl_set =
-        CRLSet::ForTesting(false, nullptr, "", kCommonName, {spki_hash});
+        CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});
     context_.cert_verifier()->SetConfig(cert_verifier_config);
 
-    CertStatus cert_status = 0;
-    DoConnection(ssl_options, &cert_status);
+    TestDelegate d;
+    d.set_allow_certificate_errors(true);
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
+    EXPECT_EQ(1, d.response_started_count());
+    CertStatus cert_status = r->ssl_info().cert_status;
 
-    // When the correct SPKI hash is specified, the connection should succeed
-    // even though the subject is listed in the CRLSet.
+    // When the correct SPKI hash is specified in
+    // |acceptable_spki_hashes_for_cn|, the connection should succeed even
+    // though the subject is listed in the CRLSet.
     EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   }
 }
@@ -10690,8 +11752,7 @@ TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
 
   // Verify the connection succeeds without being flagged.
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  RegisterDefaultHandlers(&https_server);
   https_server.SetSSLConfig(EmbeddedTestServer::CERT_OK_BY_INTERMEDIATE);
   ASSERT_TRUE(https_server.Start());
 
@@ -10887,404 +11948,6 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
 }
 #endif  // !defined(OS_IOS)
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
-    !defined(OS_FUCHSIA)
-// FTP uses a second TCP connection with the port number allocated dynamically
-// on the server side, so it would be hard to make RemoteTestServer proxy FTP
-// connections reliably. FTP tests are disabled on platforms that use
-// RemoteTestServer. See http://crbug.com/495220
-class URLRequestTestFTP : public URLRequestTest {
- public:
-  URLRequestTestFTP()
-      : ftp_test_server_(SpawnedTestServer::TYPE_FTP,
-                         base::FilePath(kTestFilePath)) {
-    // Can't use |default_context_|'s HostResolver to set up the
-    // FTPTransactionFactory because it hasn't been created yet.
-    default_context().set_host_resolver(&host_resolver_);
-  }
-
-  // URLRequestTest interface:
-  void SetUpFactory() override {
-    // Add FTP support to the default URLRequestContext.
-    job_factory_impl_->SetProtocolHandler(
-        "ftp", FtpProtocolHandler::Create(&host_resolver_, &ftp_auth_cache_));
-  }
-
-  std::string GetTestFileContents() {
-    base::FilePath path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
-    path = path.Append(kTestFilePath);
-    path = path.AppendASCII(kFtpTestFile);
-    std::string contents;
-    EXPECT_TRUE(base::ReadFileToString(path, &contents));
-    return contents;
-  }
-
- protected:
-  MockHostResolver host_resolver_;
-  FtpAuthCache ftp_auth_cache_;
-
-  SpawnedTestServer ftp_test_server_;
-};
-
-// Make sure an FTP request using an unsafe ports fails.
-TEST_F(URLRequestTestFTP, UnsafePort) {
-  GURL url("ftp://127.0.0.1:7");
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(ERR_UNSAFE_PORT, d.request_status());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPDirectoryListing) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURL("/"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_LT(0, d.bytes_received());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
-              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
-              r->GetResponseRemoteEndpoint().port());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPGetTestAnonymous) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d.data_received());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
-              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
-              r->GetResponseRemoteEndpoint().port());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPMimeType) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  struct {
-    const char* path;
-    const char* mime;
-  } test_cases[] = {
-      {"/", "text/vnd.chromium.ftp-dir"},
-      {kFtpTestFile, "application/octet-stream"},
-  };
-
-  for (const auto test : test_cases) {
-    TestDelegate d;
-
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURL(test.path), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    std::string mime;
-    r->GetMimeType(&mime);
-    EXPECT_EQ(test.mime, mime);
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPGetTest) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
-                                                   "chrome"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d.data_received());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
-              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
-    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
-              r->GetResponseRemoteEndpoint().port());
-
-    LoadTimingInfo load_timing_info;
-    r->GetLoadTimingInfo(&load_timing_info);
-    TestLoadTimingNoHttpResponse(load_timing_info);
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCheckWrongPassword) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
-                                                   "wrong_password"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(d.bytes_received(), 0);
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCheckWrongPasswordRestart) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  // Set correct login credentials. The delegate will be asked for them when
-  // the initial login with wrong credentials will fail.
-  d.set_credentials(AuthCredentials(kChrome, kChrome));
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
-                                                   "wrong_password"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d.data_received());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCheckWrongUser) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "wrong_user",
-                                                   "chrome"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(0, d.bytes_received());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCheckWrongUserRestart) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  // Set correct login credentials. The delegate will be asked for them when
-  // the initial login with wrong credentials will fail.
-  d.set_credentials(AuthCredentials(kChrome, kChrome));
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "wrong_user",
-                                                   "chrome"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d.response_started_count());
-    EXPECT_FALSE(d.received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d.data_received());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCacheURLCredentials) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  std::unique_ptr<TestDelegate> d(new TestDelegate);
-  {
-    // Pass correct login identity in the URL.
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
-                                                   "chrome"),
-        DEFAULT_PRIORITY, d.get(), TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d->RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d->response_started_count());
-    EXPECT_FALSE(d->received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d->data_received());
-  }
-
-  d.reset(new TestDelegate);
-  {
-    // This request should use cached identity from previous request.
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, d.get(),
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d->RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d->response_started_count());
-    EXPECT_FALSE(d->received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d->data_received());
-  }
-}
-
-TEST_F(URLRequestTestFTP, FTPCacheLoginBoxCredentials) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  std::unique_ptr<TestDelegate> d(new TestDelegate);
-  // Set correct login credentials. The delegate will be asked for them when
-  // the initial login with wrong credentials will fail.
-  d->set_credentials(AuthCredentials(kChrome, kChrome));
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
-                                                   "wrong_password"),
-        DEFAULT_PRIORITY, d.get(), TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d->RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d->response_started_count());
-    EXPECT_FALSE(d->received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d->data_received());
-  }
-
-  // Use a new delegate without explicit credentials. The cached ones should be
-  // used.
-  d.reset(new TestDelegate);
-  {
-    // Don't pass wrong credentials in the URL, they would override valid cached
-    // ones.
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, d.get(),
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d->RunUntilComplete();
-
-    EXPECT_FALSE(r->is_pending());
-    EXPECT_EQ(1, d->response_started_count());
-    EXPECT_FALSE(d->received_data_before_response());
-    EXPECT_EQ(GetTestFileContents(), d->data_received());
-  }
-}
-
-TEST_F(URLRequestTestFTP, RawBodyBytes) {
-  ASSERT_TRUE(ftp_test_server_.Start());
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-      ftp_test_server_.GetURL("simple.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->Start();
-  d.RunUntilComplete();
-
-  EXPECT_EQ(6, req->GetRawBodyBytes());
-}
-
-TEST_F(URLRequestTestFTP, FtpAuthCancellation) {
-  ftp_test_server_.set_no_anonymous_ftp_user(true);
-  ASSERT_TRUE(ftp_test_server_.Start());
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
-      ftp_test_server_.GetURL("simple.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->Start();
-  d.RunUntilComplete();
-
-  ASSERT_TRUE(d.auth_required_called());
-  EXPECT_EQ(OK, d.request_status());
-  EXPECT_TRUE(req->auth_challenge_info());
-  std::string mime_type;
-  req->GetMimeType(&mime_type);
-  EXPECT_EQ("text/plain", mime_type);
-  EXPECT_EQ("", d.data_received());
-  EXPECT_EQ(-1, req->GetExpectedContentSize());
-}
-
-class URLRequestTestFTPOverHttpProxy : public URLRequestTestFTP {
- public:
-  // Test interface:
-  void SetUp() override {
-    proxy_resolution_service_ = ProxyResolutionService::CreateFixed(
-        "localhost", TRAFFIC_ANNOTATION_FOR_TESTS);
-    default_context_->set_proxy_resolution_service(
-        proxy_resolution_service_.get());
-    URLRequestTestFTP::SetUp();
-  }
-
- private:
-  std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
-};
-
-// Check that FTP is not supported over an HTTP proxy.
-TEST_F(URLRequestTestFTPOverHttpProxy, Fails) {
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request(
-      default_context_->CreateRequest(GURL("ftp://foo.test/"), DEFAULT_PRIORITY,
-                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_THAT(delegate.request_status(), IsError(ERR_NO_SUPPORTED_PROXIES));
-}
-
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
 TEST_F(URLRequestTest, NetworkAccessedSetOnHostResolutionFailure) {
   MockHostResolver host_resolver;
   TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
@@ -11316,11 +11979,12 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
       GURL("http://not-a-real-domain/"), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      GURL("http://this-should-never-be-navigated-to/"),
-      URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Jumbo shrimp"));
-  AddTestInterceptor()->set_main_intercept_job(std::move(job));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), GURL("http://this-should-never-be-navigated-to/"),
+          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+          "Jumbo shrimp");
+  TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
   req->Cancel();
@@ -11344,13 +12008,13 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacks) {
     std::unique_ptr<URLRequest> r(context.CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
-    r->SetRequestHeadersCallback(base::Bind(
+    r->SetRequestHeadersCallback(base::BindRepeating(
         &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-    r->SetResponseHeadersCallback(base::Bind(
+    r->SetResponseHeadersCallback(base::BindRepeating(
         [](scoped_refptr<const HttpResponseHeaders>* left,
            scoped_refptr<const HttpResponseHeaders> right) { *left = right; },
         base::Unretained(&raw_resp_headers)));
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
     while (!delegate.response_started_count())
       base::RunLoop().RunUntilIdle();
@@ -11369,14 +12033,14 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacks) {
     std::unique_ptr<URLRequest> r(context.CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
-    r->SetRequestHeadersCallback(base::Bind([](HttpRawRequestHeaders) {
+    r->SetRequestHeadersCallback(base::BindRepeating([](HttpRawRequestHeaders) {
       FAIL() << "Callback should not be called unless request is sent";
     }));
     r->SetResponseHeadersCallback(
-        base::Bind([](scoped_refptr<const HttpResponseHeaders>) {
+        base::BindRepeating([](scoped_refptr<const HttpResponseHeaders>) {
           FAIL() << "Callback should not be called unless request is sent";
         }));
-    r->set_network_isolation_key(network_isolation_key1_);
+    r->set_isolation_info(isolation_info1_);
     r->Start();
     delegate.RunUntilComplete();
     EXPECT_TRUE(r->was_cached());
@@ -11396,9 +12060,9 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksWithRedirect) {
   std::unique_ptr<URLRequest> r(default_context().CreateRequest(
       url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   r->SetExtraRequestHeaders(extra_headers);
-  r->SetRequestHeadersCallback(base::Bind(&HttpRawRequestHeaders::Assign,
-                                          base::Unretained(&raw_req_headers)));
-  r->SetResponseHeadersCallback(base::Bind(
+  r->SetRequestHeadersCallback(base::BindRepeating(
+      &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
+  r->SetResponseHeadersCallback(base::BindRepeating(
       [](scoped_refptr<const HttpResponseHeaders>* left,
          scoped_refptr<const HttpResponseHeaders> right) { *left = right; },
       base::Unretained(&raw_resp_headers)));
@@ -11420,8 +12084,8 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksWithRedirect) {
 
   raw_req_headers = HttpRawRequestHeaders();
   raw_resp_headers = nullptr;
-  r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                            base::nullopt /* modified_headers */);
+  r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                            absl::nullopt /* modified_headers */);
   delegate.RunUntilComplete();
   EXPECT_TRUE(raw_req_headers.FindHeaderForTest("X-Foo", &value));
   EXPECT_EQ("bar", value);
@@ -11438,11 +12102,12 @@ TEST_F(URLRequestTest, HeadersCallbacksConnectFailed) {
   std::unique_ptr<URLRequest> r(default_context().CreateRequest(
       GURL("http://127.0.0.1:9/"), DEFAULT_PRIORITY, &request_delegate,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  r->SetRequestHeadersCallback(base::Bind([](net::HttpRawRequestHeaders) {
-    FAIL() << "Callback should not be called unless request is sent";
-  }));
+  r->SetRequestHeadersCallback(
+      base::BindRepeating([](net::HttpRawRequestHeaders) {
+        FAIL() << "Callback should not be called unless request is sent";
+      }));
   r->SetResponseHeadersCallback(
-      base::Bind([](scoped_refptr<const net::HttpResponseHeaders>) {
+      base::BindRepeating([](scoped_refptr<const net::HttpResponseHeaders>) {
         FAIL() << "Callback should not be called unless request is sent";
       }));
   r->Start();
@@ -11468,12 +12133,12 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksAuthRetry) {
       std::vector<scoped_refptr<const HttpResponseHeaders>>;
   RespHeadersVector raw_resp_headers;
 
-  auto req_headers_callback = base::Bind(
+  auto req_headers_callback = base::BindRepeating(
       [](ReqHeadersVector* vec, HttpRawRequestHeaders headers) {
         vec->emplace_back(new HttpRawRequestHeaders(std::move(headers)));
       },
       &raw_req_headers);
-  auto resp_headers_callback = base::Bind(
+  auto resp_headers_callback = base::BindRepeating(
       [](RespHeadersVector* vec,
          scoped_refptr<const HttpResponseHeaders> headers) {
         vec->push_back(headers);
@@ -11484,7 +12149,7 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksAuthRetry) {
   r->SetExtraRequestHeaders(extra_headers);
   r->SetRequestHeadersCallback(req_headers_callback);
   r->SetResponseHeadersCallback(resp_headers_callback);
-  r->set_network_isolation_key(network_isolation_key1_);
+  r->set_isolation_info(isolation_info1_);
   r->Start();
   delegate.RunUntilComplete();
   EXPECT_FALSE(r->is_pending());
@@ -11508,7 +12173,7 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksAuthRetry) {
   r2->SetRequestHeadersCallback(req_headers_callback);
   r2->SetResponseHeadersCallback(resp_headers_callback);
   r2->SetLoadFlags(LOAD_VALIDATE_CACHE);
-  r2->set_network_isolation_key(network_isolation_key1_);
+  r2->set_isolation_info(isolation_info1_);
   r2->Start();
   delegate.RunUntilComplete();
   EXPECT_FALSE(r2->is_pending());
@@ -11659,16 +12324,49 @@ TEST_F(URLRequestTestHTTP, TestTagging) {
 }
 #endif
 
+namespace {
+
+class ReadBufferingListener
+    : public test_server::EmbeddedTestServerConnectionListener {
+ public:
+  ReadBufferingListener() = default;
+  ~ReadBufferingListener() override = default;
+
+  void BufferNextConnection(int buffer_size) { buffer_size_ = buffer_size; }
+
+  std::unique_ptr<StreamSocket> AcceptedSocket(
+      std::unique_ptr<StreamSocket> socket) override {
+    if (!buffer_size_) {
+      return socket;
+    }
+    auto wrapped =
+        std::make_unique<ReadBufferingStreamSocket>(std::move(socket));
+    wrapped->BufferNextRead(buffer_size_);
+    // Do not buffer subsequent connections, which may be a 0-RTT retry.
+    buffer_size_ = 0;
+    return wrapped;
+  }
+
+  void ReadFromSocket(const StreamSocket& socket, int rv) override {}
+
+ private:
+  int buffer_size_ = 0;
+};
+
 // Provides a response to the 0RTT request indicating whether it was received
 // as early data, sending HTTP_TOO_EARLY if enabled.
 class ZeroRTTResponse : public test_server::BasicHttpResponse {
  public:
   ZeroRTTResponse(bool zero_rtt, bool send_too_early)
       : zero_rtt_(zero_rtt), send_too_early_(send_too_early) {}
+
+  ZeroRTTResponse(const ZeroRTTResponse&) = delete;
+  ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
+
   ~ZeroRTTResponse() override {}
 
-  void SendResponse(const test_server::SendBytesCallback& send,
-                    test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {
     AddCustomHeader("Vary", "Early-Data");
     set_content_type("text/plain");
     AddCustomHeader("Cache-Control", "no-cache");
@@ -11683,30 +12381,33 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
     // Since the EmbeddedTestServer doesn't keep the socket open by default,
     // it is explicitly kept alive to allow the remaining leg of the 0RTT
     // handshake to be received after the early data.
-    send.Run(ToResponseString(), base::DoNothing());
+    delegate->SendResponseHeaders(code(), GetHttpReasonPhrase(code()),
+                                  BuildHeaders());
+    delegate->SendContents(content(), base::DoNothing());
   }
 
  private:
   bool zero_rtt_;
   bool send_too_early_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZeroRTTResponse);
 };
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
+  DCHECK(request.ssl_info);
+
   if (request.GetURL().path() != "/zerortt")
     return nullptr;
-  auto iter = request.headers.find("Early-Data");
-  bool zero_rtt = iter != request.headers.end() && iter->second == "1";
-  return std::make_unique<ZeroRTTResponse>(zero_rtt, false);
+  return std::make_unique<ZeroRTTResponse>(
+      request.ssl_info->early_data_received, false);
 }
+
+}  // namespace
 
 class HTTPSEarlyDataTest : public TestWithTaskEnvironment {
  public:
   HTTPSEarlyDataTest()
       : context_(true), test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    auto params = std::make_unique<HttpNetworkSession::Params>();
+    auto params = std::make_unique<HttpNetworkSessionParams>();
     params->enable_early_data = true;
     context_.set_http_network_session_params(std::move(params));
 
@@ -11724,10 +12425,10 @@ class HTTPSEarlyDataTest : public TestWithTaskEnvironment {
     ssl_config_.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
     ssl_config_.early_data_enabled = true;
     test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config_);
-    test_server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+    RegisterDefaultHandlers(&test_server_);
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&HandleZeroRTTRequest));
+    test_server_.SetConnectionListener(&listener_);
   }
 
   ~HTTPSEarlyDataTest() override = default;
@@ -11745,26 +12446,25 @@ class HTTPSEarlyDataTest : public TestWithTaskEnvironment {
   TestURLRequestContext context_;
 
   SSLServerConfig ssl_config_;
+  ReadBufferingListener listener_;
   EmbeddedTestServer test_server_;
 };
 
-// Flaky on iOS, crbug.com/1021021
-#if defined(OS_IOS)
-#define MAYBE_TLSEarlyDataTest DISABLED_TLSEarlyDataTest
-#else
-#define MAYBE_TLSEarlyDataTest TLSEarlyDataTest
-#endif
-
 // TLSEarlyDataTest tests that we handle early data correctly.
-TEST_F(HTTPSEarlyDataTest, MAYBE_TLSEarlyDataTest) {
+TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTest) {
   ASSERT_TRUE(test_server_.Start());
   context_.http_transaction_factory()->GetSession()->ClearSSLSessionCache();
+
+  // kParamSize must be larger than any ClientHello sent by the client, but
+  // smaller than the maximum amount of early data allowed by the server.
+  const int kParamSize = 4 * 1024;
+  const GURL kUrl =
+      test_server_.GetURL("/zerortt?" + std::string(kParamSize, 'a'));
 
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(context_.CreateRequest(
-        test_server_.GetURL("/zerortt"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
@@ -11783,13 +12483,25 @@ TEST_F(HTTPSEarlyDataTest, MAYBE_TLSEarlyDataTest) {
     EXPECT_EQ("0", d.data_received());
   }
 
-  context_.http_transaction_factory()->GetSession()->CloseAllConnections();
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
+
+  // 0-RTT inherently involves a race condition: if the server responds with the
+  // ServerHello before the client sends the HTTP request (the client may be
+  // busy verifying a certificate), the client will send data over 1-RTT keys
+  // rather than 0-RTT.
+  //
+  // This test ensures 0-RTT is sent if relevant by making the test server wait
+  // for both the ClientHello and 0-RTT HTTP request before responding. We use
+  // a ReadBufferingStreamSocket and enable buffering for the 0-RTT request. The
+  // buffer size must be larger than the ClientHello but smaller than the
+  // ClientHello combined with the HTTP request.
+  listener_.BufferNextConnection(kParamSize);
 
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(context_.CreateRequest(
-        test_server_.GetURL("/zerortt"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -11838,7 +12550,8 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataPOSTTest) {
     EXPECT_EQ("0", d.data_received());
   }
 
-  context_.http_transaction_factory()->GetSession()->CloseAllConnections();
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
 
   {
     TestDelegate d;
@@ -11865,38 +12578,153 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataPOSTTest) {
   }
 }
 
-std::unique_ptr<test_server::HttpResponse> HandleTooEarly(
-    bool* sent_425,
-    const test_server::HttpRequest& request) {
-  if (request.GetURL().path() != "/tooearly")
-    return nullptr;
-  auto iter = request.headers.find("Early-Data");
-  bool zero_rtt = iter != request.headers.end() && iter->second == "1";
-  if (zero_rtt)
-    *sent_425 = true;
-  return std::make_unique<ZeroRTTResponse>(zero_rtt, true);
+// TLSEarlyDataTest tests that the 0-RTT is enabled for idempotent POST request.
+TEST_F(HTTPSEarlyDataTest, TLSEarlyDataIdempotentPOSTTest) {
+  ASSERT_TRUE(test_server_.Start());
+  context_.http_transaction_factory()->GetSession()->ClearSSLSessionCache();
+  const int kParamSize = 4 * 1024;
+  const GURL kUrl =
+      test_server_.GetURL("/zerortt?" + std::string(kParamSize, 'a'));
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    base::RunLoop().Run();
+
+    EXPECT_EQ(1, d.response_started_count());
+
+    EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+              SSLConnectionStatusToVersion(r->ssl_info().connection_status));
+    EXPECT_TRUE(r->ssl_info().unverified_cert.get());
+    EXPECT_TRUE(test_server_.GetCertificate()->EqualsIncludingChain(
+        r->ssl_info().cert.get()));
+
+    // The Early-Data header should be omitted in the initial request, and the
+    // handler should return "0".
+    EXPECT_EQ("0", d.data_received());
+  }
+
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
+  listener_.BufferNextConnection(kParamSize);
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->set_method("POST");
+    r->SetIdempotency(net::IDEMPOTENT);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    base::RunLoop().Run();
+
+    EXPECT_EQ(1, d.response_started_count());
+
+    EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+              SSLConnectionStatusToVersion(r->ssl_info().connection_status));
+    EXPECT_TRUE(r->ssl_info().unverified_cert.get());
+    EXPECT_TRUE(test_server_.GetCertificate()->EqualsIncludingChain(
+        r->ssl_info().cert.get()));
+
+    // The Early-Data header should be set since the request is set as an
+    // idempotent POST request.
+    EXPECT_EQ("1", d.data_received());
+  }
 }
 
-// Flaky on iOS, crbug.com/1021021
-#if defined(OS_IOS)
-#define MAYBE_TLSEarlyDataTooEarlyTest DISABLED_TLSEarlyDataTooEarlyTest
-#else
-#define MAYBE_TLSEarlyDataTooEarlyTest TLSEarlyDataTooEarlyTest
-#endif
-
-// Test that we handle 425 (Too Early) correctly.
-TEST_F(HTTPSEarlyDataTest, MAYBE_TLSEarlyDataTooEarlyTest) {
-  bool sent_425 = false;
-  test_server_.RegisterRequestHandler(
-      base::BindRepeating(&HandleTooEarly, base::Unretained(&sent_425)));
+// TLSEarlyDataTest tests that the 0-RTT is disabled for non-idempotent request.
+TEST_F(HTTPSEarlyDataTest, TLSEarlyDataNonIdempotentRequestTest) {
   ASSERT_TRUE(test_server_.Start());
   context_.http_transaction_factory()->GetSession()->ClearSSLSessionCache();
 
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(context_.CreateRequest(
-        test_server_.GetURL("/tooearly"), DEFAULT_PRIORITY, &d,
+        test_server_.GetURL("/zerortt"), DEFAULT_PRIORITY, &d,
         TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    base::RunLoop().Run();
+
+    EXPECT_EQ(1, d.response_started_count());
+
+    EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+              SSLConnectionStatusToVersion(r->ssl_info().connection_status));
+    EXPECT_TRUE(r->ssl_info().unverified_cert.get());
+    EXPECT_TRUE(test_server_.GetCertificate()->EqualsIncludingChain(
+        r->ssl_info().cert.get()));
+
+    // The Early-Data header should be omitted in the initial request, and the
+    // handler should return "0".
+    EXPECT_EQ("0", d.data_received());
+  }
+
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        test_server_.GetURL("/zerortt"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    // Sets the GET request as not idempotent.
+    r->SetIdempotency(net::NOT_IDEMPOTENT);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    base::RunLoop().Run();
+
+    EXPECT_EQ(1, d.response_started_count());
+
+    EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+              SSLConnectionStatusToVersion(r->ssl_info().connection_status));
+    EXPECT_TRUE(r->ssl_info().unverified_cert.get());
+    EXPECT_TRUE(test_server_.GetCertificate()->EqualsIncludingChain(
+        r->ssl_info().cert.get()));
+
+    // The Early-Data header should be omitted in the initial request even
+    // though it is a GET request, since the request is set as not idempotent.
+    EXPECT_EQ("0", d.data_received());
+  }
+}
+
+std::unique_ptr<test_server::HttpResponse> HandleTooEarly(
+    bool* sent_425,
+    const test_server::HttpRequest& request) {
+  DCHECK(request.ssl_info);
+
+  if (request.GetURL().path() != "/tooearly")
+    return nullptr;
+  if (request.ssl_info->early_data_received)
+    *sent_425 = true;
+  return std::make_unique<ZeroRTTResponse>(
+      request.ssl_info->early_data_received, true);
+}
+
+// Test that we handle 425 (Too Early) correctly.
+TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTooEarlyTest) {
+  bool sent_425 = false;
+  test_server_.RegisterRequestHandler(
+      base::BindRepeating(&HandleTooEarly, base::Unretained(&sent_425)));
+  ASSERT_TRUE(test_server_.Start());
+  context_.http_transaction_factory()->GetSession()->ClearSSLSessionCache();
+
+  // kParamSize must be larger than any ClientHello sent by the client, but
+  // smaller than the maximum amount of early data allowed by the server.
+  const int kParamSize = 4 * 1024;
+  const GURL kUrl =
+      test_server_.GetURL("/tooearly?" + std::string(kParamSize, 'a'));
+
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(context_.CreateRequest(
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
@@ -11916,13 +12744,28 @@ TEST_F(HTTPSEarlyDataTest, MAYBE_TLSEarlyDataTooEarlyTest) {
     EXPECT_FALSE(sent_425);
   }
 
-  context_.http_transaction_factory()->GetSession()->CloseAllConnections();
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
+
+  // 0-RTT inherently involves a race condition: if the server responds with the
+  // ServerHello before the client sends the HTTP request (the client may be
+  // busy verifying a certificate), the client will send data over 1-RTT keys
+  // rather than 0-RTT.
+  //
+  // This test ensures 0-RTT is sent if relevant by making the test server wait
+  // for both the ClientHello and 0-RTT HTTP request before responding. We use
+  // a ReadBufferingStreamSocket and enable buffering for the 0-RTT request. The
+  // buffer size must be larger than the ClientHello but smaller than the
+  // ClientHello combined with the HTTP request.
+  //
+  // We must buffer exactly one connection because the HTTP 425 response will
+  // trigger a retry, potentially on a new connection.
+  listener_.BufferNextConnection(kParamSize);
 
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(context_.CreateRequest(
-        test_server_.GetURL("/tooearly"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        kUrl, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -11972,7 +12815,8 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataRejectTest) {
     EXPECT_EQ("0", d.data_received());
   }
 
-  context_.http_transaction_factory()->GetSession()->CloseAllConnections();
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
 
   // The certificate in the resumption is changed to confirm that the
   // certificate change is observed.
@@ -12036,7 +12880,8 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTLS12RejectTest) {
     EXPECT_EQ("0", d.data_received());
   }
 
-  context_.http_transaction_factory()->GetSession()->CloseAllConnections();
+  context_.http_transaction_factory()->GetSession()->CloseAllConnections(
+      ERR_FAILED, "Very good reason");
 
   // The certificate in the resumption is changed to confirm that the
   // certificate change is observed.
@@ -12089,6 +12934,112 @@ TEST_F(URLRequestTestHTTP, AuthChallengeInfo) {
   EXPECT_EQ("testrealm", r->auth_challenge_info()->realm);
   EXPECT_EQ("Basic realm=\"testrealm\"", r->auth_challenge_info()->challenge);
   EXPECT_EQ("/auth-basic", r->auth_challenge_info()->path);
+}
+
+class URLRequestDnsAliasTest : public TestWithTaskEnvironment {
+ protected:
+  URLRequestDnsAliasTest() : context_(true) {
+    context_.set_network_delegate(&network_delegate_);
+    context_.set_host_resolver(&host_resolver_);
+    context_.Init();
+  }
+
+  void SetUp() override { ASSERT_TRUE(test_server_.Start()); }
+
+  TestNetworkDelegate network_delegate_;  // Must outlive URLRequest.
+  MockHostResolver host_resolver_;
+  TestURLRequestContext context_;
+  TestDelegate test_delegate_;
+  EmbeddedTestServer test_server_;
+};
+
+TEST_F(URLRequestDnsAliasTest, WithDnsAliases) {
+  GURL url(test_server_.GetURL("www.example.test", "/echo"));
+  std::vector<std::string> aliases({"alias1", "alias2", "host"});
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.test", "127.0.0.1", std::move(aliases));
+
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+
+  test_delegate_.RunUntilComplete();
+  EXPECT_THAT(test_delegate_.request_status(), IsOk());
+  EXPECT_THAT(request->response_info().dns_aliases,
+              testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
+  GURL url(test_server_.GetURL("www.example.test", "/echo"));
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.test", "127.0.0.1", {} /* dns_aliases */);
+
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+
+  test_delegate_.RunUntilComplete();
+  EXPECT_THAT(test_delegate_.request_status(), IsOk());
+  EXPECT_THAT(request->response_info().dns_aliases,
+              testing::ElementsAre("www.example.test"));
+}
+
+TEST_F(URLRequestTest, OnConnectedCallbackAsyncOK) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestURLRequestContext context;
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(OK);
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsOk());
+}
+
+TEST_F(URLRequestTest, OnConnectedCallbackAsyncError) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestURLRequestContext context;
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(ERR_FAILED);
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsError(ERR_FAILED));
+}
+
+TEST_F(URLRequestTest, SetURLChain) {
+  TestDelegate d;
+  {
+    GURL original_url("http://localhost");
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    EXPECT_EQ(r->url_chain().size(), 1u);
+    EXPECT_EQ(r->url_chain()[0], original_url);
+
+    const std::vector<GURL> url_chain = {
+        GURL("http://foo.test"),
+        GURL("http://bar.test"),
+        GURL("http://baz.test"),
+    };
+
+    r->SetURLChain(url_chain);
+
+    EXPECT_EQ(r->url_chain().size(), 3u);
+    EXPECT_EQ(r->url_chain()[0], url_chain[0]);
+    EXPECT_EQ(r->url_chain()[1], url_chain[1]);
+    EXPECT_EQ(r->url_chain()[2], original_url);
+  }
 }
 
 }  // namespace net

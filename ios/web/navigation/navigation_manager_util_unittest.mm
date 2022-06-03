@@ -8,9 +8,9 @@
 
 #include "base/memory/ptr_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
-#import "ios/web/navigation/wk_based_navigation_manager_impl.h"
+#import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
 #include "testing/platform_test.h"
@@ -26,7 +26,7 @@ namespace web {
 class NavigationManagerUtilTest : public PlatformTest {
  protected:
   NavigationManagerUtilTest() {
-    manager_ = std::make_unique<WKBasedNavigationManagerImpl>();
+    manager_ = std::make_unique<NavigationManagerImpl>();
     manager_->SetBrowserState(&browser_state_);
     WKWebView* mock_web_view = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];
@@ -40,7 +40,7 @@ class NavigationManagerUtilTest : public PlatformTest {
   CRWFakeBackForwardList* mock_wk_list_ = nil;
 
  private:
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests GetCommittedItemWithUniqueID, GetCommittedItemIndexWithUniqueID and
@@ -52,10 +52,11 @@ TEST_F(NavigationManagerUtilTest, GetCommittedItemWithUniqueID) {
           /*web_state=*/nullptr, GURL::EmptyGURL(),
           /*has_user_gesture=*/false, ui::PAGE_TRANSITION_TYPED,
           /*is_renderer_initiated=*/false);
-  manager_->AddPendingItem(
-      GURL("http://chromium.org"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED,
-      web::NavigationManager::UserAgentOverrideOption::INHERIT);
+  manager_->AddPendingItem(GURL("http://chromium.org"), Referrer(),
+                           ui::PAGE_TRANSITION_TYPED,
+                           web::NavigationInitiationType::BROWSER_INITIATED,
+                           /*is_post_navigation=*/false,
+                           /*is_using_https_as_default_scheme=*/false);
   NavigationItem* item = manager_->GetPendingItem();
   int unique_id = item->GetUniqueID();
   context->SetNavigationItemUniqueID(item->GetUniqueID());
@@ -69,27 +70,6 @@ TEST_F(NavigationManagerUtilTest, GetCommittedItemWithUniqueID) {
   EXPECT_EQ(item, GetCommittedItemWithUniqueID(manager_.get(), unique_id));
   EXPECT_EQ(item, GetItemWithUniqueID(manager_.get(), context.get()));
   EXPECT_EQ(0, GetCommittedItemIndexWithUniqueID(manager_.get(), unique_id));
-
-  // Commit another navigation so that the current item is updated.  This allows
-  // for removing the item with |unique_id|.
-  manager_->AddPendingItem(
-      GURL("http://test.org"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED,
-      web::NavigationManager::UserAgentOverrideOption::INHERIT);
-  manager_->CommitPendingItem();
-  manager_->RemoveItemAtIndex(0);
-  EXPECT_FALSE(GetCommittedItemWithUniqueID(manager_.get(), unique_id));
-  EXPECT_FALSE(GetItemWithUniqueID(manager_.get(), context.get()));
-  EXPECT_EQ(-1, GetCommittedItemIndexWithUniqueID(manager_.get(), unique_id));
-
-  // Add transient item.
-  manager_->AddTransientItem(GURL("http://chromium.org"));
-  item = manager_->GetTransientItem();
-  unique_id = item->GetUniqueID();
-  context->SetNavigationItemUniqueID(unique_id);
-  EXPECT_FALSE(GetCommittedItemWithUniqueID(manager_.get(), unique_id));
-  EXPECT_EQ(item, GetItemWithUniqueID(manager_.get(), context.get()));
-  EXPECT_EQ(-1, GetCommittedItemIndexWithUniqueID(manager_.get(), unique_id));
 
   // Add item to NavigationContextImpl.
   auto context_item = std::make_unique<NavigationItemImpl>();

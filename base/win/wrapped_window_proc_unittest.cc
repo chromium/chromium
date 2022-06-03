@@ -24,7 +24,7 @@ LRESULT CALLBACK TestWindowProc(HWND hwnd,
 // exception.
 class TestWrappedExceptionFiter {
  public:
-  TestWrappedExceptionFiter() : called_(false) {
+  TestWrappedExceptionFiter() {
     EXPECT_FALSE(s_filter_);
     s_filter_ = this;
   }
@@ -45,7 +45,7 @@ class TestWrappedExceptionFiter {
   }
 
  private:
-  bool called_;
+  bool called_ = false;
   static TestWrappedExceptionFiter* s_filter_;
 };
 TestWrappedExceptionFiter* TestWrappedExceptionFiter::s_filter_ = nullptr;

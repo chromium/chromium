@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/media_browsertest.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,20 +33,25 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
+  std::vector<base::Feature> enabled_features = {
+#if defined(OS_ANDROID)
+    features::kLogJsConsoleMessages,
+#endif
+  };
+
   std::vector<base::Feature> disabled_features = {
     // Disable fallback after decode error to avoid unexpected test pass on
     // the fallback path.
     media::kFallbackAfterDecodeError,
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // Disable out of process audio on Linux due to process spawn
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
   };
 
-  scoped_feature_list_.InitWithFeatures({/* enabled_features */},
-                                        disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
@@ -57,7 +64,7 @@ void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
   if (http) {
     DVLOG(0) << base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now())
              << " Starting HTTP server";
-    http_test_server.reset(new net::EmbeddedTestServer);
+    http_test_server = std::make_unique<net::EmbeddedTestServer>();
     http_test_server->ServeFilesFromSourceDirectory(media::GetTestDataPath());
     CHECK(http_test_server->Start());
     gurl = http_test_server->GetURL("/" + html_page + "?" + query);
@@ -78,13 +85,13 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::ASCIIToUTF16(expected_title));
   AddWaitForTitles(&title_watcher);
-  ui_test_utils::NavigateToURL(browser(), gurl);
-  base::string16 result = title_watcher.WaitAndGetTitle();
+  CHECK(ui_test_utils::NavigateToURL(browser(), gurl));
+  std::u16string result = title_watcher.WaitAndGetTitle();
   return base::UTF16ToASCII(result);
 }
 
 void MediaBrowserTest::AddWaitForTitles(content::TitleWatcher* title_watcher) {
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEnded));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kError));
-  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailed));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kEndedTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kErrorTitle));
+  title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
 }

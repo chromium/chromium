@@ -1,0 +1,34 @@
+From c8bdfe3f6b3ce087c36b551d668b97101f620bdc Mon Sep 17 00:00:00 2001
+From: Daniel Rubery <drubery@chromium.org>
+Date: Thu, 6 May 2021 11:45:48 -0700
+Subject: [PATCH] Fix signed comparison in base_vision_task_api.h
+
+---
+ .../cc/task/vision/core/base_vision_task_api.h                | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
+index 3d1359685f3f..c787876bec33 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
+@@ -204,7 +204,7 @@ class BaseVisionTaskApi
+         if (normalization_options.num_values == 1) {
+           float mean_value = normalization_options.mean_values[0];
+           float inv_std_value = (1.0f / normalization_options.std_values[0]);
+-          for (int i = 0; i < input_data_byte_size / sizeof(uint8);
++          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
+                i++, input_data++, normalized_input_data++) {
+             *normalized_input_data =
+                 inv_std_value * (static_cast<float>(*input_data) - mean_value);
+@@ -214,7 +214,7 @@ class BaseVisionTaskApi
+               1.0f / normalization_options.std_values[0],
+               1.0f / normalization_options.std_values[1],
+               1.0f / normalization_options.std_values[2]};
+-          for (int i = 0; i < input_data_byte_size / sizeof(uint8);
++          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
+                i++, input_data++, normalized_input_data++) {
+             *normalized_input_data = inv_std_values[i % 3] *
+                                      (static_cast<float>(*input_data) -
+-- 
+2.31.1.607.g51e8a6a459-goog
+

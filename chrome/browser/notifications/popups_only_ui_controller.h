@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 
@@ -22,6 +21,8 @@ class DesktopMessagePopupCollection;
 class PopupsOnlyUiController : public message_center::MessageCenterObserver {
  public:
   PopupsOnlyUiController();
+  PopupsOnlyUiController(const PopupsOnlyUiController&) = delete;
+  PopupsOnlyUiController& operator=(const PopupsOnlyUiController&) = delete;
   ~PopupsOnlyUiController() override;
 
   // MessageCenterObserver:
@@ -31,8 +32,8 @@ class PopupsOnlyUiController : public message_center::MessageCenterObserver {
   void OnNotificationUpdated(const std::string& notification_id) override;
   void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) override;
   void OnBlockingStateChanged(
       message_center::NotificationBlocker* blocker) override;
 
@@ -48,8 +49,6 @@ class PopupsOnlyUiController : public message_center::MessageCenterObserver {
   void ShowOrHidePopupBubbles();
 
   bool popups_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupsOnlyUiController);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_POPUPS_ONLY_UI_CONTROLLER_H_

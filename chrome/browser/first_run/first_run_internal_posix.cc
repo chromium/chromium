@@ -4,34 +4,25 @@
 
 #include "chrome/browser/first_run/first_run_internal.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/installer/util/google_update_settings.h"
-#include "chrome/installer/util/master_preferences.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
-#include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 namespace first_run {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 base::OnceClosure& GetBeforeShowFirstRunDialogHookForTesting() {
   static base::NoDestructor<base::OnceClosure> closure;
   return *closure;
 }
-#endif  // OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace internal {
 namespace {
@@ -45,7 +36,7 @@ enum class ForcedShowDialogState {
 ForcedShowDialogState g_forced_show_dialog_state =
     ForcedShowDialogState::kNotForced;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns whether the first run dialog should be shown. This is only true for
 // certain builds, and only if the user has not already set preferences. In a
 // real, official-build first run, initializes the default metrics reporting if
@@ -55,15 +46,8 @@ bool ShouldShowFirstRunDialog() {
     return g_forced_show_dialog_state == ForcedShowDialogState::kForceShown;
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // On non-official builds, only --force-first-run-dialog will show the dialog.
   return false;
-#endif
-
-  base::FilePath local_state_path;
-  base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_path);
-  if (base::PathExists(local_state_path))
-    return false;
-
+#else
   if (!IsOrganicFirstRun())
     return false;
 
@@ -83,8 +67,9 @@ bool ShouldShowFirstRunDialog() {
       is_opt_in ? metrics::EnableMetricsDefault::OPT_IN
                 : metrics::EnableMetricsDefault::OPT_OUT);
   return true;
+#endif
 }
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -96,7 +81,7 @@ void ForceFirstRunDialogShownForTesting(bool shown) {
 }
 
 void DoPostImportPlatformSpecificTasks(Profile* profile) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ShouldShowFirstRunDialog())
     return;
 
@@ -108,12 +93,7 @@ void DoPostImportPlatformSpecificTasks(Profile* profile) {
 #endif  // !OS_CHROMEOS
 }
 
-bool IsFirstRunSentinelPresent() {
-  base::FilePath sentinel;
-  return !GetFirstRunSentinelFilePath(&sentinel) || base::PathExists(sentinel);
-}
-
-bool ShowPostInstallEULAIfNeeded(installer::MasterPreferences* install_prefs) {
+bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
   // The EULA is only handled on Windows.
   return true;
 }

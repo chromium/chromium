@@ -4,7 +4,9 @@
 
 #include "extensions/browser/api/web_request/web_request_event_details.h"
 
-#include "base/stl_util.h"
+#include <memory>
+
+#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -27,12 +29,11 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
   };
 
   orig->render_process_id_ = 1;
-  orig->render_frame_id_ = 2;
   orig->extra_info_spec_ = 3;
 
-  orig->request_body_.reset(new base::DictionaryValue);
-  orig->request_headers_.reset(new base::ListValue);
-  orig->response_headers_.reset(new base::ListValue);
+  orig->request_body_ = std::make_unique<base::DictionaryValue>();
+  orig->request_headers_ = std::make_unique<base::ListValue>();
+  orig->response_headers_ = std::make_unique<base::ListValue>();
 
   for (const char* safe_attr : safe_attributes) {
     orig->dict_.SetString(safe_attr, safe_attr);
@@ -49,7 +50,6 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
       orig->CreatePublicSessionCopy();
 
   EXPECT_EQ(orig->render_process_id_, copy->render_process_id_);
-  EXPECT_EQ(orig->render_frame_id_, copy->render_frame_id_);
   EXPECT_EQ(0, copy->extra_info_spec_);
 
   EXPECT_EQ(nullptr, copy->request_body_);
@@ -68,7 +68,7 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
   EXPECT_EQ("http://www.foo.bar/", url);
 
   // Extras are filtered out (+1 for url).
-  EXPECT_EQ(base::size(safe_attributes) + 1, copy->dict_.size());
+  EXPECT_EQ(base::size(safe_attributes) + 1, copy->dict_.DictSize());
 }
 
 TEST(WebRequestEventDetailsTest, SetResponseHeaders) {

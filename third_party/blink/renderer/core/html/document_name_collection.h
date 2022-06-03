@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_name_collection.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -24,11 +25,12 @@ class DocumentNameCollection final : public HTMLNameCollection {
   bool ElementMatches(const HTMLElement&) const;
 };
 
-DEFINE_TYPE_CASTS(DocumentNameCollection,
-                  LiveNodeListBase,
-                  collection,
-                  collection->GetType() == kDocumentNamedItems,
-                  collection.GetType() == kDocumentNamedItems);
+template <>
+struct DowncastTraits<DocumentNameCollection> {
+  static bool AllowFrom(const LiveNodeListBase& collection) {
+    return collection.GetType() == kDocumentNamedItems;
+  }
+};
 
 }  // namespace blink
 

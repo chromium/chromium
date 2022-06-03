@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_SHELL_TEST_SHELL_TEST_H_
 #define EXTENSIONS_SHELL_TEST_SHELL_TEST_H_
 
-#include <memory>
-
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 

@@ -4,30 +4,43 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
+
+group("elements") {
+  visibility += [ "//ui/file_manager/*" ]
+  public_deps =
+      [ "//ui/file_manager/file_manager/foreground/elements:files_spinner" ]
+}
 
 group("closure_compile") {
   testonly = true
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
-    ":closure_compile_module",
-    ":js_test_gen_html_type_check_auto",
+    ":closure_compile_jsmodules",
+    ":js_test_gen_html_modules_type_check_auto",
   ]
 }
 
-js_type_check("closure_compile_module") {
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
+                  ]
   deps = [
     ":files_format_dialog",
     ":files_icon_button",
     ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
+    ":files_password_dialog",
     ":files_quick_view",
     ":files_ripple",
     ":files_safe_media",
-    ":files_safe_media_webview_content",
+    ":files_spinner",
     ":files_toast",
     ":files_toggle_ripple",
     ":files_tooltip",
@@ -38,124 +51,199 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+html_to_js("web_components") {
+  visibility += [ "//ui/file_manager/*" ]
+  js_files = [
+    "files_format_dialog.js",
+    "files_icon_button.js",
+    "files_message.js",
+    "files_metadata_box.js",
+    "files_metadata_entry.js",
+    "files_password_dialog.js",
+    "files_quick_view.js",
+    "files_ripple.js",
+    "files_safe_media.js",
+    "files_spinner.js",
+    "files_toast.js",
+    "files_toggle_ripple.js",
+    "files_tooltip.js",
+    "icons.js",
+    "xf_button.js",
+    "xf_circular_progress.js",
+    "xf_display_panel.js",
+    "xf_panel_item.js",
+  ]
+}
+
 js_library("files_format_dialog") {
+  visibility += [ "//ui/file_manager/audio_player/*" ]
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
 js_library("files_icon_button") {
+  visibility += [ "//ui/file_manager/audio_player/*" ]
   deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-button-state-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-control-state-extracted",
+    ":files_toggle_ripple",
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_unittest("files_message_unittest.m") {
+  deps = [
+    ":files_message",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("files_message") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_unittest("files_message_unittest") {
-  deps = [
-    ":files_message",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("files_metadata_box") {
-  externs_list = [ "$externs_path/pending_polymer.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("files_metadata_entry") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_unittest("files_password_dialog_unittest.m") {
+  deps = [
+    ":files_password_dialog",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("files_password_dialog") {
+  deps = [
+    "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
 js_library("files_quick_view") {
   deps = [
+    ":files_icon_button",
     ":files_metadata_box",
+    ":files_safe_media",
+    ":files_tooltip",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
-    "$externs_path/pending_polymer.js",
   ]
 }
 
 js_library("files_ripple") {
   deps = [
-    "//ui/webui/resources/js:assert",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("files_safe_media") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
-js_library("files_safe_media_webview_content") {
+js_library("files_spinner") {
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toast") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+  ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toggle_ripple") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
+  visibility += [ "//ui/file_manager/audio_player/*" ]
+
+  #visibility += [ "//ui/file_manager/gallery/*" ]
+
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_library("files_tooltip") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-}
-
-js_unittest("files_tooltip_unittest") {
+js_unittest("files_tooltip_unittest.m") {
   deps = [
     ":files_tooltip",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
-js_unittest("files_toast_unittest") {
+js_library("files_tooltip") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_unittest("files_toast_unittest.m") {
   deps = [
     ":files_toast",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
-js_unittest("files_xf_elements_unittest") {
+js_unittest("files_xf_elements_unittest.m") {
   deps = [
     ":xf_display_panel",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-}
 
-js_test_gen_html("js_test_gen_html") {
-  deps = [
-    ":files_message_unittest",
-    ":files_toast_unittest",
-    ":files_tooltip_unittest",
-    ":files_xf_elements_unittest",
-  ]
-  html_import = true
+  externs_list = [ "$externs_path/file_manager_private.js" ]
 }
 
 js_library("xf_button") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
 }
 
 js_library("xf_circular_progress") {
+  deps = [ "//ui/webui/resources/js:assert.m" ]
 }
 
 js_library("xf_display_panel") {
@@ -165,9 +253,31 @@ js_library("xf_display_panel") {
   ]
 }
 
+js_test_gen_html("js_test_gen_html_modules") {
+  is_polymer3 = true
+  deps = [
+    ":files_message_unittest.m",
+    ":files_password_dialog_unittest.m",
+    ":files_toast_unittest.m",
+    ":files_tooltip_unittest.m",
+    ":files_xf_elements_unittest.m",
+  ]
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "generate_exports=false",
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
 js_library("xf_panel_item") {
   deps = [
     ":xf_button",
     ":xf_circular_progress",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert.m",
   ]
 }

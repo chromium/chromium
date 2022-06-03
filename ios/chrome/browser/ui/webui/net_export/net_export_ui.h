@@ -5,16 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_NET_EXPORT_NET_EXPORT_UI_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_NET_EXPORT_NET_EXPORT_UI_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
 // The C++ back-end for the chrome://net-export webui page.
 class NetExportUI : public web::WebUIIOSController {
  public:
-  explicit NetExportUI(web::WebUIIOS* web_ui);
+  explicit NetExportUI(web::WebUIIOS* web_ui, const std::string& host);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetExportUI);
+  NetExportUI(const NetExportUI&) = delete;
+  NetExportUI& operator=(const NetExportUI&) = delete;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_NET_EXPORT_NET_EXPORT_UI_H_

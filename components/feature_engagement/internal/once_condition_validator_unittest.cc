@@ -31,7 +31,7 @@ class OnceTestEventModel : public EventModel {
  public:
   OnceTestEventModel() : ready_(false) { kValidFeatureConfig.valid = true; }
 
-  void Initialize(const OnModelInitializationFinished& callback,
+  void Initialize(OnModelInitializationFinished callback,
                   uint32_t current_day) override {}
 
   bool IsReady() const override { return ready_; }
@@ -42,7 +42,34 @@ class OnceTestEventModel : public EventModel {
     return nullptr;
   }
 
+  uint32_t GetEventCount(const std::string& event_name,
+                         uint32_t current_day,
+                         uint32_t window_size) const override {
+    return 0;
+  }
+
   void IncrementEvent(const std::string& event_name, uint32_t day) override {}
+
+  void IncrementSnooze(const std::string& event_name,
+                       uint32_t day,
+                       base::Time time) override {}
+
+  void DismissSnooze(const std::string& event_name) override {}
+
+  base::Time GetLastSnoozeTimestamp(
+      const std::string& event_name) const override {
+    return base::Time();
+  }
+
+  uint32_t GetSnoozeCount(const std::string& event_name,
+                          uint32_t window,
+                          uint32_t current_day) const override {
+    return 0;
+  }
+
+  bool IsSnoozeDismissed(const std::string& event_name) const override {
+    return false;
+  }
 
  private:
   bool ready_;
@@ -55,15 +82,16 @@ class OnceConditionValidatorTest : public ::testing::Test {
     event_model_.SetIsReady(true);
   }
 
+  OnceConditionValidatorTest(const OnceConditionValidatorTest&) = delete;
+  OnceConditionValidatorTest& operator=(const OnceConditionValidatorTest&) =
+      delete;
+
  protected:
   EditableConfiguration configuration_;
   OnceTestEventModel event_model_;
   NeverAvailabilityModel availability_model_;
   NoopDisplayLockController display_lock_controller_;
   OnceConditionValidator validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OnceConditionValidatorTest);
 };
 
 }  // namespace
@@ -73,12 +101,12 @@ TEST_F(OnceConditionValidatorTest, EnabledFeatureShouldTriggerOnce) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   validator_.NotifyIsShowing(kOnceTestFeatureFoo, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
-      availability_model_, display_lock_controller_, 0u);
+      availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.trigger_ok);
@@ -93,12 +121,12 @@ TEST_F(OnceConditionValidatorTest,
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
 }
 
@@ -107,12 +135,12 @@ TEST_F(OnceConditionValidatorTest, StillTriggerWhenAllFeaturesDisabled) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
 }
 
@@ -120,7 +148,7 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
   event_model_.SetIsReady(false);
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
-      availability_model_, display_lock_controller_, 0u);
+      availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.event_model_ready_ok);
 
@@ -128,7 +156,7 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
 }
 
@@ -136,7 +164,7 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
-      availability_model_, display_lock_controller_, 0u);
+      availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
 
@@ -144,21 +172,21 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
 }
 
 TEST_F(OnceConditionValidatorTest, DoNotTriggerForInvalidConfig) {
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kInvalidFeatureConfig, event_model_,
-      availability_model_, display_lock_controller_, 0u);
+      availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.config_ok);
 
   EXPECT_TRUE(validator_
                   .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
                                    event_model_, availability_model_,
-                                   display_lock_controller_, 0u)
+                                   display_lock_controller_, nullptr, 0u)
                   .NoErrors());
 }
 

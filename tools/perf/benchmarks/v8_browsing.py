@@ -2,58 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from core import perf_benchmark
+from core import platforms, perf_benchmark
+
 from telemetry import benchmark
 from telemetry import story
-from telemetry.timeline import chrome_trace_config
-from telemetry.web_perf import timeline_based_measurement
 import page_sets
+from benchmarks import v8_helper
 
 
-def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
-  categories = [
-    # Disable all categories by default.
-    '-*',
-    # Memory categories.
-    'disabled-by-default-memory-infra',
-    'toplevel',
-    # V8 categories.
-    'disabled-by-default-v8.gc',
-    'v8',
-    'v8.console',
-    'webkit.console',
-    # Blink categories.
-    'blink_gc',
-    # Needed for the metric reported by page.
-    'blink.user_timing'
-  ]
-
-  options.ExtendTraceCategoryFilter(categories)
-  if enable_runtime_call_stats:
-    options.AddTraceCategoryFilter('disabled-by-default-v8.runtime_stats')
-
-  options.config.enable_android_graphics_memtrack = True
-  # Trigger periodic light memory dumps every 1000 ms.
-  memory_dump_config = chrome_trace_config.MemoryDumpConfig()
-  memory_dump_config.AddTrigger('light', 1000)
-  options.config.chrome_trace_config.SetMemoryDumpConfig(memory_dump_config)
-
-  options.config.chrome_trace_config.SetTraceBufferSizeInKb(400 * 1024)
-
-  metrics = [
-    'blinkGcMetric',
-    'consoleErrorMetric',
-    'expectedQueueingTimeMetric',
-    'gcMetric',
-    'memoryMetric',
-    'reportedByPageMetric',
-  ]
-  options.ExtendTimelineBasedMetric(metrics)
-  if enable_runtime_call_stats:
-    options.AddTimelineBasedMetric('runtimeStatsTotalMetric')
-  return options
-
-class _V8BrowsingBenchmark(perf_benchmark.PerfBenchmark):
+class _V8BrowsingBenchmark(v8_helper.V8PerfMixin, perf_benchmark.PerfBenchmark):
   """Base class for V8 browsing benchmarks that measure RuntimeStats,
   eqt, gc and memory metrics.
   See browsing_stories._BrowsingStory for workload description.
@@ -62,57 +19,63 @@ class _V8BrowsingBenchmark(perf_benchmark.PerfBenchmark):
   def CreateStorySet(self, options):
     return page_sets.SystemHealthStorySet(platform=self.PLATFORM, case='browse')
 
-  def CreateCoreTimelineBasedMeasurementOptions(self):
-    options = timeline_based_measurement.Options()
-    AugmentOptionsForV8BrowsingMetrics(options)
-    return options
 
-
-@benchmark.Info(
-   emails=['mythria@chromium.org','ulan@chromium.org'],
-   component='Blink>JavaScript')
-class V8DesktopBrowsingBenchmark(
-    _V8BrowsingBenchmark):
+@benchmark.Info(emails=[
+    'cbruni@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+],
+                component='Blink>JavaScript',
+                documentation_url='https://bit.ly/system-health-v8-benchmarks')
+class V8DesktopBrowsingBenchmark(_V8BrowsingBenchmark):
+  """See _V8BrowsingBenchmark."""
   PLATFORM = 'desktop'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-      '--enable-blink-features=BlinkRuntimeCallStats')
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
   @classmethod
   def Name(cls):
     return 'v8.browsing_desktop'
 
 
-@benchmark.Info(
-   emails=['mythria@chromium.org','ulan@chromium.org'],
-   component='Blink>JavaScript')
+@benchmark.Info(emails=[
+    'cbruni@chromium.org', 'leszeks@chromium.org', 'tmrts@chromium.org'
+],
+                component='Blink>JavaScript',
+                documentation_url='https://bit.ly/system-health-v8-benchmarks')
 class V8MobileBrowsingBenchmark(
     _V8BrowsingBenchmark):
+  """See _V8BrowsingBenchmark."""
   PLATFORM = 'mobile'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-      '--enable-blink-features=BlinkRuntimeCallStats')
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
 
   @classmethod
   def Name(cls):
     return 'v8.browsing_mobile'
 
 
-@benchmark.Info(
-   emails=['mythria@chromium.org','ulan@chromium.org'],
-   component='Blink>JavaScript')
-class V8FutureDesktopBrowsingBenchmark(
-    _V8BrowsingBenchmark):
+@benchmark.Info(emails=[
+    'cbruni@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+],
+                component='Blink>JavaScript',
+                documentation_url='https://bit.ly/system-health-v8-benchmarks')
+class V8FutureDesktopBrowsingBenchmark(_V8BrowsingBenchmark):
+  """See _V8BrowsingBenchmark."""
   PLATFORM = 'desktop'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-      '--enable-blink-features=BlinkRuntimeCallStats')
+    super(V8FutureDesktopBrowsingBenchmark,
+          self).SetExtraBrowserOptions(options)
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
 
   @classmethod
@@ -120,17 +83,22 @@ class V8FutureDesktopBrowsingBenchmark(
     return 'v8.browsing_desktop-future'
 
 
-@benchmark.Info(
-   emails=['mythria@chromium.org','ulan@chromium.org'],
-   component='Blink>JavaScript')
-class V8FutureMobileBrowsingBenchmark(
-    _V8BrowsingBenchmark):
+@benchmark.Info(emails=[
+    'cbruni@chromium.org', 'leszeks@chromium.org', 'tmrts@chromium.org'
+],
+                component='Blink>JavaScript',
+                documentation_url='https://bit.ly/system-health-v8-benchmarks')
+class V8FutureMobileBrowsingBenchmark(_V8BrowsingBenchmark):
+  """See _V8BrowsingBenchmark."""
   PLATFORM = 'mobile'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(
-      '--enable-blink-features=BlinkRuntimeCallStats')
+    super(V8FutureMobileBrowsingBenchmark, self).SetExtraBrowserOptions(options)
     options.AppendExtraBrowserArgs(
       '--enable-features=V8VmFuture')
 

@@ -6,11 +6,12 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -31,13 +32,11 @@ static const int64_t kTestOverrideDelayMilliseconds = 1;
 class MonitoredVideoStubTest : public testing::Test {
  protected:
   void SetUp() override {
-    packet_.reset(new VideoPacket());
-    monitor_.reset(new MonitoredVideoStub(
-        &video_stub_,
-        base::TimeDelta::FromMilliseconds(kTestOverrideDelayMilliseconds),
-        base::Bind(
-            &MonitoredVideoStubTest::OnVideoChannelStatus,
-            base::Unretained(this))));
+    packet_ = std::make_unique<VideoPacket>();
+    monitor_ = std::make_unique<MonitoredVideoStub>(
+        &video_stub_, base::Milliseconds(kTestOverrideDelayMilliseconds),
+        base::BindRepeating(&MonitoredVideoStubTest::OnVideoChannelStatus,
+                            base::Unretained(this)));
     EXPECT_CALL(video_stub_, ProcessVideoPacketPtr(_, _)).Times(AnyNumber());
   }
 
@@ -57,13 +56,13 @@ TEST_F(MonitoredVideoStubTest, OnChannelConnected) {
   // finishes, so we expect to see at most one transition to not ready.
   EXPECT_CALL(*this, OnVideoChannelStatus(false)).Times(AtMost(1));
 
-  monitor_->ProcessVideoPacket(std::move(packet_), base::Closure());
+  monitor_->ProcessVideoPacket(std::move(packet_), {});
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(MonitoredVideoStubTest, OnChannelDisconnected) {
   EXPECT_CALL(*this, OnVideoChannelStatus(true));
-  monitor_->ProcessVideoPacket(std::move(packet_), base::Closure());
+  monitor_->ProcessVideoPacket(std::move(packet_), {});
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnVideoChannelStatus(false))
@@ -79,8 +78,8 @@ TEST_F(MonitoredVideoStubTest, OnChannelStayConnected) {
   // finishes, so we expect to see at most one transition to not ready.
   EXPECT_CALL(*this, OnVideoChannelStatus(false)).Times(AtMost(1));
 
-  monitor_->ProcessVideoPacket(std::move(packet_), base::Closure());
-  monitor_->ProcessVideoPacket(std::move(packet_), base::Closure());
+  monitor_->ProcessVideoPacket(std::move(packet_), {});
+  monitor_->ProcessVideoPacket(std::move(packet_), {});
   base::RunLoop().RunUntilIdle();
 }
 
@@ -89,7 +88,7 @@ TEST_F(MonitoredVideoStubTest, OnChannelStayDisconnected) {
   EXPECT_CALL(*this, OnVideoChannelStatus(true)).Times(1);
   EXPECT_CALL(*this, OnVideoChannelStatus(false)).Times(1);
 
-  monitor_->ProcessVideoPacket(std::move(packet_), base::Closure());
+  monitor_->ProcessVideoPacket(std::move(packet_), {});
 
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),

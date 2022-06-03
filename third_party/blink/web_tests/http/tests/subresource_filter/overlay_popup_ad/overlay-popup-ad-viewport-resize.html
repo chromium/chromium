@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  position: fixed;
+  margin-left: 0vw;
+  width: 100px;
+  height: 100px;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+
+<body marginwidth="0" marginheight="0">
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+<!-- To contain the overlay popup -->
+<div></div>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+promise_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
+
+  // Make the page unscrollable so that future overlay candidates can be
+  // determined immediately rather than at dismissal time.
+  document.body.style.overflow = "hidden";
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the current viewport size.
+  await forceLayoutUpdate();
+
+  // Expect no OverlayPopupAd usage, as the ad frame is not in the center of
+  // the viewport.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Resize the window to to make the overlay iframe centered and large
+  // relative to the viewport.
+  testRunner.useUnfortunateSynchronousResizeMode();
+  testRunner.waitUntilDone();
+  window.resizeTo(150, 150);
+
+  // Force a layout update, so that the interstitial detector
+  // is aware of the updated viewport size, and the overlay ad iframe.
+  await forceLayoutUpdate();
+
+  // Expect no OverlayPopupAd usage, as the viewport has just been resized
+  // so we have skipped this detection.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Force a layout update, to trigger another detection event.
+  await forceLayoutUpdate();
+
+  // Expect no OverlayPopupAd usage, as the overlay has been marked
+  // unqualified.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Create another overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
+
+  // Force a layout update so that the interstitial detector is aware of
+  // the new overlay ad iframe.
+  await forceLayoutUpdate();
+
+  // Expect OverlayPopupAd usage due to the appearance of the new overlay.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test overlay-popup-ad when the ad appears before (no use counter) & after (use counter) resizing the viewport.");
+</script>
+</body>
+</html>

@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <cfloat>
 
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -63,6 +63,9 @@ class SpecialValueHandler {
   };
 
   SpecialValueHandler(const Decimal& lhs, const Decimal& rhs);
+  SpecialValueHandler(const SpecialValueHandler&) = delete;
+  SpecialValueHandler& operator=(const SpecialValueHandler&) = delete;
+
   HandleResult Handle();
   Decimal Value() const;
 
@@ -76,8 +79,6 @@ class SpecialValueHandler {
   const Decimal& lhs_;
   const Decimal& rhs_;
   Result result_ = kResultIsUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(SpecialValueHandler);
 };
 
 SpecialValueHandler::SpecialValueHandler(const Decimal& lhs, const Decimal& rhs)

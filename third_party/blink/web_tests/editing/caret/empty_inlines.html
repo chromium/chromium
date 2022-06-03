@@ -1,0 +1,61 @@
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const kLineHeight = 20;
+const kStyle = `font: 10px/${kLineHeight}px Ahem; padding: 5px;`;
+
+function checkBox(content, style = '') {
+    const sample = [
+        `<div style="${kStyle}style">`,
+        content,
+        '</div>',
+    ].join('');
+
+    selection_test(
+        sample,
+        selection => {
+            const target = selection.document.querySelector('span');
+            assert_not_equals(`${target.offsetLeft},${target.offsetTop}`,
+                              '8,8');
+        },
+        sample,
+        style ? `"${content}" with ${style}` : `"${content}"`);
+}
+
+// Note: We don't have test cases for empty line box, e.g.
+//  - <div><span> </span></div>
+//  - <div><span> </span><b style="float:left">x</b></div>
+//  - <div><span> </span><b style="position:absolute">x</b></div>
+// See [1] for empty line box.
+// [1] https://drafts.csswg.org/css2/visuren.html#phantom-line-box
+
+checkBox('ab<span></span>');
+checkBox('ab<span> </span>');
+checkBox('ab <span></span>');
+checkBox('ab <span> </span>');
+checkBox('ab<span></span> ');
+checkBox('ab<span> </span> ');
+
+checkBox('<span></span>xy');
+checkBox('<span> </span>xy');
+checkBox(' <span></span>xy');
+checkBox(' <span> </span>xy');
+checkBox('<span></span> xy');
+checkBox('<span> </span> xy');
+
+checkBox('ab<span></span>xy');
+checkBox('ab<span> </span>xy');
+checkBox('ab <span></span>xy');
+checkBox('ab <span> </span>xy');
+checkBox('ab<span></span> xy');
+checkBox('ab<span> </span> xy');
+
+// Soft line wrap at <span>
+checkBox('ab<span></span>xy', `width: 2ch;`);
+checkBox('ab<span> </span>xy', `width: 3ch;`);
+
+
+</script>

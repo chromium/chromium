@@ -8,10 +8,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_componen
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-
 import androidx.annotation.VisibleForTesting;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.ui.modelutil.ListModel;

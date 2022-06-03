@@ -4,12 +4,11 @@
 <script src="../resources/js-test.js"></script>
 </head>
 
-<body id="body">
+<body>
 
-<label tabindex=0 onclick="performEvent();" id="labelElement">label</label>
-
-<p id="description"></p>
-<div id="console"></div>
+  <div id="container">
+      <label tabindex=0 onclick="performEvent();" id="labelElement">label</label>
+  </div>
 
 <script>
 
@@ -22,9 +21,8 @@
     if (window.accessibilityController) {
  
         testRunner.waitUntilDone();
-        document.getElementById("body").focus();
-        var body = accessibilityController.focusedElement;
-        var label = body.childAtIndex(0).childAtIndex(0);
+        var container = accessibilityController.accessibleElementById("container");   
+        var label = container.childAtIndex(0);
     
         // if successful, performEvent() will be called and we'll successfully parse.        
         label.press();

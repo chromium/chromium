@@ -12,7 +12,7 @@ PASS internals.isSelectPopupVisible(popup) is false
 Test opening of popup using F4
 PASS internals.isSelectPopupVisible(popup) is true
 Test opening of popup using enter key
-PASS internals.isSelectPopupVisible(popup) is true
+PASS internals.isSelectPopupVisible(popup) is false
 Works for all platforms
 Test opening of popup using space key
 PASS internals.isSelectPopupVisible(popup) is true

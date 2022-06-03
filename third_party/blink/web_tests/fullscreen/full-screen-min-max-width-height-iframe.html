@@ -15,7 +15,7 @@ iframe {
 <script>
 iframe = document.querySelector('iframe');
 
-waitForEventAndEnd(document, 'webkitfullscreenchange', function()
+waitForEventOnceAndEnd(document, 'webkitfullscreenchange', function()
 {
     computedStyle = getComputedStyle(iframe);
     testExpected('computedStyle.minWidth', '0px');

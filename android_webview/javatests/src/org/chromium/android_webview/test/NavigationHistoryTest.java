@@ -5,7 +5,8 @@
 package org.chromium.android_webview.test;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +37,7 @@ public class NavigationHistoryTest {
     private static final String PAGE_2_PATH = "/page2.html";
     private static final String PAGE_2_TITLE = "Page 2 Title";
     private static final String PAGE_WITH_HASHTAG_REDIRECT_TITLE = "Page with hashtag";
+    private static final String PAGE_WITH_SAME_DOCUMENT = "/page3.html";
 
     private TestWebServer mWebServer;
     private TestAwContentsClient mContentsClient;
@@ -64,8 +66,8 @@ public class NavigationHistoryTest {
 
     private void checkHistoryItem(NavigationEntry item, String url, String originalUrl,
             String title, boolean faviconNull) {
-        Assert.assertEquals(url, item.getUrl());
-        Assert.assertEquals(originalUrl, item.getOriginalUrl());
+        Assert.assertEquals(url, item.getUrl().getSpec());
+        Assert.assertEquals(originalUrl, item.getOriginalUrl().getSpec());
         Assert.assertEquals(title, item.getTitle());
         if (faviconNull) {
             Assert.assertNull(item.getFavicon());
@@ -98,6 +100,14 @@ public class NavigationHistoryTest {
                 CommonResources.getTextHtmlHeaders(false));
     }
 
+    private String addPageWithSameDocumentToServer(TestWebServer webServer) {
+        return mWebServer.setResponse(PAGE_WITH_SAME_DOCUMENT,
+                CommonResources.makeHtmlPageFrom(
+                        "<script>history.pushState(null, null, '/history.html');</script>",
+                        "<div>This is test page with samedocument.</div>"),
+                CommonResources.getTextHtmlHeaders(false));
+    }
+
     @Test
     @SmallTest
     public void testNavigateOneUrl() throws Throwable {
@@ -118,6 +128,33 @@ public class NavigationHistoryTest {
                 true);
 
         Assert.assertEquals(0, history.getCurrentEntryIndex());
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigateBackForwardWithIntervention() throws Throwable {
+        NavigationHistory history = getNavigationHistory(mAwContents);
+        Assert.assertEquals(0, history.getEntryCount());
+
+        final String page1Url = addPage1ToServer(mWebServer);
+        final String pageWithSameDocumentUrl = addPageWithSameDocumentToServer(mWebServer);
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), page1Url);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithSameDocumentUrl);
+
+        history = getNavigationHistory(mAwContents);
+        Assert.assertEquals(3, history.getEntryCount());
+        Assert.assertTrue(mAwContents.canGoBackOrForward(-1));
+        Assert.assertFalse(mAwContents.canGoBackOrForward(-2));
+
+        HistoryUtils.goBackSync(InstrumentationRegistry.getInstrumentation(),
+                mAwContents.getWebContents(), mContentsClient.getOnPageFinishedHelper());
+
+        Assert.assertTrue(mAwContents.canGoBackOrForward(1));
+        Assert.assertFalse(mAwContents.canGoBackOrForward(2));
     }
 
     @Test

@@ -9,12 +9,11 @@
 
 #include <memory>
 #include <queue>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -22,6 +21,7 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
 #include "components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.h"
@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -63,7 +64,7 @@ class FrameSinkVideoCapturerManager;
 // known to it.
 //
 // Once the target is resolved, this capturer attaches to it to receive events
-// of interest regarding the frame flow, display timiming, and changes to the
+// of interest regarding the frame flow, display timing, and changes to the
 // frame sink's surface. For some subset of frames, decided by
 // media::VideoCaptureOracle, this capturer will make a CopyOutputRequest on the
 // surface. Successful CopyOutputResults are then copied into pooled shared
@@ -79,7 +80,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   FrameSinkVideoCapturerImpl(
       FrameSinkVideoCapturerManager* frame_sink_manager,
       mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
-      std::unique_ptr<media::VideoCaptureOracle> oracle);
+      std::unique_ptr<media::VideoCaptureOracle> oracle,
+      bool log_to_webrtc);
+
+  FrameSinkVideoCapturerImpl(const FrameSinkVideoCapturerImpl&) = delete;
+  FrameSinkVideoCapturerImpl& operator=(const FrameSinkVideoCapturerImpl&) =
+      delete;
 
   ~FrameSinkVideoCapturerImpl() final;
 
@@ -109,7 +115,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const base::Optional<FrameSinkId>& frame_sink_id) final;
+  void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
+                    mojom::SubTargetPtr sub_target) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
@@ -173,6 +180,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                       const gfx::Rect& damage_rect,
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
+  bool IsVideoCaptureStarted() final;
 
   // VideoCaptureOverlay::FrameSource implementation:
   gfx::Size GetSourceSize() final;
@@ -198,7 +206,6 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                     OracleFrameNumber oracle_frame_number,
                     int64_t content_version,
                     const gfx::Rect& content_rect,
-                    VideoCaptureOverlay::OnceRenderer overlay_renderer,
                     scoped_refptr<media::VideoFrame> frame,
                     base::TimeTicks request_time,
                     std::unique_ptr<CopyOutputResult> result);
@@ -226,6 +233,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Expands |rect| such that its x, y, right, and bottom values are even
   // numbers.
   static gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect);
+
+  void OnLog(const std::string& message);
 
   // Owner/Manager of this instance.
   FrameSinkVideoCapturerManager* const frame_sink_manager_;
@@ -255,6 +264,11 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // ChangeTarget().
   FrameSinkId requested_target_;
 
+  // A specifier that indicates what region of the layer should be captured.
+  // If not valid, then the root render pass of the target frame sink should
+  // be captured.
+  CapturableFrameSink::RegionSpecifier region_specifier_;
+
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
   CapturableFrameSink* resolved_target_ = nullptr;
@@ -271,6 +285,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // captured frame.
   gfx::Rect last_frame_visible_rect_;
 
+  // True after Start() and false after Stop().
+  bool video_capture_started_ = false;
+
   // These are sequence counters used to ensure that the frames are being
   // delivered in the same order they are captured.
   int64_t next_capture_frame_number_ = 0;
@@ -283,7 +300,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frame, when RequestRefreshFrame() has been called.
   //
   // Note: This is always set, but the instance is overridden for unit testing.
-  base::Optional<base::OneShotTimer> refresh_frame_retry_timer_;
+  absl::optional<base::OneShotTimer> refresh_frame_retry_timer_;
 
   // Provides a pool of VideoFrames that can be efficiently delivered across
   // processes. The size of this pool is used to limit the maximum number of
@@ -295,6 +312,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   int64_t content_version_ = 0;
 
   int64_t content_version_in_marked_frame_ = -1;
+
+  gfx::Size marked_frame_size_;
 
   // A queue of captured frames pending delivery. This queue is used to re-order
   // frames, if they should happen to be captured out-of-order.
@@ -315,7 +334,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The Oracle-provided media timestamp of the first frame. This is used to
   // compute the relative media stream timestamps for each successive frame.
-  base::Optional<base::TimeTicks> first_frame_media_ticks_;
+  absl::optional<base::TimeTicks> first_frame_media_ticks_;
 
   // Zero or more overlays to be rendered over each captured video frame. The
   // order of the entries in this map determines the order in which each overlay
@@ -335,11 +354,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // in-flight frame deliveries.
   base::WeakPtrFactory<media::VideoCaptureOracle> feedback_weak_factory_;
 
+  // Enables debug log messages to be sent to webrtc native log.
+  const bool log_to_webrtc_;
+
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.
   base::WeakPtrFactory<FrameSinkVideoCapturerImpl> capture_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCapturerImpl);
 };
 
 }  // namespace viz

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script>
+function setSessionStorageValue(key, value) {
+  window.sessionStorage[key] = value;
+}
+
+function getSessionStorageValue(key) {
+  return window.sessionStorage[key] || "";
+}
+
+function setLocalStorageValue(key, value) {
+  window.localStorage[key] = value;
+}
+
+function getLocalStorageValue(key) {
+  return window.localStorage[key] || "";
+}
+</script>

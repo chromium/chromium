@@ -9,13 +9,14 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow HTML",
       "position": [8, 8],
-      "bounds": [272, 16]
+      "bounds": [784, 579]
     }
   ],
   "transforms": [

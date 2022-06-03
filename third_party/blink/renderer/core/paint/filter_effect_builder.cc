@@ -27,9 +27,10 @@
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 
 #include <algorithm>
-#include "third_party/blink/public/platform/web_point.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
@@ -66,26 +67,26 @@ inline void LastMatrixRow(Vector<float>& matrix) {
 }
 
 Vector<float> GrayscaleMatrix(double amount) {
-  double one_minus_amount = clampTo(1 - amount, 0.0, 1.0);
+  double one_minus_amount = ClampTo(1 - amount, 0.0, 1.0);
 
   // See https://drafts.fxtf.org/filter-effects/#grayscaleEquivalent for
   // information on parameters.
   Vector<float> matrix;
   matrix.ReserveInitialCapacity(20);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 + 0.7874 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 - 0.7152 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 - 0.0722 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 + 0.7874 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 - 0.7152 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 - 0.0722 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 - 0.2126 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 + 0.2848 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 - 0.0722 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 - 0.2126 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 + 0.2848 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 - 0.0722 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 - 0.2126 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 - 0.7152 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 + 0.9278 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 - 0.2126 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 - 0.7152 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 + 0.9278 * one_minus_amount));
   EndMatrixRow(matrix);
 
   LastMatrixRow(matrix);
@@ -93,26 +94,26 @@ Vector<float> GrayscaleMatrix(double amount) {
 }
 
 Vector<float> SepiaMatrix(double amount) {
-  double one_minus_amount = clampTo(1 - amount, 0.0, 1.0);
+  double one_minus_amount = ClampTo(1 - amount, 0.0, 1.0);
 
   // See https://drafts.fxtf.org/filter-effects/#sepiaEquivalent for information
   // on parameters.
   Vector<float> matrix;
   matrix.ReserveInitialCapacity(20);
 
-  matrix.UncheckedAppend(clampTo<float>(0.393 + 0.607 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.769 - 0.769 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.189 - 0.189 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.393 + 0.607 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.769 - 0.769 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.189 - 0.189 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.349 - 0.349 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.686 + 0.314 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.168 - 0.168 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.349 - 0.349 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.686 + 0.314 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.168 - 0.168 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.272 - 0.272 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.534 - 0.534 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.131 + 0.869 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.272 - 0.272 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.534 - 0.534 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.131 + 0.869 * one_minus_amount));
   EndMatrixRow(matrix);
 
   LastMatrixRow(matrix);
@@ -121,14 +122,14 @@ Vector<float> SepiaMatrix(double amount) {
 
 }  // namespace
 
-FilterEffectBuilder::FilterEffectBuilder(
-    const FloatRect& reference_box,
-    float zoom,
-    const PaintFlags* fill_flags,
-    const PaintFlags* stroke_flags,
-    SkBlurImageFilter::TileMode blur_tile_mode)
+FilterEffectBuilder::FilterEffectBuilder(const FloatRect& reference_box,
+                                         float zoom,
+                                         const PaintFlags* fill_flags,
+                                         const PaintFlags* stroke_flags,
+                                         SkTileMode blur_tile_mode)
     : reference_box_(reference_box),
       zoom_(zoom),
+      shorthand_scale_(1),
       fill_flags_(fill_flags),
       stroke_flags_(stroke_flags),
       blur_tile_mode_(blur_tile_mode) {}
@@ -165,30 +166,49 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         Vector<float> input_parameters = GrayscaleMatrix(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount());
         effect = MakeGarbageCollected<FEColorMatrix>(
-            parent_filter, FECOLORMATRIX_TYPE_MATRIX, input_parameters);
+            parent_filter, FECOLORMATRIX_TYPE_MATRIX,
+            std::move(input_parameters));
         break;
       }
       case FilterOperation::SEPIA: {
         Vector<float> input_parameters = SepiaMatrix(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount());
         effect = MakeGarbageCollected<FEColorMatrix>(
-            parent_filter, FECOLORMATRIX_TYPE_MATRIX, input_parameters);
+            parent_filter, FECOLORMATRIX_TYPE_MATRIX,
+            std::move(input_parameters));
         break;
       }
       case FilterOperation::SATURATE: {
         Vector<float> input_parameters;
-        input_parameters.push_back(clampTo<float>(
+        input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
         effect = MakeGarbageCollected<FEColorMatrix>(
-            parent_filter, FECOLORMATRIX_TYPE_SATURATE, input_parameters);
+            parent_filter, FECOLORMATRIX_TYPE_SATURATE,
+            std::move(input_parameters));
         break;
       }
       case FilterOperation::HUE_ROTATE: {
         Vector<float> input_parameters;
-        input_parameters.push_back(clampTo<float>(
+        input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
         effect = MakeGarbageCollected<FEColorMatrix>(
-            parent_filter, FECOLORMATRIX_TYPE_HUEROTATE, input_parameters);
+            parent_filter, FECOLORMATRIX_TYPE_HUEROTATE,
+            std::move(input_parameters));
+        break;
+      }
+      case FilterOperation::LUMINANCE_TO_ALPHA: {
+        Vector<float> input_parameters;
+        effect = MakeGarbageCollected<FEColorMatrix>(
+            parent_filter, FECOLORMATRIX_TYPE_LUMINANCETOALPHA,
+            std::move(input_parameters));
+        break;
+      }
+      case FilterOperation::COLOR_MATRIX: {
+        Vector<float> input_parameters =
+            To<ColorMatrixFilterOperation>(filter_operation)->Values();
+        effect = MakeGarbageCollected<FEColorMatrix>(
+            parent_filter, FECOLORMATRIX_TYPE_MATRIX,
+            std::move(input_parameters));
         break;
       }
       case FilterOperation::INVERT: {
@@ -198,9 +218,9 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_TABLE;
         Vector<float> transfer_parameters;
         transfer_parameters.push_back(
-            clampTo<float>(component_transfer_operation->Amount()));
+            ClampTo<float>(component_transfer_operation->Amount()));
         transfer_parameters.push_back(
-            clampTo<float>(1 - component_transfer_operation->Amount()));
+            ClampTo<float>(1 - component_transfer_operation->Amount()));
         transfer_function.table_values = transfer_parameters;
 
         ComponentTransferFunction null_function;
@@ -214,7 +234,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_TABLE;
         Vector<float> transfer_parameters;
         transfer_parameters.push_back(0);
-        transfer_parameters.push_back(clampTo<float>(
+        transfer_parameters.push_back(ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount()));
         transfer_function.table_values = transfer_parameters;
@@ -228,7 +248,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::BRIGHTNESS: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
-        transfer_function.slope = clampTo<float>(
+        transfer_function.slope = ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount());
         transfer_function.intercept = 0;
@@ -242,7 +262,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::CONTRAST: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
-        float amount = clampTo<float>(
+        float amount = ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount());
         transfer_function.slope = amount;
@@ -257,6 +277,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::BLUR: {
         float std_deviation = FloatValueForLength(
             To<BlurFilterOperation>(filter_operation)->StdDeviation(), 0);
+        std_deviation *= shorthand_scale_;
         effect = MakeGarbageCollected<FEGaussianBlur>(
             parent_filter, std_deviation, std_deviation);
         break;
@@ -264,8 +285,10 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::DROP_SHADOW: {
         const ShadowData& shadow =
             To<DropShadowFilterOperation>(*filter_operation).Shadow();
+        FloatPoint offset = shadow.Location().ScaledBy(shorthand_scale_);
+        float radius = shadow.Blur() * shorthand_scale_;
         effect = MakeGarbageCollected<FEDropShadow>(
-            parent_filter, shadow.Blur(), shadow.Blur(), shadow.X(), shadow.Y(),
+            parent_filter, radius, radius, offset.x(), offset.y(),
             shadow.GetColor().GetColor(), 1);
         break;
       }
@@ -274,6 +297,29 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             To<BoxReflectFilterOperation>(filter_operation);
         effect = MakeGarbageCollected<FEBoxReflect>(
             parent_filter, box_reflect_operation->Reflection());
+        break;
+      }
+      case FilterOperation::CONVOLVE_MATRIX: {
+        ConvolveMatrixFilterOperation* convolve_matrix_operation =
+            To<ConvolveMatrixFilterOperation>(filter_operation);
+        effect = MakeGarbageCollected<FEConvolveMatrix>(
+            parent_filter, convolve_matrix_operation->KernelSize(),
+            convolve_matrix_operation->Divisor(),
+            convolve_matrix_operation->Bias(),
+            convolve_matrix_operation->TargetOffset().OffsetFromOrigin(),
+            convolve_matrix_operation->EdgeMode(),
+            convolve_matrix_operation->PreserveAlpha(),
+            convolve_matrix_operation->KernelMatrix());
+        break;
+      }
+      case FilterOperation::COMPONENT_TRANSFER: {
+        ComponentTransferFilterOperation* component_transfer_operation =
+            To<ComponentTransferFilterOperation>(filter_operation);
+        effect = MakeGarbageCollected<FEComponentTransfer>(
+            parent_filter, component_transfer_operation->RedFunc(),
+            component_transfer_operation->GreenFunc(),
+            component_transfer_operation->BlueFunc(),
+            component_transfer_operation->AlphaFunc());
         break;
       }
       default:
@@ -309,7 +355,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             BuildReferenceFilter(reference_operation, nullptr);
         if (reference_filter && reference_filter->LastEffect()) {
           paint_filter_builder::PopulateSourceGraphicImageFilters(
-              reference_filter->GetSourceGraphic(), nullptr,
+              reference_filter->GetSourceGraphic(),
               current_interpolation_space);
 
           FilterEffect* filter_effect = reference_filter->LastEffect();
@@ -347,6 +393,18 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         }
         break;
       }
+      case FilterOperation::LUMINANCE_TO_ALPHA:
+      case FilterOperation::CONVOLVE_MATRIX:
+      case FilterOperation::COMPONENT_TRANSFER:
+        // These filter types only exist for Canvas filters.
+        NOTREACHED();
+        break;
+      case FilterOperation::COLOR_MATRIX: {
+        Vector<float> matrix_values =
+            To<ColorMatrixFilterOperation>(*op).Values();
+        filters.AppendColorMatrixFilter(matrix_values);
+        break;
+      }
       case FilterOperation::INVERT:
       case FilterOperation::OPACITY:
       case FilterOperation::BRIGHTNESS:
@@ -373,13 +431,16 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::BLUR: {
         float pixel_radius =
             To<BlurFilterOperation>(*op).StdDeviation().GetFloatValue();
+        pixel_radius *= shorthand_scale_;
         filters.AppendBlurFilter(pixel_radius, blur_tile_mode_);
         break;
       }
       case FilterOperation::DROP_SHADOW: {
         const ShadowData& shadow = To<DropShadowFilterOperation>(*op).Shadow();
-        filters.AppendDropShadowFilter(FlooredIntPoint(shadow.Location()),
-                                       shadow.Blur(),
+        gfx::Point floored_offset =
+            FlooredIntPoint(shadow.Location().ScaledBy(shorthand_scale_));
+        float radius = shadow.Blur() * shorthand_scale_;
+        filters.AppendDropShadowFilter(floored_offset, radius,
                                        shadow.GetColor().GetColor());
         break;
       }
@@ -412,22 +473,18 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
 
 Filter* FilterEffectBuilder::BuildReferenceFilter(
     const ReferenceFilterOperation& reference_operation,
-    FilterEffect* previous_effect) const {
-  SVGResource* resource = reference_operation.Resource();
-  if (auto* filter =
-          DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr))
-    return BuildReferenceFilter(*filter, previous_effect);
-  return nullptr;
-}
-
-Filter* FilterEffectBuilder::BuildReferenceFilter(
-    SVGFilterElement& filter_element,
     FilterEffect* previous_effect,
     SVGFilterGraphNodeMap* node_map) const {
+  SVGResource* resource = reference_operation.Resource();
+  auto* filter_element =
+      DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
+  if (!filter_element)
+    return nullptr;
+  if (auto* resource_container = resource->ResourceContainerNoCycleCheck())
+    resource_container->ClearInvalidationMask();
   FloatRect filter_region =
       SVGLengthContext::ResolveRectangle<SVGFilterElement>(
-          &filter_element,
-          filter_element.filterUnits()->CurrentValue()->EnumValue(),
+          filter_element, filter_element->filterUnits()->CurrentEnumValue(),
           reference_box_);
   // TODO(fs): We rely on the presence of a node map here to opt-in to the
   // check for an empty filter region. The reason for this is that we lack a
@@ -436,7 +493,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     return nullptr;
 
   bool primitive_bounding_box_mode =
-      filter_element.primitiveUnits()->CurrentValue()->EnumValue() ==
+      filter_element->primitiveUnits()->CurrentEnumValue() ==
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox;
   Filter::UnitScaling unit_scaling =
       primitive_bounding_box_mode ? Filter::kBoundingBox : Filter::kUserSpace;
@@ -446,7 +503,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     previous_effect = result->GetSourceGraphic();
   SVGFilterBuilder builder(previous_effect, node_map, fill_flags_,
                            stroke_flags_);
-  builder.BuildGraph(result, filter_element, reference_box_);
+  builder.BuildGraph(result, *filter_element, reference_box_);
   result->SetLastEffect(builder.LastEffect());
   return result;
 }

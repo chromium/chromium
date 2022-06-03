@@ -5,23 +5,25 @@
 package org.chromium.chrome.browser.payments;
 
 import android.content.Context;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.util.JsonWriter;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.FullCardRequestDelegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
+import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.ErrorStrings;
+import org.chromium.components.payments.PayerData;
+import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -41,8 +43,8 @@ import java.util.Set;
 /**
  * The locally stored credit card payment instrument.
  */
-public class AutofillPaymentInstrument extends PaymentInstrument
-        implements FullCardRequestDelegate, NormalizedAddressRequestDelegate {
+public class AutofillPaymentInstrument
+        extends PaymentApp implements FullCardRequestDelegate, NormalizedAddressRequestDelegate {
     // Bit field values are identical to CreditCardCompletionStatus fields in
     // autofill_card_validation.h. Please modify autofill_card_validation.h after changing these
     // bits since missing fields on both Android and Desktop are recorded in the same UMA metric:
@@ -62,12 +64,14 @@ public class AutofillPaymentInstrument extends PaymentInstrument
     }
 
     private final WebContents mWebContents;
-    private final boolean mIsMatchingMerchantsRequestedCardType;
     private CreditCard mCard;
     private String mSecurityCode;
-    @Nullable private AutofillProfile mBillingAddress;
-    @Nullable private String mMethodName;
-    @Nullable private InstrumentDetailsCallback mCallback;
+    @Nullable
+    private AutofillProfile mBillingAddress;
+    @Nullable
+    private String mMethodName;
+    @Nullable
+    private InstrumentDetailsCallback mCallback;
     private boolean mIsWaitingForBillingNormalization;
     private boolean mIsWaitingForFullCardDetails;
     private boolean mHasValidNumberAndName;
@@ -80,23 +84,17 @@ public class AutofillPaymentInstrument extends PaymentInstrument
      * @param billingAddress                 The billing address for the card.
      * @param methodName                     The payment method name, e.g., "basic-card", "visa",
      *                                       amex", or null.
-     * @param matchesMerchantCardTypeExactly Whether the card type (credit, debit, prepaid) matches
-     *                                       the type that the merchant has requested exactly. This
-     *                                       should be false for unknown card types, if the merchant
-     *                                       cannot accept some card types.
      */
     public AutofillPaymentInstrument(WebContents webContents, CreditCard card,
-            @Nullable AutofillProfile billingAddress, @Nullable String methodName,
-            boolean matchesMerchantCardTypeExactly) {
+            @Nullable AutofillProfile billingAddress, @Nullable String methodName) {
         super(card.getGUID(), card.getObfuscatedNumber(), card.getName(), null);
         mWebContents = webContents;
         mCard = card;
         mBillingAddress = billingAddress;
         mIsEditable = true;
         mMethodName = methodName;
-        mIsMatchingMerchantsRequestedCardType = matchesMerchantCardTypeExactly;
 
-        Context context = ChromeActivity.fromWebContents(mWebContents);
+        Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
 
         if (card.getIssuerIconDrawableId() != 0) {
@@ -115,18 +113,8 @@ public class AutofillPaymentInstrument extends PaymentInstrument
     }
 
     @Override
-    public boolean isAutofillInstrument() {
-        return true;
-    }
-
-    @Override
     public boolean isServerAutofillInstrument() {
         return !mCard.getIsLocal();
-    }
-
-    @Override
-    public boolean isExactlyMatchingMerchantRequest() {
-        return mIsMatchingMerchantsRequestedCardType;
     }
 
     @Override
@@ -134,19 +122,10 @@ public class AutofillPaymentInstrument extends PaymentInstrument
         boolean isSupportedMethod = super.isValidForPaymentMethodData(method, data);
         if (!isSupportedMethod) return false;
 
-        int cardType = getCard().getCardType();
-        String cardIssuerNetwork = getCard().getBasicCardIssuerNetwork();
-        if (BasicCardUtils.isBasicCardTypeSpecified(data)) {
-            Set<Integer> targetCardTypes = BasicCardUtils.convertBasicCardToTypes(data);
-            targetCardTypes.remove(CardType.UNKNOWN);
-            assert targetCardTypes.size() > 0;
-            if (!targetCardTypes.contains(cardType)) return false;
-        }
-
         if (BasicCardUtils.isBasicCardNetworkSpecified(data)) {
             Set<String> targetCardNetworks = BasicCardUtils.convertBasicCardToNetworks(data);
             assert targetCardNetworks.size() > 0;
-            if (!targetCardNetworks.contains(cardIssuerNetwork)) return false;
+            if (!targetCardNetworks.contains(getCard().getBasicCardIssuerNetwork())) return false;
         }
         return true;
     }
@@ -159,10 +138,7 @@ public class AutofillPaymentInstrument extends PaymentInstrument
 
     @Override
     public boolean canMakePayment() {
-        return PaymentsExperimentalFeatures.isEnabled(
-                       ChromeFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)
-                ? strictCanMakePayment()
-                : mHasValidNumberAndName;
+        return mHasValidNumberAndName;
     }
 
     public boolean strictCanMakePayment() {
@@ -171,7 +147,7 @@ public class AutofillPaymentInstrument extends PaymentInstrument
 
     @Override
     public boolean canPreselect() {
-        return mIsComplete && mIsMatchingMerchantsRequestedCardType;
+        return mIsComplete;
     }
 
     @Override
@@ -346,7 +322,7 @@ public class AutofillPaymentInstrument extends PaymentInstrument
         mMethodName = methodName;
         mBillingAddress = billingAddress;
 
-        Context context = ChromeActivity.fromWebContents(mWebContents);
+        Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
 
         updateIdentifierLabelsAndIcon(card.getGUID(), card.getObfuscatedNumber(), card.getName(),
@@ -474,10 +450,11 @@ public class AutofillPaymentInstrument extends PaymentInstrument
             }
         }
 
-        if (!mIsMatchingMerchantsRequestedCardType) {
-            missingFields |= CompletionStatus.CREDIT_CARD_TYPE_MISMATCH;
-        }
-
         return missingFields;
+    }
+
+    @Override
+    public @PaymentAppType int getPaymentAppType() {
+        return PaymentAppType.AUTOFILL;
     }
 }

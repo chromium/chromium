@@ -9,20 +9,25 @@
 #include <sys/types.h>
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task_runner.h"
+#include "base/observer_list_types.h"
+#include "base/task/task_runner.h"
 #include "base/trace_event/tracing_agent.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace cryptohome {
+class AccountIdentifier;
+}
 namespace chromeos {
 
 // A DbusLibraryError represents an error response received from D-Bus.
@@ -37,7 +42,24 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
     : public DBusClient,
       public base::trace_event::TracingAgent {
  public:
+  DebugDaemonClient(const DebugDaemonClient&) = delete;
+  DebugDaemonClient& operator=(const DebugDaemonClient&) = delete;
+
   ~DebugDaemonClient() override;
+
+  // Observes the signals that are received from D-Bus.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a PacketCaptureStart signal is received through D-Bus.
+    virtual void OnPacketCaptureStarted() {}
+
+    // Called when a PacketCaptureStop signal is received through D-Bus.
+    virtual void OnPacketCaptureStopped() {}
+  };
+
+  // Adds and removes the observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Requests to store debug logs into |file_descriptor| and calls |callback|
   // when completed. Debug logs will be stored in the .tgz if
@@ -97,7 +119,19 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // Gets the scrubbed logs from debugd that are very large and cannot be
   // returned directly from D-Bus. These logs will include ARC and cheets
   // system information.
-  virtual void GetScrubbedBigLogs(GetLogsCallback callback) = 0;
+  // |id|: Cryptohome Account identifier for the user to get
+  // logs for.
+  virtual void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
+                                  GetLogsCallback callback) = 0;
+
+  // Retrieves the ARC bug report for user identified by |userhash|
+  // and saves it in debugd daemon store.
+  // If a backup already exists, it is overwritten.
+  // If backup operation fails, an error is logged.
+  // |id|: Cryptohome Account identifier for the user to get
+  // logs for.
+  virtual void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
+                                  VoidDBusMethodCallback callback) = 0;
 
   // Gets all logs collected by debugd.
   virtual void GetAllLogs(GetLogsCallback callback) = 0;
@@ -163,8 +197,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // dev mode.
   virtual void RemoveRootfsVerification(EnableDebuggingCallback callback) = 0;
 
+  using UploadCrashesCallback = base::OnceCallback<void(bool succeeded)>;
   // Trigger uploading of crashes.
-  virtual void UploadCrashes() = 0;
+  virtual void UploadCrashes(UploadCrashesCallback callback) = 0;
 
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
@@ -220,24 +255,30 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                                  CupsRemovePrinterCallback callback,
                                  base::OnceClosure error_callback) = 0;
 
-  // A callback to handle the result of StartConcierge/StopConcierge.
-  using ConciergeCallback = base::OnceCallback<void(bool success)>;
-  // Calls debugd::kStartVmConcierge, which starts the Concierge service.
-  // |callback| is called when the method finishes. If the |callback| is called
-  // with true, it is guaranteed that the service is ready to accept requests.
-  // It is not necessary for ConciergeClient to use WaitForServiceToBeAvailable.
-  virtual void StartConcierge(ConciergeCallback callback) = 0;
-  // Calls debugd::kStopVmConcierge, which stops the Concierge service.
-  // |callback| is called when the method finishes.
-  virtual void StopConcierge(ConciergeCallback callback) = 0;
+  // Request a list of kernel features supported by device, passing it
+  // a |callback| on receiving the result. |result| is true on
+  // success.
+  using KernelFeatureListCallback =
+      base::OnceCallback<void(bool result, const std::string& feature_list)>;
+  virtual void GetKernelFeatureList(KernelFeatureListCallback callback) = 0;
+
+  // Request a kernel feature |name| to be enabled, passing it a
+  // |callback| which is invoked once on receiving the result. |result|
+  // is true on success. On failure, |err_str| contains the failure reason.
+  using KernelFeatureEnableCallback =
+      base::OnceCallback<void(bool result, const std::string& err_str)>;
+  virtual void KernelFeatureEnable(const std::string& name,
+                                   KernelFeatureEnableCallback callback) = 0;
 
   // A callback to handle the result of
   // StartPluginVmDispatcher/StopPluginVmDispatcher.
   using PluginVmDispatcherCallback = base::OnceCallback<void(bool success)>;
   // Calls debugd::kStartVmPluginDispatcher, which starts the PluginVm
-  // dispatcher service on behalf of |owner_id|. |callback| is called
+  // dispatcher service on behalf of |owner_id|. |lang| indicates
+  // currently selected system language. |callback| is called
   // when the method finishes.
   virtual void StartPluginVmDispatcher(const std::string& owner_id,
+                                       const std::string& lang,
                                        PluginVmDispatcherCallback callback) = 0;
   // Calls debug::kStopVmPluginDispatcher, which stops the PluginVm dispatcher
   // service. |callback| is called when the method finishes.
@@ -273,6 +314,15 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                                 int32_t value,
                                 DBusMethodCallback<std::string> callback) = 0;
 
+  // Stops the packet capture process identified with |handle|. |handle| is a
+  // unique process identifier that is returned from debugd's PacketCaptureStart
+  // D-Bus method when the packet capture process is started. Stops all on-going
+  // packet capture operations if the |handle| is empty.
+  virtual void StopPacketCapture(const std::string& handle) = 0;
+
+  virtual void PacketCaptureStartSignalReceived(dbus::Signal* signal) = 0;
+  virtual void PacketCaptureStopSignalReceived(dbus::Signal* signal) = 0;
+
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
   static std::unique_ptr<DebugDaemonClient> Create();
@@ -284,11 +334,14 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   // Create() should be used instead.
   DebugDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::DebugDaemonClient;
+}
 
 #endif  // CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_

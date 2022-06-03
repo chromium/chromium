@@ -61,15 +61,17 @@ enum RTCPeerConnectionState {
 // https://w3c.github.io/webrtc-pc/#interface-definition
 
 // TODO(guidou): Many types are of the wrong type in this interface:
-//  * Dictionary -> specific dictionary types like RTCConfiguration
+//  * any -> specific dictionary types like RTCConfiguration
 [
     ActiveScriptWrappable,
-    Exposed=Window
+    Exposed=Window,
+    LegacyWindowAlias=webkitRTCPeerConnection,
+    LegacyWindowAlias_Measure
 ] interface RTCPeerConnection : EventTarget {
     // TODO(guidou): There should only be one constructor argument.
-    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration, optional Dictionary mediaConstraints);
-    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescription> createOffer(optional RTCOfferOptions options);
-    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescription> createAnswer(optional RTCAnswerOptions options);
+    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {}, optional any mediaConstraints);
+    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createOffer(optional RTCOfferOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createAnswer(optional RTCAnswerOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});
     readonly attribute RTCSessionDescription? localDescription;
     readonly attribute RTCSessionDescription? currentLocalDescription;
@@ -78,12 +80,12 @@ enum RTCPeerConnectionState {
     readonly attribute RTCSessionDescription? remoteDescription;
     readonly attribute RTCSessionDescription? currentRemoteDescription;
     readonly attribute RTCSessionDescription? pendingRemoteDescription;
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate);
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<void> addIceCandidate(optional RTCIceCandidateInit candidate = {});
     readonly attribute RTCSignalingState signalingState;
     readonly attribute RTCIceGatheringState iceGatheringState;
     readonly attribute RTCIceConnectionState iceConnectionState;
     readonly attribute RTCPeerConnectionState connectionState;
-    // readonly attribute boolean? canTrickleIceCandidates;
+    readonly attribute boolean? canTrickleIceCandidates;
     void restartIce();
     [CallWith=ScriptState] RTCConfiguration getConfiguration();
     [CallWith=ScriptState, RaisesException] void setConfiguration(RTCConfiguration configuration);
@@ -98,16 +100,16 @@ enum RTCPeerConnectionState {
 
     // https://w3c.github.io/webrtc-pc/#legacy-interface-extensions
     // These methods return Promise<void> because having Promise-based versions requires that all overloads return Promises.
-    [CallWith=ScriptState, RaisesException] Promise<void> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional Dictionary rtcOfferOptions);
+    [CallWith=ScriptState, RaisesException] Promise<void> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional any rtcOfferOptions);
     // TODO(guidou): There should be no mediaConstraints argument.
-    [CallWith=ScriptState] Promise<void> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional Dictionary mediaConstraints);
+    [CallWith=ScriptState, RaisesException] Promise<void> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional any mediaConstraints);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
     [CallWith=ScriptState] Promise<void> setLocalDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
     [CallWith=ScriptState] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
     // getStats() has a standardized version and a legacy non-standard version.
     //
@@ -147,8 +149,8 @@ enum RTCPeerConnectionState {
     [Measure] sequence<RTCRtpReceiver> getReceivers();
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-addtransceiver
     [Measure, RaisesException] RTCRtpTransceiver addTransceiver(
-        (MediaStreamTrack or DOMString) track_or_kind,
-        optional RTCRtpTransceiverInit init);
+        (MediaStreamTrack or DOMString) trackOrKind,
+        optional RTCRtpTransceiverInit init = {});
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-addtrack
     [Measure, RaisesException] RTCRtpSender addTrack(MediaStreamTrack track, MediaStream... streams);
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-removetrack
@@ -157,8 +159,8 @@ enum RTCPeerConnectionState {
     attribute EventHandler ontrack;
 
     // https://w3c.github.io/webrtc-pc/#peer-to-peer-data-api
-    [RuntimeEnabled=RTCSctpTransport] readonly attribute RTCSctpTransport? sctp;
-    [CallWith=ScriptState, RaisesException] RTCDataChannel createDataChannel(USVString label, optional RTCDataChannelInit dataChannelDict);
+    readonly attribute RTCSctpTransport? sctp;
+    [CallWith=ScriptState, RaisesException] RTCDataChannel createDataChannel(USVString label, optional RTCDataChannelInit dataChannelDict = {});
     attribute EventHandler ondatachannel;
 
     // Certificate management
@@ -169,7 +171,7 @@ enum RTCPeerConnectionState {
     [Measure] sequence<MediaStream> getLocalStreams();
     [Measure] sequence<MediaStream> getRemoteStreams();
     // TODO(hbos): Remove |mediaConstraints|, they are no longer supported.
-    [Measure, CallWith=ScriptState, RaisesException] void addStream(MediaStream stream, optional Dictionary mediaConstraints);
+    [Measure, CallWith=ScriptState, RaisesException] void addStream(MediaStream stream, optional any mediaConstraints);
     [Measure, RaisesException] void removeStream(MediaStream stream);
     [Measure, RaisesException] RTCDTMFSender createDTMFSender(MediaStreamTrack track);
     attribute EventHandler onaddstream;
@@ -180,9 +182,7 @@ enum RTCPeerConnectionState {
 callback RTCPeerConnectionErrorCallback = void (DOMException error);
 
 // https://w3c.github.io/webrtc-pc/#dom-rtcsessiondescriptioncallback
-// TODO(yukishiino): The argument type must be RTCSessionDescriptionInit instead
-// of RTCSessionDescription.
-callback RTCSessionDescriptionCallback = void (RTCSessionDescription description);
+callback RTCSessionDescriptionCallback = void (RTCSessionDescriptionInit description);
 
 // No spec.  Blink specific definition.
 callback RTCStatsCallback = void (RTCStatsResponse response);

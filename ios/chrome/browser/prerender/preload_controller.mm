@@ -6,8 +6,8 @@
 
 #include "ios/chrome/browser/prerender/preload_controller.h"
 
+#include "base/check_op.h"
 #include "base/ios/device_util.h"
-#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -17,11 +17,11 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/preload_controller_delegate.h"
+#import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -32,7 +32,6 @@
 #include "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/page_transition_types.h"
 
@@ -76,8 +75,10 @@ const char kPrerenderFinalStatusHistogramName[] = "Prerender.FinalStatus";
 const char kPrerendersPerSessionCountHistogramName[] =
     "Prerender.PrerendersPerSessionCount";
 // The name of the histogram for recording time until a successful prerender.
-const char kPrerenderStartToReleaseContentsTime[] =
-    "Prerender.PrerenderStartToReleaseContentsTime";
+const char kPrerenderPrerenderTimeSaved[] = "Prerender.PrerenderTimeSaved";
+// Histogram to record that the load was complete when the prerender was used.
+// Not recorded if the pre-render isn't used.
+const char kPrerenderLoadComplete[] = "Prerender.PrerenderLoadComplete";
 
 // Is this install selected for this particular experiment.
 bool IsPrerenderTabEvictionExperimentalGroup() {
@@ -138,6 +139,66 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
  private:
   __weak id<PreloadCancelling> cancel_handler_ = nil;
 };
+
+// Maximum time to let a cancelled webState attempt to finish restore.
+static const size_t kMaximumCancelledWebStateDelay = 2;
+
+// Kill switch guarding a workaround for a WebKit crash, see crbug.com/1032928.
+const base::Feature kPreloadDelayWebStateReset{
+    "PreloadDelayWebStateReset", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Helper function to destroy a pre-rendering WebState. This is a free function
+// so that the code does not accidently try to access to PreloadController's
+// _webState ivar (which has been set to null by the time this function is
+// called).
+void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
+  // Preload appears to trigger an edge-case crash in WebKit when a restore is
+  // triggered and cancelled before it can complete.  This isn't specific to
+  // preload, but is very easy to trigger in preload.  As a speculative fix, if
+  // a preload is in restore, don't destroy it until after restore is complete.
+  // This logic should really belong in WebState itself, so any attempt to
+  // destroy a WebState during restore will trigger this logic.  Even better,
+  // this edge case crash should be fixed in WebKit:
+  //     https://bugs.webkit.org/show_bug.cgi?id=217440.
+  // The crash in WebKit appears to be related to IPC throttling.  Session
+  // restore can create a large number of IPC calls, which can then be
+  // throttled.  It seems if the WKWebView is destroyed with this backlog of
+  // IPC calls, sometimes WebKit crashes.
+  // See crbug.com/1032928 for an explanation for how to trigger this crash.
+  // Note the timer should only be called if for some reason session restoration
+  // fails to complete -- thus preventing a WebState leak.
+  static bool delay_preload_destroy_web_state =
+      base::FeatureList::IsEnabled(kPreloadDelayWebStateReset);
+
+  if (!delay_preload_destroy_web_state ||
+      !web_state->GetNavigationManager()->IsRestoreSessionInProgress()) {
+    web_state.reset();
+    return;
+  }
+
+  __block auto reset_timer = std::make_unique<base::OneShotTimer>();
+  __block std::unique_ptr<web::WebState> block_web_state = std::move(web_state);
+
+  auto reset_block = ^{
+    if (block_web_state)
+      block_web_state.reset();
+
+    if (!reset_timer)
+      return;
+
+    reset_timer->Stop();
+    reset_timer.reset();
+  };
+
+  reset_timer->Start(FROM_HERE, base::Seconds(kMaximumCancelledWebStateDelay),
+                     base::BindOnce(reset_block));
+
+  block_web_state->GetNavigationManager()->AddRestoreCompletionCallback(
+      base::BindOnce(^{
+        dispatch_async(dispatch_get_main_queue(), reset_block);
+      }));
+}
+
 }  // namespace
 
 @interface PreloadController () <CRConnectionTypeObserverBridge,
@@ -149,6 +210,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
                                  PreloadCancelling> {
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<web::WebStateObserverBridge> _webStateToReplaceObserver;
   std::unique_ptr<PrefObserverBridge> _observerBridge;
   std::unique_ptr<ConnectionTypeObserverBridge> _connectionTypeObserver;
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
@@ -164,10 +226,15 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
   // The dialog presenter.
   std::unique_ptr<web::JavaScriptDialogPresenter> _dialogPresenter;
+
+  // A weak pointer to the webState that will be replaced with the prerendered
+  // one. This is needed by |startPrerender| to build the new webstate with the
+  // same sessions.
+  web::WebState* _webStateToReplace;
 }
 
 // The ChromeBrowserState passed on initialization.
-@property(nonatomic) ios::ChromeBrowserState* browserState;
+@property(nonatomic) ChromeBrowserState* browserState;
 
 // Redefine property as readwrite.  The URL that is prerendered in |_webState|.
 // This can be different from the value returned by WebState last committed
@@ -184,14 +251,12 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 // there is no prerender scheduled.
 @property(nonatomic, readonly) const GURL& scheduledURL;
 
-// Whether or not the preference is enabled.
-@property(nonatomic, getter=isPreferenceEnabled) BOOL preferenceEnabled;
-
-// Whether or not prerendering is only when on wifi.
-@property(nonatomic, getter=isWifiOnly) BOOL wifiOnly;
+// Network prediction settings.
+@property(nonatomic)
+    prerender_prefs::NetworkPredictionSetting networkPredictionSetting;
 
 // Whether or not the current connection is using WWAN.
-@property(nonatomic, getter=isUsingWWAN) BOOL usingWWAN;
+@property(nonatomic, assign) BOOL isOnCellularNetwork;
 
 // Number of successful prerenders (i.e. the user viewed the prerendered page)
 // during the lifetime of this controller.
@@ -200,6 +265,12 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 // Tracks the time of the last attempt to load a prerender URL. Used for UMA
 // reporting of load durations.
 @property(nonatomic) base::TimeTicks startTime;
+
+// Whether the load was completed or not.
+@property(nonatomic, assign) BOOL loadCompleted;
+// The time between the start of the load and the completion (only valid if the
+// load completed).
+@property(nonatomic) base::TimeDelta completionTime;
 
 // Called to start any scheduled prerendering requests.
 - (void)startPrerender;
@@ -218,31 +289,32 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 @implementation PreloadController
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(browserState);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if ((self = [super init])) {
     _browserState = browserState;
-    _preferenceEnabled =
-        _browserState->GetPrefs()->GetBoolean(prefs::kNetworkPredictionEnabled);
-    _wifiOnly = _browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionWifiOnly);
-    _usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
+    _networkPredictionSetting =
+        static_cast<prerender_prefs::NetworkPredictionSetting>(
+            _browserState->GetPrefs()->GetInteger(
+                prefs::kNetworkPredictionSetting));
+    _isOnCellularNetwork = net::NetworkChangeNotifier::IsConnectionCellular(
         net::NetworkChangeNotifier::GetConnectionType());
     _webStateDelegate = std::make_unique<web::WebStateDelegateBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateToReplaceObserver =
+        std::make_unique<web::WebStateObserverBridge>(self);
     _observerBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(_browserState->GetPrefs());
     _observerBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionEnabled, &_prefChangeRegistrar);
-    _observerBridge->ObserveChangesForPreference(
-        prefs::kNetworkPredictionWifiOnly, &_prefChangeRegistrar);
+        prefs::kNetworkPredictionSetting, &_prefChangeRegistrar);
     _dialogPresenter = std::make_unique<PreloadJavaScriptDialogPresenter>(self);
-    if (_preferenceEnabled && _wifiOnly) {
+    if (_networkPredictionSetting ==
+        prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly) {
       _connectionTypeObserver =
           std::make_unique<ConnectionTypeObserverBridge>(self);
     }
-
+    _webStateToReplace = nullptr;
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(didReceiveMemoryWarning)
@@ -266,11 +338,40 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 - (BOOL)isEnabled {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return !IsPrerenderTabEvictionExperimentalGroup() && self.preferenceEnabled &&
-         !ios::device_util::IsSingleCoreDevice() &&
-         ios::device_util::RamIsAtLeast512Mb() &&
-         !net::NetworkChangeNotifier::IsOffline() &&
-         (!self.wifiOnly || !self.usingWWAN);
+
+  if (IsPrerenderTabEvictionExperimentalGroup() ||
+      ios::device_util::IsSingleCoreDevice() ||
+      !ios::device_util::RamIsAtLeast512Mb() ||
+      net::NetworkChangeNotifier::IsOffline()) {
+    return false;
+  }
+
+  switch (self.networkPredictionSetting) {
+    case prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly: {
+      return !self.isOnCellularNetwork;
+    }
+
+    case prerender_prefs::NetworkPredictionSetting::kEnabledWifiAndCellular: {
+      return true;
+    }
+
+    case prerender_prefs::NetworkPredictionSetting::kDisabled: {
+      return false;
+    }
+  }
+}
+
+- (void)setLoadCompleted:(BOOL)loadCompleted {
+  if (_loadCompleted == loadCompleted)
+    return;
+
+  _loadCompleted = loadCompleted;
+
+  if (loadCompleted) {
+    self.completionTime = base::TimeTicks::Now() - self.startTime;
+  } else {
+    self.completionTime = base::TimeDelta();
+  }
 }
 
 #pragma mark - Public
@@ -283,6 +384,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 - (void)prerenderURL:(const GURL&)url
             referrer:(const web::Referrer&)referrer
           transition:(ui::PageTransition)transition
+     currentWebState:(web::WebState*)currentWebState
          immediately:(BOOL)immediately {
   // TODO(crbug.com/754050): If CanPrerenderURL() returns false, should we
   // cancel any scheduled prerender requests?
@@ -298,6 +400,12 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   }
 
   [self removeScheduledPrerenderRequests];
+  _webStateToReplace = currentWebState;
+  // Observing the |_webStateToReplace| to make sure that if it's destructed
+  // the pre-rendering will be canceled.
+  if (_webStateToReplace) {
+    _webStateToReplace->AddObserver(_webStateToReplaceObserver.get());
+  }
   _scheduledRequest =
       std::make_unique<PrerenderRequest>(url, transition, referrer);
 
@@ -328,8 +436,29 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
   [self removeScheduledPrerenderRequests];
+
+  // Use the helper function to properly release the web::WebState.
+  auto webState = [self releasePrerenderContentsInternal];
+
+  // The WebState will be converted to a proper tab. Record navigations that
+  // happened during pre-rendering to the HistoryService.
+  HistoryTabHelper::FromWebState(webState.get())
+      ->SetDelayHistoryServiceNotification(false);
+
+  return webState;
+}
+
+#pragma mark - Internal
+
+// Helper function that return ownership of the internal web::WebState instance
+// disconnecting the observers attached to it for preloading, ... Needs to be
+// called before destroying the WebState or before converting it to a tab.
+- (std::unique_ptr<web::WebState>)releasePrerenderContentsInternal {
+  DCHECK(_webState);
+
   self.prerenderedURL = GURL();
   self.startTime = base::TimeTicks();
+  self.loadCompleted = NO;
 
   // Move the pre-rendered WebState to a local variable so that it will no
   // longer be considered as pre-rendering (otherwise tab helpers may early
@@ -338,22 +467,14 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   DCHECK(![self isWebStatePrerendered:webState.get()]);
 
   webState->RemoveObserver(_webStateObserver.get());
-  breakpad::StopMonitoringURLsForWebState(webState.get());
+  breakpad::StopMonitoringURLsForPreloadWebState(webState.get());
   webState->SetDelegate(nullptr);
   _policyDeciderBridge.reset();
-  HistoryTabHelper::FromWebState(webState.get())
-      ->SetDelayHistoryServiceNotification(false);
 
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
-  }
-
-  if (!webState->IsLoading()) {
-    [[OmniboxGeolocationController sharedInstance]
-        finishPageLoadForWebState:webState.get()
-                      loadSuccess:YES];
   }
 
   return webState;
@@ -363,9 +484,13 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 - (void)connectionTypeChanged:(net::NetworkChangeNotifier::ConnectionType)type {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(type);
-  if (self.wifiOnly && self.usingWWAN)
+  self.isOnCellularNetwork =
+      net::NetworkChangeNotifier::IsConnectionCellular(type);
+  if (self.networkPredictionSetting ==
+          prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly &&
+      self.isOnCellularNetwork) {
     [self cancelPrerender];
+  }
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -397,10 +522,17 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   }
 }
 
+- (UIView*)webViewContainerForWebState:(web::WebState*)webState {
+  return [self.delegate webViewContainer];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
+  // the |_webStateToReplace| is observed for destruction event only.
+  if (_webStateToReplace == webState)
+    return;
   DCHECK_EQ(webState, _webState.get());
   if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
     [self schedulePrerenderCancel];
@@ -408,31 +540,57 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
+  // the |_webStateToReplace| is observed for destruction event only.
+  if (_webStateToReplace == webState)
+    return;
+
   DCHECK_EQ(webState, _webState.get());
   // The load should have been cancelled when the navigation finishes, but this
   // makes sure that we didn't miss one.
-  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
+  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()]) {
     [self schedulePrerenderCancel];
+  } else if (loadSuccess) {
+    self.loadCompleted = YES;
+  }
 }
 
+- (void)webStateDestroyed:(web::WebState*)webState {
+  if (_webState.get() == webState)
+    return;
+  DCHECK_EQ(webState, _webStateToReplace);
+  // There is no way to create a pre-rendered webState without existing webState
+  // web state to replace, So cancel the prerender.
+  [self schedulePrerenderCancel];
+}
 #pragma mark - CRWWebStatePolicyDecider
 
-- (BOOL)shouldAllowRequest:(NSURLRequest*)request
-               requestInfo:(const WebStatePolicyDecider::RequestInfo&)info {
+- (void)shouldAllowRequest:(NSURLRequest*)request
+               requestInfo:(WebStatePolicyDecider::RequestInfo)requestInfo
+           decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL requestURL = net::GURLWithNSURL(request.URL);
   // Don't allow preloading for requests that are handled by opening another
   // application or by presenting a native UI.
   if (AppLauncherTabHelper::IsAppUrl(requestURL) ||
       ITunesUrlsHandlerTabHelper::CanHandleUrl(requestURL)) {
     [self schedulePrerenderCancel];
-    return NO;
+    decisionHandler(WebStatePolicyDecider::PolicyDecision::Cancel());
+    return;
   }
-  return YES;
+  decisionHandler(WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 #pragma mark - ManageAccountsDelegate
 
+- (void)onRestoreGaiaCookies {
+  [self schedulePrerenderCancel];
+}
+
 - (void)onManageAccounts {
+  [self schedulePrerenderCancel];
+}
+
+- (void)onShowConsistencyPromo:(const GURL&)url
+                      webState:(web::WebState*)webState {
   [self schedulePrerenderCancel];
 }
 
@@ -447,29 +605,39 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kNetworkPredictionEnabled ||
-      preferenceName == prefs::kNetworkPredictionWifiOnly) {
+  if (preferenceName == prefs::kNetworkPredictionSetting) {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
     // The logic is simpler if both preferences changes are handled equally.
-    self.preferenceEnabled = self.browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionEnabled);
-    self.wifiOnly = self.browserState->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionWifiOnly);
+    self.networkPredictionSetting =
+        static_cast<prerender_prefs::NetworkPredictionSetting>(
+            self.browserState->GetPrefs()->GetInteger(
+                prefs::kNetworkPredictionSetting));
 
-    if (self.wifiOnly && self.preferenceEnabled) {
-      if (!_connectionTypeObserver.get()) {
-        self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
-            net::NetworkChangeNotifier::GetConnectionType());
-        _connectionTypeObserver.reset(new ConnectionTypeObserverBridge(self));
+    switch (self.networkPredictionSetting) {
+      case prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly: {
+        if (!_connectionTypeObserver.get()) {
+          self.isOnCellularNetwork =
+              net::NetworkChangeNotifier::IsConnectionCellular(
+                  net::NetworkChangeNotifier::GetConnectionType());
+          _connectionTypeObserver =
+              std::make_unique<ConnectionTypeObserverBridge>(self);
+        }
+        if (self.isOnCellularNetwork) {
+          [self cancelPrerender];
+        }
+        break;
       }
-      if (self.usingWWAN) {
+
+      case prerender_prefs::NetworkPredictionSetting::kEnabledWifiAndCellular: {
+        _connectionTypeObserver.reset();
+        break;
+      }
+
+      case prerender_prefs::NetworkPredictionSetting::kDisabled: {
         [self cancelPrerender];
+        _connectionTypeObserver.reset();
+        break;
       }
-    } else if (self.preferenceEnabled) {
-      _connectionTypeObserver.reset();
-    } else {
-      [self cancelPrerender];
-      _connectionTypeObserver.reset();
     }
   }
 }
@@ -499,6 +667,10 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 - (void)removeScheduledPrerenderRequests {
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   _scheduledRequest = nullptr;
+  if (_webStateToReplace) {
+    _webStateToReplace->RemoveObserver(_webStateToReplaceObserver.get());
+  }
+  _webStateToReplace = nullptr;
 }
 
 #pragma mark - Prerender Helpers
@@ -508,17 +680,27 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   [self destroyPreviewContents];
   self.prerenderedURL = self.scheduledURL;
   std::unique_ptr<PrerenderRequest> request = std::move(_scheduledRequest);
+  // No need to observer the destruction of the |_webStateToReplace| anymore
+  // as it will be used here.
+  if (_webStateToReplace) {
+    _webStateToReplace->RemoveObserver(_webStateToReplaceObserver.get());
+  }
 
-  web::WebState* webStateToReplace = [self.delegate webStateToReplace];
-  if (!self.prerenderedURL.is_valid() || !webStateToReplace) {
+  // TODO(crbug.com/1140583): The correct way is to always get the
+  // webStateToReplace from the delegate. however this is not possible because
+  // there is only one delegate per browser state.
+  if (!_webStateToReplace)
+    _webStateToReplace = [self.delegate webStateToReplace];
+
+  if (!self.prerenderedURL.is_valid() || !_webStateToReplace) {
     [self destroyPreviewContents];
     return;
   }
 
   web::WebState::CreateParams createParams(self.browserState);
   _webState = web::WebState::CreateWithStorageSession(
-      createParams, webStateToReplace->BuildSessionStorage());
-
+      createParams, _webStateToReplace->BuildSessionStorage());
+  _webStateToReplace = nullptr;
   // Add the preload controller as a policyDecider before other tab helpers, so
   // that it can block the navigation if needed before other policy deciders
   // execute thier side effects (eg. AppLauncherTabHelper launching app).
@@ -528,7 +710,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
   _webState->SetDelegate(_webStateDelegate.get());
   _webState->AddObserver(_webStateObserver.get());
-  breakpad::MonitorURLsForWebState(_webState.get());
+  breakpad::MonitorURLsForPreloadWebState(_webState.get());
   _webState->SetWebUsageEnabled(true);
 
   if (AccountConsistencyService* accountConsistencyService =
@@ -543,10 +725,6 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   web::NavigationManager::WebLoadParams loadParams(self.prerenderedURL);
   loadParams.referrer = request->referrer();
   loadParams.transition_type = request->transition();
-  if ([self.delegate preloadShouldUseDesktopUserAgent]) {
-    loadParams.user_agent_override_option =
-        web::NavigationManager::UserAgentOverrideOption::DESKTOP;
-  }
   _webState->SetKeepRenderProcessAlive(true);
   _webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
@@ -555,6 +733,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   _webState->GetNavigationManager()->LoadIfNecessary();
 
   self.startTime = base::TimeTicks::Now();
+  self.loadCompleted = NO;
 }
 
 #pragma mark - Teardown Helpers
@@ -570,13 +749,8 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
   UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
                             PRERENDER_FINAL_STATUS_MAX);
 
-  _webState->RemoveObserver(_webStateObserver.get());
-  breakpad::StopMonitoringURLsForWebState(_webState.get());
-  _webState->SetDelegate(nullptr);
-  _webState.reset();
-
-  self.prerenderedURL = GURL();
-  self.startTime = base::TimeTicks();
+  // Use the helper function to properly destroy the WebState.
+  DestroyPrerenderingWebState([self releasePrerenderContentsInternal]);
 }
 
 #pragma mark - Notification Helpers
@@ -592,9 +766,16 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
                             PRERENDER_FINAL_STATUS_USED,
                             PRERENDER_FINAL_STATUS_MAX);
 
-  DCHECK_NE(base::TimeTicks(), self.startTime);
-  UMA_HISTOGRAM_TIMES(kPrerenderStartToReleaseContentsTime,
-                      base::TimeTicks::Now() - self.startTime);
+  UMA_HISTOGRAM_BOOLEAN(kPrerenderLoadComplete, self.loadCompleted);
+
+  if (self.loadCompleted) {
+    DCHECK_NE(base::TimeDelta(), self.completionTime);
+    UMA_HISTOGRAM_TIMES(kPrerenderPrerenderTimeSaved, self.completionTime);
+  } else {
+    DCHECK_NE(base::TimeTicks(), self.startTime);
+    UMA_HISTOGRAM_TIMES(kPrerenderPrerenderTimeSaved,
+                        base::TimeTicks::Now() - self.startTime);
+  }
 }
 
 @end

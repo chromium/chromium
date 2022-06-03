@@ -7,10 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"

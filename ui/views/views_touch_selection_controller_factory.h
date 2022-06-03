@@ -16,8 +16,8 @@ class VIEWS_EXPORT ViewsTouchEditingControllerFactory
   ViewsTouchEditingControllerFactory();
 
   // Overridden from ui::TouchEditingControllerFactory.
-  ui::TouchEditingControllerDeprecated* Create(ui::TouchEditable* client_view)
-      override;
+  ui::TouchEditingControllerDeprecated* Create(
+      ui::TouchEditable* client_view) override;
 };
 
 }  // namespace views

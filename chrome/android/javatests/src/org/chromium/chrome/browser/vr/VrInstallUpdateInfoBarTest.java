@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.vr;
 
-import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
-import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_LONG_MS;
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM;
 
-import android.graphics.PointF;
-import android.os.Build;
-import android.support.test.filters.MediumTest;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -27,19 +23,16 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.vr.keyboard.GvrKeyboardLoaderClient;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.vr.mock.MockVrCoreVersionChecker;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.NativeUiUtils;
-import org.chromium.chrome.browser.vr.util.VrBrowserTransitionUtils;
 import org.chromium.chrome.browser.vr.util.VrInfoBarUtils;
-import org.chromium.chrome.browser.vr.util.VrShellDelegateUtils;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -53,7 +46,6 @@ import java.util.concurrent.Callable;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebVR is only supported on L+
 @Restriction(RESTRICTION_TYPE_SVR)
 public class VrInstallUpdateInfoBarTest {
     @ClassParameter
@@ -70,22 +62,49 @@ public class VrInstallUpdateInfoBarTest {
     }
 
     /**
+     * Creates and sets a MockVrCoreVersionCheckerImpl as the VrShellDelegate's VrCoreVersionChecker
+     * instance.
+     *
+     * @param compatibility An int corresponding to a VrCoreCompatibility value that the mock
+     *        version checker will return.
+     * @return The MockVrCoreVersionCheckerImpl that was set as VrShellDelegate's
+     *        VrCoreVersionChecker instance.
+     */
+    private static MockVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
+        final MockVrCoreVersionChecker mockChecker = new MockVrCoreVersionChecker();
+        mockChecker.setMockReturnValue(compatibility);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { VrCoreInstallUtils.overrideVrCoreVersionChecker(mockChecker); });
+        Assert.assertEquals("Overriding VrCoreVersionChecker failed", compatibility,
+                mockChecker.getLastReturnValue());
+        return mockChecker;
+    }
+
+    /**
      * Helper function to run the tests checking for the upgrade/install InfoBar being present since
      * all that differs is the value returned by VrCoreVersionChecker and a couple asserts.
      *
      * @param checkerReturnCompatibility The compatibility to have the VrCoreVersionChecker return.
      */
     private void infoBarTestHelper(final int checkerReturnCompatibility) {
-        VrShellDelegateUtils.setVrCoreCompatibility(checkerReturnCompatibility);
+        VrCoreInstallUtils vrCoreInstallUtils = VrCoreInstallUtils.create(0);
+        setVrCoreCompatibility(checkerReturnCompatibility);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            vrCoreInstallUtils.requestInstallVrCore(
+                    mVrTestRule.getActivity().getCurrentWebContents());
+        });
         View decorView = mVrTestRule.getActivity().getWindow().getDecorView();
-        if (checkerReturnCompatibility == VrCoreCompatibility.VR_READY) {
+        if (checkerReturnCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_READY) {
             VrInfoBarUtils.expectInfoBarPresent(mVrTestRule, false);
-        } else if (checkerReturnCompatibility == VrCoreCompatibility.VR_OUT_OF_DATE
-                || checkerReturnCompatibility == VrCoreCompatibility.VR_NOT_AVAILABLE) {
+        } else if (checkerReturnCompatibility
+                        == VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE
+                || checkerReturnCompatibility
+                        == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE) {
             // Out of date and missing cases are the same, but with different text
             String expectedMessage;
             String expectedButton;
-            if (checkerReturnCompatibility == VrCoreCompatibility.VR_OUT_OF_DATE) {
+            if (checkerReturnCompatibility
+                    == VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE) {
                 expectedMessage = ContextUtils.getApplicationContext().getString(
                         org.chromium.chrome.vr.R.string.vr_services_check_infobar_update_text);
                 expectedButton = ContextUtils.getApplicationContext().getString(
@@ -103,13 +122,14 @@ public class VrInstallUpdateInfoBarTest {
             tempView = (TextView) decorView.findViewById(R.id.button_primary);
             Assert.assertEquals("VR install/update button text did not match expectation",
                     expectedButton, tempView.getText().toString());
-        } else if (checkerReturnCompatibility == VrCoreCompatibility.VR_NOT_SUPPORTED) {
+        } else if (checkerReturnCompatibility
+                == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED) {
             VrInfoBarUtils.expectInfoBarPresent(mVrTestRule, false);
         } else {
             Assert.fail("Invalid VrCoreVersionChecker compatibility: "
                     + String.valueOf(checkerReturnCompatibility));
         }
-        VrShellDelegateUtils.getDelegateInstance().overrideVrCoreVersionCheckerForTesting(null);
+        VrCoreInstallUtils.overrideVrCoreVersionChecker(null);
     }
 
     /**
@@ -120,7 +140,7 @@ public class VrInstallUpdateInfoBarTest {
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testInfoBarNotPresentWhenVrServicesCurrent() {
-        infoBarTestHelper(VrCoreCompatibility.VR_READY);
+        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_READY);
     }
 
     /**
@@ -132,7 +152,7 @@ public class VrInstallUpdateInfoBarTest {
             XrActivityRestriction.SupportedActivity.CCT})
     public void
     testInfoBarPresentWhenVrServicesOutdated() {
-        infoBarTestHelper(VrCoreCompatibility.VR_OUT_OF_DATE);
+        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE);
     }
 
     /**
@@ -144,7 +164,7 @@ public class VrInstallUpdateInfoBarTest {
             XrActivityRestriction.SupportedActivity.CCT})
     public void
     testInfoBarPresentWhenVrServicesMissing() {
-        infoBarTestHelper(VrCoreCompatibility.VR_NOT_AVAILABLE);
+        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE);
     }
 
     /**
@@ -155,45 +175,6 @@ public class VrInstallUpdateInfoBarTest {
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testInfoBarNotPresentWhenVrServicesNotSupported() {
-        infoBarTestHelper(VrCoreCompatibility.VR_NOT_SUPPORTED);
-    }
-
-    /**
-     * Tests that the install/upgrade prompt for the keyboard appears when clicking on the URL
-     * bar without the keyboard installed.
-     */
-    @Test
-    @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testKeyboardInstallUpgradePromptUrlBar() {
-        testKeyboardInstallUpgradeImpl(UserFriendlyElementName.URL);
-    }
-
-    /**
-     * Tests that the install/upgrade prompt for the keyboard appears when interacting with a web
-     * text input field without the keyboard installed.
-     */
-    @Test
-    @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testKeyboardInstallUpgradePromptWebInput() {
-        testKeyboardInstallUpgradeImpl(UserFriendlyElementName.CONTENT_QUAD);
-    }
-
-    private void testKeyboardInstallUpgradeImpl(final int uiElementToClick) {
-        mVrTestRule.loadUrl(
-                VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_web_input_editing"),
-                PAGE_LOAD_TIMEOUT_S);
-        GvrKeyboardLoaderClient.setFailLoadForTesting(true);
-        VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
-        // The prompt takes significantly longer to show when clicking on the web content, so we
-        // can't just wait for quiescence since that gets reached before the prompt shows (not sure
-        // what's causing a UI change other than the prompt). Instead, explicitly wait for the
-        // prompt to become visible before waiting for quiescence.
-        NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
-            NativeUiUtils.performActionAndWaitForVisibilityStatus(
-                    UserFriendlyElementName.EXIT_PROMPT, true /* visible */,
-                    () -> { NativeUiUtils.clickElement(uiElementToClick, new PointF()); });
-        });
+        infoBarTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED);
     }
 }

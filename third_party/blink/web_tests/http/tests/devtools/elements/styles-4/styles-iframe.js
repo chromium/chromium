@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that proper (and different) styles are returned for body elements of main document and iframe.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -32,15 +32,15 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('main', step1);
   }
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('Main frame style:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     ElementsTestRunner.selectNodeAndWaitForStyles('iframeBody', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('iframe style:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

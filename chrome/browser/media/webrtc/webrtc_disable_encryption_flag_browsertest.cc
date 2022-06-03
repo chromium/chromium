@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -30,6 +30,12 @@ static const char kMainWebrtcTestHtmlPage[] =
 class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
  public:
   WebRtcDisableEncryptionFlagBrowserTest() {}
+
+  WebRtcDisableEncryptionFlagBrowserTest(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+  WebRtcDisableEncryptionFlagBrowserTest& operator=(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+
   ~WebRtcDisableEncryptionFlagBrowserTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -37,21 +43,19 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // This test should run with fake devices.
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
-
     // Disable encryption with the command line flag.
     command_line->AppendSwitch(switches::kDisableWebRtcEncryption);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcDisableEncryptionFlagBrowserTest);
 };
 
 // Makes a call and checks that there's encryption or not in the SDP offer.
 // TODO(crbug.com/910216): De-flake this for ChromeOs.
-// TODO(crbug.com/984879): De-flake this for MSAN Linux.
-#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(MEMORY_SANITIZER))
+// TODO(crbug.com/984879): De-flake this for ASAN/MSAN Linux.
+// TODO(crbug.com/1211144): De-flake this for MacOS.
+#if defined(OS_CHROMEOS) || defined(OS_MAC) ||                     \
+    (defined(OS_LINUX) &&                                          \
+     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
+    (defined(OS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_VerifyEncryption DISABLED_VerifyEncryption
 #else
 #define MAYBE_VerifyEncryption VerifyEncryption

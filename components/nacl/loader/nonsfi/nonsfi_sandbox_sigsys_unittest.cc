@@ -17,7 +17,7 @@
 
 namespace {
 
-// Test cases in this file just make sure not-whitelisted syscalls
+// Test cases in this file just make sure syscalls not in the allow list
 // are appropriately disallowed. They should raise SIGSYS regardless
 // of arguments. We always pass five zeros not to pass uninitialized
 // values to syscalls.

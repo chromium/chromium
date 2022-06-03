@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/min_max_size.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -17,7 +18,6 @@ namespace blink {
 class ComputedStyle;
 class NGEarlyBreak;
 class NGLayoutResult;
-struct MinMaxSizeInput;
 
 // Operations provided by a layout algorithm.
 class NGLayoutAlgorithmOperations {
@@ -30,13 +30,9 @@ class NGLayoutAlgorithmOperations {
 
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
-  // account. If the return value is empty, the caller is expected to synthesize
-  // this value from the overflow rect returned from Layout called with an
-  // available width of 0 and LayoutUnit::max(), respectively.
-  virtual base::Optional<MinMaxSize> ComputeMinMaxSize(
-      const MinMaxSizeInput&) const {
-    return base::nullopt;
-  }
+  // account.
+  virtual MinMaxSizesResult ComputeMinMaxSizes(
+      const MinMaxSizesFloatInput&) = 0;
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
@@ -60,6 +56,7 @@ struct NGLayoutAlgorithmParams {
   const NGConstraintSpace& space;
   const NGBlockBreakToken* break_token;
   const NGEarlyBreak* early_break;
+  const NGLayoutResult* previous_result = nullptr;
 };
 
 // Base class for all LayoutNG algorithms.
@@ -79,15 +76,27 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         container_builder_(node,
                            style,
                            &space,
-                           space.GetWritingMode(),
-                           direction) {}
+                           {space.GetWritingMode(), direction}) {}
 
-  NGLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
-      : NGLayoutAlgorithm(params.node,
-                          &params.node.Style(),
-                          params.space,
-                          params.space.Direction(),
-                          params.break_token) {}
+  // Constructor for algorithms that use NGBoxFragmentBuilder and
+  // NGBlockBreakToken.
+  explicit NGLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
+      : node_(To<NGInputNodeType>(params.node)),
+        early_break_(params.early_break),
+        break_token_(params.break_token),
+        container_builder_(
+            params.node,
+            &params.node.Style(),
+            &params.space,
+            {params.space.GetWritingMode(), params.space.Direction()}) {
+    container_builder_.SetIsNewFormattingContext(
+        params.space.IsNewFormattingContext());
+    container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
+    if (UNLIKELY(params.space.HasBlockFragmentation() || params.break_token)) {
+      SetupFragmentBuilderForFragmentation(params.space, params.break_token,
+                                           &container_builder_);
+    }
+  }
 
   virtual ~NGLayoutAlgorithm() = default;
 
@@ -105,14 +114,77 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
             *container_builder_.BfcBlockOffset()};
   }
 
-  NGInputNodeType Node() const { return node_; }
+  const NGInputNodeType& Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
+  const NGBreakTokenType* BreakToken() const { return break_token_; }
+
+  const NGBoxStrut& BorderPadding() const {
+    return container_builder_.BorderPadding();
+  }
+  const NGBoxStrut& BorderScrollbarPadding() const {
+    return container_builder_.BorderScrollbarPadding();
+  }
+  const LogicalSize& ChildAvailableSize() const {
+    return container_builder_.ChildAvailableSize();
+  }
+
+  // Lay out again, this time with a predefined good breakpoint that we
+  // discovered in the first pass. This happens when we run out of space in a
+  // fragmentainer at an less-than-ideal location, due to breaking restrictions,
+  // such as orphans, widows, break-before:avoid or break-after:avoid.
+  template <typename Algorithm>
+  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
+      const NGEarlyBreak& breakpoint) {
+    // Not allowed to recurse!
+    DCHECK(!early_break_);
+
+    NGLayoutAlgorithmParams params(
+        Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
+        BreakToken(), &breakpoint);
+    Algorithm algorithm_with_break(params);
+    auto& new_builder = algorithm_with_break.container_builder_;
+    new_builder.SetBoxType(container_builder_.BoxType());
+    // We're not going to run out of space in the next layout pass, since we're
+    // breaking earlier, so no space shortage will be detected. Repeat what we
+    // found in this pass.
+    new_builder.PropagateSpaceShortage(
+        container_builder_.MinimalSpaceShortage());
+    return algorithm_with_break.Layout();
+  }
+
+  // Lay out again, this time without block fragmentation. This happens when a
+  // block-axis clipped node reaches the end, but still has content inside that
+  // wants to break. We don't want any zero-sized clipped fragments that
+  // contribute to superfluous fragmentainers.
+  template <typename Algorithm>
+  scoped_refptr<const NGLayoutResult> RelayoutWithoutFragmentation() {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    // We'll relayout with a special cloned constraint space that disables
+    // further fragmentation (but rather lets clipped child content "overflow"
+    // past the fragmentation line). This means that the cached constraint space
+    // will still be set up to do block fragmentation, but that should be the
+    // right thing, since, as far as input is concerned, this node is meant to
+    // perform block fragmentation (and it may already have produced multiple
+    // fragment, but this one will be the last).
+    NGConstraintSpace new_space = ConstraintSpace().CloneWithoutFragmentation();
+
+    NGLayoutAlgorithmParams params(Node(),
+                                   container_builder_.InitialFragmentGeometry(),
+                                   new_space, BreakToken());
+    Algorithm algorithm_without_fragmentation(params);
+    auto& new_builder = algorithm_without_fragmentation.container_builder_;
+    new_builder.SetBoxType(container_builder_.BoxType());
+    return algorithm_without_fragmentation.Layout();
+  }
 
   NGInputNodeType node_;
 
+  // When set, this will specify where to break before or inside. If not set,
+  // the algorithm will need to figure out where to break on its own.
+  const NGEarlyBreak* early_break_ = nullptr;
+
   // The break token from which we are currently resuming layout.
-  scoped_refptr<const NGBreakTokenType> break_token_;
+  const NGBreakTokenType* break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
 };

@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_GRAPHICS_LAYER_UPDATER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_GRAPHICS_LAYER_UPDATER_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -45,8 +46,9 @@ class GraphicsLayerUpdater {
     kForceUpdate,
   };
 
-  void Update(PaintLayer&,
-              Vector<PaintLayer*>& layers_needing_paint_invalidation);
+  void Update(
+      PaintLayer&,
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   bool NeedsRebuildTree() const { return needs_rebuild_tree_; }
 
@@ -55,6 +57,8 @@ class GraphicsLayerUpdater {
 #endif
 
   class UpdateContext {
+    STACK_ALLOCATED();
+
    public:
     UpdateContext();
     UpdateContext(const UpdateContext& other, const PaintLayer& layer);
@@ -75,10 +79,11 @@ class GraphicsLayerUpdater {
   };
 
  private:
-  void UpdateRecursive(PaintLayer&,
-                       UpdateType,
-                       UpdateContext&,
-                       Vector<PaintLayer*>& layers_needing_paint_invalidation);
+  void UpdateRecursive(
+      PaintLayer&,
+      UpdateType,
+      UpdateContext&,
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   bool needs_rebuild_tree_;
 };

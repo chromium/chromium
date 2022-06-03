@@ -34,15 +34,16 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   class Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() = default;
 
     virtual void OnManagerGoingDown(
         SimpleDownloadManagerCoordinator* coordinator) {}
     virtual void OnDownloadsInitialized(bool active_downloads_only) {}
     virtual void OnDownloadCreated(DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   using DownloadWhenFullManagerStartsCallBack =
@@ -50,6 +51,12 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   SimpleDownloadManagerCoordinator(const DownloadWhenFullManagerStartsCallBack&
                                        download_when_full_manager_starts_cb,
                                    bool record_full_download_manager_delay);
+
+  SimpleDownloadManagerCoordinator(const SimpleDownloadManagerCoordinator&) =
+      delete;
+  SimpleDownloadManagerCoordinator& operator=(
+      const SimpleDownloadManagerCoordinator&) = delete;
+
   ~SimpleDownloadManagerCoordinator() override;
 
   void AddObserver(Observer* observer);
@@ -114,8 +121,6 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   base::TimeTicks creation_time_ticks_;
 
   base::WeakPtrFactory<SimpleDownloadManagerCoordinator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDownloadManagerCoordinator);
 };
 
 }  // namespace download

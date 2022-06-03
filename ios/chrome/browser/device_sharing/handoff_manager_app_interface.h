@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+class ChromeBrowserState;
+
+class DeviceSharingAppInterfaceWrapper {
+ public:
+  static NSURL* GetCurrentUserActivityURL(ChromeBrowserState* browser_state);
+};
+
 // The app interface for handoff tests.
 @interface HandoffManagerAppInterface : NSObject
 

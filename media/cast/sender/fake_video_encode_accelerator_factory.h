@@ -10,10 +10,9 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/cast_config.h"
 #include "media/video/fake_video_encode_accelerator.h"
 
@@ -26,13 +25,16 @@ class FakeVideoEncodeAcceleratorFactory {
  public:
   explicit FakeVideoEncodeAcceleratorFactory(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  FakeVideoEncodeAcceleratorFactory(const FakeVideoEncodeAcceleratorFactory&) =
+      delete;
+  FakeVideoEncodeAcceleratorFactory& operator=(
+      const FakeVideoEncodeAcceleratorFactory&) = delete;
+
   ~FakeVideoEncodeAcceleratorFactory();
 
   int vea_response_count() const {
     return vea_response_count_;
-  }
-  int shm_response_count() const {
-    return shm_response_count_;
   }
 
   // Set whether the next created media::FakeVideoEncodeAccelerator will
@@ -45,35 +47,20 @@ class FakeVideoEncodeAcceleratorFactory {
   // Creates a media::FakeVideoEncodeAccelerator.  If in auto-respond mode,
   // |callback| is run synchronously (i.e., before this method returns).
   void CreateVideoEncodeAccelerator(
-      const ReceiveVideoEncodeAcceleratorCallback& callback);
-
-  // Creates shared memory of the requested |size|.  If in auto-respond mode,
-  // |callback| is run synchronously (i.e., before this method returns).
-  void CreateSharedMemory(
-      size_t size,
-      const ReceiveVideoEncodeMemoryCallback& callback);
+      ReceiveVideoEncodeAcceleratorCallback callback);
 
   // Runs the |callback| provided to the last call to
   // CreateVideoEncodeAccelerator() with the new VideoEncodeAccelerator
   // instance.
   void RespondWithVideoEncodeAccelerator();
 
-  // Runs the |callback| provided to the last call to
-  // CreateSharedMemory() with the new base::UnsafeSharedMemoryRegion instance.
-  void RespondWithSharedMemory();
-
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  bool will_init_succeed_;
-  bool auto_respond_;
+  bool will_init_succeed_ = true;
+  bool auto_respond_ = false;
   std::unique_ptr<media::VideoEncodeAccelerator> next_response_vea_;
   ReceiveVideoEncodeAcceleratorCallback vea_response_callback_;
-  base::UnsafeSharedMemoryRegion next_response_shm_;
-  ReceiveVideoEncodeMemoryCallback shm_response_callback_;
-  int vea_response_count_;
-  int shm_response_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoEncodeAcceleratorFactory);
+  int vea_response_count_ = 0;
 };
 
 }  // namespace cast

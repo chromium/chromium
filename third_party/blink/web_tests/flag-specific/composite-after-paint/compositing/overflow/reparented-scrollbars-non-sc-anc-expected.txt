@@ -8,6 +8,12 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [1200, 1000],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [1200, 10000],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

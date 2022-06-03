@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Reversal of transitions previously modified by GetKeyframes</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+'use strict';
+
+function addDiv(t) {
+  var div = document.createElement('div');
+
+  document.body.appendChild(div);
+  t.add_cleanup(function() {
+    if (div.parentNode) {
+      div.remove();
+    }
+  });
+  return div;
+};
+
+// These are simillar to wpt/css/css-transitions/KeyframeEffect-getKeyframes
+// but these use a getComputedStyle to force style evaluation of the modified
+// animation, simulating the effect of modifying and reversing the transition
+// on separate frames. This is intended as a regression test for our partial
+// implementation of this behavior.
+
+function retarget_test(description, newKeyframes, reversed_start) {
+  test(t => {
+    const div = addDiv(t);
+
+    div.style.left = '0px';
+    getComputedStyle(div).transitionProperty;
+    div.style.transition = 'left 100s linear';
+    div.style.left = '100px';
+
+    const transition = div.getAnimations()[0];
+    transition.currentTime = 50000;
+    transition.effect.setKeyframes(newKeyframes);
+
+    // Sync on style so the setKeyframes and the reversal happen on different frames.
+    getComputedStyle(div).left;
+
+    // Reverse transition
+    div.style.left = '0px';
+    const reversedTransition = div.getAnimations()[0];
+
+    assert_approx_equals(
+      reversedTransition.effect.getComputedTiming().activeDuration,
+      50000, 1,
+      "The reversed transition has correctly reduced duration"
+    );
+    assert_equals(reversedTransition.effect.getKeyframes()[0].left, reversed_start,
+        "The reversed transition starts at the expected point");
+  },  description);
+}
+
+retarget_test("A transition with replaced keyframes (same property) still exhibits " +
+    "normal reversing behavior.",
+    {left: ['200px', '300px', '100px']}, '300px');
+
+retarget_test("A transition with replaced keyframes (different property) still exhibits " +
+    "normal reversing behavior  (reversing from the base value).",
+    {top: ['200px', '300px', '100px']}, '100px');
+
+retarget_test("A transition with replaced keyframes (empty) still exhibits " +
+    "normal reversing behavior (reversing from the base value).",
+    {}, '100px');
+
+</script>

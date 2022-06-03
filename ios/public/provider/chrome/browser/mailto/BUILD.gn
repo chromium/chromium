@@ -8,9 +8,7 @@ source_set("mailto") {
     "mailto_handler_provider.h",
     "mailto_handler_provider.mm",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("test_support") {
@@ -20,7 +18,5 @@ source_set("test_support") {
     "test_mailto_handler_provider.h",
     "test_mailto_handler_provider.mm",
   ]
-  deps = [
-    ":mailto",
-  ]
+  deps = [ ":mailto" ]
 }

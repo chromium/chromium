@@ -9,15 +9,18 @@
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace base {
 class Value;
@@ -41,7 +44,15 @@ class Vector3dF;
 namespace cc {
 
 struct HomogeneousCoordinate {
-  HomogeneousCoordinate(SkMScalar x, SkMScalar y, SkMScalar z, SkMScalar w) {
+  // This needs to be big enough that it does not incorrectly clip the projected
+  // coordinate. For local to device projection, this must be bigger than the
+  // expected size of a display. For inverse projection, this is hopefully
+  // larger than the required local layer size of page content. If it is made
+  // too big then bounding box calculations based on projected coordinates can
+  // lose precision and lead to incorrect page rendering.
+  static constexpr float kInfiniteCoordinate = 1000000.0f;
+
+  HomogeneousCoordinate(SkScalar x, SkScalar y, SkScalar z, SkScalar w) {
     vec[0] = x;
     vec[1] = y;
     vec[2] = z;
@@ -51,33 +62,58 @@ struct HomogeneousCoordinate {
   bool ShouldBeClipped() const { return w() <= 0.0; }
 
   gfx::PointF CartesianPoint2d() const {
-    if (w() == SK_MScalar1)
+    if (w() == SK_Scalar1)
       return gfx::PointF(x(), y());
 
     // For now, because this code is used privately only by MathUtil, it should
     // never be called when w == 0, and we do not yet need to handle that case.
     DCHECK(w());
-    SkMScalar inv_w = SK_MScalar1 / w();
-    return gfx::PointF(x() * inv_w, y() * inv_w);
+    SkScalar inv_w = SK_Scalar1 / w();
+    // However, w may be close to 0 and we lose precision on our geometry
+    // calculations if we allow scaling to extremely large values.
+    return gfx::PointF(base::clamp(x() * inv_w, -kInfiniteCoordinate,
+                                   float{kInfiniteCoordinate}),
+                       base::clamp(y() * inv_w, -kInfiniteCoordinate,
+                                   float{kInfiniteCoordinate}));
   }
 
   gfx::Point3F CartesianPoint3d() const {
-    if (w() == SK_MScalar1)
+    if (w() == SK_Scalar1)
       return gfx::Point3F(x(), y(), z());
 
     // For now, because this code is used privately only by MathUtil, it should
     // never be called when w == 0, and we do not yet need to handle that case.
     DCHECK(w());
-    SkMScalar inv_w = SK_MScalar1 / w();
+    SkScalar inv_w = SK_Scalar1 / w();
+    // However, w may be close to 0 and we lose precision on our geometry
+    // calculations if we allow scaling to extremely large values.
+    return gfx::Point3F(base::clamp(x() * inv_w, -kInfiniteCoordinate,
+                                    float{kInfiniteCoordinate}),
+                        base::clamp(y() * inv_w, -kInfiniteCoordinate,
+                                    float{kInfiniteCoordinate}),
+                        base::clamp(z() * inv_w, -kInfiniteCoordinate,
+                                    float{kInfiniteCoordinate}));
+  }
+
+  gfx::Point3F CartesianPoint3dUnclamped() const {
+    if (w() == SK_Scalar1)
+      return gfx::Point3F(x(), y(), z());
+
+    // For now, because this code is used privately only by MathUtil, it should
+    // never be called when w == 0, and we do not yet need to handle that case.
+    DCHECK(w());
+    SkScalar inv_w = SK_Scalar1 / w();
+    // However, w may be close to 0 and we lose precision on our geometry
+    // calculations if we allow scaling to extremely large values.
     return gfx::Point3F(x() * inv_w, y() * inv_w, z() * inv_w);
   }
 
-  SkMScalar x() const { return vec[0]; }
-  SkMScalar y() const { return vec[1]; }
-  SkMScalar z() const { return vec[2]; }
-  SkMScalar w() const { return vec[3]; }
+  SkScalar x() const { return vec[0]; }
+  SkScalar y() const { return vec[1]; }
+  SkScalar z() const { return vec[2]; }
+  SkScalar w() const { return vec[3]; }
 
-  SkMScalar vec[4];
+  SkScalar vec[4];
 };
 
 class CC_BASE_EXPORT MathUtil {
@@ -153,6 +189,10 @@ class CC_BASE_EXPORT MathUtil {
   // clipped, transformed polygon.
   static gfx::Rect MapEnclosingClippedRect(const gfx::Transform& transform,
                                            const gfx::Rect& rect);
+  static gfx::Rect MapEnclosingClippedRectIgnoringError(
+      const gfx::Transform& transform,
+      const gfx::Rect& rect,
+      float ignore_error);
   static gfx::RectF MapClippedRect(const gfx::Transform& transform,
                                    const gfx::RectF& rect);
   static gfx::Rect ProjectEnclosingClippedRect(const gfx::Transform& transform,
@@ -208,13 +248,6 @@ class CC_BASE_EXPORT MathUtil {
                                      const gfx::PointF& point,
                                      bool* clipped);
 
-  static gfx::Vector2dF ComputeTransform2dScaleComponents(const gfx::Transform&,
-                                                          float fallbackValue);
-  // Returns an approximate max scale value of the transform even if it has
-  // perspective. Prefer to use ComputeTransform2dScaleComponents if there is no
-  // perspective, since it can produce more accurate results.
-  static float ComputeApproximateMaxScale(const gfx::Transform& transform);
-
   // Makes a rect that has the same relationship to input_outer_rect as
   // scale_inner_rect has to scale_outer_rect. scale_inner_rect should be
   // contained within scale_outer_rect, and likewise the rectangle that is
@@ -234,11 +267,7 @@ class CC_BASE_EXPORT MathUtil {
   static gfx::Vector2dF ProjectVector(const gfx::Vector2dF& source,
                                       const gfx::Vector2dF& destination);
 
-  // Conversion to value.
-  static std::unique_ptr<base::Value> AsValue(const gfx::Size& s);
-  static std::unique_ptr<base::Value> AsValue(const gfx::Rect& r);
   static bool FromValue(const base::Value*, gfx::Rect* out_rect);
-  static std::unique_ptr<base::Value> AsValue(const gfx::PointF& q);
 
   static void AddToTracedValue(const char* name,
                                const gfx::Size& s,
@@ -265,9 +294,6 @@ class CC_BASE_EXPORT MathUtil {
                                const gfx::Vector2dF& v,
                                base::trace_event::TracedValue* res);
   static void AddToTracedValue(const char* name,
-                               const gfx::ScrollOffset& v,
-                               base::trace_event::TracedValue* res);
-  static void AddToTracedValue(const char* name,
                                const gfx::QuadF& q,
                                base::trace_event::TracedValue* res);
   static void AddToTracedValue(const char* name,
@@ -282,6 +308,9 @@ class CC_BASE_EXPORT MathUtil {
   static void AddToTracedValue(const char* name,
                                const gfx::RRectF& rect,
                                base::trace_event::TracedValue* res);
+  static void AddCornerRadiiToTracedValue(const char* name,
+                                          const gfx::RRectF& rect,
+                                          base::trace_event::TracedValue* res);
 
   // Returns a base::Value representation of the floating point value.
   // If the value is inf, returns max double/float representation.
@@ -299,6 +328,12 @@ class CC_BASE_EXPORT MathUtil {
                                         const gfx::PointF& r);
   static bool IsNearlyTheSameForTesting(const gfx::Point3F& l,
                                         const gfx::Point3F& r);
+
+  // Helper functions for migration from SkMatrix->SkM44. It may make sense to
+  // move these to skia itself at some point.
+  static bool SkM44HasPerspective(const SkM44& m);
+  static bool SkM44Is2D(const SkM44& m);
+  static bool SkM44Preserves2DAxisAlignment(const SkM44& m);
 
  private:
   template <typename T>

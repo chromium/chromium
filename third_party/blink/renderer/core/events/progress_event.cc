@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/events/progress_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_progress_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -52,7 +53,7 @@ const AtomicString& ProgressEvent::InterfaceName() const {
   return event_interface_names::kProgressEvent;
 }
 
-void ProgressEvent::Trace(blink::Visitor* visitor) {
+void ProgressEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

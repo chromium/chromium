@@ -27,8 +27,7 @@ void SafeAudioVideoChecker::Start() {
 }
 
 void SafeAudioVideoChecker::OnMediaParserCreated() {
-  static constexpr auto kFileDecodeTime =
-      base::TimeDelta::FromMilliseconds(250);
+  static constexpr auto kFileDecodeTime = base::Milliseconds(250);
 
   media_parser()->CheckMediaFile(
       kFileDecodeTime, std::move(file_),

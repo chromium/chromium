@@ -11,30 +11,6 @@
 
 namespace IPC {
 
-void ParamTraits<net::AuthChallengeInfo>::Write(base::Pickle* m,
-                                                const param_type& p) {
-  WriteParam(m, p.is_proxy);
-  WriteParam(m, p.challenger);
-  WriteParam(m, p.scheme);
-  WriteParam(m, p.realm);
-  WriteParam(m, p.challenge);
-  WriteParam(m, p.path);
-}
-
-bool ParamTraits<net::AuthChallengeInfo>::Read(const base::Pickle* m,
-                                               base::PickleIterator* iter,
-                                               param_type* r) {
-  return ReadParam(m, iter, &r->is_proxy) &&
-         ReadParam(m, iter, &r->challenger) && ReadParam(m, iter, &r->scheme) &&
-         ReadParam(m, iter, &r->realm) && ReadParam(m, iter, &r->challenge) &&
-         ReadParam(m, iter, &r->path);
-}
-
-void ParamTraits<net::AuthChallengeInfo>::Log(const param_type& p,
-                                              std::string* l) {
-  l->append("<AuthChallengeInfo>");
-}
-
 void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
                                               const param_type& p) {
   WriteParam(m, p.username());
@@ -44,9 +20,9 @@ void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
 bool ParamTraits<net::AuthCredentials>::Read(const base::Pickle* m,
                                              base::PickleIterator* iter,
                                              param_type* r) {
-  base::string16 username;
+  std::u16string username;
   bool read_username = ReadParam(m, iter, &username);
-  base::string16 password;
+  std::u16string password;
   bool read_password = ReadParam(m, iter, &password);
 
   if (!read_username || !read_password)
@@ -74,6 +50,8 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
   WriteParam(m, p.is_issued_by_known_root);
   WriteParam(m, p.is_issued_by_additional_trust_anchor);
   WriteParam(m, p.ocsp_result);
+  WriteParam(m, p.scts);
+  WriteParam(m, p.policy_compliance);
 }
 
 bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
@@ -87,32 +65,13 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
          ReadParam(m, iter, &r->is_issued_by_additional_trust_anchor) &&
-         ReadParam(m, iter, &r->ocsp_result);
+         ReadParam(m, iter, &r->ocsp_result) && ReadParam(m, iter, &r->scts) &&
+         ReadParam(m, iter, &r->policy_compliance);
 }
 
 void ParamTraits<net::CertVerifyResult>::Log(const param_type& p,
                                              std::string* l) {
   l->append("<CertVerifyResult>");
-}
-
-void ParamTraits<net::ct::CTVerifyResult>::Write(base::Pickle* m,
-                                                 const param_type& p) {
-  WriteParam(m, p.scts);
-  WriteParam(m, p.policy_compliance);
-  WriteParam(m, p.policy_compliance_required);
-}
-
-bool ParamTraits<net::ct::CTVerifyResult>::Read(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                param_type* r) {
-  return ReadParam(m, iter, &r->scts) &&
-         ReadParam(m, iter, &r->policy_compliance) &&
-         ReadParam(m, iter, &r->policy_compliance_required);
-}
-
-void ParamTraits<net::ct::CTVerifyResult>::Log(const param_type& p,
-                                               std::string* l) {
-  l->append("<CTVerifyResult>");
 }
 
 void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {
@@ -265,14 +224,12 @@ void ParamTraits<net::ProxyServer>::Write(base::Pickle* m,
       scheme != net::ProxyServer::SCHEME_INVALID) {
     WriteParam(m, p.host_port_pair());
   }
-  WriteParam(m, p.is_trusted_proxy());
 }
 
 bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
                                          base::PickleIterator* iter,
                                          param_type* r) {
   net::ProxyServer::Scheme scheme;
-  bool is_trusted_proxy = false;
   if (!ReadParam(m, iter, &scheme))
     return false;
 
@@ -285,10 +242,7 @@ bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
     return false;
   }
 
-  if (!ReadParam(m, iter, &is_trusted_proxy))
-    return false;
-
-  *r = net::ProxyServer(scheme, host_port_pair, is_trusted_proxy);
+  *r = net::ProxyServer(scheme, host_port_pair);
   return true;
 }
 
@@ -312,6 +266,22 @@ bool ParamTraits<net::OCSPVerifyResult>::Read(const base::Pickle* m,
 void ParamTraits<net::OCSPVerifyResult>::Log(const param_type& p,
                                              std::string* l) {
   l->append("<OCSPVerifyResult>");
+}
+
+void ParamTraits<net::ResolveErrorInfo>::Write(base::Pickle* m,
+                                               const param_type& p) {
+  WriteParam(m, p.error);
+  WriteParam(m, p.is_secure_network_error);
+}
+bool ParamTraits<net::ResolveErrorInfo>::Read(const base::Pickle* m,
+                                              base::PickleIterator* iter,
+                                              param_type* r) {
+  return ReadParam(m, iter, &r->error) &&
+         ReadParam(m, iter, &r->is_secure_network_error);
+}
+void ParamTraits<net::ResolveErrorInfo>::Log(const param_type& p,
+                                             std::string* l) {
+  l->append("<ResolveErrorInfo>");
 }
 
 void ParamTraits<scoped_refptr<net::SSLCertRequestInfo>>::Write(
@@ -473,6 +443,8 @@ void ParamTraits<net::LoadTimingInfo>::Write(base::Pickle* m,
   WriteParam(m, p.send_end);
   WriteParam(m, p.receive_headers_start);
   WriteParam(m, p.receive_headers_end);
+  WriteParam(m, p.receive_non_informational_headers_start);
+  WriteParam(m, p.first_early_hints_time);
   WriteParam(m, p.push_start);
   WriteParam(m, p.push_end);
 }
@@ -503,6 +475,8 @@ bool ParamTraits<net::LoadTimingInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->send_end) &&
          ReadParam(m, iter, &r->receive_headers_start) &&
          ReadParam(m, iter, &r->receive_headers_end) &&
+         ReadParam(m, iter, &r->receive_non_informational_headers_start) &&
+         ReadParam(m, iter, &r->first_early_hints_time) &&
          ReadParam(m, iter, &r->push_start) && ReadParam(m, iter, &r->push_end);
 }
 
@@ -541,6 +515,10 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
   l->append(", ");
   LogParam(p.receive_headers_end, l);
   l->append(", ");
+  LogParam(p.receive_non_informational_headers_start, l);
+  l->append(", ");
+  LogParam(p.first_early_hints_time, l);
+  l->append(", ");
   LogParam(p.push_start, l);
   l->append(", ");
   LogParam(p.push_end, l);
@@ -549,18 +527,19 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
 
 void ParamTraits<net::SiteForCookies>::Write(base::Pickle* m,
                                              const param_type& p) {
-  WriteParam(m, p.scheme());
-  WriteParam(m, p.registrable_domain());
+  WriteParam(m, p.site());
+  WriteParam(m, p.schemefully_same());
 }
 
 bool ParamTraits<net::SiteForCookies>::Read(const base::Pickle* m,
                                             base::PickleIterator* iter,
                                             param_type* r) {
-  std::string scheme, registrable_domain;
-  if (!ReadParam(m, iter, &scheme) || !ReadParam(m, iter, &registrable_domain))
+  net::SchemefulSite site;
+  bool schemefully_same;
+  if (!ReadParam(m, iter, &site) || !ReadParam(m, iter, &schemefully_same))
     return false;
 
-  return net::SiteForCookies::FromWire(scheme, registrable_domain, r);
+  return net::SiteForCookies::FromWire(site, schemefully_same, r);
 }
 
 void ParamTraits<net::SiteForCookies>::Log(const param_type& p,
@@ -569,6 +548,8 @@ void ParamTraits<net::SiteForCookies>::Log(const param_type& p,
   LogParam(p.scheme(), l);
   l->append(",");
   LogParam(p.registrable_domain(), l);
+  l->append(",");
+  LogParam(p.schemefully_same(), l);
   l->append(")");
 }
 
@@ -585,13 +566,13 @@ bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
   std::string scheme;
   std::string host;
   uint16_t port;
-  base::Optional<base::UnguessableToken> nonce_if_opaque;
+  absl::optional<base::UnguessableToken> nonce_if_opaque;
   if (!ReadParam(m, iter, &scheme) || !ReadParam(m, iter, &host) ||
       !ReadParam(m, iter, &port) || !ReadParam(m, iter, &nonce_if_opaque)) {
     return false;
   }
 
-  base::Optional<url::Origin> creation_result =
+  absl::optional<url::Origin> creation_result =
       nonce_if_opaque
           ? url::Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
                 scheme, host, port, url::Origin::Nonce(*nonce_if_opaque))
@@ -605,6 +586,26 @@ bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<url::Origin>::Log(const url::Origin& p, std::string* l) {
+  l->append(p.Serialize());
+}
+
+void ParamTraits<net::SchemefulSite>::Write(base::Pickle* m,
+                                            const net::SchemefulSite& p) {
+  WriteParam(m, p.site_as_origin_);
+}
+
+bool ParamTraits<net::SchemefulSite>::Read(const base::Pickle* m,
+                                           base::PickleIterator* iter,
+                                           net::SchemefulSite* p) {
+  url::Origin site_as_origin;
+  if (!ReadParam(m, iter, &site_as_origin))
+    return false;
+
+  return net::SchemefulSite::FromWire(site_as_origin, p);
+}
+
+void ParamTraits<net::SchemefulSite>::Log(const net::SchemefulSite& p,
+                                          std::string* l) {
   l->append(p.Serialize());
 }
 

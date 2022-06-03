@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -27,14 +28,14 @@ const int kInvalidChunkIndex = -1;
 
 }  // namespace
 
-void ColdModeSpellCheckRequester::Trace(Visitor* visitor) {
-  visitor->Trace(frame_);
+void ColdModeSpellCheckRequester::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
   visitor->Trace(root_editable_);
   visitor->Trace(remaining_check_range_);
 }
 
-ColdModeSpellCheckRequester::ColdModeSpellCheckRequester(LocalFrame& frame)
-    : frame_(frame),
+ColdModeSpellCheckRequester::ColdModeSpellCheckRequester(LocalDOMWindow& window)
+    : window_(window),
       last_chunk_index_(kInvalidChunkIndex),
       needs_more_invocation_for_testing_(false) {}
 
@@ -54,12 +55,12 @@ bool ColdModeSpellCheckRequester::FullyChecked() const {
 
 SpellCheckRequester& ColdModeSpellCheckRequester::GetSpellCheckRequester()
     const {
-  return GetFrame().GetSpellChecker().GetSpellCheckRequester();
+  return window_->GetSpellChecker().GetSpellCheckRequester();
 }
 
 const Element* ColdModeSpellCheckRequester::CurrentFocusedEditable() const {
   const Position position =
-      GetFrame().Selection().GetSelectionInDOMTree().Extent();
+      window_->GetFrame()->Selection().GetSelectionInDOMTree().Extent();
   if (position.IsNull())
     return nullptr;
 
@@ -78,7 +79,7 @@ void ColdModeSpellCheckRequester::Invoke(IdleDeadline* deadline) {
   TRACE_EVENT0("blink", "ColdModeSpellCheckRequester::invoke");
 
   // TODO(xiaochengh): Figure out if this has any performance impact.
-  GetFrame().GetDocument()->UpdateStyleAndLayout();
+  window_->document()->UpdateStyleAndLayout(DocumentUpdateReason::kSpellCheck);
 
   const Element* current_focused = CurrentFocusedEditable();
   if (!current_focused) {

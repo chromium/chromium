@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -18,22 +19,21 @@ struct ExternalInstallInfo {
   ExternalInstallInfo(const std::string& extension_id,
                       int creation_flags,
                       bool mark_acknowledged);
+  ExternalInstallInfo(const ExternalInstallInfo&) = delete;
+  ExternalInstallInfo& operator=(const ExternalInstallInfo&) = delete;
   ExternalInstallInfo(ExternalInstallInfo&& other);
   virtual ~ExternalInstallInfo() {}
 
   std::string extension_id;
   int creation_flags;
   bool mark_acknowledged;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallInfo);
 };
 
 struct ExternalInstallInfoFile : public ExternalInstallInfo {
   ExternalInstallInfoFile(const std::string& extension_id,
                           const base::Version& version,
                           const base::FilePath& path,
-                          Manifest::Location crx_location,
+                          mojom::ManifestLocation crx_location,
                           int creation_flags,
                           bool mark_acknowledged,
                           bool install_immediately);
@@ -42,7 +42,7 @@ struct ExternalInstallInfoFile : public ExternalInstallInfo {
 
   base::Version version;
   base::FilePath path;
-  Manifest::Location crx_location;
+  mojom::ManifestLocation crx_location;
   bool install_immediately;
 };
 
@@ -50,7 +50,7 @@ struct ExternalInstallInfoUpdateUrl : public ExternalInstallInfo {
   ExternalInstallInfoUpdateUrl(const std::string& extension_id,
                                const std::string& install_parameter,
                                GURL update_url,
-                               Manifest::Location download_location,
+                               mojom::ManifestLocation download_location,
                                int creation_flags,
                                bool mark_acknowledged);
   ExternalInstallInfoUpdateUrl(ExternalInstallInfoUpdateUrl&& other);
@@ -58,7 +58,7 @@ struct ExternalInstallInfoUpdateUrl : public ExternalInstallInfo {
 
   std::string install_parameter;
   GURL update_url;
-  Manifest::Location download_location;
+  mojom::ManifestLocation download_location;
 };
 
 }  // namespace extensions

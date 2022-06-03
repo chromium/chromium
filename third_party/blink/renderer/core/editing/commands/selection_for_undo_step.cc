@@ -18,6 +18,7 @@ SelectionForUndoStep SelectionForUndoStep::From(
   result.extent_ = selection.Extent();
   result.affinity_ = selection.Affinity();
   result.is_base_first_ = selection.IsBaseFirst();
+  result.root_editable_element_ = RootEditableElementOf(result.base_);
   return result;
 }
 
@@ -78,9 +79,10 @@ bool SelectionForUndoStep::IsValidFor(const Document& document) const {
   return base_.IsValidFor(document) && extent_.IsValidFor(document);
 }
 
-void SelectionForUndoStep::Trace(Visitor* visitor) {
+void SelectionForUndoStep::Trace(Visitor* visitor) const {
   visitor->Trace(base_);
   visitor->Trace(extent_);
+  visitor->Trace(root_editable_element_);
 }
 
 // ---
@@ -112,7 +114,7 @@ SelectionForUndoStep::Builder::SetBaseAndExtentAsForwardSelection(
   return *this;
 }
 
-void SelectionForUndoStep::Builder::Trace(Visitor* visitor) {
+void SelectionForUndoStep::Builder::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
 }
 

@@ -12,30 +12,30 @@ AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='E1. Eat'
 ++++AXStaticText AXValue=' '
-++++AXLink
+++++AXLink AXDescription='space'
 ++++++AXStaticText AXValue='space'
 ++AXGroup
 ++++AXStaticText AXValue='E2. Eat'
 ++++AXStaticText AXValue=' '
-++++AXLink
+++++AXLink AXDescription='space'
 ++++++AXStaticText AXValue='space'
 ++AXGroup
 ++++AXStaticText AXValue='E3. Eat'
 ++++AXStaticText AXValue=' '
-++++AXLink
+++++AXLink AXDescription='space'
 ++++++AXStaticText AXValue='space'
 ++AXGroup
-++++AXLink
+++++AXLink AXDescription='E4. Eat'
 ++++++AXStaticText AXValue='E4. Eat'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue='space'
 ++AXGroup
-++++AXLink
+++++AXLink AXDescription='E5. Eat'
 ++++++AXStaticText AXValue='E5. Eat'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue='space'
 ++AXGroup
-++++AXLink
+++++AXLink AXDescription='E6. Eat'
 ++++++AXStaticText AXValue='E6. Eat'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue='space'

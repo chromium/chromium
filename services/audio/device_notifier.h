@@ -5,8 +5,6 @@
 #ifndef SERVICES_AUDIO_DEVICE_NOTIFIER_H_
 #define SERVICES_AUDIO_DEVICE_NOTIFIER_H_
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "base/system/system_monitor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +24,10 @@ class DeviceNotifier final : public base::SystemMonitor::DevicesChangedObserver,
                              public mojom::DeviceNotifier {
  public:
   DeviceNotifier();
+
+  DeviceNotifier(const DeviceNotifier&) = delete;
+  DeviceNotifier& operator=(const DeviceNotifier&) = delete;
+
   ~DeviceNotifier() final;
 
   void Bind(mojo::PendingReceiver<mojom::DeviceNotifier> receiver);
@@ -46,8 +48,6 @@ class DeviceNotifier final : public base::SystemMonitor::DevicesChangedObserver,
   mojo::ReceiverSet<mojom::DeviceNotifier> receivers_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<DeviceNotifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNotifier);
 };
 
 }  // namespace audio

@@ -6,10 +6,11 @@
 
 #include <cmath>
 
+#include "base/bind.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromecast/base/statistics/weighted_moving_linear_regression.h"
+#include "chromecast/media/audio/rate_adjuster.h"
 #include "chromecast/media/cma/backend/audio_decoder_for_mixer.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"
@@ -19,16 +20,14 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kLinearRegressionWindow =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kLinearRegressionWindow = base::Seconds(20);
 
 // Time interval between AV sync upkeeps.
-constexpr base::TimeDelta kAvSyncUpkeepInterval =
-    base::TimeDelta::FromMilliseconds(16);
+constexpr base::TimeDelta kAvSyncUpkeepInterval = base::Milliseconds(16);
 
 // Threshold where the audio and video PTS are far enough apart such that we
 // want to do a hard correction.
-constexpr base::TimeDelta kMaxAptsError = base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMaxAptsError = base::Milliseconds(50);
 
 // Minimum samples of video PTS before we start doing A/V sync.
 const int kMinVideoPtsSamples = 60;
@@ -44,16 +43,13 @@ const double kExpectedSlopeVariance = 0.005;
 // stream.
 const int kAvSyncFpsThreshold = 10;
 
-// How often we change the audio clock rate for AV sync.
-constexpr base::TimeDelta kRateChangeInterval = base::TimeDelta::FromSeconds(1);
-
 // Maximum correction rate for absolute sync offset.
 const double kMaxOffsetCorrection = 2.5e-4;
 
 // Maximum A/V sync offset that we allow without correction. Note that we still
 // correct the audio playback rate to match video (to prevent the offset from
 // growing) even when the offset is lower than this value.
-const int64_t kMaxIgnoredOffset = 1000;
+const int64_t kMaxIgnoredOffset = 500;
 
 }  // namespace
 
@@ -121,6 +117,7 @@ void AvSyncVideo::StartAvSync() {
 
 void AvSyncVideo::StopAvSync() {
   upkeep_av_sync_timer_.Stop();
+  audio_rate_adjuster_.reset();
 }
 
 void AvSyncVideo::UpkeepAvSync() {
@@ -189,7 +186,8 @@ void AvSyncVideo::UpkeepAvSync() {
   }
   if (video_pts_) {
     // Only do audio rate upkeep if the VPTS data was OK (ie, no bad slope).
-    AudioRateUpkeep(apts_timestamp_error, new_apts_timestamp);
+    DCHECK(audio_rate_adjuster_);
+    audio_rate_adjuster_->AddError(apts_timestamp_error, new_apts_timestamp);
   }
 }
 
@@ -230,89 +228,44 @@ void AvSyncVideo::HardCorrection(int64_t apts, int64_t desired_apts_timestamp) {
   FlushAudioPts();
 }
 
-void AvSyncVideo::AudioRateUpkeep(int64_t error, int64_t timestamp) {
-  if (!apts_error_) {
-    apts_error_ = std::make_unique<WeightedMovingLinearRegression>(
-        kLinearRegressionWindow.InMicroseconds());
-    clock_rate_start_timestamp_ = timestamp;
-    clock_rate_error_base_ = 0;
-    apts_error_start_timestamp_ = timestamp;
-  }
-
-  int64_t x = timestamp - apts_error_start_timestamp_;
-
-  // Error is positive if audio is playing out too late.
-  // We play out |current_audio_clock_rate_| seconds of audio per second of
-  // actual time. In the last N seconds, if the clock rate was 1.0 we would have
-  // played (1.0 - clock_rate) * N more seconds of audio, so the current
-  // buffer would have played out that much sooner (reducing its error by that
-  // amount). We also need to take into account any existing error when we
-  // last changed the clock rate.
-  int64_t time_at_current_clock_rate = timestamp - clock_rate_start_timestamp_;
-  int64_t correction =
-      clock_rate_error_base_ -
-      (1.0 - current_audio_clock_rate_) * time_at_current_clock_rate;
-  int64_t corrected_error = error + correction;
-  apts_error_->AddSample(x, corrected_error, 1.0);
-
-  if (time_at_current_clock_rate < kRateChangeInterval.InMicroseconds()) {
-    // Don't change clock rate too frequently.
-    return;
-  }
-
-  int64_t offset;
-  double slope;
-  double e;
-  if (!apts_error_->EstimateY(x, &offset, &e) ||
-      !apts_error_->EstimateSlope(&slope, &e)) {
-    return;
-  }
-
-  int64_t smoothed_error = error + (offset - corrected_error);
-
-  // If slope is positive, a clock rate of 1.0 is too slow (audio is playing
-  // progressively later than desired). We wanted to play slope*N seconds more
-  // audio during N seconds that would have been played at clock rate 1.0.
-  // Therefore the actual clock rate should be (1.0 + slope).
-  // However, we also want to correct for any existing offset. We correct so
-  // that the error should reduce to 0 by the next rate change interval;
-  // however the rate change is capped to prevent very fast slewing.
-  double offset_correction = 0.0;
-  if (std::abs(smoothed_error) >= kMaxIgnoredOffset) {
-    offset_correction = static_cast<double>(smoothed_error) /
-                        kRateChangeInterval.InMicroseconds();
-    offset_correction = base::ClampToRange(
-        offset_correction, -kMaxOffsetCorrection, kMaxOffsetCorrection);
-  }
-  double new_rate = (1.0 + slope) + offset_correction;
-
+double AvSyncVideo::ChangeAudioRate(double desired_clock_rate,
+                                    double error_slope,
+                                    double current_error) {
   double effective_new_rate =
-      backend_->audio_decoder()->SetAvSyncPlaybackRate(new_rate);
-  if (effective_new_rate != current_audio_clock_rate_) {
-    current_audio_clock_rate_ = effective_new_rate;
-    LOG(INFO) << "Update audio clock rate to " << effective_new_rate
-              << "; wanted " << new_rate << ", error slope = " << slope;
-    LOG(INFO) << "Offset = " << offset
-              << ", smoothed error = " << smoothed_error
-              << ", base rate = " << (1.0 + slope)
-              << ", offset correction = " << offset_correction;
+      backend_->audio_decoder()->SetAvSyncPlaybackRate(desired_clock_rate);
+  current_audio_clock_rate_ = effective_new_rate;
+  LOG(INFO) << "Update audio clock rate to " << effective_new_rate
+            << "; wanted " << desired_clock_rate
+            << ", error slope = " << error_slope
+            << ", smoothed error = " << current_error;
 
-    double vpts_slope;
-    if (video_pts_->EstimateSlope(&vpts_slope, &e)) {
-      LOG(INFO) << "VPTS slope = " << vpts_slope << "; playback rate =~ "
-                << (1.0 / vpts_slope);
-    }
+  double vpts_slope;
+  double e;
+  if (video_pts_->EstimateSlope(&vpts_slope, &e)) {
+    LOG(INFO) << "VPTS slope = " << vpts_slope << "; playback rate =~ "
+              << (1.0 / vpts_slope);
   }
-
-  clock_rate_start_timestamp_ = timestamp;
-  clock_rate_error_base_ = correction;
+  return effective_new_rate;
 }
 
 void AvSyncVideo::FlushAudioPts() {
-  apts_error_.reset();
   last_apts_timestamp_ = INT64_MIN;
   // Don't reset last_apts_value_, since we still want to ignore that value for
   // the new linear regression since it may be invalid.
+
+  RateAdjuster::Config config;
+  config.linear_regression_window = kLinearRegressionWindow;
+  config.max_ignored_current_error = kMaxIgnoredOffset;
+  config.max_current_error_correction = kMaxOffsetCorrection;
+  // Only change the clock rate if the desired rate is > 30 ppm different.
+  // Reasoning: 30 ppm means that leaving the clock rate unchanged will add at
+  // most 30 microseconds of additional error before the next clock rate check.
+  config.min_rate_change = 3.0e-5;
+  audio_rate_adjuster_ = std::make_unique<RateAdjuster>(
+      config,
+      base::BindRepeating(&AvSyncVideo::ChangeAudioRate,
+                          base::Unretained(this)),
+      current_audio_clock_rate_);
 }
 
 void AvSyncVideo::FlushVideoPts() {

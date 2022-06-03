@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Hopa! Generarea cheii private RSA aleatorii nu a reușit.</translation>
 <translation id="1445572445564823378">Această extensie încetinește <ph name="PRODUCT_NAME" />. Vă recomandăm să o dezactivați pentru a restabili performanțele produsului <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nu este acceptat.</translation>
-<translation id="149347756975725155">Nu se poate încărca pictograma „<ph name="ICON" />” a extensiei.</translation>
 <translation id="1803557475693955505">Nu se poate încărca pagina de fundal „<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Cheia privată nu a fost citită.</translation>
 <translation id="6391538222494443604">Directorul de intrare trebuie să existe.</translation>
 <translation id="641087317769093025">Extensia nu a putut fi dezarhivată</translation>
-<translation id="6413453408918378296">Pictograma nu este suficient de vizibilă „<ph name="ICON" />”.</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />” solicită accesul la cel puțin unul dintre dispozitivele tale:</translation>
 <translation id="657064425229075395">Scriptul de fundal „<ph name="BACKGROUND_SCRIPT" />” nu a putut fi încărcat.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /> (număr de serie <ph name="SERIAL_NUMBER" />)</translation>

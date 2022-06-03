@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when timeout is non-zero, the success callback is called as expected.");
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100.0;
+
+let position;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude,
+                            mockLongitude,
+                            mockAccuracy);
+
+navigator.geolocation.getCurrentPosition(function(p) {
+    position = p;
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
+    finishJSTest();
+}, function(e) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+}, {
+    timeout: 1000
+});
+</script>
+</body>
+</html>

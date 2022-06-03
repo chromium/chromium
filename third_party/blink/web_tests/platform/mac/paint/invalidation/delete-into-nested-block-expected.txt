@@ -1,36 +1,14 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'three'",
-          "rect": [8, 155, 32, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'three'",
-          "rect": [8, 119, 32, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'one'",
-          "rect": [8, 119, 28, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'two'",
-          "rect": [8, 137, 24, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "Caret",
-          "rect": [8, 119, 1, 19],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [8, 155, 32, 18],
+        [8, 119, 32, 18],
+        [8, 137, 24, 18]
       ]
     }
   ]

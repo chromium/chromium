@@ -43,10 +43,9 @@ class TextRunIterator {
   TextRunIterator(const TextRun* text_run, unsigned offset)
       : text_run_(text_run), offset_(offset), length_(text_run_->length()) {}
 
-  TextRunIterator(const TextRunIterator& other)
-      : text_run_(other.text_run_),
-        offset_(other.offset_),
-        length_(text_run_->length()) {}
+  TextRunIterator(const TextRunIterator&) = default;
+
+  TextRunIterator& operator=(const TextRunIterator&) = default;
 
   unsigned Offset() const { return offset_; }
   void Increment() { offset_++; }

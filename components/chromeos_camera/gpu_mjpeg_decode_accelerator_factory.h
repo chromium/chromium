@@ -17,7 +17,7 @@ namespace chromeos_camera {
 class GpuMjpegDecodeAcceleratorFactory {
  public:
   using CreateAcceleratorCB =
-      base::Callback<std::unique_ptr<MjpegDecodeAccelerator>(
+      base::OnceCallback<std::unique_ptr<MjpegDecodeAccelerator>(
           scoped_refptr<base::SingleThreadTaskRunner>)>;
 
   // Static query for JPEG supported. This query calls the appropriate

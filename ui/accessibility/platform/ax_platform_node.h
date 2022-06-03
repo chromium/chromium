@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -44,6 +45,10 @@ class AX_EXPORT AXPlatformNode {
   // Return the AXPlatformNode at the root of the tree for a native window.
   static AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window);
 
+  virtual ~AXPlatformNode();
+  AXPlatformNode(const AXPlatformNode&) = delete;
+  AXPlatformNode& operator=(const AXPlatformNode&) = delete;
+
   // Provide a function that returns the AXPlatformNode at the root of the
   // tree for a native window.
   static void RegisterNativeWindowHandler(NativeWindowHandlerCallback handler);
@@ -59,6 +64,15 @@ class AX_EXPORT AXPlatformNode {
   // Helper static function to notify all global observers about
   // the addition of an AXMode flag.
   static void NotifyAddAXModeFlags(AXMode mode_flags);
+
+  // Helper static function to update the AXMode. This is called when flags
+  // are removed. It doesn't currently notify global observers.
+  static void SetAXMode(AXMode new_mode);
+
+  // Since |ax_mode_| is a static, calling NotifyAddAXModeFlags in a test can
+  // cause downstream tests to be flaky. This helper function puts |ax_mode_|
+  // in the default state.
+  static void ResetAxModeForTesting();
 
   // Return the focused object in any UI popup overlaying content, or null.
   static gfx::NativeViewAccessible GetPopupFocusOverride();
@@ -81,9 +95,9 @@ class AX_EXPORT AXPlatformNode {
   // this object.
   virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type) = 0;
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Fire a platform-specific notification to announce |text|.
-  virtual void AnnounceText(const base::string16& text) = 0;
+  virtual void AnnounceText(const std::u16string& text) = 0;
 #endif
 
   // Return this object's delegate.
@@ -92,7 +106,11 @@ class AX_EXPORT AXPlatformNode {
   // Return true if this object is equal to or a descendant of |ancestor|.
   virtual bool IsDescendantOf(AXPlatformNode* ancestor) const = 0;
 
-  // Return the unique ID
+  // Set |this| as the primary web contents for the window.
+  void SetIsPrimaryWebContentsForWindow(bool is_primary);
+  bool IsPrimaryWebContentsForWindow() const;
+
+  // Return the unique ID.
   int32_t GetUniqueId() const;
 
   // Creates a string representation of this node's data.
@@ -106,9 +124,19 @@ class AX_EXPORT AXPlatformNode {
 
  protected:
   AXPlatformNode();
-  virtual ~AXPlatformNode();
+
+  // Associates a node delegate object to the platform node.
+  // Keep it protected. Only AXPlatformNode::Create should be calling this.
+  // Note: it would make a nicer design if initialization was integrated into
+  // the platform node constructor, but platform node implementation on Windows
+  // (AXPlatformNodeWin) relies on CComObject::CreateInstance() in order to
+  // create a platform node instance, and it doesn't allow to pass arguments to
+  // the constructor.
+  virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AtkUtilAuraLinuxTest, KeySnooping);
+
   // Global ObserverList for AXMode changes.
   static base::LazyInstance<
       base::ObserverList<AXModeObserver>::Unchecked>::Leaky ax_mode_observers_;
@@ -123,8 +151,20 @@ class AX_EXPORT AXPlatformNode {
   // underlying content.
   static gfx::NativeViewAccessible popup_focus_override_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNode);
+  bool is_primary_web_contents_for_window_ = false;
 };
+
+namespace testing {
+
+class ScopedAxModeSetter {
+ public:
+  explicit ScopedAxModeSetter(AXMode new_mode) {
+    AXPlatformNode::SetAXMode(new_mode);
+  }
+  ~ScopedAxModeSetter() { AXPlatformNode::ResetAxModeForTesting(); }
+};
+
+}  // namespace testing
 
 }  // namespace ui
 

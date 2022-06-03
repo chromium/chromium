@@ -26,6 +26,7 @@ enum class OmniboxPart {
   RESULTS_TEXT_DEFAULT,
   RESULTS_TEXT_DIMMED,
   RESULTS_TEXT_URL,
+  RESULTS_BUTTON_BORDER,
 };
 
 // An optional state for a given |OmniboxPart|.

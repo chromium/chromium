@@ -6,6 +6,8 @@
 match the corresponding bad_message.h file.
 """
 
+USE_PYTHON3 = True
+
 def CheckChangeOnCommit(input_api, output_api):
   return _CommonChecks(input_api, output_api)
 

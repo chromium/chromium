@@ -1,3 +1,17 @@
+// Copyright 2020 The Abseil Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef ABSL_STRINGS_INTERNAL_STR_FORMAT_PARSER_H_
 #define ABSL_STRINGS_INTERNAL_STR_FORMAT_PARSER_H_
 
@@ -6,24 +20,28 @@
 #include <stdlib.h>
 
 #include <cassert>
+#include <cstdint>
 #include <initializer_list>
 #include <iosfwd>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "absl/strings/internal/str_format/checker.h"
 #include "absl/strings/internal/str_format/extension.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace str_format_internal {
+
+enum class LengthMod : std::uint8_t { h, hh, l, ll, L, j, z, t, q, none };
+
+std::string LengthModToString(LengthMod v);
 
 // The analyzed properties of a single specified conversion.
 struct UnboundConversion {
-  UnboundConversion()
-      : flags() /* This is required to zero all the fields of flags. */ {
-    flags.basic = true;
-  }
+  UnboundConversion() {}
 
   class InputValue {
    public:
@@ -58,9 +76,9 @@ struct UnboundConversion {
   InputValue width;
   InputValue precision;
 
-  Flags flags;
-  LengthMod length_mod;
-  ConversionChar conv;
+  Flags flags = Flags::kBasic;
+  LengthMod length_mod = LengthMod::none;
+  FormatConversionChar conv = FormatConversionCharInternal::kNone;
 };
 
 // Consume conversion spec prefix (not including '%') of [p, end) if valid.
@@ -72,29 +90,43 @@ const char* ConsumeUnboundConversion(const char* p, const char* end,
                                      UnboundConversion* conv, int* next_arg);
 
 // Helper tag class for the table below.
-// It allows fast `char -> ConversionChar/LengthMod` checking and conversions.
+// It allows fast `char -> ConversionChar/LengthMod/Flags` checking and
+// conversions.
 class ConvTag {
  public:
-  constexpr ConvTag(ConversionChar::Id id) : tag_(id) {}  // NOLINT
-  // We invert the length modifiers to make them negative so that we can easily
-  // test for them.
-  constexpr ConvTag(LengthMod::Id id) : tag_(~id) {}  // NOLINT
-  // Everything else is -128, which is negative to make is_conv() simpler.
-  constexpr ConvTag() : tag_(-128) {}
+  constexpr ConvTag(FormatConversionChar conversion_char)  // NOLINT
+      : tag_(static_cast<uint8_t>(conversion_char)) {}
+  constexpr ConvTag(LengthMod length_mod)  // NOLINT
+      : tag_(0x80 | static_cast<uint8_t>(length_mod)) {}
+  constexpr ConvTag(Flags flags)  // NOLINT
+      : tag_(0xc0 | static_cast<uint8_t>(flags)) {}
+  constexpr ConvTag() : tag_(0xFF) {}
 
-  bool is_conv() const { return tag_ >= 0; }
-  bool is_length() const { return tag_ < 0 && tag_ != -128; }
-  ConversionChar as_conv() const {
+  bool is_conv() const { return (tag_ & 0x80) == 0; }
+  bool is_length() const { return (tag_ & 0xC0) == 0x80; }
+  bool is_flags() const { return (tag_ & 0xE0) == 0xC0; }
+
+  FormatConversionChar as_conv() const {
     assert(is_conv());
-    return ConversionChar::FromId(static_cast<ConversionChar::Id>(tag_));
+    assert(!is_length());
+    assert(!is_flags());
+    return static_cast<FormatConversionChar>(tag_);
   }
   LengthMod as_length() const {
+    assert(!is_conv());
     assert(is_length());
-    return LengthMod::FromId(static_cast<LengthMod::Id>(~tag_));
+    assert(!is_flags());
+    return static_cast<LengthMod>(tag_ & 0x3F);
+  }
+  Flags as_flags() const {
+    assert(!is_conv());
+    assert(!is_length());
+    assert(is_flags());
+    return static_cast<Flags>(tag_ & 0x1F);
   }
 
  private:
-  std::int8_t tag_;
+  uint8_t tag_;
 };
 
 extern const ConvTag kTags[256];
@@ -133,7 +165,7 @@ bool ParseFormatString(string_view src, Consumer consumer) {
     auto tag = GetTagForChar(percent[1]);
     if (tag.is_conv()) {
       if (ABSL_PREDICT_FALSE(next_arg < 0)) {
-        // This indicates an error in the format std::string.
+        // This indicates an error in the format string.
         // The only way to get `next_arg < 0` here is to have a positional
         // argument first which sets next_arg to -1 and then a non-positional
         // argument.
@@ -176,8 +208,9 @@ constexpr bool EnsureConstexpr(string_view s) {
 
 class ParsedFormatBase {
  public:
-  explicit ParsedFormatBase(string_view format, bool allow_ignored,
-                            std::initializer_list<Conv> convs);
+  explicit ParsedFormatBase(
+      string_view format, bool allow_ignored,
+      std::initializer_list<FormatConversionCharSet> convs);
 
   ParsedFormatBase(const ParsedFormatBase& other) { *this = other; }
 
@@ -224,8 +257,9 @@ class ParsedFormatBase {
  private:
   // Returns whether the conversions match and if !allow_ignored it verifies
   // that all conversions are used by the format.
-  bool MatchesConversions(bool allow_ignored,
-                          std::initializer_list<Conv> convs) const;
+  bool MatchesConversions(
+      bool allow_ignored,
+      std::initializer_list<FormatConversionCharSet> convs) const;
 
   struct ParsedFormatConsumer;
 
@@ -270,14 +304,14 @@ class ParsedFormatBase {
 // This is the only API that allows the user to pass a runtime specified format
 // string. These factory functions will return NULL if the format does not match
 // the conversions requested by the user.
-template <str_format_internal::Conv... C>
+template <FormatConversionCharSet... C>
 class ExtendedParsedFormat : public str_format_internal::ParsedFormatBase {
  public:
   explicit ExtendedParsedFormat(string_view format)
-#if ABSL_INTERNAL_ENABLE_FORMAT_CHECKER
+#ifdef ABSL_INTERNAL_ENABLE_FORMAT_CHECKER
       __attribute__((
           enable_if(str_format_internal::EnsureConstexpr(format),
-                    "Format std::string is not constexpr."),
+                    "Format string is not constexpr."),
           enable_if(str_format_internal::ValidFormatImpl<C...>(format),
                     "Format specified does not match the template arguments.")))
 #endif  // ABSL_INTERNAL_ENABLE_FORMAT_CHECKER
@@ -317,6 +351,7 @@ class ExtendedParsedFormat : public str_format_internal::ParsedFormatBase {
       : ParsedFormatBase(s, allow_ignored, {C...}) {}
 };
 }  // namespace str_format_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_STRINGS_INTERNAL_STR_FORMAT_PARSER_H_

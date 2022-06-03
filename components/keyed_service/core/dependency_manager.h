@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -27,6 +27,9 @@ class PrefRegistrySyncable;
 // a safe order based on the stated dependencies.
 class KEYED_SERVICE_EXPORT DependencyManager {
  public:
+  DependencyManager(const DependencyManager&) = delete;
+  DependencyManager& operator=(const DependencyManager&) = delete;
+
   // Shuts down all keyed services managed by two
   // DependencyManagers (DMs), then destroys them. The order of execution is:
   // - Shutdown services in DM1
@@ -117,7 +120,9 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // with them.
   std::set<void*> dead_context_pointers_;
 
-  DISALLOW_COPY_AND_ASSIGN(DependencyManager);
+#if DCHECK_IS_ON()
+  bool context_services_created_ = false;
+#endif
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_DEPENDENCY_MANAGER_H_

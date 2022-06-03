@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -17,10 +17,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/display/display_switches.h"
 
 namespace {
@@ -38,6 +39,11 @@ class RendererEventInjectionTest
       public ::testing::WithParamInterface<const char*> {
  public:
   RendererEventInjectionTest() {}
+
+  RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
+  RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
+      delete;
+
   ~RendererEventInjectionTest() override {}
 
   // InProcessBrowserTest:
@@ -51,7 +57,7 @@ class RendererEventInjectionTest
     command_line->AppendSwitch(switches::kDisableRendererBackgrounding);
     command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
     // kHostWindowBounds is unique to ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(switches::kHostWindowBounds, GetParam());
 #endif
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -64,8 +70,6 @@ class RendererEventInjectionTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererEventInjectionTest);
 };
 
 // Detects when a touch press is received.
@@ -75,6 +79,10 @@ class TouchEventObserver
   TouchEventObserver(const gfx::Point& location,
                      base::RepeatingClosure quit_closure)
       : expected_location_(location), quit_closure_(std::move(quit_closure)) {}
+
+  TouchEventObserver(const TouchEventObserver&) = delete;
+  TouchEventObserver& operator=(const TouchEventObserver&) = delete;
+
   ~TouchEventObserver() override = default;
 
  private:
@@ -83,13 +91,13 @@ class TouchEventObserver
     if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
       const blink::WebTouchEvent& web_touch =
           static_cast<const blink::WebTouchEvent&>(event);
-      if (event.GetType() == blink::WebInputEvent::kTouchStart) {
+      if (event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
         for (unsigned i = 0; i < web_touch.touches_length; i++) {
           const blink::WebTouchPoint& touch_point = web_touch.touches[i];
           const gfx::Point location(
               static_cast<int>(touch_point.PositionInWidget().x()),
               static_cast<int>(touch_point.PositionInWidget().y()));
-          if (touch_point.state == blink::WebTouchPoint::kStatePressed &&
+          if (touch_point.state == blink::WebTouchPoint::State::kStatePressed &&
               location == expected_location_) {
             quit_closure_.Run();
           }
@@ -100,15 +108,13 @@ class TouchEventObserver
 
   const gfx::Point expected_location_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventObserver);
 };
 
 IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop run_loop;
   content::RenderWidgetHost* rwh =
       main_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
@@ -122,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   rwh->RemoveInputEventObserver(&touch_observer);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This configures the display in various interesting ways for ChromeOS. In
 // particular, it tests rotation "/r" and a scale factor of 2 "*2".
 INSTANTIATE_TEST_SUITE_P(

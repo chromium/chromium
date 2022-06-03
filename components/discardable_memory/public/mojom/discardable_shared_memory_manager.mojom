@@ -12,7 +12,7 @@ interface DiscardableSharedMemoryManager {
   // Allocate a locked discardable shared memory segment.
   AllocateLockedDiscardableSharedMemory(
       uint32 size,
-      int32 id) => (mojo_base.mojom.UnsafeSharedMemoryRegion region);
+      int32 id) => (mojo_base.mojom.UnsafeSharedMemoryRegion? region);
   // Notify manager that a memory segment has been deleted.
   DeletedDiscardableSharedMemory(int32 id);
 };

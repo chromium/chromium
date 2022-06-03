@@ -31,7 +31,7 @@ class PaymentRequestSpecTest : public testing::Test,
       std::vector<mojom::PaymentMethodDataPtr> method_data) {
     spec_ = std::make_unique<PaymentRequestSpec>(
         mojom::PaymentOptions::New(), mojom::PaymentDetails::New(),
-        std::move(method_data), this, "en-US");
+        std::move(method_data), weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   void RecreateSpecWithOptionsAndDetails(mojom::PaymentOptionsPtr options,
@@ -40,7 +40,8 @@ class PaymentRequestSpecTest : public testing::Test,
       details->total = mojom::PaymentItem::New();
     spec_ = std::make_unique<PaymentRequestSpec>(
         std::move(options), std::move(details),
-        std::vector<mojom::PaymentMethodDataPtr>(), this, "en-US");
+        std::vector<mojom::PaymentMethodDataPtr>(),
+        weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   PaymentRequestSpec* spec() { return spec_.get(); }
@@ -48,6 +49,7 @@ class PaymentRequestSpecTest : public testing::Test,
  private:
   std::unique_ptr<PaymentRequestSpec> spec_;
   bool on_spec_updated_called_ = false;
+  base::WeakPtrFactory<PaymentRequestSpecTest> weak_ptr_factory_{this};
 };
 
 // Test that empty method data is parsed correctly.
@@ -343,8 +345,7 @@ TEST_F(PaymentRequestSpecTest, ShippingOptionsSelection_NoOptionsAtAll) {
 
   // No option selected, but there is an error provided by the mercahnt.
   EXPECT_EQ(nullptr, spec()->selected_shipping_option());
-  EXPECT_EQ(base::ASCIIToUTF16("No can do shipping."),
-            spec()->selected_shipping_option_error());
+  EXPECT_EQ(u"No can do shipping.", spec()->selected_shipping_option_error());
 }
 
 // Test that the last shipping option is selected, even in the case of
@@ -486,10 +487,10 @@ TEST_F(PaymentRequestSpecTest, RetryWithShippingAddressErrors) {
 
   spec()->Retry(std::move(errors));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid city"),
+  EXPECT_EQ(u"Invalid city",
             spec()->GetShippingAddressError(autofill::ADDRESS_HOME_CITY));
   EXPECT_EQ(
-      base::UTF8ToUTF16("Invalid address line"),
+      u"Invalid address line",
       spec()->GetShippingAddressError(autofill::ADDRESS_HOME_STREET_ADDRESS));
 
   EXPECT_TRUE(spec()->has_shipping_address_error());
@@ -516,11 +517,9 @@ TEST_F(PaymentRequestSpecTest, RetryWithPayerErrors) {
 
   spec()->Retry(std::move(errors));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid email"),
-            spec()->GetPayerError(autofill::EMAIL_ADDRESS));
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid name"),
-            spec()->GetPayerError(autofill::NAME_FULL));
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid phone"),
+  EXPECT_EQ(u"Invalid email", spec()->GetPayerError(autofill::EMAIL_ADDRESS));
+  EXPECT_EQ(u"Invalid name", spec()->GetPayerError(autofill::NAME_FULL));
+  EXPECT_EQ(u"Invalid phone",
             spec()->GetPayerError(autofill::PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_TRUE(spec()->has_payer_error());

@@ -25,6 +25,8 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEMergeNodeElement
 
-interface SVGFEMergeNodeElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEMergeNodeElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
 };

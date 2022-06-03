@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 
@@ -22,20 +21,20 @@ namespace password_manager {
 class CredentialManagerLogger {
  public:
   explicit CredentialManagerLogger(const autofill::LogManager*);
+  CredentialManagerLogger(const CredentialManagerLogger&) = delete;
+  CredentialManagerLogger& operator=(const CredentialManagerLogger&) = delete;
   ~CredentialManagerLogger();
 
-  void LogRequestCredential(const GURL& url,
+  void LogRequestCredential(const url::Origin& url,
                             CredentialMediationRequirement mediation,
                             const std::vector<GURL>& federations);
-  void LogSendCredential(const GURL& url, CredentialType type);
-  void LogStoreCredential(const GURL& url, CredentialType type);
-  void LogPreventSilentAccess(const GURL& url);
+  void LogSendCredential(const url::Origin& origin, CredentialType type);
+  void LogStoreCredential(const url::Origin& origin, CredentialType type);
+  void LogPreventSilentAccess(const url::Origin& origin);
 
  private:
   // The LogManager to which logs can be sent for display.
   const autofill::LogManager* const log_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerLogger);
 };
 
 }  // namespace password_manager

@@ -7,12 +7,21 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace network {
 class TestURLLoaderFactory;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace account_manager {
+class AccountManagerFacade;
+}
+#endif  // defined(OS_CHROMEOS)
 
 class GoogleServiceAuthError;
 
@@ -26,17 +35,6 @@ class GoogleServiceAuthError;
 // code to use IdentityTestEnvironment.
 namespace signin {
 
-// Controls whether to keep or remove accounts when clearing the primary
-// account.
-enum class ClearPrimaryAccountPolicy {
-  // Use the default internal policy.
-  DEFAULT,
-  // Explicitly keep all accounts.
-  KEEP_ALL_ACCOUNTS,
-  // Explicitly remove all accounts.
-  REMOVE_ALL_ACCOUNTS
-};
-
 struct CookieParamsForTest {
   std::string email;
   std::string gaia_id;
@@ -44,14 +42,20 @@ struct CookieParamsForTest {
 
 class IdentityManager;
 
+// Blocks until `LoadCredentials` is complete and `OnRefreshTokensLoaded` is
+// invoked.
+void WaitForRefreshTokensLoaded(IdentityManager* identity_manager);
+
 // Sets the primary account (which must not already be set) to the given email
-// address, generating a GAIA ID that corresponds uniquely to that email
-// address. On non-ChromeOS, results in the firing of the IdentityManager and
-// PrimaryAccountManager callbacks for signin success. Blocks until the primary
-// account is set. Returns the CoreAccountInfo of the newly-set account.
+// address with corresponding consent level, generating a GAIA ID that
+// corresponds uniquely to that email address. On non-ChromeOS, results in the
+// firing of the IdentityManager and PrimaryAccountManager callbacks for signin
+// success. Blocks until the primary account is set. Returns the CoreAccountInfo
+// of the newly-set account.
 // NOTE: See disclaimer at top of file re: direct usage.
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
-                                  const std::string& email);
+                                  const std::string& email,
+                                  ConsentLevel consent_level);
 
 // Sets a refresh token for the primary account (which must already be set).
 // Blocks until the refresh token is set. If |token_value| is empty a default
@@ -79,16 +83,18 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 // newly-available account.
 // NOTE: See disclaimer at top of file re: direct usage.
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
-                                        const std::string& email);
+                                        const std::string& email,
+                                        ConsentLevel consent_level);
 
-// Clears the primary account if present, with |policy| used to determine
-// whether to keep or remove all accounts. On non-ChromeOS, results in the
-// firing of the IdentityManager and PrimaryAccountManager callbacks for
-// signout. Blocks until the primary account is cleared.
+// Revokes sync consent from the primary account: the primary account is left
+// at ConsentLevel::kSignin.
 // NOTE: See disclaimer at top of file re: direct usage.
-void ClearPrimaryAccount(
-    IdentityManager* identity_manager,
-    ClearPrimaryAccountPolicy policy = ClearPrimaryAccountPolicy::DEFAULT);
+void RevokeSyncConsent(IdentityManager* identity_manager);
+
+// Clears the primary account, removes all accounts and revokes the sync
+// consent. Blocks until the primary account is cleared.
+// NOTE: See disclaimer at top of file re: direct usage.
+void ClearPrimaryAccount(IdentityManager* identity_manager);
 
 // Makes an account available for the given email address, generating a GAIA ID
 // and refresh token that correspond uniquely to that email address. Blocks
@@ -148,6 +154,7 @@ void UpdateAccountInfoForAccount(IdentityManager* identity_manager,
 
 void SimulateAccountImageFetch(IdentityManager* identity_manager,
                                const CoreAccountId& account_id,
+                               const std::string& image_url_with_size,
                                const gfx::Image& image);
 
 // Sets whether the list of accounts in Gaia cookie jar is fresh and does not
@@ -164,13 +171,24 @@ void UpdatePersistentErrorOfRefreshTokenForAccount(
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& auth_error);
 
+// Waits until `GetErrorStateOfRefreshTokenForAccount` result for `account_id`
+// satisfies the passed `predicate`. If calling the predicate on the current
+// error state returns true, this method returns immediately.
+void WaitForErrorStateOfRefreshTokenUpdatedForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    base::RepeatingCallback<bool(const GoogleServiceAuthError&)> predicate);
+
 // Disables internal retries of failed access token fetches.
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 
+// Enables account capabilities fetches in AccountFetcherService.
+void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager);
+
 #if defined(OS_ANDROID)
-// Disables interaction with system accounts, which requires special
-// initialization of the java subsystems (AccountManagerFacade).
-void DisableInteractionWithSystemAccounts();
+// Stubs AccountManagerFacade, which requires special initialization of the java
+// subsystems.
+void SetUpMockAccountManagerFacade();
 #endif
 
 // Cancels all ongoing operations related to the accounts in the Gaia cookie.
@@ -187,6 +205,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
+    IdentityManager* identity_manager);
+#endif
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

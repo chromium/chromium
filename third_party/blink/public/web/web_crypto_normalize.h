@@ -64,4 +64,4 @@ NormalizeCryptoAlgorithm(v8::Local<v8::Object>,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CRYPTO_NORMALIZE_H_

@@ -5,15 +5,19 @@
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/bluetooth_internals_resources.h"
 #include "chrome/grit/bluetooth_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #endif
 
 BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
@@ -21,21 +25,18 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://bluetooth-internals source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothInternalsHost);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
+  html_source->DisableTrustedTypesCSP();
+  html_source->AddResourcePath("test_loader_util.js",
+                               IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
   // Add required resources.
-  html_source->AddResourcePath("adapter.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_ADAPTER_MOJO_JS);
-  html_source->AddResourcePath("device.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_DEVICE_MOJO_JS);
-  html_source->AddResourcePath("bluetooth_internals.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_MOJO_JS);
-  html_source->AddResourcePath("uuid.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_UUID_MOJO_JS);
-  for (size_t i = 0; i < kBluetoothInternalsResourcesSize; i++) {
-    html_source->AddResourcePath(kBluetoothInternalsResources[i].name,
-                                 kBluetoothInternalsResources[i].value);
-  }
-  html_source->SetDefaultResource(IDR_BLUETOOTH_INTERNALS_HTML);
+  html_source->AddResourcePaths(base::make_span(
+      kBluetoothInternalsResources, kBluetoothInternalsResourcesSize));
+  html_source->SetDefaultResource(
+      IDR_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);
@@ -49,9 +50,9 @@ void BluetoothInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver) {
   page_handler_ =
       std::make_unique<BluetoothInternalsHandler>(std::move(receiver));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   page_handler_->set_debug_logs_manager(
-      chromeos::bluetooth::DebugLogsManagerFactory::GetForProfile(
+      ash::bluetooth::DebugLogsManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui())));
 #endif
 }

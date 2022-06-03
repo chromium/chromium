@@ -2,45 +2,32 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#value-prop-view {
-  display: block;
-  height: 232px;
-  margin: auto;
+:host-context([orientation=vertical]) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-top-padding: 0;
 }
 
-#intro-text {
+.subtitle-text {
+  color: var(--google-grey-900);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.subtitle-message-text {
   padding: 0 8px 16px 0;
 }
 
-#value-prop-container {
-  border-inline-end: 1px solid rgb(218, 220, 224);
-  width: 50%;
+.subtitle-message-text-minor {
+  color: var(--google-grey-900);
+  padding: 0 8px 16px 0;
 }
 
-#consents-container {
-  padding-inline-start: 24px;
-  width: 50%;
-}
-
-#user-name {
-  color: #757575;
-  padding-inline-start: 8px;
+.username-text {
+  padding-bottom: 30px;
 }
 
 #footer-text {
-  color: #757575;
   padding-top: 16px;
-}
-
-#user-image {
-  border-radius: 50%;
-  height: 20px;
-}
-
-.oobe-popup {
-  border-radius: 8px;
-  box-shadow: unset;
-  max-width: 512px;
 }
 
 #overlay-text {
@@ -60,22 +47,4 @@
   color: rgb(128, 134, 139);
   line-height: 20px;
   padding-top: 20px;
-}
-
-#overlay-close-button {
-  margin-inline-end: 0;
-}
-
-#close-button-text {
-  padding: 0 16px 0 16px;
-}
-
-.button-strip {
-  display: flex;
-  justify-content: flex-end;
-  margin: 16px;
-}
-
-oobe-text-button[disabled] {
-  pointer-events: none;
 }

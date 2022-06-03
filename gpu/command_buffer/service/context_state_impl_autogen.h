@@ -79,41 +79,6 @@ void ContextState::Initialize() {
   hint_fragment_shader_derivative = GL_DONT_CARE;
   hint_texture_filtering = GL_NICEST;
   line_width = 1.0f;
-  modelview_matrix[0] = 1.0f;
-  modelview_matrix[1] = 0.0f;
-  modelview_matrix[2] = 0.0f;
-  modelview_matrix[3] = 0.0f;
-  modelview_matrix[4] = 0.0f;
-  modelview_matrix[5] = 1.0f;
-  modelview_matrix[6] = 0.0f;
-  modelview_matrix[7] = 0.0f;
-  modelview_matrix[8] = 0.0f;
-  modelview_matrix[9] = 0.0f;
-  modelview_matrix[10] = 1.0f;
-  modelview_matrix[11] = 0.0f;
-  modelview_matrix[12] = 0.0f;
-  modelview_matrix[13] = 0.0f;
-  modelview_matrix[14] = 0.0f;
-  modelview_matrix[15] = 1.0f;
-  projection_matrix[0] = 1.0f;
-  projection_matrix[1] = 0.0f;
-  projection_matrix[2] = 0.0f;
-  projection_matrix[3] = 0.0f;
-  projection_matrix[4] = 0.0f;
-  projection_matrix[5] = 1.0f;
-  projection_matrix[6] = 0.0f;
-  projection_matrix[7] = 0.0f;
-  projection_matrix[8] = 0.0f;
-  projection_matrix[9] = 0.0f;
-  projection_matrix[10] = 1.0f;
-  projection_matrix[11] = 0.0f;
-  projection_matrix[12] = 0.0f;
-  projection_matrix[13] = 0.0f;
-  projection_matrix[14] = 0.0f;
-  projection_matrix[15] = 1.0f;
-  stencil_path_func = GL_ALWAYS;
-  stencil_path_ref = 0;
-  stencil_path_mask = 0xFFFFFFFFU;
   pack_alignment = 4;
   unpack_alignment = 4;
   pack_row_length = 0;
@@ -314,25 +279,6 @@ void ContextState::InitState(const ContextState* prev_state) const {
     }
     if ((line_width != prev_state->line_width))
       DoLineWidth(line_width);
-    if (feature_info_->feature_flags().chromium_path_rendering) {
-      if (memcmp(prev_state->modelview_matrix, modelview_matrix,
-                 sizeof(GLfloat) * 16)) {
-        api()->glMatrixLoadfEXTFn(GL_PATH_MODELVIEW_CHROMIUM, modelview_matrix);
-      }
-    }
-    if (feature_info_->feature_flags().chromium_path_rendering) {
-      if (memcmp(prev_state->projection_matrix, projection_matrix,
-                 sizeof(GLfloat) * 16)) {
-        api()->glMatrixLoadfEXTFn(GL_PATH_PROJECTION_CHROMIUM,
-                                  projection_matrix);
-      }
-    }
-    if (feature_info_->feature_flags().chromium_path_rendering)
-      if ((stencil_path_func != prev_state->stencil_path_func) ||
-          (stencil_path_ref != prev_state->stencil_path_ref) ||
-          (stencil_path_mask != prev_state->stencil_path_mask))
-        api()->glPathStencilFuncNVFn(stencil_path_func, stencil_path_ref,
-                                     stencil_path_mask);
     if (prev_state->pack_alignment != pack_alignment) {
       api()->glPixelStoreiFn(GL_PACK_ALIGNMENT, pack_alignment);
     }
@@ -415,15 +361,6 @@ void ContextState::InitState(const ContextState* prev_state) const {
                       hint_texture_filtering);
     }
     DoLineWidth(line_width);
-    if (feature_info_->feature_flags().chromium_path_rendering) {
-      api()->glMatrixLoadfEXTFn(GL_PATH_MODELVIEW_CHROMIUM, modelview_matrix);
-    }
-    if (feature_info_->feature_flags().chromium_path_rendering) {
-      api()->glMatrixLoadfEXTFn(GL_PATH_PROJECTION_CHROMIUM, projection_matrix);
-    }
-    if (feature_info_->feature_flags().chromium_path_rendering)
-      api()->glPathStencilFuncNVFn(stencil_path_func, stencil_path_ref,
-                                   stencil_path_mask);
     api()->glPixelStoreiFn(GL_PACK_ALIGNMENT, pack_alignment);
     api()->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, unpack_alignment);
     api()->glPolygonOffsetFn(polygon_offset_factor, polygon_offset_units);
@@ -620,40 +557,6 @@ bool ContextState::GetStateAsGLint(GLenum pname,
       *num_written = 1;
       if (params) {
         params[0] = static_cast<GLint>(line_width);
-      }
-      return true;
-    case GL_PATH_MODELVIEW_MATRIX_CHROMIUM:
-      *num_written = 16;
-      if (params) {
-        for (size_t i = 0; i < 16; ++i) {
-          params[i] = static_cast<GLint>(round(modelview_matrix[i]));
-        }
-      }
-      return true;
-    case GL_PATH_PROJECTION_MATRIX_CHROMIUM:
-      *num_written = 16;
-      if (params) {
-        for (size_t i = 0; i < 16; ++i) {
-          params[i] = static_cast<GLint>(round(projection_matrix[i]));
-        }
-      }
-      return true;
-    case GL_PATH_STENCIL_FUNC_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLint>(stencil_path_func);
-      }
-      return true;
-    case GL_PATH_STENCIL_REF_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLint>(stencil_path_ref);
-      }
-      return true;
-    case GL_PATH_STENCIL_VALUE_MASK_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLint>(stencil_path_mask);
       }
       return true;
     case GL_PACK_ALIGNMENT:
@@ -1082,36 +985,6 @@ bool ContextState::GetStateAsGLfloat(GLenum pname,
       *num_written = 1;
       if (params) {
         params[0] = static_cast<GLfloat>(line_width);
-      }
-      return true;
-    case GL_PATH_MODELVIEW_MATRIX_CHROMIUM:
-      *num_written = 16;
-      if (params) {
-        memcpy(params, modelview_matrix, sizeof(GLfloat) * 16);
-      }
-      return true;
-    case GL_PATH_PROJECTION_MATRIX_CHROMIUM:
-      *num_written = 16;
-      if (params) {
-        memcpy(params, projection_matrix, sizeof(GLfloat) * 16);
-      }
-      return true;
-    case GL_PATH_STENCIL_FUNC_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLfloat>(stencil_path_func);
-      }
-      return true;
-    case GL_PATH_STENCIL_REF_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLfloat>(stencil_path_ref);
-      }
-      return true;
-    case GL_PATH_STENCIL_VALUE_MASK_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = static_cast<GLfloat>(stencil_path_mask);
       }
       return true;
     case GL_PACK_ALIGNMENT:

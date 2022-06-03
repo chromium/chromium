@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_
 
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -13,14 +14,18 @@
 
 namespace blink {
 
-class FontFormatCheck {
+class PLATFORM_EXPORT FontFormatCheck {
   STACK_ALLOCATED();
 
  public:
-  FontFormatCheck(sk_sp<SkData>);
+  explicit FontFormatCheck(sk_sp<SkData>);
   bool IsVariableFont();
   bool IsCbdtCblcColorFont();
-  bool IsColrCpalColorFont();
+  bool IsColrCpalColorFont() {
+    return IsColrCpalColorFontV0() || IsColrCpalColorFontV1();
+  }
+  bool IsColrCpalColorFontV0();
+  bool IsColrCpalColorFontV1();
   bool IsSbixColorFont();
   bool IsCff2OutlineFont();
   bool IsColorFont();
@@ -34,11 +39,16 @@ class FontFormatCheck {
 
   static VariableFontSubType ProbeVariableFont(sk_sp<SkTypeface>);
 
- private:
   // hb-common.h: typedef uint32_t hb_tag_t;
-  Vector<uint32_t> table_tags_;
+  using TableTagsVector = Vector<uint32_t>;
+
+  enum class COLRVersion { kCOLRV0, kCOLRV1, kNoCOLR };
+
+ private:
+  TableTagsVector table_tags_;
+  COLRVersion colr_version_ = COLRVersion::kNoCOLR;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_FONT_FORMAT_CHECK_H_

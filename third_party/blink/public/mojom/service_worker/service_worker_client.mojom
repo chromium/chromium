@@ -46,7 +46,7 @@ struct ServiceWorkerClientInfo {
   url.mojom.Url url;
 
   // Client#frameType.
-  network.mojom.RequestContextFrameType frame_type = network.mojom.RequestContextFrameType.kNone;
+  RequestContextFrameType frame_type = RequestContextFrameType.kNone;
 
   // Client#id
   string client_uuid;

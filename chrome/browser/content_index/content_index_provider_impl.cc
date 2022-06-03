@@ -11,8 +11,6 @@
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
@@ -21,6 +19,8 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_index_context.h"
@@ -41,11 +41,10 @@ using offline_items_collection::ContentId;
 using offline_items_collection::LaunchLocation;
 using offline_items_collection::OfflineItem;
 using offline_items_collection::OfflineItemFilter;
-
+using offline_items_collection::OfflineItemSchedule;
 
 namespace {
 
-constexpr char kProviderNamespace[] = "content_index";
 constexpr char kEntryKeySeparator[] = "#";
 
 struct EntryKeyComponents {
@@ -63,9 +62,10 @@ std::string EntryKey(int64_t service_worker_registration_id,
 }
 
 std::string EntryKey(const content::ContentIndexEntry& entry) {
-  return EntryKey(entry.service_worker_registration_id,
-                  url::Origin::Create(entry.launch_url.GetOrigin()),
-                  entry.description->id);
+  return EntryKey(
+      entry.service_worker_registration_id,
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->id);
 }
 
 EntryKeyComponents GetEntryKeyComponents(const std::string& key) {
@@ -100,13 +100,16 @@ OfflineItemFilter CategoryToFilter(blink::mojom::ContentCategory category) {
 
 }  // namespace
 
+const char ContentIndexProviderImpl::kProviderNamespace[] = "content_index";
+
 ContentIndexProviderImpl::ContentIndexProviderImpl(Profile* profile)
     : profile_(profile),
       metrics_(ukm::UkmBackgroundRecorderFactory::GetForProfile(profile)),
       aggregator_(
           OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey())),
       site_engagement_service_(
-          SiteEngagementServiceFactory::GetForProfile(profile)) {
+          site_engagement::SiteEngagementServiceFactory::GetForProfile(
+              profile)) {
   aggregator_->RegisterProvider(kProviderNamespace, this);
 }
 
@@ -140,17 +143,19 @@ void ContentIndexProviderImpl::OnContentAdded(
     content::ContentIndexEntry entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!entry.is_top_level_context)
+    return;
+
   OfflineItemList items(1, EntryToOfflineItem(entry));
 
   // Delete the entry before adding it just in case the ID was overwritten.
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(items[0].id);
+  NotifyItemRemoved(items[0].id);
 
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 
-  metrics_.RecordContentAdded(url::Origin::Create(entry.launch_url.GetOrigin()),
-                              entry.description->category);
+  metrics_.RecordContentAdded(
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->category);
 }
 
 void ContentIndexProviderImpl::OnContentDeleted(
@@ -162,16 +167,16 @@ void ContentIndexProviderImpl::OnContentDeleted(
   std::string entry_key =
       EntryKey(service_worker_registration_id, origin, description_id);
   ContentId id(kProviderNamespace, entry_key);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
-void ContentIndexProviderImpl::OpenItem(LaunchLocation location,
-                                        const ContentId& id) {
+void ContentIndexProviderImpl::OpenItem(
+    const offline_items_collection::OpenParams& open_params,
+    const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      profile_, components.origin.GetURL(), /* can_create= */ false);
+  auto* storage_partition = profile_->GetStoragePartitionForUrl(
+      components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
     return;
@@ -183,7 +188,7 @@ void ContentIndexProviderImpl::OpenItem(LaunchLocation location,
 }
 
 void ContentIndexProviderImpl::DidGetEntryToOpen(
-    base::Optional<content::ContentIndexEntry> entry) {
+    absl::optional<content::ContentIndexEntry> entry) {
   if (!entry)
     return;
 
@@ -212,8 +217,8 @@ void ContentIndexProviderImpl::DidOpenTab(content::ContentIndexEntry entry,
 void ContentIndexProviderImpl::RemoveItem(const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      profile_, components.origin.GetURL(), /* can_create= */ false);
+  auto* storage_partition = profile_->GetStoragePartitionForUrl(
+      components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
     return;
@@ -242,12 +247,12 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      profile_, components.origin.GetURL(), /* can_create= */ false);
+  auto* storage_partition = profile_->GetStoragePartitionForUrl(
+      components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -259,9 +264,9 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
 
 void ContentIndexProviderImpl::DidGetItem(
     SingleItemCallback callback,
-    base::Optional<content::ContentIndexEntry> entry) {
+    absl::optional<content::ContentIndexEntry> entry) {
   if (!entry)
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   else
     std::move(callback).Run(EntryToOfflineItem(*entry));
 }
@@ -269,14 +274,12 @@ void ContentIndexProviderImpl::DidGetItem(
 void ContentIndexProviderImpl::GetAllItems(MultipleItemCallback callback) {
   // Get the number of Storage Paritions.
   std::vector<content::StoragePartition*> storage_paritions;
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
-      base::BindRepeating(
-          [](std::vector<content::StoragePartition*>* storage_paritions,
-             content::StoragePartition* storage_partition) {
-            storage_paritions->push_back(storage_partition);
-          },
-          &storage_paritions));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](std::vector<content::StoragePartition*>* storage_paritions,
+         content::StoragePartition* storage_partition) {
+        storage_paritions->push_back(storage_partition);
+      },
+      &storage_paritions));
   DCHECK(!storage_paritions.empty());
 
   auto item_list = std::make_unique<OfflineItemList>();
@@ -321,8 +324,11 @@ void ContentIndexProviderImpl::DidGetAllEntries(
     return;
   }
 
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
+    if (!entry.is_top_level_context)
+      continue;
     item_list->push_back(EntryToOfflineItem(entry));
+  }
 
   std::move(done_closure).Run();
 }
@@ -332,8 +338,8 @@ void ContentIndexProviderImpl::GetVisualsForItem(const ContentId& id,
                                                  VisualsCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
-      profile_, components.origin.GetURL(), /* can_create= */ false);
+  auto* storage_partition = profile_->GetStoragePartitionForUrl(
+      components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -361,12 +367,13 @@ OfflineItem ContentIndexProviderImpl::EntryToOfflineItem(
   item.state = offline_items_collection::OfflineItemState::COMPLETE;
   item.is_resumable = false;
   item.can_rename = false;
-  item.page_url = entry.launch_url;
+  item.url = entry.launch_url;
 
   if (site_engagement_service_) {
     item.content_quality_score =
-        site_engagement_service_->GetScore(entry.launch_url.GetOrigin()) /
-        SiteEngagementScore::kMaxPoints;
+        site_engagement_service_->GetScore(
+            entry.launch_url.DeprecatedGetOriginAsURL()) /
+        site_engagement::SiteEngagementScore::kMaxPoints;
   }
 
   return item;
@@ -395,10 +402,8 @@ void ContentIndexProviderImpl::RenameItem(const ContentId& id,
   NOTREACHED();
 }
 
-void ContentIndexProviderImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ContentIndexProviderImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+void ContentIndexProviderImpl::ChangeSchedule(
+    const ContentId& id,
+    absl::optional<OfflineItemSchedule> schedule) {
+  NOTREACHED();
 }

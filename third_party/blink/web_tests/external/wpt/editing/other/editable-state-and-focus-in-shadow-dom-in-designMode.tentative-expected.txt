@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS Waiting for load
+FAIL Collapse selection into text in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Collapse selection into text in <div contenteditable> in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Set focus to <object> in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Set focus to <p tabindex="0"> in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL SelectAll in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL SelectAll in the <div contenteditable> in the open shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Collapse selection into text in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Collapse selection into text in <div contenteditable> in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Set focus to <object> in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Set focus to <p tabindex="0"> in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL SelectAll in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL SelectAll in the <div contenteditable> in the closed shadow DOM promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+PASS Focus after Collapse selection into text in the open shadow DOM
+PASS Focus after Collapse selection into text in <div contenteditable> in the open shadow DOM
+PASS Focus after Set focus to <object> in the open shadow DOM
+PASS Focus after Set focus to <p tabindex="0"> in the open shadow DOM
+PASS Focus after Collapse selection into text in the closed shadow DOM
+PASS Focus after Collapse selection into text in <div contenteditable> in the closed shadow DOM
+PASS Focus after Set focus to <object> in the closed shadow DOM
+PASS Focus after Set focus to <p tabindex="0"> in the closed shadow DOM
+Harness: the test ran to completion.
+

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="6106989379647458772">Die Webseite unter <ph name="PAGE" /> ist möglicherweise vorübergehend nicht verfügbar oder ist jetzt unter einer neuen Webadresse aufrufbar.</translation>
-<translation id="6312113039770857350">Webseite nicht verfügbar</translation>
-<translation id="8681531050781943054">Die Website unter <ph name="PAGE" /> konnte nicht geladen, weil:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Vorschläge:<ph name="MARKUP_2" />Vergewissern Sie sich, dass Sie über eine Datenverbindung verfügen.<ph name="MARKUP_3" />Laden Sie diese Webseite später neu.<ph name="MARKUP_4" />Überprüfen Sie die von Ihnen eingegebene Adresse.<ph name="MARKUP_5" /></translation>
 </translationbundle>

@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/paint/collapsed_border_painter.h"
 
 #include "third_party/blink/renderer/core/paint/block_painter.h"
-#include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/box_border_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/table_cell_painter.h"
@@ -354,42 +355,47 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
   IntRect rect = PixelSnappedIntRect(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));
-  // |paint_rect| covers the whole collapsed borders.
-  IntRect paint_rect = rect;
-  paint_rect.Expand(IntRectOutsets(before_.outer_width, end_.outer_width,
-                                   after_.outer_width, start_.outer_width));
+
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      cell_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // We never paint diagonals at the joins.  We simply let the border with the
   // highest precedence paint on top of borders with lower precedence.
   if (before_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - before_.begin_outset,
-        rect.Y() - before_.outer_width, rect.MaxX() + before_.end_outset,
-        rect.Y() + before_.inner_width, BoxSide::kTop,
-        before_.value->GetColor(), CollapsedBorderStyle(before_.value->Style()),
-        0, 0, true);
+    IntRect edge_rect(rect.x() - before_.begin_outset,
+                      rect.y() - before_.outer_width,
+                      rect.width() + before_.begin_outset + before_.end_outset,
+                      before_.outer_width + before_.inner_width);
+    BoxBorderPainter::DrawBoxSide(
+        context, edge_rect, BoxSide::kTop, before_.value->GetColor(),
+        CollapsedBorderStyle(before_.value->Style()), auto_dark_mode);
   }
   if (after_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - after_.begin_outset,
-        rect.MaxY() - after_.inner_width, rect.MaxX() + after_.end_outset,
-        rect.MaxY() + after_.outer_width, BoxSide::kBottom,
-        after_.value->GetColor(), CollapsedBorderStyle(after_.value->Style()),
-        0, 0, true);
+    IntRect edge_rect(rect.x() - after_.begin_outset,
+                      rect.bottom() - after_.inner_width,
+                      rect.width() + after_.begin_outset + after_.end_outset,
+                      after_.inner_width + after_.outer_width);
+    BoxBorderPainter::DrawBoxSide(
+        context, edge_rect, BoxSide::kBottom, after_.value->GetColor(),
+        CollapsedBorderStyle(after_.value->Style()), auto_dark_mode);
   }
   if (start_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - start_.outer_width, rect.Y() - start_.begin_outset,
-        rect.X() + start_.inner_width, rect.MaxY() + start_.end_outset,
-        BoxSide::kLeft, start_.value->GetColor(),
-        CollapsedBorderStyle(start_.value->Style()), 0, 0, true);
+    IntRect edge_rect(rect.x() - start_.outer_width,
+                      rect.y() - start_.begin_outset,
+                      start_.outer_width + start_.inner_width,
+                      rect.height() + start_.begin_outset + start_.end_outset);
+    BoxBorderPainter::DrawBoxSide(
+        context, edge_rect, BoxSide::kLeft, start_.value->GetColor(),
+        CollapsedBorderStyle(start_.value->Style()), auto_dark_mode);
   }
   if (end_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.MaxX() - end_.inner_width, rect.Y() - end_.begin_outset,
-        rect.MaxX() + end_.outer_width, rect.MaxY() + end_.end_outset,
-        BoxSide::kRight, end_.value->GetColor(),
-        CollapsedBorderStyle(end_.value->Style()), 0, 0, true);
+    IntRect edge_rect(rect.right() - end_.inner_width,
+                      rect.y() - end_.begin_outset,
+                      end_.inner_width + end_.outer_width,
+                      rect.height() + end_.begin_outset + end_.end_outset);
+    BoxBorderPainter::DrawBoxSide(
+        context, edge_rect, BoxSide::kRight, end_.value->GetColor(),
+        CollapsedBorderStyle(end_.value->Style()), auto_dark_mode);
   }
 }
 

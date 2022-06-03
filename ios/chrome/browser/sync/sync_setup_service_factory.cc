@@ -8,19 +8,19 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 
 // static
 SyncSetupService* SyncSetupServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<SyncSetupService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
 SyncSetupService* SyncSetupServiceFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<SyncSetupService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
@@ -35,16 +35,15 @@ SyncSetupServiceFactory::SyncSetupServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SyncSetupService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
-SyncSetupServiceFactory::~SyncSetupServiceFactory() {
-}
+SyncSetupServiceFactory::~SyncSetupServiceFactory() {}
 
 std::unique_ptr<KeyedService> SyncSetupServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SyncSetupService>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+      SyncServiceFactory::GetForBrowserState(browser_state));
 }

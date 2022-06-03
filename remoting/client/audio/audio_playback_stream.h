@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/audio_stub.h"
 
@@ -31,6 +31,9 @@ class AudioPlaybackStream : public protocol::AudioStub {
       std::unique_ptr<AudioPlaybackSink> audio_sink,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
 
+  AudioPlaybackStream(const AudioPlaybackStream&) = delete;
+  AudioPlaybackStream& operator=(const AudioPlaybackStream&) = delete;
+
   ~AudioPlaybackStream() override;
 
   // AudioStub implementations.
@@ -45,8 +48,6 @@ class AudioPlaybackStream : public protocol::AudioStub {
   std::unique_ptr<Core> core_;
 
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlaybackStream);
 };
 
 }  // namespace remoting

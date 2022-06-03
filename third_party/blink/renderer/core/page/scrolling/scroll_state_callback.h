@@ -22,7 +22,7 @@ class ScrollStateCallback : public GarbageCollected<ScrollStateCallback> {
  public:
   virtual ~ScrollStateCallback() = default;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
   virtual void Invoke(ScrollState*) = 0;
 
@@ -56,7 +56,7 @@ class ScrollStateCallbackV8Impl : public ScrollStateCallback {
       : ScrollStateCallback(native_scroll_behavior), callback_(callback) {}
   ~ScrollStateCallbackV8Impl() override = default;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Invoke(ScrollState*) override;
 

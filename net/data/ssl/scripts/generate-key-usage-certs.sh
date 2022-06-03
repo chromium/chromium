@@ -12,8 +12,15 @@ try () {
 try rm -rf out
 try mkdir out
 
-try openssl genrsa -out out/key_usage_rsa.key 2048
-try openssl ecparam -genkey -name prime256v1 -noout -out out/key_usage_p256.key
+try openssl genrsa -out out/key_usage_rsa_raw.key 2048
+try openssl ecparam -genkey -name prime256v1 -noout \
+    -out out/key_usage_p256_raw.key
+
+# Convert the private keys to PKCS#8 format.
+try openssl pkcs8 -topk8 -nocrypt -in out/key_usage_rsa_raw.key \
+    -out out/key_usage_rsa.key
+try openssl pkcs8 -topk8 -nocrypt -in out/key_usage_p256_raw.key \
+    -out out/key_usage_p256.key
 
 certs=" \
   rsa_no_extension \

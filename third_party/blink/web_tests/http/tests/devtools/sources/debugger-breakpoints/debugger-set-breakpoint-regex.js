@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests Debugger.setBreakpointByUrl with isRegex set to true.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -20,7 +20,7 @@
   SourcesTestRunner.runDebuggerTestSuite([
     async function testSetNoneOfURLAndRegex(next) {
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1});
-      TestRunner.addResult(response[Protocol.Error]);
+      TestRunner.addResult(response.getError());
       next();
     },
 
@@ -28,14 +28,14 @@
       var url = 'debugger-set-breakpoint.js';
       var urlRegex = 'debugger-set-breakpoint.*';
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1, url, urlRegex});
-      TestRunner.addResult(response[Protocol.Error]);
+      TestRunner.addResult(response.getError());
       next();
     },
 
     async function testSetByRegex(next) {
       await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({urlRegex: 'debugger-set-breakpoint.*', lineNumber: 11});
-      SourcesTestRunner.runTestFunctionAndWaitUntilPaused(callFrames => {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      SourcesTestRunner.runTestFunctionAndWaitUntilPaused(async callFrames => {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         next();
       });
     }

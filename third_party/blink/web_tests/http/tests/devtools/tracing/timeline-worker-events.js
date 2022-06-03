@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests that worker events are properly filtered in timeline.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       // Save references to the worker objects to make sure they are not GC'ed.
-      var worker1;
-      var worker2;
+      let worker1;
+      let worker2;
 
       function startFirstWorker()
       {
@@ -29,9 +29,10 @@
   await TestRunner.evaluateInPageAsync(`startFirstWorker()`);
   await PerformanceTestRunner.invokeAsyncWithTimeline('startSecondWorker');
 
-  var workerMetadataEventCount = 0;
-  var allEvents = PerformanceTestRunner.timelineModel().inspectedTargetEvents();
-  var workerEvents = allEvents.filter(e => e.name === TimelineModel.TimelineModel.DevToolsMetadataEvent.TracingSessionIdForWorker);
+  // TODO(1034374): We flakily get 1 worker event instead of 2. Why do we even
+  // expect 2 when the timeline is only recording during startSecondWorker()?
+  const allEvents = PerformanceTestRunner.timelineModel().inspectedTargetEvents();
+  const workerEvents = allEvents.filter(e => e.name === TimelineModel.TimelineModel.DevToolsMetadataEvent.TracingSessionIdForWorker);
   TestRunner.addResult(`Got ${workerEvents.length} worker metadata events`);
   TestRunner.completeTest();
 })();

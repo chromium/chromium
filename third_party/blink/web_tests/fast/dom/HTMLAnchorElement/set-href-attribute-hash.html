@@ -29,7 +29,7 @@ shouldBe("a.href", "'http://www.mydomain.com/path/testurl.html#hash?value'");
 debug("'#' in hash value, and illegal characters in hostname");
 a.href = "https://www.my\"d(){}|~om?ain#com/path/testurl.html#middle";
 a.hash = "#hash#value";
-shouldBe("a.href", "'https://www.my\"d(){}|~om?ain#com/path/testurl.html#middle'");
+shouldBe("a.href", "'https://www.my%22d%28%29%7B%7D%7C%7Eom/?ain#com/path/testurl.html#middle'");
 
 debug("Set hash to null");
 a.href = "https://www.mydomain.com/path/testurl.html#middle";
@@ -57,7 +57,7 @@ shouldBe("a.href", "'file:///some%20path#hash%20value'");
 debug("Set hash to '#'");
 a.href = "http://mydomain.com#middle";
 a.hash = "#";
-shouldBe("a.href", "'http://mydomain.com/'");
+shouldBe("a.href", "'http://mydomain.com/#'");
 
 // Firefox 3.5.2 does not allow setting hash to foo: scheme, and it should.
 debug("Add hash to non-standard protocol");

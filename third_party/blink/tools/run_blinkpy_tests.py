@@ -39,8 +39,10 @@ import typ
 
 def main():
     return typ.main(
-        top_level_dirs=[path_finder.get_blink_tools_dir(),
-                        os.path.join(path_finder.get_source_dir(), 'build', 'scripts')],
+        top_level_dirs=[
+            path_finder.get_blink_tools_dir(),
+            os.path.join(path_finder.get_source_dir(), 'build', 'scripts')
+        ],
         path=[path_finder.get_blinkpy_thirdparty_dir()])
 
 

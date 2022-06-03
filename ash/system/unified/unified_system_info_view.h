@@ -7,7 +7,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/gtest_prod_util.h"
 #include "ui/views/view.h"
+
+namespace views {
+class Separator;
+}  // namespace views
 
 namespace ash {
 
@@ -17,19 +22,25 @@ namespace ash {
 class ASH_EXPORT UnifiedSystemInfoView : public views::View {
  public:
   explicit UnifiedSystemInfoView(UnifiedSystemTrayController* controller);
+
+  UnifiedSystemInfoView(const UnifiedSystemInfoView&) = delete;
+  UnifiedSystemInfoView& operator=(const UnifiedSystemInfoView&) = delete;
+
   ~UnifiedSystemInfoView() override;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
                            EnterpriseManagedVisibleForActiveDirectory);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest,
-                           SupervisedVisible);
+  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
+                           EnterpriseUserManagedVisible);
+  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest, ChildVisible);
 
   // EnterpriseManagedView for unit testing. Owned by this view. Null if
   // kManagedDeviceUIRedesign is enabled.
@@ -38,7 +49,7 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // kManagedDeviceUIRedesign is enabled.
   views::View* supervised_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoView);
+  views::Separator* separator_ = nullptr;
 };
 
 }  // namespace ash

@@ -14,12 +14,14 @@ namespace ui_devtools {
 class ConnectorDelegate {
  public:
   ConnectorDelegate() {}
+
+  ConnectorDelegate(const ConnectorDelegate&) = delete;
+  ConnectorDelegate& operator=(const ConnectorDelegate&) = delete;
+
   virtual ~ConnectorDelegate() {}
 
   virtual void BindTracingConsumerHost(
       mojo::PendingReceiver<tracing::mojom::ConsumerHost> receiver) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectorDelegate);
 };
 
 }  // namespace ui_devtools

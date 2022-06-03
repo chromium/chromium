@@ -12,7 +12,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.util.ViewUtils;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -57,6 +58,7 @@ public class PartnerBookmarksReader {
     @GuardedBy("mProgressLock")
     private boolean mFaviconsFetchedFromServer;
     private boolean mFinishedReading;
+    private boolean mFinishedResolvingBrowserCustomizations;
 
     /**
      * Observer for listeners to receive updates when changes are made to the favicon cache.
@@ -90,12 +92,23 @@ public class PartnerBookmarksReader {
     /**
      * Creates the instance of the reader.
      * @param context A Context object.
+     * @param browserCustomizations Provides status of partner customizations.
      */
-    public PartnerBookmarksReader(Context context) {
+    public PartnerBookmarksReader(
+            Context context, PartnerBrowserCustomizations browserCustomizations) {
         mContext = context;
         mNativePartnerBookmarksReader =
                 PartnerBookmarksReaderJni.get().init(PartnerBookmarksReader.this);
-        initializeAndDisableEditingIfNecessary();
+        if (!browserCustomizations.isInitialized()) {
+            browserCustomizations.initializeAsync(context);
+        }
+        browserCustomizations.setOnInitializeAsyncFinished(() -> {
+            if (browserCustomizations.isBookmarksEditingDisabled()) {
+                PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
+            }
+            mFinishedResolvingBrowserCustomizations = true;
+            maybeMarkCreationComplete();
+        });
     }
 
     /**
@@ -159,9 +172,7 @@ public class PartnerBookmarksReader {
                     }
                     mFaviconThrottle.onFaviconFetched(url, result);
                     --mNumFaviconsInProgress;
-                    if (mNumFaviconsInProgress == 0 && mFinishedReading) {
-                        shutDown();
-                    }
+                    if (canShutdown()) shutDown();
                 }
             }
 
@@ -183,14 +194,23 @@ public class PartnerBookmarksReader {
      * down the bookmark reader.
      */
     protected void onBookmarksRead() {
+        mFinishedReading = true;
+        maybeMarkCreationComplete();
+        synchronized (mProgressLock) {
+            if (canShutdown()) shutDown();
+        }
+    }
+
+    private void maybeMarkCreationComplete() {
+        if (!mFinishedReading || !mFinishedResolvingBrowserCustomizations) return;
         PartnerBookmarksReaderJni.get().partnerBookmarksCreationComplete(
                 mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
-        mFinishedReading = true;
-        synchronized (mProgressLock) {
-            if (mNumFaviconsInProgress == 0) {
-                shutDown();
-            }
-        }
+    }
+
+    @GuardedBy("mProgressLock")
+    private boolean canShutdown() {
+        return mNumFaviconsInProgress == 0 && mFinishedReading
+                && mFinishedResolvingBrowserCustomizations;
     }
 
     /**
@@ -355,19 +375,6 @@ public class PartnerBookmarksReader {
                 }
             }
         }
-    }
-
-    /**
-     * Disables partner bookmarks editing.
-     */
-    public static void disablePartnerBookmarksEditing() {
-        sForceDisableEditing = true;
-        if (sInitialized) PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
-    }
-
-    private static void initializeAndDisableEditingIfNecessary() {
-        sInitialized = true;
-        if (sForceDisableEditing) disablePartnerBookmarksEditing();
     }
 
     @NativeMethods

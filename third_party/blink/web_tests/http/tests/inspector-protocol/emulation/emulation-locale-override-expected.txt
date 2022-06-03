@@ -1,0 +1,27 @@
+Tests emulation of the default locale.
+
+Set locale to ru-RU
+Detected locale: ru-RU
+Date locale string: 02.04.2020, 20:02:00
+
+Checking locale after navigation
+Detected locale: ru-RU
+Date locale string: 02.04.2020, 20:02:00
+
+Checking locale after cross-origin navigation
+Detected locale: ru-RU
+Date locale string: 02.04.2020, 20:02:00
+
+Set locale to zh-CN
+Detected locale: zh-CN
+Date locale string: 2020/4/2 20:02:00
+
+Tried to set override from another session, got error:
+Another locale override is already in effect
+
+Reset locale to default
+Default locale matches previous value: true
+
+Tried setting bogus locale:
+Invalid locale name
+

@@ -1,9 +1,0 @@
-This ensures that @import doesn't work with headless documents.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS xhr.response.getElementById('hello').import is null
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

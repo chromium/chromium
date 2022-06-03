@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_info.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -152,8 +154,8 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
 
   Vector<TextSuggestionInfo>& suggestion_infos =
       suggestion_infos_with_node_and_highlight_color.suggestion_infos;
-  for (const std::pair<const Text*, DocumentMarker*>& node_marker_pair :
-       node_suggestion_marker_pairs_sorted_by_length) {
+  for (const std::pair<Member<const Text>, Member<DocumentMarker>>&
+           node_marker_pair : node_suggestion_marker_pairs_sorted_by_length) {
     if (node_marker_pair.first !=
         suggestion_infos_with_node_and_highlight_color.text_node)
       continue;
@@ -161,7 +163,7 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
     if (suggestion_infos.size() == max_number_of_suggestions)
       break;
 
-    const auto* marker = To<SuggestionMarker>(node_marker_pair.second);
+    const auto* marker = To<SuggestionMarker>(node_marker_pair.second.Get());
     const Vector<String>& marker_suggestions = marker->Suggestions();
     for (wtf_size_t suggestion_index = 0;
          suggestion_index < marker_suggestions.size(); ++suggestion_index) {
@@ -192,13 +194,10 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
 
 }  // namespace
 
-TextSuggestionController::TextSuggestionController(LocalFrame& frame)
-    : is_suggestion_menu_open_(false), frame_(&frame) {}
-
-void TextSuggestionController::DidAttachDocument(Document* document) {
-  DCHECK(document);
-  SetContext(document);
-}
+TextSuggestionController::TextSuggestionController(LocalDOMWindow& window)
+    : is_suggestion_menu_open_(false),
+      window_(&window),
+      text_suggestion_host_(&window) {}
 
 bool TextSuggestionController::IsMenuOpen() const {
   return is_suggestion_menu_open_;
@@ -206,8 +205,18 @@ bool TextSuggestionController::IsMenuOpen() const {
 
 void TextSuggestionController::HandlePotentialSuggestionTap(
     const PositionInFlatTree& caret_position) {
+  if (!IsAvailable()) {
+    // TODO(crbug.com/1054955): We should fix caller not to make this happens.
+    NOTREACHED();
+    return;
+  }
+  if (GetFrame() != GetDocument().GetFrame()) {
+    // TODO(crbug.com/1054955): We should fix caller not to make this happens.
+    NOTREACHED();
+    return;
+  }
   // TODO(crbug.com/779126): add support for suggestions in immersive mode.
-  if (GetDocument().GetSettings()->GetImmersiveModeEnabled())
+  if (GetFrame().GetSettings()->GetImmersiveModeEnabled())
     return;
 
   // It's theoretically possible, but extremely unlikely, that the user has
@@ -233,17 +242,18 @@ void TextSuggestionController::HandlePotentialSuggestionTap(
   if (marker && marker->Suggestions().IsEmpty())
     return;
 
-  if (!text_suggestion_host_) {
+  if (!text_suggestion_host_.is_bound()) {
     GetFrame().GetBrowserInterfaceBroker().GetInterface(
-        text_suggestion_host_.BindNewPipeAndPassReceiver());
+        text_suggestion_host_.BindNewPipeAndPassReceiver(
+            GetFrame().GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   text_suggestion_host_->StartSuggestionMenuTimer();
 }
 
-void TextSuggestionController::Trace(Visitor* visitor) {
-  visitor->Trace(frame_);
-  DocumentShutdownObserver::Trace(visitor);
+void TextSuggestionController::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
+  visitor->Trace(text_suggestion_host_);
 }
 
 void TextSuggestionController::ReplaceActiveSuggestionRange(
@@ -361,7 +371,7 @@ void TextSuggestionController::OnSuggestionMenuClosed() {
 
   GetDocument().Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::ActiveSuggestion());
-  GetFrame().Selection().SetCaretVisible(true);
+  GetFrame().Selection().SetCaretEnabled(true);
   is_suggestion_menu_open_ = false;
 }
 
@@ -416,10 +426,11 @@ void TextSuggestionController::ShowSpellCheckMenu(
   const String& description = marker->Description();
 
   is_suggestion_menu_open_ = true;
-  GetFrame().Selection().SetCaretVisible(false);
+  GetFrame().Selection().SetCaretEnabled(false);
   GetDocument().Markers().AddActiveSuggestionMarker(
       active_suggestion_range, SK_ColorTRANSPARENT,
       ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
       LayoutTheme::GetTheme().PlatformActiveSpellingMarkerHighlightColor());
 
   Vector<String> suggestions;
@@ -438,7 +449,7 @@ void TextSuggestionController::ShowSpellCheckMenu(
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowSpellCheckSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), std::move(misspelled_word),
+      viewport_bounds.x(), viewport_bounds.bottom(), std::move(misspelled_word),
       std::move(suggestion_ptrs));
 }
 
@@ -485,10 +496,11 @@ void TextSuggestionController::ShowSuggestionMenu(
 
   GetDocument().Markers().AddActiveSuggestionMarker(
       marker_range, SK_ColorTRANSPARENT, ui::mojom::ImeTextSpanThickness::kThin,
+      ui::mojom::ImeTextSpanUnderlineStyle::kSolid, SK_ColorTRANSPARENT,
       suggestion_infos_with_node_and_highlight_color.highlight_color);
 
   is_suggestion_menu_open_ = true;
-  GetFrame().Selection().SetCaretVisible(false);
+  GetFrame().Selection().SetCaretEnabled(false);
 
   const String& misspelled_word = PlainText(marker_range);
   CallMojoShowTextSuggestionMenu(
@@ -517,22 +529,22 @@ void TextSuggestionController::CallMojoShowTextSuggestionMenu(
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowTextSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), misspelled_word,
+      viewport_bounds.x(), viewport_bounds.bottom(), misspelled_word,
       std::move(suggestion_info_ptrs));
 }
 
 Document& TextSuggestionController::GetDocument() const {
   DCHECK(IsAvailable());
-  return *LifecycleContext();
+  return *window_->document();
 }
 
 bool TextSuggestionController::IsAvailable() const {
-  return LifecycleContext();
+  return !window_->IsContextDestroyed();
 }
 
 LocalFrame& TextSuggestionController::GetFrame() const {
-  DCHECK(frame_);
-  return *frame_;
+  DCHECK(window_->GetFrame());
+  return *window_->GetFrame();
 }
 
 std::pair<const Node*, const DocumentMarker*>
@@ -612,7 +624,8 @@ void TextSuggestionController::ReplaceRangeWithText(const EphemeralRange& range,
   // available or not.
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame().GetDocument()->UpdateStyleAndLayout();
+  GetFrame().GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSpellCheck);
 
   // Dispatch 'beforeinput'.
   Element* const target = FindEventTargetFrom(
@@ -634,7 +647,8 @@ void TextSuggestionController::ReplaceRangeWithText(const EphemeralRange& range,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame().GetDocument()->UpdateStyleAndLayout();
+  GetFrame().GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSpellCheck);
 
   if (is_canceled)
     return;

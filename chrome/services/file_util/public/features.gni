@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+declare_args() {
+  # Whether the file_util service supports .xz file extraction.
+  # Currently only used by imageWriterPrivate extension API, so only enabled
+  # when Extensions are enabled.
+  enable_xz_extractor = enable_extensions
+
+  # Enables analysis of Office documents for malicious macros
+  enable_maldoca = is_linux || is_win
+}

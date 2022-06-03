@@ -1,0 +1,36 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Original SVG image: https://material.io/icons/#ic_content_paste
+
+CANVAS_DIMENSIONS, 24,
+MOVE_TO, 19, 3,
+R_H_LINE_TO, -4.18f,
+CUBIC_TO, 14.4f, 1.84f, 13.3f, 1, 12, 1,
+CUBIC_TO_SHORTHAND, 9.6f, 1.84f, 9.18f, 3,
+H_LINE_TO, 5,
+CUBIC_TO, 3.9f, 3, 3, 3.9f, 3, 5,
+R_V_LINE_TO, 14,
+R_CUBIC_TO, 0, 1.1f, 0.9f, 2, 2, 2,
+R_H_LINE_TO, 14,
+R_CUBIC_TO, 1.1f, 0, 2, -0.9f, 2, -2,
+V_LINE_TO, 5,
+CUBIC_TO, 21, 3.9f, 20.1f, 3, 19, 3,
+CLOSE,
+MOVE_TO, 12, 3,
+R_CUBIC_TO, 0.55f, 0, 1, 0.45f, 1, 1,
+R_CUBIC_TO, 0, 0.55f, -0.45f, 1, -1, 1,
+R_CUBIC_TO, -0.55f, 0, -1, -0.45f, -1, -1,
+CUBIC_TO_SHORTHAND, 11.45f, 3, 12, 3,
+CLOSE,
+MOVE_TO, 19, 19,
+H_LINE_TO, 5,
+V_LINE_TO, 5,
+R_H_LINE_TO, 2,
+R_V_LINE_TO, 3,
+R_H_LINE_TO, 10,
+V_LINE_TO, 5,
+R_H_LINE_TO, 2,
+V_LINE_TO, 19,
+CLOSE

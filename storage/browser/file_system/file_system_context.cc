@@ -11,13 +11,23 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/task_runner_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/type_safety/pass_key.h"
+#include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -30,6 +40,8 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_quota_client.h"
+#include "storage/browser/file_system/file_system_request_info.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/isolated_file_system_backend.h"
 #include "storage/browser/file_system/mount_points.h"
@@ -39,13 +51,14 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
-
-using storage::QuotaClient;
+#include "url/origin.h"
 
 namespace storage {
-
 namespace {
 
 void DidGetMetadataForResolveURL(const base::FilePath& path,
@@ -90,9 +103,8 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSyncable:
       return FILE_PERMISSION_SANDBOX;
 
-    case kFileSystemTypeNativeForPlatformApp:
-    case kFileSystemTypeNativeLocal:
-    case kFileSystemTypeCloudDevice:
+    case kFileSystemTypeLocalForPlatformApp:
+    case kFileSystemTypeLocal:
     case kFileSystemTypeProvided:
     case kFileSystemTypeDeviceMediaAsFileStorage:
     case kFileSystemTypeDriveFs:
@@ -101,11 +113,11 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSmbFs:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
-    case kFileSystemTypeRestrictedNativeLocal:
+    case kFileSystemTypeRestrictedLocal:
       return FILE_PERMISSION_READ_ONLY | FILE_PERMISSION_USE_FILE_PERMISSION;
 
     case kFileSystemTypeDeviceMedia:
-    case kFileSystemTypeNativeMedia:
+    case kFileSystemTypeLocalMedia:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
     // Following types are only accessed via IsolatedFileSystem, and
@@ -133,45 +145,83 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
   return FILE_PERMISSION_ALWAYS_DENY;
 }
 
-FileSystemContext::FileSystemContext(
-    base::SingleThreadTaskRunner* io_task_runner,
-    base::SequencedTaskRunner* file_task_runner,
-    ExternalMountPoints* external_mount_points,
-    storage::SpecialStoragePolicy* special_storage_policy,
-    storage::QuotaManagerProxy* quota_manager_proxy,
+scoped_refptr<FileSystemContext> FileSystemContext::Create(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    scoped_refptr<ExternalMountPoints> external_mount_points,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
-    const FileSystemOptions& options)
+    const FileSystemOptions& options) {
+  bool force_override_incognito = base::FeatureList::IsEnabled(
+      features::kIncognitoFileSystemContextForTesting);
+  FileSystemOptions maybe_overridden_options =
+      force_override_incognito
+          ? FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
+                              /*force_in_memory=*/true,
+                              options.additional_allowed_schemes())
+          : options;
+
+  auto context = base::MakeRefCounted<FileSystemContext>(
+      std::move(io_task_runner), std::move(file_task_runner),
+      std::move(external_mount_points), std::move(special_storage_policy),
+      std::move(quota_manager_proxy), std::move(additional_backends),
+      auto_mount_handlers, partition_path, maybe_overridden_options,
+      base::PassKey<FileSystemContext>());
+  context->Initialize();
+  return context;
+}
+
+FileSystemContext::FileSystemContext(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    scoped_refptr<ExternalMountPoints> external_mount_points,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
+    const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
+    const base::FilePath& partition_path,
+    const FileSystemOptions& options,
+    base::PassKey<FileSystemContext>)
     : base::RefCountedDeleteOnSequence<FileSystemContext>(io_task_runner),
       env_override_(options.is_in_memory()
                         ? leveldb_chrome::NewMemEnv("FileSystem")
                         : nullptr),
-      io_task_runner_(io_task_runner),
-      default_file_task_runner_(file_task_runner),
-      quota_manager_proxy_(quota_manager_proxy),
-      sandbox_delegate_(
-          new SandboxFileSystemBackendDelegate(quota_manager_proxy,
-                                               file_task_runner,
-                                               partition_path,
-                                               special_storage_policy,
-                                               options,
-                                               env_override_.get())),
-      sandbox_backend_(new SandboxFileSystemBackend(sandbox_delegate_.get())),
-      plugin_private_backend_(
-          new PluginPrivateFileSystemBackend(file_task_runner,
-                                             partition_path,
-                                             special_storage_policy,
-                                             options,
-                                             env_override_.get())),
+      io_task_runner_(std::move(io_task_runner)),
+      default_file_task_runner_(std::move(file_task_runner)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
+      quota_client_(std::make_unique<FileSystemQuotaClient>(this)),
+      quota_client_wrapper_(
+          std::make_unique<storage::QuotaClientCallbackWrapper>(
+              quota_client_.get())),
+      sandbox_delegate_(std::make_unique<SandboxFileSystemBackendDelegate>(
+          quota_manager_proxy_.get(),
+          default_file_task_runner_.get(),
+          partition_path,
+          special_storage_policy,
+          options,
+          env_override_.get())),
+      sandbox_backend_(
+          std::make_unique<SandboxFileSystemBackend>(sandbox_delegate_.get())),
+      plugin_private_backend_(std::make_unique<PluginPrivateFileSystemBackend>(
+          default_file_task_runner_,
+          partition_path,
+          std::move(special_storage_policy),
+          options,
+          env_override_.get())),
       additional_backends_(std::move(additional_backends)),
       auto_mount_handlers_(auto_mount_handlers),
-      external_mount_points_(external_mount_points),
+      external_mount_points_(std::move(external_mount_points)),
       partition_path_(partition_path),
       is_incognito_(options.is_incognito()),
-      operation_runner_(
-          new FileSystemOperationRunner(util::PassKey<FileSystemContext>(),
-                                        this)) {
+      operation_runner_(std::make_unique<FileSystemOperationRunner>(
+          base::PassKey<FileSystemContext>(),
+          this)),
+      quota_client_receiver_(
+          std::make_unique<mojo::Receiver<mojom::QuotaClient>>(
+              quota_client_wrapper_.get())) {
   RegisterBackend(sandbox_backend_.get());
   RegisterBackend(plugin_private_backend_.get());
 
@@ -179,21 +229,17 @@ FileSystemContext::FileSystemContext(
     RegisterBackend(backend.get());
 
   // If the embedder's additional backends already provide support for
-  // kFileSystemTypeNativeLocal and kFileSystemTypeNativeForPlatformApp then
+  // kFileSystemTypeLocal and kFileSystemTypeLocalForPlatformApp then
   // IsolatedFileSystemBackend does not need to handle them. For example, on
   // Chrome OS the additional backend chromeos::FileSystemBackend handles these
   // types.
-  isolated_backend_.reset(new IsolatedFileSystemBackend(
-      !base::Contains(backend_map_, kFileSystemTypeNativeLocal),
-      !base::Contains(backend_map_, kFileSystemTypeNativeForPlatformApp)));
+  isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
+      !base::Contains(backend_map_, kFileSystemTypeLocal),
+      !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
+}
 
-  if (quota_manager_proxy) {
-    // Quota client assumes all backends have registered.
-    quota_manager_proxy->RegisterClient(
-        base::MakeRefCounted<FileSystemQuotaClient>(this));
-  }
-
+void FileSystemContext::Initialize() {
   sandbox_backend_->Initialize(this);
   isolated_backend_->Initialize(this);
   plugin_private_backend_->Initialize(this);
@@ -202,25 +248,52 @@ FileSystemContext::FileSystemContext(
 
   // Additional mount points must be added before regular system-wide
   // mount points.
-  if (external_mount_points)
-    url_crackers_.push_back(external_mount_points);
+  if (external_mount_points_)
+    url_crackers_.push_back(external_mount_points_.get());
   url_crackers_.push_back(ExternalMountPoints::GetSystemInstance());
   url_crackers_.push_back(IsolatedContext::GetInstance());
+
+  if (!quota_manager_proxy_)
+    return;
+
+  // QuotaManagerProxy::RegisterClient() must be called synchronously during
+  // DatabaseTracker creation until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+      quota_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
+                                       storage::QuotaClientType::kFileSystem,
+                                       QuotaManagedStorageTypes());
+
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<FileSystemContext> self,
+             mojo::PendingReceiver<storage::mojom::QuotaClient> receiver) {
+            if (!self->quota_client_receiver_) {
+              // Shutdown() may be called directly on the IO sequence. If that
+              // happens, `quota_client_receiver_` may get reset before this
+              // task runs.
+              return;
+            }
+            self->quota_client_receiver_->Bind(std::move(receiver));
+          },
+          base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
-bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
-    const GURL& origin_url) {
+bool FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
+    const blink::StorageKey& storage_key) {
   DCHECK(default_file_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(origin_url == origin_url.GetOrigin());
+  DCHECK(!storage_key.origin().opaque());
 
   bool success = true;
   for (auto& type_backend_pair : backend_map_) {
     FileSystemBackend* backend = type_backend_pair.second;
     if (!backend->GetQuotaUtil())
       continue;
-    if (backend->GetQuotaUtil()->DeleteOriginDataOnFileTaskRunner(
-            this, quota_manager_proxy(), origin_url, type_backend_pair.first) !=
-        base::File::FILE_OK) {
+    if (backend->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
+            this, quota_manager_proxy(), storage_key,
+            type_backend_pair.first) != base::File::FILE_OK) {
       // Continue the loop, but record the failure.
       success = false;
     }
@@ -231,14 +304,14 @@ bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
 
 scoped_refptr<QuotaReservation>
 FileSystemContext::CreateQuotaReservationOnFileTaskRunner(
-    const GURL& origin_url,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   DCHECK(default_file_task_runner()->RunsTasksInCurrentSequence());
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend || !backend->GetQuotaUtil())
     return scoped_refptr<QuotaReservation>();
   return backend->GetQuotaUtil()->CreateQuotaReservationOnFileTaskRunner(
-      origin_url, type);
+      storage_key, type);
 }
 
 void FileSystemContext::Shutdown() {
@@ -248,6 +321,13 @@ void FileSystemContext::Shutdown() {
                                              base::WrapRefCounted(this)));
     return;
   }
+
+  // The mojo receiver must be destroyed before the instance it calls into is
+  // destroyed.
+  quota_client_receiver_.reset();
+  quota_client_wrapper_.reset();
+  quota_client_.reset();
+
   operation_runner_->Shutdown();
 }
 
@@ -331,7 +411,7 @@ ExternalFileSystemBackend* FileSystemContext::external_backend() const {
       GetFileSystemBackend(kFileSystemTypeExternal));
 }
 
-void FileSystemContext::OpenFileSystem(const GURL& origin_url,
+void FileSystemContext::OpenFileSystem(const blink::StorageKey& storage_key,
                                        FileSystemType type,
                                        OpenFileSystemMode mode,
                                        OpenFileSystemCallback callback) {
@@ -345,6 +425,42 @@ void FileSystemContext::OpenFileSystem(const GURL& origin_url,
     return;
   }
 
+  // Quota manager isn't provided by all tests.
+  if (quota_manager_proxy()) {
+    // Ensure default bucket for `storage_key` exists so that Quota API
+    // is aware of the usage. Bucket type 'temporary' is used even though the
+    // actual storage type of the file system being opened may be different.
+    quota_manager_proxy()->GetOrCreateBucket(
+        storage_key, kDefaultBucketName, io_task_runner_.get(),
+        base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
+                       weak_factory_.GetWeakPtr(), storage_key, type, mode,
+                       std::move(callback)));
+  } else {
+    ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+  }
+}
+
+void FileSystemContext::OnGetOrCreateBucket(
+    const blink::StorageKey& storage_key,
+    FileSystemType type,
+    OpenFileSystemMode mode,
+    OpenFileSystemCallback callback,
+    QuotaErrorOr<BucketInfo> result) {
+  if (!result.ok()) {
+    std::move(callback).Run(GURL(), std::string(),
+                            base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+}
+
+void FileSystemContext::ResolveURLOnOpenFileSystem(
+    const blink::StorageKey& storage_key,
+    FileSystemType type,
+    OpenFileSystemMode mode,
+    OpenFileSystemCallback callback) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend) {
     std::move(callback).Run(GURL(), std::string(),
@@ -353,7 +469,7 @@ void FileSystemContext::OpenFileSystem(const GURL& origin_url,
   }
 
   backend->ResolveURL(
-      CreateCrackedFileSystemURL(origin_url, type, base::FilePath()), mode,
+      CreateCrackedFileSystemURL(storage_key, type, base::FilePath()), mode,
       std::move(callback));
 }
 
@@ -389,24 +505,28 @@ void FileSystemContext::ResolveURL(const FileSystemURL& url,
 void FileSystemContext::AttemptAutoMountForURLRequest(
     const FileSystemRequestInfo& request_info,
     StatusCallback callback) {
-  const FileSystemURL filesystem_url(request_info.url);
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  const FileSystemURL filesystem_url(request_info.url,
+                                     request_info.storage_key);
   if (filesystem_url.type() == kFileSystemTypeExternal) {
-    for (size_t i = 0; i < auto_mount_handlers_.size(); i++) {
-      if (auto_mount_handlers_[i].Run(request_info, filesystem_url,
-                                      copyable_callback)) {
+    for (auto& handler : auto_mount_handlers_) {
+      auto split_callback = base::SplitOnceCallback(std::move(callback));
+      callback = std::move(split_callback.first);
+      if (handler.Run(request_info, filesystem_url,
+                      std::move(split_callback.second))) {
+        // The `callback` will be run if true was returned.
         return;
       }
     }
   }
-  copyable_callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+  // If every handler returned false, then `callback` was not run yet.
+  std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
 }
 
-void FileSystemContext::DeleteFileSystem(const GURL& origin_url,
+void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
                                          FileSystemType type,
                                          StatusCallback callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(origin_url == origin_url.GetOrigin());
+  DCHECK(!storage_key.origin().opaque());
   DCHECK(!callback.is_null());
 
   FileSystemBackend* backend = GetFileSystemBackend(type);
@@ -422,15 +542,14 @@ void FileSystemContext::DeleteFileSystem(const GURL& origin_url,
   base::PostTaskAndReplyWithResult(
       default_file_task_runner(), FROM_HERE,
       // It is safe to pass Unretained(quota_util) since context owns it.
-      base::BindOnce(&FileSystemQuotaUtil::DeleteOriginDataOnFileTaskRunner,
-                     base::Unretained(backend->GetQuotaUtil()),
-                     base::RetainedRef(this),
-                     base::Unretained(quota_manager_proxy()), origin_url, type),
+      base::BindOnce(
+          &FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,
+          base::Unretained(backend->GetQuotaUtil()), base::RetainedRef(this),
+          base::Unretained(quota_manager_proxy()), storage_key, type),
       std::move(callback));
 }
 
-std::unique_ptr<storage::FileStreamReader>
-FileSystemContext::CreateFileStreamReader(
+std::unique_ptr<FileStreamReader> FileSystemContext::CreateFileStreamReader(
     const FileSystemURL& url,
     int64_t offset,
     int64_t max_bytes_to_read,
@@ -458,26 +577,33 @@ std::unique_ptr<FileStreamWriter> FileSystemContext::CreateFileStreamWriter(
 std::unique_ptr<FileSystemOperationRunner>
 FileSystemContext::CreateFileSystemOperationRunner() {
   return std::make_unique<FileSystemOperationRunner>(
-      util::PassKey<FileSystemContext>(), this);
+      base::PassKey<FileSystemContext>(), this);
 }
 
 base::SequenceBound<FileSystemOperationRunner>
 FileSystemContext::CreateSequenceBoundFileSystemOperationRunner() {
   return base::SequenceBound<FileSystemOperationRunner>(
-      io_task_runner_, util::PassKey<FileSystemContext>(),
+      io_task_runner_, base::PassKey<FileSystemContext>(),
       base::WrapRefCounted(this));
 }
 
-FileSystemURL FileSystemContext::CrackURL(const GURL& url) const {
-  return CrackFileSystemURL(FileSystemURL(url));
+FileSystemURL FileSystemContext::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  return CrackFileSystemURL(FileSystemURL(url, storage_key));
+}
+
+FileSystemURL FileSystemContext::CrackURLInFirstPartyContext(
+    const GURL& url) const {
+  return CrackFileSystemURL(
+      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url))));
 }
 
 FileSystemURL FileSystemContext::CreateCrackedFileSystemURL(
-    const GURL& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
     const base::FilePath& path) const {
-  return CrackFileSystemURL(
-      FileSystemURL(url::Origin::Create(origin), type, path));
+  return CrackFileSystemURL(FileSystemURL(storage_key, type, path));
 }
 
 bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
@@ -495,7 +621,7 @@ bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
 }
 
 void FileSystemContext::OpenPluginPrivateFileSystem(
-    const GURL& origin_url,
+    const url::Origin& origin,
     FileSystemType type,
     const std::string& filesystem_id,
     const std::string& plugin_id,
@@ -503,7 +629,7 @@ void FileSystemContext::OpenPluginPrivateFileSystem(
     StatusCallback callback) {
   DCHECK(plugin_private_backend_);
   plugin_private_backend_->OpenPrivateFileSystem(
-      origin_url, type, filesystem_id, plugin_id, mode, std::move(callback));
+      origin, type, filesystem_id, plugin_id, mode, std::move(callback));
 }
 
 FileSystemContext::~FileSystemContext() {
@@ -512,9 +638,30 @@ FileSystemContext::~FileSystemContext() {
   env_override_.release();
 }
 
-FileSystemOperation* FileSystemContext::CreateFileSystemOperation(
-    const FileSystemURL& url,
-    base::File::Error* error_code) {
+std::vector<blink::mojom::StorageType>
+FileSystemContext::QuotaManagedStorageTypes() {
+  std::vector<blink::mojom::StorageType> quota_storage_types;
+  for (const auto& file_system_type_and_backend : backend_map_) {
+    FileSystemType file_system_type = file_system_type_and_backend.first;
+    blink::mojom::StorageType storage_type =
+        FileSystemTypeToQuotaStorageType(file_system_type);
+
+    // An more elegant way of filtering out non-quota-managed backends would be
+    // to call GetQuotaUtil() on backends. Unfortunately, the method assumes the
+    // backends are initialized.
+    if (storage_type == blink::mojom::StorageType::kUnknown ||
+        storage_type == blink::mojom::StorageType::kQuotaNotManaged) {
+      continue;
+    }
+
+    quota_storage_types.push_back(storage_type);
+  }
+  return quota_storage_types;
+}
+
+std::unique_ptr<FileSystemOperation>
+FileSystemContext::CreateFileSystemOperation(const FileSystemURL& url,
+                                             base::File::Error* error_code) {
   if (!url.is_valid()) {
     if (error_code)
       *error_code = base::File::FILE_ERROR_INVALID_URL;
@@ -529,7 +676,7 @@ FileSystemOperation* FileSystemContext::CreateFileSystemOperation(
   }
 
   base::File::Error fs_error = base::File::FILE_OK;
-  FileSystemOperation* operation =
+  std::unique_ptr<FileSystemOperation> operation =
       backend->CreateFileSystemOperation(url, this, &fs_error);
 
   if (error_code)
@@ -550,10 +697,10 @@ FileSystemURL FileSystemContext::CrackFileSystemURL(
   // top of an external filesystem). Hence cracking needs to be iterated.
   for (;;) {
     FileSystemURL cracked = current;
-    for (size_t i = 0; i < url_crackers_.size(); ++i) {
-      if (!url_crackers_[i]->HandlesFileSystemMountType(current.type()))
+    for (MountPoints* url_cracker : url_crackers_) {
+      if (!url_cracker->HandlesFileSystemMountType(current.type()))
         continue;
-      cracked = url_crackers_[i]->CrackFileSystemURL(current);
+      cracked = url_cracker->CrackFileSystemURL(current);
       if (cracked.is_valid())
         break;
     }
@@ -605,11 +752,11 @@ void FileSystemContext::DidOpenFileSystemForResolveURL(
     return;
   }
 
-  storage::FileSystemInfo info(filesystem_name, filesystem_root,
-                               url.mount_type());
+  FileSystemInfo info(filesystem_name, filesystem_root, url.mount_type());
 
-  // Extract the virtual path not containing a filesystem type part from |url|.
-  base::FilePath parent = CrackURL(filesystem_root).virtual_path();
+  // Extract the virtual path not containing a filesystem type part from `url`.
+  base::FilePath parent =
+      CrackURLInFirstPartyContext(filesystem_root).virtual_path();
   base::FilePath child = url.virtual_path();
   base::FilePath path;
 
@@ -620,12 +767,8 @@ void FileSystemContext::DidOpenFileSystemForResolveURL(
     DCHECK(result);
   }
 
-  // TODO(mtomasz): Not all fields should be required for ResolveURL.
   operation_runner()->GetMetadata(
-      url,
-      FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      url, FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
       base::BindOnce(&DidGetMetadataForResolveURL, path, std::move(callback),
                      info));
 }

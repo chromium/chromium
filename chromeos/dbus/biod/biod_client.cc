@@ -10,11 +10,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/biod/messages.pb.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -37,6 +39,10 @@ void OnVoidResponse(VoidDBusMethodCallback callback, dbus::Response* response) {
 class BiodClientImpl : public BiodClient {
  public:
   BiodClientImpl() = default;
+
+  BiodClientImpl(const BiodClientImpl&) = delete;
+  BiodClientImpl& operator=(const BiodClientImpl&) = delete;
+
   ~BiodClientImpl() override = default;
 
   // BiodClient overrides:
@@ -405,8 +411,6 @@ class BiodClientImpl : public BiodClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BiodClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BiodClientImpl);
 };
 
 BiodClient::BiodClient() {
@@ -421,8 +425,12 @@ BiodClient::~BiodClient() {
 
 // static
 void BiodClient::Initialize(dbus::Bus* bus) {
-  DCHECK(bus);
-  (new BiodClientImpl())->Init(bus);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBiodFake)) {
+    BiodClient::InitializeFake();
+  } else {
+    DCHECK(bus);
+    (new BiodClientImpl())->Init(bus);
+  }
 }
 
 // static

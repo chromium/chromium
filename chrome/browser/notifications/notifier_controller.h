@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/notifier_metadata.h"
-#include "base/macros.h"
 
 class Profile;
 
@@ -31,6 +30,8 @@ class NotifierController {
   };
 
   NotifierController() = default;
+  NotifierController(const NotifierController&) = delete;
+  NotifierController& operator=(const NotifierController&) = delete;
   virtual ~NotifierController() = default;
 
   // Returns notifiers to display in the settings UI. Not all notifiers appear
@@ -45,9 +46,6 @@ class NotifierController {
   virtual void SetNotifierEnabled(Profile* profile,
                                   const message_center::NotifierId& notifier_id,
                                   bool enabled) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotifierController);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFIER_CONTROLLER_H_

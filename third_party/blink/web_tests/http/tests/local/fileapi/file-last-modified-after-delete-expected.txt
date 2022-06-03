@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 4: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test File.lastModifiedDate returns null if the information is not available.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

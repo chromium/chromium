@@ -22,10 +22,13 @@ class SimPage final {
   void SetFocused(bool);
   bool IsFocused() const;
 
+  void SetActive(bool);
+  bool IsActive() const;
+
  private:
   Persistent<Page> page_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_PAGE_H_

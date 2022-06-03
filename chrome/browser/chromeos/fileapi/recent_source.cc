@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace chromeos {
 
@@ -14,11 +14,13 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              const GURL& origin,
                              size_t max_files,
                              const base::Time& cutoff_time,
+                             FileType file_type,
                              GetRecentFilesCallback callback)
     : file_system_context_(file_system_context),
       origin_(origin),
       max_files_(max_files),
       cutoff_time_(cutoff_time),
+      file_type_(file_type),
       callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 }

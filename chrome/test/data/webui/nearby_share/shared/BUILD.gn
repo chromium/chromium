@@ -1,0 +1,153 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../../namespace_rewrites.gni")
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+js_modulizer("modulize") {
+  input_files = [
+    "fake_nearby_contact_manager.js",
+    "fake_nearby_share_settings.js",
+    "nearby_contact_visibility_test.js",
+    "nearby_device_icon_test.js",
+    "nearby_device_test.js",
+    "nearby_onboarding_page_test.js",
+    "nearby_page_template_test.js",
+    "nearby_preview_test.js",
+    "nearby_progress_test.js",
+    "nearby_visibility_page_test.js",
+  ]
+  namespace_rewrites = test_namespace_rewrites + [
+                         "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
+                         "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+                         "nearby_share.setContactManagerForTesting|setContactManagerForTesting",
+                         "nearby_share.FakeContactManager|FakeContactManager",
+                       ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://nearby/=../../chrome/browser/resources/nearby_share/\"",
+                    "js_module_root=../../chrome/browser/resources/nearby_share/",
+                    "js_module_root=./gen/chrome/browser/resources/nearby_share/",
+                  ]
+  deps = [
+    ":fake_nearby_contact_manager.m",
+    ":fake_nearby_share_settings.m",
+    ":nearby_contact_visibility_test.m",
+    ":nearby_device_icon_test.m",
+    ":nearby_device_test.m",
+    ":nearby_onboarding_page_test.m",
+    ":nearby_page_template_test.m",
+    ":nearby_preview_test.m",
+    ":nearby_progress_test.m",
+    ":nearby_visibility_page_test.m",
+  ]
+}
+
+js_library("fake_nearby_contact_manager.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_contact_manager.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("nearby_contact_visibility_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js" ]
+  deps = [
+    ":fake_nearby_contact_manager.m",
+    ":fake_nearby_share_settings.m",
+    "../..:chai_assert",
+    "../..:test_util",
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_device_icon_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_icon_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_device_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_onboarding_page_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js" ]
+  deps = [
+    ":fake_nearby_share_settings.m",
+    "../..:chai_assert",
+    "../..:test_util",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_page_template_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_preview_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_preview_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("nearby_progress_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_progress_test.m.js" ]
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_progress.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("fake_nearby_share_settings.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js" ]
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("nearby_visibility_page_test.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js" ]
+  deps = [
+    ":fake_nearby_share_settings.m",
+    "../..:chai_assert",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
+  ]
+  extra_deps = [ ":modulize" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

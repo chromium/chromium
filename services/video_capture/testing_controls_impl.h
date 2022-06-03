@@ -12,13 +12,14 @@ namespace video_capture {
 class TestingControlsImpl : public mojom::TestingControls {
  public:
   TestingControlsImpl();
+
+  TestingControlsImpl(const TestingControlsImpl&) = delete;
+  TestingControlsImpl& operator=(const TestingControlsImpl&) = delete;
+
   ~TestingControlsImpl() override;
 
   // mojom::TestingControls implementation.
   void Crash() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingControlsImpl);
 };
 
 }  // namespace video_capture

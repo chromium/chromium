@@ -4,9 +4,11 @@
 
 #include "net/filter/gzip_header.h"
 
+#include <string.h>
+
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "third_party/zlib/zlib.h"
 
 namespace net {

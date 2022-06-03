@@ -30,8 +30,6 @@ enum class ComplexSdpCategory {
 class RTCPeerConnectionController
     : public GarbageCollected<RTCPeerConnectionController>,
       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(RTCPeerConnectionController);
-
  public:
   static const char kSupplementName[];
   static RTCPeerConnectionController& From(Document&);
@@ -40,7 +38,7 @@ class RTCPeerConnectionController
 
   explicit RTCPeerConnectionController(Document&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool has_reported_ukm_ = false;

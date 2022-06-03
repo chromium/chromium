@@ -34,7 +34,7 @@
         assertNotificationDataReflects(obj); // Check Object
 
         // Verifying the exception throwing behavior of the method.
-        assert_throws('DataCloneError', function() {
+        assert_throws_dom('DataCloneError', function() {
             var notification = new Notification('Title', { data: function() { return 1; } });
         }, 'Set function in data');
 

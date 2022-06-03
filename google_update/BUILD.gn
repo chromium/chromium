@@ -5,7 +5,5 @@
 import("//build/toolchain/win/midl.gni")
 
 midl("google_update") {
-  sources = [
-    "google_update_idl.idl",
-  ]
+  sources = [ "google_update_idl.idl" ]
 }

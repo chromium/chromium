@@ -10,9 +10,9 @@ include_rules = [
   "+sandbox/linux/suid",
   "+sandbox/linux/system_headers",
   "+sandbox/mac",
+  "+sandbox/policy",
   "+sandbox/sandbox_buildflags.h",
   "+sandbox/win/src",
-  "+services/service_manager/sandbox",
   "+ppapi/c",  # header files only
 
   "+mojo/core/embedder",

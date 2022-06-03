@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 
+#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 
@@ -18,21 +19,21 @@ const char kInvalidationsFCMAppId[] = "com.google.chrome.fcm.invalidations";
 FakeServerInvalidationSender::FakeServerInvalidationSender(
     const std::string& client_id,
     bool self_notify,
-    base::RepeatingCallback<syncer::FCMNetworkHandler*()>
+    base::RepeatingCallback<invalidation::FCMNetworkHandler*()>
         fcm_network_handler_getter)
     : client_id_(client_id),
       self_notify_(self_notify),
       fcm_network_handler_getter_(fcm_network_handler_getter) {}
 
-FakeServerInvalidationSender::~FakeServerInvalidationSender() {}
+FakeServerInvalidationSender::~FakeServerInvalidationSender() = default;
 
 void FakeServerInvalidationSender::OnCommit(
-    const std::string& committer_id,
+    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
-  if (!self_notify_ && client_id_ == committer_id) {
+  if (!self_notify_ && client_id_ == committer_invalidator_client_id) {
     return;
   }
-  syncer::FCMNetworkHandler* fcm_network_handler =
+  invalidation::FCMNetworkHandler* fcm_network_handler =
       fcm_network_handler_getter_.Run();
   // If there is no FCM network handler registered for this profile, there is
   // nothing to do. This could be the case during test Setup phase because the

@@ -7,9 +7,8 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/android/render_widget_host_connector.h"
-#include "content/public/common/input_event_ack_state.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -26,11 +25,15 @@ class NavigationHandle;
 class WebContentsImpl;
 
 // Native class for GestureListenerManagerImpl.
-class GestureListenerManager : public RenderWidgetHostConnector {
+class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
  public:
   GestureListenerManager(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          WebContentsImpl* web_contents);
+
+  GestureListenerManager(const GestureListenerManager&) = delete;
+  GestureListenerManager& operator=(const GestureListenerManager&) = delete;
+
   ~GestureListenerManager() override;
 
   void ResetGestureDetection(JNIEnv* env,
@@ -43,8 +46,10 @@ class GestureListenerManager : public RenderWidgetHostConnector {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jboolean enabled);
+  bool has_listeners_attached() const { return has_listeners_attached_; }
+  void SetHasListenersAttached(JNIEnv* env, jboolean enabled);
   void GestureEventAck(const blink::WebGestureEvent& event,
-                       InputEventAckState ack_result);
+                       blink::mojom::InputEventResultState ack_result);
   void DidStopFlinging();
   bool FilterInputEvent(const blink::WebInputEvent& event);
 
@@ -60,6 +65,7 @@ class GestureListenerManager : public RenderWidgetHostConnector {
                         const float top_shown_pix,
                         bool top_changed);
   void UpdateOnTouchDown();
+  void OnRootScrollOffsetChanged(const gfx::Vector2dF& root_scroll_offset);
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(
@@ -68,6 +74,8 @@ class GestureListenerManager : public RenderWidgetHostConnector {
 
   void OnNavigationFinished(NavigationHandle* navigation_handle);
   void OnRenderProcessGone();
+
+  bool IsScrollInProgressForTesting();
 
  private:
   class ResetScrollObserver;
@@ -81,7 +89,8 @@ class GestureListenerManager : public RenderWidgetHostConnector {
   // A weak reference to the Java GestureListenerManager object.
   JavaObjectWeakGlobalRef java_ref_;
 
-  DISALLOW_COPY_AND_ASSIGN(GestureListenerManager);
+  // True if there is at least one listener attached.
+  bool has_listeners_attached_ = false;
 };
 
 }  // namespace content

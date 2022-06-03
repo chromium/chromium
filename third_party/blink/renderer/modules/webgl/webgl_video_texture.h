@@ -7,10 +7,17 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 
+namespace media {
+class VideoFrame;
+}
+
 namespace blink {
 
+class ExceptionState;
+class ExecutionContext;
 class HTMLVideoElement;
 class VideoFrameMetadata;
+struct WebGLVideoFrameUploadMetadata;
 
 class WebGLVideoTexture final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,14 +30,22 @@ class WebGLVideoTexture final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Get video frame from video frame compositor and bind it to platform
   // texture.
-  VideoFrameMetadata* VideoElementTargetVideoTexture(ExecutionContext*,
-                                                     unsigned,
-                                                     HTMLVideoElement*,
-                                                     ExceptionState&);
+  VideoFrameMetadata* shareVideoImageWEBGL(ExecutionContext*,
+                                           unsigned,
+                                           HTMLVideoElement*,
+                                           ExceptionState&);
+
+  bool releaseVideoImageWEBGL(ExecutionContext*, unsigned, ExceptionState&);
+
+  // Helper method for filling in WebGLVideoFrameUploadMetadata. Will be default
+  // initialized (skipped = false) if the metadata API is disabled.
+  static WebGLVideoFrameUploadMetadata CreateVideoFrameUploadMetadata(
+      const media::VideoFrame* frame,
+      int already_uploaded_id);
 
  private:
   Member<VideoFrameMetadata> current_frame_metadata_;

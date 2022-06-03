@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/test/recording_task_time_observer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace blink {
 namespace scheduler {

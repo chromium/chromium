@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_RENDERER_MEDIA_MEDIA_CAPS_OBSERVER_IMPL_H_
 #define CHROMECAST_RENDERER_MEDIA_MEDIA_CAPS_OBSERVER_IMPL_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "chromecast/common/mojom/media_caps.mojom.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
@@ -21,6 +19,10 @@ class MediaCapsObserverImpl : public mojom::MediaCapsObserver {
  public:
   MediaCapsObserverImpl(mojo::PendingRemote<mojom::MediaCapsObserver>* proxy,
                         SupportedCodecProfileLevelsMemo* supported_profiles);
+
+  MediaCapsObserverImpl(const MediaCapsObserverImpl&) = delete;
+  MediaCapsObserverImpl& operator=(const MediaCapsObserverImpl&) = delete;
+
   ~MediaCapsObserverImpl() override;
 
  private:
@@ -37,8 +39,6 @@ class MediaCapsObserverImpl : public mojom::MediaCapsObserver {
 
   SupportedCodecProfileLevelsMemo* supported_profiles_;
   mojo::Receiver<mojom::MediaCapsObserver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCapsObserverImpl);
 };
 
 }  // namespace media

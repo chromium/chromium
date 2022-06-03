@@ -4,7 +4,7 @@
 
 #include "components/translate/core/browser/translate_download_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/singleton.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/translate_switches.h"
@@ -17,8 +17,8 @@ TranslateDownloadManager* TranslateDownloadManager::GetInstance() {
 }
 
 TranslateDownloadManager::TranslateDownloadManager()
-    : language_list_(new TranslateLanguageList),
-      script_(new TranslateScript) {}
+    : language_list_(std::make_unique<TranslateLanguageList>()),
+      script_(std::make_unique<TranslateScript>()) {}
 
 TranslateDownloadManager::~TranslateDownloadManager() {}
 
@@ -49,7 +49,7 @@ base::Time TranslateDownloadManager::GetSupportedLanguagesLastUpdated() {
 
 // static
 std::string TranslateDownloadManager::GetLanguageCode(
-    const std::string& language) {
+    base::StringPiece language) {
   TranslateLanguageList* language_list = GetInstance()->language_list();
   DCHECK(language_list);
 
@@ -57,8 +57,7 @@ std::string TranslateDownloadManager::GetLanguageCode(
 }
 
 // static
-bool TranslateDownloadManager::IsSupportedLanguage(
-    const std::string& language) {
+bool TranslateDownloadManager::IsSupportedLanguage(base::StringPiece language) {
   TranslateLanguageList* language_list = GetInstance()->language_list();
   DCHECK(language_list);
 
@@ -72,8 +71,8 @@ void TranslateDownloadManager::ClearTranslateScriptForTesting() {
 
 void TranslateDownloadManager::ResetForTesting() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  language_list_.reset(new TranslateLanguageList);
-  script_.reset(new TranslateScript);
+  language_list_ = std::make_unique<TranslateLanguageList>();
+  script_ = std::make_unique<TranslateScript>();
   url_loader_factory_ = nullptr;
 }
 

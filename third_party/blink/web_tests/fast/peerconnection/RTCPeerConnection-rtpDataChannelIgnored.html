@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTCPeerConnection data channel type collison</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+</body>
+<script>
+
+for (const constraint of [{},
+                          // {mandatory: { RtpDataChannels: false }},
+                          {mandatory: { RtpDataChannels: true }},
+                          {optional: [{ RtpDataChannels: false }]},
+                          {optional: [{ RtpDataChannels: true }]},
+                         ]) {
+  promise_test(async t => {
+    var pc = new RTCPeerConnection({}, constraint);
+    t.add_cleanup(() => pc.close());
+    pc.createDataChannel('');
+    offer = await pc.createOffer();
+    assert_regexp_match(offer.sdp, /m=application .* webrtc-datachannel/);
+    assert_equals(offer.sdp.match(/a=rtpmap:\d+ google-data/), null);
+  }, 'Asking for Data Channels with constraint ' + JSON.stringify(constraint) + ' generates SCTP DC offer');
+}
+</script>
+</body>
+</html>

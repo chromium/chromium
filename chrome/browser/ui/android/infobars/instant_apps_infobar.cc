@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/ui/android/infobars/instant_apps_infobar.h>
+#include "chrome/browser/ui/android/infobars/instant_apps_infobar.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -12,12 +12,14 @@
 
 InstantAppsInfoBar::InstantAppsInfoBar(
     std::unique_ptr<InstantAppsInfoBarDelegate> delegate)
-    : ConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 InstantAppsInfoBar::~InstantAppsInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-InstantAppsInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+InstantAppsInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   InstantAppsInfoBarDelegate* delegate =
       static_cast<InstantAppsInfoBarDelegate*>(GetDelegate());
   base::android::ScopedJavaLocalRef<jobject> infobar;

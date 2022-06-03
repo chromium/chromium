@@ -1,0 +1,66 @@
+os: linux
+language: rust
+cache: cargo
+before_cache:
+  - find target/debug -type f -maxdepth 1 -delete
+  - rm -rf target/.rustc_info.json
+  - rm -rf target/debug/examples
+  - rm -rf target/debug/incremental
+  - rm -rf target/tests/target/debug/incremental
+  - rm -rf target/tests/target/debug/deps/{clap*, trybuild*}
+  - rm -rf target/debug/{deps,.fingerpint}/clap*
+  - find target/debug/deps -name "clap*" -exec rm -rf {} +
+  - ls -1 examples/ | sed -e 's/\.rs$//' | xargs -I "{{}}" find target/debug/deps -name "{{}}*" -exec rm -rf {} +
+  - ls -1 tests/ | sed -e 's/\.rs$//' | xargs -I "{{}}" find target/debug/deps -name "{{}}*" -exec rm -rf {} +
+rust: stable
+branches:
+  only:
+    # Always build master & Enable building pull requests.
+    - v2-master
+jobs:
+  allow_failures:
+    - rust: nightly
+    - env:
+        - SHARD=coverage
+  fast_finish: true
+  include:
+    - os: osx
+      rust: 1.36.0
+    - rust: 1.36.0
+    - {}
+    - rust: beta
+    - rust: nightly
+    - env:
+        - SHARD=lint
+      before_script:
+        - rustup component add clippy
+        - rustup component add rustfmt
+      script:
+        - echo "Checking codebase with Clippy release `cargo clippy --version`."
+        - cargo clippy --lib --features "yaml unstable"
+        - cargo clippy --tests --examples --features "yaml unstable"
+        - cargo fmt -- --check
+    - rust: nightly
+      env:
+        - SHARD=bench
+      script:
+        - cargo bench
+    - env:
+        - SHARD=coverage
+      addons:
+        apt:
+          packages:
+            - libssl-dev
+            - cmake
+            - pkg-config
+            - zlib1g-dev
+          update: true
+      before_script:
+        - cargo install cargo-tarpaulin
+      script:
+        - cargo tarpaulin --features "yaml unstable" --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
+script:
+  - cargo test --no-default-features
+  - cargo test --features yaml unstable
+notifications:
+  email: false

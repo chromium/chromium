@@ -6,7 +6,6 @@
 #define COMPONENTS_ASSIST_RANKER_RANKER_MODEL_LOADER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "components/assist_ranker/ranker_model.h"
@@ -47,6 +46,10 @@ class RankerModelLoader {
       std::unique_ptr<assist_ranker::RankerModel>)>;
 
   RankerModelLoader() = default;
+
+  RankerModelLoader(const RankerModelLoader&) = delete;
+  RankerModelLoader& operator=(const RankerModelLoader&) = delete;
+
   virtual ~RankerModelLoader() = default;
   // Call this method periodically to notify the model loader the ranker is
   // actively in use. The user's engagement with the ranked feature is used
@@ -54,9 +57,6 @@ class RankerModelLoader {
   // is pending, this will trigger (subject to retry and frequency limits) a
   // model download attempt.
   virtual void NotifyOfRankerActivity() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RankerModelLoader);
 };
 
 }  // namespace assist_ranker

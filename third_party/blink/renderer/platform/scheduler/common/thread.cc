@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 #include "base/feature_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -14,10 +15,10 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -78,6 +79,9 @@ ThreadCreationParams& ThreadCreationParams::SetSupportsGC(bool gc_enabled) {
 
 std::unique_ptr<Thread> Thread::CreateThread(
     const ThreadCreationParams& params) {
+#if DCHECK_IS_ON()
+  WTF::WillCreateThread();
+#endif
   auto thread = std::make_unique<scheduler::WorkerThread>(params);
   thread->Init();
   return std::move(thread);
@@ -94,16 +98,22 @@ void Thread::CreateAndSetCompositorThread() {
   auto compositor_thread =
       std::make_unique<scheduler::CompositorThread>(params);
   compositor_thread->Init();
-  GetCompositorThread() = std::move(compositor_thread);
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kBlinkCompositorUseDisplayThreadPriority)) {
-    // Chrome OS moves tasks between control groups on thread priority changes.
-    // This is not possible inside the sandbox, so ask the browser to do it.
-    // TODO(spang): Check if we can remove this on non-Chrome OS builds.
-    Platform::Current()->SetDisplayThreadPriority(
-        GetCompositorThread()->ThreadId());
+    compositor_thread->GetTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&base::PlatformThread::CurrentId),
+        base::BindOnce([](base::PlatformThreadId compositor_thread_id) {
+          // Chrome OS moves tasks between control groups on thread priority
+          // changes. This is not possible inside the sandbox, so ask the
+          // browser to do it.
+          Platform::Current()->SetDisplayThreadPriority(compositor_thread_id);
+        }));
   }
+#endif
+
+  GetCompositorThread() = std::move(compositor_thread);
 }
 
 Thread* Thread::Current() {

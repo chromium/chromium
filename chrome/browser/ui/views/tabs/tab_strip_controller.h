@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/range/range.h"
 
 class Tab;
 class TabStrip;
@@ -22,6 +24,7 @@ class Point;
 }
 
 namespace tab_groups {
+enum class TabGroupColorId;
 class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
@@ -79,17 +82,30 @@ class TabStripController {
   virtual bool BeforeCloseTab(int index, CloseTabSource source) = 0;
 
   // Closes the tab at the specified index in the model.
-  virtual void CloseTab(int index, CloseTabSource source) = 0;
+  virtual void CloseTab(int index) = 0;
 
-  // Ungroups the tabs at the specified index in the model.
-  virtual void UngroupAllTabsInGroup(tab_groups::TabGroupId group) = 0;
+  // Adds a tab to an existing tab group.
+  virtual void AddTabToGroup(int model_index,
+                             const tab_groups::TabGroupId& group) = 0;
 
-  // Adds a new tab to end of the tab group.
-  virtual void AddNewTabInGroup(tab_groups::TabGroupId group) = 0;
+  // Removes a tab from its tab group.
+  virtual void RemoveTabFromGroup(int model_index) = 0;
 
   // Moves the tab at |start_index| so that it is now at |final_index|, sliding
   // any tabs in between left or right as appropriate.
   virtual void MoveTab(int start_index, int final_index) = 0;
+
+  // Moves all the tabs in |group| so that it is now at |final_index|, sliding
+  // any tabs in between left or right as appropriate.
+  virtual void MoveGroup(const tab_groups::TabGroupId& group,
+                         int final_index) = 0;
+
+  // Switches the collapsed state of a tab group. Returns false if the state was
+  // not successfully switched.
+  virtual bool ToggleTabGroupCollapsedState(
+      const tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin =
+          ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
@@ -111,13 +127,12 @@ class TabStripController {
   // Creates a new tab, and loads |location| in the tab. If |location| is a
   // valid URL, then simply loads the URL, otherwise this can open a
   // search-result page for |location|.
-  virtual void CreateNewTabWithLocation(const base::string16& location) = 0;
-
-  // Invoked if the stacked layout (on or off) might have changed.
-  virtual void StackedLayoutMaybeChanged() = 0;
+  virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
 
   // Notifies controller that the user started dragging this tabstrip's tabs.
-  virtual void OnStartedDragging() = 0;
+  // |dragging_window| indicates if the whole window is moving, or if tabs are
+  // moving within a window.
+  virtual void OnStartedDragging(bool dragging_window) = 0;
 
   // Notifies controller that the user stopped dragging this tabstrip's tabs.
   // This is also called when the tabs that the user is dragging were detached
@@ -126,19 +141,48 @@ class TabStripController {
 
   // Notifies controller that the index of the tab with keyboard focus changed
   // to |index|.
-  virtual void OnKeyboardFocusedTabChanged(base::Optional<int> index) = 0;
+  virtual void OnKeyboardFocusedTabChanged(absl::optional<int> index) = 0;
 
-  // Returns the tab_groups::TabGroupVisualData instance for the given |group|.
-  virtual const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
-      tab_groups::TabGroupId group) const = 0;
+  // Returns the title of the given |group|.
+  virtual std::u16string GetGroupTitle(
+      const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the string describing the contents of the given |group|.
+  virtual std::u16string GetGroupContentString(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the color ID of the given |group|.
+  virtual tab_groups::TabGroupColorId GetGroupColorId(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the |group| collapsed state. Returns false if the group does not
+  // exist or is not collapsed.
+  virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
+
+  // Sets the title and color ID of the given |group|.
   virtual void SetVisualDataForGroup(
-      tab_groups::TabGroupId group,
-      tab_groups::TabGroupVisualData visual_data) = 0;
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data) = 0;
 
-  // Returns the list of tabs in the given |group|.
-  virtual std::vector<int> ListTabsInGroup(
-      tab_groups::TabGroupId group) const = 0;
+  // Gets the first tab index in |group|, or nullopt if the group is
+  // currently empty. This is always safe to call unlike
+  // ListTabsInGroup().
+  virtual absl::optional<int> GetFirstTabInGroup(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Gets the last tab index in |group|, or nullopt if the group is
+  // currently empty. This is always safe to call unlike
+  // ListTabsInGroup().
+  virtual absl::optional<int> GetLastTabInGroup(
+      const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the range of tabs in the given |group|. This must not be
+  // called during intermediate states where the group is not
+  // contiguous. For example, if tabs elsewhere in the tab strip are
+  // being moved into |group| it may not be contiguous; this method
+  // cannot be called.
+  virtual gfx::Range ListTabsInGroup(
+      const tab_groups::TabGroupId& group) const = 0;
 
   // Determines whether the top frame is condensed vertically, as when the
   // window is maximized. If true, the top frame is just the height of a tab,
@@ -171,11 +215,11 @@ class TabStripController {
 
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
-  virtual base::Optional<int> GetCustomBackgroundId(
+  virtual absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name.
-  virtual base::string16 GetAccessibleTabName(const Tab* tab) const = 0;
+  virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
   // Returns the profile associated with the Tabstrip.
   virtual Profile* GetProfile() const = 0;

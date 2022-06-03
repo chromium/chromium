@@ -22,6 +22,10 @@ public interface GestureListenerManager {
 
     /**
      * Add a listener that gets alerted on gesture state changes.
+     *
+     * WARNING: attaching a listener results in extra IPC that impacts rendering performance. Only
+     * attach listeners when absolutely necessary and remove as soon as possible.
+     *
      * @param listener Listener to add.
      */
     void addListener(GestureStateListener listener);

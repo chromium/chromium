@@ -15,10 +15,6 @@ import os
 import sys
 import re
 
-ASSERT = """
-assertNotReached('Interface file for Closure Compiler should not be executed.');
-"""
-
 class JsInterfaceGenerator(object):
   def Generate(self, namespace):
     return _Generator(namespace).Generate()
@@ -60,11 +56,10 @@ class _Generator(object):
   def _GetHeader(self, tool, namespace):
     """Returns the file header text.
     """
-    return (self._js_util.GetLicense() + '\n' +
-            self._js_util.GetInfo(tool) + '\n' +
-            ('/** @fileoverview Interface for %s that can be overriden. */' %
-             namespace) + '\n' +
-            ASSERT);
+    return (
+        self._js_util.GetLicense() + '\n' + self._js_util.GetInfo(tool) + '\n' +
+        ('/** @fileoverview Interface for %s that can be overriden. */' %
+         namespace))
 
   def _AppendInterfaceObject(self, c):
     """Appends the code creating the interface object.
@@ -81,8 +76,20 @@ class _Generator(object):
     if function.deprecated:
       return
 
+    def getParamNames(f):
+      names = []
+      for param in f.params:
+        names.append(param.name)
+      # TODO(https://crbug.com/1142991) Update this to represent promises
+      # better, rather than just appended as a callback param.
+      if f.returns_async:
+        names.append(f.returns_async.name)
+      return names
+
     self._js_util.AppendFunctionJsDoc(c, self._namespace.name, function)
-    c.Append('%s: assertNotReached,' % (function.name))
+
+    c.Append('%s: function(%s) {},' % (function.name, ', '.join(
+        getParamNames(function))))
     c.Append()
 
   def _AppendEvent(self, c, event):

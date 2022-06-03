@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests exception message with empty stack in console contains async stack trace.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.DebuggerAgent.setAsyncCallStackDepth(200);
@@ -17,8 +17,8 @@
     ConsoleTestRunner.expandConsoleMessages(step3);
   }
 
-  function step3() {
-    ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+  async function step3() {
+    await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
     TestRunner.completeTest();
   }
 })();

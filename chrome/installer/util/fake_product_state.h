@@ -15,7 +15,6 @@ class FakeProductState : public ProductState {
  public:
   // Takes ownership of |version|.
   void set_version(base::Version* version) { version_.reset(version); }
-  void set_multi_install(bool multi) { multi_install_ = multi; }
   void set_brand(const std::wstring& brand) { brand_ = brand; }
   void set_usagestats(DWORD usagestats) {
     has_usagestats_ = true;

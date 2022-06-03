@@ -1,115 +1,166 @@
 # Chrome Network Bug Triage
 
-The Chrome network team uses a two day bug triage rotation.  The main goals are
-to identify and label new network bugs, and investigate network bugs when no
-label seems suitable.
+The Chrome network team uses a two day bug triage rotation. The goal is to
+review outstanding issues and keep things moving forward. The rotation is time
+based rather than objective based. Sheriffs are expected to spend the majority
+of their two days working on bug triage/investigation.
+
+## 1. Review untriaged bugs
+
+Look through [this list of untriaged
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=status%3Aunconfirmed%2Cuntriaged%20-Needs%3DFeedback%20-Label%3ANetwork-Triaged%20-has:NextAction%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3ETrustTokens%2CInternals%3ENetwork%3EFTP).
+
+The goal is for this query to be empty. Bugs can be removed from the triage queue
+by doing any of the following:
+
+* Changing the bug status - marking the bug Available, or closing it.
+* Removing the `Internals>Network` component or subcomponent.
+* Adding the label `Network-Triaged` (when there are multiple components).
+
+For each bug try to:
+
+* Remove the `Internals>Network` component or subcomponent if it belongs
+  elsewhere
+* Dupe it against an existing bug
+* Close it as `WontFix`.
+* Give the bug a priority. Refer to [this document for guidelines](https://docs.google.com/document/d/1JOtp1LS7suqTjMuv41jQFc7aCTR33zJKPoGjKpvVFCA)
+* If the bug is a potential security issue (Allows for code execution from remote
+  site, allows crossing security boundaries, unchecked array bounds, etc) mark
+  it `Type-Bug-Security`.
+* If the bug has privacy implications mark it with component `Privacy`.
+* Set the type to `Task` or `Feature` when it is not a bug.
+* Pay extra attention to possible regressions. Ask the reporter to narrow down using
+  [bisect-builds-py](https://www.chromium.org/developers/bisect-builds-py). To
+  view suspicious changelists in a regression window, you can use the Change Log
+  form on [OmahaProxy](https://omahaproxy.appspot.com/)
+* CC others who may be able to help
+* Mark it as `Needs-Feedback` and request more information if needed.
+* In cases where the bug has multiple components, but primary ownership falls
+  outside of networking, further network triage may not be possible. In those
+  cases, if possible remove the networking component. Otherwise, add the
+  `Network-Triaged` label to the bug, and add a comment explaining which team
+  should triage further. Adding the `Network-Triaged` serves to filter the
+  bug from our untriaged bug list.
+* Avoid spending time deep-diving into ambiguous issues when you suspect it is
+  an out of scope server or network problem, and is not clearly high priority
+  (for instance, it affects only 1 user and is not a regression).
+  Instead:
+  * Mark the bug as `Available` with Priority 3.
+  * Add the `Needs-Feedback` label
+  * Add a comment thanking the reporter, but explaining the issue is ambiguous
+    and they need to do the debugging to demonstrate it is an actual Chrome bug.
+    * Point them to `chrome://net-export` and the
+      [NetLog Viewer](https://netlog-viewer.appspot.com/).
+    * Ask them to confirm whether it is a Chromium regression. (Regressions are
+      treated as high priority)
+* Request a NetLog that captures the problem. You can paste this on the bug:
+  ```
+  Please collect and attach a chrome://net-export log.
+  Instructions can be found here:
+  https://chromium.org/for-testers/providing-network-details
+  ```
+* If a NetLog was provided, try to spend a bit of time reviewing it. See
+  [crash-course-in-net-internals.md](crash-course-in-net-internals.md) for an
+  introduction.
+* Move to a subcomponent of `Internals>Network` if appropriate. See
+  [bug-triage-labels.md](bug-triage-labels.md) for an overview of the components.
+* If the bug is a crash, see [internal: Dealing with a crash
+  ID](https://goto.google.com/network_triage_internal#dealing-with-a-crash-id)
+and [internal: Investigating
+crashers](https://goto.google.com/network_triage_internal#investigating-crashers)
+
+## 2. Follow-up on issues with the Needs-Feedback label
+
+Look through [this list of Needs=Feedback
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=-modified%20-modified&q=Needs%3DFeedback%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3ETrustTokens%2CInternals%3ENetwork%3EFTP).
+
+* If the requested feedback was provided, review the new information and repeat
+  the same steps as (1) to re-triage based on the new information.
+* If the bug had the `Needs-Feedback` label for over 30 days, and the
+  feedback needed to make progress was not yet provided, archive the bug.
+
+## 3. Ensure P0 and P1 bugs have an owner
+
+Look through [the list of unowned high priority
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=Pri%3A0%2C1%20-has%3Aowner%20-label%3ANetwork-Triaged%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3ETrustTokens%2CInternals%3ENetwork%3EFTP).
+These bugs should either have an owner, or be downgraded to a lower priority.
+
+## 4. (Optional) Look through crash reports
+
+Top crashes will already be entered into the bug system by a different process,
+so will be handled by the triage steps above.
+
+However if you have time to look through lower threshold crashes, see
+[internal: Looking for new crashers](https://goto.google.com/network_triage_internal#looking-for-new-crashers)
+
+## 5. Send out a sheriff report
+
+On the final day of your rotation, send a brief summary to net-dev@chromium.org
+detailing any interesting or concerning trends. Do not discuss any restricted
+bugs on the public mailing list.
+
+## Covered bug components
+
+Not all of the subcomponents of `Interals>Network` are handled by this rotation.
+
+The ones that are included are:
+
+```
+Internals>Network
+Internals>Network>Auth
+Internals>Network>Cache
+Internals>Network>Connectivity
+Internals>Network>DomainSecurityPolicy
+Internals>Network>FTP
+Internals>Network>HTTP2
+Internals>Network>Library
+Internals>Network>Logging
+Internals>Network>Proxy
+Internals>Network>QUIC
+Internals>Network>SSL
+Internals>Network>TrustTokens
+```
+
+The rest of the `Internals>Network` subcomponents are out of scope,
+and covered by separate rotations:
+
+```
+Internals>Network>Certificate
+Internals>Network>CertTrans
+Internals>Network>Cookies
+Internals>Network>DataProxy
+Internals>Network>DataUse
+Internals>Network>DNS
+Internals>Network>DoH
+Internals>Network>EV
+Internals>Network>NetInfo
+Internals>Network>NetworkQuality
+Internals>Network>ReportingAndNEL
+Internals>Network>VPN
+```
 
 ## Management
 
-Owners for the network bug triage rotation can find instructions on
+* Your rotation will appear in Google Calendar as two days. You are expected to
+  work on it full-time (as best you can) during those calendar days, during your
+  ordinary working hours.
+
+* Google Calendar [google.com_52n2p39ad82hah9v7j26vek830@group.calendar.google.com](https://calendar.google.com/calendar/embed?src=google.com_52n2p39ad82hah9v7j26vek830%40group.calendar.google.com&ctz=America%2FLos_Angeles)
+
+* Owners for the network bug triage rotation can find instructions on
 generating and modifying shifts
 [here (internal-only)](https://goto.google.com/pflvb).
 
-## Responsibilities
+* An overview of bug trends can be seen on [Chromium
+  Dashboard](https://chromiumdash.appspot.com/components/Internals/Network?project=Chromium)
 
-### Required, in rough order of priority:
-* Identify new network bugs on the tracker.
-* Investigate recent `Internals>Network` issues with no subcomponent.
-* Follow up on `Needs-Feedback` issues for all network components.
-* Identify and file bugs for significant new crashers.
+* There is also an [internal dashboard with bug trends for Web
+  Platform](https://goto.google.com/vufyq) that includes network issues.
 
-### Best effort, also in rough priority order:
-* Investigate unowned and owned-but-forgotten net/ crashers.
-* Investigate old bugs.
-* Close obsolete bugs.
+* The issue tracker doesn't track any official mappings between components and
+  OWNERS. This [internal document](https://goto.google.com/kojfj) enumerates
+  the known owners for subcomponents.
 
-All of the above is to be done on each rotation.  These responsibilities should
-be tracked, and anything left undone at the end of a rotation should be handed
-off to the next triager.  The downside to passing along bug investigations like
-this is each new triager has to get back up to speed on bugs the previous
-triager was investigating.  The upside is that triagers don't get stuck
-investigating issues after their time after their rotation, and it results in a
-uniform, predictable two day commitment for all triagers.
+* [Web Platform Team SLOs](https://docs.google.com/document/d/18ylPve6jd43m8B7Dil6xmS4G9MHL2_DhQon72je-O9o/edit)
 
-## Details
-
-### Required:
-
-* Identify new network bugs on the bug tracker, looking at [this issue tracker
-  query](https://bugs.chromium.org/p/chromium/issues/list?q=status%3Aunconfirmed+-commentby=425761728072-pa1bs18esuhp2cp2qfa1u9vb6p1v6kfu@developer.gserviceaccount.com&sort=-id&num=1000).
-
-  * All Unconfirmed issues filed during your triage rotation should be scanned
-    for suspected network bugs, a network component assigned and a
-    chrome://net-export/ log requested.  Suggested text: "Please collect and
-    attach a chrome://net-export log. Instructions can be found here:
-    https://chromium.org/for-testers/providing-network-details".
-    A link to the instructions appears on net-export, for easy reference.
-    When asking for a log or more details, attach the Needs-Feedback label.
-
-  * A triager is responsible for looking at bugs reported from noon PST /
-    3:00 pm EST of the last day of the previous triager's rotation until the
-    same time on the last day of their rotation.
-
-* Investigate [Unconfirmed / Untriaged Internals>Network issues that don't belong to a more specific network component](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component%3DInternals%3ENetwork+status%3AUnconfirmed,Untriaged+-label:Needs-Feedback&sort=-modified),
-  prioritizing the most recent issues, ones with the most responsive reporters,
-  and major crashers.  This will generally take up the majority of your time as
-  triager. Continue digging until you can do one of the following:
-
-    * Mark it as `WontFix` (working as intended, obsolete issue) or a
-      duplicate.
-
-    * Mark it as a feature request.
-
-    * Mark it as `Needs-Feedback`.
-
-    * Remove the `Internals>Network` component, replacing it with at least one
-      more specific network component or non-network component. Replacing the
-      `Internals>Network` component gets it off the next triager's radar, and
-      in front of someone more familiar with the relevant code.  Note that
-      due to the way the bug report wizard works, a lot of bugs incorrectly end
-      up with the network component.
-
-    * The issue is assigned to an appropriate owner.  Make sure to mark it as
-      "assigned" so the next triager doesn't run into it.
-
-    * If there is no more specific component for a bug, it should be
-      investigated by the triager until we have a good understanding of the
-      cause of the problem, and some idea how it should be fixed, at which point
-      its status should be set to Available.  Future triagers should ignore bugs
-      with this status, unless investigating stale bugs.
-
-* Follow up on [Needs-Feedback issues for all components owned by the network stack team](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AInternals%3ENetwork+-component%3AInternals%3ENetwork%3EDataProxy+-component%3AInternals%3ENetwork%3EDataUse+-component%3AInternals%3ENetwork%3EVPN+Needs%3DFeedback&sort=-modified).
-
-    * Remove label once feedback is provided.  Continue to investigate, if
-      the previous section applies.
-
-    * If the `Needs-Feedback` label has been present for one week, ping the
-      reporter.
-
-    * Archive after two weeks with no feedback, telling users to file a new
-      bug if they still have the issue, with the requested information, unless
-      the reporter indicates they'll provide data when they can.  In that case,
-      use your own judgment for further pings or archiving.
-
-* Identify significant new crashes. See [internal documentation](https://goto.google.com/network_triage_internal#looking-for-new-crashers).
-
-### Best Effort (As you have time):
-
-* Investigate old bugs, and bugs associated with `Internals>Network`
-  subcomponents.
-
-* Investigate unowned and owned but forgotten net/ crashers that are still
-  occurring (As indicated by
-  [go/chromenetcrash](https://goto.google.com/chromenetcrash)), prioritizing
-  frequent and long standing crashers.
-
-* Close obsolete bugs.
-
-See [bug-triage-suggested-workflow.md](bug-triage-suggested-workflow.md) for
-suggested workflows.
-
-See [bug-triage-labels.md](bug-triage-labels.md) for labeling tips for network
-and non-network bugs.
-
-See [crash-course-in-net-internals.md](crash-course-in-net-internals.md) for
-some help on getting started with chrome://net-internals debugging.
+* [Web Platform bug triage guidelines](https://docs.google.com/document/d/1JOtp1LS7suqTjMuv41jQFc7aCTR33zJKPoGjKpvVFCA)

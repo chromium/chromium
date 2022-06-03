@@ -40,7 +40,7 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
     if (get_host_arg) {
       std::move(get_host_arg)
           .Run(mojom::HostStatus::kNoEligibleHosts,
-               base::nullopt /* host_device */);
+               absl::nullopt /* host_device */);
     }
   }
 
@@ -87,7 +87,7 @@ bool FakeMultiDeviceSetup::HasAtLeastOneFeatureStateObserver() {
 
 void FakeMultiDeviceSetup::NotifyHostStatusChanged(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDevice>& host_device) {
+    const absl::optional<multidevice::RemoteDevice>& host_device) {
   for (auto& observer : host_status_observers_)
     observer->OnHostStatusChanged(host_status, host_device);
 }
@@ -125,10 +125,12 @@ void FakeMultiDeviceSetup::GetEligibleActiveHostDevices(
   get_eligible_active_hosts_args_.push_back(std::move(callback));
 }
 
-void FakeMultiDeviceSetup::SetHostDevice(const std::string& host_device_id,
-                                         const std::string& auth_token,
-                                         SetHostDeviceCallback callback) {
-  set_host_args_.emplace_back(host_device_id, auth_token, std::move(callback));
+void FakeMultiDeviceSetup::SetHostDevice(
+    const std::string& host_instance_id_or_legacy_device_id,
+    const std::string& auth_token,
+    SetHostDeviceCallback callback) {
+  set_host_args_.emplace_back(host_instance_id_or_legacy_device_id, auth_token,
+                              std::move(callback));
 }
 
 void FakeMultiDeviceSetup::RemoveHostDevice() {
@@ -142,7 +144,7 @@ void FakeMultiDeviceSetup::GetHostStatus(GetHostStatusCallback callback) {
 void FakeMultiDeviceSetup::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const base::Optional<std::string>& auth_token,
+    const absl::optional<std::string>& auth_token,
     SetFeatureEnabledStateCallback callback) {
   set_feature_enabled_args_.emplace_back(feature, enabled, auth_token,
                                          std::move(callback));
@@ -163,9 +165,10 @@ void FakeMultiDeviceSetup::TriggerEventForDebugging(
 }
 
 void FakeMultiDeviceSetup::SetHostDeviceWithoutAuthToken(
-    const std::string& host_device_id,
+    const std::string& host_instance_id_or_legacy_device_id,
     mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) {
-  set_host_without_auth_args_.emplace_back(host_device_id, std::move(callback));
+  set_host_without_auth_args_.emplace_back(host_instance_id_or_legacy_device_id,
+                                           std::move(callback));
 }
 
 }  // namespace multidevice_setup

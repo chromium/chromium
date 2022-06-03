@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames. Bug 64995\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <p>Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames.
@@ -31,15 +31,15 @@
 
     var breakpointFunctionFrame = null;
 
-    function didShowScriptSource(sourceFrame) {
+    async function didShowScriptSource(sourceFrame) {
       breakpointFunctionFrame = sourceFrame;
       TestRunner.addResult('Script source was shown.');
-      SourcesTestRunner.setBreakpoint(sourceFrame, 21, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 21, '', true);
       SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
     }
 
-    function didPause(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function didPause(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.removeBreakpoint(breakpointFunctionFrame, 21);
       next();
     }

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the "style" attribute removal results in the Styles sidebar pane update (not a crash). Bug 51478\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="color: red"></div>
@@ -13,16 +13,16 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
 
-  function step1(node) {
+  async function step1(node) {
     TestRunner.addResult('Before style property removal:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     node.removeAttribute('style');
     ElementsTestRunner.waitForStyles('inspected', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('After style property removal:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

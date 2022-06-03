@@ -37,24 +37,6 @@ void WontCompile() {
   span<int, 1> span(array);
 }
 
-#elif defined(NCTEST_SPAN_FROM_STD_ARRAY_WITH_NON_MATCHING_STATIC_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 2>'"]
-
-// A span with static extent constructed from std::array must match the size of
-// the array.
-void WontCompile() {
-  std::array<int, 3> array = {1, 2, 3};
-  span<int, 2> span(array);
-}
-
-#elif defined(NCTEST_SPAN_FROM_CONST_STD_ARRAY_WITH_NON_MATCHING_STATIC_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<const int, 2>'"]
-
-// A span with static extent constructed from std::array must match the size of
-// the array.
-void WontCompile() {
-  const std::array<int, 3> array = {1, 2, 3};
-  span<const int, 2> span(array);
-}
-
 #elif defined(NCTEST_SPAN_FROM_OTHER_SPAN_WITH_MISMATCHING_EXTENT_DISALLOWED) // [r"fatal error: no matching constructor for initialization of 'span<int, 4>'"]
 
 // A span with static extent constructed from another span must match the
@@ -118,6 +100,22 @@ void WontCompile() {
 void WontCompile() {
   std::vector<int> v = {1, 2, 3};
   span<int, 3> span = v;
+}
+
+#elif defined(NCTEST_STD_SET_ITER_SIZE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
+
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  span<int> span(set.begin(), 0);
+}
+
+#elif defined(NCTEST_STD_SET_ITER_ITER_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
+
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  span<int> span(set.begin(), set.end());
 }
 
 #elif defined(NCTEST_STD_SET_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
@@ -206,6 +204,13 @@ void WontCompile() {
   span<uint8_t> bytes = as_writable_bytes(make_span(v));
 }
 
+#elif defined(NCTEST_MAKE_SPAN_FROM_SET_ITER_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<T>'"]
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  auto span = make_span(set.begin(), set.end());
+}
+
 #elif defined(NCTEST_MAKE_SPAN_FROM_SET_CONVERSION_DISALLOWED)  // [r"fatal error: no matching function for call to 'data'"]
 
 // A std::set() should not satisfy the requirements for conversion to a span.
@@ -214,48 +219,33 @@ void WontCompile() {
   auto span = make_span(set);
 }
 
-#elif defined(NCTEST_TUPLE_SIZE_WITH_DYNAMIC_SPAN_DISALLOWED)  // [r"implicit instantiation of undefined template"]
-
-// Invoking std::tuple_size on a dynamically sized span is not allowed.
-size_t WontCompile() {
-  return std::tuple_size<span<int>>::value;
-}
-
-#elif defined(NCTEST_TUPLE_ELEMENT_WITH_DYNAMIC_SPAN_DISALLOWED)  // [r"std::tuple_element<> not supported for base::span<T, dynamic_extent>"]
-
-// Invoking std::tuple_element on a dynamically elementd span is not allowed.
-void WontCompile() {
-  std::tuple_element<0, span<int>>::type value;
-}
-
-#elif defined(NCTEST_TUPLE_ELEMENT_WITH_INDEX_OUT_OF_BOUNDS_DISALLOWED)  // [r"Index out of bounds in std::tuple_element<> \(base::span\)"]
-
-// Invoking std::tuple_element with an out of bound index is not allowed.
-void WontCompile() {
-  std::tuple_element<0, span<int, 0>>::type value;
-}
-
-#elif defined(NCTEST_GET_WITH_DYNAMIC_SPAN_DISALLOWED)  // [r"std::get<> not supported for base::span<T, dynamic_extent>"]
-
-// Invoking std::get on a dynamically elementd span is not allowed.
-int WontCompile() {
-  span<int> s;
-  return std::get<0>(s);
-}
-
-#elif defined(NCTEST_GET_WITH_INDEX_OUT_OF_BOUNDS_DISALLOWED)  // [r"Index out of bounds in std::get<> \(base::span\)"]
-
-// Invoking std::get with an out of bound index is not allowed.
-int WontCompile() {
-  span<int, 0> s;
-  return std::get<0>(s);
-}
-
 #elif defined(NCTEST_CONST_VECTOR_DEDUCES_AS_CONST_SPAN)  // [r"fatal error: no viable conversion from 'span<const int, \[...\]>' to 'span<int, \[...\]>'"]
 
 int WontCompile() {
   const std::vector<int> v;
   span<int> s = make_span(v);
+}
+
+#elif defined(NCTEST_STATIC_MAKE_SPAN_FROM_ITER_AND_SIZE_CHECKS)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
+
+// The static make_span<N>(begin, size) should CHECK whether N matches size.
+// This should result in compilation failures when evaluated at compile
+// time.
+int WontCompile() {
+  constexpr StringPiece str = "Foo";
+  // Intentional extent mismatch causing CHECK failure.
+  constexpr auto made_span = make_span<2>(str.begin(), 3);
+}
+
+#elif defined(NCTEST_STATIC_MAKE_SPAN_FROM_ITERS_CHECKS_SIZE)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
+
+// The static make_span<N>(begin, end) should CHECK whether N matches end -
+// begin. This should result in compilation failures when evaluated at compile
+// time.
+int WontCompile() {
+  constexpr StringPiece str = "Foo";
+  // Intentional extent mismatch causing CHECK failure.
+  constexpr auto made_span = make_span<2>(str.begin(), str.end());
 }
 
 #elif defined(NCTEST_STATIC_MAKE_SPAN_CHECKS_SIZE)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
@@ -266,6 +256,15 @@ int WontCompile() {
   constexpr StringPiece str = "Foo";
   // Intentional extent mismatch causing CHECK failure.
   constexpr auto made_span = make_span<2>(str);
+}
+
+#elif defined(NCTEST_EXTENT_NO_DYNAMIC_EXTENT)  // [r"EXTENT should only be used for containers with a static extent"]
+
+// EXTENT should not result in |dynamic_extent|, it should be a compile-time
+// error.
+void WontCompile() {
+  std::vector<uint8_t> vector;
+  static_assert(EXTENT(vector) == 0, "Should not compile");
 }
 
 #endif

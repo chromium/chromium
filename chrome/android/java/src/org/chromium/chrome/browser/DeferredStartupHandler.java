@@ -4,57 +4,41 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.metrics.UmaUtils;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handler for application level tasks to be completed on deferred startup.
  */
 public class DeferredStartupHandler {
-    private static class Holder {
-        @SuppressLint("StaticFieldLeak")
-        private static final DeferredStartupHandler INSTANCE = new DeferredStartupHandler();
-    }
+    private static DeferredStartupHandler sInstance;
 
-    private boolean mDeferredStartupCompletedForApp;
-    private long mDeferredStartupDuration;
-    private long mMaxTaskDuration;
-    private final Context mAppContext;
+    private final Queue<Runnable> mDeferredTasks = new LinkedList<>();
 
-    private final Queue<Runnable> mDeferredTasks;
+    private CountDownLatch mLatchForTesting;
 
     /**
      * This class is an application specific object that handles the deferred startup.
      * @return The singleton instance of {@link DeferredStartupHandler}.
      */
     public static DeferredStartupHandler getInstance() {
-        return sDeferredStartupHandler == null ? Holder.INSTANCE : sDeferredStartupHandler;
+        ThreadUtils.assertOnUiThread();
+        if (sInstance == null) sInstance = new DeferredStartupHandler();
+        return sInstance;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTests(DeferredStartupHandler handler) {
-        sDeferredStartupHandler = handler;
+        sInstance = handler;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private static DeferredStartupHandler sDeferredStartupHandler;
-
-    protected DeferredStartupHandler() {
-        mAppContext = ContextUtils.getApplicationContext();
-        mDeferredTasks = new LinkedList<>();
-    }
+    protected DeferredStartupHandler() {}
 
     /**
      * Add the idle handler which will run deferred startup tasks in sequence when idle. This can
@@ -62,38 +46,22 @@ public class DeferredStartupHandler {
      * tasks.
      */
     public void queueDeferredTasksOnIdleHandler() {
-        mMaxTaskDuration = 0;
-        mDeferredStartupDuration = 0;
+        ThreadUtils.assertOnUiThread();
+        // Adding multiple IdleHandlers is okay - they'll remove themselves once the queue is empty.
         Looper.myQueue().addIdleHandler(() -> {
             Runnable currentTask = mDeferredTasks.poll();
-            if (currentTask == null) {
-                if (!mDeferredStartupCompletedForApp) {
-                    mDeferredStartupCompletedForApp = true;
-                    recordDeferredStartupStats();
-                }
+            if (currentTask != null) currentTask.run();
+            if (mDeferredTasks.isEmpty()) {
+                if (mLatchForTesting != null) mLatchForTesting.countDown();
+                if (sInstance == DeferredStartupHandler.this) sInstance = null;
                 return false;
             }
-
-            long startTime = SystemClock.uptimeMillis();
-            currentTask.run();
-            long timeTaken = SystemClock.uptimeMillis() - startTime;
-
-            mMaxTaskDuration = Math.max(mMaxTaskDuration, timeTaken);
-            mDeferredStartupDuration += timeTaken;
+            // Pump the queue so we get called back if the queue is still idle.
+            // Note that we can't simply check myQueue().isIdle() as this will continue to return
+            // true even if native tasks are queued up (until we return control to the Looper).
+            new Handler().post(() -> {});
             return true;
         });
-    }
-
-    private void recordDeferredStartupStats() {
-        RecordHistogram.recordLongTimesHistogram(
-                "UMA.Debug.EnableCrashUpload.DeferredStartUpDuration", mDeferredStartupDuration);
-        RecordHistogram.recordLongTimesHistogram(
-                "UMA.Debug.EnableCrashUpload.DeferredStartUpMaxTaskDuration", mMaxTaskDuration);
-        if (UmaUtils.hasComeToForeground()) {
-            RecordHistogram.recordLongTimesHistogram(
-                    "UMA.Debug.EnableCrashUpload.DeferredStartUpCompleteTime",
-                    SystemClock.uptimeMillis() - UmaUtils.getForegroundStartTicks());
-        }
     }
 
     /**
@@ -108,10 +76,28 @@ public class DeferredStartupHandler {
     }
 
     /**
-     * @return Whether deferred startup has been completed.
+     * Avoid using CriteriaHelper for waiting for deferred tasks to complete, as the act of polling
+     * can prevent the Looper from going idle, preventing the tasks from running.
+     *
+     * You should wait until the activity has posted its deferred startup tasks before calling this
+     * function to avoid races.
+     *
+     * @return Whether deferred startup has been completed before the timeout expires.
      */
-    @VisibleForTesting
-    public boolean isDeferredStartupCompleteForApp() {
-        return mDeferredStartupCompletedForApp;
+    public static boolean waitForDeferredStartupCompleteForTesting(long timeoutMillis) {
+        ThreadUtils.assertOnBackgroundThread();
+        // sInstance could become null while executing this function, so keep a ref here.
+        DeferredStartupHandler instance = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            if (sInstance != null) sInstance.mLatchForTesting = new CountDownLatch(1);
+            return sInstance;
+        });
+        // Tasks completed and instance was cleared before we started waiting.
+        if (instance == null) return true;
+        assert instance.mLatchForTesting != null;
+        try {
+            return instance.mLatchForTesting.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 }

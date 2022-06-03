@@ -6,7 +6,6 @@
 #define BASE_SYSTEM_SYSTEM_MONITOR_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
@@ -28,6 +27,10 @@ class BASE_EXPORT SystemMonitor {
   // Create SystemMonitor. Only one SystemMonitor instance per application
   // is allowed.
   SystemMonitor();
+
+  SystemMonitor(const SystemMonitor&) = delete;
+  SystemMonitor& operator=(const SystemMonitor&) = delete;
+
   ~SystemMonitor();
 
   // Get the application-wide SystemMonitor (if not present, returns NULL).
@@ -66,8 +69,6 @@ class BASE_EXPORT SystemMonitor {
 
   scoped_refptr<ObserverListThreadSafe<DevicesChangedObserver>>
       devices_changed_observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMonitor);
 };
 
 }  // namespace base

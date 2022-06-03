@@ -5,16 +5,16 @@
 #include "chrome/chrome_cleaner/logging/cleaner_logging_service.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -115,28 +115,28 @@ constexpr net::NetworkTrafficAnnotationTag kCleanerReportTrafficAnnotation =
 void ProtoObjectToFileInformation(const FileInformation& proto_file_information,
                                   internal::FileInformation* file_information) {
   DCHECK(file_information);
-  file_information->path = base::UTF8ToUTF16(proto_file_information.path());
+  file_information->path = base::UTF8ToWide(proto_file_information.path());
   file_information->creation_date = proto_file_information.creation_date();
   file_information->last_modified_date =
       proto_file_information.last_modified_date();
   file_information->sha256 = proto_file_information.sha256();
   file_information->size = proto_file_information.size();
   file_information->company_name =
-      base::UTF8ToUTF16(proto_file_information.company_name());
+      base::UTF8ToWide(proto_file_information.company_name());
   file_information->company_short_name =
-      base::UTF8ToUTF16(proto_file_information.company_short_name());
+      base::UTF8ToWide(proto_file_information.company_short_name());
   file_information->product_name =
-      base::UTF8ToUTF16(proto_file_information.product_name());
+      base::UTF8ToWide(proto_file_information.product_name());
   file_information->product_short_name =
-      base::UTF8ToUTF16(proto_file_information.product_short_name());
+      base::UTF8ToWide(proto_file_information.product_short_name());
   file_information->internal_name =
-      base::UTF8ToUTF16(proto_file_information.internal_name());
+      base::UTF8ToWide(proto_file_information.internal_name());
   file_information->original_filename =
-      base::UTF8ToUTF16(proto_file_information.original_filename());
+      base::UTF8ToWide(proto_file_information.original_filename());
   file_information->file_description =
-      base::UTF8ToUTF16(proto_file_information.file_description());
+      base::UTF8ToWide(proto_file_information.file_description());
   file_information->file_version =
-      base::UTF8ToUTF16(proto_file_information.file_version());
+      base::UTF8ToWide(proto_file_information.file_version());
   file_information->active_file = proto_file_information.active_file();
 }
 
@@ -184,7 +184,7 @@ void AppendScheduledTask(const ScheduledTask& scheduled_task,
   MessageBuilder::ScopedIndent scoped_indent_2(builder);
   builder->AddHeaderLine(L"Actions");
   for (auto action : scheduled_task.actions()) {
-    MessageBuilder::ScopedIndent scoped_indent(builder);
+    MessageBuilder::ScopedIndent scoped_indent_3(builder);
     builder->Add(L"File information: ");
     AppendFileInformation(action.file_information(), builder);
     builder->NewLine();
@@ -264,10 +264,10 @@ void CleanerLoggingService::Initialize(RegistryLogger* registry_logger) {
 
   const bool post_reboot = Rebooter::IsPostReboot();
 
-  std::vector<base::string16> languages;
+  std::vector<std::wstring> languages;
   base::win::i18n::GetUserPreferredUILanguageList(&languages);
 
-  base::string16 chrome_version_string;
+  std::wstring chrome_version_string;
   bool chrome_version_string_succeeded =
       RetrieveChromeVersionAndInstalledDomain(&chrome_version_string, nullptr);
 
@@ -411,7 +411,7 @@ void CleanerLoggingService::EnableUploads(bool enable,
   // Make sure not to keep any scheduled logs upload if the user opts-out of
   // logs upload. TODO(csharp): maybe we should also clear all other pending
   // logs, not just ours.
-  if (!enable)
+  if (!enable && registry_logger)
     ClearTempLogFile(registry_logger);
 }
 
@@ -468,7 +468,7 @@ void CleanerLoggingService::SetExitCode(ResultCode exit_code) {
 }
 
 void CleanerLoggingService::AddLoadedModule(
-    const base::string16& name,
+    const std::wstring& name,
     ModuleHost module_host,
     const internal::FileInformation& file_information) {
   FileInformation reported_file_information;
@@ -477,14 +477,14 @@ void CleanerLoggingService::AddLoadedModule(
   base::AutoLock lock(lock_);
   ChromeCleanerReport::SystemReport::LoadedModule* loaded_module =
       chrome_cleaner_report_.mutable_system_report()->add_loaded_modules();
-  loaded_module->set_name(base::UTF16ToUTF8(name));
+  loaded_module->set_name(base::WideToUTF8(name));
   loaded_module->set_host(module_host);
   *loaded_module->mutable_file_information() = reported_file_information;
 }
 
 void CleanerLoggingService::AddService(
-    const base::string16& display_name,
-    const base::string16& service_name,
+    const std::wstring& display_name,
+    const std::wstring& service_name,
     const internal::FileInformation& file_information) {
   FileInformation reported_file_information;
   FileInformationToProtoObject(file_information, &reported_file_information);
@@ -492,8 +492,8 @@ void CleanerLoggingService::AddService(
   base::AutoLock lock(lock_);
   ChromeCleanerReport::SystemReport::Service* service =
       chrome_cleaner_report_.mutable_system_report()->add_services();
-  service->set_display_name(base::UTF16ToUTF8(display_name));
-  service->set_service_name(base::UTF16ToUTF8(service_name));
+  service->set_display_name(base::WideToUTF8(display_name));
+  service->set_service_name(base::WideToUTF8(service_name));
   *service->mutable_file_information() = reported_file_information;
 }
 
@@ -510,7 +510,7 @@ void CleanerLoggingService::AddInstalledProgram(
 }
 
 void CleanerLoggingService::AddProcess(
-    const base::string16& name,
+    const std::wstring& name,
     const internal::FileInformation& file_information) {
   FileInformation reported_file_information;
   FileInformationToProtoObject(file_information, &reported_file_information);
@@ -518,7 +518,7 @@ void CleanerLoggingService::AddProcess(
   base::AutoLock lock(lock_);
   ChromeCleanerReport::SystemReport::Process* process =
       chrome_cleaner_report_.mutable_system_report()->add_processes();
-  process->set_name(base::UTF16ToUTF8(name));
+  process->set_name(base::WideToUTF8(name));
   *process->mutable_file_information() = reported_file_information;
 }
 
@@ -526,10 +526,10 @@ void CleanerLoggingService::AddRegistryValue(
     const internal::RegistryValue& registry_value,
     const std::vector<internal::FileInformation>& file_informations) {
   RegistryValue new_registry_value;
-  new_registry_value.set_key_path(base::UTF16ToUTF8(registry_value.key_path));
+  new_registry_value.set_key_path(base::WideToUTF8(registry_value.key_path));
   new_registry_value.set_value_name(
-      base::UTF16ToUTF8(registry_value.value_name));
-  new_registry_value.set_data(base::UTF16ToUTF8(registry_value.data));
+      base::WideToUTF8(registry_value.value_name));
+  new_registry_value.set_data(base::WideToUTF8(registry_value.data));
 
   for (const auto& file_information : file_informations) {
     FileInformation* reported_file_information =
@@ -543,7 +543,7 @@ void CleanerLoggingService::AddRegistryValue(
 }
 
 void CleanerLoggingService::AddLayeredServiceProvider(
-    const std::vector<base::string16>& guids,
+    const std::vector<std::wstring>& guids,
     const internal::FileInformation& file_information) {
   ChromeCleanerReport_SystemReport_LayeredServiceProvider
       layered_service_provider;
@@ -552,7 +552,7 @@ void CleanerLoggingService::AddLayeredServiceProvider(
   FileInformationToProtoObject(file_information, reported_file_information);
 
   for (const auto& guid : guids)
-    layered_service_provider.add_guids(base::UTF16ToUTF8(guid));
+    layered_service_provider.add_guids(base::WideToUTF8(guid));
 
   base::AutoLock lock(lock_);
   *chrome_cleaner_report_.mutable_system_report()
@@ -560,41 +560,41 @@ void CleanerLoggingService::AddLayeredServiceProvider(
 }
 
 void CleanerLoggingService::SetWinInetProxySettings(
-    const base::string16& config,
-    const base::string16& bypass,
-    const base::string16& auto_config_url,
+    const std::wstring& config,
+    const std::wstring& bypass,
+    const std::wstring& auto_config_url,
     bool autodetect) {
   base::AutoLock lock(lock_);
   ChromeCleanerReport_SystemReport_SystemProxySettings*
       win_inet_proxy_settings = chrome_cleaner_report_.mutable_system_report()
                                     ->mutable_win_inet_proxy_settings();
-  win_inet_proxy_settings->set_config(base::UTF16ToUTF8(config));
-  win_inet_proxy_settings->set_bypass(base::UTF16ToUTF8(bypass));
+  win_inet_proxy_settings->set_config(base::WideToUTF8(config));
+  win_inet_proxy_settings->set_bypass(base::WideToUTF8(bypass));
   win_inet_proxy_settings->set_auto_config_url(
-      base::UTF16ToUTF8(auto_config_url));
+      base::WideToUTF8(auto_config_url));
   win_inet_proxy_settings->set_autodetect(autodetect);
 }
 
 void CleanerLoggingService::SetWinHttpProxySettings(
-    const base::string16& config,
-    const base::string16& bypass) {
+    const std::wstring& config,
+    const std::wstring& bypass) {
   base::AutoLock lock(lock_);
   ChromeCleanerReport_SystemReport_SystemProxySettings*
       win_http_proxy_settings = chrome_cleaner_report_.mutable_system_report()
                                     ->mutable_win_http_proxy_settings();
-  win_http_proxy_settings->set_config(base::UTF16ToUTF8(config));
-  win_http_proxy_settings->set_bypass(base::UTF16ToUTF8(bypass));
+  win_http_proxy_settings->set_config(base::WideToUTF8(config));
+  win_http_proxy_settings->set_bypass(base::WideToUTF8(bypass));
 }
 
 void CleanerLoggingService::AddInstalledExtension(
-    const base::string16& extension_id,
+    const std::wstring& extension_id,
     ExtensionInstallMethod install_method,
     const std::vector<internal::FileInformation>& extension_files) {
   base::AutoLock lock(lock_);
   ChromeCleanerReport_SystemReport_InstalledExtension* installed_extension =
       chrome_cleaner_report_.mutable_system_report()
           ->add_installed_extensions();
-  installed_extension->set_extension_id(base::UTF16ToUTF8(extension_id));
+  installed_extension->set_extension_id(base::WideToUTF8(extension_id));
   installed_extension->set_install_method(install_method);
   for (const auto& file : extension_files) {
     FileInformation proto_file_information;
@@ -604,12 +604,12 @@ void CleanerLoggingService::AddInstalledExtension(
 }
 
 void CleanerLoggingService::AddScheduledTask(
-    const base::string16& name,
-    const base::string16& description,
+    const std::wstring& name,
+    const std::wstring& description,
     const std::vector<internal::FileInformation>& actions) {
   ScheduledTask scheduled_task;
-  scheduled_task.set_name(base::UTF16ToUTF8(name));
-  scheduled_task.set_description(base::UTF16ToUTF8(description));
+  scheduled_task.set_name(base::WideToUTF8(name));
+  scheduled_task.set_description(base::WideToUTF8(description));
 
   for (const auto& action : actions) {
     FileInformation* reported_action =
@@ -623,18 +623,18 @@ void CleanerLoggingService::AddScheduledTask(
 }
 
 void CleanerLoggingService::AddShortcutData(
-    const base::string16& lnk_path,
-    const base::string16& executable_path,
+    const std::wstring& lnk_path,
+    const std::wstring& executable_path,
     const std::string& executable_hash,
-    const std::vector<base::string16>& command_line_arguments) {
+    const std::vector<std::wstring>& command_line_arguments) {
   base::AutoLock lock(lock_);
   ChromeCleanerReport_SystemReport_ShortcutData* shortcut_data =
       chrome_cleaner_report_.mutable_system_report()->add_shortcut_data();
-  shortcut_data->set_lnk_path(base::UTF16ToUTF8(lnk_path));
-  shortcut_data->set_executable_path(base::UTF16ToUTF8(executable_path));
+  shortcut_data->set_lnk_path(base::WideToUTF8(lnk_path));
+  shortcut_data->set_executable_path(base::WideToUTF8(executable_path));
   shortcut_data->set_executable_hash(executable_hash);
   for (const auto& argument : command_line_arguments) {
-    shortcut_data->add_command_line_arguments(base::UTF16ToUTF8(argument));
+    shortcut_data->add_command_line_arguments(base::WideToUTF8(argument));
   }
 }
 
@@ -662,8 +662,8 @@ bool CleanerLoggingService::AllExpectedRemovalsConfirmed() const {
     if (uws.state() != UwS::REMOVABLE)
       continue;
     for (const MatchedFile& file : uws.files()) {
-      base::string16 sanitized_path =
-          base::UTF8ToUTF16(file.file_information().path());
+      std::wstring sanitized_path =
+          base::UTF8ToWide(file.file_information().path());
       RemovalStatus removal_status =
           status_updater->GetRemovalStatusOfSanitizedPath(sanitized_path);
 
@@ -853,7 +853,7 @@ void CleanerLoggingService::UpdateMatchedFilesAndFoldersMaps(UwS* added_uws) {
 void CleanerLoggingService::UpdateFileRemovalStatuses() {
   for (const auto& path_and_status :
        FileRemovalStatusUpdater::GetInstance()->GetAllRemovalStatuses()) {
-    std::string sanitized_path = base::UTF16ToUTF8(path_and_status.first);
+    std::string sanitized_path = base::WideToUTF8(path_and_status.first);
     FileRemovalStatusUpdater::FileRemovalStatus status = path_and_status.second;
     DCHECK(status.removal_status != REMOVAL_STATUS_UNSPECIFIED);
 

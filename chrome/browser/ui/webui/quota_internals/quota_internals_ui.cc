@@ -9,11 +9,14 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/quota_internals_resources.h"
+#include "chrome/grit/quota_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 using content::WebContents;
 
@@ -22,13 +25,13 @@ namespace {
 content::WebUIDataSource* CreateQuotaInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIQuotaInternalsHost);
-
   source->UseStringsJs();
-  source->AddResourcePath(
-      "event_handler.js", IDR_QUOTA_INTERNALS_EVENT_HANDLER_JS);
-  source->AddResourcePath(
-      "message_dispatcher.js", IDR_QUOTA_INTERNALS_MESSAGE_DISPATCHER_JS);
-  source->SetDefaultResource(IDR_QUOTA_INTERNALS_MAIN_HTML);
+  source->AddResourcePaths(
+      base::make_span(kQuotaInternalsResources, kQuotaInternalsResourcesSize));
+  source->AddResourcePath("", IDR_QUOTA_INTERNALS_MAIN_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   return source;
 }
 

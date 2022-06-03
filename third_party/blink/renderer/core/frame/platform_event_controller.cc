@@ -4,16 +4,17 @@
 
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
-PlatformEventController::PlatformEventController(Document* document)
-    : PageVisibilityObserver(document ? document->GetPage() : nullptr),
+PlatformEventController::PlatformEventController(LocalDOMWindow& window)
+    : PageVisibilityObserver(window.GetFrame()->GetPage()),
       has_event_listener_(false),
       is_active_(false),
-      document_(document) {}
+      window_(window) {}
 
 PlatformEventController::~PlatformEventController() = default;
 
@@ -23,12 +24,12 @@ void PlatformEventController::UpdateCallback() {
 }
 
 void PlatformEventController::StartUpdating() {
-  if (is_active_ || !document_)
+  if (is_active_ || !window_)
     return;
 
   if (HasLastData() && !update_callback_handle_.IsActive()) {
     update_callback_handle_ = PostCancellableTask(
-        *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+        *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
         WTF::Bind(&PlatformEventController::UpdateCallback,
                   WrapWeakPersistent(this)));
   }
@@ -56,8 +57,8 @@ void PlatformEventController::PageVisibilityChanged() {
     StopUpdating();
 }
 
-void PlatformEventController::Trace(blink::Visitor* visitor) {
-  visitor->Trace(document_);
+void PlatformEventController::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
   PageVisibilityObserver::Trace(visitor);
 }
 

@@ -9,6 +9,7 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_view_controller.h"
@@ -18,18 +19,16 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/payments/payment_request_edit_view_controller.h"
-#import "ios/chrome/browser/ui/payments/payment_request_error_view_controller.h"
-#import "ios/chrome/browser/ui/payments/payment_request_picker_view_controller.h"
-#import "ios/chrome/browser/ui/payments/payment_request_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
@@ -39,26 +38,25 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
-#import "ios/chrome/browser/ui/settings/credit_card_scanner/credit_card_scanner_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/advanced_signin_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/privacy_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_constants.h"
-#import "ios/chrome/browser/ui/toolbar/keyboard_assist/toolbar_assistive_keyboard_views_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/app/window_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,9 +125,29 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return nil;
 }
 
+UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
+  for (UIWindow* window in UIApplication.sharedApplication.windows) {
+    if ([window.accessibilityIdentifier isEqualToString:accessibility_id])
+      return window;
+  }
+  return nil;
+}
+
 }  // namespace
 
 @implementation ChromeMatchersAppInterface
+
++ (id<GREYMatcher>)windowWithNumber:(int)windowNumber {
+  return grey_allOf(
+      grey_accessibilityID([NSString stringWithFormat:@"%d", windowNumber]),
+      grey_kindOfClass([UIWindow class]), nil);
+}
+
++ (id<GREYMatcher>)blockerWindowWithNumber:(int)windowNumber {
+  return grey_allOf(grey_accessibilityID([NSString
+                        stringWithFormat:@"blocker-%d", windowNumber]),
+                    grey_kindOfClass([UIWindow class]), nil);
+}
 
 + (id<GREYMatcher>)buttonWithAccessibilityLabel:(NSString*)label {
   return grey_allOf(grey_accessibilityLabel(label),
@@ -216,6 +234,12 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                     grey_accessibilityTrait(UIAccessibilityTraitHeader), nil);
 }
 
++ (id<GREYMatcher>)navigationBarTitleWithAccessibilityLabelID:(int)labelID {
+  return grey_allOf(
+      grey_accessibilityID(l10n_util::GetNSStringWithFixup(labelID)),
+      grey_kindOfClass([UINavigationBar class]), nil);
+}
+
 + (id<GREYMatcher>)textFieldForCellWithLabelID:(int)messageID {
   return grey_allOf(grey_accessibilityID([l10n_util::GetNSStringWithFixup(
                         messageID) stringByAppendingString:@"_textField"]),
@@ -249,6 +273,13 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_allOf(
       [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CLOSE)],
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+}
+
++ (id<GREYMatcher>)closeTabMenuButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)],
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)forwardButton {
@@ -305,8 +336,10 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
-      matcherWithMatchesBlock:^BOOL(UITextField* element) {
-        return [element.text containsString:text];
+      matcherWithMatchesBlock:^BOOL(id element) {
+        OmniboxTextFieldIOS* omnibox =
+            base::mac::ObjCCast<OmniboxTextFieldIOS>(element);
+        return [omnibox.text containsString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
         [description
@@ -340,20 +373,33 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_allOf(
       [ChromeMatchersAppInterface
           buttonWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_SHARE)],
+      grey_not([self tabShareButton]), grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabShareButton {
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
+                 grey_accessibilityID(kOmniboxShareButtonIdentifier), nil),
       grey_sufficientlyVisible(), nil);
 }
 
-+ (id<GREYMatcher>)tabletTabSwitcherOpenButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER)];
-}
-
 + (id<GREYMatcher>)showTabsButton {
-  if (IsIPadIdiom()) {
-    return grey_accessibilityID(@"Enter Tab Switcher");
-  }
   return grey_allOf(grey_accessibilityID(kToolbarStackButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)addToReadingListButton {
+  return grey_allOf([ChromeMatchersAppInterface
+                        buttonWithAccessibilityLabelID:
+                            (IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)],
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)addToBookmarksButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS)],
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
@@ -387,26 +433,34 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)];
 }
 
++ (id<GREYMatcher>)openLinkInIncognitoButton {
+  int stringId = IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(stringId)];
+}
+
++ (id<GREYMatcher>)openLinkInNewWindowButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)];
+}
+
 + (id<GREYMatcher>)navigationBarDoneButton {
   return grey_allOf(
       [ChromeMatchersAppInterface
           buttonWithAccessibilityLabelID:(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)],
-      grey_userInteractionEnabled(), nil);
+      grey_userInteractionEnabled(), grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)bookmarksNavigationBarDoneButton {
   return grey_accessibilityID(kBookmarkHomeNavigationBarDoneButtonIdentifier);
 }
 
-+ (id<GREYMatcher>)accountConsistencyConfirmationOKButton {
-  int labelID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:labelID];
-}
-
-+ (id<GREYMatcher>)unifiedConsentAddAccountButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          (IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)];
++ (id<GREYMatcher>)bookmarksNavigationBarBackButton {
+  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+      SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
+                                         GetAnyKeyWindow()));
+  return grey_allOf(grey_buttonTitle(navBar.backItem.title),
+                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+                    nil);
 }
 
 + (id<GREYMatcher>)addAccountButton {
@@ -446,13 +500,22 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kSettingsDoneButtonId);
 }
 
-+ (id<GREYMatcher>)syncSettingsConfirmButton {
-  return grey_accessibilityID(kSyncSettingsConfirmButtonId);
++ (id<GREYMatcher>)autofillCreditCardEditTableView {
+  return grey_accessibilityID(kAutofillCreditCardEditTableViewId);
+}
+
++ (id<GREYMatcher>)addressesAndMoreButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)];
 }
 
 + (id<GREYMatcher>)paymentMethodsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_AUTOFILL_PAYMENT_METHODS)];
+}
+
++ (id<GREYMatcher>)languagesButton {
+  return grey_accessibilityID(kSettingsLanguagesCellId);
 }
 
 + (id<GREYMatcher>)addCreditCardView {
@@ -475,10 +538,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kSettingsAddCreditCardCancelButtonID);
 }
 
-+ (id<GREYMatcher>)creditCardScannerView {
-  return grey_accessibilityID(kCreditCardScannerViewID);
-}
-
 + (id<GREYMatcher>)toolsMenuView {
   return grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
 }
@@ -488,11 +547,13 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 }
 
 + (id<GREYMatcher>)primarySignInButton {
-  return grey_accessibilityID(kSigninPromoPrimaryButtonId);
+  return grey_allOf(grey_accessibilityID(kSigninPromoPrimaryButtonId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)secondarySignInButton {
-  return grey_accessibilityID(kSigninPromoSecondaryButtonId);
+  return grey_allOf(grey_accessibilityID(kSigninPromoSecondaryButtonId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)settingsAccountButton {
@@ -519,41 +580,51 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kPrivacyTableViewId);
 }
 
-+ (id<GREYMatcher>)accountsSyncButton {
-  return grey_allOf(grey_accessibilityID(kSettingsAccountsTableViewSyncCellId),
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)contentSettingsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_SETTINGS_TITLE)];
 }
 
 + (id<GREYMatcher>)googleServicesSettingsButton {
-  NSString* syncAndGoogleServicesTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
-  id<GREYMatcher> mainTextLabelMatcher =
-      grey_allOf(grey_accessibilityLabel(syncAndGoogleServicesTitle),
-                 grey_sufficientlyVisible(), nil);
   return grey_allOf(grey_kindOfClass([UITableViewCell class]),
-                    grey_sufficientlyVisible(),
-                    grey_descendant(mainTextLabelMatcher), nil);
+                    grey_accessibilityID(kSettingsGoogleServicesCellId),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)manageSyncSettingsButton {
+  return grey_allOf(grey_kindOfClass([UITableViewCell class]),
+                    grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)googleServicesSettingsView {
   return grey_accessibilityID(kGoogleServicesSettingsViewIdentifier);
 }
 
++ (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                 grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+}
+
 + (id<GREYMatcher>)settingsMenuBackButton {
   UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+      SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
+                                         GetAnyKeyWindow()));
+  return
+      [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
+}
+
++ (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
+  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
       SubviewWithAccessibilityIdentifier(
-          @"SettingNavigationBar",
-          [[UIApplication sharedApplication] keyWindow]));
-  return grey_allOf(grey_anyOf(grey_accessibilityLabel(navBar.backItem.title),
-                               grey_accessibilityLabel(@"Back"), nil),
-                    grey_kindOfClass([UIButton class]),
-                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-                    nil);
+          @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
+                                       stringWithFormat:@"%d", windowNumber])));
+  return
+      [ChromeMatchersAppInterface settingsMenuBackButton:navBar.backItem.title];
 }
 
 + (id<GREYMatcher>)settingsMenuPrivacyButton {
@@ -567,13 +638,14 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
       buttonWithAccessibilityLabelID:(IDS_IOS_PASSWORDS)];
 }
 
+// TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)paymentRequestView {
-  return grey_accessibilityID(kPaymentRequestCollectionViewID);
+  return nil;
 }
 
-// Returns matcher for the error confirmation view for payment request.
+// TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)paymentRequestErrorView {
-  return grey_accessibilityID(kPaymentRequestErrorCollectionViewID);
+  return nil;
 }
 
 + (id<GREYMatcher>)voiceSearchButton {
@@ -586,7 +658,8 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 }
 
 + (id<GREYMatcher>)settingsCollectionView {
-  return grey_accessibilityID(kSettingsTableViewId);
+  return grey_allOf(grey_accessibilityID(kSettingsTableViewId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)clearBrowsingHistoryButton {
@@ -633,16 +706,27 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kContentSuggestionsCollectionIdentifier);
 }
 
++ (id<GREYMatcher>)ntpCollectionView {
+  return grey_accessibilityID(kNTPCollectionViewIdentifier);
+}
+
+// TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)warningMessageView {
-  return grey_accessibilityID(kWarningMessageAccessibilityID);
+  return nil;
 }
 
+// TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)paymentRequestPickerRow {
-  return grey_accessibilityID(kPaymentRequestPickerRowAccessibilityID);
+  return nil;
 }
 
+// TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)paymentRequestPickerSearchBar {
-  return grey_accessibilityID(kPaymentRequestPickerSearchBarAccessibilityID);
+  return nil;
+}
+
++ (id<GREYMatcher>)openNewWindowMenuButton {
+  return grey_accessibilityID(kToolsMenuNewWindowId);
 }
 
 + (id<GREYMatcher>)readingListMenuButton {
@@ -661,9 +745,59 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
 }
 
++ (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
+  return grey_allOf(grey_accessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT)),
+                    [self systemSelectionCallout], nil);
+}
+
 + (id<GREYMatcher>)systemSelectionCalloutCopyButton {
   return grey_allOf(grey_accessibilityLabel(@"Copy"),
                     [self systemSelectionCallout], nil);
+}
+
++ (id<GREYMatcher>)systemSelectionCalloutOverflowButton {
+  return grey_accessibilityID(@"show.next.items.menu.button");
+}
+
++ (id<GREYMatcher>)copyActivityButton {
+  id<GREYMatcher> copyStaticText = [ChromeMatchersAppInterface
+      staticTextWithAccessibilityLabel:l10n_util::GetNSString(
+                                           IDS_IOS_SHARE_MENU_COPY)];
+  return grey_allOf(
+      copyStaticText,
+      grey_ancestor(grey_kindOfClassName(@"UIActivityActionGroupCell")), nil);
+}
+
++ (id<GREYMatcher>)copyLinkButton {
+  int stringId = IDS_IOS_COPY_LINK_ACTION_TITLE;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+}
+
++ (id<GREYMatcher>)editButton {
+  int stringId = IDS_IOS_EDIT_ACTION_TITLE;
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:stringId];
+}
+
++ (id<GREYMatcher>)moveButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE];
+}
+
++ (id<GREYMatcher>)readingListMarkAsReadButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_READING_LIST_MARK_AS_READ_ACTION];
+}
+
++ (id<GREYMatcher>)readingListMarkAsUnreadButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:
+          IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION];
+}
+
++ (id<GREYMatcher>)deleteButton {
+  return [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
 }
 
 + (id<GREYMatcher>)contextMenuCopyButton {
@@ -681,12 +815,26 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(ntp_home::FakeOmniboxAccessibilityID());
 }
 
++ (id<GREYMatcher>)discoverHeaderLabel {
+  return grey_accessibilityID(ntp_home::DiscoverHeaderTitleAccessibilityID());
+}
+
++ (id<GREYMatcher>)ntpLogo {
+  return grey_accessibilityID(ntp_home::NTPLogoAccessibilityID());
+}
+
 + (id<GREYMatcher>)webViewMatcher {
   return web::WebViewInWebState(chrome_test_util::GetCurrentWebState());
 }
 
 + (id<GREYMatcher>)webStateScrollViewMatcher {
   return web::WebViewScrollView(chrome_test_util::GetCurrentWebState());
+}
+
++ (id<GREYMatcher>)webStateScrollViewMatcherInWindowWithNumber:
+    (int)windowNumber {
+  return web::WebViewScrollView(
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber));
 }
 
 + (id<GREYMatcher>)historyClearBrowsingDataButton {
@@ -696,15 +844,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 + (id<GREYMatcher>)openInButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:IDS_IOS_OPEN_IN];
-}
-
-+ (id<GREYMatcher>)tabGridOpenButton {
-  if (IsRegularXRegularSizeClass()) {
-    return [self
-        buttonWithAccessibilityLabelID:IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER];
-  } else {
-    return [self buttonWithAccessibilityLabelID:IDS_IOS_TOOLBAR_SHOW_TABS];
-  }
 }
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
@@ -763,6 +902,18 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
 }
 
++ (id<GREYMatcher>)tabGridBackground {
+  return grey_accessibilityID(kGridBackgroundIdentifier);
+}
+
++ (id<GREYMatcher>)regularTabGrid {
+  return grey_accessibilityID(kRegularTabGridIdentifier);
+}
+
++ (id<GREYMatcher>)incognitoTabGrid {
+  return grey_accessibilityID(kIncognitoTabGridIdentifier);
+}
+
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_ancestor(grey_accessibilityID(IdentifierForCellAtIndex(index))),
@@ -794,6 +945,10 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kSettingsToolbarDeleteButtonId);
 }
 
++ (id<GREYMatcher>)settingsSearchEngineButton {
+  return grey_accessibilityID(kSettingsSearchEngineCellId);
+}
+
 + (id<GREYMatcher>)contentViewSmallerThanScrollView {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(view);
@@ -809,12 +964,23 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                                               descriptionBlock:describe];
 }
 
-+ (id<GREYMatcher>)autofillSaveCardLocallyInfobar {
-  return grey_accessibilityID(kSaveCardInfobarViewLocalAccessibilityID);
-}
++ (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title {
+  GREYMatchesBlock matches = ^BOOL(TableViewURLCell* cell) {
+    return [cell.titleLabel.text isEqual:title] &&
+           [cell.URLLabel.text isEqual:URL];
+  };
 
-+ (id<GREYMatcher>)autofillUploadCardInfobar {
-  return grey_accessibilityID(kSaveCardInfobarViewUploadAccessibilityID);
+  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
+    [description appendText:@"view containing URL text: "];
+    [description appendText:URL];
+    [description appendText:@" title text: "];
+    [description appendText:title];
+  };
+  return grey_allOf(
+      grey_kindOfClass([TableViewURLCell class]),
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe],
+      grey_sufficientlyVisible(), nil);
 }
 
 #pragma mark - Manual Fallback
@@ -915,6 +1081,81 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   id<GREYMatcher> parentMatcher =
       grey_descendant([self manualFallbackCreditCardTableViewMatcher]);
   return grey_allOf(classMatcher, parentMatcher, nil);
+}
+
++ (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
+                                           title:(NSString*)pageTitle {
+#if TARGET_IPHONE_SIMULATOR
+  return grey_allOf(
+      // The title of the activity view starts as the URL, then asynchronously
+      // changes to the page title. Sometimes, the activity view fails to update
+      // the text to the page title, causing test flake. Allow matcher to pass
+      // with either value for the activity view title.
+      grey_anyOf(grey_accessibilityLabel(host),
+                 grey_accessibilityLabel(pageTitle), nil),
+      grey_ancestor(
+          grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                     grey_kindOfClassName(@"LPLinkView"), nil)),
+      nil);
+#else
+  // Device tests tend to fail more often if the host is allowed in the
+  // grey_anyOf as above.
+  return grey_allOf(grey_accessibilityLabel(pageTitle),
+                    grey_ancestor(grey_allOf(
+                        grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                        grey_kindOfClassName(@"LPLinkView"), nil)),
+                    nil);
+#endif
+}
+
++ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
+  return grey_accessibilityID(
+      manual_fill::SuggestPasswordAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)useSuggestedPasswordMatcher {
+  return grey_allOf(
+      [self buttonWithAccessibilityLabelID:IDS_IOS_USE_SUGGESTED_PASSWORD],
+      grey_interactable(), nullptr);
+}
+
+#pragma mark - Tab Grid Selection Mode
++ (id<GREYMatcher>)tabGridEditButton {
+  return grey_accessibilityID(kTabGridEditButtonIdentifier);
+}
+
++ (id<GREYMatcher>)tabGridEditMenuCloseAllButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      (IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)],
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridSelectTabsMenuButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_SELECTTABS)],
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditAddToButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditAddToButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditCloseTabsButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditCloseTabsButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditSelectAllButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditSelectAllButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditShareButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditShareButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 @end

@@ -31,15 +31,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-
-// Use a 1-day max for tab visibility histograms since it's not uncommon to keep
-// a tab in the same visibility state for a very long time (see Tab.VisibleTime
-// which has 5% of samples in the overflow bucket with a 1-hour max).
-#define UMA_TAB_VISIBILITY_HISTOGRAM(visibility, sample)           \
-  UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Visibility." visibility, sample, \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromDays(1), 50)
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace resource_coordinator {
 namespace {
@@ -53,13 +45,14 @@ static int32_t reactivation_index = 0;
 int64_t internal_id_for_logging = 0;
 // Returns an int64_t number as label_id or query_id.
 int64_t NewInt64ForLabelIdOrQueryId() {
-  // The id is shifted 13 bits so that the lower bits are reserved for counting
+  // The id is shifted 16 bits so that the lower bits are reserved for counting
   // multiple queries.
-  // We choose 13 so that the lower bits for counting multiple queries and
+  // We choose 16 so that the lower bits for counting multiple queries and
   // higher bits for labeling queries are both unlikely to overflow. (lower bits
-  // only overflows when we have more than 8192 queries without labeling events;
-  // higher bits only overflow when we have more than 100 billion discards.
-  constexpr int kIdShiftBits = 13;
+  // only overflows when we have more than 65536 queries without labeling
+  // events; higher bits only overflow when we have more than 100 billion
+  // discards.
+  constexpr int kIdShiftBits = 16;
   return (++internal_id_for_logging) << kIdShiftBits;
 }
 
@@ -73,19 +66,22 @@ class TabActivityWatcher::WebContentsData
       public content::WebContentsUserData<WebContentsData>,
       public content::RenderWidgetHost::InputEventObserver {
  public:
+  WebContentsData(const WebContentsData&) = delete;
+  WebContentsData& operator=(const WebContentsData&) = delete;
+
   ~WebContentsData() override = default;
 
   // Calculates the tab reactivation score for a background tab. Returns nullopt
   // if the score could not be calculated, e.g. because the tab is in the
   // foreground.
-  base::Optional<float> CalculateReactivationScore() {
+  absl::optional<float> CalculateReactivationScore() {
     if (web_contents()->IsBeingDestroyed() || backgrounded_time_.is_null())
-      return base::nullopt;
+      return absl::nullopt;
 
     // No log for CalculateReactivationScore.
-    base::Optional<TabFeatures> tab = GetTabFeatures();
+    absl::optional<TabFeatures> tab = GetTabFeatures();
     if (!tab.has_value())
-      return base::nullopt;
+      return absl::nullopt;
 
     float score = 0.0f;
     const tab_ranker::TabRankerResult result =
@@ -93,7 +89,7 @@ class TabActivityWatcher::WebContentsData
                                                                 &score);
     if (result == tab_ranker::TabRankerResult::kSuccess)
       return score;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Call when the associated WebContents has been replaced.
@@ -158,7 +154,7 @@ class TabActivityWatcher::WebContentsData
     if (backgrounded_time_.is_null() || DisableBackgroundLogWithTabRanker())
       return;
 
-    base::Optional<TabFeatures> tab = GetTabFeatures();
+    absl::optional<TabFeatures> tab = GetTabFeatures();
     if (tab.has_value()) {
       // Background time logging always logged with label_id == 0, since we
       // only use label_id for query time logging for now.
@@ -168,7 +164,7 @@ class TabActivityWatcher::WebContentsData
   }
 
   // Logs current TabFeatures; skips if current tab is null.
-  void LogCurrentTabFeatures(const base::Optional<TabFeatures>& tab) {
+  void LogCurrentTabFeatures(const absl::optional<TabFeatures>& tab) {
     if (!tab.has_value())
       return;
     // Update label_id_: a new label_id is generated for this query if the
@@ -203,7 +199,10 @@ class TabActivityWatcher::WebContentsData
   explicit WebContentsData(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
     DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
-    web_contents->GetRenderViewHost()->GetWidget()->AddInputEventObserver(this);
+    web_contents->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->AddInputEventObserver(this);
 
     creation_time_ = NowTicks();
 
@@ -270,7 +269,7 @@ class TabActivityWatcher::WebContentsData
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (!navigation_handle->HasCommitted() ||
-        !navigation_handle->IsInMainFrame() ||
+        !navigation_handle->IsInPrimaryMainFrame() ||
         navigation_handle->IsSameDocument()) {
       return;
     }
@@ -282,9 +281,6 @@ class TabActivityWatcher::WebContentsData
     DCHECK_NE(new_source_id, ukm_source_id_)
         << "Expected a unique Source ID for the navigation";
     ukm_source_id_ = new_source_id;
-
-    // Update navigation time for UKM reporting.
-    navigation_time_ = navigation_handle->NavigationStart();
 
     // Reset the per-page data.
     page_metrics_ = {};
@@ -303,11 +299,6 @@ class TabActivityWatcher::WebContentsData
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
-    // Record Tab.Visibility.* histogram and do associated bookkeeping.
-    // Recording is done at every visibility state change rather than just when
-    // the WebContents is destroyed to reduce data loss on session end.
-    RecordVisibilityHistogram(visibility);
-
     // Record background tab UKMs and do associated bookkepping.
     if (!web_contents()->IsBeingDestroyed()) {
       // TODO(michaelpg): Consider treating occluded tabs as hidden.
@@ -319,33 +310,7 @@ class TabActivityWatcher::WebContentsData
     }
   }
 
-  void RecordVisibilityHistogram(content::Visibility new_visibility) {
-    const base::TimeTicks now = NowTicks();
-    const base::TimeDelta duration = now - last_visibility_change_time_;
-    switch (visibility_) {
-      case content::Visibility::VISIBLE: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Visible", duration);
-        break;
-      }
-
-      case content::Visibility::OCCLUDED: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Occluded", duration);
-        break;
-      }
-
-      case content::Visibility::HIDDEN: {
-        UMA_TAB_VISIBILITY_HISTOGRAM("Hidden", duration);
-        break;
-      }
-    }
-
-    visibility_ = new_visibility;
-    last_visibility_change_time_ = now;
-  }
-
   void WebContentsDestroyed() override {
-    RecordVisibilityHistogram(visibility_);
-
     if (was_replaced_)
       return;
 
@@ -410,11 +375,11 @@ class TabActivityWatcher::WebContentsData
   // WindowFeatures and MRUFeatures.
   // TODO(charleszhao): refactor TabMetricsLogger::GetTabFeatures to return a
   // full TabFeatures instead of a partial TabFeatures.
-  base::Optional<TabFeatures> GetTabFeatures() {
+  absl::optional<TabFeatures> GetTabFeatures() {
     if (web_contents()->IsBeingDestroyed() || backgrounded_time_.is_null())
-      return base::nullopt;
+      return absl::nullopt;
     // For tab features.
-    base::Optional<TabFeatures> tab =
+    absl::optional<TabFeatures> tab =
         TabMetricsLogger::GetTabFeatures(page_metrics_, web_contents());
     if (!tab.has_value())
       return tab;
@@ -437,11 +402,6 @@ class TabActivityWatcher::WebContentsData
 
   // Collect current ForegroundedOrClosedMetrics and send to ukm.
   void LogForegroundedOrClosedMetrics(bool is_foregrounded) {
-    // If background time logging is disabled, then we only log the case where
-    // the label_id_ != 0 (a feature is logged and a label has not been logged).
-    if (DisableBackgroundLogWithTabRanker() && label_id_ == 0)
-      return;
-
     TabMetricsLogger::ForegroundedOrClosedMetrics metrics;
     metrics.is_foregrounded = is_foregrounded;
     metrics.is_discarded = discarded_since_backgrounded_;
@@ -499,9 +459,6 @@ class TabActivityWatcher::WebContentsData
   // is activated.
   base::TimeTicks foregrounded_time_;
 
-  // The last navigation time associated with this tab.
-  base::TimeTicks navigation_time_;
-
   // Stores current page stats for the tab.
   TabMetricsLogger::PageMetrics page_metrics_;
 
@@ -510,12 +467,6 @@ class TabActivityWatcher::WebContentsData
 
   // If true, future events such as the tab being destroyed won't be logged.
   bool was_replaced_ = false;
-
-  // Current tab visibility.
-  content::Visibility visibility_ = web_contents()->GetVisibility();
-
-  // The last time at which |visibility_| changed.
-  base::TimeTicks last_visibility_change_time_ = NowTicks();
 
   // MRUFeatures of this WebContents, updated only before ForegroundedOrClosed
   // event is logged.
@@ -531,27 +482,28 @@ class TabActivityWatcher::WebContentsData
   FrecencyScore frecency_score_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsData);
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabActivityWatcher::WebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabActivityWatcher::WebContentsData);
 
 TabActivityWatcher::TabActivityWatcher()
     : tab_metrics_logger_(std::make_unique<TabMetricsLogger>()),
-      browser_tab_strip_tracker_(this, this, this),
+      browser_tab_strip_tracker_(this, this),
       predictor_(std::make_unique<tab_ranker::TabScorePredictor>()) {
+  BrowserList::AddObserver(this);
   browser_tab_strip_tracker_.Init();
 }
 
-TabActivityWatcher::~TabActivityWatcher() = default;
+TabActivityWatcher::~TabActivityWatcher() {
+  BrowserList::RemoveObserver(this);
+}
 
-base::Optional<float> TabActivityWatcher::CalculateReactivationScore(
+absl::optional<float> TabActivityWatcher::CalculateReactivationScore(
     content::WebContents* web_contents) {
   WebContentsData* web_contents_data =
       WebContentsData::FromWebContents(web_contents);
   if (!web_contents_data)
-    return base::nullopt;
+    return absl::nullopt;
   return web_contents_data->CalculateReactivationScore();
 }
 
@@ -560,14 +512,17 @@ void TabActivityWatcher::LogAndMaybeSortLifecycleUnitWithTabRanker(
   // Set query_id so that all TabFeatures logged in this query can be joined.
   tab_metrics_logger_->set_query_id(NewInt64ForLabelIdOrQueryId());
 
-  std::map<int32_t, base::Optional<TabFeatures>> tab_features;
+  const bool should_sort_tabs =
+      base::FeatureList::IsEnabled(features::kTabRanker);
+
+  std::map<int32_t, absl::optional<TabFeatures>> tab_features;
   for (auto* lifecycle_unit : *tabs) {
     auto* lifecycle_unit_external =
         lifecycle_unit->AsTabLifecycleUnitExternal();
     // the lifecycle_unit_external is nullptr in the unit test
     // TabManagerDelegateTest::KillMultipleProcesses.
     if (!lifecycle_unit_external) {
-      tab_features[lifecycle_unit->GetID()] = base::nullopt;
+      tab_features[lifecycle_unit->GetID()] = absl::nullopt;
       continue;
     }
     WebContentsData* web_contents_data = WebContentsData::FromWebContents(
@@ -577,17 +532,21 @@ void TabActivityWatcher::LogAndMaybeSortLifecycleUnitWithTabRanker(
     // TODO(crbug.com/1019482): move the creation of WebContentsData to
     // TabHelpers::AttachTabHelpers.
     if (!web_contents_data) {
-      tab_features[lifecycle_unit->GetID()] = base::nullopt;
+      tab_features[lifecycle_unit->GetID()] = absl::nullopt;
       continue;
     }
 
-    const base::Optional<TabFeatures> tab = web_contents_data->GetTabFeatures();
-    tab_features[lifecycle_unit->GetID()] = tab;
+    const absl::optional<TabFeatures> tab = web_contents_data->GetTabFeatures();
     web_contents_data->LogCurrentTabFeatures(tab);
+
+    // No reason to store TabFeatures if TabRanker is disabled.
+    if (should_sort_tabs) {
+      tab_features[lifecycle_unit->GetID()] = tab;
+    }
   }
 
-  // Directly return if TabRanker is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kTabRanker))
+  // Directly return if TabRanker is disabled.
+  if (!should_sort_tabs)
     return;
 
   const std::map<int32_t, float> reactivation_scores =
@@ -685,11 +644,6 @@ TabActivityWatcher* TabActivityWatcher::GetInstance() {
 }
 
 void TabActivityWatcher::OnTabClosed(WebContentsData* web_contents_data) {
-  // Log TabLifetime event.
-  tab_metrics_logger_->LogTabLifetime(
-      web_contents_data->ukm_source_id_,
-      NowTicks() - web_contents_data->navigation_time_);
-
   // Log ForegroundedOrClosed event.
   if (!web_contents_data->backgrounded_time_.is_null()) {
     web_contents_data->LogForegroundedOrClosedMetrics(

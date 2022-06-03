@@ -1,0 +1,128 @@
+# Copyright 2020 The Chromium Authors.  All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates cross-language style definitions from json5 files. The output files
+# will go under the generated file directory tree with the same path as each
+# input file.
+#
+# For input format examples, see the *_test.json5 files which contain
+# illustrations of each feature, as well as expected outputs in the
+# corresponding *_test_expected.* files.
+#
+# Other targets should depend on one of these generated targets (where "foo"
+# is the target name):
+#
+#    foo_css
+#      CSS Variables
+#
+#    foo_views
+#      Views generation for use with AshColorProvider
+#
+#    foo_proto
+#      Protobuf message schema generation
+#
+#    foo_protojson
+#      Protobuf JSON value format, contains actual color information
+template("style_variable_generator") {
+  script_file = "//tools/style_variable_generator/main.py"
+  original_target_name = target_name
+  common_inputs = [
+    "//tools/style_variable_generator/base_generator.py",
+    "//tools/style_variable_generator/color.py",
+  ]
+
+  action("${target_name}_css") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/css_generator.py",
+               "//tools/style_variable_generator/css_generator.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.css"
+    outputs = [ out_file ]
+
+    args = [
+             "--generator=CSS",
+             "--generator-option",
+             "debug_placeholder=\$i18n{crosColorsDebugOverrides}",
+             "--out-file",
+             rebase_path("$out_file", root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+
+  action("${target_name}_views_generator") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/views_generator.py",
+               "//tools/style_variable_generator/views_generator_h.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.h"
+    outputs = [ out_file ]
+    args = [
+             "--generator=Views",
+             "--out-file",
+             rebase_path("$out_file", root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+
+  source_set("${target_name}_views") {
+    sources = [ "$target_gen_dir/${original_target_name}.h" ]
+    deps = [ ":${original_target_name}_views_generator" ]
+  }
+
+  action("${target_name}_proto") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/proto_generator.py",
+               "//tools/style_variable_generator/proto_generator.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.proto"
+    outputs = [ out_file ]
+
+    args = [
+             "--generator=proto",
+             "--out-file",
+             rebase_path("$out_file", root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+
+  action("${target_name}_protojson") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/proto_generator.py",
+               "//tools/style_variable_generator/proto_json_generator.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.protojson"
+    outputs = [ out_file ]
+
+    args = [
+             "--generator=proto",
+             "--out-file",
+             rebase_path("$out_file", root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+}

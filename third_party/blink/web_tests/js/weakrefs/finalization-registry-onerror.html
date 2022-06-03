@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="module">
+setup({allow_uncaught_exception: true });
+
+// Keep FinalizationRegistry global to avoid it being reclaimed by garbage
+// collections that may happen until the registry is processed in microtasks.
+let fr;
+
+async_test(t => {
+  window.onerror = t.step_func_done(function(msg, source, lineno, colno, e) {
+    assert_equals(e.message, 'weakrefs are awesome',
+                  'Correct exception is thrown');
+  });
+
+  function callback(holdings) {
+    throw new Error('weakrefs are awesome');
+  }
+
+  fr = new FinalizationRegistry(callback);
+
+  (function() {
+    let garbage = {};
+    fr.register(garbage, 'holdings');
+    garbage = null;
+  })();
+
+  gc();
+}, 'FinalizationRegistry callback exceptions are reported to error handler');
+</script>

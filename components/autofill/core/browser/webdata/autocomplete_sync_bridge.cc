@@ -12,19 +12,20 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/model_impl/sync_metadata_store_change_list.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 #include "net/base/escape.h"
 
-using base::Optional;
+using absl::optional;
 using base::Time;
 using sync_pb::AutofillSpecifics;
 using syncer::ClientTagBasedModelTypeProcessor;
@@ -46,7 +47,7 @@ const char kAutocompleteTagDelimiter[] = "|";
 
 // Simplify checking for optional errors and returning only when present.
 #define RETURN_IF_ERROR(x)                \
-  if (Optional<ModelError> ret_val = x) { \
+  if (optional<ModelError> ret_val = x) { \
     return ret_val;                       \
   }
 
@@ -128,7 +129,10 @@ class SyncDifferenceTracker {
  public:
   explicit SyncDifferenceTracker(AutofillTable* table) : table_(table) {}
 
-  Optional<ModelError> IncorporateRemoteSpecifics(
+  SyncDifferenceTracker(const SyncDifferenceTracker&) = delete;
+  SyncDifferenceTracker& operator=(const SyncDifferenceTracker&) = delete;
+
+  optional<ModelError> IncorporateRemoteSpecifics(
       const std::string& storage_key,
       const AutofillSpecifics& specifics) {
     if (!specifics.has_value()) {
@@ -143,7 +147,7 @@ class SyncDifferenceTracker {
     const AutofillEntry remote = CreateAutofillEntry(specifics);
     DCHECK_EQ(storage_key, GetStorageKeyFromModel(remote.key()));
 
-    Optional<AutofillEntry> local;
+    optional<AutofillEntry> local;
     if (!ReadEntry(remote.key(), &local))
       return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
 
@@ -166,7 +170,7 @@ class SyncDifferenceTracker {
     return {};
   }
 
-  Optional<ModelError> IncorporateRemoteDelete(const std::string& storage_key) {
+  optional<ModelError> IncorporateRemoteDelete(const std::string& storage_key) {
     AutofillKey key;
     if (!ParseStorageKey(storage_key, &key)) {
       return ModelError(FROM_HERE, "Failed parsing storage key.");
@@ -175,7 +179,7 @@ class SyncDifferenceTracker {
     return {};
   }
 
-  Optional<ModelError> FlushToLocal(AutofillWebDataBackend* web_data_backend) {
+  optional<ModelError> FlushToLocal(AutofillWebDataBackend* web_data_backend) {
     for (const AutofillKey& key : delete_from_local_) {
       if (!table_->RemoveFormElement(key.name(), key.value())) {
         return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
@@ -190,7 +194,7 @@ class SyncDifferenceTracker {
     return {};
   }
 
-  Optional<ModelError> FlushToSync(
+  optional<ModelError> FlushToSync(
       bool include_local_only,
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       ModelTypeChangeProcessor* change_processor) {
@@ -225,7 +229,7 @@ class SyncDifferenceTracker {
   // 1. An error is encountered reading from the db, false is returned.
   // 2. The entry is not found, |entry| will not be touched.
   // 3. The entry is found, |entry| will be set.
-  bool ReadEntry(const AutofillKey& key, Optional<AutofillEntry>* entry) {
+  bool ReadEntry(const AutofillKey& key, optional<AutofillEntry>* entry) {
     if (!InitializeIfNeeded()) {
       return false;
     }
@@ -272,8 +276,6 @@ class SyncDifferenceTracker {
   // Contains merged data for entries that existed on both sync and local sides
   // and need to be saved back to sync.
   std::vector<AutofillEntry> save_to_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncDifferenceTracker);
 };
 
 }  // namespace
@@ -287,7 +289,7 @@ void AutocompleteSyncBridge::CreateForWebDataServiceAndBackend(
       std::make_unique<AutocompleteSyncBridge>(
           web_data_backend,
           std::make_unique<ClientTagBasedModelTypeProcessor>(
-              syncer::AUTOFILL, /*dump_stack=*/base::RepeatingClosure())));
+              syncer::AUTOFILL, /*dump_stack=*/base::DoNothing())));
 }
 
 // static
@@ -305,7 +307,7 @@ AutocompleteSyncBridge::AutocompleteSyncBridge(
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
 
-  scoped_observer_.Add(web_data_backend_);
+  scoped_observation_.Observe(web_data_backend_);
 
   LoadMetadata();
 }
@@ -321,7 +323,7 @@ AutocompleteSyncBridge::CreateMetadataChangeList() {
       GetAutofillTable(), syncer::AUTOFILL);
 }
 
-Optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
+optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -335,14 +337,14 @@ Optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
 
   RETURN_IF_ERROR(tracker.FlushToLocal(web_data_backend_));
   RETURN_IF_ERROR(tracker.FlushToSync(true, std::move(metadata_change_list),
-                                change_processor()));
+                                      change_processor()));
 
   web_data_backend_->CommitChanges();
   web_data_backend_->NotifyThatSyncHasStarted(syncer::AUTOFILL);
   return {};
 }
 
-Optional<ModelError> AutocompleteSyncBridge::ApplySyncChanges(
+optional<ModelError> AutocompleteSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -462,7 +464,7 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
   // committed by the AutofillWebDataService when the original local write
   // operation (that triggered this notification to the bridge) finishes.
 
-  if (Optional<ModelError> error = metadata_change_list->TakeError())
+  if (optional<ModelError> error = metadata_change_list->TakeError())
     change_processor()->ReportError(*error);
 }
 

@@ -9,23 +9,18 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
+#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-#if defined(CHROME_EARL_GREY_1)
-// EG1 test relies on view controller presentation as the signal that PassKit
-// Dialog is shown.
-#import "ios/chrome/app/main_controller.h"  // nogncheck
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"  // nogncheck
-#import "ios/chrome/test/app/chrome_test_util.h"  // nogncheck
-#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,9 +33,10 @@ namespace {
 
 // Returns matcher for PassKit error infobar.
 id<GREYMatcher> PassKitErrorInfobar() {
-  using l10n_util::GetNSStringWithFixup;
-  NSString* label = GetNSStringWithFixup(IDS_IOS_GENERIC_PASSKIT_ERROR);
-  return grey_accessibilityLabel(label);
+  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
+                    grey_accessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_GENERIC_PASSKIT_ERROR)),
+                    nil);
 }
 
 // PassKit landing page and download request handler.
@@ -70,12 +66,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 @interface PassKitEGTest : ChromeTestCase
 @end
 
-@implementation PassKitEGTest
+@implementation PassKitEGTest {
+}
 
 - (void)setUp {
   [super setUp];
 
-  self.testServer->RegisterRequestHandler(base::Bind(&GetResponse));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&GetResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
@@ -98,7 +95,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 // Tests that Chrome PassKit dialog is shown for sucessfully downloaded pkpass
 // file.
-- (void)testPassKitDownload {
+//
+// Flaky https://crbug.com/1109131.
+- (void)DISABLED_testPassKitDownload {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Wallet app is not supported on iPads.");
   }
@@ -109,33 +108,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   // PKAddPassesViewController UI is rendered out of host process so EarlGrey
   // matcher can not find PassKit Dialog UI.
-#if defined(CHROME_EARL_GREY_1)
-  // EG1 test relies on view controller presentation as the signal that PassKit
-  // Dialog is shown.
-  id<BrowserInterface> interface =
-      chrome_test_util::GetMainController().interfaceProvider.mainInterface;
-  UIViewController* viewController = interface.viewController;
-  bool dialogShown = WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    UIViewController* presentedController =
-        viewController.presentedViewController;
-    return [presentedController class] == [PKAddPassesViewController class];
-  });
-  GREYAssert(dialogShown, @"PassKit dialog was not shown");
-#elif defined(CHROME_EARL_GREY_2)
   // EG2 test can use XCUIApplication API to check for PassKit dialog UI
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* title = nil;
-  if (@available(iOS 13, *)) {
-    title = app.staticTexts[@"Toy Town Membership"];
-  } else {
-    title = app.otherElements[@"Toy Town Membership"];
-  }
+  title = app.staticTexts[@"Toy Town Membership"];
   GREYAssert([title waitForExistenceWithTimeout:kWaitForDownloadTimeout],
              @"PassKit dialog UI was not presented");
-#else
-#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
-#endif
 }
 
 @end

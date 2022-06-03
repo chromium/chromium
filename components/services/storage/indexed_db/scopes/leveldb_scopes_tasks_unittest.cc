@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
@@ -139,8 +139,7 @@ TEST_F(LevelDBScopesTasksTest, CleanupAbortsOnDestructionRequested) {
                         CleanupScopeTask::CleanupMode::kExecuteCleanupTasks,
                         kWriteBatchSizeForTesting);
 
-  leveldb_->RequestDestruction(base::DoNothing(),
-                               base::SequencedTaskRunnerHandle::Get());
+  leveldb_->RequestDestruction(&leveldb_close_event_);
   leveldb::Status s = task.Run();
   ASSERT_TRUE(s.ok()) << s.ToString();
   EXPECT_TRUE(LoadAt(delete_range_start_key_).ok());

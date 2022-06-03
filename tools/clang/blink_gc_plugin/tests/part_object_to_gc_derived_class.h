@@ -13,7 +13,8 @@ class A : public GarbageCollected<A> { };
 
 class B : public GarbageCollected<B> {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     A m_a;
 };

@@ -5,10 +5,10 @@
 #include "extensions/browser/requirements_checker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -60,8 +60,8 @@ class RequirementsCheckerTest : public ExtensionsTest {
 
     std::string error;
     extension_ =
-        Extension::Create(base::FilePath(), Manifest::UNPACKED, *manifest_dict_,
-                          Extension::NO_FLAGS, &error);
+        Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
+                          *manifest_dict_, Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension_.get()) << error;
   }
 
@@ -82,7 +82,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
       manifest_dict_->Set(kFeaturesKey, std::make_unique<base::ListValue>());
     base::ListValue* features_list = nullptr;
     ASSERT_TRUE(manifest_dict_->GetList(kFeaturesKey, &features_list));
-    features_list->AppendString(feature);
+    features_list->Append(feature);
   }
 
   std::unique_ptr<RequirementsChecker> checker_;
@@ -139,7 +139,7 @@ TEST_F(RequirementsCheckerTest, RequirementsFailMultiple) {
 
 // Tests a requirement that might fail asynchronously.
 TEST_F(RequirementsCheckerTest, RequirementsFailWebGL) {
-  content::GpuDataManager::GetInstance()->BlacklistWebGLForTesting();
+  content::GpuDataManager::GetInstance()->BlocklistWebGLForTesting();
   RequireFeature(kFeatureWebGL);
   CreateExtension();
   StartChecker();
@@ -148,7 +148,7 @@ TEST_F(RequirementsCheckerTest, RequirementsFailWebGL) {
   // waiting for the GPU check to succeed: crbug.com/706204.
   if (runner_.errors().size()) {
     EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
-                                      PreloadCheck::WEBGL_NOT_SUPPORTED));
+                                      PreloadCheck::Error::kWebglNotSupported));
     EXPECT_FALSE(checker_->GetErrorMessage().empty());
   }
 }

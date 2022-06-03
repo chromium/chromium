@@ -6,10 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FETCHER_PROPERTIES_H_
 
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -40,7 +43,7 @@ class PLATFORM_EXPORT ResourceFetcherProperties
 
   ResourceFetcherProperties() = default;
   virtual ~ResourceFetcherProperties() = default;
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 
   // Returns the client settings object bound to this global context.
   virtual const FetchClientSettingsObject& GetFetchClientSettingsObject()
@@ -63,6 +66,9 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   // defer making a new request.
   // https://html.spec.whatwg.org/C/webappapis.html#pause
   virtual bool IsPaused() const = 0;
+
+  // Returns the freezing mode set to this context.
+  virtual LoaderFreezeMode FreezeMode() const = 0;
 
   // Returns whether this global context is detached. Note that in some cases
   // the loading pipeline continues working after detached (e.g., for fetch()
@@ -87,6 +93,13 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   // The physical URL of Web Bundle from which this global context is loaded.
   // Used as an additional identifier for MemoryCache.
   virtual const KURL& WebBundlePhysicalUrl() const = 0;
+
+  virtual int GetOutstandingThrottledLimit() const = 0;
+
+  // Returns the LitePage origin the subresources such as images should be
+  // redirected to when the kSubresourceRedirect feature is enabled.
+  virtual scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const = 0;
 };
 
 // A delegating ResourceFetcherProperties subclass which can be retained
@@ -101,7 +114,7 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
 
   void Detach();
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   // ResourceFetcherProperties implementation
   // Add a test in resource_fetcher_test.cc when you change behaviors.
@@ -125,6 +138,9 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   }
   bool IsPaused() const override {
     return properties_ ? properties_->IsPaused() : paused_;
+  }
+  LoaderFreezeMode FreezeMode() const override {
+    return properties_ ? properties_->FreezeMode() : freeze_mode_;
   }
   bool IsDetached() const override {
     return properties_ ? properties_->IsDetached() : true;
@@ -150,6 +166,17 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
                        : web_bundle_physical_url_;
   }
 
+  int GetOutstandingThrottledLimit() const override {
+    return properties_ ? properties_->GetOutstandingThrottledLimit()
+                       : outstanding_throttled_limit_;
+  }
+
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override {
+    return properties_ ? properties_->GetLitePageSubresourceRedirectOrigin()
+                       : litepage_subresource_redirect_origin_;
+  }
+
  private:
   // |properties_| is null if and only if detached.
   Member<const ResourceFetcherProperties> properties_;
@@ -158,9 +185,12 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
   bool is_main_frame_ = false;
   bool paused_ = false;
+  LoaderFreezeMode freeze_mode_;
   bool load_complete_ = false;
   bool is_subframe_deprioritization_enabled_ = false;
   KURL web_bundle_physical_url_;
+  int outstanding_throttled_limit_ = 0;
+  scoped_refptr<SecurityOrigin> litepage_subresource_redirect_origin_;
 };
 
 }  // namespace blink

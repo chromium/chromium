@@ -66,15 +66,15 @@ take longer to load.
 ## Filters
 
 ### What regular expressions syntax is supported?
-The contain and exclude regular expressions are evaluated against the full path
-of each symbol. Symbol names are appended onto the end of a path and prefixed
-with a `:` (`path/to/file:symbol`). The full path is displayed below the byte
-size on the info card, and also appears when hovering over a symbol's name.
+The contain and exclude regular expressions are evaluated against each symbol's:
+* Full Name (as shown on the details card for it)
+* Source Path
+* Grouping (when a grouping is active).
 
 The "Symbols must contain" filter is applied before the "Symbols must exclude"
 filter.
 
 Example filter | Regular expression
 -------------- | ------------------
-Find symbols in `MyJavaClass` | `:MyJavaClass#`
-Find folders named `myfolder` | `myfolder/`
+Find symbols in `MyJavaClass` | `^MyJavaClass#`
+Find folders named `myfolder` | `^myfolder$`

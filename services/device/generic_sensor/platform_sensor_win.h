@@ -32,6 +32,9 @@ class PlatformSensorWin final : public PlatformSensor,
       scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
       std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 
+  PlatformSensorWin(const PlatformSensorWin&) = delete;
+  PlatformSensorWin& operator=(const PlatformSensorWin&) = delete;
+
   PlatformSensorConfiguration GetDefaultConfiguration() override;
   mojom::ReportingMode GetReportingMode() override;
   double GetMaximumSupportedFrequency() override;
@@ -53,8 +56,6 @@ class PlatformSensorWin final : public PlatformSensor,
   scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner_;
   PlatformSensorReaderWinBase* const sensor_reader_;
   base::WeakPtrFactory<PlatformSensorWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorWin);
 };
 
 }  // namespace device

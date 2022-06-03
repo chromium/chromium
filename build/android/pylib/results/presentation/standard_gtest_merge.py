@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 #
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -43,17 +43,17 @@ def merge_shard_results(summary_json, jsons_to_merge):
     # client/swarming.py, which means the state enum is saved in its string
     # name form, not in the number form.
     state = result.get('state')
-    if state == u'BOT_DIED':
+    if state == 'BOT_DIED':
       print(
           'Shard #%d had a Swarming internal failure' % index, file=sys.stderr)
-    elif state == u'EXPIRED':
+    elif state == 'EXPIRED':
       print('There wasn\'t enough capacity to run your test', file=sys.stderr)
-    elif state == u'TIMED_OUT':
+    elif state == 'TIMED_OUT':
       print('Test runtime exceeded allocated time'
             'Either it ran for too long (hard timeout) or it didn\'t produce '
             'I/O for an extended period of time (I/O timeout)',
             file=sys.stderr)
-    elif state != u'COMPLETED':
+    elif state != 'COMPLETED':
       print('Invalid Swarming task state: %s' % state, file=sys.stderr)
 
     json_data, err_msg = load_shard_json(index, result.get('task_id'),
@@ -138,7 +138,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
 def merge_list_of_dicts(left, right):
   """Merges dicts left[0] with right[0], left[1] with right[1], etc."""
   output = []
-  for i in xrange(max(len(left), len(right))):
+  for i in range(max(len(left), len(right))):
     left_dict = left[i] if i < len(left) else {}
     right_dict = right[i] if i < len(right) else {}
     merged_dict = left_dict.copy()

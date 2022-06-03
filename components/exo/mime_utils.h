@@ -9,8 +9,6 @@
 
 namespace exo {
 
-constexpr char kEncodingUTF8Legacy[] = "UTF8_STRING";
-
 // Takes a text/* mime type and returns the name of the character set specified
 // in the type. If no character set is specified, defaults to US-ASCII.
 std::string GetCharset(const std::string& mime_type);

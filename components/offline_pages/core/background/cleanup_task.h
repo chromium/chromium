@@ -30,10 +30,9 @@ class CleanupTask : public Task {
               RequestCoordinatorEventLogger* logger);
   ~CleanupTask() override;
 
+ private:
   // TaskQueue::Task implementation, starts the async chain
   void Run() override;
-
- private:
   // Step 1. get results from the store
   void GetRequests();
 

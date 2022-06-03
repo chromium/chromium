@@ -1,58 +1,63 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<if expr="is_win or is_macosx">
-<link rel="import" href="captions_browser_proxy.html">
-</if>
-
-<if expr="not is_macosx and not is_chromeos">
-<link rel="import" href="captions_subpage.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-</if>
-
-<if expr="not chromeos">
-<link rel="import" href="../controls/settings_toggle_button.html">
-</if>
-
-<dom-module id="settings-a11y-page">
-  <template>
     <style include="settings-shared"></style>
     <settings-animated-pages id="pages" current-route="{{currentRoute}}"
         section="a11y" focus-config="[[focusConfig_]]">
       <div route-path="default">
 <if expr="chromeos">
-        <cr-link-row class="hr"
+        <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageSystemAccessibilityFeaturesTap_"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
 <if expr="not chromeos">
-        <cr-link-row class="hr" id="captions" label="$i18n{captionsTitle}"
-            on-click="onCaptionsClick_"
-            external$="[[captionSettingsOpensExternally_]]">
-        </cr-link-row>
+        <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
+          <template is="dom-if" if="[[enableLiveCaption_]]">
+            <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+          </template>
+          <cr-link-row id="captions"
+              label="$i18n{captionsPreferencesTitle}"
+              sub-label="$i18n{captionsPreferencesSubtitle}"
+              on-click="onCaptionsClick_"
+              external$="[[captionSettingsOpensExternally_]]">
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
+          <cr-link-row id="captions"
+              label="$i18n{captionsTitle}"
+              on-click="onCaptionsClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
         <settings-toggle-button
-            id="a11yImageLabels"
+            class="hr"
+            hidden$="[[!showFocusHighlightOption_]]"
+            pref="{{prefs.settings.a11y.focus_highlight}}"
+            on-setting-boolean-control-change="onFocusHighlightChange_"
+            label="$i18n{focusHighlightLabel}">
+        </settings-toggle-button>
+        <settings-toggle-button
+            class="hr"
+            pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
+            on-change="onA11yCaretBrowsingChange_"
+            label="$i18n{caretBrowsingTitle}"
+            sub-label="$i18n{caretBrowsingSubtitle}">
+        </settings-toggle-button>
+</if>
+        <settings-toggle-button
+            class="hr"
             hidden$="[[!showAccessibilityLabelsSetting_]]"
             pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
-            on-change="onToggleAccessibilityImageLabels_"
+            on-change="onA11yImageLabelsChange_"
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
-</if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
             external>
         </cr-link-row>
       </div>
-<if expr="not is_macosx and not is_chromeos">
-      <template is="dom-if" if="[[showCaptionSettings_]]">
+<if expr="not chromeos">
+      <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
         <template is="dom-if" route-path="/captions">
           <settings-subpage
               associated-control="[[$$('#captions')]]"
@@ -63,6 +68,3 @@
       </template>
 </if>
     </settings-animated-pages>
-  </template>
-  <script src="a11y_page.js"></script>
-</dom-module>

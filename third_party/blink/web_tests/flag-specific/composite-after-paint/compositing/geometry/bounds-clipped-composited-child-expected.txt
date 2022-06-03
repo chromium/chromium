@@ -7,8 +7,9 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box'",
+      "name": "LayoutNGBlockFlow DIV class='container'",
       "bounds": [200, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     }

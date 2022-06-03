@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 
@@ -86,6 +87,9 @@ class BLINK_EXPORT WebNode {
   bool IsElementNode() const;
   void SimulateClick();
 
+  // See cc/paint/element_id.h for the definition of these ids.
+  uint64_t ScrollingElementIdForTesting() const;
+
   // The argument should be lower-cased.
   WebElementCollection GetElementsByHTMLTagName(const WebString&) const;
 
@@ -100,6 +104,9 @@ class BLINK_EXPORT WebNode {
   WebPluginContainer* PluginContainer() const;
 
   bool IsInsideFocusableElementOrARIAWidget() const;
+
+  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
+                                 v8::Isolate*);
 
   template <typename T>
   T To();
@@ -164,4 +171,4 @@ inline bool operator<(const WebNode& a, const WebNode& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_

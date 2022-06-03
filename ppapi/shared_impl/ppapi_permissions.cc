@@ -4,8 +4,8 @@
 
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 

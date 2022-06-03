@@ -28,7 +28,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/output_controller.h"
-#include "services/audio/stream_monitor_coordinator.h"
 #include "services/audio/sync_reader.h"
 
 namespace base {
@@ -41,6 +40,7 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
+class OutputStreamActivityMonitor;
 
 class OutputStream final : public media::mojom::AudioOutputStream,
                            public OutputController::EventHandler {
@@ -57,12 +57,14 @@ class OutputStream final : public media::mojom::AudioOutputStream,
           observer,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* audio_manager,
+      OutputStreamActivityMonitor* activity_monitor,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       LoopbackCoordinator* coordinator,
-      const base::UnguessableToken& loopback_group_id,
-      StreamMonitorCoordinator* stream_monitor_coordinator,
-      const base::UnguessableToken& processing_id);
+      const base::UnguessableToken& loopback_group_id);
+
+  OutputStream(const OutputStream&) = delete;
+  OutputStream& operator=(const OutputStream&) = delete;
 
   ~OutputStream() final;
 
@@ -84,6 +86,13 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   void CallDeleter();
   void PollAudioLevel();
   bool IsAudible();
+
+  // Internal helper method for sending logs related  to this class to clients
+  // registered to receive these logs. Prepends each log with "audio::OS" to
+  // point out its origin. Compare with OutputController::EventHandler::OnLog()
+  // which only will be called by the |controller_| object. These logs are
+  // prepended with "AOC::" where AOC corresponds to AudioOutputController.
+  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
 
   SEQUENCE_CHECKER(owning_sequence_);
 
@@ -108,8 +117,6 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   bool is_audible_ = false;
 
   base::WeakPtrFactory<OutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputStream);
 };
 
 }  // namespace audio

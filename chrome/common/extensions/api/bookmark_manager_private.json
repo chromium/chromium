@@ -57,9 +57,13 @@
             "type": "array",
             "items": {"type": "string"},
             "minItems": 1
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "cut",
@@ -72,16 +76,23 @@
             "type": "array",
             "items": {"type": "string"},
             "minItems": 1
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "paste",
         "type": "function",
         "description": "Pastes bookmarks from the clipboard into the parent folder after the last selected node.",
         "parameters": [
-          {"type": "string", "name": "parentId"},
+          {
+            "type": "string",
+            "name": "parentId"
+          },
           {
             "name": "selectedIdList",
             "description": "An array of string-valued ids for selected bookmarks.",
@@ -89,27 +100,45 @@
             "type": "array",
             "items": {"type": "string"},
             "minItems": 0
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "canPaste",
         "type": "function",
         "description": "Whether there are any bookmarks that can be pasted.",
         "parameters": [
-          {"type": "string", "name": "parentId", "description": "The ID of the folder to paste into."},
-          {"type": "function", "name": "callback", "parameters": [
-            {"name": "result", "type": "boolean"}
-          ]}
-        ]
+          {
+            "type": "string",
+            "name": "parentId",
+            "description": "The ID of the folder to paste into."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "sortChildren",
         "type": "function",
         "description": "Sorts the children of a given folder.",
         "parameters": [
-          {"type": "string", "name": "parentId", "description": "The ID of the folder to sort the children of."}
+          {
+            "type": "string",
+            "name": "parentId",
+            "description": "The ID of the folder to sort the children of."
+          }
         ]
       },
       {
@@ -165,14 +194,13 @@
             "type": "integer",
             "minimum": 0,
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "getSubtree",
@@ -188,15 +216,18 @@
             "name": "foldersOnly",
             "type": "boolean",
             "description": "Pass true to only return folders."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {"name": "results", "type": "array", "items": { "$ref": "bookmarks.BookmarkTreeNode"} }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "results",
+              "type": "array",
+              "items": { "$ref": "bookmarks.BookmarkTreeNode"}
+            }
+          ]
+        }
       },
       {
         "name": "removeTrees",
@@ -209,9 +240,13 @@
             "type": "array",
             "items": {"type": "string"},
             "minItems": 1
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "undo",

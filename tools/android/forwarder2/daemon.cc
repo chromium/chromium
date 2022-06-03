@@ -171,8 +171,8 @@ bool Daemon::SpawnIfNeeded() {
         CHECK_EQ(dup(null_fd), STDERR_FILENO);
         Socket command_socket;
         if (!command_socket.BindUnix(identifier_)) {
-          std::unique_ptr<Socket> client_socket = ConnectToUnixDomainSocket(
-              identifier_, kSingleTry, kNoIdleTime, identifier_);
+          client_socket = ConnectToUnixDomainSocket(identifier_, kSingleTry,
+                                                    kNoIdleTime, identifier_);
           if (client_socket.get()) {
             // The daemon was spawned by a concurrent process.
             exit(0);

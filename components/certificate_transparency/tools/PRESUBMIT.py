@@ -5,6 +5,7 @@
 
 """Chromium presubmit script for src/net/tools/ct_log_list."""
 
+USE_PYTHON3 = True
 
 def _RunMakeCTLogListTests(input_api, output_api):
   """Runs make_ct_known_logs_list unittests if related files were modified."""

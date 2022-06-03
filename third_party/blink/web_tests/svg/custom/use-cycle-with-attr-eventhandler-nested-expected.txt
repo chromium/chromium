@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 4: foo is called
-CONSOLE MESSAGE: line 4: foo is called
+CONSOLE MESSAGE: foo is called
+CONSOLE MESSAGE: foo is called

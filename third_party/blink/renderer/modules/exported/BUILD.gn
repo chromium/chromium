@@ -12,12 +12,15 @@ blink_modules_sources("exported") {
     "web_dom_media_stream_track.cc",
     "web_embedded_worker_impl.cc",
     "web_embedded_worker_impl.h",
-    "web_user_media_request.cc",
   ]
 
   defines = [ "BLINK_MODULES_IMPLEMENTATION=1" ]
 
   deps = [
+    "//third_party/blink/renderer/modules/accessibility",
+    "//third_party/blink/renderer/modules/crypto",
+    "//third_party/blink/renderer/modules/filesystem",
+    "//third_party/blink/renderer/modules/mediastream",
     "//ui/accessibility:ax_enums_mojo_blink",
   ]
 }
@@ -27,15 +30,15 @@ static_library("test_support") {
 
   deps = [
     "//skia",
+    "//third_party/blink/renderer/bindings/modules/v8:testing",
+    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules:modules_testing",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
 
-  sources = [
-    "web_testing_support.cc",
-  ]
+  sources = [ "web_testing_support.cc" ]
 
   configs += [
     "//third_party/blink/renderer:config",

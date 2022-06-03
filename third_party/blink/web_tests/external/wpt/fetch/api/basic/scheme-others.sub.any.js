@@ -1,3 +1,4 @@
+// META: global=window,worker
 // META: script=../resources/utils.js
 
 function checkKoUrl(url, desc) {
@@ -5,7 +6,7 @@ function checkKoUrl(url, desc) {
     desc = "Fetching " + url.substring(0, 45) + " is KO"
   promise_test(function(test) {
     var promise = fetch(url);
-    return promise_rejects(test, new TypeError(), promise);
+    return promise_rejects_js(test, TypeError, promise);
   }, desc);
 }
 

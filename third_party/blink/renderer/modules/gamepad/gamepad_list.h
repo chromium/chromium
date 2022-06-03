@@ -44,7 +44,7 @@ class MODULES_EXPORT GamepadList final : public ScriptWrappable {
   Gamepad* item(unsigned index);
   unsigned length() const { return device::Gamepads::kItemsLengthCap; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Gamepad> items_[device::Gamepads::kItemsLengthCap];

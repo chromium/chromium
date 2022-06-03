@@ -42,6 +42,9 @@ class ContentRulesRegistry : public RulesRegistry {
                       cache_delegate,
                       rules_registry_id) {}
 
+  ContentRulesRegistry(const ContentRulesRegistry&) = delete;
+  ContentRulesRegistry& operator=(const ContentRulesRegistry&) = delete;
+
   // Notifies the registry that it should evaluate rules for |contents|.
   virtual void MonitorWebContentsForRuleEvaluation(
       content::WebContents* contents) = 0;
@@ -53,11 +56,17 @@ class ContentRulesRegistry : public RulesRegistry {
       content::WebContents* tab,
       content::NavigationHandle* navigation_handle) = 0;
 
+  // Applies the given CSS selector rules to |contents|.
+  virtual void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) = 0;
+
+  // Notifies the registry that the given |contents| is being
+  // destroyed.
+  virtual void WebContentsDestroyed(content::WebContents* contents) = 0;
+
  protected:
   ~ContentRulesRegistry() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentRulesRegistry);
 };
 
 }  // namespace extensions

@@ -82,11 +82,11 @@ bool ProcessPolicy::GenerateRules(const wchar_t* name,
   std::unique_ptr<PolicyRule> process;
   switch (semantics) {
     case TargetPolicy::PROCESS_MIN_EXEC: {
-      process.reset(new PolicyRule(GIVE_READONLY));
+      process = std::make_unique<PolicyRule>(GIVE_READONLY);
       break;
     };
     case TargetPolicy::PROCESS_ALL_EXEC: {
-      process.reset(new PolicyRule(GIVE_ALLACCESS));
+      process = std::make_unique<PolicyRule>(GIVE_ALLACCESS);
       break;
     };
     default: { return false; };

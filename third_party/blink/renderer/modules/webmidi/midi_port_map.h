@@ -23,7 +23,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(entries_);
     ScriptWrappable::Trace(visitor);
   }
@@ -77,7 +77,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
       return true;
     }
 
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(map_);
       PairIterable<String, T*>::IterationSource::Trace(visitor);
     }
@@ -95,4 +95,4 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_PORT_MAP_H_

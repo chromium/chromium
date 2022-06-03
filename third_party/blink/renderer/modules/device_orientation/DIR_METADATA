@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Sensor>DeviceOrientation"
+}
+team_email: "device-dev@chromium.org"

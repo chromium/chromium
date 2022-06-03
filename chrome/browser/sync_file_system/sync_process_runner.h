@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -61,7 +60,7 @@ class SyncProcessRunner {
     virtual bool IsRunning() = 0;
     virtual void Start(const base::Location& from_here,
                        const base::TimeDelta& delay,
-                       const base::Closure& closure) = 0;
+                       base::OnceClosure closure) = 0;
     virtual base::TimeTicks Now() const = 0;
 
    protected:
@@ -72,10 +71,14 @@ class SyncProcessRunner {
                     Client* client,
                     std::unique_ptr<TimerHelper> timer_helper,
                     size_t max_parallel_task);
+
+  SyncProcessRunner(const SyncProcessRunner&) = delete;
+  SyncProcessRunner& operator=(const SyncProcessRunner&) = delete;
+
   virtual ~SyncProcessRunner();
 
   // Subclass must implement this.
-  virtual void StartSync(const SyncStatusCallback& callback) = 0;
+  virtual void StartSync(SyncStatusCallback callback) = 0;
 
   // Schedules a new sync.
   void Schedule();
@@ -119,8 +122,6 @@ class SyncProcessRunner {
 
   int64_t pending_changes_;
   base::WeakPtrFactory<SyncProcessRunner> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncProcessRunner);
 };
 
 }  // namespace sync_file_system

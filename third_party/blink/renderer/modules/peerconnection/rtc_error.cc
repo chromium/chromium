@@ -8,58 +8,70 @@
 
 namespace blink {
 
+namespace {
+
+String RTCErrorDetailToString(webrtc::RTCErrorDetailType detail) {
+  switch (detail) {
+    case webrtc::RTCErrorDetailType::NONE:
+      // This should not happen, it indicates an error in webrtc
+      LOG(ERROR) << "RTCError: RTCErrorDetail is NONE";
+      return "";
+    case webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE:
+      return "data-channel-failure";
+    case webrtc::RTCErrorDetailType::DTLS_FAILURE:
+      return "dtls-failure";
+    case webrtc::RTCErrorDetailType::FINGERPRINT_FAILURE:
+      return "fingerprint-failure";
+    case webrtc::RTCErrorDetailType::SCTP_FAILURE:
+      return "sctp-failure";
+    case webrtc::RTCErrorDetailType::SDP_SYNTAX_ERROR:
+      return "sdp-syntax-error";
+    case webrtc::RTCErrorDetailType::HARDWARE_ENCODER_NOT_AVAILABLE:
+      return "hardware-encoder-not-available";
+    case webrtc::RTCErrorDetailType::HARDWARE_ENCODER_ERROR:
+      return "hardware-encoder-error";
+    default:
+      // Included to ease introduction of new errors at the webrtc layer.
+      NOTREACHED();
+      return "";
+  }
+}
+}  // namespace
+
 // static
 RTCError* RTCError::Create(const RTCErrorInit* init, String message) {
   return MakeGarbageCollected<RTCError>(init, std::move(message));
 }
 
 RTCError::RTCError(const RTCErrorInit* init, String message)
-    : DOMException(0u, "RTCError", std::move(message), String()),
+    : DOMException(DOMExceptionCode::kOperationError, std::move(message)),
       error_detail_(init->errorDetail()),
       sdp_line_number_(init->hasSdpLineNumber()
-                           ? base::Optional<int32_t>(init->sdpLineNumber())
-                           : base::nullopt),
+                           ? absl::optional<int32_t>(init->sdpLineNumber())
+                           : absl::nullopt),
       http_request_status_code_(
           init->hasHttpRequestStatusCode()
-              ? base::Optional<int32_t>(init->httpRequestStatusCode())
-              : base::nullopt),
+              ? absl::optional<int32_t>(init->httpRequestStatusCode())
+              : absl::nullopt),
       sctp_cause_code_(init->hasSctpCauseCode()
-                           ? base::Optional<int32_t>(init->sctpCauseCode())
-                           : base::nullopt),
+                           ? absl::optional<int32_t>(init->sctpCauseCode())
+                           : absl::nullopt),
       received_alert_(init->hasReceivedAlert()
-                          ? base::Optional<uint32_t>(init->receivedAlert())
-                          : base::nullopt),
+                          ? absl::optional<uint32_t>(init->receivedAlert())
+                          : absl::nullopt),
       sent_alert_(init->hasSentAlert()
-                      ? base::Optional<uint32_t>(init->sentAlert())
-                      : base::nullopt) {}
+                      ? absl::optional<uint32_t>(init->sentAlert())
+                      : absl::nullopt) {}
+
+RTCError::RTCError(webrtc::RTCError err)
+    : DOMException(DOMExceptionCode::kOperationError, err.message()),
+      error_detail_(RTCErrorDetailToString(err.error_detail())),
+      sctp_cause_code_(err.sctp_cause_code()
+                           ? absl::optional<int32_t>(*err.sctp_cause_code())
+                           : absl::nullopt) {}
 
 const String& RTCError::errorDetail() const {
   return error_detail_;
-}
-
-int32_t RTCError::sdpLineNumber(bool& is_null) const {
-  is_null = !sdp_line_number_;
-  return sdp_line_number_ ? *sdp_line_number_ : 0;
-}
-
-int32_t RTCError::httpRequestStatusCode(bool& is_null) const {
-  is_null = !http_request_status_code_;
-  return http_request_status_code_ ? *http_request_status_code_ : 0;
-}
-
-int32_t RTCError::sctpCauseCode(bool& is_null) const {
-  is_null = !sctp_cause_code_;
-  return sctp_cause_code_ ? *sctp_cause_code_ : 0;
-}
-
-uint32_t RTCError::receivedAlert(bool& is_null) const {
-  is_null = !received_alert_;
-  return received_alert_ ? *received_alert_ : 0u;
-}
-
-uint32_t RTCError::sentAlert(bool& is_null) const {
-  is_null = !sent_alert_;
-  return sent_alert_ ? *sent_alert_ : 0u;
 }
 
 }  // namespace blink

@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "extensions/browser/deferred_start_render_host.h"
@@ -40,9 +40,11 @@ void ExtensionHostQueue::Remove(DeferredStartRenderHost* host) {
 
 void ExtensionHostQueue::PostTask() {
   if (!pending_create_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&ExtensionHostQueue::ProcessOneHost,
-                                  ptr_factory_.GetWeakPtr()));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ExtensionHostQueue::ProcessOneHost,
+                       ptr_factory_.GetWeakPtr()),
+        delay_);
     pending_create_ = true;
   }
 }
@@ -52,7 +54,7 @@ void ExtensionHostQueue::ProcessOneHost() {
   if (queue_.empty())
     return;  // can happen on shutdown
 
-  queue_.front()->CreateRenderViewNow();
+  queue_.front()->CreateRendererNow();
   queue_.pop_front();
 
   if (!queue_.empty())

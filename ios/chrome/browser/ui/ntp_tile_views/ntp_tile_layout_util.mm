@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

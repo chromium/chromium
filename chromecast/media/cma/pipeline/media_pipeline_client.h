@@ -14,15 +14,19 @@ namespace chromecast {
 namespace media {
 
 struct MediaPipelineClient {
-  typedef base::Callback<
-      void(base::TimeDelta, base::TimeDelta, base::TimeTicks)> TimeUpdateCB;
+  typedef base::RepeatingCallback<
+      void(base::TimeDelta, base::TimeDelta, base::TimeTicks)>
+      TimeUpdateCB;
 
   MediaPipelineClient();
-  MediaPipelineClient(const MediaPipelineClient& other);
+  MediaPipelineClient(MediaPipelineClient&& other);
+  MediaPipelineClient(const MediaPipelineClient& other) = delete;
+  MediaPipelineClient& operator=(MediaPipelineClient&& other);
+  MediaPipelineClient& operator=(const MediaPipelineClient& other) = delete;
   ~MediaPipelineClient();
 
   // Callback used to report a playback error as a ::media::PipelineStatus.
-  ::media::PipelineStatusCB error_cb;
+  ::media::PipelineStatusCallback error_cb;
 
   // Callback used to report the latest playback time,
   // as well as the maximum time available for rendering.

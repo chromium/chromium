@@ -9,7 +9,7 @@ behavior](https://support.google.com/webtools/answer/7347327).
 
 The ad detection infrastructure is called Ad Tagging. Ad Tagging works by
 matching resource requests against a filter list (see how the list is
-[generated](https://chromium.googlesource.com/chromium/src.git/+/master/components/subresource_filter/FILTER_LIST_GENERATION.md))
+[generated](https://chromium.googlesource.com/chromium/src.git/+/main/components/subresource_filter/FILTER_LIST_GENERATION.md))
 to determine if they’re ad requests. Any requests matching the filter are tagged
 as ads. Further, requests (and some DOM elements such as iframes) made on behalf
 of previously tagged scripts are also tagged as ads by the
@@ -23,7 +23,7 @@ request made within an ad iframe is considered an ad resource request.
 
 ### Subresource Filter
 The [Subresource
-Filter](https://chromium.googlesource.com/chromium/src.git/+/master/components/subresource_filter/README.md)
+Filter](https://chromium.googlesource.com/chromium/src.git/+/main/components/subresource_filter/README.md)
 loads the filter list and matches urls against it. The list is distributed via
 the component updater. This same list and component is used for blocking ads on
 abusive sites and those that violate the Better Ads Standard.

@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @JNINamespace("autofill_assistant")
 public class AssistantInfoBoxModel extends PropertyModel {
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final WritableObjectPropertyKey<AssistantInfoBox> INFO_BOX =
             new WritableObjectPropertyKey<>();
 

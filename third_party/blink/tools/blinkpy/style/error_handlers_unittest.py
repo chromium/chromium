@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for error_handlers.py."""
 
 import unittest
@@ -30,7 +29,6 @@ from blinkpy.style.filter import FilterConfiguration
 
 
 class DefaultStyleErrorHandlerTest(unittest.TestCase):
-
     """Tests the DefaultStyleErrorHandler class."""
 
     def setUp(self):
@@ -62,10 +60,11 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
             stderr_write=self._mock_stderr_write)
 
     def _error_handler(self, configuration, line_numbers=None):
-        return DefaultStyleErrorHandler(configuration=configuration,
-                                        file_path=self._file_path,
-                                        increment_error_count=self._mock_increment_error_count,
-                                        line_numbers=line_numbers)
+        return DefaultStyleErrorHandler(
+            configuration=configuration,
+            file_path=self._file_path,
+            increment_error_count=self._mock_increment_error_count,
+            line_numbers=line_numbers)
 
     def _check_initialized(self):
         """Check that count and error messages are initialized."""
@@ -74,10 +73,11 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
 
     def _call_error_handler(self, handle_error, confidence, line_number=100):
         """Call the given error handler with a test error."""
-        handle_error(line_number=line_number,
-                     category=self._category,
-                     confidence=confidence,
-                     message='message')
+        handle_error(
+            line_number=line_number,
+            category=self._category,
+            confidence=confidence,
+            message='message')
 
     def test_eq__true_return_value(self):
         """Test the __eq__() method for the return value of True."""
@@ -88,14 +88,17 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
 
     def test_eq__false_return_value(self):
         """Test the __eq__() method for the return value of False."""
+
         def make_handler(configuration=self._style_checker_configuration(),
-                         file_path='foo.txt', increment_error_count=lambda: True,
+                         file_path='foo.txt',
+                         increment_error_count=lambda: True,
                          line_numbers=None):
             line_numbers = line_numbers or [100]
-            return DefaultStyleErrorHandler(configuration=configuration,
-                                            file_path=file_path,
-                                            increment_error_count=increment_error_count,
-                                            line_numbers=line_numbers)
+            return DefaultStyleErrorHandler(
+                configuration=configuration,
+                file_path=file_path,
+                increment_error_count=increment_error_count,
+                line_numbers=line_numbers)
 
         handler = make_handler()
 
@@ -105,7 +108,8 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
         # Verify that a difference in any argument causes equality to fail.
         self.assertFalse(handler.__eq__(make_handler(configuration=None)))
         self.assertFalse(handler.__eq__(make_handler(file_path='bar.txt')))
-        self.assertFalse(handler.__eq__(make_handler(increment_error_count=None)))
+        self.assertFalse(
+            handler.__eq__(make_handler(increment_error_count=None)))
         self.assertFalse(handler.__eq__(make_handler(line_numbers=[50])))
 
     def test_ne(self):
@@ -125,9 +129,9 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
 
         confidence = 1
         # Confirm the error is not reportable.
-        self.assertFalse(configuration.is_reportable(self._category,
-                                                     confidence,
-                                                     self._file_path))
+        self.assertFalse(
+            configuration.is_reportable(self._category, confidence,
+                                        self._file_path))
         error_handler = self._error_handler(configuration)
         self._call_error_handler(error_handler, confidence)
 
@@ -158,9 +162,10 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
         self.assertEqual(3, len(self._error_messages))
         self.assertEqual(self._error_messages[-2],
                          'foo.h(100):  message  [whitespace/tab] [5]\n')
-        self.assertEqual(self._error_messages[-1],
-                         'Suppressing further [whitespace/tab] reports '
-                         'for this file.\n')
+        self.assertEqual(
+            self._error_messages[-1],
+            'Suppressing further [whitespace/tab] reports '
+            'for this file.\n')
 
         # Third call: no report.
         self._call_error_handler(error_handler, confidence)
@@ -171,8 +176,7 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
         """Test the line_numbers parameter."""
         self._check_initialized()
         configuration = self._style_checker_configuration()
-        error_handler = self._error_handler(configuration,
-                                            line_numbers=[50])
+        error_handler = self._error_handler(configuration, line_numbers=[50])
         confidence = 5
 
         # Error on non-modified line: no error.
@@ -190,7 +194,8 @@ class DefaultStyleErrorHandlerTest(unittest.TestCase):
         error_handler.turn_off_line_filtering()
         self._call_error_handler(error_handler, confidence, line_number=60)
         self.assertEqual(2, self._error_count)
-        self.assertEqual(self._error_messages,
-                         ['foo.h(50):  message  [whitespace/tab] [5]\n',
-                          'foo.h(60):  message  [whitespace/tab] [5]\n',
-                          'Suppressing further [whitespace/tab] reports for this file.\n'])
+        self.assertEqual(self._error_messages, [
+            'foo.h(50):  message  [whitespace/tab] [5]\n',
+            'foo.h(60):  message  [whitespace/tab] [5]\n',
+            'Suppressing further [whitespace/tab] reports for this file.\n'
+        ])

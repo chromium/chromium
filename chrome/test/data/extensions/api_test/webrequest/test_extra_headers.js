@@ -121,26 +121,6 @@ runTests([
     });
   },
 
-  function testSpecialResponseHeadersVisibleForAuth() {
-    var url = getServerURL('auth-basic?set-cookie-if-challenged');
-    var extraHeadersListener = callbackPass(function(details) {
-      checkHeaders(details.responseHeaders, ['set-cookie'], []);
-    });
-    chrome.webRequest.onAuthRequired.addListener(extraHeadersListener,
-        {urls: [url]}, ['responseHeaders', 'extraHeaders']);
-
-    var standardListener = callbackPass(function(details) {
-      checkHeaders(details.responseHeaders, [], ['set-cookie']);
-    });
-    chrome.webRequest.onAuthRequired.addListener(standardListener,
-        {urls: [url]}, ['responseHeaders']);
-
-    navigateAndWait(url, function() {
-      chrome.webRequest.onAuthRequired.removeListener(extraHeadersListener);
-      chrome.webRequest.onAuthRequired.removeListener(standardListener);
-    });
-  },
-
   function testModifySpecialRequestHeaders() {
     // Set a cookie so the cookie request header is set.
     navigateAndWait(getSetCookieUrl('foo', 'bar'), function() {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_BACKGROUND_TASK_SCHEDULER_ANDROID_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_BACKGROUND_TASK_SCHEDULER_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
 
@@ -18,6 +17,10 @@ class NotificationBackgroundTaskSchedulerAndroid
     : public notifications::NotificationBackgroundTaskScheduler {
  public:
   NotificationBackgroundTaskSchedulerAndroid();
+  NotificationBackgroundTaskSchedulerAndroid(
+      const NotificationBackgroundTaskSchedulerAndroid&) = delete;
+  NotificationBackgroundTaskSchedulerAndroid& operator=(
+      const NotificationBackgroundTaskSchedulerAndroid&) = delete;
   ~NotificationBackgroundTaskSchedulerAndroid() override;
 
  private:
@@ -25,8 +28,6 @@ class NotificationBackgroundTaskSchedulerAndroid
   void Schedule(base::TimeDelta window_start,
                 base::TimeDelta window_end) override;
   void Cancel() override;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationBackgroundTaskSchedulerAndroid);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_BACKGROUND_TASK_SCHEDULER_ANDROID_H_

@@ -11,19 +11,15 @@
 
 class Browser;
 @class BrowserViewController;
-namespace ios {
 class ChromeBrowserState;
-}
-@class TabModel;
 
 // Test double for BrowserInterface implementors. All properties are writable,
 // and have nil, nullptr, or NO as default values.
 @interface StubBrowserInterface : NSObject <BrowserInterface>
 @property(nonatomic, readwrite) UIViewController* viewController;
 @property(nonatomic, readwrite) BrowserViewController* bvc;
-@property(nonatomic, readwrite) TabModel* tabModel;
 @property(nonatomic, readwrite) Browser* browser;
-@property(nonatomic, readwrite) ios::ChromeBrowserState* browserState;
+@property(nonatomic, readwrite) ChromeBrowserState* browserState;
 @property(nonatomic, readwrite) BOOL incognito;
 @end
 

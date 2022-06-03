@@ -5,13 +5,12 @@
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_names.mojom.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 
 namespace spellcheck {
@@ -55,6 +54,12 @@ void SpellCheckPanelBrowserTestHelper::BindSpellCheckPanelHost(
     spell_check_panel_host = hosts_.back().get();
   }
   spell_check_panel_host->BindReceiver(std::move(receiver));
-  std::move(quit_on_bind_closure_).Run();
+
+  // BindSpellCheckPanelHost() is sometimes invoked as a side-effect of
+  // calling spellcheck::SpellCheckMockPanelHost::SpellingPanelVisible(),
+  // which does not call RunUntilBind(). See crbug.com/1032617 .
+  if (quit_on_bind_closure_) {
+    std::move(quit_on_bind_closure_).Run();
+  }
 }
 }  // namespace spellcheck

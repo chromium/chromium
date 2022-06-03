@@ -12,6 +12,8 @@
 
 namespace net {
 
+struct HttpRequestInfo;
+
 // An implementation of ServerPushDelegate that issues an HttpCache::Transaction
 // to lookup whether the response to the pushed URL is cached and cancel the
 // push in that case.

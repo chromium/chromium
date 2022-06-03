@@ -14,7 +14,6 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace media {
@@ -23,42 +22,45 @@ class FilterBase : public IBaseFilter, public base::RefCounted<FilterBase> {
  public:
   FilterBase();
 
+  FilterBase(const FilterBase&) = delete;
+  FilterBase& operator=(const FilterBase&) = delete;
+
   // Number of pins connected to this filter.
   virtual size_t NoOfPins() = 0;
   // Returns the IPin interface pin no index.
   virtual IPin* GetPin(int index) = 0;
 
   // Inherited from IUnknown.
-  STDMETHOD(QueryInterface)(REFIID id, void** object_ptr) override;
-  STDMETHOD_(ULONG, AddRef)() override;
-  STDMETHOD_(ULONG, Release)() override;
+  IFACEMETHODIMP QueryInterface(REFIID id, void** object_ptr) override;
+  IFACEMETHODIMP_(ULONG) AddRef() override;
+  IFACEMETHODIMP_(ULONG) Release() override;
 
   // Inherited from IBaseFilter.
-  STDMETHOD(EnumPins)(IEnumPins** enum_pins) override;
+  IFACEMETHODIMP EnumPins(IEnumPins** enum_pins) override;
 
-  STDMETHOD(FindPin)(LPCWSTR id, IPin** pin) override;
+  IFACEMETHODIMP FindPin(LPCWSTR id, IPin** pin) override;
 
-  STDMETHOD(QueryFilterInfo)(FILTER_INFO* info) override;
+  IFACEMETHODIMP QueryFilterInfo(FILTER_INFO* info) override;
 
-  STDMETHOD(JoinFilterGraph)(IFilterGraph* graph, LPCWSTR name) override;
+  IFACEMETHODIMP JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) override;
 
-  STDMETHOD(QueryVendorInfo)(LPWSTR* vendor_info) override;
+  IFACEMETHODIMP QueryVendorInfo(LPWSTR* vendor_info) override;
 
   // Inherited from IMediaFilter.
-  STDMETHOD(Stop)() override;
+  IFACEMETHODIMP Stop() override;
 
-  STDMETHOD(Pause)() override;
+  IFACEMETHODIMP Pause() override;
 
-  STDMETHOD(Run)(REFERENCE_TIME start) override;
+  IFACEMETHODIMP Run(REFERENCE_TIME start) override;
 
-  STDMETHOD(GetState)(DWORD msec_timeout, FILTER_STATE* state) override;
+  IFACEMETHODIMP GetState(DWORD msec_timeout, FILTER_STATE* state) override;
 
-  STDMETHOD(SetSyncSource)(IReferenceClock* clock) override;
+  IFACEMETHODIMP SetSyncSource(IReferenceClock* clock) override;
 
-  STDMETHOD(GetSyncSource)(IReferenceClock** clock) override;
+  IFACEMETHODIMP GetSyncSource(IReferenceClock** clock) override;
 
   // Inherited from IPersistent.
-  STDMETHOD(GetClassID)(CLSID* class_id) override = 0;
+  IFACEMETHODIMP GetClassID(CLSID* class_id) override = 0;
 
  protected:
   friend class base::RefCounted<FilterBase>;
@@ -67,8 +69,6 @@ class FilterBase : public IBaseFilter, public base::RefCounted<FilterBase> {
  private:
   FILTER_STATE state_;
   Microsoft::WRL::ComPtr<IFilterGraph> owning_graph_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterBase);
 };
 
 }  // namespace media

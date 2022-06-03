@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/test/weak_mock_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "net/cookies/canonical_cookie.h"
 #include "ui/base/page_transition_types.h"
 
@@ -35,8 +35,7 @@ struct GlobalRequestID;
 
 namespace mojom {
 class FrameRenderDataUpdate;
-class PageLoadFeatures;
-class PageLoadMetadata;
+class FrameMetadata;
 class PageLoadTiming;
 }  // namespace mojom
 
@@ -65,6 +64,11 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       content::WebContents* web_contents,
       content::RenderViewHostTestHarness* rfh_test_harness,
       const RegisterObserversCallback& callback);
+
+  PageLoadMetricsObserverTester(const PageLoadMetricsObserverTester&) = delete;
+  PageLoadMetricsObserverTester& operator=(
+      const PageLoadMetricsObserverTester&) = delete;
+
   ~PageLoadMetricsObserverTester() override;
 
   // Simulates starting a navigation to the given gurl, without committing the
@@ -91,11 +95,18 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& cpu_timing);
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& cpu_timing,
                                content::RenderFrameHost* rfh);
+  void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing);
+  void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing,
+                                 content::RenderFrameHost* rfh);
+  void SimulateMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness,
+      content::RenderFrameHost* rfh);
   void SimulateTimingAndMetadataUpdate(const mojom::PageLoadTiming& timing,
-                                       const mojom::PageLoadMetadata& metadata);
-  void SimulateMetadataUpdate(const mojom::PageLoadMetadata& metadata,
+                                       const mojom::FrameMetadata& metadata);
+  void SimulateMetadataUpdate(const mojom::FrameMetadata& metadata,
                               content::RenderFrameHost* rfh);
-  void SimulateFeaturesUpdate(const mojom::PageLoadFeatures& new_features);
+  void SimulateFeaturesUpdate(
+      const std::vector<blink::UseCounterFeature>& new_features);
   void SimulateResourceDataUseUpdate(
       const std::vector<mojom::ResourceDataUpdatePtr>& resources);
   void SimulateResourceDataUseUpdate(
@@ -115,8 +126,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateLoadedResource(const ExtraRequestCompleteInfo& info,
                               const content::GlobalRequestID& request_id);
 
-  // Simulate the first user interaction for a frame.
-  void SimulateFrameReceivedFirstUserActivation(
+  // Simulate the user interaction for a frame.
+  void SimulateFrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host);
 
   // Simulates a user input.
@@ -128,23 +139,21 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   // Simulate playing a media element.
   void SimulateMediaPlayed();
 
-  // Simulate reading cookies.
-  void SimulateCookiesRead(const GURL& url,
-                           const GURL& first_party_url,
-                           const net::CookieList& cookie_list,
-                           bool blocked_by_policy);
-
-  // Simulate writing a cookie.
-  void SimulateCookieChange(const GURL& url,
-                            const GURL& first_party_url,
-                            const net::CanonicalCookie& cookie,
-                            bool blocked_by_policy);
+  // Simulate accessingcookies.
+  void SimulateCookieAccess(const content::CookieAccessDetails& details);
 
   // Simulate accessing the local storage or session storage.
-  void SimulateDomStorageAccess(const GURL& url,
-                                const GURL& first_party_url,
-                                bool local,
-                                bool blocked_by_policy);
+  void SimulateStorageAccess(const GURL& url,
+                             const GURL& first_party_url,
+                             bool blocked_by_policy,
+                             StorageType storage_type);
+
+  // Simulate a V8 per-frame memory update.
+  void SimulateMemoryUpdate(content::RenderFrameHost* render_frame_host,
+                            int64_t delta_bytes);
+
+  void SimulateMobileFriendlinessUpdate(
+      blink::MobileFriendliness& mobile_friendliness);
 
   MetricsWebContentsObserver* metrics_web_contents_observer() {
     return metrics_web_contents_observer_;
@@ -161,11 +170,13 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
  private:
   void SimulatePageLoadTimingUpdate(
       const mojom::PageLoadTiming& timing,
-      const mojom::PageLoadMetadata& metadata,
-      const mojom::PageLoadFeatures& new_features,
+      const mojom::FrameMetadata& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
       const mojom::DeferredResourceCounts& new_deferred_resource_data,
+      const mojom::InputTiming& input_timing,
+      const blink::MobileFriendliness& mobile_friendliness,
       content::RenderFrameHost* rfh);
 
   content::WebContents* web_contents() const { return web_contents_; }
@@ -176,8 +187,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   MetricsWebContentsObserver* metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverTester);
 };
 
 }  // namespace page_load_metrics

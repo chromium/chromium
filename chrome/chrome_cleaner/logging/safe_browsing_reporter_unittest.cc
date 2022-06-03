@@ -33,6 +33,9 @@ using ::testing::Return;
 
 class SafeBrowsingReporterTest : public testing::Test {
  public:
+  SafeBrowsingReporterTest(const SafeBrowsingReporterTest&) = delete;
+  SafeBrowsingReporterTest& operator=(const SafeBrowsingReporterTest&) = delete;
+
   // SafeBrowsingReporter::OnResultCallback:
   void OnReportUploadResult(base::OnceClosure run_loop_quit,
                             SafeBrowsingReporter::Result result,
@@ -89,9 +92,6 @@ class SafeBrowsingReporterTest : public testing::Test {
   // Confirm the execution of |OnReportUploadResult| and that |result_| and
   // |response_string_| are valid.
   bool report_upload_result_called_{false};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingReporterTest);
 };
 
 TEST_F(SafeBrowsingReporterTest, Success) {

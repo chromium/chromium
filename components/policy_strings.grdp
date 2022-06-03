@@ -58,8 +58,14 @@
   <message name="IDS_POLICY_DM_STATUS_REQUEST_TOO_LARGE" desc="Message indicating a request to enterprise server is too large.">
     Request is too large
   </message>
+  <message name="IDS_POLICY_DM_STATUS_SERVICE_TOO_MANY_REQUESTS" desc="Message indicating the enterprise server receives too many requests in a short time period.">
+    Too many requests
+  </message>
   <message name="IDS_POLICY_DM_STATUS_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Message to show when the user tries to enroll a device with a packaged license using a consumer account.">
     Can't enroll with consumer account (packaged license available).
+  </message>
+  <message name="IDS_POLICY_DM_STATUS_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Message to show when the user tries to enroll a device with an ineligible enterprise account.">
+    Can't enroll with enterprise account (enterprise account is not eligible).
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
     Validation successful
@@ -154,6 +160,12 @@
   <message name="IDS_POLICY_VALUE_FORMAT_ERROR" desc="The text displayed in the status column when a policy value doesn't match the expected format.">
     Value doesn't match format.
   </message>
+  <message name="IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR" desc="The text displayed in the status column when a policy that should only be set in the cloud is set from another source.">
+    Ignored because the policy is not set by a cloud source.
+  </message>
+  <message name="IDS_POLICY_CLOUD_MANAGEMENT_ENROLLMENT_ONLY_ERROR" desc="The text displayed in the status column when a policy that is effective only when the machine is enrolled with the Chrome Browser Cloud Management.">
+    Ignored because the machine is not enrolled with Chrome Browser Cloud Management.
+  </message>
   <message name="IDS_POLICY_DEFAULT_SEARCH_DISABLED" desc="The text displayed in the status column when a policy value has been ignored because default search has not been enabled.">
     Ignored because default search is not enabled by policy.
   </message>
@@ -162,6 +174,9 @@
   </message>
   <message name="IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING" desc="The text displayed in the status column of the 'Extension Settings' policy when more than 100 origins are specified.">
     This field should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>100</ex></ph> entries. All further entries will be discarded.
+  </message>
+  <message name="IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING" desc="The text displayed in the status column of the URLAllowlist and URLBlocklist policies when the max number of filters is exceeded.">
+    This field should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries. All further entries will be ignored.
   </message>
   <message name="IDS_POLICY_SUBKEY_ERROR" desc="The text displayed in the status column for errors in a subkey of a policy.">
     Key "<ph name="SUBKEY">$1<ex>ProxyMode</ex></ph>": <ph name="ERROR">$2<ex>Must be specified.</ex></ph>
@@ -180,9 +195,6 @@
   </message>
   <message name="IDS_POLICY_INVALID_SECURE_DNS_MODE_ERROR" desc="The text displayed in the status column when the value for DnsOverHttpsMode is invalid.">
     Invalid DnsOverHttps mode.
-  </message>
-  <message name="IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR" desc="The text displayed in the status column when the value for DnsOverHttpsMode is secure, which is not supported yet.">
-    The DnsOverHttps mode <ph name="SECURE_DNS_MODE_SECURE">'secure'</ph> is not yet supported, the mode has been set to <ph name="SECURE_DNS_MODE_OFF">'off'</ph>.
   </message>
   <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_ERROR" desc="The text displayed in the status column when one or more of the DnsOverHttpsTemplates server template URIs is invalid.">
     One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.
@@ -235,11 +247,14 @@
   <message name="IDS_POLICY_OVERRIDDEN" desc="The text displayed in the status column when the corresponding policy is being ignored because another policy is overriding it.">
     Ignored because it was overridden by <ph name="POLICY_NAME">$1<ex>ProxyMode</ex></ph>.
   </message>
-  <message name="IDS_POLICY_DEPRECATED" desc="The text displayed in the status column when the corresponding policy is deprecated.">
-    This policy has been deprecated.
-  </message>
   <message name="IDS_POLICY_VALUE_DEPRECATED" desc="The text displayed in the status column when a specific value for a policy is deprecated.">
     This value is deprecated for this policy.
+  </message>
+  <message name="IDS_POLICY_DEPENDENCY_ERROR" desc="The text displayed in the status column when a policy is ignored as another policies is not set properly.">
+    Ignored because <ph name="POLICY_NAME">$1<ex>CloudReportingEnabled</ex></ph> is not set to <ph name="VALUE">$2<ex>Enabled</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_USER_IS_NOT_AFFILIATED_ERROR" desc="The text displayed in the status column when a user cloud policy is ignored due to user is not affiliated to the machine management.">
+    Ignored because user is not affiliated to the machine management or the machine is not managed.
   </message>
   <if expr="chromeos">
     <message name="IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED" desc="The text displayed in the status column when the corresponding network configuration policy failed to parse.">
@@ -255,6 +270,8 @@ Additional details:
 Additional details:
 <ph name="DEBUG_INFO">$1<ex>ERROR: Field name 'SomeRandomField' is unknown. (at toplevel)</ex></ph>
     </message>
+  </if>
+  <if expr="chromeos or lacros">
     <message name="IDS_POLICY_SCOPE_ERROR" desc="Text displayed in the status column when a policy is set in an unsupported scope.">
       Policy scope is not supported.
     </message>
@@ -262,7 +279,7 @@ Additional details:
   <message name="IDS_POLICY_LEVEL_ERROR" desc="Text displayed in the status column when a policy is set at an unsupported level.">
     Policy level is not supported.
   </message>
-  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy.">
+  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy." meaning="Policy is working as expected.">
     OK
   </message>
   <message name="IDS_POLICY_UNSET" desc="Text displayed in the status column when no value is set for a policy.">
@@ -271,6 +288,12 @@ Additional details:
   <message name="IDS_POLICY_UNKNOWN" desc="Text displayed in the status column when a policy name is not recognized.">
     Unknown policy.
   </message>
+  <message name="IDS_POLICY_PROTO_PARSING_ERROR" desc="Text displayed when error is encountered during policy parsing/decoding.">
+    Policy parsing error: <ph name="ERROR">$1<ex>Invalid JSON string: Line: 1, column: 14</ex></ph>
+  </message>
+    <message name="IDS_POLICY_HEX_COLOR_ERROR" desc="Error message in the policy summary page for the BrowserThemeColor policy when the policy value is an invalid hex color.">
+      Value "<ph name="VALUE">$1<ex>#zzzzzz</ex></ph>" is an invalid hex color.
+    </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">
@@ -281,6 +304,12 @@ Additional details:
   </message>
   <message name="IDS_POLICY_RELOAD_POLICIES" desc="Label for the button that reloads policies.">
     Reload policies
+  </message>
+  <message name="IDS_POLICY_LOADING_POLICIES" desc="Screen reader message indicates policies are being loaded.">
+    Loading policies
+  </message>
+  <message name="IDS_POLICY_LOAD_POLICIES_DONE" desc="Screen reader message indicates policies have been loaded.">
+    Policies is loaded
   </message>
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
@@ -297,12 +326,11 @@ Additional details:
 <message name="IDS_POLICY_STATUS_MACHINE" desc="Title for the machine policy status box.">
     Machine policies
   </message>
-  <message name="IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the device policy status box.">
-    Enrollment domain:
+ <if expr="is_win">
+  <message name="IDS_POLICY_STATUS_UPDATER" desc="Title for the updater policy status box on windows.">
+    Google Update
   </message>
-  <message name="IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN" desc="Label for the display domain in the device policy status box.">
-    Display domain:
-  </message>
+ </if>
   <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the machine policy status box.">
     Enrollment domain:
   </message>
@@ -333,8 +361,14 @@ Additional details:
   <message name="IDS_POLICY_LABEL_DIRECTORY_API_ID" desc="Label for the directory API ID in the device policy status box.">
     Directory API ID:
   </message>
+  <message name="IDS_POLICY_LABEL_MANAGED_BY" desc="Label for the manager in the policy status boxes. Manager can be a domain or an email address.">
+    Managed by:
+  </message>
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
     Last fetched:
+  </message>
+  <message name="IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP" desc="Label for the time when the last cloud report is sent successfully.">
+    Report sent:
   </message>
   <message name="IDS_POLICY_NOT_SPECIFIED" desc="Indicates if that device attribute has not specified yet.">
     Not Specified
@@ -342,10 +376,10 @@ Additional details:
   <message name="IDS_POLICY_LABEL_PUSH_POLICIES" desc="Label to indicates the policies can be pushed or not to chrome.">
     Policies push:
   </message>
-  <message name="IDS_POLICY_PUSH_POLICIES_ON" desc="Indicates the policies can be pushed to chrome.">
+  <message name="IDS_POLICY_PUSH_POLICIES_ON" desc="Label in the chrome://policy information page." meaning="Policies can be pushed to chrome.">
     On
   </message>
-  <message name="IDS_POLICY_PUSH_POLICIES_OFF" desc="Indicates the policies cannot be pushed to chrome.">
+  <message name="IDS_POLICY_PUSH_POLICIES_OFF" desc="Label in the chrome://policy information page." meaning="Policies cannot be pushed to chrome.">
     Off
   </message>
   <message name="IDS_POLICY_NEVER_FETCHED" desc="Indicates that a policy fetch was never performed before.">
@@ -354,11 +388,26 @@ Additional details:
   <message name="IDS_POLICY_LABEL_REFRESH_INTERVAL" desc="Label for the refresh interval in the policy status boxes.">
     Fetch interval:
   </message>
-  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict row in the policy table.">
+  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict status column in the policy table.">
     Conflict
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDING" desc="Label for the superseding status column in the policy table.">
+    Superseding
+  </message>
+  <message name="IDS_POLICY_LABEL_CONFLICT_VALUE" desc="Label for the conflict row in the policy table.">
+    Value (conflict)
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDED_VALUE" desc="Label for the superseded row in the policy table.">
+    Value (superseded)
   </message>
   <message name="IDS_POLICY_LABEL_ERROR" desc="Label for the error row in the policy table.">
     Error
+  </message>
+  <message name="IDS_POLICY_LABEL_DEPRECATED" desc="Label for the status of a deprecated policy.">
+    Deprecated
+  </message>
+  <message name="IDS_POLICY_LABEL_FUTURE" desc="Label for the status of an unreleased policy.">
+    Unreleased
   </message>
   <message name="IDS_POLICY_LABEL_IGNORED" desc="Label for the ignored row in the policy table.">
     Ignored
@@ -366,8 +415,17 @@ Additional details:
   <message name="IDS_POLICY_LABEL_VALUE" desc="Label for the value row in the policy table.">
     Value
   </message>
+  <message name="IDS_POLICY_LABEL_VERSION" desc="Label for the version in the policy status box.">
+    Version:
+  </message>
   <message name="IDS_POLICY_LABEL_STATUS" desc="Label for the actual status in the policy status boxes.">
     Status:
+  </message>
+  <message name="IDS_POLICY_LABEL_INFO" desc="Label for the info row in the policy table.">
+    Info
+  </message>
+  <message name="IDS_POLICY_LABEL_PRECEDENCE" desc="Label for the precedence order row in the policy precedence table.">
+    Current precedence order
   </message>
   <message name="IDS_POLICY_SHOW_UNSET" desc="Label for the checkbox that determines whether policies whose value has not been set are shown.">
     Show policies with no value set
@@ -427,11 +485,23 @@ Additional details:
   <message name="IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT" desc="Indicates that a policy is set by default in an enterprise environment and can be overridden (for Chrome OS only).">
     Enterprise default
   </message>
+  <message name="IDS_POLICY_SOURCE_DEFAULT" desc="Indicates that a policy is set by default and can be overridden.">
+    Default
+  </message>
+  <message name="IDS_POLICY_SOURCE_COMMAND_LINE" desc="Indicates that a policy is set by command line switch for testing purpose.">
+    Command line
+  </message>
   <message name="IDS_POLICY_SOURCE_CLOUD" desc="Indicates that the policy originates from the cloud.">
     Cloud
   </message>
   <message name="IDS_POLICY_SOURCE_MERGED" desc="Indicates that the policy is a merged values from multiple sources.">
     Merged
+  </message>
+  <message name="IDS_POLICY_SOURCE_CLOUD_FROM_ASH" desc="Indicates that the policy originates from the cloud in Ash and piped to Lacros.">
+    Cloud (Ash)
+  </message>
+  <message name="IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE" desc="Indicates that the policy originates from the restricted managed guest session override.">
+    Restricted managed guest session override
   </message>
   <message name="IDS_POLICY_SOURCE_ACTIVE_DIRECTORY" desc="Indicates that the policy originates from a local server, e.g. Samba or Active Directory.">
     <ph name="MICROSOFT_ACTIVE_DIRECTORY">Local Server</ph>
@@ -479,10 +549,10 @@ Additional details:
     Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.
   </message>
   <message name="IDS_POLICY_CONFLICT_SAME_VALUE" desc="Text explaining that a policy had conflicting sources, but with the same values.">
-    More than one source is present for the policy, but the values are the same.
+    This policy is working as intended but the same value is set elsewhere and is superseded by this policy.
   </message>
   <message name="IDS_POLICY_CONFLICT_DIFF_VALUE" desc="Text explaining that a policy had conflicting sources and values.">
-    More than one source with conflicting values is present for this policy!
+    This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.
   </message>
   <message name="IDS_POLICY_MIGRATED_OLD_POLICY" desc="Text explaining that a policy is deprecated, and that admins should use the new policy instead">
     This policy is deprecated. You should use the <ph name="NEW_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy instead.
@@ -493,17 +563,38 @@ Additional details:
   <message name="IDS_POLICY_BLOCKED" desc="Text explaining that a policy is blocked, therefore ignored.">
     This policy is blocked, its value will be ignored.
   </message>
+  <message name="IDS_POLICY_INVALID" desc="Text explaining that a policy failed to validate against a schema, and therefore ignored.">
+    This policy value failed to validate against its schema and will be ignored.
+  </message>
   <message name="IDS_POLICY_IGNORED_BY_GROUP_MERGING" desc="Text explaining that a policy is ignored because another policy of the same group has a higher priority">
     This policy is ignored because another policy from the same policy group has a higher priority.
   </message>
   <message name="IDS_POLICY_INVALID_VALUE"  desc="Text explaining that the policy value is invalid">
     Policy value is not valid.
   </message>
+  <message name="IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY" desc="Text explaining that the policy MetricsReportingEnabled can not be forced to enabled anymore">
+    This policy cannot be set to "True" and be mandatory, therefore it was changed to recommended.
+  </message>
+  <message name="IDS_POLICY_IGNORED_CHROME_PROFILE" desc="Text explaining that the policy cannot be set at the Chrome profile level and is therefore ignored.">
+    This policy cannot be set at the Chrome profile level and will be ignored.
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE" desc="Text describing the platform machine precedence value.">
+    Platform machine
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_PLATFORM_USER" desc="Text describing the platform user precedence value.">
+    Platform user
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_CLOUD_MACHINE" desc="Text describing the cloud machine precedence value.">
+    Cloud machine
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_CLOUD_USER" desc="Text describing the cloud user precedence value.">
+    Cloud user
+  </message>
   <if expr="not is_macosx">
     <message name="IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE" desc="Warning message in the policy summary page for the spellcheck policies when a language is unrecognized or unsupported.">
       List entry "<ph name="LANGUAGE_ID">$1<ex>xx-YY</ex></ph>": Unknown or unsupported language.
     </message>
-    <message name="IDS_POLICY_SPELLCHECK_BLACKLIST_IGNORE" desc="Warning message in the policy summary page for the spellcheck blacklist policy when a language is both force-enabled and force-disabled. 'SpellcheckLanguage' is a policy name and shouldn't be translated.">
+    <message name="IDS_POLICY_SPELLCHECK_BLOCKLIST_IGNORE" desc="Warning message in the policy summary page for the spellcheck blocklist policy when a language is both force-enabled and force-disabled. 'SpellcheckLanguage' is a policy name and shouldn't be translated.">
     List entry "<ph name="LANGUAGE_ID">$1<ex>en-GB</ex></ph>": Entry ignored because it is also included in the SpellcheckLanguage policy.
     </message>
   </if>
@@ -528,4 +619,138 @@ Additional details:
   <message name="IDS_POLICY_SIGNIN_PROFILE" desc="Label to indicate that the policy is for the sign-in screen profile.">
     sign-in screen profile
   </message>
+  <message name ="IDS_POLICY_COPY_VALUE" desc="Help text for link that copies the value of a policy.">
+    Copy the value of <ph name="POLICY_NAME">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy
+  </message>
+  <message name="IDS_COPY_POLICIES_JSON" desc="Label for the button that copies policies in JSON format.">
+    Copy as JSON
+  </message>
+
+  <!-- Strings for Disabled chrome://.* screen -->
+  <message name="IDS_CHROME_URLS_DISABLED_PAGE_HEADER" desc="A heading for the user when the application is blocked.">
+    Application is blocked
+  </message>
+  <message name="IDS_CHROME_URLS_DISABLED_PAGE_TITLE" desc="The title for the blocked chrome URLs page.">
+    Application blocked by your administrator
+  </message>
+  <message name="IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE" desc="A paragraph informing the user that the application is blocked.">
+    This application has been blocked by your administrator
+  </message>
+
+  <!-- Strings for Data Leak Prevention -->
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A notification informing the user that paste is blocked.">
+    Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is blocked by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
+    Sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME">$2<ex>Linux</ex></ph> has been blocked by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON" desc="Dismiss toast button label for disabled paste notification.">
+    View details
+  </message>
+  <message name="IDS_POLICY_DLP_ANDROID_APPS" desc="Name shown for ARC in data leak prevention toasts.">
+    Android apps
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON" desc="Dismiss dialog button label for disabled paste notification.">
+    Got it
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE" desc="A notification warning the user that paste is not recommended.">
+    Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is not recommended by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_PROCEED_BUTTON" desc="Proceed dialog button label for warning before paste.">
+    Paste anyway
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON" desc="Dismiss dialog button label for warning before paste.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM" desc="A toast informing the user that pasting the clipboard data to VMs is not recommended.">
+    Copying and pasting this content to <ph name="VM_NAME">$1<ex>Linux</ex></ph> is not recommended by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE" desc="The title for notification informing the user that printing is blocked.">
+    Printing is blocked
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE" desc="The message for notification informing the user that printing is blocked.">
+    Printing this content is blocked by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_WARN_TITLE" desc="The title for notification informing the user that printing is not recommended.">
+    Confidential file
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_WARN_MESSAGE" desc="The message for notification informing the user that printing is not recommended.">
+    This document is confidential and printing is not advised by your administrator.
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before printing.">
+    Continue
+  </message>
+  <message name="IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before printing.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE" desc="The title for notification informing the user that screen share is blocked.">
+    Capture confidential content
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_MESSAGE" desc="The message for notification informing the user that screen share is blocked.">
+    Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_TITLE" desc="The title for notification informing the user that screen share is paused.">
+    Screen capture paused
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen share is paused.">
+    Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_TITLE" desc="The title for notification informing the user that screen share is resumed.">
+    Screen capture resumed
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen share is resumed.">
+    Screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> was resumed
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled because of confidential content.">
+    Can't capture confidential content
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_DISABLED_MESSAGE" desc="The text of the notification when capture mode is disabled because of confidential content.">
+    Administrator policy disables screen capture when confidential content is visible
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_STOPPED_TITLE" desc="The title of the notification when video capture is stopped because of confidential content.">
+    Can't record confidential content
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_STOPPED_MESSAGE" desc="The text of the notification when video capture is stopped because of confidential content.">
+    Administrator policy disables screen recording when confidential content is visible
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE" desc="The title for notification informing the user that screen sharing is not recommended.">
+    Capture confidential content
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_MESSAGE" desc="The message for notification informing the user that screen sharing is not recommended.">
+   Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible:
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen sharing.">
+    Capture anyway
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before screen sharing.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE" desc="The title for notification informing the user that screen capture is not recommended.">
+    Capture confidential content on your screen
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that screen capture is not recommended.">
+    Administrator doesn't recommend taking screenshots or recordings due to confidential content on screen:
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen capture.">
+    Capture anyway
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before screen capture.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_TITLE" desc="The title for notification informing the user that there was confidential information revealed during screen recording.">
+    Capture confidential content on your screen
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that there was confidential information revealed during screen recording.">
+    Administrator doesn't recommend taking screenshots or recordings due to confidential content captured:
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before saving a screen recording.">
+    Save anyway
+  </message>
+  <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before saving a screen recording.">
+    Delete recording
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE" desc="Text for a bubble that informs the user that their copy and paste action has been blocked/warned with a link to a help center article about Data Leak Prevention.">
+    <ph name="BUBBLE_MESSAGE">$1<ex>Pasting from corp.google.com to this location is blocked by administrator policy</ex></ph>. <ph name="LEARN_MORE_TEXT">$2<ex>Learn more</ex></ph>
+  </message>
+
 </grit-part>

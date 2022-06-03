@@ -2,32 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("demographic_metrics_provider") {
-  sources = [
-    "demographic_metrics_provider.cc",
-    "demographic_metrics_provider.h",
-  ]
-
-  public_deps = [
-    "//third_party/metrics_proto",
-  ]
-
-  deps = [
-    ":metrics",
-    "//base",
-    "//components/sync/base",
-    "//components/sync/driver",
-  ]
-}
-
-jumbo_static_library("metrics") {
+static_library("metrics") {
   sources = [
     "android_metrics_provider.cc",
     "android_metrics_provider.h",
@@ -45,17 +27,18 @@ jumbo_static_library("metrics") {
     "daily_event.h",
     "data_use_tracker.cc",
     "data_use_tracker.h",
+    "date_changed_helper.cc",
+    "date_changed_helper.h",
     "delegating_provider.cc",
     "delegating_provider.h",
     "drive_metrics_provider.cc",
     "drive_metrics_provider.h",
-    "drive_metrics_provider_android.cc",
-    "drive_metrics_provider_ios.mm",
-    "drive_metrics_provider_linux.cc",
-    "drive_metrics_provider_mac.mm",
-    "drive_metrics_provider_win.cc",
     "enabled_state_provider.cc",
     "enabled_state_provider.h",
+    "entropy_state.cc",
+    "entropy_state.h",
+    "entropy_state_provider.cc",
+    "entropy_state_provider.h",
     "environment_recorder.cc",
     "environment_recorder.h",
     "expired_histogram_util.cc",
@@ -72,8 +55,8 @@ jumbo_static_library("metrics") {
     "log_decoder.h",
     "log_store.h",
     "machine_id_provider.h",
-    "machine_id_provider_stub.cc",
-    "machine_id_provider_win.cc",
+    "metrics_data_validation.cc",
+    "metrics_data_validation.h",
     "metrics_log.cc",
     "metrics_log.h",
     "metrics_log_manager.cc",
@@ -111,17 +94,17 @@ jumbo_static_library("metrics") {
     "persistent_system_profile.h",
     "reporting_service.cc",
     "reporting_service.h",
+    "sampling_metrics_provider.cc",
+    "sampling_metrics_provider.h",
     "stability_metrics_helper.cc",
     "stability_metrics_helper.h",
     "stability_metrics_provider.cc",
     "stability_metrics_provider.h",
     "system_memory_stats_recorder.h",
-    "system_memory_stats_recorder_linux.cc",
-    "system_session_analyzer_win.cc",
-    "system_session_analyzer_win.h",
     "ukm_demographic_metrics_provider.h",
     "unsent_log_store.cc",
     "unsent_log_store.h",
+    "unsent_log_store_metrics.cc",
     "unsent_log_store_metrics.h",
     "unsent_log_store_metrics_impl.cc",
     "unsent_log_store_metrics_impl.h",
@@ -140,20 +123,46 @@ jumbo_static_library("metrics") {
     "//base",
     "//base:base_static",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//components/variations",
+    "//components/variations/field_trial_config",
+    "//components/variations/service:constants",
     "//components/version_info:version_info",
     "//crypto",
     "//extensions/buildflags",
+    "//third_party/icu",
     "//url",
   ]
 
-  if (is_chromeos) {
-    deps += [ ":serialization" ]
+  if (is_chromeos_ash) {
+    deps += [
+      ":serialization",
+      "//components/metrics/structured:neutrino_logging",
+    ]
+  }
+
+  if (is_android) {
+    sources += [ "drive_metrics_provider_android.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "clean_exit_beacon_ios.mm",
+      "drive_metrics_provider_ios.mm",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "drive_metrics_provider_linux.cc",
+      "system_memory_stats_recorder_linux.cc",
+    ]
   }
 
   if (is_mac) {
-    libs = [
+    sources += [ "drive_metrics_provider_mac.mm" ]
+    frameworks = [
       # The below are all needed for drive_metrics_provider_mac.mm.
       "CoreFoundation.framework",
       "DiskArbitration.framework",
@@ -163,9 +172,16 @@ jumbo_static_library("metrics") {
   }
 
   if (is_win) {
-    sources -= [ "machine_id_provider_stub.cc" ]
+    sources += [
+      "drive_metrics_provider_win.cc",
+      "machine_id_provider_win.cc",
+      "system_session_analyzer/system_session_analyzer_win.cc",
+      "system_session_analyzer/system_session_analyzer_win.h",
+    ]
     deps += [ "//components/browser_watcher:stability_client" ]
     libs = [ "wevtapi.lib" ]
+  } else {
+    sources += [ "machine_id_provider_nonwin.cc" ]
   }
 
   if (is_fuchsia) {
@@ -177,17 +193,25 @@ if (is_android) {
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":metrics_java" instead.
     visibility = [ ":*" ]
-    sources = [
-      "//components/metrics/metrics_switches.cc",
-    ]
+    sources = [ "//components/metrics/metrics_switches.cc" ]
     template =
         "//components/metrics/android/java_templates/MetricsSwitches.java.tmpl"
+  }
+
+  java_cpp_enum("java_enum_srcjar") {
+    # External code should depend on ":metrics_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "stability_metrics_helper.h" ]
   }
 
   android_library("metrics_java") {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
-    srcjar_deps = [ ":java_switches_srcjar" ]
+    srcjar_deps = [
+      ":java_enum_srcjar",
+      ":java_switches_srcjar",
+    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
 
@@ -200,9 +224,7 @@ static_library("component_metrics") {
     "component_metrics_provider.h",
   ]
 
-  public_deps = [
-    "//third_party/metrics_proto",
-  ]
+  public_deps = [ "//third_party/metrics_proto" ]
 
   deps = [
     ":metrics",
@@ -212,24 +234,47 @@ static_library("component_metrics") {
 }
 
 if (!is_ios) {
-  static_library("gpu") {
+  static_library("content") {
     sources = [
-      "gpu/gpu_metrics_provider.cc",
-      "gpu/gpu_metrics_provider.h",
+      # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
+      "content/accessibility_metrics_provider.cc",
+      "content/accessibility_metrics_provider.h",
+      "content/content_stability_metrics_provider.cc",
+      "content/content_stability_metrics_provider.h",
+      "content/extensions_helper.h",
+      "content/gpu_metrics_provider.cc",
+      "content/gpu_metrics_provider.h",
+      "content/rendering_perf_metrics_provider.cc",
+      "content/rendering_perf_metrics_provider.h",
+      "content/subprocess_metrics_provider.cc",
+      "content/subprocess_metrics_provider.h",
     ]
-
-    public_deps = [
-      ":metrics",
-    ]
+    public_deps = [ ":metrics" ]
     deps = [
       "//base",
       "//content/public/browser",
+      "//extensions/buildflags",
       "//gpu/config",
     ]
+    if (is_android) {
+      deps += [ "//components/crash/content/browser" ]
+    }
   }
 }
 
-jumbo_static_library("net") {
+source_set("library_support") {
+  sources = [
+    "library_support/histogram_manager.cc",
+    "library_support/histogram_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics:metrics",
+    "//third_party/metrics_proto",
+  ]
+}
+
+static_library("net") {
   sources = [
     "net/cellular_logic_helper.cc",
     "net/cellular_logic_helper.h",
@@ -237,34 +282,24 @@ jumbo_static_library("net") {
     "net/net_metrics_log_uploader.h",
     "net/network_metrics_provider.cc",
     "net/network_metrics_provider.h",
-    "net/wifi_access_point_info_provider.cc",
-    "net/wifi_access_point_info_provider.h",
   ]
 
-  public_deps = [
-    ":metrics",
-  ]
+  public_deps = [ ":metrics" ]
   allow_circular_includes_from = [ ":metrics" ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/encrypted_messages:encrypted_message_proto",
     "//components/encrypted_messages:encrypted_messages",
     "//components/variations",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
-
-  if (is_chromeos) {
-    sources += [
-      "net/wifi_access_point_info_provider_chromeos.cc",
-      "net/wifi_access_point_info_provider_chromeos.h",
-    ]
-    deps += [ "//chromeos/network" ]
-  }
 }
 
 static_library("ui") {
@@ -273,9 +308,7 @@ static_library("ui") {
     "ui/screen_info_metrics_provider.h",
   ]
 
-  public_deps = [
-    ":metrics",
-  ]
+  public_deps = [ ":metrics" ]
   deps = [
     "//base",
     "//ui/display",
@@ -308,9 +341,7 @@ source_set("call_stack_profile_params") {
     "call_stack_profile_encoding.h",
     "call_stack_profile_params.h",
   ]
-  sources = [
-    "call_stack_profile_encoding.cc",
-  ]
+  sources = [ "call_stack_profile_encoding.cc" ]
 
   deps = [
     "//base:base",
@@ -330,9 +361,7 @@ source_set("child_call_stack_profile_builder") {
     "call_stack_profile_metadata.cc",
     "child_call_stack_profile_collector.cc",
   ]
-  public_deps = [
-    ":call_stack_profile_params",
-  ]
+  public_deps = [ ":call_stack_profile_params" ]
   deps = [
     "//base",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
@@ -346,12 +375,8 @@ source_set("child_call_stack_profile_builder") {
 
 # Dependency for browser process use of the CallStackProfileBuilder.
 source_set("call_stack_profile_builder") {
-  deps = [
-    ":metrics",
-  ]
-  public_deps = [
-    ":child_call_stack_profile_builder",
-  ]
+  deps = [ ":metrics" ]
+  public_deps = [ ":child_call_stack_profile_builder" ]
 }
 
 # The browser process mojo service for collecting profiles from child
@@ -368,28 +393,24 @@ source_set("call_stack_profile_collector") {
   ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
-    "test_enabled_state_provider.cc",
-    "test_enabled_state_provider.h",
-    "test_metrics_log_uploader.cc",
-    "test_metrics_log_uploader.h",
-    "test_metrics_provider.cc",
-    "test_metrics_provider.h",
-    "test_metrics_service_client.cc",
-    "test_metrics_service_client.h",
+    "test/test_enabled_state_provider.cc",
+    "test/test_enabled_state_provider.h",
+    "test/test_metrics_log_uploader.cc",
+    "test/test_metrics_log_uploader.h",
+    "test/test_metrics_provider.cc",
+    "test/test_metrics_provider.h",
+    "test/test_metrics_service_client.cc",
+    "test/test_metrics_service_client.h",
   ]
 
-  public_deps = [
-    ":metrics",
-  ]
-  deps = [
-    "//base",
-  ]
+  public_deps = [ ":metrics" ]
+  deps = [ "//base" ]
 }
 
-if (is_linux) {
+if (is_linux || is_chromeos) {
   static_library("serialization") {
     sources = [
       "serialization/metric_sample.cc",
@@ -397,9 +418,7 @@ if (is_linux) {
       "serialization/serialization_utils.cc",
       "serialization/serialization_utils.h",
     ]
-    deps = [
-      "//base",
-    ]
+    deps = [ "//base" ]
   }
 }
 
@@ -411,18 +430,23 @@ source_set("unit_tests") {
     "call_stack_profile_metadata_unittest.cc",
     "call_stack_profile_metrics_provider_unittest.cc",
     "child_call_stack_profile_collector_unittest.cc",
+    "clean_exit_beacon_unittest.cc",
     "cloned_install_detector_unittest.cc",
     "component_metrics_provider_unittest.cc",
     "daily_event_unittest.cc",
     "data_use_tracker_unittest.cc",
-    "demographic_metrics_provider_unittest.cc",
+    "date_changed_helper_unittest.cc",
     "drive_metrics_provider_unittest.cc",
+    "entropy_state_provider_unittest.cc",
+    "entropy_state_unittest.cc",
     "environment_recorder_unittest.cc",
     "expired_histograms_checker_unittest.cc",
     "field_trials_provider_unittest.cc",
     "file_metrics_provider_unittest.cc",
     "histogram_encoder_unittest.cc",
-    "machine_id_provider_win_unittest.cc",
+    "library_support/histogram_manager_unittest.cc",
+    "log_decoder_unittest.cc",
+    "metrics_data_validation_unittest.cc",
     "metrics_log_manager_unittest.cc",
     "metrics_log_store_unittest.cc",
     "metrics_log_unittest.cc",
@@ -436,44 +460,64 @@ source_set("unit_tests") {
     "single_sample_metrics_factory_impl_unittest.cc",
     "stability_metrics_helper_unittest.cc",
     "stability_metrics_provider_unittest.cc",
-    "system_session_analyzer_win_unittest.cc",
     "ui/screen_info_metrics_provider_unittest.cc",
+    "unsent_log_store_metrics_impl_unittest.cc",
     "unsent_log_store_unittest.cc",
   ]
 
   deps = [
     ":call_stack_profile_builder",
     ":component_metrics",
-    ":demographic_metrics_provider",
+    ":library_support",
     ":metrics",
     ":net",
     ":single_sample_metrics",
     ":test_support",
     ":ui",
+    "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/component_updater:test_support",
     "//components/encrypted_messages:encrypted_message_proto",
+    "//components/network_time:network_time_test_support",
     "//components/prefs:test_support",
     "//components/sync/base",
     "//components/sync/driver:test_support",
     "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/service:constants",
+
+    # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
+    # Mode experiment is over.
+    "//components/version_info",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",
     "//ui/gfx/geometry",
   ]
 
-  if (is_linux) {
+  if (is_win) {
+    sources += [
+      "machine_id_provider_win_unittest.cc",
+      "system_session_analyzer/system_session_analyzer_win_unittest.cc",
+    ]
+  } else {
+    sources += [ "machine_id_provider_nonwin_unittest.cc" ]
+  }
+
+  if (is_linux || is_chromeos) {
     sources += [ "serialization/serialization_utils_unittest.cc" ]
     deps += [ ":serialization" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/dbus:test_support",
       "//chromeos/network:test_support",
@@ -484,24 +528,26 @@ source_set("unit_tests") {
   # these tests.
   if (is_ios) {
     sources -= [ "child_call_stack_profile_collector_unittest.cc" ]
-  }
-
-  if (is_ios) {
     deps += [ "//ios/web/public/test" ]
-  }
-
-  if (!is_ios) {
-    deps += [ "//content/test:test_support" ]
+  } else {
+    sources += [
+      "content/content_stability_metrics_provider_unittest.cc",
+      "content/subprocess_metrics_provider_unittest.cc",
+    ]
+    deps += [
+      ":content",
+      "//content/test:test_support",
+      "//extensions/buildflags",
+    ]
   }
 }
 
 # Convenience testing target
 test("metrics_unittests") {
-  sources = [
-    "//components/test/run_all_unittests.cc",
-  ]
+  sources = [ "//components/test/run_all_unittests.cc" ]
   deps = [
     ":unit_tests",
+    "//components/metrics/demographics:unit_tests",
     "//components/test:test_support",
   ]
 }

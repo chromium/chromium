@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
-<translation id="6106989379647458772"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন হয়ে থাকতে পারে অথবা এটি হয়ত একটি নতুন ওয়েব ঠিকানায় স্থায়ীভাবে সরানো হয়েছে।</translation>
-<translation id="6312113039770857350">Webpage not available</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি লোড করা যায়নি কারণ:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />পরামর্শগুলি:<ph name="MARKUP_2" />নিশ্চিত হোন যে আপনার একটি ডেটা কানেকশন আছে<ph name="MARKUP_3" />পরবর্তীতে এই ওয়েব পৃষ্ঠাটি পুনরায় লোড করুন<ph name="MARKUP_4" />আপনার লেখা ঠিকানাটি পরীক্ষা করুন<ph name="MARKUP_5" /></translation>
 </translationbundle>

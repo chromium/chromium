@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL postMessage of a ReadableStream should work Failed to execute 'postMessage' on 'Window': Value at index 0 does not have a transferable type.
-FAIL postMessage of a WritableStream should work Failed to execute 'postMessage' on 'Window': Value at index 0 does not have a transferable type.
-FAIL postMessage of a TransformStream should work Failed to execute 'postMessage' on 'Window': Value at index 0 does not have a transferable type.
-Harness: the test ran to completion.
-

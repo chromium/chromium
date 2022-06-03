@@ -21,6 +21,10 @@ namespace {
 class VibrationManagerImplTest : public DeviceServiceTestBase {
  public:
   VibrationManagerImplTest() = default;
+
+  VibrationManagerImplTest(const VibrationManagerImplTest&) = delete;
+  VibrationManagerImplTest& operator=(const VibrationManagerImplTest&) = delete;
+
   ~VibrationManagerImplTest() override = default;
 
  protected:
@@ -63,8 +67,6 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
 
  private:
   mojo::Remote<mojom::VibrationManager> vibration_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VibrationManagerImplTest);
 };
 
 TEST_F(VibrationManagerImplTest, VibrateThenCancel) {

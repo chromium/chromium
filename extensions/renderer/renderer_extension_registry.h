@@ -11,7 +11,10 @@
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "extensions/common/activation_sequence.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -22,6 +25,11 @@ namespace extensions {
 class RendererExtensionRegistry {
  public:
   RendererExtensionRegistry();
+
+  RendererExtensionRegistry(const RendererExtensionRegistry&) = delete;
+  RendererExtensionRegistry& operator=(const RendererExtensionRegistry&) =
+      delete;
+
   ~RendererExtensionRegistry();
 
   static RendererExtensionRegistry* Get();
@@ -49,12 +57,24 @@ class RendererExtensionRegistry {
   ExtensionIdSet GetIDs() const;
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
+  // ActivationSequence related methods.
+  //
+  // Sets ActivationSequence for a Service Worker based |extension|.
+  void SetWorkerActivationSequence(
+      const scoped_refptr<const Extension>& extension,
+      ActivationSequence worker_activation_sequence);
+  // Returns the current activation sequence for worker based extension with
+  // |extension_id|. Returns absl::nullopt otherwise.
+  absl::optional<ActivationSequence> GetWorkerActivationSequence(
+      const ExtensionId& extension_id) const;
+
  private:
   ExtensionSet extensions_;
 
-  mutable base::Lock lock_;
+  // Maps extension id to ActivationSequence, for worker based extensions.
+  std::map<ExtensionId, ActivationSequence> worker_activation_sequences_;
 
-  DISALLOW_COPY_AND_ASSIGN(RendererExtensionRegistry);
+  mutable base::Lock lock_;
 };
 
 }  // namespace extensions

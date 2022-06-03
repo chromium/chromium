@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 @class UnifiedConsentMediator;
 @class UnifiedConsentViewController;
@@ -26,20 +28,29 @@
 // updates the UnifiedConsentViewController.
 @interface UnifiedConsentMediator : NSObject
 
-// Identity selected by the user to sign-in. By default, the first identity from
-// GetAllIdentitiesSortedForDisplay() is used. If there is no identity in the
-// list, the identity picker will be hidden. Nil is not accepted if at least one
-// identity exists.
+// Identity selected by the user to sign-in. By default, the identity returned
+// by `GetDefaultIdentity()` is used. If there is no identity in the list, the
+// identity picker will be hidden. Nil is not accepted if at least one identity
+// exists.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 // Instance delegate.
 @property(nonatomic, weak) id<UnifiedConsentMediatorDelegate> delegate;
 
 - (instancetype)initWithUnifiedConsentViewController:
-    (UnifiedConsentViewController*)viewController NS_DESIGNATED_INITIALIZER;
+                    (UnifiedConsentViewController*)viewController
+                               authenticationService:
+                                   (AuthenticationService*)authenticationService
+                               accountManagerService:
+                                   (ChromeAccountManagerService*)
+                                       accountManagerService
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts this mediator.
 - (void)start;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 @end
 

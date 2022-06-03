@@ -8,8 +8,7 @@
 #include <set>
 
 #include "ash/shell_observer.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -25,25 +24,29 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
                            public ShellObserver {
  public:
   explicit ShelfWindowWatcher(ShelfModel* model);
-  ~ShelfWindowWatcher() override;
 
-  static const char kDefaultShelfIdPrefix[];
+  ShelfWindowWatcher(const ShelfWindowWatcher&) = delete;
+  ShelfWindowWatcher& operator=(const ShelfWindowWatcher&) = delete;
+
+  ~ShelfWindowWatcher() override;
 
  private:
   // Observes for windows being added to a root window's default container.
   class ContainerWindowObserver : public aura::WindowObserver {
    public:
     explicit ContainerWindowObserver(ShelfWindowWatcher* window_watcher);
+
+    ContainerWindowObserver(const ContainerWindowObserver&) = delete;
+    ContainerWindowObserver& operator=(const ContainerWindowObserver&) = delete;
+
     ~ContainerWindowObserver() override;
 
    private:
     // aura::WindowObserver:
-    void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
+    void OnWindowAdded(aura::Window* new_window) override;
     void OnWindowDestroying(aura::Window* window) override;
 
     ShelfWindowWatcher* window_watcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(ContainerWindowObserver);
   };
 
   // Observes individual user windows to detect when they are closed or when
@@ -51,6 +54,10 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
   class UserWindowObserver : public aura::WindowObserver {
    public:
     explicit UserWindowObserver(ShelfWindowWatcher* window_watcher);
+
+    UserWindowObserver(const UserWindowObserver&) = delete;
+    UserWindowObserver& operator=(const UserWindowObserver&) = delete;
+
     ~UserWindowObserver() override;
 
    private:
@@ -63,8 +70,6 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
     void OnWindowTitleChanged(aura::Window* window) override;
 
     ShelfWindowWatcher* window_watcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(UserWindowObserver);
   };
 
   // Creates a ShelfItem for |window|.
@@ -99,14 +104,13 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
   ContainerWindowObserver container_window_observer_{this};
   UserWindowObserver user_window_observer_{this};
 
-  ScopedObserver<aura::Window, aura::WindowObserver>
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_container_windows_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_user_windows_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_user_windows_;
 
   // The set of windows with shelf items managed by this ShelfWindowWatcher.
   std::set<aura::Window*> user_windows_with_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWindowWatcher);
 };
 
 }  // namespace ash

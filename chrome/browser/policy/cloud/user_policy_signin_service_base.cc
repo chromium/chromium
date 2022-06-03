@@ -7,17 +7,26 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/chrome_content_client.h"
+#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
@@ -32,11 +41,16 @@ UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     UserCloudPolicyManager* policy_manager,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
-    : policy_manager_(policy_manager),
+    : profile_(profile),
+      policy_manager_(policy_manager),
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
-      system_url_loader_factory_(system_url_loader_factory) {
+      system_url_loader_factory_(system_url_loader_factory),
+      consent_level_(
+          base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)
+              ? signin::ConsentLevel::kSignin
+              : signin::ConsentLevel::kSync) {
   // Register a listener to be called back once the current profile has finished
   // initializing, so we can startup/shutdown the UserCloudPolicyManager.
   registrar_.Add(this,
@@ -52,30 +66,55 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     const std::string& client_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
-  std::unique_ptr<CloudPolicyClient> client =
-      UserCloudPolicyManager::CreateCloudPolicyClient(
-          device_management_service_, profile_url_loader_factory);
-  client->SetupRegistration(
-      dm_token, client_id,
-      std::vector<std::string>() /* user_affiliation_ids */);
-  DCHECK(client->is_registered());
-  // The user has just signed in, so the UserCloudPolicyManager should not yet
-  // be initialized. This routine will initialize the UserCloudPolicyManager
-  // with the passed client and will proactively ask the client to fetch
-  // policy without waiting for the CloudPolicyService to finish initialization.
   UserCloudPolicyManager* manager = policy_manager();
   DCHECK(manager);
-  DCHECK(!manager->core()->client());
-  InitializeUserCloudPolicyManager(account_id, std::move(client));
+
+#if DCHECK_IS_ON()
+  if (manager->core()->client()) {
+    DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
+        << "The UserCloudPolicyManager can only be initialized with a client "
+           "if the feature AccountPoliciesLoadedWithoutSync is enabled";
+  }
+#endif
+
+  // Initialize the cloud policy manager there was no prior initialization.
+  if (!manager->core()->client()) {
+    std::unique_ptr<CloudPolicyClient> client =
+        UserCloudPolicyManager::CreateCloudPolicyClient(
+            device_management_service_, profile_url_loader_factory);
+    client->SetupRegistration(
+        dm_token, client_id,
+        std::vector<std::string>() /* user_affiliation_ids */);
+    DCHECK(client->is_registered());
+    DCHECK(!manager->core()->client());
+    InitializeUserCloudPolicyManager(account_id, std::move(client));
+  }
+
   DCHECK(manager->IsClientRegistered());
 
   // Now initiate a policy fetch.
   manager->core()->service()->RefreshPolicy(std::move(callback));
 }
 
-void UserPolicySigninServiceBase::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  ShutdownUserCloudPolicyManager();
+void UserPolicySigninServiceBase::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+      ProfileManager* profile_manager = g_browser_process->profile_manager();
+      DCHECK(profile_manager);
+      ProfileAttributesEntry* entry =
+          profile_manager->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_->GetPath());
+      if (entry)
+        entry->SetUserAcceptedAccountManagement(false);
+    }
+    ShutdownUserCloudPolicyManager();
+  } else if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+                 signin::PrimaryAccountChangeEvent::Type::kCleared &&
+             !base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    ShutdownUserCloudPolicyManager();
+  }
 }
 
 void UserPolicySigninServiceBase::Observe(
@@ -153,8 +192,8 @@ UserPolicySigninServiceBase::CreateClientForRegistrationOnly(
 
   // If the user should not get policy, just bail out.
   if (!policy_manager() || !ShouldLoadPolicyForUser(username)) {
-    DVLOG(1) << "Signed in user is not in the whitelist";
-    return std::unique_ptr<CloudPolicyClient>();
+    DVLOG(1) << "Signed in user is not in the allowlist";
+    return nullptr;
   }
 
   // If the DeviceManagementService is not yet initialized, start it up now.
@@ -174,6 +213,7 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
 }
 
 void UserPolicySigninServiceBase::InitializeOnProfileReady(Profile* profile) {
+  DCHECK_EQ(profile, profile_);
   // If using a TestingProfile with no IdentityManager or
   // UserCloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
@@ -187,27 +227,29 @@ void UserPolicySigninServiceBase::InitializeOnProfileReady(Profile* profile) {
   // (http://crbug.com/316229).
   identity_manager()->AddObserver(this);
 
-  AccountId account_id =
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo());
-  if (!account_id.is_valid())
+  AccountId account_id = AccountIdFromAccountInfo(
+      identity_manager()->GetPrimaryAccountInfo(consent_level()));
+  if (!CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/false)) {
     ShutdownUserCloudPolicyManager();
-  else
-    InitializeForSignedInUser(
-        account_id, content::BrowserContext::GetDefaultStoragePartition(profile)
-                        ->GetURLLoaderFactoryForBrowserProcess());
+  } else {
+    InitializeForSignedInUser(account_id,
+                              profile->GetDefaultStoragePartition()
+                                  ->GetURLLoaderFactoryForBrowserProcess());
+  }
 }
 
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory) {
   DCHECK(account_id.is_valid());
+  UserCloudPolicyManager* manager = policy_manager();
   if (!ShouldLoadPolicyForUser(account_id.GetUserEmail())) {
+    manager->SetPoliciesRequired(false);
     DVLOG(1) << "Policy load not enabled for user: "
              << account_id.GetUserEmail();
     return;
   }
 
-  UserCloudPolicyManager* manager = policy_manager();
   // Initialize the UCPM if it is not already initialized.
   if (!manager->core()->service()) {
     // If there is no cached DMToken then we can detect this when the
@@ -249,6 +291,24 @@ void UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager() {
   UserCloudPolicyManager* manager = policy_manager();
   if (manager)
     manager->DisconnectAndRemovePolicy();
+}
+
+bool UserPolicySigninServiceBase::CanApplyPoliciesForSignedInUser(
+    bool check_for_refresh_token) {
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    return (check_for_refresh_token
+                ? identity_manager()->HasPrimaryAccountWithRefreshToken(
+                      signin::ConsentLevel::kSignin)
+                : identity_manager()->HasPrimaryAccount(
+                      signin::ConsentLevel::kSignin)) &&
+           chrome::enterprise_util::ProfileCanBeManaged(profile());
+  }
+
+  return check_for_refresh_token
+             ? identity_manager()->HasPrimaryAccountWithRefreshToken(
+                   signin::ConsentLevel::kSync)
+             : identity_manager()->HasPrimaryAccount(
+                   signin::ConsentLevel::kSync);
 }
 
 }  // namespace policy

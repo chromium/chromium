@@ -12,6 +12,7 @@ var tabId;
 var tabIdMap;
 var frameIdMap;
 var testWebSocketPort;
+var testWebTransportPort;
 var testServerPort;
 var testServer = "www.a.com";
 var defaultScheme = "http";
@@ -53,6 +54,7 @@ function runTestsForTab(tests, tab) {
   chrome.test.getConfig(function(config) {
     testServerPort = config.testServer.port;
     testWebSocketPort = config.testWebSocketPort;
+    testWebTransportPort = config.testWebTransportPort;
     chrome.test.runTests(tests);
   });
 }
@@ -313,7 +315,8 @@ function captureEvent(name, details, callback) {
     chrome.test.assertTrue('tabId' in details &&
                             typeof details.tabId === 'number');
     var key = details.tabId + "-" + details.frameId;
-    if (details.type == "main_frame" || details.type == "sub_frame") {
+    if (details.type == 'main_frame' || details.type == 'sub_frame' ||
+        details.type == 'webtransport') {
       tabAndFrameUrls[key] = details.url;
     }
     details.frameUrl = tabAndFrameUrls[key] || "unknown frame URL";
@@ -348,6 +351,15 @@ function captureEvent(name, details, callback) {
   if (details.responseHeaders) {
     details.responseHeadersExist = true;
     delete details.responseHeaders;
+  }
+
+  if (details?.requestBody?.raw) {
+    for (const rawItem of details.requestBody.raw) {
+      chrome.test.assertTrue(rawItem.bytes instanceof ArrayBuffer);
+      // Stub out the bytes with an empty array buffer, since the expectations
+      // don't hardcode real bytes.
+      rawItem.bytes = new ArrayBuffer;
+    }
   }
 
   // Check if the equivalent event is already captured, and issue a unique

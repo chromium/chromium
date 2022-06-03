@@ -184,7 +184,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
 
   // Once a custom passphrase is in use, upload should be considered disabled:
   // Even if we're technically still uploading, Google can't inspect the data.
-  service.SetIsUsingSecondaryPassphrase(true);
+  service.SetIsUsingExplicitPassphrase(true);
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
@@ -209,7 +209,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForSecondaryAccount) {
 
   // Mark the syncing account as non-primary. With this, only Sync-the-transport
   // (not Sync-the-feature) can run.
-  service.SetIsAuthenticatedAccountPrimary(false);
+  service.SetHasSyncConsent(false);
   ASSERT_FALSE(service.CanSyncFeatureStart());
 
   // Upload should NOT be active now. Even though the data type is active, we're

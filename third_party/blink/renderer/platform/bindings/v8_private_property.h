@@ -5,10 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PRIVATE_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PRIVATE_PROPERTY_H_
 
-#include <memory>
-
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/platform/bindings/script_promise_properties.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -17,8 +14,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
-class ScriptWrappable;
 
 // Provides access to V8's private properties with a symbol key.
 //
@@ -35,12 +30,16 @@ class PLATFORM_EXPORT V8PrivateProperty {
   USING_FAST_MALLOC(V8PrivateProperty);
 
  public:
-  enum CachedAccessorSymbol : unsigned {
-    kNoCachedAccessor = 0,
-    kWindowDocumentCachedAccessor,
+  // Private properties used to implement [CachedAccessor].
+  enum class CachedAccessor : unsigned {
+    kNone = 0,
+    kWindowProxy,
+    kWindowDocument,
   };
 
   V8PrivateProperty() = default;
+  V8PrivateProperty(const V8PrivateProperty&) = delete;
+  V8PrivateProperty& operator=(const V8PrivateProperty&) = delete;
 
   // Provides fast access to V8's private properties.
   //
@@ -74,9 +73,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
 
    private:
     friend class V8PrivateProperty;
-    // The following classes are exceptionally allowed to call to
-    // getFromMainWorld.
-    friend class V8ExtendableMessageEvent;
 
     Symbol(v8::Isolate* isolate, v8::Local<v8::Private> private_symbol)
         : private_symbol_(private_symbol), isolate_(isolate) {}
@@ -85,10 +81,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
     v8::Local<v8::Context> GetContext() const {
       return isolate_->GetCurrentContext();
     }
-
-    // Only friend classes are allowed to use this API.
-    WARN_UNUSED_RESULT v8::MaybeLocal<v8::Value> GetFromMainWorld(
-        ScriptWrappable*);
 
     v8::Local<v8::Private> private_symbol_;
     v8::Isolate* isolate_;
@@ -112,23 +104,7 @@ class PLATFORM_EXPORT V8PrivateProperty {
   static Symbol GetWindowDocumentCachedAccessor(v8::Isolate* isolate);
 
   static Symbol GetCachedAccessor(v8::Isolate* isolate,
-                                  CachedAccessorSymbol symbol_id) {
-    switch (symbol_id) {
-      case kWindowDocumentCachedAccessor:
-        return GetWindowDocumentCachedAccessor(isolate);
-      case kNoCachedAccessor:
-        break;
-    }
-    NOTREACHED();
-    return GetEmptySymbol();
-  }
-
-  // This is a hack for PopStateEvent to get the same private property of
-  // History, named State.
-  static Symbol GetHistoryStateSymbol(v8::Isolate* isolate) {
-    static const SymbolKey kPrivatePropertyKey;
-    return GetSymbol(isolate, kPrivatePropertyKey);
-  }
+                                  CachedAccessor symbol_id);
 
   // Returns a Symbol to access a private property. Symbol instances from same
   // |key| are guaranteed to access the same property.
@@ -151,8 +127,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
   ScopedPersistent<v8::Private> symbol_window_document_cached_accessor_;
 
   WTF::HashMap<const void*, v8::Eternal<v8::Private>> symbol_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8PrivateProperty);
 };
 
 }  // namespace blink

@@ -1,0 +1,30 @@
+<!--
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@UIA-WIN-DENY:StructureChanged/ChildrenReordered*
+-->
+<html>
+<body>
+  <div class="test-case" aria-hidden="false">
+    <button>expect invisible subtree</button>
+  </div>
+  <div class="test-case" aria-hidden="true">
+    <button>expect visible subtree</button>
+  </div>
+  <script>
+    var current_pass = 0;
+    var test_cases = document.querySelectorAll('.test-case[aria-hidden]');
+
+    function run_test_case(element) {
+      let hidden = element.getAttribute('aria-hidden') == 'true';
+      element.setAttribute('aria-hidden', !hidden);
+    }
+
+    function go() {
+      run_test_case(test_cases.item(current_pass++));
+      return current_pass < test_cases.length;
+    }
+  </script>
+</body>
+</html>

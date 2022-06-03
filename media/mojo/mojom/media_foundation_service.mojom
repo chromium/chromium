@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/frame_interface_factory.mojom";
+import "media/mojo/mojom/interface_factory.mojom";
+import "media/mojo/mojom/key_system_support.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// A service to provide Windows MediaFoundation-based InterfaceFactory and
+// KeySystemCapability. See comments on MediaFoundationServiceBroker for the
+// process/sandbox model.
+interface MediaFoundationService {
+  // Queries the capabilities of the MediaFoundation-based CDM. The client lives
+  // in the browser process.
+  IsKeySystemSupported(string key_system)
+    => (bool is_supported, KeySystemCapability? key_system_capability);
+
+  // Requests an InterfaceFactory. `frame_interfaces` can optionally be used to
+  // provide interfaces hosted by the caller to the remote InterfaceFactory
+  // implementation.  The remote `InterfaceFactory` lives in the render process
+  // to support media playback. The interface implementations provided by
+  // the `frame_interfaces` live in the browser process so they are trusted.
+  CreateInterfaceFactory(
+      pending_receiver<InterfaceFactory> factory,
+      pending_remote<FrameInterfaceFactory> frame_interfaces);
+};
+
+// A broker service to get the `MediaFoundationService`, needed to pass
+// parameters to preload the CDM before creating the `MediaFoundationService`.
+// It runs in the MediaFoundationCdm (utility) process and is connected from the
+// browser process (see content/browser/media/service_factory.cc). In the
+// process there should only be one `MediaFoundationServiceBroker` and one
+// `MediaFoundationService` instance running. As such `GetService()` should only
+// be called once and the subsequent calls will simply fail. When
+// `MediaFoundationServiceBroker` is connected the process was not sandboxed to
+// allow CDM preloading. After `GetService()` the process is fully sandboxed.
+[ServiceSandbox=sandbox.mojom.Sandbox.kMediaFoundationCdm]
+interface MediaFoundationServiceBroker {
+  // Loads the CDM at `cdm_path` into the process and returns the
+  // `MediaFoundationService`.
+  GetService(
+      mojo_base.mojom.FilePath cdm_path,
+      pending_receiver<MediaFoundationService> receiver);
+};

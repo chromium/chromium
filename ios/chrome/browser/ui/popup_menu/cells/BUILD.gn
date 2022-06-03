@@ -7,6 +7,8 @@ source_set("cells") {
   sources = [
     "popup_menu_navigation_item.h",
     "popup_menu_navigation_item.mm",
+    "popup_menu_text_item.h",
+    "popup_menu_text_item.mm",
     "popup_menu_tools_item.h",
     "popup_menu_tools_item.mm",
   ]
@@ -19,7 +21,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/util",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

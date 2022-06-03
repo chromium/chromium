@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/saml_password_attributes.h"
+#include "chromeos/login/auth/sync_trusted_vault_keys.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -84,10 +85,15 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   const std::string& GetPublicSessionInputMethod() const;
   const std::string& GetDeviceId() const;
   const std::string& GetGAPSCookie() const;
-  const base::Optional<password_manager::PasswordHashData>&
+  const std::string& GetReauthProofToken() const;
+  const absl::optional<password_manager::PasswordHashData>&
   GetSyncPasswordData() const;
-  const base::Optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
+  const absl::optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
       const;
+  const absl::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
+  // True if |managed_guest_session_launch_extension_id_| is non-empty.
+  bool IsLockableManagedGuestSession() const;
+  std::string GetManagedGuestSessionLaunchExtensionId() const;
 
   bool HasCredentials() const;
 
@@ -124,11 +130,26 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   void SetPublicSessionInputMethod(const std::string& input_method);
   void SetDeviceId(const std::string& device_id);
   void SetGAPSCookie(const std::string& gaps_cookie);
+  void SetReauthProofToken(const std::string& reauth_proof_token);
   void SetSyncPasswordData(
       const password_manager::PasswordHashData& sync_password_data);
   void SetSamlPasswordAttributes(
       const SamlPasswordAttributes& saml_password_attributes);
+  void SetSyncTrustedVaultKeys(
+      const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
+  // Sets |managed_guest_session_launch_extension_id_| which is used to set the
+  // |kLoginExtensionApiLaunchExtensionId| pref when the user's profile is
+  // created. Setting this pref indicates that this Managed Guest Session is
+  // lockable.
+  void SetManagedGuestSessionLaunchExtensionId(const std::string& extension_id);
+  // We need to pull input method used to log in into the user session to make
+  // it consistent. This method will remember given input method to be used
+  // when session starts.
+  void SetLoginInputMethodIdUsed(const std::string& input_method_id);
+  const std::string& GetLoginInputMethodIdUsed() const;
+  void SetAuthSessionId(const std::string& authsession_id);
+  const std::string& GetAuthSessionId() const;
 
   void ClearSecrets();
 
@@ -151,15 +172,30 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   std::string public_session_input_method_;
   std::string device_id_;
   std::string gaps_cookie_;
+  std::string reauth_proof_token_;
   bool is_under_advanced_protection_ = false;
+  std::string managed_guest_session_launch_extension_id_;
+  // |login_input_method_id_used_| is non-empty if login password/code was used,
+  // i.e. user used some input method to log in.
+  std::string login_input_method_id_used_;
+  std::string authsession_id_;
 
   // For password reuse detection use.
-  base::Optional<password_manager::PasswordHashData> sync_password_data_;
+  absl::optional<password_manager::PasswordHashData> sync_password_data_;
 
   // Info about the user's SAML password, such as when it will expire.
-  base::Optional<SamlPasswordAttributes> saml_password_attributes_;
+  absl::optional<SamlPasswordAttributes> saml_password_attributes_;
+
+  // Info about the user's sync encryption keys.
+  absl::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::UserContext;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_USER_CONTEXT_H_

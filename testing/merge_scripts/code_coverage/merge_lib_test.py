@@ -8,13 +8,6 @@ import subprocess
 import sys
 import unittest
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(THIS_DIR, os.pardir, os.pardir, os.pardir, 'third_party',
-                     'pymock')))
-
 import mock
 
 import merge_lib as merger

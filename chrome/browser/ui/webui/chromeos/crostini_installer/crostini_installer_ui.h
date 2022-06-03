@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,12 +20,17 @@ class CrostiniInstallerUI
     : public ui::MojoWebDialogUI,
       public chromeos::crostini_installer::mojom::PageHandlerFactory {
  public:
-  static bool IsEnabled();
-
   explicit CrostiniInstallerUI(content::WebUI* web_ui);
+
+  CrostiniInstallerUI(const CrostiniInstallerUI&) = delete;
+  CrostiniInstallerUI& operator=(const CrostiniInstallerUI&) = delete;
+
   ~CrostiniInstallerUI() override;
 
-  bool can_close();
+  // Send a close request to the web page. Return true if the page is already
+  // closed.
+  bool RequestClosePage();
+
   void ClickInstallForTesting();
 
   // Instantiates implementor of the mojom::PageHandlerFactory
@@ -43,16 +47,14 @@ class CrostiniInstallerUI
       mojo::PendingReceiver<chromeos::crostini_installer::mojom::PageHandler>
           pending_page_handler) override;
 
-  void OnWebUICloseDialog();
+  void OnPageClosed();
 
   std::unique_ptr<CrostiniInstallerPageHandler> page_handler_;
   mojo::Receiver<chromeos::crostini_installer::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
-  bool can_close_ = false;
+  bool page_closed_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerUI);
 };
 
 }  // namespace chromeos

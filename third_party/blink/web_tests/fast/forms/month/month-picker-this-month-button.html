@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="month" id="month0" value="2019-02">
+<input type="month" id="month1" value="2019-02">
+<input type="month" id="month2" value="2019-02" max="2019-05">
+<script>
+
+promise_test(() => {
+  let monthElement = document.getElementById('month0');
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    clickThisMonthButton();
+
+    let splitDate = monthElement.value.split('-');
+    let actualTodayDateString = new Date(splitDate[0], splitDate[1] - 1).toDateString();
+    let today = new Date();
+    today.setDate(1);
+    let expectedTodayDateString = today.toDateString();
+
+     assert_equals(actualTodayDateString, expectedTodayDateString, "'This month' button should have updated in-page control to this month");
+     assert_equals(internals.pagePopupWindow, null, "Click on 'This month' button should close popup.");
+  });
+}, "Date picker: 'This month' button should select current month when clicked");
+
+promise_test(() => {
+  let monthElement = document.getElementById('month1');
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    eventSender.keyDown('Tab'); // Tab over to the 'Clear' button
+    eventSender.keyDown('Tab'); // Tab over to the 'This month' button
+    eventSender.keyDown('Enter');
+
+    let splitDate = monthElement.value.split('-');
+    let actualTodayDateString = new Date(splitDate[0], splitDate[1] - 1).toDateString();
+    let today = new Date();
+    today.setDate(1);
+    let expectedTodayDateString = today.toDateString();
+
+     assert_equals(actualTodayDateString, expectedTodayDateString, "'This month' button should have updated in-page control to this month");
+     assert_equals(internals.pagePopupWindow, null, "Click on 'This month' button should close popup.");
+  });
+}, "Date picker: 'This month' button should select current month when activated with Enter key");
+
+promise_test(() => {
+  let monthElement = document.getElementById('month2');
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    clickThisMonthButton();
+
+     assert_equals(monthElement.value, "2019-02", "Click on disabled 'This month' button shouldn't change date.");
+     assert_not_equals(internals.pagePopupWindow, null, "Click on disabled 'This month' button shouldn't close popup.");
+
+     eventSender.keyDown('Enter');
+     assert_not_equals(internals.pagePopupWindow, null, "Enter key should close popup.");
+  });
+}, "Date picker: 'This month' button should be disabled when current month is not valid");
+
+</script>
+</body>
+</html>

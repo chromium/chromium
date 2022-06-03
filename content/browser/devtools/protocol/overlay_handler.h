@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/overlay.h"
 
@@ -20,6 +19,10 @@ namespace protocol {
 class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
  public:
   OverlayHandler();
+
+  OverlayHandler(const OverlayHandler&) = delete;
+  OverlayHandler& operator=(const OverlayHandler&) = delete;
+
   ~OverlayHandler() override;
   void Wire(UberDispatcher* dispatcher) override;
   void SetRenderer(int process_host_id,
@@ -37,7 +40,6 @@ class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
   RenderFrameHostImpl* host_ = nullptr;
   std::string inspect_mode_;
   std::string paused_message_;
-  DISALLOW_COPY_AND_ASSIGN(OverlayHandler);
 };
 
 }  // namespace protocol

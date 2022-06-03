@@ -61,8 +61,8 @@ NOINLINE unsigned StringImpl::HashSlowCase() const {
 void AtomicString::Init() {
   DCHECK(IsMainThread());
 
-  new (NotNull, (void*)&g_null_atom) AtomicString;
-  new (NotNull, (void*)&g_empty_atom) AtomicString("");
+  new (NotNullTag::kNotNull, (void*)&g_null_atom) AtomicString;
+  new (NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
 }
 
 template <unsigned charactersCount>
@@ -78,20 +78,22 @@ void StringStatics::Init() {
   DCHECK(IsMainThread());
 
   StringImpl::InitStatics();
-  new (NotNull, (void*)&g_empty_string) String(StringImpl::empty_);
-  new (NotNull, (void*)&g_empty_string16_bit) String(StringImpl::empty16_bit_);
+  new (NotNullTag::kNotNull, (void*)&g_empty_string) String(StringImpl::empty_);
+  new (NotNullTag::kNotNull, (void*)&g_empty_string16_bit)
+      String(StringImpl::empty16_bit_);
 
   // FIXME: These should be allocated at compile time.
-  new (NotNull, (void*)&g_star_atom) AtomicString("*");
-  new (NotNull, (void*)&g_xml_atom) AtomicString(AddStaticASCIILiteral("xml"));
-  new (NotNull, (void*)&g_xmlns_atom)
+  new (NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
+  new (NotNullTag::kNotNull, (void*)&g_xml_atom)
+      AtomicString(AddStaticASCIILiteral("xml"));
+  new (NotNullTag::kNotNull, (void*)&g_xmlns_atom)
       AtomicString(AddStaticASCIILiteral("xmlns"));
-  new (NotNull, (void*)&g_xlink_atom)
+  new (NotNullTag::kNotNull, (void*)&g_xlink_atom)
       AtomicString(AddStaticASCIILiteral("xlink"));
-  new (NotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
-  new (NotNull, (void*)&g_http_atom)
+  new (NotNullTag::kNotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
+  new (NotNullTag::kNotNull, (void*)&g_http_atom)
       AtomicString(AddStaticASCIILiteral("http"));
-  new (NotNull, (void*)&g_https_atom)
+  new (NotNullTag::kNotNull, (void*)&g_https_atom)
       AtomicString(AddStaticASCIILiteral("https"));
 }
 

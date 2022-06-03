@@ -10,8 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
@@ -25,12 +23,8 @@ namespace chromeos {
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override {}
-    // Called when the ARC is stopped after it had already started.
-    virtual void ArcStopped() {}
-  };
+  UpstartClient(const UpstartClient&) = delete;
+  UpstartClient& operator=(const UpstartClient&) = delete;
 
   virtual ~UpstartClient();
 
@@ -45,10 +39,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
 
   // Returns the global instance if initialized. May return null.
   static UpstartClient* Get();
-
-  // Adds or removes an observer.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Starts an Upstart job.
   // |job|: Name of Upstart job.
@@ -74,6 +64,12 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   // Restarts authpolicyd.
   virtual void RestartAuthPolicyService() = 0;
 
+  // Starts the Linux Wayland client version of chrome.
+  // |upstart_env|: List of upstart environment variables to be passed to the
+  // upstart service.
+  virtual void StartLacrosChrome(
+      const std::vector<std::string>& upstart_env) = 0;
+
   // Starts the media analytics process.
   // |upstart_env|: List of upstart environment variables to be passed to the
   // upstart service.
@@ -95,14 +91,24 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   // Stops wilco DTC services.
   virtual void StopWilcoDtcService(VoidDBusMethodCallback callback) = 0;
 
+  // Starts arc-data-snapshotd daemon.
+  virtual void StartArcDataSnapshotd(
+      const std::vector<std::string>& upstart_env,
+      VoidDBusMethodCallback callback) = 0;
+
+  // Stops arc-data-snapshotd daemon.
+  virtual void StopArcDataSnapshotd(VoidDBusMethodCallback callback) = 0;
+
  protected:
   // Initialize() should be used instead.
   UpstartClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpstartClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::UpstartClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_UPSTART_UPSTART_CLIENT_H_

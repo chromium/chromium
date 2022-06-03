@@ -31,7 +31,7 @@ namespace blink {
 
 class InlineBox;
 
-struct BidiRun : BidiCharacterRun {
+struct BidiRun final : BidiCharacterRun {
   BidiRun(bool override,
           unsigned char level,
           int start,
@@ -61,7 +61,11 @@ struct BidiRun : BidiCharacterRun {
 
  public:
   LineLayoutItem line_layout_item_;
-  InlineBox* box_;
+
+  // This doesn't create reference cycle as BidiRunList/BidiResolver, which own
+  // BidiRun, is allocated only on stack and BidiRun deleted manually in
+  // BidiRunList::DeleteRuns().
+  Persistent<InlineBox> box_;
 };
 
 }  // namespace blink

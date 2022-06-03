@@ -9,15 +9,13 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,12 +57,12 @@ public class ReducedModeNativeTestRule implements TestRule {
             }
 
             @Override
-            public boolean startServiceManagerOnly() {
+            public boolean startMinimalBrowser() {
                 return true;
             }
         };
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
             ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
         });
         waitForNativeLoaded();
@@ -72,22 +70,15 @@ public class ReducedModeNativeTestRule implements TestRule {
 
     private void waitForNativeLoaded() {
         CriteriaHelper.pollUiThread(
-                new Criteria("Failed while waiting for starting Service Manager.") {
-                    @Override
-                    public boolean isSatisfied() {
-                        return mNativeLoaded.get();
-                    }
-                });
+                mNativeLoaded::get, "Failed while waiting for starting minimal browser.");
     }
 
-    public void assertOnlyServiceManagerStarted() {
+    public void assertMinimalBrowserStarted() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Native has not been started.",
-                    BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                            .isNativeStarted());
-            Assert.assertFalse("The full browser is started instead of ServiceManager only.",
-                    BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                            .isFullBrowserStarted());
+                    BrowserStartupController.getInstance().isNativeStarted());
+            Assert.assertFalse("The full browser is started instead of minimal browser.",
+                    BrowserStartupController.getInstance().isFullBrowserStarted());
         });
     }
 }

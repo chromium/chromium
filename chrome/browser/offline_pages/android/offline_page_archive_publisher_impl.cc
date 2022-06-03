@@ -14,9 +14,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageArchivePublisherBridge_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "components/offline_pages/core/archive_manager.h"
@@ -37,7 +37,8 @@ OfflinePageArchivePublisherImpl::Delegate* GetDefaultDelegate() {
 }
 
 bool ShouldUseDownloadsCollection() {
-  return base::android::BuildInfo::GetInstance()->is_at_least_q();
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_Q;
 }
 
 // Helper function to do the move and register synchronously. Make sure this is
@@ -126,7 +127,7 @@ void OfflinePageArchivePublisherImpl::UnpublishArchives(
   for (auto& id : publish_ids) {
     if (id.download_id == kArchivePublishedWithoutDownloadId) {
       DCHECK(id.new_file_path.IsContentUri());
-      base::DeleteFile(id.new_file_path, false);
+      base::DeleteFile(id.new_file_path);
     } else if (id.download_id != kArchiveNotPublished) {
       download_manager_ids.push_back(id.download_id);
     }

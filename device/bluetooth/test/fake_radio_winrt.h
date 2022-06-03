@@ -23,6 +23,10 @@ class FakeRadioWinrt
           ABI::Windows::Devices::Radios::IRadio> {
  public:
   FakeRadioWinrt();
+
+  FakeRadioWinrt(const FakeRadioWinrt&) = delete;
+  FakeRadioWinrt& operator=(const FakeRadioWinrt&) = delete;
+
   ~FakeRadioWinrt() override;
 
   // IRadio:
@@ -47,6 +51,7 @@ class FakeRadioWinrt
   void SimulateAdapterPowerFailure();
   void SimulateAdapterPoweredOn();
   void SimulateAdapterPoweredOff();
+  void SimulateSpuriousStateChangedEvent();
 
  private:
   ABI::Windows::Devices::Radios::RadioState state_ =
@@ -65,8 +70,6 @@ class FakeRadioWinrt
   // TODO(https://crbug.com/878680): Implement SimulateAdapterPowerSuccess() and
   // clean this up.
   base::CancelableOnceClosure cancelable_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRadioWinrt);
 };
 
 class FakeRadioStaticsWinrt
@@ -76,7 +79,14 @@ class FakeRadioStaticsWinrt
           ABI::Windows::Devices::Radios::IRadioStatics> {
  public:
   FakeRadioStaticsWinrt();
+
+  FakeRadioStaticsWinrt(const FakeRadioStaticsWinrt&) = delete;
+  FakeRadioStaticsWinrt& operator=(const FakeRadioStaticsWinrt&) = delete;
+
   ~FakeRadioStaticsWinrt() override;
+
+  void SimulateRequestAccessAsyncError(
+      ABI::Windows::Devices::Radios::RadioAccessStatus status);
 
   // IRadioStatics:
   IFACEMETHODIMP GetRadiosAsync(
@@ -94,7 +104,8 @@ class FakeRadioStaticsWinrt
       override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FakeRadioStaticsWinrt);
+  ABI::Windows::Devices::Radios::RadioAccessStatus access_status_ =
+      ABI::Windows::Devices::Radios::RadioAccessStatus_Allowed;
 };
 
 }  // namespace device

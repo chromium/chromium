@@ -28,7 +28,7 @@ class DevUiModuleProvider {
 
   // Assuming that the DevUI module is installed, loads DevUI resources if not
   // already loaded. Virtual to enable testing.
-  virtual void LoadModule();
+  virtual void EnsureLoaded();
 
  protected:
   DevUiModuleProvider();

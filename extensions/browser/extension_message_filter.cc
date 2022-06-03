@@ -7,13 +7,18 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/blob_holder.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -27,10 +32,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/trace_util.h"
 #include "ipc/ipc_message_macros.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -39,6 +46,9 @@ namespace {
 class ShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
   static ShutdownNotifierFactory* GetInstance() {
     return base::Singleton<ShutdownNotifierFactory>::get();
   }
@@ -53,8 +63,147 @@ class ShutdownNotifierFactory
     DependsOn(ProcessManagerFactory::GetInstance());
   }
   ~ShutdownNotifierFactory() override {}
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
+// Returns true if the process corresponding to `render_process_id` can host an
+// extension with `extension_id`.  (It doesn't necessarily mean that the process
+// *does* host this specific extension at this point in time.)
+bool CanRendererHostExtensionOrigin(int render_process_id,
+                                    const std::string& extension_id) {
+  GURL extension_url = Extension::GetBaseURLFromExtensionId(extension_id);
+  url::Origin extension_origin = url::Origin::Create(extension_url);
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
+}
+
+// Returns true if `source_endpoint` can be legitimately claimed/used by
+// `process`.  Otherwise reports a bad IPC message and returns false (expecting
+// the caller to not take any action based on the rejected, untrustworthy
+// `source_endpoint`).
+bool IsValidMessagingSource(RenderProcessHost& process,
+                            const MessagingEndpoint& source_endpoint) {
+  switch (source_endpoint.type) {
+    case MessagingEndpoint::Type::kNativeApp:
+      // Requests for channels initiated by native applications don't originate
+      // from renderer processes.
+      bad_message::ReceivedBadMessage(
+          &process, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
+      return false;
+
+    case MessagingEndpoint::Type::kExtension:
+      if (!source_endpoint.extension_id.has_value()) {
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+        return false;
+      }
+      if (!CanRendererHostExtensionOrigin(
+              process.GetID(), source_endpoint.extension_id.value())) {
+        bad_message::ReceivedBadMessage(
+            &process,
+            bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
+        return false;
+      }
+      return true;
+
+    case MessagingEndpoint::Type::kTab:
+      if (source_endpoint.extension_id.has_value()) {
+        const std::string& extension_id = source_endpoint.extension_id.value();
+        bool is_content_script_expected =
+            ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+                process, extension_id);
+        if (!is_content_script_expected) {
+          // TODO(https://crbug.com/1212918): Re-enable the enforcement (i.e.
+          // replace the UmaHistogramSparse call with a call to
+          // ReceivedBadMessage and returning false) after investigating and
+          // fixing the root cause of incorrect behavior reports coming from the
+          // end users.
+          TRACE_EVENT_INSTANT("extensions",
+                              "IsValidMessagingSource: kTab: bad message",
+                              ChromeTrackEvent::kRenderProcessHost, process,
+                              ChromeTrackEvent::kChromeExtensionId,
+                              ExtensionIdForTracing(extension_id));
+          base::UmaHistogramSparse(
+              "Stability.BadMessageTerminated.Extensions",
+              bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+        } else {
+          TRACE_EVENT_INSTANT("extensions", "IsValidMessagingSource: kTab: ok",
+                              ChromeTrackEvent::kRenderProcessHost, process,
+                              ChromeTrackEvent::kChromeExtensionId,
+                              ExtensionIdForTracing(extension_id));
+        }
+      }
+      return true;
+  }
+}
+
+// Returns true if `source_context` can be legitimately claimed/used by
+// `render_process_id`.  Otherwise reports a bad IPC message and returns false
+// (expecting the caller to not take any action based on the rejected,
+// untrustworthy `source_context`).
+bool IsValidSourceContext(RenderProcessHost& process,
+                          const PortContext& source_context) {
+  if (source_context.is_for_service_worker()) {
+    const PortContext::WorkerContext& worker_context =
+        source_context.worker.value();
+
+    // Only crude checks via CanRendererHostExtensionOrigin are done here,
+    // because more granular, worker-specific checks (e.g. checking if a worker
+    // exists using ProcessManager::HasServiceWorker) might incorrectly return
+    // false=invalid-IPC for IPCs from workers that were recently torn down /
+    // made inactive.
+    if (!CanRendererHostExtensionOrigin(process.GetID(),
+                                        worker_context.extension_id)) {
+      bad_message::ReceivedBadMessage(
+          &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+base::debug::CrashKeyString* GetTargetIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::target_id", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetSourceOriginCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::source_origin",
+      base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetSourceUrlCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ExternalConnectionInfo::source_url", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+class ScopedExternalConnectionInfoCrashKeys {
+ public:
+  explicit ScopedExternalConnectionInfoCrashKeys(
+      const ExtensionMsg_ExternalConnectionInfo& info)
+      : target_id_(GetTargetIdCrashKey(), info.target_id),
+        source_endpoint_(info.source_endpoint),
+        source_origin_(GetSourceOriginCrashKey(),
+                       base::OptionalOrNullptr(info.source_origin)),
+        source_url_(GetSourceUrlCrashKey(),
+                    info.source_url.possibly_invalid_spec()) {}
+
+  ~ScopedExternalConnectionInfoCrashKeys() = default;
+
+  ScopedExternalConnectionInfoCrashKeys(
+      const ScopedExternalConnectionInfoCrashKeys&) = delete;
+  ScopedExternalConnectionInfoCrashKeys& operator=(
+      const ScopedExternalConnectionInfoCrashKeys&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString target_id_;
+  extensions::debug::ScopedMessagingEndpointCrashKeys source_endpoint_;
+  url::debug::ScopedOriginCrashKey source_origin_;
+  base::debug::ScopedCrashKeyString source_url_;
 };
 
 }  // namespace
@@ -65,10 +214,10 @@ ExtensionMessageFilter::ExtensionMessageFilter(int render_process_id,
       render_process_id_(render_process_id),
       browser_context_(context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  shutdown_notifier_ =
+  shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()->Get(context)->Subscribe(
-          base::Bind(&ExtensionMessageFilter::ShutdownOnUIThread,
-                     base::Unretained(this)));
+          base::BindRepeating(&ExtensionMessageFilter::ShutdownOnUIThread,
+                              base::Unretained(this)));
 }
 
 void ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt() {
@@ -86,24 +235,13 @@ EventRouter* ExtensionMessageFilter::GetEventRouter() {
 
 void ExtensionMessageFilter::ShutdownOnUIThread() {
   browser_context_ = nullptr;
-  shutdown_notifier_.reset();
+  shutdown_notifier_subscription_ = {};
 }
 
 void ExtensionMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     BrowserThread::ID* thread) {
   switch (message.type()) {
-    case ExtensionHostMsg_AddListener::ID:
-    case ExtensionHostMsg_RemoveListener::ID:
-    case ExtensionHostMsg_AddLazyListener::ID:
-    case ExtensionHostMsg_RemoveLazyListener::ID:
-    case ExtensionHostMsg_AddLazyServiceWorkerListener::ID:
-    case ExtensionHostMsg_RemoveLazyServiceWorkerListener::ID:
-    case ExtensionHostMsg_AddFilteredListener::ID:
-    case ExtensionHostMsg_RemoveFilteredListener::ID:
-    case ExtensionHostMsg_ShouldSuspendAck::ID:
-    case ExtensionHostMsg_SuspendAck::ID:
-    case ExtensionHostMsg_TransferBlobsAck::ID:
     case ExtensionHostMsg_WakeEventPage::ID:
     case ExtensionHostMsg_OpenChannelToExtension::ID:
     case ExtensionHostMsg_OpenChannelToTab::ID:
@@ -125,28 +263,6 @@ void ExtensionMessageFilter::OnDestruct() const {
 bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddListener,
-                        OnExtensionAddListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveListener,
-                        OnExtensionRemoveListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddLazyListener,
-                        OnExtensionAddLazyListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveLazyListener,
-                        OnExtensionRemoveLazyListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddLazyServiceWorkerListener,
-                        OnExtensionAddLazyServiceWorkerListener);
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveLazyServiceWorkerListener,
-                        OnExtensionRemoveLazyServiceWorkerListener);
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddFilteredListener,
-                        OnExtensionAddFilteredListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveFilteredListener,
-                        OnExtensionRemoveFilteredListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_ShouldSuspendAck,
-                        OnExtensionShouldSuspendAck)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_SuspendAck,
-                        OnExtensionSuspendAck)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_TransferBlobsAck,
-                        OnExtensionTransferBlobsAck)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_WakeEventPage,
                         OnExtensionWakeEventPage)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_OpenChannelToExtension,
@@ -160,184 +276,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void ExtensionMessageFilter::OnExtensionAddListener(
-    const std::string& extension_id,
-    const GURL& listener_or_worker_scope_url,
-    const std::string& event_name,
-    int64_t service_worker_version_id,
-    int worker_thread_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  EventRouter* event_router = GetEventRouter();
-  if (crx_file::id_util::IdIsValid(extension_id)) {
-    const bool is_service_worker_context = worker_thread_id != kMainThreadId;
-    if (is_service_worker_context) {
-      DCHECK(listener_or_worker_scope_url.is_valid());
-      event_router->AddServiceWorkerEventListener(
-          event_name, process, extension_id, listener_or_worker_scope_url,
-          service_worker_version_id, worker_thread_id);
-    } else {
-      event_router->AddEventListener(event_name, process, extension_id);
-    }
-  } else if (listener_or_worker_scope_url.is_valid()) {
-    event_router->AddEventListenerForURL(event_name, process,
-                                         listener_or_worker_scope_url);
-  } else {
-    NOTREACHED() << "Tried to add an event listener without a valid "
-                 << "extension ID nor listener URL";
-  }
-}
-
-void ExtensionMessageFilter::OnExtensionRemoveListener(
-    const std::string& extension_id,
-    const GURL& listener_or_worker_scope_url,
-    const std::string& event_name,
-    int64_t service_worker_version_id,
-    int worker_thread_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  if (crx_file::id_util::IdIsValid(extension_id)) {
-    const bool is_service_worker_context = worker_thread_id != kMainThreadId;
-    if (is_service_worker_context) {
-      DCHECK(listener_or_worker_scope_url.is_valid());
-      GetEventRouter()->RemoveServiceWorkerEventListener(
-          event_name, process, extension_id, listener_or_worker_scope_url,
-          service_worker_version_id, worker_thread_id);
-    } else {
-      GetEventRouter()->RemoveEventListener(event_name, process, extension_id);
-    }
-  } else if (listener_or_worker_scope_url.is_valid()) {
-    GetEventRouter()->RemoveEventListenerForURL(event_name, process,
-                                                listener_or_worker_scope_url);
-  } else {
-    NOTREACHED() << "Tried to remove an event listener without a valid "
-                 << "extension ID nor listener URL";
-  }
-}
-
-void ExtensionMessageFilter::OnExtensionAddLazyListener(
-    const std::string& extension_id,
-    const std::string& event_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-  GetEventRouter()->AddLazyEventListener(event_name, extension_id);
-}
-
-void ExtensionMessageFilter::OnExtensionAddLazyServiceWorkerListener(
-    const std::string& extension_id,
-    const std::string& event_name,
-    const GURL& service_worker_scope) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  GetEventRouter()->AddLazyServiceWorkerEventListener(event_name, extension_id,
-                                                      service_worker_scope);
-}
-
-void ExtensionMessageFilter::OnExtensionRemoveLazyListener(
-    const std::string& extension_id,
-    const std::string& event_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  GetEventRouter()->RemoveLazyEventListener(event_name, extension_id);
-}
-
-void ExtensionMessageFilter::OnExtensionRemoveLazyServiceWorkerListener(
-    const std::string& extension_id,
-    const std::string& event_name,
-    const GURL& worker_scope_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  GetEventRouter()->RemoveLazyServiceWorkerEventListener(
-      event_name, extension_id, worker_scope_url);
-}
-
-void ExtensionMessageFilter::OnExtensionAddFilteredListener(
-    const std::string& extension_id,
-    const std::string& event_name,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
-    const base::DictionaryValue& filter,
-    bool lazy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  GetEventRouter()->AddFilteredEventListener(event_name, process, extension_id,
-                                             sw_identifier, filter, lazy);
-}
-
-void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(
-    const std::string& extension_id,
-    const std::string& event_name,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
-    const base::DictionaryValue& filter,
-    bool lazy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  GetEventRouter()->RemoveFilteredEventListener(
-      event_name, process, extension_id, sw_identifier, filter, lazy);
-}
-
-void ExtensionMessageFilter::OnExtensionShouldSuspendAck(
-     const std::string& extension_id, int sequence_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  ProcessManager::Get(browser_context_)
-      ->OnShouldSuspendAck(extension_id, sequence_id);
-}
-
-void ExtensionMessageFilter::OnExtensionSuspendAck(
-     const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  ProcessManager::Get(browser_context_)->OnSuspendAck(extension_id);
-}
-
-void ExtensionMessageFilter::OnExtensionTransferBlobsAck(
-    const std::vector<std::string>& blob_uuids) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  BlobHolder::FromRenderProcessHost(process)->DropBlobs(blob_uuids);
 }
 
 void ExtensionMessageFilter::OnExtensionWakeEventPage(
@@ -391,21 +329,30 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
-    // Requests for channels initiated by native applications don't originate
-    // from renderer processes.
-    bad_message::ReceivedBadMessage(
-        this, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
+  if (!browser_context_)
+    return;
+
+  // The IPC might race with RenderProcessHost destruction.  This may only
+  // happen in scenarios that are already inherently racey, so dropping the IPC
+  // is okay and won't lead to any additional risk of data loss.
+  auto* process = content::RenderProcessHost::FromID(render_process_id_);
+  if (!process)
+    return;
+  TRACE_EVENT("extensions", "ExtensionMessageFilter::OnOpenChannelToExtension",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+  ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
+  if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+      !IsValidSourceContext(*process, source_context)) {
     return;
   }
-  if (browser_context_) {
-    ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
-                                    source_context);
-    MessageService::Get(browser_context_)
-        ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
-                                 nullptr /* opener_port */, info.target_id,
-                                 info.source_url, channel_name);
-  }
+
+  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+                                  source_context);
+  MessageService::Get(browser_context_)
+      ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
+                               nullptr /* opener_port */, info.target_id,
+                               info.source_url, channel_name);
 }
 
 void ExtensionMessageFilter::OnOpenChannelToNativeApp(
@@ -455,6 +402,14 @@ void ExtensionMessageFilter::OnCloseMessagePort(const PortContext& port_context,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!browser_context_)
     return;
+
+  // Note, we need to add more stringent IPC validation here.
+  if (!port_context.is_for_render_frame() &&
+      !port_context.is_for_service_worker()) {
+    bad_message::ReceivedBadMessage(render_process_id_,
+                                    bad_message::EMF_INVALID_PORT_CONTEXT);
+    return;
+  }
 
   MessageService::Get(browser_context_)
       ->ClosePort(port_id, render_process_id_, port_context, force_close);

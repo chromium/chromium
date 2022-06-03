@@ -6,7 +6,7 @@
 // This test is meaningless without a testRunner.
 if (window.testRunner && window.eventSender) {
 
-    testRunner.setCanOpenWindows(true);
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
 

@@ -12,4 +12,13 @@ public class Scopes {
 
     // Use this when a Scope that does nothing is needed to avoid unnecessary heap allocations.
     public static final Scope NO_OP = () -> {};
+
+    // Use this to combine multiple Scopes into one.
+    public static final Scope combine(Scope... scopes) {
+        return () -> {
+            for (int i = scopes.length - 1; i >= 0; i--) {
+                scopes[i].close();
+            }
+        };
+    }
 }

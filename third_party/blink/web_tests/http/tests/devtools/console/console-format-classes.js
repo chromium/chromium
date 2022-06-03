@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console produces instant previews for arrays and objects.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       const objWithGetter = {a: 1, __proto__: 2};
@@ -21,7 +21,7 @@
         arrayWithGetter,
         objWithGetter,
         {str: "", nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0},
-        {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false},
+        {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: new RegExp('foo/bar'), bool: false},
         new Proxy({a: 1}, {}),
         document.all,
       ];
@@ -35,8 +35,8 @@
   `);
 
   ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(onRemoteObjectsLoaded);
-  function onRemoteObjectsLoaded() {
-    ConsoleTestRunner.dumpConsoleMessages(false, true /* dumpClassNames */);
+  async function onRemoteObjectsLoaded() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, true /* dumpClassNames */);
     TestRunner.completeTest();
   }
 })();

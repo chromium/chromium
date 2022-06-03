@@ -47,7 +47,24 @@ extern const CGFloat kTableViewLabelVerticalTopSpacing;
 // The width taken by the accessory view when it is displayed.
 extern const CGFloat kTableViewAccessoryWidth;
 
+// Size of the icon image.
+extern const CGFloat kTableViewIconImageSize;
+
+// Padding used between the image and the text labels.
+extern const CGFloat kTableViewImagePadding;
+
+// Padding used between the trailing content and the trailing of the
+// contentView.
+extern const CGFloat kTableViewTrailingContentPadding;
+
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;
+
+// The accessibility identifier of the info button of the
+// TableViewInfoButtonCell.
+extern NSString* const kTableViewCellInfoButtonViewId;
+
+// Returns a padding according to the width of the current device.
+extern CGFloat HorizontalPadding();
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_

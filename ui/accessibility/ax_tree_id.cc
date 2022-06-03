@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <iostream>
 
-#include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/value_conversions.h"
+#include "base/check.h"
+#include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -29,16 +29,24 @@ AXTreeID::AXTreeID(const std::string& string) {
     type_ = ax::mojom::AXTreeIDType::kUnknown;
   } else {
     type_ = ax::mojom::AXTreeIDType::kToken;
-    base::Value string_value(string);
-    base::UnguessableToken token;
-    CHECK(base::GetValueAsUnguessableToken(string_value, &token));
-    token_ = token;
+    absl::optional<base::UnguessableToken> token =
+        base::ValueToUnguessableToken(base::Value(string));
+    CHECK(token);
+    token_ = *token;
   }
 }
 
 // static
 AXTreeID AXTreeID::FromString(const std::string& string) {
   return AXTreeID(string);
+}
+
+// static
+AXTreeID AXTreeID::FromToken(const base::UnguessableToken& token) {
+  AXTreeID id;
+  id.type_ = ax::mojom::AXTreeIDType::kToken;
+  id.token_ = token;
+  return id;
 }
 
 // static
@@ -53,7 +61,7 @@ std::string AXTreeID::ToString() const {
     case ax::mojom::AXTreeIDType::kUnknown:
       return "";
     case ax::mojom::AXTreeIDType::kToken:
-      return base::CreateUnguessableTokenValue(*token_).GetString();
+      return base::UnguessableTokenToValue(*token_).GetString();
   }
 
   NOTREACHED();
@@ -99,9 +107,8 @@ std::ostream& operator<<(std::ostream& stream, const AXTreeID& value) {
 }
 
 const AXTreeID& AXTreeIDUnknown() {
-  static const base::NoDestructor<AXTreeID> ax_tree_id_unknown(
-      ax::mojom::AXTreeIDType::kUnknown);
-  return *ax_tree_id_unknown;
+  static const AXTreeID ax_tree_id_unknown(ax::mojom::AXTreeIDType::kUnknown);
+  return ax_tree_id_unknown;
 }
 
 }  // namespace ui

@@ -21,32 +21,4 @@ bool NGOutlineUtils::HasPaintedOutline(const ComputedStyle& style,
   return true;
 }
 
-bool NGOutlineUtils::ShouldPaintOutline(
-    const NGPhysicalBoxFragment& physical_fragment) {
-  if (!physical_fragment.IsInlineBox())
-    return true;
-  const LayoutObject* layout_object = physical_fragment.GetLayoutObject();
-  DCHECK(layout_object);
-  DCHECK(layout_object->IsLayoutInline());
-
-  // A |LayoutInline| can be split across multiple objects. The first fragment
-  // produced should paint the outline for *all* fragments.
-  if (layout_object->IsElementContinuation()) {
-    // If the |LayoutInline|'s continuation-root generated a fragment, we
-    // shouldn't paint the outline.
-    DCHECK(layout_object->ContinuationRoot());
-    NGInlineCursor cursor;
-    cursor.MoveTo(*layout_object->ContinuationRoot());
-    if (cursor)
-      return false;
-  }
-
-  // The first fragment paints all outlines. Check if this is the first fragment
-  // for the |layout_object|.
-  NGInlineCursor cursor;
-  cursor.MoveTo(*layout_object);
-  DCHECK(cursor);
-  return cursor.CurrentBoxFragment() == &physical_fragment;
-}
-
 }  // namespace blink

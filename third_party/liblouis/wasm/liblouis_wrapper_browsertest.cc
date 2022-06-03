@@ -6,6 +6,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/test/browser_test.h"
 
 using LibLouisWrapperTest = extensions::ExtensionApiTest;
 

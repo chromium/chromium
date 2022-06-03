@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -30,7 +30,6 @@ class BackgroundSnapshotControllerTest
 
   // BackgroundSnapshotController::Client
   void StartSnapshot() override;
-  void RunRenovations() override;
 
   // Utility methods.
   // Runs until all of the tasks that are not delayed are gone from the task
@@ -68,10 +67,6 @@ void BackgroundSnapshotControllerTest::StartSnapshot() {
   snapshot_count_++;
 }
 
-void BackgroundSnapshotControllerTest::RunRenovations() {
-  controller_->RenovationsCompleted();
-}
-
 void BackgroundSnapshotControllerTest::PumpLoop() {
   task_runner_->RunUntilIdle();
 }
@@ -85,7 +80,7 @@ TEST_F(BackgroundSnapshotControllerTest, OnLoad) {
   controller()->DocumentOnLoadCompletedInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
 }
@@ -96,7 +91,7 @@ TEST_F(BackgroundSnapshotControllerTest, Stop) {
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   controller()->Stop();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   // Should not start snapshots
   EXPECT_EQ(0, snapshot_count());
@@ -109,14 +104,14 @@ TEST_F(BackgroundSnapshotControllerTest, Stop) {
 // as done later. That reporting should have no effect nor crash.
 TEST_F(BackgroundSnapshotControllerTest, ClientReset) {
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
   // This normally happens when navigation starts.
   controller()->Reset();
   // Next snapshot should be initiated when new document is loaded.
   controller()->DocumentOnLoadCompletedInMainFrame();
-  FastForwardBy(base::TimeDelta::FromMilliseconds(
+  FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(2, snapshot_count());

@@ -5,16 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_UTIL_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_UTIL_H_
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
 @class OpenNewTabCommand;
 
 namespace feature_engagement {
 // Sends a new tab event to the feature_engagement::Tracker based on
 // |isIncognito|. If |isIncognito| is |true|, then the "Incognito Tab Opened"
 // is fired. If |isIncognito| is |false|, then the "New Tab Event" is fired.
-void NotifyNewTabEvent(ios::ChromeBrowserState* browserState, bool isIncognito);
+void NotifyNewTabEvent(ChromeBrowserState* browserState, bool isIncognito);
 
 // Sends a new tab event to the feature_engagement::Tracker based on
 // |command.incognito| and |command.userInitiated|. If |command.userInitiated|
@@ -22,7 +20,7 @@ void NotifyNewTabEvent(ios::ChromeBrowserState* browserState, bool isIncognito);
 // then one of the new tab events is fired. If |command.incognito| is |true|,
 // then the "Incognito Tab Opened" event is fired, and if |command.incognito| is
 // |false|, then the "New Tab Opened" event is fired.
-void NotifyNewTabEventForCommand(ios::ChromeBrowserState* browserState,
+void NotifyNewTabEventForCommand(ChromeBrowserState* browserState,
                                  OpenNewTabCommand* command);
 }  // namespace feature_engagement
 

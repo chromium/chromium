@@ -12,10 +12,10 @@ PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [s
 PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (0.25) is [sepia(0.625) sepia(0.375)]
 PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (0.5) is [sepia(0.75) sepia(0.25)]
 PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (0.75) is [sepia(0.875) sepia(0.125)]
-FAIL Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (1) is [sepia(1)] assert_equals: expected "sepia ( 1 ) sepia ( 0 ) " but got "sepia ( 1 ) "
+PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (1) is [sepia(1) sepia(0)]
 PASS Compositing: property <backdrop-filter> underlying [sepia(0.5)] from add [sepia(0.5)] to replace [sepia(1)] at (1.5) is [sepia(1) sepia(0)]
 PASS Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (-0.5) is [brightness(0.75) brightness(0.75)]
-FAIL Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (0) is [brightness(0.5)] assert_equals: expected "brightness ( 0.5 ) brightness ( 1 ) " but got "brightness ( 0.5 ) "
+PASS Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (0) is [brightness(0.5) brightness(1)]
 PASS Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (0.25) is [brightness(0.375) brightness(1.125)]
 PASS Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (0.5) is [brightness(0.25) brightness(1.25)]
 PASS Compositing: property <backdrop-filter> underlying [brightness(0)] from replace [brightness(0.5)] to add [brightness(1.5)] at (0.75) is [brightness(0.125) brightness(1.375)]
@@ -29,7 +29,7 @@ PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [saturate(2)] to add [saturate(3)] at (1) is [invert(0.5) saturate(3)]
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [saturate(2)] to add [saturate(3)] at (1.5) is [invert(0.5) saturate(3.5)]
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (-0.5) is [invert(0.25) saturate(0)]
-FAIL Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (0) is [invert(0.5)] assert_equals: expected "invert ( 0.5 ) saturate ( 1 ) " but got "invert ( 0.5 ) "
+PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (0) is [invert(0.5) saturate(1)]
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (0.25) is [invert(0.625) saturate(1.5)]
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (0.5) is [invert(0.75) saturate(2)]
 PASS Compositing: property <backdrop-filter> underlying [invert(0.5)] from add [none] to replace [invert(1) saturate(3)] at (0.75) is [invert(0.875) saturate(2.5)]
@@ -176,7 +176,7 @@ PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumu
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(30px)] to replace [blur(100px)] at (1) is [blur(100px)]
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(30px)] to replace [blur(100px)] at (1.5) is [blur(130px)]
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (-0.5) is [blur(70px) blur(0px)]
-FAIL Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (0) is [blur(50px)] assert_equals: expected "blur ( 50px ) blur ( 0px ) " but got "blur ( 50px ) "
+PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (0) is [blur(50px) blur(0px)]
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (0.25) is [blur(40px) blur(25px)]
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (0.5) is [blur(30px) blur(50px)]
 PASS Compositing: property <backdrop-filter> underlying [blur(10px)] from accumulate [blur(40px)] to add [blur(100px)] at (0.75) is [blur(20px) blur(75px)]

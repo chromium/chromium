@@ -4,8 +4,6 @@
 
 // https://html.spec.whatwg.org/C/#navigator.hardwareconcurrency
 
-[
-    Exposed=(Window, Worker)
-] interface mixin NavigatorConcurrentHardware {
-    [HighEntropy, MeasureAs=NavigatorHardwareConcurrency] readonly attribute unsigned long long hardwareConcurrency;
+interface mixin NavigatorConcurrentHardware {
+    [HighEntropy=Direct, MeasureAs=NavigatorHardwareConcurrency] readonly attribute unsigned long long hardwareConcurrency;
 };

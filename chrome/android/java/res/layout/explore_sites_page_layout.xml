@@ -3,16 +3,16 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/history_navigation"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/explore_sites_category_recycler"
-        android:background="@color/modern_primary_color"
+        android:background="@color/default_bg_color"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-</org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout>
+</FrameLayout>

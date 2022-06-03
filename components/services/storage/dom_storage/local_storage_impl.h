@@ -15,32 +15,32 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
 // The Local Storage implementation. An instance of this class exists for each
-// storage partition using Local Storage, managing storage for all origins
+// storage partition using Local Storage, managing storage for all StorageKeys
 // within the partition.
 class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                          public mojom::LocalStorageControl {
  public:
-  static base::FilePath LegacyDatabaseFileNameFromOrigin(
-      const url::Origin& origin);
-  static url::Origin OriginFromLegacyDatabaseFileName(
-      const base::FilePath& file_name);
-
   // Constructs a Local Storage implementation which will create its root
   // "Local Storage" directory in |storage_root| if non-empty. |task_runner|
   // run tasks on the same sequence as the one which constructs this object.
@@ -49,10 +49,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // object to allow for remote control via the LocalStorageControl interface.
   LocalStorageImpl(const base::FilePath& storage_root,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   scoped_refptr<base::SequencedTaskRunner> legacy_task_runner,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
+  ~LocalStorageImpl() override;
 
-  void FlushOriginForTesting(const url::Origin& origin);
+  void FlushStorageKeyForTesting(const blink::StorageKey& storage_key);
 
   // Used by content settings to alter the behavior around
   // what data to keep and what data to discard at shutdown.
@@ -61,34 +61,32 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void SetForceKeepSessionState() { force_keep_session_state_ = true; }
 
   // Called when the owning BrowserContext is ending.
-  // Schedules the commit of any unsaved changes and will delete
-  // and keep data on disk per the content settings and special storage
-  // policies.
-  void ShutdownAndDelete();
+  // Schedules the commit of any unsaved changes and will delete or keep data on
+  // disk per the content settings and special storage policies.  `callback` is
+  // invoked when shutdown is complete, which may happen even before ShutDown
+  // returns.
+  void ShutDown(base::OnceClosure callback);
 
   // Clears unused storage areas, when thresholds are reached.
   void PurgeUnusedAreasIfNeeded();
 
   // mojom::LocalStorageControl implementation:
   void BindStorageArea(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
   void GetUsage(GetUsageCallback callback) override;
-  void DeleteStorage(const url::Origin& origin,
+  void DeleteStorage(const blink::StorageKey& storage_key,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
   void Flush(FlushCallback callback) override;
   void PurgeMemory() override;
   void ApplyPolicyUpdates(
-      std::vector<mojom::LocalStoragePolicyUpdatePtr> policy_updates) override;
+      std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) override;
   void ForceKeepSessionState() override;
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
-
-  // Converts a string from the old storage format to the new storage format.
-  static std::vector<uint8_t> MigrateString(const base::string16& input);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
@@ -105,12 +103,14 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   class StorageAreaHolder;
 
-  ~LocalStorageImpl() override;
-
   // Runs |callback| immediately if already connected to a database, otherwise
   // delays running |callback| untill after a connection has been established.
   // Initiates connecting to the database if no connection is in progres yet.
   void RunWhenConnected(base::OnceClosure callback);
+
+  // StorageAreas held by this LocalStorageImpl retain an unmanaged reference to
+  // `database_`. This deletes them and is used any time `database_` is reset.
+  void PurgeAllStorageAreas();
 
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
@@ -121,7 +121,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteAndRecreateDatabase(const char* histogram_name);
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
 
-  StorageAreaHolder* GetOrCreateStorageArea(const url::Origin& origin);
+  StorageAreaHolder* GetOrCreateStorageArea(
+      const blink::StorageKey& storage_key);
 
   // The (possibly delayed) implementation of GetUsage(). Can be called directly
   // from that function, or through |on_database_open_callbacks_|.
@@ -130,8 +131,9 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                      std::vector<DomStorageDatabase::KeyValuePair> data);
 
   void OnGotStorageUsageForShutdown(
-      std::vector<mojom::LocalStorageUsageInfoPtr> usage);
-  void OnShutdownComplete(leveldb::Status status);
+      std::vector<mojom::StorageUsageInfoPtr> usage);
+  void OnStorageKeysDeleted(leveldb::Status status);
+  void OnShutdownComplete();
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
   void OnCommitResult(leveldb::Status status);
@@ -171,11 +173,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   std::vector<base::OnceClosure> on_database_opened_callbacks_;
 
-  // Maps between an origin and its prefixed LevelDB view.
-  std::map<url::Origin, std::unique_ptr<StorageAreaHolder>> areas_;
-
-  // Used to access old data for migration.
-  scoped_refptr<base::SequencedTaskRunner> legacy_task_runner_;
+  // Maps between a StorageKey and its prefixed LevelDB view.
+  std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
 
   bool is_low_end_device_;
   // Counts consecutive commit errors. If this number reaches a threshold, the
@@ -183,13 +182,15 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
 
-  // The set of (origin) URLs whose storage should be cleared on shutdown.
-  std::set<GURL> origins_to_purge_on_shutdown_;
+  // The set of StorageKeys whose storage should be cleared on shutdown.
+  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
 
   // Name of an extra histogram to log open results to, if not null.
   const char* open_result_histogram_ = nullptr;
 
   mojo::Receiver<mojom::LocalStorageControl> control_receiver_{this};
+
+  base::OnceClosure shutdown_complete_callback_;
 
   base::WeakPtrFactory<LocalStorageImpl> weak_ptr_factory_{this};
 };

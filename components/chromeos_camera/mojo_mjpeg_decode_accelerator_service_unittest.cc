@@ -32,16 +32,16 @@ class MojoMjpegDecodeAcceleratorServiceTest : public ::testing::Test {
         switches::kUseFakeMjpegDecodeAccelerator);
   }
 
-  void OnInitializeDone(const base::Closure& continuation, bool success) {
+  void OnInitializeDone(base::OnceClosure continuation, bool success) {
     EXPECT_TRUE(success);
-    continuation.Run();
+    std::move(continuation).Run();
   }
 
-  void OnDecodeAck(const base::Closure& continuation,
+  void OnDecodeAck(base::OnceClosure continuation,
                    int32_t bitstream_buffer_id,
                    MjpegDecodeAccelerator::Error error) {
     EXPECT_EQ(kArbitraryBitstreamBufferId, bitstream_buffer_id);
-    continuation.Run();
+    std::move(continuation).Run();
   }
 
  private:
@@ -57,8 +57,8 @@ TEST_F(MojoMjpegDecodeAcceleratorServiceTest, InitializeAndDecode) {
 
   base::RunLoop run_loop;
   jpeg_decoder->Initialize(
-      base::Bind(&MojoMjpegDecodeAcceleratorServiceTest::OnInitializeDone,
-                 base::Unretained(this), run_loop.QuitClosure()));
+      base::BindOnce(&MojoMjpegDecodeAcceleratorServiceTest::OnInitializeDone,
+                     base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
   const size_t kInputBufferSizeInBytes = 512;
@@ -91,8 +91,8 @@ TEST_F(MojoMjpegDecodeAcceleratorServiceTest, InitializeAndDecode) {
       std::move(bitstream_buffer), kDummyFrameCodedSize,
       std::move(output_frame_handle),
       base::checked_cast<uint32_t>(kOutputFrameSizeInBytes),
-      base::Bind(&MojoMjpegDecodeAcceleratorServiceTest::OnDecodeAck,
-                 base::Unretained(this), run_loop2.QuitClosure()));
+      base::BindOnce(&MojoMjpegDecodeAcceleratorServiceTest::OnDecodeAck,
+                     base::Unretained(this), run_loop2.QuitClosure()));
   run_loop2.Run();
 }
 

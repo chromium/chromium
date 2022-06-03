@@ -24,7 +24,15 @@
 
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -32,23 +40,45 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_view_source_parser.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
 
-HTMLViewSourceDocument::HTMLViewSourceDocument(const DocumentInit& initializer,
-                                               const String& mime_type)
-    : HTMLDocument(initializer, kViewSourceDocumentClass), type_(mime_type) {
-  SetIsViewSource(true);
+class ViewSourceEventListener : public NativeEventListener {
+ public:
+  ViewSourceEventListener(HTMLTableElement* table, HTMLInputElement* checkbox)
+      : table_(table), checkbox_(checkbox) {}
 
-  // FIXME: Why do view-source pages need to load in quirks mode?
-  SetCompatibilityMode(kQuirksMode);
+  void Invoke(ExecutionContext*, Event* event) override {
+    DCHECK_EQ(event->type(), event_type_names::kChange);
+    table_->setAttribute(html_names::kClassAttr,
+                         checkbox_->checked() ? "line-wrap" : "");
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(table_);
+    visitor->Trace(checkbox_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLTableElement> table_;
+  Member<HTMLInputElement> checkbox_;
+};
+
+HTMLViewSourceDocument::HTMLViewSourceDocument(const DocumentInit& initializer)
+    : HTMLDocument(initializer), type_(initializer.GetMimeType()) {
+  SetIsViewSource(true);
+  SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }
 
@@ -60,6 +90,10 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
   ParserAppendChild(html);
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
+  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  meta->setAttribute(html_names::kNameAttr, "color-scheme");
+  meta->setAttribute(html_names::kContentAttr, "light dark");
+  head->ParserAppendChild(meta);
   html->ParserAppendChild(head);
   auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
   html->ParserAppendChild(body);
@@ -71,12 +105,35 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   body->ParserAppendChild(div);
 
   auto* table = MakeGarbageCollected<HTMLTableElement>(*this);
-  body->ParserAppendChild(table);
   tbody_ = MakeGarbageCollected<HTMLTableSectionElement>(html_names::kTbodyTag,
                                                          *this);
   table->ParserAppendChild(tbody_);
   current_ = tbody_;
   line_number_ = 0;
+
+  // Create a checkbox to control line wrapping.
+  auto* checkbox =
+      MakeGarbageCollected<HTMLInputElement>(*this, CreateElementFlags());
+  checkbox->setAttribute(html_names::kTypeAttr, "checkbox");
+  checkbox->addEventListener(
+      event_type_names::kChange,
+      MakeGarbageCollected<ViewSourceEventListener>(table, checkbox),
+      /*use_capture=*/false);
+  checkbox->setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(Locale::DefaultLocale().QueryString(
+                              IDS_VIEW_SOURCE_LINE_WRAP)));
+  auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
+  label->ParserAppendChild(
+      Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
+                              IDS_VIEW_SOURCE_LINE_WRAP))));
+  label->setAttribute(html_names::kClassAttr, "line-wrap-control");
+  label->ParserAppendChild(checkbox);
+  // Add the checkbox to a form with autocomplete=off, to avoid form
+  // restoration from changing the value of the checkbox.
+  auto* form = MakeGarbageCollected<HTMLFormElement>(*this);
+  form->setAttribute(html_names::kAutocompleteAttr, "off");
+  form->ParserAppendChild(label);
+  body->ParserAppendChild(form);
+  body->ParserAppendChild(table);
 }
 
 void HTMLViewSourceDocument::AddSource(const String& source, HTMLToken& token) {
@@ -124,7 +181,7 @@ void HTMLViewSourceDocument::ProcessTagToken(const String& source,
                                              HTMLToken& token) {
   current_ = AddSpanWithClassName("html-tag");
 
-  AtomicString tag_name(token.GetName());
+  AtomicString tag_name = token.GetName().AsAtomicString();
 
   unsigned index = 0;
   HTMLToken::AttributeList::const_iterator iter = token.Attributes().begin();
@@ -335,7 +392,7 @@ int HTMLViewSourceDocument::AddSrcset(const String& source,
   return end;
 }
 
-void HTMLViewSourceDocument::Trace(Visitor* visitor) {
+void HTMLViewSourceDocument::Trace(Visitor* visitor) const {
   visitor->Trace(current_);
   visitor->Trace(tbody_);
   visitor->Trace(td_);

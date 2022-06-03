@@ -8,12 +8,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <vector>
+
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -27,6 +31,11 @@ CFTypeID SecKeyGetTypeID();
 #if !defined(OS_IOS)
 CFTypeID SecACLGetTypeID();
 CFTypeID SecTrustedApplicationGetTypeID();
+// The NSFont/CTFont toll-free bridging is broken before 10.15.
+// http://www.openradar.me/15341349 rdar://15341349
+//
+// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
+// minimum OS for Chromium, remove this SPI declaration.
 Boolean _CFIsObjC(CFTypeID typeID, CFTypeRef obj);
 #endif
 }  // extern "C"
@@ -308,9 +317,13 @@ CF_TO_NS_CAST_DEFN(CFURL, NSURL)
 #if defined(OS_IOS)
 CF_TO_NS_CAST_DEFN(CTFont, UIFont)
 #else
-// The NSFont/CTFont toll-free bridging is broken when it comes to type
-// checking, so do some special-casing.
+// The NSFont/CTFont toll-free bridging is broken before 10.15.
 // http://www.openradar.me/15341349 rdar://15341349
+//
+// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
+// minimum OS for Chromium, remove this specialization and replace it with just:
+//
+// CF_TO_NS_CAST_DEFN(CTFont, NSFont)
 NSFont* CFToNSCast(CTFontRef cf_val) {
   NSFont* ns_val =
       const_cast<NSFont*>(reinterpret_cast<const NSFont*>(cf_val));
@@ -373,9 +386,12 @@ CF_CAST_DEFN(CTRun)
 #if defined(OS_IOS)
 CF_CAST_DEFN(CTFont)
 #else
-// The NSFont/CTFont toll-free bridging is broken when it comes to type
-// checking, so do some special-casing.
+// The NSFont/CTFont toll-free bridging is broken before 10.15.
 // http://www.openradar.me/15341349 rdar://15341349
+//
+// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
+// minimum OS for Chromium, remove this specialization and the #if IOS above,
+// and rely just on the one CF_CAST_DEFN(CTFont).
 template<> CTFontRef
 CFCast<CTFontRef>(const CFTypeRef& cf_val) {
   if (cf_val == NULL) {
@@ -464,12 +480,13 @@ base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
 }
 
 bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
+  decltype(range_out->location) end;
   if (base::IsValueInRangeForNumericType<decltype(range_out->location)>(
           range.location) &&
       base::IsValueInRangeForNumericType<decltype(range_out->length)>(
           range.length) &&
-      base::IsValueInRangeForNumericType<decltype(range_out->location)>(
-          range.location + range.length)) {
+      base::CheckAdd(range.location, range.length).AssignIfValid(&end) &&
+      base::IsValueInRangeForNumericType<decltype(range_out->location)>(end)) {
     *range_out = NSMakeRange(range.location, range.length);
     return true;
   }

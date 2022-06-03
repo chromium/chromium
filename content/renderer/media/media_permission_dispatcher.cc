@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
-#include "third_party/blink/public/web/web_user_gesture_indicator.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
 namespace {
@@ -106,8 +106,7 @@ void MediaPermissionDispatcher::RequestPermission(
 
   GetPermissionService()->RequestPermission(
       MediaPermissionTypeToPermissionDescriptor(type),
-      blink::WebUserGestureIndicator::IsProcessingUserGesture(
-          render_frame_->GetWebFrame()),
+      render_frame_->GetWebFrame()->HasTransientUserActivation(),
       base::BindOnce(&MediaPermissionDispatcher::OnPermissionStatus, weak_ptr_,
                      request_id));
 }

@@ -13,7 +13,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/synchronization/lock.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 namespace component_updater {
@@ -43,7 +43,9 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   };
 
   FakeCrOSComponentManager();
-  ~FakeCrOSComponentManager() override;
+
+  FakeCrOSComponentManager(const FakeCrOSComponentManager&) = delete;
+  FakeCrOSComponentManager& operator=(const FakeCrOSComponentManager&) = delete;
 
   void set_queue_load_requests(bool queue_load_requests) {
     queue_load_requests_ = queue_load_requests;
@@ -51,9 +53,10 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   void set_supported_components(const std::set<std::string>& components) {
     supported_components_ = components;
   }
-  void set_registered_components(const std::set<std::string>& components) {
-    registered_components_ = components;
+  void set_unload_component_result(bool result) {
+    unload_component_result_ = result;
   }
+  void SetRegisteredComponents(const std::set<std::string>& components);
 
   // Finishes a queued component load request. Should be used only if
   // |queue_load_requests_| is set.
@@ -84,8 +87,11 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
                               const base::FilePath& path) override;
   void UnregisterCompatiblePath(const std::string& name) override;
   base::FilePath GetCompatiblePath(const std::string& name) const override;
-  bool IsRegistered(const std::string& name) const override;
+  bool IsRegisteredMayBlock(const std::string& name) override;
   void RegisterInstalled() override;
+
+ protected:
+  ~FakeCrOSComponentManager() override;
 
  private:
   // Describes pending component load request.
@@ -129,12 +135,15 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   // FinishLoadRequest().
   bool queue_load_requests_ = false;
 
+  bool unload_component_result_ = true;
+
   // Set of components that can be handled by this component manager.
   std::set<std::string> supported_components_;
 
   // Set of components registered with this component manager - used primarily
   // by IsRegistered() implementation.
   std::set<std::string> registered_components_;
+  base::Lock registered_components_lock_;
 
   // The component information registered using ResetComponentInfo() - used to
   // handle component load requests when queue_load_requests_ is not set.
@@ -150,8 +159,6 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
 
   // Maps the currently mounted components to their mount point path.
   std::map<std::string, base::FilePath> mounted_components_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrOSComponentManager);
 };
 
 }  // namespace component_updater

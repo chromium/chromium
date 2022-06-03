@@ -8,9 +8,10 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "extensions/common/permissions/permission_message_provider.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Profile;
 
@@ -22,8 +23,10 @@ class Extension;
 // and controls related to the app.
 class AppInfoPermissionsPanel : public AppInfoPanel {
  public:
+  METADATA_HEADER(AppInfoPermissionsPanel);
   AppInfoPermissionsPanel(Profile* profile, const extensions::Extension* app);
-
+  AppInfoPermissionsPanel(const AppInfoPermissionsPanel&) = delete;
+  AppInfoPermissionsPanel& operator=(const AppInfoPermissionsPanel&) = delete;
   ~AppInfoPermissionsPanel() override;
 
  private:
@@ -46,16 +49,19 @@ class AppInfoPermissionsPanel : public AppInfoPanel {
   extensions::PermissionMessages GetActivePermissionMessages() const;
 
   int GetRetainedFileCount() const;
-  base::string16 GetRetainedFileHeading() const;
-  const std::vector<base::string16> GetRetainedFilePaths() const;
+  std::u16string GetRetainedFileHeading() const;
+  const std::vector<std::u16string> GetRetainedFilePaths() const;
   void RevokeFilePermissions();
 
   int GetRetainedDeviceCount() const;
-  base::string16 GetRetainedDeviceHeading() const;
-  const std::vector<base::string16> GetRetainedDevices() const;
+  std::u16string GetRetainedDeviceHeading() const;
+  const std::vector<std::u16string> GetRetainedDevices() const;
   void RevokeDevicePermissions();
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoPermissionsPanel);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoPermissionsPanel, AppInfoPanel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoPermissionsPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_PERMISSIONS_PANEL_H_

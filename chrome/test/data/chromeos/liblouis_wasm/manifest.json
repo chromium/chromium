@@ -6,5 +6,6 @@
   "description": "test",
   "background": {
     "scripts": [ "test.js" ]
-  }
+  },
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
 }

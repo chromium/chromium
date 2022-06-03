@@ -4,8 +4,19 @@
 
 package org.chromium.android_webview.test;
 
-import android.support.test.filters.MediumTest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
+
+import android.os.Build;
+import android.support.test.InstrumentationRegistry;
+
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,20 +25,29 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
-import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsLogUploader;
+import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
+import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
+import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.net.test.EmbeddedTestServer;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Integration test to verify WebView's metrics implementation. This isn't a great spot to verify
@@ -50,63 +70,30 @@ public class AwMetricsIntegrationTest {
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private TestAwContentsClient mContentsClient;
-    private TestPlatformServiceBridge mPlatformServiceBridge;
+    private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
 
     // Some short interval, arbitrarily chosen.
     private static final long UPLOAD_INTERVAL_MS = 10;
-
-    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        private final BlockingQueue<byte[]> mQueue;
-
-        public TestPlatformServiceBridge() {
-            mQueue = new LinkedBlockingQueue<>();
-        }
-
-        @Override
-        public boolean canUseGms() {
-            return true;
-        }
-
-        @Override
-        public void queryMetricsSetting(Callback<Boolean> callback) {
-            ThreadUtils.assertOnUiThread();
-            callback.onResult(true /* enabled */);
-        }
-
-        @Override
-        public void logMetrics(byte[] data) {
-            mQueue.add(data);
-        }
-
-        /**
-         * Gets the latest metrics log we've received.
-         */
-        public ChromeUserMetricsExtension waitForNextMetricsLog() throws Exception {
-            byte[] data = AwActivityTestRule.waitForNextQueueElement(mQueue);
-            return ChromeUserMetricsExtension.parseFrom(data);
-        }
-
-        /**
-         * Asserts there are no more metrics logs queued up.
-         */
-        public void assertNoMetricsLogs() throws Exception {
-            // Assert the size is zero (rather than the queue is empty), so if this fails we have
-            // some hint as to how many logs were queued up.
-            Assert.assertEquals("Expected no metrics logs to be in the queue", 0, mQueue.size());
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
-        // Kick off the metrics consent-fetching process. TestPlatformServiceBridge mocks out user
-        // consent for when we query it with AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(),
-        // so metrics consent is guaranteed to be granted.
-        mPlatformServiceBridge = new TestPlatformServiceBridge();
+        // Kick off the metrics consent-fetching process. MetricsTestPlatformServiceBridge mocks out
+        // user consent for when we query it with
+        // AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(), so metrics consent is guaranteed
+        // to be granted.
+        mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Explicitly send the data to PlatformServiceBridge and avoid sending the data via
+            // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
+            // ... etc in tests as testing the service behaviour is outside the scope of these
+            // integeration tests.
+            AndroidMetricsLogUploader.setUploader(
+                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+
             // Need to configure the metrics delay first, because
             // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization. The
             // first upload for each test case will be triggered with minimal latency, and
@@ -161,6 +148,15 @@ public class AwMetricsIntegrationTest {
         // some reason).
         Assert.assertTrue(
                 "Should have some application_locale", systemProfile.hasApplicationLocale());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Assert.assertEquals(
+                    ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        }
+        Assert.assertTrue(
+                "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
+        Assert.assertTrue(
+                "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
     }
 
     @Test
@@ -270,6 +266,79 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testMetadata_stability_pageLoad() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            Assert.assertEquals("Should have correct stability histogram kPageLoad count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.PAGE_LOAD));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_rendererLaunchCount() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            Assert.assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
+    public void testMetadata_stability_rendererCrashCount() throws Throwable {
+        TestAwContentsClient.RenderProcessGoneHelper helper =
+                mContentsClient.getRenderProcessGoneHelper();
+        helper.setResponse(true); // Don't automatically kill the browser process.
+
+        // Ensure that the renderer has started.
+        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // Crash the renderer and wait for onRenderProcessGone to be called.
+        int callCount = helper.getCallCount();
+        mRule.loadUrlAsync(mAwContents, "chrome://crash");
+        helper.waitForCallback(
+                callCount, 1, CallbackHelper.WAIT_TIMEOUT_SECONDS * 5, TimeUnit.SECONDS);
+
+        Assert.assertEquals("Should have correct stability histogram kRendererCrash count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.RENDERER_CRASH));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_browserLaunchCount() throws Throwable {
+        // This should be triggered simply by initializing the MetricsService. This should be logged
+        // (and persisted) even before we start collecting the first metrics log.
+        Assert.assertEquals("Should have correct stability histogram kLaunch count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.LAUNCH));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testMetadata_androidHistograms() throws Throwable {
         // Wait for a metrics log, since AndroidMetricsProvider only logs this histogram during log
         // collection. Do not assert anything about this histogram before this point (ex. do not
@@ -283,21 +352,121 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    public void testMetadata_privacySensitiveData() throws Throwable {
-        // We assert we do *not* log data which is deemed to be privacy sensitive. It's OK to
-        // reverse these test conditions, but only if we log these fields in a manner which is
-        // approved to preserve user privacy.
-        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
-        SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertFalse(
-                "Should not log hardware.bluetooth", systemProfile.getHardware().hasBluetooth());
-        Assert.assertFalse("Should not log hardware.usb", systemProfile.getHardware().hasUsb());
+    public void testMetadata_samplingRate() throws Throwable {
+        // Wait for a metrics log, since SamplingMetricsProvider only logs this histogram during log
+        // collection. Do not assert anything about this histogram before this point (ex. do not
+        // assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting("UMA.SamplingRatePerMille"));
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=WebViewWakeMetricsService")
+    public void testMetadata_accessibility() throws Throwable {
+        // Wait for a metrics log, since AccessibilityMetricsProvider only logs this histogram
+        // during log collection. Do not assert anything about this histogram before this point (ex.
+        // do not assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Accessibility.Android.ScreenReader.EveryReport"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST})
+    public void testMetadata_appPackageName() throws Throwable {
+        final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
+
+        mRule.runOnUiThread(() -> {
+            AwBrowserProcess.setWebViewPackageName(appPackageName);
+            AndroidMetricsServiceClient.setCanRecordPackageNameForAppTypeForTesting(true);
+            // A valid version string and non expired date means the app package name should be
+            // recorded.
+            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
+                    /* allowlistComponentVersion= */ "123.456.78.9",
+                    /* allowlistExpiryDateMs= */ System.currentTimeMillis()
+                            + TimeUnit.DAYS.toMillis(1));
+        });
+
+        // Disregard the first UMA log because it's recorded before loading the allowlist.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // Load a blank page to indicate to the MetricsService that the app is "in use" and
+        // it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto systemProfile = log.getSystemProfile();
+        Assert.assertEquals(appPackageName, systemProfile.getAppPackageName());
+    }
+
+    private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
+            ChromeComponent expected) {
+        return new TypeSafeMatcher<ChromeComponent>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(expected.toString());
+            }
+
+            @Override
+            protected void describeMismatchSafely(
+                    ChromeComponent item, Description mismatchDescription) {
+                mismatchDescription.appendText("Doesn't match " + item.toString());
+            }
+
+            @Override
+            public boolean matchesSafely(ChromeComponent item) {
+                return expected.getComponentId() == item.getComponentId()
+                        && expected.getVersion().equals(item.getVersion())
+                        && expected.getOmahaFingerprint() == item.getOmahaFingerprint();
+            }
+        };
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_chromeComponents() throws Throwable {
+        final String allowlistComponentVersion = "123.456.78.9";
+        // A fake expiry date, the allowlist component info should be recorded regardless of the
+        // expiry date.
+        final long allowlistExpiryDateMs = 1234567891011L;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
+                    allowlistComponentVersion, allowlistExpiryDateMs);
+        });
+
+        // Ignore the first log because it will likely be recorded before setting the allowlist
+        // version above.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // The start of a page load should be enough to indicate to the MetricsService that the app
+        // is "in use" and it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto systemProfile = log.getSystemProfile();
+
+        Assert.assertEquals(
+                "Should have exactly one component", systemProfile.getChromeComponentCount(), 1);
+        ChromeComponent expectedAllowlistComponent =
+                ChromeComponent.newBuilder()
+                        .setComponentId(
+                                SystemProfileProto.ComponentId.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST)
+                        .setVersion(allowlistComponentVersion)
+                        .build();
+        assertThat(systemProfile.getChromeComponentList(),
+                contains(matchesChromeComponent(expectedAllowlistComponent)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testPageLoadsEnableMultipleUploads() throws Throwable {
         mPlatformServiceBridge.waitForNextMetricsLog();
 
@@ -319,5 +488,94 @@ public class AwMetricsIntegrationTest {
         // assertNoMetricsLogs() however, because it's possible we got a metrics log between
         // onPageStarted & onPageFinished, in which case onPageFinished would *also* wake up the
         // metrics service, and we might potentially have a third metrics log in the queue.
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
+    public void testRendererHistograms() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Discard initial log since the renderer process hasn't been created yet.
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final CallbackHelper helper = new CallbackHelper();
+            int finalMetricsCollectedCount = helper.getCallCount();
+
+            // Load a page and wait for final metrics collection.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
+                        () -> { helper.notifyCalled(); });
+            });
+
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 1);
+
+            // At this point we know one of two things must be true:
+            //
+            // 1. The renderer process completed startup (logging the expected histogram) before
+            //    subprocess histograms were collected. In this case, we know the desired histogram
+            //    has been copied into the browser process.
+            // 2. Subprocess histograms were collected before the renderer process completed
+            //    startup. While we don't know if our histogram was copied over, we do know the
+            //    page load has finished and this woke up the metrics service, so MetricsService
+            //    will collect subprocess metrics again.
+            //
+            // Load a page and wait for another final log collection. We know this log collection
+            // must be triggered by either the second page load start (scenario 1) or the first page
+            // load finish (scenario 2), either of which ensures the renderer startup histogram must
+            // have been copied into the browser process.
+
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 2);
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            "Android.SeccompStatus.RendererSandbox"));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE})
+    public void testScreenCoverageReporting() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            mRule.loadUrlAsync(mAwContents,
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            // We need to wait for log collection because the histogram is recorded during
+            // MetricsProvider::ProvideCurrentSessionData().
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion2";
+
+            // The histogram records whole seconds that the WebView has been on screen, we need to
+            // leave enough time for something to be recorded.
+            CriteriaHelper.pollUiThread(() -> {
+                int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+                Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
+            });
+
+            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+
+            // Based on VisibilityMetricsLogger::WebViewOpenWebScreenPortion.
+            final int histogramZeroBucket = 11;
+            int zeroBucketSamples = RecordHistogram.getHistogramValueCountForTesting(
+                    histogramName, histogramZeroBucket);
+            Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
+                    zeroBucketSamples, totalSamples);
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 }

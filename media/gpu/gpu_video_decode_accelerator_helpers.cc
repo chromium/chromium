@@ -6,6 +6,13 @@
 
 namespace media {
 
+GpuVideoDecodeGLClient::GpuVideoDecodeGLClient() = default;
+GpuVideoDecodeGLClient::~GpuVideoDecodeGLClient() = default;
+GpuVideoDecodeGLClient::GpuVideoDecodeGLClient(const GpuVideoDecodeGLClient&) =
+    default;
+GpuVideoDecodeGLClient& GpuVideoDecodeGLClient::operator=(
+    const GpuVideoDecodeGLClient&) = default;
+
 SupportedVideoDecoderConfigs ConvertFromSupportedProfiles(
     const VideoDecodeAccelerator::SupportedProfiles& profiles,
     bool allow_encrypted) {

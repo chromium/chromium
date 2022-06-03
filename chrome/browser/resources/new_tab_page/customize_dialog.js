@@ -4,17 +4,41 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
+import './customize_backgrounds.js';
+import './customize_shortcuts.js';
+import './customize_modules.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @typedef {{label:string, icon:string}} */
-let Color;
+import {CustomizeDialogPage} from './customize_dialog_types.js';
+import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {createScrollBorders} from './utils.js';
+
+
+/**
+ * Workaround until new_tab_page is migrated to TypeScript.
+ * @interface
+ */
+class CustomizeThemesElement {
+  revertThemeChanges() {}
+  confirmThemeChanges() {}
+}
 
 /**
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
+ * @polymer
+ * @extends {PolymerElement}
  */
-class CustomizeDialogElement extends PolymerElement {
+class CustomizeDialogElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-customize-dialog';
   }
@@ -25,45 +49,166 @@ class CustomizeDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Array<!Color>} */
-      colors_: Array,
+      /** @type {!newTabPage.mojom.Theme} */
+      theme: Object,
+
+      /** @type {CustomizeDialogPage} */
+      selectedPage: {
+        type: String,
+        observer: 'onSelectedPageChange_',
+      },
+
+      /** @private {newTabPage.mojom.BackgroundCollection} */
+      selectedCollection_: Object,
+
+      /** @private */
+      showTitleNavigation_: {
+        type: Boolean,
+        computed:
+            'computeShowTitleNavigation_(selectedPage, selectedCollection_)',
+        value: false,
+      },
+
+      /** @private */
+      isRefreshToggleChecked_: {
+        type: Boolean,
+        computed: `computeIsRefreshToggleChecked_(theme, selectedCollection_)`,
+      },
+
+      /** @private */
+      shortcutsEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('shortcutsEnabled'),
+      },
+
+      /** @private */
+      modulesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesEnabled'),
+      },
     };
   }
 
   constructor() {
     super();
-    // Create a few rows of sample data.
-    // TODO(crbug.com/1030459): Add real data source.
-    this.colors_ = [];
-    for (let i = 0; i < 20; i++) {
-      this.colors_.push({
-        label: 'Warm grey',
-        icon:
-            'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiPjxkZWZzPjxwYXRoIGQ9Ik0zMiA2NEMxNC4zNCA2NCAwIDQ5LjY2IDAgMzJTMTQuMzQgMCAzMiAwczMyIDE0LjM0IDMyIDMyLTE0LjM0IDMyLTMyIDMyeiIgaWQ9ImEiLz48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMzIiIHkxPSIzMiIgeDI9IjMyLjA4IiB5Mj0iMzIiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRkZGRkYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNFM0RCRDciLz48L2xpbmVhckdyYWRpZW50PjxjbGlwUGF0aCBpZD0iYyI+PHVzZSB4bGluazpocmVmPSIjYSIvPjwvY2xpcFBhdGg+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI2EiIGZpbGw9InVybCgjYikiLz48ZyBjbGlwLXBhdGg9InVybCgjYykiPjx1c2UgeGxpbms6aHJlZj0iI2EiIGZpbGwtb3BhY2l0eT0iMCIgc3Ryb2tlPSIjRTNEQkQ3IiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+',
-      });
-      this.colors_.push(
-          {
-            label: 'Cool grey',
-            icon:
-                'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiPjxkZWZzPjxwYXRoIGQ9Ik0zMiA2NEMxNC4zNCA2NCAwIDQ5LjY2IDAgMzJTMTQuMzQgMCAzMiAwczMyIDE0LjM0IDMyIDMyLTE0LjM0IDMyLTMyIDMyeiIgaWQ9ImEiLz48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMzIiIHkxPSIzMiIgeDI9IjMyLjA4IiB5Mj0iMzIiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNEOURBREYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNBN0FCQjciLz48L2xpbmVhckdyYWRpZW50PjxjbGlwUGF0aCBpZD0iYyI+PHVzZSB4bGluazpocmVmPSIjYSIvPjwvY2xpcFBhdGg+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI2EiIGZpbGw9InVybCgjYikiLz48ZyBjbGlwLXBhdGg9InVybCgjYykiPjx1c2UgeGxpbms6aHJlZj0iI2EiIGZpbGwtb3BhY2l0eT0iMCIgc3Ryb2tlPSIjQTdBQkI3IiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+',
-          },
-      );
-    }
+    /** @private {newTabPage.mojom.PageHandlerRemote} */
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+    /** @private {!Array<!IntersectionObserver>} */
+    this.intersectionObservers_ = [];
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.$.dialog.showModal();
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.intersectionObservers_.forEach(observer => {
+      observer.disconnect();
+    });
+    this.intersectionObservers_ = [];
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.intersectionObservers_ = [
+      createScrollBorders(
+          this.$.menu, this.$.topPageScrollBorder,
+          this.$.bottomPageScrollBorder, 'show-1'),
+      createScrollBorders(
+          this.$.pages, this.$.topPageScrollBorder,
+          this.$.bottomPageScrollBorder, 'show-2'),
+    ];
+    this.pageHandler_.onCustomizeDialogAction(
+        newTabPage.mojom.CustomizeDialogAction.kOpenClicked);
+  }
+
+  /** @private */
+  onCancel_() {
+    this.$.backgrounds.revertBackgroundChanges();
+    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
+        .revertThemeChanges();
   }
 
   /** @private */
   onCancelClick_() {
+    this.pageHandler_.onCustomizeDialogAction(
+        newTabPage.mojom.CustomizeDialogAction.kCancelClicked);
     this.$.dialog.cancel();
   }
 
-  /** @private */
+  /**
+   * @private
+   */
   onDoneClick_() {
+    this.$.backgrounds.confirmBackgroundChanges();
+    /** @type {CustomizeThemesElement} */ (this.$.customizeThemes)
+        .confirmThemeChanges();
+    this.shadowRoot.querySelector('ntp-customize-shortcuts').apply();
+    if (this.modulesEnabled_) {
+      this.shadowRoot.querySelector('ntp-customize-modules').apply();
+    }
+    this.pageHandler_.onCustomizeDialogAction(
+        newTabPage.mojom.CustomizeDialogAction.kDoneClicked);
     this.$.dialog.close();
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onMenuItemKeyDown_(e) {
+    if (!['Enter', ' '].includes(e.key)) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    this.selectedPage = e.target.getAttribute('page-name');
+  }
+
+  /** @private */
+  onSelectedPageChange_() {
+    this.$.pages.scrollTop = 0;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsRefreshToggleChecked_() {
+    if (!this.selectedCollection_) {
+      return false;
+    }
+    return !!this.theme &&
+        this.selectedCollection_.id === this.theme.dailyRefreshCollectionId;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowTitleNavigation_() {
+    return this.selectedPage === CustomizeDialogPage.BACKGROUNDS &&
+        !!this.selectedCollection_;
+  }
+
+  /** @private */
+  onBackClick_() {
+    this.selectedCollection_ = null;
+    this.pageHandler_.onCustomizeDialogAction(
+        newTabPage.mojom.CustomizeDialogAction.kBackgroundsBackClicked);
+    this.$.pages.scrollTop = 0;
+  }
+
+  /** @private */
+  onBackgroundDailyRefreshToggleChange_() {
+    if (this.$.refreshToggle.checked) {
+      this.pageHandler_.setDailyRefreshCollectionId(
+          this.selectedCollection_.id);
+    } else {
+      this.pageHandler_.setDailyRefreshCollectionId('');
+    }
+    this.pageHandler_.onCustomizeDialogAction(
+        newTabPage.mojom.CustomizeDialogAction
+            .kBackgroundsRefreshToggleClicked);
   }
 }
 

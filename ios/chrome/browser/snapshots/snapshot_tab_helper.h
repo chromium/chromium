@@ -9,11 +9,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "components/infobars/core/infobar_manager.h"
+#include "base/scoped_observation.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@class SnapshotCache;
 @class SnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;
 
@@ -22,20 +22,26 @@ class WebState;
 }
 
 // SnapshotTabHelper allows capturing and retrival for web page snapshots.
-class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
-                          public web::WebStateObserver,
+class SnapshotTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<SnapshotTabHelper> {
  public:
+  SnapshotTabHelper(const SnapshotTabHelper&) = delete;
+  SnapshotTabHelper& operator=(const SnapshotTabHelper&) = delete;
+
   ~SnapshotTabHelper() override;
 
   // Creates the tab helper for |web_state| if it does not exists. The
-  // unique identifier |session_id| is used when interacting with the
+  // unique identifier |tab_id| is used when interacting with the
   // cache to save or fetch snapshots.
-  static void CreateForWebState(web::WebState* web_state, NSString* session_id);
+  static void CreateForWebState(web::WebState* web_state, NSString* tab_id);
 
   // Sets the delegate. Capturing snapshot before setting a delegate will
   // results in failures. The delegate is not owned by the tab helper.
   void SetDelegate(id<SnapshotGeneratorDelegate> delegate);
+
+  // Sets the snapshot cache to be used to store and retrieve snapshots. This is
+  // not owned by the tab helper.
+  void SetSnapshotCache(SnapshotCache* snapshot_cache);
 
   // Retrieves a color snapshot for the current page, invoking |callback|
   // with the image. The callback may be called synchronously is there is
@@ -56,12 +62,6 @@ class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
   // if snapshot generation fails.
   void UpdateSnapshotWithCallback(void (^callback)(UIImage*));
 
-  // DEPRECATED(crbug.com/917929): Use the asynchronous function
-  // |UpdateSnapshotWithCallback()| for all new callsites.
-  // Generates a new snapshot, updates the snapshot cache, and returns the new
-  // snapshot image. Returns nil if snapshot generation fails.
-  UIImage* UpdateSnapshot();
-
   // Generates a new snapshot without any overlays, and returns the new snapshot
   // image. This does not update the snapshot cache. Returns nil if snapshot
   // generation fails.
@@ -73,10 +73,19 @@ class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();
 
+  // Hint that the snapshot will likely be saved to disk when the application is
+  // backgrounded.  The snapshot is then saved in memory, so it does not need to
+  // be read off disk.
+  void WillBeSavedGreyWhenBackgrounding();
+
+  // Write a grey copy of the snapshot to disk, but if and only if a color
+  // version of the snapshot already exists in memory or on disk.
+  void SaveGreyInBackground();
+
  private:
   friend class web::WebStateUserData<SnapshotTabHelper>;
 
-  SnapshotTabHelper(web::WebState* web_state, NSString* session_id);
+  SnapshotTabHelper(web::WebState* web_state, NSString* tab_id);
 
   // web::WebStateObserver implementation.
   void PageLoaded(
@@ -84,23 +93,13 @@ class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // infobars::InfoBarManager::Observer implementation.
-  void OnInfoBarAdded(infobars::InfoBar* infobar) override;
-  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                         infobars::InfoBar* new_infobar) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
-
   web::WebState* web_state_ = nullptr;
+  NSString* tab_id_ = nil;
   SnapshotGenerator* snapshot_generator_ = nil;
-  infobars::InfoBarManager* infobar_manager_ = nullptr;
 
   // Manages this object as an observer of |web_state_|.
-  ScopedObserver<web::WebState, web::WebStateObserver> web_state_observer_;
-
-  // Manages this object as an observer of infobars.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   bool ignore_next_load_ = false;
 
@@ -114,8 +113,6 @@ class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
   base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_TAB_HELPER_H_

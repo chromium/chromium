@@ -13,6 +13,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace {
 
 // This is a short-term solution to grant camera and/or microphone access to
@@ -24,16 +26,17 @@ namespace {
 // 5. Hotwording component extension.
 // 6. XKB input method component extension.
 // 7. M17n/T13n/CJK input method component extension.
-// Once http://crbug.com/292856 is fixed, remove this whitelist.
-bool IsMediaRequestWhitelistedForExtension(
-    const extensions::Extension* extension) {
+// 8. Accessibility Common extension (used for Dictation)
+// Once http://crbug.com/292856 is fixed, remove this allowlist.
+bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
   return extension->id() == "mppnpdlheglhdfmldimlhpnegondlapf" ||
          extension->id() == "jokbpnebhdcladagohdnfgjcpejggllo" ||
          extension->id() == "clffjmdilanldobdnedchkdbofoimcgb" ||
          extension->id() == "nnckehldicaciogcbchegobnafnjkcne" ||
          extension->id() == "nbpagnldghgfoolbancepceaanlmhfmd" ||
          extension->id() == "jkghodnilhceideoidjikpgommlajknk" ||
-         extension->id() == "gjaehgfemfahhmlgpdfknkhdnemmolop";
+         extension->id() == "gjaehgfemfahhmlgpdfknkhdnemmolop" ||
+         extension->id() == "egfdjlfmgnehecnclamagfafdccgfndp";
 }
 
 }  // namespace
@@ -50,7 +53,7 @@ bool ExtensionMediaAccessHandler::SupportsStreamType(
     const extensions::Extension* extension) {
   return extension &&
          (extension->is_platform_app() ||
-          IsMediaRequestWhitelistedForExtension(extension)) &&
+          IsMediaRequestAllowedForExtension(extension)) &&
          (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
           type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 }
@@ -62,8 +65,8 @@ bool ExtensionMediaAccessHandler::CheckMediaAccessPermission(
     const extensions::Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? extensions::APIPermission::kAudioCapture
-          : extensions::APIPermission::kVideoCapture);
+          ? APIPermissionID::kAudioCapture
+          : APIPermissionID::kVideoCapture);
 }
 
 void ExtensionMediaAccessHandler::HandleRequest(
@@ -77,14 +80,14 @@ void ExtensionMediaAccessHandler::HandleRequest(
       request.audio_type ==
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kAudioCapture) &&
+          APIPermissionID::kAudioCapture) &&
       GetDevicePolicy(profile, extension->url(), prefs::kAudioCaptureAllowed,
                       prefs::kAudioCaptureAllowedUrls) != ALWAYS_DENY;
   bool video_allowed =
       request.video_type ==
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kVideoCapture) &&
+          APIPermissionID::kVideoCapture) &&
       GetDevicePolicy(profile, extension->url(), prefs::kVideoCaptureAllowed,
                       prefs::kVideoCaptureAllowedUrls) != ALWAYS_DENY;
 

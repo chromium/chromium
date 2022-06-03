@@ -6,10 +6,9 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/update_client/test_configurator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -48,7 +47,7 @@ URLLoaderPostInterceptor::URLLoaderPostInterceptor(
   InitializeWithRequestHandler();
 }
 
-URLLoaderPostInterceptor::~URLLoaderPostInterceptor() {}
+URLLoaderPostInterceptor::~URLLoaderPostInterceptor() = default;
 
 bool URLLoaderPostInterceptor::ExpectRequest(
     std::unique_ptr<RequestMatcher> request_matcher) {
@@ -226,8 +225,8 @@ URLLoaderPostInterceptor::RequestHandler(
 
   std::string request_body = request.content;
   net::HttpRequestHeaders headers;
-  for (auto it : request.headers)
-    headers.SetHeader(it.first, it.second);
+  for (auto pair : request.headers)
+    headers.SetHeader(pair.first, pair.second);
   requests_.push_back({request_body, headers, url});
   if (expectations_.empty())
     return nullptr;

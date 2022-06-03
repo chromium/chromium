@@ -10,28 +10,34 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/common/url_constants.h"
+#include "components/performance_manager/public/decorators/site_data_recorder.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/permissions/permission_manager.h"
-#include "chrome/browser/permissions/permission_result.h"
-#include "chrome/browser/resource_coordinator/local_site_characteristics_data_store_factory.h"
-#include "chrome/browser/resource_coordinator/site_characteristics_data_reader.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_result.h"
 #endif
 
 namespace resource_coordinator {
@@ -78,7 +84,7 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
         controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
     DCHECK(nav_entry);
 
-    auto* engagement_svc = SiteEngagementService::Get(
+    auto* engagement_svc = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(contents->GetBrowserContext()));
     double engagement =
         engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
@@ -107,119 +113,115 @@ class TabDataAccess {
   TabDataAccess(const TabDataAccess&) = delete;
   TabDataAccess& operator=(const TabDataAccess&) = delete;
 
-  // Schedule the task that will initialize |TabData::used_in_bg| from the local
-  // site characteristics database. This will either call
-  // |SetUsedInBgFromSiteCharacteristicsDataReader| if the data is available
-  // immediately, or will schedule a call to |OnSiteDataLoaded| once the data is
-  // available.
-  static void SetUsedInBgFromSiteCharacteristicsDB(
+  // Schedule the task that will initialize |TabData::used_in_bg| from the site
+  // data database. This will schedule a call to |OnSiteDataLoaded| once the
+  // data is available.
+  static void SetUsedInBgFromSiteDataDB(
       base::WeakPtr<SessionRestorePolicy> policy,
       TabData* tab_data,
       content::WebContents* contents);
 
-  // Set the |TabData::used_in_bg| bit based on the data provided by |reader|.
-  static void SetUsedInBgFromSiteCharacteristicsDataReader(
-      TabData* tab_data,
-      content::WebContents* contents,
-      std::unique_ptr<SiteCharacteristicsDataReader> reader);
+  // Set the |TabData::used_in_bg| bit based on the data returned from the site
+  // data database.
+  static void SetUsedInBgFromSiteData(TabData* tab_data,
+                                      content::WebContents* contents,
+                                      TabData::SiteDataReaderData reader_data);
 
-  // Callback that is invoked when the SiteCharacteristicsDataReader associated
-  // with a WebContents is ready to use. This will initialize
-  // |tab_data->used_in_bg| to the proper value and call
-  // |DispatchNotifyAllTabsScoredIfNeeded|.
-  static void OnSiteDataLoaded(
-      base::WeakPtr<SessionRestorePolicy> policy,
-      content::WebContents* contents,
-      std::unique_ptr<SiteCharacteristicsDataReader> reader);
+  // Callback that is invoked when the SiteData associated with a WebContents is
+  // ready to use. This will initialize |tab_data->used_in_bg| to the proper
+  // value and call |DispatchNotifyAllTabsScoredIfNeeded|.
+  static void OnSiteDataAvailable(base::WeakPtr<SessionRestorePolicy> policy,
+                                  content::WebContents* contents,
+                                  TabData::SiteDataReaderData reader_data);
 };
 
-void TabDataAccess::SetUsedInBgFromSiteCharacteristicsDB(
+void TabDataAccess::SetUsedInBgFromSiteDataDB(
     base::WeakPtr<SessionRestorePolicy> policy,
     TabData* tab_data,
     content::WebContents* contents) {
-  // Get a reader for the local site characteristics data corresponding to this
-  // tab's origin. This makes it possible to determine if the tab has been
-  // observed communicating with the user while in the background. This can be
-  // ready immediately in which case a final score is emitted immediately.
-  // Otherwise, it will be loaded asynchronously and the score will potentially
-  // be updated.
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  DCHECK(profile);
-  auto* factory = LocalSiteCharacteristicsDataStoreFactory::GetInstance();
-  auto* store = factory->GetForProfile(profile);
+  tab_data->used_in_bg_setter_cancel_callback.Reset(base::BindOnce(
+      &TabDataAccess::OnSiteDataAvailable, std::move(policy), contents));
 
-  // The local database isn't always available.
-  // TODO(chrisha): Note that the reader can only not exist in tests. Once we
-  // have a single point to check for the availability of the performance
-  // manager, gate the following logic behind that.
-  if (!store) {
-    tab_data->used_in_bg = false;
-    return;
-  }
+  auto call_on_graph_cb = base::BindOnce(
+      [](base::WeakPtr<performance_manager::PageNode> page_node,
+         base::OnceCallback<void(TabData::SiteDataReaderData)> reply_cb,
+         scoped_refptr<base::SequencedTaskRunner> reply_task_runner) {
+        if (!page_node) {
+          reply_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(reply_cb),
+                                        TabData::SiteDataReaderData()));
+          return;
+        }
+        auto* reader =
+            performance_manager::SiteDataRecorder::Data::FromPageNode(
+                page_node.get())
+                ->reader();
+        // The tab won't have a reader if it doesn't have an URL tracked in the
+        // site data database.
+        if (!reader) {
+          reply_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(reply_cb),
+                                        TabData::SiteDataReaderData()));
+          return;
+        }
 
-  auto reader = store->GetReaderForOrigin(
-      url::Origin::Create(contents->GetLastCommittedURL()));
+        // The reader will call |reply_cb| once the data is available.
+        reader->RegisterDataLoadedCallback(base::BindOnce(
+            [](const performance_manager::SiteDataReader* reader,
+               base::OnceCallback<void(TabData::SiteDataReaderData)> reply_cb,
+               scoped_refptr<base::SequencedTaskRunner> reply_task_runner) {
+              static const performance_manager::SiteFeatureUsage kNotUsed =
+                  performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse;
+              TabData::SiteDataReaderData reader_data = {};
+              reader_data.updates_favicon_in_bg =
+                  reader->UpdatesFaviconInBackground() != kNotUsed;
+              reader_data.updates_title_in_bg =
+                  reader->UpdatesTitleInBackground() != kNotUsed;
+              reply_task_runner->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(reply_cb), reader_data));
+            },
+            base::Unretained(reader), std::move(reply_cb), reply_task_runner));
+      },
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          contents),
+      tab_data->used_in_bg_setter_cancel_callback.callback(),
+      base::SequencedTaskRunnerHandle::Get());
 
-  if (reader->DataLoaded()) {
-    SetUsedInBgFromSiteCharacteristicsDataReader(tab_data, contents,
-                                                 std::move(reader));
-    DCHECK(tab_data->used_in_bg.has_value());
-    if (tab_data->used_in_bg)
-      ++policy->tabs_used_in_bg_;
-  } else {
-    auto* reader_raw = reader.get();
-    tab_data->used_in_bg_setter_cancel_closure.Reset(
-        base::BindOnce(&TabDataAccess::OnSiteDataLoaded, std::move(policy),
-                       contents, std::move(reader)));
-    reader_raw->RegisterDataLoadedCallback(
-        tab_data->used_in_bg_setter_cancel_closure.callback());
-  }
+  performance_manager::PerformanceManager::CallOnGraph(
+      FROM_HERE, std::move(call_on_graph_cb));
 }
 
-void TabDataAccess::SetUsedInBgFromSiteCharacteristicsDataReader(
+void TabDataAccess::SetUsedInBgFromSiteData(
     TabData* tab_data,
     content::WebContents* contents,
-    std::unique_ptr<SiteCharacteristicsDataReader> reader) {
-  static const performance_manager::SiteFeatureUsage kNotUsed =
-      performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse;
-  DCHECK(reader->DataLoaded());
-
+    TabData::SiteDataReaderData reader_data) {
   // Determine if background communication with the user is used. A pinned tab
   // has no visible tab title, so tab title updates can be ignored in that case.
   // The audio bit is ignored as tab can't play audio until they have been
   // visible at least once. We err on the side of caution, if unsure about a
   // feature (usually because of a lack of observation) then the feature is
   // considered as used.
-  bool used_in_bg = reader->UpdatesFaviconInBackground() != kNotUsed;
-  if (!tab_data->is_pinned && (reader->UpdatesTitleInBackground() != kNotUsed))
+  bool used_in_bg = reader_data.updates_favicon_in_bg;
+  if (!tab_data->is_pinned && reader_data.updates_title_in_bg)
     used_in_bg = true;
 
-  // TODO(sebmarchand): Consider that the tabs that are still under observation
-  // could be used in background.
-
+  const GURL last_committed_origin =
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(contents);
   auto notif_permission =
-      PermissionManager::Get(
+      PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(contents->GetBrowserContext()))
           ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                contents->GetLastCommittedURL(),
-                                contents->GetLastCommittedURL());
+                                last_committed_origin, last_committed_origin);
   if (notif_permission.content_setting == CONTENT_SETTING_ALLOW)
     used_in_bg = true;
 
-  // Persist this data and detach from the reader. We need to detach from the
-  // reader in a separate task because this callback is actually being invoked
-  // by the reader itself; as we're the sole owner, we'll cause it to be deleted
-  // while several stack frames deep in its code, causing an immediate use
-  // after free.
   tab_data->used_in_bg = used_in_bg;
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(reader));
 }
 
-void TabDataAccess::OnSiteDataLoaded(
+void TabDataAccess::OnSiteDataAvailable(
     base::WeakPtr<SessionRestorePolicy> policy,
     content::WebContents* contents,
-    std::unique_ptr<SiteCharacteristicsDataReader> reader) {
+    TabData::SiteDataReaderData reader_data) {
   if (!policy)
     return;
 
@@ -227,8 +229,7 @@ void TabDataAccess::OnSiteDataLoaded(
   DCHECK(it != policy->tab_data_.end());
   auto* tab_data = it->second.get();
 
-  SetUsedInBgFromSiteCharacteristicsDataReader(tab_data, contents,
-                                               std::move(reader));
+  SetUsedInBgFromSiteData(tab_data, contents, reader_data);
 
   // Score the tab and notify observers if the score has changed.
   if (policy->RescoreTabAfterDataLoaded(contents, tab_data))
@@ -299,8 +300,8 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
 
   // The local database doesn't exist on Android at all.
 #if !defined(OS_ANDROID)
-  TabDataAccess::SetUsedInBgFromSiteCharacteristicsDB(
-      weak_factory_.GetWeakPtr(), tab_data, contents);
+  TabDataAccess::SetUsedInBgFromSiteDataDB(weak_factory_.GetWeakPtr(), tab_data,
+                                           contents);
 #endif  // !defined(OS_ANDROID)
 
   // Another tab has been added, so an existing all tabs scored notification may
@@ -556,7 +557,7 @@ SessionRestorePolicy::Delegate::~Delegate() {}
 SessionRestorePolicy::TabData::TabData() = default;
 
 SessionRestorePolicy::TabData::~TabData() {
-  used_in_bg_setter_cancel_closure.Cancel();
+  used_in_bg_setter_cancel_callback.Cancel();
 }
 
 bool SessionRestorePolicy::TabData::UsedInBg() const {

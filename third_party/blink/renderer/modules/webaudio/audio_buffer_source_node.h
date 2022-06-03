@@ -81,16 +81,13 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // specification, the proper attribute name is |.loop|. The old attribute is
   // kept for backwards compatibility.
   bool Loop() const { return is_looping_; }
-  void SetLoop(bool looping) {
-    is_looping_ = looping;
-    SetDidSetLooping(looping);
-  }
+  void SetLoop(bool looping);
 
   // Loop times in seconds.
   double LoopStart() const { return loop_start_; }
   double LoopEnd() const { return loop_end_; }
-  void SetLoopStart(double loop_start) { loop_start_ = loop_start; }
-  void SetLoopEnd(double loop_end) { loop_end_ = loop_end; }
+  void SetLoopStart(double loop_start);
+  void SetLoopEnd(double loop_end);
 
   // If we are no longer playing, propogate silence ahead to downstream nodes.
   bool PropagatesSilence() const override;
@@ -147,23 +144,26 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   scoped_refptr<AudioParamHandler> playback_rate_;
   scoped_refptr<AudioParamHandler> detune_;
 
-  bool DidSetLooping() const {
-    return did_set_looping_.load(std::memory_order_acquire);
-  }
+  bool DidSetLooping() const { return did_set_looping_; }
   void SetDidSetLooping(bool loop) {
     if (loop)
-      did_set_looping_.store(true, std::memory_order_release);
+      did_set_looping_ = true;
   }
 
   // If m_isLooping is false, then this node will be done playing and become
   // inactive after it reaches the end of the sample data in the buffer.  If
   // true, it will wrap around to the start of the buffer each time it reaches
   // the end.
+  //
+  // A process lock must be used to protect access.
   bool is_looping_;
 
   // True if the source .loop attribute was ever set.
-  std::atomic_bool did_set_looping_;
+  // A process lock must be used to protect access.
+  bool did_set_looping_;
 
+  // A process lock must be used to protect access to both |loop_start_| and
+  // |loop_end_|.
   double loop_start_;
   double loop_end_;
 
@@ -202,7 +202,7 @@ class AudioBufferSourceNode final : public AudioScheduledSourceNode {
                                        AudioBufferSourceOptions*,
                                        ExceptionState&);
   AudioBufferSourceNode(BaseAudioContext&);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   AudioBufferSourceHandler& GetAudioBufferSourceHandler() const;
 
   AudioBuffer* buffer() const;

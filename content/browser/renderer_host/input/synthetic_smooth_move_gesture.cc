@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace content {
@@ -17,29 +19,38 @@ gfx::Vector2dF ProjectScalarOntoVector(float scalar,
   return gfx::ScaleVector2d(vector, scalar / vector.Length());
 }
 
-const int kDefaultSpeedInPixelsPerSec = 800;
+// returns the animation progress along an arctan curve to provide simple
+// ease-in ease-out behavior.
+float GetCurvedRatio(const base::TimeTicks& current,
+                     const base::TimeTicks& start,
+                     const base::TimeTicks& end,
+                     int speed_in_pixels_s) {
+  // Increasing this would make the start and the end of the curv smoother.
+  // Hence the higher value for the higher speed.
+  const float kArctanRange = sqrt(static_cast<double>(speed_in_pixels_s)) / 100;
+
+  const float kMaxArctan = std::atan(kArctanRange / 2);
+  const float kMinArctan = std::atan(-kArctanRange / 2);
+
+  float linear_ratio = (current - start) / (end - start);
+  return (std::atan(kArctanRange * linear_ratio - kArctanRange / 2) -
+          kMinArctan) /
+         (kMaxArctan - kMinArctan);
+}
 
 }  // namespace
 
-SyntheticSmoothMoveGestureParams::SyntheticSmoothMoveGestureParams()
-    : speed_in_pixels_s(kDefaultSpeedInPixelsPerSec),
-      fling_velocity_x(0),
-      fling_velocity_y(0),
-      prevent_fling(true),
-      add_slop(true),
-      granularity(ui::input_types::ScrollGranularity::kScrollByPixel) {}
+SyntheticSmoothMoveGestureParams::SyntheticSmoothMoveGestureParams() = default;
 
 SyntheticSmoothMoveGestureParams::SyntheticSmoothMoveGestureParams(
     const SyntheticSmoothMoveGestureParams& other) = default;
 
-SyntheticSmoothMoveGestureParams::~SyntheticSmoothMoveGestureParams() {}
+SyntheticSmoothMoveGestureParams::~SyntheticSmoothMoveGestureParams() = default;
 
 SyntheticSmoothMoveGesture::SyntheticSmoothMoveGesture(
     SyntheticSmoothMoveGestureParams params)
     : params_(params),
-      current_move_segment_start_position_(params.start_point),
-      state_(SETUP),
-      needs_scroll_begin_(true) {}
+      current_move_segment_start_position_(params.start_point) {}
 
 SyntheticSmoothMoveGesture::~SyntheticSmoothMoveGesture() {}
 
@@ -55,14 +66,16 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
   switch (params_.input_type) {
     case SyntheticSmoothMoveGestureParams::TOUCH_INPUT:
       if (!synthetic_pointer_driver_)
-        synthetic_pointer_driver_ =
-            SyntheticPointerDriver::Create(SyntheticGestureParams::TOUCH_INPUT);
+        synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kTouchInput,
+            params_.from_devtools_debugger);
       ForwardTouchInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_DRAG_INPUT:
       if (!synthetic_pointer_driver_)
-        synthetic_pointer_driver_ =
-            SyntheticPointerDriver::Create(SyntheticGestureParams::MOUSE_INPUT);
+        synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kMouseInput,
+            params_.from_devtools_debugger);
       ForwardMouseClickInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT:
@@ -150,28 +163,12 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelInputEvents(
       base::TimeTicks event_timestamp = ClampTimestamp(timestamp);
       gfx::Vector2dF delta = GetPositionDeltaAtTime(event_timestamp) -
                              current_move_segment_total_delta_;
-
-      // Android MotionEvents that carry mouse wheel ticks and the tick
-      // granularity. Since it's not easy to change this granularity, it means
-      // we can only scroll in terms of number of these ticks. Note also: if
-      // the delta is smaller than one tick size we wont send an event or
-      // accumulate it in current_move_segment_total_delta_ so that we don't
-      // consider that delta applied. If we did, slow scrolls would be entirely
-      // lost since we'd send 0 ticks in each event but assume delta was
-      // applied.
-      int pixels_per_wheel_tick = target->GetMouseWheelMinimumGranularity();
-      if (pixels_per_wheel_tick) {
-        int wheel_ticks_x = static_cast<int>(delta.x() / pixels_per_wheel_tick);
-        int wheel_ticks_y = static_cast<int>(delta.y() / pixels_per_wheel_tick);
-        delta = gfx::Vector2dF(wheel_ticks_x * pixels_per_wheel_tick,
-                               wheel_ticks_y * pixels_per_wheel_tick);
-      }
-
       if (delta.x() || delta.y()) {
         blink::WebMouseWheelEvent::Phase phase =
             needs_scroll_begin_ ? blink::WebMouseWheelEvent::kPhaseBegan
                                 : blink::WebMouseWheelEvent::kPhaseChanged;
-        ForwardMouseWheelEvent(target, delta, phase, event_timestamp);
+        ForwardMouseWheelEvent(target, delta, phase, event_timestamp,
+                               params_.modifiers);
         current_move_segment_total_delta_ += delta;
         needs_scroll_begin_ = false;
       }
@@ -187,12 +184,12 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelInputEvents(
           if (!params_.prevent_fling && (params_.fling_velocity_x != 0 ||
                                          params_.fling_velocity_y != 0)) {
             ForwardFlingGestureEvent(
-                target, blink::WebGestureEvent::kGestureFlingStart);
+                target, blink::WebGestureEvent::Type::kGestureFlingStart);
           } else {
             // Forward a wheel event with phase ended and zero deltas.
             ForwardMouseWheelEvent(target, gfx::Vector2d(),
                                    blink::WebMouseWheelEvent::kPhaseEnded,
-                                   event_timestamp);
+                                   event_timestamp, params_.modifiers);
           }
           needs_scroll_begin_ = true;
         }
@@ -261,10 +258,14 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelEvent(
     SyntheticGestureTarget* target,
     const gfx::Vector2dF& delta,
     const blink::WebMouseWheelEvent::Phase phase,
-    const base::TimeTicks& timestamp) const {
+    const base::TimeTicks& timestamp,
+    int modifiers) const {
+  if (params_.from_devtools_debugger) {
+    modifiers |= blink::WebInputEvent::kFromDebugger;
+  }
   blink::WebMouseWheelEvent mouse_wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(0, 0, delta.x(), delta.y(), 0,
-                                                params_.granularity);
+      blink::SyntheticWebMouseWheelEventBuilder::Build(
+          0, 0, delta.x(), delta.y(), modifiers, params_.granularity);
 
   mouse_wheel_event.SetPositionInWidget(
       current_move_segment_start_position_.x(),
@@ -280,7 +281,7 @@ void SyntheticSmoothMoveGesture::ForwardFlingGestureEvent(
     SyntheticGestureTarget* target,
     const blink::WebInputEvent::Type type) const {
   blink::WebGestureEvent fling_gesture_event =
-      SyntheticWebGestureEventBuilder::Build(
+      blink::SyntheticWebGestureEventBuilder::Build(
           type, blink::WebGestureDevice::kTouchpad);
   fling_gesture_event.data.fling_start.velocity_x = params_.fling_velocity_x;
   fling_gesture_event.data.fling_start.velocity_y = params_.fling_velocity_y;
@@ -340,24 +341,29 @@ gfx::Vector2dF SyntheticSmoothMoveGesture::GetPositionDeltaAtTime(
   if (FinishedCurrentMoveSegment(timestamp))
     return params_.distances[current_move_segment_];
 
-  float delta_length =
-      params_.speed_in_pixels_s *
-      (timestamp - current_move_segment_start_time_).InSecondsF();
-  return ProjectScalarOntoVector(delta_length,
-                                 params_.distances[current_move_segment_]);
+  return gfx::ScaleVector2d(
+      params_.distances[current_move_segment_],
+      GetCurvedRatio(timestamp, current_move_segment_start_time_,
+                     current_move_segment_stop_time_,
+                     params_.speed_in_pixels_s));
 }
 
 void SyntheticSmoothMoveGesture::ComputeNextMoveSegment() {
   current_move_segment_++;
   DCHECK_LT(current_move_segment_, static_cast<int>(params_.distances.size()));
-  int64_t total_duration_in_us = static_cast<int64_t>(
-      1e6 * (params_.distances[current_move_segment_].Length() /
-             params_.speed_in_pixels_s));
-  DCHECK_GT(total_duration_in_us, 0);
-  current_move_segment_start_time_ = current_move_segment_stop_time_;
-  current_move_segment_stop_time_ =
-      current_move_segment_start_time_ +
-      base::TimeDelta::FromMicroseconds(total_duration_in_us);
+  // Percentage based scrolls do not require velocity and are delivered in a
+  // single segment. No need to compute another segment
+  if (params_.granularity == ui::ScrollGranularity::kScrollByPercentage) {
+    current_move_segment_start_time_ = current_move_segment_stop_time_;
+  } else {
+    int64_t total_duration_in_us = static_cast<int64_t>(
+        1e6 * (params_.distances[current_move_segment_].Length() /
+               params_.speed_in_pixels_s));
+    DCHECK_GT(total_duration_in_us, 0);
+    current_move_segment_start_time_ = current_move_segment_stop_time_;
+    current_move_segment_stop_time_ = current_move_segment_start_time_ +
+                                      base::Microseconds(total_duration_in_us);
+  }
 }
 
 base::TimeTicks SyntheticSmoothMoveGesture::ClampTimestamp(

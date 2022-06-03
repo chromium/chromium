@@ -15,9 +15,9 @@ namespace ui {
 namespace test {
 
 TestEventTarget::TestEventTarget()
-    : parent_(NULL),
+    : parent_(nullptr),
       mark_events_as_handled_(false),
-      recorder_(NULL),
+      recorder_(nullptr),
       target_name_("unknown") {
   SetTargetHandler(this);
 }

@@ -26,9 +26,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                app:hint="@string/bookmark_name"
+                android:hint="@string/bookmark_name"
                 app:emptyErrorMessage="@string/bookmark_missing_title">
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="flagNoExtractUi"
@@ -43,7 +43,7 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginEnd="3dp"
                 android:text="@string/bookmark_folder"
-                android:textAppearance="@style/TextAppearance.BlackCaption" />
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
             <TextView
                 android:id="@+id/folder_text"
@@ -59,10 +59,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:hint="@string/bookmark_url"
+                android:hint="@string/bookmark_url"
                 app:emptyErrorMessage="@string/bookmark_missing_url">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="flagNoExtractUi"
@@ -72,7 +72,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height_no_shadow"
@@ -81,7 +81,7 @@
     <View
         android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/selectable_list_toolbar_shadow_height"
+        android:layout_height="@dimen/bookmark_dialog_toolbar_shadow_height"
         android:layout_marginTop="@dimen/toolbar_height_no_shadow"
         android:background="@drawable/bookmark_title_bar_shadow"
         android:visibility="gone" />

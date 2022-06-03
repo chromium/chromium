@@ -11,6 +11,8 @@ source_set("test_support") {
     "mock_display_agent.h",
     "mock_notification_background_task_scheduler.cc",
     "mock_notification_background_task_scheduler.h",
+    "mock_notification_schedule_service.cc",
+    "mock_notification_schedule_service.h",
     "mock_notification_scheduler_client.cc",
     "mock_notification_scheduler_client.h",
   ]

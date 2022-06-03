@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
+<html>
+<head>
+
+
+    <base target="_blank">
+
+    <title>Insertable Streams - Video</title>
+
+
+</head>
+
+<body>
+
+<div id="container">
+    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
+        <span>Video processing with insertable streams</span></h1>
+
+    <p>This sample shows how to perform processing on a video stream using the experimental
+        <a href="https://github.com/w3c/mediacapture-insertable-streams">insertable streams</a> API.
+        There are options for the source of the input stream, the destination of the output stream,
+        and the API used to transform the stream. There is also the option to duplicate the source
+        stream to a video element on the page, which may affect the source FPS.
+    </p>
+
+    <span id="outputVideoContainer"></span>
+
+    <div class="box">
+        <span>Source:</span>
+        <select id="sourceSelector" disabled>
+            <option selected value="">(stopped)</option>
+            <option value="camera">Camera</option>
+            <option value="video">Video</option>
+            <option value="canvas">Canvas</option>
+            <option value="pc">Peer connection (from camera)</option>
+        </select>
+        <span>Add to page: <input type="checkbox" id="sourceVisible" disabled></span>
+    </div>
+    <div class="box">
+        <span>Transform:</span>
+        <select id="transformSelector" disabled>
+            <option selected value="webgl">WebGL</option>
+            <option value="canvas2d">Canvas2D</option>
+            <option value="noop">Do nothing</option>
+            <option value="drop">Drop frames at random</option>
+            <option value="delay">Delay all frames by 100ms</option>
+            <option value="webcodec">Run frames through WebCodec</option>
+        </select>
+    </div>
+    <div class="box">
+        <span>Destination:</span>
+        <select id="sinkSelector" disabled>
+            <option selected value="video">Video</option>
+            <option value="pc">Peer connection</option>
+        </select>
+    </div>
+
+    <p>View the console to see logging.</p>
+
+    <p>
+        <b>Note</b>: This sample is using an experimental API that has not yet been standardized. As
+        of 2020-11-16, this API is available in Chrome M88 if the experimental code is enabled on
+        the command line with
+        <code>--enable-blink-features=WebCodecs,MediaStreamInsertableStreams</code>.
+    </p>
+    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/insertable-streams/video-processing"
+       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+
+</div>
+
+
+<script src="video-processing.js"></script>
+</body></html>

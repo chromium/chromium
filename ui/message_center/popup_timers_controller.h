@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -29,6 +28,10 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
       public PopupTimer::Delegate {
  public:
   explicit PopupTimersController(MessageCenter* message_center);
+
+  PopupTimersController(const PopupTimersController&) = delete;
+  PopupTimersController& operator=(const PopupTimersController&) = delete;
+
   ~PopupTimersController() override;
 
   // MessageCenterObserver implementation.
@@ -56,6 +59,14 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
   // Removes and cancels a single popup timer, if it exists.
   void CancelTimer(const std::string& id);
 
+  // Set timeout values used to dismiss notifications.
+  static void SetNotificationTimeouts(int default_timeout,
+                                      int high_priority_timeout);
+
+  base::TimeDelta GetTimeoutForNotification(Notification* notification);
+
+  int GetNotificationTimeoutDefault();
+
  private:
   // Weak, global.
   MessageCenter* message_center_;
@@ -64,8 +75,6 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
   using PopupTimerCollection =
       std::map<std::string, std::unique_ptr<PopupTimer>>;
   PopupTimerCollection popup_timers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTimersController);
 };
 
 }  // namespace message_center

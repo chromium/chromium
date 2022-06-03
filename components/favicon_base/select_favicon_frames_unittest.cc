@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -18,18 +18,18 @@ using std::vector;
 
 namespace {
 
-const ui::ScaleFactor FaviconScaleFactor1x[] = {
-  ui::SCALE_FACTOR_100P,
+const ui::ResourceScaleFactor FaviconScaleFactor1x[] = {
+    ui::k100Percent,
 };
 
-const ui::ScaleFactor FaviconScaleFactor1xAnd2x[] = {
-  ui::SCALE_FACTOR_100P,
-  ui::SCALE_FACTOR_200P,
+const ui::ResourceScaleFactor FaviconScaleFactor1xAnd2x[] = {
+    ui::k100Percent,
+    ui::k200Percent,
 };
 
-#define SCOPED_FAVICON_SCALE_FACTOR(list)          \
-  ui::test::ScopedSetSupportedScaleFactors scoped( \
-      std::vector<ui::ScaleFactor>(list, list + base::size(list)))
+#define SCOPED_FAVICON_SCALE_FACTOR(list)                  \
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped( \
+      std::vector<ui::ResourceScaleFactor>(list, list + base::size(list)))
 
 #define SCOPED_FAVICON_SCALE_FACTOR_1X \
   SCOPED_FAVICON_SCALE_FACTOR(FaviconScaleFactor1x)

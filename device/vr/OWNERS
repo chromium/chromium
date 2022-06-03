@@ -4,6 +4,3 @@ bialpio@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: xr-dev@chromium.org
-# COMPONENT: Internals>XR

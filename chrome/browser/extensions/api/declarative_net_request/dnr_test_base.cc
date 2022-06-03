@@ -5,14 +5,11 @@
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "components/version_info/version_info.h"
 
 namespace extensions {
 namespace declarative_net_request {
 
-// Use channel UNKNOWN to ensure that the declarativeNetRequest API is
-// available, irrespective of its actual availability.
-DNRTestBase::DNRTestBase() : channel_(::version_info::Channel::UNKNOWN) {}
+DNRTestBase::DNRTestBase() = default;
 
 void DNRTestBase::SetUp() {
   ExtensionServiceTestBase::SetUp();

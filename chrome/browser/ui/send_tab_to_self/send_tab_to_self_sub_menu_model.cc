@@ -11,6 +11,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -61,18 +62,16 @@ int CommandIdToVectorIndex(int command_id) {
 }
 
 // Converts menu type to string.
-const std::string MenuTypeToString(SendTabToSelfMenuType menu_type) {
+ShareEntryPoint MenuTypeToEntryPoint(SendTabToSelfMenuType menu_type) {
   switch (menu_type) {
     case SendTabToSelfMenuType::kTab:
-      return kTabMenu;
+      return ShareEntryPoint::kTabMenu;
     case SendTabToSelfMenuType::kContent:
-      return kContentMenu;
+      return ShareEntryPoint::kContentMenu;
     case SendTabToSelfMenuType::kOmnibox:
-      return kOmniboxMenu;
+      return ShareEntryPoint::kOmniboxMenu;
     case SendTabToSelfMenuType::kLink:
-      return kLinkMenu;
-    default:
-      NOTREACHED();
+      return ShareEntryPoint::kLinkMenu;
   }
 }
 
@@ -96,14 +95,15 @@ SendTabToSelfSubMenuModel::SendTabToSelfSubMenuModel(
     SendTabToSelfMenuType menu_type,
     const GURL& link_url)
     : ui::SimpleMenuModel(this),
-      tab_(tab),
+      tab_(tab->GetWeakPtr()),
       menu_type_(menu_type),
       link_url_(link_url) {
+  DCHECK(tab_);
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   Build(profile);
 }
 
-SendTabToSelfSubMenuModel::~SendTabToSelfSubMenuModel() {}
+SendTabToSelfSubMenuModel::~SendTabToSelfSubMenuModel() = default;
 
 bool SendTabToSelfSubMenuModel::IsCommandIdEnabled(int command_id) const {
   // Only valid device names are shown, so all items are enabled.
@@ -116,25 +116,22 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
   if (vector_index == -1) {
     return;
   }
+
+  send_tab_to_self::RecordDeviceClicked(MenuTypeToEntryPoint(menu_type_));
+
+  if (!tab_) {
+    // The WebContents has already been destroyed, just close the menu.
+    return;
+  }
+
   const ValidDeviceItem& item = valid_device_items_[vector_index];
   if (menu_type_ == SendTabToSelfMenuType::kLink) {
     // Is sharing a link from link menu.
-    CreateNewEntry(tab_, item.device_name, item.cache_guid, link_url_);
+    CreateNewEntry(tab_.get(), item.device_name, item.cache_guid, link_url_);
   } else {
     // Is sharing a tab from tab menu, content menu or omnibox menu.
-    CreateNewEntry(tab_, item.device_name, item.cache_guid);
+    CreateNewEntry(tab_.get(), item.device_name, item.cache_guid);
   }
-
-  RecordSendTabToSelfClickResult(MenuTypeToString(menu_type_),
-                                 SendTabToSelfClickResult::kClickItem);
-  return;
-}
-
-void SendTabToSelfSubMenuModel::OnMenuWillShow(ui::SimpleMenuModel* source) {
-  RecordSendTabToSelfClickResult(MenuTypeToString(menu_type_),
-                                 SendTabToSelfClickResult::kShowDeviceList);
-  RecordSendTabToSelfDeviceCount(MenuTypeToString(menu_type_),
-                                 valid_device_items_.size());
 }
 
 void SendTabToSelfSubMenuModel::Build(Profile* profile) {

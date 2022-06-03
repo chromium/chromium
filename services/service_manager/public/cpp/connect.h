@@ -5,8 +5,6 @@
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_CONNECT_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_CONNECT_H_
 
-#include <utility>
-
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 namespace service_manager {

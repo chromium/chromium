@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRIP_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRIP_SPACE_H_
 
-#include <memory>
-
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 
 namespace blink {
@@ -15,13 +14,17 @@ class XRGripSpace : public XRSpace {
  public:
   XRGripSpace(XRSession* session, XRInputSource* input_source);
 
-  std::unique_ptr<TransformationMatrix> MojoFromNative() override;
-  std::unique_ptr<TransformationMatrix> NativeFromMojo() override;
+  absl::optional<TransformationMatrix> MojoFromNative() override;
   bool EmulatedPosition() const override;
 
-  base::Optional<XRNativeOriginInformation> NativeOrigin() const override;
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
+      const override;
 
-  void Trace(blink::Visitor*) override;
+  bool IsStationary() const override;
+
+  std::string ToString() const override;
+
+  void Trace(Visitor*) const override;
 
  private:
   Member<XRInputSource> input_source_;

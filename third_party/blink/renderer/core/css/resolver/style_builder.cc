@@ -46,44 +46,34 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
-#include "third_party/blink/renderer/core/css/resolver/css_variable_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
-                                 const CSSValue& value) {
+                                 const ScopedCSSValue& scoped_value) {
   CSSPropertyRef ref(name, state.GetDocument());
   DCHECK(ref.IsValid());
 
-  ApplyProperty(ref.GetProperty(), state, value);
+  ApplyProperty(ref.GetProperty(), state, scoped_value);
 }
 
 void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  StyleResolverState& state,
-                                 const CSSValue& value) {
+                                 const ScopedCSSValue& scoped_value) {
   DCHECK(!Variable::IsStaticInstance(property))
       << "Please use a CustomProperty instance to apply custom properties";
 
   CSSPropertyID id = property.PropertyID();
-  bool is_inherited = property.IsInherited();
-  if (id != CSSPropertyID::kVariable && (value.IsVariableReferenceValue() ||
-                                         value.IsPendingSubstitutionValue())) {
-    bool omit_animation_tainted =
-        CSSAnimations::IsAnimationAffectingProperty(property);
-    const CSSValue* resolved_value =
-        CSSVariableResolver(state).ResolveVariableReferences(
-            id, value, omit_animation_tainted);
-    ApplyProperty(property, state, *resolved_value);
+  const CSSValue& value = scoped_value.GetCSSValue();
 
-    if (!state.Style()->HasVariableReferenceFromNonInheritedProperty() &&
-        !is_inherited)
-      state.Style()->SetHasVariableReferenceFromNonInheritedProperty();
-    return;
-  }
+  // These values must be resolved by StyleCascade before application:
+  DCHECK(!value.IsVariableReferenceValue());
+  DCHECK(!value.IsPendingSubstitutionValue());
 
   DCHECK(!property.IsShorthand())
       << "Shorthand property id = " << static_cast<int>(id)
@@ -98,12 +88,13 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   // isInherit => (state.parentNode() && state.parentStyle())
   DCHECK(!is_inherit || (state.ParentNode() && state.ParentStyle()));
 
-  if (is_inherit && !state.ParentStyle()->HasExplicitlyInheritedProperties() &&
-      !is_inherited) {
-    state.ParentStyle()->SetHasExplicitlyInheritedProperties();
+  bool is_inherited_for_unset = state.IsInheritedForUnset(property);
+  if (is_inherit && !is_inherited_for_unset) {
+    state.Style()->SetHasExplicitInheritance();
+    state.ParentStyle()->SetChildHasExplicitInheritance();
   } else if (value.IsUnsetValue()) {
     DCHECK(!is_inherit && !is_initial);
-    if (is_inherited)
+    if (is_inherited_for_unset)
       is_inherit = true;
     else
       is_initial = true;
@@ -114,7 +105,7 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   else if (is_inherit)
     To<Longhand>(property).ApplyInherit(state);
   else
-    To<Longhand>(property).ApplyValue(state, value);
+    To<Longhand>(property).ApplyValue(state, scoped_value);
 }
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_V8_BINDING_FOR_MODULES_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_V8_BINDING_FOR_MODULES_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_value.h"
@@ -34,8 +35,7 @@ MODULES_EXPORT bool CanInjectIDBKeyIntoScriptValue(v8::Isolate*,
                                                    const IDBKeyPath&);
 ScriptValue DeserializeScriptValue(ScriptState*,
                                    SerializedScriptValue*,
-                                   const Vector<WebBlobInfo>*,
-                                   bool read_wasm_from_stream);
+                                   const Vector<WebBlobInfo>*);
 
 #if DCHECK_IS_ON()
 void AssertPrimaryKeyValidOrInjectable(ScriptState*, const IDBValue*);

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL hasEnrolledInstrument() resolves to false for unsupported payment methods. promise_test: Unhandled rejection with value: object "UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process."
+FAIL If request.[[state]] is "interactive", then return a promise rejected with an "InvalidStateError" DOMException. promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
+FAIL If request.[[state]] is "closed", then return a promise rejected with an "InvalidStateError" DOMException. promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
+Harness: the test ran to completion.
+

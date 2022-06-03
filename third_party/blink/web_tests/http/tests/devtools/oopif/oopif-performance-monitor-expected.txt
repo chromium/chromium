@@ -3,9 +3,11 @@ Tests stability of performance metrics list.
 
 Metrics reported:
 AdSubframes
+ArrayBufferContents
 AudioHandlers
 ContextLifecycleStateObservers
 DetachedScriptStates
+DevToolsCommandDuration
 Documents
 DomContentLoaded
 FirstMeaningfulPaint
@@ -20,6 +22,7 @@ MediaKeySessions
 MediaKeys
 NavigationStart
 Nodes
+ProcessTime
 RTCPeerConnections
 RecalcStyleCount
 RecalcStyleDuration
@@ -31,15 +34,6 @@ TaskOtherDuration
 ThreadTime
 Timestamp
 UACSSResources
-V8CallInDetachedWindowByClosingAfter10s
-V8CallInDetachedWindowByClosingAfter1mins
-V8CallInDetachedWindowByClosings
-V8CallInDetachedWindowByNavigationAfter10s
-V8CallInDetachedWindowByNavigationAfter1mins
-V8CallInDetachedWindowByNavigations
-V8CallInDetachedWindowByOtherReasonAfter10s
-V8CallInDetachedWindowByOtherReasonAfter1mins
-V8CallInDetachedWindowByOtherReasons
 V8CompileDuration
 V8PerContextDatas
 WorkerGlobalScopes

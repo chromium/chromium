@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+<input type="date" id="date" value="10000-08-15">
+<script>
+openPickerAppearanceOnly(document.getElementById('date'), function() {
+    // Change the month a couple of times in the month picker menu.
+    // Ensure that only the current month is highlighted when
+    // the month picker menu is reopened.
+
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('Enter');
+
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('Enter');
+
+    clickMonthPopupButton();
+
+    testRunner.notifyDone();
+});
+
+</script>

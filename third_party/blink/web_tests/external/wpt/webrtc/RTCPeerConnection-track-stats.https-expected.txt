@@ -1,10 +1,6 @@
 This is a testharness.js-based test.
 PASS addTrack() without setLocalDescription() yields track stats
-PASS addTrack() without setLocalDescription() yields media stream stats
 PASS addTrack() with setLocalDescription() yields track stats
-PASS addTrack() with setLocalDescription() yields media stream stats
-PASS addTrack(): Media stream stats references track stats
-PASS Media stream stats references track stats
 PASS O/A exchange yields outbound RTP stream stats for sending track
 PASS O/A exchange yields inbound RTP stream stats for receiving track
 PASS replaceTrack() before offer: new track attachment stats present

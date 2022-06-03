@@ -16,5 +16,21 @@ AXWebArea
 ++++++AXCell
 ++++++++AXStaticText AXValue='WebKit'
 ++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='Browser'
+++++++AXCell
+++++++++AXStaticText AXValue='Chrome'
+++++++AXCell
+++++++++AXStaticText AXValue='Safari'
 ++++AXColumn
+++++++AXCell
+++++++++AXStaticText AXValue='Rendering Engine'
+++++++AXCell
+++++++++AXStaticText AXValue='Blink'
+++++++AXCell
+++++++++AXStaticText AXValue='WebKit'
 ++++AXGroup
+++++++AXCell
+++++++++AXStaticText AXValue='Browser'
+++++++AXCell
+++++++++AXStaticText AXValue='Rendering Engine'

@@ -24,8 +24,14 @@ void DummyInputMethod::OnBlur() {
 }
 
 #if defined(OS_WIN)
-bool DummyInputMethod::OnUntranslatedIMEMessage(const MSG event,
+bool DummyInputMethod::OnUntranslatedIMEMessage(const CHROME_MSG event,
                                                 NativeEventResult* result) {
+  return false;
+}
+
+void DummyInputMethod::OnInputLocaleChanged() {}
+
+bool DummyInputMethod::IsInputLocaleCJK() const {
   return false;
 }
 #endif
@@ -54,38 +60,18 @@ void DummyInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
 void DummyInputMethod::CancelComposition(const TextInputClient* client) {
 }
 
-void DummyInputMethod::OnInputLocaleChanged() {
-}
-
-bool DummyInputMethod::IsInputLocaleCJK() const {
-  return false;
-}
-
 TextInputType DummyInputMethod::GetTextInputType() const {
   return TEXT_INPUT_TYPE_NONE;
-}
-
-TextInputMode DummyInputMethod::GetTextInputMode() const {
-  return TEXT_INPUT_MODE_DEFAULT;
-}
-
-int DummyInputMethod::GetTextInputFlags() const {
-  return 0;
-}
-
-bool DummyInputMethod::CanComposeInline() const {
-  return true;
 }
 
 bool DummyInputMethod::IsCandidatePopupOpen() const {
   return false;
 }
 
-bool DummyInputMethod::GetClientShouldDoLearning() {
-  return false;
-}
-
 void DummyInputMethod::ShowVirtualKeyboardIfEnabled() {}
+
+void DummyInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
+}
 
 void DummyInputMethod::AddObserver(InputMethodObserver* observer) {
 }
@@ -93,14 +79,8 @@ void DummyInputMethod::AddObserver(InputMethodObserver* observer) {
 void DummyInputMethod::RemoveObserver(InputMethodObserver* observer) {
 }
 
-InputMethodKeyboardController*
-DummyInputMethod::GetInputMethodKeyboardController() {
+VirtualKeyboardController* DummyInputMethod::GetVirtualKeyboardController() {
   return nullptr;
-}
-
-const std::vector<std::unique_ptr<KeyEvent>>&
-DummyInputMethod::GetKeyEventsForTesting() {
-  return key_events_for_testing_;
 }
 
 }  // namespace ui

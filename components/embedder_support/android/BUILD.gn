@@ -4,14 +4,109 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
+
+android_library("browser_context_java") {
+  sources = [
+    "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolver.java",
+    "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolverSupplier.java",
+  ]
+  deps = [
+    ":simple_factory_key_java",
+    "//base:base_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("simple_factory_key_java") {
+  sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
+  deps = [ "//base:base_java" ]
+}
+
+generate_jni("simple_factory_key_jni_headers") {
+  sources = [ "java/src/org/chromium/components/embedder_support/simple_factory_key/SimpleFactoryKeyHandle.java" ]
+}
+
+static_library("simple_factory_key") {
+  sources = [
+    "simple_factory_key/simple_factory_key_handle.cc",
+    "simple_factory_key/simple_factory_key_handle.h",
+  ]
+  deps = [
+    ":simple_factory_key_jni_headers",
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
 
 android_library("application_java") {
+  deps = [ "//base:base_java" ]
+  sources = [
+    "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java",
+    "java/src/org/chromium/components/embedder_support/application/FirebaseConfig.java",
+    "java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java",
+  ]
+}
+
+android_library("util_java") {
+  sources = [
+    "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
+    "java/src/org/chromium/components/embedder_support/util/Origin.java",
+    "java/src/org/chromium/components/embedder_support/util/UrlConstants.java",
+    "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
+    "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_main_dex_java",
+    "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//url:gurl_java",
   ]
-  java_files = [
-    "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java",
-    "java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java",
+}
+
+static_library("util") {
+  sources = [
+    "util/android_stream_reader_url_loader.cc",
+    "util/android_stream_reader_url_loader.h",
+    "util/cdn_utils.cc",
+    "util/cdn_utils.h",
+    "util/input_stream.cc",
+    "util/input_stream.h",
+    "util/input_stream_reader.cc",
+    "util/input_stream_reader.h",
+    "util/response_delegate_impl.cc",
+    "util/response_delegate_impl.h",
+    "util/url_utilities.cc",
+    "util/web_resource_response.cc",
+    "util/web_resource_response.h",
+  ]
+
+  deps = [
+    ":util_jni_headers",
+    "//base",
+    "//components/google/core/common",
+    "//components/version_info",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/system:system",
+    "//net",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom",
+    "//url",
+    "//url:gurl_android",
+  ]
+}
+
+generate_jni("util_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
+    "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
+    "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
   ]
 }
 
@@ -36,9 +131,10 @@ android_library("content_view_java") {
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",
-    "//ui/android:ui_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/components/embedder_support/view/ContentView.java",
   ]
 }
@@ -46,18 +142,15 @@ android_library("content_view_java") {
 android_library("view_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
-    "//ui/android:ui_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  java_files = [ "java/src/org/chromium/components/embedder_support/view/ContentViewRenderView.java" ]
+  sources = [ "java/src/org/chromium/components/embedder_support/view/ContentViewRenderView.java" ]
 }
 
 generate_jni("view_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/embedder_support/view/ContentViewRenderView.java",
-  ]
+  sources = [ "java/src/org/chromium/components/embedder_support/view/ContentViewRenderView.java" ]
 }
 
 java_strings_grd("web_contents_delegate_strings_grd") {
@@ -86,38 +179,49 @@ static_library("web_contents_delegate") {
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//url:gurl_android",
   ]
 }
 
 android_resources("web_contents_delegate_java_resources") {
-  custom_package = "org.chromium.components.embedder_support.delegate"
-  resource_dirs = [ "java/res" ]
-  deps = [
-    ":web_contents_delegate_strings_grd",
+  sources = [
+    "java/res/drawable-hdpi/color_picker_advanced_select_handle.png",
+    "java/res/drawable-mdpi/color_picker_advanced_select_handle.png",
+    "java/res/drawable-xhdpi/color_picker_advanced_select_handle.png",
+    "java/res/drawable/color_button_background.xml",
+    "java/res/drawable/color_picker_border.xml",
+    "java/res/layout/color_picker_advanced_component.xml",
+    "java/res/layout/color_picker_dialog_content.xml",
+    "java/res/layout/color_picker_dialog_title.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
   ]
+  deps = [ ":web_contents_delegate_strings_grd" ]
 }
 
 android_library("web_contents_delegate_java") {
   deps = [
     ":web_contents_delegate_java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:com_android_support_support_compat_java",
-    "//ui/android:ui_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
+  resources_package = "org.chromium.components.embedder_support.delegate"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorChooserAndroid.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvanced.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvancedComponent.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerDialog.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerMoreButton.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSimple.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestionListAdapter.java",
-    "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
     "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
+    "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
 
@@ -125,5 +229,108 @@ generate_jni("web_contents_delegate_jni_headers") {
   sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorChooserAndroid.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
+  ]
+}
+
+static_library("context_menu") {
+  sources = [
+    "contextmenu/context_menu_builder.cc",
+    "contextmenu/context_menu_builder.h",
+  ]
+  deps = [
+    ":context_menu_jni_headers",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//url:gurl_android",
+  ]
+}
+
+generate_jni("context_menu_jni_headers") {
+  sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
+}
+
+android_library("context_menu_java") {
+  deps = [
+    "//base:base_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public:blink_headers_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
+}
+
+android_library("native_java_unittests_java") {
+  testonly = true
+  deps = [
+    ":util_java",
+    "//base:base_java",
+    "//third_party/junit",
+  ]
+  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+# See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
+# can't put 'java' in the name here.
+generate_jni("native_j_unittests_jni_headers") {
+  testonly = true
+  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+}
+
+android_library("junit_test_support") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "junit/src/org/chromium/components/embedder_support/util/ShadowUrlUtilities.java" ]
+  deps = [
+    ":util_java",
+    "//third_party/android_deps:robolectric_all_java",
+  ]
+}
+
+java_library("components_embedder_support_junit_tests") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
+  ]
+  deps = [
+    ":util_java",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
+android_library("embedder_support_javatests") {
+  testonly = true
+
+  sources = [
+    "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
+    "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
+  ]
+  deps = [
+    ":util_java",
+    ":web_contents_delegate_java",
+    ":web_contents_delegate_java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
   ]
 }

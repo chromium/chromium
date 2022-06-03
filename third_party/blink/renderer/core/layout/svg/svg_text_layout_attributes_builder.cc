@@ -23,6 +23,11 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_list.h"
+#include "third_party/blink/renderer/core/svg/svg_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
 
 namespace blink {
@@ -74,11 +79,12 @@ void SVGTextLayoutAttributesBuilder::BuildLayoutAttributes() {
   LayoutObject* child = text_root_.FirstChild();
   while (child) {
     if (child->IsSVGInlineText()) {
-      UpdateLayoutAttributes(ToLayoutSVGInlineText(*child), value_list_position,
-                             character_data_map_);
+      UpdateLayoutAttributes(To<LayoutSVGInlineText>(*child),
+                             value_list_position, character_data_map_);
     } else if (child->IsSVGInline()) {
       // Visit children of text content elements.
-      if (LayoutObject* inline_child = ToLayoutSVGInline(child)->FirstChild()) {
+      if (LayoutObject* inline_child =
+              To<LayoutSVGInline>(child)->FirstChild()) {
         child = inline_child;
         continue;
       }
@@ -122,12 +128,12 @@ void SVGTextLayoutAttributesBuilder::CollectTextPositioningElements(
        child = child->NextSibling()) {
     if (child->IsSVGInlineText()) {
       character_count_ +=
-          CountCharactersInTextNode(ToLayoutSVGInlineText(*child));
+          CountCharactersInTextNode(To<LayoutSVGInlineText>(*child));
       continue;
     }
 
     if (child->IsSVGInline()) {
-      CollectTextPositioningElements(ToLayoutSVGInline(*child));
+      CollectTextPositioningElements(To<LayoutSVGInline>(*child));
       continue;
     }
   }
@@ -172,15 +178,15 @@ class AttributeListsIterator {
 
  private:
   SVGLengthContext length_context_;
-  Member<SVGLengthList> x_list_;
+  const SVGLengthList* x_list_;
   unsigned x_list_remaining_;
-  Member<SVGLengthList> y_list_;
+  const SVGLengthList* y_list_;
   unsigned y_list_remaining_;
-  Member<SVGLengthList> dx_list_;
+  const SVGLengthList* dx_list_;
   unsigned dx_list_remaining_;
-  Member<SVGLengthList> dy_list_;
+  const SVGLengthList* dy_list_;
   unsigned dy_list_remaining_;
-  Member<SVGNumberList> rotate_list_;
+  const SVGNumberList* rotate_list_;
   unsigned rotate_list_remaining_;
 };
 
@@ -241,7 +247,7 @@ void SVGTextLayoutAttributesBuilder::FillCharacterDataMap(
 }
 
 void SVGTextLayoutAttributesBuilder::TextPosition::Trace(
-    blink::Visitor* visitor) {
+    blink::Visitor* visitor) const {
   visitor->Trace(element);
 }
 

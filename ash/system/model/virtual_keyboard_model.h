@@ -5,20 +5,15 @@
 #ifndef ASH_SYSTEM_MODEL_VIRTUAL_KEYBOARD_MODEL_H_
 #define ASH_SYSTEM_MODEL_VIRTUAL_KEYBOARD_MODEL_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "ash/keyboard/arc/arc_input_method_surface_manager.h"
-#include "base/macros.h"
+#include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "base/observer_list.h"
 
 namespace ash {
 
-class ArcInputMethodSurfaceManager;
-
 // Model to store virtual keyboard visibility state.
 class ASH_EXPORT VirtualKeyboardModel
-    : public ArcInputMethodSurfaceManager::Observer {
+    : public ArcInputMethodBoundsTracker::Observer {
  public:
   class Observer {
    public:
@@ -28,21 +23,26 @@ class ASH_EXPORT VirtualKeyboardModel
   };
 
   VirtualKeyboardModel();
+
+  VirtualKeyboardModel(const VirtualKeyboardModel&) = delete;
+  VirtualKeyboardModel& operator=(const VirtualKeyboardModel&) = delete;
+
   ~VirtualKeyboardModel() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Start/stop observing ArcInputMethodSurfaceManager.
-  void SetInputMethodSurfaceManagerObserver(
-      ArcInputMethodSurfaceManager* input_method_surface_manager);
-  void RemoveInputMethodSurfaceManagerObserver(
-      ArcInputMethodSurfaceManager* input_method_surface_manager);
+  // Start/stop observing ArcInputMethodBoundsTracker.
+  void SetInputMethodBoundsTrackerObserver(
+      ArcInputMethodBoundsTracker* input_method_bounds_tracker);
+  void RemoveInputMethodBoundsTrackerObserver(
+      ArcInputMethodBoundsTracker* input_method_bounds_tracker);
 
-  // ArcInputMethodSurfaceManager::Observer:
-  void OnArcInputMethodSurfaceBoundsChanged(const gfx::Rect& bounds) override;
+  // ArcInputMethodBoundsTracker::Observer:
+  void OnArcInputMethodBoundsChanged(const gfx::Rect& bounds) override;
 
   bool visible() const { return visible_; }
+  const gfx::Rect& arc_keyboard_bounds() const { return arc_keyboard_bounds_; }
 
  private:
   void NotifyChanged();
@@ -50,9 +50,9 @@ class ASH_EXPORT VirtualKeyboardModel
   // The visibility of virtual keyboard.
   bool visible_ = false;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  gfx::Rect arc_keyboard_bounds_;
 
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardModel);
+  base::ObserverList<Observer>::Unchecked observers_;
 };
 
 }  // namespace ash

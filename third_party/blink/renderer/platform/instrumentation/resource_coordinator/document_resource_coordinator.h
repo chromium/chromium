@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -21,19 +20,29 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   USING_FAST_MALLOC(DocumentResourceCoordinator);
 
  public:
+  using WebMemoryMeasurementMode =
+      ::performance_manager::mojom::blink::WebMemoryMeasurement::Mode;
+  using OnWebMemoryMeasurementRequestedCallback = ::performance_manager::mojom::
+      blink::DocumentCoordinationUnit::OnWebMemoryMeasurementRequestedCallback;
+
   // Returns nullptr if instrumentation is not enabled.
   static std::unique_ptr<DocumentResourceCoordinator> MaybeCreate(
       const BrowserInterfaceBrokerProxy&);
+  DocumentResourceCoordinator(const DocumentResourceCoordinator&) = delete;
+  DocumentResourceCoordinator& operator=(const DocumentResourceCoordinator&) =
+      delete;
   ~DocumentResourceCoordinator();
 
   void SetNetworkAlmostIdle();
   void SetLifecycleState(performance_manager::mojom::LifecycleState);
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
-  void SetOriginTrialFreezePolicy(
-      performance_manager::mojom::InterventionPolicy policy);
-  // A one way switch that marks a frame as being an adframe.
-  void SetIsAdFrame();
+  void SetIsAdFrame(bool is_ad_frame);
   void OnNonPersistentNotificationCreated();
+  void SetHadFormInteraction();
+  void OnFirstContentfulPaint(base::TimeDelta time_since_navigation_start);
+  void OnWebMemoryMeasurementRequested(
+      WebMemoryMeasurementMode mode,
+      OnWebMemoryMeasurementRequestedCallback callback);
 
  private:
   explicit DocumentResourceCoordinator(const BrowserInterfaceBrokerProxy&);
@@ -41,7 +50,7 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   mojo::Remote<performance_manager::mojom::blink::DocumentCoordinationUnit>
       service_;
 
-  DISALLOW_COPY_AND_ASSIGN(DocumentResourceCoordinator);
+  bool had_form_interaction_ = false;
 };
 
 }  // namespace blink

@@ -21,8 +21,8 @@
 
 namespace {
 
-base::string16 FormatUrlToSubdomain(const GURL& url) {
-  base::string16 formated_url = url_formatter::FormatUrl(
+std::u16string FormatUrlToSubdomain(const GURL& url) {
+  std::u16string formated_url = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitTrivialSubdomains,
       net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   return base::UTF8ToUTF16(GURL(formated_url).host());
@@ -37,18 +37,18 @@ TabUIHelper::TabUIHelper(content::WebContents* contents)
     : WebContentsObserver(contents) {}
 TabUIHelper::~TabUIHelper() {}
 
-base::string16 TabUIHelper::GetTitle() const {
-  const base::string16& contents_title = web_contents()->GetTitle();
+std::u16string TabUIHelper::GetTitle() const {
+  const std::u16string& contents_title = web_contents()->GetTitle();
   if (!contents_title.empty())
     return contents_title;
 
   if (tab_ui_data_)
     return tab_ui_data_->title;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
 #else
-  return base::string16();
+  return std::u16string();
 #endif
 }
 
@@ -87,13 +87,14 @@ void TabUIHelper::NotifyInitialNavigationDelayed(bool is_navigation_delayed) {
   // When fetching favicon from history, we first try the exact URL, and then
   // fall back to the host.
   FetchFaviconFromHistory(web_contents()->GetVisibleURL(),
-                          base::Bind(&TabUIHelper::OnURLFaviconFetched,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                          base::BindOnce(&TabUIHelper::OnURLFaviconFetched,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabUIHelper::DidStopLoading() {
   // Reset the properties after the initial navigation finishes loading, so that
-  // latter navigations are not affected.
+  // latter navigations are not affected. Note that the prerendered page won't
+  // reset the properties because DidStopLoading is not called for prerendering.
   is_navigation_delayed_ = false;
   created_by_session_restore_ = false;
   tab_ui_data_.reset();
@@ -130,8 +131,8 @@ void TabUIHelper::OnURLFaviconFetched(
   }
 
   FetchFaviconFromHistory(web_contents()->GetVisibleURL().GetWithEmptyPath(),
-                          base::Bind(&TabUIHelper::OnHostFaviconFetched,
-                                     weak_ptr_factory_.GetWeakPtr()));
+                          base::BindOnce(&TabUIHelper::OnHostFaviconFetched,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabUIHelper::OnHostFaviconFetched(
@@ -151,4 +152,4 @@ void TabUIHelper::UpdateFavicon(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);

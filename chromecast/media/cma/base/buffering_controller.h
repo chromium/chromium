@@ -23,7 +23,7 @@ class BufferingState;
 
 class BufferingController {
  public:
-  typedef base::Callback<void(bool)> BufferingNotificationCB;
+  typedef base::RepeatingCallback<void(bool)> BufferingNotificationCB;
 
   // Creates a buffering controller where the conditions to trigger rebuffering
   // are given by |config|. The whole point of the buffering controller is to
@@ -34,6 +34,10 @@ class BufferingController {
   BufferingController(
       const scoped_refptr<BufferingConfig>& config,
       const BufferingNotificationCB& buffering_notification_cb);
+
+  BufferingController(const BufferingController&) = delete;
+  BufferingController& operator=(const BufferingController&) = delete;
+
   ~BufferingController();
 
   // Creates a buffering state for one stream. This state is added to the list
@@ -106,8 +110,6 @@ class BufferingController {
 
   base::WeakPtr<BufferingController> weak_this_;
   base::WeakPtrFactory<BufferingController> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingController);
 };
 
 }  // namespace media

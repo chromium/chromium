@@ -5,16 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 
+#include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_interpolations.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_map.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
+#include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class CascadeInterpolations;
+class CascadeResolver;
 class CSSCustomPropertyDeclaration;
 class CSSParserContext;
 class CSSProperty;
@@ -22,371 +34,144 @@ class CSSValue;
 class CSSVariableData;
 class CSSVariableReferenceValue;
 class CustomProperty;
-class StyleCascadeSlots;
+class MatchResult;
 class StyleResolverState;
 
 namespace cssvalue {
 
 class CSSPendingSubstitutionValue;
-class CSSPendingInterpolationValue;
 
 }  // namespace cssvalue
 
-// The StyleCascade is responsible for managing cascaded values [1], resolving
-// dependencies between them, and applying the values to the ComputedStyle.
+// StyleCascade analyzes declarations provided by CSS rules and animations,
+// and figures out which declarations should be skipped, and which should be
+// applied (and in which order).
 //
-// Its usage pattern is:
-//
-//   const CSSPropertyName& name = ...;
-//   const CSSValue* value1 = ...;
-//   const CSSValue* value2 = ...;
+// Usage:
 //
 //   StyleCascade cascade(state);
-//   cascade.Add(name, value1, Priority(Origin::kAuthor));
-//   cascade.Add(name, value2, Priority(Origin::kUA));
-//   cascade.Apply(); // value1 is applied, value2 is ignored.
+//   cascade.MutableMatchResult().AddMatchedProperties(...matched rule...);
+//   cascade.MutableMatchResult().AddMatchedProperties(...another rule...);
+//   cascade.AddInterpolation(...); // Optional
+//   cascade.Apply();
 //
 // [1] https://drafts.csswg.org/css-cascade/#cascade
 class CORE_EXPORT StyleCascade {
   STACK_ALLOCATED();
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
-  using CSSPendingInterpolationValue = cssvalue::CSSPendingInterpolationValue;
 
  public:
-  class Animator;
-  class Resolver;
-  class AutoLock;
-
   StyleCascade(StyleResolverState& state) : state_(state) {}
+  StyleCascade(const StyleCascade&) = delete;
+  StyleCascade& operator=(const StyleCascade&) = delete;
 
-  static constexpr uint16_t kMaxCascadeOrder = ~static_cast<uint16_t>(0);
+  const MatchResult& GetMatchResult() { return match_result_; }
 
-  // Represents the origin and importance criteria described by css-cascade [1].
+  // Access the MatchResult in order to add declarations to it.
+  // The modifications made will be taken into account during Apply().
   //
-  // Higher values are more significant than lower values. The values are
-  // chosen such that an important origin can be produced by inverting the bits
-  // of the corresponding non-important origin.
+  // It is invalid to modify the MatchResult after Apply has been called
+  // (unless Reset is called first).
   //
-  // [1] https://www.w3.org/TR/css-cascade-3/#cascade-origin
-  enum class Origin : uint8_t {
-    kNone = 0,
-    kUserAgent = 0b0001,
-    kUser = 0b0010,
-    kAuthor = 0b0011,
-    kAnimation = 0b0100,
-    kImportantAuthor = 0b1100,
-    kImportantUser = 0b1101,
-    kImportantUserAgent = 0b1110,
-    kTransition = 0b10000,
-  };
+  // TODO(andruud): ElementRuleCollector could emit MatchedProperties
+  // directly to the cascade.
+  MatchResult& MutableMatchResult();
 
-  // All important Origins (and only those) must have this bit set. This
-  // provides a fast way to check if an Origin is important.
-  static constexpr uint8_t kImportantBit = 0b1000;
-
-  // The Priority class encapsulates a subset of the cascading criteria
-  // described by css-cascade [1], and provides a way to compare priorities.
+  // Add ActiveInterpolationsMap to the cascade. The interpolations present
+  // in the map will be taken into account during the next call to Apply.
   //
-  // It encompasses, from most significant to least significant: Origin (which
-  // includes importance); tree order, which is a number representing the
-  // shadow-including tree order [2]; and finally cascade order, which is
-  // a monotonically increasing number increased by one every time something
-  // is added to the cascade.
+  // It is valid to add interpolations to the StyleCascade even after Apply
+  // has been called.
   //
-  // The cascade order is initially kMaxCascadeOrder for an instance of
-  // Priority; an actual value will be assigned by StyleCascade::Add.
+  // Note that it's assumed that the incoming ActiveInterpolationsMap outlives
+  // the StyleCascade object.
+  void AddInterpolations(const ActiveInterpolationsMap*, CascadeOrigin);
+
+  // Applies the current CSS declarations and animations to the
+  // StyleResolverState.
   //
-  // [1] https://drafts.csswg.org/css-cascade/#cascading
-  // [2] https://drafts.csswg.org/css-scoping/#shadow-cascading
-  class CORE_EXPORT Priority {
-    DISALLOW_NEW();
+  // It is valid to call Apply multiple times (up to 15), and each call may
+  // provide a different filter.
+  void Apply(CascadeFilter = CascadeFilter());
 
-   public:
-    Priority() : Priority(Origin::kNone) {}
-    // Deliberately implicit.
-    Priority(Origin origin) : Priority(origin, 0) {}
-    // For an explanation of 'tree_order', see css-scoping [1].
-    // [1] https://drafts.csswg.org/css-scoping/#shadow-cascading
-    Priority(Origin, uint16_t tree_order);
-
-    Origin GetOrigin() const;
-    bool HasOrigin() const { return GetOrigin() != Origin::kNone; }
-    bool HasUAOrigin() const {
-      return GetOrigin() == Origin::kUserAgent ||
-             GetOrigin() == Origin::kImportantUserAgent;
-    }
-
-    // This function is used to determine if an incoming Value should win
-    // over the Value which already exists in the cascade.
-    bool operator>=(const Priority&) const;
-    bool operator<(const Priority& p) const { return !(*this >= p); }
-
-    // Returns a copy of this Priority, except that the non-important origin
-    // has been converted to its important counterpart.
-    //
-    // Must be used with kUserAgent, kAuthor, and kAuthor only, as importance
-    // does not apply to the other origins.
-    //
-    // https://drafts.csswg.org/css-cascade/#important
-    inline Priority AddImportance() const {
-      DCHECK_GE(GetOrigin(), Origin::kUserAgent);
-      DCHECK_LE(GetOrigin(), Origin::kAuthor);
-      // Flip Origin bits, converting non-important to important. We only
-      // xor four bits here, because only those bits are in use by
-      // k[Important,][User,UserAgent,Author].
-      return Priority(priority_ ^ (static_cast<uint64_t>(0b1111) << 32));
-    }
-
-   private:
-    friend class StyleCascade;
-    friend class StyleCascadeTest;
-
-    Priority(uint64_t priority) : priority_(priority) {}
-
-    // Returns a copy of this Priority, with the cascade order set to the
-    // specified value.
-    //
-    // For the purposes of StyleCascade::Add alone, we don't need to store the
-    // cascade order at all, since the cascade order is implicit in the order
-    // of the calls to ::Add. However, some properties unfortunately require
-    // that we store the cascade order and act upon it Apply-time. This is
-    // because we have multiple properties that mutate the same field on
-    // ComputedStyle, hence the relative ordering must be preserved between
-    // them to know which should be applied. (See class Filter).
-    inline Priority WithCascadeOrder(uint16_t cascade_order) const {
-      return Priority((priority_ & ~0xFFFF) | cascade_order);
-    }
-
-    // To make Priority comparisons fast, the origin, tree_order and
-    // cascade_order are stored in a single uint64_t, as follows:
-    //
-    //  Bit  0-15: cascade_order
-    //  Bit 16-31: tree_order
-    //  Bit 32-39: Origin
-    //
-    // This way, the numeric value of priority_ can be compared directly
-    // for all criteria simultaneously.
-    uint64_t priority_;
-  };
-
-  // The Value class simply represents the data we store for each property
-  // in the cascade. See StyleCascade::cascade_ field.
-  class CORE_EXPORT Value {
-    DISALLOW_NEW();
-
-   public:
-    // The empty Value is needed because we store it in a HashMap.
-    Value() = default;
-    Value(const CSSValue* value, Priority priority)
-        : value_(value), priority_(priority) {}
-    bool IsEmpty() const { return !priority_.HasOrigin(); }
-    const CSSValue* GetValue() const { return value_; }
-    const Priority& GetPriority() const { return priority_; }
-    void Trace(blink::Visitor* visitor) { visitor->Trace(value_); }
-
-   private:
-    Member<const CSSValue> value_;
-    Priority priority_;
-  };
-
-  // Add a Value to the cascade. The Value will either become the cascaded
-  // value, or be discarded, depending on the Priority of the incoming value
-  // vs. the Priority of the existing value.
-  void Add(const CSSPropertyName&, const CSSValue*, Priority);
-
-  // Applies all values currently in the cascade to the ComputedStyle.
-  // Any CSSPendingInterpolationValues present in the cascade will be ignored.
-  void Apply();
-  // Applies all values currently in the cascade to the ComputedStyle,
-  // dispatching any CSSPendingInterpolationValues to the given Animator.
-  void Apply(Animator&);
-
-  // Excludes properties with a given flag set or unset.
+  // Returns a CSSBitset containing the !important declarations (analyzing
+  // if needed). If there are no !important declarations, returns nullptr.
   //
-  // The exclusion takes effect during Apply, and has no effect for Add.
+  // Note that this function does not return any set bits for -internal-visited-
+  // properties. Instead, !important -internal-visited-* declarations cause
+  // the corresponding unvisited properties to be set in the return value.
+  std::unique_ptr<CSSBitset> GetImportantSet();
+
+  // Resets the cascade to its initial state. Note that this does not undo
+  // any changes already applied to the StyleResolverState/ComputedStyle.
+  void Reset();
+
+  // Applying interpolations may involve resolving values, since we may be
+  // applying a keyframe from e.g. "color: var(--x)" to "color: var(--y)".
+  // Hence that code needs an entry point to the resolving process.
   //
-  // Multiple calls to Exclude are combined, and a property is excluded from
-  // application if any of the conditions match.
+  // This function handles IACVT [1] as follows:
   //
-  // For example, the following applies only inherited properties that can't
-  // be interpolated:
-  //
-  //   StyleCascade cascade(state);
-  //   cascade.Add(name1, value1, Priority(Origin::kAuthor));
-  //   cascade.Add(name2, value2, Priority(Origin::kAuthor));
-  //   cascade.Add(name3, value3, Priority(Origin::kAuthor));
-  //   cascade.Exclude(CSSProperty::kInherited, false);
-  //   cascade.Exclude(CSSProperty::kInterpolable, true);
-  //   cascade.Apply();
-  //
-  // Note that calling Apply clears the excludes.
-  //
-  void Exclude(CSSProperty::Flag, bool set);
-
-  class CORE_EXPORT Excluder {
-    STACK_ALLOCATED();
-
-   public:
-    void Exclude(CSSProperty::Flag, bool set);
-    bool IsExcluded(const CSSProperty&) const;
-    void Clear();
-
-   private:
-    // Specifies which bits are significant in flags_. In other words, mask_
-    // contains a '1' at the corresponding position for each flag seen by
-    // Exclude().
-    CSSProperty::Flags mask_ = 0;
-    // Contains the flags to exclude. Only bits set in mask_ matter.
-    CSSProperty::Flags flags_ = 0;
-  };
-
-  // Removes all kAnimationPropertyPriority properties from the cascade,
-  // without applying the properties. This is used when pre-emptively copying
-  // the cascade in case there are animations.
-  //
-  // TODO(crbug.com/985010): Improve with non-destructive Apply.
-  void RemoveAnimationPriority();
-
-  // Resolver is an object passed on a stack during Apply. Its most important
-  // job is to detect cycles during Apply (in general, keep track of which
-  // properties we're currently applying).
-  class CORE_EXPORT Resolver {
-    STACK_ALLOCATED();
-
-   public:
-    // TODO(crbug.com/985047): Probably use a HashMap for this.
-    using NameStack = Vector<CSSPropertyName, 8>;
-
-    // A 'locked' property is a property we are in the process of applying.
-    // In other words, once a property is locked, locking it again would form
-    // a cycle, and is therefore an error.
-    bool IsLocked(const CSSProperty&) const;
-    bool IsLocked(const CSSPropertyName&) const;
-
-    // We do not allow substitution of animation-tainted values into
-    // an animation-affecting property.
-    //
-    // https://drafts.csswg.org/css-variables/#animation-tainted
-    bool AllowSubstitution(CSSVariableData*) const;
-
-    // SetSlot/StyleCascadeSlots is responsible for resolving situations where
-    // we have multiple (non-alias) properties in the cascade that mutates the
-    // same fields on ComputedStyle.
-    //
-    // An example of this is writing-mode and -webkit-writing-mode, which
-    // both result in ComputedStyle::SetWritingMode calls.
-    //
-    // When applying the cascade (applying each property/value pair to the
-    // ComputedStyle), the order of the application is in the general case
-    // not defined. (It is determined by the iteration order of the HashMap).
-    // This means that if both writing-mode and -webkit-writing-mode exist in
-    // the cascade, we would get non-deterministic behavior: the application
-    // order would not be defined. SetSlot/StyleCascadeSlots fixes this.
-    //
-    // StyleCascadeSlots stores the Priority of the value that was previously
-    // applied for a certain 'group' of properties (e.g. writing-mode and
-    // -webkit-writing-mode is one such group). When we're about to apply a
-    // value, we only actually do so if the call to SetSlot succeeds. If the
-    // call to SetSlot does not succeed, it means that we have previously added
-    // a value with higher priority, and that the current value must be ignored.
-    //
-    // A key difference between discarding Values as a result of SetSlot, vs.
-    // discarding them cascade-time (StyleCascade::Add), is that we are taking
-    // the cascade order into account. This means that, if everything else is
-    // equal (origin, tree order), the value that entered the cascade last wins.
-    // This is crucial to resolve situations like writing-mode and
-    // -webkit-writing-mode.
-    bool SetSlot(const CSSProperty&, const Value&, StyleResolverState&);
-
-   private:
-    friend class AutoLock;
-    friend class StyleCascade;
-    friend class TestCascadeResolver;
-
-    Resolver(Animator& animator, Excluder& excluder, StyleCascadeSlots& slots)
-        : animator_(animator), excluder_(excluder), slots_(slots) {}
-    // If the given property is already being applied, returns true.
-    // The return value is the same value you would get from InCycle(), and
-    // is just returned for convenience.
-    //
-    // When a cycle has been detected, the Resolver will *persist the cycle
-    // state* (i.e. InCycle() will continue to return true) until we reach
-    // the start of the cycle.
-    //
-    // The cycle state is cleared by ~AutoLock, once we have moved far enough
-    // up the stack.
-    bool DetectCycle(const CSSProperty&);
-    // Returns true whenever the Resolver is in a cycle state.
-    // This DOES NOT detect cycles; the caller must call DetectCycle first.
-    bool InCycle() const;
-
-    NameStack stack_;
-    Animator& animator_;
-    wtf_size_t cycle_depth_ = kNotFound;
-    const Excluder& excluder_;
-    StyleCascadeSlots& slots_;
-  };
-
-  // Automatically locks and unlocks the given property. (See
-  // Resolver::IsLocked).
-  class CORE_EXPORT AutoLock {
-    STACK_ALLOCATED();
-
-   public:
-    AutoLock(const CSSProperty&, Resolver&);
-    AutoLock(const CSSPropertyName&, Resolver&);
-    ~AutoLock();
-
-   private:
-    Resolver& resolver_;
-  };
-
-  // Animator & CSSPendingInterpolationValue
-  //
-  // Blink's way of applying animations poses some difficulty for StyleCascade,
-  // as much of the code that applies the animation effects completely bypasses
-  // StyleBuilder; it sets the values on ComputedStyle directly. This prevents
-  // those values from participating properly in the cascade.
-  //
-  // At the same time, we don't want to actually create CSSValues for the
-  // animation effects, as this is (yet another?) unnecessary conversion, and
-  // it produces unwanted GC pressure. To solve this problem, the cascading
-  // and application aspects of interpolations are handled *separately*.
-  //
-  // CSSPendingInterpolationValue represents the cascading aspect of an
-  // interpolation: this means that, once we know that an interpolation is
-  // active for a given property, we add a CSSPendingInterpolationValue to the
-  // cascade (with the appropriate Priority). Apply-time, we then ask the
-  // Animator (see StyleAnimator) to actually apply the interpolated value
-  // using the interpolation infrastructure.
-  class CORE_EXPORT Animator {
-   public:
-    virtual void Apply(const CSSProperty&,
-                       const CSSPendingInterpolationValue&,
-                       Resolver&) = 0;
-  };
-
-  // Applying a CSSPendingInterpolationValue may involve resolving values,
-  // since we may be applying a keyframe from e.g. "color: var(--x)" to
-  // "color: var(--y)". Hence that code needs an entry point to the resolving
-  // process.
+  //  - If a cycle was detected, returns nullptr.
+  //  - If IACVT for other reasons, returns a 'CSSUnsetValue'.
   //
   // TODO(crbug.com/985023): This function has an associated const
   // violation, which isn't great. (This vilation was not introduced with
   // StyleCascade, however).
   //
   // See documentation the other Resolve* functions for what resolve means.
-  const CSSValue* Resolve(const CSSPropertyName&, const CSSValue&, Resolver&);
+  //
+  // [1] https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
+  const CSSValue* Resolve(const CSSPropertyName&,
+                          const CSSValue&,
+                          CascadeOrigin,
+                          CascadeResolver&);
 
- private:
-  friend class TestCascade;
+  // Returns the cascaded values [1].
+  //
+  // This is intended for use by the Inspector Agent.
+  //
+  // Calling this requires a call to Apply to have taken place first. This is
+  // because some of the cascaded values depend on computed value of other
+  // properties (see ApplyCascadeAffecting).
+  //
+  // Note that this function currently returns cascaded values from
+  // CascadeOrigin::kUserAgent, kUser and kAuthor only.
+  //
+  // [1] https://drafts.csswg.org/css-cascade/#cascaded
+  HeapHashMap<CSSPropertyName, Member<const CSSValue>> GetCascadedValues()
+      const;
 
   // The maximum number of tokens that may be produced by a var()
   // reference.
   //
   // https://drafts.csswg.org/css-variables/#long-variables
-  static const size_t kMaxSubstitutionTokens = 16384;
+  static const size_t kMaxSubstitutionTokens = 65536;
+
+ private:
+  friend class TestCascade;
+
+  // Before we can Apply the cascade, the MatchResult and CascadeInterpolations
+  // must be Analyzed. This means going through all the declarations, and
+  // adding them to the CascadeMap, which gives us a complete picture of which
+  // declarations won the cascade.
+  //
+  // We analyze only if needed (i.e. if MatchResult or CascadeInterpolations)
+  // has been mutated since the last call to AnalyzeIfNeeded.
+  void AnalyzeIfNeeded();
+  void AnalyzeMatchResult();
+  void AnalyzeInterpolations();
+
+  // Clears the CascadeMap and other state, and analyzes the MatchResult/
+  // interpolations again.
+  void Reanalyze();
+
+  // Some properties are "cascade affecting", in the sense that their computed
+  // value actually affects cascade behavior. For example, css-logical
+  // properties change their cascade behavior depending on the computed value
+  // of direction/writing-mode.
+  void ApplyCascadeAffecting(CascadeResolver&);
 
   // Applies kHighPropertyPriority properties.
   //
@@ -394,28 +179,43 @@ class CORE_EXPORT StyleCascade {
   // em/ch/etc to dynamically apply font-size (and related properties), but
   // in practice, it is very inconvenient to detect these dependencies. Hence,
   // we apply font-affecting properties (among others) before all the others.
-  void ApplyHighPriority(Resolver&);
+  void ApplyHighPriority(CascadeResolver&);
 
   // Applies -webkit-appearance, and excludes -internal-ua-* properties if
   // we don't have an appearance.
-  void ApplyAppearance(Resolver&);
+  void ApplyAppearance(CascadeResolver&);
 
-  // Apply a single property (including any dependencies).
-  void Apply(const CSSPropertyName&);
-  void Apply(const CSSPropertyName&, Resolver&);
-  void Apply(const CSSProperty&, Resolver&);
+  // Applies -webkit-border-image (if present), and skips any border-image
+  // longhands found with lower priority than -webkit-border-image.
+  //
+  // The -webkit-border-image property is unique (in a bad way), since it's
+  // a surrogate of a shorthand. Therefore it needs special treatment to
+  // behave correctly.
+  void ApplyWebkitBorderImage(CascadeResolver&);
 
-  // True if the cascade currently holds the provided value for a given
-  // property. Note that the value is compared by address.
-  bool HasValue(const CSSPropertyName&, const CSSValue*) const;
+  void ApplyMatchResult(CascadeResolver&);
+  void ApplyInterpolations(CascadeResolver&);
+  void ApplyInterpolationMap(const ActiveInterpolationsMap&,
+                             CascadeOrigin,
+                             size_t index,
+                             CascadeResolver&);
+  void ApplyInterpolation(const CSSProperty&,
+                          CascadePriority,
+                          const ActiveInterpolations&,
+                          CascadeResolver&);
 
-  // Get current cascaded value for the specified property.
-  const CSSValue* GetValue(const CSSPropertyName&) const;
-
-  // If there is a cascaded value for the specified property, replace it
-  // with the incoming value, maintaining the current cascade origin.
-  // Has no effect if there is no cascaded value for the property.
-  void ReplaceValue(const CSSPropertyName&, const CSSValue*);
+  // Looks up a value with random access, and applies it.
+  void LookupAndApply(const CSSPropertyName&, CascadeResolver&);
+  void LookupAndApply(const CSSProperty&, CascadeResolver&);
+  void LookupAndApplyValue(const CSSProperty&,
+                           CascadePriority,
+                           CascadeResolver&);
+  void LookupAndApplyDeclaration(const CSSProperty&,
+                                 CascadePriority,
+                                 CascadeResolver&);
+  void LookupAndApplyInterpolation(const CSSProperty&,
+                                   CascadePriority,
+                                   CascadeResolver&);
 
   // Whether or not we are calculating the style for the root element.
   // We need to know this to detect cycles with 'rem' units.
@@ -485,19 +285,32 @@ class CORE_EXPORT StyleCascade {
   // other words, we must first Apply '--y'. Hence, resolving 'width' will
   // Apply '--y' as a side-effect. (This process would then continue to '--x').
 
-  const CSSValue* Resolve(const CSSProperty&, const CSSValue&, Resolver&);
+  const CSSValue* Resolve(const CSSProperty&,
+                          const CSSValue&,
+                          CascadePriority,
+                          CascadeOrigin&,
+                          CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
                                         const CSSCustomPropertyDeclaration&,
-                                        Resolver&);
+                                        CascadeResolver&);
   const CSSValue* ResolveVariableReference(const CSSProperty&,
                                            const CSSVariableReferenceValue&,
-                                           Resolver&);
+                                           CascadeResolver&);
   const CSSValue* ResolvePendingSubstitution(const CSSProperty&,
                                              const CSSPendingSubstitutionValue&,
-                                             Resolver&);
+                                             CascadeResolver&);
+  const CSSValue* ResolveRevert(const CSSProperty&,
+                                const CSSValue&,
+                                CascadeOrigin&,
+                                CascadeResolver&);
+  const CSSValue* ResolveRevertLayer(const CSSProperty&,
+                                     const CSSValue&,
+                                     CascadePriority,
+                                     CascadeOrigin&,
+                                     CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
-                                                     Resolver&);
+                                                     CascadeResolver&);
 
   // The Resolve*Into functions either resolve dependencies, append to the
   // TokenSequence accordingly, and return true; or it returns false when
@@ -507,12 +320,13 @@ class CORE_EXPORT StyleCascade {
   //
   // [1] https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
 
-  bool ResolveTokensInto(CSSParserTokenRange, Resolver&, TokenSequence&);
-  bool ResolveVarInto(CSSParserTokenRange, Resolver&, TokenSequence&);
-  bool ResolveEnvInto(CSSParserTokenRange, Resolver&, TokenSequence&);
+  bool ResolveTokensInto(CSSParserTokenRange, CascadeResolver&, TokenSequence&);
+  bool ResolveVarInto(CSSParserTokenRange, CascadeResolver&, TokenSequence&);
+  bool ResolveEnvInto(CSSParserTokenRange, CascadeResolver&, TokenSequence&);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
-  CSSVariableData* GetEnvironmentVariable(const AtomicString&) const;
+  CSSVariableData* GetEnvironmentVariable(const AtomicString&,
+                                          WTF::Vector<unsigned>) const;
   const CSSParserContext* GetParserContext(const CSSVariableReferenceValue&);
 
   // Detects if the given property/data depends on the font-size property
@@ -526,14 +340,69 @@ class CORE_EXPORT StyleCascade {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
   bool ValidateFallback(const CustomProperty&, CSSParserTokenRange) const;
   // Marks the CustomProperty as referenced by something. Needed to avoid
-  // animating these custom properties on the compositor, and to disable the
-  // matched properties cache in some cases.
-  void MarkReferenced(const CustomProperty&);
+  // animating these custom properties on the compositor.
+  void MarkIsReferenced(const CSSProperty& referencer,
+                        const CustomProperty& referenced);
+  // Marks a CSSProperty as having a reference to a custom property. Needed to
+  // disable the matched property cache in some cases.
+  void MarkHasVariableReference(const CSSProperty&);
+
+  const Document& GetDocument() const;
+  const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
+
+  void CountUse(WebFeature);
+  void MaybeUseCountRevert(const CSSValue&);
+  void MaybeUseCountSummaryDisplayBlock();
 
   StyleResolverState& state_;
-  HeapHashMap<CSSPropertyName, Value> cascade_;
-  uint16_t order_ = 0;
-  Excluder excluder_;
+  MatchResult match_result_;
+  CascadeInterpolations interpolations_;
+  CascadeMap map_;
+  // Generational Apply
+  //
+  // Generation is a number that's incremented by one for each call to Apply
+  // (the first call to Apply has generation 1). When a declaration is applied
+  // to ComputedStyle, the current Apply-generation is stored in the CascadeMap.
+  // In other words, the CascadeMap knows which declarations have already been
+  // applied to ComputedStyle, which makes it possible to avoid applying the
+  // same declaration twice during a single call to Apply:
+  //
+  // For example:
+  //
+  //   --x: red;
+  //   background-color: var(--x);
+  //
+  // During Apply (generation=1), we linearly traverse the declarations above,
+  // and first apply '--x' to the ComputedStyle. Then, we proceed to
+  // 'background-color', which must first have its dependencies resolved before
+  // we can apply it. This is where we check the current generation stored for
+  // '--x'. If it's equal to the generation associated with the Apply call, we
+  // know that we already applied it. Either something else referenced it before
+  // we did, or it appeared before us in the MatchResult. Either way, we don't
+  // have to apply '--x' again.
+  //
+  // Had the order been reversed, such that the '--x' declaration appeared after
+  // the 'background-color' declaration, we would discover (during resolution of
+  // var(--x), that the current generation of '--x' is _less_ than the
+  // generation associated with the Apply call, hence we need to LookupAndApply
+  // '--x' before applying 'background-color'.
+  //
+  // A secondary benefit to the generational apply mechanic, is that it's
+  // possible to efficiently apply the StyleCascade more than once (perhaps with
+  // a different CascadeFilter for each call), without rebuilding it. By
+  // incrementing generation_, the existing record of what has been applied is
+  // immediately invalidated, and everything will be applied again.
+  //
+  // Note: The maximum generation number is currently 15. This is more than
+  //       enough for our needs.
+  uint8_t generation_ = 0;
+
+  bool needs_match_result_analyze_ = false;
+  bool needs_interpolations_analyze_ = false;
+  // A cascade-affecting property is for example 'direction', since the
+  // computed value of the property affects how e.g. margin-inline-start
+  // (and other css-logical properties) cascade.
+  bool depends_on_cascade_affecting_property_ = false;
 };
 
 }  // namespace blink

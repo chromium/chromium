@@ -3,7 +3,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
-<canvas id="webgl-canvas"></canvas>
 
 <script>
 let testName = "XRSession attributes meet [SameObject] requirement";
@@ -18,7 +17,7 @@ let testFunction = function(session, fakeDeviceController, t) {
       profiles: ["foo", "bar"]
     });
 
-    session.requestAnimationFrame((time, xrFrame) => {
+    requestSkipAnimationFrame(session, (time, xrFrame) => {
       let renderState = session.renderState;
       let sources = session.inputSources;
 

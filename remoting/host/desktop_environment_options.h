@@ -5,10 +5,9 @@
 #ifndef REMOTING_HOST_DESKTOP_ENVIRONMENT_OPTIONS_H_
 #define REMOTING_HOST_DESKTOP_ENVIRONMENT_OPTIONS_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/session_options.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 
 namespace remoting {
@@ -45,6 +44,15 @@ class DesktopEnvironmentOptions final {
   bool enable_file_transfer() const;
   void set_enable_file_transfer(bool enabled);
 
+  bool enable_remote_open_url() const;
+  void set_enable_remote_open_url(bool enabled);
+
+  bool enable_remote_webauthn() const;
+  void set_enable_remote_webauthn(bool enabled);
+
+  const absl::optional<size_t>& clipboard_size() const;
+  void set_clipboard_size(absl::optional<size_t> clipboard_size);
+
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();
 
@@ -70,6 +78,19 @@ class DesktopEnvironmentOptions final {
 
   // True if this host has file transfer enabled.
   bool enable_file_transfer_ = false;
+
+  // True if this host has the remote open URL feature enabled. Note, caller
+  // should also call IsRemoteOpenUrlSupported() to determine if the feature is
+  // supported by the platform.
+  bool enable_remote_open_url_ = false;
+
+  // True if this host has the remote WebAuthn feature enabled.
+  bool enable_remote_webauthn_ = false;
+
+  // If set, this value is used to constrain the amount of data that can be
+  // transferred using ClipboardEvents. A value of 0 will effectively disable
+  // clipboard sharing.
+  absl::optional<size_t> clipboard_size_;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;

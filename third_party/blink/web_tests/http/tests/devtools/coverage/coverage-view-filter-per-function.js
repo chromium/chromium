@@ -4,14 +4,14 @@
 
 (async function() {
   TestRunner.addResult(`Tests the filter is properly applied to coverage list view.\n`);
-  await TestRunner.loadModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
 
   await CoverageTestRunner.startCoverage(false);
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
 
-  var coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
+  var coverageView = Coverage.CoverageView.instance();
   setFilter('devtools');
   CoverageTestRunner.dumpCoverageListView();
   setFilter('CES/COV');
@@ -23,8 +23,8 @@
   TestRunner.completeTest();
 
   function setFilter(text) {
-    coverageView._filterInput.setValue(text);
-    coverageView._filterInput._onChangeCallback();
+    coverageView.filterInput.setValue(text);
+    coverageView.filterInput.onChangeCallback();
     TestRunner.addResult(`Filter: '${text}'`);
   }
 })();

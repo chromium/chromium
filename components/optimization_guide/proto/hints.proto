@@ -4,11 +4,15 @@
 
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "HintsProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
-import "previews_metadata.proto";
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/loading_predictor_metadata.proto";
+import "components/optimization_guide/proto/performance_hints_metadata.proto";
+import "components/optimization_guide/proto/public_image_metadata.proto";
 
 // Information about the hint that the client already has for a host.
 message MatchedHintInfo {
@@ -27,11 +31,20 @@ message HostInfo {
   optional MatchedHintInfo matched_hint = 2;
 }
 
+// Information about a URL to request hints for.
+message UrlInfo {
+  // The URL that the client is requesting information for.
+  optional string url = 1;
+}
+
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
   // Information about the set of hosts to retrieve hints for.
   repeated HostInfo hosts = 1;
+
+  // Information about the set of URLs to retrieve hints for.
+  repeated UrlInfo urls = 4;
 
   // The set of optimization types that the requesting client can support
   // and perform.
@@ -40,8 +53,25 @@ message GetHintsRequest {
   // optimizations present in this set.
   repeated OptimizationType supported_optimizations = 2;
 
+  // The set of key representations that the client can process.
+  //
+  // It is guaranteed that the response will only contain hints for key
+  // representations present in this set. If not specified,
+  // [HOST_SUFFIX, FULL_URL] will be used.
+  repeated KeyRepresentation supported_key_representations = 5;
+
   // Context in which this request is made.
   optional RequestContext context = 3;
+
+  // The field trials that are currently active when this request is made.
+  repeated FieldTrial active_field_trials = 6;
+
+  // The locale to associate with this request.
+  //
+  // It is the IETF language tag, defined in BCP 47. The region subtag is not
+  // included when it adds no distinguishing information to the language tag
+  // (e.g. both "en-US" and "fr" are correct here).
+  optional string locale = 7;
 }
 
 // Response to the GetHints request.
@@ -52,16 +82,10 @@ message GetHintsResponse {
   // representation combination. These hints are intended to apply to a full
   // page. It is expected that the client will use the Hint record with the
   // most specific key that matches the main frame URL.
-  //
-  // Note, this list may contain multiple hints that apply to a page. For
-  // example, if there are hints for (HOST_SUFFIX,cnn.com) and
-  // (HOST_SUFFIX,sports.cnn.com), these may both apply to
-  // sports.cnn.com/foo. In this case, the client is expected to use the
-  // hints from (HOST_SUFFIX,sports.cnn.com).
   repeated Hint hints = 1;
 
-  // The maximum duration in which the hints provided in this response should
-  // be retained in the client cache.
+  // The maximum duration in which the hints, or lack of hints, provided in
+  // this response are valid.
   optional Duration max_cache_duration = 2;
 
   // A set of hint keys to remove from the client cache.
@@ -75,29 +99,11 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-// A Duration represents a signed, fixed-length span of time represented
-// as a count of seconds and fractions of seconds at nanosecond
-// resolution. It is independent of any calendar and concepts like "day"
-// or "month". It is related to Timestamp in that the difference between
-// two Timestamp values is a Duration and it can be added or subtracted
-// from a Timestamp. Range is approximately +-10,000 years.
-// This is local definition matching server side duration.proto definition.
-message Duration {
-  // Signed seconds of the span of time. Must be from -315,576,000,000
-  // to +315,576,000,000 inclusive.
-  optional int64 seconds = 1;
-
-  // Signed fractions of a second at nanosecond resolution of the span
-  // of time. Durations less than one second are represented with a 0
-  // `seconds` field and a positive or negative `nanos` field. For durations
-  // of one second or more, a non-zero value for the `nanos` field must be
-  // of the same sign as the `seconds` field. Must be from -999,999,999
-  // to +999,999,999 inclusive.
-  optional int32 nanos = 2;
-}
-
-
+// Must sync with enum OptimizationType in enums.xml for metric recording.
 enum OptimizationType {
+  // Values for obsolete optimizations.
+  reserved 11, 12;
+
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
   NOSCRIPT = 1;
@@ -106,14 +112,51 @@ enum OptimizationType {
   RESOURCE_LOADING = 2;
   // This optimization redirects the navigation through a lite page server.
   LITE_PAGE_REDIRECT = 3;
-  // This optimization does nothing (no-op).
-  OPTIMIZATION_NONE = 4;
+  // This optimization does validation of metadata fetch on navigation.
+  METADATA_FETCH_VALIDATION = 4;
   // This optimization defers execution of parser-blocking script until after
   // parsing completes.
   DEFER_ALL_SCRIPT = 5;
   // This optimization is used to provide aggregated performance information
   // about the page and pages it links to.
   PERFORMANCE_HINTS = 6;
+  // This optimization allows page loads going through the data reduction
+  // proxy to be transformed by the proxy.
+  LITE_PAGE = 7;
+  // This optimization compresses public images.
+  COMPRESS_PUBLIC_IMAGES = 8;
+  // This optimization provides the Loading Predictor with resources predicted
+  // to be on the page.
+  LOADING_PREDICTOR = 9;
+  // This optimization provides information about hosts that historically
+  // provide a fast and responsive user experience.
+  FAST_HOST_HINTS = 10;
+  // This optimization provides information about how to throttle meda requests
+  // to reduce the bitrate of adaptively streamed media.
+  LITE_VIDEO = 13;
+  // This optimization is used to provide aggregated performance information
+  // about pages linked to from the current page.
+  LINK_PERFORMANCE = 14;
+  // Detects if a page is a shopping page or not. A tradeoff has been made here
+  // where the number of shopping page predictions for non-shopping pages is
+  // increased to reduce the number of non-shopping page predictions for
+  // shopping pages.
+  SHOPPING_PAGE_PREDICTOR = 15;
+  // This optimization provides information about hosts that are identified as
+  // commonly logged-in.
+  LOGIN_DETECTION = 16;
+  // Provides key information about the merchant represented by the current
+  // host.
+  MERCHANT_TRUST_SIGNALS = 17;
+  // Provides pricing data so the user can track prices and price updates.
+  PRICE_TRACKING = 18;
+  // This optimization does validation of bloom filter.
+  BLOOM_FILTER_VALIDATION = 19;
+  // Provides 'About this site' data about the site being visited.
+  ABOUT_THIS_SITE = 20;
+  // Provides key information about the merchant represented by the current
+  // host -- VERSION 2.
+  MERCHANT_TRUST_SIGNALS_V2 = 21;
 }
 
 // Presents semantics for how page load URLs should be matched.
@@ -123,55 +166,46 @@ enum KeyRepresentation {
   //
   // Example: A host suffix of example.com would match pages with host
   // sports.example.com, but not fooexample.com.
-  HOST_SUFFIX = 1;
+  HOST_SUFFIX = 1 [deprecated = true];
+  // The full URL to match.
+  //
+  // This will be an exact match of a page load URL, including query params and
+  // fragments.
+  FULL_URL = 2;
+  // The host to match.
+  //
+  // This will be an exact match of a page load host.
+  HOST = 3;
 }
 
 message Optimization {
+  reserved 2, 3, 4, 5, 10, 14;
   // The type of optimization the hint applies to.
   optional OptimizationType optimization_type = 1;
-  // A percent value to inflate the number of received bytes by for the purposes
-  // of data savings calculations in the client.
+  // The version of the tuning group for the optimization type.
   //
-  // If this value is set to 0, the client should use its configured default.
+  // This will only be populated if this optimization is being autotuned.
   //
-  // Ex: If the received bytes is 100 and the inflation_percent is 30, the
-  // inflated bytes calculated by the client will be 30 in order to have a total
-  // consumed bytes value of 130.
-  optional int64 inflation_percent = 2 [deprecated = true];
-  // An ordered set of resource loading hints for OptimizationType
-  // RESOURCE_LOADING.
-  //
-  // Only the first ResourceLoadingHint record that matches a target resource
-  // URL will be applied to that resource.
-  repeated ResourceLoadingHint resource_loading_hints = 3 [deprecated = true];
-  // The experiment name that activates the optimization.
-  //
-  // If a non-empty name is provided, the optimization will be disabled unless
-  // an experiment of that same name is running. An empty name is not
-  // experimental.
-  //
-  // Optimization Hints experiments are enabled and configured by passing an
-  // experiment_name parameter to the OptimizationHintsExperiments feature.
-  // For example, if experiment_name is my_exp, it could be enabled with the
-  // following command-line flags:
-  //   --enable-features=OptimizationHintsExperiments<MyFieldTrial
-  //   --force-fieldtrial-params="MyFieldTrial.Enabled:experiment_name/my_exp"
-  //   --force-fieldtrials=MyFieldTrial/Enabled/
-  optional string experiment_name = 4;
-  // The experiment name that should be excluded from using this optimization.
-  //
-  // If a non-empty name is provided and the client is in an experiment of that
-  // same name, the optimization will be disabled and skipped for that client.
-  // An empty name is not experimental.
-  optional string excluded_experiment_name = 5;
+  // If this is set to UINT64_MAX, this optimization should be considered as
+  // not allowed and was only included for metrics purposes.
+  optional uint64 tuning_version = 6;
   // The metadata associated with the optimization type.
   //
   // It is expected that the client and server have agreed upon the appropriate
   // metadata type for the optimization type.
-  oneof metadata { PreviewsMetadata previews_metadata = 10; }
+  //
+  // New clients should utilize any_metadata rather than adding another field.
+  oneof metadata {
+    PerformanceHintsMetadata performance_hints_metadata = 11;
+    PublicImageMetadata public_image_metadata = 12;
+    LoadingPredictorMetadata loading_predictor_metadata = 13;
+    Any any_metadata = 15;
+  }
 }
 
 message PageHint {
+  reserved 2;
+
   // The pattern to match against the committed page URL.
   //
   // The pattern may be a single substring to match against the full URL or it
@@ -179,14 +213,11 @@ message PageHint {
   // separated by the ‘*’ wildcard character (with an implicit ‘*’ at the
   // beginning and end).
   optional string page_pattern = 1;
-  // The maximum effective connection type threshold for triggering the
-  // optimization associated with this hint.
-  optional EffectiveConnectionType max_ect_trigger = 2 [deprecated = true];
-  // An ordered set of optimizations that should be whitelisted for this page
+  // An ordered set of optimizations that should be allowlisted for this page
   // pattern.
   //
   // The client will use the first optimization that it supports.
-  repeated Optimization whitelisted_optimizations = 3;
+  repeated Optimization allowlisted_optimizations = 3;
 }
 
 message Hint {
@@ -195,9 +226,11 @@ message Hint {
   // The key that applies to this hint. The key_representation field describes
   // the form in which this key takes. Guaranteed to be non-empty.
   optional string key = 2;
-  // Top-level optimizations are currently unused on the client as of M-72. This
-  // may change in the future as new optimization types are added.
-  repeated Optimization whitelisted_optimizations = 3;
+  // An unordered set of optimizations that should be allowlisted for this
+  // hint.
+  //
+  // This field is currently only specified for key_representation of HOST.
+  repeated Optimization allowlisted_optimizations = 3;
   // An ordered set of per-page hints. Only the first PageHint record
   // that matches a committed page URL should be used for that page load.
   repeated PageHint page_hints = 4;
@@ -206,6 +239,8 @@ message Hint {
   // It is expected that this version be sent along with subsequent requests
   // for hosts that match this hint.
   optional string version = 5;
+  // The maximum duration for which the hint should be used for.
+  optional Duration max_cache_duration = 6;
 }
 
 // Configuration and data for a Bloom filter.
@@ -228,17 +263,26 @@ message BloomFilter {
   optional bytes data = 3;
 }
 
-// A scalable filter for an optimization type. Initially, this is used to
-// provide a large scale blacklist but might be used for whitelists in
-// the future.
+// A scalable filter for an optimization type.
+//
+// Next ID: 6
 message OptimizationFilter {
   // The type of optimization this filter applies to.
   optional OptimizationType optimization_type = 1;
   // The filter data represented as a Bloom filter.
   optional BloomFilter bloom_filter = 2;
   // Additional filters represented as regexps matched against the main page
-  // URL.
+  // URL. If matched, the URL will be considered as contained in the filter.
   repeated string regexps = 3;
+  // Additional filters represented as regexps matched against the main page
+  // URL. If matched, the URL will be considered as not contained in the filter.
+  //
+  // This set of regexps should be checked prior to any matching against the
+  // contained bloom_filter or regexps fields.
+  repeated string exclusion_regexps = 5;
+  // Whether additional host suffixes (other than the host) should be checked
+  // against the filter.
+  optional bool skip_host_suffix_checking = 4;
 }
 
 message Configuration {
@@ -258,21 +302,16 @@ message Configuration {
   // details for that key that it wants to provide as the client will only
   // look at that one record to decide which optimization to apply.
   repeated Hint hints = 1;
-  // A list of per-optimization blacklists.
-  repeated OptimizationFilter optimization_blacklists = 2;
-}
-
-message Timestamp {
-  // Represents seconds of UTC time since Unix epoch
-  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-  // 9999-12-31T23:59:59Z inclusive.
-  optional int64 seconds = 1;
-
-  // Non-negative fractions of a second at nanosecond resolution. Negative
-  // second values with fractions must still have non-negative nanos values
-  // that count forward in time. Must be from 0 to 999,999,999
-  // inclusive.
-  optional int32 nanos = 2;
+  // A set of per-optimization blocklists.
+  //
+  // It is guaranteed that an optimization type will not have filters in both
+  // |optimization_blocklists| and |optimization_allowlists|.
+  repeated OptimizationFilter optimization_blocklists = 2;
+  // A set of per-optimization allowlists.
+  //
+  // It is guaranteed that an optimization type will not have filters in both
+  // |optimization_blocklists| and |optimization_allowlists|.
+  repeated OptimizationFilter optimization_allowlists = 3;
 }
 
 enum HintSource {

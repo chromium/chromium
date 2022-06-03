@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_FILE_TASK_RUNNER_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/task/task_traits.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -13,11 +14,18 @@ class SequencedTaskRunner;
 
 namespace extensions {
 
-// Returns the singleton instance of the task runner to be used for
+// Returns the singleton instance of the task runner to be used for most
 // extension-related tasks that read, modify, or delete files. All these tasks
 // must be posted to this task runner, even if it is only reading the file,
 // since other tasks may be modifying it.
 scoped_refptr<base::SequencedTaskRunner> GetExtensionFileTaskRunner();
+
+// Returns a non-singleton task runner, for tasks that touch files, but won't
+// race with each other. Currently, this is used to unpack multiple extensions
+// in parallel. They each touch a different set of files, which avoids potential
+// race conditions.
+scoped_refptr<base::SequencedTaskRunner> GetOneShotFileTaskRunner(
+    base::TaskPriority priority);
 
 }  // namespace extensions
 

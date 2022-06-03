@@ -10,16 +10,18 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/common/safe_browsing/file_type_policies.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -60,7 +62,7 @@ namespace component_updater {
 
 bool FileTypePoliciesComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool FileTypePoliciesComponentInstallerPolicy::RequiresNetworkEncryption()
@@ -70,7 +72,7 @@ bool FileTypePoliciesComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 FileTypePoliciesComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -85,19 +87,18 @@ base::FilePath FileTypePoliciesComponentInstallerPolicy::GetInstalledPath(
 void FileTypePoliciesComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadFileTypesFromDisk, GetInstalledPath(install_dir)));
 }
 
 // Called during startup and installation before ComponentReady().
 bool FileTypePoliciesComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().
@@ -122,16 +123,12 @@ std::string FileTypePoliciesComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 FileTypePoliciesComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  attributes["tag"] = safe_browsing::GetFileTypePoliciesTag();
+  return attributes;
 }
 
-std::vector<std::string>
-FileTypePoliciesComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
-void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus,
-                                       const base::FilePath& user_data_dir) {
+void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering File Type Policies component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FileTypePoliciesComponentInstallerPolicy>());

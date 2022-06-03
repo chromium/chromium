@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 // A format string for generating paths to COM class in-proc server keys under
@@ -39,7 +39,7 @@ struct CertificateInfo {
 
   // The "Subject" name of the certificate. This is the signer (e.g.,
   // "Google LLC" or "Microsoft Corporation").
-  base::string16 subject;
+  std::u16string subject;
 };
 
 // Extracts information about the certificate of the given |file|, populating
@@ -59,9 +59,9 @@ bool IsMicrosoftModule(base::StringPiece16 subject);
 // Removes any existing trailing backslash in the values.
 //
 // e.g. c:\windows\system32 -> %systemroot%
-using StringMapping = std::vector<std::pair<base::string16, base::string16>>;
+using StringMapping = std::vector<std::pair<std::u16string, std::u16string>>;
 StringMapping GetEnvironmentVariablesMapping(
-    const std::vector<base::string16>& environment_variables);
+    const std::vector<std::wstring>& environment_variables);
 
 // If |prefix_mapping| contains a matching prefix with |path|, substitutes that
 // prefix with its associated value. If multiple matches are found, the longest
@@ -70,7 +70,7 @@ StringMapping GetEnvironmentVariablesMapping(
 // This function expects |prefix_mapping| and |path| to contain lowercase
 // strings. Also, |prefix_mapping| must not contain any trailing backslashes.
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  base::string16* path);
+                                  std::u16string* path);
 
 // Reads the file on disk to find out the SizeOfImage and TimeDateStamp
 // properties of the module. Returns false on error.
@@ -82,7 +82,7 @@ namespace internal {
 
 // Removes trailing null characters from the certificate's subject.
 // Exposed for testing.
-void NormalizeCertificateSubject(base::string16* subject);
+void NormalizeCertificateSubject(std::wstring* subject);
 
 }  // namespace internal
 

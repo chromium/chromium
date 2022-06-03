@@ -5,55 +5,51 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  java_files = [
-    "android/java/src/org/chromium/chrome/browser/util/AccessibilityUtil.java",
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/AndroidTaskUtils.java",
-    "android/java/src/org/chromium/chrome/browser/util/BitmapCache.java",
-    "android/java/src/org/chromium/chrome/browser/util/ChromeContextUtil.java",
+    "android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
-    "android/java/src/org/chromium/chrome/browser/util/ColorUtils.java",
-    "android/java/src/org/chromium/chrome/browser/util/ConversionUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/FileSizeUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
-    "android/java/src/org/chromium/chrome/browser/util/IntentUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/KeyNavigationUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
-    "android/java/src/org/chromium/chrome/browser/util/UrlConstants.java",
-    "android/java/src/org/chromium/chrome/browser/util/UrlUtilities.java",
-    "android/java/src/org/chromium/chrome/browser/util/ViewUtils.java",
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//content/public/android:content_java",
-    "//third_party/android_deps:com_android_support_collections_java",
-    "//third_party/android_deps:com_android_support_support_compat_java",
-    "//third_party/android_deps:com_android_support_support_core_utils_java",
+    "//components/browser_ui/util/android:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/util/ChromeContextUtil.java",
+    "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
-    "android/java/src/org/chromium/chrome/browser/util/UrlUtilities.java",
   ]
 }
 
 android_library("javatests") {
   testonly = true
-  java_files = [
+  sources = [
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProviderTest.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtilTest.java",
-    "android/java/src/org/chromium/chrome/browser/util/UrlUtilitiesTest.java",
   ]
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

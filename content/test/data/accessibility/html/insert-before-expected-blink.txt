@@ -1,0 +1,7 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer
+++++++image name='a0'
+++++++image name='a1'
+++++++image name='a2'
+++++++group

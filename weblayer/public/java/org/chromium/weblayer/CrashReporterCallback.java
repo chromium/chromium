@@ -4,6 +4,8 @@
 
 package org.chromium.weblayer;
 
+import androidx.annotation.NonNull;
+
 /**
  * Callback object for results of asynchronous {@link CrashReporterController} operations.
  */
@@ -14,14 +16,14 @@ public abstract class CrashReporterCallback {
      *
      * @param localIds an array of crash report IDs available to be uploaded.
      */
-    public void onPendingCrashReports(String[] localIds) {}
+    public void onPendingCrashReports(@NonNull String[] localIds) {}
 
     /**
      * Called when a crash has been deleted.
      *
      * @param localId the local identifier of the crash that was deleted.
      */
-    public void onCrashDeleted(String localId) {}
+    public void onCrashDeleted(@NonNull String localId) {}
 
     /**
      * Called when a crash has been uploaded.
@@ -29,7 +31,7 @@ public abstract class CrashReporterCallback {
      * @param localId the local identifier of the crash that was uploaded.
      * @param reportId the remote identifier for the uploaded crash.
      */
-    public void onCrashUploadSucceeded(String localId, String reportId) {}
+    public void onCrashUploadSucceeded(@NonNull String localId, @NonNull String reportId) {}
 
     /**
      * Called when a crash failed to upload.
@@ -37,5 +39,5 @@ public abstract class CrashReporterCallback {
      * @param localId the local identifier of the crash that failed to upload.
      * @param failureReason a free text string giving the failure reason.
      */
-    public void onCrashUploadFailed(String localId, String faulreReason) {}
+    public void onCrashUploadFailed(@NonNull String localId, @NonNull String failureReason) {}
 }

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 
 namespace base {
@@ -20,6 +19,11 @@ class ChromePrefModelAssociatorClient
  public:
   // Returns the global instance.
   static ChromePrefModelAssociatorClient* GetInstance();
+
+  ChromePrefModelAssociatorClient(const ChromePrefModelAssociatorClient&) =
+      delete;
+  ChromePrefModelAssociatorClient& operator=(
+      const ChromePrefModelAssociatorClient&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<ChromePrefModelAssociatorClient>;
@@ -35,8 +39,6 @@ class ChromePrefModelAssociatorClient
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePrefModelAssociatorClient);
 };
 
 #endif  // CHROME_BROWSER_PREFS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_

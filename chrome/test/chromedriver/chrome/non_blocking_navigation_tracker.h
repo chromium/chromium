@@ -16,12 +16,10 @@ class NonBlockingNavigationTracker : public PageLoadStrategy {
 
   ~NonBlockingNavigationTracker() override;
 
-  // Overriden from PageLoadStrategy:
-  Status IsPendingNavigation(const std::string& frame_id,
-                             const Timeout* timeout,
-                             bool* is_pending) override;
+  // Overridden from PageLoadStrategy:
+  Status IsPendingNavigation(const Timeout* timeout, bool* is_pending) override;
   void set_timed_out(bool timed_out) override;
-  void ClearState(const std::string& new_frame_id) override;
+  void SetFrame(const std::string& new_frame_id) override;
   bool IsNonBlocking() const override;
 };
 

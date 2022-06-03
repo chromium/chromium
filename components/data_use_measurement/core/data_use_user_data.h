@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_USER_DATA_H_
 #define COMPONENTS_DATA_USE_MEASUREMENT_CORE_DATA_USE_USER_DATA_H_
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace data_use_measurement {
@@ -43,6 +39,10 @@ class DataUseUserData : public base::SupportsUserData::Data {
   enum AppState { UNKNOWN, BACKGROUND, FOREGROUND };
 
   explicit DataUseUserData(AppState app_state);
+
+  DataUseUserData(const DataUseUserData&) = delete;
+  DataUseUserData& operator=(const DataUseUserData&) = delete;
+
   ~DataUseUserData() override;
 
   AppState app_state() const { return app_state_; }
@@ -63,8 +63,6 @@ class DataUseUserData : public base::SupportsUserData::Data {
   AppState app_state_;
 
   DataUseContentType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseUserData);
 };
 
 }  // namespace data_use_measurement

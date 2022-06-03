@@ -27,12 +27,12 @@ var root = createShadowRootWithInnerHtml(host, style + "<div class=target>Shadow
 testTooltipTextInShadow("The title of elements in shadow inherits from the document", root.querySelector(".target"), "PASS-fromdoc");
 
 host = document.getElementById("distributed");
-createShadowRootWithInnerHtml(host, "<div title='PASS-distributed'><content></content></div>");
+createShadowRootWithInnerHtml(host, "<div title='PASS-distributed'><slot></slot></div>");
 testTooltipTextInShadow("The title of distributed elements inherits in the flat tree", host.querySelector(".target"), "PASS-distributed");
 
 host = document.getElementById("multilevel");
-var host2ndLevel = createShadowRootWithInnerHtml(host, "<div title='NG-multilevel'><content></content></div>").firstChild;
-createShadowRootWithInnerHtml(host2ndLevel, "<div title='PASS-multilevel'><content></content></div>");
+var host2ndLevel = createShadowRootWithInnerHtml(host, "<div title='NG-multilevel'><slot></slot></div>").firstChild;
+createShadowRootWithInnerHtml(host2ndLevel, "<div title='PASS-multilevel'><slot></slot></div>");
 testTooltipTextInShadow("The title of distributed elements inherits in the flat tree (multiple levels)", host.querySelector(".target"), "PASS-multilevel");
 
 function testTooltipTextInShadow(description, element, expected) {
@@ -46,7 +46,7 @@ function testTooltipTextInShadow(description, element, expected) {
 }
 
 function createShadowRootWithInnerHtml(host, shadowHtml) {
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = shadowHtml;
     return root;
 }

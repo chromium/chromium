@@ -16,9 +16,9 @@ namespace data_decoder {
 namespace {
 
 void TestParseXmlCallback(std::unique_ptr<base::Value>* value_out,
-                          base::Optional<std::string>* error_out,
-                          base::Optional<base::Value> value,
-                          const base::Optional<std::string>& error) {
+                          absl::optional<std::string>* error_out,
+                          absl::optional<base::Value> value,
+                          const absl::optional<std::string>& error) {
   std::unique_ptr<base::Value> value_ptr =
       value ? base::Value::ToUniquePtrValue(std::move(value.value())) : nullptr;
   *value_out = std::move(value_ptr);
@@ -34,7 +34,7 @@ void TestParseXml(const std::string& xml, const std::string& json) {
   mojom::XmlParser& parser = parser_impl;
 
   std::unique_ptr<base::Value> actual_value;
-  base::Optional<std::string> error;
+  absl::optional<std::string> error;
   parser.Parse(xml,
                base::BindOnce(&TestParseXmlCallback, &actual_value, &error));
   if (json.empty()) {

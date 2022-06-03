@@ -50,7 +50,7 @@ class EGLApiTest : public testing::Test {
       SetDisabledExtensionsEGL(disabled_extensions);
     }
     g_driver_egl.InitializeClientExtensionBindings();
-    GLSurfaceEGL::InitializeDisplay(EGL_DEFAULT_DISPLAY);
+    GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform(EGL_DEFAULT_DISPLAY));
     g_driver_egl.InitializeExtensionBindings();
   }
 

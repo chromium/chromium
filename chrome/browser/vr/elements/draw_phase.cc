@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/elements/draw_phase.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace vr {
 

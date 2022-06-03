@@ -2,14 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import six
+
 from cli_tools.soundwave import pandas_sqlite
 from core.external_modules import pandas
-
 
 TABLE_NAME = 'bugs'
 COLUMN_TYPES = (
     ('id', 'int64'),  # crbug number identifying this issue
-    ('summary', unicode),  # issue title ('1%-5% regression in loading ...')
+    ('summary',
+     six.text_type),  # issue title ('1%-5% regression in loading ...')
     ('published', 'datetime64[ns]'),  # when the issue got created
     ('updated', 'datetime64[ns]'),  # when the issue got last updated
     ('state', str),  # usually either 'open' or 'closed'

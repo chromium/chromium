@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/adapters/dtls_transport_proxy.h"
 
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"

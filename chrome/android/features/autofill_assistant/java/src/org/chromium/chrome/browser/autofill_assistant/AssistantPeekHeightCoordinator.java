@@ -10,9 +10,11 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -61,17 +63,15 @@ class AssistantPeekHeightCoordinator {
     private final int mToolbarHeightWithoutPaddingBottom;
     private final int mDefaultToolbarPaddingBottom;
     private final int mChildrenVerticalSpacing;
-    private final int mSuggestionsVerticalInset;
 
     private int mPeekHeight;
     private @PeekMode int mPeekMode = PeekMode.UNDEFINED;
     private int mHeaderHeight;
-    private int mSuggestionsHeight;
     private int mActionsHeight;
 
     AssistantPeekHeightCoordinator(Context context, Delegate delegate,
             BottomSheetController bottomSheetController, View toolbarView, View headerView,
-            View suggestionsView, View actionsView, @PeekMode int initialMode) {
+            View actionsView, @PeekMode int initialMode) {
         mToolbarView = toolbarView;
         mDelegate = delegate;
         mBottomSheetController = bottomSheetController;
@@ -85,13 +85,11 @@ class AssistantPeekHeightCoordinator {
                 R.dimen.autofill_assistant_toolbar_vertical_padding);
         mChildrenVerticalSpacing = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_vertical_spacing);
-        mSuggestionsVerticalInset =
-                context.getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset);
 
         // Show only actions if we are in the peek state and peek mode is HANDLE_HEADER_CAROUSELS.
         mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 maybeShowOnlyCarousels();
             }
         });
@@ -99,10 +97,8 @@ class AssistantPeekHeightCoordinator {
         // Listen for height changes in the header and carousel to make sure we always have the
         // correct peek height.
         mHeaderHeight = headerView.getHeight();
-        mSuggestionsHeight = suggestionsView.getHeight();
         mActionsHeight = actionsView.getHeight();
         listenForHeightChange(headerView, this::onHeaderHeightChanged);
-        listenForHeightChange(suggestionsView, this::onSuggestionsHeightChanged);
         listenForHeightChange(actionsView, this::onActionsHeightChanged);
 
         setPeekMode(initialMode);
@@ -110,17 +106,21 @@ class AssistantPeekHeightCoordinator {
 
     private void onHeaderHeightChanged(int height) {
         mHeaderHeight = height;
-        updateToolbarPadding();
+        maybeUpdateToolBarPadding();
     }
 
     private void onActionsHeightChanged(int height) {
         mActionsHeight = height;
-        updateToolbarPadding();
+        maybeUpdateToolBarPadding();
     }
 
-    private void onSuggestionsHeightChanged(int height) {
-        mSuggestionsHeight = height;
-        updateToolbarPadding();
+    private void maybeUpdateToolBarPadding() {
+        if (mPeekMode != PeekMode.UNDEFINED) {
+            // TODO(b/164389932): Investigate proper fix for HANDLE_HEADER peek state not working as
+            // expected when switching from CCT to browser. Without the postTask, it shows in the
+            // HEADER mode with no pull handle displayed.
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateToolbarPadding);
+        }
     }
 
     private void maybeShowOnlyCarousels() {
@@ -179,11 +179,6 @@ class AssistantPeekHeightCoordinator {
                 break;
             case PeekMode.HANDLE_HEADER_CAROUSELS:
                 toolbarPaddingBottom = mHeaderHeight;
-                if (mSuggestionsHeight > 0) {
-                    toolbarPaddingBottom += mSuggestionsHeight + mChildrenVerticalSpacing
-                            - 2 * mSuggestionsVerticalInset;
-                }
-
                 if (mActionsHeight > 0) {
                     toolbarPaddingBottom += mActionsHeight;
                 }

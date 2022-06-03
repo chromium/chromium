@@ -31,10 +31,13 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   TestPrefDelegate()
       : write_count_(0), read_count_(0), value_(new base::DictionaryValue) {}
 
+  TestPrefDelegate(const TestPrefDelegate&) = delete;
+  TestPrefDelegate& operator=(const TestPrefDelegate&) = delete;
+
   ~TestPrefDelegate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     value_->Clear();
-    EXPECT_EQ(0U, value_->size());
+    EXPECT_EQ(0U, value_->DictSize());
   }
 
   void SetDictionaryValue(const base::DictionaryValue& value) override {
@@ -42,7 +45,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
 
     write_count_++;
     value_.reset(value.DeepCopy());
-    ASSERT_EQ(value.size(), value_->size());
+    ASSERT_EQ(value.DictSize(), value_->DictSize());
   }
 
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
@@ -71,8 +74,6 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   std::unique_ptr<base::DictionaryValue> value_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrefDelegate);
 };
 
 using NetworkQualitiesPrefManager = TestWithTaskEnvironment;

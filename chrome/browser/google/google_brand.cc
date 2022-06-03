@@ -7,17 +7,18 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "chrome/browser/mac/keystone_glue.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/google/google_brand_chromeos.h"
 #endif
 
@@ -46,12 +47,12 @@ bool GetBrand(std::string* brand) {
   // Cache brand code value, since it is queried a lot and registry queries are
   // slow enough to actually affect top-level metrics like
   // Omnibox.CharTypedToRepaintLatency.
-  static const base::NoDestructor<base::Optional<std::string>> brand_code(
-      []() -> base::Optional<std::string> {
-        base::string16 brand16;
-        if (!GoogleUpdateSettings::GetBrand(&brand16))
-          return base::nullopt;
-        return base::UTF16ToASCII(brand16);
+  static const base::NoDestructor<absl::optional<std::string>> brand_code(
+      []() -> absl::optional<std::string> {
+        std::wstring brandw;
+        if (!GoogleUpdateSettings::GetBrand(&brandw))
+          return absl::nullopt;
+        return base::WideToASCII(brandw);
       }());
   if (!brand_code->has_value())
     return false;
@@ -60,10 +61,10 @@ bool GetBrand(std::string* brand) {
 }
 
 bool GetReactivationBrand(std::string* brand) {
-  base::string16 brand16;
-  bool ret = GoogleUpdateSettings::GetReactivationBrand(&brand16);
+  std::wstring brandw;
+  bool ret = GoogleUpdateSettings::GetReactivationBrand(&brandw);
   if (ret)
-    brand->assign(base::UTF16ToASCII(brand16));
+    brand->assign(base::WideToASCII(brandw));
   return ret;
 }
 
@@ -75,9 +76,9 @@ bool GetBrand(std::string* brand) {
     return true;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   brand->assign(keystone_glue::BrandCode());
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetBrand());
 #else
   brand->clear();
@@ -93,7 +94,7 @@ bool GetReactivationBrand(std::string* brand) {
 #endif
 
 bool GetRlzBrand(std::string* brand) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetRlzBrand());
   return true;
 #else
@@ -147,6 +148,11 @@ bool IsInternetCafeBrandCode(const std::string& brand) {
     "OOBF", "OOBG", "OOBH", "OOBI", "OOBJ", "IDCM",
   };
   return base::Contains(kBrands, brand);
+}
+
+bool IsEnterprise(const std::string& brand) {
+  return brand == "GGRV" ||
+         base::StartsWith(brand, "GCE", base::CompareCase::SENSITIVE);
 }
 
 // BrandForTesting ------------------------------------------------------------

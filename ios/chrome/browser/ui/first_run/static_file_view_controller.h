@@ -7,18 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-namespace ios {
 class ChromeBrowserState;
-}
-
-// Status for tapped links.  This enum is used in UMA and entries should not be
-// re-ordered or deleted.
-enum MobileFreLinkTappedStatus {
-  SUCCESS = 0,
-  FAILED = 1,
-  DID_NOT_COMPLETE = 2,
-  NUM_MOBILE_FRE_LINK_TAPPED_STATUS
-};
 
 // View controller used to display a bundled file in a web view with a shadow
 // below the navigation bar when the user scrolls.
@@ -26,11 +15,8 @@ enum MobileFreLinkTappedStatus {
 
 // Initializes with the given URL to display and browser state. Neither
 // |browserState| nor |URL| may be nil.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                                  URL:(NSURL*)URL;
-
-// The status of the load.
-@property(nonatomic, assign) MobileFreLinkTappedStatus loadStatus;
 
 @end
 

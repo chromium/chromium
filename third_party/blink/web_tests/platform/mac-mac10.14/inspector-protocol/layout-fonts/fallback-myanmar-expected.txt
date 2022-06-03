@@ -1,0 +1,7 @@
+Test passes if a maxmium of the two first glyphs are notdef's (for Myanmar fonts that do not combine a left quote with a Myanmar spacing mark and the rest of the run is shaped, given a system Myanmar font is available.
+‘ေရွးျမန္မာမင္းေတြလက္ထက္က
+#myanmar:
+"Myanmar MN" : 22
+
+PASS
+

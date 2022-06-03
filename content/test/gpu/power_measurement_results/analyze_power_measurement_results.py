@@ -11,6 +11,8 @@ Related design doc:
 https://docs.google.com/document/d/1s3L2IYguQmPHInsKkbHh06hXCXo8ggo5iPIhOaCNwVw
 """
 
+from __future__ import print_function
+
 import enum
 import json
 import logging
@@ -88,17 +90,20 @@ def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
 
 
 def ProcessJsonData(jsons,
-                    measurement_names=_MEASUREMENTS,
+                    measurement_names=None,
                     per_bot=False,
                     repeat_strategy=RepeatStrategy.COUNT_MINIMUM,
-                    bot_whitelist=[],
-                    bot_blacklist=[]):
+                    bot_allowlist=None,
+                    bot_blocklist=None):
+  measurement_names = measurement_names or _MEASUREMENTS
+  bot_allowlist = bot_allowlist or []
+  bot_blocklist = bot_blocklist or []
   min_build = None
   max_build = None
   results = {}
   bots = []
-  for json in jsons:
-    builds = json.get('builds', [])
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number > 0:
@@ -108,9 +113,9 @@ def ProcessJsonData(jsons,
           max_build = build_number
 
       bot = build['bot']
-      if bot_whitelist and bot not in bot_whitelist:
+      if bot_allowlist and bot not in bot_allowlist:
         continue
-      if bot_blacklist and bot in bot_blacklist:
+      if bot_blocklist and bot in bot_blocklist:
         continue
 
       if bot not in bots:
@@ -179,21 +184,21 @@ def MedianLow(data):
 
 
 def MarkSection():
-  print ''
+  print('')
 
 
 def MarkExperiment(description):
-  print ''
-  print '**************************************************************'
-  print description
-  print '**************************************************************'
-  print ''
+  print('')
+  print('**************************************************************')
+  print(description)
+  print('**************************************************************')
+  print('')
 
 
 def GetBotBuilds(jsons, bot_name):
   build_numbers = []
-  for json in jsons:
-    builds = json.get('builds', [])
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number > 0:
@@ -214,15 +219,15 @@ def GetOutliers(data, variation_threshold):
   return outliers
 
 
-def FindBuild(jsons, bot_whitelist, test_name, result):
-  for json in jsons:
-    builds = json.get('builds', [])
+def FindBuild(jsons, selected_bots, test_name, result):
+  for j in jsons:
+    builds = j.get('builds', [])
     for build in builds:
       build_number = build.get('number', -1)
       if build_number < 0:
         continue
       bot = build['bot']
-      if bot not in bot_whitelist:
+      if bot not in selected_bots:
         continue
 
       tests = build['tests']
@@ -299,8 +304,9 @@ def RunExperiment_BadBots(jsons,
 
 
 def RunExperiment_GoodBots(jsons,
-                           bad_bots=[],
+                           bad_bots=None,
                            repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
+  bad_bots = bad_bots or []
   MIN_RUNS_PER_BOT = 8
   STDEV_GOOD_BOT_THRESHOLD = 0.2
   GOOD_BOT_RANGE_PERC = 0.08

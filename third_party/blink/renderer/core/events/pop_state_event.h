@@ -27,10 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POP_STATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POP_STATE_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_pop_state_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/pop_state_event_init.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -38,36 +37,36 @@ namespace blink {
 class History;
 class SerializedScriptValue;
 
-class PopStateEvent final : public Event {
+class CORE_EXPORT PopStateEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PopStateEvent();
-  PopStateEvent(ScriptState*, const AtomicString&, const PopStateEventInit*);
-  PopStateEvent(scoped_refptr<SerializedScriptValue>, History*);
-  ~PopStateEvent() override;
-
   static PopStateEvent* Create();
-  static PopStateEvent* Create(scoped_refptr<SerializedScriptValue>, History*);
-  static PopStateEvent* Create(ScriptState*,
-                               const AtomicString&,
-                               const PopStateEventInit*);
+  static PopStateEvent* Create(ScriptState* script_state,
+                               const AtomicString& type,
+                               const PopStateEventInit* initializer);
+  static PopStateEvent* Create(
+      scoped_refptr<SerializedScriptValue> serialized_state,
+      History* history);
 
-  ScriptValue state(ScriptState*) const;
-  SerializedScriptValue* SerializedState() const {
-    return serialized_state_.get();
-  }
-  void SetSerializedState(scoped_refptr<SerializedScriptValue> state);
-  History* GetHistory() const { return history_.Get(); }
+  PopStateEvent() = default;
+  PopStateEvent(ScriptState* script_state,
+                const AtomicString& type,
+                const PopStateEventInit* initializer);
+  PopStateEvent(scoped_refptr<SerializedScriptValue> serialized_state,
+                History* history);
+  ~PopStateEvent() override = default;
+
+  ScriptValue state(ScriptState* script_state, ExceptionState& exception_state);
+  bool IsStateDirty() const { return false; }
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
+  WorldSafeV8Reference<v8::Value> state_;
   scoped_refptr<SerializedScriptValue> serialized_state_;
-  scoped_refptr<DOMWrapperWorld> world_;
-  TraceWrapperV8Reference<v8::Value> state_;
   Member<History> history_;
 };
 

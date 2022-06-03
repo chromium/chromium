@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/service_manager/public/cpp/service_filter.h"
 #include "services/service_manager/public/mojom/service_filter.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -20,15 +21,15 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM_TRAITS)
       const service_manager::ServiceFilter& in) {
     return in.service_name();
   }
-  static const base::Optional<base::Token>& instance_group(
+  static const absl::optional<base::Token>& instance_group(
       const service_manager::ServiceFilter& in) {
     return in.instance_group();
   }
-  static const base::Optional<base::Token>& instance_id(
+  static const absl::optional<base::Token>& instance_id(
       const service_manager::ServiceFilter& in) {
     return in.instance_id();
   }
-  static const base::Optional<base::Token>& globally_unique_id(
+  static const absl::optional<base::Token>& globally_unique_id(
       const service_manager::ServiceFilter& in) {
     return in.globally_unique_id();
   }

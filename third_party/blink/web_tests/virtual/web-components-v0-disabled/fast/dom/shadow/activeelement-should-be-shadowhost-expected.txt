@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 32: Uncaught TypeError: shadowHost.createShadowRoot is not a function
-Makes sure that document.activeElement returns a shadow host when a element in the correspoinding shadow tree is focused.

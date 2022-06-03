@@ -1,0 +1,19 @@
+<style>
+  :host([button-type='next']) cr-button {
+    padding-inline-end: 10px;
+  }
+
+  :host([button-type='back']) cr-button {
+    padding-inline-start: 10px;
+  }
+</style>
+<cr-button class$="[[getClass_(buttonType)]]" on-click="onTap_"
+    disabled="[[disabled]]">
+  <template is="dom-if" if="[[hasIconBeforeText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+  [[getDisplayName_(buttonType)]]
+  <template is="dom-if" if="[[hasIconAfterText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+</cr-button>

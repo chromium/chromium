@@ -155,8 +155,20 @@ TEST(LayoutUnitTest, LayoutUnitSnapSizeToPixel) {
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1.5), LayoutUnit(0.99)));
   EXPECT_EQ(2, SnapSizeToPixel(LayoutUnit(1.5), LayoutUnit(1)));
 
-  EXPECT_EQ(0, SnapSizeToPixel(LayoutUnit(0.5), LayoutUnit(1.5)));
-  EXPECT_EQ(0, SnapSizeToPixel(LayoutUnit(0.99), LayoutUnit(1.5)));
+  // 0.046875 is 3/64, lower than 4 * LayoutUnit::Epsilon()
+  EXPECT_EQ(0, SnapSizeToPixel(LayoutUnit(0.046875), LayoutUnit(0)));
+  // 0.078125 is 5/64, higher than 4 * LayoutUnit::Epsilon()
+  EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(0.078125), LayoutUnit(0)));
+
+  // Negative versions
+  EXPECT_EQ(0, SnapSizeToPixel(LayoutUnit(-0.046875), LayoutUnit(0)));
+  EXPECT_EQ(-1, SnapSizeToPixel(LayoutUnit(-0.078125), LayoutUnit(0)));
+
+  // The next 2 would snap to zero but for the requirement that we not snap
+  // sizes greater than 4 * LayoutUnit::Epsilon() to 0.
+  EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(0.5), LayoutUnit(1.5)));
+  EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(0.99), LayoutUnit(1.5)));
+
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1.0), LayoutUnit(1.5)));
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1.49), LayoutUnit(1.5)));
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1.5), LayoutUnit(1.5)));
@@ -253,6 +265,24 @@ TEST(LayoutUnitTest, LayoutUnitDivision) {
             (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(2)).ToInt());
   EXPECT_EQ(kIntMaxForLayoutUnit,
             (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(0.5)).ToInt());
+}
+
+TEST(LayoutUnitTest, LayoutUnitMulDiv) {
+  const LayoutUnit kMaxValue = LayoutUnit::Max();
+  const LayoutUnit kMinValue = LayoutUnit::Min();
+  const LayoutUnit kEpsilon = LayoutUnit().AddEpsilon();
+  EXPECT_EQ(kMaxValue, kMaxValue.MulDiv(kMaxValue, kMaxValue));
+  EXPECT_EQ(kMinValue, kMinValue.MulDiv(kMinValue, kMinValue));
+  EXPECT_EQ(kMinValue, kMaxValue.MulDiv(kMinValue, kMaxValue));
+  EXPECT_EQ(kMaxValue, kMinValue.MulDiv(kMinValue, kMaxValue));
+  EXPECT_EQ(kMinValue + kEpsilon * 2, kMaxValue.MulDiv(kMaxValue, kMinValue));
+
+  EXPECT_EQ(kMaxValue, kMaxValue.MulDiv(LayoutUnit(2), kEpsilon));
+  EXPECT_EQ(kMinValue, kMinValue.MulDiv(LayoutUnit(2), kEpsilon));
+
+  const LayoutUnit kLargerInt(16384);
+  const LayoutUnit kLargerInt2(32768);
+  EXPECT_EQ(LayoutUnit(8192), kLargerInt.MulDiv(kLargerInt, kLargerInt2));
 }
 
 TEST(LayoutUnitTest, LayoutUnitCeil) {

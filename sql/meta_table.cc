@@ -6,9 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
+#include "base/check_op.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -20,42 +18,11 @@ const char kVersionKey[] = "version";
 const char kCompatibleVersionKey[] = "last_compatible_version";
 const char kMmapStatusKey[] = "mmap_status";
 
-// Used to track success/failure of deprecation checks.
-enum DeprecationEventType {
-  // Database has info, but no meta table.  This is probably bad.
-  DEPRECATION_DATABASE_NOT_EMPTY = 0,
-
-  // No meta, unable to query sqlite_master.  This is probably bad.
-  DEPRECATION_DATABASE_UNKNOWN,
-
-  // Failure querying meta table, corruption or similar problem likely.
-  DEPRECATION_FAILED_VERSION,
-
-  // Version key not found in meta table.  Some sort of update error likely.
-  DEPRECATION_NO_VERSION,
-
-  // Version was out-dated, database successfully razed.  Should only
-  // happen once per long-idle user, low volume expected.
-  DEPRECATION_RAZED,
-
-  // Version was out-dated, database raze failed.  This user's
-  // database will be stuck.
-  DEPRECATION_RAZE_FAILED,
-
-  // Always keep this at the end.
-  DEPRECATION_EVENT_MAX,
-};
-
-void RecordDeprecationEvent(DeprecationEventType deprecation_event) {
-  UMA_HISTOGRAM_ENUMERATION("Sqlite.DeprecationVersionResult",
-                            deprecation_event, DEPRECATION_EVENT_MAX);
-}
-
 }  // namespace
 
 namespace sql {
 
-MetaTable::MetaTable() : db_(nullptr) {}
+MetaTable::MetaTable() = default;
 
 MetaTable::~MetaTable() = default;
 
@@ -67,6 +34,12 @@ constexpr int64_t MetaTable::kMmapSuccess;
 bool MetaTable::DoesTableExist(sql::Database* db) {
   DCHECK(db);
   return db->DoesTableExist("meta");
+}
+
+// static
+bool MetaTable::DeleteTableForTesting(sql::Database* db) {
+  DCHECK(db);
+  return db->Execute("DROP TABLE IF EXISTS meta");
 }
 
 // static
@@ -95,51 +68,34 @@ bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
 }
 
 // static
-void MetaTable::RazeIfDeprecated(Database* db, int deprecated_version) {
-  DCHECK_GT(deprecated_version, 0);
-  DCHECK_EQ(0, db->transaction_nesting());
-
-  if (!DoesTableExist(db)) {
-    sql::Statement s(db->GetUniqueStatement(
-        "SELECT COUNT(*) FROM sqlite_master"));
-    if (s.Step()) {
-      if (s.ColumnInt(0) != 0) {
-        RecordDeprecationEvent(DEPRECATION_DATABASE_NOT_EMPTY);
-      }
-      // NOTE(shess): Empty database at first run is expected, so
-      // don't histogram that case.
-    } else {
-      RecordDeprecationEvent(DEPRECATION_DATABASE_UNKNOWN);
-    }
+void MetaTable::RazeIfIncompatible(Database* db,
+                                   int lowest_supported_version,
+                                   int current_version) {
+  if (!sql::MetaTable::DoesTableExist(db))
     return;
-  }
 
-  // TODO(shess): Share sql with PrepareGetStatement().
-  sql::Statement s(db->GetUniqueStatement(
-                       "SELECT value FROM meta WHERE key=?"));
+  // TODO(crbug.com/1228463): Share sql with PrepareGetStatement().
+  sql::Statement s(
+      db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
   s.BindCString(0, kVersionKey);
-  if (!s.Step()) {
-    if (!s.Succeeded()) {
-      RecordDeprecationEvent(DEPRECATION_FAILED_VERSION);
-    } else {
-      RecordDeprecationEvent(DEPRECATION_NO_VERSION);
-    }
+  if (!s.Step())
     return;
-  }
+  int on_disk_schema_version = s.ColumnInt(0);
 
-  int version = s.ColumnInt(0);
+  s.Assign(db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
+  s.BindCString(0, kCompatibleVersionKey);
+  if (!s.Step())
+    return;
+  int on_disk_compatible_version = s.ColumnInt(0);
+
   s.Clear();  // Clear potential automatic transaction for Raze().
-  if (version <= deprecated_version) {
-    if (db->Raze()) {
-      RecordDeprecationEvent(DEPRECATION_RAZED);
-    } else {
-      RecordDeprecationEvent(DEPRECATION_RAZE_FAILED);
-    }
+
+  if ((lowest_supported_version != kNoLowestSupportedVersion &&
+       lowest_supported_version > on_disk_schema_version) ||
+      (current_version < on_disk_compatible_version)) {
+    db->Raze();
     return;
   }
-
-  // NOTE(shess): Successfully getting a version which is not
-  // deprecated is expected, so don't histogram that case.
 }
 
 bool MetaTable::Init(Database* db, int version, int compatible_version) {
@@ -158,8 +114,10 @@ bool MetaTable::Init(Database* db, int version, int compatible_version) {
 
   if (!DoesTableExist(db)) {
     if (!db_->Execute("CREATE TABLE meta"
-        "(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR)"))
+                      "(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value "
+                      "LONGVARCHAR)")) {
       return false;
+    }
 
     // Newly-created databases start out with mmap'ed I/O, but have no place to
     // store the setting.  Set here so that later opens don't need to validate.
@@ -170,8 +128,6 @@ bool MetaTable::Init(Database* db, int version, int compatible_version) {
     // there, we should create an index.
     SetVersionNumber(version);
     SetCompatibleVersionNumber(compatible_version);
-  } else {
-    db_->AddTaggedHistogram("Sqlite.Version", GetVersionNumber());
   }
   return transaction.Commit();
 }
@@ -257,15 +213,15 @@ bool MetaTable::DeleteKey(const char* key) {
 
 void MetaTable::PrepareSetStatement(Statement* statement, const char* key) {
   DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO meta (key,value) VALUES (?,?)"));
+  statement->Assign(db_->GetCachedStatement(
+      SQL_FROM_HERE, "INSERT OR REPLACE INTO meta (key,value) VALUES (?,?)"));
   statement->BindCString(0, key);
 }
 
 bool MetaTable::PrepareGetStatement(Statement* statement, const char* key) {
   DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(SQL_FROM_HERE,
-      "SELECT value FROM meta WHERE key=?"));
+  statement->Assign(db_->GetCachedStatement(
+      SQL_FROM_HERE, "SELECT value FROM meta WHERE key=?"));
   statement->BindCString(0, key);
   return statement->Step();
 }

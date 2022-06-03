@@ -14,6 +14,10 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("android_webview")
 public class AwCrashReporterClient {
+    // The filename prefix used by Chromium proguarding, which we use to
+    // recognise stack frames that reference WebView.
+    private static final String CHROMIUM_PREFIX = "chromium-";
+
     /**
      * Determine if a Throwable should be reported to the crash reporting mechanism.
      *
@@ -29,15 +33,13 @@ public class AwCrashReporterClient {
     @VisibleForTesting
     @CalledByNative
     public static boolean stackTraceContainsWebViewCode(Throwable t) {
-        ClassLoader webViewClassLoader = AwCrashReporterClient.class.getClassLoader();
         for (StackTraceElement frame : t.getStackTrace()) {
-            try {
-                Class frameClass = webViewClassLoader.loadClass(frame.getClassName());
-                if (frameClass.getClassLoader() == webViewClassLoader
-                        || frameClass.getPackage().getName().equals("android.webkit")) {
-                    return true;
-                }
-            } catch (ClassNotFoundException e) {
+            if (frame.getClassName().startsWith("android.webkit.")
+                    || frame.getClassName().startsWith("com.android.webview.")
+                    || frame.getClassName().startsWith("org.chromium.")
+                    || (frame.getFileName() != null
+                            && frame.getFileName().startsWith(CHROMIUM_PREFIX))) {
+                return true;
             }
         }
         return false;

@@ -10,9 +10,9 @@ PASS fieldset with display: table-column-group
 PASS fieldset with display: table-column
 PASS fieldset with display: table-caption
 PASS fieldset with display: list-item
-FAIL fieldset with display: flow assert_equals: display: flow is not supported expected "flow" but got "block"
 PASS fieldset with display: flow-root
 FAIL fieldset with display: run-in assert_equals: display: run-in is not supported expected "run-in" but got "block"
+FAIL fieldset with display: block ruby assert_equals: display: block ruby is not supported expected "block ruby" but got "block"
 PASS fieldset with display: inline
 PASS fieldset with display: inline-block
 PASS fieldset with display: inline-table

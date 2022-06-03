@@ -4,7 +4,7 @@
 
 #include "gpu/ipc/common/android/scoped_surface_request_conduit.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 namespace {

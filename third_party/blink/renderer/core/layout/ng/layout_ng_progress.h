@@ -11,6 +11,10 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutProgress>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutProgress>;
+
 class CORE_EXPORT LayoutNGProgress
     : public LayoutNGBlockFlowMixin<LayoutProgress> {
  public:
@@ -24,8 +28,6 @@ class CORE_EXPORT LayoutNGProgress
  protected:
   bool IsOfType(LayoutObjectType type) const override;
 };
-
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGProgress, IsLayoutNGProgress());
 
 }  // namespace blink
 

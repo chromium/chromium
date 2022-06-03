@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS outside image ::marker's content
+FAIL outside image ::marker assert_equals: event.target expected Element node <li class="image"></li> but got Element node <ol class="outside" data-x="-65">
+  <li class="image"></l...
+PASS outside string ::marker's content
+FAIL outside string ::marker assert_equals: event.target expected Element node <li class="string"></li> but got Element node <ol class="outside" data-x="-65">
+  <li class="image"></l...
+PASS outside marker ::marker's content
+PASS outside marker ::marker
+PASS outside nested image ::marker's content
+FAIL outside nested image ::marker assert_equals: event.target expected Element node <li class="nested image"></li> but got Element node <ol class="outside" data-x="-65">
+  <li class="image"></l...
+PASS outside nested string ::marker's content
+FAIL outside nested string ::marker assert_equals: event.target expected Element node <li class="nested string"></li> but got Element node <ol class="outside" data-x="-65">
+  <li class="image"></l...
+PASS inside image ::marker's content
+PASS inside image ::marker
+PASS inside string ::marker's content
+PASS inside string ::marker
+PASS inside marker ::marker's content
+PASS inside marker ::marker
+PASS inside nested image ::marker's content
+PASS inside nested image ::marker
+PASS inside nested string ::marker's content
+PASS inside nested string ::marker
+Harness: the test ran to completion.
+

@@ -24,6 +24,8 @@ class ComponentUpdateService;
 class CRLSetPolicy : public ComponentInstallerPolicy {
  public:
   CRLSetPolicy();
+  CRLSetPolicy(const CRLSetPolicy&) = delete;
+  CRLSetPolicy& operator=(const CRLSetPolicy&) = delete;
   ~CRLSetPolicy() override;
 
   // Queues a task to reconfigure the network service returned by
@@ -42,31 +44,27 @@ class CRLSetPolicy : public ComponentInstallerPolicy {
       network::mojom::NetworkService* network_service);
 
   // ComponentInstallerPolicy implementation.
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CRLSetPolicy);
 };
 
 // Registers a CRLSet component with |cus|. On a new CRLSet update, the default
 // Network Service, returned by content::GetNetworkService(), will be updated
 // with the new CRLSet.
-void RegisterCRLSetComponent(ComponentUpdateService* cus,
-                             const base::FilePath& user_data_dir);
+void RegisterCRLSetComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

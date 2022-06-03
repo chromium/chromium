@@ -7,8 +7,9 @@ package org.chromium.net.smoke;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;

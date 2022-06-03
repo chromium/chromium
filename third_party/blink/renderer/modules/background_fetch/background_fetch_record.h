@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -48,16 +47,14 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   void SetResponseAndUpdateState(mojom::blink::FetchAPIResponsePtr& response);
 
   bool IsRecordPending();
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   void OnRequestCompleted(mojom::blink::FetchAPIResponsePtr response);
   const KURL& ObservedUrl() const;
 
  private:
   using ResponseReadyProperty =
-      ScriptPromiseProperty<Member<BackgroundFetchRecord>,
-                            Member<Response>,
-                            Member<DOMException>>;
+      ScriptPromiseProperty<Member<Response>, Member<DOMException>>;
 
   // Resolves a pending |response_ready_property_| with |response|, if it's not
   // null.

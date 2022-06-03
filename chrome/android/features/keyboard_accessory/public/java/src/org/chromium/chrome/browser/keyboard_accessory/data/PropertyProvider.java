@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * A simple class that holds a list of {@link Observer}s which can be notified about new data by
+ * A simple class that holds a set of {@link Observer}s which can be notified about new data by
  * directly passing that data into {@link PropertyProvider#notifyObservers(T)}.
  * @param <T> The object this provider provides.
  */
 public class PropertyProvider<T> implements Provider<T> {
-    private final List<Observer<T>> mObservers = new ArrayList<>();
+    private final Set<Observer<T>> mObservers = new HashSet<>();
     protected int mType;
 
     public PropertyProvider() {

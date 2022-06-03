@@ -5,18 +5,18 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "cc/paint/filter_operation.h"
 
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -39,6 +39,10 @@ bool FilterOperation::operator==(const FilterOperation& other) const {
     return shape_ == other.shape_ && amount_ == other.amount_ &&
            outer_threshold_ == other.outer_threshold_;
   }
+  if (type_ == STRETCH) {
+    return amount_ == other.amount_ &&
+           outer_threshold_ == other.outer_threshold_;
+  }
   return amount_ == other.amount_;
 }
 
@@ -59,7 +63,7 @@ FilterOperation::FilterOperation(FilterType type, float amount)
 
 FilterOperation::FilterOperation(FilterType type,
                                  float amount,
-                                 SkBlurImageFilter::TileMode tile_mode)
+                                 SkTileMode tile_mode)
     : type_(type),
       amount_(amount),
       outer_threshold_(0),
@@ -104,6 +108,19 @@ FilterOperation::FilterOperation(FilterType type, float amount, int inset)
       drop_shadow_color_(0),
       zoom_inset_(inset) {
   DCHECK_EQ(type_, ZOOM);
+  memset(matrix_, 0, sizeof(matrix_));
+}
+
+FilterOperation::FilterOperation(FilterType type,
+                                 float amount,
+                                 float outer_threshold)
+    : type_(type),
+      amount_(amount),
+      outer_threshold_(outer_threshold),
+      drop_shadow_offset_(0, 0),
+      drop_shadow_color_(0),
+      zoom_inset_(0) {
+  DCHECK_EQ(type_, STRETCH);
   memset(matrix_, 0, sizeof(matrix_));
 }
 
@@ -187,6 +204,8 @@ static FilterOperation CreateNoOpFilter(FilterOperation::FilterType type) {
     case FilterOperation::ALPHA_THRESHOLD:
       return FilterOperation::CreateAlphaThresholdFilter(
           FilterOperation::ShapeRects(), 1.f, 0.f);
+    case FilterOperation::STRETCH:
+      return FilterOperation::CreateStretchFilter(0.f, 0.f);
   }
   NOTREACHED();
   return FilterOperation::CreateEmptyFilter();
@@ -200,12 +219,13 @@ static float ClampAmountForFilterType(float amount,
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY:
     case FilterOperation::ALPHA_THRESHOLD:
-      return base::ClampToRange(amount, 0.f, 1.f);
+      return base::clamp(amount, 0.f, 1.f);
     case FilterOperation::SATURATE:
     case FilterOperation::BRIGHTNESS:
     case FilterOperation::CONTRAST:
     case FilterOperation::BLUR:
     case FilterOperation::DROP_SHADOW:
+    case FilterOperation::STRETCH:
       return std::max(amount, 0.f);
     case FilterOperation::ZOOM:
       return std::max(amount, 1.f);
@@ -331,6 +351,10 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
       }
       value->EndArray();
     } break;
+    case FilterOperation::STRETCH:
+      value->SetDouble("amount_x", amount_);
+      value->SetDouble("amount_y", outer_threshold_);
+      break;
   }
 }
 
@@ -353,10 +377,8 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
       // Mapping a blur forward requires an outset (negative inset) because a
       // smaller source rectangle gets blurred to a larger destination
       // rectangle.
-      // TODO(916583): Fix this function for reverse mapping:
-      // float sign = (direction == SkImageFilter::kForward_MapDirection) ? -1.0
-      // : 1.0;
-      float sign = -1.0;
+      float sign =
+          (direction == SkImageFilter::kForward_MapDirection) ? -1.0 : 1.0;
       float spread_x = std::abs(spread.x()) * sign;
       float spread_y = std::abs(spread.y()) * sign;
       gfx::RectF result(rect);

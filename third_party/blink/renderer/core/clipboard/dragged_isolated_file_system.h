@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DRAGGED_ISOLATED_FILE_SYSTEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DRAGGED_ISOLATED_FILE_SYSTEM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -17,6 +16,10 @@ class DataObject;
 class CORE_EXPORT DraggedIsolatedFileSystem {
  public:
   DraggedIsolatedFileSystem() = default;
+  DraggedIsolatedFileSystem(const DraggedIsolatedFileSystem&) = delete;
+  DraggedIsolatedFileSystem& operator=(const DraggedIsolatedFileSystem&) =
+      delete;
+
   virtual ~DraggedIsolatedFileSystem() = default;
 
   using FileSystemIdPreparationCallback = void (*)(DataObject*);
@@ -27,7 +30,6 @@ class CORE_EXPORT DraggedIsolatedFileSystem {
  private:
   static FileSystemIdPreparationCallback prepare_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(DraggedIsolatedFileSystem);
 };
 
 }  // namespace blink

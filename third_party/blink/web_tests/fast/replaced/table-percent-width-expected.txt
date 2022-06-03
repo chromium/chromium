@@ -9,14 +9,14 @@ TEST COMPLETE
 
 PASS getWidth('img-1') is '105px'
 PASS getHeight('img-1') is '105px'
-PASS getWidth('img-2') is '98px'
-PASS getHeight('img-2') is '98px'
+PASS getWidth('img-2') is '100px'
+PASS getHeight('img-2') is '100px'
 PASS getWidth('img-3') is '40px'
 PASS getHeight('img-3') is '40px'
-FAIL getWidth('img-4') should be 36px. Was 98px.
-FAIL getHeight('img-4') should be 36px. Was 98px.
+PASS getWidth('img-4') is '100px'
+PASS getHeight('img-4') is '100px'
 PASS getWidth('img-5') is '40px'
-FAIL getHeight('img-5') should be 36px. Was 98px.
+PASS getHeight('img-5') is '40px'
 PASS successfullyParsed is true
 
 TEST COMPLETE

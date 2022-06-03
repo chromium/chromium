@@ -8,8 +8,10 @@
 #include <algorithm>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
@@ -97,19 +99,28 @@ VerifiedContents::~VerifiedContents() {
 //   ]
 // }
 // static.
-std::unique_ptr<VerifiedContents> VerifiedContents::Create(
+std::unique_ptr<VerifiedContents> VerifiedContents::CreateFromFile(
     base::span<const uint8_t> public_key,
     const base::FilePath& path) {
+  std::string contents;
+  if (!base::ReadFileToString(path, &contents))
+    return nullptr;
+  return Create(public_key, contents);
+}
+
+std::unique_ptr<VerifiedContents> VerifiedContents::Create(
+    base::span<const uint8_t> public_key,
+    base::StringPiece contents) {
   ScopedUMARecorder<kUMAVerifiedContentsInitTime,
                     kUMAVerifiedContentsInitResult>
       uma_recorder;
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
-  if (!verified_contents->GetPayload(path, &payload))
+  if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  base::Optional<base::Value> dictionary = base::JSONReader::Read(payload);
+  absl::optional<base::Value> dictionary = base::JSONReader::Read(payload);
   if (!dictionary || !dictionary->is_dict())
     return nullptr;
 
@@ -140,8 +151,8 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (!format || *format != kTreeHash)
       continue;
 
-    base::Optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
-    base::Optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
+    absl::optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
+    absl::optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
     if (!block_size || !hash_block_size)
       return nullptr;
 
@@ -170,25 +181,13 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
                                  &root_hash)) {
         return nullptr;
       }
-      base::FilePath file_path =
-          base::FilePath::FromUTF8Unsafe(*file_path_string);
-      base::FilePath::StringType lowercase_file_path =
-          base::ToLowerASCII(file_path.value());
-      auto i = verified_contents->root_hashes_.insert(
-          std::make_pair(lowercase_file_path, std::string()));
-      i->second.swap(root_hash);
 
-#if defined(OS_WIN)
-      // Additionally store a canonicalized filename without (.| )+ suffix, so
-      // that any filename with (.| )+ suffix can be matched later, see
-      // HasTreeHashRoot() and TreeHashRootEquals().
-      base::FilePath::StringType trimmed_path;
-      if (content_verifier_utils::TrimDotSpaceSuffix(lowercase_file_path,
-                                                     &trimmed_path)) {
-        verified_contents->root_hashes_.insert(
-            std::make_pair(trimmed_path, i->second));
-      }
-#endif  // defined(OS_WIN)
+      content_verifier_utils::CanonicalRelativePath canonical_path =
+          content_verifier_utils::CanonicalizeRelativePath(
+              base::FilePath::FromUTF8Unsafe(*file_path_string));
+      auto i = verified_contents->root_hashes_.insert(
+          std::make_pair(canonical_path, std::string()));
+      i->second.swap(root_hash);
     }
 
     break;
@@ -199,40 +198,16 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
 
 bool VerifiedContents::HasTreeHashRoot(
     const base::FilePath& relative_path) const {
-  base::FilePath::StringType path = NormalizeResourcePath(relative_path);
-  if (base::Contains(root_hashes_, path))
-    return true;
-
-#if defined(OS_WIN)
-  base::FilePath::StringType trimmed_path;
-  if (content_verifier_utils::TrimDotSpaceSuffix(path, &trimmed_path))
-    return base::Contains(root_hashes_, trimmed_path);
-#endif  // defined(OS_WIN)
-  return false;
+  return base::Contains(
+      root_hashes_,
+      content_verifier_utils::CanonicalizeRelativePath(relative_path));
 }
 
 bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
                                           const std::string& expected) const {
-  base::FilePath::StringType normalized_relative_path =
-      NormalizeResourcePath(relative_path);
-  if (TreeHashRootEqualsImpl(normalized_relative_path, expected))
-    return true;
-
-#if defined(OS_WIN)
-  base::FilePath::StringType trimmed_relative_path;
-  if (content_verifier_utils::TrimDotSpaceSuffix(normalized_relative_path,
-                                                 &trimmed_relative_path)) {
-    return TreeHashRootEqualsImpl(trimmed_relative_path, expected);
-  }
-#endif  // defined(OS_WIN)
-  return false;
-}
-
-// static
-base::FilePath::StringType VerifiedContents::NormalizeResourcePath(
-    const base::FilePath& relative_path) {
-  return base::ToLowerASCII(
-      relative_path.NormalizePathSeparatorsTo('/').value());
+  return TreeHashRootEqualsForCanonicalPath(
+      content_verifier_utils::CanonicalizeRelativePath(relative_path),
+      expected);
 }
 
 // We're loosely following the "JSON Web Signature" draft spec for signing
@@ -276,12 +251,9 @@ base::FilePath::StringType VerifiedContents::NormalizeResourcePath(
 // that it is for a given extension), but in the future we may validate using
 // the extension's key too (eg for non-webstore hosted extensions such as
 // enterprise installs).
-bool VerifiedContents::GetPayload(const base::FilePath& path,
+bool VerifiedContents::GetPayload(base::StringPiece contents,
                                   std::string* payload) {
-  std::string contents;
-  if (!base::ReadFileToString(path, &contents))
-    return false;
-  base::Optional<base::Value> top_list = base::JSONReader::Read(contents);
+  absl::optional<base::Value> top_list = base::JSONReader::Read(contents);
   if (!top_list || !top_list->is_list())
     return false;
 
@@ -369,11 +341,12 @@ bool VerifiedContents::VerifySignature(const std::string& protected_value,
   return true;
 }
 
-bool VerifiedContents::TreeHashRootEqualsImpl(
-    const base::FilePath::StringType& normalized_relative_path,
+bool VerifiedContents::TreeHashRootEqualsForCanonicalPath(
+    const content_verifier_utils::CanonicalRelativePath&
+        canonical_relative_path,
     const std::string& expected) const {
   std::pair<RootHashes::const_iterator, RootHashes::const_iterator> hashes =
-      root_hashes_.equal_range(normalized_relative_path);
+      root_hashes_.equal_range(canonical_relative_path);
   for (auto iter = hashes.first; iter != hashes.second; ++iter) {
     if (expected == iter->second)
       return true;

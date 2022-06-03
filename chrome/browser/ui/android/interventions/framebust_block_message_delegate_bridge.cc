@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 
@@ -46,7 +45,7 @@ ScopedJavaLocalRef<jstring> FramebustBlockMessageDelegateBridge::GetBlockedUrl(
 jint FramebustBlockMessageDelegateBridge::GetEnumeratedIcon(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return ResourceMapper::MapFromChromiumId(message_delegate_->GetIconId());
+  return ResourceMapper::MapToJavaDrawableId(message_delegate_->GetIconId());
 }
 
 void FramebustBlockMessageDelegateBridge::OnLinkTapped(

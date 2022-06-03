@@ -19,12 +19,6 @@ void ClipList::ClipPath(const SkPath& path,
   new_clip.anti_aliasing_mode_ = anti_aliasing_mode;
   new_clip.path_ = path;
   new_clip.path_.transform(ctm);
-  if (clip_list_.IsEmpty()) {
-    current_clip_path_ = path;
-  } else {
-    Op(current_clip_path_, path, SkPathOp::kIntersect_SkPathOp,
-       &current_clip_path_);
-  }
   clip_list_.push_back(new_clip);
 }
 
@@ -35,12 +29,18 @@ void ClipList::Playback(cc::PaintCanvas* canvas) const {
   }
 }
 
-const SkPath& ClipList::GetCurrentClipPath() const {
-  return current_clip_path_;
+SkPath ClipList::IntersectPathWithClip(const SkPath& path) const {
+  SkPath total = path;
+  for (const ClipOp* it = clip_list_.begin(); it < clip_list_.end(); it++) {
+    Op(total, it->path_, SkPathOp::kIntersect_SkPathOp, &total);
+  }
+  return total;
 }
 
 ClipList::ClipOp::ClipOp() : anti_aliasing_mode_(kAntiAliased) {}
 
-ClipList::ClipOp::ClipOp(const ClipOp& other) = default;
+ClipList::ClipOp::ClipOp(const ClipOp&) = default;
+
+ClipList::ClipOp& ClipList::ClipOp::operator=(const ClipOp&) = default;
 
 }  // namespace blink

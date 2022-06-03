@@ -1,12 +1,5 @@
 bsep@chromium.org
-erikchen@chromium.org
+connily@chromium.org
+dfried@chromium.org
 sky@chromium.org
 tbergquist@chromium.org
-
-# For changes related to the tab alert indicators.
-per-file tab_utils*=miu@chromium.org
-
-# For changes around tab style and rendering.
-per-file tab_style*=dfried@chromium.org
-
-# COMPONENT: UI>Browser>TabStrip

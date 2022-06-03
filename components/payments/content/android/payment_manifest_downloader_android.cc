@@ -15,7 +15,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace payments {
 namespace {
@@ -25,6 +27,9 @@ class DownloadCallback {
   explicit DownloadCallback(
       const base::android::JavaParamRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
+
+  DownloadCallback(const DownloadCallback&) = delete;
+  DownloadCallback& operator=(const DownloadCallback&) = delete;
 
   ~DownloadCallback() {}
 
@@ -40,6 +45,8 @@ class DownloadCallback {
     } else {
       Java_ManifestDownloadCallback_onPaymentMethodManifestDownloadSuccess(
           env, jcallback_,
+          url::GURLAndroid::FromNativeGURL(env, url_after_redirects),
+          url::Origin::Create(url_after_redirects).CreateJavaObject(),
           base::android::ConvertUTF8ToJavaString(env, content));
     }
   }
@@ -62,8 +69,6 @@ class DownloadCallback {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jcallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCallback);
 };
 
 }  // namespace
@@ -78,11 +83,12 @@ PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() {}
 void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& juri,
+    const base::android::JavaParamRef<jobject>& jmerchant_origin,
+    const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadPaymentMethodManifest(
-      GURL(base::android::ConvertJavaStringToUTF8(
-          env, Java_PaymentManifestDownloader_getUriString(env, juri))),
+      url::Origin::FromJavaObject(jmerchant_origin),
+      *url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnPaymentMethodManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }
@@ -90,11 +96,12 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
 void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& juri,
+    const base::android::JavaParamRef<jobject>& jpayment_method_manifest_origin,
+    const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadWebAppManifest(
-      GURL(base::android::ConvertJavaStringToUTF8(
-          env, Java_PaymentManifestDownloader_getUriString(env, juri))),
+      url::Origin::FromJavaObject(jpayment_method_manifest_origin),
+      *url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnWebAppManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }
@@ -117,9 +124,15 @@ static jlong JNI_PaymentManifestDownloader_Init(
 
   return reinterpret_cast<jlong>(new PaymentManifestDownloaderAndroid(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
-      content::BrowserContext::GetDefaultStoragePartition(
-          web_contents->GetBrowserContext())
+      web_contents->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()));
+}
+
+// Static free function declared and called directly from java.
+static base::android::ScopedJavaLocalRef<jobject>
+JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* unused_env) {
+  return url::Origin().CreateJavaObject();
 }
 
 }  // namespace payments

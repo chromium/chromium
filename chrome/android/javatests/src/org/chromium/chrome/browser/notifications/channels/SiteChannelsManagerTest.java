@@ -7,14 +7,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -28,12 +31,16 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
-import org.chromium.chrome.browser.notifications.NotificationManagerProxy;
-import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
-import org.chromium.chrome.browser.settings.website.ContentSettingValues;
-import org.chromium.chrome.browser.settings.website.PermissionInfo;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -58,7 +65,7 @@ public class SiteChannelsManagerTest {
 
     @Before
     public void setUp() {
-        mChromeBrowserTestRule.loadNativeLibraryAndInitBrowserProcess();
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         Context mContext = InstrumentationRegistry.getTargetContext();
         NotificationManagerProxy notificationManagerProxy =
@@ -70,10 +77,10 @@ public class SiteChannelsManagerTest {
     private static void clearExistingSiteChannels(
             NotificationManagerProxy notificationManagerProxy) {
         for (NotificationChannel channel : notificationManagerProxy.getNotificationChannels()) {
-            if (channel.getId().startsWith(ChannelDefinitions.CHANNEL_ID_PREFIX_SITES)
+            if (SiteChannelsManager.isValidSiteChannelId(channel.getId())
                     || (channel.getGroup() != null
-                               && channel.getGroup().equals(
-                                          ChannelDefinitions.ChannelGroupId.SITES))) {
+                            && channel.getGroup().equals(
+                                    ChromeChannelDefinitions.ChannelGroupId.SITES))) {
                 notificationManagerProxy.deleteNotificationChannel(channel.getId());
             }
         }
@@ -191,11 +198,32 @@ public class SiteChannelsManagerTest {
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
-    public void testBlockingPermissionInIncognitoCreatesNoChannels() {
+    public void testBlockingPermissionInIncognitoTabbedActivityCreatesNoChannels() {
         PermissionInfo info = new PermissionInfo(
-                PermissionInfo.Type.NOTIFICATION, "https://example-incognito.com", null, true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> info.setContentSetting(ContentSettingValues.BLOCK));
+                ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                                           /*createIfNeeded=*/true),
+                    ContentSettingValues.BLOCK);
+        });
+        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+    }
+
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @SmallTest
+    public void testBlockingPermissionInIncognitoCCTCreatesNoChannels() {
+        PermissionInfo info = new PermissionInfo(
+                ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+            Profile nonPrimaryOTRProfile =
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                            otrProfileID, /*createIfNeeded=*/true);
+            assertNotNull(nonPrimaryOTRProfile);
+            assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
+            info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+        });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
     }
 
@@ -238,7 +266,7 @@ public class SiteChannelsManagerTest {
     public void testGetChannelIdForOrigin_unknownOrigin() {
         String channelId = mSiteChannelsManager.getChannelIdForOrigin("https://unknown.com");
 
-        assertThat(channelId, is(ChannelDefinitions.ChannelId.SITES));
+        assertThat(channelId, is(ChromeChannelDefinitions.ChannelId.SITES));
 
         assertThat(RecordHistogram.getHistogramTotalCountForTesting(
                            "Notifications.Android.SitesChannel"),

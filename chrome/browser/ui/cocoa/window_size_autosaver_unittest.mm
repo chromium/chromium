@@ -7,7 +7,8 @@
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
+#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -17,17 +18,14 @@
 
 namespace {
 
-class WindowSizeAutosaverTest : public CocoaProfileTest {
+class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
   void SetUp() override {
-    CocoaProfileTest::SetUp();
-    path_ = "WindowSizeAutosaverTest";
-    window_ =
-        [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 101, 150, 151)
-                                    styleMask:NSTitledWindowMask|
-                                              NSResizableWindowMask
-                                      backing:NSBackingStoreBuffered
-                                        defer:NO];
-    // TODO(joi): Do all registration up front.
+    BrowserWithTestWindowTest::SetUp();
+    window_ = [[NSWindow alloc]
+        initWithContentRect:NSMakeRect(100, 101, 150, 151)
+                  styleMask:NSTitledWindowMask | NSResizableWindowMask
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
     static_cast<user_prefs::PrefRegistrySyncable*>(
         profile()->GetPrefs()->DeprecatedGetPrefRegistry())
         ->RegisterDictionaryPref(path_);
@@ -35,22 +33,23 @@ class WindowSizeAutosaverTest : public CocoaProfileTest {
 
   void TearDown() override {
     [window_ close];
-    CocoaProfileTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
  public:
+  CocoaTestHelper cocoa_test_helper_;
   NSWindow* window_;
-  const char* path_;
+  const char* path_ = "WindowSizeAutosaverTest";
 };
 
 TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   PrefService* pref = profile()->GetPrefs();
-  ASSERT_TRUE(pref != NULL);
+  ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
   const base::DictionaryValue* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
-  EXPECT_TRUE(placement->empty());
+  EXPECT_TRUE(placement->DictEmpty());
 
   // Replace the window with one that doesn't have resize controls.
   [window_ close];
@@ -97,7 +96,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   }
 
   // ...and it should be in the profile, too.
-  EXPECT_TRUE(pref->GetDictionary(path_) != NULL);
+  EXPECT_TRUE(pref->GetDictionary(path_));
   int x, y;
   const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
   EXPECT_FALSE(windowPref->GetInteger("left", &x));
@@ -112,12 +111,12 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
 
 TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   PrefService* pref = profile()->GetPrefs();
-  ASSERT_TRUE(pref != NULL);
+  ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
   const base::DictionaryValue* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
-  EXPECT_TRUE(placement->empty());
+  EXPECT_TRUE(placement->DictEmpty());
 
   // Ask the window to save its position, then check that a preference
   // exists.  We're technically passing in a pointer to the user prefs
@@ -156,7 +155,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   }
 
   // ...and it should be in the profile, too.
-  EXPECT_TRUE(pref->GetDictionary(path_) != NULL);
+  EXPECT_TRUE(pref->GetDictionary(path_));
   int x1, y1, x2, y2;
   const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
   EXPECT_FALSE(windowPref->GetInteger("x", &x1));
@@ -174,7 +173,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
 // http://crbug.com/39625
 TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   PrefService* pref = profile()->GetPrefs();
-  ASSERT_TRUE(pref != NULL);
+  ASSERT_TRUE(pref);
 
   DictionaryPrefUpdate update(pref, path_);
   base::DictionaryValue* windowPref = update.Get();
@@ -197,7 +196,7 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   }
 
   // ...and it should be gone from the profile, too.
-  EXPECT_TRUE(pref->GetDictionary(path_) != NULL);
+  EXPECT_TRUE(pref->GetDictionary(path_));
   int x1, y1, x2, y2;
   EXPECT_FALSE(windowPref->GetInteger("x", &x1));
   EXPECT_FALSE(windowPref->GetInteger("y", &x1));

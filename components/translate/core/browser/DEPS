@@ -9,5 +9,8 @@ include_rules = [
 specific_include_rules = {
   "translate_ranker_impl_unittest\.cc": [
     "+components/ukm",
+  ],
+  "translate_metrics_logger_impl_unittest\.cc": [
+    "+components/ukm",
   ]
 }

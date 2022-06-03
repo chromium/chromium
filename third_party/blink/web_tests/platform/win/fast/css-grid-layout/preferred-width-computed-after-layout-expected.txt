@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Input 1 test
+FAIL Input 2 test assert_equals: Error expected 204 but got 208
+FAIL Input 3 test assert_equals: Error expected 204 but got 208
+PASS Input 4 test
+PASS Input 5 test
+PASS Input 6 test
+PASS Input 7 test
+Harness: the test ran to completion.
+

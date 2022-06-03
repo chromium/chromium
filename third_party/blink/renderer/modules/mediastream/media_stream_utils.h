@@ -15,14 +15,13 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class MediaStreamComponent;
-class WebMediaStreamTrack;
 
 class MediaStreamUtils {
   STATIC_ONLY(MediaStreamUtils);
 
  public:
   static void CreateNativeAudioMediaStreamTrack(
-      const WebMediaStreamTrack&,
+      MediaStreamComponent*,
       scoped_refptr<base::SingleThreadTaskRunner>);
 
   static void DidCreateMediaStreamTrack(MediaStreamComponent*);

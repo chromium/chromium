@@ -12,9 +12,9 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "components/nacl/browser/nacl_file_host.h"
 #include "components/nacl/common/pnacl_types.h"
@@ -35,14 +35,18 @@ class PnaclTranslationCache;
 // called on the IO thread.
 class PnaclHost {
  public:
-  typedef base::Callback<void(base::File)> TempFileCallback;
-  typedef base::Callback<void(const base::File&, bool is_hit)> NexeFdCallback;
+  typedef base::RepeatingCallback<void(base::File)> TempFileCallback;
+  typedef base::RepeatingCallback<void(const base::File&, bool is_hit)>
+      NexeFdCallback;
 
   // Gets the PnaclHost singleton instance (creating it if necessary).
   // PnaclHost is a singleton because there is only one translation cache, and
   // so that the BrowsingDataRemover can clear it even if no translation has
   // ever been started.
   static PnaclHost* GetInstance();
+
+  PnaclHost(const PnaclHost&) = delete;
+  PnaclHost& operator=(const PnaclHost&) = delete;
 
   // The PnaclHost instance is intentionally leaked on shutdown. DeInitIfSafe()
   // attempts to cleanup |disk_cache_| earlier, but if it fails to do so in
@@ -79,7 +83,6 @@ class PnaclHost {
   // in the cache, but the renderer is still expected to call
   // TranslationFinished.
   void GetNexeFd(int render_process_id,
-                 int render_view_id,
                  int pp_instance,
                  bool is_incognito,
                  const nacl::PnaclCacheInfo& cache_info,
@@ -126,7 +129,6 @@ class PnaclHost {
     PendingTranslation(const PendingTranslation& other);
     ~PendingTranslation();
     base::ProcessHandle process_handle;
-    int render_view_id;
     base::File* nexe_fd;
     bool got_nexe_fd;
     bool got_cache_reply;
@@ -180,8 +182,8 @@ class PnaclHost {
   void DeInitIfSafe();
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                       base::TaskPriority::USER_VISIBLE});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
   // Operations which are pending with the cache backend, which we should
   // wait for before destroying it (see comment on DeInitIfSafe).
@@ -191,7 +193,6 @@ class PnaclHost {
   std::unique_ptr<PnaclTranslationCache> disk_cache_;
   PendingTranslationMap pending_translations_;
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclHost);
 };
 
 }  // namespace pnacl

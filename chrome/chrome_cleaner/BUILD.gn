@@ -20,9 +20,7 @@ buildflag_header("buildflags") {
 
 group("engine_definitions") {
   if (is_internal_chrome_cleaner_build) {
-    deps = [
-      "${chrome_cleaner_internal_root}:engine_definitions",
-    ]
+    deps = [ "${chrome_cleaner_internal_root}:engine_definitions" ]
   } else {
     deps = [
       "//chrome/chrome_cleaner/engines/common:dummy_engine_resources",
@@ -33,9 +31,7 @@ group("engine_definitions") {
 
 group("engine_target_factory") {
   if (is_internal_chrome_cleaner_build) {
-    deps = [
-      "${chrome_cleaner_internal_root}:engine_target_factory",
-    ]
+    deps = [ "${chrome_cleaner_internal_root}:engine_target_factory" ]
   } else {
     deps = [
       "//chrome/chrome_cleaner/engines/target:dummy_engine_delegate_factory",
@@ -64,9 +60,7 @@ static_library("other_executable_definitions") {
 }
 
 test("chrome_cleaner_unittests") {
-  sources = [
-    "//chrome/chrome_cleaner/test/test_main.cc",
-  ]
+  sources = [ "//chrome/chrome_cleaner/test/test_main.cc" ]
 
   deps = [
     # Dependencies of the test harness.
@@ -90,7 +84,6 @@ test("chrome_cleaner_unittests") {
     "//chrome/chrome_cleaner/mojom/typemaps:unittest_sources",
     "//chrome/chrome_cleaner/os:unittest_sources",
     "//chrome/chrome_cleaner/parsers/broker:unittest_sources",
-    "//chrome/chrome_cleaner/parsers/json_parser:unittest_sources",
     "//chrome/chrome_cleaner/parsers/parser_utils:unittest_sources",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:unittest_sources",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/target:unittest_sources",

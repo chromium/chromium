@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "content/child/blink_platform_impl.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 
@@ -21,8 +21,6 @@ class WebThreadScheduler;
 }
 
 namespace content {
-
-class MockClipboardHost;
 
 // An implementation of BlinkPlatformImpl for tests.
 class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
@@ -42,11 +40,15 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
 
   explicit TestBlinkWebUnitTestSupport(
       SchedulerType scheduler_type = SchedulerType::kMockScheduler);
+
+  TestBlinkWebUnitTestSupport(const TestBlinkWebUnitTestSupport&) = delete;
+  TestBlinkWebUnitTestSupport& operator=(const TestBlinkWebUnitTestSupport&) =
+      delete;
+
   ~TestBlinkWebUnitTestSupport() override;
 
-  std::unique_ptr<blink::WebURLLoaderFactory> CreateDefaultURLLoaderFactory()
-      override;
   blink::WebString UserAgent() override;
+  blink::WebString ReducedUserAgent() override;
   blink::WebString QueryLocalizedString(int resource_id) override;
   blink::WebString QueryLocalizedString(int resource_id,
                                         const blink::WebString& value) override;
@@ -56,10 +58,9 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
       const blink::WebString& value2) override;
   blink::WebString DefaultLocale() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
-
-  blink::WebURLLoaderMockFactory* GetURLLoaderMockFactory() override;
-
   bool IsThreadedAnimationEnabled() override;
+  bool IsUseZoomForDSFEnabled() override;
+  cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   // May be called when |this| is registered as the active blink Platform
   // implementation. Overrides the result of IsThreadedAnimationEnabled() to
@@ -68,17 +69,17 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   // cross-test side effects.
   static bool SetThreadedAnimationEnabled(bool enabled);
 
+  static bool SetUseZoomForDsfEnabled(bool enabled);
+
  private:
   void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
 
-  std::unique_ptr<MockClipboardHost> mock_clipboard_host_;
-  std::unique_ptr<blink::WebURLLoaderMockFactory> url_loader_factory_;
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   bool threaded_animation_ = true;
+  bool use_zoom_for_dsf_ = true;
+  cc::TestTaskGraphRunner test_task_graph_runner_;
 
   base::WeakPtrFactory<TestBlinkWebUnitTestSupport> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlinkWebUnitTestSupport);
 };
 
 }  // namespace content

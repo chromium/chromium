@@ -1,0 +1,57 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+# TODO(https://crbug.com/1198341): once this code is ported to Blink code
+# conventions, this target should be merged into
+# //third_party/blink/public:blink_headers and
+# //third_party/blink/renderer/platform/media should be a dep of
+# //third_party/blink/renderer/platform.
+source_set("media") {
+  sources = [
+    "buffered_data_source_host_impl.h",
+    "interval_map.h",
+    "key_system_config_selector.h",
+    "lru.h",
+    "multi_buffer.h",
+    "power_status_helper.h",
+    "remote_playback_client_wrapper_impl.h",
+    "resource_fetch_context.h",
+    "url_index.h",
+    "video_frame_compositor.h",
+    "web_encrypted_media_client_impl.h",
+    "web_media_player_params.h",
+  ]
+  public_deps = [
+    "//base",
+    "//cc",
+    "//components/viz/common",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public:blink_headers",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/platform/media" ]
+  deps = [ "//third_party/blink/renderer/platform/media" ]
+
+  if (media_use_ffmpeg || !is_android) {
+    sources += [
+      "learning_experiment_helper.h",
+      "multi_buffer_data_source.h",
+      "smoothness_helper.h",
+      "web_media_player_impl.h",
+    ]
+    public_deps += [
+      "//media/learning/common",
+      "//services/media_session/public/cpp:base_cpp",
+    ]
+  }
+}

@@ -11,9 +11,7 @@ static_library("parse_tasks_remaining_counter") {
     "parse_tasks_remaining_counter.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 static_library("command_line_arguments_sanitizer") {
@@ -31,9 +29,7 @@ static_library("command_line_arguments_sanitizer") {
 
 source_set("unittest_sources") {
   testonly = true
-  sources = [
-    "command_line_arguments_sanitizer_unittest.cc",
-  ]
+  sources = [ "command_line_arguments_sanitizer_unittest.cc" ]
   deps = [
     ":command_line_arguments_sanitizer",
     "//base",

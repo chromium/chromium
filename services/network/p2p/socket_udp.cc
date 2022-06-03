@@ -5,9 +5,10 @@
 #include "services/network/p2p/socket_udp.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -129,7 +130,8 @@ P2PSocketUdp::~P2PSocketUdp() = default;
 void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
                         uint16_t min_port,
                         uint16_t max_port,
-                        const P2PHostAndIPEndPoint& remote_address) {
+                        const P2PHostAndIPEndPoint& remote_address,
+                        const net::NetworkIsolationKey& network_isolation_key) {
   DCHECK(!socket_);
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
@@ -225,7 +227,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 
     client_->DataReceived(
         recv_address_, data,
-        base::TimeTicks() + base::TimeDelta::FromNanoseconds(rtc::TimeNanos()));
+        base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
     delegate_->DumpPacket(
         base::make_span(reinterpret_cast<uint8_t*>(&data[0]), data.size()),
@@ -271,8 +273,8 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
     }
   }
 
-  TRACE_EVENT_ASYNC_STEP_INTO1("p2p", "Send", packet.id, "UdpAsyncSendTo",
-                               "size", packet.size);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("p2p", "UdpAsyncSendTo", packet.id, "size",
+                                    packet.size);
   // Don't try to set DSCP in following conditions,
   // 1. If the outgoing packet is set to DSCP_NO_CHANGE
   // 2. If no change in DSCP value from last packet
@@ -357,7 +359,8 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
                                     int32_t transport_sequence_number,
                                     int64_t send_time_ms,
                                     int result) {
-  TRACE_EVENT_ASYNC_END1("p2p", "Send", packet_id, "result", result);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("p2p", "UdpAsyncSendTo", packet_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END1("p2p", "Send", packet_id, "result", result);
   if (result < 0) {
     ReportSocketError(result, "WebRTC.ICE.UdpSocketWriteErrorCode");
 
@@ -373,9 +376,8 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
 
   // UMA to track the histograms from 1ms to 1 sec for how long a packet spends
   // in the browser process.
-  UMA_HISTOGRAM_TIMES(
-      "WebRTC.SystemSendPacketDuration_UDP" /* name */,
-      base::TimeDelta::FromMilliseconds(rtc::TimeMillis() - send_time_ms));
+  UMA_HISTOGRAM_TIMES("WebRTC.SystemSendPacketDuration_UDP" /* name */,
+                      base::Milliseconds(rtc::TimeMillis() - send_time_ms));
 
   client_->SendComplete(
       P2PSendPacketMetrics(packet_id, transport_sequence_number, send_time_ms));

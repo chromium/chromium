@@ -2,21 +2,65 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grd") {
+  grd_prefix = "webrtc_logs"
+  out_grd = "$target_gen_dir/webrtc_logs_resources.grd"
+  input_files = [
+    "webrtc_logs.css",
+    "webrtc_logs.html",
+    "webrtc_logs.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
 
 grit("webrtc_logs_resources") {
-  source = "webrtc_logs_resources.grd"
-
-  # The .grd contains references to generated files.
-  source_is_generated = true
+  source = "$target_gen_dir/webrtc_logs_resources.grd"
+  deps = [ ":build_grd" ]
+  enable_input_discovery_for_gn_analyze = false
+  defines = chrome_grit_defines
   use_brotli = true
   outputs = [
     "grit/webrtc_logs_resources.h",
+    "grit/webrtc_logs_resources_map.cc",
+    "grit/webrtc_logs_resources_map.h",
     "webrtc_logs_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+}
+
+js_type_check("closure_compile") {
+  deps = [
+    ":media_data_table",
+    ":media_engagement",
+    ":media_history",
   ]
+}
+
+js_library("media_engagement") {
+  deps = [
+    "//chrome/browser/media:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("media_history") {
+  deps = [
+    ":media_data_table",
+    "//chrome/browser/media:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tabs",
+  ]
+}
+
+js_library("media_data_table") {
 }

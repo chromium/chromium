@@ -1,0 +1,124 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/load_timing_info.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/request_priority.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// These values are used for UMA. Entries should not be renumbered. Please keep
+// in sync with "ContentResourceType2" in
+// src/tools/metrics/histograms/enums.xml.
+// DEPRECATED. Consider using network::mojom::RequestDestination instead.
+enum ResourceType {
+  kMainFrame = 0,           // top level page
+  kSubFrame = 1,            // frame or iframe
+  kStylesheet = 2,          // a CSS stylesheet
+  kScript = 3,              // an external script
+  kImage = 4,               // an image (jpg/gif/png/etc)
+  kFontResource = 5,        // a font
+  kSubResource = 6,         // an "other" subresource.
+  kObject = 7,              // an object (or embed) tag for a plugin.
+  kMedia = 8,               // a media resource.
+  kWorker = 9,              // the main resource of a dedicated worker.
+  kSharedWorker = 10,       // the main resource of a shared worker.
+  kPrefetch = 11,           // an explicitly requested prefetch
+  kFavicon = 12,            // a favicon
+  kXhr = 13,                // a XMLHttpRequest
+  kPing = 14,               // a ping request for <a ping>/sendBeacon.
+  kServiceWorker = 15,      // the main resource of a service worker.
+  kCspReport = 16,          // a report of Content Security Policy violations.
+  kPluginResource = 17,     // a resource that a plugin requested.
+  // kNavigationPreload = 18,  // Deprecated.
+  // a main-frame service worker navigation preload request.
+  kNavigationPreloadMainFrame = 19,
+  // a sub-frame service worker navigation preload request.
+  kNavigationPreloadSubFrame = 20,
+};
+
+// Network related information reported for loads and redirects.
+struct CommonNetworkInfo {
+  // True if the request accessed the network in the process of retrieving data.
+  bool network_accessed;
+
+  // True if loading this resource always requires accessing the network, either
+  // because it should always be revalidated or because it should not be cached.
+  bool always_access_network;
+
+  // The host IP and port of the response.
+  network.mojom.IPEndPoint? remote_endpoint;
+};
+
+// Information for a redirect.
+struct RedirectInfo {
+  // The origin of the URL after the redirect.
+  //
+  // The full URL is not available, because in some cases the path and query
+  // may be sanitized away - see https://crbug.com/973885.
+  url.mojom.Origin origin_of_new_url;
+
+  // Various network related information.
+  CommonNetworkInfo network_info;
+};
+
+// Information pertaining to resource loading.
+// This will be passed to ResourceResponse callback methods.
+struct ResourceLoadInfo {
+  // An ID that uniquely identifies this request.
+  int64 request_id;
+
+  // The final URL of the response (final = after all redirects).
+  url.mojom.Url final_url;
+
+  // The response referrer.
+  url.mojom.Url referrer;
+
+  // The original URL is the URL used to initialize the subresource request,
+  // and it may differ from the |final_url| if the request was redirected.
+  url.mojom.Url original_url;
+
+  // The request method used to fetch this response.
+  string method;
+
+  // The request destination type.
+  network.mojom.RequestDestination request_destination;
+
+  // Loading priority of the corresponding request.
+  network.mojom.RequestPriority request_priority;
+
+  // The mime type.
+  string mime_type;
+
+  // True if the response was fetched from the network cache.
+  bool was_cached;
+
+  // Various network related information.
+  CommonNetworkInfo network_info;
+
+  // The network error code, net::OK if no error happened.
+  int32 net_error;
+
+  // The timing info.
+  network.mojom.LoadTimingInfo load_timing_info;
+
+  // The size of the response body before removing any content encodings.
+  // Does not include redirects or sub-requests issued at lower levels (range
+  // requests or auth). Does include bytes from the cache.
+  int64 raw_body_bytes;
+
+  // The total amount of data received from network after SSL decoding and proxy
+  // handling. Pertains only to the last request, i.e. reset on redirects, but
+  // not reset when multiple roundtrips are used for range requests or auth.
+  int64 total_received_bytes;
+
+  // The list of redirects that led to this resource load. Empty if there were
+  // no redirects.
+  array<RedirectInfo> redirect_info_chain;
+};

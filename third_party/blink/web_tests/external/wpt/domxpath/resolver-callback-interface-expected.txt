@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS callable resolver
+PASS callable resolver: result is not cached
+PASS callable resolver: abrupt completion from Call
+FAIL callable resolver: no 'lookupNamespaceURI' lookups assert_equals: expected 0 but got 1
+PASS object resolver
+PASS object resolver: this value and `prefix` argument
+PASS object resolver: 'lookupNamespaceURI' is not cached
+FAIL object resolver: abrupt completion from Get assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL object resolver: 'lookupNamespaceURI' is thruthy and not callable assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL object resolver: 'lookupNamespaceURI' is falsy and not callable assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

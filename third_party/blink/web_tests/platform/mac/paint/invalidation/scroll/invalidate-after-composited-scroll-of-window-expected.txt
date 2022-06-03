@@ -1,29 +1,20 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 4934],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Tests that invalidation of a div after scrolling invalidates just the div and no other area.'",
-          "rect": [8, 4908, 555, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [8, 2408, 100, 100],
-          "reason": "background"
-        }
+      "invalidations": [
+        [8, 4908, 555, 18],
+        [8, 2408, 100, 100]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

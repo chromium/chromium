@@ -1,0 +1,93 @@
+Test for size attribute of input
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS spinButtonWidth is >= 1
+The content area of the number input without min/max/step attribute should have the same width as text input
+PASS number.offsetWidth is text.offsetWidth
+
+
+The number whose width is specified should respect the setting
+PASS numberWithWidth.offsetWidth is 100
+PASS numberWithWidth.min = 0; numberWithWidth.max = 100; numberWithWidth.offsetWidth is 100
+
+
+The number input should ignore size attribute for layout
+PASS number.size = 10; number.offsetWidth is text.offsetWidth
+PASS number.size is 10
+PASS number.size = 100; number.offsetWidth is text.offsetWidth
+PASS number.size is 100
+PASS number.size = null threw exception IndexSizeError: Failed to set the 'size' property on 'HTMLInputElement': The value provided is 0, which is an invalid size..
+
+
+If min or max is absent, the number input has the same width as input[type=text]
+PASS numberWidth(0, null, null) is text.offsetWidth
+PASS numberWidth(null, 100, null) is text.offsetWidth
+PASS numberWidth(null, null, 100) is text.offsetWidth
+
+
+If step is any, the input[type=text] has the same width as input[type=text]
+PASS numberWidth(0, 1, "any") is text.offsetWidth
+PASS numberWidth(0, 10, "any") is text.offsetWidth
+PASS numberWidth(0, 1.1, "any") is text.offsetWidth
+
+
+The case the inner spin button has border or padding.
+PASS numberWidth(0, 10, 1, "with-border") is textWidthPlusSpinButtonWidth(2) + borderWidth
+PASS numberWidth(0, 10, 1, "with-padding") is textWidthPlusSpinButtonWidth(2) + paddingWidth
+PASS numberWidth(0, 10, 1, "with-margin") is textWidthPlusSpinButtonWidth(2)
+PASS numberWidth(0, 10, 1, "with-border with-padding") is textWidthPlusSpinButtonWidth(2) + borderWidth + paddingWidth
+
+
+The default step does not need to be considered.
+PASS numberWidth(0, 1, null) is textWidthPlusSpinButtonWidth(1)
+PASS numberWidth(0, 100, null) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(-100, 1, null) is textWidthPlusSpinButtonWidth(4)
+PASS numberWidth(0.0, 1.0, null) is textWidthPlusSpinButtonWidth(1)
+PASS numberWidth(0.5, 1.5, null) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(-0.5, 1.5, null) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(1e+10, 1e+10 + 1, null) should be 124. Was 125.
+PASS numberWidth(-1e+10, 1e+10 + 1, null) is textWidthPlusSpinButtonWidth(12)
+
+
+Check the width of a number input when min/max/step is changed variously
+PASS numberWidth(0, 1, 1) is textWidthPlusSpinButtonWidth(1)
+PASS numberWidth(0, 10, 1) is textWidthPlusSpinButtonWidth(2)
+PASS numberWidth(0, 100, 1) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(0, 1000, 1) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(0, 10000, 1) should be 78. Was 79.
+FAIL numberWidth(0, 100000, 1) should be 86. Was 87.
+PASS numberWidth(0, 1000000, 1) is textWidthPlusSpinButtonWidth(7)
+PASS numberWidth(0, 10000000, 1) is textWidthPlusSpinButtonWidth(8)
+PASS numberWidth(0, 100000000, 1) is textWidthPlusSpinButtonWidth(9)
+FAIL numberWidth(0, 1000000000, 1) should be 116. Was 117.
+PASS numberWidth(-1, 0, 1) is textWidthPlusSpinButtonWidth(2)
+PASS numberWidth(-10, 0, 1) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(-100, 0, 1) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(-1000, 0, 1) should be 78. Was 79.
+FAIL numberWidth(-10000, 0, 1) should be 86. Was 87.
+PASS numberWidth(-100000, 0, 1) is textWidthPlusSpinButtonWidth(7)
+PASS numberWidth(-1000000, 0, 1) is textWidthPlusSpinButtonWidth(8)
+PASS numberWidth(-10000000, 0, 1) is textWidthPlusSpinButtonWidth(9)
+FAIL numberWidth(-100000000, 0, 1) should be 116. Was 117.
+FAIL numberWidth(-1000000000, 0, 1) should be 124. Was 125.
+PASS numberWidth(0, 1, 0.5) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(0, 1, 0.05) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(0, 1, 0.005) should be 78. Was 79.
+FAIL numberWidth(0, 1, 0.0005) should be 86. Was 87.
+PASS numberWidth(0, 1, 0.00005) is textWidthPlusSpinButtonWidth(7)
+PASS numberWidth(0, 1, 0.000005) is textWidthPlusSpinButtonWidth(8)
+PASS numberWidth(0, 1, 0.0000005) is textWidthPlusSpinButtonWidth(9)
+PASS numberWidth(0.5, 1, 1) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(0.05, 1, 1) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(0.005, 1, 1) should be 78. Was 79.
+PASS numberWidth(1.5, 2, 1) is textWidthPlusSpinButtonWidth(3)
+PASS numberWidth(1.05, 2, 1) is textWidthPlusSpinButtonWidth(4)
+FAIL numberWidth(1.005, 2, 1) should be 78. Was 79.
+PASS numberWidth(123456, 123456, 0.0000005) is textWidthPlusSpinButtonWidth(14)
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

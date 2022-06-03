@@ -1,0 +1,53 @@
+{
+  "android-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "fuchsia-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "linux-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win32-official": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

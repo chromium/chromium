@@ -16,7 +16,3 @@
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/1
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/0
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/1
--SharedImageBackingFactoryAHBTest.CannotWriteWhileReading
--SharedImageBackingFactoryAHBTest.CanHaveMultipleReaders
--SharedImageBackingFactoryAHBTest.CannotReadWhileWriting
--SharedImageBackingFactoryAHBTest.LegacyClearing

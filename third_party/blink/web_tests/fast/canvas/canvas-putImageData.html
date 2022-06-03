@@ -241,13 +241,13 @@ test(function(t) {
 }, "Test clamping of dirtyX/Y/Width/Height.");
 
 var testInvalidParams = [
-    ['TestInvalidParam 1', new TypeError, function() {context.putImageData({}, 0, 0);}],
-    ['TestInvalidParam 2', new TypeError, function() {context.putImageData(null, 0, 0, 0, 0, 0, 0);}],
-    ['TestInvalidParam 3', new TypeError, function() {context.putImageData(undefined, 0, 0, 0, 0, 0, 0);}],
+    ['TestInvalidParam 1', TypeError, function() {context.putImageData({}, 0, 0);}],
+    ['TestInvalidParam 2', TypeError, function() {context.putImageData(null, 0, 0, 0, 0, 0, 0);}],
+    ['TestInvalidParam 3', TypeError, function() {context.putImageData(undefined, 0, 0, 0, 0, 0, 0);}],
 
 ];
 
-generate_tests(assert_throws, testInvalidParams);
+generate_tests(assert_throws_js, testInvalidParams);
 
 test(function(t) {
     var smallbuffer = context.createImageData(10, 10);

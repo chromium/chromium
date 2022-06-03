@@ -63,7 +63,9 @@ class HidItemStateTable {
   ~HidItemStateTable();
 
   // Set the value of a local or global item.
-  void SetItemValue(HidReportDescriptorItem::Tag tag, uint32_t value);
+  void SetItemValue(HidReportDescriptorItem::Tag tag,
+                    uint32_t value,
+                    size_t payload_size);
 
   // The collection that will be modified when main items are encountered.
   HidCollection* collection = nullptr;

@@ -6,10 +6,10 @@
 
 #include "base/fuchsia/service_directory_test_base.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ScopedServiceBindingTest : public ServiceDirectoryTestBase {};
 
@@ -19,6 +19,35 @@ TEST_F(ScopedServiceBindingTest, ConnectTwice) {
   auto stub2 = public_service_directory_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_OK);
   VerifyTestInterface(&stub2, ZX_OK);
+}
+
+// Verifies that ScopedServiceBinding allows connection more than once.
+TEST_F(ScopedServiceBindingTest, ConnectTwiceNewName) {
+  const char kInterfaceName[] = "fuchsia.TestInterface2";
+
+  ScopedServiceBinding<testfidl::TestInterface> new_service_binding(
+      outgoing_directory_.get(), &test_service_, kInterfaceName);
+
+  testfidl::TestInterfacePtr stub, stub2;
+  public_service_directory_->Connect(
+       kInterfaceName, stub.NewRequest().TakeChannel());
+  public_service_directory_->Connect(
+       kInterfaceName, stub2.NewRequest().TakeChannel());
+  VerifyTestInterface(&stub, ZX_OK);
+  VerifyTestInterface(&stub2, ZX_OK);
+}
+
+// Verifies that ScopedSingleClientServiceBinding allows a different name.
+TEST_F(ScopedServiceBindingTest, SingleClientConnectNewName) {
+  const char kInterfaceName[] = "fuchsia.TestInterface2";
+  auto service_binding_new_name_ = std::make_unique<
+      ScopedSingleClientServiceBinding<testfidl::TestInterface>>(
+          outgoing_directory_.get(), &test_service_, kInterfaceName);
+
+  testfidl::TestInterfacePtr stub;
+  public_service_directory_->Connect(kInterfaceName,
+                                     stub.NewRequest().TakeChannel());
+  VerifyTestInterface(&stub, ZX_OK);
 }
 
 // Verify that if we connect twice to a prefer-new bound service, the existing
@@ -122,5 +151,72 @@ TEST_F(ScopedServiceBindingTest, SingleBindingSetOnLastClientCallback) {
   run_loop.Run();
 }
 
-}  // namespace fuchsia
+// Test the kConnectOnce option for ScopedSingleClientServiceBinding properly
+// stops publishing the service after a first disconnect.
+TEST_F(ScopedServiceBindingTest, ConnectOnce_OnlyFirstConnectionSucceeds) {
+  // Teardown the default multi-client binding and create a connect-once one.
+  service_binding_ = nullptr;
+  ScopedSingleClientServiceBinding<testfidl::TestInterface,
+                                   ScopedServiceBindingPolicy::kConnectOnce>
+      binding(outgoing_directory_.get(), &test_service_);
+
+  // Connect the first client, and verify that it is functional.
+  auto existing_client =
+      public_service_directory_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&existing_client, ZX_OK);
+
+  // Connect the second client, then verify that it gets closed and the existing
+  // one remains functional.
+  auto new_client =
+      public_service_directory_->Connect<testfidl::TestInterface>();
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(new_client);
+  VerifyTestInterface(&existing_client, ZX_OK);
+
+  // Disconnect the first client.
+  existing_client.Unbind().TakeChannel().reset();
+  RunLoop().RunUntilIdle();
+
+  // Re-connect the second client, then verify that it gets closed.
+  new_client = public_service_directory_->Connect<testfidl::TestInterface>();
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(new_client);
+}
+
+class MultiUseBindingTest : public ScopedServiceBindingTest {
+ public:
+  MultiUseBindingTest() {
+    service_binding_->SetOnLastClientCallback(
+        BindRepeating(&MultiUseBindingTest::OnLastClient, Unretained(this)));
+  }
+  ~MultiUseBindingTest() override = default;
+
+ protected:
+  void OnLastClient() { disconnect_count_++; }
+
+  int disconnect_count_ = 0;
+};
+
+// Test the last client callback is called every time the number of active
+// clients reaches 0.
+TEST_F(MultiUseBindingTest, MultipleLastClientCallback) {
+  // Connect a client, verify it is functional.
+  auto stub = public_service_directory_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&stub, ZX_OK);
+
+  // Disconnect the client, the callback should have been called once.
+  stub.Unbind().TakeChannel().reset();
+  RunLoop().RunUntilIdle();
+  EXPECT_EQ(disconnect_count_, 1);
+
+  // Re-connect the client, verify it is functional.
+  stub = public_service_directory_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&stub, ZX_OK);
+
+  // Disconnect the client, the callback should have been called a second time.
+  stub.Unbind().TakeChannel().reset();
+  RunLoop().RunUntilIdle();
+  EXPECT_EQ(disconnect_count_, 2);
+}
+
 }  // namespace base

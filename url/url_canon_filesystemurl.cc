@@ -39,7 +39,7 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
   output->Append("filesystem:", 11);
   new_parsed->scheme.len = 10;
 
-  if (!parsed.inner_parsed() || !parsed.inner_parsed()->scheme.is_valid())
+  if (!inner_parsed || !inner_parsed->scheme.is_valid())
     return false;
 
   bool success = true;
@@ -57,8 +57,8 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
       inner_scheme_type = SCHEME_WITH_HOST_AND_PORT;
     }
     success = CanonicalizeStandardURL(
-        spec, parsed.inner_parsed()->Length(), *parsed.inner_parsed(),
-        inner_scheme_type, charset_converter, output, &new_inner_parsed);
+        spec, inner_parsed->Length(), *inner_parsed, inner_scheme_type,
+        charset_converter, output, &new_inner_parsed);
   } else {
     // TODO(ericu): The URL is wrong, but should we try to output more of what
     // we were given?  Echoing back filesystem:mailto etc. doesn't seem all that
@@ -66,7 +66,7 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
     return false;
   }
   // The filesystem type must be more than just a leading slash for validity.
-  success &= parsed.inner_parsed()->path.len > 1;
+  success &= new_inner_parsed.path.len > 1;
 
   success &= CanonicalizePath(source.path, parsed.path, output,
                               &new_parsed->path);
@@ -94,14 +94,14 @@ bool CanonicalizeFileSystemURL(const char* spec,
       new_parsed);
 }
 
-bool CanonicalizeFileSystemURL(const base::char16* spec,
+bool CanonicalizeFileSystemURL(const char16_t* spec,
                                int spec_len,
                                const Parsed& parsed,
                                CharsetConverter* charset_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
-  return DoCanonicalizeFileSystemURL<base::char16, base::char16>(
-      spec, URLComponentSource<base::char16>(spec), parsed, charset_converter,
+  return DoCanonicalizeFileSystemURL<char16_t, char16_t>(
+      spec, URLComponentSource<char16_t>(spec), parsed, charset_converter,
       output, new_parsed);
 }
 
@@ -120,7 +120,7 @@ bool ReplaceFileSystemURL(const char* base,
 
 bool ReplaceFileSystemURL(const char* base,
                           const Parsed& base_parsed,
-                          const Replacements<base::char16>& replacements,
+                          const Replacements<char16_t>& replacements,
                           CharsetConverter* charset_converter,
                           CanonOutput* output,
                           Parsed* new_parsed) {

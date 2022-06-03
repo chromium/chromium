@@ -9,10 +9,14 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
 
 namespace content {
 
@@ -36,33 +40,36 @@ void FakeServiceWorker::RunUntilInitializeGlobalScope() {
   loop.Run();
 }
 
+void FakeServiceWorker::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 void FakeServiceWorker::InitializeGlobalScope(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
         service_worker_host,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
-    blink::mojom::FetchHandlerExistence fetch_handler_existence) {
+    blink::mojom::FetchHandlerExistence fetch_handler_existence,
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+        subresource_loader_factories,
+    mojo::PendingReceiver<blink::mojom::ReportingObserver>
+        reporting_observer_receiver) {
   host_.Bind(std::move(service_worker_host));
 
   // Enable callers to use these endpoints without us actually binding them
   // to an implementation.
-  mojo::AssociateWithDisconnectedPipe(registration_info->receiver.PassHandle());
+  registration_info->receiver.EnableUnassociatedUsage();
   if (registration_info->installing) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->installing->receiver.PassHandle());
+    registration_info->installing->receiver.EnableUnassociatedUsage();
   }
   if (registration_info->waiting) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->waiting->receiver.PassHandle());
+    registration_info->waiting->receiver.EnableUnassociatedUsage();
   }
   if (registration_info->active) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->active->receiver.PassHandle());
+    registration_info->active->receiver.EnableUnassociatedUsage();
   }
-
   if (service_worker_info) {
-    mojo::AssociateWithDisconnectedPipe(
-        service_worker_info->receiver.PassHandle());
+    service_worker_info->receiver.EnableUnassociatedUsage();
   }
 
   registration_info_ = std::move(registration_info);
@@ -76,7 +83,7 @@ void FakeServiceWorker::InitializeGlobalScope(
 void FakeServiceWorker::DispatchInstallEvent(
     DispatchInstallEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
-                          true /* has_fetch_handler */);
+                          /*fetch_count=*/0);
 }
 
 void FakeServiceWorker::DispatchActivateEvent(
@@ -125,8 +132,11 @@ void FakeServiceWorker::DispatchFetchEventForMainResource(
   response->response_type = network::mojom::FetchResponseType::kDefault;
   mojo::Remote<blink::mojom::ServiceWorkerFetchResponseCallback>
       response_callback(std::move(pending_response_callback));
-  response_callback->OnResponse(
-      std::move(response), blink::mojom::ServiceWorkerFetchEventTiming::New());
+  auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+  auto now = base::TimeTicks::Now();
+  timing->respond_with_settled_time = now;
+  timing->dispatch_event_time = now;
+  response_callback->OnResponse(std::move(response), std::move(timing));
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
@@ -134,7 +144,7 @@ void FakeServiceWorker::DispatchNotificationClickEvent(
     const std::string& notification_id,
     const blink::PlatformNotificationData& notification_data,
     int action_index,
-    const base::Optional<base::string16>& reply,
+    const absl::optional<std::u16string>& reply,
     DispatchNotificationClickEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
@@ -147,7 +157,7 @@ void FakeServiceWorker::DispatchNotificationCloseEvent(
 }
 
 void FakeServiceWorker::DispatchPushEvent(
-    const base::Optional<std::string>& payload,
+    const absl::optional<std::string>& payload,
     DispatchPushEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
@@ -163,14 +173,14 @@ void FakeServiceWorker::DispatchSyncEvent(const std::string& tag,
                                           bool last_chance,
                                           base::TimeDelta timeout,
                                           DispatchSyncEventCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
 void FakeServiceWorker::DispatchPeriodicSyncEvent(
     const std::string& tag,
     base::TimeDelta timeout,
     DispatchPeriodicSyncEventCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
 void FakeServiceWorker::DispatchAbortPaymentEvent(
@@ -190,7 +200,8 @@ void FakeServiceWorker::DispatchCanMakePaymentEvent(
     DispatchCanMakePaymentEventCallback callback) {
   mojo::Remote<payments::mojom::PaymentHandlerResponseCallback>
       response_callback(std::move(pending_response_callback));
-  response_callback->OnResponseForCanMakePayment(true);
+  response_callback->OnResponseForCanMakePayment(
+      payments::mojom::CanMakePaymentResponse::New());
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
@@ -222,8 +233,8 @@ void FakeServiceWorker::Ping(PingCallback callback) {
   std::move(callback).Run();
 }
 
-void FakeServiceWorker::SetIdleTimerDelayToZero() {
-  is_zero_idle_timer_delay_ = true;
+void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
+  idle_delay_ = delay;
 }
 
 void FakeServiceWorker::AddMessageToConsole(

@@ -36,7 +36,7 @@ class WebPluginContainerImpl;
 
 class CORE_EXPORT PluginDocument final : public HTMLDocument {
  public:
-  PluginDocument(const DocumentInit&, Color background_color);
+  PluginDocument(const DocumentInit&);
 
   void SetPluginNode(HTMLPlugInElement* plugin_node) {
     plugin_node_ = plugin_node;
@@ -47,7 +47,7 @@ class CORE_EXPORT PluginDocument final : public HTMLDocument {
 
   void Shutdown() override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   class BeforeUnloadEventListener;
@@ -59,7 +59,12 @@ class CORE_EXPORT PluginDocument final : public HTMLDocument {
   const Color background_color_;
 };
 
-DEFINE_DOCUMENT_TYPE_CASTS(PluginDocument);
+template <>
+struct DowncastTraits<PluginDocument> {
+  static bool AllowFrom(const Document& document) {
+    return document.IsPluginDocument();
+  }
+};
 
 }  // namespace blink
 

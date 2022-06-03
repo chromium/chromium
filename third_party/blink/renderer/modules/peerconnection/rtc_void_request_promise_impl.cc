@@ -12,7 +12,7 @@
 namespace blink {
 
 RTCVoidRequestPromiseImpl::RTCVoidRequestPromiseImpl(
-    base::Optional<RTCSetSessionDescriptionOperation> operation,
+    absl::optional<RTCSetSessionDescriptionOperation> operation,
     RTCPeerConnection* requester,
     ScriptPromiseResolver* resolver,
     const char* interface_name,
@@ -64,7 +64,7 @@ void RTCVoidRequestPromiseImpl::Clear() {
   requester_.Clear();
 }
 
-void RTCVoidRequestPromiseImpl::Trace(blink::Visitor* visitor) {
+void RTCVoidRequestPromiseImpl::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   visitor->Trace(requester_);
   RTCVoidRequest::Trace(visitor);

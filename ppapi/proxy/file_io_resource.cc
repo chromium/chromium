@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -159,12 +159,10 @@ int32_t FileIOResource::Open(PP_Resource file_ref,
   // don't want the plugin destroying it during the Open operation.
   file_ref_ = enter_file_ref.resource();
 
-  Call<PpapiPluginMsg_FileIO_OpenReply>(BROWSER,
-      PpapiHostMsg_FileIO_Open(
-          file_ref,
-          open_flags),
-      base::Bind(&FileIOResource::OnPluginMsgOpenFileComplete, this,
-                 callback));
+  Call<PpapiPluginMsg_FileIO_OpenReply>(
+      BROWSER, PpapiHostMsg_FileIO_Open(file_ref, open_flags),
+      base::BindOnce(&FileIOResource::OnPluginMsgOpenFileComplete, this,
+                     callback));
 
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
   return PP_OK_COMPLETIONPENDING;
@@ -210,12 +208,11 @@ int32_t FileIOResource::Query(PP_FileInfo* info,
   // completion task to write the result.
   scoped_refptr<QueryOp> query_op(new QueryOp(file_holder_));
   base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(),
-      FROM_HERE,
-      Bind(&FileIOResource::QueryOp::DoWork, query_op),
-      RunWhileLocked(Bind(&TrackedCallback::Run, callback)));
+      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
+      base::BindOnce(&FileIOResource::QueryOp::DoWork, query_op),
+      RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(
-      Bind(&FileIOResource::OnQueryComplete, this, query_op, info));
+      base::BindOnce(&FileIOResource::OnQueryComplete, this, query_op, info));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -228,10 +225,10 @@ int32_t FileIOResource::Touch(PP_Time last_access_time,
   if (rv != PP_OK)
     return rv;
 
-  Call<PpapiPluginMsg_FileIO_GeneralReply>(BROWSER,
-      PpapiHostMsg_FileIO_Touch(last_access_time, last_modified_time),
-      base::Bind(&FileIOResource::OnPluginMsgGeneralComplete, this,
-                 callback));
+  Call<PpapiPluginMsg_FileIO_GeneralReply>(
+      BROWSER, PpapiHostMsg_FileIO_Touch(last_access_time, last_modified_time),
+      base::BindOnce(&FileIOResource::OnPluginMsgGeneralComplete, this,
+                     callback));
 
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
   return PP_OK_COMPLETIONPENDING;
@@ -290,7 +287,7 @@ int32_t FileIOResource::Write(int64_t offset,
     if (append) {
       increase = bytes_to_write;
     } else {
-      uint64_t max_offset = offset + bytes_to_write;
+      max_offset = offset + bytes_to_write;
       if (max_offset >
           static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
         return PP_ERROR_FAILED;  // amount calculation would overflow.
@@ -305,13 +302,9 @@ int32_t FileIOResource::Write(int64_t offset,
       memcpy(copy.get(), buffer, bytes_to_write);
       int64_t result =
           file_system_resource_->AsPPB_FileSystem_API()->RequestQuota(
-              increase,
-              base::Bind(&FileIOResource::OnRequestWriteQuotaComplete,
-                         this,
-                         offset,
-                         base::Passed(&copy),
-                         bytes_to_write,
-                         callback));
+              increase, base::BindOnce(
+                            &FileIOResource::OnRequestWriteQuotaComplete, this,
+                            offset, std::move(copy), bytes_to_write, callback));
       if (result == PP_OK_COMPLETIONPENDING)
         return PP_OK_COMPLETIONPENDING;
       DCHECK(result == increase);
@@ -340,9 +333,8 @@ int32_t FileIOResource::SetLength(int64_t length,
       int32_t result =
           file_system_resource_->AsPPB_FileSystem_API()->RequestQuota(
               increase,
-              base::Bind(&FileIOResource::OnRequestSetLengthQuotaComplete,
-                         this,
-                         length, callback));
+              base::BindOnce(&FileIOResource::OnRequestSetLengthQuotaComplete,
+                             this, length, callback));
       if (result == PP_OK_COMPLETIONPENDING) {
         state_manager_.SetPendingOperation(
             FileIOStateManager::OPERATION_EXCLUSIVE);
@@ -364,10 +356,10 @@ int32_t FileIOResource::Flush(scoped_refptr<TrackedCallback> callback) {
   if (rv != PP_OK)
     return rv;
 
-  Call<PpapiPluginMsg_FileIO_GeneralReply>(BROWSER,
-      PpapiHostMsg_FileIO_Flush(),
-      base::Bind(&FileIOResource::OnPluginMsgGeneralComplete, this,
-                 callback));
+  Call<PpapiPluginMsg_FileIO_GeneralReply>(
+      BROWSER, PpapiHostMsg_FileIO_Flush(),
+      base::BindOnce(&FileIOResource::OnPluginMsgGeneralComplete, this,
+                     callback));
 
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
   return PP_OK_COMPLETIONPENDING;
@@ -416,10 +408,10 @@ int32_t FileIOResource::RequestOSFileHandle(
   if (rv != PP_OK)
     return rv;
 
-  Call<PpapiPluginMsg_FileIO_RequestOSFileHandleReply>(BROWSER,
-      PpapiHostMsg_FileIO_RequestOSFileHandle(),
-      base::Bind(&FileIOResource::OnPluginMsgRequestOSFileHandleComplete, this,
-                 callback, handle));
+  Call<PpapiPluginMsg_FileIO_RequestOSFileHandleReply>(
+      BROWSER, PpapiHostMsg_FileIO_RequestOSFileHandle(),
+      base::BindOnce(&FileIOResource::OnPluginMsgRequestOSFileHandleComplete,
+                     this, callback, handle));
 
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
   return PP_OK_COMPLETIONPENDING;
@@ -440,7 +432,7 @@ FileIOResource::FileHolder::~FileHolder() {
     base::TaskRunner* file_task_runner =
         PpapiGlobals::Get()->GetFileTaskRunner();
     file_task_runner->PostTask(FROM_HERE,
-                               base::BindOnce(&DoClose, Passed(&file_)));
+                               base::BindOnce(&DoClose, std::move(file_)));
   }
 }
 
@@ -478,12 +470,11 @@ int32_t FileIOResource::ReadValidated(int64_t offset,
   scoped_refptr<ReadOp> read_op(
       new ReadOp(file_holder_, offset, bytes_to_read));
   base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(),
-      FROM_HERE,
-      Bind(&FileIOResource::ReadOp::DoWork, read_op),
-      RunWhileLocked(Bind(&TrackedCallback::Run, callback)));
-  callback->set_completion_task(
-      Bind(&FileIOResource::OnReadComplete, this, read_op, array_output));
+      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
+      base::BindOnce(&FileIOResource::ReadOp::DoWork, read_op),
+      RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
+  callback->set_completion_task(base::BindOnce(&FileIOResource::OnReadComplete,
+                                               this, read_op, array_output));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -520,11 +511,11 @@ int32_t FileIOResource::WriteValidated(
   scoped_refptr<WriteOp> write_op(new WriteOp(
       file_holder_, offset, std::move(copy), bytes_to_write, append));
   base::PostTaskAndReplyWithResult(
-      PpapiGlobals::Get()->GetFileTaskRunner(),
-      FROM_HERE,
-      Bind(&FileIOResource::WriteOp::DoWork, write_op),
-      RunWhileLocked(Bind(&TrackedCallback::Run, callback)));
-  callback->set_completion_task(Bind(&FileIOResource::OnWriteComplete, this));
+      PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
+      base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
+      RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
+  callback->set_completion_task(
+      base::BindOnce(&FileIOResource::OnWriteComplete, this));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -532,10 +523,10 @@ int32_t FileIOResource::WriteValidated(
 void FileIOResource::SetLengthValidated(
     int64_t length,
     scoped_refptr<TrackedCallback> callback) {
-  Call<PpapiPluginMsg_FileIO_GeneralReply>(BROWSER,
-      PpapiHostMsg_FileIO_SetLength(length),
-      base::Bind(&FileIOResource::OnPluginMsgGeneralComplete, this,
-                 callback));
+  Call<PpapiPluginMsg_FileIO_GeneralReply>(
+      BROWSER, PpapiHostMsg_FileIO_SetLength(length),
+      base::BindOnce(&FileIOResource::OnPluginMsgGeneralComplete, this,
+                     callback));
 
   // On the browser side we grow |max_written_offset_| monotonically, due to the
   // unpredictable ordering of plugin side Write and SetLength calls. Match that
@@ -612,11 +603,11 @@ void FileIOResource::OnRequestWriteQuotaComplete(
     scoped_refptr<WriteOp> write_op(new WriteOp(
         file_holder_, offset, std::move(buffer), bytes_to_write, append));
     base::PostTaskAndReplyWithResult(
-        PpapiGlobals::Get()->GetFileTaskRunner(),
-        FROM_HERE,
-        Bind(&FileIOResource::WriteOp::DoWork, write_op),
-        RunWhileLocked(Bind(&TrackedCallback::Run, callback)));
-    callback->set_completion_task(Bind(&FileIOResource::OnWriteComplete, this));
+        PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
+        base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
+        RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
+    callback->set_completion_task(
+        BindOnce(&FileIOResource::OnWriteComplete, this));
   }
 }
 

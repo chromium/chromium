@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 
@@ -38,7 +38,7 @@ extern const char kTestClientDirectivePolicyReferenceName[];
 ClientMetadata BuildClientMetadata(
     int32_t retry_count,
     const ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id = base::nullopt);
+    const absl::optional<std::string>& session_id = absl::nullopt);
 
 PolicyReference BuildPolicyReference(const std::string& name, int64_t version);
 
@@ -58,7 +58,8 @@ DeviceFeatureStatus BuildDeviceFeatureStatus(
 DeviceActivityStatus BuildDeviceActivityStatus(
     const std::string& device_id,
     int64_t last_activity_time_sec,
-    const ConnectivityStatus online_status);
+    const ConnectivityStatus online_status,
+    Timestamp last_update_time);
 
 // The data field is set to "start_|start_time_millis|_end_|end_time_millis|".
 BeaconSeed BuildBeaconSeedForTest(int64_t start_time_millis,

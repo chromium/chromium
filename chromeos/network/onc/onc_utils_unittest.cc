@@ -6,10 +6,11 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/network/network_ui_data.h"
@@ -27,7 +28,7 @@ std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
   base::FilePath path;
   std::unique_ptr<base::Value> result;
   if (!test_utils::GetTestDataPath("network", filename, &path)) {
-    NOTREACHED() << "Unable to get test file path for: " << filename;
+    LOG(FATAL) << "Unable to get test file path for: " << filename;
     return result;
   }
   JSONFileValueDeserializer deserializer(path,
@@ -44,39 +45,35 @@ std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
 namespace onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
+  base::Value encrypted_onc =
+      test_utils::ReadTestDictionaryValue("broken-encrypted-iterations.onc");
 
-  std::unique_ptr<base::Value> decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
 
-  EXPECT_EQ(nullptr, decrypted_onc.get());
+  EXPECT_TRUE(decrypted_onc.is_none());
 }
 
 TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
+  base::Value encrypted_onc = test_utils::ReadTestDictionaryValue(
+      "broken-encrypted-zero-iterations.onc");
 
-  std::string error;
-  std::unique_ptr<base::Value> decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
 
-  EXPECT_EQ(nullptr, decrypted_onc.get());
+  EXPECT_TRUE(decrypted_onc.is_none());
 }
 
 TEST(ONCDecrypterTest, LoadEncryptedOnc) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("encrypted.onc");
-  std::unique_ptr<base::Value> expected_decrypted_onc =
-      test_utils::ReadTestDictionary("decrypted.onc");
+  base::Value encrypted_onc =
+      test_utils::ReadTestDictionaryValue("encrypted.onc");
+  base::Value expected_decrypted_onc =
+      test_utils::ReadTestDictionaryValue("decrypted.onc");
 
   std::string error;
-  std::unique_ptr<base::Value> actual_decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value actual_decrypted_onc = Decrypt("test0000", encrypted_onc);
 
   base::Value emptyDict;
-  EXPECT_TRUE(test_utils::Equals(expected_decrypted_onc.get(),
-                                 actual_decrypted_onc.get()));
+  EXPECT_TRUE(
+      test_utils::Equals(&expected_decrypted_onc, &actual_decrypted_onc));
 }
 
 namespace {
@@ -128,8 +125,8 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
   certs["cert_google"] = "pem_google";
   certs["cert_webkit"] = "pem_webkit";
 
-  for (base::DictionaryValue::Iterator it(*test_cases);
-       !it.IsAtEnd(); it.Advance()) {
+  for (base::DictionaryValue::Iterator it(*test_cases); !it.IsAtEnd();
+       it.Advance()) {
     SCOPED_TRACE("Test case: " + it.key());
 
     const base::DictionaryValue* test_case = NULL;
@@ -141,17 +138,14 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
     const base::ListValue* expected_resolved_onc = NULL;
     test_case->GetList("WithResolvedRefs", &expected_resolved_onc);
 
-    bool expected_success = (networks_with_cert_refs->GetSize() ==
-                             expected_resolved_onc->GetSize());
+    bool expected_success = (networks_with_cert_refs->GetList().size() ==
+                             expected_resolved_onc->GetList().size());
 
-    std::unique_ptr<base::ListValue> actual_resolved_onc(
-        networks_with_cert_refs->DeepCopy());
-
-    bool success = ResolveServerCertRefsInNetworks(certs,
-                                                   actual_resolved_onc.get());
+    base::Value actual_resolved_onc(networks_with_cert_refs->Clone());
+    bool success = ResolveServerCertRefsInNetworks(certs, &actual_resolved_onc);
     EXPECT_EQ(expected_success, success);
-    EXPECT_TRUE(test_utils::Equals(expected_resolved_onc,
-                                   actual_resolved_onc.get()));
+    EXPECT_TRUE(
+        test_utils::Equals(expected_resolved_onc, &actual_resolved_onc));
   }
 }
 
@@ -206,6 +200,43 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
         ConvertProxyConfigToOncProxySettings(*shill_proxy_config);
     EXPECT_TRUE(test_utils::Equals(onc_proxy_settings, &actual_proxy_settings));
   }
+}
+
+TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
+  // WiFi configuration that doesn't have HiddenSSID field set.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  base::Value* hidden_ssid_field =
+      wifi_fields->FindKey(::onc::wifi::kHiddenSSID);
+  ASSERT_TRUE(hidden_ssid_field);
+  EXPECT_FALSE(hidden_ssid_field->GetBool());
+}
+
+TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
+  // WiFi configuration that have HiddenSSID field set to false.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary(
+          "translation_of_shill_wifi_with_state.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  EXPECT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+}
+
+TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
+  // WiFi configuration that have HiddenSSID field set to true.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary("wifi_with_hidden_ssid.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  EXPECT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
 }
 
 TEST(ONCPasswordVariable, PasswordAvailable) {

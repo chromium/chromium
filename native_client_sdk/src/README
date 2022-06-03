@@ -18,7 +18,7 @@ Contributing
 If you want to contribute to the Native Client SDK itself, please read the
 online documentation on contributing code to Chromium here:
 
-  http://www.chromium.org/developers/contributing-code
+  https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/contributing.md
 
 Known Issues
 ------------

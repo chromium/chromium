@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iosfwd>
 #include <list>
 #include <map>
@@ -15,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
@@ -65,19 +65,22 @@ class AutofillProfile : public AutofillDataModel {
   bool IsDeletable() const override;
 
   // FormGroup:
-  void GetMatchingTypes(const base::string16& text,
+  void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         ServerFieldTypeSet* matching_types) const override;
 
   void GetMatchingTypesAndValidities(
-      const base::string16& text,
+      const std::u16string& text,
       const std::string& app_locale,
       ServerFieldTypeSet* matching_types,
       std::map<ServerFieldType, AutofillProfile::ValidityState>*
           matching_types_validities) const;
 
-  base::string16 GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfo(ServerFieldType type, const base::string16& value) override;
+  std::u16string GetRawInfo(ServerFieldType type) const override;
+  void SetRawInfoWithVerificationStatus(
+      ServerFieldType type,
+      const std::u16string& value,
+      structured_address::VerificationStatus status) override;
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 
@@ -140,6 +143,12 @@ class AutofillProfile : public AutofillDataModel {
   bool MergeDataFrom(const AutofillProfile& profile,
                      const std::string& app_locale);
 
+  // Merges structured data from |this| profile and the given |profile| into
+  // |this| profile. Expected to be called if |this| profile is already
+  // verified. Returns true if the profile was modified.
+  bool MergeStructuredDataFrom(const AutofillProfile& profile,
+                               const std::string& app_locale);
+
   // Saves info from |profile| into |this|, provided |this| and |profile| do not
   // have any direct conflicts (i.e. data is present but different). Will not
   // make changes if |this| is verified and |profile| is not. Returns true if
@@ -157,7 +166,7 @@ class AutofillProfile : public AutofillDataModel {
   static void CreateDifferentiatingLabels(
       const std::vector<AutofillProfile*>& profiles,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Creates inferred labels for |profiles|, according to the rules above and
   // stores them in |created_labels|. If |suggested_fields| is not NULL, the
@@ -172,12 +181,12 @@ class AutofillProfile : public AutofillDataModel {
       ServerFieldType excluded_field,
       size_t minimal_fields_shown,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Builds inferred label from the first |num_fields_to_include| non-empty
   // fields in |label_fields|. Uses as many fields as possible if there are not
   // enough non-empty fields.
-  base::string16 ConstructInferredLabel(const ServerFieldType* label_fields,
+  std::u16string ConstructInferredLabel(const ServerFieldType* label_fields,
                                         const size_t label_fields_size,
                                         size_t num_fields_to_include,
                                         const std::string& app_locale) const;
@@ -198,7 +207,12 @@ class AutofillProfile : public AutofillDataModel {
 
   // Logs the number of days since the profile was last used, records its
   // use and updates |previous_use_date_| to the last value of |use_date_|.
+  // Also initiates the logging of the structured token verification statuses.
   void RecordAndLogUse();
+
+  // Logs the verification status of non-empty structured name and address
+  // tokens. Should be called when a profile is used to fill a form.
+  void LogVerificationStatuses();
 
   // Returns true if the current profile has greater frescocency than the
   // |other|. Frescocency is a combination of validation score and frecency to
@@ -270,21 +284,57 @@ class AutofillProfile : public AutofillDataModel {
 
   // Check for the validity of the data. Leave the field empty if the data is
   // invalid and the relevant feature is enabled.
-  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const override;
+  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const;
 
   base::WeakPtr<const AutofillProfile> GetWeakPtr() const {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- private:
-  typedef std::vector<const FormGroup*> FormGroupList;
+  // Calls |FinalizeAfterImport()| on all |FormGroup| members that are
+  // implemented using the hybrid-structure |AddressComponent|.
+  // If possible, this will initiate the completion of the structure tree to
+  // derive all missing values either by parsing their parent node if assigned,
+  // or by formatting the value from their child nodes.
+  // Returns true if all calls yielded true.
+  bool FinalizeAfterImport();
 
+  // Returns true if the profile contains any structured data. This can be any
+  // name type but the full name, or for addresses, the street name or house
+  // number.
+  bool HasStructuredData();
+
+  // Returns a constant reference to the |name_| field.
+  const NameInfo& GetNameInfo() const { return name_; }
+
+  // Returns a constant reference to the |address_| field.
+  const Address& GetAddress() const { return address_; }
+
+  // Returns the label of the profile.
+  const std::string& profile_label() const { return profile_label_; }
+
+  // Sets the label of the profile.
+  void set_profile_label(const std::string& label) { profile_label_ = label; }
+
+  bool disallow_settings_visible_updates() const {
+    return disallow_settings_visible_updates_;
+  }
+  void set_disallow_settings_visible_updates(bool disallow) {
+    disallow_settings_visible_updates_ = disallow;
+  }
+
+ private:
   // FormGroup:
-  base::string16 GetInfoImpl(const AutofillType& type,
+  std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
-  bool SetInfoImpl(const AutofillType& type,
-                   const base::string16& value,
-                   const std::string& app_locale) override;
+
+  structured_address::VerificationStatus GetVerificationStatusImpl(
+      const ServerFieldType type) const override;
+
+  bool SetInfoWithVerificationStatusImpl(
+      const AutofillType& type,
+      const std::u16string& value,
+      const std::string& app_locale,
+      structured_address::VerificationStatus status) override;
 
   // Creates inferred labels for |profiles| at indices corresponding to
   // |indices|, and stores the results to the corresponding elements of
@@ -297,11 +347,15 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<ServerFieldType>& fields,
       size_t num_fields_to_include,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Utilities for listing and lookup of the data members that constitute
   // user-visible profile information.
-  FormGroupList FormGroups() const;
+  std::array<const FormGroup*, 5> FormGroups() const {
+    // Adjust the return type size as necessary.
+    return {&name_, &email_, &company_, &phone_number_, &address_};
+  }
+
   const FormGroup* FormGroupForType(const AutofillType& type) const;
   FormGroup* MutableFormGroupForType(const AutofillType& type);
 
@@ -315,8 +369,20 @@ class AutofillProfile : public AutofillDataModel {
   PhoneNumber phone_number_;
   Address address_;
 
+  // The label is chosen by the user and can contain an arbitrary value.
+  // However, there are two labels that play a special role to indicate that an
+  // address is either a 'HOME' or a 'WORK' address. In this case, the value of
+  // the label is '$HOME$' or '$WORK$', respectively.
+  std::string profile_label_;
+
   // The BCP 47 language code that can be used to format |address_| for display.
   std::string language_code_;
+
+  // The state indicates if the profile qualifies to get merged with a
+  // profile observed in a form submission. If true, the profile can still be
+  // updated silently, but it should not be considered for merges that need to
+  // involve user interactions.
+  bool disallow_settings_visible_updates_{false};
 
   // ID used for identifying this profile. Only set for SERVER_PROFILEs. This is
   // a hash of the contents.

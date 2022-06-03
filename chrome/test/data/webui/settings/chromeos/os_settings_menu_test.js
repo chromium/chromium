@@ -2,15 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {Router, routes, Route, osPageVisibility} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /** @fileoverview Runs tests for the OS settings menu. */
+
+function setupRouter() {
+  const testRoutes = {
+    BASIC: new settings.Route('/'),
+    ADVANCED: new settings.Route('/advanced'),
+  };
+  testRoutes.BLUETOOTH =
+      testRoutes.BASIC.createSection('/bluetooth', 'bluetooth');
+  testRoutes.RESET = testRoutes.ADVANCED.createSection('/osReset', 'osReset');
+
+  settings.Router.resetInstanceForTesting(new settings.Router(testRoutes));
+
+  settings.routes.RESET = testRoutes.RESET;
+  settings.routes.BLUETOOTH = testRoutes.BLUETOOTH;
+  settings.routes.ADVANCED = testRoutes.ADVANCED;
+  settings.routes.BASIC = testRoutes.BASIC;
+}
 
 suite('OSSettingsMenu', function() {
   let settingsMenu = null;
 
   setup(function() {
+    setupRouter();
     PolymerTest.clearBody();
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageVisibility = settings.pageVisibility;
+    settingsMenu.pageVisibility = settings.osPageVisibility;
     document.body.appendChild(settingsMenu);
   });
 
@@ -59,14 +84,31 @@ suite('OSSettingsMenu', function() {
     Polymer.dom.flush();
     assertNotEquals(openIcon, ironIconElement.icon);
   });
+
+  test('Advanced menu expands on navigating to an advanced setting', () => {
+    assertFalse(settingsMenu.advancedOpened);
+    settings.Router.getInstance().navigateTo(settings.routes.RESET);
+    assertFalse(settingsMenu.advancedOpened);
+
+    // If there are search params and the current route is a descendant of
+    // the Advanced route, then ensure that the advanced menu expands.
+    const params = new URLSearchParams('search=test');
+    settings.Router.getInstance().navigateTo(settings.routes.RESET, params);
+    Polymer.dom.flush();
+    assertTrue(settingsMenu.advancedOpened);
+  });
 });
 
 suite('OSSettingsMenuReset', function() {
+  let settingsMenu = null;
+
   setup(function() {
+    setupRouter();
     PolymerTest.clearBody();
-    settings.navigateTo(settings.routes.RESET, '');
+    settings.Router.getInstance().navigateTo(settings.routes.RESET, '');
     settingsMenu = document.createElement('os-settings-menu');
     document.body.appendChild(settingsMenu);
+    Polymer.dom.flush();
   });
 
   teardown(function() {
@@ -76,15 +118,15 @@ suite('OSSettingsMenuReset', function() {
   test('openResetSection', function() {
     const selector = settingsMenu.$.subMenu;
     const path = new window.URL(selector.selected).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/osReset', path);
   });
 
   test('navigateToAnotherSection', function() {
     const selector = settingsMenu.$.subMenu;
     let path = new window.URL(selector.selected).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/osReset', path);
 
-    settings.navigateTo(settings.routes.BLUETOOTH, '');
+    settings.Router.getInstance().navigateTo(settings.routes.BLUETOOTH, '');
     Polymer.dom.flush();
 
     path = new window.URL(selector.selected).pathname;
@@ -94,9 +136,9 @@ suite('OSSettingsMenuReset', function() {
   test('navigateToBasic', function() {
     const selector = settingsMenu.$.subMenu;
     const path = new window.URL(selector.selected).pathname;
-    assertEquals('/reset', path);
+    assertEquals('/osReset', path);
 
-    settings.navigateTo(settings.routes.BASIC, '');
+    settings.Router.getInstance().navigateTo(settings.routes.BASIC, '');
     Polymer.dom.flush();
 
     // BASIC has no sub page selected.

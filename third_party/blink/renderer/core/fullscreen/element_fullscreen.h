@@ -7,21 +7,22 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/fullscreen/fullscreen_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class Element;
+class FullscreenOptions;
 
-class ElementFullscreen {
+class CORE_EXPORT ElementFullscreen {
   STATIC_ONLY(ElementFullscreen);
 
  public:
   static ScriptPromise requestFullscreen(ScriptState*,
                                          Element&,
-                                         const FullscreenOptions*);
+                                         const FullscreenOptions*,
+                                         ExceptionState& exception_state);
 
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(fullscreenchange, kFullscreenchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(fullscreenerror, kFullscreenerror)

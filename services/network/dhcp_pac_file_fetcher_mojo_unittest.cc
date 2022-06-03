@@ -4,6 +4,7 @@
 
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
 
+#include "base/memory/ptr_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/mock_pac_file_fetcher.h"
 #include "net/test/gtest_util.h"
@@ -51,7 +52,7 @@ TEST_F(DhcpPacFileFetcherMojoTest, UsePacSctipt) {
   CreateFetcher(pac_url.spec());
 
   net::TestCompletionCallback callback;
-  base::string16 pac_text;
+  std::u16string pac_text;
   dhcp_pac_file_fetcher_mojo_->Fetch(&pac_text, callback.callback(),
                                      net::NetLogWithSource(),
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -67,7 +68,7 @@ TEST_F(DhcpPacFileFetcherMojoTest, PacScriptMissing) {
   CreateFetcher(std::string());
 
   net::TestCompletionCallback callback;
-  base::string16 pac_text;
+  std::u16string pac_text;
   dhcp_pac_file_fetcher_mojo_->Fetch(&pac_text, callback.callback(),
                                      net::NetLogWithSource(),
                                      TRAFFIC_ANNOTATION_FOR_TESTS);

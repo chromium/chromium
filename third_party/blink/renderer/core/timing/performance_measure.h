@@ -49,6 +49,7 @@ class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
                      double end_time,
                      scoped_refptr<SerializedScriptValue>,
                      ExceptionState&);
+  ~PerformanceMeasure() override = default;
 
   static PerformanceMeasure* Create(ScriptState*,
                                     const AtomicString& name,
@@ -64,10 +65,9 @@ class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
   mojom::blink::PerformanceMarkOrMeasurePtr ToMojoPerformanceMarkOrMeasure()
       override;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
-  ~PerformanceMeasure() override = default;
   scoped_refptr<SerializedScriptValue> serialized_detail_;
   // In order to prevent cross-world reference leak, we create a copy of the
   // detail for each world.

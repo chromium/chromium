@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <valarray>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 
 namespace ui {
 
@@ -85,10 +85,11 @@ void ListSelectionModel::IncrementFrom(int index) {
 
 void ListSelectionModel::DecrementFrom(int index) {
   for (auto i = selected_indices_.begin(); i != selected_indices_.end();) {
-    if (DecrementFromImpl(index, &(*i)))
+    if (DecrementFromImpl(index, &(*i))) {
       i = selected_indices_.erase(i);
-    else
+    } else {
       ++i;
+    }
   }
   DecrementFromImpl(index, &anchor_);
   DecrementFromImpl(index, &active_);
@@ -98,7 +99,7 @@ void ListSelectionModel::SetSelectedIndex(int index) {
   anchor_ = active_ = index;
   selected_indices_.clear();
   if (index != kUnselectedIndex)
-    selected_indices_.push_back(index);
+    selected_indices_.insert(index);
 }
 
 bool ListSelectionModel::IsSelected(int index) const {
@@ -106,16 +107,23 @@ bool ListSelectionModel::IsSelected(int index) const {
 }
 
 void ListSelectionModel::AddIndexToSelection(int index) {
-  if (!IsSelected(index)) {
-    selected_indices_.push_back(index);
-    std::sort(selected_indices_.begin(), selected_indices_.end());
+  selected_indices_.insert(index);
+}
+
+void ListSelectionModel::AddIndexRangeToSelection(int index_start,
+                                                  int index_end) {
+  DCHECK_LE(index_start, index_end);
+
+  if (index_start == index_end)
+    return AddIndexToSelection(index_start);
+
+  for (int i = index_start; i <= index_end; ++i) {
+    selected_indices_.insert(i);
   }
 }
 
 void ListSelectionModel::RemoveIndexFromSelection(int index) {
-  auto i = std::find(selected_indices_.begin(), selected_indices_.end(), index);
-  if (i != selected_indices_.end())
-    selected_indices_.erase(i);
+  selected_indices_.erase(index);
 }
 
 void ListSelectionModel::SetSelectionFromAnchorTo(int index) {
@@ -123,9 +131,9 @@ void ListSelectionModel::SetSelectionFromAnchorTo(int index) {
     SetSelectedIndex(index);
   } else {
     int delta = std::abs(index - anchor_);
-    SelectedIndices new_selection(delta + 1, 0);
+    SelectedIndices new_selection;
     for (int i = 0, min = std::min(index, anchor_); i <= delta; ++i)
-      new_selection[i] = i + min;
+      new_selection.insert(i + min);
     selected_indices_.swap(new_selection);
     active_ = index;
   }
@@ -137,10 +145,8 @@ void ListSelectionModel::AddSelectionFromAnchorTo(int index) {
   } else {
     for (int i = std::min(index, anchor_), end = std::max(index, anchor_);
          i <= end; ++i) {
-      if (!IsSelected(i))
-        selected_indices_.push_back(i);
+      selected_indices_.insert(i);
     }
-    std::sort(selected_indices_.begin(), selected_indices_.end());
     active_ = index;
   }
 }
@@ -195,13 +201,11 @@ void ListSelectionModel::Move(int old_index, int new_index, int length) {
   // still sorted piecewise, and |pivot_value| is a lower bound for elements in
   // [low, middle), and an upper bound for [middle, high).
   std::rotate(low, middle, high);
-  DCHECK(std::is_sorted(selected_indices_.begin(), selected_indices_.end()));
 }
 
 void ListSelectionModel::Clear() {
   anchor_ = active_ = kUnselectedIndex;
-  SelectedIndices empty_selection;
-  selected_indices_.swap(empty_selection);
+  selected_indices_.clear();
 }
 
 }  // namespace ui

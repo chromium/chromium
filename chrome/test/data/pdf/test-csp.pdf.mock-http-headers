@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+content-security-policy: default-src 'self'
+content-type: application/pdf

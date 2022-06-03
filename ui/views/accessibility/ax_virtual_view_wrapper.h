@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_AX_VIRTUAL_VIEW_WRAPPER_H_
 #define UI_VIEWS_ACCESSIBILITY_AX_VIRTUAL_VIEW_WRAPPER_H_
 
+#include <string>
 #include <vector>
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
@@ -19,18 +20,18 @@ class AXVirtualView;
 // Wraps (and adapts) an AXVirtualView for use with AXTreeSourceViews.
 class AXVirtualViewWrapper : public AXAuraObjWrapper {
  public:
-  AXVirtualViewWrapper(AXVirtualView* virtual_view, AXAuraObjCache* cache);
+  AXVirtualViewWrapper(AXAuraObjCache* cache, AXVirtualView* virtual_view);
   AXVirtualViewWrapper(const AXVirtualViewWrapper&) = delete;
   AXVirtualViewWrapper& operator=(const AXVirtualViewWrapper&) = delete;
   ~AXVirtualViewWrapper() override;
 
   // AXAuraObjWrapper:
-  bool IsIgnored() override;
   AXAuraObjWrapper* GetParent() override;
   void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override;
   void Serialize(ui::AXNodeData* out_node_data) override;
-  int32_t GetUniqueId() const override;
+  ui::AXNodeID GetUniqueId() const override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
+  std::string ToString() const override;
 
  private:
   // Weak.

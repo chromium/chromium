@@ -7,18 +7,18 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace ash {
 
 class AutoConnectNotifier;
 class AutoConnectNotifierTest;
 class CapsLockNotificationController;
+class GestureEducationNotificationController;
 class CastNotificationController;
+class CellularSetupNotifier;
+class MicrophoneMuteNotificationController;
 class PowerNotificationController;
 class ScreenSecurityNotificationController;
 class SessionLimitNotificationController;
-class SupervisedNotificationController;
 class TracingNotificationController;
 class UpdateNotificationController;
 class WifiToggleNotificationController;
@@ -27,22 +27,30 @@ class WifiToggleNotificationController;
 class SystemNotificationController {
  public:
   SystemNotificationController();
+
+  SystemNotificationController(const SystemNotificationController&) = delete;
+  SystemNotificationController& operator=(const SystemNotificationController&) =
+      delete;
+
   ~SystemNotificationController();
 
  private:
   friend class AutoConnectNotifierTest;
+  friend class CellularSetupNotifierTest;
+  friend class UpdateNotificationControllerTest;
   const std::unique_ptr<AutoConnectNotifier> auto_connect_;
   const std::unique_ptr<CapsLockNotificationController> caps_lock_;
   const std::unique_ptr<CastNotificationController> cast_;
+  const std::unique_ptr<CellularSetupNotifier> cellular_setup_notifier_;
+  const std::unique_ptr<GestureEducationNotificationController>
+      gesture_education_;
+  std::unique_ptr<MicrophoneMuteNotificationController> microphone_mute_;
   const std::unique_ptr<PowerNotificationController> power_;
   const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;
-  const std::unique_ptr<SupervisedNotificationController> supervised_;
   const std::unique_ptr<TracingNotificationController> tracing_;
   const std::unique_ptr<UpdateNotificationController> update_;
   const std::unique_ptr<WifiToggleNotificationController> wifi_toggle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNotificationController);
 };
 
 }  // namespace ash

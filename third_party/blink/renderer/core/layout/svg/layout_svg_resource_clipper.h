@@ -21,6 +21,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_CLIPPER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -33,39 +34,34 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   explicit LayoutSVGResourceClipper(SVGClipPathElement*);
   ~LayoutSVGResourceClipper() override;
 
-  const char* GetName() const override { return "LayoutSVGResourceClipper"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGResourceClipper";
+  }
 
-  void RemoveAllClientsFromCache(bool mark_for_invalidation = true) override;
+  void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box);
+  gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box);
 
   static const LayoutSVGResourceType kResourceType = kClipperResourceType;
-  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
+  LayoutSVGResourceType ResourceType() const override {
+    NOT_DESTROYED();
+    return kResourceType;
+  }
 
-  bool HitTestClipContent(const FloatRect&, const HitTestLocation&) const;
+  bool HitTestClipContent(const gfx::RectF&, const HitTestLocation&) const;
 
   SVGUnitTypes::SVGUnitType ClipPathUnits() const;
-  AffineTransform CalculateClipTransform(const FloatRect& reference_box) const;
+  AffineTransform CalculateClipTransform(const gfx::RectF& reference_box) const;
 
-  base::Optional<Path> AsPath();
+  absl::optional<Path> AsPath();
   sk_sp<const PaintRecord> CreatePaintRecord();
 
-  bool HasCycle() { return in_clip_expansion_; }
-  void BeginClipExpansion() {
-    DCHECK(!in_clip_expansion_);
-    in_clip_expansion_ = true;
-  }
-  void EndClipExpansion() {
-    DCHECK(in_clip_expansion_);
-    in_clip_expansion_ = false;
-  }
-
- protected:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void WillBeDestroyed() override;
-
  private:
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
   void CalculateLocalClipBounds();
+  bool FindCycleFromSelf() const override;
 
   // Cache of the clip path when using path clipping.
   enum ClipContentPathValidity {
@@ -79,15 +75,33 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   // clipping.
   sk_sp<const PaintRecord> cached_paint_record_;
 
-  FloatRect local_clip_bounds_;
-
-  // Reference cycle detection.
-  bool in_clip_expansion_;
+  gfx::RectF local_clip_bounds_;
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceClipper,
-                                      kClipperResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceClipper> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kClipperResourceType;
+  }
+};
+
+inline LayoutSVGResourceClipper* GetSVGResourceAsType(
+    SVGResourceClient& client,
+    const ReferenceClipPathOperation& reference_clip) {
+  return GetSVGResourceAsType<LayoutSVGResourceClipper>(
+      client, reference_clip.Resource());
+}
+
+inline LayoutSVGResourceClipper* GetSVGResourceAsType(
+    SVGResourceClient& client,
+    const ClipPathOperation* clip_path_operation) {
+  const auto* reference_clip =
+      DynamicTo<ReferenceClipPathOperation>(clip_path_operation);
+  if (!reference_clip)
+    return nullptr;
+  return GetSVGResourceAsType(client, *reference_clip);
+}
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_CLIPPER_H_

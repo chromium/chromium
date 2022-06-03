@@ -122,7 +122,7 @@ EntrySync* EntrySync::getParent() const {
 EntrySync::EntrySync(DOMFileSystemBase* file_system, const String& full_path)
     : EntryBase(file_system, full_path) {}
 
-void EntrySync::Trace(blink::Visitor* visitor) {
+void EntrySync::Trace(Visitor* visitor) const {
   EntryBase::Trace(visitor);
 }
 

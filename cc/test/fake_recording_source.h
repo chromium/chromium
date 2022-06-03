@@ -5,7 +5,9 @@
 #ifndef CC_TEST_FAKE_RECORDING_SOURCE_H_
 #define CC_TEST_FAKE_RECORDING_SOURCE_H_
 
-#include <stddef.h>
+#include <cstddef>
+#include <memory>
+#include <utility>
 
 #include "cc/base/region.h"
 #include "cc/layers/recording_source.h"
@@ -60,10 +62,6 @@ class FakeRecordingSource : public RecordingSource {
     client_.set_bounds(layer_bounds);
   }
 
-  void SetClearCanvasWithDebugColor(bool clear) {
-    clear_canvas_with_debug_color_ = clear;
-  }
-
   void set_fill_with_nonsolid_color(bool nonsolid) {
     client_.set_fill_with_nonsolid_color(nonsolid);
   }
@@ -76,18 +74,16 @@ class FakeRecordingSource : public RecordingSource {
     client_.set_contains_slow_paths(slow_paths);
   }
 
+  void set_has_draw_text_op() { client_.set_has_draw_text_op(); }
+
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);
     Region invalidation;
     gfx::Rect new_recorded_viewport = client_.PaintableRegion();
     scoped_refptr<DisplayItemList> display_list =
-        client_.PaintContentsToDisplayList(
-            ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
-    size_t painter_reported_memory_usage =
-        client_.GetApproximateUnsharedMemoryUsage();
+        client_.PaintContentsToDisplayList();
     UpdateAndExpandInvalidation(&invalidation, size_, new_recorded_viewport);
-    UpdateDisplayItemList(display_list, painter_reported_memory_usage,
-                          recording_scale_factor_);
+    UpdateDisplayItemList(display_list, recording_scale_factor_);
   }
 
   void add_draw_rect(const gfx::Rect& rect) {
@@ -109,29 +105,28 @@ class FakeRecordingSource : public RecordingSource {
   }
 
   void add_draw_image(sk_sp<SkImage> image, const gfx::Point& point) {
-    client_.add_draw_image(std::move(image), point, default_flags_);
+    client_.add_draw_image(std::move(image), point, SkSamplingOptions(),
+                           default_flags_);
   }
   void add_draw_image(PaintImage image, const gfx::Point& point) {
-    client_.add_draw_image(std::move(image), point, default_flags_);
+    client_.add_draw_image(std::move(image), point, SkSamplingOptions(),
+                           default_flags_);
   }
 
   void add_draw_image_with_transform(PaintImage image,
                                      const gfx::Transform& transform) {
     client_.add_draw_image_with_transform(std::move(image), transform,
-                                          default_flags_);
+                                          SkSamplingOptions(), default_flags_);
   }
 
   void add_draw_image_with_flags(sk_sp<SkImage> image,
                                  const gfx::Point& point,
+                                 const SkSamplingOptions& sampling,
                                  const PaintFlags& flags) {
-    client_.add_draw_image(std::move(image), point, flags);
+    client_.add_draw_image(std::move(image), point, sampling, flags);
   }
 
   void set_default_flags(const PaintFlags& flags) { default_flags_ = flags; }
-
-  void set_reported_memory_usage(size_t reported_memory_usage) {
-    client_.set_reported_memory_usage(reported_memory_usage);
-  }
 
   void reset_draws() {
     client_ = FakeContentLayerClient();
@@ -141,11 +136,6 @@ class FakeRecordingSource : public RecordingSource {
   void SetPlaybackAllowedEvent(base::WaitableEvent* event) {
     playback_allowed_event_ = event;
   }
-
-  // Checks that the basic properties of the |other| match |this|.  For the
-  // DisplayItemList, it checks that the painted result matches the painted
-  // result of |other|.
-  bool EqualsTo(const FakeRecordingSource& other);
 
   void SetRecordingScaleFactor(float recording_scale_factor) {
     recording_scale_factor_ = recording_scale_factor;
@@ -158,7 +148,7 @@ class FakeRecordingSource : public RecordingSource {
  private:
   FakeContentLayerClient client_;
   PaintFlags default_flags_;
-  base::WaitableEvent* playback_allowed_event_;
+  base::WaitableEvent* playback_allowed_event_ = nullptr;
 };
 
 }  // namespace cc

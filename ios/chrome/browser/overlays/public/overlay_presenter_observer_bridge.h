@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <string>
 
 #include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
@@ -17,9 +16,14 @@
 @protocol OverlayPresenterObserving <NSObject>
 @optional
 
+// Invoked by OverlayPresenterObserver::GetOverlayRequestSupport().
+- (const OverlayRequestSupport*)overlayRequestSupportForPresenter:
+    (OverlayPresenter*)presenter;
+
 // Invoked by OverlayPresenterObserver::WillShowOverlay().
 - (void)overlayPresenter:(OverlayPresenter*)presenter
-    willShowOverlayForRequest:(OverlayRequest*)request;
+    willShowOverlayForRequest:(OverlayRequest*)request
+          initialPresentation:(BOOL)initialPresentation;
 
 // Invoked by OverlayPresenterObserver::DidShowOverlay().
 - (void)overlayPresenter:(OverlayPresenter*)presenter
@@ -41,11 +45,20 @@ class OverlayPresenterObserverBridge : public OverlayPresenterObserver {
   // It it the responsibility of calling code to add/remove the instance
   // from OverlayPresenter's observer list.
   OverlayPresenterObserverBridge(id<OverlayPresenterObserving> observer);
+
+  OverlayPresenterObserverBridge(const OverlayPresenterObserverBridge&) =
+      delete;
+  OverlayPresenterObserverBridge& operator=(
+      const OverlayPresenterObserverBridge&) = delete;
+
   ~OverlayPresenterObserverBridge() override;
 
   // OverlayPresenterObserver:
+  const OverlayRequestSupport* GetRequestSupport(
+      OverlayPresenter* presenter) const override;
   void WillShowOverlay(OverlayPresenter* presenter,
-                       OverlayRequest* request) override;
+                       OverlayRequest* request,
+                       bool initial_presentation) override;
   void DidShowOverlay(OverlayPresenter* presenter,
                       OverlayRequest* request) override;
   void DidHideOverlay(OverlayPresenter* presenter,
@@ -54,8 +67,6 @@ class OverlayPresenterObserverBridge : public OverlayPresenterObserver {
 
  private:
   __weak id<OverlayPresenterObserving> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayPresenterObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTER_OBSERVER_BRIDGE_H_

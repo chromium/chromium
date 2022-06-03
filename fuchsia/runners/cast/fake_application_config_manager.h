@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "url/gurl.h"
 
 // Test cast.ApplicationConfigManager implementation which maps a test Cast
@@ -18,36 +18,34 @@
 class FakeApplicationConfigManager
     : public chromium::cast::ApplicationConfigManager {
  public:
+  // Default agent url used for all applications.
+  static const char kFakeAgentUrl[];
+
   FakeApplicationConfigManager();
+
+  FakeApplicationConfigManager(const FakeApplicationConfigManager&) = delete;
+  FakeApplicationConfigManager& operator=(const FakeApplicationConfigManager&) =
+      delete;
+
   ~FakeApplicationConfigManager() override;
 
-  // Associates a Cast application |id| with a url, to be served from the
-  // EmbeddedTestServer.
-  void AddAppMapping(const std::string& id,
-                     const GURL& url,
-                     bool enable_remote_debugging);
+  // Creates a config for a dummy application with the specified |id| and |url|.
+  // Callers should updated the returned config as necessary and then register
+  // the app by calling AddAppConfig().
+  static chromium::cast::ApplicationConfig CreateConfig(const std::string& id,
+                                                        const GURL& url);
 
-  // Associates a Cast application |id| with a url and an agent that handles
-  // its bindings, to be served from the EmbeddedTestServer.
-  void AddAppMappingWithAgent(const std::string& id,
-                              const GURL& url,
-                              bool enable_remote_debugging,
-                              const std::string& agent_url);
+  // Adds |app_config| to the list of apps.
+  void AddAppConfig(chromium::cast::ApplicationConfig app_config);
 
-  // Associates a Cast application |id| with a url and a set of content
-  // directories, to be served from the EmbeddedTestServer.
-  void AddAppMappingWithContentDirectories(
-      const std::string& id,
-      const GURL& url,
-      std::vector<fuchsia::web::ContentDirectoryProvider> directories);
+  // Associates a Cast application |id| with the |url|.
+  void AddApp(const std::string& id, const GURL& url);
 
   // chromium::cast::ApplicationConfigManager interface.
   void GetConfig(std::string id, GetConfigCallback config_callback) override;
 
  private:
   std::map<std::string, chromium::cast::ApplicationConfig> id_to_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeApplicationConfigManager);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_FAKE_APPLICATION_CONFIG_MANAGER_H_

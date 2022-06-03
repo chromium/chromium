@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Test Picture-in-Picture service error</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/picture-in-picture/resources/picture-in-picture-helpers.js"></script>
+<body></body>
+<script type="module">
+import {PictureInPictureService, PictureInPictureServiceReceiver} from '/gen/third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.m.js';
+
+class PictureInPictureServiceMock {
+  constructor() {
+    this.receiver_ = new PictureInPictureServiceReceiver(this);
+
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(PictureInPictureService.$interfaceName);
+    this.interceptor_.oninterfacerequest =
+        e => this.receiver_.$.bindHandle(e.handle);
+    this.interceptor_.start();
+  }
+
+  async startSession(playerId, surfaceId, naturalSize, showPlayPauseButton,
+        observer, callback) {
+    return {session: null, size: {width: 0, height: 0}};
+  }
+};
+
+promise_test(async t => {
+  new PictureInPictureServiceMock();
+
+  const video = await loadVideo(document, '/media/test.ogv');
+  return promise_rejects_dom(t, 'NotSupportedError',
+    requestPictureInPictureWithTrustedClick(video));
+});
+</script>

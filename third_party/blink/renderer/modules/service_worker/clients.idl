@@ -8,7 +8,7 @@
     ImplementedAs=ServiceWorkerClients
 ] interface Clients {
     [CallWith=ScriptState] Promise<any> get(DOMString id);
-    [CallWith=ScriptState] Promise<sequence<Client>> matchAll(optional ClientQueryOptions options);
+    [CallWith=ScriptState] Promise<sequence<Client>> matchAll(optional ClientQueryOptions options = {});
     [CallWith=ScriptState] Promise<WindowClient?> openWindow(USVString url);
     [CallWith=ScriptState] Promise<void> claim();
 };

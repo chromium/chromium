@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java",
+  "+components/infobars/android/java/src/org/chromium/components/infobars/InfoBar.java",
+  "+components/infobars/android/java/src/org/chromium/components/infobars/InfoBarAnimationListener.java",
+  "+components/infobars/android/java/src/org/chromium/components/infobars/InfoBarUiItem.java",
+  "+content/public/android/java/src/org/chromium/content_public/browser/UiThreadTaskTraits.java",
+  "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
+  "+content/public/android/java/src/org/chromium/content_public/common/ContentUrlConstants.java"
+]

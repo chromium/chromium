@@ -1,7 +1,7 @@
 # Controlling Access to Powerful Web Platform Features
 
 _Author: [dominickn@chromium.org](mailto:dominickn@chromium.org)_
-_Contributors: [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
+_Contributors: [mgiuca@chromium.org](mailto:mgiuca@chromium.org), [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
 
 # Overview
 
@@ -52,7 +52,7 @@ and summarises why alternative proposals were not taken up.
 +   [__Powerful Web Platform APIs__](https://www.chromium.org/Home/chromium-security/prefer-secure-origins-for-powerful-new-features)
     are capabilities which carry inherent security or privacy risks when used,
     but also provide users of web apps with significant utility. A canonical
-    example is native file system access (i.e. allowing web sites to directly
+    example is local file system access (i.e. allowing web sites to directly
     read and write from certain locations on the user's device). Many such
     capabilities already exist on the web in every browser (e.g. access to
     camera and microphone hardware), while new capabilities are under constant
@@ -142,7 +142,7 @@ which may include:
 
 These mechanisms must clearly disclose the origin of the request, and follow
 Chromium's
-[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/master/docs/security/url_display_guidelines/url_display_guidelines.md).
+[guidelines on displaying URLs](https://chromium.googlesource.com/chromium/src/+/main/docs/security/url_display_guidelines/url_display_guidelines.md).
 Implementations may be tested using tools such as
 [Trickuri](https://github.com/chromium/trickuri).
 
@@ -246,7 +246,7 @@ mechanisms. For example, some of the following measures could be explored:
 +   restrict what Service Workers may do in the background unless they control
     a site that is installed.
 
-# Case Study -- Native File System Access
+# Case Study -- File System Access
 
 We describe a high level case study based on the principles in this document
 for granting a web site access to a) read any file in a certain directory; b)
@@ -279,8 +279,8 @@ write files to a directory.
 
 Apps on any desktop or mobile platform require installation to run, and when
 installed, apps are automatically granted many privileges. We could extend
-this concept to the web by restricting powerful APIs like native file system
-access only to installed web apps. That is, the drive-by web could not even
+this concept to the web by restricting powerful APIs like the File System
+Access API only to installed web apps. That is, the drive-by web could not even
 ask for permission to access an API -- the site would need to be installed.
 
 A key argument for using installation in this manner is that some APIs are

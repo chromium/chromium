@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The source of the input event result.
+enum InputEventResultSource {
+  kUnknown,
+  kCompositorThread,
+  kMainThread,
+  kBrowser,
+};
+
+// The handling state of the input event.
+enum InputEventResultState {
+  // Remove this eventually and use optional.
+  kUnknown,
+  // Was consumed.
+  kConsumed,
+  // Was not consumed.
+  kNotConsumed,
+  // Could not be targeted.
+  kNoConsumerExists,
+  // Discarded.
+  kIgnored,
+  // Consumed but forced to be non blocking due to event listener settings.
+  kSetNonBlocking,
+  // Consumed but forced to be non blocking due to active fling.
+  kSetNonBlockingDueToFling
+};

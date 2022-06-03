@@ -4,12 +4,9 @@
 
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 
-#include "base/feature_list.h"
-#include "base/strings/string_piece.h"
-#include "chrome/common/chrome_features.h"
+#include "base/strings/string_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "google/cacheinvalidation/include/types.h"
 
 namespace policy {
 
@@ -19,51 +16,62 @@ constexpr char kFcmPolicyPublicTopicPrefix[] = "cs-";
 
 }  // namespace
 
-bool IsPublicInvalidationTopic(const syncer::Topic& topic) {
-  return base::StringPiece(topic).starts_with(kFcmPolicyPublicTopicPrefix);
+bool IsPublicInvalidationTopic(const invalidation::Topic& topic) {
+  return base::StartsWith(topic, kFcmPolicyPublicTopicPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
-bool GetCloudPolicyObjectIdFromPolicy(
+bool GetCloudPolicyTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    invalidation::ObjectId* object_id) {
-  if (base::FeatureList::IsEnabled(features::kPolicyFcmInvalidations)) {
-    if (!policy.has_policy_invalidation_topic() ||
-        policy.policy_invalidation_topic().empty()) {
-      return false;
-    }
-    *object_id = invalidation::ObjectId(syncer::kDeprecatedSourceForFCM,
-                                        policy.policy_invalidation_topic());
-  } else {
-    if (!policy.has_invalidation_source() || !policy.has_invalidation_name() ||
-        policy.invalidation_name().empty()) {
-      return false;
-    }
-    *object_id = invalidation::ObjectId(policy.invalidation_source(),
-                                        policy.invalidation_name());
+    invalidation::Topic* topic) {
+  if (!policy.has_policy_invalidation_topic() ||
+      policy.policy_invalidation_topic().empty()) {
+    return false;
   }
+  *topic = policy.policy_invalidation_topic();
   return true;
 }
 
-bool GetRemoteCommandObjectIdFromPolicy(
+bool GetRemoteCommandTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    invalidation::ObjectId* object_id) {
-  if (base::FeatureList::IsEnabled(features::kPolicyFcmInvalidations)) {
-    if (!policy.has_command_invalidation_topic() ||
-        policy.command_invalidation_topic().empty()) {
-      return false;
-    }
-    *object_id = invalidation::ObjectId(syncer::kDeprecatedSourceForFCM,
-                                        policy.command_invalidation_topic());
-  } else {
-    if (!policy.has_command_invalidation_source() ||
-        !policy.has_command_invalidation_name() ||
-        policy.command_invalidation_name().empty()) {
-      return false;
-    }
-    *object_id = invalidation::ObjectId(policy.command_invalidation_source(),
-                                        policy.command_invalidation_name());
+    invalidation::Topic* topic) {
+  if (!policy.has_command_invalidation_topic() ||
+      policy.command_invalidation_topic().empty()) {
+    return false;
   }
+  *topic = policy.command_invalidation_topic();
   return true;
+}
+
+bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
+                           const base::Time& last_fetch_time,
+                           const base::Time& current_time) {
+  // If the version is unknown, consider the invalidation invalid if the
+  // fetch was very recently.
+  if (invalidation.is_unknown_version()) {
+    base::TimeDelta elapsed = current_time - last_fetch_time;
+    return elapsed < invalidation_timeouts::kUnknownVersionIgnorePeriod;
+  }
+
+  // The invalidation version is the timestamp in microseconds. If the
+  // invalidation occurred before the last fetch, then the invalidation
+  // is expired.
+  base::Time invalidation_time =
+      base::Time::UnixEpoch() + base::Microseconds(invalidation.version()) +
+      invalidation_timeouts::kMaxInvalidationTimeDelta;
+  return invalidation_time < last_fetch_time;
+}
+
+PolicyInvalidationType GetInvalidationMetric(bool is_missing_payload,
+                                             bool is_expired) {
+  if (is_expired) {
+    if (is_missing_payload)
+      return POLICY_INVALIDATION_TYPE_NO_PAYLOAD_EXPIRED;
+    return POLICY_INVALIDATION_TYPE_EXPIRED;
+  }
+  if (is_missing_payload)
+    return POLICY_INVALIDATION_TYPE_NO_PAYLOAD;
+  return POLICY_INVALIDATION_TYPE_NORMAL;
 }
 
 }  // namespace policy

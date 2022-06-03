@@ -6,13 +6,13 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Importing AES-CBC key...
 
 encrypt() with iv that is null...
-error is: TypeError: AesCbcParams: iv: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesCbcParams: iv: Not a BufferSource
 
 encrypt() without iv...
-error is: TypeError: AesCbcParams: iv: Missing required property
+error is: TypeError: Failed to execute 'decrypt' on 'SubtleCrypto': AesCbcParams: iv: Missing required property
 
 encrypt() with iv that is a number...
-error is: TypeError: AesCbcParams: iv: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': AesCbcParams: iv: Not a BufferSource
 
 encrypt() with an iv containing 0 bytes...
 error is: OperationError: The "iv" has an unexpected length -- must be 16 bytes

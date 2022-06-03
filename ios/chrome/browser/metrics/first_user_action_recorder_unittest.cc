@@ -7,26 +7,25 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/base/device_form_factor.h"
 
 using base::UserMetricsAction;
 
 class FirstUserActionRecorderTest : public PlatformTest {
  protected:
   void SetUp() override {
-    base::TimeDelta delta = base::TimeDelta::FromSeconds(60);
+    base::TimeDelta delta = base::Seconds(60);
     recorder_.reset(new FirstUserActionRecorder(delta));
 
     histogram_tester_.reset(new base::HistogramTester());
 
-    is_pad_ = IsIPadIdiom();
+    is_pad_ = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   }
 
   web::WebTaskEnvironment task_environment_;

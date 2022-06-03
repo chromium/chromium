@@ -1,0 +1,9 @@
+{
+  "name": "chrome.windows.onBoundsChanged test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "end-to-end browser test for chrome.windows.onBoundsChanged event API",
+  "background": {
+    "scripts": ["test.js"]
+  }
+}

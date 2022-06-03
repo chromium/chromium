@@ -16,8 +16,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "user_consent_types.proto";
-import "gaia_password_reuse.proto";
+import "components/sync/protocol/user_consent_types.proto";
+import "components/sync/protocol/gaia_password_reuse.proto";
 
 message UserEventSpecifics {
   // Time of event, as measured by client in microseconds since Windows epoch.
@@ -35,12 +35,10 @@ message UserEventSpecifics {
   // Used for testing and debugging EventLog system.
   message Test {}
 
-  // Reports field trial membership for the subset of trials that have been
-  // registered as important to other event types.
-  message FieldTrial { repeated fixed32 variation_ids = 1; }
-
   // Language detection output.
   message LanguageDetection {
+    option deprecated = true;
+
     message Language {
       // ISO 639 language code will be used.
       optional string language_code = 1;
@@ -60,6 +58,8 @@ message UserEventSpecifics {
 
   // User translated a page or interacted with translate suggestion.
   message Translation {
+    option deprecated = true;
+
     // Source language of the translation.
     optional string from_language_code = 1;
     // Target language of the translation.
@@ -94,8 +94,13 @@ message UserEventSpecifics {
   }
 
   // User consented to the usage of a feature or denied/revoked a consent.
+  // This is not used anymore; consents were migrated to a separate data type.
+  // The message has to stay though since the server must keep supporting legacy
+  // consent formats like this.
   // Next id: 14
   message UserConsent {
+    option deprecated = true;
+
     // =========================================================================
     // Fields common to all Chrome User Consents.
     // =========================================================================
@@ -129,33 +134,17 @@ message UserEventSpecifics {
       UserConsentTypes.ArcPlayTermsOfServiceConsent
           arc_play_terms_of_service_consent = 10;
 
-      UserConsentTypes.ArcMetricsAndUsageConsent arc_metrics_and_usage_consent =
-          11;
-
       UserConsentTypes.UnifiedConsent unified_consent = 13;
     }
+    reserved "arc_metrics_and_usage_consent";
+    reserved 11;
 
-    // =========================================================================
-    // Client only fields. TODO(markusheintz): Refactor the code so that these
-    // fields can be moved out of this message.
-    // =========================================================================
-
-    // The account ID of the user who gave the consent. This field is used
-    // by UserEventService to distinguish consents from different users,
-    // as UserConsent does not get deleted when a user signs out. However,
-    // it should be cleared before being sent over the wire, as the UserEvent
-    // is sent over an authenticated channel, so this information would be
-    // redundant.
-    //
-    // For semantics and usage of the |account_id| in the signin codebase,
-    // see PrimaryAccountManager::GetAuthenticatedAccountId()
-    // or AccountInfo::account_id.
-    optional string account_id = 6;
+    reserved 6;
+    reserved "account_id";
 
     // =========================================================================
     // Deprecated fields. Please do not use them !
     // =========================================================================
-    // TODO (markusheintz): Deprecate them completely once there few clients with <= M67.
 
     // Which feature does the consent apply to?
     enum Feature {
@@ -190,14 +179,34 @@ message UserEventSpecifics {
     optional EventTrigger event_trigger = 1;
   }
 
+  message FlocIdComputed {
+    enum EventTrigger {
+      UNSPECIFIED = 0;
+      // Event added because the floc id is computed for the 1st floc session.
+      NEW = 1;
+      // Event added because the floc id is re-computed due to a long period of
+      // time has passed since the last computation.
+      REFRESHED = 2;
+      // Event added because the floc id is re-computed due to history deletion.
+      HISTORY_DELETE = 3;
+    }
+    reserved 1;
+    reserved "event_trigger";
+
+    // If not set, it means that the floc is disabled.
+    optional uint64 floc_id = 2;
+  }
+
   oneof event {
     Test test_event = 8;
-    FieldTrial field_trial_event = 9;
-    LanguageDetection language_detection_event = 10;
-    Translation translation_event = 11;
-    UserConsent user_consent = 12;
+    LanguageDetection language_detection_event = 10 [deprecated = true];
+    Translation translation_event = 11 [deprecated = true];
+    UserConsent user_consent = 12 [deprecated = true];
     // Happens when a user types their Google account password on another site.
     GaiaPasswordReuse gaia_password_reuse_event = 104;
     GaiaPasswordCaptured gaia_password_captured_event = 15;
+    FlocIdComputed floc_id_computed_event = 16;
   }
+  reserved "field_trial_event";
+  reserved 9;
 }

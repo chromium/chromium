@@ -5,17 +5,16 @@
 #ifndef MEDIA_BASE_AUDIO_DECODER_H_
 #define MEDIA_BASE_AUDIO_DECODER_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decode_status.h"
+#include "media/base/decoder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/status.h"
 #include "media/base/waiting.h"
 
 namespace media {
@@ -23,39 +22,33 @@ namespace media {
 class AudioBuffer;
 class CdmContext;
 
-class MEDIA_EXPORT AudioDecoder {
+class MEDIA_EXPORT AudioDecoder : public Decoder {
  public:
-  // Callback for VideoDecoder initialization.
-  using InitCB = base::OnceCallback<void(bool success)>;
+  // Callback for Decoder initialization.
+  using InitCB = base::OnceCallback<void(Status)>;
 
   // Callback for AudioDecoder to return a decoded frame whenever it becomes
   // available. Only non-EOS frames should be returned via this callback.
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<AudioBuffer>)>;
 
-  // Callback for Decode(). Called after the decoder has accepted corresponding
-  // DecoderBuffer, indicating that the pipeline can send next buffer to decode.
-  using DecodeCB = base::RepeatingCallback<void(DecodeStatus)>;
+  // Callback type for Decode(). Called after the decoder has completed decoding
+  // corresponding DecoderBuffer, indicating that it's ready to accept another
+  // buffer to decode.  |kOk| implies success, |kAborted| implies that the
+  // decode was aborted, which does not necessarily indicate an error.  For
+  // example, a Reset() can trigger this.  Any other status code indicates that
+  // the decoder encountered an error, and must be reset.
+  using DecodeCB = base::OnceCallback<void(Status)>;
 
   AudioDecoder();
+
+  AudioDecoder(const AudioDecoder&) = delete;
+  AudioDecoder& operator=(const AudioDecoder&) = delete;
 
   // Fires any pending callbacks, stops and destroys the decoder.
   // Note: Since this is a destructor, |this| will be destroyed after this call.
   // Make sure the callbacks fired from this call doesn't post any task that
   // depends on |this|.
-  virtual ~AudioDecoder();
-
-  // Returns the name of the decoder for logging and decoder selection purposes.
-  // This name should be available immediately after construction (e.g. before
-  // Initialize() is called). It should also be stable in the sense that the
-  // name does not change across multiple constructions.
-  // TODO(xhwang): Rename this method since the name is not only for display.
-  virtual std::string GetDisplayName() const = 0;
-
-  // Returns true if the implementation is expected to be implemented by the
-  // platform. The value should be available immediately after construction and
-  // should not change within the lifetime of a decoder instance. The value is
-  // used only for logging.
-  virtual bool IsPlatformDecoder() const;
+  ~AudioDecoder() override;
 
   // Initializes an AudioDecoder with |config|, executing the |init_cb| upon
   // completion.
@@ -85,7 +78,7 @@ class MEDIA_EXPORT AudioDecoder {
   // |output_cb| must be called for each frame pending in the queue and
   // |decode_cb| must be called after that.
   virtual void Decode(scoped_refptr<DecoderBuffer> buffer,
-                      const DecodeCB& decode_cb) = 0;
+                      DecodeCB decode_cb) = 0;
 
   // Resets decoder state. All pending Decode() requests will be finished or
   // aborted before |closure| is called.
@@ -94,8 +87,8 @@ class MEDIA_EXPORT AudioDecoder {
   // Returns true if the decoder needs bitstream conversion before decoding.
   virtual bool NeedsBitstreamConversion() const;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoder);
+  // Returns the type of the decoder for statistics recording purposes.
+  virtual AudioDecoderType GetDecoderType() const = 0;
 };
 
 }  // namespace media

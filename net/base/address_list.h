@@ -29,32 +29,49 @@ class NET_EXPORT AddressList {
   AddressList();
   AddressList(const AddressList&);
   AddressList& operator=(const AddressList&);
+  AddressList(AddressList&&);
+  AddressList& operator=(AddressList&&);
   ~AddressList();
 
   // Creates an address list for a single IP literal.
   explicit AddressList(const IPEndPoint& endpoint);
 
+  // Creates an address list for a single IP literal and a list of DNS aliases.
+  AddressList(const IPEndPoint& endpoint, std::vector<std::string> aliases);
+
   static AddressList CreateFromIPAddress(const IPAddress& address,
                                          uint16_t port);
 
   static AddressList CreateFromIPAddressList(const IPAddressList& addresses,
-                                             const std::string& canonical_name);
+                                             std::vector<std::string> aliases);
 
-  // Copies the data from |head| and the chained list into an AddressList.
+  // Copies the data from `head` and the chained list into an AddressList.
   static AddressList CreateFromAddrinfo(const struct addrinfo* head);
 
-  // Returns a copy of |list| with port on each element set to |port|.
+  // Returns a copy of `list` with port on each element set to |port|.
   static AddressList CopyWithPort(const AddressList& list, uint16_t port);
 
-  // TODO(szym): Remove all three. http://crbug.com/126134
-  const std::string& canonical_name() const { return canonical_name_; }
+  // TODO(crbug.com/126134): Remove all references to canonical name
+  // in net::AddressList.
+  // Here and below, by "canonical name", we mean the value of the name for
+  // the DNS record that contained the stored-order first IP address stored
+  // by this class. Note that the canonical name, if set, is now stored as
+  // the first entry in the vector `dns_aliases_` below.
+  // Returns the first entry, if it exists, of `dns_aliases_` or an empty
+  // string otherwise.
+  const std::string& GetCanonicalName() const;
 
-  void set_canonical_name(const std::string& canonical_name) {
-    canonical_name_ = canonical_name;
-  }
-
-  // Sets canonical name to the literal of the first IP address on the list.
+  // Sets the first entry of `dns_aliases_` to the literal of the first IP
+  // address on the list. Assumes that `dns_aliases_` is empty.
   void SetDefaultCanonicalName();
+
+  // The alias chain is preserved in reverse order, from canonical name (i.e.
+  // address record name) through to query name.
+  const std::vector<std::string>& dns_aliases() const { return dns_aliases_; }
+
+  void SetDnsAliases(std::vector<std::string> aliases);
+
+  void AppendDnsAliases(std::vector<std::string> aliases);
 
   // Creates a value representation of the address list, appropriate for
   // inclusion in a NetLog.
@@ -93,8 +110,11 @@ class NET_EXPORT AddressList {
 
  private:
   std::vector<IPEndPoint> endpoints_;
-  // TODO(szym): Remove. http://crbug.com/126134
-  std::string canonical_name_;
+
+  // The first entry, if it exists, is the canonical name.
+  // The alias chain is preserved in reverse order, from canonical name (i.e.
+  // address record name) through to query name.
+  std::vector<std::string> dns_aliases_;
 };
 
 }  // namespace net

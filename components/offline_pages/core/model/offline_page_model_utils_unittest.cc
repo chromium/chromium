@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -37,44 +38,40 @@ TEST(OfflinePageModelUtilsTest, ToNamespaceEnum) {
             OfflinePagesNamespaceEnumeration::BROWSER_ACTIONS);
 }
 
-static const struct GenerateUniqueFilenameTestCase {
-  const base::string16 page_title;
+struct GenerateUniqueFilenameTestCase {
+  const std::u16string page_title;
   const GURL page_url;
   const base::FilePath::CharType* expected_basename;
-} kGenerateUniqueFilenameCases[] = {
-    {base::ASCIIToUTF16("wikipedia.org-Main_Page"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org-Main_Page.mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org-Main_Page"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org-Main_Page (1).mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org-Main_Page"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org-Main_Page (2).mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org-Main_Page.mhtml"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org-Main_Page (3).mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org-Main_Page"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org-Main_Page (4).mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org.mhtml")},
-    {base::ASCIIToUTF16("wikipedia.org"),
-     GURL("http://www.wikipedia.org/Main_Page"),
-     FILE_PATH_LITERAL("wikipedia.org (1).mhtml")},
-    {base::UTF8ToUTF16("bücher.com"), GURL("http://xn--bcher-kva.com"),
-     FILE_PATH_LITERAL("bücher.com.mhtml")},
-    {base::ASCIIToUTF16("http://foo.com/path/title.html"),
-     GURL("http://foo.com"),
-     FILE_PATH_LITERAL("http___foo.com_path_title.html.mhtml")},
-    {base::ASCIIToUTF16("foo.com/foo-%40.html"),
-     GURL("http://foo.com/foo-%40.html"),
-     FILE_PATH_LITERAL("foo-@.html.mhtml")},
-    {base::ASCIIToUTF16("Viva%40%40%40-TestTitle"),
-     GURL("http://foo.com/%40.html"),
-     FILE_PATH_LITERAL("Viva%40%40%40-TestTitle.mhtml")},
 };
+
+const std::vector<GenerateUniqueFilenameTestCase>& UniqueFilenameCases() {
+  static base::NoDestructor<std::vector<GenerateUniqueFilenameTestCase>> cases{{
+      {u"wikipedia.org-Main_Page", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org-Main_Page.mhtml")},
+      {u"wikipedia.org-Main_Page", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org-Main_Page (1).mhtml")},
+      {u"wikipedia.org-Main_Page", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org-Main_Page (2).mhtml")},
+      {u"wikipedia.org-Main_Page.mhtml",
+       GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org-Main_Page (3).mhtml")},
+      {u"wikipedia.org-Main_Page", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org-Main_Page (4).mhtml")},
+      {u"wikipedia.org", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org.mhtml")},
+      {u"wikipedia.org", GURL("http://www.wikipedia.org/Main_Page"),
+       FILE_PATH_LITERAL("wikipedia.org (1).mhtml")},
+      {u"bücher.com", GURL("http://xn--bcher-kva.com"),
+       FILE_PATH_LITERAL("bücher.com.mhtml")},
+      {u"http://foo.com/path/title.html", GURL("http://foo.com"),
+       FILE_PATH_LITERAL("http___foo.com_path_title.html.mhtml")},
+      {u"foo.com/foo-%40.html", GURL("http://foo.com/foo-%40.html"),
+       FILE_PATH_LITERAL("foo-@.html.mhtml")},
+      {u"Viva%40%40%40-TestTitle", GURL("http://foo.com/%40.html"),
+       FILE_PATH_LITERAL("Viva%40%40%40-TestTitle.mhtml")},
+  }};
+  return *cases;
+}
 
 // Crashing on Windows, see http://crbug.com/79365
 #if defined(OS_WIN)
@@ -86,7 +83,7 @@ TEST(OfflinePageModelUtilsTest, MAYBE_TestGenerateUniqueFilename) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  for (const auto& test_case : kGenerateUniqueFilenameCases) {
+  for (const auto& test_case : UniqueFilenameCases()) {
     base::FilePath path = model_utils::GenerateUniqueFilenameForOfflinePage(
         test_case.page_title, test_case.page_url, temp_dir.GetPath());
     // Writing a dummy file so the uniquifier can increase.

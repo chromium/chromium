@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
+#include "base/test/task_environment.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -25,6 +27,7 @@ class AlertCoordinatorTest : public PlatformTest {
  protected:
   AlertCoordinatorTest() {
     view_controller_ = [[UIViewController alloc] init];
+    browser_ = std::make_unique<TestBrowser>();
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
@@ -41,15 +44,19 @@ class AlertCoordinatorTest : public PlatformTest {
                                         NSString* message) {
     alert_coordinator_ =
         [[AlertCoordinator alloc] initWithBaseViewController:view_controller
+                                                     browser:browser_.get()
                                                        title:title
                                                      message:message];
     return alert_coordinator_;
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+
   AlertCoordinator* alert_coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
+  std::unique_ptr<Browser> browser_;
 };
 
 #pragma mark - Tests.

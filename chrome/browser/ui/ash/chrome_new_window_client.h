@@ -10,10 +10,8 @@
 #include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/macros.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "url/gurl.h"
 
 namespace arc {
@@ -33,21 +31,33 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                               public arc::ControlCameraAppDelegate {
  public:
   ChromeNewWindowClient();
+
+  ChromeNewWindowClient(const ChromeNewWindowClient&) = delete;
+  ChromeNewWindowClient& operator=(const ChromeNewWindowClient&) = delete;
+
   ~ChromeNewWindowClient() override;
 
   static ChromeNewWindowClient* Get();
 
   // Overridden from ash::NewWindowDelegate:
   void NewTab() override;
-  void NewTabWithUrl(const GURL& url, bool from_user_interaction) override;
-  void NewWindow(bool incognito) override;
+  void NewWindow(bool incognito, bool should_trigger_session_restore) override;
+  void NewWindowForDetachingTab(
+      aura::Window* source_window,
+      const ui::OSExchangeData& drop_data,
+      NewWindowForDetachingTabCallback closure) override;
+  void OpenUrl(const GURL& url, bool from_user_interaction) override;
+  void OpenCalculator() override;
   void OpenFileManager() override;
+  void OpenDownloadsFolder() override;
   void OpenCrosh() override;
   void OpenGetHelp() override;
   void RestoreTab() override;
   void ShowKeyboardShortcutViewer() override;
   void ShowTaskManager() override;
-  void OpenFeedbackPage(bool from_assistant) override;
+  void OpenDiagnostics() override;
+  void OpenFeedbackPage(FeedbackSource source,
+                        const std::string& description_template) override;
 
   // arc::OpenUrlDelegate:
   void OpenUrlFromArc(const GURL& url) override;
@@ -55,13 +65,13 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenArcCustomTab(
       const GURL& url,
       int32_t task_id,
-      int32_t surface_id,
-      int32_t top_margin,
       arc::mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override;
   void OpenChromePageFromArc(arc::mojom::ChromePage page) override;
+  void OpenAppWithIntent(const GURL& start_url,
+                         arc::mojom::LaunchIntentPtr intent) override;
 
   // arc::ControlCameraAppDelegate:
-  void LaunchCameraApp(const std::string& queries) override;
+  void LaunchCameraApp(const std::string& queries, int32_t task_id) override;
   void CloseCameraApp() override;
   bool IsCameraAppEnabled() override;
 
@@ -83,8 +93,6 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   const std::map<arc::mojom::ChromePage, std::string> browser_settings_pages_;
 
   const std::map<arc::mojom::ChromePage, std::string> about_pages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNewWindowClient);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_

@@ -33,7 +33,7 @@ struct WebSocketFrameChunk;
 // websocket_stream.cc if the class is used for any communication with Google.
 // In such a case, annotation should be passed from the callers to this class
 // and a local annotation can not be used anymore.
-class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
+class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
  public:
   typedef WebSocketMaskingKey (*WebSocketMaskingKeyGeneratorFunction)();
 
@@ -147,7 +147,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
   void AddToIncompleteControlFrameBody(base::span<const char> data);
 
   // Storage for pending reads.
-  scoped_refptr<IOBufferWithSize> read_buffer_;
+  const scoped_refptr<IOBufferWithSize> read_buffer_;
 
   // The connection, wrapped in a ClientSocketHandle so that we can prevent it
   // from being returned to the pool.
@@ -195,8 +195,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
   CompletionOnceCallback write_callback_;
   CompletionOnceCallback read_callback_;
 };
-
-NET_EXPORT extern const char kWebSocketReadBufferSize[];
 
 }  // namespace net
 

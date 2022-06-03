@@ -26,13 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_UI_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_UI_CONTROLLER_H_
 
-#include <memory>
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -44,13 +45,10 @@ class CORE_EXPORT ColorChooserUIController
     : public GarbageCollected<ColorChooserUIController>,
       public mojom::blink::ColorChooserClient,
       public ColorChooser {
-  USING_GARBAGE_COLLECTED_MIXIN(ColorChooserUIController);
-  USING_PRE_FINALIZER(ColorChooserUIController, Dispose);
-
  public:
   ColorChooserUIController(LocalFrame*, blink::ColorChooserClient*);
   ~ColorChooserUIController() override;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Dispose();
 
@@ -65,7 +63,9 @@ class CORE_EXPORT ColorChooserUIController
   void DidChooseColor(uint32_t color) final;
 
  protected:
+#if defined(OS_ANDROID)
   void OpenColorChooser();
+#endif
   mojo::Remote<mojom::blink::ColorChooser> chooser_;
   Member<blink::ColorChooserClient> client_;
 
@@ -73,7 +73,8 @@ class CORE_EXPORT ColorChooserUIController
 
  private:
   mojo::Remote<mojom::blink::ColorChooserFactory> color_chooser_factory_;
-  mojo::Receiver<mojom::blink::ColorChooserClient> receiver_{this};
+  HeapMojoReceiver<mojom::blink::ColorChooserClient, ColorChooserUIController>
+      receiver_;
 };
 
 }  // namespace blink

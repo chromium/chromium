@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {generateMotionData, setMainWindowHidden, setMockMotionData, waitForMotion} from '../resources/device-orientation-helpers.js';
+import {sensor_test} from '../resources/sensor-helpers.js';
+
+function sleep(time_ms) {
+  return new Promise(resolve => window.setTimeout(resolve, time_ms));
+}
+
+sensor_test(async (t, sensorProvider) => {
+  const motionData = generateMotionData(0, 0, 0,
+                                        0, 0, 0,
+                                        0, 0, 0);
+
+  setMockMotionData(sensorProvider, motionData);
+  await waitForMotion(motionData);
+
+  await setMainWindowHidden(true);
+  let hidden = true;
+  let hiddenEventPromise = new Promise((resolve, reject) => {
+    window.addEventListener(
+      'devicemotion',
+      event => {
+        if (hidden) {
+          reject();
+        } else {
+          resolve();
+        }
+      },
+      { once: true });
+  });
+
+  // devicemotion events fire every 16ms when active, so we sleep for a while
+  // here to make sure we're not actually getting any events.
+  await sleep(100);
+  hidden = false;
+  await setMainWindowHidden(false);
+  return Promise.all([hiddenEventPromise, waitForMotion(motionData)]);
+}, 'Tests to check that devicemotion events are not fired when the page is not visible.');
+</script>
+</body>
+</html>

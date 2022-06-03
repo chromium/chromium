@@ -4,9 +4,9 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/tracked_preference_incident.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_handler_util.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 

@@ -12,6 +12,10 @@
 
 @synthesize userInteractionEnabled = _userInteractionEnabled;
 
+- (void)setPrimary:(BOOL)primary {
+  // no-op
+}
+
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   // no-op

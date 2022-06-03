@@ -5,7 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Importing the password...
 
 Deriving an AES key with no length...
-error is: TypeError: AesDerivedKeyParams: length: Missing required property
+error is: TypeError: Failed to execute 'deriveKey' on 'SubtleCrypto': AesDerivedKeyParams: length: Missing required property
 
 Deriving an AES key with bad length...
 error is: OperationError: AES key length must be 128 or 256 bits
@@ -20,10 +20,10 @@ Deriving a zero-length HMAC key...
 error is: TypeError: HMAC key length must not be zero
 
 Deriving an ECDH key...
-error is: NotSupportedError: ECDH: Unsupported operation: get key length
+error is: NotSupportedError: Failed to execute 'deriveKey' on 'SubtleCrypto': ECDH: Unsupported operation: get key length
 
 Deriving an RSA-OAEP key...
-error is: NotSupportedError: RSA-OAEP: Unsupported operation: get key length
+error is: NotSupportedError: Failed to execute 'deriveKey' on 'SubtleCrypto': RSA-OAEP: Unsupported operation: get key length
 
 
 PASS successfullyParsed is true

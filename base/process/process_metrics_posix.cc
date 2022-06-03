@@ -18,10 +18,14 @@
 #include <sys/resource.h>
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include <features.h>
 #endif
 
 namespace base {
@@ -37,9 +41,9 @@ ProcessMetrics::~ProcessMetrics() = default;
 
 #if !defined(OS_FUCHSIA)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 static const rlim_t kSystemDefaultMaxFds = 8192;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 static const rlim_t kSystemDefaultMaxFds = 256;
 #elif defined(OS_SOLARIS)
 static const rlim_t kSystemDefaultMaxFds = 8192;
@@ -73,7 +77,7 @@ size_t GetMaxFds() {
 }
 
 size_t GetHandleLimit() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Taken from a small test that allocated ports in a loop.
   return static_cast<size_t>(1 << 18);
 #else
@@ -101,22 +105,37 @@ void IncreaseFdLimitTo(unsigned int max_descriptors) {
 
 #endif  // !defined(OS_FUCHSIA)
 
-size_t GetPageSize() {
-  return getpagesize();
-}
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+namespace {
 
-size_t ProcessMetrics::GetMallocUsage() {
-#if defined(OS_MACOSX) || defined(OS_IOS)
-  malloc_statistics_t stats = {0};
-  malloc_zone_statistics(nullptr, &stats);
-  return stats.size_in_use;
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+size_t GetMallocUsageMallinfo() {
+#if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+#if __GLIBC_PREREQ(2, 33)
+#define MALLINFO2_FOUND_IN_LIBC
+  struct mallinfo2 minfo = mallinfo2();
+#endif
+#endif  // defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+#if !defined(MALLINFO2_FOUND_IN_LIBC)
   struct mallinfo minfo = mallinfo();
+#endif
+#undef MALLINFO2_FOUND_IN_LIBC
 #if BUILDFLAG(USE_TCMALLOC)
   return minfo.uordblks;
 #else
   return minfo.hblkhd + minfo.arena;
 #endif
+}
+
+}  // namespace
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+
+size_t ProcessMetrics::GetMallocUsage() {
+#if defined(OS_APPLE)
+  malloc_statistics_t stats = {0};
+  malloc_zone_statistics(nullptr, &stats);
+  return stats.size_in_use;
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  return GetMallocUsageMallinfo();
 #elif defined(OS_FUCHSIA)
   // TODO(fuchsia): Not currently exposed. https://crbug.com/735087.
   return 0;

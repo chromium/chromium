@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,8 +34,7 @@ base::ProcessId DetermineProcessId(base::ProcessHandle handle,
 
 }  // namespace
 
-Task::Task(const base::string16& title,
-           const std::string& rappor_sample,
+Task::Task(const std::u16string& title,
            const gfx::ImageSkia* icon,
            base::ProcessHandle handle,
            base::ProcessId process_id)
@@ -46,28 +46,24 @@ Task::Task(const base::string16& title,
       network_sent_rate_(0),
       network_read_rate_(0),
       title_(title),
-      rappor_sample_name_(rappor_sample),
       icon_(icon ? *icon : gfx::ImageSkia()),
       process_handle_(handle),
       process_id_(DetermineProcessId(handle, process_id)) {}
 
-Task::~Task() {}
+Task::~Task() = default;
 
 // static
-base::string16 Task::GetProfileNameFromProfile(Profile* profile) {
+std::u16string Task::GetProfileNameFromProfile(Profile* profile) {
   DCHECK(profile);
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(profile->GetOriginalProfile()->GetPath(),
-                                   &entry)) {
-    return entry->GetName();
-  }
-
-  return base::string16();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(
+              profile->GetOriginalProfile()->GetPath());
+  return entry ? entry->GetName() : std::u16string();
 }
 
-void Task::Activate() {
-}
+void Task::Activate() {}
 
 bool Task::IsKillable() {
   // Protects from trying to kill a task that doesn't have an accurate process
@@ -94,15 +90,13 @@ void Task::Refresh(const base::TimeDelta& update_interval,
 
   int64_t current_cycle_read_byte_count =
       cumulative_bytes_read_ - last_refresh_cumulative_bytes_read_;
-  network_read_rate_ =
-      (current_cycle_read_byte_count * base::TimeDelta::FromSeconds(1)) /
-      update_interval;
+  network_read_rate_ = base::ClampRound<int64_t>(current_cycle_read_byte_count /
+                                                 update_interval.InSecondsF());
 
   int64_t current_cycle_sent_byte_count =
       cumulative_bytes_sent_ - last_refresh_cumulative_bytes_sent_;
-  network_sent_rate_ =
-      (current_cycle_sent_byte_count * base::TimeDelta::FromSeconds(1)) /
-      update_interval;
+  network_sent_rate_ = base::ClampRound<int64_t>(current_cycle_sent_byte_count /
+                                                 update_interval.InSecondsF());
 
   last_refresh_cumulative_bytes_read_ = cumulative_bytes_read_;
   last_refresh_cumulative_bytes_sent_ = cumulative_bytes_sent_;
@@ -143,8 +137,8 @@ void Task::GetTerminationStatus(base::TerminationStatus* out_status,
   *out_error_code = 0;
 }
 
-base::string16 Task::GetProfileName() const {
-  return base::string16();
+std::u16string Task::GetProfileName() const {
+  return std::u16string();
 }
 
 SessionID Task::GetTabId() const {
@@ -165,10 +159,6 @@ bool Task::ReportsSqliteMemory() const {
 
 int64_t Task::GetSqliteMemoryUsed() const {
   return -1;
-}
-
-bool Task::ReportsV8Memory() const {
-  return GetV8MemoryAllocated() != -1;
 }
 
 int64_t Task::GetV8MemoryAllocated() const {
@@ -193,6 +183,14 @@ int Task::GetKeepaliveCount() const {
 
 bool Task::IsRunningInVM() const {
   return false;
+}
+
+int64_t Task::GetNetworkUsageRate() const {
+  return network_sent_rate_ + network_read_rate_;
+}
+
+int64_t Task::GetCumulativeNetworkUsage() const {
+  return cumulative_bytes_sent_ + cumulative_bytes_read_;
 }
 
 // static

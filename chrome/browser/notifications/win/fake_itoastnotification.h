@@ -8,8 +8,7 @@
 #include <windows.ui.notifications.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
 
 class FakeIToastNotification
     : public Microsoft::WRL::RuntimeClass<
@@ -18,8 +17,10 @@ class FakeIToastNotification
           ABI::Windows::UI::Notifications::IToastNotification,
           ABI::Windows::UI::Notifications::IToastNotification2> {
  public:
-  explicit FakeIToastNotification(const base::string16& xml,
-                                  const base::string16& tag);
+  explicit FakeIToastNotification(const std::wstring& xml,
+                                  const std::wstring& tag);
+  FakeIToastNotification(const FakeIToastNotification&) = delete;
+  FakeIToastNotification& operator=(const FakeIToastNotification&) = delete;
   ~FakeIToastNotification() override = default;
 
   // ABI::Windows::UI::Notifications::IToastNotification implementation:
@@ -57,12 +58,10 @@ class FakeIToastNotification
   HRESULT STDMETHODCALLTYPE get_SuppressPopup(boolean* value) override;
 
  private:
-  base::string16 xml_;
+  std::wstring xml_;
 
-  base::string16 group_;
-  base::string16 tag_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIToastNotification);
+  std::wstring group_;
+  std::wstring tag_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_ITOASTNOTIFICATION_H_

@@ -6,9 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MaterialComponents/MaterialProgressView.h>
+
 #import "base/mac/foundation_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
-#import "ios/third_party/material_components_ios/src/components/ProgressView/src/MaterialProgressView.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

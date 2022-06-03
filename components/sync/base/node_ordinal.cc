@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check.h"
+#include "base/notreached.h"
+
 namespace syncer {
 
 NodeOrdinal Int64ToNodeOrdinal(int64_t x) {

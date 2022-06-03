@@ -7,6 +7,7 @@
 namespace update_client {
 
 constexpr char NetworkFetcher::kHeaderEtag[];
+constexpr char NetworkFetcher::kHeaderXCupServerProof[];
 constexpr char NetworkFetcher::kHeaderXRetryAfter[];
 
 }  // namespace update_client

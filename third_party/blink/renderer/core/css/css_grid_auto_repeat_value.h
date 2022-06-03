@@ -38,7 +38,7 @@ class CSSGridAutoRepeatValue : public CSSValueList {
 
   CSSValueID AutoRepeatID() const { return auto_repeat_id_; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }
 

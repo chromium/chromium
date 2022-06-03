@@ -20,10 +20,10 @@ bool StructTraits<gpu::mojom::GpuFeatureInfoDataView, gpu::GpuFeatureInfo>::
              &out->enabled_gpu_driver_bug_workarounds) &&
          data.ReadDisabledExtensions(&out->disabled_extensions) &&
          data.ReadDisabledWebglExtensions(&out->disabled_webgl_extensions) &&
-         data.ReadAppliedGpuBlacklistEntries(
-             &out->applied_gpu_blacklist_entries) &&
+         data.ReadAppliedGpuBlocklistEntries(
+             &out->applied_gpu_blocklist_entries) &&
          gpu::GpuBlocklist::AreEntryIndicesValid(
-             out->applied_gpu_blacklist_entries) &&
+             out->applied_gpu_blocklist_entries) &&
          data.ReadAppliedGpuDriverBugListEntries(
              &out->applied_gpu_driver_bug_list_entries) &&
          gpu::GpuDriverBugList::AreEntryIndicesValid(

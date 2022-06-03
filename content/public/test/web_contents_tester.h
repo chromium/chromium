@@ -11,8 +11,8 @@
 
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -22,15 +22,10 @@ namespace gfx {
 class Size;
 }
 
-namespace net {
-class HttpResponseHeaders;
-}
-
 namespace content {
 
 class BrowserContext;
-class NavigationHandle;
-class RenderFrameHost;
+class NavigationSimulator;
 
 // This interface allows embedders of content/ to write tests that depend on a
 // test version of WebContents.  This interface can be retrieved from any
@@ -56,6 +51,10 @@ class RenderFrameHost;
 // there is a fundamental assumption in content/ that a WebContents* can be
 // downcast to a WebContentsImpl*, and this wouldn't be true for TestWebContents
 // objects.
+//
+// Tests that use a TestWebContents must also use TestRenderViewHost and
+// TestRenderFrameHost. They can do so by instantiating a
+// RenderViewHostTestEnabler.
 class WebContentsTester {
  public:
   // Retrieves a WebContentsTester to drive tests of the specified WebContents.
@@ -87,45 +86,25 @@ class WebContentsTester {
       ui::PageTransition transition = ui::PAGE_TRANSITION_LINK) = 0;
 
   // Creates a pending navigation to the given URL with the default parameters
-  // and then aborts it with the given |error_code| and |response_headers|.
-  virtual void NavigateAndFail(
-      const GURL& url,
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+  // and then aborts it with the given |error_code|.
+  virtual void NavigateAndFail(const GURL& url, int error_code) = 0;
 
   // Sets the loading state to the given value.
   virtual void TestSetIsLoading(bool value) = 0;
 
-  // Simulates a navigation with the given information.
-  //
-  // Guidance for calling these:
-  // - nav_entry_id should be 0 if simulating a renderer-initiated navigation;
-  //   if simulating a browser-initiated one, pass the GetUniqueID() value of
-  //   the NavigationController's PendingEntry.
-  // - did_create_new_entry should be true if simulating a navigation that
-  //   created a new navigation entry; false for history navigations, reloads,
-  //   and other navigations that don't affect the history list.
-  virtual void TestDidNavigate(RenderFrameHost* render_frame_host,
-                               int nav_entry_id,
-                               bool did_create_new_entry,
-                               const GURL& url,
-                               ui::PageTransition transition) = 0;
-
-  // Sets HttpResponseData on |navigation_handle|.
-  virtual void SetHttpResponseHeaders(
-      NavigationHandle* navigation_handle,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
-
   // Simulate this WebContents' main frame having an opener that points to the
   // main frame of |opener|.
   virtual void SetOpener(WebContents* opener) = 0;
+
+  // Sets the process state for the primary main frame renderer.
+  virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
 
   // Returns headers that were passed in the previous SaveFrameWithHeaders(...)
   // call.
   virtual const std::string& GetSaveFrameHeaders() = 0;
 
   // Returns the suggested file name passed in the SaveFrameWithHeaders call.
-  virtual const base::string16& GetSuggestedFileName() = 0;
+  virtual const std::u16string& GetSuggestedFileName() = 0;
 
   // Returns whether a download request triggered via DownloadImage() is in
   // progress for |url|.
@@ -144,7 +123,7 @@ class WebContentsTester {
 
   // Sets the return value of GetTitle() of TestWebContents. Once set, the real
   // title will never be returned.
-  virtual void SetTitle(const base::string16& new_title) = 0;
+  virtual void SetTitle(const std::u16string& new_title) = 0;
 
   // Sets the return value of GetContentsMimeType().
   virtual void SetMainFrameMimeType(const std::string& mime_type) = 0;
@@ -154,16 +133,13 @@ class WebContentsTester {
   virtual void SetIsCurrentlyAudible(bool audible) = 0;
 
   // Simulates an input event from the user.
-  virtual void TestDidReceiveInputEvent(blink::WebInputEvent::Type type) = 0;
+  virtual void TestDidReceiveMouseDownEvent() = 0;
 
   // Simulates successfully finishing a load.
   virtual void TestDidFinishLoad(const GURL& url) = 0;
 
   // Simulates terminating an load with a network error.
-  virtual void TestDidFailLoadWithError(
-      const GURL& url,
-      int error_code,
-      const base::string16& error_description) = 0;
+  virtual void TestDidFailLoadWithError(const GURL& url, int error_code) = 0;
 
   // Returns whether PauseSubresourceLoading was called on this web contents.
   virtual bool GetPauseSubresourceLoadingCalled() = 0;
@@ -171,15 +147,35 @@ class WebContentsTester {
   // Resets the state around PauseSubresourceLoadingCalled.
   virtual void ResetPauseSubresourceLoadingCalled() = 0;
 
-  // Sets the return value of GetPageImportanceSignals().
-  virtual void SetPageImportanceSignals(PageImportanceSignals signals) = 0;
-
   // Sets the last active time.
   virtual void SetLastActiveTime(base::TimeTicks last_active_time) = 0;
 
   // Increments/decrements the number of connected Bluetooth devices.
   virtual void TestIncrementBluetoothConnectedDeviceCount() = 0;
   virtual void TestDecrementBluetoothConnectedDeviceCount() = 0;
+
+  // Used to create portals and retrieve their WebContents.
+  virtual const blink::PortalToken& CreatePortal(
+      std::unique_ptr<WebContents> portal_web_contents) = 0;
+  virtual WebContents* GetPortalContents(
+      const blink::PortalToken& portal_token) = 0;
+
+  // Indicates if this WebContents has been frozen via a call to
+  // SetPageFrozen().
+  virtual bool IsPageFrozen() = 0;
+
+  // Starts prerendering a page with |url|, and returns the root frame tree node
+  // id of the page. The page has a pending navigation in the root frame tree
+  // node when this method returns.
+  virtual int AddPrerender(const GURL& url) = 0;
+  // Starts prerendering a page, simulates a navigation to |url| in the main
+  // frame and returns the main frame of the page after the navigation is
+  // complete.
+  virtual RenderFrameHost* AddPrerenderAndCommitNavigation(const GURL& url) = 0;
+  // Starts prerendering a page, simulates a navigation to |url| in the main
+  // frame and returns the simulator after the navigation is started.
+  virtual std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
+      const GURL& url) = 0;
 };
 
 }  // namespace content

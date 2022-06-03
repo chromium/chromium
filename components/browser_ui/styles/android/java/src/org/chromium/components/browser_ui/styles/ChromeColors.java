@@ -6,10 +6,15 @@ package org.chromium.components.browser_ui.styles;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.support.v7.content.res.AppCompatResources;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Px;
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.base.ApiCompatibilityUtils;
 
@@ -17,53 +22,136 @@ import org.chromium.base.ApiCompatibilityUtils;
  * Provides common default colors for Chrome UI.
  */
 public class ChromeColors {
+    private static final String TAG = "ChromeColors";
+
     /**
      * Determines the default theme color used for toolbar based on the provided parameters.
-     * @param res {@link Resources} used to retrieve colors.
-     * @param useDark If true, returns a default dark color. If false, returns a default color
-     *         depend
-     *              on whether Night Mode is on.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used in incognito mode. If true, this method will
+     *                    return a non-dynamic dark theme color.
      * @return The default theme color.
      */
-    public static int getDefaultThemeColor(Resources res, boolean useDark) {
-        return useDark
-                ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary_dark)
-                : ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
+    public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.toolbar_background_primary_dark)
+                           : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
     }
 
     /**
      * Returns the primary background color used as native page background based on the given
      * parameters.
-     * @param res The {@link Resources} used to retrieve colors.
-     * @param useDark Whether or not the color is for a dark mode. If true, a dark color will be
-     *               returned. Otherwise, the color returned will depend on whether Night Mode is
-     *               on.
+     *
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used in incognito mode. If true, this method will
+     *                    return a non-dynamic dark background color.
      * @return The primary background color.
      */
-    public static int getPrimaryBackgroundColor(Resources res, boolean useDark) {
-        return useDark
-                ? ApiCompatibilityUtils.getColor(res, org.chromium.ui.R.color.dark_primary_color)
-                : ApiCompatibilityUtils.getColor(res, org.chromium.ui.R.color.modern_primary_color);
+    public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.default_bg_color_dark)
+                           : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic,
+                                   // Temporarily pass a default, see https://crbug.com/1247186.
+                                   R.color.default_bg_color);
     }
 
     /**
-     * Returns the icon tint resource to use based on the current parameters and whether the app is
-     * in night mode.
-     * @param useLight Whether or not the icon tint should be light when not in night mode.
+     * Returns the large text primary style based on the given parameter.
+     *
+     * @param forceLightTextColor When true, returns the light-mode large text primary style;
+     *         otherwise returns adaptive large text primary style.
+     * @return The large text primary style.
+     */
+    public static int getLargeTextPrimaryStyle(boolean forceLightTextColor) {
+        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                                   : R.style.TextAppearance_TextLarge_Primary;
+    }
+
+    /**
+     * Returns the text medium thick secondary style based on the given parameter.
+     *
+     * @param forceLightTextColor When true, returns the light-mode medium text secondary style;
+     *         otherwise returns adaptive medium text secondary style.
+     * @return The medium text secondary style.
+     */
+    public static int getTextMediumThickSecondaryStyle(boolean forceLightTextColor) {
+        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
+                                   : R.style.TextAppearance_TextMediumThick_Secondary;
+    }
+
+    /**
+     * Returns the primary icon tint resource to use based on the current parameters and whether
+     * the app is in night mode.
+     *
+     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
+     *         adaptive primary icon tint color res.
      * @return The {@link ColorRes} for the icon tint.
      */
-    public static @ColorRes int getIconTintRes(boolean useLight) {
-        return useLight ? R.color.tint_on_dark_bg : R.color.standard_mode_tint;
+    public static @ColorRes int getPrimaryIconTintRes(boolean forceLightIconTint) {
+        return forceLightIconTint ? R.color.default_icon_color_light_tint_list
+                                  : R.color.default_icon_color_tint_list;
     }
 
     /**
-     * Returns the icon tint to use based on the current parameters and whether the app is in night
-     * mode.
+     * Returns the primary icon tint to use based on the current parameters and whether the app is
+     * in night mode.
+     *
      * @param context The {@link Context} used to retrieve colors.
-     * @param useLight Whether or not the icon tint should be light when not in night mode.
+     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
+     *         adaptive primary icon tint color res.
      * @return The {@link ColorStateList} for the icon tint.
      */
-    public static ColorStateList getIconTint(Context context, boolean useLight) {
-        return AppCompatResources.getColorStateList(context, getIconTintRes(useLight));
+    public static ColorStateList getPrimaryIconTint(Context context, boolean forceLightIconTint) {
+        return AppCompatResources.getColorStateList(
+                context, getPrimaryIconTintRes(forceLightIconTint));
+    }
+
+    /**
+     * Returns the secondary icon tint resource to use based on the current parameters and whether
+     * the app is in night mode.
+     *
+     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
+     *         adaptive secondary icon tint color res.
+     * @return The {@link ColorRes} for the icon tint.
+     */
+    public static @ColorRes int getSecondaryIconTintRes(boolean forceLightIconTint) {
+        return forceLightIconTint ? R.color.default_icon_color_secondary_light_tint_list
+                                  : R.color.default_icon_color_secondary_tint_list;
+    }
+
+    /**
+     * Returns the secondary icon tint to use based on the current parameters and whether the app
+     * is in night mode.
+     *
+     * @param context The {@link Context} used to retrieve colors.
+     * @param forceLightIconTint When true, returns the light tint color res; otherwise returns
+     *         adaptive secondary icon tint color res.
+     * @return The {@link ColorStateList} for the icon tint.
+     */
+    public static ColorStateList getSecondaryIconTint(Context context, boolean forceLightIconTint) {
+        return AppCompatResources.getColorStateList(
+                context, getSecondaryIconTintRes(forceLightIconTint));
+    }
+
+    /**
+     * Calculates the surface color using theme colors.
+     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
+     * @param elevationDimen The dimen to look up the elevation level with.
+     * @return the {@link ColorInt} for the background of a surface view.
+     */
+    public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
+        float elevation = context.getResources().getDimension(elevationDimen);
+        return getSurfaceColor(context, elevation);
+    }
+
+    /**
+     * Calculates the surface color using theme colors.
+     * @param context The {@link Context} used to retrieve attrs and colors.
+     * @param elevation The elevation in px.
+     * @return the {@link ColorInt} for the background of a surface view.
+     */
+    public static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
+        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
+        return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
 }

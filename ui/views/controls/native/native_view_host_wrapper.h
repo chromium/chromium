@@ -5,8 +5,14 @@
 #ifndef UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_WRAPPER_H_
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_WRAPPER_H_
 
+#include <memory>
+
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
+
+namespace gfx {
+class RoundedCornersF;
+}
 
 namespace ui {
 class LayerOwner;
@@ -41,6 +47,11 @@ class NativeViewHostWrapper {
   // Called when our associated NativeViewHost is removed from a View hierarchy
   // rooted at a valid Widget.
   virtual void RemovedFromWidget() = 0;
+
+  // Clips the corners of the gfx::NativeView to the |corner_radii| specififed.
+  // Returns true on success or false if the platform doesn't support the
+  // operation.
+  virtual bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) = 0;
 
   // Sets the custom mask for clipping gfx::NativeView. Returns true on
   // success or false if the platform doesn't support the operation.
@@ -103,6 +114,9 @@ class NativeViewHostWrapper {
   // Pass the parent accessible object to the native view so that it can return
   // this value when querying its parent accessible.
   virtual void SetParentAccessible(gfx::NativeViewAccessible) = 0;
+
+  // Returns the parent accessible object to the native view.
+  virtual gfx::NativeViewAccessible GetParentAccessible() = 0;
 
   // Creates a platform-specific instance of an object implementing this
   // interface.

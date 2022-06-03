@@ -4,20 +4,25 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
-#import <CommonCrypto/CommonCrypto.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#import <MaterialComponents/MaterialTypography.h>
+
+#include <memory>
+#include <set>
+#include <string>
+
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/hash/md5.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "build/branding_buildflags.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #import "net/base/mac/url_conversions.h"
 #include "skia/ext/skia_utils_ios.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,7 +43,40 @@ const CGFloat kFallbackIconSize = 180;
 
 // Radius of the rounded corner of the fallback icon.
 const CGFloat kFallbackRoundedCorner = 8;
+
+// Create an image with a rounded square with color |backgroundColor| and
+// |string| centered in color |textColor|.
+UIImage* GetFallbackImageWithStringAndColor(NSString* string,
+                                            UIColor* backgroundColor,
+                                            UIColor* textColor) {
+  CGRect rect = CGRectMake(0, 0, kFallbackIconSize, kFallbackIconSize);
+  UIGraphicsBeginImageContext(rect.size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
+  CGContextSetStrokeColorWithColor(context, [textColor CGColor]);
+  UIBezierPath* rounded =
+      [UIBezierPath bezierPathWithRoundedRect:rect
+                                 cornerRadius:kFallbackRoundedCorner];
+  [rounded fill];
+  UIFont* font = [MDCTypography headlineFont];
+  font = [font fontWithSize:(kFallbackIconSize / 2)];
+  CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
+                               kFallbackIconSize, [font lineHeight]);
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  [paragraphStyle setAlignment:NSTextAlignmentCenter];
+  NSMutableDictionary* attributes = [[NSMutableDictionary alloc] init];
+  [attributes setValue:font forKey:NSFontAttributeName];
+  [attributes setValue:textColor forKey:NSForegroundColorAttributeName];
+  [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+
+  [string drawInRect:textRect withAttributes:attributes];
+  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
+
+}  // namespace
 
 @interface BaseSpotlightManager () {
   // Domain of the spotlight manager.
@@ -48,10 +86,10 @@ const CGFloat kFallbackRoundedCorner = 8;
   favicon::LargeIconService* _largeIconService;  // weak
 
   // Queue to query large icons.
-  base::CancelableTaskTracker _largeIconTaskTracker;
+  std::unique_ptr<base::CancelableTaskTracker> _largeIconTaskTracker;
 
-  // Dictionary to track the tasks querying the large icons.
-  NSMutableDictionary* _pendingTasks;
+  // Tasks querying the large icons.
+  std::set<GURL> _pendingTasks;
 
   // Records whether -shutdown has been invoked and the method forwarded to
   // the base class.
@@ -60,13 +98,7 @@ const CGFloat kFallbackRoundedCorner = 8;
 
 // Compute a hash consisting of the first 8 bytes of the MD5 hash of a string
 // containing |URL| and |title|.
-- (int64_t)getHashForURL:(const GURL&)URL title:(NSString*)title;
-
-// Create an image with a rounded square with color |backgroundColor| and
-// |string| centered in color |textColor|.
-UIImage* GetFallbackImageWithStringAndColor(NSString* string,
-                                            UIColor* backgroundColor,
-                                            UIColor* textColor);
+- (int64_t)hashForURL:(const GURL&)URL title:(NSString*)title;
 
 // Returns an array of Keywords for Spotlight search.
 - (NSArray*)keywordsForSpotlightItems;
@@ -82,7 +114,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   if (self) {
     _spotlightDomain = domain;
     _largeIconService = largeIconService;
-    _pendingTasks = [[NSMutableDictionary alloc] init];
+    _largeIconTaskTracker = std::make_unique<base::CancelableTaskTracker>();
   }
   return self;
 }
@@ -91,14 +123,15 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   DCHECK(_shutdownCalled);
 }
 
-- (int64_t)getHashForURL:(const GURL&)URL title:(NSString*)title {
+- (int64_t)hashForURL:(const GURL&)URL title:(NSString*)title {
   NSString* key = [NSString
       stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(URL.spec()), title];
-  unsigned char hash[CC_MD5_DIGEST_LENGTH];
   const std::string clipboard = base::SysNSStringToUTF8(key);
   const char* c_string = clipboard.c_str();
-  CC_MD5(c_string, strlen(c_string), hash);
-  uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash));
+
+  base::MD5Digest hash;
+  base::MD5Sum(c_string, strlen(c_string), &hash);
+  uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash.a));
   return md5;
 }
 
@@ -106,13 +139,14 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   NSString* spotlightID = [NSString
       stringWithFormat:@"%@.%016llx",
                        spotlight::StringFromSpotlightDomain(_spotlightDomain),
-                       [self getHashForURL:URL title:title]];
+                       [self hashForURL:URL title:title]];
   return spotlightID;
 }
 
 - (void)cancelAllLargeIconPendingTasks {
-  _largeIconTaskTracker.TryCancelAll();
-  [_pendingTasks removeAllObjects];
+  DCHECK(!_shutdownCalled);
+  _largeIconTaskTracker->TryCancelAll();
+  _pendingTasks.clear();
 }
 
 - (void)clearAllSpotlightItems:(BlockWithError)callback {
@@ -145,7 +179,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   DCHECK(defaultTitle);
   NSURL* nsURL = net::NSURLWithGURL(indexedURL);
   std::string description = indexedURL.SchemeIsCryptographic()
-                                ? indexedURL.GetOrigin().spec()
+                                ? indexedURL.DeprecatedGetOriginAsURL().spec()
                                 : indexedURL.spec();
 
   CSSearchableItemAttributeSet* attributeSet =
@@ -163,94 +197,36 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                                    attributeSet:attributeSet]];
 }
 
-UIImage* GetFallbackImageWithStringAndColor(NSString* string,
-                                            UIColor* backgroundColor,
-                                            UIColor* textColor) {
-  CGRect rect = CGRectMake(0, 0, kFallbackIconSize, kFallbackIconSize);
-  UIGraphicsBeginImageContext(rect.size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
-  CGContextSetStrokeColorWithColor(context, [textColor CGColor]);
-  UIBezierPath* rounded =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:kFallbackRoundedCorner];
-  [rounded fill];
-  UIFont* font = [MDCTypography headlineFont];
-  font = [font fontWithSize:(kFallbackIconSize / 2)];
-  CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
-                               kFallbackIconSize, [font lineHeight]);
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  [paragraphStyle setAlignment:NSTextAlignmentCenter];
-  NSMutableDictionary* attributes = [[NSMutableDictionary alloc] init];
-  [attributes setValue:font forKey:NSFontAttributeName];
-  [attributes setValue:textColor forKey:NSForegroundColorAttributeName];
-  [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-
-  [string drawInRect:textRect withAttributes:attributes];
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
-}
-
 - (void)refreshItemsWithURL:(const GURL&)URLToRefresh title:(NSString*)title {
-  NSURL* NSURL = net::NSURLWithGURL(URLToRefresh);
-
-  if (!NSURL || [_pendingTasks objectForKey:NSURL]) {
+  DCHECK(!_shutdownCalled);
+  if (!URLToRefresh.is_valid() || base::Contains(_pendingTasks, URLToRefresh))
     return;
-  }
 
+  _pendingTasks.insert(URLToRefresh);
   __weak BaseSpotlightManager* weakSelf = self;
-  GURL URL = URLToRefresh;
-  void (^faviconBlock)(const favicon_base::LargeIconResult&) = ^(
-      const favicon_base::LargeIconResult& result) {
-    BaseSpotlightManager* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf->_pendingTasks removeObjectForKey:NSURL];
-    UIImage* favicon;
-    if (result.bitmap.is_valid()) {
-      scoped_refptr<base::RefCountedMemory> data =
-          result.bitmap.bitmap_data.get();
-      favicon = [UIImage
-          imageWithData:[NSData dataWithBytes:data->front() length:data->size()]
-                  scale:[UIScreen mainScreen].scale];
-    } else {
-      NSString* iconText =
-          base::SysUTF16ToNSString(favicon::GetFallbackIconText(URL));
-      UIColor* backgroundColor = skia::UIColorFromSkColor(
-          result.fallback_icon_style->background_color);
-      UIColor* textColor =
-          skia::UIColorFromSkColor(result.fallback_icon_style->text_color);
-      favicon = GetFallbackImageWithStringAndColor(iconText, backgroundColor,
-                                                   textColor);
-    }
-    NSArray* spotlightItems = [strongSelf spotlightItemsWithURL:URL
-                                                        favicon:favicon
-                                                   defaultTitle:title];
-
-    if ([spotlightItems count]) {
-      [[CSSearchableIndex defaultSearchableIndex]
-          indexSearchableItems:spotlightItems
-             completionHandler:nil];
-    }
-  };
-
   base::CancelableTaskTracker::TaskId taskID =
       _largeIconService->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
-          URL, kMinIconSize * [UIScreen mainScreen].scale,
+          URLToRefresh, kMinIconSize * [UIScreen mainScreen].scale,
           kIconSize * [UIScreen mainScreen].scale,
-          base::BindRepeating(faviconBlock), &_largeIconTaskTracker);
-  [_pendingTasks setObject:[NSNumber numberWithLongLong:taskID] forKey:NSURL];
+          base::BindOnce(
+              ^(const GURL& itemURL,
+                const favicon_base::LargeIconResult& result) {
+                [weakSelf largeIconResult:result itemURL:itemURL title:title];
+              },
+              URLToRefresh),
+          _largeIconTaskTracker.get());
+
+  if (taskID == base::CancelableTaskTracker::kBadTaskId)
+    _pendingTasks.erase(URLToRefresh);
 }
 
 - (NSUInteger)pendingLargeIconTasksCount {
-  return [_pendingTasks count];
+  return static_cast<NSUInteger>(_pendingTasks.size());
 }
 
 - (void)shutdown {
   [self cancelAllLargeIconPendingTasks];
+  _largeIconTaskTracker.reset();
   _largeIconService = nullptr;
   _shutdownCalled = YES;
 }
@@ -258,7 +234,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 #pragma mark private methods
 
 - (NSArray*)keywordsForSpotlightItems {
-  NSMutableArray* keywordsArray = [NSMutableArray arrayWithArray:@[
+  return @[
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_ONE),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TWO),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_THREE),
@@ -268,15 +244,47 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_SEVEN),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_NINE),
-    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN)
-  ]];
-  NSArray* additionalArray = ios::GetChromeBrowserProvider()
-                                 ->GetSpotlightProvider()
-                                 ->GetAdditionalKeywords();
-  if (additionalArray) {
-    [keywordsArray addObjectsFromArray:additionalArray];
+    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    @"google",
+    @"chrome",
+#else
+    @"chromium",
+#endif
+  ];
+}
+
+- (void)largeIconResult:(const favicon_base::LargeIconResult&)largeIconResult
+                itemURL:(const GURL&)itemURL
+                  title:(NSString*)title {
+  _pendingTasks.erase(itemURL);
+
+  UIImage* favicon;
+  if (largeIconResult.bitmap.is_valid()) {
+    scoped_refptr<base::RefCountedMemory> data =
+        largeIconResult.bitmap.bitmap_data;
+    favicon = [UIImage imageWithData:[NSData dataWithBytes:data->front()
+                                                    length:data->size()]
+                               scale:[UIScreen mainScreen].scale];
+  } else {
+    NSString* iconText =
+        base::SysUTF16ToNSString(favicon::GetFallbackIconText(itemURL));
+    UIColor* backgroundColor = skia::UIColorFromSkColor(
+        largeIconResult.fallback_icon_style->background_color);
+    UIColor* textColor = skia::UIColorFromSkColor(
+        largeIconResult.fallback_icon_style->text_color);
+    favicon = GetFallbackImageWithStringAndColor(iconText, backgroundColor,
+                                                 textColor);
   }
-  return keywordsArray;
+  NSArray* spotlightItems = [self spotlightItemsWithURL:itemURL
+                                                favicon:favicon
+                                           defaultTitle:title];
+
+  if ([spotlightItems count]) {
+    [[CSSearchableIndex defaultSearchableIndex]
+        indexSearchableItems:spotlightItems
+           completionHandler:nil];
+  }
 }
 
 @end

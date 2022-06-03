@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_BACKWARD_CODE_POINT_STATE_MACHINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_BACKWARD_CODE_POINT_STATE_MACHINE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -18,6 +17,9 @@ class CORE_EXPORT BackwardCodePointStateMachine {
 
  public:
   BackwardCodePointStateMachine();
+  BackwardCodePointStateMachine(const BackwardCodePointStateMachine&) = delete;
+  BackwardCodePointStateMachine& operator=(
+      const BackwardCodePointStateMachine&) = delete;
   ~BackwardCodePointStateMachine() = default;
 
   // Prepares by feeding preceding text.
@@ -44,10 +46,8 @@ class CORE_EXPORT BackwardCodePointStateMachine {
 
   // The internal state.
   BackwardCodePointState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackwardCodePointStateMachine);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_STATE_MACHINES_BACKWARD_CODE_POINT_STATE_MACHINE_H_

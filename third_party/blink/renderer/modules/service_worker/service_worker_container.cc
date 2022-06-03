@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -55,6 +56,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
@@ -66,8 +69,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/weborigin/security_violation_reporting_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -77,12 +80,12 @@ namespace {
 void MaybeRecordThirdPartyServiceWorkerUsage(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
-  // ServiceWorkerContainer is only supported on documents.
-  Document* document = To<Document>(execution_context);
-  DCHECK(document);
+  // ServiceWorkerContainer is only supported on windows.
+  LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
+  DCHECK(window);
 
-  if (document->IsCrossSiteSubframe())
-    UseCounter::Count(document, WebFeature::kThirdPartyServiceWorker);
+  if (window->IsCrossSiteSubframe())
+    UseCounter::Count(window, WebFeature::kThirdPartyServiceWorker);
 }
 
 bool HasFiredDomContentLoaded(const Document& document) {
@@ -100,20 +103,15 @@ mojom::ServiceWorkerUpdateViaCache ParseUpdateViaCache(const String& value) {
   return mojom::ServiceWorkerUpdateViaCache::kImports;
 }
 
-mojom::ScriptType ParseScriptType(const String& type) {
-  if (type == "classic")
-    return mojom::ScriptType::kClassic;
-  if (type == "module")
-    return mojom::ScriptType::kModule;
-  NOTREACHED() << "Invalid type: " << type;
-  return mojom::ScriptType::kClassic;
-}
-
 class GetRegistrationCallback : public WebServiceWorkerProvider::
                                     WebServiceWorkerGetRegistrationCallbacks {
  public:
   explicit GetRegistrationCallback(ScriptPromiseResolver* resolver)
       : resolver_(resolver) {}
+
+  GetRegistrationCallback(const GetRegistrationCallback&) = delete;
+  GetRegistrationCallback& operator=(const GetRegistrationCallback&) = delete;
+
   ~GetRegistrationCallback() override = default;
 
   void OnSuccess(WebServiceWorkerRegistrationObjectInfo info) override {
@@ -139,7 +137,6 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
 
  private:
   Persistent<ScriptPromiseResolver> resolver_;
-  DISALLOW_COPY_AND_ASSIGN(GetRegistrationCallback);
 };
 
 }  // namespace
@@ -150,11 +147,11 @@ class ServiceWorkerContainer::DomContentLoadedListener final
   void Invoke(ExecutionContext* execution_context, Event* event) override {
     DCHECK_EQ(event->type(), "DOMContentLoaded");
 
-    Document& document = *To<Document>(execution_context);
-    DCHECK(HasFiredDomContentLoaded(document));
+    LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
+    DCHECK(HasFiredDomContentLoaded(*window.document()));
 
     auto* container =
-        Supplement<Document>::From<ServiceWorkerContainer>(document);
+        Supplement<LocalDOMWindow>::From<ServiceWorkerContainer>(window);
     if (!container) {
       // There is no container for some reason, which means there's no message
       // queue to start. Just abort.
@@ -167,20 +164,17 @@ class ServiceWorkerContainer::DomContentLoadedListener final
 
 const char ServiceWorkerContainer::kSupplementName[] = "ServiceWorkerContainer";
 
-ServiceWorkerContainer* ServiceWorkerContainer::From(Document* document) {
-  if (!document)
-    return nullptr;
-
+ServiceWorkerContainer* ServiceWorkerContainer::From(LocalDOMWindow& window) {
   ServiceWorkerContainer* container =
-      Supplement<Document>::From<ServiceWorkerContainer>(document);
+      Supplement<LocalDOMWindow>::From<ServiceWorkerContainer>(window);
   if (!container) {
     // TODO(leonhsl): Figure out whether it's really necessary to create an
-    // instance when there's no frame or frame client for |document|.
-    container = MakeGarbageCollected<ServiceWorkerContainer>(document);
-    Supplement<Document>::ProvideTo(*document, container);
-    if (document->GetFrame() && document->GetFrame()->Client()) {
+    // instance when there's no frame or frame client for |window|.
+    container = MakeGarbageCollected<ServiceWorkerContainer>(window);
+    Supplement<LocalDOMWindow>::ProvideTo(window, container);
+    if (window.GetFrame() && window.GetFrame()->Client()) {
       std::unique_ptr<WebServiceWorkerProvider> provider =
-          document->GetFrame()->Client()->CreateServiceWorkerProvider();
+          window.GetFrame()->Client()->CreateServiceWorkerProvider();
       if (provider) {
         provider->SetClient(container);
         container->provider_ = std::move(provider);
@@ -191,10 +185,10 @@ ServiceWorkerContainer* ServiceWorkerContainer::From(Document* document) {
 }
 
 ServiceWorkerContainer* ServiceWorkerContainer::CreateForTesting(
-    Document* document,
+    LocalDOMWindow& window,
     std::unique_ptr<WebServiceWorkerProvider> provider) {
   ServiceWorkerContainer* container =
-      MakeGarbageCollected<ServiceWorkerContainer>(document);
+      MakeGarbageCollected<ServiceWorkerContainer>(window);
   container->provider_ = std::move(provider);
   return container;
 }
@@ -203,7 +197,7 @@ ServiceWorkerContainer::~ServiceWorkerContainer() {
   DCHECK(!provider_);
 }
 
-void ServiceWorkerContainer::ContextDestroyed(ExecutionContext*) {
+void ServiceWorkerContainer::ContextDestroyed() {
   if (provider_) {
     provider_->SetClient(nullptr);
     provider_ = nullptr;
@@ -211,15 +205,15 @@ void ServiceWorkerContainer::ContextDestroyed(ExecutionContext*) {
   controller_ = nullptr;
 }
 
-void ServiceWorkerContainer::Trace(blink::Visitor* visitor) {
+void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
   visitor->Trace(ready_);
   visitor->Trace(dom_content_loaded_observer_);
   visitor->Trace(service_worker_registration_objects_);
   visitor->Trace(service_worker_objects_);
   EventTargetWithInlineData::Trace(visitor);
-  Supplement<Document>::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 ScriptPromise ServiceWorkerContainer::registerServiceWorker(
@@ -229,9 +223,9 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // TODO(asamidoi): Remove this check after module loading for
-  // ServiceWorker is enabled by default (https://crbug.com/824647).
-  if (options->type() == "module" &&
+  // TODO(crbug.com/824647): Remove this check after module loading for
+  // ServiceWorker is enabled by default.
+  if (options->type() == script_type_names::kModule &&
       !RuntimeEnabledFeatures::ModuleServiceWorkerEnabled()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
@@ -290,10 +284,10 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   }
 
   KURL scope_url;
-  if (options->scope().IsNull())
-    scope_url = KURL(script_url, "./");
-  else
+  if (options->hasScope())
     scope_url = execution_context->CompleteURL(options->scope());
+  else
+    scope_url = KURL(script_url, "./");
   scope_url.RemoveFragmentIdentifier();
 
   if (!SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
@@ -339,9 +333,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 
   ContentSecurityPolicy* csp = execution_context->GetContentSecurityPolicy();
   if (csp) {
-    if (!csp->AllowRequestWithoutIntegrity(
-            mojom::RequestContextType::SERVICE_WORKER, script_url) ||
-        !csp->AllowWorkerContextFromSource(script_url)) {
+    if (!csp->AllowWorkerContextFromSource(script_url)) {
       callbacks->OnError(WebServiceWorkerError(
           mojom::blink::ServiceWorkerErrorType::kSecurity,
           String(
@@ -354,20 +346,17 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 
   mojom::ServiceWorkerUpdateViaCache update_via_cache =
       ParseUpdateViaCache(options->updateViaCache());
-  mojom::ScriptType type = ParseScriptType(options->type());
+  absl::optional<mojom::blink::ScriptType> script_type =
+      Script::ParseScriptType(options->type());
+  DCHECK(script_type);
 
   WebFetchClientSettingsObject fetch_client_settings_object(
       execution_context->Fetcher()
           ->GetProperties()
           .GetFetchClientSettingsObject());
-  // The outgoing referrer is a required parameter. Use |script_url| if the
-  // ResourceFetcher doesn't provide it.
-  if (fetch_client_settings_object.outgoing_referrer.IsEmpty()) {
-    fetch_client_settings_object.outgoing_referrer = script_url;
-  }
 
   provider_->RegisterServiceWorker(
-      scope_url, script_url, type, update_via_cache,
+      scope_url, script_url, *script_type, update_via_cache,
       std::move(fetch_client_settings_object), std::move(callbacks));
   return promise;
 }
@@ -507,9 +496,6 @@ void ServiceWorkerContainer::SetController(
     MaybeRecordThirdPartyServiceWorkerUsage(GetExecutionContext());
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kServiceWorkerControlledPage);
-    GetExecutionContext()->GetScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kServiceWorkerControlledPage,
-        {SchedulingPolicy::RecordMetricsForBackForwardCache()});
   }
   if (should_notify_controller_change)
     DispatchEvent(*Event::Create(event_type_names::kControllerchange));
@@ -517,11 +503,11 @@ void ServiceWorkerContainer::SetController(
 
 void ServiceWorkerContainer::ReceiveMessage(WebServiceWorkerObjectInfo source,
                                             TransferableMessage message) {
-  auto* context = GetExecutionContext();
-  if (!context || !context->ExecutingWindow())
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  if (!window)
     return;
   // ServiceWorkerContainer is only supported on documents.
-  auto* document = DynamicTo<Document>(context);
+  auto* document = window->document();
   DCHECK(document);
 
   if (!is_client_message_queue_enabled_) {
@@ -565,7 +551,7 @@ void ServiceWorkerContainer::CountFeature(mojom::WebFeature feature) {
 }
 
 ExecutionContext* ServiceWorkerContainer::GetExecutionContext() const {
-  return GetSupplementable();
+  return GetSupplementable()->GetExecutionContext();
 }
 
 const AtomicString& ServiceWorkerContainer::InterfaceName() const {
@@ -590,16 +576,18 @@ ServiceWorkerContainer::GetOrCreateServiceWorkerRegistration(
   if (info.registration_id == mojom::blink::kInvalidServiceWorkerRegistrationId)
     return nullptr;
 
-  ServiceWorkerRegistration* registration =
-      service_worker_registration_objects_.at(info.registration_id);
-  if (registration) {
+  auto it = service_worker_registration_objects_.find(info.registration_id);
+  if (it != service_worker_registration_objects_.end()) {
+    ServiceWorkerRegistration* registration = it->value;
     registration->Attach(std::move(info));
     return registration;
   }
 
-  registration = MakeGarbageCollected<ServiceWorkerRegistration>(
-      GetSupplementable(), std::move(info));
-  service_worker_registration_objects_.Set(info.registration_id, registration);
+  const int64_t registration_id = info.registration_id;
+  ServiceWorkerRegistration* registration =
+      MakeGarbageCollected<ServiceWorkerRegistration>(
+          GetSupplementable()->GetExecutionContext(), std::move(info));
+  service_worker_registration_objects_.Set(registration_id, registration);
   return registration;
 }
 
@@ -607,21 +595,25 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
     WebServiceWorkerObjectInfo info) {
   if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
     return nullptr;
-  ServiceWorker* worker = service_worker_objects_.at(info.version_id);
-  if (!worker) {
-    worker = ServiceWorker::Create(GetSupplementable(), std::move(info));
-    service_worker_objects_.Set(info.version_id, worker);
-  }
+
+  auto it = service_worker_objects_.find(info.version_id);
+  if (it != service_worker_objects_.end())
+    return it->value;
+
+  const int64_t version_id = info.version_id;
+  ServiceWorker* worker = ServiceWorker::Create(
+      GetSupplementable()->GetExecutionContext(), std::move(info));
+  service_worker_objects_.Set(version_id, worker);
   return worker;
 }
 
-ServiceWorkerContainer::ServiceWorkerContainer(Document* document)
-    : Supplement<Document>(*document), ContextLifecycleObserver(document) {}
+ServiceWorkerContainer::ServiceWorkerContainer(LocalDOMWindow& window)
+    : Supplement<LocalDOMWindow>(window),
+      ExecutionContextLifecycleObserver(&window) {}
 
 ServiceWorkerContainer::ReadyProperty*
 ServiceWorkerContainer::CreateReadyProperty() {
-  return MakeGarbageCollected<ReadyProperty>(GetExecutionContext(), this,
-                                             ReadyProperty::kReady);
+  return MakeGarbageCollected<ReadyProperty>(GetExecutionContext());
 }
 
 void ServiceWorkerContainer::EnableClientMessageQueue() {
@@ -644,7 +636,8 @@ void ServiceWorkerContainer::DispatchMessageEvent(
     TransferableMessage message) {
   DCHECK(is_client_message_queue_enabled_);
 
-  auto msg = ToBlinkTransferableMessage(std::move(message));
+  auto msg =
+      BlinkTransferableMessage::FromTransferableMessage(std::move(message));
   MessagePortArray* ports =
       MessagePort::EntanglePorts(*GetExecutionContext(), std::move(msg.ports));
   ServiceWorker* service_worker =
@@ -689,7 +682,7 @@ void ServiceWorkerContainer::OnGetRegistrationForReady(
       !ready_->GetExecutionContext()->IsContextDestroyed()) {
     ready_->Resolve(
         ServiceWorkerContainer::From(
-            To<Document>(ready_->GetExecutionContext()))
+            *To<LocalDOMWindow>(ready_->GetExecutionContext()))
             ->GetOrCreateServiceWorkerRegistration(std::move(info)));
   }
 }

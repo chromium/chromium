@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/task_traits_extension.h"
@@ -67,7 +68,10 @@ TaskExecutor* GetRegisteredTaskExecutorForTraits(const TaskTraits& traits) {
   uint8_t extension_id = traits.extension_id();
   if (extension_id != TaskTraitsExtensionStorage::kInvalidExtensionId) {
     TaskExecutor* executor = (*GetTaskExecutorMap())[extension_id - 1];
-    DCHECK(executor);
+    DCHECK(executor)
+        << "A TaskExecutor wasn't yet registered for this extension.\nHint: if "
+           "this is in a unit test, you're likely missing a "
+           "content::BrowserTaskEnvironment member in your fixture.";
     return executor;
   }
 

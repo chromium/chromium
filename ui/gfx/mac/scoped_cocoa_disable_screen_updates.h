@@ -5,7 +5,6 @@
 #ifndef UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 #define UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -18,10 +17,13 @@ namespace gfx {
 class GFX_EXPORT ScopedCocoaDisableScreenUpdates {
  public:
   ScopedCocoaDisableScreenUpdates();
-  ~ScopedCocoaDisableScreenUpdates();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedCocoaDisableScreenUpdates);
+  ScopedCocoaDisableScreenUpdates(const ScopedCocoaDisableScreenUpdates&) =
+      delete;
+  ScopedCocoaDisableScreenUpdates& operator=(
+      const ScopedCocoaDisableScreenUpdates&) = delete;
+
+  ~ScopedCocoaDisableScreenUpdates();
 };
 
 }  // namespace gfx

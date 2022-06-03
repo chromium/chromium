@@ -8,45 +8,32 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
 
-NullExecutionContext::NullExecutionContext(
-    OriginTrialContext* origin_trial_context)
+NullExecutionContext::NullExecutionContext()
     : ExecutionContext(
           v8::Isolate::GetCurrent(),
           MakeGarbageCollected<Agent>(v8::Isolate::GetCurrent(),
-                                      base::UnguessableToken::Null()),
-          origin_trial_context,
-          nullptr,
-          WebSandboxFlags::kNone,
-          nullptr),
-      is_secure_context_(true),
+                                      base::UnguessableToken::Create())),
       scheduler_(scheduler::CreateDummyFrameScheduler()) {}
 
 NullExecutionContext::~NullExecutionContext() {}
 
-void NullExecutionContext::SetIsSecureContext(bool is_secure_context) {
-  is_secure_context_ = is_secure_context;
-}
-
-bool NullExecutionContext::IsSecureContext(String& error_message) const {
-  if (!is_secure_context_)
-    error_message = "A secure context is required";
-  return is_secure_context_;
-}
-
 void NullExecutionContext::SetUpSecurityContextForTesting() {
+  SetPolicyContainer(PolicyContainer::CreateEmpty());
   auto* policy = MakeGarbageCollected<ContentSecurityPolicy>();
   GetSecurityContext().SetSecurityOriginForTesting(
       SecurityOrigin::Create(url_));
   policy->BindToDelegate(GetContentSecurityPolicyDelegate());
-  GetSecurityContext().SetContentSecurityPolicy(policy);
+  SetContentSecurityPolicy(policy);
 }
 
 FrameOrWorkerScheduler* NullExecutionContext::GetScheduler() {
@@ -58,7 +45,8 @@ scoped_refptr<base::SingleThreadTaskRunner> NullExecutionContext::GetTaskRunner(
   return Thread::Current()->GetTaskRunner();
 }
 
-BrowserInterfaceBrokerProxy& NullExecutionContext::GetBrowserInterfaceBroker() {
+const BrowserInterfaceBrokerProxy&
+NullExecutionContext::GetBrowserInterfaceBroker() const {
   return GetEmptyBrowserInterfaceBroker();
 }
 

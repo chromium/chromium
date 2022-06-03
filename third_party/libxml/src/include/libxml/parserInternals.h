@@ -43,7 +43,7 @@ XMLPUBVAR unsigned int xmlParserMaxDepth;
 /**
  * XML_MAX_NAME_LENGTH:
  *
- * Maximum size allowed for a markup identitier
+ * Maximum size allowed for a markup identifier.
  * This is not a limitation of the parser but a safety boundary feature,
  * use XML_PARSE_HUGE option to override it.
  * Note that with the use of parsing dictionaries overriding the limit

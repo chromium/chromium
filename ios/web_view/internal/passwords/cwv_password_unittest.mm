@@ -5,7 +5,7 @@
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -19,10 +19,10 @@ namespace ios_web_view {
 
 using CWVPasswordTest = PlatformTest;
 
-// Tests CWVPassword initialization for a blacklisted site.
-TEST_F(CWVPasswordTest, Blacklisted) {
-  autofill::PasswordForm password_form;
-  password_form.origin = GURL("http://www.example.com/accounts/LoginAuth");
+// Tests CWVPassword initialization for a blocked site.
+TEST_F(CWVPasswordTest, Blocked) {
+  password_manager::PasswordForm password_form;
+  password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
   password_form.username_element = base::SysNSStringToUTF16(@"Email");
   password_form.username_value = base::SysNSStringToUTF16(@"test@egmail.com");
@@ -30,8 +30,9 @@ TEST_F(CWVPasswordTest, Blacklisted) {
   password_form.password_value = base::SysNSStringToUTF16(@"test");
   password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
   password_form.signon_realm = "http://www.example.com/";
-  password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
-  password_form.blacklisted_by_user = true;
+  password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  password_form.blocked_by_user = true;
+  password_form.encrypted_password = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
@@ -42,15 +43,16 @@ TEST_F(CWVPasswordTest, Blacklisted) {
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
               password.site);
-  EXPECT_TRUE(password.blacklisted);
+  EXPECT_TRUE(password.blocked);
   EXPECT_FALSE(password.username);
   EXPECT_FALSE(password.password);
+  EXPECT_FALSE(password.keychainIdentifier);
 }
 
-// Tests CWVPassword initialization for a non-blacklisted site.
-TEST_F(CWVPasswordTest, NonBlacklisted) {
-  autofill::PasswordForm password_form;
-  password_form.origin = GURL("http://www.example.com/accounts/LoginAuth");
+// Tests CWVPassword initialization for a non-blocked site.
+TEST_F(CWVPasswordTest, NonBlocked) {
+  password_manager::PasswordForm password_form;
+  password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
   password_form.username_element = base::SysNSStringToUTF16(@"Email");
   password_form.username_value = base::SysNSStringToUTF16(@"test@egmail.com");
@@ -58,8 +60,9 @@ TEST_F(CWVPasswordTest, NonBlacklisted) {
   password_form.password_value = base::SysNSStringToUTF16(@"test");
   password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
   password_form.signon_realm = "http://www.example.com/";
-  password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
-  password_form.blacklisted_by_user = false;
+  password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  password_form.blocked_by_user = false;
+  password_form.encrypted_password = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
@@ -70,9 +73,10 @@ TEST_F(CWVPasswordTest, NonBlacklisted) {
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
               password.site);
-  EXPECT_FALSE(password.blacklisted);
+  EXPECT_FALSE(password.blocked);
   EXPECT_NSEQ(@"test@egmail.com", password.username);
   EXPECT_NSEQ(@"test", password.password);
+  EXPECT_NSEQ(@"test-encrypted-password", password.keychainIdentifier);
 }
 
 }  // namespace ios_web_view

@@ -8,12 +8,10 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
-#include "storage/browser/quota/quota_limit_type.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -22,6 +20,7 @@ class SequencedTaskRunner;
 namespace storage {
 
 class FileSystemContext;
+enum class QuotaLimitType;
 
 // A context class which is carried around by FileSystemOperation and
 // its delegated tasks. It is valid to reuse one context instance across
@@ -39,6 +38,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
   FileSystemOperationContext(FileSystemContext* context,
                              base::SequencedTaskRunner* task_runner);
 
+  FileSystemOperationContext(const FileSystemOperationContext&) = delete;
+  FileSystemOperationContext& operator=(const FileSystemOperationContext&) =
+      delete;
+
   ~FileSystemOperationContext() override;
 
   FileSystemContext* file_system_context() const {
@@ -53,7 +56,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
 
   // Returns the current remaining quota.
   int64_t allowed_bytes_growth() const { return allowed_bytes_growth_; }
-  storage::QuotaLimitType quota_limit_type() const { return quota_limit_type_; }
+  QuotaLimitType quota_limit_type() const { return quota_limit_type_; }
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
 
   ChangeObserverList* change_observers() { return &change_observers_; }
@@ -70,7 +73,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
     DCHECK_CALLED_ON_VALID_THREAD(setter_thread_checker_);
     update_observers_ = list;
   }
-  void set_quota_limit_type(storage::QuotaLimitType limit_type) {
+  void set_quota_limit_type(QuotaLimitType limit_type) {
     DCHECK_CALLED_ON_VALID_THREAD(setter_thread_checker_);
     quota_limit_type_ = limit_type;
   }
@@ -83,7 +86,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
   int64_t allowed_bytes_growth_;
 
   // The current quota limit type, used by ObfuscatedFileUtil.
-  storage::QuotaLimitType quota_limit_type_;
+  QuotaLimitType quota_limit_type_;
 
   // Observers attached to this context.
   ChangeObserverList change_observers_;
@@ -91,8 +94,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
 
   // Used to check its setters are not called on arbitrary thread.
   THREAD_CHECKER(setter_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationContext);
 };
 
 }  // namespace storage

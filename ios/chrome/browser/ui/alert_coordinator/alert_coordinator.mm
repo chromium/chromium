@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 
-#include "base/logging.h"
+#import "ios/chrome/browser/main/browser.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -15,8 +15,6 @@
 @interface AlertCoordinator () {
   // Variable backing a property from Subclassing category.
   UIAlertController* _alertController;
-  // Title for the alert.
-  NSString* _title;
 }
 
 // Redefined to readwrite.
@@ -41,24 +39,13 @@
 @synthesize noInteractionAction = _noInteractionAction;
 @synthesize rawCancelAction = _rawCancelAction;
 @synthesize message = _message;
+@synthesize title = _title;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message {
-  self = [super initWithBaseViewController:viewController browserState:nullptr];
-  if (self) {
-    [self commonInitWithTitle:title message:message];
-  }
-  return self;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                     title:(NSString*)title
-                                   message:(NSString*)message
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState {
-  self = [super initWithBaseViewController:viewController
-                              browserState:browserState];
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     [self commonInitWithTitle:title message:message];
   }
@@ -75,6 +62,13 @@
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style {
+  [self addItemWithTitle:title action:actionBlock style:style enabled:YES];
+}
+
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+                 enabled:(BOOL)enabled {
   if (self.visible ||
       (style == UIAlertActionStyleCancel && self.cancelButtonAdded)) {
     return;
@@ -89,11 +83,12 @@
       [UIAlertAction actionWithTitle:title
                                style:style
                              handler:^(UIAlertAction*) {
-                               [weakSelf setNoInteractionAction:nil];
+                               [weakSelf alertDismissed];
                                if (actionBlock)
                                  actionBlock();
-                               [weakSelf alertDismissed];
                              }];
+
+  alertAction.enabled = enabled;
 
   [self.alertController addAction:alertAction];
 }

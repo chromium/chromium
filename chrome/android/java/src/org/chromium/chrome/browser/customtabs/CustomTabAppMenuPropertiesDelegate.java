@@ -7,25 +7,24 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.content.res.AppCompatResources;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
-import org.chromium.chrome.browser.appmenu.AppMenuPropertiesDelegateImpl;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -33,8 +32,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import java.util.Map;
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
 
+    private final Verifier mVerifier;
     private final @CustomTabsUiType int mUiType;
     private final boolean mShowShare;
     private final boolean mShowStar;
@@ -55,7 +57,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsIncognito;
 
     private final List<String> mMenuEntries;
-    private final Map<MenuItem, Integer> mItemToIndexMap = new HashMap<MenuItem, Integer>();
+    private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
+    private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
 
     private boolean mIsCustomEntryAdded;
 
@@ -66,11 +69,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
             boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, bookmarkBridgeSupplier);
+                toolbarManager, decorView, null, null, bookmarkBridgeSupplier);
+        mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
         mIsOpenedByChrome = isOpenedByChrome;
@@ -94,14 +98,16 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     public void prepareMenu(Menu menu, AppMenuHandler handler) {
         Tab currentTab = mActivityTabProvider.get();
         if (currentTab != null) {
+            GURL url = currentTab.getUrl();
+
             MenuItem forwardMenuItem = menu.findItem(R.id.forward_menu_id);
             forwardMenuItem.setEnabled(currentTab.canGoForward());
 
-            mReloadMenuItem = menu.findItem(R.id.reload_menu_id);
             Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
             DrawableCompat.setTintList(icon,
-                    AppCompatResources.getColorStateList(mContext, R.color.standard_mode_tint));
-            mReloadMenuItem.setIcon(icon);
+                    AppCompatResources.getColorStateList(
+                            mContext, R.color.default_icon_color_tint_list));
+            menu.findItem(R.id.reload_menu_id).setIcon(icon);
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem shareItem = menu.findItem(R.id.share_row_menu_id);
@@ -127,14 +133,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
                 requestDesktopSiteVisible = false;
                 addToHomeScreenVisible = false;
-            } else if (mUiType == CustomTabsUiType.PAYMENT_REQUEST) {
-                // Only the icon row and 'find in page' are shown for opening payment request UI
-                // from Chrome.
-                openInChromeItemVisible = false;
-                requestDesktopSiteVisible = false;
-                addToHomeScreenVisible = false;
-                downloadItemVisible = false;
-                bookmarkItemVisible = false;
             } else if (mUiType == CustomTabsUiType.READER_MODE) {
                 // Only 'find in page' and the reader mode preference are shown for Reader Mode UI.
                 menu.findItem(R.id.icon_row_menu_id).setVisible(false);
@@ -147,7 +145,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 menu.findItem(R.id.reader_mode_prefs_id).setVisible(true);
             } else if (mUiType == CustomTabsUiType.MINIMAL_UI_WEBAPP) {
                 requestDesktopSiteVisible = false;
-                addToHomeScreenVisible = false;
+                // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification
+                // (instead of looking up cached value).
+                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
                 downloadItemVisible = false;
                 bookmarkItemVisible = false;
             } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
@@ -167,25 +167,26 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             if (mIsIncognito) {
                 addToHomeScreenVisible = false;
+                downloadItemVisible = false;
+                openInChromeItemVisible = false;
             }
 
-            String url = currentTab.getUrl();
-            boolean isChromeScheme = url.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                    || url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
-            if (isChromeScheme || TextUtils.isEmpty(url)) {
+            boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                    || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+            if (isChromeScheme || url.isEmpty()) {
                 addToHomeScreenVisible = false;
             }
 
             MenuItem downloadItem = menu.findItem(R.id.offline_page_id);
             if (downloadItemVisible) {
-                downloadItem.setEnabled(DownloadUtils.isAllowedToDownloadPage(currentTab));
+                downloadItem.setEnabled(shouldEnableDownloadPage(currentTab));
             } else {
                 downloadItem.setVisible(false);
             }
 
             MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
             if (bookmarkItemVisible) {
-                updateBookmarkMenuItem(bookmarkItem, currentTab);
+                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab);
             } else {
                 bookmarkItem.setVisible(false);
             }
@@ -209,11 +210,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 mIsCustomEntryAdded = true;
                 for (int i = 0; i < mMenuEntries.size(); i++) {
                     MenuItem item = menu.add(0, 0, 1, mMenuEntries.get(i));
-                    mItemToIndexMap.put(item, i);
+                    mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
+                    mItemIdToIndexMap.put(item.getItemId(), i);
                 }
             }
 
-            updateRequestDesktopSiteMenuItem(menu, currentTab, requestDesktopSiteVisible);
+            updateRequestDesktopSiteMenuItem(
+                    menu, currentTab, requestDesktopSiteVisible, isChromeScheme);
             prepareAddToHomescreenMenuItem(menu, currentTab, addToHomeScreenVisible);
         }
     }
@@ -232,13 +235,14 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     @Override
-    public @Nullable Bundle getBundleForMenuItem(MenuItem item) {
-        if (!mItemToIndexMap.containsKey(item)) {
-            return null;
+    public Bundle getBundleForMenuItem(int itemId) {
+        Bundle itemBundle = super.getBundleForMenuItem(itemId);
+
+        if (!mItemIdToIndexMap.containsKey(itemId)) {
+            return itemBundle;
         }
 
-        Bundle itemBundle = new Bundle();
-        itemBundle.putInt(CUSTOM_MENU_ITEM_ID_KEY, mItemToIndexMap.get(item).intValue());
+        itemBundle.putInt(CUSTOM_MENU_ITEM_ID_KEY, mItemIdToIndexMap.get(itemId).intValue());
         return itemBundle;
     }
 
@@ -252,14 +256,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     /**
-     * Get the {@link MenuItem} object associated with the given title. If multiple menu items have
-     * the same title, a random one will be returned. This method is for testing purpose _only_.
+     * Get the menu item's id object associated with the given title. If multiple menu items have
+     * the same title, a random one will be returned. If the menu item is not found, return -1. This
+     * method is for testing purpose _only_.
      */
     @VisibleForTesting
-    MenuItem getMenuItemForTitle(String title) {
-        for (MenuItem item : mItemToIndexMap.keySet()) {
-            if (item.getTitle().equals(title)) return item;
+    int getItemIdForTitle(String title) {
+        if (mTitleToItemIdMap.containsKey(title)) {
+            return mTitleToItemIdMap.get(title).intValue();
         }
-        return null;
+        return AppMenuPropertiesDelegate.INVALID_ITEM_ID;
     }
 }

@@ -16,7 +16,14 @@
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
+#include "v8/include/v8-value.h"
 
 namespace extensions {
 
@@ -144,9 +151,9 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
       << feature_name;
   SetPrivate(data, kFeatureName,
              v8_helpers::ToV8StringUnsafe(isolate, feature_name));
-  v8::Local<v8::FunctionTemplate> function_template =
-      v8::FunctionTemplate::New(isolate, Router, data);
-  function_template->RemovePrototype();
+  v8::Local<v8::FunctionTemplate> function_template = v8::FunctionTemplate::New(
+      isolate, Router, data, v8::Local<v8::Signature>(), 0,
+      v8::ConstructorBehavior::kThrow);
   v8::Local<v8::ObjectTemplate>::New(isolate, object_template_)
       ->Set(isolate, name.c_str(), function_template);
   router_data_.Append(data);

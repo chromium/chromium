@@ -30,25 +30,25 @@ The results should be indentical to the results for aria-undefined.html.
 -->
 <html>
 <body>
-<div aria-atomic="" aria-label="Atomic undefined"></div>
+<div aria-atomic="" role="group" aria-label="Atomic undefined"></div>
 <div aria-autocomplete="" role="textbox" aria-label="Autocomplete undefined"></div>
-<div aria-busy="" aria-label="Busy undefined"></div>
+<div aria-busy="" role="group" aria-label="Busy undefined"></div>
 <div aria-checked="" role="treeitem" aria-label="Checked undefined"></div>
-<div aria-current="" aria-label="Current undefined"></div>
-<div aria-disabled="" aria-label="Disabled undefined"></div>
-<div aria-dropeffect="" aria-label="Dropeffect undefined"></div>
+<div aria-current="" role="group" aria-label="Current undefined"></div>
+<div aria-disabled="" role="group" aria-label="Disabled undefined"></div>
+<div aria-dropeffect="" role="group" aria-label="Dropeffect undefined"></div>
 <div aria-expanded="" role="treeitem" aria-label="Expanded undefined"></div>
-<div aria-grabbed="" aria-label="Grabbed undefined"></div>
+<div aria-grabbed="" role="group" aria-label="Grabbed undefined"></div>
 <div aria-haspopup="" role="button" aria-label="Haspopup undefined"></div>
-<div aria-invalid="" aria-label="Invalid undefined"></div>
-<div aria-live="" aria-label="Live undefined"></div>
+<div aria-invalid="" role="textbox" aria-label="Invalid undefined"></div>
+<div aria-live="" role="group" aria-label="Live undefined"></div>
 <div aria-modal="" role="dialog" aria-label="Modal undefined"></div>
 <div aria-multiline="" role="textbox" aria-label="Multiline undefined"></div>
 <div aria-multiselectable="" role="grid" aria-label="Multiselectable undefined"></div>
 <div aria-orientation="" role="scrollbar" aria-label="Orientation undefined"></div>
 <div aria-pressed="" role="button" aria-label="Pressed undefined"></div>
 <div aria-readonly="" role="textbox" aria-label="Readonly undefined"></div>
-<div aria-relevant="" aria-label="Relevant undefined"></div>
+<div aria-relevant="" role="group" aria-label="Relevant undefined"></div>
 <div aria-required="" role="textbox" aria-label="Required undefined"></div>
 <!-- Test selected inside multiselectable. -->
 <div role="tree" aria-multiselectable="true">
@@ -59,7 +59,7 @@ The results should be indentical to the results for aria-undefined.html.
 </div>
 <!-- Test aria-hidden at end because a broken test can have extra object,
      and ruin the rest of the test. -->
-<div aria-hidden="" style="display: block" aria-label="Hidden undefined, display block"></div>
+<div aria-hidden="" role="group" style="display: block" aria-label="Hidden undefined, display block"></div>
 <div aria-hidden="" style="display: none" aria-label="Hidden undefined, display none"></div>
 </body>
 </html>

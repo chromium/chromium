@@ -1,0 +1,5 @@
+This tests verifies the hit test regions given to the compositor for svg elements. It can only be run in DumpRenderTree.
+
+svgline: layer(1200x900) has hit test rect (20,124 33x7)
+
+

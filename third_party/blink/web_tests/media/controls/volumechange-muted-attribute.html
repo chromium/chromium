@@ -12,5 +12,12 @@
   var video = document.querySelector('video');
   enableTestMode(video);
   video.src = '../content/test.ogv';
+
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    video.requestVideoFrameCallback(() => {
+      testRunner.notifyDone();
+    });
+  }
 </script>
 </html>

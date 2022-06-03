@@ -6,3 +6,9 @@ include_rules = [
   "+ui/base",
   "+ui/latency",
 ]
+
+specific_include_rules = {
+  "dxgi_helpers.cc": [
+    "+third_party/libyuv/include/libyuv/planar_functions.h",
+  ],
+}

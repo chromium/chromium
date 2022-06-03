@@ -24,7 +24,7 @@
  */
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface DeprecatedStorageQuota {
     // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
     [Measure, CallWith=ScriptState] void queryUsageAndQuota(StorageUsageCallback usageCallback, optional StorageErrorCallback? errorCallback);

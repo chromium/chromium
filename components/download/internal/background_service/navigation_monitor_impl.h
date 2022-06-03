@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_NAVIGATION_MONITOR_IMPL_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 
@@ -15,6 +14,10 @@ namespace download {
 class NavigationMonitorImpl : public NavigationMonitor {
  public:
   NavigationMonitorImpl();
+
+  NavigationMonitorImpl(const NavigationMonitorImpl&) = delete;
+  NavigationMonitorImpl& operator=(const NavigationMonitorImpl&) = delete;
+
   ~NavigationMonitorImpl() override;
 
   // NavigationMonitor implementation.
@@ -33,16 +36,14 @@ class NavigationMonitorImpl : public NavigationMonitor {
 
   int current_navigation_count_;
 
-  base::CancelableClosure navigation_finished_callback_;
+  base::CancelableOnceClosure navigation_finished_callback_;
 
-  base::CancelableClosure backup_navigation_finished_callback_;
+  base::CancelableOnceClosure backup_navigation_finished_callback_;
 
   base::TimeDelta navigation_completion_delay_;
   base::TimeDelta navigation_timeout_delay_;
 
   base::WeakPtrFactory<NavigationMonitorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationMonitorImpl);
 };
 
 }  // namespace download

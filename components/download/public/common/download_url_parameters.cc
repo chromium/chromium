@@ -8,34 +8,24 @@ namespace download {
 
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const net::NetworkIsolationKey& network_isolation_key)
-    : DownloadUrlParameters(url,
-                            -1,
-                            -1,
-                            -1,
-                            traffic_annotation,
-                            network_isolation_key) {}
+    const net::NetworkTrafficAnnotationTag& traffic_annotation)
+    : DownloadUrlParameters(url, -1, -1, traffic_annotation) {}
 
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
     int render_process_host_id,
-    int render_view_host_routing_id,
     int render_frame_host_routing_id,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : content_initiated_(false),
       use_if_range_(true),
       method_("GET"),
+      credentials_mode_(::network::mojom::CredentialsMode::kInclude),
       post_id_(-1),
       prefer_cache_(false),
       referrer_policy_(
-          net::URLRequest::
-              CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+          net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       render_process_host_id_(render_process_host_id),
-      render_view_host_routing_id_(render_view_host_routing_id),
       render_frame_host_routing_id_(render_frame_host_routing_id),
-      frame_tree_node_id_(-1),
       url_(url),
       do_not_prompt_for_login_(false),
       cross_origin_redirects_(network::mojom::RedirectMode::kFollow),
@@ -44,7 +34,7 @@ DownloadUrlParameters::DownloadUrlParameters(
       traffic_annotation_(traffic_annotation),
       download_source_(DownloadSource::UNKNOWN),
       require_safety_checks_(true),
-      network_isolation_key_(network_isolation_key) {}
+      has_user_gesture_(false) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
 

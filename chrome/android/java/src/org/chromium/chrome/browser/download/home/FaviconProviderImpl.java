@@ -8,8 +8,8 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.favicon.FaviconHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 
 /** Implementation for {@link FaviconHelper}. */
 public class FaviconProviderImpl implements FaviconProvider {

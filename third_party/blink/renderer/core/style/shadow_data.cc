@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 
-#include "third_party/blink/renderer/platform/animation/animation_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/color_blend.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
@@ -33,19 +32,8 @@ bool ShadowData::operator==(const ShadowData& o) const {
          style_ == o.style_ && color_ == o.color_;
 }
 
-ShadowData ShadowData::Blend(const ShadowData& from,
-                             double progress,
-                             const Color& current_color) const {
-  DCHECK_EQ(Style(), from.Style());
-  return ShadowData(blink::Blend(from.Location(), Location(), progress),
-                    clampTo(blink::Blend(from.Blur(), Blur(), progress), 0.0f),
-                    blink::Blend(from.Spread(), Spread(), progress), Style(),
-                    blink::Blend(from.GetColor().Resolve(current_color),
-                                 GetColor().Resolve(current_color), progress));
-}
-
 ShadowData ShadowData::NeutralValue() {
-  return ShadowData(FloatPoint(0, 0), 0, 0, kNormal,
+  return ShadowData(FloatPoint(0, 0), 0, 0, ShadowStyle::kNormal,
                     StyleColor(Color::kTransparent));
 }
 

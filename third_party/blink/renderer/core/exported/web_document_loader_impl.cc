@@ -38,11 +38,10 @@
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
-#include "third_party/blink/public/platform/web_loading_hints_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -55,10 +54,6 @@ namespace blink {
 // static
 bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
   return DocumentLoader::WillLoadUrlAsEmpty(url);
-}
-
-WebURL WebDocumentLoaderImpl::OriginalUrl() const {
-  return DocumentLoader::OriginalUrl();
 }
 
 WebString WebDocumentLoaderImpl::OriginalReferrer() const {
@@ -94,10 +89,6 @@ WebURL WebDocumentLoaderImpl::UnreachableURL() const {
   return DocumentLoader::UnreachableURL();
 }
 
-void WebDocumentLoaderImpl::RedirectChain(WebVector<WebURL>& result) const {
-  result.Assign(redirect_chain_);
-}
-
 bool WebDocumentLoaderImpl::IsClientRedirect() const {
   return DocumentLoader::IsClientRedirect();
 }
@@ -114,6 +105,11 @@ WebDocumentLoader::ExtraData* WebDocumentLoaderImpl::GetExtraData() const {
   return extra_data_.get();
 }
 
+std::unique_ptr<WebDocumentLoader::ExtraData>
+WebDocumentLoaderImpl::TakeExtraData() {
+  return std::move(extra_data_);
+}
+
 void WebDocumentLoaderImpl::SetExtraData(
     std::unique_ptr<ExtraData> extra_data) {
   extra_data_ = std::move(extra_data);
@@ -122,12 +118,12 @@ void WebDocumentLoaderImpl::SetExtraData(
 WebDocumentLoaderImpl::WebDocumentLoaderImpl(
     LocalFrame* frame,
     WebNavigationType navigation_type,
-    base::Optional<ContentSecurityPolicy*> content_security_policy,
-    std::unique_ptr<WebNavigationParams> navigation_params)
+    std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container)
     : DocumentLoader(frame,
                      navigation_type,
-                     content_security_policy,
-                     std::move(navigation_params)),
+                     std::move(navigation_params),
+                     std::move(policy_container)),
       response_wrapper_(DocumentLoader::GetResponse()) {}
 
 WebDocumentLoaderImpl::~WebDocumentLoaderImpl() {
@@ -143,14 +139,7 @@ void WebDocumentLoaderImpl::DetachFromFrame(bool flush_microtask_queue) {
 void WebDocumentLoaderImpl::SetSubresourceFilter(
     WebDocumentSubresourceFilter* subresource_filter) {
   DocumentLoader::SetSubresourceFilter(MakeGarbageCollected<SubresourceFilter>(
-      GetFrame()->GetDocument(), base::WrapUnique(subresource_filter)));
-}
-
-void WebDocumentLoaderImpl::SetLoadingHintsProvider(
-    std::unique_ptr<blink::WebLoadingHintsProvider> loading_hints_provider) {
-  DocumentLoader::SetPreviewsResourceLoadingHints(
-      PreviewsResourceLoadingHints::CreateFromLoadingHintsProvider(
-          *GetFrame()->GetDocument(), std::move(loading_hints_provider)));
+      GetFrame()->DomWindow(), base::WrapUnique(subresource_filter)));
 }
 
 void WebDocumentLoaderImpl::SetServiceWorkerNetworkProvider(
@@ -172,31 +161,44 @@ void WebDocumentLoaderImpl::ResumeParser() {
 }
 
 bool WebDocumentLoaderImpl::HasBeenLoadedAsWebArchive() const {
-  return archive_ || (archive_load_result_ != mojom::MHTMLLoadResult::kSuccess);
+  return archive_;
 }
 
-WebURLRequest::PreviewsState WebDocumentLoaderImpl::GetPreviewsState() const {
+PreviewsState WebDocumentLoaderImpl::GetPreviewsState() const {
   return DocumentLoader::GetPreviewsState();
 }
 
 WebArchiveInfo WebDocumentLoaderImpl::GetArchiveInfo() const {
-  if (archive_) {
-    DCHECK(archive_->MainResource());
-    return {archive_load_result_, archive_->MainResource()->Url(),
-            archive_->Date()};
+  if (archive_ &&
+      archive_->LoadResult() == mojom::blink::MHTMLLoadResult::kSuccess) {
+    return {
+        archive_->LoadResult(),
+        archive_->MainResource()->Url(),
+        archive_->Date(),
+    };
   }
-  return {archive_load_result_, WebURL(), base::Time()};
+
+  // TODO(arthursonzogni): Returning MHTMLLoadResult::kSuccess when there are no
+  // archive is very misleading. Consider adding a new enum value to
+  // discriminate success versus no archive.
+  return {
+      archive_ ? archive_->LoadResult()
+               : mojom::blink::MHTMLLoadResult::kSuccess,
+      WebURL(),
+      base::Time(),
+  };
 }
 
-bool WebDocumentLoaderImpl::HadUserGesture() const {
-  return DocumentLoader::HadTransientActivation();
+bool WebDocumentLoaderImpl::LastNavigationHadTransientUserActivation() const {
+  return DocumentLoader::LastNavigationHadTransientUserActivation();
 }
 
-bool WebDocumentLoaderImpl::IsListingFtpDirectory() const {
-  return DocumentLoader::IsListingFtpDirectory();
+void WebDocumentLoaderImpl::SetCodeCacheHost(
+    mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
+  DocumentLoader::SetCodeCacheHost(std::move(code_cache_host));
 }
 
-void WebDocumentLoaderImpl::Trace(blink::Visitor* visitor) {
+void WebDocumentLoaderImpl::Trace(Visitor* visitor) const {
   DocumentLoader::Trace(visitor);
 }
 

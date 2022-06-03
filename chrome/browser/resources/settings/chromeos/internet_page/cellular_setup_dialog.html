@@ -1,0 +1,58 @@
+<style include="settings-shared">
+  @media (min-width: 640px){
+    :host {
+      --cr-dialog-width: 512px;
+    }
+  }
+
+  @media (max-width: 640px){
+    :host {
+      --cr-dialog-width: 320px;
+    }
+  }
+
+  :host {
+    --cr-dialog-body-padding-horizontal: 24px;
+    --cr-dialog-title-slot-padding-bottom: 0;
+    --cr-dialog-title-slot-padding-end: 0;
+    --cr-dialog-title-slot-padding-start: 0;
+    --cr-dialog-title-slot-padding-top: 0;
+  }
+
+  #header {
+    padding-bottom: 8px;
+    padding-inline-end:  24px;
+    padding-inline-start: 24px;
+    padding-top: 24px;
+  }
+
+  #title {
+    align-items: center;
+    background-color: var(--cros-dialog-title-background-color);
+    display: flex;
+    font-size: x-small;
+    height: 32px;
+    justify-content: center;
+  }
+
+</style>
+<!-- TODO(crbug/1093185): Change close logic when CellularSetup embedded -->
+<cr-dialog id="dialog">
+  <div slot="title">
+    <template is="dom-if"
+        if="[[shouldShowDialogTitle_(dialogTitle_)]]" restamp>
+      <div id="title">
+        [[dialogTitle_]]
+      </div>
+    </template>
+    <div id="header">[[getDialogHeader_(dialogHeader_)]]</div>
+  </div>
+  <div slot="body">
+    <cellular-setup
+        flow-title="{{dialogTitle_}}"
+        flow-header="{{dialogHeader_}}"
+        delegate="[[delegate_]]"
+        current-page-name="[[pageName]]">
+    </cellular-setup>
+  </div>
+</cr-dialog>

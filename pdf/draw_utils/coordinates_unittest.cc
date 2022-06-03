@@ -4,9 +4,10 @@
 
 #include "pdf/draw_utils/coordinates.h"
 
-#include "pdf/test/test_utils.h"
-#include "ppapi/cpp/point.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
 namespace draw_utils {
@@ -30,67 +31,68 @@ void CompareInsetSizes(const PageInsetSizes& expected_insets,
 }  // namespace
 
 TEST(CoordinateTest, AdjustBottomGapForRightSidePage) {
-  pp::Rect bottom_gap(0, 10, 500, 100);
+  gfx::Rect bottom_gap(0, 10, 500, 100);
   AdjustBottomGapForRightSidePage(250, &bottom_gap);
-  CompareRect({250, 10, 250, 100}, bottom_gap);
+  EXPECT_EQ(gfx::Rect(250, 10, 250, 100), bottom_gap);
 
   bottom_gap.SetRect(15, 20, 700, 100);
   AdjustBottomGapForRightSidePage(365, &bottom_gap);
-  CompareRect({365, 20, 350, 100}, bottom_gap);
+  EXPECT_EQ(gfx::Rect(365, 20, 350, 100), bottom_gap);
 
   bottom_gap.SetRect(100, 40, 951, 200);
   AdjustBottomGapForRightSidePage(450, &bottom_gap);
-  CompareRect({450, 40, 475, 200}, bottom_gap);
+  EXPECT_EQ(gfx::Rect(450, 40, 475, 200), bottom_gap);
 }
 
 TEST(CoordinateTest, CenterRectHorizontally) {
-  pp::Rect page_rect(10, 20, 400, 300);
+  gfx::Rect page_rect(10, 20, 400, 300);
   CenterRectHorizontally(600, &page_rect);
-  CompareRect({100, 20, 400, 300}, page_rect);
+  EXPECT_EQ(gfx::Rect(100, 20, 400, 300), page_rect);
 
   page_rect.SetRect(300, 450, 500, 700);
   CenterRectHorizontally(800, &page_rect);
-  CompareRect({150, 450, 500, 700}, page_rect);
+  EXPECT_EQ(gfx::Rect(150, 450, 500, 700), page_rect);
 
   page_rect.SetRect(800, 100, 200, 250);
   CenterRectHorizontally(350, &page_rect);
-  CompareRect({75, 100, 200, 250}, page_rect);
+  EXPECT_EQ(gfx::Rect(75, 100, 200, 250), page_rect);
 }
 
 TEST(CoordinateTest, ExpandDocumentSize) {
-  pp::Size doc_size(100, 400);
+  gfx::Size doc_size(100, 400);
 
   // Test various expansion sizes.
-  pp::Size rect_size(100, 200);
+  gfx::Size rect_size(100, 200);
   ExpandDocumentSize(rect_size, &doc_size);
-  CompareSize({100, 600}, doc_size);
+  EXPECT_EQ(gfx::Size(100, 600), doc_size);
 
   rect_size.SetSize(200, 150);
   ExpandDocumentSize(rect_size, &doc_size);
-  CompareSize({200, 750}, doc_size);
+  EXPECT_EQ(gfx::Size(200, 750), doc_size);
 
   rect_size.SetSize(100, 300);
   ExpandDocumentSize(rect_size, &doc_size);
-  CompareSize({200, 1050}, doc_size);
+  EXPECT_EQ(gfx::Size(200, 1050), doc_size);
 
   rect_size.SetSize(250, 400);
   ExpandDocumentSize(rect_size, &doc_size);
-  CompareSize({250, 1450}, doc_size);
+  EXPECT_EQ(gfx::Size(250, 1450), doc_size);
 }
 
 TEST(CoordinateTest, GetBottomGapBetweenRects) {
-  CompareRect({95, 600, 350, 50},
-              GetBottomGapBetweenRects(600, {95, 200, 350, 450}));
+  EXPECT_EQ(gfx::Rect(95, 600, 350, 50),
+            GetBottomGapBetweenRects(600, {95, 200, 350, 450}));
 
-  CompareRect({200, 500, 350, 10},
-              GetBottomGapBetweenRects(500, {200, 0, 350, 510}));
+  EXPECT_EQ(gfx::Rect(200, 500, 350, 10),
+            GetBottomGapBetweenRects(500, {200, 0, 350, 510}));
 
   // Test rectangle with a negative bottom value.
-  CompareRect({150, -100, 400, 150},
-              GetBottomGapBetweenRects(-100, {150, 0, 400, 50}));
+  EXPECT_EQ(gfx::Rect(150, -100, 400, 150),
+            GetBottomGapBetweenRects(-100, {150, 0, 400, 50}));
 
-  // Test case where |page_rect_bottom| >= |dirty_rect.bottom()|.
-  CompareRect({0, 0, 0, 0}, GetBottomGapBetweenRects(1400, {0, 10, 300, 500}));
+  // Test case where `page_rect_bottom` >= `dirty_rect.bottom()`.
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0),
+            GetBottomGapBetweenRects(1400, {0, 10, 300, 500}));
 }
 
 TEST(CoordinateTest, GetMostVisiblePage) {
@@ -151,79 +153,83 @@ TEST(CoordinateTest, GetPageInsetsForTwoUpView) {
 
 TEST(CoordinateTest, GetRectForSingleView) {
   // Test portrait pages.
-  CompareRect({50, 500, 200, 400},
-              GetRectForSingleView({200, 400}, {300, 500}));
-  CompareRect({50, 600, 100, 340},
-              GetRectForSingleView({100, 340}, {200, 600}));
+  EXPECT_EQ(gfx::Rect(50, 500, 200, 400),
+            GetRectForSingleView({200, 400}, {300, 500}));
+  EXPECT_EQ(gfx::Rect(50, 600, 100, 340),
+            GetRectForSingleView({100, 340}, {200, 600}));
 
   // Test landscape pages.
-  CompareRect({0, 1000, 500, 450},
-              GetRectForSingleView({500, 450}, {500, 1000}));
-  CompareRect({25, 1500, 650, 200},
-              GetRectForSingleView({650, 200}, {700, 1500}));
+  EXPECT_EQ(gfx::Rect(0, 1000, 500, 450),
+            GetRectForSingleView({500, 450}, {500, 1000}));
+  EXPECT_EQ(gfx::Rect(25, 1500, 650, 200),
+            GetRectForSingleView({650, 200}, {700, 1500}));
 }
 
 TEST(CoordinateTest, GetScreenRect) {
-  const pp::Rect rect(10, 20, 200, 300);
+  const gfx::Rect rect(10, 20, 200, 300);
 
   // Test various zooms with the position at the origin.
-  CompareRect({10, 20, 200, 300}, GetScreenRect(rect, {0, 0}, 1));
-  CompareRect({15, 30, 300, 450}, GetScreenRect(rect, {0, 0}, 1.5));
-  CompareRect({5, 10, 100, 150}, GetScreenRect(rect, {0, 0}, 0.5));
+  EXPECT_EQ(gfx::Rect(10, 20, 200, 300), GetScreenRect(rect, {0, 0}, 1));
+  EXPECT_EQ(gfx::Rect(15, 30, 300, 450), GetScreenRect(rect, {0, 0}, 1.5));
+  EXPECT_EQ(gfx::Rect(5, 10, 100, 150), GetScreenRect(rect, {0, 0}, 0.5));
 
   // Test various zooms with the position elsewhere.
-  CompareRect({-390, -10, 200, 300}, GetScreenRect(rect, {400, 30}, 1));
-  CompareRect({-385, 0, 300, 450}, GetScreenRect(rect, {400, 30}, 1.5));
-  CompareRect({-395, -20, 100, 150}, GetScreenRect(rect, {400, 30}, 0.5));
+  EXPECT_EQ(gfx::Rect(-390, -10, 200, 300), GetScreenRect(rect, {400, 30}, 1));
+  EXPECT_EQ(gfx::Rect(-385, 0, 300, 450), GetScreenRect(rect, {400, 30}, 1.5));
+  EXPECT_EQ(gfx::Rect(-395, -20, 100, 150),
+            GetScreenRect(rect, {400, 30}, 0.5));
 
   // Test various zooms with a negative position.
-  CompareRect({-90, 70, 200, 300}, GetScreenRect(rect, {100, -50}, 1));
-  CompareRect({-85, 80, 300, 450}, GetScreenRect(rect, {100, -50}, 1.5));
-  CompareRect({-95, 60, 100, 150}, GetScreenRect(rect, {100, -50}, 0.5));
+  EXPECT_EQ(gfx::Rect(-90, 70, 200, 300), GetScreenRect(rect, {100, -50}, 1));
+  EXPECT_EQ(gfx::Rect(-85, 80, 300, 450), GetScreenRect(rect, {100, -50}, 1.5));
+  EXPECT_EQ(gfx::Rect(-95, 60, 100, 150), GetScreenRect(rect, {100, -50}, 0.5));
 
   // Test an empty rect always outputs an empty rect.
-  const pp::Rect empty_rect;
-  CompareRect({-20, -500, 0, 0}, GetScreenRect(empty_rect, {20, 500}, 1));
-  CompareRect({-20, -500, 0, 0}, GetScreenRect(empty_rect, {20, 500}, 1.5));
-  CompareRect({-20, -500, 0, 0}, GetScreenRect(empty_rect, {20, 500}, 0.5));
+  const gfx::Rect empty_rect;
+  EXPECT_EQ(gfx::Rect(-20, -500, 0, 0),
+            GetScreenRect(empty_rect, {20, 500}, 1));
+  EXPECT_EQ(gfx::Rect(-20, -500, 0, 0),
+            GetScreenRect(empty_rect, {20, 500}, 1.5));
+  EXPECT_EQ(gfx::Rect(-20, -500, 0, 0),
+            GetScreenRect(empty_rect, {20, 500}, 0.5));
 }
 
 TEST(CoordinateTest, GetSurroundingRect) {
   constexpr int kDocWidth = 1000;
 
   // Test various position, sizes, and document width.
-  CompareRect({0, 97, 1000, 314},
-              GetSurroundingRect(100, 300, kSingleViewInsets, kDocWidth,
-                                 kBottomSeparator));
-  CompareRect({0, 37, 1000, 214},
-              GetSurroundingRect(40, 200, kSingleViewInsets, kDocWidth,
-                                 kBottomSeparator));
-  CompareRect({0, 197, 1000, 514},
-              GetSurroundingRect(200, 500, kSingleViewInsets, kDocWidth,
-                                 kBottomSeparator));
-  CompareRect(
-      {0, -103, 200, 314},
+  EXPECT_EQ(gfx::Rect(0, 97, 1000, 314),
+            GetSurroundingRect(100, 300, kSingleViewInsets, kDocWidth,
+                               kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(0, 37, 1000, 214),
+            GetSurroundingRect(40, 200, kSingleViewInsets, kDocWidth,
+                               kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(0, 197, 1000, 514),
+            GetSurroundingRect(200, 500, kSingleViewInsets, kDocWidth,
+                               kBottomSeparator));
+  EXPECT_EQ(
+      gfx::Rect(0, -103, 200, 314),
       GetSurroundingRect(-100, 300, kSingleViewInsets, 200, kBottomSeparator));
 }
 
 TEST(CoordinateTest, GetLeftFillRect) {
   // Testing various rectangles with different positions and sizes.
-  pp::Rect page_rect(10, 20, 400, 500);
-  CompareRect({0, 17, 5, 514},
-              GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
+  gfx::Rect page_rect(10, 20, 400, 500);
+  EXPECT_EQ(gfx::Rect(0, 17, 5, 514),
+            GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   page_rect.SetRect(200, 300, 400, 350);
-  CompareRect({0, 297, 195, 364},
-              GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(0, 297, 195, 364),
+            GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   page_rect.SetRect(800, 650, 20, 15);
-  CompareRect({0, 647, 795, 29},
-              GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(0, 647, 795, 29),
+            GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   // Testing rectangle with a negative y-component.
   page_rect.SetRect(50, -200, 100, 300);
-  CompareRect({0, -203, 45, 314},
-              GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(0, -203, 45, 314),
+            GetLeftFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 }
 
 TEST(CoordinateTest, GetRightFillRect) {
@@ -231,66 +237,67 @@ TEST(CoordinateTest, GetRightFillRect) {
 
   // Testing various rectangles with different positions, sizes, and document
   // widths.
-  pp::Rect page_rect(10, 20, 400, 500);
-  CompareRect({415, 17, 585, 514},
-              GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
-                               kBottomSeparator));
+  gfx::Rect page_rect(10, 20, 400, 500);
+  EXPECT_EQ(gfx::Rect(415, 17, 585, 514),
+            GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
+                             kBottomSeparator));
 
   page_rect.SetRect(200, 300, 400, 350);
-  CompareRect({605, 297, 395, 364},
-              GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
-                               kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(605, 297, 395, 364),
+            GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
+                             kBottomSeparator));
 
   page_rect.SetRect(200, 300, 400, 350);
-  CompareRect(
-      {605, 297, 195, 364},
+  EXPECT_EQ(
+      gfx::Rect(605, 297, 195, 364),
       GetRightFillRect(page_rect, kSingleViewInsets, 800, kBottomSeparator));
 
   // Testing rectangle with a negative y-component.
   page_rect.SetRect(50, -200, 100, 300);
-  CompareRect({155, -203, 845, 314},
-              GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
-                               kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(155, -203, 845, 314),
+            GetRightFillRect(page_rect, kSingleViewInsets, kDocWidth,
+                             kBottomSeparator));
 }
 
 TEST(CoordinateTest, GetBottomFillRect) {
   // Testing various rectangles with different positions and sizes.
-  pp::Rect page_rect(10, 20, 400, 500);
-  CompareRect({5, 527, 410, 4}, GetBottomFillRect(page_rect, kSingleViewInsets,
-                                                  kBottomSeparator));
+  gfx::Rect page_rect(10, 20, 400, 500);
+  EXPECT_EQ(gfx::Rect(5, 527, 410, 4),
+            GetBottomFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   page_rect.SetRect(200, 300, 400, 350);
-  CompareRect(
-      {195, 657, 410, 4},
-      GetBottomFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(195, 657, 410, 4),
+            GetBottomFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   page_rect.SetRect(800, 650, 20, 15);
-  CompareRect({795, 672, 30, 4}, GetBottomFillRect(page_rect, kSingleViewInsets,
-                                                   kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(795, 672, 30, 4),
+            GetBottomFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 
   // Testing rectangle with a negative y-component.
   page_rect.SetRect(50, -200, 100, 300);
-  CompareRect({45, 107, 110, 4}, GetBottomFillRect(page_rect, kSingleViewInsets,
-                                                   kBottomSeparator));
+  EXPECT_EQ(gfx::Rect(45, 107, 110, 4),
+            GetBottomFillRect(page_rect, kSingleViewInsets, kBottomSeparator));
 }
 
 TEST(CoordinateTest, GetLeftRectForTwoUpView) {
-  CompareRect({100, 100, 200, 400},
-              GetLeftRectForTwoUpView({200, 400}, {300, 100}));
-  CompareRect({0, 0, 300, 400}, GetLeftRectForTwoUpView({300, 400}, {300, 0}));
+  EXPECT_EQ(gfx::Rect(100, 100, 200, 400),
+            GetLeftRectForTwoUpView({200, 400}, {300, 100}));
+  EXPECT_EQ(gfx::Rect(0, 0, 300, 400),
+            GetLeftRectForTwoUpView({300, 400}, {300, 0}));
 
   // Test empty rect gets positioned.
-  CompareRect({100, 0, 0, 0}, GetLeftRectForTwoUpView({0, 0}, {100, 0}));
+  EXPECT_EQ(gfx::Rect(100, 0, 0, 0), GetLeftRectForTwoUpView({0, 0}, {100, 0}));
 }
 
 TEST(CoordinateTest, GetRightRectForTwoUpView) {
-  CompareRect({300, 100, 200, 400},
-              GetRightRectForTwoUpView({200, 400}, {300, 100}));
-  CompareRect({300, 0, 300, 400},
-              GetRightRectForTwoUpView({300, 400}, {300, 0}));
+  EXPECT_EQ(gfx::Rect(300, 100, 200, 400),
+            GetRightRectForTwoUpView({200, 400}, {300, 100}));
+  EXPECT_EQ(gfx::Rect(300, 0, 300, 400),
+            GetRightRectForTwoUpView({300, 400}, {300, 0}));
 
   // Test empty rect gets positioned.
-  CompareRect({100, 0, 0, 0}, GetRightRectForTwoUpView({0, 0}, {100, 0}));
+  EXPECT_EQ(gfx::Rect(100, 0, 0, 0),
+            GetRightRectForTwoUpView({0, 0}, {100, 0}));
 }
 
 }  // namespace draw_utils

@@ -1,0 +1,382 @@
+
+
+container{
+  "paths": [
+    {
+      "path": [
+        "M",
+        80,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        350,
+        "L",
+        80,
+        350,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        80,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        350,
+        "L",
+        80,
+        350,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        80,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        350,
+        "L",
+        80,
+        350,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        800,
+        0,
+        "L",
+        800,
+        420,
+        "L",
+        0,
+        420,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "container",
+    "nodeWidth": "300",
+    "nodeHeight": "300",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+child{
+  "paths": [
+    {
+      "path": [
+        "M",
+        220,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        200,
+        "L",
+        220,
+        200,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        140,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        270,
+        "L",
+        140,
+        270,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        140,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        270,
+        "L",
+        140,
+        270,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        140,
+        50,
+        "L",
+        380,
+        50,
+        "L",
+        380,
+        350,
+        "L",
+        140,
+        350,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "child",
+    "nodeWidth": "240",
+    "nodeHeight": "220",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+span{
+  "paths": [
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "span",
+    "idValue": "span",
+    "nodeWidth": "10",
+    "nodeHeight": "70",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutInline",
+    "showAccessibilityInfo": true
+  }
+}
+TEXT{
+  "paths": [
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        310,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        170,
+        "L",
+        310,
+        170,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "nodeWidth": "15",
+    "nodeHeight": "105",
+    "tagName": "#text",
+    "showAccessibilityInfo": true
+  }
+}
+

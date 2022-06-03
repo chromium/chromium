@@ -1,0 +1,22 @@
+<html>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.setPopupBlockingEnabled(false);
+    testRunner.dumpAsText();
+}
+
+try {
+    window.open('about:blank', "_blank", "", null);
+    document.write("success");
+} catch (ex) {
+    document.write("FAIL - caught exception: " + ex);
+}
+
+if (window.testRunner) {
+    testRunner.notifyDone();
+}
+
+</script>
+<div>This tests that calling window.open() with a null as a fourth parameter does no throw an exception.</div>
+</html>

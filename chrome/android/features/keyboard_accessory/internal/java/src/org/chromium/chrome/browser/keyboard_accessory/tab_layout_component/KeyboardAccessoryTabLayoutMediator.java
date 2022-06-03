@@ -8,15 +8,17 @@ import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_componen
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
+
+import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver;
+import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -104,6 +106,20 @@ class KeyboardAccessoryTabLayoutMediator
     @Override
     public void closeActiveTab() {
         mModel.set(ACTIVE_TAB, null);
+    }
+
+    @Override
+    public void setActiveTab(@AccessoryTabType int tabType) {
+        ListModel<KeyboardAccessoryData.Tab> tabs = mModel.get(TABS);
+        int tabPosition = 0;
+        while (tabPosition < tabs.size()) {
+            if (tabs.get(tabPosition).getRecordingType() == tabType) {
+                break;
+            }
+            tabPosition++;
+        }
+        assert tabPosition < tabs.size() : "No tab found for the given tabType: " + tabType;
+        mModel.set(ACTIVE_TAB, tabPosition);
     }
 
     @Override

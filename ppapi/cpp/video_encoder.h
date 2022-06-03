@@ -57,6 +57,7 @@ class VideoEncoder : public Resource {
   /// The copy constructor for <code>VideoEncoder</code>.
   /// @param[in] other A reference to a <code>VideoEncoder</code>.
   VideoEncoder(const VideoEncoder& other);
+  VideoEncoder& operator=(const VideoEncoder& other);
 
   /// Gets an array of supported video encoder profiles.
   /// These can be used to choose a profile before calling Initialize().

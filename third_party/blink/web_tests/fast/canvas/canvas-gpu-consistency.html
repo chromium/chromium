@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<canvas id="canvas" width="300" height="300"></canvas>
+<script>
+// Testing that getImageData does NOT unaccelerate the canvas
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d', { willReadFrequently: false });
+
+var img = document.createElement('IMG');
+img.onload = function () {
+  ctx.getImageData(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, 300, 300);
+}
+
+// This src image correspond to a gradient white line
+img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQ" +
+"AAAAGklEQVQYlWNgYGD4j4z/////H12MYVQRUYoAkYZrlWt0UekAAAAASUVORK5CYII=";
+
+</script>

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -30,16 +29,17 @@ class TabManager::ResourceCoordinatorSignalObserver
 
   explicit ResourceCoordinatorSignalObserver(
       const base::WeakPtr<TabManager>& tab_manager);
-  ~ResourceCoordinatorSignalObserver() override;
 
-  // ProcessNode::ObserverDefaultImpl:
-  // This function run on the performance manager sequence.
-  void OnExpectedTaskQueueingDurationSample(
-      const ProcessNode* process_node) override;
+  ResourceCoordinatorSignalObserver(const ResourceCoordinatorSignalObserver&) =
+      delete;
+  ResourceCoordinatorSignalObserver& operator=(
+      const ResourceCoordinatorSignalObserver&) = delete;
+
+  ~ResourceCoordinatorSignalObserver() override;
 
   // PageNode::ObserverDefaultImpl:
   // This function run on the performance manager sequence.
-  void OnPageAlmostIdleChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
@@ -55,24 +55,14 @@ class TabManager::ResourceCoordinatorSignalObserver
       const WebContentsProxy& contents_proxy,
       int64_t navigation_id);
 
-  // Equivalent to the the GraphObserver functions above, but these are the
-  // counterparts that run on the UI thread.
-  static void OnPageAlmostIdleOnUi(const base::WeakPtr<TabManager>& tab_manager,
-                                   const WebContentsProxy& contents_proxy,
-                                   int64_t navigation_id);
-  static void OnExpectedTaskQueueingDurationSampleOnUi(
-      const base::WeakPtr<TabManager>& tab_manager,
-      const WebContentsProxy& contents_proxy,
-      int64_t navigation_id,
-      base::TimeDelta duration);
+  // Posted to the UI thread from the GraphObserver functions above.
+  static void OnPageStoppedLoadingOnUi(const WebContentsProxy& contents_proxy);
 
   // Can only be dereferenced on the UI thread. When the tab manager dies this
   // is used to drop messages received from the performance manager. Ideally
   // we'd also then tear down this observer on the perf manager sequence itself,
   // but when one dies they're both about to die.
   base::WeakPtr<TabManager> tab_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorSignalObserver);
 };
 
 }  // namespace resource_coordinator

@@ -199,6 +199,10 @@ class NET_EXPORT ProxyConfig {
     return auto_detect_;
   }
 
+  void set_from_system(bool from_system) { from_system_ = from_system; }
+
+  bool from_system() const { return from_system_; }
+
   // Helpers to construct some common proxy configurations.
 
   static ProxyConfig CreateDirect() {
@@ -222,6 +226,9 @@ class NET_EXPORT ProxyConfig {
  private:
   // True if the proxy configuration should be auto-detected.
   bool auto_detect_;
+
+  // True if the proxy configuration was created from system settings.
+  bool from_system_ = false;
 
   // If non-empty, indicates the URL of the proxy auto-config file to use.
   GURL pac_url_;

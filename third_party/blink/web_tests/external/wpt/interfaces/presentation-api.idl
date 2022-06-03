@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Presentation API (https://w3c.github.io/presentation-api/)
 
 partial interface Navigator {
@@ -54,8 +54,8 @@ interface PresentationConnection : EventTarget {
   readonly attribute USVString id;
   readonly attribute USVString url;
   readonly attribute PresentationConnectionState state;
-  void close();
-  void terminate();
+  undefined close();
+  undefined terminate();
   attribute EventHandler onconnect;
   attribute EventHandler onclose;
   attribute EventHandler onterminate;
@@ -63,10 +63,10 @@ interface PresentationConnection : EventTarget {
   // Communication
   attribute BinaryType binaryType;
   attribute EventHandler onmessage;
-  void send (DOMString message);
-  void send (Blob data);
-  void send (ArrayBuffer data);
-  void send (ArrayBufferView data);
+  undefined send (DOMString message);
+  undefined send (Blob data);
+  undefined send (ArrayBuffer data);
+  undefined send (ArrayBufferView data);
 };
 
 enum PresentationConnectionCloseReason { "error", "closed", "wentaway" };

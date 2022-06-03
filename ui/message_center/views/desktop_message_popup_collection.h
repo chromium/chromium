@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/views/message_popup_collection.h"
@@ -27,9 +27,14 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
       public display::DisplayObserver {
  public:
   DesktopMessagePopupCollection();
+
+  DesktopMessagePopupCollection(const DesktopMessagePopupCollection&) = delete;
+  DesktopMessagePopupCollection& operator=(
+      const DesktopMessagePopupCollection&) = delete;
+
   ~DesktopMessagePopupCollection() override;
 
-  void StartObserving(display::Screen* screen);
+  void StartObserving();
 
   // Overridden from MessagePopupCollection:
   bool RecomputeAlignment(const display::Display& display) override;
@@ -45,6 +50,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
   bool IsTopDown() const override;
   bool IsFromLeft() const override;
   bool IsPrimaryDisplayForNotification() const override;
+  bool BlockForMixedFullscreen(const Notification& notification) const override;
 
  private:
   friend class test::MessagePopupCollectionTest;
@@ -64,12 +70,11 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
-  int32_t alignment_;
-  int64_t primary_display_id_;
-  display::Screen* screen_;
+  int32_t alignment_ = POPUP_ALIGNMENT_BOTTOM | POPUP_ALIGNMENT_RIGHT;
+  int64_t primary_display_id_ = display::kInvalidDisplayId;
+  display::Screen* screen_ = nullptr;
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
   gfx::Rect work_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMessagePopupCollection);
 };
 
 }  // namespace message_center

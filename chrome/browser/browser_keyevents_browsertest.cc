@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -23,12 +23,14 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 // TODO(kbr): remove: http://crbug.com/222296
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #import "base/mac/mac_util.h"
 #endif
 
@@ -100,6 +102,9 @@ class TestFinishObserver : public content::NotificationObserver {
                    content::Source<content::WebContents>(web_contents));
   }
 
+  TestFinishObserver(const TestFinishObserver&) = delete;
+  TestFinishObserver& operator=(const TestFinishObserver&) = delete;
+
   bool WaitForFinish() {
     if (!finished_) {
       waiting_ = true;
@@ -127,13 +132,17 @@ class TestFinishObserver : public content::NotificationObserver {
   bool finished_;
   bool waiting_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFinishObserver);
 };
 
 class BrowserKeyEventsTest : public InProcessBrowserTest {
  public:
   BrowserKeyEventsTest() {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 
   bool IsViewFocused(ViewID vid) {
     return ui_test_utils::IsViewFocused(browser(), vid);
@@ -294,13 +303,7 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
   }
 };
 
-#if defined(OS_MACOSX)
-// http://crbug.com/81451
-#define MAYBE_NormalKeyEvents DISABLED_NormalKeyEvents
-#else
-#define MAYBE_NormalKeyEvents NormalKeyEvents
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_NormalKeyEvents) {
+IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
   static const KeyEventTestData kTestNoInput[] = {
     // a
     { ui::VKEY_A, false, false, false, false,
@@ -364,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_NormalKeyEvents) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -395,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_NormalKeyEvents) {
   EXPECT_NO_FATAL_FAILURE(CheckTextBoxValue(tab_index, L"B", L"aA"));
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
   static const KeyEventTestData kTestCtrlF = {
@@ -454,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -476,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlZSuppressKeyDown));
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlEnter));
 }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 // http://crbug.com/81451
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
   static const KeyEventTestData kTestCmdF = {
@@ -499,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -520,14 +523,15 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
 }
 #endif
 
-#if defined(OS_MACOSX)
-// http://crbug.com/81451 for mac
+// https://crbug.com/81451 for mac
+// https://crbug.com/1249688 for Lacros
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AccessKeys DISABLED_AccessKeys
 #else
 #define MAYBE_AccessKeys AccessKeys
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On Mac, access keys use ctrl+alt modifiers.
   static const KeyEventTestData kTestAccessA = {
     ui::VKEY_A, true, false, true, false,
@@ -582,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RunAllPendingInMessageLoop();
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
@@ -600,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
   // Make sure no element is focused.
   EXPECT_NO_FATAL_FAILURE(CheckFocusedElement(tab_index, L""));
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   // Alt+D should move the focus to the location entry.
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestAccessD));
 
@@ -638,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -646,10 +650,18 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   static const KeyEventTestData kTestCtrlOrCmdT = {
-#if defined(OS_MACOSX)
-    ui::VKEY_T, false, false, false, true,
-    true, false, false, false, 1,
-    { "D 91 0 false false false true" }
+#if defined(OS_MAC)
+    ui::VKEY_T,
+    false,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false,
+    false,
+    1,
+    {"D 91 0 false false false true"}
 #else
     ui::VKEY_T, true, false, false, false,
     true, false, false, false, 1,
@@ -673,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   // Because of issue <http://crbug.com/65375>, switching back to the first tab
   // may cause the focus to be grabbed by omnibox. So instead, we load our
   // testing page in the newly created tab and try Cmd-W here.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Make sure the focus is in the testing page.
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
@@ -686,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
       browser()->tab_strip_model()->GetWebContentsAt(1));
 
   // Press Ctrl/Cmd+W, which will close the tab.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_W, false, false, false, true));
 #else
@@ -699,11 +711,8 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
-  // TODO(kbr): re-enable: http://crbug.com/222296
-  return;
-
   static const KeyEventTestData kTestCtrlA = {
     ui::VKEY_A, true, false, false, false,
     false, false, false, false, 4,
@@ -735,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -772,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, PageUpDownKeys) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -816,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusMenuBarByAltKey) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));

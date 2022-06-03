@@ -9,9 +9,13 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -40,8 +44,11 @@ static_assert(offsetof(MyOverlapped, context_) == 0,
 class CompletionHandler : public base::MessagePumpForIO::IOHandler,
                           public base::RefCounted<CompletionHandler> {
  public:
-  CompletionHandler() = default;
+  CompletionHandler() : base::MessagePumpForIO::IOHandler(FROM_HERE) {}
   static CompletionHandler* Get();
+
+  CompletionHandler(const CompletionHandler&) = delete;
+  CompletionHandler& operator=(const CompletionHandler&) = delete;
 
  private:
   friend class base::RefCounted<CompletionHandler>;
@@ -51,8 +58,6 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
   void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
                      DWORD actual_bytes,
                      DWORD error) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionHandler);
 };
 
 class CompletionHandlerHolder {
@@ -115,20 +120,19 @@ bool File::Init(const base::FilePath& name) {
 
   DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
   DWORD access = GENERIC_READ | GENERIC_WRITE | DELETE;
-  base_file_ = base::File(CreateFile(base::as_wcstr(name.value()), access,
-                                     sharing, nullptr, OPEN_EXISTING,
-                                     FILE_FLAG_OVERLAPPED, nullptr));
+  base_file_ =
+      base::File(CreateFile(name.value().c_str(), access, sharing, nullptr,
+                            OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
 
   if (!base_file_.IsValid())
     return false;
 
-  base::MessageLoopCurrentForIO::Get()->RegisterIOHandler(
-      base_file_.GetPlatformFile(), CompletionHandler::Get());
+  base::CurrentIOThread::Get()->RegisterIOHandler(base_file_.GetPlatformFile(),
+                                                  CompletionHandler::Get());
 
   init_ = true;
-  sync_base_file_ =
-      base::File(CreateFile(base::as_wcstr(name.value()), access, sharing,
-                            nullptr, OPEN_EXISTING, 0, nullptr));
+  sync_base_file_ = base::File(CreateFile(name.value().c_str(), access, sharing,
+                                          nullptr, OPEN_EXISTING, 0, nullptr));
 
   if (!sync_base_file_.IsValid())
     return false;
@@ -275,12 +279,14 @@ size_t File::GetLength() {
 }
 
 // Static.
-void File::WaitForPendingIO(int* num_pending_io) {
-  while (*num_pending_io) {
-    // Asynchronous IO operations may be in flight and the completion may end
-    // up calling us back so let's wait for them.
-    base::MessagePumpForIO::IOHandler* handler = CompletionHandler::Get();
-    base::MessageLoopCurrentForIO::Get()->WaitForIOCompletion(100, handler);
+void File::WaitForPendingIOForTesting(int* num_pending_io) {
+  // Spin on the burn-down count until the file IO completes.
+  constexpr base::TimeDelta kMillisecond = base::Milliseconds(1);
+  for (; *num_pending_io; base::PlatformThread::Sleep(kMillisecond)) {
+    // This waits for callbacks running on worker threads.
+    base::ThreadPoolInstance::Get()->FlushForTesting();  // IN-TEST
+    // This waits for the "Reply" tasks running on the current MessageLoop.
+    base::RunLoop().RunUntilIdle();
   }
 }
 

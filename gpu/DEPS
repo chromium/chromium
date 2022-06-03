@@ -12,4 +12,5 @@ include_rules = [
   "+ui/gl",
   "+ui/surface",
   "+ui/ozone/public",
+  "+ui/base/ui_base_features.h",
 ]

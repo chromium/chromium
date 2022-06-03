@@ -24,6 +24,9 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type);
 // Prevent shell or external applications from being invoked during testing.
 void DisableShellOperationsForTesting();
 
+// Returns false if DisableShellOperationsForTesting() has been called.
+bool AreShellOperationsAllowed();
+
 }  // namespace internal
 }  // namespace platform_util
 

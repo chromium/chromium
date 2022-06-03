@@ -43,7 +43,7 @@ class MODULES_EXPORT NotificationEvent final : public ExtendableEvent {
   // ExtendableEvent interface.
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<Notification> notification_;

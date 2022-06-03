@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -323,7 +323,7 @@ void ValidateAddressStrictly(const AutofillProfile* profile,
 }
 
 void ValidateEmailAddress(const AutofillProfile* profile) {
-  const base::string16& email = profile->GetRawInfo(EMAIL_ADDRESS);
+  const std::u16string& email = profile->GetRawInfo(EMAIL_ADDRESS);
   if (email.empty()) {
     profile->SetValidityState(EMAIL_ADDRESS, AutofillDataModel::EMPTY,
                               AutofillDataModel::CLIENT);

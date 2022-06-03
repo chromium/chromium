@@ -37,9 +37,11 @@ Element* DocumentFullscreen::fullscreenElement(Document& document) {
   return Fullscreen::FullscreenElementForBindingFrom(document);
 }
 
-ScriptPromise DocumentFullscreen::exitFullscreen(ScriptState* script_state,
-                                                 Document& document) {
-  return Fullscreen::ExitFullscreen(document, script_state);
+ScriptPromise DocumentFullscreen::exitFullscreen(
+    ScriptState* script_state,
+    Document& document,
+    ExceptionState& exception_state) {
+  return Fullscreen::ExitFullscreen(document, script_state, &exception_state);
 }
 
 void DocumentFullscreen::webkitExitFullscreen(Document& document) {

@@ -13,7 +13,6 @@
 
 #include "rlz/win/lib/machine_deal.h"
 
-#include "base/logging.h"
 #include "rlz/lib/machine_deal_win.h"
 #include "rlz/test/rlz_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"

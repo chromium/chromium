@@ -24,6 +24,10 @@ class CONTENT_EXPORT RefCountedVideoSourceProvider
       mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider,
       base::OnceClosure destruction_cb);
 
+  RefCountedVideoSourceProvider(const RefCountedVideoSourceProvider&) = delete;
+  RefCountedVideoSourceProvider& operator=(
+      const RefCountedVideoSourceProvider&) = delete;
+
   base::WeakPtr<RefCountedVideoSourceProvider> GetWeakPtr();
 
   const mojo::Remote<video_capture::mojom::VideoSourceProvider>&
@@ -41,8 +45,6 @@ class CONTENT_EXPORT RefCountedVideoSourceProvider
   mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider_;
   base::OnceClosure destruction_cb_;
   base::WeakPtrFactory<RefCountedVideoSourceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedVideoSourceProvider);
 };
 
 }  // namespace content

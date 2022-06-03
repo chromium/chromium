@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- TODO(crbuc.com/806868): Use a Chrome approved text appearance and remove this. -->
+    <!-- TODO(b/144417635): Move this to TextAppearance.TextLarge.Primary with @font/accent_font_medium. -->
+    <style name="TextAppearance.AssistantDetailsTitle" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textColor">@color/default_text_color_list</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+    <style name="TextAppearance.AssistantDetailsPrice" parent="TextAppearance.TextMedium.Primary">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <!-- TODO(b/144149405): Move this to TextAppearance.TextMedium.Primary with @font/accent_font_medium. -->
+    <style name="TextAppearance.AssistantBlackTitle" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textColor">@color/default_text_color_list</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+    <style name="TextAppearance.AssistantBlackCaption" parent="TextAppearance.TextSmall.Secondary">
+        <item name="android:fontFamily">@font/accent_font</item>
+    </style>
+    <style name="TextAppearance.AssistantBlackBody" parent="TextAppearance.TextMedium.Secondary">
+        <item name="android:fontFamily">@font/accent_font</item>
+    </style>
+</resources>

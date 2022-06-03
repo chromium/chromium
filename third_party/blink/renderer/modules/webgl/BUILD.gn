@@ -26,11 +26,19 @@ blink_modules_sources("webgl") {
     "ext_shader_texture_lod.h",
     "ext_srgb.cc",
     "ext_srgb.h",
+    "ext_texture_compression_bptc.cc",
+    "ext_texture_compression_bptc.h",
+    "ext_texture_compression_rgtc.cc",
+    "ext_texture_compression_rgtc.h",
     "ext_texture_filter_anisotropic.cc",
     "ext_texture_filter_anisotropic.h",
+    "ext_texture_norm_16.cc",
+    "ext_texture_norm_16.h",
     "gl_string_query.h",
     "khr_parallel_shader_compile.cc",
     "khr_parallel_shader_compile.h",
+    "oes_draw_buffers_indexed.cc",
+    "oes_draw_buffers_indexed.h",
     "oes_element_index_uint.cc",
     "oes_element_index_uint.h",
     "oes_fbo_render_mipmap.cc",
@@ -135,6 +143,8 @@ blink_modules_sources("webgl") {
     "webgl_transform_feedback.h",
     "webgl_uniform_location.cc",
     "webgl_uniform_location.h",
+    "webgl_unowned_texture.cc",
+    "webgl_unowned_texture.h",
     "webgl_vertex_array_object.cc",
     "webgl_vertex_array_object.h",
     "webgl_vertex_array_object_base.cc",
@@ -144,19 +154,20 @@ blink_modules_sources("webgl") {
     "webgl_video_texture.cc",
     "webgl_video_texture.h",
     "webgl_video_texture_enum.h",
+    "webgl_webcodecs_video_frame.cc",
+    "webgl_webcodecs_video_frame.h",
   ]
-
-  if (support_webgl2_compute_context) {
-    sources += [
-      "webgl2_compute_rendering_context.cc",
-      "webgl2_compute_rendering_context.h",
-      "webgl2_compute_rendering_context_base.cc",
-      "webgl2_compute_rendering_context_base.h",
-    ]
-  }
 
   # The modules/webgl/ directly is a larger module, and
   # the implementation depends on a fair chunk of core/ --
   # include the core pch for faster Windows compilation times.
   configs += [ "//third_party/blink/renderer/core:blink_core_pch" ]
+
+  public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//third_party/blink/renderer/modules/xr:xr",
+  ]
+  deps += [ "//third_party/blink/renderer/modules/webcodecs:webcodecs" ]
+  allow_circular_includes_from = deps
 }

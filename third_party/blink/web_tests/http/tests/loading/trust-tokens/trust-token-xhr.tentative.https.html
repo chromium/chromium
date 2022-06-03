@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests the prototype Trust Token API's functionality through its XHR interface.</title>
+<link rel="help" href="https://github.com/WICG/trust-token-api#trust-token-redemption" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  'use strict';
+
+  async_test((t) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://trusttoken.test');
+    request.setTrustToken({
+      type: 'token-request'
+    });
+    request.onerror = t.step_func(() => {
+      assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
+
+      if (window.testRunner)
+        window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
+    });
+    request.send();
+  }, 'No keys for the issuer -> expect issuance to fail');
+
+  async_test((t) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', 'https://trusttoken.test');
+    request.setTrustToken({
+      type: 'token-redemption'
+    });
+    request.onerror = t.step_func(() => {
+      assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
+
+      if (window.testRunner)
+        window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
+    });
+    request.send();
+  }, 'No keys for the issuer -> expect redemption to fail');
+
+  async_test((t) => {
+      let request = new XMLHttpRequest();
+      request.open('GET', 'https://destination.test');
+      request.setTrustToken({
+        type: 'send-redemption-record',
+        issuers: ['https://issuer.test']
+      });
+      request.onerror = t.step_func(() => {
+        assert_equals(request.trustTokenOperationError, null,
+          'The request should fail for a reason unrelated to its Trust Tokens ' +
+          ' operation (namely that its destination doesn\'t exist)');
+
+        if (window.testRunner)
+          window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
+      });
+      request.send();
+    },
+    'No RR for the issuer -> expect signing to fail, but an error while' +
+    ' signing shouldn\'t result in the request being aborted');
+</script>

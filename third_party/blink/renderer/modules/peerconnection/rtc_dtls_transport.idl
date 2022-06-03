@@ -13,8 +13,7 @@ enum RTCDtlsTransportState {
 };
 
 [
-    Exposed=Window,
-    RuntimeEnabled=RTCDtlsTransport
+    Exposed=Window
 ] interface RTCDtlsTransport : EventTarget {
     readonly attribute RTCIceTransport iceTransport;
     readonly attribute RTCDtlsTransportState state;

@@ -9,6 +9,7 @@ header("Origin-Trial: AlCoOPbezqtrGMzSzbLQC4c+oPqO6yuioemcBPjgcXajF8jtmZr4B8tJRP
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Test Sample API when trial is enabled</title>
+<link rel="stylesheet" href="resources/origintrials.css">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="resources/origintrials.js"></script>
@@ -17,5 +18,7 @@ header("Origin-Trial: AlCoOPbezqtrGMzSzbLQC4c+oPqO6yuioemcBPjgcXajF8jtmZr4B8tJRP
 // The trial is enabled by the token above in header.
 expect_success();
 expect_success_bindings();
+expect_success_css(document.documentElement, 'none');
+
 
 </script>

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "components/autofill/core/browser/payments/strike_database.h"
+#include "components/autofill/core/browser/strike_database.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -16,7 +16,7 @@ namespace autofill {
 
 // static
 StrikeDatabase* StrikeDatabaseFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<StrikeDatabase*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -37,8 +37,8 @@ StrikeDatabaseFactory::~StrikeDatabaseFactory() {}
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       chrome_browser_state->GetProtoDatabaseProvider();

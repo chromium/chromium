@@ -1,3 +1,3 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXComboBox AXRoleDescription='combo box' AXAutocompleteValue='list' AXHasPopup='1' AXHasPopupValue='listbox'
+++++AXComboBox AXAutocompleteValue='list' AXHasPopup=1 AXPopupValue='listbox' AXRoleDescription='combo box'

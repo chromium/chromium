@@ -17,16 +17,25 @@ class TopContainerBackground : public views::Background {
   // Construct a themed background for the specified browser.
   explicit TopContainerBackground(BrowserView* browser_view);
 
+  TopContainerBackground(const TopContainerBackground& other) = delete;
+  TopContainerBackground& operator=(const TopContainerBackground& other) =
+      delete;
+
+  // Static version for painting this background, used by the SidePanel
+  // background to paint this background as a part of its background.
+  // TODO(pbos): See if we can get rid of `translate_view_coordinates` by
+  // figuring out a way to translate the offset correctly regardless of `view`.
+  // Also figure out if tab painting could reuse this logic.
+  static void PaintBackground(gfx::Canvas* canvas,
+                              const views::View* view,
+                              const BrowserView* browser_view,
+                              bool translate_view_coordinates);
+
  private:
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
 
   BrowserView* const browser_view_;
-
-  // Disallow copy and assign.
-  TopContainerBackground(const TopContainerBackground& other) = delete;
-  TopContainerBackground& operator=(const TopContainerBackground& other) =
-      delete;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_

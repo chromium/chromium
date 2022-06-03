@@ -1,7 +1,1 @@
-per-file ChromeApplication.java=agrieve@chromium.org
 per-file ShortcutHelper.java=dominickn@chromium.org
-
-# This is For simple changes of adding/removing features.  For more structural
-# changes, use the normal OWNERS rules.
-per-file ChromeFeatureList.java=*
-per-file ChromeSwitches.java=*

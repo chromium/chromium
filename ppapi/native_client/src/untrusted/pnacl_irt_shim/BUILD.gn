@@ -5,6 +5,10 @@
 assert(is_nacl,
        "These targets must only be built using the untrusted NaCl toolchains.")
 
+source_set("irt_ppapi") {
+  sources = [ "//ppapi/nacl_irt/irt_ppapi.h" ]
+}
+
 # We need to actually ship this library in the SDK.
 static_library("aot") {
   output_name = "pnacl_irt_shim"
@@ -13,6 +17,10 @@ static_library("aot") {
     "pnacl_shim.c",
     "shim_entry.c",
     "shim_ppapi.c",
+  ]
+  deps = [
+    ":irt_ppapi",
+    "//ppapi/c",
   ]
 
   # Indicate that this variant of the shim library should not depend on
@@ -40,5 +48,9 @@ source_set("irt") {
   sources = [
     "irt_shim_ppapi.c",
     "pnacl_shim.c",
+  ]
+  deps = [
+    ":irt_ppapi",
+    "//ppapi/c",
   ]
 }

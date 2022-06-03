@@ -5,6 +5,8 @@
 #ifndef MEDIA_CDM_SUPPORTED_CDM_VERSIONS_H_
 #define MEDIA_CDM_SUPPORTED_CDM_VERSIONS_H_
 
+#include <stddef.h>
+
 #include <array>
 
 #include "media/base/media_export.h"

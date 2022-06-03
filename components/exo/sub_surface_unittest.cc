@@ -4,11 +4,13 @@
 
 #include "components/exo/sub_surface.h"
 
+#include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace exo {
 namespace {
@@ -156,6 +158,26 @@ TEST_F(SubSurfaceTest, SetCommitBehavior) {
   // grandchild to take effect when synchronous is disabled.
   EXPECT_EQ(position2.ToString(),
             grandchild->window()->bounds().origin().ToString());
+}
+
+TEST_F(SubSurfaceTest, SetOnParent) {
+  gfx::Size buffer_size(32, 32);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto parent = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(parent.get());
+  parent->Attach(buffer.get());
+  parent->Commit();
+
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kSkipImeProcessing, true);
+  ASSERT_TRUE(parent->window()->GetProperty(aura::client::kSkipImeProcessing));
+
+  // SkipImeProcessing property is propagated to SubSurface.
+  auto surface = std::make_unique<Surface>();
+  auto sub_surface = std::make_unique<SubSurface>(surface.get(), parent.get());
+  surface->SetParent(parent.get(), gfx::Point(10, 10));
+  EXPECT_TRUE(surface->window()->GetProperty(aura::client::kSkipImeProcessing));
 }
 
 }  // namespace

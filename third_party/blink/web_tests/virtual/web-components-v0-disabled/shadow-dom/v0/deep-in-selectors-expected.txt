@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL /deep/ should be valid in the second selector of selectors a.createShadowRoot is not a function
-Harness: the test ran to completion.
-

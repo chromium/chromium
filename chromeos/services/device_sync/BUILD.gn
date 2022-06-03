@@ -5,9 +5,7 @@
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 static_library("feature_status_change") {
-  sources = [
-    "feature_status_change.h",
-  ]
+  sources = [ "feature_status_change.h" ]
 }
 
 static_library("device_sync") {
@@ -139,6 +137,9 @@ static_library("device_sync") {
     "sync_scheduler.h",
     "sync_scheduler_impl.cc",
     "sync_scheduler_impl.h",
+    "synced_bluetooth_address_tracker.h",
+    "synced_bluetooth_address_tracker_impl.cc",
+    "synced_bluetooth_address_tracker_impl.h",
     "value_string_encoding.cc",
     "value_string_encoding.h",
   ]
@@ -153,24 +154,26 @@ static_library("device_sync") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
-    "//base/util/values:values_util",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/constants:constants",
     "//chromeos/network",
     "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/mojom",
     "//components/gcm_driver",
     "//components/prefs",
+    "//device/bluetooth",
     "//net",
+    "//third_party/securemessage/proto",
   ]
 
   visibility = [
     ":*",
     "//chrome/browser/chromeos",
     "//chrome/test:test_support_ui",
+    "//chromeos/services/device_sync/public/cpp:prefs",
     "//chromeos/services/device_sync/public/cpp:unit_tests",
   ]
 }
@@ -223,15 +226,15 @@ static_library("test_support") {
     "fake_remote_device_v2_loader.h",
     "fake_software_feature_manager.cc",
     "fake_software_feature_manager.h",
+    "fake_synced_bluetooth_address_tracker.cc",
+    "fake_synced_bluetooth_address_tracker.h",
     "mock_cryptauth_client.cc",
     "mock_cryptauth_client.h",
     "mock_sync_scheduler.cc",
     "mock_sync_scheduler.h",
   ]
 
-  public_deps = [
-    ":device_sync",
-  ]
+  public_deps = [ ":device_sync" ]
 
   deps = [
     ":device_sync",
@@ -241,6 +244,19 @@ static_library("test_support") {
     "//chromeos/services/device_sync/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("stub_device_sync") {
+  sources = [
+    "stub_device_sync.cc",
+    "stub_device_sync.h",
+  ]
+
+  deps = [
+    ":device_sync",
+    "//base",
+    "//chromeos/components/multidevice:stub_multidevice_util",
   ]
 }
 
@@ -280,22 +296,24 @@ source_set("unit_tests") {
     "remote_device_v2_loader_impl_unittest.cc",
     "software_feature_manager_impl_unittest.cc",
     "sync_scheduler_impl_unittest.cc",
+    "synced_bluetooth_address_tracker_impl_unittest.cc",
   ]
 
   deps = [
     ":device_sync",
     ":feature_status_change",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
-    "//chromeos/constants:constants",
     "//chromeos/dbus:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",
     "//chromeos/services/device_sync/proto:test_support",
     "//chromeos/services/device_sync/proto:util",
+    "//chromeos/services/device_sync/public/cpp:prefs",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/device_sync/public/cpp:unit_tests",
     "//chromeos/services/device_sync/public/mojom",
@@ -303,9 +321,11 @@ source_set("unit_tests") {
     "//components/gcm_driver:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//device/bluetooth:mocks",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/securemessage/proto",
   ]
 }

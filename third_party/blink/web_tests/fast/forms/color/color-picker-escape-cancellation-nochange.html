@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+promise_test(() => {
+  let colorControl = document.getElementById('color');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, 'Popup should close after pressing escape with no changes.');
+  });
+}, "Color picker: Pressing escape with no changes should close the popup");
+
+</script>
+</body>
+</html>

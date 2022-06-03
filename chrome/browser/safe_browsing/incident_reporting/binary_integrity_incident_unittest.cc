@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "base/cxx17_backports.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

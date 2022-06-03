@@ -18,7 +18,7 @@ when it's destructed.
 
 
 This object is primarily held by both the [`NavigationControllerImpl`](
-https://cs.chromium.org/chromium/src/content/browser/frame_host/navigation_controller_impl.h?dr=CSs&l=426)
+https://cs.chromium.org/chromium/src/content/browser/renderer_host/navigation_controller_impl.h?dr=CSs&l=426)
 and in the [`ContentPlatformSpecificTabData`](
 https://cs.chromium.org/chromium/src/components/sessions/content/content_platform_specific_tab_data.h?dr=C&l=35)
 which is used to restore tabs. The services stores recent tab
@@ -80,7 +80,7 @@ The `session_namespace_id` for a frame's session storage is stored in the
 `CreateNewWindowParams` object in [frame.mojom](https://cs.chromium.org/chromium/src/content/common/frame.mojom).
 
 If the frame wasn't created from a previous frame, the SessionStorage namespace
-object is created [here](https://cs.chromium.org/chromium/src/content/browser/frame_host/navigation_controller_impl.cc?type=cs&l=1904)
+object is created [here](https://cs.chromium.org/chromium/src/content/browser/renderer_host/navigation_controller_impl.cc?type=cs&l=1904)
 and the id is accessed [here](https://cs.chromium.org/chromium/src/content/browser/renderer_host/render_view_host_impl.cc?type=cs&l=321).
 
 ## Renderer Connection to Session Storage

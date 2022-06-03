@@ -48,15 +48,16 @@ static bool hasConstantValues(float* values, int frames_to_process) {
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
-    float cutoff_frequency[audio_utilities::kRenderQuantumFrames];
-    float q[audio_utilities::kRenderQuantumFrames];
-    float gain[audio_utilities::kRenderQuantumFrames];
-    float detune[audio_utilities::kRenderQuantumFrames];  // in Cents
+    float cutoff_frequency[RenderQuantumFrames()];
+    float q[RenderQuantumFrames()];
+    float gain[RenderQuantumFrames()];
+    float detune[RenderQuantumFrames()];  // in Cents
 
     SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                   audio_utilities::kRenderQuantumFrames);
+                   RenderQuantumFrames());
 
-    if (GetBiquadProcessor()->HasSampleAccurateValues()) {
+    if (GetBiquadProcessor()->HasSampleAccurateValues() &&
+        GetBiquadProcessor()->IsAudioRate()) {
       GetBiquadProcessor()->Parameter1().CalculateSampleAccurateValues(
           cutoff_frequency, frames_to_process);
       GetBiquadProcessor()->Parameter2().CalculateSampleAccurateValues(
@@ -79,10 +80,10 @@ void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
       UpdateCoefficients(isConstant ? 1 : frames_to_process, cutoff_frequency,
                          q, gain, detune);
     } else {
-      cutoff_frequency[0] = GetBiquadProcessor()->Parameter1().Value();
-      q[0] = GetBiquadProcessor()->Parameter2().Value();
-      gain[0] = GetBiquadProcessor()->Parameter3().Value();
-      detune[0] = GetBiquadProcessor()->Parameter4().Value();
+      cutoff_frequency[0] = GetBiquadProcessor()->Parameter1().FinalValue();
+      q[0] = GetBiquadProcessor()->Parameter2().FinalValue();
+      gain[0] = GetBiquadProcessor()->Parameter3().FinalValue();
+      detune[0] = GetBiquadProcessor()->Parameter4().FinalValue();
       UpdateCoefficients(1, cutoff_frequency, q, gain, detune);
     }
   }
@@ -94,7 +95,7 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
                                          const float* gain,
                                          const float* detune) {
   // Convert from Hertz to normalized frequency 0 -> 1.
-  double nyquist = this->Nyquist();
+  double nyquist = Nyquist();
 
   biquad_.SetHasSampleAccurateValues(number_of_frames > 1);
 
@@ -110,35 +111,35 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
     // Configure the biquad with the new filter parameters for the appropriate
     // type of filter.
     switch (GetBiquadProcessor()->GetType()) {
-      case BiquadProcessor::kLowPass:
+      case BiquadProcessor::FilterType::kLowPass:
         biquad_.SetLowpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::kHighPass:
+      case BiquadProcessor::FilterType::kHighPass:
         biquad_.SetHighpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::kBandPass:
+      case BiquadProcessor::FilterType::kBandPass:
         biquad_.SetBandpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::kLowShelf:
+      case BiquadProcessor::FilterType::kLowShelf:
         biquad_.SetLowShelfParams(k, normalized_frequency, gain[k]);
         break;
 
-      case BiquadProcessor::kHighShelf:
+      case BiquadProcessor::FilterType::kHighShelf:
         biquad_.SetHighShelfParams(k, normalized_frequency, gain[k]);
         break;
 
-      case BiquadProcessor::kPeaking:
+      case BiquadProcessor::FilterType::kPeaking:
         biquad_.SetPeakingParams(k, normalized_frequency, q[k], gain[k]);
         break;
 
-      case BiquadProcessor::kNotch:
+      case BiquadProcessor::FilterType::kNotch:
         biquad_.SetNotchParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::kAllpass:
+      case BiquadProcessor::FilterType::kAllpass:
         biquad_.SetAllpassParams(k, normalized_frequency, q[k]);
         break;
     }
@@ -159,7 +160,7 @@ void BiquadDSPKernel::UpdateTailTime(int coef_index) {
   double tail =
       biquad_.TailFrame(coef_index, kMaxTailTime * sample_rate) / sample_rate;
 
-  tail_time_ = clampTo(tail, 0.0, kMaxTailTime);
+  tail_time_ = ClampTo(tail, 0.0, kMaxTailTime);
 }
 
 void BiquadDSPKernel::Process(const float* source,
@@ -195,7 +196,7 @@ void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
   // updating |kernel| while we're computing the response.
   DCHECK(IsMainThread());
 
-  DCHECK_GT(n_frequencies, 0);
+  DCHECK_GE(n_frequencies, 0);
   DCHECK(frequency_hz);
   DCHECK(mag_response);
   DCHECK(phase_response);

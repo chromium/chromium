@@ -8,10 +8,9 @@
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/WebApkHandlerDelegate_jni.h"
-#include "chrome/browser/android/color_helpers.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/android/color_utils_android.h"
 
 using base::android::JavaParamRef;
 
@@ -72,9 +71,9 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       base::android::ConvertJavaStringToUTF8(env, jmanifest_url),
       base::android::ConvertJavaStringToUTF8(env, jmanifest_start_url),
       static_cast<blink::mojom::DisplayMode>(jdisplay_mode),
-      static_cast<blink::WebScreenOrientationLockType>(jorientation),
-      JavaColorToOptionalSkColor(jtheme_color),
-      JavaColorToOptionalSkColor(jbackground_color),
+      static_cast<device::mojom::ScreenOrientationLockType>(jorientation),
+      ui::JavaColorToOptionalSkColor(jtheme_color),
+      ui::JavaColorToOptionalSkColor(jbackground_color),
       base::Time::FromJavaTime(jlast_update_check_time_ms),
       base::Time::FromJavaTime(jlast_update_completion_time_ms),
       static_cast<bool>(jrelax_updates), backing_browser_package_name,

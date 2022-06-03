@@ -1,0 +1,25 @@
+Verifies that mixed content issue is created from mixed content XMLHttpRequest.
+
+PASS: requestIds match
+PASS: frameIds match
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/request-data.js
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-xhr.html
+                request : {
+                    requestId : <string>
+                    url : http://devtools.test:8000/inspector-protocol/resources/request-data.js
+                }
+                resolutionStatus : MixedContentBlocked
+                resourceType : XMLHttpRequest
+            }
+        }
+    }
+}
+

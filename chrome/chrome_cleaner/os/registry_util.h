@@ -9,9 +9,8 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
-
-#include "base/strings/string16.h"
 
 namespace base {
 namespace win {
@@ -43,9 +42,9 @@ namespace internal {
 // functions in base to manipulate user data obtained via the Windows API use
 // 16-bits strings.
 struct RegistryValue {
-  base::string16 key_path;
-  base::string16 value_name;
-  base::string16 data;
+  std::wstring key_path;
+  std::wstring value_name;
+  std::wstring data;
 };
 
 }  // namespace internal
@@ -56,28 +55,34 @@ extern const wchar_t kUninstallerKeyPath[];
 // The key for Chrome policies.
 extern const wchar_t kChromePoliciesKeyPath[];
 
-// The keys for the Chrome policy forcelist and whitelist.
+// The keys for the Chrome policy forcelist, whitelist and allowlist.
+// Whitelist has been deprecated in favor of allowlist, but is still reported
+// by the cleaner for compatibility with older versions of Chrome.
 extern const wchar_t kChromePoliciesForcelistKeyPath[];
-extern const wchar_t kChromePoliciesWhitelistKeyPath[];
+extern const wchar_t kChromePoliciesWhitelistKeyPathDeprecated[];
+extern const wchar_t kChromePoliciesAllowlistKeyPath[];
 
-// The keys for the Chromium policy forcelist and whitelist.
+// The keys for the Chromium policy forcelist, whitelist and allowlist.
+// Whitelist has been deprecated in favor of allowlist, but is still reported
+// by the cleaner for compatibility with older versions of Chromium.
 extern const wchar_t kChromiumPoliciesForcelistKeyPath[];
-extern const wchar_t kChromiumPoliciesWhitelistKeyPath[];
+extern const wchar_t kChromiumPoliciesWhitelistKeyPathDeprecated[];
+extern const wchar_t kChromiumPoliciesAllowlistKeyPath[];
 
 // Returns a string representation of the registry value type.
-base::string16 RegistryValueTypeToString(DWORD value_type);
+std::wstring RegistryValueTypeToString(DWORD value_type);
 
 // Enumerates matching value names from a registry key against a given pattern
 // with wild-cards.
 void CollectMatchingRegistryNames(const base::win::RegKey& key,
-                                  const base::string16& pattern,
+                                  const std::wstring& pattern,
                                   const wchar_t escape_char,
-                                  std::vector<base::string16>* names);
+                                  std::vector<std::wstring>* names);
 
 // Enumerates matching key paths from a registry key against a given pattern
 // with wild-cards. Returns a vector of fully qualified RegPath (i.e. wow64).
 void CollectMatchingRegistryPaths(HKEY hkey,
-                                  const base::string16& pattern,
+                                  const std::wstring& pattern,
                                   const wchar_t escape_char,
                                   std::vector<RegKeyPath>* key_paths);
 
@@ -87,7 +92,7 @@ void CollectMatchingRegistryPaths(HKEY hkey,
 // |error| to indicate the type of error code.
 bool ReadRegistryValue(const base::win::RegKey& reg_key,
                        const wchar_t* value_name,
-                       base::string16* content,
+                       std::wstring* content,
                        uint32_t* content_type,
                        RegistryError* error);
 
@@ -96,16 +101,9 @@ bool ReadRegistryValue(const base::win::RegKey& reg_key,
 // set |error| to indicate the type of error code.
 bool ReadRegistryValue(const RegKeyPath& key_path,
                        const wchar_t* value_name,
-                       base::string16* content,
+                       std::wstring* content,
                        uint32_t* content_type,
                        RegistryError* error);
-
-// Write a registry value of type REG_SZ, REG_EXPAND_SZ or REG_MULTI_SZ. Return
-// false on failure.
-bool WriteRegistryValue(const wchar_t* value_name,
-                        const base::string16& content,
-                        uint32_t content_type,
-                        base::win::RegKey* reg_key);
 
 // Return a string representation of a potentially non-string registry type
 // value. For string types, |raw_content| is simply copied into |content|, so
@@ -115,7 +113,7 @@ bool WriteRegistryValue(const wchar_t* value_name,
 void GetRegistryValueAsString(const wchar_t* raw_content,
                               size_t raw_content_bytes,
                               DWORD value_type,
-                              base::string16* content);
+                              std::wstring* content);
 
 }  // namespace chrome_cleaner
 

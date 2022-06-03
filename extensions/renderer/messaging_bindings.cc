@@ -7,12 +7,13 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "extensions/renderer/gc_callback.h"
 #include "extensions/renderer/script_context.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
 
 namespace extensions {
 
@@ -36,10 +37,10 @@ void MessagingBindings::BindToGC(
   CHECK(args[2]->IsInt32());
   // TODO(devlin): Update callers to not pass a port ID.
   // int js_port_id = args[2].As<v8::Int32>()->Value();
-  base::Closure fallback = base::DoNothing();
+
   // Destroys itself when the object is GC'd or context is invalidated.
   new GCCallback(context(), args[0].As<v8::Object>(),
-                 args[1].As<v8::Function>(), fallback);
+                 args[1].As<v8::Function>(), base::OnceClosure());
 }
 
 }  // namespace extensions

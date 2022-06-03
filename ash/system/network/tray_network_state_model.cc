@@ -10,6 +10,8 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/system/network/vpn_list.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -54,11 +56,15 @@ class TrayNetworkStateModel::Impl
     : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
  public:
   explicit Impl(TrayNetworkStateModel* model) : model_(model) {
-    ash::GetNetworkConfigService(
+    GetNetworkConfigService(
         remote_cros_network_config_.BindNewPipeAndPassReceiver());
     remote_cros_network_config_->AddObserver(
         cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   }
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() override = default;
 
   void GetActiveNetworks() {
@@ -124,13 +130,11 @@ class TrayNetworkStateModel::Impl
       remote_cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 TrayNetworkStateModel::TrayNetworkStateModel()
     : update_frequency_(kUpdateFrequencyMs) {
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() !=
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION) {
     update_frequency_ = 0;  // Send updates immediately for tests.
   }
@@ -163,7 +167,7 @@ const DeviceStateProperties* TrayNetworkStateModel::GetDevice(
   return iter->second.get();
 }
 
-DeviceStateType TrayNetworkStateModel::GetDeviceState(NetworkType type) {
+DeviceStateType TrayNetworkStateModel::GetDeviceState(NetworkType type) const {
   const DeviceStateProperties* device = GetDevice(type);
   return device ? device->device_state : DeviceStateType::kUnavailable;
 }
@@ -171,6 +175,12 @@ DeviceStateType TrayNetworkStateModel::GetDeviceState(NetworkType type) {
 void TrayNetworkStateModel::SetNetworkTypeEnabledState(NetworkType type,
                                                        bool enabled) {
   impl_->SetNetworkTypeEnabledState(type, enabled);
+}
+
+bool TrayNetworkStateModel::IsBuiltinVpnProhibited() const {
+  return TrayNetworkStateModel::GetDeviceState(
+             chromeos::network_config::mojom::NetworkType::kVPN) ==
+         chromeos::network_config::mojom::DeviceStateType::kProhibited;
 }
 
 chromeos::network_config::mojom::CrosNetworkConfig*
@@ -189,6 +199,7 @@ void TrayNetworkStateModel::OnGetDeviceStateList(
   }
 
   impl_->GetActiveNetworks();  // Will trigger an observer event.
+  SendDeviceStateListChanged();
 }
 
 void TrayNetworkStateModel::UpdateActiveNetworks(
@@ -253,10 +264,9 @@ void TrayNetworkStateModel::OnGetVirtualNetworks(
 void TrayNetworkStateModel::NotifyNetworkListChanged() {
   if (timer_.IsRunning())
     return;
-  timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(update_frequency_),
-      base::BindRepeating(&TrayNetworkStateModel::SendNetworkListChanged,
-                          base::Unretained(this)));
+  timer_.Start(FROM_HERE, base::Milliseconds(update_frequency_),
+               base::BindOnce(&TrayNetworkStateModel::SendNetworkListChanged,
+                              base::Unretained(this)));
 }
 
 void TrayNetworkStateModel::NotifyVpnProvidersChanged() {
@@ -272,6 +282,11 @@ void TrayNetworkStateModel::SendActiveNetworkStateChanged() {
 void TrayNetworkStateModel::SendNetworkListChanged() {
   for (auto& observer : observer_list_)
     observer.NetworkListChanged();
+}
+
+void TrayNetworkStateModel::SendDeviceStateListChanged() {
+  for (auto& observer : observer_list_)
+    observer.DeviceStateListChanged();
 }
 
 }  // namespace ash

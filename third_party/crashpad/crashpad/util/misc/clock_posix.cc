@@ -16,7 +16,9 @@
 
 #include <time.h>
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
@@ -28,7 +30,7 @@ constexpr uint64_t kNanosecondsPerSecond = 1E9;
 
 namespace crashpad {
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_APPLE)
 
 uint64_t ClockMonotonicNanoseconds() {
   timespec now;

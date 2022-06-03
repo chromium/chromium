@@ -14,16 +14,16 @@ using InterfaceId = uint32_t;
 
 // IDs of associated interface can be generated at both sides of the message
 // pipe. In order to avoid collision, the highest bit is used as namespace bit:
-// at the side where the client-side of the master interface lives, IDs are
+// at the side where the client-side of the primary interface lives, IDs are
 // generated with the namespace bit set to 1; at the opposite side IDs are
 // generated with the namespace bit set to 0.
 const uint32_t kInterfaceIdNamespaceMask = 0x80000000;
 
-const InterfaceId kMasterInterfaceId = 0x00000000;
+const InterfaceId kPrimaryInterfaceId = 0x00000000;
 const InterfaceId kInvalidInterfaceId = 0xFFFFFFFF;
 
-inline bool IsMasterInterfaceId(InterfaceId id) {
-  return id == kMasterInterfaceId;
+inline bool IsPrimaryInterfaceId(InterfaceId id) {
+  return id == kPrimaryInterfaceId;
 }
 
 inline bool IsValidInterfaceId(InterfaceId id) {

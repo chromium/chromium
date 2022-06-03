@@ -9,20 +9,20 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.Origin;
-import org.chromium.chrome.browser.browserservices.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationEntry;
 
 import javax.inject.Inject;
@@ -73,6 +74,11 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
         mActivity = activity;
         mSessionDataHolder = sessionDataHolder;
         lifecycleDispatcher.register(this);
+
+        // The active handler will also get set in onStartWithNative, but since native may take some
+        // time to initialize, we eagerly set it here to catch any messages the Custom Tabs Client
+        // sends our way before that triggers.
+        mSessionDataHolder.setActiveHandler(this);
     }
 
     @Override
@@ -116,7 +122,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     @Nullable
     public String getCurrentUrl() {
         Tab tab = mTabProvider.getTab();
-        return tab == null ? null : tab.getUrl();
+        return tab == null ? null : tab.getUrl().getSpec();
     }
 
     @Override
@@ -127,7 +133,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
         NavigationEntry entry = tab.getWebContents().getNavigationController()
                 .getPendingEntry();
-        return entry != null ? entry.getUrl() : null;
+        return entry != null ? entry.getUrl().getSpec() : null;
     }
 
     @Override

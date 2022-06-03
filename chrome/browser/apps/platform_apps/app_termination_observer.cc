@@ -22,7 +22,10 @@ namespace {
 class AppTerminationObserverFactory : public BrowserContextKeyedServiceFactory {
  public:
   AppTerminationObserverFactory();
-  ~AppTerminationObserverFactory() override;
+  AppTerminationObserverFactory(const AppTerminationObserverFactory&) = delete;
+  AppTerminationObserverFactory& operator=(
+      const AppTerminationObserverFactory&) = delete;
+  ~AppTerminationObserverFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
@@ -30,16 +33,12 @@ class AppTerminationObserverFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppTerminationObserverFactory);
 };
 
 AppTerminationObserverFactory::AppTerminationObserverFactory()
     : BrowserContextKeyedServiceFactory(
           "AppTerminationObserver",
           BrowserContextDependencyManager::GetInstance()) {}
-AppTerminationObserverFactory::~AppTerminationObserverFactory() = default;
 
 KeyedService* AppTerminationObserverFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {

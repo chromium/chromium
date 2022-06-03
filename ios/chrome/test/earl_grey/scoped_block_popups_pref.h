@@ -14,14 +14,16 @@
 class ScopedBlockPopupsPref {
  public:
   explicit ScopedBlockPopupsPref(ContentSetting setting);
+
+  ScopedBlockPopupsPref(const ScopedBlockPopupsPref&) = delete;
+  ScopedBlockPopupsPref& operator=(const ScopedBlockPopupsPref&) = delete;
+
   ~ScopedBlockPopupsPref();
 
  private:
   // Saves the original pref setting so that it can be restored when the scoper
   // is destroyed.
   ContentSetting original_setting_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockPopupsPref);
 };
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_SCOPED_BLOCK_POPUPS_PREF_H_

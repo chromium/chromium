@@ -33,9 +33,9 @@
 
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -102,10 +102,12 @@ class PLATFORM_EXPORT MHTMLArchive final
   ArchiveResource* MainResource() const { return main_resource_.Get(); }
   ArchiveResource* SubresourceForURL(const KURL&) const;
 
+  String GetCacheIdentifier() const;
+
   // The purported creation date (as expressed by the Date: header).
   base::Time Date() const { return date_; }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   blink::mojom::MHTMLLoadResult LoadResult() const { return load_result_; }
 
  private:
@@ -117,6 +119,9 @@ class PLATFORM_EXPORT MHTMLArchive final
   void AddSubresource(ArchiveResource*);
   static bool CanLoadArchive(const KURL&);
 
+  // URL of the MHTML resource (e.g. file:///foo/bar.mhtml).
+  KURL archive_url_;
+
   base::Time date_;
   Member<ArchiveResource> main_resource_;
   SubArchiveResources subresources_;
@@ -124,4 +129,4 @@ class PLATFORM_EXPORT MHTMLArchive final
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_MHTML_ARCHIVE_H_

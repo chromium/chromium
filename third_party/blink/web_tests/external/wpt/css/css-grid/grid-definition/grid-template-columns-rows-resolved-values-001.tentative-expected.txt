@@ -1,0 +1,80 @@
+This is a testharness.js-based test.
+Found 76 tests; 40 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL 'grid' with: grid-template-columns: ; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "110px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: ; and grid-template-rows: ;
+FAIL 'grid' with: grid-template-columns: auto auto; and grid-template-rows: ; assert_in_array: gridTemplateRows value "10px 20px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: auto auto; and grid-template-rows: ;
+FAIL 'grid' with: grid-template-columns: 60px; and grid-template-rows: ; assert_in_array: gridTemplateRows value "20px 20px 20px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: 60px; and grid-template-rows: ;
+FAIL 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: ; assert_in_array: gridTemplateRows value "20px 20px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: ;
+FAIL 'grid' with: grid-template-columns: ; and grid-template-rows: 50px; assert_in_array: gridTemplateColumns value "110px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: ; and grid-template-rows: 50px;
+FAIL 'grid' with: grid-template-columns: ; and grid-template-rows: 50px 30px; assert_in_array: gridTemplateColumns value "110px" not in array ["none"]
+PASS Children of 'grid' with: grid-template-columns: ; and grid-template-rows: 50px 30px;
+FAIL 'grid' with: grid-template-columns: 60px; and grid-template-rows: 50px; assert_in_array: gridTemplateRows value "50px 20px 20px" not in array ["50px"]
+PASS Children of 'grid' with: grid-template-columns: 60px; and grid-template-rows: 50px;
+FAIL 'grid' with: grid-template-columns: 60px; and grid-template-rows: 50px 30px; assert_in_array: gridTemplateRows value "50px 30px 20px" not in array ["50px 30px"]
+PASS Children of 'grid' with: grid-template-columns: 60px; and grid-template-rows: 50px 30px;
+FAIL 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px; assert_in_array: gridTemplateRows value "50px 20px" not in array ["50px"]
+PASS Children of 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px;
+PASS 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px 30px;
+PASS Children of 'grid' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px 30px;
+FAIL 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "110px 0px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: ;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "60px 0px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: ;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px 50px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: ;
+FAIL 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "110px 0px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px;
+FAIL 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px 50px; assert_in_array: gridTemplateColumns value "110px 0px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px 50px;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "60px 0px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px 50px; assert_in_array: gridTemplateColumns value "60px 0px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px 50px;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px 50px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: 60px;
+FAIL 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: 60px 50px; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px 50px"]
+PASS Children of 'gridItemsPositions' with: grid-template-columns: 60px 50px; and grid-template-rows: 60px 50px;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "100px 110px 50px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: auto auto; assert_in_array: gridTemplateColumns value "110px 50px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: auto auto;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "60px 110px 50px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "100px 60px 50px" not in array ["100px 60px"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: 50px; assert_in_array: gridTemplateColumns value "100px 110px 50px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: 50px;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: 50px 30px; assert_in_array: gridTemplateColumns value "110px 50px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: ; and grid-template-rows: 50px 30px;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: 50px; assert_in_array: gridTemplateColumns value "60px 110px 50px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: 50px;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: 50px 30px; assert_in_array: gridTemplateColumns value "60px 50px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 60px; and grid-template-rows: 50px 30px;
+FAIL 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px; assert_in_array: gridTemplateColumns value "100px 60px 50px" not in array ["100px 60px"]
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px;
+PASS 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px 30px;
+PASS Children of 'gridAutoFlowColumn' with: grid-template-columns: 100px 60px; and grid-template-rows: 50px 30px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "110px 50px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: ; assert_in_array: gridTemplateColumns value "60px 70px 0px 0px 100px" not in array ["60px 70px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: ;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "110px 50px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px 70px; assert_in_array: gridTemplateColumns value "110px 50px 0px 0px 100px" not in array ["none"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: ; and grid-template-rows: 60px 70px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px 70px; assert_in_array: gridTemplateColumns value "60px 50px 0px 0px 100px" not in array ["60px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px; and grid-template-rows: 60px 70px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: 60px; assert_in_array: gridTemplateColumns value "60px 70px 0px 0px 100px" not in array ["60px 70px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: 60px;
+FAIL 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: 60px 70px; assert_in_array: gridTemplateColumns value "60px 70px 0px 0px 100px" not in array ["60px 70px"]
+PASS Children of 'gridAutoFlowColumnItemsPositions' with: grid-template-columns: 60px 70px; and grid-template-rows: 60px 70px;
+Harness: the test ran to completion.
+

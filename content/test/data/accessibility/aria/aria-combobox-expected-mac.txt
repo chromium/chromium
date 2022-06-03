@@ -1,7 +1,7 @@
 AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='State'
-++AXComboBox AXTitle='State' AXAutocompleteValue='list' AXFocused='1'
+++AXComboBox AXAutocompleteValue='list' AXTitle='State'
 ++AXList
 ++++AXStaticText AXValue='Alabama'
-++++AXStaticText AXValue='Alaska'
+++++AXStaticText AXFocused=1 AXValue='Alaska'

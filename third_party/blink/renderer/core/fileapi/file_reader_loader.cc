@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -46,7 +47,6 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -67,17 +67,11 @@ FileReaderLoader::FileReaderLoader(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : read_type_(read_type),
       client_(client),
-      // TODO(https://crbug.com/957651): task_runner should never be null, but
-      // if it is make sure SimpleWatcher doesn't crash and just use a default
-      // task runner instead for now.
-      handle_watcher_(
-          FROM_HERE,
-          mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-          task_runner ? task_runner : base::SequencedTaskRunnerHandle::Get()),
+      handle_watcher_(FROM_HERE,
+                      mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
+                      task_runner),
       task_runner_(std::move(task_runner)) {
-  // TODO(https://crbug.com/957651): Change this into a DCHECK once we figured
-  // out where code is passing in a null task runner,
-  CHECK(task_runner_);
+  DCHECK(task_runner_);
 }
 
 FileReaderLoader::~FileReaderLoader() {
@@ -98,7 +92,7 @@ void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
       blink::BlobUtils::GetDataPipeCapacity(blob_data->size());
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  MojoResult rv = CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+  MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
     Failed(FileErrorCode::kNotReadableErr, FailureType::kMojoPipeCreation);
     return;
@@ -147,7 +141,7 @@ DOMArrayBuffer* FileReaderLoader::ArrayBufferResult() {
                                   SafeCast<size_t>(bytes_loaded_));
   }
 
-  array_buffer_result_ = DOMArrayBuffer::Create(raw_data_);
+  array_buffer_result_ = DOMArrayBuffer::Create(std::move(raw_data_));
   DCHECK_EQ(raw_data_.DataLength(), 0u);
   raw_data_.Reset();
   return array_buffer_result_;
@@ -218,14 +212,12 @@ void FileReaderLoader::Cleanup() {
 }
 
 void FileReaderLoader::Failed(FileErrorCode error_code, FailureType type) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(EnumerationHistogram, failure_histogram,
-                                  ("Storage.Blob.FileReaderLoader.FailureType",
-                                   static_cast<int>(FailureType::kCount)));
   // If an error was already reported, don't report this error again.
   if (error_code_ != FileErrorCode::kOK)
     return;
   error_code_ = error_code;
-  failure_histogram.Count(static_cast<int>(type));
+  base::UmaHistogramEnumeration("Storage.Blob.FileReaderLoader.FailureType",
+                                type);
   Cleanup();
   if (client_)
     client_->DidFail(error_code_);
@@ -334,10 +326,8 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 }
 
 void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram,
-                                  file_reader_loader_read_errors_histogram,
-                                  ("Storage.Blob.FileReaderLoader.ReadError"));
-  file_reader_loader_read_errors_histogram.Sample(std::max(0, -net_error_));
+  base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError",
+                           std::max(0, -net_error_));
 
   if (status != net::OK) {
     net_error_ = status;

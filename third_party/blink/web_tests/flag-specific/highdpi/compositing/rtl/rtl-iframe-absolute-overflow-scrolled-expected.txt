@@ -1,0 +1,65 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutIFrame (positioned) IFRAME",
+      "bounds": [600, 600]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [22, 0],
+      "bounds": [1500, 1500],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='layer' class='positioned'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [22, 578],
+      "bounds": [578, 22]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "bounds": [22, 578]
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [0, 578],
+      "bounds": [22, 22]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-922, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [98, 75, 0, 1]
+      ]
+    }
+  ]
+}
+

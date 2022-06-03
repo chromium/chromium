@@ -9,7 +9,6 @@
 
 #include "gpu/vulkan/buildflags.h"
 #include "ui/ozone/demo/renderer_factory.h"
-#include "ui/ozone/public/ozone_gpu_test_helper.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/vulkan_implementation.h"
@@ -28,6 +27,10 @@ class SimpleRendererFactory : public RendererFactory {
   };
 
   SimpleRendererFactory();
+
+  SimpleRendererFactory(const SimpleRendererFactory&) = delete;
+  SimpleRendererFactory& operator=(const SimpleRendererFactory&) = delete;
+
   ~SimpleRendererFactory() override;
 
   bool Initialize() override;
@@ -40,8 +43,6 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleRendererFactory);
 };
 
 }  // namespace ui

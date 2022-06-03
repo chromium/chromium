@@ -5,22 +5,26 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
 namespace apps {
 
-class AppServiceProxy;
-
 // Singleton that owns all AppServiceProxy's and associates them with Profile.
 class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
  public:
+  static bool IsAppServiceAvailableForProfile(Profile* profile);
+
   static AppServiceProxy* GetForProfile(Profile* profile);
 
   static AppServiceProxyFactory* GetInstance();
+
+  AppServiceProxyFactory(const AppServiceProxyFactory&) = delete;
+  AppServiceProxyFactory& operator=(const AppServiceProxyFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<AppServiceProxyFactory>;
@@ -34,8 +38,6 @@ class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceProxyFactory);
 };
 
 }  // namespace apps

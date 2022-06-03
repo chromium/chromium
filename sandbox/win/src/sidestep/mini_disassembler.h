@@ -4,8 +4,8 @@
 
 // Definition of MiniDisassembler.
 
-#ifndef SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_H__
-#define SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_H__
+#ifndef SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_H_
+#define SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_H_
 
 #include "sandbox/win/src/sidestep/mini_disassembler_types.h"
 
@@ -150,4 +150,4 @@ class MiniDisassembler {
 
 }  // namespace sidestep
 
-#endif  // SANDBOX_SRC_SIDESTEP_MINI_DISASSEMBLER_H__
+#endif  // SANDBOX_WIN_SRC_SIDESTEP_MINI_DISASSEMBLER_H_

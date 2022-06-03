@@ -6,7 +6,7 @@ package org.chromium.components.module_installer.logger;
 
 import com.google.android.play.core.splitinstall.model.SplitInstallErrorCode;
 
-import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
+import org.chromium.base.metrics.RecordHistogram;
 
 class SplitInstallFailureLogger {
     // FeatureModuleInstallStatus defined in //tools/metrics/histograms/enums.xml.
@@ -99,7 +99,6 @@ class SplitInstallFailureLogger {
 
     private void log(String moduleName, int code) {
         String name = "Android.FeatureModules.InstallStatus." + moduleName;
-        EnumeratedHistogramSample sample = new EnumeratedHistogramSample(name, COUNT);
-        sample.record(code);
+        RecordHistogram.recordEnumeratedHistogram(name, code, COUNT);
     }
 }

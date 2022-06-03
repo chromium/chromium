@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("node") {
+  action(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    # Declare dependencies to all involved tools.
+    inputs += [
+      "//third_party/node/node.py",
+      "//third_party/node/node_modules.py",
+      "//third_party/node/node_modules.tar.gz.sha1",
+    ]
+
+    if (is_linux || is_chromeos) {
+      inputs += [ "//third_party/node/linux/node-linux-x64.tar.gz.sha1" ]
+    }
+    if (is_win) {
+      inputs += [ "//third_party/node/win/node.exe.sha1" ]
+    }
+    if (is_mac) {
+      inputs += [ "//third_party/node/mac/node-darwin-x64.tar.gz.sha1" ]
+    }
+  }
+}

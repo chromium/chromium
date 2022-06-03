@@ -1,106 +1,25 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'about all the stuff'",
-          "rect": [8, 264, 104, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'about all the stuff'",
-          "rect": [8, 164, 104, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'write a book'",
-          "rect": [8, 144, 77, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'write a book'",
-          "rect": [8, 144, 77, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'more words.'",
-          "rect": [8, 104, 77, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'more words.'",
-          "rect": [8, 104, 77, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'that comes'",
-          "rect": [8, 284, 65, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'that comes'",
-          "rect": [8, 184, 65, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'the break.'",
-          "rect": [8, 324, 61, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'the break.'",
-          "rect": [8, 224, 61, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'I could'",
-          "rect": [8, 124, 42, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'I could'",
-          "rect": [8, 124, 42, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'words,'",
-          "rect": [8, 84, 42, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'words,'",
-          "rect": [8, 84, 42, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Word,'",
-          "rect": [8, 64, 39, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Word,'",
-          "rect": [8, 64, 39, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'after'",
-          "rect": [8, 304, 27, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'after'",
-          "rect": [8, 204, 27, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [8, 164, 10, 100],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [8, 264, 104, 19],
+        [8, 164, 104, 19],
+        [8, 144, 77, 19],
+        [8, 104, 77, 19],
+        [8, 284, 65, 19],
+        [8, 184, 65, 19],
+        [8, 324, 61, 19],
+        [8, 224, 61, 19],
+        [8, 124, 42, 19],
+        [8, 84, 42, 19],
+        [8, 64, 39, 19],
+        [8, 304, 27, 19],
+        [8, 204, 27, 19],
+        [8, 164, 10, 100]
       ]
     }
   ]

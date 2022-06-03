@@ -33,8 +33,8 @@
 
     // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
     [RuntimeEnabled=FileSystem, MeasureAs=RequestFileSystem] void webkitRequestFileSystem(unsigned short type, long long size,
-            FileSystemCallback successCallback, optional ErrorCallback? errorCallback);
+            FileSystemCallback successCallback, optional ErrorCallback? errorCallback = null);
     // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
     [RuntimeEnabled=FileSystem] void webkitResolveLocalFileSystemURL(DOMString url,
-            EntryCallback successCallback, optional ErrorCallback? errorCallback);
+            EntryCallback successCallback, optional ErrorCallback? errorCallback = null);
 };

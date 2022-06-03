@@ -34,7 +34,7 @@ class ValidationMessageOverlayDelegateTest : public PaintTestConfigurations,
     // an extra step is required to ensure that the system font is configured.
     // See https://crbug.com/969622
     blink::WebFontRendering::SetMenuFontMetrics(
-        base::ASCIIToUTF16("Arial").c_str(), 12);
+        blink::WebString::FromASCII("Arial"), 12);
   }
 #endif
 };
@@ -49,8 +49,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   // When WebTestSupport::IsRunningWebTest is set, the animations in
   // ValidationMessageOverlayDelegate are disabled. We are specifically testing
   // animations, so make sure that doesn't happen.
-  bool was_running_web_test = WebTestSupport::IsRunningWebTest();
-  WebTestSupport::SetIsRunningWebTest(false);
+  ScopedWebTestMode web_test_mode(false);
 
   SetBodyInnerHTML("<div id='anchor'></div>");
   Element* anchor = GetElementById("anchor");
@@ -61,11 +60,11 @@ TEST_P(ValidationMessageOverlayDelegateTest,
       TextDirection::kLtr);
   ValidationMessageOverlayDelegate* delegate_ptr = delegate.get();
 
-  auto overlay =
-      std::make_unique<FrameOverlay>(&GetFrame(), std::move(delegate));
+  auto* overlay =
+      MakeGarbageCollected<FrameOverlay>(&GetFrame(), std::move(delegate));
   delegate_ptr->CreatePage(*overlay);
-  ASSERT_TRUE(
-      GetFrame().View()->UpdateLifecycleToCompositingCleanPlusScrolling());
+  ASSERT_TRUE(GetFrame().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest));
 
   // Trigger the overlay animations.
   auto paint_controller =
@@ -78,14 +77,15 @@ TEST_P(ValidationMessageOverlayDelegateTest,
       To<LocalFrame>(delegate_ptr->GetPageForTesting()->MainFrame())
           ->GetDocument();
   HeapVector<Member<Animation>> animations =
-      internal_document->GetDocumentAnimations().getAnimations();
+      internal_document->GetDocumentAnimations().getAnimations(
+          *internal_document);
   ASSERT_FALSE(animations.IsEmpty());
 
   for (const auto& animation : animations) {
     EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   }
 
-  WebTestSupport::SetIsRunningWebTest(was_running_web_test);
+  overlay->Destroy();
 }
 
 // Regression test for https://crbug.com/990680, where we found we were not
@@ -125,7 +125,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   AnimationClock& external_clock = GetPage().Animator().Clock();
   base::TimeTicks current_time = external_clock.CurrentTime();
 
-  base::TimeTicks new_time = current_time + base::TimeDelta::FromSeconds(1);
+  base::TimeTicks new_time = current_time + base::Seconds(1);
   PageWidgetDelegate::Animate(GetPage(), new_time);
 
   // TODO(crbug.com/785940): Until this bug is fixed, this comparison could pass
@@ -134,6 +134,8 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   EXPECT_EQ(external_clock.CurrentTime(), internal_clock.CurrentTime());
 
   GetPage().SetValidationMessageClientForTesting(original_client);
+
+  static_cast<ValidationMessageClient*>(client)->WillBeDestroyed();
 }
 
 }  // namespace blink

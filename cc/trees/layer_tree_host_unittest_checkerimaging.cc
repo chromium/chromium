@@ -20,8 +20,9 @@ const char kCheckerboardImagesMetric[] = "CheckerboardedImagesCount";
 
 class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
  public:
-  LayerTreeHostCheckerImagingTest() : url_(GURL("https://example.com")),
-                                      ukm_source_id_(123) {}
+  LayerTreeHostCheckerImagingTest()
+      : url_(GURL("https://example.com")),
+        ukm_source_id_(ukm::AssignNewSourceId()) {}
 
   void BeginTest() override {
     layer_tree_host()->SetSourceURL(ukm_source_id_, url_);
@@ -36,8 +37,9 @@ class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
     recorder->UpdateSourceURL(ukm_source_id_, url_);
 
     // Change the source to ensure any accumulated metrics are flushed.
-    impl->ukm_manager()->SetSourceId(200);
-    recorder->UpdateSourceURL(200, GURL("chrome://test2"));
+    ukm::SourceId newSourceId = ukm::AssignNewSourceId();
+    impl->ukm_manager()->SetSourceId(newSourceId);
+    recorder->UpdateSourceURL(newSourceId, GURL("chrome://test2"));
 
     const auto& entries = recorder->GetEntriesByName(kRenderingEvent);
     ASSERT_EQ(1u, entries.size());
@@ -69,7 +71,7 @@ class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
                             .set_decoding_mode(PaintImage::DecodingMode::kAsync)
                             .TakePaintImage();
     content_layer_client_.add_draw_image(checkerable_image, gfx::Point(0, 0),
-                                         PaintFlags());
+                                         SkSamplingOptions(), PaintFlags());
 
     layer_tree_host()->SetRootLayer(
         FakePictureLayer::Create(&content_layer_client_));

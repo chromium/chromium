@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_FILE_API_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_FILE_API_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -15,7 +16,7 @@ class ExecutionContext;
 class ScriptState;
 class Blob;
 
-class URLFileAPI {
+class CORE_EXPORT URLFileAPI {
   STATIC_ONLY(URLFileAPI);
 
  public:
@@ -26,4 +27,4 @@ class URLFileAPI {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_FILE_API_H_

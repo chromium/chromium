@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/usb/usb_descriptors.h"
 
@@ -38,6 +37,9 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
       scoped_refptr<base::RefCountedBytes>,
       std::vector<mojom::UsbIsochronousPacketPtr> packets)>;
 
+  UsbDeviceHandle(const UsbDeviceHandle&) = delete;
+  UsbDeviceHandle& operator=(const UsbDeviceHandle&) = delete;
+
   virtual scoped_refptr<UsbDevice> GetDevice() const = 0;
 
   // Notifies UsbDevice to drop the reference of this object; cancels all the
@@ -58,7 +60,9 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
                                             int alternate_setting,
                                             ResultCallback callback) = 0;
   virtual void ResetDevice(ResultCallback callback) = 0;
-  virtual void ClearHalt(uint8_t endpoint, ResultCallback callback) = 0;
+  virtual void ClearHalt(mojom::UsbTransferDirection direction,
+                         uint8_t endpoint_number,
+                         ResultCallback callback) = 0;
 
   virtual void ControlTransfer(mojom::UsbTransferDirection direction,
                                mojom::UsbControlTransferType request_type,
@@ -99,9 +103,6 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
 
   UsbDeviceHandle();
   virtual ~UsbDeviceHandle();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceHandle);
 };
 
 }  // namespace device

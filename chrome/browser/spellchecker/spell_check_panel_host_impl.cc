@@ -48,7 +48,7 @@ void SpellCheckPanelHostImpl::ShowSpellingPanel(bool show) {
 }
 
 void SpellCheckPanelHostImpl::UpdateSpellingPanelWithMisspelledWord(
-    const base::string16& word) {
+    const std::u16string& word) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   spellcheck_platform::UpdateSpellingPanelWithMisspelledWord(word);
 }

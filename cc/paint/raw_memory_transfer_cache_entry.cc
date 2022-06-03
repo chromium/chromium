@@ -5,6 +5,7 @@
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 
 #include <string.h>
+#include <utility>
 
 namespace cc {
 
@@ -47,7 +48,7 @@ size_t ServiceRawMemoryTransferCacheEntry::CachedSize() const {
 }
 
 bool ServiceRawMemoryTransferCacheEntry::Deserialize(
-    GrContext* context,
+    GrDirectContext* context,
     base::span<const uint8_t> data) {
   data_ = std::vector<uint8_t>(data.begin(), data.end());
   return true;

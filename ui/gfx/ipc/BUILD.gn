@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_component("ipc") {
+component("ipc") {
   output_name = "gfx_ipc"
 
   sources = [
@@ -23,5 +21,10 @@ jumbo_component("ipc") {
     "//ui/gfx:selection_bound",
     "//ui/gfx/ipc/geometry",
     "//ui/gfx/range",
+  ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "IOSurface.framework",
   ]
 }

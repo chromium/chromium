@@ -1,0 +1,22 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../os_settings_routes.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="settings-multidevice-task-continuation-disabled-link">
+  <template>
+    <style include="settings-shared">
+      :host {
+        --cr-subsequent-anchors-of-span-margin: 0;
+      }
+    </style>
+    <div id="container"
+        inner-h-t-m-l="[[getAriaLabelledContent_()]]">
+    </div>
+  </template>
+  <script src="multidevice_task_continuation_disabled_link.js"></script>
+</dom-module>

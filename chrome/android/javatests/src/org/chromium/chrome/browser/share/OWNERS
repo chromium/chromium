@@ -1,0 +1,6 @@
+file://chrome/android/java/src/org/chromium/chrome/browser/share/OWNERS
+
+per-file ChromeProvidedSharingOptionsProviderTest.java=file://components/send_tab_to_self/OWNERS
+per-file ShareButton*=file://components/send_tab_to_self/OWNERS
+per-file ShareDelegate*=file://components/send_tab_to_self/OWNERS
+per-file ShareSheet*=file://components/send_tab_to_self/OWNERS

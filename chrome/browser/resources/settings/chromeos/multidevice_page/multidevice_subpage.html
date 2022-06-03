@@ -1,0 +1,238 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../os_settings_routes.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="multidevice_constants.html">
+<link rel="import" href="multidevice_browser_proxy.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
+<link rel="import" href="multidevice_feature_toggle.html">
+<link rel="import" href="multidevice_task_continuation_item.html">
+<link rel="import" href="multidevice_tether_item.html">
+<link rel="import" href="multidevice_wifi_sync_item.html">
+
+<dom-module id="settings-multidevice-subpage">
+  <template>
+    <style include="settings-shared iron-flex">
+      settings-multidevice-feature-item,
+      settings-multidevice-tether-item {
+        --feature-item-row-padding: 0;
+      }
+
+      settings-multidevice-feature-item:first-of-type {
+        --feature-item-border-top-style: none;
+      }
+
+      cr-button {
+        white-space: nowrap;
+      }
+
+      #feature-items-container {
+        padding-inline-start: var(--cr-section-indent-padding);
+      }
+    </style>
+    <div class="settings-box first">
+      <div id="status-text-container"
+          class="start"
+          enabled$="[[isSuiteOn(pageContentData)]]"
+          inner-h-t-m-l="[[getStatusInnerHtml_(pageContentData)]]">
+      </div>
+        <template is="dom-if" if="[[shouldShowVerifyButton_(pageContentData)]]"
+            restamp>
+          <cr-button on-click="handleVerifyButtonClick_">
+            $i18n{multideviceVerifyButton}
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[shouldShowSuiteToggle_(pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-toggle
+              toggle-aria-label="$i18n{multideviceSuiteToggleA11yLabel}"
+              feature="[[MultiDeviceFeature.BETTER_TOGETHER_SUITE]]"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kMultiDeviceOnOff]]">
+          </settings-multidevice-feature-toggle>
+        </template>
+    </div>
+    <template is="dom-if"
+        if="[[shouldShowIndividualFeatures_(pageContentData)]]"
+        restamp>
+      <div id="feature-items-container">
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.SMART_LOCK, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="smartLockItem"
+              feature="[[MultiDeviceFeature.SMART_LOCK]]"
+              page-content-data="[[pageContentData]]"
+              subpage-route="[[routes.SMART_LOCK]]"
+              deep-link-focus-id$="[[Setting.kSmartLockOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.INSTANT_TETHERING, pageContentData)]]"
+            restamp>
+          <settings-multidevice-tether-item id="instantTetheringItem"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kInstantTetheringOnOff]]">
+          </settings-multidevice-tether-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.MESSAGES, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="messagesItem"
+              feature="[[MultiDeviceFeature.MESSAGES]]"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kMessagesOnOff]]
+                  [[Setting.kMessagesSetUp]]">
+            <template is="dom-if"
+                if="[[doesAndroidMessagesRequireSetUp_(pageContentData)]]"
+                restamp>
+              <cr-button disabled$="[[isAndroidMessagesSetupButtonDisabled_(
+                                       pageContentData)]]"
+                  on-click="handleAndroidMessagesButtonClick_"
+                  slot="feature-controller">
+                $i18n{multideviceSetupButton}
+              </cr-button>
+            </template>
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.PHONE_HUB, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubItem"
+              feature="[[MultiDeviceFeature.PHONE_HUB]]"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kPhoneHubOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[shouldShowPhoneHubNotificationsItem_(pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubNotificationsItem"
+              feature="[[MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS]]"
+              info-tooltip="[[getPhoneHubNotificationsTooltip_(
+                                  pageContentData)]]"
+              page-content-data="[[pageContentData]]" is-sub-feature
+              deep-link-focus-id$="[[Setting.kPhoneHubNotificationsOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubCameraRollItem"
+              feature="[[MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL]]"
+              page-content-data="[[pageContentData]]" is-sub-feature
+              deep-link-focus-id$="[[Setting.kPhoneHubCameraRollOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION, pageContentData)]]"
+            restamp>
+          <settings-multidevice-task-continuation-item
+              id="phoneHubTaskContinuationItem"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
+          </settings-multidevice-task-continuation-item>
+        </template>
+        <template is="dom-if"
+            if="[[shouldShowPhoneHubAppsItem_(pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubAppsItem"
+              feature="[[MultiDeviceFeature.ECHE]]"
+              page-content-data="[[pageContentData]]" is-sub-feature
+              deep-link-focus-id$="[[Setting.kPhoneHubAppsOnOff]]">
+            <template is="dom-if"
+                if="[[isPhoneHubAppsSetupRequired_(pageContentData)]]"
+                restamp>
+              <cr-button on-click="handlePhoneHubAppsSetupClick_"
+                  slot="feature-controller">
+                $i18n{multideviceSetupButton}
+              </cr-button>
+            </template>
+          </settings-multidevice-feature-item>
+        </template>
+        <div id="feature-items-container">
+          <template is="dom-if"
+              if="[[shouldShowPhoneHubCombinedSetupItem_(pageContentData)]]"
+              restamp>
+            <div id="phoneHubCombinedSetupItem" class="settings-box two-line">
+              <div id="phoneHubAppsAndNotificationsSetupLabel"
+                  class="start" aria-hidden="true">
+                $i18n{multidevicePhoneHubAppsAndNotificationsItemTitle}
+                <div id="phoneHubAppsAndNotificationsSetupSummary"
+                    class="secondary" aria-hidden="true">
+                  $i18n{multidevicePhoneHubAppsAndNotificationsItemSummary}
+                </div>
+              </div>
+              <cr-button on-click="handlePhoneHubCombinedSetupClick_"
+                  aria-labelledby="phoneHubAppsAndNotificationsSetupLabel"
+                  aria-describedby="phoneHubAppsAndNotificationsSetupSummary">
+                $i18n{multideviceSetupButton}
+              </cr-button>
+            </div>
+          </template>
+        </div>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
+                MultiDeviceFeature.WIFI_SYNC, pageContentData)]]"
+            restamp>
+          <settings-multidevice-wifi-sync-item id="wifiSyncItem"
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kWifiSyncOnOff]]">
+          </settings-multidevice-wifi-sync-item>
+        </template>
+      </div>
+    </template>
+    <div class="settings-box two-line">
+      <div id="forgetDeviceLabel" class="start" aria-hidden="true">
+        $i18n{multideviceForgetDevice}
+        <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
+            $i18n{multideviceForgetDeviceSummary}
+        </div>
+      </div>
+      <cr-button on-click="handleForgetDeviceClick_"
+          aria-labelledby="forgetDeviceLabel"
+          aria-describedby="forgetDeviceSummary"
+          deep-link-focus-id$="[[Setting.kForgetPhone]]">
+        $i18n{multideviceForgetDeviceDisconnect}
+      </cr-button>
+    </div>
+    <cr-dialog id="forgetDeviceDialog">
+      <div slot="title">$i18n{multideviceForgetDevice}</div>
+      <div slot="body">
+        <div class="first">
+          $i18n{multideviceForgetDeviceDialogMessage}
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button"
+            on-click="onForgetDeviceDialogCancelClick_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="confirmButton"
+            class="action-button"
+            on-click="onForgetDeviceDialogConfirmClick_">
+          $i18n{multideviceForgetDeviceDisconnect}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="multidevice_subpage.js"></script>
+</dom-module>

@@ -1,0 +1,42 @@
+Hyphenation patterns for American English
+
+(more info about the licence to be added later)
+
+% This file has been renamed from ushyphmax.tex to hyph-en-us.tex in June 2008
+% for consistency with other files with hyphenation patterns in hyph-utf8 package.
+% No other changes made. See http://www.tug.org/tex-hyphen for more details.
+
+% ushyphmax.tex -- patterns for more hyphenation pattern memory (12000+).
+% Also known as ushyphen.max.
+%
+% version of 2005-05-30.
+% Patterns of March 1, 1990.
+%
+% Copyright (C) 1990, 2004, 2005 Gerard D.C. Kuiken.
+% Copying and distribution of this file, with or without modification,
+% are permitted in any medium without royalty provided the copyright
+% notice and this notice are preserved.
+%
+% Needs extended pattern memory.
+% Hyphenation trie becomes 7283 with 377 ops.
+%
+% These patterns are based on the Hyphenation Exception Log
+% published in TUGboat, Volume 10 (1989), No. 3, pp. 337-341,
+% and a large number of incorrectly hyphenated words not yet published.
+% If added to Liang's before the closing bracket } of \patterns,
+% the patterns run errorfree as far as known at this moment.
+%
+% These patterns find all admissible hyphens of the words in
+% the Exception Log.  ushyph2.tex is a smaller set.
+%
+% Please send bugs or suggestions to tex-live (at) tug.org.
+%
+% 2005-05-30 (karl): in the past, ushyphmax.tex was a file containing
+% only the additional patterns, without the \patterns command, etc.
+% This turned out not to be very useful, since in practice the TeX
+% distributions need one self-contained file for a language.  Therefore,
+% ushyphmax.tex now contains both the additional patterns from
+% Dr. Kuiken, and the original patterns and hyphenations from Knuth's
+% hyphen.tex.
+%
+% The Plain TeX hyphenation tables.

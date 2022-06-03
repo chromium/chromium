@@ -35,7 +35,7 @@ class RemoveNodePreservingChildrenCommand final : public CompositeEditCommand {
   RemoveNodePreservingChildrenCommand(Node*,
                                       ShouldAssumeContentIsAlwaysEditable);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

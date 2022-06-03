@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="cablev2_authenticator">
+
+    <!-- dist:onDemand="true" makes this a separately installed module.
+         dist:onDemand="false" would always install the module alongside the
+         rest of Chrome. -->
+    <dist:module
+        dist:onDemand="false"
+        dist:title="@string/cablev2_authenticator_module_title">
+        <!-- This will fuse the module into the base APK if a system image
+             APK is built from this bundle. -->
+        <dist:fusing dist:include="true" />
+    </dist:module>
+
+    <application/>
+</manifest>

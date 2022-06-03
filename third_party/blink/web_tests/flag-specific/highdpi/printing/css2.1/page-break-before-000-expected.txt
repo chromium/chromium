@@ -1,0 +1,7 @@
+This test should produce two pages of output. This text should be at the top of the first page.
+This text should be at the top of the second and final page.
+
+
+PASS: page number of "test1" is 0
+FAIL: expected page number of "test2" is 1. Was 0
+FAIL: expected number of pages is 2. Was 1

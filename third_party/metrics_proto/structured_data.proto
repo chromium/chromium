@@ -1,0 +1,79 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package metrics;
+
+// One structured metrics event, containing several hashed and unhashed metrics
+// related to a single event type, tied to a single pseudonymous user.
+//
+// Next tag: 5
+message StructuredEventProto {
+  // A per-client, per-profile, per-project ID that is used only for structured
+  // metrics. For projects recorded from Chrome OS's platform2 repository, this
+  // ID is device-wide, not per-profile. The ID is rotated at least every 90
+  // days.
+  optional fixed64 profile_event_id = 1;
+
+  // The first 8 bytes of the MD5 hash of the event's name as a string. Each
+  // name is defined in src/tools/metrics/structured/structured.xml, and this
+  // will be the hash of one of those.
+  optional fixed64 event_name_hash = 2;
+
+  // All metric values for this event. Each metric has two properties defined in
+  // structured.xml that determine what is recorded.
+  //
+  // 1. Metric name. This is a string, and the first 8 bytes of its MD5 hash is
+  //    recorded as name_hash.
+  //
+  // 2. Kind. Each metric can store three kinds of values.
+  //
+  //    - int64. The client supplies an int64 value for the metric, and that
+  //      value is recorded as-is in value_int64.
+  //
+  //    - string. The client supplies a string value for the metric, which is
+  //      recorded as-is in value_string. This is sometimes referred to as a
+  //      "raw string" to differentiate from the following.
+  //
+  //    - hashed-string. The client supplies an arbitrary string for the metric.
+  //      The string itself is not recorded, instead, value_hmac records the
+  //      first 8 bytes of:
+  //
+  //          HMAC_SHA256(concat(string, metric_name), event_key)
+  //
+  //      The event_key is a per-profile, per-client, per-project secret 32-byte
+  //      key used only for signing hashed values for this event. Keys should
+  //      never leave the device, and are rotated at least every 90 days.
+  message Metric {
+    optional fixed64 name_hash = 1;
+    oneof value {
+      fixed64 value_hmac = 2;
+      int64 value_int64 = 3;
+      string value_string = 4;
+    }
+  }
+  repeated Metric metrics = 3;
+
+  // Type of this event, which determines which log source the event is saved
+  // into. An event should have type RAW_STRING if and only if the event may
+  // contain raw string metrics, ie. strings that have not been HMAC'd. The
+  // UNKNOWN value is considered an error and should never be sent.
+  enum EventType {
+    UNKNOWN = 0;
+    REGULAR = 1;
+    RAW_STRING = 2;
+  }
+  optional EventType event_type = 4;
+}
+
+// The top-level proto for structured metrics. One StructuredDataProto is
+// uploaded per UMA upload containing structured metrics. Contains all
+// structured events for that upload, and any other metadata.
+message StructuredDataProto {
+  repeated StructuredEventProto events = 1;
+}

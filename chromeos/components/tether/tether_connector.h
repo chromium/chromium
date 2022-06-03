@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/network/network_connection_handler.h"
 
 namespace chromeos {
@@ -20,20 +19,23 @@ namespace tether {
 // the associated Wi-Fi network.
 class TetherConnector {
  public:
+  using StringErrorCallback =
+      NetworkConnectionHandler::TetherDelegate::StringErrorCallback;
+
   TetherConnector() {}
+
+  TetherConnector(const TetherConnector&) = delete;
+  TetherConnector& operator=(const TetherConnector&) = delete;
+
   virtual ~TetherConnector() {}
 
-  virtual void ConnectToNetwork(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback) = 0;
+  virtual void ConnectToNetwork(const std::string& tether_network_guid,
+                                base::OnceClosure success_callback,
+                                StringErrorCallback error_callback) = 0;
 
   // Returns whether the connection attempt was successfully canceled.
   virtual bool CancelConnectionAttempt(
       const std::string& tether_network_guid) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherConnector);
 };
 
 }  // namespace tether

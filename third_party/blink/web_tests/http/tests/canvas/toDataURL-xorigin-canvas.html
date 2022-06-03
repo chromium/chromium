@@ -15,7 +15,7 @@
         var canvas2d = document.createElement("canvas");
         var context2d = canvas2d.getContext("2d");
         context2d.drawImage(img, 0, 0);
-        assert_throws("SecurityError", () => {
+        assert_throws_dom("SecurityError", () => {
           canvas2d.toDataURL();
         }, "x-origin image should prevent calls to toDataURL() in 2d canvas");
 
@@ -23,7 +23,7 @@
           var canvasBitmap = document.createElement("canvas");
           var contextBitmap = canvasBitmap.getContext("bitmaprenderer");
           contextBitmap.transferFromImageBitmap(bitmap);
-          assert_throws("SecurityError", () => {
+          assert_throws_dom("SecurityError", () => {
             canvasBitmap.toDataURL();
           }, `x-origin image should prevent calls to toDataURL()
               in bitmaprenderer canvas`);

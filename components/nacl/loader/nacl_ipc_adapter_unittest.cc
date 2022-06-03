@@ -38,7 +38,7 @@ class NaClIPCAdapterTest : public testing::Test {
                                   base::ThreadTaskRunnerHandle::Get().get());
   }
   void TearDown() override {
-    sink_ = NULL;  // This pointer is actually owned by the IPCAdapter.
+    sink_ = nullptr;  // This pointer is actually owned by the IPCAdapter.
     adapter_.reset();
     // The adapter destructor has to post a task to destroy the Channel on the
     // IO thread. For the purposes of the test, we just need to make sure that
@@ -284,7 +284,7 @@ TEST_F(NaClIPCAdapterTest, ReadWithChannelError) {
         : SimpleThread("NaClIPCAdapterThread"),
           adapter_(adapter) {}
     void Run() override {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
       adapter_->OnChannelError();
     }
    private:

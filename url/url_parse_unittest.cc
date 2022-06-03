@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -374,8 +374,8 @@ static URLParseCase file_cases[] = {
 {"FiLe:c|",                  "FiLe", NULL, NULL, NULL,     -1, "c|",          NULL, NULL},
 {"FILE:/\\\\/server/file",   "FILE", NULL, NULL, "server", -1, "/file",       NULL, NULL},
 {"file://server/",           "file", NULL, NULL, "server", -1, "/",           NULL, NULL},
-{"file://localhost/c:/",     "file", NULL, NULL, NULL,     -1, "/c:/",        NULL, NULL},
-{"file://127.0.0.1/c|\\",    "file", NULL, NULL, NULL,     -1, "/c|\\",       NULL, NULL},
+{"file://localhost/c:/",     "file", NULL, NULL, "localhost", -1, "/c:/",     NULL, NULL},
+{"file://127.0.0.1/c|\\",    "file", NULL, NULL, "127.0.0.1", -1, "/c|\\",    NULL, NULL},
 {"file:/",                   "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
 {"file:",                    "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
   // If there is a Windows drive letter, treat any number of slashes as the
@@ -491,26 +491,26 @@ TEST(URLParser, ExtractFileName) {
   struct FileCase {
     const char* input;
     const char* expected;
-  } file_cases[] = {
-    {"http://www.google.com", NULL},
-    {"http://www.google.com/", ""},
-    {"http://www.google.com/search", "search"},
-    {"http://www.google.com/search/", ""},
-    {"http://www.google.com/foo/bar.html?baz=22", "bar.html"},
-    {"http://www.google.com/foo/bar.html#ref", "bar.html"},
-    {"http://www.google.com/search/;param", ""},
-    {"http://www.google.com/foo/bar.html;param#ref", "bar.html"},
-    {"http://www.google.com/foo/bar.html;foo;param#ref", "bar.html"},
-    {"http://www.google.com/foo/bar.html?query#ref", "bar.html"},
-    {"http://www.google.com/foo;/bar.html", "bar.html"},
-    {"http://www.google.com/foo;/", ""},
-    {"http://www.google.com/foo;", "foo"},
-    {"http://www.google.com/;", ""},
-    {"http://www.google.com/foo;bar;html", "foo"},
+  } extract_cases[] = {
+      {"http://www.google.com", nullptr},
+      {"http://www.google.com/", ""},
+      {"http://www.google.com/search", "search"},
+      {"http://www.google.com/search/", ""},
+      {"http://www.google.com/foo/bar.html?baz=22", "bar.html"},
+      {"http://www.google.com/foo/bar.html#ref", "bar.html"},
+      {"http://www.google.com/search/;param", ""},
+      {"http://www.google.com/foo/bar.html;param#ref", "bar.html"},
+      {"http://www.google.com/foo/bar.html;foo;param#ref", "bar.html"},
+      {"http://www.google.com/foo/bar.html?query#ref", "bar.html"},
+      {"http://www.google.com/foo;/bar.html", "bar.html"},
+      {"http://www.google.com/foo;/", ""},
+      {"http://www.google.com/foo;", "foo"},
+      {"http://www.google.com/;", ""},
+      {"http://www.google.com/foo;bar;html", "foo"},
   };
 
-  for (size_t i = 0; i < base::size(file_cases); i++) {
-    const char* url = file_cases[i].input;
+  for (size_t i = 0; i < base::size(extract_cases); i++) {
+    const char* url = extract_cases[i].input;
     int len = static_cast<int>(strlen(url));
 
     Parsed parsed;
@@ -519,7 +519,7 @@ TEST(URLParser, ExtractFileName) {
     Component file_name;
     ExtractFileName(url, parsed.path, &file_name);
 
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].expected, file_name));
+    EXPECT_TRUE(ComponentMatches(url, extract_cases[i].expected, file_name));
   }
 }
 

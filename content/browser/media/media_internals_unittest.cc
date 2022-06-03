@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -48,7 +48,7 @@ class MediaInternalsTestBase {
 
  protected:
   // Extracts and deserializes the JSON update data; merges into |update_data_|.
-  virtual void UpdateCallbackImpl(const base::string16& update) {
+  virtual void UpdateCallbackImpl(const std::u16string& update) {
     // Each update string looks like "<JavaScript Function Name>({<JSON>});"
     // or for video capabilities: "<JavaScript Function Name>([{<JSON>}]);".
     // In the second case we will be able to extract the dictionary if it is the
@@ -68,9 +68,9 @@ class MediaInternalsTestBase {
   }
 
   void ExpectInt(const std::string& key, int expected_value) const {
-    int actual_value = 0;
-    ASSERT_TRUE(update_data_.GetInteger(key, &actual_value));
-    EXPECT_EQ(expected_value, actual_value);
+    absl::optional<int> actual_value = update_data_.FindIntKey(key);
+    ASSERT_TRUE(actual_value);
+    EXPECT_EQ(expected_value, *actual_value);
   }
 
   void ExpectString(const std::string& key,
@@ -88,8 +88,8 @@ class MediaInternalsTestBase {
                            const base::ListValue& expected_list) const {
     const base::ListValue* actual_list;
     ASSERT_TRUE(update_data_.GetList(key, &actual_list));
-    const size_t expected_size = expected_list.GetSize();
-    const size_t actual_size = actual_list->GetSize();
+    const size_t expected_size = expected_list.GetList().size();
+    const size_t actual_size = actual_list->GetList().size();
     ASSERT_EQ(expected_size, actual_size);
     for (size_t i = 0; i < expected_size; ++i) {
       std::string expected_value, actual_value;
@@ -166,11 +166,11 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media::VideoCaptureDeviceDescriptor descriptor;
   descriptor.device_id = "dummy";
   descriptor.set_display_name("dummy");
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   descriptor.capture_api = media::VideoCaptureApi::MACOSX_AVFOUNDATION;
 #elif defined(OS_WIN)
   descriptor.capture_api = media::VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   descriptor.device_id = "/dev/dummy";
   descriptor.capture_api = media::VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
 #elif defined(OS_ANDROID)
@@ -188,20 +188,20 @@ TEST_F(MediaInternalsVideoCaptureDeviceTest,
   media_internals()->UpdateVideoCaptureDeviceCapabilities(
       descriptors_and_formats);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ExpectString("id", "/dev/dummy");
 #else
   ExpectString("id", "dummy");
 #endif
   ExpectString("name", "dummy");
   base::ListValue expected_list;
-  expected_list.AppendString(media::VideoCaptureFormat::ToString(format_hd));
+  expected_list.Append(media::VideoCaptureFormat::ToString(format_hd));
   ExpectListOfStrings("formats", expected_list);
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ExpectString("captureApi", "V4L2 SPLANE");
 #elif defined(OS_WIN)
   ExpectString("captureApi", "Direct Show");
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   ExpectString("captureApi", "AV Foundation");
 #elif defined(OS_ANDROID)
   ExpectString("captureApi", "Camera API2 Legacy");
@@ -308,8 +308,8 @@ INSTANTIATE_TEST_SUITE_P(
 namespace {
 
 // Test page titles.
-const char kTestTitle1[] = "Test Title 1";
-const char kTestTitle2[] = "Test Title 2";
+const char16_t kTestTitle1[] = u"Test Title 1";
+const char16_t kTestTitle2[] = u"Test Title 2";
 
 }  // namespace
 
@@ -339,7 +339,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   }
 
  protected:
-  void UpdateCallbackImpl(const base::string16& update) override {
+  void UpdateCallbackImpl(const std::u16string& update) override {
     base::AutoLock auto_lock(lock_);
     MediaInternalsTestBase::UpdateCallbackImpl(update);
     call_count_++;
@@ -379,7 +379,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
 
     {
       base::AutoLock auto_lock(lock_);
-      if (!update_data_.empty() && call_count_ == wanted_call_count_)
+      if (!update_data_.DictEmpty() && call_count_ == wanted_call_count_)
         return;
     }
 
@@ -415,8 +415,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
 TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Create a test media session and request audio focus.
   std::unique_ptr<WebContents> web_contents1 = CreateTestWebContents();
-  static_cast<TestWebContents*>(web_contents1.get())
-      ->SetTitle(base::UTF8ToUTF16(kTestTitle1));
+  static_cast<TestWebContents*>(web_contents1.get())->SetTitle(kTestTitle1);
   MediaSessionImpl* media_session1 = MediaSessionImpl::Get(web_contents1.get());
   media_session1->RequestSystemAudioFocus(AudioFocusType::kGain);
   WaitForCallbackCount(1);
@@ -438,8 +437,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
 
   // Create another media session.
   std::unique_ptr<WebContents> web_contents2 = CreateTestWebContents();
-  static_cast<TestWebContents*>(web_contents2.get())
-      ->SetTitle(base::UTF8ToUTF16(kTestTitle2));
+  static_cast<TestWebContents*>(web_contents2.get())->SetTitle(kTestTitle2);
   MediaSessionImpl* media_session2 = MediaSessionImpl::Get(web_contents2.get());
   media_session2->RequestSystemAudioFocus(
       AudioFocusType::kGainTransientMayDuck);

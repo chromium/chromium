@@ -44,7 +44,7 @@ template("crashpad_fuzzer_test") {
     if (defined(invoker.seed_corpus)) {
       not_needed(invoker, [ "seed_corpus" ])
     }
-  } else if (crashpad_is_in_chromium) {
+  } else if (crashpad_is_in_chromium && use_fuzzing_engine) {
     # Append "crashpad_" to the beginning of the fuzzer's name to make it easier
     # in Chromium to recognize where fuzzer came from.
     forward_variables_from(invoker, "*")

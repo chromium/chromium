@@ -8,9 +8,6 @@
 
 #include "base/mac/bundle_locations.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
-#include "content/browser/sandbox_parameters_mac.h"  // nogncheck
-#include "net/test/test_data_directory.h"
 
 namespace {
 
@@ -131,13 +128,9 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 
 namespace content {
 
-void ShellBrowserMainParts::PreMainMessageLoopStart() {
+void ShellBrowserMainParts::PreCreateMainMessageLoop() {
   base::scoped_nsobject<NSMenu> main_menu = BuildMainMenu();
   [[NSApplication sharedApplication] setMainMenu:main_menu];
-
-  // Expand the network service sandbox to allow reading the test TLS
-  // certificates.
-  SetNetworkTestCertsDirectoryForTesting(net::GetTestCertsDirectory());
 }
 
 }  // namespace content

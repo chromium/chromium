@@ -25,9 +25,11 @@
 #include "absl/container/btree_map.h"
 #include "absl/container/btree_set.h"
 #include "absl/container/flat_hash_set.h"
+#include "absl/strings/cord.h"
 #include "absl/time/time.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 // Like remove_const but propagates the removal through std::pair.
@@ -99,6 +101,16 @@ struct Generator<std::string> {
   }
 };
 
+template <>
+struct Generator<Cord> {
+  int maxval;
+  explicit Generator(int m) : maxval(m) {}
+  Cord operator()(int i) const {
+    char buf[16];
+    return Cord(GenerateDigits(buf, i, maxval));
+  }
+};
+
 template <typename T, typename U>
 struct Generator<std::pair<T, U> > {
   Generator<typename remove_pair_const<T>::type> tgen;
@@ -148,6 +160,7 @@ std::vector<V> GenerateValuesWithSeed(int n, int maxval, int seed) {
 }
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_BTREE_TEST_H_

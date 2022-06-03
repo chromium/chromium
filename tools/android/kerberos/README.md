@@ -34,7 +34,7 @@ $CHROMIUM_SRC/tools/android/kerberos/negotiate_test_server.py
 
     The policies to set are:
 
-     *   AuthServerWhitelist: `*`
+     *   AuthServerAllowlist: `*`
      *   AuthAndroidNegotiateAccountType: `org.chromium.tools.SpnegoAuthenticator`
 
     To set them you have to be able to set restrictions for apps on the device.

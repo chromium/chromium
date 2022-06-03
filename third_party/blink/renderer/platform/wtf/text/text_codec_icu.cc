@@ -32,7 +32,7 @@
 #include <unicode/ucnv_cb.h>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -326,7 +326,7 @@ void TextCodecICU::CreateICUConverter() const {
   DLOG_IF(ERROR, err == U_AMBIGUOUS_ALIAS_WARNING)
       << "ICU ambiguous alias warning for encoding: " << encoding_.GetName();
   if (converter_icu_)
-    ucnv_setFallback(converter_icu_, TRUE);
+    ucnv_setFallback(converter_icu_, true);
 }
 
 int TextCodecICU::DecodeToBuffer(UChar* target,
@@ -431,7 +431,7 @@ String TextCodecICU::Decode(const char* bytes,
   // ICU decodes it as U+E5E5.
   if (!strcmp(encoding_.GetName(), "GBK")) {
     if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
-      resultString.Replace(0xE5E5, ideographicSpaceCharacter);
+      resultString.Replace(0xE5E5, kIdeographicSpaceCharacter);
     // Make GBK compliant to the encoding spec and align with GB18030
     resultString.Replace(0x01F9, 0xE7C8);
     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3

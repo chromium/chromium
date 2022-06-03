@@ -7,7 +7,8 @@
 #include <stddef.h>
 #include <winioctl.h>
 
-#include "chrome/utility/image_writer/error_messages.h"
+#include "base/logging.h"
+#include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {

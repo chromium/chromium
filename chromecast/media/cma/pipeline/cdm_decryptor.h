@@ -15,6 +15,10 @@ namespace media {
 class CdmDecryptor : public StreamDecryptor {
  public:
   explicit CdmDecryptor(bool clear_buffer_needed);
+
+  CdmDecryptor(const CdmDecryptor&) = delete;
+  CdmDecryptor& operator=(const CdmDecryptor&) = delete;
+
   ~CdmDecryptor() override;
 
   // StreamDecryptor implementation:
@@ -30,7 +34,6 @@ class CdmDecryptor : public StreamDecryptor {
 
   base::WeakPtr<CdmDecryptor> weak_this_;
   base::WeakPtrFactory<CdmDecryptor> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(CdmDecryptor);
 };
 
 }  // namespace media

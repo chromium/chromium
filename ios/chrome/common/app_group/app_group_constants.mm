@@ -4,7 +4,7 @@
 
 #include "ios/chrome/common/app_group/app_group_constants.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
@@ -17,7 +17,7 @@ namespace app_group {
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
-const char kChromeExtensionFieldTrialPreference[] = "Extension.FieldTrial";
+NSString* const kChromeExtensionFieldTrialPreference = @"Extension.FieldTrial";
 
 const char kChromeAppGroupCommandPreference[] =
     "GroupApp.ChromeAppGroupCommand";
@@ -58,6 +58,8 @@ NSString* const kOpenCommandSourceTodayExtension = @"ChromeTodayExtension";
 NSString* const kOpenCommandSourceContentExtension = @"ChromeContentExtension";
 NSString* const kOpenCommandSourceSearchExtension = @"ChromeSearchExtension";
 NSString* const kOpenCommandSourceShareExtension = @"ChromeShareExtension";
+NSString* const kOpenCommandSourceCredentialsExtension =
+    @"ChromeCredentialsExtension";
 
 NSString* const kSuggestedItems = @"SuggestedItems";
 
@@ -136,6 +138,16 @@ NSURL* ContentWidgetFaviconsFolder() {
       [chromeURL URLByAppendingPathComponent:@"ContentWidgetFavicons"
                                  isDirectory:YES];
   return contentWidgetFaviconsURL;
+}
+
+NSURL* CrashpadFolder() {
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* crashpadURL = [chromeURL URLByAppendingPathComponent:@"Crashpad"
+                                                  isDirectory:YES];
+  return crashpadURL;
 }
 
 }  // namespace app_group

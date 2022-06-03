@@ -84,7 +84,7 @@ Polymer({
      */
     currentEditIndex: {
       type: Number,
-      value: function() {
+      value() {
         return -1;
       }
     },
@@ -96,7 +96,7 @@ Polymer({
      */
     nodeCount: {
       type: Number,
-      value: function() {
+      value() {
         return 0;
       }
     },
@@ -107,7 +107,7 @@ Polymer({
      */
     nodes: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       }
     },
@@ -119,7 +119,7 @@ Polymer({
      */
     nodeTypeOptions: {
       type: Array,
-      value: function() {
+      value() {
         return [
           {name: 'Headphones', type: AudioNodeType.HEADPHONE},
           {name: 'Mic', type: AudioNodeType.MIC},
@@ -138,7 +138,7 @@ Polymer({
     },
   },
 
-  ready: function() {
+  ready() {
     sendWithPromise('requestAudioNodes').then(
         this.updateAudioNodes_.bind(this));
   },
@@ -146,7 +146,7 @@ Polymer({
   /**
    * Adds a new node with default settings to the list of nodes.
    */
-  appendNewNode: function() {
+  appendNewNode() {
     var newNode = new AudioNode();
     newNode.id += this.nodeCount;
     this.nodeCount++;
@@ -158,7 +158,7 @@ Polymer({
    * @param {{model: {index: number}}} e Event with a model containing
    *     the index in |nodes| to add.
    */
-  insertAudioNode: function(e) {
+  insertAudioNode(e) {
     // Create a new audio node and add all the properties from |nodes[i]|.
     var info = this.nodes[e.model.index];
     chrome.send('insertAudioNode', [info]);
@@ -168,7 +168,7 @@ Polymer({
    * This adds/modifies the audio node |nodes[currentEditIndex]| to/from the
    * AudioNodeList.
    */
-  insertEditedAudioNode: function() {
+  insertEditedAudioNode() {
     // Insert a new node or update an existing node using all the properties
     // in |node|.
     var node = this.nodes[this.currentEditIndex];
@@ -181,7 +181,7 @@ Polymer({
    * @param {{model: {index: number}}} e Event with a model containing
    *     the index in |nodes| to remove.
    */
-  removeAudioNode: function(e) {
+  removeAudioNode(e) {
     var info = this.nodes[e.model.index];
     chrome.send('removeAudioNode', [info.id]);
   },
@@ -192,7 +192,7 @@ Polymer({
    * @param {Event} event Contains event data. |event.model.index| is the index
    *     of the item which the target is contained in.
    */
-  copyDevice: function(event) {
+  copyDevice(event) {
     // Create a shallow copy of the selected device.
     var newNode = new AudioNode();
     Object.assign(newNode, this.nodes[event.model.index]);
@@ -209,7 +209,7 @@ Polymer({
    * @param {Event} event Contains event data. |event.model.index| is the index
    *     of the item which the target is contained in.
    */
-  showEditDialog: function(event) {
+  showEditDialog(event) {
     var index = event.model.index;
     this.currentEditIndex = index;
     this.currentEditableObject = this.nodes[index];
@@ -221,7 +221,7 @@ Polymer({
    * @param {!Array<!AudioNode>} nodeList A list of audio nodes.
    * @private
    */
-  updateAudioNodes_: function(nodeList) {
+  updateAudioNodes_(nodeList) {
     /** @type {!Array<!AudioNode>} */ var newNodeList = [];
     for (var i = 0; i < nodeList.length; ++i) {
       // Create a new audio node and add all the properties from |nodeList[i]|.

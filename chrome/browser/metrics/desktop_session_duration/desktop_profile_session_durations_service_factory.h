@@ -26,6 +26,11 @@ class DesktopProfileSessionDurationsServiceFactory
 
   static DesktopProfileSessionDurationsServiceFactory* GetInstance();
 
+  DesktopProfileSessionDurationsServiceFactory(
+      const DesktopProfileSessionDurationsServiceFactory&) = delete;
+  DesktopProfileSessionDurationsServiceFactory& operator=(
+      const DesktopProfileSessionDurationsServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       DesktopProfileSessionDurationsServiceFactory>;
@@ -38,8 +43,6 @@ class DesktopProfileSessionDurationsServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopProfileSessionDurationsServiceFactory);
 };
 
 }  // namespace metrics

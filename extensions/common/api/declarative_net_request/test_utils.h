@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "base/values.h"
+#include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/url_pattern.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
-class ListValue;
-class Value;
 }  // namespace base
 
 namespace extensions {
@@ -38,14 +38,18 @@ struct TestRuleCondition : public DictionarySource {
   TestRuleCondition(const TestRuleCondition&);
   TestRuleCondition& operator=(const TestRuleCondition&);
 
-  base::Optional<std::string> url_filter;
-  base::Optional<std::string> regex_filter;
-  base::Optional<bool> is_url_filter_case_sensitive;
-  base::Optional<std::vector<std::string>> domains;
-  base::Optional<std::vector<std::string>> excluded_domains;
-  base::Optional<std::vector<std::string>> resource_types;
-  base::Optional<std::vector<std::string>> excluded_resource_types;
-  base::Optional<std::string> domain_type;
+  absl::optional<std::string> url_filter;
+  absl::optional<std::string> regex_filter;
+  absl::optional<bool> is_url_filter_case_sensitive;
+  absl::optional<std::vector<std::string>> domains;
+  absl::optional<std::vector<std::string>> excluded_domains;
+  absl::optional<std::vector<std::string>> request_methods;
+  absl::optional<std::vector<std::string>> excluded_request_methods;
+  absl::optional<std::vector<std::string>> resource_types;
+  absl::optional<std::vector<std::string>> excluded_resource_types;
+  absl::optional<std::vector<int>> tab_ids;
+  absl::optional<std::vector<int>> excluded_tab_ids;
+  absl::optional<std::string> domain_type;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -56,8 +60,9 @@ struct TestRuleQueryKeyValue : public DictionarySource {
   TestRuleQueryKeyValue(const TestRuleQueryKeyValue&);
   TestRuleQueryKeyValue& operator=(const TestRuleQueryKeyValue&);
 
-  base::Optional<std::string> key;
-  base::Optional<std::string> value;
+  absl::optional<std::string> key;
+  absl::optional<std::string> value;
+  absl::optional<bool> replace_only;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -68,8 +73,8 @@ struct TestRuleQueryTransform : public DictionarySource {
   TestRuleQueryTransform(const TestRuleQueryTransform&);
   TestRuleQueryTransform& operator=(const TestRuleQueryTransform&);
 
-  base::Optional<std::vector<std::string>> remove_params;
-  base::Optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
+  absl::optional<std::vector<std::string>> remove_params;
+  absl::optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -80,15 +85,15 @@ struct TestRuleTransform : public DictionarySource {
   TestRuleTransform(const TestRuleTransform&);
   TestRuleTransform& operator=(const TestRuleTransform&);
 
-  base::Optional<std::string> scheme;
-  base::Optional<std::string> host;
-  base::Optional<std::string> port;
-  base::Optional<std::string> path;
-  base::Optional<std::string> query;
-  base::Optional<TestRuleQueryTransform> query_transform;
-  base::Optional<std::string> fragment;
-  base::Optional<std::string> username;
-  base::Optional<std::string> password;
+  absl::optional<std::string> scheme;
+  absl::optional<std::string> host;
+  absl::optional<std::string> port;
+  absl::optional<std::string> path;
+  absl::optional<std::string> query;
+  absl::optional<TestRuleQueryTransform> query_transform;
+  absl::optional<std::string> fragment;
+  absl::optional<std::string> username;
+  absl::optional<std::string> password;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -99,10 +104,25 @@ struct TestRuleRedirect : public DictionarySource {
   TestRuleRedirect(const TestRuleRedirect&);
   TestRuleRedirect& operator=(const TestRuleRedirect&);
 
-  base::Optional<std::string> extension_path;
-  base::Optional<TestRuleTransform> transform;
-  base::Optional<std::string> url;
-  base::Optional<std::string> regex_substitution;
+  absl::optional<std::string> extension_path;
+  absl::optional<TestRuleTransform> transform;
+  absl::optional<std::string> url;
+  absl::optional<std::string> regex_substitution;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
+};
+
+struct TestHeaderInfo : public DictionarySource {
+  TestHeaderInfo(std::string header,
+                 std::string operation,
+                 absl::optional<std::string> value);
+  ~TestHeaderInfo() override;
+  TestHeaderInfo(const TestHeaderInfo&);
+  TestHeaderInfo& operator=(const TestHeaderInfo&);
+
+  absl::optional<std::string> header;
+  absl::optional<std::string> operation;
+  absl::optional<std::string> value;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -113,9 +133,10 @@ struct TestRuleAction : public DictionarySource {
   TestRuleAction(const TestRuleAction&);
   TestRuleAction& operator=(const TestRuleAction&);
 
-  base::Optional<std::string> type;
-  base::Optional<std::vector<std::string>> remove_headers_list;
-  base::Optional<TestRuleRedirect> redirect;
+  absl::optional<std::string> type;
+  absl::optional<std::vector<TestHeaderInfo>> request_headers;
+  absl::optional<std::vector<TestHeaderInfo>> response_headers;
+  absl::optional<TestRuleRedirect> redirect;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -126,50 +147,112 @@ struct TestRule : public DictionarySource {
   TestRule(const TestRule&);
   TestRule& operator=(const TestRule&);
 
-  base::Optional<int> id;
-  base::Optional<int> priority;
-  base::Optional<TestRuleCondition> condition;
-  base::Optional<TestRuleAction> action;
+  absl::optional<int> id;
+  absl::optional<int> priority;
+  absl::optional<TestRuleCondition> condition;
+  absl::optional<TestRuleAction> action;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
 
 // Helper function to build a generic TestRule.
-TestRule CreateGenericRule();
+TestRule CreateGenericRule(int id = kMinValidID);
+
+// Helper function to build a generic regex TestRule.
+TestRule CreateRegexRule(int id = kMinValidID);
+
+// Bitmasks to configure the extension under test.
+enum ConfigFlag {
+  kConfig_None = 0,
+
+  // Whether a background script ("background.js") will be persisted for the
+  // extension. Clients can listen in to the "ready" message from the background
+  // page to detect its loading.
+  kConfig_HasBackgroundScript = 1 << 0,
+
+  // Whether the extension has the declarativeNetRequestFeedback permission.
+  kConfig_HasFeedbackPermission = 1 << 1,
+
+  // Whether the extension has the activeTab permission.
+  kConfig_HasActiveTab = 1 << 2,
+
+  // Whether the "declarative_net_request" manifest key should be omitted.
+  kConfig_OmitDeclarativeNetRequestKey = 1 << 3,
+
+  // Whether the "declarativeNetRequest" permission should be omitted.
+  kConfig_OmitDeclarativeNetRequestPermission = 1 << 4,
+
+  // Whether the "declarativeNetRequestWithHostAccess" permission should be
+  // included.
+  kConfig_HasDelarativeNetRequestWithHostAccessPermission = 1 << 5,
+};
+
+// Describes a single extension ruleset.
+struct TestRulesetInfo {
+  TestRulesetInfo(const std::string& manifest_id_and_path,
+                  const base::Value& rules_value,
+                  bool enabled = true);
+  TestRulesetInfo(const std::string& manifest_id,
+                  const std::string& relative_file_path,
+                  const base::Value& rules_value,
+                  bool enabled = true);
+  TestRulesetInfo(const TestRulesetInfo&);
+  TestRulesetInfo& operator=(const TestRulesetInfo&);
+
+  // Unique ID for the ruleset.
+  const std::string manifest_id;
+
+  // File path relative to the extension directory.
+  const std::string relative_file_path;
+
+  // The base::Value corresponding to the rules in the ruleset.
+  const base::Value rules_value;
+
+  // Whether the ruleset is enabled by default.
+  const bool enabled;
+
+  // Returns the corresponding value to be specified in the manifest for the
+  // ruleset.
+  std::unique_ptr<base::DictionaryValue> GetManifestValue() const;
+};
 
 // Helper to build an extension manifest which uses the
 // kDeclarativeNetRequestKey manifest key. |hosts| specifies the host
-// permissions to grant. If |has_background_script| is true, the manifest
-// returned will have "background.js" as its background script.
+// permissions to grant. |flags| is a bitmask of ConfigFlag to configure the
+// extension. |ruleset_info| specifies the static rulesets for the extension.
 std::unique_ptr<base::DictionaryValue> CreateManifest(
-    const std::string& json_rules_filename,
+    const std::vector<TestRulesetInfo>& ruleset_info,
     const std::vector<std::string>& hosts = {},
-    bool has_background_script = false);
+    unsigned flags = ConfigFlag::kConfig_None,
+    const std::string& extension_name = "Test Extension");
 
 // Returns a ListValue corresponding to a vector of strings.
 std::unique_ptr<base::ListValue> ToListValue(
     const std::vector<std::string>& vec);
 
-// Writes the declarative |rules| in the given |extension_dir| together with the
-// manifest file. |hosts| specifies the host permissions, the extensions should
-// have. If |has_background_script| is true, a background script
-// ("background.js") will also be persisted for the extension. Clients can
-// listen in to the "ready" message from the background page to detect its
-// loading.
+// Returns a ListValue corresponding to a vector of TestRules.
+std::unique_ptr<base::ListValue> ToListValue(
+    const std::vector<TestRule>& rules);
+
+// Writes the rulesets specified in |ruleset_info| in the given |extension_dir|
+// together with the manifest file. |hosts| specifies the host permissions, the
+// extensions should have. |flags| is a bitmask of ConfigFlag to configure the
+// extension.
+void WriteManifestAndRulesets(
+    const base::FilePath& extension_dir,
+    const std::vector<TestRulesetInfo>& ruleset_info,
+    const std::vector<std::string>& hosts,
+    unsigned flags = ConfigFlag::kConfig_None,
+    const std::string& extension_name = "Test Extension");
+
+// Specialization of WriteManifestAndRulesets above for an extension with a
+// single static ruleset.
 void WriteManifestAndRuleset(
     const base::FilePath& extension_dir,
-    const base::FilePath::CharType* json_rules_filepath,
-    const std::string& json_rules_filename,
-    const std::vector<TestRule>& rules,
+    const TestRulesetInfo& ruleset_info,
     const std::vector<std::string>& hosts,
-    bool has_background_script = false);
-void WriteManifestAndRuleset(
-    const base::FilePath& extension_dir,
-    const base::FilePath::CharType* json_rules_filepath,
-    const std::string& json_rules_filename,
-    const base::Value& rules,
-    const std::vector<std::string>& hosts,
-    bool has_background_script = false);
+    unsigned flags = ConfigFlag::kConfig_None,
+    const std::string& extension_name = "Test Extension");
 
 }  // namespace declarative_net_request
 }  // namespace extensions

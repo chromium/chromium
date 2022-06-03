@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
@@ -62,15 +62,14 @@ bool OncCertificatePattern::Empty() const {
 bool OncCertificatePattern::Matches(
     const net::X509Certificate& certificate,
     const std::string& pem_encoded_issuer_ca) const {
-  if (!issuer_pattern_.Empty() || !subject_pattern_.Empty()) {
-    if (!issuer_pattern_.Empty() &&
-        !issuer_pattern_.Matches(certificate.issuer()))
-      return false;
-    if (!subject_pattern_.Empty() &&
-        !subject_pattern_.Matches(certificate.subject()))
-      return false;
+  if (!issuer_pattern_.Empty() &&
+      !issuer_pattern_.Matches(certificate.issuer())) {
+    return false;
   }
-
+  if (!subject_pattern_.Empty() &&
+      !subject_pattern_.Matches(certificate.subject())) {
+    return false;
+  }
   if (!pem_encoded_issuer_cas_.empty() &&
       !base::Contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
     return false;
@@ -79,7 +78,7 @@ bool OncCertificatePattern::Matches(
 }
 
 // static
-base::Optional<OncCertificatePattern>
+absl::optional<OncCertificatePattern>
 OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
   // All of these are optional.
   const base::Value* pem_encoded_issuer_cas_value = dict.FindKeyOfType(
@@ -88,7 +87,7 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
   if (pem_encoded_issuer_cas_value &&
       !GetAsListOfStrings(*pem_encoded_issuer_cas_value,
                           &pem_encoded_issuer_cas)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const base::Value* enrollment_uri_list_value = dict.FindKeyOfType(
@@ -96,7 +95,7 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
   std::vector<std::string> enrollment_uri_list;
   if (enrollment_uri_list_value &&
       !GetAsListOfStrings(*enrollment_uri_list_value, &enrollment_uri_list)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto issuer_pattern =

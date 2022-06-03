@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//ui/ozone/ozone.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
-jumbo_component("x11") {
+component("x11") {
   output_name = "x11_events_platform"
 
   sources = [
@@ -20,13 +20,12 @@ jumbo_component("x11") {
 
   defines = [ "EVENTS_IMPLEMENTATION" ]
 
-  configs += [ "//build/config/linux:x11" ]
-
   public_deps = [
     "//ui/events",
     "//ui/events:events_base",
     "//ui/events/devices",
     "//ui/events/devices/x11",
+    "//ui/events/keycodes:x11",
     "//ui/events/platform",
     "//ui/events/x",
     "//ui/gfx",
@@ -35,26 +34,29 @@ jumbo_component("x11") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
+    "//ui/base:features",
+    "//ui/events/keycodes:x11",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/events/ozone" ]
   }
 
-  if (use_x11) {
+  if (use_glib) {
     sources += [
-      "x11_event_source_glib.cc",
-      "x11_event_source_glib.h",
+      "x11_event_watcher_glib.cc",
+      "x11_event_watcher_glib.h",
     ]
-
     configs += [ "//build/config/linux:glib" ]
   } else {
-    assert(ozone_platform_x11)
     sources += [
-      "x11_event_source_default.cc",
-      "x11_event_source_default.h",
+      "x11_event_watcher_fdwatch.cc",
+      "x11_event_watcher_fdwatch.h",
     ]
+  }
 
-    deps += [ "//ui/events/keycodes:x11" ]
+  if (use_ozone) {
+    deps += [ "//ui/base:features" ]
   }
 }

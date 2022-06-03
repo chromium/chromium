@@ -10,7 +10,8 @@ import static org.hamcrest.Matchers.not;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,7 @@ import java.util.Set;
 /**
  * Tests the object registry, which maintains bidirectional object/ID mappings.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public final class RemoteObjectRegistryTest {
     @Test
     public void testMaintainsRetainingSet() {
@@ -37,7 +38,7 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
+        int id = registry.getObjectId(o, null);
         Assert.assertSame(o, registry.getObjectById(id));
     }
 
@@ -47,8 +48,8 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
-        Assert.assertEquals(id, registry.getObjectId(o));
+        int id = registry.getObjectId(o, null);
+        Assert.assertEquals(id, registry.getObjectId(o, null));
     }
 
     @Test
@@ -57,9 +58,9 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
-        registry.removeObjectById(id);
-        int id2 = registry.getObjectId(o);
+        int id = registry.getObjectId(o, null);
+        registry.unrefObjectById(id);
+        int id2 = registry.getObjectId(o, null);
         Assert.assertSame(o, registry.getObjectById(id2));
     }
 

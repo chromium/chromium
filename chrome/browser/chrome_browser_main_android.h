@@ -5,15 +5,19 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 
-#include "base/macros.h"
 #include "chrome/browser/android/chrome_backup_watcher.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile_manager_android.h"
 
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsAndroid(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsAndroid(content::MainFunctionParams parameters,
                                 StartupData* startup_data);
+
+  ChromeBrowserMainPartsAndroid(const ChromeBrowserMainPartsAndroid&) = delete;
+  ChromeBrowserMainPartsAndroid& operator=(
+      const ChromeBrowserMainPartsAndroid&) = delete;
+
   ~ChromeBrowserMainPartsAndroid() override;
 
   // content::BrowserMainParts overrides.
@@ -29,8 +33,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  private:
   std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsAndroid);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_

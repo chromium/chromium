@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -17,14 +18,14 @@ namespace blink {
 
 namespace {
 
-base::Optional<float> CalculateSpaceNeeded(const float destination,
+absl::optional<float> CalculateSpaceNeeded(const float destination,
                                            const float source) {
   DCHECK_GT(source, 0);
   DCHECK_GT(destination, 0);
 
   float repeat_tiles_count = floorf(destination / source);
   if (!repeat_tiles_count)
-    return base::nullopt;
+    return absl::nullopt;
 
   float space = destination;
   space -= source * repeat_tiles_count;
@@ -38,11 +39,9 @@ struct TileParameters {
   float spacing;
 };
 
-base::Optional<TileParameters> ComputeTileParameters(
+absl::optional<TileParameters> ComputeTileParameters(
     ENinePieceImageRule tile_rule,
-    float dst_pos,
     float dst_extent,
-    float src_pos,
     float src_extent,
     float in_scale_factor) {
   switch (tile_rule) {
@@ -50,91 +49,119 @@ base::Optional<TileParameters> ComputeTileParameters(
       float repetitions =
           std::max(1.0f, roundf(dst_extent / (src_extent * in_scale_factor)));
       float scale_factor = dst_extent / (src_extent * repetitions);
-      return TileParameters{scale_factor, src_pos * scale_factor, 0};
+      return TileParameters{scale_factor, 0, 0};
     }
     case kRepeatImageRule: {
       float scaled_tile_extent = src_extent * in_scale_factor;
       // We want to construct the phase such that the pattern is centered (when
       // stretch is not set for a particular rule).
-      float phase = src_pos * in_scale_factor;
-      phase -= (dst_extent - scaled_tile_extent) / 2;
+      float phase = (dst_extent - scaled_tile_extent) / 2;
       return TileParameters{in_scale_factor, phase, 0};
     }
     case kSpaceImageRule: {
-      base::Optional<float> spacing =
+      absl::optional<float> spacing =
           CalculateSpaceNeeded(dst_extent, src_extent);
       if (!spacing)
-        return base::nullopt;
-      return TileParameters{1, src_pos - *spacing, *spacing};
+        return absl::nullopt;
+      return TileParameters{1, *spacing, *spacing};
     }
     case kStretchImageRule:
-      return TileParameters{in_scale_factor, src_pos * in_scale_factor, 0};
+      return TileParameters{in_scale_factor, 0, 0};
     default:
       NOTREACHED();
   }
-  return base::nullopt;
+  return absl::nullopt;
+}
+
+bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {
+  // Corner pieces shouldn't be tiled.
+  if (draw_info.is_corner_piece)
+    return false;
+  // If we're supposed to stretch in both dimensions, we can skip tiling
+  // calculations.
+  if (draw_info.tile_rule.horizontal == kStretchImageRule &&
+      draw_info.tile_rule.vertical == kStretchImageRule)
+    return false;
+  return true;
 }
 
 void PaintPieces(GraphicsContext& context,
                  const PhysicalRect& border_image_rect,
                  const ComputedStyle& style,
+                 const Document& document,
                  const NinePieceImage& nine_piece_image,
                  Image* image,
-                 IntSize image_size,
-                 bool include_logical_left_edge,
-                 bool include_logical_right_edge) {
-  IntRectOutsets border_widths(style.BorderTopWidth(), style.BorderRightWidth(),
-                               style.BorderBottomWidth(),
-                               style.BorderLeftWidth());
+                 const FloatSize& unzoomed_image_size,
+                 PhysicalBoxSides sides_to_include) {
+  // |image_size| is in the image's native resolution and |slice_scale| defines
+  // the effective size of a CSS pixel in the image.
+  FloatSize image_size = image->SizeAsFloat(kRespectImageOrientation);
+  // Compute the scale factor to apply to the slice values by relating the
+  // zoomed size to the "unzoomed" (CSS pixel) size. For raster images this
+  // should match any DPR scale while for generated images it should match the
+  // effective zoom. (Modulo imprecisions introduced by the computation.) This
+  // scale should in theory be uniform.
+  FloatSize slice_scale(image_size.width() / unzoomed_image_size.width(),
+                        image_size.height() / unzoomed_image_size.height());
+
+  IntRectOutsets border_widths(
+      style.BorderTopWidth().ToInt(), style.BorderRightWidth().ToInt(),
+      style.BorderBottomWidth().ToInt(), style.BorderLeftWidth().ToInt());
   NinePieceImageGrid grid(
-      nine_piece_image, image_size, PixelSnappedIntRect(border_image_rect),
-      border_widths, include_logical_left_edge, include_logical_right_edge);
+      nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
+      PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
 
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+
+  ScopedInterpolationQuality interpolation_quality_scope(
+      context, style.GetInterpolationQuality());
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
-    NinePieceImageGrid::NinePieceDrawInfo draw_info = grid.GetNinePieceDrawInfo(
-        piece, nine_piece_image.GetImage()->ImageScaleFactor());
+    NinePieceImageGrid::NinePieceDrawInfo draw_info =
+        grid.GetNinePieceDrawInfo(piece);
+    if (!draw_info.is_drawable)
+      continue;
 
-    if (draw_info.is_drawable) {
-      if (draw_info.is_corner_piece) {
-        // Since there is no way for the developer to specify decode behavior,
-        // use kSync by default.
-        context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                          &draw_info.source, style.HasFilterInducingProperty());
-      } else if (draw_info.tile_rule.horizontal == kStretchImageRule &&
-                 draw_info.tile_rule.vertical == kStretchImageRule) {
-        // Just do a scale.
-        // Since there is no way for the developer to specify decode behavior,
-        // use kSync by default.
-        context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                          &draw_info.source, style.HasFilterInducingProperty());
-      } else {
-        // TODO(cavalcantii): see crbug.com/662513.
-        base::Optional<TileParameters> h_tile = ComputeTileParameters(
-            draw_info.tile_rule.horizontal, draw_info.destination.X(),
-            draw_info.destination.Width(), draw_info.source.X(),
-            draw_info.source.Width(), draw_info.tile_scale.Width());
-        base::Optional<TileParameters> v_tile = ComputeTileParameters(
-            draw_info.tile_rule.vertical, draw_info.destination.Y(),
-            draw_info.destination.Height(), draw_info.source.Y(),
-            draw_info.source.Height(), draw_info.tile_scale.Height());
-        if (!h_tile || !v_tile)
-          continue;
-
-        FloatSize tile_scale_factor(h_tile->scale_factor, v_tile->scale_factor);
-        FloatPoint tile_phase(draw_info.destination.X() - h_tile->phase,
-                              draw_info.destination.Y() - v_tile->phase);
-        FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
-
-        // TODO(cavalcantii): see crbug.com/662507.
-        base::Optional<ScopedInterpolationQuality> interpolation_quality_scope;
-        if (draw_info.tile_rule.horizontal == kRoundImageRule ||
-            draw_info.tile_rule.vertical == kRoundImageRule)
-          interpolation_quality_scope.emplace(context, kInterpolationLow);
-
-        context.DrawImageTiled(image, draw_info.destination, draw_info.source,
-                               tile_scale_factor, tile_phase, tile_spacing);
-      }
+    if (!ShouldTile(draw_info)) {
+      // Since there is no way for the developer to specify decode behavior,
+      // use kSync by default.
+      context.DrawImage(image, Image::kSyncDecode, auto_dark_mode,
+                        draw_info.destination, &draw_info.source);
+      continue;
     }
+
+    // TODO(cavalcantii): see crbug.com/662513.
+    absl::optional<TileParameters> h_tile = ComputeTileParameters(
+        draw_info.tile_rule.horizontal, draw_info.destination.width(),
+        draw_info.source.width(), draw_info.tile_scale.width());
+    absl::optional<TileParameters> v_tile = ComputeTileParameters(
+        draw_info.tile_rule.vertical, draw_info.destination.height(),
+        draw_info.source.height(), draw_info.tile_scale.height());
+    if (!h_tile || !v_tile)
+      continue;
+
+    // TODO(cavalcantii): see crbug.com/662507.
+    absl::optional<ScopedInterpolationQuality> interpolation_quality_override;
+    if (draw_info.tile_rule.horizontal == kRoundImageRule ||
+        draw_info.tile_rule.vertical == kRoundImageRule)
+      interpolation_quality_override.emplace(context, kInterpolationMedium);
+
+    ImageTilingInfo tiling_info;
+    tiling_info.image_rect = draw_info.source;
+    tiling_info.scale = FloatSize(h_tile->scale_factor, v_tile->scale_factor);
+    // The phase defines the origin of the whole image - not the image
+    // rect (see ImageTilingInfo) - so we need to adjust it to account
+    // for that.
+    FloatPoint tile_origin_in_dest_space = draw_info.source.origin();
+    tile_origin_in_dest_space.Scale(tiling_info.scale.width(),
+                                    tiling_info.scale.height());
+    tiling_info.phase =
+        draw_info.destination.origin() +
+        (FloatPoint(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
+    tiling_info.spacing = FloatSize(h_tile->spacing, v_tile->spacing);
+
+    context.DrawImageTiled(image, draw_info.destination, tiling_info,
+                           auto_dark_mode);
   }
 }
 
@@ -147,8 +174,7 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
                                   const PhysicalRect& rect,
                                   const ComputedStyle& style,
                                   const NinePieceImage& nine_piece_image,
-                                  bool include_logical_left_edge,
-                                  bool include_logical_right_edge) {
+                                  PhysicalBoxSides sides_to_include) {
   StyleImage* style_image = nine_piece_image.GetImage();
   if (!style_image)
     return false;
@@ -167,36 +193,32 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   rect_with_outsets.Expand(style.ImageOutsets(nine_piece_image));
   PhysicalRect border_image_rect = rect_with_outsets;
 
-  // NinePieceImage returns the image slices without effective zoom applied and
-  // thus we compute the nine piece grid on top of the image in unzoomed
-  // coordinates.
-  //
-  // FIXME: The default object size passed to imageSize() should be scaled by
-  // the zoom factor passed in. In this case it means that borderImageRect
-  // should be passed in compensated by effective zoom, since the scale factor
-  // is one. For generated images, the actual image data (gradient stops, etc.)
-  // are scaled to effective zoom instead so we must take care not to cause
-  // scale of them again.
-  IntSize image_size = RoundedIntSize(
-      style_image->ImageSize(document, 1, border_image_rect.size.ToLayoutSize(),
-                             kRespectImageOrientation));
+  // Resolve the image size for any image that may need it (for example
+  // generated or SVG), then get an image using that size. This will yield an
+  // image with either "native" size (raster images) or size scaled by effective
+  // zoom.
+  const FloatSize default_object_size(border_image_rect.size);
+  FloatSize image_size = style_image->ImageSize(
+      style.EffectiveZoom(), default_object_size, kRespectImageOrientation);
   scoped_refptr<Image> image =
-      style_image->GetImage(observer, document, style, FloatSize(image_size));
+      style_image->GetImage(observer, document, style, image_size);
   if (!image)
     return true;
 
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
-               "data",
-               inspector_paint_image_event::Data(node, *style_image,
-                                                 FloatRect(image->Rect()),
-                                                 FloatRect(border_image_rect)));
+  // Resolve the image size again, this time with a size-multiplier of one, to
+  // yield the size in CSS pixels. This is the unit/scale we expect the
+  // 'border-image-slice' values to be in.
+  FloatSize unzoomed_image_size = style_image->ImageSize(
+      1, default_object_size.ScaledBy(1 / style.EffectiveZoom()),
+      kRespectImageOrientation);
 
-  ScopedInterpolationQuality interpolation_quality_scope(
-      graphics_context, style.GetInterpolationQuality());
-  PaintPieces(graphics_context, border_image_rect, style, nine_piece_image,
-              image.get(), image_size, include_logical_left_edge,
-              include_logical_right_edge);
-
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
+      inspector_paint_image_event::Data, node, *style_image,
+      FloatRect(image->Rect()), FloatRect(border_image_rect));
+  PaintPieces(graphics_context, border_image_rect, style, document,
+              nine_piece_image, image.get(), unzoomed_image_size,
+              sides_to_include);
   return true;
 }
 

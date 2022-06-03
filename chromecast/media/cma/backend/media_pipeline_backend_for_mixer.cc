@@ -9,10 +9,11 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/base/task_runner_impl.h"
-#include "chromecast/media/base/monotonic_clock.h"
+#include "chromecast/media/base/default_monotonic_clock.h"
 #include "chromecast/media/cma/backend/audio_decoder_for_mixer.h"
 #include "chromecast/media/cma/backend/av_sync.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"

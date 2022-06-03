@@ -10,9 +10,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "components/translate/core/browser/translate_language_list.h"
 #include "components/translate/core/browser/translate_script.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace base {
@@ -61,9 +61,9 @@ class TranslateDownloadManager {
     return script_.get();
   }
 
-  // Fills |languages| with the list of languages that the translate server can
-  // translate to and from. May cause a language list request unless
-  // |translate_allowed| is false.
+  // Fills |languages| with the alphabetically sorted list of languages that the
+  // translate server can translate to and from. May cause a language list
+  // request unless |translate_allowed| is false.
   static void GetSupportedLanguages(bool translate_allowed,
                                     std::vector<std::string>* languages);
 
@@ -74,10 +74,10 @@ class TranslateDownloadManager {
   // Returns the language code that can be used with the Translate method for a
   // specified |language|. (ex. GetLanguageCode("en-US") will return "en", and
   // GetLanguageCode("zh-CN") returns "zh-CN")
-  static std::string GetLanguageCode(const std::string& language);
+  static std::string GetLanguageCode(base::StringPiece language);
 
   // Returns true if |language| is supported by the translation server.
-  static bool IsSupportedLanguage(const std::string& language);
+  static bool IsSupportedLanguage(base::StringPiece language);
 
   // Must be called to shut Translate down. Cancels any pending fetches.
   void Shutdown();

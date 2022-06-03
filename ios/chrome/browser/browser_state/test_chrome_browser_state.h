@@ -10,13 +10,14 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/net/net_types.h"
+#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -24,7 +25,7 @@ class TestingPrefServiceSyncable;
 }
 
 // This class is the implementation of ChromeBrowserState used for testing.
-class TestChromeBrowserState : public ios::ChromeBrowserState {
+class TestChromeBrowserState final : public ChromeBrowserState {
  public:
   typedef std::vector<
       std::pair<BrowserStateKeyedServiceFactory*,
@@ -36,6 +37,9 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
                 RefcountedBrowserStateKeyedServiceFactory::TestingFactory>>
       RefcountedTestingFactories;
 
+  TestChromeBrowserState(const TestChromeBrowserState&) = delete;
+  TestChromeBrowserState& operator=(const TestChromeBrowserState&) = delete;
+
   ~TestChromeBrowserState() override;
 
   // BrowserState:
@@ -44,17 +48,19 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
 
   // ChromeBrowserState:
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
-  ios::ChromeBrowserState* GetOriginalChromeBrowserState() override;
+  ChromeBrowserState* GetOriginalChromeBrowserState() override;
   bool HasOffTheRecordChromeBrowserState() const override;
-  ios::ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
+  ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
+  BrowserStatePolicyConnector* GetPolicyConnector() override;
   PrefService* GetPrefs() override;
-  PrefService* GetOffTheRecordPrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
-                                   const base::Closure& completion) override;
+                                   base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      override;
 
   // This method is defined as empty following the paradigm of
   // TestingProfile::DestroyOffTheRecordProfile().
@@ -73,22 +79,27 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
   void CreateBookmarkModel(bool delete_file);
 
   // !!!!!!!! WARNING: THIS IS GENERALLY NOT SAFE TO CALL! !!!!!!!!
-  // Creates the history service. If |delete_file| is true, the history file is
-  // deleted first, then the HistoryService is created. As
-  // TestChromeBrowserState deletes the directory containing the files used by
-  // HistoryService, this only matters if you're recreating the HistoryService.
-  bool CreateHistoryService(bool delete_file) WARN_UNUSED_RESULT;
+  // Creates the history service.
+  bool CreateHistoryService() WARN_UNUSED_RESULT;
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
   // null. Returns null for off-the-record TestChromeBrowserState and also
   // for TestChromeBrowserState initialized with a custom pref service.
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
+  // Sets a SharedURLLoaderFactory for test.
+  void SetSharedURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+
   // Helper class that allows for parameterizing the building
   // of TestChromeBrowserStates.
   class Builder {
    public:
     Builder();
+
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+
     ~Builder();
 
     // Adds a testing factory to the TestChromeBrowserState. These testing
@@ -109,6 +120,9 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
     void SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
 
+    void SetPolicyConnector(
+        std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
+
     // Creates the TestChromeBrowserState using previously-set settings.
     std::unique_ptr<TestChromeBrowserState> Build();
 
@@ -120,10 +134,10 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
     base::FilePath state_path_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+
     TestingFactories testing_factories_;
     RefcountedTestingFactories refcounted_testing_factories_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
  protected:
@@ -132,7 +146,8 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
       const base::FilePath& path,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
-      RefcountedTestingFactories refcounted_testing_factories);
+      RefcountedTestingFactories refcounted_testing_factories,
+      std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
 
  private:
   friend class Builder;
@@ -146,11 +161,6 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
   // and off-the-record TestChromeBrowserState has been created.
   void Init();
 
-  // We use a temporary directory to store testing browser state data.
-  // This must be declared before anything that may make use of the
-  // directory so as to ensure files are closed before cleanup.
-  base::ScopedTempDir temp_dir_;
-
   // The path to this browser state.
   base::FilePath state_path_;
 
@@ -159,12 +169,16 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 
+  std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+
+  // A SharedURLLoaderFactory for test.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
+
   // The incognito ChromeBrowserState instance that is associated with this
   // non-incognito ChromeBrowserState instance.
   std::unique_ptr<TestChromeBrowserState> otr_browser_state_;
   TestChromeBrowserState* original_browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserState);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_H_

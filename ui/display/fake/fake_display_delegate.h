@@ -11,10 +11,8 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "ui/display/fake/fake_display_delegate.h"
 #include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/fake_display_controller.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -72,6 +70,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
                                                 public FakeDisplayController {
  public:
   FakeDisplayDelegate();
+
+  FakeDisplayDelegate(const FakeDisplayDelegate&) = delete;
+  FakeDisplayDelegate& operator=(const FakeDisplayDelegate&) = delete;
+
   ~FakeDisplayDelegate() override;
 
   // FakeDisplayController:
@@ -84,14 +86,14 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
   void TakeDisplayControl(DisplayControlCallback callback) override;
   void RelinquishDisplayControl(DisplayControlCallback callback) override;
   void GetDisplays(GetDisplaysCallback callback) override;
-  void Configure(const DisplaySnapshot& output,
-                 const DisplayMode* mode,
-                 const gfx::Point& origin,
-                 ConfigureCallback callback) override;
+  void Configure(
+      const std::vector<display::DisplayConfigurationParams>& config_requests,
+      ConfigureCallback callback) override;
   void GetHDCPState(const DisplaySnapshot& output,
                     GetHDCPStateCallback callback) override;
   void SetHDCPState(const DisplaySnapshot& output,
                     HDCPState state,
+                    ContentProtectionMethod protection_method,
                     SetHDCPStateCallback callback) override;
   bool SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;
@@ -99,6 +101,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
+  void SetPrivacyScreen(int64_t display_id, bool enabled) override;
   void AddObserver(NativeDisplayObserver* observer) override;
   void RemoveObserver(NativeDisplayObserver* observer) override;
   FakeDisplayController* GetFakeDisplayController() override;
@@ -127,8 +130,6 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
 
   // The next available display id.
   uint8_t next_display_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplayDelegate);
 };
 
 }  // namespace display

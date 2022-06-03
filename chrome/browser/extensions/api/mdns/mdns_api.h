@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "chrome/common/extensions/api/mdns.h"
@@ -34,6 +33,10 @@ class MDnsAPI : public BrowserContextKeyedAPI,
                 public media_router::DnsSdRegistry::DnsSdObserver {
  public:
   explicit MDnsAPI(content::BrowserContext* context);
+
+  MDnsAPI(const MDnsAPI&) = delete;
+  MDnsAPI& operator=(const MDnsAPI&) = delete;
+
   ~MDnsAPI() override;
 
   static MDnsAPI* Get(content::BrowserContext* context);
@@ -114,13 +117,14 @@ class MDnsAPI : public BrowserContextKeyedAPI,
   // Count of active listeners per service type, saved from the previous
   // invocation of UpdateMDnsListeners().
   ServiceTypeCounts prev_service_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsAPI);
 };
 
 class MdnsForceDiscoveryFunction : public ExtensionFunction {
  public:
   MdnsForceDiscoveryFunction();
+  MdnsForceDiscoveryFunction(const MdnsForceDiscoveryFunction&) = delete;
+  MdnsForceDiscoveryFunction& operator=(const MdnsForceDiscoveryFunction&) =
+      delete;
 
  protected:
   ~MdnsForceDiscoveryFunction() override;
@@ -130,7 +134,6 @@ class MdnsForceDiscoveryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   DECLARE_EXTENSION_FUNCTION("mdns.forceDiscovery", MDNS_FORCEDISCOVERY)
-  DISALLOW_COPY_AND_ASSIGN(MdnsForceDiscoveryFunction);
 };
 
 }  // namespace extensions

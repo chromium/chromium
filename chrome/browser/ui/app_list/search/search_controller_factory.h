@@ -12,6 +12,10 @@
 class AppListControllerDelegate;
 class Profile;
 
+namespace ash {
+class AppListNotifier;
+}
+
 namespace app_list {
 
 class SearchController;
@@ -20,7 +24,8 @@ class SearchController;
 std::unique_ptr<SearchController> CreateSearchController(
     Profile* profile,
     AppListModelUpdater* model_updater,
-    AppListControllerDelegate* list_controller);
+    AppListControllerDelegate* list_controller,
+    ash::AppListNotifier* notifier);
 
 }  // namespace app_list
 

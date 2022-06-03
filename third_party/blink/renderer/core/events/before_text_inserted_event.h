@@ -41,7 +41,7 @@ class BeforeTextInsertedEvent final : public Event {
   const String& GetText() const { return text_; }
   void SetText(const String& s) { text_ = s; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String text_;
@@ -49,4 +49,4 @@ class BeforeTextInsertedEvent final : public Event {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_BEFORE_TEXT_INSERTED_EVENT_H_

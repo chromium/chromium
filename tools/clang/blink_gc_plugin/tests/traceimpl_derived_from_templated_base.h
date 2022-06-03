@@ -11,14 +11,14 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 template <int Y>
 class TraceImplTemplatedBase
     : public GarbageCollected<TraceImplTemplatedBase<Y> > {
  public:
-  void Trace(Visitor* visitor) { visitor->Trace(x_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(x_); }
 
  private:
   Member<X> x_;

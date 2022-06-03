@@ -68,14 +68,36 @@ function isVideoPlaying() {
       if (!allElementsRoughlyEqualTo_(gFingerprints, gFingerprints[0])) {
         clearInterval(gDetectorInterval);
         gDetectorInterval = null;
-        returnToTest('video-playing');
+        silentReturnToTest('video-playing');
         return;
       }
     }
   } catch (exception) {
     throw failTest('Failed to detect video: ' + exception.message);
   }
-  returnToTest('video-not-playing');
+  silentReturnToTest('video-not-playing');
+}
+
+/**
+ * Checks if the video has stopped
+ *
+ * @return {string} video-stopped or video-not-stopped.
+ */
+function isVideoStopped() {
+  // Video is considered to be stopped if the last 5 fingerprints are the same.
+  // We only check for rough equality though to account for rounding errors.
+  if (gFingerprints.length < 5) {
+    silentReturnToTest('video-not-stopped');
+    return;
+  }
+
+  if (allElementsRoughlyEqualTo_(gFingerprints.slice(-5),
+                                 gFingerprints[gFingerprints.length - 1])) {
+    silentReturnToTest('video-stopped');
+    return;
+  }
+
+  silentReturnToTest('video-not-stopped');
 }
 
 /**

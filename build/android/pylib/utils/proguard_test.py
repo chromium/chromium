@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env vpython3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -26,7 +26,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testMethod(self):
     actual = proguard.Parse(
@@ -48,7 +48,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testClassAnnotation(self):
     actual = proguard.Parse(
@@ -77,7 +77,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testClassAnnotationWithArrays(self):
     actual = proguard.Parse(
@@ -109,7 +109,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testNestedClassAnnotations(self):
     actual = proguard.Parse(
@@ -157,7 +157,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testClassArraysOfAnnotations(self):
     actual = proguard.Parse(
@@ -216,7 +216,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testReadFullClassFileAttributes(self):
     actual = proguard.Parse(
@@ -248,7 +248,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testMethodAnnotation(self):
     actual = proguard.Parse(
@@ -283,7 +283,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testMethodAnnotationWithArrays(self):
     actual = proguard.Parse(
@@ -321,7 +321,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testMethodAnnotationWithPrimitivesAndArrays(self):
     actual = proguard.Parse(
@@ -369,7 +369,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testNestedMethodAnnotations(self):
     actual = proguard.Parse(
@@ -423,7 +423,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testMethodArraysOfAnnotations(self):
     actual = proguard.Parse(
@@ -488,7 +488,7 @@ class TestParse(unittest.TestCase):
         }
       ]
     }
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

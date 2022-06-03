@@ -9,17 +9,19 @@
 	<style>
 		div {
 			background-color:red;
-			height:100px;
+			height:50px;
 			width:100px;
 		}
 		@supports (margin: 0) {
-			div { background-color:green; }
+			.test1 { background:green; }
+			.test2 { background: red; }
 		}
+		.test2 { background: green; }
 	</style>
 </head>
 <body>
 	<p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
-	<div>
-	</div>
+	<div class="test1"></div>
+	<div class="test2"></div>
 </body>
 </html>

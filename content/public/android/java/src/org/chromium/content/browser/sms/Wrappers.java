@@ -10,6 +10,8 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
+import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
 
@@ -21,23 +23,32 @@ class Wrappers {
      * Wraps com.google.android.gms.auth.api.phone.SmsRetrieverClient.
      */
     static class SmsRetrieverClientWrapper {
+        // Used for user consent flow.
         private final SmsRetrieverClient mSmsRetrieverClient;
-        private SmsReceiverContext mContext;
+        // Used for browser code flow.
+        private final SmsCodeBrowserClient mSmsCodeBrowserClient;
+        private WebOTPServiceContext mContext;
 
-        public SmsRetrieverClientWrapper(SmsRetrieverClient smsRetrieverClient) {
+        public SmsRetrieverClientWrapper(
+                SmsRetrieverClient smsRetrieverClient, SmsCodeBrowserClient smsCodeBrowserClient) {
             mSmsRetrieverClient = smsRetrieverClient;
+            mSmsCodeBrowserClient = smsCodeBrowserClient;
         }
 
-        public void setContext(SmsReceiverContext context) {
+        public void setContext(WebOTPServiceContext context) {
             mContext = context;
         }
 
-        public SmsReceiverContext getContext() {
+        public WebOTPServiceContext getContext() {
             return mContext;
         }
 
-        public Task<Void> startSmsRetriever() {
-            return mSmsRetrieverClient.startSmsRetriever();
+        public Task<Void> startSmsCodeBrowserRetriever() {
+            return mSmsCodeBrowserClient.startSmsCodeRetriever();
+        }
+
+        public Task<Void> startSmsUserConsent(String senderAddress) {
+            return mSmsRetrieverClient.startSmsUserConsent(senderAddress);
         }
     }
 
@@ -45,15 +56,26 @@ class Wrappers {
      * Extends android.content.ContextWrapper to store and retrieve the
      * registered BroadcastReceiver.
      */
-    static class SmsReceiverContext extends ContextWrapper {
-        private BroadcastReceiver mReceiver;
+    static class WebOTPServiceContext extends ContextWrapper {
+        private BroadcastReceiver mVerificationReceiver;
+        private BroadcastReceiver mUserConsentReceiver;
+        private final SmsProviderGms mSmsProviderGms;
 
-        public SmsReceiverContext(Context context) {
+        public WebOTPServiceContext(Context context, SmsProviderGms provider) {
             super(context);
+            mSmsProviderGms = provider;
         }
 
-        public BroadcastReceiver getRegisteredReceiver() {
-            return mReceiver;
+        public SmsVerificationReceiver getRegisteredVerificationReceiver() {
+            return (SmsVerificationReceiver) mVerificationReceiver;
+        }
+
+        public SmsUserConsentReceiver getRegisteredUserConsentReceiver() {
+            return (SmsUserConsentReceiver) mUserConsentReceiver;
+        }
+
+        public SmsVerificationReceiver createVerificationReceiverForTesting() {
+            return new SmsVerificationReceiver(mSmsProviderGms, this);
         }
 
         // ---------------------------------------------------------------------
@@ -61,13 +83,23 @@ class Wrappers {
 
         @Override
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-            mReceiver = receiver;
+            if (filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION)) {
+                mVerificationReceiver = receiver;
+            } else {
+                mUserConsentReceiver = receiver;
+            }
+
             return super.registerReceiver(receiver, filter);
         }
 
         @Override
         public void unregisterReceiver(BroadcastReceiver receiver) {
-            mReceiver = null;
+            if (receiver == mVerificationReceiver) {
+                mVerificationReceiver = null;
+            } else {
+                mUserConsentReceiver = null;
+            }
+
             super.unregisterReceiver(receiver);
         }
     }

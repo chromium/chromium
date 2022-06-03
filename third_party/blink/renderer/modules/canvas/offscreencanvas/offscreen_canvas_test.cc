@@ -55,13 +55,14 @@ class OffscreenCanvasTest : public ::testing::Test,
     return ToScriptStateForMainWorld(GetDocument().GetFrame());
   }
 
-  Document& GetDocument() const {
-    return *web_view_helper_.GetWebView()
-                ->MainFrameImpl()
-                ->GetFrame()
-                ->DomWindow()
-                ->document();
+  LocalDOMWindow* GetWindow() const {
+    return web_view_helper_.GetWebView()
+        ->MainFrameImpl()
+        ->GetFrame()
+        ->DomWindow();
   }
+
+  Document& GetDocument() const { return *GetWindow()->document(); }
 
  private:
   frame_test_helpers::WebViewHelper web_view_helper_;
@@ -84,7 +85,7 @@ void OffscreenCanvasTest::SetUp() {
 
   web_view_helper_.Initialize();
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       String::FromUTF8("<body><canvas id='c'></canvas></body>"));
 
   auto* canvas_element =
@@ -92,7 +93,7 @@ void OffscreenCanvasTest::SetUp() {
 
   DummyExceptionStateForTesting exception_state;
   offscreen_canvas_ = HTMLCanvasElementModule::transferControlToOffscreen(
-      &GetDocument(), *canvas_element, exception_state);
+      GetWindow(), *canvas_element, exception_state);
   // |offscreen_canvas_| should inherit the FrameSinkId from |canvas_element|s
   // SurfaceLayerBridge, but in tests this id is zero; fill it up by hand.
   offscreen_canvas_->SetFrameSinkId(kClientId, kSinkId);
@@ -103,7 +104,7 @@ void OffscreenCanvasTest::SetUp() {
     attrs.desynchronized = GetParam().desynchronized;
   }
   context_ = static_cast<OffscreenCanvasRenderingContext2D*>(
-      offscreen_canvas_->GetCanvasRenderingContext(&GetDocument(), String("2d"),
+      offscreen_canvas_->GetCanvasRenderingContext(GetWindow(), String("2d"),
                                                    attrs));
 }
 
@@ -147,8 +148,9 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   const bool context_alpha = GetParam().alpha;
 
   const auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      offscreen_canvas().Size(), CanvasColorParams(), nullptr /* provider */,
-      kLow_SkFilterQuality);
+      SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
+                                 offscreen_canvas().Size().height()),
+      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),

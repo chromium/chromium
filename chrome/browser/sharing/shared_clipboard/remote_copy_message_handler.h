@@ -8,13 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/cancelable_callback.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/image_decoder.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -28,6 +27,8 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
                                  public ImageDecoder::ImageRequest {
  public:
   explicit RemoteCopyMessageHandler(Profile* profile);
+  RemoteCopyMessageHandler(const RemoteCopyMessageHandler&) = delete;
+  RemoteCopyMessageHandler& operator=(const RemoteCopyMessageHandler&) = delete;
   ~RemoteCopyMessageHandler() override;
 
   // SharingMessageHandler implementation:
@@ -38,24 +39,33 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
   void OnImageDecoded(const SkBitmap& decoded_image) override;
   void OnDecodeImageFailed() override;
 
-  bool IsOriginAllowed(const GURL& image_url);
+  bool IsImageSourceAllowed(const GURL& image_url);
 
  private:
+  friend class RemoteCopyBrowserTest;
+  friend class RemoteCopyMessageHandlerTest;
+
   void HandleText(const std::string& text);
   void HandleImage(const std::string& image_url);
   void OnURLLoadComplete(std::unique_ptr<std::string> content);
-  void WriteImageAndShowNotification(const SkBitmap& original_image,
-                                     const SkBitmap& resized_image);
-  void ShowNotification(const base::string16& title, const SkBitmap& image);
+  void WriteImageAndShowNotification(const SkBitmap& image);
+  void ShowNotification(const std::u16string& title, const SkBitmap& image);
+  void DetectWrite(const ui::ClipboardSequenceNumberToken& old_sequence_number,
+                   base::TimeTicks start_ticks,
+                   bool is_image);
   void Finish(RemoteCopyHandleMessageResult result);
+  void CancelAsyncTasks();
+
+  void set_allowed_origin_for_testing(const GURL& origin) {
+    allowed_origin_ = origin;
+  }
 
   Profile* profile_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  base::CancelableOnceCallback<void(const SkBitmap&)> resize_callback_;
   std::string device_name_;
   base::ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCopyMessageHandler);
+  base::OneShotTimer write_detection_timer_;
+  GURL allowed_origin_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_REMOTE_COPY_MESSAGE_HANDLER_H_

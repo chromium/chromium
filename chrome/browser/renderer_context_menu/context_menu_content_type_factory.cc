@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "content/public/browser/web_contents.h"
@@ -22,16 +24,17 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/session_manager/core/session_manager.h"
 #endif
 
 namespace {
 
 bool IsUserSessionBlocked() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (session_manager::SessionManager::Get() &&
       session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return true;
@@ -46,12 +49,14 @@ class NullContextMenuContentType : public ContextMenuContentType {
   NullContextMenuContentType(content::WebContents* web_contents,
                              const content::ContextMenuParams& params)
       : ContextMenuContentType(web_contents, params, false) {}
+
+  NullContextMenuContentType(const NullContextMenuContentType&) = delete;
+  NullContextMenuContentType& operator=(const NullContextMenuContentType&) =
+      delete;
+
   ~NullContextMenuContentType() override = default;
 
   bool SupportsGroup(int group) override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullContextMenuContentType);
 };
 
 }  // namespace
@@ -88,14 +93,15 @@ ContextMenuContentTypeFactory::CreateInternal(
         new ContextMenuContentTypeWebView(web_contents, params));
   }
 
-  const extensions::ViewType view_type = extensions::GetViewType(web_contents);
+  const extensions::mojom::ViewType view_type =
+      extensions::GetViewType(web_contents);
 
-  if (view_type == extensions::VIEW_TYPE_APP_WINDOW) {
+  if (view_type == extensions::mojom::ViewType::kAppWindow) {
     return base::WrapUnique(
         new ContextMenuContentTypePlatformApp(web_contents, params));
   }
 
-  if (view_type == extensions::VIEW_TYPE_EXTENSION_POPUP) {
+  if (view_type == extensions::mojom::ViewType::kExtensionPopup) {
     return base::WrapUnique(
         new ContextMenuContentTypeExtensionPopup(web_contents, params));
   }

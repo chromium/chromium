@@ -39,6 +39,7 @@ class GPU_EXPORT TextureBase {
 
   // The target. 0 if unset, otherwise GL_TEXTURE_2D or GL_TEXTURE_CUBE_MAP.
   //             Or GL_TEXTURE_2D_ARRAY or GL_TEXTURE_3D (for GLES3).
+  //             Or GL_TEXTURE_EXTERNAL_OES for YUV textures.
   unsigned int target_;
 
   void SetTarget(unsigned int target);

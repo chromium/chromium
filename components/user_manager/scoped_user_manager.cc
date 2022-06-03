@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/user_manager/user_manager.h"
 
 namespace user_manager {

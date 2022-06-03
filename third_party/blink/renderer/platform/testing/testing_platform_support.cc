@@ -38,13 +38,14 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "gin/public/v8_platform.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_platform.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -108,18 +109,9 @@ WebString TestingPlatformSupport::DefaultLocale() {
   return WebString::FromUTF8("en-US");
 }
 
-WebURLLoaderMockFactory* TestingPlatformSupport::GetURLLoaderMockFactory() {
-  return old_platform_ ? old_platform_->GetURLLoaderMockFactory() : nullptr;
-}
-
-std::unique_ptr<WebURLLoaderFactory>
-TestingPlatformSupport::CreateDefaultURLLoaderFactory() {
-  return old_platform_ ? old_platform_->CreateDefaultURLLoaderFactory()
-                       : nullptr;
-}
-
-WebData TestingPlatformSupport::GetDataResource(int resource_id,
-                                                ui::ScaleFactor scale_factor) {
+WebData TestingPlatformSupport::GetDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor) {
   return old_platform_
              ? old_platform_->GetDataResource(resource_id, scale_factor)
              : WebData();
@@ -135,7 +127,14 @@ TestingPlatformSupport::GetBrowserInterfaceBroker() {
   return interface_broker_.get();
 }
 
+cc::TaskGraphRunner* TestingPlatformSupport::GetTaskGraphRunner() {
+  // We want to ensure that if the underlying platform has a TaskGraphRunner
+  // that we continue to return its instance.
+  return old_platform_ ? old_platform_->GetTaskGraphRunner() : nullptr;
+}
+
 void TestingPlatformSupport::RunUntilIdle() {
+  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -147,8 +146,13 @@ void TestingPlatformSupport::SetThreadedAnimationEnabled(bool enabled) {
   is_threaded_animation_enabled_ = enabled;
 }
 
-class ScopedUnittestsEnvironmentSetup::DummyRendererResourceCoordinator final
-    : public blink::RendererResourceCoordinator {};
+bool TestingPlatformSupport::IsUseZoomForDSFEnabled() {
+  return is_zoom_for_dsf_enabled_;
+}
+
+void TestingPlatformSupport::SetUseZoomForDSF(bool enabled) {
+  is_zoom_for_dsf_enabled_ = enabled;
+}
 
 ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
                                                                  char** argv) {
@@ -171,7 +175,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   Platform::SetCurrentPlatformForTesting(dummy_platform_.get());
 
   WTF::Partitions::Initialize();
-  WTF::Initialize(nullptr);
+  WTF::Initialize();
 
   // This must be called after WTF::Initialize(), because ThreadSpecific<>
   // used in this function depends on WTF::IsMainThread().
@@ -180,14 +184,16 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   testing_platform_support_ = std::make_unique<TestingPlatformSupport>();
   Platform::SetCurrentPlatformForTesting(testing_platform_support_.get());
 
-  dummy_renderer_resource_coordinator_ =
-      std::make_unique<DummyRendererResourceCoordinator>();
-  RendererResourceCoordinator::SetCurrentRendererResourceCoordinatorForTesting(
-      dummy_renderer_resource_coordinator_.get());
-
   ProcessHeap::Init();
-  ThreadState::AttachMainThread();
-  blink::ThreadState::Current()->DetachFromIsolate();
+  // Initializing ThreadState for testing with a testing specific platform.
+  // ScopedUnittestsEnvironmentSetup keeps the platform alive until the end of
+  // the test. The testing platform is initialized using gin::V8Platform which
+  // is the default platform used by ThreadState.
+  // Note that the platform is not initialized by AttachMainThreadForTesting
+  // to avoid including test-only headers in production build targets.
+  v8_platform_for_heap_testing_ =
+      std::make_unique<HeapTestingPlatformAdapter>(gin::V8Platform::Get());
+  ThreadState::AttachMainThreadForTesting(v8_platform_for_heap_testing_.get());
   http_names::Init();
   fetch_initiator_type_names::Init();
 

@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_NAVIGATION_REFERRER_H_
 #define IOS_WEB_PUBLIC_NAVIGATION_REFERRER_H_
 
-#include "base/logging.h"
 #include "url/gurl.h"
 
 namespace web {

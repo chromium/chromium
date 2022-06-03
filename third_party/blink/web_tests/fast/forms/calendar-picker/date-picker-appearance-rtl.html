@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<script>
+testRunner.waitUntilDone();
+if (window.internals)
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
+</script>
+<script src="../resources/picker-common.js"></script>
+<input type=date id=date value="1800-05-12" lang="ar-AE">
+<script>
+openPickerAppearanceOnly(document.getElementById('date'), () => testRunner.notifyDone());
+</script>
+</html>

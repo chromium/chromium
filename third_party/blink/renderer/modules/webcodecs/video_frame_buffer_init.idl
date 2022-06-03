@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoFrameBufferInit {
+  required VideoPixelFormat format;
+
+  // Default layout is tightly-packed.
+  sequence<PlaneLayout> layout;
+
+  required [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+
+  DOMRectInit visibleRect;
+
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+
+  VideoColorSpaceInit colorSpace;
+};

@@ -38,7 +38,7 @@ class CORE_EXPORT CSSInitialValue : public CSSValue {
 
   bool Equals(const CSSInitialValue&) const { return true; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
   }
 

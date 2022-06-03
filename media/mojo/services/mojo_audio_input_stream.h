@@ -44,6 +44,9 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
       StreamCreatedCallback stream_created_callback,
       base::OnceClosure deleter_callback);
 
+  MojoAudioInputStream(const MojoAudioInputStream&) = delete;
+  MojoAudioInputStream& operator=(const MojoAudioInputStream&) = delete;
+
   ~MojoAudioInputStream() override;
 
   void SetOutputDeviceForAec(const std::string& raw_output_device_id);
@@ -73,8 +76,6 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
   mojo::Remote<mojom::AudioInputStreamClient> client_;
   std::unique_ptr<AudioInputDelegate> delegate_;
   base::WeakPtrFactory<MojoAudioInputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioInputStream);
 };
 
 }  // namespace media

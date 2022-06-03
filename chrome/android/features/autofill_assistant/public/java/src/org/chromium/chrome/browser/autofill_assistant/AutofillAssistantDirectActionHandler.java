@@ -11,13 +11,15 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Definition;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * A handler that provides just enough functionality to allow on-demand loading of the module
@@ -30,24 +32,30 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     private static final String ACTION_NAME = "name";
     private static final String EXPERIMENT_IDS = "experiment_ids";
     private static final String ONBOARDING_ACTION = "onboarding";
+    private static final String ONBOARDING_AND_START_ACTION = "onboarding_and_start";
     private static final String USER_NAME = "user_name";
+    private static final String SHOW_ERROR_ON_FAILURE = "show_error_on_failure";
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final ScrimView mScrimView;
-    private final GetCurrentTab mGetCurrentTab;
+    private final BrowserControlsStateProvider mBrowserControls;
+    private final CompositorViewHolder mCompositorViewHolder;
+    private final ActivityTabProvider mActivityTabProvider;
     private final AutofillAssistantModuleEntryProvider mModuleEntryProvider;
 
     @Nullable
     private AutofillAssistantActionHandler mDelegate;
 
     AutofillAssistantDirectActionHandler(Context context,
-            BottomSheetController bottomSheetController, ScrimView scrimView,
-            GetCurrentTab getCurrentTab, AutofillAssistantModuleEntryProvider moduleEntryProvider) {
+            BottomSheetController bottomSheetController,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            ActivityTabProvider activityTabProvider,
+            AutofillAssistantModuleEntryProvider moduleEntryProvider) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mScrimView = scrimView;
-        mGetCurrentTab = getCurrentTab;
+        mBrowserControls = browserControls;
+        mCompositorViewHolder = compositorViewHolder;
+        mActivityTabProvider = activityTabProvider;
         mModuleEntryProvider = moduleEntryProvider;
     }
 
@@ -61,6 +69,12 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             reporter.addDirectAction(ONBOARDING_ACTION)
                     .withParameter(ACTION_NAME, Type.STRING, /* required= */ false)
                     .withParameter(EXPERIMENT_IDS, Type.STRING, /* required= */ false)
+                    .withResult(AA_ACTION_RESULT, Type.BOOLEAN);
+            reporter.addDirectAction(ONBOARDING_AND_START_ACTION)
+                    .withParameter(ACTION_NAME, Type.STRING, /* required= */ true)
+                    .withParameter(USER_NAME, Type.STRING, /* required= */ false)
+                    .withParameter(EXPERIMENT_IDS, Type.STRING, /* required= */ false)
+                    .withParameter(SHOW_ERROR_ON_FAILURE, Type.BOOLEAN, /* required= */ false)
                     .withResult(AA_ACTION_RESULT, Type.BOOLEAN);
             return;
         }
@@ -103,7 +117,8 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             return true;
         }
         // Only handle and perform the action if it is known to the controller.
-        if (isActionAvailable(actionId) || ONBOARDING_ACTION.equals(actionId)) {
+        if (isActionAvailable(actionId) || ONBOARDING_ACTION.equals(actionId)
+                || ONBOARDING_AND_START_ACTION.equals(actionId)) {
             performAction(actionId, arguments, callback);
             return true;
         }
@@ -111,7 +126,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     }
 
     private boolean isActionAvailable(String actionId) {
-        if (mDelegate == null) return false;
+        if (mDelegate == null || !mDelegate.hasRunFirstCheck()) return false;
         for (AutofillAssistantDirectAction action : mDelegate.getActions()) {
             if (action.getNames().contains(actionId)) return true;
         }
@@ -171,7 +186,39 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
                 return;
             }
             if (ONBOARDING_ACTION.equals(actionId)) {
-                delegate.performOnboarding(experimentIds, booleanCallback);
+                delegate.performOnboarding(experimentIds, arguments, booleanCallback);
+                return;
+            }
+            if (ONBOARDING_AND_START_ACTION.equals(actionId)) {
+                delegate.performOnboarding(experimentIds, arguments, onboardingResult -> {
+                    if (!onboardingResult) {
+                        booleanCallback.onResult(false);
+                        return;
+                    }
+                    boolean showErrorOnFailure = arguments.getBoolean(SHOW_ERROR_ON_FAILURE, false);
+                    delegate.fetchWebsiteActions(arguments.getString(USER_NAME, ""),
+                            arguments.getString(EXPERIMENT_IDS, ""), arguments,
+                            fetchActionsResult -> {
+                                if (!fetchActionsResult) {
+                                    booleanCallback.onResult(false);
+                                    if (showErrorOnFailure) {
+                                        delegate.showFatalError();
+                                    }
+                                    return;
+                                }
+                                String afterOnboardingActionId =
+                                        arguments.getString(ACTION_NAME, "");
+                                if (!isActionAvailable(afterOnboardingActionId)) {
+                                    booleanCallback.onResult(false);
+                                    if (showErrorOnFailure) {
+                                        delegate.showFatalError();
+                                    }
+                                    return;
+                                }
+                                delegate.performAction(afterOnboardingActionId, experimentIds,
+                                        arguments, booleanCallback);
+                            });
+                });
                 return;
             }
 
@@ -201,7 +248,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             return;
         }
 
-        Tab tab = mGetCurrentTab.get();
+        Tab tab = mActivityTabProvider.get();
         if (tab == null) {
             // TODO(b/134741524): Allow DFM loading UI to work with no tabs.
             callback.onResult(null);
@@ -210,7 +257,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
         mModuleEntryProvider.getModuleEntry(tab, (entry) -> {
             mDelegate = createDelegate(entry);
             callback.onResult(mDelegate);
-        });
+        }, /* showUi = */ true);
     }
 
     /** Creates a delegate from the given {@link AutofillAssistantModuleEntry}, if possible. */
@@ -219,7 +266,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
             @Nullable AutofillAssistantModuleEntry entry) {
         if (entry == null) return null;
 
-        return entry.createActionHandler(
-                mContext, mBottomSheetController, mScrimView, mGetCurrentTab);
+        return entry.createActionHandler(mContext, mBottomSheetController, mBrowserControls,
+                mCompositorViewHolder, mActivityTabProvider);
     }
 }

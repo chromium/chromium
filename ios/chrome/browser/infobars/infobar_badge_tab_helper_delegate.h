@@ -9,15 +9,24 @@
 
 @protocol BadgeItem;
 
+namespace web {
+class WebState;
+}
+
 // Delegate used by InfobarBadgeTabHelper to manage the Infobar badges.
 @protocol InfobarBadgeTabHelperDelegate
 
-// Asks the delegate to add a badge with the configuration of |badgeItem|.
-- (void)addInfobarBadge:(id<BadgeItem>)badgeItem;
-// Asks the delegate to remove a badge matching the badgeType of |badgeItem|.
-- (void)removeInfobarBadge:(id<BadgeItem>)badgeItem;
-// Asks the delegate to update the configuration of |badgeItem|.
-- (void)updateInfobarBadge:(id<BadgeItem>)badgeItem;
+// Asks the delegate to add a badge with the configuration of |badgeItem| for
+// |webState|.
+- (void)addInfobarBadge:(id<BadgeItem>)badgeItem
+            forWebState:(web::WebState*)webState;
+// Asks the delegate to remove a badge matching the badgeType of |badgeItem| for
+// |webState|.
+- (void)removeInfobarBadge:(id<BadgeItem>)badgeItem
+               forWebState:(web::WebState*)webState;
+// Asks the delegate to update the configuration of |badgeItem| for |webState|.
+- (void)updateInfobarBadge:(id<BadgeItem>)badgeItem
+               forWebState:(web::WebState*)webState;
 
 @end
 

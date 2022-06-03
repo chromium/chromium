@@ -13,16 +13,17 @@
 #import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
+#import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/dynamic_color_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -51,9 +52,10 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 // will read "Select All" instead of a11y label.
 - (void)selectAllText;
 
-// The view containing all the buttons and textfields that is common between
-// iPhone and iPad.
-@property(nonatomic, strong) FindBarView* findBarView;
+// Redefined to be readwrite
+@property(nonatomic, strong, readwrite)
+    FindBarViewController* findBarViewController;
+
 // Typing delay timer.
 @property(nonatomic, strong) NSTimer* delayTimer;
 // Yes if incognito.
@@ -74,57 +76,62 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 
 #pragma mark - Public
 
-- (UIView*)createFindBarViewWithDarkAppearance:(BOOL)darkAppearance {
-  if (self.findBarView) {
-    return self.findBarView;
+- (FindBarViewController*)findBarViewController {
+  if (_findBarViewController) {
+    return _findBarViewController;
   }
-  self.findBarView =
-      [[FindBarView alloc] initWithDarkAppearance:darkAppearance];
-  self.findBarView.translatesAutoresizingMaskIntoConstraints = NO;
+  _findBarViewController =
+      [[FindBarViewController alloc] initWithDarkAppearance:self.isIncognito];
 
-  self.findBarView.inputField.delegate = self;
-  [self.findBarView.inputField addTarget:self
-                                  action:@selector(editingChanged)
-                        forControlEvents:UIControlEventEditingChanged];
-  [self.findBarView.nextButton addTarget:self.dispatcher
-                                  action:@selector(findNextStringInPage)
-                        forControlEvents:UIControlEventTouchUpInside];
-  [self.findBarView.nextButton addTarget:self
-                                  action:@selector(hideKeyboard:)
-                        forControlEvents:UIControlEventTouchUpInside];
-  [self.findBarView.previousButton addTarget:self.dispatcher
-                                      action:@selector(findPreviousStringInPage)
-                            forControlEvents:UIControlEventTouchUpInside];
-  [self.findBarView.previousButton addTarget:self
-                                      action:@selector(hideKeyboard:)
-                            forControlEvents:UIControlEventTouchUpInside];
-  [self.findBarView.closeButton addTarget:self.dispatcher
-                                   action:@selector(closeFindInPage)
-                         forControlEvents:UIControlEventTouchUpInside];
+  _findBarViewController.findBarView.inputField.delegate = self;
+  [_findBarViewController.findBarView.inputField
+             addTarget:self
+                action:@selector(editingChanged)
+      forControlEvents:UIControlEventEditingChanged];
+  [_findBarViewController.findBarView.nextButton
+             addTarget:self.commandHandler
+                action:@selector(findNextStringInPage)
+      forControlEvents:UIControlEventTouchUpInside];
+  [_findBarViewController.findBarView.nextButton
+             addTarget:self
+                action:@selector(hideKeyboard:)
+      forControlEvents:UIControlEventTouchUpInside];
+  [_findBarViewController.findBarView.previousButton
+             addTarget:self.commandHandler
+                action:@selector(findPreviousStringInPage)
+      forControlEvents:UIControlEventTouchUpInside];
+  [_findBarViewController.findBarView.previousButton
+             addTarget:self
+                action:@selector(hideKeyboard:)
+      forControlEvents:UIControlEventTouchUpInside];
+  [_findBarViewController.findBarView.closeButton
+             addTarget:self.commandHandler
+                action:@selector(closeFindInPage)
+      forControlEvents:UIControlEventTouchUpInside];
 
-  return self.findBarView;
+  return _findBarViewController;
 }
 
 - (void)findBarViewWillHide {
-  self.findBarView.inputField.selectedTextRange = nil;
+  self.findBarViewController.findBarView.inputField.selectedTextRange = nil;
   [self.delayTimer invalidate];
   self.delayTimer = nil;
 }
 
 - (void)findBarViewDidHide {
-  self.findBarView = nil;
+  self.findBarViewController = nil;
 }
 
 - (NSString*)searchTerm {
-  return [self.findBarView.inputField text];
+  return [self.findBarViewController.findBarView.inputField text];
 }
 
 - (BOOL)isFindInPageShown {
-  return self.findBarView != nil;
+  return self.findBarViewController.findBarView != nil;
 }
 
 - (BOOL)isFocused {
-  return [self.findBarView.inputField isFirstResponder];
+  return [self.findBarViewController.findBarView.inputField isFirstResponder];
 }
 
 - (void)updateResultsCount:(FindInPageModel*)model {
@@ -141,15 +148,15 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 
   if (initialUpdate) {
     // Set initial text and first search.
-    [self.findBarView.inputField setText:model.text];
+    [self.findBarViewController.findBarView.inputField setText:model.text];
     [self editingChanged];
   }
 
   // Focus input field if necessary.
   if (focusTextfield) {
-    [self.findBarView.inputField becomeFirstResponder];
+    [self.findBarViewController.findBarView.inputField becomeFirstResponder];
   } else {
-    [self.findBarView.inputField resignFirstResponder];
+    [self.findBarViewController.findBarView.inputField resignFirstResponder];
   }
 
   [self updateWithMatchNumber:model.currentIndex
@@ -168,22 +175,26 @@ const NSTimeInterval kSearchShortDelay = 0.100;
                                    base::SysNSStringToUTF16(indexStr),
                                    base::SysNSStringToUTF16(matchesStr));
   }
-  [self.findBarView updateResultsLabelWithText:text];
+  [self.findBarViewController.findBarView updateResultsLabelWithText:text];
 
   BOOL enabled = matchCount != 0;
-  self.findBarView.nextButton.enabled = enabled;
-  self.findBarView.previousButton.enabled = enabled;
+  self.findBarViewController.findBarView.nextButton.enabled = enabled;
+  self.findBarViewController.findBarView.previousButton.enabled = enabled;
 }
 
 - (void)hideKeyboard:(id)sender {
-  [self.findBarView endEditing:YES];
+  [self.findBarViewController.findBarView endEditing:YES];
 }
 
 - (void)selectAllText {
-  UITextRange* wholeTextRange = [self.findBarView.inputField
-      textRangeFromPosition:self.findBarView.inputField.beginningOfDocument
-                 toPosition:self.findBarView.inputField.endOfDocument];
-  self.findBarView.inputField.selectedTextRange = wholeTextRange;
+  UITextRange* wholeTextRange =
+      [self.findBarViewController.findBarView.inputField
+          textRangeFromPosition:self.findBarViewController.findBarView
+                                    .inputField.beginningOfDocument
+                     toPosition:self.findBarViewController.findBarView
+                                    .inputField.endOfDocument];
+  self.findBarViewController.findBarView.inputField.selectedTextRange =
+      wholeTextRange;
 }
 
 #pragma mark - Internal
@@ -192,7 +203,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
   [self.delayTimer invalidate];
   NSUInteger length = [[self searchTerm] length];
   if (length == 0) {
-    [self.dispatcher searchFindInPage];
+    [self.commandHandler searchFindInPage];
     return;
   }
 
@@ -203,7 +214,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
       (length > kSearchDelayChars) ? kSearchShortDelay : kSearchLongDelay;
   self.delayTimer =
       [NSTimer scheduledTimerWithTimeInterval:delay
-                                       target:self.dispatcher
+                                       target:self.commandHandler
                                      selector:@selector(searchFindInPage)
                                      userInfo:nil
                                       repeats:NO];
@@ -212,7 +223,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField*)textField {
-  DCHECK(textField == self.findBarView.inputField);
+  DCHECK(textField == self.findBarViewController.findBarView.inputField);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kFindBarTextFieldWillBecomeFirstResponderNotification
                     object:self];
@@ -220,15 +231,15 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 }
 
 - (void)textFieldDidEndEditing:(UITextField*)textField {
-  DCHECK(textField == self.findBarView.inputField);
+  DCHECK(textField == self.findBarViewController.findBarView.inputField);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kFindBarTextFieldDidResignFirstResponderNotification
                     object:self];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  DCHECK(textField == self.findBarView.inputField);
-  [self.findBarView.inputField resignFirstResponder];
+  DCHECK(textField == self.findBarViewController.findBarView.inputField);
+  [self.findBarViewController.findBarView.inputField resignFirstResponder];
   return YES;
 }
 

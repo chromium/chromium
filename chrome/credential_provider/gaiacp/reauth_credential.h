@@ -60,11 +60,15 @@ class ATL_NO_VTABLE CReauthCredential
   // Returns S_OK if the user information stored in this credential matches
   // the user information that is being validated. Otherwise fills |error_text|
   // with an appropriate error message and returns an error.
-  HRESULT ValidateExistingUser(const base::string16& username,
-                               const base::string16& domain,
-                               const base::string16& sid,
+  HRESULT ValidateExistingUser(const std::wstring& username,
+                               const std::wstring& domain,
+                               const std::wstring& sid,
                                BSTR* error_text) override;
   HRESULT GetStringValueImpl(DWORD field_id, wchar_t** value) override;
+
+  // Check if tos has been accepted by this user at least once prior to this
+  // login attempt.
+  bool CheckIfTosAccepted();
 
   // Information about the OS user.
   CComBSTR os_user_domain_;

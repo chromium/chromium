@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/task/task.h"
@@ -23,12 +21,15 @@ class UpdateRequestTask : public Task {
   UpdateRequestTask(RequestQueueStore* store,
                     int64_t request_id,
                     RequestQueueStore::UpdateCallback callback);
+
+  UpdateRequestTask(const UpdateRequestTask&) = delete;
+  UpdateRequestTask& operator=(const UpdateRequestTask&) = delete;
+
   ~UpdateRequestTask() override;
 
+ protected:
   // TaskQueue::Task implementation.
   void Run() override;
-
- protected:
   // Step 1. Reading the requests.
   void ReadRequest();
   // Step 2. Work is done in the implementation step.
@@ -57,7 +58,6 @@ class UpdateRequestTask : public Task {
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<UpdateRequestTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequestTask);
 };
 
 }  // namespace offline_pages

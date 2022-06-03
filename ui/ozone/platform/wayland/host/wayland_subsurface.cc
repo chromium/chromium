@@ -1,28 +1,57 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 
+#include <cstdint>
+
+#include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
+
+namespace {
+
+// Returns DIP bounds of the subsurface relative to the parent surface.
+gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
+                                 const gfx::Rect& parent_bounds_px,
+                                 float buffer_scale) {
+  const auto bounds_dip =
+      gfx::ScaleToEnclosingRect(bounds_px, 1.0f / buffer_scale);
+  const auto parent_bounds_dip =
+      gfx::ScaleToEnclosingRect(parent_bounds_px, 1.0f / buffer_scale);
+  return wl::TranslateBoundsToParentCoordinates(bounds_dip, parent_bounds_dip);
+}
+
+}  // namespace
 
 namespace ui {
 
-WaylandSubsurface::WaylandSubsurface(PlatformWindowDelegate* delegate,
-                                     WaylandConnection* connection)
-    : WaylandWindow(delegate, connection) {}
+WaylandSubsurface::WaylandSubsurface(WaylandConnection* connection,
+                                     WaylandWindow* parent)
+    : wayland_surface_(connection, parent),
+      connection_(connection),
+      parent_(parent) {
+  DCHECK(parent_);
+  DCHECK(connection_);
+  if (!surface()) {
+    LOG(ERROR) << "Failed to create wl_surface";
+    return;
+  }
+  wayland_surface_.Initialize();
+}
 
 WaylandSubsurface::~WaylandSubsurface() = default;
 
-void WaylandSubsurface::Show(bool inactive) {
-  if (subsurface_)
-    return;
+gfx::AcceleratedWidget WaylandSubsurface::GetWidget() const {
+  return wayland_surface_.GetWidget();
+}
 
-  CreateSubsurface();
-  UpdateBufferScale(false);
+void WaylandSubsurface::Show() {
+  if (!subsurface_)
+    CreateSubsurface();
 }
 
 void WaylandSubsurface::Hide() {
@@ -30,10 +59,7 @@ void WaylandSubsurface::Hide() {
     return;
 
   subsurface_.reset();
-
-  // Detach buffer from surface in order to completely shutdown menus and
-  // tooltips, and release resources.
-  connection()->buffer_manager_host()->ResetSurfaceContents(GetWidget());
+  connection_->buffer_manager_host()->ResetSurfaceContents(wayland_surface());
 }
 
 bool WaylandSubsurface::IsVisible() const {
@@ -41,54 +67,48 @@ bool WaylandSubsurface::IsVisible() const {
 }
 
 void WaylandSubsurface::CreateSubsurface() {
-  auto* parent = parent_window();
-  if (!parent) {
-    // If Aura does not not provide a reference parent window, needed by
-    // Wayland, we get the current focused window to place and show the
-    // tooltips.
-    parent = connection()->wayland_window_manager()->GetCurrentFocusedWindow();
-  }
+  DCHECK(parent_);
 
-  // Tooltip creation is an async operation. By the time Aura actually creates
-  // the tooltip, it is possible that the user has already moved the
-  // mouse/pointer out of the window that triggered the tooptip. In this case,
-  // parent is NULL.
-  if (!parent)
-    return;
-
-  wl_subcompositor* subcompositor = connection()->subcompositor();
+  wl_subcompositor* subcompositor = connection_->subcompositor();
   DCHECK(subcompositor);
-  subsurface_.reset(wl_subcompositor_get_subsurface(subcompositor, surface(),
-                                                    parent->surface()));
-
-  // Chromium positions tooltip windows in screen coordinates, but Wayland
-  // requires them to be in local surface coordinates a.k.a relative to parent
-  // window.
-  const auto parent_bounds_dip =
-      gfx::ScaleToRoundedRect(parent->GetBounds(), 1.0 / ui_scale());
-  auto new_bounds_dip =
-      wl::TranslateBoundsToParentCoordinates(GetBounds(), parent_bounds_dip);
-  auto bounds_px =
-      gfx::ScaleToRoundedRect(new_bounds_dip, ui_scale() / buffer_scale());
+  subsurface_ = wayland_surface()->CreateSubsurface(parent_->root_surface());
 
   DCHECK(subsurface_);
-  // Convert position to DIP.
-  wl_subsurface_set_position(subsurface_.get(), bounds_px.x() / buffer_scale(),
-                             bounds_px.y() / buffer_scale());
-  wl_subsurface_set_desync(subsurface_.get());
-  wl_surface_commit(parent->surface());
-  connection()->ScheduleFlush();
+  wl_subsurface_set_sync(subsurface_.get());
+
+  // Subsurfaces don't need to trap input events. Its display rect is fully
+  // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
+  // dispatch all of the input to platform window.
+  gfx::Rect region_px;
+  wayland_surface()->SetInputRegion(&region_px);
+
+  connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
 }
 
-bool WaylandSubsurface::OnInitialize(PlatformWindowInitProperties properties) {
-  // If we do not have parent window provided, we must always use a focused
-  // window whenever the subsurface is created.
-  if (properties.parent_widget == gfx::kNullAcceleratedWidget) {
-    DCHECK(!parent_window());
-    return true;
+void WaylandSubsurface::ConfigureAndShowSurface(
+    const gfx::Rect& bounds_px,
+    const gfx::Rect& parent_bounds_px,
+    float buffer_scale,
+    const WaylandSurface* reference_below,
+    const WaylandSurface* reference_above) {
+  Show();
+
+  // Chromium positions quads in display::Display coordinates in physical
+  // pixels, but Wayland requires them to be in local surface coordinates a.k.a
+  // relative to parent window.
+  auto bounds_dip_in_parent_surface =
+      AdjustSubsurfaceBounds(bounds_px, parent_bounds_px, buffer_scale);
+  wl_subsurface_set_position(subsurface_.get(),
+                             bounds_dip_in_parent_surface.x(),
+                             bounds_dip_in_parent_surface.y());
+
+  // Setup the stacking order of this subsurface.
+  DCHECK(!reference_above || !reference_below);
+  if (reference_below) {
+    wl_subsurface_place_above(subsurface_.get(), reference_below->surface());
+  } else if (reference_above) {
+    wl_subsurface_place_below(subsurface_.get(), reference_above->surface());
   }
-  set_parent_window(GetParentWindow(properties.parent_widget));
-  return true;
 }
 
 }  // namespace ui

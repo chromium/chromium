@@ -26,6 +26,8 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 
+class GrDirectContext;
+
 namespace gpu {
 
 namespace gles2 {
@@ -60,6 +62,10 @@ class GLES2_IMPL_EXPORT ImplementationBase
   ImplementationBase(CommandBufferHelper* helper,
                      TransferBufferInterface* transfer_buffer,
                      GpuControl* gpu_control);
+
+  ImplementationBase(const ImplementationBase&) = delete;
+  ImplementationBase& operator=(const ImplementationBase&) = delete;
+
   ~ImplementationBase() override;
 
   void FreeUnusedSharedMemory();
@@ -80,11 +86,12 @@ class GLES2_IMPL_EXPORT ImplementationBase
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
-  void SetGrContext(GrContext* gr) override;
+  void SetGrContext(GrDirectContext* gr) override;
   bool HasGrContextSupport() const override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
   void SetDisplayTransform(gfx::OverlayTransform transform) override;
+  void SetFrameRate(float frame_rate) override;
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -157,8 +164,6 @@ class GLES2_IMPL_EXPORT ImplementationBase
   CommandBufferHelper* helper_;
 
   base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImplementationBase);
 };
 
 }  // namespace gpu

@@ -36,8 +36,8 @@ class FakeEngine extends SplitCompatEngine {
     }
 
     /**
-     * Copies {MODULES_SRC_DIRECTORY_PATH}/|moduleName|.apk to the folder where SplitCompat expects
-     * downloaded modules to be. Then calls SplitCompat to emulate the module.
+     * Copies {MODULES_SRC_DIRECTORY_PATH}/|package name|/|moduleName|.apk to the folder where
+     * SplitCompat expects downloaded modules to be. Then calls SplitCompat to emulate the module.
      *
      * We copy the module so that this works on non-rooted devices. The path SplitCompat expects
      * module to be is not accessible without rooting.
@@ -65,10 +65,15 @@ class FakeEngine extends SplitCompatEngine {
 
         // Get list of all files at path where SplitCompat looks for downloaded modules.
         // May change in future releases of the Play Core SDK.
-        File srcModuleDir = new File(MODULES_SRC_DIRECTORY_PATH);
+        File srcModuleDir = new File(MODULES_SRC_DIRECTORY_PATH, context.getPackageName());
         if (!srcModuleDir.exists()) {
-            Log.e(TAG, "Modules source directory does not exist");
-            return false;
+            // As fallback, check the parent directory (this is the old behavior).
+            // TODO(huangs): Delete this fallback once catapult/.../device_utils.py is updated.
+            srcModuleDir = new File(MODULES_SRC_DIRECTORY_PATH);
+            if (!srcModuleDir.exists()) {
+                Log.e(TAG, "Modules source directory does not exist");
+                return false;
+            }
         }
         if (!srcModuleDir.canRead()) {
             Log.e(TAG, "Cannot read modules source directory");

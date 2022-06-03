@@ -29,6 +29,10 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
       SessionID window_id,
       SessionID tab_id,
       const base::RepeatingCallback<void(SyncedTabDelegate*)>& notify_cb);
+
+  TestSyncedTabDelegate(const TestSyncedTabDelegate&) = delete;
+  TestSyncedTabDelegate& operator=(const TestSyncedTabDelegate&) = delete;
+
   ~TestSyncedTabDelegate() override;
 
   void Navigate(const std::string& url,
@@ -78,8 +82,6 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       entries_;
   std::vector<std::string> page_language_per_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncedTabDelegate);
 };
 
 // A placeholder delegate. These delegates have no WebContents, simulating a tab
@@ -89,6 +91,10 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
 class PlaceholderTabDelegate : public SyncedTabDelegate {
  public:
   explicit PlaceholderTabDelegate(SessionID tab_id);
+
+  PlaceholderTabDelegate(const PlaceholderTabDelegate&) = delete;
+  PlaceholderTabDelegate& operator=(const PlaceholderTabDelegate&) = delete;
+
   ~PlaceholderTabDelegate() override;
 
   // SyncedTabDelegate overrides.
@@ -118,14 +124,16 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
 
  private:
   const SessionID tab_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaceholderTabDelegate);
 };
 
 class TestSyncedWindowDelegate : public SyncedWindowDelegate {
  public:
   explicit TestSyncedWindowDelegate(SessionID window_id,
                                     sync_pb::SessionWindow_BrowserType type);
+
+  TestSyncedWindowDelegate(const TestSyncedWindowDelegate&) = delete;
+  TestSyncedWindowDelegate& operator=(const TestSyncedWindowDelegate&) = delete;
+
   ~TestSyncedWindowDelegate() override;
 
   // |delegate| must not be nullptr and must outlive this object.
@@ -154,13 +162,17 @@ class TestSyncedWindowDelegate : public SyncedWindowDelegate {
 
   std::vector<SyncedTabDelegate*> tab_delegates_;
   bool is_session_restore_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncedWindowDelegate);
 };
 
 class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
  public:
   TestSyncedWindowDelegatesGetter();
+
+  TestSyncedWindowDelegatesGetter(const TestSyncedWindowDelegatesGetter&) =
+      delete;
+  TestSyncedWindowDelegatesGetter& operator=(
+      const TestSyncedWindowDelegatesGetter&) = delete;
+
   ~TestSyncedWindowDelegatesGetter() override;
 
   void ResetWindows();
@@ -198,8 +210,6 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
   std::vector<std::unique_ptr<TestSyncedWindowDelegate>> windows_;
   std::vector<std::unique_ptr<TestSyncedTabDelegate>> tabs_;
   DummyRouter router_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncedWindowDelegatesGetter);
 };
 
 }  // namespace sync_sessions

@@ -8,14 +8,14 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/image_fetcher/core/cache/image_store_types.h"
 
 namespace image_fetcher {
 
 // Enum for the result of the fetch, reported through UMA. Present in enums.xml
 // as ImageFetcherEvent. New values should be added at the end and things
 // should not be renumbered.
-// GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.image_fetcher)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.image_fetcher
 enum class ImageFetcherEvent {
   kImageRequest = 0,
   kCacheHit = 1,
@@ -72,6 +72,12 @@ class ImageFetcherMetricsReporter {
 
   // Report the network error for the network fetch.
   static void ReportRequestStatusCode(const std::string& client_name, int code);
+
+  // Report the total cache size and number of metadata entries for a given
+  // CacheOption.
+  static void ReportCacheStatus(CacheOption cache_option,
+                                size_t total_bytes,
+                                int metadata_count);
 };
 
 }  // namespace image_fetcher

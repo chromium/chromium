@@ -6,12 +6,11 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_NOTIFICATION_SWIPE_CONTROL_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
@@ -22,8 +21,7 @@ class MessageView;
 namespace ash {
 
 // View containing 2 buttons that appears behind notification by swiping.
-class ASH_EXPORT NotificationSwipeControlView : public views::View,
-                                                public views::ButtonListener {
+class ASH_EXPORT NotificationSwipeControlView : public views::View {
  public:
   // Physical positions to show buttons in the swipe control. This is invariant
   // across RTL/LTR languages because buttons should be shown on one side which
@@ -35,13 +33,13 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View,
 
   explicit NotificationSwipeControlView(
       message_center::MessageView* message_view);
+  NotificationSwipeControlView(const NotificationSwipeControlView&) = delete;
+  NotificationSwipeControlView& operator=(const NotificationSwipeControlView&) =
+      delete;
   ~NotificationSwipeControlView() override;
 
   // views::View
   const char* GetClassName() const override;
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Update the visibility of control buttons.
   void UpdateButtonsVisibility();
@@ -50,6 +48,16 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View,
   void UpdateCornerRadius(int top_radius, int bottom_radius);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NotificationSwipeControlViewTest,
+                           DeleteOnSettingsButtonPressed);
+  FRIEND_TEST_ALL_PREFIXES(NotificationSwipeControlViewTest,
+                           DeleteOnSnoozeButtonPressed);
+
+  enum class ButtonId {
+    kSettings,
+    kSnooze,
+  };
+
   // Change the visibility of the settings button.
   void ShowButtons(ButtonPosition button_position,
                    bool has_settings,
@@ -62,13 +70,15 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View,
   // Change the visibility of the snooze button. True to show, false to hide.
   void ShowSnoozeButton(bool show);
 
+  void ButtonPressed(ButtonId button, const ui::Event& event);
+
   message_center::MessageView* const message_view_;
 
   // Owned by views hierarchy.
   views::ImageButton* settings_button_ = nullptr;
   views::ImageButton* snooze_button_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(NotificationSwipeControlView);
+  base::WeakPtrFactory<NotificationSwipeControlView> weak_factory_{this};
 };
 
 }  // namespace ash

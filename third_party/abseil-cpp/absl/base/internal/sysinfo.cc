@@ -17,7 +17,6 @@
 #include "absl/base/attributes.h"
 
 #ifdef _WIN32
-#include <shlwapi.h>
 #include <windows.h>
 #else
 #include <fcntl.h>
@@ -40,6 +39,7 @@
 #endif
 
 #include <string.h>
+
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
@@ -51,20 +51,88 @@
 #include <vector>
 
 #include "absl/base/call_once.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/spinlock.h"
 #include "absl/base/internal/unscaledcycleclock.h"
+#include "absl/base/thread_annotations.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
-static once_flag init_system_info_once;
-static int num_cpus = 0;
-static double nominal_cpu_frequency = 1.0;  // 0.0 might be dangerous.
+namespace {
+
+#if defined(_WIN32)
+
+// Returns number of bits set in `bitMask`
+DWORD Win32CountSetBits(ULONG_PTR bitMask) {
+  for (DWORD bitSetCount = 0; ; ++bitSetCount) {
+    if (bitMask == 0) return bitSetCount;
+    bitMask &= bitMask - 1;
+  }
+}
+
+// Returns the number of logical CPUs using GetLogicalProcessorInformation(), or
+// 0 if the number of processors is not available or can not be computed.
+// https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation
+int Win32NumCPUs() {
+#pragma comment(lib, "kernel32.lib")
+  using Info = SYSTEM_LOGICAL_PROCESSOR_INFORMATION;
+
+  DWORD info_size = sizeof(Info);
+  Info* info(static_cast<Info*>(malloc(info_size)));
+  if (info == nullptr) return 0;
+
+  bool success = GetLogicalProcessorInformation(info, &info_size);
+  if (!success && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+    free(info);
+    info = static_cast<Info*>(malloc(info_size));
+    if (info == nullptr) return 0;
+    success = GetLogicalProcessorInformation(info, &info_size);
+  }
+
+  DWORD logicalProcessorCount = 0;
+  if (success) {
+    Info* ptr = info;
+    DWORD byteOffset = 0;
+    while (byteOffset + sizeof(Info) <= info_size) {
+      switch (ptr->Relationship) {
+        case RelationProcessorCore:
+          logicalProcessorCount += Win32CountSetBits(ptr->ProcessorMask);
+          break;
+
+        case RelationNumaNode:
+        case RelationCache:
+        case RelationProcessorPackage:
+          // Ignore other entries
+          break;
+
+        default:
+          // Ignore unknown entries
+          break;
+      }
+      byteOffset += sizeof(Info);
+      ptr++;
+    }
+  }
+  free(info);
+  return logicalProcessorCount;
+}
+
+#endif
+
+}  // namespace
+
 
 static int GetNumCPUs() {
 #if defined(__myriad2__)
   return 1;
+#elif defined(_WIN32)
+  const unsigned hardware_concurrency = Win32NumCPUs();
+  return hardware_concurrency ? hardware_concurrency : 1;
+#elif defined(_AIX)
+  return sysconf(_SC_NPROCESSORS_ONLN);
 #else
   // Other possibilities:
   //  - Read /sys/devices/system/cpu/online and use cpumask_parse()
@@ -76,16 +144,32 @@ static int GetNumCPUs() {
 #if defined(_WIN32)
 
 static double GetNominalCPUFrequency() {
-  DWORD data;
-  DWORD data_size = sizeof(data);
-  #pragma comment(lib, "shlwapi.lib")  // For SHGetValue().
-  if (SUCCEEDED(
-          SHGetValueA(HKEY_LOCAL_MACHINE,
-                      "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
-                      "~MHz", nullptr, &data, &data_size))) {
-    return data * 1e6;  // Value is MHz.
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) && \
+    !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+  // UWP apps don't have access to the registry and currently don't provide an
+  // API informing about CPU nominal frequency.
+  return 1.0;
+#else
+#pragma comment(lib, "advapi32.lib")  // For Reg* functions.
+  HKEY key;
+  // Use the Reg* functions rather than the SH functions because shlwapi.dll
+  // pulls in gdi32.dll which makes process destruction much more costly.
+  if (RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+                    "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0,
+                    KEY_READ, &key) == ERROR_SUCCESS) {
+    DWORD type = 0;
+    DWORD data = 0;
+    DWORD data_size = sizeof(data);
+    auto result = RegQueryValueExA(key, "~MHz", 0, &type,
+                                   reinterpret_cast<LPBYTE>(&data), &data_size);
+    RegCloseKey(key);
+    if (result == ERROR_SUCCESS && type == REG_DWORD &&
+        data_size == sizeof(data)) {
+      return data * 1e6;  // Value is MHz.
+    }
   }
   return 1.0;
+#endif  // WINAPI_PARTITION_APP && !WINAPI_PARTITION_DESKTOP
 }
 
 #elif defined(CTL_HW) && defined(HW_CPU_FREQ)
@@ -256,28 +340,34 @@ static double GetNominalCPUFrequency() {
 
 #endif
 
-// InitializeSystemInfo() may be called before main() and before
-// malloc is properly initialized, therefore this must not allocate
-// memory.
-static void InitializeSystemInfo() {
-  num_cpus = GetNumCPUs();
-  nominal_cpu_frequency = GetNominalCPUFrequency();
-}
+ABSL_CONST_INIT static once_flag init_num_cpus_once;
+ABSL_CONST_INIT static int num_cpus = 0;
 
+// NumCPUs() may be called before main() and before malloc is properly
+// initialized, therefore this must not allocate memory.
 int NumCPUs() {
-  base_internal::LowLevelCallOnce(&init_system_info_once, InitializeSystemInfo);
+  base_internal::LowLevelCallOnce(
+      &init_num_cpus_once, []() { num_cpus = GetNumCPUs(); });
   return num_cpus;
 }
 
+// A default frequency of 0.0 might be dangerous if it is used in division.
+ABSL_CONST_INIT static once_flag init_nominal_cpu_frequency_once;
+ABSL_CONST_INIT static double nominal_cpu_frequency = 1.0;
+
+// NominalCPUFrequency() may be called before main() and before malloc is
+// properly initialized, therefore this must not allocate memory.
 double NominalCPUFrequency() {
-  base_internal::LowLevelCallOnce(&init_system_info_once, InitializeSystemInfo);
+  base_internal::LowLevelCallOnce(
+      &init_nominal_cpu_frequency_once,
+      []() { nominal_cpu_frequency = GetNominalCPUFrequency(); });
   return nominal_cpu_frequency;
 }
 
 #if defined(_WIN32)
 
 pid_t GetTID() {
-  return GetCurrentThreadId();
+  return pid_t{GetCurrentThreadId()};
 }
 
 #elif defined(__linux__)
@@ -325,15 +415,16 @@ pid_t GetTID() {
 #else
 
 // Fallback implementation of GetTID using pthread_getspecific.
-static once_flag tid_once;
-static pthread_key_t tid_key;
-static absl::base_internal::SpinLock tid_lock(
-    absl::base_internal::kLinkerInitialized);
+ABSL_CONST_INIT static once_flag tid_once;
+ABSL_CONST_INIT static pthread_key_t tid_key;
+ABSL_CONST_INIT static absl::base_internal::SpinLock tid_lock(
+    absl::kConstInit, base_internal::SCHEDULE_KERNEL_ONLY);
 
 // We set a bit per thread in this array to indicate that an ID is in
 // use. ID 0 is unused because it is the default value returned by
 // pthread_getspecific().
-static std::vector<uint32_t>* tid_array ABSL_GUARDED_BY(tid_lock) = nullptr;
+ABSL_CONST_INIT static std::vector<uint32_t> *tid_array
+    ABSL_GUARDED_BY(tid_lock) = nullptr;
 static constexpr int kBitsPerWord = 32;  // tid_array is uint32_t.
 
 // Returns the TID to tid_array.
@@ -400,5 +491,18 @@ pid_t GetTID() {
 
 #endif
 
+// GetCachedTID() caches the thread ID in thread-local storage (which is a
+// userspace construct) to avoid unnecessary system calls. Without this caching,
+// it can take roughly 98ns, while it takes roughly 1ns with this caching.
+pid_t GetCachedTID() {
+#ifdef ABSL_HAVE_THREAD_LOCAL
+  static thread_local pid_t thread_id = GetTID();
+  return thread_id;
+#else
+  return GetTID();
+#endif  // ABSL_HAVE_THREAD_LOCAL
+}
+
 }  // namespace base_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

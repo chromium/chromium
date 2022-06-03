@@ -4,7 +4,7 @@
 
 #include "components/viz/common/gpu/context_lost_reason.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace viz {
 

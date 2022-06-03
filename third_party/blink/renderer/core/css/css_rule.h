@@ -42,9 +42,8 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
  public:
   ~CSSRule() override = default;
 
-  // The values must match the table in [1]. See also css_rule.idl.
-  // [1] https://wiki.csswg.org/spec/cssom-constants
   enum Type {
+    // Web-exposed values, see css_rule.idl:
     kStyleRule = 1,
     kCharsetRule = 2,
     kImportRule = 3,
@@ -54,14 +53,30 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kKeyframesRule = 7,
     kKeyframeRule = 8,
     kNamespaceRule = 10,
+    kCounterStyleRule = 11,
     kSupportsRule = 12,
     kViewportRule = 15,
-    kPropertyRule = 18,
-    // Experimental features below. Such features must be greater than 1000:
-    // the 0-1000 range is reserved by the CSS Working Group.
+    // CSSOM constants are deprecated [1], and there will be no new
+    // web-exposed values.
+    //
+    // [1] https://wiki.csswg.org/spec/cssom-constants
+
+    // Values for internal use, not web-exposed:
+    kPropertyRule = 16,
+    kScrollTimelineRule = 17,
+    kContainerRule = 18,
+    kLayerBlockRule = 19,
+    kLayerStatementRule = 20,
   };
 
-  virtual Type type() const = 0;
+  virtual Type GetType() const = 0;
+
+  // https://drafts.csswg.org/cssom/#dom-cssrule-type
+  int type() const {
+    Type type = GetType();
+    return type > Type::kViewportRule ? 0 : static_cast<int>(type);
+  }
+
   virtual String cssText() const = 0;
   virtual void Reattach(StyleRuleBase*) = 0;
 
@@ -71,26 +86,23 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
 
   void SetParentRule(CSSRule*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   CSSStyleSheet* parentStyleSheet() const {
     if (parent_is_rule_)
-      return parent_rule_ ? parent_rule_->parentStyleSheet() : nullptr;
-    return parent_style_sheet_;
+      return parent_ ? ParentAsCSSRule()->parentStyleSheet() : nullptr;
+    return ParentAsCSSStyleSheet();
   }
 
   CSSRule* parentRule() const {
-    return parent_is_rule_ ? parent_rule_ : nullptr;
+    return parent_is_rule_ ? ParentAsCSSRule() : nullptr;
   }
 
   // The CSSOM spec states that "setting the cssText attribute must do nothing."
   void setCSSText(const String&) {}
 
  protected:
-  CSSRule(CSSStyleSheet* parent)
-      : has_cached_selector_text_(false),
-        parent_is_rule_(false),
-        parent_style_sheet_(parent) {}
+  CSSRule(CSSStyleSheet* parent);
 
   bool HasCachedSelectorText() const { return has_cached_selector_text_; }
   void SetHasCachedSelectorText(bool has_cached_selector_text) const {
@@ -100,14 +112,27 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   const CSSParserContext* ParserContext(SecureContextMode) const;
 
  private:
+  bool VerifyParentIsCSSRule() const;
+  bool VerifyParentIsCSSStyleSheet() const;
+
+  CSSRule* ParentAsCSSRule() const {
+    DCHECK(parent_is_rule_);
+    DCHECK(VerifyParentIsCSSRule());
+    return reinterpret_cast<CSSRule*>(parent_.Get());
+  }
+  CSSStyleSheet* ParentAsCSSStyleSheet() const {
+    DCHECK(!parent_is_rule_);
+    DCHECK(VerifyParentIsCSSStyleSheet());
+    return reinterpret_cast<CSSStyleSheet*>(parent_.Get());
+  }
+
   mutable unsigned char has_cached_selector_text_ : 1;
   unsigned char parent_is_rule_ : 1;
 
-  // These should be Members, but no Members in unions.
-  union {
-    CSSRule* parent_rule_;
-    CSSStyleSheet* parent_style_sheet_;
-  };
+  // parent_ should reference either CSSRule or CSSStyleSheet (both are
+  // descendants of ScriptWrappable). This field should only be accessed
+  // via the getters above (ParentAsCSSRule and ParentAsCSSStyleSheet).
+  Member<ScriptWrappable> parent_;
 };
 
 }  // namespace blink

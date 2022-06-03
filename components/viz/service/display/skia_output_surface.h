@@ -9,23 +9,29 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 #if defined(OS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
 class SkCanvas;
 class SkImage;
+
+#if defined(OS_APPLE)
+class SkDeferredDisplayList;
+#endif
 
 namespace gfx {
 class ColorSpace;
@@ -50,7 +56,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
  public:
 #if defined(OS_ANDROID)
   using OverlayList = std::vector<OverlayCandidate>;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   using OverlayList = CALayerOverlayList;
 #elif defined(OS_WIN)
   using OverlayList = DCLayerOverlayList;
@@ -62,6 +68,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 #endif
 
   explicit SkiaOutputSurface(OutputSurface::Type type);
+
+  SkiaOutputSurface(const SkiaOutputSurface&) = delete;
+  SkiaOutputSurface& operator=(const SkiaOutputSurface&) = delete;
+
   ~SkiaOutputSurface() override;
 
   SkiaOutputSurface* AsSkiaOutputSurface() override;
@@ -83,21 +93,17 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void MakePromiseSkImage(
       ExternalUseClient::ImageContext* image_context) = 0;
 
-  // Make a promise SkImage from the given |contexts| and the |yuv_color_space|.
-  // For YUV format, at least three resource contexts should be provided.
-  // contexts[0] contains pixels from y panel, contexts[1] contains pixels
-  // from u panel, contexts[2] contains pixels from v panel. For NV12 format,
-  // at least two resource contexts should be provided. contexts[0] contains
-  // pixels from y panel, contexts[1] contains pixels from u and v panels. If
-  // has_alpha is true, the last item in contexts contains alpha panel.
+  // Make a promise SkImage from the given |contexts| and |image_color_space|.
+  // The number of contexts provided should match the number of planes indicated
+  // by plane_config.
   virtual sk_sp<SkImage> MakePromiseSkImageFromYUV(
       const std::vector<ExternalUseClient::ImageContext*>& contexts,
-      SkYUVColorSpace yuv_color_space,
-      sk_sp<SkColorSpace> dst_color_space,
-      bool has_alpha) = 0;
+      sk_sp<SkColorSpace> image_color_space,
+      SkYUVAInfo::PlaneConfig plane_config,
+      SkYUVAInfo::Subsampling subsampling) = 0;
 
-  // Swaps the current backbuffer to the screen.
-  virtual void SkiaSwapBuffers(OutputSurfaceFrame frame) = 0;
+  // Called if SwapBuffers() will be skipped.
+  virtual void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) = 0;
 
   // TODO(weiliangc): This API should move to OverlayProcessor.
   // Schedule |output_surface_plane| as an overlay plane to be displayed.
@@ -110,55 +116,54 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // will use this SkCanvas to paint the render pass.
   // Note: BeginPaintRenderPass cannot be called without finishing the prior
   // paint render pass.
-  virtual SkCanvas* BeginPaintRenderPass(const RenderPassId& id,
+  virtual SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                          const gfx::Size& size,
                                          ResourceFormat format,
                                          bool mipmap,
-                                         sk_sp<SkColorSpace> color_space) = 0;
+                                         sk_sp<SkColorSpace> color_space,
+                                         const gpu::Mailbox& mailbox) = 0;
 
   // Finish painting the current frame or current render pass, depends on which
   // BeginPaint function is called last. This method will schedule a GPU task to
-  // play the DDL back on GPU thread on a cached SkSurface. This method returns
-  // a sync token which can be waited on in a command buffer to ensure the paint
-  // operation is completed. This token is released when the GPU ops from
-  // painting the render pass have been seen and processed by the GPU main.
+  // play the DDL back on GPU thread on a cached SkSurface.
   // Optionally the caller may specify |on_finished| callback to be called after
   // the GPU has finished processing all submitted commands. The callback may be
   // called on a different thread.
-  virtual gpu::SyncToken SubmitPaint(base::OnceClosure on_finished) = 0;
+  virtual void EndPaint(base::OnceClosure on_finished) = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been
   // painted with BeginPaintRenderPass and FinishPaintRenderPass. The format
   // and mipmap must match arguments used for BeginPaintRenderPass() to paint
   // this render pass.
   virtual sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
-      const RenderPassId& id,
+      const AggregatedRenderPassId& id,
       const gfx::Size& size,
       ResourceFormat format,
       bool mipmap,
-      sk_sp<SkColorSpace> color_space) = 0;
+      sk_sp<SkColorSpace> color_space,
+      const gpu::Mailbox& mailbox) = 0;
 
   // Remove cached resources generated by BeginPaintRenderPass and
   // FinishPaintRenderPass.
-  virtual void RemoveRenderPassResource(std::vector<RenderPassId> ids) = 0;
+  virtual void RemoveRenderPassResource(
+      std::vector<AggregatedRenderPassId> ids) = 0;
 
   // Copy the output of the current frame if the |id| is zero, otherwise copy
   // the output of a cached SkSurface for the given |id|.
-  virtual void CopyOutput(RenderPassId id,
+  virtual void CopyOutput(AggregatedRenderPassId id,
                           const copy_output::RenderPassGeometry& geometry,
                           const gfx::ColorSpace& color_space,
-                          std::unique_ptr<CopyOutputRequest> request) = 0;
+                          std::unique_ptr<CopyOutputRequest> request,
+                          const gpu::Mailbox& mailbox) = 0;
 
-  // Schedule drawing overlays at next SkiaSwapBuffers() call. Waits on
+  // Schedule drawing overlays at next SwapBuffers() call. Waits on
   // |sync_tokens| for the overlay textures to be ready before scheduling.
+  // Optionally the caller may specify |on_finished| callback to be called after
+  // the GPU has finished processing all submitted commands. The callback may be
+  // called on a different thread.
   virtual void ScheduleOverlays(OverlayList overlays,
-                                std::vector<gpu::SyncToken> sync_tokens) = 0;
-
-#if defined(OS_WIN)
-  // Enables/disables drawing with DC layers. Should be enabled before
-  // ScheduleDCLayers() will be called.
-  virtual void SetEnableDCLayers(bool enable) = 0;
-#endif
+                                std::vector<gpu::SyncToken> sync_tokens,
+                                base::OnceClosure on_finished) = 0;
 
   // Add context lost observer.
   virtual void AddContextLostObserver(ContextLostObserver* observer) = 0;
@@ -171,15 +176,31 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
 
-  // Only used for the Android pre-SurfaceControl overlay code path to pass all
-  // promotion hints.
-  virtual void SendOverlayPromotionNotification(
-      std::vector<gpu::SyncToken> sync_tokens,
-      base::flat_set<gpu::Mailbox> promotion_denied,
-      base::flat_map<gpu::Mailbox, gfx::Rect> possible_promotions) = 0;
+  // Android specific, asks GLSurfaceEGLSurfaceControl to not detach child
+  // surface controls during destruction. This is necessary for cases when we
+  // switch from chrome to other app, the OS will take care of the cleanup.
+  virtual void PreserveChildSurfaceControls() = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurface);
+  // Flush pending GPU tasks. This method returns a sync token which can be
+  // waited on in a command buffer to ensure all pending tasks are executed on
+  // the GPU main thread.
+  virtual gpu::SyncToken Flush() = 0;
+
+  // Only used for creating and destroying shared images for render passes
+  virtual gpu::SharedImageInterface* GetSharedImageInterface() = 0;
+
+  // Notify OutputSurface that Display has started and stopped observing
+  // begin frames. Used to estimate when rendering becomes idle.
+  virtual void OnObservingBeginFrameSourceChanged(bool observing) = 0;
+
+#if defined(OS_APPLE) || defined(USE_OZONE)
+  virtual SkCanvas* BeginPaintRenderPassOverlay(
+      const gfx::Size& size,
+      ResourceFormat format,
+      bool mipmap,
+      sk_sp<SkColorSpace> color_space) = 0;
+  virtual sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() = 0;
+#endif
 };
 
 }  // namespace viz

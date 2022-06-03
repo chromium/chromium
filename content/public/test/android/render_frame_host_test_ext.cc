@@ -8,10 +8,12 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
-#include "content/browser/frame_host/render_frame_host_android.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "base/memory/ptr_util.h"
+#include "content/browser/renderer_host/render_frame_host_android.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/android/content_test_jni/RenderFrameHostTestExt_jni.h"
+#include "ui/gfx/geometry/rect.h"
 
 using base::android::JavaParamRef;
 
@@ -53,11 +55,33 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jscript,
     const JavaParamRef<jobject>& jcallback) {
-  base::string16 script(ConvertJavaStringToUTF16(env, jscript));
+  std::u16string script(ConvertJavaStringToUTF16(env, jscript));
   auto callback = base::BindOnce(
       &OnExecuteJavaScriptResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
   render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+}
+
+void RenderFrameHostTestExt::UpdateVisualState(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jcallback) {
+  auto result_callback = base::BindOnce(
+      &base::android::RunBooleanCallbackAndroid,
+      base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
+  render_frame_host_->InsertVisualStateCallback(std::move(result_callback));
+}
+
+void RenderFrameHostTestExt::NotifyVirtualKeyboardOverlayRect(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint x,
+    jint y,
+    jint width,
+    jint height) {
+  gfx::Size size(width, height);
+  gfx::Point origin(x, y);
+  render_frame_host_->NotifyVirtualKeyboardOverlayRect(gfx::Rect(origin, size));
 }
 
 }  // namespace content

@@ -11,17 +11,15 @@ namespace device {
 namespace fido {
 namespace mac {
 
-// Operation is the interface to OperationBase.
 class Operation {
  public:
-  virtual ~Operation() = default;
-  virtual void Run() = 0;
-
- protected:
   Operation() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Operation);
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
+
+  virtual ~Operation() = default;
+  virtual void Run() = 0;
 };
 
 }  // namespace mac

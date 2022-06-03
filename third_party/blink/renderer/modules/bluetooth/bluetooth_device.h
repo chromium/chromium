@@ -5,13 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_DEVICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_DEVICE_H_
 
-#include <memory>
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_server.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -22,6 +24,8 @@ class BluetoothRemoteGATTCharacteristic;
 class BluetoothRemoteGATTDescriptor;
 class BluetoothRemoteGATTServer;
 class BluetoothRemoteGATTService;
+class ScriptPromiseResolver;
+class WatchAdvertisementsOptions;
 
 // BluetoothDevice represents a physical bluetooth device in the DOM. See IDL.
 //
@@ -29,10 +33,12 @@ class BluetoothRemoteGATTService;
 // CallbackPromiseAdapter templatized with this class. See this class's
 // "Interface required by CallbackPromiseAdapter" section and the
 // CallbackPromiseAdapter class comments.
-class BluetoothDevice final : public EventTargetWithInlineData,
-                              public ContextLifecycleObserver {
+class BluetoothDevice final
+    : public EventTargetWithInlineData,
+      public ExecutionContextClient,
+      public ActiveScriptWrappable<BluetoothDevice>,
+      public mojom::blink::WebBluetoothAdvertisementClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(BluetoothDevice);
 
  public:
   BluetoothDevice(ExecutionContext*,
@@ -76,13 +82,26 @@ class BluetoothDevice final : public EventTargetWithInlineData,
   Bluetooth* GetBluetooth() { return bluetooth_; }
 
   // Interface required by Garbage Collection:
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // IDL exposed interface:
+  ScriptPromise watchAdvertisements(ScriptState*,
+                                    const WatchAdvertisementsOptions*,
+                                    ExceptionState&);
   String id() { return device_->id; }
   String name() { return device_->name; }
   BluetoothRemoteGATTServer* gatt() { return gatt_; }
+  bool watchingAdvertisements() { return client_receiver_.is_bound(); }
 
+  void AbortWatchAdvertisements();
+
+  // WebBluetoothAdvertisementClient:
+  void AdvertisingEvent(mojom::blink::WebBluetoothAdvertisingEventPtr) override;
+
+  // ActiveScriptWrappable:
+  bool HasPendingActivity() const override;
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(advertisementreceived, kAdvertisementreceived)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(gattserverdisconnected,
                                   kGattserverdisconnected)
 
@@ -92,12 +111,20 @@ class BluetoothDevice final : public EventTargetWithInlineData,
                           RegisteredEventListener&) override;
 
  private:
+  void WatchAdvertisementsCallback(mojom::blink::WebBluetoothResult);
+
   // Holds all GATT Attributes associated with this BluetoothDevice.
   Member<BluetoothAttributeInstanceMap> attribute_instance_map_;
 
   mojom::blink::WebBluetoothDevicePtr device_;
   Member<BluetoothRemoteGATTServer> gatt_;
   Member<Bluetooth> bluetooth_;
+
+  Member<ScriptPromiseResolver> watch_advertisements_resolver_;
+
+  HeapMojoAssociatedReceiver<mojom::blink::WebBluetoothAdvertisementClient,
+                             BluetoothDevice>
+      client_receiver_;
 };
 
 }  // namespace blink

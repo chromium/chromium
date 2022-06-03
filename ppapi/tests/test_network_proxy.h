@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_NETWORK_PROXY_H_
-#define PAPPI_TESTS_TEST_NETWORK_PROXY_H_
+#ifndef PPAPI_TESTS_TEST_NETWORK_PROXY_H_
+#define PPAPI_TESTS_TEST_NETWORK_PROXY_H_
 
 #include <string>
 
@@ -20,4 +20,4 @@ class TestNetworkProxy : public TestCase {
   std::string TestGetProxyForURL();
 };
 
-#endif  // PAPPI_TESTS_TEST_NETWORK_PROXY_H_
+#endif  // PPAPI_TESTS_TEST_NETWORK_PROXY_H_

@@ -36,7 +36,7 @@ void TestImeControllerClient::SetCapsLockEnabled(bool enabled) {
 }
 
 void TestImeControllerClient::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset,
+    input_method::ImeKeyset keyset,
     OverrideKeyboardKeysetCallback callback) {
   last_keyset_ = keyset;
   std::move(callback).Run();

@@ -24,7 +24,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_VALIDITY_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_VALIDITY_STATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -35,8 +34,10 @@ class ValidityState final : public ScriptWrappable {
 
  public:
   explicit ValidityState(ListedElement* control) : control_(control) {}
+  ValidityState(const ValidityState&) = delete;
+  ValidityState& operator=(const ValidityState&) = delete;
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(control_);
     ScriptWrappable::Trace(visitor);
   }
@@ -59,8 +60,6 @@ class ValidityState final : public ScriptWrappable {
 
  private:
   Member<ListedElement> control_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidityState);
 };
 
 }  // namespace blink

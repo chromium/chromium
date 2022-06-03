@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
-
 action("bake_in_configs") {
   visibility = [ ":*" ]
   script = "bake_in_configs.py"
@@ -33,9 +30,7 @@ action("bake_in_configs") {
   ]
 
   output_file = "$target_gen_dir/baked_in_configs.cc"
-  outputs = [
-    output_file,
-  ]
+  outputs = [ output_file ]
 
   # The JSON file list is too long for the command line on Windows, so put
   # them in a response file.
@@ -48,7 +43,7 @@ action("bake_in_configs") {
   ]
 }
 
-jumbo_component("domain_reliability") {
+component("domain_reliability") {
   sources = [
     "baked_in_configs.h",
     "beacon.cc",
@@ -63,10 +58,10 @@ jumbo_component("domain_reliability") {
     "dispatcher.cc",
     "dispatcher.h",
     "domain_reliability_export.h",
+    "features.cc",
+    "features.h",
     "google_configs.cc",
     "google_configs.h",
-    "header.cc",
-    "header.h",
     "monitor.cc",
     "monitor.h",
     "quic_error_mapping.cc",
@@ -90,14 +85,13 @@ jumbo_component("domain_reliability") {
   ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
   sources = [
     "config_unittest.cc",
     "context_unittest.cc",
     "dispatcher_unittest.cc",
     "google_configs_unittest.cc",
-    "header_unittest.cc",
     "monitor_unittest.cc",
     "scheduler_unittest.cc",
     "test_util.cc",
@@ -106,8 +100,6 @@ jumbo_source_set("unit_tests") {
     "util_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":domain_reliability",
     "//base",
@@ -115,16 +107,4 @@ jumbo_source_set("unit_tests") {
     "//net:test_support",
     "//testing/gtest",
   ]
-}
-
-fuzzer_test("domain_reliability_header_fuzzer") {
-  sources = [
-    "header_fuzzer.cc",
-  ]
-  deps = [
-    ":domain_reliability",
-    "//base",
-    "//base:i18n",
-  ]
-  dict = "header.dict"
 }

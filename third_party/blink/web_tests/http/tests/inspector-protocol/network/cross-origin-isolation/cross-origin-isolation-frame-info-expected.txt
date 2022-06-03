@@ -1,0 +1,17 @@
+Verifies that we can successfully retrieve frame info from frame tree.
+Frame: {
+    adFrameStatus : <object>
+    crossOriginIsolatedContextType : Isolated
+    domainAndRegistry : oopif.test
+    gatedAPIFeatures : [
+        [0] : SharedArrayBuffers
+        [1] : SharedArrayBuffersTransferAllowed
+    ]
+    id : <string>
+    loaderId : <string>
+    mimeType : text/html
+    secureContextType : Secure
+    securityOrigin : https://devtools.oopif.test:8443
+    url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-site&coop
+}
+

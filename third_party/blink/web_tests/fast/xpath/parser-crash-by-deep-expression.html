@@ -4,7 +4,7 @@
 <script src="../../resources/gc.js"></script>
 <script>
 test(() => {
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     // window.gc() may return a value. This test expects the resolver
     // function returns no value.
     document.createExpression(

@@ -1,0 +1,25 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package gaia;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// This message is a pass-through for chrome.identity extension remote consent
+// implementation. It is both created and consumed by LSO, and passed through
+// the browser via as a web-safe omit-padding base64-encoded string in the
+// `consent_result` field of the IssueToken request.
+message OAuth2MintTokenConsentResult {
+  optional bool approved = 1;
+
+  // Opaque data to be passed to the IssueToken.
+  // Absent if `approved` is false.
+  optional bytes encrypted_approval_data = 2;
+
+  // The obfuscated gaia ID of the user that was shown the consent page.
+  optional string obfuscated_id = 3;
+}

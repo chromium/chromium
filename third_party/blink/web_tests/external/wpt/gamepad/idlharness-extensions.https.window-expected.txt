@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Gamepad: original interface defined
+PASS Partial interface Gamepad: member names are unique
+PASS GamepadHapticActuator interface: existence and properties of interface object
+PASS GamepadHapticActuator interface object length
+PASS GamepadHapticActuator interface object name
+PASS GamepadHapticActuator interface: existence and properties of interface prototype object
+PASS GamepadHapticActuator interface: existence and properties of interface prototype object's "constructor" property
+PASS GamepadHapticActuator interface: existence and properties of interface prototype object's @@unscopables property
+PASS GamepadHapticActuator interface: attribute type
+FAIL GamepadHapticActuator interface: operation pulse(double, double) assert_own_property: interface prototype object missing non-static operation expected property "pulse" missing
+FAIL GamepadPose interface: existence and properties of interface object assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface object length assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface object name assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: existence and properties of interface prototype object assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute hasOrientation assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute hasPosition assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute position assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute linearVelocity assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute linearAcceleration assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute orientation assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute angularVelocity assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadPose interface: attribute angularAcceleration assert_own_property: self does not have own property "GamepadPose" expected property "GamepadPose" missing
+FAIL GamepadTouch interface: existence and properties of interface object assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface object length assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface object name assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: existence and properties of interface prototype object assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: attribute touchId assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: attribute surfaceId assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: attribute position assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL GamepadTouch interface: attribute surfaceDimensions assert_own_property: self does not have own property "GamepadTouch" expected property "GamepadTouch" missing
+FAIL Gamepad interface: attribute hand assert_true: The prototype object must have a property "hand" expected true got false
+FAIL Gamepad interface: attribute hapticActuators assert_true: The prototype object must have a property "hapticActuators" expected true got false
+FAIL Gamepad interface: attribute pose assert_true: The prototype object must have a property "pose" expected true got false
+FAIL Gamepad interface: attribute touchEvents assert_true: The prototype object must have a property "touchEvents" expected true got false
+Harness: the test ran to completion.
+

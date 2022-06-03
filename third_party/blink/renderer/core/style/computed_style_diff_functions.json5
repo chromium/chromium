@@ -1,5 +1,5 @@
 {
-  // This file specifies the fields we want to diff in the various diff functions 
+  // This file specifies the fields we want to diff in the various diff functions
   // in ComputedStyle.
 
   parameters: {
@@ -9,7 +9,7 @@
       default: [],
     },
 
-    // A list of methods to diff (these can be public getters of fields or 
+    // A list of methods to diff (these can be public getters of fields or
     // functions that use fields to determine a value).
     // Each entry is expressed as a dict of two fields:
     // 1. method: the method to be diffed
@@ -23,7 +23,7 @@
     // Each entry is expressed as a dict of two fields:
     // 1. predicate: the predicate to be tested
     // 2. field_dependencies: lists the properties this predicate test depends on.
-    // TODO: Note that you also have to pass in the arguments for the predicate. 
+    // TODO: Note that you also have to pass in the arguments for the predicate.
     // This may be removed in the future if we are always passing the other ComputedStyle
     predicates_to_test: {
       default: [],
@@ -32,10 +32,10 @@
   data: [
     {
         name: "ScrollAnchorDisablingPropertyChanged",
-        fields_to_diff: ["width", "min-width", "max-width", "height", "min-height", "max-height", "margin-top", "margin-left", "margin-right", "margin-bottom", 
-                  "left", "right", "top", "bottom", "padding-top", 
+        fields_to_diff: ["width", "min-width", "max-width", "height", "min-height", "max-height", "margin-top", "margin-left", "margin-right", "margin-bottom",
+                  "left", "right", "top", "bottom", "padding-top",
                   "padding-left", "padding-right", "padding-bottom",
-                  "intrinsic-width", "intrinsic-height"],
+                  "contain-intrinsic-width", "contain-intrinsic-height"],
         methods_to_diff: [
           {
             method: "GetPosition()",
@@ -48,10 +48,6 @@
         fields_to_diff: ["font"],
         methods_to_diff: [
           {
-            method: "FontInternal().LoadingCustomFonts()",
-            field_dependencies: ["font"]
-          },
-          {
             method: "TextTransform()",
             field_dependencies: ["text-transform"]
           },
@@ -59,11 +55,6 @@
             method: "WhiteSpace()",
             field_dependencies: ["white-space"]
           },
-        ]
-    },
-    {
-        name: "DiffNeedsCollectInlinesAndFullLayoutAndPaintInvalidation",
-        methods_to_diff: [
           {
             method: "Direction()",
             field_dependencies: ["direction"]
@@ -80,37 +71,43 @@
     },
     {
         name: "DiffNeedsFullLayoutAndPaintInvalidation",
-        fields_to_diff: ["padding-top", "padding-left", "padding-right", 
-                "padding-bottom", "-webkit-appearance", "-webkit-line-clamp",
+        fields_to_diff: ["padding-top", "padding-left", "padding-right",
+                "padding-bottom", "appearance", "-webkit-line-clamp",
                 "text-overflow", "shape-margin", "order", "-webkit-highlight",
-                "text-indent", "text-align-last", "TextIndentLine", "-internal-effective-zoom",
-                "word-break", "overflow-wrap", "-webkit-line-break", 
-                "-webkit-text-security", "hyphens", "HyphenationLimitBefore", 
-                "HyphenationLimitAfter", "-webkit-hyphenate-character", 
-                "image-orientation", "-webkit-ruby-position", 
-                "TextEmphasisMark", "-webkit-text-emphasis-position", 
-                "TextEmphasisCustomMark", "text-justify", "text-orientation", 
-                "text-combine-upright", "tab-size", "text-size-adjust", 
-                "list-style-image", "line-height-step", 
+                "text-indent", "text-align-last", "TextIndentLine", "EffectiveZoom",
+                "word-break", "overflow-wrap", "-webkit-line-break",
+                "-webkit-text-security", "hyphens", "HyphenationLimitBefore",
+                "HyphenationLimitAfter", "-webkit-hyphenate-character",
+                "image-orientation", "-webkit-ruby-position",
+                "TextEmphasisMark", "-webkit-text-emphasis-position",
+                "TextEmphasisCustomMark", "text-justify", "text-orientation",
+                "text-combine-upright", "tab-size", "text-size-adjust",
+                "list-style-image", "line-height-step",
                 "-webkit-text-stroke-width", "line-height",
-                "-webkit-border-horizontal-spacing", 
-                "-webkit-border-vertical-spacing", "TextAutosizingMultiplier", 
-                "NamedGridColumnLines", "NamedGridRowLines", "OrderedNamedGridColumnLines", 
-                "OrderedNamedGridRowLines", "AutoRepeatNamedGridColumnLines", 
-                "AutoRepeatNamedGridRowLines", "AutoRepeatOrderedNamedGridColumnLines", 
-                "AutoRepeatOrderedNamedGridRowLines", "NamedGridArea", "grid-auto-rows", 
+                "-webkit-border-horizontal-spacing",
+                "-webkit-border-vertical-spacing", "TextAutosizingMultiplier",
+                "NamedGridColumnLines", "NamedGridRowLines", "OrderedNamedGridColumnLines",
+                "OrderedNamedGridRowLines", "AutoRepeatNamedGridColumnLines",
+                "AutoRepeatNamedGridRowLines", "AutoRepeatOrderedNamedGridColumnLines",
+                "AutoRepeatOrderedNamedGridRowLines", "ImplicitNamedGridColumnLines",
+                "ImplicitNamedGridRowLines", "NamedGridArea", "grid-auto-rows",
                 "grid-template-rows", "grid-template-columns", "grid-auto-columns", "row-gap",
-                "NamedGridAreaRowCount", "NamedGridAreaColumnCount", 
-                "GridAutoRepeatColumns", "GridAutoRepeatRows", "GridAutoRepeatColumnsInsertionPoint", 
-                "GridAutoRepeatRowsInsertionPoint", "grid-auto-flow", "GridAutoRepeatColumnsType", 
-                "GridAutoRepeatRowsType", "-webkit-box-flex", 
-                "-webkit-box-ordinal-group", "flex-basis", 
-                "flex-shrink", "flex-grow", "flex-direction", "flex-wrap", "-webkit-box-align", 
+                "NamedGridAreaRowCount", "NamedGridAreaColumnCount",
+                "GridAutoRepeatColumns", "GridAutoRepeatRows", "GridAutoRepeatColumnsInsertionPoint",
+                "GridAutoRepeatRowsInsertionPoint", "grid-auto-flow", "GridAutoRepeatColumnsType",
+                "GridAutoRepeatRowsType", "-webkit-box-flex",
+                "-webkit-box-ordinal-group", "flex-basis",
+                "flex-shrink", "flex-grow", "flex-direction", "flex-wrap", "-webkit-box-align",
                 "-webkit-box-pack", "-webkit-box-orient",
                 "grid-row-start", "grid-row-end", "grid-column-start", "grid-column-end",
                 "column-gap", "column-width", "column-rule-style",
-                "column-rule-width", "column-rule-color", "ColumnRuleColorIsCurrentColor", "-internal-visited-column-rule-color",
-                "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",],
+                "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
+                "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
+                "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
+                "BaselineShiftType", "baseline-shift", "dominant-baseline",
+                "CssDominantBaseline", "text-anchor",
+                "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
+                "marker-end", "marker-mid", "marker-start", "scrollbar-width"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
@@ -127,10 +124,6 @@
           {
             method: "BorderRightWidth()",
             field_dependencies: ["border-right-width"]
-          },
-          {
-            method: "HasFilters()",
-            field_dependencies: ["filter"]
           },
           {
             method: "HasPseudoElementStyle(kPseudoIdScrollbar)",
@@ -172,6 +165,14 @@
             method: "OriginalDisplay()",
             field_dependencies: ["OriginalDisplay"]
           },
+          {
+            method: "HasStroke()",
+            field_dependencies: ["stroke"]
+          },
+          {
+            method: "HasDashArray()",
+            field_dependencies: ["stroke-dasharray"]
+          },
         ],
         predicates_to_test: [
           {
@@ -184,7 +185,8 @@
           },
           {
             predicate: "a.OpacityChangedStackingContext(b)",
-            field_dependencies: ["IsStackingContext", "opacity"]
+            field_dependencies: ["IsStackingContextWithoutContainment",
+                                 "opacity"]
           },
         ]
     },
@@ -213,16 +215,14 @@
         name: "DiffNeedsFullLayoutAndPaintInvalidationDisplayListItem",
         methods_to_diff: [
           {
-            method: "ListStyleType()",
-            field_dependencies: ["ListStyleType"]
-          },
-          {
-            method: "ListStyleStringValue()",
-            field_dependencies: ["ListStyleStringValue"]
-          },
-          {
             method: "ListStylePosition()",
             field_dependencies: ["list-style-position"]
+          },
+        ],
+        predicates_to_test: [
+          {
+            predicate: "a.ListStyleTypeDataEquivalent(b)",
+            field_dependencies: ["list-style-type"]
           },
         ]
     },
@@ -231,7 +231,11 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain", "intrinsic-width", "intrinsic-height"],
+                "justify-self", "contain", "contain-intrinsic-width",
+                "contain-intrinsic-height", "container-type",
+                "content-visibility", "aspect-ratio", "overflow-clip-margin",
+                "-internal-align-self-block", "orphans", "widows",
+                "scrollbar-gutter"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -241,16 +245,22 @@
             method: "GetPosition()",
             field_dependencies: ["position"]
           },
+          {
+            method: "SkipsContents()",
+            field_dependencies: ["content-visibility"]
+          },
         ]
     },
     {
-        name: "DiffNeedsPaintInvalidationSubtree",
-        fields_to_diff: ["mix-blend-mode", "isolation", "Mask", "MaskBoxImage"],
-    },
-    {
-        name: "DiffNeedsPaintInvalidationObject",
+        name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
-                "-webkit-user-drag", "object-fit", "object-position"],
+                "-webkit-user-drag", "object-fit", "object-position",
+                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
+                "stop-color", "stop-opacity", "flood-color", "flood-opacity",
+                "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
+                "color-interpolation", "color-interpolation-filters", "paint-order",
+                "fill", "fill-opacity", "stroke", "stroke-opacity",
+                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced"],
         methods_to_diff: [
           {
             method: "Visibility()",
@@ -272,6 +282,14 @@
             method: "Resize()",
             field_dependencies: ["resize"]
           },
+          {
+            method: "UsedColorScheme()",
+            field_dependencies: ["color-scheme"]
+          },
+          {
+            method: "AccentColorResolved()",
+            field_dependencies: ["accent-color", "color"]
+          }
         ],
         predicates_to_test: [
           {
@@ -288,7 +306,7 @@
           },
           {
             predicate: "a.OutlineVisuallyEqual(b)",
-            field_dependencies: ["outline-width", "outline-color", "OutlineColorIsCurrentColor", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
+            field_dependencies: ["outline-width", "outline-color", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
           },
           {
             predicate: "a.InternalVisitedBorderLeftColorHasNotChanged(b)",
@@ -309,6 +327,10 @@
           {
             predicate: "a.InternalVisitedOutlineColorHasNotChanged(b)",
             field_dependencies: ["-internal-visited-outline-color"]
+          },
+          {
+            predicate: "a.StrokeDashArrayDataEquivalent(b)",
+            field_dependencies: ["stroke-dasharray"]
           },
         ]
     },
@@ -336,8 +358,8 @@
         fields_to_diff: ["z-index"],
         methods_to_diff: [
           {
-            method: "IsStackingContext()",
-            field_dependencies: ["IsStackingContext"]
+            method: "IsStackingContextWithoutContainment()",
+            field_dependencies: ["IsStackingContextWithoutContainment"]
           },
         ]
     },
@@ -352,7 +374,7 @@
         name: "UpdatePropertySpecificDifferencesTransform",
         fields_to_diff: ["transform", "translate", "rotate",
                     "scale", "offset-path", "offset-rotate", "transform-origin",
-                     "offset-position", "offset-anchor", "offset-distance", 
+                     "offset-position", "offset-anchor", "offset-distance",
                      "perspective", "perspective-origin", "transform-box"],
         methods_to_diff: [
           {
@@ -360,8 +382,8 @@
             // while hasTransform() differs, as it checks a number of conditions aside
             // from just the matrix, including but not limited to animation state.
             method: "HasTransform()",
-            field_dependencies: ["transform", "offset-position", 
-                    "HasCurrentTransformAnimation", "translate", "rotate", 
+            field_dependencies: ["transform", "offset-position",
+                    "HasCurrentTransformAnimation", "translate", "rotate",
                     "scale"]
           },
         ]
@@ -385,10 +407,10 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesMask",
-        fields_to_diff: ["Mask", "MaskBoxImage"],
+        fields_to_diff: ["Mask", "MaskBoxImage", "mask"],
     },
     {
-        name: "UpdatePropertySpecificDifferencesNeedsRecomputeOverflow",
+        name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",
         predicates_to_test: [
           {
             predicate: "a.BoxShadowDataEquivalent(b)",
@@ -396,20 +418,17 @@
           },
           {
             predicate: "a.OutlineVisuallyEqual(b)",
-            field_dependencies: ["outline-width", "outline-color", "OutlineColorIsCurrentColor", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
+            field_dependencies: ["outline-width", "outline-color", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
           },
           {
             predicate: "a.BorderVisualOverflowEqual(b)",
             field_dependencies: ["border-image"]
           },
-        ]
-    },
-    {
-        name: "UpdatePropertySpecificDifferencesBackdropFilter",
-        predicates_to_test: [
           {
-            predicate: "a.BackdropFilterDataEquivalent(b)",
-            field_dependencies: ["backdrop-filter"]
+            predicate: "a.TextDecorationVisualOverflowEqual(b)",
+            field_dependencies: ["text-decoration-thickness", "text-decoration-style",
+                                 "text-decoration-line", "text-underline-offset", "text-underline-position",
+                                 "AppliedTextDecorations"]
           },
         ]
     },
@@ -417,6 +436,7 @@
         name: "UpdatePropertySpecificDifferencesTextDecorationOrColor",
         fields_to_diff: ["color", "-internal-visited-color", "text-decoration-line",
                 "text-decoration-style", "text-decoration-color",
+                "text-decoration-thickness", "text-underline-offset",
                 "-internal-visited-text-decoration-color", "TextEmphasisFill",
                 "text-underline-position", "text-decoration-skip-ink", "AppliedTextDecorations"],
         methods_to_diff: [

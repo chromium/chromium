@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var canvas2D = document.createElement("canvas");
+var ctx2D = canvas2D.getContext("2d");
+canvas2D.width = canvas2D.height = 1024;
+var imageData = new ImageData(canvas2D.width, canvas2D.height);
+document.body.appendChild(canvas2D);
+
+function rand(range) {
+  return Math.floor(Math.random() * range);
+}
+
+function initializeImageData() {
+  for(var i = 0; i < imageData.data.length; i++)
+    imageData.data[i] = rand(256);
+}
+
+function putImageDataToCanvas2D() {
+  ctx2D.putImageData(imageData, 0, 0);
+  requestAnimationFrame(putImageDataToCanvas2D);
+}
+
+window.onload = function () {
+  initializeImageData()
+  putImageDataToCanvas2D();
+}
+
+</script>
+</body>
+</html>

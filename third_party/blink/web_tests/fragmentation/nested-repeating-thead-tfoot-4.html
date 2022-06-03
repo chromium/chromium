@@ -8,7 +8,7 @@ thead, tr, tfoot {
 }
 </style>
 <p>crbug.com/759195: Carry footer offset through to nested tables even when they don't have a footer.</p>
-<div style="columns:3; height:400px; column-fill: auto; column-width: 100px;background-color: yellow;">
+<div id="multicol" style="display:none; columns:3; height:400px; column-fill: auto; column-width: 100px;background-color: yellow;">
   <table cellpadding=0 cellspacing=0>
     <thead>
       <tr>
@@ -166,3 +166,7 @@ thead, tr, tfoot {
     </tbody>
   </table>
 </div>
+<script>
+  // Avoid crbug.com/1254935
+  multicol.style.display = "block";
+</script>

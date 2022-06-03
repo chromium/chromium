@@ -1,0 +1,86 @@
+<style include="cr-shared-style settings-shared">
+  #prompt {
+    color: var(--cr-primary-text-color);
+    margin-top: 8px;
+    min-height: 40px;
+    white-space: pre-line;
+  }
+
+  #switchAssignments {
+    background-color: var(--cros-textfield-background-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 60px;
+    margin-top: 20px;
+    overflow: auto;
+    padding: 16px;
+  }
+
+  .switch-assignment {
+    display: flex;
+  }
+
+  .icon {
+    margin-inline-end: 10px;
+  }
+
+  .add-assignment-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+  }
+
+  .assigned-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+  }
+
+  .remove-assignment-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
+
+  #errorIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
+
+  #button-container {
+    margin-inline-end: 10px;
+    padding-top: 8px;
+  }
+
+  #errorContainer {
+    height: 40px;
+    margin-top: 16px;
+  }
+
+  #error {
+    color: var(--cros-icon-color-alert);
+    display: flex;
+  }
+</style>
+<div id="prompt" aria-live="polite">[[promptText_]]</div>
+<div id="switchAssignments">
+  <template is="dom-if" if="[[!assignments_.length]]">
+    [[noSwitchesLabel_]]
+  </template>
+  <template is="dom-if" if="[[assignments_.length]]">
+    <template is="dom-repeat" items="[[assignments_]]" as="assignment">
+      <div class="switch-assignment">
+        <iron-icon icon="os-settings:[[computeIcon_(assignment, assignmentState_)]]"
+            class$="icon [[computeIcon_(assignment, assignmentState_)]]-icon"
+            aria-label="[[computeIconLabel_(assignment, assignmentState_)]]">
+        </iron-icon>
+        [[getLabelForAssignment_(assignment)]]
+      </div>
+    </template>
+  </template>
+</div>
+<div id="errorContainer">
+  <template is="dom-if" if="[[errorText_]]">
+    <div id="error" aria-live="polite">
+      <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
+          aria-label="$i18n{switchAccessActionAssignmentErrorIconLabel}">
+      </iron-icon>
+      [[errorText_]]
+    </div>
+  </template>
+</div>

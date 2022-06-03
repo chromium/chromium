@@ -4,7 +4,7 @@
 
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ui {
 

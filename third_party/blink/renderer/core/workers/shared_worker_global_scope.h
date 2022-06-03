@@ -33,6 +33,7 @@
 
 #include <memory>
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -40,7 +41,6 @@
 
 namespace blink {
 
-class ApplicationCacheHostForWorker;
 class SharedWorkerThread;
 class WorkerClassicScriptLoader;
 
@@ -48,10 +48,11 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SharedWorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
-                          SharedWorkerThread*,
-                          base::TimeTicks time_origin,
-                          const base::UnguessableToken& appcache_host_id);
+  SharedWorkerGlobalScope(
+      std::unique_ptr<GlobalScopeCreationParams> creation_params,
+      SharedWorkerThread* thread,
+      base::TimeTicks time_origin,
+      const SharedWorkerToken& token);
 
   ~SharedWorkerGlobalScope() override;
 
@@ -61,22 +62,27 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   const AtomicString& InterfaceName() const override;
 
   // WorkerGlobalScope
-  void Initialize(const KURL& response_url,
-                  network::mojom::ReferrerPolicy response_referrer_policy,
-                  network::mojom::IPAddressSpace response_address_space,
-                  const Vector<CSPHeaderAndType>& response_csp_headers,
-                  const Vector<String>* response_origin_trial_tokens,
-                  int64_t appcache_id) override;
+  void Initialize(
+      const KURL& response_url,
+      network::mojom::ReferrerPolicy response_referrer_policy,
+      network::mojom::IPAddressSpace response_address_space,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+      const Vector<String>* response_origin_trial_tokens) override;
   void FetchAndRunClassicScript(
       const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override;
   void FetchAndRunModuleScript(
       const KURL& module_url_record,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode) override;
+      network::mojom::CredentialsMode,
+      RejectCoepUnsafeNone reject_coep_unsafe_none) override;
 
   // shared_worker_global_scope.idl
   const String name() const;
@@ -84,9 +90,16 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
 
   void Connect(MessagePortChannel channel);
 
-  void OnAppCacheSelected();
+  void Trace(Visitor*) const override;
 
-  void Trace(blink::Visitor*) override;
+  // Returns the token that uniquely identifies this worker.
+  const SharedWorkerToken& GetSharedWorkerToken() const { return token_; }
+  WorkerToken GetWorkerToken() const final { return token_; }
+  bool CrossOriginIsolatedCapability() const final;
+  bool DirectSocketCapability() const final;
+  ExecutionContextToken GetExecutionContextToken() const final {
+    return token_;
+  }
 
  private:
   void DidReceiveResponseForClassicScript(
@@ -96,7 +109,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
 
   void ExceptionThrown(ErrorEvent*) override;
 
-  Member<ApplicationCacheHostForWorker> appcache_host_;
+  const SharedWorkerToken token_;
 };
 
 template <>

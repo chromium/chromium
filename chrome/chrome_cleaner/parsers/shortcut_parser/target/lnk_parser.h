@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 
@@ -69,9 +68,13 @@ mojom::LnkParsingResult ParseLnkBytes(std::vector<BYTE> file_buffer,
 }  // namespace internal
 
 struct ParsedLnkFile {
-  base::string16 target_path;
-  base::string16 command_line_arguments;
-  base::string16 icon_location;
+  ParsedLnkFile();
+  ~ParsedLnkFile();
+  std::wstring target_path;
+  std::wstring working_dir;
+  std::wstring command_line_arguments;
+  std::wstring icon_location;
+  int32_t icon_index = -1;
 };
 
 mojom::LnkParsingResult ParseLnk(base::win::ScopedHandle file_handle,

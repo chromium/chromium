@@ -26,6 +26,11 @@ class MergeSessionLoaderThrottle
   explicit MergeSessionLoaderThrottle(
       scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
           chromeos_listener);
+
+  MergeSessionLoaderThrottle(const MergeSessionLoaderThrottle&) = delete;
+  MergeSessionLoaderThrottle& operator=(const MergeSessionLoaderThrottle&) =
+      delete;
+
   ~MergeSessionLoaderThrottle() override;
 
  private:
@@ -36,11 +41,13 @@ class MergeSessionLoaderThrottle
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
-  void WillRedirectRequest(net::RedirectInfo* redirect_info,
-                           const network::mojom::URLResponseHead& response_head,
-                           bool* defer,
-                           std::vector<std::string>* to_be_removed_headers,
-                           net::HttpRequestHeaders* modified_headers) override;
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* to_be_removed_headers,
+      net::HttpRequestHeaders* modified_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_headers) override;
   void DetachFromCurrentSequence() override;
   void ResumeLoader(DelayedCallbackGroup::RunReason run_reason);
 
@@ -48,8 +55,6 @@ class MergeSessionLoaderThrottle
   scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
       chromeos_listener_;
   base::WeakPtrFactory<MergeSessionLoaderThrottle> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MergeSessionLoaderThrottle);
 };
 
 #endif  // CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_

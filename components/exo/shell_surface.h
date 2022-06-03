@@ -8,9 +8,12 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/ui_base_types.h"
+
+namespace ash {
+class ScopedAnimationDisabler;
+}  // namespace ash
 
 namespace ui {
 class CompositorLock;
@@ -27,10 +30,13 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // specified as part of the geometry is relative to the shell surface.
   ShellSurface(Surface* surface,
                const gfx::Point& origin,
-               bool activatable,
                bool can_minimize,
                int container);
   explicit ShellSurface(Surface* surface);
+
+  ShellSurface(const ShellSurface&) = delete;
+  ShellSurface& operator=(const ShellSurface&) = delete;
+
   ~ShellSurface() override;
 
   // Set the callback to run when the client is asked to configure the surface.
@@ -39,7 +45,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // in steps of NxM pixels).
   using ConfigureCallback =
       base::RepeatingCallback<uint32_t(const gfx::Size& size,
-                                       ash::WindowStateType state_type,
+                                       chromeos::WindowStateType state_type,
                                        bool resizing,
                                        bool activated,
                                        const gfx::Vector2d& origin_offset)>;
@@ -55,6 +61,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Set the "parent" of this surface. This window should be stacked above a
   // parent.
   void SetParent(ShellSurface* parent);
+
+  bool CanMaximize() const override;
 
   // Maximizes the shell surface.
   void Maximize();
@@ -82,11 +90,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Start an interactive move of surface.
   void StartMove();
 
-  // Before widget initialization, this method will be called. Depending on the
-  // implementation, it may return true to force the surface to launch in a
-  // maximized state.
-  virtual bool ShouldAutoMaximize();
-
   // Return the initial show state for this surface.
   ui::WindowShowState initial_show_state() { return initial_show_state_; }
 
@@ -95,7 +98,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Overridden from ShellSurfaceBase:
   void InitializeWindowState(ash::WindowState* window_state) override;
-  base::Optional<gfx::Rect> GetWidgetBounds() const override;
+  absl::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
 
   // Overridden from aura::WindowObserver:
@@ -106,9 +109,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Overridden from ash::WindowStateObserver:
   void OnPreWindowStateTypeChange(ash::WindowState* window_state,
-                                  ash::WindowStateType old_type) override;
+                                  chromeos::WindowStateType old_type) override;
   void OnPostWindowStateTypeChange(ash::WindowState* window_state,
-                                   ash::WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // Overridden from wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -118,10 +121,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Overridden from ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds) override;
   bool OnPreWidgetCommit() override;
-  void OnPostWidgetCommit() override;
 
  private:
-  class ScopedAnimationsDisabled;
   struct Config;
 
   // Helper class used to coalesce a number of changes into one "configure"
@@ -133,6 +134,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   class ScopedConfigure {
    public:
     ScopedConfigure(ShellSurface* shell_surface, bool force_configure);
+
+    ScopedConfigure(const ScopedConfigure&) = delete;
+    ScopedConfigure& operator=(const ScopedConfigure&) = delete;
+
     ~ScopedConfigure();
 
     void set_needs_configure() { needs_configure_ = true; }
@@ -141,8 +146,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     ShellSurface* const shell_surface_;
     const bool force_configure_;
     bool needs_configure_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedConfigure);
   };
 
   // Set the parent window of this surface.
@@ -160,7 +163,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   void EndDrag();
 
-  std::unique_ptr<ScopedAnimationsDisabled> scoped_animations_disabled_;
+  std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
   ConfigureCallback configure_callback_;
@@ -174,8 +177,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool ignore_window_bounds_changes_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSurface);
 };
 
 }  // namespace exo

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 
-#include <memory>
-
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,22 +19,32 @@ class TabStrip;
 // calculations and updates. Painting is done in TabStrip.
 class TabGroupViews {
  public:
-  TabGroupViews(TabStrip* tab_strip, tab_groups::TabGroupId group);
+  // Creates the various views representing a tab group and adds them to
+  // |tab_strip| as children.  Assumes these views are not destroyed before
+  // |this|.
+  TabGroupViews(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
+
+  // Destroys the views added during the constructor.
   ~TabGroupViews();
 
   tab_groups::TabGroupId group() const { return group_; }
-  TabGroupHeader* header() const { return header_.get(); }
-  TabGroupHighlight* highlight() const { return highlight_.get(); }
-  TabGroupUnderline* underline() const { return underline_.get(); }
+  TabGroupHeader* header() { return header_; }
+  TabGroupHighlight* highlight() { return highlight_; }
+  TabGroupUnderline* underline() { return underline_; }
 
-  // Updates the visuals of each view in preparation for repainting.
-  void UpdateVisuals();
+  // Updates bounds of all elements not explicitly positioned by the tab strip.
+  // This currently includes both the underline and highlight.
+  void UpdateBounds();
+
+  // Updates the group title and color and ensures that all elements that might
+  // need repainting are repainted.
+  void OnGroupVisualsChanged();
 
   // Returns the bounds of the entire group, including the header and all tabs.
   gfx::Rect GetBounds() const;
 
   // Returns the last tab in the group. Used for some visual calculations.
-  Tab* GetLastTabInGroup() const;
+  const Tab* GetLastTabInGroup() const;
 
   // Returns the group color.
   SkColor GetGroupColor() const;
@@ -49,16 +57,12 @@ class TabGroupViews {
   // tab color. Needed to layer painting for the group background highlight.
   SkColor GetGroupBackgroundColor() const;
 
-  // Returns whether the group highlight background should be shown. Currently
-  // it should only be shown if the entire group is dragging via its header.
-  bool ShouldPaintGroupBackground() const;
-
  private:
   TabStrip* const tab_strip_;
   const tab_groups::TabGroupId group_;
-  std::unique_ptr<TabGroupHeader> header_;
-  std::unique_ptr<TabGroupHighlight> highlight_;
-  std::unique_ptr<TabGroupUnderline> underline_;
+  TabGroupHeader* header_;
+  TabGroupHighlight* highlight_;
+  TabGroupUnderline* underline_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_

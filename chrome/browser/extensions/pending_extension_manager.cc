@@ -6,9 +6,9 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,11 +19,13 @@
 #include "url/gurl.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
 // Install predicate used by AddFromExternalUpdateUrl().
-bool AlwaysInstall(const extensions::Extension* extension) {
+bool AlwaysInstall(const extensions::Extension* extension,
+                   content::BrowserContext* context) {
   return true;
 }
 
@@ -55,12 +57,13 @@ const PendingExtensionInfo* PendingExtensionManager::GetById(
 }
 
 bool PendingExtensionManager::Remove(const std::string& id) {
-  if (base::Contains(expected_policy_reinstalls_, id)) {
-    base::TimeDelta latency =
-        base::TimeTicks::Now() - expected_policy_reinstalls_[id];
-    UMA_HISTOGRAM_LONG_TIMES("Extensions.CorruptPolicyExtensionResolved",
+  if (base::Contains(expected_reinstalls_, id)) {
+    base::TimeDelta latency = base::TimeTicks::Now() - expected_reinstalls_[id];
+    base::UmaHistogramLongTimes("Extensions.CorruptPolicyExtensionResolved",
                              latency);
-    expected_policy_reinstalls_.erase(id);
+    LOG(ERROR) << "Corrupted extension " << id << " reinstalled with latency "
+               << latency;
+    expected_reinstalls_.erase(id);
   }
   PendingExtensionList::iterator iter;
   for (iter = pending_extension_list_.begin();
@@ -96,30 +99,47 @@ bool PendingExtensionManager::HasPendingExtensionFromSync() const {
 }
 
 bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
-  return std::find_if(
-             pending_extension_list_.begin(), pending_extension_list_.end(),
-             [](const PendingExtensionInfo& info) {
-               return info.install_source() ==
-                          Manifest::EXTERNAL_POLICY_DOWNLOAD ||
-                      info.install_source() == Manifest::EXTERNAL_COMPONENT;
-             }) != pending_extension_list_.end();
+  return std::find_if(pending_extension_list_.begin(),
+                      pending_extension_list_.end(),
+                      [](const PendingExtensionInfo& info) {
+                        return info.install_source() ==
+                                   ManifestLocation::kExternalPolicyDownload ||
+                               info.install_source() ==
+                                   ManifestLocation::kExternalComponent;
+                      }) != pending_extension_list_.end();
 }
 
-void PendingExtensionManager::ExpectPolicyReinstallForCorruption(
-    const ExtensionId& id) {
-  if (base::Contains(expected_policy_reinstalls_, id))
+void PendingExtensionManager::RecordPolicyReinstallReason(
+    PolicyReinstallReason reason_for_uma) {
+  base::UmaHistogramEnumeration("Extensions.CorruptPolicyExtensionDetected3",
+                                reason_for_uma);
+}
+
+void PendingExtensionManager::RecordExtensionReinstallManifestLocation(
+    mojom::ManifestLocation manifest_location_for_uma) {
+  base::UmaHistogramEnumeration("Extensions.CorruptedExtensionLocation",
+                                manifest_location_for_uma);
+}
+
+void PendingExtensionManager::ExpectReinstallForCorruption(
+    const ExtensionId& id,
+    absl::optional<PolicyReinstallReason> reason_for_uma,
+    mojom::ManifestLocation manifest_location_for_uma) {
+  if (base::Contains(expected_reinstalls_, id))
     return;
-  expected_policy_reinstalls_[id] = base::TimeTicks::Now();
-  UMA_HISTOGRAM_BOOLEAN("Extensions.CorruptPolicyExtensionDetected2", true);
+  expected_reinstalls_[id] = base::TimeTicks::Now();
+  if (reason_for_uma)
+    RecordPolicyReinstallReason(*reason_for_uma);
+  RecordExtensionReinstallManifestLocation(manifest_location_for_uma);
 }
 
-bool PendingExtensionManager::IsPolicyReinstallForCorruptionExpected(
+bool PendingExtensionManager::IsReinstallForCorruptionExpected(
     const ExtensionId& id) const {
-  return base::Contains(expected_policy_reinstalls_, id);
+  return base::Contains(expected_reinstalls_, id);
 }
 
-bool PendingExtensionManager::HasAnyPolicyReinstallForCorruption() const {
-  return !expected_policy_reinstalls_.empty();
+bool PendingExtensionManager::HasAnyReinstallForCorruption() const {
+  return !expected_reinstalls_.empty();
 }
 
 bool PendingExtensionManager::AddFromSync(
@@ -146,7 +166,8 @@ bool PendingExtensionManager::AddFromSync(
   }
 
   static const bool kIsFromSync = true;
-  static const Manifest::Location kSyncLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kSyncLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
 
   return AddExtensionImpl(id,
@@ -175,7 +196,8 @@ bool PendingExtensionManager::AddFromExtensionImport(
   }
 
   static const bool kIsFromSync = false;
-  static const Manifest::Location kManifestLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kManifestLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
   static const bool kRemoteInstall = false;
 
@@ -195,7 +217,7 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
     const std::string& id,
     const std::string& install_parameter,
     const GURL& update_url,
-    Manifest::Location location,
+    ManifestLocation location,
     int creation_flags,
     bool mark_acknowledged) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -224,22 +246,14 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
     }
   }
 
-  return AddExtensionImpl(id,
-                          install_parameter,
-                          update_url,
-                          base::Version(),
-                          &AlwaysInstall,
-                          kIsFromSync,
-                          location,
-                          creation_flags,
-                          mark_acknowledged,
-                          kRemoteInstall);
+  return AddExtensionImpl(id, install_parameter, update_url, base::Version(),
+                          &AlwaysInstall, kIsFromSync, location, creation_flags,
+                          mark_acknowledged, kRemoteInstall);
 }
-
 
 bool PendingExtensionManager::AddFromExternalFile(
     const std::string& id,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     const base::Version& version,
     int creation_flags,
     bool mark_acknowledged) {
@@ -263,25 +277,34 @@ bool PendingExtensionManager::AddFromExternalFile(
                           kRemoteInstall);
 }
 
-void PendingExtensionManager::GetPendingIdsForUpdateCheck(
-    std::list<std::string>* out_ids_for_update_check) const {
-  PendingExtensionList::const_iterator iter;
-  for (iter = pending_extension_list_.begin();
-       iter != pending_extension_list_.end();
-       ++iter) {
-    Manifest::Location install_source = iter->install_source();
+std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
+    const {
+  std::list<std::string> result;
+
+  // Add the extensions that need repairing but are not necessarily from an
+  // external loader.
+  for (const auto& iter : expected_reinstalls_)
+    result.push_back(iter.first);
+
+  for (PendingExtensionList::const_iterator iter =
+           pending_extension_list_.begin();
+       iter != pending_extension_list_.end(); ++iter) {
+    ManifestLocation install_source = iter->install_source();
 
     // Some install sources read a CRX from the filesystem.  They can
     // not be fetched from an update URL, so don't include them in the
     // set of ids.
-    if (install_source == Manifest::EXTERNAL_PREF ||
-        install_source == Manifest::EXTERNAL_REGISTRY ||
-        install_source == Manifest::EXTERNAL_POLICY) {
+    if (install_source == ManifestLocation::kExternalPref ||
+        install_source == ManifestLocation::kExternalRegistry ||
+        install_source == ManifestLocation::kExternalPolicy) {
       continue;
     }
 
-    out_ids_for_update_check->push_back(iter->id());
+    if (!base::Contains(expected_reinstalls_, iter->id()))
+      result.push_back(iter->id());
   }
+
+  return result;
 }
 
 bool PendingExtensionManager::AddExtensionImpl(
@@ -291,22 +314,15 @@ bool PendingExtensionManager::AddExtensionImpl(
     const base::Version& version,
     PendingExtensionInfo::ShouldAllowInstallPredicate should_allow_install,
     bool is_from_sync,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     int creation_flags,
     bool mark_acknowledged,
     bool remote_install) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  PendingExtensionInfo info(id,
-                            install_parameter,
-                            update_url,
-                            version,
-                            should_allow_install,
-                            is_from_sync,
-                            install_source,
-                            creation_flags,
-                            mark_acknowledged,
-                            remote_install);
+  PendingExtensionInfo info(id, install_parameter, update_url, version,
+                            should_allow_install, is_from_sync, install_source,
+                            creation_flags, mark_acknowledged, remote_install);
 
   if (const PendingExtensionInfo* pending = GetById(id)) {
     // Bugs in this code will manifest as sporadic incorrect extension

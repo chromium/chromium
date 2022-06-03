@@ -4,18 +4,17 @@
 
 package org.chromium.content.browser;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_shell_apk.ContentShellApplication;
 
 /**
@@ -23,9 +22,6 @@ import org.chromium.content_shell_apk.ContentShellApplication;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentCommandLineTest {
-    @Rule
-    public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
-
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]
     static final String INIT_SWITCHES[] = { "init_command", "--switch", "Arg",
@@ -50,7 +46,7 @@ public class ContentCommandLineTest {
 
     void loadJni() {
         Assert.assertFalse(CommandLine.getInstance().isNativeImplementation());
-        mActivityTestRule.loadNativeLibraryNoBrowserProcess();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         Assert.assertTrue(CommandLine.getInstance().isNativeImplementation());
     }
 

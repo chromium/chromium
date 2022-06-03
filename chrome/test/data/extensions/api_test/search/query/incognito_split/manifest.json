@@ -1,0 +1,10 @@
+{
+  "name": "Extension Search API Test Incognito",
+  "version": "0.1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["search", "tabs"],
+  "incognito": "split"
+}

@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
-#define UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
+#ifndef UI_EVENTS_GESTURE_EVENT_DETAILS_H_
+#define UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 
 #include <string.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_base_export.h"
+#include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
 
@@ -21,12 +23,11 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   GestureEventDetails();
   explicit GestureEventDetails(EventType type);
 
-  GestureEventDetails(
-      EventType type,
-      float delta_x,
-      float delta_y,
-      ui::input_types::ScrollGranularity units =
-          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
+  GestureEventDetails(EventType type,
+                      float delta_x,
+                      float delta_y,
+                      ui::ScrollGranularity units =
+                          ui::ScrollGranularity::kScrollByPrecisePixel);
 
   // The caller is responsible for ensuring that the gesture data from |other|
   // is compatible and sufficient for that expected by gestures of |type|.
@@ -39,13 +40,12 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     device_type_ = device_type;
   }
 
-  bool is_source_touch_event_set_non_blocking() const {
-    return is_source_touch_event_set_non_blocking_;
+  bool is_source_touch_event_set_blocking() const {
+    return is_source_touch_event_set_blocking_;
   }
-  void set_is_source_touch_event_set_non_blocking(
-      bool is_source_touch_event_set_non_blocking) {
-    is_source_touch_event_set_non_blocking_ =
-        is_source_touch_event_set_non_blocking;
+  void set_is_source_touch_event_set_blocking(
+      bool is_source_touch_event_set_blocking) {
+    is_source_touch_event_set_blocking_ = is_source_touch_event_set_blocking;
   }
 
   EventPointerType primary_pointer_type() const {
@@ -53,6 +53,13 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   }
   void set_primary_pointer_type(EventPointerType primary_pointer_type) {
     primary_pointer_type_ = primary_pointer_type;
+  }
+
+  uint32_t primary_unique_touch_event_id() const {
+    return primary_unique_touch_event_id_;
+  }
+  void set_primary_unique_touch_event_id(uint32_t unique_touch_event_id) {
+    primary_unique_touch_event_id_ = unique_touch_event_id;
   }
 
   int touch_points() const { return touch_points_; }
@@ -81,7 +88,7 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.scroll_begin.y_hint;
   }
 
-  ui::input_types::ScrollGranularity scroll_begin_units() const {
+  ui::ScrollGranularity scroll_begin_units() const {
     DCHECK_EQ(ET_GESTURE_SCROLL_BEGIN, type_);
     return data_.scroll_begin.delta_hint_units;
   }
@@ -96,7 +103,7 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.scroll_update.y;
   }
 
-  ui::input_types::ScrollGranularity scroll_update_units() const {
+  ui::ScrollGranularity scroll_update_units() const {
     DCHECK_EQ(ET_GESTURE_SCROLL_UPDATE, type_);
     return data_.scroll_update.delta_units;
   }
@@ -185,13 +192,13 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
       // the x/y values from the first scroll_update.
       float x_hint;
       float y_hint;
-      ui::input_types::ScrollGranularity delta_hint_units;
+      ui::ScrollGranularity delta_hint_units;
     } scroll_begin;
 
     struct {  // SCROLL delta.
       float x;
       float y;
-      ui::input_types::ScrollGranularity delta_units;
+      ui::ScrollGranularity delta_units;
       // Whether any previous scroll update in the current scroll sequence was
       // suppressed because the underlying touch was consumed.
     } scroll_update;
@@ -224,11 +231,12 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   GestureDeviceType device_type_;
 
-  bool is_source_touch_event_set_non_blocking_ = false;
+  bool is_source_touch_event_set_blocking_ = false;
 
   // The pointer type for the first touch point in the gesture.
-  EventPointerType primary_pointer_type_ =
-      EventPointerType::POINTER_TYPE_UNKNOWN;
+  EventPointerType primary_pointer_type_ = EventPointerType::kUnknown;
+  // The unique touch id for the first touch in the gesture.
+  uint32_t primary_unique_touch_event_id_ = 0;
 
   int touch_points_;  // Number of active touch points in the gesture.
 
@@ -239,4 +247,4 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_GESTURE_EVENT_DETAILS_H_
+#endif  // UI_EVENTS_GESTURE_EVENT_DETAILS_H_

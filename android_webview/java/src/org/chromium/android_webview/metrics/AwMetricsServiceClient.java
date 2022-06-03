@@ -10,10 +10,8 @@ import android.content.pm.PackageManager;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -29,9 +27,12 @@ public class AwMetricsServiceClient {
     // reporting. See https://developer.android.com/reference/android/webkit/WebView.html
     private static final String OPT_OUT_META_DATA_STR = "android.webkit.WebView.MetricsOptOut";
 
-    private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";
-
-    private static boolean isAppOptedOut(Context ctx) {
+    /**
+     * Find out if the App opted out from metrics collection using the meta-data tag.
+     *
+     * @param ctx App {@link Context}.
+     */
+    public static boolean isAppOptedOut(Context ctx) {
         try {
             ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
                     ctx.getPackageName(), PackageManager.GET_META_DATA);
@@ -49,16 +50,13 @@ public class AwMetricsServiceClient {
         }
     }
 
-    @CalledByNative
-    private static boolean canRecordPackageNameForAppType() {
-        // Only record if it's a system app or it was installed from Play Store.
-        Context ctx = ContextUtils.getApplicationContext();
-        String packageName = ctx.getPackageName();
-        String installerPackageName = ctx.getPackageManager().getInstallerPackageName(packageName);
-        return (ctx.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) != 0
-                || (PLAY_STORE_PACKAGE_NAME.equals(installerPackageName));
-    }
-
+    /**
+     * Set user consent settings.
+     *
+     * @param ctx application {@link Context}
+     * @param userConsent user consent via Android Usage & diagnostics settings.
+     * @return whether metrics reporting is enabled or not.
+     */
     public static void setConsentSetting(Context ctx, boolean userConsent) {
         ThreadUtils.assertOnUiThread();
         AwMetricsServiceClientJni.get().setHaveMetricsConsent(userConsent, !isAppOptedOut(ctx));
@@ -74,34 +72,19 @@ public class AwMetricsServiceClient {
         AwMetricsServiceClientJni.get().setUploadIntervalForTesting(uploadIntervalMs);
     }
 
-    @CalledByNative
-    private static String getAppPackageName() {
-        // Return this unconditionally; let native code enforce whether or not it's OK to include
-        // this in the logs.
-        Context ctx = ContextUtils.getApplicationContext();
-        return ctx.getPackageName();
+    /**
+     * Sets a callback to run each time after final metrics have been collected.
+     */
+    @VisibleForTesting
+    public static void setOnFinalMetricsCollectedListenerForTesting(Runnable listener) {
+        AwMetricsServiceClientJni.get().setOnFinalMetricsCollectedListenerForTesting(listener);
     }
 
-    /**
-     * Gets a long representing the install time of the embedder application. Units are in seconds,
-     * as this is the resolution used by the metrics service. Returns {@code -1} upon failure.
-     */
-    // TODO(https://crbug.com/1012025): remove this when the kInstallDate pref has been persisted
-    // for one or two milestones.
-    @CalledByNative
-    private static long getAppInstallTime() {
-        try {
-            Context ctx = ContextUtils.getApplicationContext();
-            long installTimeMs = ctx.getPackageManager()
-                                         .getPackageInfo(ctx.getPackageName(), 0 /* flags */)
-                                         .firstInstallTime;
-            long installTimeSec = installTimeMs / 1000;
-            return installTimeSec;
-        } catch (PackageManager.NameNotFoundException e) {
-            // This should never happen.
-            Log.e(TAG, "App could not find itself by package name!");
-            return -1;
-        }
+    @VisibleForTesting
+    public static void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs) {
+        ThreadUtils.assertOnUiThread();
+        AwMetricsServiceClientJni.get().setAppPackageNameLoggingRuleForTesting(
+                version, expiryDateMs);
     }
 
     @NativeMethods
@@ -109,5 +92,7 @@ public class AwMetricsServiceClient {
         void setHaveMetricsConsent(boolean userConsent, boolean appConsent);
         void setFastStartupForTesting(boolean fastStartupForTesting);
         void setUploadIntervalForTesting(long uploadIntervalMs);
+        void setOnFinalMetricsCollectedListenerForTesting(Runnable listener);
+        void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs);
     }
 }

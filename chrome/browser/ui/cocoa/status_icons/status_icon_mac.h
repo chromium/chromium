@@ -7,11 +7,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
@@ -22,14 +22,18 @@
 class StatusIconMac : public StatusIcon {
  public:
   StatusIconMac();
+
+  StatusIconMac(const StatusIconMac&) = delete;
+  StatusIconMac& operator=(const StatusIconMac&) = delete;
+
   ~StatusIconMac() override;
 
   // Overridden from StatusIcon.
   void SetImage(const gfx::ImageSkia& image) override;
-  void SetToolTip(const base::string16& tool_tip) override;
+  void SetToolTip(const std::u16string& tool_tip) override;
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override;
 
   bool HasStatusIconMenu();
@@ -59,8 +63,6 @@ class StatusIconMac : public StatusIcon {
   // Status menu shown when right-clicking the system icon, if it has been
   // created by |UpdatePlatformContextMenu|.
   base::scoped_nsobject<MenuControllerCocoa> menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconMac);
 };
 
 #endif // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_ICON_MAC_H_

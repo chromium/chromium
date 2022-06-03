@@ -40,6 +40,12 @@
 
 namespace blink {
 
+template <typename InlineBoxType>
+void InlineBoxList<InlineBoxType>::Trace(Visitor* visitor) const {
+  visitor->Trace(first_);
+  visitor->Trace(last_);
+}
+
 #if DCHECK_IS_ON()
 template <typename InlineBoxType>
 void InlineBoxList<InlineBoxType>::AssertIsEmpty() {
@@ -222,10 +228,10 @@ bool LineBoxList::HitTest(LineLayoutBoxModel layout_object,
 
   CullRect cull_rect(
       First()->IsHorizontal()
-          ? IntRect(point.left.ToInt(), hit_search_bounding_box.Y(), 1,
-                    hit_search_bounding_box.Height())
-          : IntRect(hit_search_bounding_box.X(), point.top.ToInt(),
-                    hit_search_bounding_box.Width(), 1));
+          ? gfx::Rect(point.left.ToInt(), hit_search_bounding_box.y(), 1,
+                      hit_search_bounding_box.height())
+          : gfx::Rect(hit_search_bounding_box.x(), point.top.ToInt(),
+                      hit_search_bounding_box.width(), 1));
 
   if (!AnyLineIntersectsRect(layout_object, cull_rect, accumulated_offset))
     return false;
@@ -359,14 +365,32 @@ void LineBoxList::DirtyLinesFromChangedChild(LineLayoutItem container,
     // findNextLineBreak. findNextLineBreak, despite the name, actually returns
     // the first LayoutObject after the BR. <rdar://problem/3849947> "Typing
     // after pasting line does not appear until after window resize."
-    if (RootInlineBox* prev_root_box = box->PrevRootBox())
+    if (RootInlineBox* prev_root_box = box->PrevRootBox()) {
       prev_root_box->MarkDirty();
+#if DCHECK_IS_ON()
+      for (; prev_root_box; prev_root_box = prev_root_box->PrevRootBox()) {
+        DCHECK(prev_root_box->IsDirty() ||
+               prev_root_box->LineBreakObj() != child);
+      }
+#endif
+    }
     // If |child| or any of its immediately previous siblings with culled
     // lineboxes is the object after a line-break in |box| or the linebox after
     // it then that means |child| actually sits on the linebox after |box| (or
     // is its line-break object) and so we need to dirty it as well.
-    if (RootInlineBox* next_root_box = box->NextRootBox())
+    if (RootInlineBox* next_root_box = box->NextRootBox()) {
       next_root_box->MarkDirty();
+
+      next_root_box = next_root_box->NextRootBox();
+      if (next_root_box && next_root_box->LineBreakObj() == child)
+        next_root_box->MarkDirty();
+#if DCHECK_IS_ON()
+      for (; next_root_box; next_root_box = next_root_box->NextRootBox()) {
+        DCHECK(next_root_box->IsDirty() ||
+               next_root_box->LineBreakObj() != child);
+      }
+#endif
+    }
   }
 }
 

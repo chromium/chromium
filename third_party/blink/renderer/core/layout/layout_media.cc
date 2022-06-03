@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 
+#include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -40,11 +42,18 @@ LayoutMedia::LayoutMedia(HTMLMediaElement* video) : LayoutImage(video) {
 
 LayoutMedia::~LayoutMedia() = default;
 
+void LayoutMedia::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutImage::Trace(visitor);
+}
+
 HTMLMediaElement* LayoutMedia::MediaElement() const {
+  NOT_DESTROYED();
   return To<HTMLMediaElement>(GetNode());
 }
 
 void LayoutMedia::UpdateLayout() {
+  NOT_DESTROYED();
   LayoutSize old_size(ContentWidth(), ContentHeight());
 
   LayoutImage::UpdateLayout();
@@ -90,7 +99,7 @@ void LayoutMedia::UpdateLayout() {
       width = ComputePanelWidth(new_rect);
     }
 
-    LayoutBox* layout_box = ToLayoutBox(child);
+    auto* layout_box = To<LayoutBox>(child);
     layout_box->SetLocation(new_rect.Location());
     layout_box->SetOverrideLogicalWidth(width);
     layout_box->SetOverrideLogicalHeight(new_rect.Height());
@@ -103,13 +112,15 @@ void LayoutMedia::UpdateLayout() {
 
 bool LayoutMedia::IsChildAllowed(LayoutObject* child,
                                  const ComputedStyle& style) const {
+  NOT_DESTROYED();
   // Two types of child layout objects are allowed: media controls
   // and the text track container. Filter children by node type.
   DCHECK(child->GetNode());
 
   // Out-of-flow positioned or floating child breaks layout hierarchy.
   // This check can be removed if ::-webkit-media-controls is made internal.
-  if (style.HasOutOfFlowPosition() || style.IsFloating())
+  if (style.HasOutOfFlowPosition() ||
+      (style.IsFloating() && !style.IsFlexOrGridItem()))
     return false;
 
   // The user agent stylesheet (mediaControls.css) has
@@ -130,9 +141,12 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
 }
 
 void LayoutMedia::PaintReplaced(const PaintInfo&,
-                                const PhysicalOffset& paint_offset) const {}
+                                const PhysicalOffset& paint_offset) const {
+  NOT_DESTROYED();
+}
 
 LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
+  NOT_DESTROYED();
   // TODO(mlamouri): we don't know if the main frame has an horizontal scrollbar
   // if it is out of process. See https://crbug.com/662480
   if (GetDocument().GetPage()->MainFrame()->IsRemoteFrame())
@@ -154,9 +168,9 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   // TODO(crbug.com/771379): Once we no longer assume that the video is in the
   // main frame for the visibility calculation below, we will only care about
   // the video's frame's scrollbar check below.
-  ScrollbarMode h_mode, v_mode;
+  mojom::blink::ScrollbarMode h_mode, v_mode;
   page_view->GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
-  if (h_mode != ScrollbarMode::kAlwaysOff)
+  if (h_mode != mojom::blink::ScrollbarMode::kAlwaysOff)
     return media_rect.Width();
 
   // If the video's frame (can be different from main frame if video is in an
@@ -165,7 +179,7 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   LocalFrameView* media_page_view = media_frame ? media_frame->View() : nullptr;
   if (media_page_view && media_page_view->GetLayoutView()) {
     media_page_view->GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
-    if (h_mode != ScrollbarMode::kAlwaysOff)
+    if (h_mode != mojom::blink::ScrollbarMode::kAlwaysOff)
       return media_rect.Width();
   }
 
@@ -181,9 +195,9 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
       FloatPoint(media_rect.MaxX(), media_rect.MaxY()),
       kTraverseDocumentBoundaries));
 
-  const bool bottom_left_corner_visible = bottom_left_point.X() < visible_width;
+  const bool bottom_left_corner_visible = bottom_left_point.x() < visible_width;
   const bool bottom_right_corner_visible =
-      bottom_right_point.X() < visible_width;
+      bottom_right_point.x() < visible_width;
 
   // If both corners are visible, then we can see the whole panel.
   if (bottom_left_corner_visible && bottom_right_corner_visible)
@@ -208,16 +222,16 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   // we'll calculate the point where the panel intersects the right edge of the
   // page and then calculate the visible width of the panel from the distance
   // between the visible point and the edge intersection point.
-  const float slope = (bottom_right_point.Y() - bottom_left_point.Y()) /
-                      (bottom_right_point.X() - bottom_left_point.X());
+  const float slope = (bottom_right_point.y() - bottom_left_point.y()) /
+                      (bottom_right_point.x() - bottom_left_point.x());
   const float edge_intersection_y =
-      bottom_left_point.Y() + ((visible_width - bottom_left_point.X()) * slope);
+      bottom_left_point.y() + ((visible_width - bottom_left_point.x()) * slope);
 
   const FloatPoint edge_intersection_point(visible_width, edge_intersection_y);
 
   // Calculate difference.
   FloatPoint difference_vector = edge_intersection_point;
-  difference_vector.Move(-bottom_left_point.X(), -bottom_left_point.Y());
+  difference_vector.Offset(-bottom_left_point.x(), -bottom_left_point.y());
 
   return LayoutUnit(difference_vector.length());
 }

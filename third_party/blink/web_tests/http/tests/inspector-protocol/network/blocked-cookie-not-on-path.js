@@ -14,7 +14,7 @@
 
   // navigate to a different path to see that the cookie was blocked
   const {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(differentPathUrl);
-  testRunner.log(`requestWillBeSentExtraInfo blocked cookies: ${JSON.stringify(requestExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(requestExtraInfo.params.associatedCookies, 'requestWillBeSentExtraInfo blocked cookies:');
 
   testRunner.completeTest();
 })

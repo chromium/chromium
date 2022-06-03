@@ -6,6 +6,7 @@
 #define CHROME_INSTALLER_UTIL_WORK_ITEM_LIST_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include <list>
@@ -14,11 +15,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "chrome/installer/util/work_item.h"
-
-namespace base {
-class FilePath;
-}
 
 // A WorkItem subclass that recursively contains a list of WorkItems. Thus it
 // provides functionalities to carry out or roll back the sequence of actions
@@ -38,17 +36,18 @@ class WorkItemList : public WorkItem {
 
   // Add a CallbackWorkItem that invokes a callback.
   virtual WorkItem* AddCallbackWorkItem(
-      base::Callback<bool(const CallbackWorkItem&)> callback);
+      base::OnceCallback<bool(const CallbackWorkItem&)> do_action,
+      base::OnceCallback<void(const CallbackWorkItem&)> rollback_action);
 
   // Add a CopyTreeWorkItem to the list of work items.
   // See the NOTE in the documentation for the CopyTreeWorkItem class for
-  // special considerations regarding |temp_dir|.
+  // special considerations regarding |temp_path|.
   virtual WorkItem* AddCopyTreeWorkItem(
-      const std::wstring& source_path,
-      const std::wstring& dest_path,
-      const std::wstring& temp_dir,
+      const base::FilePath& source_path,
+      const base::FilePath& dest_path,
+      const base::FilePath& temp_path,
       CopyOverWriteOption overwrite_option,
-      const std::wstring& alternative_path = L"");
+      const base::FilePath& alternative_path = base::FilePath());
 
   // Add a CreateDirWorkItem that creates a directory at the given path.
   virtual WorkItem* AddCreateDirWorkItem(const base::FilePath& path);
@@ -78,9 +77,9 @@ class WorkItemList : public WorkItem {
                                           const base::FilePath& temp_path);
 
   // Add a MoveTreeWorkItem to the list of work items.
-  virtual WorkItem* AddMoveTreeWorkItem(const std::wstring& source_path,
-                                        const std::wstring& dest_path,
-                                        const std::wstring& temp_dir,
+  virtual WorkItem* AddMoveTreeWorkItem(const base::FilePath& source_path,
+                                        const base::FilePath& dest_path,
+                                        const base::FilePath& temp_path,
                                         MoveTreeOption duplicate_option);
 
   // Add a SetRegValueWorkItem that sets a registry value with REG_SZ type
@@ -118,14 +117,7 @@ class WorkItemList : public WorkItem {
       const std::wstring& key_path,
       REGSAM wow64_access,
       const std::wstring& value_name,
-      const WorkItem::GetValueFromExistingCallback& get_value_callback);
-
-  // Add a SelfRegWorkItem that registers or unregisters a DLL at the
-  // specified path. If user_level_registration is true, then alternate
-  // registration and unregistration entry point names will be used.
-  virtual WorkItem* AddSelfRegWorkItem(const std::wstring& dll_path,
-                                       bool do_register,
-                                       bool user_level_registration);
+      WorkItem::GetValueFromExistingCallback get_value_callback);
 
  protected:
   friend class WorkItem;

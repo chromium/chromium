@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<translation id="6106989379647458772"><ph name="PAGE" /> இல் உள்ள இணையப்பக்கம் தற்காலிகமாக இயங்கவில்லை அல்லது புதிய வலை முகவரிக்கு நிரந்தரமாக நகர்த்தப்பட்டிருக்கலாம்.</translation>
-<translation id="6312113039770857350">இணையப்பக்கம் கிடைக்கவில்லை</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> இல் உள்ள இணையப்பக்கத்தை ஏற்ற முடியவில்லை, ஏனெனில்:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />பரிந்துரைகள்:<ph name="MARKUP_2" />உங்களுடைய தரவு இணைப்பைச் சரிபார்க்கவும்<ph name="MARKUP_3" />இந்த இணையப்பக்கத்தைப் பின்னர் ஏற்றவும்<ph name="MARKUP_4" />நீங்கள் உள்ளிட்ட முகவரியைச் சரிபார்க்கவும்<ph name="MARKUP_5" /></translation>
 </translationbundle>

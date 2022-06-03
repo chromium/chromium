@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/debug/debugger.h"
@@ -31,6 +32,8 @@ static void SigUSR1Handler(int signal) {}
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+
+#include <windows.h>
 #endif
 
 namespace content {
@@ -39,12 +42,12 @@ namespace {
 
 #if defined(OS_WIN)
 
-base::string16 ToNativeString(base::StringPiece string) {
-  return base::ASCIIToUTF16(string);
+std::wstring ToNativeString(base::StringPiece string) {
+  return base::ASCIIToWide(string);
 }
 
-std::string FromNativeString(base::StringPiece16 string) {
-  return base::UTF16ToASCII(string);
+std::string FromNativeString(base::WStringPiece string) {
+  return base::WideToASCII(string);
 }
 
 #else  // defined(OS_WIN)
@@ -126,7 +129,7 @@ std::vector<std::string> FeaturesFromSwitch(
     const base::CommandLine& command_line,
     const char* switch_name) {
   using NativeString = base::CommandLine::StringType;
-  using NativeStringPiece = base::BasicStringPiece<NativeString>;
+  using NativeStringPiece = base::CommandLine::StringPieceType;
 
   std::vector<std::string> features;
   if (!command_line.HasSwitch(switch_name))
@@ -144,7 +147,7 @@ std::vector<std::string> FeaturesFromSwitch(
     arg.remove_prefix(prefix.size());
     if (!IsStringASCII(arg))
       continue;
-    auto vals = SplitString(FromNativeString(arg.as_string()), ",",
+    auto vals = SplitString(FromNativeString(NativeString(arg)), ",",
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     features.insert(features.end(), vals.begin(), vals.end());
   }

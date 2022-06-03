@@ -1,0 +1,9 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+no_redundant_field_init_check_int_test_nocompile_sources = [ "../src/org/chromium/tools/errorprone/plugin/NoRedundantFieldInitCheckIntTest.java" ]
+
+test_class_name_check_test_nocompile_sources = [
+  "../src/org/chromium/tools/errorprone/plugin/TestClassNameCheckTesting.java",
+]

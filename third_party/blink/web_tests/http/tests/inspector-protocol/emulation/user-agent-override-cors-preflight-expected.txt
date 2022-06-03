@@ -1,0 +1,5 @@
+Tests emulation of the user agent for CORS preflight requests.
+navigator.userAgent: Nutri-Matic Drinks Dispenser
+Access-Control-Request-Headers: x-devtools-test
+User-Agent: Nutri-Matic Drinks Dispenser
+

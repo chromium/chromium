@@ -4,30 +4,90 @@
 
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
-#include "base/task/post_task.h"
+#include "base/macros.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/resource_type.h"
-#include "content/public/common/transferrable_url_loader.mojom.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+
+namespace {
+
+void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
+  response_head->headers->RemoveHeader("Content-Security-Policy");
+  response_head->headers->RemoveHeader("Content-Security-Policy-Report-Only");
+
+  if (!response_head->parsed_headers)
+    return;
+
+  std::vector<network::mojom::ContentSecurityPolicyPtr>& csp =
+      response_head->parsed_headers->content_security_policy;
+  std::vector<network::mojom::ContentSecurityPolicyPtr> cleared;
+
+  for (auto& policy : csp) {
+    auto frame_ancestors = policy->directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (frame_ancestors == policy->directives.end())
+      continue;
+
+    auto cleared_policy = network::mojom::ContentSecurityPolicy::New();
+    cleared_policy->self_origin = std::move(policy->self_origin);
+    cleared_policy->header = std::move(policy->header);
+    cleared_policy->header->header_value = "";
+    cleared_policy
+        ->directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+        std::move(frame_ancestors->second);
+
+    auto raw_frame_ancestors = policy->raw_directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (raw_frame_ancestors == policy->raw_directives.end()) {
+      DCHECK(false);
+    } else {
+      cleared_policy->header->header_value =
+          "frame-ancestors " + raw_frame_ancestors->second;
+      response_head->headers->AddHeader(
+          cleared_policy->header->type ==
+                  network::mojom::ContentSecurityPolicyType::kEnforce
+              ? "Content-Security-Policy"
+              : "Content-Security-Policy-Report-Only",
+          cleared_policy->header->header_value);
+      cleared_policy
+          ->raw_directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+          std::move(raw_frame_ancestors->second);
+    }
+
+    cleared.push_back(std::move(cleared_policy));
+  }
+
+  csp.swap(cleared);
+}
+
+}  // namespace
 
 PluginResponseInterceptorURLLoaderThrottle::
-    PluginResponseInterceptorURLLoaderThrottle(int resource_type,
-                                               int frame_tree_node_id)
-    : resource_type_(resource_type), frame_tree_node_id_(frame_tree_node_id) {}
+    PluginResponseInterceptorURLLoaderThrottle(
+        network::mojom::RequestDestination request_destination,
+        int frame_tree_node_id)
+    : request_destination_(request_destination),
+      frame_tree_node_id_(frame_tree_node_id) {}
 
 PluginResponseInterceptorURLLoaderThrottle::
     ~PluginResponseInterceptorURLLoaderThrottle() = default;
@@ -54,6 +114,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (extension_id.empty())
     return;
 
+  // Chrome's PDF Extension does not work properly in the face of a restrictive
+  // Content-Security-Policy, and does not currently respect the policy anyway.
+  // Ignore CSP served on a PDF response. https://crbug.com/271452
+  if (extension_id == extension_misc::kPdfExtensionId &&
+      response_head->headers) {
+    // We still want to honor the frame-ancestors directive in the
+    // AncestorThrottle.
+    ClearAllButFrameAncestors(response_head);
+  }
+
+  MimeTypesHandler::ReportUsedHandler(extension_id);
+
   std::string view_id = base::GenerateGUID();
   // The string passed down to the original client with the response body.
   std::string payload = view_id;
@@ -75,13 +147,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
               &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
               weak_factory_.GetWeakPtr()));
 
-  mojo::DataPipe data_pipe(data_pipe_size);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(
+      mojo::CreateDataPipe(data_pipe_size, producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
+
   uint32_t len = static_cast<uint32_t>(payload.size());
   CHECK_EQ(MOJO_RESULT_OK,
-           data_pipe.producer_handle->WriteData(
-               payload.c_str(), &len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteData(payload.c_str(), &len,
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 
-  new_client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+  new_client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.decoded_body_length = len;
@@ -101,7 +178,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
             response_head->headers->raw_headers());
   }
 
-  auto transferrable_loader = content::mojom::TransferrableURLLoader::New();
+  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
   transferrable_loader->url = GURL(
       extensions::Extension::GetBaseURLFromExtensionId(extension_id).spec() +
       base::GenerateGUID());
@@ -111,9 +188,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->head->intercepted_by_plugin = true;
 
   bool embedded =
-      resource_type_ != static_cast<int>(content::ResourceType::kMainFrame);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+      request_destination_ != network::mojom::RequestDestination::kDocument;
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
           extension_id, view_id, embedded, frame_tree_node_id_,

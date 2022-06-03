@@ -227,7 +227,7 @@ def InsertImageSets(
           lambda m: InsertImageStyle(
               m, filepath, scale_factors, distribution,
               filename_expansion_function=filename_expansion_function),
-          text)).decode('utf-8').encode('utf-8')
+          text))
 
 
 def RemoveImagesNotIn(scale_factors, src_match):
@@ -317,7 +317,10 @@ class ChromeHtml(interface.GathererBase):
 
   def GetData(self, lang, encoding):
     """Returns inlined text of the HTML document."""
-    return self.inlined_text_
+    ret = self.inlined_text_
+    if encoding == util.BINARY:
+      ret = ret.encode('utf-8')
+    return ret
 
   def GetHtmlResourceFilenames(self):
     """Returns a set of all filenames inlined by this file."""

@@ -29,4 +29,20 @@ ImporterIE7PasswordInfo::~ImporterIE7PasswordInfo() {
 ImporterIE7PasswordInfo& ImporterIE7PasswordInfo::operator=(
     const ImporterIE7PasswordInfo& other) = default;
 
+ImportedPasswordForm::ImportedPasswordForm() = default;
+
+ImportedPasswordForm::ImportedPasswordForm(const ImportedPasswordForm& form) =
+    default;
+
+ImportedPasswordForm::ImportedPasswordForm(
+    ImportedPasswordForm&& form) noexcept = default;
+
+ImportedPasswordForm& ImportedPasswordForm::operator=(
+    const ImportedPasswordForm& form) = default;
+
+ImportedPasswordForm& ImportedPasswordForm::operator=(
+    ImportedPasswordForm&& form) = default;
+
+ImportedPasswordForm::~ImportedPasswordForm() = default;
+
 }  // namespace importer

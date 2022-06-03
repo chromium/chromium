@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/sys_byteorder.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
@@ -19,7 +20,7 @@ namespace network {
 
 const int kStunHeaderSize = 20;
 const uint16_t kStunBindingRequest = 0x0001;
-const uint16_t kStunBindingResponse = 0x0102;
+const uint16_t kStunBindingResponse = 0x0101;
 const uint16_t kStunBindingError = 0x0111;
 const uint32_t kStunMagicCookie = 0x2112A442;
 
@@ -220,18 +221,6 @@ FakeSocketClient::FakeSocketClient(
 }
 
 FakeSocketClient::~FakeSocketClient() {}
-
-void FakeSocketClient::IncomingTcpConnection(
-    const net::IPEndPoint& endpoint,
-    mojo::PendingRemote<network::mojom::P2PSocket> socket,
-    mojo::PendingReceiver<network::mojom::P2PSocketClient> client_receiver) {
-  accepted_.push_back(
-      std::make_pair(std::move(socket), std::move(client_receiver)));
-}
-
-void FakeSocketClient::CloseAccepted() {
-  accepted_.clear();
-}
 
 void CreateRandomPacket(std::vector<int8_t>* packet) {
   size_t size = kStunHeaderSize + rand() % 1000;

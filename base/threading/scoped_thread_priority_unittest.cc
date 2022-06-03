@@ -35,6 +35,13 @@ void FunctionThatBoostsPriorityOnFirstInvoke(ThreadPriority expected_priority) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   EXPECT_EQ(expected_priority, PlatformThread::GetCurrentThreadPriority());
 }
+
+void FunctionThatBoostsPriorityOnEveryInvoke() {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+  EXPECT_EQ(base::ThreadPriority::NORMAL,
+            PlatformThread::GetCurrentThreadPriority());
+}
+
 #endif  // OS_WIN
 
 }  // namespace
@@ -110,6 +117,17 @@ TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnFirstInvoke) {
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
 }
+
+TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnEveryInvoke) {
+  PlatformThread::SetCurrentThreadPriority(ThreadPriority::BACKGROUND);
+
+  FunctionThatBoostsPriorityOnEveryInvoke();
+  FunctionThatBoostsPriorityOnEveryInvoke();
+
+  // Put back the default thread priority.
+  PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
+}
+
 #endif  // OS_WIN
 
 }  // namespace base

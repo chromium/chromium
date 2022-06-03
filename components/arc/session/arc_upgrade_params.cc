@@ -4,10 +4,10 @@
 
 #include "components/arc/session/arc_upgrade_params.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_features.h"
 
 namespace arc {
@@ -35,7 +35,9 @@ UpgradeParams::UpgradeParams()
           !base::FeatureList::IsEnabled(arc::kBootCompletedBroadcastFeature)),
       packages_cache_mode(GetPackagesCacheMode()),
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcDisableGmsCoreCache)) {}
+          chromeos::switches::kArcDisableGmsCoreCache)),
+      enable_arc_nearby_share(
+          base::FeatureList::IsEnabled(arc::kEnableArcNearbyShare)) {}
 
 UpgradeParams::UpgradeParams(const UpgradeParams& other) = default;
 UpgradeParams::UpgradeParams(UpgradeParams&& other) = default;

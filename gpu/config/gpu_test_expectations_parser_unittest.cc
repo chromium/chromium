@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "gpu/config/gpu_test_expectations_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +39,8 @@ static const struct TestOsWithFamily {
     {{"HIGHSIERRA", GPUTestConfig::kOsMacHighSierra}, kOsFamilyMac},
     {{"MOJAVE", GPUTestConfig::kOsMacMojave}, kOsFamilyMac},
     {{"CATALINA", GPUTestConfig::kOsMacCatalina}, kOsFamilyMac},
+    {{"BIGSUR", GPUTestConfig::kOsMacBigSur}, kOsFamilyMac},
+    {{"MONTEREY", GPUTestConfig::kOsMacMonterey}, kOsFamilyMac},
     {{"LINUX", GPUTestConfig::kOsLinux}, {"LINUX", GPUTestConfig::kOsLinux}},
     {{"CHROMEOS", GPUTestConfig::kOsChromeOS},
      {"CHROMEOS", GPUTestConfig::kOsChromeOS}},
@@ -77,6 +78,7 @@ class GPUTestExpectationsParserTest : public testing::Test {
     bot_config_.AddGPUVendor(0x10de);
     bot_config_.set_gpu_device_id(0x0640);
     bot_config_.set_api(GPUTestConfig::kAPID3D11);
+    bot_config_.set_command_decoder(GPUTestConfig::kCommandDecoderPassthrough);
     ASSERT_TRUE(bot_config_.IsValid());
   }
 
@@ -346,9 +348,36 @@ TEST_F(GPUTestExpectationsParserTest, MultipleAPIsConflict) {
   EXPECT_NE(0u, parser.GetErrorMessages().size());
 }
 
+TEST_F(GPUTestExpectationsParserTest, PassthroughCommandDecoder) {
+  const std::string text = "BUG12345 PASSTHROUGH : MyTest = FAIL";
+
+  GPUTestExpectationsParser parser;
+  EXPECT_TRUE(parser.LoadTestExpectations(text));
+  EXPECT_EQ(0u, parser.GetErrorMessages().size());
+  EXPECT_EQ(GPUTestExpectationsParser::kGpuTestFail,
+            parser.GetTestExpectation("MyTest", bot_config()));
+}
+
+TEST_F(GPUTestExpectationsParserTest, ValidatingCommandDecoder) {
+  const std::string text = "BUG12345 VALIDATING : MyTest = FAIL";
+
+  GPUTestExpectationsParser parser;
+  EXPECT_TRUE(parser.LoadTestExpectations(text));
+  EXPECT_EQ(0u, parser.GetErrorMessages().size());
+  EXPECT_EQ(GPUTestExpectationsParser::kGpuTestPass,
+            parser.GetTestExpectation("MyTest", bot_config()));
+}
+
+TEST_F(GPUTestExpectationsParserTest, MultipleCommandDecodersConflict) {
+  const std::string text = "BUG12345 VALIDATING VALIDATING : MyTest = FAIL";
+
+  GPUTestExpectationsParser parser;
+  EXPECT_FALSE(parser.LoadTestExpectations(text));
+  EXPECT_NE(0u, parser.GetErrorMessages().size());
+}
+
 INSTANTIATE_TEST_SUITE_P(GPUTestExpectationsParser,
                          GPUTestExpectationsParserParamTest,
                          ::testing::ValuesIn(kOSVersionsWithFamily));
 
 }  // namespace gpu
-

@@ -5,8 +5,7 @@
 #include "chromecast/gpu/cast_content_gpu_client.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
-#include "components/viz/common/features.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "content/public/child/child_thread.h"
 
@@ -23,19 +22,17 @@ std::unique_ptr<CastContentGpuClient> CastContentGpuClient::Create() {
 
 void CastContentGpuClient::PostCompositorThreadCreated(
     base::SingleThreadTaskRunner* task_runner) {
-  if (features::IsVizDisplayCompositorEnabled()) {
-    DCHECK(task_runner);
-    mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
-        video_geometry_setter;
-    content::ChildThread::Get()->BindHostReceiver(
-        video_geometry_setter.InitWithNewPipeAndPassReceiver());
+  DCHECK(task_runner);
+  mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
+      video_geometry_setter;
+  content::ChildThread::Get()->BindHostReceiver(
+      video_geometry_setter.InitWithNewPipeAndPassReceiver());
 
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &viz::OverlayStrategyUnderlayCast::ConnectVideoGeometrySetter,
-            std::move(video_geometry_setter)));
-  }
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &viz::OverlayStrategyUnderlayCast::ConnectVideoGeometrySetter,
+          std::move(video_geometry_setter)));
 }
 
 }  // namespace shell

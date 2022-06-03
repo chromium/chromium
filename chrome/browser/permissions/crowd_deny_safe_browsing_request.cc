@@ -9,13 +9,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "components/safe_browsing/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "url/origin.h"
 
@@ -25,8 +24,7 @@ namespace {
 constexpr char kSafeBrowsingNotificationPermissionName[] = "NOTIFICATIONS";
 
 // The maximum amount of time to wait for the Safe Browsing response.
-constexpr base::TimeDelta kSafeBrowsingCheckTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 
 }  // namespace
 
@@ -51,13 +49,13 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   void CheckOrigin(const url::Origin& origin) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    // Start the timer before the call to CheckApiBlacklistUrl(), as it may
-    // call back into OnCheckApiBlacklistUrlResult() synchronously.
+    // Start the timer before the call to CheckApiBlocklistUrl(), as it may
+    // call back into OnCheckApiBlocklistUrlResult() synchronously.
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 
     if (!database_manager_->IsSupported() ||
-        database_manager_->CheckApiBlacklistUrl(origin.GetURL(), this)) {
+        database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
       timeout_.AbandonAndStop();
       SendResultToHandler(Verdict::kAcceptable);
     }
@@ -71,7 +69,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
       const safe_browsing::ThreatMetadata& metadata) {
     return metadata.api_permissions.count(
                kSafeBrowsingNotificationPermissionName)
-               ? Verdict::kKnownToShowUnsolicitedNotificationPermissionRequests
+               ? Verdict::kUnacceptable
                : Verdict::kAcceptable;
   }
 
@@ -88,7 +86,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   // SafeBrowsingDatabaseManager::Client:
-  void OnCheckApiBlacklistUrlResult(
+  void OnCheckApiBlocklistUrlResult(
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata) override {
     timeout_.AbandonAndStop();
@@ -114,8 +112,8 @@ CrowdDenySafeBrowsingRequest::CrowdDenySafeBrowsingRequest(
   client_ = std::make_unique<SafeBrowsingClient>(
       database_manager, weak_factory_.GetWeakPtr(),
       base::SequencedTaskRunnerHandle::Get());
-  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                 base::BindOnce(&SafeBrowsingClient::CheckOrigin,
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SafeBrowsingClient::CheckOrigin,
                                 base::Unretained(client_.get()), origin));
 }
 

@@ -4,6 +4,8 @@
 
 #include "media/audio/win/audio_session_event_listener_win.h"
 
+#include "base/logging.h"
+
 namespace media {
 
 AudioSessionEventListener::AudioSessionEventListener(
@@ -30,16 +32,15 @@ AudioSessionEventListener::~AudioSessionEventListener() {
       << "UnregisterAudioSessionNotification() failed: " << std::hex << hr;
 }
 
-STDMETHODIMP_(ULONG) AudioSessionEventListener::AddRef() {
+ULONG AudioSessionEventListener::AddRef() {
   return 1;  // Class is owned in Chromium code and should have no outside refs.
 }
 
-STDMETHODIMP_(ULONG) AudioSessionEventListener::Release() {
+ULONG AudioSessionEventListener::Release() {
   return 1;  // Class is owned in Chromium code and should have no outside refs.
 }
 
-STDMETHODIMP AudioSessionEventListener::QueryInterface(REFIID iid,
-                                                       void** object) {
+HRESULT AudioSessionEventListener::QueryInterface(REFIID iid, void** object) {
   if (iid == IID_IUnknown || iid == __uuidof(IAudioSessionEvents)) {
     *object = static_cast<IAudioSessionEvents*>(this);
     return S_OK;
@@ -49,7 +50,7 @@ STDMETHODIMP AudioSessionEventListener::QueryInterface(REFIID iid,
   return E_NOINTERFACE;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnChannelVolumeChanged(
+HRESULT AudioSessionEventListener::OnChannelVolumeChanged(
     DWORD channel_count,
     float new_channel_volume_array[],
     DWORD changed_channel,
@@ -57,25 +58,24 @@ STDMETHODIMP AudioSessionEventListener::OnChannelVolumeChanged(
   return S_OK;
 }
 
-STDMETHODIMP
+IFACEMETHODIMP
 AudioSessionEventListener::OnDisplayNameChanged(LPCWSTR new_display_name,
                                                 LPCGUID event_context) {
   return S_OK;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnGroupingParamChanged(
+HRESULT AudioSessionEventListener::OnGroupingParamChanged(
     LPCGUID new_grouping_param,
     LPCGUID event_context) {
   return S_OK;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnIconPathChanged(
-    LPCWSTR new_icon_path,
-    LPCGUID event_context) {
+HRESULT AudioSessionEventListener::OnIconPathChanged(LPCWSTR new_icon_path,
+                                                     LPCGUID event_context) {
   return S_OK;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnSessionDisconnected(
+HRESULT AudioSessionEventListener::OnSessionDisconnected(
     AudioSessionDisconnectReason disconnect_reason) {
   DVLOG(1) << __func__ << ": " << disconnect_reason;
   if (device_change_cb_)
@@ -83,15 +83,14 @@ STDMETHODIMP AudioSessionEventListener::OnSessionDisconnected(
   return S_OK;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnSimpleVolumeChanged(
+HRESULT AudioSessionEventListener::OnSimpleVolumeChanged(
     float new_volume,
     BOOL new_mute,
     LPCGUID event_context) {
   return S_OK;
 }
 
-STDMETHODIMP AudioSessionEventListener::OnStateChanged(
-    AudioSessionState new_state) {
+HRESULT AudioSessionEventListener::OnStateChanged(AudioSessionState new_state) {
   return S_OK;
 }
 

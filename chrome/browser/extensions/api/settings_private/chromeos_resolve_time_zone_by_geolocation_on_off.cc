@@ -4,15 +4,13 @@
 
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 
-#include "base/feature_list.h"
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_time_zone_pref_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -30,14 +28,17 @@ class GeneratedResolveTimezoneByGeolocationOnOff
     : public GeneratedTimeZonePrefBase {
  public:
   explicit GeneratedResolveTimezoneByGeolocationOnOff(Profile* profile);
+
+  GeneratedResolveTimezoneByGeolocationOnOff(
+      const GeneratedResolveTimezoneByGeolocationOnOff&) = delete;
+  GeneratedResolveTimezoneByGeolocationOnOff& operator=(
+      const GeneratedResolveTimezoneByGeolocationOnOff&) = delete;
+
   ~GeneratedResolveTimezoneByGeolocationOnOff() override;
 
   // GeneratedPref implementation:
   std::unique_ptr<settings_api::PrefObject> GetPrefObject() const override;
   SetPrefResult SetPref(const base::Value* value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeneratedResolveTimezoneByGeolocationOnOff);
 };
 
 GeneratedResolveTimezoneByGeolocationOnOff::
@@ -73,14 +74,7 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
   // cannot deactivate automatic timezone.
   if (chromeos::system::TimeZoneResolverManager::
           IsTimeZoneResolutionPolicyControlled() ||
-      !profile_->IsSameProfile(ProfileManager::GetPrimaryUserProfile())) {
-    return SetPrefResult::PREF_NOT_MODIFIABLE;
-  }
-
-  // If the Parent Access Code feature is not available, children must use
-  // automatic timezone.
-  if (profile_->IsChild() &&
-      !base::FeatureList::IsEnabled(features::kParentAccessCodeForTimeChange)) {
+      !profile_->IsSameOrParent(ProfileManager::GetPrimaryUserProfile())) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 

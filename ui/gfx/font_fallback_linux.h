@@ -28,6 +28,7 @@ struct GFX_EXPORT FallbackFontData {
 
   FallbackFontData();
   FallbackFontData(const FallbackFontData& other);
+  FallbackFontData& operator=(const FallbackFontData& other);
 };
 
 // Return a font family which provides a glyph for the Unicode code point

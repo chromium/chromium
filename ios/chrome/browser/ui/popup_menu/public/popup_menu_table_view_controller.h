@@ -28,10 +28,7 @@
 
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Selects the row at |point|. This is the same as tapping the row. Point must
 // be in window base coordinates.

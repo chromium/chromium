@@ -5,20 +5,23 @@
 #ifndef GPU_VULKAN_VULKAN_INSTANCE_H_
 #define GPU_VULKAN_VULKAN_INSTANCE_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "gpu/config/vulkan_info.h"
-#include "gpu/vulkan/vulkan_export.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
 
-class VULKAN_EXPORT VulkanInstance {
+class COMPONENT_EXPORT(VULKAN) VulkanInstance {
  public:
   VulkanInstance();
+
+  VulkanInstance(const VulkanInstance&) = delete;
+  VulkanInstance& operator=(const VulkanInstance&) = delete;
 
   ~VulkanInstance();
 
@@ -34,20 +37,29 @@ class VULKAN_EXPORT VulkanInstance {
 
   VkInstance vk_instance() { return vk_instance_; }
 
+  bool is_from_angle() const { return is_from_angle_; }
+
  private:
-  void CollectInfo();
+  bool CreateInstance(const std::vector<const char*>& required_extensions,
+                      const std::vector<const char*>& required_layers);
+  bool InitializeFromANGLE(const std::vector<const char*>& required_extensions,
+                           const std::vector<const char*>& required_layers);
+
+  bool CollectBasicInfo(const std::vector<const char*>& required_layers);
+  bool CollectDeviceInfo(VkPhysicalDevice physical_device = VK_NULL_HANDLE);
   void Destroy();
+
+  const bool is_from_angle_;
 
   VulkanInfo vulkan_info_;
 
+  VkInstance owned_vk_instance_ = VK_NULL_HANDLE;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
   bool debug_report_enabled_ = false;
 #if DCHECK_IS_ON()
   VkDebugReportCallbackEXT error_callback_ = VK_NULL_HANDLE;
   VkDebugReportCallbackEXT warning_callback_ = VK_NULL_HANDLE;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanInstance);
 };
 
 }  // namespace gpu

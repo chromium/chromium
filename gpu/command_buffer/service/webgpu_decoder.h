@@ -13,6 +13,7 @@
 namespace gpu {
 
 class DecoderClient;
+struct GpuPreferences;
 class MemoryTracker;
 class SharedImageManager;
 
@@ -29,7 +30,11 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                                CommandBufferServiceBase* command_buffer_service,
                                SharedImageManager* shared_image_manager,
                                MemoryTracker* memory_tracker,
-                               gles2::Outputter* outputter);
+                               gles2::Outputter* outputter,
+                               const GpuPreferences& gpu_preferences);
+
+  WebGPUDecoder(const WebGPUDecoder&) = delete;
+  WebGPUDecoder& operator=(const WebGPUDecoder&) = delete;
 
   ~WebGPUDecoder() override;
 
@@ -47,9 +52,6 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
   WebGPUDecoder(DecoderClient* client,
                 CommandBufferServiceBase* command_buffer_service,
                 gles2::Outputter* outputter);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebGPUDecoder);
 };
 
 }  // namespace webgpu

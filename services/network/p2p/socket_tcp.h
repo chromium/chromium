@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
       mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
+
+  P2PSocketTcpBase(const P2PSocketTcpBase&) = delete;
+  P2PSocketTcpBase& operator=(const P2PSocketTcpBase&) = delete;
+
   ~P2PSocketTcpBase() override;
 
   void InitAccepted(const net::IPEndPoint& remote_address,
@@ -48,7 +52,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   void Init(const net::IPEndPoint& local_address,
             uint16_t min_port,
             uint16_t max_port,
-            const P2PHostAndIPEndPoint& remote_address) override;
+            const P2PHostAndIPEndPoint& remote_address,
+            const net::NetworkIsolationKey& network_isolation_key) override;
 
   // mojom::P2PSocket implementation:
   void Send(const std::vector<int8_t>& data,
@@ -117,8 +122,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   bool connected_ = false;
   const P2PSocketType type_;
   ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketTcpBase);
 };
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
@@ -129,6 +132,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
       mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
+
+  P2PSocketTcp(const P2PSocketTcp&) = delete;
+  P2PSocketTcp& operator=(const P2PSocketTcp&) = delete;
 
   ~P2PSocketTcp() override;
 
@@ -141,9 +147,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
       const std::vector<int8_t>& data,
       const rtc::PacketOptions& options,
       const net::NetworkTrafficAnnotationTag traffic_annotation) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketTcp);
 };
 
 // P2PSocketStunTcp class provides the framing of STUN messages when used
@@ -160,6 +163,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
 
+  P2PSocketStunTcp(const P2PSocketStunTcp&) = delete;
+  P2PSocketStunTcp& operator=(const P2PSocketStunTcp&) = delete;
+
   ~P2PSocketStunTcp() override;
 
  protected:
@@ -174,8 +180,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
 
  private:
   int GetExpectedPacketSize(const uint8_t* data, int len, int* pad_bytes);
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketStunTcp);
 };
 
 }  // namespace network

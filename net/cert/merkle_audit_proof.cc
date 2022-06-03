@@ -4,7 +4,7 @@
 
 #include "net/cert/merkle_audit_proof.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace net {
 namespace ct {

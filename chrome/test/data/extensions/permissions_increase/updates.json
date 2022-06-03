@@ -1,0 +1,32 @@
+)]}'
+{
+  "response": {
+    "protocol": "3.1",
+    "app": [
+      {
+        "appid": "pgdpcfcocojkjfbgpiianjngphoopgmo",
+        "updatecheck": {
+          "status": "ok",
+          "manifest": {
+            "version": "2",
+            "packages": {
+              "package": [
+                {
+                  "size": 1103,
+                  "hash_sha256": "dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853",
+                  "name": "v2.crx",
+                  "fp": "1.dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853"
+                }
+              ]
+            }
+          },
+          "urls": {
+            "url": [
+              {"codebase": "http://localhost/autoupdate/"}
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

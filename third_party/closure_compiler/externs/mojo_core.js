@@ -8,10 +8,8 @@ const Mojo = {};
  * @param {string} name
  * @param {MojoHandle} handle
  * @param {string=} scope
- * @param {boolean=} useBrowserInterfaceBroker
  */
-Mojo.bindInterface = function(
-    name, handle, scope, useBrowserInterfaceBroker) {};
+Mojo.bindInterface = function(name, handle, scope) {};
 
 /** @typedef {number} */
 let MojoResult;

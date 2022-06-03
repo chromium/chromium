@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_scheduler.h"
 
@@ -19,8 +18,12 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // Creates MetricsUploadScheduler object with the given |upload_callback|
   // callback to call when uploading should happen.  The callback must
   // arrange to call either UploadFinished or UploadCancelled on completion.
-  MetricsUploadScheduler(const base::Closure& upload_callback,
+  MetricsUploadScheduler(const base::RepeatingClosure& upload_callback,
                          bool fast_startup_for_testing);
+
+  MetricsUploadScheduler(const MetricsUploadScheduler&) = delete;
+  MetricsUploadScheduler& operator=(const MetricsUploadScheduler&) = delete;
+
   ~MetricsUploadScheduler() override;
 
   // Callback from MetricsService when a triggered upload finishes.
@@ -43,8 +46,6 @@ class MetricsUploadScheduler : public MetricsScheduler {
 
   // Time to wait for the next upload attempt if the next one fails.
   base::TimeDelta backoff_interval_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsUploadScheduler);
 };
 
 }  // namespace metrics

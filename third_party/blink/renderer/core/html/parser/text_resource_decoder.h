@@ -25,7 +25,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
@@ -59,6 +58,8 @@ class CORE_EXPORT TextResourceDecoder {
   };
 
   explicit TextResourceDecoder(const TextResourceDecoderOptions&);
+  TextResourceDecoder(const TextResourceDecoder&) = delete;
+  TextResourceDecoder& operator=(const TextResourceDecoder&) = delete;
   ~TextResourceDecoder();
 
   void SetEncoding(const WTF::TextEncoding&, EncodingSource);
@@ -79,8 +80,10 @@ class CORE_EXPORT TextResourceDecoder {
       TextResourceDecoderOptions::ContentType,
       const WTF::TextEncoding& default_encoding);
 
-  bool CheckForCSSCharset(const char*, wtf_size_t, bool& moved_data_to_buffer);
-  bool CheckForXMLCharset(const char*, wtf_size_t, bool& moved_data_to_buffer);
+  void AddToBuffer(const char* data, wtf_size_t data_length);
+  void AddToBufferIfEmpty(const char* data, wtf_size_t data_length);
+  bool CheckForCSSCharset(const char*, wtf_size_t);
+  bool CheckForXMLCharset(const char*, wtf_size_t);
   void CheckForMetaCharset(const char*, wtf_size_t);
   void AutoDetectEncodingIfAllowed(const char* data, wtf_size_t len);
 
@@ -98,10 +101,8 @@ class CORE_EXPORT TextResourceDecoder {
   bool detection_completed_;
 
   std::unique_ptr<HTMLMetaCharsetParser> charset_parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextResourceDecoder);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_TEXT_RESOURCE_DECODER_H_

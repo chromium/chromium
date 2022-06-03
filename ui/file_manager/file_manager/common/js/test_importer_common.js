@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Shared cloud importer namespace
-var importer = importer || {};
+import {importer} from './importer_common.js';
+import {TestCallRecorder} from './unittest_util.js';
+
+// Namespace
+export const importerTest = {};
 
 /**
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to
  * access chrome's sync file system.  Call this during setUp.
- * @return {!importer.TestLogger}
+ * @return {!importerTest.TestLogger}
  * @suppress{accessControls} For testing.
  */
-importer.setupTestLogger = () => {
-  const logger = new importer.TestLogger();
+importerTest.setupTestLogger = () => {
+  const logger = new importerTest.TestLogger();
   importer.logger_ = logger;
   return logger;
 };
@@ -23,7 +26,7 @@ importer.setupTestLogger = () => {
  * @implements {importer.Logger}
  * @final
  */
-importer.TestLogger = class {
+importerTest.TestLogger = class {
   constructor() {
     /** @public {!TestCallRecorder} */
     this.errorRecorder = new TestCallRecorder();

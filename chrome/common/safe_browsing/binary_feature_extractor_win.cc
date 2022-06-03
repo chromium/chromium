@@ -13,8 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "chrome/common/safe_browsing/pe_image_reader_win.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "base/win/pe_image_reader.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 
@@ -117,7 +117,7 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
-  PeImageReader pe_image;
+  base::win::PeImageReader pe_image;
   if (!pe_image.Initialize(data, data_size))
     return false;
 
@@ -130,7 +130,7 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
   size_t optional_header_size = 0;
   const uint8_t* optional_header_data =
       pe_image.GetOptionalHeaderData(&optional_header_size);
-  if (pe_image.GetWordSize() == PeImageReader::WORD_SIZE_32) {
+  if (pe_image.GetWordSize() == base::win::PeImageReader::WORD_SIZE_32) {
     pe_headers->set_optional_headers32(optional_header_data,
                                        optional_header_size);
   } else {

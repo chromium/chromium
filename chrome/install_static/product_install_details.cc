@@ -129,13 +129,31 @@ std::unique_ptr<PrimaryInstallDetails> MakeProductDetails(
   details->set_mode(mode);
   details->set_system_level(system_level);
 
+  const wchar_t* channel_override = nullptr;
+  // |kRegValueChannel| must match the value of google_update::kRegChannelField.
+  static constexpr wchar_t kRegValueChannel[] = L"channel";
+
+  // |kRegValueChannel| is written by the installer to convey a policy-driven
+  // channel value.
+  std::wstring client(GetClientsKeyPath(mode->app_guid));
+  std::wstring channel_from_registry;
+  if (nt::QueryRegValueSZ(system_level ? nt::HKLM : nt::HKCU, nt::WOW6432,
+                          client.c_str(), kRegValueChannel,
+                          &channel_from_registry)) {
+    channel_override = channel_from_registry.c_str();
+  }
+
   // Cache the ap and cohort name values found in the registry for use in crash
   // keys and in about:version.
   std::wstring update_ap;
   std::wstring update_cohort_name;
-  details->set_channel(DetermineChannel(*mode, system_level,
-                                        false /* !from_binaries */, &update_ap,
-                                        &update_cohort_name));
+  auto channel = DetermineChannel(*mode, system_level, channel_override,
+                                  &update_ap, &update_cohort_name);
+  details->set_channel(channel.channel_name);
+  details->set_channel_origin(channel.origin);
+  if (channel.origin == ChannelOrigin::kPolicy)
+    details->set_channel_override(channel_from_registry);
+  details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);
 

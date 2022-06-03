@@ -10,14 +10,12 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/video_accelerator/protected_buffer_allocator.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
-#include "mojo/public/cpp/system/buffer.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -40,6 +38,9 @@ constexpr size_t kMaxBuffersPerAllocator = 64;
 
 class ProtectedBufferManager::ProtectedBuffer {
  public:
+  ProtectedBuffer(const ProtectedBuffer&) = delete;
+  ProtectedBuffer& operator=(const ProtectedBuffer&) = delete;
+
   virtual ~ProtectedBuffer() {}
 
   // Downcasting methods to return duplicated handles to the underlying
@@ -65,8 +66,6 @@ class ProtectedBufferManager::ProtectedBuffer {
 
  private:
   scoped_refptr<gfx::NativePixmap> dummy_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtectedBuffer);
 };
 
 class ProtectedBufferManager::ProtectedSharedMemory
@@ -105,9 +104,9 @@ ProtectedBufferManager::ProtectedSharedMemory::Create(
       new ProtectedSharedMemory(std::move(dummy_handle)));
 
   size_t aligned_size =
-      base::bits::Align(size, base::SysInfo::VMAllocationGranularity());
+      base::bits::AlignUp(size, base::SysInfo::VMAllocationGranularity());
 
-  auto shmem_region = mojo::CreateUnsafeSharedMemoryRegion(aligned_size);
+  auto shmem_region = base::UnsafeSharedMemoryRegion::Create(aligned_size);
   if (!shmem_region.IsValid()) {
     VLOGF(1) << "Failed to allocate shared memory";
     return nullptr;
@@ -185,6 +184,11 @@ class ProtectedBufferManager::ProtectedBufferAllocatorImpl
       uint64_t allocator_id,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager,
       base::OnceClosure release_all_protected_buffers_cb);
+
+  ProtectedBufferAllocatorImpl(const ProtectedBufferAllocatorImpl&) = delete;
+  ProtectedBufferAllocatorImpl& operator=(const ProtectedBufferAllocatorImpl&) =
+      delete;
+
   ~ProtectedBufferAllocatorImpl() override;
   bool AllocateProtectedSharedMemory(base::ScopedFD dummy_fd,
                                      size_t size) override;
@@ -199,7 +203,6 @@ class ProtectedBufferManager::ProtectedBufferAllocatorImpl
   base::OnceClosure release_all_protected_buffers_cb_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ProtectedBufferAllocatorImpl);
 };
 
 ProtectedBufferManager::ProtectedBufferAllocatorImpl::

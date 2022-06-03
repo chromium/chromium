@@ -6,11 +6,15 @@
 
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_util.h"
 
 namespace net {
 
@@ -29,11 +33,13 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
     std::string domain_key,
     std::string name_key,
     GURL url,
+    absl::optional<CookiePartitionKey> cookie_partition_key,
     net::CookieChangeCallback callback)
     : change_dispatcher_(std::move(change_dispatcher)),
       domain_key_(std::move(domain_key)),
       name_key_(std::move(name_key)),
       url_(std::move(url)),
+      cookie_partition_key_(std::move(cookie_partition_key)),
       callback_(std::move(callback)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(url_.is_valid() || url_.is_empty());
@@ -49,7 +55,8 @@ CookieMonsterChangeDispatcher::Subscription::~Subscription() {
 }
 
 void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
-    const CookieChangeInfo& change) {
+    const CookieChangeInfo& change,
+    const CookieAccessDelegate* cookie_access_delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const CanonicalCookie& cookie = change.cookie;
@@ -57,11 +64,26 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
   // The net::CookieOptions are hard-coded for now, but future APIs may set
   // different options. For example, JavaScript observers will not be allowed to
   // see HTTP-only changes.
-  if (!url_.is_empty() &&
-      !cookie
-           .IncludeForRequestURL(url_, CookieOptions::MakeAllInclusive(),
-                                 change.access_semantics)
-           .IsInclude()) {
+  if (!url_.is_empty()) {
+    bool delegate_treats_url_as_trustworthy =
+        cookie_access_delegate &&
+        cookie_access_delegate->ShouldTreatUrlAsTrustworthy(url_);
+    CookieOptions options = CookieOptions::MakeAllInclusive();
+    CookieSamePartyStatus same_party_status =
+        cookie_util::GetSamePartyStatus(cookie, options);
+    if (!cookie
+             .IncludeForRequestURL(
+                 url_, options,
+                 CookieAccessParams{change.access_result.access_semantics,
+                                    delegate_treats_url_as_trustworthy,
+                                    same_party_status})
+             .status.IsInclude()) {
+      return;
+    }
+  }
+
+  if (change.cookie.IsPartitioned() &&
+      change.cookie.PartitionKey() != cookie_partition_key_) {
     return;
   }
 
@@ -78,7 +100,9 @@ void CookieMonsterChangeDispatcher::Subscription::DoDispatchChange(
   callback_.Run(change);
 }
 
-CookieMonsterChangeDispatcher::CookieMonsterChangeDispatcher() {}
+CookieMonsterChangeDispatcher::CookieMonsterChangeDispatcher(
+    const CookieMonster* cookie_monster)
+    : cookie_monster_(cookie_monster) {}
 
 CookieMonsterChangeDispatcher::~CookieMonsterChangeDispatcher() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -113,12 +137,13 @@ std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForCookie(
     const GURL& url,
     const std::string& name,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      std::move(callback));
+      cookie_partition_key, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -127,12 +152,14 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 std::unique_ptr<CookieChangeSubscription>
 CookieMonsterChangeDispatcher::AddCallbackForUrl(
     const GURL& url,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
-      std::string(kGlobalNameKey), url, std::move(callback));
+      std::string(kGlobalNameKey), url, cookie_partition_key,
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -145,7 +172,8 @@ CookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), std::string(kGlobalDomainKey),
-      std::string(kGlobalNameKey), GURL(""), std::move(callback));
+      std::string(kGlobalNameKey), GURL(""), CookiePartitionKey::Todo(),
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -187,7 +215,8 @@ void CookieMonsterChangeDispatcher::DispatchChangeToNameKey(
   SubscriptionList& subscription_list = it->second;
   for (base::LinkNode<Subscription>* node = subscription_list.head();
        node != subscription_list.end(); node = node->next()) {
-    node->value()->DispatchChange(change);
+    node->value()->DispatchChange(change,
+                                  cookie_monster_->cookie_access_delegate());
   }
 }
 

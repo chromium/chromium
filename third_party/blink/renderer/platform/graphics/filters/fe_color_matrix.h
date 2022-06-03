@@ -38,21 +38,16 @@ enum ColorMatrixType {
 
 class PLATFORM_EXPORT FEColorMatrix final : public FilterEffect {
  public:
-  FEColorMatrix(Filter*, ColorMatrixType, const Vector<float>&);
+  FEColorMatrix(Filter*, ColorMatrixType, Vector<float>);
 
   ColorMatrixType GetType() const;
   bool SetType(ColorMatrixType);
 
   const Vector<float>& Values() const;
-  bool SetValues(const Vector<float>&);
+  bool SetValues(Vector<float>);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indention) const override;
-
-  static inline void CalculateSaturateComponents(float* components,
-                                                 float value);
-  static inline void CalculateHueRotateComponents(float* components,
-                                                  float value);
 
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;

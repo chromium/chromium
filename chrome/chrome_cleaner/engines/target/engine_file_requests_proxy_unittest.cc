@@ -190,9 +190,9 @@ MULTIPROCESS_TEST_MAIN(FindFirstFileMultiple) {
   }
   std::wstring first_found = data.cFileName;
 
-  base::string16 file_name_1 =
+  std::wstring file_name_1 =
       child_process->test_file_1_path().BaseName().value();
-  base::string16 file_name_2 =
+  std::wstring file_name_2 =
       child_process->test_file_2_path().BaseName().value();
   if (!base::EqualsCaseInsensitiveASCII(file_name_1, data.cFileName) &&
       !base::EqualsCaseInsensitiveASCII(file_name_2, data.cFileName)) {
@@ -341,7 +341,7 @@ MULTIPROCESS_TEST_MAIN(OpenReadOnlyFileNoHangs) {
   scoped_refptr<EngineFileRequestsProxy> proxy(
       child_process->GetFileRequestsProxy());
 
-  const base::string16 too_long(std::numeric_limits<int16_t>::max() + 1, '0');
+  const std::wstring too_long(std::numeric_limits<int16_t>::max() + 1, '0');
   EXPECT_FALSE(
       proxy->OpenReadOnlyFile(base::FilePath(too_long), FILE_ATTRIBUTE_NORMAL)
           .IsValid());

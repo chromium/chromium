@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -29,6 +30,9 @@ class AutofillCreditCardTableViewControllerTest
   AutofillCreditCardTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
+    WebStateList* web_state_list = nullptr;
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             web_state_list);
     // Credit card import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestChromeBrowserState by
     // default.
@@ -37,7 +41,7 @@ class AutofillCreditCardTableViewControllerTest
 
   ChromeTableViewController* InstantiateController() override {
     return [[AutofillCreditCardTableViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithBrowser:browser_.get()];
   }
 
   void AddCreditCard(const std::string& origin,
@@ -71,6 +75,7 @@ class AutofillCreditCardTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<Browser> browser_;
 };
 
 // Default test case of no credit cards.

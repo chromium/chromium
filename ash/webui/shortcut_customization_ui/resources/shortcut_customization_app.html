@@ -1,0 +1,45 @@
+<style include="shortcut-customization-fonts">
+  :host {
+    @apply --shortcut-customization-default-font;
+  }
+</style>
+<!-- TODO(jimmyxgong): Localize this title -->
+<navigation-view-panel id="navigationPanel" title="Shortcut Customization"
+    show-tool-bar>
+  <div slot="bottom-nav-content-panel">
+    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_">
+      <!-- TODO(jimmyxgong): i18n this string-->
+      Reset all shortcuts
+    </cr-button>
+  </div>
+</navigation-view-panel>
+
+<template is="dom-if" if="[[showEditDialog_]]" restamp>
+  <accelerator-edit-dialog id="editDialog"
+      description="[[dialogShortcutTitle_]]"
+      accelerator-infos="[[dialogAccelerators_]]"
+      action="[[dialogAction_]]"
+      source="[[dialogSource_]]">
+  </accelerator-edit-dialog>
+</template>
+
+<template is="dom-if" if="[[showRestoreAllDialog_]]" restamp>
+  <cr-dialog id="restoreDialog" show-on-attach
+      on-close="closeRestoreAllDialog_">
+    <div slot="body">
+      <!-- TODO(jimmyxgong): i18n string -->
+      Reset all shortcuts to defaults?
+    </div>
+    <div slot="button-container">
+      <cr-button id="cancelButton" on-click="onCancelRestoreButtonClicked_">
+        <!-- TODO(jimmyxgong): i18n string -->
+        Cancel
+      </cr-button>
+      <cr-button class="action-button"
+          on-click="onConfirmRestoreButtonClicked_">
+        <!-- TODO(jimmyxgong): i18n string -->
+        Reset
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

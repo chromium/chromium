@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -44,16 +45,13 @@ TEST_F(CWVCreditCardSaverTest, Initialization) {
       autofill::TestLegalMessageLine("Test line 1",
                                      {autofill::LegalMessageLine::Link(
                                          5, 9, "http://www.chromium.org/")})};
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback;
+  autofill::AutofillClient::UploadSaveCardPromptCallback callback;
 
   CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
-                                   willUploadToCloud:YES
                                    legalMessageLines:legal_message_lines
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
+                                  savePromptCallback:std::move(callback)];
 
   EXPECT_EQ(credit_card, *credit_card_saver.creditCard.internalCard);
   ASSERT_EQ(1U, credit_card_saver.legalMessages.count);
@@ -66,149 +64,90 @@ TEST_F(CWVCreditCardSaverTest, Initialization) {
                       effectiveRange:&range];
   EXPECT_NSEQ([NSURL URLWithString:@"http://www.chromium.org/"], link);
   EXPECT_TRUE(NSEqualRanges(NSMakeRange(5, 4), range));
-  EXPECT_TRUE(credit_card_saver.willUploadToCloud);
 }
 
 // Tests when user ignores credit card save.
 TEST_F(CWVCreditCardSaverTest, Ignore) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   autofill::AutofillClient::SaveCreditCardOptions options;
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback =
+  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
       base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision) {
+          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
+              const autofill::AutofillClient::UserProvidedCardDetails&
+                  user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::IGNORED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
+                decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
-                                   willUploadToCloud:NO
                                    legalMessageLines:{}
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
+                                  savePromptCallback:std::move(callback)];
   // Force -[CWVCreditCardSaver dealloc].
   credit_card_saver = nil;
+  ALLOW_UNUSED_LOCAL(credit_card_saver);
 
   EXPECT_TRUE(callback_called);
 }
 
-// Tests when user declines a local save.
-TEST_F(CWVCreditCardSaverTest, DeclineLocal) {
-  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback;
-
-  BOOL callback_called = NO;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback =
-      base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision) {
-            callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::DECLINED, decision);
-          });
-
-  CWVCreditCardSaver* credit_card_saver =
-      [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
-                                         saveOptions:options
-                                   willUploadToCloud:NO
-                                   legalMessageLines:{}
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
-  [credit_card_saver decline];
-
-  EXPECT_TRUE(callback_called);
-}
-
-// Tests when user declines a cloud save.
-TEST_F(CWVCreditCardSaverTest, DeclineCloud) {
+// Tests when user declines a save.
+TEST_F(CWVCreditCardSaverTest, Decline) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   autofill::AutofillClient::SaveCreditCardOptions options;
   autofill::AutofillClient::LocalSaveCardPromptCallback local_callback;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback =
+  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
       base::BindLambdaForTesting(
           [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::DECLINED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
+                decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
-                                   willUploadToCloud:YES
                                    legalMessageLines:{}
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
+                                  savePromptCallback:std::move(callback)];
   [credit_card_saver decline];
 
   EXPECT_TRUE(callback_called);
 }
 
-// Tests when user accepts a local save.
-TEST_F(CWVCreditCardSaverTest, AcceptLocal) {
+// Tests when user accepts a save.
+TEST_F(CWVCreditCardSaverTest, Accept) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   autofill::AutofillClient::SaveCreditCardOptions options;
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback =
-      base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision) {
-            callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::ACCEPTED, decision);
-          });
-
-  CWVCreditCardSaver* credit_card_saver =
-      [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
-                                         saveOptions:options
-                                   willUploadToCloud:NO
-                                   legalMessageLines:{}
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
-  __block BOOL completion_called = NO;
-  [credit_card_saver acceptWithRiskData:nil
-                      completionHandler:^(BOOL cardSaved) {
-                        EXPECT_TRUE(cardSaved);
-                        completion_called = YES;
-                      }];
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return completion_called;
-  }));
-
-  EXPECT_TRUE(callback_called);
-}
-
-// Tests when user accepts a cloud save.
-TEST_F(CWVCreditCardSaverTest, AcceptCloud) {
-  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback;
-
-  BOOL callback_called = NO;
-  autofill::AutofillClient::UploadSaveCardPromptCallback upload_callback =
+  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
       base::BindLambdaForTesting(
           [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::ACCEPTED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
+                decision);
+            EXPECT_EQ(u"John Doe", user_provided_card_details.cardholder_name);
+            EXPECT_EQ(u"08", user_provided_card_details.expiration_date_month);
+            EXPECT_EQ(u"2021", user_provided_card_details.expiration_date_year);
           });
 
   CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
                                          saveOptions:options
-                                   willUploadToCloud:YES
                                    legalMessageLines:{}
-                            uploadSavePromptCallback:std::move(upload_callback)
-                             localSavePromptCallback:std::move(local_callback)];
+                                  savePromptCallback:std::move(callback)];
   BOOL risk_data_used = NO;
   [credit_card_saver loadRiskData:base::BindLambdaForTesting(
                                       [&](const std::string& risk_data) {
@@ -216,11 +155,14 @@ TEST_F(CWVCreditCardSaverTest, AcceptCloud) {
                                         risk_data_used = YES;
                                       })];
   __block BOOL completion_called = NO;
-  [credit_card_saver acceptWithRiskData:@"dummy-risk-data"
-                      completionHandler:^(BOOL cardSaved) {
-                        EXPECT_TRUE(cardSaved);
-                        completion_called = YES;
-                      }];
+  [credit_card_saver acceptWithCardHolderFullName:@"John Doe"
+                                  expirationMonth:@"08"
+                                   expirationYear:@"2021"
+                                         riskData:@"dummy-risk-data"
+                                completionHandler:^(BOOL cardSaved) {
+                                  EXPECT_TRUE(cardSaved);
+                                  completion_called = YES;
+                                }];
   [credit_card_saver handleCreditCardUploadCompleted:YES];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {

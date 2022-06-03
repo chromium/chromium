@@ -31,7 +31,7 @@ void ModulePendingScriptTreeClient::NotifyModuleTreeLoadFinished(
     pending_script_->NotifyModuleTreeLoadFinished();
 }
 
-void ModulePendingScriptTreeClient::Trace(Visitor* visitor) {
+void ModulePendingScriptTreeClient::Trace(Visitor* visitor) const {
   visitor->Trace(module_script_);
   visitor->Trace(pending_script_);
   ModuleTreeClient::Trace(visitor);
@@ -40,7 +40,7 @@ void ModulePendingScriptTreeClient::Trace(Visitor* visitor) {
 ModulePendingScript::ModulePendingScript(ScriptElementBase* element,
                                          ModulePendingScriptTreeClient* client,
                                          bool is_external)
-    : PendingScript(element, TextPosition()),
+    : PendingScript(element, TextPosition::MinimumPosition()),
       module_tree_client_(client),
       is_external_(is_external) {
   CHECK(GetElement());
@@ -54,7 +54,7 @@ void ModulePendingScript::DisposeInternal() {
   module_tree_client_ = nullptr;
 }
 
-void ModulePendingScript::Trace(Visitor* visitor) {
+void ModulePendingScript::Trace(Visitor* visitor) const {
   visitor->Trace(module_tree_client_);
   PendingScript::Trace(visitor);
 }

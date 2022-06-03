@@ -6,12 +6,22 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
-import {PartialPoint, Point, Viewport} from './viewport.js';
+import {NamedDestinationMessageData, Point, SaveRequestType} from './constants.js';
+import {UnseasonedPdfPluginElement} from './internal_plugin.js';
+import {PartialPoint, PinchPhase, Viewport} from './viewport.js';
 
-/** @typedef {{ type: string }} */
+/** @typedef {{type: string, messageId: (string|undefined)}} */
 export let MessageData;
+
+/**
+ * @typedef {{
+ *   type: string,
+ *   dataToSave: Array,
+ *   messageId: string,
+ * }}
+ */
+let SaveAttachmentMessageData;
 
 /**
  * @typedef {{
@@ -25,18 +35,6 @@ let SaveDataMessageData;
 /**
  * @typedef {{
  *   type: string,
- *   to: string,
- *   cc: string,
- *   bcc: string,
- *   subject: string,
- *   body: string,
- * }}
- */
-let EmailMessageData;
-
-/**
- * @typedef {{
- *   type: string,
  *   url: string,
  *   grayscale: boolean,
  *   modifiable: boolean,
@@ -45,24 +43,14 @@ let EmailMessageData;
  */
 export let PrintPreviewParams;
 
-// Note: Redefining this type here, to work around the fact that ink externs
-// are only available on Chrome OS, so the targets that contain them cannot be
-// built on other platforms.
-// TODO (rbpotter): Break InkController into its own file that is only included
-// on Chrome OS.
-
 /**
  * @typedef {{
- *   setAnnotationTool: function(AnnotationTool):void,
- *   viewportChanged: function():void,
- *   saveDocument: function():!Promise,
- *   undo: function():void,
- *   redo: function():void,
- *   load: function(string, !ArrayBuffer):!Promise,
- *   viewport: !Viewport,
+ *   imageData: !ArrayBuffer,
+ *   width: number,
+ *   height: number,
  * }}
  */
-let ViewerInkHostElement;
+let ThumbnailMessageData;
 
 /**
  * Creates a cryptographically secure pseudorandom 128-bit token.
@@ -70,14 +58,22 @@ let ViewerInkHostElement;
  */
 function createToken() {
   const randomBytes = new Uint8Array(16);
-  return window.crypto.getRandomValues(randomBytes)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+  window.crypto.getRandomValues(randomBytes);
+  return Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** @abstract */
+/** @interface */
 export class ContentController {
   constructor() {}
+
+  /** @return {!EventTarget} */
+  getEventTarget() {}
+
+  /** @return {boolean} */
+  get isActive() {}
+
+  /** @param {boolean} isActive */
+  set isActive(isActive) {}
 
   beforeZoom() {}
 
@@ -85,11 +81,15 @@ export class ContentController {
 
   viewportChanged() {}
 
-  /** @abstract */
   rotateClockwise() {}
 
-  /** @abstract */
   rotateCounterclockwise() {}
+
+  /** @param {boolean} displayAnnotations */
+  setDisplayAnnotations(displayAnnotations) {}
+
+  /** @param {boolean} enableTwoUpView */
+  setTwoUpView(enableTwoUpView) {}
 
   /** Triggers printing of the current document. */
   print() {}
@@ -102,163 +102,173 @@ export class ContentController {
 
   /**
    * Requests that the current document be saved.
-   * @param {boolean} requireResult whether a response is required, otherwise
-   *     the controller may save the document to disk internally.
-   * @return {Promise<{fileName: string, dataToSave: ArrayBuffer}>}
+   * @param {!SaveRequestType} requestType The type of save request. If
+   *     ANNOTATION, a response is required, otherwise the controller may save
+   *     the document to disk internally.
+   * @return {!Promise<!{fileName: string, dataToSave: !ArrayBuffer}>}
+   */
+  save(requestType) {}
+
+  /**
+   * Requests that the attachment at a certain index be saved.
+   * @param {number} index The index of the attachment to be saved.
+   * @return {!Promise<!SaveAttachmentMessageData>}
    * @abstract
    */
-  save(requireResult) {}
+  saveAttachment(index) {}
 
   /**
    * Loads PDF document from `data` activates UI.
    * @param {string} fileName
    * @param {!ArrayBuffer} data
-   * @return {Promise<void>}
-   * @abstract
+   * @return {!Promise<void>}
    */
   load(fileName, data) {}
 
-  /**
-   * Unloads the current document and removes the UI.
-   * @abstract
-   */
+  /** Unloads the current document and removes the UI. */
   unload() {}
 }
 
 /**
- * Controller for annotation mode, on Chrome OS only. Fires the following events
- * from its event target:
- * has-unsaved-changes: Fired to indicate there are ink annotations that have
- *     not been saved.
- * set-annotation-undo-state: Contains information about whether undo or redo
- *     options are available.
+ * Event types dispatched by the plugin controller.
+ * @enum {string}
  */
-export class InkController extends ContentController {
-  /** @param {!Viewport} viewport */
-  constructor(viewport) {
-    super();
+export const PluginControllerEventType = {
+  IS_ACTIVE_CHANGED: 'PluginControllerEventType.IS_ACTIVE_CHANGED',
+  PLUGIN_MESSAGE: 'PluginControllerEventType.PLUGIN_MESSAGE',
+};
 
-    /** @private {!Viewport} */
-    this.viewport_ = viewport;
-
-    /** @private {?ViewerInkHostElement} */
-    this.inkHost_ = null;
-
+/**
+ * PDF plugin controller singleton, responsible for communicating with the
+ * embedded plugin element. Dispatches a
+ * `PluginControllerEventType.PLUGIN_MESSAGE` event containing the message from
+ * the plugin, if a message type not handled by this controller is received.
+ * @implements {ContentController}
+ */
+export class PluginController {
+  constructor() {
     /** @private {!EventTarget} */
     this.eventTarget_ = new EventTarget();
 
-    /** @type {?AnnotationTool} */
-    this.tool_ = null;
+    /** @private {boolean} */
+    this.isActive_ = false;
+
+    /** @private {!HTMLEmbedElement} */
+    this.plugin_;
+
+    /** @private {?UnseasonedPdfPluginElement} */
+    this.unseasonedPlugin_ = null;
+
+    /** @private {?Array} */
+    this.unseasonedDelayedMessages_ = null;
+
+    /** @private {!Viewport} */
+    this.viewport_;
+
+    /** @private {!function():boolean} */
+    this.getIsUserInitiatedCallback_;
+
+    /** @private {!function():?Promise} */
+    this.getLoadedCallback_;
+
+    /** @private {!Map<string, PromiseResolver>} */
+    this.pendingTokens_;
+
+    /** @private {!Map<string, !PromiseResolver>} */
+    this.requestResolverMap_;
+
+    /**
+     * Counter for use with createUid
+     * @private {number}
+     */
+    this.uidCounter_ = 1;
   }
 
-  /** @return {!EventTarget} */
-  getEventTarget() {
-    return this.eventTarget_;
-  }
-
-  /** @param {AnnotationTool} tool */
-  setAnnotationTool(tool) {
-    this.tool_ = tool;
-    if (this.inkHost_) {
-      this.inkHost_.setAnnotationTool(tool);
-    }
-  }
-
-  /** @override */
-  rotateClockwise() {
-    // TODO(dstockwell): implement rotation
-  }
-
-  /** @override */
-  rotateCounterclockwise() {
-    // TODO(dstockwell): implement rotation
-  }
-
-  /** @override */
-  viewportChanged() {
-    this.inkHost_.viewportChanged();
-  }
-
-  /** @override */
-  save(requireResult) {
-    return this.inkHost_.saveDocument();
-  }
-
-  /** @override */
-  undo() {
-    this.inkHost_.undo();
-  }
-
-  /** @override */
-  redo() {
-    this.inkHost_.redo();
-  }
-
-  /** @override */
-  load(filename, data) {
-    if (!this.inkHost_) {
-      const inkHost = document.createElement('viewer-ink-host');
-      $('content').appendChild(inkHost);
-      this.inkHost_ = /** @type {!ViewerInkHostElement} */ (inkHost);
-      this.inkHost_.viewport = this.viewport_;
-      inkHost.addEventListener('stroke-added', e => {
-        this.eventTarget_.dispatchEvent(new CustomEvent('has-unsaved-changes'));
-      });
-      inkHost.addEventListener('undo-state-changed', e => {
-        this.eventTarget_.dispatchEvent(
-            new CustomEvent('set-annotation-undo-state', {detail: e.detail}));
-      });
-    }
-    return this.inkHost_.load(filename, data);
-  }
-
-  /** @override */
-  unload() {
-    this.inkHost_.remove();
-    this.inkHost_ = null;
-  }
-}
-
-/**
- * PDF plugin controller, responsible for communicating with the embedded plugin
- * element. Dispatches a 'plugin-message' event containing the message from the
- * plugin, if a message type not handled by this controller is received.
- */
-export class PluginController extends ContentController {
   /**
    * @param {!HTMLEmbedElement} plugin
    * @param {!Viewport} viewport
    * @param {function():boolean} getIsUserInitiatedCallback
    * @param {function():?Promise} getLoadedCallback
    */
-  constructor(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
-    super();
-
-    /** @private {!HTMLEmbedElement} */
+  init(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
     this.plugin_ = plugin;
-
-    /** @private {!Viewport} */
     this.viewport_ = viewport;
-
-    /** @private {!function():boolean} */
     this.getIsUserInitiatedCallback_ = getIsUserInitiatedCallback;
-
-    /** @private {!function():?Promise} */
     this.getLoadedCallback_ = getLoadedCallback;
-
-    /** @private {!Map<string, PromiseResolver>} */
     this.pendingTokens_ = new Map();
+    this.requestResolverMap_ = new Map();
+
     this.plugin_.addEventListener(
         'message', e => this.handlePluginMessage_(e), false);
+    if (!this.plugin_.postMessage) {
+      this.unseasonedPlugin_ =
+          /** @type {!UnseasonedPdfPluginElement} */ (this.plugin_);
+      this.unseasonedDelayedMessages_ = [];
 
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
+      this.unseasonedPlugin_.postMessage =
+          /**
+           * @param {*} message
+           * @param {!Array<!Transferable>=} transfer
+           */
+          (message, transfer) => {
+            this.unseasonedDelayedMessages_.push({message, transfer});
+          };
+    }
   }
 
-  /** @return {!EventTarget} */
+  /**
+   * @return {boolean}
+   * @override
+   */
+  get isActive() {
+    // Check whether `plugin_` is defined as a signal that `init()` was called.
+    return !!this.plugin_ && this.isActive_;
+  }
+
+  /**
+   * @param {boolean} isActive
+   * @override
+   */
+  set isActive(isActive) {
+    const wasActive = this.isActive;
+    this.isActive_ = isActive;
+    if (this.isActive === wasActive) {
+      return;
+    }
+
+    this.eventTarget_.dispatchEvent(new CustomEvent(
+        PluginControllerEventType.IS_ACTIVE_CHANGED, {detail: this.isActive}));
+  }
+
+  /**
+   * @return {number} A new unique ID.
+   * @private
+   */
+  createUid_() {
+    return this.uidCounter_++;
+  }
+
+  /**
+   * @return {!EventTarget}
+   * @override
+   */
   getEventTarget() {
     return this.eventTarget_;
   }
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  updateScroll(x, y) {
+    this.postMessage_({type: 'updateScroll', x, y});
+  }
+
+  viewportChanged() {}
+
+  redo() {}
+
+  undo() {}
 
   /**
    * Notify the plugin to stop reacting to scroll events while zoom is taking
@@ -268,7 +278,7 @@ export class PluginController extends ContentController {
   beforeZoom() {
     this.postMessage_({type: 'stopScrolling'});
 
-    if (this.viewport_.pinchPhase == Viewport.PinchPhase.PINCH_START) {
+    if (this.viewport_.pinchPhase === PinchPhase.START) {
       const position = this.viewport_.position;
       const zoom = this.viewport_.getZoom();
       const pinchPhase = this.viewport_.pinchPhase;
@@ -323,6 +333,22 @@ export class PluginController extends ContentController {
     this.plugin_.postMessage(message);
   }
 
+  /**
+   * Post a message to the PPAPI plugin, for cases where direct response is
+   * expected from the PPAPI plugin.
+   * @param {!MessageData} message
+   * @return {!Promise} A promise holding the response from the PPAPI plugin.
+   * @private
+   */
+  postMessageWithReply_(message) {
+    const promiseResolver = new PromiseResolver();
+    message.messageId = `${message.type}_${this.createUid_()}`;
+    this.requestResolverMap_.set(message.messageId, promiseResolver);
+    this.postMessage_(message);
+    return promiseResolver.promise;
+  }
+
+
   /** @override */
   rotateClockwise() {
     this.postMessage_({type: 'rotateClockwise'});
@@ -331,6 +357,22 @@ export class PluginController extends ContentController {
   /** @override */
   rotateCounterclockwise() {
     this.postMessage_({type: 'rotateCounterclockwise'});
+  }
+
+  /** @override */
+  setDisplayAnnotations(displayAnnotations) {
+    this.postMessage_({
+      type: 'displayAnnotations',
+      display: displayAnnotations,
+    });
+  }
+
+  /** @override */
+  setTwoUpView(enableTwoUpView) {
+    this.postMessage_({
+      type: 'setTwoUpView',
+      enableTwoUpView: enableTwoUpView,
+    });
   }
 
   /** @override */
@@ -343,7 +385,21 @@ export class PluginController extends ContentController {
   }
 
   getSelectedText() {
-    this.postMessage_({type: 'getSelectedText'});
+    return this.postMessageWithReply_({type: 'getSelectedText'});
+  }
+
+  /**
+   * Post a thumbnail request message to the plugin.
+   * @param {number} page
+   * @return {!Promise<!ThumbnailMessageData>} A promise holding the thumbnail
+   *     response from the plugin.
+   */
+  requestThumbnail(page) {
+    return this.postMessageWithReply_({
+      type: 'getThumbnail',
+      // The plugin references pages using zero-based indices.
+      page: page - 1,
+    });
   }
 
   /** @param {!PrintPreviewParams} printPreviewParams */
@@ -361,11 +417,14 @@ export class PluginController extends ContentController {
     });
   }
 
-  /** @param {string} newColor New color, in hex, for the PDF plugin. */
-  backgroundColorChanged(newColor) {
+  /**
+   * @param {number} color New color, as a 32-bit integer, of the PDF plugin
+   *     background.
+   */
+  setBackgroundColor(color) {
     this.postMessage_({
-      type: 'backgroundColorChanged',
-      backgroundColor: newColor,
+      type: 'setBackgroundColor',
+      color: color,
     });
   }
 
@@ -382,39 +441,99 @@ export class PluginController extends ContentController {
     this.postMessage_({type: 'getPasswordComplete', password: password});
   }
 
-  /** @param {string} destination */
+  /**
+   * @param {string} destination
+   * @return {!Promise<!NamedDestinationMessageData>}
+   *     A promise holding the named destination information from the plugin.
+   */
   getNamedDestination(destination) {
-    this.postMessage_({
+    return this.postMessageWithReply_({
       type: 'getNamedDestination',
       namedDestination: destination,
     });
   }
 
+  /** @param {boolean} enableReadOnly */
+  setReadOnly(enableReadOnly) {
+    this.postMessage_({
+      type: 'setReadOnly',
+      enableReadOnly: enableReadOnly,
+    });
+  }
+
   /** @override */
-  save(requireResult) {
+  save(requestType) {
     const resolver = new PromiseResolver();
     const newToken = createToken();
     this.pendingTokens_.set(newToken, resolver);
-    this.postMessage_({type: 'save', token: newToken, force: requireResult});
+    this.postMessage_({
+      type: 'save',
+      token: newToken,
+      saveRequestType: requestType,
+    });
     return resolver.promise;
   }
 
   /** @override */
+  saveAttachment(index) {
+    return this.postMessageWithReply_({
+      type: 'saveAttachment',
+      attachmentIndex: index,
+    });
+  }
+
+  /** @override */
   async load(fileName, data) {
-    const url = URL.createObjectURL(new Blob([data]));
-    this.plugin_.removeAttribute('headers');
-    this.plugin_.setAttribute('stream-url', url);
+    // Load `data` into the PDF plugin. The unseasoned plugin transfers the data
+    // to be loaded within the inner frame, while the Pepper plugin updates
+    // `src` directly.
+    let url;
+    if (this.unseasonedPlugin_) {
+      assert(this.unseasonedPlugin_ === this.plugin_);
+      this.unseasonedPlugin_.postMessage(
+          {type: 'loadArray', dataToLoad: data}, [data]);
+    } else {
+      url = URL.createObjectURL(new Blob([data]));
+      this.plugin_.setAttribute('src', url);
+      this.plugin_.setAttribute('has-edits', '');
+    }
+
     this.plugin_.style.display = 'block';
     try {
       await this.getLoadedCallback_();
+      this.isActive = true;
     } finally {
-      URL.revokeObjectURL(url);
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
     }
   }
 
   /** @override */
   unload() {
     this.plugin_.style.display = 'none';
+    this.isActive = false;
+  }
+
+  /**
+   * Binds an event handler for messages received from the unseasoned plugin.
+   *
+   * TODO(crbug.com/1228987): Remove this method when a permanent postMessage()
+   * bridge is implemented for the Unseasoned viewer.
+   *
+   * @param {!MessagePort} port The message port to bind to.
+   */
+  bindUnseasonedMessageHandler(port) {
+    assert(this.unseasonedDelayedMessages_ !== null);
+    const delayedMessages = this.unseasonedDelayedMessages_;
+    this.unseasonedDelayedMessages_ = null;
+
+    this.unseasonedPlugin_.postMessage = port.postMessage.bind(port);
+    port.onmessage = e => this.handlePluginMessage_(e);
+
+    for (const {message, transfer} of delayedMessages) {
+      this.unseasonedPlugin_.postMessage(message, transfer);
+    }
   }
 
   /**
@@ -424,14 +543,19 @@ export class PluginController extends ContentController {
    */
   handlePluginMessage_(messageEvent) {
     const messageData = /** @type {!MessageData} */ (messageEvent.data);
+
+    // Handle case where this Plugin->Page message is a direct response
+    // to a previous Page->Plugin message
+    if (messageData.messageId !== undefined) {
+      const resolver =
+          this.requestResolverMap_.get(messageData.messageId) || null;
+      assert(resolver !== null);
+      this.requestResolverMap_.delete(messageData.messageId);
+      resolver.resolve(messageData);
+      return;
+    }
+
     switch (messageData.type) {
-      case 'email':
-        const emailData = /** @type {!EmailMessageData} */ (messageData);
-        const href = 'mailto:' + emailData.to + '?cc=' + emailData.cc +
-            '&bcc=' + emailData.bcc + '&subject=' + emailData.subject +
-            '&body=' + emailData.body;
-        window.location.href = href;
-        break;
       case 'goToPage':
         this.viewport_.goToPage(
             /** @type {{type: string, page: number}} */ (messageData).page);
@@ -453,22 +577,17 @@ export class PluginController extends ContentController {
         resolver.resolve(null);
         break;
       default:
-        this.eventTarget_.dispatchEvent(
-            new CustomEvent('plugin-message', {detail: messageData}));
+        this.eventTarget_.dispatchEvent(new CustomEvent(
+            PluginControllerEventType.PLUGIN_MESSAGE, {detail: messageData}));
     }
   }
 
   /**
    * Handles the pdf file buffer received from the plugin.
-   *
    * @param {!SaveDataMessageData} messageData data of the message event.
    * @private
    */
   saveData_(messageData) {
-    assert(
-        loadTimeData.getBoolean('pdfFormSaveEnabled') ||
-        loadTimeData.getBoolean('pdfAnnotationsEnabled'));
-
     // Verify a token that was created by this instance is included to avoid
     // being spammed.
     const resolver = this.pendingTokens_.get(messageData.token);
@@ -492,9 +611,17 @@ export class PluginController extends ContentController {
         `File too large to be saved: ${bufView.length} bytes.`);
     assert(bufView.length >= MIN_FILE_SIZE);
     assert(
-        String.fromCharCode(bufView[0], bufView[1], bufView[2], bufView[3]) ==
+        String.fromCharCode(bufView[0], bufView[1], bufView[2], bufView[3]) ===
         '%PDF');
 
     resolver.resolve(messageData);
   }
+
+  /** @return {!PluginController} */
+  static getInstance() {
+    return instance || (instance = new PluginController());
+  }
 }
+
+/** @type {?PluginController} */
+let instance = null;

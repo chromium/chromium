@@ -8,13 +8,14 @@
 #include <drm_mode.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <limits>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -34,6 +35,16 @@ class MockDrmDevice : public DrmDevice {
     std::vector<DrmDevice::Property> properties;
   };
 
+  struct ConnectorProperties {
+    ConnectorProperties();
+    ConnectorProperties(const ConnectorProperties&);
+    ~ConnectorProperties();
+
+    uint32_t id;
+
+    std::vector<DrmDevice::Property> properties;
+  };
+
   struct PlaneProperties {
     PlaneProperties();
     PlaneProperties(const PlaneProperties&);
@@ -44,7 +55,10 @@ class MockDrmDevice : public DrmDevice {
     std::vector<DrmDevice::Property> properties;
   };
 
-  MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
+  explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
+
+  MockDrmDevice(const MockDrmDevice&) = delete;
+  MockDrmDevice& operator=(const MockDrmDevice&) = delete;
 
   static ScopedDrmPropertyBlobPtr AllocateInFormatsBlob(
       uint32_t id,
@@ -53,7 +67,6 @@ class MockDrmDevice : public DrmDevice {
 
   int get_get_crtc_call_count() const { return get_crtc_call_count_; }
   int get_set_crtc_call_count() const { return set_crtc_call_count_; }
-  int get_restore_crtc_call_count() const { return restore_crtc_call_count_; }
   int get_add_framebuffer_call_count() const {
     return add_framebuffer_call_count_;
   }
@@ -62,6 +75,8 @@ class MockDrmDevice : public DrmDevice {
   }
   int get_page_flip_call_count() const { return page_flip_call_count_; }
   int get_overlay_clear_call_count() const { return overlay_clear_call_count_; }
+  int get_test_modeset_count() const { return test_modeset_count_; }
+  int get_commit_modeset_count() const { return commit_modeset_count_; }
   int get_commit_count() const { return commit_count_; }
   int get_set_object_property_count() const {
     return set_object_property_count_;
@@ -79,31 +94,47 @@ class MockDrmDevice : public DrmDevice {
     legacy_gamma_ramp_expectation_ = state;
   }
   void set_commit_expectation(bool state) { commit_expectation_ = state; }
+  void set_overlay_modeset_expecation(bool state) {
+    modeset_with_overlays_expectation_ = state;
+  }
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
   const std::vector<sk_sp<SkSurface>> buffers() const { return buffers_; }
+
+  int last_planes_committed_count() const {
+    return last_planes_committed_count_;
+  }
 
   uint32_t get_cursor_handle_for_crtc(uint32_t crtc) const {
     const auto it = crtc_cursor_map_.find(crtc);
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
-  void set_connector_type(uint32_t type) { connector_type_ = type; }
-
-  void InitializeState(const std::vector<CrtcProperties>& crtc_properties,
-                       const std::vector<PlaneProperties>& plane_properties,
-                       const std::map<uint32_t, std::string>& property_names,
-                       bool use_atomic);
+  void InitializeState(
+      const std::vector<CrtcProperties>& crtc_properties,
+      const std::vector<ConnectorProperties>& connector_properties,
+      const std::vector<PlaneProperties>& plane_properties,
+      const std::map<uint32_t, std::string>& property_names,
+      bool use_atomic);
   bool InitializeStateWithResult(
       const std::vector<CrtcProperties>& crtc_properties,
+      const std::vector<ConnectorProperties>& connector_properties,
       const std::vector<PlaneProperties>& plane_properties,
       const std::map<uint32_t, std::string>& property_names,
       bool use_atomic);
 
+  void UpdateState(const std::vector<CrtcProperties>& crtc_properties,
+                   const std::vector<ConnectorProperties>& connector_properties,
+                   const std::vector<PlaneProperties>& plane_properties,
+                   const std::map<uint32_t, std::string>& property_names);
+
   void RunCallbacks();
 
   void SetPropertyBlob(ScopedDrmPropertyBlobPtr blob);
+
+  void SetModifiersOverhead(base::flat_map<uint64_t, int> modifiers_overhead);
+  void SetSystemLimitOfModifiers(uint64_t limit);
 
   // DrmDevice:
   ScopedDrmResourcesPtr GetResources() override;
@@ -114,8 +145,7 @@ class MockDrmDevice : public DrmDevice {
   bool SetCrtc(uint32_t crtc_id,
                uint32_t framebuffer,
                std::vector<uint32_t> connectors,
-               drmModeModeInfo* mode) override;
-  bool SetCrtc(drmModeCrtc* crtc, std::vector<uint32_t> connectors) override;
+               const drmModeModeInfo& mode) override;
   bool DisableCrtc(uint32_t crtc_id) override;
   ScopedDrmConnectorPtr GetConnector(uint32_t connector_id) override;
   bool AddFramebuffer2(uint32_t width,
@@ -139,7 +169,8 @@ class MockDrmDevice : public DrmDevice {
   bool SetProperty(uint32_t connector_id,
                    uint32_t property_id,
                    uint64_t value) override;
-  ScopedDrmPropertyBlob CreatePropertyBlob(void* blob, size_t size) override;
+  ScopedDrmPropertyBlob CreatePropertyBlob(const void* blob,
+                                           size_t size) override;
   void DestroyPropertyBlob(uint32_t id) override;
   bool GetCapability(uint64_t capability, uint64_t* value) override;
   ScopedDrmPropertyBlobPtr GetPropertyBlob(uint32_t property_id) override;
@@ -160,10 +191,6 @@ class MockDrmDevice : public DrmDevice {
   bool MapDumbBuffer(uint32_t handle, size_t size, void** pixels) override;
   bool UnmapDumbBuffer(void* pixels, size_t size) override;
   bool CloseBufferHandle(uint32_t handle) override;
-  bool CommitProperties(drmModeAtomicReq* request,
-                        uint32_t flags,
-                        uint32_t crtc_count,
-                        scoped_refptr<PageFlipRequest> callback) override;
   bool SetGammaRamp(
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
@@ -171,7 +198,20 @@ class MockDrmDevice : public DrmDevice {
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
+  // Properties of the plane associated with a fb.
+  struct FramebufferProps {
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint64_t modifier = 0;
+  };
+
   ~MockDrmDevice() override;
+
+  bool CommitPropertiesInternal(
+      drmModeAtomicReq* request,
+      uint32_t flags,
+      uint32_t crtc_count,
+      scoped_refptr<PageFlipRequest> callback) override;
 
   bool UpdateProperty(uint32_t id,
                       uint64_t value,
@@ -183,15 +223,17 @@ class MockDrmDevice : public DrmDevice {
 
   int get_crtc_call_count_;
   int set_crtc_call_count_;
-  int restore_crtc_call_count_;
   int add_framebuffer_call_count_;
   int remove_framebuffer_call_count_;
   int page_flip_call_count_;
   int overlay_clear_call_count_;
   int allocate_buffer_count_;
+  int test_modeset_count_ = 0;
+  int commit_modeset_count_ = 0;
   int commit_count_ = 0;
   int set_object_property_count_ = 0;
   int set_gamma_ramp_count_ = 0;
+  int last_planes_committed_count_ = 0;
 
   bool set_crtc_expectation_;
   bool add_framebuffer_expectation_;
@@ -199,8 +241,10 @@ class MockDrmDevice : public DrmDevice {
   bool create_dumb_buffer_expectation_;
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
+  bool modeset_with_overlays_expectation_ = true;
 
   uint32_t current_framebuffer_;
+  uint32_t plane_crtc_id_prop_id_ = 0;
 
   std::vector<sk_sp<SkSurface>> buffers_;
 
@@ -214,20 +258,18 @@ class MockDrmDevice : public DrmDevice {
   base::queue<PageFlipCallback> callbacks_;
 
   std::vector<CrtcProperties> crtc_properties_;
-
+  std::vector<ConnectorProperties> connector_properties_;
   std::vector<PlaneProperties> plane_properties_;
 
   std::map<uint32_t, std::string> property_names_;
 
-  // TODO(dnicoara): Generate all IDs internal to MockDrmDevice.
-  // For now generate something with a high enough ID to be unique in tests.
-  uint32_t property_id_generator_ = 0xff000000;
-
   std::set<uint32_t> allocated_property_blobs_;
 
-  uint32_t connector_type_ = DRM_MODE_CONNECTOR_eDP;
+  // Props of the plane associated with the generated fb_id.
+  base::flat_map<uint32_t /*fb_id*/, FramebufferProps> fb_props_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockDrmDevice);
+  uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
+  base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
 };
 
 }  // namespace ui

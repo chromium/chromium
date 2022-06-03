@@ -79,13 +79,15 @@ see [this thread](https://groups.google.com/a/chromium.org/forum/#!topic/blink-d
 *   Don't enable tests with external dependencies on CQ and main waterfall,
     e.g. tests against live sites.
     It is fine to check in those tests, but only run them on your own bots.
+*   Eventually, all tests should implement the
+    [Test Executable API](./test_executable_api.md) command line interface.
 
 ## What tests are needed for new features
 
 * **Unit Tests** are needed no matter where the code is for your feature.
   It is the best practice to add the unit tests
   when you add new code or update existing code in the same changelist,
-  check out [Code Coverage in Gerrit](/code_coverage_in_gerrit.md)
+  check out [Code Coverage in Gerrit](./code_coverage_in_gerrit.md)
   for the instruction about how to see the code coverage in Gerrit.
 * **Browser Tests** are recommended for integration tests and e2e tests.
   It will be great if you add browser tests to cover the major user
@@ -128,14 +130,33 @@ Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverag
 ## How to run tests
 
 ### Run tests locally
-*  [Run gtest locally]
+*  [Run gtest locally](#Run-gtest-locally)
 *  [Run browser tests locally]
 *  [Run tests on Android](./android_test_instructions.md#Running-Tests)
    It includes the instructions to run gTests, JUnit tests and Instrumentation tests on Android.
 *  [Run EarlGrey tests locally](../ios/testing.md#running-tests-from-xcode)
-*  [Run Web Tests locally](./testing/web_tests.md#running-web-tests)
+*  [Run Web Tests locally](./web_tests.md#running-web-tests)
 *  [Telemetry: Run benchmarks locally]
 *  [Run fuzz target locally]
+
+#### Run gtest locally
+
+Before you can run a gtest, you need to build the appropriate launcher target
+that contains your test, such as `blink_unittests`:
+
+```bash
+autoninja -C out/Default blink_unittests
+```
+
+To run specific tests, rather than all tests in a launcher, pass
+`--gtest_filter=` with a pattern. The simplest pattern is the full name of a
+test (SuiteOrFixtureName.TestName), but you can use wildcards:
+
+```bash
+out/Default/blink_unittests --gtest_filter='Foo*'
+```
+
+Use `--help` for more ways to select and run tests.
 
 ### Run tests remotely(on Swarming)
 >TODO: add the link to the instruction about how to run tests on Swarming.
@@ -147,28 +168,30 @@ Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverag
 
 ## How to deal with flaky tests
 
-Go to [Flaky portal] to find the report about the flaky tests in your projects.
+Go to [Flake Portal] to find reports about flaky tests in your projects.
 
-If you can not fix the flaky tests in a short time, consider to disable it first,
-then fix it later. [How do I disable a flaky test] is the instruction about how to disable a flaky test.
+* [Addressing Flaky GTests](./gtest_flake_tips.md)
+* [Addressing Flaky Web Tests](./web_tests_addressing_flake.md)
+* [Addressing Flaky WPTs](./web_platform_tests_addressing_flake.md)
 
->TODO: add the link to the instruction about how to reproduce/debug/verify flaky tests.
-
+If you cannot fix a flaky test in a short timeframe, disable it first to reduce
+development pain for other and then fix it later. "[How do I disable a flaky
+test]" has instructions on how to disable a flaky test.
 
 [gtest]: https://github.com/google/googletest
-[Simple gtests]: https://github.com/google/googletest/blob/master/googletest/docs/primer.md#simple-tests
+[Simple gtests]: https://github.com/google/googletest/blob/master/docs/primer.md#simple-tests
 [Junit]: https://developer.android.com/training/testing/junit-rules
-[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/master/testing/android/docs/instrumentation.md
+[Instrumentation Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/android/docs/instrumentation.md
 [EarlGrey]: https://github.com/google/EarlGrey
 [Telemetry]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md
-[Fuzzer Tests]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
+[Fuzzer Tests]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
 [Web Tests]: ./web_tests.md
 [crbug/611756]: https://bugs.chromium.org/p/chromium/issues/detail?id=611756
-[Flaky portal]: https://analysis.chromium.org/p/chromium/flake-portal
-[Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#write-fuzz-target
+[Flake Portal]: https://analysis.chromium.org/p/chromium/flake-portal
+[Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#write-fuzz-target
 [Telemetry: Run benchmarks locally]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/docs/run_benchmarks_locally.md
-[Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
+[Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
 [Android Debugging Instructions]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_debugging_instructions.md
 [Chrome OS Debugging Tips]: ./chromeos_debugging_tips.md
 [Debugging Web Tests]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Debugging-Web-Tests

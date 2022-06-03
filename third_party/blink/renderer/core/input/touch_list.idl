@@ -25,7 +25,9 @@
 
 // https://w3c.github.io/touch-events/#touchlist-interface
 
-interface TouchList {
+[
+    Exposed=Window
+] interface TouchList {
     readonly attribute unsigned long length;
     getter Touch? item(unsigned long index);
 };

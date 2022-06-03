@@ -7,14 +7,17 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-#if defined(OS_ANDROID)
-#define USE_MINIKIN_HYPHENATION
+#if defined(USE_MINIKIN_HYPHENATION) && defined(OS_FUCHSIA)
+// Fuchsia doesn't include |blink_platform_unittests_data|.
+#undef USE_MINIKIN_HYPHENATION
 #endif
+
 #if defined(USE_MINIKIN_HYPHENATION)
 #include "base/files/file_path.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenation_minikin.h"
@@ -34,8 +37,8 @@ class HyphenationTest : public testing::Test {
  protected:
   void TearDown() override { LayoutLocale::ClearForTesting(); }
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MACOSX)
-  // Get a |Hyphenation| instnace for the specified locale for testing.
+#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+  // Get a |Hyphenation| instance for the specified locale for testing.
   scoped_refptr<Hyphenation> GetHyphenation(const AtomicString& locale) {
 #if defined(USE_MINIKIN_HYPHENATION)
     // Because the mojo service to open hyphenation dictionaries is not
@@ -45,17 +48,44 @@ class HyphenationTest : public testing::Test {
 #if defined(OS_ANDROID)
     base::FilePath path("/system/usr/hyphen-data");
 #else
-#error "This configuration is not supported."
+    base::FilePath path = test::HyphenationDictionaryDir();
 #endif
     path = path.AppendASCII(filename);
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (file.IsValid())
-      return HyphenationMinikin::FromFileForTesting(std::move(file));
+      return HyphenationMinikin::FromFileForTesting(locale, std::move(file));
 #else
     if (const LayoutLocale* layout_locale = LayoutLocale::Get(locale))
       return layout_locale->GetHyphenation();
 #endif
     return nullptr;
+  }
+#endif
+
+#if defined(USE_MINIKIN_HYPHENATION)
+  void TestWordToHyphenate(StringView text,
+                           StringView expected,
+                           unsigned expected_num_leading_chars) {
+    unsigned num_leading_chars;
+    const StringView result =
+        HyphenationMinikin::WordToHyphenate(text, &num_leading_chars);
+    EXPECT_EQ(result, expected);
+    EXPECT_EQ(num_leading_chars, expected_num_leading_chars);
+
+    // |WordToHyphenate| has separate codepaths for 8 and 16 bits. Make sure
+    // both codepaths return the same results. When a paragraph has at least one
+    // 16 bits character (e.g., Emoji), there will be 8 bits words in 16 bits
+    // string.
+    if (!text.Is8Bit()) {
+      // If |text| is 16 bits, 16 bits codepath is already tested.
+      return;
+    }
+    String text16 = text.ToString();
+    text16.Ensure16Bit();
+    const StringView result16 =
+        HyphenationMinikin::WordToHyphenate(text16, &num_leading_chars);
+    EXPECT_EQ(result16, expected);
+    EXPECT_EQ(num_leading_chars, expected_num_leading_chars);
   }
 #endif
 };
@@ -69,16 +99,42 @@ TEST_F(HyphenationTest, Get) {
   EXPECT_EQ(nullptr, LayoutLocale::Get("en-UK")->GetHyphenation());
 }
 
-#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MACOSX)
-// TODO(crbug.com/851413): Reenable this test.
-#if defined(OS_ANDROID)
-#define MAYBE_HyphenLocations DISABLED_HyphenLocations
-#else
-#define MAYBE_HyphenLocations HyphenLocations
+#if defined(USE_MINIKIN_HYPHENATION)
+TEST_F(HyphenationTest, MapLocale) {
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de-xyz"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li"), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li-1901"), "de-ch-1901");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu"), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu-xyz"), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz-xyz"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-ca"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr-xyz"), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("mn-xyz"), "mn-cyrl");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("und-Deva-xyz"), "hi");
+
+  const char* no_map_locales[] = {"en-us", "fr"};
+  for (const char* locale_str : no_map_locales) {
+    AtomicString locale(locale_str);
+    AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
+    // If no mapping, the same instance should be returned.
+    EXPECT_EQ(locale.Impl(), mapped_locale.Impl());
+  }
+}
 #endif
-TEST_F(HyphenationTest, MAYBE_HyphenLocations) {
+
+#if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
+TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
-  ASSERT_TRUE(hyphenation) << "Cannot find the hyphenation engine";
+#if defined(OS_ANDROID)
+  // Hyphenation is available only for Android M MR1 or later.
+  if (!hyphenation)
+    return;
+#endif
+  ASSERT_TRUE(hyphenation) << "Cannot find the hyphenation for en-us";
 
   // Get all hyphenation points by |HyphenLocations|.
   const String word("hyphenation");
@@ -112,6 +168,18 @@ TEST_F(HyphenationTest, MAYBE_HyphenLocations) {
   EXPECT_THAT(actual, ElementsAreArray(locations));
 }
 
+#if defined(USE_MINIKIN_HYPHENATION)
+TEST_F(HyphenationTest, WordToHyphenate) {
+  TestWordToHyphenate("word", "word", 0);
+  TestWordToHyphenate(" word", "word", 1);
+  TestWordToHyphenate("  word", "word", 2);
+  TestWordToHyphenate("  word..", "word", 2);
+  TestWordToHyphenate(" ( word. ).", "word", 3);
+  TestWordToHyphenate(u" ( \u3042. ).", u"\u3042", 3);
+  TestWordToHyphenate(u" ( \U00020B9F. ).", u"\U00020B9F", 3);
+}
+#endif
+
 TEST_F(HyphenationTest, LeadingSpaces) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
 #if defined(OS_ANDROID)
@@ -134,12 +202,23 @@ TEST_F(HyphenationTest, LeadingSpaces) {
   String only_spaces("   ");
   EXPECT_THAT(hyphenation->HyphenLocations(only_spaces), ElementsAre());
   EXPECT_EQ(0u, hyphenation->LastHyphenLocation(only_spaces, 3));
+}
 
-  // Line breaker is not supposed to pass with trailing spaces.
-  String trailing_space("principle ");
-  EXPECT_THAT(hyphenation->HyphenLocations(trailing_space),
-              testing::AnyOf(ElementsAre(), ElementsAre(6, 4)));
-  EXPECT_EQ(0u, hyphenation->LastHyphenLocation(trailing_space, 10));
+TEST_F(HyphenationTest, NonLetters) {
+  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+#if defined(OS_ANDROID)
+  // Hyphenation is available only for Android M MR1 or later.
+  if (!hyphenation)
+    return;
+#endif
+
+  String non_letters("**********");
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
+
+  non_letters.Ensure16Bit();
+  EXPECT_EQ(0u,
+            hyphenation->LastHyphenLocation(non_letters, non_letters.length()));
 }
 
 TEST_F(HyphenationTest, English) {
@@ -154,6 +233,10 @@ TEST_F(HyphenationTest, English) {
   Vector<wtf_size_t, 8> locations = hyphenation->HyphenLocations("hyphenation");
   EXPECT_THAT(locations, testing::AnyOf(ElementsAreArray({6, 2}),
                                         ElementsAreArray({7, 6, 2})));
+
+  // Avoid hyphenating capitalized words.
+  locations = hyphenation->HyphenLocations("Hyphenation");
+  EXPECT_EQ(locations.size(), 0u);
 }
 
 TEST_F(HyphenationTest, German) {
@@ -167,6 +250,10 @@ TEST_F(HyphenationTest, German) {
 
   Vector<wtf_size_t, 8> locations =
       hyphenation->HyphenLocations("konsonantien");
+  EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
+
+  // Hyphenate capitalized words if German.
+  locations = hyphenation->HyphenLocations("Konsonantien");
   EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
 
   // Test words with non-ASCII (> U+0080) characters.

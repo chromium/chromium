@@ -5,6 +5,6 @@ Object.type === myImpl => true
 Object.hasProperties === myImpl => true
 Object.describe === myImpl => true
 Object.className === myImpl => true
-String.prototype.escapeCharacters === myImpl => true
+String.prototype.testStringProtoFunc === myImpl => true
 JSON.stringify === myImpl => true
 

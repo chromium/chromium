@@ -41,7 +41,7 @@ bool CanonicalURLStringCompare(const std::string& s1, const std::string& s2) {
     ++ch2;
   }
   int pri_diff = GetURLCharPriority(*ch1) - GetURLCharPriority(*ch2);
-  // We want false to be returned if |pri_diff| > 0.
+  // We want false to be returned if `pri_diff` > 0.
   return (pri_diff != 0) ? pri_diff < 0 : *ch1 < *ch2;
 }
 
@@ -55,18 +55,18 @@ bool IsPathPrefix(const std::string& p1, const std::string& p2) {
     return false;
   std::pair<std::string::const_iterator, std::string::const_iterator>
       first_diff = std::mismatch(p1.begin(), p1.end(), p2.begin());
-  // Necessary condition: |p1| is a string prefix of |p2|.
+  // Necessary condition: `p1` is a string prefix of `p2`.
   if (first_diff.first != p1.end())
-    return false;  // E.g.: (|p1| = "/test", |p2| = "/exam") => false.
+    return false;  // E.g.: (`p1` = "/test", `p2` = "/exam") => false.
 
-  // |p1| is string prefix.
+  // `p1` is string prefix.
   if (first_diff.second == p2.end())  // Is exact match?
     return true;  // E.g.: ("/test", "/test") => true.
-  // |p1| is strict string prefix, check full match of last path component.
+  // `p1` is strict string prefix, check full match of last path component.
   if (!p1.empty() && *p1.rbegin() == '/')  // Ends in '/'?
     return true;  // E.g.: ("/test/", "/test/stuff") => true.
 
-  // Finally, |p1| does not end in "/": check first extra character in |p2|.
+  // Finally, `p1` does not end in "/": check first extra character in `p2`.
   // E.g.: ("/test", "/test/stuff") => true; ("/test", "/testing") => false.
   return *(first_diff.second) == '/';
 }

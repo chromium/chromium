@@ -10,11 +10,6 @@ shared_library("verifier_test_dll_1") {
     "verifier_test_dll.cc",
     "verifier_test_dll_1.def",
   ]
-
-  # Unconditionally disable incremental linking for these modules so that
-  # their exports do not go through an ILT jmp stub.
-  configs -= [ "//build/config/win:default_incremental_linking" ]
-  configs += [ "//build/config/win:no_incremental_linking" ]
 }
 
 shared_library("verifier_test_dll_2") {
@@ -23,6 +18,4 @@ shared_library("verifier_test_dll_2") {
     "verifier_test_dll.cc",
     "verifier_test_dll_2.def",
   ]
-  configs -= [ "//build/config/win:default_incremental_linking" ]
-  configs += [ "//build/config/win:no_incremental_linking" ]
 }

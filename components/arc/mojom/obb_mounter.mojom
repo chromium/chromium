@@ -21,8 +21,8 @@ interface ObbMounterHost {
 // Next Method ID: 2
 interface ObbMounterInstance {
   // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(ObbMounterHost host_ptr);
+  InitDeprecated@0(pending_remote<ObbMounterHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(ObbMounterHost host_ptr) => ();
+  [MinVersion=1] Init@1(pending_remote<ObbMounterHost> host_remote) => ();
 };

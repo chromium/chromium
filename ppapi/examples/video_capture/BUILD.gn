@@ -6,9 +6,7 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("video_capture") {
   output_name = "ppapi_example_vc"
-  sources = [
-    "video_capture.cc",
-  ]
+  sources = [ "video_capture.cc" ]
   deps = [
     "//ppapi/cpp",
     "//ppapi/lib/gl/gles2",

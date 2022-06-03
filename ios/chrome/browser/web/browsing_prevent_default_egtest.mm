@@ -8,8 +8,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,13 +19,6 @@ namespace {
 
 // Timeout to use when waiting for a condition to be true.
 const CFTimeInterval kConditionTimeout = 4.0;
-
-// Returns the URL for the HTML that is used for testing purposes in this file.
-GURL GetTestUrl() {
-  return web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/"
-      "browsing_prevent_default_test_page.html");
-}
 }  // namespace
 
 // Tests that the javascript preventDefault() function correctly prevents new
@@ -42,9 +34,10 @@ GURL GetTestUrl() {
   // Disable popup blocking, because that will mask failures that try to open
   // new tabs.
   ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW);
-  web::test::SetUpFileBasedHttpServer();
 
-  const GURL testURL = GetTestUrl();
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL testURL =
+      self.testServer->GetURL("/browsing_prevent_default_test_page.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -81,9 +74,10 @@ GURL GetTestUrl() {
   // Disable popup blocking, because that will mask failures that try to open
   // new tabs.
   ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW);
-  web::test::SetUpFileBasedHttpServer();
 
-  const GURL testURL = GetTestUrl();
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL testURL =
+      self.testServer->GetURL("/browsing_prevent_default_test_page.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 

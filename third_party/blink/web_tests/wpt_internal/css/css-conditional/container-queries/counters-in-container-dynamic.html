@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="match" href="counters-ref.html">
+<title>Tests counter updates</title>
+<style>
+  #container {
+    contain: size layout style;
+    width: 200px;
+    height: 200px;
+  }
+
+  #counter::before {
+    content: counter(my-counter);
+  }
+
+  @container (min-width: 300px) {
+    #counter {
+      counter-reset: my-counter 100;
+    }
+  }
+</style>
+<p>Pass if you see the number 100 below.</p>
+<div id="container">
+  <div id="counter"></div>
+</div>
+<script>
+  container.offsetTop;
+  container.style.width = "400px";
+</script>

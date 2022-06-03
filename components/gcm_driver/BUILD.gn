@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/gcm_driver/config.gni")
 
 buildflag_header("gcm_buildflags") {
@@ -40,10 +41,6 @@ static_library("gcm_driver") {
     "registration_info.h",
     "system_encryptor.cc",
     "system_encryptor.h",
-    "web_push_common.cc",
-    "web_push_common.h",
-    "web_push_sender.cc",
-    "web_push_sender.h",
   ]
 
   public_deps = [
@@ -63,7 +60,6 @@ static_library("gcm_driver") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/sync",
     "//components/version_info",
     "//google_apis",
     "//google_apis/gcm",
@@ -80,11 +76,8 @@ static_library("gcm_driver") {
     "//components/gcm_driver/instance_id",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//components/timers" ]
-  }
-
   if (use_gcm_from_platform) {
+    assert(is_android)
     sources += [
       "gcm_driver_android.cc",
       "gcm_driver_android.h",
@@ -99,10 +92,6 @@ static_library("gcm_driver") {
       "gcm_account_mapper.h",
       "gcm_account_tracker.cc",
       "gcm_account_tracker.h",
-      "gcm_channel_status_request.cc",
-      "gcm_channel_status_request.h",
-      "gcm_channel_status_syncer.cc",
-      "gcm_channel_status_syncer.h",
       "gcm_client_factory.cc",
       "gcm_client_factory.h",
       "gcm_client_impl.cc",
@@ -115,6 +104,7 @@ static_library("gcm_driver") {
       "gcm_stats_recorder_impl.h",
     ]
     deps += [
+      "//build:chromeos_buildflags",
       "//components/crx_file",
       "//google_apis/gcm",
     ]
@@ -136,9 +126,7 @@ static_library("test_support") {
     "fake_gcm_profile_service.h",
   ]
 
-  public_deps = [
-    ":gcm_driver",
-  ]
+  public_deps = [ ":gcm_driver" ]
   deps = [
     "//base",
     "//components/gcm_driver/instance_id:test_support",
@@ -177,10 +165,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "gcm_delayed_task_controller_unittest.cc",
-    "gcm_stats_recorder_android_unittest.cc",
-  ]
+  sources = [ "gcm_delayed_task_controller_unittest.cc" ]
 
   deps = [
     ":gcm_driver",
@@ -189,7 +174,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/gcm_driver/crypto",
     "//components/prefs:test_support",
-    "//components/sync/protocol",
     "//google_apis:test_support",
     "//google_apis/gcm:test_support",
     "//net:test_support",
@@ -198,13 +182,8 @@ source_set("unit_tests") {
     "//third_party/protobuf:protobuf_lite",
   ]
 
-  if (!is_ios) {
-    sources += [ "web_push_sender_unittest.cc" ]
-
-    deps += [
-      "//content/test:test_support",
-      "//third_party/re2",
-    ]
+  if (is_android) {
+    sources += [ "gcm_stats_recorder_android_unittest.cc" ]
   }
 
   if (!use_gcm_from_platform) {
@@ -212,13 +191,15 @@ source_set("unit_tests") {
       "account_tracker_unittest.cc",
       "gcm_account_mapper_unittest.cc",
       "gcm_account_tracker_unittest.cc",
-      "gcm_channel_status_request_unittest.cc",
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
       "gcm_driver_unittest.cc",
       "gcm_stats_recorder_impl_unittest.cc",
     ]
 
-    deps += [ "//components/signin/public/identity_manager:test_support" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//components/signin/public/identity_manager:test_support",
+    ]
   }
 }

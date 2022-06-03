@@ -18,19 +18,24 @@ namespace extensions {
 class ExtensionCache {
  public:
   // Callback that is invoked when the file placed when PutExtension done.
-  typedef base::Callback<void(const base::FilePath& file_path,
-                              bool file_ownership_passed)> PutExtensionCallback;
+  using PutExtensionCallback =
+      base::OnceCallback<void(const base::FilePath& file_path,
+                              bool file_ownership_passed)>;
 
-  ExtensionCache() {}
-  virtual ~ExtensionCache() {}
+  ExtensionCache() = default;
+
+  ExtensionCache(const ExtensionCache&) = delete;
+  ExtensionCache& operator=(const ExtensionCache&) = delete;
+
+  virtual ~ExtensionCache() = default;
 
   // Initialize cache in background. The |callback| is called when cache ready.
   // Can be called multiple times. The |callback| can be called immediately if
   // cache is ready.
-  virtual void Start(const base::Closure& callback) = 0;
+  virtual void Start(base::OnceClosure callback) = 0;
 
   // Shut down the cache. Must be called at most once on browser shutdown.
-  virtual void Shutdown(const base::Closure& callback) = 0;
+  virtual void Shutdown(base::OnceClosure callback) = 0;
 
   // Allow caching for the extension with given |id|. User specific extensions
   // should not be cached for privacy reasons. But default apps including policy
@@ -55,10 +60,7 @@ class ExtensionCache {
                             const std::string& expected_hash,
                             const base::FilePath& file_path,
                             const std::string& version,
-                            const PutExtensionCallback& callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCache);
+                            PutExtensionCallback callback) = 0;
 };
 
 }  // namespace extensions

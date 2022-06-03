@@ -20,6 +20,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForQ;
 
 /**
  * Class used to forward view, input events down to native.
@@ -78,8 +80,9 @@ public class EventForwarder {
             final int apiVersion = Build.VERSION.SDK_INT;
             final boolean isTouchpadScroll = event.getButtonState() == 0
                     && (event.getActionMasked() == MotionEvent.ACTION_DOWN
-                               || event.getActionMasked() == MotionEvent.ACTION_MOVE
-                               || event.getActionMasked() == MotionEvent.ACTION_UP);
+                            || event.getActionMasked() == MotionEvent.ACTION_MOVE
+                            || event.getActionMasked() == MotionEvent.ACTION_UP
+                            || event.getActionMasked() == MotionEvent.ACTION_CANCEL);
 
             if (apiVersion >= android.os.Build.VERSION_CODES.M && !isTouchpadScroll) {
                 return onMouseEvent(event);
@@ -143,6 +146,11 @@ public class EventForwarder {
 
             float scale = getEventSourceScaling();
 
+            int gestureClassification = 0;
+            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                gestureClassification = ApiHelperForQ.getClassification(event);
+            }
+
             final boolean consumed = EventForwarderJni.get().onTouchEvent(mNativeEventForwarder,
                     EventForwarder.this, event, oldestEventTime, eventAction, pointerCount,
                     event.getHistorySize(), event.getActionIndex(), event.getX() / scale,
@@ -155,7 +163,8 @@ public class EventForwarder {
                     pointerCount > 1 ? event.getAxisValue(MotionEvent.AXIS_TILT, 1) : 0,
                     event.getRawX() / scale, event.getRawY() / scale, event.getToolType(0),
                     pointerCount > 1 ? event.getToolType(1) : MotionEvent.TOOL_TYPE_UNKNOWN,
-                    event.getButtonState(), event.getMetaState(), isTouchHandleEvent);
+                    gestureClassification, event.getButtonState(), event.getMetaState(),
+                    isTouchHandleEvent);
 
             if (didOffsetEvent) event.recycle();
             return consumed;
@@ -265,14 +274,6 @@ public class EventForwarder {
 
         int eventAction = event.getActionMasked();
 
-        // Ignore ACTION_HOVER_ENTER & ACTION_HOVER_EXIT because every mouse-down on Android
-        // follows a hover-exit and is followed by a hover-enter.  https://crbug.com/715114
-        // filed on distinguishing actual hover enter/exit from these bogus ones.
-        if (eventAction == MotionEvent.ACTION_HOVER_ENTER
-                || eventAction == MotionEvent.ACTION_HOVER_EXIT) {
-            return false;
-        }
-
         // For mousedown and mouseup events, we use ACTION_BUTTON_PRESS
         // and ACTION_BUTTON_RELEASE respectively because they provide
         // info about the changed-button.
@@ -308,7 +309,9 @@ public class EventForwarder {
 
     @TargetApi(Build.VERSION_CODES.M)
     public static int getMouseEventActionButton(MotionEvent event) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return event.getActionButton();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ApiHelperForM.getActionButton(event);
+        }
 
         // On <M, the only mice events sent are hover events, which cannot have a button.
         return 0;
@@ -470,8 +473,8 @@ public class EventForwarder {
                 float x0, float y0, float x1, float y1, int pointerId0, int pointerId1,
                 float touchMajor0, float touchMajor1, float touchMinor0, float touchMinor1,
                 float orientation0, float orientation1, float tilt0, float tilt1, float rawX,
-                float rawY, int androidToolType0, int androidToolType1, int androidButtonState,
-                int androidMetaState, boolean isTouchHandleEvent);
+                float rawY, int androidToolType0, int androidToolType1, int gestureClassification,
+                int androidButtonState, int androidMetaState, boolean isTouchHandleEvent);
 
         void onMouseEvent(long nativeEventForwarder, EventForwarder caller, long timeMs, int action,
                 float x, float y, int pointerId, float pressure, float orientation, float tilt,

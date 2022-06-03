@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -20,6 +19,11 @@ namespace views {
 class VIEWS_EXPORT ScopedFullscreenVisibility {
  public:
   explicit ScopedFullscreenVisibility(HWND hwnd);
+
+  ScopedFullscreenVisibility(const ScopedFullscreenVisibility&) = delete;
+  ScopedFullscreenVisibility& operator=(const ScopedFullscreenVisibility&) =
+      delete;
+
   ~ScopedFullscreenVisibility();
 
   // Returns true if |hwnd| is currently hidden due to instance(s) of this
@@ -27,13 +31,11 @@ class VIEWS_EXPORT ScopedFullscreenVisibility {
   static bool IsHiddenForFullscreen(HWND hwnd);
 
  private:
-  typedef std::map<HWND, int> FullscreenHWNDs;
+  using FullscreenHWNDs = std::map<HWND, int>;
 
   HWND hwnd_;
 
   static FullscreenHWNDs* full_screen_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFullscreenVisibility);
 };
 
 }  // namespace views

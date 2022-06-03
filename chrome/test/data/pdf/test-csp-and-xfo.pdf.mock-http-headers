@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+content-security-policy: frame-ancestors 'self'
+x-frame-options: DENY
+content-type: application/pdf

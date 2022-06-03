@@ -4,6 +4,8 @@
 
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 
+#include "base/check_op.h"
+
 namespace device {
 
 PlatformSensorConfiguration::PlatformSensorConfiguration(double frequency)

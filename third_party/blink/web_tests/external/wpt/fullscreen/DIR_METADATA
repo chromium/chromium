@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>Fullscreen"
+}
+team_email: "layout-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

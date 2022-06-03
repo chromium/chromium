@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html style="height:100%; overflow:scroll;">
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+</head>
+<script>
+promise_test(async () => {
+  await mouseMoveTo(50, 50);
+  const pixelsToScrollY = 100;
+  await smoothScroll(
+    pixelsToScrollY, 50, 50, GestureSourceType.MOUSE_INPUT,
+    'down', SPEED_INSTANT
+  );
+  await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+
+  const { y: expectedScrollY } = calculateExpectedScroll(
+    document.scrollingElement, 0, pixelsToScrollY
+  );
+  assert_approx_equals(window.scrollY, expectedScrollY, 0.001);
+}, "Mouse wheel scrolls properly on main frame.");
+</script>
+<body>
+<div style="height:1000px;">
+</div>
+</body>
+</html>

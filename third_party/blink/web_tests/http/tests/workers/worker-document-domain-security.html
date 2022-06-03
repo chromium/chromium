@@ -10,7 +10,7 @@
             test(function () {
                 document.domain = 'example.test';
 
-                assert_throws("SecurityError", function () {
+                assert_throws_dom("SecurityError", function () {
                     new Worker("http://example.test/worker.js");
                 });
 

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="6106989379647458772"><ph name="PAGE" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
-<translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />ত ৱেবপৃষ্ঠাটো ল’ড কৰিব নোৱাৰাৰ কাৰণ হৈছে:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />পৰামৰ্শ:<ph name="MARKUP_2" />আপোনাৰ এটা ডেটা সংযোগ থকাটো নিশ্চিত কৰক<ph name="MARKUP_3" />এই ৱেবপে‘জটো পিছত ৰিল‘ড কৰক<ph name="MARKUP_4" />আপুনি দিয়া ঠিকনাটো পৰীক্ষা কৰক<ph name="MARKUP_5" /></translation>
 </translationbundle>

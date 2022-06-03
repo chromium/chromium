@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">¡Vaya! Se ha producido un error al generar una clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está ralentizando <ph name="PRODUCT_NAME" />. Deberías inhabilitarla para restaurar el rendimiento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">No se admite WebGL.</translation>
-<translation id="149347756975725155">No se ha podido cargar el icono de la extensión "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">No se ha podido cargar la página de fondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">No se ha podido decodificar la imagen <ph name="IMAGE_NAME" />.</translation>
 <translation id="2350172092385603347">Se ha utilizado la localización, pero no se ha especificado default_locale en el archivo de manifiesto.</translation>
@@ -16,7 +15,7 @@
 <translation id="2903070246402204397">El administrador ha bloqueado la extensión <ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">No se ha podido instalar el paquete: "<ph name="ERROR_CODE" />".</translation>
 <translation id="3115238746683532089">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">No se ha podido sustituir el archivo .crx. Comprueba si se está utilizando el archivo.</translation>
+<translation id="3144135466825225871">No se ha podido reemplazar el archivo .crx. Comprueba si se está utilizando el archivo.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
 <translation id="3302709122321372472">No se ha podido cargar el archivo CSS "<ph name="RELATIVE_PATH" />" para el script de contenido.</translation>
 <translation id="3369521687965833290">No se puede descomprimir la extensión. Para descomprimir de forma segura una extensión, debe existir una ruta al directorio de tu perfil que comience con una letra de unidad y que no incluya ninguna unión, ningún punto de montaje ni ningún enlace simbólico. No existe ninguna ruta de este tipo para tu perfil.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Se ha producido un error al leer la clave privada.</translation>
 <translation id="6391538222494443604">Debe existir el directorio de entrada.</translation>
 <translation id="641087317769093025">No se ha podido descomprimir la extensión.</translation>
-<translation id="6413453408918378296">El icono "<ph name="ICON" />" no se ve lo suficiente.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> está solicitando acceso a uno o varios de tus dispositivos:</translation>
 <translation id="657064425229075395">No se ha podido cargar la secuencia de comandos en segundo plano "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>

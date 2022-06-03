@@ -9,10 +9,10 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_essentials.pb.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_proto_producer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace password_manager {
@@ -33,12 +33,11 @@ DEFINE_BINARY_PROTO_FUZZER(const ::form_data_fuzzer::Form& form_proto) {
   autofill::FormData form_data = GenerateWithProto(form_proto);
 
   FormDataParser parser;
-  std::unique_ptr<autofill::PasswordForm> result =
-      parser.Parse(form_data, mode);
+  std::unique_ptr<PasswordForm> result = parser.Parse(form_data, mode);
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.
-    autofill::PasswordForm copy(*result);
+    PasswordForm copy(*result);
   }
 }
 

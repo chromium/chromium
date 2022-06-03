@@ -31,10 +31,10 @@ suite(extension_manager_unit_tests.suiteName, function() {
   const testActivities = {activities: []};
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     service = new TestService();
-    Service.instance_ = service;
+    Service.setInstance(service);
 
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);
@@ -76,7 +76,8 @@ suite(extension_manager_unit_tests.suiteName, function() {
           extensionId: extension.id,
         });
 
-        const activityLog = manager.$$('extensions-activity-log');
+        const activityLog =
+            manager.shadowRoot.querySelector('extensions-activity-log');
         assertTrue(!!activityLog);  // View should now be present.
         expectEquals(extension.id, activityLog.extensionInfo.id);
 

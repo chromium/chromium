@@ -20,7 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -72,7 +74,7 @@ SVGRectElement::SVGRectElement(Document& document)
   AddToPropertyMap(ry_);
 }
 
-void SVGRectElement::Trace(blink::Visitor* visitor) {
+void SVGRectElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -86,28 +88,34 @@ Path SVGRectElement::AsPath() const {
   Path path;
 
   SVGLengthContext length_context(this);
-  DCHECK(GetLayoutObject());
-  const ComputedStyle& style = GetLayoutObject()->StyleRef();
+  const ComputedStyle& style = ComputedStyleRef();
 
-  FloatSize size(ToFloatSize(
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
-  if (size.Width() < 0 || size.Height() < 0 ||
-      (!size.Width() && !size.Height()))
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  if (size.x() < 0 || size.y() < 0 || size.IsZero())
     return path;
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  FloatRect rect(
-      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
-      size);
-  FloatPoint radii(
-      length_context.ResolveLengthPair(svg_style.Rx(), svg_style.Ry(), style));
-  if (radii.X() > 0 || radii.Y() > 0) {
-    if (svg_style.Rx().IsAuto())
-      radii.SetX(radii.Y());
-    else if (svg_style.Ry().IsAuto())
-      radii.SetY(radii.X());
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  FloatRect rect(origin.x(), origin.y(), size.x(), size.y());
 
-    path.AddRoundedRect(rect, ToFloatSize(radii));
+  gfx::Vector2dF radii =
+      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+  // Apply the SVG corner radius constraints, per the rect section of the SVG
+  // shapes spec: if one of radii.x() and radii.y() is auto or negative, then
+  // the other corner radius value is used. If both are auto or negative, then
+  // they are both set to 0.
+  if (style.Rx().IsAuto() || radii.x() < 0)
+    radii.set_x(std::max(0.f, radii.y()));
+  if (style.Ry().IsAuto() || radii.y() < 0)
+    radii.set_y(radii.x());
+
+  if (radii.x() > 0 || radii.y() > 0) {
+    // Apply SVG corner radius constraints, continued: if radii.x() is greater
+    // than half of the width of the rectangle then its set to half of the
+    // width; radii.y() is handled similarly.
+    radii.SetToMin(gfx::ScaleVector2d(size, 0.5));
+    path.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
   } else {
     path.AddRect(rect);
   }
@@ -143,7 +151,9 @@ void SVGRectElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void SVGRectElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGRectElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr || attr_name == svg_names::kRxAttr ||
@@ -153,7 +163,7 @@ void SVGRectElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGRectElement::SelfHasRelativeLengths() const {
@@ -165,7 +175,7 @@ bool SVGRectElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGRect(this);
+  return MakeGarbageCollected<LayoutSVGRect>(this);
 }
 
 }  // namespace blink

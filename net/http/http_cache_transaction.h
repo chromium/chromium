@@ -87,12 +87,16 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   Transaction(RequestPriority priority,
               HttpCache* cache);
+
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
+
   ~Transaction() override;
 
   // Virtual so it can be extended for testing.
   virtual Mode mode() const;
 
-  std::string& method() { return method_; }
+  const std::string& method() const { return method_; }
 
   const std::string& key() const { return cache_key_; }
 
@@ -154,13 +158,15 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void SetWebSocketHandshakeStreamCreateHelper(
       WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
   void SetBeforeNetworkStartCallback(
-      const BeforeNetworkStartCallback& callback) override;
-  void SetBeforeHeadersSentCallback(
-      const BeforeHeadersSentCallback& callback) override;
+      BeforeNetworkStartCallback callback) override;
+  void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
+  void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
+  void CloseConnectionOnDestruction() override;
 
   // Invoked when parallel validation cannot proceed due to response failure
   // and this transaction needs to be restarted.
@@ -169,9 +175,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Invoked to remove the association between a transaction waiting to be
   // added to an entry and the entry.
   void ResetCachePendingState() { cache_pending_ = false; }
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
   RequestPriority priority() const { return priority_; }
   PartialData* partial() { return partial_.get(); }
@@ -209,6 +212,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   struct NetworkTransactionInfo {
     NetworkTransactionInfo();
+
+    NetworkTransactionInfo(const NetworkTransactionInfo&) = delete;
+    NetworkTransactionInfo& operator=(const NetworkTransactionInfo&) = delete;
+
     ~NetworkTransactionInfo();
 
     // Load timing information for the last network request, if any. Set in the
@@ -219,8 +226,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     int64_t total_sent_bytes = 0;
     ConnectionAttempts old_connection_attempts;
     IPEndPoint old_remote_endpoint;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkTransactionInfo);
   };
 
   enum State {
@@ -381,6 +386,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Validates the entry headers against the requested range and continues with
   // the validation of the rest of the entry.  Returns a network error code.
   int ValidateEntryHeadersAndContinue();
+
+  // Returns whether the current externally conditionalized request's validation
+  // headers match the current cache entry's headers.
+  bool ExternallyConditionalizedValidationHeadersMatchEntry() const;
 
   // Called to start requests which were given an "if-modified-since" or
   // "if-none-match" validation header by the caller (NOT when the request was
@@ -563,8 +572,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Saves network transaction info using |transaction|.
   void SaveNetworkTransactionInfo(const HttpTransaction& transaction);
 
-  // Disables caching for media content when running on battery.
-  bool ShouldDisableMediaCaching(const HttpResponseHeaders* headers) const;
+  // Determines whether caching should be disabled for a response, given its
+  // headers.
+  bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
   State next_state_;
 
@@ -595,7 +605,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // and modifies the members for future transactions. Then,
   // WriteResponseInfoToEntry() writes |updated_prefetch_response_| to the cache
   // entry if it is populated, or |response_| otherwise. Finally,
-  // WriteResponseInfoToEntry() resets this to base::nullopt.
+  // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
   const HttpResponseInfo* new_response_;
@@ -646,7 +656,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
-  bool cant_conditionalize_zero_freshness_from_memhint_;
   bool recorded_histograms_;
   ParallelWritingPattern parallel_writing_pattern_;
 
@@ -669,16 +678,15 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       websocket_handshake_stream_base_create_helper_;
 
   BeforeNetworkStartCallback before_network_start_callback_;
-  BeforeHeadersSentCallback before_headers_sent_callback_;
+  ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   // True if the Transaction is currently processing the DoLoop.
   bool in_do_loop_;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 }  // namespace net

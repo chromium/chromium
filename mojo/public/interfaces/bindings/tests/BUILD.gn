@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("../../../tools/bindings/mojom.gni")
 
 group("test_data_deps") {
@@ -21,8 +22,8 @@ copy("validation_test_data") {
     "data/validation/associated_conformance_mthd0_good.expected",
     "data/validation/associated_conformance_mthd0_illegal_invalid_interface_id.data",
     "data/validation/associated_conformance_mthd0_illegal_invalid_interface_id.expected",
-    "data/validation/associated_conformance_mthd0_illegal_master_interface_id.data",
-    "data/validation/associated_conformance_mthd0_illegal_master_interface_id.expected",
+    "data/validation/associated_conformance_mthd0_illegal_primary_interface_id.data",
+    "data/validation/associated_conformance_mthd0_illegal_primary_interface_id.expected",
     "data/validation/associated_conformance_mthd0_interface_id_index_out_of_range.data",
     "data/validation/associated_conformance_mthd0_interface_id_index_out_of_range.expected",
     "data/validation/associated_conformance_mthd0_unexpected_invalid_associated_interface.data",
@@ -251,21 +252,15 @@ copy("validation_test_data") {
     "data/validation/resp_conformance_msghdr_no_such_method.expected",
   ]
 
-  outputs = [
-    "$root_gen_dir/layout_test_data/{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "$root_gen_dir/layout_test_data/{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 action_foreach("validation_test_data_list") {
   testonly = true
   script = "//mojo/public/tools/bindings/gen_data_files_list.py"
   inputs = mojom_generator_sources
-  sources = [
-    "data/validation",
-  ]
-  outputs = [
-    "$root_gen_dir/layout_test_data/{{source_root_relative_dir}}/{{source_file_part}}_index.txt",
-  ]
+  sources = [ "data/validation" ]
+  outputs = [ "$root_gen_dir/layout_test_data/{{source_root_relative_dir}}/{{source_file_part}}_index.txt" ]
   args = [
     "-d",
     rebase_path(sources[0], root_build_dir),
@@ -277,9 +272,7 @@ action_foreach("validation_test_data_list") {
 mojom("test_deserializer_interface") {
   testonly = true
   generate_java = true
-  sources = [
-    "deserializer.test-mojom",
-  ]
+  sources = [ "deserializer.test-mojom" ]
   js_generate_struct_deserializers = true
 }
 
@@ -315,6 +308,95 @@ mojom("test_interfaces") {
     "//mojo/public/mojom/base",
   ]
 
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo.test.TypemappedRect"
+          cpp = "::mojo::test::RectChromium"
+          hashable = true
+        },
+        {
+          mojom = "mojo.test.SharedTypemappedRect"
+          cpp = "::mojo::test::SharedRect"
+        },
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/bindings/tests/rect_chromium_traits.h",
+        "//mojo/public/cpp/bindings/tests/shared_rect_traits.h",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo.test.PickledEnum"
+          cpp = "::mojo::test::PickledEnumChromium"
+        },
+        {
+          mojom = "mojo.test.PickledStruct"
+          cpp = "::mojo::test::PickledStructChromium"
+          move_only = true
+        },
+        {
+          mojom = "mojo.test.TestNativeStructMojom"
+          cpp = "::mojo::test::TestNativeStruct"
+        },
+        {
+          mojom = "mojo.test.TestNativeStructWithAttachmentsMojom"
+          cpp = "::mojo::test::TestNativeStructWithAttachments"
+          move_only = true
+        },
+      ]
+      traits_sources = [
+        "//mojo/public/cpp/bindings/tests/pickled_types_chromium.cc",
+        "//mojo/public/cpp/bindings/tests/test_native_types.cc",
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/bindings/tests/pickled_types_chromium.h",
+        "//mojo/public/cpp/bindings/tests/test_native_types.h",
+      ]
+      traits_deps = [ "//ipc" ]
+    },
+  ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo.test.TypemappedRect"
+          cpp = "::mojo::test::RectBlink"
+          hashable = true
+        },
+        {
+          mojom = "mojo.test.SharedTypemappedRect"
+          cpp = "::mojo::test::SharedRect"
+        },
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/bindings/tests/rect_blink_traits.h",
+        "//mojo/public/cpp/bindings/tests/shared_rect_traits.h",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo.test.PickledEnum"
+          cpp = "::mojo::test::PickledEnumBlink"
+        },
+        {
+          mojom = "mojo.test.PickledStruct"
+          cpp = "::mojo::test::PickledStructBlink"
+          move_only = true
+        },
+      ]
+      traits_sources =
+          [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.cc" ]
+      traits_headers =
+          [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.h" ]
+      traits_deps = [ "//ipc" ]
+    },
+  ]
+
   support_lazy_serialization = true
 
   # Validation tests require precise message content matching, so we avoid
@@ -324,25 +406,19 @@ mojom("test_interfaces") {
 
 component("test_export_component") {
   testonly = true
-  deps = [
-    ":test_export",
-  ]
+  deps = [ ":test_export" ]
 }
 
 if (!is_ios) {
   component("test_export_blink_component") {
     testonly = true
-    public_deps = [
-      ":test_export_blink",
-    ]
+    public_deps = [ ":test_export_blink" ]
   }
 }
 
 mojom("test_export") {
   testonly = true
-  sources = [
-    "test_export.mojom",
-  ]
+  sources = [ "test_export.mojom" ]
   export_class_attribute = "MOJO_TEST_EXPORT"
   export_define = "MOJO_TEST_IMPLEMENTATION=1"
   export_header = "mojo/public/cpp/bindings/tests/mojo_test_export.h"
@@ -360,12 +436,8 @@ mojom("test_export") {
 
 mojom("test_exported_import") {
   testonly = true
-  sources = [
-    "test_import.mojom",
-  ]
-  public_deps = [
-    ":test_export",
-  ]
+  sources = [ "test_import.mojom" ]
+  public_deps = [ ":test_export" ]
 
   overridden_deps = [ ":test_export" ]
   component_deps = [ ":test_export_component" ]
@@ -384,16 +456,12 @@ mojom("test_exported_import") {
 # test_export.mojom from |test_exported_import|.
 component("test_export_component2") {
   testonly = true
-  public_deps = [
-    ":test_export2",
-  ]
+  public_deps = [ ":test_export2" ]
 }
 
 mojom("test_export2") {
   testonly = true
-  sources = [
-    "test_export2.mojom",
-  ]
+  sources = [ "test_export2.mojom" ]
   export_class_attribute = "MOJO_TEST_EXPORT"
   export_define = "MOJO_TEST_IMPLEMENTATION=1"
   export_header = "mojo/public/cpp/bindings/tests/mojo_test_export.h"
@@ -403,33 +471,25 @@ mojom("test_export2") {
 mojom("test_mojom_import") {
   testonly = true
   generate_java = true
-  sources = [
-    "sample_import.mojom",
-  ]
+  sources = [ "sample_import.mojom" ]
 }
 
 mojom("test_mojom_import_wrapper") {
   testonly = true
   generate_java = true
-  public_deps = [
-    ":test_mojom_import",
-  ]
+  public_deps = [ ":test_mojom_import" ]
 }
 
 mojom("test_mojom_import_wrapper_wrapper") {
   testonly = true
   generate_java = true
-  public_deps = [
-    ":test_mojom_import_wrapper",
-  ]
+  public_deps = [ ":test_mojom_import_wrapper" ]
 }
 
 mojom("test_mojom_import2") {
   testonly = true
   generate_java = true
-  sources = [
-    "sample_import2.mojom",
-  ]
+  sources = [ "sample_import2.mojom" ]
   public_deps = [
     ":test_mojom_import",
     ":test_mojom_import_wrapper_wrapper",
@@ -438,8 +498,68 @@ mojom("test_mojom_import2") {
 
 mojom("test_struct_traits_interfaces") {
   testonly = true
-  sources = [
-    "struct_with_traits.mojom",
+  sources = [ "struct_with_traits.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo.test.EnumWithTraits"
+          cpp = "::mojo::test::EnumWithTraitsImpl"
+        },
+        {
+          mojom = "mojo.test.StructWithTraits"
+          cpp = "::mojo::test::StructWithTraitsImpl"
+        },
+        {
+          mojom = "mojo.test.StructWithUnreachableTraits"
+          cpp = "::mojo::test::StructWithUnreachableTraitsImpl"
+        },
+        {
+          mojom = "mojo.test.NestedStructWithTraits"
+          cpp = "::mojo::test::NestedStructWithTraitsImpl"
+        },
+        {
+          mojom = "mojo.test.TrivialStructWithTraits"
+          cpp = "::mojo::test::TrivialStructWithTraitsImpl"
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "mojo.test.MoveOnlyStructWithTraits"
+          cpp = "::mojo::test::MoveOnlyStructWithTraitsImpl"
+          move_only = true
+        },
+        {
+          mojom = "mojo.test.StructWithTraitsForUniquePtr"
+          cpp = "::std::unique_ptr<int>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "mojo.test.UnionWithTraits"
+          cpp = "::std::unique_ptr<::mojo::test::UnionWithTraitsBase>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "mojo.test.StructForceSerialize"
+          cpp = "::mojo::test::StructForceSerializeImpl"
+          force_serialize = true
+        },
+        {
+          mojom = "mojo.test.StructNestedForceSerialize"
+          cpp = "::mojo::test::StructNestedForceSerializeImpl"
+        },
+      ]
+      traits_sources = [
+        "//mojo/public/cpp/bindings/tests/struct_with_traits_impl_traits.cc",
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/bindings/tests/struct_with_traits_impl_traits.h",
+      ]
+      traits_public_deps =
+          [ "//mojo/public/cpp/bindings/tests:struct_with_traits_impl" ]
+    },
   ]
 
   support_lazy_serialization = true
@@ -454,9 +574,7 @@ mojom("test_associated_interfaces") {
     "validation_test_associated_interfaces.mojom",
   ]
 
-  public_deps = [
-    ":test_interfaces",
-  ]
+  public_deps = [ ":test_interfaces" ]
 
   # Validation tests require precise message content matching, so we avoid
   # scrambling message IDs for test interfaces.
@@ -466,17 +584,13 @@ mojom("test_associated_interfaces") {
 mojom("test_wtf_types") {
   testonly = true
 
-  sources = [
-    "test_wtf_types.mojom",
-  ]
+  sources = [ "test_wtf_types.mojom" ]
 }
 
 mojom("test_no_sources") {
   testonly = true
 
-  public_deps = [
-    ":test_interfaces",
-  ]
+  public_deps = [ ":test_interfaces" ]
 }
 
 mojom("echo") {
@@ -492,9 +606,7 @@ mojom("echo") {
 mojom("other_test_interfaces") {
   testonly = true
   generate_java = true
-  sources = [
-    "new_endpoint_types.test-mojom",
-  ]
+  sources = [ "new_endpoint_types.test-mojom" ]
 }
 
 # Ensure that some target forces JS and Java bindings generation when all

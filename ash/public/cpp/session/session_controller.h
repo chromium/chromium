@@ -19,6 +19,7 @@ class AccountId;
 
 namespace ash {
 
+class SessionObserver;
 class SessionControllerClient;
 class SessionActivationObserver;
 
@@ -78,7 +79,7 @@ class ASH_PUBLIC_EXPORT SessionController {
   // notification saying the session length is limited (e.g. a public session in
   // a library). Setting |length_limit| to zero removes the notification.
   virtual void SetSessionLengthLimit(base::TimeDelta length_limit,
-                                     base::TimeTicks start_time) = 0;
+                                     base::Time start_time) = 0;
 
   // Returns whether it's ok to switch the active multiprofile user. May affect
   // or be affected by system state such as window overview mode and screen
@@ -114,6 +115,13 @@ class ASH_PUBLIC_EXPORT SessionController {
   virtual void RemoveSessionActivationObserverForAccountId(
       const AccountId& account_id,
       SessionActivationObserver* observer) = 0;
+
+  // Adds/remove session observer.
+  virtual void AddObserver(SessionObserver* observer) = 0;
+  virtual void RemoveObserver(SessionObserver* observer) = 0;
+
+  // Returns true if the screen is currently locked.
+  virtual bool IsScreenLocked() const = 0;
 
  protected:
   SessionController();

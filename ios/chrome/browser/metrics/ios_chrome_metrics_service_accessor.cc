@@ -39,13 +39,3 @@ bool IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
       GetApplicationContext()->GetMetricsService(), trial_name, group_name);
 }
-
-// static
-bool IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameHash(
-    uint32_t trial_name_hash,
-    const std::string& group_name) {
-  return metrics::MetricsServiceAccessor::
-      RegisterSyntheticFieldTrialWithNameHash(
-          GetApplicationContext()->GetMetricsService(), trial_name_hash,
-          group_name);
-}

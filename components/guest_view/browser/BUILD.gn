@@ -32,6 +32,10 @@ static_library("browser") {
     "//components/guest_view/common",
   ]
   deps = [
+    "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
@@ -56,9 +60,7 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "guest_view_manager_unittest.cc",
-  ]
+  sources = [ "guest_view_manager_unittest.cc" ]
   deps = [
     ":test_support",
     "//testing/gtest",

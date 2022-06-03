@@ -23,16 +23,13 @@ enum PermissionName {
   BACKGROUND_FETCH,
   IDLE_DETECTION,
   PERIODIC_BACKGROUND_SYNC,
-  WAKE_LOCK,
+  SCREEN_WAKE_LOCK,
+  SYSTEM_WAKE_LOCK,
   NFC,
-};
-
-// This is similar to WakeLockType in modules/wake_lock/wake_lock.idl.
-// We also have device.mojom.WakeLockType, but it has more types than what we
-// handle in the Wake Lock API.
-enum WakeLockType {
-  kScreen,
-  kSystem,
+  STORAGE_ACCESS,
+  WINDOW_PLACEMENT,
+  FONT_ACCESS,
+  DISPLAY_CAPTURE,
 };
 
 struct MidiPermissionDescriptor {
@@ -44,15 +41,15 @@ struct ClipboardPermissionDescriptor {
   bool allowWithoutSanitization;
 };
 
-struct WakeLockPermissionDescriptor {
-  WakeLockType type;
+struct CameraDevicePermissionDescriptor {
+  bool panTiltZoom;
 };
 
 // Union of possible extensions to the base PermissionDescriptor type.
 union PermissionDescriptorExtension {
   MidiPermissionDescriptor midi;
   ClipboardPermissionDescriptor clipboard;
-  WakeLockPermissionDescriptor wake_lock;
+  CameraDevicePermissionDescriptor camera_device;
 };
 
 // This struct roughly corresponds to the PermissionDescriptor dictionary as

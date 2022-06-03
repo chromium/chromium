@@ -1,0 +1,22 @@
+#!/usr/bin/env vpython
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import logging
+import sys
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+path_util.AddTracingToPath()
+
+
+from cli_tools.tbmv3 import validate_tbmv3_metric
+
+
+if __name__ == '__main__':
+  try:
+    sys.exit(validate_tbmv3_metric.Main())
+  except Exception:
+    logging.exception('Terminated with exception:')
+    sys.exit(1)

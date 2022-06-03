@@ -168,6 +168,9 @@ TEST_F(VulkanFenceHelperTest, SkiaCallbackAfterFences) {
       fence_helper->GenerateCleanupFence();
   EXPECT_TRUE(fence_handle.is_valid());
 
+  // Call vkQueueWaitIdle() to make sure the |fence_handle| is passed.
+  vkQueueWaitIdle(queue());
+
   // Enqueue 5 more callbacks.
   for (int i = 5; i < 10; i++) {
     fence_helper->EnqueueCleanupTaskForSubmittedWork(

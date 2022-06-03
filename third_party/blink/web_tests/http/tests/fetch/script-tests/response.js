@@ -135,35 +135,35 @@ test(function() {
 
 test(function() {
     [0, 1, 100, 101, 199, 600, 700].forEach(function(status) {
-        assert_throws({name: 'RangeError'},
-                      function() {
-                        new Response(new Blob(), {status: status});
-                      },
-                      'new Response with status = ' + status +
-                      ' should throw');
+        assert_throws_js(RangeError,
+                         function() {
+                           new Response(new Blob(), {status: status});
+                         },
+                         'new Response with status = ' + status +
+                         ' should throw');
       });
 
     [204, 205, 304].forEach(function(status) {
-        assert_throws({name: 'TypeError'},
-                      function() {
-                        new Response(new Blob(), {status: status});
-                      },
-                      'new Response with null body status = ' + status +
-                      ' and body is non-null should throw');
+        assert_throws_js(TypeError,
+                         function() {
+                           new Response(new Blob(), {status: status});
+                         },
+                         'new Response with null body status = ' + status +
+                         ' and body is non-null should throw');
       });
 
     [300, 0, 304, 305, 306, 309, 500].forEach(function(status) {
-        assert_throws({name: 'RangeError'},
-                      function() {
-                        Response.redirect('https://www.example.com/test.html',
-                                          status);
-                      },
-                      'Response.redirect() with invalid status = ' + status +
-                      ' should throw');
+        assert_throws_js(RangeError,
+                         function() {
+                           Response.redirect('https://www.example.com/test.html',
+                                             status);
+                         },
+                         'Response.redirect() with invalid status = ' + status +
+                         ' should throw');
       });
 
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() {
         Response.redirect('https://', 301);
       },
@@ -171,8 +171,8 @@ test(function() {
       ' and status 301 should throw');
 
     INVALID_URLS.forEach(function(url) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             Response.redirect(url);
           },
@@ -180,8 +180,8 @@ test(function() {
           ' and default status value should throw');
       });
 
-    assert_throws(
-      {name: 'TypeError'},
+    assert_throws_js(
+      TypeError,
       function() {
         Response.redirect('https://', 300);
       },
@@ -198,8 +198,8 @@ test(function() {
       });
 
     INVALID_HEADER_NAMES.forEach(function(name) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             var obj = {};
             obj[name] = 'a';
@@ -207,8 +207,8 @@ test(function() {
           },
           'new Response with headers with an invalid name (' + name +
           ') should throw');
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Response(new Blob(), {headers: [[name, 'a']]});
           },
@@ -216,15 +216,15 @@ test(function() {
           ') should throw');
       });
     INVALID_HEADER_VALUES.forEach(function(value) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Response(new Blob(),
                          {headers: {'X-Fetch-Test': value}});
           },
           'new Response with headers with an invalid value should throw');
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Response(new Blob(),
                          {headers: [['X-Fetch-Test', value]]});
@@ -240,8 +240,8 @@ test(function() {
       });
 
     INVALID_REASON_PHRASE.forEach(function(text) {
-        assert_throws(
-          {name: 'TypeError'},
+        assert_throws_js(
+          TypeError,
           function() {
             new Response(new Blob(), {statusText: text});
           },
@@ -301,7 +301,7 @@ promise_test(function(t) {
     assert_not_equals(res.body, body);
     assert_not_equals(res.body, clone.body);
     assert_not_equals(body, clone.body);
-    assert_throws({name: 'TypeError'}, function() { body.getReader(); });
+    assert_throws_js(TypeError, function() { body.getReader(); });
     return Promise.all([res.text(), clone.text()]).then(function(r) {
         assert_equals(r[0], 'hello');
         assert_equals(r[1], 'hello');
@@ -317,7 +317,7 @@ promise_test(function(t) {
     assert_not_equals(res.body, body);
     assert_not_equals(res.body, clone.body);
     assert_not_equals(body, clone.body);
-    assert_throws({name: 'TypeError'}, function() { body.getReader(); });
+    assert_throws_js(TypeError, function() { body.getReader(); });
     return Promise.all(
       [readableStreamToArray(res.body), readableStreamToArray(clone.body)])
       .then(r => {
@@ -330,14 +330,14 @@ test(() => {
     var res = new Response('hello');
     res.body.cancel();
     assert_true(res.bodyUsed);
-    assert_throws({name: 'TypeError'}, () => res.clone());
+    assert_throws_js(TypeError, () => res.clone());
   }, 'Used => clone');
 
 test(() => {
     var res = new Response('hello');
     const reader = res.body.getReader();
     assert_false(res.bodyUsed);
-    assert_throws({name: 'TypeError'}, () => res.clone());
+    assert_throws_js(TypeError, () => res.clone());
     reader.releaseLock();
   }, 'Locked => clone');
 
@@ -440,11 +440,11 @@ promise_test(function() {
         assert_equals(response.headers.get('location'),
                       'https://www.example.com/test.html',
                       'Location header should be correct absoulte URL');
-        assert_throws({name: 'TypeError'},
-                      function() {
-                        response.headers.append('Accept-Language', 'test');
-                      },
-                      'response.headers must throw since guard is immutable');
+        assert_throws_js(TypeError,
+                         function() {
+                           response.headers.append('Accept-Language', 'test');
+                         },
+                         'response.headers must throw since guard is immutable');
       });
   }, 'Response.redirect() with default status value');
 
@@ -484,8 +484,8 @@ test(() => {
     var controller;
     var stream = new ReadableStream({start: c => controller = c});
     stream.getReader();
-    assert_throws(TypeError(), () => new Response(stream),
-                  'Response constructor should throw TypeError');
+    assert_throws_js(TypeError, () => new Response(stream),
+                     'Response constructor should throw TypeError');
   }, 'Response constructed with a locked stream');
 
 promise_test(() => {
@@ -544,7 +544,7 @@ promise_test(t => {
         controller.error();
     }, 1);
     var response = new Response(stream);
-    return promise_rejects(t, TypeError(), response.text());
+    return promise_rejects_js(t, TypeError, response.text());
   }, 'Response constructed with an errored stream');
 
 promise_test(t => {
@@ -552,7 +552,7 @@ promise_test(t => {
     var stream = new ReadableStream({start: c => controller = c});
     setTimeout(() => controller.enqueue(), 1);
     var response = new Response(stream);
-    return promise_rejects(t, TypeError(), response.text());
+    return promise_rejects_js(t, TypeError, response.text());
   }, 'Response constructed stream with an undefined chunk');
 
 promise_test(t => {
@@ -560,7 +560,7 @@ promise_test(t => {
     var stream = new ReadableStream({start: c => controller = c});
     setTimeout(() => controller.enqueue(null), 1);
     var response = new Response(stream);
-    return promise_rejects(t, TypeError(), response.text());
+    return promise_rejects_js(t, TypeError, response.text());
   }, 'Response constructed stream with a null chunk');
 
 promise_test(t => {
@@ -568,7 +568,7 @@ promise_test(t => {
     var stream = new ReadableStream({start: c => controller = c});
     setTimeout(() => controller.enqueue('hello'), 1);
     var response = new Response(stream);
-    return promise_rejects(t, TypeError(), response.text());
+    return promise_rejects_js(t, TypeError, response.text());
   }, 'Response constructed stream with a string chunk');
 
 done();

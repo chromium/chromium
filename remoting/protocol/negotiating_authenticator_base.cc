@@ -6,10 +6,11 @@
 
 #include <algorithm>
 #include <sstream>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
@@ -95,7 +96,7 @@ std::string NegotiatingAuthenticatorBase::MethodToString(Method method) {
 
 void NegotiatingAuthenticatorBase::ProcessMessageInternal(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, PROCESSING_MESSAGE);
 
   if (current_authenticator_->state() == WAITING_MESSAGE) {
@@ -103,16 +104,17 @@ void NegotiatingAuthenticatorBase::ProcessMessageInternal(
     // give it to the underlying authenticator to process.
     // |current_authenticator_| is owned, so Unretained() is safe here.
     current_authenticator_->ProcessMessage(
-        message, base::Bind(&NegotiatingAuthenticatorBase::UpdateState,
-                            base::Unretained(this), resume_callback));
+        message,
+        base::BindOnce(&NegotiatingAuthenticatorBase::UpdateState,
+                       base::Unretained(this), std::move(resume_callback)));
   } else {
     // Otherwise, just discard the message.
-    UpdateState(resume_callback);
+    UpdateState(std::move(resume_callback));
   }
 }
 
 void NegotiatingAuthenticatorBase::UpdateState(
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, PROCESSING_MESSAGE);
 
   // After the underlying authenticator finishes processing the message, the
@@ -127,7 +129,7 @@ void NegotiatingAuthenticatorBase::UpdateState(
   if (state_ == REJECTED)
     rejection_reason_ = current_authenticator_->rejection_reason();
 
-  resume_callback.Run();
+  std::move(resume_callback).Run();
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement>

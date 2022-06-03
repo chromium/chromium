@@ -12,7 +12,7 @@ TEST(GetDeterministicMachineSpecificIdTest, IsDeterministic) {
   std::string second_machine_id;
 
   const MachineIdStatus kExpectedStatus =
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN) || defined(OS_MAC)
       MachineIdStatus::SUCCESS;
 #else
       MachineIdStatus::NOT_IMPLEMENTED;

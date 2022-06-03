@@ -5,12 +5,26 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "image.mojom",
-  ]
+  sources = [ "image.mojom" ]
 
-  public_deps = [
-    "//skia/public/mojom",
+  public_deps = [ "//skia/public/mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.ImageSkia"
+          cpp = "::gfx::ImageSkia"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "gfx.mojom.ImageSkiaRep"
+          cpp = "::gfx::ImageSkiaRep"
+        },
+      ]
+      traits_headers = [ "image_skia_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
   ]
 }
 
@@ -30,21 +44,15 @@ source_set("mojom_traits") {
 # Using a test service because the traits need to pass handles around. Revisit
 # this after Deserialize(Serialize()) API works with handles.
 mojom("test_interfaces") {
-  sources = [
-    "image_traits_test_service.mojom",
-  ]
+  sources = [ "image_traits_test_service.mojom" ]
 
-  public_deps = [
-    ":mojom",
-  ]
+  public_deps = [ ":mojom" ]
 }
 
 source_set("unit_test") {
   testonly = true
 
-  sources = [
-    "image_traits_unittest.cc",
-  ]
+  sources = [ "image_traits_unittest.cc" ]
 
   deps = [
     ":mojom_traits",
@@ -52,6 +60,7 @@ source_set("unit_test") {
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]

@@ -8,8 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"
@@ -50,14 +51,23 @@ void FakeUsbDeviceManager::GetDevices(mojom::UsbEnumerationOptionsPtr options,
 
 void FakeUsbDeviceManager::GetDevice(
     const std::string& guid,
+    const std::vector<uint8_t>& blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
   auto it = devices_.find(guid);
   if (it == devices_.end())
     return;
 
-  FakeUsbDevice::Create(it->second, std::move(device_receiver),
-                        std::move(device_client));
+  FakeUsbDevice::Create(it->second, blocked_interface_classes,
+                        std::move(device_receiver), std::move(device_client));
+}
+
+void FakeUsbDeviceManager::GetSecurityKeyDevice(
+    const std::string& guid,
+    mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
+  return GetDevice(guid, /*blocked_interface_classes=*/{},
+                   std::move(device_receiver), std::move(device_client));
 }
 
 #if defined(OS_ANDROID)
@@ -74,7 +84,7 @@ void FakeUsbDeviceManager::RefreshDeviceInfo(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
                                        CheckAccessCallback callback) {
   std::move(callback).Run(true);
@@ -82,12 +92,14 @@ void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
 
 void FakeUsbDeviceManager::OpenFileDescriptor(
     const std::string& guid,
+    uint32_t drop_privileges_mask,
+    mojo::PlatformHandle lifeline_fd,
     OpenFileDescriptorCallback callback) {
   std::move(callback).Run(base::File(
       base::FilePath(FILE_PATH_LITERAL("/dev/null")),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void FakeUsbDeviceManager::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {

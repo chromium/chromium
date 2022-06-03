@@ -4,7 +4,6 @@
 
 #include "ios/web/public/test/element_selector.h"
 
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,6 +61,12 @@
 
   return [[ElementSelector alloc] initWithSelectorScript:script
                                      selectorDescription:description];
+}
+
++ (ElementSelector*)selectorWithScript:(NSString*)selectorScript
+                   selectorDescription:(NSString*)selectorDescription {
+  return [[ElementSelector alloc] initWithSelectorScript:selectorScript
+                                     selectorDescription:selectorDescription];
 }
 
 - (instancetype)initWithSelectorScript:(NSString*)selectorScript

@@ -56,9 +56,10 @@ class EventFilterUnittest : public testing::Test {
   std::unique_ptr<EventMatcher> MatcherFromURLFilterList(
       std::unique_ptr<ListValue> url_filter_list) {
     auto filter_dict = std::make_unique<DictionaryValue>();
-    filter_dict->Set("url", std::move(url_filter_list));
-    return std::unique_ptr<EventMatcher>(
-        new EventMatcher(std::move(filter_dict), MSG_ROUTING_NONE));
+    filter_dict->SetKey(
+        "url", base::Value::FromUniquePtrValue(std::move(url_filter_list)));
+    return std::make_unique<EventMatcher>(std::move(filter_dict),
+                                          MSG_ROUTING_NONE);
   }
 
   EventFilter event_filter_;
@@ -225,7 +226,7 @@ TEST_F(EventFilterUnittest, InvalidURLFilterCantBeAdded) {
 TEST_F(EventFilterUnittest, EmptyListOfURLFiltersMatchesAllURLs) {
   std::unique_ptr<base::ListValue> filter_list(new base::ListValue());
   std::unique_ptr<EventMatcher> matcher(
-      MatcherFromURLFilterList(std::unique_ptr<ListValue>(new ListValue)));
+      MatcherFromURLFilterList(std::make_unique<ListValue>()));
   int id = event_filter_.AddEventMatcher("event1", std::move(matcher));
   std::set<int> matches = event_filter_.MatchEvent("event1",
       google_event_, MSG_ROUTING_NONE);

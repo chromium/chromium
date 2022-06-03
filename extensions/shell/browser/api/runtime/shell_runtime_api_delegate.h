@@ -17,6 +17,10 @@ namespace extensions {
 class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
  public:
   explicit ShellRuntimeAPIDelegate(content::BrowserContext* browser_context);
+
+  ShellRuntimeAPIDelegate(const ShellRuntimeAPIDelegate&) = delete;
+  ShellRuntimeAPIDelegate& operator=(const ShellRuntimeAPIDelegate&) = delete;
+
   ~ShellRuntimeAPIDelegate() override;
 
   // RuntimeAPIDelegate implementation.
@@ -24,15 +28,13 @@ class ShellRuntimeAPIDelegate : public RuntimeAPIDelegate {
   void RemoveUpdateObserver(UpdateObserver* observer) override;
   void ReloadExtension(const std::string& extension_id) override;
   bool CheckForUpdates(const std::string& extension_id,
-                       const UpdateCheckCallback& callback) override;
+                       UpdateCheckCallback callback) override;
   void OpenURL(const GURL& uninstall_url) override;
   bool GetPlatformInfo(api::runtime::PlatformInfo* info) override;
   bool RestartDevice(std::string* error_message) override;
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellRuntimeAPIDelegate);
 };
 
 }  // namespace extensions

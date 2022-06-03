@@ -34,40 +34,40 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
-SkBitmap WebImage::FromData(const WebData& data, const WebSize& desired_size) {
+SkBitmap WebImage::FromData(const WebData& data,
+                            const gfx::Size& desired_size) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
       data, data_complete, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, ColorBehavior::Ignore(),
-      ImageDecoder::OverrideAllowDecodeToYuv::kDeny));
+      ImageDecoder::kDefaultBitDepth, ColorBehavior::Ignore()));
   if (!decoder || !decoder->IsSizeAvailable())
     return {};
 
   // Frames are arranged by decreasing size, then decreasing bit depth.
   // Pick the frame closest to |desiredSize|'s area without being smaller,
   // which has the highest bit depth.
-  const size_t frame_count = decoder->FrameCount();
-  size_t index = 0;  // Default to first frame if none are large enough.
+  const wtf_size_t frame_count = decoder->FrameCount();
+  wtf_size_t index = 0;  // Default to first frame if none are large enough.
   int frame_area_at_index = 0;
-  for (size_t i = 0; i < frame_count; ++i) {
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
-    if (WebSize(frame_size) == desired_size) {
+    if (ToGfxSize(frame_size) == desired_size) {
       index = i;
       break;  // Perfect match.
     }
 
-    const int frame_area = frame_size.Width() * frame_size.Height();
-    if (frame_area < (desired_size.width * desired_size.height))
+    const int frame_area = frame_size.width() * frame_size.height();
+    if (frame_area < (desired_size.width() * desired_size.height()))
       break;  // No more frames that are large enough.
 
     if (!i || (frame_area < frame_area_at_index)) {
@@ -79,10 +79,21 @@ SkBitmap WebImage::FromData(const WebData& data, const WebSize& desired_size) {
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(index);
   if (!frame || decoder->Failed())
     return {};
-  return frame->Bitmap();
+
+  if (decoder->Orientation().Orientation() == ImageOrientationEnum::kDefault)
+    return frame->Bitmap();
+
+  cc::PaintImage paint_image(Image::ResizeAndOrientImage(
+      cc::PaintImage::CreateFromBitmap(frame->Bitmap()),
+      decoder->Orientation()));
+
+  SkBitmap bitmap;
+  paint_image.GetSwSkImage()->asLegacyBitmap(&bitmap);
+  return bitmap;
 }
 
-SkBitmap WebImage::DecodeSVG(const WebData& data, const WebSize& desired_size) {
+SkBitmap WebImage::DecodeSVG(const WebData& data,
+                             const gfx::Size& desired_size) {
   scoped_refptr<SVGImage> svg_image = SVGImage::Create(nullptr);
   const bool data_complete = true;
   Image::SizeAvailability size_available =
@@ -101,15 +112,17 @@ SkBitmap WebImage::DecodeSVG(const WebData& data, const WebSize& desired_size) {
     container_size = svg_image->ConcreteObjectSize(FloatSize());
   scoped_refptr<Image> svg_container =
       SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL());
-  if (PaintImage image = svg_container->PaintImageForCurrentFrame())
-    image.GetSkImage()->asLegacyBitmap(&bitmap, SkImage::kRO_LegacyBitmapMode);
+  if (PaintImage image = svg_container->PaintImageForCurrentFrame()) {
+    image.GetSwSkImage()->asLegacyBitmap(&bitmap,
+                                         SkImage::kRO_LegacyBitmapMode);
+  }
   return bitmap;
 }
 
 WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   // This is to protect from malicious images. It should be big enough that it's
   // never hit in practice.
-  const size_t kMaxFrameCount = 8;
+  const wtf_size_t kMaxFrameCount = 8;
 
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
@@ -120,11 +133,11 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
 
   // Frames are arranged by decreasing size, then decreasing bit depth.
   // Keep the first frame at every size, has the highest bit depth.
-  const size_t frame_count = decoder->FrameCount();
+  const wtf_size_t frame_count = decoder->FrameCount();
   IntSize last_size;
 
   WebVector<SkBitmap> frames;
-  for (size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
+  for (wtf_size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
     if (frame_size == last_size)
       continue;
@@ -151,12 +164,12 @@ WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
   if (!decoder || !decoder->IsSizeAvailable() || decoder->FrameCount() == 0)
     return {};
 
-  const size_t frame_count = decoder->FrameCount();
+  const wtf_size_t frame_count = decoder->FrameCount();
   IntSize last_size = decoder->FrameSizeAtIndex(0);
 
   WebVector<WebImage::AnimationFrame> frames;
   frames.reserve(frame_count);
-  for (size_t i = 0; i < frame_count; ++i) {
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
     // If frame size changes, this is most likely not an animation and is
     // instead an image with multiple versions at different resolutions. If
     // that's the case, return only the first frame (or no frames if we failed

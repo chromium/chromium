@@ -11,16 +11,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/capabilities.h"
@@ -61,16 +61,13 @@ void ExecuteGetStatus(
                std::string(), kW3CDefault);
 }
 
-void ExecuteCreateSession(
-    SessionThreadMap* session_thread_map,
-    const Command& init_session_cmd,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
-  std::string new_id = session_id;
-  if (new_id.empty())
-    new_id = GenerateId();
-  std::unique_ptr<Session> session = std::make_unique<Session>(new_id);
+void ExecuteCreateSession(SessionThreadMap* session_thread_map,
+                          const Command& init_session_cmd,
+                          const base::DictionaryValue& params,
+                          const std::string& host,
+                          const CommandCallback& callback) {
+  std::string new_id = GenerateId();
+  std::unique_ptr<Session> session = std::make_unique<Session>(new_id, host);
   std::unique_ptr<SessionThreadInfo> threadInfo =
       std::make_unique<SessionThreadInfo>(new_id, GetW3CSetting(params));
   if (!threadInfo->thread()->Start()) {
@@ -90,7 +87,7 @@ void ExecuteCreateSession(
 namespace {
 
 void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
-                  const base::Closure& all_get_session_func,
+                  const base::RepeatingClosure& all_get_session_func,
                   base::ListValue* session_list,
                   const Status& status,
                   std::unique_ptr<base::Value> value,
@@ -101,11 +98,13 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
 
   (*session_remaining_count)--;
 
-  std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
-  session->SetString("id", session_id);
-  session->SetKey("capabilities",
-                  base::Value::FromUniquePtrValue(std::move(value)));
-  session_list->Append(std::move(session));
+  if (value) {
+    std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
+    session->SetString("id", session_id);
+    session->SetKey("capabilities",
+                    base::Value::FromUniquePtrValue(std::move(value)));
+    session_list->Append(std::move(session));
+  }
 
   if (!*session_remaining_count) {
     all_get_session_func.Run();
@@ -128,21 +127,17 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
     return;
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
   for (auto iter = session_thread_map->begin();
        iter != session_thread_map->end(); ++iter) {
-    session_capabilities_command.Run(params,
-                                     iter->first,
-                                     base::Bind(
-                                               &OnGetSession,
-                                               weak_ptr_factory.GetWeakPtr(),
-                                               run_loop.QuitClosure(),
-                                               session_list.get()));
+    session_capabilities_command.Run(
+        params, iter->first,
+        base::BindRepeating(&OnGetSession, weak_ptr_factory.GetWeakPtr(),
+                            run_loop.QuitClosure(), session_list.get()));
   }
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
-  base::MessageLoopCurrent::Get()->SetNestableTasksAllowed(true);
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
   run_loop.Run();
 
   callback.Run(Status(kOk), std::move(session_list), session_id, false);
@@ -151,7 +146,7 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
 namespace {
 
 void OnSessionQuit(const base::WeakPtr<size_t>& quit_remaining_count,
-                   const base::Closure& all_quit_func,
+                   const base::RepeatingClosure& all_quit_func,
                    const Status& status,
                    std::unique_ptr<base::Value> value,
                    const std::string& session_id,
@@ -180,20 +175,18 @@ void ExecuteQuitAll(
                  session_id, false);
     return;
   }
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   for (auto iter = session_thread_map->begin();
        iter != session_thread_map->end(); ++iter) {
-    quit_command.Run(params,
-                     iter->first,
-                     base::Bind(&OnSessionQuit,
-                                weak_ptr_factory.GetWeakPtr(),
-                                run_loop.QuitClosure()));
+    quit_command.Run(
+        params, iter->first,
+        base::BindRepeating(&OnSessionQuit, weak_ptr_factory.GetWeakPtr(),
+                            run_loop.QuitClosure()));
   }
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
   // Uses a nested run loop to block this thread until all the quit
   // commands have executed, or the timeout expires.
-  base::MessageLoopCurrent::Get()->SetNestableTasksAllowed(true);
   run_loop.Run();
   callback.Run(Status(kOk), std::unique_ptr<base::Value>(),
                session_id, false);
@@ -214,7 +207,7 @@ void ExecuteSessionCommandOnSessionThread(
     std::unique_ptr<base::DictionaryValue> params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const CommandCallback& callback_on_cmd,
-    const base::Closure& terminate_on_cmd) {
+    const base::RepeatingClosure& terminate_on_cmd) {
   Session* session = GetThreadLocalSession();
 
   if (!session) {
@@ -233,8 +226,7 @@ void ExecuteSessionCommandOnSessionThread(
       // Note: ChromeDriver log-replay depends on the format of this logging.
       // see chromedriver/log_replay/client_replay.py
       VLOG(0) << "[" << session->id << "] "
-              << "COMMAND " << command_name << " "
-              << FormatValueForDisplay(*params);
+              << "COMMAND " << command_name << " " << PrettyPrintValue(*params);
     }
   }
 
@@ -348,12 +340,13 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
   } else {
     iter->second->thread()->task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ExecuteSessionCommandOnSessionThread, command_name,
-                       command, w3c_standard_command, return_ok_without_session,
-                       base::WrapUnique(params.DeepCopy()),
-                       base::ThreadTaskRunnerHandle::Get(), callback,
-                       base::Bind(&TerminateSessionThreadOnCommandThread,
-                                  session_thread_map, session_id)));
+        base::BindOnce(
+            &ExecuteSessionCommandOnSessionThread, command_name, command,
+            w3c_standard_command, return_ok_without_session,
+            base::WrapUnique(params.DeepCopy()),
+            base::ThreadTaskRunnerHandle::Get(), callback,
+            base::BindRepeating(&TerminateSessionThreadOnCommandThread,
+                                session_thread_map, session_id)));
   }
 }
 

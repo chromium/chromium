@@ -10,9 +10,11 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
+#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -23,7 +25,7 @@ namespace {
 
 size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
   static const char kTypeSQL[] =
-      "SELECT COUNT(*) FROM sqlite_master WHERE type = ?";
+      "SELECT COUNT(*) FROM sqlite_schema WHERE type = ?";
   sql::Statement s(db->GetUniqueStatement(kTypeSQL));
   s.BindCString(0, type);
   EXPECT_TRUE(s.Step());
@@ -42,7 +44,7 @@ bool GetPageSize(sql::Database* db, int* page_size) {
 // Get |name|'s root page number in the database.
 bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
   static const char kPageSql[] =
-      "SELECT rootpage FROM sqlite_master WHERE name = ?";
+      "SELECT rootpage FROM sqlite_schema WHERE name = ?";
   sql::Statement s(db->GetUniqueStatement(kPageSql));
   s.BindString(0, name);
   if (!s.Step())
@@ -70,12 +72,53 @@ void WriteBigEndian(unsigned val, unsigned char* buf, size_t bytes) {
   }
 }
 
+bool IsWalDatabase(const base::FilePath& db_path) {
+  // The SQLite header is documented at:
+  //   https://www.sqlite.org/fileformat.html#the_database_header
+  //
+  // Read the entire header.
+  constexpr int kHeaderSize = 100;
+  uint8_t header[kHeaderSize];
+  base::ReadFile(db_path, reinterpret_cast<char*>(header), sizeof(header));
+  constexpr int kWriteVersionHeaderOffset = 18;
+  constexpr int kReadVersionHeaderOffset = 19;
+  // If the read version is unsupported, we can't rely on our ability to
+  // interpret anything else in the header.
+  DCHECK_LE(header[kReadVersionHeaderOffset], 2)
+      << "Unsupported SQLite file format";
+  return header[kWriteVersionHeaderOffset] == 2;
+}
+
 }  // namespace
 
 namespace sql {
 namespace test {
 
 bool CorruptSizeInHeader(const base::FilePath& db_path) {
+  if (IsWalDatabase(db_path)) {
+    // Checkpoint the WAL file in Truncate mode before corrupting to ensure that
+    // any future transaction always touches the DB file and not just the WAL
+    // file.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // TODO: This function doesn't reliably work if connections to the DB are
+    // still open. Change any uses to ensure that we close all database
+    // connections before calling this function.
+    sql::Database db({.exclusive_locking = false, .wal_mode = true});
+    if (!db.Open(db_path))
+      return false;
+    int wal_log_size = 0;
+    int checkpointed_frame_count = 0;
+    int truncate_result = sqlite3_wal_checkpoint_v2(
+        db.db(InternalApiToken()), /*zDb=*/nullptr, SQLITE_CHECKPOINT_TRUNCATE,
+        &wal_log_size, &checkpointed_frame_count);
+    // A successful checkpoint in truncate mode sets these to zero.
+    DCHECK(wal_log_size == 0);
+    DCHECK(checkpointed_frame_count == 0);
+    if (truncate_result != SQLITE_OK)
+      return false;
+    db.Close();
+  }
+
   // See http://www.sqlite.org/fileformat.html#database_header
   const size_t kHeaderSize = 100;
 

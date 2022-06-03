@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="resources/manual.js"></script>
+  </head>
+  <body>
+    <p>
+      These tests require a supported HID device:
+    </p>
+    <ul>
+      <li>Sony DS4 Wireless Controller v2 (054c:09cc) [USB]
+      <li>Sony DualSense Wireless Controller (054c:0ce6) [USB]
+      <li>Nintendo Switch Pro Controller (0573:2009) [USB]
+      <li>Philips Speech Mike III (0911:0fa0) [USB]
+      <li>Jabra Evolve 65 Stereo Headset with Link (0b0e:0306) [USB]
+      <li>Google Stadia Controller (18d1:9400) [USB]
+    </ul>
+    <script>
+      // Formats a 32-bit integer |value| in hexadecimal with leading zeros.
+      const hex32 = value => {
+        return ('00000000' + value.toString(16)).substr(-8);
+      };
+
+      // Finds the item in |report| with matching |usage|, computes its bit
+      // index within the report map, and checks against the |expectedBitIndex|
+      // and |expectedBitWidth|. If a usage is reused for multiple fields within
+      // a report, only the first field is considered.
+      const checkReportUsage =
+          (report, usage, expectedBitIndex, expectedBitWidth) => {
+        const itemIndex = report.items.findIndex(item => {
+          if (item.isRange)
+            return item.usageMinimum <= usage && usage <= item.usageMaximum;
+          return item.usages.includes(usage);
+        });
+        assert_greater_than_equal(
+            itemIndex, 0,
+            'No report item matching usage 0x' + hex32(usage) + '.');
+        if (itemIndex < 0)
+          return null;
+
+        let bitIndex = 0;
+        for (let i = 0; i < itemIndex; ++i)
+          bitIndex += report.items[i].reportSize * report.items[i].reportCount;
+
+        const item = report.items[itemIndex];
+        if (!item.isArray) {
+          if (item.isRange) {
+            bitIndex += (usage - item.usageMinimum) * item.reportSize;
+          } else {
+            const usageIndex = item.usages.indexOf(usage);
+            bitIndex += usageIndex * item.reportSize;
+          }
+        }
+
+        assert_equals(bitIndex, expectedBitIndex,
+                      'Incorrect bit index for usage 0x' + hex32(usage) + '.');
+        assert_equals(item.reportSize, expectedBitWidth,
+                      'Incorrect bit width for usage 0x' + hex32(usage) + '.');
+      };
+
+      // Returns the first top-level collection in |device.collections| with a
+      // usage matching |usagePage| and |usage|, or undefined if no matching
+      // collection was found.
+      const getCollectionByUsage = (device, usagePage, usage) => {
+        return device.collections.find(c => {
+            return c.usagePage == usagePage && c.usage == usage;});
+      }
+
+      // Returns the first device in |devices| with a top-level collection
+      // matching |usagePage| and |usage|, or undefined if no matching device
+      // was found.
+      const getDeviceByCollectionUsage = (devices, usagePage, usage) => {
+        return devices.find(d => {
+          return getCollectionByUsage(d, usagePage, usage);
+        }) !== undefined;
+      }
+
+      // Returns the first report in |devices| with matching |reportType| and
+      // |reportId|, or undefined if no matching report was found.
+      const getReport = (devices, reportType, reportId) => {
+        for (const d of devices) {
+          for (const c of d.collections) {
+            let reports = [];
+            if (reportType == 'input')
+              reports = c.inputReports;
+            else if (reportType == 'output')
+              reports = c.outputReports;
+            else if (reportType == 'feature')
+              reports = c.featureReports;
+
+            const r = reports.find(r => { return r.reportId == reportId; });
+            if (r !== undefined)
+              return r;
+          }
+        }
+        return undefined;
+      };
+
+      // Returns true if |devices| contains a device with matching |vendorId|
+      // and |productId|.
+      const hasDeviceIds = (devices, vendorId, productId) => {
+        return devices.find(d => {
+          return d.vendorId == vendorId && d.productId == productId;
+        }) !== undefined;
+      };
+
+      const checkReportMapDualshock4 = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
+        // Input report
+        const input01 = getReport(devices, 'input', 0x01);
+        assert_not_equals(input01, undefined, 'input report 0x01');
+        checkReportUsage(input01, 0x00010030, 0, 8);
+        checkReportUsage(input01, 0x00010031, 8, 8);
+        checkReportUsage(input01, 0x00010032, 16, 8);
+        checkReportUsage(input01, 0x00010035, 24, 8);
+        checkReportUsage(input01, 0x00010039, 32, 4);
+        checkReportUsage(input01, 0x00090001, 36, 1);
+        checkReportUsage(input01, 0x00090002, 37, 1);
+        checkReportUsage(input01, 0x00090003, 38, 1);
+        checkReportUsage(input01, 0x00090004, 39, 1);
+        checkReportUsage(input01, 0x00090005, 40, 1);
+        checkReportUsage(input01, 0x00090006, 41, 1);
+        checkReportUsage(input01, 0x00090007, 42, 1);
+        checkReportUsage(input01, 0x00090008, 43, 1);
+        checkReportUsage(input01, 0x00090009, 44, 1);
+        checkReportUsage(input01, 0x0009000a, 45, 1);
+        checkReportUsage(input01, 0x0009000b, 46, 1);
+        checkReportUsage(input01, 0x0009000c, 47, 1);
+        checkReportUsage(input01, 0x0009000d, 48, 1);
+        checkReportUsage(input01, 0x0009000e, 49, 1);
+        checkReportUsage(input01, 0xff000020, 50, 6);
+        checkReportUsage(input01, 0x00010033, 56, 8);
+        checkReportUsage(input01, 0x00010034, 64, 8);
+
+        // Output report
+        const output05 = getReport(devices, 'output', 0x05);
+        assert_not_equals(output05, undefined, 'output report 0x05');
+        checkReportUsage(output05, 0xff000022, 0, 8);
+
+        // Feature reports
+        const feature02 = getReport(devices, 'feature', 0x02);
+        assert_not_equals(feature02, undefined, 'feature report 0x02');
+        checkReportUsage(feature02, 0xff000024, 0, 8);
+        const feature04 = getReport(devices, 'feature', 0x04);
+        assert_not_equals(feature04, undefined, 'feature report 0x04');
+        checkReportUsage(feature04, 0xff000023, 0, 8);
+        const feature08 = getReport(devices, 'feature', 0x08);
+        assert_not_equals(feature08, undefined, 'feature report 0x08');
+        checkReportUsage(feature08, 0xff000025, 0, 8);
+        const feature10 = getReport(devices, 'feature', 0x10);
+        assert_not_equals(feature10, undefined, 'feature report 0x10');
+        checkReportUsage(feature10, 0xff000026, 0, 8);
+        const feature11 = getReport(devices, 'feature', 0x11);
+        assert_not_equals(feature11, undefined, 'feature report 0x11');
+        checkReportUsage(feature11, 0xff000027, 0, 8);
+        const feature12 = getReport(devices, 'feature', 0x12);
+        assert_not_equals(feature12, undefined, 'feature report 0x12');
+        checkReportUsage(feature12, 0xff020021, 0, 8);
+        const feature13 = getReport(devices, 'feature', 0x13);
+        assert_not_equals(feature13, undefined, 'feature report 0x13');
+        checkReportUsage(feature13, 0xff020022, 0, 8);
+        const feature14 = getReport(devices, 'feature', 0x14);
+        assert_not_equals(feature14, undefined, 'feature report 0x14');
+        checkReportUsage(feature14, 0xff050020, 0, 8);
+        const feature15 = getReport(devices, 'feature', 0x15);
+        assert_not_equals(feature15, undefined, 'feature report 0x15');
+        checkReportUsage(feature15, 0xff050021, 0, 8);
+        const feature80 = getReport(devices, 'feature', 0x80);
+        assert_not_equals(feature80, undefined, 'feature report 0x80');
+        checkReportUsage(feature80, 0xff800020, 0, 8);
+        const feature81 = getReport(devices, 'feature', 0x81);
+        assert_not_equals(feature81, undefined, 'feature report 0x81');
+        checkReportUsage(feature81, 0xff800021, 0, 8);
+        const feature82 = getReport(devices, 'feature', 0x82);
+        assert_not_equals(feature82, undefined, 'feature report 0x82');
+        checkReportUsage(feature82, 0xff800022, 0, 8);
+        const feature83 = getReport(devices, 'feature', 0x83);
+        assert_not_equals(feature83, undefined, 'feature report 0x83');
+        checkReportUsage(feature83, 0xff800023, 0, 8);
+        const feature84 = getReport(devices, 'feature', 0x84);
+        assert_not_equals(feature84, undefined, 'feature report 0x84');
+        checkReportUsage(feature84, 0xff800024, 0, 8);
+        const feature85 = getReport(devices, 'feature', 0x85);
+        assert_not_equals(feature85, undefined, 'feature report 0x85');
+        checkReportUsage(feature85, 0xff800025, 0, 8);
+        const feature86 = getReport(devices, 'feature', 0x86);
+        assert_not_equals(feature86, undefined, 'feature report 0x86');
+        checkReportUsage(feature86, 0xff800026, 0, 8);
+        const feature87 = getReport(devices, 'feature', 0x87);
+        assert_not_equals(feature87, undefined, 'feature report 0x87');
+        checkReportUsage(feature87, 0xff800027, 0, 8);
+        const feature88 = getReport(devices, 'feature', 0x88);
+        assert_not_equals(feature88, undefined, 'feature report 0x88');
+        checkReportUsage(feature88, 0xff800028, 0, 8);
+        const feature89 = getReport(devices, 'feature', 0x89);
+        assert_not_equals(feature89, undefined, 'feature report 0x89');
+        checkReportUsage(feature89, 0xff800029, 0, 8);
+        const feature90 = getReport(devices, 'feature', 0x90);
+        assert_not_equals(feature90, undefined, 'feature report 0x90');
+        checkReportUsage(feature90, 0xff800030, 0, 8);
+        const feature91 = getReport(devices, 'feature', 0x91);
+        assert_not_equals(feature91, undefined, 'feature report 0x91');
+        checkReportUsage(feature91, 0xff800031, 0, 8);
+        const feature92 = getReport(devices, 'feature', 0x92);
+        assert_not_equals(feature92, undefined, 'feature report 0x92');
+        checkReportUsage(feature92, 0xff800032, 0, 8);
+        const feature93 = getReport(devices, 'feature', 0x93);
+        assert_not_equals(feature93, undefined, 'feature report 0x93');
+        checkReportUsage(feature93, 0xff800033, 0, 8);
+        const feature94 = getReport(devices, 'feature', 0x94);
+        assert_not_equals(feature94, undefined, 'feature report 0x94');
+        checkReportUsage(feature94, 0xff800034, 0, 8);
+        const featurea0 = getReport(devices, 'feature', 0xa0);
+        assert_not_equals(featurea0, undefined, 'feature report 0xa0');
+        checkReportUsage(featurea0, 0xff800040, 0, 8);
+        const featurea1 = getReport(devices, 'feature', 0xa1);
+        assert_not_equals(featurea1, undefined, 'feature report 0xa1');
+        checkReportUsage(featurea1, 0xff800041, 0, 8);
+        const featurea2 = getReport(devices, 'feature', 0xa2);
+        assert_not_equals(featurea2, undefined, 'feature report 0xa2');
+        checkReportUsage(featurea2, 0xff800042, 0, 8);
+        const featurea3 = getReport(devices, 'feature', 0xa3);
+        assert_not_equals(featurea3, undefined, 'feature report 0xa3');
+        checkReportUsage(featurea3, 0xff800043, 0, 8);
+        const featurea4 = getReport(devices, 'feature', 0xa4);
+        assert_not_equals(featurea4, undefined, 'feature report 0xa4');
+        checkReportUsage(featurea4, 0xff800044, 0, 8);
+        const featurea7 = getReport(devices, 'feature', 0xa7);
+        assert_not_equals(featurea7, undefined, 'feature report 0xa7');
+        checkReportUsage(featurea7, 0xff80004a, 0, 8);
+        const featurea8 = getReport(devices, 'feature', 0xa8);
+        assert_not_equals(featurea8, undefined, 'feature report 0xa8');
+        checkReportUsage(featurea8, 0xff80004b, 0, 8);
+        const featurea9 = getReport(devices, 'feature', 0xa9);
+        assert_not_equals(featurea9, undefined, 'feature report 0xa9');
+        checkReportUsage(featurea9, 0xff80004c, 0, 8);
+        const featureaa = getReport(devices, 'feature', 0xaa);
+        assert_not_equals(featureaa, undefined, 'feature report 0xaa');
+        checkReportUsage(featureaa, 0xff80004e, 0, 8);
+        const featureab = getReport(devices, 'feature', 0xab);
+        assert_not_equals(featureab, undefined, 'feature report 0xab');
+        checkReportUsage(featureab, 0xff80004f, 0, 8);
+        const featureac = getReport(devices, 'feature', 0xac);
+        assert_not_equals(featureac, undefined, 'feature report 0xac');
+        checkReportUsage(featureac, 0xff800050, 0, 8);
+        const featuread = getReport(devices, 'feature', 0xad);
+        assert_not_equals(featuread, undefined, 'feature report 0xad');
+        checkReportUsage(featuread, 0xff800051, 0, 8);
+        const featureae = getReport(devices, 'feature', 0xae);
+        assert_not_equals(featureae, undefined, 'feature report 0xae');
+        checkReportUsage(featureae, 0xff800052, 0, 8);
+        const featureaf = getReport(devices, 'feature', 0xaf);
+        assert_not_equals(featureaf, undefined, 'feature report 0xaf');
+        checkReportUsage(featureaf, 0xff800053, 0, 8);
+        const featureb0 = getReport(devices, 'feature', 0xb0);
+        assert_not_equals(featureb0, undefined, 'feature report 0xb0');
+        checkReportUsage(featureb0, 0xff800054, 0, 8);
+        const featureb3 = getReport(devices, 'feature', 0xb3);
+        assert_not_equals(featureb3, undefined, 'feature report 0xb3');
+        checkReportUsage(featureb3, 0xff800055, 0, 8);
+        const featureb4 = getReport(devices, 'feature', 0xb4);
+        assert_not_equals(featureb4, undefined, 'feature report 0xb4');
+        checkReportUsage(featureb4, 0xff800055, 0, 8);
+        const featureb5 = getReport(devices, 'feature', 0xb5);
+        assert_not_equals(featureb5, undefined, 'feature report 0xb5');
+        checkReportUsage(featureb5, 0xff800056, 0, 8);
+        const featured0 = getReport(devices, 'feature', 0xd0);
+        assert_not_equals(featured0, undefined, 'feature report 0xd0');
+        checkReportUsage(featured0, 0xff800058, 0, 8);
+        const featured4 = getReport(devices, 'feature', 0xd4);
+        assert_not_equals(featured4, undefined, 'feature report 0xd4');
+        checkReportUsage(featured4, 0xff800059, 0, 8);
+        const featuree0 = getReport(devices, 'feature', 0xe0);
+        assert_not_equals(featuree0, undefined, 'feature report 0xe0');
+        checkReportUsage(featuree0, 0xff800057, 0, 8);
+        const featuref0 = getReport(devices, 'feature', 0xf0);
+        assert_not_equals(featuref0, undefined, 'feature report 0xf0');
+        checkReportUsage(featuref0, 0xff800047, 0, 8);
+        const featuref1 = getReport(devices, 'feature', 0xf1);
+        assert_not_equals(featuref1, undefined, 'feature report 0xf1');
+        checkReportUsage(featuref1, 0xff800048, 0, 8);
+        const featuref2 = getReport(devices, 'feature', 0xf2);
+        assert_not_equals(featuref2, undefined, 'feature report 0xf2');
+        checkReportUsage(featuref2, 0xff800049, 0, 8);
+      };
+
+      checkReportMapDualSense = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
+        // Input report
+        const input01 = getReport(devices, 'input', 0x01);
+        assert_not_equals(input01, undefined, 'input report 0x01');
+        checkReportUsage(input01, 0x00010030, 0, 8);
+        checkReportUsage(input01, 0x00010031, 8, 8);
+        checkReportUsage(input01, 0x00010032, 16, 8);
+        checkReportUsage(input01, 0x00010035, 24, 8);
+        checkReportUsage(input01, 0x00010033, 32, 8);
+        checkReportUsage(input01, 0x00010034, 40, 8);
+        checkReportUsage(input01, 0xff000020, 48, 8);
+        checkReportUsage(input01, 0x00010039, 56, 4);
+        checkReportUsage(input01, 0x00090001, 60, 1);
+        checkReportUsage(input01, 0x00090002, 61, 1);
+        checkReportUsage(input01, 0x00090003, 62, 1);
+        checkReportUsage(input01, 0x00090004, 63, 1);
+        checkReportUsage(input01, 0x00090005, 64, 1);
+        checkReportUsage(input01, 0x00090006, 65, 1);
+        checkReportUsage(input01, 0x00090007, 66, 1);
+        checkReportUsage(input01, 0x00090008, 67, 1);
+        checkReportUsage(input01, 0x00090009, 68, 1);
+        checkReportUsage(input01, 0x0009000a, 69, 1);
+        checkReportUsage(input01, 0x0009000b, 70, 1);
+        checkReportUsage(input01, 0x0009000c, 71, 1);
+        checkReportUsage(input01, 0x0009000d, 72, 1);
+        checkReportUsage(input01, 0x0009000e, 73, 1);
+        checkReportUsage(input01, 0x0009000f, 74, 1);
+        checkReportUsage(input01, 0xff000021, 75, 1);
+        checkReportUsage(input01, 0xff000022, 88, 8);
+
+        // Output report
+        const output02 = getReport(devices, 'output', 0x02);
+        assert_not_equals(output02, undefined, 'output report 0x02');
+        checkReportUsage(output02, 0xff000023, 0, 8);
+
+        // Feature reports
+        const feature05 = getReport(devices, 'feature', 0x05);
+        assert_not_equals(feature05, undefined, 'feature report 0x05');
+        checkReportUsage(feature05, 0xff000033, 0, 8);
+        const feature08 = getReport(devices, 'feature', 0x08);
+        assert_not_equals(feature08, undefined, 'feature report 0x08');
+        checkReportUsage(feature08, 0xff000034, 0, 8);
+        const feature09 = getReport(devices, 'feature', 0x09);
+        assert_not_equals(feature09, undefined, 'feature report 0x09');
+        checkReportUsage(feature09, 0xff000024, 0, 8);
+        const feature0a = getReport(devices, 'feature', 0x0a);
+        assert_not_equals(feature0a, undefined, 'feature report 0x0a');
+        checkReportUsage(feature0a, 0xff000025, 0, 8);
+        const feature20 = getReport(devices, 'feature', 0x20);
+        assert_not_equals(feature20, undefined, 'feature report 0x20');
+        checkReportUsage(feature20, 0xff000026, 0, 8);
+        const feature21 = getReport(devices, 'feature', 0x21);
+        assert_not_equals(feature21, undefined, 'feature report 0x21');
+        checkReportUsage(feature21, 0xff000027, 0, 8);
+        const feature22 = getReport(devices, 'feature', 0x22);
+        assert_not_equals(feature22, undefined, 'feature report 0x22');
+        checkReportUsage(feature22, 0xff000040, 0, 8);
+        const feature80 = getReport(devices, 'feature', 0x80);
+        assert_not_equals(feature80, undefined, 'feature report 0x80');
+        checkReportUsage(feature80, 0xff000028, 0, 8);
+        const feature81 = getReport(devices, 'feature', 0x81);
+        assert_not_equals(feature81, undefined, 'feature report 0x81');
+        checkReportUsage(feature81, 0xff000029, 0, 8);
+        const feature82 = getReport(devices, 'feature', 0x82);
+        assert_not_equals(feature82, undefined, 'feature report 0x82');
+        checkReportUsage(feature82, 0xff00002a, 0, 8);
+        const feature83 = getReport(devices, 'feature', 0x83);
+        assert_not_equals(feature83, undefined, 'feature report 0x83');
+        checkReportUsage(feature83, 0xff00002b, 0, 8);
+        const feature84 = getReport(devices, 'feature', 0x84);
+        assert_not_equals(feature84, undefined, 'feature report 0x84');
+        checkReportUsage(feature84, 0xff00002c, 0, 8);
+        const feature85 = getReport(devices, 'feature', 0x85);
+        assert_not_equals(feature85, undefined, 'feature report 0x85');
+        checkReportUsage(feature85, 0xff00002d, 0, 8);
+        const featurea0 = getReport(devices, 'feature', 0xa0);
+        assert_not_equals(featurea0, undefined, 'feature report 0xa0');
+        checkReportUsage(featurea0, 0xff00002e, 0, 8);
+        const featuree0 = getReport(devices, 'feature', 0xe0);
+        assert_not_equals(featuree0, undefined, 'feature report 0xe0');
+        checkReportUsage(featuree0, 0xff00002f, 0, 8);
+        const featuref0 = getReport(devices, 'feature', 0xf0);
+        assert_not_equals(featuref0, undefined, 'feature report 0xf0');
+        checkReportUsage(featuref0, 0xff000030, 0, 8);
+        const featuref1 = getReport(devices, 'feature', 0xf1);
+        assert_not_equals(featuref1, undefined, 'feature report 0xf1');
+        checkReportUsage(featuref1, 0xff000031, 0, 8);
+        const featuref2 = getReport(devices, 'feature', 0xf2);
+        assert_not_equals(featuref2, undefined, 'feature report 0xf2');
+        checkReportUsage(featuref2, 0xff000032, 0, 8);
+        const featuref4 = getReport(devices, 'feature', 0xf4);
+        assert_not_equals(featuref4, undefined, 'feature report 0xf4');
+        checkReportUsage(featuref4, 0xff000035, 0, 8);
+        const featuref5 = getReport(devices, 'feature', 0xf5);
+        assert_not_equals(featuref5, undefined, 'feature report 0xf5');
+        checkReportUsage(featuref5, 0xff000036, 0, 8);
+      };
+
+      checkReportMapSwitchPro = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0004);
+        assert_not_equals(collection, undefined, 'joystick collection');
+
+        // Input reports
+        const input30 = getReport(devices, 'input', 0x30);
+        assert_not_equals(input30, undefined, 'input report 0x30');
+        checkReportUsage(input30, 0x00090001, 0, 1);
+        checkReportUsage(input30, 0x00090002, 1, 1);
+        checkReportUsage(input30, 0x00090003, 2, 1);
+        checkReportUsage(input30, 0x00090004, 3, 1);
+        checkReportUsage(input30, 0x00090005, 4, 1);
+        checkReportUsage(input30, 0x00090006, 5, 1);
+        checkReportUsage(input30, 0x00090007, 6, 1);
+        checkReportUsage(input30, 0x00090008, 7, 1);
+        checkReportUsage(input30, 0x00090009, 8, 1);
+        checkReportUsage(input30, 0x0009000a, 9, 1);
+        checkReportUsage(input30, 0x0009000b, 10, 1);
+        checkReportUsage(input30, 0x0009000c, 11, 1);
+        checkReportUsage(input30, 0x0009000d, 12, 1);
+        checkReportUsage(input30, 0x0009000e, 13, 1);
+        checkReportUsage(input30, 0x00010030, 16, 16);
+        checkReportUsage(input30, 0x00010031, 32, 16);
+        checkReportUsage(input30, 0x00010032, 48, 16);
+        checkReportUsage(input30, 0x00010035, 64, 16);
+        checkReportUsage(input30, 0x00010039, 80, 4);
+        checkReportUsage(input30, 0x0009000f, 84, 1);
+        checkReportUsage(input30, 0x00090010, 85, 1);
+        checkReportUsage(input30, 0x00090011, 86, 1);
+        checkReportUsage(input30, 0x00090012, 87, 1);
+
+        const input21 = getReport(devices, 'input', 0x21);
+        assert_not_equals(input21, undefined, 'input report 0x21');
+        checkReportUsage(input21, 0xff000001, 0, 8);
+
+        const input81 = getReport(devices, 'input', 0x81);
+        assert_not_equals(input81, undefined, 'input report 0x81');
+        checkReportUsage(input81, 0xff000002, 0, 8);
+
+        // Output reports
+        const output01 = getReport(devices, 'output', 0x01);
+        assert_not_equals(output01, undefined, 'output report 0x01');
+        checkReportUsage(output01, 0xff000003, 0, 8);
+
+        const output10 = getReport(devices, 'output', 0x10);
+        assert_not_equals(output10, undefined, 'output report 0x10');
+        checkReportUsage(output10, 0xff000004, 0, 8);
+
+        const output80 = getReport(devices, 'output', 0x80);
+        assert_not_equals(output80, undefined, 'output report 0x80');
+        checkReportUsage(output80, 0xff000005, 0, 8);
+
+        const output82 = getReport(devices, 'output', 0x82);
+        assert_not_equals(output82, undefined, 'output report 0x82');
+        checkReportUsage(output82, 0xff000006, 0, 8);
+      };
+
+      checkReportMapSpeechMike = devices => {
+        // Speech Mike exposes five HID interfaces, two of which are blocked by
+        // WebHID. None of the interfaces use report IDs. Distinguish the
+        // interfaces by their top-level collection usage information.
+        assert_equals(devices.length, 3, 'device count');
+        const device0 = getDeviceByCollectionUsage(devices, 0xffa0, 0x0001);
+        assert_not_equals(device0, undefined, 'vendor device');
+        assert_equals(device0.collections.length, 1,
+                      'vendor device collection count');
+        const device1 = getDeviceByCollectionUsage(devices, 0x000c, 0x0001);
+        assert_not_equals(device1, undefined, 'consumer device');
+        assert_equals(device1.collections.length, 1,
+                      'consumer device collection count');
+        const device2 = getDeviceByCollectionUsage(devices, 0x0001, 0x0004);
+        assert_not_equals(device2, undefined, 'joystick device');
+        assert_equals(device2.collections.length, 1,
+                      'joystick device collection count');
+
+        // These devices should be blocked by WebHID.
+        const device3 = getDeviceByCollectionUsage(devices, 0x0001, 0x0002);
+        assert_equals(device3, undefined, 'mouse device');
+        const device4 = getDeviceByCollectionUsage(devices, 0x0001, 0x0006);
+        assert_equals(device4, undefined, 'keyboard device');
+
+        const device0Input = getReport([device0], 'input', 0x00);
+        assert_not_equals(device0Input, undefined, 'vendor input report');
+        checkReportUsage(device0Input, 0xffa10003, 0, 8);
+        checkReportUsage(device0Input, 0xffa10004, 8, 8);
+
+        const device0Output = getReport([device0], 'output', 0x00);
+        assert_not_equals(device0Input, undefined, 'vendor output report');
+        checkReportUsage(device0Output, 0xffa10005, 0, 8);
+        checkReportUsage(device0Output, 0xffa10006, 8, 8);
+
+        const device1Input = getReport([device1], 'input', 0x00);
+        assert_not_equals(device1Input, undefined, 'consumer input report');
+        checkReportUsage(device1Input, 0x000c00e9, 0, 1);
+        checkReportUsage(device1Input, 0x000c00ea, 1, 1);
+
+        const device2Input = getReport([device2], 'input', 0x00);
+        assert_not_equals(device2Input, undefined, 'joystick input report');
+        checkReportUsage(device2Input, 0x00090001, 0, 1);
+        checkReportUsage(device2Input, 0x00090002, 1, 1);
+        checkReportUsage(device2Input, 0x00090003, 2, 1);
+        checkReportUsage(device2Input, 0x00090004, 3, 1);
+        checkReportUsage(device2Input, 0x00090005, 4, 1);
+        checkReportUsage(device2Input, 0x00090006, 5, 1);
+        checkReportUsage(device2Input, 0x00090007, 6, 1);
+        checkReportUsage(device2Input, 0x00090008, 7, 1);
+        checkReportUsage(device2Input, 0x00090009, 8, 1);
+        checkReportUsage(device2Input, 0x0009000a, 9, 1);
+        checkReportUsage(device2Input, 0x0009000b, 10, 1);
+        checkReportUsage(device2Input, 0x0009000c, 11, 1);
+        checkReportUsage(device2Input, 0x0009000d, 12, 1);
+        checkReportUsage(device2Input, 0x0009000e, 13, 1);
+        checkReportUsage(device2Input, 0x0009000f, 14, 1);
+        checkReportUsage(device2Input, 0x00090010, 15, 1);
+        checkReportUsage(device2Input, 0x00090011, 16, 1);
+        checkReportUsage(device2Input, 0x00090012, 17, 1);
+        checkReportUsage(device2Input, 0x00090013, 18, 1);
+        checkReportUsage(device2Input, 0x00090014, 19, 1);
+        checkReportUsage(device2Input, 0x00010030, 24, 8);
+        checkReportUsage(device2Input, 0x00010031, 32, 8);
+      };
+
+      checkReportMapEvolveLink = devices => {
+        // Expect one device with three top-level collections.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 3, 'collection count');
+        const collection0 = getCollectionByUsage(devices[0], 0x000b, 0x0005);
+        assert_not_equals(collection0, undefined, 'headset collection');
+        const collection1 = getCollectionByUsage(devices[0], 0xff00, 0x0005);
+        assert_not_equals(collection1, undefined, 'vendor collection');
+        const collection2 = getCollectionByUsage(devices[0], 0x000c, 0x0001);
+        assert_not_equals(collection2, undefined, 'consumer collection');
+
+        // Input reports
+        const input01 = getReport(devices, 'input', 0x01);
+        assert_not_equals(input01, undefined, 'input report 0x01');
+
+        const input02 = getReport(devices, 'input', 0x02);
+        assert_not_equals(input02, undefined, 'input report 0x02');
+        checkReportUsage(input02, 0x000b0020, 0, 1);
+        checkReportUsage(input02, 0x000b0097, 1, 1);
+        checkReportUsage(input02, 0x000b002f, 2, 1);
+        checkReportUsage(input02, 0x000b0021, 3, 1);
+        checkReportUsage(input02, 0x000b0024, 4, 1);
+        checkReportUsage(input02, 0x000b0050, 5, 1);
+
+        // The following item is buggy in a way that causes it to differ by
+        // platform. Here is the relevant portion of the report descriptor:
+        //
+        // 0x05, 0x0B,        //   Usage Page (Telephony)
+        // ...  (some irrelevant items omitted)
+        // 0x09, 0x07,        //   Usage (Programmable Button)
+        // 0x05, 0x09,        //   Usage Page (Button)
+        // 0x75, 0x01,        //   Report Size (1)
+        // 0x95, 0x01,        //   Report Count (1)
+        // 0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,...)
+        //
+        // The Input item on the last line emits a 1-bit report field. The usage
+        // is defined by the preceding Usage Page and Usage items. Usage Page
+        // items are global, meaning the page set by the first Usage Page item
+        // persists until it is overridden by a following Usage Page item.
+        // According to the HID specification for the Usage Page item, "Any
+        // usage that follows which is defined as 16 bits or less is interpreted
+        // as a Usage ID and concatenated with the Usage Page to form a 32 bit
+        // Usage." This means the Usage should be concatenated with the
+        // preceding Usage Page (Telephony) and not the following Usage Page
+        // (Button).
+        //
+        // On platforms where we parse the raw HID report descriptor, we
+        // correctly use the preceding Usage Page (Telephony). On Windows,
+        // report descriptor information is parsed by the operating system and
+        // provided to applications as "preparsed data". This parser incorrectly
+        // applies the following Usage Page (Button).
+        //
+        // To avoid platform dependency, skip verifying this item.
+
+        //checkReportUsage(input02, 0x000b0007, 6, 1);
+        checkReportUsage(input02, 0x000b00b0, 7, 4);
+        checkReportUsage(input02, 0x000b00b1, 7, 4);
+        checkReportUsage(input02, 0x000b00b2, 7, 4);
+        checkReportUsage(input02, 0x000b00b3, 7, 4);
+        checkReportUsage(input02, 0x000b00b4, 7, 4);
+        checkReportUsage(input02, 0x000b00b5, 7, 4);
+        checkReportUsage(input02, 0x000b00b6, 7, 4);
+        checkReportUsage(input02, 0x000b00b7, 7, 4);
+        checkReportUsage(input02, 0x000b00b8, 7, 4);
+        checkReportUsage(input02, 0x000b00b9, 7, 4);
+        checkReportUsage(input02, 0x000b00ba, 7, 4);
+        checkReportUsage(input02, 0x000b00bb, 7, 4);
+
+        const input04 = getReport(devices, 'input', 0x04);
+        assert_not_equals(input04, undefined, 'input report 0x04');
+        checkReportUsage(input04, 0xff300020, 0, 1);
+        checkReportUsage(input04, 0xff300097, 1, 1);
+        checkReportUsage(input04, 0xff30002f, 2, 1);
+        checkReportUsage(input04, 0xff300021, 3, 1);
+        checkReportUsage(input04, 0xff300024, 4, 1);
+        checkReportUsage(input04, 0xff30fffd, 5, 1);
+        checkReportUsage(input04, 0xff300050, 6, 1);
+        checkReportUsage(input04, 0xff3000b0, 7, 4);
+        checkReportUsage(input04, 0xff3000b1, 7, 4);
+        checkReportUsage(input04, 0xff3000b2, 7, 4);
+        checkReportUsage(input04, 0xff3000b3, 7, 4);
+        checkReportUsage(input04, 0xff3000b4, 7, 4);
+        checkReportUsage(input04, 0xff3000b5, 7, 4);
+        checkReportUsage(input04, 0xff3000b6, 7, 4);
+        checkReportUsage(input04, 0xff3000b7, 7, 4);
+        checkReportUsage(input04, 0xff3000b8, 7, 4);
+        checkReportUsage(input04, 0xff3000b9, 7, 4);
+        checkReportUsage(input04, 0xff3000ba, 7, 4);
+        checkReportUsage(input04, 0xff3000bb, 7, 4);
+
+        const input05 = getReport(devices, 'input', 0x05);
+        assert_not_equals(input05, undefined, 'input report 0x05');
+        checkReportUsage(input05, 0xff000001, 0, 8);
+
+        const input08 = getReport(devices, 'input', 0x08);
+        assert_not_equals(input08, undefined, 'input report 0x08');
+        checkReportUsage(input08, 0xff600002, 0, 1);
+
+        // Output reports
+        const output02 = getReport(devices, 'output', 0x02);
+        assert_not_equals(output02, undefined, 'output report 0x02');
+        checkReportUsage(output02, 0x00080017, 0, 1);
+        checkReportUsage(output02, 0x00080009, 1, 1);
+        checkReportUsage(output02, 0x00080018, 2, 1);
+        checkReportUsage(output02, 0x00080020, 3, 1);
+        checkReportUsage(output02, 0x00080021, 4, 1);
+        checkReportUsage(output02, 0x000b009e, 5, 1);
+
+        const output04 = getReport(devices, 'output', 0x04);
+        assert_not_equals(output04, undefined, 'output report 0x04');
+        checkReportUsage(output04, 0xff400017, 0, 1);
+        checkReportUsage(output04, 0xff400009, 1, 1);
+        checkReportUsage(output04, 0xff400018, 2, 1);
+        checkReportUsage(output04, 0xff400020, 3, 1);
+        checkReportUsage(output04, 0xff400021, 4, 1);
+        checkReportUsage(output04, 0xff30009e, 5, 1);
+
+        const output05 = getReport(devices, 'output', 0x05);
+        assert_not_equals(output05, undefined, 'output report 0x05');
+        checkReportUsage(output05, 0xff000001, 0, 8);
+
+        // Feature report 0x08
+        const feature08 = getReport(devices, 'feature', 0x08);
+        assert_not_equals(feature08, undefined, 'feature report 0x08');
+        checkReportUsage(feature08, 0xff600002, 0, 1);
+      };
+
+      checkReportMapStadiaController = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0005);
+        assert_not_equals(collection, undefined, 'game pad collection');
+
+        // Input report 0x03
+        const input03 = getReport(devices, 'input', 0x03);
+        assert_not_equals(input03, undefined, 'input report 0x03');
+        checkReportUsage(input03, 0x00010039, 0, 4);
+        checkReportUsage(input03, 0x00090012, 8, 1);
+        checkReportUsage(input03, 0x00090011, 9, 1);
+        checkReportUsage(input03, 0x00090014, 10, 1);
+        checkReportUsage(input03, 0x00090013, 11, 1);
+        checkReportUsage(input03, 0x0009000d, 12, 1);
+        checkReportUsage(input03, 0x0009000c, 13, 1);
+        checkReportUsage(input03, 0x0009000b, 14, 1);
+        checkReportUsage(input03, 0x0009000f, 15, 1);
+        checkReportUsage(input03, 0x0009000e, 16, 1);
+        checkReportUsage(input03, 0x00090008, 17, 1);
+        checkReportUsage(input03, 0x00090007, 18, 1);
+        checkReportUsage(input03, 0x00090005, 19, 1);
+        checkReportUsage(input03, 0x00090004, 20, 1);
+        checkReportUsage(input03, 0x00090002, 21, 1);
+        checkReportUsage(input03, 0x00090001, 22, 1);
+        checkReportUsage(input03, 0x00010030, 24, 8);
+        checkReportUsage(input03, 0x00010031, 32, 8);
+        checkReportUsage(input03, 0x00010032, 40, 8);
+        checkReportUsage(input03, 0x00010035, 48, 8);
+        checkReportUsage(input03, 0x000200c5, 56, 8);
+        checkReportUsage(input03, 0x000200c4, 64, 8);
+        checkReportUsage(input03, 0x000c00e9, 72, 1);
+        checkReportUsage(input03, 0x000c00ea, 73, 1);
+        checkReportUsage(input03, 0x000c00cd, 74, 1);
+
+        // Output report 0x05
+        const output05 = getReport(devices, 'output', 0x05);
+        assert_not_equals(output05, undefined, 'output report 0x05');
+        checkReportUsage(output05, 0x000f0097, 0, 16);
+      };
+
+      // The content of the HIDDevice.collections member can differ by platform,
+      // so this test aims to only test the properties that are expected to
+      // remain consistent. In particular, the test verifies that all reports
+      // are present and that each report field with an assigned usage appears
+      // at the correct bit index and has the correct field bit width.
+      manual_hid_test(async (t, devices) => {
+        if (hasDeviceIds(devices, 0x054c, 0x09cc))
+          checkReportMapDualshock4(devices);
+        else if (hasDeviceIds(devices, 0x054c, 0x0ce6))
+          checkReportMapDualSense(devices);
+        else if (hasDeviceIds(devices, 0x057e, 0x2009))
+          checkReportMapSwitchPro(devices);
+        else if (hasDeviceIds(devices, 0x0911, 0x0fa0))
+          checkReportMapSpeechMike(devices);
+        else if (hasDeviceIds(devices, 0x0b0e, 0x0306))
+          checkReportMapEvolveLink(devices);
+        else if (hasDeviceIds(devices, 0x18d1, 0x9400))
+          checkReportMapStadiaController(devices);
+        else
+          assert_unreached('Select a supported device.');
+      }, 'Collection info matches the expected report map.');
+    </script>
+  </body>
+</html>

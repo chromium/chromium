@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MojoInterfaceProviderImpl} from './mojo_interface_provider.m.js';
+
 /**
  * @fileoverview Polymer behavior for observing CrosNetworkConfigObserver
  * events.
  */
 
 /** @polymerBehavior */
-const NetworkListenerBehavior = {
+/* #export */ const NetworkListenerBehavior = {
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
   observer_: null,
 
   /** @override */
-  attached: function() {
+  attached() {
     this.observer_ =
         new chromeos.networkConfig.mojom.CrosNetworkConfigObserverReceiver(
             this);
@@ -28,16 +30,43 @@ const NetworkListenerBehavior = {
    * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
    *     activeNetworks
    */
-  onActiveNetworksChanged: function(activeNetworks) {},
+  onActiveNetworksChanged(activeNetworks) {},
 
   /** @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network */
-  onNetworkStateChanged: function(network) {},
+  onNetworkStateChanged(network) {},
 
-  onNetworkStateListChanged: function() {},
+  onNetworkStateListChanged() {},
 
-  onDeviceStateListChanged: function() {},
+  onDeviceStateListChanged() {},
 
-  onVpnProvidersChanged: function() {},
+  onVpnProvidersChanged() {},
 
-  onNetworkCertificatesChanged: function() {},
+  onNetworkCertificatesChanged() {},
 };
+
+/** @interface */
+/* #export */ class NetworkListenerBehaviorInterface {
+  constructor() {
+    /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
+    this.observer_;
+  }
+
+  attached() {}
+
+  /**
+   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+   *     activeNetworks
+   */
+  onActiveNetworksChanged(activeNetworks) {}
+
+  /** @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network */
+  onNetworkStateChanged(network) {}
+
+  onNetworkStateListChanged() {}
+
+  onDeviceStateListChanged() {}
+
+  onVpnProvidersChanged() {}
+
+  onNetworkCertificatesChanged() {}
+}

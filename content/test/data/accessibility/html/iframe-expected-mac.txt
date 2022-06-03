@@ -1,4 +1,4 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXGroup AXRoleDescription='group' AXDescription='Empty iframe'
+++++AXGroup AXDescription='Empty iframe' AXRoleDescription='group'
 ++++++AXWebArea AXRoleDescription='HTML content'

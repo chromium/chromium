@@ -11,11 +11,9 @@
 namespace blink {
 
 class PresentationAvailability;
-class PresentationRequest;
 
 using PresentationAvailabilityProperty =
-    ScriptPromiseProperty<Member<PresentationRequest>,
-                          Member<PresentationAvailability>,
+    ScriptPromiseProperty<Member<PresentationAvailability>,
                           Member<DOMException>>;
 
 }  // namespace blink

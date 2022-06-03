@@ -13,6 +13,8 @@
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 PermissionSet::PermissionSet() {}
@@ -53,6 +55,10 @@ PermissionSet::PermissionSet(APIPermissionSet apis,
 }
 
 PermissionSet::~PermissionSet() {}
+
+PermissionSet::PermissionSet(PermissionSet&& other) = default;
+
+PermissionSet& PermissionSet::operator=(PermissionSet&& other) = default;
 
 // static
 std::unique_ptr<const PermissionSet> PermissionSet::CreateDifference(
@@ -135,7 +141,7 @@ bool PermissionSet::operator!=(const PermissionSet& rhs) const {
   return !(*this == rhs);
 }
 
-std::unique_ptr<const PermissionSet> PermissionSet::Clone() const {
+std::unique_ptr<PermissionSet> PermissionSet::Clone() const {
   return base::WrapUnique(new PermissionSet(*this));
 }
 
@@ -164,8 +170,7 @@ bool PermissionSet::IsEmpty() const {
   return apis().empty() && manifest_permissions().empty();
 }
 
-bool PermissionSet::HasAPIPermission(
-    APIPermission::ID id) const {
+bool PermissionSet::HasAPIPermission(APIPermissionID id) const {
   return apis().find(id) != apis().end();
 }
 
@@ -177,12 +182,12 @@ bool PermissionSet::HasAPIPermission(const std::string& permission_name) const {
   return (permission && apis_.count(permission->id()));
 }
 
-bool PermissionSet::CheckAPIPermission(APIPermission::ID permission) const {
+bool PermissionSet::CheckAPIPermission(APIPermissionID permission) const {
   return CheckAPIPermissionWithParam(permission, NULL);
 }
 
 bool PermissionSet::CheckAPIPermissionWithParam(
-    APIPermission::ID permission,
+    APIPermissionID permission,
     const APIPermission::CheckParam* param) const {
   APIPermissionSet::const_iterator iter = apis().find(permission);
   if (iter == apis().end())
@@ -239,12 +244,12 @@ PermissionSet::PermissionSet(const PermissionSet& other)
 
 void PermissionSet::InitImplicitPermissions() {
   // The downloads permission implies the internal version as well.
-  if (apis_.find(APIPermission::kDownloads) != apis_.end())
-    apis_.insert(APIPermission::kDownloadsInternal);
+  if (apis_.find(APIPermissionID::kDownloads) != apis_.end())
+    apis_.insert(APIPermissionID::kDownloadsInternal);
 
   // The fileBrowserHandler permission implies the internal version as well.
-  if (apis_.find(APIPermission::kFileBrowserHandler) != apis_.end())
-    apis_.insert(APIPermission::kFileBrowserHandlerInternal);
+  if (apis_.find(APIPermissionID::kFileBrowserHandler) != apis_.end())
+    apis_.insert(APIPermissionID::kFileBrowserHandlerInternal);
 }
 
 void PermissionSet::InitEffectiveHosts() {

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -51,12 +50,13 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
  public:
   explicit MemoryCacheEntry(Resource* resource) : resource_(resource) {}
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   Resource* GetResource() const { return resource_; }
 
  private:
-  void ClearResourceWeak(const WeakCallbackInfo&);
+  void ClearResourceWeak(const LivenessBroker&);
 
+  // We use UntracedMember<> here to do custom weak processing.
   UntracedMember<Resource> resource_;
 };
 
@@ -65,13 +65,13 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
 class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                                           public MemoryCacheDumpClient,
                                           public MemoryPressureListener {
-  USING_GARBAGE_COLLECTED_MIXIN(MemoryCache);
-
  public:
   explicit MemoryCache(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  MemoryCache(const MemoryCache&) = delete;
+  MemoryCache& operator=(const MemoryCache&) = delete;
   ~MemoryCache() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   struct TypeStatistic {
     STACK_ALLOCATED();
@@ -152,7 +152,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
 
-  void OnMemoryPressure(WebMemoryPressureLevel) override;
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel) override;
 
  private:
   enum PruneStrategy {
@@ -194,8 +195,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   friend class MemoryCacheTest;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryCache);
 };
 
 // Returns the global cache.
@@ -207,4 +206,4 @@ PLATFORM_EXPORT MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache*);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_

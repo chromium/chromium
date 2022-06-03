@@ -8,7 +8,6 @@ from blinkpy.w3c.common import is_file_exportable
 
 
 class ChromiumCommit(object):
-
     def __init__(self, host, sha=None, position=None):
         """Initializes a ChomiumCommit object, given a sha or commit position.
 
@@ -16,9 +15,9 @@ class ChromiumCommit(object):
             host: A Host object.
             sha: A Chromium commit SHA hash.
             position: A commit position footer string of the form:
-                    'Cr-Commit-Position: refs/heads/master@{#431915}'
+                    'Cr-Commit-Position: refs/heads/main@{#431915}'
                 or just the commit position string:
-                    'refs/heads/master@{#431915}'
+                    'refs/heads/main@{#431915}'
         """
         self.host = host
         self.absolute_chromium_dir = absolute_chromium_dir(host)
@@ -47,25 +46,26 @@ class ChromiumCommit(object):
     def short_sha(self):
         return self.sha[0:10]
 
-    def num_behind_master(self):
-        """Returns the number of commits this commit is behind origin/master.
+    def num_behind_main(self):
+        """Returns the number of commits this commit is behind origin/main.
 
         It is inclusive of this commit and of the latest commit.
         """
-        return len(self.host.executive.run_command([
-            'git', 'rev-list', '{}..origin/master'.format(self.sha)
-        ], cwd=self.absolute_chromium_dir).splitlines())
+        return len(
+            self.host.executive.run_command(
+                ['git', 'rev-list', '{}..origin/main'.format(self.sha)],
+                cwd=self.absolute_chromium_dir).splitlines())
 
     def position_to_sha(self, commit_position):
-        return self.host.executive.run_command([
-            'git', 'crrev-parse', commit_position
-        ], cwd=self.absolute_chromium_dir).strip()
+        return self.host.executive.run_command(
+            ['git', 'crrev-parse', commit_position],
+            cwd=self.absolute_chromium_dir).strip()
 
     def sha_to_position(self, sha):
         try:
-            return self.host.executive.run_command([
-                'git', 'footers', '--position', sha
-            ], cwd=self.absolute_chromium_dir).strip()
+            return self.host.executive.run_command(
+                ['git', 'footers', '--position', sha],
+                cwd=self.absolute_chromium_dir).strip()
         except ScriptError as e:
             # Commits from Gerrit CLs that have not yet been committed in
             # Chromium do not have a commit position.
@@ -75,38 +75,40 @@ class ChromiumCommit(object):
                 raise
 
     def subject(self):
-        return self.host.executive.run_command([
-            'git', 'show', '--format=%s', '--no-patch', self.sha
-        ], cwd=self.absolute_chromium_dir).strip()
+        return self.host.executive.run_command(
+            ['git', 'show', '--format=%s', '--no-patch', self.sha],
+            cwd=self.absolute_chromium_dir).strip()
 
     def body(self):
-        return self.host.executive.run_command([
-            'git', 'show', '--format=%b', '--no-patch', self.sha
-        ], cwd=self.absolute_chromium_dir)
+        return self.host.executive.run_command(
+            ['git', 'show', '--format=%b', '--no-patch', self.sha],
+            cwd=self.absolute_chromium_dir)
 
     def author(self):
-        return self.host.executive.run_command([
-            'git', 'show', '--format=%aN <%aE>', '--no-patch', self.sha
-        ], cwd=self.absolute_chromium_dir).strip()
+        return self.host.executive.run_command(
+            ['git', 'show', '--format=%aN <%aE>', '--no-patch', self.sha],
+            cwd=self.absolute_chromium_dir).strip()
 
     def message(self):
         """Returns a string with a commit's subject and body."""
-        return self.host.executive.run_command([
-            'git', 'show', '--format=%B', '--no-patch', self.sha
-        ], cwd=self.absolute_chromium_dir)
+        return self.host.executive.run_command(
+            ['git', 'show', '--format=%B', '--no-patch', self.sha],
+            cwd=self.absolute_chromium_dir)
 
     def change_id(self):
         """Returns the Change-Id footer if it is present."""
-        return self.host.executive.run_command([
-            'git', 'footers', '--key', 'Change-Id', self.sha
-        ], cwd=self.absolute_chromium_dir).strip()
+        return self.host.executive.run_command(
+            ['git', 'footers', '--key', 'Change-Id', self.sha],
+            cwd=self.absolute_chromium_dir).strip()
 
     def filtered_changed_files(self):
         """Returns a list of modified exportable files."""
-        changed_files = self.host.executive.run_command([
-            'git', 'diff-tree', '--name-only', '--no-commit-id', '-r', self.sha,
-            '--', self.absolute_chromium_wpt_dir
-        ], cwd=self.absolute_chromium_dir).splitlines()
+        changed_files = self.host.executive.run_command(
+            [
+                'git', 'diff-tree', '--name-only', '--no-commit-id', '-r',
+                self.sha, '--', self.absolute_chromium_wpt_dir
+            ],
+            cwd=self.absolute_chromium_dir).splitlines()
         return [f for f in changed_files if is_file_exportable(f)]
 
     def format_patch(self):
@@ -116,9 +118,10 @@ class ChromiumCommit(object):
         if not filtered_files:
             return ''
 
-        return self.host.executive.run_command([
-            'git', 'format-patch', '-1', '--stdout', self.sha, '--'
-        ] + filtered_files, cwd=self.absolute_chromium_dir)
+        return self.host.executive.run_command(
+            ['git', 'format-patch', '-1', '--stdout', self.sha, '--'] +
+            filtered_files,
+            cwd=self.absolute_chromium_dir)
 
     def url(self):
         """Returns a URL to view more information about this commit."""

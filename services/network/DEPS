@@ -9,6 +9,8 @@ include_rules = [
   # store for networking-related data (Like which servers support QUIC), rather
   # than to store user preferences.
   "+components/prefs",
+  "+components/version_info",
+  "+components/web_package",
   "+crypto",
   "+ipc",
   # FakeSSLClientSocket
@@ -17,7 +19,6 @@ include_rules = [
   "+sandbox",
   "+services/proxy_resolver/public/mojom",
   "+services/service_manager/public",
-  "+services/service_manager/sandbox",
   "+third_party/boringssl/src/include",
   "+url",
 ]
@@ -28,4 +29,3 @@ specific_include_rules = {
     "+services/proxy_resolver/proxy_resolver_factory_impl.h",
   ],
 }
-                                                                                

@@ -1,7 +1,6 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Prettifies 'git diff' output.
 
 prettify_diff() takes a diff string, and returns an HTML string decorating the
@@ -10,16 +9,19 @@ diff.
 This code doesn't support other diff commands such as "diff" and "svn diff".
 """
 
-
 import base64
-import cgi
 import difflib
 import mimetypes
 import re
+import six
 import zlib
 
-from blinkpy.common.base85 import decode_base85
+if six.PY2:
+    import cgi
+else:
+    import html as cgi
 
+from blinkpy.common.base85 import decode_base85
 
 # The style below is meant to be similar to PolyGerrit.
 _LEADING_HTML = """<!DOCTYPE html>
@@ -58,10 +60,11 @@ td { white-space: pre-wrap; font-size: 14px; }
   color: #666;
   padding: 0 0.5em;
   text-align: right;
+  user-select: none;
   vertical-align: top;
   width: 94px;
 }
-.emptylineno { box-sizing: border-box; width: 94px; }
+.emptylineno { box-sizing: border-box;  user-select: none; width: 94px; }
 .code { border-left: 1px solid #ddd; word-break: break-all; }
 .del { background: #ffeeee; }
 .del.strong { background: #ffcaca; }
@@ -125,7 +128,12 @@ class DiffFile(object):
     """
     LINK_BASE_URL = 'https://chromium.googlesource.com/chromium/src/+/master/'
 
-    def __init__(self, old_name, new_name, hunks=None, binaries=None, info=None):
+    def __init__(self,
+                 old_name,
+                 new_name,
+                 hunks=None,
+                 binaries=None,
+                 info=None):
         assert old_name or new_name
         assert bool(hunks) + bool(binaries) + bool(info) == 1
         self._old_name = old_name
@@ -147,13 +155,15 @@ class DiffFile(object):
         elif self._old_name != self._new_name:
             status = 'R'
             pretty_name = cgi.escape(self._new_name)
-            additional_info = ('\n<span class=rename>Renamed from {}</span>'
-                               .format(self._linkify(self._old_name)))
+            additional_info = (
+                '\n<span class=rename>Renamed from {}</span>'.format(
+                    self._linkify(self._old_name)))
 
         result_html = (
             '\n<table>\n<tr><td colspan=3 class=fileheader>'
             '<div class=fileheader-container>'
-            '<div class=filename>' + status + ' ' + pretty_name + additional_info + '</div>'
+            '<div class=filename>' + status + ' ' + pretty_name +
+            additional_info + '</div>'
             '<button type=button onclick="toggleFollowingRows(this);">&#x25B2;</button>'
             '</div></tr>')
 
@@ -166,14 +176,17 @@ class DiffFile(object):
         else:
             old_binary, new_binary = self._binaries  # pylint: disable=unpacking-non-sequence
             if self._old_name and old_binary:
-                result_html += old_binary.prettify(self._mime_from_name(self._old_name), 'del')
+                result_html += old_binary.prettify(
+                    self._mime_from_name(self._old_name), 'del')
             if self._new_name and new_binary:
-                result_html += new_binary.prettify(self._mime_from_name(self._new_name), 'add')
+                result_html += new_binary.prettify(
+                    self._mime_from_name(self._new_name), 'add')
         return result_html + '<tr><td colspan=3 class=filehooter><div></div></table>\n'
 
     def _linkify(self, name):
         return '<a href="{url}" target="_new">{anchor}</a>'.format(
-            url=DiffFile.LINK_BASE_URL + cgi.escape(name), anchor=cgi.escape(name))
+            url=DiffFile.LINK_BASE_URL + cgi.escape(name),
+            anchor=cgi.escape(name))
 
     def _mime_from_name(self, name):
         mime_type, _ = mimetypes.guess_type(name)
@@ -206,20 +219,25 @@ class DiffFile(object):
             match = re.match(r'(GIT binary patch|--- ([^ ]+).*)', line)
             if match:
                 if match.group(0) == 'GIT binary patch':
-                    return DiffFile._parse_binaries(lines[i + 1:], old_name, new_name)
-                return DiffFile._parse_text_hunks(lines[i:], old_name, new_name)
+                    return DiffFile._parse_binaries(lines[i + 1:], old_name,
+                                                    new_name)
+                return DiffFile._parse_text_hunks(lines[i:], old_name,
+                                                  new_name)
 
-            index_match = re.match(r'^index ([0-9a-f]+)\.\.([0-9a-f]+).*', line)
+            index_match = re.match(r'^index ([0-9a-f]+)\.\.([0-9a-f]+).*',
+                                   line)
             if index_match:
                 # Adjusts old_name and new_name for file addition/removal.
-                old_name, new_name = DiffFile._adjust_names(index_match, old_name, new_name)
+                old_name, new_name = DiffFile._adjust_names(
+                    index_match, old_name, new_name)
                 continue
 
             diff_match = re.match(diff_command_re, line)
             if diff_match:
                 # There are no hunks. Renaming without any modification,
                 # or adding/removing an empty file.
-                return (DiffFile(old_name, new_name, info=info_lines), lines[i:])
+                return (DiffFile(old_name, new_name, info=info_lines),
+                        lines[i:])
 
             # File mode, rename summary, etc.
             info_lines.append(line)
@@ -232,7 +250,8 @@ class DiffFile(object):
     def _parse_binaries(lines, old_name, new_name):
         new_binary, remaining_lines = BinaryHunk.parse(lines)
         old_binary, remaining_lines = BinaryHunk.parse(remaining_lines)
-        return (DiffFile(old_name, new_name, binaries=(old_binary, new_binary)),
+        return (DiffFile(
+            old_name, new_name, binaries=(old_binary, new_binary)),
                 remaining_lines)
 
     @staticmethod
@@ -277,9 +296,10 @@ class DiffHunk(object):
         # modified part of a line, which should be highlighted in the pretty
         # diff.
         self._annotations = [None for _ in self._lines]
-        for deleted_index, inserted_index in self._find_operations(self._lines):
-            DiffHunk._annotate_character_diff(self._lines, deleted_index,
-                                              inserted_index, self._annotations)
+        for deleted_index, inserted_index in self._find_operations(
+                self._lines):
+            DiffHunk._annotate_character_diff(
+                self._lines, deleted_index, inserted_index, self._annotations)
 
     @staticmethod
     def _find_operations(lines):
@@ -315,7 +335,8 @@ class DiffHunk(object):
         return operations
 
     @staticmethod
-    def _annotate_character_diff(lines, deleted_index, inserted_index, annotations):
+    def _annotate_character_diff(lines, deleted_index, inserted_index,
+                                 annotations):
         assert len(lines) == len(annotations)
         if not deleted_index:
             for i in inserted_index:
@@ -332,16 +353,16 @@ class DiffHunk(object):
         matcher = difflib.SequenceMatcher(None, deleted_str, inserted_str)
         for tag, d_start, d_end, i_start, i_end in matcher.get_opcodes():
             if tag == 'delete':
-                DiffHunk._annotate(lines, deleted_index[0],
-                                   d_start, d_end, annotations)
+                DiffHunk._annotate(lines, deleted_index[0], d_start, d_end,
+                                   annotations)
             elif tag == 'insert':
-                DiffHunk._annotate(lines, inserted_index[0],
-                                   i_start, i_end, annotations)
+                DiffHunk._annotate(lines, inserted_index[0], i_start, i_end,
+                                   annotations)
             elif tag == 'replace':
-                DiffHunk._annotate(lines, deleted_index[0],
-                                   d_start, d_end, annotations)
-                DiffHunk._annotate(lines, inserted_index[0],
-                                   i_start, i_end, annotations)
+                DiffHunk._annotate(lines, deleted_index[0], d_start, d_end,
+                                   annotations)
+                DiffHunk._annotate(lines, inserted_index[0], i_start, i_end,
+                                   annotations)
 
     @staticmethod
     def _annotate(lines, index, start, end, annotations):
@@ -359,7 +380,8 @@ class DiffHunk(object):
             annotations[index] = []
         annotations[index].append((start, min(line_len, end)))
         if end > line_len:
-            DiffHunk._annotate(lines, index + 1, 0, end - line_len, annotations)
+            DiffHunk._annotate(lines, index + 1, 0, end - line_len,
+                               annotations)
 
     def prettify_code(self, index, klass):
         line = self._lines[index][1:]
@@ -385,16 +407,19 @@ class DiffHunk(object):
 
     def prettify(self):
         result_html = ('<tr><td class=hunkheader>@@<td class=hunkheader>@@'
-                       '<td class=hunkheader>{}</tr>\n').format(cgi.escape(self._context))
+                       '<td class=hunkheader>{}</tr>\n').format(
+                           cgi.escape(self._context))
         old_lineno = self._old_start
         new_lineno = self._new_start
         for i, line in enumerate(self._lines):
             if line[0] == ' ':
-                result_html += ('<tr><td class=lineno>{old_lineno}<td '
-                                'class=lineno>{new_lineno}<td class=code>{code}'
-                                '</tr>\n').format(old_lineno=old_lineno,
-                                                  new_lineno=new_lineno,
-                                                  code=cgi.escape(line[1:]))
+                result_html += (
+                    '<tr><td class=lineno>{old_lineno}<td '
+                    'class=lineno>{new_lineno}<td class=code>{code}'
+                    '</tr>\n').format(
+                        old_lineno=old_lineno,
+                        new_lineno=new_lineno,
+                        code=cgi.escape(line[1:]))
                 old_lineno += 1
                 new_lineno += 1
             elif line[0] == '-':
@@ -465,10 +490,11 @@ class BinaryHunk(object):
         self._compressed_data = bin_data
 
     def prettify(self, mime_type, klass):
-        result_html = ('<tr><td class=emptylineno><td class=emptylineno>'
-                       '<td class="{klass} strong binary">Binary {type}; {size}'
-                       ' Bytes<br>\n').format(klass=klass, type=self._type,
-                                              size=self._size)
+        result_html = (
+            '<tr><td class=emptylineno><td class=emptylineno>'
+            '<td class="{klass} strong binary">Binary {type}; {size}'
+            ' Bytes<br>\n').format(
+                klass=klass, type=self._type, size=self._size)
         if self._type == 'delta':
             # Because we can assume the input diff is always produced by git, we
             # can obtain the original blob, apply the delta, and render both of
@@ -480,8 +506,10 @@ class BinaryHunk(object):
             return result_html + 'We don\'t support rendering a delta binary hunk.'
         if mime_type.startswith('image/'):
             return result_html + '<img src="data:{type};base64,{data}">'.format(
-                type=mime_type, data=base64.b64encode(zlib.decompress(self._compressed_data)))
-        return result_html + 'We don\'t support rendering {} binary.'.format(mime_type)
+                type=mime_type,
+                data=base64.b64encode(zlib.decompress(self._compressed_data)))
+        return result_html + 'We don\'t support rendering {} binary.'.format(
+            mime_type)
 
     @staticmethod
     def parse(lines):
@@ -494,7 +522,7 @@ class BinaryHunk(object):
             raise ValueError('No "literal <size>" or "delta <size>".')
         bin_type = match.group(1)
         size = int(match.group(2))
-        bin_data = ''
+        bin_data = b''
 
         lines = lines[1:]
         for i, line in enumerate(lines):
@@ -510,6 +538,10 @@ class BinaryHunk(object):
             if line_length * 5 > (len(line) - 1) * 4:
                 raise ValueError('Base85 length mismatch: length by the first '
                                  'letter:{}, actual:{}, line:"{}"'.format(
-                                     line_length * 5, (len(line) - 1) * 4, line))
-            bin_data += decode_base85(line[1:])[0:line_length]
+                                     line_length * 5, (len(line) - 1) * 4,
+                                     line))
+            if six.PY2:
+                bin_data += decode_base85(line[1:])[0:line_length]
+            else:
+                bin_data += base64.b85decode(line[1:].encode('utf8'))
         raise ValueError('No blank line terminating a binary hunk.')

@@ -19,7 +19,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Supports the unit-testing of logging code.
 
 Provides support for unit-testing messages logged using the built-in
@@ -68,7 +67,7 @@ class TestLogStream(object):
 
     def assertMessages(self, messages):
         """Asserts that the given messages match the logged messages."""
-        self._test_case.assertEqual(messages, self.messages)
+        self._test_case.assertEqual(sorted(messages), sorted(self.messages))
 
 
 class LogTesting(object):

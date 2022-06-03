@@ -35,10 +35,6 @@ KeyedService* ImageLoaderFactory::BuildServiceInstanceFor(
   return new ImageLoader;
 }
 
-bool ImageLoaderFactory::ServiceIsCreatedWithBrowserContext() const {
-  return false;
-}
-
 content::BrowserContext* ImageLoaderFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetOriginalContext(context);

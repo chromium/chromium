@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/process_manager.h"
@@ -41,23 +42,23 @@ class HistoryApiTest : public ExtensionApiTest {
   }
 };
 
-// Full text search indexing sometimes exceeds a timeout. (http://crbug/119505)
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, DISABLED_MiscSearch) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "misc_search.html"))
+  ASSERT_TRUE(
+      RunExtensionTest("history/regular", {.page_url = "misc_search.html"}))
       << message_;
 }
 
-// Same could happen here without the FTS (http://crbug/119505)
-IN_PROC_BROWSER_TEST_F(HistoryApiTest, DISABLED_TimedSearch) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "timed_search.html"))
+  ASSERT_TRUE(
+      RunExtensionTest("history/regular", {.page_url = "timed_search.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "delete.html"))
+  ASSERT_TRUE(RunExtensionTest("history/regular", {.page_url = "delete.html"}))
       << message_;
 }
 
@@ -65,19 +66,22 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
   browser()->profile()->GetPrefs()->
       SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "delete_prohibited.html"))
+  ASSERT_TRUE(RunExtensionTest("history/regular",
+                               {.page_url = "delete_prohibited.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "get_visits.html"))
+  ASSERT_TRUE(
+      RunExtensionTest("history/regular", {.page_url = "get_visits.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "search_after_add.html"))
+  ASSERT_TRUE(RunExtensionTest("history/regular",
+                               {.page_url = "search_after_add.html"}))
       << message_;
 }
 
@@ -89,8 +93,9 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
   ExtensionTestMessageListener regular_listener("regular ready", false);
   ExtensionTestMessageListener incognito_listener("incognito ready", false);
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("history/incognito"), kFlagEnableIncognito);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("history/incognito"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(regular_listener.WaitUntilSatisfied());
   ASSERT_TRUE(incognito_listener.WaitUntilSatisfied());
@@ -127,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
       embedded_test_server()->GetURL("www.b.com", "/simple.html");
   content::TestNavigationObserver incognito_observer(
       incognito_browser->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::NavigateToURL(incognito_browser, b_com);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, b_com));
   EXPECT_TRUE(incognito_observer.last_navigation_succeeded());
 
   // Check history in regular mode is not modified by incognito navigation.
@@ -142,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   // Perform navigation in regular mode.
   content::TestNavigationObserver regular_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::NavigateToURL(browser(), b_com);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_com));
   EXPECT_TRUE(regular_observer.last_navigation_succeeded());
 
   // Check history in regular mode is modified by navigation.

@@ -8,11 +8,11 @@
 
 #import <Carbon/Carbon.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
-#include "base/stl_util.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ui {
@@ -422,6 +422,10 @@ DomKey DomKeyFromKeyCode(unsigned short keyCode) {
       return DomKey::ARROW_UP;
     case kVK_ContextMenu:
       return DomKey::CONTEXT_MENU;
+    case kVK_JIS_Eisu:
+      return DomKey::EISU;
+    case kVK_JIS_Kana:
+      return DomKey::KANJI_MODE;
     default:
       return DomKey::NONE;
   }
@@ -838,6 +842,12 @@ DomKey DomKeyFromNSEvent(NSEvent* event) {
     if (is_dead_key)
       return DomKey::DeadKeyFromCombiningCharacter(dead_dom_key_char);
 
+    // Mac Eisu Kana key events have a space symbol (U+0020) as [event
+    // characters]. However, the symbol is not generated for users and the event
+    // is just used for enabling/disabling an IME.
+    if ([event keyCode] == kVK_JIS_Eisu || [event keyCode] == kVK_JIS_Kana)
+      return DomKeyFromKeyCode([event keyCode]);
+
     // [event characters] will have dead key state applied.
     NSString* characters = [event characters];
     if ([characters length] > 0) {
@@ -878,6 +888,8 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
 
   CFDataRef layout_data = static_cast<CFDataRef>(TISGetInputSourceProperty(
       input_source, kTISPropertyUnicodeKeyLayoutData));
+  if (!layout_data)
+    return 0xFFFD;  // REPLACEMENT CHARACTER
 
   const UCKeyboardLayout* keyboard_layout =
       reinterpret_cast<const UCKeyboardLayout*>(CFDataGetBytePtr(layout_data));

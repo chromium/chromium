@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/frame_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -34,12 +35,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceMemoryBrowserTest, PerformanceMemory) {
 
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
-  int usedJSHeapSize = -1;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      root,
-      "window.domAutomationController.send(performance.memory.usedJSHeapSize);",
-      &usedJSHeapSize));
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
+  int usedJSHeapSize =
+      EvalJs(root, "performance.memory.usedJSHeapSize;").ExtractInt();
 
   EXPECT_GE(usedJSHeapSize, 0);
   // There is no explicit way to check if the memory values are bucketized or

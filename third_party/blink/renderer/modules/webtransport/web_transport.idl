@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webtransport/#web-transport
+[
+    ActiveScriptWrappable,
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=WebTransport
+] interface WebTransport {
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
+  [CallWith=ScriptState, RaisesException] Promise<WritableStream>
+      createUnidirectionalStream();
+  readonly attribute ReadableStream incomingUnidirectionalStreams;
+
+  [CallWith=ScriptState, RaisesException] Promise<WebTransportBidirectionalStream>
+      createBidirectionalStream();
+  readonly attribute ReadableStream incomingBidirectionalStreams;
+
+  readonly attribute WebTransportDatagramDuplexStream datagrams;
+
+  void close(optional WebTransportCloseInfo closeInfo = {});
+  readonly attribute Promise<void> ready;
+  readonly attribute Promise<WebTransportCloseInfo> closed;
+};

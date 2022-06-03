@@ -1,0 +1,45 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+
+<dom-module id="parental-handoff-element">
+  <template>
+    <style include="oobe-dialog-host-styles"></style>
+    <oobe-adaptive-dialog id="parentalHandoffDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'parentalHandoffDialogSubtitle', username_)]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img src="/images/kids_turn.svg" class="oobe-illustration"
+            aria-hidden="true">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="nextButton"
+            text-key="parentalHandoffDialogNextButton" class="focus-on-show"
+            inverse on-click="onNextButtonPressed_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="parental_handoff.js"></script>
+</dom-module>

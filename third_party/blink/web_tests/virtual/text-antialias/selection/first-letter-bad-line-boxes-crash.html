@@ -3,6 +3,8 @@
 <script src="../../../resources/testharnessreport.js"></script>
 
 <script>
+setup({single_test: true});
+
 var aoScriptElements = document.getElementsByTagName("script");
 for(var i = 0; i < aoScriptElements.length; i++) {
   aoScriptElements[i].parentNode.removeChild(aoScriptElements[i]);

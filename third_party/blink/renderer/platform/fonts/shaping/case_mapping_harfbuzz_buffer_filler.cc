@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
 
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 namespace blink {
@@ -19,7 +21,7 @@ static const uint16_t* ToUint16(const UChar* src) {
 
 CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     CaseMapIntend case_map_intend,
-    AtomicString locale,
+    const AtomicString& locale,
     hb_buffer_t* harfbuzz_buffer,
     const String& text,
     unsigned start_index,
@@ -60,7 +62,7 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
 // here.
 void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     CaseMapIntend case_map_intend,
-    AtomicString locale,
+    const AtomicString& locale,
     const UChar* buffer,
     unsigned buffer_length,
     unsigned start_index,

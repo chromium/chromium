@@ -6,8 +6,7 @@ which is automatically synced with W3C web-platform-tests.
 * testdriver.js
 * testharness.js
 * testharness.css
-* idlharness.js
-* webidl2.js
+* testdriver-actions.js
 
 The following files are native to Blink and can be modified:
 
@@ -19,4 +18,3 @@ https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_platfor
 
 References:
 * web-platform-tests  https://github.com/web-platform-tests/wpt
-* webidl2.js          https://github.com/w3c/webidl2.js

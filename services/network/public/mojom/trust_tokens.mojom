@@ -1,0 +1,299 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// TrustTokenProtocolVersion enumerates the versions of Trust Token that the
+// client knows about. Different versions represent different configuration
+// flows, data structure meanings, etc and may require clearing the database
+// due to incompatibilities. kTrustTokenV3Pmb and kTrustTokenV3Voprf can
+// safely be supported at the same time, as they use the same underlying data
+// model; they just use different cryptosystems to generate tokens' signatures.
+// TODO(crbug/1133969): Schema versioning needs to be implemented for future
+// versions that need to clear the database on schema changes.
+//
+// NOTE: When updating this enum, you probably also need to update
+// kTrustTokensMajorVersion in trust_token_parameterization.h.
+enum TrustTokenProtocolVersion {
+  kTrustTokenV3Pmb,
+  kTrustTokenV3Voprf,
+};
+
+
+// TrustTokenOperationStatus enumerates (an incomplete collection of) outcomes
+// for a Trust Tokens protocol operation.
+//
+// Each status may be returned in similar cases beyond those listed in its
+// comment.
+enum TrustTokenOperationStatus {
+  kOk,
+
+  // A client-provided argument was malformed or otherwise invalid.
+  kInvalidArgument,
+
+  // A precondition failed (for instance, no verification key was available for
+  // an issuer when executing an operation required such a key to be present).
+  kFailedPrecondition,
+
+  // No inputs for the given operation available, or a quota on the operation's
+  // output would be exceeded.
+  kResourceExhausted,
+
+  // The operation's result already exists (for instance, a cache was hit).
+  kAlreadyExists,
+
+  // Internal storage has not yet initialized, or the system is unavailable in
+  // some other general, probably transient, manner.
+  kUnavailable,
+
+  // The server response was malformed or otherwise invalid.
+  kBadResponse,
+
+  // A, usually severe, internal error occurred.
+  kInternalError,
+
+  // The operation failed for some other reason.
+  kUnknownError,
+
+  // The operation was executed by a means other than sending the resource
+  // request at hand, so there's no response to provide for the request.
+  kOperationSuccessfullyFulfilledLocally,
+};
+
+// Trust Tokens operation parameterization
+//
+// This file specifies Mojo objects related to Trust Tokens protocol operations
+// (https://github.com/wicg/trust-token-api). The operations generally involve
+// checking stored state, attaching a request header, and processing a
+// corresponding response header. Operation parameters are provided via Fetch
+// and other Web Platform APIs.
+enum TrustTokenOperationType {
+  // In "issuance," clients send locally-generated blinded tokens and receive
+  // tokens signed by an issuing server.
+  kIssuance,
+  // In "redemption", clients exchange single-use server-signed tokens for
+  // multi-use Redemption Records.
+  kRedemption,
+  // The "signing" operation involves attaching Redemption Records to outgoing
+  // requests, and potentially signing the requests with a key bound to the
+  // attached RR, to represent trust from the issuer.
+  kSigning,
+};
+
+// TrustTokenRefreshPolicy specifies, during redemption, whether to respect or
+// ignore cached Redemption Records.
+enum TrustTokenRefreshPolicy {
+  // If there's a valid RR already stored, return early and don't attempt to
+  // redeem a token for a new RR.
+  kUseCached,
+  // Even there's a valid RR already stored, attempt to redeem a token for a
+  // new RR, overwriting the stored RR.
+  kRefresh,
+};
+
+// TrustTokenSignRequestData specifies how to construct a request signature (or
+// none) during the "redemption record attachment and request signing" protocol
+// step.
+enum TrustTokenSignRequestData {
+  // Just attach a Redemption Record (RR), not an additional signature over
+  // request data.
+  kOmit,
+  // In addition to an RR, attach a signature over a canonical request data
+  // structure comprising  a collection of request headers and some additional
+  // metadata (see the explainer).
+  kHeadersOnly,
+  // In addition to an RR, attach a signature over a canonical request data
+  // structure comprising a collection of request headers, some additional
+  // contents of the request, and some additional metadata (see the explainer).
+  kInclude,
+};
+
+// Struct TrustTokenParams specifies a requested Trust Tokens protocol
+// operation.
+struct TrustTokenParams {
+  // Required.
+  TrustTokenOperationType type;
+
+  // Required exactly when "type" is "kRedemption"; specifies whether the
+  // caller wishes to use a cached Redemption Record (RR) if available or
+  // redeem a new token, evicting the RR currently stored.
+  TrustTokenRefreshPolicy refresh_policy = kUseCached;
+
+  // The remaining members are used only when "type" is "kSigning": these
+  // parameters specify the manner in which the outgoing request should be
+  // signed, including optionally specifying additional data to add in
+  // browser-provided request headers (for instance, a timestamp or custom
+  // client-provided data).
+  TrustTokenSignRequestData sign_request_data = kOmit;
+  bool include_timestamp_header = false;
+  array<url.mojom.Origin> issuers;
+  array<string> additional_signed_headers;
+
+  // "possibly_unsafe_additional_signing_data", which stores the request's
+  // optional additionalSigningData Trust Tokens parameter, might not be a valid
+  // HTTP header value; it's the user's responsibility to ensure that it is safe
+  // to attach as a header prior to adding it to an outgoing request's headers.
+  string? possibly_unsafe_additional_signing_data;
+};
+
+// Result struct for a HasTrustTokens (see below) call:
+struct HasTrustTokensResult {
+  // See HasTrustTokens's method comment for the possible values.
+  TrustTokenOperationStatus status;
+  bool has_trust_tokens;
+};
+
+// This interface is implicitly scoped to a top-level origin that is
+// (1) potentially trustworthy and (2) either HTTP or HTTPS. (All Trust Tokens
+// state is keyed by origins satisfying those two conditions.)
+interface HasTrustTokensAnswerer {
+  // Returns whether the user has any trust tokens issued by |issuer|. While
+  // these tokens' storage is globally- (or, at least, NetworkContext-) scoped,
+  // the method will only return a yes/no result if |issuer| is associated with
+  // the top-level origin implicit in this instance of HasTrustTokensAnswerer.
+  //
+  // Concretely, this method:
+  //
+  // - verifies that |issuer| is HTTP(S) and potentially trustworthy, which are
+  // preconditions for a Trust Tokens issuer origin, returning kInvalidArgument
+  // if not;
+  // - checks if internal storage is initialized, returning kUnavailable if not;
+  // - attempts to associate |issuer| with the top-level origin to which this
+  // HasTrustTokensAnswerer is scoped, returning kResourceExhausted on failure;
+  // and
+  // - if all of these conditions pass, returns kOk alongside a boolean
+  // denoting whether the user possesses any trust tokens issued by |issuer|.
+  HasTrustTokens(url.mojom.Origin issuer) => (HasTrustTokensResult result);
+};
+
+// Struct TrustTokenKeyCommitmentResult represents a trust token issuer's
+// current key commitments and associated information. These are published via
+// the issuer's key commitment endpoint, obtained out of band, and provided to
+// the network service through periodic updates (see
+// NetworkService::SetTrustTokenKeyCommitments).
+struct TrustTokenVerificationKey {
+  string body;
+  mojo_base.mojom.Time expiry;
+};
+
+struct TrustTokenKeyCommitmentResult {
+  // |protocol_version| is the Trust Token version that this key commitment is
+  // for.
+  TrustTokenProtocolVersion protocol_version;
+
+  // |id| is the ID for this key commitment.
+  int32 id;
+
+  // |batch_size| is the issuer's number of tokens it wishes the client
+  // to request per Trust Tokens issuance operation.
+  int32 batch_size;
+
+  // |keys| is the collection of the issuer's current trust token verification
+  // keys.
+  array<TrustTokenVerificationKey> keys;
+
+  // |request_issuance_locally_on| specifies operating systems on which to
+  // divert issuance requests for this issuer to the system (i.e. to request
+  // "platform-provided" tokens)
+  enum Os {
+    kAndroid,
+  };
+  array<Os> request_issuance_locally_on;
+
+  // When specifying that the browser should attempt local issuance on at least
+  // one operating system, issuers could benefit from a couple different
+  // fallback behaviors depending on their particular requirements.
+  //
+  // |unavailable_local_operation_fallback|'s value specifies what action to
+  // take when both of the following hold simultaneously:
+  // (1) local issuance is specified on at least one OS (i.e.
+  // |request_issuance_locally_on| is nonempty) and
+  // (2) we're not on any of the specified OSes.
+  enum UnavailableLocalOperationFallback {
+    // If we're not on a matching OS, instead attempt a standard web
+    // issuance request against the issuance request's destination URL.
+    kWebIssuance,
+    // If we're not on a matching OS, just fail the issuance request.
+    kReturnWithError,
+  };
+  UnavailableLocalOperationFallback unavailable_local_operation_fallback;
+};
+
+// Struct FulfillTrustTokenIssuanceRequest represents a Trust Tokens issuance
+// request intended to be satisfied in a manner other than the standard direct
+// resource request to the issuer's server. It contains "the same information"
+// as a Trust-Tokens-over-HTTP request.
+struct FulfillTrustTokenIssuanceRequest {
+  // |issuer| is the Trust Tokens issuer corresponding to this Trust Tokens
+  // issuance operation. Like all Trust Tokens issuer origins, this should be
+  // both
+  // - potentially trustworthy and
+  // - HTTP or HTTPS.
+  url.mojom.Origin issuer;
+  // |request| is a base64-encoded issuance request (in other words, a value
+  // that could serve as to the Sec-Trust-Token request header in a Trust
+  // Tokens-over-HTTP issuance request).
+  string request;
+};
+
+// Struct FulfillTrustTokenIssuanceAnswer represents a Trust Tokens issuance
+// response obtained in a manner other than the standard direct resource
+// request to the issuer's server. It contains "the same information" as a
+// Trust-Tokens-over-HTTP response.
+//
+// Note: We can't call this "FulfillTrustTokenIssuanceResponse" if we want a
+// "FulfillTrustTokenIssuance" method in C++-to-Java interfaces down the line,
+// because the Java bindings append the suffix "Response" when generating
+// callback names.
+struct FulfillTrustTokenIssuanceAnswer {
+  // WARNING: Since these values are committed to histograms, please do not
+  // remove or reorder entries.
+  enum Status {
+    kOk,
+    // It wasn't possible to route the issuance operation to the specified
+    // token issuer.
+    kNotFound,
+    // Some other error occurred.
+    kUnknownError
+  };
+  Status status;
+
+  // If |status| is kOk, |response| will contain a value intended to be
+  // interpreted identically to a Trust Tokens-over-HTTP Sec-Trust-Token
+  // response header. Otherwise, its value is indeterminate.
+  string response;
+};
+
+// TrustTokenOperationResult contains all the information required by
+// DevTools. Which fields are set depend on |type| and |status|.
+struct TrustTokenOperationResult {
+  // Required.
+  TrustTokenOperationType type;
+  TrustTokenOperationStatus status;
+
+  // Shared among the different operation types.
+  url.mojom.Origin? issuer;
+  url.mojom.Origin? top_level_origin;
+
+  // In case of TrustTokenOperationType::kIssuance.
+  int32 issued_token_count = 0;
+};
+
+// Struct StoredTrustTokensForIssuer is used by DevTools to inspect
+// the current state of the Trust Token store.
+struct StoredTrustTokensForIssuer {
+  url.mojom.Origin issuer;
+  int32 count;
+};
+
+// Returned by DeleteStoredTrustTokens method on the NetworkContext.
+enum DeleteStoredTrustTokensStatus {
+  kSuccessTokensDeleted,
+  kSuccessNoTokensDeleted,
+  kFailureFeatureDisabled,
+  kFailureInvalidOrigin,
+};

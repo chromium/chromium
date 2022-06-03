@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL e.style['ruby-align'] = "start" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['ruby-align'] = "center" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['ruby-align'] = "space-between" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['ruby-align'] = "space-around" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

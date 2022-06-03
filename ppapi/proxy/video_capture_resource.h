@@ -26,6 +26,10 @@ class VideoCaptureResource
   VideoCaptureResource(Connection connection,
                        PP_Instance instance,
                        PluginDispatcher* dispatcher);
+
+  VideoCaptureResource(const VideoCaptureResource&) = delete;
+  VideoCaptureResource& operator=(const VideoCaptureResource&) = delete;
+
   ~VideoCaptureResource() override;
 
   // PluginResource override.
@@ -91,8 +95,6 @@ class VideoCaptureResource
   OpenState open_state_;
 
   DeviceEnumerationResourceHelper enumeration_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureResource);
 };
 
 }  // namespace proxy

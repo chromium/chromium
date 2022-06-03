@@ -42,7 +42,7 @@ HTMLNoScriptElement::HTMLNoScriptElement(Document& document)
 
 bool HTMLNoScriptElement::LayoutObjectIsNeeded(
     const ComputedStyle& style) const {
-  if (GetDocument().CanExecuteScripts(kNotAboutToExecuteScript))
+  if (GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript))
     return false;
   return Element::LayoutObjectIsNeeded(style);
 }

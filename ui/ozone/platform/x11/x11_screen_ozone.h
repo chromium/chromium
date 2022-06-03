@@ -9,11 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "ui/base/x/x11_display_manager.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/x/event.h"
 #include "ui/ozone/public/platform_screen.h"
 
 namespace ui {
@@ -22,10 +20,14 @@ class X11WindowManager;
 
 // A PlatformScreen implementation for X11.
 class X11ScreenOzone : public PlatformScreen,
-                       public XEventDispatcher,
+                       public x11::EventObserver,
                        public XDisplayManager::Delegate {
  public:
   X11ScreenOzone();
+
+  X11ScreenOzone(const X11ScreenOzone&) = delete;
+  X11ScreenOzone& operator=(const X11ScreenOzone&) = delete;
+
   ~X11ScreenOzone() override;
 
   // Fetch display list through Xlib/XRandR
@@ -39,29 +41,44 @@ class X11ScreenOzone : public PlatformScreen,
   gfx::Point GetCursorScreenPoint() const override;
   gfx::AcceleratedWidget GetAcceleratedWidgetAtScreenPoint(
       const gfx::Point& point) const override;
+  gfx::AcceleratedWidget GetLocalProcessWidgetAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::AcceleratedWidget>& ignore) const override;
   display::Display GetDisplayNearestPoint(
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
+  void SetScreenSaverSuspended(bool suspend) override;
+  bool IsScreenSaverActive() const override;
+  base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
+  std::string GetCurrentWorkspace() override;
+  std::vector<base::Value> GetGpuExtraInfo(
+      const gfx::GpuExtraInfo& gpu_extra_info) override;
+  void SetDeviceScaleFactor(float scale) override;
 
-  // Overridden from ui::XEventDispatcher:
-  bool DispatchXEvent(XEvent* event) override;
+  // Overridden from x11::EventObserver:
+  void OnEvent(const x11::Event& event) override;
 
  private:
   friend class X11ScreenOzoneTest;
 
   // Overridden from ui::XDisplayManager::Delegate:
   void OnXDisplayListUpdated() override;
-  float GetXDisplayScaleFactor() override;
+  float GetXDisplayScaleFactor() const override;
 
   gfx::Point GetCursorLocation() const;
 
   X11WindowManager* const window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
 
-  DISALLOW_COPY_AND_ASSIGN(X11ScreenOzone);
+  // Scale value that DesktopScreenOzoneLinux sets by listening to
+  // DeviceScaleFactorObserver.
+  float device_scale_factor_ = 1.0f;
+
+  // Indicates that |this| is initialized.
+  bool initialized_ = false;
 };
 
 }  // namespace ui

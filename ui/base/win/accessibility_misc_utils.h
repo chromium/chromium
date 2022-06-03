@@ -4,19 +4,20 @@
 #ifndef UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 #define UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 
+#include <string>
+
 #include "base/win/atl.h"  // Must be before UIAutomationCore.h
 
 #include <UIAutomationCore.h>
 
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace base {
 namespace win {
 
   // UIA Text provider implementation for edit controls.
-class UI_BASE_EXPORT UIATextProvider
+class COMPONENT_EXPORT(UI_BASE) UIATextProvider
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextProvider {
  public:
@@ -30,7 +31,7 @@ class UI_BASE_EXPORT UIATextProvider
 
   // Creates an instance of the UIATextProvider class.
   // Returns true on success
-  static bool CreateTextProvider(const string16& value,
+  static bool CreateTextProvider(const std::u16string& value,
                                  bool editable,
                                  IUnknown** provider);
 
@@ -38,29 +39,29 @@ class UI_BASE_EXPORT UIATextProvider
     editable_ = editable;
   }
 
-  void set_value(const string16& value) { value_ = value; }
+  void set_value(const std::u16string& value) { value_ = value; }
 
   //
   // ITextProvider methods.
   //
-  STDMETHOD(GetSelection)(SAFEARRAY** ret) override;
+  IFACEMETHODIMP GetSelection(SAFEARRAY** ret) override;
 
-  STDMETHOD(GetVisibleRanges)(SAFEARRAY** ret) override;
+  IFACEMETHODIMP GetVisibleRanges(SAFEARRAY** ret) override;
 
-  STDMETHOD(RangeFromChild)(IRawElementProviderSimple* child,
-                            ITextRangeProvider** ret) override;
+  IFACEMETHODIMP RangeFromChild(IRawElementProviderSimple* child,
+                                ITextRangeProvider** ret) override;
 
-  STDMETHOD(RangeFromPoint)(struct UiaPoint point,
-                            ITextRangeProvider** ret) override;
+  IFACEMETHODIMP RangeFromPoint(struct UiaPoint point,
+                                ITextRangeProvider** ret) override;
 
-  STDMETHOD(get_DocumentRange)(ITextRangeProvider** ret) override;
+  IFACEMETHODIMP get_DocumentRange(ITextRangeProvider** ret) override;
 
-  STDMETHOD(get_SupportedTextSelection)(
+  IFACEMETHODIMP get_SupportedTextSelection(
       enum SupportedTextSelection* ret) override;
 
  private:
   bool editable_;
-  string16 value_;
+  std::u16string value_;
 };
 
 }  // win

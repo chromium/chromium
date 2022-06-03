@@ -1,5 +1,5 @@
 /* Bra86.c -- Converter for x86 code (BCJ)
-2013-11-12 : Igor Pavlov : Public domain */
+2017-04-03 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -37,7 +37,7 @@ SizeT x86_Convert(Byte *data, SizeT size, UInt32 ip, UInt32 *state, int encoding
       else
       {
         mask >>= (unsigned)d;
-        if (mask != 0 && (mask > 4 || mask == 3 || Test86MSByte(p[(mask >> 1) + 1])))
+        if (mask != 0 && (mask > 4 || mask == 3 || Test86MSByte(p[(size_t)(mask >> 1) + 1])))
         {
           mask = (mask >> 1) | 4;
           pos++;

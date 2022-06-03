@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: we do not support keydown and keyup actions, please use test_driver.send_keys
+FAIL Tests that the mouse events with some keys pressed. assert_true: Timed out waiting for pointermove expected true got false
+Harness: the test ran to completion.
+

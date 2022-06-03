@@ -1,0 +1,36 @@
+<style include="shared-style">
+  :host {
+    --standard-border: 1px solid black;
+  }
+
+  #logs-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    white-space: pre-wrap;
+  }
+
+  log-object {
+    border-inline-end: var(--standard-border);
+    border-inline-start: var(--standard-border);
+    border-top: var(--standard-border);
+  }
+
+  log-object:last-child {
+    border-bottom: var(--standard-border);
+  }
+</style>
+<cr-button disabled="[[!logList_.length]]" class="internals-button"
+    on-click="onSaveLogsButtonClicked_">
+  Save Logs
+</cr-button>
+<cr-button disabled="[[!logList_.length]]" class="internals-button"
+    on-click="onClearLogsButtonClicked_">
+  Clear Logs
+</cr-button>
+<iron-list items="[[logList_]]" as="log" id="logs-list">
+  <template>
+    <log-object log-message="[[log]]">
+    </log-object>
+  </template>
+</iron-list>

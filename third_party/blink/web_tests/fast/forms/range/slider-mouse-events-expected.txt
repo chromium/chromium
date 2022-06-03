@@ -6,11 +6,11 @@ mousedown
 mousemove
 input
 mouseup
-40
+35
 mousemove
 mousedown
 input
-5
+0
 mousemove
 input
 mouseup

@@ -11,7 +11,18 @@ config("libunwind_config") {
 
     # ValueAsBitPattern in Unwind-EHABI.cpp is only used on Debug builds.
     "-Wno-unused-function",
+
+    # libunwind expects to be compiled with unwind tables so it can
+    # unwind its own frames.
+    "-funwind-tables",
   ]
+
+  if (is_fuchsia) {
+    # Workaround for https://bugs.llvm.org/show_bug.cgi?id=45875:
+    # compiling the C code with -fexceptions ensures that accurate
+    # unwinding information is generated for _Unwind_RaiseException.
+    cflags_c = [ "-fexceptions" ]
+  }
 }
 
 source_set("libunwind") {
@@ -19,6 +30,7 @@ source_set("libunwind") {
   if (is_fuchsia) {
     visibility += [ "//buildtools/third_party/libc++abi" ]
   } else if (is_android) {
+    visibility += [ "//buildtools/third_party/libc++abi" ]
     visibility += [ "//services/tracing/public/cpp" ]
   }
   if (!is_component_build) {
@@ -44,11 +56,13 @@ source_set("libunwind") {
     "//build/config/compiler:no_exceptions",
     "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
+    "//build/config/compiler:default_optimization",
   ]
   configs += [
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:exceptions",
     "//build/config/compiler:rtti",
+    "//build/config/compiler:optimize_speed",
 
     # Must be after no_chromium_code
     ":libunwind_config",

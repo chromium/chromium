@@ -25,7 +25,7 @@ async_test(t => {
           t.done();
         });
       });
-    }, 0);
+    }, 1);
   }
   channel.port1.postMessage(offscreen, [offscreen]);
 }, "Verify that posting an OffscreenCanvas through a MessageChannel works as intended.");
@@ -36,7 +36,7 @@ test(function() {
   canvas.width = canvas.height = 10;
   var offscreen = canvas.transferControlToOffscreen();
   channel.port2.onmessage = function() {};
-  assert_throws("DataCloneError", function() {channel.port1.postMessage(offscreen)});
+  assert_throws_dom("DataCloneError", function() {channel.port1.postMessage(offscreen)});
 }, "Verify that cloning an OffscreenCanvas through a MessageChannel throws an exception")
 
 </script>

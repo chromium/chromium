@@ -5,21 +5,22 @@
 #ifndef COMPONENTS_VIZ_COMMON_GPU_METAL_API_PROXY_H_
 #define COMPONENTS_VIZ_COMMON_GPU_METAL_API_PROXY_H_
 
+#include <memory>
+#include <string>
+
 #import <Metal/Metal.h>
 
-#include "base/mac/availability.h"
 #include "base/mac/scoped_nsobject.h"
 
 namespace gl {
 class ProgressReporter;
 }  // namespace gl
 
-class API_AVAILABLE(macos(10.11)) MTLLibraryCache;
+class MTLLibraryCache;
 
 // The MTLDeviceProxy wraps all calls to an MTLDevice. It reports progress
 // to the GPU watchdog to prevent the watchdog from killing the GPU process
 // when progress is being made.
-API_AVAILABLE(macos(10.11))
 @interface MTLDeviceProxy : NSObject <MTLDevice> {
   base::scoped_nsprotocol<id<MTLDevice>> _device;
 

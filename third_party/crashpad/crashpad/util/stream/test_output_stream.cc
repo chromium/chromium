@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "util/stream/test_output_stream.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace crashpad {
 namespace test {

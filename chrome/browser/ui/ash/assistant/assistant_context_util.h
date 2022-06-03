@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CONTEXT_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CONTEXT_UTIL_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 

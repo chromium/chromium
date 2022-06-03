@@ -19,6 +19,8 @@ double GetSensorMaxAllowedFrequency(SensorType type) {
     case SensorType::LINEAR_ACCELERATION:
       return SensorTraits<
           SensorType::LINEAR_ACCELERATION>::kMaxAllowedFrequency;
+    case SensorType::GRAVITY:
+      return SensorTraits<SensorType::GRAVITY>::kMaxAllowedFrequency;
     case SensorType::GYROSCOPE:
       return SensorTraits<SensorType::GYROSCOPE>::kMaxAllowedFrequency;
     case SensorType::MAGNETOMETER:
@@ -53,6 +55,8 @@ double GetSensorDefaultFrequency(mojom::SensorType type) {
       return SensorTraits<SensorType::ACCELEROMETER>::kDefaultFrequency;
     case SensorType::LINEAR_ACCELERATION:
       return SensorTraits<SensorType::LINEAR_ACCELERATION>::kDefaultFrequency;
+    case SensorType::GRAVITY:
+      return SensorTraits<SensorType::GRAVITY>::kDefaultFrequency;
     case SensorType::GYROSCOPE:
       return SensorTraits<SensorType::GYROSCOPE>::kDefaultFrequency;
     case SensorType::MAGNETOMETER:

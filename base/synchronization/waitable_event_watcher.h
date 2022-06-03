@@ -7,13 +7,13 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 #include <dispatch/dispatch.h>
 
 #include "base/mac/scoped_dispatch_object.h"
@@ -80,6 +80,9 @@ class BASE_EXPORT WaitableEventWatcher
 
   WaitableEventWatcher();
 
+  WaitableEventWatcher(const WaitableEventWatcher&) = delete;
+  WaitableEventWatcher& operator=(const WaitableEventWatcher&) = delete;
+
 #if defined(OS_WIN)
   ~WaitableEventWatcher() override;
 #else
@@ -115,7 +118,7 @@ class BASE_EXPORT WaitableEventWatcher
 
   EventCallback callback_;
   WaitableEvent* event_ = nullptr;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   // Invokes the callback and resets the source. Must be called on the task
   // runner on which StartWatching() was called.
   void InvokeCallback();
@@ -151,8 +154,6 @@ class BASE_EXPORT WaitableEventWatcher
   // sequence.
   SequenceChecker sequence_checker_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEventWatcher);
 };
 
 }  // namespace base

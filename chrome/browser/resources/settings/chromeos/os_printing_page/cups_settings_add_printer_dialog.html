@@ -1,0 +1,19 @@
+<style include="settings-shared"></style>
+
+<!-- Manually Add Printer Dialog -->
+<template is="dom-if" if="[[showManuallyAddDialog_]]" restamp>
+  <add-printer-manually-dialog new-printer="{{newPrinter}}">
+  </add-printer-manually-dialog>
+</template>
+
+<!-- Manufacturer and Model Dialog -->
+<template is="dom-if" if="[[showManufacturerDialog_]]" restamp>
+  <add-printer-manufacturer-model-dialog active-printer="{{newPrinter}}">
+  </add-printer-manufacturer-model-dialog>
+</template>
+
+<!-- Add Print Server Dialog -->
+<template is="dom-if" if="[[showAddPrintServerDialog_]]" restamp>
+  <add-print-server-dialog></add-print-server-dialog>
+</template>
+

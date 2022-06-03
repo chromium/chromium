@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNITION_MANAGER_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
@@ -101,7 +100,6 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   ~SpeechRecognitionManagerImpl() override;
 
  private:
-  class FrameDeletionObserver;
 
   // Data types for the internal Finite State Machine (FSM).
   enum FSMState {
@@ -175,11 +173,6 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   int GetNextSessionID();
 
   static int next_requester_id_;
-
-  // This class lives on the UI thread; all access to it must be done on that
-  // thread.
-  std::unique_ptr<FrameDeletionObserver, BrowserThread::DeleteOnUIThread>
-      frame_deletion_observer_;
 
   media::AudioSystem* audio_system_;
   MediaStreamManager* media_stream_manager_;

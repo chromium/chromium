@@ -4,33 +4,38 @@
 
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas/offscreen_canvas_module.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
-#include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_module.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 
 namespace blink {
 
-void OffscreenCanvasModule::getContext(
+V8OffscreenRenderingContext* OffscreenCanvasModule::getContext(
     ExecutionContext* execution_context,
     OffscreenCanvas& offscreen_canvas,
-    const String& id,
+    const String& context_id,
     const CanvasContextCreationAttributesModule* attributes,
-    ExceptionState& exception_state,
-    OffscreenRenderingContext& result) {
+    ExceptionState& exception_state) {
   if (offscreen_canvas.IsNeutered()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "OffscreenCanvas object is detached");
-    return;
+    return nullptr;
+  }
+  CanvasContextCreationAttributesCore canvas_context_creation_attributes;
+  if (!ToCanvasContextCreationAttributes(
+          attributes, canvas_context_creation_attributes, exception_state)) {
+    return nullptr;
   }
 
   // OffscreenCanvas cannot be transferred after getContext, so this execution
   // context will always be the right one from here on.
   CanvasRenderingContext* context = offscreen_canvas.GetCanvasRenderingContext(
-      execution_context, id, ToCanvasContextCreationAttributes(attributes));
-  if (context)
-    context->SetOffscreenCanvasGetContextResult(result);
+      execution_context, context_id, canvas_context_creation_attributes);
+  if (!context)
+    return nullptr;
+  return context->AsV8OffscreenRenderingContext();
 }
 
 }  // namespace blink

@@ -15,9 +15,9 @@ namespace autofill {
 namespace {
 
 void FillCommonFields(FormFieldData* data) {
-  data->label = base::ASCIIToUTF16("label");
-  data->name = base::ASCIIToUTF16("name");
-  data->value = base::ASCIIToUTF16("value");
+  data->label = u"label";
+  data->name = u"name";
+  data->value = u"value";
   data->form_control_type = "password";
   data->autocomplete_attribute = "off";
   data->max_length = 200;
@@ -26,10 +26,8 @@ void FillCommonFields(FormFieldData* data) {
   data->is_focusable = true;
   data->should_autocomplete = false;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
-  data->option_values.push_back(base::ASCIIToUTF16("First"));
-  data->option_values.push_back(base::ASCIIToUTF16("Second"));
-  data->option_contents.push_back(base::ASCIIToUTF16("First"));
-  data->option_contents.push_back(base::ASCIIToUTF16("Second"));
+  data->options = {{.value = u"First", .content = u"First"},
+                   {.value = u"Second", .content = u"Second"}};
 }
 
 void FillVersion2Fields(FormFieldData* data) {
@@ -37,24 +35,24 @@ void FillVersion2Fields(FormFieldData* data) {
 }
 
 void FillVersion3Fields(FormFieldData* data) {
-  data->placeholder = base::ASCIIToUTF16("placeholder");
+  data->placeholder = u"placeholder";
 }
 
 void FillVersion5Fields(FormFieldData* data) {
-  data->css_classes = base::ASCIIToUTF16("class1 class2");
+  data->css_classes = u"class1 class2";
 }
 
 void FillVersion6Fields(FormFieldData* data) {
   data->properties_mask =
-      FieldPropertiesFlags::USER_TYPED | FieldPropertiesFlags::HAD_FOCUS;
+      FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 }
 
 void FillVersion7Fields(FormFieldData* data) {
-  data->id_attribute = base::ASCIIToUTF16("id");
+  data->id_attribute = u"id";
 }
 
 void FillVersion8Fields(FormFieldData* data) {
-  data->name_attribute = base::ASCIIToUTF16("name");
+  data->name_attribute = u"name";
 }
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
@@ -83,12 +81,21 @@ void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {
 
 void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteInt(data.text_direction);
-  pickle->WriteInt(static_cast<int>(data.option_values.size()));
-  for (auto s : data.option_values)
-    pickle->WriteString16(s);
-  pickle->WriteInt(static_cast<int>(data.option_contents.size()));
-  for (auto s : data.option_contents)
-    pickle->WriteString16(s);
+  pickle->WriteInt(static_cast<int>(data.options.size()));
+  for (const auto& option : data.options)
+    pickle->WriteString16(option.value);
+  pickle->WriteInt(static_cast<int>(data.options.size()));
+  for (const auto& option : data.options)
+    pickle->WriteString16(option.content);
+}
+
+void WriteVersion9Specific(const FormFieldData& data, base::Pickle* pickle) {
+  pickle->WriteInt(data.text_direction);
+  pickle->WriteInt(static_cast<int>(data.options.size()));
+  for (const SelectOption& option : data.options) {
+    pickle->WriteString16(option.value);
+    pickle->WriteString16(option.content);
+  }
 }
 
 void WriteVersion2Specific(const FormFieldData& data, base::Pickle* pickle) {
@@ -195,6 +202,20 @@ void SerializeInVersion8Format(const FormFieldData& data,
   WriteSection5(data, pickle);
   WriteVersion2Specific(data, pickle);
   WriteSection2(data, pickle);
+  WriteVersion3Specific(data, pickle);
+  WriteVersion5Specific(data, pickle);
+  WriteVersion6Specific(data, pickle);
+  WriteVersion7Specific(data, pickle);
+  WriteVersion8Specific(data, pickle);
+}
+
+void SerializeInVersion9Format(const FormFieldData& data,
+                               base::Pickle* pickle) {
+  WriteSection1(data, pickle);
+  WriteSection4(data, pickle);
+  WriteSection5(data, pickle);
+  WriteVersion2Specific(data, pickle);
+  WriteVersion9Specific(data, pickle);
   WriteVersion3Specific(data, pickle);
   WriteVersion5Specific(data, pickle);
   WriteVersion6Specific(data, pickle);
@@ -367,13 +388,34 @@ TEST(FormFieldDataTest, DeserializeVersion8) {
   EXPECT_TRUE(actual.SameFieldAs(data));
 }
 
+TEST(FormFieldDataTest, DeserializeVersion9) {
+  FormFieldData data;
+  FillCommonFields(&data);
+  FillVersion2Fields(&data);
+  FillVersion3Fields(&data);
+  FillVersion5Fields(&data);
+  FillVersion6Fields(&data);
+  FillVersion7Fields(&data);
+  FillVersion8Fields(&data);
+
+  base::Pickle pickle;
+  pickle.WriteInt(9);
+  SerializeInVersion9Format(data, &pickle);
+
+  base::PickleIterator iter(pickle);
+  FormFieldData actual;
+  EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
+
+  EXPECT_TRUE(actual.SameFieldAs(data));
+}
+
 // Verify that if the data isn't valid, the FormFieldData isn't populated
 // during deserialization.
 TEST(FormFieldDataTest, DeserializeBadData) {
   base::Pickle pickle;
   pickle.WriteInt(255);
-  pickle.WriteString16(base::ASCIIToUTF16("random"));
-  pickle.WriteString16(base::ASCIIToUTF16("data"));
+  pickle.WriteString16(u"random");
+  pickle.WriteString16(u"data");
 
   base::PickleIterator iter(pickle);
   FormFieldData actual;
@@ -387,12 +429,10 @@ TEST(FormFieldDataTest, IsTextInputElement) {
     const char* form_control_type;
     bool expected;
   } test_data[] = {
-      {"text", true},      {"search", true},
-      {"tel", true},       {"url", true},
-      {"email", true},     {"password", true},
-      {"select", false},   {"", false},
-      {"checkbox", false}, {"random_string", false},
-      {"textarea", false},
+      {"text", true},      {"search", true},         {"tel", true},
+      {"url", true},       {"email", true},          {"password", true},
+      {"number", true},    {"select", false},        {"", false},
+      {"checkbox", false}, {"random_string", false}, {"textarea", false},
   };
 
   for (const auto& test_case : test_data) {

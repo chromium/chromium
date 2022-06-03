@@ -4,9 +4,10 @@
 
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is collected and shown in the text editor.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('sources');
 
@@ -36,7 +37,7 @@
 
   const debuggerModel = SDK.targetManager.mainTarget().model(SDK.DebuggerModel);
   const rawLocation = debuggerModel.createRawLocationByScriptId(scriptId, 0, 0);
-  const uiLocation = Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(rawLocation);
+  const uiLocation = await Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(rawLocation);
   await SourcesTestRunner.showUISourceCodePromise(uiLocation.uiSourceCode);
 
   function decorationAdded(line, type, element) {

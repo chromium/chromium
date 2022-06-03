@@ -20,7 +20,7 @@ class WebrtcDesktopCapturePrivateChooseDesktopMediaFunction
   ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() override;
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction

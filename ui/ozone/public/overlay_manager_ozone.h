@@ -22,6 +22,15 @@ class OverlayManagerOzone {
   // Get the hal struct to check for overlay support.
   virtual std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) = 0;
+
+  bool allow_sync_and_real_buffer_page_flip_testing() const {
+    return allow_sync_and_real_buffer_page_flip_testing_;
+  }
+
+ protected:
+  // TODO(fangzhoug): Some Chrome OS boards still use the legacy video decoder.
+  // Remove this once ChromeOSVideoDecoder is on everywhere.
+  bool allow_sync_and_real_buffer_page_flip_testing_ = false;
 };
 
 }  // namespace ui

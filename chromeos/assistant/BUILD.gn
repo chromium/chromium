@@ -3,10 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//chromeos/assistant/ambient.gni")
 import("//chromeos/assistant/assistant.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  flags = [ "ENABLE_CROS_LIBASSISTANT=$enable_cros_libassistant" ]
+  flags = [
+    "ENABLE_CROS_LIBASSISTANT=$enable_cros_libassistant",
+    "ENABLE_CROS_AMBIENT_MODE_BACKEND=$enable_cros_ambient_mode_backend",
+  ]
 }

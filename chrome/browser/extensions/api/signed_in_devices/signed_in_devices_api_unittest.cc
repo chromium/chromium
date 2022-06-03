@@ -17,7 +17,9 @@
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
@@ -26,6 +28,22 @@
 using syncer::DeviceInfo;
 using syncer::FakeDeviceInfoSyncService;
 using syncer::FakeDeviceInfoTracker;
+
+namespace {
+std::unique_ptr<DeviceInfo> CreateDevice(const std::string& guid,
+                                         const std::string& name) {
+  return std::make_unique<DeviceInfo>(
+      guid, name, "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
+      "model", "full_hardware_class", base::Time(),
+      syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      /*sharing_info=*/absl::nullopt,
+      /*passk_info=*/absl::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::ModelTypeSet());
+}
+}  // namespace
 
 namespace extensions {
 
@@ -40,22 +58,13 @@ TEST(SignedInDevicesAPITest, GetSignedInDevices) {
   scoped_refptr<Extension> extension_test =
       extension_prefs.AddExtension(extension_name);
 
-  DeviceInfo device_info1(base::GenerateGUID(), "abc Device", "XYZ v1",
-                          "XYZ SyncAgent v1",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
-                          base::SysInfo::HardwareInfo(), base::Time(),
-                          /*send_tab_to_self_receiving_enabled=*/true,
-                          /*sharing_info=*/base::nullopt);
+  std::unique_ptr<DeviceInfo> device_info1 =
+      CreateDevice(base::GenerateGUID(), "abc Device");
+  std::unique_ptr<DeviceInfo> device_info2 =
+      CreateDevice(base::GenerateGUID(), "def Device");
 
-  DeviceInfo device_info2(base::GenerateGUID(), "def Device", "XYZ v2",
-                          "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
-                          base::SysInfo::HardwareInfo(), base::Time(),
-                          /*send_tab_to_self_receiving_enabled=*/true,
-                          /*sharing_info=*/base::nullopt);
-
-  device_tracker.Add(&device_info1);
-  device_tracker.Add(&device_info2);
+  device_tracker.Add(device_info1.get());
+  device_tracker.Add(device_info2.get());
 
   std::vector<std::unique_ptr<DeviceInfo>> output1 = GetAllSignedInDevices(
       extension_test->id(), &device_tracker, extension_prefs.prefs());
@@ -69,14 +78,10 @@ TEST(SignedInDevicesAPITest, GetSignedInDevices) {
 
   // Add a third device and make sure the first 2 ids are retained and a new
   // id is generated for the third device.
-  DeviceInfo device_info3(base::GenerateGUID(), "def Device", "jkl v2",
-                          "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
-                          base::SysInfo::HardwareInfo(), base::Time(),
-                          /*send_tab_to_self_receiving_enabled=*/true,
-                          /*sharing_info=*/base::nullopt);
+  std::unique_ptr<DeviceInfo> device_info3 =
+      CreateDevice(base::GenerateGUID(), "jkl Device");
 
-  device_tracker.Add(&device_info3);
+  device_tracker.Add(device_info3.get());
 
   std::vector<std::unique_ptr<DeviceInfo>> output2 = GetAllSignedInDevices(
       extension_test->id(), &device_tracker, extension_prefs.prefs());
@@ -136,31 +141,22 @@ TEST_F(ExtensionSignedInDevicesTest, GetAll) {
       DeviceInfoSyncServiceFactory::GetForProfile(profile())
           ->GetDeviceInfoTracker());
 
-  DeviceInfo device_info1(base::GenerateGUID(), "abc Device", "XYZ v1",
-                          "XYZ SyncAgent v1",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
-                          base::SysInfo::HardwareInfo(), base::Time(),
-                          /*send_tab_to_self_receiving_enabled=*/true,
-                          /*sharing_info=*/base::nullopt);
+  std::unique_ptr<DeviceInfo> device_info1 =
+      CreateDevice(base::GenerateGUID(), "abc Device");
+  std::unique_ptr<DeviceInfo> device_info2 =
+      CreateDevice(base::GenerateGUID(), "def Device");
 
-  DeviceInfo device_info2(base::GenerateGUID(), "def Device", "XYZ v2",
-                          "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
-                          base::SysInfo::HardwareInfo(), base::Time(),
-                          /*send_tab_to_self_receiving_enabled=*/true,
-                          /*sharing_info=*/base::nullopt);
-
-  device_tracker->Add(&device_info1);
-  device_tracker->Add(&device_info2);
+  device_tracker->Add(device_info1.get());
+  device_tracker->Add(device_info2.get());
 
   std::unique_ptr<base::ListValue> result(
       RunFunctionAndReturnList(new SignedInDevicesGetFunction(), "[null]"));
 
   // Ensure dictionary matches device info.
   VerifyDictionaryWithDeviceInfo(GetDictionaryFromList(0, result.get()),
-                                 &device_info1);
+                                 device_info1.get());
   VerifyDictionaryWithDeviceInfo(GetDictionaryFromList(1, result.get()),
-                                 &device_info2);
+                                 device_info2.get());
 
   // Ensure public ids are set and unique.
   std::string public_id1 = GetPublicId(GetDictionaryFromList(0, result.get()));

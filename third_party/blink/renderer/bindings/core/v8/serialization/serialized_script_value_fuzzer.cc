@@ -10,8 +10,12 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -47,9 +51,8 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   g_blob_info_array = new WebBlobInfoArray();
   g_blob_info_array->emplace_back(WebBlobInfo::BlobForTesting(
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "text/plain", 12));
-  g_blob_info_array->emplace_back(
-      WebBlobInfo::FileForTesting("d875dfc2-4505-461b-98fe-0cf6cc5eaf44",
-                                  "/native/path", "path", "text/plain"));
+  g_blob_info_array->emplace_back(WebBlobInfo::FileForTesting(
+      "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "path", "text/plain"));
   return 0;
 }
 
@@ -71,9 +74,11 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
   if (hash & kFuzzMessagePorts) {
     MessagePortArray* message_ports = MakeGarbageCollected<MessagePortArray>(3);
     std::generate(message_ports->begin(), message_ports->end(), []() {
-      auto* port =
-          MakeGarbageCollected<MessagePort>(g_page_holder->GetDocument());
-      port->Entangle(mojo::MessagePipe().handle0);
+      auto* port = MakeGarbageCollected<MessagePort>(
+          *g_page_holder->GetFrame().DomWindow());
+      // Let the other end of the pipe close itself.
+      blink::MessagePortDescriptorPair pipe;
+      port->Entangle(pipe.TakePort0());
       return port;
     });
     options.message_ports = message_ports;
@@ -113,9 +118,9 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
 // Explicitly specify some attributes to avoid issues with the linker dead-
 // stripping the following function on macOS, as it is not called directly
 // by fuzz target. LibFuzzer runtime uses dlsym() to resolve that function.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 __attribute__((used)) __attribute__((visibility("default")))
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 extern "C" int
 LLVMFuzzerInitialize(int* argc, char*** argv) {
   return blink::LLVMFuzzerInitialize(argc, argv);

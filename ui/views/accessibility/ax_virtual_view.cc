@@ -11,13 +11,18 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/layout.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -61,13 +66,18 @@ AXVirtualView::~AXVirtualView() {
     ax_platform_node_->Destroy();
     ax_platform_node_ = nullptr;
   }
+
+#if defined(USE_AURA)
+  if (ax_aura_obj_cache_)
+    ax_aura_obj_cache_->Remove(this);
+#endif
 }
 
 void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
   DCHECK(view);
   if (view->virtual_parent_view_ == this)
     return;  // Already a child of this virtual view.
-  AddChildViewAt(std::move(view), GetChildCount());
+  AddChildViewAt(std::move(view), static_cast<int>(children_.size()));
 }
 
 void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
@@ -81,7 +91,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
                                          "AXVirtualView parent. Call "
                                          "RemoveChildView first.";
   DCHECK_GE(index, 0);
-  DCHECK_LE(index, GetChildCount());
+  DCHECK_LE(index, static_cast<int>(children_.size()));
 
   view->virtual_parent_view_ = this;
   children_.insert(children_.begin() + index, std::move(view));
@@ -93,10 +103,10 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
 
 void AXVirtualView::ReorderChildView(AXVirtualView* view, int index) {
   DCHECK(view);
-  if (index >= GetChildCount())
+  if (index >= static_cast<int>(children_.size()))
     return;
   if (index < 0)
-    index = GetChildCount() - 1;
+    index = static_cast<int>(children_.size()) - 1;
 
   DCHECK_EQ(view->virtual_parent_view_, this);
   if (children_[index].get() == view)
@@ -193,12 +203,17 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
 void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
   if (GetOwnerView()) {
-    const auto& events_callback =
+    const ViewAccessibility::AccessibilityEventsCallback& events_callback =
         GetOwnerView()->GetViewAccessibility().accessibility_events_callback();
     if (events_callback)
-      events_callback.Run(*this, event_type);
+      events_callback.Run(this, event_type);
   }
+
+  // This is used on platforms that have a native accessibility API.
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
+
+  // This is used on platforms that don't have a native accessibility API.
+  AXEventManager::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
 ui::AXNodeData& AXVirtualView::GetCustomData() {
@@ -206,7 +221,7 @@ ui::AXNodeData& AXVirtualView::GetCustomData() {
 }
 
 void AXVirtualView::SetPopulateDataCallback(
-    base::RepeatingCallback<void(const View&, ui::AXNodeData*)> callback) {
+    base::RepeatingCallback<void(ui::AXNodeData*)> callback) {
   populate_data_callback_ = std::move(callback);
 }
 
@@ -234,24 +249,56 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
     node_data.AddAction(ax::mojom::Action::kShowContextMenu);
 
   if (populate_data_callback_ && GetOwnerView())
-    populate_data_callback_.Run(*GetOwnerView(), &node_data);
+    populate_data_callback_.Run(&node_data);
+
+  // According to the ARIA spec, the node should not be ignored if it is
+  // focusable. This is to ensure that the focusable node is both understandable
+  // and operable.
+  if (node_data.HasState(ax::mojom::State::kIgnored) &&
+      node_data.HasState(ax::mojom::State::kFocusable)) {
+    node_data.RemoveState(ax::mojom::State::kIgnored);
+  }
+
   return node_data;
 }
 
-int AXVirtualView::GetChildCount() {
-  return static_cast<int>(children_.size());
+int AXVirtualView::GetChildCount() const {
+  int count = 0;
+  for (const std::unique_ptr<AXVirtualView>& child : children_) {
+    if (child->IsIgnored()) {
+      count += child->GetChildCount();
+    } else {
+      ++count;
+    }
+  }
+  return count;
 }
 
 gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
-  DCHECK_GE(index, 0) << "Child indices should be greater or equal to 0.";
+  DCHECK_GE(index, 0) << "|index| should be greater or equal to 0.";
   DCHECK_LT(index, GetChildCount())
-      << "Child indices should be less than the child count.";
-  if (index >= 0 && index < GetChildCount())
-    return children_[index]->GetNativeObject();
+      << "|index| should be less than the child count.";
+
+  for (const std::unique_ptr<AXVirtualView>& child : children_) {
+    if (child->IsIgnored()) {
+      int child_count = child->GetChildCount();
+      if (index < child_count)
+        return child->ChildAtIndex(index);
+      index -= child_count;
+    } else {
+      if (index == 0)
+        return child->GetNativeObject();
+      --index;
+    }
+
+    DCHECK_GE(index, 0) << "|index| should be less than the child count.";
+  }
+
+  NOTREACHED() << "|index| should be less than the child count.";
   return nullptr;
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
   NOTREACHED();
   return nullptr;
@@ -262,12 +309,18 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeViewAccessible() {
   return GetNativeObject();
 }
 
-gfx::NativeViewAccessible AXVirtualView::GetParent() {
-  if (parent_view_)
-    return parent_view_->GetNativeObject();
+gfx::NativeViewAccessible AXVirtualView::GetParent() const {
+  if (parent_view_) {
+    if (!parent_view_->IsIgnored())
+      return parent_view_->GetNativeObject();
+    return GetDelegate()->GetParent();
+  }
 
-  if (virtual_parent_view_)
+  if (virtual_parent_view_) {
+    if (virtual_parent_view_->IsIgnored())
+      return virtual_parent_view_->GetParent();
     return virtual_parent_view_->GetNativeObject();
+  }
 
   // This virtual view hasn't been added to a parent view yet.
   return nullptr;
@@ -277,11 +330,24 @@ gfx::Rect AXVirtualView::GetBoundsRect(
     const ui::AXCoordinateSystem coordinate_system,
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
+  // We could optionally add clipping here if ever needed.
+  // TODO(nektar): Implement bounds that are relative to the parent.
+  gfx::Rect bounds = gfx::ToEnclosingRect(GetData().relative_bounds.bounds);
+  View* owner_view = GetOwnerView();
+  if (owner_view && owner_view->GetWidget())
+    View::ConvertRectToScreen(owner_view, &bounds);
   switch (coordinate_system) {
-    case ui::AXCoordinateSystem::kScreen:
-      // We could optionally add clipping here if ever needed.
-      // TODO(nektar): Implement bounds that are relative to the parent.
-      return gfx::ToEnclosingRect(custom_data_.relative_bounds.bounds);
+    case ui::AXCoordinateSystem::kScreenDIPs:
+      return bounds;
+    case ui::AXCoordinateSystem::kScreenPhysicalPixels: {
+      float scale_factor = 1.0;
+      if (owner_view && owner_view->GetWidget()) {
+        gfx::NativeView native_view = owner_view->GetWidget()->GetNativeView();
+        if (native_view)
+          scale_factor = ui::GetScaleFactorForNativeView(native_view);
+      }
+      return gfx::ScaleToEnclosingRect(bounds, scale_factor);
+    }
     case ui::AXCoordinateSystem::kRootFrame:
     case ui::AXCoordinateSystem::kFrame:
       NOTIMPLEMENTED();
@@ -289,24 +355,57 @@ gfx::Rect AXVirtualView::GetBoundsRect(
   }
 }
 
-gfx::NativeViewAccessible AXVirtualView::HitTestSync(int x, int y) {
-  // TODO(nektar): Implement.
-  return GetNativeObject();
+gfx::NativeViewAccessible AXVirtualView::HitTestSync(
+    int screen_physical_pixel_x,
+    int screen_physical_pixel_y) const {
+  if (GetData().IsInvisible())
+    return nullptr;
+
+  // Check if the point is within any of the virtual children of this view.
+  // AXVirtualView's HitTestSync is a recursive function that will return the
+  // deepest child, since it does not support relative bounds.
+  // Search the greater indices first, since they're on top in the z-order.
+  for (const std::unique_ptr<AXVirtualView>& child :
+       base::Reversed(children_)) {
+    gfx::NativeViewAccessible result =
+        child->HitTestSync(screen_physical_pixel_x, screen_physical_pixel_y);
+    if (result)
+      return result;
+  }
+
+  // If it's not inside any of our virtual children, and it's inside the bounds
+  // of this virtual view, then it's inside this virtual view.
+  gfx::Rect bounds_in_screen_physical_pixels =
+      GetBoundsRect(ui::AXCoordinateSystem::kScreenPhysicalPixels,
+                    ui::AXClippingBehavior::kUnclipped);
+  if (bounds_in_screen_physical_pixels.Contains(
+          static_cast<float>(screen_physical_pixel_x),
+          static_cast<float>(screen_physical_pixel_y)) &&
+      !IsIgnored()) {
+    return GetNativeObject();
+  }
+
+  return nullptr;
 }
 
-gfx::NativeViewAccessible AXVirtualView::GetFocus() {
-  if (parent_view_)
-    return parent_view_->GetFocusedDescendant();
-
-  if (virtual_parent_view_)
-    return virtual_parent_view_->GetFocus();
+gfx::NativeViewAccessible AXVirtualView::GetFocus() const {
+  View* owner_view = GetOwnerView();
+  if (owner_view) {
+    if (!(owner_view->HasFocus())) {
+      return nullptr;
+    }
+    return owner_view->GetViewAccessibility().GetFocusedDescendant();
+  }
 
   // This virtual view hasn't been added to a parent view yet.
   return nullptr;
 }
 
 ui::AXPlatformNode* AXVirtualView::GetFromNodeID(int32_t id) {
-  // TODO(nektar): Implement.
+  AXVirtualView* virtual_view = GetFromId(id);
+  if (virtual_view) {
+    return virtual_view->ax_platform_node();
+  }
   return nullptr;
 }
 
@@ -315,7 +414,7 @@ bool AXVirtualView::AccessibilityPerformAction(const ui::AXActionData& data) {
   if (custom_data_.HasAction(data.action))
     result = HandleAccessibleAction(data);
   if (!result && GetOwnerView())
-    return GetOwnerView()->HandleAccessibleAction(data);
+    return HandleAccessibleActionInOwnerView(data);
   return result;
 }
 
@@ -333,8 +432,8 @@ const ui::AXUniqueId& AXVirtualView::GetUniqueId() const {
   return unique_id_;
 }
 
-// Virtual views need to implement this function in order for A11Y events
-// to be routed correctly.
+// Virtual views need to implement this function in order for accessibility
+// events to be routed correctly.
 gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
 #if defined(OS_WIN)
   if (GetOwnerView())
@@ -343,9 +442,56 @@ gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
   return gfx::kNullAcceleratedWidget;
 }
 
+absl::optional<bool> AXVirtualView::GetTableHasColumnOrRowHeaderNode() const {
+  return GetDelegate()->GetTableHasColumnOrRowHeaderNode();
+}
+
+std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds() const {
+  return GetDelegate()->GetColHeaderNodeIds();
+}
+
+std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds(int col_index) const {
+  return GetDelegate()->GetColHeaderNodeIds(col_index);
+}
+
+absl::optional<int32_t> AXVirtualView::GetCellId(int row_index,
+                                                 int col_index) const {
+  return GetDelegate()->GetCellId(row_index, col_index);
+}
+
 bool AXVirtualView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  return false;
+  if (!GetOwnerView())
+    return false;
+
+  switch (action_data.action) {
+    case ax::mojom::Action::kShowContextMenu: {
+      const gfx::Rect screen_bounds = GetBoundsRect(
+          ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped,
+          nullptr /* offscreen_result */);
+      if (!screen_bounds.IsEmpty()) {
+        GetOwnerView()->ShowContextMenu(screen_bounds.CenterPoint(),
+                                        ui::MENU_SOURCE_KEYBOARD);
+        return true;
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  return HandleAccessibleActionInOwnerView(action_data);
+}
+
+bool AXVirtualView::HandleAccessibleActionInOwnerView(
+    const ui::AXActionData& action_data) {
+  DCHECK(GetOwnerView());
+  // Save the node id so that the owner view can determine which virtual view
+  // is being targeted for action.
+  ui::AXActionData forwarded_action_data = action_data;
+  forwarded_action_data.target_node_id = GetData().id;
+  return GetOwnerView()->HandleAccessibleAction(forwarded_action_data);
 }
 
 View* AXVirtualView::GetOwnerView() const {
@@ -359,13 +505,19 @@ View* AXVirtualView::GetOwnerView() const {
   return nullptr;
 }
 
+ViewAXPlatformNodeDelegate* AXVirtualView::GetDelegate() const {
+  DCHECK(GetOwnerView());
+  return static_cast<ViewAXPlatformNodeDelegate*>(
+      &GetOwnerView()->GetViewAccessibility());
+}
+
 AXVirtualViewWrapper* AXVirtualView::GetOrCreateWrapper(
     views::AXAuraObjCache* cache) {
 #if defined(USE_AURA)
-  if (!wrapper_)
-    wrapper_ = std::make_unique<AXVirtualViewWrapper>(this, cache);
+  return static_cast<AXVirtualViewWrapper*>(cache->GetOrCreate(this));
+#else
+  return nullptr;
 #endif
-  return wrapper_.get();
 }
 
 }  // namespace views

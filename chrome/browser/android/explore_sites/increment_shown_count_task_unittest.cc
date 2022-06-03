@@ -5,7 +5,7 @@
 #include "chrome/browser/android/explore_sites/increment_shown_count_task.h"
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
 #include "components/offline_pages/task/task_test_base.h"
@@ -21,6 +21,12 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
  public:
   ExploreSitesIncrementShownCountTaskTest() = default;
+
+  ExploreSitesIncrementShownCountTaskTest(
+      const ExploreSitesIncrementShownCountTaskTest&) = delete;
+  ExploreSitesIncrementShownCountTaskTest& operator=(
+      const ExploreSitesIncrementShownCountTaskTest&) = delete;
+
   ~ExploreSitesIncrementShownCountTaskTest() override = default;
 
   void SetUp() override {
@@ -53,19 +59,19 @@ class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesIncrementShownCountTaskTest);
 };
 
 void ExploreSitesIncrementShownCountTaskTest::PopulateCategories() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert_categories(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label, ntp_shown_count)
-VALUES
-(1, "1234", 1, "label_1", 5),
-(2, "1234", 2, "label_2", 2)
-    )"));
+    static constexpr char kSql[] =
+        // clang-format off
+        "INSERT INTO categories"
+            "(category_id, version_token, type, label, ntp_shown_count)"
+            "VALUES "
+            "(1, '1234', 1, 'label_1', 5),"
+            "(2, '1234', 2, 'label_2', 2)";
+    // clang-format on
+    sql::Statement insert_categories(db->GetUniqueStatement(kSql));
     return insert_categories.Run();
   }));
 }

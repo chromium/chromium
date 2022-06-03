@@ -31,7 +31,8 @@ class AutofillDriverIOSWebFrameFactory
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
   ~AutofillDriverIOSWebFrameFactory() override;
 
   AutofillDriverIOSWebFrameFactory(
@@ -39,7 +40,8 @@ class AutofillDriverIOSWebFrameFactory
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
 
   // Returns a AutofillDriverIOSFromWebFrame for |web_frame|, creating it if
   // needed.
@@ -53,7 +55,7 @@ class AutofillDriverIOSWebFrameFactory
   AutofillClient* client_ = nullptr;
   id<AutofillDriverIOSBridge> bridge_ = nil;
   std::string app_locale_;
-  AutofillManager::AutofillDownloadManagerState enable_download_manager_;
+  BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
@@ -74,7 +76,8 @@ class AutofillDriverIOSRefCountable
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
 
  private:
   friend class base::RefCountedThreadSafe<AutofillDriverIOSRefCountable>;
@@ -93,22 +96,23 @@ class AutofillDriverIOSWebFrame
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager);
 
   ~AutofillDriverIOSWebFrame() override;
 
   AutofillDriverIOS* driver() { return driver_.get(); }
   scoped_refptr<AutofillDriverIOSRefCountable> GetRetainableDriver();
 
-  AutofillDriverIOSWebFrame(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+  AutofillDriverIOSWebFrame(web::WebState* web_state,
+                            web::WebFrame* web_frame,
+                            AutofillClient* client,
+                            id<AutofillDriverIOSBridge> bridge,
+                            const std::string& app_locale,
+                            BrowserAutofillManager::AutofillDownloadManagerState
+                                enable_download_manager);
   scoped_refptr<AutofillDriverIOSRefCountable> driver_;
 };
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_AUTOFILL_DRIVER_IOS_WEBSTATE_H_
+#endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_WEBFRAME_H_

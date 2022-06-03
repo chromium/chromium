@@ -13,6 +13,9 @@ namespace viz {
 // client and service does not happen before writing is completed.
 class ResourceFence : public base::RefCountedThreadSafe<ResourceFence> {
  public:
+  ResourceFence(const ResourceFence&) = delete;
+  ResourceFence& operator=(const ResourceFence&) = delete;
+
   virtual void Set() = 0;
   virtual bool HasPassed() = 0;
 
@@ -20,9 +23,6 @@ class ResourceFence : public base::RefCountedThreadSafe<ResourceFence> {
   friend class base::RefCountedThreadSafe<ResourceFence>;
   ResourceFence() = default;
   virtual ~ResourceFence() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceFence);
 };
 
 }  // namespace viz

@@ -31,7 +31,7 @@
 namespace blink {
 
 DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
-    : AudioDelayDSPKernel(processor, audio_utilities::kRenderQuantumFrames) {
+    : AudioDelayDSPKernel(processor, processor->RenderQuantumFrames()) {
   DCHECK(processor);
   DCHECK_GT(processor->SampleRate(), 0);
 
@@ -39,8 +39,9 @@ DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
   DCHECK_GE(max_delay_time_, 0);
   DCHECK(!std::isnan(max_delay_time_));
 
-  buffer_.Allocate(
-      BufferLengthForDelay(max_delay_time_, processor->SampleRate()));
+  buffer_.Allocate(BufferLengthForDelay(max_delay_time_,
+                                        processor->SampleRate(),
+                                        processor->RenderQuantumFrames()));
   buffer_.Zero();
 }
 
@@ -58,10 +59,14 @@ double DelayDSPKernel::DelayTime(float) {
   return GetDelayProcessor()->DelayTime().FinalValue();
 }
 
-void DelayDSPKernel::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+bool DelayDSPKernel::IsAudioRate() {
+  return GetDelayProcessor()->DelayTime().IsAudioRate();
+}
 
-  float values[audio_utilities::kRenderQuantumFrames];
+void DelayDSPKernel::ProcessOnlyAudioParams(uint32_t frames_to_process) {
+  DCHECK_LE(frames_to_process, RenderQuantumFrames());
+
+  float values[RenderQuantumFrames()];
 
   GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
       values, frames_to_process);

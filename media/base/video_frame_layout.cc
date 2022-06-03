@@ -8,7 +8,7 @@
 #include <numeric>
 #include <sstream>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace media {
 
@@ -43,6 +43,7 @@ std::vector<ColorPlaneLayout> PlanesFromStrides(
 // static
 size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
   switch (format) {
+    case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_BGRA:
@@ -54,6 +55,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
+    case PIXEL_FORMAT_RGBAF16:
       return 1;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV21:
@@ -85,7 +87,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
+absl::optional<VideoFrameLayout> VideoFrameLayout::Create(
     VideoPixelFormat format,
     const gfx::Size& coded_size) {
   return CreateWithStrides(format, coded_size,
@@ -93,40 +95,43 @@ base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
-    std::vector<int32_t> strides) {
-  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides));
+    std::vector<int32_t> strides,
+    size_t buffer_addr_align,
+    uint64_t modifier) {
+  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides),
+                          buffer_addr_align, modifier);
 }
 
 // static
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           false /*is_multi_planar */, buffer_addr_align,
                           modifier);
 }
 
-base::Optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
+absl::optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     std::vector<ColorPlaneLayout> planes,
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return base::nullopt,
+  // TODO(crbug.com/896135): Return absl::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           true /*is_multi_planar */, buffer_addr_align,
@@ -171,7 +176,7 @@ std::ostream& operator<<(std::ostream& ostream,
           << VectorToString(layout.planes())
           << ", is_multi_planar: " << layout.is_multi_planar()
           << ", buffer_addr_align: " << layout.buffer_addr_align()
-          << ", modifier: " << layout.modifier() << ")";
+          << ", modifier: 0x" << std::hex << layout.modifier() << ")";
   return ostream;
 }
 

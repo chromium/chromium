@@ -13,6 +13,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/system/sys_info.h"
 #include "chrome/android/test_support_jni_headers/ServicificationBackgroundService_jni.h"
+#include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/active_field_trials.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -24,25 +25,34 @@ JNI_ServicificationBackgroundService_TestPersistentHistogramsOnDiskSystemProfile
     JNIEnv* env) {
   base::GlobalHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
-  if (!allocator)
+  if (!allocator) {
+    LOG(ERROR) << "The GlobalHistogramAllocator is null!";
     return false;
+  }
 
   const base::FilePath& persistent_file_path =
       allocator->GetPersistentLocation();
-  if (persistent_file_path.empty())
+  if (persistent_file_path.empty()) {
+    LOG(ERROR) << "The path of the persistent file is empty!";
     return false;
+  }
 
   base::File file(persistent_file_path,
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
+    LOG(ERROR) << "The persistent file isn't valid!";
     return false;
+  }
 
   std::unique_ptr<base::MemoryMappedFile> mapped(new base::MemoryMappedFile());
-  if (!mapped->Initialize(std::move(file), base::MemoryMappedFile::READ_ONLY))
+  if (!mapped->Initialize(std::move(file), base::MemoryMappedFile::READ_ONLY)) {
+    LOG(ERROR) << "Fails to Initialize the memory mapped file!";
     return false;
+  }
 
   if (!base::FilePersistentMemoryAllocator::IsFileAcceptable(
           *mapped, true /* read_only */)) {
+    LOG(ERROR) << "The memory mapped file isn't acceptable!";
     return false;
   }
 
@@ -106,4 +116,10 @@ JNI_ServicificationBackgroundService_TestPersistentHistogramsOnDiskSystemProfile
   }
 
   return true;
+}
+
+// Returns whether a background session has started.
+jboolean JNI_ServicificationBackgroundService_IsBackgroundSessionStart(
+    JNIEnv* env) {
+  return UmaSessionStats::IsBackgroundSessionStartForTesting();
 }

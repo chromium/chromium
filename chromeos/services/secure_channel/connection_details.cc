@@ -4,7 +4,9 @@
 
 #include "chromeos/services/secure_channel/connection_details.h"
 
-#include "base/logging.h"
+#include <tuple>
+
+#include "base/check.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace chromeos {
@@ -29,12 +31,8 @@ bool ConnectionDetails::operator!=(const ConnectionDetails& other) const {
 }
 
 bool ConnectionDetails::operator<(const ConnectionDetails& other) const {
-  if (device_id() != other.device_id())
-    return device_id() < other.device_id();
-
-  // Currently, there is only one ConnectionMedium type.
-  DCHECK(connection_medium() == other.connection_medium());
-  return false;
+  return std::tie(device_id_, connection_medium_) <
+         std::tie(other.device_id_, other.connection_medium_);
 }
 
 std::ostream& operator<<(std::ostream& stream,

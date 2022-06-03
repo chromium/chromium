@@ -10,13 +10,14 @@
 // icu is used, and that the "wrong" static value doesn't affect other tests,
 // this test is executed on its own process.
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_locale.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/l10n/time_format.h"
 
-using base::TimeDelta;
 
 class TimeFormatBrowserTest : public InProcessBrowserTest {
  public:
@@ -34,9 +35,8 @@ IN_PROC_BROWSER_TEST_F(TimeFormatBrowserTest, DecimalPointNotDot) {
   // This showed up on the browser on estimated download time, for example.
   // http://crbug.com/60476
 
-  base::string16 one_min =
+  std::u16string one_min =
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_SHORT,
-                             TimeDelta::FromMinutes(1));
-  EXPECT_EQ(base::ASCIIToUTF16("1 min"), one_min);
+                             ui::TimeFormat::LENGTH_SHORT, base::Minutes(1));
+  EXPECT_EQ(u"1 min", one_min);
 }

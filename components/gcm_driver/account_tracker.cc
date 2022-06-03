@@ -4,8 +4,8 @@
 
 #include "components/gcm_driver/account_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 
@@ -35,7 +35,7 @@ void AccountTracker::RemoveObserver(Observer* observer) {
 
 std::vector<CoreAccountInfo> AccountTracker::GetAccounts() const {
   const CoreAccountId active_account_id =
-      identity_manager_->GetPrimaryAccountId();
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   std::vector<CoreAccountInfo> accounts;
 
   for (auto it = accounts_.begin(); it != accounts_.end(); ++it) {
@@ -63,7 +63,7 @@ void AccountTracker::OnRefreshTokenUpdatedForAccount(
                "account_id", account_info.account_id.ToString());
 
   // Ignore refresh tokens if there is no active account ID at all.
-  if (!identity_manager_->HasPrimaryAccount())
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
   DVLOG(1) << "AVAILABLE " << account_info.account_id;
@@ -80,26 +80,29 @@ void AccountTracker::OnRefreshTokenRemovedForAccount(
   UpdateSignInState(account_id, /*is_signed_in=*/false);
 }
 
-void AccountTracker::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
-
-  std::vector<CoreAccountInfo> accounts =
-      identity_manager_->GetAccountsWithRefreshTokens();
-
-  DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";
-
-  for (const CoreAccountInfo& account_info : accounts) {
-    StartTrackingAccount(account_info);
-    UpdateSignInState(account_info.account_id, /*is_signed_in=*/true);
+void AccountTracker::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
+      std::vector<CoreAccountInfo> accounts =
+          identity_manager_->GetAccountsWithRefreshTokens();
+      DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";
+      for (const CoreAccountInfo& account_info : accounts) {
+        StartTrackingAccount(account_info);
+        UpdateSignInState(account_info.account_id, /*is_signed_in=*/true);
+      }
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountCleared");
+      DVLOG(1) << "LOGOUT";
+      StopTrackingAllAccounts();
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
-}
-
-void AccountTracker::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountCleared");
-  DVLOG(1) << "LOGOUT";
-  StopTrackingAllAccounts();
 }
 
 void AccountTracker::UpdateSignInState(const CoreAccountId& account_id,

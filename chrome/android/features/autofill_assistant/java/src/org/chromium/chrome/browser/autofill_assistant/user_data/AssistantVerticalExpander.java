@@ -17,7 +17,8 @@ import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.ui.widget.TintedDrawable;
+import org.chromium.chrome.browser.autofill_assistant.AssistantChevronStyle;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 /**
  * This class provides a vertical expander widget, which allows to toggle between a collapsed and an
@@ -28,16 +29,10 @@ import org.chromium.chrome.browser.ui.widget.TintedDrawable;
  * parameters for disambiguation, otherwise the child won't be added at all!
  */
 public class AssistantVerticalExpander extends LinearLayout {
-    /** Controls whether the chevron should be visible. */
-    enum ChevronStyle {
-        AUTO, /** visible if the expander has an expanded view, else invisible. */
-        ALWAYS,
-        NEVER
-    }
-
     private final ViewGroup mTitleContainer;
     private final ViewGroup mCollapsedContainer;
     private final ViewGroup mExpandedContainer;
+    private final LinearLayout mTitleAndChevronContainer;
     private final View mChevronButton;
 
     private Callback<Boolean> mOnExpansionStateChangedListener;
@@ -46,7 +41,7 @@ public class AssistantVerticalExpander extends LinearLayout {
     private View mExpandedView;
     private boolean mExpanded;
     private boolean mFixed;
-    private ChevronStyle mChevronStyle = ChevronStyle.AUTO;
+    private @AssistantChevronStyle int mChevronStyle = AssistantChevronStyle.NOT_SET_AUTOMATIC;
 
     public AssistantVerticalExpander(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -64,19 +59,19 @@ public class AssistantVerticalExpander extends LinearLayout {
         titleContainer.addView(mTitleContainer);
         titleContainer.addView(mCollapsedContainer);
 
-        LinearLayout titleAndChevronContainer = new LinearLayout(getContext());
-        titleAndChevronContainer.setOrientation(HORIZONTAL);
-        titleAndChevronContainer.setLayoutParams(new LinearLayout.LayoutParams(
+        mTitleAndChevronContainer = new LinearLayout(getContext());
+        mTitleAndChevronContainer.setOrientation(HORIZONTAL);
+        mTitleAndChevronContainer.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        titleAndChevronContainer.addView(titleContainer,
+        mTitleAndChevronContainer.addView(titleContainer,
                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
-        titleAndChevronContainer.addView(mChevronButton);
+        mTitleAndChevronContainer.addView(mChevronButton);
         update();
-        addView(titleAndChevronContainer);
+        addView(mTitleAndChevronContainer);
         addView(mExpandedContainer);
 
         // Expand/Collapse when user clicks on the title, the chevron, or the collapsed section.
-        titleAndChevronContainer.setOnClickListener(unusedView -> {
+        mTitleAndChevronContainer.setOnClickListener(unusedView -> {
             if (!mFixed) {
                 setExpanded(!mExpanded);
             }
@@ -138,9 +133,9 @@ public class AssistantVerticalExpander extends LinearLayout {
         }
     }
 
-    public void setChevronStyle(ChevronStyle style) {
-        if (style != mChevronStyle) {
-            mChevronStyle = style;
+    public void setChevronStyle(@AssistantChevronStyle int chevronStyle) {
+        if (chevronStyle != mChevronStyle) {
+            mChevronStyle = chevronStyle;
             update();
         }
     }
@@ -173,6 +168,9 @@ public class AssistantVerticalExpander extends LinearLayout {
     public View getExpandedView() {
         return mExpandedView;
     }
+    public View getTitleAndChevronContainer() {
+        return mTitleAndChevronContainer;
+    }
 
     /**
      * Creates a default container for children of this widget.
@@ -201,14 +199,14 @@ public class AssistantVerticalExpander extends LinearLayout {
 
     private void update() {
         switch (mChevronStyle) {
-            case AUTO:
+            case AssistantChevronStyle.NOT_SET_AUTOMATIC:
                 mChevronButton.setVisibility(
                         !mFixed && mExpandedView != null ? View.VISIBLE : View.GONE);
                 break;
-            case ALWAYS:
+            case AssistantChevronStyle.ALWAYS:
                 mChevronButton.setVisibility(View.VISIBLE);
                 break;
-            case NEVER:
+            case AssistantChevronStyle.NEVER:
                 mChevronButton.setVisibility(View.GONE);
                 break;
         }

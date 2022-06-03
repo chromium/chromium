@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/testfidl/cpp/fidl.h"
 #include "base/test/task_environment.h"
+#include "base/testfidl/cpp/fidl.h"
 #include "fuchsia/mojom/example.mojom.h"
 #include "fuchsia/mojom/test_interface_request_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -11,8 +11,8 @@
 
 namespace fuchsia {
 
-using base::fuchsia::testfidl::TestInterface;
-using base::fuchsia::testfidl::TestInterfacePtr;
+using base::testfidl::TestInterface;
+using base::testfidl::TestInterfacePtr;
 
 TEST(InterfaceRequestStructTraitsTest, Serialization) {
   base::test::SingleThreadTaskEnvironment task_environment(
@@ -22,8 +22,8 @@ TEST(InterfaceRequestStructTraitsTest, Serialization) {
   fidl::InterfaceRequest<TestInterface> output_request;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              fuchsia::test::mojom::TestInterfaceRequest>(&input_request,
-                                                          &output_request));
+              fuchsia::test::mojom::TestInterfaceRequest>(input_request,
+                                                          output_request));
   EXPECT_TRUE(output_request.is_valid());
 }
 

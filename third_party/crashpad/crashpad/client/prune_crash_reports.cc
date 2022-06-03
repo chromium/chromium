@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace crashpad {

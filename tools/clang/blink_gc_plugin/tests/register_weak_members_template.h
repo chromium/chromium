@@ -11,12 +11,12 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  void Trace(Visitor* visitor) {}
+  void Trace(Visitor* visitor) const {}
 };
 
 class HasUntracedWeakMembers : public GarbageCollected<HasUntracedWeakMembers> {
  public:
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->template RegisterWeakMembers<
         HasUntracedWeakMembers, &HasUntracedWeakMembers::ClearWeakMembers>(
         this);

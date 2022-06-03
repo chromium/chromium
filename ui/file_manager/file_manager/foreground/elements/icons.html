@@ -2,10 +2,6 @@
   -- Use of this source code is governed by a BSD-style license that can be
   -- found in the LICENSE file.
   -->
-
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-
 <iron-iconset-svg name="files" size="24">
   <svg>
     <defs>
@@ -32,6 +28,8 @@
     <defs>
       <g id="eject"><path d="M14.04 11v2h-12v-2h12zm-6-8l6 6h-12l6-6z"/></g>
       <g id="external-link"><path d="M12 12H4V4h3.2V2.4H4c-.8 0-1.6.8-1.6 1.6v8c0 .8.8 1.6 1.6 1.6h8c.8 0 1.6-.8 1.6-1.6V8.8H12V12zM8.8 2.4V4h2L5.6 9.2l1.2 1.2L12 5.2v2h1.6V2.4H8.8z"/><g>
+      <g id="arrow_up_small"><path d="M8.8 5.15l3.81 4.01.99-1.02L8 2.4 2.4 8.14l.99 1.02L7.2 5.15v8.45h1.6z"/></g>
+      <g id="arrow_down_small"><path d="M7.2 10.85L3.39 6.84 2.4 7.86 8 13.6l5.6-5.74-.99-1.02-3.81 4.01V2.4H7.2z"/></g>
     </defs>
   </svg>
 </iron-iconset-svg>
@@ -73,12 +71,22 @@
   </svg>
 </iron-iconset-svg>
 
+<!-- files viewBox 0 0 32 32 icon set -->
+<iron-iconset-svg name="files32" size="32">
+  <svg>
+    <defs>
+      <g id="small-dragger"><path d="M14,19 C14.55,19 15,19.45 15,20 C15,20.55 14.55,21 14,21 C13.45,21 13,20.55 13,20 C13,19.45 13.45,19 14,19 Z M18,19 C18.55,19 19,19.45 19,20 C19,20.55 18.55,21 18,21 C17.45,21 17,20.55 17,20 C17,19.45 17.45,19 18,19 Z M14,15 C14.55,15 15,15.45 15,16 C15,16.55 14.55,17 14,17 C13.45,17 13,16.55 13,16 C13,15.45 13.45,15 14,15 Z M18,15 C18.55,15 19,15.45 19,16 C19,16.55 18.55,17 18,17 C17.45,17 17,16.55 17,16 C17,15.45 17.45,15 18,15 Z M14,11 C14.55,11 15,11.45 15,12 C15,12.55 14.55,13 14,13 C13.45,13 13,12.55 13,12 C13,11.45 13.45,11 14,11 Z M18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 C17.45,13 17,12.55 17,12 C17,11.45 17.45,11 18,11 Z"/> </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
 <!-- files viewBox 0 0 36 36 icon set -->
 <iron-iconset-svg name="files36" size="36">
   <svg>
     <defs>
-      <g id='success'><path fill='#34A853' d='M14 23.6L8.4 18l-1.9 1.9 7.5 7.4 16-16-1.9-1.8z'/></g>
-      <g id='failure' stroke='#EA4335' stroke-width='2.6'><circle cx='18' cy='18' r='12.1' fill='none'/><path d='M18 11v8.5m0 2.6v2.6'/></g>
+      <g id='success'><path d='M14 23.6L8.4 18l-1.9 1.9 7.5 7.4 16-16-1.9-1.8z'></path></g>
+      <g id='failure' stroke-width='2.6'><circle cx='18' cy='18' r='12.1' fill='none'></circle><path d='M18 11v8.5m0 2.6v2.6'></path></g>
+      <g id='hard-drive' transform='scale(1.8,1.8)' fill='#1A73E8C0'><path d="M15 2c1.1046 0 2 .8954 2 2v12c0 1.1046-.8954 2-2 2H5c-1.1046 0-2-.8954-2-2V4c0-1.1046.8954-2 2-2h10zm0 10H5v4h10v-4zm-2 1c.5523 0 1 .4477 1 1s-.4477 1-1 1-1-.4477-1-1 .4477-1 1-1zm2-9H5v6h10V4z"></path></g>
     </defs>
   </svg>
 </iron-iconset-svg>

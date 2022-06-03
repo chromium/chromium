@@ -15,4 +15,10 @@ extern const CGFloat kiPhoneLocationBarPlaceholderColorBrightness;
 // Last button in accessory view for keyboard, commonly used TLD.
 extern NSString* const kDotComTLD;
 
+// Accessibility identifier of the share button.
+extern NSString* const kOmniboxShareButtonIdentifier;
+
+// Accessibility identifier of the voice search button.
+extern NSString* const kOmniboxVoiceSearchButtonIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_CONSTANTS_H_

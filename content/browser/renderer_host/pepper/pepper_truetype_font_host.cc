@@ -6,7 +6,8 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "ppapi/c/pp_errors.h"
@@ -30,8 +31,8 @@ PepperTrueTypeFontHost::PepperTrueTypeFontHost(
   font_ = PepperTrueTypeFont::Create();
   // Initialize the font on a ThreadPool thread. This must complete before
   // using |font_|.
-  task_runner_ = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   SerializedTrueTypeFontDesc* actual_desc =
       new SerializedTrueTypeFontDesc(desc);
   base::PostTaskAndReplyWithResult(

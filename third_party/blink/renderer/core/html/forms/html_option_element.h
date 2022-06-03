@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPTION_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -33,11 +34,19 @@ namespace blink {
 class ExceptionState;
 class HTMLDataListElement;
 class HTMLSelectElement;
+class OptionTextObserver;
 
 class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static HTMLOptionElement* CreateForJSConstructor(
+      Document& document,
+      const String& data,
+      ExceptionState& exception_state) {
+    return CreateForJSConstructor(document, data, AtomicString(), false, false,
+                                  exception_state);
+  }
   static HTMLOptionElement* CreateForJSConstructor(Document&,
                                                    const String& data,
                                                    const AtomicString& value,
@@ -46,6 +55,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
                                                    ExceptionState&);
 
   explicit HTMLOptionElement(Document&);
+  ~HTMLOptionElement() override;
+  void Trace(Visitor* visitor) const override;
 
   // A text to be shown to users.  The difference from |label()| is |label()|
   // returns an empty string if |label| content attribute is empty.
@@ -94,16 +105,23 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void SetMultiSelectFocusedState(bool);
   bool IsMultiSelectFocused() const;
 
- private:
-  ~HTMLOptionElement() override;
+  void SetWasOptionInsertedCalled(bool flag) {
+    was_option_inserted_called_ = flag;
+  }
+  bool WasOptionInsertedCalled() const { return was_option_inserted_called_; }
 
+  void OptionInsertedIntoSelectMenuElement();
+  void OptionRemovedFromSelectMenuElement();
+
+  // Callback for OptionTextObserver.
+  void DidChangeTextContent();
+
+ private:
   bool SupportsFocus() const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
-  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
-  void RemovedFrom(ContainerNode&) override;
-  void AccessKeyAction(bool) override;
+  void AccessKeyAction(SimulatedClickCreationScope) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
@@ -111,6 +129,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   String CollectOptionInnerText() const;
 
   void UpdateLabel();
+
+  Member<OptionTextObserver> text_observer_;
 
   // Represents 'selectedness'.
   // https://html.spec.whatwg.org/C/#concept-option-selectedness
@@ -121,6 +141,15 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // Represents the option being focused on in a multi-select non-contiguous
   // traversal via the keyboard.
   bool is_multi_select_focused_ = false;
+
+  // True while HTMLSelectElement::OptionInserted(this) and OptionRemoved(this);
+  // This flag is necessary to detect a state where DOM tree is updated and
+  // OptionInserted() is not called yet.
+  bool was_option_inserted_called_ = false;
+
+  // This flag is necessary to detect when an option is a descendant of
+  // <selectmenu> in order to be able to render arbitrary content.
+  bool is_descendant_of_select_menu_ = false;
 };
 
 }  // namespace blink

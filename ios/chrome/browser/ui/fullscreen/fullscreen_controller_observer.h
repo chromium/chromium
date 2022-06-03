@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_
-#define IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_
+#define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -16,6 +16,11 @@ class FullscreenController;
 class FullscreenControllerObserver {
  public:
   FullscreenControllerObserver() = default;
+
+  FullscreenControllerObserver(const FullscreenControllerObserver&) = delete;
+  FullscreenControllerObserver& operator=(const FullscreenControllerObserver&) =
+      delete;
+
   virtual ~FullscreenControllerObserver() = default;
 
   // Invoked when the maximum or minimum viewport insets for |controller| have
@@ -43,11 +48,13 @@ class FullscreenControllerObserver {
                                      FullscreenAnimator* animator) {}
 
   // Invoked before the FullscreenController service is shut down.
+  // TODO(crbug.com/1046022): Rename to FullscreenControllerDestroyed.
   virtual void FullscreenControllerWillShutDown(
       FullscreenController* controller) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerObserver);
+  // Invoked when |controller| needs to resize its horizontal insets.
+  // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
+  virtual void ResizeHorizontalInsets(FullscreenController* controller) {}
 };
 
-#endif  // IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_OBSERVER_H_

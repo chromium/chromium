@@ -92,11 +92,15 @@ class SessionManager {
   // the |session| then it must also set configuration for the |session| using
   // Session::set_config(). The callback must take ownership of the |session| if
   // it ACCEPTs it.
-  typedef base::Callback<void(Session* session,
-                              IncomingSessionResponse* response)>
+  typedef base::RepeatingCallback<void(Session* session,
+                                       IncomingSessionResponse* response)>
       IncomingSessionCallback;
 
   SessionManager() {}
+
+  SessionManager(const SessionManager&) = delete;
+  SessionManager& operator=(const SessionManager&) = delete;
+
   virtual ~SessionManager() {}
 
   // Starts accepting incoming connections.
@@ -123,9 +127,6 @@ class SessionManager {
   // factory before all authenticators it created are deleted.
   virtual void set_authenticator_factory(
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };
 
 }  // namespace protocol

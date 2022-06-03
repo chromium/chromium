@@ -22,7 +22,8 @@ namespace {
 const size_t kPageSize = 4096;
 }  // namespace
 
-TEST(NativeLibraryPrefetcherTest, TestPercentageOfResidentCode) {
+// https://crbug.com/1056021 - flaky on Nexus 5.
+TEST(NativeLibraryPrefetcherTest, DISABLED_TestPercentageOfResidentCode) {
   size_t length = 4 * kPageSize;
   auto shared_region = base::WritableSharedMemoryRegion::Create(length);
   ASSERT_TRUE(shared_region.IsValid());

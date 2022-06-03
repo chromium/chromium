@@ -8,14 +8,15 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/os_crypt/key_storage_config_linux.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "crypto/encryptor.h"
@@ -86,7 +87,7 @@ std::unique_ptr<KeyStorageLinux> (*g_key_storage_provider)() =
 std::string* GetPasswordV10() {
   base::AutoLock auto_lock(g_cache.Get().lock);
   if (!g_cache.Get().password_v10_cache.get()) {
-    g_cache.Get().password_v10_cache.reset(new std::string("peanuts"));
+    g_cache.Get().password_v10_cache = std::make_unique<std::string>("peanuts");
   }
   return g_cache.Get().password_v10_cache.get();
 }
@@ -97,8 +98,13 @@ std::string* GetPasswordV11() {
   base::AutoLock auto_lock(g_cache.Get().lock);
   if (!g_cache.Get().is_password_v11_cached) {
     std::unique_ptr<KeyStorageLinux> key_storage = g_key_storage_provider();
-    g_cache.Get().password_v11_cache.reset(
-        key_storage ? new std::string(key_storage->GetKey()) : nullptr);
+    if (key_storage) {
+      absl::optional<std::string> key = key_storage->GetKey();
+      if (key.has_value()) {
+        g_cache.Get().password_v11_cache =
+            std::make_unique<std::string>(std::move(*key));
+      }
+    }
     g_cache.Get().is_password_v11_cached = true;
   }
   return g_cache.Get().password_v11_cache.get();
@@ -133,14 +139,14 @@ std::unique_ptr<crypto::SymmetricKey> GetEncryptionKey(Version version) {
 }  // namespace
 
 // static
-bool OSCrypt::EncryptString16(const base::string16& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 // static
 bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              base::string16* plaintext) {
+                              std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;

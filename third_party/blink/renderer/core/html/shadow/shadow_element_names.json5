@@ -1,0 +1,133 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  metadata: {
+    namespace: "shadow_element_names",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    //
+    // ID names for UA shadow elements
+    //
+    {
+      name: "details-content",
+      Symbol: "kIdDetailsContent",
+    },
+    {
+      name: "details-summary",
+      Symbol: "kIdDetailsSummary",
+    },
+    {
+      name: "details-marker",
+      Symbol: "kIdDetailsMarker",
+    },
+    {
+      name: "date-time-edit",
+      Symbol: "kIdDateTimeEdit",
+    },
+    {
+      name: "spin",
+      Symbol: "kIdSpinButton",
+    },
+    {
+      name: "clear",
+      Symbol: "kIdClearButton",
+    },
+    {
+      name: "editing-view-port",
+      Symbol: "kIdEditingViewPort",
+    },
+    {
+      name: "picker",
+      Symbol: "kIdPickerIndicator",
+    },
+    {
+      name: "placeholder",
+      Symbol: "kIdPlaceholder",
+    },
+    {
+      name: "search-clear",
+      Symbol: "kIdSearchClearButton",
+    },
+    {
+      name: "password-reveal",
+      Symbol: "kIdPasswordRevealButton",
+    },
+    {
+      name: "thumb",
+      Symbol: "kIdSliderThumb",
+    },
+    {
+      name: "track",
+      Symbol: "kIdSliderTrack",
+    },
+    {
+      name: "text-field-container",
+      Symbol: "kIdTextFieldContainer",
+    },
+    {
+      name: "file-upload-button",
+      Symbol: "kIdFileUploadButton",
+    },
+    {
+      name: "optgroup-label",
+      Symbol: "kIdOptGroupLabel",
+    },
+
+    //
+    // Pseudo names for UA shadow elements.
+    // These are web-exposed as pseudo element selectors.
+    //
+    {
+      name: "-webkit-details-marker",
+      Symbol: "kPseudoWebKitDetailsMarker",
+    },
+    {
+      name: "-webkit-input-placeholder",
+      Symbol: "kPseudoInputPlaceholder",
+    },
+    {
+      name: "-webkit-file-upload-button",
+      Symbol: "kPseudoFileUploadButton",
+    },
+    {
+      name: "-internal-input-suggested",
+      Symbol: "kPseudoInternalInputSuggested",
+    },
+    {
+      name: "-internal-media-controls-segmented-track",
+      Symbol: "kPseudoMediaControlsSegmentedTrack",
+    },
+    {
+      name: "-webkit-media-slider-container",
+      Symbol: "kPseudoMediaSliderContainer",
+    },
+    {
+      name: "-webkit-media-slider-thumb",
+      Symbol: "kPseudoMediaSliderThumb",
+    },
+    {
+      name: "-webkit-meter-inner-element",
+      Symbol: "kPseudoMeterInnerElement",
+    },
+    {
+      name: "-webkit-slider-container",
+      Symbol: "kPseudoSliderContainer",
+    },
+    {
+      name: "-webkit-slider-thumb",
+      Symbol: "kPseudoSliderThumb",
+    },
+    {
+      name: "-webkit-slider-runnable-track",
+      Symbol: "kPseudoSliderTrack",
+    },
+    {
+      name: "-webkit-textfield-decoration-container",
+      Symbol: "kPseudoTextFieldDecorationContainer",
+    },
+  ],
+}

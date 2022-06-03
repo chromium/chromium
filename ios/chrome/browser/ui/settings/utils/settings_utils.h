@@ -14,6 +14,6 @@
 // Returns a ProceduralBlockWithURL that uses the dispatcher and opens url
 // (parameter to the block) in a new tab.
 ProceduralBlockWithURL BlockToOpenURL(UIResponder* responder,
-                                      id<ApplicationCommands> dispatcher);
+                                      id<ApplicationCommands> handler);
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_SETTINGS_UTILS_H_

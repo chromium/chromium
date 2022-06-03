@@ -15,12 +15,15 @@ namespace media {
 
 class VP9Picture;
 
-// class to share reference frame management code
-// between encoder and decoder classes.
-// TODO(crbug.com/924804): Add the support in Decoder class.
+// This class encapsulates VP9-specific reference frame management code. This
+// class is thread afine.
 class Vp9ReferenceFrameVector {
  public:
   Vp9ReferenceFrameVector();
+
+  Vp9ReferenceFrameVector(const Vp9ReferenceFrameVector&) = delete;
+  Vp9ReferenceFrameVector& operator=(const Vp9ReferenceFrameVector&) = delete;
+
   ~Vp9ReferenceFrameVector();
 
   void Refresh(scoped_refptr<VP9Picture> pic);
@@ -32,7 +35,6 @@ class Vp9ReferenceFrameVector {
   std::array<scoped_refptr<VP9Picture>, kVp9NumRefFrames> reference_frames_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(Vp9ReferenceFrameVector);
 };
 
 }  // namespace media

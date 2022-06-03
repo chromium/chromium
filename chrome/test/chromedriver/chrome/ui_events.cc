@@ -4,7 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -23,6 +23,11 @@ MouseEvent::MouseEvent(MouseEventType type,
       modifiers(modifiers),
       buttons(buttons),
       click_count(click_count),
+      force(0.0),
+      tangentialPressure(0.0),
+      tiltX(0),
+      tiltY(0),
+      twist(0),
       pointer_type(kMouse) {}
 
 MouseEvent::MouseEvent(const MouseEvent& other) = default;
@@ -39,6 +44,10 @@ TouchEvent::TouchEvent(TouchEventType type, int x, int y)
       radiusY(1.0),
       rotationAngle(0.0),
       force(1.0),
+      tangentialPressure(0.0),
+      tiltX(0),
+      tiltY(0),
+      twist(0),
       id(0),
       dispatch(true) {}
 
@@ -130,7 +139,7 @@ KeyEvent KeyEventBuilder::Build() {
   return key_event_;
 }
 
-void KeyEventBuilder::Generate(std::list<KeyEvent>* key_events) {
+void KeyEventBuilder::Generate(std::vector<KeyEvent>* key_events) {
   key_events->push_back(SetType(kRawKeyDownEventType)->Build());
   if (key_event_.modified_text.length() || key_event_.unmodified_text.length())
     key_events->push_back(SetType(kCharEventType)->Build());

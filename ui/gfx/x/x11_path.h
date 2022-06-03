@@ -5,22 +5,26 @@
 #ifndef UI_GFX_X_X11_PATH_H_
 #define UI_GFX_X_X11_PATH_H_
 
-#include "ui/gfx/gfx_export.h"
-#include "ui/gfx/x/x11_types.h"
+#include "base/component_export.h"
+#include "ui/gfx/x/xproto.h"
 
 class SkPath;
 class SkRegion;
 
-namespace gfx {
+namespace x11 {
 
 // Creates a new XRegion given |region|. The caller is responsible for
 // destroying the returned region.
-GFX_EXPORT XRegion* CreateRegionFromSkRegion(const SkRegion& region);
+COMPONENT_EXPORT(X11)
+std::unique_ptr<std::vector<Rectangle>> CreateRegionFromSkRegion(
+    const SkRegion& region);
 
 // Creates a new XRegion given |path|. The caller is responsible for destroying
 // the returned region.
-GFX_EXPORT XRegion* CreateRegionFromSkPath(const SkPath& path);
+COMPONENT_EXPORT(X11)
+std::unique_ptr<std::vector<Rectangle>> CreateRegionFromSkPath(
+    const SkPath& path);
 
-}  // namespace gfx
+}  // namespace x11
 
 #endif  // UI_GFX_X_X11_PATH_H_

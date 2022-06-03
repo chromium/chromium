@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
-#define IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
+#ifndef IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_
+#define IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_
 
 namespace app_group {
 
@@ -18,4 +18,4 @@ void ClearAppGroupSandbox();
 
 }  // namespace app_group
 
-#endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
+#endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_

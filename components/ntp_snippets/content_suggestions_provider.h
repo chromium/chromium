@@ -130,7 +130,7 @@ class ContentSuggestionsProvider {
   virtual void ClearHistory(
       base::Time begin,
       base::Time end,
-      const base::Callback<bool(const GURL& url)>& filter) = 0;
+      const base::RepeatingCallback<bool(const GURL& url)>& filter) = 0;
 
   // Clears suggestions for any non-history related reason (e.g., sign-in status
   // change, etc.) so that the next fetch starts from scratch.

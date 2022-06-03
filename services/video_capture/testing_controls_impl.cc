@@ -4,7 +4,7 @@
 
 #include "services/video_capture/testing_controls_impl.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace video_capture {
 

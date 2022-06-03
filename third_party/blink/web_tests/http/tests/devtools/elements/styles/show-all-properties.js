@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that large rules are truncated and can be fully expanded.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   var ruleText = '\n';
   for (var i = 0; i < 200; i++)
@@ -18,10 +18,10 @@
 
   await new Promise(x => ElementsTestRunner.selectNodeAndWaitForStyles('inspected', x));
   TestRunner.addResult('Before showing all properties:')
-  ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
   TestRunner.addResult('After showing all properties:')
-  ElementsTestRunner.firstMatchedStyleSection()._showAllButton.click();
-  ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  ElementsTestRunner.firstMatchedStyleSection().showAllButton.click();
+  await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
   TestRunner.completeTest();
 })();

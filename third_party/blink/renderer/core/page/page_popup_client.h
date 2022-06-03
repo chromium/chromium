@@ -39,10 +39,14 @@
 
 namespace blink {
 
+class CSSFontSelector;
 class ChromeClient;
 class Document;
 class Element;
 class Locale;
+class Page;
+class PagePopup;
+class PagePopupController;
 
 class CORE_EXPORT PagePopupClient {
  public:
@@ -53,12 +57,13 @@ class CORE_EXPORT PagePopupClient {
   //  - window.setValueAndClosePopup(number, string).
   virtual void WriteDocument(SharedBuffer*) = 0;
 
-  // This is called after the document is ready to do additionary setup.
-  virtual void SelectFontsFromOwnerDocument(Document&) = 0;
-
   virtual Element& OwnerElement() = 0;
 
   virtual ChromeClient& GetChromeClient() = 0;
+
+  virtual CSSFontSelector* CreateCSSFontSelector(Document& popup_document);
+
+  virtual PagePopupController* CreatePagePopupController(Page&, PagePopup&);
 
   // Returns effective zoom factor of ownerElement, or the page zoom factor if
   // the effective zoom factor is not available.
@@ -85,6 +90,9 @@ class CORE_EXPORT PagePopupClient {
   // This is called whenever a PagePopup was closed.
   virtual void DidClosePopup() = 0;
 
+  // This is called when popup content or its owner's position changed.
+  virtual void Update(bool force_update) {}
+
   virtual ~PagePopupClient() = default;
 
   // Helper functions to be used in PagePopupClient::writeDocument().
@@ -99,6 +107,7 @@ class CORE_EXPORT PagePopupClient {
                           const Vector<String>& values,
                           SharedBuffer*);
   static void AddProperty(const char* name, const IntRect&, SharedBuffer*);
+  void AddLocalizedProperty(const char* name, int resource_id, SharedBuffer*);
 };
 
 inline void PagePopupClient::AddString(const String& str, SharedBuffer* data) {
@@ -107,4 +116,4 @@ inline void PagePopupClient::AddString(const String& str, SharedBuffer* data) {
 }
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_POPUP_CLIENT_H_

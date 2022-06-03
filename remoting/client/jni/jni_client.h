@@ -27,6 +27,10 @@ struct ConnectToHostInfo;
 class JniClient : public ChromotingSession::Delegate {
  public:
   JniClient(base::android::ScopedJavaGlobalRef<jobject> java_client);
+
+  JniClient(const JniClient&) = delete;
+  JniClient& operator=(const JniClient&) = delete;
+
   ~JniClient() override;
 
   // Initiates a connection with the specified host. To skip the attempt at
@@ -179,8 +183,6 @@ class JniClient : public ChromotingSession::Delegate {
   // Holds pointer for the UI thread.
   base::WeakPtr<JniClient> weak_ptr_;
   base::WeakPtrFactory<JniClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JniClient);
 };
 
 }  // namespace remoting

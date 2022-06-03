@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_view.h"
@@ -37,7 +37,7 @@ class HungPagesTableModel : public ui::TableModel,
  public:
   class Delegate {
    public:
-    // Notification when the model is updated (eg. new location) yet
+    // Notification when the model is updated (e.g. new location) yet
     // still hung.
     virtual void TabUpdated() = 0;
 
@@ -45,10 +45,12 @@ class HungPagesTableModel : public ui::TableModel,
     virtual void TabDestroyed() = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit HungPagesTableModel(Delegate* delegate);
+  HungPagesTableModel(const HungPagesTableModel&) = delete;
+  HungPagesTableModel& operator=(const HungPagesTableModel&) = delete;
   ~HungPagesTableModel() override;
 
   void InitForWebContents(content::WebContents* hung_contents,
@@ -67,8 +69,8 @@ class HungPagesTableModel : public ui::TableModel,
 
   // Overridden from ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column_id) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  std::u16string GetText(int row, int column_id) override;
+  ui::ImageModel GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Overridden from RenderProcessHostObserver:
@@ -89,6 +91,8 @@ class HungPagesTableModel : public ui::TableModel,
    public:
     WebContentsObserverImpl(HungPagesTableModel* model,
                             content::WebContents* tab);
+    WebContentsObserverImpl(const WebContentsObserverImpl&) = delete;
+    WebContentsObserverImpl& operator=(const WebContentsObserverImpl&) = delete;
 
     favicon::FaviconDriver* favicon_driver() {
       return favicon::ContentFaviconDriver::FromWebContents(web_contents());
@@ -101,8 +105,6 @@ class HungPagesTableModel : public ui::TableModel,
 
    private:
     HungPagesTableModel* model_;
-
-    DISALLOW_COPY_AND_ASSIGN(WebContentsObserverImpl);
   };
 
   // Invoked when a WebContents is destroyed. Cleans up |tab_observers_| and
@@ -124,13 +126,13 @@ class HungPagesTableModel : public ui::TableModel,
   // some more until the renderer process responds).
   base::RepeatingClosure hang_monitor_restarter_;
 
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
-      process_observer_{this};
+  base::ScopedObservation<content::RenderProcessHost,
+                          content::RenderProcessHostObserver>
+      process_observation_{this};
 
-  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
-      widget_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HungPagesTableModel);
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      widget_observation_{this};
 };
 
 // This class displays a dialog which contains information about a hung
@@ -138,12 +140,10 @@ class HungPagesTableModel : public ui::TableModel,
 class HungRendererDialogView : public views::DialogDelegateView,
                                public HungPagesTableModel::Delegate {
  public:
-  // Factory function for creating an instance of the HungRendererDialogView
-  // class. At any given point only one instance can be active.
-  static HungRendererDialogView* Create(gfx::NativeWindow context);
+  METADATA_HEADER(HungRendererDialogView);
 
-  // Returns a pointer to the singleton instance if any.
-  static HungRendererDialogView* GetInstance();
+  HungRendererDialogView(const HungRendererDialogView&) = delete;
+  HungRendererDialogView& operator=(const HungRendererDialogView&) = delete;
 
   // Shows or hides the hung renderer dialog for the given WebContents.
   static void Show(content::WebContents* contents,
@@ -152,65 +152,85 @@ class HungRendererDialogView : public views::DialogDelegateView,
   static void Hide(content::WebContents* contents,
                    content::RenderWidgetHost* render_widget_host);
 
-  // Returns true if the frame is in the foreground.
-  static bool IsFrameActive(content::WebContents* contents);
+  // Returns true if there is an instance showing for the given WebContents.
+  static bool IsShowingForWebContents(content::WebContents* contents);
 
-  virtual void ShowForWebContents(
-      content::WebContents* contents,
-      content::RenderWidgetHost* render_widget_host,
-      base::RepeatingClosure hang_monitor_restarter);
-  virtual void EndForWebContents(content::WebContents* contents,
-                                 content::RenderWidgetHost* render_widget_host);
+  views::TableView* table_for_testing() { return hung_pages_table_; }
+  HungPagesTableModel* table_model_for_testing() {
+    return hung_pages_table_model_.get();
+  }
 
   // views::DialogDelegateView overrides:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  void WindowClosing() override;
-  bool Cancel() override;
-  bool Accept() override;
-  bool Close() override;
 
   // HungPagesTableModel::Delegate overrides:
   void TabUpdated() override;
   void TabDestroyed() override;
 
- protected:
-  HungRendererDialogView();
-  ~HungRendererDialogView() override;
-
-  // views::View overrides:
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
-
-  static HungRendererDialogView* g_instance_;
-
  private:
   friend class HungRendererDialogViewBrowserTest;
 
-  // Initialize the controls in this dialog.
-  void Init();
+  explicit HungRendererDialogView(content::WebContents* web_contents);
+  ~HungRendererDialogView() override;
+
+  // Creates an instance for the given WebContents and window.
+  static HungRendererDialogView* CreateInstance(content::WebContents* contents,
+                                                gfx::NativeWindow window);
+
+  // Gets the instance, if any, for the given WebContents, or null if there is
+  // none.
+  static HungRendererDialogView* GetInstanceForWebContentsForTests(
+      content::WebContents* contents);
+
+  // Shows or hides the dialog. Dispatched to by the `Show()` and `Hide()`
+  // static methods.
+  void ShowDialog(content::RenderWidgetHost* render_widget_host,
+                  base::RepeatingClosure hang_monitor_restarter);
+  void EndDialog(content::RenderWidgetHost* render_widget_host);
 
   // Restart the hang timer, giving the page more time.
   void RestartHangTimer();
 
+  // Crashes the hung renderer.
+  void ForceCrashHungRenderer();
+
+  // Resets the association with the WebContents.
+  //
+  // TODO(avi): Calls to this are rather unfortunately scattered throughout the
+  // class, but there doesn't seem to be a place that would work for the three
+  // ways that the dialog can go away (the two buttons plus the external
+  // closing). Both the destructor and `WindowClosing()` functions are too late.
+  // Can it be wired in better?
+  void ResetWebContentsAssociation();
+
+  // Updates the labels and the button text of the dialog. Normally called only
+  // once when the render process first hangs, right before the dialog is shown.
+  // It is separated into its own function so that the browsertest's "show UI"
+  // functionality is able to fake a multi-page hang and force the UI to refresh
+  // as if multiple pages were legitimately hung.
   void UpdateLabels();
 
+  // Causes the dialog to close with no action taken. Called when the page
+  // stops hanging by itself, or when the page or render process goes away.
   void CloseDialogWithNoAction();
 
+  // Bypasses the requirement for the browser window to be active. Only used in
+  // tests.
+  static void BypassActiveBrowserRequirementForTests();
+
+  // The WebContents that this dialog was created for and is associated with.
+  content::WebContents* const web_contents_;
+
   // The label describing the list.
-  views::Label* info_label_;
+  views::Label* info_label_ = nullptr;
 
   // Controls within the dialog box.
-  views::TableView* hung_pages_table_;
+  views::TableView* hung_pages_table_ = nullptr;
 
   // The model that provides the contents of the table that shows a list of
   // pages affected by the hang.
   std::unique_ptr<HungPagesTableModel> hung_pages_table_model_;
-
-  // Whether or not we've created controls for ourself.
-  bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(HungRendererDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HUNG_RENDERER_VIEW_H_

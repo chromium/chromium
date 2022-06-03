@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_DATABASE_H_
 #define CHROME_BROWSER_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_DATABASE_H_
 
-#include <string>
-#include <vector>
-
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
@@ -101,6 +98,9 @@ class ActivityDatabase {
   // reads/writes.
   explicit ActivityDatabase(Delegate* delegate);
 
+  ActivityDatabase(const ActivityDatabase&) = delete;
+  ActivityDatabase& operator=(const ActivityDatabase&) = delete;
+
   // Opens the DB.  This invokes OnDatabaseInit in the delegate to create or
   // update the database schema if needed.
   void Init(const base::FilePath& db_name);
@@ -174,6 +174,8 @@ class ActivityDatabase {
   // only be called on the database thread.
   sql::Database* GetSqlConnection();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // A reference a Delegate for policy-specific database behavior.  See the
   // top-level comment for ActivityDatabase for comments on cleanup.
   Delegate* delegate_;
@@ -190,7 +192,6 @@ class ActivityDatabase {
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeOff);
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeOn);
   FRIEND_TEST_ALL_PREFIXES(ActivityDatabaseTest, BatchModeFlush);
-  DISALLOW_COPY_AND_ASSIGN(ActivityDatabase);
 };
 
 }  // namespace extensions

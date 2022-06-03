@@ -12,29 +12,39 @@
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
-#include "content/browser/appcache/appcache_navigation_handle.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/browser/interface_provider_filtering.h"
-#include "content/browser/service_worker/service_worker_navigation_handle.h"
+#include "content/browser/net/cross_origin_embedder_policy_reporter.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_content_settings_proxy_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/worker_type.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
+#include "services/metrics/public/cpp/delegating_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
@@ -45,13 +55,13 @@ namespace content {
 // RAII helper class for talking to SharedWorkerDevToolsManager.
 class SharedWorkerHost::ScopedDevToolsHandle {
  public:
-  ScopedDevToolsHandle(SharedWorkerHost* owner,
-                       bool* out_pause_on_start,
-                       base::UnguessableToken* out_devtools_worker_token)
-      : owner_(owner) {
+  explicit ScopedDevToolsHandle(SharedWorkerHost* owner) : owner_(owner) {
     SharedWorkerDevToolsManager::GetInstance()->WorkerCreated(
-        owner, out_pause_on_start, out_devtools_worker_token);
+        owner, &pause_on_start_, &dev_tools_token_);
   }
+
+  ScopedDevToolsHandle(const ScopedDevToolsHandle&) = delete;
+  ScopedDevToolsHandle& operator=(const ScopedDevToolsHandle&) = delete;
 
   ~ScopedDevToolsHandle() {
     SharedWorkerDevToolsManager::GetInstance()->WorkerDestroyed(owner_);
@@ -65,51 +75,114 @@ class SharedWorkerHost::ScopedDevToolsHandle {
         owner_, std::move(agent_remote), std::move(agent_host_receiver));
   }
 
+  bool pause_on_start() const { return pause_on_start_; }
+
+  const base::UnguessableToken& dev_tools_token() const {
+    return dev_tools_token_;
+  }
+
  private:
   SharedWorkerHost* owner_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevToolsHandle);
+
+  // Indicates if the worker should be paused when it is started. This is set
+  // when a dev tools agent host already exists for that shared worker, which
+  // happens when a shared worker is restarted while it is being debugged.
+  bool pause_on_start_;
+
+  base::UnguessableToken dev_tools_token_;
 };
 
-SharedWorkerHost::SharedWorkerHost(SharedWorkerServiceImpl* service,
-                                   const SharedWorkerInstance& instance,
-                                   int worker_process_id)
+class SharedWorkerHost::ScopedProcessHostRef {
+ public:
+  explicit ScopedProcessHostRef(RenderProcessHost* render_process_host)
+      : render_process_host_(render_process_host) {
+    render_process_host_->IncrementWorkerRefCount();
+  }
+
+  ~ScopedProcessHostRef() {
+    if (!render_process_host_->AreRefCountsDisabled())
+      render_process_host_->DecrementWorkerRefCount();
+  }
+
+  ScopedProcessHostRef(const ScopedProcessHostRef& other) = delete;
+
+ private:
+  RenderProcessHost* const render_process_host_;
+};
+
+SharedWorkerHost::SharedWorkerHost(
+    SharedWorkerServiceImpl* service,
+    const SharedWorkerInstance& instance,
+    scoped_refptr<SiteInstanceImpl> site_instance,
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies,
+    const network::CrossOriginEmbedderPolicy&
+        creator_cross_origin_embedder_policy)
     : service_(service),
+      token_(blink::SharedWorkerToken()),
       instance_(instance),
-      worker_process_id_(worker_process_id),
-      next_connection_request_id_(1) {
+      content_security_policies_(std::move(content_security_policies)),
+      site_instance_(std::move(site_instance)),
+      scoped_process_host_ref_(
+          std::make_unique<ScopedProcessHostRef>(site_instance_->GetProcess())),
+      next_connection_request_id_(1),
+      devtools_handle_(std::make_unique<ScopedDevToolsHandle>(this)),
+      code_cache_host_receivers_(GetProcessHost()
+                                     ->GetStoragePartition()
+                                     ->GetGeneratedCodeCacheContext()),
+      ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
+                                            ukm::SourceIdType::WORKER_ID)),
+      reporting_source_(base::UnguessableToken::Create()),
+      creator_cross_origin_embedder_policy_(
+          creator_cross_origin_embedder_policy) {
+  DCHECK(GetProcessHost());
+  DCHECK(GetProcessHost()->IsInitializedAndNotDead());
+
+  site_instance_->AddObserver(this);
+
   // Set up the worker pending receiver. This is needed first in either
   // AddClient() or Start(). AddClient() can sometimes be called before Start()
   // when two clients call new SharedWorker() at around the same time.
   worker_receiver_ = worker_.BindNewPipeAndPassReceiver();
 
-  // Keep the renderer process alive that will be hosting the shared worker.
-  auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
-  DCHECK(!IsShuttingDown(worker_process_host));
-  worker_process_host->IncrementKeepAliveRefCount();
+  service_->NotifyWorkerCreated(token_, GetProcessHost()->GetID(),
+                                devtools_handle_->dev_tools_token());
 }
 
 SharedWorkerHost::~SharedWorkerHost() {
+  site_instance_->RemoveObserver(this);
+
   if (started_) {
     // Attempt to notify the worker before disconnecting.
-    if (worker_)
+    if (worker_) {
       worker_->Terminate();
-
-    // Notify the service that each client still connected will be removed and
-    // that the worker will terminate.
-    for (const auto& client : clients_) {
-      service_->NotifyClientRemoved(instance_, client.client_process_id,
-                                    client.frame_id);
     }
-    service_->NotifyWorkerTerminating(instance_);
   } else {
     // Tell clients that this worker failed to start.
     for (const ClientInfo& info : clients_)
-      info.client->OnScriptLoadFailed();
+      info.client->OnScriptLoadFailed(/*error_message=*/"");
   }
 
-  auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
-  if (!IsShuttingDown(worker_process_host))
-    worker_process_host->DecrementKeepAliveRefCount();
+  // Send any final reports and allow the reporting configuration to be
+  // removed.
+  if (site_instance_->HasProcess()) {
+    GetProcessHost()
+        ->GetStoragePartition()
+        ->GetNetworkContext()
+        ->SendReportsAndRemoveSource(reporting_source_);
+  }
+
+  // Notify the service that each client still connected will be removed and
+  // that the worker will terminate.
+  for (const auto& client : clients_) {
+    service_->NotifyClientRemoved(token_, client.render_frame_host_id);
+  }
+  service_->NotifyBeforeWorkerDestroyed(token_);
+}
+
+RenderProcessHost* SharedWorkerHost::GetProcessHost() {
+  DCHECK(site_instance_->HasProcess());
+  return site_instance_->GetProcess();
 }
 
 void SharedWorkerHost::Start(
@@ -119,7 +192,10 @@ void SharedWorkerHost::Start(
         subresource_loader_factories,
     blink::mojom::ControllerServiceWorkerInfoPtr controller,
     base::WeakPtr<ServiceWorkerObjectHost>
-        controller_service_worker_object_host) {
+        controller_service_worker_object_host,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    const GURL& final_response_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   DCHECK(main_script_load_params);
@@ -127,22 +203,59 @@ void SharedWorkerHost::Start(
   DCHECK(!subresource_loader_factories->pending_default_factory());
 
   started_ = true;
+  final_response_url_ = final_response_url;
 
+  if (base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)) {
+    // https://html.spec.whatwg.org/C/#run-a-worker
+    worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
+    if (final_response_url.SchemeIsBlob() ||
+        final_response_url.SchemeIs(url::kAboutScheme) ||
+        final_response_url.SchemeIs(url::kDataScheme)) {
+      // > 13.6 If response's url's scheme is a local scheme, then set worker
+      // global scope's embedder policy to owner's embedder policy.
+      worker_cross_origin_embedder_policy_ =
+          creator_cross_origin_embedder_policy_;
+    } else if (main_script_load_params->response_head->parsed_headers) {
+      // > 13.7 Otherwise, set worker global scope's embedder policy to the
+      // result of obtaining an embedder policy from response.
+      worker_cross_origin_embedder_policy_ = CoepFromMainResponse(
+          final_response_url, main_script_load_params->response_head.get());
+    }
+    switch (worker_cross_origin_embedder_policy_->value) {
+      case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
+        OnFeatureUsed(blink::mojom::WebFeature::kCoepNoneSharedWorker);
+        break;
+      case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+        OnFeatureUsed(
+            blink::mojom::WebFeature::kCoepCredentiallessSharedWorker);
+        break;
+      case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+        OnFeatureUsed(blink::mojom::WebFeature::kCoepRequireCorpSharedWorker);
+        break;
+    }
+
+    // Create a COEP reporter with worker's policy.
+    coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+        CrossOriginEmbedderPolicyReporter::Creator::kSharedWorker,
+        GetProcessHost()->GetStoragePartition(), final_response_url,
+        worker_cross_origin_embedder_policy_->reporting_endpoint,
+        worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
+        GetReportingSource(), GetNetworkIsolationKey());
+  } else {
+    worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
+  }
+
+  auto options = blink::mojom::WorkerOptions::New(
+      instance_.script_type(), instance_.credentials_mode(), instance_.name());
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
-      instance_.url(), instance_.name(), instance_.content_security_policy(),
-      instance_.content_security_policy_type(),
-      instance_.creation_address_space()));
+      instance_.url(), std::move(options),
+      mojo::Clone(content_security_policies_),
+      instance_.creation_address_space(),
+      std::move(outside_fetch_client_settings_object)));
 
-  // Register with DevTools.
-  bool pause_on_start;
-  base::UnguessableToken devtools_worker_token;
-  devtools_handle_ = std::make_unique<ScopedDevToolsHandle>(
-      this, &pause_on_start, &devtools_worker_token);
-
-  auto renderer_preferences = blink::mojom::RendererPreferences::New();
+  auto renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
-      renderer_preferences.get());
+      GetProcessHost()->GetBrowserContext(), &renderer_preferences);
 
   // Create a RendererPreferenceWatcher to observe updates in the preferences.
   mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher_remote;
@@ -150,8 +263,7 @@ void SharedWorkerHost::Start(
       preference_watcher_receiver =
           watcher_remote.InitWithNewPipeAndPassReceiver();
   GetContentClient()->browser()->RegisterRendererPreferenceWatcher(
-      RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
-      std::move(watcher_remote));
+      GetProcessHost()->GetBrowserContext(), std::move(watcher_remote));
 
   // Set up content settings interface.
   mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>
@@ -188,44 +300,30 @@ void SharedWorkerHost::Start(
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
-      std::move(info), GetContentClient()->browser()->GetUserAgent(),
-      pause_on_start, devtools_worker_token, std::move(renderer_preferences),
-      std::move(preference_watcher_receiver), std::move(content_settings),
-      service_worker_handle_->TakeProviderInfo(),
-      appcache_handle_
-          ? base::make_optional(appcache_handle_->appcache_host_id())
-          : base::nullopt,
+      std::move(info), token_, instance_.storage_key().origin(),
+      GetContentClient()->browser()->GetUserAgent(),
+      GetContentClient()->browser()->GetReducedUserAgent(),
+      GetContentClient()->browser()->GetUserAgentMetadata(),
+      devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
+      std::move(renderer_preferences), std::move(preference_watcher_receiver),
+      std::move(content_settings), service_worker_handle_->TakeContainerInfo(),
       std::move(main_script_load_params),
       std::move(subresource_loader_factories), std::move(controller),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
-      std::move(browser_interface_broker));
+      std::move(browser_interface_broker), ukm_source_id_);
 
   // |service_worker_remote_object| is an associated interface ptr, so calls
   // can't be made on it until its request endpoint is sent. Now that the
   // request endpoint was sent, it can be used, so add it to
   // ServiceWorkerObjectHost.
   if (service_worker_remote_object.is_valid()) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(
-            &ServiceWorkerObjectHost::AddRemoteObjectPtrAndUpdateState,
-            controller_service_worker_object_host,
-            std::move(service_worker_remote_object),
-            service_worker_sent_state));
+    controller_service_worker_object_host->AddRemoteObjectPtrAndUpdateState(
+        std::move(service_worker_remote_object), service_worker_sent_state);
   }
 
   // Monitor the lifetime of the worker.
   worker_.set_disconnect_handler(base::BindOnce(
       &SharedWorkerHost::OnWorkerConnectionLost, weak_factory_.GetWeakPtr()));
-
-  // Notify the service that the worker was started and that some clients were
-  // already connected.
-  service_->NotifyWorkerStarted(instance_, worker_process_id_,
-                                devtools_worker_token);
-  for (const auto& client : clients_) {
-    service_->NotifyClientAdded(instance_, client.client_process_id,
-                                client.frame_id);
-  }
 }
 
 //  This is similar to
@@ -238,49 +336,82 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bypass_redirect_checks);
 
-  auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
-
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       default_factory_receiver =
           pending_default_factory.InitWithNewPipeAndPassReceiver();
 
-  const url::Origin& origin = instance_.constructor_origin();
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
-      URLLoaderFactoryParamsHelper::CreateForWorker(
-          worker_process_host, origin,
-          net::NetworkIsolationKey(origin, origin));
+      CreateNetworkFactoryParamsForSubresources();
+  url::Origin origin = url::Origin::Create(instance_.url());
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      worker_process_host->GetBrowserContext(),
-      /*frame=*/nullptr, worker_process_id_,
+      GetProcessHost()->GetBrowserContext(),
+      /*frame=*/nullptr, GetProcessHost()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource, origin,
-      /*navigation_id=*/base::nullopt, &default_factory_receiver,
+      /*navigation_id=*/absl::nullopt,
+      ukm::SourceIdObj::FromInt64(ukm_source_id_), &default_factory_receiver,
       &factory_params->header_client, bypass_redirect_checks,
-      &factory_params->factory_override);
+      /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
 
-  // TODO(nhiroki): Call devtools_instrumentation::WillCreateURLLoaderFactory()
-  // here.
+  devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
+      this, &factory_params->factory_override);
 
-  // TODO(yhirano): Support COEP.
-
-  worker_process_host->CreateURLLoaderFactory(
-      std::move(default_factory_receiver), std::move(factory_params));
+  GetProcessHost()->CreateURLLoaderFactory(std::move(default_factory_receiver),
+                                           std::move(factory_params));
 
   return pending_default_factory;
+}
+
+network::mojom::URLLoaderFactoryParamsPtr
+SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
+  url::Origin origin = GetStorageKey().origin();
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter;
+  network::mojom::ClientSecurityStatePtr client_security_state;
+  if (base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)) {
+    // TODO(crbug.com/1231019): make sure client_security_state is no longer
+    // nullptr anywhere.
+    client_security_state = network::mojom::ClientSecurityState::New();
+    client_security_state->cross_origin_embedder_policy =
+        cross_origin_embedder_policy();
+    if (coep_reporter_) {
+      coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+    }
+  }
+  network::mojom::URLLoaderFactoryParamsPtr factory_params =
+      URLLoaderFactoryParamsHelper::CreateForWorker(
+          GetProcessHost(), origin,
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     // TODO(https://crbug.com/1147281): We
+                                     // should pass the top_level_site from
+                                     // `GetStorageKey()` instead.
+                                     origin, origin,
+                                     net::SiteForCookies::FromOrigin(origin),
+                                     /*party_context=*/absl::nullopt,
+                                     GetStorageKey().nonce().has_value()
+                                         ? &GetStorageKey().nonce().value()
+                                         : nullptr),
+          std::move(coep_reporter),
+          /*url_loader_network_observer=*/mojo::NullRemote(),
+          /*devtools_observer=*/mojo::NullRemote(),
+          std::move(client_security_state),
+          /*debug_tag=*/
+          "SharedWorkerHost::CreateNetworkFactoryForSubresource");
+  return factory_params;
 }
 
 void SharedWorkerHost::AllowFileSystem(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   GetContentClient()->browser()->AllowWorkerFileSystem(
-      url, RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
-      GetRenderFrameIDsForWorker(), std::move(callback));
+      url, GetProcessHost()->GetBrowserContext(), GetRenderFrameIDsForWorker(),
+      std::move(callback));
 }
 
 void SharedWorkerHost::AllowIndexedDB(const GURL& url,
                                       base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerIndexedDB(
-      url, RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
+      url, GetProcessHost()->GetBrowserContext(),
       GetRenderFrameIDsForWorker()));
 }
 
@@ -289,44 +420,62 @@ void SharedWorkerHost::AllowCacheStorage(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(
       GetContentClient()->browser()->AllowWorkerCacheStorage(
-          url,
-          RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
+          url, GetProcessHost()->GetBrowserContext(),
           GetRenderFrameIDsForWorker()));
 }
 
 void SharedWorkerHost::AllowWebLocks(const GURL& url,
                                      base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerWebLocks(
-      url, RenderProcessHost::FromID(worker_process_id_)->GetBrowserContext(),
+      url, GetProcessHost()->GetBrowserContext(),
       GetRenderFrameIDsForWorker()));
 }
 
-void SharedWorkerHost::CreateAppCacheBackend(
-    mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver) {
+void SharedWorkerHost::CreateWebTransportConnector(
+    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderProcessHost* worker_process_host = GetProcessHost();
-  if (!worker_process_host)
-    return;
-  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
-      worker_process_host->GetStoragePartition());
-  if (!storage_partition_impl)
-    return;
-  storage_partition_impl->GetAppCacheService()->CreateBackend(
-      worker_process_host->GetID(), MSG_ROUTING_NONE, std::move(receiver));
+  const url::Origin origin = url::Origin::Create(instance().url());
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WebTransportConnectorImpl>(
+                                  GetProcessHost()->GetID(), /*frame=*/nullptr,
+                                  origin, GetNetworkIsolationKey()),
+                              std::move(receiver));
 }
 
-void SharedWorkerHost::CreateQuicTransportConnector(
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
+void SharedWorkerHost::BindCacheStorage(
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderProcessHost* worker_process_host = GetProcessHost();
-  if (!worker_process_host)
-    return;
 
-  const url::Origin origin = url::Origin::Create(instance().url());
-  mojo::MakeSelfOwnedReceiver(std::make_unique<QuicTransportConnectorImpl>(
-                                  worker_process_host->GetID(), origin,
-                                  net::NetworkIsolationKey(origin, origin)),
-                              std::move(receiver));
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter;
+  if (coep_reporter_) {
+    DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
+    coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
+  GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy(),
+                                     std::move(coep_reporter), GetStorageKey(),
+                                     std::move(receiver));
+}
+
+void SharedWorkerHost::CreateBroadcastChannelProvider(
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      GetProcessHost()->GetStoragePartition());
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BroadcastChannelProvider>(
+          storage_partition_impl->GetBroadcastChannelService(),
+          GetStorageKey()),
+      std::move(receiver));
+}
+
+void SharedWorkerHost::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  code_cache_host_receivers_.Add(GetProcessHost()->GetID(),
+                                 GetNetworkIsolationKey(), std::move(receiver));
 }
 
 void SharedWorkerHost::Destruct() {
@@ -337,12 +486,10 @@ void SharedWorkerHost::Destruct() {
 SharedWorkerHost::ClientInfo::ClientInfo(
     mojo::Remote<blink::mojom::SharedWorkerClient> client,
     int connection_request_id,
-    int client_process_id,
-    int frame_id)
+    GlobalRenderFrameHostId render_frame_host_id)
     : client(std::move(client)),
       connection_request_id(connection_request_id),
-      client_process_id(client_process_id),
-      frame_id(frame_id) {}
+      render_frame_host_id(render_frame_host_id) {}
 
 SharedWorkerHost::ClientInfo::~ClientInfo() {}
 
@@ -368,15 +515,29 @@ void SharedWorkerHost::OnReadyForInspection(
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
         agent_host_receiver) {
-  if (devtools_handle_) {
-    devtools_handle_->WorkerReadyForInspection(std::move(agent_remote),
-                                               std::move(agent_host_receiver));
-  }
+  devtools_handle_->WorkerReadyForInspection(std::move(agent_remote),
+                                             std::move(agent_host_receiver));
 }
 
-void SharedWorkerHost::OnScriptLoadFailed() {
+void SharedWorkerHost::OnScriptLoadFailed(const std::string& error_message) {
   for (const ClientInfo& info : clients_)
-    info.client->OnScriptLoadFailed();
+    info.client->OnScriptLoadFailed(error_message);
+}
+
+// The implementation of the following algorithm:
+// https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
+bool SharedWorkerHost::CheckCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+    network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
+  if (!network::CompatibleWithCrossOriginIsolated(
+          creator_cross_origin_embedder_policy) ||
+      network::CompatibleWithCrossOriginIsolated(
+          worker_cross_origin_embedder_policy)) {
+    return true;
+  }
+  // TODO(https://crbug.com/1060832): Add reporters.
+  return false;
 }
 
 void SharedWorkerHost::OnFeatureUsed(blink::mojom::WebFeature feature) {
@@ -388,14 +549,16 @@ void SharedWorkerHost::OnFeatureUsed(blink::mojom::WebFeature feature) {
     info.client->OnFeatureUsed(feature);
 }
 
-std::vector<GlobalFrameRoutingId>
+void SharedWorkerHost::RenderProcessHostDestroyed() {
+  Destruct();
+}
+
+std::vector<GlobalRenderFrameHostId>
 SharedWorkerHost::GetRenderFrameIDsForWorker() {
-  std::vector<GlobalFrameRoutingId> result;
+  std::vector<GlobalRenderFrameHostId> result;
   result.reserve(clients_.size());
-  for (const ClientInfo& info : clients_) {
-    result.push_back(
-        GlobalFrameRoutingId(info.client_process_id, info.frame_id));
-  }
+  for (const ClientInfo& info : clients_)
+    result.push_back(info.render_frame_host_id);
   return result;
 }
 
@@ -403,11 +566,27 @@ base::WeakPtr<SharedWorkerHost> SharedWorkerHost::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
+  // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
+  // top-level browsing context, which shouldn't be use for SharedWorkers used
+  // in iframes.
+  return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+      GetStorageKey().origin());
+}
+
+const blink::StorageKey& SharedWorkerHost::GetStorageKey() const {
+  return instance().storage_key();
+}
+
+void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
+  broker_receiver_.ReportBadMessage(error + " for the shared worker scope");
+}
+
 void SharedWorkerHost::AddClient(
     mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
-    int client_process_id,
-    int frame_id,
-    const blink::MessagePortChannel& port) {
+    GlobalRenderFrameHostId client_render_frame_host_id,
+    const blink::MessagePortChannel& port,
+    ukm::SourceId client_ukm_source_id) {
   mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(
       std::move(client));
 
@@ -416,30 +595,29 @@ void SharedWorkerHost::AddClient(
   remote_client->OnCreated(instance_.creation_context_type());
 
   clients_.emplace_back(std::move(remote_client), next_connection_request_id_++,
-                        client_process_id, frame_id);
+                        client_render_frame_host_id);
   ClientInfo& info = clients_.back();
 
   // Observe when the client goes away.
   info.client.set_disconnect_handler(base::BindOnce(
       &SharedWorkerHost::OnClientConnectionLost, weak_factory_.GetWeakPtr()));
 
+  ukm::DelegatingUkmRecorder* ukm_recorder = ukm::DelegatingUkmRecorder::Get();
+  if (ukm_recorder) {
+    ukm::builders::Worker_ClientAdded(ukm_source_id_)
+        .SetClientSourceId(client_ukm_source_id)
+        .SetWorkerType(static_cast<int64_t>(WorkerType::kSharedWorker))
+        .Record(ukm_recorder);
+  }
+
   worker_->Connect(info.connection_request_id, port.ReleaseHandle());
 
-  // Notify that a new client was added now. If the worker is not started, the
-  // Start() function will handle sending a notification for each existing
-  // client.
-  if (started_)
-    service_->NotifyClientAdded(instance_, client_process_id, frame_id);
-}
-
-void SharedWorkerHost::SetAppCacheHandle(
-    std::unique_ptr<AppCacheNavigationHandle> appcache_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  appcache_handle_ = std::move(appcache_handle);
+  // Notify that a new client was added now.
+  service_->NotifyClientAdded(token_, client_render_frame_host_id);
 }
 
 void SharedWorkerHost::SetServiceWorkerHandle(
-    std::unique_ptr<ServiceWorkerNavigationHandle> service_worker_handle) {
+    std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   service_worker_handle_ = std::move(service_worker_handle);
 }
@@ -447,16 +625,24 @@ void SharedWorkerHost::SetServiceWorkerHandle(
 void SharedWorkerHost::PruneNonExistentClients() {
   DCHECK(!started_);
 
-  // It isn't necessary to send a notification to the removed clients since they
-  // are about to be destroyed anyway.
-  clients_.remove_if([](const ClientInfo& client_info) {
-    return !RenderFrameHostImpl::FromID(client_info.client_process_id,
-                                        client_info.frame_id);
-  });
+  auto it = clients_.begin();
+  auto end = clients_.end();
+  while (it != end) {
+    if (!RenderFrameHostImpl::FromID(it->render_frame_host_id)) {
+      service_->NotifyClientRemoved(token_, it->render_frame_host_id);
+      it = clients_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 bool SharedWorkerHost::HasClients() const {
   return !clients_.empty();
+}
+
+const base::UnguessableToken& SharedWorkerHost::GetDevToolsToken() const {
+  return devtools_handle_->dev_tools_token();
 }
 
 mojo::Remote<blink::mojom::SharedWorker>
@@ -476,12 +662,8 @@ void SharedWorkerHost::OnClientConnectionLost() {
   // We'll get a notification for each dropped connection.
   for (auto it = clients_.begin(); it != clients_.end(); ++it) {
     if (!it->client.is_connected()) {
-      // Notify the service that a client was removed while the worker was
-      // running.
-      if (started_) {
-        service_->NotifyClientRemoved(instance_, it->client_process_id,
-                                      it->frame_id);
-      }
+      // Notify the service that the client is gone.
+      service_->NotifyClientRemoved(token_, it->render_frame_host_id);
       clients_.erase(it);
       break;
     }

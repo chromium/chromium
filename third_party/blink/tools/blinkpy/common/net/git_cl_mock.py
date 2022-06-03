@@ -7,11 +7,15 @@ from blinkpy.common.system.executive import ScriptError
 
 # pylint: disable=unused-argument
 
-class MockGitCL(object):
 
-    def __init__(
-            self, host, try_job_results=None, status='closed',
-            issue_number='1234', time_out=False, git_error_output=None):
+class MockGitCL(object):
+    def __init__(self,
+                 host,
+                 try_job_results=None,
+                 status='closed',
+                 issue_number='1234',
+                 time_out=False,
+                 git_error_output=None):
         """Constructs a fake GitCL with canned return values.
 
         Args:
@@ -53,9 +57,8 @@ class MockGitCL(object):
     def wait_for_try_jobs(self, **_):
         if self._time_out:
             return None
-        return CLStatus(
-            self._status,
-            self.filter_latest(self._try_job_results))
+        return CLStatus(self._status,
+                        self.filter_latest(self._try_job_results))
 
     def wait_for_closed_status(self, **_):
         if self._time_out:

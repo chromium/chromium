@@ -22,19 +22,23 @@ namespace protocol {
 class PerformanceTracker : public FrameStatsConsumer {
  public:
   // Callback that updates UMA custom counts or custom times histograms.
-  typedef base::Callback<void(const std::string& histogram_name,
-                              int64_t value,
-                              int histogram_min,
-                              int histogram_max,
-                              int histogram_buckets)>
+  typedef base::RepeatingCallback<void(const std::string& histogram_name,
+                                       int64_t value,
+                                       int histogram_min,
+                                       int histogram_max,
+                                       int histogram_buckets)>
       UpdateUmaCustomHistogramCallback;
 
   // Callback that updates UMA enumeration histograms.
-  typedef base::Callback<
+  typedef base::RepeatingCallback<
       void(const std::string& histogram_name, int64_t value, int histogram_max)>
       UpdateUmaEnumHistogramCallback;
 
   PerformanceTracker();
+
+  PerformanceTracker(const PerformanceTracker&) = delete;
+  PerformanceTracker& operator=(const PerformanceTracker&) = delete;
+
   ~PerformanceTracker() override;
 
   // Constant used to calculate the average for rate metrics and used by the
@@ -98,8 +102,6 @@ class PerformanceTracker : public FrameStatsConsumer {
   bool is_paused_ = false;
 
   base::RepeatingTimer upload_uma_stats_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceTracker);
 };
 
 }  // namespace protocol

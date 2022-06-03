@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/linux/font_unique_name_lookup_linux.h"
 
+#include "base/logging.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
@@ -19,7 +20,6 @@ sk_sp<SkTypeface> FontUniqueNameLookupLinux::MatchUniqueName(
   if (!Platform::Current()->GetSandboxSupport()) {
     LOG(ERROR) << "@font-face src: local() instantiation only available when "
                   "connected to browser process.";
-    DCHECK(Platform::Current()->GetSandboxSupport());
     return nullptr;
   }
 

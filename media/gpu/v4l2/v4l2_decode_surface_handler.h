@@ -16,21 +16,21 @@ class V4L2DecodeSurfaceHandler
     : public DecodeSurfaceHandler<V4L2DecodeSurface> {
  public:
   V4L2DecodeSurfaceHandler() = default;
+
+  V4L2DecodeSurfaceHandler(const V4L2DecodeSurfaceHandler&) = delete;
+  V4L2DecodeSurfaceHandler& operator=(const V4L2DecodeSurfaceHandler&) = delete;
+
   ~V4L2DecodeSurfaceHandler() override = default;
 
   // Append slice data in |data| of size |size| to pending hardware
   // input buffer with |index|. This buffer will be submitted for decode
   // on the next DecodeSurface(). Return true on success.
-  virtual bool SubmitSlice(const scoped_refptr<V4L2DecodeSurface>& dec_surface,
+  virtual bool SubmitSlice(V4L2DecodeSurface* dec_surface,
                            const uint8_t* data,
                            size_t size) = 0;
 
   // Decode the surface |dec_surface|.
-  virtual void DecodeSurface(
-      const scoped_refptr<V4L2DecodeSurface>& dec_surface) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4L2DecodeSurfaceHandler);
+  virtual void DecodeSurface(scoped_refptr<V4L2DecodeSurface> dec_surface) = 0;
 };
 
 }  // namespace media

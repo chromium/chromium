@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import defaultdict
 import fnmatch
 import json
 import os
@@ -59,7 +60,7 @@ class MockInputApi(object):
   attribute as the list of changed files.
   """
 
-  DEFAULT_BLACK_LIST = ()
+  DEFAULT_FILES_TO_SKIP = ()
 
   def __init__(self):
     self.canned_checks = MockCannedChecks()
@@ -91,25 +92,26 @@ class MockInputApi(object):
   def AffectedSourceFiles(self, file_filter=None):
     return self.AffectedFiles(file_filter=file_filter)
 
-  def FilterSourceFile(self, file, white_list=(), black_list=()):
+  def FilterSourceFile(self, file,
+                       files_to_check=(), files_to_skip=()):
     local_path = file.LocalPath()
-    found_in_white_list = not white_list
-    if white_list:
-      if type(white_list) is str:
-        raise TypeError('white_list should be an iterable of strings')
-      for pattern in white_list:
+    found_in_files_to_check = not files_to_check
+    if files_to_check:
+      if type(files_to_check) is str:
+        raise TypeError('files_to_check should be an iterable of strings')
+      for pattern in files_to_check:
         compiled_pattern = re.compile(pattern)
         if compiled_pattern.search(local_path):
-          found_in_white_list = True
+          found_in_files_to_check = True
           break
-    if black_list:
-      if type(black_list) is str:
-        raise TypeError('black_list should be an iterable of strings')
-      for pattern in black_list:
+    if files_to_skip:
+      if type(files_to_skip) is str:
+        raise TypeError('files_to_skip should be an iterable of strings')
+      for pattern in files_to_skip:
         compiled_pattern = re.compile(pattern)
         if compiled_pattern.search(local_path):
           return False
-    return found_in_white_list
+    return found_in_files_to_check
 
   def LocalPaths(self):
     return [file.LocalPath() for file in self.files]
@@ -124,7 +126,7 @@ class MockInputApi(object):
       if file_.LocalPath() == filename:
         return '\n'.join(file_.NewContents())
     # Otherwise, file is not in our mock API.
-    raise IOError, "No such file or directory: '%s'" % filename
+    raise IOError("No such file or directory: '%s'" % filename)
 
 
 class MockOutputApi(object):
@@ -177,16 +179,21 @@ class MockFile(object):
   MockInputApi for presubmit unittests.
   """
 
-  def __init__(self, local_path, new_contents, old_contents=None, action='A'):
+  def __init__(self, local_path, new_contents, old_contents=None, action='A',
+               scm_diff=None):
     self._local_path = local_path
     self._new_contents = new_contents
     self._changed_contents = [(i + 1, l) for i, l in enumerate(new_contents)]
     self._action = action
-    self._scm_diff = "--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" % (local_path,
-      len(new_contents))
+    if scm_diff:
+      self._scm_diff = scm_diff
+    else:
+      self._scm_diff = (
+        "--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" %
+            (local_path, len(new_contents)))
+      for l in new_contents:
+        self._scm_diff += "+%s\n" % l
     self._old_contents = old_contents
-    for l in new_contents:
-      self._scm_diff += "+%s\n" % l
 
   def Action(self):
     return self._action
@@ -240,6 +247,7 @@ class MockChange(object):
 
   def __init__(self, changed_files):
     self._changed_files = changed_files
+    self.footers = defaultdict(list)
 
   def LocalPaths(self):
     return self._changed_files
@@ -247,3 +255,7 @@ class MockChange(object):
   def AffectedFiles(self, include_dirs=False, include_deletes=True,
                     file_filter=None):
     return self._changed_files
+
+  def GitFootersFromDescription(self):
+    return self.footers
+

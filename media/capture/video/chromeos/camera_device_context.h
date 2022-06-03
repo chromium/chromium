@@ -8,15 +8,23 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace media {
 
+enum class ClientType : uint32_t {
+  kPreviewClient = 0,
+  kVideoClient = 1,
+};
+
 // A class storing the context of a running CameraDeviceDelegate.
 //
 // The class is also used to forward/translate events and method calls to a
-// given VideoCaptureDevice::Client.
+// given VideoCaptureDevice::Client. This class supposes to have two clients
+// at most. One is for preview and another is for video.
 class CAPTURE_EXPORT CameraDeviceContext {
  public:
   // The internal state of the running CameraDeviceDelegate.  The state
@@ -91,11 +99,13 @@ class CAPTURE_EXPORT CameraDeviceContext {
     kError,
   };
 
-  explicit CameraDeviceContext(
-      std::unique_ptr<VideoCaptureDevice::Client> client);
+  CameraDeviceContext();
 
   ~CameraDeviceContext();
 
+  bool AddClient(ClientType client_type,
+                 std::unique_ptr<VideoCaptureDevice::Client> client);
+  void RemoveClient(ClientType client_type);
   void SetState(State state);
 
   State GetState();
@@ -114,17 +124,20 @@ class CAPTURE_EXPORT CameraDeviceContext {
   // The buffer would be passed to the renderer process directly through
   // |client_->OnIncomingCapturedBufferExt|.
   void SubmitCapturedVideoCaptureBuffer(
+      ClientType client_type,
       VideoCaptureDevice::Client::Buffer buffer,
       const VideoCaptureFormat& frame_format,
       base::TimeTicks reference_time,
-      base::TimeDelta timestamp);
+      base::TimeDelta timestamp,
+      const VideoFrameMetadata& metadata);
 
   // Submits the captured camera frame through a locally-allocated
   // GpuMemoryBuffer.  The captured buffer would be submitted through
   // |client_->OnIncomingCapturedGfxBuffer|, which would perform buffer copy
   // and/or format conversion to an I420 SharedMemory-based video capture buffer
   // for client consumption.
-  void SubmitCapturedGpuMemoryBuffer(gfx::GpuMemoryBuffer* buffer,
+  void SubmitCapturedGpuMemoryBuffer(ClientType client_type,
+                                     gfx::GpuMemoryBuffer* buffer,
                                      const VideoCaptureFormat& frame_format,
                                      base::TimeTicks reference_time,
                                      base::TimeDelta timestamp);
@@ -133,14 +146,29 @@ class CAPTURE_EXPORT CameraDeviceContext {
 
   void SetScreenRotation(int screen_rotation);
 
-  int GetCameraFrameOrientation();
+  // Controls whether the Chrome OS video capture device applies frame rotation
+  // according to sensor and UI rotation.
+  void SetCameraFrameRotationEnabledAtSource(bool is_enabled);
+
+  // Gets the accumulated rotation that the camera frame needs to be rotated
+  // to match the display orientation.  This includes the sensor orientation and
+  // the screen rotation.
+  int GetCameraFrameRotation();
+
+  // Gets whether the camera frame rotation is enabled inside the video capture
+  // device.
+  bool IsCameraFrameRotationEnabledAtSource();
 
   // Reserves a video capture buffer from the buffer pool provided by the video
   // |client_|.  Returns true if the operation succeeds; false otherwise.
   bool ReserveVideoCaptureBufferFromPool(
+      ClientType client_type,
       gfx::Size size,
       VideoPixelFormat format,
       VideoCaptureDevice::Client::Buffer* buffer);
+
+  // Returns true if there is a client.
+  bool HasClient();
 
  private:
   friend class RequestManagerTest;
@@ -150,20 +178,29 @@ class CAPTURE_EXPORT CameraDeviceContext {
   // The state the CameraDeviceDelegate currently is in.
   State state_;
 
+  // Lock to serialize the access to the various camera rotation state variables
+  // since they are access on multiple threads.
+  base::Lock rotation_state_lock_;
+
   // Clockwise angle through which the output image needs to be rotated to be
   // upright on the device screen in its native orientation.  This value should
   // be 0, 90, 180, or 270.
-  int sensor_orientation_;
+  int sensor_orientation_ GUARDED_BY(rotation_state_lock_);
 
   // Clockwise screen rotation in degrees. This value should be 0, 90, 180, or
   // 270.
-  int screen_rotation_;
+  int screen_rotation_ GUARDED_BY(rotation_state_lock_);
 
-  std::unique_ptr<VideoCaptureDevice::Client> client_;
+  // Whether the camera frame rotation is enabled inside the video capture
+  // device.
+  bool frame_rotation_at_source_ GUARDED_BY(rotation_state_lock_);
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CameraDeviceContext);
+  base::Lock client_lock_;
+  // A map for client type and client instance.
+  base::flat_map<ClientType, std::unique_ptr<VideoCaptureDevice::Client>>
+      clients_ GUARDED_BY(client_lock_);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_CONTEXT_CHROMEOS_H_
+#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_DEVICE_CONTEXT_H_

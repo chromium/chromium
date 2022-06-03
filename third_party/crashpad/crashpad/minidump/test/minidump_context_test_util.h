@@ -49,8 +49,8 @@ void InitializeMinidumpContextMIPS64(MinidumpContextMIPS* context,
                                      uint32_t seed);
 //! \}
 
-//! \brief Verifies, via gtest assertions, that a context structure contains
-//!     expected values.
+//! \brief Verifies, via Google Test assertions, that a context structure
+//!     contains expected values.
 //!
 //! \param[in] expect_seed The seed value used to initialize a context
 //!     structure. This is the seed value used with

@@ -6,13 +6,17 @@
 
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,89 +27,81 @@
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-namespace {
-
-// Frame ids of fake web frames used in this test class.
-const char kOneMatchFrameId[] = "frame_with_one_match";
-const char kTwoMatchesFrameId[] = "frame_with_two_matches";
-
-}  // namespace
-
 namespace web {
 
 // Tests FindInPageManagerImpl and verifies that the state of
 // FindInPageManagerDelegate is correct depending on what web frames return.
 class FindInPageManagerImplTest : public WebTest {
  protected:
-  FindInPageManagerImplTest() {
-    test_web_state_ = std::make_unique<TestWebState>();
+  FindInPageManagerImplTest() : WebTest(std::make_unique<FakeWebClient>()) {}
+
+  void SetUp() override {
+    WebTest::SetUp();
+
+    fake_web_state_ = std::make_unique<FakeWebState>();
+    fake_web_state_->SetBrowserState(GetBrowserState());
     auto frames_manager = std::make_unique<FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
-    test_web_state_->SetWebFramesManager(std::move(frames_manager));
-    FindInPageManagerImpl::CreateForWebState(test_web_state_.get());
+    fake_web_state_->SetWebFramesManager(std::move(frames_manager));
+
+    JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+        ->ConfigureFeatures({FindInPageJavaScriptFeature::GetInstance()});
+    FindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }
 
-  // Returns the FindInPageManager associated with |test_web_state_|.
+  // Returns the FindInPageManager associated with |fake_web_state_|.
   FindInPageManager* GetFindInPageManager() {
-    return FindInPageManager::FromWebState(test_web_state_.get());
+    return FindInPageManager::FromWebState(fake_web_state_.get());
   }
-  // Returns a FakeWebFrame that is the main frame with id |frame_id| that will
-  // return |js_result| for the JavaScript function call
-  // "findInString.findString".
-  std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
-      std::unique_ptr<base::Value> js_result,
-      const std::string& frame_id) {
-    return CreateWebFrameWithJsResultForFind(std::move(js_result), frame_id,
-                                             /*is_main_frame=*/true);
-  }
-  // Returns a FakeWebFrame child frame with id |frame_id| that
-  // will return |js_result| for the JavaScript function call
-  // "findInString.findString".
-  std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
-      std::unique_ptr<base::Value> js_result,
-      const std::string& frame_id) {
-    return CreateWebFrameWithJsResultForFind(std::move(js_result), frame_id,
-                                             /*is_main_frame=*/false);
-  }
-  // Returns a FakeWebFrame with id |frame_id| that will return |js_result| for
-  // the JavaScript function call "findInString.findString".
-  std::unique_ptr<FakeWebFrame> CreateWebFrameWithJsResultForFind(
-      std::unique_ptr<base::Value> js_result,
-      const std::string& frame_id,
-      bool is_main_frame) {
-    auto frame =
-        std::make_unique<FakeWebFrame>(frame_id, is_main_frame, GURL());
-    frame->AddJsResultForFunctionCall(std::move(js_result), kFindInPageSearch);
 
+  // Returns a fake WebFrame that represents the main frame which will return
+  // |js_result| for the JavaScript function call "findInString.findString".
+  std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
+      base::Value* js_result) {
+    auto frame = FakeWebFrame::CreateMainWebFrame(GURL());
+    frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
+    frame->set_browser_state(GetBrowserState());
     return frame;
   }
 
-  void AddWebFrame(std::unique_ptr<WebFrame> frame) {
+  // Returns a fake WebFrame that represents a child frame which will return
+  // |js_result| for the JavaScript function call "findInString.findString".
+  std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
+      base::Value* js_result) {
+    auto frame = FakeWebFrame::CreateChildWebFrame(GURL());
+    frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
+    frame->set_browser_state(GetBrowserState());
+    return frame;
+  }
+
+  void AddWebFrame(std::unique_ptr<FakeWebFrame> frame) {
     WebFrame* frame_ptr = frame.get();
     fake_web_frames_manager_->AddWebFrame(std::move(frame));
-    test_web_state_->OnWebFrameDidBecomeAvailable(frame_ptr);
+    fake_web_state_->OnWebFrameDidBecomeAvailable(frame_ptr);
   }
 
   void RemoveWebFrame(const std::string& frame_id) {
     WebFrame* frame_ptr = fake_web_frames_manager_->GetFrameWithId(frame_id);
-    test_web_state_->OnWebFrameWillBecomeUnavailable(frame_ptr);
+    fake_web_state_->OnWebFrameWillBecomeUnavailable(frame_ptr);
     fake_web_frames_manager_->RemoveWebFrame(frame_id);
   }
 
-  std::unique_ptr<TestWebState> test_web_state_;
+  std::unique_ptr<FakeWebState> fake_web_state_;
   FakeWebFramesManager* fake_web_frames_manager_;
   FakeFindInPageManagerDelegate fake_delegate_;
+  base::UserActionTester user_action_tester_;
 };
 
 // Tests that Find In Page responds with a total match count of three when a
 // frame has one match and another frame has two matches.
 TEST_F(FindInPageManagerImplTest, FindMatchesMultipleFrames) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
@@ -130,11 +126,12 @@ TEST_F(FindInPageManagerImplTest, FindMatchesMultipleFrames) {
 // has one match but find in one frame was cancelled. This can occur if the
 // frame becomes unavailable.
 TEST_F(FindInPageManagerImplTest, FrameCancelFind) {
-  auto frame_with_null_result = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(), "frame");
+  auto null = std::make_unique<base::Value>();
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_null_result =
+      CreateMainWebFrameWithJsResultForFind(null.get());
   FakeWebFrame* frame_with_null_result_ptr = frame_with_null_result.get();
-  auto frame_with_one_match = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto frame_with_one_match = CreateChildWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
   AddWebFrame(std::move(frame_with_null_result));
   AddWebFrame(std::move(frame_with_one_match));
@@ -158,16 +155,23 @@ TEST_F(FindInPageManagerImplTest, FrameCancelFind) {
 // Tests that Find In Page returns a total match count matching the latest find
 // if two finds are called.
 TEST_F(FindInPageManagerImplTest, ReturnLatestFind) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-  RemoveWebFrame(kOneMatchFrameId);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return fake_delegate_.state();
+  }));
+  fake_delegate_.Reset();
+
+  RemoveWebFrame(kMainFakeFrameId);
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -187,13 +191,13 @@ TEST_F(FindInPageManagerImplTest, ReturnLatestFind) {
 // Tests that Find In Page should not return if the web state is destroyed
 // during a find.
 TEST_F(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   AddWebFrame(std::move(frame_with_one_match));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
-  test_web_state_.reset();
+  fake_web_state_.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_delegate_.state());
 }
@@ -201,21 +205,28 @@ TEST_F(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
 // Tests that Find In Page updates total match count when a frame with matches
 // becomes unavailable during find.
 TEST_F(FindInPageManagerImplTest, FrameUnavailableAfterDelegateCallback) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-
-  RemoveWebFrame(kTwoMatchesFrameId);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state();
   }));
+  fake_delegate_.Reset();
+
+  RemoveWebFrame(kChildFakeFrameId);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return fake_delegate_.state();
+  }));
+
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
   EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
@@ -227,15 +238,17 @@ TEST_F(FindInPageManagerImplTest, FrameUnavailableAfterDelegateCallback) {
 // Tests that Find In Page returns with the right match count for a frame with
 // one match and another that requires pumping to return its two matches.
 TEST_F(FindInPageManagerImplTest, FrameRespondsWithPending) {
+  auto negative_one = std::make_unique<base::Value>(-1.0);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+
   std::unique_ptr<FakeWebFrame> frame_with_two_matches =
-      CreateMainWebFrameWithJsResultForFind(std::make_unique<base::Value>(-1.0),
-                                            kTwoMatchesFrameId);
-  frame_with_two_matches->AddJsResultForFunctionCall(
-      std::make_unique<base::Value>(2.0), kFindInPagePump);
+      CreateMainWebFrameWithJsResultForFind(negative_one.get());
+  frame_with_two_matches->AddJsResultForFunctionCall(two.get(),
+                                                     kFindInPagePump);
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_two_matches));
-  auto frame_with_one_match = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto frame_with_one_match = CreateChildWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
   AddWebFrame(std::move(frame_with_one_match));
 
@@ -260,8 +273,8 @@ TEST_F(FindInPageManagerImplTest, FrameRespondsWithPending) {
 // Tests that Find In Page doesn't fail when delegate is not set.
 TEST_F(FindInPageManagerImplTest, DelegateNotSet) {
   GetFindInPageManager()->SetDelegate(nullptr);
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
   AddWebFrame(std::move(frame_with_one_match));
 
@@ -274,8 +287,9 @@ TEST_F(FindInPageManagerImplTest, DelegateNotSet) {
 
 // Tests that Find In Page returns no matches if can't call JavaScript function.
 TEST_F(FindInPageManagerImplTest, FrameCannotCallJavaScriptFunction) {
-  auto frame_cannot_call_func = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_cannot_call_func =
+      CreateMainWebFrameWithJsResultForFind(one.get());
   frame_cannot_call_func->set_can_call_function(false);
   AddWebFrame(std::move(frame_cannot_call_func));
 
@@ -304,8 +318,9 @@ TEST_F(FindInPageManagerImplTest, NoFrames) {
 // are no matches in the only frame. Tests that Find in Page also did not
 // respond with an selected match index value.
 TEST_F(FindInPageManagerImplTest, FrameWithNoMatchNoHighlight) {
-  auto frame_with_zero_matches = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(0.0), "frame_with_zero_matches");
+  auto zero = std::make_unique<base::Value>(0.0);
+  auto frame_with_zero_matches =
+      CreateMainWebFrameWithJsResultForFind(zero.get());
   FakeWebFrame* frame_with_zero_matches_ptr = frame_with_zero_matches.get();
   AddWebFrame(std::move(frame_with_zero_matches));
 
@@ -326,8 +341,9 @@ TEST_F(FindInPageManagerImplTest, FrameWithNoMatchNoHighlight) {
 // Tests that Find in Page responds with index zero after a find when there are
 // two matches in a frame.
 TEST_F(FindInPageManagerImplTest, DidHighlightFirstIndex) {
-  auto frame_with_two_matches = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_two_matches =
+      CreateMainWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_two_matches));
 
@@ -348,8 +364,9 @@ TEST_F(FindInPageManagerImplTest, DidHighlightFirstIndex) {
 // Tests that Find in Page responds with index one to a FindInPageNext find
 // after a FindInPageSearch find finishes when there are two matches in a frame.
 TEST_F(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
-  auto frame_with_two_matches = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_two_matches =
+      CreateMainWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_two_matches));
 
@@ -380,11 +397,12 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
 // match and another with two matches when making successive FindInPageNext
 // calls.
 TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
@@ -432,11 +450,12 @@ TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
 // calls.
 TEST_F(FindInPageManagerImplTest,
        FindDidLoopThroughAllMatchesWithPreviousCall) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
@@ -486,11 +505,12 @@ TEST_F(FindInPageManagerImplTest,
 // after a FindInPageSearch find finishes when there are two matches in a
 // frame and one match in another.
 TEST_F(FindInPageManagerImplTest, FindDidHighlightLastIndexAfterPreviousCall) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
@@ -522,8 +542,9 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightLastIndexAfterPreviousCall) {
 // Tests that Find in Page does not respond to a FindInPageNext or a
 // FindInPagePrevious call if no FindInPageSearch find was executed beforehand.
 TEST_F(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
-  auto frame_with_three_matches = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(3.0), "frame_with_three_matches");
+  auto three = std::make_unique<base::Value>(3.0);
+  auto frame_with_three_matches =
+      CreateMainWebFrameWithJsResultForFind(three.get());
   AddWebFrame(std::move(frame_with_three_matches));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -542,11 +563,12 @@ TEST_F(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
 // removed.
 TEST_F(FindInPageManagerImplTest,
        FindDidHighlightNextMatchAfterFrameDisappears) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   FakeWebFrame* frame_with_one_match_ptr = frame_with_one_match.get();
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_two_matches_ptr = frame_with_two_matches.get();
   AddWebFrame(std::move(frame_with_one_match));
   AddWebFrame(std::move(frame_with_two_matches));
@@ -561,7 +583,7 @@ TEST_F(FindInPageManagerImplTest,
   EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
 
-  RemoveWebFrame(kOneMatchFrameId);
+  RemoveWebFrame(kMainFakeFrameId);
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -574,11 +596,11 @@ TEST_F(FindInPageManagerImplTest,
 
 // Tests that Find in Page does not respond when frame is removed
 TEST_F(FindInPageManagerImplTest, FindDidNotRepondAfterFrameRemoved) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   AddWebFrame(std::move(frame_with_one_match));
 
-  RemoveWebFrame(kOneMatchFrameId);
+  RemoveWebFrame(kMainFakeFrameId);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(fake_delegate_.state());
@@ -588,8 +610,8 @@ TEST_F(FindInPageManagerImplTest, FindDidNotRepondAfterFrameRemoved) {
 // FindInPageSearch find when there is one match in a frame and then responds
 // with a total match count of zero when that frame is removed.
 TEST_F(FindInPageManagerImplTest, FindInPageUpdateMatchCountAfterFrameRemoved) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   AddWebFrame(std::move(frame_with_one_match));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -599,7 +621,7 @@ TEST_F(FindInPageManagerImplTest, FindInPageUpdateMatchCountAfterFrameRemoved) {
     return fake_delegate_.state();
   }));
 
-  RemoveWebFrame(kOneMatchFrameId);
+  RemoveWebFrame(kMainFakeFrameId);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state()->match_count == 0;
@@ -609,11 +631,12 @@ TEST_F(FindInPageManagerImplTest, FindInPageUpdateMatchCountAfterFrameRemoved) {
 // Tests that DidHighlightMatches is not called when a frame with no matches is
 // removed from the page.
 TEST_F(FindInPageManagerImplTest, FindDidNotResponseAfterFrameDisappears) {
-  const char kZeroMatchesFrameId[] = "frame_with_zero_matches";
-  auto frame_with_zero_matches = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(0.0), kZeroMatchesFrameId);
-  auto frame_with_two_matches = CreateChildWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), kTwoMatchesFrameId);
+  auto zero = std::make_unique<base::Value>(0.0);
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_zero_matches =
+      CreateMainWebFrameWithJsResultForFind(zero.get());
+  auto frame_with_two_matches =
+      CreateChildWebFrameWithJsResultForFind(two.get());
   AddWebFrame(std::move(frame_with_zero_matches));
   AddWebFrame(std::move(frame_with_two_matches));
 
@@ -624,7 +647,7 @@ TEST_F(FindInPageManagerImplTest, FindDidNotResponseAfterFrameDisappears) {
   }));
 
   fake_delegate_.Reset();
-  RemoveWebFrame(kZeroMatchesFrameId);
+  RemoveWebFrame(kMainFakeFrameId);
 
   EXPECT_FALSE(fake_delegate_.state());
 }
@@ -632,11 +655,11 @@ TEST_F(FindInPageManagerImplTest, FindDidNotResponseAfterFrameDisappears) {
 // Tests that Find in Page SetContentIsHTML() returns true if the web state's
 // content is HTML and returns false if the web state's content is not HTML.
 TEST_F(FindInPageManagerImplTest, FindInPageCanSearchContent) {
-  test_web_state_->SetContentIsHTML(false);
+  fake_web_state_->SetContentIsHTML(false);
 
   EXPECT_FALSE(GetFindInPageManager()->CanSearchContent());
 
-  test_web_state_->SetContentIsHTML(true);
+  fake_web_state_->SetContentIsHTML(true);
 
   EXPECT_TRUE(GetFindInPageManager()->CanSearchContent());
 }
@@ -644,8 +667,8 @@ TEST_F(FindInPageManagerImplTest, FindInPageCanSearchContent) {
 // Tests that Find in Page resets the match count to 0 and the query to nil
 // after calling StopFinding().
 TEST_F(FindInPageManagerImplTest, FindInPageCanStopFind) {
-  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(1.0), kOneMatchFrameId);
+  auto one = std::make_unique<base::Value>(1.0);
+  auto frame_with_one_match = CreateMainWebFrameWithJsResultForFind(one.get());
   AddWebFrame(std::move(frame_with_one_match));
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -667,8 +690,9 @@ TEST_F(FindInPageManagerImplTest, FindInPageCanStopFind) {
 // FindInPageSearch. This simulates a once hidden match becoming visible between
 // a FindInPageSearch and a FindInPageNext.
 TEST_F(FindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
-  auto frame_with_hidden_match = CreateMainWebFrameWithJsResultForFind(
-      std::make_unique<base::Value>(2.0), "frame_with_hidden_match");
+  auto two = std::make_unique<base::Value>(2.0);
+  auto frame_with_hidden_match =
+      CreateMainWebFrameWithJsResultForFind(two.get());
   FakeWebFrame* frame_with_hidden_match_ptr = frame_with_hidden_match.get();
   AddWebFrame(std::move(frame_with_hidden_match));
 
@@ -681,7 +705,7 @@ TEST_F(FindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
   select_and_scroll_result->SetDouble("matches", 3.0);
   select_and_scroll_result->SetDouble("index", 1.0);
   frame_with_hidden_match_ptr->AddJsResultForFunctionCall(
-      std::move(select_and_scroll_result), kFindInPageSelectAndScrollToMatch);
+      select_and_scroll_result.get(), kFindInPageSelectAndScrollToMatch);
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -689,6 +713,21 @@ TEST_F(FindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
     return fake_delegate_.state() && fake_delegate_.state()->match_count == 3;
   }));
   EXPECT_EQ(1, fake_delegate_.state()->index);
+}
+
+// Tests that Find in Page logs correct UserActions for given API calls.
+TEST_F(FindInPageManagerImplTest, FindUserActions) {
+  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindActionName));
+  GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindActionName));
+
+  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindNextActionName));
+  GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindNextActionName));
+
+  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindPreviousActionName));
+  GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindPreviousActionName));
 }
 
 }  // namespace web

@@ -12,28 +12,35 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/browser/value_store/value_store.h"
+
+namespace syncer {
+class SyncError;
+class ModelError;
+}  // namespace syncer
 
 namespace extensions {
 
 class SettingsSyncProcessor;
 
 // Decorates a ValueStore with sync behaviour.
-class SyncableSettingsStorage : public ValueStore {
+class SyncableSettingsStorage : public value_store::ValueStore {
  public:
   SyncableSettingsStorage(scoped_refptr<SettingsObserverList> observers,
                           const std::string& extension_id,
                           // Ownership taken.
-                          ValueStore* delegate,
+                          value_store::ValueStore* delegate,
                           syncer::ModelType sync_type,
                           const syncer::SyncableService::StartSyncFlare& flare);
+
+  SyncableSettingsStorage(const SyncableSettingsStorage&) = delete;
+  SyncableSettingsStorage& operator=(const SyncableSettingsStorage&) = delete;
 
   ~SyncableSettingsStorage() override;
 
@@ -61,8 +68,8 @@ class SyncableSettingsStorage : public ValueStore {
   // already active.
   // |sync_state| is the current state of the extension settings in sync.
   // |sync_processor| is used to write out any changes.
-  // Returns any error when trying to sync, or an empty error on success.
-  syncer::SyncError StartSyncing(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> StartSyncing(
       std::unique_ptr<base::DictionaryValue> sync_state,
       std::unique_ptr<SettingsSyncProcessor> sync_processor);
 
@@ -71,13 +78,13 @@ class SyncableSettingsStorage : public ValueStore {
 
   // Pushes a list of sync changes into this storage area. May be called at any
   // time, changes will be ignored if sync isn't active.
-  // Returns any error when trying to sync, or an empty error on success.
-  syncer::SyncError ProcessSyncChanges(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       std::unique_ptr<SettingSyncDataList> sync_changes);
 
  private:
   // Sends the changes from |result| to sync if it's enabled.
-  void SyncResultIfEnabled(const ValueStore::WriteResult& result);
+  void SyncResultIfEnabled(const value_store::ValueStore::WriteResult& result);
 
   // Analyze the result returned by a call to the delegate, and take appropriate
   // measures.
@@ -86,27 +93,27 @@ class SyncableSettingsStorage : public ValueStore {
 
   // Sends all local settings to sync. This assumes that there are no settings
   // in sync yet.
-  // Returns any error when trying to sync, or an empty error on success.
-  syncer::SyncError SendLocalSettingsToSync(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> SendLocalSettingsToSync(
       std::unique_ptr<base::DictionaryValue> local_state);
 
   // Overwrites local state with sync state.
-  // Returns any error when trying to sync, or an empty error on success.
-  syncer::SyncError OverwriteLocalSettingsWithSync(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> OverwriteLocalSettingsWithSync(
       std::unique_ptr<base::DictionaryValue> sync_state,
       std::unique_ptr<base::DictionaryValue> local_state);
 
   // Called when an Add/Update/Remove comes from sync.
   syncer::SyncError OnSyncAdd(const std::string& key,
                               std::unique_ptr<base::Value> new_value,
-                              ValueStoreChangeList* changes);
+                              value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncUpdate(const std::string& key,
                                  std::unique_ptr<base::Value> old_value,
                                  std::unique_ptr<base::Value> new_value,
-                                 ValueStoreChangeList* changes);
+                                 value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncDelete(const std::string& key,
                                  std::unique_ptr<base::Value> old_value,
-                                 ValueStoreChangeList* changes);
+                                 value_store::ValueStoreChangeList* changes);
 
   // List of observers to settings changes.
   const scoped_refptr<SettingsObserverList> observers_;
@@ -115,15 +122,13 @@ class SyncableSettingsStorage : public ValueStore {
   std::string const extension_id_;
 
   // Storage area to sync.
-  const std::unique_ptr<ValueStore> delegate_;
+  const std::unique_ptr<value_store::ValueStore> delegate_;
 
   // Object which sends changes to sync.
   std::unique_ptr<SettingsSyncProcessor> sync_processor_;
 
   const syncer::ModelType sync_type_;
   const syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableSettingsStorage);
 };
 
 }  // namespace extensions

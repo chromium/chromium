@@ -25,7 +25,6 @@ constexpr uint32_t kStubCapture = 1 << 0;
 // If |destroyed| is non-null it it set to true from the destructor of the
 // NativeWidget.
 NativeWidget* CreatePlatformNativeWidgetImpl(
-    const Widget::InitParams& init_params,
     Widget* widget,
     uint32_t behavior,
     bool* destroyed);

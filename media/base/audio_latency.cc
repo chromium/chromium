@@ -11,19 +11,21 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "media/base/mac/audio_latency_mac.h"
 #endif
 
 namespace media {
 
 namespace {
+
 #if !defined(OS_WIN)
 // Taken from "Bit Twiddling Hacks"
 // http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
@@ -38,11 +40,30 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
   return v;
 }
 #endif
+
+#if defined(OS_ANDROID)
+// WebAudio renderer's quantum size (frames per callback) that is used for
+// calculating the "interactive" buffer size.
+// TODO(crbug.com/988121): This number needs to be passed down from Blink when
+// user-selectable render quantum size is implemented.
+const int kWebAudioRenderQuantumSize = 128;
+
+// From media/renderers/paint_canvas_video_renderer.cc. To calculate the optimum
+// buffer size for Pixel 3/4/5 devices, which has a HW buffer size of 96 frames.
+int GCD(int a, int b) {
+  return a == 0 ? b : GCD(b % a, a);
+}
+
+int LCM(int a, int b) {
+  return a / GCD(a, b) * b;
+}
+#endif
+
 }  // namespace
 
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #elif defined(OS_ANDROID)
   // Only N MR1+ has support for OpenSLES performance modes which allow for
@@ -61,7 +82,9 @@ bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
 int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
                                            int preferred_buffer_size) {
   // Empirically, we consider 20ms of samples to be high latency.
+#if !defined(USE_CRAS)
   const double twenty_ms_size = 2.0 * sample_rate / 100;
+#endif
 
 #if defined(OS_WIN)
   preferred_buffer_size = std::max(preferred_buffer_size, 1);
@@ -84,7 +107,12 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
   //
   // On Linux, the minimum hardware buffer size is 512, so the lower calculated
   // values are unused.  OSX may have a value as low as 128.
+#if defined(USE_CRAS)
+  const double eighty_ms_size = 8.0 * sample_rate / 100;
+  const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);
+#else
   const int high_latency_buffer_size = RoundUpToPowerOfTwo(twenty_ms_size);
+#endif  // defined(USE_CRAS)
 #endif  // defined(OS_WIN)
 
   return std::max(preferred_buffer_size, high_latency_buffer_size);
@@ -106,7 +134,8 @@ int AudioLatency::GetRtcBufferSize(int sample_rate, int hardware_buffer_size) {
     return frames_per_buffer;
   }
 
-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_FUCHSIA)
   // On Linux, MacOS and Fuchsia, the low level IO implementations on the
   // browser side supports all buffer size the clients want. We use the native
   // peer connection buffer size (10ms) to achieve best possible performance.
@@ -130,13 +159,28 @@ int AudioLatency::GetRtcBufferSize(int sample_rate, int hardware_buffer_size) {
 
 // static
 int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
+  CHECK_GT(hardware_buffer_size, 0);
+
 #if defined(OS_ANDROID)
   // Always log this because it's relatively hard to get this
   // information out.
   LOG(INFO) << "audioHardwareBufferSize = " << hardware_buffer_size;
-#endif
 
+  if (hardware_buffer_size >= kWebAudioRenderQuantumSize)
+    return hardware_buffer_size;
+
+  // HW buffer size is smaller than the Web Audio's render quantum size, so
+  // compute LCM to avoid glitches and regulate the workload per callback.
+  // (e.g. 96 vs 128 -> 384) Also cap the buffer size to 4 render quanta
+  // (512 frames ~= 10ms at 48K) if LCM goes beyond interactive latency range.
+  int sensible_buffer_size = std::min(
+      LCM(hardware_buffer_size, kWebAudioRenderQuantumSize),
+      kWebAudioRenderQuantumSize * 4);
+
+  return sensible_buffer_size;
+#else
   return hardware_buffer_size;
+#endif  // defined(OS_ANDROID)
 }
 
 int AudioLatency::GetExactBufferSize(base::TimeDelta duration,

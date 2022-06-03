@@ -18,9 +18,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
@@ -46,18 +46,21 @@ void* BareMmap(size_t len) {
 //
 // The strategy taken here is that a random 64-bit cookie value is written into
 // a mapped region by SetUp(). While the mapping is active, Check() should not
-// crash, or for a gtest expectation, Expected() and Observed() should not crash
-// and should be equal. After the region is unmapped, Check() should crash,
-// either because the region has been unmapped and the address not reused, the
-// address has been reused but is protected against reading (unlikely), or
-// because the address has been reused but the cookie value is no longer present
-// there.
+// crash, or for a Google Test expectation, Expected() and Observed() should not
+// crash and should be equal. After the region is unmapped, Check() should
+// crash, either because the region has been unmapped and the address not
+// reused, the address has been reused but is protected against reading
+// (unlikely), or because the address has been reused but the cookie value is no
+// longer present there.
 class TestCookie {
  public:
   // A weird constructor for a weird class. The member variable initialization
   // assures that Check() won’t crash if called on an object that hasn’t had
   // SetUp() called on it.
   explicit TestCookie() : address_(&cookie_), cookie_(0) {}
+
+  TestCookie(const TestCookie&) = delete;
+  TestCookie& operator=(const TestCookie&) = delete;
 
   ~TestCookie() {}
 
@@ -78,8 +81,6 @@ class TestCookie {
  private:
   uint64_t* address_;
   uint64_t cookie_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCookie);
 };
 
 TEST(ScopedMmap, Mmap) {
@@ -401,6 +402,19 @@ TEST(ScopedMmapDeathTest, Mprotect) {
   ASSERT_TRUE(mapping.Mprotect(PROT_READ | PROT_WRITE));
   EXPECT_EQ(*addr, 1);
   *addr = 2;
+}
+
+TEST(ScopedMmapTest, Release) {
+  ScopedMmap mapping;
+
+  const size_t kPageSize = base::checked_cast<size_t>(getpagesize());
+  ASSERT_TRUE(ScopedMmapResetMmap(&mapping, kPageSize));
+  ASSERT_TRUE(mapping.is_valid());
+
+  ScopedMmap mapping2;
+  ASSERT_TRUE(mapping2.ResetAddrLen(mapping.release(), kPageSize));
+  EXPECT_TRUE(mapping2.is_valid());
+  EXPECT_FALSE(mapping.is_valid());
 }
 
 }  // namespace

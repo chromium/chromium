@@ -10,21 +10,23 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
+
 namespace content_settings {
 class CookieSettings;
 }
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all CookieSettings and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
  public:
   static scoped_refptr<content_settings::CookieSettings> GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static CookieSettingsFactory* GetInstance();
+
+  CookieSettingsFactory(const CookieSettingsFactory&) = delete;
+  CookieSettingsFactory& operator=(const CookieSettingsFactory&) = delete;
 
  private:
   friend class base::NoDestructor<CookieSettingsFactory>;
@@ -39,8 +41,6 @@ class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsFactory);
 };
 
 }  // namespace ios

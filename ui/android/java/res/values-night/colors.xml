@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- Common text colors -->
+    <color name="default_text_color_baseline">@color/default_text_color_light</color>
+    <color name="default_text_color_inverse">@color/default_text_color_dark</color>
+    <color name="default_text_color_secondary">@color/default_text_color_secondary_light</color>
+    <color name="default_text_color_link">@color/default_text_color_link_light</color>
+    <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_light</color>
+    <color name="default_text_color_error">@color/default_text_color_error_light</color>
+    <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_dark</color>
+    <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_light</color>
+
+    <!-- Common icon colors for drawables. -->
+    <color name="default_icon_color">@color/default_icon_color_light</color>
+    <color name="default_icon_color_inverse">@color/default_icon_color_inverse_dark</color>
+    <color name="default_icon_color_accent1_baseline">@color/default_icon_color_blue_light</color>
+    <color name="default_icon_color_secondary">@color/default_icon_color_secondary_light</color>
+    <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_light</color>
+    <color name="default_icon_color_disabled">@color/default_icon_color_disabled_light</color>
+    <color name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_dark</color>
+
+    <!-- Common background and branding color. -->
+    <color name="default_bg_color">@color/default_bg_color_dark</color>
+    <color name="default_bg_color_secondary">@color/default_bg_color_secondary_dark</color>
+    <color name="default_bg_color_elev_0">@color/default_bg_color_dark</color>
+    <color name="default_bg_color_elev_1">@color/default_bg_color_dark_elev_1</color>
+    <color name="default_bg_color_elev_2">@color/default_bg_color_dark_elev_2</color>
+    <color name="default_bg_color_elev_3">@color/default_bg_color_dark_elev_3</color>
+    <color name="default_bg_color_elev_4">@color/default_bg_color_dark_elev_4</color>
+    <color name="default_bg_color_elev_5">@color/default_bg_color_dark_elev_5</color>
+    <color name="default_bg_color_elev_6">@color/default_bg_color_dark_elev_6</color>
+    <!-- Legacy elevation/surface colors kept around for tab switcher, which has
+         a separate feature to control enabling baseline. This is most
+         noticeable in the title background color for thumbnails, legacy will
+         resolve to white while updated for baseline will show off-white. Once
+         tab switcher removes feature gating these colors can be deleted. -->
+    <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_dark_elev_1</color>
+    <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_dark_elev_4</color>
+    <color name="default_bg_color_blue">@color/default_bg_color_blue_light</color>
+
+    <!-- Bottom sheet colors -->
+    <color name="sheet_bg_color">@color/default_bg_color_dark_elev_4</color>
+
+    <!-- Dialog colors -->
+    <color name="dialog_bg_color">@color/dialog_bg_color_dark</color>
+
+    <!-- Snackbar colors -->
+    <color name="snackbar_background_color">@color/default_bg_color_dark_elev_4</color>
+
+    <!-- Ripple colors for clickable widgets -->
+    <color name="ripple_color_blue">@color/ripple_color_blue_light</color>
+
+    <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
+    <color name="default_control_color_normal">@color/default_control_color_normal_dark</color>
+    <color name="default_control_color_active">@color/default_control_color_active_dark</color>
+
+    <!-- Chip colors -->
+    <color name="default_chip_outline_color">@color/default_chip_outline_color_dark</color>
+    <color name="chip_selected_hover">@color/chip_selected_hover_light</color>
+    <color name="chip_selected_focused">@color/chip_selected_focused_light</color>
+    <color name="chip_selected_hover_and_focused">@color/chip_selected_hover_and_focused_light</color>
+    <color name="chip_selected">@color/chip_selected_dark</color>
+
+    <!-- CircularProgressView colors -->
+    <color name="circular_progress_outer_circle_progress_color_small">@color/circular_progress_outer_circle_progress_color_small_dark</color>
+    <color name="circular_progress_icon_color_small_large">@color/circular_progress_icon_color_small_large_dark</color>
+
+    <!-- Incognito icon colors -->
+    <color name="incognito_icon_filled_bg_color">@color/incognito_icon_filled_bg_color_light</color>
+
+    <!-- IncognitoHistoryPlaceholderView  colors -->
+    <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_600</color>
+    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_900</color>
+
+    <!-- Colors of adaptive toolbar -->
+    <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_dark</color>
+    <color name="adaptive_toolbar_preference_header_line">@color/adaptive_toolbar_preference_header_line_dark</color>
+    <color name="adaptive_toolbar_preference_header_blue">@color/adaptive_toolbar_preference_header_blue_dark</color>
+    <color name="adaptive_toolbar_preference_header_omnibox">@color/adaptive_toolbar_preference_header_omnibox_dark</color>
+
+    <!-- Menu colors -->
+    <color name="menu_action_bar_bg_color">@color/menu_action_bar_bg_color_dark</color>
+    <color name="menu_item_bg_color">@color/menu_item_bg_color_dark</color>
+
+    <!-- Other colors -->
+    <color name="default_red">@color/default_red_light</color>
+    <color name="default_green">@color/default_green_light</color>
+    <color name="filled_button_bg_color">@color/filled_button_bg_color_light</color>
+    <color name="filled_button_bg_color_disabled">@color/filled_button_bg_color_disabled_light</color>
+    <color name="divider_line_bg_color">@color/divider_line_bg_color_light</color>
+    <color name="omnibox_bg_color">@color/omnibox_bg_color_dark</color>
+    <color name="image_loading_color">@color/image_loading_color_light</color>
+    <color name="promo_illustration_bg_color">@color/promo_illustration_bg_color_dark</color>
+    <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_light</color>
+    <color name="menu_chip_background_color">@color/menu_chip_background_color_light</color>
+    <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_light</color>
+    <color name="iph_highlight_blue">@color/iph_highlight_blue_light</color>
+    <color name="rating_star_yellow">@color/rating_star_yellow_light</color>
+</resources>

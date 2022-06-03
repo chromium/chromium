@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERBUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERBUFFER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
 
 namespace blink {
@@ -61,7 +60,7 @@ class WebGLRenderbuffer final : public WebGLSharedPlatform3DObject {
   bool HasEverBeenBound() const { return Object() && has_ever_been_bound_; }
   void SetHasEverBeenBound() { has_ever_been_bound_ = true; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;

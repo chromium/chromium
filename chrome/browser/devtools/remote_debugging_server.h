@@ -7,20 +7,16 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
-
 class RemoteDebuggingServer {
  public:
   static void EnableTetheringForDebug();
 
   RemoteDebuggingServer();
-  virtual ~RemoteDebuggingServer();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDebuggingServer);
+  RemoteDebuggingServer(const RemoteDebuggingServer&) = delete;
+  RemoteDebuggingServer& operator=(const RemoteDebuggingServer&) = delete;
+
+  virtual ~RemoteDebuggingServer();
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_REMOTE_DEBUGGING_SERVER_H_

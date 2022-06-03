@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/web-share/
+// https://w3c.github.io/web-share/level-2/#navigator-interface
 
 [
   ImplementedAs=NavigatorShare,
   RuntimeEnabled=WebShare
 ] partial interface Navigator {
-  [SecureContext, CallWith=ScriptState, MeasureAs=WebShareCanShare, RuntimeEnabled=WebShareV2]
-  boolean canShare(optional ShareData data);
+  [SecureContext, CallWith=ScriptState, MeasureAs=WebShareCanShare]
+  boolean canShare(optional ShareData data = {});
 
   [SecureContext, CallWith=ScriptState, RaisesException, MeasureAs=WebShareShare]
-  Promise<void> share(optional ShareData data);
+  Promise<void> share(optional ShareData data = {});
 };

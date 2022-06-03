@@ -23,25 +23,34 @@
   _selectedAction = action;
 }
 
-- (BOOL)shouldAllowOverscrollActions {
+- (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
   return YES;
 }
 
-- (UIView*)toolbarSnapshotView {
+- (UIView*)toolbarSnapshotViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
   return nil;
 }
 
-- (UIView*)headerView {
+- (UIView*)headerViewForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
   return _headerView;
 }
 
-- (CGFloat)overscrollActionsControllerHeaderInset:
+- (CGFloat)headerInsetForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   return 0;
 }
 
-- (CGFloat)overscrollHeaderHeight {
+- (CGFloat)headerHeightForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
   return 0;
+}
+
+- (FullscreenController*)fullscreenControllerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return nullptr;
 }
 
 @end

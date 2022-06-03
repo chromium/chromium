@@ -5,11 +5,11 @@
 #ifndef NET_REPORTING_MOCK_PERSISTENT_REPORTING_STORE_H_
 #define NET_REPORTING_MOCK_PERSISTENT_REPORTING_STORE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "url/origin.h"
@@ -45,23 +45,17 @@ class MockPersistentReportingStore
     // DELETE_REPORTING_ENDPOINT
     Command(Type type, const ReportingEndpoint& endpoint);
     Command(Type type,
-            const GURL& origin,
-            const std::string& group,
-            const GURL& endpoint);
-    Command(Type type,
-            const url::Origin& origin,
-            const std::string& group,
-            const GURL& endpoint);
+            const ReportingEndpointGroupKey& group_key,
+            const GURL& endpoint_url);
     // Constructors for endpoint group commands. |type| must be one of
     // ADD_REPORTING_ENDPOINT_GROUP,
     // UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME,
     // UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS, or
     // DELETE_REPORTING_ENDPOINT_GROUP
     Command(Type type, const CachedReportingEndpointGroup& group);
-    Command(Type type, const GURL& origin, const std::string& group);
-    Command(Type type, const url::Origin& origin, const std::string& group);
+    Command(Type type, const ReportingEndpointGroupKey& group_key);
     // |type| must be LOAD_REPORTING_CLIENTS or FLUSH.
-    Command(Type type);
+    explicit Command(Type type);
 
     Command(const Command& other);
     Command(Command&& other);
@@ -73,8 +67,7 @@ class MockPersistentReportingStore
 
     // Identifies the group to which the command pertains. (Applies to endpoint
     // and endpoint group commands.)
-    ReportingEndpointGroupKey group_key =
-        ReportingEndpointGroupKey(url::Origin(), "");
+    ReportingEndpointGroupKey group_key = ReportingEndpointGroupKey();
 
     // Identifies the endpoint to which the command pertains. (Applies to
     // endpoint commands only.)
@@ -88,6 +81,11 @@ class MockPersistentReportingStore
   using CommandList = std::vector<Command>;
 
   MockPersistentReportingStore();
+
+  MockPersistentReportingStore(const MockPersistentReportingStore&) = delete;
+  MockPersistentReportingStore& operator=(const MockPersistentReportingStore&) =
+      delete;
+
   ~MockPersistentReportingStore() override;
 
   // PersistentReportingStore implementation:
@@ -127,6 +125,8 @@ class MockPersistentReportingStore
   // Count the number of commands with type |t|.
   int CountCommands(Command::Type t);
 
+  void ClearCommands();
+
   CommandList GetAllCommands() const;
 
   // Gets the number of stored endpoints/groups, simulating the actual number
@@ -155,8 +155,6 @@ class MockPersistentReportingStore
   // called. Reset to 0 when Flush() is called.
   int queued_endpoint_count_delta_;
   int queued_endpoint_group_count_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPersistentReportingStore);
 };
 
 bool operator==(const MockPersistentReportingStore::Command& lhs,

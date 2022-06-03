@@ -33,14 +33,13 @@ struct WinFolderNamesToCSIDLMapping {
 
 // Mapping from variable names to Windows CSIDL ids.
 constexpr WinFolderNamesToCSIDLMapping kWinFolderMapping[] = {
-    { kWinWindowsFolderVarName,        CSIDL_WINDOWS},
-    { kWinProgramFilesFolderVarName,   CSIDL_PROGRAM_FILES},
-    { kWinProgramDataFolderVarName,    CSIDL_COMMON_APPDATA},
-    { kWinProfileFolderVarName,        CSIDL_PROFILE},
-    { kWinLocalAppDataFolderVarName,   CSIDL_LOCAL_APPDATA},
-    { kWinRoamingAppDataFolderVarName, CSIDL_APPDATA},
-    { kWinDocumentsFolderVarName,      CSIDL_PERSONAL}
-};
+    {kWinWindowsFolderVarName, CSIDL_WINDOWS},
+    {kWinProgramFilesFolderVarName, CSIDL_PROGRAM_FILES},
+    {kWinProgramDataFolderVarName, CSIDL_COMMON_APPDATA},
+    {kWinProfileFolderVarName, CSIDL_PROFILE},
+    {kWinLocalAppDataFolderVarName, CSIDL_LOCAL_APPDATA},
+    {kWinRoamingAppDataFolderVarName, CSIDL_APPDATA},
+    {kWinDocumentsFolderVarName, CSIDL_PERSONAL}};
 
 template <class FunctionType>
 struct ScopedFunctionHelper {
@@ -54,7 +53,7 @@ struct ScopedFunctionHelper {
           function_name[2] && function_name[2] != ':') {
         function_name += 2;
       }
-      function_ = reinterpret_cast<FunctionType *>(
+      function_ = reinterpret_cast<FunctionType*>(
           GetProcAddress(library_, function_name));
       assert(function_);
     }
@@ -65,7 +64,8 @@ struct ScopedFunctionHelper {
       FreeLibrary(library_);
   }
 
-  template <class... Args> auto operator()(Args... a) {
+  template <class... Args>
+  auto operator()(Args... a) {
     return function_(a...);
   }
 
@@ -74,20 +74,19 @@ struct ScopedFunctionHelper {
   FunctionType* function_;
 };
 
-#define SCOPED_LOAD_FUNCTION(library, function)                                \
+#define SCOPED_LOAD_FUNCTION(library, function) \
   ScopedFunctionHelper<decltype(function)>(library, #function)
 
 }  // namespace
 
 namespace install_static {
 
-// Replaces all variable occurances in the policy string with the respective
+// Replaces all variable occurrences in the policy string with the respective
 // system settings values.
 // Note that this uses GetProcAddress to load DLLs that cannot be loaded before
 // the blacklist in the DllMain of chrome_elf has been applied. This function
 // should only be used after DllMain() has run.
-std::wstring ExpandPathVariables(
-    const std::wstring& untranslated_string) {
+std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
   std::wstring result(untranslated_string);
   if (result.length() == 0)
     return result;
@@ -140,14 +139,15 @@ std::wstring ExpandPathVariables(
   position = result.find(kMachineNamePolicyVarName);
   if (position != std::wstring::npos) {
     DWORD return_length = 0;
-    ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, NULL, &return_length);
+    ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, nullptr,
+                        &return_length);
     if (return_length != 0) {
       std::unique_ptr<WCHAR[]> machinename(new WCHAR[return_length]);
-      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname,
-                          machinename.get(), &return_length);
+      ::GetComputerNameEx(ComputerNamePhysicalDnsHostname, machinename.get(),
+                          &return_length);
       std::wstring machinename_string(machinename.get());
-      result.replace(
-          position, wcslen(kMachineNamePolicyVarName), machinename_string);
+      result.replace(position, wcslen(kMachineNamePolicyVarName),
+                     machinename_string);
     }
   }
   auto wts_query_session_information =
@@ -155,7 +155,7 @@ std::wstring ExpandPathVariables(
   auto wts_free_memory = SCOPED_LOAD_FUNCTION(L"wtsapi32.dll", ::WTSFreeMemory);
   position = result.find(kWinClientName);
   if (position != std::wstring::npos) {
-    LPWSTR buffer = NULL;
+    LPWSTR buffer = nullptr;
     DWORD buffer_length = 0;
     if (wts_query_session_information(WTS_CURRENT_SERVER, WTS_CURRENT_SESSION,
                                       WTSClientName, &buffer, &buffer_length)) {
@@ -166,7 +166,7 @@ std::wstring ExpandPathVariables(
   }
   position = result.find(kWinSessionName);
   if (position != std::wstring::npos) {
-    LPWSTR buffer = NULL;
+    LPWSTR buffer = nullptr;
     DWORD buffer_length = 0;
     if (wts_query_session_information(WTS_CURRENT_SERVER, WTS_CURRENT_SESSION,
                                       WTSWinStationName, &buffer,

@@ -15,7 +15,8 @@ class PartObject;
 class PartBObject {
     DISALLOW_NEW();
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     HeapHashSet<PartBObject> m_set;
     HeapVector<PartBObject> m_vector;
@@ -24,7 +25,8 @@ private:
 class PartObject {
     DISALLOW_NEW();
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     Member<HeapObject> m_obj1;
     Member<HeapObject> m_obj2;
@@ -35,7 +37,8 @@ private:
 
 class HeapObject : public GarbageCollected<HeapObject> {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
+
 private:
     PartObject m_part;
     Member<HeapObject> m_obj;

@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -63,7 +64,6 @@ namespace blink {
 // dependencies to core/.
 
 class DOMWindow;
-class EventTarget;
 class ExceptionState;
 class ExecutionContext;
 class FlexibleArrayBufferView;
@@ -76,93 +76,11 @@ class XPathNSResolver;
 // JavaScript value being converted is either undefined or null, kNullable will
 // stop the conversion attempt and the union's IsNull() method will return true.
 // If kNotNullable is used, the other conversion steps listed in
-// https://heycam.github.io/webidl/#es-union will continue being attempted.
+// https://webidl.spec.whatwg.org/#es-union will continue being attempted.
 enum class UnionTypeConversionMode {
   kNullable,
   kNotNullable,
 };
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& callback_info,
-                             DOMWindow* impl) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& callback_info,
-                             EventTarget* impl) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& callback_info, Node* impl) {
-  V8SetReturnValue(callback_info, static_cast<ScriptWrappable*>(impl));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueForMainWorld(const CallbackInfo& callback_info,
-                                         DOMWindow* impl) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueForMainWorld(const CallbackInfo& callback_info,
-                                         EventTarget* impl) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueForMainWorld(const CallbackInfo& callback_info,
-                                         Node* impl) {
-  // Since EventTarget has a special version of ToV8 and V8EventTarget.h
-  // defines its own v8SetReturnValue family, which are slow, we need to
-  // override them with optimized versions for Node and its subclasses.
-  // Without this overload, V8SetReturnValueForMainWorld for Node would be
-  // very slow.
-  //
-  // class hierarchy:
-  //     ScriptWrappable <-- EventTarget <--+-- Node <-- ...
-  //                                        +-- Window
-  // overloads:
-  //     V8SetReturnValueForMainWorld(ScriptWrappable*)
-  //         Optimized and very fast.
-  //     V8SetReturnValueForMainWorld(EventTarget*)
-  //         Uses custom ToV8 function and slow.
-  //     V8SetReturnValueForMainWorld(Node*)
-  //         Optimized and very fast.
-  //     V8SetReturnValueForMainWorld(Window*)
-  //         Uses custom ToV8 function and slow.
-  V8SetReturnValueForMainWorld(callback_info,
-                               static_cast<ScriptWrappable*>(impl));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 DOMWindow* impl,
-                                 const ScriptWrappable*) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 EventTarget* impl,
-                                 const ScriptWrappable*) {
-  V8SetReturnValue(callback_info, ToV8(impl, callback_info.Holder(),
-                                       callback_info.GetIsolate()));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueFast(const CallbackInfo& callback_info,
-                                 Node* impl,
-                                 const ScriptWrappable* wrappable) {
-  V8SetReturnValueFast(callback_info, static_cast<ScriptWrappable*>(impl),
-                       wrappable);
-}
 
 template <typename CallbackInfo, typename T>
 inline void V8SetReturnValue(const CallbackInfo& callbackInfo,
@@ -199,8 +117,8 @@ CORE_EXPORT void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>&,
 // Conversion flags, used in toIntXX/toUIntXX.
 enum IntegerConversionConfiguration {
   kNormalConversion,
+  kClamp,
   kEnforceRange,
-  kClamp
 };
 
 // Convert a value to a boolean.
@@ -328,7 +246,7 @@ inline uint64_t ToUInt64(v8::Isolate* isolate,
 }
 
 // NaNs and +/-Infinity should be 0, otherwise modulo 2^64.
-// Step 8 - 12 of https://heycam.github.io/webidl/#abstract-opdef-converttoint
+// Step 8 - 12 of https://webidl.spec.whatwg.org/#abstract-opdef-converttoint
 inline uint64_t DoubleToInteger(double d) {
   if (std::isnan(d) || std::isinf(d))
     return 0;
@@ -387,7 +305,7 @@ CORE_EXPORT float ToRestrictedFloat(v8::Isolate*,
                                     v8::Local<v8::Value>,
                                     ExceptionState&);
 
-inline base::Optional<base::Time> ToCoreNullableDate(
+inline absl::optional<base::Time> ToCoreNullableDate(
     v8::Isolate* isolate,
     v8::Local<v8::Value> object,
     ExceptionState& exception_state) {
@@ -396,19 +314,19 @@ inline base::Optional<base::Time> ToCoreNullableDate(
   //   NaN time value, then set the value of the element to the empty string;
   // We'd like to return same values for |null| and an invalid Date object.
   if (object->IsNull())
-    return base::nullopt;
+    return absl::nullopt;
   if (!object->IsDate()) {
     exception_state.ThrowTypeError("The provided value is not a Date.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   double time_value = object.As<v8::Date>()->ValueOf();
   if (!std::isfinite(time_value))
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJsTime(time_value);
 }
 
 // USVString conversion helper.
-CORE_EXPORT String ReplaceUnmatchedSurrogates(const String&);
+CORE_EXPORT String ReplaceUnmatchedSurrogates(String);
 
 // FIXME: Remove the special casing for XPathNSResolver.
 XPathNSResolver* ToXPathNSResolver(ScriptState*, v8::Local<v8::Value>);
@@ -432,6 +350,33 @@ VectorOf<typename NativeValueTraits<IDLType>::ImplType> ToImplArguments(
     for (int i = start_index; i < length; ++i) {
       result.UncheckedAppend(
           TraitsType::NativeValue(info.GetIsolate(), info[i], exception_state));
+      if (exception_state.HadException())
+        return VectorType();
+    }
+  }
+  return result;
+}
+
+template <typename IDLType>
+VectorOf<typename NativeValueTraits<IDLType>::ImplType> ToImplArguments(
+    const v8::FunctionCallbackInfo<v8::Value>& info,
+    int start_index,
+    ExceptionState& exception_state,
+    ExecutionContext* execution_context) {
+  using TraitsType = NativeValueTraits<IDLType>;
+  using VectorType = VectorOf<typename TraitsType::ImplType>;
+
+  int length = info.Length();
+  VectorType result;
+  if (start_index < length) {
+    if (static_cast<size_t>(length - start_index) > VectorType::MaxCapacity()) {
+      exception_state.ThrowRangeError("Array length exceeds supported limit.");
+      return VectorType();
+    }
+    result.ReserveInitialCapacity(length - start_index);
+    for (int i = start_index; i < length; ++i) {
+      result.UncheckedAppend(TraitsType::NativeValue(
+          info.GetIsolate(), info[i], exception_state, execution_context));
       if (exception_state.HadException())
         return VectorType();
     }
@@ -503,13 +448,9 @@ CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 // a context, if the window is currently being displayed in a Frame.
 CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
 
-// If 'storage' is non-null, it must be large enough to copy all bytes in the
-// array buffer view into it.  Use allocateFlexibleArrayBufferStorage(v8Value)
-// to allocate it using alloca() in the callers stack frame.
 CORE_EXPORT void ToFlexibleArrayBufferView(v8::Isolate*,
                                            v8::Local<v8::Value>,
-                                           FlexibleArrayBufferView&,
-                                           void* storage = nullptr);
+                                           FlexibleArrayBufferView&);
 
 CORE_EXPORT bool IsValidEnum(const String& value,
                              const char* const* valid_values,
@@ -521,10 +462,6 @@ CORE_EXPORT bool IsValidEnum(const Vector<String>& values,
                              size_t length,
                              const String& enum_name,
                              ExceptionState&);
-
-// Result values for platform object 'deleter' methods,
-// http://www.w3.org/TR/WebIDL/#delete
-enum DeleteResult { kDeleteSuccess, kDeleteReject, kDeleteUnknownProperty };
 
 CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
                                                 v8::Local<v8::Context>,

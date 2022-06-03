@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
 #include "snapshot/win/pe_image_resource_reader.h"

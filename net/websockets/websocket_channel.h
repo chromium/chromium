@@ -19,11 +19,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_stream.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -36,11 +36,13 @@ class HttpRequestHeaders;
 class IOBuffer;
 class IPEndPoint;
 class NetLogWithSource;
+class IsolationInfo;
 class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
 struct WebSocketHandshakeRequestInfo;
 struct WebSocketHandshakeResponseInfo;
+struct NetworkTrafficAnnotationTag;
 
 // Transport-independent implementation of WebSockets. Implements protocol
 // semantics that do not depend on the underlying transport. Provides the
@@ -51,15 +53,16 @@ class NET_EXPORT WebSocketChannel {
  public:
   // The type of a WebSocketStream creator callback. Must match the signature of
   // WebSocketStream::CreateAndConnectStream().
-  typedef base::Callback<std::unique_ptr<WebSocketStreamRequest>(
+  typedef base::OnceCallback<std::unique_ptr<WebSocketStreamRequest>(
       const GURL&,
       const std::vector<std::string>&,
       const url::Origin&,
       const SiteForCookies&,
-      const NetworkIsolationKey&,
+      const IsolationInfo&,
       const HttpRequestHeaders&,
       URLRequestContext*,
       const NetLogWithSource&,
+      NetworkTrafficAnnotationTag,
       std::unique_ptr<WebSocketStream::ConnectDelegate>)>
       WebSocketStreamRequestCreationCallback;
 
@@ -73,6 +76,10 @@ class NET_EXPORT WebSocketChannel {
   // connection process.
   WebSocketChannel(std::unique_ptr<WebSocketEventInterface> event_interface,
                    URLRequestContext* url_request_context);
+
+  WebSocketChannel(const WebSocketChannel&) = delete;
+  WebSocketChannel& operator=(const WebSocketChannel&) = delete;
+
   virtual ~WebSocketChannel();
 
   // Starts the connection process.
@@ -81,8 +88,9 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
-      const HttpRequestHeaders& additional_headers);
+      const IsolationInfo& isolation_info,
+      const HttpRequestHeaders& additional_headers,
+      NetworkTrafficAnnotationTag traffic_annotation);
 
   // Sends a data frame to the remote side. It is the responsibility of the
   // caller to ensure that they have sufficient send quota to send this data,
@@ -98,7 +106,7 @@ class NET_EXPORT WebSocketChannel {
   ChannelState SendFrame(bool fin,
                          WebSocketFrameHeader::OpCode op_code,
                          scoped_refptr<IOBuffer> buffer,
-                         size_t buffer_size);
+                         size_t buffer_size) WARN_UNUSED_RESULT;
 
   // Calls WebSocketStream::ReadFrames() with the appropriate arguments. Stops
   // calling ReadFrames if no writable buffer in dataframe or WebSocketStream
@@ -117,12 +125,6 @@ class NET_EXPORT WebSocketChannel {
   ChannelState StartClosingHandshake(uint16_t code, const std::string& reason)
       WARN_UNUSED_RESULT;
 
-  // Returns the current send quota. This value is unsafe to use outside of the
-  // browser IO thread because it changes asynchronously.  The value is only
-  // valid for the execution of the current Task or until SendFrame() is called,
-  // whichever happens sooner.
-  int current_send_quota() const { return current_send_quota_; }
-
   // Starts the connection process, using a specified creator callback rather
   // than the default. This is exposed for testing.
   void SendAddChannelRequestForTesting(
@@ -130,9 +132,10 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
-      const WebSocketStreamRequestCreationCallback& callback);
+      NetworkTrafficAnnotationTag traffic_annotation,
+      WebSocketStreamRequestCreationCallback callback);
 
   // The default timout for the closing handshake is a sensible value (see
   // kClosingHandshakeTimeoutSeconds in websocket_channel.cc). However, we can
@@ -148,21 +151,6 @@ class NET_EXPORT WebSocketChannel {
   // This method is public for testing.
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request);
-
-  // Called when the stream ends the WebSocket Opening Handshake.
-  // This method is public for testing.
-  void OnFinishOpeningHandshake(
-      std::unique_ptr<WebSocketHandshakeResponseInfo> response);
-
-  // The renderer calls AddReceiveFlowControlQuota() to the browser per
-  // recerving this amount of data so that the browser can continue sending
-  // remaining data to the renderer.
-#if defined(OS_ANDROID)
-  static const uint64_t kReceiveQuotaThreshold = 1 << 15;
-#else
-  // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
-  static const uint64_t kReceiveQuotaThreshold = 65500;
-#endif
 
  private:
   // The object passes through a linear progression of states from
@@ -197,20 +185,25 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
-      const WebSocketStreamRequestCreationCallback& callback);
+      NetworkTrafficAnnotationTag traffic_annotation,
+      WebSocketStreamRequestCreationCallback callback);
 
   // Called when a URLRequest is created for handshaking.
   void OnCreateURLRequest(URLRequest* request);
 
   // Success callback from WebSocketStream::CreateAndConnectStream(). Reports
   // success to the event interface. May delete |this|.
-  void OnConnectSuccess(std::unique_ptr<WebSocketStream> stream);
+  void OnConnectSuccess(
+      std::unique_ptr<WebSocketStream> stream,
+      std::unique_ptr<WebSocketHandshakeResponseInfo> response);
 
   // Failure callback from WebSocketStream::CreateAndConnectStream(). Reports
   // failure to the event interface. May delete |this|.
-  void OnConnectFailure(const std::string& message);
+  void OnConnectFailure(const std::string& message,
+                        int net_error,
+                        absl::optional<int> response_code);
 
   // SSL certificate error callback from
   // WebSocketStream::CreateAndConnectStream(). Forwards the request to the
@@ -228,7 +221,7 @@ class NET_EXPORT WebSocketChannel {
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials);
+                     absl::optional<AuthCredentials>* credentials);
 
   // Sets |state_| to |new_state| and updates UMA if necessary.
   void SetState(State new_state);
@@ -361,17 +354,6 @@ class NET_EXPORT WebSocketChannel {
   // during the connection process.
   std::unique_ptr<WebSocketStreamRequest> stream_request_;
 
-  // If the renderer's send quota reaches this level, it is sent a quota
-  // refresh. "quota units" are currently bytes. TODO(ricea): Update the
-  // definition of quota units when necessary.
-  int send_quota_low_water_mark_;
-  // The level the quota is refreshed to when it reaches the low_water_mark
-  // (quota units).
-  int send_quota_high_water_mark_;
-  // The current amount of quota that the renderer has available for sending
-  // on this logical channel (quota units).
-  int current_send_quota_;
-
   // Timer for the closing handshake.
   base::OneShotTimer close_timer_;
 
@@ -410,11 +392,7 @@ class NET_EXPORT WebSocketChannel {
 
   // True if we're waiting for OnReadDone() callback.
   bool is_reading_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketChannel);
 };
-
-NET_EXPORT extern const char kWebSocketReceiveQuotaThreshold[];
 
 }  // namespace net
 

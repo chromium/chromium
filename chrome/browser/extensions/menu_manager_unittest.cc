@@ -11,13 +11,14 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -25,16 +26,19 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/common/context_menu_params.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -57,13 +61,16 @@ class MenuManagerTest : public testing::Test {
         prefs_(base::ThreadTaskRunnerHandle::Get()),
         next_id_(1) {}
 
+  MenuManagerTest(const MenuManagerTest&) = delete;
+  MenuManagerTest& operator=(const MenuManagerTest&) = delete;
+
   void TearDown() override {
     prefs_.pref_service()->CommitPendingWrite();
     base::RunLoop().RunUntilIdle();
   }
 
   // Returns a test item.
-  std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
+  std::unique_ptr<MenuItem> CreateTestItem(const Extension* extension,
                                            bool incognito = false) {
     MenuItem::Type type = MenuItem::NORMAL;
     MenuItem::ContextList contexts(MenuItem::ALL);
@@ -75,7 +82,7 @@ class MenuManagerTest : public testing::Test {
   }
 
   // Returns a test item with the given string ID.
-  std::unique_ptr<MenuItem> CreateTestItemWithID(Extension* extension,
+  std::unique_ptr<MenuItem> CreateTestItemWithID(const Extension* extension,
                                                  const std::string& string_id) {
     MenuItem::Type type = MenuItem::NORMAL;
     MenuItem::ContextList contexts(MenuItem::ALL);
@@ -88,7 +95,7 @@ class MenuManagerTest : public testing::Test {
 
   // Creates and returns a test Extension. The caller does *not* own the return
   // value.
-  Extension* AddExtension(const std::string& name) {
+  const Extension* AddExtension(const std::string& name) {
     scoped_refptr<Extension> extension = prefs_.AddExtension(name);
     extensions_.push_back(extension);
     return extension.get();
@@ -102,14 +109,11 @@ class MenuManagerTest : public testing::Test {
   ExtensionList extensions_;
   TestExtensionPrefs prefs_;
   int next_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuManagerTest);
 };
 
 // Tests adding, getting, and removing items.
 TEST_F(MenuManagerTest, AddGetRemoveItems) {
-  Extension* extension = AddExtension("test");
+  const Extension* extension = AddExtension("test");
 
   // Add a new item, make sure you can get it back.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension);
@@ -155,7 +159,7 @@ TEST_F(MenuManagerTest, AddGetRemoveItems) {
   ASSERT_FALSE(manager_.AddContextItem(extension, std::move(item2too)));
 
   // But the same string ID should not collide with another extension.
-  Extension* extension2 = AddExtension("test2");
+  const Extension* extension2 = AddExtension("test2");
   std::unique_ptr<MenuItem> item2other =
       CreateTestItemWithID(extension2, "id2");
   ASSERT_TRUE(manager_.AddContextItem(extension2, std::move(item2other)));
@@ -163,9 +167,9 @@ TEST_F(MenuManagerTest, AddGetRemoveItems) {
 
 // Test adding/removing child items.
 TEST_F(MenuManagerTest, ChildFunctions) {
-  Extension* extension1 = AddExtension("1111");
-  Extension* extension2 = AddExtension("2222");
-  Extension* extension3 = AddExtension("3333");
+  const Extension* extension1 = AddExtension("1111");
+  const Extension* extension2 = AddExtension("2222");
+  const Extension* extension3 = AddExtension("3333");
 
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1);
   MenuItem* item1_ptr = item1.get();
@@ -221,7 +225,12 @@ TEST_F(MenuManagerTest, ChildFunctions) {
 }
 
 TEST_F(MenuManagerTest, PopulateFromValue) {
-  Extension* extension = AddExtension("test");
+  const Extension* extension = AddExtension("test");
+  std::string error;
+
+  std::unique_ptr<MenuItem> invalid_item(MenuItem::Populate(
+      extension->id(), base::Value("needs a dictionary"), &error));
+  EXPECT_EQ(invalid_item.get(), nullptr);
 
   bool incognito = true;
   int type = MenuItem::CHECKBOX;
@@ -232,35 +241,34 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::PAGE);
   contexts.Add(MenuItem::SELECTION);
-  int contexts_value = 0;
-  ASSERT_TRUE(contexts.ToValue()->GetAsInteger(&contexts_value));
+  int contexts_value = contexts.ToValue()->GetInt();
 
-  auto document_url_patterns = std::make_unique<base::ListValue>();
-  document_url_patterns->AppendString("http://www.google.com/*");
-  document_url_patterns->AppendString("http://www.reddit.com/*");
+  base::Value document_url_patterns(base::Value::Type::LIST);
+  document_url_patterns.Append("http://www.google.com/*");
+  document_url_patterns.Append("http://www.reddit.com/*");
 
-  auto target_url_patterns = std::make_unique<base::ListValue>();
-  target_url_patterns->AppendString("http://www.yahoo.com/*");
-  target_url_patterns->AppendString("http://www.facebook.com/*");
+  base::Value target_url_patterns(base::Value::Type::LIST);
+  target_url_patterns.Append("http://www.yahoo.com/*");
+  target_url_patterns.Append("http://www.facebook.com/*");
 
-  base::DictionaryValue value;
-  value.SetBoolean("incognito", incognito);
-  value.SetString("string_uid", std::string());
-  value.SetInteger("type", type);
-  value.SetString("title", title);
-  value.SetBoolean("checked", checked);
-  value.SetBoolean("visible", visible);
-  value.SetBoolean("enabled", enabled);
-  value.SetInteger("contexts", contexts_value);
-  std::string error;
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetBoolKey("incognito", incognito);
+  value.SetStringKey("string_uid", std::string());
+  value.SetIntKey("type", type);
+  value.SetStringKey("title", title);
+  value.SetBoolKey("checked", checked);
+  value.SetBoolKey("visible", visible);
+  value.SetBoolKey("enabled", enabled);
+  value.SetIntKey("contexts", contexts_value);
   URLPatternSet document_url_pattern_set;
-  document_url_pattern_set.Populate(*document_url_patterns,
-                                    URLPattern::SCHEME_ALL, true, &error);
-  value.Set("document_url_patterns", std::move(document_url_patterns));
+  document_url_pattern_set.Populate(
+      base::Value::AsListValue(document_url_patterns), URLPattern::SCHEME_ALL,
+      true, &error);
+  value.SetKey("document_url_patterns", std::move(document_url_patterns));
   URLPatternSet target_url_pattern_set;
-  target_url_pattern_set.Populate(*target_url_patterns, URLPattern::SCHEME_ALL,
-                                  true, &error);
-  value.Set("target_url_patterns", std::move(target_url_patterns));
+  target_url_pattern_set.Populate(base::Value::AsListValue(target_url_patterns),
+                                  URLPattern::SCHEME_ALL, true, &error);
+  value.SetKey("target_url_patterns", std::move(target_url_patterns));
 
   std::unique_ptr<MenuItem> item(
       MenuItem::Populate(extension->id(), value, &error));
@@ -282,7 +290,7 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
 
 // Tests that deleting a parent properly removes descendants.
 TEST_F(MenuManagerTest, DeleteParent) {
-  Extension* extension = AddExtension("1111");
+  const Extension* extension = AddExtension("1111");
 
   // Set up 5 items to add.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension);
@@ -354,7 +362,7 @@ TEST_F(MenuManagerTest, DeleteParent) {
 
 // Tests changing parents.
 TEST_F(MenuManagerTest, ChangeParent) {
-  Extension* extension1 = AddExtension("1111");
+  const Extension* extension1 = AddExtension("1111");
 
   // First create two items and add them both to the manager.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1);
@@ -424,7 +432,7 @@ TEST_F(MenuManagerTest, ChangeParent) {
   ASSERT_EQ(item3_ptr, item1_ptr->children()[0].get());
 
   // Make sure you can't move a node to be a child of another extension's item.
-  Extension* extension2 = AddExtension("2222");
+  const Extension* extension2 = AddExtension("2222");
   std::unique_ptr<MenuItem> item4 = CreateTestItem(extension2);
   MenuItem* item4_ptr = item4.get();
   ASSERT_TRUE(manager_.AddContextItem(extension2, std::move(item4)));
@@ -443,7 +451,7 @@ TEST_F(MenuManagerTest, ExtensionUnloadRemovesMenuItems) {
   ASSERT_TRUE(notifier != NULL);
 
   // Create a test extension.
-  Extension* extension1 = AddExtension("1111");
+  const Extension* extension1 = AddExtension("1111");
 
   // Create an MenuItem and put it into the manager.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1);
@@ -455,7 +463,7 @@ TEST_F(MenuManagerTest, ExtensionUnloadRemovesMenuItems) {
       1u, manager_.MenuItems(MenuItem::ExtensionKey(extension1->id()))->size());
 
   // Create a menu item with a different extension id and add it to the manager.
-  Extension* extension2 = AddExtension("2222");
+  const Extension* extension2 = AddExtension("2222");
   std::unique_ptr<MenuItem> item2 = CreateTestItem(extension2);
   MenuItem* item2_ptr = item2.get();
   ASSERT_NE(item1_ptr->extension_id(), item2->extension_id());
@@ -480,6 +488,9 @@ class MockEventRouter : public EventRouter {
  public:
   explicit MockEventRouter(Profile* profile) : EventRouter(profile, NULL) {}
 
+  MockEventRouter(const MockEventRouter&) = delete;
+  MockEventRouter& operator=(const MockEventRouter&) = delete;
+
   MOCK_METHOD6(DispatchEventToExtensionMock,
                void(const std::string& extension_id,
                     const std::string& event_name,
@@ -497,9 +508,6 @@ class MockEventRouter : public EventRouter {
                                  event->event_url,
                                  event->user_gesture);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventRouter);
 };
 
 // MockEventRouter factory function
@@ -516,7 +524,7 @@ TEST_F(MenuManagerTest, RemoveAll) {
   manager_.RemoveAllContextItems(MenuItem::ExtensionKey("CCCC"));
 
   // Add 2 top-level and one child item for extension 1.
-  Extension* extension1 = AddExtension("1111");
+  const Extension* extension1 = AddExtension("1111");
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1);
   std::unique_ptr<MenuItem> item2 = CreateTestItem(extension1);
   std::unique_ptr<MenuItem> item3 = CreateTestItem(extension1);
@@ -526,7 +534,7 @@ TEST_F(MenuManagerTest, RemoveAll) {
   ASSERT_TRUE(manager_.AddChildItem(item1_ptr->id(), std::move(item3)));
 
   // Add one top-level item for extension 2.
-  Extension* extension2 = AddExtension("2222");
+  const Extension* extension2 = AddExtension("2222");
   std::unique_ptr<MenuItem> item4 = CreateTestItem(extension2);
   ASSERT_TRUE(manager_.AddContextItem(extension2, std::move(item4)));
 
@@ -548,7 +556,7 @@ TEST_F(MenuManagerTest, RemoveAll) {
 // Tests that removing all items one-by-one doesn't leave an entry around.
 TEST_F(MenuManagerTest, RemoveOneByOne) {
   // Add 2 test items.
-  Extension* extension1 = AddExtension("1111");
+  const Extension* extension1 = AddExtension("1111");
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1);
   std::unique_ptr<MenuItem> item2 = CreateTestItem(extension1);
   std::unique_ptr<MenuItem> item3 = CreateTestItemWithID(extension1, "id3");
@@ -575,13 +583,13 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
           &profile, base::BindRepeating(&MockEventRouterFactoryFunction)));
 
   content::ContextMenuParams params;
-  params.media_type = blink::ContextMenuDataMediaType::kImage;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
   params.src_url = GURL("http://foo.bar/image.png");
   params.page_url = GURL("http://foo.bar");
-  params.selection_text = base::ASCIIToUTF16("Hello World");
+  params.selection_text = u"Hello World";
   params.is_editable = false;
 
-  Extension* extension = AddExtension("test");
+  const Extension* extension = AddExtension("test");
   std::unique_ptr<MenuItem> parent = CreateTestItem(extension);
   std::unique_ptr<MenuItem> item = CreateTestItem(extension);
   MenuItem* item_ptr = item.get();
@@ -612,16 +620,13 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetSize());
+  ASSERT_EQ(2u, list->GetList().size());
 
   base::DictionaryValue* info;
   ASSERT_TRUE(list->GetDictionary(0, &info));
 
-  int tmp_id = 0;
-  ASSERT_TRUE(info->GetInteger("menuItemId", &tmp_id));
-  ASSERT_EQ(id.uid, tmp_id);
-  ASSERT_TRUE(info->GetInteger("parentMenuItemId", &tmp_id));
-  ASSERT_EQ(parent_id.uid, tmp_id);
+  ASSERT_EQ(id.uid, info->FindIntKey("menuItemId"));
+  ASSERT_EQ(parent_id.uid, info->FindIntKey("parentMenuItemId"));
 
   std::string tmp;
   ASSERT_TRUE(info->GetString("mediaType", &tmp));
@@ -631,20 +636,20 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(info->GetString("pageUrl", &tmp));
   ASSERT_EQ(params.page_url.spec(), tmp);
 
-  base::string16 tmp16;
+  std::u16string tmp16;
   ASSERT_TRUE(info->GetString("selectionText", &tmp16));
   ASSERT_EQ(params.selection_text, tmp16);
 
-  bool bool_tmp = true;
-  ASSERT_TRUE(info->GetBoolean("editable", &bool_tmp));
-  ASSERT_EQ(params.is_editable, bool_tmp);
+  absl::optional<bool> editable = info->FindBoolKey("editable");
+  ASSERT_TRUE(editable.has_value());
+  ASSERT_EQ(params.is_editable, editable.value());
 
   delete list;
 }
 
 // Test that there is always only one radio item selected.
 TEST_F(MenuManagerTest, SanitizeRadioButtons) {
-  Extension* extension = AddExtension("test");
+  const Extension* extension = AddExtension("test");
 
   // A single unchecked item should get checked.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension);
@@ -754,7 +759,7 @@ TEST_F(MenuManagerTest, SanitizeRadioButtons) {
 // sanitized. More specifically, on initialization of the context menu, the
 // first item of each list should be checked.
 TEST_F(MenuManagerTest, SanitizeContextMenuWithMultipleRadioLists) {
-  Extension* extension = AddExtension("test");
+  const Extension* extension = AddExtension("test");
 
   // Create a radio list with two radio buttons.
   // Create first radio button.
@@ -796,7 +801,7 @@ TEST_F(MenuManagerTest, SanitizeContextMenuWithMultipleRadioLists) {
 
 // Tests the RemoveAllIncognitoContextItems functionality.
 TEST_F(MenuManagerTest, RemoveAllIncognito) {
-  Extension* extension1 = AddExtension("1111");
+  const Extension* extension1 = AddExtension("1111");
   // Add 2 top-level and one child item for extension 1
   // with incognito 'true'.
   std::unique_ptr<MenuItem> item1 = CreateTestItem(extension1, true);
@@ -818,7 +823,7 @@ TEST_F(MenuManagerTest, RemoveAllIncognito) {
   ASSERT_TRUE(manager_.AddChildItem(item4_id, std::move(item6)));
 
   // Add one top-level item for extension 2.
-  Extension* extension2 = AddExtension("2222");
+  const Extension* extension2 = AddExtension("2222");
   std::unique_ptr<MenuItem> item7 = CreateTestItem(extension2);
   ASSERT_TRUE(manager_.AddContextItem(extension2, std::move(item7)));
 
@@ -831,6 +836,142 @@ TEST_F(MenuManagerTest, RemoveAllIncognito) {
   manager_.RemoveAllIncognitoContextItems();
   EXPECT_EQ(2u, manager_.MenuItems(key1)->size());
   EXPECT_EQ(1u, manager_.MenuItems(key2)->size());
+}
+
+// TODO(https://crbug.com/1150988): This should be unified with the existing
+// version of this enum in ExtensionBrowserTest.
+enum class ContextType {
+  // A non-persistent background page/JS based extension.
+  kEventPage,
+  // A Service Worker based extension.
+  kServiceWorker,
+  // An extension with a persistent background page.
+  kPersistentBackground,
+};
+
+class MenuManagerStorageTest : public MenuManagerTest,
+                               public testing::WithParamInterface<ContextType> {
+ protected:
+  scoped_refptr<const Extension> AddEventPageExtension(
+      const std::string& name) {
+    base::DictionaryValue dictionary;
+    TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
+    base::Value value(base::Value::Type::LIST);
+    value.Append("background.js");
+    dictionary.SetPath(manifest_keys::kBackgroundScripts, std::move(value));
+    dictionary.SetPath(manifest_keys::kBackgroundPersistent,
+                       base::Value(false));
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
+  }
+
+  scoped_refptr<const Extension> AddServiceWorkerExtension(
+      const std::string& name) {
+    base::DictionaryValue dictionary;
+    TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
+    dictionary.SetStringPath(manifest_keys::kBackgroundServiceWorkerScript,
+                             "background.js");
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
+  }
+
+  scoped_refptr<const Extension> CreateTestExtension() {
+    static constexpr char kName[] = "1111";
+    switch (GetParam()) {
+      case ContextType::kPersistentBackground:
+        return AddExtension(kName);
+
+      case ContextType::kEventPage:
+        return AddEventPageExtension(kName);
+
+      case ContextType::kServiceWorker:
+        return AddServiceWorkerExtension(kName);
+    }
+  }
+
+  bool IsPersistent() const {
+    return GetParam() == ContextType::kPersistentBackground;
+  }
+
+  void FlushStateStore() {
+    StateStore* state_store =
+        ExtensionSystem::Get(profile_.get())->state_store();
+    base::RunLoop run_loop;
+    state_store->FlushForTesting(run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         MenuManagerStorageTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         MenuManagerStorageTest,
+                         ::testing::Values(ContextType::kEventPage));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         MenuManagerStorageTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+// Tests writing menus to and reading them from storage. Menus for
+// persistent background page-based extensions are not written to or
+// read from storage.
+TEST_P(MenuManagerStorageTest, WriteToAndReadFromStorage) {
+  // Observer reads and writes from storage for the MenuManager.
+  MenuManagerTestObserver observer(&manager_);
+
+  scoped_refptr<const Extension> extension = CreateTestExtension();
+  ASSERT_TRUE(extension);
+  ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
+  const MenuItem::ExtensionKey extension_key(extension->id());
+
+  // Add 2 top-level and one child item for the extension.
+  std::unique_ptr<MenuItem> item1 =
+      CreateTestItemWithID(extension.get(), "id1");
+  std::unique_ptr<MenuItem> item2 =
+      CreateTestItemWithID(extension.get(), "id2");
+  std::unique_ptr<MenuItem> item3 =
+      CreateTestItemWithID(extension.get(), "id3");
+  MenuItem::Id item1_id = item1->id();
+  MenuItem::Id item2_id = item2->id();
+  MenuItem::Id item3_id = item3->id();
+  ASSERT_TRUE(manager_.AddContextItem(extension.get(), std::move(item1)));
+  ASSERT_TRUE(manager_.AddContextItem(extension.get(), std::move(item2)));
+  ASSERT_TRUE(manager_.AddChildItem(item1_id, std::move(item3)));
+
+  // Verify that a write did or did not occur. For the non-persistent
+  // cases, remove the menus so we can test that they are properly
+  // restored from storage.
+  manager_.WriteToStorage(extension.get(), extension_key);
+  if (IsPersistent()) {
+    EXPECT_FALSE(observer.will_write_for_extension(extension->id()));
+  } else {
+    EXPECT_TRUE(observer.will_write_for_extension(extension->id()));
+    manager_.RemoveAllContextItems(extension_key);
+    EXPECT_FALSE(manager_.GetItemById(item1_id));
+    EXPECT_FALSE(manager_.GetItemById(item2_id));
+    EXPECT_FALSE(manager_.GetItemById(item3_id));
+  }
+
+  // Call MenuManager::OnExtensionLoaded(), which is where
+  // MenuManager::ReadFromStorage() is called, then flush the
+  // pending tasks in the StateStore. After that, we can check
+  // if a read occurred.
+  manager_.OnExtensionLoaded(profile_.get(), extension.get());
+  FlushStateStore();
+
+  if (IsPersistent()) {
+    EXPECT_FALSE(observer.did_read_for_extension(extension->id()));
+  } else {
+    EXPECT_TRUE(observer.did_read_for_extension(extension->id()));
+  }
+
+  // Expect the items to exist, either because we never cleared them
+  // or because they were reloaded from the store.
+  EXPECT_TRUE(manager_.GetItemById(item1_id));
+  EXPECT_TRUE(manager_.GetItemById(item2_id));
+  EXPECT_TRUE(manager_.GetItemById(item3_id));
 }
 
 }  // namespace extensions

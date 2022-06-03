@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_HTTPS_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_HTTPS_STATE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -28,7 +28,7 @@ enum class HttpsState {
 // spec-conformant way.
 PLATFORM_EXPORT HttpsState CalculateHttpsState(
     const SecurityOrigin*,
-    base::Optional<HttpsState> parent_https_state = base::nullopt);
+    absl::optional<HttpsState> parent_https_state = absl::nullopt);
 
 }  // namespace blink
 

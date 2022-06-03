@@ -6,6 +6,17 @@
  * @fileoverview Polymer element for displaying AD domain joining and AD
  * Authenticate user screens.
  */
+
+
+// The definitions below (JoinConfigType, ACTIVE_DIRECTORY_ERROR_STATE) are
+// used in enterprise_enrollment.js as well.
+
+/** @typedef {{name: string, ad_username: ?string, ad_password: ?string,
+ *             computer_ou: ?string, encryption_types: ?string,
+ *             computer_name_validation_regex: ?string}}
+ */
+ var JoinConfigType;
+
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values.
 /** @enum {number} */ var ACTIVE_DIRECTORY_ERROR_STATE = {
@@ -17,22 +28,32 @@
   BAD_UNLOCK_PASSWORD: 5,
 };
 
+(function() {
+
+const adLoginStep = {
+  UNLOCK: 'unlock',
+  CREDS: 'creds',
+};
+
 var DEFAULT_ENCRYPTION_TYPES = 'strong';
 
 /** @typedef {Iterable<{value: string, title: string, selected: boolean,
  *                      subtitle: string}>} */
 var EncryptionSelectListType;
 
-/** @typedef {{name: string, ad_username: ?string, ad_password: ?string,
- *             computer_ou: ?string, encryption_types: ?string,
- *             computer_name_validation_regex: ?string}}
- */
-var JoinConfigType;
-
 Polymer({
-  is: 'offline-ad-login',
+  is: 'offline-ad-login-element',
 
-  behaviors: [I18nBehavior, OobeDialogHostBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior
+  ],
+
+  EXTERNAL_API: [
+    'reset',
+    'setErrorState',
+  ],
 
   properties: {
     /**
@@ -47,10 +68,6 @@ Polymer({
      * Whether the screen is for domain join.
      */
     isDomainJoin: {type: Boolean, value: false},
-    /**
-     * Whether the unlock option should be shown.
-     */
-    unlockPasswordStep: {type: Boolean, value: false, observer: 'focus'},
     /**
      * The kerberos realm (AD Domain), the machine is part of.
      */
@@ -72,9 +89,9 @@ Polymer({
      */
     userNameLabel: {type: String, value: ''},
     /**
-     * Welcome message on top of the UI.
+     * ID of localized welcome message on top of the UI.
      */
-    adWelcomeMessage: String,
+    adWelcomeMessageKey: String,
     /**
      * Error message for the machine name input.
      */
@@ -133,6 +150,12 @@ Polymer({
     'calculateUserInputValue_(selectedConfigOption_)',
   ],
 
+  UI_STEPS: adLoginStep,
+
+  defaultUIStep() {
+    return adLoginStep.CREDS;
+  },
+
   /** @private Used for 'More options' dialog. */
   storedOrgUnit_: String,
 
@@ -171,14 +194,57 @@ Polymer({
    */
   errorStateLocked_: false,
 
+  /**
+   * True when we skip unlock step and show back button option.
+   * @private {boolean}
+   */
+  backToUnlockButtonVisible_: false,
+
+  /**
+   * True when join configurations are visible.
+   * @private {boolean}
+   */
+  joinConfigVisible_: false,
+
   /** @override */
-  ready: function() {
-    if (!this.isDomainJoin)
-      return;
-    this.setupEncList();
+  ready() {
+    if (this.isDomainJoin) {
+      this.setupEncList();
+    } else {
+      this.initializeLoginScreen('ActiveDirectoryLoginScreen', {
+        resetAllowed: true,
+      });
+    }
   },
 
-  setupEncList: function() {
+  onBeforeShow(data) {
+    if (data) {
+      this.realm = data['realm'];
+      if ('emailDomain' in data)
+        this.userRealm = '@' + data['emailDomain'];
+    }
+    if (!this.adWelcomeMessageKey)
+      this.adWelcomeMessageKey = 'loginWelcomeMessage';
+    this.focus();
+  },
+
+  /**
+   * @param {string} username
+   * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
+   */
+  setErrorState(username, errorState) {
+    this.userName = username;
+    this.errorState = errorState;
+    this.loading = false;
+  },
+
+  reset() {
+    this.$.userInput.value = '';
+    this.$.passwordInput.value = '';
+    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+  },
+
+  setupEncList() {
     var list = /** @type {!EncryptionSelectListType}>} */
         (loadTimeData.getValue('encryptionTypesList'));
     for (var item of list) {
@@ -194,8 +260,8 @@ Polymer({
         loadTimeData.getString('adJoinErrorMachineNameInvalid');
   },
 
-  focus: function() {
-    if (this.unlockPasswordStep) {
+  focus() {
+    if (this.uiStep === adLoginStep.UNLOCK) {
       this.$.unlockPasswordInput.focus();
     } else if (this.isDomainJoin && !this.$.machineNameInput.value) {
       this.$.machineNameInput.focus();
@@ -206,7 +272,7 @@ Polymer({
     }
   },
 
-  errorStateObserver_: function() {
+  errorStateObserver_() {
     if (this.errorStateLocked_)
       return;
     // Prevent updateErrorStateOnInputInvalidStateChange_ from changing
@@ -228,21 +294,21 @@ Polymer({
     this.errorStateLocked_ = false;
   },
 
-  encryptionSubtitle_: function() {
+  encryptionSubtitle_() {
     return this.encryptionValueToSubtitleMap[this.encryptionValue_];
   },
 
-  isEncryptionStrong_: function() {
+  isEncryptionStrong_() {
     return this.encryptionValue_ == this.defaultEncryption;
   },
 
   /**
    * @param {Array<JoinConfigType>} options
    */
-  setJoinConfigurationOptions: function(options) {
-    this.$.backToUnlockButton.hidden = true;
+  setJoinConfigurationOptions(options) {
+    this.backToUnlockButtonVisible_ = false;
     if (!options || options.length < 1) {
-      this.$.joinConfig.hidden = true;
+      this.joinConfigVisible_ = false;
       return;
     }
     this.joinConfigOptions_ = options;
@@ -254,11 +320,11 @@ Polymer({
         this.$.joinConfigSelect, selectList,
         this.onJoinConfigSelected_.bind(this));
     this.onJoinConfigSelected_(this.$.joinConfigSelect.value);
-    this.$.joinConfig.hidden = false;
+    this.joinConfigVisible_ = true;
   },
 
   /** @private */
-  onSubmit_: function() {
+  onSubmit_() {
     if (this.disabled)
       return;
 
@@ -277,28 +343,32 @@ Polymer({
       return;
 
     var user = /** @type {string} */ (this.$.userInput.value);
+    const password = /** @type {string} / */ (this.$.passwordInput.value);
     if (!user.includes('@') && this.userRealm)
       user += this.userRealm;
-    var msg = {
-      'distinguished_name': this.$.orgUnitInput.value,
-      'username': user,
-      'password': this.$.passwordInput.value
-    };
+
     if (this.isDomainJoin) {
-      msg['machine_name'] = this.$.machineNameInput.value;
-      msg['encryption_types'] = this.$.encryptionList.value;
+      const msg = {
+        'distinguished_name': this.$.orgUnitInput.value,
+        'username': user,
+        'password': password,
+        'machine_name' : this.$.machineNameInput.value,
+        'encryption_types' : this.$.encryptionList.value,
+      };
+      this.fire('authCompleted', msg);
+    } else {
+      this.loading = true;
+      chrome.send('completeAdAuthentication', [user, password]);
     }
-    this.fire('authCompleted', msg);
   },
 
   /** @private */
-  onBackButton_: function() {
-    this.$.passwordInput.value = '';
-    this.fire('cancel');
+  onBackButton_() {
+    this.userActed('cancel');
   },
 
   /** @private */
-  onMoreOptionsClicked_: function() {
+  onMoreOptionsClicked_() {
     this.disabled = true;
     this.fire('dialogShown');
     this.storedOrgUnit_ = this.$.orgUnitInput.value;
@@ -308,19 +378,19 @@ Polymer({
   },
 
   /** @private */
-  onMoreOptionsConfirmTap_: function() {
+  onMoreOptionsConfirmTap_() {
     this.storedOrgUnit_ = null;
     this.storedEncryption_ = null;
     this.$.moreOptionsDlg.close();
   },
 
   /** @private */
-  onMoreOptionsCancelTap_: function() {
+  onMoreOptionsCancelTap_() {
     this.$.moreOptionsDlg.close();
   },
 
   /** @private */
-  onMoreOptionsClosed_: function() {
+  onMoreOptionsClosed_() {
     if (this.storedOrgUnit_ != null)
       this.$.orgUnitInput.value = this.storedOrgUnit_;
     if (this.storedEncryption_ != null) {
@@ -329,11 +399,11 @@ Polymer({
     }
     this.fire('dialogHidden');
     this.disabled = false;
-    this.focus();
+    this.$.moreOptionsBtn.focus();
   },
 
   /** @private */
-  onUnlockPasswordEntered_: function() {
+  onUnlockPasswordEntered_() {
     var msg = {
       'unlock_password': this.$.unlockPasswordInput.value,
     };
@@ -341,28 +411,30 @@ Polymer({
   },
 
   /** @private */
-  onSkipClicked_: function() {
-    this.$.backToUnlockButton.hidden = false;
-    this.unlockPasswordStep = false;
+  onSkipClicked_() {
+    this.backToUnlockButtonVisible_ = true;
+    this.setUIStep(adLoginStep.CREDS);
+    this.focus();
   },
 
   /** @private */
-  onBackToUnlock_: function() {
+  onBackToUnlock_() {
     if (this.disabled)
       return;
-    this.unlockPasswordStep = true;
+    this.setUIStep(adLoginStep.UNLOCK);
+    this.focus();
   },
 
   /**
    * @private
    * @param {!string} value
    * */
-  onEncryptionSelected_: function(value) {
+  onEncryptionSelected_(value) {
     this.encryptionValue_ = value;
   },
 
   /** @private */
-  onJoinConfigSelected_: function(value) {
+  onJoinConfigSelected_(value) {
     if (this.selectedConfigOption_ == this.joinConfigOptions_[value])
       return;
     this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
@@ -384,7 +456,7 @@ Polymer({
    * @return {string} Regular expression.
    * @private
    */
-  getMachineNameInputPattern_: function(option) {
+  getMachineNameInputPattern_(option) {
     return option['computer_name_validation_regex'];
   },
 
@@ -393,7 +465,7 @@ Polymer({
    * @param {!JoinConfigType} option Value of this.selectedConfigOption_;
    * @private
    */
-  calculateUserInputValue_: function(option) {
+  calculateUserInputValue_(option) {
     this.userName =
         this.calculateInputValue_('userInput', 'ad_username', option);
   },
@@ -407,7 +479,7 @@ Polymer({
    * @return {string} New input value.
    * @private
    */
-  calculateInputValue_: function(inputElementId, key, option) {
+  calculateInputValue_(inputElementId, key, option) {
     if (option && key in option)
       return option[key];
 
@@ -427,7 +499,7 @@ Polymer({
    * @param {Object} option Value of this.selectedConfigOption_;
    * @private
    */
-  isInputDisabled_: function(key, option, disabledAll) {
+  isInputDisabled_(key, option, disabledAll) {
     return disabledAll || (key in option);
   },
 
@@ -435,11 +507,11 @@ Polymer({
    * Returns true if "Machine name is invalid" error should be displayed.
    * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
    */
-  isMachineNameInvalid_: function(errorState) {
+  isMachineNameInvalid_(errorState) {
     return errorState != ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_TOO_LONG;
   },
 
-  getMachineNameError_: function(locale, errorState) {
+  getMachineNameError_(locale, errorState) {
     if (errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_TOO_LONG)
       return this.i18nDynamic(locale, 'adJoinErrorMachineNameTooLong');
     if (errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_INVALID) {
@@ -450,12 +522,12 @@ Polymer({
     return this.i18nDynamic(locale, 'adJoinErrorMachineNameInvalid');
   },
 
-  i18nUpdateLocale: function() {
+  i18nUpdateLocale() {
     this.setupEncList();
-    I18nBehavior.i18nUpdateLocale.call(this);
+    OobeI18nBehaviorImpl.i18nUpdateLocale.call(this);
   },
 
-  onKeydownUnlockPassword_: function(e) {
+  onKeydownUnlockPassword_(e) {
     if (e.key == 'Enter') {
       if (this.$.unlockPasswordInput.value.length == 0)
         this.onSkipClicked_();
@@ -465,7 +537,7 @@ Polymer({
     this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
   },
 
-  onKeydownMachineNameInput_: function(e) {
+  onKeydownMachineNameInput_(e) {
     this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
     if (e.key == 'Enter') {
       this.switchTo_('userInput') || this.switchTo_('passwordInput') ||
@@ -473,30 +545,30 @@ Polymer({
     }
   },
 
-  onKeydownUserInput_: function(e) {
+  onKeydownUserInput_(e) {
     this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
     if (e.key == 'Enter')
       this.switchTo_('passwordInput') || this.onSubmit_();
   },
 
-  userNameObserver_: function() {
+  userNameObserver_() {
     if (this.userRealm && this.userName &&
         this.userName.endsWith(this.userRealm)) {
       this.userName = this.userName.replace(this.userRealm, '');
     }
   },
 
-  domainHidden: function(userRealm, userName) {
+  domainHidden(userRealm, userName) {
     return !userRealm || (userName && userName.includes('@'));
   },
 
-  onKeydownAuthPasswordInput_: function(e) {
+  onKeydownAuthPasswordInput_(e) {
     this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
     if (e.key == 'Enter')
       this.onSubmit_();
   },
 
-  switchTo_: function(inputId) {
+  switchTo_(inputId) {
     if (!this.$[inputId].disabled && this.$[inputId].value.length == 0) {
       this.$[inputId].focus();
       return true;
@@ -504,26 +576,26 @@ Polymer({
     return false;
   },
 
-  machineNameInvalidObserver_: function(isInvalid) {
+  machineNameInvalidObserver_(isInvalid) {
     this.setErrorState_(
         isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_INVALID);
   },
 
-  userInvalidObserver_: function(isInvalid) {
+  userInvalidObserver_(isInvalid) {
     this.setErrorState_(isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_USERNAME);
   },
 
-  authPasswordInvalidObserver_: function(isInvalid) {
+  authPasswordInvalidObserver_(isInvalid) {
     this.setErrorState_(
         isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_AUTH_PASSWORD);
   },
 
-  unlockPasswordInvalidObserver_: function(isInvalid) {
+  unlockPasswordInvalidObserver_(isInvalid) {
     this.setErrorState_(
         isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_UNLOCK_PASSWORD);
   },
 
-  setErrorState_: function(isInvalid, error) {
+  setErrorState_(isInvalid, error) {
     if (this.errorStateLocked_)
       return;
     this.errorStateLocked_ = true;
@@ -534,10 +606,11 @@ Polymer({
     this.errorStateLocked_ = false;
   },
 
-  disabledObserver_: function(disabled) {
+  disabledObserver_(disabled) {
     if (disabled)
       this.$.credsStep.classList.add('full-disabled');
     else
       this.$.credsStep.classList.remove('full-disabled');
   },
 });
+})();

@@ -12,8 +12,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "url/gurl.h"
 
@@ -33,10 +35,12 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
       ServiceWorkerContextClient* owner,
       int fetch_event_id,
       const GURL& url,
-      blink::mojom::FetchEventPreloadHandlePtr preload_handle);
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>
+          preload_url_loader_client_receiver);
   ~NavigationPreloadRequest() override;
 
   // network::mojom::URLLoaderClient:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -54,13 +58,12 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
  private:
   void MaybeReportResponseToOwner();
   void ReportErrorToOwner(const std::string& message,
-                          const std::string& unsanitized_message);
+                          blink::WebServiceWorkerError::Mode error_mode);
 
-  ServiceWorkerContextClient* owner_;
+  ServiceWorkerContextClient* owner_ = nullptr;
 
-  const int fetch_event_id_;
+  const int fetch_event_id_ = -1;
   const GURL url_;
-  mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
 
   std::unique_ptr<blink::WebURLResponse> response_;

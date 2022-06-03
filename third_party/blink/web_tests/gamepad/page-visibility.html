@@ -2,6 +2,7 @@
 <html>
 <body>
 <script src="../resources/js-test.js"></script>
+<script src="../resources/visibility.js"></script>
 <script>
 description("Tests that gamepad events are not fired when page is hidden but kept as pending and fired when the page becomes visible again.");
 window.jsTestIsAsync = true;
@@ -75,11 +76,10 @@ function testWithPageVisibleAgain() {
             finishSoon(); // Give some time to fail if unexpecteds events are coming.
     });
 
-    testRunner.setPageVisibility('visible');
+    setMainWindowHidden(false);
 }
 
 function testWithPageHidden() {
-    testRunner.setPageVisibility('hidden');
     var shouldNotReceive = function() {
         testFailed('Should not have received gamepad events while the page was hidden');
         finishJSTest();
@@ -114,7 +114,8 @@ addListener('gamepadconnected', function() {
     testPassed("Received a gamepadconnected event");
     shouldBeEqualToNumber('event.gamepad.index', 0);
     removeListeners();
-    setTimeout(testWithPageHidden, 0);
+
+    setMainWindowHidden(true).then(testWithPageHidden);
 });
 
 gamepadController.connect(0);

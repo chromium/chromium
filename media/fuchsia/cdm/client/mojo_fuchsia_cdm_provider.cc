@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/fuchsia/cdm/client/mojo_fuchsia_cdm_provider.h"
+
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace media {
@@ -23,7 +24,7 @@ void MojoFuchsiaCdmProvider::CreateCdmInterface(
     interface_broker_->GetInterface(cdm_provider_.BindNewPipeAndPassReceiver());
   }
 
-  cdm_provider_->CreateCdmInterface(key_system, std::move(cdm_request));
+  cdm_provider_->CreateCdm(key_system, std::move(cdm_request));
 }
 
 }  // namespace media

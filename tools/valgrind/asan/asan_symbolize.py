@@ -118,6 +118,12 @@ def make_chrome_osx_binary_name_filter(product_dir_path=''):
   return chrome_osx_binary_name_filter
 
 
+def make_sysroot_filter(sysroot):
+  """Creates a binary name filter for a symbol tree of a remote system."""
+
+  return lambda binary_path: sysroot + binary_path
+
+
 # Construct a path to the .dSYM bundle for the given binary.
 # There are three possible cases for binary location in Chromium:
 # 1. The binary is a standalone executable or dynamic library in the product
@@ -217,6 +223,7 @@ def main():
   parser.add_argument('--executable-path',
       help='Path to program executable. Used on OSX swarming bots to locate '
            'dSYM bundles for associated frameworks and bundles.')
+  parser.add_argument('--sysroot', help='Root directory for symbol files')
   args = parser.parse_args()
 
   disable_buffering()
@@ -227,7 +234,9 @@ def main():
   # /path/to/src/out/Release/../../
   asan_symbolize.fix_filename_patterns.append('Release/../../')
   binary_name_filter = None
-  if platform.uname()[0] == 'Darwin':
+  if args.sysroot:
+    binary_name_filter = make_sysroot_filter(args.sysroot)
+  elif platform.uname()[0] == 'Darwin':
     binary_name_filter = make_chrome_osx_binary_name_filter(
         chrome_product_dir_path(args.executable_path))
   loop = asan_symbolize.SymbolizationLoop(

@@ -4,9 +4,13 @@
 
 #include "ui/native_theme/native_theme_features.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
 namespace features {
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
@@ -20,31 +24,12 @@ constexpr base::FeatureState kOverlayScrollbarFeatureState =
 const base::Feature kOverlayScrollbar{"OverlayScrollbar",
                                       kOverlayScrollbarFeatureState};
 
-// Enables will flash all scrollbars in page after any scroll update.
-const base::Feature kOverlayScrollbarFlashAfterAnyScrollUpdate{
-    "OverlayScrollbarFlashAfterAnyScrollUpdate", kOverlayScrollbarFeatureState};
-
-// Experiment: Enables will flash scorllbar when user move mouse enter a
-// scrollable area.
-const base::Feature kOverlayScrollbarFlashWhenMouseEnter{
-    "OverlayScrollbarFlashWhenMouseEnter", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features
 
 namespace ui {
 
 bool IsOverlayScrollbarEnabled() {
   return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
-}
-
-bool OverlayScrollbarFlashAfterAnyScrollUpdate() {
-  return base::FeatureList::IsEnabled(
-      features::kOverlayScrollbarFlashAfterAnyScrollUpdate);
-}
-
-bool OverlayScrollbarFlashWhenMouseEnter() {
-  return base::FeatureList::IsEnabled(
-      features::kOverlayScrollbarFlashWhenMouseEnter);
 }
 
 }  // namespace ui

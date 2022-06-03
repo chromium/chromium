@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_output_ipc.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace media {
 class AudioParameters;
@@ -29,10 +29,15 @@ class PepperPlatformAudioOutput
  public:
   // Factory function, returns NULL on failure. StreamCreated() will be called
   // when the stream is created.
-  static PepperPlatformAudioOutput* Create(int sample_rate,
-                                           int frames_per_buffer,
-                                           int source_render_frame_id,
-                                           AudioHelper* client);
+  static PepperPlatformAudioOutput* Create(
+      int sample_rate,
+      int frames_per_buffer,
+      const blink::LocalFrameToken& source_frame_token,
+      AudioHelper* client);
+
+  PepperPlatformAudioOutput(const PepperPlatformAudioOutput&) = delete;
+  PepperPlatformAudioOutput& operator=(const PepperPlatformAudioOutput&) =
+      delete;
 
   // The following three methods are all called on main thread.
 
@@ -58,7 +63,7 @@ class PepperPlatformAudioOutput
                           const media::AudioParameters& output_params,
                           const std::string& matched_device_id) override;
   void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool playing_automatically) override;
   void OnIPCClosed() override;
 
@@ -72,7 +77,7 @@ class PepperPlatformAudioOutput
 
   bool Initialize(int sample_rate,
                   int frames_per_buffer,
-                  int source_render_frame_id,
+                  const blink::LocalFrameToken& source_frame_token,
                   AudioHelper* client);
 
   // I/O thread backends to above functions.
@@ -92,8 +97,6 @@ class PepperPlatformAudioOutput
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioOutput);
 };
 
 }  // namespace content

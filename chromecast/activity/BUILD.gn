@@ -5,11 +5,7 @@
 import("//chromecast/chromecast.gni")
 
 cast_source_set("activity") {
-  sources = [
-    "queryable_data_host.h",
-  ]
+  sources = [ "queryable_data_host.h" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

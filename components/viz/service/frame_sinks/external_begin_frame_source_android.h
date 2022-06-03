@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -21,6 +20,12 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
       public ExternalBeginFrameSourceClient {
  public:
   ExternalBeginFrameSourceAndroid(uint32_t restart_id, float refresh_rate);
+
+  ExternalBeginFrameSourceAndroid(const ExternalBeginFrameSourceAndroid&) =
+      delete;
+  ExternalBeginFrameSourceAndroid& operator=(
+      const ExternalBeginFrameSourceAndroid&) = delete;
+
   ~ExternalBeginFrameSourceAndroid() override;
 
   void OnVSync(JNIEnv* env,
@@ -29,19 +34,19 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
                jlong period_micros);
   void UpdateRefreshRate(float refresh_rate) override;
 
+  // BeginFrameSource:
+  void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source) override;
+
  private:
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
   void SetEnabled(bool enabled);
 
-  uint64_t next_sequence_number_ = BeginFrameArgs::kStartingFrameNumber;
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-  // Used for determining what the sequence number should be on
-  // CreateBeginFrameArgs.
-  base::TimeTicks next_expected_frame_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalBeginFrameSourceAndroid);
+  BeginFrameArgsGenerator begin_frame_args_generator_;
 };
 
 }  // namespace viz

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for Animation Frame feature\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
@@ -24,8 +24,8 @@
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
 
-  PerformanceTestRunner.printTimelineRecordsWithDetails('RequestAnimationFrame');
-  PerformanceTestRunner.printTimelineRecordsWithDetails('FireAnimationFrame');
-  PerformanceTestRunner.printTimelineRecordsWithDetails('CancelAnimationFrame');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('RequestAnimationFrame');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('FireAnimationFrame');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('CancelAnimationFrame');
   TestRunner.completeTest();
 })();

@@ -21,16 +21,19 @@ namespace extensions {
 class DeclarativeManifestHandler : public ManifestHandler {
  public:
   DeclarativeManifestHandler();
+
+  DeclarativeManifestHandler(const DeclarativeManifestHandler&) = delete;
+  DeclarativeManifestHandler& operator=(const DeclarativeManifestHandler&) =
+      delete;
+
   ~DeclarativeManifestHandler() override;
 
   // ManifestHandler overrides.
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   // ManifestHandler overrides.
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeManifestHandler);
 };
 
 }  // namespace extensions

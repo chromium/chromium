@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
 #include <algorithm>
+
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -26,6 +28,20 @@ inline UScriptCode getScriptForOpenType(UChar32 ch, UErrorCode* status) {
     return USCRIPT_HIRAGANA;
   }
   return script;
+}
+
+inline bool IsHanScript(UScriptCode script) {
+  return script == USCRIPT_HAN || script == USCRIPT_HIRAGANA ||
+         script == USCRIPT_BOPOMOFO;
+}
+
+inline UScriptCode FirstHanScript(
+    const ScriptRunIterator::UScriptCodeList& list) {
+  const auto* const result =
+      std::find_if(list.begin(), list.end(), IsHanScript);
+  if (result != list.end())
+    return *result;
+  return USCRIPT_INVALID_CODE;
 }
 
 }  // namespace
@@ -190,7 +206,11 @@ bool ScriptRunIterator::Consume(unsigned* limit, UScriptCode* script) {
     if (!MergeSets()) {
       *limit = pos;
       *script = ResolveCurrentScript();
-      FixupStack(*script);
+      // If the current character is an open bracket, do not assign the resolved
+      // script to it yet because it will belong to the next run.
+      const bool exclude_last =
+          paired_type == PairedBracketType::kBracketTypeOpen;
+      FixupStack(*script, exclude_last);
       current_set_ = *next_set_;
       return true;
     }
@@ -220,8 +240,21 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
       if (it->ch == target) {
         // Have a match, use open paren's resolved script.
         UScriptCode script = it->script;
-        next_set_->clear();
-        next_set_->push_back(script);
+        // Han languages are multi-scripts, and there are font features that
+        // apply to consecutive punctuation characters.
+        // When encountering a closing bracket do not insist on the closing
+        // bracket getting assigned the same script as the opening bracket if
+        // current_set_ provides an option to resolve to any other possible Han
+        // script as well, which avoids breaking the run.
+        if (IsHanScript(script)) {
+          const UScriptCode current_han_script = FirstHanScript(current_set_);
+          if (current_han_script != USCRIPT_INVALID_CODE)
+            script = current_han_script;
+        }
+        if (script != USCRIPT_COMMON) {
+          next_set_->clear();
+          next_set_->push_back(script);
+        }
 
         // And pop stack to this point.
         int num_popped =
@@ -332,20 +365,27 @@ bool ScriptRunIterator::MergeSets() {
 // adjust it if the stack got overfull and open brackets were pushed off
 // the bottom. This sets the script of the fixup_depth topmost entries of the
 // stack to the resolved script.
-void ScriptRunIterator::FixupStack(UScriptCode resolved_script) {
-  if (brackets_fixup_depth_ > 0) {
-    if (brackets_fixup_depth_ > brackets_.size()) {
-      // Should never happen unless someone breaks the code.
-      DLOG(ERROR) << "Brackets fixup depth exceeds size of bracket vector.";
-      brackets_fixup_depth_ = brackets_.size();
-    }
-    auto it = brackets_.rbegin();
-    for (wtf_size_t i = 0; i < brackets_fixup_depth_; ++i) {
-      it->script = resolved_script;
-      ++it;
-    }
+void ScriptRunIterator::FixupStack(UScriptCode resolved_script,
+                                   bool exclude_last) {
+  wtf_size_t count = brackets_fixup_depth_;
+  if (count <= 0)
+    return;
+  if (count > brackets_.size()) {
+    // Should never happen unless someone breaks the code.
+    DLOG(ERROR) << "Brackets fixup depth exceeds size of bracket vector.";
+    count = brackets_.size();
+  }
+  auto it = brackets_.rbegin();
+  // Do not assign the script to the last one if |exclude_last|.
+  if (exclude_last) {
+    ++it;
+    --count;
+    brackets_fixup_depth_ = 1;
+  } else {
     brackets_fixup_depth_ = 0;
   }
+  for (; count; ++it, --count)
+    it->script = resolved_script;
 }
 
 bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {

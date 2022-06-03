@@ -43,9 +43,11 @@ class MakeInternalSettingsWriter(json5_generator.Writer):
     _FILE_BASENAME = 'internal_settings_generated'
 
     def __init__(self, json5_file_path, output_dir):
-        super(MakeInternalSettingsWriter, self).__init__(json5_file_path, output_dir)
+        super(MakeInternalSettingsWriter, self).__init__(
+            json5_file_path, output_dir)
 
-        self.json5_file.name_dictionaries.sort(key=lambda entry: entry['name'].original)
+        self.json5_file.name_dictionaries.sort(
+            key=lambda entry: entry['name'].original)
 
         self._outputs = {
             (self._FILE_BASENAME + '.h'): self.generate_header,
@@ -53,21 +55,29 @@ class MakeInternalSettingsWriter(json5_generator.Writer):
             (self._FILE_BASENAME + '.idl'): self.generate_idl,
         }
         self._template_context = {
-            'input_files': self._input_files,
-            'primary_header_name': 'internal_settings_generated.h',
-            'settings': self.json5_file.name_dictionaries,
-            'header_guard': self.make_header_guard(self._relative_output_dir + self._FILE_BASENAME + '.h')
+            'input_files':
+            self._input_files,
+            'primary_header_name':
+            'internal_settings_generated.h',
+            'settings':
+            self.json5_file.name_dictionaries,
+            'header_guard':
+            self.make_header_guard(self._relative_output_dir +
+                                   self._FILE_BASENAME + '.h')
         }
 
-    @template_expander.use_jinja('templates/internal_settings_generated.h.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/internal_settings_generated.h.tmpl', filters=filters)
     def generate_header(self):
         return self._template_context
 
-    @template_expander.use_jinja('templates/internal_settings_generated.cc.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/internal_settings_generated.cc.tmpl', filters=filters)
     def generate_implementation(self):
         return self._template_context
 
-    @template_expander.use_jinja('templates/internal_settings_generated.idl.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/internal_settings_generated.idl.tmpl', filters=filters)
     def generate_idl(self):
         return self._template_context
 

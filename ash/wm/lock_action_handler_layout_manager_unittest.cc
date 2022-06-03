@@ -31,7 +31,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -48,24 +47,27 @@ aura::Window* GetContainer(ShellWindowId container_id) {
 
 class TestWindowDelegate : public views::WidgetDelegate {
  public:
-  TestWindowDelegate() = default;
+  TestWindowDelegate() {
+    SetCanMaximize(true);
+    SetCanResize(true);
+    SetOwnedByWidget(true);
+    SetFocusTraversesOut(true);
+  }
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override = default;
 
   // views::WidgetDelegate:
-  void DeleteDelegate() override { delete this; }
   views::Widget* GetWidget() override { return widget_; }
   const views::Widget* GetWidget() const override { return widget_; }
   bool CanActivate() const override { return true; }
-  bool CanResize() const override { return true; }
-  bool CanMaximize() const override { return true; }
-  bool ShouldAdvanceFocusToTopLevelWidget() const override { return true; }
 
   void set_widget(views::Widget* widget) { widget_ = widget; }
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 }  // namespace
@@ -73,6 +75,12 @@ class TestWindowDelegate : public views::WidgetDelegate {
 class LockActionHandlerLayoutManagerTest : public AshTestBase {
  public:
   LockActionHandlerLayoutManagerTest() = default;
+
+  LockActionHandlerLayoutManagerTest(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+  LockActionHandlerLayoutManagerTest& operator=(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+
   ~LockActionHandlerLayoutManagerTest() override = default;
 
   void SetUp() override {
@@ -155,14 +163,20 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
       action_background_controller_factory_;
 
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManagerTest);
 };
 
 class LockActionHandlerLayoutManagerTestWithTestBackgroundController
     : public LockActionHandlerLayoutManagerTest {
  public:
   LockActionHandlerLayoutManagerTestWithTestBackgroundController() = default;
+
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController& operator=(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+
   ~LockActionHandlerLayoutManagerTestWithTestBackgroundController() override =
       default;
 
@@ -187,9 +201,6 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* background_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      LockActionHandlerLayoutManagerTestWithTestBackgroundController);
 };
 
 TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {
@@ -316,7 +327,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
 
   // Verify that window bounds get updated when Chromevox bounds are shown (so
   // the Chromevox panel does not overlay with the action handler window).
-  ash::ShelfLayoutManager* shelf_layout_manager =
+  ShelfLayoutManager* shelf_layout_manager =
       GetPrimaryShelf()->shelf_layout_manager();
   ASSERT_TRUE(shelf_layout_manager);
 

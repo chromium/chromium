@@ -31,6 +31,7 @@
 namespace blink {
 
 class HTMLElement;
+class HTMLLIElement;
 class HTMLUListElement;
 
 class CORE_EXPORT InsertListCommand final : public CompositeEditCommand {
@@ -41,7 +42,7 @@ class CORE_EXPORT InsertListCommand final : public CompositeEditCommand {
 
   bool PreservesTypingStyle() const override { return true; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

@@ -1,0 +1,127 @@
+This test checks that the justify-content property is applied correctly when using content-distribution values.
+
+direction: LTR | justify-content: 'space-between'
+
+PASS
+
+direction: LTR | justify-content: 'space-around'
+
+PASS
+
+direction: LTR | justify-content: 'space-evenly'
+
+PASS
+
+direction: LTR | justify-content: 'stretch'
+
+PASS
+
+direction: LTR | justify-content: 'space-between'
+
+PASS
+
+direction: LTR | justify-content: 'space-around'
+
+PASS
+
+direction: LTR | justify-content: 'space-evenly'
+
+PASS
+
+direction: LTR | justify-content: 'stretch'
+
+PASS
+
+direction: LTR | justify-content: 'space-between'
+
+PASS
+
+direction: LTR | justify-content: 'space-around'
+
+FAIL:
+Expected 28 for offsetLeft, but got 27. 
+Expected 178 for offsetLeft, but got 177. 
+Expected 28 for offsetLeft, but got 27. 
+Expected 178 for offsetLeft, but got 177. 
+
+<div class="grid justifyContentSpaceAround" data-expected-width="300" data-expected-height="200">
+        <div class="firstRowFirstColumn" data-offset-x="28" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowSecondColumn" data-offset-x="103" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowThirdColumn" data-offset-x="178" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowFourthColumn" data-offset-x="253" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowFirstColumn" data-offset-x="28" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowSecondColumn" data-offset-x="103" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowThirdColumn" data-offset-x="178" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowFourthColumn" data-offset-x="253" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+    </div>
+
+direction: LTR | justify-content: 'space-evenly'
+
+PASS
+
+direction: LTR | justify-content: 'stretch'
+
+PASS
+
+direction: RTL | justify-content: 'space-between'
+
+PASS
+
+direction: RTL | justify-content: 'space-around'
+
+PASS
+
+direction: RTL | justify-content: 'space-evenly'
+
+PASS
+
+direction: RTL | justify-content: 'stretch'
+
+PASS
+
+direction: RTL | justify-content: 'space-between'
+
+PASS
+
+direction: RTL | justify-content: 'space-around'
+
+PASS
+
+direction: RTL | justify-content: 'space-evenly'
+
+PASS
+
+direction: RTL | justify-content: 'stretch'
+
+PASS
+
+direction: RTL | justify-content: 'space-between'
+
+PASS
+
+direction: RTL | justify-content: 'space-around'
+
+FAIL:
+Expected 178 for offsetLeft, but got 177. 
+Expected 28 for offsetLeft, but got 27. 
+Expected 178 for offsetLeft, but got 177. 
+Expected 28 for offsetLeft, but got 27. 
+
+<div class="grid justifyContentSpaceAround directionRTL" data-expected-width="300" data-expected-height="200">
+        <div class="firstRowFirstColumn" data-offset-x="253" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowSecondColumn" data-offset-x="178" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowThirdColumn" data-offset-x="103" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="firstRowFourthColumn" data-offset-x="28" data-offset-y="0" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowFirstColumn" data-offset-x="253" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowSecondColumn" data-offset-x="178" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowThirdColumn" data-offset-x="103" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+        <div class="secondRowFourthColumn" data-offset-x="28" data-offset-y="40" data-expected-width="20" data-expected-height="40"></div>
+    </div>
+
+direction: RTL | justify-content: 'space-evenly'
+
+PASS
+
+direction: RTL | justify-content: 'stretch'
+
+PASS

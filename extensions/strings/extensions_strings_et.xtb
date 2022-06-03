@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Oih! RSA juhusliku privaatvõtme genereerimine ebaõnnestus.</translation>
 <translation id="1445572445564823378">Laiendus aeglustab rakendust <ph name="PRODUCT_NAME" />. Peaksite selle keelama, et taastada rakenduse <ph name="PRODUCT_NAME" /> toimivus.</translation>
 <translation id="1468038450257740950">WebGL-i ei toetata.</translation>
-<translation id="149347756975725155">Laienduse ikooni <ph name="ICON" /> ei õnnestunud laadida.</translation>
 <translation id="1803557475693955505">Tagaplaanilehte <ph name="BACKGROUND_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="2159915644201199628">Ei saanud pilti dekodeerida: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokaliseerimist kasutatakse, kuid parameetrit default_locale ei olnud manifestis määratud.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Privaatvõtme lugemine ei õnnestunud.</translation>
 <translation id="6391538222494443604">Olemas peab olema sisendkataloog.</translation>
 <translation id="641087317769093025">Ei saanud laiendust lahti pakkida</translation>
-<translation id="6413453408918378296">Ikoon „<ph name="ICON" />” ei ole piisavalt nähtav.</translation>
 <translation id="6542618148162044354">Rakendus „<ph name="APP_NAME" />” taotleb juurdepääsu ühele või mitmele teie seadmele:</translation>
 <translation id="657064425229075395">Taustaskripti „<ph name="BACKGROUND_SCRIPT" />” ei õnnestunud laadida.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> tootjalt <ph name="VENDOR_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>

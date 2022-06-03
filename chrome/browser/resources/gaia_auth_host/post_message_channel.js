@@ -11,13 +11,21 @@
 
 // <include src="channel.js">
 
-const PostMessageChannel = (function() {
+// clang-format off
+// #import {Channel} from './channel.m.js';
+// clang-format on
+
+/* #export */ const PostMessageChannel = (function() {
   /**
    * Allowed origins of the hosting page.
    * @type {Array<string>}
    */
-  const ALLOWED_ORIGINS =
-      ['chrome://oobe', 'chrome://chrome-signin', 'chrome://password-change'];
+  const ALLOWED_ORIGINS = [
+    'chrome://oobe',
+    'chrome://chrome-signin',
+    'chrome://password-change',
+    'chrome://lock-reauth'
+  ];
 
   /** @const */
   const PORT_MESSAGE = 'post-message-port-message';
@@ -37,6 +45,7 @@ const PostMessageChannel = (function() {
 
   /**
    * A simple event target.
+   * @constructor
    */
   function EventTarget() {
     this.listeners_ = [];
@@ -46,14 +55,14 @@ const PostMessageChannel = (function() {
     /**
      * Add an event listener.
      */
-    addListener: function(listener) {
+    addListener(listener) {
       this.listeners_.push(listener);
     },
 
     /**
      * Dispatches a given event to all listeners.
      */
-    dispatch: function(e) {
+    dispatch(e) {
       for (let i = 0; i < this.listeners_.length; ++i) {
         this.listeners_[i].call(undefined, e);
       }
@@ -110,14 +119,14 @@ const PostMessageChannel = (function() {
      * Gets a global unique id to use.
      * @return {number}
      */
-    createChannelId_: function() {
+    createChannelId_() {
       return (new Date()).getTime();
     },
 
     /**
      * Posts data to upperWindow. Queue it if upperWindow is not available.
      */
-    postToUpperWindow: function(data) {
+    postToUpperWindow(data) {
       if (this.upperWindow == null) {
         this.deferredUpperWindowMessages_.push(data);
         return;
@@ -133,11 +142,11 @@ const PostMessageChannel = (function() {
      * @param {DOMWindow=} opt_targetWindow
      * @param {string=} opt_targetOrigin
      */
-    createPort: function(
-        channelId, channelName, opt_targetWindow, opt_targetOrigin) {
+    createPort(channelId, channelName, opt_targetWindow, opt_targetOrigin) {
       const port = new PostMessagePort(channelId, channelName);
       if (opt_targetWindow) {
-        port.setTarget(opt_targetWindow, opt_targetOrigin);
+        port.setTarget(
+            opt_targetWindow, /** @type {string} */ (opt_targetOrigin));
       }
       this.channels_[channelId] = port;
       return port;
@@ -147,7 +156,7 @@ const PostMessageChannel = (function() {
      * Returns a message forward handler for the given proxy port.
      * @private
      */
-    getProxyPortForwardHandler_: function(proxyPort) {
+    getProxyPortForwardHandler_(proxyPort) {
       return function(msg) {
         proxyPort.postMessage(msg);
       };
@@ -160,8 +169,7 @@ const PostMessageChannel = (function() {
      * @param {!DOMWindow} targetWindow
      * @param {!string} targetOrigin
      */
-    createProxyPort: function(
-        channelId, channelName, targetWindow, targetOrigin) {
+    createProxyPort(channelId, channelName, targetWindow, targetOrigin) {
       const port =
           this.createPort(channelId, channelName, targetWindow, targetOrigin);
       port.onMessage.addListener(this.getProxyPortForwardHandler_(port));
@@ -171,13 +179,13 @@ const PostMessageChannel = (function() {
     /**
      * Creates a connecting port to the daemon and request connection.
      * @param {string} name
-     * @return {PostMessagePort}
+     * @return {?PostMessagePort}
      */
-    connectToDaemon: function(name) {
+    connectToDaemon(name) {
       if (this.isDaemon) {
         console.error(
             'Error: Connecting from the daemon page is not supported.');
-        return;
+        return null;
       }
 
       const port = this.createPort(this.createChannelId_(), name);
@@ -199,7 +207,7 @@ const PostMessageChannel = (function() {
      * Dispatches a 'message' event to port.
      * @private
      */
-    dispatchMessageToPort_: function(e) {
+    dispatchMessageToPort_(e) {
       const channelId = e.data.channelId;
       const port = this.channels_[channelId];
       if (!port) {
@@ -213,7 +221,7 @@ const PostMessageChannel = (function() {
     /**
      * Window 'message' handler.
      */
-    onMessage_: function(e) {
+    onMessage_(e) {
       if (typeof e.data != 'object' || !e.data.hasOwnProperty('type')) {
         return;
       }
@@ -272,6 +280,7 @@ const PostMessageChannel = (function() {
   /**
    * A HTML5 postMessage based port that provides the same port interface
    * as the messaging API port.
+   * @constructor
    * @param {number} channelId
    * @param {string} name
    */
@@ -291,7 +300,7 @@ const PostMessageChannel = (function() {
      * @param {DOMWindow} targetWindow
      * @param {string} targetOrigin
      */
-    setTarget: function(targetWindow, targetOrigin) {
+    setTarget(targetWindow, targetOrigin) {
       this.targetWindow = targetWindow;
       this.targetOrigin = targetOrigin;
 
@@ -301,7 +310,7 @@ const PostMessageChannel = (function() {
       this.deferredMessages_ = [];
     },
 
-    postMessage: function(msg) {
+    postMessage(msg) {
       if (!this.targetWindow) {
         this.deferredMessages_.push(msg);
         return;
@@ -312,7 +321,7 @@ const PostMessageChannel = (function() {
           this.targetOrigin);
     },
 
-    handleWindowMessage: function(e) {
+    handleWindowMessage(e) {
       this.onMessage.dispatch(e.data.payload);
     }
   };
@@ -330,7 +339,7 @@ const PostMessageChannel = (function() {
     __proto__: Channel.prototype,
 
     /** @override */
-    connect: function(name) {
+    connect(name) {
       this.port_ = channelManager.connectToDaemon(name);
       this.port_.onMessage.addListener(this.onMessage_.bind(this));
     },
@@ -364,7 +373,6 @@ const PostMessageChannel = (function() {
   return PostMessageChannel;
 })();
 
-/** @override */
 Channel.create = function() {
   return new PostMessageChannel();
 };

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_BOUNDED_REFERENCE_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_BOUNDED_REFERENCE_SPACE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -19,13 +20,11 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   XRBoundedReferenceSpace(XRSession*, XRRigidTransform*);
   ~XRBoundedReferenceSpace() override;
 
-  std::unique_ptr<TransformationMatrix> NativeFromMojo() override;
+  absl::optional<TransformationMatrix> MojoFromNative() override;
 
   HeapVector<Member<DOMPointReadOnly>> boundsGeometry();
 
-  base::Optional<XRNativeOriginInformation> NativeOrigin() const override;
-
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void OnReset() override;
 
@@ -36,8 +35,8 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
   void EnsureUpdated();
 
   HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
-  std::unique_ptr<TransformationMatrix> bounded_native_from_mojo_;
-  unsigned int stage_parameters_id_ = 0;
+  std::unique_ptr<TransformationMatrix> mojo_from_bounded_native_;
+  uint32_t stage_parameters_id_ = 0;
 };
 
 }  // namespace blink

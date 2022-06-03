@@ -5,9 +5,8 @@
 #include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/services/secure_channel/ble_listener_operation.h"
-#include "chromeos/services/secure_channel/latency_metrics_logger.h"
+#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 
 namespace chromeos {
 
@@ -18,13 +17,18 @@ BleListenerConnectionAttempt::Factory*
     BleListenerConnectionAttempt::Factory::test_factory_ = nullptr;
 
 // static
-BleListenerConnectionAttempt::Factory*
-BleListenerConnectionAttempt::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<ConnectionAttempt<BleListenerFailureType>>
+BleListenerConnectionAttempt::Factory::Create(
+    BleConnectionManager* ble_connection_manager,
+    ConnectionAttemptDelegate* delegate,
+    const ConnectionAttemptDetails& connection_attempt_details) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(ble_connection_manager, delegate,
+                                         connection_attempt_details);
+  }
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new BleListenerConnectionAttempt(
+      ble_connection_manager, delegate, connection_attempt_details));
 }
 
 // static
@@ -34,15 +38,6 @@ void BleListenerConnectionAttempt::Factory::SetFactoryForTesting(
 }
 
 BleListenerConnectionAttempt::Factory::~Factory() = default;
-
-std::unique_ptr<ConnectionAttempt<BleListenerFailureType>>
-BleListenerConnectionAttempt::Factory::BuildInstance(
-    BleConnectionManager* ble_connection_manager,
-    ConnectionAttemptDelegate* delegate,
-    const ConnectionAttemptDetails& connection_attempt_details) {
-  return base::WrapUnique(new BleListenerConnectionAttempt(
-      ble_connection_manager, delegate, connection_attempt_details));
-}
 
 BleListenerConnectionAttempt::BleListenerConnectionAttempt(
     BleConnectionManager* ble_connection_manager,
@@ -62,7 +57,7 @@ BleListenerConnectionAttempt::CreateConnectToDeviceOperation(
         success_callback,
     const ConnectToDeviceOperation<
         BleListenerFailureType>::ConnectionFailedCallback& failure_callback) {
-  return BleListenerOperation::Factory::Get()->BuildInstance(
+  return BleListenerOperation::Factory::Create(
       ble_connection_manager_, std::move(success_callback), failure_callback,
       device_id_pair, connection_priority);
 }

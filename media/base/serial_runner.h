@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
@@ -71,6 +70,9 @@ class MEDIA_EXPORT SerialRunner {
   static std::unique_ptr<SerialRunner> Run(Queue&& bound_fns,
                                            PipelineStatusCallback done_cb);
 
+  SerialRunner(const SerialRunner&) = delete;
+  SerialRunner& operator=(const SerialRunner&) = delete;
+
  private:
   friend std::default_delete<SerialRunner>;
 
@@ -85,8 +87,6 @@ class MEDIA_EXPORT SerialRunner {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<SerialRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialRunner);
 };
 
 }  // namespace media

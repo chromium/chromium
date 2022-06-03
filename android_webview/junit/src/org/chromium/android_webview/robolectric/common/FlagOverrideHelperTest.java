@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.robolectric.common;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +39,7 @@ public class FlagOverrideHelperTest {
     private static final Flag[] sMockFlagList = {
             Flag.commandLine("flag-1", "This is flag 1"),
             Flag.commandLine("flag-2", "This is flag 2"),
+            Flag.commandLine("flag-3", "This is flag 3", "some-value"),
             Flag.baseFeature("feature-1", "This is feature 1"),
             Flag.baseFeature("feature-2", "This is feature 2"),
     };
@@ -103,6 +104,30 @@ public class FlagOverrideHelperTest {
         helper.applyFlagOverrides(map);
         Assert.assertTrue("The 'flag-1' commandline flag should be applied",
                 CommandLine.getInstance().hasSwitch("flag-1"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddFlag_noValue() {
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("flag-1", true);
+        FlagOverrideHelper helper = new FlagOverrideHelper(sMockFlagList);
+        helper.applyFlagOverrides(map);
+        Assert.assertTrue("The 'flag-1' commandline flag should be applied",
+                CommandLine.getInstance().hasSwitch("flag-1"));
+        Assert.assertNull("The 'flag-1' commandline flag should not have a value",
+                CommandLine.getInstance().getSwitchValue("flag-1"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddFlag_withValue() {
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("flag-3", true);
+        FlagOverrideHelper helper = new FlagOverrideHelper(sMockFlagList);
+        helper.applyFlagOverrides(map);
+        Assert.assertEquals("The 'flag-3' commandline flag should have a value", "some-value",
+                CommandLine.getInstance().getSwitchValue("flag-3"));
     }
 
     @Test

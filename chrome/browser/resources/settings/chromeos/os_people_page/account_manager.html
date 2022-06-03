@@ -1,0 +1,391 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_tooltip_icon.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/icon.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="account_manager_browser_proxy.html">
+<link rel="import" href="../parental_controls_page/parental_controls_browser_proxy.html">
+
+<dom-module id="settings-account-manager">
+  <template>
+    <style include="settings-shared iron-flex iron-flex-alignment">
+      :host {
+        --add-account-margin-top: 16px;
+      }
+
+      .account-manager-description {
+        color: var(--cr-secondary-text-color);
+        display: block;
+        max-width: 560px;
+      }
+
+      .account-manager-description.full-width {
+        max-width: none;
+      }
+
+      .profile-icon {
+        --profile-icon-size: 40px;
+        background: center / cover no-repeat;
+        border-radius: 50%;
+        flex-shrink: 0;
+        height: var(--profile-icon-size);
+        width: var(--profile-icon-size);
+      }
+
+      .profile-icon.device-account-icon {
+        --profile-icon-size: 60px;
+        margin-top: 16px;
+      }
+
+      .device-account-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .device-account-container .primary {
+        font-weight: 500;
+        margin-bottom: 4px;
+        margin-top: 16px;
+      }
+
+      .account-list-item {
+        padding-inline-end: 8px;
+        padding-inline-start: 0;
+      }
+
+      #outer {
+        margin-inline-end: var(--cr-section-padding);
+        margin-inline-start: 60px;
+      }
+
+      .middle .secondary {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .secondary-accounts-policy-indicator {
+        margin-inline-end: 12px;
+      }
+
+      .settings-box.user-message {
+        align-items: flex-end;
+      }
+
+      .secondary-accounts-tooltip {
+        margin-inline-start: 5px;
+        width: 15px;
+      }
+
+      .settings-box.secondary-accounts-box {
+        align-items: flex-end;
+      }
+
+      .account-list-header-description {
+        align-items: center;
+        display: flex;
+        width: 100%;
+      }
+
+      .account-list-header-description > .secondary {
+        flex-grow: 1;
+      }
+
+      .account-list-header-description > .secondary {
+        padding-inline-end: 40px;
+      }
+
+      .secondary-accounts-disabled-tooltip {
+        padding-inline-end: 12px;
+      }
+
+      #account-list-header > h2 {
+        padding-bottom: 8px;
+        padding-top: 16px;
+      }
+
+      #account-list-header {
+        padding-bottom: 8px;
+      }
+
+      cr-policy-indicator {
+        margin-inline-end: 1em;
+        margin-top: var(--add-account-margin-top);
+      }
+
+      .secondary-accounts-box > #add-account-button {
+        margin-bottom: 12px;
+        margin-top: 12px;
+      }
+
+      #add-account-icon {
+        -webkit-mask-image: url(chrome://resources/images/add.svg);
+        background-color: currentColor;
+        height: 24px;
+        margin-inline-end: 0.5em;
+        width: 24px;
+      }
+
+      .signed-out-text {
+        color: var(--cros-text-color-alert);
+      }
+
+      .error-badge {
+        background: url(chrome://os-settings/images/error_badge.svg)
+            center / cover no-repeat;
+        display: block;
+        height: 20px;
+        left: 60%;
+        position: relative;
+        top: 60%;
+        width: 20px;
+      }
+
+      :host-context([dir='rtl']) .error-badge {
+        left: auto;
+        right: 60%;
+      }
+
+      .managed-badge {
+        --badge-offset: calc(100% - var(--badge-size)
+                             - 2 * var(--padding-size));
+        --badge-size: 10px;
+        --padding-size: 4px;
+        background: var(--cros-icon-color-prominent);
+        border-radius: 50%;
+        height: var(--badge-size);
+        left: var(--badge-offset);
+        padding: var(--padding-size);
+        position: relative;
+        top: var(--badge-offset);
+        width: var(--badge-size);
+      }
+
+      .managed-badge > iron-icon {
+        --iron-icon-fill-color: white;
+        --iron-icon-height: var(--badge-size);
+        --iron-icon-width: var(--badge-size);
+        display: block;
+      }
+
+      :host-context([dir='rtl']) .managed-badge {
+        left: auto;
+        right: var(--badge-offset);
+      }
+
+      .managed-message {
+        color: var(--cr-secondary-text-color);
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      .managed-message > iron-icon,
+      .managed-message > cr-icon-button {
+        margin-inline-end: 5px;
+      }
+
+      .management-status {
+        color: var(--cr-secondary-text-color);
+        overflow: hidden;
+        text-align: end;
+        text-overflow: ellipsis;
+        width: 18ch;
+      }
+
+      .edu-account-label {
+        margin-inline-start: 12px;
+      }
+
+      .tooltip-primary-account {
+        margin-inline-end: 12px;
+        margin-inline-start: 12px;
+      }
+
+      .no-accounts-message {
+        color: var(--cr-secondary-text-color);
+        padding: 20px 50px;
+        text-align: center;
+      }
+
+      .settings-box.border-bottom {
+        border-bottom: var(--cr-separator-line);
+      }
+    </style>
+
+    <!-- Account management description -->
+    <div class="settings-box first account-manager-description full-width">
+      <localized-link
+          localized-string="[[getAccountManagerDescription_()]]"
+          link-url="$i18nRaw{accountManagerLearnMoreUrl}">
+      </localized-link>
+    </div>
+
+    <!-- Managed account badge and message -->
+    <template is="dom-if" if="[[isDeviceAccountManaged_]]">
+      <div class="settings-box first managed-message">
+        <template is="dom-if" if="[[!isChildUser_]]">
+          <iron-icon icon="cr20:domain"></iron-icon>
+        </template>
+        <template is="dom-if" if="[[isChildUser_]]">
+          <cr-icon-button iron-icon="cr20:kite"
+              on-click="onManagedIconClick_">
+          </cr-icon-button>
+        </template>
+        <localized-link
+            localized-string=
+              "[[getManagementDescription_(isChildUser_, deviceAccount_)]]"
+            link-url="$i18nRaw{accountManagerChromeUIManagementURL}">
+        </localized-link>
+      </div>
+    </template>
+
+    <!-- Primary account icon, name and email -->
+    <div class="device-account-container"
+        aria-labelledby="deviceAccountFullName"
+        aria-describedby="deviceAccountEmail">
+      <div class="profile-icon device-account-icon"
+          aria-hidden="true"
+          style="background-image: [[getIconImageSet_(deviceAccount_.pic)]]">
+        <template is="dom-if"
+            if="[[shouldShowManagedBadge_(isDeviceAccountManaged_,
+                  isChildUser_)]]">
+          <div class="managed-badge">
+            <iron-icon icon="cr:work"></iron-icon>
+          </div>
+        </template>
+      </div>
+      <span id="deviceAccountFullName" class="primary" aria-hidden="true">
+        [[deviceAccount_.fullName]]
+      </span>
+      <span id="deviceAccountEmail" class="secondary" aria-hidden="true">
+        [[deviceAccount_.email]]
+      </span>
+    </div>
+
+    <!-- Secondary Accounts list header -->
+    <div class="secondary-accounts-box settings-box first">
+      <div id="account-list-header" class="start">
+        <h2>
+          [[getAccountListHeader_(isChildUser_)]]
+        </h2>
+        <div class="account-list-header-description">
+          <span class="secondary">
+            [[getAccountListDescription_(isChildUser_)]]
+          </span>
+          <template is="dom-if" if="[[
+                                  !isSecondaryGoogleAccountSigninAllowed_]]">
+            <cr-tooltip-icon
+                class="secondary-accounts-disabled-tooltip"
+                icon-class="[[getManagedAccountTooltipIcon_(isChildUser_)]]"
+                tooltip-text="[[getSecondaryAccountsDisabledUserMessage_(
+                                    isChildUser_)]]"
+                icon-aria-label="[[getSecondaryAccountsDisabledUserMessage_(
+                                      isChildUser_)]]">
+            </cr-tooltip-icon>
+          </template>
+          <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+              id="add-account-button" on-click="addAccount_"
+              deep-link-focus-id$="[[Setting.kAddAccount]]">
+            <div id="add-account-icon"></div>
+            [[getAddAccountLabel_(isChildUser_,
+                isSecondaryGoogleAccountSigninAllowed_)]]
+          </cr-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Accounts list -->
+    <div id="outer" class="layout vertical nowrap" role="list">
+      <template is="dom-repeat" id="account-list"
+          items="[[getAccounts_(accounts_)]]">
+        <div class="settings-box account-list-item" role="listitem">
+
+          <div class="profile-icon"
+              style="background-image: [[getIconImageSet_(item.pic)]]">
+            <template is="dom-if" if="[[!item.isSignedIn]]">
+              <span class="error-badge"></span>
+            </template>
+          </div>
+
+          <div class="middle two-line no-min-width">
+            <div class="flex text-elide">
+              <!-- If account is signed in, display the full name -->
+              <template is="dom-if" if="[[item.isSignedIn]]">
+                <span id="fullName-[[index]]"
+                    aria-hidden="true">[[item.fullName]]</span>
+              </template>
+              <!-- Else, display a re-authentication message -->
+              <template is="dom-if" if="[[!item.isSignedIn]]">
+                <span class="signed-out-text">
+                  [[getAccountManagerSignedOutName_(item.unmigrated)]]
+                </span>
+              </template>
+
+              <div class="secondary" id="email-[[index]]"
+                  aria-hidden="true">[[item.email]]</div>
+            </div>
+          </div>
+
+          <template is="dom-if"
+              if="[[shouldShowReauthenticationButton_(item)]]">
+            <cr-button title="[[getAccountManagerSignedOutTitle_(item)]]"
+                class="reauth-button" on-click="onReauthenticationTap_"
+                aria-labelledby$="fullName-[[index]] email-[[index]]">
+              [[getAccountManagerSignedOutLabel_(item.unmigrated)]]
+            </cr-button>
+          </template>
+
+          <!-- If this is the Device Account, display the management status -->
+          <template is="dom-if" if="[[item.isDeviceAccount]]">
+            <cr-tooltip-icon id="primaryAccountTooltip" aria-hidden="true"
+                icon-class="[[getPrimaryAccountTooltipIcon_(isChildUser_)]]"
+                class="tooltip-primary-account"
+                tooltip-text="[[getPrimaryAccountTooltip_(isChildUser_)]]"
+                icon-aria-label="[[getPrimaryAccountTooltip_(isChildUser_)]]">
+            </cr-tooltip-icon>
+            <span class="management-status"
+                aria-labelledby$="fullName-[[index]] email-[[index]]"
+                aria-describedby="primaryAccountTooltip">
+              [[getManagementLabel_(item)]]
+            </span>
+          </template>
+          <!-- Else, display a hamburger menu for removing the account -->
+          <template is="dom-if" if="[[!item.isDeviceAccount]]">
+            <cr-icon-button class="icon-more-vert"
+                title="[[getMoreActionsTitle_(item)]]"
+                aria-label="[[getMoreActionsTitle_(item)]]"
+                aria-describedby$="fullName-[[index]]
+                                   edu-account-label-[[index]]"
+                on-click="onAccountActionsMenuButtonTap_"
+                deep-link-focus-id$="[[Setting.kRemoveAccount]]">
+            </cr-icon-button>
+          </template>
+        </div>
+      </template>
+
+      <cr-action-menu role-description="$i18n{menu}">
+        <button class="dropdown-item" on-click="onRemoveAccountTap_">
+          $i18n{removeAccountLabel}
+        </button>
+      </cr-action-menu>
+    </div>
+
+    <div class="settings-box"></div>
+
+  </template>
+  <script src="account_manager.js"></script>
+</dom-module>

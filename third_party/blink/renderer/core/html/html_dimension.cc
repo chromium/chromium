@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -167,7 +168,8 @@ static bool ParseDimensionValue(const CharacterType* current,
     SkipWhile<CharacterType, IsASCIIDigit>(current, end);
   }
   bool ok;
-  double value = CharactersToDouble(number_start, current - number_start, &ok);
+  double value = CSSValueClampingUtils::ClampDouble(
+      CharactersToDouble(number_start, current - number_start, &ok));
   if (!ok)
     return false;
   HTMLDimension::HTMLDimensionType type = HTMLDimension::kAbsolute;

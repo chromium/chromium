@@ -8,6 +8,8 @@
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_blob.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-primitive.h"
 
 namespace {
 
@@ -15,10 +17,9 @@ namespace {
 void GetBlobUuid(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(1, args.Length());
   blink::WebBlob blob = blink::WebBlob::FromV8Value(args[0]);
-  args.GetReturnValue().Set(v8::String::NewFromUtf8(args.GetIsolate(),
-                                                    blob.Uuid().Utf8().data(),
-                                                    v8::NewStringType::kNormal)
-                                .ToLocalChecked());
+  args.GetReturnValue().Set(
+      v8::String::NewFromUtf8(args.GetIsolate(), blob.Uuid().Utf8().data())
+          .ToLocalChecked());
 }
 
 }  // namespace

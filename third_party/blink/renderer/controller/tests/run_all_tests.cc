@@ -29,7 +29,7 @@
  */
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -37,7 +37,6 @@
 #include "content/public/test/blink_test_environment.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "v8/include/v8.h"
 
 namespace {
@@ -46,12 +45,14 @@ class BlinkUnitTestSuite : public base::TestSuite {
  public:
   BlinkUnitTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  BlinkUnitTestSuite(const BlinkUnitTestSuite&) = delete;
+  BlinkUnitTestSuite& operator=(const BlinkUnitTestSuite&) = delete;
+
  private:
   void Initialize() override {
     base::TestSuite::Initialize();
 
     content::SetUpBlinkTestEnvironment();
-    blink::SchemeRegistry::Initialize();
   }
   void Shutdown() override {
     // Tickle EndOfTaskRunner which among other things will flush the queue
@@ -62,16 +63,12 @@ class BlinkUnitTestSuite : public base::TestSuite {
     // Collect garbage (including threadspecific persistent handles) in order
     // to release mock objects referred from v8 or Oilpan heap. Otherwise false
     // mock leaks will be reported.
-    blink::V8GCController::CollectAllGarbageForTesting(
-        v8::Isolate::GetCurrent(),
-        v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
+    blink::ThreadState::Current()->CollectAllGarbageForTesting();
 
     content::TearDownBlinkTestEnvironment();
 
     base::TestSuite::Shutdown();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkUnitTestSuite);
 };
 
 }  // namespace

@@ -34,24 +34,34 @@
             </div>
         </div>
         <p id="result">Test did not run.</p>
+        <script src="../resources/gesture-util.js"></script>
         <script>
             if (window.testRunner)
                 testRunner.dumpAsText();
             var container = document.getElementById("container");
             container.scrollLeft = 2;
-            // Drag scrollbar thumber to left most:
-            if (window.eventSender) {
+
+            async function runTest() {
+              await waitForCompositorCommit();
+
+              // Drag scrollbar thumb to the left.
+              const scrollPromise = waitForScrollEvent(container);
+              if (window.eventSender) {
                 eventSender.mouseMoveTo(30, 145);
                 eventSender.mouseDown();
                 eventSender.mouseMoveTo(0, 145);
                 eventSender.mouseUp();
-            }
-            requestAnimationFrame(function() {
-              if (window.testRunner) {
-                  document.getElementById("result").innerText = container.scrollLeft == 0 ? "PASS" : "FAIL";
-                  testRunner.notifyDone();
               }
-            });
+              await scrollPromise;
+              await waitForCompositorCommit();
+              if (window.testRunner) {
+                document.getElementById("result").innerText =
+                    container.scrollLeft == 0 ? "PASS" : "FAIL";
+                testRunner.notifyDone();
+              }
+            }
+
+            runTest();
             testRunner.waitUntilDone();
         </script>
     </body>

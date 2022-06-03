@@ -1,6 +1,6 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.  Use of this source
-// code is governed by a BSD-style license that can be found in the LICENSE
-// file.
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SQL_TABLE_BUILDER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SQL_TABLE_BUILDER_H_
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_piece.h"
 
 namespace sql {
@@ -49,6 +49,9 @@ class SQLTableBuilder {
   // Create the builder for an arbitrary table name.
   explicit SQLTableBuilder(const std::string& table_name);
 
+  SQLTableBuilder(const SQLTableBuilder& rhs) = delete;
+  SQLTableBuilder& operator=(const SQLTableBuilder& rhs) = delete;
+
   ~SQLTableBuilder();
 
   // Adds a column in the table description, with |name| and |type|. |name|
@@ -61,7 +64,12 @@ class SQLTableBuilder {
   void AddPrimaryKeyColumn(std::string name);
 
   // As AddColumn but also adds column |name| to the unique key of the table.
-  void AddColumnToUniqueKey(std::string name, std::string type);
+  // If 'parent_table' isn't empty then the column is a foreign key to
+  // 'parent_table' and an implicit index is created. Only one foreign key per
+  // table is allowed.
+  void AddColumnToUniqueKey(std::string name,
+                            std::string type,
+                            std::string parent_table = std::string());
 
   // Renames column |old_name| to |new_name|. |new_name| can not exist already.
   // |old_name| must have been added in the past. Furthermore, there must be no
@@ -87,7 +95,17 @@ class SQLTableBuilder {
   // Assuming that the database connected through |db| contains a table called
   // |table_name_| in a state described by version |old_version|, migrates it to
   // the current version, which must be sealed. Returns true on success.
-  bool MigrateFrom(unsigned old_version, sql::Database* db) const;
+  // |post_migration_step_callback| is executed after each migration step in to
+  // allow the calling site to inject custom logic to run upon each migration
+  // step from |old_version| to the current version. The passed parameter
+  // corresponds to database to be migrated and the new version number that has
+  // been reached after the migration step. |post_migration_step_callback|
+  // returns true on success, otherwise the migration is aborted.
+  bool MigrateFrom(
+      unsigned old_version,
+      sql::Database* db,
+      const base::RepeatingCallback<bool(sql::Database*, unsigned)>&
+          post_migration_step_callback = base::NullCallback()) const;
 
   // If |db| connects to a database where table |table_name_| already exists,
   // this is a no-op and returns true. Otherwise, |table_name_| is created in a
@@ -175,8 +193,6 @@ class SQLTableBuilder {
 
   // The name of the table.
   const std::string table_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLTableBuilder);
 };
 
 }  // namespace password_manager

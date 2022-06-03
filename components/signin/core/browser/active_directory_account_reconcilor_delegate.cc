@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 
+#include "base/containers/contains.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -16,11 +17,6 @@ ActiveDirectoryAccountReconcilorDelegate::
 
 ActiveDirectoryAccountReconcilorDelegate::
     ~ActiveDirectoryAccountReconcilorDelegate() = default;
-
-bool ActiveDirectoryAccountReconcilorDelegate::IsAccountConsistencyEnforced()
-    const {
-  return true;
-}
 
 gaia::GaiaSource ActiveDirectoryAccountReconcilorDelegate::GetGaiaApiSource()
     const {
@@ -46,6 +42,8 @@ ActiveDirectoryAccountReconcilorDelegate::GetChromeAccountsForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,
     const CoreAccountId& primary_account,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
+    bool first_execution,
+    bool primary_has_error,
     const gaia::MultiloginMode mode) const {
   DCHECK_EQ(mode,
             gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);

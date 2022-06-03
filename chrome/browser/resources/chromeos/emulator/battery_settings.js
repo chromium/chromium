@@ -46,7 +46,7 @@ Polymer({
      */
     batteryStateOptions: {
       type: Array,
-      value: function() {
+      value() {
         return ['Full', 'Charging', 'Discharging', 'Not Present'];
       },
     },
@@ -60,7 +60,7 @@ Polymer({
      */
     powerSourceOptions: {
       type: Array,
-      value: function() {
+      value() {
         return [
           {
             id: '0',
@@ -146,13 +146,13 @@ Polymer({
     'powerSourcesChanged(powerSourceOptions.*)',
   ],
 
-  ready: function() {
+  ready() {
     this.addWebUIListener(
         'power-properties-updated', this.onPowerPropertiesUpdated_.bind(this));
     chrome.send('requestPowerInfo');
   },
 
-  onBatteryPercentChange: function(e) {
+  onBatteryPercentChange(e) {
     this.percent = parseInt(e.target.value, 10);
     if (!isNaN(this.percent))
       chrome.send('updateBatteryPercent', [this.percent]);
@@ -162,11 +162,11 @@ Polymer({
    * @param {!{model: {item: {id: string}}}} e
    * @private
    */
-  onSetAsSourceClick_: function(e) {
+  onSetAsSourceClick_(e) {
     chrome.send('updatePowerSourceId', [e.model.item.id]);
   },
 
-  batteryStateChanged: function(batteryState) {
+  batteryStateChanged(batteryState) {
     // Find the index of the selected battery state.
     var index = this.batteryStateOptions.indexOf(batteryState);
     if (index < 0)
@@ -174,7 +174,7 @@ Polymer({
     chrome.send('updateBatteryState', [index]);
   },
 
-  powerSourcesChanged: function() {
+  powerSourcesChanged() {
     var connectedPowerSources =
         this.powerSourceOptions.filter(function(source) {
           return source.connected;
@@ -182,19 +182,19 @@ Polymer({
     chrome.send('updatePowerSources', [connectedPowerSources]);
   },
 
-  onTimeUntilEmptyChange: function(e) {
+  onTimeUntilEmptyChange(e) {
     this.timeUntilEmpty = parseInt(e.target.value, 10);
     if (!isNaN(this.timeUntilEmpty))
       chrome.send('updateTimeToEmpty', [this.timeUntilEmpty]);
   },
 
-  onTimeUntilFullChange: function(e) {
+  onTimeUntilFullChange(e) {
     this.timeUntilFull = parseInt(e.target.value, 10);
     if (!isNaN(this.timeUntilFull))
       chrome.send('updateTimeToFull', [this.timeUntilFull]);
   },
 
-  onPowerChanged: function(e) {
+  onPowerChanged(e) {
     e.model.set('item.power', e.target.value);
   },
 
@@ -208,7 +208,7 @@ Polymer({
    * }} properties
    * @private
    */
-  onPowerPropertiesUpdated_: function(properties) {
+  onPowerPropertiesUpdated_(properties) {
     this.batteryPercent = properties.battery_percent;
     this.batteryState = this.batteryStateOptions[properties.battery_state];
     this.timeUntilEmpty = properties.battery_time_to_empty_sec;
@@ -216,11 +216,11 @@ Polymer({
     this.selectedPowerSourceId = properties.external_power_source_id;
   },
 
-  isBatteryPresent: function() {
+  isBatteryPresent() {
     return this.batteryState != 'Not Present';
   },
 
-  isDualRole: function(source) {
+  isDualRole(source) {
     return source.type == 'DualRoleUSB';
   },
 
@@ -229,15 +229,15 @@ Polymer({
    * @return {string}
    * @private
    */
-  cssClassForSetAsSource_: function(source) {
+  cssClassForSetAsSource_(source) {
     return source.id == this.selectedPowerSourceId ? '' : 'action-button';
   },
 
-  canAmpsChange: function(type) {
+  canAmpsChange(type) {
     return type == 'USB';
   },
 
-  canBecomeSource: function(source, selectedId, powerSourceOptionsChange) {
+  canBecomeSource(source, selectedId, powerSourceOptionsChange) {
     if (!source.connected || !this.isDualRole(source))
       return false;
     return !this.powerSourceOptions.some(function(source) {

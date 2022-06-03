@@ -9,6 +9,13 @@
     "unprivileged": true,
     "types": [
       {
+        "id": "AccessLevel",
+        "nodoc": true,
+        "type": "string",
+        "enum": ["TRUSTED_CONTEXTS", "TRUSTED_AND_UNTRUSTED_CONTEXTS"],
+        "description": "The storage area's access level."
+      },
+      {
         "id": "StorageChange",
         "type": "object",
         "properties": {
@@ -51,21 +58,20 @@
                 ],
                 "description": "A single key to get, list of keys to get, or a dictionary specifying default values (see description of the object).  An empty list or object will return an empty result object.  Pass in <code>null</code> to get the entire contents of storage.",
                 "optional": true
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback with storage items, or on failure (in which case $(ref:runtime.lastError) will be set).",
-                "parameters": [
-                  {
-                    "name": "items",
-                    "type": "object",
-                    "additionalProperties": { "type": "any" },
-                    "description": "Object with items in their key-value mappings."
-                  }
-                ]
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback with storage items, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [
+                {
+                  "name": "items",
+                  "type": "object",
+                  "additionalProperties": { "type": "any" },
+                  "description": "Object with items in their key-value mappings."
+                }
+              ]
+            }
           },
           {
             "name": "getBytesInUse",
@@ -80,20 +86,19 @@
                 ],
                 "description": "A single key or list of keys to get the total usage for. An empty list will return 0. Pass in <code>null</code> to get the total usage of all of storage.",
                 "optional": true
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback with the amount of space being used by storage, or on failure (in which case $(ref:runtime.lastError) will be set).",
-                "parameters": [
-                  {
-                    "name": "bytesInUse",
-                    "type": "integer",
-                    "description": "Amount of space being used in storage, in bytes."
-                  }
-                ]
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback with the amount of space being used by storage, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [
+                {
+                  "name": "bytesInUse",
+                  "type": "integer",
+                  "description": "Amount of space being used in storage, in bytes."
+                }
+              ]
+            }
           },
           {
             "name": "set",
@@ -106,15 +111,14 @@
                 "additionalProperties": { "type": "any", "preserveNull": true },
                 "preserveNull": true,
                 "description": "<p>An object which gives each key/value pair to update storage with. Any other key/value pairs in storage will not be affected.</p><p>Primitive values such as numbers will serialize as expected. Values with a <code>typeof</code> <code>\"object\"</code> and <code>\"function\"</code> will typically serialize to <code>{}</code>, with the exception of <code>Array</code> (serializes as expected), <code>Date</code>, and <code>Regex</code> (serialize using their <code>String</code> representation).</p>"
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
-                "parameters": [],
-                "optional": true
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
           },
           {
             "name": "remove",
@@ -128,29 +132,49 @@
                   {"type": "array", "items": {"type": "string"}}
                 ],
                 "description": "A single key or a list of keys for items to remove."
-              },
-              {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
-                "parameters": [],
-                "optional": true
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
           },
           {
             "name": "clear",
             "type": "function",
             "description": "Removes all items from storage.",
+            "parameters": [],
+            "returns_async":  {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
+          }, {
+            "name": "setAccessLevel",
+            "nodoc": true,
+            "type": "function",
+            "description": "Sets the desired access level for the storage area. The default will be only trusted contexts.",
             "parameters": [
               {
-                "name": "callback",
-                "type": "function",
-                "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
-                "parameters": [],
-                "optional": true
+                "type": "object",
+                "name": "accessOptions",
+                "properties": {
+                  "accessLevel": {
+                    "$ref": "AccessLevel",
+                    "description": "The access level of the storage area."
+                  }
+                }
               }
-            ]
+            ],
+            "returns_async":  {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
           }
         ],
         "events": [
@@ -237,6 +261,18 @@
         "$ref": "StorageArea",
         "description": "Items in the <code>managed</code> storage area are set by the domain administrator, and are read-only for the extension; trying to modify this namespace results in an error.",
         "value": [ "managed" ]
+      },
+      "session" : {
+        "$ref": "StorageArea",
+        "description": "Items in the <code>session</code> storage area are stored in-memory and will not be persisted to disk.",
+        "nodoc": true,
+        "value": ["session"],
+        "properties": {
+          "QUOTA_BYTES": {
+            "value": 1048576,
+            "description": "The maximum amount (in bytes) of data that can be stored in memory, as measured by estimating the dynamically allocated memory usage of every value and key. Updates that would cause this limit to be exceeded fail immediately and set $(ref:runtime.lastError)."
+          }
+        }
       }
     }
   }

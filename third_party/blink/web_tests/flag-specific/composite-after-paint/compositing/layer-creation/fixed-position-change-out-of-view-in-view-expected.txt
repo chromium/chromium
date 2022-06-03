@@ -11,24 +11,6 @@ Layer tree when the fixed elements are out-of-view (should have just a root laye
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, -100, 0, 1]
-      ]
     }
   ]
 }
@@ -43,11 +25,6 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
       "bounds": [10, 10],
       "contentsOpaque": true,
@@ -60,6 +37,11 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -97,24 +79,6 @@ Layer tree when the fixed elements are out-of-view again (should have just a roo
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, -100, 0, 1]
-      ]
     }
   ]
 }

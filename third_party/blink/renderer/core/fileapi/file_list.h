@@ -48,7 +48,7 @@ class CORE_EXPORT FileList final : public ScriptWrappable {
   void Append(File* file) { files_.push_back(file); }
   Vector<base::FilePath> PathsForUserVisibleFiles() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<File>> files_;

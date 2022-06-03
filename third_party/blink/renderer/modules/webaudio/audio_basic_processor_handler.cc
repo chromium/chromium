@@ -75,14 +75,14 @@ void AudioBasicProcessorHandler::Process(uint32_t frames_to_process) {
       Processor()->NumberOfChannels() != NumberOfChannels()) {
     destination_bus->Zero();
   } else {
-    AudioBus* source_bus = Input(0).Bus();
+    scoped_refptr<AudioBus> source_bus = Input(0).Bus();
 
     // FIXME: if we take "tail time" into account, then we can avoid calling
     // processor()->process() once the tail dies down.
     if (!Input(0).IsConnected())
       source_bus->Zero();
 
-    Processor()->Process(source_bus, destination_bus, frames_to_process);
+    Processor()->Process(source_bus.get(), destination_bus, frames_to_process);
   }
 }
 
@@ -110,7 +110,7 @@ void AudioBasicProcessorHandler::CheckNumberOfChannelsForInput(
   DCHECK(Context()->IsAudioThread());
   Context()->AssertGraphOwner();
 
-  DCHECK_EQ(input, &this->Input(0));
+  DCHECK_EQ(input, &Input(0));
   DCHECK(Processor());
 
   unsigned number_of_channels = input->NumberOfChannels();

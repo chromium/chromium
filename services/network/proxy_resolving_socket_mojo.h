@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketMojo
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::SocketObserver> observer,
       TLSSocketFactory* tls_socket_factory);
+
+  ProxyResolvingSocketMojo(const ProxyResolvingSocketMojo&) = delete;
+  ProxyResolvingSocketMojo& operator=(const ProxyResolvingSocketMojo&) = delete;
+
   ~ProxyResolvingSocketMojo() override;
   void Connect(
       mojom::ProxyResolvingSocketFactory::CreateProxyResolvingSocketCallback
@@ -66,8 +70,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketMojo
       connect_callback_;
   base::OnceClosure pending_upgrade_to_tls_callback_;
   std::unique_ptr<SocketDataPump> socket_data_pump_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketMojo);
 };
 
 }  // namespace network

@@ -41,7 +41,7 @@ bool PictureInPictureController::IsElementInPictureInPicture(
   return controller && controller->IsPictureInPictureElement(element);
 }
 
-void PictureInPictureController::Trace(blink::Visitor* visitor) {
+void PictureInPictureController::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 

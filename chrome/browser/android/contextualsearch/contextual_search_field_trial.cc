@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -19,7 +19,6 @@ const char kContextualSearchResolverUrl[] = "contextual-search-resolver-url";
 const char kContextualSearchSurroundingSizeParamName[] = "surrounding_size";
 const char kContextualSearchSampleSurroundingSizeParamName[] =
     "sample_surrounding_size";
-const char kContextualSearchSendURLDisabledParamName[] = "disable_send_url";
 const char kContextualSearchDecodeMentionsDisabledParamName[] =
     "disable_decode_mentions";
 
@@ -40,8 +39,6 @@ ContextualSearchFieldTrial::ContextualSearchFieldTrial()
       surrounding_size_(0),
       is_sample_surrounding_size_cached_(false),
       sample_surrounding_size_(0),
-      is_send_base_page_url_disabled_cached_(false),
-      is_send_base_page_url_disabled_(false),
       is_decode_mentions_disabled_cached_(false),
       is_decode_mentions_disabled_(false),
       is_contextual_cards_version_cached_(false),
@@ -71,12 +68,6 @@ int ContextualSearchFieldTrial::GetSampleSurroundingSize() {
       kContextualSearchSampleSurroundingSizeParamName,
       kContextualSearchDefaultSampleSurroundingSize,
       &is_sample_surrounding_size_cached_, &sample_surrounding_size_);
-}
-
-bool ContextualSearchFieldTrial::IsSendBasePageURLDisabled() {
-  return GetBooleanParam(kContextualSearchSendURLDisabledParamName,
-                         &is_send_base_page_url_disabled_cached_,
-                         &is_send_base_page_url_disabled_);
 }
 
 bool ContextualSearchFieldTrial::IsDecodeMentionsDisabled() {
@@ -118,14 +109,6 @@ int ContextualSearchFieldTrial::GetIntParamValueOrDefault(
     std::string param_string = GetSwitch(name);
     if (param_string.empty())
       param_string = GetParam(name);
-    // If we still didn't get a param, try getting a Feature param.
-    if (param_string.empty()) {
-      // First check the Contextual Search Definitions feature.
-      param_string = base::GetFieldTrialParamValueByFeature(
-          chrome::android::kContextualSearchDefinitions, name);
-    }
-    // TODO(donnd): check for a Translation feature once that's been added.
-
     int param_int;
     if (!param_string.empty() && base::StringToInt(param_string, &param_int))
       *cached_value = param_int;

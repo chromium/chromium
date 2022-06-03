@@ -6,10 +6,10 @@ from mod_pywebsocket import handshake
 
 
 def web_socket_do_extra_handshake(request):
-  msg = ('HTTP/1.1 101 Switching Protocols\r\n'
-         'Upgrade: websocket\r\n'
-         'Connection: Upgrade\r\n'
-         'Sec-WebSocket-Accept: 3rfd')
+  msg = (b'HTTP/1.1 101 Switching Protocols\r\n'
+         b'Upgrade: websocket\r\n'
+         b'Connection: Upgrade\r\n'
+         b'Sec-WebSocket-Accept: 3rfd')
   request.connection.write(msg)
   # Prevent pywebsocket from sending its own handshake message.
   raise handshake.AbortedByUserException('Close the connection')

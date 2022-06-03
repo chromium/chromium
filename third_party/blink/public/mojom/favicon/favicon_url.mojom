@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The icon type in a page. The definition must be same as
+// favicon_base::IconType.
+// TODO: Figure out if it should be updated to be in sync.
+enum FaviconIconType {
+  kInvalid,
+  kFavicon,
+  kTouchIcon,
+  kTouchPrecomposedIcon,
+};
+
+// The favicon url from the document.
+struct FaviconURL {
+  // The url of the icon.
+  url.mojom.Url icon_url;
+
+  // The type of the icon
+  FaviconIconType icon_type;
+
+  // Icon's bitmaps' size
+  array<gfx.mojom.Size> icon_sizes;
+};

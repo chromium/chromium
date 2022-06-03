@@ -6,12 +6,10 @@
 #define CHROME_CHROME_CLEANER_OS_FILE_REMOVER_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/logging/proto/removal_status.pb.h"
 #include "chrome/chrome_cleaner/os/digest_verifier.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"

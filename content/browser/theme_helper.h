@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_THEME_HELPER_H_
 #define CONTENT_BROWSER_THEME_HELPER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/common/renderer.mojom-forward.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -20,6 +19,9 @@ class ThemeHelper : public ui::NativeThemeObserver {
  public:
   static ThemeHelper* GetInstance();
 
+  ThemeHelper(const ThemeHelper&) = delete;
+  ThemeHelper& operator=(const ThemeHelper&) = delete;
+
   void SendSystemColorInfo(mojom::Renderer* renderer) const;
 
  private:
@@ -30,9 +32,8 @@ class ThemeHelper : public ui::NativeThemeObserver {
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* updated_theme) override;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver> theme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHelper);
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 };
 
 }  // namespace content

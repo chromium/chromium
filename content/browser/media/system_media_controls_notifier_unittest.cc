@@ -32,6 +32,12 @@ using testing::Expectation;
 class SystemMediaControlsNotifierTest : public testing::Test {
  public:
   SystemMediaControlsNotifierTest() = default;
+
+  SystemMediaControlsNotifierTest(const SystemMediaControlsNotifierTest&) =
+      delete;
+  SystemMediaControlsNotifierTest& operator=(
+      const SystemMediaControlsNotifierTest&) = delete;
+
   ~SystemMediaControlsNotifierTest() override = default;
 
   void SetUp() override {
@@ -55,16 +61,16 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   void SimulateStopped() { notifier_->MediaSessionInfoChanged(nullptr); }
 
   void SimulateMetadataChanged(bool empty,
-                               base::string16 title,
-                               base::string16 artist) {
+                               std::u16string title,
+                               std::u16string artist) {
     if (!empty) {
       media_session::MediaMetadata metadata;
       metadata.title = title;
       metadata.artist = artist;
       notifier_->MediaSessionMetadataChanged(
-          base::Optional<media_session::MediaMetadata>(metadata));
+          absl::optional<media_session::MediaMetadata>(metadata));
     } else {
-      notifier_->MediaSessionMetadataChanged(base::nullopt);
+      notifier_->MediaSessionMetadataChanged(absl::nullopt);
     }
   }
 
@@ -96,8 +102,6 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   std::unique_ptr<SystemMediaControlsNotifier> notifier_;
   system_media_controls::testing::MockSystemMediaControls
       mock_system_media_controls_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsNotifierTest);
 };
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
@@ -118,8 +122,8 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
-  base::string16 title = base::ASCIIToUTF16("title");
-  base::string16 artist = base::ASCIIToUTF16("artist");
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
 
   EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
   EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
@@ -134,7 +138,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesNullMetadata) {
   EXPECT_CALL(mock_system_media_controls(), SetArtist(_)).Times(0);
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
 
-  SimulateMetadataChanged(true, base::string16(), base::string16());
+  SimulateMetadataChanged(true, std::u16string(), std::u16string());
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {

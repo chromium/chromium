@@ -4,8 +4,9 @@
 
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 
+#include <memory>
+
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -25,6 +26,10 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
 
   explicit LoginScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  LoginScreenStrategy(const LoginScreenStrategy&) = delete;
+  LoginScreenStrategy& operator=(const LoginScreenStrategy&) = delete;
+
   ~LoginScreenStrategy() override = default;
 
  protected:
@@ -38,13 +43,10 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
         timeout =
             kBaseAttemptTimeoutSec * (delegate_->NoResponseResultCount() + 1);
       }
-      return base::TimeDelta::FromSeconds(timeout);
+      return base::Seconds(timeout);
     }
-    return base::TimeDelta::FromSeconds(kBaseAttemptTimeoutSec);
+    return base::Seconds(kBaseAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStrategy);
 };
 
 class ErrorScreenStrategy : public PortalDetectorStrategy {
@@ -53,17 +55,18 @@ class ErrorScreenStrategy : public PortalDetectorStrategy {
 
   explicit ErrorScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  ErrorScreenStrategy(const ErrorScreenStrategy&) = delete;
+  ErrorScreenStrategy& operator=(const ErrorScreenStrategy&) = delete;
+
   ~ErrorScreenStrategy() override = default;
 
  protected:
   // PortalDetectorStrategy overrides:
   StrategyId Id() const override { return STRATEGY_ID_ERROR_SCREEN; }
   base::TimeDelta GetNextAttemptTimeoutImpl() override {
-    return base::TimeDelta::FromSeconds(kAttemptTimeoutSec);
+    return base::Seconds(kAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenStrategy);
 };
 
 class SessionStrategy : public PortalDetectorStrategy {
@@ -74,6 +77,10 @@ class SessionStrategy : public PortalDetectorStrategy {
 
   explicit SessionStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  SessionStrategy(const SessionStrategy&) = delete;
+  SessionStrategy& operator=(const SessionStrategy&) = delete;
+
   ~SessionStrategy() override = default;
 
  protected:
@@ -84,11 +91,8 @@ class SessionStrategy : public PortalDetectorStrategy {
       timeout = kFastAttemptTimeoutSec;
     else
       timeout = kSlowAttemptTimeoutSec;
-    return base::TimeDelta::FromSeconds(timeout);
+    return base::Seconds(timeout);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStrategy);
 };
 
 }  // namespace
@@ -127,7 +131,7 @@ PortalDetectorStrategy::PortalDetectorStrategy(Delegate* delegate)
   policy_.maximum_backoff_ms = 2 * 60 * 1000;
   policy_.entry_lifetime_ms = -1;
   policy_.always_use_initial_delay = true;
-  backoff_entry_.reset(new net::BackoffEntry(&policy_, delegate_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(&policy_, delegate_);
 }
 
 PortalDetectorStrategy::~PortalDetectorStrategy() = default;
@@ -138,19 +142,14 @@ std::unique_ptr<PortalDetectorStrategy> PortalDetectorStrategy::CreateById(
     Delegate* delegate) {
   switch (id) {
     case STRATEGY_ID_LOGIN_SCREEN:
-      return std::unique_ptr<PortalDetectorStrategy>(
-          new LoginScreenStrategy(delegate));
+      return std::make_unique<LoginScreenStrategy>(delegate);
     case STRATEGY_ID_ERROR_SCREEN:
-      return std::unique_ptr<PortalDetectorStrategy>(
-          new ErrorScreenStrategy(delegate));
+      return std::make_unique<ErrorScreenStrategy>(delegate);
     case STRATEGY_ID_SESSION:
-      return std::unique_ptr<PortalDetectorStrategy>(
-          new SessionStrategy(delegate));
-    default:
-      NOTREACHED();
-      return std::unique_ptr<PortalDetectorStrategy>(
-          static_cast<PortalDetectorStrategy*>(nullptr));
+      return std::make_unique<SessionStrategy>(delegate);
   }
+  NOTREACHED();
+  return nullptr;
 }
 
 base::TimeDelta PortalDetectorStrategy::GetDelayTillNextAttempt() {
@@ -172,7 +171,7 @@ void PortalDetectorStrategy::Reset() {
 void PortalDetectorStrategy::SetPolicyAndReset(
     const net::BackoffEntry::Policy& policy) {
   policy_ = policy;
-  backoff_entry_.reset(new net::BackoffEntry(&policy_, delegate_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(&policy_, delegate_);
 }
 
 void PortalDetectorStrategy::OnDetectionCompleted() {

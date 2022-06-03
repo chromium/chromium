@@ -33,7 +33,11 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-shared.h"
+#include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
@@ -43,27 +47,29 @@ class WebServiceWorkerContextClient;
 class WebURL;
 struct WebEmbeddedWorkerStartData;
 
-// As we're on the border line between non-Blink and Blink variants, we need
-// to use mojo::ScopedMessagePipeHandle to pass Mojo types.
 struct BLINK_EXPORT WebServiceWorkerInstalledScriptsManagerParams {
   WebServiceWorkerInstalledScriptsManagerParams() = delete;
   WebServiceWorkerInstalledScriptsManagerParams(
       WebVector<WebURL> installed_scripts_urls,
-      mojo::ScopedMessagePipeHandle manager_receiver,
-      mojo::ScopedMessagePipeHandle manager_host_remote);
+      CrossVariantMojoReceiver<
+          mojom::ServiceWorkerInstalledScriptsManagerInterfaceBase>
+          manager_receiver,
+      CrossVariantMojoRemote<
+          mojom::ServiceWorkerInstalledScriptsManagerHostInterfaceBase>
+          manager_host_remote);
   ~WebServiceWorkerInstalledScriptsManagerParams() = default;
 
   WebVector<WebURL> installed_scripts_urls;
-  // A handle for
-  // mojo::PendingReceiver<mojom::blink::ServiceWorkerInstalledScriptsManager>.
-  mojo::ScopedMessagePipeHandle manager_receiver;
-  // A handle for
-  // mojo::PendingRemote<mojom::blink::ServiceWorkerInstalledScriptsManagerHost>.
-  mojo::ScopedMessagePipeHandle manager_host_remote;
+  CrossVariantMojoReceiver<
+      mojom::ServiceWorkerInstalledScriptsManagerInterfaceBase>
+      manager_receiver;
+  CrossVariantMojoRemote<
+      mojom::ServiceWorkerInstalledScriptsManagerHostInterfaceBase>
+      manager_host_remote;
 };
 
-// An interface to start and terminate an embedded worker.
-// All methods of this class must be called on the main thread.
+// An interface to start and terminate an embedded worker. Lives on
+// a background thread from the ThreadPool.
 class BLINK_EXPORT WebEmbeddedWorker {
  public:
   // Invoked on the main thread to instantiate a WebEmbeddedWorker.
@@ -78,16 +84,14 @@ class BLINK_EXPORT WebEmbeddedWorker {
   virtual void StartWorkerContext(
       std::unique_ptr<WebEmbeddedWorkerStartData>,
       std::unique_ptr<WebServiceWorkerInstalledScriptsManagerParams>,
-      mojo::ScopedMessagePipeHandle content_settings_handle,
-      mojo::ScopedMessagePipeHandle cache_storage,
-      mojo::ScopedMessagePipeHandle browser_interface_broker,
+      CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
+          content_settings,
+      CrossVariantMojoRemote<mojom::CacheStorageInterfaceBase> cache_storage,
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+          browser_interface_broker,
       scoped_refptr<base::SingleThreadTaskRunner>
           initiator_thread_task_runner) = 0;
   virtual void TerminateWorkerContext() = 0;
-
-  // Resumes starting a worker startup that was paused via
-  // WebEmbeddedWorkerStartData.pauseAfterDownloadMode.
-  virtual void ResumeAfterDownload() = 0;
 };
 
 }  // namespace blink

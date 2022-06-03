@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -26,16 +25,14 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     const InvalidationLists& invalidation_lists,
     ContainerNode& node) {
   DCHECK(node.InActiveDocument());
+  DCHECK(!node.GetDocument().InStyleRecalc());
   bool requires_descendant_invalidation = false;
 
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
       if (invalidation_set->WholeSubtreeInvalid()) {
-        ContainerNode* subtree_root = &node;
-        if (RuntimeEnabledFeatures::FlatTreeStyleRecalcEnabled()) {
-          if (auto* shadow_root = DynamicTo<ShadowRoot>(node))
-            subtree_root = &shadow_root->host();
-        }
+        auto* shadow_root = DynamicTo<ShadowRoot>(node);
+        auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
                                      style_change_reason::kStyleInvalidator));
@@ -54,7 +51,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     }
     // No need to schedule descendant invalidations on display:none elements.
     if (requires_descendant_invalidation && !node.GetComputedStyle() &&
-        node.CanParticipateInFlatTree()) {
+        !node.IsShadowRoot()) {
       requires_descendant_invalidation = false;
     }
   }
@@ -108,12 +105,9 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
 
   scheduling_parent.SetNeedsStyleInvalidation();
 
-  ContainerNode* subtree_root = &scheduling_parent;
-  if (RuntimeEnabledFeatures::FlatTreeStyleRecalcEnabled()) {
-    subtree_root = DynamicTo<Element>(scheduling_parent);
-    if (!subtree_root)
-      subtree_root = &To<ShadowRoot>(scheduling_parent).host();
-  }
+  Element* subtree_root = DynamicTo<Element>(scheduling_parent);
+  if (!subtree_root)
+    subtree_root = &To<ShadowRoot>(scheduling_parent).host();
 
   for (auto& invalidation_set : invalidation_lists.siblings) {
     DescendantInvalidationSet* descendants =

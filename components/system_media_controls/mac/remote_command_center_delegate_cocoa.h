@@ -34,6 +34,7 @@ API_AVAILABLE(macos(10.12.2))
 - (void)setCanPlayPause:(bool)can_playpause;
 - (void)setCanGoNextTrack:(bool)can_go_next_track;
 - (void)setCanGoPreviousTrack:(bool)can_go_prev_track;
+- (void)setCanSeekTo:(bool)can_seek_to;
 
 @end
 

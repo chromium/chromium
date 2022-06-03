@@ -72,11 +72,11 @@ the two build directories are followed by `": DIFFERENT(expected)"` or
 You can ignore lines that say `": None"` or `": DIFFERENT(expected)"`, these
 don't turn the step red. `": DIFFERENT(expected)"` is for files that are known
 to not yet be deterministic; these are listed in
-[`src/tools/determinism/deterministic_build_whitelist.pyl`][1].  If the
+[`src/tools/determinism/deterministic_build_ignorelist.pyl`][1].  If the
 deterministic bots turn red, you usually do *not* want to add an entry to this
 list, but figure out what introduced the nondeterminism and revert that.
 
-[1]: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/determinism/deterministic_build_whitelist.pyl
+[1]: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/determinism/deterministic_build_ignorelist.pyl
 
 If only a few bytes are different, the script prints a diff of the hexdump
 of the two files. Most of the time, you can ignore this.
@@ -161,5 +161,5 @@ Things *not* to do:
   clobbering a deterministic bot might make it green, it's papering over issues
   that the deterministic bots are supposed to catch.
 
-- Don't add entries to `src/tools/determinism/deterministic_build_whitelist.py`.
+- Don't add entries to `src/tools/determinism/deterministic_build_ignorelist.py`.
   Instead, try to revert commits introducing nondeterminism.

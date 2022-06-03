@@ -7,12 +7,12 @@
 #include <cstddef>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/guid.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "sql/statement.h"
 
@@ -59,7 +59,7 @@ AutocompleteActionPredictorTable::Row::Row()
 }
 
 AutocompleteActionPredictorTable::Row::Row(const Row::Id& id,
-                                           const base::string16& user_text,
+                                           const std::u16string& user_text,
                                            const GURL& url,
                                            int number_of_hits,
                                            int number_of_misses)
@@ -67,8 +67,7 @@ AutocompleteActionPredictorTable::Row::Row(const Row::Id& id,
       user_text(user_text),
       url(url),
       number_of_hits(number_of_hits),
-      number_of_misses(number_of_misses) {
-}
+      number_of_misses(number_of_misses) {}
 
 AutocompleteActionPredictorTable::Row::Row(const Row& row)
     : id(row.id),
@@ -220,11 +219,11 @@ void AutocompleteActionPredictorTable::DeleteAllRows() {
 
 AutocompleteActionPredictorTable::AutocompleteActionPredictorTable(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-    : PredictorTableBase(std::move(db_task_runner)) {}
+    : sqlite_proto::TableManager(std::move(db_task_runner)) {}
 
 AutocompleteActionPredictorTable::~AutocompleteActionPredictorTable() = default;
 
-void AutocompleteActionPredictorTable::CreateTableIfNonExistent() {
+void AutocompleteActionPredictorTable::CreateOrClearTablesIfNecessary() {
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   if (CantAccessDatabase())
     return;

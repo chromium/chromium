@@ -16,6 +16,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace net {
@@ -30,27 +31,27 @@ class HostResolverMdnsListener
   HostResolverMdnsListener(net::HostResolver* resolver,
                            const net::HostPortPair& host,
                            net::DnsQueryType query_type);
+
+  HostResolverMdnsListener(const HostResolverMdnsListener&) = delete;
+  HostResolverMdnsListener& operator=(const HostResolverMdnsListener&) = delete;
+
   ~HostResolverMdnsListener() override;
 
   int Start(mojo::PendingRemote<mojom::MdnsListenClient> response_client,
             base::OnceClosure cancellation_callback);
 
   // net::HostResolver::MdnsListenerDelegate implementation
-  void OnAddressResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      net::IPEndPoint address) override;
-  void OnTextResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      std::vector<std::string> text_records) override;
-  void OnHostnameResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      net::HostPortPair host) override;
-  void OnUnhandledResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type) override;
+  void OnAddressResult(net::MdnsListenerUpdateType update_type,
+                       net::DnsQueryType query_type,
+                       net::IPEndPoint address) override;
+  void OnTextResult(net::MdnsListenerUpdateType update_type,
+                    net::DnsQueryType query_type,
+                    std::vector<std::string> text_records) override;
+  void OnHostnameResult(net::MdnsListenerUpdateType update_type,
+                        net::DnsQueryType query_type,
+                        net::HostPortPair host) override;
+  void OnUnhandledResult(net::MdnsListenerUpdateType update_type,
+                         net::DnsQueryType query_type) override;
 
  private:
   void OnConnectionError();
@@ -59,8 +60,6 @@ class HostResolverMdnsListener
   mojo::Remote<mojom::MdnsListenClient> response_client_;
 
   base::OnceClosure cancellation_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverMdnsListener);
 };
 
 }  // namespace network

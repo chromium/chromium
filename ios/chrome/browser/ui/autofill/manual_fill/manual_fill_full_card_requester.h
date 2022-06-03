@@ -13,10 +13,7 @@ namespace autofill {
 class CreditCard;
 }  // namespace autofill
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
-
 class WebStateList;
 
 @protocol FullCardRequestResultDelegateObserving;
@@ -27,7 +24,7 @@ class WebStateList;
 
 // Inits the requests with required parameters and the |delegate| to receive the
 // success/failure state of the request.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                         webStateList:(WebStateList*)webStateList
                       resultDelegate:
                           (id<FullCardRequestResultDelegateObserving>)delegate;

@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -84,20 +84,20 @@ const CGFloat kSpotlightCornerRadius = 7;
   if (dimmed == _dimmed)
     return;
   _dimmed = dimmed;
-  if (!self.configuration)
+  if (!self.toolbarConfiguration)
     return;
 
   if (dimmed) {
     self.alpha = kToolbarDimmedButtonAlpha;
     if (_spotlightView) {
       self.spotlightView.backgroundColor =
-          self.configuration.dimmedButtonsSpotlightColor;
+          self.toolbarConfiguration.dimmedButtonsSpotlightColor;
     }
   } else {
     self.alpha = 1;
     if (_spotlightView) {
       self.spotlightView.backgroundColor =
-          self.configuration.buttonsSpotlightColor;
+          self.toolbarConfiguration.buttonsSpotlightColor;
     }
   }
 }
@@ -110,13 +110,14 @@ const CGFloat kSpotlightCornerRadius = 7;
   return state;
 }
 
-- (void)setConfiguration:(ToolbarConfiguration*)configuration {
-  _configuration = configuration;
-  if (!configuration)
+- (void)setToolbarConfiguration:(ToolbarConfiguration*)toolbarConfiguration {
+  _toolbarConfiguration = toolbarConfiguration;
+  if (!toolbarConfiguration)
     return;
 
-  self.tintColor = configuration.buttonsTintColor;
-  _spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
+  self.tintColor = toolbarConfiguration.buttonsTintColor;
+  _spotlightView.backgroundColor =
+      self.toolbarConfiguration.buttonsSpotlightColor;
 }
 
 #pragma mark - Subclassing
@@ -127,7 +128,8 @@ const CGFloat kSpotlightCornerRadius = 7;
   spotlightView.hidden = YES;
   spotlightView.userInteractionEnabled = NO;
   spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
-  spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
+  spotlightView.backgroundColor =
+      self.toolbarConfiguration.buttonsSpotlightColor;
   // Make sure that the spotlightView is below the image to avoid changing the
   // color of the image.
   [self insertSubview:spotlightView belowSubview:self.imageView];

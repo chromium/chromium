@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//testing/test.gni")
+import("//third_party/google_benchmark/buildconfig.gni")
 
 # Only applied to CRC32C source and tests. (not exported)
 config("crc32c_config") {
@@ -22,7 +23,7 @@ config("crc32c_config") {
   # If we ever support big-endian builds, add logic to conditionally enable
   # BYTE_ORDER_BIG_ENDIAN.
 
-  if (target_cpu == "x86" || target_cpu == "x64") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
     defines += [
       "HAVE_MM_PREFETCH=1",
       "HAVE_SSE42=1",
@@ -84,7 +85,7 @@ source_set("crc32c_sse42") {
   ]
 
   configs += [ ":crc32c_config" ]
-  if (target_cpu == "x86" || target_cpu == "x64") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
     if (is_win && !is_clang) {
       cflags = [ "/arch:AVX" ]
     } else {
@@ -92,9 +93,7 @@ source_set("crc32c_sse42") {
     }
   }
 
-  deps = [
-    ":crc32c_internal_headers",
-  ]
+  deps = [ ":crc32c_internal_headers" ]
 }
 
 source_set("crc32c_arm64") {
@@ -103,7 +102,7 @@ source_set("crc32c_arm64") {
   sources = [
     "src/src/crc32c_arm64.cc",
     "src/src/crc32c_arm64.h",
-    "src/src/crc32c_arm64_linux_check.h",
+    "src/src/crc32c_arm64_check.h",
   ]
 
   configs += [ ":crc32c_config" ]
@@ -129,9 +128,7 @@ source_set("crc32c_arm64") {
     }
   }
 
-  deps = [
-    ":crc32c_internal_headers",
-  ]
+  deps = [ ":crc32c_internal_headers" ]
 }
 
 source_set("crc32c_internal_headers") {
@@ -165,4 +162,18 @@ test("crc32c_tests") {
     "//testing/gtest:gtest_main",
     "//third_party/googletest:gtest",
   ]
+}
+
+if (enable_google_benchmarks) {
+  test("crc32c_benchmark") {
+    sources = [ "src/src/crc32c_benchmark.cc" ]
+    configs += [ ":crc32c_config" ]
+    deps = [
+      ":crc32c",
+      ":crc32c_arm64",
+      ":crc32c_internal_headers",
+      ":crc32c_sse42",
+      "//third_party/google_benchmark",
+    ]
+  }
 }

@@ -10,8 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 class FilePath;
@@ -40,6 +39,9 @@ class LoadErrorReporter {
                                const std::string& error) = 0;
   };
 
+  LoadErrorReporter(const LoadErrorReporter&) = delete;
+  LoadErrorReporter& operator=(const LoadErrorReporter&) = delete;
+
   // Initializes the error reporter. Must be called before any other methods
   // and on the UI thread.
   static void Init(bool enable_noisy_errors);
@@ -59,10 +61,10 @@ class LoadErrorReporter {
 
   // Report an error. Errors always go to VLOG(1). Optionally, they can also
   // cause a noisy alert box.
-  void ReportError(const base::string16& message, bool be_noisy);
+  void ReportError(const std::u16string& message, bool be_noisy);
 
   // Get the errors that have been reported so far.
-  const std::vector<base::string16>* GetErrors();
+  const std::vector<std::u16string>* GetErrors();
 
   // Clear the list of errors reported so far.
   void ClearErrors();
@@ -78,12 +80,10 @@ class LoadErrorReporter {
   ~LoadErrorReporter();
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  std::vector<base::string16> errors_;
+  std::vector<std::u16string> errors_;
   bool enable_noisy_errors_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadErrorReporter);
 };
 
 }  // namespace extensions

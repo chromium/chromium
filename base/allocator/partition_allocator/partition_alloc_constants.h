@@ -6,18 +6,32 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 
 #include <limits.h>
+#include <cstddef>
 
+#include <algorithm>
+#include <limits>
+
+#include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/logging.h"
-
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
+
+#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+#include <mach/vm_page_size.h>
+#endif
 
 namespace base {
 
-// Allocation granularity of sizeof(void*) bytes.
-static const size_t kAllocationGranularity = sizeof(void*);
-static const size_t kAllocationGranularityMask = kAllocationGranularity - 1;
-static const size_t kBucketShift = (kAllocationGranularity == 8) ? 3 : 2;
+// Size of a cache line. Not all CPUs in the world have a 64 bytes cache line
+// size, but as of 2021, most do. This is in particular the case for almost all
+// x86_64 and almost all ARM CPUs supported by Chromium. As this is used for
+// static alignment, we cannot query the CPU at runtime to determine the actual
+// alignment, so use 64 bytes everywhere. Since this is only used to avoid false
+// sharing, getting this wrong only results in lower performance, not incorrect
+// code.
+constexpr size_t kPartitionCachelineSize = 64;
 
 // Underlying partition storage pages (`PartitionPage`s) are a power-of-2 size.
 // It is typical for a `PartitionPage` to be based on multiple system pages.
@@ -32,21 +46,50 @@ static const size_t kBucketShift = (kAllocationGranularity == 8) ? 3 : 2;
 // Slot span sizes are adjusted depending on the allocation size, to make sure
 // the packing does not lead to unused (wasted) space at the end of the last
 // system page of the span. For our current maximum slot span size of 64 KiB and
-// other constant values, we pack _all_ `PartitionRootGeneric::Alloc` sizes
-// perfectly up against the end of a system page.
+// other constant values, we pack _all_ `PartitionRoot::Alloc` sizes perfectly
+// up against the end of a system page.
 
 #if defined(_MIPS_ARCH_LOONGSON)
-static const size_t kPartitionPageShift = 16;  // 64 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageShift() {
+  return 16;  // 64 KiB
+}
 #elif defined(ARCH_CPU_PPC64)
-static const size_t kPartitionPageShift = 18;  // 256 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageShift() {
+  return 18;  // 256 KiB
+}
+#elif defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageShift() {
+  return vm_page_shift + 2;
+}
 #else
-static const size_t kPartitionPageShift = 14;  // 16 KiB
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageShift() {
+  return 14;  // 16 KiB
+}
 #endif
-static const size_t kPartitionPageSize = 1 << kPartitionPageShift;
-static const size_t kPartitionPageOffsetMask = kPartitionPageSize - 1;
-static const size_t kPartitionPageBaseMask = ~kPartitionPageOffsetMask;
-// TODO: Should this be 1 if defined(_MIPS_ARCH_LOONGSON)?
-static const size_t kMaxPartitionPagesPerSlotSpan = 4;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageSize() {
+  return 1 << PartitionPageShift();
+}
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageOffsetMask() {
+  return PartitionPageSize() - 1;
+}
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+PartitionPageBaseMask() {
+  return ~PartitionPageOffsetMask();
+}
+
+// Number of system pages per regular slot span. Above this limit, we call it
+// a single-slot span, as the span literally hosts only one slot, and has
+// somewhat different implementation. At run-time, single-slot spans can be
+// differentiated with a call to CanStoreRawSize().
+// TODO: Should this be 1 on platforms with page size larger than 4kB, e.g.
+// ARM macOS or defined(_MIPS_ARCH_LOONGSON)?
+constexpr size_t kMaxPartitionPagesPerRegularSlotSpan = 4;
 
 // To avoid fragmentation via never-used freelist entries, we hand out partition
 // freelist sections gradually, in units of the dominant system page size. What
@@ -55,17 +98,31 @@ static const size_t kMaxPartitionPagesPerSlotSpan = 4;
 // dirty a private page, which is very wasteful if we never actually store
 // objects there.
 
-static const size_t kNumSystemPagesPerPartitionPage =
-    kPartitionPageSize / kSystemPageSize;
-static const size_t kMaxSystemPagesPerSlotSpan =
-    kNumSystemPagesPerPartitionPage * kMaxPartitionPagesPerSlotSpan;
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+NumSystemPagesPerPartitionPage() {
+  return PartitionPageSize() >> SystemPageShift();
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxSystemPagesPerRegularSlotSpan() {
+  return NumSystemPagesPerPartitionPage() *
+         kMaxPartitionPagesPerRegularSlotSpan;
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxRegularSlotSpanSize() {
+  return kMaxPartitionPagesPerRegularSlotSpan << PartitionPageShift();
+}
 
 // We reserve virtual address space in 2 MiB chunks (aligned to 2 MiB as well).
 // These chunks are called *super pages*. We do this so that we can store
 // metadata in the first few pages of each 2 MiB-aligned section. This makes
-// freeing memory very fast. We specifically choose 2 MiB because this virtual
-// address block represents a full but single PTE allocation on ARM, ia32 and
-// x64.
+// freeing memory very fast. 2 MiB size & alignment were chosen, because this
+// virtual address block represents a full but single page table allocation on
+// ARM, ia32 and x64, which may be slightly more performance&memory efficient.
+// (Note, these super pages are backed by 4 KiB system pages and have nothing to
+// do with OS concept of "huge pages"/"large pages", even though the size
+// coincides.)
 //
 // The layout of the super page is as follows. The sizes below are the same for
 // 32- and 64-bit platforms.
@@ -74,20 +131,37 @@ static const size_t kMaxSystemPagesPerSlotSpan =
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
+//     | *Scan State Bitmap    |
 //     | Slot span             |
 //     | Slot span             |
 //     | ...                   |
 //     | Slot span             |
-//     | Guard page (4 KiB)    |
+//     | Guard pages (16 KiB)  |
 //     +-----------------------+
 //
-// Each slot span is a contiguous range of one or more `PartitionPage`s.
+// State Bitmap is inserted for partitions that may have quarantine enabled.
+//
+// If refcount_at_end_allocation is enabled, RefcountBitmap(4KiB) is inserted
+// after the Metadata page for BackupRefPtr. The guard pages after the bitmap
+// will be 4KiB.
+//
+//...
+//     | Metadata page (4 KiB) |
+//     | RefcountBitmap (4 KiB)|
+//     | Guard pages (4 KiB)   |
+//...
+//
+// Each slot span is a contiguous range of one or more `PartitionPage`s. Note
+// that slot spans of different sizes may co-exist with one super page. Even
+// slot spans of the same size may support different slot sizes. However, all
+// slots within a span have to be of the same size.
 //
 // The metadata page has the following format. Note that the `PartitionPage`
-// that is not at the head of a slot span is "unused". In other words, the
-// metadata for the slot span is stored only in the first `PartitionPage` of the
-// slot span. Metadata accesses to other `PartitionPage`s are redirected to the
-// first `PartitionPage`.
+// that is not at the head of a slot span is "unused" (by most part, it only
+// stores the offset from the head page). In other words, the metadata for the
+// slot span is stored only in the first `PartitionPage` of the slot span.
+// Metadata accesses to other `PartitionPage`s are redirected to the first
+// `PartitionPage`.
 //
 //     +---------------------------------------------+
 //     | SuperPageExtentEntry (32 B)                 |
@@ -97,37 +171,106 @@ static const size_t kMaxSystemPagesPerSlotSpan =
 //     | PartitionPage of slot span 2 (32 B, used)   |
 //     | PartitionPage of slot span 3 (32 B, used)   |
 //     | ...                                         |
+//     | PartitionPage of slot span N (32 B, used)   |
+//     | PartitionPage of slot span N (32 B, unused) |
 //     | PartitionPage of slot span N (32 B, unused) |
 //     +---------------------------------------------+
 //
-// A direct-mapped page has a similar layout to fake it looking like a super
-// page:
+// A direct-mapped page has an identical layout at the beginning to fake it
+// looking like a super page:
 //
-//     +-----------------------+
-//     | Guard page (4 KiB)    |
-//     | Metadata page (4 KiB) |
-//     | Guard pages (8 KiB)   |
-//     | Direct mapped object  |
-//     | Guard page (4 KiB)    |
-//     +-----------------------+
+//     +---------------------------------+
+//     | Guard page (4 KiB)              |
+//     | Metadata page (4 KiB)           |
+//     | Guard pages (8 KiB)             |
+//     | Direct mapped object            |
+//     | Guard page (4 KiB, 32-bit only) |
+//     +---------------------------------+
 //
-// A direct-mapped page's metadata page has the following layout:
+// A direct-mapped page's metadata page has the following layout (on 64 bit
+// architectures. On 32 bit ones, the layout is identical, some sizes are
+// different due to smaller pointers.):
 //
-//     +--------------------------------+
-//     | SuperPageExtentEntry (32 B)    |
-//     | PartitionPage (32 B)           |
-//     | PartitionBucket (32 B)         |
-//     | PartitionDirectMapExtent (8 B) |
-//     +--------------------------------+
+//     +----------------------------------+
+//     | SuperPageExtentEntry (32 B)      |
+//     | PartitionPage (32 B)             |
+//     | PartitionBucket (40 B)           |
+//     | PartitionDirectMapExtent (32 B)  |
+//     +----------------------------------+
+//
+// See |PartitionDirectMapMetadata| for details.
 
-static const size_t kSuperPageShift = 21;  // 2 MiB
-static const size_t kSuperPageSize = 1 << kSuperPageShift;
-static const size_t kSuperPageOffsetMask = kSuperPageSize - 1;
-static const size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
-static const size_t kNumPartitionPagesPerSuperPage =
-    kSuperPageSize / kPartitionPageSize;
+constexpr size_t kGiB = 1024 * 1024 * 1024ull;
+constexpr size_t kSuperPageShift = 21;  // 2 MiB
+constexpr size_t kSuperPageSize = 1 << kSuperPageShift;
+constexpr size_t kSuperPageAlignment = kSuperPageSize;
+constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
+constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask & kMemTagUnmask;
 
-// The following kGeneric* constants apply to the generic variants of the API.
+// GigaCage is split into two pools, one which supports BackupRefPtr (BRP) and
+// one that doesn't.
+#if defined(PA_HAS_64_BITS_POINTERS)
+// The Configurable Pool is only available in 64-bit mode
+constexpr size_t kNumPools = 3;
+constexpr size_t kPoolMaxSize = 8 * kGiB;
+#else
+constexpr size_t kNumPools = 2;
+constexpr size_t kPoolMaxSize = 4 * kGiB;
+#endif
+constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
+
+static constexpr internal::pool_handle kRegularPoolHandle = 1;
+static constexpr internal::pool_handle kBRPPoolHandle = 2;
+static constexpr internal::pool_handle kConfigurablePoolHandle = 3;
+
+// Slots larger than this size will not receive MTE protection. Pages intended
+// for allocations larger than this constant should not be backed with PROT_MTE
+// (which saves shadow tag memory). We also save CPU cycles by skipping tagging
+// of large areas which are less likely to benefit from MTE protection.
+// TODO(Richard.Townsend@arm.com): adjust RecommitSystemPagesForData to skip
+// PROT_MTE.
+constexpr size_t kMaxMemoryTaggingSize = 1024;
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+NumPartitionPagesPerSuperPage() {
+  return kSuperPageSize >> PartitionPageShift();
+}
+
+constexpr ALWAYS_INLINE size_t MaxSuperPagesInPool() {
+  return kMaxSuperPagesInPool;
+}
+
+#if defined(PA_HAS_64_BITS_POINTERS)
+// In 64-bit mode, the direct map allocation granularity is super page size,
+// because this is the reservation granularity of the GigaCage.
+constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
+  return kSuperPageSize;
+}
+
+constexpr ALWAYS_INLINE size_t DirectMapAllocationGranularityShift() {
+  return kSuperPageShift;
+}
+#else   // defined(PA_HAS_64_BITS_POINTERS)
+// In 32-bit mode, address space is space is a scarce resource. Use the system
+// allocation granularity, which is the lowest possible address space allocation
+// unit. However, don't go below partition page size, so that GigaCage bitmaps
+// don't get too large. See kBytesPer1BitOfBRPPoolBitmap.
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+DirectMapAllocationGranularity() {
+  return std::max(PageAllocationGranularity(), PartitionPageSize());
+}
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+DirectMapAllocationGranularityShift() {
+  return std::max(PageAllocationGranularityShift(), PartitionPageShift());
+}
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+DirectMapAllocationGranularityOffsetMask() {
+  return DirectMapAllocationGranularity() - 1;
+}
+
 // The "order" of an allocation is closely related to the power-of-1 size of the
 // allocation. More precisely, the order is the bit index of the
 // most-significant-bit in the allocation size, where the bit numbers starts at
@@ -136,51 +279,119 @@ static const size_t kNumPartitionPagesPerSuperPage =
 // In terms of allocation sizes, order 0 covers 0, order 1 covers 1, order 2
 // covers 2->3, order 3 covers 4->7, order 4 covers 8->15.
 
-static const size_t kGenericMinBucketedOrder = 4;  // 8 bytes.
+// PartitionAlloc should return memory properly aligned for any type, to behave
+// properly as a generic allocator. This is not strictly required as long as
+// types are explicitly allocated with PartitionAlloc, but is to use it as a
+// malloc() implementation, and generally to match malloc()'s behavior.
+//
+// In practice, this means 8 bytes alignment on 32 bit architectures, and 16
+// bytes on 64 bit ones.
+//
+// Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
+constexpr size_t kMinBucketedOrder =
+    kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
-static const size_t kGenericMaxBucketedOrder = 20;
-static const size_t kGenericNumBucketedOrders =
-    (kGenericMaxBucketedOrder - kGenericMinBucketedOrder) + 1;
-// Eight buckets per order (for the higher orders), e.g. order 8 is 128, 144,
-// 160, ..., 240:
-static const size_t kGenericNumBucketsPerOrderBits = 3;
-static const size_t kGenericNumBucketsPerOrder =
-    1 << kGenericNumBucketsPerOrderBits;
-static const size_t kGenericNumBuckets =
-    kGenericNumBucketedOrders * kGenericNumBucketsPerOrder;
-static const size_t kGenericSmallestBucket = 1
-                                             << (kGenericMinBucketedOrder - 1);
-static const size_t kGenericMaxBucketSpacing =
-    1 << ((kGenericMaxBucketedOrder - 1) - kGenericNumBucketsPerOrderBits);
-static const size_t kGenericMaxBucketed =
-    (1 << (kGenericMaxBucketedOrder - 1)) +
-    ((kGenericNumBucketsPerOrder - 1) * kGenericMaxBucketSpacing);
+constexpr size_t kMaxBucketedOrder = 20;
+constexpr size_t kNumBucketedOrders =
+    (kMaxBucketedOrder - kMinBucketedOrder) + 1;
+// 4 buckets per order (for the higher orders).
+constexpr size_t kNumBucketsPerOrderBits = 2;
+constexpr size_t kNumBucketsPerOrder = 1 << kNumBucketsPerOrderBits;
+constexpr size_t kNumBuckets = kNumBucketedOrders * kNumBucketsPerOrder;
+constexpr size_t kSmallestBucket = 1 << (kMinBucketedOrder - 1);
+constexpr size_t kMaxBucketSpacing =
+    1 << ((kMaxBucketedOrder - 1) - kNumBucketsPerOrderBits);
+constexpr size_t kMaxBucketed = (1 << (kMaxBucketedOrder - 1)) +
+                                ((kNumBucketsPerOrder - 1) * kMaxBucketSpacing);
 // Limit when downsizing a direct mapping using `realloc`:
-static const size_t kGenericMinDirectMappedDownsize = kGenericMaxBucketed + 1;
-static const size_t kGenericMaxDirectMapped =
-    (1UL << 31) + kPageAllocationGranularity;  // 2 GiB plus 1 more page.
-static const size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
+constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
+// Intentionally set to less than 2GiB to make sure that a 2GiB allocation
+// fails. This is a security choice in Chrome, to help making size_t vs int bugs
+// harder to exploit.
+//
+// There are matching limits in other allocators, such as tcmalloc. See
+// crbug.com/998048 for details.
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+MaxDirectMapped() {
+  // Subtract kSuperPageSize to accommodate for granularity inside
+  // PartitionRoot::GetDirectMapReservationSize.
+  return (1UL << 31) - kSuperPageSize;
+}
 
-// Constant for the memory reclaim logic.
-static const size_t kMaxFreeableSpans = 16;
+// Max alignment supported by AlignedAllocFlags().
+// kSuperPageSize alignment can't be easily supported, because each super page
+// starts with guard pages & metadata.
+constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;
+
+constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
+
+// When a SlotSpan becomes empty, the allocator tries to avoid re-using it
+// immediately, to help with fragmentation. At this point, it becomes dirty
+// committed memory, which we want to minimize. This could be decommitted
+// immediately, but that would imply doing a lot of system calls. In particular,
+// for single-slot SlotSpans, a malloc() / free() loop would cause a *lot* of
+// system calls.
+//
+// As an intermediate step, empty SlotSpans are placed into a per-partition
+// global ring buffer, giving the newly-empty SlotSpan a chance to be re-used
+// before getting decommitted. A new entry (i.e. a newly empty SlotSpan) taking
+// the place used by a previous one will lead the previous SlotSpan to be
+// decommitted immediately, provided that it is still empty.
+//
+// Setting this value higher means giving more time for reuse to happen, at the
+// cost of possibly increasing peak committed memory usage (and increasing the
+// size of PartitionRoot a bit, since the ring buffer is there). Note that the
+// ring buffer doesn't necessarily contain an empty SlotSpan, as SlotSpans are
+// *not* removed from it when re-used. So the ring buffer really is a buffer of
+// *possibly* empty SlotSpans.
+//
+// In all cases, PartitionRoot::PurgeMemory() with the
+// PartitionPurgeDecommitEmptySlotSpans flag will eagerly decommit all entries
+// in the ring buffer, so with periodic purge enabled, this typically happens
+// every few seconds.
+#if defined(OS_LINUX)
+// Set to a higher value on Linux, to assess impact on performance bots. This
+// roughly halves the number of syscalls done during a speedometer 2.0 run on
+// this platform.
+constexpr size_t kMaxFreeableSpans = std::numeric_limits<int8_t>::max();
+#else
+constexpr size_t kMaxFreeableSpans = 16;
+#endif
+
+constexpr int kEmptyCacheIndexBits = 8;
+// Has to fit into SlotSpanMetadata::empty_cache_index.
+static_assert(kMaxFreeableSpans < (1 << (kEmptyCacheIndexBits - 1)), "");
 
 // If the total size in bytes of allocated but not committed pages exceeds this
 // value (probably it is a "out of virtual address space" crash), a special
 // crash stack trace is generated at
 // `PartitionOutOfMemoryWithLotsOfUncommitedPages`. This is to distinguish "out
 // of virtual address space" from "out of physical memory" in crash reports.
-static const size_t kReasonableSizeOfUnusedPages = 1024 * 1024 * 1024;  // 1 GiB
+constexpr size_t kReasonableSizeOfUnusedPages = 1024 * 1024 * 1024;  // 1 GiB
 
 // These byte values match tcmalloc.
-static const unsigned char kUninitializedByte = 0xAB;
-static const unsigned char kFreedByte = 0xCD;
+constexpr unsigned char kUninitializedByte = 0xAB;
+constexpr unsigned char kFreedByte = 0xCD;
 
-// Flags for `PartitionAllocGenericFlags`.
+constexpr unsigned char kQuarantinedByte = 0xEF;
+
+// 1 is smaller than anything we can use, as it is not properly aligned. Not
+// using a large size, since PartitionBucket::slot_size is a uint32_t, and
+// static_cast<uint32_t>(-1) is too close to a "real" size.
+constexpr size_t kInvalidBucketSize = 1;
+
+// Flags for `PartitionAllocFlags`.
 enum PartitionAllocFlags {
   PartitionAllocReturnNull = 1 << 0,
   PartitionAllocZeroFill = 1 << 1,
+  PartitionAllocNoHooks = 1 << 2,  // Internal only.
+  // If the allocation requires a "slow path" (such as allocating/committing a
+  // new slot span), return nullptr instead. Note this makes all large
+  // allocations return nullptr, such as direct-mapped ones, and even for
+  // smaller ones, a nullptr value is common.
+  PartitionAllocFastPathOrReturnNull = 1 << 3,  // Internal only.
 
-  PartitionAllocLastFlag = PartitionAllocZeroFill
+  PartitionAllocLastFlag = PartitionAllocFastPathOrReturnNull
 };
 
 }  // namespace base

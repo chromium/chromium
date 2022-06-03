@@ -45,10 +45,11 @@ class PagePopup {
   virtual AXObject* RootAXObject() = 0;
   virtual void SetWindowRect(const IntRect&) = 0;
   virtual void PostMessageToPopup(const String& message) = 0;
+  virtual void Update() = 0;
 
  protected:
   virtual ~PagePopup() = default;
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_POPUP_H_

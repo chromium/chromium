@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -12,6 +13,35 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 
 namespace blink {
+
+JSEventHandlerForContentAttribute* JSEventHandlerForContentAttribute::Create(
+    ExecutionContext* context,
+    const QualifiedName& name,
+    const AtomicString& value,
+    HandlerType type) {
+  if (!context || !context->CanExecuteScripts(kAboutToExecuteScript))
+    return nullptr;
+  if (value.IsNull())
+    return nullptr;
+  DCHECK(IsA<LocalDOMWindow>(context));
+  return MakeGarbageCollected<JSEventHandlerForContentAttribute>(context, name,
+                                                                 value, type);
+}
+
+JSEventHandlerForContentAttribute::JSEventHandlerForContentAttribute(
+    ExecutionContext* context,
+    const QualifiedName& name,
+    const AtomicString& value,
+    HandlerType type)
+    : JSEventHandler(type),
+      did_compile_(false),
+      function_name_(name.LocalName()),
+      script_body_(value),
+      source_url_(context->Url().GetString()),
+      position_(To<LocalDOMWindow>(context)
+                    ->GetScriptController()
+                    .EventHandlerPosition()),
+      isolate_(context->GetIsolate()) {}
 
 v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetListenerObject(
     EventTarget& event_target) {
@@ -75,8 +105,8 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   } else {
     window = event_target.ToLocalDOMWindow();
     DCHECK(window);
+    DCHECK_EQ(window, execution_context_of_event_target);
     document = window->document();
-    DCHECK_EQ(document, To<Document>(execution_context_of_event_target));
   }
   DCHECK(document);
 
@@ -99,6 +129,16 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   HTMLFormElement* form_owner = nullptr;
   if (auto* html_element = DynamicTo<HTMLElement>(element)) {
     form_owner = html_element->formOwner();
+
+    // https://html.spec.whatwg.org/C/#window-reflecting-body-element-event-handler-set
+    // The Event handlers on HTMLBodyElement and HTMLFrameSetElement which are
+    // listed in the Window-reflecting body element event handler set should be
+    // treated as if they are the corresponding event handlers of the window
+    // object.
+    if (html_element->IsHTMLBodyElement() ||
+        html_element->IsHTMLFrameSetElement()) {
+      window = To<LocalDOMWindow>(execution_context_of_event_target);
+    }
   }
 
   // Step 10. Let function be the result of calling FunctionCreate, with
@@ -163,10 +203,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   DCHECK_LE(scopes_size, base::size(scopes));
 
   v8::ScriptOrigin origin(
-      V8String(isolate, source_url_),
-      v8::Integer::New(isolate, position_.line_.ZeroBasedInt()),
-      v8::Integer::New(isolate, position_.column_.ZeroBasedInt()),
-      v8::True(isolate));  // True as |SanitizeScriptErrors::kDoNotSanitize|
+      isolate, V8String(isolate, source_url_), position_.line_.ZeroBasedInt(),
+      position_.column_.ZeroBasedInt(),
+      true);  // true as |SanitizeScriptErrors::kDoNotSanitize|
   v8::ScriptCompiler::Source source(V8String(isolate, script_body_), origin);
 
   v8::Local<v8::Function> compiled_function;

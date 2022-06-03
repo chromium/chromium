@@ -63,22 +63,19 @@ def get_files_to_compare(build_dir, recursive=False):
 
 
 def get_files_to_compare_using_isolate(build_dir):
-  # First, find all .isolate files in build_dir.
-  # TODO(maruel): https://crbug.com/972075 Extract targets from mb.
-  isolates = glob.glob(os.path.join(build_dir, '*.isolate'))
+  # First, find all .runtime_deps files in build_dir.
+  runtime_deps_files = glob.glob(os.path.join(build_dir, '*.runtime_deps'))
 
   # Then, extract their contents.
   ret_files = set()
 
-  for isolate in isolates:
-    with open(isolate) as f:
-      isolate_contents = ast.literal_eval(f.read())
-      isolate_files = isolate_contents['variables']['files']
-      for isolate_file in isolate_files:
-        normalized_path = os.path.normpath(
-            os.path.join(build_dir, isolate_file))
+  for runtime_deps_file in runtime_deps_files:
+    with open(runtime_deps_file) as f:
+      for runtime_dep in f:
+        runtime_dep = runtime_dep.rstrip()
+        normalized_path = os.path.normpath(os.path.join(build_dir, runtime_dep))
 
-        # Ignore isolate files that are not in the build dir ... for now.
+        # Ignore runtime dep files that are not in the build dir ... for now.
         # If we ever move to comparing determinism of artifacts built from two
         # repositories, we'll want to get rid of this check.
         if os.path.commonprefix((normalized_path, build_dir)) != build_dir:
@@ -298,13 +295,13 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
   print('Epoch: %s' %
       ' '.join(epoch_hex[i:i+2] for i in xrange(0, len(epoch_hex), 2)))
 
-  with open(os.path.join(BASE_DIR, 'deterministic_build_whitelist.pyl')) as f:
-    raw_whitelist = ast.literal_eval(f.read())
-    whitelist_list = raw_whitelist[target_platform]
+  with open(os.path.join(BASE_DIR, 'deterministic_build_ignorelist.pyl')) as f:
+    raw_ignorelist = ast.literal_eval(f.read())
+    ignorelist_list = raw_ignorelist[target_platform]
     if re.search(r'\bis_component_build\s*=\s*true\b',
                  open(os.path.join(first_dir, 'args.gn')).read()):
-      whitelist_list += raw_whitelist.get(target_platform + '_component', [])
-    whitelist = frozenset(whitelist_list)
+      ignorelist_list += raw_ignorelist.get(target_platform + '_component', [])
+    ignorelist = frozenset(ignorelist_list)
 
   if use_isolate_files:
     first_list = get_files_to_compare_using_isolate(first_dir)
@@ -335,10 +332,10 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
     if not result:
       tag = 'equal'
       equals.append(f)
-      if f in whitelist:
+      if f in ignorelist:
         unexpected_equals.append(f)
     else:
-      if f in whitelist:
+      if f in ignorelist:
         expected_diffs.append(f)
         tag = 'expected'
       else:
@@ -389,9 +386,11 @@ def main():
   parser.add_option('-r', '--recursive', action='store_true', default=False,
                     help='Indicates if the comparison should be recursive.')
   parser.add_option(
-      '--use-isolate-files', action='store_true', default=False,
-      help='Use .isolate files in each directory to determine which artifacts '
-           'to compare.')
+      '--use-isolate-files',
+      action='store_true',
+      default=False,
+      help='Use .runtime_deps files in each directory to determine which '
+      'artifacts to compare.')
 
   parser.add_option('--json-output', help='JSON file to output differences')
   parser.add_option('--ninja-path', help='path to ninja command.',

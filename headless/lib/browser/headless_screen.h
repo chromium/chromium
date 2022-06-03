@@ -21,6 +21,10 @@ class HeadlessScreen : public display::ScreenBase {
  public:
   // Creates a display::Screen of the specified size (physical pixels).
   static HeadlessScreen* Create(const gfx::Size& size);
+
+  HeadlessScreen(const HeadlessScreen&) = delete;
+  HeadlessScreen& operator=(const HeadlessScreen&) = delete;
+
   ~HeadlessScreen() override;
 
  protected:
@@ -28,13 +32,14 @@ class HeadlessScreen : public display::ScreenBase {
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override;
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override;
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
 
  private:
   explicit HeadlessScreen(const gfx::Rect& screen_bounds);
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessScreen);
 };
 
 }  // namespace headless

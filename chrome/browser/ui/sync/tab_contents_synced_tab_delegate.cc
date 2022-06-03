@@ -20,7 +20,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -54,7 +54,7 @@ bool TabContentsSyncedTabDelegate::IsBeingDestroyed() const {
 
 std::string TabContentsSyncedTabDelegate::GetExtensionAppId() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return extensions::TabHelper::FromWebContents(web_contents_)->GetAppId();
+  return apps::GetAppIdForWebContents(web_contents_);
 #else
   return std::string();
 #endif
@@ -131,6 +131,7 @@ TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
   SupervisedUserNavigationObserver* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(web_contents_);
   DCHECK(navigation_observer);
+
   return &navigation_observer->blocked_navigations();
 #else
   NOTREACHED();
@@ -144,7 +145,6 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
           GetWindowId()) == nullptr)
     return false;
 
-  // Is there a valid NavigationEntry?
   if (ProfileIsSupervised() && !GetBlockedNavigations()->empty())
     return true;
 

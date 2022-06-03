@@ -25,7 +25,8 @@ std::unique_ptr<WebContentsDisplayObserver> WebContentsDisplayObserver::Create(
 WebContentsDisplayObserverView::WebContentsDisplayObserverView(
     content::WebContents* web_contents,
     base::RepeatingClosure callback)
-    : web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       widget_(views::Widget::GetWidgetForNativeWindow(
           web_contents->GetTopLevelNativeWindow())),
       callback_(std::move(callback)) {
@@ -41,6 +42,7 @@ WebContentsDisplayObserverView::~WebContentsDisplayObserverView() {
   if (widget_)
     widget_->RemoveObserver(this);
   BrowserList::RemoveObserver(this);
+  CHECK(!IsInObserverList());
 }
 
 void WebContentsDisplayObserverView::OnBrowserSetLastActive(Browser* browser) {

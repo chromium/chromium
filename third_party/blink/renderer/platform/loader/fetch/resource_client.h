@@ -26,7 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -40,7 +42,8 @@ namespace blink {
 class Resource;
 
 class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
-  USING_PRE_FINALIZER(ResourceClient, ClearResource);
+  USING_PRE_FINALIZER(ResourceClient, Prefinalize);
+
  public:
   ResourceClient() = default;
   virtual ~ResourceClient() = default;
@@ -64,10 +67,13 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
 
   Resource* GetResource() const { return resource_; }
 
+  bool FinishedFromMemoryCache() const { return finished_from_memory_cache_; }
+  void SetHasFinishedFromMemoryCache() { finished_from_memory_cache_ = true; }
+
   // Name for debugging, e.g. shown in memory-infra.
   virtual String DebugName() const = 0;
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  protected:
   void ClearResource() { SetResource(nullptr, nullptr); }
@@ -82,12 +88,20 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   // additional clients.
   friend class CSSFontFaceSrcValue;
 
+  FRIEND_TEST_ALL_PREFIXES(ResourceTest, GarbageCollection);
+
   void SetResource(Resource* new_resource,
                    base::SingleThreadTaskRunner* task_runner);
 
+  void Prefinalize();
+
   Member<Resource> resource_;
+
+  // If true, the Resource was already available from the memory cache when this
+  // ResourceClient was setup, so that the request finished immediately.
+  bool finished_from_memory_cache_ = false;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_

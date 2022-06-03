@@ -4,7 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_value.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
@@ -22,17 +22,17 @@ blink::mojom::IDBValuePtr IndexedDBValue::ConvertAndEraseValue(
     // Release value->bits std::string.
     value->bits.clear();
   }
-  IndexedDBBlobInfo::ConvertBlobInfo(value->blob_info,
-                                     &mojo_value->blob_or_file_info);
+  IndexedDBExternalObject::ConvertToMojo(value->external_objects,
+                                         &mojo_value->external_objects);
   return mojo_value;
 }
 
 IndexedDBValue::IndexedDBValue() = default;
 IndexedDBValue::IndexedDBValue(
     const std::string& input_bits,
-    const std::vector<IndexedDBBlobInfo>& input_blob_info)
-    : bits(input_bits), blob_info(input_blob_info) {
-  DCHECK(input_blob_info.empty() || input_bits.size());
+    const std::vector<IndexedDBExternalObject>& external_objects)
+    : bits(input_bits), external_objects(external_objects) {
+  DCHECK(external_objects.empty() || input_bits.size());
 }
 IndexedDBValue::IndexedDBValue(const IndexedDBValue& other) = default;
 IndexedDBValue::~IndexedDBValue() = default;

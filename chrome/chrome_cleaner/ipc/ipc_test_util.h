@@ -40,7 +40,7 @@ class ParentProcess : public base::RefCountedThreadSafe<ParentProcess> {
   void AppendSwitch(const std::string& switch_string);
   void AppendSwitch(const std::string& switch_string, const std::string& value);
   void AppendSwitchNative(const std::string& switch_string,
-                          const base::string16& value);
+                          const std::wstring& value);
   void AppendSwitchPath(const std::string& switch_string,
                         const base::FilePath& value);
   void AppendSwitchHandleToShare(const std::string& switch_string,

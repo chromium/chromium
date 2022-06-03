@@ -26,8 +26,10 @@ VaapiImageDecoderTestCommon::VaapiImageDecoderTestCommon(
 VaapiImageDecoderTestCommon::~VaapiImageDecoderTestCommon() = default;
 
 void VaapiImageDecoderTestCommon::SetUp() {
-  ASSERT_TRUE(decoder_->Initialize(
-      base::BindRepeating([]() { LOG(FATAL) << "Oh noes! Decoder failed"; })));
+  ASSERT_TRUE(
+      decoder_->Initialize(base::BindRepeating([](VaapiFunctions function) {
+        LOG(FATAL) << "Oh noes! Decoder failed";
+      })));
 }
 
 base::FilePath VaapiImageDecoderTestCommon::FindTestDataFilePath(

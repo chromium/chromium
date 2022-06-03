@@ -6,9 +6,6 @@ package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
-import android.support.test.rule.UiThreadTestRule;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -17,13 +14,16 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Space;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
 import org.chromium.components.browser_ui.widget.test.R;
 
@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.widget.test.R;
  * Tests for DualControlLayout.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DualControlLayoutTest {
     private static final int PRIMARY_HEIGHT = 16;
     private static final int SECONDARY_HEIGHT = 8;
@@ -44,9 +45,6 @@ public class DualControlLayoutTest {
 
     private int mTinyControlWidth;
     private Context mContext;
-
-    @Rule
-    public UiThreadTestRule mRule = new UiThreadTestRule();
 
     @Before
     public void setUp() {

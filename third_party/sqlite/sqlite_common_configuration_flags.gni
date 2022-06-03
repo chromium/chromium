@@ -1,0 +1,86 @@
+# Compile-time options passed to SQLite when compiling and building
+# the Chromium amalgamations.
+sqlite_common_configuration_flags = [
+  "SQLITE_ENABLE_FTS3",
+
+  # New unicode61 tokenizer with built-in tables.
+  "SQLITE_DISABLE_FTS3_UNICODE",
+
+  # Chrome does not enable fts4, disable extra code.
+  "SQLITE_DISABLE_FTS4_DEFERRED",
+  "SQLITE_ENABLE_ICU",
+
+  # Defaults the secure_delete pragma to 1.
+  #
+  # This causes SQLite to overwrite all deleted information with zeroes,
+  # trading additional I/O for better privacy guarantees.
+  "SQLITE_SECURE_DELETE",
+
+  # TODO(pwnall): SQLite adds mutexes to protect structures which cross
+  # threads. In theory Chrome should be able to turn this to "2" which
+  # should give a slight speed boost. "2" is safe as long as a single
+  # connection is not used by more than one thread at a time.
+  "SQLITE_THREADSAFE=1",
+
+  # SQLite can spawn threads to sort in parallel if configured
+  # appropriately.  Chrome doesn't configure SQLite for that, and would
+  # prefer to control distribution to worker threads.
+  "SQLITE_MAX_WORKER_THREADS=0",
+
+  # Allow 256MB mmap footprint per connection.  Should not be too open-ended
+  # as that could cause memory fragmentation.  50MB encompasses the 99th
+  # percentile of Chrome databases in the wild.
+  # TODO(pwnall): A 64-bit-specific value could be 1G or more.
+  # TODO(pwnall): Figure out if exceeding this is costly.
+  "SQLITE_MAX_MMAP_SIZE=268435456",
+
+  # The default POSIX permissions for a newly created SQLite database.
+  #
+  # If unspecified, this defaults to 0644. All the data stored by Chrome is
+  # private, so our databases use stricter settings.
+  "SQLITE_DEFAULT_FILE_PERMISSIONS=0600",
+
+  # Databases are opened in EXCLUSIVE mode by default.
+  #
+  # NORMAL mode, where a database can be used by multiple processes
+  # simultaneously, can be enabled by executing "PRAGMA locking_mode=0".
+  #
+  # https://www.sqlite.org/compile.html#default_locking_mode
+  # https://www.sqlite.org/pragma.html#pragma_locking_mode
+  "SQLITE_DEFAULT_LOCKING_MODE=1",
+
+  # Needed by the SQL MemoryDumpProvider.
+  #
+  # Setting this to 1 is needed to collect the information reported by
+  # sqlite3_status64(SQLITE_STATUS_MEMORY_USED). Without this setting, the API
+  # still exists, but does not work as promised.
+  "SQLITE_DEFAULT_MEMSTATUS=1",
+
+  # Must match sql::Database::kDefaultPageSize.
+  "SQLITE_DEFAULT_PAGE_SIZE=4096",
+
+  # By default SQLite pre-allocates 100 pages of pcache data, which will not
+  # be released until the handle is closed.  This is contrary to Chrome's
+  # memory-usage goals.
+  "SQLITE_DEFAULT_PCACHE_INITSZ=0",
+
+  # The flags below are recommended in the SQLite documentation.
+  "SQLITE_LIKE_DOESNT_MATCH_BLOBS",
+  "SQLITE_OMIT_DEPRECATED",
+  "SQLITE_OMIT_PROGRESS_CALLBACK",
+  "SQLITE_OMIT_SHARED_CACHE",
+  "SQLITE_USE_ALLOCA",
+
+  # Chrome does not use sqlite3_column_decltype().
+  "SQLITE_OMIT_DECLTYPE",
+
+  # Chrome does not use sqlite3_{enable_}load_extension().
+  # Asides from giving us fairly minor code savings, this option disables code
+  # that breaks our method for renaming SQLite's exported symbols. Last,
+  # there's a tiny security benefit to knowing that WebSQL can't possibly
+  # reach extension loading code.
+  "SQLITE_OMIT_LOAD_EXTENSION",
+
+  # Uses isnan() in the C99 standard library.
+  "SQLITE_HAVE_ISNAN",
+]

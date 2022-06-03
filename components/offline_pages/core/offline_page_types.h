@@ -45,8 +45,10 @@ enum class SavePageResult {
   // Unable to add the file to the system download manager.
   ADD_TO_DOWNLOAD_MANAGER_FAILED = 13,
   // Unable to get write permission on public directory.
-  PERMISSION_DENIED = 14,
-  kMaxValue = PERMISSION_DENIED,
+  STORAGE_PERMISSION_DENIED = 14,
+  // The URL from the tab or saved page doesn't match the requested page URL.
+  INCORRECT_URL = 15,
+  kMaxValue = INCORRECT_URL,
 };
 
 // Result of adding an offline page.

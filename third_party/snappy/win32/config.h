@@ -1,14 +1,14 @@
 #ifndef THIRD_PARTY_SNAPPY_OPENSOURCE_CMAKE_CONFIG_H_
 #define THIRD_PARTY_SNAPPY_OPENSOURCE_CMAKE_CONFIG_H_
 
+/* Define to 1 if the compiler supports __attribute__((always_inline)). */
+#define HAVE_ATTRIBUTE_ALWAYS_INLINE 1
+
 /* Define to 1 if the compiler supports __builtin_ctz and friends. */
-/* #undef HAVE_BUILTIN_CTZ */
+#define HAVE_BUILTIN_CTZ 1
 
 /* Define to 1 if the compiler supports __builtin_expect. */
-/* #undef HAVE_BUILTIN_EXPECT */
-
-/* Define to 1 if you have the <byteswap.h> header file. */
-/* #undef HAVE_BYTESWAP_H */
+#define HAVE_BUILTIN_EXPECT 1
 
 /* Define to 1 if you have a definition for mmap() in <sys/mman.h>. */
 /* #undef HAVE_FUNC_MMAP */
@@ -19,17 +19,11 @@
 /* Define to 1 to use the gflags package for command-line parsing. */
 /* #undef HAVE_GFLAGS */
 
-/* Define to 1 if you have Google Test. */
-/* #undef HAVE_GTEST */
-
 /* Define to 1 if you have the `lzo2' library (-llzo2). */
 /* #undef HAVE_LIBLZO2 */
 
 /* Define to 1 if you have the `z' library (-lz). */
-/* #undef HAVE_LIBZ */
-
-/* Define to 1 if you have the <sys/endian.h> header file. */
-/* #undef HAVE_SYS_ENDIAN_H */
+#define HAVE_LIBZ 1
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 /* #undef HAVE_SYS_MMAN_H */

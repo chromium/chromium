@@ -37,6 +37,13 @@ WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx)
   SetObject(texture);
 }
 
+WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx,
+                           GLuint texture,
+                           GLenum target)
+    : WebGLSharedPlatform3DObject(ctx), target_(target) {
+  SetObject(texture);
+}
+
 WebGLTexture::~WebGLTexture() = default;
 
 void WebGLTexture::SetTarget(GLenum target) {

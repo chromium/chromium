@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/atomic_sequence_num.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -15,20 +16,24 @@ namespace media {
 
 namespace {
 
-int g_next_gpu_memory_buffer_id = 1;
+base::AtomicSequenceNumber g_gpu_memory_buffer_id_generator;
 
 class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
-  GpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format)
+  GpuMemoryBufferImpl(const gfx::Size& size,
+                      gfx::BufferFormat format,
+                      bool fail_to_map_gpu_memory_buffer)
       : mapped_(false),
         format_(format),
         size_(size),
         num_planes_(gfx::NumberOfPlanesForLinearBufferFormat(format)),
-        id_(g_next_gpu_memory_buffer_id++) {
+        id_(g_gpu_memory_buffer_id_generator.GetNext() + 1),
+        fail_to_map_gpu_memory_buffer_(fail_to_map_gpu_memory_buffer) {
     DCHECK(gfx::BufferFormat::R_8 == format_ ||
            gfx::BufferFormat::RG_88 == format_ ||
            gfx::BufferFormat::YUV_420_BIPLANAR == format_ ||
-           gfx::BufferFormat::BGRX_1010102 == format_ ||
+           gfx::BufferFormat::P010 == format_ ||
+           gfx::BufferFormat::BGRA_1010102 == format_ ||
            gfx::BufferFormat::RGBA_1010102 == format_ ||
            gfx::BufferFormat::RGBA_8888 == format_ ||
            gfx::BufferFormat::BGRA_8888 == format_);
@@ -42,6 +47,8 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
+    if (fail_to_map_gpu_memory_buffer_)
+      return false;
     DCHECK(!mapped_);
     mapped_ = true;
     return true;
@@ -52,6 +59,8 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     return &bytes_[plane][0];
   }
   void Unmap() override {
+    if (fail_to_map_gpu_memory_buffer_)
+      return;
     DCHECK(mapped_);
     mapped_ = false;
   }
@@ -64,7 +73,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   }
   gfx::GpuMemoryBufferId GetId() const override { return id_; }
   gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::NATIVE_PIXMAP;
+    return gfx::SHARED_MEMORY_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     NOTREACHED();
@@ -88,6 +97,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   size_t num_planes_;
   std::vector<uint8_t> bytes_[kMaxPlanes];
   gfx::GpuMemoryBufferId id_;
+  bool fail_to_map_gpu_memory_buffer_ = false;
 };
 
 }  // unnamed namespace
@@ -107,10 +117,11 @@ MockGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage /* usage */) {
+  base::AutoLock guard(lock_);
   if (fail_to_allocate_gpu_memory_buffer_)
     return nullptr;
   std::unique_ptr<gfx::GpuMemoryBuffer> ret(
-      new GpuMemoryBufferImpl(size, format));
+      new GpuMemoryBufferImpl(size, format, fail_to_map_gpu_memory_buffer_));
   created_memory_buffers_.push_back(ret.get());
   return ret;
 }

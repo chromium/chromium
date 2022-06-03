@@ -1,0 +1,26 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ /*
+ * Note that we have to apply these styles when the page is loaded or the
+ * scrollbars might not pick them up.
+ */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.otherScrollBar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+</style>
+<div id="test-scrollbarwidth" style="background-color: orange; width: 100px; height: 100px; overflow: auto;">
+ <div style="width: 200px; height: 200px; background-color: red">
+  Test Scroll bar width with scroll
+ </div>
+</div>

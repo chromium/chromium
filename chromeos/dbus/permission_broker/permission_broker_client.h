@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace dbus {
 class Bus;
@@ -29,9 +28,8 @@ namespace chromeos {
 // http://git.chromium.org/gitweb/?p=chromiumos/platform/permission_broker.git
 class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
  public:
-  // The ResultCallback is used for both the RequestPathAccess and
-  // RequestUsbAccess methods. Its boolean parameter represents the result of
-  // the operation that it was submitted alongside.
+  // The ResultCallback's boolean parameter represents the result of the
+  // operation that it was submitted alongside.
   using ResultCallback = base::OnceCallback<void(bool)>;
 
   // An OpenPathCallback callback is run when an OpenPath request is completed.
@@ -54,6 +52,9 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
   // Returns the global instance if initialized. May return null.
   static PermissionBrokerClient* Get();
 
+  PermissionBrokerClient(const PermissionBrokerClient&) = delete;
+  PermissionBrokerClient& operator=(const PermissionBrokerClient&) = delete;
+
   // CheckPathAccess requests a hint from the permission broker about whether
   // a later call to RequestPathAccess will be successful. It presumes that
   // the |interface_id| value passed to RequestPathAccess will be
@@ -67,6 +68,22 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
   virtual void OpenPath(const std::string& path,
                         OpenPathCallback callback,
                         ErrorCallback error_callback) = 0;
+
+  // ClaimDevicePath requests that the permission broker open
+  // the device node identified by |path| and set of USB interfaces that can be
+  // claimed |allowed_interfaces_mask|, returning the resulting file descriptor.
+  // The interface number 0 corresponds to the LSB of |allowed_interfaces_mask|.
+  // For example, a device which has an ADB interface and other interfaces for
+  // Camera or Storage may be opened purely as an ADB device using a mask that
+  // zeros out the Camera and Storage interface number bit positions.
+  // One of |callback| or |error_callback| is called. |lifeline_fd| is the
+  // read side of a pipe that is is watched by permission broker. When this
+  // pipe closes, any kernel drivers removed from the device are reattached.
+  virtual void ClaimDevicePath(const std::string& path,
+                               uint32_t allowed_interfaces_mask,
+                               int lifeline_fd,
+                               OpenPathCallback callback,
+                               ErrorCallback error_callback) = 0;
 
   // Requests the |port| be opened on the firewall for incoming TCP/IP
   // connections received on |interface| (an empty string indicates all
@@ -152,11 +169,13 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
   // Initialize/Shutdown should be used instead.
   PermissionBrokerClient();
   virtual ~PermissionBrokerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionBrokerClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::PermissionBrokerClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_PERMISSION_BROKER_PERMISSION_BROKER_CLIENT_H_

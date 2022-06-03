@@ -75,7 +75,7 @@ static void ResetCommandLineArguments(int argc, const char* argv[],
 void ExUtilDeleteCommandLineArguments(CommandLineArguments* const args) {
   if (args != NULL) {
     if (args->own_argv_) {
-      free((void*)args->argv_);
+      WebPFree((void*)args->argv_);
       WebPDataClear(&args->argv_data_);
     }
     ResetCommandLineArguments(0, NULL, args);
@@ -102,7 +102,7 @@ int ExUtilInitCommandLineArguments(int argc, const char* argv[],
       return 0;
     }
     args->own_argv_ = 1;
-    args->argv_ = (const char**)malloc(MAX_ARGC * sizeof(*args->argv_));
+    args->argv_ = (const char**)WebPMalloc(MAX_ARGC * sizeof(*args->argv_));
     if (args->argv_ == NULL) return 0;
 
     argc = 0;

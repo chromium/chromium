@@ -25,5 +25,7 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEFuncGElement
 
-interface SVGFEFuncGElement : SVGComponentTransferFunctionElement {
+[
+    Exposed=Window
+] interface SVGFEFuncGElement : SVGComponentTransferFunctionElement {
 };

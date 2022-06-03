@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<style>
+html {
+  background-image: linear-gradient(blue, blue);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100px 100px;
+  width: 300px;
+  height: 300px;
+}
+</style>
+<div style="width: 600px; height: 500px"></div>
+<script>
+function repaintTest() {
+  document.documentElement.style.height = '400px';
+}
+runRepaintAndPixelTest();
+</script>

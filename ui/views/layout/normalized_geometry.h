@@ -6,8 +6,8 @@
 #define UI_VIEWS_LAYOUT_NORMALIZED_GEOMETRY_H_
 
 #include <string>
+#include <utility>
 
-#include "base/optional.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/views_export.h"
 
@@ -147,16 +147,15 @@ class VIEWS_EXPORT NormalizedInsets {
 class VIEWS_EXPORT NormalizedSizeBounds {
  public:
   NormalizedSizeBounds();
-  NormalizedSizeBounds(const base::Optional<int>& main,
-                       const base::Optional<int>& cross);
+  NormalizedSizeBounds(SizeBound main, SizeBound cross);
   explicit NormalizedSizeBounds(const NormalizedSize& size);
   NormalizedSizeBounds(const NormalizedSizeBounds& size_bounds);
 
-  const base::Optional<int>& main() const { return main_; }
-  void set_main(const base::Optional<int>& main) { main_ = main; }
+  const SizeBound& main() const { return main_; }
+  void set_main(SizeBound main) { main_ = std::move(main); }
 
-  const base::Optional<int>& cross() const { return cross_; }
-  void set_cross(const base::Optional<int>& cross) { cross_ = cross; }
+  const SizeBound& cross() const { return cross_; }
+  void set_cross(SizeBound cross) { cross_ = std::move(cross); }
 
   void Expand(int main, int cross);
   void Inset(const NormalizedInsets& insets);
@@ -168,8 +167,8 @@ class VIEWS_EXPORT NormalizedSizeBounds {
   std::string ToString() const;
 
  private:
-  base::Optional<int> main_;
-  base::Optional<int> cross_;
+  SizeBound main_;
+  SizeBound cross_;
 };
 
 // Represents a rectangle in layout space - that is, a rectangle whose
@@ -259,19 +258,19 @@ gfx::Point VIEWS_EXPORT Denormalize(LayoutOrientation orientation,
                                     const NormalizedPoint& point);
 
 NormalizedSize VIEWS_EXPORT Normalize(LayoutOrientation orientation,
-                                      const gfx::Size& point);
+                                      const gfx::Size& size);
 gfx::Size VIEWS_EXPORT Denormalize(LayoutOrientation orientation,
-                                   const NormalizedSize& point);
+                                   const NormalizedSize& size);
 
 NormalizedSizeBounds VIEWS_EXPORT Normalize(LayoutOrientation orientation,
-                                            const SizeBounds& point);
+                                            const SizeBounds& bounds);
 SizeBounds VIEWS_EXPORT Denormalize(LayoutOrientation orientation,
-                                    const NormalizedSizeBounds& point);
+                                    const NormalizedSizeBounds& bounds);
 
 NormalizedInsets VIEWS_EXPORT Normalize(LayoutOrientation orientation,
-                                        const gfx::Insets& point);
+                                        const gfx::Insets& insets);
 gfx::Insets VIEWS_EXPORT Denormalize(LayoutOrientation orientation,
-                                     const NormalizedInsets& point);
+                                     const NormalizedInsets& insets);
 
 NormalizedRect VIEWS_EXPORT Normalize(LayoutOrientation orientation,
                                       const gfx::Rect& rect);
@@ -284,10 +283,10 @@ int VIEWS_EXPORT GetMainAxis(LayoutOrientation orientation,
                              const gfx::Size& size);
 int VIEWS_EXPORT GetCrossAxis(LayoutOrientation orientation,
                               const gfx::Size& size);
-base::Optional<int> VIEWS_EXPORT GetMainAxis(LayoutOrientation orientation,
-                                             const SizeBounds& size);
-base::Optional<int> VIEWS_EXPORT GetCrossAxis(LayoutOrientation orientation,
-                                              const SizeBounds& size);
+SizeBound VIEWS_EXPORT GetMainAxis(LayoutOrientation orientation,
+                                   const SizeBounds& size);
+SizeBound VIEWS_EXPORT GetCrossAxis(LayoutOrientation orientation,
+                                    const SizeBounds& size);
 void VIEWS_EXPORT SetMainAxis(gfx::Size* size,
                               LayoutOrientation orientation,
                               int main);
@@ -296,10 +295,10 @@ void VIEWS_EXPORT SetCrossAxis(gfx::Size* size,
                                int cross);
 void VIEWS_EXPORT SetMainAxis(SizeBounds* size,
                               LayoutOrientation orientation,
-                              base::Optional<int> main);
+                              SizeBound main);
 void VIEWS_EXPORT SetCrossAxis(SizeBounds* size,
                                LayoutOrientation orientation,
-                               base::Optional<int> cross);
+                               SizeBound cross);
 
 }  // namespace views
 

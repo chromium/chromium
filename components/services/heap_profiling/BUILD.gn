@@ -29,9 +29,7 @@ static_library("heap_profiling") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "json_exporter_unittest.cc",
-  ]
+  sources = [ "json_exporter_unittest.cc" ]
   deps = [
     ":heap_profiling",
     "//base",

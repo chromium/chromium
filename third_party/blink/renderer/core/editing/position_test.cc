@@ -106,12 +106,13 @@ TEST_F(PositionTest, NodeAsRangeLastNode) {
   EXPECT_EQ(t3, PositionInFlatTree::AfterNode(*p3).NodeAsRangeLastNode());
 }
 
-TEST_F(PositionTest, NodeAsRangeLastNodeShadow) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(PositionTest, DISABLED_NodeAsRangeLastNodeShadow) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<a id='a'><content select=#two></content><content "
-      "select=#one></content></a>";
+      "<a id='a'><slot name='#two'></slot><slot name='#one'></slot></a>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -130,8 +131,10 @@ TEST_F(PositionTest, NodeAsRangeLastNodeShadow) {
   EXPECT_EQ(t2, Position::InParentAfterNode(*n2).NodeAsRangeLastNode());
   EXPECT_EQ(t3, Position::AfterNode(*host).NodeAsRangeLastNode());
 
+  // TODO(crbug.com/1157146): This returns <slot name='#one'> instead of t2:
   EXPECT_EQ(t2,
             PositionInFlatTree::InParentBeforeNode(*n1).NodeAsRangeLastNode());
+  // TODO(crbug.com/1157146): This returns <slot name='#two'> instead of a:
   EXPECT_EQ(a,
             PositionInFlatTree::InParentBeforeNode(*n2).NodeAsRangeLastNode());
   EXPECT_EQ(t1,
@@ -148,10 +151,10 @@ TEST_F(PositionTest, OperatorBool) {
 }
 
 TEST_F(PositionTest, ToPositionInFlatTreeWithActiveInsertionPoint) {
-  const char* body_content = "<p id='host'>00<b id='one'>11</b>22</p>";
+  const char* body_content =
+      "<p id='host'>00<b slot='#one' id='one'>11</b>22</p>";
   const char* shadow_content =
-      "<a id='a'><content select=#one "
-      "id='content'></content><content></content></a>";
+      "<a id='a'><slot name=#one id='content'></slot><slot></slot></a>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* anchor = shadow_root->getElementById("a");
@@ -160,18 +163,18 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithActiveInsertionPoint) {
             ToPositionInFlatTree(Position(anchor, 0)));
   EXPECT_EQ(PositionInFlatTree(anchor, 1),
             ToPositionInFlatTree(Position(anchor, 1)));
-  EXPECT_EQ(PositionInFlatTree(anchor, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*anchor),
             ToPositionInFlatTree(Position(anchor, 2)));
 }
 
 TEST_F(PositionTest, ToPositionInFlatTreeWithInactiveInsertionPoint) {
-  const char* body_content = "<p id='p'><content></content></p>";
+  const char* body_content = "<p id='p'><slot></slot></p>";
   SetBodyContent(body_content);
   Element* anchor = GetDocument().getElementById("p");
 
   EXPECT_EQ(PositionInFlatTree(anchor, 0),
             ToPositionInFlatTree(Position(anchor, 0)));
-  EXPECT_EQ(PositionInFlatTree(anchor, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*anchor),
             ToPositionInFlatTree(Position(anchor, 1)));
 }
 
@@ -180,40 +183,40 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithNotDistributed) {
   SetBodyContent("<progress id=sample>foo</progress>");
   Element* sample = GetDocument().getElementById("sample");
 
-  EXPECT_EQ(PositionInFlatTree(sample, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*sample),
             ToPositionInFlatTree(Position(sample, 0)));
 }
 
 TEST_F(PositionTest, ToPositionInFlatTreeWithShadowRoot) {
-  const char* body_content = "<p id='host'>00<b id='one'>11</b>22</p>";
-  const char* shadow_content = "<a><content select=#one></content></a>";
+  const char* body_content =
+      "<p id='host'>00<b slot='#one' id='one'>11</b>22</p>";
+  const char* shadow_content = "<a><slot name=#one></slot></a>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
 
   EXPECT_EQ(PositionInFlatTree(host, 0),
             ToPositionInFlatTree(Position(shadow_root, 0)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*host),
             ToPositionInFlatTree(Position(shadow_root, 1)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterChildren),
-            ToPositionInFlatTree(
-                Position(shadow_root, PositionAnchorType::kAfterChildren)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kBeforeChildren),
-            ToPositionInFlatTree(
-                Position(shadow_root, PositionAnchorType::kBeforeChildren)));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*host),
+            ToPositionInFlatTree(Position::LastPositionInNode(*shadow_root)));
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
+            ToPositionInFlatTree(Position::FirstPositionInNode(*shadow_root)));
 }
 
 TEST_F(PositionTest,
        ToPositionInFlatTreeWithShadowRootContainingSingleContent) {
-  const char* body_content = "<p id='host'>00<b id='one'>11</b>22</p>";
-  const char* shadow_content = "<content select=#one></content>";
+  const char* body_content =
+      "<p id='host'>00<b slot='#one' id='one'>11</b>22</p>";
+  const char* shadow_content = "<slot name=#one></slot>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
 
   EXPECT_EQ(PositionInFlatTree(host, 0),
             ToPositionInFlatTree(Position(shadow_root, 0)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*host),
             ToPositionInFlatTree(Position(shadow_root, 1)));
 }
 
@@ -224,7 +227,7 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithEmptyShadowRoot) {
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
 
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterChildren),
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
             ToPositionInFlatTree(Position(shadow_root, 0)));
 }
 
@@ -248,6 +251,53 @@ TEST_F(PositionTest, IsConnectedInFlatTree) {
       "<div>f|oo<template data-mode=open>bar</template></div>");
   EXPECT_TRUE(position.IsConnected());
   EXPECT_FALSE(ToPositionInFlatTree(position).IsConnected());
+}
+
+TEST_F(PositionTest, FirstPositionInShadowHost) {
+  SetBodyContent("<p id=host>foo</p>");
+  SetShadowContent("bar", "host");
+  Element* host = GetDocument().getElementById("host");
+
+  Position dom = Position::FirstPositionInNode(*host);
+  PositionInFlatTree flat = PositionInFlatTree::FirstPositionInNode(*host);
+  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(flat, ToPositionInFlatTree(dom));
+}
+
+TEST_F(PositionTest, LastPositionInShadowHost) {
+  SetBodyContent("<p id=host>foo</p>");
+  SetShadowContent("bar", "host");
+  Element* host = GetDocument().getElementById("host");
+
+  Position dom = Position::LastPositionInNode(*host);
+  PositionInFlatTree flat = PositionInFlatTree::LastPositionInNode(*host);
+  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(flat, ToPositionInFlatTree(dom));
+}
+
+TEST_F(PositionTest, ComparePositionsAcrossShadowBoundary) {
+  SetBodyContent("<p id=host>foo</p>");
+  ShadowRoot* shadow_root = SetShadowContent("<div>bar</div>", "host");
+  Element* body = GetDocument().body();
+  Element* host = GetDocument().getElementById("host");
+  Node* child = shadow_root->firstChild();
+  Node* grandchild = child->firstChild();
+  std::array<Node*, 4> nodes = {body, host, child, grandchild};
+  unsigned size = nodes.size();
+  for (unsigned i = 0; i < size; ++i) {
+    for (unsigned j = 0; j < i; ++j) {
+      EXPECT_LT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_LT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+    EXPECT_EQ(Position(nodes[i], 0), Position(nodes[i], 0));
+    EXPECT_EQ(PositionInFlatTree(nodes[i], 0), PositionInFlatTree(nodes[i], 0));
+    for (unsigned j = i + 1; j < size; ++j) {
+      EXPECT_GT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_GT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+  }
 }
 
 }  // namespace blink

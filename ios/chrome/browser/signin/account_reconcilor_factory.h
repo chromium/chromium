@@ -12,11 +12,9 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class AccountReconcilor;
-
-namespace ios {
-
 class ChromeBrowserState;
 
+namespace ios {
 // Singleton that owns all AccountReconcilors and associates them with browser
 // states.
 class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
@@ -25,10 +23,13 @@ class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
   // state (creating one if none exists). Returns null if this browser state
   // cannot have an GaiaCookieManagerService (for example, if it is incognito).
   static AccountReconcilor* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   // Returns an instance of the factory singleton.
   static AccountReconcilorFactory* GetInstance();
+
+  AccountReconcilorFactory(const AccountReconcilorFactory&) = delete;
+  AccountReconcilorFactory& operator=(const AccountReconcilorFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AccountReconcilorFactory>;
@@ -39,8 +40,6 @@ class AccountReconcilorFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorFactory);
 };
 
 }  // namespace ios

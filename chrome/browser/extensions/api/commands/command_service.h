@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/extensions/command.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 
 class Profile;
@@ -39,13 +39,14 @@ class CommandService : public BrowserContextKeyedAPI,
                        public ExtensionRegistryObserver {
  public:
   // An enum specifying which extension commands to fetch. There are effectively
-  // four options: all, active, suggested, and inactive. Only the first three
-  // appear in the enum since there hasn't been a need for 'inactive' yet.
+  // four options: all, active, suggested, and inactive. Only the first two
+  // appear in the enum since there isn't currently a need for 'inactive' yet or
+  // 'suggested'.
   //
-  // 'Inactive' means no key is bound. It might be because 1) a key wasn't
+  // 'inactive' means no key is bound. It might be because 1) a key wasn't
   // specified (suggested) or 2) it was not granted (key already taken).
   //
-  // SUGGESTED covers developer-assigned keys that may or may not have been
+  // 'suggested' covers developer-assigned keys that may or may not have been
   // granted. Reasons for not granting include permission denied/key already
   // taken.
   //
@@ -56,7 +57,6 @@ class CommandService : public BrowserContextKeyedAPI,
   enum QueryType {
     ALL,
     ACTIVE,
-    SUGGESTED,
   };
 
   // An enum specifying whether the command is global in scope or not. Global
@@ -77,6 +77,10 @@ class CommandService : public BrowserContextKeyedAPI,
     // Called when an extension command is removed.
     virtual void OnExtensionCommandRemoved(const std::string& extension_id,
                                            const Command& command) {}
+
+    // Called when the CommandService is being destroyed.
+    virtual void OnCommandServiceDestroying() {}
+
    protected:
     virtual ~Observer() {}
   };
@@ -86,6 +90,10 @@ class CommandService : public BrowserContextKeyedAPI,
 
   // Constructs a CommandService object for the given profile.
   explicit CommandService(content::BrowserContext* context);
+
+  CommandService(const CommandService&) = delete;
+  CommandService& operator=(const CommandService&) = delete;
+
   ~CommandService() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -94,35 +102,16 @@ class CommandService : public BrowserContextKeyedAPI,
   // Convenience method to get the CommandService for a profile.
   static CommandService* Get(content::BrowserContext* context);
 
-  // Returns true if |extension| is permitted to and does remove the bookmark
-  // shortcut key.
-  static bool RemovesBookmarkShortcut(const Extension* extension);
-
-  // Returns true if |extension| is permitted to and does remove the bookmark
-  // all tabs shortcut key.
-  static bool RemovesBookmarkAllTabsShortcut(const Extension* extension);
-
-  // Gets the command (if any) for the browser action of an extension given
-  // its |extension_id|. The function consults the master list to see if
-  // the command is active. Returns false if the extension has no browser
-  // action. Returns false if the command is not active and |type| requested
-  // is ACTIVE. |command| contains the command found and |active| (if not
-  // NULL) contains whether |command| is active.
-  bool GetBrowserActionCommand(const std::string& extension_id,
-                               QueryType type,
-                               Command* command,
-                               bool* active) const;
-
-  // Gets the command (if any) for the page action of an extension given
-  // its |extension_id|. The function consults the master list to see if
-  // the command is active. Returns false if the extension has no page
-  // action. Returns false if the command is not active and |type| requested
-  // is ACTIVE. |command| contains the command found and |active| (if not
-  // NULL) contains whether |command| is active.
-  bool GetPageActionCommand(const std::string& extension_id,
-                            QueryType type,
-                            Command* command,
-                            bool* active) const;
+  // Gets the command (if any) for the specified |action_type| of an extension
+  // given its |extension_id|. The function consults the master list to see if
+  // the command is active. Returns false if the command is not active and
+  // |type| requested is ACTIVE. |command| contains the command found and
+  // |active| (if not null) contains whether |command| is active.
+  bool GetExtensionActionCommand(const std::string& extension_id,
+                                 ActionInfo::Type action_type,
+                                 QueryType type,
+                                 Command* command,
+                                 bool* active) const;
 
   // Gets the active named commands (if any) for the extension with
   // |extension_id|. The function consults the master list to see if the
@@ -173,17 +162,6 @@ class CommandService : public BrowserContextKeyedAPI,
   // VKEY_UNKNOWN) if the command is not found.
   Command FindCommandByName(const std::string& extension_id,
                             const std::string& command) const;
-
-  // If the extension with |extension_id| suggests the assignment of a command
-  // to |accelerator|, returns true and assigns the command to *|command|. Also
-  // assigns the type to *|command_type| if non-null.
-  bool GetSuggestedExtensionCommand(const std::string& extension_id,
-                                    const ui::Accelerator& accelerator,
-                                    Command* command) const;
-
-  // Returns true if |extension| requests to override the bookmark shortcut key
-  // and should be allowed to do so.
-  bool RequestsBookmarkShortcutOverride(const Extension* extension) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -243,31 +221,13 @@ class CommandService : public BrowserContextKeyedAPI,
   bool IsCommandShortcutUserModified(const Extension* extension,
                                      const std::string& command_name);
 
-  // Returns true if the extension is changing the binding of |command_name| on
-  // install.
-  bool IsKeybindingChanging(const Extension* extension,
-                            const std::string& command_name);
-
-  // Returns |extension|'s previous suggested key for |command_name| in the
-  // preferences, or the empty string if none.
-  std::string GetSuggestedKeyPref(const Extension* extension,
-                                  const std::string& command_name);
-
-  bool GetExtensionActionCommand(const std::string& extension_id,
-                                 QueryType query_type,
-                                 Command* command,
-                                 bool* active,
-                                 Command::Type type) const;
-
   // A weak pointer to the profile we are associated with. Not owned by us.
   Profile* profile_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandService);
 };
 
 template <>

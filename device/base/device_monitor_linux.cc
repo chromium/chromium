@@ -77,7 +77,7 @@ void DeviceMonitorLinux::RemoveObserver(Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   observers_.RemoveObserver(observer);
 
-  if (observers_.might_have_observers())
+  if (!observers_.empty())
     return;
 
   monitor_watch_controller_.reset();

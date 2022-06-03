@@ -23,12 +23,15 @@
  * DAMAGE.
  */
 
+#include "third_party/blink/renderer/modules/webaudio/gain_node.h"
+
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gain_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/gain_node.h"
-#include "third_party/blink/renderer/modules/webaudio/gain_options.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -38,10 +41,7 @@ GainHandler::GainHandler(AudioNode& node,
     : AudioHandler(kNodeTypeGain, node, sample_rate),
       gain_(&gain),
       sample_accurate_gain_values_(
-          audio_utilities::kRenderQuantumFrames)  // FIXME: can probably
-                                                  // share temp buffer
-                                                  // in context
-{
+          GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();
   AddOutput(1);
 
@@ -55,6 +55,9 @@ scoped_refptr<GainHandler> GainHandler::Create(AudioNode& node,
 }
 
 void GainHandler::Process(uint32_t frames_to_process) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "GainHandler::Process");
+
   // FIXME: for some cases there is a nice optimization to avoid processing
   // here, and let the gain change happen in the summing junction input of the
   // AudioNode we're connected to.  Then we can avoid all of the following:
@@ -65,9 +68,11 @@ void GainHandler::Process(uint32_t frames_to_process) {
   if (!IsInitialized() || !Input(0).IsConnected()) {
     output_bus->Zero();
   } else {
-    AudioBus* input_bus = Input(0).Bus();
+    scoped_refptr<AudioBus> input_bus = Input(0).Bus();
 
-    if (gain_->HasSampleAccurateValues()) {
+    bool is_sample_accurate = gain_->HasSampleAccurateValues();
+
+    if (is_sample_accurate && gain_->IsAudioRate()) {
       // Apply sample-accurate gain scaling for precise envelopes, grain
       // windows, etc.
       DCHECK_LE(frames_to_process, sample_accurate_gain_values_.size());
@@ -75,23 +80,28 @@ void GainHandler::Process(uint32_t frames_to_process) {
       gain_->CalculateSampleAccurateValues(gain_values, frames_to_process);
       output_bus->CopyWithSampleAccurateGainValuesFrom(*input_bus, gain_values,
                                                        frames_to_process);
+
+      return;
+    }
+
+    // The gain is not sample-accurate or not a-rate.  In this case, we have a
+    // fixed gain for the render and just need to incorporate any inputs to the
+    // gain, if any.
+    float gain = is_sample_accurate ? gain_->FinalValue() : gain_->Value();
+
+    if (gain == 0) {
+      output_bus->Zero();
     } else {
-      // Apply the gain.
-      if (gain_->Value() == 0) {
-        // If the gain is 0, just zero the bus and set the silence hint.
-        output_bus->Zero();
-      } else {
-        output_bus->CopyWithGainFrom(*input_bus, gain_->Value());
-      }
+      output_bus->CopyWithGainFrom(*input_bus, gain);
     }
   }
 }
 
 void GainHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
-  float values[audio_utilities::kRenderQuantumFrames];
+  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
 
   gain_->CalculateSampleAccurateValues(values, frames_to_process);
 }
@@ -108,7 +118,7 @@ void GainHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   Context()->AssertGraphOwner();
 
   DCHECK(input);
-  DCHECK_EQ(input, &this->Input(0));
+  DCHECK_EQ(input, &Input(0));
 
   unsigned number_of_channels = input->NumberOfChannels();
 
@@ -168,7 +178,7 @@ AudioParam* GainNode::gain() const {
   return gain_;
 }
 
-void GainNode::Trace(blink::Visitor* visitor) {
+void GainNode::Trace(Visitor* visitor) const {
   visitor->Trace(gain_);
   AudioNode::Trace(visitor);
 }

@@ -7,9 +7,9 @@
 
 #include <delayimp.h>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 
 namespace {

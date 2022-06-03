@@ -2,10 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {DialogType} from '../../common/js/dialog_type.js';
+import {FileType} from '../../common/js/file_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {FileTasks} from './file_tasks.js';
+
 /**
  * UMA exporter for Quick View.
  */
-class QuickViewUma {
+export class QuickViewUma {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!DialogType} dialogType
@@ -64,7 +74,7 @@ class QuickViewUma {
         'QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
 
     const volumeType = this.volumeManager_.getVolumeInfo(entry).volumeType;
-    if (QuickViewUma.VolumeType.includes(volumeType)) {
+    if (QuickViewUma.VolumeType.includes(assert(volumeType))) {
       metrics.recordEnum(
           'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
     } else {

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager.h"
 
@@ -37,11 +36,15 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
   // A callback run when the results of a call to GetDownloadDetails are ready.
   // The supplied parameter may be null, indicating that there are no persisted
   // details for the |browser_context| passed to GetDownloadDetails.
-  typedef base::Callback<void(
+  typedef base::OnceCallback<void(
       std::unique_ptr<ClientIncidentReport_DownloadDetails>)>
       GetDownloadDetailsCallback;
 
   DownloadMetadataManager();
+
+  DownloadMetadataManager(const DownloadMetadataManager&) = delete;
+  DownloadMetadataManager& operator=(const DownloadMetadataManager&) = delete;
+
   ~DownloadMetadataManager() override;
 
   // Adds |download_manager| to the set observed by the metadata manager.
@@ -57,7 +60,7 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
   // be run immediately if the data is available. Otherwise, it will be run
   // later on the caller's thread.
   virtual void GetDownloadDetails(content::BrowserContext* browser_context,
-                                  const GetDownloadDetailsCallback& callback);
+                                  GetDownloadDetailsCallback callback);
 
  protected:
   // Returns the DownloadManager for a given BrowserContext. Virtual for tests.
@@ -82,8 +85,6 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
   // Contexts for each DownloadManager that has been added and has not yet
   // "gone down".
   ManagerToContextMap contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadMetadataManager);
 };
 
 }  // namespace safe_browsing

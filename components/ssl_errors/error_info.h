@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
-#define COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#ifndef COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
+#define COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
 
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 
@@ -43,6 +41,7 @@ class ErrorInfo {
     CERTIFICATE_TRANSPARENCY_REQUIRED = 15,
     CERT_SYMANTEC_LEGACY = 16,
     CERT_KNOWN_INTERCEPTION_BLOCKED = 17,
+    LEGACY_TLS = 18,
     END_OF_ENUM
   };
 
@@ -65,19 +64,19 @@ class ErrorInfo {
       std::vector<ErrorInfo>* errors);
 
   // A description of the error.
-  const base::string16& details() const { return details_; }
+  const std::u16string& details() const { return details_; }
 
   // A short message describing the error (1 line).
-  const base::string16& short_description() const { return short_description_; }
+  const std::u16string& short_description() const { return short_description_; }
 
  private:
-  ErrorInfo(const base::string16& details,
-            const base::string16& short_description);
+  ErrorInfo(const std::u16string& details,
+            const std::u16string& short_description);
 
-  base::string16 details_;
-  base::string16 short_description_;
+  std::u16string details_;
+  std::u16string short_description_;
 };
 
 }  // namespace ssl_errors
 
-#endif  // COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#endif  // COMPONENTS_SSL_ERRORS_ERROR_INFO_H_

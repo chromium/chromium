@@ -6,8 +6,8 @@
 #define UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"
@@ -35,10 +35,18 @@ namespace wm {
 class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
  public:
   CompoundEventFilter();
+
+  CompoundEventFilter(const CompoundEventFilter&) = delete;
+  CompoundEventFilter& operator=(const CompoundEventFilter&) = delete;
+
   ~CompoundEventFilter() override;
 
   // Returns the cursor for the specified component.
   static gfx::NativeCursor CursorForWindowComponent(int window_component);
+
+  // Returns the not-resizable cursor for the specified component.
+  static gfx::NativeCursor NoResizeCursorForWindowComponent(
+      int window_component);
 
   // Adds/removes additional event filters. This does not take ownership of
   // the EventHandler.
@@ -73,11 +81,10 @@ class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Additional pre-target event handlers.
   base::ObserverList<ui::EventHandler, true>::Unchecked handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompoundEventFilter);
 };
 
 }  // namespace wm

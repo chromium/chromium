@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -25,9 +26,10 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.favicon.IconType;
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
-import org.chromium.chrome.browser.media.ui.MediaNotificationManager.ListenerService;
+import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.url.GURL;
 
 /**
  * Test of media notifications to ensure that the favicon is displayed on normal devices and
@@ -37,9 +39,8 @@ import org.chromium.chrome.browser.media.ui.MediaNotificationManager.ListenerSer
 @Config(manifest = Config.NONE,
         // Remove this after updating to a version of Robolectric that supports
         // notification channel creation. crbug.com/774315
-        sdk = Build.VERSION_CODES.N_MR1,
-        shadows = {MediaNotificationTestShadowResources.class})
-public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBase {
+        sdk = Build.VERSION_CODES.N_MR1, shadows = {MediaNotificationTestShadowResources.class})
+public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
     private static final String IS_LOW_END_DEVICE_SWITCH =
             "--" + BaseSwitches.ENABLE_LOW_END_DEVICE_MODE;
@@ -58,7 +59,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBa
 
         @Override
         public boolean getLargeIconForUrl(
-                final String pageUrl, int desiredSizePx, final LargeIconCallback callback) {
+                final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
             mGetIconCalledAtLeastOnce = true;
             mCallback = callback;
             return true;
@@ -74,8 +75,8 @@ public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBa
     public void setUp() {
         super.setUp();
 
-        getManager().mThrottler.mManager = getManager();
-        doCallRealMethod().when(getManager()).onServiceStarted(any(ListenerService.class));
+        getController().mThrottler.mController = getController();
+        doCallRealMethod().when(getController()).onServiceStarted(any(MockListenerService.class));
         doCallRealMethod()
                 .when(mMockForegroundServiceUtils)
                 .startForegroundService(any(Intent.class));
@@ -122,7 +123,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBa
     public void testGetNullNotificationIcon() {
         mTabHolder.simulateFaviconUpdated(null);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge();
-        mTabHolder.mMediaSessionTabHelper.mLargeIconBridge = largeIconBridge;
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = largeIconBridge;
 
         // Simulate and hide notification.
         mTabHolder.simulateMediaSessionStateChanged(true, false);
@@ -146,7 +147,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBa
     public void testGetNotificationIcon() {
         mTabHolder.simulateFaviconUpdated(mFavicon);
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge();
-        mTabHolder.mMediaSessionTabHelper.mLargeIconBridge = largeIconBridge;
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = largeIconBridge;
 
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         assertEquals(null, getDisplayedIcon());
@@ -156,8 +157,30 @@ public class MediaNotificationFaviconTest extends MediaNotificationManagerTestBa
         assertEquals(mFavicon, getDisplayedIcon());
     }
 
+    @Test
+    public void testWillReturnLargeIcon() {
+        mTabHolder.simulateFaviconUpdated(mFavicon);
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge =
+                new TestLargeIconBridge();
+
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        assertEquals(0, getCurrentNotificationInfo().defaultNotificationLargeIcon);
+    }
+
+    @Test
+    public void testNoLargeIcon() {
+        mTabHolder.simulateFaviconUpdated(null);
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        assertNotEquals(0, getCurrentNotificationInfo().defaultNotificationLargeIcon);
+    }
+
     private Bitmap getDisplayedIcon() {
-        return mTabHolder.mMediaSessionTabHelper.mFavicon;
+        return mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mFavicon;
+    }
+
+    private MediaNotificationInfo getCurrentNotificationInfo() {
+        return mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mNotificationInfoBuilder
+                .build();
     }
 
     @Override

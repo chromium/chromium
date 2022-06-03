@@ -16,7 +16,7 @@
 
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
@@ -54,6 +54,9 @@ class TestMachMessageHandler : public MachMessageServer::Interface {
         return_value_(false),
         destroy_complex_request_(false) {
   }
+
+  TestMachMessageHandler(const TestMachMessageHandler&) = delete;
+  TestMachMessageHandler& operator=(const TestMachMessageHandler&) = delete;
 
   ~TestMachMessageHandler() {
   }
@@ -110,8 +113,6 @@ class TestMachMessageHandler : public MachMessageServer::Interface {
   kern_return_t return_code_;
   bool return_value_;
   bool destroy_complex_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMachMessageHandler);
 };
 
 TEST(CompositeMachMessageServer, HandlerDoesNotHandle) {

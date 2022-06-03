@@ -4,29 +4,29 @@
 
 package org.chromium.chrome.browser.printing;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.ChromeAccessorActivity;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
-import org.chromium.chrome.browser.share.ShareActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 
 /**
  * A simple activity that allows Chrome to expose print as an option in the share menu.
  */
-public class PrintShareActivity extends ShareActivity {
+public class PrintShareActivity extends ChromeAccessorActivity {
+    public static final String BROADCAST_ACTION = "PrintShareActivityBroadcastAction";
+
     @Override
-    protected void handleShareAction(ChromeActivity triggeringActivity) {
-        triggeringActivity.onMenuOrKeyboardAction(R.id.print_id, true);
+    protected String getBroadcastAction() {
+        return BROADCAST_ACTION;
     }
 
     public static boolean featureIsAvailable(Tab currentTab) {
         PrintingController printingController = PrintingControllerImpl.getInstance();
-        return !currentTab.isNativePage() && !((TabImpl) currentTab).isShowingInterstitialPage()
-                && !printingController.isBusy()
-                && PrefServiceBridge.getInstance().getBoolean(Pref.PRINTING_ENABLED);
+        return !currentTab.isNativePage() && !printingController.isBusy()
+                && UserPrefs.get(Profile.getLastUsedRegularProfile())
+                           .getBoolean(Pref.PRINTING_ENABLED);
     }
 }

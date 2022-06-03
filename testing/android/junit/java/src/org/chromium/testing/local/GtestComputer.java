@@ -43,12 +43,13 @@ public class GtestComputer extends Computer {
         @Override
         public void run(RunNotifier notifier) {
             long startTimeMillis = System.currentTimeMillis();
-            mLogger.testCaseStarted(mRunner.getDescription(),
-                    mRunner.getDescription().testCount());
+            // Robolectric 4.3 clears testExecutionContext after running so
+            // need to store data before running.
+            Description desc = mRunner.getDescription();
+            int testcount = mRunner.getDescription().testCount();
+            mLogger.testCaseStarted(desc, testcount);
             mRunner.run(notifier);
-            mLogger.testCaseFinished(mRunner.getDescription(),
-                    mRunner.getDescription().testCount(),
-                    System.currentTimeMillis() - startTimeMillis);
+            mLogger.testCaseFinished(desc, testcount, System.currentTimeMillis() - startTimeMillis);
         }
 
         @Override

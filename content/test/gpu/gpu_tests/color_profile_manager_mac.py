@@ -11,6 +11,8 @@
 # trigger undefined-variables.
 # pylint: disable=undefined-variable
 
+from __future__ import print_function
+
 import sys
 if sys.platform.startswith('darwin'):
   import Foundation
@@ -46,26 +48,29 @@ if sys.platform.startswith('darwin'):
   objc.parseBridgeSupport(color_sync_bridge_string, globals(),
                           color_sync_framework)
 
+
 # Set |display_id| to use the color profile specified in |profile_url|. If
 # |profile_url| is None, then use the factor default.
 def SetDisplayCustomProfile(device_id, profile_url):
   if profile_url == None:
     profile_url = Foundation.kCFNull
   profile_info = {
-    kColorSyncDeviceDefaultProfileID : profile_url,
-    kColorSyncProfileUserScope : Foundation.kCFPreferencesCurrentUser
+      kColorSyncDeviceDefaultProfileID: profile_url,
+      kColorSyncProfileUserScope: Foundation.kCFPreferencesCurrentUser
   }
-  result = ColorSyncDeviceSetCustomProfiles(
-              kColorSyncDisplayDeviceClass, device_id, profile_info)
+  result = ColorSyncDeviceSetCustomProfiles(kColorSyncDisplayDeviceClass,
+                                            device_id, profile_info)
   if result != True:
-    raise
+    raise Exception('Failed to set display custom profile')
+
 
 # Returns the URL for the system's sRGB color profile.
 def GetSRGBProfileURL():
   srgb_profile_path = '/System/Library/ColorSync/Profiles/sRGB Profile.icc'
   srgb_profile_url = Foundation.CFURLCreateFromFileSystemRepresentation(
-      None, srgb_profile_path, len(srgb_profile_path), False)
+      None, srgb_profile_path.encode('utf-8'), len(srgb_profile_path), False)
   return srgb_profile_url
+
 
 # Return a map from display ID to custom color profiles set on the display or
 # None if no custom color profile is set.
@@ -74,7 +79,7 @@ def GetDisplaysToProfileURLMap():
   online_display_list_result = Quartz.CGGetOnlineDisplayList(32, None, None)
   error = online_display_list_result[0]
   if error != Quartz.kCGErrorSuccess:
-    raise
+    raise Exception('Failed to get online displays from Quartz')
   online_displays = online_display_list_result[1]
   for display_id in online_displays:
     device_info = ColorSyncDeviceCopyDeviceInfo(

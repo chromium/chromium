@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/common/pdf_util.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 
@@ -20,14 +20,17 @@ ChromeMimeHandlerViewGuestDelegate::~ChromeMimeHandlerViewGuestDelegate() {
 }
 
 bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);
   DCHECK(menu_delegate);
 
-  std::unique_ptr<RenderViewContextMenuBase> menu =
-      menu_delegate->BuildMenu(web_contents, params);
+  std::unique_ptr<RenderViewContextMenuBase> menu = menu_delegate->BuildMenu(
+      render_frame_host,
+      AddContextMenuParamsPropertiesFromPreferences(web_contents, params));
   menu_delegate->ShowMenu(std::move(menu));
   return true;
 }
@@ -37,11 +40,10 @@ void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
     const std::string& mime_type) {
   if (mime_type != kPDFMimeType)
     return;
-  base::UmaHistogramEnumeration(
-      "PDF.LoadStatus",
-      in_main_frame ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
-                    : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium,
-      PDFLoadStatus::kPdfLoadStatusCount);
+
+  ReportPDFLoadStatus(in_main_frame
+                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
+                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
 }
 
 }  // namespace extensions

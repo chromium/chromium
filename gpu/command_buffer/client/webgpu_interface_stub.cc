@@ -7,9 +7,33 @@
 namespace gpu {
 namespace webgpu {
 
-WebGPUInterfaceStub::WebGPUInterfaceStub() = default;
+namespace {
+
+class APIChannelStub : public APIChannel {
+ public:
+  APIChannelStub() = default;
+
+  const DawnProcTable& GetProcs() const override { return procs_; }
+  void Disconnect() override {}
+
+  DawnProcTable* procs() { return &procs_; }
+
+ private:
+  ~APIChannelStub() override = default;
+
+  DawnProcTable procs_ = {};
+};
+
+}  // anonymous namespace
+
+WebGPUInterfaceStub::WebGPUInterfaceStub()
+    : api_channel_(base::MakeRefCounted<APIChannelStub>()) {}
 
 WebGPUInterfaceStub::~WebGPUInterfaceStub() = default;
+
+DawnProcTable* WebGPUInterfaceStub::procs() {
+  return static_cast<APIChannelStub*>(api_channel_.get())->procs();
+}
 
 // InterfaceBase implementation.
 void WebGPUInterfaceStub::GenSyncTokenCHROMIUM(GLbyte* sync_token) {}
@@ -17,29 +41,31 @@ void WebGPUInterfaceStub::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {}
 void WebGPUInterfaceStub::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                    GLsizei count) {}
 void WebGPUInterfaceStub::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {}
+void WebGPUInterfaceStub::ShallowFlushCHROMIUM() {}
 
 // WebGPUInterface implementation
-const DawnProcTable& WebGPUInterfaceStub::GetProcs() const {
-  return null_procs_;
+scoped_refptr<APIChannel> WebGPUInterfaceStub::GetAPIChannel() const {
+  return api_channel_;
 }
 void WebGPUInterfaceStub::FlushCommands() {}
-WGPUDevice WebGPUInterfaceStub::GetDefaultDevice() {
-  return nullptr;
+void WebGPUInterfaceStub::EnsureAwaitingFlush(bool* needs_flush) {}
+void WebGPUInterfaceStub::FlushAwaitingCommands() {}
+ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice) {
+  return {nullptr, 0, 0, 0, 0};
 }
-ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice device) {
-  return {nullptr, 0, 0};
-}
-bool WebGPUInterfaceStub::RequestAdapterAsync(
+void WebGPUInterfaceStub::RequestAdapterAsync(
     PowerPreference power_preference,
-    base::OnceCallback<void(uint32_t, const WGPUDeviceProperties&)>
-        request_adapter_callback) {
-  return false;
-}
-bool WebGPUInterfaceStub::RequestDeviceAsync(
+    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
+        request_adapter_callback) {}
+void WebGPUInterfaceStub::RequestDeviceAsync(
     uint32_t adapter_service_id,
-    const WGPUDeviceProperties* requested_device_properties,
-    base::OnceCallback<void(bool)> request_device_callback) {
-  return false;
+    const WGPUDeviceProperties& requested_device_properties,
+    base::OnceCallback<void(WGPUDevice,
+                            const WGPUSupportedLimits*,
+                            const char*)> request_device_callback) {}
+
+WGPUDevice WebGPUInterfaceStub::DeprecatedEnsureDefaultDeviceSync() {
+  return nullptr;
 }
 
 // Include the auto-generated part of this class. We split this because

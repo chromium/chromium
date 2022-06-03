@@ -5,7 +5,7 @@
 #ifndef UI_BASE_COCOA_ACCESSIBILITY_FOCUS_OVERRIDER_H_
 #define UI_BASE_COCOA_ACCESSIBILITY_FOCUS_OVERRIDER_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -28,7 +28,7 @@ namespace ui {
 // The above-required overriding of focus is done by instantiating an
 // AccessibilityFocusOverrider and updating its state when the NSView in the
 // PWA process is focused.
-class UI_BASE_EXPORT AccessibilityFocusOverrider {
+class COMPONENT_EXPORT(UI_BASE) AccessibilityFocusOverrider {
  public:
   class Client {
    public:

@@ -1,0 +1,364 @@
+This is a testharness.js-based test.
+Found 360 tests; 323 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Checking place-self: auto left
+PASS Checking place-self: auto right
+PASS Checking place-self: auto auto
+PASS Checking place-self: auto normal
+PASS Checking place-self: auto stretch
+PASS Checking place-self: auto start
+PASS Checking place-self: auto end
+PASS Checking place-self: auto self-start
+PASS Checking place-self: auto self-end
+PASS Checking place-self: auto center
+PASS Checking place-self: auto flex-start
+PASS Checking place-self: auto flex-end
+PASS Checking place-self: auto baseline
+PASS Checking place-self: auto first baseline
+FAIL Checking place-self: auto last baseline assert_equals: align-self expanded value expected "auto" but got ""
+PASS Checking place-self: auto safe flex-end
+PASS Checking place-self: auto unsafe end
+PASS Checking place-self: auto safe end
+PASS Checking place-self: auto unsafe flex-start
+PASS Checking place-self: auto safe center
+PASS Checking place-self: normal left
+PASS Checking place-self: normal right
+PASS Checking place-self: normal auto
+PASS Checking place-self: normal normal
+PASS Checking place-self: normal stretch
+PASS Checking place-self: normal start
+PASS Checking place-self: normal end
+PASS Checking place-self: normal self-start
+PASS Checking place-self: normal self-end
+PASS Checking place-self: normal center
+PASS Checking place-self: normal flex-start
+PASS Checking place-self: normal flex-end
+PASS Checking place-self: normal baseline
+PASS Checking place-self: normal first baseline
+FAIL Checking place-self: normal last baseline assert_equals: align-self expanded value expected "normal" but got ""
+PASS Checking place-self: normal safe flex-end
+PASS Checking place-self: normal unsafe end
+PASS Checking place-self: normal safe end
+PASS Checking place-self: normal unsafe flex-start
+PASS Checking place-self: normal safe center
+PASS Checking place-self: stretch left
+PASS Checking place-self: stretch right
+PASS Checking place-self: stretch auto
+PASS Checking place-self: stretch normal
+PASS Checking place-self: stretch stretch
+PASS Checking place-self: stretch start
+PASS Checking place-self: stretch end
+PASS Checking place-self: stretch self-start
+PASS Checking place-self: stretch self-end
+PASS Checking place-self: stretch center
+PASS Checking place-self: stretch flex-start
+PASS Checking place-self: stretch flex-end
+PASS Checking place-self: stretch baseline
+PASS Checking place-self: stretch first baseline
+FAIL Checking place-self: stretch last baseline assert_equals: align-self expanded value expected "stretch" but got ""
+PASS Checking place-self: stretch safe flex-end
+PASS Checking place-self: stretch unsafe end
+PASS Checking place-self: stretch safe end
+PASS Checking place-self: stretch unsafe flex-start
+PASS Checking place-self: stretch safe center
+PASS Checking place-self: start left
+PASS Checking place-self: start right
+PASS Checking place-self: start auto
+PASS Checking place-self: start normal
+PASS Checking place-self: start stretch
+PASS Checking place-self: start start
+PASS Checking place-self: start end
+PASS Checking place-self: start self-start
+PASS Checking place-self: start self-end
+PASS Checking place-self: start center
+PASS Checking place-self: start flex-start
+PASS Checking place-self: start flex-end
+PASS Checking place-self: start baseline
+PASS Checking place-self: start first baseline
+FAIL Checking place-self: start last baseline assert_equals: align-self expanded value expected "start" but got ""
+PASS Checking place-self: start safe flex-end
+PASS Checking place-self: start unsafe end
+PASS Checking place-self: start safe end
+PASS Checking place-self: start unsafe flex-start
+PASS Checking place-self: start safe center
+PASS Checking place-self: end left
+PASS Checking place-self: end right
+PASS Checking place-self: end auto
+PASS Checking place-self: end normal
+PASS Checking place-self: end stretch
+PASS Checking place-self: end start
+PASS Checking place-self: end end
+PASS Checking place-self: end self-start
+PASS Checking place-self: end self-end
+PASS Checking place-self: end center
+PASS Checking place-self: end flex-start
+PASS Checking place-self: end flex-end
+PASS Checking place-self: end baseline
+PASS Checking place-self: end first baseline
+FAIL Checking place-self: end last baseline assert_equals: align-self expanded value expected "end" but got ""
+PASS Checking place-self: end safe flex-end
+PASS Checking place-self: end unsafe end
+PASS Checking place-self: end safe end
+PASS Checking place-self: end unsafe flex-start
+PASS Checking place-self: end safe center
+PASS Checking place-self: self-start left
+PASS Checking place-self: self-start right
+PASS Checking place-self: self-start auto
+PASS Checking place-self: self-start normal
+PASS Checking place-self: self-start stretch
+PASS Checking place-self: self-start start
+PASS Checking place-self: self-start end
+PASS Checking place-self: self-start self-start
+PASS Checking place-self: self-start self-end
+PASS Checking place-self: self-start center
+PASS Checking place-self: self-start flex-start
+PASS Checking place-self: self-start flex-end
+PASS Checking place-self: self-start baseline
+PASS Checking place-self: self-start first baseline
+FAIL Checking place-self: self-start last baseline assert_equals: align-self expanded value expected "self-start" but got ""
+PASS Checking place-self: self-start safe flex-end
+PASS Checking place-self: self-start unsafe end
+PASS Checking place-self: self-start safe end
+PASS Checking place-self: self-start unsafe flex-start
+PASS Checking place-self: self-start safe center
+PASS Checking place-self: self-end left
+PASS Checking place-self: self-end right
+PASS Checking place-self: self-end auto
+PASS Checking place-self: self-end normal
+PASS Checking place-self: self-end stretch
+PASS Checking place-self: self-end start
+PASS Checking place-self: self-end end
+PASS Checking place-self: self-end self-start
+PASS Checking place-self: self-end self-end
+PASS Checking place-self: self-end center
+PASS Checking place-self: self-end flex-start
+PASS Checking place-self: self-end flex-end
+PASS Checking place-self: self-end baseline
+PASS Checking place-self: self-end first baseline
+FAIL Checking place-self: self-end last baseline assert_equals: align-self expanded value expected "self-end" but got ""
+PASS Checking place-self: self-end safe flex-end
+PASS Checking place-self: self-end unsafe end
+PASS Checking place-self: self-end safe end
+PASS Checking place-self: self-end unsafe flex-start
+PASS Checking place-self: self-end safe center
+PASS Checking place-self: center left
+PASS Checking place-self: center right
+PASS Checking place-self: center auto
+PASS Checking place-self: center normal
+PASS Checking place-self: center stretch
+PASS Checking place-self: center start
+PASS Checking place-self: center end
+PASS Checking place-self: center self-start
+PASS Checking place-self: center self-end
+PASS Checking place-self: center center
+PASS Checking place-self: center flex-start
+PASS Checking place-self: center flex-end
+PASS Checking place-self: center baseline
+PASS Checking place-self: center first baseline
+FAIL Checking place-self: center last baseline assert_equals: align-self expanded value expected "center" but got ""
+PASS Checking place-self: center safe flex-end
+PASS Checking place-self: center unsafe end
+PASS Checking place-self: center safe end
+PASS Checking place-self: center unsafe flex-start
+PASS Checking place-self: center safe center
+PASS Checking place-self: flex-start left
+PASS Checking place-self: flex-start right
+PASS Checking place-self: flex-start auto
+PASS Checking place-self: flex-start normal
+PASS Checking place-self: flex-start stretch
+PASS Checking place-self: flex-start start
+PASS Checking place-self: flex-start end
+PASS Checking place-self: flex-start self-start
+PASS Checking place-self: flex-start self-end
+PASS Checking place-self: flex-start center
+PASS Checking place-self: flex-start flex-start
+PASS Checking place-self: flex-start flex-end
+PASS Checking place-self: flex-start baseline
+PASS Checking place-self: flex-start first baseline
+FAIL Checking place-self: flex-start last baseline assert_equals: align-self expanded value expected "flex-start" but got ""
+PASS Checking place-self: flex-start safe flex-end
+PASS Checking place-self: flex-start unsafe end
+PASS Checking place-self: flex-start safe end
+PASS Checking place-self: flex-start unsafe flex-start
+PASS Checking place-self: flex-start safe center
+PASS Checking place-self: flex-end left
+PASS Checking place-self: flex-end right
+PASS Checking place-self: flex-end auto
+PASS Checking place-self: flex-end normal
+PASS Checking place-self: flex-end stretch
+PASS Checking place-self: flex-end start
+PASS Checking place-self: flex-end end
+PASS Checking place-self: flex-end self-start
+PASS Checking place-self: flex-end self-end
+PASS Checking place-self: flex-end center
+PASS Checking place-self: flex-end flex-start
+PASS Checking place-self: flex-end flex-end
+PASS Checking place-self: flex-end baseline
+PASS Checking place-self: flex-end first baseline
+FAIL Checking place-self: flex-end last baseline assert_equals: align-self expanded value expected "flex-end" but got ""
+PASS Checking place-self: flex-end safe flex-end
+PASS Checking place-self: flex-end unsafe end
+PASS Checking place-self: flex-end safe end
+PASS Checking place-self: flex-end unsafe flex-start
+PASS Checking place-self: flex-end safe center
+PASS Checking place-self: baseline left
+PASS Checking place-self: baseline right
+PASS Checking place-self: baseline auto
+PASS Checking place-self: baseline normal
+PASS Checking place-self: baseline stretch
+PASS Checking place-self: baseline start
+PASS Checking place-self: baseline end
+PASS Checking place-self: baseline self-start
+PASS Checking place-self: baseline self-end
+PASS Checking place-self: baseline center
+PASS Checking place-self: baseline flex-start
+PASS Checking place-self: baseline flex-end
+PASS Checking place-self: baseline baseline
+PASS Checking place-self: baseline first baseline
+FAIL Checking place-self: baseline last baseline assert_equals: align-self expanded value expected "baseline" but got ""
+PASS Checking place-self: baseline safe flex-end
+PASS Checking place-self: baseline unsafe end
+PASS Checking place-self: baseline safe end
+PASS Checking place-self: baseline unsafe flex-start
+PASS Checking place-self: baseline safe center
+PASS Checking place-self: first baseline left
+PASS Checking place-self: first baseline right
+PASS Checking place-self: first baseline auto
+PASS Checking place-self: first baseline normal
+PASS Checking place-self: first baseline stretch
+PASS Checking place-self: first baseline start
+PASS Checking place-self: first baseline end
+PASS Checking place-self: first baseline self-start
+PASS Checking place-self: first baseline self-end
+PASS Checking place-self: first baseline center
+PASS Checking place-self: first baseline flex-start
+PASS Checking place-self: first baseline flex-end
+PASS Checking place-self: first baseline baseline
+PASS Checking place-self: first baseline first baseline
+FAIL Checking place-self: first baseline last baseline assert_equals: align-self expanded value expected "baseline" but got ""
+PASS Checking place-self: first baseline safe flex-end
+PASS Checking place-self: first baseline unsafe end
+PASS Checking place-self: first baseline safe end
+PASS Checking place-self: first baseline unsafe flex-start
+PASS Checking place-self: first baseline safe center
+FAIL Checking place-self: last baseline left assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline right assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline auto assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline normal assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline stretch assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline start assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline self-start assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline self-end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline center assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline flex-start assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline flex-end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline baseline assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline first baseline assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline last baseline assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline safe flex-end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline unsafe end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline safe end assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline unsafe flex-start assert_equals: align-self expanded value expected "last baseline" but got ""
+FAIL Checking place-self: last baseline safe center assert_equals: align-self expanded value expected "last baseline" but got ""
+PASS Checking place-self: safe flex-end left
+PASS Checking place-self: safe flex-end right
+PASS Checking place-self: safe flex-end auto
+PASS Checking place-self: safe flex-end normal
+PASS Checking place-self: safe flex-end stretch
+PASS Checking place-self: safe flex-end start
+PASS Checking place-self: safe flex-end end
+PASS Checking place-self: safe flex-end self-start
+PASS Checking place-self: safe flex-end self-end
+PASS Checking place-self: safe flex-end center
+PASS Checking place-self: safe flex-end flex-start
+PASS Checking place-self: safe flex-end flex-end
+PASS Checking place-self: safe flex-end baseline
+PASS Checking place-self: safe flex-end first baseline
+FAIL Checking place-self: safe flex-end last baseline assert_equals: align-self expanded value expected "safe flex-end" but got ""
+PASS Checking place-self: safe flex-end safe flex-end
+PASS Checking place-self: safe flex-end unsafe end
+PASS Checking place-self: safe flex-end safe end
+PASS Checking place-self: safe flex-end unsafe flex-start
+PASS Checking place-self: safe flex-end safe center
+PASS Checking place-self: unsafe end left
+PASS Checking place-self: unsafe end right
+PASS Checking place-self: unsafe end auto
+PASS Checking place-self: unsafe end normal
+PASS Checking place-self: unsafe end stretch
+PASS Checking place-self: unsafe end start
+PASS Checking place-self: unsafe end end
+PASS Checking place-self: unsafe end self-start
+PASS Checking place-self: unsafe end self-end
+PASS Checking place-self: unsafe end center
+PASS Checking place-self: unsafe end flex-start
+PASS Checking place-self: unsafe end flex-end
+PASS Checking place-self: unsafe end baseline
+PASS Checking place-self: unsafe end first baseline
+FAIL Checking place-self: unsafe end last baseline assert_equals: align-self expanded value expected "unsafe end" but got ""
+PASS Checking place-self: unsafe end safe flex-end
+PASS Checking place-self: unsafe end unsafe end
+PASS Checking place-self: unsafe end safe end
+PASS Checking place-self: unsafe end unsafe flex-start
+PASS Checking place-self: unsafe end safe center
+PASS Checking place-self: safe end left
+PASS Checking place-self: safe end right
+PASS Checking place-self: safe end auto
+PASS Checking place-self: safe end normal
+PASS Checking place-self: safe end stretch
+PASS Checking place-self: safe end start
+PASS Checking place-self: safe end end
+PASS Checking place-self: safe end self-start
+PASS Checking place-self: safe end self-end
+PASS Checking place-self: safe end center
+PASS Checking place-self: safe end flex-start
+PASS Checking place-self: safe end flex-end
+PASS Checking place-self: safe end baseline
+PASS Checking place-self: safe end first baseline
+FAIL Checking place-self: safe end last baseline assert_equals: align-self expanded value expected "safe end" but got ""
+PASS Checking place-self: safe end safe flex-end
+PASS Checking place-self: safe end unsafe end
+PASS Checking place-self: safe end safe end
+PASS Checking place-self: safe end unsafe flex-start
+PASS Checking place-self: safe end safe center
+PASS Checking place-self: unsafe flex-start left
+PASS Checking place-self: unsafe flex-start right
+PASS Checking place-self: unsafe flex-start auto
+PASS Checking place-self: unsafe flex-start normal
+PASS Checking place-self: unsafe flex-start stretch
+PASS Checking place-self: unsafe flex-start start
+PASS Checking place-self: unsafe flex-start end
+PASS Checking place-self: unsafe flex-start self-start
+PASS Checking place-self: unsafe flex-start self-end
+PASS Checking place-self: unsafe flex-start center
+PASS Checking place-self: unsafe flex-start flex-start
+PASS Checking place-self: unsafe flex-start flex-end
+PASS Checking place-self: unsafe flex-start baseline
+PASS Checking place-self: unsafe flex-start first baseline
+FAIL Checking place-self: unsafe flex-start last baseline assert_equals: align-self expanded value expected "unsafe flex-start" but got ""
+PASS Checking place-self: unsafe flex-start safe flex-end
+PASS Checking place-self: unsafe flex-start unsafe end
+PASS Checking place-self: unsafe flex-start safe end
+PASS Checking place-self: unsafe flex-start unsafe flex-start
+PASS Checking place-self: unsafe flex-start safe center
+PASS Checking place-self: safe center left
+PASS Checking place-self: safe center right
+PASS Checking place-self: safe center auto
+PASS Checking place-self: safe center normal
+PASS Checking place-self: safe center stretch
+PASS Checking place-self: safe center start
+PASS Checking place-self: safe center end
+PASS Checking place-self: safe center self-start
+PASS Checking place-self: safe center self-end
+PASS Checking place-self: safe center center
+PASS Checking place-self: safe center flex-start
+PASS Checking place-self: safe center flex-end
+PASS Checking place-self: safe center baseline
+PASS Checking place-self: safe center first baseline
+FAIL Checking place-self: safe center last baseline assert_equals: align-self expanded value expected "safe center" but got ""
+PASS Checking place-self: safe center safe flex-end
+PASS Checking place-self: safe center unsafe end
+PASS Checking place-self: safe center safe end
+PASS Checking place-self: safe center unsafe flex-start
+PASS Checking place-self: safe center safe center
+Harness: the test ran to completion.
+

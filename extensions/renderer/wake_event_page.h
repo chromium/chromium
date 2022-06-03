@@ -16,7 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "ipc/ipc_sync_message_filter.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 class RenderThread;
@@ -33,6 +33,10 @@ class ScriptContext;
 class WakeEventPage : public content::RenderThreadObserver {
  public:
   WakeEventPage();
+
+  WakeEventPage(const WakeEventPage&) = delete;
+  WakeEventPage& operator=(const WakeEventPage&) = delete;
+
   ~WakeEventPage() override;
 
   // Returns the single instance of the WakeEventPage object.
@@ -63,16 +67,16 @@ class WakeEventPage : public content::RenderThreadObserver {
 
   // The response from an ExtensionHostMsg_WakeEvent call, passed true if the
   // call was successful, false on failure.
-  using OnResponseCallback = base::Callback<void(bool)>;
+  using OnResponseCallback = base::OnceCallback<void(bool)>;
 
   // Makes an ExtensionHostMsg_WakeEvent request for an extension ID. The
   // second argument is a callback to run when the request has completed.
   using MakeRequestCallback =
-      base::Callback<void(const std::string&, const OnResponseCallback&)>;
+      base::RepeatingCallback<void(const std::string&, OnResponseCallback)>;
 
   // For |requests_|.
   struct RequestData {
-    RequestData(int thread_id, const OnResponseCallback& on_response);
+    RequestData(int thread_id, OnResponseCallback on_response);
     ~RequestData();
 
     // The thread ID the request was made on. |on_response| must be called on
@@ -84,13 +88,13 @@ class WakeEventPage : public content::RenderThreadObserver {
   };
 
   // Runs |on_response|, passing it |success|.
-  static void RunOnResponseWithResult(const OnResponseCallback& on_response,
+  static void RunOnResponseWithResult(OnResponseCallback on_response,
                                       bool success);
 
   // Sends the ExtensionHostMsg_WakeEvent IPC for |extension_id|, and
   // updates |requests_| bookkeeping.
   void MakeRequest(const std::string& extension_id,
-                   const OnResponseCallback& on_response);
+                   OnResponseCallback on_response);
 
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;
@@ -107,8 +111,6 @@ class WakeEventPage : public content::RenderThreadObserver {
 
   // Lock for |requests_|.
   base::Lock requests_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeEventPage);
 };
 
 }  //  namespace extensions

@@ -28,6 +28,7 @@
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/mac/process_snapshot_mac.h"
 #include "util/file/file_writer.h"
+#include "util/mach/bootstrap.h"
 #include "util/mach/exc_client_variants.h"
 #include "util/mach/exception_behaviors.h"
 #include "util/mach/exception_types.h"

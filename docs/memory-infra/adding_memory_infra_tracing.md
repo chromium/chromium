@@ -29,8 +29,8 @@ two things:
  2. Register and unregister you dump provider with the
     [`MemoryDumpManager`][mdm].
 
-[mdp]: https://chromium.googlesource.com/chromium/src/+/master/base/trace_event/memory_dump_provider.h
-[mdm]: https://chromium.googlesource.com/chromium/src/+/master/base/trace_event/memory_dump_manager.h
+[mdp]: https://chromium.googlesource.com/chromium/src/+/main/base/trace_event/memory_dump_provider.h
+[mdm]: https://chromium.googlesource.com/chromium/src/+/main/base/trace_event/memory_dump_manager.h
 
 ## Creating a Memory Dump Provider
 
@@ -68,9 +68,9 @@ For many components, this may be all that is needed. See
 [Handling Shared Memory Allocations](#Handling-Shared-Memory-Allocations) and
 [Suballocations](#Suballocations) for information on more complex use cases.
 
-[resource-pool]:  https://chromium.googlesource.com/chromium/src/+/master/cc/resources/resource_pool.h
-[mem-alloc-dump]: https://chromium.googlesource.com/chromium/src/+/master/base/trace_event/memory_allocator_dump.h
-[pmd]:            https://chromium.googlesource.com/chromium/src/+/master/base/trace_event/process_memory_dump.h
+[resource-pool]:  https://chromium.googlesource.com/chromium/src/+/main/cc/resources/resource_pool.h
+[mem-alloc-dump]: https://chromium.googlesource.com/chromium/src/+/main/base/trace_event/memory_allocator_dump.h
+[pmd]:            https://chromium.googlesource.com/chromium/src/+/main/base/trace_event/process_memory_dump.h
 
 ## Registering a Memory Dump Provider
 
@@ -95,7 +95,7 @@ complex and may be a number of things:
  * If your component already uses a custom `base::SingleThreadTaskRunner` for
    executing tasks on a specific thread, you should likely use this runner.
 
-[task-runner-handle]: https://chromium.googlesource.com/chromium/src/+/master/base/thread_task_runner_handle.h
+[task-runner-handle]: https://chromium.googlesource.com/chromium/src/+/main/base/thread_task_runner_handle.h
 
 ## Unregistration
 
@@ -175,4 +175,4 @@ which make up a texture. To create a suballocation, instead of calling
 [`ProcessMemoryDump::AddSubAllocation`][pmd], providing the ID of the parent
 allocation as the first parameter.
 
-[texture-manager]: https://chromium.googlesource.com/chromium/src/+/master/gpu/command_buffer/service/texture_manager.cc
+[texture-manager]: https://chromium.googlesource.com/chromium/src/+/main/gpu/command_buffer/service/texture_manager.cc

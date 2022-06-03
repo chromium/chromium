@@ -6,7 +6,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -37,14 +37,14 @@ void FakeBluetoothProfileManagerClient::RegisterProfile(
     const dbus::ObjectPath& profile_path,
     const std::string& uuid,
     const Options& options,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
-  VLOG(1) << "RegisterProfile: " << profile_path.value() << ": " << uuid;
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  DVLOG(1) << "RegisterProfile: " << profile_path.value() << ": " << uuid;
 
   if (uuid == kUnregisterableUuid) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(error_callback,
+        base::BindOnce(std::move(error_callback),
                        bluetooth_profile_manager::kErrorInvalidArguments,
                        "Can't register this UUID"));
     return;
@@ -54,30 +54,34 @@ void FakeBluetoothProfileManagerClient::RegisterProfile(
 
   auto iter = service_provider_map_.find(profile_path);
   if (iter == service_provider_map_.end()) {
-    error_callback.Run(bluetooth_profile_manager::kErrorInvalidArguments,
-                       "No profile created");
+    std::move(error_callback)
+        .Run(bluetooth_profile_manager::kErrorInvalidArguments,
+             "No profile created");
   } else {
     auto piter = profile_map_.find(uuid);
     if (piter != profile_map_.end()) {
-      error_callback.Run(bluetooth_profile_manager::kErrorAlreadyExists,
-                         "Profile already registered");
+      std::move(error_callback)
+          .Run(bluetooth_profile_manager::kErrorAlreadyExists,
+               "Profile already registered");
     } else {
       profile_map_[uuid] = profile_path;
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(callback));
     }
   }
 }
 
 void FakeBluetoothProfileManagerClient::UnregisterProfile(
     const dbus::ObjectPath& profile_path,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
-  VLOG(1) << "UnregisterProfile: " << profile_path.value();
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  DVLOG(1) << "UnregisterProfile: " << profile_path.value();
 
   auto iter = service_provider_map_.find(profile_path);
   if (iter == service_provider_map_.end()) {
-    error_callback.Run(bluetooth_profile_manager::kErrorInvalidArguments,
-                       "Profile not registered");
+    std::move(error_callback)
+        .Run(bluetooth_profile_manager::kErrorInvalidArguments,
+             "Profile not registered");
   } else {
     for (auto piter = profile_map_.begin(); piter != profile_map_.end();
          ++piter) {
@@ -87,7 +91,8 @@ void FakeBluetoothProfileManagerClient::UnregisterProfile(
       }
     }
 
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback));
   }
 }
 

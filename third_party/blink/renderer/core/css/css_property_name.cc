@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -17,8 +18,7 @@ struct SameSizeAsCSSPropertyName {
   AtomicString custom_property_name_;
 };
 
-static_assert(sizeof(CSSPropertyName) == sizeof(SameSizeAsCSSPropertyName),
-              "CSSPropertyName should stay small");
+ASSERT_SIZE(CSSPropertyName, SameSizeAsCSSPropertyName);
 
 }  // namespace
 

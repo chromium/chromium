@@ -19,11 +19,11 @@
 namespace viz {
 
 bool DeJellyEnabled() {
-  if (base::FeatureList::IsEnabled(features::kDisableDeJelly))
-    return false;
-
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableDeJelly);
+  static bool enabled =
+      !base::FeatureList::IsEnabled(features::kDisableDeJelly) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableDeJelly);
+  return enabled;
 }
 
 bool DeJellyActive() {
@@ -32,9 +32,9 @@ bool DeJellyActive() {
 
 #if defined(OS_ANDROID)
   return Java_DeJellyUtils_useDeJelly(base::android::AttachCurrentThread());
-#endif
-
+#else
   return true;
+#endif
 }
 
 float DeJellyScreenWidth() {
@@ -46,9 +46,9 @@ float DeJellyScreenWidth() {
 
 #if defined(OS_ANDROID)
   return Java_DeJellyUtils_screenWidth(base::android::AttachCurrentThread());
-#endif
-
+#else
   return 1440.0f;
+#endif
 }
 
 float MaxDeJellyHeight() {

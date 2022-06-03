@@ -1,28 +1,25 @@
-import urllib
+from urllib.parse import urlencode
 
 
-def basic_authentication(username=None, password=None, protocol="http"):
-    from .fixtures import server_config, url
-    build_url = url(server_config())
-
+def basic_authentication(url, username=None, password=None, protocol="http"):
     query = {}
 
-    return build_url("/webdriver/tests/support/authentication.py",
-                     query=urllib.urlencode(query),
-                     protocol=protocol)
+    return url("/webdriver/tests/support/authentication.py",
+               query=urlencode(query),
+               protocol=protocol)
 
 
 def main(request, response):
     user = request.auth.username
     password = request.auth.password
 
-    if user == "user" and password == "password":
-        return "Authentication done"
+    if user == b"user" and password == b"password":
+        return b"Authentication done"
 
-    realm = "test"
-    if "realm" in request.GET:
-        realm = request.GET.first("realm")
+    realm = b"test"
+    if b"realm" in request.GET:
+        realm = request.GET.first(b"realm")
 
-    return ((401, "Unauthorized"),
-            [("WWW-Authenticate", 'Basic realm="' + realm + '"')],
-            "Please login with credentials 'user' and 'password'")
+    return ((401, b"Unauthorized"),
+            [(b"WWW-Authenticate", b'Basic realm="' + realm + b'"')],
+            b"Please login with credentials 'user' and 'password'")

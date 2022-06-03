@@ -1,0 +1,46 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates the final .pak file allowlist that can be used by repack()'s
+# repack_allowlist parameter. Used resources are tracked by the toolchain when
+# enable_resource_allowlist_generation = true and are stored in the unstripped
+# binary's debug info. This action extracts the allowlist from the binary.
+#
+# Variables
+#   input: Path to the unstripped .so file.
+#   output: Path to write the output allowlist to.
+#
+# Example
+#   generate_resource_allowlist("pak_allowlist") {
+#     deps = [ ":my_shared_lib" ]
+#     input = "$root_out_dir/lib.unstripped/libmy_shared_lib$shlib_extension"
+#     output = "$target_gen_dir/pak_allowlist.txt"
+#   }
+template("generate_resource_allowlist") {
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "inputs",
+                           ])
+
+    script = "//tools/resources/generate_resource_allowlist.py"
+
+    outputs = [ invoker.output ]
+
+    args = [
+      "-o",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+    foreach(input, invoker.inputs) {
+      args += [ rebase_path(input, root_build_dir) ]
+    }
+
+    # This target's dependencies are needed at build time only. Make sure shared
+    # library dependencies don't get packaged into the final build.
+    metadata = {
+      shared_libraries_barrier = []
+    }
+  }
+}

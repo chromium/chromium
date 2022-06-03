@@ -5,22 +5,10 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Chromium'",
-          "rect": [40, 107, 113, 27],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'Chromium'",
-          "rect": [8, 107, 113, 27],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutImage IMG id='foo'",
-          "rect": [8, 88, 32, 32],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [40, 108, 113, 26],
+        [8, 108, 113, 26],
+        [8, 88, 32, 32]
       ]
     }
   ]

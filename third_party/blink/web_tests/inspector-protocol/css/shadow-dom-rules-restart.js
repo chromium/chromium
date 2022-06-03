@@ -10,7 +10,7 @@
   testRunner.log('\nDevTools session #1:');
   session.evaluate(`
     var template = document.querySelector('#tmpl');
-    var root = document.querySelector('#host').createShadowRoot();
+    var root = document.querySelector('#host').attachShadow({mode: 'open'});
     root.appendChild(template.content.cloneNode(true));
   `);
 

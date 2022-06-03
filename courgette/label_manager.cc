@@ -9,6 +9,8 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -111,17 +113,6 @@ Label* LabelManager::Find(RVA rva) {
       labels_.begin(), labels_.end(), Label(rva),
       [](const Label& l1, const Label& l2) { return l1.rva_ < l2.rva_; });
   return it == labels_.end() || it->rva_ != rva ? nullptr : &(*it);
-}
-
-void LabelManager::RemoveUnderusedLabels(int32_t count_threshold) {
-  if (count_threshold <= 0)
-    return;
-  labels_.erase(std::remove_if(labels_.begin(), labels_.end(),
-                               [count_threshold](const Label& label) {
-                                 return label.count_ < count_threshold;
-                               }),
-                labels_.end());
-  // Not shrinking |labels_|, since this may cause reallocation.
 }
 
 void LabelManager::UnassignIndexes() {

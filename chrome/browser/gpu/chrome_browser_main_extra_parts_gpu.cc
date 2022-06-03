@@ -4,7 +4,7 @@
 
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -16,26 +16,39 @@ const char kGL[] = "GL";
 const char kVulkan[] = "Vulkan";
 }  // namespace
 
-ChromeBrowserMainExtraPartsGpu::ChromeBrowserMainExtraPartsGpu() {}
+ChromeBrowserMainExtraPartsGpu::ChromeBrowserMainExtraPartsGpu() = default;
 
 ChromeBrowserMainExtraPartsGpu::~ChromeBrowserMainExtraPartsGpu() {
   if (features::IsUsingSkiaRenderer())
     content::GpuDataManager::GetInstance()->RemoveObserver(this);
 }
 
-void ChromeBrowserMainExtraPartsGpu::PostEarlyInitialization() {
+void ChromeBrowserMainExtraPartsGpu::PreCreateThreads() {
+  // This should be the first time to get an instance of GpuDataManager.
+  // This is where it's initialized.
+  // 1) Need to initialize in-process GpuDataManager before creating threads.
+  // It's unsafe to append the gpu command line switches to the global
+  // CommandLine::ForCurrentProcess object after threads are created.
+  // 2) Must be after other parts' PreCreateThreads to pick up chrome://flags.
+  DCHECK(!content::GpuDataManager::Initialized());
+  content::GpuDataManager* manager = content::GpuDataManager::GetInstance();
   if (features::IsUsingSkiaRenderer())
-    content::GpuDataManager::GetInstance()->AddObserver(this);
+    manager->AddObserver(this);
 }
 
 void ChromeBrowserMainExtraPartsGpu::OnGpuInfoUpdate() {
   DCHECK(features::IsUsingSkiaRenderer());
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kTrialName, GetSkiaBackendName());
+  const auto* backend_name = GetSkiaBackendName();
+  if (backend_name) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kTrialName, backend_name);
+  }
 }
 
 const char* ChromeBrowserMainExtraPartsGpu::GetSkiaBackendName() const {
   auto* manager = content::GpuDataManager::GetInstance();
+  if (!manager->IsEssentialGpuInfoAvailable())
+    return nullptr;
   if (manager->GetFeatureStatus(gpu::GpuFeatureType::GPU_FEATURE_TYPE_VULKAN) ==
       gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
     return kVulkan;

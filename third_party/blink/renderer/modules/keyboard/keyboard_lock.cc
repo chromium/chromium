@@ -8,12 +8,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -30,7 +30,7 @@ constexpr char kKeyboardLockNoValidKeyCodesErrorMsg[] =
     "No valid key codes passed into lock().";
 
 constexpr char kKeyboardLockChildFrameErrorMsg[] =
-    "lock() must be called from a top-level browsing context.";
+    "lock() must be called from a primary top-level browsing context.";
 
 constexpr char kKeyboardLockRequestFailedErrorMsg[] =
     "lock() request could not be registered.";
@@ -38,7 +38,7 @@ constexpr char kKeyboardLockRequestFailedErrorMsg[] =
 }  // namespace
 
 KeyboardLock::KeyboardLock(ExecutionContext* context)
-    : ContextLifecycleObserver(context) {}
+    : ExecutionContextClient(context), service_(context) {}
 
 KeyboardLock::~KeyboardLock() = default;
 
@@ -87,22 +87,18 @@ void KeyboardLock::unlock(ScriptState* state) {
 }
 
 bool KeyboardLock::IsLocalFrameAttached() {
-  if (GetFrame())
-    return true;
-  return false;
+  return DomWindow();
 }
 
 bool KeyboardLock::EnsureServiceConnected() {
-  if (!service_) {
-    LocalFrame* frame = GetFrame();
-    if (!frame) {
+  if (!service_.is_bound()) {
+    if (!DomWindow())
       return false;
-    }
     // See https://bit.ly/2S0zRAS for task types.
-    frame->GetBrowserInterfaceBroker().GetInterface(
+    DomWindow()->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
-            frame->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    DCHECK(service_);
+            DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    DCHECK(service_.is_bound());
   }
 
   return true;
@@ -111,8 +107,8 @@ bool KeyboardLock::EnsureServiceConnected() {
 bool KeyboardLock::CalledFromSupportedContext(ExecutionContext* context) {
   DCHECK(context);
   // This API is only accessible from a top level, secure browsing context.
-  LocalFrame* frame = GetFrame();
-  return frame && frame->IsMainFrame() && context->IsSecureContext();
+  return DomWindow() && DomWindow()->GetFrame()->IsMainFrame() &&
+         context->IsSecureContext();
 }
 
 void KeyboardLock::LockRequestFinished(
@@ -155,9 +151,10 @@ void KeyboardLock::LockRequestFinished(
   request_keylock_resolver_ = nullptr;
 }
 
-void KeyboardLock::Trace(blink::Visitor* visitor) {
+void KeyboardLock::Trace(Visitor* visitor) const {
+  visitor->Trace(service_);
   visitor->Trace(request_keylock_resolver_);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

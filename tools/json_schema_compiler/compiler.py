@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -18,6 +18,7 @@ Usage example:
 
 from __future__ import print_function
 
+import io
 import optparse
 import os
 import shlex
@@ -57,9 +58,6 @@ def GenerateSchema(generator_name,
     # If compiling the C++ model code, delete 'nocompile' nodes.
     if generator_name == 'cpp':
       api_def = json_schema.DeleteNodes(api_def, 'nocompile')
-
-    # Delete all 'nodefine' nodes. They are only for documentation.
-    api_def = json_schema.DeleteNodes(api_def, 'nodefine')
 
     api_defs.extend(api_def)
 
@@ -149,7 +147,8 @@ def GenerateSchema(generator_name,
         output_dir = os.path.join(destdir, src_path)
       if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-      with open(os.path.join(output_dir, filename), 'w') as f:
+      generator_filepath = os.path.join(output_dir, filename)
+      with io.open(generator_filepath, 'w', encoding='utf-8') as f:
         f.write(code)
     # If multiple files are being output, add the filename for each file.
     if len(generators) > 1:

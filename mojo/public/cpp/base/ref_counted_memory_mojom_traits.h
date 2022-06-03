@@ -5,8 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_REF_COUNTED_MEMORY_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_REF_COUNTED_MEMORY_MOJOM_TRAITS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -16,7 +14,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::RefCountedMemoryDataView,
                  scoped_refptr<base::RefCountedMemory>> {
   static mojo_base::BigBuffer data(

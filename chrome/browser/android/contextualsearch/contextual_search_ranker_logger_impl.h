@@ -28,12 +28,19 @@ enum AssistRankerPrediction {
   ASSIST_RANKER_PREDICTION_SHOW,
 };
 
+// Provides the native portion of the Java class by the same name.
 // Runs Ranker inference and logging through UKM for Ranker model development.
 // This is used to prediction whether a tap gesture will be useful to the user
-// or not.
+// or not and possible suppression.
 class ContextualSearchRankerLoggerImpl {
  public:
   ContextualSearchRankerLoggerImpl(JNIEnv* env, jobject obj);
+
+  ContextualSearchRankerLoggerImpl(const ContextualSearchRankerLoggerImpl&) =
+      delete;
+  ContextualSearchRankerLoggerImpl& operator=(
+      const ContextualSearchRankerLoggerImpl&) = delete;
+
   ~ContextualSearchRankerLoggerImpl();
 
   // Calls the destructor.  Should be called when this native object is no
@@ -100,8 +107,6 @@ class ContextualSearchRankerLoggerImpl {
 
   // The linked Java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchRankerLoggerImpl);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_RANKER_LOGGER_IMPL_H_

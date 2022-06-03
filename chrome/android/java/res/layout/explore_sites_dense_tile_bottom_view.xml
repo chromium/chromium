@@ -58,6 +58,6 @@
         android:ellipsize="end"
         android:gravity="center_horizontal"
         android:lines="2"
-        android:textAppearance="@style/TextAppearance.BlackCaption"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         app:leading="@dimen/text_size_small_leading" />
 </org.chromium.chrome.browser.explore_sites.ExploreSitesTileView>

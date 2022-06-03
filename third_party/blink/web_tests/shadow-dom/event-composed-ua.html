@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="../resources/gesture-util.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
 
 <form>
   <input id="input" type="text">
@@ -10,20 +14,6 @@
 <script>
 const input = document.querySelector('#input');
 const input2 = document.querySelector('#input2');
-
-function click(x, y) {
-  eventSender.mouseMoveTo(x, y);
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-}
-
-function doubleClick(x, y) {
-  eventSender.mouseMoveTo(x, y);
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-}
 
 const composedEventTypes = [
   // UI Events
@@ -39,35 +29,41 @@ const composedEventTypes = [
   // See LayoutTests/fast/events/touch/basic-single-touch-events.html for Touch Events.
 ];
 
-for (const eventType of composedEventTypes) {
-  async_test((test) => {
-    input.addEventListener(eventType, test.step_func_done((e) => {
-      assert_true(e.composed);
+promise_test( async (t) => {
+
+  let received_events = new Set();
+
+  for (const eventType of composedEventTypes) {
+    input.addEventListener(eventType, t.step_func((e) => {
+      received_events.add(eventType);
+      assert_true(e.composed, `A ${eventType} event should be a composed event`);
     }));
-  }, `A ${eventType} event should be a composed event`);
-}
+  }
 
-click(input.offsetLeft, input.offsetTop);
-doubleClick(input.offsetLeft, input.offsetTop);
+  await mouseClickOn(input.offsetLeft, input.offsetTop);
+  await mouseDoubleClickOn(input.offsetLeft, input.offsetTop);
 
-// For mouseenter/mouseleave
-click(input2.offsetLeft, input2.offsetTop);
+  // For mouseenter/mouseleave
+  await mouseMoveTo(input2.offsetLeft, input2.offsetTop);
 
-// For focus/blur
-input.blur();
-input.focus();
-input.blur();
+  input.blur();
+  input.focus();
+  input.blur();
 
-// For keypress
-input.focus();
-eventSender.keyDown(' ');
+  // For keypress
+  input.focus();
+  await new test_driver.send_keys(input, ' ');
 
-// For wheel
-eventSender.mouseMoveTo(input.offsetLeft + 5, input.offsetTop + 5);
-eventSender.mouseScrollBy(-1, -2);
+  // For wheel event
+  await smoothScrollWithXY(1, 2, input.offsetLeft + 5, input.offsetTop +5, GestureSourceType.MOUSE_INPUT);
 
-// For composition
-input.focus();
-textInputController.setMarkedText('1', 0, 1);
-textInputController.insertText('1');
+  // For composition
+  input.focus();
+  textInputController.setMarkedText('1', 0, 1);
+  textInputController.insertText('1');
+
+  await waitUntil( () => {return received_events.size == composedEventTypes.length;} );
+
+}, "Checked composed bit for events");
+
 </script>

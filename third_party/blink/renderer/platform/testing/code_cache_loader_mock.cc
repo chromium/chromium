@@ -6,19 +6,31 @@
 
 namespace blink {
 
-void CodeCacheLoaderMock::FetchFromCodeCacheSynchronously(
-    const GURL& url,
-    base::Time* response_time_out,
-    mojo_base::BigBuffer* buffer_out) {
-  *response_time_out = base::Time();
-  *buffer_out = mojo_base::BigBuffer();
-}
-
 void CodeCacheLoaderMock::FetchFromCodeCache(
     blink::mojom::CodeCacheType cache_type,
-    const GURL& kurl,
-    CodeCacheLoader::FetchCodeCacheCallback callback) {
-  std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+    const WebURL& url,
+    WebCodeCacheLoader::FetchCodeCacheCallback callback) {
+  if (controller_ && controller_->delayed_) {
+    // This simple mock doesn't support multiple in-flight loads.
+    CHECK(!controller_->callback_);
+
+    controller_->callback_ = std::move(callback);
+  } else {
+    std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+  }
+}
+
+void CodeCacheLoaderMock::ClearCodeCacheEntry(
+    blink::mojom::CodeCacheType cache_type,
+    const WebURL& url) {}
+
+void CodeCacheLoaderMock::Controller::DelayResponse() {
+  delayed_ = true;
+}
+void CodeCacheLoaderMock::Controller::Respond(base::Time time,
+                                              mojo_base::BigBuffer data) {
+  CHECK(callback_);
+  std::move(callback_).Run(time, std::move(data));
 }
 
 }  // namespace blink

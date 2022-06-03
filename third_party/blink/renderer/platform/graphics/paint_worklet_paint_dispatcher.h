@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_painter.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -40,6 +39,9 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
       base::WeakPtr<PaintWorkletPaintDispatcher>* paintee);
 
   PaintWorkletPaintDispatcher();
+  PaintWorkletPaintDispatcher(const PaintWorkletPaintDispatcher&) = delete;
+  PaintWorkletPaintDispatcher& operator=(const PaintWorkletPaintDispatcher&) =
+      delete;
 
   // Dispatches a set of paint class instances - each represented by a
   // PaintWorkletInput - to the appropriate PaintWorklet threads, asynchronously
@@ -69,7 +71,7 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
 
   // The main thread is given a base::WeakPtr to this class to hand to the
   // PaintWorklet thread(s), so that they can register and unregister
-  // PaintWorklets. See blink::WebFrameWidgetBase for where this happens.
+  // PaintWorklets. See blink::WebFrameWidgetImpl for where this happens.
   base::WeakPtr<PaintWorkletPaintDispatcher> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -104,8 +106,6 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PaintWorkletPaintDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletPaintDispatcher);
 };
 
 }  // namespace blink

@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for v8.parseOnBackground\n`);
-  await TestRunner.loadModule('performance_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

@@ -8,8 +8,11 @@
 #include <iterator>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace prefs {
 
@@ -27,11 +30,11 @@ bool DictionaryValueUpdate::HasKey(base::StringPiece key) const {
 }
 
 size_t DictionaryValueUpdate::size() const {
-  return value_->size();
+  return value_->DictSize();
 }
 
 bool DictionaryValueUpdate::empty() const {
-  return value_->empty();
+  return value_->DictEmpty();
 }
 
 void DictionaryValueUpdate::Clear() {
@@ -81,7 +84,7 @@ void DictionaryValueUpdate::SetString(base::StringPiece path,
 }
 
 void DictionaryValueUpdate::SetString(base::StringPiece path,
-                                      const base::string16& in_value) {
+                                      const std::u16string& in_value) {
   Set(path, std::make_unique<base::Value>(in_value));
 }
 
@@ -108,13 +111,12 @@ void DictionaryValueUpdate::SetKey(base::StringPiece key, base::Value value) {
 void DictionaryValueUpdate::SetWithoutPathExpansion(
     base::StringPiece key,
     std::unique_ptr<base::Value> in_value) {
-  const base::Value* old_value = nullptr;
-  if (value_->GetWithoutPathExpansion(key, &old_value) &&
-      *old_value == *in_value) {
+  const base::Value* old_value = value_->FindKey(key);
+  if (old_value && *old_value == *in_value) {
     return;
   }
   RecordKey(key);
-  value_->SetWithoutPathExpansion(key, std::move(in_value));
+  value_->SetKey(key, base::Value::FromUniquePtrValue(std::move(in_value)));
 }
 
 std::unique_ptr<DictionaryValueUpdate>
@@ -122,11 +124,11 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
     base::StringPiece path,
     std::unique_ptr<base::DictionaryValue> in_value) {
   RecordKey(path);
-  auto* dictionary_value = static_cast<base::DictionaryValue*>(
-      value_->SetWithoutPathExpansion(path, std::move(in_value)));
+  auto* dictionary_value = static_cast<base::DictionaryValue*>(value_->SetKey(
+      path, base::Value::FromUniquePtrValue(std::move(in_value))));
 
   std::vector<std::string> full_path = path_;
-  full_path.push_back(path.as_string());
+  full_path.push_back(std::string(path));
   return std::make_unique<DictionaryValueUpdate>(
       report_update_, dictionary_value, std::move(full_path));
 }
@@ -143,7 +145,11 @@ bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
 
 bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
                                       double* out_value) const {
-  return value_->GetDouble(path, out_value);
+  if (absl::optional<double> value = value_->FindDoubleKey(path)) {
+    *out_value = *value;
+    return true;
+  }
+  return false;
 }
 
 bool DictionaryValueUpdate::GetString(base::StringPiece path,
@@ -152,7 +158,7 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
 }
 
 bool DictionaryValueUpdate::GetString(base::StringPiece path,
-                                      base::string16* out_value) const {
+                                      std::u16string* out_value) const {
   return value_->GetString(path, out_value);
 }
 
@@ -188,31 +194,56 @@ bool DictionaryValueUpdate::GetList(base::StringPiece path,
 bool DictionaryValueUpdate::GetBooleanWithoutPathExpansion(
     base::StringPiece key,
     bool* out_value) const {
-  return value_->GetBooleanWithoutPathExpansion(key, out_value);
+  absl::optional<bool> flag = value_->FindBoolKey(key);
+  if (!flag)
+    return false;
+
+  *out_value = flag.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetIntegerWithoutPathExpansion(
     base::StringPiece key,
     int* out_value) const {
-  return value_->GetIntegerWithoutPathExpansion(key, out_value);
+  absl::optional<int> value = value_->FindIntKey(key);
+  if (!value)
+    return false;
+
+  *out_value = value.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetDoubleWithoutPathExpansion(
     base::StringPiece key,
     double* out_value) const {
-  return value_->GetDoubleWithoutPathExpansion(key, out_value);
+  absl::optional<double> value = value_->FindDoubleKey(key);
+  if (!value)
+    return false;
+
+  *out_value = value.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
     base::StringPiece key,
     std::string* out_value) const {
-  return value_->GetStringWithoutPathExpansion(key, out_value);
+  std::string* value = value_->FindStringKey(key);
+  if (!value)
+    return false;
+
+  *out_value = *value;
+  return true;
 }
 
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
     base::StringPiece key,
-    base::string16* out_value) const {
-  return value_->GetStringWithoutPathExpansion(key, out_value);
+    std::u16string* out_value) const {
+  std::string* value = value_->FindStringKey(key);
+  if (!value)
+    return false;
+
+  *out_value = base::UTF8ToUTF16(*value);
+  return true;
 }
 
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
@@ -229,7 +260,7 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     return false;
 
   std::vector<std::string> full_path = path_;
-  full_path.push_back(key.as_string());
+  full_path.push_back(std::string(key));
   *out_value = std::make_unique<DictionaryValueUpdate>(
       report_update_, dictionary_value, std::move(full_path));
   return true;
@@ -248,9 +279,18 @@ bool DictionaryValueUpdate::GetListWithoutPathExpansion(
   return value_->GetListWithoutPathExpansion(key, out_value);
 }
 
-bool DictionaryValueUpdate::Remove(base::StringPiece path,
-                                   std::unique_ptr<base::Value>* out_value) {
-  if (!value_->Remove(path, out_value))
+bool DictionaryValueUpdate::Remove(base::StringPiece path) {
+  base::StringPiece current_path(path);
+  base::Value* current_dictionary = value_;
+  size_t delimiter_position = current_path.rfind('.');
+  if (delimiter_position != base::StringPiece::npos) {
+    current_dictionary =
+        value_->FindPath(current_path.substr(0, delimiter_position));
+    if (!current_dictionary)
+      return false;
+    current_path = current_path.substr(delimiter_position + 1);
+  }
+  if (!current_dictionary->RemoveKey(current_path))
     return false;
 
   RecordPath(path);
@@ -260,9 +300,12 @@ bool DictionaryValueUpdate::Remove(base::StringPiece path,
 bool DictionaryValueUpdate::RemoveWithoutPathExpansion(
     base::StringPiece key,
     std::unique_ptr<base::Value>* out_value) {
-  if (!value_->RemoveWithoutPathExpansion(key, out_value))
+  absl::optional<base::Value> value = value_->ExtractKey(key);
+  if (!value)
     return false;
 
+  if (out_value)
+    *out_value = base::Value::ToUniquePtrValue(std::move(*value));
   RecordKey(key);
   return true;
 }
@@ -270,9 +313,12 @@ bool DictionaryValueUpdate::RemoveWithoutPathExpansion(
 bool DictionaryValueUpdate::RemovePath(
     base::StringPiece path,
     std::unique_ptr<base::Value>* out_value) {
-  if (!value_->RemovePath(path, out_value))
+  absl::optional<base::Value> value = value_->ExtractPath(path);
+  if (!value)
     return false;
 
+  if (out_value)
+    *out_value = base::Value::ToUniquePtrValue(std::move(*value));
   std::vector<base::StringPiece> split_path = SplitPath(path);
   base::DictionaryValue* dict = value_;
   for (size_t i = 0; i < split_path.size() - 1; ++i) {
@@ -325,7 +371,7 @@ std::vector<std::string> DictionaryValueUpdate::ConcatPath(
   std::vector<std::string> full_path = base_path;
   full_path.reserve(full_path.size() + path.size());
   std::transform(path.begin(), path.end(), std::back_inserter(full_path),
-                 [](base::StringPiece s) { return s.as_string(); });
+                 [](base::StringPiece s) { return std::string(s); });
   return full_path;
 }
 

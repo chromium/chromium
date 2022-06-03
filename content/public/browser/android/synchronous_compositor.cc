@@ -17,13 +17,12 @@ SynchronousCompositor::Frame::~Frame() {}
 
 SynchronousCompositor::Frame::Frame(Frame&& rhs)
     : layer_tree_frame_sink_id(rhs.layer_tree_frame_sink_id),
-      frame(std::move(rhs.frame)) {}
+      frame(std::move(rhs.frame)),
+      local_surface_id(rhs.local_surface_id) {}
 
-SynchronousCompositor::FrameFuture::FrameFuture(
-    viz::LocalSurfaceId local_surface_id)
+SynchronousCompositor::FrameFuture::FrameFuture()
     : waitable_event_(base::WaitableEvent::ResetPolicy::MANUAL,
-                      base::WaitableEvent::InitialState::NOT_SIGNALED),
-      local_surface_id_(local_surface_id) {}
+                      base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
 SynchronousCompositor::FrameFuture::~FrameFuture() {}
 
@@ -48,6 +47,7 @@ SynchronousCompositor::FrameFuture::GetFrame() {
 SynchronousCompositor::Frame& SynchronousCompositor::Frame::operator=(
     Frame&& rhs) {
   layer_tree_frame_sink_id = rhs.layer_tree_frame_sink_id;
+  local_surface_id = rhs.local_surface_id;
   frame = std::move(rhs.frame);
   return *this;
 }

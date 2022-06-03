@@ -13,23 +13,7 @@
 
 namespace blink {
 
-namespace {
-
-struct VideoTestParam {
-  String description;
-  IntRect target_rect;
-  bool expected_result;
-};
-
-}  // anonymous namespace
-
-class MediaCustomControlsFullscreenDetectorTest
-    : public testing::Test,
-      private ScopedVideoFullscreenDetectionForTest {
- public:
-  MediaCustomControlsFullscreenDetectorTest()
-      : ScopedVideoFullscreenDetectionForTest(true) {}
-
+class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
@@ -66,12 +50,11 @@ class MediaCustomControlsFullscreenDetectorTest
     return false;
   }
 
-  static bool ComputeIsDominantVideo(const IntRect& target_rect,
-                                     const IntRect& root_rect,
-                                     const IntRect& intersection_rect) {
+  static bool IsFullscreen(IntRect target, IntRect screen) {
+    IntRect intersection = IntersectRects(target, screen);
     return MediaCustomControlsFullscreenDetector::
-        ComputeIsDominantVideoForTests(target_rect.Size(), root_rect.Size(),
-                                       intersection_rect.Size());
+        IsFullscreenVideoOfDifferentRatioForTesting(
+            target.size(), screen.size(), intersection.size());
   }
 
  private:
@@ -80,33 +63,30 @@ class MediaCustomControlsFullscreenDetectorTest
   Persistent<HTMLVideoElement> video_;
 };
 
-TEST_F(MediaCustomControlsFullscreenDetectorTest, computeIsDominantVideo) {
-  // TestWithParam cannot be applied here as IntRect needs the memory allocator
-  // to be initialized, but the array of parameters is statically initialized,
-  // which is before the memory allocation initialization.
-  VideoTestParam test_params[] = {
-      {"xCompleteFill", {0, 0, 100, 50}, true},
-      {"yCompleteFill", {0, 0, 50, 100}, true},
-      {"xyCompleteFill", {0, 0, 100, 100}, true},
-      {"xIncompleteFillTooSmall", {0, 0, 84, 50}, false},
-      {"yIncompleteFillTooSmall", {0, 0, 50, 84}, false},
-      {"xIncompleteFillJustRight", {0, 0, 86, 50}, true},
-      {"yIncompleteFillJustRight", {0, 0, 50, 86}, true},
-      {"xVisibleProportionTooSmall", {-26, 0, 100, 100}, false},
-      {"yVisibleProportionTooSmall", {0, -26, 100, 100}, false},
-      {"xVisibleProportionJustRight", {-24, 0, 100, 100}, true},
-      {"yVisibleProportionJustRight", {0, -24, 100, 100}, true},
-  };
+TEST_F(MediaCustomControlsFullscreenDetectorTest, heuristicForAspectRatios) {
+  IntRect screen(0, 0, 1920, 1080);
 
-  IntRect root_rect(0, 0, 100, 100);
+  EXPECT_TRUE(IsFullscreen({0, 130, 1920, 820}, screen))
+      << "Ultrawide screen (21:9)";
+  EXPECT_TRUE(IsFullscreen({240, 0, 1440, 1080}, screen))
+      << "Standard TV (4:3)";
+  EXPECT_TRUE(IsFullscreen({656, 0, 607, 1080}, screen))
+      << "Full HD, but portrait (9:16)";
 
-  for (const VideoTestParam& test_param : test_params) {
-    const IntRect& target_rect = test_param.target_rect;
-    IntRect intersection_rect = Intersection(target_rect, root_rect);
-    EXPECT_EQ(test_param.expected_result,
-              ComputeIsDominantVideo(target_rect, root_rect, intersection_rect))
-        << test_param.description << " failed";
-  }
+  EXPECT_TRUE(IsFullscreen({0, -100, 1920, 1080}, screen))
+      << "Normal fullscreen video but scrolled a bit up.";
+  EXPECT_TRUE(IsFullscreen({100, 0, 1920, 1080}, screen))
+      << "Normal fullscreen video but scrolled a bit right.";
+
+  EXPECT_FALSE(IsFullscreen({0, -300, 1920, 1080}, screen))
+      << "Normal fullscreen video but scrolled a great deal up.";
+  EXPECT_FALSE(IsFullscreen({490, 0, 1920, 1080}, screen))
+      << "Normal fullscreen video but scrolled a great deal right.";
+
+  EXPECT_FALSE(IsFullscreen({0, 0, 800, 600}, screen)) << "Small video";
+  EXPECT_FALSE(IsFullscreen({500, 100, 1024, 768}, screen))
+      << "Another small video";
+  EXPECT_FALSE(IsFullscreen({0, 0, 0, 0}, screen)) << "Hidden video";
 }
 
 TEST_F(MediaCustomControlsFullscreenDetectorTest,
@@ -143,7 +123,7 @@ TEST_F(MediaCustomControlsFullscreenDetectorTest,
 
 TEST_F(MediaCustomControlsFullscreenDetectorTest,
        hasListenersAfterAddToDocumentByParser) {
-  GetDocument().body()->SetInnerHTMLFromString("<body><video></video></body>");
+  GetDocument().body()->setInnerHTML("<body><video></video></body>");
 
   EXPECT_TRUE(CheckEventListenerRegistered(GetDocument(),
                                            event_type_names::kFullscreenchange,

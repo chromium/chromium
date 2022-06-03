@@ -1,24 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [939, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 939, 235],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 939, 235]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [600, 15],
-      "contentsOpaque": true
+      "bounds": [600, 15]
     }
   ],
   "transforms": [
@@ -36,24 +31,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [939, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 939, 235],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 939, 235]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [400, 15],
-      "contentsOpaque": true
+      "bounds": [400, 15]
     }
   ],
   "transforms": [
@@ -71,16 +61,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 400, 600],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 400, 600]
       ]
     }
   ]
@@ -88,66 +74,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        },
-        {
-          "object": "InlineTextBox 'AAAA BBBB CCCC'",
-          "rect": [439, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'DDDD EEEE FFFF'",
-          "rect": [439, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
-          "rect": [439, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'KKKK LLLL MMMM'",
-          "rect": [439, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'NNNN'",
-          "rect": [439, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'AAAA BBBB CCCC'",
-          "rect": [39, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'DDDD EEEE FFFF'",
-          "rect": [39, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
-          "rect": [39, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'KKKK LLLL MMMM'",
-          "rect": [39, 8, 352, 562],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'NNNN'",
-          "rect": [39, 8, 352, 562],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [400, 0, 400, 600],
+        [110, 8, 68, 562],
+        [181, 8, 68, 561],
+        [323, 8, 68, 522],
+        [252, 8, 68, 482],
+        [39, 8, 68, 172]
       ]
     }
   ]

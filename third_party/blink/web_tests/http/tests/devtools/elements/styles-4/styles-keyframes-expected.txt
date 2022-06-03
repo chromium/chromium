@@ -15,15 +15,11 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ======== @keyframes animName ========
 [expanded] 
@@ -72,15 +68,11 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ======== @keyframes animName ========
 [expanded] 
@@ -129,15 +121,11 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ======== @keyframes animName ========
 [expanded] 
@@ -186,15 +174,11 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ======== @keyframes animName ========
 [expanded] 
@@ -243,15 +227,11 @@ element.style { ()
         animation-fill-mode: none, none, none, none;
         animation-play-state: running, running, running, running;
         animation-name: animName, mediaAnim, doesNotExist, styleSheetAnim;
+        animation-timeline: auto, auto, auto, auto;
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ======== @keyframes animName ========
 [expanded] 

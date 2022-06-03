@@ -1,8 +1,11 @@
 /*
- * Copyright 2017 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
  */
+
 'use strict';
 
 var startButton = document.getElementById('startButton');
@@ -90,10 +93,7 @@ function start() {
   startButton.disabled = true;
   navigator.mediaDevices.getUserMedia({
     audio: true,
-    video: {
-      width: {exact: 1280},
-      height: {exact: 720},
-    },
+    video: true
   })
     .then(gotStream)
     .catch(function(e) {

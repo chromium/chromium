@@ -4,7 +4,24 @@
 
 #include "content/public/browser/web_ui_controller.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
+
 namespace content {
+
+namespace {
+// This registry maintains a mapping from WebUI to its MojoJS interface broker
+// initializer, i.e. callbacks that populate an interface broker's binder map
+// with interfaces exposed to MojoJS. If such a mapping exists, we instantiate
+// the broker in ReadyToCommitNavigation, enable MojoJS bindings for this
+// frame, and ask renderer to use it to handle Mojo.bindInterface calls.
+base::LazyInstance<WebUIBrowserInterfaceBrokerRegistry>::Leaky
+    g_web_ui_browser_interface_broker_registry = LAZY_INSTANCE_INITIALIZER;
+}  // namespace
+
+WebUIController::WebUIController(WebUI* web_ui) : web_ui_(web_ui) {}
+
+WebUIController::~WebUIController() = default;
 
 bool WebUIController::OverrideHandleWebUIMessage(const GURL& source_url,
                                                  const std::string& message,
@@ -14,6 +31,26 @@ bool WebUIController::OverrideHandleWebUIMessage(const GURL& source_url,
 
 WebUIController::Type WebUIController::GetType() {
   return nullptr;
+}
+
+bool WebUIController::IsJavascriptErrorReportingEnabled() {
+  return true;
+}
+
+void WebUIController::WebUIReadyToCommitNavigation(
+    RenderFrameHost* render_frame_host) {
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
+
+  broker_ =
+      g_web_ui_browser_interface_broker_registry.Get().CreateInterfaceBroker(
+          *this);
+
+  if (broker_) {
+    // If this WebUIController has a per-WebUI interface broker, create the
+    // broker's remote and ask renderer to use it.
+    rfh->EnableMojoJsBindingsWithBroker(broker_->BindNewPipeAndPassRemote());
+  }
 }
 
 }  // namespace content

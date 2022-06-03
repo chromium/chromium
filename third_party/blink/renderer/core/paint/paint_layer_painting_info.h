@@ -6,7 +6,7 @@
  *
  * Other contributors:
  *   Robert O'Callahan <roc+@cs.cmu.edu>
- *   David Baron <dbaron@fas.harvard.edu>
+ *   David Baron <dbaron@dbaron.org>
  *   Christian Biesinger <cbiesinger@web.de>
  *   Randall Jesup <rjesup@wgate.com>
  *   Roland Mainz <roland.mainz@informatik.med.uni-giessen.de>
@@ -45,7 +45,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -62,7 +63,6 @@ class PaintLayer;
 
 enum PaintLayerFlag {
   kPaintLayerNoFlag = 0,
-  kPaintLayerHaveTransparency = 1,
   kPaintLayerPaintingOverlayOverflowControls = 1 << 3,
   kPaintLayerPaintingCompositingBackgroundPhase = 1 << 4,
   kPaintLayerPaintingCompositingForegroundPhase = 1 << 5,
@@ -134,8 +134,6 @@ inline String PaintLayerFlagsToDebugString(PaintLayerFlags flags) {
       append("kPaintLayerPaintingCompositingDecorationPhase");
   }
 
-  if (flags & kPaintLayerHaveTransparency)
-    append("kPaintLayerHaveTransparency");
   if (flags & kPaintLayerPaintingOverlayOverflowControls)
     append("kPaintLayerPaintingOverlayOverflowControls");
   if (flags & kPaintLayerPaintingCompositingScrollingPhase)

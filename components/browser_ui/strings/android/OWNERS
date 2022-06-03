@@ -1,0 +1,6 @@
+# Please ensure you check for duplicate strings before adding new ones.
+#
+# Prefer generalizing feature specific existing strings instead of creating
+# a new version of the same (or an extremely similiar string).
+
+*

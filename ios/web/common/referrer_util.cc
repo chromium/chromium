@@ -4,8 +4,9 @@
 
 #include "ios/web/common/referrer_util.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "ios/web/public/navigation/referrer.h"
+#include "net/url_request/referrer_policy.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -20,64 +21,64 @@ std::string ReferrerHeaderValueForNavigation(const GURL& destination,
     case ReferrerPolicyNever:
       return std::string();
     case ReferrerPolicyOrigin:
-      return referrer.url.GetOrigin().spec();
+      return referrer.url.DeprecatedGetOriginAsURL().spec();
     case ReferrerPolicyDefault:
     case ReferrerPolicyNoReferrerWhenDowngrade:
       if (is_downgrade)
         return std::string();
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicyOriginWhenCrossOrigin:
-      if (referrer.url.GetOrigin() != destination.GetOrigin())
-        return referrer.url.GetOrigin().spec();
+      if (referrer.url.DeprecatedGetOriginAsURL() !=
+          destination.DeprecatedGetOriginAsURL())
+        return referrer.url.DeprecatedGetOriginAsURL().spec();
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicySameOrigin:
-      if (referrer.url.GetOrigin() != destination.GetOrigin())
+      if (referrer.url.DeprecatedGetOriginAsURL() !=
+          destination.DeprecatedGetOriginAsURL())
         return std::string();
       return referrer.url.GetAsReferrer().spec();
     case ReferrerPolicyStrictOrigin:
       if (is_downgrade)
         return std::string();
-      return referrer.url.GetOrigin().spec();
+      return referrer.url.DeprecatedGetOriginAsURL().spec();
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
       if (is_downgrade)
         return std::string();
-      if (referrer.url.GetOrigin() != destination.GetOrigin())
-        return referrer.url.GetOrigin().spec();
+      if (referrer.url.DeprecatedGetOriginAsURL() !=
+          destination.DeprecatedGetOriginAsURL())
+        return referrer.url.DeprecatedGetOriginAsURL().spec();
       return referrer.url.GetAsReferrer().spec();
   }
   NOTREACHED();
   return std::string();
 }
 
-net::URLRequest::ReferrerPolicy PolicyForNavigation(
-    const GURL& destination,
-    const web::Referrer& referrer) {
+net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
+                                        const web::Referrer& referrer) {
   // Based on the matching logic in content's
   // resource_dispatcher_host_impl.cc
   switch (referrer.policy) {
     case ReferrerPolicyAlways:
-      return net::URLRequest::NEVER_CLEAR_REFERRER;
+      return net::ReferrerPolicy::NEVER_CLEAR;
     case ReferrerPolicyNever:
-      return net::URLRequest::NO_REFERRER;
+      return net::ReferrerPolicy::NO_REFERRER;
     case ReferrerPolicyOrigin:
-      return net::URLRequest::ORIGIN;
+      return net::ReferrerPolicy::ORIGIN;
     case ReferrerPolicyNoReferrerWhenDowngrade:
     case ReferrerPolicyDefault:
-      return net::URLRequest::
-          CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+      return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
     case ReferrerPolicyOriginWhenCrossOrigin:
-      return net::URLRequest::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
+      return net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
     case ReferrerPolicySameOrigin:
-      return net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_CROSS_ORIGIN;
+      return net::ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN;
     case ReferrerPolicyStrictOrigin:
-      return net::URLRequest::
+      return net::ReferrerPolicy::
           ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
-      return net::URLRequest::
-          REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
+      return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
   NOTREACHED();
-  return net::URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
 }
 
 ReferrerPolicy ReferrerPolicyFromString(const std::string& policy) {

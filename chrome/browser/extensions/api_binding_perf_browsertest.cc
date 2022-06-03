@@ -25,6 +25,11 @@ namespace {
 #define LOCAL_TEST(TestName) DISABLED_ ## TestName
 
 class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
+ public:
+  APIBindingPerfBrowserTest(const APIBindingPerfBrowserTest&) = delete;
+  APIBindingPerfBrowserTest& operator=(const APIBindingPerfBrowserTest&) =
+      delete;
+
  protected:
   APIBindingPerfBrowserTest() {}
   ~APIBindingPerfBrowserTest() override {}
@@ -40,32 +45,29 @@ class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         "runTest(time => window.domAutomationController.send(time))",
         &time_elapsed_ms));
-    return base::TimeDelta::FromMillisecondsD(time_elapsed_ms);
+    return base::Milliseconds(time_elapsed_ms);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(APIBindingPerfBrowserTest);
 };
 
-const char kSimpleContentScriptManifest[] =
-    "{"
-    "  'name': 'Perf test extension',"
-    "  'version': '0',"
-    "  'manifest_version': 2,"
-    "  'content_scripts': [ {"
-    "    'all_frames': true,"
-    "    'matches': [ '<all_urls>' ],"
-    "    'run_at': 'document_end',"
-    "    'js': [ 'content_script.js' ]"
-    "  } ],"
-    "  'permissions': [ 'storage' ]"
-    "}";
+constexpr char kSimpleContentScriptManifest[] =
+    R"({
+         "name": "Perf test extension",
+         "version": "0",
+         "manifest_version": 2,
+         "content_scripts": [ {
+           "all_frames": true,
+           "matches": [ "<all_urls>" ],
+           "run_at": "document_end",
+           "js": [ "content_script.js" ]
+         } ],
+         "permissions": [ "storage" ]
+       })";
 
 IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithNoContentScript)) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(
-                                   "/extensions/perf_tests/many_frames.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/extensions/perf_tests/many_frames.html")));
 
   base::TimeDelta time_elapsed = RunTestAndReportTime();
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";
@@ -74,14 +76,14 @@ IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
 IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithEmptyContentScript)) {
   TestExtensionDir extension_dir;
-  extension_dir.WriteManifestWithSingleQuotes(kSimpleContentScriptManifest);
+  extension_dir.WriteManifest(kSimpleContentScriptManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
                           "// This space intentionally left blank.");
   ASSERT_TRUE(LoadExtension(extension_dir.UnpackedPath()));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(
-                                   "/extensions/perf_tests/many_frames.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/extensions/perf_tests/many_frames.html")));
 
   base::TimeDelta time_elapsed = RunTestAndReportTime();
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";
@@ -90,15 +92,15 @@ IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
 IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithStorageAndRuntime)) {
   TestExtensionDir extension_dir;
-  extension_dir.WriteManifestWithSingleQuotes(kSimpleContentScriptManifest);
+  extension_dir.WriteManifest(kSimpleContentScriptManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
                           "chrome.storage.onChanged.addListener;"
                           "chrome.runtime.onMessage.addListener;");
   ASSERT_TRUE(LoadExtension(extension_dir.UnpackedPath()));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(
-                                   "/extensions/perf_tests/many_frames.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/extensions/perf_tests/many_frames.html")));
 
   base::TimeDelta time_elapsed = RunTestAndReportTime();
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";

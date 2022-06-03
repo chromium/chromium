@@ -16,8 +16,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/noise.h"
+#include "device/fido/cable/v2_handshake.h"
 #include "device/fido/fido_device.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
@@ -25,8 +26,8 @@ namespace device {
 
 class FidoCableDevice;
 
-// FidoCableHandshakeHandler abstracts over the different versions of caBLE
-// handshakes.
+// FidoCableHandshakeHandler abstracts FidoCableV1HandshakeHandler to allow
+// tests to inject fake handshake handlers.
 class FidoCableHandshakeHandler {
  public:
   virtual ~FidoCableHandshakeHandler() = 0;
@@ -46,6 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   FidoCableV1HandshakeHandler(FidoCableDevice* device,
                               base::span<const uint8_t, 8> nonce,
                               base::span<const uint8_t, 32> session_pre_key);
+
+  FidoCableV1HandshakeHandler(const FidoCableV1HandshakeHandler&) = delete;
+  FidoCableV1HandshakeHandler& operator=(const FidoCableV1HandshakeHandler&) =
+      delete;
+
   ~FidoCableV1HandshakeHandler() override;
 
   // FidoCableHandshakeHandler:
@@ -68,52 +74,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   std::string handshake_key_;
 
   base::WeakPtrFactory<FidoCableV1HandshakeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableV1HandshakeHandler);
-};
-
-// FidoCableV2HandshakeHandler implements an NNpsk0[1] handshake that provides
-// forward secrecy.
-//
-// [1] https://noiseexplorer.com/patterns/NNpsk0/
-class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV2HandshakeHandler
-    : public FidoCableHandshakeHandler {
- public:
-  FidoCableV2HandshakeHandler(
-      FidoCableDevice* device,
-      base::span<const uint8_t, 32> psk_gen_key,
-      base::span<const uint8_t, 8> nonce,
-      base::span<const uint8_t, kCableEphemeralIdSize> eid,
-      base::Optional<base::span<const uint8_t, 65>> peer_identity,
-      base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>
-          pairing_callback);
-  ~FidoCableV2HandshakeHandler() override;
-
-  // FidoCableHandshakeHandler:
-  void InitiateCableHandshake(FidoDevice::DeviceCallback callback) override;
-  bool ValidateAuthenticatorHandshakeMessage(
-      base::span<const uint8_t> response) override;
-
- private:
-  void MixHash(base::span<const uint8_t> in);
-  void MixKey(base::span<const uint8_t> ikm);
-  void MixKeyAndHash(base::span<const uint8_t> ikm);
-  void InitializeKey(base::span<const uint8_t, 32> key);
-  std::vector<uint8_t> Encrypt(base::span<const uint8_t> plaintext);
-  base::Optional<std::vector<uint8_t>> Decrypt(
-      base::span<const uint8_t> ciphertext);
-
-  FidoCableDevice* const cable_device_;
-  std::array<uint8_t, 16> eid_;
-  std::array<uint8_t, 32> psk_;
-  std::array<uint8_t, 32> chaining_key_;
-  std::array<uint8_t, 32> h_;
-  std::array<uint8_t, 32> symmetric_key_;
-  uint32_t symmetric_nonce_;
-  base::Optional<std::array<uint8_t, 65>> peer_identity_;
-  bssl::UniquePtr<EC_KEY> ephemeral_key_;
-  base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>
-      pairing_callback_;
 };
 
 }  // namespace device

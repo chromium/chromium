@@ -11,7 +11,7 @@ test(() => {
     '<div contenteditable>^text|</div>',
     '<a href="http://www.example.com/">link</a>'
   ].join(''),
-  selection => {
+  (selection, testRunner) => {
     let cutFired = false;
     selection.document.body.addEventListener('cut', () => cutFired = true);
 
@@ -36,7 +36,7 @@ test(() => {
     '<a href="http://www.example.com/">link</a>',
     '<div contenteditable id="target"></div>'
   ].join(''),
-  selection => {
+  (selection, testRunner) => {
     selection.setClipboardData('foo');
 
     let copyFired = false;
@@ -65,7 +65,7 @@ test(() => {
     '<div contenteditable>^text|</div>',
     '<a href="http://www.example.com/">link</a>'
   ].join(''),
-  selection => {
+  (selection, testRunner) => {
     selection.setClipboardData('foo');
 
     let pasteFired = false;
@@ -91,7 +91,7 @@ test(() => {
     '<div contenteditable>^text|</div>',
     '<a href="http://www.example.com/">link</a>'
   ].join(''),
-  selection => {
+  (selection, testRunner) => {
     selection.setClipboardData('foo');
 
     let pasteFired = false;
@@ -119,7 +119,7 @@ test(() => {
     '<div contenteditable>^text|</div>',
     '<a href="http://www.example.com/">link</a>'
   ].join(''),
-  selection => {
+  (selection, testRunner) => {
     selection.setClipboardData('foo');
 
     let pasteFired = false;

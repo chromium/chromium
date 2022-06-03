@@ -14,10 +14,11 @@ source_set("app_runtime") {
   ]
 
   deps = [
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
+
+  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }

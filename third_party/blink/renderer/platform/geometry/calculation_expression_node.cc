@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 // ------ CalculationExpressionLeafNode ------

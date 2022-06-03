@@ -4,12 +4,17 @@
 
 #include "ash/keyboard/ui/keyboard_event_handler.h"
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 
 namespace keyboard {
 
 TEST(KeyboardEventHandlerTest, HandleGestureEvents) {
+  // KeyboardEventHandler needs a KeyboardUIController to be present, otherwise
+  // handling gesture events will crash.
+  KeyboardUIController controller;
+
   KeyboardEventHandler filter;
   ui::GestureEvent pinch_begin(
       15, 15, 0, base::TimeTicks(),

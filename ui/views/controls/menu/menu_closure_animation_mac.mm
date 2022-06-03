@@ -7,7 +7,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -67,12 +68,12 @@ void MenuClosureAnimationMac::AdvanceAnimation() {
   if (step_ == AnimationStep::kUnselected ||
       step_ == AnimationStep::kSelected) {
     item_->SetForcedVisualSelection(step_ == AnimationStep::kSelected);
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(80),
+    timer_.Start(FROM_HERE, base::Milliseconds(80),
                  base::BindRepeating(&MenuClosureAnimationMac::AdvanceAnimation,
                                      base::Unretained(this)));
   } else if (step_ == AnimationStep::kFading) {
     auto fade = std::make_unique<gfx::LinearAnimation>(this);
-    fade->SetDuration(base::TimeDelta::FromMilliseconds(200));
+    fade->SetDuration(base::Milliseconds(200));
     fade_animation_ = std::move(fade);
     fade_animation_->Start();
   } else if (step_ == AnimationStep::kFinish) {

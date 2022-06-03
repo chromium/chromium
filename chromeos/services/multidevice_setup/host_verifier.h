@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_VERIFIER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_VERIFIER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -32,6 +31,9 @@ class HostVerifier {
     virtual void OnHostVerified() = 0;
   };
 
+  HostVerifier(const HostVerifier&) = delete;
+  HostVerifier& operator=(const HostVerifier&) = delete;
+
   virtual ~HostVerifier();
 
   // Returns whether verification for the current MultiDevice host device has
@@ -55,8 +57,6 @@ class HostVerifier {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVerifier);
 };
 
 }  // namespace multidevice_setup

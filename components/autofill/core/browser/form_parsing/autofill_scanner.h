@@ -10,9 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-
 namespace autofill {
 
 class AutofillField;
@@ -23,6 +20,10 @@ class AutofillScanner {
   explicit AutofillScanner(const std::vector<AutofillField*>& fields);
   explicit AutofillScanner(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
+
+  AutofillScanner(const AutofillScanner&) = delete;
+  AutofillScanner& operator=(const AutofillScanner&) = delete;
+
   ~AutofillScanner();
 
   // Advances the cursor by one step, if possible.
@@ -45,6 +46,9 @@ class AutofillScanner {
   // |RewindTo()|.
   size_t SaveCursor();
 
+  // Returns the current cursor position.
+  size_t CursorPosition();
+
  private:
   void Init(const std::vector<AutofillField*>& fields);
 
@@ -62,8 +66,6 @@ class AutofillScanner {
 
   // The storage of non-owning pointers, used for the unique_ptr constructor.
   std::vector<AutofillField*> non_owning_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillScanner);
 };
 
 }  // namespace autofill

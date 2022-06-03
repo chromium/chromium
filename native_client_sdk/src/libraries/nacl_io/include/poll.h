@@ -7,4 +7,4 @@
 
 #include <sys/poll.h>
 
-#endif
+#endif  // LIBRARIES_NACL_IO_INCLUDE_POLL_H_

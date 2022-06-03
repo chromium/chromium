@@ -5,9 +5,14 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -15,8 +20,12 @@ namespace blink {
 namespace {
 
 class MultiColumnRenderingTest : public RenderingTest {
- public:
+ protected:
   LayoutMultiColumnFlowThread* FindFlowThread(const char* id) const;
+
+  static bool IsLegacyLayout() {
+    return !RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled();
+  }
 
   // Generate a signature string based on what kind of column boxes the flow
   // thread has established. 'c' is used for regular column content sets, while
@@ -270,7 +279,7 @@ TEST_F(MultiColumnRenderingTest, SpannerWithSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("invalidSpanner")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner")->SpannerPlaceholder(),
@@ -298,7 +307,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner"));
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
@@ -326,7 +335,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerAfterSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("spanner1")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner1"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner1")->SpannerPlaceholder(),
@@ -339,7 +348,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerAfterSpanner) {
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
                 GetLayoutObjectByElementId("spanner2")),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner2"));
   EXPECT_EQ(GetLayoutObjectByElementId("spanner2")->SpannerPlaceholder(),
@@ -372,7 +381,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner1")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner1"));
   column_box =
@@ -382,7 +391,7 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
             column_box);
   EXPECT_EQ(GetLayoutObjectByElementId("spanner2")->SpannerPlaceholder(),
             column_box);
-  EXPECT_EQ(ToLayoutMultiColumnSpannerPlaceholder(column_box)
+  EXPECT_EQ(To<LayoutMultiColumnSpannerPlaceholder>(column_box)
                 ->LayoutObjectInFlowThread(),
             GetLayoutObjectByElementId("spanner2"));
   EXPECT_EQ(flow_thread->ContainingColumnSpannerPlaceholder(
@@ -391,14 +400,28 @@ TEST_F(MultiColumnRenderingTest, SubtreeWithSpannerBeforeSpanner) {
 }
 
 TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffset) {
-  SetMulticolHTML(
-      "<div id='mc' "
-      "style='line-height:100px;'>text<br>text<br>text<br>text<br>text<div "
-      "id='spanner1'>spanner</div>text<br>text<div "
-      "id='spanner2'>text<br>text</div>text</div>");
+  SetMulticolHTML(R"HTML(
+      <div id='mc' style='line-height:100px;'>
+        text<br>
+        text<br>
+        text<br>
+        text<br>
+        text
+        <div id='spanner1'>spanner</div>
+        text<br>
+        text
+        <div id='spanner2'>
+          text<br>
+          text
+        </div>
+        text
+      </div>
+  )HTML");
   LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
   EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
   LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
+  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
+  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
             first_row);  // negative overflow
@@ -411,34 +434,45 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffset) {
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
             first_row);
+  LayoutUnit offset;
+  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
+  // in the first and 2 lines in the second. Line height is 100px. There's 100px
+  // of unused space at the end of the second column. LayoutNGBlockFragmentation
+  // consumes this and includes it in the flow thread offset, while legacy block
+  // fragmentation doesn't. But it doesn't really matter in this case. It's just
+  // an implementation detail.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    offset = LayoutUnit(600);
+  else
+    offset = LayoutUnit(500);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             first_row);  // bottom of last line in first row.
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             first_row);  // bottom of last line in first row.
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             first_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
+            second_row);
+  offset += LayoutUnit(200);
+  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
             third_row);
+  offset += LayoutUnit(100);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(799), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             third_row);  // bottom of last row
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
@@ -449,14 +483,28 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffset) {
 }
 
 TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalRl) {
-  SetMulticolHTML(
-      "<div id='mc' style='line-height:100px; "
-      "-webkit-writing-mode:vertical-rl;'>text<br>text<br>text<br>text<br>text<"
-      "div id='spanner1'>spanner</div>text<br>text<div "
-      "id='spanner2'>text<br>text</div>text</div>");
+  SetMulticolHTML(R"HTML(
+      <div id='mc' style='line-height:100px; writing-mode:vertical-rl;'>
+        text<br>
+        text<br>
+        text<br>
+        text<br>
+        text
+        <div id='spanner1'>spanner</div>
+        text<br>
+        text
+        <div id='spanner2'>
+          text<br>
+          text
+        </div>
+        text
+      </div>
+  )HTML");
   LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
   EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
   LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
+  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
+  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
             first_row);  // negative overflow
@@ -469,34 +517,45 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalRl) {
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
             first_row);
+  LayoutUnit offset;
+  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
+  // in the first and 2 lines in the second. Line height is 100px. There's 100px
+  // of unused space at the end of the second column. LayoutNGBlockFragmentation
+  // consumes this and includes it in the flow thread offset, while legacy block
+  // fragmentation doesn't. But it doesn't really matter in this case. It's just
+  // an implementation detail.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    offset = LayoutUnit(600);
+  else
+    offset = LayoutUnit(500);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             first_row);  // bottom of last line in first row.
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             first_row);  // bottom of last line in first row.
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             first_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
+            second_row);
+  offset += LayoutUnit(200);
+  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
             third_row);
+  offset += LayoutUnit(100);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(799), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             third_row);  // bottom of last row
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
@@ -507,14 +566,28 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalRl) {
 }
 
 TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalLr) {
-  SetMulticolHTML(
-      "<div id='mc' style='line-height:100px; "
-      "-webkit-writing-mode:vertical-lr;'>text<br>text<br>text<br>text<br>text<"
-      "div id='spanner1'>spanner</div>text<br>text<div "
-      "id='spanner2'>text<br>text</div>text</div>");
+  SetMulticolHTML(R"HTML(
+      <div id='mc' style='line-height:100px; writing-mode:vertical-lr;'>
+        text<br>
+        text<br>
+        text<br>
+        text<br>
+        text
+        <div id='spanner1'>spanner</div>
+        text<br>
+        text
+        <div id='spanner2'>
+          text<br>
+          text
+        </div>
+        text
+      </div>
+  )HTML");
   LayoutMultiColumnFlowThread* flow_thread = FindFlowThread("mc");
   EXPECT_EQ(ColumnSetSignature(flow_thread), "cscsc");
   LayoutMultiColumnSet* first_row = flow_thread->FirstMultiColumnSet();
+  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
+  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(-10000), LayoutBox::kAssociateWithFormerPage),
             first_row);  // negative overflow
@@ -527,34 +600,45 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalLr) {
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(), LayoutBox::kAssociateWithLatterPage),
             first_row);
+  LayoutUnit offset;
+  // The first column row contains 5 lines, split into two columns, i.e. 3 lines
+  // in the first and 2 lines in the second. Line height is 100px. There's 100px
+  // of unused space at the end of the second column. LayoutNGBlockFragmentation
+  // consumes this and includes it in the flow thread offset, while legacy block
+  // fragmentation doesn't. But it doesn't really matter in this case. It's just
+  // an implementation detail.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    offset = LayoutUnit(600);
+  else
+    offset = LayoutUnit(500);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             first_row);  // bottom of last line in first row.
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(499), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             first_row);  // bottom of last line in first row.
-  LayoutMultiColumnSet* second_row = first_row->NextSiblingMultiColumnSet();
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             first_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(500), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
+            second_row);
+  offset += LayoutUnit(200);
+  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithFormerPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(699), LayoutBox::kAssociateWithLatterPage),
-            second_row);
-  LayoutMultiColumnSet* third_row = second_row->NextSiblingMultiColumnSet();
-  EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithFormerPage),
+                offset, LayoutBox::kAssociateWithFormerPage),
             second_row);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(700), LayoutBox::kAssociateWithLatterPage),
+                offset, LayoutBox::kAssociateWithLatterPage),
             third_row);
+  offset += LayoutUnit(100);
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
-                LayoutUnit(799), LayoutBox::kAssociateWithLatterPage),
+                offset - LayoutUnit(1), LayoutBox::kAssociateWithLatterPage),
             third_row);  // bottom of last row
   EXPECT_EQ(flow_thread->ColumnSetAtBlockOffset(
                 LayoutUnit(10000), LayoutBox::kAssociateWithFormerPage),
@@ -564,8 +648,19 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalLr) {
             third_row);  // overflow
 }
 
-class MultiColumnTreeModifyingTest : public MultiColumnRenderingTest {
+// Some of these tests manipulate layout objects in such a way that we might end
+// up with a mix of legacy and NG objects, and inside block fragmentation, any
+// such mismatch (e.g. an NG layout object inside legacy block fragmentation)
+// will be treated as monolithic content, which isn't what these tests expect.
+// Disable LayoutNG to ensure that we only use one engine.
+//
+// TODO(mstensho): Rather than disabling LayoutNG, we should *enable*
+// LayoutNGBlockFragmentation, but that currently causes failures.
+class MultiColumnTreeModifyingTest : public MultiColumnRenderingTest,
+                                     private ScopedLayoutNGForTest {
  public:
+  MultiColumnTreeModifyingTest() : ScopedLayoutNGForTest(false) {}
+
   void SetMulticolHTML(const char*);
   void ReparentLayoutObject(const char* new_parent_id,
                             const char* child_id,
@@ -1082,6 +1177,486 @@ TEST_F(MultiColumnTreeModifyingTest,
   EXPECT_EQ(ColumnSetSignature("mc"), "csc");
   DestroyLayoutObject("spanner");
   EXPECT_EQ(ColumnSetSignature("mc"), "c");
+}
+
+TEST_F(MultiColumnRenderingTest, Continuation) {
+  InsertStyleElement("#mc { column-count: 2}");
+  SetBodyInnerHTML("<div id=mc><span>x<div id=inner></div>y</div>");
+  auto& multicol = *GetElementById("mc");
+  const auto& container = *To<LayoutBlockFlow>(multicol.GetLayoutObject());
+  const auto& flow_thread = *container.MultiColumnFlowThread();
+
+  ASSERT_TRUE(&flow_thread)
+      << "We have flow thread even if container has no children.";
+
+  // 1. Continuations should be in anonymous block in LayoutNG.
+  EXPECT_FALSE(flow_thread.ChildrenInline());
+  if (IsLegacyLayout()) {
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "x"
+  |  +--LayoutBlockFlow (anonymous)
+  |  |  +--LayoutBlockFlow DIV id="inner"
+  |  +--LayoutBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutInline SPAN
+  |  |  |  |  +--LayoutText #text "x"
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutNGBlockFlow DIV id="inner"
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutInline SPAN
+  |  |  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 2. Remove #inner to avoid continuation.
+  GetElementById("inner")->remove();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutInline SPAN
+  |  |  +--LayoutText #text "x"
+  |  +--LayoutInline SPAN
+  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "x"
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 3. Normalize to merge "x" and "y".
+  // See http://crbug.com/1201508 for redundant |LayoutInline SPAN|.
+  multicol.normalize();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutInline SPAN
+  |  |  +--LayoutText #text "xy"
+  |  +--LayoutInline SPAN
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  |  |  |  +--LayoutText #text "xy"
+  |  |  +--LayoutInline SPAN
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+}
+
+TEST_F(MultiColumnRenderingTest, InsertBlock) {
+  InsertStyleElement("#mc { column-count: 3}");
+  SetBodyInnerHTML("<div id=mc></div>");
+
+  auto& multicol = *GetElementById("mc");
+  const auto& container = *To<LayoutBlockFlow>(multicol.GetLayoutObject());
+  const auto& flow_thread = *container.MultiColumnFlowThread();
+
+  ASSERT_TRUE(&flow_thread)
+      << "We have flow thread even if container has no children.";
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 1. Add inline child
+  multicol.appendChild(Text::Create(GetDocument(), "x"));
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 2. Remove inline child
+  multicol.removeChild(multicol.firstChild());
+  RunDocumentLifecycle();
+
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(
+        R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+        ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 3. Insert block
+  multicol.insertBefore(MakeGarbageCollected<HTMLDivElement>(GetDocument()),
+                        multicol.lastChild());
+  RunDocumentLifecycle();
+  EXPECT_FALSE(flow_thread.ChildrenInline());
+
+  if (IsLegacyLayout()) {
+    EXPECT_EQ(
+        R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutBlockFlow DIV
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+        ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_EQ(
+        R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow DIV
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+        ToSimpleLayoutTree(container));
+  }
+}
+
+TEST_F(MultiColumnRenderingTest, InsertInline) {
+  InsertStyleElement("#mc { column-count: 3}");
+  SetBodyInnerHTML("<div id=mc></div>");
+
+  auto& multicol = *GetElementById("mc");
+  const auto& container = *To<LayoutBlockFlow>(multicol.GetLayoutObject());
+  const auto& flow_thread = *container.MultiColumnFlowThread();
+
+  ASSERT_TRUE(&flow_thread)
+      << "We have flow thread even if container has no children.";
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(
+        R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+        ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 1. Add inline child
+  multicol.appendChild(Text::Create(GetDocument(), "x"));
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 2. Remove inline child
+  multicol.removeChild(multicol.firstChild());
+  RunDocumentLifecycle();
+
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 3. Insert inline
+  multicol.insertBefore(MakeGarbageCollected<HTMLSpanElement>(GetDocument()),
+                        multicol.lastChild());
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutInline SPAN
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutInline SPAN
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+}
+
+TEST_F(MultiColumnRenderingTest, ListItem) {
+  InsertStyleElement("#mc { column-count: 3; display: list-item; }");
+  SetBodyInnerHTML("<div id=mc></div>");
+
+  auto& multicol = *GetElementById("mc");
+  const auto& container = *To<LayoutBlockFlow>(multicol.GetLayoutObject());
+  const auto& flow_thread = *container.MultiColumnFlowThread();
+
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutListItem DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutListMarker ::marker
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGListItem DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGOutsideListMarker ::marker
+  |  |  +--LayoutText (anonymous) "\u2022 "
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+}
+
+TEST_F(MultiColumnRenderingTest, SplitInline) {
+  InsertStyleElement("#mc { column-count: 3}");
+  SetBodyInnerHTML("<div id=mc></div>");
+
+  auto& multicol = *GetElementById("mc");
+  const auto& container = *To<LayoutBlockFlow>(multicol.GetLayoutObject());
+  const auto& flow_thread = *container.MultiColumnFlowThread();
+
+  ASSERT_TRUE(&flow_thread)
+      << "We have flow thread even if container has no children.";
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 1. Add inline child
+  multicol.appendChild(Text::Create(GetDocument(), "x"));
+  RunDocumentLifecycle();
+
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 2. Remove inline child
+  multicol.removeChild(multicol.firstChild());
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 3. Add inline child again
+  multicol.appendChild(Text::Create(GetDocument(), "x"));
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 4. Add inline child (one more)
+  multicol.appendChild(Text::Create(GetDocument(), "y"));
+  RunDocumentLifecycle();
+  if (IsLegacyLayout()) {
+    EXPECT_TRUE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutText #text "x"
+  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_FALSE(flow_thread.ChildrenInline());
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
+
+  // 5. Add a block child to split inline children.
+  multicol.insertBefore(MakeGarbageCollected<HTMLDivElement>(GetDocument()),
+                        multicol.lastChild());
+  RunDocumentLifecycle();
+  EXPECT_FALSE(flow_thread.ChildrenInline());
+  if (IsLegacyLayout()) {
+    EXPECT_EQ(R"DUMP(
+LayoutBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  |  +--LayoutBlockFlow DIV
+  |  +--LayoutBlockFlow (anonymous)
+  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  } else {
+    EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="mc"
+  +--LayoutMultiColumnFlowThread (anonymous)
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "x"
+  |  +--LayoutNGBlockFlow DIV
+  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  +--LayoutText #text "y"
+  +--LayoutMultiColumnSet (anonymous)
+)DUMP",
+              ToSimpleLayoutTree(container));
+  }
 }
 
 }  // anonymous namespace

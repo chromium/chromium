@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -19,7 +18,6 @@
 #include "components/prefs/pref_member.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/net/net_types.h"
-#include "net/cert/ct_verifier.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
@@ -27,6 +25,8 @@
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_job_factory.h"
 
+class ChromeBrowserState;
+enum class ChromeBrowserStateType;
 class HostContentSettingsMap;
 class IOSChromeHttpUserAgentSettings;
 class IOSChromeNetworkDelegate;
@@ -34,11 +34,6 @@ class IOSChromeURLRequestContextGetter;
 
 namespace content_settings {
 class CookieSettings;
-}
-
-namespace ios {
-class ChromeBrowserState;
-enum class ChromeBrowserStateType;
 }
 
 namespace net {
@@ -51,7 +46,7 @@ class ReportSender;
 class SystemCookieStore;
 class TransportSecurityPersister;
 class TransportSecurityState;
-class URLRequestJobFactoryImpl;
+class URLRequestJobFactory;
 }  // namespace net
 
 // Conceptually speaking, the ChromeBrowserStateIOData represents data that
@@ -65,14 +60,16 @@ class ChromeBrowserStateIOData {
   typedef std::vector<scoped_refptr<IOSChromeURLRequestContextGetter>>
       IOSChromeURLRequestContextGetterVector;
 
+  ChromeBrowserStateIOData(const ChromeBrowserStateIOData&) = delete;
+  ChromeBrowserStateIOData& operator=(const ChromeBrowserStateIOData&) = delete;
+
   virtual ~ChromeBrowserStateIOData();
 
   // Utility to install additional WebUI handlers into the |job_factory|.
   // Ownership of the handlers is transferred from |protocol_handlers|
   // to the |job_factory|.
-  static void InstallProtocolHandlers(
-      net::URLRequestJobFactoryImpl* job_factory,
-      ProtocolHandlerMap* protocol_handlers);
+  static void InstallProtocolHandlers(net::URLRequestJobFactory* job_factory,
+                                      ProtocolHandlerMap* protocol_handlers);
 
   // Initializes the ChromeBrowserStateIOData object and primes the
   // RequestContext generation. Must be called prior to any of the Get*()
@@ -97,7 +94,7 @@ class ChromeBrowserStateIOData {
     return transport_security_state_.get();
   }
 
-  ios::ChromeBrowserStateType browser_state_type() const {
+  ChromeBrowserStateType browser_state_type() const {
     return browser_state_type_;
   }
 
@@ -160,10 +157,9 @@ class ChromeBrowserStateIOData {
     void* browser_state;
   };
 
-  explicit ChromeBrowserStateIOData(
-      ios::ChromeBrowserStateType browser_state_type);
+  explicit ChromeBrowserStateIOData(ChromeBrowserStateType browser_state_type);
 
-  void InitializeOnUIThread(ios::ChromeBrowserState* browser_state);
+  void InitializeOnUIThread(ChromeBrowserState* browser_state);
   void ApplyProfileParamsToContext(net::URLRequestContext* context) const;
 
   // Called when the ChromeBrowserState is destroyed. |context_getters| must
@@ -248,7 +244,6 @@ class ChromeBrowserStateIOData {
       proxy_resolution_service_;
   mutable std::unique_ptr<net::TransportSecurityState>
       transport_security_state_;
-  mutable std::unique_ptr<net::CTVerifier> cert_transparency_verifier_;
   mutable std::unique_ptr<net::HttpServerProperties> http_server_properties_;
   mutable std::unique_ptr<net::TransportSecurityPersister>
       transport_security_persister_;
@@ -267,9 +262,7 @@ class ChromeBrowserStateIOData {
   mutable std::unique_ptr<IOSChromeHttpUserAgentSettings>
       chrome_http_user_agent_settings_;
 
-  const ios::ChromeBrowserStateType browser_state_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateIOData);
+  const ChromeBrowserStateType browser_state_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IO_DATA_H_

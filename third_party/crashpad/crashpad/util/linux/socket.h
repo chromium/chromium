@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "util/file/file_io.h"
 
 namespace crashpad {
@@ -29,6 +28,10 @@ namespace crashpad {
 //!     sockets.
 class UnixCredentialSocket {
  public:
+  UnixCredentialSocket() = delete;
+  UnixCredentialSocket(const UnixCredentialSocket&) = delete;
+  UnixCredentialSocket& operator=(const UnixCredentialSocket&) = delete;
+
   //! \brief Creates an `AF_UNIX` family socket pair with `SO_PASSCRED` set on
   //!     each socket.
   //!
@@ -40,7 +43,7 @@ class UnixCredentialSocket {
 
   //! \brief The maximum number of file descriptors that may be sent/received
   //!     with `SendMsg()` or `RecvMsg()`.
-  static const size_t kMaxSendRecvMsgFDs;
+  static constexpr size_t kMaxSendRecvMsgFDs = 4;
 
   //! \brief Wraps `sendmsg()` to send a message with file descriptors.
   //!
@@ -86,9 +89,6 @@ class UnixCredentialSocket {
                       size_t buf_size,
                       ucred* creds,
                       std::vector<ScopedFileHandle>* fds = nullptr);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UnixCredentialSocket);
 };
 
 }  // namespace crashpad

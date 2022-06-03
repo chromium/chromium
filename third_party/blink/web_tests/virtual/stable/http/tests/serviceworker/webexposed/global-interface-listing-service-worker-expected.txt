@@ -9,6 +9,7 @@ interface AbortPaymentEvent : ExtendableEvent
     method constructor
     method respondWith
 interface AbortSignal : EventTarget
+    static method abort
     attribute @@toStringTag
     getter aborted
     getter onabort
@@ -143,6 +144,19 @@ interface CompressionStream
     getter readable
     getter writable
     method constructor
+interface CookieStore : EventTarget
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method get
+    method getAll
+    method set
+interface CookieStoreManager
+    attribute @@toStringTag
+    method constructor
+    method getSubscriptions
+    method subscribe
+    method unsubscribe
 interface CountQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -153,6 +167,7 @@ interface Crypto
     getter subtle
     method constructor
     method getRandomValues
+    method randomUUID
 interface CryptoKey
     attribute @@toStringTag
     getter algorithm
@@ -426,6 +441,11 @@ interface EventTarget
     method constructor
     method dispatchEvent
     method removeEventListener
+interface ExtendableCookieChangeEvent : ExtendableEvent
+    attribute @@toStringTag
+    getter changed
+    getter deleted
+    method constructor
 interface ExtendableEvent : Event
     attribute @@toStringTag
     method constructor
@@ -441,6 +461,7 @@ interface ExtendableMessageEvent : ExtendableEvent
 interface FetchEvent : ExtendableEvent
     attribute @@toStringTag
     getter clientId
+    getter handled
     getter isReload
     getter preloadResponse
     getter request
@@ -486,12 +507,46 @@ interface FileReader : EventTarget
     setter onloadend
     setter onloadstart
     setter onprogress
+interface FileSystemDirectoryHandle : FileSystemHandle
+    attribute @@toStringTag
+    method @@asyncIterator
+    method constructor
+    method entries
+    method getDirectoryHandle
+    method getFileHandle
+    method keys
+    method removeEntry
+    method resolve
+    method values
+interface FileSystemFileHandle : FileSystemHandle
+    attribute @@toStringTag
+    method constructor
+    method createWritable
+    method getFile
+interface FileSystemHandle
+    attribute @@toStringTag
+    getter kind
+    getter name
+    method constructor
+    method isSameEntry
+    method queryPermission
+    method requestPermission
+interface FileSystemWritableFileStream : WritableStream
+    attribute @@toStringTag
+    method constructor
+    method seek
+    method truncate
+    method write
 interface FontFace
     attribute @@toStringTag
+    getter ascentOverride
+    getter descentOverride
     getter display
     getter family
     getter featureSettings
+    getter lineGapOverride
     getter loaded
+    getter sizeAdjust
     getter status
     getter stretch
     getter style
@@ -500,9 +555,13 @@ interface FontFace
     getter weight
     method constructor
     method load
+    setter ascentOverride
+    setter descentOverride
     setter display
     setter family
     setter featureSettings
+    setter lineGapOverride
+    setter sizeAdjust
     setter stretch
     setter style
     setter unicodeRange
@@ -650,6 +709,7 @@ interface IDBRequest : EventTarget
 interface IDBTransaction : EventTarget
     attribute @@toStringTag
     getter db
+    getter durability
     getter error
     getter mode
     getter objectStoreNames
@@ -683,6 +743,7 @@ interface ImageBitmapRenderingContext
     method transferFromImageBitmap
 interface ImageData
     attribute @@toStringTag
+    getter colorSpace
     getter data
     getter height
     getter width
@@ -736,6 +797,14 @@ interface NavigationPreloadManager
     method enable
     method getState
     method setHeaderValue
+interface NavigatorUAData
+    attribute @@toStringTag
+    getter brands
+    getter mobile
+    getter platform
+    method constructor
+    method getHighEntropyValues
+    method toJSON
 interface NetworkInformation : EventTarget
     attribute @@toStringTag
     getter downlink
@@ -998,6 +1067,7 @@ interface PeriodicSyncManager
     method unregister
 interface PermissionStatus : EventTarget
     attribute @@toStringTag
+    getter name
     getter onchange
     getter state
     method constructor
@@ -1043,6 +1113,14 @@ interface PushSubscriptionOptions
     getter applicationServerKey
     getter userVisibleOnly
     method constructor
+interface ReadableByteStreamController
+    attribute @@toStringTag
+    getter byobRequest
+    getter desiredSize
+    method close
+    method constructor
+    method enqueue
+    method error
 interface ReadableStream
     attribute @@toStringTag
     getter locked
@@ -1052,6 +1130,26 @@ interface ReadableStream
     method pipeThrough
     method pipeTo
     method tee
+interface ReadableStreamBYOBReader
+    attribute @@toStringTag
+    getter closed
+    method cancel
+    method constructor
+    method read
+    method releaseLock
+interface ReadableStreamBYOBRequest
+    attribute @@toStringTag
+    getter view
+    method constructor
+    method respond
+    method respondWithNewView
+interface ReadableStreamDefaultController
+    attribute @@toStringTag
+    getter desiredSize
+    method close
+    method constructor
+    method enqueue
+    method error
 interface ReadableStreamDefaultReader
     attribute @@toStringTag
     getter closed
@@ -1059,6 +1157,12 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
+interface ReportingObserver
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
+    method takeRecords
 interface Request
     attribute @@toStringTag
     getter bodyUsed
@@ -1103,6 +1207,10 @@ interface Response
     method formData
     method json
     method text
+interface Scheduler
+    attribute @@toStringTag
+    method constructor
+    method postTask
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag
     getter blockedURI
@@ -1135,6 +1243,7 @@ interface ServiceWorkerRegistration : EventTarget
     attribute @@toStringTag
     getter active
     getter backgroundFetch
+    getter cookies
     getter installing
     getter navigationPreload
     getter onupdatefound
@@ -1151,10 +1260,11 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
-interface StorageManager
+interface StorageManager : EventTarget
     attribute @@toStringTag
     method constructor
     method estimate
+    method getDirectory
     method persisted
 interface SubtleCrypto
     attribute @@toStringTag
@@ -1181,6 +1291,20 @@ interface SyncManager
     method constructor
     method getTags
     method register
+interface TaskController : AbortController
+    attribute @@toStringTag
+    method constructor
+    method setPriority
+interface TaskPriorityChangeEvent : Event
+    attribute @@toStringTag
+    getter previousPriority
+    method constructor
+interface TaskSignal : AbortSignal
+    attribute @@toStringTag
+    getter onprioritychange
+    getter priority
+    method constructor
+    setter onprioritychange
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
@@ -1214,6 +1338,8 @@ interface TextMetrics
     getter actualBoundingBoxDescent
     getter actualBoundingBoxLeft
     getter actualBoundingBoxRight
+    getter fontBoundingBoxAscent
+    getter fontBoundingBoxDescent
     getter width
     method constructor
 interface TransformStream
@@ -1221,6 +1347,41 @@ interface TransformStream
     getter readable
     getter writable
     method constructor
+interface TrustedHTML
+    attribute @@toStringTag
+    method constructor
+    method toJSON
+    method toString
+interface TrustedScript
+    attribute @@toStringTag
+    method constructor
+    method toJSON
+    method toString
+interface TrustedScriptURL
+    attribute @@toStringTag
+    method constructor
+    method toJSON
+    method toString
+interface TrustedTypePolicy
+    attribute @@toStringTag
+    getter name
+    method constructor
+    method createHTML
+    method createScript
+    method createScriptURL
+interface TrustedTypePolicyFactory : EventTarget
+    attribute @@toStringTag
+    getter defaultPolicy
+    getter emptyHTML
+    getter emptyScript
+    method constructor
+    method createPolicy
+    method getAttributeType
+    method getPropertyType
+    method getTypeMapping
+    method isHTML
+    method isScript
+    method isScriptURL
 interface URL
     attribute @@toStringTag
     getter hash
@@ -1248,6 +1409,19 @@ interface URL
     setter protocol
     setter search
     setter username
+interface URLPattern
+    attribute @@toStringTag
+    getter hash
+    getter hostname
+    getter password
+    getter pathname
+    getter port
+    getter protocol
+    getter search
+    getter username
+    method constructor
+    method exec
+    method test
 interface URLSearchParams
     attribute @@toStringTag
     method @@iterator
@@ -2570,6 +2744,41 @@ interface WebSocket : EventTarget
     setter onerror
     setter onmessage
     setter onopen
+interface WebTransport
+    attribute @@toStringTag
+    getter closed
+    getter datagrams
+    getter incomingBidirectionalStreams
+    getter incomingUnidirectionalStreams
+    getter ready
+    method close
+    method constructor
+    method createBidirectionalStream
+    method createUnidirectionalStream
+interface WebTransportBidirectionalStream
+    attribute @@toStringTag
+    getter readable
+    getter writable
+    method constructor
+interface WebTransportDatagramDuplexStream
+    attribute @@toStringTag
+    getter incomingHighWaterMark
+    getter incomingMaxAge
+    getter maxDatagramSize
+    getter outgoingHighWaterMark
+    getter outgoingMaxAge
+    getter readable
+    getter writable
+    method constructor
+    setter incomingHighWaterMark
+    setter incomingMaxAge
+    setter outgoingHighWaterMark
+    setter outgoingMaxAge
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter source
+    getter streamErrorCode
+    method constructor
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused
@@ -2580,6 +2789,7 @@ interface WindowClient : Client
 interface WorkerGlobalScope : EventTarget
     attribute @@toStringTag
     getter caches
+    getter crossOriginIsolated
     getter crypto
     getter fonts
     getter indexedDB
@@ -2592,7 +2802,9 @@ interface WorkerGlobalScope : EventTarget
     getter onunhandledrejection
     getter origin
     getter performance
+    getter scheduler
     getter self
+    getter trustedTypes
     method atob
     method btoa
     method clearInterval
@@ -2602,14 +2814,17 @@ interface WorkerGlobalScope : EventTarget
     method fetch
     method importScripts
     method queueMicrotask
+    method reportError
     method setInterval
     method setTimeout
+    method structuredClone
     setter onerror
     setter onlanguagechange
     setter onrejectionhandled
     setter onunhandledrejection
     setter origin
     setter performance
+    setter scheduler
 interface WorkerLocation
     attribute @@toStringTag
     getter hash
@@ -2640,15 +2855,22 @@ interface WorkerNavigator
     getter platform
     getter product
     getter storage
-    getter usb
     getter userAgent
+    getter userAgentData
+    method clearAppBadge
     method constructor
+    method setAppBadge
 interface WritableStream
     attribute @@toStringTag
     getter locked
     method abort
+    method close
     method constructor
     method getWriter
+interface WritableStreamDefaultController
+    attribute @@toStringTag
+    method constructor
+    method error
 interface WritableStreamDefaultWriter
     attribute @@toStringTag
     getter closed
@@ -2659,11 +2881,13 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
+[NAMESPACES]
 [GLOBAL OBJECT]
     attribute console
     attribute globalThis
     attribute internals
     getter clients
+    getter cookieStore
     getter onabortpayment
     getter onactivate
     getter onbackgroundfetchabort
@@ -2671,6 +2895,7 @@ interface WritableStreamDefaultWriter
     getter onbackgroundfetchfail
     getter onbackgroundfetchsuccess
     getter oncanmakepayment
+    getter oncookiechange
     getter onfetch
     getter oninstall
     getter onmessage
@@ -2692,6 +2917,7 @@ interface WritableStreamDefaultWriter
     setter onbackgroundfetchfail
     setter onbackgroundfetchsuccess
     setter oncanmakepayment
+    setter oncookiechange
     setter onfetch
     setter oninstall
     setter onmessage

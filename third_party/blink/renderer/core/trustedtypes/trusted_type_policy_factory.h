@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_TYPE_POLICY_FACTORY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -21,22 +22,23 @@ class TrustedScript;
 class TrustedTypePolicy;
 class TrustedTypePolicyOptions;
 
-class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
-                                                   public ContextClient {
+class CORE_EXPORT TrustedTypePolicyFactory final
+    : public EventTargetWithInlineData,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(TrustedTypePolicyFactory);
 
  public:
   explicit TrustedTypePolicyFactory(ExecutionContext*);
 
   // TrustedTypePolicyFactory.idl
+  TrustedTypePolicy* createPolicy(const String&, ExceptionState&);
   TrustedTypePolicy* createPolicy(const String&,
                                   const TrustedTypePolicyOptions*,
                                   ExceptionState&);
 
   TrustedTypePolicy* defaultPolicy() const;
 
-  Vector<String> getPolicyNames() const;
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecreatepolicy, kBeforecreatepolicy)
 
   bool isHTML(ScriptState*, const ScriptValue&);
   bool isScript(ScriptState*, const ScriptValue&);
@@ -69,7 +71,9 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
   //  relate it to the total number of TT enabled documents.)
   void CountTrustedTypeAssignmentError();
 
-  void Trace(blink::Visitor*) override;
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+  void Trace(Visitor*) const override;
 
  private:
   const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,

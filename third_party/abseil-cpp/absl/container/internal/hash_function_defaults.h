@@ -53,9 +53,11 @@
 
 #include "absl/base/config.h"
 #include "absl/hash/hash.h"
+#include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 // The hash of an object of type T is computed by using absl::Hash.
@@ -71,23 +73,39 @@ struct StringHash {
   size_t operator()(absl::string_view v) const {
     return absl::Hash<absl::string_view>{}(v);
   }
+  size_t operator()(const absl::Cord& v) const {
+    return absl::Hash<absl::Cord>{}(v);
+  }
+};
+
+struct StringEq {
+  using is_transparent = void;
+  bool operator()(absl::string_view lhs, absl::string_view rhs) const {
+    return lhs == rhs;
+  }
+  bool operator()(const absl::Cord& lhs, const absl::Cord& rhs) const {
+    return lhs == rhs;
+  }
+  bool operator()(const absl::Cord& lhs, absl::string_view rhs) const {
+    return lhs == rhs;
+  }
+  bool operator()(absl::string_view lhs, const absl::Cord& rhs) const {
+    return lhs == rhs;
+  }
 };
 
 // Supports heterogeneous lookup for string-like elements.
 struct StringHashEq {
   using Hash = StringHash;
-  struct Eq {
-    using is_transparent = void;
-    bool operator()(absl::string_view lhs, absl::string_view rhs) const {
-      return lhs == rhs;
-    }
-  };
+  using Eq = StringEq;
 };
 
 template <>
 struct HashEq<std::string> : StringHashEq {};
 template <>
 struct HashEq<absl::string_view> : StringHashEq {};
+template <>
+struct HashEq<absl::Cord> : StringHashEq {};
 
 // Supports heterogeneous lookup for pointers and smart pointers.
 template <class T>
@@ -139,6 +157,7 @@ template <class T>
 using hash_default_eq = typename container_internal::HashEq<T>::Eq;
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_HASH_FUNCTION_DEFAULTS_H_

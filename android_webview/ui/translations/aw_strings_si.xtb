@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
-<translation id="6106989379647458772"><ph name="PAGE" /> හි වෙබ් පිටුව තාවකාලිකව ක්‍රියා නොකරයි, නැතහොත් එය ස්ථිරවම වෙනත් වෙබ් ලිපිනයක් වෙත ගෙන ගොස් ඇත.</translation>
-<translation id="6312113039770857350">වෙබ් පිටුව ලබා ගත නොහැකිය</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> හි මෙම වෙබ් පිටුව පහත හේතුව නිසා පූරණය කළ නොහැකි විය:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />යෝජනා:<ph name="MARKUP_2" />ඔබට දත්ත සබැඳුමක් ඇති බව සහතික කර ගන්න<ph name="MARKUP_3" />මෙම වෙබ් පිටුව පසුව පූරණය කරන්න<ph name="MARKUP_4" />ඔබ ඇතුළත් කළ ලිපිනය පරීක්ෂා කරන්න<ph name="MARKUP_5" /></translation>
 </translationbundle>

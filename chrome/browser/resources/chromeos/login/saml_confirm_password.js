@@ -2,77 +2,124 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+'use strict';
+
+(function() {
+
+/**
+ * UI mode for the dialog.
+ * @enum {string}
+ */
+const UIState = {
+  PASSWORD: 'password',
+  PROGRESS: 'progress',
+};
+
 Polymer({
-  is: 'saml-confirm-password',
+  is: 'saml-confirm-password-element',
+
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
 
   properties: {
     email: String,
 
-    disabled: {type: Boolean, value: false, observer: 'disabledChanged_'},
-
-    manualInput:
-        {type: Boolean, value: false, observer: 'manualInputChanged_'}
-  },
-
-  ready: function() {
-    /**
-     * Workaround for
-     * https://github.com/PolymerElements/neon-animation/issues/32
-     * TODO(dzhioev): Remove when fixed in Polymer.
-     */
-    var pages = this.$.animatedPages;
-    delete pages._squelchNextFinishEvent;
-    Object.defineProperty(pages, '_squelchNextFinishEvent', {
-      get: function() {
-        return false;
-      }
-    });
-  },
-
-  reset: function() {
-    if (this.$.cancelConfirmDlg.open)
-      this.$.cancelConfirmDlg.close();
-    this.disabled = false;
-    this.$.navigation.closeVisible = true;
-    if (this.$.animatedPages.selected != 0)
-      this.$.animatedPages.selected = 0;
-    this.$.passwordInput.invalid = false;
-    this.$.passwordInput.value = '';
-    if (this.manualInput) {
-      this.$$('#confirmPasswordInput').invalid = false;
-      this.$$('#confirmPasswordInput').value = '';
+    isManualInput: {
+      type: Boolean,
+      value: false,
     }
   },
 
-  invalidate: function() {
-    this.$.passwordInput.invalid = true;
+  EXTERNAL_API: ['show'],
+
+  defaultUIStep() {
+    return UIState.PASSWORD;
   },
 
-  focus: function() {
-    if (this.$.animatedPages.selected == 0)
-      this.$.passwordInput.focus();
+  UI_STEPS: UIState,
+
+  /**
+   * Callback to run when the screen is dismissed.
+   * @type {?function(string)}
+   */
+  callback_: null,
+
+  ready() {
+    this.initializeLoginScreen('ConfirmSamlPasswordScreen', {
+      resetAllowed: true,
+    });
+
+    cr.ui.LoginUITools.addSubmitListener(
+        this.$.passwordInput, this.submit_.bind(this));
+    cr.ui.LoginUITools.addSubmitListener(
+        this.$.confirmPasswordInput, this.submit_.bind(this));
   },
 
-  onClose_: function() {
-    this.disabled = true;
-    this.$.cancelConfirmDlg.showModal();
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.SAML_PASSWORD_CONFIRM;
   },
 
-  onCancelNo_: function() {
-    this.$.cancelConfirmDlg.close();
+  /**
+   * Shows the confirm password screen.
+   * @param {string} email The authenticated user's e-mail.
+   * @param {boolean} manualPasswordInput True if no password has been
+   *     scrapped and the user needs to set one manually for the device.
+   * @param {number} attemptCount Number of attempts tried, starting at 0.
+   * @param {function(string)} callback The callback to be invoked when the
+   *     screen is dismissed.
+   */
+  show(email, manualPasswordInput, attemptCount, callback) {
+    this.callback_ = callback;
+    this.reset();
+    this.email = email;
+    this.isManualInput = manualPasswordInput;
+    if (attemptCount > 0)
+      this.$.passwordInput.invalid = true;
+    cr.ui.Oobe.showScreen({id: 'saml-confirm-password'});
   },
 
-  onCancelYes_: function() {
-    this.$.cancelConfirmDlg.close();
-    this.fire('cancel');
+  resetFields() {
+    this.$.passwordInput.invalid = false;
+    this.$.passwordInput.value = '';
+    if (this.isManualInput) {
+      this.shadowRoot.querySelector('#confirmPasswordInput').invalid = false;
+      this.shadowRoot.querySelector('#confirmPasswordInput').value = '';
+    }
   },
 
-  onPasswordSubmitted_: function() {
+  reset() {
+    if (this.$.cancelConfirmDlg.open)
+      this.$.cancelConfirmDlg.hideDialog();
+    this.setUIStep(UIState.PASSWORD);
+    this.resetFields();
+  },
+
+
+  onCancel_() {
+    this.$.cancelConfirmDlg.showDialog();
+  },
+
+  onCancelNo_() {
+    this.$.cancelConfirmDlg.hideDialog();
+  },
+
+  onCancelYes_() {
+    this.$.cancelConfirmDlg.hideDialog();
+
+    cr.ui.Oobe.showScreen({id: 'gaia-signin'});
+    cr.ui.Oobe.resetSigninUI(true);
+  },
+
+  submit_() {
     if (!this.$.passwordInput.validate())
       return;
-    if (this.manualInput) {
+    if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
-      var confirmPasswordInput = this.$$('#confirmPasswordInput');
+      var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate())
         return;
 
@@ -82,44 +129,29 @@ Polymer({
         return;
       }
     }
-
-    this.$.animatedPages.selected = 1;
-    this.$.navigation.closeVisible = false;
-    this.fire('passwordEnter', {password: this.$.passwordInput.value});
+    this.setUIStep(UIState.PROGRESS);
+    this.callback_(this.$.passwordInput.value);
+    this.resetFields();
   },
 
-  onDialogOverlayClosed_: function() {
+  onDialogOverlayClosed_() {
     this.disabled = false;
   },
 
-  disabledChanged_: function(disabled) {
-    this.$.confirmPasswordCard.classList.toggle('full-disabled', disabled);
+  subtitleText_(locale, manual) {
+    const key = manual ? 'manualPasswordTitle' : 'confirmPasswordTitle';
+    return this.i18n(key);
   },
 
-  onAnimationFinish_: function() {
-    if (this.$.animatedPages.selected == 1)
-      this.$.passwordInput.value = '';
+  passwordPlaceholder_(locale, manual) {
+    const key = manual ? 'manualPasswordInputLabel' : 'confirmPasswordLabel';
+    return this.i18n(key);
   },
 
-  manualInputChanged_: function() {
-    var titleId =
-        this.manualInput ? 'manualPasswordTitle' : 'confirmPasswordTitle';
-    var passwordInputLabelId =
-        this.manualInput ? 'manualPasswordInputLabel' : 'confirmPasswordLabel';
-    var passwordInputErrorId = this.manualInput ?
-        'manualPasswordMismatch' :
-        'confirmPasswordIncorrectPassword';
-
-    this.$.title.textContent = loadTimeData.getString(titleId);
-    this.$.passwordInput.label = loadTimeData.getString(passwordInputLabelId);
-    this.$.passwordInput.error = loadTimeData.getString(passwordInputErrorId);
+  passwordErrorText_(locale, manual) {
+    const key =
+        manual ? 'manualPasswordMismatch' : 'confirmPasswordIncorrectPassword';
+    return this.i18n(key);
   },
-
-  getConfirmPasswordInputLabel_: function() {
-    return loadTimeData.getString('confirmPasswordLabel');
-  },
-
-  getConfirmPasswordInputError_: function() {
-    return loadTimeData.getString('manualPasswordMismatch');
-  }
 });
+})();

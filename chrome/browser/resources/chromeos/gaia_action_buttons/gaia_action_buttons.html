@@ -1,0 +1,26 @@
+<style>
+  .secondary-button {
+    margin-inline-end: 20px;
+  }
+
+  .rounded-button {
+    border-radius: 20px;
+  }
+</style>
+
+<cr-button
+    class$="[[secondaryButtonClasses_]]"
+    on-click="onSecondaryActionButtonClicked_"
+    aria-label$="[[data_.secondaryActionButtonLabel]]"
+    hidden="[[!data_.secondaryActionButtonLabel]]"
+    disabled="[[!data_.secondaryActionButtonEnabled]]">
+    [[data_.secondaryActionButtonLabel]]
+</cr-button>
+<cr-button
+    class$="[[actionButtonClasses_]]"
+    on-click="onPrimaryActionButtonClicked_"
+    aria-label$="[[data_.primaryActionButtonLabel]]"
+    hidden="[[!data_.primaryActionButtonLabel]]"
+    disabled="[[!data_.primaryActionButtonEnabled]]">
+  [[data_.primaryActionButtonLabel]]
+</cr-button>

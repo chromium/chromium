@@ -7,8 +7,9 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -152,7 +153,9 @@ int Version::CompareTo(const Version& other) const {
 }
 
 std::string Version::GetString() const {
-  DCHECK(IsValid());
+  if (!IsValid())
+    return "invalid";
+
   std::string version_str;
   size_t count = components_.size();
   for (size_t i = 0; i < count - 1; ++i) {

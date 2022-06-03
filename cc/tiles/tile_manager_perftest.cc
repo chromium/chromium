@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -43,7 +43,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
  public:
   TileManagerPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void InitializeFrameSink() override {
@@ -268,7 +268,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
     timer_.Reset();
     do {
-      host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+      host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
       for (auto* layer : layers)
         layer->UpdateTiles();
 

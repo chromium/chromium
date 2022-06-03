@@ -9,6 +9,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -26,30 +27,27 @@ class PasswordReuseModalWarningDialog
       public ChromePasswordProtectionService::Observer,
       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(PasswordReuseModalWarningDialog);
   PasswordReuseModalWarningDialog(content::WebContents* web_contents,
                                   ChromePasswordProtectionService* service,
                                   ReusedPasswordAccountType password_type,
                                   OnWarningDone done_callback);
-
+  PasswordReuseModalWarningDialog(const PasswordReuseModalWarningDialog&) =
+      delete;
+  PasswordReuseModalWarningDialog& operator=(
+      const PasswordReuseModalWarningDialog&) = delete;
   ~PasswordReuseModalWarningDialog() override;
 
   void CreateSavedPasswordReuseModalWarningDialog(
-      const base::string16 message_body,
-      std::vector<size_t> placeholder_offsets);
+      const std::u16string message_body);
   void CreateGaiaPasswordReuseModalWarningDialog(
       views::Label* message_body_label);
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowWindowIcon() const override;
-  int GetDialogButtons() const override;
-  bool Cancel() override;
-  bool Accept() override;
-  bool Close() override;
+  ui::ImageModel GetWindowIcon() override;
 
   // ChromePasswordProtectionService::Observer:
   void OnGaiaPasswordChanged() override;
@@ -66,7 +64,8 @@ class PasswordReuseModalWarningDialog
   const GURL url_;
   const ReusedPasswordAccountType password_type_;
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseModalWarningDialog);
+  // Records the start time when modal warning is constructed.
+  base::TimeTicks modal_construction_start_time_;
 };
 
 }  // namespace safe_browsing

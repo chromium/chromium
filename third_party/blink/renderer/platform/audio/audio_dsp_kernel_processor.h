@@ -52,7 +52,9 @@ class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
  public:
   // numberOfChannels may be later changed if object is not yet in an
   // "initialized" state
-  AudioDSPKernelProcessor(float sample_rate, unsigned number_of_channels);
+  AudioDSPKernelProcessor(float sample_rate,
+                          unsigned number_of_channels,
+                          unsigned render_quantum_frames);
 
   // Subclasses create the appropriate type of processing kernel here.
   // We'll call this to create a kernel for each channel.

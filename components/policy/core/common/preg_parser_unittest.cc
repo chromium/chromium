@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,7 +28,7 @@ const char kRegistryPolFile[] = "parser_test/registry.pol";
 const char kInvalidEncodingRegistryPolFile[] = "invalid_encoding/registry.pol";
 const char kNonExistingRegistryPolFile[] = "does_not_exist.pol";
 
-const char kRegistryKey[] = "SOFTWARE\\Policies\\Chromium";
+const char16_t kRegistryKey[] = u"SOFTWARE\\Policies\\Chromium";
 
 // Check whether two RegistryDicts equal each other.
 testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
@@ -118,8 +117,7 @@ TEST_F(PRegParserTest, TestParseFile) {
   // Run the parser.
   base::FilePath test_file(test_data_dir_.AppendASCII(kRegistryPolFile));
   PolicyLoadStatusUmaReporter status;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   // Build the expected output dictionary.
   RegistryDict expected;
@@ -149,15 +147,13 @@ TEST_F(PRegParserTest, SubstringRootInvalid) {
 
   // No data should be loaded for partial roots ("Aa/Bb/C").
   RegistryDict dict1;
-  ASSERT_TRUE(preg_parser::ReadFile(
-      test_file, base::ASCIIToUTF16("SOFTWARE\\Policies\\Chro"), &dict1,
-      &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, u"SOFTWARE\\Policies\\Chro",
+                                    &dict1, &status));
   EXPECT_TRUE(RegistryDictEquals(dict1, empty));
 
   // Safety check with kRegistryKey (dict should not be empty).
   RegistryDict dict2;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict2, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict2, &status));
   EXPECT_FALSE(RegistryDictEquals(dict2, empty));
 }
 
@@ -167,8 +163,7 @@ TEST_F(PRegParserTest, RejectInvalidStrings) {
       test_data_dir_.AppendASCII(kInvalidEncodingRegistryPolFile));
   PolicyLoadStatusUmaReporter status;
   RegistryDict dict;
-  ASSERT_TRUE(preg_parser::ReadFile(test_file, base::ASCIIToUTF16(kRegistryKey),
-                                    &dict, &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   RegistryDict empty;
   EXPECT_TRUE(RegistryDictEquals(dict, empty));
@@ -180,8 +175,7 @@ TEST_F(PRegParserTest, LoadStatusSampling) {
   RegistryDict dict;
   base::FilePath test_file(
       test_data_dir_.AppendASCII(kNonExistingRegistryPolFile));
-  ASSERT_FALSE(preg_parser::ReadFile(
-      test_file, base::ASCIIToUTF16(kRegistryKey), &dict, &status));
+  ASSERT_FALSE(preg_parser::ReadFile(test_file, kRegistryKey, &dict, &status));
 
   PolicyLoadStatusSampler::StatusSet expected_status_set;
   expected_status_set[POLICY_LOAD_STATUS_STARTED] = true;

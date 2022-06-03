@@ -13,88 +13,97 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class MediaLog;
+class FormatSupportChecker;
 
 // Stores different pixel formats and DGXI formats, and checks for decoder
 // GUID support.
 class MEDIA_GPU_EXPORT TextureSelector {
  public:
+  enum class HDRMode {
+    kSDROnly = 0,
+    kSDROrHDR = 1,
+  };
+
   TextureSelector(VideoPixelFormat pixfmt,
-                  DXGI_FORMAT dxgifmt,
-                  GUID decoder_guid,
-                  gfx::Size coded_size,
-                  bool is_encrypted,
-                  bool supports_swap_chain);
-  virtual ~TextureSelector() = default;
+                  DXGI_FORMAT output_dxgifmt,
+                  ComD3D11VideoDevice video_device,
+                  ComD3D11DeviceContext d3d11_device_context,
+                  bool use_shared_handle);
+  virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& workarounds,
-      const VideoDecoderConfig& config,
-      MediaLog* media_log);
+      DXGI_FORMAT decoder_output_format,
+      HDRMode hdr_output_mode,
+      const FormatSupportChecker* format_checker,
+      ComD3D11VideoDevice video_device,
+      ComD3D11DeviceContext device_context,
+      MediaLog* media_log,
+      bool shared_image_use_shared_handle = false);
 
-  bool SupportsDevice(Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device);
-  ComD3D11Texture2D CreateOutputTexture(ComD3D11Device device, gfx::Size size);
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
-      ComD3D11VideoDevice video_device,
-      ComD3D11DeviceContext,
-      ComD3D11Texture2D input_texture,
       gfx::Size size);
 
-  const D3D11_VIDEO_DECODER_DESC* DecoderDescriptor() { return &decoder_desc_; }
-  const GUID DecoderGuid() { return decoder_guid_; }
-  VideoPixelFormat PixelFormat() { return pixel_format_; }
+  virtual bool DoesDecoderOutputUseSharedHandle() const;
 
-  static constexpr size_t BUFFER_COUNT = 20;
+  VideoPixelFormat PixelFormat() const { return pixel_format_; }
+  DXGI_FORMAT OutputDXGIFormat() const { return output_dxgifmt_; }
+  bool DoesSharedImageUseSharedHandle() const {
+    return shared_image_use_shared_handle_;
+  }
+
+  virtual bool WillCopyForTesting() const;
+
+ protected:
+  const ComD3D11VideoDevice& video_device() const { return video_device_; }
+
+  const ComD3D11DeviceContext& device_context() const {
+    return device_context_;
+  }
 
  private:
   friend class CopyTextureSelector;
-  // Set up instances of the parameter structs for D3D11 Functions
-  void SetUpDecoderDescriptor();
-  void SetUpTextureDescriptor();
-
-  D3D11_TEXTURE2D_DESC texture_desc_;
-  D3D11_VIDEO_DECODER_DESC decoder_desc_;
 
   const VideoPixelFormat pixel_format_;
-  const DXGI_FORMAT dxgi_format_;
-  const GUID decoder_guid_;
-  const gfx::Size coded_size_;
-  const bool is_encrypted_;
-  const bool supports_swap_chain_;
+  const DXGI_FORMAT output_dxgifmt_;
+
+  ComD3D11VideoDevice video_device_;
+  ComD3D11DeviceContext device_context_;
+
+  bool shared_image_use_shared_handle_;
 };
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
  public:
+  // TODO(liberato): do we need |input_dxgifmt| here?
   CopyTextureSelector(VideoPixelFormat pixfmt,
                       DXGI_FORMAT input_dxgifmt,
                       DXGI_FORMAT output_dxgifmt,
-                      GUID decoder_guid,
-                      gfx::Size coded_size,
-                      bool is_encrypted,
-                      bool supports_swap_chain)
-      : TextureSelector(pixfmt,
-                        input_dxgifmt,
-                        decoder_guid,
-                        coded_size,
-                        is_encrypted,
-                        supports_swap_chain),
-        output_dxgifmt_(output_dxgifmt) {}
+                      absl::optional<gfx::ColorSpace> output_color_space,
+                      ComD3D11VideoDevice video_device,
+                      ComD3D11DeviceContext d3d11_device_context,
+                      bool use_shared_handle);
+  ~CopyTextureSelector() override;
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
-      ComD3D11VideoDevice video_device,
-      ComD3D11DeviceContext,
-      ComD3D11Texture2D input_texture,
       gfx::Size size) override;
 
+  bool DoesDecoderOutputUseSharedHandle() const override;
+
+  bool WillCopyForTesting() const override;
+
  private:
-  DXGI_FORMAT output_dxgifmt_;
+  absl::optional<gfx::ColorSpace> output_color_space_;
+  scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 
 }  // namespace media

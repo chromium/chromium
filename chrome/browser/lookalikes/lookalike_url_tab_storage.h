@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_TAB_STORAGE_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
@@ -19,13 +17,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// A short-lived, per-tab storage for lookalike interstitials.
-// Contains an allowlist for bypassing lookalike URL warnings tied to
-// web_contents and extra URL parameters for handling interstitial reloads.
-// Since lookalike URL interstitials only trigger when site
-// engagement is low, Chrome does not need to persist interstitial bypasses
-// beyond the life of the web_contents-- if the user proceeds to interact with a
-// page, site engagement will go up and the allowlist will be bypassed entirely.
+// A short-lived, per-tab storage for lookalike interstitials, containing
+// extra URL parameters for handling interstitial reloads.
 class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
  public:
   struct InterstitialParams {
@@ -45,13 +38,13 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
 
   LookalikeUrlTabStorage();
 
+  LookalikeUrlTabStorage(const LookalikeUrlTabStorage&) = delete;
+  LookalikeUrlTabStorage& operator=(const LookalikeUrlTabStorage&) = delete;
+
   ~LookalikeUrlTabStorage() override;
 
   static LookalikeUrlTabStorage* GetOrCreate(
       content::WebContents* web_contents);
-
-  bool IsDomainAllowed(const std::string& domain);
-  void AllowDomain(const std::string& domain);
 
   // Stores parameters associated with a lookalike interstitial. Must be called
   // when a lookalike interstitial is shown.
@@ -65,13 +58,9 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
   InterstitialParams GetInterstitialParams() const;
 
  private:
-  std::set<std::string> allowed_domains_;
-
   // Parameters associated with the currently displayed interstitial. These are
   // cleared immediately on next navigation.
   InterstitialParams interstitial_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlTabStorage);
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_TAB_STORAGE_H_

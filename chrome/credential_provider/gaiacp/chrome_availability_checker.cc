@@ -13,19 +13,21 @@ namespace {
 
 bool IsSupportedChromeVersionInstalled() {
   // Check if Chrome is installed on this machine.
-  base::FilePath gls_path =
-      chrome_launcher_support::GetChromePathForInstallationLevel(
-          chrome_launcher_support::SYSTEM_LEVEL_INSTALLATION, false);
+  base::FilePath gls_path = GetChromePath();
   if (gls_path.empty()) {
     return false;
   }
 
-  // Check if Chrome version is supported.
+  // Check if the Chrome version is supported only if we are using a system
+  // installed Chrome since version number is read from the registry.
+  base::FilePath system_chrome_path = GetSystemChromePath();
   base::Version chrome_version =
       chrome_launcher_support::GetChromeVersionForInstallationLevel(
           chrome_launcher_support::SYSTEM_LEVEL_INSTALLATION, false);
-  if (!chrome_version.IsValid() ||
-      chrome_version < GetMinimumSupportedChromeVersion()) {
+
+  if (gls_path == system_chrome_path &&
+      (!chrome_version.IsValid() ||
+       chrome_version < GetMinimumSupportedChromeVersion())) {
     return false;
   }
   return true;

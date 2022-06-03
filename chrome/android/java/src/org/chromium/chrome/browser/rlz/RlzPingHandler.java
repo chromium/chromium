@@ -10,8 +10,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.identity.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +41,7 @@ public class RlzPingHandler {
                         .getUniqueId(ID_SALT);
         id = generate50CharacterId(id.toUpperCase(Locale.getDefault()));
 
-        RlzPingHandlerJni.get().startPing(Profile.getLastUsedProfile().getOriginalProfile(), brand,
+        RlzPingHandlerJni.get().startPing(Profile.getLastUsedRegularProfile(), brand,
                 Locale.getDefault().getLanguage(), TextUtils.join(",", events), id, callback);
     }
 

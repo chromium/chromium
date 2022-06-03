@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(AUTHPOLICY) AuthPolicyClient {
   // Returns the global instance if initialized. May return null.
   static AuthPolicyClient* Get();
 
+  AuthPolicyClient(const AuthPolicyClient&) = delete;
+  AuthPolicyClient& operator=(const AuthPolicyClient&) = delete;
+
   // Calls JoinADDomain to join a machine/device to an Active Directory domain.
   // Password is read from the |password_fd|. |callback| is called after getting
   // (or failing to get) D-BUS response.
@@ -99,11 +102,13 @@ class COMPONENT_EXPORT(AUTHPOLICY) AuthPolicyClient {
   // Initialize/Shutdown should be used instead.
   AuthPolicyClient();
   virtual ~AuthPolicyClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::AuthPolicyClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_

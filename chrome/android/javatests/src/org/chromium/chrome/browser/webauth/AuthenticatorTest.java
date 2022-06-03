@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.webauth;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,16 +19,14 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
-import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.webauthn.Fido2ApiHandler;
+import org.chromium.components.webauthn.MockFido2ApiHandler;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -40,8 +39,7 @@ import org.chromium.net.test.ServerCertificate;
         "ignore-certificate-errors"})
 public class AuthenticatorTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TEST_FILE = "/content/test/data/android/authenticator.html";
     private EmbeddedTestServer mTestServer;
@@ -49,26 +47,6 @@ public class AuthenticatorTest {
     private Tab mTab;
     private AuthenticatorUpdateWaiter mUpdateWaiter;
     private MockFido2ApiHandler mMockHandler;
-
-    private class MockFido2ApiHandler extends Fido2ApiHandler {
-        @Override
-        protected void makeCredential(PublicKeyCredentialCreationOptions options,
-                RenderFrameHost frameHost, HandlerResponseCallback callback) {
-            callback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
-        }
-
-        @Override
-        protected void getAssertion(PublicKeyCredentialRequestOptions options,
-                RenderFrameHost frameHost, HandlerResponseCallback callback) {
-            callback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
-        }
-
-        @Override
-        protected void isUserVerifyingPlatformAuthenticatorAvailable(
-                RenderFrameHost frameHost, HandlerResponseCallback callback) {
-            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
-        }
-    }
 
     /** Waits until the JavaScript code supplies a result. */
     private class AuthenticatorUpdateWaiter extends EmptyTabObserver {
@@ -84,7 +62,7 @@ public class AuthenticatorTest {
             String title = mActivityTestRule.getActivity().getActivityTab().getTitle();
 
             // Wait until the title indicates either success or failure.
-            if (!title.startsWith("Success") && !title.startsWith("Fail:")) return;
+            if (!title.startsWith("Success") && !title.startsWith("Fail")) return;
             mStatus = title;
             mCallbackHelper.notifyCalled();
         }
@@ -104,13 +82,13 @@ public class AuthenticatorTest {
         mUrl = mTestServer.getURLWithHostName("subdomain.example.test", TEST_FILE);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
-        mTab.addObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         mMockHandler = new MockFido2ApiHandler();
     }
 
     @After
     public void tearDown() {
-        mTab.removeObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         mTestServer.stopAndDestroyServer();
     }
 

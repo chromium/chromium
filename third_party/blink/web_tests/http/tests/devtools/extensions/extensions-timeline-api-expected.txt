@@ -23,10 +23,10 @@ traceProvider.onRecordingStopped fired.
 Timeline Flame Chart
 Group: long extension name
 Level 0
-Extension record X 1 (hsla(261, 82%, 70%, 0.7))
-Extension record X 2 (hsla(230, 88%, 70%, 0.7))
+Extension record X 1 (hsl(261deg 82% 70% / 70%))
+Extension record X 2 (hsl(230deg 88% 70% / 70%))
 Level 1
-Extension record I 1 (hsla(298, 100%, 70%, 0.7))
-Extension record B+E (hsla(292, 100%, 70%, 0.7))
+Extension record I 1 (hsl(298deg 100% 70% / 70%))
+Extension record B+E (hsl(292deg 100% 70% / 70%))
 All tests done.
 

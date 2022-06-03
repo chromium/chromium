@@ -1,0 +1,12 @@
+[{
+  "id" : 1,
+  "priority": 1,
+  "action": { "type" : "block" },
+  "condition" : { "urlFilter" : "abc*", "resourceTypes" : [ "main_frame", "xmlhttprequest" ] }
+},
+{
+  "id" : 2,
+  "priority": 1,
+  "action": { "type" : "redirect", "redirect" : { "url": "http://redir2.com" } },
+  "condition" : { "urlFilter" : "redir1.com", "resourceTypes" : [ "main_frame" ] }
+}]

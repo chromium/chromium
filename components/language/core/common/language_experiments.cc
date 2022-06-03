@@ -14,12 +14,14 @@
 
 namespace language {
 // Features:
-const base::Feature kUseHeuristicLanguageModel{
-    "UseHeuristicLanguageModel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOverrideTranslateTriggerInIndia{
     "OverrideTranslateTriggerInIndia", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kExplicitLanguageAsk{"ExplicitLanguageAsk",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAppLanguagePrompt{"AppLanguagePrompt",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kForceAppLanguagePrompt{"ForceAppLanguagePrompt",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kUseFluentLanguageModel {
   "UseFluentLanguageModel",
 #if defined(OS_IOS)
@@ -30,22 +32,28 @@ const base::Feature kUseFluentLanguageModel {
 };
 const base::Feature kNotifySyncOnLanguageDetermined{
     "NotifySyncOnLanguageDetermined", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Base feature for Translate desktop UI experiment
-const base::Feature kUseButtonTranslateBubbleUi{
-    "UseButtonTranslateBubbleUI", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDetailedLanguageSettings{
+    "DetailedLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDesktopRestructuredLanguageSettings{
+    "DesktopRestructuredLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDesktopDetailedLanguageSettings{
+    "DesktopDetailedLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTranslateAssistContent{"TranslateAssistContent",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTranslateIntent{"TranslateIntent",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDetectedSourceLanguageOption{
+    "DetectedSourceLanguageOption", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kContentLanguagesInLanguagePicker{
+    "ContentLanguagesInLanguagePicker", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Params:
 const char kBackoffThresholdKey[] = "backoff_threshold";
 const char kOverrideModelKey[] = "override_model";
 const char kEnforceRankerKey[] = "enforce_ranker";
-const char kOverrideModelHeuristicValue[] = "heuristic";
 const char kOverrideModelGeoValue[] = "geo";
 const char kOverrideModelDefaultValue[] = "default";
-
-// Params for Translate Desktop UI experiment
-const char kTranslateUIBubbleKey[] = "translate_ui_bubble_style";
-const char kTranslateUIBubbleTabValue[] = "tab";
+const char kContentLanguagesDisableObserversParam[] = "disable_observers";
 
 OverrideLanguageModel GetOverrideLanguageModel() {
   std::map<std::string, std::string> params;
@@ -56,12 +64,6 @@ OverrideLanguageModel GetOverrideLanguageModel() {
   // have concurrent overrides in experiment without having to partition them
   // explicitly. For example, we may have a FLUENT experiment globally and a
   // GEO experiment in India only.
-
-  if (base::FeatureList::IsEnabled(kUseHeuristicLanguageModel) ||
-      (should_override_model &&
-       params[kOverrideModelKey] == kOverrideModelHeuristicValue)) {
-    return OverrideLanguageModel::HEURISTIC;
-  }
 
   if (should_override_model &&
       params[kOverrideModelKey] == kOverrideModelGeoValue) {
@@ -79,12 +81,7 @@ bool ShouldForceTriggerTranslateOnEnglishPages(int force_trigger_count) {
   if (!base::FeatureList::IsEnabled(kOverrideTranslateTriggerInIndia))
     return false;
 
-  bool threshold_reached =
-      IsForceTriggerBackoffThresholdReached(force_trigger_count);
-  UMA_HISTOGRAM_BOOLEAN("Translate.ForceTriggerBackoffStateReached",
-                        threshold_reached);
-
-  return !threshold_reached;
+  return !IsForceTriggerBackoffThresholdReached(force_trigger_count);
 }
 
 bool ShouldPreventRankerEnforcementInIndia(int force_trigger_count) {
@@ -106,21 +103,6 @@ bool IsForceTriggerBackoffThresholdReached(int force_trigger_count) {
   }
 
   return force_trigger_count >= threshold;
-}
-
-TranslateUIBubbleModel GetTranslateUiBubbleModel() {
-  std::map<std::string, std::string> params;
-  if (base::GetFieldTrialParamsByFeature(language::kUseButtonTranslateBubbleUi,
-                                         &params)) {
-    if (params[language::kTranslateUIBubbleKey] ==
-        language::kTranslateUIBubbleTabValue) {
-      return language::TranslateUIBubbleModel::TAB;
-    } else {
-      return language::TranslateUIBubbleModel::DEFAULT;
-    }
-  } else {
-    return language::TranslateUIBubbleModel::DEFAULT;
-  }
 }
 
 }  // namespace language

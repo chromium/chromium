@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
-class TestMockTimeTaskRunner;
+class SingleThreadTaskRunner;
 class TickClock;
 }  // namespace base
 
@@ -59,7 +59,7 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
 
  protected:
   MemoryUsageMonitor(
-      scoped_refptr<base::TestMockTimeTaskRunner> task_runner_for_testing,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing,
       const base::TickClock* clock_for_testing);
 
   // Adds V8 related memory usage data to the given struct.

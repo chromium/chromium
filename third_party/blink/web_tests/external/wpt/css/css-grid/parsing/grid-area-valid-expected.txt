@@ -55,6 +55,6 @@ FAIL e.style['grid-row'] = "1 / auto" should set the property value assert_equal
 PASS e.style['grid-column'] = "2 j / span 3 k" should set the property value
 PASS e.style['grid-column-end'] = "\\31st" should set the property value
 PASS e.style['grid-column-end'] = "\\31 st" should set the property value
-FAIL e.style['grid-column'] = "\\31st / \\31 st" should set the property value assert_in_array: serialization should be sound value "\\31 st / \31 st" not in array ["\\31 st", "\\31st"]
+FAIL e.style['grid-column'] = "\\31st / \\31 st" should set the property value assert_in_array: serialization should be sound value "\\31 st / \\31 st" not in array ["\\31 st", "\\31st"]
 Harness: the test ran to completion.
 

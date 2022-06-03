@@ -9,17 +9,25 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
-#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
+enum class BackgroundServiceWorkerType {
+  kClassic,
+  kModule,
+};
+
 class BackgroundInfo : public Extension::ManifestData {
  public:
   BackgroundInfo();
+
+  BackgroundInfo(const BackgroundInfo&) = delete;
+  BackgroundInfo& operator=(const BackgroundInfo&) = delete;
+
   ~BackgroundInfo() override;
 
   static GURL GetBackgroundURL(const Extension* extension);
@@ -27,12 +35,17 @@ class BackgroundInfo : public Extension::ManifestData {
       const Extension* extension);
   static const std::string& GetBackgroundServiceWorkerScript(
       const Extension* extension);
+  static BackgroundServiceWorkerType GetBackgroundServiceWorkerType(
+      const Extension* extension);
   static bool HasBackgroundPage(const Extension* extension);
   static bool HasPersistentBackgroundPage(const Extension* extension);
   static bool HasLazyBackgroundPage(const Extension* extension);
   static bool HasGeneratedBackgroundPage(const Extension* extension);
   static bool AllowJSAccess(const Extension* extension);
   static bool IsServiceWorkerBased(const Extension* extension);
+  static bool HasLazyContext(const Extension* extension) {
+    return HasLazyBackgroundPage(extension) || IsServiceWorkerBased(extension);
+  }
 
   bool has_background_page() const {
     return background_url_.is_valid() || !background_scripts_.empty();
@@ -46,21 +59,21 @@ class BackgroundInfo : public Extension::ManifestData {
     return has_background_page() && !is_persistent_;
   }
 
-  bool Parse(const Extension* extension, base::string16* error);
+  bool Parse(const Extension* extension, std::u16string* error);
 
  private:
   bool LoadBackgroundScripts(const Extension* extension,
                              const std::string& key,
-                             base::string16* error);
+                             std::u16string* error);
   bool LoadBackgroundPage(const Extension* extension,
                           const std::string& key,
-                          base::string16* error);
-  bool LoadBackgroundPage(const Extension* extension, base::string16* error);
+                          std::u16string* error);
+  bool LoadBackgroundPage(const Extension* extension, std::u16string* error);
   bool LoadBackgroundServiceWorkerScript(const Extension* extension,
-                                         base::string16* error);
+                                         std::u16string* error);
   bool LoadBackgroundPersistent(const Extension* extension,
-                                base::string16* error);
-  bool LoadAllowJSAccess(const Extension* extension, base::string16* error);
+                                std::u16string* error);
+  bool LoadAllowJSAccess(const Extension* extension, std::u16string* error);
 
   // Optional URL to a master page of which a single instance should be always
   // loaded in the background.
@@ -71,7 +84,10 @@ class BackgroundInfo : public Extension::ManifestData {
   std::vector<std::string> background_scripts_;
 
   // Optional service worker based background script.
-  base::Optional<std::string> background_service_worker_script_;
+  absl::optional<std::string> background_service_worker_script_;
+
+  // Optional service worker based background type.
+  absl::optional<BackgroundServiceWorkerType> background_service_worker_type_;
 
   // True if the background page should stay loaded forever; false if it should
   // load on-demand (when it needs to handle an event). Defaults to true.
@@ -83,17 +99,20 @@ class BackgroundInfo : public Extension::ManifestData {
   // allowing them to run in different processes.
   // Defaults to true.
   bool allow_js_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundInfo);
 };
 
 // Parses all background/event page-related keys in the manifest.
 class BackgroundManifestHandler : public ManifestHandler {
  public:
   BackgroundManifestHandler();
+
+  BackgroundManifestHandler(const BackgroundManifestHandler&) = delete;
+  BackgroundManifestHandler& operator=(const BackgroundManifestHandler&) =
+      delete;
+
   ~BackgroundManifestHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;
@@ -101,8 +120,6 @@ class BackgroundManifestHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundManifestHandler);
 };
 
 }  // namespace extensions

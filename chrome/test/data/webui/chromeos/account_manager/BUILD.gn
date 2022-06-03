@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://account-migration-welcome/=../../chrome/browser/resources/chromeos/account_manager/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":account_migration_welcome_test",
+    ":test_account_manager_browser_proxy",
+  ]
+}
+
+js_library("account_migration_welcome_test") {
+  deps = [
+    ":test_account_manager_browser_proxy",
+    "../..:chai_assert",
+    "//chrome/browser/resources/chromeos/account_manager:account_migration_welcome_app",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_account_manager_browser_proxy") {
+  deps = [
+    "../..:test_browser_proxy",
+    "//chrome/browser/resources/chromeos/account_manager:account_manager_browser_proxy",
+  ]
+}

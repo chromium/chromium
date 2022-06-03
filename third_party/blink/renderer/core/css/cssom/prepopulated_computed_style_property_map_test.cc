@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -19,8 +20,8 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   PrepopulatedComputedStylePropertyMapTest() = default;
 
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->SetInnerHTMLFromString("<div id='target' style='" +
-                                                 value + "'></div>");
+    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
+                                       "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -63,24 +64,27 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, NativePropertyAccessors) {
 
   DummyExceptionStateForTesting exception_state;
 
-  map->get(&GetDocument(), "color", exception_state);
+  map->get(GetDocument().GetExecutionContext(), "color", exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  map->has(&GetDocument(), "color", exception_state);
+  map->has(GetDocument().GetExecutionContext(), "color", exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  map->getAll(&GetDocument(), "color", exception_state);
+  map->getAll(GetDocument().GetExecutionContext(), "color", exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  map->get(&GetDocument(), "align-contents", exception_state);
+  map->get(GetDocument().GetExecutionContext(), "align-contents",
+           exception_state);
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
 
-  map->has(&GetDocument(), "align-contents", exception_state);
+  map->has(GetDocument().GetExecutionContext(), "align-contents",
+           exception_state);
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
 
-  map->getAll(&GetDocument(), "align-contents", exception_state);
+  map->getAll(GetDocument().GetExecutionContext(), "align-contents",
+              exception_state);
   EXPECT_TRUE(exception_state.HadException());
   exception_state.ClearException();
 }
@@ -99,29 +103,34 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {
 
   DummyExceptionStateForTesting exception_state;
 
-  const CSSStyleValue* foo = map->get(&GetDocument(), "--foo", exception_state);
+  const CSSStyleValue* foo =
+      map->get(GetDocument().GetExecutionContext(), "--foo", exception_state);
   ASSERT_NE(nullptr, foo);
   ASSERT_EQ(CSSStyleValue::kUnparsedType, foo->GetType());
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(true, map->has(&GetDocument(), "--foo", exception_state));
+  EXPECT_EQ(true, map->has(GetDocument().GetExecutionContext(), "--foo",
+                           exception_state));
   EXPECT_FALSE(exception_state.HadException());
 
-  CSSStyleValueVector fooAll =
-      map->getAll(&GetDocument(), "--foo", exception_state);
+  CSSStyleValueVector fooAll = map->getAll(GetDocument().GetExecutionContext(),
+                                           "--foo", exception_state);
   EXPECT_EQ(1U, fooAll.size());
   ASSERT_NE(nullptr, fooAll[0]);
   ASSERT_EQ(CSSStyleValue::kUnparsedType, fooAll[0]->GetType());
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(nullptr, map->get(&GetDocument(), "--quix", exception_state));
+  EXPECT_EQ(nullptr, map->get(GetDocument().GetExecutionContext(), "--quix",
+                              exception_state));
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(false, map->has(&GetDocument(), "--quix", exception_state));
+  EXPECT_EQ(false, map->has(GetDocument().GetExecutionContext(), "--quix",
+                            exception_state));
   EXPECT_FALSE(exception_state.HadException());
 
   EXPECT_EQ(CSSStyleValueVector(),
-            map->getAll(&GetDocument(), "--quix", exception_state));
+            map->getAll(GetDocument().GetExecutionContext(), "--quix",
+                        exception_state));
   EXPECT_FALSE(exception_state.HadException());
 }
 

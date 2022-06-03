@@ -1,8 +1,8 @@
-CONSOLE MESSAGE: line 49: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'NodeIterator': Filter function can't be recursive
-CONSOLE MESSAGE: line 49: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
-CONSOLE MESSAGE: line 49: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
-CONSOLE MESSAGE: line 49: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
-CONSOLE MESSAGE: line 94: Should have tests 4 filter calls: 4
+CONSOLE MESSAGE: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'NodeIterator': Filter function can't be recursive
+CONSOLE MESSAGE: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
+CONSOLE MESSAGE: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
+CONSOLE MESSAGE: Should have thrown an exception: InvalidStateError: Failed to execute 'nextNode' on 'TreeWalker': Filter function can't be recursive
+CONSOLE MESSAGE: Should have tests 4 filter calls: 4
 Mozilla Bug 559526
 
 

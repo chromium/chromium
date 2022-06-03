@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 source_set("android") {
   visibility = [ "//chrome/browser/touch_to_fill:factory" ]
@@ -13,9 +12,17 @@ source_set("android") {
     "touch_to_fill_view_impl.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":jni_headers",
+    "//chrome/browser/touch_to_fill:public",
+    "//chrome/browser/ui",
+    "//components/password_manager/core/browser",
+    "//ui/android",
     "//ui/gfx",
+    "//url",
+    "//url:gurl_android",
   ]
 }
 
@@ -28,39 +35,53 @@ generate_jni("jni_headers") {
 
 android_library("public_java") {
   deps = [
-    # TODO(crbug.com/1004415): Remove dependency on chrome_java and depend on
-    # bottomsheet directly. Add public_java to chrome_java target instead.
-    "//chrome/android:chrome_java",
-    "//chrome/android:chrome_public_java",
+    "//base:base_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
-  java_files = [
-    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+  sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillComponent.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
   ]
 }
 
 junit_binary("touch_to_fill_junit_tests") {
   testonly = true
 
-  java_files = [ "junit/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillControllerTest.java" ]
+  sources = [ "junit/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillControllerTest.java" ]
 
   deps = [
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/touch_to_fill/android:public_java",
     "//chrome/browser/touch_to_fill/android/internal:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
     "//components/module_installer/android:module_installer_java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 
 android_library("test_java") {
   testonly = true
 
-  java_files = [
+  sources = [
     "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewTest.java",
   ]
@@ -72,15 +93,20 @@ android_library("test_java") {
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
-    "//third_party/espresso:espresso_all_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
 }

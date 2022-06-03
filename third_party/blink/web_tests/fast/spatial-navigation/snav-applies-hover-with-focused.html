@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<style>
+  #menu_entry:hover,
+  .items:hover,
+  button:hover {
+    background-color: #CCC;
+  }
+
+  #menu_entry {
+    width: 80px;
+    cursor: pointer;
+  }
+
+  #menu_list {
+    visibility: hidden;
+    width: 80px;
+    border: 1px #CCC solid;
+  }
+
+  .items {
+    cursor: pointer;
+  }
+</style>
+
+<button id="btn1">Button 1</button>
+<div id="menu_container">
+  <div id='menu_entry'>Menu 1</div>
+  <div id='menu_list'>
+    <div id='first_item' class='items'>item 1</div>
+    <div id='second_item' class='items'>item 2</div>
+    <div id='third_item' class='items'>item 3</div>
+  </div>
+</div>
+<button id="btn2">Button 2</button>
+<p>An element focused via SpatNav followed by focus() should be hovered.</p>
+
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='resources/snav-testharness.js'></script>
+<script>
+  const menu_entry = document.querySelector('#menu_entry');
+  const menu_list = document.querySelector('#menu_list');
+  const first_item = document.querySelector('#first_item');
+  const btn1 = document.querySelector('#btn1');
+
+  // In general sites, authors use focus event handler due to a11y requirements.
+  menu_entry.addEventListener('focus', () => {
+    // When users press up key on a topmost item, menu_entry should get focus.
+    if (event.relatedTarget && event.relatedTarget.className === 'items') {
+      menu_list.style.visibility = 'hidden';
+      btn1.focus();
+      return;
+    }
+    // Once menu_entry gets focus, menu_list shows up and an item gets focus.
+    menu_list.style.visibility = 'visible';
+    document.querySelectorAll('.items')[0].focus();
+  });
+  menu_container.addEventListener('mouseover', () => {
+    menu_list.style.visibility = 'visible';
+  });
+  menu_container.addEventListener('mouseleave', () => {
+    menu_list.style.visibility = 'hidden';
+  });
+
+  // SpatNav Test
+  snav.assertSnavEnabledAndTestable();
+
+  test(() => {
+    // Move focus to first_item
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement, first_item, 'first_item gets focus.');
+    assert_equals(menu_list.style.visibility, 'visible', 'menu_list shows up.');
+    assert_true(first_item.matches(':hover'), 'first_item should be hovered.');
+
+    // Move focus to menu_entry
+    snav.triggerMove('Down');
+    snav.triggerMove('Up');
+    snav.triggerMove('Up');
+    assert_equals(document.activeElement, btn1, 'button1 gets focus.');
+    assert_equals(menu_list.style.visibility, 'hidden', 'menu_list disappears.');
+    assert_true(btn1.matches(':hover'), 'button1 should be hovered.');
+  }, 'Focused and hovered elements should be indentical.');
+</script>
+
+<p><em>Manual test instruction: Ensure that focused(focus indicator) and
+    hovered(gray background) element should be identical.</em></p>

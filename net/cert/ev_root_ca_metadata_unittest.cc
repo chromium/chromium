@@ -10,132 +10,74 @@
 #include "net/test/cert_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(USE_NSS_CERTS)
-#include "crypto/nss_util.h"
-#include "crypto/scoped_nss_types.h"
-#endif
-
 namespace net {
 
 namespace {
 
-#if defined(USE_NSS_CERTS) || defined(OS_WIN)
-const char kVerisignPolicyStr[] = "2.16.840.1.113733.1.7.23.6";
-const char kThawtePolicyStr[] = "2.16.840.1.113733.1.7.48.1";
+#if defined(OS_WIN)
 const char kFakePolicyStr[] = "2.16.840.1.42";
 const char kCabEvPolicyStr[] = "2.23.140.1.1";
-#elif defined(OS_MACOSX)
+const char kStarfieldPolicyStr[] = "2.16.840.1.114414.1.7.23.3";
+#elif defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 const char kFakePolicyStr[] = "2.16.840.1.42";
 #endif
 
-#if defined(USE_NSS_CERTS) || defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 // DER OID values (no tag or length).
-const uint8_t kVerisignPolicyBytes[] = {0x60, 0x86, 0x48, 0x01, 0x86, 0xf8,
-                                        0x45, 0x01, 0x07, 0x17, 0x06};
-const uint8_t kThawtePolicyBytes[] = {0x60, 0x86, 0x48, 0x01, 0x86, 0xf8,
-                                      0x45, 0x01, 0x07, 0x30, 0x01};
 const uint8_t kFakePolicyBytes[] = {0x60, 0x86, 0x48, 0x01, 0x2a};
 const uint8_t kCabEvPolicyBytes[] = {0x67, 0x81, 0x0c, 0x01, 0x01};
+const uint8_t kStarfieldPolicyBytes[] = {0x60, 0x86, 0x48, 0x01, 0x86, 0xFD,
+                                         0x6E, 0x01, 0x07, 0x17, 0x03};
 
-const SHA256HashValue kVerisignFingerprint = {
-    {0xe7, 0x68, 0x56, 0x34, 0xef, 0xac, 0xf6, 0x9a, 0xce, 0x93, 0x9a,
-     0x6b, 0x25, 0x5b, 0x7b, 0x4f, 0xab, 0xef, 0x42, 0x93, 0x5b, 0x50,
-     0xa2, 0x65, 0xac, 0xb5, 0xcb, 0x60, 0x27, 0xe4, 0x4e, 0x70}};
 const SHA256HashValue kFakeFingerprint = {
     {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa,
      0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
      0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}};
+const SHA256HashValue kStarfieldFingerprint = {
+    {0x14, 0x65, 0xfa, 0x20, 0x53, 0x97, 0xb8, 0x76, 0xfa, 0xa6, 0xf0,
+     0xa9, 0x95, 0x8e, 0x55, 0x90, 0xe4, 0x0f, 0xcc, 0x7f, 0xaa, 0x4f,
+     0xb7, 0xc2, 0xc8, 0x67, 0x75, 0x21, 0xfb, 0x5f, 0xb6, 0x58}};
 
 class EVOidData {
  public:
   EVOidData();
   bool Init();
 
-  EVRootCAMetadata::PolicyOID verisign_policy;
-  der::Input verisign_policy_bytes;
-
-  EVRootCAMetadata::PolicyOID thawte_policy;
-  der::Input thawte_policy_bytes;
-
   EVRootCAMetadata::PolicyOID fake_policy;
   der::Input fake_policy_bytes;
 
   EVRootCAMetadata::PolicyOID cab_ev_policy;
   der::Input cab_ev_policy_bytes;
+
+  EVRootCAMetadata::PolicyOID starfield_policy;
+  der::Input starfield_policy_bytes;
 };
 
-#endif  // defined(USE_NSS_CERTS) || defined(OS_WIN) || defined(OS_MACOSX)
+#endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
-#if defined(USE_NSS_CERTS)
-
-SECOidTag RegisterOID(PLArenaPool* arena, const char* oid_string) {
-  SECOidData oid_data;
-  memset(&oid_data, 0, sizeof(oid_data));
-  oid_data.offset = SEC_OID_UNKNOWN;
-  oid_data.desc = oid_string;
-  oid_data.mechanism = CKM_INVALID_MECHANISM;
-  oid_data.supportedExtension = INVALID_CERT_EXTENSION;
-
-  SECStatus rv = SEC_StringToOID(arena, &oid_data.oid, oid_string, 0);
-  if (rv != SECSuccess)
-    return SEC_OID_UNKNOWN;
-
-  return SECOID_AddEntry(&oid_data);
-}
+#if defined(OS_WIN)
 
 EVOidData::EVOidData()
-    : verisign_policy(SEC_OID_UNKNOWN),
-      verisign_policy_bytes(kVerisignPolicyBytes),
-      thawte_policy(SEC_OID_UNKNOWN),
-      thawte_policy_bytes(kThawtePolicyBytes),
-      fake_policy(SEC_OID_UNKNOWN),
-      fake_policy_bytes(kFakePolicyBytes),
-      cab_ev_policy(SEC_OID_UNKNOWN),
-      cab_ev_policy_bytes(kCabEvPolicyBytes) {}
-
-bool EVOidData::Init() {
-  crypto::EnsureNSSInit();
-  crypto::ScopedPLArenaPool pool(PORT_NewArena(DER_DEFAULT_CHUNKSIZE));
-  if (!pool.get())
-    return false;
-
-  verisign_policy = RegisterOID(pool.get(), kVerisignPolicyStr);
-  thawte_policy = RegisterOID(pool.get(), kThawtePolicyStr);
-  fake_policy = RegisterOID(pool.get(), kFakePolicyStr);
-  cab_ev_policy = RegisterOID(pool.get(), kCabEvPolicyStr);
-
-  return verisign_policy != SEC_OID_UNKNOWN &&
-         thawte_policy != SEC_OID_UNKNOWN && fake_policy != SEC_OID_UNKNOWN &&
-         cab_ev_policy != SEC_OID_UNKNOWN;
-}
-
-#elif defined(OS_WIN)
-
-EVOidData::EVOidData()
-    : verisign_policy(kVerisignPolicyStr),
-      verisign_policy_bytes(kVerisignPolicyBytes),
-      thawte_policy(kThawtePolicyStr),
-      thawte_policy_bytes(kThawtePolicyBytes),
-      fake_policy(kFakePolicyStr),
+    : fake_policy(kFakePolicyStr),
       fake_policy_bytes(kFakePolicyBytes),
       cab_ev_policy(kCabEvPolicyStr),
-      cab_ev_policy_bytes(kCabEvPolicyBytes) {}
+      cab_ev_policy_bytes(kCabEvPolicyBytes),
+      starfield_policy(kStarfieldPolicyStr),
+      starfield_policy_bytes(kStarfieldPolicyBytes) {}
 
 bool EVOidData::Init() {
   return true;
 }
 
-#elif defined(OS_MACOSX)
+#elif defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
 EVOidData::EVOidData()
-    : verisign_policy(kVerisignPolicyBytes),
-      verisign_policy_bytes(kVerisignPolicyBytes),
-      thawte_policy(kThawtePolicyBytes),
-      thawte_policy_bytes(kThawtePolicyBytes),
-      fake_policy(kFakePolicyBytes),
+    : fake_policy(kFakePolicyBytes),
       fake_policy_bytes(kFakePolicyBytes),
       cab_ev_policy(kCabEvPolicyBytes),
-      cab_ev_policy_bytes(kCabEvPolicyBytes) {}
+      cab_ev_policy_bytes(kCabEvPolicyBytes),
+      starfield_policy(kStarfieldPolicyBytes),
+      starfield_policy_bytes(kStarfieldPolicyBytes) {}
 
 bool EVOidData::Init() {
   return true;
@@ -143,7 +85,7 @@ bool EVOidData::Init() {
 
 #endif
 
-#if defined(USE_NSS_CERTS) || defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
 class EVRootCAMetadataTest : public testing::Test {
  protected:
@@ -155,43 +97,51 @@ class EVRootCAMetadataTest : public testing::Test {
 TEST_F(EVRootCAMetadataTest, Basic) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
 
-  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(ev_oid_data.verisign_policy));
+  // Contains an expected policy.
+  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(ev_oid_data.starfield_policy));
   EXPECT_TRUE(
-      ev_metadata->IsEVPolicyOIDGivenBytes(ev_oid_data.verisign_policy_bytes));
+      ev_metadata->IsEVPolicyOIDGivenBytes(ev_oid_data.starfield_policy_bytes));
 
+  // Does not contain an unregistered policy.
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(ev_oid_data.fake_policy));
   EXPECT_FALSE(
       ev_metadata->IsEVPolicyOIDGivenBytes(ev_oid_data.fake_policy_bytes));
 
-  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kVerisignFingerprint,
-                                          ev_oid_data.verisign_policy));
+  // The policy is correct for the right root.
+  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+                                          ev_oid_data.starfield_policy));
   EXPECT_TRUE(ev_metadata->HasEVPolicyOIDGivenBytes(
-      kVerisignFingerprint, ev_oid_data.verisign_policy_bytes));
+      kStarfieldFingerprint, ev_oid_data.starfield_policy_bytes));
 
+  // The policy does not match if the root does not match.
   EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
-                                           ev_oid_data.verisign_policy));
+                                           ev_oid_data.starfield_policy));
   EXPECT_FALSE(ev_metadata->HasEVPolicyOIDGivenBytes(
-      kFakeFingerprint, ev_oid_data.verisign_policy_bytes));
+      kFakeFingerprint, ev_oid_data.starfield_policy_bytes));
 
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kVerisignFingerprint,
+  // The expected root only has the expected policies; it should fail to match
+  // the root against both unknown policies as well as policies associated
+  // with other roots.
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
                                            ev_oid_data.fake_policy));
   EXPECT_FALSE(ev_metadata->HasEVPolicyOIDGivenBytes(
-      kVerisignFingerprint, ev_oid_data.fake_policy_bytes));
+      kStarfieldFingerprint, ev_oid_data.fake_policy_bytes));
 
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kVerisignFingerprint,
-                                           ev_oid_data.thawte_policy));
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+                                           ev_oid_data.cab_ev_policy));
   EXPECT_FALSE(ev_metadata->HasEVPolicyOIDGivenBytes(
-      kVerisignFingerprint, ev_oid_data.thawte_policy_bytes));
+      kStarfieldFingerprint, ev_oid_data.cab_ev_policy_bytes));
 
   // Test a completely bogus OID given bytes.
   const uint8_t bad_oid[] = {0};
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOIDGivenBytes(kVerisignFingerprint,
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOIDGivenBytes(kStarfieldFingerprint,
                                                      der::Input(bad_oid)));
 }
 
 TEST_F(EVRootCAMetadataTest, AddRemove) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
 
+  // An unregistered/junk policy should not work.
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(ev_oid_data.fake_policy));
   EXPECT_FALSE(
       ev_metadata->IsEVPolicyOIDGivenBytes(ev_oid_data.fake_policy_bytes));
@@ -202,6 +152,8 @@ TEST_F(EVRootCAMetadataTest, AddRemove) {
       kFakeFingerprint, ev_oid_data.fake_policy_bytes));
 
   {
+    // However, this unregistered/junk policy can be temporarily registered
+    // and made to work.
     ScopedTestEVPolicy test_ev_policy(ev_metadata, kFakeFingerprint,
                                       kFakePolicyStr);
 
@@ -215,6 +167,7 @@ TEST_F(EVRootCAMetadataTest, AddRemove) {
         kFakeFingerprint, ev_oid_data.fake_policy_bytes));
   }
 
+  // It should go out of scope when the ScopedTestEVPolicy goes out of scope.
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(ev_oid_data.fake_policy));
   EXPECT_FALSE(
       ev_metadata->IsEVPolicyOIDGivenBytes(ev_oid_data.fake_policy_bytes));
@@ -232,10 +185,10 @@ TEST_F(EVRootCAMetadataTest, IsCaBrowserForumEvOid) {
   EXPECT_FALSE(
       EVRootCAMetadata::IsCaBrowserForumEvOid(ev_oid_data.fake_policy));
   EXPECT_FALSE(
-      EVRootCAMetadata::IsCaBrowserForumEvOid(ev_oid_data.verisign_policy));
+      EVRootCAMetadata::IsCaBrowserForumEvOid(ev_oid_data.starfield_policy));
 }
 
-#endif  // defined(USE_NSS_CERTS) || defined(OS_WIN) || defined(OS_MACOSX)
+#endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
 }  // namespace
 

@@ -4,8 +4,10 @@
 
 #include "cc/tiles/mipmap_util.h"
 
-#include "cc/test/geometry_test_utils.h"
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -18,12 +20,11 @@ TEST(MipMapUtilTest, Basic) {
   const SkSize expected_scale = SkSize::Make(0.25f, 0.25f);
 
   EXPECT_EQ(target_level, MipMapUtil::GetLevelForSize(src_size, target_size));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
-                                           src_size, target_level));
-  EXPECT_SIZE_EQ(target_size,
-                 MipMapUtil::GetSizeForLevel(src_size, target_level));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
-                                           src_size, target_size));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
+                                       src_size, target_level));
+  EXPECT_EQ(target_size, MipMapUtil::GetSizeForLevel(src_size, target_level));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
+                                       src_size, target_size));
 }
 
 // Ensures that a no-op scale works.
@@ -34,12 +35,11 @@ TEST(MipMapUtilTest, NoScale) {
   const SkSize expected_scale = SkSize::Make(1, 1);
 
   EXPECT_EQ(target_level, MipMapUtil::GetLevelForSize(src_size, target_size));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
-                                           src_size, target_level));
-  EXPECT_SIZE_EQ(target_size,
-                 MipMapUtil::GetSizeForLevel(src_size, target_level));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
-                                           src_size, target_size));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
+                                       src_size, target_level));
+  EXPECT_EQ(target_size, MipMapUtil::GetSizeForLevel(src_size, target_level));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
+                                       src_size, target_size));
 }
 
 // Ensures that we return the base mip level if the caller requests an upscale.
@@ -50,9 +50,9 @@ TEST(MipMapUtilTest, Upscale) {
   const int result_level = 0;
 
   EXPECT_EQ(result_level, MipMapUtil::GetLevelForSize(src_size, target_size));
-  EXPECT_FLOAT_SIZE_EQ(result_size, MipMapUtil::GetScaleAdjustmentForSize(
-                                        src_size, target_size));
-  EXPECT_SIZE_EQ(src_size, MipMapUtil::GetSizeForLevel(src_size, result_level));
+  EXPECT_SKSIZE_EQ(result_size, MipMapUtil::GetScaleAdjustmentForSize(
+                                    src_size, target_size));
+  EXPECT_EQ(src_size, MipMapUtil::GetSizeForLevel(src_size, result_level));
 }
 
 // Ensures that the maximum mip level GetLevelForSize will ever return is 30.
@@ -74,12 +74,11 @@ TEST(MipMapUtilTest, NonSquare) {
       static_cast<float>(target_size.width()) / src_size.width(), 1);
 
   EXPECT_EQ(target_level, MipMapUtil::GetLevelForSize(src_size, target_size));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
-                                           src_size, target_level));
-  EXPECT_SIZE_EQ(target_size,
-                 MipMapUtil::GetSizeForLevel(src_size, target_level));
-  EXPECT_FLOAT_SIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
-                                           src_size, target_size));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForLevel(
+                                       src_size, target_level));
+  EXPECT_EQ(target_size, MipMapUtil::GetSizeForLevel(src_size, target_level));
+  EXPECT_SKSIZE_EQ(expected_scale, MipMapUtil::GetScaleAdjustmentForSize(
+                                       src_size, target_size));
 }
 
 // Ensures that we handle rounding images correctly.
@@ -98,20 +97,19 @@ TEST(MipMapUtilTest, Rounding) {
             MipMapUtil::GetLevelForSize(src_size, target_size_larger));
   EXPECT_EQ(target_level_smaller,
             MipMapUtil::GetLevelForSize(src_size, target_size_smaller));
-  EXPECT_FLOAT_SIZE_EQ(
+  EXPECT_SKSIZE_EQ(
       expected_scale_larger,
       MipMapUtil::GetScaleAdjustmentForLevel(src_size, target_level_larger));
-  EXPECT_FLOAT_SIZE_EQ(
+  EXPECT_SKSIZE_EQ(
       expected_scale_smaller,
       MipMapUtil::GetScaleAdjustmentForLevel(src_size, target_level_smaller));
-  EXPECT_SIZE_EQ(src_size,
-                 MipMapUtil::GetSizeForLevel(src_size, target_level_larger));
-  EXPECT_SIZE_EQ(target_size_smaller,
-                 MipMapUtil::GetSizeForLevel(src_size, target_level_smaller));
-  EXPECT_FLOAT_SIZE_EQ(
-      expected_scale_larger,
-      MipMapUtil::GetScaleAdjustmentForSize(src_size, target_size_larger));
-  EXPECT_FLOAT_SIZE_EQ(
+  EXPECT_EQ(src_size,
+            MipMapUtil::GetSizeForLevel(src_size, target_level_larger));
+  EXPECT_EQ(target_size_smaller,
+            MipMapUtil::GetSizeForLevel(src_size, target_level_smaller));
+  EXPECT_SKSIZE_EQ(expected_scale_larger, MipMapUtil::GetScaleAdjustmentForSize(
+                                              src_size, target_size_larger));
+  EXPECT_SKSIZE_EQ(
       expected_scale_smaller,
       MipMapUtil::GetScaleAdjustmentForSize(src_size, target_size_smaller));
 }

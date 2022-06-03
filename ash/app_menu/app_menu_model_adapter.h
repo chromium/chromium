@@ -36,6 +36,10 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
                       ui::MenuSourceType source_type,
                       base::OnceClosure on_menu_closed_callback,
                       bool is_tablet_mode);
+
+  AppMenuModelAdapter(const AppMenuModelAdapter&) = delete;
+  AppMenuModelAdapter& operator=(const AppMenuModelAdapter&) = delete;
+
   ~AppMenuModelAdapter() override;
 
   // Builds the view tree and shows the menu.
@@ -48,13 +52,21 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   // Closes the menu if one is being shown.
   void Cancel();
 
+  // Gives subclasses a chance to map |command_id| to a certain range to avoid
+  // conflicts with other command IDs. See app_menu_constants.h.
+  virtual int GetCommandIdForHistograms(int command_id);
+
   base::TimeTicks GetClosingEventTime();
 
-  // Overridden from views::MenuModelAdapter:
+  // Gets the widget associated with the submenu. May return nullptr.
+  views::Widget* GetSubmenuWidget();
+
+  // views::MenuModelAdapter:
   void ExecuteCommand(int id, int mouse_event_flags) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 
   ui::SimpleMenuModel* model() { return model_.get(); }
+  views::MenuItemView* root_for_testing() { return root_; }
 
  protected:
   const std::string& app_id() const { return app_id_; }
@@ -101,8 +113,6 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // Whether tablet mode is active.
   bool is_tablet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModelAdapter);
 };
 
 }  // namespace ash

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import org.chromium.base.Callback;
 import org.chromium.content.R;
 import org.chromium.ui.widget.UiWidgetFactory;
 
@@ -31,13 +32,13 @@ public class SelectPopupDialog implements SelectPopup.Ui {
 
     // The dialog hosting the popup list view.
     private final AlertDialog mListBoxPopup;
-    private final SelectPopup mSelectPopup;
+    private final Callback<int[]> mSelectionChangedCallback;
 
     private boolean mSelectionNotified;
 
-    public SelectPopupDialog(SelectPopup selectPopup, Context windowContext,
+    public SelectPopupDialog(Context windowContext, Callback<int[]> selectionChangedCallback,
             List<SelectPopupItem> items, boolean multiple, int[] selected) {
-        mSelectPopup = selectPopup;
+        mSelectionChangedCallback = selectionChangedCallback;
 
         final ListView listView = new ListView(windowContext);
         // setCacheColorHint(0) is required to prevent a black background in WebView on Lollipop:
@@ -104,7 +105,7 @@ public class SelectPopupDialog implements SelectPopup.Ui {
     private static void setInverseBackgroundForced(AlertDialog dialog) {
         // This is needed for pre-Holo themes (e.g. android:Theme.Black), which can be used in
         // WebView. See http://crbug.com/596626. This can be removed if/when this class starts
-        // using android.support.v7.app.AlertDialog.
+        // using androidx.appcompat.app.AlertDialog.
         dialog.setInverseBackgroundForced(true);
     }
 
@@ -136,7 +137,7 @@ public class SelectPopupDialog implements SelectPopup.Ui {
 
     private void notifySelection(int[] indicies) {
         if (mSelectionNotified) return;
-        mSelectPopup.selectMenuItems(indicies);
+        mSelectionChangedCallback.onResult(indicies);
         mSelectionNotified = true;
     }
 

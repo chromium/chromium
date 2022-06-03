@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_instanced_base_vertex_base_instance.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
@@ -30,13 +31,18 @@ bool WebGLMultiDrawInstancedBaseVertexBaseInstance::Supported(
   // Logic: IsSupportedByValidating || IsSupportedByPassthroughOnANGLE
   // GL_ANGLE_base_vertex_base_instance is removed from supports if we requested
   // GL_WEBGL_draw_instanced_base_vertex_base_instance first
-  // So we need to add a or for
+  // So we need to add an OR for
   // GL_WEBGL_draw_instanced_base_vertex_base_instance
+  // Same happens for GL_ANGLE_multi_draw if GL_WEBGL_multi_draw is requested
+  // first
   return (context->ExtensionsUtil()->SupportsExtension(
               "GL_WEBGL_draw_instanced_base_vertex_base_instance") &&
           context->ExtensionsUtil()->SupportsExtension(
               "GL_WEBGL_multi_draw_instanced_base_vertex_base_instance")) ||
-         (context->ExtensionsUtil()->SupportsExtension("GL_ANGLE_multi_draw") &&
+         ((context->ExtensionsUtil()->SupportsExtension(
+               "GL_ANGLE_multi_draw") ||
+           context->ExtensionsUtil()->EnsureExtensionEnabled(
+               "GL_WEBGL_multi_draw")) &&
           (context->ExtensionsUtil()->SupportsExtension(
                "GL_ANGLE_base_vertex_base_instance") ||
            context->ExtensionsUtil()->SupportsExtension(
@@ -56,7 +62,7 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
         GLuint counts_offset,
         const base::span<const int32_t> instance_counts,
         GLuint instance_counts_offset,
-        const base::span<const int32_t> baseinstances,
+        const base::span<const uint32_t> baseinstances,
         GLuint baseinstances_offset,
         GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
@@ -79,11 +85,12 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
     return;
   }
 
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->MultiDrawArraysInstancedBaseInstanceWEBGL(
       mode, &firsts[firsts_offset], &counts[counts_offset],
       &instance_counts[instance_counts_offset],
-      reinterpret_cast<const GLuint*>(&baseinstances[baseinstances_offset]),
-      drawcount);
+      &baseinstances[baseinstances_offset], drawcount);
 }
 
 void WebGLMultiDrawInstancedBaseVertexBaseInstance::
@@ -98,7 +105,7 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
         GLuint instance_counts_offset,
         const base::span<const int32_t> basevertices,
         GLuint basevertices_offset,
-        const base::span<const int32_t> baseinstances,
+        const base::span<const uint32_t> baseinstances,
         GLuint baseinstances_offset,
         GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
@@ -129,14 +136,15 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
     return;
   }
 
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()
       ->ContextGL()
       ->MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
           mode, &counts[counts_offset], type, &offsets[offsets_offset],
           &instance_counts[instance_counts_offset],
           &basevertices[basevertices_offset],
-          reinterpret_cast<const GLuint*>(&baseinstances[baseinstances_offset]),
-          drawcount);
+          &baseinstances[baseinstances_offset], drawcount);
 }
 
 }  // namespace blink

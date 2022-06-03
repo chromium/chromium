@@ -4,11 +4,11 @@
 
 #include "chrome/updater/win/ui/complete_wnd.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/win/ui/constants.h"
-#include "chrome/updater/win/ui/util.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace ui {
@@ -85,12 +85,12 @@ bool CompleteWnd::MaybeCloseWindow() {
 }
 
 void CompleteWnd::DisplayCompletionDialog(bool is_success,
-                                          const base::string16& text,
-                                          const base::string16& help_url) {
+                                          const std::wstring& text,
+                                          const std::u16string& help_url) {
   if (!OmahaWnd::OnComplete())
     return;
 
-  base::string16 s;
+  std::wstring s;
   LoadString(IDS_CLOSE, &s);
   SetDlgItemText(IDC_CLOSE, s.c_str());
 
@@ -98,7 +98,7 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
 
   // FormatMessage() converts all LFs to CRLFs, which are rendered as little
   // squares in UI. To avoid this, convert all CRLFs to LFs.
-  base::string16 display_text;
+  std::wstring display_text;
   base::ReplaceChars(text, L"\r\n", L"\n", &display_text);
 
   if (is_success) {

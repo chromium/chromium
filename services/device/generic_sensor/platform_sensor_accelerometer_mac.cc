@@ -10,6 +10,9 @@
 
 #include "base/bind.h"
 #include "base/numerics/math_constants.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "device/base/synchronization/shared_memory_seqlock_buffer.h"
 #include "services/device/generic_sensor/platform_sensor_provider_mac.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -34,11 +37,126 @@ namespace device {
 
 using mojom::SensorType;
 
+// Helper class that performs the actual I/O. It must run on a
+// SequencedTaskRunner that is properly configured for blocking I/O
+// operations.
+class PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper final {
+ public:
+  explicit BlockingTaskRunnerHelper(
+      base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor);
+  ~BlockingTaskRunnerHelper();
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
+  void Init();
+  void StartPolling(double frequency);
+  void StopPolling();
+
+ private:
+  void PollForData();
+
+  // Repeating timer for data polling.
+  base::RepeatingTimer timer_;
+
+  // |platform_sensor_| can only be checked for validity on
+  // |owner_task_runner_|'s sequence.
+  base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor_;
+
+  // Task runner belonging to PlatformSensorAccelerometerMac. Calls to it
+  // will be done via this task runner.
+  scoped_refptr<base::SequencedTaskRunner> owner_task_runner_;
+
+  // SuddenMotionSensor instance that performs blocking calls.
+  std::unique_ptr<SuddenMotionSensor> sudden_motion_sensor_;
+
+  // In builds with DCHECK enabled, checks that methods of this class are
+  // called on the right thread.
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::
+    BlockingTaskRunnerHelper(
+        base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor)
+    : platform_sensor_(platform_sensor),
+      owner_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+  // Detaches from the sequence on which this object was created. It will be
+  // bound to another sequence when Init() is called.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::
+    ~BlockingTaskRunnerHelper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::Init() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (sudden_motion_sensor_)
+    return;
+
+  sudden_motion_sensor_.reset(SuddenMotionSensor::Create());
+}
+
+void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::StartPolling(
+    double frequency) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!timer_.IsRunning());
+
+  if (!sudden_motion_sensor_)
+    return;
+
+  timer_.Start(
+      FROM_HERE,
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / frequency), this,
+      &PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::PollForData);
+}
+
+void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::StopPolling() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_.Stop();
+}
+
+void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::PollForData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sudden_motion_sensor_);
+
+  // Retrieve per-axis calibrated values.
+  float axis_value[3];
+  if (!sudden_motion_sensor_->ReadSensorValues(axis_value))
+    return;
+
+  SensorReading reading;
+  reading.accel.timestamp =
+      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
+  reading.accel.x = axis_value[0] * base::kMeanGravityDouble;
+  reading.accel.y = axis_value[1] * base::kMeanGravityDouble;
+  reading.accel.z = axis_value[2] * base::kMeanGravityDouble;
+
+  owner_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PlatformSensorAccelerometerMac::OnReadingAvailable,
+                     platform_sensor_, reading));
+}
+
 PlatformSensorAccelerometerMac::PlatformSensorAccelerometerMac(
     SensorReadingSharedBuffer* reading_buffer,
     PlatformSensorProvider* provider)
     : PlatformSensor(SensorType::ACCELEROMETER, reading_buffer, provider),
-      sudden_motion_sensor_(SuddenMotionSensor::Create()) {}
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      blocking_task_helper_(nullptr,
+                            base::OnTaskRunnerDeleter(blocking_task_runner_)) {
+  // We need to properly initialize |blocking_task_helper_| here because we need
+  // |weak_factory_| to be created first.
+  blocking_task_helper_.reset(
+      new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::Init,
+                                base::Unretained(blocking_task_helper_.get())));
+}
 
 PlatformSensorAccelerometerMac::~PlatformSensorAccelerometerMac() = default;
 
@@ -61,40 +179,25 @@ PlatformSensorAccelerometerMac::GetDefaultConfiguration() {
 
 bool PlatformSensorAccelerometerMac::StartSensor(
     const PlatformSensorConfiguration& configuration) {
-  if (!sudden_motion_sensor_)
-    return false;
-
-  float axis_value[3];
-  if (!sudden_motion_sensor_->ReadSensorValues(axis_value))
-    return false;
-
-  timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                        configuration.frequency()),
-      this, &PlatformSensorAccelerometerMac::PollForData);
-
+  if (is_reading_active_)
+    StopSensor();
+  is_reading_active_ = true;
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::StartPolling,
+                                base::Unretained(blocking_task_helper_.get()),
+                                configuration.frequency()));
   return true;
 }
 
 void PlatformSensorAccelerometerMac::StopSensor() {
-  timer_.Stop();
+  is_reading_active_ = false;
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::StopPolling,
+                                base::Unretained(blocking_task_helper_.get())));
 }
 
-void PlatformSensorAccelerometerMac::PollForData() {
-  // Retrieve per-axis calibrated values.
-  float axis_value[3];
-  if (!sudden_motion_sensor_->ReadSensorValues(axis_value))
-    return;
-
-  SensorReading reading;
-  reading.accel.timestamp =
-      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
-  reading.accel.x = axis_value[0] * base::kMeanGravityDouble;
-  reading.accel.y = axis_value[1] * base::kMeanGravityDouble;
-  reading.accel.z = axis_value[2] * base::kMeanGravityDouble;
-
-  if (IsSignificantlyDifferent(reading_, reading)) {
+void PlatformSensorAccelerometerMac::OnReadingAvailable(SensorReading reading) {
+  if (is_reading_active_ && IsSignificantlyDifferent(reading_, reading)) {
     reading_ = reading;
     UpdateSharedBufferAndNotifyClients(reading);
   }

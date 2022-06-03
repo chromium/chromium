@@ -4,16 +4,22 @@
 
 package org.chromium.base.test;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.SharedPreferences;
 import android.content.pm.InstrumentationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.internal.runner.RunnerArgs;
 import android.support.test.internal.runner.TestExecutor;
@@ -21,16 +27,30 @@ import android.support.test.internal.runner.TestLoader;
 import android.support.test.internal.runner.TestRequest;
 import android.support.test.internal.runner.TestRequestBuilder;
 import android.support.test.runner.AndroidJUnitRunner;
+import android.support.test.runner.MonitoringInstrumentation.ActivityFinisher;
+import android.text.TextUtils;
+
+import androidx.core.content.ContextCompat;
 
 import dalvik.system.DexFile;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
+import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
+import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.BuildConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -39,16 +59,16 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
- * A custom AndroidJUnitRunner that supports multidex installer and list out test information.
+ * A custom AndroidJUnitRunner that supports multidex installer and lists out test information.
+ * Also customizes various TestRunner and Instrumentation behaviors, like when Activities get
+ * finished, and adds a timeout to waitForIdleSync.
  *
- * This class is the equivalent of BaseChromiumInstrumentationTestRunner in JUnit3. Please
- * beware that is this not a class runner. It is declared in test apk AndroidManifest.xml
+ * Please beware that is this not a class runner. It is declared in test apk AndroidManifest.xml
  * <instrumentation>
- *
- * TODO(yolandyan): remove this class after all tests are converted to JUnit4. Use class runner
- * for test listing.
  */
 @MainDex
 public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
@@ -78,6 +98,18 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final String ARGUMENT_LOG_ONLY = "log";
 
     private static final String TAG = "BaseJUnitRunner";
+
+    private static final int STATUS_CODE_BATCH_FAILURE = 1338;
+
+    // The ID of the bundle value Instrumentation uses to report the crash stack, if the test
+    // crashed.
+    private static final String BUNDLE_STACK_ID = "stack";
+
+    private static final long WAIT_FOR_IDLE_TIMEOUT_MS = 10000L;
+
+    private static final long FINISH_APP_TASKS_TIMEOUT_MS = 3000L;
+    private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
+
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
 
     @Override
@@ -140,7 +172,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
-        if (arguments != null && arguments.getString(LIST_ALL_TESTS_FLAG) != null) {
+        if (shouldListTests()) {
             Log.w(TAG,
                     String.format("Runner will list out tests info in JSON without running tests. "
                                     + "Arguments: %s",
@@ -154,7 +186,35 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                                         + " crbug.com/754015. Arguments: %s",
                                 arguments.toString()));
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAllAppTasks(getTargetContext());
+            }
+            checkOrDeleteOnDiskSharedPreferences(false);
+            clearDataDirectory(sInMemorySharedPreferencesContext);
+            InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
             super.onStart();
+        }
+    }
+
+    // The Instrumentation implementation of waitForIdleSync does not have a timeout and can wait
+    // indefinitely in the case of animations, etc.
+    //
+    // You should never use this function in new code, as waitForIdleSync hides underlying issues.
+    // There's almost always a better condition to wait on.
+    @Override
+    public void waitForIdleSync() {
+        final CallbackHelper idleCallback = new CallbackHelper();
+        runOnMainSync(() -> {
+            Looper.myQueue().addIdleHandler(() -> {
+                idleCallback.notifyCalled();
+                return false;
+            });
+        });
+
+        try {
+            idleCallback.waitForFirst((int) WAIT_FOR_IDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException ex) {
+            Log.w(TAG, "Timeout while waiting for idle main thread.");
         }
     }
 
@@ -246,7 +306,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         return builder.build();
     }
 
-    static boolean shouldListTests(Bundle arguments) {
+    static boolean shouldListTests() {
+        Bundle arguments = InstrumentationRegistry.getArguments();
         return arguments != null && arguments.getString(LIST_ALL_TESTS_FLAG) != null;
     }
 
@@ -412,6 +473,232 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             } catch (NoClassDefFoundError e) {
                 throw new ClassNotFoundException(name, e);
             }
+        }
+    }
+
+    @Override
+    public void finish(int resultCode, Bundle results) {
+        if (shouldListTests()) {
+            super.finish(resultCode, results);
+            return;
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAllAppTasks(getTargetContext());
+            }
+            finishAllActivities();
+        } catch (Exception e) {
+            // Ignore any errors finishing Activities so that otherwise passing tests don't fail
+            // during tear down due to framework issues. See crbug.com/653731.
+        }
+
+        try {
+            checkOrDeleteOnDiskSharedPreferences(true);
+            UmaRecorderHolder.resetForTesting();
+
+            // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
+            // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore
+            // lifetime asserts if that is the case.
+            if (!ApplicationStatus.isInitialized()
+                    || ApplicationStatus.isEveryActivityDestroyed()) {
+                LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            } else {
+                LifetimeAssert.resetForTesting();
+            }
+        } catch (Exception e) {
+            // It's not possible (as far as I know) to update already reported test results, so we
+            // send another status update have the instrumentation test instance parse it.
+            Bundle b = new Bundle();
+            b.putString(BUNDLE_STACK_ID, Log.getStackTraceString(e));
+            InstrumentationRegistry.getInstrumentation().sendStatus(STATUS_CODE_BATCH_FAILURE, b);
+        }
+
+        // This will end up force stopping the package, so code after this line will not run.
+        super.finish(resultCode, results);
+    }
+
+    // Since we prevent the default runner's behaviour of finishing Activities between tests, don't
+    // finish Activities, don't have the runner wait for them to finish either (as this will add a 2
+    // second timeout to each test).
+    @Override
+    protected void waitForActivitiesToComplete() {}
+
+    // Note that in this class we cannot use ThreadUtils to post tasks as some tests initialize the
+    // browser in ways that cause tasks posted through PostTask to not run. This function should be
+    // used instead.
+    @Override
+    public void runOnMainSync(Runnable runner) {
+        if (runner.getClass() == ActivityFinisher.class) {
+            // This is a gross hack.
+            // Without migrating to the androidx runner, we have no way to prevent
+            // MonitoringInstrumentation from trying to kill our activities, and we rely on
+            // MonitoringInstrumentation for many things like result reporting.
+            // In order to allow batched tests to reuse Activities, drop the ActivityFinisher tasks
+            // without running them.
+            return;
+        }
+        super.runOnMainSync(runner);
+    }
+
+    /** Finishes all tasks Chrome has listed in Android's Overview. */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void finishAllAppTasks(final Context context) {
+        // Close all of the tasks one by one.
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
+            task.finishAndRemoveTask();
+        }
+        long endTime = SystemClock.uptimeMillis()
+                + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
+        while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
+            try {
+                Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    private void finishAllActivities() {
+        // This mirrors the default logic of the test runner for finishing Activities when
+        // ApplicationStatus isn't initialized. However, we keep Chromium's logic for finishing
+        // Activities below both because it's worked historically and we don't want to risk breaking
+        // things, and because the ActivityFinisher does some filtering on which Activities it
+        // chooses to finish which could potentially cause issues.
+        if (!ApplicationStatus.isInitialized()) {
+            runOnMainSync(() -> new ActivityFinisher().run());
+            super.waitForActivitiesToComplete();
+            return;
+        }
+        CallbackHelper allDestroyedCalledback = new CallbackHelper();
+        ApplicationStatus.ActivityStateListener activityStateListener =
+                new ApplicationStatus.ActivityStateListener() {
+                    @Override
+                    public void onActivityStateChange(Activity activity, int newState) {
+                        switch (newState) {
+                            case ActivityState.DESTROYED:
+                                if (ApplicationStatus.isEveryActivityDestroyed()) {
+                                    allDestroyedCalledback.notifyCalled();
+                                    ApplicationStatus.unregisterActivityStateListener(this);
+                                }
+                                break;
+                            case ActivityState.CREATED:
+                                if (!activity.isFinishing()) {
+                                    // This is required to ensure we finish any activities created
+                                    // after doing the bulk finish operation below.
+                                    ApiCompatibilityUtils.finishAndRemoveTask(activity);
+                                }
+                                break;
+                        }
+                    }
+                };
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (ApplicationStatus.isEveryActivityDestroyed()) {
+                allDestroyedCalledback.notifyCalled();
+            } else {
+                ApplicationStatus.registerStateListenerForAllActivities(activityStateListener);
+            }
+            for (Activity a : ApplicationStatus.getRunningActivities()) {
+                if (!a.isFinishing()) ApiCompatibilityUtils.finishAndRemoveTask(a);
+            }
+        });
+        try {
+            allDestroyedCalledback.waitForFirst();
+        } catch (TimeoutException e) {
+            // There appears to be a framework bug on K and L where onStop and onDestroy are not
+            // called for a handful of tests. We ignore these exceptions.
+            Log.w(TAG, "Activity failed to be destroyed after a test");
+
+            runOnMainSync(() -> {
+                // Make sure subsequent tests don't have these notifications firing.
+                ApplicationStatus.unregisterActivityStateListener(activityStateListener);
+            });
+        }
+    }
+
+    // This method clears the data directory for the test apk, but device_utils.py clears the data
+    // for the apk under test via `pm clear`. Fake module smoke tests in particular requires some
+    // data to be kept for the apk under test: /sdcard/Android/data/package/files/local_testing
+    private static void clearDataDirectory(Context targetContext) {
+        File dataDir = ContextCompat.getDataDir(targetContext);
+        File[] files = dataDir.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            // Symlink to app's native libraries.
+            if (file.getName().equals("lib")) {
+                continue;
+            }
+            if (file.getName().equals("incremental-install-files")) {
+                continue;
+            }
+            // E.g. Legacy multidex files.
+            if (file.getName().equals("code_cache")) {
+                continue;
+            }
+            // SharedPreferences handled by checkOrDeleteOnDiskSharedPreferences().
+            if (file.getName().equals("shared_prefs")) {
+                continue;
+            }
+            if (file.isDirectory()
+                    && (file.getName().startsWith("app_") || file.getName().equals("cache"))) {
+                // Directories are lazily created by PathUtils only once, and so can be cleared but
+                // not removed.
+                for (File subFile : file.listFiles()) {
+                    if (!FileUtils.recursivelyDeleteFile(subFile, FileUtils.DELETE_ALL)) {
+                        throw new RuntimeException(
+                                "Could not delete file: " + subFile.getAbsolutePath());
+                    }
+                }
+            } else if (!FileUtils.recursivelyDeleteFile(file, FileUtils.DELETE_ALL)) {
+                throw new RuntimeException("Could not delete file: " + file.getAbsolutePath());
+            }
+        }
+    }
+
+    private void checkOrDeleteOnDiskSharedPreferences(boolean check) {
+        File dataDir = ContextCompat.getDataDir(InstrumentationRegistry.getTargetContext());
+        File prefsDir = new File(dataDir, "shared_prefs");
+        File[] files = prefsDir.listFiles();
+        if (files == null) {
+            return;
+        }
+        ArrayList<File> badFiles = new ArrayList<>();
+        for (File f : files) {
+            // Multidex support library prefs need to stay or else multidex extraction will occur
+            // needlessly.
+            // WebView prefs need to stay because webview tests have no (good) way of hooking
+            // SharedPreferences for instantiated WebViews.
+            if (!f.getName().endsWith("multidex.version.xml")
+                    && !f.getName().equals("WebViewChromiumPrefs.xml")) {
+                if (check) {
+                    badFiles.add(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        if (!badFiles.isEmpty()) {
+            String errorMsg = "Found unexpected shared preferences file(s) after test ran.\n"
+                    + "All code should use ContextUtils.getApplicationContext() when accessing "
+                    + "SharedPreferences so that tests are hooked to use InMemorySharedPreferences."
+                    + " This could also mean needing to override getSharedPreferences() on custom "
+                    + "Context subclasses (e.g. ChromeBaseAppCompatActivity does this to make "
+                    + "Preferences screens work).\n\n";
+
+            SharedPreferences testPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
+                    "test", Context.MODE_PRIVATE);
+            if (!(testPrefs instanceof InMemorySharedPreferences)) {
+                errorMsg += String.format(
+                        "ContextUtils.getApplicationContext() was set to type \"%s\", which does "
+                                + "not delegate to InMemorySharedPreferencesContext (this is "
+                                + "likely the issues).\n\n",
+                        ContextUtils.getApplicationContext().getClass().getName());
+            }
+
+            errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
+            throw new AssertionError(errorMsg);
         }
     }
 }

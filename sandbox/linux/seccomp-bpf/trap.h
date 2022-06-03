@@ -27,6 +27,11 @@ namespace sandbox {
 //   true. Threads are incompatible with the seccomp sandbox anyway.
 class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
  public:
+  // Copying and assigning is unimplemented. It doesn't make sense for a
+  // singleton.
+  Trap(const Trap&) = delete;
+  Trap& operator=(const Trap&) = delete;
+
   uint16_t Add(TrapFnc fnc, const void* aux, bool safe) override;
 
   bool EnableUnsafeTraps() override;
@@ -41,7 +46,7 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
 
  private:
   struct TrapKey {
-    TrapKey() : fnc(NULL), aux(NULL), safe(false) {}
+    TrapKey() : fnc(nullptr), aux(nullptr), safe(false) {}
     TrapKey(TrapFnc f, const void* a, bool s) : fnc(f), aux(a), safe(s) {}
     TrapFnc fnc;
     const void* aux;
@@ -75,10 +80,6 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   size_t trap_array_size_;      // Currently used size of array
   size_t trap_array_capacity_;  // Currently allocated capacity of array
   bool has_unsafe_traps_;       // Whether unsafe traps have been enabled
-
-  // Copying and assigning is unimplemented. It doesn't make sense for a
-  // singleton.
-  DISALLOW_COPY_AND_ASSIGN(Trap);
 };
 
 }  // namespace sandbox

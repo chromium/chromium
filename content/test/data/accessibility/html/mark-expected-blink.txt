@@ -1,10 +1,11 @@
 rootWebArea
 ++genericContainer ignored
-++++paragraph
-++++++staticText name='This test is to check '
-++++++++inlineTextBox name='This test is to check '
-++++++mark
-++++++++staticText name='mark tag'
-++++++++++inlineTextBox name='mark tag'
-++++++staticText name='.'
-++++++++inlineTextBox name='.'
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='This test is to check '
+++++++++++inlineTextBox name='This test is to check '
+++++++++mark
+++++++++++staticText name='mark tag'
+++++++++++++inlineTextBox name='mark tag'
+++++++++staticText name='.'
+++++++++++inlineTextBox name='.'

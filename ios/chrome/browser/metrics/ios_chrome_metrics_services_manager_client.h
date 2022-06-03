@@ -24,6 +24,12 @@ class IOSChromeMetricsServicesManagerClient
     : public metrics_services_manager::MetricsServicesManagerClient {
  public:
   explicit IOSChromeMetricsServicesManagerClient(PrefService* local_state);
+
+  IOSChromeMetricsServicesManagerClient(
+      const IOSChromeMetricsServicesManagerClient&) = delete;
+  IOSChromeMetricsServicesManagerClient& operator=(
+      const IOSChromeMetricsServicesManagerClient&) = delete;
+
   ~IOSChromeMetricsServicesManagerClient() override;
 
  private:
@@ -33,7 +39,6 @@ class IOSChromeMetricsServicesManagerClient
   class IOSChromeEnabledStateProvider;
 
   // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<rappor::RapporServiceImpl> CreateRapporServiceImpl() override;
   std::unique_ptr<variations::VariationsService> CreateVariationsService()
       override;
   std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient()
@@ -42,7 +47,12 @@ class IOSChromeMetricsServicesManagerClient
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsMetricsReportingEnabled() override;
   bool IsMetricsConsentGiven() override;
-  bool IsIncognitoSessionActive() override;
+  bool IsOffTheRecordSessionActive() override;
+
+  // Static helper for |IsOffTheRecordSessionActive()|, suitable for binding
+  // into callbacks. |true| if any browser states have any incognito WebStates
+  // in any Browser.
+  static bool AreIncognitoTabsPresent();
 
   // MetricsStateManager which is passed as a parameter to service constructors.
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -56,8 +66,6 @@ class IOSChromeMetricsServicesManagerClient
 
   // Weak pointer to the local state prefs store.
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServicesManagerClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_

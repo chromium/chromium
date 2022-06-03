@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that constructed stylesheets appear properly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
@@ -15,10 +15,20 @@
       document.adoptedStyleSheets = [s];
   `);
 
-  ElementsTestRunner.selectNodeAndWaitForStyles('inspected', dump);
+  ElementsTestRunner.selectNodeAndWaitForStyles('inspected', modify);
 
-  function dump() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
-    TestRunner.completeTest();
+  async function modify() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
+
+    TestRunner.cssModel.addEventListener(SDK.CSSModel.Events.StyleSheetChanged, onStyleSheetChanged, this);
+
+    function onStyleSheetChanged(event) {
+      TestRunner.addResult('StyleSheetChanged triggered');
+      TestRunner.completeTest();
+    }
+
+    await TestRunner.evaluateInPagePromise(`
+      s.insertRule('div {color: green}');
+    `);
   }
 })();

@@ -5,34 +5,42 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_SCHEDULE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_SCHEDULE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include <memory>
+
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
+
+class SimpleFactoryKey;
+
+namespace base {
+template <typename T>
+struct DefaultSingletonTraits;
+}  // namespace base
 
 namespace notifications {
 class NotificationScheduleService;
 }  // namespace notifications
 
-class NotificationScheduleServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class NotificationScheduleServiceFactory : public SimpleKeyedServiceFactory {
  public:
   static NotificationScheduleServiceFactory* GetInstance();
-  static notifications::NotificationScheduleService* GetForBrowserContext(
-      content::BrowserContext* context);
+  static notifications::NotificationScheduleService* GetForKey(
+      SimpleFactoryKey* key);
 
  private:
-  friend class base::NoDestructor<NotificationScheduleServiceFactory>;
-
-  // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  friend struct base::DefaultSingletonTraits<
+      NotificationScheduleServiceFactory>;
 
   NotificationScheduleServiceFactory();
+  NotificationScheduleServiceFactory(
+      const NotificationScheduleServiceFactory&) = delete;
+  NotificationScheduleServiceFactory& operator=(
+      const NotificationScheduleServiceFactory&) = delete;
   ~NotificationScheduleServiceFactory() override;
 
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduleServiceFactory);
+  // SimpleKeyedServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_SCHEDULE_SERVICE_FACTORY_H_

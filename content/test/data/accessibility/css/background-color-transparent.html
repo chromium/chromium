@@ -1,0 +1,39 @@
+<!--
+@BLINK-ALLOW:backgroundColor=*
+@BLINK-ALLOW:color=*
+@WIN-ALLOW:background-color:*
+@WIN-ALLOW:color:*
+@WIN-ALLOW:ia2_hypertext=*
+@WIN-ALLOW:offset:*
+@AURALINUX-ALLOW:bg-color=*
+@AURALINUX-ALLOW:fg-color=*
+@AURALINUX-ALLOW:offset=*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+
+<div id="default">Document base color.</div>
+
+<div style="background-color: blue">
+    <p id="transparent" style="background-color: transparent">Transparent color.</p>
+</div>
+
+<div style="background-color: blue">
+    <div style="background-color: green">
+        <p id="obscuring-background" style="background-color: transparent">Obscuring background.</p>
+    </div>
+</div>
+
+<p id="blended-default" style="background-color: rgba(50%, 50%, 50%, 0.5)">
+    Blended with document base color.
+</p>
+
+<div style="background-color: rgba(50%, 50%, 50%, 0.5)">
+    <p id="blended-background" style="background-color: rgba(50%, 50%, 50%, 0.5)">
+        Blended with background color.
+    </p>
+</div>
+
+  </body>
+</html>

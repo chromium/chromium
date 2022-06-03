@@ -23,8 +23,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.TestChildProcessConnection;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class BindingManagerTest {
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
         manager.addConnection(connection);
         iterable.add(connection);
-        connection.removeModerateBinding(); // Remove initial binding.
+        connection.removeModerateBinding(false); // Remove initial binding.
         return connection;
     }
 
@@ -69,8 +69,8 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager = new BindingManager(mActivity, 4, mIterable);
-        mVariableManager = new BindingManager(mActivity, mIterable);
+        mManager = new BindingManager(mActivity, 4, mIterable, false);
+        mVariableManager = new BindingManager(mActivity, mIterable, false);
     }
 
     @After

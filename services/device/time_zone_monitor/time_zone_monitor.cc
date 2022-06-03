@@ -7,13 +7,14 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace device {
 
-TimeZoneMonitor::TimeZoneMonitor() {
-}
+TimeZoneMonitor::TimeZoneMonitor()
+    : timezone_(icu::TimeZone::createDefault()) {}
 
 TimeZoneMonitor::~TimeZoneMonitor() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -27,15 +28,24 @@ void TimeZoneMonitor::Bind(
 
 void TimeZoneMonitor::NotifyClients(base::StringPiece zone_id_str) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT0("device", "TimeZoneMonitor::NotifyClients");
   VLOG(1) << "timezone reset to " << zone_id_str;
 
   for (auto& client : clients_)
-    client->OnTimeZoneChange(zone_id_str.as_string());
+    client->OnTimeZoneChange(std::string(zone_id_str));
 }
 
 void TimeZoneMonitor::UpdateIcuAndNotifyClients(
     std::unique_ptr<icu::TimeZone> new_zone) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT0("device", "TimeZoneMonitor::UpdateIcuAndNotifyClients");
+
+  // Do not notify clients if the timezone didn't change.
+  if (*timezone_ == *new_zone) {
+    return;
+  }
+  // Keep track of the last timezone sent to clients.
+  timezone_ = base::WrapUnique(new_zone->clone());
 
   std::string zone_id_str = GetTimeZoneId(*new_zone);
 

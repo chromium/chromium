@@ -1,0 +1,51 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
+<link rel="import" href="../../prefs/prefs.html">
+<link rel="import" href="../prefs_behavior.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../../shared/nearby_onboarding_page.html">
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="../../shared/nearby_visibility_page.html">
+<link rel="import" href="nearby_share_confirm_page.html">
+<link rel="import" href="nearby_share_high_visibility_page.html">
+<link rel="import" href="nearby_share_receive_manager.html">
+
+<dom-module id="nearby-share-receive-dialog">
+  <template>
+    <style>
+      cr-dialog::part(dialog) {
+        height: 420px;
+        width: 512px;
+      }
+    </style>
+    <cr-dialog id="dialog" show-on-attach>
+      <div id="content" slot="body" aria-live="polite">
+        <cr-view-manager id="viewManager">
+          <nearby-share-high-visibility-page id="[[Page.HIGH_VISIBILITY]]"
+              slot="view" device-name="[[settings.deviceName]]"
+              shutoff-timestamp="[[highVisibilityShutoffTimestamp_]]"
+              register-result="[[registerForegroundReceiveSurfaceResult_]]"
+              nearby-process-stopped="[[nearbyProcessStopped_]]"
+              start-advertising-failed="[[startAdvertisingFailed_]]">
+          </nearby-share-high-visibility-page>
+          <nearby-share-confirm-page id="[[Page.CONFIRM]]" slot="view"
+              share-target="[[shareTarget]]"
+              connection-token="[[connectionToken]]"
+              transfer-status="[[transferStatus_]]">
+          </nearby-share-confirm-page>
+          <nearby-onboarding-page id="[[Page.ONBOARDING]]" slot="view"
+              settings="{{settings}}">
+          </nearby-onboarding-page>
+          <nearby-visibility-page id="[[Page.VISIBILITY]]" slot="view"
+              settings="{{settings}}">
+          </nearby-visibility-page>
+        </cr-view-manager>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="nearby_share_receive_dialog.js"></script>
+</dom-module>

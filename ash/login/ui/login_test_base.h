@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/login_types.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 
 namespace views {
 class View;
@@ -25,6 +24,10 @@ class LoginDataDispatcher;
 class LoginTestBase : public AshTestBase {
  public:
   LoginTestBase();
+
+  LoginTestBase(const LoginTestBase&) = delete;
+  LoginTestBase& operator=(const LoginTestBase&) = delete;
+
   ~LoginTestBase() override;
 
   // Shows a full Lock/Login screen. These methods are useful for when we want
@@ -65,6 +68,10 @@ class LoginTestBase : public AshTestBase {
   // Changes the active number of users. Fires an event on |DataDispatcher()|.
   void AddChildUsers(size_t num_users);
 
+  // Removes user specified by |account_id| from users(). Fires an event on
+  // |DataDispatcher()|
+  void RemoveUser(const AccountId& account_id);
+
   std::vector<LoginUserInfo>& users() { return users_; }
 
   const std::vector<LoginUserInfo>& users() const { return users_; }
@@ -76,14 +83,10 @@ class LoginTestBase : public AshTestBase {
   void TearDown() override;
 
  private:
-  class WidgetDelegate;
-
   // The widget created using |ShowWidgetWithContent|.
   std::unique_ptr<views::Widget> widget_;
 
   std::vector<LoginUserInfo> users_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTestBase);
 };
 
 }  // namespace ash

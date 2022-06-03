@@ -4,13 +4,14 @@
 
 #include "net/url_request/url_fetcher_response_writer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -67,19 +68,18 @@ URLFetcherFileWriter::~URLFetcherFileWriter() {
 int URLFetcherFileWriter::Initialize(CompletionOnceCallback callback) {
   DCHECK(!callback_);
 
-  file_stream_.reset(new FileStream(file_task_runner_));
+  file_stream_ = std::make_unique<FileStream>(file_task_runner_);
 
   int result = ERR_IO_PENDING;
   owns_file_ = true;
   if (file_path_.empty()) {
     base::FilePath* temp_file_path = new base::FilePath;
     base::PostTaskAndReplyWithResult(
-        file_task_runner_.get(),
-        FROM_HERE,
-        base::Bind(&base::CreateTemporaryFile, temp_file_path),
-        base::Bind(&URLFetcherFileWriter::DidCreateTempFile,
-                   weak_factory_.GetWeakPtr(),
-                   base::Owned(temp_file_path)));
+        file_task_runner_.get(), FROM_HERE,
+        base::BindOnce(&base::CreateTemporaryFile, temp_file_path),
+        base::BindOnce(&URLFetcherFileWriter::DidCreateTempFile,
+                       weak_factory_.GetWeakPtr(),
+                       base::Owned(temp_file_path)));
   } else {
     result =
         file_stream_->Open(file_path_,
@@ -167,8 +167,7 @@ void URLFetcherFileWriter::CloseAndDeleteFile() {
   file_stream_.reset();
   DisownFile();
   file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                file_path_, false /* recursive */));
+      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path_));
 }
 
 void URLFetcherFileWriter::DidCreateTempFile(base::FilePath* temp_file_path,

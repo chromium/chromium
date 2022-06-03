@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -101,7 +100,7 @@ int IdentifiersFactory::IntIdForNode(Node* node) {
 
 // static
 String IdentifiersFactory::AddProcessIdPrefixTo(uint64_t id) {
-  uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
+  auto process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
 
   StringBuilder builder;
 

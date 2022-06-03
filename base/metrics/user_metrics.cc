@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
-#include "base/trace_event/trace_event.h"
+#include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace {
@@ -30,20 +30,30 @@ void RecordAction(const UserMetricsAction& action) {
 }
 
 void RecordComputedAction(const std::string& action) {
-  TRACE_EVENT_INSTANT1("ui", "UserEvent", TRACE_EVENT_SCOPE_GLOBAL, "action", action);
+  RecordComputedActionAt(action, TimeTicks::Now());
+}
+
+void RecordComputedActionSince(const std::string& action,
+                               TimeDelta time_since) {
+  RecordComputedActionAt(action, TimeTicks::Now() - time_since);
+}
+
+void RecordComputedActionAt(const std::string& action, TimeTicks action_time) {
+  TRACE_EVENT_INSTANT1("ui", "UserEvent", TRACE_EVENT_SCOPE_GLOBAL, "action",
+                       action);
   if (!g_task_runner.Get()) {
     DCHECK(g_callbacks.Get().empty());
     return;
   }
 
   if (!g_task_runner.Get()->BelongsToCurrentThread()) {
-    g_task_runner.Get()->PostTask(FROM_HERE,
-                                  BindOnce(&RecordComputedAction, action));
+    g_task_runner.Get()->PostTask(
+        FROM_HERE, BindOnce(&RecordComputedActionAt, action, action_time));
     return;
   }
 
   for (const ActionCallback& callback : g_callbacks.Get()) {
-    callback.Run(action);
+    callback.Run(action, action_time);
   }
 }
 
@@ -71,6 +81,12 @@ void SetRecordActionTaskRunner(
   DCHECK(task_runner->BelongsToCurrentThread());
   DCHECK(!g_task_runner.Get() || g_task_runner.Get()->BelongsToCurrentThread());
   g_task_runner.Get() = task_runner;
+}
+
+scoped_refptr<SingleThreadTaskRunner> GetRecordActionTaskRunner() {
+  if (g_task_runner.IsCreated())
+    return g_task_runner.Get();
+  return nullptr;
 }
 
 }  // namespace base

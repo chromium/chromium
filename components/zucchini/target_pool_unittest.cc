@@ -5,9 +5,9 @@
 #include "components/zucchini/target_pool.h"
 
 #include <cmath>
+#include <deque>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "components/zucchini/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,29 +16,29 @@ namespace zucchini {
 
 namespace {
 
-using OffsetVector = std::vector<offset_t>;
+using OffsetDeque = std::deque<offset_t>;
 
 }  // namespace
 
 TEST(TargetPoolTest, InsertTargetsFromReferences) {
-  auto test_insert = [](std::vector<Reference>&& references) -> OffsetVector {
+  auto test_insert = [](std::vector<Reference>&& references) -> OffsetDeque {
     TargetPool target_pool;
     target_pool.InsertTargets(references);
     // Return copy since |target_pool| goes out of scope.
     return target_pool.targets();
   };
 
-  EXPECT_EQ(OffsetVector(), test_insert({}));
-  EXPECT_EQ(OffsetVector({0, 1}), test_insert({{0, 0}, {10, 1}}));
-  EXPECT_EQ(OffsetVector({0, 1}), test_insert({{0, 1}, {10, 0}}));
-  EXPECT_EQ(OffsetVector({0, 1, 2}), test_insert({{0, 1}, {10, 0}, {20, 2}}));
-  EXPECT_EQ(OffsetVector({0}), test_insert({{0, 0}, {10, 0}}));
-  EXPECT_EQ(OffsetVector({0, 1}), test_insert({{0, 0}, {10, 0}, {20, 1}}));
+  EXPECT_EQ(OffsetDeque(), test_insert({}));
+  EXPECT_EQ(OffsetDeque({0, 1}), test_insert({{0, 0}, {10, 1}}));
+  EXPECT_EQ(OffsetDeque({0, 1}), test_insert({{0, 1}, {10, 0}}));
+  EXPECT_EQ(OffsetDeque({0, 1, 2}), test_insert({{0, 1}, {10, 0}, {20, 2}}));
+  EXPECT_EQ(OffsetDeque({0}), test_insert({{0, 0}, {10, 0}}));
+  EXPECT_EQ(OffsetDeque({0, 1}), test_insert({{0, 0}, {10, 0}, {20, 1}}));
 }
 
 TEST(TargetPoolTest, KeyOffset) {
   auto test_key_offset = [](const std::string& nearest_offsets_key,
-                            OffsetVector&& targets) {
+                            OffsetDeque&& targets) {
     TargetPool target_pool(std::move(targets));
     for (offset_t offset : target_pool.targets()) {
       offset_t key = target_pool.KeyForOffset(offset);

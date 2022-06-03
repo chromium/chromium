@@ -19,12 +19,16 @@ class Capabilities;
 class ClientResolution;
 class ExtensionMessage;
 class PairingRequest;
+class PeerConnectionParameters;
 class SelectDesktopDisplayRequest;
 class VideoControl;
 
 class HostStub {
  public:
   HostStub() {}
+
+  HostStub(const HostStub&) = delete;
+  HostStub& operator=(const HostStub&) = delete;
 
   // Notification of the client dimensions and pixel density.
   // This may be used to resize the host display to match the client area.
@@ -37,6 +41,11 @@ class HostStub {
   // Configures audio properties. Currently only pausing & resuming the audio
   // channel is supported.
   virtual void ControlAudio(const AudioControl& audio_control) = 0;
+
+  // Configures peer connection. This will have no effect if the host doesn't
+  // support the parameters or the parameters are invalid.
+  virtual void ControlPeerConnection(
+      const PeerConnectionParameters& parameters) = 0;
 
   // Passes the set of capabilities supported by the client to the host.
   virtual void SetCapabilities(const Capabilities& capabilities) = 0;
@@ -53,9 +62,6 @@ class HostStub {
 
  protected:
   virtual ~HostStub() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostStub);
 };
 
 }  // namespace protocol

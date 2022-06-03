@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 
-#include "base/logging.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,38 +29,43 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 @interface BookmarkActivity ()
 // Whether or not the page is bookmarked.
 @property(nonatomic, assign) BOOL bookmarked;
-// The URL for the activity.
+// The bookmark model used to validate if a page was bookmarked.
+@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+// The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
-// The dispatcher that handles when the activity is performed.
-@property(nonatomic, weak) id<BrowserCommands> dispatcher;
+// The title of the page to be bookmarked.
+@property(nonatomic, assign) NSString* title;
+// The handler invoked when the activity is performed.
+@property(nonatomic, weak) id<BookmarksCommands> handler;
+// User's preferences service.
+@property(nonatomic, assign) PrefService* prefService;
 @end
 
 @implementation BookmarkActivity
 
-@synthesize bookmarked = _bookmarked;
-@synthesize dispatcher = _dispatcher;
-@synthesize URL = _URL;
-
 - (instancetype)initWithURL:(const GURL&)URL
-                 bookmarked:(BOOL)bookmarked
-                 dispatcher:(id<BrowserCommands>)dispatcher {
+                      title:(NSString*)title
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                    handler:(id<BookmarksCommands>)handler
+                prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _URL = URL;
-    _bookmarked = bookmarked;
-    _dispatcher = dispatcher;
+    _title = title;
+    _bookmarkModel = bookmarkModel;
+    _handler = handler;
+    _prefService = prefService;
+
+    _bookmarked = _bookmarkModel && _bookmarkModel->loaded() &&
+                  _bookmarkModel->IsBookmarked(_URL);
   }
   return self;
-}
-
-+ (NSString*)activityIdentifier {
-  return kBookmarkActivityType;
 }
 
 #pragma mark - UIActivity
 
 - (NSString*)activityType {
-  return [BookmarkActivity activityIdentifier];
+  return kBookmarkActivityType;
 }
 
 - (NSString*)activityTitle {
@@ -72,7 +81,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return YES;
+  // Don't show the add/remove bookmark activity if we have an invalid
+  // bookmarkModel, or if editing bookmarks is disabled in the prefs.
+  return self.bookmarkModel && [self isEditBookmarksEnabledInPrefs];
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -83,8 +94,23 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (void)performActivity {
-  [self.dispatcher bookmarkPage];
+  // Activity must be marked finished first, otherwise it may dismiss UI
+  // presented by the bookmark command below.
   [self activityDidFinish:YES];
+
+  BookmarkAddCommand* command =
+      [[BookmarkAddCommand alloc] initWithURL:self.URL
+                                        title:self.title
+                         presentFolderChooser:NO];
+  [self.handler bookmark:command];
+}
+
+#pragma mark - Private
+
+// Verifies if, based on preferences, the user can edit their bookmarks or not.
+- (BOOL)isEditBookmarksEnabledInPrefs {
+    return self.prefService->GetBoolean(
+        bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 @end

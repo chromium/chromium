@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
+#include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,76 +27,15 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
-
-class TestPopupObserver : public PasswordGenerationPopupObserver {
- public:
-  enum class GenerationPopup {
-    kShown,
-    kHidden,
-  };
-
-  TestPopupObserver() = default;
-  ~TestPopupObserver() = default;
-
-  void OnPopupShown(
-      PasswordGenerationPopupController::GenerationUIState state) override {
-    popup_showing_ = GenerationPopup::kShown;
-    state_ = state;
-    MaybeQuitRunLoop();
-  }
-
-  void OnPopupHidden() override {
-    popup_showing_ = GenerationPopup::kHidden;
-    MaybeQuitRunLoop();
-  }
-
-  bool popup_showing() const {
-    return popup_showing_ == GenerationPopup::kShown;
-  }
-  PasswordGenerationPopupController::GenerationUIState state() const {
-    return state_;
-  }
-
-  // Waits until the popup is in specified status.
-  void WaitForStatus(GenerationPopup status) {
-    if (status == popup_showing_)
-      return;
-    base::RunLoop run_loop;
-    run_loop_ = &run_loop;
-    run_loop_->Run();
-    EXPECT_EQ(popup_showing_, status);
-  }
-
-  // Waits until the popup is either shown or hidden.
-  void WaitForStatusChange() {
-    base::RunLoop run_loop;
-    run_loop_ = &run_loop;
-    run_loop_->Run();
-  }
-
- private:
-  void MaybeQuitRunLoop() {
-    if (run_loop_) {
-      run_loop_->Quit();
-      run_loop_ = nullptr;
-    }
-  }
-
-  // The loop to be stopped after the popup state change.
-  base::RunLoop* run_loop_ = nullptr;
-  GenerationPopup popup_showing_ = GenerationPopup::kHidden;
-  PasswordGenerationPopupController::GenerationUIState state_ =
-      PasswordGenerationPopupController::kOfferGeneration;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPopupObserver);
-};
 
 enum ReturnCodes {  // Possible results of the JavaScript code.
   RETURN_CODE_OK,
@@ -118,8 +58,7 @@ class PasswordGenerationInteractiveTest
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
     client->SetTestObserver(&observer_);
-    // The base class should enable password generation.
-    ASSERT_TRUE(client->GetPasswordFeatureManager()->IsGenerationEnabled());
+
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
 
@@ -150,10 +89,10 @@ class PasswordGenerationInteractiveTest
         "}",
         field_id.c_str(), RETURN_CODE_NO_ELEMENT, RETURN_CODE_OK,
         RETURN_CODE_OK);
-    int return_value = RETURN_CODE_INVALID;
-    ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-        RenderFrameHost(), script, &return_value));
-    EXPECT_EQ(RETURN_CODE_OK, return_value);
+    EXPECT_EQ(RETURN_CODE_OK,
+              content::EvalJs(RenderFrameHost(), script,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
   std::string GetFocusedElement() {
@@ -178,12 +117,15 @@ class PasswordGenerationInteractiveTest
 
   void SendKeyToPopup(ui::KeyboardCode key) {
     content::NativeWebKeyboardEvent event(
-        blink::WebKeyboardEvent::kRawKeyDown,
+        blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.windows_key_code = key;
-    WebContents()->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(
-        event);
+    WebContents()
+        ->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardKeyboardEvent(event);
   }
 
   bool GenerationPopupShowing() {
@@ -198,14 +140,19 @@ class PasswordGenerationInteractiveTest
                PasswordGenerationPopupController::kEditGeneratedPassword;
   }
 
-  void WaitForStatus(TestPopupObserver::GenerationPopup status) {
+  void WaitForStatus(TestGenerationPopupObserver::GenerationPopup status) {
     observer_.WaitForStatus(status);
   }
 
-  void WaitForPopupStatusChange() { observer_.WaitForStatusChange(); }
+  void WaitForGenerationPopupShowing() {
+    if (GenerationPopupShowing())
+      return;
+    observer_.WaitForStatusChange();
+    EXPECT_TRUE(GenerationPopupShowing());
+  }
 
  private:
-  TestPopupObserver observer_;
+  TestGenerationPopupObserver observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -254,9 +201,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // Delete the password. The generation prompt should be visible.
   base::HistogramTester histogram_tester;
   SimulateUserDeletingFieldContent("password_field");
-  WaitForPopupStatusChange();
-  EXPECT_FALSE(EditingPopupShowing());
-  EXPECT_TRUE(GenerationPopupShowing());
+  WaitForGenerationPopupShowing();
 
   // The metrics are recorded on navigation when the frame is destroyed.
   NavigateToFile("/password/done.html");
@@ -275,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // The same flow happens when user generates a password from the context menu.
   password_manager_util::UserTriggeredManualGenerationFromContextMenu(
       ChromePasswordManagerClient::FromWebContents(WebContents()));
-  WaitForStatus(TestPopupObserver::GenerationPopup::kShown);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
   SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_RETURN);
@@ -289,20 +234,20 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // Delete the password. The generation prompt should not be visible.
   SimulateUserDeletingFieldContent("password_field");
-  WaitForStatus(TestPopupObserver::GenerationPopup::kHidden);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
   EXPECT_FALSE(EditingPopupShowing());
   EXPECT_FALSE(GenerationPopupShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndDismissed) {
+                       PopupShownAndDismissed) {
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
 
   FocusUsernameField();
 
   // Popup is dismissed.
-  WaitForStatus(TestPopupObserver::GenerationPopup::kHidden);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -333,15 +278,58 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // Execute the script in the context of the iframe so that it kinda receives a
   // user gesture.
-  std::vector<content::RenderFrameHost*> frames = WebContents()->GetAllFrames();
-  ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[0] == RenderFrameHost());
+  content::RenderFrameHost* child_frame = ChildFrameAt(WebContents(), 0);
 
   std::string focus_script =
       "document.getElementById('password_field').focus();";
 
-  ASSERT_TRUE(content::ExecuteScript(frames[1], focus_script));
+  ASSERT_TRUE(content::ExecuteScript(child_frame, focus_script));
   EXPECT_TRUE(GenerationPopupShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
+                       GenerationTriggeredOnTap) {
+  ASSERT_TRUE(content::ExecJs(
+      RenderFrameHost(),
+      "var submitRect = document.getElementById('password_field')"
+      ".getBoundingClientRect();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  double y = content::EvalJs(RenderFrameHost(),
+                             "(submitRect.top + submitRect.bottom) / 2;",
+                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                 .ExtractDouble();
+  double x = content::EvalJs(RenderFrameHost(),
+                             "(submitRect.left + submitRect.right) / 2;",
+                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                 .ExtractDouble();
+
+  // Tap in the middle of the field.
+  content::SimulateTapAt(WebContents(),
+                         gfx::Point(static_cast<int>(x), static_cast<int>(y)));
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
+                       GenerationTriggeredOnClick) {
+  ASSERT_TRUE(content::ExecJs(
+      RenderFrameHost(),
+      "var submitRect = document.getElementById('password_field')"
+      ".getBoundingClientRect();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  double y = content::EvalJs(RenderFrameHost(),
+                             "(submitRect.top + submitRect.bottom) / 2;",
+                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                 .ExtractDouble();
+  double x = content::EvalJs(RenderFrameHost(),
+                             "(submitRect.left + submitRect.right) / 2;",
+                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                 .ExtractDouble();
+
+  // Click in the middle of the field.
+  content::SimulateMouseClickAt(
+      WebContents(), 0, blink::WebMouseEvent::Button::kLeft,
+      gfx::Point(static_cast<int>(x), static_cast<int>(y)));
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
 }
 
 // https://crbug.com/791389
@@ -381,8 +369,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       password_store->stored_passwords();
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(1u, stored_passwords.begin()->second.size());
-  EXPECT_EQ(base::UTF8ToUTF16("UN"),
-            (stored_passwords.begin()->second)[0].username_value);
+  EXPECT_EQ(u"UN", (stored_passwords.begin()->second)[0].username_value);
 }
 
 // Verify that navigating away closes the popup.
@@ -396,5 +383,50 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   NavigateToFile("/password/signup_form.html");
 
   // Check that popup is dismissed.
+  EXPECT_FALSE(GenerationPopupShowing());
+}
+
+class PasswordGenerationPopupViewPrerenderingTest
+    : public PasswordGenerationInteractiveTest {
+ public:
+  PasswordGenerationPopupViewPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &PasswordGenerationPopupViewPrerenderingTest::WebContents,
+            base::Unretained(this))) {}
+  ~PasswordGenerationPopupViewPrerenderingTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PasswordGenerationInteractiveTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
+                       PasswordGenerationPopupControllerInPrerendering) {
+  // Open popup.
+  FocusPasswordField();
+  EXPECT_TRUE(GenerationPopupShowing());
+
+  auto prerender_url = embedded_test_server()->GetURL("/empty.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
+  // It should keep the current popup controller since the prerenedering should
+  // not affect the current page.
+  EXPECT_TRUE(GenerationPopupShowing());
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+  // It should clear the current popup controller since the page loading deletes
+  // the popup controller from the previous page.
   EXPECT_FALSE(GenerationPopupShowing());
 }

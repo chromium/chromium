@@ -9,12 +9,12 @@
 
 namespace service_manager {
 
-TestService::TestService(mojom::ServiceRequest request)
-    : binding_(this, std::move(request)) {
+TestService::TestService(mojo::PendingReceiver<mojom::Service> receiver)
+    : receiver_(this, std::move(receiver)) {
   // Run until we have a functioning Connector end-to-end, in case e.g. the test
   // wants to making blocking calls on interfaces right away.
   mojo::Remote<mojom::Connector> flushing_connector;
-  binding_.GetConnector()->BindConnectorReceiver(
+  receiver_.GetConnector()->BindConnectorReceiver(
       flushing_connector.BindNewPipeAndPassReceiver());
   flushing_connector.FlushForTesting();
 }

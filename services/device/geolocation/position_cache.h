@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_POSITION_CACHE_H_
 #define SERVICES_DEVICE_GEOLOCATION_POSITION_CACHE_H_
 
+#include <cstddef>
+
 namespace device {
 namespace mojom {
 class Geoposition;

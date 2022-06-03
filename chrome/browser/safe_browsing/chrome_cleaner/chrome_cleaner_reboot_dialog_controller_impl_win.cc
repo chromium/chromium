@@ -19,16 +19,6 @@ namespace safe_browsing {
 
 namespace {
 
-// These values are used to send UMA information and are replicated in the
-// enums.xml, so the order MUST NOT CHANGE
-enum SettingsPageActiveOnRebootRequiredHistogramValue {
-  SETTINGS_PAGE_ON_REBOOT_REQUIRED_NO_BROWSER = 0,
-  SETTINGS_PAGE_ON_REBOOT_REQUIRED_NOT_ACTIVE_TAB = 1,
-  SETTINGS_PAGE_ON_REBOOT_REQUIRED_ACTIVE_TAB = 2,
-
-  SETTINGS_PAGE_ON_REBOOT_REQUIRED_MAX,
-};
-
 class PromptDelegateImpl
     : public ChromeCleanerRebootDialogControllerImpl::PromptDelegate {
  public:
@@ -48,13 +38,6 @@ void PromptDelegateImpl::ShowChromeCleanerRebootPrompt(
 }
 
 void PromptDelegateImpl::OnSettingsPageIsActiveTab() {}
-
-void RecordSettingsPageActiveOnRebootRequired(
-    SettingsPageActiveOnRebootRequiredHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "SoftwareReporter.Cleaner.SettingsPageActiveOnRebootRequired", value,
-      SETTINGS_PAGE_ON_REBOOT_REQUIRED_MAX);
-}
 
 }  // namespace
 
@@ -132,9 +115,6 @@ void ChromeCleanerRebootDialogControllerImpl::MaybeStartRebootPrompt() {
   Browser* browser = chrome_cleaner_util::FindBrowser();
 
   if (browser == nullptr) {
-    RecordSettingsPageActiveOnRebootRequired(
-        SETTINGS_PAGE_ON_REBOOT_REQUIRED_NO_BROWSER);
-
     waiting_for_browser_ = true;
     BrowserList::AddObserver(this);
 
@@ -148,16 +128,11 @@ void ChromeCleanerRebootDialogControllerImpl::StartRebootPromptForBrowser(
     Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (chrome_cleaner_util::CleanupPageIsActiveTab(browser)) {
-    RecordSettingsPageActiveOnRebootRequired(
-        SETTINGS_PAGE_ON_REBOOT_REQUIRED_ACTIVE_TAB);
-
     prompt_delegate_->OnSettingsPageIsActiveTab();
     OnInteractionDone();
     return;
   }
 
-  RecordSettingsPageActiveOnRebootRequired(
-      SETTINGS_PAGE_ON_REBOOT_REQUIRED_NOT_ACTIVE_TAB);
   prompt_delegate_->ShowChromeCleanerRebootPrompt(browser, this);
 }
 

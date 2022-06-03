@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "ios/web/common/user_agent.h"
-#include "ios/web/public/deprecated/navigation_item_list.h"
 #include "ios/web/public/navigation/browser_url_rewriter.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/navigation/reload_type.h"
@@ -31,20 +32,6 @@ class WebState;
 // exactly one NavigationManager.
 class NavigationManager {
  public:
-  // User agent override option used in LoadURLParams.
-  enum class UserAgentOverrideOption : short {
-    // Inherit the user agent type from the last committed non-native item if
-    // there is one, otherwise keep the default type, which is NONE for native
-    // item and MOBILE for non-native item.
-    INHERIT = 0,
-
-    // Use the mobile user agent.
-    MOBILE,
-
-    // Use the desktop user agent.
-    DESKTOP,
-  };
-
   // Parameters for URL loading. Most parameters are optional, and can be left
   // at the default values set by the constructor.
   struct WebLoadParams {
@@ -61,9 +48,6 @@ class NavigationManager {
     // The transition type for the load. Defaults to PAGE_TRANSITION_LINK.
     ui::PageTransition transition_type;
 
-    // The user agent override option for the load. Defualts to INHERIT.
-    UserAgentOverrideOption user_agent_override_option;
-
     // True for renderer-initiated navigations. This is
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated;
@@ -74,6 +58,13 @@ class NavigationManager {
     // Any post data to send with the load. When setting this, you should
     // generally set a Content-Type header as well.
     NSData* post_data;
+
+    // True if the navigation was initiated by typing in the omnibox but the
+    // typed text didn't have a scheme such as http or https (e.g. google.com),
+    // and https was used as the default scheme for the navigation. This is used
+    // by TypedNavigationUpgradeThrottle to determine if the navigation should
+    // be observed and fall back to using http scheme if necessary.
+    bool is_using_https_as_default_scheme;
 
     // Create a new WebLoadParams with the given URL and defaults for all other
     // parameters.
@@ -107,12 +98,7 @@ class NavigationManager {
   // in progress, or null if there is none.
   virtual NavigationItem* GetPendingItem() const = 0;
 
-  // Returns the transient item if any. This is an item which is removed and
-  // discarded if any navigation occurs. Note that the returned item is owned
-  // by the navigation manager and may be deleted at any time.
-  virtual NavigationItem* GetTransientItem() const = 0;
-
-  // Removes the transient and pending NavigationItems.
+  // Removes the pending NavigationItem.
   virtual void DiscardNonCommittedItems() = 0;
 
   // Loads the URL with specified |params|.
@@ -134,7 +120,7 @@ class NavigationManager {
       BrowserURLRewriter::URLRewriter rewriter) = 0;
 
   // Returns the number of items in the NavigationManager, excluding
-  // pending and transient entries.
+  // pending entries.
   // TODO(crbug.com/533848): Update to return size_t.
   virtual int GetItemCount() const = 0;
 
@@ -155,12 +141,6 @@ class NavigationManager {
   // TODO(crbug.com/533848): Update to return size_t.
   virtual int GetPendingItemIndex() const = 0;
 
-  // Removes the item at the specified |index|.  If the index is the last
-  // committed index or the pending item, this does nothing and returns false.
-  // Otherwise this call discards any transient or pending entries.
-  // TODO(crbug.com/533848): Update to use size_t.
-  virtual bool RemoveItemAtIndex(int index) = 0;
-
   // Navigation relative to the current item.
   virtual bool CanGoBack() const = 0;
   virtual bool CanGoForward() const = 0;
@@ -175,8 +155,7 @@ class NavigationManager {
   // Reloads the visible item under the specified ReloadType. If
   // |check_for_repost| is true and the current item has POST data the user is
   // prompted to see if they really want to reload the page. Pass in true if the
-  // reload is explicitly initiated by the user. If a transient item is showing,
-  // initiates a new navigation to its URL.
+  // reload is explicitly initiated by the user.
   // TODO(crbug.com/700958): implement the logic for |check_for_repost|.
   virtual void Reload(ReloadType reload_type, bool check_for_repost) = 0;
 
@@ -186,8 +165,8 @@ class NavigationManager {
 
   // Returns a list of all non-redirected NavigationItems whose index precedes
   // or follows the current index.
-  virtual NavigationItemList GetBackwardItems() const = 0;
-  virtual NavigationItemList GetForwardItems() const = 0;
+  virtual std::vector<NavigationItem*> GetBackwardItems() const = 0;
+  virtual std::vector<NavigationItem*> GetForwardItems() const = 0;
 
   // Initializes this NavigationManager with the given saved navigations, using
   // |last_committed_item_index| as the currently loaded item. Before this call
@@ -206,26 +185,6 @@ class NavigationManager {
   // TODO(crbug.com/904502): This API is only needed for clearing cookies.
   // Remove after //ios/web exposes a proper cookie clearing API.
   virtual void AddRestoreCompletionCallback(base::OnceClosure callback) = 0;
-
-  // Removes all items from this except the last committed item, and inserts
-  // copies of all items from |source| at the beginning of the session history.
-  //
-  // For example:
-  // source: A B *C* D
-  // this:   E F *G*
-  // result: A B C *G*
-  //
-  // If there is a pending item after *G* in |this|, it is also preserved.
-  // This ignores any pending or transient entries in |source|.  This will be a
-  // no-op if called while CanPruneAllButLastCommittedItem() is false.
-  virtual void CopyStateFromAndPrune(const NavigationManager* source) = 0;
-
-  // Whether the NavigationManager can prune all but the last committed item.
-  // This is true when all the following conditions are met:
-  // - There is a last committed NavigationItem.
-  // - There is no pending history navigation.
-  // - There is no transient NavigationItem.
-  virtual bool CanPruneAllButLastCommittedItem() const = 0;
 };
 
 }  // namespace web

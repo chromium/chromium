@@ -43,7 +43,7 @@ class WebGLRenderbufferAttachment final
  public:
   explicit WebGLRenderbufferAttachment(WebGLRenderbuffer*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "WebGLAttachment"; }
 
  private:
@@ -61,7 +61,7 @@ class WebGLRenderbufferAttachment final
   Member<WebGLRenderbuffer> renderbuffer_;
 };
 
-void WebGLRenderbufferAttachment::Trace(blink::Visitor* visitor) {
+void WebGLRenderbufferAttachment::Trace(Visitor* visitor) const {
   visitor->Trace(renderbuffer_);
   WebGLFramebuffer::WebGLAttachment::Trace(visitor);
 }
@@ -107,7 +107,7 @@ class WebGLTextureAttachment final : public WebGLFramebuffer::WebGLAttachment {
                          GLint level,
                          GLint layer);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override {
     return "WebGLTextureAttachment";
   }
@@ -130,7 +130,7 @@ class WebGLTextureAttachment final : public WebGLFramebuffer::WebGLAttachment {
   GLint layer_;
 };
 
-void WebGLTextureAttachment::Trace(blink::Visitor* visitor) {
+void WebGLTextureAttachment::Trace(Visitor* visitor) const {
   visitor->Trace(texture_);
   WebGLFramebuffer::WebGLAttachment::Trace(visitor);
 }
@@ -183,9 +183,12 @@ void WebGLTextureAttachment::Unattach(gpu::gles2::GLES2Interface* gl,
 
 WebGLFramebuffer::WebGLAttachment::WebGLAttachment() = default;
 
-WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(
-    WebGLRenderingContextBase* ctx) {
-  return MakeGarbageCollected<WebGLFramebuffer>(ctx, true);
+WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
+                                                 bool has_stencil) {
+  WebGLFramebuffer* const fb =
+      MakeGarbageCollected<WebGLFramebuffer>(ctx, true);
+  fb->SetOpaqueHasStencil(has_stencil);
+  return fb;
 }
 
 WebGLFramebuffer::WebGLFramebuffer(WebGLRenderingContextBase* ctx, bool opaque)
@@ -209,7 +212,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(GLenum target,
                                                         GLsizei num_views) {
   DCHECK(object_);
   DCHECK(IsBound(target));
-  if (Context()->IsWebGL2OrHigher()) {
+  if (Context()->IsWebGL2()) {
     if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
       SetAttachmentInternal(target, GL_DEPTH_ATTACHMENT, tex_target, texture,
                             level, layer);
@@ -267,7 +270,7 @@ void WebGLFramebuffer::SetAttachmentForBoundFramebuffer(
     WebGLRenderbuffer* renderbuffer) {
   DCHECK(object_);
   DCHECK(IsBound(target));
-  if (Context()->IsWebGL2OrHigher()) {
+  if (Context()->IsWebGL2()) {
     if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
       SetAttachmentInternal(target, GL_DEPTH_ATTACHMENT, renderbuffer);
       SetAttachmentInternal(target, GL_STENCIL_ATTACHMENT, renderbuffer);
@@ -316,7 +319,7 @@ void WebGLFramebuffer::RemoveAttachmentFromBoundFramebuffer(
     return;
 
   bool check_more = true;
-  bool is_web_gl1 = !Context()->IsWebGL2OrHigher();
+  bool is_web_gl1 = !Context()->IsWebGL2();
   bool check_web_gl1_depth_stencil = false;
   while (check_more) {
     check_more = false;
@@ -359,17 +362,21 @@ GLenum WebGLFramebuffer::CheckDepthStencilStatus(const char** reason) const {
     *reason = kIncompleteOpaque;
     return GL_FRAMEBUFFER_UNSUPPORTED;
   }
-  if (Context()->IsWebGL2OrHigher() || web_gl1_depth_stencil_consistent_)
+  if (Context()->IsWebGL2() || web_gl1_depth_stencil_consistent_)
     return GL_FRAMEBUFFER_COMPLETE;
   *reason = "conflicting DEPTH/STENCIL/DEPTH_STENCIL attachments";
   return GL_FRAMEBUFFER_UNSUPPORTED;
 }
 
 bool WebGLFramebuffer::HasStencilBuffer() const {
-  WebGLAttachment* attachment = GetAttachment(GL_STENCIL_ATTACHMENT);
-  if (!attachment)
-    attachment = GetAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
-  return attachment && attachment->Valid();
+  if (opaque_) {
+    return opaque_has_stencil_;
+  } else {
+    WebGLAttachment* attachment = GetAttachment(GL_STENCIL_ATTACHMENT);
+    if (!attachment)
+      attachment = GetAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
+    return attachment && attachment->Valid();
+  }
 }
 
 void WebGLFramebuffer::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
@@ -400,7 +407,7 @@ void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
 }
 
 void WebGLFramebuffer::DrawBuffersIfNecessary(bool force) {
-  if (Context()->IsWebGL2OrHigher() ||
+  if (Context()->IsWebGL2() ||
       Context()->ExtensionEnabled(kWebGLDrawBuffersName)) {
     bool reset = force;
     // This filtering works around graphics driver bugs on Mac OS X.
@@ -471,7 +478,7 @@ void WebGLFramebuffer::RemoveAttachmentInternal(GLenum target,
 }
 
 void WebGLFramebuffer::CommitWebGL1DepthStencilIfConsistent(GLenum target) {
-  DCHECK(!Context()->IsWebGL2OrHigher());
+  DCHECK(!Context()->IsWebGL2());
   WebGLAttachment* depth_attachment = nullptr;
   WebGLAttachment* stencil_attachment = nullptr;
   WebGLAttachment* depth_stencil_attachment = nullptr;
@@ -540,7 +547,7 @@ GLenum WebGLFramebuffer::GetDrawBuffer(GLenum draw_buffer) {
   return GL_NONE;
 }
 
-void WebGLFramebuffer::Trace(blink::Visitor* visitor) {
+void WebGLFramebuffer::Trace(Visitor* visitor) const {
   visitor->Trace(attachments_);
   WebGLContextObject::Trace(visitor);
 }

@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/internal.pb.h"

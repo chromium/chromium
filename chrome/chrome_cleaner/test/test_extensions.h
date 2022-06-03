@@ -5,10 +5,10 @@
 #ifndef CHROME_CHROME_CLEANER_TEST_TEST_EXTENSIONS_H_
 #define CHROME_CHROME_CLEANER_TEST_TEST_EXTENSIONS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 
@@ -16,14 +16,14 @@ namespace chrome_cleaner {
 
 struct TestRegistryEntry {
   HKEY hkey;
-  base::string16 path;
-  base::string16 name;
-  base::string16 value;
+  std::wstring path;
+  std::wstring name;
+  std::wstring value;
 
   TestRegistryEntry(HKEY hkey,
-                    const base::string16& path,
-                    const base::string16& name,
-                    const base::string16& value);
+                    const std::wstring& path,
+                    const std::wstring& name,
+                    const std::wstring& value);
   TestRegistryEntry(const TestRegistryEntry& other);
   TestRegistryEntry& operator=(const TestRegistryEntry& other);
 };
@@ -45,7 +45,7 @@ const wchar_t kTestExtensionId7[] = L"nopnopnopnopnopnopnopnopnopnopno";
 // Test force installed extension settings
 const TestRegistryEntry kExtensionForcelistEntries[] = {
     {HKEY_LOCAL_MACHINE, kChromePoliciesForcelistKeyPath, L"test1",
-     base::string16(kTestExtensionId3) + L"https://test.test/crxupdate2/crx"}};
+     std::wstring(kTestExtensionId3) + L"https://test.test/crxupdate2/crx"}};
 const char kValidExtensionSettingsJson[] =
     "{\"extensionwithinstallmodeblockeda\":{\"installation_mode\":\"blocked\","
     "\"update_url\":"
@@ -96,9 +96,6 @@ const char kDefaultExtensionsJson[] =
       "external_update_url":"https://test.test/crx"
     },
   })";
-const char kValidDefaultExtensionsJson[] =
-    "{\"aapocclcgogkmnckokdopfmhonfmgoek\":{"
-    "\"external_update_url\":\"https://test.test/crx\"}}";
 
 // Test force installed master preferences
 const char kMasterPreferencesJson[] =
@@ -133,8 +130,8 @@ const char kMasterPreferencesJsonNoExtensions[] =
 
 bool CreateProfileWithExtensionAndFiles(
     const base::FilePath& profile_path,
-    const base::string16& extension_id,
-    const std::vector<base::string16>& extension_files);
+    const std::wstring& extension_id,
+    const std::vector<std::wstring>& extension_files);
 
 }  // namespace chrome_cleaner
 

@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "net/base/features.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -35,6 +36,10 @@ class TestNetworkQualityObserver
         effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {
     tracker_->AddEffectiveConnectionTypeObserver(this);
   }
+
+  TestNetworkQualityObserver(const TestNetworkQualityObserver&) = delete;
+  TestNetworkQualityObserver& operator=(const TestNetworkQualityObserver&) =
+      delete;
 
   ~TestNetworkQualityObserver() override {
     tracker_->RemoveEffectiveConnectionTypeObserver(this);
@@ -62,7 +67,7 @@ class TestNetworkQualityObserver
       return;
     ASSERT_NE(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
               run_loop_wait_effective_connection_type);
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_wait_effective_connection_type_ =
         run_loop_wait_effective_connection_type;
     run_loop_->Run();
@@ -74,8 +79,6 @@ class TestNetworkQualityObserver
   std::unique_ptr<base::RunLoop> run_loop_;
   network::NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityObserver);
 };
 
 void CheckEffectiveConnectionType(net::EffectiveConnectionType expected) {

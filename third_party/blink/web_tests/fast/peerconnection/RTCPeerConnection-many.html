@@ -37,10 +37,10 @@ promise_test(async function() {
       allocatePeerConnection();
     }
     // Exceeding the limit should throw an UnknownError.
-    assert_throws("UnknownError", allocatePeerConnection,
-                  'Creating too many RTCPeerConnections gives UnknownError');
+    assert_throws_dom("UnknownError", allocatePeerConnection,
+                      'Creating too many RTCPeerConnections gives UnknownError');
   } finally {
-    // On swarming bots running webkit_layout_tests (such as win7-rel), garbage
+    // On swarming bots running blink_web_tests (such as win7-rel), garbage
     // collection is not guaranteed to occur between test pages. As such we
     // cannot assume that the initial count is 0, and we must clean up after
     // this test regardless of test result or unrelated tests may fail.

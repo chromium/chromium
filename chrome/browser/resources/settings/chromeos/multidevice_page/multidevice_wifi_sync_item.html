@@ -1,0 +1,39 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
+<link rel="import" href="multidevice_wifi_sync_disabled_link.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../os_people_page/os_sync_browser_proxy.html">
+<link rel="import" href="../../people_page/sync_browser_proxy.html">
+
+<dom-module id="settings-multidevice-wifi-sync-item">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-multidevice-feature-item id="wifiSyncItem"
+        feature="[[MultiDeviceFeature.WIFI_SYNC]]"
+        page-content-data="[[pageContentData]]">
+      <template is="dom-if" if="[[!isWifiSyncV1Enabled_]]" restamp>
+        <settings-multidevice-wifi-sync-disabled-link
+            class="secondary"
+            id="featureSecondary"
+            slot="feature-summary">
+        </settings-multidevice-wifi-sync-disabled-link>
+        <!-- Replace the standard feature-controller with an always disabled
+          cr-toggle when Chrome Sync is disabled. When Chrome Sync is enabled
+          the standard feature-controller is used. This is done to avoid adding
+          extra logic in the standard feature-controller to keep the toggle
+          unchecked when Chrome Sync is on but Wifi Sync host is enabled on the
+          backend -->
+        <cr-toggle disabled="true"
+            slot="feature-controller">
+        </cr-toggle>
+      </template>
+    </settings-multidevice-feature-item>
+  </template>
+  <script src="multidevice_wifi_sync_item.js"></script>
+</dom-module>

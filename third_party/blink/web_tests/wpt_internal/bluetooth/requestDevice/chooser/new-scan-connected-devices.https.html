@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+
+  let requestDevicePromise = setBluetoothFakeAdapter('DeviceEventAdapter')
+                                 .then(() => requestDeviceWithTrustedClick({
+                                         filters: [{services: ['heart_rate']}]
+                                       }));
+  return getBluetoothManualChooserEvents(4).then(events => {
+    assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+    let idsByName = new AddDeviceEventSet();
+    idsByName.assert_add_device_event(events[1]);
+    assert_true(idsByName.has('Connected Heart Rate Device'), events[1]);
+    assert_equals(events[2], 'discovering');
+    assert_equals(events[3], 'discovery-idle');
+    sendBluetoothManualChooserEvent(
+        'selected', idsByName.get('Connected Heart Rate Device'));
+    return requestDevicePromise;
+  });
+});
+</script>

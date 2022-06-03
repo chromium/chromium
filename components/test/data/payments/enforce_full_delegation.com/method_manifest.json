@@ -1,0 +1,4 @@
+{
+  "default_applications": ['app.js'],
+  "supported_origins": []
+}

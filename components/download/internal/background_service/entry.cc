@@ -24,7 +24,6 @@ Entry::Entry()
       bytes_uploaded(0u),
       attempt_count(0),
       resumption_count(0),
-      cleanup_attempt_count(0),
       has_upload_data(false),
       did_received_response(false),
       require_response_headers(true) {}
@@ -40,7 +39,6 @@ Entry::Entry(const DownloadParams& params)
       bytes_uploaded(0u),
       attempt_count(0),
       resumption_count(0),
-      cleanup_attempt_count(0),
       has_upload_data(false),
       traffic_annotation(params.traffic_annotation),
       did_received_response(false),
@@ -68,7 +66,6 @@ bool Entry::operator==(const Entry& other) const {
          bytes_uploaded == other.bytes_uploaded &&
          attempt_count == other.attempt_count &&
          resumption_count == other.resumption_count &&
-         cleanup_attempt_count == other.cleanup_attempt_count &&
          has_upload_data == other.has_upload_data &&
          traffic_annotation == other.traffic_annotation &&
          url_chain == other.url_chain &&

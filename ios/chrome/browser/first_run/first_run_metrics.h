@@ -13,7 +13,18 @@
 
 namespace first_run {
 
-// The different First Run Chrome Login outcomes for users.
+// The different ways to interact with the sign-in flow during First Run.
+enum SignInAttemptStatus {
+  // The user did not attempt to sign in.
+  NOT_ATTEMPTED,
+  // The user attempted to sign in.
+  ATTEMPTED,
+  // Sign-in was not shown because it was disabled by policy.
+  SKIPPED_BY_POLICY,
+};
+
+// The different First Run Chrome Login outcomes for users. This is mapped to
+// the FirstRunSignInResult enum in enums.xml for metrics.
 enum SignInStatus {
   // User skipped sign in by clicking on Skip at the first opportunity.
   SIGNIN_SKIPPED_QUICK,
@@ -33,6 +44,8 @@ enum SignInStatus {
   // the cases where sentinel creation failed. In most likelihood, user will
   // go through First Run again at the next launch - deprecated.
   SENTINEL_CREATION_FAILED,
+  // Sign-in was skipped because it is disabled by policy.
+  SIGNIN_SKIPPED_POLICY,
   // Number of First Run states.
   SIGNIN_SIZE
 };
@@ -56,6 +69,39 @@ enum ExternalLaunch {
   LAUNCH_BY_OTHERS,
   // Number of ways that Chrome was launched for the first time.
   LAUNCH_SIZE
+};
+
+// The different stages of the first run experience. This is mapped to the
+// FirstRunStageResult enum in enums.xml for metrics.
+// TODO(crbug.com/1189815): Add welcome stage and record metrics.
+enum FirstRunStage {
+  // The first run experience has started.
+  kStart,
+  // The first run experience has completed.
+  kComplete,
+  // Sync screen is shown.
+  kSyncScreenStart,
+  // Sync screen is closed with sync.
+  kSyncScreenCompletionWithSync,
+  // Sync screen is closed without sync.
+  kSyncScreenCompletionWithoutSync,
+  // Sync screen is closed when user taps on advance sync settings button.
+  kSyncScreenCompletionWithSyncSettings,
+  // SignIn screen is shown.
+  kSignInScreenStart,
+  // SignIn screen is closed with sign in.
+  kSignInScreenCompletionWithSignIn,
+  // SignIn screen is closed without sign in.
+  kSignInScreenCompletionWithoutSignIn,
+  // Default browser screen is shown.
+  kDefaultBrowserScreenStart,
+  // Default browser screen is closed with opening Settings.app.
+  kDefaultBrowserScreenCompletionWithSettings,
+  // Default browser screen is closed without opening Settings.app.
+  kDefaultBrowserScreenCompletionWithoutSettings,
+  // Max value of the first run experience stages.
+  // kMaxValue should share the value of the highest enumerator.
+  kMaxValue = kDefaultBrowserScreenCompletionWithoutSettings,
 };
 
 }  // namespace first_run

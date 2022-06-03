@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_PATCH_PATCH_IMPL_H_
 #define COMPONENTS_UPDATE_CLIENT_PATCH_PATCH_IMPL_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/update_client/patcher.h"
@@ -20,7 +17,11 @@ class PatchChromiumFactory : public PatcherFactory {
  public:
   using Callback =
       base::RepeatingCallback<mojo::PendingRemote<patch::mojom::FilePatcher>()>;
+
   explicit PatchChromiumFactory(Callback callback);
+
+  PatchChromiumFactory(const PatchChromiumFactory&) = delete;
+  PatchChromiumFactory& operator=(const PatchChromiumFactory&) = delete;
 
   scoped_refptr<Patcher> Create() const override;
 
@@ -29,8 +30,6 @@ class PatchChromiumFactory : public PatcherFactory {
 
  private:
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchChromiumFactory);
 };
 
 }  // namespace update_client

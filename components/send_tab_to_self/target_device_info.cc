@@ -86,47 +86,31 @@ bool TargetDeviceInfo::operator==(const TargetDeviceInfo& rhs) const {
 
 SharingDeviceNames GetSharingDeviceNames(const syncer::DeviceInfo* device) {
   DCHECK(device);
-  SharingDeviceNames device_names;
-
-  base::SysInfo::HardwareInfo hardware_info = device->hardware_info();
-  hardware_info.manufacturer = CapitalizeWords(hardware_info.manufacturer);
-  sync_pb::SyncEnums::DeviceType type = device->device_type();
+  std::string model = device->model_name();
 
   // 1. Skip renaming for M78- devices where HardwareInfo is not available.
   // 2. Skip renaming if client_name is high quality i.e. not equals to model.
-  // 3. Skip renaming for Android and Chrome OS devices if feature is not
-  //    enabled, which always have low quality client_name.
-  if (hardware_info.model.empty() ||
-      hardware_info.model != device->client_name() ||
-      (!base::FeatureList::IsEnabled(kSharingRenameDevices) &&
-       (type == sync_pb::SyncEnums::TYPE_CROS ||
-        type == sync_pb::SyncEnums::TYPE_PHONE ||
-        type == sync_pb::SyncEnums::TYPE_TABLET))) {
-    device_names.full_name = device_names.short_name = device->client_name();
-    return device_names;
-  }
+  if (model.empty() || model != device->client_name())
+    return {device->client_name(), device->client_name()};
+
+  std::string manufacturer = CapitalizeWords(device->manufacturer_name());
+  sync_pb::SyncEnums::DeviceType type = device->device_type();
 
   // For chromeOS, return manufacturer + model.
   if (type == sync_pb::SyncEnums::TYPE_CROS) {
-    device_names.short_name = device_names.full_name =
-        base::StrCat({hardware_info.manufacturer, " ", hardware_info.model});
-    return device_names;
+    std::string name = base::StrCat({manufacturer, " ", model});
+    return {name, name};
   }
 
-  if (hardware_info.manufacturer == "Apple Inc.") {
-    // Internal names of Apple devices are formatted as MacbookPro2, 3 or //
-    // iPhone2,1 or Ipad4, 1.
-    device_names.short_name = hardware_info.model.substr(
-        0, hardware_info.model.find_first_of("0123456789,"));
-    device_names.full_name = hardware_info.model;
-    return device_names;
-  }
+  // Internal names of Apple devices are formatted as MacbookPro2,3 or
+  // iPhone2,1 or Ipad4,1.
+  if (manufacturer == "Apple Inc.")
+    return {model, model.substr(0, model.find_first_of("0123456789,"))};
 
-  device_names.short_name =
-      base::StrCat({hardware_info.manufacturer, " ", GetDeviceType(type)});
-  device_names.full_name =
-      base::StrCat({device_names.short_name, " ", hardware_info.model});
-  return device_names;
+  std::string short_name =
+      base::StrCat({manufacturer, " ", GetDeviceType(type)});
+  std::string full_name = base::StrCat({short_name, " ", model});
+  return {full_name, short_name};
 }
 
 }  // namespace send_tab_to_self

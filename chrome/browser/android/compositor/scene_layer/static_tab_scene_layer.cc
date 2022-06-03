@@ -20,6 +20,7 @@ namespace android {
 StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
                                          const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
+      tab_content_manager_(nullptr),
       last_set_tab_id_(-1),
       background_color_(SK_ColorWHITE),
       brightness_(1.f) {}
@@ -39,7 +40,6 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
 void StaticTabSceneLayer::UpdateTabLayer(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jobject>& jtab_content_manager,
     jint id,
     jboolean can_use_live_layer,
     jint default_background_color,
@@ -48,11 +48,12 @@ void StaticTabSceneLayer::UpdateTabLayer(
     jfloat static_to_view_blend,
     jfloat saturation,
     jfloat brightness) {
+  DCHECK(tab_content_manager_)
+      << "TabContentManager must be set before updating the layer";
+
   background_color_ = default_background_color;
   if (!content_layer_.get()) {
-    android::TabContentManager* tab_content_manager =
-        android::TabContentManager::FromJavaObject(jtab_content_manager);
-    content_layer_ = android::ContentLayer::Create(tab_content_manager);
+    content_layer_ = android::ContentLayer::Create(tab_content_manager_);
     layer_->AddChild(content_layer_->layer());
   }
 
@@ -78,6 +79,16 @@ void StaticTabSceneLayer::UpdateTabLayer(
     if (brightness_ < 1.f)
       filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
     layer_->SetFilters(filters);
+  }
+}
+
+void StaticTabSceneLayer::SetTabContentManager(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jobj,
+    const base::android::JavaParamRef<jobject>& jtab_content_manager) {
+  if (!tab_content_manager_) {
+    tab_content_manager_ =
+        TabContentManager::FromJavaObject(jtab_content_manager);
   }
 }
 

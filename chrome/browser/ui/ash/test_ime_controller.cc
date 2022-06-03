@@ -62,6 +62,6 @@ void TestImeController::SetExtraInputOptionsEnabledState(
 }
 
 void TestImeController::ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                                          const base::string16& text) {
+                                          const std::u16string& text) {
   show_mode_indicator_ = true;
 }

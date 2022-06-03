@@ -51,7 +51,7 @@ void ClipRect::SetRect(const FloatClipRect& rect) {
 void ClipRect::SetRectInternal(const FloatClipRect& rect) {
   has_radius_ = rect.HasRadius();
   is_infinite_ = rect.IsInfinite();
-  rect_ = PhysicalRect::FastAndLossyFromFloatRect(rect.Rect());
+  rect_ = PhysicalRect::FastAndLossyFromRectF(rect.Rect());
 }
 
 void ClipRect::SetRect(const PhysicalRect& rect) {

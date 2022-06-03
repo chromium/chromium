@@ -39,6 +39,43 @@ struct __declspec(uuid("050e4b78-71b2-43ff-bf7c-f6ba589aced9"))
     VectorChangedEventHandler<Uri*>
     : VectorChangedEventHandler_impl<UriPtrAggregate> {};
 
+#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
+// Specialization templates that used to be in windows.foundation.h, removed in
+// the 10.0.19041.0 SDK, so placed here instead.
+template <>
+struct __declspec(uuid("b939af5b-b45d-5489-9149-61442c1905fe")) IVector<int>
+    : IVector_impl<int> {};
+
+template <>
+struct __declspec(uuid("8d720cdf-3934-5d3f-9a55-40e8063b086a")) IVectorView<int>
+    : IVectorView_impl<int> {};
+
+template <>
+struct __declspec(uuid("bfea7f78-50c2-5f1d-a6ea-9e978d2699ff")) IIterator<int>
+    : IIterator_impl<int> {};
+
+template <>
+struct __declspec(uuid("81a643fb-f51c-5565-83c4-f96425777b66")) IIterable<int>
+    : IIterable_impl<int> {};
+
+template <>
+struct __declspec(uuid("0d82bd8d-fe62-5d67-a7b9-7886dd75bc4e")) IVector<Uri*>
+    : IVector_impl<Internal::AggregateType<Uri*, IUriRuntimeClass*>> {};
+
+template <>
+struct __declspec(uuid("4b8385bd-a2cd-5ff1-bf74-7ea580423e50"))
+    IVectorView<Uri*>
+    : IVectorView_impl<Internal::AggregateType<Uri*, IUriRuntimeClass*>> {};
+
+template <>
+struct __declspec(uuid("1c157d0f-5efe-5cec-bbd6-0c6ce9af07a5")) IIterator<Uri*>
+    : IIterator_impl<Internal::AggregateType<Uri*, IUriRuntimeClass*>> {};
+
+template <>
+struct __declspec(uuid("b0d63b78-78ad-5e31-b6d8-e32a0e16c447")) IIterable<Uri*>
+    : IIterable_impl<Internal::AggregateType<Uri*, IUriRuntimeClass*>> {};
+#endif
+
 }  // namespace Collections
 }  // namespace Foundation
 }  // namespace Windows
@@ -49,7 +86,6 @@ namespace win {
 
 namespace {
 
-using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::Uri;
 using ABI::Windows::Foundation::Collections::CollectionChange;
 using ABI::Windows::Foundation::Collections::CollectionChange_ItemChanged;
@@ -81,7 +117,7 @@ class FakeVectorChangedEventHandler
     EXPECT_TRUE(SUCCEEDED(vector_->add_VectorChanged(this, &token_)));
   }
 
-  ~FakeVectorChangedEventHandler() {
+  ~FakeVectorChangedEventHandler() override {
     EXPECT_TRUE(SUCCEEDED(vector_->remove_VectorChanged(token_)));
   }
 
@@ -661,12 +697,15 @@ TEST(VectorTest, First) {
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_EQ(3, current);
   hr = iterator->MoveNext(&has_current);
-  EXPECT_FALSE(SUCCEEDED(hr));
-  EXPECT_EQ(E_BOUNDS, hr);
+  EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_FALSE(has_current);
   hr = iterator->get_Current(&current);
   EXPECT_FALSE(SUCCEEDED(hr));
   EXPECT_EQ(E_BOUNDS, hr);
+  hr = iterator->MoveNext(&has_current);
+  EXPECT_FALSE(SUCCEEDED(hr));
+  EXPECT_EQ(E_BOUNDS, hr);
+  EXPECT_FALSE(has_current);
 
   hr = vec->First(&iterator);
   EXPECT_TRUE(SUCCEEDED(hr));
@@ -676,6 +715,134 @@ TEST(VectorTest, First) {
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_EQ(3u, actual);
   EXPECT_THAT(copy, ElementsAre(1, 2, 3));
+}
+
+TEST(VectorTest, MoveNext_S_OK_ValidItem) {
+  auto vec = Make<Vector<int>>(g_one_two_three);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  // Moving next to a valid item should return S_OK:
+  // [1, 2, 3]
+  //  |->|
+  EXPECT_EQ(S_OK, iterator->MoveNext(&has_current));
+}
+
+TEST(VectorTest, MoveNext_S_OK_FromLastItem) {
+  auto vec = Make<Vector<int>>(g_one);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  // Moving next past the last item should return S_OK:
+  // [1]
+  //  |->|
+  EXPECT_EQ(S_OK, iterator->MoveNext(&has_current));
+}
+
+TEST(VectorTest, MoveNext_E_CHANGED_STATE_ValidItem) {
+  auto vec = Make<Vector<int>>(g_one_two_three);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  vec->Append(4);
+
+  // Moving next after changing the vector should return E_CHANGED_STATE:
+  EXPECT_EQ(E_CHANGED_STATE, iterator->MoveNext(&has_current));
+}
+
+TEST(VectorTest, MoveNext_E_CHANGED_STATE_AfterLastItem) {
+  auto vec = Make<Vector<int>>(g_one);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+  iterator->MoveNext(&has_current);
+
+  vec->Append(4);
+
+  // Moving next after changing the vector should return E_CHANGED_STATE:
+  EXPECT_EQ(E_CHANGED_STATE, iterator->MoveNext(&has_current));
+}
+
+TEST(VectorTest, MoveNext_E_BOUNDS) {
+  auto vec = Make<Vector<int>>(g_one);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+  iterator->MoveNext(&has_current);
+
+  // Moving next when already past the last item should return E_BOUNDS:
+  // [1]
+  //     |->|
+  EXPECT_EQ(E_BOUNDS, iterator->MoveNext(&has_current));
+}
+
+TEST(VectorTest, MoveNext_HasCurrent_ValidItem) {
+  auto vec = Make<Vector<int>>(g_one_two_three);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  // Moving next to a valid item should set |has_current| to true:
+  // [1, 2, 3]
+  //  |->|
+  iterator->MoveNext(&has_current);
+  EXPECT_TRUE(has_current);
+}
+
+TEST(VectorTest, MoveNext_HasCurrent_LastItem) {
+  auto vec = Make<Vector<int>>(g_one_two);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  // Moving next to the last item should set |has_current| to true:
+  // [1, 2]
+  //  |->|
+  iterator->MoveNext(&has_current);
+  EXPECT_TRUE(has_current);
+}
+
+TEST(VectorTest, MoveNext_HasCurrent_FromLastItem) {
+  auto vec = Make<Vector<int>>(g_one);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+  iterator->MoveNext(&has_current);
+
+  // Moving next when already past the end should set |has_current| to false:
+  // [1]
+  //     |->|
+  iterator->MoveNext(&has_current);
+  EXPECT_FALSE(has_current);
+}
+
+TEST(VectorTest, MoveNext_HasCurrent_AfterLastItem) {
+  auto vec = Make<Vector<int>>(g_one);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+
+  // Moving next from the last item should set |has_current| to false:
+  // [1]
+  //  |->|
+  boolean has_current;
+  iterator->MoveNext(&has_current);
+  EXPECT_FALSE(has_current);
+}
+
+TEST(VectorTest, MoveNext_HasCurrent_Changed) {
+  auto vec = Make<Vector<int>>(g_one_two);
+  ComPtr<IIterator<int>> iterator;
+  vec->First(&iterator);
+  boolean has_current;
+
+  vec->Append(4);
+
+  // Moving next after changing the vector should set |has_current| to false:
+  iterator->MoveNext(&has_current);
+  EXPECT_FALSE(has_current);
 }
 
 }  // namespace win

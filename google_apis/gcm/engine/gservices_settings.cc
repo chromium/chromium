@@ -8,8 +8,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -177,7 +178,7 @@ namespace gcm {
 
 // static
 const base::TimeDelta GServicesSettings::MinimumCheckinInterval() {
-  return base::TimeDelta::FromSeconds(kMinimumCheckinInterval);
+  return base::Seconds(kMinimumCheckinInterval);
 }
 
 // static
@@ -278,7 +279,7 @@ base::TimeDelta GServicesSettings::GetCheckinInterval() const {
   if (checkin_interval < kMinimumCheckinInterval)
     checkin_interval = kMinimumCheckinInterval;
 
-  return base::TimeDelta::FromSeconds(checkin_interval);
+  return base::Seconds(checkin_interval);
 }
 
 GURL GServicesSettings::GetCheckinURL() const {

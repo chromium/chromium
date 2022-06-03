@@ -8,7 +8,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -21,7 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,6 +42,10 @@ class PlatformStateStoreTestBase : public ::testing::Test {
  protected:
   PlatformStateStoreTestBase() {}
 
+  PlatformStateStoreTestBase(const PlatformStateStoreTestBase&) = delete;
+  PlatformStateStoreTestBase& operator=(const PlatformStateStoreTestBase&) =
+      delete;
+
   void SetUp() override {
     ::testing::Test::SetUp();
     ASSERT_NO_FATAL_FAILURE(
@@ -51,8 +54,6 @@ class PlatformStateStoreTestBase : public ::testing::Test {
 
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformStateStoreTestBase);
 };
 
 #else  // OS_WIN
@@ -75,6 +76,9 @@ class StateStoreTest : public PlatformStateStoreTestBase {
       : profile_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  StateStoreTest(const StateStoreTest&) = delete;
+  StateStoreTest& operator=(const StateStoreTest&) = delete;
 
   void SetUp() override {
     PlatformStateStoreTestBase::SetUp();
@@ -107,7 +111,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
     ASSERT_NE(nullptr, prefs.get());
     base::DictionaryValue* dict = nullptr;
     ASSERT_TRUE(prefs->GetAsDictionary(&dict));
-    ASSERT_TRUE(dict->Remove(prefs::kSafeBrowsingIncidentsSent, nullptr));
+    ASSERT_TRUE(dict->RemovePath(prefs::kSafeBrowsingIncidentsSent));
     ASSERT_TRUE(JSONFileValueSerializer(GetPrefsPath()).Serialize(*dict));
   }
 
@@ -122,8 +126,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
     profile_ = profile_manager_.CreateTestingProfile(
         kProfileName_, factory.CreateSyncable(pref_registry),
         base::UTF8ToUTF16(kProfileName_), 0, std::string(),
-        TestingProfile::TestingFactories(),
-        /*override_new_profile=*/base::Optional<bool>(false));
+        TestingProfile::TestingFactories());
   }
 
   static const char kProfileName_[];
@@ -141,8 +144,6 @@ class StateStoreTest : public PlatformStateStoreTestBase {
       disable_purge_for_testing_;
   base::ScopedTempDir temp_dir_;
   TestingProfileManager profile_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(StateStoreTest);
 };
 
 // static

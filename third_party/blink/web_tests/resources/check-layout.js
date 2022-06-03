@@ -244,7 +244,7 @@ window.checkLayout = function(selectorList, outputContainer)
 
     var pre = document.querySelector('.FAIL');
     if (pre)
-        setTimeout(function() { pre.previousSibling.scrollIntoView(); }, 0);
+        setTimeout(function() { pre.previousSibling.scrollIntoView(); }, 1);
     return result;
 }
 

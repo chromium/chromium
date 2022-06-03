@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/notification_ui_manager_impl.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -52,8 +53,8 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
 
   const Notification GetANotification(const std::string& id) {
     return Notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, id, base::string16(),
-        base::string16(), gfx::Image(), base::string16(),
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
+        std::u16string(), gfx::Image(), std::u16string(),
         GURL("chrome-extension://adflkjsdflkdsfdsflkjdsflkdjfs"),
         NotifierId(NotifierType::APPLICATION, "adflkjsdflkdsfdsflkjdsflkdjfs"),
         message_center::RichNotificationData(),
@@ -81,6 +82,8 @@ TEST_F(NotificationUIManagerTest, AddNotificationOnShutdown) {
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
   notification_manager()->Add(GetANotification("test2"), &profile);
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(NotificationUIManagerTest, UpdateNotification) {
@@ -91,6 +94,8 @@ TEST_F(NotificationUIManagerTest, UpdateNotification) {
   ASSERT_TRUE(
       notification_manager()->Update(GetANotification("test"), &profile));
   EXPECT_TRUE(message_center()->NotificationCount() == 1);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 // Regression test for crbug.com/767868
@@ -99,7 +104,7 @@ TEST_F(NotificationUIManagerTest, GetAllIdsReturnsOriginalId) {
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
   notification_manager()->Add(GetANotification("test"), &profile);
   std::set<std::string> ids = notification_manager()->GetAllIdsByProfile(
-      NotificationUIManager::GetProfileID(&profile));
+      ProfileNotification::GetProfileID(&profile));
   ASSERT_EQ(1u, ids.size());
   EXPECT_EQ(*ids.begin(), "test");
 }

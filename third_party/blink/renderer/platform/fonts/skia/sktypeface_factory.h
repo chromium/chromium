@@ -30,4 +30,4 @@ class SkTypeface_Factory {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SKIA_SKTYPEFACE_FACTORY_H_

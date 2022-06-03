@@ -14,10 +14,10 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -155,9 +155,8 @@ class ClientMixin : public ClientInterface {
     //
     // However the better place to focus on is de-duplication and caching on the
     // proxy service side (which currently caches but doesn't de-duplicate).
-    return base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
          base::TaskPriority::USER_VISIBLE});
   }
 
@@ -186,6 +185,10 @@ class ProxyResolverMojo : public net::ProxyResolver {
       net::HostResolver* host_resolver,
       std::unique_ptr<net::ProxyResolverErrorObserver> error_observer,
       net::NetLog* net_log);
+
+  ProxyResolverMojo(const ProxyResolverMojo&) = delete;
+  ProxyResolverMojo& operator=(const ProxyResolverMojo&) = delete;
+
   ~ProxyResolverMojo() override;
 
   // ProxyResolver implementation:
@@ -213,8 +216,6 @@ class ProxyResolverMojo : public net::ProxyResolver {
   std::unique_ptr<net::ProxyResolverErrorObserver> error_observer_;
 
   net::NetLog* net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverMojo);
 };
 
 class ProxyResolverMojo::Job
@@ -227,6 +228,10 @@ class ProxyResolverMojo::Job
       net::ProxyInfo* results,
       net::CompletionOnceCallback callback,
       const net::NetLogWithSource& net_log);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() override;
 
   // Returns the LoadState of this job.
@@ -249,8 +254,6 @@ class ProxyResolverMojo::Job
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::Receiver<proxy_resolver::mojom::ProxyResolverRequestClient> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverMojo::Job::Job(

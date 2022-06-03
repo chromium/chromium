@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class Document;
+class LocalDOMWindow;
 
 // Represents the animation worklet on the main thread. All the logic for
 // loading a new source module is implemented in its parent class |Worklet|. The
@@ -23,11 +23,15 @@ class Document;
 // corresponding |AnimationWorkletGlobalScope| on the worklet thread.
 class MODULES_EXPORT AnimationWorklet final : public Worklet {
  public:
-  explicit AnimationWorklet(Document*);
+  explicit AnimationWorklet(LocalDOMWindow&);
+
+  AnimationWorklet(const AnimationWorklet&) = delete;
+  AnimationWorklet& operator=(const AnimationWorklet&) = delete;
+
   ~AnimationWorklet() override;
 
   WorkletAnimationId NextWorkletAnimationId();
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Unique id associated with this worklet that is used by cc to identify all
@@ -40,8 +44,6 @@ class MODULES_EXPORT AnimationWorklet final : public Worklet {
   WorkletGlobalScopeProxy* CreateGlobalScope() final;
 
   Member<AnimationWorkletProxyClient> proxy_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWorklet);
 };
 
 }  // namespace blink

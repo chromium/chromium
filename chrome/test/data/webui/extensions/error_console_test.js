@@ -6,7 +6,7 @@ import 'chrome://extensions/extensions.js';
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {eventToPromise, waitBeforeNextRender} from '../test_util.m.js';
+import {eventToPromise, waitBeforeNextRender} from '../test_util.js';
 
 import {findMatches} from './test_util.js';
 
@@ -17,7 +17,7 @@ suite('CrExtensionsErrorConsoleTest', function() {
 
   // Initialize an extension activity log item before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     window.history.replaceState(
         {}, '', '?errors=oehidglfoeondlkoeloailjdmmghacge');
     const manager = document.createElement('extensions-manager');

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/offline_pages/prefetch/offline_metrics_collector_impl.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/common/pref_names.h"
 #include "components/offline_pages/core/offline_clock.h"

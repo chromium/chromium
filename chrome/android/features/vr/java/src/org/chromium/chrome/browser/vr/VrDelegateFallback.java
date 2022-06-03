@@ -16,10 +16,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 
@@ -29,9 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Fallback {@link VrDelegate} implementation if the VR module is not available.
  */
 /* package */ class VrDelegateFallback extends VrDelegate {
-    /* package */ static final CachedMetrics
-            .BooleanHistogramSample ENTER_VR_BROWSER_WITHOUT_FEATURE_MODULE_METRIC =
-            new CachedMetrics.BooleanHistogramSample("VR.EnterVrBrowserWithoutFeatureModule");
     private static final String TAG = "VrDelegateFallback";
     private static final boolean DEBUG_LOGS = false;
     private static final String DEFAULT_VR_MODE_PACKAGE = "com.google.vr.vrcore";
@@ -71,7 +66,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     }
 
     @Override
-    public void maybeRegisterVrEntryHook(final ChromeActivity activity) {}
+    public void maybeRegisterVrEntryHook(final Activity activity) {}
 
     @Override
     public void maybeUnregisterVrEntryHook() {}
@@ -106,10 +101,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
     }
 
     @Override
-    public void onActivityShown(ChromeActivity activity) {}
+    public void onActivityShown(Activity activity) {}
 
     @Override
-    public void onActivityHidden(ChromeActivity activity) {}
+    public void onActivityHidden(Activity activity) {}
 
     @Override
     public boolean onDensityChanged(int oldDpi, int newDpi) {
@@ -120,10 +115,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
     public void rawTopContentOffsetChanged(float topContentOffset) {}
 
     @Override
-    public void onNewIntentWithNative(ChromeActivity activity, Intent intent) {}
+    public void onNewIntentWithNative(Activity activity, Intent intent) {}
 
     @Override
-    public void maybeHandleVrIntentPreNative(ChromeActivity activity, Intent intent) {
+    public void maybeHandleVrIntentPreNative(Activity activity, Intent intent) {
         if (!VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(activity, intent)) return;
         if (bootsToVr() && relaunchOnMainDisplayIfNecessary(activity, intent)) return;
 
@@ -153,7 +148,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     public void setVrModeEnabled(Activity activity, boolean enabled) {}
 
     @Override
-    public void doPreInflationStartup(ChromeActivity activity, Bundle savedInstanceState) {
+    public void doPreInflationStartup(Activity activity, Bundle savedInstanceState) {
         if (!VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(
                     activity, activity.getIntent())) {
             return;
@@ -191,15 +186,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
     private void onVrModuleInstallFinished(boolean success) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof ChromeActivity)) return;
 
         if (!success) {
             onVrModuleInstallFailure(activity);
             return;
         }
         assert VrModule.isInstalled();
-
-        ENTER_VR_BROWSER_WITHOUT_FEATURE_MODULE_METRIC.record(true);
 
         // We need native to enter VR. Enter VR flow will automatically continue once native is
         // loaded.
@@ -214,8 +206,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
     }
 
     private void onVrModuleInstallFailure(Activity activity) {
-        ENTER_VR_BROWSER_WITHOUT_FEATURE_MODULE_METRIC.record(false);
-
         // For SVR close Chrome. For standalones launch into 2D-in-VR (if that fails, close Chrome).
         if (bootsToVr()) {
             if (!setVrMode(activity, false)) {

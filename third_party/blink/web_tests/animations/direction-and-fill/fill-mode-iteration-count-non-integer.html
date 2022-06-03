@@ -88,9 +88,8 @@ async_test(t => {
     }
     document.addEventListener("animationend", t.step_func(() => {
       if (++animsFinished == numAnims) {
-        // This call to setTimeout() should be OK in the test environment
-        // since we're just giving style a chance to resolve.
-        t.step_timeout(endTest, 0);
+        // Give the animation a chance to be 1 frame into the after phase.
+        requestAnimationFrame(endTest);
       }
     }));
   }));

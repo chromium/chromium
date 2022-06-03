@@ -8,7 +8,7 @@
 <script>
 var div = document.querySelector("div");
 document.body.appendChild(div);
-var shadowRoot = div.createShadowRoot();
+var shadowRoot = div.attachShadow({mode: 'open'});
 
 //Window named properties
 var namedElements = ['a', 'area', 'embed', 'form', 'frame',

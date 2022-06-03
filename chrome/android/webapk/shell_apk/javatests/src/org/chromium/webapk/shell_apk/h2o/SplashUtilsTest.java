@@ -6,7 +6,8 @@ package org.chromium.webapk.shell_apk.h2o;
 
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,8 +29,8 @@ public class SplashUtilsTest {
         final int requestedSplashWidth = 1000;
         final int requestedSplashHeight = 1000;
         Bitmap screenshot = SplashUtils.createAndImmediatelyScreenshotSplashView(
-                InstrumentationRegistry.getTargetContext(), requestedSplashWidth,
-                requestedSplashHeight, 1024 * 1024 * 4 /* maxSizeBytes */);
+                InstrumentationRegistry.getContext(), requestedSplashWidth, requestedSplashHeight,
+                1024 * 1024 * 4 /* maxSizeBytes */);
         Assert.assertNotNull(screenshot);
         Assert.assertEquals(requestedSplashWidth, screenshot.getWidth());
         Assert.assertEquals(requestedSplashHeight, screenshot.getHeight());

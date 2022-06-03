@@ -32,7 +32,7 @@ BrailleCommandData.makeDotPattern = function(dots) {
  * @return {string?}
  */
 BrailleCommandData.getCommand = function(dots) {
-  var command = BrailleCommandData.DOT_PATTERN_TO_COMMAND[dots];
+  const command = BrailleCommandData.DOT_PATTERN_TO_COMMAND[dots];
   return command;
 };
 
@@ -43,7 +43,7 @@ BrailleCommandData.getCommand = function(dots) {
  * @return {string} The shortcut.
  */
 BrailleCommandData.getDotShortcut = function(command, opt_chord) {
-  var commandDots = BrailleCommandData.getDots(command);
+  const commandDots = BrailleCommandData.getDots(command);
   return BrailleCommandData.makeShortcutText(commandDots, opt_chord);
 };
 
@@ -53,21 +53,21 @@ BrailleCommandData.getDotShortcut = function(command, opt_chord) {
  * @return {string}
  */
 BrailleCommandData.makeShortcutText = function(pattern, opt_chord) {
-  var dots = [];
-  for (var shifter = 0; shifter <= 7; shifter++) {
+  const dots = [];
+  for (let shifter = 0; shifter <= 7; shifter++) {
     if ((1 << shifter) & pattern) {
       dots.push(shifter + 1);
     }
   }
-  var msgid;
+  let msgid;
   if (dots.length > 1) {
     msgid = 'braille_dots';
-  } else if (dots.length == 1) {
+  } else if (dots.length === 1) {
     msgid = 'braille_dot';
   }
 
   if (msgid) {
-    var dotText = Msgs.getMsg(msgid, [dots.join('-')]);
+    let dotText = Msgs.getMsg(msgid, [dots.join('-')]);
     if (opt_chord) {
       dotText = Msgs.getMsg('braille_chord', [dotText]);
     }
@@ -81,9 +81,9 @@ BrailleCommandData.makeShortcutText = function(pattern, opt_chord) {
  * @return {number} The dot pattern for |command|.
  */
 BrailleCommandData.getDots = function(command) {
-  for (var key in BrailleCommandData.DOT_PATTERN_TO_COMMAND) {
+  for (let key in BrailleCommandData.DOT_PATTERN_TO_COMMAND) {
     key = parseInt(key, 10);
-    if (command == BrailleCommandData.DOT_PATTERN_TO_COMMAND[key]) {
+    if (command === BrailleCommandData.DOT_PATTERN_TO_COMMAND[key]) {
       return key;
     }
   }
@@ -94,9 +94,9 @@ BrailleCommandData.getDots = function(command) {
  * @private
  */
 BrailleCommandData.init_ = function() {
-  var map = function(dots, command) {
-    var pattern = BrailleCommandData.makeDotPattern(dots);
-    var existingCommand = BrailleCommandData.DOT_PATTERN_TO_COMMAND[pattern];
+  const map = function(dots, command) {
+    const pattern = BrailleCommandData.makeDotPattern(dots);
+    const existingCommand = BrailleCommandData.DOT_PATTERN_TO_COMMAND[pattern];
     if (existingCommand) {
       throw 'Braille command pattern already exists: ' + dots + ' ' +
           existingCommand + '. Trying to map ' + command;
@@ -143,9 +143,8 @@ BrailleCommandData.init_ = function() {
   // Question.
   map([1, 4, 5, 6], 'toggleKeyboardHelp');
 
-  // All cells (with 7 as mod).
-  map([1, 2, 3, 4, 5, 6, 7], 'darkenScreen');
-  map([1, 2, 3, 4, 5, 6], 'undarkenScreen');
+  // All cells.
+  map([1, 2, 3, 4, 5, 6], 'toggleScreen');
 
   // s.
   map([1, 2, 3, 4, 5], 'toggleSpeechOnOrOff');

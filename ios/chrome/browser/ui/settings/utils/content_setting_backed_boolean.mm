@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 
-#include "base/scoped_observer.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -32,8 +31,9 @@
 
 namespace {
 
-typedef ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-    ContentSettingsObserver;
+typedef base::ScopedObservation<HostContentSettingsMap,
+                                content_settings::Observer>
+    ContentSettingsObseration;
 
 class ContentSettingsObserverBridge : public content_settings::Observer {
  public:
@@ -43,8 +43,7 @@ class ContentSettingsObserverBridge : public content_settings::Observer {
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+                               ContentSettingsType content_type) override;
 
  private:
   ContentSettingBackedBoolean* setting_;  // weak
@@ -59,21 +58,17 @@ ContentSettingsObserverBridge::~ContentSettingsObserverBridge() {}
 void ContentSettingsObserverBridge::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   // Ignore when it's the ContentSettingBackedBoolean that is changing the
   // content setting.
   if (setting_.isModifyingContentSetting) {
     return;
   }
-  const ContentSettingsDetails settings_details(
-      primary_pattern, secondary_pattern, content_type, resource_identifier);
-  ContentSettingsType settingID = settings_details.type();
   // Unfortunately, because the ContentSettingsPolicyProvider doesn't publish
   // the specific content setting on policy updates, we must refresh on every
   // ContentSettingsType::DEFAULT notification.
-  if (settingID != ContentSettingsType::DEFAULT &&
-      settingID != setting_.settingID) {
+  if (content_type != ContentSettingsType::DEFAULT &&
+      content_type != setting_.settingID) {
     return;
   }
   // Notify the BooleanObserver.
@@ -86,7 +81,7 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
   ContentSettingsType _settingID;
   scoped_refptr<HostContentSettingsMap> _settingsMap;
   std::unique_ptr<ContentSettingsObserverBridge> _adaptor;
-  std::unique_ptr<ContentSettingsObserver> _content_settings_observer;
+  std::unique_ptr<ContentSettingsObseration> _content_settings_observer;
 }
 
 @synthesize settingID = _settingID;
@@ -105,8 +100,8 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
     // Listen for changes to the content setting.
     _adaptor.reset(new ContentSettingsObserverBridge(self));
     _content_settings_observer.reset(
-        new ContentSettingsObserver(_adaptor.get()));
-    _content_settings_observer->Add(settingsMap);
+        new ContentSettingsObseration(_adaptor.get()));
+    _content_settings_observer->Observe(settingsMap);
   }
   return self;
 }

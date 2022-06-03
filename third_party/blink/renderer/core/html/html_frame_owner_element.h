@@ -21,14 +21,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 
+#include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -42,10 +44,10 @@ class Frame;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
 class WebPluginContainerImpl;
+class ResourceRequestHead;
 
 class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
                                           public FrameOwner {
-  USING_GARBAGE_COLLECTED_MIXIN(HTMLFrameOwnerElement);
  public:
   ~HTMLFrameOwnerElement() override;
 
@@ -72,6 +74,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   EmbeddedContentView* OwnedEmbeddedContentView() const {
     return embedded_content_view_;
   }
+
+  void SetColorScheme(mojom::blink::ColorScheme);
 
   class PluginDisposeSuspendScope {
     STACK_ALLOCATED();
@@ -100,21 +104,20 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void AddResourceTiming(const ResourceTimingInfo&) final;
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
-  bool CanRenderFallbackContent() const override { return false; }
-  void RenderFallbackContent(Frame*) override {}
   void IntrinsicSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return FastGetAttribute(html_names::kNameAttr);
   }
-  ScrollbarMode ScrollingMode() const override { return ScrollbarMode::kAuto; }
+  mojom::blink::ScrollbarMode ScrollbarMode() const override {
+    return mojom::blink::ScrollbarMode::kAuto;
+  }
   int MarginWidth() const override { return -1; }
   int MarginHeight() const override { return -1; }
   bool AllowFullscreen() const override { return false; }
-  bool DisallowDocumentAccess() const override { return false; }
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return !embedded_content_view_; }
-  AtomicString RequiredCsp() const override { return g_null_atom; }
+  mojom::blink::ColorScheme GetColorScheme() const override;
   bool ShouldLazyLoadChildren() const final;
 
   // For unit tests, manually trigger the UpdateContainerPolicy method.
@@ -124,15 +127,15 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  void Trace(Visitor*) override;
+  // Element overrides:
+  bool IsAdRelated() const override;
+
+  void Trace(Visitor*) const override;
 
  protected:
   HTMLFrameOwnerElement(const QualifiedName& tag_name, Document&);
 
-  void SetSandboxFlags(WebSandboxFlags);
-  void SetAllowedToDownload(bool allowed) {
-    frame_policy_.allowed_to_download = allowed;
-  }
+  void SetSandboxFlags(network::mojom::blink::WebSandboxFlags);
 
   bool LoadOrRedirectSubframe(const KURL&,
                               const AtomicString& frame_name,
@@ -142,34 +145,41 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void DisposePluginSoon(WebPluginContainerImpl*);
 
-  // Return the origin which is to be used for feature policy container
+  // Return the origin which is to be used for permissions policy container
   // policies, as "the origin of the URL in the frame's src attribute" (see
-  // https://wicg.github.io/feature-policy/#iframe-allow-attribute).
+  // https://w3c.github.io/webappsec-permissions-policy/#iframe-allow-attribute).
   // This method is intended to be overridden by specific frame classes.
-  virtual scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy()
+  virtual scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy()
       const {
     return SecurityOrigin::CreateUniqueOpaque();
   }
 
-  // Return a feature policy container policy for this frame, based on the
+  // Return a permissions policy container policy for this frame, based on the
   // frame attributes and the effective origin specified in the frame
   // attributes.
-  virtual ParsedFeaturePolicy ConstructContainerPolicy(
-      Vector<String>* /*  messages */) const = 0;
+  virtual ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
 
   // Update the container policy and notify the frame loader client of any
   // changes.
-  void UpdateContainerPolicy(Vector<String>* messages = nullptr);
+  void UpdateContainerPolicy();
 
   // Return a document policy required policy for this frame, based on the
   // frame attributes.
-  virtual DocumentPolicy::FeatureState ConstructRequiredPolicy() const {
-    return DocumentPolicy::FeatureState{};
+  virtual DocumentPolicyFeatureState ConstructRequiredPolicy() const {
+    return DocumentPolicyFeatureState{};
   }
 
   // Update the required policy and notify the frame loader client of any
   // changes.
   void UpdateRequiredPolicy();
+
+  // Return a set of Trust Tokens parameters for requests for this frame,
+  // based on the frame attributes.
+  virtual network::mojom::blink::TrustTokenParamsPtr ConstructTrustTokenParams()
+      const;
+
+ protected:
+  bool is_swapping_frames() const { return is_swapping_frames_; }
 
  private:
   // Intentionally private to prevent redundant checks when the type is
@@ -181,11 +191,15 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     is_swapping_frames_ = is_swapping;
   }
 
+  // Check if the frame should be lazy-loaded and apply when conditions are
+  // passed. Return true when lazy-load is applied.
+  bool LazyLoadIfPossible(const KURL&,
+                          const ResourceRequestHead&,
+                          WebFrameLoadType frame_load_type);
+
   virtual network::mojom::ReferrerPolicy ReferrerPolicyAttribute() {
     return network::mojom::ReferrerPolicy::kDefault;
   }
-
-  bool IsLoadingFrameDefaultEagerEnforced() const;
 
   Member<Frame> content_frame_;
   Member<EmbeddedContentView> embedded_content_view_;
@@ -231,7 +245,7 @@ class SubframeLoadingDisabler {
 
   CORE_EXPORT static SubtreeRootSet& DisabledSubtreeRoots();
 
-  Member<Node> root_;
+  Node* root_;
 };
 
 template <>

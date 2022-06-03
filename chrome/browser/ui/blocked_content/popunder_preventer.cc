@@ -36,8 +36,8 @@ WebContentsSet BuildOpenerSet(content::WebContents* contents) {
 
 }  // namespace
 
-PopunderPreventer::PopunderPreventer(content::WebContents* activating_contents)
-    : popup_(nullptr) {
+PopunderPreventer::PopunderPreventer(
+    content::WebContents* activating_contents) {
   // If a popup is the active window, and the WebContents that is going to be
   // activated shares in the opener chain of that popup, then we suspect that
   // WebContents to be trying to create a popunder. Store the popup window so
@@ -72,8 +72,7 @@ PopunderPreventer::PopunderPreventer(content::WebContents* activating_contents)
   if (!common_openers.empty()) {
     // The popup is indeed related to the WebContents wanting to activate. Store
     // it, so we can focus it later.
-    popup_ = active_popup;
-    Observe(popup_);
+    popup_ = active_popup->GetWeakPtr();
   }
 }
 
@@ -85,9 +84,5 @@ PopunderPreventer::~PopunderPreventer() {
   if (!delegate)
     return;
 
-  delegate->ActivateContents(popup_);
-}
-
-void PopunderPreventer::WebContentsDestroyed() {
-  popup_ = nullptr;
+  delegate->ActivateContents(popup_.get());
 }

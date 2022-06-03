@@ -17,12 +17,12 @@ class RenderFrameHost;
 namespace extensions {
 
 // Represents an endpoint (tab, frame or worker) of a message channel in a
-// render process.
+// render process or a native messaging host.
 // TODO(crbug.com/939594): Consolidate all classes/structs around extension
 // message ports.
 class ChannelEndpoint {
  public:
-  // An endpoint for a PortContext.
+  // An endpoint for a renderer PortContext.
   ChannelEndpoint(content::BrowserContext* browser_context,
                   int render_process_id,
                   const PortContext& port_context);

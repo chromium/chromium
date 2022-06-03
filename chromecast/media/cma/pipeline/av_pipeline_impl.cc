@@ -9,15 +9,15 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
 #include "chromecast/media/cdm/cast_cdm_context.h"
 #include "chromecast/media/cma/base/buffering_frame_provider.h"
 #include "chromecast/media/cma/base/buffering_state.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "chromecast/media/cma/pipeline/cdm_decryptor.h"
 #include "chromecast/media/cma/pipeline/decrypt_util.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
@@ -29,24 +29,17 @@
 namespace chromecast {
 namespace media {
 
-namespace {
-
-const int kNoCallbackId = -1;
-
-}  // namespace
-
 AvPipelineImpl::AvPipelineImpl(CmaBackend::Decoder* decoder,
-                               const AvPipelineClient& client)
+                               AvPipelineClient client)
     : bytes_decoded_since_last_update_(0),
       decoder_(decoder),
-      client_(client),
+      client_(std::move(client)),
       state_(kUninitialized),
       buffered_time_(::media::kNoTimestamp),
       playable_buffered_time_(::media::kNoTimestamp),
       enable_feeding_(false),
       pending_read_(false),
       cast_cdm_context_(nullptr),
-      player_tracker_callback_id_(kNoCallbackId),
       weak_factory_(this),
       decrypt_weak_factory_(this) {
   DCHECK(decoder_);
@@ -57,9 +50,6 @@ AvPipelineImpl::AvPipelineImpl(CmaBackend::Decoder* decoder,
 
 AvPipelineImpl::~AvPipelineImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (cast_cdm_context_ && player_tracker_callback_id_ != kNoCallbackId)
-    cast_cdm_context_->UnregisterPlayer(player_tracker_callback_id_);
 }
 
 void AvPipelineImpl::SetCodedFrameProvider(
@@ -72,7 +62,7 @@ void AvPipelineImpl::SetCodedFrameProvider(
   // Wrap the incoming frame provider to add some buffering capabilities.
   frame_provider_.reset(new BufferingFrameProvider(
       std::move(frame_provider), max_buffer_size, max_frame_size,
-      base::Bind(&AvPipelineImpl::OnDataBuffered, weak_this_)));
+      base::BindRepeating(&AvPipelineImpl::OnDataBuffered, weak_this_)));
 }
 
 bool AvPipelineImpl::StartPlayingFrom(
@@ -106,7 +96,7 @@ bool AvPipelineImpl::StartPlayingFrom(
   return true;
 }
 
-void AvPipelineImpl::Flush(const base::Closure& flush_cb) {
+void AvPipelineImpl::Flush(base::OnceClosure flush_cb) {
   LOG(INFO) << __FUNCTION__;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(flush_cb_.is_null());
@@ -118,7 +108,7 @@ void AvPipelineImpl::Flush(const base::Closure& flush_cb) {
   DCHECK_EQ(state_, kPlaying);
   set_state(kFlushing);
 
-  flush_cb_ = flush_cb;
+  flush_cb_ = std::move(flush_cb);
   // Stop feeding the pipeline.
   // Do not invalidate |pushed_buffer_| here since the backend may still be
   // using it. Invalidate it in StartPlayingFrom on the assumption that
@@ -145,7 +135,8 @@ void AvPipelineImpl::Flush(const base::Closure& flush_cb) {
   // Reset |decryptor_| to flush buffered frames in |decryptor_|.
   decryptor_.reset();
 
-  frame_provider_->Flush(base::Bind(&AvPipelineImpl::OnFlushDone, weak_this_));
+  frame_provider_->Flush(
+      base::BindOnce(&AvPipelineImpl::OnFlushDone, weak_this_));
 }
 
 void AvPipelineImpl::OnFlushDone() {
@@ -165,16 +156,12 @@ void AvPipelineImpl::SetCdm(CastCdmContext* cast_cdm_context) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(cast_cdm_context);
 
-  if (cast_cdm_context_ && player_tracker_callback_id_ != kNoCallbackId)
-    cast_cdm_context_->UnregisterPlayer(player_tracker_callback_id_);
-
   cast_cdm_context_ = cast_cdm_context;
-  player_tracker_callback_id_ = cast_cdm_context_->RegisterPlayer(
-      base::Bind(&AvPipelineImpl::OnCdmStateChanged, weak_this_),
-      base::Bind(&AvPipelineImpl::OnCdmDestroyed, weak_this_));
+  event_cb_registration_ = cast_cdm_context_->RegisterEventCB(
+      base::BindRepeating(&AvPipelineImpl::OnCdmStateChanged, weak_this_));
 
   // We could be waiting for CDM to provide key (see b/29564232).
-  OnCdmStateChanged();
+  OnCdmStateChanged(::media::CdmContext::Event::kHasAdditionalUsableKey);
 }
 
 void AvPipelineImpl::FetchBuffer() {
@@ -186,7 +173,7 @@ void AvPipelineImpl::FetchBuffer() {
 
   pending_read_ = true;
   frame_provider_->Read(
-      base::Bind(&AvPipelineImpl::OnNewFrame, weak_this_));
+      base::BindOnce(&AvPipelineImpl::OnNewFrame, weak_this_));
 }
 
 void AvPipelineImpl::OnNewFrame(
@@ -278,8 +265,7 @@ void AvPipelineImpl::PushReadyBuffer(scoped_refptr<DecoderBufferBase> buffer) {
   DCHECK(!pushed_buffer_);
 
   if (!buffer->end_of_stream() && buffering_state_.get()) {
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(buffer->timestamp());
+    base::TimeDelta timestamp = base::Microseconds(buffer->timestamp());
     if (timestamp != ::media::kNoTimestamp)
       buffering_state_->SetMaxRenderingTime(timestamp);
   }
@@ -358,8 +344,11 @@ void AvPipelineImpl::OnVideoResolutionChanged(const Size& size) {
   // Ignored here; VideoPipelineImpl overrides this method.
 }
 
-void AvPipelineImpl::OnCdmStateChanged() {
+void AvPipelineImpl::OnCdmStateChanged(::media::CdmContext::Event event) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (event != ::media::CdmContext::Event::kHasAdditionalUsableKey)
+    return;
 
   // Update the buffering state if needed.
   if (buffering_state_.get())
@@ -368,11 +357,6 @@ void AvPipelineImpl::OnCdmStateChanged() {
   // Process the pending buffer in case the CDM now has the frame key id.
   if (pending_buffer_)
     ProcessPendingBuffer();
-}
-
-void AvPipelineImpl::OnCdmDestroyed() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  cast_cdm_context_ = NULL;
 }
 
 void AvPipelineImpl::OnDataBuffered(
@@ -385,9 +369,8 @@ void AvPipelineImpl::OnDataBuffered(
 
   if (!buffer->end_of_stream() &&
       (buffered_time_ == ::media::kNoTimestamp ||
-       buffered_time_ <
-           base::TimeDelta::FromMicroseconds(buffer->timestamp()))) {
-    buffered_time_ = base::TimeDelta::FromMicroseconds(buffer->timestamp());
+       buffered_time_ < base::Microseconds(buffer->timestamp()))) {
+    buffered_time_ = base::Microseconds(buffer->timestamp());
   }
 
   if (is_at_max_capacity)
@@ -424,10 +407,10 @@ void AvPipelineImpl::UpdatePlayableFrames() {
       }
 
       if (playable_buffered_time_ == ::media::kNoTimestamp ||
-          playable_buffered_time_ < base::TimeDelta::FromMicroseconds(
-                                        non_playable_frame->timestamp())) {
+          playable_buffered_time_ <
+              base::Microseconds(non_playable_frame->timestamp())) {
         playable_buffered_time_ =
-            base::TimeDelta::FromMicroseconds(non_playable_frame->timestamp());
+            base::Microseconds(non_playable_frame->timestamp());
         buffering_state_->SetBufferedTime(playable_buffered_time_);
       }
     }

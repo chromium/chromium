@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 static_library("storage_monitor") {
@@ -21,6 +22,7 @@ static_library("storage_monitor") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp",
@@ -45,12 +47,12 @@ static_library("storage_monitor") {
       "storage_monitor_mac.h",
       "storage_monitor_mac.mm",
     ]
-    libs = [
+    frameworks = [
       "DiskArbitration.framework",
       "Foundation.framework",
       "ImageCaptureCore.framework",
     ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     # For Chrome OS, |is_linux| is also true. Put this in an else-if block above
     # the |is_linux| else-if block, so they do not clash.
     sources += [
@@ -68,7 +70,7 @@ static_library("storage_monitor") {
       ]
       deps += [ "//services/device/public/mojom" ]
     }
-  } else if (is_linux) {
+  } else if (is_linux || is_chromeos_lacros) {
     if (use_udev) {
       sources += [
         "mtab_watcher_linux.cc",
@@ -82,10 +84,12 @@ static_library("storage_monitor") {
   }
 
   if (use_udev) {
-    sources += [
-      "udev_util_linux.cc",
-      "udev_util_linux.h",
-    ]
+    if (is_linux || is_chromeos) {
+      sources += [
+        "udev_util_linux.cc",
+        "udev_util_linux.h",
+      ]
+    }
     deps += [ "//device/udev_linux" ]
   }
 
@@ -99,16 +103,8 @@ static_library("test_support") {
   sources = [
     "mock_removable_storage_observer.cc",
     "mock_removable_storage_observer.h",
-    "test_media_transfer_protocol_manager_chromeos.cc",
-    "test_media_transfer_protocol_manager_chromeos.h",
-    "test_portable_device_watcher_win.cc",
-    "test_portable_device_watcher_win.h",
     "test_storage_monitor.cc",
     "test_storage_monitor.h",
-    "test_storage_monitor_win.cc",
-    "test_storage_monitor_win.h",
-    "test_volume_mount_watcher_win.cc",
-    "test_volume_mount_watcher_win.h",
   ]
 
   public_deps = [
@@ -117,28 +113,37 @@ static_library("test_support") {
     "//content/public/browser",
   ]
 
-  if (is_chromeos && use_dbus) {
-    deps = [
-      "//services/device/public/mojom",
+  deps = [ "//build:chromeos_buildflags" ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "test_media_transfer_protocol_manager_chromeos.cc",
+      "test_media_transfer_protocol_manager_chromeos.h",
     ]
+    if (use_dbus) {
+      deps += [ "//services/device/public/mojom" ]
+    }
   }
 
   if (is_win) {
-    deps = [
-      "//testing/gtest",
+    sources += [
+      "test_portable_device_watcher_win.cc",
+      "test_portable_device_watcher_win.h",
+      "test_storage_monitor_win.cc",
+      "test_storage_monitor_win.h",
+      "test_volume_mount_watcher_win.cc",
+      "test_volume_mount_watcher_win.h",
     ]
+    deps += [ "//testing/gtest" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "image_capture_device_manager_unittest.mm",
     "media_storage_util_unittest.cc",
     "storage_info_unittest.cc",
-    "storage_monitor_mac_unittest.mm",
     "storage_monitor_unittest.cc",
-    "storage_monitor_win_unittest.cc",
   ]
 
   deps = [
@@ -148,8 +153,19 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_win) {
+    sources += [ "storage_monitor_win_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "image_capture_device_manager_unittest.mm",
+      "storage_monitor_mac_unittest.mm",
+    ]
+  }
+
   if (use_dbus) {
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//services/device/public/mojom",
         "//testing/gmock",
@@ -158,11 +174,11 @@ source_set("unit_tests") {
         "mtp_manager_client_chromeos_unittest.cc",
         "storage_monitor_chromeos_unittest.cc",
       ]
-    } else if (is_linux) {
+    } else if (is_linux || is_chromeos_lacros) {
       sources += [ "storage_monitor_linux_unittest.cc" ]
     }
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/disks:test_support" ]
   }
 }

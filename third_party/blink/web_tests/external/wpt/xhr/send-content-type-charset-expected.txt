@@ -16,7 +16,7 @@ FAIL charset with leading space that is UTF-8 does change assert_equals: expecte
 FAIL charset with trailing space that is UTF-8 does not change assert_equals: expected "text/plain;charset=utf-8 ;x=x" but got "text/plain;charset=UTF-8 ;x=x"
 FAIL charset in double quotes that is UTF-8 does not change assert_equals: expected "text/plain;charset=\"utf-8\"" but got "text/plain;charset=\"UTF-8\""
 FAIL charset in double quotes with space assert_equals: expected "text/plain;charset=UTF-8" but got "text/plain;charset=\" UTF-8\""
-FAIL charset in double quotes with backslashes that is UTF-8 does not change assert_equals: expected "text/plain;charset=\"u\\t\f-8\"" but got "text/plain;charset=\"UTF-8\""
+FAIL charset in double quotes with backslashes that is UTF-8 does not change assert_equals: expected "text/plain;charset=\"u\\t\\f-8\"" but got "text/plain;charset=\"UTF-8\""
 FAIL unknown parameters need to be preserved assert_equals: expected "yo/yo;charset=UTF-8;yo=YO;x=y" but got "YO/yo;charset=UTF-8;yo=YO; X=y"
 Harness: the test ran to completion.
 

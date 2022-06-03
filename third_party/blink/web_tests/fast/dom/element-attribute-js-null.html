@@ -18,7 +18,7 @@
             const expectedValue = attr.expectedNull;
             test(() => {
                 if (attr.isException) {
-                        assert_throws(expectedValue,
+                    assert_throws_dom(expectedValue,
                                       () => element[attr.name] = null);
                     return;
                 }

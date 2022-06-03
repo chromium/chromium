@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
@@ -28,7 +28,7 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/controls/webview/webview.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "chrome/browser/ui/recently_audible_helper.h"
 #endif
 
@@ -37,7 +37,7 @@ namespace {
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
   gfx::Rect tabstrip_bounds(browser_view->frame()->GetBoundsForTabStripRegion(
-      browser_view->tabstrip()));
+      browser_view->tab_strip_region_view()->GetMinimumSize()));
   gfx::Point tabstrip_region_origin(tabstrip_bounds.origin());
   views::View::ConvertPointToTarget(browser_view->parent(), browser_view,
                                     &tabstrip_region_origin);
@@ -46,8 +46,8 @@ gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
 
 // Helper function to take a printf-style format string and substitute the
 // browser name (like "Chromium" or "Google Chrome") for %s, and return the
-// result as a base::string16.
-base::string16 SubBrowserName(const char* fmt) {
+// result as a std::u16string.
+std::u16string SubBrowserName(const char* fmt) {
   return base::UTF8ToUTF16(base::StringPrintf(
       fmt, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str()));
 }
@@ -64,10 +64,10 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_TRUE(browser_view()->browser());
 
   // Test initial state.
-  EXPECT_TRUE(browser_view()->IsTabStripVisible());
-  EXPECT_FALSE(browser_view()->IsIncognito());
-  EXPECT_FALSE(browser_view()->IsGuestSession());
-  EXPECT_TRUE(browser_view()->IsBrowserTypeNormal());
+  EXPECT_TRUE(browser_view()->GetTabStripVisible());
+  EXPECT_FALSE(browser_view()->GetIncognito());
+  EXPECT_FALSE(browser_view()->GetGuestSession());
+  EXPECT_TRUE(browser_view()->GetIsNormalType());
   EXPECT_FALSE(browser_view()->IsFullscreen());
   EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
@@ -139,9 +139,8 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   EXPECT_FALSE(bookmark_bar->GetVisible());
 
   // The NTP should be treated the same as any other page.
-  NavigateAndCommitActiveTabWithTitle(browser,
-                                      GURL(chrome::kChromeUINewTabURL),
-                                      base::string16());
+  NavigateAndCommitActiveTabWithTitle(browser, GURL(chrome::kChromeUINewTabURL),
+                                      std::u16string());
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(top_container, bookmark_bar->parent());
 
@@ -165,7 +164,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
 }
 
 // TODO(https://crbug.com/1020758): Flaky on Linux.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_FindBarBoundingBoxLocationBar \
   DISABLED_FindBarBoundingBoxLocationBar
 #else
@@ -212,7 +211,7 @@ TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
 }
 
 // On macOS, most accelerators are handled by CommandDispatcher.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 // Test that repeated accelerators are processed or ignored depending on the
 // commands that they refer to. The behavior for different commands is dictated
 // by IsCommandRepeatable() in chrome/browser/ui/views/accelerator_table.h.
@@ -231,11 +230,11 @@ TEST_F(BrowserViewTest, DISABLED_RepeatedAccelerators) {
       ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_IS_REPEAT);
   EXPECT_TRUE(browser_view()->AcceleratorPressed(kNextTabRepeatAccel));
 }
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_MAC)
 
 // Test that bookmark bar view becomes invisible when closing the browser.
 // TODO(https://crbug.com/1000251): Flaky on Linux.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_BookmarkBarInvisibleOnShutdown \
   DISABLED_BookmarkBarInvisibleOnShutdown
 #else
@@ -283,7 +282,7 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
 
   Tab* tab = browser_view()->tabstrip()->tab_at(0);
   TabRendererData start_media;
-  start_media.alert_state = TabAlertState::AUDIO_PLAYING;
+  start_media.alert_state = {TabAlertState::AUDIO_PLAYING};
   tab->SetData(std::move(start_media));
   EXPECT_EQ(SubBrowserName("about:blank - Audio playing - %s"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
@@ -308,11 +307,11 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Tests that audio playing state is reflected in the "Window" menu on Mac.
 TEST_F(BrowserViewTest, TitleAudioIndicators) {
-  base::string16 playing_icon = base::WideToUTF16(L"\U0001F50A");
-  base::string16 muted_icon = base::WideToUTF16(L"\U0001F507");
+  std::u16string playing_icon = u"\U0001F50A";
+  std::u16string muted_icon = u"\U0001F507";
 
   AddTab(browser_view()->browser(), GURL("about:blank"));
   content::WebContents* contents = browser_view()->GetActiveWebContents();
@@ -321,22 +320,22 @@ TEST_F(BrowserViewTest, TitleAudioIndicators) {
 
   audible_helper->SetNotRecentlyAudibleForTesting();
   EXPECT_EQ(browser_view()->GetWindowTitle().find(playing_icon),
-            base::string16::npos);
+            std::u16string::npos);
   EXPECT_EQ(browser_view()->GetWindowTitle().find(muted_icon),
-            base::string16::npos);
+            std::u16string::npos);
 
   audible_helper->SetCurrentlyAudibleForTesting();
   EXPECT_NE(browser_view()->GetWindowTitle().find(playing_icon),
-            base::string16::npos);
+            std::u16string::npos);
   EXPECT_EQ(browser_view()->GetWindowTitle().find(muted_icon),
-            base::string16::npos);
+            std::u16string::npos);
 
   audible_helper->SetRecentlyAudibleForTesting();
   contents->SetAudioMuted(true);
   EXPECT_EQ(browser_view()->GetWindowTitle().find(playing_icon),
-            base::string16::npos);
+            std::u16string::npos);
   EXPECT_NE(browser_view()->GetWindowTitle().find(muted_icon),
-            base::string16::npos);
+            std::u16string::npos);
 }
 #endif
 
@@ -345,10 +344,11 @@ class BrowserViewHostedAppTest : public TestWithBrowserView {
   BrowserViewHostedAppTest()
       : TestWithBrowserView(Browser::TYPE_POPUP,
                             BrowserWithTestWindowTest::HostedApp()) {}
-  ~BrowserViewHostedAppTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewHostedAppTest);
+  BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
+  BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
+
+  ~BrowserViewHostedAppTest() override {}
 };
 
 // Test basic layout for hosted apps.

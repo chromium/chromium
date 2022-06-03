@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
@@ -20,26 +22,34 @@ import org.chromium.base.ChildBindingState;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.CpuFeatures;
+import org.chromium.base.EarlyTraceEvent;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.Linker;
+import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
-import org.chromium.content.app.ChromiumLinkerParams;
+import org.chromium.base.task.PostTask;
+import org.chromium.build.BuildConfig;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,8 +71,16 @@ public final class ChildProcessLauncherHelperImpl {
     private static final String NUM_PRIVILEGED_SERVICES_KEY =
             "org.chromium.content.browser.NUM_PRIVILEGED_SERVICES";
 
-    // Flag to check features after native is initialized.
-    private static boolean sCheckedFeatures;
+    // When decrementing the refcount on bindings, delay the decrement by this amount of time in
+    // case a new ref count is added in the mean time. This is a heuristic to avoid temporarily
+    // dropping bindings when inputs to calculating importance change independently.
+    private static final int REMOVE_BINDING_DELAY_MS = 500;
+
+    // To be conservative, only delay removing binding in the initial second of the process.
+    private static final int TIMEOUT_FOR_DELAY_BINDING_REMOVE_MS = 1000;
+
+    // Flag to check if ServiceGroupImportance should be enabled after native is initialized.
+    private static boolean sCheckedServiceGroupImportance;
 
     // A warmed-up connection to a sandboxed service.
     private static SpareChildConnection sSpareSandboxedConnection;
@@ -105,6 +123,22 @@ public final class ChildProcessLauncherHelperImpl {
     // Whether the process can use warmed up connection.
     private final boolean mCanUseWarmUpConnection;
 
+    // Tracks reporting exception from child process to avoid reporting it more than once.
+    private boolean mReportedException;
+
+    // Enables early Java tracing in child process before native is initialized.
+    private static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH =
+            "--" + EarlyTraceEvent.TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
+
+    // The first known App Zygote PID. If the app zygote gets restarted, the new bundles from it
+    // are not sent further for simplicity. Accessed only on LauncherThread.
+    private static int sZygotePid;
+
+    // The bundle with RELRO FD. For sending to child processes, including the ones that did not
+    // announce whether they inherit from the app zygote. Declared as volatile to allow sending it
+    // from different threads.
+    private static volatile Bundle sZygoteBundle;
+
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
@@ -131,9 +165,11 @@ public final class ChildProcessLauncherHelperImpl {
                             ContentChildProcessConstants.EXTRA_CPU_COUNT, CpuFeatures.getCount());
                     connectionBundle.putLong(
                             ContentChildProcessConstants.EXTRA_CPU_FEATURES, CpuFeatures.getMask());
-                    if (LibraryLoader.getInstance().useChromiumLinker()) {
-                        connectionBundle.putBundle(Linker.EXTRA_LINKER_SHARED_RELROS,
-                                Linker.getInstance().getSharedRelros());
+                    if (sZygoteBundle != null) {
+                        connectionBundle.putAll(sZygoteBundle);
+                    } else {
+                        LibraryLoader.getInstance().getMediator().putSharedRelrosToBundle(
+                                connectionBundle);
                     }
                 }
 
@@ -161,6 +197,13 @@ public final class ChildProcessLauncherHelperImpl {
                 }
 
                 @Override
+                public void onReceivedZygoteInfo(
+                        ChildProcessConnection connection, Bundle relroBundle) {
+                    assert LauncherThread.runningOnLauncherThread();
+                    distributeZygoteInfo(connection, relroBundle);
+                }
+
+                @Override
                 public void onConnectionLost(ChildProcessConnection connection) {
                     assert LauncherThread.runningOnLauncherThread();
                     if (connection.getPid() == 0) return;
@@ -179,9 +222,115 @@ public final class ChildProcessLauncherHelperImpl {
                 }
             };
 
+    @IntDef({ZygoteChildState.FAILED_TO_CREATE_BUNDLE, ZygoteChildState.FIRST_USABLE_ZYGOTE,
+            ZygoteChildState.ZYGOTE_RESTARTED, ZygoteChildState.ZYGOTE_SEEN})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ZygoteChildState {
+        // These values are persisted to logs. Entries should not be renumbered and numeric values
+        // should never be reused.
+        int FAILED_TO_CREATE_BUNDLE = 0;
+        int FIRST_USABLE_ZYGOTE = 1;
+        int ZYGOTE_RESTARTED = 2;
+        int ZYGOTE_SEEN = 3;
+        int COUNT = 4;
+    }
+
+    /**
+     * Records a histogram telling what is known about the App Zygote that the
+     * current isolated process was forked from. Must be called once per
+     * isolated process (but only if it comes from the app zygote (S+) and RELRO
+     * sharing with the app zygote is working.
+     */
+    private static void recordChildStateHistogram(@ZygoteChildState int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "ChromiumAndroidLinker.ChildProcessZygoteState", state, ZygoteChildState.COUNT);
+    }
+
+    /**
+     * Called for every new child connection. Receives a possibly null bundle inherited from the App
+     * Zygote. Sends the bundle to existing processes that did not have usable bundles or sends
+     * a previously memoized bundle to the new child.
+     *
+     * @param connection the connection to the new child
+     * @param zygoteBundle the bundle received from the child process, null means that either the
+     *                     process did not inherit from the app zygote or the app zygote did not
+     *                     produce a usable RELRO region.
+     */
+    private static void distributeZygoteInfo(
+            ChildProcessConnection connection, @Nullable Bundle zygoteBundle) {
+        if (LibraryLoader.mainProcessIntendsToProvideRelroFd()) return;
+
+        if (!connection.hasUsableZygoteInfo()) {
+            Log.d(TAG, "Connection likely not created from app zygote");
+            sendPreviouslySeenZygoteBundle(connection);
+            return;
+        }
+
+        // If the process was created from the app zygote, but failed to generate the the zygote
+        // bundle - ignore it.
+        if (zygoteBundle == null) {
+            recordChildStateHistogram(ZygoteChildState.FAILED_TO_CREATE_BUNDLE);
+            return;
+        }
+
+        if (sZygotePid != 0) {
+            Log.d(TAG, "Zygote was seen before with a usable RELRO bundle.");
+            onObtainedUsableZygoteBundle(connection);
+            return;
+        }
+
+        Log.d(TAG, "Encountered the first usable RELRO bundle.");
+        recordChildStateHistogram(ZygoteChildState.FIRST_USABLE_ZYGOTE);
+        sZygotePid = connection.getZygotePid();
+        sZygoteBundle = zygoteBundle;
+
+        // Use the RELRO FD in the current process. Some nontrivial CPU cycles are consumed because
+        // it needs an mmap+memcmp(5 megs)+mmap+munmap. This happens on the process launcher thread,
+        // will work correctly on any thread.
+        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(zygoteBundle);
+
+        // Use the RELRO FD for all processes launched up to now. Non-blocking 'oneway' IPCs are
+        // used. The CPU time costs in the child process are the same.
+        sendPreviouslySeenZygoteBundleToExistingConnections(connection.getPid());
+    }
+
+    private static void onObtainedUsableZygoteBundle(ChildProcessConnection connection) {
+        if (sZygotePid != connection.getZygotePid()) {
+            Log.d(TAG, "Zygote restarted.");
+            recordChildStateHistogram(ZygoteChildState.ZYGOTE_RESTARTED);
+            return;
+        }
+        recordChildStateHistogram(ZygoteChildState.ZYGOTE_SEEN);
+        // TODO(pasko): To avoid accumulating open file descriptors close the received RELRO FD
+        // if it cannot be used.
+    }
+
+    private static void sendPreviouslySeenZygoteBundle(ChildProcessConnection connection) {
+        if (sZygotePid != 0 && sZygoteBundle != null) {
+            connection.consumeZygoteBundle(sZygoteBundle);
+        }
+    }
+
+    private static void sendPreviouslySeenZygoteBundleToExistingConnections(int pid) {
+        CollectionUtil.forEach(sLauncherByPid, entry -> {
+            int otherPid = entry.getKey();
+            if (pid != otherPid) {
+                ChildProcessConnection otherConnection = entry.getValue().mLauncher.getConnection();
+                if (otherConnection.getZygotePid() == 0) {
+                    // The Zygote PID for each connection must be finalized before the launcher
+                    // thread starts processing the zygote info. Zygote PID being 0 guarantees that
+                    // the zygote did not produce the RELRO region.
+                    otherConnection.consumeZygoteBundle(sZygoteBundle);
+                }
+            }
+        });
+    }
+
     private final ChildProcessLauncher mLauncher;
 
     private long mNativeChildProcessLauncherHelper;
+
+    private long mStartTimeMs;
 
     // This is the current computed importance from all the inputs from setPriority.
     // The initial value is MODERATE since a newly created connection has moderate bindings.
@@ -219,6 +368,10 @@ public final class ChildProcessLauncherHelperImpl {
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
+        if (TraceEvent.enabled()) {
+            commandLine = Arrays.copyOf(commandLine, commandLine.length + 1);
+            commandLine[commandLine.length - 1] = TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
+        }
         boolean sandboxed = true;
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
@@ -227,9 +380,17 @@ public final class ChildProcessLauncherHelperImpl {
                 // We only support sandboxed utility processes now.
                 assert ContentSwitches.SWITCH_UTILITY_PROCESS.equals(processType);
 
+                String serviceSandboxType = ContentSwitchUtils.getSwitchValue(
+                        commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE);
+
+                // Non-sandboxed utility processes only supported for non-public Chromecast.
+                if (BuildConfig.IS_CHROMECAST_BRANDING_INTERNAL
+                        && ContentSwitches.NONE_SANDBOX_TYPE.equals(serviceSandboxType)) {
+                    sandboxed = false;
+                }
+
                 // Remove sandbox restriction on network service process.
-                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
-                            commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE))) {
+                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(serviceSandboxType)) {
                     sandboxed = false;
                 }
             }
@@ -243,10 +404,10 @@ public final class ChildProcessLauncherHelperImpl {
                 commandLine, filesToBeMapped, sandboxed, canUseWarmUpConnection, binderCallback);
         helper.start();
 
-        if (!sCheckedFeatures) {
-            sCheckedFeatures = true;
+        if (sandboxed && !sCheckedServiceGroupImportance) {
+            sCheckedServiceGroupImportance = true;
             if (sSandboxedChildConnectionRanking != null
-                    && ContentFeatureList.isEnabled(ContentFeatureList.SERVICE_GROUP_IMPORTANCE)) {
+                    && ChildProcessLauncherHelperImplJni.get().serviceGroupImportanceEnabled()) {
                 sSandboxedChildConnectionRanking.enableServiceGroupImportance();
             }
         }
@@ -293,11 +454,14 @@ public final class ChildProcessLauncherHelperImpl {
             public void run() {
                 ChildConnectionAllocator allocator =
                         getConnectionAllocator(context, true /* sandboxed */);
+                boolean bindWaiveCpu = ContentFeatureList.isEnabled(
+                        ContentFeatureList.BINDING_MANAGEMENT_WAIVE_CPU);
                 if (ChildProcessConnection.supportVariableConnections()) {
-                    sBindingManager = new BindingManager(context, sSandboxedChildConnectionRanking);
+                    sBindingManager = new BindingManager(
+                            context, sSandboxedChildConnectionRanking, bindWaiveCpu);
                 } else {
                     sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
-                            sSandboxedChildConnectionRanking);
+                            sSandboxedChildConnectionRanking, bindWaiveCpu);
                 }
             }
         });
@@ -350,23 +514,25 @@ public final class ChildProcessLauncherHelperImpl {
     @VisibleForTesting
     static ChildConnectionAllocator getConnectionAllocator(Context context, boolean sandboxed) {
         assert LauncherThread.runningOnLauncherThread();
-        final String packageName = ChildProcessCreationParamsImpl.getPackageNameForService();
         boolean bindToCaller = ChildProcessCreationParamsImpl.getBindToCallerCheck();
         boolean bindAsExternalService =
                 sandboxed && ChildProcessCreationParamsImpl.getIsSandboxedServiceExternal();
 
         if (!sandboxed) {
             if (sPrivilegedChildConnectionAllocator == null) {
-                sPrivilegedChildConnectionAllocator = ChildConnectionAllocator.create(context,
-                        LauncherThread.getHandler(), null, packageName,
-                        ChildProcessCreationParamsImpl.getPrivilegedServicesName(),
-                        NUM_PRIVILEGED_SERVICES_KEY, bindToCaller, bindAsExternalService,
-                        true /* useStrongBinding */);
+                sPrivilegedChildConnectionAllocator =
+                        ChildConnectionAllocator.create(context, LauncherThread.getHandler(), null,
+                                ChildProcessCreationParamsImpl.getPackageNameForPrivilegedService(),
+                                ChildProcessCreationParamsImpl.getPrivilegedServicesName(),
+                                NUM_PRIVILEGED_SERVICES_KEY, bindToCaller, bindAsExternalService,
+                                true /* useStrongBinding */);
             }
             return sPrivilegedChildConnectionAllocator;
         }
 
         if (sSandboxedChildConnectionAllocator == null) {
+            final String packageName =
+                    ChildProcessCreationParamsImpl.getPackageNameForSandboxedService();
             Log.d(TAG,
                     "Create a new ChildConnectionAllocator with package name = %s,"
                             + " sandboxed = true",
@@ -391,7 +557,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindToCaller, bindAsExternalService, false /* useStrongBinding */);
             } else if (ChildProcessConnection.supportVariableConnections()) {
                 connectionAllocator = ChildConnectionAllocator.createVariableSize(context,
-                        LauncherThread.getHandler(), packageName,
+                        LauncherThread.getHandler(), freeSlotRunnable, packageName,
                         ChildProcessCreationParamsImpl.getSandboxedServicesName(), bindToCaller,
                         bindAsExternalService, false /* useStrongBinding */);
             } else {
@@ -446,6 +612,7 @@ public final class ChildProcessLauncherHelperImpl {
 
     private void start() {
         mLauncher.start(true /* doSetupConnection */, true /* queueIfNoFreeConnection */);
+        mStartTimeMs = System.currentTimeMillis();
     }
 
     /**
@@ -480,12 +647,15 @@ public final class ChildProcessLauncherHelperImpl {
         // Note there is no guarantee that connection lost has happened. However ChildProcessRanking
         // is not thread safe, so this is the best we can do.
         int reverseRank = getReverseRankWhenConnectionLost();
-        int bindingCounts[] = connection.remainingBindingStateCountsCurrentOrWhenDied();
+        String exceptionString = connection.getExceptionDuringInit();
+        if (exceptionString != null && !mReportedException) {
+            mReportedException = true;
+            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
+                    () -> JavaExceptionReporter.reportStackTrace(exceptionString));
+        }
         ChildProcessLauncherHelperImplJni.get().setTerminationInfo(terminationInfoPtr,
                 connection.bindingStateCurrentOrWhenDied(), connection.isKilledByUs(),
-                connection.hasCleanExit(), bindingCounts[ChildBindingState.STRONG],
-                bindingCounts[ChildBindingState.MODERATE], bindingCounts[ChildBindingState.WAIVED],
-                reverseRank);
+                connection.hasCleanExit(), exceptionString != null, reverseRank);
         LauncherThread.post(() -> mLauncher.stop());
     }
 
@@ -534,7 +704,7 @@ public final class ChildProcessLauncherHelperImpl {
                     // Nothing to add.
                     break;
                 case ChildProcessImportance.MODERATE:
-                    connection.addModerateBinding();
+                    connection.addModerateBinding(false);
                     break;
                 case ChildProcessImportance.IMPORTANT:
                     connection.addStrongBinding();
@@ -550,19 +720,28 @@ public final class ChildProcessLauncherHelperImpl {
             if (mBindingManager != null) mBindingManager.rankingChanged();
         }
 
-        if (mEffectiveImportance != newEffectiveImportance) {
-            switch (mEffectiveImportance) {
-                case ChildProcessImportance.NORMAL:
-                    // Nothing to remove.
-                    break;
-                case ChildProcessImportance.MODERATE:
-                    connection.removeModerateBinding();
-                    break;
-                case ChildProcessImportance.IMPORTANT:
-                    connection.removeStrongBinding();
-                    break;
-                default:
-                    assert false;
+        if (mEffectiveImportance != newEffectiveImportance
+                && mEffectiveImportance != ChildProcessImportance.NORMAL) {
+            final int existingEffectiveImportance = mEffectiveImportance;
+            Runnable removeBindingRunnable = () -> {
+                switch (existingEffectiveImportance) {
+                    case ChildProcessImportance.NORMAL:
+                        // Nothing to remove.
+                        break;
+                    case ChildProcessImportance.MODERATE:
+                        connection.removeModerateBinding(false);
+                        break;
+                    case ChildProcessImportance.IMPORTANT:
+                        connection.removeStrongBinding();
+                        break;
+                    default:
+                        assert false;
+                }
+            };
+            if (System.currentTimeMillis() - mStartTimeMs < TIMEOUT_FOR_DELAY_BINDING_REMOVE_MS) {
+                LauncherThread.postDelayed(removeBindingRunnable, REMOVE_BINDING_DELAY_MS);
+            } else {
+                removeBindingRunnable.run();
             }
         }
 
@@ -595,45 +774,13 @@ public final class ChildProcessLauncherHelperImpl {
         }
     }
 
-    private static boolean sLinkerInitialized;
-    private static long sLinkerLoadAddress;
-    private static void initLinker() {
-        assert LauncherThread.runningOnLauncherThread();
-        if (sLinkerInitialized) return;
-        if (LibraryLoader.getInstance().useChromiumLinker()) {
-            sLinkerLoadAddress = Linker.getInstance().getBaseLoadAddress();
-            if (sLinkerLoadAddress == 0) {
-                Log.i(TAG, "Shared RELRO support disabled!");
-            }
-        }
-        sLinkerInitialized = true;
-    }
-
-    private static ChromiumLinkerParams getLinkerParamsForNewConnection() {
-        assert LauncherThread.runningOnLauncherThread();
-
-        initLinker();
-        assert sLinkerInitialized;
-        if (sLinkerLoadAddress == 0) return null;
-
-        // Always wait for the shared RELROs in service processes.
-        final boolean waitForSharedRelros = true;
-        if (LibraryLoader.getInstance().areTestsEnabled()) {
-            Linker linker = Linker.getInstance();
-            return new ChromiumLinkerParams(sLinkerLoadAddress, waitForSharedRelros,
-                    linker.getTestRunnerClassNameForTesting(),
-                    linker.getImplementationForTesting());
-        } else {
-            return new ChromiumLinkerParams(sLinkerLoadAddress, waitForSharedRelros);
-        }
-    }
-
     private static Bundle populateServiceBundle(Bundle bundle) {
         ChildProcessCreationParamsImpl.addIntentExtras(bundle);
         bundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER,
                 ChildProcessCreationParamsImpl.getBindToCallerCheck());
-        ChromiumLinkerParams linkerParams = getLinkerParamsForNewConnection();
-        if (linkerParams != null) linkerParams.populateBundle(bundle);
+        MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
+        m.ensureInitializedInMainProcess();
+        m.putLoadAddressToBundle(bundle);
         return bundle;
     }
 
@@ -662,7 +809,7 @@ public final class ChildProcessLauncherHelperImpl {
                 pids.add(entry.getKey());
             });
 
-            responseHandler.post(() -> callback.onResult(map));
+            responseHandler.post(callback.bind(map));
         });
     }
 
@@ -728,7 +875,9 @@ public final class ChildProcessLauncherHelperImpl {
         void onChildProcessStarted(long nativeChildProcessLauncherHelper, int pid);
 
         void setTerminationInfo(long termiantionInfoPtr, @ChildBindingState int bindingState,
-                boolean killedByUs, boolean cleanExit, int remainingStrong, int remainingModerate,
-                int remainingWaived, int reverseRank);
+                boolean killedByUs, boolean cleanExit, boolean exceptionDuringInit,
+                int reverseRank);
+
+        boolean serviceGroupImportanceEnabled();
     }
 }

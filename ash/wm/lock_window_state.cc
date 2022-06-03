@@ -19,10 +19,13 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
+
+using ::chromeos::WindowStateType;
 
 LockWindowState::LockWindowState(aura::Window* window, bool exclude_shelf)
     : current_state_type_(WindowState::Get(window)->GetStateType()),
@@ -42,17 +45,18 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_PIP:
     case WM_EVENT_PIN:
     case WM_EVENT_TRUSTED_PIN:
+    case WM_EVENT_TOGGLE_FLOATING:
       NOTREACHED();
       break;
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_MAXIMIZE:
-    case WM_EVENT_CYCLE_SNAP_LEFT:
-    case WM_EVENT_CYCLE_SNAP_RIGHT:
+    case WM_EVENT_CYCLE_SNAP_PRIMARY:
+    case WM_EVENT_CYCLE_SNAP_SECONDARY:
     case WM_EVENT_CENTER:
-    case WM_EVENT_SNAP_LEFT:
-    case WM_EVENT_SNAP_RIGHT:
+    case WM_EVENT_SNAP_PRIMARY:
+    case WM_EVENT_SNAP_SECONDARY:
     case WM_EVENT_NORMAL:
     case WM_EVENT_MAXIMIZE:
       UpdateWindow(window_state,
@@ -67,8 +71,8 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
       if (window_state->IsMaximized() || window_state->IsFullscreen()) {
         UpdateBounds(window_state);
       } else {
-        const ash::SetBoundsWMEvent* bounds_event =
-            static_cast<const ash::SetBoundsWMEvent*>(event);
+        const SetBoundsWMEvent* bounds_event =
+            static_cast<const SetBoundsWMEvent*>(event);
         window_state->SetBoundsConstrained(bounds_event->requested_bounds());
       }
       break;

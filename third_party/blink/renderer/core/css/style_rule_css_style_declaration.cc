@@ -31,7 +31,14 @@ namespace blink {
 StyleRuleCSSStyleDeclaration::StyleRuleCSSStyleDeclaration(
     MutableCSSPropertyValueSet& property_set_arg,
     CSSRule* parent_rule)
-    : PropertySetCSSStyleDeclaration(property_set_arg),
+    : PropertySetCSSStyleDeclaration(
+          const_cast<Document*>(CSSStyleSheet::SingleOwnerDocument(
+              parent_rule->parentStyleSheet()))
+              ? const_cast<Document*>(CSSStyleSheet::SingleOwnerDocument(
+                                          parent_rule->parentStyleSheet()))
+                    ->GetExecutionContext()
+              : nullptr,
+          property_set_arg),
       parent_rule_(parent_rule) {}
 
 StyleRuleCSSStyleDeclaration::~StyleRuleCSSStyleDeclaration() = default;
@@ -44,8 +51,10 @@ void StyleRuleCSSStyleDeclaration::WillMutate() {
 void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {
   // Style sheet mutation needs to be signaled even if the change failed.
   // willMutateRules/didMutateRules must pair.
-  if (parent_rule_ && parent_rule_->parentStyleSheet())
-    parent_rule_->parentStyleSheet()->DidMutateRules();
+  if (parent_rule_ && parent_rule_->parentStyleSheet()) {
+    parent_rule_->parentStyleSheet()->DidMutate(
+        CSSStyleSheet::Mutation::kRules);
+  }
 }
 
 CSSStyleSheet* StyleRuleCSSStyleDeclaration::ParentStyleSheet() const {
@@ -57,7 +66,7 @@ void StyleRuleCSSStyleDeclaration::Reattach(
   property_set_ = &property_set;
 }
 
-void StyleRuleCSSStyleDeclaration::Trace(blink::Visitor* visitor) {
+void StyleRuleCSSStyleDeclaration::Trace(Visitor* visitor) const {
   visitor->Trace(parent_rule_);
   PropertySetCSSStyleDeclaration::Trace(visitor);
 }

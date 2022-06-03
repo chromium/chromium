@@ -38,10 +38,11 @@ struct GraphOperations {
 
   // Traverse the frame tree of a |page| in the given order, invoking the
   // provided |callable| for each frame node in the tree. If the visitor returns
-  // false then then the iteration is halted.
-  static void VisitFrameTreePreOrder(const PageNode* page,
+  // false then then the iteration is halted. Returns true if all calls to the
+  // visitor returned true, false otherwise.
+  static bool VisitFrameTreePreOrder(const PageNode* page,
                                      const FrameNodeVisitor& visitor);
-  static void VisitFrameTreePostOrder(const PageNode* page,
+  static bool VisitFrameTreePostOrder(const PageNode* page,
                                       const FrameNodeVisitor& visitor);
 
   // Returns true if the given |frame| is in the frame tree associated with the

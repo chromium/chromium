@@ -9,7 +9,6 @@
 
 #include "ash/accelerators/key_hold_detector.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -21,6 +20,9 @@ namespace ash {
 // A KeyHoldDetector delegate to control control magnified screen.
 class ASH_EXPORT MagnifierKeyScroller : public KeyHoldDetector::Delegate {
  public:
+  MagnifierKeyScroller(const MagnifierKeyScroller&) = delete;
+  MagnifierKeyScroller& operator=(const MagnifierKeyScroller&) = delete;
+
   static bool IsEnabled();
   static void SetEnabled(bool enabled);
   static std::unique_ptr<ui::EventHandler> CreateHandler();
@@ -29,10 +31,9 @@ class ASH_EXPORT MagnifierKeyScroller : public KeyHoldDetector::Delegate {
   class ScopedEnablerForTest {
    public:
     ScopedEnablerForTest() { SetEnabled(true); }
+    ScopedEnablerForTest(const ScopedEnablerForTest&) = delete;
+    ScopedEnablerForTest& operator=(const ScopedEnablerForTest&) = delete;
     ~ScopedEnablerForTest() { SetEnabled(false); }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedEnablerForTest);
   };
 
  private:
@@ -45,8 +46,6 @@ class ASH_EXPORT MagnifierKeyScroller : public KeyHoldDetector::Delegate {
 
   MagnifierKeyScroller();
   ~MagnifierKeyScroller() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MagnifierKeyScroller);
 };
 
 }  // namespace ash

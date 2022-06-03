@@ -6,7 +6,6 @@
 
 #include "courgette/assembly_program.h"
 
-#include "base/logging.h"
 #include "courgette/encoded_program.h"
 #include "courgette/instruction_utils.h"
 
@@ -23,6 +22,10 @@ class LabelReceptor : public InstructionReceptor {
   using VECTOR = CONTAINER<Label*>;
 
   LabelReceptor() = default;
+
+  LabelReceptor(const LabelReceptor&) = delete;
+  LabelReceptor& operator=(const LabelReceptor&) = delete;
+
   ~LabelReceptor() override = default;
 
   VECTOR* mutable_abs32_vector() { return &abs32_vector_; }
@@ -31,20 +34,12 @@ class LabelReceptor : public InstructionReceptor {
   // InstructionReceptor:
   CheckBool EmitPeRelocs() override { return true; }
   CheckBool EmitElfRelocation() override { return true; }
-  CheckBool EmitElfARMRelocation() override { return true; }
   CheckBool EmitOrigin(RVA rva) override { return true; }
   CheckBool EmitSingleByte(uint8_t byte) override { return true; }
   CheckBool EmitMultipleBytes(const uint8_t* bytes, size_t len) override {
     return true;
   }
   CheckBool EmitRel32(Label* label) override {
-    rel32_vector_.push_back(label);
-    return true;
-  }
-  CheckBool EmitRel32ARM(uint16_t op,
-                         Label* label,
-                         const uint8_t* arm_op,
-                         uint16_t op_size) override {
     rel32_vector_.push_back(label);
     return true;
   }
@@ -60,8 +55,6 @@ class LabelReceptor : public InstructionReceptor {
  private:
   VECTOR abs32_vector_;
   VECTOR rel32_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelReceptor);
 };
 
 }  // namespace
@@ -75,23 +68,6 @@ void AssemblyProgram::PrecomputeLabels(RvaVisitor* abs32_visitor,
                                        RvaVisitor* rel32_visitor) {
   abs32_label_manager_.Read(abs32_visitor);
   rel32_label_manager_.Read(rel32_visitor);
-  TrimLabels();
-}
-
-// Chosen empirically to give the best reduction in payload size for
-// an update from daisy_3701.98.0 to daisy_4206.0.0.
-const int AssemblyProgram::kLabelLowerLimit = 5;
-
-void AssemblyProgram::TrimLabels() {
-  // For now only trim for ARM binaries.
-  if (kind() != EXE_ELF_32_ARM)
-    return;
-
-  int lower_limit = kLabelLowerLimit;
-
-  VLOG(1) << "TrimLabels: threshold " << lower_limit;
-
-  rel32_label_manager_.RemoveUnderusedLabels(lower_limit);
 }
 
 void AssemblyProgram::UnassignIndexes() {

@@ -16,17 +16,17 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "third_party/modp_b64/modp_b64.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/strings/grit/app_locale_settings.h"
 #include "url/gurl.h"
 
@@ -72,17 +72,13 @@ std::string GetPngDataUrl(const unsigned char* data, size_t size) {
 
 WindowOpenDisposition GetDispositionFromClick(const base::ListValue* args,
                                               int start_index) {
-  double button = 0.0;
-  bool alt_key = false;
-  bool ctrl_key = false;
-  bool meta_key = false;
-  bool shift_key = false;
+  base::Value::ConstListView list = args->GetList();
+  double button = list[start_index].GetDouble();
+  bool alt_key = list[start_index + 1].GetBool();
+  bool ctrl_key = list[start_index + 2].GetBool();
+  bool meta_key = list[start_index + 3].GetBool();
+  bool shift_key = list[start_index + 4].GetBool();
 
-  CHECK(args->GetDouble(start_index++, &button));
-  CHECK(args->GetBoolean(start_index++, &alt_key));
-  CHECK(args->GetBoolean(start_index++, &ctrl_key));
-  CHECK(args->GetBoolean(start_index++, &meta_key));
-  CHECK(args->GetBoolean(start_index++, &shift_key));
   return ui::DispositionFromClick(
       button == 1.0, alt_key, ctrl_key, meta_key, shift_key);
 }
@@ -101,8 +97,7 @@ bool ParseScaleFactor(const base::StringPiece& identifier,
   }
 
   double scale = 0;
-  std::string stripped;
-  identifier.substr(0, identifier.length() - 1).CopyToString(&stripped);
+  std::string stripped(identifier.substr(0, identifier.length() - 1));
   if (!base::StringToDouble(stripped, &scale)) {
     LOG(WARNING) << "Invalid scale factor format: " << identifier;
     return false;
@@ -154,7 +149,7 @@ void ParsePathAndImageSpec(const GURL& url,
             pos + 1, stripped_path.length() - pos - 1), &factor)) {
       // Strip scale factor specification from path.
       stripped_path.remove_suffix(stripped_path.length() - pos);
-      stripped_path.CopyToString(path);
+      path->assign(stripped_path.data(), stripped_path.size());
     }
     if (scale_factor)
       *scale_factor = factor;
@@ -171,7 +166,7 @@ void ParsePathAndImageSpec(const GURL& url,
             &index)) {
       // Strip frame index specification from path.
       stripped_path.remove_suffix(stripped_path.length() - pos);
-      stripped_path.CopyToString(path);
+      path->assign(stripped_path.data(), stripped_path.size());
     }
     if (frame_index)
       *frame_index = index;
@@ -184,22 +179,17 @@ void ParsePathAndScale(const GURL& url,
   ParsePathAndImageSpec(url, path, scale_factor, nullptr);
 }
 
-void ParsePathAndFrame(const GURL& url, std::string* path, int* frame_index) {
-  ParsePathAndImageSpec(url, path, nullptr, frame_index);
-}
-
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::DictionaryValue* localized_strings) {
-  localized_strings->SetString("a11yenhanced", GetA11yEnhanced());
-  localized_strings->SetString("fontfamily", GetFontFamily());
-  localized_strings->SetString("fontsize", GetFontSize());
-  localized_strings->SetString("language", l10n_util::GetLanguage(app_locale));
-  localized_strings->SetString("textdirection", GetTextDirection());
+                             base::Value* localized_strings) {
+  localized_strings->SetStringKey("fontfamily", GetFontFamily());
+  localized_strings->SetStringKey("fontsize", GetFontSize());
+  localized_strings->SetStringKey("language",
+                                  l10n_util::GetLanguage(app_locale));
+  localized_strings->SetStringKey("textdirection", GetTextDirection());
 }
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,
                              ui::TemplateReplacements* replacements) {
-  (*replacements)["a11yenhanced"] = GetA11yEnhanced();
   (*replacements)["fontfamily"] = GetFontFamily();
   (*replacements)["fontsize"] = GetFontSize();
   (*replacements)["language"] = l10n_util::GetLanguage(app_locale);
@@ -210,14 +200,14 @@ std::string GetWebUiCssTextDefaults() {
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
   return GetWebUiCssTextDefaults(
-      resource_bundle.LoadDataResourceString(IDR_WEBUI_CSS_TEXT_DEFAULTS));
+      resource_bundle.LoadDataResourceString(IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS));
 }
 
 std::string GetWebUiCssTextDefaultsMd() {
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
-  return GetWebUiCssTextDefaults(
-      resource_bundle.LoadDataResourceString(IDR_WEBUI_CSS_TEXT_DEFAULTS_MD));
+  return GetWebUiCssTextDefaults(resource_bundle.LoadDataResourceString(
+      IDR_WEBUI_CSS_TEXT_DEFAULTS_MD_CSS));
 }
 
 void AppendWebUiCssTextDefaults(std::string* html) {
@@ -226,20 +216,18 @@ void AppendWebUiCssTextDefaults(std::string* html) {
   html->append("</style>");
 }
 
-std::string GetA11yEnhanced() {
-  return base::FeatureList::IsEnabled(features::kWebUIA11yEnhancements)
-             ? "a11y-enhanced"
-             : "";
-}
-
 std::string GetFontFamily() {
   std::string font_family = l10n_util::GetStringUTF8(IDS_WEB_FONT_FAMILY);
 
-// TODO(dnicoara) Remove Ozone check when PlatformFont support is introduced
-// into Ozone: crbug.com/320050
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(USE_OZONE)
-  font_family = ui::ResourceBundle::GetSharedInstance().GetFont(
-      ui::ResourceBundle::BaseFont).GetFontName() + ", " + font_family;
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string font_name = ui::ResourceBundle::GetSharedInstance()
+                              .GetFont(ui::ResourceBundle::BaseFont)
+                              .GetFontName();
+  // Wrap |font_name| with quotes to ensure it will always be parsed correctly
+  // in CSS.
+  font_family = "\"" + font_name + "\", " + font_family;
 #endif
 
   return font_family;

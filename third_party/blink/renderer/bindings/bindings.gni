@@ -2,18 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# All paths in this file should be absolute so it can be imported into
-# different contexts.
+# The database file produced by
+# "//third_party/blink/renderer/bindings:web_idl_database".
+web_idl_database_filepath =
+    get_path_info(".", "gen_dir") + "/web_idl_database.pickle"
 
-import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
-
-declare_args() {
-  # If this variable is set true, we use a new code generator to generate code
-  # of IDL dictionaries.  See https://crbug.com/839389 for the details.
-  use_v8_bind_gen_for_dictionary = false
-}
-
-bindings_core_v8_files =
+# Source files to be part of
+# "//third_party/blink/renderer/core:core".
+blink_core_sources_bindings =
     get_path_info([
                     "core/v8/active_script_wrappable.cc",
                     "core/v8/active_script_wrappable.h",
@@ -21,18 +17,16 @@ bindings_core_v8_files =
                     "core/v8/array_value.h",
                     "core/v8/binding_security.cc",
                     "core/v8/binding_security.h",
+                    "core/v8/boxed_v8_module.h",
+                    "core/v8/callback_invoke_helper.cc",
+                    "core/v8/callback_invoke_helper.h",
                     "core/v8/callback_promise_adapter.h",
                     "core/v8/custom/v8_custom_xpath_ns_resolver.cc",
                     "core/v8/custom/v8_custom_xpath_ns_resolver.h",
                     "core/v8/custom/v8_dev_tools_host_custom.cc",
-                    "core/v8/custom/v8_element_custom.cc",
-                    "core/v8/custom/v8_event_target_custom.cc",
                     "core/v8/custom/v8_html_all_collection_custom.cc",
                     "core/v8/custom/v8_html_plugin_element_custom.cc",
-                    "core/v8/custom/v8_message_channel_custom.cc",
-                    "core/v8/custom/v8_pop_state_event_custom.cc",
                     "core/v8/custom/v8_promise_rejection_event_custom.cc",
-                    "core/v8/custom/v8_shadow_root_custom.cc",
                     "core/v8/custom/v8_window_custom.cc",
                     "core/v8/custom/v8_xml_http_request_custom.cc",
                     "core/v8/custom_wrappable_adapter.cc",
@@ -46,6 +40,8 @@ bindings_core_v8_files =
                     "core/v8/idl_dictionary_base.h",
                     "core/v8/idl_types.h",
                     "core/v8/idl_types_base.h",
+                    "core/v8/isolated_world_csp.cc",
+                    "core/v8/isolated_world_csp.h",
                     "core/v8/iterable.h",
                     "core/v8/js_based_event_listener.cc",
                     "core/v8/js_based_event_listener.h",
@@ -58,11 +54,17 @@ bindings_core_v8_files =
                     "core/v8/local_window_proxy.cc",
                     "core/v8/local_window_proxy.h",
                     "core/v8/maplike.h",
-                    "core/v8/boxed_v8_module.h",
                     "core/v8/module_record.cc",
                     "core/v8/module_record.h",
+                    "core/v8/module_request.cc",
+                    "core/v8/module_request.h",
                     "core/v8/native_value_traits.h",
+                    "core/v8/native_value_traits_buffer_sources.cc",
+                    "core/v8/native_value_traits_impl.cc",
                     "core/v8/native_value_traits_impl.h",
+                    "core/v8/observable_array.cc",
+                    "core/v8/observable_array.h",
+                    "core/v8/observable_array_exotic_object_handler.h",
                     "core/v8/profiler_trace_builder.cc",
                     "core/v8/profiler_trace_builder.h",
                     "core/v8/referrer_script_info.cc",
@@ -75,17 +77,18 @@ bindings_core_v8_files =
                     "core/v8/sanitize_script_errors.h",
                     "core/v8/scheduled_action.cc",
                     "core/v8/scheduled_action.h",
+                    "core/v8/script_cache_consumer.cc",
+                    "core/v8/script_cache_consumer.h",
+                    "core/v8/script_cache_consumer_client.h",
                     "core/v8/script_controller.cc",
                     "core/v8/script_controller.h",
-                    "core/v8/isolated_world_csp.cc",
-                    "core/v8/isolated_world_csp.h",
                     "core/v8/script_custom_element_definition.cc",
                     "core/v8/script_custom_element_definition.h",
                     "core/v8/script_custom_element_definition_builder.cc",
                     "core/v8/script_custom_element_definition_builder.h",
                     "core/v8/script_custom_element_definition_data.h",
-                    "core/v8/script_event_listener.cc",
-                    "core/v8/script_event_listener.h",
+                    "core/v8/script_evaluation_result.cc",
+                    "core/v8/script_evaluation_result.h",
                     "core/v8/script_function.cc",
                     "core/v8/script_function.h",
                     "core/v8/script_iterator.cc",
@@ -93,8 +96,6 @@ bindings_core_v8_files =
                     "core/v8/script_promise.cc",
                     "core/v8/script_promise.h",
                     "core/v8/script_promise_property.h",
-                    "core/v8/script_promise_property_base.cc",
-                    "core/v8/script_promise_property_base.h",
                     "core/v8/script_promise_resolver.cc",
                     "core/v8/script_promise_resolver.h",
                     "core/v8/script_regexp.cc",
@@ -125,21 +126,17 @@ bindings_core_v8_files =
                     "core/v8/serialization/v8_script_value_serializer.h",
                     "core/v8/source_location.cc",
                     "core/v8/source_location.h",
-                    "core/v8/to_v8_for_core.cc",
                     "core/v8/to_v8_for_core.h",
+                    "core/v8/to_v8_traits.h",
                     "core/v8/use_counter_callback.cc",
                     "core/v8/use_counter_callback.h",
-                    "core/v8/v0_custom_element_constructor_builder.cc",
-                    "core/v8/v0_custom_element_constructor_builder.h",
                     "core/v8/v8_binding_for_core.cc",
                     "core/v8/v8_binding_for_core.h",
-                    "core/v8/v8_cache_options.h",
+                    "core/v8/v8_ctype_traits.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
-                    "core/v8/v8_dom_configuration.cc",
-                    "core/v8/v8_dom_configuration.h",
                     "core/v8/v8_embedder_graph_builder.cc",
                     "core/v8/v8_embedder_graph_builder.h",
                     "core/v8/v8_event_listener_info.h",
@@ -156,20 +153,20 @@ bindings_core_v8_files =
                     "core/v8/v8_intersection_observer_delegate.h",
                     "core/v8/v8_iterator_result_value.cc",
                     "core/v8/v8_iterator_result_value.h",
+                    "core/v8/v8_metrics.cc",
+                    "core/v8/v8_metrics.h",
                     "core/v8/v8_object_builder.cc",
                     "core/v8/v8_object_builder.h",
                     "core/v8/v8_object_parser.cc",
                     "core/v8/v8_object_parser.h",
                     "core/v8/v8_page_popup_controller_binding.cc",
                     "core/v8/v8_page_popup_controller_binding.h",
-                    "core/v8/v8_persistent_value_vector.h",
                     "core/v8/v8_script_runner.cc",
                     "core/v8/v8_script_runner.h",
+                    "core/v8/v8_set_return_value_for_core.h",
                     "core/v8/v8_string_resource.h",
                     "core/v8/v8_throw_dom_exception.cc",
                     "core/v8/v8_throw_dom_exception.h",
-                    "core/v8/v8_v0_custom_element_lifecycle_callbacks.cc",
-                    "core/v8/v8_v0_custom_element_lifecycle_callbacks.h",
                     "core/v8/v8_wasm_response_extensions.cc",
                     "core/v8/v8_wasm_response_extensions.h",
                     "core/v8/window_proxy.cc",
@@ -183,13 +180,29 @@ bindings_core_v8_files =
                   ],
                   "abspath")
 
-bindings_dir = get_path_info(".", "abspath")
-blink_output_dir = "$root_gen_dir/third_party/blink/renderer"
-bindings_output_dir = "$root_gen_dir/third_party/blink/renderer/bindings"
-bindings_core_v8_output_dir = "$bindings_output_dir/core/v8"
+# Source files to be part of
+# "//third_party/blink/renderer/modules:modules".
+blink_modules_sources_bindings = get_path_info(
+        [
+          "modules/v8/module_bindings_initializer.cc",
+          "modules/v8/module_bindings_initializer.h",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.cc",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.h",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.h",
+          "modules/v8/to_v8_for_modules.h",
+          "modules/v8/v8_binding_for_modules.cc",
+          "modules/v8/v8_binding_for_modules.h",
+          "modules/v8/v8_context_snapshot_impl.cc",
+          "modules/v8/v8_context_snapshot_impl.h",
+          "modules/v8/webgl_any.cc",
+          "modules/v8/webgl_any.h",
+        ],
+        "abspath")
 
-bindings_unittest_files =
-    get_path_info(
+bindings_unittest_files = get_path_info(
         [
           "core/v8/activity_logger_test.cc",
           "core/v8/binding_security_test.cc",
@@ -200,6 +213,7 @@ bindings_unittest_files =
           "core/v8/boxed_v8_module_test.cc",
           "core/v8/native_value_traits_impl_test.cc",
           "core/v8/native_value_traits_test.cc",
+          "core/v8/no_alloc_direct_call_host_test.cc",
           "core/v8/referrer_script_info_test.cc",
           "core/v8/script_promise_property_test.cc",
           "core/v8/script_promise_resolver_test.cc",
@@ -207,6 +221,7 @@ bindings_unittest_files =
           "core/v8/script_streamer_test.cc",
           "core/v8/script_wrappable_v8_gc_integration_test.cc",
           "core/v8/to_v8_test.cc",
+          "core/v8/to_v8_traits_test.cc",
           "core/v8/trace_wrapper_v8_reference_test.cc",
           "core/v8/v8_binding_for_testing.cc",
           "core/v8/v8_binding_for_testing.h",
@@ -217,10 +232,10 @@ bindings_unittest_files =
           "core/v8/serialization/serialized_script_value_test.cc",
           "core/v8/serialization/serialized_script_value_threaded_test.cc",
           "core/v8/serialization/v8_script_value_serializer_test.cc",
-          "core/v8/v8_extras_test_utils.cc",
-          "core/v8/v8_extras_test_utils.h",
           "core/v8/script_promise_tester.cc",
           "core/v8/script_promise_tester.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules_test.cc",
+          "modules/v8/v8_binding_for_modules_test.cc",
+          "modules/v8/v8_element_test.cc",
         ],
         "abspath")
-bindings_unittest_files += bindings_modules_v8_unittest_files

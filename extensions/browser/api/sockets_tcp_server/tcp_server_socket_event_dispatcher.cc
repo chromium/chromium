@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
@@ -128,7 +127,7 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     const AcceptParams& params,
     int result_code,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
   DCHECK_CURRENTLY_ON(params.thread_id);
@@ -145,8 +144,7 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     sockets_tcp_server::AcceptInfo accept_info;
     accept_info.socket_id = params.socket_id;
     accept_info.client_socket_id = client_socket_id;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp_server::OnAccept::Create(accept_info);
+    auto args = sockets_tcp_server::OnAccept::Create(accept_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_TCP_SERVER_ON_ACCEPT,
                   sockets_tcp_server::OnAccept::kEventName, std::move(args)));
@@ -154,17 +152,17 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 
     // Post a task to delay the "accept" until the socket is available, as
     // calling StartAccept at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
-        base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept, params));
+    content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept,
+                                  params));
   } else {
     // Dispatch "onAcceptError" event but don't start another accept to avoid
     // potential infinite "accepts" if we have a persistent network error.
     sockets_tcp_server::AcceptErrorInfo accept_error_info;
     accept_error_info.socket_id = params.socket_id;
     accept_error_info.result_code = result_code;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp_server::OnAcceptError::Create(accept_error_info);
+    auto args = sockets_tcp_server::OnAcceptError::Create(accept_error_info);
     std::unique_ptr<Event> event(new Event(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
         sockets_tcp_server::OnAcceptError::kEventName, std::move(args)));
@@ -172,10 +170,10 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 
     // Since we got an error, the socket is now "paused" until the application
     // "resumes" it.
-    ResumableTCPServerSocket* socket =
+    ResumableTCPServerSocket* server_socket =
         params.server_sockets->Get(params.extension_id, params.socket_id);
-    if (socket) {
-      socket->set_paused(true);
+    if (server_socket) {
+      server_socket->set_paused(true);
     }
   }
 }
@@ -185,8 +183,8 @@ void TCPServerSocketEventDispatcher::PostEvent(const AcceptParams& params,
                                                std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DispatchEvent, params.browser_context_id,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
                                 params.extension_id, std::move(event)));
 }
 

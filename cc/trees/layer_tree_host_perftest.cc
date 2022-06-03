@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "build/build_config.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/texture_layer.h"
@@ -23,7 +24,6 @@
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -40,13 +40,12 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
  public:
   LayerTreeHostPerfTest()
       : draw_timer_(kWarmupRuns,
-                    base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+                    base::Milliseconds(kTimeLimitMillis),
                     kTimeCheckInterval),
         commit_timer_(0, base::TimeDelta(), 1),
         full_damage_each_frame_(false),
         begin_frame_driven_drawing_(false),
-        measure_commit_cost_(false) {
-  }
+        measure_commit_cost_(false) {}
 
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
@@ -60,8 +59,9 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
         !layer_tree_host()->GetSettings().single_thread_proxy_scheduler;
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
-        gpu_memory_buffer_manager(), renderer_settings, ImplThreadTaskRunner(),
-        synchronous_composite, disable_display_vsync, refresh_rate);
+        gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
+        ImplThreadTaskRunner(), synchronous_composite, disable_display_vsync,
+        refresh_rate);
   }
 
   void BeginTest() override {
@@ -152,7 +152,7 @@ class LayerTreeHostPerfTestJsonReader : public LayerTreeHostPerfTest {
   void BuildTree() override {
     gfx::Size viewport = gfx::Size(720, 1038);
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(viewport), 1.f,
-                                               viz::LocalSurfaceIdAllocation());
+                                               viz::LocalSurfaceId());
     scoped_refptr<Layer> root = ParseTreeFromJson(json_,
                                                   &fake_content_layer_client_);
     ASSERT_TRUE(root.get());
@@ -263,8 +263,8 @@ class ScrollingLayerTreePerfTest : public LayerTreeHostPerfTestJsonReader {
     if (TestEnded())
       return;
     static const gfx::Vector2d delta = gfx::Vector2d(0, 10);
-    scrollable_->SetScrollOffset(
-        gfx::ScrollOffsetWithDelta(scrollable_->CurrentScrollOffset(), delta));
+    SetScrollOffset(scrollable_.get(),
+                    CurrentScrollOffset(scrollable_.get()) + delta);
   }
 
  private:
@@ -314,7 +314,7 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     ASSERT_TRUE(tab_contents_.get());
   }
 
-  void WillCommit() override {
+  void WillCommit(CommitState*) override {
     if (CleanUpStarted())
       return;
     gpu::Mailbox gpu_mailbox;
@@ -322,10 +322,9 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     name_stream << "name" << next_fence_sync_;
     gpu_mailbox.SetName(
         reinterpret_cast<const int8_t*>(name_stream.str().c_str()));
-    std::unique_ptr<viz::SingleReleaseCallback> callback =
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            &BrowserCompositorInvalidateLayerTreePerfTest::ReleaseMailbox,
-            base::Unretained(this)));
+    auto callback = base::BindOnce(
+        &BrowserCompositorInvalidateLayerTreePerfTest::ReleaseMailbox,
+        base::Unretained(this));
 
     gpu::SyncToken next_sync_token(gpu::CommandBufferNamespace::GPU_IO,
                                    gpu::CommandBufferId::FromUnsafeValue(1),

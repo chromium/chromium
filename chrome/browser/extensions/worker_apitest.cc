@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 
 namespace extensions {
 

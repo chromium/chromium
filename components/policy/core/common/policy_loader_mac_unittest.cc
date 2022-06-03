@@ -10,12 +10,12 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
@@ -36,6 +36,8 @@ namespace {
 class TestHarness : public PolicyProviderTestHarness {
  public:
   TestHarness();
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -53,16 +55,13 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
 
   static PolicyProviderTestHarness* Create();
 
  private:
   MockPreferences* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness()
@@ -116,9 +115,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   prefs_->AddTestItem(name, array, true);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> dict(ValueToProperty(*policy_value));
   ASSERT_TRUE(dict);
@@ -150,8 +148,8 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     PolicyTestBase::SetUp();
     std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderMac(
         task_environment_.GetMainThreadTaskRunner(), base::FilePath(), prefs_));
-    provider_.reset(
-        new AsyncPolicyProvider(&schema_registry_, std::move(loader)));
+    provider_ = std::make_unique<AsyncPolicyProvider>(&schema_registry_,
+                                                      std::move(loader));
     provider_->Init(&schema_registry_);
   }
 
@@ -197,7 +195,7 @@ TEST_F(PolicyLoaderMacTest, TestNonForcedValue) {
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(test_keys::kKeyString, POLICY_LEVEL_RECOMMENDED,
            POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-           std::make_unique<base::Value>("string value"), nullptr);
+           base::Value("string value"), nullptr);
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
 }
 

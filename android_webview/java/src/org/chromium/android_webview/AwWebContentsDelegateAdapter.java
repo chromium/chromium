@@ -17,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.FrameLayout;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
@@ -25,6 +24,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Adapts the AwWebContentsDelegate interface to the AwContentsClient interface.
@@ -153,12 +153,12 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public void onUpdateUrl(String url) {
+    public void onUpdateUrl(GURL url) {
         // TODO: implement
     }
 
     @Override
-    public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {
         // This is only called in chrome layers.
         assert false;
@@ -266,6 +266,11 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
+    public int getDisplayMode() {
+        return mAwContents.getDisplayMode();
+    }
+
+    @Override
     public void loadingStateChanged() {
         mContentsClient.updateTitle(mAwContents.getTitle(), false);
     }
@@ -308,9 +313,10 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public boolean shouldBlockMediaRequest(String url) {
+    public boolean shouldBlockMediaRequest(GURL url) {
         return mAwSettings != null
-                ? mAwSettings.getBlockNetworkLoads() && URLUtil.isNetworkUrl(url) : true;
+                ? mAwSettings.getBlockNetworkLoads() && URLUtil.isNetworkUrl(url.getSpec())
+                : true;
     }
 
     private static class GetDisplayNameTask extends AsyncTask<String[]> {

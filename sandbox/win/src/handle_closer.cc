@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/interceptors.h"
@@ -91,7 +91,7 @@ size_t HandleCloser::GetBufferSize() {
   return bytes_total;
 }
 
-bool HandleCloser::InitializeTargetHandles(TargetProcess* target) {
+bool HandleCloser::InitializeTargetHandles(TargetProcess& target) {
   // Do nothing on an empty list (global pointer already initialized to
   // nullptr).
   if (handles_to_close_.empty())
@@ -105,13 +105,13 @@ bool HandleCloser::InitializeTargetHandles(TargetProcess* target) {
     return false;
 
   void* remote_data;
-  if (!CopyToChildMemory(target->Process(), local_buffer.get(), bytes_needed,
+  if (!CopyToChildMemory(target.Process(), local_buffer.get(), bytes_needed,
                          &remote_data))
     return false;
 
   g_handles_to_close = reinterpret_cast<HandleCloserInfo*>(remote_data);
 
-  ResultCode rc = target->TransferVariable(
+  ResultCode rc = target.TransferVariable(
       "g_handles_to_close", &g_handles_to_close, sizeof(g_handles_to_close));
 
   return (SBOX_ALL_OK == rc);

@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_UPDATE_OBSERVER_H_
 #define EXTENSIONS_BROWSER_UPDATE_OBSERVER_H_
 
-#include <string>
-
 namespace extensions {
 class Extension;
 

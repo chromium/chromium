@@ -6,12 +6,13 @@
 
 #include <stddef.h>
 
+#include "base/base64.h"
 #include "base/strings/sys_string_conversions.h"
 
 @interface WebMenuRunner (PrivateAPI)
 
 // Worker function used during initialization.
-- (void)addItem:(const content::MenuItem&)item;
+- (void)addItem:(const blink::mojom::MenuItemPtr&)item;
 
 // A callback for the menu controller object to call when an item is selected
 // from the menu. This is not called if the menu is dismissed without a
@@ -22,7 +23,7 @@
 
 @implementation WebMenuRunner
 
-- (id)initWithItems:(const std::vector<content::MenuItem>&)items
+- (id)initWithItems:(const std::vector<blink::mojom::MenuItemPtr>&)items
            fontSize:(CGFloat)fontSize
        rightAligned:(BOOL)rightAligned {
   if ((self = [super init])) {
@@ -37,25 +38,35 @@
   return self;
 }
 
-- (void)addItem:(const content::MenuItem&)item {
-  if (item.type == content::MenuItem::SEPARATOR) {
+- (void)addItem:(const blink::mojom::MenuItemPtr&)item {
+  if (item->type == blink::mojom::MenuItem::Type::kSeparator) {
     [_menu addItem:[NSMenuItem separatorItem]];
     return;
   }
 
-  NSString* title = base::SysUTF16ToNSString(item.label);
+  NSString* title = base::SysUTF8ToNSString(item->label.value_or(""));
+  // https://crbug.com/1140620: SysUTF8ToNSString will return nil if the bits
+  // that it is passed cannot be turned into a CFString. If this nil value is
+  // passed to -[NSMenuItem addItemWithTitle:action:keyEquivalent], Chromium
+  // will crash. Therefore, for debugging, if the result is nil, substitute in
+  // the raw bytes, encoded for safety in base64, to allow for investigation.
+  if (!title) {
+    std::string base64;
+    base::Base64Encode(*item->label, &base64);
+    title = base::SysUTF8ToNSString(base64);
+  }
   NSMenuItem* menuItem = [_menu addItemWithTitle:title
                                           action:@selector(menuItemSelected:)
                                    keyEquivalent:@""];
-  if (!item.tool_tip.empty()) {
-    NSString* toolTip = base::SysUTF16ToNSString(item.tool_tip);
+  if (item->tool_tip.has_value()) {
+    NSString* toolTip = base::SysUTF8ToNSString(item->tool_tip.value());
     [menuItem setToolTip:toolTip];
   }
-  [menuItem setEnabled:(item.enabled && item.type != content::MenuItem::GROUP)];
+  [menuItem setEnabled:(item->enabled &&
+                        item->type != blink::mojom::MenuItem::Type::kGroup)];
   [menuItem setTarget:self];
 
-  // Set various alignment/language attributes. Note that many (if not most) of
-  // these attributes are functional only on 10.6 and above.
+  // Set various alignment/language attributes.
   base::scoped_nsobject<NSMutableDictionary> attrs(
       [[NSMutableDictionary alloc] initWithCapacity:3]);
   base::scoped_nsobject<NSMutableParagraphStyle> paragraphStyle(
@@ -63,18 +74,15 @@
   [paragraphStyle setAlignment:_rightAligned ? NSRightTextAlignment
                                              : NSLeftTextAlignment];
   NSWritingDirection writingDirection =
-      item.rtl ? NSWritingDirectionRightToLeft
-               : NSWritingDirectionLeftToRight;
+      item->text_direction == base::i18n::RIGHT_TO_LEFT
+          ? NSWritingDirectionRightToLeft
+          : NSWritingDirectionLeftToRight;
   [paragraphStyle setBaseWritingDirection:writingDirection];
   [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
-  if (item.has_directional_override) {
-    base::scoped_nsobject<NSNumber> directionValue(
-        [[NSNumber alloc] initWithInteger:
-            writingDirection + NSTextWritingDirectionOverride]);
-    base::scoped_nsobject<NSArray> directionArray(
-        [[NSArray alloc] initWithObjects:directionValue.get(), nil]);
-    [attrs setObject:directionArray forKey:NSWritingDirectionAttributeName];
+  if (item->has_text_direction_override) {
+    [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
+              forKey:NSWritingDirectionAttributeName];
   }
 
   [attrs setObject:[NSFont menuFontOfSize:_fontSize]

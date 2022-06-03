@@ -17,7 +17,7 @@
 // the #ifdefs and add a platform_test_<platform>.cc implementation file.
 class PlatformTest : public testing::Test {
  public:
-  virtual ~PlatformTest();
+  ~PlatformTest() override;
 
  protected:
   PlatformTest();

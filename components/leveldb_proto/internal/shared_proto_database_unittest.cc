@@ -11,7 +11,10 @@
 #include "build/build_config.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/testing/proto/test_db.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::_;
 
 namespace leveldb_proto {
 
@@ -34,15 +37,31 @@ inline void GetClientFromTaskRunner(SharedProtoDatabase* db,
 
 }  // namespace
 
+class MockSharedDb : public SharedProtoDatabase {
+ public:
+  MockSharedDb(const std::string& client_db_id, const base::FilePath& db_dir)
+      : SharedProtoDatabase(client_db_id, db_dir) {}
+  MOCK_METHOD1(DestroyObsoleteSharedProtoDatabaseClients,
+               void(Callbacks::UpdateCallback));
+
+ private:
+  friend class base::RefCountedThreadSafe<MockSharedDb>;
+  friend class SharedProtoDatabaseTest;
+
+  ~MockSharedDb() override = default;
+};
+
 class SharedProtoDatabaseTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    db_ = base::WrapRefCounted(
-        new SharedProtoDatabase("client", temp_dir_.GetPath()));
+    db_ = base::WrapRefCounted(new MockSharedDb("client", temp_dir_.GetPath()));
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    if (db_)
+      db_->Shutdown();
+  }
 
   void InitDB(bool create_if_missing,
               const std::string& client_name,
@@ -54,7 +73,10 @@ class SharedProtoDatabaseTest : public testing::Test {
                        task_environment_.GetMainThreadTaskRunner()));
   }
 
-  void KillDB() { db_.reset(); }
+  void KillDB() {
+    db_->Shutdown();
+    db_.reset();
+  }
 
   bool IsDatabaseInitialized(SharedProtoDatabase* db) {
     return db->init_state_ == SharedProtoDatabase::InitState::kSuccess;
@@ -86,14 +108,14 @@ class SharedProtoDatabaseTest : public testing::Test {
     return task_environment_.GetMainThreadTaskRunner();
   }
 
-  SharedProtoDatabase* db() { return db_.get(); }
+  MockSharedDb* db() { return db_.get(); }
   ProtoLevelDBWrapper* wrapper() { return db_->db_wrapper_.get(); }
 
  private:
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
 
-  scoped_refptr<SharedProtoDatabase> db_;
+  scoped_refptr<MockSharedDb> db_;
 };
 
 TEST_F(SharedProtoDatabaseTest, CreateClient_SucceedsWithCreate) {
@@ -142,7 +164,7 @@ TEST_F(SharedProtoDatabaseTest, GetClient_DifferentThreads) {
   run_loop.Run();
   base::RunLoop quit_cooldown;
   GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, quit_cooldown.QuitClosure(), base::TimeDelta::FromSeconds(3));
+      FROM_HERE, quit_cooldown.QuitClosure(), base::Seconds(3));
 }
 
 // If not attempt to create the db, kInvalidOperation will be returned in the
@@ -204,6 +226,54 @@ TEST_F(SharedProtoDatabaseTest, TestDBDestructionAfterInit) {
              },
              run_init_loop.QuitClosure()));
   run_init_loop.Run();
+  KillDB();
+}
+
+TEST_F(SharedProtoDatabaseTest, CancelDeleteObsoleteClients) {
+  base::RunLoop run_init_loop;
+  EXPECT_CALL(*db(), DestroyObsoleteSharedProtoDatabaseClients(_)).Times(0);
+  InitDB(true /* create_if_missing */, "TestDatabaseUMA",
+         base::BindOnce(
+             [](base::OnceClosure signal, Enums::InitStatus status,
+                SharedDBMetadataProto::MigrationStatus migration_status) {
+               EXPECT_EQ(SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                         migration_status);
+               ASSERT_EQ(status, Enums::InitStatus::kOK);
+               std::move(signal).Run();
+             },
+             run_init_loop.QuitClosure()));
+  run_init_loop.Run();
+
+  auto db_task_runner = db()->database_task_runner_for_testing();
+
+  KillDB();
+
+  base::RunLoop wait_task;
+  db_task_runner->PostTask(FROM_HERE, wait_task.QuitClosure());
+  wait_task.Run();
+}
+
+TEST_F(SharedProtoDatabaseTest, DeleteObsoleteClients) {
+  db()->SetDeleteObsoleteDelayForTesting(base::TimeDelta());
+  EXPECT_CALL(*db(), DestroyObsoleteSharedProtoDatabaseClients(_)).Times(1);
+  base::RunLoop run_init_loop;
+  InitDB(true /* create_if_missing */, "TestDatabaseUMA",
+         base::BindOnce(
+             [](base::OnceClosure signal, Enums::InitStatus status,
+                SharedDBMetadataProto::MigrationStatus migration_status) {
+               EXPECT_EQ(SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                         migration_status);
+               ASSERT_EQ(status, Enums::InitStatus::kOK);
+               std::move(signal).Run();
+             },
+             run_init_loop.QuitClosure()));
+  run_init_loop.Run();
+  auto db_task_runner = db()->database_task_runner_for_testing();
+
+  base::RunLoop wait_task;
+  db_task_runner->PostTask(FROM_HERE, wait_task.QuitClosure());
+  wait_task.Run();
+
   KillDB();
 }
 

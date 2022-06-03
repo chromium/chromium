@@ -5,11 +5,15 @@
 #ifndef UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_H_
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_H_
 
-#include <string>
+#include <memory>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
+
+namespace gfx {
+class RoundedCornersF;
+}
 
 namespace views {
 namespace test {
@@ -31,6 +35,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
   METADATA_HEADER(NativeViewHost);
 
   NativeViewHost();
+
+  NativeViewHost(const NativeViewHost&) = delete;
+  NativeViewHost& operator=(const NativeViewHost&) = delete;
+
   ~NativeViewHost() override;
 
   // Attach a gfx::NativeView to this View. Its bounds will be kept in sync
@@ -46,14 +54,16 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // detached before calling this function, and this has no effect in that case.
   void Detach();
 
-  // Sets the corner radius for clipping gfx::NativeView. Returns true on
-  // success or false if the platform doesn't support the operation.
-  // This method calls SetCustomMask internally.
-  bool SetCornerRadius(int corner_radius);
+  // Sets the corner radii for clipping gfx::NativeView. Returns true on success
+  // or false if the platform doesn't support the operation. This method calls
+  // SetCustomMask internally.
+  bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii);
 
   // Sets the custom layer mask for clipping gfx::NativeView. Returns true on
   // success or false if the platform doesn't support the operation.
   // NB: This does not interact nicely with fast_resize.
+  // TODO(tluk): This is currently only being used to apply rounded corners in
+  // ash code. Migrate existing use to SetCornerRadii().
   bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask);
 
   // Sets the height of the top region where the gfx::NativeView shouldn't be
@@ -76,6 +86,9 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // it can return this value when querying its parent accessible.
   void SetParentAccessible(gfx::NativeViewAccessible);
 
+  // Returns the parent accessible object to this host's native view.
+  gfx::NativeViewAccessible GetParentAccessible();
+
   // Fast resizing will move the native view and clip its visible region, this
   // will result in white areas and will not resize the content (so scrollbars
   // will be all wrong and content will flow offscreen). Only use this
@@ -89,6 +102,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   void NativeViewDestroyed();
 
+  // Sets the desired background color for repainting when the view is clipped.
+  // Defaults to transparent color if unset.
+  void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
+
   // Overridden from View:
   void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -97,6 +114,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   void SetVisible(bool visible) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
  protected:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -131,7 +149,8 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // in the setter/accessor above.
   bool fast_resize_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHost);
+  // The color to use for repainting the background when the view is clipped.
+  absl::optional<SkColor> background_color_when_clipped_;
 };
 
 }  // namespace views

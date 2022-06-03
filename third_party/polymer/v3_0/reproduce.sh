@@ -37,9 +37,11 @@ rsync -c --delete --delete-excluded -r -v --prune-empty-dirs \
     "components-chromium/"
 
 # Replace all occurrences of "@polymer/" with "../" or # "../../".
-find components-chromium/ -mindepth 2 -maxdepth 2 -name '*.js' \
+find components-chromium/ -mindepth 2 -maxdepth 2 \
+  \( -name "*.js" -or -name "*.d.ts" \) \
   -exec sed -i 's/@polymer\//..\//g' {} +
-find components-chromium/ -mindepth 3 -maxdepth 3 -name '*.js' \
+find components-chromium/ -mindepth 3 -maxdepth 3 \
+  \( -name "*.js" -or -name "*.d.ts" \) \
   -exec sed -i 's/@polymer\//..\/..\//g' {} +
 
 # Replace all occurrences of "@webcomponents/" with "../".
@@ -53,6 +55,19 @@ patch -p1 --forward -r - < chromium.patch
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
 python minify_polymer.py
 
+echo 'Copying TypeScript .d.ts files to the final Polymer directory.'
+# Copy all .d.ts files to the final Polymer directory. Note that the order of
+# include and exclude flags matters.
+rsync -c --delete -r -v --prune-empty-dirs \
+    --include="*/" --include="*.d.ts" --exclude="*" \
+    "node_modules/@polymer/polymer/" "components-chromium/polymer/"
+
+echo 'Generating polymer.d.ts file for Polymer bundle.'
+cp polymer.js components-chromium/polymer/polymer.d.ts
+
+# Apply additional chrome specific patches for the .d.ts files.
+patch -p1 --forward -r - < chromium_dts.patch
+
 echo 'Updating paper/iron elements to point to the minified file.'
 # Replace all paths that point to within polymer/ to point to the bundle.
 find components-chromium/ -name '*.js' -exec sed -i \
@@ -60,7 +75,8 @@ find components-chromium/ -name '*.js' -exec sed -i \
 
 # Undo any changes in paper-ripple, since Chromium's implementation is a fork of
 # the original paper-ripple.
-git checkout -- components-chromium/paper-ripple/*
+echo 'Undo changes in paper-ripple.'
+git checkout -- components-chromium/paper-ripple/
 
 new=$(git status --porcelain components-chromium | grep '^??' | \
       cut -d' ' -f2 | egrep '\.(js|css)$' || true)
@@ -95,5 +111,3 @@ python ../v1_0/rgbify_hex_vars.py --filter-prefix=google --replace \
 
 echo 'Creating GN files for interfaces and externs...'
 ../v1_0/generate_gn.sh 3 # polymer_version=3
-
-# TODO find unused elements?

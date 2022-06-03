@@ -109,7 +109,6 @@ class MojoFacade {
 
   // Runs JavaScript on WebUI page.
   WebState* web_state_ = nil;
-  //  __weak id<CRWJSInjectionEvaluator> script_evaluator_ = nil;
   // Id of the last created watch.
   int last_watch_id_ = 0;
   // Currently active watches created through this facade.

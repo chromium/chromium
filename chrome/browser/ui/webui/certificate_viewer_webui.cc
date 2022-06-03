@@ -8,10 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -26,6 +25,7 @@
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_util_nss.h"
@@ -48,6 +48,9 @@ class CertNodeBuilder {
   // Convenience version: Converts |label_id| to the corresponding resource
   // string, then delegates to the other constructor.
   explicit CertNodeBuilder(int label_id);
+
+  CertNodeBuilder(const CertNodeBuilder&) = delete;
+  CertNodeBuilder& operator=(const CertNodeBuilder&) = delete;
 
   // Builder methods all return |*this| so that they can be chained in single
   // expressions.
@@ -72,8 +75,6 @@ class CertNodeBuilder {
   // |built_| is false until Build() is called. Once it is |true|, |node_| and
   // |children_| are no longer valid for use.
   bool built_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CertNodeBuilder);
 };
 
 CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
@@ -104,7 +105,7 @@ CertNodeBuilder& CertNodeBuilder::ChildIfNotNull(
 
 std::unique_ptr<base::DictionaryValue> CertNodeBuilder::Build() {
   DCHECK(!built_);
-  if (!children_.empty()) {
+  if (!children_.GetList().empty()) {
     node_.SetKey("children", std::move(children_));
   }
   built_ = true;
@@ -173,7 +174,7 @@ ui::ModalType CertificateViewerDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-base::string16 CertificateViewerDialog::GetDialogTitle() const {
+std::u16string CertificateViewerDialog::GetDialogTitle() const {
   return title_;
 }
 
@@ -307,20 +308,21 @@ CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {
 }
 
 void CertificateViewerDialogHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "exportCertificate",
-      base::BindRepeating(&CertificateViewerDialogHandler::ExportCertificate,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+      base::BindRepeating(
+          &CertificateViewerDialogHandler::HandleExportCertificate,
+          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestCertificateFields",
       base::BindRepeating(
-          &CertificateViewerDialogHandler::RequestCertificateFields,
+          &CertificateViewerDialogHandler::HandleRequestCertificateFields,
           base::Unretained(this)));
 }
 
-void CertificateViewerDialogHandler::ExportCertificate(
+void CertificateViewerDialogHandler::HandleExportCertificate(
     const base::ListValue* args) {
-  int cert_index = GetCertificateIndex(args);
+  int cert_index = GetCertificateIndex(args->GetList()[0].GetInt());
   if (cert_index < 0)
     return;
 
@@ -332,9 +334,11 @@ void CertificateViewerDialogHandler::ExportCertificate(
                        cert_chain_.end());
 }
 
-void CertificateViewerDialogHandler::RequestCertificateFields(
+void CertificateViewerDialogHandler::HandleRequestCertificateFields(
     const base::ListValue* args) {
-  int cert_index = GetCertificateIndex(args);
+  AllowJavascript();
+  const base::Value& callback_id = args->GetList()[0];
+  int cert_index = GetCertificateIndex(args->GetList()[1].GetInt());
   if (cert_index < 0)
     return;
 
@@ -451,17 +455,12 @@ void CertificateViewerDialogHandler::RequestCertificateFields(
           .Build());
 
   // Send certificate information to javascript.
-  web_ui()->CallJavascriptFunctionUnsafe("cert_viewer.getCertificateFields",
-                                         root_list);
+  ResolveJavascriptCallback(callback_id, root_list);
 }
 
 int CertificateViewerDialogHandler::GetCertificateIndex(
-    const base::ListValue* args) const {
-  int cert_index;
-  double val;
-  if (!(args->GetDouble(0, &val)))
-    return -1;
-  cert_index = static_cast<int>(val);
+    int requested_index) const {
+  int cert_index = requested_index;
   if (cert_index < 0 || cert_index >= static_cast<int>(cert_chain_.size()))
     return -1;
   return cert_index;

@@ -6,6 +6,8 @@
 
 namespace ui {
 
+const char kAXAutoCompleteTextViewClassname[] =
+    "android.widget.AutoCompleteTextView";
 const char kAXAbsListViewClassname[] = "android.widget.AbsListView";
 const char kAXButtonClassname[] = "android.widget.Button";
 const char kAXCheckBoxClassname[] = "android.widget.CheckBox";
@@ -21,6 +23,8 @@ const char kAXImageButtonClassname[] = "android.widget.ImageButton";
 const char kAXImageViewClassname[] = "android.widget.ImageView";
 const char kAXListViewClassname[] = "android.widget.ListView";
 const char kAXMenuItemClassname[] = "android.view.MenuItem";
+const char kAXMultiAutoCompleteTextViewClassname[] =
+    "android.widget.MultiAutoCompleteTextView";
 const char kAXPagerClassname[] = "android.support.v4.view.ViewPager";
 const char kAXProgressBarClassname[] = "android.widget.ProgressBar";
 const char kAXRadioButtonClassname[] = "android.widget.RadioButton";
@@ -29,10 +33,11 @@ const char kAXSeekBarClassname[] = "android.widget.SeekBar";
 const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";
 const char kAXTabWidgetClassname[] = "android.widget.TabWidget";
+const char kAXTextViewClassname[] = "android.widget.TextView";
 const char kAXToggleButtonClassname[] = "android.widget.ToggleButton";
 const char kAXViewClassname[] = "android.view.View";
 const char kAXViewGroupClassname[] = "android.view.ViewGroup";
 const char kAXWebViewClassname[] = "android.webkit.WebView";
-const base::char16 kSecurePasswordBullet = 0x2022;
+const char16_t kSecurePasswordBullet = 0x2022;
 
 }  // namespace ui

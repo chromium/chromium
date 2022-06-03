@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -49,7 +50,7 @@ const AtomicString& FontFaceSetLoadEvent::InterfaceName() const {
   return event_interface_names::kFontFaceSetLoadEvent;
 }
 
-void FontFaceSetLoadEvent::Trace(blink::Visitor* visitor) {
+void FontFaceSetLoadEvent::Trace(Visitor* visitor) const {
   visitor->Trace(fontfaces_);
   Event::Trace(visitor);
 }

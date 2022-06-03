@@ -18,7 +18,7 @@ bool QuicClockSkewDetector::ClockSkewDetected(base::TimeTicks ticks_now,
   last_wall_time_ = wall_now;
   last_ticks_time_ = ticks_now;
 
-  if (offset < base::TimeDelta::FromSeconds(1))
+  if (offset < base::Seconds(1))
     return false;
 
   return true;

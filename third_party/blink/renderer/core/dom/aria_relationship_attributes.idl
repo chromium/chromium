@@ -10,7 +10,7 @@
     [CEReactions, Reflect=aria_activedescendant] attribute Element? ariaActiveDescendantElement;
     [CEReactions, Reflect=aria_controls] attribute FrozenArray<Element>? ariaControlsElements;
     [CEReactions, Reflect=aria_describedby] attribute FrozenArray<Element>? ariaDescribedByElements;
-    [CEReactions, Reflect=aria_details] attribute Element? ariaDetailsElement;
+    [CEReactions, Reflect=aria_details] attribute FrozenArray<Element>? ariaDetailsElements;
     [CEReactions, Reflect=aria_errormessage] attribute Element? ariaErrorMessageElement;
     [CEReactions, Reflect=aria_flowto] attribute FrozenArray<Element>? ariaFlowToElements;
     [CEReactions, Reflect=aria_labelledby] attribute FrozenArray<Element>? ariaLabelledByElements;

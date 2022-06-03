@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<script src="../../resources/gc.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+
+<div id='breadBox'>
+  <div id='bread'></div>
+</div>
+<div id='toaster'></div>
+
+<div id='fruitBowl'></div>
+
+<script>
+'use strict';
+(() => {
+
+if (!window.internals) {
+  // Requires observeGC
+  return;
+}
+
+promise_test((t) => {
+  // We may not want to land this test, including for now as an example of how
+  // this interface behaves in a way that is independent of our feature.
+  var trash_observation = null;
+  (() => {
+    // Construct a node which we do not attach or insert in any way.
+    // This should DEFINITELY be collected.
+    const trash = document.createElement("div");
+
+    trash_observation = internals.observeGC(trash);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(trash_observation.wasCollected,
+      "|trash| really should have been collected");
+  });
+}, 'Testing collection works as expected');
+
+promise_test((t) => {
+  var toast_observation = null;
+  (() => {
+    const toast = document.createElement("div");
+
+    // Set |toast| as active descendant of |toaster|.
+    toaster.ariaActiveDescendantElement = toast;
+
+    // Since |toast| is not yet inserted in the document this relationship
+    // is not observable.
+    assert_equals(toaster.ariaActiveDescendantElement, null);
+
+    // Insert |toast| into the document, this should make the relationship
+    // visible AND prevent GC.
+    breadBox.appendChild(toast);
+    assert_equals(toaster.ariaActiveDescendantElement, toast);
+
+    // Since there is another reference to |toast| from the breadBox it should
+    // not be a candidate for GC.
+    toast_observation = internals.observeGC(toast);
+  })();
+
+  return asyncGC().then(() => {
+    assert_false(toast_observation.wasCollected);
+  });
+}, 'Reference to element in a valid scope should not be collectable by GC');
+
+promise_test((t) => {
+  var toast_observation = null;
+  (() => {
+    const toast = document.createElement("div");
+
+    // Set |toast| as active descendant of |toaster|.
+    toaster.ariaActiveDescendantElement = toast;
+
+    // Since |toast| is not yet inserted in the document this relationship
+    // is not observable.
+    assert_equals(toaster.ariaActiveDescendantElement, null);
+
+    // Since there are no other references to |toast| it should be a candidate
+    // for GC.
+    toast_observation = internals.observeGC(toast);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(toast_observation.wasCollected,
+                'Invalid ER should not prevent GC');
+  });
+}, 'Reference to element in an invalid scope should not prevent GC');
+
+promise_test((t) => {
+  var bread_observation = null;
+  (() => {
+    const bread = document.getElementById("bread");
+
+    // Set |bread| as active descendant of |toaster| and verify this is
+    // observable as it is a valid scope.
+    toaster.ariaActiveDescendantElement = bread;
+    assert_equals(toaster.ariaActiveDescendantElement, bread);
+
+    // Now remove |bread| from the document, this should make |bread| a
+    // candidate for GC.
+    bread.remove();
+    assert_equals(toaster.ariaActiveDescendantElement, null);
+
+    // Since there are no other references to |toast| it should be a candidate
+    // for GC.
+    bread_observation = internals.observeGC(bread);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(bread_observation.wasCollected,
+                'Invalid ER should not prevent GC');
+  });
+}, 'Reference being previously valid but now invalid should not prevent GC');
+
+promise_test((t) => {
+  var apple_observation = null;
+  var banana_observation = null;
+  var pear_observation = null;
+  (() => {
+    const apple = document.createElement("div");
+    apple.setAttribute("id", "apple");
+
+    const banana = document.createElement("div");
+    banana.setAttribute("id", "banana");
+
+    const pear = document.createElement("div");
+    pear.setAttribute("id", "pear");
+
+    // Insert all 3 pieces of fruit into fruitBowl.
+    fruitBowl.appendChild(apple);
+    fruitBowl.appendChild(banana);
+    fruitBowl.appendChild(pear);
+
+    // Set describedBy based on the order of my fruit preferences.
+    fruitBowl.ariaDescribedByElements = [pear, apple, banana];
+    assert_array_equals(fruitBowl.ariaDescribedByElements, [pear, apple, banana]);
+    assert_equals(fruitBowl.getAttribute("aria-describedby"), "pear apple banana");
+
+    // Someone else comes along and eats the apple.
+    apple.remove();
+    assert_array_equals(fruitBowl.ariaDescribedByElements, [pear, banana]);
+
+    // only |apple| should be collectable by the GC.
+    apple_observation = internals.observeGC(apple);
+    banana_observation = internals.observeGC(banana);
+    pear_observation = internals.observeGC(pear);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(apple_observation.wasCollected,
+                'Invalid ER should not prevent GC');
+    assert_false(banana_observation.wasCollected,
+                'Valid ER should prevent GC');
+    assert_false(pear_observation.wasCollected,
+                'Valid ER should prevent GC');
+  });
+}, 'Element reflection arrayAttributes garbage collection test');
+
+})();
+</script>

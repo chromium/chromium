@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.CachedMetrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -215,11 +214,6 @@ public class LazySubscriptionsManager {
             if (message.getCollapseKey() != null) {
                 queueJSON = filterMessageBasedOnCollapseKey(queueJSON, message.getCollapseKey());
             }
-
-            // Use {@link CachedMetrics} so this gets reported when native is
-            // loaded instead of calling native right away.
-            new CachedMetrics.Count100HistogramSample("PushMessaging.QueuedMessagesCount")
-                    .record(queueJSON.length());
 
             // If the queue is full remove the oldest message.
             if (queueJSON.length() == MESSAGES_QUEUE_SIZE) {

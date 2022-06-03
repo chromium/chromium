@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -15,13 +16,15 @@
 #endif
 
 bool IsURLNewTabPage(const GURL& url) {
-  return url.GetOrigin() == kChromeUINewTabURL;
+  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL;
 }
 
 bool IsVisibleURLNewTabPage(web::WebState* web_state) {
   if (!web_state)
     return false;
-  return IsURLNewTabPage(web_state->GetVisibleURL());
+  NewTabPageTabHelper* ntp_helper =
+      NewTabPageTabHelper::FromWebState(web_state);
+  return ntp_helper && ntp_helper->IsActive();
 }
 
 bool IsNTPWithoutHistory(web::WebState* web_state) {

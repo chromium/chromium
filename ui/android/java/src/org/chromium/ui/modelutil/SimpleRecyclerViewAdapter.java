@@ -4,13 +4,13 @@
 
 package org.chromium.ui.modelutil;
 
-import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -73,7 +73,7 @@ public class SimpleRecyclerViewAdapter
         mListObserver = new ListObserver<Void>() {
             @Override
             public void onItemRangeInserted(ListObservable source, int index, int count) {
-                notifyItemInserted(index);
+                notifyItemRangeInserted(index, count);
             }
 
             @Override
@@ -84,7 +84,7 @@ public class SimpleRecyclerViewAdapter
             @Override
             public void onItemRangeChanged(
                     ListObservable<Void> source, int index, int count, @Nullable Void payload) {
-                notifyItemChanged(index);
+                notifyItemRangeChanged(index, count);
             }
 
             @Override
@@ -98,6 +98,11 @@ public class SimpleRecyclerViewAdapter
     /** Clean up any state that needs to be. */
     public void destroy() {
         mListData.removeObserver(mListObserver);
+    }
+
+    /** @return The ModelList describing RecyclerView children. */
+    public ModelList getModelList() {
+        return mListData;
     }
 
     @Override
@@ -117,10 +122,20 @@ public class SimpleRecyclerViewAdapter
         return mListData.get(position).type;
     }
 
+    /**
+     * Create a new view of the desired type.
+     *
+     * @param parent Parent view.
+     * @param typeId Type of the view to create.
+     * @return Created view.
+     */
+    protected View createView(ViewGroup parent, int typeId) {
+        return mViewBuilderMap.get(typeId).first.buildView(parent);
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(mViewBuilderMap.get(viewType).first.buildView(),
-                mViewBuilderMap.get(viewType).second);
+        return new ViewHolder(createView(parent, viewType), mViewBuilderMap.get(viewType).second);
     }
 
     @Override

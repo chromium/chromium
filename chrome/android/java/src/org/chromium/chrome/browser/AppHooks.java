@@ -4,12 +4,8 @@
 
 package org.chromium.chrome.browser;
 
-import android.app.Notification;
-import android.app.Service;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -17,28 +13,20 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.banners.AppDetailsDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
-import org.chromium.chrome.browser.feedback.AsyncFeedbackSource;
-import org.chromium.chrome.browser.feedback.FeedbackCollector;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
-import org.chromium.chrome.browser.feedback.FeedbackSource;
-import org.chromium.chrome.browser.feedback.FeedbackSourceProvider;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
+import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.VariationsSession;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.offlinepages.CCTRequestStatus;
+import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksProviderIterator;
@@ -46,24 +34,21 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.password_manager.GooglePasswordManagerUIProvider;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.services.AndroidEduOwnerCheckCallback;
-import org.chromium.chrome.browser.settings.LocationSettings;
-import org.chromium.chrome.browser.signin.GoogleActivityController;
 import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.tab.AuthenticatorNavigationInterceptor;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.ImmersiveModeManager;
+import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
-import org.chromium.chrome.browser.webauth.Fido2ApiHandler;
-import org.chromium.chrome.browser.widget.FeatureHighlightProvider;
-import org.chromium.components.download.DownloadCollectionBridge;
+import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
+import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
+import org.chromium.components.policy.AppRestrictionsProvider;
+import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.SystemAccountManagerDelegate;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.policy.AppRestrictionsProvider;
-import org.chromium.policy.CombinedPolicyProvider;
+import org.chromium.components.webapps.AppDetailsDelegate;
 
 import java.util.Collections;
 import java.util.List;
@@ -72,6 +57,9 @@ import java.util.List;
  * Base class for defining methods where different behavior is required by downstream targets.
  * The correct version of {@link AppHooksImpl} will be determined at compile time via build rules.
  * See http://crbug/560466.
+ *
+ * Note that new functionality should not be added to AppHooks. Instead the delegate pattern in
+ * go/apphooks-migration should be followed to solve this class of problems.
  */
 public abstract class AppHooks {
     private static AppHooksImpl sInstance;
@@ -88,14 +76,6 @@ public abstract class AppHooks {
     public static AppHooks get() {
         if (sInstance == null) sInstance = new AppHooksImpl();
         return sInstance;
-    }
-
-    /**
-     * Initiate AndroidEdu device check.
-     * @param callback Callback that should receive the results of the AndroidEdu device check.
-     */
-    public void checkIsAndroidEduDevice(final AndroidEduOwnerCheckCallback callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onSchoolCheckDone(false));
     }
 
     /**
@@ -155,13 +135,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return An instance of ExternalAuthUtils to be installed as a singleton.
-     */
-    public ExternalAuthUtils createExternalAuthUtils() {
-        return new ExternalAuthUtils();
-    }
-
-    /**
      * @return An instance of {@link FeedbackReporter} to report feedback.
      */
     public FeedbackReporter createFeedbackReporter() {
@@ -184,21 +157,14 @@ public abstract class AppHooks {
     }
 
     /**
-     * Returns a new instance of HelpAndFeedback.
+     * Returns a new instance of HelpAndFeedbackLauncher.
      */
-    public HelpAndFeedback createHelpAndFeedback() {
-        return new HelpAndFeedback();
+    public HelpAndFeedbackLauncher createHelpAndFeedbackLauncher() {
+        return new HelpAndFeedbackLauncherImpl();
     }
 
     public InstantAppsHandler createInstantAppsHandler() {
         return new InstantAppsHandler();
-    }
-
-    /**
-     * @return An instance of {@link LocaleManager} that handles customized locale related logic.
-     */
-    public LocaleManager createLocaleManager() {
-        return new LocaleManager();
     }
 
     /**
@@ -207,23 +173,6 @@ public abstract class AppHooks {
      */
     public GooglePasswordManagerUIProvider createGooglePasswordManagerUIProvider() {
         return null;
-    }
-
-    /**
-     * Returns an instance of LocationSettings to be installed as a singleton.
-     */
-    public LocationSettings createLocationSettings() {
-        // Using an anonymous subclass as the constructor is protected.
-        // This is done to deter instantiation of LocationSettings elsewhere without using the
-        // getInstance() helper method.
-        return new LocationSettings() {};
-    }
-
-    /**
-     * @return An instance of MultiWindowUtils to be installed as a singleton.
-     */
-    public MultiWindowUtils createMultiWindowUtils() {
-        return new MultiWindowUtils();
     }
 
     /**
@@ -275,41 +224,16 @@ public abstract class AppHooks {
     }
 
     /**
-     * Upgrades a service from background to foreground after calling
-     * {@link Service#startForegroundService(Intent)}.
-     * @param service The service to be foreground.
-     * @param id The notification id.
-     * @param notification The notification attached to the foreground service.
-     * @param foregroundServiceType The type of foreground service. Must be a subset of the
-     *                              foreground service types defined in AndroidManifest.xml.
-     *                              Use 0 if no foregroundServiceType attribute is defined.
-     */
-    public void startForeground(
-            Service service, int id, Notification notification, int foregroundServiceType) {
-        // TODO(xingliu): Add appropriate foregroundServiceType to manifest when we have new sdk.
-        service.startForeground(id, notification);
-    }
-
-    /**
-     * @return A callback that will be run each time an offline page is saved in the custom tabs
-     * namespace.
-     */
-    @CalledByNative
-    public Callback<CCTRequestStatus> getOfflinePagesCCTRequestDoneCallback() {
-        return null;
-    }
-
-    /**
-     * @return A list of whitelisted apps that are allowed to receive notification when the
+     * @return A list of allowlisted apps that are allowed to receive notification when the
      * set of offlined pages downloaded on their behalf has changed. Apps are listed by their
      * package name.
      */
-    public List<String> getOfflinePagesCctWhitelist() {
+    public List<String> getOfflinePagesCctAllowlist() {
         return Collections.emptyList();
     }
 
     /**
-     * @return A list of whitelisted app package names whose completed notifications
+     * @return A list of allowlisted app package names whose completed notifications
      * we should suppress.
      */
     public List<String> getOfflinePagesSuppressNotificationPackages() {
@@ -330,35 +254,6 @@ public abstract class AppHooks {
      */
     public PartnerBrowserCustomizations.Provider getCustomizationProvider() {
         return new PartnerBrowserCustomizations.ProviderPackage();
-    }
-
-    /**
-     * @return A {@link FeedbackSourceProvider} that can provide additional {@link FeedbackSource}s
-     * and {@link AsyncFeedbackSource}s to be used by a {@link FeedbackCollector}.
-     */
-    public FeedbackSourceProvider getAdditionalFeedbackSources() {
-        return new FeedbackSourceProvider() {};
-    }
-
-    /**
-     * @return a new {@link Fido2ApiHandler} instance.
-     */
-    public Fido2ApiHandler createFido2ApiHandler() {
-        return new Fido2ApiHandler();
-    }
-
-    /**
-     * @return A new {@link FeatureHighlightProvider}.
-     */
-    public FeatureHighlightProvider createFeatureHighlightProvider() {
-        return new FeatureHighlightProvider();
-    }
-
-    /**
-     * @return A new {@link DownloadCollectionBridge} instance.
-     */
-    public DownloadCollectionBridge getDownloadCollectionBridge() {
-        return DownloadCollectionBridge.getDownloadCollectionBridge();
     }
 
     /**
@@ -394,17 +289,49 @@ public abstract class AppHooks {
     }
 
     /**
-     * @param contentView The root content view for the containing activity.
-     * @return A new {@link ImmersiveModeManager} or null if there isn't one.
-     */
-    public @Nullable ImmersiveModeManager createImmersiveModeManager(View contentView) {
-        return null;
-    }
-
-    /**
      * Returns a new {@link TrustedVaultClient.Backend} instance.
      */
     public TrustedVaultClient.Backend createSyncTrustedVaultClientBackend() {
         return new TrustedVaultClient.EmptyBackend();
     }
+
+    /**
+     * This is deprecated, and should not be called. Use FeedHooks instead.
+     */
+    public @Nullable ProcessScope getExternalSurfaceProcessScope(
+            ProcessScopeDependencyProvider dependencies) {
+        return null;
+    }
+
+    /**
+     * Returns the URL to the WebAPK creation/update server.
+     */
+    public String getWebApkServerUrl() {
+        return "";
+    }
+
+    /**
+     * Returns a Chime Delegate if the chime module is defined.
+     */
+    public ChimeDelegate getChimeDelegate() {
+        return new ChimeDelegate();
+    }
+
+    public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
+        return null;
+    }
+
+    public ChromeStartupDelegate createChromeStartupDelegate() {
+        return new ChromeStartupDelegate();
+    }
+
+    public boolean canStartForegroundServiceWhileInvisible() {
+        return true;
+    }
+
+    public String getDefaultQueryTilesServerUrl() {
+        return "";
+    }
+
+    // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }

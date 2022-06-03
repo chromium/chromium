@@ -8,17 +8,20 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
 #endif
 
@@ -28,7 +31,6 @@ class StartupData;
 class PrefService;
 class Profile;
 class StartupBrowserCreator;
-class StartupTimeBomb;
 class ShutdownWatcherHelper;
 class WebUsbDetector;
 
@@ -40,16 +42,14 @@ namespace tracing {
 class TraceEventSystemStatsMonitor;
 }
 
-namespace performance_monitor {
-class SystemMonitor;
-}
-
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
+  ChromeBrowserMainParts(const ChromeBrowserMainParts&) = delete;
+  ChromeBrowserMainParts& operator=(const ChromeBrowserMainParts&) = delete;
   ~ChromeBrowserMainParts() override;
 
   // Add additional ChromeBrowserMainExtraParts.
-  virtual void AddParts(ChromeBrowserMainExtraParts* parts);
+  void AddParts(std::unique_ptr<ChromeBrowserMainExtraParts> parts);
 
 #if !defined(OS_ANDROID)
   // Returns the RunLoop that would be run by MainMessageLoopRun. This is used
@@ -59,7 +59,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif
 
  protected:
-  ChromeBrowserMainParts(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainParts(content::MainFunctionParams parameters,
                          StartupData* startup_data);
 
   // content::BrowserMainParts overrides.
@@ -69,12 +69,17 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   int PreEarlyInitialization() override;
   void PostEarlyInitialization() override;
   void ToolkitInitialized() override;
-  void PreMainMessageLoopStart() override;
-  void PostMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
+  void PostCreateMainMessageLoop() override;
   int PreCreateThreads() override;
   void PostCreateThreads() override;
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+#if !defined(OS_ANDROID)
+  bool ShouldInterceptMainMessageLoopRun() override;
+#endif
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
+  void OnFirstIdle() override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 
@@ -136,31 +141,27 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Members initialized on construction ---------------------------------------
 
-  const content::MainFunctionParams parameters_;
+  content::MainFunctionParams parameters_;
   // TODO(sky): remove this. This class (and related calls), may mutate the
   // CommandLine, so it is misleading keeping a const ref here.
   const base::CommandLine& parsed_command_line_;
-  int result_code_;
+  int result_code_ = content::RESULT_CODE_NORMAL_EXIT;
 
 #if !defined(OS_ANDROID)
-  // Create StartupTimeBomb object for watching jank during startup.
-  std::unique_ptr<StartupTimeBomb> startup_watcher_;
-
   // Create ShutdownWatcherHelper object for watching jank during shutdown.
   // Please keep |shutdown_watcher| as the first object constructed, and hence
   // it is destroyed last.
   std::unique_ptr<ShutdownWatcherHelper> shutdown_watcher_;
+
+  // HangWatcher based equivalent to |shutdown_watcher_|
+  absl::optional<base::WatchHangsInScope> watch_hangs_scope_;
 
   std::unique_ptr<WebUsbDetector> web_usb_detector_;
 #endif  // !defined(OS_ANDROID)
 
   // Vector of additional ChromeBrowserMainExtraParts.
   // Parts are deleted in the inverse order they are added.
-  std::vector<ChromeBrowserMainExtraParts*> chrome_extra_parts_;
-
-  // The system monitor instance, used by some subsystems to collect the system
-  // metrics they need.
-  std::unique_ptr<performance_monitor::SystemMonitor> system_monitor_;
+  std::vector<std::unique_ptr<ChromeBrowserMainExtraParts>> chrome_extra_parts_;
 
   // The system stats monitor used by chrome://tracing. This doesn't do anything
   // until tracing of the |system_stats| category is enabled.
@@ -191,24 +192,21 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   bool restart_last_session_ = false;
 #endif  // !defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+  downgrade::DowngradeManager downgrade_manager_;
+#endif
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Android's first run is done in Java instead of native. Chrome OS does not
   // use master preferences.
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-#if defined(OS_WIN)
-  downgrade::DowngradeManager downgrade_manager_;
-#endif
-
-  Profile* profile_;
-  bool run_message_loop_;
+  Profile* profile_ = nullptr;
 
   base::FilePath user_data_dir_;
 
   StartupData* startup_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainParts);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

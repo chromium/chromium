@@ -14,13 +14,16 @@
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/hdr_metadata.h"
 
-#if defined(USE_OZONE) || defined(OS_LINUX)
+#if defined(USE_OZONE) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "ui/gfx/native_pixmap_handle.h"
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #elif defined(OS_WIN)
-#include "ipc/ipc_platform_file.h"  // nogncheck
+#include "base/types/token_type.h"
+#include "base/win/scoped_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #elif defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
@@ -50,28 +53,36 @@ enum GpuMemoryBufferType {
 
 using GpuMemoryBufferId = GenericSharedMemoryId;
 
+#if defined(OS_WIN)
+using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
+#endif
+
 // TODO(crbug.com/863011): Convert this to a proper class to ensure the state is
 // always consistent, particularly that the only one handle is set at the same
 // time and it corresponds to |type|.
 struct GFX_EXPORT GpuMemoryBufferHandle {
   GpuMemoryBufferHandle();
+#if defined(OS_ANDROID)
+  explicit GpuMemoryBufferHandle(
+      base::android::ScopedHardwareBufferHandle handle);
+#endif
   GpuMemoryBufferHandle(GpuMemoryBufferHandle&& other);
   GpuMemoryBufferHandle& operator=(GpuMemoryBufferHandle&& other);
   ~GpuMemoryBufferHandle();
   GpuMemoryBufferHandle Clone() const;
   bool is_null() const { return type == EMPTY_BUFFER; }
-  GpuMemoryBufferType type;
-  GpuMemoryBufferId id;
+  GpuMemoryBufferType type = GpuMemoryBufferType::EMPTY_BUFFER;
+  GpuMemoryBufferId id{0};
   base::UnsafeSharedMemoryRegion region;
-  uint32_t offset;
-  int32_t stride;
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+  uint32_t offset = 0;
+  int32_t stride = 0;
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   NativePixmapHandle native_pixmap_handle;
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
-  ScopedRefCountedIOSurfaceMachPort mach_port;
+#elif defined(OS_MAC)
+  ScopedIOSurface io_surface;
 #elif defined(OS_WIN)
-  // TODO(crbug.com/863011): convert this to a scoped handle.
-  IPC::PlatformFileForTransit dxgi_handle;
+  base::win::ScopedHandle dxgi_handle;
+  absl::optional<DXGIHandleToken> dxgi_token;
 #elif defined(OS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif
@@ -98,7 +109,7 @@ class GFX_EXPORT GpuMemoryBuffer {
   // after this has been called.
   virtual void Unmap() = 0;
 
-  // Returns the size for the buffer.
+  // Returns the size in pixels of the first plane of the buffer.
   virtual Size GetSize() const = 0;
 
   // Returns the format for the buffer.
@@ -110,7 +121,11 @@ class GFX_EXPORT GpuMemoryBuffer {
 
   // Set the color space in which this buffer should be interpreted when used
   // as an overlay. Note that this will not impact texturing from the buffer.
-  virtual void SetColorSpace(const gfx::ColorSpace& color_space);
+  virtual void SetColorSpace(const ColorSpace& color_space);
+
+  // Set the HDR metadata for use when this buffer is used as an overlay. Note
+  // that this will not impact texturing from the buffer.
+  virtual void SetHDRMetadata(const HDRMetadata& hdr_metadata);
 
   // Returns a unique identifier associated with buffer.
   virtual GpuMemoryBufferId GetId() const = 0;

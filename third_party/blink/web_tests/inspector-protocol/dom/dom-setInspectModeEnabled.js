@@ -12,6 +12,9 @@
     testRunner.die(message.error.message);
     return;
   }
+  const highlightRequests = [];
+  dp.Overlay.onNodeHighlightRequested(event => highlightRequests.push(event));
+  dp.Input.dispatchMouseEvent({type: 'mouseMoved', button: 'left', buttons: 0, clickCount: 1, x: 175, y: 175 });
   dp.Input.dispatchMouseEvent({type: 'mouseMoved', button: 'left', buttons: 0, clickCount: 1, x: 150, y: 150 });
   dp.Input.dispatchMouseEvent({type: 'mousePressed', button: 'left', buttons: 0, clickCount: 1, x: 150, y: 150 });
   dp.Input.dispatchMouseEvent({type: 'mouseReleased', button: 'left', buttons: 1, clickCount: 1, x: 150, y: 150 });
@@ -19,6 +22,8 @@
   var message = await dp.Overlay.onceInspectNodeRequested();
   message = await dp.DOM.pushNodesByBackendIdsToFrontend({backendNodeIds: [message.params.backendNodeId]});
   testRunner.log('DOM.inspectNodeRequested: ' + nodeTracker.nodeForId(message.result.nodeIds[0]).localName);
+  testRunner.log('Number of nodeHighlightRequested events: ' + highlightRequests.length);
+  testRunner.log('Overlay.nodeHighlightRequested: ' + nodeTracker.nodeForId(highlightRequests[0].params.nodeId).localName);
   testRunner.completeTest();
 })
 

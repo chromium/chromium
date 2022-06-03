@@ -45,16 +45,38 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
+namespace {
+
+void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
+  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
+    return;
+
+  // Let any forms in the shadow including ancestors know that this
+  // ListedElement has changed. Don't include any forms inside the same
+  // TreeScope know because that relationship isn't tracked by listed elements
+  // including shadow trees.
+  for (ContainerNode* parent = insertion_point.OwnerShadowHost(); parent;
+       parent = parent->ParentOrShadowHostNode()) {
+    if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
+      form->InvalidateListedElementsIncludingShadowTrees();
+      return;
+    }
+  }
+}
+
+}  // namespace
+
 class FormAttributeTargetObserver : public IdTargetObserver {
  public:
   FormAttributeTargetObserver(const AtomicString& id, ListedElement*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
   void IdTargetChanged() override;
 
  private:
@@ -73,7 +95,7 @@ ListedElement::~ListedElement() {
   // We can't call setForm here because it contains virtual calls.
 }
 
-void ListedElement::Trace(Visitor* visitor) {
+void ListedElement::Trace(Visitor* visitor) const {
   visitor->Trace(form_attribute_target_observer_);
   visitor->Trace(form_);
   visitor->Trace(validity_state_);
@@ -122,6 +144,8 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
   // Trigger for elements outside of forms.
   if (!form_ && insertion_point.isConnected())
     element.GetDocument().DidAssociateFormControl(&element);
+
+  InvalidateShadowIncludingAncestorForms(insertion_point);
 }
 
 void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
@@ -136,6 +160,9 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   if (insertion_point.isConnected() &&
       element.FastHasAttribute(html_names::kFormAttr)) {
     SetFormAttributeTargetObserver(nullptr);
+    ResetFormOwner();
+  } else if (!form_ && insertion_point.isConnected()) {
+    // An unassociated listed element is detached from the document.
     ResetFormOwner();
   } else {
     // If the form and element are both in the same tree, preserve the
@@ -155,6 +182,8 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
         .GetFormController()
         .InvalidateStatefulFormControlList();
   }
+
+  InvalidateShadowIncludingAncestorForms(insertion_point);
 }
 
 HTMLFormElement* ListedElement::FindAssociatedForm(
@@ -195,6 +224,10 @@ void ListedElement::AssociateByParser(HTMLFormElement* form) {
 }
 
 void ListedElement::SetForm(HTMLFormElement* new_form) {
+  if (!form_ || !new_form) {
+    // Element was unassociated, or is becoming unassociated.
+    ToHTMLElement().GetDocument().MarkUnassociatedListedElementsDirty();
+  }
   if (form_.Get() == new_form)
     return;
   WillChangeForm();
@@ -314,8 +347,7 @@ void ListedElement::UpdateWillValidateCache() {
 }
 
 bool ListedElement::CustomError() const {
-  return ToHTMLElement().willValidate() &&
-         !custom_validation_message_.IsEmpty();
+  return !custom_validation_message_.IsEmpty();
 }
 
 bool ListedElement::HasBadInput() const {
@@ -371,7 +403,9 @@ void ListedElement::SetCustomValidationMessage(const String& message) {
 }
 
 String ListedElement::validationMessage() const {
-  return CustomError() ? custom_validation_message_ : String();
+  return ToHTMLElement().willValidate() && CustomError()
+             ? custom_validation_message_
+             : String();
 }
 
 String ListedElement::ValidationSubMessage() const {
@@ -493,7 +527,7 @@ bool ListedElement::reportValidity() {
   // Update layout now before calling IsFocusable(), which has
   // !LayoutObject()->NeedsLayout() assertion.
   HTMLElement& element = ToHTMLElement();
-  element.GetDocument().UpdateStyleAndLayout();
+  element.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kForm);
   if (element.IsFocusable()) {
     ShowValidationMessage();
     return false;
@@ -503,8 +537,9 @@ bool ListedElement::reportValidity() {
         "An invalid form control with name='%name' is not focusable.");
     message.Replace("%name", GetName());
     element.GetDocument().AddConsoleMessage(
-        ConsoleMessage::Create(mojom::ConsoleMessageSource::kRendering,
-                               mojom::ConsoleMessageLevel::kError, message));
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kRendering,
+            mojom::ConsoleMessageLevel::kError, message));
   }
   return false;
 }
@@ -700,7 +735,7 @@ FormAttributeTargetObserver::FormAttributeTargetObserver(const AtomicString& id,
           id),
       element_(element) {}
 
-void FormAttributeTargetObserver::Trace(Visitor* visitor) {
+void FormAttributeTargetObserver::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   IdTargetObserver::Trace(visitor);
 }

@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests the graph model.\n`);
 
   await TestRunner.showPanel('web-audio');
+  await TestRunner.loadLegacyModule('web_audio');
 
   const contextId = 'contextId';
   const graph = new WebAudio.GraphVisualizer.GraphView(contextId);
@@ -100,8 +101,14 @@
   }
 
   function dumpInOutBoundingMapSize() {
-    TestRunner.addResult(`Number of nodes with out-bound edges: ${graph._outboundEdgeMap.size}`);
-    TestRunner.addResult(`Number of nodes with in-bound edges: ${graph._inboundEdgeMap.size}`);
+    // TODO(crbug.com/1238850): Remove the _outboundEdgeMap branch.
+    if (graph.hasOwnProperty('outboundEdgeMap')) {
+      TestRunner.addResult(`Number of nodes with out-bound edges: ${graph.outboundEdgeMap.size}`);
+      TestRunner.addResult(`Number of nodes with in-bound edges: ${graph.inboundEdgeMap.size}`);
+    } else {
+      TestRunner.addResult(`Number of nodes with out-bound edges: ${graph.outboundEdgeMap.size}`);
+      TestRunner.addResult(`Number of nodes with in-bound edges: ${graph.inboundEdgeMap.size}`);
+    }
   }
 
 })();

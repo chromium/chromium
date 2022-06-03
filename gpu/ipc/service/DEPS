@@ -5,7 +5,9 @@ include_rules = [
   "+components/viz/common/gpu/gpu_vsync_callback.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/resources/resource_format.h",
+  "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/resource_sizes.h",
+  "+mojo/public",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",
   "+ui/base",
@@ -15,3 +17,9 @@ include_rules = [
   "+ui/platform_window",
   "+media/gpu/android/texture_owner.h",
 ]
+
+specific_include_rules = {
+  "image_decode_accelerator_stub_unittest\.cc": [
+    "+skia/ext/skia_memory_dump_provider.h",
+  ],
+}

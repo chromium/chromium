@@ -15,7 +15,7 @@ class HeapObject : public GarbageCollected<HeapObject> {
 public:
     HeapObject() { }
 
-    void Trace(Visitor*) { }
+    void Trace(Visitor*) const {}
 };
 
 template <typename T>
@@ -23,12 +23,12 @@ class TemplatedObject final : public GarbageCollected<TemplatedObject<T>> {
  public:
   TemplatedObject(T*) {}
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   class Local final : public GarbageCollected<Local> {
    public:
-    void Trace(Visitor* visitor) {
+    void Trace(Visitor* visitor) const {
       visitor->Trace(m_heapObject);
       visitor->Trace(m_object);
     }

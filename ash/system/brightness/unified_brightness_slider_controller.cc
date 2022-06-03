@@ -33,17 +33,12 @@ views::View* UnifiedBrightnessSliderController::CreateView() {
   return slider_;
 }
 
-void UnifiedBrightnessSliderController::ButtonPressed(views::Button* sender,
-                                                      const ui::Event& event) {
-  // The button in is UnifiedBrightnessView is no-op.
-}
-
 void UnifiedBrightnessSliderController::SliderValueChanged(
     views::Slider* sender,
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  if (reason != views::VALUE_CHANGED_BY_USER)
+  if (reason != views::SliderChangeReason::kByUser)
     return;
 
   BrightnessControlDelegate* brightness_control_delegate =

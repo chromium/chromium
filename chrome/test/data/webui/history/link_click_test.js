@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
+import {$} from 'chrome://resources/js/util.m.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+
 suite('listenForPrivilegedLinkClicks unit test', function() {
   test('click handler', async () => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
-    history.listenForPrivilegedLinkClicks();
+    listenForPrivilegedLinkClicks();
     document.body.innerHTML = `
       <a id="file" href="file:///path/to/file">File</a>
       <a id="chrome" href="about:chrome">Chrome</a>

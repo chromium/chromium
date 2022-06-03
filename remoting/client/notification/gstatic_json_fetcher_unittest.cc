@@ -57,13 +57,13 @@ class GstaticJsonFetcherTest : public testing::Test {
                          const std::string& data) {
     url_fetcher_factory_.SetFakeResponse(
         GstaticJsonFetcher::GetFullUrl(relative_path), data, net::HTTP_OK,
-        net::URLRequestStatus::SUCCESS);
+        net::OK);
   }
   void SetFakeFailedResponse(const std::string& relative_path,
                              net::HttpStatusCode status_code) {
     url_fetcher_factory_.SetFakeResponse(
         GstaticJsonFetcher::GetFullUrl(relative_path), "", status_code,
-        net::URLRequestStatus::FAILED);
+        net::ERR_FAILED);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{

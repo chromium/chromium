@@ -5,28 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_OPTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_OPTIONS_H_
 
-#include <string>
-
-#include "base/files/file.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "media/base/audio_point.h"
 #include "media/base/audio_processing.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc/media/base/media_channel.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
-#include "third_party/webrtc/rtc_base/task_queue.h"
-
-namespace webrtc {
-
-class TypingDetection;
-
-}
 
 namespace blink {
 
@@ -51,12 +33,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
     kEchoCancellationSystem
   };
 
-  // Creates an AudioProcessingProperties object with fields initialized to
-  // their default values.
-  AudioProcessingProperties();
-  AudioProcessingProperties(const AudioProcessingProperties& other);
-  AudioProcessingProperties& operator=(const AudioProcessingProperties& other);
-
   // Disables properties that are enabled by default.
   void DisableDefaultProperties();
 
@@ -73,64 +49,44 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
       const AudioProcessingProperties& other) const;
 
   // Converts this struct to an equivalent media::AudioProcessingSettings.
-  // TODO(https://crbug.com/878757): Eliminate this class in favor of the media
-  // one.
-  media::AudioProcessingSettings ToAudioProcessingSettings() const;
+  media::AudioProcessingSettings ToAudioProcessingSettings(
+      bool multi_channel_capture_processing) const;
 
   EchoCancellationType echo_cancellation_type =
       EchoCancellationType::kEchoCancellationAec3;
+  // Indicates whether system-level gain control and noise suppression
+  // functionalities are active that fill a role comparable to the browser
+  // counterparts.
+  bool system_gain_control_activated = false;
+  bool system_noise_suppression_activated = false;
+
+  // Used for an experiment for forcing certain system-level
+  // noise suppression functionalities to be off. In contrast to
+  // `system_noise_suppression_activated` the system-level noise suppression
+  // referred to does not correspond to something that can replace the browser
+  // counterpart. I.e., the browser counterpart should be on, even if
+  // `disable_hw_noise_suppression` is false.
   bool disable_hw_noise_suppression = false;
+
   bool goog_audio_mirroring = false;
   bool goog_auto_gain_control = true;
+  // TODO(https://crbug.com/1215061): Deprecate this constraint. The flag no
+  // longer toggles meaningful processing effects, but it still forces the audio
+  // processing module to be created and used.
   bool goog_experimental_echo_cancellation =
 #if defined(OS_ANDROID)
       false;
 #else
       true;
 #endif
-  bool goog_typing_noise_detection = false;
   bool goog_noise_suppression = true;
+  // Experimental noise suppression maps to transient suppression (keytap
+  // removal).
   bool goog_experimental_noise_suppression = true;
   bool goog_highpass_filter = true;
+  // TODO(bugs.webrtc.org/7494): Effectively a no-op, remove this flag.
   bool goog_experimental_auto_gain_control = true;
 };
-
-// Enables the typing detection with the given detector.
-PLATFORM_EXPORT void EnableTypingDetection(
-    AudioProcessing::Config* apm_config,
-    webrtc::TypingDetection* typing_detector);
-
-// Starts the echo cancellation dump in
-// |audio_processing|. |worker_queue| must be kept alive until either
-// |audio_processing| is destroyed, or
-// StopEchoCancellationDump(audio_processing) is called.
-PLATFORM_EXPORT void StartEchoCancellationDump(
-    AudioProcessing* audio_processing,
-    base::File aec_dump_file,
-    rtc::TaskQueue* worker_queue);
-
-// Stops the echo cancellation dump in |audio_processing|.
-// This method has no impact if echo cancellation dump has not been started on
-// |audio_processing|.
-PLATFORM_EXPORT void StopEchoCancellationDump(
-    AudioProcessing* audio_processing);
-
-// Enables automatic gain control with flags and optional configures.
-PLATFORM_EXPORT void ConfigAutomaticGainControl(
-    AudioProcessing::Config* apm_config,
-    bool agc_enabled,
-    bool experimental_agc_enabled,
-    bool use_hybrid_agc,
-    base::Optional<bool> hybrid_agc_use_peaks_not_rms,
-    base::Optional<int> hybrid_agc_saturation_margin,
-    base::Optional<double> compression_gain_db);
-
-PLATFORM_EXPORT void PopulateApmConfig(
-    AudioProcessing::Config* apm_config,
-    const AudioProcessingProperties& properties,
-    const base::Optional<std::string>& audio_processing_platform_config_json,
-    base::Optional<double>* gain_control_compression_gain_db);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_OPTIONS_H_

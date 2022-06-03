@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -18,7 +18,19 @@ TestCreditCardFIDOAuthenticator::TestCreditCardFIDOAuthenticator(
     AutofillClient* client)
     : CreditCardFIDOAuthenticator(driver, client) {}
 
-TestCreditCardFIDOAuthenticator::~TestCreditCardFIDOAuthenticator() {}
+TestCreditCardFIDOAuthenticator::~TestCreditCardFIDOAuthenticator() = default;
+
+void TestCreditCardFIDOAuthenticator::Authenticate(
+    const CreditCard* card,
+    base::WeakPtr<Requester> requester,
+    base::Value request_options,
+    absl::optional<std::string> context_token) {
+  authenticate_invoked_ = true;
+  card_ = *card;
+  context_token_ = context_token;
+  CreditCardFIDOAuthenticator::Authenticate(
+      card, requester, std::move(request_options), context_token);
+}
 
 void TestCreditCardFIDOAuthenticator::GetAssertion(
     PublicKeyCredentialRequestOptionsPtr request_options) {
@@ -30,6 +42,11 @@ void TestCreditCardFIDOAuthenticator::MakeCredential(
     PublicKeyCredentialCreationOptionsPtr creation_options) {
   creation_options_ = creation_options->Clone();
   CreditCardFIDOAuthenticator::MakeCredential(std::move(creation_options));
+}
+
+void TestCreditCardFIDOAuthenticator::OptOut() {
+  opt_out_called_ = true;
+  CreditCardFIDOAuthenticator::OptOut();
 }
 
 // static
@@ -90,6 +107,21 @@ std::string TestCreditCardFIDOAuthenticator::GetRelyingPartyId() {
 void TestCreditCardFIDOAuthenticator::IsUserVerifiable(
     base::OnceCallback<void(bool)> callback) {
   return std::move(callback).Run(is_user_verifiable_);
+}
+
+bool TestCreditCardFIDOAuthenticator::IsUserOptedIn() {
+  if (is_user_opted_in_.has_value())
+    return is_user_opted_in_.value();
+
+  return CreditCardFIDOAuthenticator::IsUserOptedIn();
+}
+
+void TestCreditCardFIDOAuthenticator::Reset() {
+  is_user_verifiable_ = false;
+  is_user_opted_in_ = absl::nullopt;
+  opt_out_called_ = false;
+  authenticate_invoked_ = false;
+  card_ = CreditCard();
 }
 
 }  // namespace autofill

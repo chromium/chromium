@@ -37,19 +37,19 @@
 </style>
 <print-preview-header id="header" destination="[[destination]]"
     cloud-print-error-message="[[cloudPrintErrorMessage]]"
-    error="[[error]]" state="[[state]]"
+    error="[[error]]" sheet-count="[[sheetCount_]]" state="[[state]]"
     settings="[[settings]]" managed="[[controlsManaged]]">
 </print-preview-header>
 <div id="container" show-bottom-shadow>
   <print-preview-destination-settings id="destinationSettings"
-      cloud-print-interface="[[cloudPrintInterface]]" dark="[[inDarkMode]]"
-      destination="{{destination}}" destination-state="{{destinationState}}"
+      dark="[[inDarkMode]]" destination="{{destination}}"
+      destination-state="{{destinationState}}"
       error="{{error}}" first-load="[[firstLoad_]]" settings="[[settings]]"
       state="[[state]]" app-kiosk-mode="[[isInAppKioskMode_]]"
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
   <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pin.available]]" class="settings-section">
@@ -60,6 +60,7 @@
       hidden$="[[!settings.pages.available]]" class="settings-section">
   </print-preview-pages-settings>
   <print-preview-copies-settings settings="[[settings]]"
+      capability="[[destination.capabilities.printer.copies]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.copies.available]]" class="settings-section">
   </print-preview-copies-settings>
@@ -90,7 +91,7 @@
         hidden$="[[!settings.pagesPerSheet.available]]"
         class="settings-section">
     </print-preview-pages-per-sheet-settings>
-    <print-preview-margins-settings settings="[[settings]]"
+    <print-preview-margins-settings settings="[[settings]]" state="[[state]]"
         disabled="[[controlsDisabled_]]"
         hidden$="[[!settings.margins.available]]"
         class="settings-section">
@@ -121,7 +122,7 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
     <print-preview-link-container destination="[[destination]]"
         app-kiosk-mode="[[isInAppKioskMode_]]"
         disabled="[[controlsDisabled_]]">
@@ -131,5 +132,6 @@
 </div>
 <print-preview-button-strip destination="[[destination]]"
     state="[[state]]" first-load="[[firstLoad_]]"
+    sheet-count="[[sheetCount_]]" max-sheets="[[maxSheets]]"
     on-print-button-focused="onPrintButtonFocused_">
 </print-preview-button-strip>

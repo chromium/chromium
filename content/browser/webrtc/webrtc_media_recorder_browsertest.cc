@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "media/base/media_switches.h"
@@ -22,10 +22,13 @@ static struct EncodingParameters {
 } const kEncodingParameters[] = {
     {true, "video/webm;codecs=VP8"},
     {true, "video/webm;codecs=VP9"},
-    {true, "video/x-matroska;codecs=AVC1"},
     {false, ""},  // Instructs the platform to choose any accelerated codec.
     {false, "video/webm;codecs=VP8"},
     {false, "video/webm;codecs=VP9"},
+};
+
+static const EncodingParameters kProprietaryEncodingParameters[] = {
+    {true, "video/x-matroska;codecs=AVC1"},
     {false, "video/x-matroska;codecs=AVC1"},
 };
 
@@ -35,7 +38,7 @@ namespace content {
 
 // All tests in this fixture experience flaky DCHECK failures on macOS; see
 // https://crbug.com/810321.
-#if defined(OS_MACOSX) && DCHECK_IS_ON()
+#if defined(OS_MAC) && DCHECK_IS_ON()
 #define MAYBE_WebRtcMediaRecorderTest DISABLED_WebRtcMediaRecorderTest
 #else
 #define MAYBE_WebRtcMediaRecorderTest WebRtcMediaRecorderTest
@@ -47,6 +50,11 @@ class MAYBE_WebRtcMediaRecorderTest
       public testing::WithParamInterface<struct EncodingParameters> {
  public:
   MAYBE_WebRtcMediaRecorderTest() {}
+
+  MAYBE_WebRtcMediaRecorderTest(const MAYBE_WebRtcMediaRecorderTest&) = delete;
+  MAYBE_WebRtcMediaRecorderTest& operator=(
+      const MAYBE_WebRtcMediaRecorderTest&) = delete;
+
   ~MAYBE_WebRtcMediaRecorderTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -56,9 +64,6 @@ class MAYBE_WebRtcMediaRecorderTest
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "GetUserMedia");
   }
 
   void MaybeForceDisableEncodeAccelerator(bool disable) {
@@ -68,9 +73,6 @@ class MAYBE_WebRtcMediaRecorderTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableAcceleratedVideoDecode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_WebRtcMediaRecorderTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Start) {
@@ -81,7 +83,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, StartAndDataAvailable) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
+#else
+#define MAYBE_StartAndDataAvailable StartAndDataAvailable
+#endif
+IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest,
+                       MAYBE_StartAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testStartAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
@@ -112,7 +121,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, ResumeAndDataAvailable) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
+#else
+#define MAYBE_ResumeAndDataAvailable ResumeAndDataAvailable
+#endif
+IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest,
+                       MAYBE_ResumeAndDataAvailable) {
   MaybeForceDisableEncodeAccelerator(GetParam().disable_accelerator);
   MakeTypicalCall(base::StringPrintf("testResumeAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
@@ -124,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Pause) {
 }
 
 // TODO(crbug.com/571389): Flaky on TSAN bots.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_PauseStop DISABLED_PauseStop
 #else
 #define MAYBE_PauseStop PauseStop
@@ -140,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
 }
 
 // TODO (crbug.com/736268): Flaky on Linux TSan bots.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_IllegalPauseThrowsDOMError DISABLED_IllegalPauseThrowsDOMError
 #else
 #define MAYBE_IllegalPauseThrowsDOMError IllegalPauseThrowsDOMError
@@ -150,8 +166,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222675
+#define MAYBE_TwoChannelAudioRecording DISABLED_TwoChannelAudioRecording
+#else
+#define MAYBE_TwoChannelAudioRecording TwoChannelAudioRecording
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
-                       TwoChannelAudioRecording) {
+                       MAYBE_TwoChannelAudioRecording) {
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
@@ -180,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_IllegalRequestDataThrowsDOMError \
   DISABLED_IllegalRequestDataThrowsDOMError
 #else
@@ -196,11 +218,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
 // These tests are flakily timing out on emulators (https://crbug.com/716691)
 // and/or under Android ASAN (https://crbug.com/693565);
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSan, https://crbug.com/694373.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #elif defined(OS_WIN) && !defined(NDEBUG)
 // Fails on Win7 debug, https://crbug.com/703844.
+#define MAYBE_PeerConnection DISABLED_PeerConnection
+#elif defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Fails on Mac/Arm, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #else
 #define MAYBE_PeerConnection PeerConnection
@@ -214,7 +239,11 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
+  DISABLED_AddingTrackToMediaStreamFiresErrorEvent
+#elif defined(OS_ANDROID)
+// Flaky on Android (crbug.com/1174634).
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent
 #else
@@ -233,8 +262,16 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
                   kMediaRecorderHtmlFile);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(OpenCodec,
                          MAYBE_WebRtcMediaRecorderTest,
                          testing::ValuesIn(kEncodingParameters));
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+INSTANTIATE_TEST_SUITE_P(ProprietaryCodec,
+                         MAYBE_WebRtcMediaRecorderTest,
+                         testing::ValuesIn(kProprietaryEncodingParameters));
+
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace content

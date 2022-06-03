@@ -23,24 +23,25 @@ class Origin;
 
 namespace content {
 
-// An class that builds GURL->bool predicates to filter browsing data.
-// These filters can be of two modes - a whitelist or a blacklist. The filter
-// entries can be origins or registrable domains.
+// A class that builds Origin->bool predicates to filter browsing data. These
+// filters can be of two modes - a list of items to delete or a list of items to
+// preserve, deleting everything else. The filter entries can be origins or
+// registrable domains.
 //
 // This class defines interface to build filters for various kinds of browsing
-// data. |BuildGeneralFilter()| is useful for most browsing data storage
-// backends, but some backends, such as website settings and cookies, use
-// other formats of filter.
+// data. |BuildOriginFilter()| is useful for most browsing data storage backends,
+// but some backends, such as website settings and cookies, use other formats of
+// filter.
 class CONTENT_EXPORT BrowsingDataFilterBuilder {
  public:
-  enum Mode {
-    // This means that only the origins given will be deleted.
-    WHITELIST,
-    // Everyone EXCEPT the origins given will be deleted.
-    BLACKLIST
+  enum class Mode {
+    // Only the origins given will be deleted.
+    kDelete,
+    // All origins EXCEPT the origins given will be deleted.
+    kPreserve
   };
 
-  // Constructs a filter with the given |mode| - whitelist or blacklist.
+  // Constructs a filter with the given |mode|: delete or preserve.
   static std::unique_ptr<BrowsingDataFilterBuilder> Create(Mode mode);
 
   virtual ~BrowsingDataFilterBuilder() = default;
@@ -58,21 +59,29 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // to accept it.
   virtual void AddRegisterableDomain(const std::string& registrable_domain) = 0;
 
-  // Returns true if we're an empty blacklist, where we delete everything.
-  virtual bool IsEmptyBlacklist() = 0;
+  // Returns true if we're an empty preserve list, where we delete everything.
+  virtual bool MatchesAllOriginsAndDomains() = 0;
 
-  // Builds a filter that matches URLs that are in the whitelist,
-  // or aren't in the blacklist.
-  virtual base::RepeatingCallback<bool(const GURL&)> BuildGeneralFilter() = 0;
+  // Deprecated: Prefer `BuildOriginFilter()` instead.
+  // Builds a filter that matches URLs that are in the list to delete, or aren't
+  // in the list to preserve.
+  virtual base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() = 0;
+
+  // Builds a filter that matches origins that are in the list to delete, or
+  // aren't in the list to preserve. This is preferred to BuildUrlFilter() as
+  // it does not inherently perform GURL->Origin conversions.
+  virtual base::RepeatingCallback<bool(const url::Origin&)>
+  BuildOriginFilter() = 0;
 
   // Builds a filter that can be used with the network service. This uses a Mojo
   // struct rather than a predicate function (as used by the rest of the filters
   // built by this class) because we need to be able to pass the filter to the
-  // network service via IPC. Returns nullptr if |IsEmptyBlacklist()| is true.
+  // network service via IPC. Returns nullptr if |IsEmptyPreserveList()| is
+  // true.
   virtual network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() = 0;
 
   // Builds a CookieDeletionInfo object that matches cookies whose sources are
-  // in the whitelist, or aren't in the blacklist.
+  // in the list to delete, or aren't in the list to preserve.
   virtual network::mojom::CookieDeletionFilterPtr
   BuildCookieDeletionFilter() = 0;
 
@@ -80,8 +89,8 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   virtual base::RepeatingCallback<bool(const std::string& site)>
   BuildPluginFilter() = 0;
 
-  // A convenience method to produce an empty blacklist, a filter that matches
-  // everything.
+  // A convenience method to produce an empty preserve list, a filter that
+  // matches everything.
   static base::RepeatingCallback<bool(const GURL&)> BuildNoopFilter();
 
   // The mode of the filter.

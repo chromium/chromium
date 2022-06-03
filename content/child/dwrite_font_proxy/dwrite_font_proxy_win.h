@@ -9,15 +9,20 @@
 #include <wrl.h>
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 
 namespace content {
 
@@ -28,14 +33,23 @@ class DWriteFontFamilyProxy;
 // into a custom font collection.
 // This is needed because the sandbox interferes with DirectWrite's
 // communication with the system font service.
+// This class can be accessed from any thread, uses locks and thread annotations
+// to coordinate concurrent accesses.
 class DWriteFontCollectionProxy
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IDWriteFontCollection,
           IDWriteFontCollectionLoader,
-          IDWriteFontFileLoader> {
+          IDWriteFontFileLoader>,
+      public blink::WebFontPrewarmer {
  public:
   // Factory method to avoid exporting the class and all it derives from.
+  //
+  // |proxy| is an optional DWriteFontProxy to use when the constructed
+  // DWriteFontCollectionProxy is used on the current sequence. DWriteFontProxy
+  // remotes will be bound via ChildThread when the constructed
+  // DWriteFontCollectionProxy is used from a sequence for which no
+  // DWriteFontProxy has been provided.
   static CONTENT_EXPORT HRESULT
   Create(DWriteFontCollectionProxy** proxy_out,
          IDWriteFactory* dwrite_factory,
@@ -45,6 +59,10 @@ class DWriteFontCollectionProxy
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   DWriteFontCollectionProxy();
+
+  DWriteFontCollectionProxy& operator=(const DWriteFontCollectionProxy&) =
+      delete;
+
   ~DWriteFontCollectionProxy() override;
 
   // IDWriteFontCollection:
@@ -52,10 +70,13 @@ class DWriteFontCollectionProxy
                                            UINT32* index,
                                            BOOL* exists) override;
   HRESULT STDMETHODCALLTYPE
-  GetFontFamily(UINT32 index, IDWriteFontFamily** font_family) override;
-  UINT32 STDMETHODCALLTYPE GetFontFamilyCount() override;
+  GetFontFamily(UINT32 index, IDWriteFontFamily** font_family) override
+      LOCKS_EXCLUDED(families_lock_);
+  UINT32 STDMETHODCALLTYPE GetFontFamilyCount() override
+      LOCKS_EXCLUDED(families_lock_);
   HRESULT STDMETHODCALLTYPE GetFontFromFontFace(IDWriteFontFace* font_face,
-                                                IDWriteFont** font) override;
+                                                IDWriteFont** font) override
+      LOCKS_EXCLUDED(families_lock_);
 
   // IDWriteFontCollectionLoader:
   HRESULT STDMETHODCALLTYPE CreateEnumeratorFromKey(
@@ -82,26 +103,62 @@ class DWriteFontCollectionProxy
   // Gets the family at the specified index with the expected name. This can be
   // used to avoid an IPC call when both the index and family name are known.
   bool GetFontFamily(UINT32 family_index,
-                     const base::string16& family_name,
-                     IDWriteFontFamily** font_family);
+                     const std::u16string& family_name,
+                     IDWriteFontFamily** font_family)
+      LOCKS_EXCLUDED(families_lock_);
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);
 
-  bool CreateFamily(UINT32 family_index);
+  // blink::WebFontPrewarmer:
+  void PrewarmFamily(const blink::WebString& family_name) override;
 
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
+  CONTENT_EXPORT void InitializePrewarmerForTesting(
+      mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy);
+
  private:
-  void SetProxy(mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy);
+  void InitializePrewarmer();
+  void BindFontProxy(mojo::PendingRemote<blink::mojom::DWriteFontProxy> remote);
+  UINT32 GetFontFamilyCountLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  DWriteFontFamilyProxy* GetFamily(UINT32 family_index)
+      LOCKS_EXCLUDED(families_lock_);
+  DWriteFontFamilyProxy* GetFamilyLockRequired(UINT32 family_index)
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  DWriteFontFamilyProxy* GetOrCreateFamilyLockRequired(UINT32 family_index)
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  absl::optional<UINT32> FindFamilyIndexLockRequired(
+      const std::u16string& family_name,
+      HRESULT* hresult_out = nullptr) EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
 
+  HRESULT FindFamilyName(const std::u16string& family_name,
+                         UINT32* index,
+                         BOOL* exists) LOCKS_EXCLUDED(families_lock_);
+  DWriteFontFamilyProxy* FindFamily(const std::u16string& family_name)
+      LOCKS_EXCLUDED(families_lock_);
+
+  void PrewarmFamilyOnWorker(const std::u16string family_name);
+
+  base::Lock families_lock_;
+
+  // This is initialized in ctor (RuntimeClassInitialize) and will not change.
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
-  std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
-  std::map<base::string16, UINT32> family_names_;
-  UINT32 family_count_ = UINT_MAX;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<blink::mojom::ThreadSafeDWriteFontProxyPtr> font_proxy_;
 
-  DISALLOW_ASSIGN(DWriteFontCollectionProxy);
+  std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_
+      GUARDED_BY(families_lock_);
+  std::map<std::u16string, UINT32> family_names_ GUARDED_BY(families_lock_);
+  UINT32 family_count_ GUARDED_BY(families_lock_) = UINT_MAX;
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> prewarm_task_runner_;
+  // Per-sequence mojo::Remote<DWriteFontProxy>. This is preferred to a
+  // mojo::SharedRemote, which would force a thread hop for each call that
+  // doesn't originate from the "bound" sequence.
+  base::SequenceLocalStorageSlot<mojo::Remote<blink::mojom::DWriteFontProxy>>
+      font_proxy_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Implements the DirectWrite font family interface. This class is just a
@@ -114,6 +171,9 @@ class DWriteFontFamilyProxy
           IDWriteFontFamily> {
  public:
   DWriteFontFamilyProxy();
+
+  DWriteFontFamilyProxy& operator=(const DWriteFontFamilyProxy&) = delete;
+
   ~DWriteFontFamilyProxy() override;
 
   // IDWriteFontFamily:
@@ -121,8 +181,8 @@ class DWriteFontFamilyProxy
   GetFontCollection(IDWriteFontCollection** font_collection) override;
   UINT32 STDMETHODCALLTYPE GetFontCount() override;
   HRESULT STDMETHODCALLTYPE GetFont(UINT32 index, IDWriteFont** font) override;
-  HRESULT STDMETHODCALLTYPE
-  GetFamilyNames(IDWriteLocalizedStrings** names) override;
+  HRESULT STDMETHODCALLTYPE GetFamilyNames(
+      IDWriteLocalizedStrings** names) override LOCKS_EXCLUDED(family_lock_);
   HRESULT STDMETHODCALLTYPE
   GetFirstMatchingFont(DWRITE_FONT_WEIGHT weight,
                        DWRITE_FONT_STRETCH stretch,
@@ -137,25 +197,33 @@ class DWriteFontFamilyProxy
   HRESULT STDMETHODCALLTYPE
   RuntimeClassInitialize(DWriteFontCollectionProxy* collection, UINT32 index);
 
-  bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font);
+  bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font)
+      LOCKS_EXCLUDED(family_lock_);
 
-  void SetName(const base::string16& family_name);
+  const std::u16string& GetName() LOCKS_EXCLUDED(family_lock_);
+  void SetName(const std::u16string& family_name) LOCKS_EXCLUDED(family_lock_);
+  void SetNameIfNotLoaded(const std::u16string& family_name)
+      LOCKS_EXCLUDED(family_lock_);
 
-  const base::string16& GetName();
-
-  bool IsLoaded();
-
- protected:
-  bool LoadFamily();
+  void PrewarmFamilyOnWorker() LOCKS_EXCLUDED(family_lock_);
 
  private:
-  UINT32 family_index_;
-  base::string16 family_name_;
-  Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> proxy_collection_;
-  Microsoft::WRL::ComPtr<IDWriteFontFamily> family_;
-  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_;
+  IDWriteFontFamily* LoadFamily() LOCKS_EXCLUDED(family_lock_);
+  IDWriteFontFamily* LoadFamilyCoreLockRequired()
+      EXCLUSIVE_LOCKS_REQUIRED(family_lock_);
 
-  DISALLOW_ASSIGN(DWriteFontFamilyProxy);
+  base::Lock family_lock_;
+
+  // These are initialized in ctor (RuntimeClassInitialize) and will not change.
+  UINT32 family_index_;
+  Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> proxy_collection_;
+
+  Microsoft::WRL::ComPtr<IDWriteFontFamily> family_ GUARDED_BY(family_lock_);
+  std::u16string family_name_ GUARDED_BY(family_lock_);
+  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_
+      GUARDED_BY(family_lock_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Implements the DirectWrite font file enumerator interface, backed by a list
@@ -166,6 +234,9 @@ class FontFileEnumerator
           IDWriteFontFileEnumerator> {
  public:
   FontFileEnumerator();
+
+  FontFileEnumerator& operator=(const FontFileEnumerator&) = delete;
+
   ~FontFileEnumerator() override;
 
   // IDWriteFontFileEnumerator:
@@ -183,8 +254,6 @@ class FontFileEnumerator
   std::vector<HANDLE> files_;
   UINT32 next_file_ = 0;
   UINT32 current_file_ = UINT_MAX;
-
-  DISALLOW_ASSIGN(FontFileEnumerator);
 };
 
 // Implements the DirectWrite font file stream interface that maps the file to
@@ -196,6 +265,9 @@ class FontFileStream
           IDWriteFontFileStream> {
  public:
   FontFileStream();
+
+  FontFileStream& operator=(const FontFileStream&) = delete;
+
   ~FontFileStream() override;
 
   // IDWriteFontFileStream:
@@ -211,8 +283,6 @@ class FontFileStream
 
  private:
   base::MemoryMappedFile data_;
-
-  DISALLOW_ASSIGN(FontFileStream);
 };
 
 }  // namespace content

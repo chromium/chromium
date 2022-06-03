@@ -4,7 +4,7 @@
 
 #include "remoting/client/input/native_device_keymap.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace remoting {
 

@@ -33,14 +33,14 @@
         android:layout_height="@dimen/keyboard_accessory_height"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@color/modern_secondary_color">
+        android:background="@color/default_bg_color_secondary">
 
         <include layout="@layout/keyboard_accessory_tabs"
             android:id="@+id/tabs"/>
 
         <View style="@style/VerticalDivider" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>

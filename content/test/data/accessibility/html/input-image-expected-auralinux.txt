@@ -1,3 +1,3 @@
 [document web]
 ++[section]
-++++[push button] name='Submit' xml-roles:button
+++++[push button] name='Submit'

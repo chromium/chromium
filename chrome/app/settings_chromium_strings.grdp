@@ -16,7 +16,7 @@
       Updating Chromium (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
     </message>
     <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated Chromium">
-      Nearly up to date! Relaunch Chromium to finish updating.
+      Nearly up to date! Relaunch Chromium to finish updating. Incognito windows won't reopen.
     </message>
     <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (Chromium)">
       Chromium is up to date
@@ -26,6 +26,9 @@
     <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About Chromium OS page.">
       About Chromium OS
     </message>
+    <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about Chrome OS settings, which gives information about the current Chrome OS version.">
+      Chromium OS version
+    </message>
     <message name="IDS_SETTINGS_ABOUT_SEE_OS_SETTINGS_FOR_UPDATE_MESSAGE" desc="Message shown to users on Chromium browser settings which alerts the user that OS updates are shown in Chromium OS settings.">
       To see if your device is up to date, go to <ph name="LINK_BEGIN">&lt;a href="chrome://os-settings/help"&gt;</ph>Chromium OS Settings<ph name="LINK_END">&lt;/a&gt;</ph>
     </message>
@@ -34,16 +37,43 @@
     </message>
   </if>
 
-  <!-- Cookie Settings Page -->
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DATA_POST_SESSION" desc="Label for the checkbox that allows the user to automatically delete their cookies and site data at the end of the browser session.">
-    Clear cookies and site data when you quit Chromium
-  </message>
-
   <!-- Autofill Page -->
   <message name="IDS_SETTINGS_GOOGLE_PAYMENTS_CACHED" desc="Label that will be used to show that a credit card comes from Google Pay and is saved locally. This should follow the casing of the 'Google Pay' and 'Chrome' brands. 'Copied to Chromium' is short for 'The credit card is copied to Chromium'. 'Google Pay' should not be translated as it is the product name.">
     Google Pay (copied to Chromium)
   </message>
-
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE" desc="Error message when the password check can't be completed because the user is offline.">
+    Chromium can't check your passwords. Try checking your internet connection.
+  </message>
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_SIGNED_OUT" desc="Error message when the password check can't be completed because the user is not signed in.">
+    Chromium can check your passwords when you sign in with your Google Account
+  </message>
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_NO_PASSWORDS" desc="Error message when the password check can't be completed since no passwords could be checked.">
+    No saved passwords. Chromium can check your passwords when you save them.
+  </message>
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_QUOTA_LIMIT_GOOGLE_ACCOUNT" desc="Error message when the password check can't be completed since the user hit the quota limit, but the user is able to check their passwords in their Google account.">
+    Chromium can't check your passwords. Try again after 24 hours or <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>check passwords in your Google Account<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_QUOTA_LIMIT" desc="Error message when the password check can't be completed since the user hit the quota limit.">
+    Chromium can't check your passwords. Try again after 24 hours.
+  </message>
+  <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_GENERIC" desc="Error message when the password check can't be completed for an unspecified reason.">
+    Chromium can't check your passwords. Try again later.
+  </message>
+  <message name="IDS_SETTINGS_NO_COMPROMISED_CREDENTIALS_LABEL" desc="Label which is shown when there were no compromised passwords detected.">
+    Chromium will notify you when you sign in with a compromised password
+  </message>
+  <message name="IDS_SETTINGS_SIGNED_OUT_USER_LABEL" desc="Label which is shown at the top of the compromised password section if user is signed out.">
+    To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL" desc="Label which is shown at the bottom of the compromised password section if user is signed out and has compromised credentials.">
+    To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION_GENERATION" desc="Information about why weak passwords are a security issue and what syncing user should do to fix the problem. Has a link.">
+    Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>create and remember strong passwords for you<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_EDIT_DISCLAIMER_DESCRIPTION" desc="A description for the dialog which tells the user to edit password in Chromium if it was changed already.">
+    If so, please edit your saved password in Chromium so it matches your new password.
+  </message>
   <!-- Default Browser Page -->
   <if expr="not chromeos">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT" desc="The text displayed when Chrome is the default browser">
@@ -61,11 +91,7 @@
   </if>
 
   <!-- Main Page -->
-  <if expr="chromeos">
-    <message name="IDS_SETTINGS_BROWSER_SETTINGS_BANNER" desc="Banner displayed in OS settings page that links to Browser settings.">
-      If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>
-      Chromium browser settings<ph name="LINK_END">&lt;/a&gt;</ph>
-    </message>
+  <if expr="chromeos or lacros">
     <!-- No target="_blank" because OS settings opens its own window. -->
     <message name="IDS_SETTINGS_OS_SETTINGS_BANNER" desc="Banner displayed in browser settings page that links to OS settings.">
       If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>
@@ -80,11 +106,76 @@
   <message name="IDS_SETTINGS_RESTART_TO_APPLY_CHANGES" desc="Description in the snackbar to restart Chrome and apply changes.">
     To apply your changes, relaunch Chromium
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
+
+  <if expr="not chromeos and not lacros">
+    <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
     Allow Chromium sign-in
-  </message>
-  <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC" desc="The description of the preference to allow to sign-in to Chrome">
+    </message>
+    <message name="IDS_SETTINGS_SIGNIN_ALLOWED_DESC" desc="The description of the preference to allow to sign-in to Chrome">
     By turning this off, you can sign in to Google sites like Gmail without signing in to Chromium
+    </message>
+  </if>
+
+  <!-- Site Settings -->
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
+    Open PDFs in Chromium
+  </message>
+
+  <!-- Privacy Review -->
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+    When you close all Chromium windows, cookies and site data are automatically cleared
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+    You will be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of most sites<ph name="END_BOLD">&lt;/b&gt;</ph> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of Google services and Chromium<ph name="END_BOLD">&lt;/b&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+    Sites you visit remember your information until you close Chromium
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the privacy review, explaining to users that they can review their most important privacy and security settings in the privacy review.">
+    Customize some of Chromium’s most important privacy choices
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_SUB_HEADER" desc="A subheader shown at on the welcome card in the privacy review, explaining to users that Chromium has default settings but they can customize them if they like.">
+    The default settings work for most people, but you can customize them to fit how you like to use Chromium
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+    Checks URLs with a list of unsafe sites stored in Chromium
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy review.">
+    If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the privacy review.">
+    See how Chromium plans to safeguard you from cross-site tracking while preserving the open web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the privacy review.">
+    Choose whether to include Chromium history for more personalized experiences in Google services
+  </message>
+
+  <!-- Safety check -->
+  <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">
+    Chromium can help keep you safe from data breaches, bad extensions, and more
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_FAILED_OFFLINE" desc="This text describes that Chromium cannot check for updates because there currently is no internet connection.">
+    Chromium can't check for updates. Try checking your internet connection.
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_FAILED" desc="This text describes that Chromium cannot update due to an unknown error.">
+    Chromium didn't update, something went wrong. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Fix Chromium update problems and failed updates.<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_UNKNOWN" desc="This text displays the installed version of Chromium when it is not possible to check for updates on non-Chrome branded browsers.">
+    Chromium version <ph name="PRODUCT_VERSION">$1<ex>15.0.865.0</ex></ph> is installed
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SIGNED_OUT" desc="This text points out that the password check can only run when the user is signed in.">
+    Chromium can't check your passwords because you're not signed in
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED" desc="This text points out that Safe Browsing is disabled and that the user is not protected.">
+    Safe Browsing is off. Chromium recommends turning it on.
+  </message>
+
+  <!-- Safe Browsing -->
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_TWO" desc="Second bullet point under the safe browsing enhanced protection mode">
+    Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO" desc="First bullet point under the safe browsing standard protection mode">
+    Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.
   </message>
 
   <!-- People Page -->
@@ -98,18 +189,23 @@
     This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>.
   </message>
 <if expr="not chromeos">
-  <message name="IDS_SETTINGS_PROFILE_NAME_AND_PICTURE" desc="Label of the link that takes you to the page to edit your name and picture for your chrome profile.">
-    Chromium name and picture
+  <message name="IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE" desc="Label of the link that takes you to the page to customize your chrome profile.">
+    Customize your Chromium profile
   </message>
+  <message name="IDS_SETTING_NAME_YOUR_PROFILE" desc="Title of the edit local profile name section on the manage profile page.">
+    Name your Chromium profile
+  </message>
+</if>
   <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is alredy present in Chromium.">
     Sync and personalize Chromium across your devices
+  </message>
+<if expr="chromeos">
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
+    You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 </if>
 
   <!-- Sync Page -->
-  <message name="IDS_SETTINGS_SYNC_SIGNIN" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
-    Sign in to Chromium
-  </message>
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">
     For added security, Chromium will encrypt your data.
   </message>
@@ -119,18 +215,12 @@
   <message name="IDS_DRIVE_SUGGEST_PREF_DESC" desc="The documentation string of the 'Show Drive Results in Omnibox' - full description sentence">
     Chromium will access your Drive to make suggestions in the address bar
   </message>
-<if expr="not chromeos">
-    <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chromium.">
-      Sign in to sync and personalize Chromium across your devices
-    </message>
-    <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_ACCOUNT" desc="The text displayed to prompt users to enable sync for an account that is alredy present in Chromium.">
-      Sync and personalize Chromium across your devices
-    </message>
-</if>
+  <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chromium.">
+    Sign in to sync and personalize Chromium across your devices
+  </message>
 
   <!-- Languages Page -->
-  <!-- Chrome OS string is in settings_strings.grdp. -->
-  <if expr="not chromeos">
+  <if expr="is_win">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
       This language is used to display the Chromium UI
     </message>

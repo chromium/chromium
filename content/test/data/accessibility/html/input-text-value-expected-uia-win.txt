@@ -1,18 +1,18 @@
-document
-++group IsControlElement=false
-++++description
-++++++description Name='l1'
-++++textbox Name='l1'
-++++description
-++++++description Name='l2'
-++++textbox Name='l2' Value.Value='value'
-++++textbox Name='l2'
-++++textbox Name='l2' Value.Value='value  *'
-++++description
-++++++description Name='Email'
-++++group IsControlElement=false
-++++textbox Name='Email'
-++++textbox Name='Email' Value.Value='value'
-++++textbox Name='l5'
-++++textbox Name='l6' Value.Value='Value'
-++++textbox Name='Name' Value.Value='value'
+Document
+++Group IsControlElement=false
+++++Text
+++++++Text Name='l1'
+++++Edit Name='l1'
+++++Text
+++++++Text Name='l2'
+++++Edit Name='l2' Value.Value='value'
+++++Edit Name='l2'
+++++Edit Name='l2' Value.Value='value  *'
+++++Text
+++++++Text Name='Email'
+++++Group IsControlElement=false
+++++Edit Name='Email'
+++++Edit Name='Email' Value.Value='value'
+++++Edit Name='l5'
+++++Edit Name='l6' Value.Value='Value'
+++++Edit Name='Name' Value.Value='value'

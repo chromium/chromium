@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Dynamically styling 'overflow-anchor: none' on the anchor node should prevent scroll anchoring assert_equals: expected 150 but got 200
-Harness: the test ran to completion.
-

@@ -1,0 +1,12 @@
+[document web]
+++[tree] setsize:5
+++++[tree item] name='treeitem 2 of 5, level 1' selectable posinset:2 setsize:5
+++++++[static] name='treeitem 2 of 5, level 1'
+++++[tree item] name='treeitem 3 of 5, level 1' selectable posinset:3 setsize:5
+++++++[static] name='treeitem 3 of 5, level 1'
+++++[tree item] name='treeitem 1 of 2, level 2' selectable posinset:1 setsize:2
+++++++[static] name='treeitem 1 of 2, level 2'
+++++[tree item] name='treeitem 1 of 1, level 3' selectable posinset:1 setsize:1
+++++++[static] name='treeitem 1 of 1, level 3'
+++++[tree item] name='treeitem 2 of 2, level 2' selectable posinset:2 setsize:2
+++++++[static] name='treeitem 2 of 2, level 2'

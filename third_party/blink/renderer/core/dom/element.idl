@@ -32,34 +32,36 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     readonly attribute DOMString? namespaceURI;
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
-    [Affects=Nothing] readonly attribute DOMString tagName;
+    readonly attribute DOMString tagName;
 
-    [Affects=Nothing, CEReactions, Reflect] attribute DOMString id;
-    [Affects=Nothing, CEReactions, Reflect=class] attribute DOMString className;
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
+    [CEReactions, Reflect] attribute DOMString id;
+    [CEReactions, Reflect=class] attribute DOMString className;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
     [Unscopable, CEReactions, Reflect] attribute DOMString slot;
 
     [Affects=Nothing] boolean hasAttributes();
-    [Affects=Nothing, SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
+    [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
     [Affects=Nothing] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] void setAttribute(DOMString name, TrustedString value);
-    [RaisesException, CEReactions, CustomElementCallbacks] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
-    [CEReactions, CustomElementCallbacks] void removeAttribute(DOMString name);
-    [CEReactions, CustomElementCallbacks] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
+    [RaisesException, CEReactions] void setAttribute(DOMString name, TrustedString value);
+    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
+    [CEReactions] void removeAttribute(DOMString name);
+    [CEReactions] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [RaisesException, CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     [Affects=Nothing] boolean hasAttribute(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
 
     Attr? getAttributeNode(DOMString name);
     Attr? getAttributeNodeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr? setAttributeNode(Attr attr);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr? setAttributeNodeNS(Attr attr);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr removeAttributeNode(Attr attr);
+    [RaisesException, CEReactions] Attr? setAttributeNode(Attr attr);
+    [RaisesException, CEReactions] Attr? setAttributeNodeNS(Attr attr);
+    [RaisesException, CEReactions] Attr removeAttributeNode(Attr attr);
+
+    [RuntimeEnabled=EditContext] attribute EditContext? editContext;
 
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
-    [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+    [PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
     [RaisesException] Element? closest(DOMString selectors);
     [RaisesException] boolean matches(DOMString selectors);
@@ -69,12 +71,12 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
 
-    [RaisesException, CEReactions, CustomElementCallbacks] Element? insertAdjacentElement(DOMString where, Element element);
+    [RaisesException, CEReactions] Element? insertAdjacentElement(DOMString where, Element element);
     [RaisesException] void insertAdjacentText(DOMString where, DOMString data);
 
     // CSS Shadow Parts
     // https://drafts.csswg.org/css-shadow-parts/#idl
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
 
     // Pointer Events
     // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
@@ -90,13 +92,19 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // https://w3c.github.io/DOM-Parsing/#extensions-to-the-element-interface
     //
     // TODO(mkwst): Write a spec for the `TrustedHTML` variants.
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, Custom=Setter, RuntimeCallStatsCounter=ElementInnerHTML] attribute HTMLString innerHTML;
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, Custom=Setter] attribute HTMLString outerHTML;
-    [CEReactions, CustomElementCallbacks, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
+    // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
+    // https://crbug.com/1058762 has been fixed.
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
+    [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
+    [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
+
+    // Declarative Shadow DOM getInnerHTML() function.
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
-    [MeasureAs=ElementRequestPointerLock] void requestPointerLock(optional PointerLockOptions options);
+    // This function returns void unless the Runtime Enabled Feature |PointerLockOptions| is enabled then it returns Promise<void>.
+    [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] any requestPointerLock(optional PointerLockOptions options = {});
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
@@ -105,21 +113,21 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.
-    void scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg);
-    [ImplementedAs=scrollTo] void scroll(optional ScrollToOptions options);
+    void scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg = {});
+    [ImplementedAs=scrollTo] void scroll(optional ScrollToOptions options = {});
     [ImplementedAs=scrollTo] void scroll(unrestricted double x, unrestricted double y);
-    void scrollTo(optional ScrollToOptions options);
+    void scrollTo(optional ScrollToOptions options = {});
     void scrollTo(unrestricted double x, unrestricted double y);
-    void scrollBy(optional ScrollToOptions options);
+    void scrollBy(optional ScrollToOptions options = {});
     void scrollBy(unrestricted double x, unrestricted double y);
-    [Affects=Nothing] attribute unrestricted double scrollTop;
-    [Affects=Nothing] attribute unrestricted double scrollLeft;
-    [Affects=Nothing] readonly attribute long scrollWidth;
-    [Affects=Nothing] readonly attribute long scrollHeight;
-    [Affects=Nothing] readonly attribute long clientTop;
-    [Affects=Nothing] readonly attribute long clientLeft;
-    [Affects=Nothing] readonly attribute long clientWidth;
-    [Affects=Nothing] readonly attribute long clientHeight;
+    attribute unrestricted double scrollTop;
+    attribute unrestricted double scrollLeft;
+    readonly attribute long scrollWidth;
+    readonly attribute long scrollHeight;
+    readonly attribute long clientTop;
+    readonly attribute long clientLeft;
+    readonly attribute long clientWidth;
+    readonly attribute long clientHeight;
 
     // Typed OM
     // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects
@@ -127,8 +135,6 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
-    [RuntimeEnabled=ShadowDOMV0, RaisesException, DeprecateAs=ElementCreateShadowRoot] ShadowRoot createShadowRoot();
-    [RuntimeEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;
@@ -137,23 +143,15 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // Accessibility Object Model
     [RuntimeEnabled=AccessibilityObjectModel] readonly attribute AccessibleNode? accessibleNode;
 
-    [RuntimeEnabled=InvisibleDOM, CEReactions, CustomElementCallbacks, Reflect, ReflectOnly=("static","invisible"), ReflectEmpty="invisible", ReflectInvalid="invisible"] attribute DOMString invisible;
-
     // Event handler attributes
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onsearch;
-
-    // Declarative display locking.
-    [RuntimeEnabled=DisplayLocking, CEReactions, CustomElementCallbacks, Reflect] attribute DOMString renderSubtree;
-    [RuntimeEnabled=DisplayLocking, CallWith=ScriptState] Promise<any> updateRendering();
-
-    // CSS version of display locking.
-    [RuntimeEnabled=CSSRenderSubtree] void resetSubtreeRendered();
+    [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
 
     // Element Timing
-    [Affects=Nothing, CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+    [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
 };
 
 Element includes ParentNode;

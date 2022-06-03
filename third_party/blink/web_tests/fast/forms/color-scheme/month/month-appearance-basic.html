@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Month: <input type="month" /></li>
+</ul>
+
+<!-- disabled, readonly -->
+<ul>
+  <li>Month disabled: <input type="month" disabled/></li>
+  <li>Month readonly: <input type="month" readonly/></li>
+</ul>
+
+<!-- RTL -->
+<ul>
+  <li>Month RTL: <input type="month" value="2019-02" dir="rtl"/></li>
+</ul>
+
+<!-- font-size, font-weight -->
+<ul>
+  <li>Month font-size, font-weight: <input type="month" value="2019-02" style="font-size: 36px; font-weight: bold;"/> </li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Month hover: <input type="month" id="hoverTarget" value="2019-02"/></li>
+</ul>
+
+<!-- small width -->
+<ul>
+  <li>Month width: 10px: <input type="month" style="width: 10px;"/> </li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Month zoom: 1.5: <input type="month" style="zoom: 1.5;"/></li>
+  <li>Month zoom: 3: <input type="month" style="zoom: 3;"/></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

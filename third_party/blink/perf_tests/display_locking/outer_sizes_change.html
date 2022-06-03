@@ -50,7 +50,7 @@ function construct(n) {
   for (let i = 0; i < n; ++i) {
     const clone = specimen.cloneNode(true);
     if (i > 0)
-      clone.renderSubtree = "invisible";
+      clone.style = "content-visibility: hidden-matchable";
     document.body.appendChild(clone);
   }
 }

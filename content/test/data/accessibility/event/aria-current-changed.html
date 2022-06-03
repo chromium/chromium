@@ -1,0 +1,13 @@
+<nav>
+  <ul>
+    <li id="home"><a href="/" aria-current="page">Home</a></li>
+    <li id="about"><a href="/">About</a></li>
+  </ul>
+</nav>
+<script>
+  function go() {
+    // Move aria-curent=page from "Home" to "About".
+    document.getElementById('home').removeAttribute('aria-current');
+    document.getElementById('about').setAttribute('aria-current', 'page');
+  }
+</script>

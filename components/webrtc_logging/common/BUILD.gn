@@ -8,16 +8,12 @@ source_set("common") {
     "partial_circular_buffer.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "partial_circular_buffer_unittest.cc",
-  ]
+  sources = [ "partial_circular_buffer_unittest.cc" ]
   deps = [
     ":common",
     "//base",

@@ -1,0 +1,312 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  testonly = true
+  deps = [
+    ":android_photos",
+    ":background",
+    ":breadcrumbs",
+    ":context_menu",
+    ":copy_between_windows",
+    ":create_new_folder",
+    ":crostini",
+    ":directory_tree",
+    ":directory_tree_context_menu",
+    ":drive_specific",
+    ":file_dialog",
+    ":file_display",
+    ":file_list",
+    ":files_tooltip",
+    ":folder_shortcuts",
+    ":format_dialog",
+    ":gear_menu",
+    ":grid_view",
+    ":holding_space",
+    ":install_linux_package_dialog",
+    ":keyboard_operations",
+    ":metadata",
+    ":metrics",
+    ":my_files",
+    ":open_audio_files",
+    ":open_image_media_app",
+    ":open_media_app",
+    ":open_sniffed_files",
+    ":open_video_media_app",
+    ":providers",
+    ":quick_view",
+    ":recents",
+    ":restore_geometry",
+    ":restore_prefs",
+    ":search",
+    ":share_and_manage_dialog",
+    ":sort_columns",
+    ":tab_index",
+    ":tasks",
+    ":toolbar",
+    ":transfer",
+    ":trash",
+    ":traverse",
+    ":zip_files",
+  ]
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=gen/ui/file_manager/",
+        "js_module_root=../../ui/file_manager/",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
+js_library("background") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/integration_tests:files_app_state",
+    "//ui/file_manager/integration_tests:remote_call",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+    "//ui/file_manager/integration_tests:volume_manager_common_volume_type",
+  ]
+}
+
+js_library("android_photos") {
+  testonly = true
+  deps = [
+    ":background",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("breadcrumbs") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("context_menu") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("copy_between_windows") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("create_new_folder") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("crostini") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("directory_tree") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("directory_tree_context_menu") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("drive_specific") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("file_dialog") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("file_display") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("file_list") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("files_tooltip") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("folder_shortcuts") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("format_dialog") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("gear_menu") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("grid_view") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("holding_space") {
+  testonly = true
+  deps = [
+    ":background",
+    ":file_dialog",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("install_linux_package_dialog") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("keyboard_operations") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("metadata") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/integration_tests:metadata_stats_type",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+  externs_list = [ "$externs_path/file_manager_private.js" ]
+}
+
+js_library("metrics") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("my_files") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("open_audio_files") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("open_media_app") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("open_image_media_app") {
+  testonly = true
+  deps = [ ":open_media_app" ]
+}
+
+js_library("open_sniffed_files") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("open_video_media_app") {
+  testonly = true
+  deps = [
+    ":open_media_app",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("providers") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("quick_view") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/integration_tests:dialog_type",
+    "//ui/file_manager/integration_tests:remote_call",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
+}
+
+js_library("recents") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("restore_geometry") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("restore_prefs") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("search") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/integration_tests:files_app_state",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("share_and_manage_dialog") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("sort_columns") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("tab_index") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("tasks") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("toolbar") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("transfer") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("trash") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("traverse") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("zip_files") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}

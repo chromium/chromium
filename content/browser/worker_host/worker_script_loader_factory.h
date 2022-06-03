@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -18,10 +21,8 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class AppCacheHost;
 class BrowserContext;
-class ServiceWorkerNavigationHandle;
-class ResourceContext;
+class ServiceWorkerMainResourceHandle;
 class WorkerScriptLoader;
 
 // WorkerScriptLoaderFactory creates a WorkerScriptLoader to load the main
@@ -34,10 +35,6 @@ class WorkerScriptLoader;
 class CONTENT_EXPORT WorkerScriptLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
-  // Returns the resource context, or nullptr during shutdown. Must be called on
-  // the IO thread.
-  using ResourceContextGetter = base::RepeatingCallback<ResourceContext*(void)>;
-
   // Returns the browser context, or nullptr during shutdown. Must be called on
   // the UI thread.
   using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;
@@ -48,16 +45,22 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoaderFactory(
       int process_id,
-      ServiceWorkerNavigationHandle* service_worker_handle,
-      base::WeakPtr<AppCacheHost> appcache_host,
+      const DedicatedOrSharedWorkerToken& worker_token,
+      const net::IsolationInfo& isolation_info,
+      ServiceWorkerMainResourceHandle* service_worker_handle,
       const BrowserContextGetter& browser_context_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      ukm::SourceId worker_source_id);
+
+  WorkerScriptLoaderFactory(const WorkerScriptLoaderFactory&) = delete;
+  WorkerScriptLoaderFactory& operator=(const WorkerScriptLoaderFactory&) =
+      delete;
+
   ~WorkerScriptLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
@@ -71,17 +74,17 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
 
  private:
   const int process_id_;
-  base::WeakPtr<ServiceWorkerNavigationHandle> service_worker_handle_;
-  base::WeakPtr<AppCacheHost> appcache_host_;
+  const DedicatedOrSharedWorkerToken worker_token_;
+  const net::IsolationInfo isolation_info_;
+  base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle_;
   BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+  const ukm::SourceId worker_source_id_;
 
   // This is owned by SelfOwnedReceiver associated with the given
   // mojo::PendingReceiver<URLLoader>, and invalidated after receiver completion
   // or failure.
   base::WeakPtr<WorkerScriptLoader> script_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerScriptLoaderFactory);
 };
 
 }  // namespace content

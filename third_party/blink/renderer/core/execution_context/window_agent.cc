@@ -12,7 +12,7 @@ WindowAgent::WindowAgent(v8::Isolate* isolate)
 
 WindowAgent::~WindowAgent() = default;
 
-void WindowAgent::Trace(Visitor* visitor) {
+void WindowAgent::Trace(Visitor* visitor) const {
   Agent::Trace(visitor);
 }
 

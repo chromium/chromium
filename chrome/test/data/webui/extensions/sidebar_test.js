@@ -5,10 +5,9 @@
 /** @fileoverview Suite of tests for extension-sidebar. */
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 import {testVisible} from './test_util.js';
 
@@ -26,27 +25,29 @@ suite(extension_sidebar_tests.suiteName, function() {
   let sidebar;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     sidebar = document.createElement('extensions-sidebar');
     document.body.appendChild(sidebar);
   });
 
   test(assert(extension_sidebar_tests.TestNames.SetSelected), function() {
     const selector = '.section-item.iron-selected';
-    expectFalse(!!sidebar.$$(selector));
+    expectFalse(!!sidebar.shadowRoot.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     sidebar = document.createElement('extensions-sidebar');
     document.body.appendChild(sidebar);
     const whenSelected = eventToPromise('iron-select', sidebar.$.sectionMenu);
     flush();
     return whenSelected
         .then(function() {
-          expectEquals(sidebar.$$(selector).id, 'sections-shortcuts');
+          expectEquals(
+              sidebar.shadowRoot.querySelector(selector).id,
+              'sections-shortcuts');
 
           window.history.replaceState(undefined, '', '/');
-          PolymerTest.clearBody();
+          document.body.innerHTML = '';
           sidebar = document.createElement('extensions-sidebar');
           document.body.appendChild(sidebar);
           const whenSelected =
@@ -55,7 +56,9 @@ suite(extension_sidebar_tests.suiteName, function() {
           return whenSelected;
         })
         .then(function() {
-          expectEquals(sidebar.$$(selector).id, 'sections-extensions');
+          expectEquals(
+              sidebar.shadowRoot.querySelector(selector).id,
+              'sections-extensions');
         });
   });
 
@@ -67,23 +70,19 @@ suite(extension_sidebar_tests.suiteName, function() {
         boundTestVisible('#sections-shortcuts', true);
         boundTestVisible('#more-extensions', true);
 
-        sidebar.isSupervised = true;
-        flush();
-        boundTestVisible('#more-extensions', false);
-
         let currentPage;
         navigation.addListener(newPage => {
           currentPage = newPage;
         });
 
-        tap(sidebar.$$('#sections-shortcuts'));
+        sidebar.shadowRoot.querySelector('#sections-shortcuts').click();
         expectDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        tap(sidebar.$$('#sections-extensions'));
+        sidebar.shadowRoot.querySelector('#sections-extensions').click();
         expectDeepEquals(currentPage, {page: Page.LIST});
 
         // Clicking on the link for the current page should close the dialog.
         sidebar.addEventListener('close-drawer', () => done());
-        tap(sidebar.$$('#sections-extensions'));
+        sidebar.shadowRoot.querySelector('#sections-extensions').click();
       });
 });

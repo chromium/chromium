@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/logging.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/public/cast_media_shlib.h"
@@ -45,6 +46,13 @@ const int kMaxMessagesInQueue = 5;
 // static
 constexpr int LeScanManagerImpl::kMaxScanResultEntries;
 
+// static
+std::unique_ptr<LeScanManager> LeScanManager::Create(
+    BluetoothManagerPlatform* bluetooth_manager,
+    bluetooth_v2_shlib::LeScannerImpl* le_scanner) {
+  return std::make_unique<LeScanManagerImpl>(le_scanner);
+}
+
 class LeScanManagerImpl::ScanHandleImpl : public LeScanManager::ScanHandle {
  public:
   explicit ScanHandleImpl(LeScanManagerImpl* manager, int32_t id)
@@ -69,9 +77,15 @@ LeScanManagerImpl::~LeScanManagerImpl() = default;
 void LeScanManagerImpl::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   io_task_runner_ = std::move(io_task_runner);
+  InitializeOnIoThread();
 }
 
 void LeScanManagerImpl::Finalize() {}
+
+void LeScanManagerImpl::InitializeOnIoThread() {
+  MAKE_SURE_IO_THREAD(InitializeOnIoThread);
+  le_scanner_->SetDelegate(this);
+}
 
 void LeScanManagerImpl::AddObserver(Observer* observer) {
   observers_->AddObserver(observer);
@@ -103,7 +117,7 @@ void LeScanManagerImpl::RequestScan(RequestScanCallback cb) {
 }
 
 void LeScanManagerImpl::GetScanResults(GetScanResultsCallback cb,
-                                       base::Optional<ScanFilter> scan_filter) {
+                                       absl::optional<ScanFilter> scan_filter) {
   MAKE_SURE_IO_THREAD(GetScanResults, BindToCurrentSequence(std::move(cb)),
                       std::move(scan_filter));
   std::move(cb).Run(GetScanResultsInternal(std::move(scan_filter)));
@@ -126,8 +140,8 @@ void LeScanManagerImpl::PauseScan() {
   }
 }
 
-void LeScanManagerImpl::RestartScan() {
-  MAKE_SURE_IO_THREAD(RestartScan);
+void LeScanManagerImpl::ResumeScan() {
+  MAKE_SURE_IO_THREAD(ResumeScan);
   if (scan_handle_ids_.empty()) {
     LOG(ERROR) << "Can't restart scan, no scan handle";
     return;
@@ -210,7 +224,7 @@ void LeScanManagerImpl::OnScanResult(
 
 // Returns a list of all scan results. The results are sorted by RSSI.
 std::vector<LeScanResult> LeScanManagerImpl::GetScanResultsInternal(
-    base::Optional<ScanFilter> scan_filter) {
+    absl::optional<ScanFilter> scan_filter) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   std::vector<LeScanResult> results;
   for (const auto& pair : addr_to_scan_results_) {

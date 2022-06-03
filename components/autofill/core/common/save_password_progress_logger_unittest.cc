@@ -9,10 +9,7 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -41,47 +38,6 @@ class TestLogger : public SavePasswordProgressLogger {
 };
 
 }  // namespace
-
-TEST(SavePasswordProgressLoggerTest, LogPasswordForm) {
-  TestLogger logger;
-  PasswordForm form;
-  form.action = GURL("http://example.org/verysecret?verysecret");
-  form.password_element = UTF8ToUTF16("pwdelement");
-  form.password_value = UTF8ToUTF16("verysecret");
-  form.username_value = UTF8ToUTF16("verysecret");
-  logger.LogPasswordForm(SavePasswordProgressLogger::STRING_MESSAGE, form);
-  SCOPED_TRACE(testing::Message() << "Log string = ["
-                                  << logger.accumulated_log() << "]");
-  EXPECT_TRUE(logger.LogsContainSubstring(kTestString));
-  EXPECT_TRUE(logger.LogsContainSubstring("pwdelement"));
-  EXPECT_TRUE(logger.LogsContainSubstring("http://example.org"));
-  EXPECT_FALSE(logger.LogsContainSubstring("verysecret"));
-}
-
-TEST(SavePasswordProgressLoggerTest, LogPasswordFormElementID) {
-  // Test filtering element IDs.
-  TestLogger logger;
-  PasswordForm form;
-  const std::string kHTMLInside("Username <script> element");
-  const std::string kHTMLInsideExpected("Username__script__element");
-  const std::string kIPAddressInside("y128.0.0.1Y");
-  const std::string kIPAddressInsideExpected("y128_0_0_1Y");
-  const std::string kSpecialCharsInside("X@#a$%B&*c()D;:e+!x");
-  const std::string kSpecialCharsInsideExpected("X__a__B__c__D__e__x");
-  form.username_element = UTF8ToUTF16(kHTMLInside);
-  form.password_element = UTF8ToUTF16(kIPAddressInside);
-  form.new_password_element = UTF8ToUTF16(kSpecialCharsInside);
-  logger.LogPasswordForm(SavePasswordProgressLogger::STRING_MESSAGE, form);
-  SCOPED_TRACE(testing::Message() << "Log string = ["
-                                  << logger.accumulated_log() << "]");
-  EXPECT_TRUE(logger.LogsContainSubstring(kTestString));
-  EXPECT_FALSE(logger.LogsContainSubstring(kHTMLInside));
-  EXPECT_TRUE(logger.LogsContainSubstring(kHTMLInsideExpected));
-  EXPECT_FALSE(logger.LogsContainSubstring(kIPAddressInside));
-  EXPECT_TRUE(logger.LogsContainSubstring(kIPAddressInsideExpected));
-  EXPECT_FALSE(logger.LogsContainSubstring(kSpecialCharsInside));
-  EXPECT_TRUE(logger.LogsContainSubstring(kSpecialCharsInsideExpected));
-}
 
 TEST(SavePasswordProgressLoggerTest, LogHTMLForm) {
   TestLogger logger;

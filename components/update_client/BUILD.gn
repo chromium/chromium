@@ -21,6 +21,31 @@ source_set("network_impl") {
   ]
 }
 
+source_set("in_process_unzipper") {
+  sources = [
+    "unzip/in_process_unzipper.cc",
+    "unzip/in_process_unzipper.h",
+  ]
+  deps = [
+    ":update_client",
+    "//base",
+    "//third_party/zlib/google:zip",
+  ]
+}
+
+source_set("in_process_patcher") {
+  sources = [
+    "patch/in_process_patcher.cc",
+    "patch/in_process_patcher.h",
+  ]
+  deps = [
+    ":update_client",
+    "//base",
+    "//courgette:bsdiff",
+    "//courgette:courgette_lib",
+  ]
+}
+
 source_set("unzip_impl") {
   sources = [
     "unzip/unzip_impl.cc",
@@ -39,6 +64,7 @@ source_set("patch_impl") {
   ]
   deps = [
     ":update_client",
+    "//build:chromeos_buildflags",
     "//components/services/patch/public/cpp",
     "//components/services/patch/public/mojom",
     "//mojo/public/cpp/bindings",
@@ -58,8 +84,6 @@ static_library("update_client") {
     "action_runner.cc",
     "action_runner.h",
     "activity_data_service.h",
-    "background_downloader_win.cc",
-    "background_downloader_win.h",
     "command_line_config_policy.cc",
     "command_line_config_policy.h",
     "component.cc",
@@ -73,6 +97,8 @@ static_library("update_client") {
     "configurator.h",
     "crx_downloader.cc",
     "crx_downloader.h",
+    "crx_downloader_factory.cc",
+    "crx_downloader_factory.h",
     "crx_update_item.h",
     "network.cc",
     "network.h",
@@ -96,6 +122,8 @@ static_library("update_client") {
     "request_sender.cc",
     "request_sender.h",
     "task.h",
+    "task_send_registration_ping.cc",
+    "task_send_registration_ping.h",
     "task_send_uninstall_ping.cc",
     "task_send_uninstall_ping.h",
     "task_traits.h",
@@ -116,8 +144,6 @@ static_library("update_client") {
     "update_query_params_delegate.h",
     "updater_state.cc",
     "updater_state.h",
-    "updater_state_mac.mm",
-    "updater_state_win.cc",
     "url_fetcher_downloader.cc",
     "url_fetcher_downloader.h",
     "utils.cc",
@@ -127,6 +153,7 @@ static_library("update_client") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/client_update_protocol",
     "//components/crx_file",
     "//components/prefs",
@@ -135,6 +162,18 @@ static_library("update_client") {
     "//crypto",
     "//url",
   ]
+
+  if (is_win) {
+    sources += [
+      "background_downloader_win.cc",
+      "background_downloader_win.h",
+      "updater_state_win.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "updater_state_mac.mm" ]
+  }
 }
 
 static_library("test_support") {
@@ -142,15 +181,15 @@ static_library("test_support") {
   sources = [
     "net/url_loader_post_interceptor.cc",
     "net/url_loader_post_interceptor.h",
+    "test_activity_data_service.cc",
+    "test_activity_data_service.h",
     "test_configurator.cc",
     "test_configurator.h",
     "test_installer.cc",
     "test_installer.h",
   ]
 
-  public_deps = [
-    ":update_client",
-  ]
+  public_deps = [ ":update_client" ]
 
   deps = [
     ":network_impl",
@@ -177,6 +216,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/binary_courgette_patch.bin",
     "//components/test/data/update_client/binary_input.bin",
     "//components/test/data/update_client/binary_output.bin",
+    "//components/test/data/update_client/empty_file",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx",
     "//components/test/data/update_client/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx",
@@ -188,22 +228,16 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/updatecheck_reply_parse_error.json",
     "//components/test/data/update_client/updatecheck_reply_unknownapp.json",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 bundle_data("recovery_component_tests_bundle_data") {
   visibility = [ "//chrome/test:unit_tests" ]
   testonly = true
-  sources = [
-    "//components/test/data/update_client/ChromeRecovery.crx3",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  sources = [ "//components/test/data/update_client/ChromeRecovery.crx3" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
@@ -255,9 +289,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("update_client_protocol_serializer_fuzzer") {
-  sources = [
-    "protocol_serializer_fuzzer.cc",
-  ]
+  sources = [ "protocol_serializer_fuzzer.cc" ]
   deps = [
     ":update_client",
     "//base:base",
@@ -266,9 +298,7 @@ fuzzer_test("update_client_protocol_serializer_fuzzer") {
 }
 
 fuzzer_test("update_client_protocol_parser_fuzzer") {
-  sources = [
-    "protocol_parser_fuzzer.cc",
-  ]
+  sources = [ "protocol_parser_fuzzer.cc" ]
   deps = [
     ":update_client",
     "//base:base",

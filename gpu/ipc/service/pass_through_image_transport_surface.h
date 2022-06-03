@@ -28,6 +28,11 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
       gl::GLSurface* surface,
       bool override_vsync_for_multi_window_swap);
 
+  PassThroughImageTransportSurface(const PassThroughImageTransportSurface&) =
+      delete;
+  PassThroughImageTransportSurface& operator=(
+      const PassThroughImageTransportSurface&) = delete;
+
   // GLSurface implementation.
   bool Initialize(gl::GLSurfaceFormat format) override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
@@ -59,12 +64,13 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
   void UpdateVSyncEnabled();
 
   void StartSwapBuffers(gfx::SwapResponse* response);
-  void FinishSwapBuffers(gfx::SwapResponse response, uint64_t local_swap_id);
+  void FinishSwapBuffers(gfx::SwapResponse response,
+                         uint64_t local_swap_id,
+                         gfx::GpuFenceHandle release_fence);
   void FinishSwapBuffersAsync(SwapCompletionCallback callback,
                               gfx::SwapResponse response,
                               uint64_t local_swap_id,
-                              gfx::SwapResult result,
-                              std::unique_ptr<gfx::GpuFence> gpu_fence);
+                              gfx::SwapCompletionResult result);
 
   void BufferPresented(PresentationCallback callback,
                        uint64_t local_swap_id,
@@ -88,8 +94,6 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
 
   base::WeakPtrFactory<PassThroughImageTransportSurface> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PassThroughImageTransportSurface);
 };
 
 }  // namespace gpu

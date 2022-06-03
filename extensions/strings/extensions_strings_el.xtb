@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Αποτυχία δημιουργίας τυχαίου ιδιωτικού κλειδιού RSA.</translation>
 <translation id="1445572445564823378">Αυτή η επέκταση επιβραδύνει το <ph name="PRODUCT_NAME" />. Πρέπει να την απενεργοποιήσετε για να επαναφέρετε την απόδοση του <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Το WebGL δεν υποστηρίζεται.</translation>
-<translation id="149347756975725155">Δεν ήταν δυνατή η φόρτωση του εικονιδίου επέκτασης "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">Δεν ήταν δυνατή η φόρτωση της σελίδας φόντου "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Δεν ήταν δυνατή η αποκωδικοποίηση της εικόνας: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Χρησιμοποιήθηκε τοπική προσαρμογή, όμως δεν καθορίστηκε η τιμή "default_locale" στη δήλωση.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Αποτυχία ανάγνωσης ιδιωτικού κλειδιού.</translation>
 <translation id="6391538222494443604">Ο κατάλογος εισόδου πρέπει να υπάρχει.</translation>
 <translation id="641087317769093025">Δεν ήταν δυνατή η αποσυμπίεση της επέκτασης</translation>
-<translation id="6413453408918378296">Το εικονίδιο δεν είναι επαρκώς ορατό "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354">Η εφαρμογή "<ph name="APP_NAME" />" ζητά πρόσβαση σε μία ή περισσότερες συσκευές σας:</translation>
 <translation id="657064425229075395">Δεν ήταν δυνατή η φόρτωση του σεναρίου παρασκηνίου '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> από <ph name="VENDOR_NAME" /> (σειριακός αριθμός <ph name="SERIAL_NUMBER" />)</translation>

@@ -6,10 +6,27 @@
  * @fileoverview
  * 'os-settings-menu' shows a menu with a hardcoded set of pages and subpages.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+import '../../settings_shared_css.js';
+import '../os_icons.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-menu',
 
-  behaviors: [settings.RouteObserverBehavior],
+  behaviors: [RouteObserverBehavior],
 
   properties: {
     advancedOpened: {
@@ -28,21 +45,31 @@ Polymer({
       readOnly: true,
     },
 
-    showApps: Boolean,
-
     showCrostini: Boolean,
+
+    showStartup: Boolean,
 
     showReset: Boolean,
 
+    showKerberosSection: Boolean,
   },
 
-  /** @param {!settings.Route} newRoute */
-  currentRouteChanged: function(newRoute) {
+  /** @param {!Route} newRoute */
+  currentRouteChanged(newRoute) {
+    const urlSearchQuery =
+        Router.getInstance().getQueryParameters().get('search');
+    // If the route navigated to by a search result is in the advanced
+    // section, the advanced menu will expand.
+    if (urlSearchQuery && routes.ADVANCED &&
+        routes.ADVANCED.contains(newRoute)) {
+      this.advancedOpened = true;
+    }
+
     // Focus the initially selected path.
     const anchors = this.root.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
       const anchorRoute =
-          settings.router.getRouteForPath(anchors[i].getAttribute('href'));
+          Router.getInstance().getRouteForPath(anchors[i].getAttribute('href'));
       if (anchorRoute && anchorRoute.contains(newRoute)) {
         this.setSelectedUrl_(anchors[i].href);
         return;
@@ -53,7 +80,7 @@ Polymer({
   },
 
   /** @private */
-  onAdvancedButtonToggle_: function() {
+  onAdvancedButtonToggle_() {
     this.advancedOpened = !this.advancedOpened;
   },
 
@@ -63,7 +90,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onLinkClick_: function(event) {
+  onLinkClick_(event) {
     if (event.target.matches('a')) {
       event.preventDefault();
     }
@@ -74,7 +101,7 @@ Polymer({
    * |iron-list| uses the entire url. Using |getAttribute| will not work.
    * @param {string} url
    */
-  setSelectedUrl_: function(url) {
+  setSelectedUrl_(url) {
     this.$.topMenu.selected = this.$.subMenu.selected = url;
   },
 
@@ -82,7 +109,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onSelectorActivate_: function(event) {
+  onSelectorActivate_(event) {
     this.setSelectedUrl_(event.detail.selected);
   },
 
@@ -91,12 +118,12 @@ Polymer({
    * @return {string} Which icon to use.
    * @private
    * */
-  arrowState_: function(opened) {
+  arrowState_(opened) {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   },
 
   /** @return {boolean} Whether the advanced submenu is open. */
-  isAdvancedSubmenuOpenedForTest: function() {
+  isAdvancedSubmenuOpenedForTest() {
     const submenu = /** @type {IronCollapseElement} */ (this.$.advancedSubmenu);
     return submenu.opened;
   },
@@ -106,7 +133,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  boolToString_: function(bool) {
+  boolToString_(bool) {
     return bool.toString();
   },
 });

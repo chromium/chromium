@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -21,6 +21,8 @@ class WarningBadgeService : public KeyedService,
                             public WarningService::Observer {
  public:
   explicit WarningBadgeService(Profile* profile);
+  WarningBadgeService(const WarningBadgeService&) = delete;
+  WarningBadgeService& operator=(const WarningBadgeService&) = delete;
   ~WarningBadgeService() override;
 
   static WarningBadgeService* Get(content::BrowserContext* context);
@@ -31,7 +33,7 @@ class WarningBadgeService : public KeyedService,
 
  protected:
   // Virtual for testing.
-  virtual const std::set<Warning>& GetCurrentWarnings() const;
+  virtual const WarningSet& GetCurrentWarnings() const;
 
  private:
   // Implementation of WarningService::Observer.
@@ -43,13 +45,11 @@ class WarningBadgeService : public KeyedService,
 
   Profile* profile_;
 
-  ScopedObserver<WarningService, WarningService::Observer>
-      warning_service_observer_;
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      warning_service_observation_{this};
 
   // Warnings that do not trigger a badge on the wrench menu.
   WarningSet suppressed_warnings_;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningBadgeService);
 };
 
 }  // namespace extensions

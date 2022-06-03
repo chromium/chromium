@@ -202,8 +202,8 @@ TEST(OrdinalTest, ToInternalValue) {
 bool IsNonEmptyPrintableString(const std::string& str) {
   if (str.empty())
     return false;
-  for (size_t i = 0; i < str.length(); ++i) {
-    if (!isprint(str[i]))
+  for (char c : str) {
+    if (!isprint(c))
       return false;
   }
   return true;

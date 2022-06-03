@@ -4,8 +4,8 @@
 
 #include "components/history/core/browser/android/urls_sql_handler.h"
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "components/history/core/browser/url_database.h"
 
 using base::Time;

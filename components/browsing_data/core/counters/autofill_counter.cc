@@ -48,7 +48,7 @@ AutofillCounter::~AutofillCounter() {
 
 void AutofillCounter::OnInitialized() {
   DCHECK(web_data_service_);
-  sync_tracker_.OnInitialized(base::Bind(&IsAutofillSyncEnabled));
+  sync_tracker_.OnInitialized(base::BindRepeating(&IsAutofillSyncEnabled));
 }
 
 const char* AutofillCounter::GetPrefName() const {

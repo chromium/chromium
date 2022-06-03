@@ -26,13 +26,16 @@ void DoCanonicalizePathComponent(const CHAR* source,
     if (separator)
       output->push_back(separator);
     // Copy the path using path URL's more lax escaping rules (think for
-    // javascript:). We convert to UTF-8 and escape non-ASCII, but leave all
-    // ASCII characters alone. This helps readability of JavaStript.
+    // javascript:). We convert to UTF-8 and escape characters from the
+    // C0 control percent-encode set, but leave all other characters alone.
+    // This helps readability of JavaScript.
+    // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+    // https://url.spec.whatwg.org/#c0-control-percent-encode-set
     new_component->begin = output->length();
     int end = component.end();
     for (int i = component.begin; i < end; i++) {
       UCHAR uch = static_cast<UCHAR>(source[i]);
-      if (uch < 0x20 || uch >= 0x80)
+      if (uch < 0x20 || uch > 0x7E)
         AppendUTF8EscapedChar(source, &i, end, output);
       else
         output->push_back(static_cast<char>(uch));
@@ -59,17 +62,20 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   new_parsed->password.reset();
   new_parsed->host.reset();
   new_parsed->port.reset();
-  // We allow path URLs to have the path, query and fragment components, but we
-  // will canonicalize each of the via the weaker path URL rules.
+
+  // Canonicalize path via the weaker path URL rules.
   //
   // Note: parsing the path part should never cause a failure, see
   // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
   DoCanonicalizePathComponent<CHAR, UCHAR>(source.path, parsed.path, '\0',
                                            output, &new_parsed->path);
-  DoCanonicalizePathComponent<CHAR, UCHAR>(source.query, parsed.query, '?',
-                                           output, &new_parsed->query);
-  DoCanonicalizePathComponent<CHAR, UCHAR>(source.ref, parsed.ref, '#', output,
-                                           &new_parsed->ref);
+
+  // Similar to mailto:, always use the default UTF-8 charset converter for
+  // query.
+  CanonicalizeQuery(source.query, parsed.query, nullptr, output,
+                    &new_parsed->query);
+
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
 
   return success;
 }
@@ -85,13 +91,29 @@ bool CanonicalizePathURL(const char* spec,
       URLComponentSource<char>(spec), parsed, output, new_parsed);
 }
 
-bool CanonicalizePathURL(const base::char16* spec,
+bool CanonicalizePathURL(const char16_t* spec,
                          int spec_len,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed) {
-  return DoCanonicalizePathURL<base::char16, base::char16>(
-      URLComponentSource<base::char16>(spec), parsed, output, new_parsed);
+  return DoCanonicalizePathURL<char16_t, char16_t>(
+      URLComponentSource<char16_t>(spec), parsed, output, new_parsed);
+}
+
+void CanonicalizePathURLPath(const char* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component) {
+  DoCanonicalizePathComponent<char, unsigned char>(source, component, '\0',
+                                                   output, new_component);
+}
+
+void CanonicalizePathURLPath(const char16_t* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component) {
+  DoCanonicalizePathComponent<char16_t, char16_t>(source, component, '\0',
+                                                  output, new_component);
 }
 
 bool ReplacePathURL(const char* base,
@@ -108,7 +130,7 @@ bool ReplacePathURL(const char* base,
 
 bool ReplacePathURL(const char* base,
                     const Parsed& base_parsed,
-                    const Replacements<base::char16>& replacements,
+                    const Replacements<char16_t>& replacements,
                     CanonOutput* output,
                     Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;

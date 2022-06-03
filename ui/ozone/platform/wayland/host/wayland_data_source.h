@@ -5,77 +5,98 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_SOURCE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_SOURCE_H_
 
-#include <wayland-client.h>
-
-#include <map>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/notreached.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
-#include "ui/ozone/platform/wayland/host/internal/wayland_data_source_base.h"
-#include "ui/ozone/public/platform_clipboard.h"
+
+struct wl_data_source;
+struct gtk_primary_selection_source;
+struct zwp_primary_selection_source_v1;
+
+namespace wl {
+template <typename T>
+class DataSource;
+}  // namespace wl
 
 namespace ui {
 
-class OSExchangeData;
 class WaylandConnection;
-class WaylandWindow;
 
-// The WaylandDataSource object represents the source side of a
-// WaylandDataOffer. It is created by the source client in a data
-// transfer and provides a way to describe the offered data
-// (wl_data_source_offer) // and a way to respond to requests to
-// transfer the data (OnSend listener).
-class WaylandDataSource : public internal::WaylandDataSourceBase {
- public:
-  using DragDataMap = std::map<std::string, std::string>;
+// DataSource represents the source side of a DataOffer. It is created by the
+// source client in a data transfer and provides a way to describe the offered
+// data and a way to respond to requests to transfer the data. There are a few
+// variants of Wayland protocol objects and extensions supporting different
+// features. E.g: regular copy/paste and drag operations are implemented by
+// wl_data_source (along with its _device and _offer counterparts), etc.
+// Implementation wise, these variants are share a single class template, with
+// specializations defined for each underlying supported extensions. Below are
+// the type aliases for the variants currently supported.
 
-  // Takes ownership of data_source.
-  explicit WaylandDataSource(wl_data_source* data_source,
-                             WaylandConnection* connection);
-  ~WaylandDataSource() override;
+using WaylandDataSource = wl::DataSource<wl_data_source>;
 
-  void set_connection(WaylandConnection* connection) {
-    DCHECK(connection);
-    connection_ = connection;
-  }
+using GtkPrimarySelectionSource = wl::DataSource<gtk_primary_selection_source>;
 
-  void WriteToClipboard(const PlatformClipboard::DataMap& data_map) override;
-  void Offer(const ui::OSExchangeData& data);
-  void SetAction(int operation);
-  void SetDragData(const DragDataMap& data_map);
-
-  wl_data_source* data_source() const { return data_source_.get(); }
-
- private:
-  static void OnTarget(void* data,
-                       wl_data_source* source,
-                       const char* mime_type);
-  static void OnSend(void* data,
-                     wl_data_source* source,
-                     const char* mime_type,
-                     int32_t fd);
-  static void OnCancel(void* data, wl_data_source* source);
-  static void OnDnDDropPerformed(void* data, wl_data_source* source);
-  static void OnDnDFinished(void* data, wl_data_source* source);
-  static void OnAction(void* data, wl_data_source* source, uint32_t dnd_action);
-
-  void GetDragData(const std::string& mime_type, std::string* contents);
-
-  wl::Object<wl_data_source> data_source_;
-  WaylandConnection* connection_ = nullptr;
-  WaylandWindow* source_window_ = nullptr;
-
-  DragDataMap drag_data_map_;
-  // Action selected by the compositor
-  uint32_t dnd_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataSource);
-};
+using ZwpPrimarySelectionSource = wl::DataSource<zwp_primary_selection_source_v1>;
 
 }  // namespace ui
+
+namespace wl {
+
+// Template class implementing DataSource, whereas T is the underlying source
+// type, e.g: wl_data_source, gtk_primary_selection_source, etc. This class
+// is not supposed to be used directly, instead use the aliases defined above.
+template <typename T>
+class DataSource {
+ public:
+  class Delegate {
+   public:
+    virtual void OnDataSourceFinish(bool completed) = 0;
+    virtual void OnDataSourceSend(const std::string& mime_type,
+                                  std::string* contents) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  // Takes ownership of |data_source|.
+  DataSource(T* data_source,
+             ui::WaylandConnection* connection,
+             Delegate* delegate);
+  DataSource(const DataSource<T>&) = delete;
+  DataSource& operator=(const DataSource<T>&) = delete;
+  ~DataSource() = default;
+
+  void Initialize();
+  void Offer(const std::vector<std::string>& mime_types);
+  void SetDndActions(uint32_t dnd_actions);
+
+  uint32_t dnd_action() const { return dnd_action_; }
+  T* data_source() const { return data_source_.get(); }
+
+ private:
+  void HandleFinishEvent(bool completed);
+  void HandleSendEvent(const std::string& mime_type, int32_t fd);
+
+  static void OnSend(void* data, T* source, const char* mime_type, int32_t fd);
+  static void OnCancel(void* data, T* source);
+  static void OnDnDFinished(void* data, T* source);
+  static void OnAction(void* data, T* source, uint32_t dnd_action);
+  static void OnTarget(void* data, T* source, const char* mime_type);
+  static void OnDnDDropPerformed(void* data, T* source);
+
+  wl::Object<T> data_source_;
+
+  ui::WaylandConnection* const connection_;
+
+  Delegate* const delegate_;
+
+  // Action selected by the compositor
+  uint32_t dnd_action_ = 0;
+};
+
+}  // namespace wl
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_SOURCE_H_

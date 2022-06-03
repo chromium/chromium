@@ -7,70 +7,31 @@
 #include "base/base64url.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_qr_code.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "components/qr_code_generator/dino_image.h"
+#include "components/qr_code_generator/qr_code_generator.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
-using QRCode = AuthenticatorQRCode;
+using QRCode = QRCodeGenerator;
 
 namespace {
 
-static constexpr int kDinoWidth = 20;
-static constexpr int kDinoHeight = 22;
-static constexpr int kDinoHeadHeight = 8;
-static constexpr int kDinoWidthBytes = (kDinoWidth + 7) / 8;
-static constexpr int kDinoBodyHeight = kDinoHeight - kDinoHeadHeight;
-
-static const uint8_t kDinoHeadRight[kDinoWidthBytes * kDinoHeadHeight] = {
-    // clang-format off
-  0b00000000, 0b00011111, 0b11100000,
-  0b00000000, 0b00111111, 0b11110000,
-  0b00000000, 0b00110111, 0b11110000,
-  0b00000000, 0b00111111, 0b11110000,
-  0b00000000, 0b00111111, 0b11110000,
-  0b00000000, 0b00111111, 0b11110000,
-  0b00000000, 0b00111110, 0b00000000,
-  0b00000000, 0b00111111, 0b11000000,
-    // clang-format on
-};
-
-static const uint8_t kDinoHeadLeft[kDinoWidthBytes * kDinoHeadHeight] = {
-    // clang-format off
-  0b00000111, 0b11111000, 0b00000000,
-  0b00001111, 0b11111100, 0b00000000,
-  0b00001111, 0b11101100, 0b00000000,
-  0b00001111, 0b11111100, 0b00000000,
-  0b00001111, 0b11111100, 0b00000000,
-  0b00001111, 0b11111100, 0b00000000,
-  0b00000000, 0b01111100, 0b00000000,
-  0b00000011, 0b11111100, 0b00000000,
-    // clang-format on
-};
-
-static const uint8_t kDinoBody[kDinoWidthBytes * kDinoBodyHeight] = {
-    // clang-format off
-  0b10000000, 0b01111100, 0b00000000,
-  0b10000001, 0b11111100, 0b00000000,
-  0b11000011, 0b11111111, 0b00000000,
-  0b11100111, 0b11111101, 0b00000000,
-  0b11111111, 0b11111100, 0b00000000,
-  0b11111111, 0b11111100, 0b00000000,
-  0b01111111, 0b11111000, 0b00000000,
-  0b00111111, 0b11111000, 0b00000000,
-  0b00011111, 0b11110000, 0b00000000,
-  0b00001111, 0b11100000, 0b00000000,
-  0b00000111, 0b01100000, 0b00000000,
-  0b00000110, 0b00100000, 0b00000000,
-  0b00000100, 0b00100000, 0b00000000,
-  0b00000110, 0b00110000, 0b00000000,
-    // clang-format on
-};
+// kMinimumQRVersion is the minimum QR version (i.e. size) that we support.
+// The amount of input already precludes smaller versions with the current
+// encoder but it's possible that a low-ECC configuration could be added that
+// would otherwise cause a smaller version to be used. This minimum ensures
+// that the UI sizing remains constant and that the dino image doesn't
+// obscure too much of the QR code
+constexpr int kMinimumQRVersion = 5;
 
 // QRView displays a QR code.
 class QRView : public views::View {
  public:
+  METADATA_HEADER(QRView);
+
   // kTilePixels is the height and width, in pixels, of a single tile from the
   // QR code.
   static constexpr int kTilePixels = 10;
@@ -79,27 +40,44 @@ class QRView : public views::View {
   static constexpr int kDinoTilePixels = 3;
   // kMid is the pixel offset from the top (or left) to the middle of the
   // displayed QR code.
-  static constexpr int kMid = (kTilePixels * (2 + QRCode::kSize + 2)) / 2;
+  static constexpr int kMid = (kTilePixels * (2 + QRCode::V5::kSize + 2)) / 2;
   // kDinoX is the x-coordinate of the dino image.
-  static constexpr int kDinoX = kMid - (kDinoWidth * kDinoTilePixels) / 2;
+  static constexpr int kDinoX =
+      kMid - (dino_image::kDinoWidth * kDinoTilePixels) / 2;
   // kDinoY is the y-coordinate of the dino image.
-  static constexpr int kDinoY = kMid - (kDinoHeight * kDinoTilePixels) / 2;
+  static constexpr int kDinoY =
+      kMid - (dino_image::kDinoHeight * kDinoTilePixels) / 2;
 
-  explicit QRView(const uint8_t qr_data[QRCode::kInputBytes])
-      : qr_tiles_(qr_.Generate(qr_data)) {}
-  ~QRView() override {}
+  explicit QRView(const std::string& qr_string) {
+    absl::optional<QRCode::GeneratedCode> code = qr_.Generate(
+        base::as_bytes(base::make_span(qr_string)), kMinimumQRVersion);
+    DCHECK(code);
+    // The QR Encoder supports dynamic sizing but we expect our data to fit in
+    // a version five code.
+    CHECK_EQ(code->qr_size, QRCode::V5::kSize);
+    qr_tiles_ = code->data;
+  }
 
-  void RefreshQRCode(const uint8_t new_qr_data[QRCode::kInputBytes]) {
+  QRView(const QRView&) = delete;
+  QRView& operator=(const QRView&) = delete;
+  ~QRView() override = default;
+
+  void RefreshQRCode(const std::string& qr_string) {
     state_ = (state_ + 1) % 6;
-    qr_tiles_ = qr_.Generate(new_qr_data);
+    absl::optional<QRCode::GeneratedCode> code =
+        qr_.Generate(base::as_bytes(base::make_span(qr_string)),
+                     kMinimumQRVersion, /*mask=*/state_);
+    DCHECK(code);
+    CHECK_EQ(code->qr_size, QRCode::V5::kSize);
+    qr_tiles_ = code->data;
     SchedulePaint();
   }
 
   // View:
   gfx::Size CalculatePreferredSize() const override {
     // A two-tile border is required around the QR code.
-    return gfx::Size((2 + QRCode::kSize + 2) * kTilePixels,
-                     (2 + QRCode::kSize + 2) * kTilePixels);
+    return gfx::Size((2 + QRCode::V5::kSize + 2) * kTilePixels,
+                     (2 + QRCode::V5::kSize + 2) * kTilePixels);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -131,28 +109,28 @@ class QRView : public views::View {
 
     // Draw the two-tile border around the edge.
     // Top.
-    canvas->FillRect(
-        gfx::Rect(0, 0, (2 + QRCode::kSize + 2) * kTilePixels, 2 * kTilePixels),
-        off);
+    canvas->FillRect(gfx::Rect(0, 0, (2 + QRCode::V5::kSize + 2) * kTilePixels,
+                               2 * kTilePixels),
+                     off);
     // Bottom.
     canvas->FillRect(
-        gfx::Rect(0, (2 + QRCode::kSize) * kTilePixels,
-                  (2 + QRCode::kSize + 2) * kTilePixels, 2 * kTilePixels),
+        gfx::Rect(0, (2 + QRCode::V5::kSize) * kTilePixels,
+                  (2 + QRCode::V5::kSize + 2) * kTilePixels, 2 * kTilePixels),
         off);
     // Left
     canvas->FillRect(gfx::Rect(0, 2 * kTilePixels, 2 * kTilePixels,
-                               QRCode::kSize * kTilePixels),
+                               QRCode::V5::kSize * kTilePixels),
                      off);
     // Right
     canvas->FillRect(
-        gfx::Rect((2 + QRCode::kSize) * kTilePixels, 2 * kTilePixels,
-                  2 * kTilePixels, QRCode::kSize * kTilePixels),
+        gfx::Rect((2 + QRCode::V5::kSize) * kTilePixels, 2 * kTilePixels,
+                  2 * kTilePixels, QRCode::V5::kSize * kTilePixels),
         off);
 
     // Paint the QR code.
     int index = 0;
-    for (int y = 0; y < QRCode::kSize; y++) {
-      for (int x = 0; x < QRCode::kSize; x++) {
+    for (int y = 0; y < QRCode::V5::kSize; y++) {
+      for (int x = 0; x < QRCode::V5::kSize; x++) {
         SkColor tile_color = qr_tiles_[index++] & 1 ? on : off;
         canvas->FillRect(gfx::Rect((x + 2) * kTilePixels, (y + 2) * kTilePixels,
                                    kTilePixels, kTilePixels),
@@ -160,10 +138,13 @@ class QRView : public views::View {
       }
     }
 
-    PaintDinoSegment(canvas, (state_ & 1) ? kDinoHeadLeft : kDinoHeadRight,
-                     kDinoHeadHeight, 0);
-    PaintDinoSegment(canvas, kDinoBody, kDinoHeight - kDinoHeadHeight,
-                     kDinoHeadHeight);
+    PaintDinoSegment(
+        canvas,
+        (state_ & 1) ? dino_image::kDinoHeadLeft : dino_image::kDinoHeadRight,
+        dino_image::kDinoHeadHeight, 0);
+    PaintDinoSegment(canvas, dino_image::kDinoBody,
+                     dino_image::kDinoHeight - dino_image::kDinoHeadHeight,
+                     dino_image::kDinoHeadHeight);
   }
 
  private:
@@ -177,7 +158,7 @@ class QRView : public views::View {
       uint8_t current_byte;
       int bits = 0;
 
-      for (int x = 0; x < kDinoWidth; x++) {
+      for (int x = 0; x < dino_image::kDinoWidth; x++) {
         if (bits == 0) {
           current_byte = *data++;
           bits = 8;
@@ -197,53 +178,19 @@ class QRView : public views::View {
   }
 
   QRCode qr_;
-  base::span<const uint8_t, QRCode::kTotalSize> qr_tiles_;
+  base::span<const uint8_t> qr_tiles_;
   int state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(QRView);
 };
 
-// Base64EncodedSize returns the number of bytes required to base64 encode an
-// input of |input_length| bytes, without padding.
-constexpr size_t Base64EncodedSize(size_t input_length) {
-  return ((input_length * 4) + 2) / 3;
-}
-
-// QRDataForCurrentTime writes a URL suitable for encoding as a QR to
-// |out_qr_data|. The URL is generated based on |qr_generator_key| and the
-// current time such that the caBLE discovery code can recognise the URL as
-// valid.
-void QRDataForCurrentTime(uint8_t out_qr_data[QRCode::kInputBytes],
-                          base::span<const uint8_t, 32> qr_generator_key) {
-  const int64_t current_tick = device::CableDiscoveryData::CurrentTimeTick();
-  auto qr_secret = device::CableDiscoveryData::DeriveQRSecret(qr_generator_key,
-                                                              current_tick);
-
-  std::string base64_qr_secret;
-  base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(qr_secret.data()),
-                        qr_secret.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64_qr_secret);
-  static constexpr size_t kEncodedSecretLength =
-      Base64EncodedSize(sizeof(qr_secret));
-  DCHECK_EQ(kEncodedSecretLength, base64_qr_secret.size());
-
-  static constexpr char kPrefix[] = "fido://c1/";
-  static constexpr size_t kPrefixLength = sizeof(kPrefix) - 1;
-
-  static_assert(QRCode::kInputBytes == kPrefixLength + kEncodedSecretLength,
-                "unexpected QR input length");
-  memcpy(out_qr_data, kPrefix, kPrefixLength);
-  memcpy(&out_qr_data[kPrefixLength], base64_qr_secret.data(),
-         kEncodedSecretLength);
-}
+BEGIN_METADATA(QRView, views::View)
+END_METADATA
 
 }  // anonymous namespace
 
 class AuthenticatorQRViewCentered : public views::View {
  public:
-  explicit AuthenticatorQRViewCentered(
-      const uint8_t qr_data[QRCode::kInputBytes]) {
+  METADATA_HEADER(AuthenticatorQRViewCentered);
+  explicit AuthenticatorQRViewCentered(const std::string& qr_data) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal));
@@ -255,36 +202,36 @@ class AuthenticatorQRViewCentered : public views::View {
     AddChildView(qr_view_);
   }
 
-  void RefreshQRCode(const uint8_t new_qr_data[QRCode::kInputBytes]) {
+  void RefreshQRCode(const std::string& new_qr_data) {
     qr_view_->RefreshQRCode(new_qr_data);
   }
 
   QRView* qr_view_;
 };
 
+BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)
+END_METADATA
+
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
     std::unique_ptr<AuthenticatorQRSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)),
-      qr_generator_key_(reinterpret_cast<AuthenticatorQRSheetModel*>(model())
-                            ->dialog_model()
-                            ->qr_generator_key()) {}
+      qr_string_(static_cast<AuthenticatorQRSheetModel*>(model())
+                     ->dialog_model()
+                     ->cable_qr_string()) {}
 
 AuthenticatorQRSheetView::~AuthenticatorQRSheetView() = default;
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorQRSheetView::BuildStepSpecificContent() {
-  uint8_t qr_data[QRCode::kInputBytes];
-  QRDataForCurrentTime(qr_data, qr_generator_key_);
-  auto qr_view = std::make_unique<AuthenticatorQRViewCentered>(qr_data);
+  auto qr_view = std::make_unique<AuthenticatorQRViewCentered>(qr_string_);
   qr_view_ = qr_view.get();
 
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(600), this,
+  timer_.Start(FROM_HERE, base::Milliseconds(600), this,
                &AuthenticatorQRSheetView::Update);
-  return qr_view;
+  return std::make_pair(std::move(qr_view), AutoFocus::kYes);
 }
 
 void AuthenticatorQRSheetView::Update() {
-  uint8_t qr_data[QRCode::kInputBytes];
-  QRDataForCurrentTime(qr_data, qr_generator_key_);
-  qr_view_->RefreshQRCode(qr_data);
+  qr_view_->RefreshQRCode(qr_string_);
 }

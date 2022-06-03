@@ -6,12 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_LOCK_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
@@ -19,18 +20,19 @@ class ExceptionState;
 class ScriptPromiseResolver;
 
 class KeyboardLock final : public GarbageCollected<KeyboardLock>,
-                           public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(KeyboardLock);
-
+                           public ExecutionContextClient {
  public:
   explicit KeyboardLock(ExecutionContext*);
+
+  KeyboardLock(const KeyboardLock&) = delete;
+  KeyboardLock& operator=(const KeyboardLock&) = delete;
+
   ~KeyboardLock();
 
   ScriptPromise lock(ScriptState*, const Vector<String>&, ExceptionState&);
   void unlock(ScriptState*);
 
-  // ContextLifecycleObserver override.
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Returns true if the local frame is attached to the renderer.
@@ -45,10 +47,8 @@ class KeyboardLock final : public GarbageCollected<KeyboardLock>,
   void LockRequestFinished(ScriptPromiseResolver*,
                            mojom::KeyboardLockRequestResult);
 
-  mojo::Remote<mojom::blink::KeyboardLockService> service_;
+  HeapMojoRemote<mojom::blink::KeyboardLockService> service_;
   Member<ScriptPromiseResolver> request_keylock_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLock);
 };
 
 }  // namespace blink

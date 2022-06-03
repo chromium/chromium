@@ -12,9 +12,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/process/process_handle.h"
+#include "base/files/platform_file.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -32,19 +30,17 @@ namespace base {
 
 class BASE_EXPORT SyncSocket {
  public:
-#if defined(OS_WIN)
-  typedef HANDLE Handle;
-  typedef Handle TransitDescriptor;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  typedef int Handle;
-  typedef FileDescriptor TransitDescriptor;
-#endif
+  using Handle = PlatformFile;
+  using ScopedHandle = ScopedPlatformFile;
   static const Handle kInvalidHandle;
 
   SyncSocket();
 
-  // Creates a SyncSocket from a Handle.  Used in transport.
-  explicit SyncSocket(Handle handle) : handle_(handle)  {}
+  // Creates a SyncSocket from a Handle.
+  explicit SyncSocket(Handle handle);
+  explicit SyncSocket(ScopedHandle handle);
+  SyncSocket(const SyncSocket&) = delete;
+  SyncSocket& operator=(const SyncSocket&) = delete;
   virtual ~SyncSocket();
 
   // Initializes and connects a pair of sockets.
@@ -52,17 +48,8 @@ class BASE_EXPORT SyncSocket {
   // return, the sockets will both be valid and connected.
   static bool CreatePair(SyncSocket* socket_a, SyncSocket* socket_b);
 
-  // Returns |Handle| wrapped in a |TransitDescriptor|.
-  static Handle UnwrapHandle(const TransitDescriptor& descriptor);
-
-  // Prepares a |TransitDescriptor| which wraps |Handle| used for transit.
-  // This is used to prepare the underlying shared resource before passing back
-  // the handle to be used by the peer process.
-  bool PrepareTransitDescriptor(ProcessHandle peer_process_handle,
-                                TransitDescriptor* descriptor);
-
-  // Closes the SyncSocket.  Returns true on success, false on failure.
-  virtual bool Close();
+  // Closes the SyncSocket.
+  virtual void Close();
 
   // Sends the message to the remote peer of the SyncSocket.
   // Note it is not safe to send messages from the same socket handle by
@@ -89,18 +76,19 @@ class BASE_EXPORT SyncSocket {
   // not block when called.
   virtual size_t Peek();
 
+  // Returns true if the Handle is valid, and false if it is not.
+  bool IsValid() const;
+
   // Extracts the contained handle.  Used for transferring between
   // processes.
-  Handle handle() const { return handle_; }
+  Handle handle() const;
 
   // Extracts and takes ownership of the contained handle.
   Handle Release();
+  ScopedHandle Take();
 
  protected:
-  Handle handle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncSocket);
+  ScopedHandle handle_;
 };
 
 // Derives from SyncSocket and adds support for shutting down the socket from
@@ -110,6 +98,9 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
  public:
   CancelableSyncSocket();
   explicit CancelableSyncSocket(Handle handle);
+  explicit CancelableSyncSocket(ScopedHandle handle);
+  CancelableSyncSocket(const CancelableSyncSocket&) = delete;
+  CancelableSyncSocket& operator=(const CancelableSyncSocket&) = delete;
   ~CancelableSyncSocket() override = default;
 
   // Initializes a pair of cancelable sockets.  See documentation for
@@ -128,7 +119,7 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // and there isn't a way to cancel a blocking synchronous Read that is
   // supported on <Vista. So, for Windows only, we override these
   // SyncSocket methods in order to support shutting down the 'socket'.
-  bool Close() override;
+  void Close() override;
   size_t Receive(void* buffer, size_t length) override;
   size_t ReceiveWithTimeout(void* buffer,
                             size_t length,
@@ -147,14 +138,7 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   WaitableEvent shutdown_event_;
   WaitableEvent file_operation_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(CancelableSyncSocket);
 };
-
-#if defined(OS_WIN) && !defined(COMPONENT_BUILD)
-// TODO(cpu): remove this once chrome is split in two dlls.
-__declspec(selectany)
-    const SyncSocket::Handle SyncSocket::kInvalidHandle = INVALID_HANDLE_VALUE;
-#endif
 
 }  // namespace base
 

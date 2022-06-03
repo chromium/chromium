@@ -22,7 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -39,6 +38,9 @@ class CSSRuleList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  CSSRuleList(const CSSRuleList&) = delete;
+  CSSRuleList& operator=(const CSSRuleList&) = delete;
+
   virtual unsigned length() const = 0;
   virtual CSSRule* item(unsigned index) const = 0;
 
@@ -46,9 +48,6 @@ class CSSRuleList : public ScriptWrappable {
 
  protected:
   CSSRuleList() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CSSRuleList);
 };
 
 template <class Rule>
@@ -56,7 +55,7 @@ class LiveCSSRuleList final : public CSSRuleList {
  public:
   LiveCSSRuleList(Rule* rule) : rule_(rule) {}
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(rule_);
     CSSRuleList::Trace(visitor);
   }

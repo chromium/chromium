@@ -4,12 +4,12 @@
 
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace device {
 
-#if !defined(OS_LINUX) || defined(LINUX_WITHOUT_DBUS)
+#if (!defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(LINUX_WITHOUT_DBUS)
 // static
 base::WeakPtr<BluetoothLocalGattDescriptor>
 BluetoothLocalGattDescriptor::Create(

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/mhtml/shared_buffer_chunk_reader.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 

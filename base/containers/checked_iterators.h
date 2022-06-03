@@ -9,8 +9,9 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "base/containers/util.h"
-#include "base/logging.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -27,14 +28,24 @@ class CheckedContiguousIterator {
   template <typename U>
   friend class CheckedContiguousIterator;
 
+  // Required for certain libc++ algorithm optimizations that are not available
+  // for NaCl.
+#if defined(_LIBCPP_VERSION) && !defined(OS_NACL)
+  template <typename Ptr>
+  friend struct std::pointer_traits;
+#endif
+
   constexpr CheckedContiguousIterator() = default;
+
   constexpr CheckedContiguousIterator(T* start, const T* end)
       : CheckedContiguousIterator(start, start, end) {}
+
   constexpr CheckedContiguousIterator(const T* start, T* current, const T* end)
       : start_(start), current_(current), end_(end) {
     CHECK_LE(start, current);
     CHECK_LE(current, end);
   }
+
   constexpr CheckedContiguousIterator(const CheckedContiguousIterator& other) =
       default;
 
@@ -60,34 +71,39 @@ class CheckedContiguousIterator {
   constexpr CheckedContiguousIterator& operator=(
       const CheckedContiguousIterator& other) = default;
 
-  constexpr bool operator==(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ == other.current_;
+  friend constexpr bool operator==(const CheckedContiguousIterator& lhs,
+                                   const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ == rhs.current_;
   }
 
-  constexpr bool operator!=(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ != other.current_;
+  friend constexpr bool operator!=(const CheckedContiguousIterator& lhs,
+                                   const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ != rhs.current_;
   }
 
-  constexpr bool operator<(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ < other.current_;
+  friend constexpr bool operator<(const CheckedContiguousIterator& lhs,
+                                  const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ < rhs.current_;
   }
 
-  constexpr bool operator<=(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ <= other.current_;
+  friend constexpr bool operator<=(const CheckedContiguousIterator& lhs,
+                                   const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ <= rhs.current_;
+  }
+  friend constexpr bool operator>(const CheckedContiguousIterator& lhs,
+                                  const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ > rhs.current_;
   }
 
-  constexpr bool operator>(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ > other.current_;
-  }
-
-  constexpr bool operator>=(const CheckedContiguousIterator& other) const {
-    CheckComparable(other);
-    return current_ >= other.current_;
+  friend constexpr bool operator>=(const CheckedContiguousIterator& lhs,
+                                   const CheckedContiguousIterator& rhs) {
+    lhs.CheckComparable(rhs);
+    return lhs.current_ >= rhs.current_;
   }
 
   constexpr CheckedContiguousIterator& operator++() {
@@ -149,8 +165,7 @@ class CheckedContiguousIterator {
   constexpr friend difference_type operator-(
       const CheckedContiguousIterator& lhs,
       const CheckedContiguousIterator& rhs) {
-    CHECK_EQ(lhs.start_, rhs.start_);
-    CHECK_EQ(lhs.end_, rhs.end_);
+    lhs.CheckComparable(rhs);
     return lhs.current_ - rhs.current_;
   }
 
@@ -201,5 +216,50 @@ template <typename T>
 using CheckedContiguousConstIterator = CheckedContiguousIterator<const T>;
 
 }  // namespace base
+
+#if defined(_LIBCPP_VERSION) && !defined(OS_NACL)
+// Specialize both std::__is_cpp17_contiguous_iterator and std::pointer_traits
+// for CCI in case we compile with libc++ outside of NaCl. The former is
+// required to enable certain algorithm optimizations (e.g. std::copy can be a
+// simple std::memmove under certain circumstances), and is a precursor to
+// C++20's std::contiguous_iterator concept [1]. Once we actually use C++20 it
+// will be enough to add `using iterator_concept = std::contiguous_iterator_tag`
+// to the iterator class [2], and we can get rid of this non-standard
+// specialization.
+//
+// The latter is required to obtain the underlying raw pointer without resulting
+// in CHECK failures. The important bit is the `to_address(pointer)` overload,
+// which is the standard blessed way to customize `std::to_address(pointer)` in
+// C++20 [3].
+//
+// [1] https://wg21.link/iterator.concept.contiguous
+// [2] https://wg21.link/std.iterator.tags
+// [3] https://wg21.link/pointer.traits.optmem
+namespace std {
+
+template <typename T>
+struct __is_cpp17_contiguous_iterator<::base::CheckedContiguousIterator<T>>
+    : true_type {};
+
+template <typename T>
+struct pointer_traits<::base::CheckedContiguousIterator<T>> {
+  using pointer = ::base::CheckedContiguousIterator<T>;
+  using element_type = T;
+  using difference_type = ptrdiff_t;
+
+  template <typename U>
+  using rebind = ::base::CheckedContiguousIterator<U>;
+
+  static constexpr pointer pointer_to(element_type& r) noexcept {
+    return pointer(&r, &r);
+  }
+
+  static constexpr element_type* to_address(pointer p) noexcept {
+    return p.current_;
+  }
+};
+
+}  // namespace std
+#endif
 
 #endif  // BASE_CONTAINERS_CHECKED_ITERATORS_H_

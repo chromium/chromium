@@ -7,12 +7,11 @@
 #include <inttypes.h>
 
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -26,11 +25,14 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   // This should never outlive the provided ProcessMemoryDump, as it should
   // always be scoped to a single OnMemoryDump funciton call.
   SkiaGpuTraceMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                         base::Optional<uint64_t> share_group_tracing_guid)
+                         absl::optional<uint64_t> share_group_tracing_guid)
       : pmd_(pmd),
         share_group_tracing_guid_(share_group_tracing_guid),
         tracing_process_id_(base::trace_event::MemoryDumpManager::GetInstance()
                                 ->GetTracingProcessId()) {}
+
+  SkiaGpuTraceMemoryDump(const SkiaGpuTraceMemoryDump&) = delete;
+  SkiaGpuTraceMemoryDump& operator=(const SkiaGpuTraceMemoryDump&) = delete;
 
   ~SkiaGpuTraceMemoryDump() override = default;
 
@@ -41,6 +43,12 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
                         uint64_t value) override {
     auto* dump = GetOrCreateAllocatorDump(dump_name);
     dump->AddScalar(value_name, units, value);
+  }
+  void dumpStringValue(const char* dump_name,
+                       const char* value_name,
+                       const char* value) override {
+    auto* dump = GetOrCreateAllocatorDump(dump_name);
+    dump->AddString(value_name, "", value);
   }
 
   void setMemoryBacking(const char* dump_name,
@@ -122,73 +130,21 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   }
 
   base::trace_event::ProcessMemoryDump* pmd_;
-  base::Optional<uint64_t> share_group_tracing_guid_;
+  absl::optional<uint64_t> share_group_tracing_guid_;
   uint64_t tracing_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaGpuTraceMemoryDump);
 };
 
 }  // namespace
 
-void DetermineGrCacheLimitsFromAvailableMemory(
-    size_t* max_resource_cache_bytes,
-    size_t* max_glyph_cache_texture_bytes) {
-  // Default limits.
-#if defined(OS_FUCHSIA)
-  // Reduce protected budget on fuchsia due to https://fxb/36620.
-  constexpr size_t kMaxGaneshResourceCacheBytes = 24 * 1024 * 1024;
-#else
-  constexpr size_t kMaxGaneshResourceCacheBytes = 96 * 1024 * 1024;
-#endif  // defined(OS_FUCHSIA)
-  constexpr size_t kMaxDefaultGlyphCacheTextureBytes = 2048 * 1024 * 4;
-
-  *max_resource_cache_bytes = kMaxGaneshResourceCacheBytes;
-  *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes;
-
-// We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !defined(OS_NACL)
-  // The limit of the bytes allocated toward GPU resources in the GrContext's
-  // GPU cache.
-#if defined(OS_FUCHSIA)
-  // Reduce protected budget on fuchsia due to https://fxb/36620.
-  constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 24 * 1024 * 1024;
-#else
-  constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;
-#endif  // defined(OS_FUCHSIA)
-  constexpr size_t kMaxHighEndGaneshResourceCacheBytes = 256 * 1024 * 1024;
-  // Limits for glyph cache textures.
-  constexpr size_t kMaxLowEndGlyphCacheTextureBytes = 1024 * 512 * 4;
-  // High-end / low-end memory cutoffs.
-  constexpr int64_t kHighEndMemoryThreshold = (int64_t)4096 * 1024 * 1024;
-  constexpr int64_t kLowEndMemoryThreshold = (int64_t)512 * 1024 * 1024;
-
-  int64_t amount_of_physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-  if (amount_of_physical_memory <= kLowEndMemoryThreshold) {
-    *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes;
-    *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes;
-  } else if (amount_of_physical_memory >= kHighEndMemoryThreshold) {
-    *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes;
-  }
-#endif
-}
-
-void DefaultGrCacheLimitsForTests(size_t* max_resource_cache_bytes,
-                                  size_t* max_glyph_cache_texture_bytes) {
-  constexpr size_t kDefaultGlyphCacheTextureBytes = 2048 * 1024 * 4;
-  constexpr size_t kDefaultGaneshResourceCacheBytes = 96 * 1024 * 1024;
-  *max_resource_cache_bytes = kDefaultGaneshResourceCacheBytes;
-  *max_glyph_cache_texture_bytes = kDefaultGlyphCacheTextureBytes;
-}
-
-void DumpGrMemoryStatistics(const GrContext* context,
+void DumpGrMemoryStatistics(const GrDirectContext* context,
                             base::trace_event::ProcessMemoryDump* pmd,
-                            base::Optional<uint64_t> tracing_guid) {
+                            absl::optional<uint64_t> tracing_guid) {
   SkiaGpuTraceMemoryDump trace_memory_dump(pmd, tracing_guid);
   context->dumpMemoryStatistics(&trace_memory_dump);
 }
 
 void DumpBackgroundGrMemoryStatistics(
-    const GrContext* context,
+    const GrDirectContext* context,
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 

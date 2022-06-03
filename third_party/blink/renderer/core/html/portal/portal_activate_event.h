@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
@@ -39,7 +40,7 @@ class CORE_EXPORT PortalActivateEvent : public Event {
   // For use by Blink.
   static PortalActivateEvent* Create(
       LocalFrame* frame,
-      const base::UnguessableToken& predecessor_portal_token,
+      const PortalToken& predecessor_portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> predecessor_portal,
       mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
           predecessor_portal_client_receiver,
@@ -53,7 +54,7 @@ class CORE_EXPORT PortalActivateEvent : public Event {
 
   PortalActivateEvent(
       Document* document,
-      const base::UnguessableToken& predecessor_portal_token,
+      const PortalToken& predecessor_portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> predecessor_portal,
       mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
           predecessor_portal_client_receiver,
@@ -64,7 +65,7 @@ class CORE_EXPORT PortalActivateEvent : public Event {
 
   ~PortalActivateEvent() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Event overrides
   const AtomicString& InterfaceName() const override;
@@ -81,7 +82,7 @@ class CORE_EXPORT PortalActivateEvent : public Event {
   Member<Document> document_;
   Member<HTMLPortalElement> adopted_portal_;
 
-  base::UnguessableToken predecessor_portal_token_;
+  PortalToken predecessor_portal_token_;
   mojo::PendingAssociatedRemote<mojom::blink::Portal> predecessor_portal_;
   mojo::PendingAssociatedReceiver<mojom::blink::PortalClient>
       predecessor_portal_client_receiver_;

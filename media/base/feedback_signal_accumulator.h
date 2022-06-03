@@ -34,7 +34,7 @@ class FeedbackSignalAccumulator {
   // Update(1.0, t=1s) will result in an accumulated average value of 0.5.
   explicit FeedbackSignalAccumulator(base::TimeDelta half_life)
       : half_life_(half_life), average_(NAN) {
-    DCHECK(half_life_ > base::TimeDelta());
+    DCHECK(half_life_.is_positive());
   }
 
   // Erase all memory of historical values, re-starting with the given

@@ -9,17 +9,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -37,8 +35,6 @@ public final class SearchEngineChoiceMetricsTest {
     private static final String HISTOGRAM_AFTER_CHOICE =
             "Android.SearchEngineChoice.ChosenSearchEngine";
 
-    @Rule
-    public DisableHistogramsRule mDisableHistogramsRule = new DisableHistogramsRule();
     @Mock
     private TemplateUrlService mTemplateUrlService;
     @Mock

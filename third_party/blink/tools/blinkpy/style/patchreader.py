@@ -32,7 +32,6 @@ import logging
 
 from blinkpy.common.checkout.diff_parser import DiffParser
 
-
 _log = logging.getLogger(__name__)
 
 
@@ -51,9 +50,10 @@ class PatchReader(object):
         """Checks style in the given patch."""
         patch_files = DiffParser(patch_string.splitlines()).files
 
-        for path, diff_file in patch_files.iteritems():
+        for path, diff_file in patch_files.items():
             line_numbers = diff_file.added_or_modified_line_numbers()
-            _log.debug('Found %s new or modified lines in: %s', len(line_numbers), path)
+            _log.debug('Found %s new or modified lines in: %s',
+                       len(line_numbers), path)
 
             if not line_numbers:
                 # Don't check files which contain only deleted lines
@@ -62,4 +62,5 @@ class PatchReader(object):
                 self._text_file_reader.count_delete_only_file()
                 continue
 
-            self._text_file_reader.process_file(file_path=path, line_numbers=line_numbers)
+            self._text_file_reader.process_file(
+                file_path=path, line_numbers=line_numbers)

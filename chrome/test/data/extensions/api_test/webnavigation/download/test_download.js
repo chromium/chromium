@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-onload = async function() {
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
   let getURL = chrome.extension.getURL;
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
   let config = await promise(chrome.test.getConfig);
@@ -55,4 +58,4 @@ onload = async function() {
       chrome.tabs.update(tab.id, { url: URL_START + "?" + port });
     },
   ]);
-};
+});

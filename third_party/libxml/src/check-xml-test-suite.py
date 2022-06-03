@@ -326,7 +326,7 @@ def runTest(test):
 	#elif extra == 'both' or extra == 'parameter':
 	res = testNotWfEntDtd(URI, id)
 	#else:
-	#    print "Unknow value %s for an ENTITIES test value" % (extra)
+	#    print "Unknown value %s for an ENTITIES test value" % (extra)
 	#    return -1
     elif type == "error":
 	res = testError(URI, id)
@@ -397,7 +397,7 @@ while case != None:
 	old_test_failed = test_failed
 	old_test_error = test_error
         runTestCases(case)
-	print "   Ran %d tests: %d suceeded, %d failed and %d generated an error" % (
+	print "   Ran %d tests: %d succeeded, %d failed and %d generated an error" % (
 	       test_nr - old_test_nr, test_succeed - old_test_succeed,
 	       test_failed - old_test_failed, test_error - old_test_error)
     case = case.next
@@ -405,5 +405,5 @@ while case != None:
 conf.freeDoc()
 log.close()
 
-print "Ran %d tests: %d suceeded, %d failed and %d generated an error in %.2f s." % (
+print "Ran %d tests: %d succeeded, %d failed and %d generated an error in %.2f s." % (
       test_nr, test_succeed, test_failed, test_error, time.time() - start)

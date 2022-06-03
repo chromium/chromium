@@ -5,6 +5,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/sync/engine/entity_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

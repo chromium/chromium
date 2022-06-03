@@ -5,15 +5,15 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/allocator/partition_allocator/spin_lock.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include <windows.h>  // Must be in front of other Windows header files.
 
-#include <VersionHelpers.h>
+#include <versionhelpers.h>
 #endif
 
 namespace base {
@@ -25,7 +25,7 @@ void* GetRandomPageBase() {
   random <<= 32ULL;
   random |= static_cast<uintptr_t>(RandomValue());
 
-// The kASLRMask and kASLROffset constants will be suitable for the
+// The ASLRMask() and ASLROffset() constants will be suitable for the
 // OS and build configuration.
 #if defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   // Windows >= 8.1 has the full 47 bits. Use them where available.
@@ -36,14 +36,14 @@ void* GetRandomPageBase() {
     windows_81_initialized = true;
   }
   if (!windows_81) {
-    random &= internal::kASLRMaskBefore8_10;
+    random &= internal::ASLRMaskBefore8_10();
   } else {
-    random &= internal::kASLRMask;
+    random &= internal::ASLRMask();
   }
-  random += internal::kASLROffset;
+  random += internal::ASLROffset();
 #else
-  random &= internal::kASLRMask;
-  random += internal::kASLROffset;
+  random &= internal::ASLRMask();
+  random += internal::ASLROffset();
 #endif  // defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 #else   // defined(ARCH_CPU_32_BITS)
 #if defined(OS_WIN)
@@ -57,11 +57,11 @@ void* GetRandomPageBase() {
   if (!is_wow64)
     return nullptr;
 #endif  // defined(OS_WIN)
-  random &= internal::kASLRMask;
-  random += internal::kASLROffset;
+  random &= internal::ASLRMask();
+  random += internal::ASLROffset();
 #endif  // defined(ARCH_CPU_32_BITS)
 
-  DCHECK_EQ(0ULL, (random & kPageAllocationGranularityOffsetMask));
+  PA_DCHECK(!(random & PageAllocationGranularityOffsetMask()));
   return reinterpret_cast<void*>(random);
 }
 

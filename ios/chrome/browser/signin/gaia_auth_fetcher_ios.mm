@@ -8,10 +8,7 @@
 
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/browser/signin/feature_flags.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
-#include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_wk_webview_bridge.h"
-#include "ios/web/common/features.h"
 #include "ios/web/public/browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -19,27 +16,14 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Whether the iOS specialization of the GaiaAuthFetcher should be used.
-bool g_should_use_gaia_auth_fetcher_ios = true;
-
-}  // namespace
-
 GaiaAuthFetcherIOS::GaiaAuthFetcherIOS(
     GaiaAuthConsumer* consumer,
     gaia::GaiaSource source,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     web::BrowserState* browser_state)
     : GaiaAuthFetcher(consumer, source, url_loader_factory),
-      browser_state_(browser_state) {
-  if (base::FeatureList::IsEnabled(kUseNSURLSessionForGaiaSigninRequests)) {
-    bridge_.reset(
-        new GaiaAuthFetcherIOSNSURLSessionBridge(this, browser_state));
-  } else {
-    bridge_.reset(new GaiaAuthFetcherIOSWKWebViewBridge(this, browser_state));
-  }
-}
+      browser_state_(browser_state),
+      bridge_(new GaiaAuthFetcherIOSNSURLSessionBridge(this, browser_state_)) {}
 
 GaiaAuthFetcherIOS::~GaiaAuthFetcherIOS() {}
 
@@ -54,7 +38,7 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
 
   bool cookies_required =
       credentials_mode != network::mojom::CredentialsMode::kOmit;
-  if (!ShouldUseGaiaAuthFetcherIOS() || !cookies_required) {
+  if (!cookies_required) {
     GaiaAuthFetcher::CreateAndStartGaiaFetcher(body, body_content_type, headers,
                                                gaia_gurl, credentials_mode,
                                                traffic_annotation);
@@ -85,17 +69,8 @@ void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,
                                          const std::string& data,
                                          net::Error net_error,
                                          int response_code) {
-  DVLOG(2) << "Response " << url.spec() << ", code = " << response_code << "\n";
-  DVLOG(2) << "data: " << data << "\n";
+  VLOG(2) << "Response " << url.spec() << ", code = " << response_code << "\n";
+  VLOG(2) << "data: " << data << "\n";
   SetPendingFetch(false);
   DispatchFetchedRequest(url, data, net_error, response_code);
-}
-
-void GaiaAuthFetcherIOS::SetShouldUseGaiaAuthFetcherIOSForTesting(
-    bool use_gaia_fetcher_ios) {
-  g_should_use_gaia_auth_fetcher_ios = use_gaia_fetcher_ios;
-}
-
-bool GaiaAuthFetcherIOS::ShouldUseGaiaAuthFetcherIOS() {
-  return g_should_use_gaia_auth_fetcher_ios;
 }

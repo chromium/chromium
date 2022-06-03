@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 
+class GURL;
+
 // Delegate to handle Save Card Infobar Modal actions.
 @protocol InfobarSaveCardModalDelegate <InfobarModalDelegate>
 

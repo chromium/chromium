@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/browser_dialogs.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/permissions/permission_util.h"
+
+#if !defined(TOOLKIT_VIEWS)
+#include "ui/shell_dialogs/selected_file_info.h"
+#endif
 
 namespace chrome {
 
@@ -13,6 +17,17 @@ void RecordDialogCreation(DialogIdentifier identifier) {
   UMA_HISTOGRAM_ENUMERATION("Dialog.Creation", identifier,
                             DialogIdentifier::MAX_VALUE);
 }
+
+#if !defined(TOOLKIT_VIEWS)
+void ShowWindowNamePrompt(Browser* browser) {
+  NOTIMPLEMENTED();
+}
+
+void ShowWindowNamePromptForTesting(Browser* browser,
+                                    gfx::NativeWindow context) {
+  NOTIMPLEMENTED();
+}
+#endif
 
 }  // namespace chrome
 
@@ -26,40 +41,4 @@ void ShowFolderUploadConfirmationDialog(
     content::WebContents* web_contents) {
   std::move(callback).Run(selected_files);
 }
-
-void ShowNativeFileSystemPermissionDialog(
-    const url::Origin& origin,
-    const base::FilePath& path,
-    bool is_directory,
-    base::OnceCallback<void(PermissionAction result)> callback,
-    content::WebContents* web_contents) {
-  // There's no dialog version of this available outside views, run callback as
-  // if the dialog was instantly cancelled.
-  std::move(callback).Run(PermissionAction::DISMISSED);
-}
-
-void ShowNativeFileSystemRestrictedDirectoryDialog(
-    const url::Origin& origin,
-    const base::FilePath& path,
-    bool is_directory,
-    base::OnceCallback<void(
-        content::NativeFileSystemPermissionContext::SensitiveDirectoryResult)>
-        callback,
-    content::WebContents* web_contents) {
-  // There's no dialog version of this available outside views, run callback as
-  // if the dialog was instantly dismissed.
-  std::move(callback).Run(content::NativeFileSystemPermissionContext::
-                              SensitiveDirectoryResult::kAbort);
-}
-
-void ShowNativeFileSystemDirectoryAccessConfirmationDialog(
-    const url::Origin& origin,
-    const base::FilePath& path,
-    base::OnceCallback<void(PermissionAction result)> callback,
-    content::WebContents* web_contents) {
-  // There's no dialog version of this available outside views, run callback as
-  // if the dialog was instantly dismissed.
-  std::move(callback).Run(PermissionAction::DISMISSED);
-}
-
 #endif  // !defined(TOOLKIT_VIEWS)

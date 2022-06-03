@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_JOB_H_
-#define SANDBOX_SRC_JOB_H_
+#ifndef SANDBOX_WIN_SRC_JOB_H_
+#define SANDBOX_WIN_SRC_JOB_H_
 
 #include <stddef.h>
 
@@ -21,6 +21,9 @@ namespace sandbox {
 class Job {
  public:
   Job();
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
   ~Job();
 
@@ -54,13 +57,15 @@ class Job {
   // If the object is not yet initialized, it returns an invalid handle.
   base::win::ScopedHandle Take();
 
+  // Updates the active process limit for |job_handle|.
+  static DWORD SetActiveProcessLimit(base::win::ScopedHandle* job_handle,
+                                     DWORD processes);
+
  private:
   // Handle to the job referenced by the object.
   base::win::ScopedHandle job_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_JOB_H_
+#endif  // SANDBOX_WIN_SRC_JOB_H_

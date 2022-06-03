@@ -7,20 +7,14 @@ import("//build/config/android/rules.gni")
 android_library("dom_distiller_core_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
+    "//components/dom_distiller/core/mojom:mojom_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  java_files = [
+  sources = [
+    "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
-    "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
-  ]
-  srcjar_deps = [ ":jni_enums" ]
-}
-
-java_cpp_enum("jni_enums") {
-  visibility = [ ":*" ]
-  sources = [
-    "//components/dom_distiller/core/distilled_page_prefs.h",
   ]
 }

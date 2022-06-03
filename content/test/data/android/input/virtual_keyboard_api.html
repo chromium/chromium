@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- Note: if this page gets long (or wide) enough that it can't fit entirely on
+     the phone's display without scrolling, the test will start being flaky and
+     it will be very difficult to debug :(. -->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width">
+</head>
+<body>
+  <textarea id="txt1" virtualkeyboardpolicy="manual" onfocusin="FocusIn1()"></textarea>
+  <textarea id="txt2" virtualkeyboardpolicy="manual"></textarea>
+  <textarea id="txt3" virtualkeyboardpolicy="manual" onfocusin="FocusIn2()"></textarea>
+  <input id="input_text" type="text"></input>
+</body>
+  <script>
+        let VKRect, new_vv_width = 0, new_vv_height = 0, numEvents = 0;
+        navigator.virtualKeyboard.overlaysContent = true;
+        let old_vv_width = visualViewport.width.toFixed(2);
+        let old_vv_height = visualViewport.height.toFixed(2);
+        navigator.virtualKeyboard.addEventListener('geometrychange', evt => {
+          numEvents++;
+          VKRect = navigator.virtualKeyboard.boundingRect;
+          new_vv_width = visualViewport.width.toFixed(2);
+          new_vv_height = visualViewport.height.toFixed(2);
+        }, false);
+
+        function FocusIn1() {
+          navigator.virtualKeyboard.show();
+        }
+
+        function FocusIn2() {
+          txt2.focus();
+        }
+
+        var selectionChangeEventLog = "";
+        var otherEventLog = "";
+
+        function addOtherEventLog(type, detail) {
+          if (otherEventLog.length > 0) {
+            otherEventLog += ',';
+          }
+          if (detail == null) {
+            otherEventLog += type;
+          } else {
+            otherEventLog += type + '(' + detail + ')';
+          }
+        }
+
+        function addSelectionChangeEventLog(type, detail) {
+          if (selectionChangeEventLog.length > 0) {
+            selectionChangeEventLog += ',';
+          }
+          if (detail == null) {
+            selectionChangeEventLog += type;
+          } else {
+            selectionChangeEventLog += type + '(' + detail + ')';
+          }
+        }
+
+        // selectionchange event is queued, so it races with the other events.
+        // crbug.com/628964
+        function getEventLogs() {
+          if (otherEventLog.length > 0 && selectionChangeEventLog.length > 0)
+            return otherEventLog + ',' + selectionChangeEventLog;
+          return otherEventLog + selectionChangeEventLog;
+        }
+
+        function clearEventLogs() {
+          selectionChangeEventLog = '';
+          otherEventLog = '';
+        }
+
+        function addKeyEventListener(element, event_name) {
+          element.addEventListener(event_name, function (e) { addOtherEventLog(event_name, e.keyCode); });
+        }
+
+        function addSelectionEventListener(event_name) {
+          // Note that listeners added to the element are not effective for now.
+          document.addEventListener(event_name, function (e) { addSelectionChangeEventLog(event_name, e.data); });
+        }
+
+        function registerListeners(element) {
+          addKeyEventListener(element, "keydown");
+          addKeyEventListener(element, "keypress");
+          addKeyEventListener(element, "keyup");
+        }
+
+        var inputText = document.getElementById("input_text");
+        var contenteditableEvent1 = document.getElementById("txt1");
+        var contenteditableEvent2 = document.getElementById("txt2");
+        // SelectionEventListener should be outside registerListenersAndObserver() to avoid duplication.
+        addSelectionEventListener("selectionchange");
+        registerListeners(inputText);
+        registerListeners(contenteditableEvent1);
+        registerListeners(contenteditableEvent2);
+    </script>
+</html>

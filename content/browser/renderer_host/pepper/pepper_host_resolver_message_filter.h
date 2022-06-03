@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -47,6 +46,11 @@ class CONTENT_EXPORT PepperHostResolverMessageFilter
                                   PP_Instance instance,
                                   bool private_api);
 
+  PepperHostResolverMessageFilter(const PepperHostResolverMessageFilter&) =
+      delete;
+  PepperHostResolverMessageFilter& operator=(
+      const PepperHostResolverMessageFilter&) = delete;
+
  protected:
   ~PepperHostResolverMessageFilter() override;
 
@@ -68,10 +72,10 @@ class CONTENT_EXPORT PepperHostResolverMessageFilter
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   void OnLookupFinished(int net_result,
-                        const base::Optional<net::AddressList>& addresses,
+                        const absl::optional<net::AddressList>& addresses,
                         const ppapi::host::ReplyMessageContext& bound_info);
   void SendResolveReply(int32_t result,
                         const std::string& canonical_name,
@@ -94,8 +98,6 @@ class CONTENT_EXPORT PepperHostResolverMessageFilter
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 
   ppapi::host::ReplyMessageContext host_resolve_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperHostResolverMessageFilter);
 };
 
 }  // namespace content

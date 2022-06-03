@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -36,8 +35,8 @@ class DistillerPageWebContentsFactory : public DistillerPageFactory {
  public:
   explicit DistillerPageWebContentsFactory(
       content::BrowserContext* browser_context)
-      : DistillerPageFactory(), browser_context_(browser_context) {}
-  ~DistillerPageWebContentsFactory() override {}
+      : browser_context_(browser_context) {}
+  ~DistillerPageWebContentsFactory() override = default;
 
   std::unique_ptr<DistillerPage> CreateDistillerPage(
       const gfx::Size& render_view_size) const override;
@@ -67,8 +66,10 @@ class DistillerPageWebContents : public DistillerPage,
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
-                   int error_code,
-                   const base::string16& error_description) override;
+                   int error_code) override;
+
+  DistillerPageWebContents(const DistillerPageWebContents&) = delete;
+  DistillerPageWebContents& operator=(const DistillerPageWebContents&) = delete;
 
  protected:
   bool StringifyOutput() override;
@@ -102,6 +103,8 @@ class DistillerPageWebContents : public DistillerPage,
                                      const base::TimeTicks& javascript_start,
                                      base::Value value);
 
+  content::RenderFrameHost& TargetRenderFrameHost();
+
   // The current state of the |DistillerPage|, initially |IDLE|.
   State state_;
 
@@ -113,7 +116,6 @@ class DistillerPageWebContents : public DistillerPage,
   content::BrowserContext* browser_context_;
   gfx::Size render_view_size_;
   base::WeakPtrFactory<DistillerPageWebContents> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DistillerPageWebContents);
 };
 
 }  // namespace dom_distiller

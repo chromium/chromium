@@ -181,7 +181,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Invalid header name. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
 
@@ -195,7 +195,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Response header name should be lower-cased. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -206,7 +206,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Exchange contains stateful response header. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -220,7 +220,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Duplicate header value. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
   }
@@ -245,20 +245,37 @@ bool ParseResponseMap(const cbor::Value& value,
             response_code));
     return false;
   }
+
+  // https://wicg.github.io/webpackage/loading.html#parsing-b2-cbor-headers
+  // 7. If responseHeaders does not contain `Content-Type`, return a failure.
+  // [spec text]
+  // Note: "Parsing b3 CBOR headers" algorithm should have the same step.
+  // See https://github.com/WICG/webpackage/issues/555
+  auto content_type_iter = out->response_headers().find("content-type");
+  if (content_type_iter == out->response_headers().end()) {
+    signed_exchange_utils::ReportErrorAndTraceEvent(
+        devtools_proxy,
+        "Exchange's inner response must have Content-Type header.");
+    return false;
+  }
+  // https://wicg.github.io/webpackage/loading.html#parsing-b2-cbor-headers
+  // 8. Set `X-Content-Type-Options`/`nosniff` in responseHeaders. [spec text]
+  // Note: "Parsing b3 CBOR headers" algorithm should have the same step.
+  // See https://github.com/WICG/webpackage/issues/555
+  out->SetResponseHeader("x-content-type-options", "nosniff");
+
   // Note: This does not reject content-type like "application/signed-exchange"
   // (no "v=" parameter). In that case, SignedExchangeRequestHandler does not
   // handle the inner response and UA just downloads it.
   // See https://github.com/WICG/webpackage/issues/299 for details.
-  auto found = out->response_headers().find("content-type");
-  if (found != out->response_headers().end() &&
-      signed_exchange_utils::GetSignedExchangeVersion(found->second)
+  if (signed_exchange_utils::GetSignedExchangeVersion(content_type_iter->second)
           .has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf(
             "Exchange's inner response must not be a signed-exchange. "
             "conetent-type: %s",
-            found->second.c_str()));
+            content_type_iter->second.c_str()));
     return false;
   }
 
@@ -268,7 +285,7 @@ bool ParseResponseMap(const cbor::Value& value,
 }  // namespace
 
 // static
-base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
+absl::optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
     SignedExchangeVersion version,
     const signed_exchange_utils::URLWithRawString& fallback_url,
     base::StringPiece signature_header_field,
@@ -280,13 +297,13 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   const auto& request_url = fallback_url;
 
   cbor::Reader::DecoderError error;
-  base::Optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
+  absl::optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf("Failed to decode Value. CBOR error: %s",
                            cbor::Reader::ErrorCodeToString(error)));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SignedExchangeEnvelope ret;
@@ -296,16 +313,16 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!ParseResponseMap(*value, &ret, devtools_proxy)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse response map.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
+  absl::optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
       signatures = SignedExchangeSignatureHeaderField::ParseSignature(
           signature_header_field, devtools_proxy);
   if (!signatures || signatures->empty()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse signature header field.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // TODO(https://crbug.com/850475): Support multiple signatures.
@@ -319,7 +336,7 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!url::IsSameOriginWith(request_url.url, validity_url)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Validity URL must be same-origin with request URL.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::move(ret);
@@ -336,14 +353,22 @@ SignedExchangeEnvelope& SignedExchangeEnvelope::operator=(
 
 bool SignedExchangeEnvelope::AddResponseHeader(base::StringPiece name,
                                                base::StringPiece value) {
-  std::string name_str = name.as_string();
+  std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
   if (response_headers_.find(name_str) != response_headers_.end())
     return false;
 
-  response_headers_.emplace(std::move(name_str), value.as_string());
+  response_headers_.emplace(std::move(name_str), std::string(value));
   return true;
+}
+
+void SignedExchangeEnvelope::SetResponseHeader(base::StringPiece name,
+                                               base::StringPiece value) {
+  std::string name_str(name);
+  DCHECK_EQ(name_str, base::ToLowerASCII(name))
+      << "Response header names should be always lower-cased.";
+  response_headers_[name_str] = std::string(value);
 }
 
 scoped_refptr<net::HttpResponseHeaders>

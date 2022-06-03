@@ -18,7 +18,9 @@ class CompositionMarkerListImplTest : public EditingTestBase {
   DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
     return MakeGarbageCollected<CompositionMarker>(
         start_offset, end_offset, Color::kTransparent,
-        ui::mojom::ImeTextSpanThickness::kThin, Color::kBlack);
+        ui::mojom::ImeTextSpanThickness::kThin,
+        ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kBlack,
+        Color::kBlack);
   }
 
   Persistent<CompositionMarkerListImpl> marker_list_;

@@ -7,19 +7,26 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
+#include "url/gurl.h"
+
 namespace syncer {
 
 // An interface the embedding application (e.g. Chromium) implements to provide
 // required HTTP POST functionality to the syncer backend. This interface is
 // designed for one-time use. You create one, use it, and create another if you
 // want to make a subsequent POST.
-class HttpPostProviderInterface {
+// It is RefCountedThreadSafe because its implementations may PostTask to
+// background task runners, and thus need to stick around across context
+// switches, etc.
+class HttpPostProviderInterface
+    : public base::RefCountedThreadSafe<HttpPostProviderInterface> {
  public:
   // Add additional headers to the request.
   virtual void SetExtraRequestHeaders(const char* headers) = 0;
 
   // Set the URL to POST to.
-  virtual void SetURL(const char* url, int port) = 0;
+  virtual void SetURL(const GURL& url) = 0;
 
   // Set the type, length and content of the POST payload.
   // |content_type| is a null-terminated MIME type specifier.
@@ -55,7 +62,8 @@ class HttpPostProviderInterface {
   virtual void Abort() = 0;
 
  protected:
-  virtual ~HttpPostProviderInterface() {}
+  friend class base::RefCountedThreadSafe<HttpPostProviderInterface>;
+  virtual ~HttpPostProviderInterface() = default;
 };
 
 }  // namespace syncer

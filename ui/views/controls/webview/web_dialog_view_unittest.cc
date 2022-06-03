@@ -4,18 +4,22 @@
 
 #include "ui/views/controls/webview/web_dialog_view.h"
 
-#include <gtest/gtest.h>
 #include <memory>
+#include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/test/test_web_contents_handler.h"
@@ -36,7 +40,7 @@ class TestWebDialogViewWebDialogDelegate
   }
 
   // ui::WebDialogDelegate
-  bool CanCloseDialog() const override { return true; }
+  bool OnDialogCloseRequested() override { return true; }
   bool ShouldCloseDialogOnEscape() const override { return close_on_escape_; }
   ui::ModalType GetDialogModalType() const override {
     return ui::MODAL_TYPE_WINDOW;
@@ -49,11 +53,13 @@ class TestWebDialogViewWebDialogDelegate
 // Provides functionality to test a WebDialogView.
 class WebDialogViewUnitTest : public views::test::WidgetTest {
  public:
-  template <typename... TaskEnvironmentTraits>
-  NOINLINE explicit WebDialogViewUnitTest(TaskEnvironmentTraits&&... traits)
-      : views::test::WidgetTest(
-            views::test::WidgetTest::SubclassManagesTaskEnvironment()),
-        task_environment_(std::forward<TaskEnvironmentTraits>(traits)...) {}
+  WebDialogViewUnitTest()
+      : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>())) {}
+
+  WebDialogViewUnitTest(const WebDialogViewUnitTest&) = delete;
+  WebDialogViewUnitTest& operator=(const WebDialogViewUnitTest&) = delete;
+
   ~WebDialogViewUnitTest() override = default;
 
   // testing::Test
@@ -126,10 +132,8 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
       widget_->OnKeyEvent(&event_copy);
   }
 
-  // TaskEnvironment must be created first
-  content::BrowserTaskEnvironment task_environment_;
-
  private:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
   content::TestContentBrowserClient test_browser_client_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   // These are raw pointers (vs unique pointers) because the views
@@ -140,8 +144,6 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
   std::unique_ptr<TestWebDialogViewWebDialogDelegate> web_dialog_delegate_;
   std::unique_ptr<content::TestWebContents> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogViewUnitTest);
 };
 
 TEST_F(WebDialogViewUnitTest, WebDialogViewClosedOnEscape) {
@@ -177,12 +179,10 @@ TEST_F(WebDialogViewUnitTest, ObservableWebViewOnWebDialogViewClosed) {
   EXPECT_FALSE(web_view_delegate());
 
   ResetWebDialogDelegate();
-  // Calling back to web view's ResourceLoadComplete() should not cause crash.
-  content::RenderFrameHost* rfh = web_view()->web_contents()->GetMainFrame();
-  ASSERT_TRUE(rfh);
-  content::GlobalRequestID request_id;
-  content::mojom::ResourceLoadInfo resource_load_info;
-  web_view()->ResourceLoadComplete(rfh, request_id, resource_load_info);
+}
+
+TEST_F(WebDialogViewUnitTest, MetadataTest) {
+  test::TestViewMetadata(web_dialog_view());
 }
 
 }  // namespace views

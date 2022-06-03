@@ -5,10 +5,10 @@
 #include "content/browser/child_process_task_port_provider_mac.h"
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/child_process.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -53,15 +53,12 @@ ChildProcessTaskPortProvider::~ChildProcessTaskPortProvider() {}
 
 void ChildProcessTaskPortProvider::OnTaskPortReceived(
     base::ProcessHandle pid,
-    mojo::ScopedHandle task_port) {
-  base::mac::ScopedMachSendRight port;
-  if (mojo::UnwrapMachPort(
-          std::move(task_port),
-          base::mac::ScopedMachSendRight::Receiver(port).get()) !=
-      MOJO_RESULT_OK) {
-    DLOG(ERROR) << "Failed to unwrap task port for pid " << pid;
+    mojo::PlatformHandle task_port) {
+  if (!task_port.is_mach_send()) {
+    DLOG(ERROR) << "Invalid handle received as task port for pid " << pid;
     return;
   }
+  base::mac::ScopedMachSendRight port = task_port.TakeMachSendRight();
 
   // Request a notification from the kernel for when the port becomes a dead
   // name, indicating that the process has died.

@@ -5,6 +5,9 @@
 #ifndef UI_VIEWS_LAYOUT_PROPOSED_LAYOUT_H_
 #define UI_VIEWS_LAYOUT_PROPOSED_LAYOUT_H_
 
+#include <string>
+#include <vector>
+
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"

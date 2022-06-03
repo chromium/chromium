@@ -79,7 +79,7 @@ function test_invalid_selector(selector) {
     const stringifiedSelector = JSON.stringify(selector);
 
     test(function(){
-        assert_throws(
+        assert_throws_dom(
           DOMException.SYNTAX_ERR,
           () => document.querySelector(selector),
           stringifiedSelector + " should throw in querySelector");
@@ -89,9 +89,55 @@ function test_invalid_selector(selector) {
         const {sheet} = style;
         document.head.removeChild(style);
 
-        assert_throws(
+        assert_throws_dom(
           DOMException.SYNTAX_ERR,
           () => sheet.insertRule(selector + "{}"),
           stringifiedSelector + " should throw in insertRule");
     }, stringifiedSelector + " should be an invalid selector");
+}
+
+// serialized can be the expected serialization of rule, or an array of
+// permitted serializations, or omitted if value should serialize as rule.
+function test_valid_rule(rule, serialized) {
+    if (serialized === undefined)
+        serialized = rule;
+
+    test(function(){
+        const style = document.createElement("style");
+        document.head.append(style);
+        const {sheet} = style;
+        document.head.removeChild(style);
+        const {cssRules} = sheet;
+
+        assert_equals(cssRules.length, 0, "Sheet should have no rules");
+        sheet.insertRule(rule);
+        assert_equals(cssRules.length, 1, "Sheet should have 1 rule");
+
+        const serialization = cssRules[0].cssText;
+        if (Array.isArray(serialized))
+            assert_in_array(serialization, serialized, "serialization should be sound");
+        else
+            assert_equals(serialization, serialized, "serialization should be canonical");
+
+        sheet.deleteRule(0);
+        assert_equals(cssRules.length, 0, "Sheet should have no rule");
+        sheet.insertRule(serialization);
+        assert_equals(cssRules.length, 1, "Sheet should have 1 rule");
+
+        assert_equals(cssRules[0].cssText, serialization, "serialization should round-trip");
+    }, rule + " should be a valid rule");
+}
+
+function test_invalid_rule(rule) {
+    test(function(){
+        const style = document.createElement("style");
+        document.head.append(style);
+        const {sheet} = style;
+        document.head.removeChild(style);
+
+        assert_throws_dom(
+          DOMException.SYNTAX_ERR,
+          () => sheet.insertRule(rule),
+          rule + " should throw in insertRule");
+    }, rule + " should be an invalid rule");
 }

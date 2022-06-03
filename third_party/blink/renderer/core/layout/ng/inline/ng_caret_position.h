@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_CARET_POSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_CARET_POSITION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -30,6 +30,9 @@ struct NGCaretPosition {
   STACK_ALLOCATED();
 
  public:
+  explicit operator bool() const { return IsNotNull(); }
+
+  bool IsNotNull() const { return cursor.IsNotNull(); }
   bool IsNull() const { return cursor.IsNull(); }
 
   Position ToPositionInDOMTree() const;
@@ -37,20 +40,24 @@ struct NGCaretPosition {
 
   NGInlineCursor cursor;
   NGCaretPositionType position_type;
-  base::Optional<unsigned> text_offset;
+  absl::optional<unsigned> text_offset;
 };
 
 // Given an inline formatting context, a text offset in the context and a text
 // affinity, returns the corresponding NGCaretPosition, or null if not found.
 // Note that in many cases, null result indicates that we have reached an
 // unexpected case that is not properly handled.
-CORE_EXPORT NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow&,
-                                                   unsigned,
-                                                   TextAffinity);
+// When |layout_text| isn't |nullptr|, this functions returns position for
+// |layout_text| in multiple candidates.
+CORE_EXPORT NGCaretPosition
+ComputeNGCaretPosition(const LayoutBlockFlow& context,
+                       unsigned offset,
+                       TextAffinity affinity,
+                       const LayoutText* layout_text = nullptr);
 
 // Shorthand of the above when the input is a position instead of a
 // (context, offset) pair.
-NGCaretPosition ComputeNGCaretPosition(const PositionWithAffinity&);
+CORE_EXPORT NGCaretPosition ComputeNGCaretPosition(const PositionWithAffinity&);
 
 }  // namespace blink
 

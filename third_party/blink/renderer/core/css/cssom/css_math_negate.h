@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_NEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_NEGATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 
 namespace blink {
@@ -17,7 +16,7 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
 
  public:
   // The constructor defined in the IDL.
-  static CSSMathNegate* Create(const CSSNumberish& arg) {
+  static CSSMathNegate* Create(V8CSSNumberish* arg) {
     return Create(CSSNumericValue::FromNumberish(arg));
   }
   // Blink-internal constructor
@@ -27,10 +26,12 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
 
   CSSMathNegate(CSSNumericValue* value, const CSSNumericValueType& type)
       : CSSMathValue(type), value_(value) {}
+  CSSMathNegate(const CSSMathNegate&) = delete;
+  CSSMathNegate& operator=(const CSSMathNegate&) = delete;
 
   String getOperator() const final { return "negate"; }
 
-  void value(CSSNumberish& value) { value.SetCSSNumericValue(value_); }
+  V8CSSNumberish* value();
 
   // Blink-internal methods
   const CSSNumericValue& Value() const { return *value_; }
@@ -38,7 +39,7 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kNegateType; }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(value_);
     CSSMathValue::Trace(visitor);
   }
@@ -52,20 +53,16 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
     return value_->Equals(*other_negate.value_);
   }
 
-  CSSMathExpressionNode* ToCalcExpressionNode() const final {
-    // TODO(crbug.com/xxx): Implement
-    return nullptr;
-  }
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   // From CSSNumericValue
   CSSNumericValue* Negate() final { return value_.Get(); }
-  base::Optional<CSSNumericSumValue> SumValue() const final;
+  absl::optional<CSSNumericSumValue> SumValue() const final;
 
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   Member<CSSNumericValue> value_;
-  DISALLOW_COPY_AND_ASSIGN(CSSMathNegate);
 };
 
 }  // namespace blink

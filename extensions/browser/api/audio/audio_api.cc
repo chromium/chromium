@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/audio/audio_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -73,9 +74,8 @@ BrowserContextKeyedAPIFactory<AudioAPI>* AudioAPI::GetFactoryInstance() {
 AudioAPI::AudioAPI(content::BrowserContext* context)
     : browser_context_(context),
       stable_id_calculator_(CreateIdCalculator(context)),
-      service_(AudioService::CreateInstance(stable_id_calculator_.get())),
-      audio_service_observer_(this) {
-  audio_service_observer_.Add(service_.get());
+      service_(AudioService::CreateInstance(stable_id_calculator_.get())) {
+  audio_service_observation_.Observe(service_.get());
 }
 
 AudioAPI::~AudioAPI() {}
@@ -89,9 +89,9 @@ void AudioAPI::OnDeviceChanged() {
   if (!event_router)
     return;
 
-  std::unique_ptr<Event> event(new Event(
-      events::AUDIO_ON_DEVICE_CHANGED, audio::OnDeviceChanged::kEventName,
-      std::unique_ptr<base::ListValue>(new base::ListValue())));
+  auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICE_CHANGED,
+                                       audio::OnDeviceChanged::kEventName,
+                                       std::vector<base::Value>());
   event->will_dispatch_callback =
       base::BindRepeating(&CanReceiveDeprecatedAudioEvent);
   event_router->BroadcastEvent(std::move(event));
@@ -106,11 +106,10 @@ void AudioAPI::OnLevelChanged(const std::string& id, int level) {
   raw_event.device_id = id;
   raw_event.level = level;
 
-  std::unique_ptr<base::ListValue> event_args =
-      audio::OnLevelChanged::Create(raw_event);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_LEVEL_CHANGED,
-                                         audio::OnLevelChanged::kEventName,
-                                         std::move(event_args)));
+  auto event_args = audio::OnLevelChanged::Create(raw_event);
+  auto event = std::make_unique<Event>(events::AUDIO_ON_LEVEL_CHANGED,
+                                       audio::OnLevelChanged::kEventName,
+                                       std::move(event_args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -124,11 +123,10 @@ void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
   raw_event.stream_type =
       is_input ? audio::STREAM_TYPE_INPUT : audio::STREAM_TYPE_OUTPUT;
   raw_event.is_muted = is_muted;
-  std::unique_ptr<base::ListValue> event_args =
-      audio::OnMuteChanged::Create(raw_event);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_MUTE_CHANGED,
-                                         audio::OnMuteChanged::kEventName,
-                                         std::move(event_args)));
+  auto event_args = audio::OnMuteChanged::Create(raw_event);
+  auto event = std::make_unique<Event>(events::AUDIO_ON_MUTE_CHANGED,
+                                       audio::OnMuteChanged::kEventName,
+                                       std::move(event_args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -137,11 +135,10 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
   if (!event_router)
     return;
 
-  std::unique_ptr<base::ListValue> args =
-      audio::OnDeviceListChanged::Create(devices);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_DEVICES_CHANGED,
-                                         audio::OnDeviceListChanged::kEventName,
-                                         std::move(args)));
+  auto args = audio::OnDeviceListChanged::Create(devices);
+  auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICES_CHANGED,
+                                       audio::OnDeviceListChanged::kEventName,
+                                       std::move(args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -171,7 +168,7 @@ ExtensionFunction::ResponseAction AudioGetInfoFunction::Run() {
 
 ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
   std::unique_ptr<audio::GetDevices::Params> params(
-      audio::GetDevices::Params::Create(*args_));
+      audio::GetDevices::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -191,7 +188,7 @@ ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
 
 ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
   std::unique_ptr<audio::SetActiveDevices::Params> params(
-      audio::SetActiveDevices::Params::Create(*args_));
+      audio::SetActiveDevices::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -218,7 +215,7 @@ ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
 
 ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
   std::unique_ptr<audio::SetProperties::Params> params(
-      audio::SetProperties::Params::Create(*args_));
+      audio::SetProperties::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -267,7 +264,7 @@ ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
 
 ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
   std::unique_ptr<audio::SetMute::Params> params(
-      audio::SetMute::Params::Create(*args_));
+      audio::SetMute::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -285,7 +282,7 @@ ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
 
 ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
   std::unique_ptr<audio::GetMute::Params> params(
-      audio::GetMute::Params::Create(*args_));
+      audio::GetMute::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =

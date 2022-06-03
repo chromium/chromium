@@ -86,7 +86,7 @@ void silk_NLSF2A(
     opus_int32 a32_QA1[ SILK_MAX_ORDER_LPC ];
 
     silk_assert( LSF_COS_TAB_SZ_FIX == 128 );
-    silk_assert( d==10 || d==16 );
+    celt_assert( d==10 || d==16 );
 
     /* convert LSFs to 2*cos(LSF), using piecewise linear curve from table */
     ordering = d == 16 ? ordering16 : ordering10;

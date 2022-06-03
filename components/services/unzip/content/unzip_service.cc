@@ -5,6 +5,7 @@
 #include "components/services/unzip/content/unzip_service.h"
 
 #include "base/no_destructor.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
 
@@ -28,7 +29,6 @@ mojo::PendingRemote<mojom::Unzipper> LaunchUnzipper() {
   content::ServiceProcessHost::Launch<mojom::Unzipper>(
       remote.InitWithNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
-          .WithSandboxType(service_manager::SandboxType::kUtility)
           .WithDisplayName(IDS_UNZIP_SERVICE_DISPLAY_NAME)
           .Pass());
   return remote;

@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "crypto/symmetric_key.h"
@@ -24,15 +26,17 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using value_store::TestValueStoreFactory;
+using value_store::ValueStore;
 
 namespace extensions {
 namespace lock_screen_data {
@@ -47,32 +51,32 @@ void ExpectNotRun(const std::string& message) {
   ADD_FAILURE() << "Unexpectedly run: " << message;
 }
 
-void WriteCallback(const base::Closure& callback,
+void WriteCallback(base::OnceClosure callback,
                    OperationResult* result_out,
                    OperationResult result) {
   *result_out = result;
-  callback.Run();
+  std::move(callback).Run();
 }
 
-void ReadCallback(const base::Closure& callback,
+void ReadCallback(base::OnceClosure callback,
                   OperationResult* result_out,
                   std::unique_ptr<std::vector<char>>* content_out,
                   OperationResult result,
                   std::unique_ptr<std::vector<char>> content) {
   *result_out = result;
   *content_out = std::move(content);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void GetRegisteredItemsCallback(
-    const base::Closure& callback,
+    base::OnceClosure callback,
     OperationResult* result_out,
     std::unique_ptr<base::DictionaryValue>* value_out,
     OperationResult result,
     std::unique_ptr<base::DictionaryValue> value) {
   *result_out = result;
   *value_out = std::move(value);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -80,6 +84,12 @@ void GetRegisteredItemsCallback(
 class LockScreenValueStoreMigratorImplTest : public testing::Test {
  public:
   LockScreenValueStoreMigratorImplTest() = default;
+
+  LockScreenValueStoreMigratorImplTest(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+  LockScreenValueStoreMigratorImplTest& operator=(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+
   ~LockScreenValueStoreMigratorImplTest() override = default;
 
   void SetUp() override {
@@ -133,8 +143,9 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   void RunMigrator(const std::set<ExtensionId>& extensions_to_migrate) {
     migrator_->Run(
         extensions_to_migrate,
-        base::Bind(&LockScreenValueStoreMigratorImplTest::OnExtensionMigrated,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &LockScreenValueStoreMigratorImplTest::OnExtensionMigrated,
+            base::Unretained(this)));
   }
 
   std::string GenerateKey(const std::string& password) {
@@ -204,7 +215,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   OperationResult RegisterDataItem(DataItem* item) {
     base::RunLoop run_loop;
     OperationResult result = OperationResult::kFailed;
-    item->Register(base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Register(
+        base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
     return result;
   }
@@ -213,8 +225,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
                                   const std::vector<char>& content) {
     base::RunLoop run_loop;
     OperationResult result = OperationResult::kFailed;
-    item->Write(content,
-                base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Write(content, base::BindOnce(&WriteCallback, run_loop.QuitClosure(),
+                                        &result));
     run_loop.Run();
     return result;
   }
@@ -224,8 +236,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     OperationResult result = OperationResult::kFailed;
     std::unique_ptr<std::vector<char>> read_content;
     base::RunLoop run_loop;
-    item->Read(base::Bind(&ReadCallback, run_loop.QuitClosure(), &result,
-                          &read_content));
+    item->Read(base::BindOnce(&ReadCallback, run_loop.QuitClosure(), &result,
+                              &read_content));
     run_loop.Run();
     if (data)
       *data = std::move(read_content);
@@ -244,8 +256,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     base::RunLoop run_loop;
     DataItem::GetRegisteredValuesForExtension(
         context_.get(), storage, task_runner_.get(), extension_id,
-        base::Bind(&GetRegisteredItemsCallback, run_loop.QuitClosure(), &result,
-                   &items_value));
+        base::BindOnce(&GetRegisteredItemsCallback, run_loop.QuitClosure(),
+                       &result, &items_value));
     run_loop.Run();
 
     if (result != OperationResult::kSuccess) {
@@ -329,7 +341,7 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     base::RunLoop run_loop;
     task_runner_->PostTaskAndReply(
         FROM_HERE,
-        base::Bind(
+        base::BindOnce(
             &LockScreenValueStoreMigratorImplTest::ReleaseValueStoreCaches,
             base::Unretained(this)),
         run_loop.QuitClosure());
@@ -347,8 +359,12 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     TestValueStoreFactory* factory = storage_type == StorageType::SOURCE
                                          ? source_value_store_factory_.get()
                                          : target_value_store_factory_.get();
-    TestingValueStore* store =
-        static_cast<TestingValueStore*>(factory->GetExisting(extension_id));
+    base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
+        settings_namespace::LOCAL, value_store_util::ModelType::APP,
+        extension_id);
+    value_store::TestingValueStore* store =
+        static_cast<value_store::TestingValueStore*>(
+            factory->GetExisting(value_store_dir));
     ASSERT_TRUE(store);
 
     store->set_status_code(code);
@@ -380,8 +396,6 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   std::unique_ptr<LockScreenValueStoreMigratorImpl> migrator_;
 
   std::map<ExtensionId, base::RunLoop> extension_waiters_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImplTest);
 };
 
 TEST_F(LockScreenValueStoreMigratorImplTest, Basic) {
@@ -1010,7 +1024,7 @@ TEST_F(LockScreenValueStoreMigratorImplTest,
 
   // Clear data for app 1.
   migrator()->ClearDataForExtension(
-      app->id(), base::Bind(&ExpectNotRun, "clear data callback"));
+      app->id(), base::BindOnce(&ExpectNotRun, "clear data callback"));
   EXPECT_FALSE(migrator()->IsMigratingExtensionData(app->id()));
 
   DeleteMigrator();
@@ -1046,7 +1060,7 @@ TEST_F(LockScreenValueStoreMigratorImplTest,
 
   // Clear data for app 1.
   migrator()->ClearDataForExtension(
-      app->id(), base::Bind(&ExpectNotRun, "clear data callback"));
+      app->id(), base::BindOnce(&ExpectNotRun, "clear data callback"));
   EXPECT_FALSE(migrator()->IsMigratingExtensionData(app->id()));
 
   // This should clear the target storage.

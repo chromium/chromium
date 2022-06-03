@@ -31,19 +31,18 @@ namespace blink {
 class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
                                       public SVGURIReference {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGAElement);
 
  public:
   SVGAnimatedString* svgTarget() { return svg_target_.Get(); }
 
   explicit SVGAElement(Document&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String title() const override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 

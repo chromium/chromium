@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 
 namespace skia {
@@ -84,8 +85,15 @@ void WriteSkFontStyle(base::Pickle* pickle, SkFontStyle style) {
 
 bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out) {
   DCHECK(out);
+  if (in.colorType() == kUnknown_SkColorType &&
+      in.alphaType() == kUnknown_SkAlphaType && in.empty() && in.isNull()) {
+    // Default-initialized bitmaps convert to the same.
+    *out = SkBitmap();
+    return true;
+  }
   const SkImageInfo& info = in.info();
-  if (info.colorType() == kN32_SkColorType &&
+  const bool stride_matches_width = in.rowBytes() == info.minRowBytes();
+  if (stride_matches_width && info.colorType() == kN32_SkColorType &&
       (info.alphaType() == kPremul_SkAlphaType ||
        info.alphaType() == kOpaque_SkAlphaType)) {
     // Shallow copy if the data is already in the right format.

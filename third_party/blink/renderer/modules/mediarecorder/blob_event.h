@@ -34,7 +34,7 @@ class MODULES_EXPORT BlobEvent final : public Event {
   // Event
   const AtomicString& InterfaceName() const final;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<Blob> blob_;

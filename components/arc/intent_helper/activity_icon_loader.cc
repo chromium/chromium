@@ -13,12 +13,13 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
-#include "components/arc/arc_service_manager.h"
+#include "base/task/thread_pool.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/intent_helper/adaptive_icon_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace arc {
@@ -31,8 +32,9 @@ constexpr size_t kLargeIconSizeInDip = 20;
 constexpr size_t kMaxIconSizeInPx = 200;
 constexpr char kPngDataUrlPrefix[] = "data:image/png;base64,";
 
-ui::ScaleFactor GetSupportedScaleFactor() {
-  std::vector<ui::ScaleFactor> scale_factors = ui::GetSupportedScaleFactors();
+ui::ResourceScaleFactor GetSupportedResourceScaleFactor() {
+  std::vector<ui::ResourceScaleFactor> scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   DCHECK(!scale_factors.empty());
   return scale_factors.back();
 }
@@ -79,12 +81,20 @@ mojom::IntentHelperInstance* GetInstanceForRequestActivityIcons(
   return instance;
 }
 
+ActivityIconLoader::ActivityName GenerateActivityName(
+    const mojom::ActivityIconPtr& icon) {
+  return ActivityIconLoader::ActivityName(
+      icon->activity->package_name, icon->activity->activity_name.has_value()
+                                        ? (*icon->activity->activity_name)
+                                        : std::string());
+}
+
 // Encodes the |image| as PNG data considering scale factor, and returns it as
 // data: URL.
 scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
     const gfx::ImageSkia& image,
-    ui::ScaleFactor scale_factor) {
-  float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ui::ResourceScaleFactor scale_factor) {
+  float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(image.GetRepresentation(scale).GetBitmap(),
                                     false /* discard_transparency */, &output);
@@ -97,9 +107,29 @@ scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
       new base::RefCountedData<GURL>(GURL(kPngDataUrlPrefix + encoded)));
 }
 
+ActivityIconLoader::Icons ResizeIconsInternal(
+    const gfx::ImageSkia& image,
+    ui::ResourceScaleFactor scale_factor) {
+  // Resize the original icon to the sizes intent_helper needs.
+  gfx::ImageSkia icon_large(gfx::ImageSkiaOperations::CreateResizedImage(
+      image, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(kLargeIconSizeInDip, kLargeIconSizeInDip)));
+  icon_large.MakeThreadSafe();
+  gfx::Image icon20(icon_large);
+
+  gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
+      image, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
+  icon_small.MakeThreadSafe();
+  gfx::Image icon16(icon_small);
+
+  return ActivityIconLoader::Icons(
+      icon16, icon20, GeneratePNGDataUrl(icon_small, scale_factor));
+}
+
 std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
     std::vector<mojom::ActivityIconPtr> icons,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   auto result = std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
   for (size_t i = 0; i < icons.size(); ++i) {
     static const size_t kBytesPerPixel = 4;
@@ -119,24 +149,22 @@ std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
 
     gfx::ImageSkia original(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 
-    // Resize the original icon to the sizes intent_helper needs.
-    gfx::ImageSkia icon_large(gfx::ImageSkiaOperations::CreateResizedImage(
-        original, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kLargeIconSizeInDip, kLargeIconSizeInDip)));
-    gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
-        original, skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
-    gfx::Image icon16(icon_small);
-    gfx::Image icon20(icon_large);
+    result->insert(std::make_pair(GenerateActivityName(icon),
+                                  ResizeIconsInternal(original, scale_factor)));
+  }
 
-    const std::string activity_name = icon->activity->activity_name.has_value()
-                                          ? (*icon->activity->activity_name)
-                                          : std::string();
+  return result;
+}
+
+std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeIcons(
+    std::vector<ActivityIconLoader::ActivityName> activity_names,
+    const std::vector<gfx::ImageSkia>& images,
+    ui::ResourceScaleFactor scale_factor) {
+  DCHECK_EQ(activity_names.size(), images.size());
+  auto result = std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
+  for (size_t i = 0; i < activity_names.size(); ++i) {
     result->insert(std::make_pair(
-        ActivityIconLoader::ActivityName(icon->activity->package_name,
-                                         activity_name),
-        ActivityIconLoader::Icons(
-            icon16, icon20, GeneratePNGDataUrl(icon_small, scale_factor))));
+        activity_names[i], ResizeIconsInternal(images[i], scale_factor)));
   }
 
   return result;
@@ -158,6 +186,8 @@ ActivityIconLoader::ActivityName::ActivityName(const std::string& package_name,
                                                const std::string& activity_name)
     : package_name(package_name), activity_name(activity_name) {}
 
+ActivityIconLoader::ActivityName::~ActivityName() = default;
+
 bool ActivityIconLoader::ActivityName::operator<(
     const ActivityName& other) const {
   return std::tie(package_name, activity_name) <
@@ -165,9 +195,14 @@ bool ActivityIconLoader::ActivityName::operator<(
 }
 
 ActivityIconLoader::ActivityIconLoader()
-    : scale_factor_(GetSupportedScaleFactor()) {}
+    : scale_factor_(GetSupportedResourceScaleFactor()) {}
 
 ActivityIconLoader::~ActivityIconLoader() = default;
+
+void ActivityIconLoader::SetAdaptiveIconDelegate(
+    AdaptiveIconDelegate* delegate) {
+  delegate_ = delegate;
+}
 
 void ActivityIconLoader::InvalidateIcons(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -234,6 +269,13 @@ void ActivityIconLoader::AddCacheEntryForTesting(const ActivityName& activity) {
       std::make_pair(activity, Icons(gfx::Image(), gfx::Image(), nullptr)));
 }
 
+void ActivityIconLoader::OnIconsReadyForTesting(
+    std::unique_ptr<ActivityToIconsMap> cached_result,
+    OnIconsReadyCallback cb,
+    std::vector<mojom::ActivityIconPtr> icons) {
+  OnIconsReady(std::move(cached_result), std::move(cb), std::move(icons));
+}
+
 // static
 bool ActivityIconLoader::HasIconsReadyCallbackRun(GetResult result) {
   switch (result) {
@@ -252,9 +294,40 @@ void ActivityIconLoader::OnIconsReady(
     OnIconsReadyCallback cb,
     std::vector<mojom::ActivityIconPtr> icons) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::PostTaskAndReplyWithResult(
+  if (delegate_) {
+    std::vector<ActivityName> actvity_names;
+    for (const auto& icon : icons)
+      actvity_names.emplace_back(GenerateActivityName(icon));
+
+    delegate_->GenerateAdaptiveIcons(
+        icons,
+        base::BindOnce(&ActivityIconLoader::OnAdaptiveIconGenerated,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(actvity_names),
+                       std::move(cached_result), std::move(cb)));
+    return;
+  }
+
+  // TODO(crbug.com/1083331): Remove when the adaptive icon feature is enabled
+  // by default.
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ResizeAndEncodeIcons, std::move(icons), scale_factor_),
+      base::BindOnce(&ActivityIconLoader::OnIconsResized,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(cached_result),
+                     std::move(cb)));
+}
+
+void ActivityIconLoader::OnAdaptiveIconGenerated(
+    std::vector<ActivityName> actvity_names,
+    std::unique_ptr<ActivityToIconsMap> cached_result,
+    OnIconsReadyCallback cb,
+    const std::vector<gfx::ImageSkia>& adaptive_icons) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ResizeIcons, std::move(actvity_names), adaptive_icons,
+                     scale_factor_),
       base::BindOnce(&ActivityIconLoader::OnIconsResized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cached_result),
                      std::move(cb)));

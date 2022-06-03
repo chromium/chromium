@@ -6,15 +6,14 @@
 #define CHROME_GPU_CHROME_CONTENT_GPU_CLIENT_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "content/public/gpu/content_gpu_client.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace arc {
 class ProtectedBufferManager;
 }  // namespace arc
@@ -23,23 +22,24 @@ class ProtectedBufferManager;
 class ChromeContentGpuClient : public content::ContentGpuClient {
  public:
   ChromeContentGpuClient();
+
+  ChromeContentGpuClient(const ChromeContentGpuClient&) = delete;
+  ChromeContentGpuClient& operator=(const ChromeContentGpuClient&) = delete;
+
   ~ChromeContentGpuClient() override;
 
   // content::ContentGpuClient:
   void GpuServiceInitialized() override;
-  void ExposeInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
-                                 mojo::BinderMap* binders) override;
+  void ExposeInterfacesToBrowser(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      mojo::BinderMap* binders) override;
   void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_task_runner) override;
   void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) override;
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  std::unique_ptr<media::CdmProxy> CreateCdmProxy(
-      const base::Token& cdm_guid) override;
-#endif
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> GetProtectedBufferManager();
 #endif
 
@@ -47,11 +47,9 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
   // Used to profile main thread startup.
   std::unique_ptr<ThreadProfiler> main_thread_profiler_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentGpuClient);
 };
 
 #endif  // CHROME_GPU_CHROME_CONTENT_GPU_CLIENT_H_

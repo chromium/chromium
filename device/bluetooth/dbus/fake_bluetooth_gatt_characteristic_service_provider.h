@@ -31,6 +31,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicServiceProvider
       const std::string& uuid,
       const std::vector<std::string>& flags,
       const dbus::ObjectPath& service_path);
+
+  FakeBluetoothGattCharacteristicServiceProvider(
+      const FakeBluetoothGattCharacteristicServiceProvider&) = delete;
+  FakeBluetoothGattCharacteristicServiceProvider& operator=(
+      const FakeBluetoothGattCharacteristicServiceProvider&) = delete;
+
   ~FakeBluetoothGattCharacteristicServiceProvider() override;
 
   // BluetoothGattCharacteristicServiceProvider override.
@@ -41,9 +47,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicServiceProvider
   // GATT manager.
   void GetValue(
       const dbus::ObjectPath& device_path,
-      device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-      device::BluetoothLocalGattService::Delegate::ErrorCallback
-          error_callback);
+      device::BluetoothLocalGattService::Delegate::ValueCallback callback);
   void SetValue(const dbus::ObjectPath& device_path,
                 const std::vector<uint8_t>& value,
                 base::OnceClosure callback,
@@ -59,7 +63,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicServiceProvider
           error_callback);
 
   // Method to simulate starting and stopping notifications.
-  bool NotificationsChange(bool start);
+  bool NotificationsChange(const dbus::ObjectPath& device_path, bool start);
 
   const dbus::ObjectPath& object_path() const override;
   const std::string& uuid() const { return uuid_; }
@@ -84,8 +88,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicServiceProvider
 
   // The delegate that method calls are passed on to.
   std::unique_ptr<BluetoothGattAttributeValueDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattCharacteristicServiceProvider);
 };
 
 }  // namespace bluez

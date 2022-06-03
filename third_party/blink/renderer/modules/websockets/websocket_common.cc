@@ -7,18 +7,17 @@
 #include <stddef.h>
 
 #include "base/metrics/histogram_macros.h"
-#include "third_party/blink/public/platform/web_insecure_request_policy.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/security_context/insecure_request_policy.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
+#include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-
-#include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
-#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -41,11 +40,12 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   url_ = KURL(NullURL(), url);
 
   bool upgrade_insecure_requests_set =
-      execution_context->GetSecurityContext().GetInsecureRequestPolicy() &
-      kUpgradeInsecureRequests;
+      (execution_context->GetSecurityContext().GetInsecureRequestPolicy() &
+       mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests) !=
+      mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
 
   if (upgrade_insecure_requests_set && url_.Protocol() == "ws" &&
-      !SecurityOrigin::Create(url_)->IsPotentiallyTrustworthy()) {
+      !network::IsUrlPotentiallyTrustworthy(url_)) {
     UseCounter::Count(
         execution_context,
         WebFeature::kUpgradeInsecureRequestsUpgradedRequestWebsocket);
@@ -79,15 +79,8 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     return ConnectResult::kException;
   }
 
-  if (!IsPortAllowedForScheme(url_)) {
-    state_ = kClosed;
-    exception_state.ThrowSecurityError(
-        "The port " + String::Number(url_.Port()) + " is not allowed.");
-    return ConnectResult::kException;
-  }
-
-  if (!execution_context->GetContentSecurityPolicyForWorld()
-           ->AllowConnectToSource(url_)) {
+  if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
+           ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
     state_ = kClosed;
 
     return ConnectResult::kAsyncError;

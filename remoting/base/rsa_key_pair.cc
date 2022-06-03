@@ -99,7 +99,7 @@ std::string RsaKeyPair::GenerateCertificate() const {
   net::x509_util::CreateSelfSignedCert(
       key_->key(), net::x509_util::DIGEST_SHA256, "CN=chromoting",
       base::RandInt(1, std::numeric_limits<int>::max()), base::Time::Now(),
-      base::Time::Now() + base::TimeDelta::FromDays(1), {}, &der_cert);
+      base::Time::Now() + base::Days(1), {}, &der_cert);
   return der_cert;
 }
 

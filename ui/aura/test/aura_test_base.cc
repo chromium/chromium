@@ -6,16 +6,11 @@
 
 #include "base/command_line.h"
 #include "ui/aura/client/window_parenting_client.h"
-#include "ui/aura/test/aura_test_context_factory.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/base/ui_base_switches_util.h"
-#include "ui/compositor/test/test_context_factories.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -36,7 +31,6 @@ AuraTestBase::~AuraTestBase() {
 void AuraTestBase::SetUp() {
   setup_called_ = true;
   testing::Test::SetUp();
-  ui::MaterialDesignController::Initialize();
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   // Changing the parameters for gesture recognition shouldn't cause
@@ -69,17 +63,8 @@ void AuraTestBase::SetUp() {
   gesture_config->set_velocity_tracker_strategy(
       ui::VelocityTracker::Strategy::LSQ2_RESTRICTED);
 
-  // The ContextFactory must exist before any Compositors are created.
-  ui::ContextFactory* context_factory = nullptr;
-  ui::ContextFactoryPrivate* context_factory_private = nullptr;
-  const bool enable_pixel_output = false;
-  context_factories_ =
-      std::make_unique<ui::TestContextFactories>(enable_pixel_output);
-  context_factory = context_factories_->GetContextFactory();
-  context_factory_private = context_factories_->GetContextFactoryPrivate();
-
   helper_ = std::make_unique<AuraTestHelper>();
-  helper_->SetUp(context_factory, context_factory_private);
+  helper_->SetUp();
 }
 
 void AuraTestBase::TearDown() {
@@ -90,7 +75,6 @@ void AuraTestBase::TearDown() {
   RunAllPendingInMessageLoop();
 
   helper_->TearDown();
-  context_factories_.reset();
   testing::Test::TearDown();
 }
 
@@ -112,7 +96,7 @@ void AuraTestBase::ParentWindow(Window* window) {
 }
 
 bool AuraTestBase::DispatchEventUsingWindowDispatcher(ui::Event* event) {
-  ui::EventDispatchDetails details = event_sink()->OnEventFromSource(event);
+  ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(event);
   CHECK(!details.dispatcher_destroyed);
   return event->handled();
 }

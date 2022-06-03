@@ -22,7 +22,7 @@ namespace vr {
 
 VR_BASE_EXPORT UScriptCode UScriptGetScript(UChar32 codepoint, UErrorCode* err);
 
-VR_BASE_EXPORT base::string16 FormatUrlForVr(const GURL& gurl,
+VR_BASE_EXPORT std::u16string FormatUrlForVr(const GURL& gurl,
                                              url::Parsed* new_parsed);
 
 }  // namespace vr

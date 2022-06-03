@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>crbug.com/1103773</title>
+<style>
+select {
+  padding: 1rem;
+}
+
+.update {
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+</style>
+<body>
+<select><option>abcd</select>
+<script>
+const select = document.querySelector('select');
+select.offsetTop;
+if (window.testRunner)
+  testRunner.waitUntilDone();
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    select.classList.add('update');
+    testRunner.notifyDone();
+  });
+});
+</script>
+</body>

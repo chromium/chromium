@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<select id="select">
+<option id="option1">1</option>
+<option id="option2">2</option>
+<option id="option3">2</option>
+</select>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(t => {
+  let select = document.querySelector('select');
+  select.addEventListener("change", t.step_func(e => {
+    assert_equals(e.target.value, "2", "`change` event must fire for '2' on the select element");
+    t.done();
+  }));
+
+  // Press on the select to show the popup.
+  let axSelect = axElementById('select');
+  select.focus();
+  axSelect.press();
+
+  requestAnimationFrame(t.step_func(() => {
+    // Once the popup is shown, click on another option, which must fire the event
+    let axOption2 = axElementById('option2');
+    axOption2.press();
+    t.step_timeout(t.unreached_func("`change` event never fired"), 100);
+  }));
+}, 'When performing a click through a11y on an option in a select popup, the change event must fire');
+</script>

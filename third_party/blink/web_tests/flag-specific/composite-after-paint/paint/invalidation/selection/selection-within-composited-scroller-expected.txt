@@ -8,14 +8,24 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [200, 200],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [185, 185],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [200, 1620],
-      "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'test'",
-          "rect": [0, 610, 22, 20],
-          "reason": "geometry"
-        }
+      "contentsOpaque": true,
+      "backgroundColor": "#ADD8E6",
+      "invalidations": [
+        [0, 610, 22, 20]
       ],
       "transform": 2
     },
@@ -35,6 +45,7 @@
       "name": "Scroll corner of LayoutNGBlockFlow DIV id='scroller'",
       "position": [185, 185],
       "bounds": [15, 15],
+      "contentsOpaque": true,
       "transform": 1
     }
   ],

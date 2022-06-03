@@ -5,10 +5,13 @@
 module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
-import "services/network/public/mojom/tcp_socket.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
+import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/privileged/mojom/gl/gpu_host.mojom";
+[EnableIf=is_win]
+import "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom";
 import "services/viz/privileged/mojom/gl/gpu_service.mojom";
 import "ui/gfx/mojom/font_render_params.mojom";
 
@@ -28,14 +31,15 @@ struct FrameSinkManagerParams {
 
   // Viz to host interface.
   pending_remote<FrameSinkManagerClient> frame_sink_manager_client;
+
+  DebugRendererSettings debug_renderer_settings;
 };
 
-struct VizDevToolsParams {
-  // Socket for viz devtools server.
-  pending_remote<network.mojom.TCPServerSocket> server_socket;
-
-  // Port the devtools server socket is bound to.
-  uint16 server_port;
+// This interface provides mechanism for the Viz Debugger to output data.
+[EnableIf=use_viz_debugger]
+interface VizDebugOutput {
+ // Called by the VizDebugger instance at the end of each frame.
+ LogFrame(mojo_base.mojom.Value frameData);
 };
 
 // This is the primordial interface used to (re)start the viz services.
@@ -50,8 +54,24 @@ interface VizMain {
       handle<shared_buffer>? activity_flags,
       gfx.mojom.SubpixelRendering subpixel_rendering);
 
-  // The viz devtools server is for use by developers to observe the
-  // FrameSinkManager in the viz compositor. This is only called if the flag
+  // Create a GPU info collection service provided by the info-collection GPU
+  // process.
+  [EnableIf=is_win]
+  CreateInfoCollectionGpuService(
+      pending_receiver<InfoCollectionGpuService> info_collection_gpu_service);
+
+  // Initiates the devtools enabled stream connection for the Viz Debugger.
+  // This is only called if the flag --enable-viz-devtools is used.
+  [EnableIf=use_viz_debugger]
+  StartDebugStream(pending_remote<VizDebugOutput> viz_debug);
+
+  // Sends debug filtering information to the active Viz Debugger instance.
+  // This is only called if the flag --enable-viz-devtools is used.
+  [EnableIf=use_viz_debugger]
+  FilterDebugStream(mojo_base.mojom.Value filterData);
+
+  // Ends the Viz debugging session. This is only called if the flag
   // --enable-viz-devtools is used.
-  CreateVizDevTools(VizDevToolsParams params);
+  [EnableIf=use_viz_debugger]
+  StopDebugStream();
 };

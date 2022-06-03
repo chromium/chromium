@@ -16,7 +16,7 @@
     }
     </style>
 </head>
-<body onload="setSrcByTagName('video', 'content/test.ogv'); init()">
+<body onload="setVideoSrcAndWaitForFirstFrame('content/test.ogv')">
 <p>The look of the controls should not change.</p>
 <div class="override">
     <video controls></video>

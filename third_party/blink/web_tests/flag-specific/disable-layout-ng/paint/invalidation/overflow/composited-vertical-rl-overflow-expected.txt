@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,13 +10,10 @@
       "name": "LayoutBlockFlow (positioned) DIV id='div'",
       "position": [-50, 0],
       "bounds": [150, 100],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV id='div'",
-          "rect": [0, 0, 150, 100],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [0, 0, 150, 100]
       ],
       "transform": 1
     }

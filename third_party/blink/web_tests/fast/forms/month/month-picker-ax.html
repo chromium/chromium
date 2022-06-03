@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+    <script src="../resources/common.js"></script>
+    <script src="../resources/picker-common.js"></script>
+    <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+
+<body>
+<input type="month" id="month1" value="2000-01">
+
+<script>
+promise_test((t) => {
+  var month1 = document.getElementById('month1');
+  return openPickerWithPromise(month1).then(() => {
+    var markDirtyCounter = 0;
+    var focusCounter = 0;
+    let promise = new Promise((resolve, reject) => {
+      accessibilityController.setNotificationListener(function(axnode, type) {
+        if (type == 'Focus') {
+          console.log('Focused: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
+          focusCounter++;
+        } else if (type == 'MarkDirty') {
+          console.log('Received MarkDirty');
+          markDirtyCounter++;
+        }
+
+        if (focusCounter == 1 && markDirtyCounter >= 2) {
+            assert_equals(month1.value, "2000-05", "Arrow key in month picker should have changed value");
+            t.done();
+        }
+      });
+
+      // In case of failure, reject the promise so we get some logs instead of timing out.
+      window.setTimeout(() => {
+        reject(`Didn't receive expected events.  Got ${focusCounter} Focus and ${markDirtyCounter} MarkDirty`);
+      }, 1500);
+    });
+
+    eventSender.keyDown('ArrowDown');
+    return promise;
+  });
+}, 'Tests if typing an arrow key dispatches |Focus| and |MarkDirty| a11y events.');
+
+</script>
+</body>
+</html>

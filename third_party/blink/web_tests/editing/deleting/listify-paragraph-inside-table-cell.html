@@ -1,0 +1,69 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+        '<div contenteditable>',
+            '<i><table><tr><td>Please |put cursor here</td>',
+            '</tr></table></i>',
+        '</div>',
+    ],
+    'insertUnorderedList',
+    [
+        '<div contenteditable>',
+            '<i><table><tbody><tr><td><ul><li>|Please put cursor here</li></ul></td>',
+            '</tr></tbody></table></i>',
+        '</div>',
+    ],
+    'Create a list with enclosing italics element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<b><table><tr><td>Please |put cursor here</td>',
+            '</tr></table></b>',
+        '</div>',
+    ],
+    'insertUnorderedList',
+    [
+        '<div contenteditable>',
+            '<b><table><tbody><tr><td><ul><li>|Please put cursor here</li></ul></td>',
+            '</tr></tbody></table></b>',
+        '</div>',
+    ],
+    'Create a list with enclosing bold element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<u><table><tr><td>Please |put cursor here</td>',
+            '</tr></table></u>',
+        '</div>',
+    ],
+    'insertUnorderedList',
+    [
+        '<div contenteditable>',
+            '<u><table><tbody><tr><td><ul><li>|Please put cursor here</li></ul></td>',
+            '</tr></tbody></table></u>',
+        '</div>',
+    ],
+    'Create a list with enclosing underline element');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<i><b><table><tr><td>Please |put cursor here</td>',
+            '</tr></table></b></i>',
+        '</div>',
+    ],
+    'insertUnorderedList',
+    [
+        '<div contenteditable>',
+            '<i><b><table><tbody><tr><td><ul><li>|Please put cursor here</li></ul></td>',
+            '</tr></tbody></table></b></i>',
+        '</div>',
+    ],
+    'Create a list with multiple enclosing presentational element');
+</script>

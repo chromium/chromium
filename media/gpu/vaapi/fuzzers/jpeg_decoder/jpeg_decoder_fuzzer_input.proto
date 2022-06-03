@@ -1,0 +1,84 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+package media.fuzzing;
+
+message JpegComponent {
+  optional uint32 id = 1;
+  optional uint32 horizontal_sampling_factor = 2;
+  optional uint32 vertical_sampling_factor = 3;
+  optional uint32 quantization_table_selector = 4;
+}
+
+message JpegFrameHeader {
+  optional uint32 visible_width = 1;
+  optional uint32 visible_height = 2;
+  optional uint32 coded_width = 3;
+  optional uint32 coded_height = 4;
+  repeated JpegComponent components = 5;
+}
+
+message JpegHuffmanTable {
+  optional bool valid = 1;
+  optional bytes code_length = 2;
+  optional bytes code_value = 3;
+}
+
+message JpegQuantizationTable {
+  optional bool valid = 1;
+  optional bytes value = 2;
+}
+
+message JpegScanHeader {
+  message Component {
+    optional uint32 component_selector = 1;
+    optional uint32 dc_selector = 2;
+    optional uint32 ac_selector = 3;
+  }
+  repeated Component components = 1;
+}
+
+message JpegParseResult {
+  optional JpegFrameHeader frame_header = 1;
+  repeated JpegHuffmanTable dc_table = 2;
+  repeated JpegHuffmanTable ac_table = 3;
+  repeated JpegQuantizationTable q_table = 4;
+  optional uint32 restart_interval = 5;
+  optional JpegScanHeader scan = 6;
+  optional bytes data = 7;
+  optional uint32 image_size = 8;
+}
+
+enum VARTFormat {
+  INVALID = 0;
+  YUV420 = 1;
+  YUV422 = 2;
+  YUV444 = 3;
+  YUV411 = 4;
+  YUV400 = 5;
+  YUV420_10 = 6;
+  YUV422_10 = 7;
+  YUV444_10 = 8;
+  YUV420_12 = 9;
+  YUV422_12 = 10;
+  YUV444_12 = 11;
+  RGB16 = 12;
+  RGB32 = 13;
+  RGBP = 14;
+  RGB32_10 = 15;
+  PROTECTED = 16;
+}
+
+message JpegImageList {
+  message JpegImage {
+    optional VARTFormat picture_va_rt_format = 1 [default = INVALID];
+    optional int32 surface_coded_width = 2;
+    optional int32 surface_coded_height = 3;
+    optional int32 surface_visible_width = 4;
+    optional int32 surface_visible_height = 5;
+    optional JpegParseResult parse_result = 6;
+  }
+  repeated JpegImage images = 1;
+}

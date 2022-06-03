@@ -1,0 +1,4 @@
+# https://crbug.com/1039873
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset

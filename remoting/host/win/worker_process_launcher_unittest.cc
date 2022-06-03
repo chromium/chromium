@@ -6,13 +6,14 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -20,6 +21,7 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_messages.h"
@@ -43,45 +45,59 @@ namespace {
 class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
  public:
   MockProcessLauncherDelegate() {}
+
+  MockProcessLauncherDelegate(const MockProcessLauncherDelegate&) = delete;
+  MockProcessLauncherDelegate& operator=(const MockProcessLauncherDelegate&) =
+      delete;
+
   ~MockProcessLauncherDelegate() override {}
 
   // WorkerProcessLauncher::Delegate interface.
-  MOCK_METHOD1(LaunchProcess, void(WorkerProcessLauncher*));
-  MOCK_METHOD1(Send, void(IPC::Message*));
-  MOCK_METHOD0(CloseChannel, void());
-  MOCK_METHOD0(KillProcess, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProcessLauncherDelegate);
+  MOCK_METHOD(void, LaunchProcess, (WorkerProcessLauncher*), (override));
+  MOCK_METHOD(void, Send, (IPC::Message*), (override));
+  MOCK_METHOD(void,
+              GetRemoteAssociatedInterface,
+              (mojo::GenericPendingAssociatedReceiver),
+              (override));
+  MOCK_METHOD(void, CloseChannel, (), (override));
+  MOCK_METHOD(void, KillProcess, (), (override));
 };
 
 class MockIpcDelegate : public WorkerProcessIpcDelegate {
  public:
   MockIpcDelegate() {}
+
+  MockIpcDelegate(const MockIpcDelegate&) = delete;
+  MockIpcDelegate& operator=(const MockIpcDelegate&) = delete;
+
   ~MockIpcDelegate() override {}
 
   // WorkerProcessIpcDelegate interface.
-  MOCK_METHOD1(OnChannelConnected, void(int32_t));
-  MOCK_METHOD1(OnMessageReceived, bool(const IPC::Message&));
-  MOCK_METHOD1(OnPermanentError, void(int));
-  MOCK_METHOD0(OnWorkerProcessStopped, void());
+  MOCK_METHOD(void, OnChannelConnected, (int32_t), (override));
+  MOCK_METHOD(bool, OnMessageReceived, (const IPC::Message&), (override));
+  MOCK_METHOD(void, OnPermanentError, (int), (override));
+  MOCK_METHOD(void, OnWorkerProcessStopped, (), (override));
+  MOCK_METHOD(void,
+              OnAssociatedInterfaceRequest,
+              (const std::string& interface_name,
+               mojo::ScopedInterfaceEndpointHandle handle),
+              (override));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIpcDelegate);
 };
 
 class MockWorkerListener : public IPC::Listener {
  public:
   MockWorkerListener() {}
+
+  MockWorkerListener(const MockWorkerListener&) = delete;
+  MockWorkerListener& operator=(const MockWorkerListener&) = delete;
+
   ~MockWorkerListener() override {}
 
-  MOCK_METHOD3(OnCrash, void(const std::string&, const std::string&, int));
+  MOCK_METHOD(void, OnCrash, (const std::string&, const std::string&, int));
 
   // IPC::Listener implementation
   bool OnMessageReceived(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWorkerListener);
 };
 
 bool MockWorkerListener::OnMessageReceived(const IPC::Message& message) {
@@ -193,11 +209,11 @@ WorkerProcessLauncherTest::~WorkerProcessLauncherTest() {
 void WorkerProcessLauncherTest::SetUp() {
   task_runner_ = new AutoThreadTaskRunner(
       task_environment_.GetMainThreadTaskRunner(),
-      base::Bind(&WorkerProcessLauncherTest::QuitMainMessageLoop,
-                 base::Unretained(this)));
+      base::BindOnce(&WorkerProcessLauncherTest::QuitMainMessageLoop,
+                     base::Unretained(this)));
 
   // Set up process launcher delegate
-  launcher_delegate_.reset(new MockProcessLauncherDelegate());
+  launcher_delegate_ = std::make_unique<MockProcessLauncherDelegate>();
   EXPECT_CALL(*launcher_delegate_, Send(_))
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::SendToProcess));
@@ -321,11 +337,10 @@ void WorkerProcessLauncherTest::CrashWorker() {
 }
 
 void WorkerProcessLauncherTest::StartWorker() {
-  launcher_.reset(new WorkerProcessLauncher(std::move(launcher_delegate_),
-                                            &server_listener_));
+  launcher_ = std::make_unique<WorkerProcessLauncher>(
+      std::move(launcher_delegate_), &server_listener_);
 
-  launcher_->SetKillProcessTimeoutForTest(
-      base::TimeDelta::FromMilliseconds(100));
+  launcher_->SetKillProcessTimeoutForTest(base::Milliseconds(100));
 }
 
 void WorkerProcessLauncherTest::StopWorker() {

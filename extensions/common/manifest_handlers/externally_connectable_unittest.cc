@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
@@ -38,9 +38,6 @@ TEST_F(ExternallyConnectableTest, IDsAndMatches) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_ids_and_matches.json");
   ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kWebConnectable));
 
   ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
@@ -101,9 +98,6 @@ TEST_F(ExternallyConnectableTest, IDs) {
       LoadAndExpectSuccess("externally_connectable_ids.json");
   ASSERT_TRUE(extension.get());
 
-  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kWebConnectable));
-
   ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
@@ -121,9 +115,6 @@ TEST_F(ExternallyConnectableTest, Matches) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_matches.json");
   ASSERT_TRUE(extension.get());
-
-  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kWebConnectable));
 
   ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
@@ -165,9 +156,6 @@ TEST_F(ExternallyConnectableTest, MatchesWithTlsChannelId) {
       "externally_connectable_matches_tls_channel_id.json");
   ASSERT_TRUE(extension.get());
 
-  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kWebConnectable));
-
   ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
@@ -189,9 +177,6 @@ TEST_F(ExternallyConnectableTest, AllIDs) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_all_ids.json");
   ASSERT_TRUE(extension.get());
-
-  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
-      APIPermission::kWebConnectable));
 
   ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());

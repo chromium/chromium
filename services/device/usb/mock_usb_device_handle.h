@@ -61,11 +61,15 @@ class MockUsbDeviceHandle : public UsbDeviceHandle {
   }
   MOCK_METHOD1(ResetDeviceInternal, void(ResultCallback& callback));
 
-  void ClearHalt(uint8_t endpoint, ResultCallback callback) override {
-    ClearHaltInternal(endpoint, callback);
+  void ClearHalt(mojom::UsbTransferDirection direction,
+                 uint8_t endpoint_number,
+                 ResultCallback callback) override {
+    ClearHaltInternal(direction, endpoint_number, callback);
   }
-  MOCK_METHOD2(ClearHaltInternal,
-               void(uint8_t endpoint, ResultCallback& callback));
+  MOCK_METHOD3(ClearHaltInternal,
+               void(mojom::UsbTransferDirection direction,
+                    uint8_t endpoint_number,
+                    ResultCallback& callback));
 
   void ControlTransfer(mojom::UsbTransferDirection direction,
                        mojom::UsbControlTransferType request_type,

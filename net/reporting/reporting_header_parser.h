@@ -7,9 +7,13 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "net/base/net_export.h"
+#include "net/http/structured_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace base {
 class Value;
@@ -17,74 +21,55 @@ class Value;
 
 namespace net {
 
+class IsolationInfo;
+class NetworkIsolationKey;
 class ReportingContext;
+
+// Tries to parse a Reporting-Endpoints header. Returns base::nullopt if parsing
+// failed and the header should be ignored; otherwise returns a (possibly
+// empty) mapping of endpoint names to URLs.
+NET_EXPORT
+absl::optional<base::flat_map<std::string, std::string>>
+ParseReportingEndpoints(const std::string& header);
 
 class NET_EXPORT ReportingHeaderParser {
  public:
-  // Histograms.  These are mainly used in test cases to verify that interesting
-  // events occurred.
-
-  static const char kHeaderOutcomeHistogram[];
-  static const char kHeaderEndpointGroupOutcomeHistogram[];
-  static const char kHeaderEndpointOutcomeHistogram[];
-
-  enum class HeaderOutcome {
-    DISCARDED_NO_REPORTING_SERVICE = 0,
-    DISCARDED_INVALID_SSL_INFO = 1,
-    DISCARDED_CERT_STATUS_ERROR = 2,
-    DISCARDED_JSON_TOO_BIG = 3,
-    DISCARDED_JSON_INVALID = 4,
-    PARSED = 5,
-    REMOVED_EMPTY = 6,
-    MAX
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // They should also be kept in sync with the NetReportingHeaderType enum
+  // in tools/metrics/histograms/enums.xml
+  enum class ReportingHeaderType {
+    kReportTo = 0,
+    kReportToInvalid = 1,
+    kReportingEndpoints = 2,
+    kReportingEndpointsInvalid = 3,
+    kMaxValue = kReportingEndpointsInvalid,
   };
 
-  enum class HeaderEndpointGroupOutcome {
-    DISCARDED_NOT_DICTIONARY = 0,
-    DISCARDED_GROUP_NOT_STRING = 1,
-    DISCARDED_TTL_MISSING = 2,
-    DISCARDED_TTL_NOT_INTEGER = 3,
-    DISCARDED_TTL_NEGATIVE = 4,
-    DISCARDED_ENDPOINTS_MISSING = 5,
-    DISCARDED_ENDPOINTS_NOT_LIST = 6,
+  ReportingHeaderParser() = delete;
+  ReportingHeaderParser(const ReportingHeaderParser&) = delete;
+  ReportingHeaderParser& operator=(const ReportingHeaderParser&) = delete;
 
-    PARSED = 7,
-    REMOVED_TTL_ZERO = 8,
-    REMOVED_EMPTY = 9,
-    DISCARDED_INCLUDE_SUBDOMAINS_NOT_ALLOWED = 10,
-    MAX
-  };
+  static void ParseReportToHeader(
+      ReportingContext* context,
+      const NetworkIsolationKey& network_isolation_key,
+      const url::Origin& origin,
+      std::unique_ptr<base::Value> value);
 
-  enum class HeaderEndpointOutcome {
-    DISCARDED_NOT_DICTIONARY = 0,
-    DISCARDED_URL_MISSING = 1,
-    DISCARDED_URL_NOT_STRING = 2,
-    DISCARDED_URL_INVALID = 3,
-    DISCARDED_URL_INSECURE = 4,
-    DISCARDED_PRIORITY_NOT_INTEGER = 5,
-    DISCARDED_WEIGHT_NOT_INTEGER = 6,
-    DISCARDED_WEIGHT_NEGATIVE = 7,
+  // `isolation_info` here will be stored in the cache, associated with the
+  // `reporting_source`. `network_isolation_key` is the NIK which will be
+  // passed in with reports to be queued. This must match the NIK from
+  // `isolation_source`, unless it is empty (which will be the case if the
+  // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
+  static void ProcessParsedReportingEndpointsHeader(
+      ReportingContext* context,
+      const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
+      const NetworkIsolationKey& network_isolation_key,
+      const url::Origin& origin,
+      base::flat_map<std::string, std::string> parsed_header);
 
-    REMOVED = 8,  // Obsolete: removing for max_age: 0 is done on a group basis.
-    SET_REJECTED_BY_DELEGATE = 9,
-    SET = 10,
-    DISCARDED_PRIORITY_NEGATIVE = 11,
-
-    MAX
-  };
-
-  static void RecordHeaderDiscardedForNoReportingService();
-  static void RecordHeaderDiscardedForInvalidSSLInfo();
-  static void RecordHeaderDiscardedForCertStatusError();
-  static void RecordHeaderDiscardedForJsonInvalid();
-  static void RecordHeaderDiscardedForJsonTooBig();
-
-  static void ParseHeader(ReportingContext* context,
-                          const GURL& url,
-                          std::unique_ptr<base::Value> value);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReportingHeaderParser);
+  static void RecordReportingHeaderType(ReportingHeaderType header_type);
 };
 
 }  // namespace net

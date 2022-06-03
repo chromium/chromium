@@ -21,11 +21,11 @@ namespace device {
 // same process that runs the Device Service implementation.
 class ScopedGeolocationOverrider {
  public:
-  explicit ScopedGeolocationOverrider(const mojom::Geoposition& position);
+  explicit ScopedGeolocationOverrider(mojom::GeopositionPtr position);
   ScopedGeolocationOverrider(double latitude, double longitude);
   ~ScopedGeolocationOverrider();
-  void OverrideGeolocation(const mojom::Geoposition& position);
-  void UpdateLocation(const mojom::Geoposition& position);
+  void OverrideGeolocation(mojom::GeopositionPtr position);
+  void UpdateLocation(mojom::GeopositionPtr position);
   void UpdateLocation(double latitude, double longitude);
 
   // Pause resolving Geolocation queries to keep request inflight.

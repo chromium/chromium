@@ -16,7 +16,7 @@ class FakeOverlayUserData : public OverlayUserData<FakeOverlayUserData> {
 
  private:
   OVERLAY_USER_DATA_SETUP(FakeOverlayUserData);
-  FakeOverlayUserData(void* value);
+  FakeOverlayUserData(void* value = nullptr);
 
   void* value_ = nullptr;
 };

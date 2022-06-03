@@ -12,19 +12,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
-#include "components/download/internal/background_service/stats.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 
 namespace download {
 
-DeferredClientWrapper::DeferredClientWrapper(DownloadClient client_id,
-                                             ClientFactory client_factory,
+DeferredClientWrapper::DeferredClientWrapper(ClientFactory client_factory,
                                              SimpleFactoryKey* key)
     : client_factory_(std::move(client_factory)), key_(key) {
 #if defined(OS_ANDROID)
-  client_id_ = client_id;
   full_browser_requested_ = false;
 #endif
 
@@ -193,10 +190,10 @@ void DeferredClientWrapper::RunDeferredClosures(bool force_inflate) {
 
 void DeferredClientWrapper::DoRunDeferredClosures() {
   DCHECK(wrapped_client_);
-  for (auto& closure : deferred_closures_) {
+  auto deferred_closures = std::move(deferred_closures_);
+  for (auto& closure : deferred_closures) {
     std::move(closure).Run();
   }
-  deferred_closures_.clear();
 }
 
 void DeferredClientWrapper::InflateClient(Profile* profile) {
@@ -211,7 +208,6 @@ void DeferredClientWrapper::LaunchFullBrowser() {
   if (full_browser_requested_)
     return;
   full_browser_requested_ = true;
-  stats::LogDownloadClientInflatedFullBrowser(client_id_);
   android_startup::LoadFullBrowser();
 }
 #endif

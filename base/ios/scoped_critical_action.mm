@@ -6,16 +6,21 @@
 
 #import <UIKit/UIKit.h>
 
+#include <float.h>
+#include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 
 namespace base {
 namespace ios {
 
-ScopedCriticalAction::ScopedCriticalAction()
+ScopedCriticalAction::ScopedCriticalAction(StringPiece task_name)
     : core_(MakeRefCounted<ScopedCriticalAction::Core>()) {
-  ScopedCriticalAction::Core::StartBackgroundTask(core_);
+  ScopedCriticalAction::Core::StartBackgroundTask(core_, task_name);
 }
 
 ScopedCriticalAction::~ScopedCriticalAction() {
@@ -29,30 +34,38 @@ ScopedCriticalAction::Core::~Core() {
   DCHECK_EQ(background_task_id_, UIBackgroundTaskInvalid);
 }
 
-// This implementation calls |beginBackgroundTaskWithExpirationHandler:| when
-// instantiated and |endBackgroundTask:| when destroyed, creating a scope whose
-// execution will continue (temporarily) even after the app is backgrounded.
+// This implementation calls |beginBackgroundTaskWithName:expirationHandler:|
+// when instantiated and |endBackgroundTask:| when destroyed, creating a scope
+// whose execution will continue (temporarily) even after the app is
+// backgrounded.
 // static
-void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core) {
+void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
+                                                     StringPiece task_name) {
   UIApplication* application = [UIApplication sharedApplication];
   if (!application) {
     return;
   }
 
-  core->background_task_id_ =
-      [application beginBackgroundTaskWithExpirationHandler:^{
-        DLOG(WARNING) << "Background task with id " << core->background_task_id_
-                      << " expired.";
-        // Note if |endBackgroundTask:| is not called for each task before time
-        // expires, the system kills the application.
-        EndBackgroundTask(core);
-      }];
+  AutoLock lock_scope(core->background_task_id_lock_);
+  NSString* task_string =
+      !task_name.empty() ? base::SysUTF8ToNSString(task_name) : nil;
+  core->background_task_id_ = [application
+      beginBackgroundTaskWithName:task_string
+                expirationHandler:^{
+                  DLOG(WARNING)
+                      << "Background task with name <"
+                      << base::SysNSStringToUTF8(task_string) << "> and with "
+                      << "id " << core->background_task_id_ << " expired.";
+                  // Note if |endBackgroundTask:| is not called for each task
+                  // before time expires, the system kills the application.
+                  EndBackgroundTask(core);
+                }];
 
   if (core->background_task_id_ == UIBackgroundTaskInvalid) {
-    DLOG(WARNING)
-        << "beginBackgroundTaskWithExpirationHandler: returned an invalid ID";
+    DLOG(WARNING) << "beginBackgroundTaskWithName:<" << task_name << "> "
+                  << "expirationHandler: returned an invalid ID";
   } else {
-    VLOG(3) << "Beginning background task with id "
+    VLOG(3) << "Beginning background task <" << task_name << "> with id "
             << core->background_task_id_;
   }
 }

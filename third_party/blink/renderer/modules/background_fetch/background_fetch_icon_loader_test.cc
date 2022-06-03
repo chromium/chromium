@@ -4,13 +4,16 @@
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/manifest/image_resource.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -42,7 +45,7 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
       : loader_(MakeGarbageCollected<BackgroundFetchIconLoader>()) {}
   ~BackgroundFetchIconLoaderTest() override {
     loader_->Stop();
-    platform_->GetURLLoaderMockFactory()
+    WebURLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -89,15 +92,15 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
   }
 
   KURL PickRightIcon(HeapVector<Member<ManifestImageResource>> icons,
-                     const WebSize& ideal_display_size) {
+                     const gfx::Size& ideal_display_size) {
     loader_->icons_ = std::move(icons);
 
     return loader_->PickBestIconForDisplay(GetContext(),
-                                           ideal_display_size.height);
+                                           ideal_display_size.height());
   }
 
   void LoadIcon(const KURL& url,
-                const WebSize& maximum_size,
+                const gfx::Size& maximum_size,
                 base::OnceClosure quit_closure,
                 const String& sizes = "500x500",
                 const String& purpose = "ANY") {
@@ -111,11 +114,11 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
     loader_->DidGetIconDisplaySizeIfSoLoadIcon(
         GetContext(),
         WTF::Bind(&BackgroundFetchIconLoaderTest::IconLoaded,
-                  WTF::Unretained(this), WTF::Passed(std::move(quit_closure))),
+                  WTF::Unretained(this), std::move(quit_closure)),
         maximum_size);
   }
 
-  ExecutionContext* GetContext() const { return &GetDocument(); }
+  ExecutionContext* GetContext() const { return GetFrame().DomWindow(); }
 
  protected:
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
@@ -129,11 +132,11 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
 TEST_F(BackgroundFetchIconLoaderTest, SuccessTest) {
   base::RunLoop run_loop;
 
-  WebSize maximum_size{192, 168};
+  gfx::Size maximum_size{192, 168};
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure());
 
-  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 
@@ -151,7 +154,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickIconRelativePath) {
   icons.push_back(
       CreateTestIcon(kBackgroundFetchImageLoaderIcon500x500, "500x500"));
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(500, 500));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(500, 500));
   ASSERT_TRUE(best_icon.IsValid());
   EXPECT_EQ(best_icon, KURL(kBackgroundFetchImageLoaderIcon500x500FullPath));
 }
@@ -161,7 +164,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickIconFullPath) {
   icons.push_back(CreateTestIcon(kBackgroundFetchImageLoaderIcon500x500FullPath,
                                  "500x500"));
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(500, 500));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(500, 500));
   ASSERT_TRUE(best_icon.IsValid());
   EXPECT_EQ(best_icon, KURL(kBackgroundFetchImageLoaderIcon500x500FullPath));
 }
@@ -179,7 +182,7 @@ TEST_F(BackgroundFetchIconLoaderTest, PickRightIcon) {
   icons.push_back(icon1);
   icons.push_back(icon2);
 
-  KURL best_icon = PickRightIcon(std::move(icons), WebSize(42, 42));
+  KURL best_icon = PickRightIcon(std::move(icons), gfx::Size(42, 42));
   ASSERT_TRUE(best_icon.IsValid());
   // We expect the smallest Icon larger than the ideal display size.
   EXPECT_EQ(best_icon, KURL(KURL(kBackgroundFetchImageLoaderBaseUrl),
@@ -189,11 +192,11 @@ TEST_F(BackgroundFetchIconLoaderTest, PickRightIcon) {
 TEST_F(BackgroundFetchIconLoaderTest, EmptySizes) {
   base::RunLoop run_loop;
 
-  WebSize maximum_size{192, 168};
+  gfx::Size maximum_size{192, 168};
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure(), "", "ANY");
 
-  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 
@@ -204,11 +207,11 @@ TEST_F(BackgroundFetchIconLoaderTest, EmptySizes) {
 TEST_F(BackgroundFetchIconLoaderTest, EmptyPurpose) {
   base::RunLoop run_loop;
 
-  WebSize maximum_size{192, 168};
+  gfx::Size maximum_size{192, 168};
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure(), "500X500", "");
 
-  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 

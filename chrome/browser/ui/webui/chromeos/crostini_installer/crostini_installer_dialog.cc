@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
 
-#include "base/bind_helpers.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/window_properties.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/crostini/crostini_features.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 // The dialog content area size. Note that the height is less than the design
@@ -27,7 +34,10 @@ namespace chromeos {
 
 void CrostiniInstallerDialog::Show(Profile* profile,
                                    OnLoadedCallback on_loaded_callback) {
-  DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    return;
+  }
+
   auto* instance = SystemWebDialogDelegate::FindInstance(GetUrl().spec());
   if (instance) {
     instance->Focus();
@@ -36,9 +46,9 @@ void CrostiniInstallerDialog::Show(Profile* profile,
 
   // TODO(lxj): Move installer status tracking into the CrostiniInstaller.
   DCHECK(!crostini::CrostiniManager::GetForProfile(profile)
-              ->GetInstallerViewStatus());
-  crostini::CrostiniManager::GetForProfile(profile)->SetInstallerViewStatus(
-      true);
+              ->GetCrostiniDialogStatus(crostini::DialogType::INSTALLER));
+  crostini::CrostiniManager::GetForProfile(profile)->SetCrostiniDialogStatus(
+      crostini::DialogType::INSTALLER, true);
 
   instance =
       new CrostiniInstallerDialog(profile, std::move(on_loaded_callback));
@@ -48,13 +58,13 @@ void CrostiniInstallerDialog::Show(Profile* profile,
 CrostiniInstallerDialog::CrostiniInstallerDialog(
     Profile* profile,
     OnLoadedCallback on_loaded_callback)
-    : SystemWebDialogDelegate(GetUrl(), /*title=*/base::string16()),
+    : SystemWebDialogDelegate(GetUrl(), /*title=*/{}),
       profile_(profile),
       on_loaded_callback_(std::move(on_loaded_callback)) {}
 
 CrostiniInstallerDialog::~CrostiniInstallerDialog() {
-  crostini::CrostiniManager::GetForProfile(profile_)->SetInstallerViewStatus(
-      false);
+  crostini::CrostiniManager::GetForProfile(profile_)->SetCrostiniDialogStatus(
+      crostini::DialogType::INSTALLER, false);
 }
 
 void CrostiniInstallerDialog::GetDialogSize(gfx::Size* size) const {
@@ -62,20 +72,31 @@ void CrostiniInstallerDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 bool CrostiniInstallerDialog::ShouldShowCloseButton() const {
+  return true;
+}
+
+bool CrostiniInstallerDialog::ShouldShowDialogTitle() const {
+  return true;
+}
+
+// TODO(crbug.com/1053376): We should add a browser test for the dialog to check
+// that <esc> or X button in overview mode cannot close the dialog immediately
+// without the web page noticing it.
+bool CrostiniInstallerDialog::ShouldCloseDialogOnEscape() const {
   return false;
 }
 
 void CrostiniInstallerDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
+
+  const ash::ShelfID shelf_id(crostini::kCrostiniInstallerShelfId);
+  params->init_properties_container.SetProperty(ash::kShelfIDKey,
+                                                shelf_id.Serialize());
 }
 
-bool CrostiniInstallerDialog::CanCloseDialog() const {
-  // TODO(929571): If other WebUI Dialogs also need to let the WebUI control
-  // closing logic, we should find a more general solution.
-
-  // Disallow closing without WebUI consent.
-  return installer_ui_ == nullptr || installer_ui_->can_close();
+bool CrostiniInstallerDialog::OnDialogCloseRequested() {
+  return installer_ui_ == nullptr || installer_ui_->RequestClosePage();
 }
 
 void CrostiniInstallerDialog::OnDialogShown(content::WebUI* webui) {
@@ -90,6 +111,9 @@ void CrostiniInstallerDialog::OnCloseContents(content::WebContents* source,
 }
 
 void CrostiniInstallerDialog::OnWebContentsFinishedLoad() {
+  DCHECK(dialog_window());
+  dialog_window()->SetTitle(
+      l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_TITLE));
   if (!on_loaded_callback_.is_null()) {
     DCHECK(installer_ui_);
     std::move(on_loaded_callback_).Run(installer_ui_);

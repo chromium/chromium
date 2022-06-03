@@ -7,10 +7,12 @@ import unittest
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
 from .code_node import TextNode
+from .code_node import render_code_node
+from .code_node_cxx import CxxClassDefNode
 from .code_node_cxx import CxxFuncDefNode
 from .code_node_cxx import CxxLikelyIfNode
 from .code_node_cxx import CxxUnlikelyIfNode
-from .codegen_utils import render_code_node
+from .codegen_accumulator import CodeGenAccumulator
 from .mako_renderer import MakoRenderer
 
 
@@ -22,6 +24,8 @@ class CodeNodeCxxTest(unittest.TestCase):
     def assertRenderResult(self, node, expected):
         if node.renderer is None:
             node.set_renderer(MakoRenderer())
+        if node.accumulator is None:
+            node.set_accumulator(CodeGenAccumulator())
 
         def simplify(text):
             return "\n".join(
@@ -33,7 +37,7 @@ class CodeNodeCxxTest(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_symbol_definition_with_branches(self):
-        root = SymbolScopeNode(separator_last="\n")
+        root = SymbolScopeNode()
 
         root.register_code_symbols([
             SymbolNode("var1", "int ${var1} = 1;"),
@@ -75,11 +79,11 @@ if (var5) {
   int var6 = 6;
   return var6;
 }
-var3;
+var3;\
 """)
 
     def test_symbol_definition_with_nested_branches(self):
-        root = SymbolScopeNode(separator_last="\n")
+        root = SymbolScopeNode()
 
         root.register_code_symbols([
             SymbolNode("var1", "int ${var1} = 1;"),
@@ -128,26 +132,21 @@ if (true) {
     return var2;
   }
   return;
-}
+}\
 """)
 
     def test_function_definition_minimum(self):
-        root = SymbolScopeNode(separator_last="\n")
-        root.append(
-            CxxFuncDefNode(
-                name="blink::bindings::func", arg_decls=[],
-                return_type="void"))
+        root = CxxFuncDefNode(
+            name="blink::bindings::func", arg_decls=[], return_type="void")
 
         self.assertRenderResult(root, """\
 void blink::bindings::func() {
 
-}
+}\
 """)
 
     def test_function_definition_full(self):
-        root = SymbolScopeNode(separator_last="\n")
-
-        func_def = CxxFuncDefNode(
+        root = CxxFuncDefNode(
             name="blink::bindings::func",
             arg_decls=["int arg1", "int arg2"],
             return_type="void",
@@ -158,18 +157,16 @@ void blink::bindings::func() {
                 "member2(\"str\")",
             ])
 
-        func_def.body.register_code_symbols([
+        root.body.register_code_symbols([
             SymbolNode("var1", "int ${var1} = 1;"),
             SymbolNode("var2", "int ${var2} = 2;"),
         ])
 
-        func_def.body.extend([
+        root.body.extend([
             CxxUnlikelyIfNode(
                 cond=TextNode("${var1}"), body=[TextNode("return ${var1};")]),
             TextNode("return ${var2};"),
         ])
-
-        root.append(func_def)
 
         self.assertRenderResult(
             root, """\
@@ -181,5 +178,34 @@ void blink::bindings::func(int arg1, int arg2) const override\
   }
   int var2 = 2;
   return var2;
-}
+}\
+""")
+
+    def test_class_definition(self):
+        root = CxxClassDefNode("X", ["A", "B"], final=True)
+
+        root.public_section.extend([
+            TextNode("void m1();"),
+            TextNode("void m2();"),
+        ])
+        root.private_section.extend([
+            TextNode("int m1_;"),
+            TextNode("int m2_;"),
+        ])
+
+        self.assertRenderResult(
+            root, """\
+class X final : public A, public B {
+
+ public:
+  void m1();
+  void m2();
+
+
+ private:
+  int m1_;
+  int m2_;
+
+
+};\
 """)

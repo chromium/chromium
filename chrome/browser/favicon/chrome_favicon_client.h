@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 #define CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_client.h"
 
 class GURL;
@@ -15,11 +14,17 @@ class Profile;
 class ChromeFaviconClient : public favicon::FaviconClient {
  public:
   explicit ChromeFaviconClient(Profile* profile);
+
+  ChromeFaviconClient(const ChromeFaviconClient&) = delete;
+  ChromeFaviconClient& operator=(const ChromeFaviconClient&) = delete;
+
   ~ChromeFaviconClient() override;
 
  private:
   // favicon::FaviconClient implementation:
   bool IsNativeApplicationURL(const GURL& url) override;
+  bool IsReaderModeURL(const GURL& url) override;
+  const GURL GetOriginalUrlFromReaderModeUrl(const GURL& url) override;
   base::CancelableTaskTracker::TaskId GetFaviconForNativeApplicationURL(
       const GURL& url,
       const std::vector<int>& desired_sizes_in_pixel,
@@ -27,8 +32,6 @@ class ChromeFaviconClient : public favicon::FaviconClient {
       base::CancelableTaskTracker* tracker) override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFaviconClient);
 };
 
 #endif  // CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_

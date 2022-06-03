@@ -15,6 +15,11 @@
 
 namespace mojo {
 
+// DEPRECATED: Do not introduce new uses of this type. Instead use the
+// PendingRemote type defined in pending_remote.h. Mojom files which pass
+// interface endpoints (i.e. raw "Interface" types) should be updated to instead
+// pass a "pending_remote<Interface>".
+//
 // InterfacePtrInfo stores necessary information to communicate with a remote
 // interface implementation, which could be used to construct an InterfacePtr.
 template <typename Interface>
@@ -27,6 +32,9 @@ class InterfacePtrInfo {
       : state_(std::move(handle), version) {}
 
   InterfacePtrInfo(InterfacePtrInfo&& other) = default;
+
+  InterfacePtrInfo(const InterfacePtrInfo&) = delete;
+  InterfacePtrInfo& operator=(const InterfacePtrInfo&) = delete;
 
   ~InterfacePtrInfo() {}
 
@@ -50,8 +58,6 @@ class InterfacePtrInfo {
 
  private:
   internal::PendingRemoteState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfacePtrInfo);
 };
 
 }  // namespace mojo

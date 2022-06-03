@@ -7,8 +7,10 @@
 
 #include <algorithm>
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
@@ -26,63 +28,12 @@ class PropertyTreeState;
 //
 // The clip tree is rooted at a node with no parent. This root node should
 // not be modified.
-class PLATFORM_EXPORT ClipPaintPropertyNode
-    : public PaintPropertyNode<ClipPaintPropertyNode> {
+class ClipPaintPropertyNode;
+
+class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
+    : public PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
+                               ClipPaintPropertyNode> {
  public:
-  // To make it less verbose and more readable to construct and update a node,
-  // a struct with default values is used to represent the state.
-  struct State {
-    scoped_refptr<const TransformPaintPropertyNode> local_transform_space;
-    FloatRoundedRect clip_rect;
-    base::Optional<FloatClipRect> clip_rect_excluding_overlay_scrollbars;
-    scoped_refptr<const RefCountedPath> clip_path;
-
-    PaintPropertyChangeType ComputeChange(const State& other) const {
-      if (local_transform_space != other.local_transform_space ||
-          clip_rect != other.clip_rect || clip_path != other.clip_path) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      if (clip_rect_excluding_overlay_scrollbars !=
-          other.clip_rect_excluding_overlay_scrollbars) {
-        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
-  };
-
-  // This node is really a sentinel, and does not represent a real clip space.
-  static const ClipPaintPropertyNode& Root();
-
-  static scoped_refptr<ClipPaintPropertyNode> Create(
-      const ClipPaintPropertyNode& parent,
-      State&& state) {
-    return base::AdoptRef(new ClipPaintPropertyNode(
-        &parent, std::move(state), false /* is_parent_alias */));
-  }
-  static scoped_refptr<ClipPaintPropertyNode> CreateAlias(
-      const ClipPaintPropertyNode& parent) {
-    return base::AdoptRef(new ClipPaintPropertyNode(
-        &parent,
-        State{nullptr, FloatRoundedRect(LayoutRect::InfiniteIntRect())},
-        true /* is_parent_alias */));
-  }
-
-  // The empty AnimationState struct is to meet the requirement of
-  // ObjectPaintProperties.
-  struct AnimationState {};
-  PaintPropertyChangeType Update(const ClipPaintPropertyNode& parent,
-                                 State&& state,
-                                 const AnimationState& = AnimationState()) {
-    auto parent_changed = SetParent(&parent);
-    auto state_changed = state_.ComputeChange(state);
-    if (state_changed != PaintPropertyChangeType::kUnchanged) {
-      DCHECK(!IsParentAlias()) << "Changed the state of an alias node.";
-      state_ = std::move(state);
-      AddChanged(state_changed);
-    }
-    return std::max(parent_changed, state_changed);
-  }
-
   // Checks if the accumulated clip from |this| to |relative_to_state.Clip()|
   // has changed, at least significance of |change|, in the space of
   // |relative_to_state.Transform()|. We check for changes of not only clip
@@ -90,46 +41,137 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   // .Transform()| of the clip nodes. |transform_not_to_check| specifies a
   // transform node that the caller has checked or will check its change in
   // other ways and this function should treat it as unchanged.
-  bool Changed(PaintPropertyChangeType change,
-               const PropertyTreeState& relative_to_state,
-               const TransformPaintPropertyNode* transform_not_to_check) const;
+  bool Changed(
+      PaintPropertyChangeType change,
+      const PropertyTreeState& relative_to_state,
+      const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 
-  // Returns the local transform space of this node. Note that the function
-  // first unaliases the node, meaning that it walks up the parent chain until
-  // it finds a concrete node (not a parent alias) or root. The reason for this
-  // is that a parent alias conceptually doesn't have a local transform space,
-  // so we just want to return a convenient space which would eliminate extra
-  // work. The parent's transform node qualifies as that. Also note, although
-  // this is a walk up the parent chain, the only case it would be heavy is if
-  // there is a long chain of nested aliases, which is unlikely.
-  const TransformPaintPropertyNode& LocalTransformSpace() const {
-    // TODO(vmpstr): If this becomes a performance problem, then we should audit
-    // the call sites and explicitly unalias clip nodes everywhere. If this is
-    // done, then here we can add a DCHECK that we never invoke this function on
-    // a parent alias.
-    return *Unalias().state_.local_transform_space;
+ protected:
+  using PaintPropertyNode::PaintPropertyNode;
+};
+
+class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {
+ public:
+  static scoped_refptr<ClipPaintPropertyNodeAlias> Create(
+      const ClipPaintPropertyNodeOrAlias& parent) {
+    return base::AdoptRef(new ClipPaintPropertyNodeAlias(parent));
   }
-  const FloatRoundedRect& ClipRect() const { return state_.clip_rect; }
-  const FloatClipRect ClipRectExcludingOverlayScrollbars() const {
-    return state_.clip_rect_excluding_overlay_scrollbars
-               ? *state_.clip_rect_excluding_overlay_scrollbars
-               : FloatClipRect(state_.clip_rect);
+
+  PaintPropertyChangeType SetParent(
+      const ClipPaintPropertyNodeOrAlias& parent) {
+    DCHECK(IsParentAlias());
+    return PaintPropertyNode::SetParent(parent);
+  }
+
+ private:
+  explicit ClipPaintPropertyNodeAlias(
+      const ClipPaintPropertyNodeOrAlias& parent)
+      : ClipPaintPropertyNodeOrAlias(parent, kParentAlias) {}
+};
+
+class PLATFORM_EXPORT ClipPaintPropertyNode
+    : public ClipPaintPropertyNodeOrAlias {
+ public:
+  // To make it less verbose and more readable to construct and update a node,
+  // a struct with default values is used to represent the state.
+  struct State {
+    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
+              local_transform_space,
+          const gfx::RectF& layout_clip_rect,
+          const FloatRoundedRect& paint_clip_rect)
+        : local_transform_space(std::move(local_transform_space)) {
+      SetClipRect(layout_clip_rect, paint_clip_rect);
+    }
+
+    scoped_refptr<const TransformPaintPropertyNodeOrAlias>
+        local_transform_space;
+    absl::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
+    scoped_refptr<const RefCountedPath> clip_path;
+
+    void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
+                     const FloatRoundedRect& paint_clip_rect_arg) {
+      layout_clip_rect.SetRect(layout_clip_rect_arg);
+      if (paint_clip_rect_arg.IsRounded())
+        layout_clip_rect.SetHasRadius();
+      paint_clip_rect = paint_clip_rect_arg;
+    }
+
+    PaintPropertyChangeType ComputeChange(const State& other) const {
+      if (local_transform_space != other.local_transform_space ||
+          paint_clip_rect != other.paint_clip_rect ||
+          clip_path != other.clip_path) {
+        return PaintPropertyChangeType::kChangedOnlyValues;
+      }
+      if (layout_clip_rect_excluding_overlay_scrollbars !=
+          other.layout_clip_rect_excluding_overlay_scrollbars) {
+        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
+      }
+      return PaintPropertyChangeType::kUnchanged;
+    }
+
+    friend class ClipPaintPropertyNode;
+
+   private:
+    FloatClipRect layout_clip_rect;
+    FloatRoundedRect paint_clip_rect;
+  };
+
+  // This node is really a sentinel, and does not represent a real clip space.
+  static const ClipPaintPropertyNode& Root();
+
+  static scoped_refptr<ClipPaintPropertyNode> Create(
+      const ClipPaintPropertyNodeOrAlias& parent,
+      State&& state) {
+    return base::AdoptRef(new ClipPaintPropertyNode(&parent, std::move(state)));
+  }
+
+  // The empty AnimationState struct is to meet the requirement of
+  // ObjectPaintProperties.
+  struct AnimationState {};
+  PaintPropertyChangeType Update(const ClipPaintPropertyNodeOrAlias& parent,
+                                 State&& state,
+                                 const AnimationState& = AnimationState()) {
+    auto parent_changed = SetParent(parent);
+    auto state_changed = state_.ComputeChange(state);
+    if (state_changed != PaintPropertyChangeType::kUnchanged) {
+      state_ = std::move(state);
+      AddChanged(state_changed);
+    }
+    return std::max(parent_changed, state_changed);
+  }
+
+  const ClipPaintPropertyNode& Unalias() const = delete;
+  bool IsParentAlias() const = delete;
+
+  const TransformPaintPropertyNodeOrAlias& LocalTransformSpace() const {
+    return *state_.local_transform_space;
+  }
+  // The clip rect for painting and compositing. It may be pixel snapped, or
+  // not (e.g. for SVG).
+  const FloatRoundedRect& PaintClipRect() const {
+    return state_.paint_clip_rect;
+  }
+  // The clip rect used for GeometryMapper to map in layout coordinates.
+  const FloatClipRect& LayoutClipRect() const {
+    return state_.layout_clip_rect;
+  }
+  const FloatClipRect& LayoutClipRectExcludingOverlayScrollbars() const {
+    return state_.layout_clip_rect_excluding_overlay_scrollbars
+               ? *state_.layout_clip_rect_excluding_overlay_scrollbars
+               : state_.layout_clip_rect;
   }
 
   const RefCountedPath* ClipPath() const { return state_.clip_path.get(); }
 
   std::unique_ptr<JSONObject> ToJSON() const;
 
-  // Returns memory usage of the clip cache of this node plus ancestors.
-  size_t CacheMemoryUsageInBytes() const;
-
  private:
-  friend class PaintPropertyNode<ClipPaintPropertyNode>;
+  friend class PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
+                                 ClipPaintPropertyNode>;
 
-  ClipPaintPropertyNode(const ClipPaintPropertyNode* parent,
-                        State&& state,
-                        bool is_parent_alias)
-      : PaintPropertyNode(parent, is_parent_alias), state_(std::move(state)) {}
+  ClipPaintPropertyNode(const ClipPaintPropertyNodeOrAlias* parent,
+                        State&& state)
+      : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
 
   void AddChanged(PaintPropertyChangeType changed) {
     // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is

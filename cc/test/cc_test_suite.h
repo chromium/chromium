@@ -12,7 +12,7 @@
 
 namespace base {
 namespace test {
-class SingleThreadTaskEnvironment;
+class TaskEnvironment;
 }
 }  // namespace base
 
@@ -26,13 +26,15 @@ class CCTestSuite : public base::TestSuite {
 
   CCTestSuite& operator=(const CCTestSuite&) = delete;
 
+  static void RunUntilIdle();
+
  protected:
   // Overridden from base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  static std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };

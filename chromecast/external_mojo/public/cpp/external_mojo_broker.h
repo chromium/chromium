@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace service_manager {
@@ -26,6 +27,9 @@ class ExternalMojoBroker {
  public:
   explicit ExternalMojoBroker(const std::string& broker_path);
 
+  ExternalMojoBroker(const ExternalMojoBroker&) = delete;
+  ExternalMojoBroker& operator=(const ExternalMojoBroker&) = delete;
+
   ~ExternalMojoBroker();
 
   // Initializes the embedded into a Chromium process (eg in cast_shell).
@@ -38,14 +42,14 @@ class ExternalMojoBroker {
 
   mojo::PendingRemote<mojom::ExternalConnector> CreateConnector();
 
+  void BindConnector(mojo::PendingReceiver<mojom::ExternalConnector> receiver);
+
  private:
   class ConnectorImpl;
   class ReadWatcher;
 
   std::unique_ptr<ConnectorImpl> connector_;
   std::unique_ptr<ReadWatcher> read_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMojoBroker);
 };
 
 }  // namespace external_mojo

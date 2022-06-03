@@ -23,14 +23,14 @@ class UsbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
  public:
   explicit UsbDeviceProvider(Profile* profile);
 
-  void QueryDevices(const SerialsCallback& callback) override;
+  void QueryDevices(SerialsCallback callback) override;
 
   void QueryDeviceInfo(const std::string& serial,
-                       const DeviceInfoCallback& callback) override;
+                       DeviceInfoCallback callback) override;
 
   void OpenSocket(const std::string& serial,
                   const std::string& socket_name,
-                  const SocketCallback& callback) override;
+                  SocketCallback callback) override;
 
   void ReleaseDevice(const std::string& serial) override;
 
@@ -38,8 +38,8 @@ class UsbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
   ~UsbDeviceProvider() override;
 
   void EnumeratedDevices(
-      const SerialsCallback& callback,
-      const std::vector<scoped_refptr<AndroidUsbDevice> >& devices);
+      SerialsCallback callback,
+      const std::vector<scoped_refptr<AndroidUsbDevice>>& devices);
 
   typedef std::map<std::string, scoped_refptr<AndroidUsbDevice> > UsbDeviceMap;
 

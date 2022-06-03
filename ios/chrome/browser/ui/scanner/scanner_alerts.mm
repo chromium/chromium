@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"

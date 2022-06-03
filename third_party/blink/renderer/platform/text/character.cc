@@ -36,12 +36,12 @@
 #include <unicode/uscript.h>
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 
@@ -91,12 +91,12 @@ unsigned Character::ExpansionOpportunityCount(
     const TextJustify text_justify) {
   if (text_justify == TextJustify::kDistribute) {
     is_after_expansion = true;
-    return characters.size();
+    return base::checked_cast<unsigned>(characters.size());
   }
 
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < characters.size(); ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       if (TreatAsSpace(characters[i])) {
         count++;
         is_after_expansion = true;
@@ -105,7 +105,7 @@ unsigned Character::ExpansionOpportunityCount(
       }
     }
   } else {
-    for (unsigned i = characters.size(); i > 0; --i) {
+    for (size_t i = characters.size(); i > 0; --i) {
       if (TreatAsSpace(characters[i - 1])) {
         count++;
         is_after_expansion = true;
@@ -125,7 +125,7 @@ unsigned Character::ExpansionOpportunityCount(
     const TextJustify text_justify) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < characters.size(); ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
@@ -148,7 +148,7 @@ unsigned Character::ExpansionOpportunityCount(
       is_after_expansion = false;
     }
   } else {
-    for (unsigned i = characters.size(); i > 0; --i) {
+    for (size_t i = characters.size(); i > 0; --i) {
       UChar32 character = characters[i - 1];
       if (TreatAsSpace(character)) {
         count++;
@@ -224,6 +224,14 @@ bool Character::IsEmojiTagSequence(UChar32 c) {
          (c >= kTagLatinSmallLetterA && c <= kTagLatinSmallLetterZ);
 }
 
+bool Character::IsExtendedPictographic(UChar32 c) {
+  return u_hasBinaryProperty(c, UCHAR_EXTENDED_PICTOGRAPHIC);
+}
+
+bool Character::IsEmojiComponent(UChar32 c) {
+  return u_hasBinaryProperty(c, UCHAR_EMOJI_COMPONENT);
+}
+
 template <typename CharacterType>
 static inline String NormalizeSpacesInternal(const CharacterType* characters,
                                              unsigned length) {
@@ -266,6 +274,30 @@ bool Character::HasDefiniteScript(UChar32 character) {
     return false;
   return hint_char_script != USCRIPT_INHERITED &&
          hint_char_script != USCRIPT_COMMON;
+}
+
+// https://w3c.github.io/mathml-core/#stretchy-operator-axis
+static const UChar stretchy_operator_with_inline_axis[]{
+    0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,
+    0x02DC, 0x02F7, 0x0302, 0x0332, 0x203E, 0x20D0, 0x20D1, 0x20D6, 0x20D7,
+    0x20E1, 0x2190, 0x2192, 0x2194, 0x2198, 0x2199, 0x219C, 0x219D, 0x219E,
+    0x21A0, 0x21A2, 0x21A3, 0x21A4, 0x21A6, 0x21A9, 0x21AA, 0x21AB, 0x21AC,
+    0x21AD, 0x21B4, 0x21B9, 0x21BC, 0x21BD, 0x21C0, 0x21C1, 0x21C4, 0x21C6,
+    0x21C7, 0x21C9, 0x21CB, 0x21CC, 0x21D0, 0x21D2, 0x21D4, 0x21DA, 0x21DB,
+    0x21DC, 0x21DD, 0x21E0, 0x21E2, 0x21E4, 0x21E5, 0x21E6, 0x21E8, 0x21F0,
+    0x21F6, 0x21FD, 0x21FE, 0x21FF, 0x23B4, 0x23B5, 0x23DC, 0x23DD, 0x23DE,
+    0x23DF, 0x23E0, 0x23E1, 0x2500, 0x27F5, 0x27F6, 0x27F7, 0x27F8, 0x27F9,
+    0x27FA, 0x27FB, 0x27FC, 0x27FD, 0x27FE, 0x27FF, 0x290C, 0x290D, 0x290E,
+    0x290F, 0x2910, 0x294E, 0x2950, 0x2952, 0x2953, 0x2956, 0x2957, 0x295A,
+    0x295B, 0x295E, 0x295F, 0x2B45, 0x2B46, 0xFE35, 0xFE36, 0xFE37, 0xFE38};
+
+bool Character::IsVerticalMathCharacter(UChar32 text_content) {
+  return text_content != kArabicMathematicalOperatorMeemWithHahWithTatweel &&
+         text_content != kArabicMathematicalOperatorHahWithDal &&
+         !std::binary_search(stretchy_operator_with_inline_axis,
+                             stretchy_operator_with_inline_axis +
+                                 base::size(stretchy_operator_with_inline_axis),
+                             text_content);
 }
 
 }  // namespace blink

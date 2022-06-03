@@ -1,11 +1,15 @@
 Verifies that replayed CORS XHRs still have post data
-POST request 0: {
+request 0: {
+  "method": "OPTIONS",
+  "url": "http://127.0.0.1:8000/inspector-protocol/network/resources/cors-return-post.php"
+}
+request 1: {
   "method": "POST",
   "url": "http://127.0.0.1:8000/inspector-protocol/network/resources/cors-return-post.php",
   "postData": "{\"data\":\"test post data\"}",
   "responseData": "post data: {\"data\":\"test post data\"}"
 }
-POST request 1: {
+request 2: {
   "method": "POST",
   "url": "http://127.0.0.1:8000/inspector-protocol/network/resources/cors-return-post.php",
   "postData": "{\"data\":\"test post data\"}",

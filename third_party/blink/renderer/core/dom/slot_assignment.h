@@ -41,21 +41,15 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
                                   const AtomicString& new_value);
 
   bool FindHostChildBySlotName(const AtomicString& slot_name) const;
-  void CallSlotChangeAfterRemovedFromAssignFunction(HTMLSlotElement& slot);
-  void CallSlotChangeAfterAdditionFromAssignFunction(
-      HTMLSlotElement& slot,
-      const HeapVector<Member<Node>>& added_assign_nodes);
-  void CallSlotChangeAfterAddition(HTMLSlotElement& slot);
-  void CallSlotChangeAfterRemoved(HTMLSlotElement& slot);
-  void CallSlotChangeIfNeeded(HTMLSlotElement& slot, Node& child);
 
-  HTMLSlotElement* FindSlotChange(HTMLSlotElement& slot, Node& child);
-
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
   bool NeedsAssignmentRecalc() const { return needs_assignment_recalc_; }
   void SetNeedsAssignmentRecalc();
   void RecalcAssignment();
+  HeapHashSet<Member<Node>>& GetCandidateDirectionality() {
+    return candidate_directionality_set_;
+  }
 
  private:
   enum class SlotMutationType {
@@ -63,8 +57,7 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
     kRenamed,
   };
 
-  HTMLSlotElement* FindSlotInManualSlotting(const Node&);
-  HTMLSlotElement* FindSlotInUserAgentShadow(const Node&) const;
+  HTMLSlotElement* FindSlotInManualSlotting(Node&);
 
   void CollectSlots();
   HTMLSlotElement* GetCachedFirstSlotWithoutAccessingNodeTree(
@@ -81,8 +74,9 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   unsigned needs_collect_slots_ : 1;
   unsigned needs_assignment_recalc_ : 1;
   unsigned slot_count_ : 30;
+  HeapHashSet<Member<Node>> candidate_directionality_set_;
 };
 
 }  // namespace blink
 
-#endif  // HTMLSlotAssignment_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_H_

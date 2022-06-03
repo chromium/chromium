@@ -1,0 +1,11 @@
+{
+  "name": "DLP Test Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "An extension for testing the DLP policy for extension urls.",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}

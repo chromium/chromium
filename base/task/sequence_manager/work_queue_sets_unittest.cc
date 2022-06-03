@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequence_manager/work_queue.h"
@@ -30,8 +32,8 @@ class MockObserver : public WorkQueueSets::Observer {
 class WorkQueueSetsTest : public testing::Test {
  public:
   void SetUp() override {
-    work_queue_sets_.reset(new WorkQueueSets("test", &mock_observer_,
-                                             SequenceManager::Settings()));
+    work_queue_sets_ = std::make_unique<WorkQueueSets>(
+        "test", &mock_observer_, SequenceManager::Settings());
   }
 
   void TearDown() override {

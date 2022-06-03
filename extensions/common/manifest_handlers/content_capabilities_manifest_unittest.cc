@@ -13,9 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace extensions {
+using extensions::mojom::APIPermissionID;
 
-using extensions::APIPermission;
+namespace extensions {
 
 class ContentCapabilitiesManifestTest : public ManifestTest {
   std::string GetTestExtensionID() const override {
@@ -82,10 +82,10 @@ TEST_F(ContentCapabilitiesManifestTest, InvalidPermission) {
       extension.get());
   // Make sure the invalid permission is not included in the permission set.
   EXPECT_EQ(3u, info.permissions.size());
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kClipboardRead));
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kClipboardWrite));
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kUnlimitedStorage));
-  EXPECT_EQ(0u, info.permissions.count(APIPermission::kUsb));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kClipboardRead));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kClipboardWrite));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kUnlimitedStorage));
+  EXPECT_EQ(0u, info.permissions.count(APIPermissionID::kUsb));
 }
 
 TEST_F(ContentCapabilitiesManifestTest, InvalidValue) {
@@ -109,11 +109,10 @@ TEST_F(ContentCapabilitiesManifestTest, Valid) {
   EXPECT_FALSE(info.url_patterns.MatchesURL(GURL("https://example.com/")));
   EXPECT_TRUE(info.url_patterns.MatchesURL(GURL("https://valid.example.com/")));
   EXPECT_EQ(3u, info.permissions.size());
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kClipboardRead));
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kClipboardWrite));
-  EXPECT_EQ(1u, info.permissions.count(APIPermission::kUnlimitedStorage));
-  EXPECT_EQ(0u, info.permissions.count(APIPermission::kUsb));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kClipboardRead));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kClipboardWrite));
+  EXPECT_EQ(1u, info.permissions.count(APIPermissionID::kUnlimitedStorage));
+  EXPECT_EQ(0u, info.permissions.count(APIPermissionID::kUsb));
 }
-
 
 }  // namespace extensions

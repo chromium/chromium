@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 
@@ -48,8 +49,7 @@ TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
   // This should not DCHECK.
   EXPECT_TRUE(command->Apply())
       << "The insert ordered list command should have succeeded";
-  EXPECT_EQ("<ol><li>\nd\n</li></ol>",
-            GetDocument().body()->InnerHTMLAsString());
+  EXPECT_EQ("<ol><li>\nd\n</li></ol>", GetDocument().body()->innerHTML());
 }
 
 // Refer https://crbug.com/794356
@@ -69,6 +69,21 @@ TEST_F(InsertListCommandTest, UnlistifyParagraphCrashOnVisuallyEmptyParagraph) {
       "|<textarea style=\"float:left;\"></textarea>"
       "</ul></dl>",
       GetSelectionTextFromBody());
+}
+
+TEST_F(InsertListCommandTest, UnlistifyParagraphCrashOnNonLi) {
+  // Checks that InsertOrderedList does not cause a crash when the caret is in a
+  // non-<li> child of a list which contains non-<li> blocks.
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(SetSelectionTextToBody("<ol><div>|"
+                                                  "<p>foo</p><p>bar</p>"
+                                                  "</div></ol>"),
+                           SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kOrderedList);
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("|foo<br><ol><p>bar</p></ol>", GetSelectionTextFromBody());
 }
 
 // Refer https://crbug.com/798176
@@ -127,6 +142,81 @@ TEST_F(InsertListCommandTest, InsertListWithCollapsedVisibility) {
       "<dl>"
       "<ol></ol><ul>^a|</ul>"
       "</dl>",
+      GetSelectionTextFromBody());
+}
+
+// Refer https://crbug.com/1183158
+TEST_F(InsertListCommandTest, UnlistifyParagraphWithNonEditable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<li>a|<div contenteditable=false>b</div></li>"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_FALSE(command->Apply());
+  EXPECT_EQ("<ul><li>a|<div contenteditable=\"false\">b</div></li></ul><br>",
+            GetSelectionTextFromBody());
+}
+
+// Refer https://crbug.com/1188327
+TEST_F(InsertListCommandTest, NestedSpansJustInsideBody) {
+  InsertStyleElement("span { appearance: checkbox; }");
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<span><span><span>a</span></span></span>|b"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_FALSE(command->Apply());
+  EXPECT_EQ(
+      "<ul><li><br>a</li></ul><span><span><span>^a</span></span></span>b|",
+      GetSelectionTextFromBody());
+}
+
+TEST_F(InsertListCommandTest, ListifyInputInTableCell) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "^<ruby><div style='display: table-cell'><input style='display: "
+          "table-cell' type='file' maxlength='100'><select>|"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<ruby><div style=\"display: "
+      "table-cell\"><ul><li>^<br></li><li><ruby><div style=\"display: "
+      "table-cell\">|<input maxlength=\"100\" style=\"display: table-cell\" "
+      "type=\"file\"></div></ruby></li><li><select></select></li></ul></div></"
+      "ruby>",
+      GetSelectionTextFromBody());
+}
+
+TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement(
+      "rb { display: table-cell; }"
+      "input { float: left; }");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable='true'><ol><li>^<br></li>"
+                             "<li><ruby><rb><input></input></rb></ruby></li>"
+                             "<li>XXX</li></ol><div>|</div>"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kOrderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><br></li>"
+      "<li><ruby><rb><input></rb></ruby></li><li><br></li><li><br></li></ol>"
+      "</rb></ruby></li></ol>|XXX<br><div></div></div>",
       GetSelectionTextFromBody());
 }
 }

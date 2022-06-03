@@ -5,18 +5,19 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_CWV_PASSWORD_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_CWV_PASSWORD_INTERNAL_H_
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #import "ios/web_view/public/cwv_password.h"
 
 @interface CWVPassword ()
 
-- (instancetype)initWithPasswordForm:(const autofill::PasswordForm&)passwordForm
+- (instancetype)initWithPasswordForm:
+    (const password_manager::PasswordForm&)passwordForm
     NS_DESIGNATED_INITIALIZER;
 
 // The internal autofill credit card that is wrapped by this object.
 // Intentionally not declared as a property to avoid issues when read by
 // -[NSObject valueForKey:].
-- (autofill::PasswordForm*)internalPasswordForm;
+- (password_manager::PasswordForm*)internalPasswordForm;
 
 @end
 

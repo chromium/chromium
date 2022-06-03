@@ -10,103 +10,168 @@ import android.graphics.Color;
 import android.graphics.RectF;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.animation.FloatProperty;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to
  * draw itself onto the GL canvas at the desired Y Offset.
  */
-public class LayoutTab {
+public class LayoutTab extends PropertyModel {
     public static final float ALPHA_THRESHOLD = 1.0f / 255.0f;
 
-    private static final float SNAP_SPEED = 1.0f; // dp per second
-
+    // TODO(crbug.com/1070284): Make the following properties be part of the PropertyModel.
+    // Begin section --------------
     // Public Layout constants.
     public static final float CLOSE_BUTTON_WIDTH_DP = 36.f;
     public static final float SHADOW_ALPHA_ON_LIGHT_BG = 0.8f;
     public static final float SHADOW_ALPHA_ON_DARK_BG = 1.0f;
 
-    // TODO(dtrainor): Investigate removing this.
-    private static final float BORDER_THICKNESS_DP = 4.f;
-
-    // Cached values from values/dimens.xml
-    private static float sCompositorButtonSlop; // compositor_button_slop
-
-    private static float sDpToPx;
+    public static float sDpToPx;
     private static float sPxToDp;
+    // End section --------------
 
-    private final int mId;
-    private final boolean mIsIncognito;
+    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
+
+    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     // Fields initialized in init()
-    private float mScale;
-    private float mTiltX; // angle in degrees.
-    private float mTiltY; // angle in degrees.
-    private float mTiltXPivotOffset;
-    private float mTiltYPivotOffset;
-    private float mX;
-    private float mY;
-    private float mRenderX;
-    private float mRenderY;
-    private float mClippedX; // The top left X offset of the clipped rectangle.
-    private float mClippedY; // The top left Y offset of the clipped rectangle.
-    private float mClippedWidth;
-    private float mClippedHeight;
-    private float mAlpha;
-    private float mSaturation;
-    private float mBorderAlpha;
-    private float mBorderCloseButtonAlpha;
-    private float mBorderScale;
-    private float mOriginalContentWidth;  // in dp.
-    private float mOriginalContentHeight; // in dp.
-    private float mMaxContentWidth;
-    private float mMaxContentHeight;
-    private float mStaticToViewBlend;
-    private float mBrightness;
-    private boolean mVisible;
-    private boolean mShouldStall;
-    private boolean mCanUseLiveTexture;
-    private boolean mShowToolbar;
-    private boolean mAnonymizeToolbar;
-    private float mToolbarAlpha;
-    private boolean mInsetBorderVertical;
-    private float mToolbarYOffset;
-    private float mSideBorderScale;
-    private boolean mCloseButtonIsOnRight;
+    public static final WritableFloatPropertyKey SCALE = new WritableFloatPropertyKey();
 
-    private final RectF mBounds = new RectF(); // Pre-allocated to avoid in-frame allocations.
-    private final RectF mClosePlacement = new RectF();
+    public static final WritableFloatPropertyKey TILT_X_IN_DEGREES = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey TILT_Y_IN_DEGREES = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey TILT_X_PIVOT_OFFSET =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey TILT_Y_PIVOT_OFFSET =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey X = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey Y = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey RENDER_X = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey RENDER_Y = new WritableFloatPropertyKey();
+
+    // The top left X offset of the clipped rectangle.
+    public static final WritableFloatPropertyKey CLIPPED_X = new WritableFloatPropertyKey();
+
+    // The top left Y offset of the clipped rectangle.
+    public static final WritableFloatPropertyKey CLIPPED_Y = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey CLIPPED_WIDTH = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey CLIPPED_HEIGHT = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey SATURATION = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey BORDER_CLOSE_BUTTON_ALPHA =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey ORIGINAL_CONTENT_WIDTH_IN_DP =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey ORIGINAL_CONTENT_HEIGHT_IN_DP =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey MAX_CONTENT_WIDTH = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey MAX_CONTENT_HEIGHT =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey STATIC_TO_VIEW_BLEND =
+            new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey BRIGHTNESS = new WritableFloatPropertyKey();
+
+    public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey SHOULD_STALL = new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey CAN_USE_LIVE_TEXTURE =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey SHOW_TOOLBAR = new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey ANONYMIZE_TOOLBAR =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableFloatPropertyKey TOOLBAR_ALPHA = new WritableFloatPropertyKey();
+
+    public static final WritableBooleanPropertyKey INSET_BORDER_VERTICAL =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableFloatPropertyKey TOOLBAR_Y_OFFSET = new WritableFloatPropertyKey();
+
+    public static final WritableFloatPropertyKey SIDE_BORDER_SCALE = new WritableFloatPropertyKey();
+
+    public static final WritableBooleanPropertyKey CLOSE_BUTTON_IS_ON_RIGHT =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<RectF> BOUNDS = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<RectF> CLOSE_PLACEMENT =
+            new WritableObjectPropertyKey<>();
 
     /** Whether we need to draw the decoration (border, shadow, ..) at all. */
-    private float mDecorationAlpha;
+    public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
 
     /**
      * Whether this tab need to have its title texture generated. As this is not a free operation
      * knowing that we won't show it might save a few cycles and memory.
      */
-    private boolean mIsTitleNeeded;
+    public static final WritableBooleanPropertyKey IS_TITLE_NEEDED =
+            new WritableBooleanPropertyKey();
 
     /**
      * Whether initFromHost() has been called since the last call to init().
      */
-    private boolean mInitFromHostCalled;
+    public static final WritableBooleanPropertyKey INIT_FROM_HOST_CALLED =
+            new WritableBooleanPropertyKey();
 
     // All the members bellow are initialized from the delayed initialization.
     //
     // Begin section --------------
 
     /** The color of the background of the tab. Used as the best approximation to fill in. */
-    private int mBackgroundColor = Color.WHITE;
+    public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
-    private int mToolbarBackgroundColor = 0xfff2f2f2;
+    public static final WritableIntPropertyKey TOOLBAR_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
 
-    private int mTextBoxBackgroundColor = Color.WHITE;
+    public static final WritableIntPropertyKey TEXT_BOX_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
 
-    private float mTextBoxAlpha = 1.0f;
+    public static final WritableFloatPropertyKey TEXT_BOX_ALPHA = new WritableFloatPropertyKey();
 
     // End section --------------
+
+    public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
+            new PropertyModel.WritableFloatPropertyKey();
+
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE,
+            TILT_X_IN_DEGREES, TILT_Y_IN_DEGREES, TILT_X_PIVOT_OFFSET, TILT_Y_PIVOT_OFFSET, X, Y,
+            RENDER_X, RENDER_Y, CLIPPED_X, CLIPPED_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA,
+            SATURATION, BORDER_ALPHA, BORDER_CLOSE_BUTTON_ALPHA, BORDER_SCALE,
+            ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP, MAX_CONTENT_WIDTH,
+            MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, BRIGHTNESS, IS_VISIBLE, SHOULD_STALL,
+            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA,
+            INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET, SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT,
+            BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA, IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED,
+            BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR, TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA,
+            CONTENT_OFFSET};
 
     /**
      * Default constructor for a {@link LayoutTab}.
@@ -122,8 +187,17 @@ public class LayoutTab {
      */
     public LayoutTab(int tabId, boolean isIncognito, int maxContentTextureWidth,
             int maxContentTextureHeight, boolean showCloseButton, boolean isTitleNeeded) {
-        mId = tabId;
-        mIsIncognito = isIncognito;
+        super(ALL_KEYS);
+
+        set(TAB_ID, tabId);
+        set(IS_INCOGNITO, isIncognito);
+        set(BOUNDS, new RectF());
+        set(CLOSE_PLACEMENT, new RectF());
+        set(BACKGROUND_COLOR, Color.WHITE);
+        set(TOOLBAR_BACKGROUND_COLOR, 0xfff2f2f2);
+        set(TEXT_BOX_BACKGROUND_COLOR, Color.WHITE);
+        set(TEXT_BOX_ALPHA, 1.0f);
+
         init(maxContentTextureWidth, maxContentTextureHeight, showCloseButton, isTitleNeeded);
     }
 
@@ -139,40 +213,39 @@ public class LayoutTab {
      */
     public void init(int maxContentTextureWidth, int maxContentTextureHeight,
             boolean showCloseButton, boolean isTitleNeeded) {
-        mAlpha = 1.0f;
-        mSaturation = 1.0f;
-        mBrightness = 1.0f;
-        mBorderAlpha = 1.0f;
-        mBorderCloseButtonAlpha = showCloseButton ? 1.f : 0.f;
-        mBorderScale = 1.0f;
-        mClippedX = 0.0f;
-        mClippedY = 0.0f;
-        mClippedWidth = Float.MAX_VALUE;
-        mClippedHeight = Float.MAX_VALUE;
-        mScale = 1.0f;
-        mTiltX = 0.0f;
-        mTiltY = 0.0f;
-        mVisible = true;
-        mX = 0.0f;
-        mY = 0.0f;
-        mRenderX = 0.0f;
-        mRenderY = 0.0f;
-        mStaticToViewBlend = 0.0f;
-        mDecorationAlpha = 1.0f;
-        mIsTitleNeeded = isTitleNeeded;
-        mCanUseLiveTexture = true;
-        mShowToolbar = false;
-        mAnonymizeToolbar = false;
-        mToolbarAlpha = 1.f;
-        mInsetBorderVertical = false;
-        mToolbarYOffset = 0.f;
-        mSideBorderScale = 1.f;
-        mOriginalContentWidth = maxContentTextureWidth * sPxToDp;
-        mOriginalContentHeight = maxContentTextureHeight * sPxToDp;
-        mMaxContentWidth = maxContentTextureWidth * sPxToDp;
-        mMaxContentHeight = maxContentTextureHeight * sPxToDp;
-
-        mInitFromHostCalled = false;
+        set(ALPHA, 1.0f);
+        set(SATURATION, 1.0f);
+        set(BRIGHTNESS, 1.0f);
+        set(BORDER_ALPHA, 1.0f);
+        set(BORDER_CLOSE_BUTTON_ALPHA, showCloseButton ? 1.f : 0.f);
+        set(BORDER_SCALE, 1.0f);
+        set(CLIPPED_X, 0.0f);
+        set(CLIPPED_Y, 0.0f);
+        set(CLIPPED_WIDTH, Float.MAX_VALUE);
+        set(CLIPPED_HEIGHT, Float.MAX_VALUE);
+        set(SCALE, 1.0f);
+        set(TILT_X_IN_DEGREES, 0.0f);
+        set(TILT_Y_IN_DEGREES, 0.0f);
+        set(IS_VISIBLE, true);
+        set(X, 0.0f);
+        set(Y, 0.0f);
+        set(RENDER_X, 0.0f);
+        set(RENDER_Y, 0.0f);
+        set(STATIC_TO_VIEW_BLEND, 0.0f);
+        set(DECORATION_ALPHA, 1.0f);
+        set(IS_TITLE_NEEDED, isTitleNeeded);
+        set(CAN_USE_LIVE_TEXTURE, true);
+        set(SHOW_TOOLBAR, false);
+        set(ANONYMIZE_TOOLBAR, false);
+        set(TOOLBAR_ALPHA, 1.0f);
+        set(INSET_BORDER_VERTICAL, false);
+        set(TOOLBAR_Y_OFFSET, 0.f);
+        set(SIDE_BORDER_SCALE, 1.f);
+        set(ORIGINAL_CONTENT_WIDTH_IN_DP, maxContentTextureWidth * sPxToDp);
+        set(ORIGINAL_CONTENT_HEIGHT_IN_DP, maxContentTextureHeight * sPxToDp);
+        set(MAX_CONTENT_WIDTH, maxContentTextureWidth * sPxToDp);
+        set(MAX_CONTENT_HEIGHT, maxContentTextureHeight * sPxToDp);
+        set(INIT_FROM_HOST_CALLED, false);
     }
 
     /**
@@ -189,21 +262,20 @@ public class LayoutTab {
      */
     public void initFromHost(int backgroundColor, boolean shouldStall, boolean canUseLiveTexture,
             int toolbarBackgroundColor, int textBoxBackgroundColor, float textBoxAlpha) {
-        mBackgroundColor = backgroundColor;
-
-        mToolbarBackgroundColor = toolbarBackgroundColor;
-        mTextBoxBackgroundColor = textBoxBackgroundColor;
-        mTextBoxAlpha = textBoxAlpha;
-        mShouldStall = shouldStall;
-        mCanUseLiveTexture = canUseLiveTexture;
-        mInitFromHostCalled = true;
+        set(BACKGROUND_COLOR, backgroundColor);
+        set(TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
+        set(TEXT_BOX_BACKGROUND_COLOR, textBoxBackgroundColor);
+        set(TEXT_BOX_ALPHA, textBoxAlpha);
+        set(SHOULD_STALL, shouldStall);
+        set(CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
+        set(INIT_FROM_HOST_CALLED, true);
     }
 
     /**
      * @return Whether {@link #initFromHost} needs to be called on this {@link LayoutTab}.
      */
     public boolean isInitFromHostNeeded() {
-        return !mInitFromHostCalled;
+        return !get(INIT_FROM_HOST_CALLED);
     }
 
     /**
@@ -215,28 +287,20 @@ public class LayoutTab {
         Resources res = context.getResources();
         sDpToPx = res.getDisplayMetrics().density;
         sPxToDp = 1.0f / sDpToPx;
-        sCompositorButtonSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
-    }
-
-    /**
-     * @return The slop amount in pixel to detect a touch on the tab.
-     */
-    public static float getTouchSlop() {
-        return sCompositorButtonSlop;
     }
 
     /**
      * @return The scale applied to the the content of the tab. Default is 1.0.
      */
     public float getScale() {
-        return mScale;
+        return get(SCALE);
     }
 
     /**
      * @param scale The scale to apply on the content of the tab (everything except the borders).
      */
     public void setScale(float scale) {
-        mScale = scale;
+        set(SCALE, scale);
     }
 
     /**
@@ -244,22 +308,22 @@ public class LayoutTab {
      * @param pivotOffset The offset of the X axis of the tilt pivot.
      */
     public void setTiltX(float tilt, float pivotOffset) {
-        mTiltX = tilt;
-        mTiltXPivotOffset = pivotOffset;
+        set(TILT_X_IN_DEGREES, tilt);
+        set(TILT_X_PIVOT_OFFSET, pivotOffset);
     }
 
     /**
      * @return The tilt angle around the X axis of the tab in degree.
      */
     public float getTiltX() {
-        return mTiltX;
+        return get(TILT_X_IN_DEGREES);
     }
 
     /**
      * @return The offset of the X axis of the tilt pivot.
      */
     public float getTiltXPivotOffset() {
-        return mTiltXPivotOffset;
+        return get(TILT_X_PIVOT_OFFSET);
     }
 
     /**
@@ -267,22 +331,22 @@ public class LayoutTab {
      * @param pivotOffset The offset of the Y axis of the tilt pivot.
      */
     public void setTiltY(float tilt, float pivotOffset) {
-        mTiltY = tilt;
-        mTiltYPivotOffset = pivotOffset;
+        set(TILT_Y_IN_DEGREES, tilt);
+        set(TILT_Y_PIVOT_OFFSET, pivotOffset);
     }
 
     /**
      * @return The tilt angle around the Y axis of the tab in degree.
      */
     public float getTiltY() {
-        return mTiltY;
+        return get(TILT_Y_IN_DEGREES);
     }
 
     /**
      * @return The offset of the Y axis of the tilt pivot.
      */
     public float getTiltYPivotOffset() {
-        return mTiltYPivotOffset;
+        return get(TILT_Y_IN_DEGREES);
     }
 
     /**
@@ -292,8 +356,8 @@ public class LayoutTab {
      * @param clippedY The top left Y offset of the clipped rectangle.
      */
     public void setClipOffset(float clippedX, float clippedY) {
-        mClippedX = clippedX;
-        mClippedY = clippedY;
+        set(CLIPPED_X, clippedX);
+        set(CLIPPED_Y, clippedY);
     }
 
     /**
@@ -303,169 +367,169 @@ public class LayoutTab {
      * @param clippedHeight The height of the clipped rectangle. Float.MAX_VALUE for no clipping.
      */
     public void setClipSize(float clippedWidth, float clippedHeight) {
-        mClippedWidth = clippedWidth;
-        mClippedHeight = clippedHeight;
+        set(CLIPPED_WIDTH, clippedWidth);
+        set(CLIPPED_HEIGHT, clippedHeight);
     }
 
     /**
      * @return The top left X offset of the clipped rectangle.
      */
     public float getClippedX() {
-        return mClippedX;
+        return get(CLIPPED_X);
     }
 
     /**
      * @return The top left Y offset of the clipped rectangle.
      */
     public float getClippedY() {
-        return mClippedY;
+        return get(CLIPPED_Y);
     }
 
     /**
      * @return The width of the clipped rectangle. Float.MAX_VALUE for no clipping.
      */
     public float getClippedWidth() {
-        return mClippedWidth;
+        return get(CLIPPED_WIDTH);
     }
 
     /**
      * @return The height of the clipped rectangle. Float.MAX_VALUE for no clipping.
      */
     public float getClippedHeight() {
-        return mClippedHeight;
+        return get(CLIPPED_HEIGHT);
     }
 
     /**
      * @return The maximum drawable width (scaled) of the tab contents in dp.
      */
     public float getScaledContentWidth() {
-        return getOriginalContentWidth() * mScale;
+        return getOriginalContentWidth() * get(SCALE);
     }
 
     /**
      * @return The maximum drawable height (scaled) of the tab contents in dp.
      */
     public float getScaledContentHeight() {
-        return getOriginalContentHeight() * mScale;
+        return getOriginalContentHeight() * get(SCALE);
     }
 
     /**
      * @return The maximum drawable width (not scaled) of the tab contents texture.
      */
     public float getOriginalContentWidth() {
-        return Math.min(mOriginalContentWidth, mMaxContentWidth);
+        return Math.min(get(ORIGINAL_CONTENT_WIDTH_IN_DP), get(MAX_CONTENT_WIDTH));
     }
 
     /**
      * @return The maximum drawable height (not scaled) of the tab contents texture.
      */
     public float getOriginalContentHeight() {
-        return Math.min(mOriginalContentHeight, mMaxContentHeight);
+        return Math.min(get(ORIGINAL_CONTENT_HEIGHT_IN_DP), get(MAX_CONTENT_HEIGHT));
     }
 
     /**
      * @return The original unclamped width (not scaled) of the tab contents texture.
      */
     public float getUnclampedOriginalContentHeight() {
-        return mOriginalContentHeight;
+        return get(ORIGINAL_CONTENT_HEIGHT_IN_DP);
     }
 
     /**
      * @return The width of the drawn content (clipped and scaled).
      */
     public float getFinalContentWidth() {
-        return Math.min(mClippedWidth, getScaledContentWidth());
+        return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
     }
 
     /**
      * @return The height of the drawn content (clipped and scaled).
      */
     public float getFinalContentHeight() {
-        return Math.min(mClippedHeight, getScaledContentHeight());
+        return Math.min(get(CLIPPED_HEIGHT), getScaledContentHeight());
     }
 
     /**
      * @return The maximum width the content can be.
      */
     public float getMaxContentWidth() {
-        return mMaxContentWidth;
+        return get(MAX_CONTENT_WIDTH);
     }
 
     /**
      * @return The maximum height the content can be.
      */
     public float getMaxContentHeight() {
-        return mMaxContentHeight;
+        return get(MAX_CONTENT_HEIGHT);
     }
 
     /**
      * @param width The maximum width the content can be.
      */
     public void setMaxContentWidth(float width) {
-        mMaxContentWidth = width;
+        set(MAX_CONTENT_WIDTH, width);
     }
 
     /**
      * @param height The maximum height the content can be.
      */
     public void setMaxContentHeight(float height) {
-        mMaxContentHeight = height;
+        set(MAX_CONTENT_HEIGHT, height);
     }
 
     /**
      * @return The id of the tab, same as the id from the Tab in TabModel.
      */
     public int getId() {
-        return mId;
+        return get(TAB_ID);
     }
 
     /**
      * @return Whether the underlying tab is incognito or not.
      */
     public boolean isIncognito() {
-        return mIsIncognito;
+        return get(IS_INCOGNITO);
     }
 
     /**
      * @param y The vertical draw position.
      */
     public void setY(float y) {
-        mY = y;
+        set(Y, y);
     }
 
     /**
      * @return The vertical draw position for the update logic.
      */
     public float getY() {
-        return mY;
+        return get(Y);
     }
 
     /**
      * @return The vertical draw position for the renderer.
      */
     public float getRenderY() {
-        return mRenderY;
+        return get(RENDER_Y);
     }
 
     /**
      * @param x The horizontal draw position.
      */
     public void setX(float x) {
-        mX = x;
+        set(X, x);
     }
 
     /**
      * @return The horizontal draw position for the update logic.
      */
     public float getX() {
-        return mX;
+        return get(X);
     }
 
     /**
      * @return The horizontal draw position for the renderer.
      */
     public float getRenderX() {
-        return mRenderX;
+        return get(RENDER_X);
     }
 
     /**
@@ -476,14 +540,14 @@ public class LayoutTab {
      * @param f The transparency value for the tab.
      */
     public void setAlpha(float f) {
-        mAlpha = f;
+        set(ALPHA, f);
     }
 
     /**
      * @return The transparency value for all of the tab components.
      */
     public float getAlpha() {
-        return mAlpha;
+        return get(ALPHA);
     }
 
     /**
@@ -492,49 +556,49 @@ public class LayoutTab {
      * @param f The saturation value for the contents.
      */
     public void setSaturation(float f) {
-        mSaturation = f;
+        set(SATURATION, f);
     }
 
     /**
      * @return The saturation value for the tab contents.
      */
     public float getSaturation() {
-        return mSaturation;
+        return get(SCALE);
     }
 
     /**
      * @param alpha The maximum alpha value of the tab border.
      */
     public void setBorderAlpha(float alpha) {
-        mBorderAlpha = alpha;
+        set(BORDER_ALPHA, alpha);
     }
 
     /**
      * @return The current alpha value at which the tab border is drawn.
      */
     public float getBorderAlpha() {
-        return Math.min(mBorderAlpha, mAlpha);
+        return Math.min(get(BORDER_ALPHA), get(ALPHA));
     }
 
     /**
      * @return The current alpha value at which the tab border inner shadow is drawn.
      */
     public float getBorderInnerShadowAlpha() {
-        return Math.min(mBorderAlpha * (1.0f - mToolbarAlpha), mAlpha);
+        return Math.min(get(BORDER_ALPHA) * (1.0f - get(TOOLBAR_ALPHA)), get(ALPHA));
     }
 
     /**
      * @param alpha The maximum alpha value of the close button on the border.
      */
     public void setBorderCloseButtonAlpha(float alpha) {
-        mBorderCloseButtonAlpha = alpha;
+        set(BORDER_CLOSE_BUTTON_ALPHA, alpha);
     }
 
     /**
      * @return The current alpha value at which the close button on the border is drawn.
      */
     public float getBorderCloseButtonAlpha() {
-        return mBorderCloseButtonAlpha;
+        return get(BORDER_CLOSE_BUTTON_ALPHA);
     }
 
     /**
@@ -542,182 +606,91 @@ public class LayoutTab {
      *              1.0f yields 1:1 pixel with the source image.
      */
     public void setBorderScale(float scale) {
-        mBorderScale = scale;
+        set(BORDER_SCALE, scale);
     }
 
     /**
      * @return The current scale applied on the tab border.
      */
     public float getBorderScale() {
-        return mBorderScale;
+        return get(BORDER_SCALE);
     }
 
     /**
      * @param decorationAlpha Whether or not to draw the decoration for this card.
      */
     public void setDecorationAlpha(float decorationAlpha) {
-        mDecorationAlpha = decorationAlpha;
+        set(DECORATION_ALPHA, decorationAlpha);
     }
 
     /**
      * @return The opacity of the decoration.
      */
     public float getDecorationAlpha() {
-        return mDecorationAlpha;
+        return get(DECORATION_ALPHA);
     }
 
     /**
      * @param toolbarYOffset The y offset of the toolbar.
      */
     public void setToolbarYOffset(float toolbarYOffset) {
-        mToolbarYOffset = toolbarYOffset;
+        set(TOOLBAR_Y_OFFSET, toolbarYOffset);
     }
 
     /**
      * @return The y offset of the toolbar.
      */
     public float getToolbarYOffset() {
-        return mToolbarYOffset;
+        return get(TOOLBAR_Y_OFFSET);
     }
 
     /**
      * @param scale The scale of the side border (from 0 to 1).
      */
     public void setSideBorderScale(float scale) {
-        mSideBorderScale = MathUtils.clamp(scale, 0.f, 1.f);
+        set(SIDE_BORDER_SCALE, MathUtils.clamp(scale, 0.f, 1.f));
     }
 
     /**
      * @return The scale of the side border (from 0 to 1).
      */
     public float getSideBorderScale() {
-        return mSideBorderScale;
+        return get(SIDE_BORDER_SCALE);
     }
 
     /**
      * @param brightness The brightness value to apply to the tab.
      */
     public void setBrightness(float brightness) {
-        mBrightness = brightness;
+        set(BRIGHTNESS, brightness);
     }
 
     /**
      * @return The brightness of the tab.
      */
     public float getBrightness() {
-        return mBrightness;
+        return get(BRIGHTNESS);
     }
 
     /**
      * @param drawDecoration Whether or not to draw decoration.
      */
     public void setDrawDecoration(boolean drawDecoration) {
-        mDecorationAlpha = drawDecoration ? 1.0f : 0.0f;
+        set(DECORATION_ALPHA, drawDecoration ? 1.0f : 0.0f);
     }
 
     /**
      * @param percentageView The blend between the old static tab and the new live one.
      */
     public void setStaticToViewBlend(float percentageView) {
-        mStaticToViewBlend = percentageView;
+        set(STATIC_TO_VIEW_BLEND, percentageView);
     }
 
     /**
      * @return The current blend between the old static tab and the new live one.
      */
     public float getStaticToViewBlend() {
-        return mStaticToViewBlend;
-    }
-
-    /**
-     * Computes the Manhattan-ish distance to the edge of the tab.
-     * This distance is good enough for click detection.
-     *
-     * @param x          X coordinate of the hit testing point.
-     * @param y          Y coordinate of the hit testing point.
-     * @return           The Manhattan-ish distance to the tab.
-     */
-    public float computeDistanceTo(float x, float y) {
-        final RectF bounds = getClickTargetBounds();
-        float dx = Math.max(bounds.left - x, x - bounds.right);
-        float dy = Math.max(bounds.top - y, y - bounds.bottom);
-        return Math.max(0.0f, Math.max(dx, dy));
-    }
-
-    /**
-     * @return The rectangle that represents the click target of the tab.
-     */
-    public RectF getClickTargetBounds() {
-        final float borderScaled = BORDER_THICKNESS_DP * mBorderScale;
-        mBounds.top = mY + mClippedY - borderScaled;
-        mBounds.bottom = mY + mClippedY + getFinalContentHeight() + borderScaled;
-        mBounds.left = mX + mClippedX - borderScaled;
-        mBounds.right = mX + mClippedX + getFinalContentWidth() + borderScaled;
-        return mBounds;
-    }
-
-    /**
-     * Tests if a point is inside the closing button of the tab.
-     *
-     * @param x The horizontal coordinate of the hit testing point.
-     * @param y The vertical coordinate of the hit testing point.
-     * @return  Whether the hit testing point is inside the tab.
-     */
-    public boolean checkCloseHitTest(float x, float y) {
-        RectF closeRectangle = getCloseBounds();
-        return closeRectangle != null ? closeRectangle.contains(x, y) : false;
-    }
-
-    /**
-     * @return The bounds of the active area of the close button. {@code null} if the close button
-     *         is not clickable.
-     */
-    public RectF getCloseBounds() {
-        if (!mIsTitleNeeded || !mVisible || mBorderCloseButtonAlpha < 0.5f || mBorderAlpha < 0.5f
-                || mBorderScale != 1.0f || Math.abs(mTiltX) > 1.0f || Math.abs(mTiltY) > 1.0f) {
-            return null;
-        }
-        mClosePlacement.set(0, 0, CLOSE_BUTTON_WIDTH_DP, CLOSE_BUTTON_WIDTH_DP);
-        if (mCloseButtonIsOnRight) {
-            mClosePlacement.offset(getFinalContentWidth() - mClosePlacement.width(), 0.f);
-        }
-        if (mClosePlacement.bottom > getFinalContentHeight()
-                || mClosePlacement.right > getFinalContentWidth()) {
-            return null;
-        }
-        mClosePlacement.offset(mX + mClippedX, mY + mClippedY);
-        mClosePlacement.inset(-sCompositorButtonSlop, -sCompositorButtonSlop);
-
-        return mClosePlacement;
-    }
-
-    /**
-     * Update snapping to pixel. To be called once every frame.
-     *
-     * @param dt The delta time between update frames in ms.
-     * @return   True if the snapping requests to render at least one more frame.
-     */
-    public boolean updateSnap(long dt) {
-        final float step = dt * SNAP_SPEED / 1000.0f;
-        final float x = updateSnap(step, mRenderX, mX);
-        final float y = updateSnap(step, mRenderY, mY);
-        final boolean change = x != mRenderX || y != mRenderY;
-        mRenderX = x;
-        mRenderY = y;
-        return change;
-    }
-
-    private float updateSnap(float step, float current, float ref) {
-        if (Math.abs(current - ref) > sPxToDp) return ref;
-        final float refRounded = Math.round(ref * sDpToPx) * sPxToDp;
-        if (refRounded < ref) {
-            current -= step;
-            current = Math.max(refRounded, current);
-        } else {
-            current += step;
-            current = Math.min(refRounded, current);
-        }
-        return current;
+        return get(STATIC_TO_VIEW_BLEND);
     }
 
     @Override
@@ -730,64 +703,64 @@ public class LayoutTab {
      * @param originalContentHeight The maximum content height for the given orientation in px.
      */
     public void setContentSize(int originalContentWidth, int originalContentHeight) {
-        mOriginalContentWidth = originalContentWidth * sPxToDp;
-        mOriginalContentHeight = originalContentHeight * sPxToDp;
+        set(ORIGINAL_CONTENT_WIDTH_IN_DP, originalContentWidth * sPxToDp);
+        set(ORIGINAL_CONTENT_HEIGHT_IN_DP, originalContentHeight * sPxToDp);
     }
 
     /**
      * @return Whether the tab title should be displayed.
      */
     public boolean isTitleNeeded() {
-        return mIsTitleNeeded;
+        return get(IS_TITLE_NEEDED);
     }
 
     /**
      * @param visible True if the {@link LayoutTab} is visible and need to be drawn.
      */
     public void setVisible(boolean visible) {
-        mVisible = visible;
+        set(IS_VISIBLE, visible);
     }
 
     /**
      * @return True if the {@link LayoutTab} is visible and will be drawn.
      */
     public boolean isVisible() {
-        return mVisible;
+        return get(IS_VISIBLE);
     }
 
     /**
      * @param shouldStall Whether or not the tab should wait for the live layer to load.
      */
     public void setShouldStall(boolean shouldStall) {
-        mShouldStall = shouldStall;
+        set(SHOULD_STALL, shouldStall);
     }
 
     /**
      * @return Whether or not the tab should wait for the live layer to load.
      */
     public boolean shouldStall() {
-        return mShouldStall;
+        return get(SHOULD_STALL);
     }
 
     /**
      * @return Whether the tab can use a live texture to render.
      */
     public boolean canUseLiveTexture() {
-        return mCanUseLiveTexture;
+        return get(CAN_USE_LIVE_TEXTURE);
     }
 
     /**
      * @param showToolbar Whether or not to show a toolbar at the top of the content.
      */
     public void setShowToolbar(boolean showToolbar) {
-        mShowToolbar = showToolbar;
+        set(SHOW_TOOLBAR, showToolbar);
     }
 
     /**
      * @return Whether or not to show a toolbar at the top of the content.
      */
     public boolean showToolbar() {
-        return mShowToolbar;
+        return get(SHOW_TOOLBAR);
     }
 
     /**
@@ -796,7 +769,7 @@ public class LayoutTab {
      * @param anonymize Whether or not to anonymize the toolbar (hiding URL, etc.).
      */
     public void setAnonymizeToolbar(boolean anonymize) {
-        mAnonymizeToolbar = anonymize;
+        set(ANONYMIZE_TOOLBAR, anonymize);
     }
 
     /**
@@ -805,267 +778,70 @@ public class LayoutTab {
      * @return Whether or not to anonymize the toolbar (hiding URL, etc.).
      */
     public boolean anonymizeToolbar() {
-        return mAnonymizeToolbar;
+        return get(ANONYMIZE_TOOLBAR);
     }
 
     /**
      * @param alpha The alpha of the toolbar.
      */
     public void setToolbarAlpha(float alpha) {
-        mToolbarAlpha = alpha;
+        set(TOOLBAR_ALPHA, alpha);
     }
 
     /**
      * @return The alpha of the toolbar.
      */
     public float getToolbarAlpha() {
-        return mToolbarAlpha;
+        return get(TOOLBAR_ALPHA);
     }
 
     /**
      * @param inset Whether or not to inset the top vertical component of the tab border or not.
      */
     public void setInsetBorderVertical(boolean inset) {
-        mInsetBorderVertical = inset;
+        set(INSET_BORDER_VERTICAL, inset);
     }
 
     /**
      * @return Whether or not to inset the top vertical component of the tab border or not.
      */
     public boolean insetBorderVertical() {
-        return mInsetBorderVertical;
+        return get(INSET_BORDER_VERTICAL);
     }
 
     public void setCloseButtonIsOnRight(boolean closeButtonIsOnRight) {
-        mCloseButtonIsOnRight = closeButtonIsOnRight;
+        set(CLOSE_BUTTON_IS_ON_RIGHT, closeButtonIsOnRight);
     }
 
     public boolean isCloseButtonOnRight() {
-        return mCloseButtonIsOnRight;
-    }
-
-    /**
-     * @return The theoretical number of visible pixels. 0 if invisible.
-     */
-    public float computeVisibleArea() {
-        return (mVisible && mAlpha > ALPHA_THRESHOLD ? 1.0f : 0.0f) * getFinalContentWidth()
-                * getFinalContentHeight();
+        return get(CLOSE_BUTTON_IS_ON_RIGHT);
     }
 
     /**
      * @return The color of the background of the tab. Used as the best approximation to fill in.
      */
     public int getBackgroundColor() {
-        return mBackgroundColor;
+        return get(BACKGROUND_COLOR);
     }
 
     /**
      * @return The color of the background of the toolbar.
      */
     public int getToolbarBackgroundColor() {
-        return mToolbarBackgroundColor;
+        return get(TOOLBAR_BACKGROUND_COLOR);
     }
 
     /**
      * @return The color of the textbox in the toolbar. Used as the color for the anonymize rect.
      */
     public int getTextBoxBackgroundColor() {
-        return mTextBoxBackgroundColor;
+        return get(TEXT_BOX_BACKGROUND_COLOR);
     }
 
     /**
      * @return The alpha value of the textbox in the toolbar.
      */
     public float getTextBoxAlpha() {
-        return mTextBoxAlpha;
+        return get(TEXT_BOX_ALPHA);
     }
-
-    public static final FloatProperty<LayoutTab> ALPHA = new FloatProperty<LayoutTab>("ALPHA") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setAlpha(v);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getAlpha();
-        }
-    };
-
-    public static final FloatProperty<LayoutTab> BORDER_ALPHA =
-            new FloatProperty<LayoutTab>("BORDER_ALPHA") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setBorderAlpha(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getBorderAlpha();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> DECORATION_ALPHA =
-            new FloatProperty<LayoutTab>("DECORATION_ALPHA") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setDecorationAlpha(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getDecorationAlpha();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> BORDER_SCALE =
-            new FloatProperty<LayoutTab>("BORDER_SCALE") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setBorderScale(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getBorderScale();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> TOOLBAR_ALPHA =
-            new FloatProperty<LayoutTab>("TOOLBAR_ALPHA") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setToolbarAlpha(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getToolbarAlpha();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> TOOLBAR_Y_OFFSET =
-            new FloatProperty<LayoutTab>("TOOLBAR_Y_OFFSET") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setToolbarYOffset(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getToolbarYOffset();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> MAX_CONTENT_HEIGHT =
-            new FloatProperty<LayoutTab>("MAX_CONTENT_HEIGHT") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setMaxContentHeight(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getMaxContentHeight();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> SATURATION =
-            new FloatProperty<LayoutTab>("SATURATION") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setSaturation(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getSaturation();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> SCALE = new FloatProperty<LayoutTab>("SCALE") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setScale(v);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getScale();
-        }
-    };
-
-    public static final FloatProperty<LayoutTab> SIDE_BORDER_SCALE =
-            new FloatProperty<LayoutTab>("SIDE_BORDER_SCALE") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setSideBorderScale(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getSideBorderScale();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> STATIC_TO_VIEW_BLEND =
-            new FloatProperty<LayoutTab>("STATIC_TO_VIEW_BLEND") {
-                @Override
-                public void setValue(LayoutTab layoutTab, float v) {
-                    layoutTab.setStaticToViewBlend(v);
-                }
-
-                @Override
-                public Float get(LayoutTab layoutTab) {
-                    return layoutTab.getStaticToViewBlend();
-                }
-            };
-
-    public static final FloatProperty<LayoutTab> TILTX = new FloatProperty<LayoutTab>("TILTX") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setTiltX(v, layoutTab.mTiltXPivotOffset);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getTiltX();
-        }
-    };
-
-    public static final FloatProperty<LayoutTab> TILTY = new FloatProperty<LayoutTab>("TILTY") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setTiltY(v, layoutTab.mTiltYPivotOffset);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getTiltY();
-        }
-    };
-
-    public static final FloatProperty<LayoutTab> X = new FloatProperty<LayoutTab>("X") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setX(v);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getX();
-        }
-    };
-
-    public static final FloatProperty<LayoutTab> Y = new FloatProperty<LayoutTab>("Y") {
-        @Override
-        public void setValue(LayoutTab layoutTab, float v) {
-            layoutTab.setY(v);
-        }
-
-        @Override
-        public Float get(LayoutTab layoutTab) {
-            return layoutTab.getY();
-        }
-    };
 }

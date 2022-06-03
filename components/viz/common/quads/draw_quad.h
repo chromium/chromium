@@ -37,8 +37,12 @@ class VIZ_COMMON_EXPORT DrawQuad {
     kInvalid,
     kDebugBorder,
     kPictureContent,
-    kRenderPass,
+    // This is the compositor, pre-aggregation, draw quad.
+    kCompositorRenderPass,
+    // This is the viz, post-aggregation, draw quad.
+    kAggregatedRenderPass,
     kSolidColor,
+    kSharedElement,
     kStreamVideoContent,
     kSurfaceContent,
     kTextureContent,
@@ -73,10 +77,14 @@ class VIZ_COMMON_EXPORT DrawQuad {
 
   bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 
-  bool ShouldDrawWithBlending() const {
+  bool ShouldDrawWithBlendingForReasonOtherThanMaskFilter() const {
     return needs_blending || shared_quad_state->opacity < 1.0f ||
-           shared_quad_state->blend_mode != SkBlendMode::kSrcOver ||
-           !shared_quad_state->rounded_corner_bounds.IsEmpty();
+           shared_quad_state->blend_mode != SkBlendMode::kSrcOver;
+  }
+
+  bool ShouldDrawWithBlending() const {
+    return ShouldDrawWithBlendingForReasonOtherThanMaskFilter() ||
+           !shared_quad_state->mask_filter_info.IsEmpty();
   }
 
   // Is the left edge of this tile aligned with the originating layer's
@@ -136,11 +144,11 @@ class VIZ_COMMON_EXPORT DrawQuad {
  protected:
   DrawQuad();
 
-  void SetAll(const SharedQuadState* shared_quad_state,
-              Material material,
-              const gfx::Rect& rect,
-              const gfx::Rect& visible_rect,
-              bool needs_blending);
+  void SetAll(const SharedQuadState* quad_state,
+              Material m,
+              const gfx::Rect& r,
+              const gfx::Rect& visible_r,
+              bool blending);
   virtual void ExtendValue(base::trace_event::TracedValue* value) const = 0;
 };
 

@@ -1,0 +1,16 @@
+Tests various style traces.
+Recording started
+Tracing complete
+Previous value requestId is identical to the current one
+importer.css?body: in_body_parser_blocking
+style.css?body_print: non_blocking
+style.css?dynamicDocWriteBody: in_body_parser_blocking
+style.css?dynamicDocWriteHead: blocking
+style.css?dynamicDocWritePrintBody: non_blocking
+style.css?dynamicDocWritePrintHead: non_blocking
+style.css?head: blocking
+style.css?head_print: non_blocking
+style.css?imported: in_body_parser_blocking
+style.css?preload: non_blocking
+style.css?preload_used: in_body_parser_blocking
+

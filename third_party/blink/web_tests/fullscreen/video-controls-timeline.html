@@ -23,7 +23,7 @@
                 eventSender.mouseDown();
 
                 waitForEvent(timeline, 'mouseup');
-                waitForEventAndEnd(video, 'seeked');
+                waitForEventOnceAndEnd(video, 'seeked');
                 eventSender.mouseUp();
             }
             else

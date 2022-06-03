@@ -10,9 +10,7 @@ source_set("ios") {
     "device_accounts_provider.mm",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("test_support") {

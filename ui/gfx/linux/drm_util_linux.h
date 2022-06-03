@@ -5,6 +5,8 @@
 #ifndef UI_GFX_LINUX_DRM_UTIL_LINUX_H_
 #define UI_GFX_LINUX_DRM_UTIL_LINUX_H_
 
+#include <cstdint>
+
 #include "ui/gfx/buffer_types.h"
 
 namespace ui {

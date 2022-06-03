@@ -11,27 +11,31 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_face.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
-#include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
-#include "third_party/blink/renderer/modules/shapedetection/landmark.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -42,13 +46,17 @@ using testing::UnorderedElementsAre;
 namespace blink {
 namespace {
 
-v8::Local<v8::Value> RoundTripForModules(v8::Local<v8::Value> value,
-                                         V8TestingScope& scope) {
+v8::Local<v8::Value> RoundTripForModules(
+    v8::Local<v8::Value> value,
+    V8TestingScope& scope,
+    Transferables* transferables = nullptr) {
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState& exception_state = scope.GetExceptionState();
+  V8ScriptValueSerializer::Options serialize_options;
+  DCHECK(!transferables || transferables->message_ports.IsEmpty());
+  serialize_options.transferables = transferables;
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      V8ScriptValueSerializerForModules(
-          script_state, V8ScriptValueSerializerForModules::Options())
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
           .Serialize(value, exception_state);
   DCHECK_EQ(!serialized_script_value, exception_state.HadException());
   EXPECT_TRUE(serialized_script_value);
@@ -261,10 +269,11 @@ WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(
     v8::Isolate* isolate,
     const ScriptValue& value) {
   WebVector<unsigned char> vector;
-  if (DOMArrayBuffer* buffer =
-          V8ArrayBuffer::ToImplWithTypeCheck(isolate, value.V8Value())) {
+  DummyExceptionStateForTesting exception_state;
+  if (DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+          isolate, value.V8Value(), exception_state)) {
     vector.Assign(reinterpret_cast<const unsigned char*>(buffer->Data()),
-                  buffer->ByteLengthAsSizeT());
+                  buffer->ByteLength());
   }
   return vector;
 }
@@ -985,84 +994,181 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidDOMFileSystem) {
           ->IsNull());
 }
 
-TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedBarcode) {
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
   V8TestingScope scope;
-  ScriptState* script_state = scope.GetScriptState();
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x13, 0xff, 0x0d, 0x5c, 'B',  0x04, 0x74, 0x65, 0x78, 0x74, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00,
-       0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x01, 0x00, 0x00, 0x00, 0x00,
-       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
-  ASSERT_TRUE(V8DetectedBarcode::HasInstance(result, scope.GetIsolate()));
-  DetectedBarcode* detected_barcode =
-      V8DetectedBarcode::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ("text", detected_barcode->rawValue());
-  DOMRectReadOnly* bounding_box = detected_barcode->boundingBox();
-  EXPECT_EQ(1, bounding_box->x());
-  EXPECT_EQ(2, bounding_box->y());
-  EXPECT_EQ(3, bounding_box->width());
-  EXPECT_EQ(4, bounding_box->height());
-  const HeapVector<Member<Point2D>>& corner_points =
-      detected_barcode->cornerPoints();
-  EXPECT_EQ(1u, corner_points.size());
-  EXPECT_EQ(1, corner_points[0]->x());
-  EXPECT_EQ(2, corner_points[0]->y());
+
+  const gfx::Size kFrameSize(600, 480);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
+
+  // Round trip the frame and make sure the size is the same.
+  v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+
+  ASSERT_TRUE(V8VideoFrame::HasInstance(result, scope.GetIsolate()));
+
+  VideoFrame* new_frame = V8VideoFrame::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_frame->frame()->natural_size(), kFrameSize);
+
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  // Closing |blink_frame| and |new_frame| should remove all references
+  // to |media_frame|.
+  blink_frame->close();
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  new_frame->close();
+  EXPECT_TRUE(media_frame->HasOneRef());
 }
 
-TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedFace) {
+TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
   V8TestingScope scope;
-  ScriptState* script_state = scope.GetScriptState();
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x13, 0xff, 0x0d, 0x5c, 'F',  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-       0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-       0x10, 0x40, 0x01, 0x03, 0x65, 0x79, 0x65, 0x01, 0x00, 0x00, 0x00, 0x00,
-       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
+
+  const gfx::Size kFrameSize(600, 480);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  VideoFrameTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<VideoFrameTransferList>();
+  transfer_list->video_frames.push_back(blink_frame);
+  v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
   v8::Local<v8::Value> result =
-      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
-  ASSERT_TRUE(V8DetectedFace::HasInstance(result, scope.GetIsolate()));
-  DetectedFace* detected_face = V8DetectedFace::ToImpl(result.As<v8::Object>());
-  DOMRectReadOnly* bounding_box = detected_face->boundingBox();
-  EXPECT_EQ(1, bounding_box->x());
-  EXPECT_EQ(2, bounding_box->y());
-  EXPECT_EQ(3, bounding_box->width());
-  EXPECT_EQ(4, bounding_box->height());
-  const HeapVector<Member<Landmark>>& landmarks = detected_face->landmarks();
-  EXPECT_EQ(1u, landmarks.size());
-  EXPECT_EQ("eye", landmarks[0]->type());
-  const HeapVector<Member<Point2D>>& locations = landmarks[0]->locations();
-  EXPECT_EQ(1u, locations.size());
-  EXPECT_EQ(1, locations[0]->x());
-  EXPECT_EQ(2, locations[0]->y());
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8VideoFrame::HasInstance(result, scope.GetIsolate()));
+
+  VideoFrame* new_frame = V8VideoFrame::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_frame->frame()->natural_size(), kFrameSize);
+
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  // The transfer should have closed the source frame.
+  EXPECT_EQ(blink_frame->frame(), nullptr);
+
+  // Closing |new_frame| should remove all references to |media_frame|.
+  new_frame->close();
+  EXPECT_TRUE(media_frame->HasOneRef());
 }
 
-TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedText) {
+TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
   V8TestingScope scope;
-  ScriptState* script_state = scope.GetScriptState();
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x13, 0xff, 0x0d, 0x5c, 't',  0x04, 0x74, 0x65, 0x78, 0x74, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00,
-       0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x01, 0x00, 0x00, 0x00, 0x00,
-       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
-  ASSERT_TRUE(V8DetectedText::HasInstance(result, scope.GetIsolate()));
-  DetectedText* detected_text = V8DetectedText::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ("text", detected_text->rawValue());
-  DOMRectReadOnly* bounding_box = detected_text->boundingBox();
-  EXPECT_EQ(1, bounding_box->x());
-  EXPECT_EQ(2, bounding_box->y());
-  EXPECT_EQ(3, bounding_box->width());
-  EXPECT_EQ(4, bounding_box->height());
-  const HeapVector<Member<Point2D>>& corner_points =
-      detected_text->cornerPoints();
-  EXPECT_EQ(1u, corner_points.size());
-  EXPECT_EQ(1, corner_points[0]->x());
-  EXPECT_EQ(2, corner_points[0]->y());
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  const gfx::Size kFrameSize(600, 480);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  // Create and close the frame.
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
+  blink_frame->close();
+
+  // Serializing the closed frame should throw an error.
+  v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
+  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
+                   .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest(
+      "DataCloneError", scope.GetScriptState(), exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
+  V8TestingScope scope;
+
+  const unsigned kChannels = 2;
+  const unsigned kSampleRate = 8000;
+  const unsigned kFrames = 500;
+  constexpr base::TimeDelta kTimestamp = base::Milliseconds(314);
+
+  auto audio_bus = media::AudioBus::Create(kChannels, kFrames);
+
+  // Populate each sample with a unique value.
+  const unsigned kTotalSamples = (kFrames * kChannels);
+  const float kSampleMultiplier = 1.0 / kTotalSamples;
+  for (unsigned ch = 0; ch < kChannels; ++ch) {
+    float* data = audio_bus->channel(ch);
+    for (unsigned i = 0; i < kFrames; ++i)
+      data[i] = (i + ch * kFrames) * kSampleMultiplier;
+  }
+
+  // Copying the data from an AudioBus instead of creating a media::AudioBuffer
+  // directly is acceptable/desirable here, as it's a path often exercised when
+  // receiving microphone/WebCam data.
+  auto audio_buffer =
+      media::AudioBuffer::CopyFrom(kSampleRate, kTimestamp, audio_bus.get());
+
+  auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));
+
+  // Round trip the frame and make sure the size is the same.
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+
+  // The data should have been copied, not transferred.
+  EXPECT_TRUE(audio_data->data());
+
+  ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
+
+  AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(base::Microseconds(new_data->timestamp()), kTimestamp);
+  EXPECT_EQ(new_data->numberOfChannels(), kChannels);
+  EXPECT_EQ(new_data->numberOfFrames(), kFrames);
+  EXPECT_EQ(new_data->sampleRate(), kSampleRate);
+
+  // Copy out the frames to make sure they haven't been changed during the
+  // transfer.
+  DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
+  AudioDataCopyToOptions* options =
+      MakeGarbageCollected<AudioDataCopyToOptions>();
+
+  for (unsigned int ch = 0; ch < kChannels; ++ch) {
+    options->setPlaneIndex(ch);
+    new_data->copyTo(dest, options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    float* new_samples = static_cast<float*>(copy_dest->Data());
+
+    for (unsigned int i = 0; i < kFrames; ++i)
+      ASSERT_EQ(new_samples[i], (i + ch * kFrames) * kSampleMultiplier);
+  }
+
+  // Closing the original |audio_data| should not affect |new_data|.
+  audio_data->close();
+  EXPECT_TRUE(new_data->data());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
+  V8TestingScope scope;
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      /*channel_count=*/2,
+      /*sample_rate=*/8000,
+      /*frame_count=*/500, base::Milliseconds(314));
+
+  // Create and close the frame.
+  auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));
+  audio_data->close();
+
+  // Serializing the closed frame should throw an error.
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
+  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
+                   .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest(
+      "DataCloneError", scope.GetScriptState(), exception_state));
 }
 
 }  // namespace

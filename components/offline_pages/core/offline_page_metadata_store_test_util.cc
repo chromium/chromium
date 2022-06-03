@@ -4,13 +4,15 @@
 
 #include "components/offline_pages/core/offline_page_metadata_store_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/model/add_page_task.h"
 #include "components/offline_pages/core/model/get_pages_task.h"
@@ -45,14 +47,14 @@ void OfflinePageMetadataStoreTestUtil::BuildStore() {
     return;
   }
 
-  store_.reset(new OfflinePageMetadataStore(base::ThreadTaskRunnerHandle::Get(),
-                                            temp_directory_.GetPath()));
+  store_ = std::make_unique<OfflinePageMetadataStore>(
+      base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
   store_ptr_ = store_.get();
 }
 
 void OfflinePageMetadataStoreTestUtil::BuildStoreInMemory() {
-  store_.reset(
-      new OfflinePageMetadataStore(base::ThreadTaskRunnerHandle::Get()));
+  store_ = std::make_unique<OfflinePageMetadataStore>(
+      base::ThreadTaskRunnerHandle::Get());
   store_ptr_ = store_.get();
 }
 
@@ -74,7 +76,7 @@ void OfflinePageMetadataStoreTestUtil::InsertItem(const OfflinePageItem& page) {
         result = cb_result;
         run_loop.Quit();
       }));
-  task->Run();
+  task->Execute(base::DoNothing());
   run_loop.Run();
   EXPECT_EQ(AddPageResult::SUCCESS, result);
 }
@@ -107,7 +109,7 @@ OfflinePageMetadataStoreTestUtil::GetPageByOfflineId(int64_t offline_id) {
               page = new OfflinePageItem(cb_pages[0]);
             run_loop.Quit();
           })));
-  task->Run();
+  task->Execute(base::DoNothing());
   run_loop.Run();
   return base::WrapUnique<OfflinePageItem>(page);
 }

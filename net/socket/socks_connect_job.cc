@@ -4,6 +4,7 @@
 
 #include "net/socket/socks_connect_job.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,8 +20,7 @@
 namespace net {
 
 // SOCKSConnectJobs will time out if the SOCKS handshake takes longer than this.
-static constexpr base::TimeDelta kSOCKSConnectJobTimeout =
-    base::TimeDelta::FromSeconds(30);
+static constexpr base::TimeDelta kSOCKSConnectJobTimeout = base::Seconds(30);
 
 SOCKSSocketParams::SOCKSSocketParams(
     scoped_refptr<TransportSocketParams> proxy_server_params,
@@ -35,6 +35,18 @@ SOCKSSocketParams::SOCKSSocketParams(
       traffic_annotation_(traffic_annotation) {}
 
 SOCKSSocketParams::~SOCKSSocketParams() = default;
+
+std::unique_ptr<SOCKSConnectJob> SOCKSConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<SOCKSSocketParams> socks_params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<SOCKSConnectJob>(
+      priority, socket_tag, common_connect_job_params, std::move(socks_params),
+      delegate, net_log);
+}
 
 SOCKSConnectJob::SOCKSConnectJob(
     RequestPriority priority,
@@ -166,14 +178,14 @@ int SOCKSConnectJob::DoSOCKSConnect() {
 
   // Add a SOCKS connection on top of the tcp socket.
   if (socks_params_->is_socks_v5()) {
-    socket_.reset(new SOCKS5ClientSocket(transport_connect_job_->PassSocket(),
-                                         socks_params_->destination(),
-                                         socks_params_->traffic_annotation()));
+    socket_ = std::make_unique<SOCKS5ClientSocket>(
+        transport_connect_job_->PassSocket(), socks_params_->destination(),
+        socks_params_->traffic_annotation());
   } else {
     socks_socket_ptr_ = new SOCKSClientSocket(
         transport_connect_job_->PassSocket(), socks_params_->destination(),
         socks_params_->network_isolation_key(), priority(), host_resolver(),
-        socks_params_->transport_params()->disable_secure_dns(),
+        socks_params_->transport_params()->secure_dns_policy(),
         socks_params_->traffic_annotation());
     socket_.reset(socks_socket_ptr_);
   }
@@ -190,7 +202,7 @@ int SOCKSConnectJob::DoSOCKSConnectComplete(int result) {
     return result;
   }
 
-  SetSocket(std::move(socket_));
+  SetSocket(std::move(socket_), absl::nullopt /* dns_aliases */);
   return result;
 }
 

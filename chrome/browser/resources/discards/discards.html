@@ -10,6 +10,8 @@ general use and is not localized.-->
   <head>
     <title>Discards</title>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <style>
       html,
@@ -18,12 +20,18 @@ general use and is not localized.-->
         overflow: hidden;
       }
 
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: var(--md-background-color);
+        }
+      }
+
       body {
         margin: 0;
       }
     </style>
   </head>
-  <body>
+  <body dir="ltr">
     <discards-main></discards-main>
     <script type="module" src="discards_main.js"></script>
   </body>

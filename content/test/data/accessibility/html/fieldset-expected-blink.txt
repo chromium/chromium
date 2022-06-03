@@ -1,7 +1,13 @@
 rootWebArea
 ++genericContainer ignored
-++++form
-++++++group name='Browser Engines:'
+++++genericContainer ignored
+++++++section
+++++++++group name='Browser Engines:'
+++++++++++legend
+++++++++++++staticText name='Browser Engines:'
+++++++++++++++inlineTextBox name='Browser Engines:'
+++++++group name='Which cake do you prefer?'
 ++++++++legend
-++++++++++staticText name='Browser Engines:'
-++++++++++++inlineTextBox name='Browser Engines:'
+++++++++++heading name='Which cake do you prefer?'
+++++++++++++staticText name='Which cake do you prefer?'
+++++++++++++++inlineTextBox name='Which cake do you prefer?'

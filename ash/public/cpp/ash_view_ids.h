@@ -27,8 +27,6 @@ enum ViewID {
   VIEW_ID_CAST_CAST_VIEW_LABEL,
   VIEW_ID_CAST_MAIN_VIEW,
   VIEW_ID_CAST_SELECT_VIEW,
-  // System tray network submenu item for extension-controlled networks.
-  VIEW_ID_EXTENSION_CONTROLLED_WIFI,
   VIEW_ID_MEDIA_TRAY_VIEW,
   // Power button in system tray.
   VIEW_ID_POWER_BUTTON,
@@ -36,6 +34,7 @@ enum ViewID {
   VIEW_ID_STICKY_HEADER,
   // System tray menu item for "device is managed by example.com".
   VIEW_ID_TRAY_ENTERPRISE,
+  VIEW_ID_TRAY_ENTERPRISE_LABEL,
   // System tray up-arrow icon that shows an update is available.
   VIEW_ID_TRAY_UPDATE_ICON,
   // System tray menu item label for updates (e.g. "Restart to update").

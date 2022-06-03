@@ -7,15 +7,16 @@
 #include <atomic>
 
 #include "base/bind.h"
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits_extension.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_features.h"
@@ -24,52 +25,62 @@
 #include "base/android/task_scheduler/post_task_android.h"
 #endif
 
+using QueueType = content::BrowserTaskQueues::QueueType;
+
 namespace content {
+namespace features {
+// When the "BrowserPrioritizeInputQueue" feature is enabled, the browser will
+// schedule tasks related to input in kHigh priority queue. This puts it under
+// bootstrap, but above regular tasks.
+//
+// The goal is to reduce jank by ensuring chromium is handling input events as
+// soon as possible.
+//
+// TODO(nuskos): Remove this feature flag after we've done our retroactive study
+// of all chrometto performance improvements.
+constexpr base::Feature kBrowserPrioritizeInputQueue{
+    "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When NavigationTaskQueue is enabled, the browser will schedule some tasks
+// related to navigation network responses in a kHighest priority queue.
+constexpr base::Feature kNavigationNetworkResponseQueue{
+    "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
+// the kBootstrap task type on the default task queues (based on priority of
+// the task) rather than a dedicated high-priority task queue. Intended to
+// evaluate the impact of the already-launched prioritization of bootstrap
+// tasks (crbug.com/1258621).
+const base::Feature kTreatBootstrapTaskTypeAsDefault{
+    "TreatBootstrapAsDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When TreatPreconnectAsDefault is enabled, the browser will execute tasks with
+// the kPreconnect task type on the default task queues (based on priority of
+// the task) rather than a dedicated high-priority task queue. Intended to
+// evaluate the impact of the already-launched prioritization of preconnect
+// tasks (crbug.com/1257582).
+const base::Feature kTreatPreconnectTaskTypeAsDefault{
+    "TreatPreconnectAsDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace features
+
 namespace {
 
-using QueueType = ::content::BrowserTaskQueues::QueueType;
+// Returns the BrowserThread::ID stored in |traits| which must be coming from a
+// call through BaseBrowserTaskExecutor and hence have the
+// BrowserTaskTraitsExtension.
+BrowserThread::ID ExtractBrowserThreadId(const base::TaskTraits& traits) {
+  DCHECK_EQ(BrowserTaskTraitsExtension::kExtensionId, traits.extension_id());
+  const BrowserTaskTraitsExtension extension =
+      traits.GetExtension<BrowserTaskTraitsExtension>();
+
+  const BrowserThread::ID thread_id = extension.browser_thread();
+  DCHECK_GE(thread_id, 0);
+  return thread_id;
+}
 
 // |g_browser_task_executor| is intentionally leaked on shutdown.
 BrowserTaskExecutor* g_browser_task_executor = nullptr;
-
-QueueType GetQueueType(const base::TaskTraits& traits,
-                       BrowserTaskType task_type) {
-  switch (task_type) {
-    case BrowserTaskType::kBootstrap:
-      // Note we currently ignore the priority for bootstrap tasks.
-      return QueueType::kBootstrap;
-
-    case BrowserTaskType::kNavigation:
-    case BrowserTaskType::kPreconnect:
-      // Note we currently ignore the priority for navigation and preconnection
-      // tasks.
-      return QueueType::kNavigationAndPreconnection;
-
-    case BrowserTaskType::kDefault:
-      // Defer to traits.priority() below.
-      break;
-
-    case BrowserTaskType::kBrowserTaskType_Last:
-      NOTREACHED();
-  }
-
-  switch (traits.priority()) {
-    case base::TaskPriority::BEST_EFFORT:
-      return QueueType::kBestEffort;
-
-    case base::TaskPriority::USER_VISIBLE:
-      return QueueType::kUserVisible;
-
-    case base::TaskPriority::USER_BLOCKING:
-      return QueueType::kUserBlocking;
-  }
-}
-
-const scoped_refptr<base::SequencedTaskRunner>& GetNullTaskRunner() {
-  static const base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
-      null_task_runner;
-  return *null_task_runner;
-}
 
 }  // namespace
 
@@ -83,30 +94,30 @@ bool BaseBrowserTaskExecutor::PostDelayedTask(const base::Location& from_here,
                                               base::TimeDelta delay) {
   if (traits.extension_id() != BrowserTaskTraitsExtension::kExtensionId ||
       traits.GetExtension<BrowserTaskTraitsExtension>().nestable()) {
-    return GetTaskRunner(traits)->PostDelayedTask(from_here, std::move(task),
-                                                  delay);
+    return GetTaskRunner(ExtractBrowserThreadId(traits), traits)
+        ->PostDelayedTask(from_here, std::move(task), delay);
   } else {
-    return GetTaskRunner(traits)->PostNonNestableDelayedTask(
-        from_here, std::move(task), delay);
+    return GetTaskRunner(ExtractBrowserThreadId(traits), traits)
+        ->PostNonNestableDelayedTask(from_here, std::move(task), delay);
   }
 }
 
 scoped_refptr<base::TaskRunner> BaseBrowserTaskExecutor::CreateTaskRunner(
     const base::TaskTraits& traits) {
-  return GetTaskRunner(traits);
+  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
 scoped_refptr<base::SequencedTaskRunner>
 BaseBrowserTaskExecutor::CreateSequencedTaskRunner(
     const base::TaskTraits& traits) {
-  return GetTaskRunner(traits);
+  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::CreateSingleThreadTaskRunner(
     const base::TaskTraits& traits,
     base::SingleThreadTaskRunnerThreadMode thread_mode) {
-  return GetTaskRunner(traits);
+  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
 #if defined(OS_WIN)
@@ -114,57 +125,95 @@ scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::CreateCOMSTATaskRunner(
     const base::TaskTraits& traits,
     base::SingleThreadTaskRunnerThreadMode thread_mode) {
-  return GetTaskRunner(traits);
+  return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 #endif  // defined(OS_WIN)
 
 scoped_refptr<base::SingleThreadTaskRunner>
-BaseBrowserTaskExecutor::GetTaskRunner(const base::TaskTraits& traits) const {
-  auto id_and_queue = GetThreadIdAndQueueType(traits);
+BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
+                                       const base::TaskTraits& traits) const {
+  const QueueType queue_type = GetQueueType(traits);
 
-  switch (id_and_queue.thread_id) {
+  switch (identifier) {
     case BrowserThread::UI: {
-      return browser_ui_thread_handle_->GetBrowserTaskRunner(
-          id_and_queue.queue_type);
+      return browser_ui_thread_handle_->GetBrowserTaskRunner(queue_type);
     }
     case BrowserThread::IO:
-      return browser_io_thread_handle_->GetBrowserTaskRunner(
-          id_and_queue.queue_type);
+      return browser_io_thread_handle_->GetBrowserTaskRunner(queue_type);
     case BrowserThread::ID_COUNT:
       NOTREACHED();
   }
   return nullptr;
 }
 
-BaseBrowserTaskExecutor::ThreadIdAndQueueType
-BaseBrowserTaskExecutor::GetThreadIdAndQueueType(
-    const base::TaskTraits& traits) const {
-  BrowserTaskType task_type;
-  BrowserThread::ID thread_id;
-
-  if (traits.use_current_thread()) {
-    thread_id = GetCurrentThreadID();
-
-    // BrowserTaskTraitsExtension is optional if use_current_thread() is true.
-    if (traits.extension_id() == BrowserTaskTraitsExtension::kExtensionId) {
-      task_type = traits.GetExtension<BrowserTaskTraitsExtension>().task_type();
-    } else {
-      task_type = BrowserTaskType::kDefault;
-    }
-  } else {
-    // Otherwise BrowserTaskTraitsExtension is mandatory.
-    DCHECK_EQ(BrowserTaskTraitsExtension::kExtensionId, traits.extension_id());
-    BrowserTaskTraitsExtension extension =
+// static
+QueueType BaseBrowserTaskExecutor::GetQueueType(
+    const base::TaskTraits& traits) {
+  if (traits.extension_id() == BrowserTaskTraitsExtension::kExtensionId) {
+    const BrowserTaskTraitsExtension extension =
         traits.GetExtension<BrowserTaskTraitsExtension>();
 
-    thread_id = extension.browser_thread();
-    DCHECK_GE(thread_id, 0);
-
-    task_type = extension.task_type();
+    const BrowserTaskType task_type = extension.task_type();
     DCHECK_LT(task_type, BrowserTaskType::kBrowserTaskType_Last);
+
+    switch (task_type) {
+      case BrowserTaskType::kBootstrap:
+        if (base::FeatureList::IsEnabled(
+                features::kTreatBootstrapTaskTypeAsDefault)) {
+          // Defer to traits.priority() below rather than executing this task on
+          // the dedicated bootstrap queue.
+          break;
+        }
+
+        // Note we currently ignore the priority for bootstrap tasks.
+        return QueueType::kBootstrap;
+
+      case BrowserTaskType::kPreconnect:
+        if (base::FeatureList::IsEnabled(
+                features::kTreatPreconnectTaskTypeAsDefault)) {
+          // Defer to traits.priority() below rather than executing this task on
+          // the dedicated preconnect queue.
+          break;
+        }
+
+        // Note we currently ignore the priority for preconnection tasks.
+        return QueueType::kPreconnection;
+
+      case BrowserTaskType::kUserInput:
+        if (base::FeatureList::IsEnabled(
+                features::kBrowserPrioritizeInputQueue)) {
+          return QueueType::kUserInput;
+        }
+        // Defer to traits.priority() below.
+        break;
+
+      case BrowserTaskType::kNavigationNetworkResponse:
+        if (base::FeatureList::IsEnabled(
+                features::kNavigationNetworkResponseQueue)) {
+          return QueueType::kNavigationNetworkResponse;
+        }
+        // Defer to traits.priority() below.
+        break;
+
+      case BrowserTaskType::kDefault:
+        // Defer to traits.priority() below.
+        break;
+
+      case BrowserTaskType::kBrowserTaskType_Last:
+        NOTREACHED();
+    }
   }
 
-  return {thread_id, GetQueueType(traits, task_type)};
+  switch (traits.priority()) {
+    case base::TaskPriority::BEST_EFFORT:
+      return QueueType::kBestEffort;
+
+    case base::TaskPriority::USER_VISIBLE:
+      return QueueType::kUserVisible;
+
+    case base::TaskPriority::USER_BLOCKING:
+      return QueueType::kUserBlocking;
+  }
 }
 
 BrowserTaskExecutor::BrowserTaskExecutor(
@@ -187,7 +236,7 @@ void BrowserTaskExecutor::Create() {
   DCHECK(!base::ThreadTaskRunnerHandle::IsSet());
   CreateInternal(std::make_unique<BrowserUIThreadScheduler>(),
                  std::make_unique<BrowserIOThreadDelegate>());
-  g_browser_task_executor->ui_thread_executor_->BindToCurrentThread();
+  Get()->ui_thread_executor_->BindToCurrentThread();
 }
 
 // static
@@ -224,14 +273,17 @@ void BrowserTaskExecutor::CreateInternal(
 
 // static
 BrowserTaskExecutor* BrowserTaskExecutor::Get() {
-  DCHECK(g_browser_task_executor);
+  DCHECK(g_browser_task_executor)
+      << "No browser task executor created.\nHint: if this is in a unit test, "
+         "you're likely missing a content::BrowserTaskEnvironment member in "
+         "your fixture.";
   return g_browser_task_executor;
 }
 
 // static
 void BrowserTaskExecutor::ResetForTesting() {
 #if defined(OS_ANDROID)
-  base::PostTaskAndroid::SignalNativeSchedulerShutdown();
+  base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
 #endif
   if (g_browser_task_executor) {
     RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
@@ -245,13 +297,20 @@ void BrowserTaskExecutor::ResetForTesting() {
 
 // static
 void BrowserTaskExecutor::PostFeatureListSetup() {
-  DCHECK(g_browser_task_executor);
-  DCHECK(g_browser_task_executor->ui_thread_executor_);
-  DCHECK(g_browser_task_executor->io_thread_executor_);
-  g_browser_task_executor->browser_ui_thread_handle_
-      ->PostFeatureListInitializationSetup();
-  g_browser_task_executor->browser_io_thread_handle_
-      ->PostFeatureListInitializationSetup();
+  DCHECK(Get()->browser_ui_thread_handle_);
+  DCHECK(Get()->browser_io_thread_handle_);
+  DCHECK(Get()->ui_thread_executor_);
+  Get()->browser_ui_thread_handle_->PostFeatureListInitializationSetup();
+  Get()->browser_io_thread_handle_->PostFeatureListInitializationSetup();
+  Get()->ui_thread_executor_->PostFeatureListSetup();
+}
+
+// static
+absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+BrowserTaskExecutor::OnUserInputStart() {
+  DCHECK(Get()->ui_thread_executor_);
+  return absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>(
+      Get()->ui_thread_executor_->OnUserInputStart());
 }
 
 // static
@@ -259,8 +318,8 @@ void BrowserTaskExecutor::Shutdown() {
   if (!g_browser_task_executor)
     return;
 
-  DCHECK(g_browser_task_executor->ui_thread_executor_);
-  DCHECK(g_browser_task_executor->io_thread_executor_);
+  DCHECK(Get()->ui_thread_executor_);
+  DCHECK(Get()->io_thread_executor_);
   // We don't delete |g_browser_task_executor| because other threads may
   // PostTask or call BrowserTaskExecutor::GetTaskRunner while we're tearing
   // things down. We don't want to add locks so we just leak instead of dealing
@@ -268,31 +327,25 @@ void BrowserTaskExecutor::Shutdown() {
   // PostTaskAndroid::SignalNativeSchedulerShutdown on Android. In tests however
   // we need to clean up, so BrowserTaskExecutor::ResetForTesting should be
   // called.
-  g_browser_task_executor->ui_thread_executor_.reset();
-  g_browser_task_executor->io_thread_executor_.reset();
+  Get()->ui_thread_executor_.reset();
+  Get()->io_thread_executor_.reset();
 }
 
 // static
 void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
     BrowserThread::ID identifier) {
-  DCHECK(g_browser_task_executor);
+  DCHECK(Get());
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
   switch (identifier) {
     case BrowserThread::UI:
-      g_browser_task_executor->browser_ui_thread_handle_
-          ->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+      Get()->browser_ui_thread_handle_->ScheduleRunAllPendingTasksForTesting(
+          run_loop.QuitClosure());
       break;
     case BrowserThread::IO: {
-      // In tests there may not be a functional IO thread.
-      if (!g_browser_task_executor->io_thread_executor_ ||
-          !g_browser_task_executor->io_thread_executor_
-               ->HasDelegateForTesting()) {
-        return;
-      }
-      g_browser_task_executor->browser_io_thread_handle_
-          ->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+      Get()->browser_io_thread_handle_->ScheduleRunAllPendingTasksForTesting(
+          run_loop.QuitClosure());
       break;
     }
     case BrowserThread::ID_COUNT:
@@ -304,29 +357,37 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
 
 // static
 void BrowserTaskExecutor::EnableAllQueues() {
-  DCHECK(g_browser_task_executor);
-  g_browser_task_executor->browser_ui_thread_handle_->EnableAllQueues();
-  g_browser_task_executor->browser_io_thread_handle_->EnableAllQueues();
+  Get()->browser_ui_thread_handle_->EnableAllQueues();
+  Get()->browser_io_thread_handle_->EnableAllQueues();
+}
+
+// static
+scoped_refptr<base::SingleThreadTaskRunner>
+BrowserTaskExecutor::GetUIThreadTaskRunner(const BrowserTaskTraits& traits) {
+  return Get()->GetTaskRunner(BrowserThread::UI, traits);
+}
+
+// static
+scoped_refptr<base::SingleThreadTaskRunner>
+BrowserTaskExecutor::GetIOThreadTaskRunner(const BrowserTaskTraits& traits) {
+  return Get()->GetTaskRunner(BrowserThread::IO, traits);
 }
 
 // static
 void BrowserTaskExecutor::InitializeIOThread() {
-  DCHECK(g_browser_task_executor);
-  g_browser_task_executor->browser_io_thread_handle_
-      ->EnableAllExceptBestEffortQueues();
+  Get()->browser_io_thread_handle_->EnableAllExceptBestEffortQueues();
 }
 
-std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
-  DCHECK(g_browser_task_executor);
-  DCHECK(g_browser_task_executor->io_thread_executor_);
+std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
+  DCHECK(Get()->io_thread_executor_);
 
   std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate =
-      g_browser_task_executor->io_thread_executor_->TakeDelegate();
+      Get()->io_thread_executor_->TakeDelegate();
 
   DCHECK(browser_io_thread_delegate);
   TRACE_EVENT0("startup", "BrowserTaskExecutor::CreateIOThread");
 
-  auto io_thread = std::make_unique<BrowserProcessSubThread>(BrowserThread::IO);
+  auto io_thread = std::make_unique<BrowserProcessIOThread>();
 
   if (browser_io_thread_delegate->allow_blocking_for_testing()) {
     io_thread->AllowBlockingForTesting();
@@ -334,81 +395,15 @@ std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.delegate = browser_io_thread_delegate.release();
+  options.delegate = std::move(browser_io_thread_delegate);
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
-  if (base::FeatureList::IsEnabled(features::kBrowserUseDisplayThreadPriority))
+  if (base::FeatureList::IsEnabled(
+          ::features::kBrowserUseDisplayThreadPriority))
     options.priority = base::ThreadPriority::DISPLAY;
-  if (!io_thread->StartWithOptions(options))
+  if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;
-}
-
-#if DCHECK_IS_ON()
-
-// static
-void BrowserTaskExecutor::AddValidator(
-    const base::TaskTraits& traits,
-    BrowserTaskQueues::Validator* validator) {
-  if (!g_browser_task_executor)
-    return;
-
-  auto id_and_queue = g_browser_task_executor->GetThreadIdAndQueueType(traits);
-  switch (id_and_queue.thread_id) {
-    case BrowserThread::ID::IO:
-      g_browser_task_executor->browser_io_thread_handle_->AddValidator(
-          id_and_queue.queue_type, validator);
-      break;
-
-    case BrowserThread::ID::UI:
-      g_browser_task_executor->browser_ui_thread_handle_->AddValidator(
-          id_and_queue.queue_type, validator);
-      break;
-
-    case BrowserThread::ID::ID_COUNT:
-      NOTREACHED();
-      break;
-  }
-}
-
-// static
-void BrowserTaskExecutor::RemoveValidator(
-    const base::TaskTraits& traits,
-    BrowserTaskQueues::Validator* validator) {
-  if (!g_browser_task_executor)
-    return;
-
-  auto id_and_queue = g_browser_task_executor->GetThreadIdAndQueueType(traits);
-  switch (id_and_queue.thread_id) {
-    case BrowserThread::ID::IO:
-      g_browser_task_executor->browser_io_thread_handle_->RemoveValidator(
-          id_and_queue.queue_type, validator);
-      break;
-
-    case BrowserThread::ID::UI:
-      g_browser_task_executor->browser_ui_thread_handle_->RemoveValidator(
-          id_and_queue.queue_type, validator);
-      break;
-
-    case BrowserThread::ID::ID_COUNT:
-      NOTREACHED();
-      break;
-  }
-}
-
-#endif
-
-BrowserThread::ID BrowserTaskExecutor::GetCurrentThreadID() const {
-  NOTREACHED()
-      << "Should have been routed to UIThreadExecutor or IOThreadExecutor";
-  return BrowserThread::UI;
-}
-
-const scoped_refptr<base::SequencedTaskRunner>&
-BrowserTaskExecutor::GetContinuationTaskRunner() {
-  NOTREACHED()
-      << "Should have been routed to UIThreadExecutor or IOThreadExecutor";
-  return GetNullTaskRunner();
 }
 
 BrowserTaskExecutor::UIThreadExecutor::UIThreadExecutor(
@@ -427,6 +422,17 @@ void BrowserTaskExecutor::UIThreadExecutor::BindToCurrentThread() {
   base::SetTaskExecutorForCurrentThread(this);
 }
 
+absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+BrowserTaskExecutor::UIThreadExecutor::OnUserInputStart() {
+  DCHECK(browser_ui_thread_scheduler_);
+  return browser_ui_thread_scheduler_->OnUserInputStart();
+}
+
+void BrowserTaskExecutor::UIThreadExecutor::PostFeatureListSetup() {
+  DCHECK(browser_ui_thread_scheduler_);
+  browser_ui_thread_scheduler_->PostFeatureListSetup();
+}
+
 scoped_refptr<BrowserUIThreadScheduler::Handle>
 BrowserTaskExecutor::UIThreadExecutor::GetUIThreadHandle() {
   return browser_ui_thread_handle_;
@@ -435,16 +441,6 @@ BrowserTaskExecutor::UIThreadExecutor::GetUIThreadHandle() {
 void BrowserTaskExecutor::UIThreadExecutor::SetIOThreadHandle(
     scoped_refptr<BrowserUIThreadScheduler::Handle> io_thread_handle) {
   browser_io_thread_handle_ = std::move(io_thread_handle);
-}
-
-BrowserThread::ID BrowserTaskExecutor::UIThreadExecutor::GetCurrentThreadID()
-    const {
-  return BrowserThread::UI;
-}
-
-const scoped_refptr<base::SequencedTaskRunner>&
-BrowserTaskExecutor::UIThreadExecutor::GetContinuationTaskRunner() {
-  return browser_ui_thread_scheduler_->GetTaskRunnerForCurrentTask();
 }
 
 BrowserTaskExecutor::IOThreadExecutor::IOThreadExecutor(
@@ -467,17 +463,6 @@ BrowserTaskExecutor::IOThreadExecutor::GetIOThreadHandle() {
 void BrowserTaskExecutor::IOThreadExecutor::SetUIThreadHandle(
     scoped_refptr<BrowserUIThreadScheduler::Handle> ui_thread_handle) {
   browser_ui_thread_handle_ = std::move(ui_thread_handle);
-}
-
-BrowserThread::ID BrowserTaskExecutor::IOThreadExecutor::GetCurrentThreadID()
-    const {
-  return BrowserThread::IO;
-}
-
-const scoped_refptr<base::SequencedTaskRunner>&
-BrowserTaskExecutor::IOThreadExecutor::GetContinuationTaskRunner() {
-  DCHECK(browser_io_thread_delegate_);
-  return browser_io_thread_delegate_->GetTaskRunnerForCurrentTask();
 }
 
 }  // namespace content

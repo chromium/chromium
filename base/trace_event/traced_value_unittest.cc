@@ -8,11 +8,144 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace trace_event {
+
+TEST(TraceEventArgumentTest, InitializerListCreatedContainers) {
+  std::string json;
+  TracedValue::Build(
+      {
+          {"empty_array", TracedValue::Array({})},
+          {"empty_dictionary", TracedValue::Dictionary({})},
+          {"nested_array", TracedValue::Array({
+                               TracedValue::Array({}),
+                               TracedValue::Dictionary({}),
+                               true,
+                           })},
+          {"nested_dictionary", TracedValue::Dictionary({
+                                    {"d", TracedValue::Dictionary({})},
+                                    {"a", TracedValue::Array({})},
+                                    {"b", true},
+                                })},
+      })
+      ->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{\"empty_array\":[],\"empty_dictionary\":{},"
+      "\"nested_array\":[[],{},true],"
+      "\"nested_dictionary\":{\"d\":{},\"a\":[],\"b\":true}}",
+      json);
+}
+
+TEST(TraceEventArgumentTest, InitializerListCreatedFlatDictionary) {
+  std::string json;
+  TracedValue::Build({{"bool_var", true},
+                      {"double_var", 3.14},
+                      {"int_var", 2020},
+                      {"literal_var", "literal"}})
+      ->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{\"bool_var\":true,\"double_var\":3.14,\"int_var\":2020,\""
+      "literal_var\":\"literal\"}",
+      json);
+}
+
+TEST(TraceEventArgumentTest, ArrayAndDictionaryScope) {
+  std::unique_ptr<TracedValue> value(new TracedValue());
+  {
+    auto dictionary = value->BeginDictionaryScoped("dictionary_name");
+    value->SetInteger("my_int", 1);
+  }
+  {
+    auto array = value->BeginArrayScoped("array_name");
+    value->AppendInteger(2);
+  }
+  {
+    auto surround_dictionary =
+        value->BeginDictionaryScoped("outside_dictionary");
+    value->SetBoolean("my_bool", true);
+    {
+      auto inside_array = value->BeginArrayScoped("inside_array");
+      value->AppendBoolean(false);
+    }
+    {
+      auto inside_array = value->BeginDictionaryScoped("inside_dictionary");
+      value->SetBoolean("inner_bool", false);
+    }
+  }
+  {
+    auto surround_array = value->BeginArrayScoped("outside_array");
+    value->AppendBoolean(false);
+    {
+      auto inside_dictionary = value->AppendDictionaryScoped();
+      value->SetBoolean("my_bool", true);
+    }
+    {
+      auto inside_array = value->AppendArrayScoped();
+      value->AppendBoolean(false);
+    }
+  }
+  {
+    auto dictionary = value->BeginDictionaryScopedWithCopiedName(
+        std::string("wonderful_") + std::string("world"));
+  }
+  {
+    auto array = value->BeginArrayScopedWithCopiedName(
+        std::string("wonderful_") + std::string("array"));
+  }
+  std::string json;
+  value->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{"
+      "\"dictionary_name\":{\"my_int\":1},"
+      "\"array_name\":[2],"
+      "\"outside_dictionary\":{\"my_bool\":true,\"inside_array\":[false],"
+      "\"inside_dictionary\":{\"inner_bool\":false}},"
+      "\"outside_array\":[false,{\"my_bool\":true},[false]],"
+      "\"wonderful_world\":{},"
+      "\"wonderful_array\":[]"
+      "}",
+      json);
+}
+
+std::string SayHello() {
+  // Create a string by concatenating two strings, so that there is no literal
+  // corresponding to the result.
+  return std::string("hello ") + std::string("world");
+}
+
+TEST(TraceEventArgumentTest, StringAndPointerConstructors) {
+  std::string json;
+  const char* const_char_ptr_var = "const char* value";
+  TracedValue::Build(
+      {
+          {"literal_var", "literal"},
+          {"std_string_var", std::string("std::string value")},
+          {"string_from_function", SayHello()},
+          {"string_from_lambda", []() { return std::string("hello"); }()},
+          {"base_string_piece_var",
+           base::StringPiece("base::StringPiece value")},
+          {"const_char_ptr_var", const_char_ptr_var},
+          {"void_nullptr", static_cast<void*>(nullptr)},
+          {"int_nullptr", static_cast<int*>(nullptr)},
+          {"void_1234ptr", reinterpret_cast<void*>(0x1234)},
+      })
+      ->AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{\"literal_var\":\"literal\","
+      "\"std_string_var\":\"std::string value\","
+      "\"string_from_function\":\"hello world\","
+      "\"string_from_lambda\":\"hello\","
+      "\"base_string_piece_var\":\"base::StringPiece value\","
+      "\"const_char_ptr_var\":\"const char* value\","
+      "\"void_nullptr\":\"0x0\","
+      "\"int_nullptr\":\"0x0\","
+      "\"void_1234ptr\":\"0x1234\"}",
+      json);
+}
 
 TEST(TraceEventArgumentTest, FlatDictionary) {
   std::unique_ptr<TracedValue> value(new TracedValue());
@@ -20,10 +153,12 @@ TEST(TraceEventArgumentTest, FlatDictionary) {
   value->SetDouble("double", 0.0);
   value->SetInteger("int", 2014);
   value->SetString("string", "string");
+  value->SetPointer("ptr", reinterpret_cast<void*>(0x1234));
   std::string json = "PREFIX";
   value->AppendAsTraceFormat(&json);
   EXPECT_EQ(
-      "PREFIX{\"bool\":true,\"double\":0.0,\"int\":2014,\"string\":\"string\"}",
+      "PREFIX{\"bool\":true,\"double\":0.0,\"int\":2014,\"string\":\"string\","
+      "\"ptr\":\"0x1234\"}",
       json);
 }
 
@@ -124,6 +259,30 @@ TEST(TraceEventArgumentTest, PassTracedValue) {
   json = "";
   nested_dict_value->AppendAsTraceFormat(&json);
   EXPECT_EQ("{\"b\":2,\"c\":[\"foo\"],\"f\":3,\"g\":{}}", json);
+}
+
+TEST(TraceEventArgumentTest, NanAndInfinityJSON) {
+  TracedValueJSON value;
+  value.SetDouble("nan", std::nan(""));
+  value.SetDouble("infinity", INFINITY);
+  value.SetDouble("negInfinity", -INFINITY);
+  std::string json;
+  value.AppendAsTraceFormat(&json);
+  EXPECT_EQ(
+      "{\"nan\":\"NaN\",\"infinity\":\"Infinity\","
+      "\"negInfinity\":\"-Infinity\"}",
+      json);
+
+  std::string formatted_json = value.ToFormattedJSON();
+  // Remove CR and LF to make the result platform-independent.
+  ReplaceChars(formatted_json, "\n\r", "", &formatted_json);
+  EXPECT_EQ(
+      "{"
+      "   \"infinity\": \"Infinity\","
+      "   \"nan\": \"NaN\","
+      "   \"negInfinity\": \"-Infinity\""
+      "}",
+      formatted_json);
 }
 
 }  // namespace trace_event

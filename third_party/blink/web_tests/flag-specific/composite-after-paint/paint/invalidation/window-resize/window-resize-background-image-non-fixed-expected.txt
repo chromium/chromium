@@ -25,12 +25,8 @@
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 250, 400, 350],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [0, 250, 400, 350]
       ]
     }
   ]
@@ -42,12 +38,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [400, 0, 400, 600]
       ]
     }
   ]

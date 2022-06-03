@@ -7,13 +7,14 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
 #include "content/common/content_export.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -33,7 +34,7 @@ struct URLWithRawString {
   std::string raw_string;
   URLWithRawString() = default;
   URLWithRawString(base::StringPiece url_string)
-      : url(url_string), raw_string(url_string.as_string()) {}
+      : url(url_string), raw_string(url_string) {}
 };
 
 // Utility method to call SignedExchangeDevToolsProxy::ReportError() and
@@ -42,8 +43,8 @@ struct URLWithRawString {
 void ReportErrorAndTraceEvent(
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::string& error_message,
-    base::Optional<SignedExchangeError::FieldIndexPair> error_field =
-        base::nullopt);
+    absl::optional<SignedExchangeError::FieldIndexPair> error_field =
+        absl::nullopt);
 
 // Returns true when SignedHTTPExchange feature is enabled. This must be called
 // on the UI thread.
@@ -64,7 +65,7 @@ bool ShouldHandleAsSignedHTTPExchange(
 // of application/signed-exchange. Returns SignedExchangeVersion::kUnknown if an
 // unsupported signed exchange version is found.
 // [1] https://wicg.github.io/webpackage/loading.html#signed-exchange-version
-CONTENT_EXPORT base::Optional<SignedExchangeVersion> GetSignedExchangeVersion(
+CONTENT_EXPORT absl::optional<SignedExchangeVersion> GetSignedExchangeVersion(
     const std::string& content_type);
 
 // Returns the matching SignedExchangeLoadResult for the verifier's result.
@@ -98,7 +99,7 @@ base::Time GetVerificationTime();
 
 // Override the time which is used for verifying signed exchange.
 CONTENT_EXPORT void SetVerificationTimeForTesting(
-    base::Optional<base::Time> verification_time_for_testing);
+    absl::optional<base::Time> verification_time_for_testing);
 
 }  // namespace signed_exchange_utils
 }  // namespace content

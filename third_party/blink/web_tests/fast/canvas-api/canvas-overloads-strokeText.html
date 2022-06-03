@@ -5,13 +5,13 @@
 var ctx = document.createElement('canvas').getContext('2d');
 
 test(function(t) {
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.strokeText();
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.strokeText('moo');
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.strokeText('moo', 0);
     });
     assert_equals(ctx.strokeText('moo',0,0), undefined);

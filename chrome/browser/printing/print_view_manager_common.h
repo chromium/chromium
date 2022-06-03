@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 
-#include "components/printing/common/print.mojom.h"
+#include "components/printing/common/print.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 

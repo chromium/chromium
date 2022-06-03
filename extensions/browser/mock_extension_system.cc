@@ -4,7 +4,7 @@
 
 #include "extensions/browser/mock_extension_system.h"
 
-#include "extensions/browser/value_store/value_store_factory.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
@@ -25,10 +25,6 @@ ExtensionService* MockExtensionSystem::extension_service() {
   return nullptr;
 }
 
-RuntimeData* MockExtensionSystem::runtime_data() {
-  return nullptr;
-}
-
 ManagementPolicy* MockExtensionSystem::management_policy() {
   return nullptr;
 }
@@ -37,7 +33,7 @@ ServiceWorkerManager* MockExtensionSystem::service_worker_manager() {
   return nullptr;
 }
 
-SharedUserScriptMaster* MockExtensionSystem::shared_user_script_master() {
+UserScriptManager* MockExtensionSystem::user_script_manager() {
   return nullptr;
 }
 
@@ -49,7 +45,12 @@ StateStore* MockExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> MockExtensionSystem::store_factory() {
+StateStore* MockExtensionSystem::dynamic_user_scripts_store() {
+  return nullptr;
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+MockExtensionSystem::store_factory() {
   return nullptr;
 }
 
@@ -69,13 +70,17 @@ const base::OneShotEvent& MockExtensionSystem::ready() const {
   return ready_;
 }
 
+bool MockExtensionSystem::is_ready() const {
+  return ready_.is_signaled();
+}
+
 ContentVerifier* MockExtensionSystem::content_verifier() {
   return nullptr;
 }
 
 std::unique_ptr<ExtensionSet> MockExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return std::unique_ptr<ExtensionSet>();
+  return nullptr;
 }
 
 void MockExtensionSystem::InstallUpdate(
@@ -86,6 +91,10 @@ void MockExtensionSystem::InstallUpdate(
     InstallUpdateCallback install_update_callback) {
   NOTREACHED();
 }
+
+void MockExtensionSystem::PerformActionBasedOnOmahaAttributes(
+    const std::string& extension_id,
+    const base::Value& attributes) {}
 
 bool MockExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,

@@ -7,9 +7,11 @@
 
 #include <vector>
 
-#include "ui/views/view.h"
+#include "base/gtest_prod_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
+#include "ui/views/view.h"
 
 namespace payments {
 class PaymentRequestBrowserTestBase;
@@ -22,11 +24,13 @@ class PaymentRequestBrowserTestBase;
 class ViewStack : public views::BoundsAnimatorObserver,
                   public views::View {
  public:
+  METADATA_HEADER(ViewStack);
   ViewStack();
+  ViewStack(const ViewStack&) = delete;
+  ViewStack& operator=(const ViewStack&) = delete;
   ~ViewStack() override;
 
-  // Adds a view to the stack and starts animating it in from the right. This
-  // takes ownership of the view and calls set_owned_by_client() on it.
+  // Adds a view to the stack and starts animating it in from the right.
   // If |animate| is false, the view will simply be added to the hierarchy
   // without the sliding animation.
   void Push(std::unique_ptr<views::View> state, bool animate);
@@ -43,17 +47,17 @@ class ViewStack : public views::BoundsAnimatorObserver,
   // without the sliding animation.
   void PopMany(int n, bool animate = true);
 
-  size_t size() const;
+  size_t GetSize() const;
 
   // views::View:
   // The children of this view must not be able to process events when the views
   // are being animated so this returns false when an animation is in progress.
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
   void RequestFocus() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Returns the top state of the stack.
-  views::View* top() { return stack_.back().get(); }
+  views::View* top() { return stack_.back(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -80,9 +84,7 @@ class ViewStack : public views::BoundsAnimatorObserver,
 
   // Should be the last member, because views need to be destroyed before other
   // members, and members are destroyed in reverse order of their creation.
-  std::vector<std::unique_ptr<views::View>> stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewStack);
+  std::vector<views::View*> stack_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAYMENTS_VIEW_STACK_H_

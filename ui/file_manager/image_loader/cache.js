@@ -6,7 +6,7 @@
  * Persistent cache storing images in an indexed database on the hard disk.
  * @constructor
  */
-function ImageCache() {
+export function ImageCache() {
   /**
    * IndexedDB database handle.
    * @type {IDBDatabase}
@@ -27,7 +27,7 @@ ImageCache.DB_NAME = 'image-loader';
  * @type {number}
  * @const
  */
-ImageCache.DB_VERSION = 14;
+ImageCache.DB_VERSION = 15;
 
 /**
  * Memory limit for images data in bytes.
@@ -54,8 +54,8 @@ ImageCache.prototype.initialize = function(callback) {
   // Establish a connection to the database or (re)create it if not available
   // or not up to date. After changing the database's schema, increment
   // ImageCache.DB_VERSION to force database recreating.
-  var openRequest = window.indexedDB.open(
-      ImageCache.DB_NAME, ImageCache.DB_VERSION);
+  const openRequest =
+      window.indexedDB.open(ImageCache.DB_NAME, ImageCache.DB_VERSION);
 
   openRequest.onsuccess = function(e) {
     this.db_ = e.target.result;
@@ -66,7 +66,7 @@ ImageCache.prototype.initialize = function(callback) {
 
   openRequest.onupgradeneeded = function(e) {
     console.info('Cache database creating or upgrading.');
-    var db = e.target.result;
+    const db = e.target.result;
     if (db.objectStoreNames.contains('metadata')) {
       db.deleteObjectStore('metadata');
     }
@@ -91,9 +91,9 @@ ImageCache.prototype.initialize = function(callback) {
  * @private
  */
 ImageCache.prototype.setCacheSize_ = function(size, opt_transaction) {
-  var transaction = opt_transaction ||
-      this.db_.transaction(['settings'], 'readwrite');
-  var settingsStore = transaction.objectStore('settings');
+  const transaction =
+      opt_transaction || this.db_.transaction(['settings'], 'readwrite');
+  const settingsStore = transaction.objectStore('settings');
 
   settingsStore.put({key: 'size', value: size});  // Update asynchronously.
 };
@@ -109,10 +109,10 @@ ImageCache.prototype.setCacheSize_ = function(size, opt_transaction) {
  */
 ImageCache.prototype.fetchCacheSize_ = function(
     onSuccess, onFailure, opt_transaction) {
-  var transaction = opt_transaction ||
+  const transaction = opt_transaction ||
       this.db_.transaction(['settings', 'metadata', 'data'], 'readwrite');
-  var settingsStore = transaction.objectStore('settings');
-  var sizeRequest = settingsStore.get('size');
+  const settingsStore = transaction.objectStore('settings');
+  const sizeRequest = settingsStore.get('size');
 
   sizeRequest.onsuccess = function(e) {
     if (e.target.result) {
@@ -141,7 +141,7 @@ ImageCache.prototype.fetchCacheSize_ = function(
  */
 ImageCache.prototype.evictCache_ = function(
     size, onSuccess, onFailure, opt_transaction) {
-  var transaction = opt_transaction ||
+  const transaction = opt_transaction ||
       this.db_.transaction(['settings', 'metadata', 'data'], 'readwrite');
 
   // Check if the requested size is smaller than the cache size.
@@ -150,7 +150,7 @@ ImageCache.prototype.evictCache_ = function(
     return;
   }
 
-  var onCacheSize = function(cacheSize) {
+  const onCacheSize = function(cacheSize) {
     if (size < ImageCache.MEMORY_LIMIT - cacheSize) {
       // Enough space, no need to evict.
       this.setCacheSize_(cacheSize + size, transaction);
@@ -158,21 +158,21 @@ ImageCache.prototype.evictCache_ = function(
       return;
     }
 
-    var bytesToEvict = Math.max(size, ImageCache.EVICTION_CHUNK_SIZE);
+    let bytesToEvict = Math.max(size, ImageCache.EVICTION_CHUNK_SIZE);
 
     // Fetch all metadata.
-    var metadataEntries = [];
-    var metadataStore = transaction.objectStore('metadata');
-    var dataStore = transaction.objectStore('data');
+    const metadataEntries = [];
+    const metadataStore = transaction.objectStore('metadata');
+    const dataStore = transaction.objectStore('data');
 
-    var onEntriesFetched = function() {
+    const onEntriesFetched = function() {
       metadataEntries.sort(function(a, b) {
         return b.lastLoadTimestamp - a.lastLoadTimestamp;
       });
 
-      var totalEvicted = 0;
+      let totalEvicted = 0;
       while (bytesToEvict > 0) {
-        var entry = metadataEntries.pop();
+        const entry = metadataEntries.pop();
         totalEvicted += entry.size;
         bytesToEvict -= entry.size;
         metadataStore.delete(entry.key);  // Remove asynchronously.
@@ -183,7 +183,7 @@ ImageCache.prototype.evictCache_ = function(
     }.bind(this);
 
     metadataStore.openCursor().onsuccess = function(e) {
-      var cursor = e.target.result;
+      const cursor = e.target.result;
       if (cursor) {
         metadataEntries.push(cursor.value);
         cursor.continue();
@@ -214,8 +214,8 @@ ImageCache.prototype.saveImage = function(
     return;
   }
 
-  var onNotFoundInCache = function() {
-    var metadataEntry = {
+  const onNotFoundInCache = function() {
+    const metadataEntry = {
       key: key,
       timestamp: timestamp,
       width: width,
@@ -225,14 +225,14 @@ ImageCache.prototype.saveImage = function(
       lastLoadTimestamp: Date.now(),
     };
 
-    var dataEntry = {key: key, data: data};
+    const dataEntry = {key: key, data: data};
 
-    var transaction = this.db_.transaction(['settings', 'metadata', 'data'],
-                                           'readwrite');
-    var metadataStore = transaction.objectStore('metadata');
-    var dataStore = transaction.objectStore('data');
+    const transaction =
+        this.db_.transaction(['settings', 'metadata', 'data'], 'readwrite');
+    const metadataStore = transaction.objectStore('metadata');
+    const dataStore = transaction.objectStore('data');
 
-    var onCacheEvicted = function() {
+    const onCacheEvicted = function() {
       metadataStore.put(metadataEntry);  // Add asynchronously.
       dataStore.put(dataEntry);  // Add asynchronously.
     };
@@ -263,19 +263,19 @@ ImageCache.prototype.loadImage = function(
     return;
   }
 
-  var transaction = this.db_.transaction(['settings', 'metadata', 'data'],
-                                         'readwrite');
-  var metadataStore = transaction.objectStore('metadata');
-  var dataStore = transaction.objectStore('data');
-  var metadataRequest = metadataStore.get(key);
-  var dataRequest = dataStore.get(key);
+  const transaction =
+      this.db_.transaction(['settings', 'metadata', 'data'], 'readwrite');
+  const metadataStore = transaction.objectStore('metadata');
+  const dataStore = transaction.objectStore('data');
+  const metadataRequest = metadataStore.get(key);
+  const dataRequest = dataStore.get(key);
 
-  var metadataEntry = null;
-  var metadataReceived = false;
-  var dataEntry = null;
-  var dataReceived = false;
+  let metadataEntry = null;
+  let metadataReceived = false;
+  let dataEntry = null;
+  let dataReceived = false;
 
-  var onPartialSuccess = function() {
+  const onPartialSuccess = function() {
     // Check if all sub-requests have finished.
     if (!metadataReceived || !dataReceived) {
       return;
@@ -352,17 +352,17 @@ ImageCache.prototype.removeImage = function(
     return;
   }
 
-  var transaction = opt_transaction ||
+  const transaction = opt_transaction ||
       this.db_.transaction(['settings', 'metadata', 'data'], 'readwrite');
-  var metadataStore = transaction.objectStore('metadata');
-  var dataStore = transaction.objectStore('data');
+  const metadataStore = transaction.objectStore('metadata');
+  const dataStore = transaction.objectStore('data');
 
-  var cacheSize = null;
-  var cacheSizeReceived = false;
-  var metadataEntry = null;
-  var metadataReceived = false;
+  let cacheSize = null;
+  let cacheSizeReceived = false;
+  let metadataEntry = null;
+  let metadataReceived = false;
 
-  var onPartialSuccess = function() {
+  const onPartialSuccess = function() {
     if (!cacheSizeReceived || !metadataReceived) {
       return;
     }
@@ -385,11 +385,11 @@ ImageCache.prototype.removeImage = function(
     dataStore.delete(key);  // Delete asynchronously.
   }.bind(this);
 
-  var onCacheSizeFailure = function() {
+  const onCacheSizeFailure = function() {
     cacheSizeReceived = true;
   };
 
-  var onCacheSizeSuccess = function(result) {
+  const onCacheSizeSuccess = function(result) {
     cacheSize = result;
     cacheSizeReceived = true;
     onPartialSuccess();
@@ -399,7 +399,7 @@ ImageCache.prototype.removeImage = function(
   this.fetchCacheSize_(onCacheSizeSuccess, onCacheSizeFailure, transaction);
 
   // Receive image's metadata.
-  var metadataRequest = metadataStore.get(key);
+  const metadataRequest = metadataStore.get(key);
 
   metadataRequest.onsuccess = function(e) {
     if (e.target.result) {

@@ -8,16 +8,20 @@
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 namespace base {
-
-class PowerMonitor;
 
 // Communicates power state changes to the power monitor.
 class BASE_EXPORT PowerMonitorSource {
  public:
   PowerMonitorSource();
+
+  PowerMonitorSource(const PowerMonitorSource&) = delete;
+  PowerMonitorSource& operator=(const PowerMonitorSource&) = delete;
+
   virtual ~PowerMonitorSource();
 
   // Normalized list of power events.
@@ -27,8 +31,29 @@ class BASE_EXPORT PowerMonitorSource {
     RESUME_EVENT        // The system is being resumed.
   };
 
-  // Is the computer currently on battery power. Can be called on any thread.
-  bool IsOnBatteryPower();
+  // Reads the current DeviceThermalState, if available on the platform.
+  // Otherwise, returns kUnknown.
+  virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
+
+  // Reads the current operating system CPU speed limit, if available on the
+  // platform. Otherwise returns PowerThermalObserver::kSpeedLimitMax.
+  virtual int GetCurrentSpeedLimit();
+
+  // Update the result of thermal state.
+  virtual void SetCurrentThermalState(
+      PowerThermalObserver::DeviceThermalState state);
+
+  // Platform-specific method to check whether the system is currently
+  // running on battery power.
+  virtual bool IsOnBatteryPower() = 0;
+
+#if defined(OS_ANDROID)
+  // Read and return the current remaining battery capacity (microampere-hours).
+  virtual int GetRemainingBatteryCapacity();
+#endif  // defined(OS_ANDROID)
+
+  static const char* DeviceThermalStateToString(
+      PowerThermalObserver::DeviceThermalState state);
 
  protected:
   friend class PowerMonitorTest;
@@ -36,29 +61,12 @@ class BASE_EXPORT PowerMonitorSource {
   // Friend function that is allowed to access the protected ProcessPowerEvent.
   friend void ProcessPowerEventHelper(PowerEvent);
 
-  // ProcessPowerEvent should only be called from a single thread, most likely
+  // Process*Event should only be called from a single thread, most likely
   // the UI thread or, in child processes, the IO thread.
   static void ProcessPowerEvent(PowerEvent event_id);
-
-  // Platform-specific method to check whether the system is currently
-  // running on battery power.  Returns true if running on batteries,
-  // false otherwise.
-  virtual bool IsOnBatteryPowerImpl() = 0;
-
-  // Sets the initial state for |on_battery_power_|, which defaults to false
-  // since not all implementations can provide the value at construction. May
-  // only be called before a base::PowerMonitor has been created.
-  void SetInitialOnBatteryPowerState(bool on_battery_power);
-
- private:
-  bool on_battery_power_ = false;
-  bool suspended_ = false;
-
-  // This lock guards access to on_battery_power_, to ensure that
-  // IsOnBatteryPower can be called from any thread.
-  Lock battery_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorSource);
+  static void ProcessThermalEvent(
+      PowerThermalObserver::DeviceThermalState new_thermal_state);
+  static void ProcessSpeedLimitEvent(int speed_limit);
 };
 
 }  // namespace base

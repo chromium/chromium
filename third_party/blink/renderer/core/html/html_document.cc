@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  *
  * Portions are Copyright (C) 2002 Netscape Communications Corporation.
- * Other contributors: David Baron <dbaron@fas.harvard.edu>
+ * Other contributors: David Baron <dbaron@dbaron.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,11 +53,11 @@
 
 #include "third_party/blink/renderer/core/html/html_document.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
@@ -66,7 +66,7 @@ HTMLDocument::HTMLDocument(const DocumentInit& initializer,
                            DocumentClassFlags extended_document_classes)
     : Document(initializer, kHTMLDocumentClass | extended_document_classes) {
   ClearXMLVersion();
-  if (IsSrcdocDocument() || initializer.ImportsController()) {
+  if (IsSrcdocDocument()) {
     DCHECK(InNoQuirksMode());
     LockCompatibilityMode();
   }
@@ -74,13 +74,15 @@ HTMLDocument::HTMLDocument(const DocumentInit& initializer,
 
 HTMLDocument::~HTMLDocument() = default;
 
+HTMLDocument* HTMLDocument::CreateForTest() {
+  return MakeGarbageCollected<HTMLDocument>(DocumentInit::Create().ForTest());
+}
+
 Document* HTMLDocument::CloneDocumentWithoutChildren() const {
   return MakeGarbageCollected<HTMLDocument>(
       DocumentInit::Create()
-          .WithContextDocument(ContextDocument())
-          .WithOwnerDocument(const_cast<HTMLDocument*>(this))
-          .WithURL(Url())
-          .WithRegistrationContext(RegistrationContext()));
+          .WithExecutionContext(GetExecutionContext())
+          .WithURL(Url()));
 }
 
 // --------------------------------------------------------------------------
@@ -91,8 +93,8 @@ void HTMLDocument::AddNamedItem(const AtomicString& name) {
   if (name.IsEmpty())
     return;
   named_item_counts_.insert(name);
-  if (LocalFrame* f = GetFrame()) {
-    f->GetScriptController()
+  if (LocalDOMWindow* window = domWindow()) {
+    window->GetScriptController()
         .WindowProxy(DOMWrapperWorld::MainWorld())
         ->NamedItemAdded(this, name);
   }
@@ -102,8 +104,8 @@ void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   if (name.IsEmpty())
     return;
   named_item_counts_.erase(name);
-  if (LocalFrame* f = GetFrame()) {
-    f->GetScriptController()
+  if (LocalDOMWindow* window = domWindow()) {
+    window->GetScriptController()
         .WindowProxy(DOMWrapperWorld::MainWorld())
         ->NamedItemRemoved(this, name);
   }

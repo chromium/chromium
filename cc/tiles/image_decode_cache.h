@@ -77,11 +77,26 @@ class CC_EXPORT ImageDecodeCache {
   ToScopedImageType(ImageType image_type) {
     using ScopedImageType =
         devtools_instrumentation::ScopedImageDecodeTask::ImageType;
-    if (image_type == ImageType::kWEBP)
-      return ScopedImageType::kWebP;
-    if (image_type == ImageType::kJPEG)
-      return ScopedImageType::kJpeg;
-    return ScopedImageType::kOther;
+    switch (image_type) {
+      case ImageType::kJXL:
+        return ScopedImageType::kJxl;
+      case ImageType::kAVIF:
+        return ScopedImageType::kAvif;
+      case ImageType::kBMP:
+        return ScopedImageType::kBmp;
+      case ImageType::kGIF:
+        return ScopedImageType::kGif;
+      case ImageType::kICO:
+        return ScopedImageType::kIco;
+      case ImageType::kJPEG:
+        return ScopedImageType::kJpeg;
+      case ImageType::kPNG:
+        return ScopedImageType::kPng;
+      case ImageType::kWEBP:
+        return ScopedImageType::kWebP;
+      case ImageType::kInvalid:
+        return ScopedImageType::kOther;
+    }
   }
 
   virtual ~ImageDecodeCache() {}

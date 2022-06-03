@@ -6,11 +6,12 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/win/win_util.h"
@@ -26,7 +27,7 @@ namespace {
 
 // Returns the value associated with flag --session-id when it's present or
 // empty string when it's not found.
-base::string16 GetSessionId(const base::CommandLine& command_line) {
+std::wstring GetSessionId(const base::CommandLine& command_line) {
   return command_line.GetSwitchValueNative(kSessionIdSwitch);
 }
 
@@ -204,7 +205,7 @@ bool GetTimeoutOverride(const base::CommandLine& command_line,
     return false;
 
   DCHECK(timeout);
-  *timeout = base::TimeDelta::FromMinutes(timeout_minutes);
+  *timeout = base::Minutes(timeout_minutes);
   return true;
 }
 
@@ -238,7 +239,7 @@ bool Settings::allow_crash_report_upload() const {
   return allow_crash_report_upload_;
 }
 
-base::string16 Settings::session_id() const {
+std::wstring Settings::session_id() const {
   return session_id_;
 }
 

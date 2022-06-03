@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -204,7 +203,7 @@ TEST_F(WebRtcLogUploaderTest, AddLocallyStoredLogInfoToUploadListFile) {
   // Get a temporary filename. We don't want the file to exist to begin with
   // since that's the normal use case, hence the delete.
   ASSERT_TRUE(base::CreateTemporaryFile(&test_list_path_));
-  EXPECT_TRUE(base::DeleteFile(test_list_path_, false));
+  EXPECT_TRUE(base::DeleteFile(test_list_path_));
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader(
       new WebRtcLogUploader());
 
@@ -242,7 +241,7 @@ TEST_F(WebRtcLogUploaderTest, AddUploadedLogInfoToUploadListFile) {
   // Get a temporary filename. We don't want the file to exist to begin with
   // since that's the normal use case, hence the delete.
   ASSERT_TRUE(base::CreateTemporaryFile(&test_list_path_));
-  EXPECT_TRUE(base::DeleteFile(test_list_path_, false));
+  EXPECT_TRUE(base::DeleteFile(test_list_path_));
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader(
       new WebRtcLogUploader());
 
@@ -304,7 +303,7 @@ TEST_F(WebRtcLogUploaderTest, AddRtpDumpsToPostedData) {
       base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoUpload,
                      base::Unretained(webrtc_log_uploader.get()),
                      std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
-                     upload_done_data),
+                     std::move(upload_done_data)),
       run_loop.QuitClosure());
   run_loop.Run();
 

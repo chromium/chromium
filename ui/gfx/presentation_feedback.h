@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_PRESENTAION_FEEDBACK_H_
-#define UI_GFX_PRESENTAION_FEEDBACK_H_
+#ifndef UI_GFX_PRESENTATION_FEEDBACK_H_
+#define UI_GFX_PRESENTATION_FEEDBACK_H_
 
 #include <stdint.h>
 
@@ -48,6 +48,8 @@ struct PresentationFeedback {
     return {base::TimeTicks::Now(), base::TimeDelta(), Flags::kFailure};
   }
 
+  bool failed() const { return !!(flags & Flags::kFailure); }
+
   // The time when a buffer begins scan-out. If a buffer is never presented on
   // a screen, the |timestamp| will be set to the time of the failure.
   base::TimeTicks timestamp;
@@ -57,12 +59,43 @@ struct PresentationFeedback {
 
   // A combination of Flags. It indicates the kind of the |timestamp|.
   uint32_t flags = 0;
+
+  // The following are additional timestamps that are reported if available on
+  // the underlying platform. If not available, the timestamp is set to 0.
+
+  // A buffer sent to the system compositor or display controller for
+  // presentation is returned to chromium's compositor with an out fence for
+  // synchronization. This fence indicates when reads from this buffer for
+  // presentation (on the GPU or display controller) have been finished and it
+  // is safe to write new data to this buffer. Since this fence may not have
+  // been signalled when the swap for a new frame is issued, this timestamp is
+  // meant to track the latency from when a swap is issued on the GPU thread to
+  // when the GPU can start rendering to this buffer.
+  base::TimeTicks available_timestamp;
+
+  // The time when the GPU has finished completing all the drawing commands on
+  // the primary plane. On Android, SurfaceFlinger does not latch to a buffer
+  // until this fence has been signalled.
+  base::TimeTicks ready_timestamp;
+
+  // The time when the primary plane is latched by the system compositor for its
+  // next rendering update. On Android this corresponds to the SurfaceFlinger
+  // latch time.
+  base::TimeTicks latch_timestamp;
+
+  // The time when write operations have completed, corresponding to the time
+  // when rendering on the GPU finished.
+  base::TimeTicks writes_done_timestamp;
 };
 
 inline bool operator==(const PresentationFeedback& lhs,
                        const PresentationFeedback& rhs) {
   return lhs.timestamp == rhs.timestamp && lhs.interval == rhs.interval &&
-         lhs.flags == rhs.flags;
+         lhs.flags == rhs.flags &&
+         lhs.available_timestamp == rhs.available_timestamp &&
+         lhs.ready_timestamp == rhs.ready_timestamp &&
+         lhs.latch_timestamp == rhs.latch_timestamp &&
+         lhs.writes_done_timestamp == rhs.writes_done_timestamp;
 }
 
 inline bool operator!=(const PresentationFeedback& lhs,
@@ -72,4 +105,4 @@ inline bool operator!=(const PresentationFeedback& lhs,
 
 }  // namespace gfx
 
-#endif  // UI_GFX_PRESENTAION_FEEDBACK_H_
+#endif  // UI_GFX_PRESENTATION_FEEDBACK_H_

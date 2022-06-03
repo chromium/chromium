@@ -27,10 +27,22 @@ class CORE_EXPORT PropertyHandle {
     DCHECK_NE(CSSPropertyID::kVariable, property.PropertyID());
   }
 
+  // TODO(crbug.com/980160): Eliminate call to GetCSSPropertyVariable().
   explicit PropertyHandle(const AtomicString& property_name)
       : handle_type_(kHandleCSSCustomProperty),
         css_property_(&GetCSSPropertyVariable()),
         property_name_(property_name) {}
+
+  // TODO(crbug.com/980160): Eliminate call to GetCSSPropertyVariable().
+  explicit PropertyHandle(const CSSPropertyName& property_name)
+      : handle_type_(property_name.IsCustomProperty() ? kHandleCSSCustomProperty
+                                                      : kHandleCSSProperty),
+        css_property_(property_name.IsCustomProperty()
+                          ? &GetCSSPropertyVariable()
+                          : &CSSProperty::Get(property_name.Id())),
+        property_name_(property_name.IsCustomProperty()
+                           ? property_name.ToAtomicString()
+                           : g_null_atom) {}
 
   explicit PropertyHandle(const QualifiedName& attribute_name)
       : handle_type_(kHandleSVGAttribute), svg_attribute_(&attribute_name) {}
@@ -140,7 +152,7 @@ struct HashTraits<blink::PropertyHandle>
     : SimpleClassHashTraits<blink::PropertyHandle> {
   static const bool kNeedsDestruction = true;
   static void ConstructDeletedValue(blink::PropertyHandle& slot, bool) {
-    new (NotNull, &slot) blink::PropertyHandle(
+    new (NotNullTag::kNotNull, &slot) blink::PropertyHandle(
         blink::PropertyHandle::DeletedValueForHashTraits());
   }
   static bool IsDeletedValue(const blink::PropertyHandle& value) {

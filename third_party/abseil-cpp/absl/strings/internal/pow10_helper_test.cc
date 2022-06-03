@@ -20,6 +20,7 @@
 #include "absl/strings/str_format.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
 
 namespace {
@@ -117,4 +118,5 @@ TEST(Pow10HelperTest, Works) {
 
 }  // namespace
 }  // namespace strings_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

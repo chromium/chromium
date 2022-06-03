@@ -20,6 +20,7 @@ class BrowserContext;
 
 namespace extensions {
 
+class ExtensionRegistry;
 class RulesRegistry;
 
 // RulesCacheDelegate implements the part of the RulesRegistry which works on
@@ -142,6 +143,8 @@ class RulesCacheDelegate {
   bool notified_registry_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  const ExtensionRegistry* extension_registry_ = nullptr;
 
   // Use this factory to generate weak pointers bound to the UI thread.
   base::WeakPtrFactory<RulesCacheDelegate> weak_ptr_factory_{this};

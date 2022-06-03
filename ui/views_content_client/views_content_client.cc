@@ -38,7 +38,7 @@ int ViewsContentClient::RunMain() {
   params.argv = argv_;
 #endif
 
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 void ViewsContentClient::OnPreMainMessageLoopRun(
@@ -46,6 +46,11 @@ void ViewsContentClient::OnPreMainMessageLoopRun(
     gfx::NativeWindow window_context) {
   std::move(on_pre_main_message_loop_run_callback_)
       .Run(browser_context, window_context);
+}
+
+void ViewsContentClient::OnResourcesLoaded() {
+  if (on_resources_loaded_callback_)
+    std::move(on_resources_loaded_callback_).Run();
 }
 
 }  // namespace ui

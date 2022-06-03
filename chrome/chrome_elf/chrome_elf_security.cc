@@ -23,21 +23,23 @@ void EarlyBrowserSecurity() {
   NTSTATUS ret_val = STATUS_SUCCESS;
   HANDLE handle = INVALID_HANDLE_VALUE;
 
-  // Check for kRegistrySecurityFinchPath.  If it exists,
-  // we do NOT disable extension points.  (Emergency off flag.)
-  if (nt::OpenRegKey(nt::HKCU,
-                     install_static::GetRegistryPath()
-                         .append(elf_sec::kRegSecurityFinchKeyName)
-                         .c_str(),
-                     KEY_QUERY_VALUE, &handle, &ret_val)) {
-    nt::CloseRegKey(handle);
+  // Check for kRegBrowserExtensionPointKeyName. We only disable extension
+  // points when this exists, for devices that have been vetted by our
+  // heuristic.
+  if (!nt::OpenRegKey(nt::HKCU,
+                      install_static::GetRegistryPath()
+                          .append(elf_sec::kRegBrowserExtensionPointKeyName)
+                          .c_str(),
+                      KEY_QUERY_VALUE, &handle, &ret_val)) {
+#ifdef _DEBUG
+    // The only failure expected is for the path not existing.
+    if (ret_val != STATUS_OBJECT_NAME_NOT_FOUND)
+      assert(false);
+#endif
     return;
   }
-#ifdef _DEBUG
-  // The only failure expected is for the path not existing.
-  if (ret_val != STATUS_OBJECT_NAME_NOT_FOUND)
-    assert(false);
-#endif
+
+  nt::CloseRegKey(handle);
 
   if (::IsWindows8OrGreater()) {
     SetProcessMitigationPolicyFunc set_process_mitigation_policy =

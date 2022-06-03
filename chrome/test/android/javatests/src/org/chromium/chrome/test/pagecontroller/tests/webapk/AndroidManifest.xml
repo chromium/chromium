@@ -1,0 +1,24 @@
+<!--
+ * Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+-->
+
+<manifest
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      package="org.chromium.chrome.test.pagecontroller.tests.webapk">
+
+    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- We add an application tag here just so that we can indicate that this
+         package needs to link against the android.test library, which is
+         needed when building test cases. -->
+    <application>
+        <uses-library android:name="android.test.runner" />
+    </application>
+
+    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
+        android:targetPackage="org.chromium.chrome"
+        android:label="Runner for org.chromium.chrome.test.webapk"/>
+</manifest>

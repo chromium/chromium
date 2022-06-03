@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/logging.h"
 #include "gpu/command_buffer/service/texture_base.h"
 
 namespace gpu {
@@ -18,10 +19,6 @@ MailboxManagerImpl::MailboxManagerImpl() = default;
 MailboxManagerImpl::~MailboxManagerImpl() {
   DCHECK(mailbox_to_textures_.empty());
   DCHECK(textures_to_mailboxes_.empty());
-}
-
-bool MailboxManagerImpl::UsesSync() {
-  return false;
 }
 
 TextureBase* MailboxManagerImpl::ConsumeTexture(const Mailbox& mailbox) {

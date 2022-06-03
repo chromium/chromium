@@ -7,12 +7,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "components/arc/mojom/video_encode_accelerator.mojom.h"
@@ -22,26 +23,30 @@
 #include "components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "components/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void CreateArcVideoDecodeAccelerator(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoDecodeAccelerator> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoDecodeAccelerator>(
-          gpu_preferences, client->GetProtectedBufferManager()),
+          gpu_preferences, gpu_workarounds,
+          client->GetProtectedBufferManager()),
       std::move(receiver));
 }
 
 void CreateArcVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoEncodeAccelerator> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences),
+      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences,
+                                                          gpu_workarounds),
       std::move(receiver));
 }
 
@@ -73,14 +78,15 @@ void CreateProtectedBufferManager(
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   binders->Add(base::BindRepeating(&CreateArcVideoDecodeAccelerator, client,
-                                   gpu_preferences),
+                                   gpu_preferences, gpu_workarounds),
                base::ThreadTaskRunnerHandle::Get());
-  binders->Add(
-      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_preferences),
-      base::ThreadTaskRunnerHandle::Get());
+  binders->Add(base::BindRepeating(&CreateArcVideoEncodeAccelerator,
+                                   gpu_preferences, gpu_workarounds),
+               base::ThreadTaskRunnerHandle::Get());
   binders->Add(
       base::BindRepeating(&CreateArcVideoProtectedBufferAllocator, client),
       base::ThreadTaskRunnerHandle::Get());

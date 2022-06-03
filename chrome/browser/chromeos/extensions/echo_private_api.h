@@ -8,14 +8,16 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "chrome/browser/chromeos/ui/echo_dialog_listener.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
+#include "chrome/browser/ash/notifications/echo_dialog_listener.h"
+#include "extensions/browser/extension_function.h"
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-
+namespace ash {
 class EchoDialogView;
+}  // namespace ash
+
+namespace chromeos {
 
 // Namespace to register the EchoCheckedOffers field in Local State.
 namespace echo_offer {
@@ -40,17 +42,18 @@ class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
                              ECHOPRIVATE_GETREGISTRATIONCODE)
 };
 
-class EchoPrivateGetOobeTimestampFunction
-    : public ChromeAsyncExtensionFunction {
+class EchoPrivateGetOobeTimestampFunction : public ExtensionFunction {
  public:
   EchoPrivateGetOobeTimestampFunction();
 
  protected:
   ~EchoPrivateGetOobeTimestampFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
-  bool GetOobeTimestampOnFileSequence();
+  std::unique_ptr<base::Value> GetOobeTimestampOnFileSequence();
+  void RespondWithResult(std::unique_ptr<base::Value> result);
+
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getOobeTimestamp",
                              ECHOPRIVATE_GETOOBETIMESTAMP)
 };
@@ -86,12 +89,12 @@ class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
 // either asks user's consent to verify the device's eligibility for the offer,
 // or informs the user that the offers redeeming is disabled.
 // It returns whether the user consent was given.
-class EchoPrivateGetUserConsentFunction : public ChromeAsyncExtensionFunction,
-                                          public chromeos::EchoDialogListener {
+class EchoPrivateGetUserConsentFunction : public ExtensionFunction,
+                                          public ash::EchoDialogListener {
  public:
   // Type for the dialog shown callback used in tests.
   using DialogShownTestCallback =
-      base::RepeatingCallback<void(chromeos::EchoDialogView* dialog)>;
+      base::RepeatingCallback<void(ash::EchoDialogView* dialog)>;
 
   EchoPrivateGetUserConsentFunction();
 
@@ -103,7 +106,7 @@ class EchoPrivateGetUserConsentFunction : public ChromeAsyncExtensionFunction,
  protected:
   ~EchoPrivateGetUserConsentFunction() override;
 
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
  private:
   // chromeos::EchoDialogListener overrides.

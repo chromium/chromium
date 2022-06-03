@@ -6,7 +6,7 @@
 
 #include <zircon/types.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 

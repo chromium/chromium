@@ -11,12 +11,13 @@
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardInfoBar_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -32,9 +33,9 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
 
 AutofillSaveCardInfoBar::AutofillSaveCardInfoBar(
     std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate)
-    : ConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() {}
+AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() = default;
 
 void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
                                                         jobject obj,
@@ -44,13 +45,16 @@ void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-AutofillSaveCardInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+AutofillSaveCardInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
       GetSaveCardDelegate();
 
   base::android::ScopedJavaLocalRef<jobject> java_delegate =
       Java_AutofillSaveCardInfoBar_create(
-          env, reinterpret_cast<intptr_t>(this), GetEnumeratedIconId(),
+          env, reinterpret_cast<intptr_t>(this),
+          resource_id_mapper.Run(delegate->GetIconId()),
           ScopedJavaLocalRef<jobject>(),
           base::android::ConvertUTF16ToJavaString(env,
                                                   delegate->GetMessageText()),
@@ -59,7 +63,17 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(JNIEnv* env) {
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_OK)),
           base::android::ConvertUTF16ToJavaString(
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_CANCEL)),
-          delegate->IsGooglePayBrandingEnabled());
+          delegate->IsGooglePayBrandingEnabled(),
+          delegate->displayed_target_account_email().empty()
+              ? nullptr
+              : base::android::ConvertUTF16ToJavaString(
+                    env, delegate->displayed_target_account_email()),
+          delegate->displayed_target_account_avatar().IsEmpty()
+              ? nullptr
+              : gfx::ConvertToJavaBitmap(
+                    *delegate->displayed_target_account_avatar()
+                         .AsImageSkia()
+                         .bitmap()));
 
   Java_AutofillSaveCardInfoBar_setDescriptionText(
       env, java_delegate,
@@ -68,7 +82,7 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   Java_AutofillSaveCardInfoBar_addDetail(
       env, java_delegate,
-      ResourceMapper::MapFromChromiumId(delegate->issuer_icon_id()),
+      ResourceMapper::MapToJavaDrawableId(delegate->issuer_icon_id()),
       base::android::ConvertUTF16ToJavaString(env, delegate->card_label()),
       base::android::ConvertUTF16ToJavaString(env, delegate->card_sub_label()));
 

@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -52,7 +54,15 @@ SVGURIReference::SVGURIReference(SVGElement* element)
   href_->AddToPropertyMap(element);
 }
 
-void SVGURIReference::Trace(blink::Visitor* visitor) {
+const String& SVGURIReference::HrefString() const {
+  return href_->CurrentValue()->Value();
+}
+
+SVGAnimatedString* SVGURIReference::href() const {
+  return href_.Get();
+}
+
+void SVGURIReference::Trace(Visitor* visitor) const {
   visitor->Trace(href_);
 }
 
@@ -124,7 +134,7 @@ Element* SVGURIReference::ObserveTarget(Member<IdTargetObserver>& observer,
 Element* SVGURIReference::ObserveTarget(Member<IdTargetObserver>& observer,
                                         SVGElement& context_element,
                                         const String& href_string) {
-  TreeScope& tree_scope = context_element.GetTreeScope();
+  TreeScope& tree_scope = context_element.OriginatingTreeScope();
   AtomicString id = FragmentIdentifierFromIRIString(href_string, tree_scope);
   return ObserveTarget(
       observer, tree_scope, id,

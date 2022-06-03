@@ -9,7 +9,7 @@
 #include <ostream>
 #include <vector>
 
-#include "chrome/chrome_cleaner/strings/string16_embedded_nulls.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace chrome_cleaner_sandbox {
@@ -45,28 +45,28 @@ void InitUnicodeString(UNICODE_STRING* unicode_string,
 // Returns true if |new_value| can be arrived at solely by deleting 0 or more
 // characters from |old_value|.
 bool ValidateRegistryValueChange(
-    const chrome_cleaner::String16EmbeddedNulls& old_value,
-    const chrome_cleaner::String16EmbeddedNulls& new_value);
+    const chrome_cleaner::WStringEmbeddedNulls& old_value,
+    const chrome_cleaner::WStringEmbeddedNulls& new_value);
 
 // Checks for errors in a value parameter for a native registry function.
 NtRegistryParamError ValidateNtRegistryValue(
-    const chrome_cleaner::String16EmbeddedNulls& param);
+    const chrome_cleaner::WStringEmbeddedNulls& param);
 
 // Checks for errors in a native registry function parameter that is expected
 // to be NULL-terminated (keys and value names).
 NtRegistryParamError ValidateNtRegistryNullTerminatedParam(
-    const chrome_cleaner::String16EmbeddedNulls& param);
+    const chrome_cleaner::WStringEmbeddedNulls& param);
 
 // Checks for errors in a native registry key path: all the errors detected by
 // ValidateNtRegistryParam, plus if it's an absolute path it must be under
 // \Registry.
 NtRegistryParamError ValidateNtRegistryKey(
-    const chrome_cleaner::String16EmbeddedNulls& key);
+    const chrome_cleaner::WStringEmbeddedNulls& key);
 
 // Format a native registry key, value or value name (which may contain
 // embedded NULLs) for logging.
-base::string16 FormatNtRegistryMemberForLogging(
-    const chrome_cleaner::String16EmbeddedNulls& key);
+std::wstring FormatNtRegistryMemberForLogging(
+    const chrome_cleaner::WStringEmbeddedNulls& key);
 
 // Format NtRegistryParamError and write it to a stream for logging.
 std::ostream& operator<<(std::ostream& os, NtRegistryParamError param_error);
@@ -81,7 +81,7 @@ NTSTATUS NativeCreateKey(HANDLE parent_key,
 
 // |key_name| must be a null-terminated string.
 NTSTATUS NativeOpenKey(HANDLE parent_key,
-                       const chrome_cleaner::String16EmbeddedNulls& key_name,
+                       const chrome_cleaner::WStringEmbeddedNulls& key_name,
                        uint32_t dw_access,
                        HANDLE* out_handle);
 
@@ -91,9 +91,9 @@ NTSTATUS NativeOpenKey(HANDLE parent_key,
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884.aspx
 NTSTATUS NativeSetValueKey(
     HANDLE key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name,
     ULONG type,
-    const chrome_cleaner::String16EmbeddedNulls& value);
+    const chrome_cleaner::WStringEmbeddedNulls& value);
 
 // Retrieves the type and data of the value under |registry_handle| specified by
 // |value_name| and places it them in |out_type| and |out_value|. Either or both
@@ -101,9 +101,9 @@ NTSTATUS NativeSetValueKey(
 // returned. Returns true on success, false otherwise.
 NTSTATUS NativeQueryValueKey(
     HANDLE key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name,
     ULONG* out_type,
-    chrome_cleaner::String16EmbeddedNulls* out_value);
+    chrome_cleaner::WStringEmbeddedNulls* out_value);
 
 NTSTATUS NativeDeleteKey(HANDLE handle);
 

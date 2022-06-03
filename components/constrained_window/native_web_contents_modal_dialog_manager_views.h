@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,6 +27,11 @@ class NativeWebContentsModalDialogManagerViews
   NativeWebContentsModalDialogManagerViews(
       gfx::NativeWindow dialog,
       web_modal::SingleWebContentsDialogManagerDelegate* native_delegate);
+
+  NativeWebContentsModalDialogManagerViews(
+      const NativeWebContentsModalDialogManagerViews&) = delete;
+  NativeWebContentsModalDialogManagerViews& operator=(
+      const NativeWebContentsModalDialogManagerViews&) = delete;
 
   ~NativeWebContentsModalDialogManagerViews() override;
 
@@ -66,12 +70,6 @@ class NativeWebContentsModalDialogManagerViews
     return native_delegate_;
   }
 
-  // By default just calls widget->Show() or Hide(), but allows a derived class
-  // to override in order to hide an alternate way (e.g. if the default hide
-  // would tear down attached dialogs too early).
-  virtual void ShowWidget(views::Widget* widget);
-  virtual void HideWidget(views::Widget* widget);
-
   static views::Widget* GetWidget(gfx::NativeWindow dialog);
 
  private:
@@ -79,12 +77,11 @@ class NativeWebContentsModalDialogManagerViews
 
   web_modal::SingleWebContentsDialogManagerDelegate* native_delegate_;
   gfx::NativeWindow dialog_;
-  web_modal::WebContentsModalDialogHost* host_;
-  bool host_destroying_;
+  web_modal::WebContentsModalDialogHost* host_ = nullptr;
+  bool within_show_ = false;
+  bool host_destroying_ = false;
   std::set<views::Widget*> observed_widgets_;
   std::set<views::Widget*> shown_widgets_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWebContentsModalDialogManagerViews);
 };
 
 }  // namespace constrained_window

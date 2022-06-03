@@ -12,7 +12,7 @@
 namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
-// FocusManagerTest, public:
+// FocusManagerTest
 
 FocusManagerTest::FocusManagerTest() : contents_view_(new View) {}
 
@@ -21,9 +21,6 @@ FocusManagerTest::~FocusManagerTest() = default;
 FocusManager* FocusManagerTest::GetFocusManager() {
   return GetWidget()->GetFocusManager();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// FocusManagerTest, ViewTestBase overrides:
 
 void FocusManagerTest::SetUp() {
   ViewsTestBase::SetUp();
@@ -52,9 +49,6 @@ void FocusManagerTest::TearDown() {
   ViewsTestBase::TearDown();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// FocusManagerTest, WidgetDelegate implementation:
-
 View* FocusManagerTest::GetContentsView() {
   return contents_view_;
 }
@@ -72,11 +66,7 @@ void FocusManagerTest::GetAccessiblePanes(std::vector<View*>* panes) {
             std::back_inserter(*panes));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// FocusManagerTest, protected:
-
-void FocusManagerTest::InitContentView() {
-}
+void FocusManagerTest::InitContentView() {}
 
 void FocusManagerTest::AddFocusChangeListener(FocusChangeListener* listener) {
   ASSERT_FALSE(focus_change_listener_);
@@ -107,8 +97,7 @@ void TestFocusChangeListener::OnWillChangeFocus(View* focused_before,
   focus_changes_.emplace_back(focused_before, focused_now);
 }
 void TestFocusChangeListener::OnDidChangeFocus(View* focused_before,
-                                               View* focused_now) {
-}
+                                               View* focused_now) {}
 
 void TestFocusChangeListener::ClearFocusChanges() {
   focus_changes_.clear();

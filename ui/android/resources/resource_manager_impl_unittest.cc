@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -48,14 +47,13 @@ class TestResourceManagerImpl : public ResourceManagerImpl {
 
   void SetResourceAsLoaded(AndroidResourceType res_type, int res_id) {
     SkBitmap small_bitmap;
-    small_bitmap.allocPixels(
-        SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+    small_bitmap.allocN32Pixels(1, 1, /*is_opaque=*/true);
     SkCanvas canvas(small_bitmap);
     canvas.drawColor(SK_ColorWHITE);
     small_bitmap.setImmutable();
 
     OnResourceReady(nullptr, nullptr, res_type, res_id,
-                    gfx::ConvertToJavaBitmap(&small_bitmap), 1, 1,
+                    gfx::ConvertToJavaBitmap(small_bitmap), 1, 1,
                     reinterpret_cast<intptr_t>(new Resource()));
   }
 
@@ -77,11 +75,11 @@ class MockUIResourceManager : public cc::UIResourceManager {
  public:
   MockUIResourceManager() {}
 
+  MockUIResourceManager(const MockUIResourceManager&) = delete;
+  MockUIResourceManager& operator=(const MockUIResourceManager&) = delete;
+
   MOCK_METHOD1(CreateUIResource, cc::UIResourceId(cc::UIResourceClient*));
   MOCK_METHOD1(DeleteUIResource, void(cc::UIResourceId));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUIResourceManager);
 };
 
 }  // namespace

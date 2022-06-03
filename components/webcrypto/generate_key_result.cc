@@ -4,7 +4,8 @@
 
 #include "components/webcrypto/generate_key_result.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace webcrypto {
 

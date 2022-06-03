@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/views_touch_selection_controller_factory.h"
 #include "ui/views/widget/native_widget_private.h"
 
@@ -31,7 +32,11 @@ ViewsDelegate::ViewsDelegate()
   ui::TouchEditingControllerFactory::SetInstance(
       editing_controller_factory_.get());
 
-#if defined(USE_AURA)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+  // TouchSelectionMenuRunnerViews is not supported on Mac or Cast.
+  // It is also not used on Ash (the ChromeViewsDelegate() for Ash will
+  // immediately replace this). But tests running without the Chrome layer
+  // will not get the replacement.
   touch_selection_menu_runner_ =
       std::make_unique<TouchSelectionMenuRunnerViews>();
 #endif
@@ -61,8 +66,8 @@ bool ViewsDelegate::GetSavedWindowPlacement(
   return false;
 }
 
-void ViewsDelegate::NotifyMenuItemFocused(const base::string16& menu_name,
-                                          const base::string16& menu_item_name,
+void ViewsDelegate::NotifyMenuItemFocused(const std::u16string& menu_name,
+                                          const std::u16string& menu_item_name,
                                           int item_index,
                                           int item_count,
                                           bool has_submenu) {}
@@ -71,6 +76,10 @@ ViewsDelegate::ProcessMenuAcceleratorResult
 ViewsDelegate::ProcessAcceleratorWhileMenuShowing(
     const ui::Accelerator& accelerator) {
   return ProcessMenuAcceleratorResult::LEAVE_MENU_OPEN;
+}
+
+bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
+  return true;
 }
 
 #if defined(OS_WIN)
@@ -85,14 +94,15 @@ HICON ViewsDelegate::GetSmallWindowIcon() const {
 bool ViewsDelegate::IsWindowInMetro(gfx::NativeWindow window) const {
   return false;
 }
-#elif defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+#elif BUILDFLAG(ENABLE_DESKTOP_AURA) && \
+    (defined(OS_LINUX) || defined(OS_CHROMEOS))
 gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;
 }
 #endif
 
-NonClientFrameView* ViewsDelegate::CreateDefaultNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<NonClientFrameView>
+ViewsDelegate::CreateDefaultNonClientFrameView(Widget* widget) {
   return nullptr;
 }
 
@@ -112,13 +122,11 @@ bool ViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   return false;
 }
 
+#if defined(OS_MAC)
 ui::ContextFactory* ViewsDelegate::GetContextFactory() {
   return nullptr;
 }
-
-ui::ContextFactoryPrivate* ViewsDelegate::GetContextFactoryPrivate() {
-  return nullptr;
-}
+#endif
 
 std::string ViewsDelegate::GetApplicationName() {
   base::FilePath program = base::CommandLine::ForCurrentProcess()->GetProgram();

@@ -34,10 +34,10 @@ String CSSQuadValue::CustomCSSText() const {
       }
     }
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
-void CSSQuadValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSQuadValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(top_);
   visitor->Trace(right_);
   visitor->Trace(bottom_);

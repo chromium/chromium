@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging dumps proper messages.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -21,8 +21,9 @@
         console.dirxml([document, fragment, document.createElement("span")]);
     }
   `);
+  await TestRunner.showPanel('elements');
 
-  runtime.loadModulePromise('elements').then(function() {
+  TestRunner.loadLegacyModule('elements').then(function() {
     TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);
   });
 
@@ -30,8 +31,8 @@
     ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(onRemoteObjectsLoaded);
   }
 
-  function onRemoteObjectsLoaded() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function onRemoteObjectsLoaded() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

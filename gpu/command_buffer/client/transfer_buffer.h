@@ -199,6 +199,9 @@ class GPU_EXPORT ScopedTransferBufferPtr {
         helper_(helper),
         transfer_buffer_(transfer_buffer) {}
 
+  ScopedTransferBufferPtr(const ScopedTransferBufferPtr&) = delete;
+  ScopedTransferBufferPtr& operator=(const ScopedTransferBufferPtr&) = delete;
+
   ~ScopedTransferBufferPtr() {
     Release();
   }
@@ -240,7 +243,6 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   unsigned int size_;
   CommandBufferHelper* helper_;
   TransferBufferInterface* transfer_buffer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTransferBufferPtr);
 };
 
 template <typename T>
@@ -270,6 +272,10 @@ class ScopedResultPtr {
   explicit ScopedResultPtr(TransferBufferInterface* tb)
       : result_(static_cast<T*>(tb->AcquireResultBuffer())),
         transfer_buffer_(tb) {}
+
+  ScopedResultPtr(const ScopedResultPtr&) = delete;
+  ScopedResultPtr& operator=(const ScopedResultPtr&) = delete;
+
   ~ScopedResultPtr() {
     if (transfer_buffer_)
       transfer_buffer_->ReleaseResultBuffer();
@@ -278,7 +284,6 @@ class ScopedResultPtr {
   int offset() const { return transfer_buffer_->GetResultOffset(); }
 
   // Make this a move-only class like unique_ptr.
-  DISALLOW_COPY_AND_ASSIGN(ScopedResultPtr);
   ScopedResultPtr(ScopedResultPtr<T>&& other) { *this = std::move(other); }
   ScopedResultPtr& operator=(ScopedResultPtr<T>&& other) {
     this->result_ = other.result_;

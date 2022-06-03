@@ -11,15 +11,18 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
+import java.lang.ref.WeakReference;
+
 /**
  * A utility for observing when a view gets drawn for the first time.
  */
 public class FirstDrawDetector {
-    View mView;
+    WeakReference<View> mView;
     Runnable mCallback;
+    private boolean mHasRunBefore;
 
     private FirstDrawDetector(View view, Runnable callback) {
-        mView = view;
+        mView = new WeakReference<>(view);
         mCallback = callback;
     }
 
@@ -49,23 +52,29 @@ public class FirstDrawDetector {
                         // view might not have been drawn yet at this point. Trigger the first paint
                         // at the next frame.
                         PostTask.postTask(TaskTraits.CHOREOGRAPHER_FRAME, () -> onFirstDraw());
-                        mView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        if (mView.get() != null) {
+                            mView.get().getViewTreeObserver().removeOnPreDrawListener(this);
+                        }
                         return true;
                     }
                 };
         ViewTreeObserver.OnDrawListener firstDrawListener = new ViewTreeObserver.OnDrawListener() {
             @Override
             public void onDraw() {
+                if (mHasRunBefore) return;
+                mHasRunBefore = true;
                 // This callback will be run in the normal case (e.g., screen is on).
                 onFirstDraw();
                 // The draw listener can't be removed from within the callback, so remove it
                 // asynchronously.
-                PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                        () -> mView.getViewTreeObserver().removeOnDrawListener(this));
+                PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+                    if (mView.get() == null) return;
+                    mView.get().getViewTreeObserver().removeOnDrawListener(this);
+                });
             }
         };
-        mView.getViewTreeObserver().addOnPreDrawListener(firstPreDrawListener);
-        mView.getViewTreeObserver().addOnDrawListener(firstDrawListener);
+        mView.get().getViewTreeObserver().addOnPreDrawListener(firstPreDrawListener);
+        mView.get().getViewTreeObserver().addOnDrawListener(firstDrawListener);
     }
 
     private void onFirstDraw() {

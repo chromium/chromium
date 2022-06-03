@@ -6,9 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_TRACK_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
@@ -18,6 +17,8 @@ class PLATFORM_EXPORT TrackObserver {
  public:
   TrackObserver(const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
                 const scoped_refptr<webrtc::MediaStreamTrackInterface>& track);
+  TrackObserver(const TrackObserver&) = delete;
+  TrackObserver& operator=(const TrackObserver&) = delete;
   ~TrackObserver();
 
   using OnChangedCallback = base::RepeatingCallback<void(
@@ -29,7 +30,6 @@ class PLATFORM_EXPORT TrackObserver {
  private:
   class TrackObserverImpl;
   const scoped_refptr<TrackObserverImpl> observer_;
-  DISALLOW_COPY_AND_ASSIGN(TrackObserver);
 };
 
 }  // namespace blink

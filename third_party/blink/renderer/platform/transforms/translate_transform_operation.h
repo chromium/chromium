@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -51,16 +52,17 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return *this == static_cast<const TransformOperation&>(other);
   }
 
-  bool CanBlendWith(const TransformOperation& other) const override;
-  bool DependsOnBoxSize() const override {
-    return x_.IsPercentOrCalc() || y_.IsPercentOrCalc();
+  BoxSizeDependency BoxSizeDependencies() const override {
+    return CombineDependencies(
+        (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
+        (y_.IsPercentOrCalc() ? kDependsHeight : kDependsNone));
   }
 
   double X(const FloatSize& border_box_size) const {
-    return FloatValueForLength(x_, border_box_size.Width());
+    return FloatValueForLength(x_, border_box_size.width());
   }
   double Y(const FloatSize& border_box_size) const {
-    return FloatValueForLength(y_, border_box_size.Height());
+    return FloatValueForLength(y_, border_box_size.height());
   }
 
   const Length& X() const { return x_; }
@@ -102,6 +104,7 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   }
 
   bool PreservesAxisAlignment() const final { return true; }
+  bool IsIdentityOrTranslation() const final { return true; }
 
   TranslateTransformOperation(const Length& tx,
                               const Length& ty,
@@ -111,6 +114,10 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     DCHECK(IsMatchingOperationType(type));
   }
 
+  void CommonPrimitiveForInterpolation(
+      const TransformOperation* from,
+      TransformOperation::OperationType& common_type) const;
+
   bool HasNonTrivial3DComponent() const override { return z_ != 0.0; }
 
   Length x_;
@@ -119,7 +126,13 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   OperationType type_;
 };
 
-DEFINE_TRANSFORM_TYPE_CASTS(TranslateTransformOperation);
+template <>
+struct DowncastTraits<TranslateTransformOperation> {
+  static bool AllowFrom(const TransformOperation& transform) {
+    return TranslateTransformOperation::IsMatchingOperationType(
+        transform.GetType());
+  }
+};
 
 }  // namespace blink
 

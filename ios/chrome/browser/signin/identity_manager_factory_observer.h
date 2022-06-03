@@ -16,17 +16,16 @@ class IdentityManager;
 class IdentityManagerFactoryObserver : public base::CheckedObserver {
  public:
   IdentityManagerFactoryObserver() {}
+
+  IdentityManagerFactoryObserver(const IdentityManagerFactoryObserver&) =
+      delete;
+  IdentityManagerFactoryObserver& operator=(
+      const IdentityManagerFactoryObserver&) = delete;
+
   ~IdentityManagerFactoryObserver() override {}
 
   // Called when an IdentityManager instance is created.
   virtual void IdentityManagerCreated(signin::IdentityManager* manager) {}
-
-  // Called when a IdentityManager instance is being shut down. Observers
-  // of |manager| should remove themselves at this point.
-  virtual void IdentityManagerShutdown(signin::IdentityManager* manager) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactoryObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_

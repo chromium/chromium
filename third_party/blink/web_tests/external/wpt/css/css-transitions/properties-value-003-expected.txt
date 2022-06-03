@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 192 tests; 84 PASS, 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 192 tests; 86 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS border-top-left-radius border-radius(px) / values
 PASS border-top-left-radius border-radius(px) / events
 PASS border-top-left-radius border-radius(px-px) / values
@@ -30,8 +30,8 @@ PASS font-size-adjust number(integer) / values
 PASS font-size-adjust number(integer) / events
 PASS font-size-adjust number(decimal) / values
 PASS font-size-adjust number(decimal) / events
-FAIL font-stretch font-stretch(keyword) / values assert_not_equals: must not be target value after start got disallowed value "125%"
-FAIL font-stretch font-stretch(keyword) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "font-stretch:2s" but got ""
+PASS font-stretch font-stretch(keyword) / values
+PASS font-stretch font-stretch(keyword) / events
 FAIL marker-offset length(pt) / values assert_not_equals: initial and target values may not match got disallowed value ""
 FAIL marker-offset length(pt) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "marker-offset:2s" but got ""
 FAIL marker-offset length(pc) / values assert_not_equals: initial and target values may not match got disallowed value ""

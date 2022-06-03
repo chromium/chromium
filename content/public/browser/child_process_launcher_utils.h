@@ -21,4 +21,4 @@ CONTENT_EXPORT bool CurrentlyOnProcessLauncherTaskRunner();
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_LAUNCHER_UTILES_H_
+#endif  // CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_LAUNCHER_UTILS_H_

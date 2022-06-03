@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 #include "chrome/chrome_cleaner/logging/proto/interface_logger.pb.h"
 
@@ -23,8 +23,11 @@ namespace chrome_cleaner {
 class InterfaceLogService : public InterfaceMetadataObserver {
  public:
   static std::unique_ptr<InterfaceLogService> Create(
-      const base::StringPiece16 file_name,
-      const base::StringPiece16 build_version);
+      const base::WStringPiece file_name,
+      const base::WStringPiece build_version);
+
+  InterfaceLogService(const InterfaceLogService&) = delete;
+  InterfaceLogService& operator=(const InterfaceLogService&) = delete;
 
   ~InterfaceLogService() override;
 
@@ -44,15 +47,15 @@ class InterfaceLogService : public InterfaceMetadataObserver {
   base::FilePath GetLogFilePath() const;
 
  private:
-  InterfaceLogService(const base::StringPiece16 file_name,
-                      const base::StringPiece16 build_version,
+  InterfaceLogService(const base::WStringPiece file_name,
+                      const base::WStringPiece build_version,
                       std::ofstream csv_stream);
 
   // TODO(joenotcharles): Currently the CallHistory is only used in the unit
   // test. Decide whether it's worth keeping.
   CallHistory call_record_;
 
-  const base::string16 log_file_name_;
+  const std::wstring log_file_name_;
   // Stream to output CSV records to.
   std::ofstream csv_stream_;
 
@@ -63,8 +66,6 @@ class InterfaceLogService : public InterfaceMetadataObserver {
   mutable base::Lock lock_;
 
   base::TimeDelta GetTicksSinceCreation() const;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceLogService);
 };
 
 }  // namespace chrome_cleaner

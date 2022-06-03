@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 
-#include "base/macros.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/launch_service/launch_manager.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 enum class WindowOpenDisposition;
 class GURL;
+class Profile;
 
 namespace apps {
 struct AppLaunchParams;
 }  // namespace apps
+
+namespace base {
+class CommandLine;
+class FilePath;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -27,33 +34,55 @@ class WebAppProvider;
 
 // Handles launch requests for Desktop PWAs and bookmark apps.
 // Web applications have type AppType::kWeb in the app registry.
-class WebAppLaunchManager : public apps::LaunchManager {
+class WebAppLaunchManager {
  public:
+  using OpenApplicationCallback = base::RepeatingCallback<content::WebContents*(
+      apps::AppLaunchParams&& params)>;
+
   explicit WebAppLaunchManager(Profile* profile);
-  ~WebAppLaunchManager() override;
+  WebAppLaunchManager(const WebAppLaunchManager&) = delete;
+  WebAppLaunchManager& operator=(const WebAppLaunchManager&) = delete;
+  virtual ~WebAppLaunchManager();
 
-  // apps::LaunchManager:
-  content::WebContents* OpenApplication(
-      const apps::AppLaunchParams& params) override;
+  content::WebContents* OpenApplication(apps::AppLaunchParams&& params);
 
-  bool OpenApplicationWindow(const std::string& app_id,
-                             const base::CommandLine& command_line,
-                             const base::FilePath& current_directory) override;
+  // |browser| may be nullptr if the navigation fails.
+  void LaunchApplication(
+      const std::string& app_id,
+      const base::CommandLine& command_line,
+      const base::FilePath& current_directory,
+      const absl::optional<GURL>& url_handler_launch_url,
+      const absl::optional<GURL>& protocol_handler_launch_url,
+      const std::vector<base::FilePath>& launch_files,
+      base::OnceCallback<void(Browser* browser,
+                              apps::mojom::LaunchContainer container)>
+          callback);
 
-  bool OpenApplicationTab(const std::string& app_id) override;
+  static void SetOpenApplicationCallbackForTesting(
+      OpenApplicationCallback callback);
 
  private:
-  void OpenWebApplication(const apps::AppLaunchParams& params);
+  virtual void LaunchWebApplication(
+      apps::AppLaunchParams&& params,
+      base::OnceCallback<void(Browser* browser,
+                              apps::mojom::LaunchContainer container)>
+          callback);
 
+  Profile* const profile_;
   WebAppProvider* const provider_;
 
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppLaunchManager);
 };
 
-Browser* CreateWebApplicationWindow(Profile* profile,
-                                    const std::string& app_id);
+Browser* CreateWebApplicationWindow(
+    Profile* profile,
+    const std::string& app_id,
+    WindowOpenDisposition disposition,
+    int32_t restore_id,
+    bool omit_from_session_restore = false,
+    bool can_resize = true,
+    bool can_maximize = true,
+    const gfx::Rect initial_bounds = gfx::Rect());
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,

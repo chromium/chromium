@@ -43,8 +43,8 @@ dictionary MediaTrackSettings {
     double            saturation;
     double            sharpness;
     double            focusDistance;
-    [RuntimeEnabled=MediaCapturePanTilt] double            pan;
-    [RuntimeEnabled=MediaCapturePanTilt] double            tilt;
+    double            pan;
+    double            tilt;
     double            zoom;
     boolean           torch;
 
@@ -53,4 +53,5 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=GetDisplayMedia] DOMString displaySurface;
     [RuntimeEnabled=GetDisplayMedia] boolean logicalSurface;
     [RuntimeEnabled=GetDisplayMedia] DOMString cursor;
+    [RuntimeEnabled=CaptureHandle, MeasureAs=CaptureHandle] CaptureHandle captureHandle;
 };

@@ -209,16 +209,17 @@ line_boundary_test(15, 'rtl', kSample15[0], kSample15[1], 'left');
 
 const kSample16 = [
   '|\u202Bxyz \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2.\u202C',
+  '\u202Bxyz| \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2.\u202C',
   '\u202Bxyz \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2.\u202C|',
 ];
 line_boundary_test(16, 'ltr', kSample16[0], kSample16[1], 'forward');
 line_boundary_test(16, 'ltr', kSample16[1], kSample16[0], 'backward');
 line_boundary_test(16, 'ltr', kSample16[0], kSample16[1], 'right');
 line_boundary_test(16, 'ltr', kSample16[1], kSample16[0], 'left');
-line_boundary_test(16, 'rtl', kSample16[0], kSample16[1], 'forward');
+line_boundary_test(16, 'rtl', kSample16[0], kSample16[2], 'forward');
 line_boundary_test(16, 'rtl', kSample16[1], kSample16[0], 'backward');
 line_boundary_test(16, 'rtl', kSample16[0], kSample16[0], 'right');
-line_boundary_test(16, 'rtl', kSample16[0], kSample16[1], 'left');
+line_boundary_test(16, 'rtl', kSample16[0], kSample16[2], 'left');
 
 const kSample17 = [
   '|abc "\u202Bxyz \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."',

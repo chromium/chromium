@@ -1,0 +1,26 @@
+Tests that edited stylesheets appear properly.
+
+[expanded] 
+element.style { ()
+
+[expanded] 
+.rule4 { (<style>)
+    color: white;
+
+[expanded] 
+.rule2 { (<style>)
+/-- overloaded --/     color: yellow;
+
+[expanded] 
+.rule1 { (<style>)
+/-- overloaded --/     color: green;
+
+[expanded] 
+.rule0 { (<style>)
+/-- overloaded --/     color: black;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+

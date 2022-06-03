@@ -29,8 +29,7 @@ SVGNumberOptionalNumberInterpolationType::MaybeConvertSVGValue(
   if (svg_value.GetType() != kAnimatedNumberOptionalNumber)
     return nullptr;
 
-  const SVGNumberOptionalNumber& number_optional_number =
-      ToSVGNumberOptionalNumber(svg_value);
+  const auto& number_optional_number = To<SVGNumberOptionalNumber>(svg_value);
   auto result = std::make_unique<InterpolableList>(2);
   result->Set(0, std::make_unique<InterpolableNumber>(
                      number_optional_number.FirstNumber()->Value()));
@@ -42,12 +41,12 @@ SVGNumberOptionalNumberInterpolationType::MaybeConvertSVGValue(
 SVGPropertyBase* SVGNumberOptionalNumberInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  const InterpolableList& list = ToInterpolableList(interpolable_value);
+  const auto& list = To<InterpolableList>(interpolable_value);
   return MakeGarbageCollected<SVGNumberOptionalNumber>(
       MakeGarbageCollected<SVGNumber>(
-          ToInterpolableNumber(list.Get(0))->Value()),
+          To<InterpolableNumber>(list.Get(0))->Value()),
       MakeGarbageCollected<SVGNumber>(
-          ToInterpolableNumber(list.Get(1))->Value()));
+          To<InterpolableNumber>(list.Get(1))->Value()));
 }
 
 }  // namespace blink

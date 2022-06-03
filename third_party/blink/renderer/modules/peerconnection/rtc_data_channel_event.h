@@ -25,9 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DATA_CHANNEL_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DATA_CHANNEL_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_event_init.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -50,7 +50,7 @@ class RTCDataChannelEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<RTCDataChannel> channel_;

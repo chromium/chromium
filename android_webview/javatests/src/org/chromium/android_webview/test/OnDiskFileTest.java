@@ -6,7 +6,8 @@ package org.chromium.android_webview.test;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -45,7 +46,7 @@ public class OnDiskFileTest {
                                                 .getCacheDir()
                                                 .getPath(),
                 "WebView/Default/HTTP Cache");
-        FileUtils.recursivelyDeleteFile(webViewCacheDir);
+        FileUtils.recursivelyDeleteFile(webViewCacheDir, FileUtils.DELETE_ALL);
 
         mActivityTestRule.startBrowserProcess();
         final TestAwContentsClient contentClient = new TestAwContentsClient();

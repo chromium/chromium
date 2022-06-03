@@ -12,7 +12,6 @@ import android.os.Handler;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
@@ -169,12 +168,6 @@ class CastWebContentsSurfaceHelper {
                 .map(params -> mMediaSessionGetter.get(params.webContents))
                 .subscribe(Observers.onEnter(MediaSessionImpl::requestSystemAudioFocus));
 
-        // Miscellaneous actions responding to WebContents lifecycle.
-        webContentsState.subscribe((WebContents webContents) -> {
-            // Notify CastWebContentsComponent when closed.
-            return () -> CastWebContentsComponent.onComponentClosed(mSessionId);
-        });
-
         // When onDestroy() is called after onNewStartParams(), log and reset StartParams states.
         uriState.andThen(Observable.not(mCreatedState))
                 .map(Both::getFirst)
@@ -220,7 +213,6 @@ class CastWebContentsSurfaceHelper {
         return mTouchInputEnabled;
     }
 
-    @RemovableInRelease
     void setMediaSessionGetterForTesting(MediaSessionGetter mediaSessionGetter) {
         mMediaSessionGetter = mediaSessionGetter;
     }

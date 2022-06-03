@@ -93,7 +93,8 @@ The handler runs in a separate process from the client or clients. It is
 responsible for snapshotting the crashing client process’ state on a crash,
 saving it to a crash dump, and transmitting the crash dump to an upstream
 server. Clients register with the handler to allow it to capture and upload
-their crashes.
+their crashes. On iOS, there is no separate process for the handler.
+[This is a limitation of iOS.](ios_overview_design.md#ios-limitations)
 
 ### The Crashpad handler
 
@@ -213,6 +214,12 @@ Crashpad provides a facility for a process to disassociate (unregister) with an
 existing crash handler, which can be necessary when an older client spawns an
 updated version.
 
+#### iOS
+
+iOS registers both a signal handler for `SIGABRT` and a Mach exception handler
+with a subset of available exceptions. [This is a limitation of
+iOS.](ios_overview_design.md#ios-limitations)
+
 #### Windows
 
 There are two modes of registration on Windows. In both cases the handler is
@@ -240,7 +247,24 @@ of command line arguments in this mode.
 
 #### Linux/Android
 
-TODO(mmentovai): describe this. See this preliminary doc.
+On Linux, a registration is a connected socket pair between a client process and
+the Crashpad handler. This socket pair may be private or shared among many
+client processes.
+
+##### Private Connections
+
+Private connections are the default registration mode when starting the handler
+process in response to a crash or on behalf of another client. This mode is
+required to use a ptrace broker, which is in turn required to trace Android
+isolated processes.
+
+##### Shared Connections
+
+Shared connections are the default mode when using a long-lived handler. The
+same connected socket pair may be shared among any number of clients. The socket
+pair is created by the first process to start the handler at which point the
+client socket end may be shared with other clients by any convenient means (e.g.
+inheritance).
 
 ### Capturing Exceptions
 
@@ -254,6 +278,14 @@ Mach port set as the client process’ exception port. As exceptions are
 dispatched to the Mach port by the kernel, on macOS, exceptions can be handled
 entirely from the Crashpad handler without the need to run any code in the crash
 process at the time of the exception.
+
+#### iOS
+
+On iOS, the operating system will notify the handler of crashes via the Mach
+exception port or the signal handler. As exceptions are handled in-process, an
+intermediate dump file is generated rather than a minidump. See more
+information about the [iOS in-process
+handler.](ios_overview_design.md#ios-in-process-handler)
 
 #### Windows
 
@@ -290,8 +322,16 @@ here.](https://crashpad.chromium.org/bug/133)
 
 #### Linux/Android
 
-TODO(mmentovai): describe this. See [this preliminary
-doc.](https://goto.google.com/crashpad-android-dd)
+On Linux, exceptions are dispatched as signals to the crashing thread. Crashpad
+signal handlers will send a message over the socket to the Crashpad handler
+notifying it of the crash and the location of exception information to be read
+from the crashing process. When using a shared socket connection, communication
+is entirely one-way. The client sends its dump request to the handler and then
+waits until the handler responds with a SIGCONT or a timeout occurs. When using
+a private socket connection, the handler may respond over the socket to
+communicate with a ptrace broker process. The broker is forked from the crashing
+process, executes ptrace requests against the crashing process, and sends the
+information over the socket to the handler.
 
 ### The CrashpadInfo structure
 
@@ -389,6 +429,14 @@ details of how these properties are stored vary between platforms.
 
 The macOS implementation simply stores database properties on the minidump files
 in filesystem extended attributes.
+
+#### iOS
+
+The iOS implementation also stores database properties of minidump files in
+filesystem extended attributes. Separate from the database, iOS also stores its
+intermediate dump files adjacent to the database. See more information about
+[iOS intermediate
+dumps.](ios_overview_design.md#the-crashpad-intermediatedump-format)
 
 #### Windows
 

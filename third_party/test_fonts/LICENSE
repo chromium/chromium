@@ -645,7 +645,10 @@ given a different name.
 $Id$
 --------------------------------------------------------------------------------
 The SIL OPEN FONT LICENSE for Noto applies to the following files:
+NotoColorEmoji.ttf
+NotoSansCJKjp-Regular.otf
 NotoSansKhmer-Regular.ttf
+NotoSansSymbols2-Regular.ttf
 
 This Font Software is licensed under the SIL Open Font License,
 Version 1.1.

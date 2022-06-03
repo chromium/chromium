@@ -2,43 +2,50 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//media/media_options.gni")
 
-jumbo_source_set("browser") {
-  sources = [
-    "cdm_message_filter_android.cc",
-    "cdm_message_filter_android.h",
-    "media_drm_storage_impl.cc",
-    "media_drm_storage_impl.h",
-  ]
+if (enable_media_drm_storage) {
+  source_set("browser") {
+    sources = [
+      "media_drm_storage_impl.cc",
+      "media_drm_storage_impl.h",
+    ]
 
-  public_deps = [
-    "//base",
-    "//content/public/browser",
-    "//media/mojo/mojom",
-    "//url",
-  ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//media/mojo/mojom",
+      "//url",
+    ]
 
-  deps = [
-    "//components/cdm/common",
-    "//components/prefs",
-    "//content/public/common",
-    "//ipc",
-    "//media",
-  ]
-}
+    deps = [
+      "//components/cdm/common",
+      "//components/prefs",
+      "//components/user_prefs",
+      "//content/public/common",
+      "//ipc",
+      "//media",
+    ]
 
-jumbo_source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "media_drm_storage_impl_unittest.cc",
-  ]
-  deps = [
-    ":browser",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//content/test:test_support",
-    "//media/mojo/services",
-    "//testing/gtest",
-  ]
+    if (is_android) {
+      sources += [
+        "cdm_message_filter_android.cc",
+        "cdm_message_filter_android.h",
+      ]
+      deps += [ "//third_party/widevine/cdm:headers" ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "media_drm_storage_impl_unittest.cc" ]
+    deps = [
+      ":browser",
+      "//base/test:test_support",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+      "//media/mojo/services",
+      "//testing/gtest",
+    ]
+  }
 }

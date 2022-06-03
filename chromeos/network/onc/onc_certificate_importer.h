@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/onc/onc_parsed_certificates.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
@@ -24,6 +23,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
   typedef base::OnceCallback<void(bool success)> DoneCallback;
 
   CertificateImporter() {}
+
+  CertificateImporter(const CertificateImporter&) = delete;
+  CertificateImporter& operator=(const CertificateImporter&) = delete;
+
   virtual ~CertificateImporter() {}
 
   // This is intended for user-initiated ONC imports.
@@ -49,9 +52,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
       const std::vector<OncParsedCertificates::ClientCertificate>&
           client_certificates,
       DoneCallback done_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateImporter);
 };
 
 }  // namespace onc

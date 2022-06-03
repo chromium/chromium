@@ -17,11 +17,17 @@ namespace test {
 class TestInkDrop : public InkDrop {
  public:
   TestInkDrop();
+
+  TestInkDrop(const TestInkDrop&) = delete;
+  TestInkDrop& operator=(const TestInkDrop&) = delete;
+
   ~TestInkDrop() override;
 
   bool is_hovered() const { return is_hovered_; }
 
+  // InkDrop:
   void HostSizeChanged(const gfx::Size& new_size) override;
+  void HostTransformChanged(const gfx::Transform& new_transform) override;
   InkDropState GetTargetInkDropState() const override;
   void AnimateToState(InkDropState ink_drop_state) override;
   void SetHoverHighlightFadeDuration(base::TimeDelta duration) override;
@@ -37,8 +43,6 @@ class TestInkDrop : public InkDrop {
  private:
   InkDropState state_ = InkDropState::HIDDEN;
   bool is_hovered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDrop);
 };
 
 }  // namespace test

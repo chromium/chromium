@@ -8,11 +8,10 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/json/string_escape.h"
-#include "base/logging.h"
 
 namespace mojo {
 template <typename DataViewType, typename T>
@@ -242,6 +241,16 @@ template <typename Traits>
 bool Ordinal<Traits>::EqualsFn::operator()(const Ordinal<Traits>& lhs,
                                            const Ordinal<Traits>& rhs) const {
   return lhs.Equals(rhs);
+}
+
+template <typename Traits>
+bool operator==(const Ordinal<Traits>& lhs, const Ordinal<Traits>& rhs) {
+  return lhs.EqualsOrBothInvalid(rhs);
+}
+
+template <typename Traits>
+bool operator!=(const Ordinal<Traits>& lhs, const Ordinal<Traits>& rhs) {
+  return !(lhs == rhs);
 }
 
 template <typename Traits>

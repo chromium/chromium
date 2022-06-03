@@ -4,10 +4,12 @@
 
 #include "chrome/browser/badging/badge_manager.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
@@ -15,23 +17,61 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/ukm/app_source_url_recorder.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "services/metrics/public/cpp/delegating_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "chrome/browser/badging/badge_manager_delegate_mac.h"
 #elif defined(OS_WIN)
 #include "chrome/browser/badging/badge_manager_delegate_win.h"
 #endif
 
+using web_app::WebAppProvider;
+
+namespace {
+
+bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
+                             const web_app::AppId& app_id,
+                             const base::Clock* clock,
+                             Profile* profile) {
+  const base::Time last_badging_time =
+      WebAppProvider::GetForLocalAppsUnchecked(profile)
+          ->registrar()
+          .GetAppLastBadgingTime(app_id);
+  return clock->Now() < last_badging_time + time_frame;
+}
+
+// When web apps are disabled, there is no WebAppProvider.
+web_app::WebAppSyncBridge* GetWebAppSyncBridgeForProfile(Profile* profile) {
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  return provider ? &provider->sync_bridge() : nullptr;
+}
+
+}  // namespace
+
 namespace badging {
 
-BadgeManager::BadgeManager(Profile* profile) {
-#if defined(OS_MACOSX)
+BadgeManager::BadgeManager(Profile* profile)
+    : BadgeManager(profile, GetWebAppSyncBridgeForProfile(profile)) {}
+
+BadgeManager::BadgeManager(Profile* profile,
+                           web_app::WebAppSyncBridge* sync_bridge)
+    : profile_(profile),
+      clock_(base::DefaultClock::GetInstance()),
+      sync_bridge_(sync_bridge) {
+  // The delegate is also set for Chrome OS but is set from the constructor of
+  // web_apps_chromeos.cc.
+#if defined(OS_MAC)
   SetDelegate(std::make_unique<BadgeManagerDelegateMac>(profile, this));
 #elif defined(OS_WIN)
   SetDelegate(std::make_unique<BadgeManagerDelegateWin>(profile, this));
@@ -44,42 +84,104 @@ void BadgeManager::SetDelegate(std::unique_ptr<BadgeManagerDelegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void BadgeManager::BindReceiver(
+void BadgeManager::BindFrameReceiver(
     content::RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  Profile* profile = Profile::FromBrowserContext(
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* profile = Profile::FromBrowserContext(
       content::WebContents::FromRenderFrameHost(frame)->GetBrowserContext());
 
-  badging::BadgeManager* badge_manager =
+  auto* badge_manager =
       badging::BadgeManagerFactory::GetInstance()->GetForProfile(profile);
   if (!badge_manager)
     return;
 
-  BindingContext context(frame->GetProcess()->GetID(), frame->GetRoutingID());
+  auto context = std::make_unique<FrameBindingContext>(
+      frame->GetProcess()->GetID(), frame->GetRoutingID());
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));
 }
 
-base::Optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
+void BadgeManager::BindServiceWorkerReceiver(
+    content::RenderProcessHost* service_worker_process_host,
+    const GURL& service_worker_scope,
+    mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* profile = Profile::FromBrowserContext(
+      service_worker_process_host->GetBrowserContext());
+
+  auto* badge_manager =
+      badging::BadgeManagerFactory::GetInstance()->GetForProfile(profile);
+  if (!badge_manager)
+    return;
+
+  auto context = std::make_unique<BadgeManager::ServiceWorkerBindingContext>(
+      service_worker_process_host->GetID(), service_worker_scope);
+
+  badge_manager->receivers_.Add(badge_manager, std::move(receiver),
+                                std::move(context));
+}
+
+absl::optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
     const web_app::AppId& app_id) {
   const auto& it = badged_apps_.find(app_id);
   if (it == badged_apps_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second;
 }
 
+bool BadgeManager::HasRecentApiUsage(const web_app::AppId& app_id) const {
+  return IsLastBadgingTimeWithin(kBadgingOverrideLifetime, app_id, clock_,
+                                 profile_);
+}
+
 void BadgeManager::SetBadgeForTesting(const web_app::AppId& app_id,
-                                      BadgeValue value) {
+                                      BadgeValue value,
+                                      ukm::UkmRecorder* test_recorder) {
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  if (value == absl::nullopt) {
+    ukm::builders::Badging(source_id)
+        .SetUpdateAppBadge(kSetFlagBadge)
+        .Record(test_recorder);
+  } else {
+    ukm::builders::Badging(source_id)
+        .SetUpdateAppBadge(kSetNumericBadge)
+        .Record(test_recorder);
+  }
   UpdateBadge(app_id, value);
 }
 
-void BadgeManager::ClearBadgeForTesting(const web_app::AppId& app_id) {
-  UpdateBadge(app_id, base::nullopt);
+void BadgeManager::ClearBadgeForTesting(const web_app::AppId& app_id,
+                                        ukm::UkmRecorder* test_recorder) {
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm::builders::Badging(source_id)
+      .SetUpdateAppBadge(kClearBadge)
+      .Record(test_recorder);
+  UpdateBadge(app_id, absl::nullopt);
+}
+
+const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
+  const base::Clock* previous = clock_;
+  clock_ = clock;
+  return previous;
+}
+
+void BadgeManager::SetSyncBridgeForTesting(
+    web_app::WebAppSyncBridge* sync_bridge) {
+  sync_bridge_ = sync_bridge;
 }
 
 void BadgeManager::UpdateBadge(const web_app::AppId& app_id,
-                               base::Optional<BadgeValue> value) {
+                               absl::optional<BadgeValue> value) {
+  if (sync_bridge_ &&
+      !IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
+                               clock_, profile_)) {
+    sync_bridge_->SetAppLastBadgingTime(app_id, clock_->Now());
+  }
+
   if (!value)
     badged_apps_.erase(app_id);
   else
@@ -99,50 +201,105 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
     return;
   }
 
-  const base::Optional<web_app::AppId> app_id =
-      GetAppIdForBadging(receivers_.current_context());
-  if (!app_id)
-    return;
+  const std::vector<std::tuple<web_app::AppId, GURL>> app_ids_and_urls =
+      receivers_.current_context()->GetAppIdsAndUrlsForBadging();
 
   // Convert the mojo badge representation into a BadgeManager::BadgeValue.
   BadgeValue value = mojo_value->is_flag()
-                         ? base::nullopt
-                         : base::make_optional(mojo_value->get_number());
-  UpdateBadge(app_id.value(), base::make_optional(value));
+                         ? absl::nullopt
+                         : absl::make_optional(mojo_value->get_number());
+
+  // ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
+  for (const auto& app : app_ids_and_urls) {
+    GURL url = std::get<1>(app);
+    // The app's start_url is used to identify the app
+    // for recording badging usage per app.
+    ukm::SourceId source_id = ukm::AppSourceUrlRecorder::GetSourceIdForPWA(url);
+    if (value == absl::nullopt) {
+      ukm::builders::Badging(source_id)
+          .SetUpdateAppBadge(kSetFlagBadge)
+          .Record(recorder);
+    } else {
+      ukm::builders::Badging(source_id)
+          .SetUpdateAppBadge(kSetNumericBadge)
+          .Record(recorder);
+    }
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+
+    UpdateBadge(/*app_id=*/std::get<0>(app), absl::make_optional(value));
+  }
 }
 
 void BadgeManager::ClearBadge() {
-  const base::Optional<web_app::AppId> app_id =
-      GetAppIdForBadging(receivers_.current_context());
-  if (!app_id)
-    return;
+  const std::vector<std::tuple<web_app::AppId, GURL>> app_ids_and_urls =
+      receivers_.current_context()->GetAppIdsAndUrlsForBadging();
 
-  UpdateBadge(app_id.value(), base::nullopt);
+  ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
+  for (const auto& app : app_ids_and_urls) {
+    // The app's start_url is used to identify the app
+    // for recording badging usage per app.
+    GURL url = std::get<1>(app);
+    ukm::SourceId source_id = ukm::AppSourceUrlRecorder::GetSourceIdForPWA(url);
+    ukm::builders::Badging(source_id)
+        .SetUpdateAppBadge(kClearBadge)
+        .Record(recorder);
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+    UpdateBadge(/*app_id=*/std::get<0>(app), absl::nullopt);
+  }
 }
 
-base::Optional<web_app::AppId> BadgeManager::GetAppIdForBadging(
-    const BindingContext& context) {
+std::vector<std::tuple<web_app::AppId, GURL>>
+BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* frame =
-      content::RenderFrameHost::FromID(context.process_id, context.frame_id);
+      content::RenderFrameHost::FromID(process_id_, frame_id_);
   if (!frame)
-    return base::nullopt;
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
   content::WebContents* contents =
       content::WebContents::FromRenderFrameHost(frame);
   if (!contents)
-    return base::nullopt;
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const web_app::AppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))
-          ->registrar();
+  const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
+      Profile::FromBrowserContext(contents->GetBrowserContext()));
+  if (!provider)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const base::Optional<web_app::AppId> app_id =
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
-  return app_id;
+  if (!app_id)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
+  return std::vector<std::tuple<web_app::AppId, GURL>>{std::make_tuple(
+      app_id.value(), registrar.GetAppStartUrl(app_id.value()))};
 }
 
-std::string GetBadgeString(base::Optional<uint64_t> badge_content) {
+std::vector<std::tuple<web_app::AppId, GURL>>
+BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(process_id_);
+  if (!render_process_host)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
+
+  const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
+      Profile::FromBrowserContext(render_process_host->GetBrowserContext()));
+  if (!provider)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
+
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  std::vector<std::tuple<web_app::AppId, GURL>> app_ids_urls{};
+  for (const auto& app_id : registrar.FindAppsInScope(scope_)) {
+    app_ids_urls.push_back(
+        std::make_tuple(app_id, registrar.GetAppStartUrl(app_id)));
+  }
+  return app_ids_urls;
+}
+
+std::string GetBadgeString(absl::optional<uint64_t> badge_content) {
   if (!badge_content)
     return "•";
 

@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"
 
@@ -27,6 +25,9 @@ namespace ownership {
 class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
  public:
   MockOwnerKeyUtil();
+
+  MockOwnerKeyUtil(const MockOwnerKeyUtil&) = delete;
+  MockOwnerKeyUtil& operator=(const MockOwnerKeyUtil&) = delete;
 
   // OwnerKeyUtil implementation:
   bool ImportPublicKey(std::vector<uint8_t>* output) override;
@@ -53,8 +54,6 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
 
   std::vector<uint8_t> public_key_;
   crypto::ScopedSECKEYPrivateKey private_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOwnerKeyUtil);
 };
 
 }  // namespace ownership

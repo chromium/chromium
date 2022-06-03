@@ -11,10 +11,13 @@ import static org.junit.Assert.assertTrue;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaFormat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.nio.ByteBuffer;
@@ -34,6 +37,7 @@ public class MediaFormatBuilderTest {
             0x00, 0x00, 0x00, 0x01, 0x68, (byte) 0xce, 0x38, (byte) 0x80};
 
     private static final String VIDEO_ENCODER_MIME = MediaFormat.MIMETYPE_VIDEO_AVC;
+    private static final int BITRATE_MODE_CBR = 2;
     private static final int VIDEO_ENCODER_BIT_RATE = 16000000;
     private static final int VIDEO_ENCODER_FRAME_RATE = 30;
     private static final int VIDEO_ENCODER_I_FRAME_INTERVAL = 2;
@@ -54,6 +58,11 @@ public class MediaFormatBuilderTest {
         public void addMetadataToFormat(MediaFormat format) {
             was_called = true;
         }
+    }
+
+    @Before
+    public void setUp() {
+        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
     }
 
     @Test
@@ -119,9 +128,11 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateVideoEncoderSetsRelevantKeys() {
         MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_ENCODER_BIT_RATE, VIDEO_ENCODER_FRAME_RATE,
-                VIDEO_ENCODER_I_FRAME_INTERVAL, VIDEO_ENCODER_COLOR_FORMAT, false);
+                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
+                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
+                VIDEO_ENCODER_COLOR_FORMAT, false);
         assertEquals(format.getInteger(MediaFormat.KEY_BIT_RATE), VIDEO_ENCODER_BIT_RATE);
+        assertEquals(format.getInteger(MediaFormat.KEY_BITRATE_MODE), BITRATE_MODE_CBR);
         assertEquals(format.getInteger(MediaFormat.KEY_FRAME_RATE), VIDEO_ENCODER_FRAME_RATE);
         assertEquals(format.getInteger(MediaFormat.KEY_I_FRAME_INTERVAL),
                 VIDEO_ENCODER_I_FRAME_INTERVAL);
@@ -131,8 +142,9 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateVideoEncoderWithAdaptivePlaybackDisabled() {
         MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_ENCODER_BIT_RATE, VIDEO_ENCODER_FRAME_RATE,
-                VIDEO_ENCODER_I_FRAME_INTERVAL, VIDEO_ENCODER_COLOR_FORMAT, false);
+                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
+                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
+                VIDEO_ENCODER_COLOR_FORMAT, false);
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
@@ -140,8 +152,9 @@ public class MediaFormatBuilderTest {
     @Test
     public void testCreateVideoEncoderWithAdaptivePlaybackEnabled() {
         MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(VIDEO_ENCODER_MIME,
-                VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_ENCODER_BIT_RATE, VIDEO_ENCODER_FRAME_RATE,
-                VIDEO_ENCODER_I_FRAME_INTERVAL, VIDEO_ENCODER_COLOR_FORMAT, true);
+                VIDEO_WIDTH, VIDEO_HEIGHT, BITRATE_MODE_CBR, VIDEO_ENCODER_BIT_RATE,
+                VIDEO_ENCODER_FRAME_RATE, VIDEO_ENCODER_I_FRAME_INTERVAL,
+                VIDEO_ENCODER_COLOR_FORMAT, true);
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }

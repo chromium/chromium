@@ -25,6 +25,10 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
                                  public HighlighterController::Observer {
  public:
   explicit MetalayerMode(Delegate* delegate);
+
+  MetalayerMode(const MetalayerMode&) = delete;
+  MetalayerMode& operator=(const MetalayerMode&) = delete;
+
   ~MetalayerMode() override;
 
  private:
@@ -33,20 +37,21 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   // the user.
   bool feature_enabled() const {
     return assistant_enabled_ && assistant_context_enabled_ &&
-           assistant_allowed_state_ == mojom::AssistantAllowedState::ALLOWED;
+           assistant_allowed_state_ ==
+               chromeos::assistant::AssistantAllowedState::ALLOWED;
   }
 
   // Whether the tool is in "loading" state.
   bool loading() const {
     return feature_enabled() &&
-           assistant_state_ == mojom::AssistantState::NOT_READY;
+           assistant_status_ == chromeos::assistant::AssistantStatus::NOT_READY;
   }
 
   // Whether the tool can be selected from the menu (only true when enabled
   // by the user and fully loaded).
   bool selectable() const {
     return feature_enabled() &&
-           assistant_state_ != mojom::AssistantState::NOT_READY;
+           assistant_status_ != chromeos::assistant::AssistantStatus::NOT_READY;
   }
 
   // PaletteTool:
@@ -62,13 +67,15 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
 
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(mojom::AssistantState state) override;
+  void OnAssistantStatusChanged(
+      chromeos::assistant::AssistantStatus status) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantContextEnabled(bool enabled) override;
   void OnAssistantFeatureAllowedChanged(
-      mojom::AssistantAllowedState state) override;
+      chromeos::assistant::AssistantAllowedState state) override;
 
   // HighlighterController::Observer:
   void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
@@ -82,14 +89,15 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   // Called when the metalayer session is complete.
   void OnMetalayerSessionComplete();
 
-  mojom::AssistantState assistant_state_ = mojom::AssistantState::NOT_READY;
+  chromeos::assistant::AssistantStatus assistant_status_ =
+      chromeos::assistant::AssistantStatus::NOT_READY;
 
   bool assistant_enabled_ = false;
 
   bool assistant_context_enabled_ = false;
 
-  mojom::AssistantAllowedState assistant_allowed_state_ =
-      mojom::AssistantAllowedState::ALLOWED;
+  chromeos::assistant::AssistantAllowedState assistant_allowed_state_ =
+      chromeos::assistant::AssistantAllowedState::ALLOWED;
 
   base::TimeTicks previous_stroke_end_;
 
@@ -97,8 +105,6 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   bool activated_via_button_ = false;
 
   base::WeakPtrFactory<MetalayerMode> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetalayerMode);
 };
 
 }  // namespace ash

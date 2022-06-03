@@ -18,6 +18,8 @@
 
 namespace net {
 
+class ProxyResolutionRequest;
+
 namespace test {
 
 class JobControllerPeer;
@@ -47,7 +49,7 @@ class HttpStreamFactory::JobController
   const Job* main_job() const { return main_job_.get(); }
   const Job* alternative_job() const { return alternative_job_.get(); }
 
-  GURL ApplyHostMappingRules(const GURL& url, HostPortPair* endpoint);
+  void RewriteUrlWithHostMappingRules(GURL& url);
 
   // Methods below are called by HttpStreamFactory only.
   // Creates request and hands out to HttpStreamFactory, this will also create
@@ -156,9 +158,6 @@ class HttpStreamFactory::JobController
   // Returns true if |this| has a pending alternative job that is not completed.
   bool HasPendingAltJob() const;
 
-  // Returns the estimated memory usage in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   friend class test::JobControllerPeer;
 
@@ -206,10 +205,6 @@ class HttpStreamFactory::JobController
   // net error of the failed alternative service job.
   void OnAlternativeServiceJobFailed(int net_error);
 
-  // Must be called when the alternative proxy job fails. |net_error| is the
-  // net error of the failed alternative proxy job.
-  void OnAlternativeProxyJobFailed(int net_error);
-
   // Called when all Jobs complete. Reports alternative service brokenness to
   // HttpServerProperties if apply and resets net errors afterwards:
   // - report broken if the main job has no error and the alternative job has an
@@ -248,22 +243,12 @@ class HttpStreamFactory::JobController
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
-  // Returns a quic::ParsedQuicVersion that has been advertised in
-  // |advertised_versions| and is supported.  If more than one
-  // ParsedQuicVersions are supported, the first matched in the supported
-  // versions will be returned.  If no mutually supported version is found,
-  // QUIC_VERSION_UNSUPPORTED_VERSION will be returned.
+  // Returns the first quic::ParsedQuicVersion that has been advertised in
+  // |advertised_versions| and is supported, following the order of
+  // |advertised_versions|.  If no mutually supported version is found,
+  // quic::ParsedQuicVersion::Unsupported() will be returned.
   quic::ParsedQuicVersion SelectQuicVersion(
       const quic::ParsedQuicVersionVector& advertised_versions);
-
-  // Returns true if the |request_| can be fetched via an alternative
-  // proxy server, and sets |alternative_proxy_info| to the alternative proxy
-  // server configuration. |alternative_proxy_info| should not be null,
-  // and is owned by the caller.
-  bool ShouldCreateAlternativeProxyServerJob(
-      const ProxyInfo& proxy_info_,
-      const GURL& url,
-      ProxyInfo* alternative_proxy_info) const;
 
   // Records histogram metrics for the usage of alternative protocol. Must be
   // called when |job| has succeeded and the other job will be orphaned.
@@ -344,11 +329,8 @@ class HttpStreamFactory::JobController
   // It will be nulled when the |request_| is finished.
   Job* bound_job_;
 
-  // True if an alternative proxy server job can be started to fetch |request_|.
-  bool can_start_alternative_proxy_job_;
-
   State next_state_;
-  std::unique_ptr<ProxyResolutionService::Request> proxy_resolve_request_;
+  std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
   const HttpRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const SSLConfig server_ssl_config_;

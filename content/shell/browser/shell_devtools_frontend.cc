@@ -39,10 +39,6 @@ void ShellDevToolsFrontend::Activate() {
   frontend_shell_->ActivateContents(frontend_shell_->web_contents());
 }
 
-void ShellDevToolsFrontend::Focus() {
-  frontend_shell_->web_contents()->Focus();
-}
-
 void ShellDevToolsFrontend::InspectElementAt(int x, int y) {
   devtools_bindings_->InspectElementAt(x, y);
 }
@@ -51,7 +47,8 @@ void ShellDevToolsFrontend::Close() {
   frontend_shell_->Close();
 }
 
-void ShellDevToolsFrontend::DocumentAvailableInMainFrame() {
+void ShellDevToolsFrontend::DocumentAvailableInMainFrame(
+    RenderFrameHost* render_frame_host) {
   devtools_bindings_->Attach();
 }
 

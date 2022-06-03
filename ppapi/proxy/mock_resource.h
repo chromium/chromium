@@ -15,10 +15,11 @@ namespace proxy {
 class MockResource : public ppapi::Resource {
  public:
   MockResource(const ppapi::HostResource& resource);
-  virtual ~MockResource();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockResource);
+  MockResource(const MockResource&) = delete;
+  MockResource& operator=(const MockResource&) = delete;
+
+  virtual ~MockResource();
 };
 
 }  // namespace proxy

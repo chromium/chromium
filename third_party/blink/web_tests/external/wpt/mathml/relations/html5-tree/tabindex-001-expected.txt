@@ -1,0 +1,66 @@
+This is a testharness.js-based test.
+Found 62 tests; 50 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS default and invalid values for annotation without href
+PASS default and invalid values for annotation with href
+PASS default and invalid values for annotation-xml without href
+PASS default and invalid values for annotation-xml with href
+PASS default and invalid values for maction without href
+PASS default and invalid values for maction with href
+PASS default and invalid values for menclose without href
+PASS default and invalid values for menclose with href
+PASS default and invalid values for merror without href
+PASS default and invalid values for merror with href
+PASS default and invalid values for mfrac without href
+PASS default and invalid values for mfrac with href
+FAIL default and invalid values for mi without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mi with href assert_equals: no attribute expected 0 but got -1
+PASS default and invalid values for mmultiscripts without href
+PASS default and invalid values for mmultiscripts with href
+FAIL default and invalid values for mn without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mn with href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mo without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mo with href assert_equals: no attribute expected 0 but got -1
+PASS default and invalid values for mover without href
+PASS default and invalid values for mover with href
+PASS default and invalid values for mpadded without href
+PASS default and invalid values for mpadded with href
+PASS default and invalid values for mphantom without href
+PASS default and invalid values for mphantom with href
+PASS default and invalid values for mprescripts without href
+PASS default and invalid values for mprescripts with href
+PASS default and invalid values for mroot without href
+PASS default and invalid values for mroot with href
+FAIL default and invalid values for mrow without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mrow with href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for ms without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for ms with href assert_equals: no attribute expected 0 but got -1
+PASS default and invalid values for mspace without href
+PASS default and invalid values for mspace with href
+PASS default and invalid values for msqrt without href
+PASS default and invalid values for msqrt with href
+PASS default and invalid values for mstyle without href
+PASS default and invalid values for mstyle with href
+PASS default and invalid values for msub without href
+PASS default and invalid values for msub with href
+PASS default and invalid values for msubsup without href
+PASS default and invalid values for msubsup with href
+PASS default and invalid values for msup without href
+PASS default and invalid values for msup with href
+PASS default and invalid values for mtable without href
+PASS default and invalid values for mtable with href
+PASS default and invalid values for mtd without href
+PASS default and invalid values for mtd with href
+FAIL default and invalid values for mtext without href assert_equals: no attribute expected 0 but got -1
+FAIL default and invalid values for mtext with href assert_equals: no attribute expected 0 but got -1
+PASS default and invalid values for mtr without href
+PASS default and invalid values for mtr with href
+PASS default and invalid values for munder without href
+PASS default and invalid values for munder with href
+PASS default and invalid values for munderover without href
+PASS default and invalid values for munderover with href
+PASS default and invalid values for none without href
+PASS default and invalid values for none with href
+PASS default and invalid values for semantics without href
+PASS default and invalid values for semantics with href
+Harness: the test ran to completion.
+

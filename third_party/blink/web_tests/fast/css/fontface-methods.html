@@ -1,6 +1,9 @@
+<!doctype html>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<title>Tests load() method of FontFace</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <style>
 @font-face {
     font-family: Font1;
@@ -13,79 +16,60 @@
 }
 </style>
 <script>
-description('Tests load() method of FontFace.');
-
-window.jsTestIsAsync = true;
-
 function getDocumentFontFaces() {
     var faces = [];
     document.fonts.forEach(function(face) { faces.push(face); });
     return faces;
 }
 
-function fail(message) {
-    return function() {
-        testFailed(message);
-        finishJSTest();
-    };
+function rejection(promise) {
+  return new Promise((resolve, reject) => promise.then(reject, resolve));
 }
 
-function testStep1() {
-    var faces = getDocumentFontFaces();
-    face1 = faces[0];
-    face2 = faces[1];
+promise_test(async () => {
+    face1 = getDocumentFontFaces()[0];
+    assert_equals(face1.status, 'unloaded');
+    face1.load();
+    assert_equals(face1.status, 'loading');
+    await face1.loaded;
+    assert_equals(face1.status, 'loaded');
+}, 'face1.load() should be fulfilled');
 
-    shouldBeEqualToString('face1.status', 'unloaded');
-    face1.load().then(testStep2, fail('face1.load() rejected'));
-    shouldBeEqualToString('face1.status', 'loading');
-}
+promise_test(async () => {
+    face2 = getDocumentFontFaces()[1];
+    assert_equals(face2.status, 'unloaded');
+    face2.load();
+    assert_equals(face2.status, 'loading');
+    await rejection(face2.loaded);
+    assert_equals(face2.status, 'error');
+}, 'face2.load() should be rejected');
 
-function testStep2() {
-    shouldBeEqualToString('face1.status', 'loaded');
-
-    shouldBeEqualToString('face2.status', 'unloaded');
-    face2.load().then(fail('face2.load() fulfilled'), testStep3);
-    shouldBeEqualToString('face2.status', 'loading');
-}
-
-function testStep3() {
-    shouldBeEqualToString('face2.status', 'error');
-
+promise_test(async () => {
     face3 = new FontFace('Font3', 'url(../../resources/Ahem.ttf?font3)', {});
-    shouldBeEqualToString('face3.status', 'unloaded');
+    assert_equals(face3.status, 'unloaded');
     face3.load();
-    shouldBeEqualToString('face3.status', 'loading');
-    face3.loaded.then(testStep4, fail('face3.load() rejected'));
-}
+    assert_equals(face3.status, 'loading');
+    await face3.loaded;
+    assert_equals(face3.status, 'loaded');
+}, 'face3.load() should be fulfilled');
 
-function testStep4() {
-    shouldBeEqualToString('face3.status', 'loaded');
-
+promise_test(async () => {
     face4 = new FontFace('Font4', 'url(../../resources/DownLoadErrorAhem.otf)', {});
-    shouldBeEqualToString('face4.status', 'unloaded');
+    assert_equals(face4.status, 'unloaded');
     face4.load();
-    shouldBeEqualToString('face4.status', 'loading');
-    face4.loaded.then(fail('face4.load() fulfilled'), testStep5);
-}
+    assert_equals(face4.status, 'loading');
+    await rejection(face4.loaded);
+    assert_equals(face4.status, 'error');
+}, 'face4.load() should be rejected');
 
-function testStep5() {
-    shouldBeEqualToString('face4.status', 'error');
-
+promise_test(async () => {
     face5 = new FontFace('Font5', 'url(data:font/truetype;base64,), url(../../resources/Ahem.ttf?font5)', {});
-    shouldBeEqualToString('face5.status', 'unloaded');
-    face5.load().then(testStep6, fail('face5.load() rejected'));
-    shouldBeEqualToString('face5.status', 'loading');
-}
-
-function testStep6() {
-    shouldBeEqualToString('face5.status', 'loaded');
-    finishJSTest();
-}
-
-if (document.fonts)
-    testStep1();
-else
-    testFailed('document.fonts does not exist');
+    assert_equals(face5.status, 'unloaded');
+    face5.load();
+    assert_equals(face5.status, 'loading');
+    await face5.loaded;
+    assert_equals(face5.status, 'loaded');
+}, 'face5.load() should be fulfilled');
 
 </script>
 </head>

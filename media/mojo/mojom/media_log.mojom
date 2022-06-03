@@ -7,5 +7,5 @@ module media.mojom;
 import "media/mojo/mojom/media_types.mojom";
 
 interface MediaLog {
-  AddEvent(MediaLogEvent event);
+  AddLogRecord(MediaLogRecord event);
 };

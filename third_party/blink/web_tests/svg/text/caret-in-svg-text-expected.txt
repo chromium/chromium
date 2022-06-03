@@ -1,7 +1,0 @@
-Sheriff Woody
-שדגש
-
-Failure. Was: 20,15,0,19, expected: 20,566,0,18
-Failure. Was: 113,15,0,19, expected: 114,566,0,18
-Failure. Was: 20,35,0,19, expected: 58,546,0,18
-Failure. Was: 55,35,0,19, expected: 20,546,0,18

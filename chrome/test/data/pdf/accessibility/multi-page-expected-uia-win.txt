@@ -1,8 +1,7 @@
-group
-++document Name='PDF document containing 2 pages'
-++++region Name='Page 1'
-++++++group IsControlElement=false
-++++++++description Name='Page 1'
-++++region Name='Page 2'
-++++++group IsControlElement=false
-++++++++description Name='Page 2'
+Document Name='PDF document containing 2 pages'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Text Name='Page 1'
+++Group Name='Page 2'
+++++Group IsControlElement=false
+++++++Text Name='Page 2'

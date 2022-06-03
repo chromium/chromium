@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../forms/resources/picker-common.js"></script>
+
+<input type=date id=dateElement>
+
+<script>
+promise_test(async () => {
+  await openPickerWithPromise(dateElement);
+  const {Month, Day, Week, isWeekOutsideOfRange} = popupWindow;
+
+  assert_true(isWeekOutsideOfRange(
+    /*week=*/new Week(1, 1),
+    /*minWeek=*/new Week(2, 1),
+    /*maxWeek=*/new Week(3, 1)),
+    'week.year < min < max: week is outside of range');
+  assert_false(isWeekOutsideOfRange(
+    /*week=*/new Week(2, 9),
+    /*minWeek=*/new Week(1, 1),
+    /*maxWeek=*/new Week(3, 1)),
+    'min < week.year < max: week is within range');
+  assert_true(isWeekOutsideOfRange(
+    /*week=*/new Week(3, 1),
+    /*minWeek=*/new Week(1, 1),
+    /*maxWeek=*/new Week(2, 1)),
+    'min < max < week.year: week is outside of range');
+
+  assert_true(isWeekOutsideOfRange(
+    /*week=*/new Week(1, 1),
+    /*minWeek=*/new Week(1, 2),
+    /*maxWeek=*/new Week(1, 3)),
+    'week.week < min < max: week is outside of range');
+  assert_false(isWeekOutsideOfRange(
+    /*week=*/new Week(1, 2),
+    /*minWeek=*/new Week(1, 1),
+    /*maxWeek=*/new Week(1, 3)),
+    'min < week.week < max: week is within range');
+  assert_true(isWeekOutsideOfRange(
+    /*week=*/new Week(1, 3),
+    /*minWeek=*/new Week(1, 1),
+    /*maxWeek=*/new Week(1, 2)),
+    'min < max < week.week: week is outside of range');
+
+}, `Tests behavior of the date picker's internal function isTodayOutsideOfRange.`);
+</script>

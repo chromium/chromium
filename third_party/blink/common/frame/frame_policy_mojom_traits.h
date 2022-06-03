@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_COMMON_FRAME_FRAME_POLICY_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_COMMON_FRAME_FRAME_POLICY_MOJOM_TRAITS_H_
 
-#include "third_party/blink/common/feature_policy/feature_policy_mojom_traits.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/frame/frame_policy.mojom-shared.h"
 
@@ -15,21 +16,21 @@ template <>
 class BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy> {
  public:
-  static bool allowed_to_download(const blink::FramePolicy& frame_policy) {
-    return frame_policy.allowed_to_download;
+  static bool is_fenced(const blink::FramePolicy& frame_policy) {
+    return frame_policy.is_fenced;
   }
 
-  static const std::vector<blink::ParsedFeaturePolicyDeclaration>&
+  static const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
   container_policy(const blink::FramePolicy& frame_policy) {
     return frame_policy.container_policy;
   }
 
-  static blink::WebSandboxFlags sandbox_flags(
+  static network::mojom::WebSandboxFlags sandbox_flags(
       const blink::FramePolicy& frame_policy) {
     return frame_policy.sandbox_flags;
   }
 
-  static const blink::DocumentPolicy::FeatureState& required_document_policy(
+  static const blink::DocumentPolicyFeatureState& required_document_policy(
       const blink::FramePolicy& frame_policy) {
     return frame_policy.required_document_policy;
   }

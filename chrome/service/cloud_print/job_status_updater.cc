@@ -6,10 +6,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
@@ -34,8 +33,7 @@ JobStatusUpdater::JobStatusUpdater(
     PrintSystem* print_system,
     Delegate* delegate,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
-    : start_time_(base::Time::Now()),
-      printer_name_(printer_name),
+    : printer_name_(printer_name),
       job_id_(job_id),
       local_job_id_(local_job_id),
       cloud_print_server_url_(cloud_print_server_url),
@@ -73,18 +71,13 @@ void JobStatusUpdater::UpdateStatus() {
         last_job_details_.status = PRINT_JOB_STATUS_COMPLETED;
         need_update = true;
       }
-      UMA_HISTOGRAM_ENUMERATION("CloudPrint.NativeJobStatus",
-                                last_job_details_.status, PRINT_JOB_STATUS_MAX);
     }
     if (need_update) {
       request_ = CloudPrintURLFetcher::Create(partial_traffic_annotation_);
       request_->StartGetRequest(
-          CloudPrintURLFetcher::REQUEST_UPDATE_JOB,
-          GetUrlForJobStatusUpdate(
-              cloud_print_server_url_, job_id_, last_job_details_),
-          this,
-          kCloudPrintAPIMaxRetryCount,
-          std::string());
+          GetUrlForJobStatusUpdate(cloud_print_server_url_, job_id_,
+                                   last_job_details_),
+          this, kCloudPrintAPIMaxRetryCount);
     }
   }
 }
@@ -117,7 +110,7 @@ CloudPrintURLFetcher::ResponseAction JobStatusUpdater::OnRequestAuthError() {
   return CloudPrintURLFetcher::STOP_PROCESSING;
 }
 
-std::string JobStatusUpdater::GetAuthHeader() {
+std::string JobStatusUpdater::GetAuthHeaderValue() {
   return GetCloudPrintAuthHeaderFromStore();
 }
 

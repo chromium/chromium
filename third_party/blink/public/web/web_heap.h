@@ -44,12 +44,8 @@ class WebHeap {
   // outside of tests.
   BLINK_EXPORT static void CollectGarbageForTesting();
   BLINK_EXPORT static void CollectAllGarbageForTesting();
-
-  // These functions allow hooking the GC allocator.
-  BLINK_EXPORT static void SetAllocationHook(AllocationHook);
-  BLINK_EXPORT static void SetFreeHook(FreeHook);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HEAP_H_

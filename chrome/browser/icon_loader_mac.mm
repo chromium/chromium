@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -23,7 +23,7 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
 // static
 scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
   // NSWorkspace is thread-safe.
-  return base::CreateTaskRunner(traits());
+  return base::ThreadPool::CreateTaskRunner(traits());
 }
 
 void IconLoader::ReadIcon() {

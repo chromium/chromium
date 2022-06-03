@@ -10,8 +10,7 @@
 #include "ipc/ipc_message_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
@@ -98,31 +97,25 @@ void ParamTraits<SkBitmap>::Log(const SkBitmap& p, std::string* l) {
 }
 
 void ParamTraits<gfx::Transform>::Write(base::Pickle* m, const param_type& p) {
-#ifdef SK_MSCALAR_IS_FLOAT
-  float column_major_data[16];
+  SkScalar column_major_data[16];
   p.matrix().asColMajorf(column_major_data);
-#else
-  double column_major_data[16];
-  p.matrix().asColMajord(column_major_data);
-#endif
   // We do this in a single write for performance reasons.
-  m->WriteBytes(&column_major_data, sizeof(SkMScalar) * 16);
+  m->WriteBytes(&column_major_data, sizeof(SkScalar) * 16);
 }
 
 bool ParamTraits<gfx::Transform>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
   const char* column_major_data;
-  if (!iter->ReadBytes(&column_major_data, sizeof(SkMScalar) * 16))
+  if (!iter->ReadBytes(&column_major_data, sizeof(SkScalar) * 16))
     return false;
-  r->matrix().setColMajor(
-      reinterpret_cast<const SkMScalar*>(column_major_data));
+  r->matrix().setColMajor(reinterpret_cast<const SkScalar*>(column_major_data));
   return true;
 }
 
 void ParamTraits<gfx::Transform>::Log(
     const param_type& p, std::string* l) {
-#ifdef SK_MSCALAR_IS_FLOAT
+#ifdef SK_SCALAR_IS_FLOAT
   float row_major_data[16];
   p.matrix().asRowMajorf(row_major_data);
 #else

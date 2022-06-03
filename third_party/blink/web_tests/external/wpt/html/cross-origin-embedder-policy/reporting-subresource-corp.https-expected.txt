@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS [document] same-origin
+PASS [document] blocked by CORP: same-origin
+PASS [document] blocked due to COEP
+PASS [document] blocked during redirect
+PASS [dedicated worker] same-origin
+PASS [dedicated worker] blocked by CORP: same-origin
+FAIL [dedicated worker] blocked due to COEP assert_equals: expected 2 but got 0
+FAIL [dedicated worker] blocked during redirect assert_equals: expected 2 but got 0
+PASS [shared worker] same-origin
+PASS [shared worker] blocked by CORP: same-origin
+FAIL [shared worker] blocked due to COEP assert_equals: expected 2 but got 0
+FAIL [shared worker] blocked during redirect assert_equals: expected 2 but got 0
+PASS [service worker] same-origin
+PASS [service worker] blocked by CORP: same-origin
+PASS [service worker] blocked due to COEP
+PASS [service worker] blocked during redirect
+PASS [between service worker and page] same-origin
+PASS [between service worker and page] blocked by CORP: same-origin
+PASS [between service worker and page] blocked due to COEP
+PASS [between service worker and page] blocked during redirect
+PASS destination: script
+Harness: the test ran to completion.
+

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/download/google_drive_app_util.h"
+#import "ios/chrome/browser/download/external_app_util.h"
 
 #import <UIKit/UIKit.h>
 

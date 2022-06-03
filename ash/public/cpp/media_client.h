@@ -18,8 +18,23 @@ class ASH_PUBLIC_EXPORT MediaClient {
   // Handles the Play/Pause Toggle Media shortcut key.
   virtual void HandleMediaPlayPause() = 0;
 
+  // Handles the Play Media shortcut key.
+  virtual void HandleMediaPlay() = 0;
+
+  // Handles the Pause Media shortcut key.
+  virtual void HandleMediaPause() = 0;
+
+  // Handles the Stop Media shortcut key.
+  virtual void HandleMediaStop() = 0;
+
   // Handles the Previous Track Media shortcut key.
   virtual void HandleMediaPrevTrack() = 0;
+
+  // Handles the Seek Backward Media shortcut key.
+  virtual void HandleMediaSeekBackward() = 0;
+
+  // Handles the Seek Forward Media shortcut key.
+  virtual void HandleMediaSeekForward() = 0;
 
   // Requests that the client resends the NotifyMediaCaptureChanged() message.
   virtual void RequestCaptureState() = 0;

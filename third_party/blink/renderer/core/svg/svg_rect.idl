@@ -25,6 +25,7 @@
 // TODO(foolip): SVGRect is gone from SVG 2, replaced by DOMRect.
 // https://crbug.com/709001
 [
+    Exposed=Window,
     ImplementedAs=SVGRectTearOff
 ] interface SVGRect {
     [RaisesException=Setter] attribute unrestricted float x;

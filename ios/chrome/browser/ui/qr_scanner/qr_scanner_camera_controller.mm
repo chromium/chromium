@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

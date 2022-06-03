@@ -4,8 +4,10 @@
 
 module media.mojom;
 
+import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This file decribes the communication between a given Renderer Host interface
@@ -69,9 +71,8 @@ interface VideoCaptureObserver {
   // video frames via calls to OnBufferReady().
   OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
 
-  // |buffer_id| has video capture data with |info| containing the associated
-  // VideoFrame constituent parts.
-  OnBufferReady(int32 buffer_id, VideoFrameInfo info);
+  // |buffer| and |scaled_buffers| have capture data ready for consumption.
+  OnBufferReady(ReadyBuffer buffer, array<ReadyBuffer> scaled_buffers);
 
   // The buffer handle previously registered for |buffer_id| via OnNewBuffer(),
   // is no longer going to be used by the Browser/Host.
@@ -98,13 +99,21 @@ interface VideoCaptureHost {
          mojo_base.mojom.UnguessableToken session_id,
          VideoCaptureParams params);
 
+  // Start/stop cropping the video track.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  Crop(mojo_base.mojom.UnguessableToken device_id,
+       mojo_base.mojom.Token crop_id)
+    => (CropRequestResult crop_result);
+
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).
   RequestRefreshFrame(mojo_base.mojom.UnguessableToken device_id);
 
   // Indicates that a renderer has finished using a previously shared buffer.
   ReleaseBuffer(mojo_base.mojom.UnguessableToken device_id, int32 buffer_id,
-                double consumer_resource_utilization);
+                VideoCaptureFeedback feedback);
 
   // Get the formats supported by a device referenced by |session_id|.
   GetDeviceSupportedFormats(mojo_base.mojom.UnguessableToken device_id,

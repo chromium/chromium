@@ -4,17 +4,19 @@
 
 #include "chrome/installer/setup/setup_install_details.h"
 
+#include <string>
+
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/google_update_constants.h"
-#include "chrome/installer/util/master_preferences.h"
-#include "chrome/installer/util/master_preferences_constants.h"
+#include "chrome/installer/util/initial_preferences.h"
+#include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -31,39 +33,29 @@ const install_static::InstallConstants* FindInstallMode(
   return &install_static::kInstallModes[0];
 }
 
-// Returns true if Chrome is installed (i.e., has a "pv" value) and its
-// UninstallArguments contains "--multi-install".
-bool IsUpdatingFromMulti(const install_static::InstallConstants& mode,
-                         bool system_level) {
-  const HKEY root = system_level ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  const wchar_t* const app_guid = mode.app_guid;
-  base::win::RegKey key;
-  base::string16 value;
-
-  return key.Open(root, install_static::GetClientsKeyPath(app_guid).c_str(),
-                  KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
-         key.ReadValue(google_update::kRegVersionField, &value) ==
-             ERROR_SUCCESS &&
-         !value.empty() &&
-         key.Open(root, install_static::GetClientStateKeyPath(app_guid).c_str(),
-                  KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
-         key.ReadValue(installer::kUninstallArgumentsField, &value) ==
-             ERROR_SUCCESS &&
-         value.find(L"--multi-install") != base::string16::npos;
+// Returns the value of `switch_name` from `command_line` if it is present, or
+// nullopt otherwise.
+absl::optional<std::wstring> GetSwitchValue(
+    const base::CommandLine& command_line,
+    base::StringPiece switch_name) {
+  absl::optional<std::wstring> result;
+  if (command_line.HasSwitch(switch_name))
+    result = command_line.GetSwitchValueNative(switch_name);
+  return result;
 }
 
 }  // namespace
 
 void InitializeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences) {
+    const installer::InitialPreferences& initial_preferences) {
   install_static::InstallDetails::SetForProcess(
-      MakeInstallDetails(command_line, master_preferences));
+      MakeInstallDetails(command_line, initial_preferences));
 }
 
 std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences) {
+    const installer::InitialPreferences& initial_preferences) {
   std::unique_ptr<install_static::PrimaryInstallDetails> details(
       std::make_unique<install_static::PrimaryInstallDetails>());
 
@@ -73,32 +65,41 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   details->set_mode(mode);
 
   // The install level may be set by any of:
-  // - distribution.system_level=true in master_preferences,
+  // - distribution.system_level=true in initial_preferences,
   // - --system-level on the command line, or
   // - the GoogleUpdateIsMachine=1 environment variable.
-  // In all three cases the value is sussed out in MasterPreferences
+  // In all three cases the value is sussed out in InitialPreferences
   // initialization.
   bool system_level = false;
-  master_preferences.GetBool(installer::master_preferences::kSystemLevel,
-                             &system_level);
+  initial_preferences.GetBool(installer::initial_preferences::kSystemLevel,
+                              &system_level);
   details->set_system_level(system_level);
 
   // The channel is determined based on the brand and the mode's
   // ChannelStrategy. For brands that do not support Google Update, the channel
   // is an empty string. For modes using the FIXED strategy, the channel is the
-  // default_channel_name in the mode. For modes using the ADDITIONAL_PARAMETERS
-  // strategy, the channel is parsed from the "ap" value in either the binaries'
-  // ClientState registry key or the mode's ClientState registry key. Which one
-  // is used depends on whether or not this Chrome is updating from a legacy
-  // multi-install Chrome.
+  // default_channel_name in the mode. For modes using the FLOATING strategy,
+  // the channel is dictated by the --channel switch on the command line or the
+  // mode's default if none is provided. An override on the command line will be
+  // written to the "ap" value for the sake of subsequent update checks.
 
   // Cache the ap and cohort name values found in the registry for use in crash
   // keys.
-  base::string16 update_ap;
-  base::string16 update_cohort_name;
-  details->set_channel(install_static::DetermineChannel(
-      *mode, system_level, IsUpdatingFromMulti(*mode, system_level), &update_ap,
-      &update_cohort_name));
+  std::wstring update_ap;
+  std::wstring update_cohort_name;
+
+  absl::optional<std::wstring> channel_from_cmd_line =
+      GetSwitchValue(command_line, installer::switches::kChannel);
+
+  auto channel = install_static::DetermineChannel(
+      *mode, system_level,
+      channel_from_cmd_line ? channel_from_cmd_line->c_str() : nullptr,
+      &update_ap, &update_cohort_name);
+  details->set_channel(channel.channel_name);
+  details->set_channel_origin(channel.origin);
+  if (channel.origin == install_static::ChannelOrigin::kPolicy)
+    details->set_channel_override(*channel_from_cmd_line);
+  details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);
 

@@ -15,6 +15,10 @@ class FullscreenModel;
 class FullscreenModelObserver {
  public:
   FullscreenModelObserver() = default;
+
+  FullscreenModelObserver(const FullscreenModelObserver&) = delete;
+  FullscreenModelObserver& operator=(const FullscreenModelObserver&) = delete;
+
   virtual ~FullscreenModelObserver() = default;
 
   // Invoked when |model|'s toolbar heights have been updated.
@@ -34,9 +38,6 @@ class FullscreenModelObserver {
 
   // Invoked when the model is reset.
   virtual void FullscreenModelWasReset(FullscreenModel* model) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenModelObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_OBSERVER_H_

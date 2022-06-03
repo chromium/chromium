@@ -1,0 +1,13 @@
+Name: classworlds
+Short Name: classworlds
+URL: http://classworlds.codehaus.org/
+Version: 1.1-alpha-2
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A class loader framework.
+
+Local Modifications:
+No modifications.

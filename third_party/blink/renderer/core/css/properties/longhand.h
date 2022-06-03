@@ -8,13 +8,14 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSValue;
-class StyleResolverState;
 class CSSParserContext;
 class CSSParserLocalContext;
 class CSSParserTokenRange;
@@ -30,8 +31,20 @@ class Longhand : public CSSProperty {
   }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
+  // Properties which take tree-scoped references should override this method to
+  // handle the TreeScope during application.
+  virtual void ApplyValue(StyleResolverState& state,
+                          const ScopedCSSValue& scoped_value) const {
+    ApplyValue(state, scoped_value.GetCSSValue());
+  }
   virtual void ApplyValue(StyleResolverState&, const CSSValue&) const {
     NOTREACHED();
+  }
+  void ApplyUnset(StyleResolverState& state) const {
+    if (state.IsInheritedForUnset(*this))
+      ApplyInherit(state);
+    else
+      ApplyInitial(state);
   }
   virtual const blink::Color ColorIncludingFallback(bool, const ComputedStyle&)
       const {
@@ -43,9 +56,7 @@ class Longhand : public CSSProperty {
   }
 
  protected:
-  constexpr Longhand(CSSPropertyID id,
-                     uint16_t flags,
-                     char repetition_separator)
+  constexpr Longhand(CSSPropertyID id, Flags flags, char repetition_separator)
       : CSSProperty(id, flags | kLonghand, repetition_separator) {}
 };
 

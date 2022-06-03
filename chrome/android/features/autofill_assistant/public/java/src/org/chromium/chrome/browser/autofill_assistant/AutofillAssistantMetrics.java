@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
+import org.chromium.chrome.browser.autofill_assistant.strings.IntentStrings;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Records user actions and histograms related to Autofill Assistant.
@@ -15,42 +19,82 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
  * All enums are auto generated from
  * components/autofill_assistant/browser/metrics.h.
  */
-/* package */ class AutofillAssistantMetrics {
-    /**
-     * Note: Java-side constructors expect a (NUM_ENTRIES+1) value, but C++ works with implicitly
-     * defined enum boundaries using 'kMaxValue'. See crbug.com/983518.
-     */
-    private static final EnumeratedHistogramSample ENUMERATED_DROP_OUT_REASON =
-            new EnumeratedHistogramSample(
-                    "Android.AutofillAssistant.DropOutReason", DropOutReason.MAX_VALUE + 1);
-
-    private static final EnumeratedHistogramSample ENUMERATED_ON_BOARDING =
-            new EnumeratedHistogramSample(
-                    "Android.AutofillAssistant.OnBoarding", OnBoarding.MAX_VALUE + 1);
-
-    private static final EnumeratedHistogramSample ENUMERATED_FEATURE_MODULE_INSTALLATION =
-            new EnumeratedHistogramSample("Android.AutofillAssistant.FeatureModuleInstallation",
-                    FeatureModuleInstallation.MAX_VALUE + 1);
-
+public class AutofillAssistantMetrics {
     /**
      * Records the reason for a drop out.
      */
-    /* package */ static void recordDropOut(@DropOutReason int reason) {
-        ENUMERATED_DROP_OUT_REASON.record(reason);
+    public static void recordDropOut(@DropOutReason int reason, String intent) {
+        String histogramSuffix = getHistogramSuffixForIntent(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.DropOutReason." + histogramSuffix, reason,
+                DropOutReason.MAX_VALUE + 1);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.DropOutReason", reason, DropOutReason.MAX_VALUE + 1);
     }
 
     /**
      * Records the onboarding related action.
      */
-    /* package */ static void recordOnBoarding(@OnBoarding int metric) {
-        ENUMERATED_ON_BOARDING.record(metric);
+    public static void recordOnBoarding(@OnBoarding int metric, String intent) {
+        String histogramSuffix = getHistogramSuffixForIntent(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.OnBoarding." + histogramSuffix, metric,
+                OnBoarding.MAX_VALUE + 1);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.OnBoarding", metric, OnBoarding.MAX_VALUE + 1);
     }
 
     /**
      * Records the feature module installation action.
      */
-    /* package */ static void recordFeatureModuleInstallation(
-            @FeatureModuleInstallation int metric) {
-        ENUMERATED_FEATURE_MODULE_INSTALLATION.record(metric);
+    public static void recordFeatureModuleInstallation(@FeatureModuleInstallation int metric) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.FeatureModuleInstallation", metric,
+                FeatureModuleInstallation.MAX_VALUE + 1);
+    }
+
+    /**
+     * Returns whether {@code webContents} are non-null and valid. Invalid
+     * webContents will cause a failed DCHECK when attempting to report UKM metrics.
+     */
+    private static boolean areWebContentsValid(@Nullable WebContents webContents) {
+        return webContents != null && !webContents.isDestroyed();
+    }
+
+    /**
+     * Returns histogram suffix for given intent.
+     */
+    private static String getHistogramSuffixForIntent(@Nullable String intent) {
+        if (intent == null) {
+            // Intent is not set.
+            return "NotSet";
+        }
+        switch (intent) {
+            case IntentStrings.BUY_MOVIE_TICKET:
+                return "BuyMovieTicket";
+            case IntentStrings.FLIGHTS_CHECKIN:
+                return "FlightsCheckin";
+            case IntentStrings.FOOD_ORDERING:
+                return "FoodOrdering";
+            case IntentStrings.FOOD_ORDERING_DELIVERY:
+                return "FoodOrderingDelivery";
+            case IntentStrings.FOOD_ORDERING_PICKUP:
+                return "FoodOrderingPickup";
+            case IntentStrings.PASSWORD_CHANGE:
+                return "PasswordChange";
+            case IntentStrings.RENT_CAR:
+                return "RentCar";
+            case IntentStrings.SHOPPING:
+                return "Shopping";
+            case IntentStrings.SHOPPING_ASSISTED_CHECKOUT:
+                return "ShoppingAssistedCheckout";
+            case IntentStrings.TELEPORT:
+                return "Teleport";
+        }
+        return "UnknownIntent";
     }
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 
@@ -24,10 +25,11 @@ void InputKeys(Browser* browser, const std::vector<ui::KeyboardCode>& keys) {
 class SelectedKeywordViewTest : public extensions::ExtensionBrowserTest {
  public:
   SelectedKeywordViewTest() = default;
-  ~SelectedKeywordViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectedKeywordViewTest);
+  SelectedKeywordViewTest(const SelectedKeywordViewTest&) = delete;
+  SelectedKeywordViewTest& operator=(const SelectedKeywordViewTest&) = delete;
+
+  ~SelectedKeywordViewTest() override = default;
 };
 
 // Tests that an extension's short name is registered as the value of the
@@ -44,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   // Activate the extension's omnibox keyword.
-  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y, ui::VKEY_SPACE});
+  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y, ui::VKEY_TAB});
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   SelectedKeywordView* selected_keyword_view =

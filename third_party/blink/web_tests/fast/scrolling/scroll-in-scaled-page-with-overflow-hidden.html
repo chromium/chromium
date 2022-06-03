@@ -1,0 +1,59 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+
+<style>
+    html, body { margin:0; overflow: hidden; }
+</style>
+
+<div>
+  This tests that a usually overflow: hidden viewport should be scrollable when
+  scaled. Otherwise, you can't get to content you would have been able to get to
+  had you not been zoomed it.
+</div>
+<div id="console"></div>
+
+<div style='font-size:40px; height: 1000px;'>
+</div>
+
+<script>
+  const MOUSE_INPUT = GestureSourceType.MOUSE_INPUT;
+  async function runTest() {
+    promise_test( async () => {
+      assert_true(typeof(window.internals) !== "undefined",
+                  "This test requires window.internals.");
+
+      // Force a layout.
+      document.body.offsetLeft;
+
+      internals.setPageScaleFactor(2);
+
+      await waitForCompositorCommit();
+
+      // Note that with ScrollTopLeftInterop enabled,
+      // document.scrollingElement is null because document.body is
+      // potentially scrollable (with overflow:hidden the box can still
+      // be scrolled programmatically).
+      assert_equals(window.visualViewport.pageTop, 0);
+
+      const { y: pixelsToScrollY } = calculatePixelsToScroll(
+        document.scrollingElement, 0, 700
+      );
+      await smoothScroll(
+        pixelsToScrollY, 100, 100, MOUSE_INPUT, 'down', SPEED_INSTANT
+      );
+      await waitForAnimationEndTimeBased(() => {
+        return window.visualViewport.pageTop;
+      });
+      const expectedPageTop = 300;
+      assert_equals(
+        window.visualViewport.pageTop,
+        expectedPageTop,
+        "Visual viewport is scrolled fully to the bottom"
+      );
+    },
+    "Viewport with overflow: hidden can still be panned when pinch-zoomed in.");
+  }
+  window.addEventListener("load", runTest);
+</script>

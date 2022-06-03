@@ -26,7 +26,7 @@ struct SpeechSynthesisVoice {
   bool is_default;
 };
 
-// This interface receives updates to the list of voices. See SpeechSythesis'
+// This interface receives updates to the list of voices. See SpeechSynthesis'
 // AddVoiceListObserver method.
 interface SpeechSynthesisVoiceListObserver {
   // Receives the list of voices that may be used.

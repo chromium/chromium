@@ -4,12 +4,14 @@
 
 #include "ash/dbus/ash_dbus_services.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/dbus/display_service_provider.h"
 #include "ash/dbus/gesture_properties_service_provider.h"
 #include "ash/dbus/liveness_service_provider.h"
+#include "ash/dbus/privacy_screen_service_provider.h"
 #include "ash/dbus/url_handler_service_provider.h"
+#include "ash/dbus/user_authentication_service_provider.h"
 #include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -35,18 +37,30 @@ AshDBusServices::AshDBusServices(dbus::Bus* system_bus) {
       dbus::ObjectPath(chromeos::kLivenessServicePath),
       chromeos::CrosDBusService::CreateServiceProviderList(
           std::make_unique<LivenessServiceProvider>()));
+  privacy_screen_service_ = chromeos::CrosDBusService::Create(
+      system_bus, privacy_screen::kPrivacyScreenServiceName,
+      dbus::ObjectPath(privacy_screen::kPrivacyScreenServicePath),
+      chromeos::CrosDBusService::CreateServiceProviderList(
+          std::make_unique<PrivacyScreenServiceProvider>()));
   url_handler_service_ = chromeos::CrosDBusService::Create(
       system_bus, chromeos::kUrlHandlerServiceName,
       dbus::ObjectPath(chromeos::kUrlHandlerServicePath),
       chromeos::CrosDBusService::CreateServiceProviderList(
           std::make_unique<UrlHandlerServiceProvider>()));
+  user_authentication_service_ = chromeos::CrosDBusService::Create(
+      system_bus, chromeos::kUserAuthenticationServiceName,
+      dbus::ObjectPath(chromeos::kUserAuthenticationServicePath),
+      chromeos::CrosDBusService::CreateServiceProviderList(
+          std::make_unique<UserAuthenticationServiceProvider>()));
 }
 
 AshDBusServices::~AshDBusServices() {
   display_service_.reset();
   gesture_properties_service_.reset();
   liveness_service_.reset();
+  privacy_screen_service_.reset();
   url_handler_service_.reset();
+  user_authentication_service_.reset();
 }
 
 }  // namespace ash

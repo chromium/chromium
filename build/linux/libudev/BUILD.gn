@@ -7,6 +7,7 @@ import("//tools/generate_library_loader/generate_library_loader.gni")
 libudev_functions = [
   "udev_device_get_action",
   "udev_device_get_devnode",
+  "udev_device_get_devtype",
   "udev_device_get_parent",
   "udev_device_get_parent_with_subsystem_devtype",
   "udev_device_get_property_value",

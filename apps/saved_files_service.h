@@ -13,10 +13,10 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
+#include "extensions/browser/extension_host_registry.h"
 
 namespace content {
 class BrowserContext;
@@ -38,9 +38,11 @@ namespace apps {
 // when suspended.
 class SavedFilesService : public extensions::SavedFilesServiceInterface,
                           public KeyedService,
-                          public content::NotificationObserver {
+                          public extensions::ExtensionHostRegistry::Observer {
  public:
   explicit SavedFilesService(content::BrowserContext* context);
+  SavedFilesService(const SavedFilesService&) = delete;
+  SavedFilesService& operator=(const SavedFilesService&) = delete;
   ~SavedFilesService() override;
 
   static SavedFilesService* Get(content::BrowserContext* context);
@@ -82,10 +84,9 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
   // A container for the registered files for an app.
   class SavedFiles;
 
-  // content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                extensions::ExtensionHost* host) override;
 
   // Returns the SavedFiles for |extension_id| or NULL if one does not exist.
   SavedFiles* Get(const std::string& extension_id) const;
@@ -103,10 +104,11 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
 
   std::map<std::string, std::unique_ptr<SavedFiles>>
       extension_id_to_saved_files_;
-  content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
 
-  DISALLOW_COPY_AND_ASSIGN(SavedFilesService);
+  base::ScopedObservation<extensions::ExtensionHostRegistry,
+                          extensions::ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 };
 
 }  // namespace apps

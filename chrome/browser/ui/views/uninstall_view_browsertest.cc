@@ -8,16 +8,20 @@
 
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/uninstall_browser_prompt.h"
+#include "content/public/test/browser_test.h"
 
 class UninstallViewBrowserTest : public DialogBrowserTest {
  public:
   UninstallViewBrowserTest() {}
 
+  UninstallViewBrowserTest(const UninstallViewBrowserTest&) = delete;
+  UninstallViewBrowserTest& operator=(const UninstallViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // UninstallView may need to know whether Chrome is the default browser,
     // which requires IO. Since this is a test, we'll just allow that.
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
 
     chrome::ShowUninstallBrowserPrompt();
 
@@ -26,9 +30,6 @@ class UninstallViewBrowserTest : public DialogBrowserTest {
     // See ShowUninstallBrowserPrompt in uninstall_view.cc.
     exit(0);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UninstallViewBrowserTest);
 };
 
 // Invokes a dialog confirming that the user wants to uninstall Chrome.

@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 
+#include "components/favicon/core/favicon_service.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -40,8 +41,8 @@ FaviconWebStateDispatcherImpl::RequestWebState() {
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(web_state_create_params);
 
-  ios::ChromeBrowserState* original_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(browser_state_);
+  ChromeBrowserState* original_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state_);
 
   favicon::WebFaviconDriver::CreateForWebState(
       web_state.get(),

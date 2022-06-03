@@ -50,7 +50,7 @@ GLint WebGLUniformLocation::Location() const {
   return location_;
 }
 
-void WebGLUniformLocation::Trace(blink::Visitor* visitor) {
+void WebGLUniformLocation::Trace(Visitor* visitor) const {
   visitor->Trace(program_);
   ScriptWrappable::Trace(visitor);
 }

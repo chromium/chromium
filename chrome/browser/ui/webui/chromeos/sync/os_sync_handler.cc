@@ -6,10 +6,13 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -19,6 +22,10 @@ using syncer::SyncService;
 using syncer::SyncUserSettings;
 using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
+
+namespace {
+const char kWallpaperEnabledKey[] = "wallpaperEnabled";
+}  // namespace
 
 OSSyncHandler::OSSyncHandler(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
@@ -30,19 +37,23 @@ OSSyncHandler::~OSSyncHandler() {
 }
 
 void OSSyncHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "DidNavigateToOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateToOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "DidNavigateAwayFromOsSyncPage",
       base::BindRepeating(&OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "OsSyncPrefsDispatch",
+      base::BindRepeating(&OSSyncHandler::HandleOsSyncPrefsDispatch,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOsSyncFeatureEnabled",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncFeatureEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SetOsSyncDatatypes",
       base::BindRepeating(&OSSyncHandler::HandleSetOsSyncDatatypes,
                           base::Unretained(this)));
@@ -62,13 +73,16 @@ void OSSyncHandler::OnStateChanged(syncer::SyncService* service) {
 }
 
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(const base::ListValue* args) {
+  HandleOsSyncPrefsDispatch(args);
+}
+
+void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::ListValue* args) {
   AllowJavascript();
 
   // Cache the feature enabled pref.
   SyncService* service = GetSyncService();
   if (service)
-    feature_enabled_ = service->GetUserSettings()->GetOsSyncFeatureEnabled();
-
+    feature_enabled_ = service->GetUserSettings()->IsOsSyncFeatureEnabled();
   PushSyncPrefs();
 }
 
@@ -78,17 +92,26 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 }
 
 void OSSyncHandler::HandleSetOsSyncFeatureEnabled(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
-  CHECK(args->GetBoolean(0, &feature_enabled_));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  feature_enabled_ = list[0].GetBool();
   should_commit_feature_enabled_ = true;
   // Changing the feature enabled state may change toggle state.
   PushSyncPrefs();
 }
 
 void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
-  const base::DictionaryValue* result;
-  CHECK(args->GetDictionary(0, &result));
+  CHECK_EQ(1u, args->GetList().size());
+  const base::Value& result_value = args->GetList()[0];
+  CHECK(result_value.is_dict());
+  const base::DictionaryValue& result =
+      base::Value::AsDictionaryValue(result_value);
+
+  // Wallpaper sync status is stored directly to the profile's prefs.
+  bool wallpaper_synced;
+  CHECK(result.GetBoolean(kWallpaperEnabledKey, &wallpaper_synced));
+  profile_->GetPrefs()->SetBoolean(chromeos::settings::prefs::kSyncOsWallpaper,
+                                   wallpaper_synced);
 
   // Start configuring the SyncService using the configuration passed to us from
   // the JS layer.
@@ -99,14 +122,14 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
     return;
 
   bool sync_all_os_types;
-  CHECK(result->GetBoolean("syncAllOsTypes", &sync_all_os_types));
+  CHECK(result.GetBoolean("syncAllOsTypes", &sync_all_os_types));
 
   UserSelectableOsTypeSet selected_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string key =
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
     bool sync_value;
-    CHECK(result->GetBoolean(key, &sync_value)) << key;
+    CHECK(result.GetBoolean(key, &sync_value)) << key;
     if (sync_value)
       selected_types.Put(type);
   }
@@ -156,26 +179,33 @@ void OSSyncHandler::PushSyncPrefs() {
     args.SetBoolean(type_name + "Registered", registered_types.Has(type));
     args.SetBoolean(type_name + "Synced", selected_types.Has(type));
   }
+
+  // Wallpaper sync status is fetched from prefs and is considered enabled if
+  // all OS types are enabled; this mimics behavior of GetSelectedOsTypes().
+  args.SetBoolean(kWallpaperEnabledKey,
+                  user_settings->IsSyncAllOsTypesEnabled() ||
+                      profile_->GetPrefs()->GetBoolean(
+                          chromeos::settings::prefs::kSyncOsWallpaper));
+
   FireWebUIListener("os-sync-prefs-changed", base::Value(feature_enabled_),
                     args);
 }
 
 syncer::SyncService* OSSyncHandler::GetSyncService() const {
-  const bool is_sync_allowed =
-      ProfileSyncServiceFactory::IsSyncAllowed(profile_);
-  return is_sync_allowed ? ProfileSyncServiceFactory::GetForProfile(profile_)
+  const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
+  return is_sync_allowed ? SyncServiceFactory::GetForProfile(profile_)
                          : nullptr;
 }
 
 void OSSyncHandler::AddSyncServiceObserver() {
   // Observe even if sync isn't allowed. IsSyncAllowed() can change mid-session.
-  SyncService* service = ProfileSyncServiceFactory::GetForProfile(profile_);
+  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (service)
     service->AddObserver(this);
 }
 
 void OSSyncHandler::RemoveSyncServiceObserver() {
-  SyncService* service = ProfileSyncServiceFactory::GetForProfile(profile_);
+  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (service)
     service->RemoveObserver(this);
 }

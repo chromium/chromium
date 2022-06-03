@@ -4,8 +4,8 @@
 
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
 
+#include "base/check.h"
 #include "base/guid.h"
-#include "base/logging.h"
 
 namespace chromeos {
 

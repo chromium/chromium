@@ -15,10 +15,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/nacl/nacl_browsertest_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/url_request/url_request.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -28,12 +28,11 @@ using net::test_server::HttpResponse;
 void TestDispatcherHostDelegate::RequestBeginning(
     net::URLRequest* request,
     content::ResourceContext* resource_context,
-    content::AppCacheService* appcache_service,
-    content::ResourceType resource_type,
+    blink::mojom::ResourceType resource_type,
     std::vector<std::unique_ptr<content::ResourceThrottle>>* throttles) {
   // This checks the same condition as the one for PNaCl in
   // AppendComponentUpdaterThrottles.
-  if (resource_type == content::ResourceType::kObject) {
+  if (resource_type == blink::mojom::ResourceType::kObject) {
     const net::HttpRequestHeaders& headers = request->extra_request_headers();
     std::string accept_headers;
     if (headers.GetHeader("Accept", &accept_headers)) {
@@ -53,8 +52,8 @@ void PnaclHeaderTest::StartServer() {
   // that watches for the .pexe fetch also.
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&PnaclHeaderTest::WatchForPexeFetch, base::Unretained(this)));
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PnaclHeaderTest::WatchForPexeFetch, base::Unretained(this)));
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
   ASSERT_TRUE(embedded_test_server()->Start());
 }
@@ -78,7 +77,8 @@ void PnaclHeaderTest::RunLoadTest(const std::string& url,
   // in the background).
   base::ScopedPathOverride component_dir(chrome::DIR_PNACL_COMPONENT);
 
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(url)));
 
   // Wait until the NMF and pexe are also loaded, not just the HTML.
   // Do this by waiting till the LoadTestMessageHandler responds.
@@ -106,7 +106,7 @@ std::unique_ptr<HttpResponse> PnaclHeaderTest::WatchForPexeFetch(
   // Skip other non-pexe files and let ServeFilesFromDirectory handle it.
   GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
   if (absolute_url.path().find(".pexe") == std::string::npos)
-    return std::unique_ptr<HttpResponse>();
+    return nullptr;
 
   // For pexe files, check for the special Accept header,
   // along with the expected ResourceType of the URL request.

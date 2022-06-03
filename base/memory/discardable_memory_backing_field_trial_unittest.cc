@@ -15,7 +15,7 @@
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #endif  // defined(OS_POSIX)
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 namespace base {
 
 class DiscardableMemoryBackingFieldTrialTest : public ::testing::Test {
@@ -88,4 +88,4 @@ TEST_F(DiscardableMemoryBackingFieldTrialTest, AshmemBackingMatchesTrialGroup) {
 
 }  // namespace base
 
-#endif  // defined(OS_ANDROID) || defined(OS_LINUX)
+#endif  // defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)

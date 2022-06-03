@@ -17,5 +17,9 @@ void RandBytes(void *bytes, size_t length) {
   base::RandBytes(bytes, length);
 }
 
+void RandBytes(base::span<uint8_t> bytes) {
+  RandBytes(bytes.data(), bytes.size());
+}
+
 }  // namespace crypto
 

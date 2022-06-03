@@ -4,16 +4,19 @@
 
 package org.chromium.content.browser.input;
 
-import android.support.test.filters.SmallTest;
+import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -23,7 +26,7 @@ import org.chromium.ui.base.ime.TextInputType;
  * IME (input method editor) and text input tests for input-mode attribute.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+@Batch(ImeTest.IME_BATCH)
 public class ImeInputModeTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
@@ -31,6 +34,27 @@ public class ImeInputModeTest {
     @Before
     public void setUp() throws Exception {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_MODE_HTML);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mRule.getActivity().finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TextInput"})
+    public void testNumericPassword() throws Exception {
+        mRule.focusElement("input_numeric_password", true /* shouldShowKeyboard */);
+
+        mRule.waitForKeyboardStates(1, 0, 1, new Integer[] {TextInputType.PASSWORD},
+                new Integer[] {WebTextInputMode.NUMERIC});
+        Assert.assertNotNull(mRule.getInputMethodManagerWrapper().getInputConnection());
+
+        Assert.assertTrue(
+                (mRule.getConnectionFactory().getOutAttrs().inputType
+                        & (InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD))
+                != 0);
     }
 
     @Test

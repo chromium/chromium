@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant.generic_ui;
 
-import android.support.annotation.Nullable;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -24,10 +22,35 @@ public class AssistantGenericUiDelegate {
         mNativeAssistantGenericUiDelegate = nativeAssistantGenericUiDelegate;
     }
 
-    void onViewClicked(String identifier, @Nullable AssistantValue value) {
+    void onViewClicked(String identifier) {
         assert mNativeAssistantGenericUiDelegate != 0;
-        AssistantGenericUiDelegateJni.get().onViewClicked(mNativeAssistantGenericUiDelegate,
-                AssistantGenericUiDelegate.this, identifier, value);
+        AssistantGenericUiDelegateJni.get().onViewClicked(
+                mNativeAssistantGenericUiDelegate, AssistantGenericUiDelegate.this, identifier);
+    }
+
+    void onValueChanged(String modelIdentifier, AssistantValue value) {
+        assert mNativeAssistantGenericUiDelegate != 0;
+        AssistantGenericUiDelegateJni.get().onValueChanged(mNativeAssistantGenericUiDelegate,
+                AssistantGenericUiDelegate.this, modelIdentifier, value);
+    }
+
+    void onTextLinkClicked(int link) {
+        assert mNativeAssistantGenericUiDelegate != 0;
+        AssistantGenericUiDelegateJni.get().onTextLinkClicked(
+                mNativeAssistantGenericUiDelegate, AssistantGenericUiDelegate.this, link);
+    }
+
+    void onGenericPopupDismissed(String popupIdentifier) {
+        assert mNativeAssistantGenericUiDelegate != 0;
+        AssistantGenericUiDelegateJni.get().onGenericPopupDismissed(
+                mNativeAssistantGenericUiDelegate, AssistantGenericUiDelegate.this,
+                popupIdentifier);
+    }
+
+    void onViewContainerCleared(String viewIdentifier) {
+        assert mNativeAssistantGenericUiDelegate != 0;
+        AssistantGenericUiDelegateJni.get().onViewContainerCleared(
+                mNativeAssistantGenericUiDelegate, AssistantGenericUiDelegate.this, viewIdentifier);
     }
 
     @CalledByNative
@@ -38,6 +61,14 @@ public class AssistantGenericUiDelegate {
     @NativeMethods
     interface Natives {
         void onViewClicked(long nativeAssistantGenericUiDelegate, AssistantGenericUiDelegate caller,
-                String identifier, @Nullable AssistantValue value);
+                String identifier);
+        void onValueChanged(long nativeAssistantGenericUiDelegate,
+                AssistantGenericUiDelegate caller, String modelIdentifier, AssistantValue value);
+        void onTextLinkClicked(
+                long nativeAssistantGenericUiDelegate, AssistantGenericUiDelegate caller, int link);
+        void onGenericPopupDismissed(long nativeAssistantGenericUiDelegate,
+                AssistantGenericUiDelegate caller, String popupIdentifier);
+        void onViewContainerCleared(long nativeAssistantGenericUiDelegate,
+                AssistantGenericUiDelegate caller, String viewIdentifier);
     }
 }

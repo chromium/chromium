@@ -4,7 +4,6 @@
 
 #include "components/dom_distiller/core/article_entry.h"
 
-#include "base/logging.h"
 
 namespace dom_distiller {
 

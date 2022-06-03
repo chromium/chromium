@@ -6,20 +6,24 @@
 
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
-#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_seccomp.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 #if defined(__mips__)
@@ -146,7 +150,7 @@ class NumberToHex {
 
 // Records the syscall number and first four arguments in a crash key, to help
 // debug the failure.
-void SetSeccompCrashKey(const struct sandbox::arch_seccomp_data& args) {
+void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
 #if !defined(OS_NACL_NONSFI)
   NumberToHex<int> nr(args.nr);
   NumberToHex<uint64_t> arg1(args.args[0]);
@@ -353,6 +357,24 @@ intptr_t SIGSYSSchedHandler(const struct arch_seccomp_data& args,
   return -ENOSYS;
 }
 
+intptr_t SIGSYSFstatatHandler(const struct arch_seccomp_data& args,
+                              void* fs_denied_errno) {
+  if (args.nr == __NR_fstatat_default) {
+    if (*reinterpret_cast<const char*>(args.args[1]) == '\0' &&
+        args.args[3] == static_cast<uint64_t>(AT_EMPTY_PATH)) {
+      return syscall(__NR_fstat_default, static_cast<int>(args.args[0]),
+                     reinterpret_cast<default_stat_struct*>(args.args[2]));
+    }
+    return -reinterpret_cast<intptr_t>(fs_denied_errno);
+  }
+
+  CrashSIGSYS_Handler(args, fs_denied_errno);
+
+  // Should never be reached.
+  RAW_CHECK(false);
+  return -ENOSYS;
+}
+
 bpf_dsl::ResultExpr CrashSIGSYS() {
   return bpf_dsl::Trap(CrashSIGSYS_Handler, NULL);
 }
@@ -383,6 +405,11 @@ bpf_dsl::ResultExpr CrashSIGSYSPtrace() {
 
 bpf_dsl::ResultExpr RewriteSchedSIGSYS() {
   return bpf_dsl::Trap(SIGSYSSchedHandler, NULL);
+}
+
+bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno) {
+  return bpf_dsl::Trap(SIGSYSFstatatHandler,
+                       reinterpret_cast<void*>(fs_denied_errno));
 }
 
 void AllocateCrashKeys() {

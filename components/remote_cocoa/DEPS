@@ -3,6 +3,8 @@ include_rules = [
   "+components/crash/core/common/crash_key.h",
   "+components/viz/common",
   "+mojo/public/cpp/bindings",
+  "+net/cert",
+  "+services/network/public/mojom/network_param.mojom",
   "+skia/ext",
   "+ui/accelerated_widget_mac",
   "+ui/base",

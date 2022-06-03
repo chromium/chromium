@@ -6,6 +6,18 @@
     return document.getElementById(id);
   };
 
+  // The modal permission dialog requires a user gesture to trigger.
+  // Hook up a click event listener to run a specified method (which
+  // may be changed by the test).
+  var functionToRun;
+  function runFunctionOnClick() {
+      eval(functionToRun);
+  }
+
+  window.addEventListener('load', () => {
+      window.addEventListener('click', runFunctionOnClick);
+  });
+
   function getSources() {
     navigator.mediaDevices.enumerateDevices().then(function(devices) {
       document.title = 'Media devices available';
@@ -31,13 +43,17 @@
         JSON.stringify(constraints));
     navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
+          window.document.title = 'Granted';
           detectVideoInLocalView1(stream).then(() => {
             stream.getVideoTracks()[0].stop();
             detectVideoStopped('local-view-1')
                 .then(reportTestSuccess);
           });
         })
-        .catch(failTest);
+        .catch(() => {
+          window.document.title = 'Denied';
+          failTest();
+        });
   }
 
   // Requests getusermedia and expects it to succeed.
@@ -673,39 +689,41 @@
   }
 
   function applyConstraintsVideoTwoStreams() {
-    navigator.mediaDevices.getUserMedia({video:true})
-      .then(stream => {
+    navigator.mediaDevices.getUserMedia({
+        video:{
+            width:{exact:640},
+            height: {exact:480}
+        }
+    }).then(stream => {
         assertEquals(stream.getVideoTracks().length, 1);
-        var track1 = stream.getVideoTracks()[0];
+        let track1 = stream.getVideoTracks()[0];
+        let deviceId1 = track1.getSettings().deviceId;
         track1.onmute = () => failTest("Unexpected mute of track1");
         track1.onunmute = () => failTest("Unexpected unmute of track1");
-        var settings1 = track1.getSettings();
-        var default_device_id = settings1.deviceId;
-        var default_width = settings1.width;
-        var default_height = settings1.height;
-        return navigator.mediaDevices.getUserMedia({video:true})
-          .then(stream2 => {
-            var track2 = stream2.getVideoTracks()[0];
+        return navigator.mediaDevices.getUserMedia({
+            video:{
+                deviceId: {exact: deviceId1},
+                width:{exact:640},
+                height: {exact:480}
+            }
+        }).then(stream2 => {
+            let track2 = stream2.getVideoTracks()[0];
             track2.onmute = () => failTest("Unexpected mute of track2");
             track2.onunmute = () => failTest("Unexpected unmute of track2");
-            var settings2 = track2.getSettings();
-            assertEquals(settings2.width, default_width);
-            assertEquals(settings2.height, default_height);
-            assertEquals(settings2.deviceId, default_device_id);
             return track1.applyConstraints({
-              width: default_width-1,
-              height: default_height-1
+              width: {exact: 639},
+              height: {exact: 479}
             }).then(()=> {
               assertEquals(track1.readyState, "live");
-              settings1 = track1.getSettings();
-              assertEquals(settings1.deviceId, default_device_id);
-              assertEquals(settings1.width, default_width - 1);
-              assertEquals(settings1.height, default_height - 1);
+              let settings1 = track1.getSettings();
+              assertEquals(639, settings1.width);
+              assertEquals(479, settings1.height);
               assertEquals(track2.readyState, "live");
-              settings2 = track2.getSettings();
-              assertEquals(settings2.deviceId, default_device_id);
-              assertEquals(settings2.width, default_width);
-              assertEquals(settings2.height, default_height);
+              let settings2 = track2.getSettings();
+              assertEquals(640, settings2.width);
+              assertEquals(480, settings2.height);
+              assertEquals(deviceId1, settings1.deviceId);
+              assertEquals(deviceId1, settings2.deviceId);
               track1.stop();
               track2.stop();
               reportTestSuccess();
@@ -766,7 +784,7 @@
       assertEquals(video.videoHeight, canvas_height);
       var new_width = canvas_width - 1;
       var new_height = canvas_height - 1;
-      video.onprogress = () => {
+      video.ontimeupdate = () => {
         assertEquals(video.videoWidth, new_width);
         assertEquals(video.videoHeight, new_height);
         canvas_track.applyConstraints({width: {min: canvas_width + 1}})
@@ -946,6 +964,21 @@
     }
   }
 
+  async function enumerationAfterSameDocumentNaviagtion() {
+    let stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:true });
+    stream.getTracks().forEach(t => t.stop());
+    let devices1 = await navigator.mediaDevices.enumerateDevices();
+
+    // Navigate within the same document and enumerate again.
+    window.location = "#navigate";
+    let devices2 = await navigator.mediaDevices.enumerateDevices();
+    assertEquals(devices1.length, devices2.length);
+    for (let i=0; i<devices1.length; i++) {
+      assertEquals(devices1[i].deviceId, devices2[i].deviceId);
+    }
+    reportTestSuccess();
+  }
+
   </script>
 </head>
 <body>
@@ -964,5 +997,6 @@
           style="display:none"></canvas></td>
     </tr>
   </table>
+  <p>Some text so the document is ready for input.</p>
 </body>
 </html>

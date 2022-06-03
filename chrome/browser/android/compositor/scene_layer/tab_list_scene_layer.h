@@ -8,13 +8,12 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <unordered_set>
 
-#include "base/macros.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/android/compositor/tab_content_manager.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ui {
@@ -30,23 +29,23 @@ class TabLayer;
 class TabListSceneLayer : public SceneLayer {
  public:
   TabListSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  TabListSceneLayer(const TabListSceneLayer&) = delete;
+  TabListSceneLayer& operator=(const TabListSceneLayer&) = delete;
+
   ~TabListSceneLayer() override;
 
   void BeginBuildingFrame(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jobj);
   void FinishBuildingFrame(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj);
-  void UpdateLayer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
-      jint background_color,
-      jfloat viewport_x,
-      jfloat viewport_y,
-      jfloat viewport_width,
-      jfloat viewport_height,
-      const base::android::JavaParamRef<jobject>& jlayer_title_cache,
-      const base::android::JavaParamRef<jobject>& jtab_content_manager,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+  void UpdateLayer(JNIEnv* env,
+                   const base::android::JavaParamRef<jobject>& jobj,
+                   jint background_color,
+                   jfloat viewport_x,
+                   jfloat viewport_y,
+                   jfloat viewport_width,
+                   jfloat viewport_height);
   // TODO(meiliang): This method needs another parameter, a resource that can be
   // used to indicate the currently selected tab for the TabLayer.
   // TODO(dtrainor): This method is ridiculous.  Break this apart?
@@ -72,7 +71,6 @@ class TabListSceneLayer : public SceneLayer {
                    jfloat width,
                    jfloat height,
                    jfloat content_width,
-                   jfloat content_height,
                    jfloat visible_content_height,
                    jfloat shadow_x,
                    jfloat shadow_y,
@@ -102,9 +100,9 @@ class TabListSceneLayer : public SceneLayer {
                    jboolean show_tab_title,
                    jint toolbar_textbox_resource_id,
                    jint toolbar_textbox_background_color,
-                   jfloat toolbar_textbox_alpha,
                    jfloat toolbar_alpha,
                    jfloat toolbar_y_offset,
+                   jfloat content_offset,
                    jfloat side_border_scale,
                    jboolean inset_border);
 
@@ -114,14 +112,18 @@ class TabListSceneLayer : public SceneLayer {
                           jfloat alpha,
                           jint top_offset);
 
+  void SetDependencies(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jobj,
+      const base::android::JavaParamRef<jobject>& jtab_content_manager,
+      const base::android::JavaParamRef<jobject>& jlayer_title_cache,
+      const base::android::JavaParamRef<jobject>& jresource_manager);
+
   void OnDetach() override;
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
 
  private:
-  // The set of tint colors that were used for a frame.
-  std::unordered_set<int> used_tints_;
-
   typedef std::map<int, scoped_refptr<TabLayer>> TabMap;
   TabMap tab_map_;
   std::set<int> visible_tabs_this_frame_;
@@ -135,8 +137,6 @@ class TabListSceneLayer : public SceneLayer {
   SkColor background_color_;
 
   scoped_refptr<cc::Layer> own_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabListSceneLayer);
 };
 
 }  // namespace android

@@ -19,7 +19,9 @@
 
 // https://w3c.github.io/uievents/#interface-MutationEvent
 
-interface MutationEvent : Event {
+[
+    Exposed=Window
+] interface MutationEvent : Event {
     // attrChangeType
     const unsigned short MODIFICATION = 1;
     const unsigned short ADDITION     = 2;
@@ -31,12 +33,12 @@ interface MutationEvent : Event {
     readonly attribute DOMString      attrName;
     readonly attribute unsigned short attrChange;
     // TODO(foolip): None of the initMutationEvent() arguments should be optional.
-    [Measure] void initMutationEvent([DefaultValue=Undefined] optional DOMString type,
-                                     [DefaultValue=Undefined] optional boolean bubbles,
-                                     [DefaultValue=Undefined] optional boolean cancelable,
-                                     [DefaultValue=Undefined] optional Node? relatedNode,
-                                     [DefaultValue=Undefined] optional DOMString prevValue,
-                                     [DefaultValue=Undefined] optional DOMString newValue,
-                                     [DefaultValue=Undefined] optional DOMString attrName,
-                                     [DefaultValue=Undefined] optional unsigned short attrChange);
+    [Measure] void initMutationEvent(optional DOMString type = "undefined",
+                                     optional boolean bubbles = false,
+                                     optional boolean cancelable = false,
+                                     optional Node? relatedNode = null,
+                                     optional DOMString prevValue = "undefined",
+                                     optional DOMString newValue = "undefined",
+                                     optional DOMString attrName = "undefined",
+                                     optional unsigned short attrChange = 0);
 };

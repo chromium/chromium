@@ -1,0 +1,17 @@
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<style>
+.sample {
+    font: 10px/15px Ahem;
+    letter-spacing: 20px;
+}
+</style>
+<div class="sample" id="target1"><span href="#">abc</span> def</div>
+<div class="sample" id="target2"><span href="#">abc</span> def</div>
+<script>
+for (let i = 0; i < 2; ++i) {
+    document.body.offsetHeight;
+    target1.firstChild.firstChild.appendData('X');
+    target2.lastChild.insertData(2, 'X');
+}
+</script>

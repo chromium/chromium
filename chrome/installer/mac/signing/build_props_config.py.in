@@ -11,6 +11,10 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     properties from the branding and version data.
     """
 
+    @staticmethod
+    def is_chrome_branded():
+        return @IS_CHROME_BRANDED@
+
     @property
     def app_product(self):
         return '@PRODUCT_FULLNAME@'

@@ -11,6 +11,8 @@ source_set("recent_tabs") {
     "recent_tabs_coordinator.mm",
     "recent_tabs_mediator.h",
     "recent_tabs_mediator.mm",
+    "recent_tabs_menu_helper.h",
+    "recent_tabs_menu_helper.mm",
     "synced_sessions_bridge.h",
     "synced_sessions_bridge.mm",
   ]
@@ -28,19 +30,20 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/menu:context_menu_delegate",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ui/base",
   ]
-  public_deps = [
-    "//components/sync_sessions",
-  ]
+  public_deps = [ "//components/sync_sessions" ]
 }
 
 source_set("recent_tabs_ui_constants") {
@@ -55,6 +58,7 @@ source_set("recent_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "recent_tabs_consumer.h",
+    "recent_tabs_menu_provider.h",
     "recent_tabs_presentation_delegate.h",
     "recent_tabs_table_view_controller.h",
     "recent_tabs_table_view_controller.mm",
@@ -67,45 +71,53 @@ source_set("recent_tabs_ui") {
   ]
   deps = [
     ":recent_tabs_ui_constants",
+    "resources:recent_tabs_other_devices_empty",
     "//base",
+    "//components/prefs",
     "//components/sessions",
     "//components/strings",
     "//components/sync",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/context_menu",
     "//ios/chrome/browser/ui/settings/sync/utils",
-    "//ios/chrome/browser/ui/signin_interaction/public",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/favicon",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
-  public_deps = [
-    "//components/sync_sessions",
-  ]
+  public_deps = [ "//components/sync_sessions" ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "recent_tabs_coordinator_unittest.mm",
-  ]
+  sources = [ "recent_tabs_coordinator_unittest.mm" ]
   deps = [
     ":recent_tabs",
     ":recent_tabs_ui",
@@ -118,7 +130,9 @@ source_set("unit_tests") {
     "//components/sync_user_events",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui:feature_flags",
@@ -132,61 +146,63 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_tests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "recent_tabs_egtest.mm",
-  ]
-  deps = [
-    ":recent_tabs_ui",
-    ":recent_tabs_ui_constants",
-    "//base/test:test_support",
-    "//components/strings",
-    "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui/authentication:eg_test_support",
-    "//ios/chrome/browser/ui/authentication/cells:constants",
-    "//ios/chrome/browser/ui/history:constants",
-    "//ios/chrome/browser/ui/history:history_ui",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web/public/test/http_server",
-    "//ui/base",
-  ]
-  libs = [ "XCTest.framework" ]
-}
-
-source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
   sources = [
-    "recent_tabs_egtest.mm",
+    "recent_tabs_app_interface.h",
+    "recent_tabs_app_interface.mm",
   ]
   deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "recent_tabs_app_interface.h",
+    "recent_tabs_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "recent_tabs_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
     ":recent_tabs_ui_constants",
     "//base/test:test_support",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/table_view:constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -194,5 +210,5 @@ source_set("eg2_tests") {
     "//ios/web/public/test/http_server",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

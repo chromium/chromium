@@ -11,12 +11,6 @@
     window.jsTestIsAsync = true;
     description("Tests that the plugin container doesn't generate user gestures");
 
-    if (window.testRunner) {
-        testRunner.setCloseRemainingWindowsWhenComplete(true);
-        testRunner.setCanOpenWindows();
-        testRunner.setPopupBlockingEnabled(true);
-    }
-
     if (window.eventSender) {
         var link = document.querySelector("#link");
         eventSender.mouseMoveTo(link.offsetLeft + 10, link.offsetTop + link.offsetHeight / 2);

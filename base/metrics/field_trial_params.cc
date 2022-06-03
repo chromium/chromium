@@ -11,11 +11,20 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time_delta_from_string.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+
+std::string UnescapeValue(const std::string& value) {
+  return UnescapeURLComponent(
+      value, UnescapeRule::PATH_SEPARATORS |
+                 UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+}
 
 bool AssociateFieldTrialParams(const std::string& trial_name,
                                const std::string& group_name,
@@ -79,8 +88,9 @@ bool AssociateFieldTrialParamsFromString(
 
 bool GetFieldTrialParams(const std::string& trial_name,
                          FieldTrialParams* params) {
-  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(
-      trial_name, params);
+  FieldTrial* trial = FieldTrialList::Find(trial_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
@@ -89,10 +99,8 @@ bool GetFieldTrialParamsByFeature(const Feature& feature,
     return false;
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
-  if (!trial)
-    return false;
-
-  return GetFieldTrialParams(trial->trial_name(), params);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 std::string GetFieldTrialParamValue(const std::string& trial_name,
@@ -108,14 +116,13 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
 
 std::string GetFieldTrialParamValueByFeature(const Feature& feature,
                                              const std::string& param_name) {
-  if (!FeatureList::IsEnabled(feature))
-    return std::string();
-
-  FieldTrial* trial = FeatureList::GetFieldTrial(feature);
-  if (!trial)
-    return std::string();
-
-  return GetFieldTrialParamValue(trial->trial_name(), param_name);
+  FieldTrialParams params;
+  if (GetFieldTrialParamsByFeature(feature, &params)) {
+    auto it = params.find(param_name);
+    if (it != params.end())
+      return it->second;
+  }
+  return std::string();
 }
 
 int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
@@ -126,11 +133,11 @@ int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
   int value_as_int = 0;
   if (!StringToInt(value_as_string, &value_as_int)) {
     if (!value_as_string.empty()) {
-      DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                    << " with string value " << value_as_string
-                    << " under feature " << feature.name
-                    << " into an int. Falling back to default value of "
-                    << default_value;
+      NOTREACHED() << "Failed to parse field trial param " << param_name
+                   << " with string value " << value_as_string
+                   << " under feature " << feature.name
+                   << " into an int. Falling back to default value of "
+                   << default_value;
     }
     value_as_int = default_value;
   }
@@ -145,11 +152,11 @@ double GetFieldTrialParamByFeatureAsDouble(const Feature& feature,
   double value_as_double = 0;
   if (!StringToDouble(value_as_string, &value_as_double)) {
     if (!value_as_string.empty()) {
-      DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                    << " with string value " << value_as_string
-                    << " under feature " << feature.name
-                    << " into a double. Falling back to default value of "
-                    << default_value;
+      NOTREACHED() << "Failed to parse field trial param " << param_name
+                   << " with string value " << value_as_string
+                   << " under feature " << feature.name
+                   << " into a double. Falling back to default value of "
+                   << default_value;
     }
     value_as_double = default_value;
   }
@@ -167,13 +174,36 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
     return false;
 
   if (!value_as_string.empty()) {
-    DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                  << " with string value " << value_as_string
-                  << " under feature " << feature.name
-                  << " into a bool. Falling back to default value of "
-                  << default_value;
+    NOTREACHED() << "Failed to parse field trial param " << param_name
+                 << " with string value " << value_as_string
+                 << " under feature " << feature.name
+                 << " into a bool. Falling back to default value of "
+                 << default_value;
   }
   return default_value;
+}
+
+base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
+    const Feature& feature,
+    const std::string& param_name,
+    base::TimeDelta default_value) {
+  std::string value_as_string =
+      GetFieldTrialParamValueByFeature(feature, param_name);
+
+  if (value_as_string.empty())
+    return default_value;
+
+  absl::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
+  if (!ret.has_value()) {
+    NOTREACHED() << "Failed to parse field trial param " << param_name
+                 << " with string value " << value_as_string
+                 << " under feature " << feature.name
+                 << " into a base::TimeDelta. Falling back to default value of "
+                 << default_value;
+    return default_value;
+  }
+
+  return ret.value();
 }
 
 std::string FeatureParam<std::string>::Get() const {
@@ -193,15 +223,19 @@ bool FeatureParam<bool>::Get() const {
   return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
 }
 
+base::TimeDelta FeatureParam<base::TimeDelta>::Get() const {
+  return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
+}
+
 void LogInvalidEnumValue(const Feature& feature,
                          const std::string& param_name,
                          const std::string& value_as_string,
                          int default_value_as_int) {
-  DLOG(WARNING) << "Failed to parse field trial param " << param_name
-                << " with string value " << value_as_string << " under feature "
-                << feature.name
-                << " into an enum. Falling back to default value of "
-                << default_value_as_int;
+  NOTREACHED() << "Failed to parse field trial param " << param_name
+               << " with string value " << value_as_string << " under feature "
+               << feature.name
+               << " into an enum. Falling back to default value of "
+               << default_value_as_int;
 }
 
 }  // namespace base

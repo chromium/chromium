@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 13: Uncaught TypeError: host1.createShadowRoot is not a function
-A crash should not happen when fallback elements are reprojected.
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

@@ -29,7 +29,8 @@ class _Generator(object):
     c = Code()
     (c.Append(cpp_util.CHROMIUM_LICENSE)
       .Append()
-      .Append(cpp_util.GENERATED_FEATURE_MESSAGE % self._source_file)
+      .Append(cpp_util.GENERATED_FEATURE_MESSAGE %
+              cpp_util.ToPosixPath(self._source_file))
       .Append()
     )
 
@@ -93,7 +94,7 @@ class _Generator(object):
       .Append('kUnknown,')
     )
     for feature in self._feature_defs:
-      c.Append('%s,' % cpp_util.ConstantName(feature.name))
+      c.Append('%s,' % cpp_util.FeatureNameToConstantName(feature.name))
     c.Append('kEnumBoundary')
 
     return c

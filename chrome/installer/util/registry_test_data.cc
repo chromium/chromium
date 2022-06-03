@@ -10,9 +10,7 @@
 
 using base::win::RegKey;
 
-RegistryTestData::RegistryTestData()
-    : root_key_(NULL) {
-}
+RegistryTestData::RegistryTestData() : root_key_(nullptr) {}
 
 RegistryTestData::~RegistryTestData() {
   Reset();
@@ -21,7 +19,7 @@ RegistryTestData::~RegistryTestData() {
 // static
 bool RegistryTestData::DeleteKey(HKEY root_key, const wchar_t* path) {
   LONG result = ERROR_SUCCESS;
-  if (root_key != NULL && path != NULL && *path != L'\0') {
+  if (root_key != nullptr && path != nullptr && *path != L'\0') {
     result = RegKey(root_key, L"", KEY_QUERY_VALUE).DeleteKey(path);
     if (result == ERROR_FILE_NOT_FOUND) {
       result = ERROR_SUCCESS;
@@ -38,7 +36,7 @@ void RegistryTestData::Reset() {
   DeleteKey(root_key_, base_path_.c_str());
 
   // Forget state.
-  root_key_ = NULL;
+  root_key_ = nullptr;
   base_path_.clear();
   empty_key_path_.clear();
   non_empty_key_path_.clear();
@@ -65,7 +63,7 @@ bool RegistryTestData::Initialize(HKEY root_key, const wchar_t* base_path) {
     if (result == ERROR_SUCCESS)
       result = key.Create(root_key_, non_empty_key_path_.c_str(), KEY_WRITE);
     if (result == ERROR_SUCCESS)
-      result = key.WriteValue(NULL, non_empty_key_path_.c_str());
+      result = key.WriteValue(nullptr, non_empty_key_path_.c_str());
     if (result == ERROR_SUCCESS)
       result = key.CreateKey(L"SubKey", KEY_WRITE);
     if (result == ERROR_SUCCESS)
@@ -86,7 +84,7 @@ void RegistryTestData::ExpectMatchesNonEmptyKey(HKEY root_key,
 
   EXPECT_EQ(ERROR_SUCCESS, key.Open(root_key, path, KEY_READ));
   std::wstring str_value;
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(NULL, &str_value));
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(nullptr, &str_value));
   EXPECT_EQ(non_empty_key_path_, str_value);
   EXPECT_EQ(ERROR_SUCCESS, key.OpenKey(L"Subkey", KEY_READ));
   DWORD dw_value = 0;
@@ -101,8 +99,9 @@ void RegistryTestData::ExpectEmptyKey(HKEY root_key, const wchar_t* path) {
   RegKey key;
   EXPECT_EQ(ERROR_SUCCESS, key.Open(root_key, path, KEY_READ));
   EXPECT_EQ(ERROR_SUCCESS,
-            RegQueryInfoKey(key.Handle(), NULL, NULL, NULL, &num_subkeys,
-                            NULL, NULL, &num_values, NULL, NULL, NULL, NULL));
+            RegQueryInfoKey(key.Handle(), nullptr, nullptr, nullptr,
+                            &num_subkeys, nullptr, nullptr, &num_values,
+                            nullptr, nullptr, nullptr, nullptr));
   EXPECT_EQ(0UL, num_subkeys);
   EXPECT_EQ(0UL, num_values);
 }

@@ -49,7 +49,7 @@ SVGPropertyTearOffBase::SVGPropertyTearOffBase(SVGElement* context_element)
       binding_(nullptr),
       property_is_anim_val_(kPropertyIsNotAnimVal) {}
 
-void SVGPropertyTearOffBase::Trace(Visitor* visitor) {
+void SVGPropertyTearOffBase::Trace(Visitor* visitor) const {
   visitor->Trace(context_element_);
   visitor->Trace(binding_);
   ScriptWrappable::Trace(visitor);
@@ -59,6 +59,14 @@ void SVGPropertyTearOffBase::ThrowReadOnly(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
       ExceptionMessages::ReadOnly());
+}
+
+void SVGPropertyTearOffBase::ThrowIndexSize(ExceptionState& exception_state,
+                                            uint32_t index,
+                                            uint32_t max_bound) {
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kIndexSizeError,
+      ExceptionMessages::IndexExceedsMaximumBound("index", index, max_bound));
 }
 
 void SVGPropertyTearOffBase::Bind(SVGAnimatedPropertyBase* binding) {

@@ -14,7 +14,7 @@
 
 #include "minidump/minidump_memory_info_writer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "snapshot/memory_map_region_snapshot.h"
 #include "util/file/file_writer.h"
 
